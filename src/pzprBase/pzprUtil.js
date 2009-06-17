@@ -1,4 +1,4 @@
-// pzprUtil.js v3.1.9p3
+// pzprUtil.js v3.2.0
 
 //---------------------------------------------------------------------------
 // ★Colorsクラス 主に色分けの情報を管理する
@@ -16,9 +16,9 @@ Colors.prototype = {
 	//---------------------------------------------------------------------------
 	getNewLineColor : function(){
 		while(1){
-			var Rdeg = int(Math.random() * 384)-64; if(Rdeg<0){Rdeg=0;} if(Rdeg>255){Rdeg=255;}
-			var Gdeg = int(Math.random() * 384)-64; if(Gdeg<0){Gdeg=0;} if(Gdeg>255){Gdeg=255;}
-			var Bdeg = int(Math.random() * 384)-64; if(Bdeg<0){Bdeg=0;} if(Bdeg>255){Bdeg=255;}
+			var Rdeg = mf(Math.random() * 384)-64; if(Rdeg<0){Rdeg=0;} if(Rdeg>255){Rdeg=255;}
+			var Gdeg = mf(Math.random() * 384)-64; if(Gdeg<0){Gdeg=0;} if(Gdeg>255){Gdeg=255;}
+			var Bdeg = mf(Math.random() * 384)-64; if(Bdeg<0){Bdeg=0;} if(Bdeg>255){Bdeg=255;}
 
 			// HLSの各組成値を求める
 			var Cmax = Math.max(Rdeg,Math.max(Gdeg,Bdeg));
@@ -40,7 +40,7 @@ Colors.prototype = {
 				 && (((360+this.lastHdeg-Hdeg)%360>=45)&&((360+this.lastHdeg-Hdeg)%360<=315)) ){
 				this.lastHdeg = Hdeg;
 				this.lastYdeg = Ydeg;
-				//alert("rgb("+Rdeg+", "+Gdeg+", "+Bdeg+")\nHLS("+int(Hdeg)+", "+(""+int(Ldeg*1000)*0.001).slice(0,5)+", "+(""+int(Sdeg*1000)*0.001).slice(0,5)+")\nY("+(""+int(Ydeg*1000)*0.001).slice(0,5)+")");
+				//alert("rgb("+Rdeg+", "+Gdeg+", "+Bdeg+")\nHLS("+mf(Hdeg)+", "+(""+mf(Ldeg*1000)*0.001).slice(0,5)+", "+(""+mf(Sdeg*1000)*0.001).slice(0,5)+")\nY("+(""+mf(Ydeg*1000)*0.001).slice(0,5)+")");
 				return "rgb("+Rdeg+","+Gdeg+","+Bdeg+")";
 			}
 		}
@@ -57,8 +57,8 @@ Colors.prototype = {
 		if(!k.isborderCross){ this.setColor1(id,val); return;}
 
 		var cc1, cc2;
-		if(k.isborderAsLine==0){ cc1 = bd.getcc1(id);      cc2 = bd.getcc2(id);     }
-		else                   { cc1 = bd.getcrosscc1(id); cc2 = bd.getcrosscc2(id);}
+		if(k.isborderAsLine==0){ cc1 = bd.cc1(id);      cc2 = bd.cc2(id);     }
+		else                   { cc1 = bd.crosscc1(id); cc2 = bd.crosscc2(id);}
 
 		if(val==1){ this.setLineColor1(id,cc1,cc2);}
 		else      { this.setLineColor2(id,cc1,cc2);}
@@ -135,7 +135,7 @@ Colors.prototype = {
 		}
 		else{
 			if(id==-1 || id>=(k.qcols+1)*(k.qrows+1)){ return -1;}
-			return bd.lcntCross(id%(k.qcols+1), int(id/(k.qcols+1)));
+			return bd.lcntCross(id%(k.qcols+1), mf(id/(k.qcols+1)));
 		}
 	},
 	changeColors : function(startid, backid, col){
@@ -165,20 +165,20 @@ Colors.prototype = {
 	tshapeid : function(cc){
 		var bx, by, func;
 		if(k.isborderAsLine==0){
-			bx = cc%(k.qcols)*2+1; by = int(cc/(k.qcols))*2+1;
+			bx = cc%(k.qcols)*2+1; by = mf(cc/(k.qcols))*2+1;
 			if(cc==-1 || bd.lcntCell(bd.cell[cc].cx,bd.cell[cc].cy)!=3){ return -1;}
-			func = bd.getLineBorder.bind(bd);
+			func = bd.LiB.bind(bd);
 		}
 		else{
-			bx = cc%(k.qcols+1)*2; by = int(cc/(k.qcols+1))*2;
-			if(cc==-1 || bd.lcntCross(int(bx/2),int(by/2))!=3){ return -1;}
-			func = bd.getQansBorder.bind(bd);
+			bx = cc%(k.qcols+1)*2; by = mf(cc/(k.qcols+1))*2;
+			if(cc==-1 || bd.lcntCross(mf(bx/2),mf(by/2))!=3){ return -1;}
+			func = bd.QaB.bind(bd);
 		}
 
-		if     (func(bd.getbnum(bx-1,by  ))<=0){ return bd.getbnum(bx+1,by  );}
-		else if(func(bd.getbnum(bx+1,by  ))<=0){ return bd.getbnum(bx-1,by  );}
-		else if(func(bd.getbnum(bx  ,by-1))<=0){ return bd.getbnum(bx  ,by+1);}
-		else if(func(bd.getbnum(bx  ,by+1))<=0){ return bd.getbnum(bx  ,by-1);}
+		if     (func(bd.bnum(bx-1,by  ))<=0){ return bd.bnum(bx+1,by  );}
+		else if(func(bd.bnum(bx+1,by  ))<=0){ return bd.bnum(bx-1,by  );}
+		else if(func(bd.bnum(bx  ,by-1))<=0){ return bd.bnum(bx  ,by+1);}
+		else if(func(bd.bnum(bx  ,by+1))<=0){ return bd.bnum(bx  ,by-1);}
 
 		return -1;
 	},
@@ -190,8 +190,8 @@ Colors.prototype = {
 	setColor1 : function(id,val){
 		var idlist=new Array();
 		var cc1, cc2, color;
-		if(k.isborderAsLine==0){ cc1 = bd.getcc1(id);      cc2 = bd.getcc2(id);     }
-		else                   { cc1 = bd.getcrosscc1(id); cc2 = bd.getcrosscc2(id);}
+		if(k.isborderAsLine==0){ cc1 = bd.cc1(id);      cc2 = bd.cc2(id);     }
+		else                   { cc1 = bd.crosscc1(id); cc2 = bd.crosscc2(id);}
 
 		pc.zstable = true;
 		if(val!=0){
@@ -254,27 +254,27 @@ Colors.prototype = {
 		}
 	},
 	sc0 : function(idlist,bx,by,dir){
-		var line = (k.isborderAsLine==0?bd.getLineBorder.bind(bd):bd.getQansBorder.bind(bd));
+		var line = (k.isborderAsLine==0?bd.LiB.bind(bd):bd.QaB.bind(bd));
 		while(1){
 			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 			if((bx+by)%2==0){
-				var lcnt = this.lcntCell(int(bx/2)+int(by/2)*(k.qcols+(k.isborderAsLine==0?0:1)));
+				var lcnt = this.lcntCell(mf(bx/2)+mf(by/2)*(k.qcols+(k.isborderAsLine==0?0:1)));
 				if(dir==0 || this.branch(bx,by,lcnt)){
-					if(line(bd.getbnum(bx,by-1))>0){ this.sc0(idlist,bx,by,1)}
-					if(line(bd.getbnum(bx,by+1))>0){ this.sc0(idlist,bx,by,2)}
-					if(line(bd.getbnum(bx-1,by))>0){ this.sc0(idlist,bx,by,3)}
-					if(line(bd.getbnum(bx+1,by))>0){ this.sc0(idlist,bx,by,4)}
+					if(line(bd.bnum(bx,by-1))>0){ this.sc0(idlist,bx,by,1)}
+					if(line(bd.bnum(bx,by+1))>0){ this.sc0(idlist,bx,by,2)}
+					if(line(bd.bnum(bx-1,by))>0){ this.sc0(idlist,bx,by,3)}
+					if(line(bd.bnum(bx+1,by))>0){ this.sc0(idlist,bx,by,4)}
 					break;
 				}
 				else if(lcnt==3||lcnt==4){ }
 				else if(lcnt==0){ return;}
-				else if(dir!=1 && line(bd.getbnum(bx,by+1))>0){ dir=2;}
-				else if(dir!=2 && line(bd.getbnum(bx,by-1))>0){ dir=1;}
-				else if(dir!=3 && line(bd.getbnum(bx+1,by))>0){ dir=4;}
-				else if(dir!=4 && line(bd.getbnum(bx-1,by))>0){ dir=3;}
+				else if(dir!=1 && line(bd.bnum(bx,by+1))>0){ dir=2;}
+				else if(dir!=2 && line(bd.bnum(bx,by-1))>0){ dir=1;}
+				else if(dir!=3 && line(bd.bnum(bx+1,by))>0){ dir=4;}
+				else if(dir!=4 && line(bd.bnum(bx-1,by))>0){ dir=3;}
 			}
 			else{
-				var id = bd.getbnum(bx,by);
+				var id = bd.bnum(bx,by);
 				if(id==-1 || line(id)<=0 || idlist[id]!=0){ if(idlist[id]==2){ idlist[id]=3;} return;}
 				idlist[id]=1;
 			}
@@ -299,7 +299,7 @@ Colors.prototype = {
 		var first=-1;
 		for(var i=0;i<bd.border.length;i++){ bd.border[i].color = ""; }
 		for(var i=0;i<bd.border.length;i++){
-			if( bd.border[i].color == "" && ((k.isborderAsLine==0 && bd.getLineBorder(i)>0) || (k.isborderAsLine==1 && bd.getQansBorder(i)==1)) ){
+			if( bd.border[i].color == "" && ((k.isborderAsLine==0 && bd.LiB(i)>0) || (k.isborderAsLine==1 && bd.QaB(i)==1)) ){
 				var newColor = col.getNewLineColor();
 				if(k.isborderCross){
 					this.changeLines(i,bd.backLine(i),newColor, function(id,col){ bd.border[id].color = col;});
@@ -351,12 +351,12 @@ Rooms.prototype = {
 		for(var i=1;i<=this.rareamax;i++){
 			var val = -1;
 			for(var c=0;c<bd.cell.length;c++){
-				if(this.cell[c]==i && bd.getQnumCell(c)!=-1){
-					if(val==-1){ val = bd.getQnumCell(c);}
-					if(this.getTopOfRoom(i)!=c){ bd.setQnumCell(c, -1);}
+				if(this.cell[c]==i && bd.QnC(c)!=-1){
+					if(val==-1){ val = bd.QnC(c);}
+					if(this.getTopOfRoom(i)!=c){ bd.sQnC(c, -1);}
 				}
 			}
-			if(val!=-1){ bd.setQnumCell(this.getTopOfRoom(i), val);}
+			if(val!=-1){ bd.sQnC(this.getTopOfRoom(i), val);}
 		}
 	},
 	//--------------------------------------------------------------------------------
@@ -365,10 +365,13 @@ Rooms.prototype = {
 	// room.sr0()                 setLineToRarea()から呼ばれて、idを含む一つの部屋の領域を、指定されたareaidにする
 	//--------------------------------------------------------------------------------
 	setLineToRarea : function(id){
-		var cc1 = bd.getcc1(id), cc2 = bd.getcc2(id);
-		if( bd.lcntCross(bd.getcrosscc1(id)) >= 2 && bd.lcntCross(bd.getcrosscc2(id)) >= 2 && cc1 != -1 && cc2 != -1 ){
+		var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+		var bx = bd.border[id].cx, by = bd.border[id].cy;
+		if( bd.lcntCross(mf((bx-bx%2)/2), mf((by-by%2)/2))>=2 && bd.lcntCross(mf((bx+bx%2)/2), mf((by+by%2)/2))>=2
+			&& cc1!=-1 && cc2!=-1)
+		{
 			var keep = this.cell[cc1];
-			var func = function(id){ return (id!=-1 && bd.getQuesBorder(id)==0); };
+			var func = function(id){ return (id!=-1 && bd.QuB(id)==0); };
 			this.rareamax++;
 			this.sr0(func, this.cell, cc2, this.rareamax);
 			if(this.cell[cc1] == this.rareamax){
@@ -379,13 +382,13 @@ Rooms.prototype = {
 	},
 	removeLineFromRarea : function(id){
 		var fordel, keep;
-		var cc1 = bd.getcc1(id), cc2 = bd.getcc2(id);
+		var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
 		if(cc1!=-1 && cc2!=-1 && this.cell[cc1] != this.cell[cc2]){
 			var tc1 = this.getTopOfRoomByCell(cc1);
 			var tc2 = this.getTopOfRoomByCell(cc2);
 
-			if     (bd.getQnumCell(tc1)!=-1&&bd.getQnumCell(tc2)==-1){ bd.setQnumCell(tc2, bd.getQnumCell(tc1)); pc.paintCell(tc2);}
-			else if(bd.getQnumCell(tc1)==-1&&bd.getQnumCell(tc2)!=-1){ bd.setQnumCell(tc1, bd.getQnumCell(tc2)); pc.paintCell(tc1);}
+			if     (bd.QnC(tc1)!=-1&&bd.QnC(tc2)==-1){ bd.sQnC(tc2, bd.QnC(tc1)); pc.paintCell(tc2);}
+			else if(bd.QnC(tc1)==-1&&bd.QnC(tc2)!=-1){ bd.sQnC(tc1, bd.QnC(tc2)); pc.paintCell(tc1);}
 
 			var dcc = -1;
 			if(bd.cell[tc1].cx > bd.cell[tc2].cx || (bd.cell[tc1].cx == bd.cell[tc2].cx && bd.cell[tc1].cy > bd.cell[tc2].cy)){
@@ -395,16 +398,16 @@ Rooms.prototype = {
 
 			for(var i=0;i<bd.cell.length;i++){ if(this.cell[i]==fordel){ this.cell[i] = keep;} }
 
-			if(k.isOneNumber && bd.getQnumCell(dcc) != -1){ bd.setQnumCell(dcc, -1); pc.paintCell(dcc);}
+			if(k.isOneNumber && bd.QnC(dcc) != -1){ bd.sQnC(dcc, -1); pc.paintCell(dcc);}
 		}
 	},
 	sr0 : function(func, checks, i, areaid){
-		if(i==-1 || checks[i]==areaid){ return;}
+		if(checks[i]==areaid){ return;}
 		checks[i] = areaid;
-		if( bd.cell[i].up()!=-1 && func(bd.cell[i].ub()) ){ arguments.callee(func, checks, bd.cell[i].up(), areaid);}
-		if( bd.cell[i].dn()!=-1 && func(bd.cell[i].db()) ){ arguments.callee(func, checks, bd.cell[i].dn(), areaid);}
-		if( bd.cell[i].lt()!=-1 && func(bd.cell[i].lb()) ){ arguments.callee(func, checks, bd.cell[i].lt(), areaid);}
-		if( bd.cell[i].rt()!=-1 && func(bd.cell[i].rb()) ){ arguments.callee(func, checks, bd.cell[i].rt(), areaid);}
+		if( func(bd.ub(i)) ){ this.sr0(func, checks, bd.up(i), areaid);}
+		if( func(bd.db(i)) ){ this.sr0(func, checks, bd.dn(i), areaid);}
+		if( func(bd.lb(i)) ){ this.sr0(func, checks, bd.lt(i), areaid);}
+		if( func(bd.rb(i)) ){ this.sr0(func, checks, bd.rt(i), areaid);}
 		return;
 	},
 
