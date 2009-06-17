@@ -1,4 +1,4 @@
-// Answer.js v3.1.9p2
+// Answer.js v3.2.0
 
 //---------------------------------------------------------------------------
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
@@ -40,15 +40,17 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.check()        答えのチェックを行う(puz.check()を呼び出す)
-	// ans.setAlert()     puz.check()から戻ってきたときに返す、エラー内容を表示するalert文を設定する
+	// ans.check()     答えのチェックを行う(checkAns()を呼び出す)
+	// ans.checkAns()  答えのチェックを行う(オーバーライド用)
+	// ans.check1st()  オートチェック時に初めに判定を行う(オーバーライド用)
+	// ans.setAlert()  check()から戻ってきたときに返す、エラー内容を表示するalert文を設定する
 	//---------------------------------------------------------------------------
 	check : function(){
 		this.inCheck = true;
 		this.alstr = { jp:'' ,en:''};
 		kc.keyreset();
 
-		if(!puz.check()){
+		if(!this.checkAns()){
 			alert((lang.isJP()||!this.alstr.en)?this.alstr.jp:this.alstr.en);
 			this.errDisp = true;
 			pc.paintAll();
@@ -60,6 +62,8 @@ AnsCheck.prototype = {
 		this.inCheck = false;
 		return true;
 	},
+	checkAns : function(){},	//オーバーライド用
+	//check1st : function(){},	//オーバーライド用
 	setAlert : function(strJP, strEN){ this.alstr.jp = strJP; this.alstr.en = strEN;},
 
 	//---------------------------------------------------------------------------
@@ -78,7 +82,7 @@ AnsCheck.prototype = {
 		this.inCheck = true;
 		this.disableSetError();
 
-		if(this.autocheck1st() && puz.check() && this.inCheck){
+		if(this.autocheck1st() && this.checkAns() && this.inCheck){
 			mv.mousereset();
 			alert(lang.isJP()?"正解です！":"Complete!");
 			ret = true;
@@ -91,7 +95,7 @@ AnsCheck.prototype = {
 	},
 	// リンク系は重いので最初に端点を判定する
 	autocheck1st : function(){
-		if(puz.check1st){ return puz.check1st();}
+		if(this.check1st){ return this.check1st();}
 		else if( (k.isCenterLine && !ans.checkLcntCell(1)) || (k.isborderAsLine && !ans.checkLcntCross(1,0)) ){ return false;}
 		return true;
 	},
@@ -108,10 +112,10 @@ AnsCheck.prototype = {
 	checkdir4Cell : function(cc, func){
 		if(cc<0 || cc>=bd.cell.length){ return 0;}
 		var cnt = 0;
-		if(bd.cell[cc].up()!=-1 && func(bd.cell[cc].up())){ cnt++;}
-		if(bd.cell[cc].dn()!=-1 && func(bd.cell[cc].dn())){ cnt++;}
-		if(bd.cell[cc].lt()!=-1 && func(bd.cell[cc].lt())){ cnt++;}
-		if(bd.cell[cc].rt()!=-1 && func(bd.cell[cc].rt())){ cnt++;}
+		if(bd.up(cc)!=-1 && func(bd.up(cc))){ cnt++;}
+		if(bd.dn(cc)!=-1 && func(bd.dn(cc))){ cnt++;}
+		if(bd.lt(cc)!=-1 && func(bd.lt(cc))){ cnt++;}
+		if(bd.rt(cc)!=-1 && func(bd.rt(cc))){ cnt++;}
 		return cnt;
 	},
 
@@ -119,15 +123,15 @@ AnsCheck.prototype = {
 	setErrLareaById : function(area, areaid, val){
 		var blist = new Array();
 		for(var id=0;id<bd.border.length;id++){
-			if(bd.getLineBorder(id)!=1){ continue;}
-			var cc1 = bd.getcc1(id), cc2 = bd.getcc2(id);
+			if(bd.LiB(id)!=1){ continue;}
+			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
 			if(cc1!=-1 && cc2!=-1 && area.check[cc1]==areaid && area.check[cc1]==area.check[cc2]){ blist.push(id);}
 		}
-		bd.setErrorBorder(blist,val);
+		bd.sErB(blist,val);
 
 		var clist = new Array();
-		for(var c=0;c<bd.cell.length;c++){ if(area.check[c]==areaid && bd.getQnumCell(c)!=-1){ clist.push(c);} }
-		bd.setErrorCell(clist,4);
+		for(var c=0;c<bd.cell.length;c++){ if(area.check[c]==areaid && bd.QnC(c)!=-1){ clist.push(c);} }
+		bd.sErC(clist,4);
 	},
 
 	//---------------------------------------------------------------------------
@@ -138,14 +142,14 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	checkAllCell : function(func){
 		for(var c=0;c<bd.cell.length;c++){
-			if(func(c)){ bd.setErrorCell([c],1); return false;}
+			if(func(c)){ bd.sErC([c],1); return false;}
 		}
 		return true;
 	},
 	linkBWarea : function(area){
 		if(area.max>1){
-			if(this.performAsLine){ bd.setErrorBorder(bd.borders,2); this.setErrLareaByCell(area,1,1); }
-			if(!this.performAsLine || k.puzzleid=="firefly"){ bd.setErrorCell(area.room[1],1);}
+			if(this.performAsLine){ bd.sErB(bd.borders,2); this.setErrLareaByCell(area,1,1); }
+			if(!this.performAsLine || k.puzzleid=="firefly"){ bd.sErC(area.room[1],1);}
 			return false;
 		}
 		return true;
@@ -154,7 +158,7 @@ AnsCheck.prototype = {
 		for(var c=0;c<bd.cell.length;c++){
 			if(bd.cell[c].cx<k.qcols-1 && bd.cell[c].cy<k.qrows-1){
 				if( func(c) && func(c+1) && func(c+k.qcols) && func(c+k.qcols+1) ){
-					bd.setErrorCell([c,c+1,c+k.qcols,c+k.qcols+1],1);
+					bd.sErC([c,c+1,c+k.qcols,c+k.qcols+1],1);
 					return false;
 				}
 			}
@@ -164,10 +168,10 @@ AnsCheck.prototype = {
 	checkSideCell : function(func){
 		for(var c=0;c<bd.cell.length;c++){
 			if(bd.cell[c].cx<k.qcols-1 && func(c,c+1)){
-				bd.setErrorCell([c,c+1],1); return false;
+				bd.sErC([c,c+1],1); return false;
 			}
 			if(bd.cell[c].cy<k.qrows-1 && func(c,c+k.qcols)){
-				bd.setErrorCell([c,c+k.qcols],1); return false;
+				bd.sErC([c,c+k.qcols],1); return false;
 			}
 		}
 		return true;
@@ -184,7 +188,7 @@ AnsCheck.prototype = {
 		for(var id=1;id<=area.max;id++){
 			var d = this.getSizeOfArea(area,id,func);
 			if(!func2(d.x2-d.x1+1, d.y2-d.y1+1, d.cnt)){
-				bd.setErrorCell(area.room[id],1);
+				bd.sErC(area.room[id],1);
 				return false;
 			}
 		}
@@ -210,9 +214,9 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	checkQnumCross : function(func){	//func(cr,bcnt){} -> エラーならfalseを返す関数にする
 		for(var c=0;c<bd.cross.length;c++){
-			if(bd.getQnumCross(c)<0){ continue;}
-			if(!func(bd.getQnumCross(c), bd.bcntCross(bd.cross[c].cx, bd.cross[c].cy))){
-				bd.setErrorCross([c],1);
+			if(bd.QnX(c)<0){ continue;}
+			if(!func(bd.QnX(c), bd.bcntCross(bd.cross[c].cx, bd.cross[c].cy))){
+				bd.sErX([c],1);
 				return false;
 			}
 		}
@@ -270,8 +274,8 @@ AnsCheck.prototype = {
 	checkOneLoop : function(){
 		var xarea = this.searchXarea();
 		if(xarea.max>1){
-			bd.setErrorBorder(bd.borders,2);
-			bd.setErrorBorder(xarea.room[1],1);
+			bd.sErB(bd.borders,2);
+			bd.sErB(xarea.room[1],1);
 			return false;
 		}
 		return true;
@@ -284,8 +288,8 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	setLcnts : function(id, val){
 		var cc1, cc2;
-		if(k.isCenterLine){ cc1 = bd.getcc1(id),      cc2 = bd.getcc2(id);}
-		else              { cc1 = bd.getcrosscc1(id), cc2 = bd.getcrosscc2(id);}
+		if(k.isCenterLine){ cc1 = bd.cc1(id),      cc2 = bd.cc2(id);}
+		else              { cc1 = bd.crosscc1(id), cc2 = bd.crosscc2(id);}
 
 		if(val>0){
 			if(cc1!=-1){ this.lcnts.total[this.lcnts.cell[cc1]]--; this.lcnts.cell[cc1]++; this.lcnts.total[this.lcnts.cell[cc1]]++;}
@@ -302,8 +306,8 @@ AnsCheck.prototype = {
 		if(this.lcnts.total[val]==0){ return true;}
 		for(var c=0;c<bd.cell.length;c++){
 			if(this.lcnts.cell[c]==val){
-				if(!this.performAsLine){ bd.setErrorCell([c],1);}
-				else{ bd.setErrorBorder(bd.borders,2); this.setCellLineError(c,true);}
+				if(!this.performAsLine){ bd.sErC([c],1);}
+				else{ bd.sErB(bd.borders,2); this.setCellLineError(c,true);}
 				return false;
 			}
 		}
@@ -317,29 +321,29 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	checkdir4Border : function(){
 		for(var c=0;c<bd.cell.length;c++){
-			if(bd.getQnumCell(c)>=0 && this.checkdir4Border1(c)!=bd.getQnumCell(c)){ bd.setErrorCell([c],1); return false;}
+			if(bd.QnC(c)>=0 && this.checkdir4Border1(c)!=bd.QnC(c)){ bd.sErC([c],1); return false;}
 		}
 		return true;
 	},
 	checkdir4Border1 : function(cc){
 		if(cc<0 || cc>=bd.cell.length){ return 0;}
-		var func = function(id){ return (id!=-1&&((bd.getQuesBorder(id)==1)||(bd.getQansBorder(id)==1)));};
+		var func = function(id){ return (id!=-1&&((bd.QuB(id)==1)||(bd.QaB(id)==1)));};
 		var cnt = 0;
 		var cx = bd.cell[cc].cx; var cy = bd.cell[cc].cy;
-		if( (k.isoutsideborder==0 && cy==0        ) || func(bd.getbnum(cx*2+1,cy*2  )) ){ cnt++;}
-		if( (k.isoutsideborder==0 && cy==k.qrows-1) || func(bd.getbnum(cx*2+1,cy*2+2)) ){ cnt++;}
-		if( (k.isoutsideborder==0 && cx==0        ) || func(bd.getbnum(cx*2  ,cy*2+1)) ){ cnt++;}
-		if( (k.isoutsideborder==0 && cx==k.qcols-1) || func(bd.getbnum(cx*2+2,cy*2+1)) ){ cnt++;}
+		if( (k.isoutsideborder==0 && cy==0        ) || func(bd.bnum(cx*2+1,cy*2  )) ){ cnt++;}
+		if( (k.isoutsideborder==0 && cy==k.qrows-1) || func(bd.bnum(cx*2+1,cy*2+2)) ){ cnt++;}
+		if( (k.isoutsideborder==0 && cx==0        ) || func(bd.bnum(cx*2  ,cy*2+1)) ){ cnt++;}
+		if( (k.isoutsideborder==0 && cx==k.qcols-1) || func(bd.bnum(cx*2+2,cy*2+1)) ){ cnt++;}
 		return cnt;
 	},
 
 	checkenableLineParts : function(val){
 		var func = function(i){
-			return ((bd.cell[i].ub()!=-1 && bd.getLineBorder(bd.cell[i].ub())==1 && bd.isnoLPup(i)) ||
-					(bd.cell[i].db()!=-1 && bd.getLineBorder(bd.cell[i].db())==1 && bd.isnoLPdown(i)) ||
-					(bd.cell[i].lb()!=-1 && bd.getLineBorder(bd.cell[i].lb())==1 && bd.isnoLPleft(i)) ||
-					(bd.cell[i].rb()!=-1 && bd.getLineBorder(bd.cell[i].rb())==1 && bd.isnoLPright(i)) ); };
-		for(var i=0;i<bd.cell.length;i++){ if(func(i)){ bd.setErrorCell([i],1); return false;} }
+			return ((bd.ub(i)!=-1 && bd.LiB(bd.ub(i))==1 && bd.isnoLPup(i)) ||
+					(bd.db(i)!=-1 && bd.LiB(bd.db(i))==1 && bd.isnoLPdown(i)) ||
+					(bd.lb(i)!=-1 && bd.LiB(bd.lb(i))==1 && bd.isnoLPleft(i)) ||
+					(bd.rb(i)!=-1 && bd.LiB(bd.rb(i))==1 && bd.isnoLPright(i)) ); };
+		for(var i=0;i<bd.cell.length;i++){ if(func(i)){ bd.sErC([i],1); return false;} }
 		return true;
 	},
 
@@ -351,15 +355,15 @@ AnsCheck.prototype = {
 		if     (this.lcntCell(cc)==3 || this.lcntCell(cc)==4){ return true;}
 		else if(this.lcntCell(cc)==0 || this.lcntCell(cc)==1){ return false;}
 
-		if     (bd.getLineBorder(bd.cell[cc].ub())==1 && bd.getLineBorder(bd.cell[cc].db())==1){ return true;}
-		else if(bd.getLineBorder(bd.cell[cc].lb())==1 && bd.getLineBorder(bd.cell[cc].rb())==1){ return true;}
+		if     (bd.LiB(bd.ub(cc))==1 && bd.LiB(bd.db(cc))==1){ return true;}
+		else if(bd.LiB(bd.lb(cc))==1 && bd.LiB(bd.rb(cc))==1){ return true;}
 
 		return false;
 	},
 
 	setCellLineError : function(cc, flag){
-		if(flag){ bd.setErrorCell([cc],1);}
-		bd.setErrorBorder([bd.cell[cc].ub(),bd.cell[cc].db(),bd.cell[cc].lb(),bd.cell[cc].rb()], 1);
+		if(flag){ bd.sErC([cc],1);}
+		bd.sErB([bd.ub(cc),bd.db(cc),bd.lb(cc),bd.rb(cc)], 1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -380,24 +384,24 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	checkOneNumber : function(area, eval, func){
 		for(var id=1;id<=area.max;id++){
-			if(eval( bd.getQnumCell(this.getQnumCellInArea(area,id)), this.getCellsOfRoom(area, id, func) )){
-				if(this.performAsLine){ bd.setErrorBorder(bd.borders,2); this.setErrLareaById(area,id,1);}
-				else{ bd.setErrorCell(area.room[id],(k.puzzleid!="tateyoko"?1:4));}
+			if(eval( bd.QnC(this.getQnumCellInArea(area,id)), this.getCellsOfRoom(area, id, func) )){
+				if(this.performAsLine){ bd.sErB(bd.borders,2); this.setErrLareaById(area,id,1);}
+				else{ bd.sErC(area.room[id],(k.puzzleid!="tateyoko"?1:4));}
 				return false;
 			}
 		}
 		return true;
 	},
-	checkBlackCellCount  : function(area)          { return this.checkOneNumber(area, function(top,cnt){ return (top>=0 && top!=cnt);}, function(c){ return bd.getQansCell(c)== 1;} );},
-	checkDisconnectLine  : function(area)          { return this.checkOneNumber(area, function(top,cnt){ return (top==-1 && cnt==0); }, function(c){ return bd.getQnumCell(c)!=-1;} );},
+	checkBlackCellCount  : function(area)          { return this.checkOneNumber(area, function(top,cnt){ return (top>=0 && top!=cnt);}, function(c){ return bd.QaC(c)== 1;} );},
+	checkDisconnectLine  : function(area)          { return this.checkOneNumber(area, function(top,cnt){ return (top==-1 && cnt==0); }, function(c){ return bd.QnC(c)!=-1;} );},
 	checkNumberAndSize   : function(area)          { return this.checkOneNumber(area, function(top,cnt){ return (top> 0 && top!=cnt);}, f_true); },
-	checkQnumsInArea     : function(area, func)    { return this.checkOneNumber(area, function(top,cnt){ return func(cnt);},            function(c){ return bd.getQnumCell(c)!=-1;} );},
-	checkBlackCellInArea : function(area, func)    { return this.checkOneNumber(area, function(top,cnt){ return func(cnt);},            function(c){ return bd.getQansCell(c)== 1;} );},
+	checkQnumsInArea     : function(area, func)    { return this.checkOneNumber(area, function(top,cnt){ return func(cnt);},            function(c){ return bd.QnC(c)!=-1;} );},
+	checkBlackCellInArea : function(area, func)    { return this.checkOneNumber(area, function(top,cnt){ return func(cnt);},            function(c){ return bd.QaC(c)== 1;} );},
 	checkNoObjectInRoom  : function(area, getvalue){ return this.checkOneNumber(area, function(top,cnt){ return (cnt==0); },            function(c){ return getvalue(c)!=-1;} );},
 
 	getQnumCellInArea : function(area, areaid){
 		if(k.isOneNumber){ return this.getTopOfRoom(area,areaid); }
-		for(var i=0;i<area.room[areaid].length;i++){ if(bd.getQnumCell(area.room[areaid][i])!=-1){ return area.room[areaid][i];} }
+		for(var i=0;i<area.room[areaid].length;i++){ if(bd.QnC(area.room[areaid][i])!=-1){ return area.room[areaid][i];} }
 		return -1;
 	},
 	getTopOfRoom : function(area, areaid){
@@ -426,11 +430,11 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	checkSideAreaCell : function(area, func, flag){
 		for(var id=0;id<bd.border.length;id++){
-			if(bd.getQuesBorder(id)!=1&&bd.getQansBorder(id)!=1){ continue;}
-			var cc1 = bd.getcc1(id), cc2 = bd.getcc2(id);
+			if(bd.QuB(id)!=1&&bd.QaB(id)!=1){ continue;}
+			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
 			if(cc1!=-1 && cc2!=-1 && func(area, cc1, cc2)){
-				if(!flag){ bd.setErrorCell([cc1,cc2],1);}
-				else{ bd.setErrorCell(area.room[area.check[cc1]],1); bd.setErrorCell(area.room[area.check[cc2]],1); }
+				if(!flag){ bd.sErC([cc1,cc2],1);}
+				else{ bd.sErC(area.room[area.check[cc1]],1); bd.sErC(area.room[area.check[cc2]],1); }
 				return false;
 			}
 		}
@@ -440,11 +444,11 @@ AnsCheck.prototype = {
 	checkSeqBlocksInRoom : function(rarea){
 		for(var id=1;id<=rarea.max;id++){
 			var area = new AreaInfo();
-			var func = function(id){ return (id!=-1 && bd.getQansCell(id)==1); };
-			for(var c=0;c<bd.cell.length;c++){ area.check.push(((rarea.check[c]==id && bd.getQansCell(c)==1)?0:-1));}
+			var func = function(id){ return (id!=-1 && bd.QaC(id)==1); };
+			for(var c=0;c<bd.cell.length;c++){ area.check.push(((rarea.check[c]==id && bd.QaC(c)==1)?0:-1));}
 			for(var c=0;c<k.qcols*k.qrows;c++){ if(area.check[c]==0){ area.max++; area.room[area.max]=new Array(); this.sc0(func, area, c, area.max);} }
 			if(area.max>1){
-				bd.setErrorCell(rarea.room[id],1);
+				bd.sErC(rarea.room[id],1);
 				return false;
 			}
 		}
@@ -458,12 +462,12 @@ AnsCheck.prototype = {
 			if(area.check[c]==-1 || getvalue(c)==-1){ continue;}
 			if(d[area.check[c]]==-1 && getvalue(c)!=-1){ d[area.check[c]] = getvalue(c);}
 			else if(d[area.check[c]]!=getvalue(c)){
-				if(this.performAsLine){ bd.setErrorBorder(bd.borders,2); this.setErrLareaByCell(area,c,1);}
-				else{ bd.setErrorCell(area.room[area.check[c]],1);}
+				if(this.performAsLine){ bd.sErB(bd.borders,2); this.setErrLareaByCell(area,c,1);}
+				else{ bd.sErC(area.room[area.check[c]],1);}
 				if(k.puzzleid=="kaero"){
 					for(var cc=0;cc<bd.cell.length;cc++){
-						if(area.check[c]==area.check[cc] && puz.getBeforeCell(cc)!=-1 && area.check[c]!=area.check[puz.getBeforeCell(cc)]){
-							bd.setErrorCell([puz.getBeforeCell(cc)],4);
+						if(area.check[c]==area.check[cc] && this.getBeforeCell(cc)!=-1 && area.check[c]!=area.check[this.getBeforeCell(cc)]){
+							bd.sErC([this.getBeforeCell(cc)],4);
 						}
 					}
 				}
@@ -483,10 +487,10 @@ AnsCheck.prototype = {
 			else if(d[getvalue(c)]!=area.check[c]){
 				var clist = new Array();
 				for(var cc=0;cc<bd.cell.length;cc++){
-					if(k.puzzleid=="kaero"){ if(getvalue(c)==bd.getQnumCell(cc)){ clist.push(cc);}}
+					if(k.puzzleid=="kaero"){ if(getvalue(c)==bd.QnC(cc)){ clist.push(cc);}}
 					else{ if(area.check[c]==area.check[cc] || d[getvalue(c)]==area.check[cc]){ clist.push(cc);} }
 				}
-				bd.setErrorCell(clist,1);
+				bd.sErC(clist,1);
 				return false;
 			}
 		}
@@ -499,11 +503,11 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	checkLcntCross : function(val, bp){
 		for(var i=0;i<(k.qcols+1)*(k.qrows+1);i++){
-			var cx = i%(k.qcols+1), cy = int(i/(k.qcols+1));
+			var cx = i%(k.qcols+1), cy = mf(i/(k.qcols+1));
 			if(k.isoutsidecross==0 && k.isborderAsLine==0 && (cx==0||cy==0||cx==k.qcols||cy==k.qrows)){ continue;}
 			var lcnts = this.lcnts.cell[i] + ((k.isoutsideborder==0&&(cx==0||cy==0||cx==k.qcols||cy==k.qrows))?2:0);
-			if(lcnts==val && (bp==0 || (bp==1&&bd.getQnumCross(bd.getxnum(cx, cy))==1) || (bp==2&&bd.getQnumCross(bd.getxnum(cx, cy))!=1) )){
-				bd.setErrorBorder(bd.borders,2);
+			if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(cx, cy))==1) || (bp==2&&bd.QnX(bd.xnum(cx, cy))!=1) )){
+				bd.sErB(bd.borders,2);
 				this.setCrossBorderError(cx,cy);
 				return false;
 			}
@@ -511,8 +515,8 @@ AnsCheck.prototype = {
 		return true;
 	},
 	setCrossBorderError : function(cx,cy){
-		bd.setErrorCross([bd.getxnum(cx, cy)], 1);
-		bd.setErrorBorder([bd.getbnum(cx*2,cy*2-1),bd.getbnum(cx*2,cy*2+1),bd.getbnum(cx*2-1,cy*2),bd.getbnum(cx*2+1,cy*2)], 1);
+		if(k.iscross){ bd.sErX([bd.xnum(cx, cy)], 1);}
+		bd.sErB([bd.bnum(cx*2,cy*2-1),bd.bnum(cx*2,cy*2+1),bd.bnum(cx*2-1,cy*2),bd.bnum(cx*2+1,cy*2)], 1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -527,10 +531,10 @@ AnsCheck.prototype = {
 	// ans.sr0()           searchRLareaから呼ばれる再起呼び出し用関数
 	//---------------------------------------------------------------------------
 	searchWarea : function(){
-		return this.searchBWarea(function(id){ return (id!=-1 && bd.getQansCell(id)!=1); });
+		return this.searchBWarea(function(id){ return (id!=-1 && bd.QaC(id)!=1); });
 	},
 	searchBarea : function(){
-		return this.searchBWarea(function(id){ return (id!=-1 && bd.getQansCell(id)==1); });
+		return this.searchBWarea(function(id){ return (id!=-1 && bd.QaC(id)==1); });
 	},
 	searchBWarea : function(func){
 		var area = new AreaInfo();
@@ -539,21 +543,21 @@ AnsCheck.prototype = {
 		return area;
 	},
 	sc0 : function(func, area, i, areaid){
-		if(i==-1 || area.check[i]!=0){ return;}
+		if(area.check[i]!=0){ return;}
 		area.check[i] = areaid;
 		area.room[areaid].push(i);
-		if( func(bd.cell[i].up()) ){ arguments.callee(func, area, bd.cell[i].up(), areaid);}
-		if( func(bd.cell[i].dn()) ){ arguments.callee(func, area, bd.cell[i].dn(), areaid);}
-		if( func(bd.cell[i].lt()) ){ arguments.callee(func, area, bd.cell[i].lt(), areaid);}
-		if( func(bd.cell[i].rt()) ){ arguments.callee(func, area, bd.cell[i].rt(), areaid);}
+		if( func(bd.up(i)) ){ this.sc0(func, area, bd.up(i), areaid);}
+		if( func(bd.dn(i)) ){ this.sc0(func, area, bd.dn(i), areaid);}
+		if( func(bd.lt(i)) ){ this.sc0(func, area, bd.lt(i), areaid);}
+		if( func(bd.rt(i)) ){ this.sc0(func, area, bd.rt(i), areaid);}
 		return;
 	},
 
 	searchRarea : function(){
-		return this.searchRLarea(function(id){ return (id!=-1 && bd.getQuesBorder(id)==0 && bd.getQansBorder(id)==0); }, false);
+		return this.searchRLarea(function(id){ return (id!=-1 && bd.QuB(id)==0 && bd.QaB(id)==0); }, false);
 	},
 	searchLarea : function(){
-		return this.searchRLarea(function(id){ return (id!=-1 && bd.getLineBorder(id)>0); }, true);
+		return this.searchRLarea(function(id){ return (id!=-1 && bd.LiB(id)>0); }, true);
 	},
 	searchRLarea : function(func, flag){
 		var area = new AreaInfo();
@@ -562,13 +566,13 @@ AnsCheck.prototype = {
 		return area;
 	},
 	sr0 : function(func, area, i, areaid){
-		if(i==-1 || area.check[i]!=0){ return;}
+		if(area.check[i]!=0){ return;}
 		area.check[i] = areaid;
 		area.room[areaid].push(i);
-		if( func(bd.cell[i].ub()) ){ arguments.callee(func, area, bd.cell[i].up(), areaid);}
-		if( func(bd.cell[i].db()) ){ arguments.callee(func, area, bd.cell[i].dn(), areaid);}
-		if( func(bd.cell[i].lb()) ){ arguments.callee(func, area, bd.cell[i].lt(), areaid);}
-		if( func(bd.cell[i].rb()) ){ arguments.callee(func, area, bd.cell[i].rt(), areaid);}
+		if( func(bd.ub(i)) ){ this.sr0(func, area, bd.up(i), areaid);}
+		if( func(bd.db(i)) ){ this.sr0(func, area, bd.dn(i), areaid);}
+		if( func(bd.lb(i)) ){ this.sr0(func, area, bd.lt(i), areaid);}
+		if( func(bd.rb(i)) ){ this.sr0(func, area, bd.rt(i), areaid);}
 		return;
 	},
 
@@ -578,7 +582,7 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	searchXarea : function(){
 		var area = new AreaInfo();
-		for(var id=0;id<bd.border.length;id++){ area.check[id]=((k.isborderAsLine==0?bd.getLineBorder(id)==1:bd.getQansBorder(id)==1)?0:-1); }
+		for(var id=0;id<bd.border.length;id++){ area.check[id]=((k.isborderAsLine==0?bd.LiB(id)==1:bd.QaB(id)==1)?0:-1); }
 		for(var id=0;id<bd.border.length;id++){ if(area.check[id]==0){ this.setLineArea(area, this.LineList(id), area.max);} }
 		return area;
 	},
