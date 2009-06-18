@@ -1,4 +1,4 @@
-// global.js v3.1.9p3
+// global.js v3.2.0
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -69,10 +69,12 @@ var k = {
 		Opera : !!window.opera,
 		WebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1,
 		Gecko : navigator.userAgent.indexOf('Gecko') > -1 && navigator.userAgent.indexOf('KHTML') == -1
-	}
+	},
+	scriptcheck : false	// 内部用
 };
 
 var g;						// グラフィックコンテキスト
+var Puzzles = new Array();	// パズル個別クラス
 
 //---------------------------------------------------------------------------
 // ★共通グローバル関数
@@ -81,7 +83,7 @@ var g;						// グラフィックコンテキスト
 	// newEL(tag)      新しいtagのHTMLエレメントを表すjQueryオブジェクトを作成する
 	// unselectable()  jQueryオブジェクトを文字列選択不可にする(メソッドチェーン記述用)
 	// getSrcElement() イベントを起こしたエレメントを返す
-	// int()           小数点以下を切捨てる
+	// mf()            小数点以下を切捨てる(旧int())
 	// f_true()        trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
 	//---------------------------------------------------------------------------
 function newEL(tag){ return $(document.createElement(tag));}
@@ -93,7 +95,7 @@ $.fn.unselectable = function(){
 };
 function getSrcElement(event){ return event.target || event.srcElement;}
 
-var int = Math.floor;
+var mf = Math.floor;
 function f_true(){ return true;}
 
 	//---------------------------------------------------------------------------
@@ -154,7 +156,7 @@ Timer.prototype = {
 	start : function(){
 		this.st = (new Date()).getTime();
 		var self = this;
-		this.TID = setInterval(function(){self.update();},100);
+		this.TID = setInterval(this.update.bind(this),100);
 	},
 	update : function(){
 		if(k.callmode!='pmake'){ this.updatetime();}
@@ -167,9 +169,9 @@ Timer.prototype = {
 	},
 	updatetime : function(){
 		var nowtime = (new Date()).getTime();
-		var seconds = int((nowtime - this.st)/1000);
-		var hours   = int(seconds/3600);
-		var minutes = int(seconds/60) - hours*60;
+		var seconds = mf((nowtime - this.st)/1000);
+		var hours   = mf(seconds/3600);
+		var minutes = mf(seconds/60) - hours*60;
 		seconds = seconds - minutes*60 - hours*3600;
 
 		if(minutes < 10) minutes = "0" + minutes;
