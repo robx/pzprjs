@@ -1,53 +1,43 @@
 //
-// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.1.9p1
+// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.2.0
 //
+Puzzles.tilepaint = function(){ };
+Puzzles.tilepaint.prototype = {
+	setting : function(){
+		// グローバル変数の初期設定
+		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
+		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
+		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-function setting(){
-	// グローバル変数の初期設定
-	if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-	if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-	k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.iscross      = 0;		// 1:Crossが操作可能なパズル
+		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
+		k.isextendcell = 1;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-	k.iscross      = 0;		// 1:Crossが操作可能なパズル
-	k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-	k.isextendcell = 1;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
+		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
+		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
-	k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-	k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-	k.isborderCross   = 0;	// 1:線が交差するパズル
-	k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-	k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.dispzero      = 1;	// 1:0を表示するかどうか
+		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
+		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
+		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
+		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
+		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
+		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
 
-	k.dispzero      = 1;	// 1:0を表示するかどうか
-	k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-	k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-	k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-	k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-	k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-	k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.BlackCell     = 1;	// 1:黒マスを入力するパズル
+		k.NumberIsWhite = 1;	// 1:数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
 
-	k.BlackCell     = 1;	// 1:黒マスを入力するパズル
-	k.NumberIsWhite = 1;	// 1:数字のあるマスが黒マスにならないパズル
-	k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
+		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
-	k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
-	k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
+		k.fstruct = ["arearoom", "cellqnum51", "others"];
 
-	k.fstruct = ["arearoom", "cellqnum51", "others"];
-
-	//k.def_csize = 36;
-	k.def_psize = 40;
-}
-
-//-------------------------------------------------------------
-// Puzzle個別クラスの定義
-Puzzle = function(){
-	this.prefix();
-};
-Puzzle.prototype = {
-	prefix : function(){
-		this.input_init();
-		this.graphic_init();
+		//k.def_csize = 36;
+		k.def_psize = 40;
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　左クリックで黒タイルが、右クリックで白タイル確定タイルが入力できます。",
@@ -56,20 +46,12 @@ Puzzle.prototype = {
 		else{
 			base.setExpression("　左クリックで境界線や数字のブロックが、右クリックで下絵が入力できます。数字を入力する場所はSHIFTキーを押すと切り替えられます。",
 							   " Left Click to input border lines or number block, Right Click to paint a design. Press SHIFT key to change the side of inputting numbers.");
-			tc.targetdir = 2;
 		}
 		base.setTitle("タイルペイント","TilePaint");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){
 		menu.addUseToFlags();
-	},
-	postfix : function(){
-		menu.ex.adjustSpecial  = menu.ex.adjustQues51_1;
-		menu.ex.adjustSpecial2 = menu.ex.adjustQues51_2;
-
-		tc.getTCX = function(){ return int((tc.cursolx-1)/2);};
-		tc.getTCY = function(){ return int((tc.cursoly-1)/2);};
 	},
 
 	//---------------------------------------------------------
@@ -98,35 +80,32 @@ Puzzle.prototype = {
 		};
 		mv.set51cell = function(cc,val){
 			if(val==true){
-				bd.setQuesCell(cc,51);
-				bd.setQnumCell(cc,0);
-				bd.setDirecCell(cc,0);
-				bd.setQansCell(cc,-1);
-				bd.setQsubCell(cc,0);
-				bd.setQuesBorder(bd.cell[cc].ub(),((bd.cell[cc].up()!=-1 && bd.getQuesCell(bd.cell[cc].up())!=51)?1:0));
-				bd.setQuesBorder(bd.cell[cc].db(),((bd.cell[cc].dn()!=-1 && bd.getQuesCell(bd.cell[cc].dn())!=51)?1:0));
-				bd.setQuesBorder(bd.cell[cc].lb(),((bd.cell[cc].lt()!=-1 && bd.getQuesCell(bd.cell[cc].lt())!=51)?1:0));
-				bd.setQuesBorder(bd.cell[cc].rb(),((bd.cell[cc].rt()!=-1 && bd.getQuesCell(bd.cell[cc].rt())!=51)?1:0));
+				bd.sQuC(cc,51);
+				bd.sQnC(cc, 0);
+				bd.sDiC(cc, 0);
+				bd.sQaC(cc,-1);
+				bd.sQsC(cc, 0);
+				bd.sQuB(bd.ub(cc),((bd.up(cc)!=-1 && bd.QuC(bd.up(cc))!=51)?1:0));
+				bd.sQuB(bd.db(cc),((bd.dn(cc)!=-1 && bd.QuC(bd.dn(cc))!=51)?1:0));
+				bd.sQuB(bd.lb(cc),((bd.lt(cc)!=-1 && bd.QuC(bd.lt(cc))!=51)?1:0));
+				bd.sQuB(bd.rb(cc),((bd.rt(cc)!=-1 && bd.QuC(bd.rt(cc))!=51)?1:0));
 			}
 			else{
-				bd.setQuesCell(cc,0);
-				bd.setQnumCell(cc,0);
-				bd.setDirecCell(cc,0);
-				bd.setQansCell(cc,-1);
-				bd.setQsubCell(cc,0);
+				bd.sQuC(cc, 0);
+				bd.sQnC(cc, 0);
+				bd.sDiC(cc, 0);
+				bd.sQaC(cc,-1);
+				bd.sQsC(cc, 0);
 			}
 		};
 
 		mv.inputBGcolor1 = function(x,y){
 			var cc = this.cellid(new Pos(x,y));
-			if(cc==-1 || cc==this.mouseCell || bd.getQuesCell(cc)==51){ return;}
-			if(this.inputData==-1){
-				if     (bd.getQsubCell(cc)==0){ this.inputData=3;}
-				else                          { this.inputData=0;}
-			}
-			bd.setQsubCell(cc, this.inputData);
+			if(cc==-1 || cc==this.mouseCell || bd.QuC(cc)==51){ return;}
+			if(this.inputData==-1){ this.inputData=(bd.QsC(cc)==0)?3:0;}
+			bd.sQsC(cc, this.inputData);
 			this.mouseCell = cc; 
-			pc.paint(bd.cell[cc].cx, bd.cell[cc].cy, bd.cell[cc].cx, bd.cell[cc].cy);
+			pc.paintCell(cc);
 		};
 
 		// キーボード入力系
@@ -137,7 +116,24 @@ Puzzle.prototype = {
 		};
 
 		if(k.callmode == "pmake"){
-			kp.generate(99, true, false, this.kpgenerate);
+			kp.kpgenerate = function(mode){
+				this.inputcol('image','knumq','-',[0,0]);
+				this.inputcol('num','knum_',' ',' ');
+				this.inputcol('num','knum1','1','1');
+				this.inputcol('num','knum2','2','2');
+				this.insertrow();
+				this.inputcol('num','knum3','3','3');
+				this.inputcol('num','knum4','4','4');
+				this.inputcol('num','knum5','5','5');
+				this.inputcol('num','knum6','6','6');
+				this.insertrow();
+				this.inputcol('num','knum7','7','7');
+				this.inputcol('num','knum8','8','8');
+				this.inputcol('num','knum9','9','9');
+				this.inputcol('num','knum0','0','0');
+				this.insertrow();
+			};
+			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
 				kc.key_inputqnum(ca,99);
@@ -148,8 +144,8 @@ Puzzle.prototype = {
 		base.ASconfirm = function(){
 			if(confirm("補助記号を消去しますか？")){
 				um.chainflag=0;
-				for(i=0;i<k.qcols*k.qrows;i++){
-					if(bd.getQsubCell(i)==1){ um.addOpe('cell','qsub',i,bd.getQsubCell(i),0);}
+				for(var i=0;i<k.qcols*k.qrows;i++){
+					if(bd.QsC(i)==1){ um.addOpe('cell','qsub',i,bd.QsC(i),0);}
 				}
 				if(!g.vml){ pc.flushCanvasAll();}
 
@@ -160,24 +156,13 @@ Puzzle.prototype = {
 				pc.paintAll();
 			}
 		};
-	},
 
-	kpgenerate : function(mode){
-		kp.inputcol('image','knumq','-',[0,0]);
-		kp.inputcol('num','knum_',' ',' ');
-		kp.inputcol('num','knum1','1','1');
-		kp.inputcol('num','knum2','2','2');
-		kp.insertrow();
-		kp.inputcol('num','knum3','3','3');
-		kp.inputcol('num','knum4','4','4');
-		kp.inputcol('num','knum5','5','5');
-		kp.inputcol('num','knum6','6','6');
-		kp.insertrow();
-		kp.inputcol('num','knum7','7','7');
-		kp.inputcol('num','knum8','8','8');
-		kp.inputcol('num','knum9','9','9');
-		kp.inputcol('num','knum0','0','0');
-		kp.insertrow();
+		menu.ex.adjustSpecial  = menu.ex.adjustQues51_1;
+		menu.ex.adjustSpecial2 = menu.ex.adjustQues51_2;
+
+		tc.getTCX = function(){ return mf((tc.cursolx-1)/2);};
+		tc.getTCY = function(){ return mf((tc.cursoly-1)/2);};
+		tc.targetdir = 2;
 	},
 
 	//---------------------------------------------------------
@@ -220,190 +205,186 @@ Puzzle.prototype = {
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
-	pzlinput : function(type, bstr){
-		if(type==0 || type==1){
-			bstr = enc.decodeBorder(bstr);
-			bstr = this.decodeTilePaint(bstr);
-		}
-	},
+	encode_init : function(){
+		enc.pzlimport = function(type, bstr){
+			if(type==0 || type==1){
+				bstr = this.decodeBorder(bstr);
+				bstr = this.decodeTilePaint(bstr);
+			}
+		};
+		enc.pzlexport = function(type){
+			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
+			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?"+this.pzldata();}
+			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
+		};
+		enc.pzldata = function(){
+			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeBorder()+this.encodeTilePaint();
+		};
 
-	pzloutput : function(type){
-		if(type==0)     { document.urloutput.ta.value = enc.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-		else if(type==1){ document.urloutput.ta.value = enc.getDocbase()+k.puzzleid+"/sa/m.html?"+this.pzldata();}
-		else if(type==3){ document.urloutput.ta.value = enc.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-	},
-	pzldata : function(){
-		return "/"+k.qcols+"/"+k.qrows+"/"+enc.encodeBorder()+this.encodeTilePaint();
-	},
+		enc.decodeTilePaint = function(bstr){
+			// 盤面内数字のデコード
+			var cell=0, a=0;
+			for(var i=0;i<bstr.length;i++){
+				var ca = bstr.charAt(i);
 
-	//---------------------------------------------------------
-	decodeTilePaint : function(bstr){
-		// 盤面内数字のデコード
-		var cell=0, a=0;
-		for(var i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i);
-
-			if(ca>='g' && ca<='z'){ cell+=(parseInt(ca,36)-15);}
-			else{
-				bd.setQuesCell(cell,51);
-				if     (ca=='-'){
-					bd.setDirecCell(cell,(bstr.charAt(i+1)!="."?parseInt(bstr.charAt(i+1),16):-1));
-					bd.setQnumCell(cell,parseInt(bstr.substring(i+2,i+4),16));
-					cell++; i+=3;
-				}
-				else if(ca=='+'){
-					bd.setDirecCell(cell,parseInt(bstr.substring(i+1,i+3),16));
-					bd.setQnumCell(cell,(bstr.charAt(i+3)!="."?parseInt(bstr.charAt(i+3),16):-1));
-					cell++; i+=3;
-				}
-				else if(ca=='='){
-					bd.setDirecCell(cell,parseInt(bstr.substring(i+1,i+3),16));
-					bd.setQnumCell(cell,parseInt(bstr.substring(i+3,i+5),16));
-					cell++; i+=4;
-				}
+				if(ca>='g' && ca<='z'){ cell+=(parseInt(ca,36)-15);}
 				else{
-					bd.setDirecCell(cell,(bstr.charAt(i)!="."?parseInt(bstr.charAt(i),16):-1));
-					bd.setQnumCell(cell,(bstr.charAt(i+1)!="."?parseInt(bstr.charAt(i+1),16):-1));
-					cell++; i+=1;
+					bd.sQuC(cell,51);
+					if     (ca=='-'){
+						bd.sDiC(cell,(bstr.charAt(i+1)!="."?parseInt(bstr.charAt(i+1),16):-1));
+						bd.sQnC(cell,parseInt(bstr.substring(i+2,i+4),16));
+						cell++; i+=3;
+					}
+					else if(ca=='+'){
+						bd.sDiC(cell,parseInt(bstr.substring(i+1,i+3),16));
+						bd.sQnC(cell,(bstr.charAt(i+3)!="."?parseInt(bstr.charAt(i+3),16):-1));
+						cell++; i+=3;
+					}
+					else if(ca=='='){
+						bd.sDiC(cell,parseInt(bstr.substring(i+1,i+3),16));
+						bd.sQnC(cell,parseInt(bstr.substring(i+3,i+5),16));
+						cell++; i+=4;
+					}
+					else{
+						bd.sDiC(cell,(bstr.charAt(i)!="."?parseInt(bstr.charAt(i),16):-1));
+						bd.sQnC(cell,(bstr.charAt(i+1)!="."?parseInt(bstr.charAt(i+1),16):-1));
+						cell++; i+=1;
+					}
 				}
+				if(cell>=bd.cell.length){ a=i+1; break;}
 			}
-			if(cell>=bd.cell.length){ a=i+1; break;}
-		}
 
-		// 盤面外数字のデコード
-		cell=0;
-		for(var i=a;i<bstr.length;i++){
-			var ca = bstr.charAt(i);
-			if     (ca=='.'){ bd.setDirecEXcell(cell,-1); cell++;}
-			else if(ca=='-'){ bd.setDirecEXcell(cell,parseInt(bstr.substring(i+1,i+3),16)); cell++; i+=2;}
-			else            { bd.setDirecEXcell(cell,parseInt(ca,16)); cell++;}
-			if(cell>=k.qcols){ a=i+1; break;}
-		}
-		for(var i=a;i<bstr.length;i++){
-			var ca = bstr.charAt(i);
-			if     (ca=='.'){ bd.setQnumEXcell(cell,-1); cell++;}
-			else if(ca=='-'){ bd.setQnumEXcell(cell,parseInt(bstr.substring(i+1,i+3),16)); cell++; i+=2;}
-			else            { bd.setQnumEXcell(cell,parseInt(ca,16)); cell++;}
-			if(cell>=k.qcols+k.qrows){ a=i+1; break;}
-		}
-
-		return bstr.substring(a,bstr.length);
-	},
-	encodeTilePaint : function(type){
-		var cm="";
-
-		// 盤面内側の数字部分のエンコード
-		var count=0;
-		for(var c=0;c<bd.cell.length;c++){
-			var pstr = "";
-
-			if(bd.getQuesCell(c)==51){
-				pstr+=bd.getDirecCell(c).toString(16);
-				pstr+=bd.getQnumCell(c).toString(16);
-
-				if     (bd.getQnumCell(c) >=16 && bd.getDirecCell(c)>=16){ pstr = ("="+pstr);}
-				else if(bd.getQnumCell(c) >=16){ pstr = ("-"+pstr);}
-				else if(bd.getDirecCell(c)>=16){ pstr = ("+"+pstr);}
+			// 盤面外数字のデコード
+			cell=0;
+			for(var i=a;i<bstr.length;i++){
+				var ca = bstr.charAt(i);
+				if     (ca=='.'){ bd.sDiE(cell,-1); cell++;}
+				else if(ca=='-'){ bd.sDiE(cell,parseInt(bstr.substring(i+1,i+3),16)); cell++; i+=2;}
+				else            { bd.sDiE(cell,parseInt(ca,16)); cell++;}
+				if(cell>=k.qcols){ a=i+1; break;}
 			}
-			else{ pstr=" "; count++;}
+			for(var i=a;i<bstr.length;i++){
+				var ca = bstr.charAt(i);
+				if     (ca=='.'){ bd.sQnE(cell,-1); cell++;}
+				else if(ca=='-'){ bd.sQnE(cell,parseInt(bstr.substring(i+1,i+3),16)); cell++; i+=2;}
+				else            { bd.sQnE(cell,parseInt(ca,16)); cell++;}
+				if(cell>=k.qcols+k.qrows){ a=i+1; break;}
+			}
 
-			if     (count== 0){ cm += pstr;}
-			else if(pstr!=" "){ cm += ((count+15).toString(36)+pstr); count=0;}
-			else if(count==20){ cm += "z"; count=0;}
-		}
-		if(count>0){ cm += (count+15).toString(36);}
+			return bstr.substring(a,bstr.length);
+		};
+		enc.encodeTilePaint = function(type){
+			var cm="";
 
-		// 盤面外側の数字部分のエンコード
-		for(var c=0;c<k.qcols;c++){
-			if     (bd.getDirecEXcell(c)<  0){ cm += ".";}
-			else if(bd.getDirecEXcell(c)< 16){ cm += bd.getDirecEXcell(c).toString(16);}
-			else if(bd.getDirecEXcell(c)<256){ cm += ("-"+bd.getDirecEXcell(c).toString(16));}
-		}
-		for(var c=k.qcols;c<k.qcols+k.qrows;c++){
-			if     (bd.getQnumEXcell(c)<  0){ cm += ".";}
-			else if(bd.getQnumEXcell(c)< 16){ cm += bd.getQnumEXcell(c).toString(16);}
-			else if(bd.getQnumEXcell(c)<256){ cm += ("-"+bd.getQnumEXcell(c).toString(16));}
-		}
+			// 盤面内側の数字部分のエンコード
+			var count=0;
+			for(var c=0;c<bd.cell.length;c++){
+				var pstr = "";
 
-		return cm;
-	},
+				if(bd.QuC(c)==51){
+					pstr+=bd.DiC(c).toString(16);
+					pstr+=bd.QnC(c).toString(16);
 
-	//---------------------------------------------------------
-	decodeOthers : function(array){
-		if(array.length<2*k.qrows+1){ return false;}
-		fio.decodeCell( function(c,ca){
-			if     (ca == "#"){ bd.setQansCell(c, 1);}
-			else if(ca == "+"){ bd.setQsubCell(c, 1);}
-			else if(ca == "-"){ bd.setQsubCell(c, 3);}
-		},array.slice(k.qrows+1,2*k.qrows+1));
-		return true;
-	},
-	encodeOthers : function(){
-		return ""+fio.encodeCell( function(c){
-			if     (bd.getQansCell(c)==1){ return "# ";}
-			else if(bd.getQsubCell(c)==1){ return "+ ";}
-			else if(bd.getQsubCell(c)==3){ return "- ";}
-			else                         { return ". ";}
-		});
+					if     (bd.QnC(c) >=16 && bd.DiC(c)>=16){ pstr = ("="+pstr);}
+					else if(bd.QnC(c) >=16){ pstr = ("-"+pstr);}
+					else if(bd.DiC(c)>=16){ pstr = ("+"+pstr);}
+				}
+				else{ pstr=" "; count++;}
+
+				if     (count== 0){ cm += pstr;}
+				else if(pstr!=" "){ cm += ((count+15).toString(36)+pstr); count=0;}
+				else if(count==20){ cm += "z"; count=0;}
+			}
+			if(count>0){ cm += (count+15).toString(36);}
+
+			// 盤面外側の数字部分のエンコード
+			for(var c=0;c<k.qcols;c++){
+				if     (bd.DiE(c)<  0){ cm += ".";}
+				else if(bd.DiE(c)< 16){ cm += bd.DiE(c).toString(16);}
+				else if(bd.DiE(c)<256){ cm += ("-"+bd.DiE(c).toString(16));}
+			}
+			for(var c=k.qcols;c<k.qcols+k.qrows;c++){
+				if     (bd.QnE(c)<  0){ cm += ".";}
+				else if(bd.QnE(c)< 16){ cm += bd.QnE(c).toString(16);}
+				else if(bd.QnE(c)<256){ cm += ("-"+bd.QnE(c).toString(16));}
+			}
+
+			return cm;
+		};
+
+		//---------------------------------------------------------
+		fio.decodeOthers = function(array){
+			if(array.length<k.qrows){ return false;}
+			this.decodeCell( function(c,ca){
+				if     (ca == "#"){ bd.sQaC(c, 1);}
+				else if(ca == "+"){ bd.sQsC(c, 1);}
+				else if(ca == "-"){ bd.sQsC(c, 3);}
+			},array.slice(0,k.qrows));
+			return true;
+		};
+		fio.encodeOthers = function(){
+			return ""+this.encodeCell( function(c){
+				if     (bd.QaC(c)==1){ return "# ";}
+				else if(bd.QsC(c)==1){ return "+ ";}
+				else if(bd.QsC(c)==3){ return "- ";}
+				else                 { return ". ";}
+			});
+		};
 	},
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	check : function(){
+	answer_init : function(){
+		ans.checkAns = function(){
 
-		if( !ans.checkSameObjectInRoom(ans.searchRarea(), function(c){ return bd.getQansCell(c);}) ){
-			ans.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both balck and white cells.'); return false;
-		}
-
-		if( !this.checkRowsCols() ){
-			ans.setAlert('数字の下か右にある黒マスの数が間違っています。','The number of black cells underward or rightward is not correct.'); return false;
-		}
-
-		return true;
-	},
-
-	checkRowsCols : function(){
-		var num, cnt, clist;
-
-		for(var cy=0;cy<k.qrows;cy++){
-			cnt = 0; clist = new Array();
-			num = bd.getQnumEXcell(bd.getexnum(-1,cy));
-			bd.setErrorEXcell([bd.getexnum(-1,cy)],1);
-			for(var cx=0;cx<=k.qcols;cx++){
-				var cc = bd.getcnum(cx,cy);
-				if(cx==k.qcols || bd.getQuesCell(cc)==51){
-					if(clist.length>0 && num!=cnt){ bd.setErrorCell(clist,1); return false;}
-
-					bd.setErrorEXcell([bd.getexnum(-1,cy)],0);
-					if(cx==k.qcols){ break;}
-					num = bd.getQnumCell(cc);
-					cnt = 0; clist = new Array();
-				}
-				else if(bd.getQansCell(cc)==1){ cnt++;}
-				clist.push(cc);
+			if( !this.checkSameObjectInRoom(this.searchRarea(), function(c){ return (bd.QaC(c)==1?1:2);}) ){
+				this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both balck and white cells.'); return false;
 			}
-			bd.setErrorEXcell([bd.getexnum(-1,cy)],0);
-		}
-		for(var cx=0;cx<k.qcols;cx++){
-			cnt = 0; clist = new Array();
-			num = bd.getDirecEXcell([bd.getexnum(cx,-1)]);
-			bd.setErrorEXcell([bd.getexnum(cx,-1)],1);
+
+			if( !this.checkRowsCols() ){
+				this.setAlert('数字の下か右にある黒マスの数が間違っています。','The number of black cells underward or rightward is not correct.'); return false;
+			}
+
+			return true;
+		};
+
+		ans.checkRowsCols = function(){
 			for(var cy=0;cy<k.qrows;cy++){
-				var cc = bd.getcnum(cx,cy);
-				if(cy==k.qrows || bd.getQuesCell(cc)==51){
-					if(clist.length>0 && num!=cnt){ bd.setErrorCell(clist,1); return false;}
+				var cnt = 0, clist = new Array(), num = bd.QnE(bd.exnum(-1,cy));
+				bd.sErE([bd.exnum(-1,cy)],1);
+				for(var cx=0;cx<=k.qcols;cx++){
+					var cc = bd.cnum(cx,cy);
+					if(cx==k.qcols || bd.QuC(cc)==51){
+						if(clist.length>0 && num!=cnt){ bd.sErC(clist,1); return false;}
 
-					bd.setErrorEXcell([bd.getexnum(cx,-1)],0);
-					if(cy==k.qrows){ break;}
-					num = bd.getDirecCell(cc);
-					cnt = 0; clist = new Array();
+						bd.sErE([bd.exnum(-1,cy)],0);
+						if(cx==k.qcols){ break;}
+						cnt = 0; clist = new Array(), num = bd.QnC(cc);
+					}
+					else if(bd.QaC(cc)==1){ cnt++;}
+					clist.push(cc);
 				}
-				else if(bd.getQansCell(cc)==1){ cnt++;}
-				clist.push(cc);
+				bd.sErE([bd.exnum(-1,cy)],0);
 			}
-			bd.setErrorEXcell([bd.getexnum(cx,-1)],0);
-		}
+			for(var cx=0;cx<k.qcols;cx++){
+				var cnt = 0, clist = new Array(), num = bd.DiE([bd.exnum(cx,-1)]);
+				bd.sErE([bd.exnum(cx,-1)],1);
+				for(var cy=0;cy<k.qrows;cy++){
+					var cc = bd.cnum(cx,cy);
+					if(cy==k.qrows || bd.QuC(cc)==51){
+						if(clist.length>0 && num!=cnt){ bd.sErC(clist,1); return false;}
 
-		return true;
+						bd.sErE([bd.exnum(cx,-1)],0);
+						if(cy==k.qrows){ break;}
+						cnt = 0; clist = new Array(), num = bd.DiC(cc);
+					}
+					else if(bd.QaC(cc)==1){ cnt++;}
+					clist.push(cc);
+				}
+				bd.sErE([bd.exnum(cx,-1)],0);
+			}
+
+			return true;
+		};
 	}
 };

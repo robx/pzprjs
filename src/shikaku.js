@@ -1,53 +1,43 @@
 //
-// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.1.9p1
+// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.2.0
 //
+Puzzles.shikaku = function(){ };
+Puzzles.shikaku.prototype = {
+	setting : function(){
+		// グローバル変数の初期設定
+		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
+		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
+		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-function setting(){
-	// グローバル変数の初期設定
-	if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-	if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-	k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.iscross      = 0;		// 1:Crossが操作可能なパズル
+		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
+		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-	k.iscross      = 0;		// 1:Crossが操作可能なパズル
-	k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-	k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
+		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
+		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
-	k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-	k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-	k.isborderCross   = 0;	// 1:線が交差するパズル
-	k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-	k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.dispzero      = 0;	// 1:0を表示するかどうか
+		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
+		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
+		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
+		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
+		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
+		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
 
-	k.dispzero      = 0;	// 1:0を表示するかどうか
-	k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-	k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-	k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-	k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-	k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-	k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
+		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
 
-	k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-	k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-	k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
+		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-	k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-	k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
+		k.fstruct = ["cellqnum","borderans"];
 
-	k.fstruct = ["cellqnum","borderans"];
-
-	//k.def_csize = 36;
-	//k.def_psize = 24;
-}
-
-//-------------------------------------------------------------
-// Puzzle個別クラスの定義
-Puzzle = function(){
-	this.prefix();
-};
-Puzzle.prototype = {
-	prefix : function(){
-		this.input_init();
-		this.graphic_init();
+		//k.def_csize = 36;
+		//k.def_psize = 24;
 
 		base.setTitle("四角に切れ","Shikaku");
 		base.setExpression("　左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
@@ -55,7 +45,6 @@ Puzzle.prototype = {
 		base.setFloatbgcolor("rgb(127, 191, 0)");
 	},
 	menufix : function(){ },
-	postfix : function(){ },
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
@@ -128,10 +117,10 @@ Puzzle.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.getQnumCell(c)!=-1){
-					var px=bd.cell[c].px()+int(k.cwidth/2), py=bd.cell[c].py()+int(k.cheight/2);
+				if(bd.QnC(c)!=-1){
+					var px=bd.cell[c].px()+mf(k.cwidth/2), py=bd.cell[c].py()+mf(k.cheight/2);
 
-					if(bd.getErrorCell(c)==1){ g.fillStyle = this.errcolor1;}
+					if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
 					else{ g.fillStyle = this.Cellcolor;}
 					g.beginPath();
 					g.arc(px, py, rsize , 0, Math.PI*2, false);
@@ -147,107 +136,108 @@ Puzzle.prototype = {
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
-	pzlinput : function(type, bstr){
-		if(type==0 || type==1){ bstr = enc.decodeNumber16(bstr);}
-		else if(type==2)      { bstr = this.decodeKanpen(bstr); }
-	},
-	pzloutput : function(type){
-		if(type==0)     { document.urloutput.ta.value = enc.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-		else if(type==1){ document.urloutput.ta.value = enc.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-		else if(type==2){ document.urloutput.ta.value = enc.kanpenbase()+"shikaku.html?problem="+this.pzldataKanpen();}
-		else if(type==3){ document.urloutput.ta.value = enc.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-	},
-	pzldata : function(){
-		return "/"+k.qcols+"/"+k.qrows+"/"+enc.encodeNumber16();
-	},
+	encode_init : function(){
+		enc.pzlimport = function(type, bstr){
+			if(type==0 || type==1){ bstr = this.decodeNumber16(bstr);}
+			else if(type==2)      { bstr = this.decodeKanpen(bstr); }
+		};
+		enc.pzlexport = function(type){
+			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
+			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
+			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"shikaku.html?problem="+this.pzldataKanpen();}
+			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
+		};
+		enc.pzldata = function(){
+			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeNumber16();
+		};
 
-	//---------------------------------------------------------
-	decodeKanpen : function(bstr){
-		bstr = (bstr.split("_")).join(" ");
-		fio.decodeCell( function(c,ca){
-			if(ca != "."){ bd.setQnumCell(c, parseInt(ca));}
-		},bstr.split("/"));
-		return "";
-	},
-	pzldataKanpen : function(){
-		return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
-			if     (bd.getQnumCell(c)>=0) { return (bd.getQnumCell(c).toString() + "_");}
-			else                          { return "._";}
-		});
-	},
+		enc.decodeKanpen = function(bstr){
+			bstr = (bstr.split("_")).join(" ");
+			fio.decodeCell( function(c,ca){
+				if(ca != "."){ bd.dQnC(c, parseInt(ca));}
+			},bstr.split("/"));
+			return "";
+		};
+		enc.pzldataKanpen = function(){
+			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
+				return (bd.QnC(c)>=0)?(bd.QnC(c).toString() + "_"):"._";
+			});
+		};
 
-	//---------------------------------------------------------
-	kanpenOpen : function(array){
-		fio.decodeCell( function(c,ca){
-			if(ca != "."){ bd.setQnumCell(c, parseInt(ca));}
-		},array.slice(0,k.qrows));
+		//---------------------------------------------------------
+		fio.kanpenOpen = function(array){
+			this.decodeCell( function(c,ca){
+				if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+			},array.slice(0,k.qrows));
 
-		var rmax = parseInt(array[k.qrows]);
-		var barray = array.slice(k.qrows+1,k.qrows+1+rmax);
-		this.decodeRectArea(barray);
-	},
-	decodeRectArea : function(barray){
-		var rdata = new Array();
-		for(var i=0;i<barray.length;i++){
-			if(barray[i]==""){ break;}
-			var pce = barray[i].split(" ");
-			var sp = { y1:parseInt(pce[0]), x1:parseInt(pce[1]), y2:parseInt(pce[2]), x2:parseInt(pce[3])};
-			for(var cx=sp.x1;cx<=sp.x2;cx++){
-				for(var cy=sp.y1;cy<=sp.y2;cy++){
-					rdata[bd.getcnum(cx,cy)] = i+1;
+			var rmax = parseInt(array[k.qrows]);
+			var barray = array.slice(k.qrows+1,k.qrows+1+rmax);
+			this.decodeRectArea(barray);
+		};
+		fio.decodeRectArea = function(barray){
+			var rdata = new Array();
+			for(var i=0;i<barray.length;i++){
+				if(barray[i]==""){ break;}
+				var pce = barray[i].split(" ");
+				var sp = { y1:parseInt(pce[0]), x1:parseInt(pce[1]), y2:parseInt(pce[2]), x2:parseInt(pce[3])};
+				for(var cx=sp.x1;cx<=sp.x2;cx++){
+					for(var cy=sp.y1;cy<=sp.y2;cy++){
+						rdata[bd.cnum(cx,cy)] = i+1;
+					}
 				}
 			}
-		}
-		for(var id=0;id<bd.border.length;id++){
-			var cc1=bd.getcc1(id), cc2=bd.getcc2(id);
-			if(cc1!=-1 && cc2!=-1 && rdata[cc1]!=rdata[cc2]){ bd.setQansBorder(id,1);}
-		}
-	},
-
-	kanpenSave : function(){
-		return ""+fio.encodeCell( function(c){
-			if(bd.getQnumCell(c)>0){ return (bd.getQnumCell(c).toString() + " ");}
-			else                   { return ". ";}
-		})+this.encodeRectArea();
-	},
-	encodeRectArea : function(){
-		var bstr = "", rectcount = 0;
-		var rarea = ans.searchRarea();
-		for(var id=1;id<=rarea.max;id++){
-			var d = ans.getSizeOfArea(rarea,id,f_true);
-			if((d.x2-d.x1+1)*(d.y2-d.y1+1)==d.cnt){
-				bstr += (""+d.y1+" "+d.x1+" "+d.y2+" "+d.x2+"/");
-				rectcount++;
+			for(var id=0;id<bd.border.length;id++){
+				var cc1=bd.cc1(id), cc2=bd.cc2(id);
+				if(cc1!=-1 && cc2!=-1 && rdata[cc1]!=rdata[cc2]){ bd.sQaB(id,1);}
 			}
-		}
-		return ""+rectcount+"/"+bstr;
+		};
+
+		fio.kanpenSave = function(){
+			return ""+this.encodeCell( function(c){
+				return (bd.QnC(c)>0)?(bd.QnC(c).toString() + " "):". ";
+			})+this.encodeRectArea();
+		};
+		fio.encodeRectArea = function(){
+			var bstr = "", rectcount = 0;
+			var rarea = ans.searchRarea();
+			for(var id=1;id<=rarea.max;id++){
+				var d = ans.getSizeOfArea(rarea,id,f_true);
+				if((d.x2-d.x1+1)*(d.y2-d.y1+1)==d.cnt){
+					bstr += (""+d.y1+" "+d.x1+" "+d.y2+" "+d.x2+"/");
+					rectcount++;
+				}
+			}
+			return ""+rectcount+"/"+bstr;
+		};
 	},
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	check : function(){
+	answer_init : function(){
+		ans.checkAns = function(){
 
-		var rarea = ans.searchRarea();
-		if( !ans.checkQnumsInArea(rarea, function(a){ return (a==0);}) ){
-			ans.setAlert('数字の入っていない領域があります。','An area has no numbers.'); return false;
-		}
+			var rarea = this.searchRarea();
+			if( !this.checkQnumsInArea(rarea, function(a){ return (a==0);}) ){
+				this.setAlert('数字の入っていない領域があります。','An area has no numbers.'); return false;
+			}
 
-		if( !ans.checkQnumsInArea(rarea, function(a){ return (a>=2);}) ){
-			ans.setAlert('1つの領域に2つ以上の数字が入っています。','An area has plural numbers.'); return false;
-		}
+			if( !this.checkQnumsInArea(rarea, function(a){ return (a>=2);}) ){
+				this.setAlert('1つの領域に2つ以上の数字が入っています。','An area has plural numbers.'); return false;
+			}
 
-		if( !ans.checkAllArea(rarea, f_true, function(w,h,a){ return (w*h==a);} ) ){
-			ans.setAlert('四角形ではない領域があります。','An area is not rectangle.'); return false;
-		}
+			if( !this.checkAllArea(rarea, f_true, function(w,h,a){ return (w*h==a);} ) ){
+				this.setAlert('四角形ではない領域があります。','An area is not rectangle.'); return false;
+			}
 
-		if( !ans.checkNumberAndSize(rarea) ){
-			ans.setAlert('数字と領域の大きさが違います。','The size of the area is not equal to the number.'); return false;
-		}
+			if( !this.checkNumberAndSize(rarea) ){
+				this.setAlert('数字と領域の大きさが違います。','The size of the area is not equal to the number.'); return false;
+			}
 
-		if( !ans.checkLcntCross(1,0) ){
-			ans.setAlert('途切れている線があります。','There is a dead-end line.'); return false;
-		}
+			if( !this.checkLcntCross(1,0) ){
+				this.setAlert('途切れている線があります。','There is a dead-end line.'); return false;
+			}
 
-		return true;
+			return true;
+		};
 	}
 };

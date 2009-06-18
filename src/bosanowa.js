@@ -1,53 +1,43 @@
 //
-// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.1.9p2
+// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.2.0
 //
+Puzzles.bosanowa = function(){ };
+Puzzles.bosanowa.prototype = {
+	setting : function(){
+		// グローバル変数の初期設定
+		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
+		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
+		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-function setting(){
-	// グローバル変数の初期設定
-	if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-	if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-	k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.iscross      = 0;		// 1:Crossが操作可能なパズル
+		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
+		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-	k.iscross      = 0;		// 1:Crossが操作可能なパズル
-	k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-	k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
+		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
+		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
-	k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-	k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-	k.isborderCross   = 0;	// 1:線が交差するパズル
-	k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-	k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.dispzero      = 0;	// 1:0を表示するかどうか
+		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
+		k.isAnsNumber   = 1;	// 1:回答に数字を入力するパズル
+		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
+		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
+		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
+		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
 
-	k.dispzero      = 0;	// 1:0を表示するかどうか
-	k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-	k.isAnsNumber   = 1;	// 1:回答に数字を入力するパズル
-	k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-	k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-	k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-	k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
+		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
 
-	k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-	k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-	k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
+		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
-	k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
-	k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
+		k.fstruct = ["others"];
 
-	k.fstruct = ["others"];
-
-	//k.def_csize = 36;
-	k.def_psize = 36;
-}
-
-//-------------------------------------------------------------
-// Puzzle個別クラスの定義
-Puzzle = function(){
-	this.prefix();
-};
-Puzzle.prototype = {
-	prefix : function(){
-		this.input_init();
-		this.graphic_init();
+		//k.def_csize = 36;
+		k.def_psize = 36;
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　キーボードやマウスで数字が入力できます。",
@@ -70,11 +60,6 @@ Puzzle.prototype = {
 		pp.setMenuStr('disptype_3', 'ワリタイ形式', 'Waritai type');
 		pp.funcs['disptype'] = function(){ pc.paintAll();};
 	},
-	postfix : function(){
-		tc.cursolx = k.qcols-1-k.qcols%2;
-		tc.cursoly = k.qrows-1-k.qrows%2;
-		bd.setQuesCell(tc.getTCC(),7);
-	},
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
@@ -95,22 +80,22 @@ Puzzle.prototype = {
 			if(pos.x==tcp.x&&pos.y==tcp.y){
 				var max = 255;
 				if(pos.x%2==1&&pos.y%2==1){
-					var cc = bd.getcnum(int((pos.x-1)/2),int((pos.y-1)/2));
+					var cc = bd.cnum(mf((pos.x-1)/2),mf((pos.y-1)/2));
 					if(k.mode==1){
 						if(this.btn.Left){
-							if     (bd.getQuesCell(cc)==0){ this.setval(cc,-1); bd.setQuesCell(cc,7);}
-							else if(this.getval(cc)==max) { this.setval(cc,-1); bd.setQuesCell(cc,0);}
-							else if(this.getval(cc)==-1)  { this.setval(cc, 1); bd.setQuesCell(cc,7);}
+							if     (bd.QuC(cc)==0)       { this.setval(cc,-1); bd.sQuC(cc,7);}
+							else if(this.getval(cc)==max){ this.setval(cc,-1); bd.sQuC(cc,0);}
+							else if(this.getval(cc)==-1) { this.setval(cc, 1); bd.sQuC(cc,7);}
 							else{ this.setval(cc,this.getval(cc)+1);}
 						}
 						else if(this.btn.Right){
-							if     (bd.getQuesCell(cc)==0){ this.setval(cc,max); bd.setQuesCell(cc,7);}
-							else if(this.getval(cc)== 1)  { this.setval(cc, -1); bd.setQuesCell(cc,7);}
-							else if(this.getval(cc)==-1)  { this.setval(cc, -1); bd.setQuesCell(cc,0);}
+							if     (bd.QuC(cc)==0)       { this.setval(cc,max); bd.sQuC(cc,7);}
+							else if(this.getval(cc)== 1) { this.setval(cc, -1); bd.sQuC(cc,7);}
+							else if(this.getval(cc)==-1) { this.setval(cc, -1); bd.sQuC(cc,0);}
 							else{ this.setval(cc,this.getval(cc)-1);}
 						}
 					}
-					if(k.mode==3 && bd.getQuesCell(cc)==7){
+					if(k.mode==3 && bd.QuC(cc)==7){
 						if(this.btn.Left){
 							if     (this.getval(cc)==max){ this.setval(cc,-1);}
 							else if(this.getval(cc)==-1) { this.setval(cc, 1);}
@@ -126,17 +111,17 @@ Puzzle.prototype = {
 			}
 			else{
 				tc.setTCP(pos);
-				pc.paint(int(tcp.x/2)-1,int(tcp.y/2)-1,int(tcp.x/2)+1,int(tcp.y/2)+1);
+				pc.paint(mf(tcp.x/2)-1,mf(tcp.y/2)-1,mf(tcp.x/2)+1,mf(tcp.y/2)+1);
 			}
-			pc.paint(int(pos.x/2)-1,int(pos.y/2)-1,int(pos.x/2)+1,int(pos.y/2)+1);
+			pc.paint(mf(pos.x/2)-1,mf(pos.y/2)-1,mf(pos.x/2)+1,mf(pos.y/2)+1);
 		};
 		mv.setval = function(cc,val){
-			if     (k.mode==1){ bd.setQnumCell(cc,val);}
-			else if(k.mode==3){ bd.setQansCell(cc,val);}
+			if     (k.mode==1){ bd.sQnC(cc,val);}
+			else if(k.mode==3){ bd.sQaC(cc,val);}
 		};
 		mv.getval = function(cc){
-			if     (k.mode==1){ return bd.getQnumCell(cc);}
-			else if(k.mode==3){ return bd.getQansCell(cc);}
+			if     (k.mode==1){ return bd.QnC(cc);}
+			else if(k.mode==3){ return bd.QaC(cc);}
 			return -1;
 		};
 
@@ -149,35 +134,39 @@ Puzzle.prototype = {
 			var tcp = tc.getTCP();
 			if(tcp.x%2==1&&tcp.y%2==1){
 				var cc = tc.getTCC();
-				if(k.mode==1 && ca=='w'){ bd.setQuesCell(cc,(bd.getQuesCell(cc)!=7?7:0)); bd.setQnumCell(cc,-1); bd.setQansCell(cc,-1);}
-				else if(bd.getQuesCell(cc)==7 && (k.mode==3 || '0'<=ca && ca<='9')){ this.key_inputqnum(ca,255);}
-				else if(k.mode==1 && '0'<=ca && ca<='9'){ bd.setQuesCell(cc,7); bd.setQnumCell(cc,-1); this.key_inputqnum(ca,255);}
-				else if(k.mode==1 && (ca=='-'||ca==' ')){ bd.setQuesCell(cc,7); bd.setQnumCell(cc,-1);}
+				if(k.mode==1 && ca=='w'){ bd.sQuC(cc,(bd.QuC(cc)!=7?7:0)); bd.sQnC(cc,-1); bd.sQaC(cc,-1);}
+				else if(bd.QuC(cc)==7 && (k.mode==3 || '0'<=ca && ca<='9')){ this.key_inputqnum(ca,255);}
+				else if(k.mode==1 && '0'<=ca && ca<='9'){ bd.sQuC(cc,7); bd.sQnC(cc,-1); this.key_inputqnum(ca,255);}
+				else if(k.mode==1 && (ca=='-'||ca==' ')){ bd.sQuC(cc,7); bd.sQnC(cc,-1);}
 				else{ return false;}
 			}
 			else if((tcp.x+tcp.y)%2==1){
 				var id = tc.getTBC();
-				var cc1=bd.getcc1(id), cc2=bd.getcc2(id);
-				if((cc1==-1||bd.getQuesCell(cc1)!=7)||(cc2==-1||bd.getQuesCell(cc2)!=7)){ return false;}
+				var cc1=bd.cc1(id), cc2=bd.cc2(id);
+				if((cc1==-1||bd.QuC(cc1)!=7)||(cc2==-1||bd.QuC(cc2)!=7)){ return false;}
 				if('0'<=ca && ca<='9'){
 					var num = parseInt(ca);
 					var max = 99;
 
-					if(bd.getQsubBorder(id)<=0 || this.prev!=id){ if(num<=max){ bd.setQsubBorder(id,num);}}
+					if(bd.QsB(id)<=0 || this.prev!=id){ if(num<=max){ bd.sQsB(id,num);}}
 					else{
-						if(bd.getQsubBorder(id)*10+num<=max){ bd.setQsubBorder(id,bd.getQsubBorder(id)*10+num);}
-						else if(num<=max){ bd.setQsubBorder(id,num);}
+						if(bd.QsB(id)*10+num<=max){ bd.sQsB(id,bd.QsB(id)*10+num);}
+						else if(num<=max){ bd.sQsB(id,num);}
 					}
 					this.prev=id;
 				}
-				else if(ca=='-'||ca==' '){ bd.setQsubBorder(id,-1);}
+				else if(ca=='-'||ca==' '){ bd.sQsB(id,-1);}
 				else{ return false;}
 			}
 			else{ return false;}
 
-			pc.paint(int(tcp.x/2)-1,int(tcp.y/2)-1,int(tcp.x/2)+1,int(tcp.y/2)+1);
+			pc.paint(mf(tcp.x/2)-1,mf(tcp.y/2)-1,mf(tcp.x/2)+1,mf(tcp.y/2)+1);
 			return true;
 		};
+
+		tc.cursolx = k.qcols-1-k.qcols%2;
+		tc.cursoly = k.qrows-1-k.qrows%2;
+		if(k.callmode=="pmake"){ bd.sQuC(tc.getTCC(),7);}
 	},
 
 	//---------------------------------------------------------
@@ -217,37 +206,37 @@ Puzzle.prototype = {
 		pc.drawBorders_bosanowa = function(x1,y1,x2,y2){
 			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4,f_true);
 			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i], cc1=bd.getcc1(id), cc2=bd.getcc2(id);
+				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
 
 				this.vhide(["b"+id+"_bd_", "b"+id+"_bds_"]);
 				if(menu.getVal('disptype')==3){
-					if((cc1!=-1&&bd.getQuesCell(cc1)==7) ^(cc2!=-1&&bd.getQuesCell(cc2)==7)){ this.drawBorder1(id,true);}
-					else if((cc1!=-1&&bd.getQuesCell(cc1)==7)&&(cc2!=-1&&bd.getQuesCell(cc2)==7)){
+					if((cc1!=-1&&bd.QuC(cc1)==7) ^(cc2!=-1&&bd.QuC(cc2)==7)){ this.drawBorder1(id,true);}
+					else if((cc1!=-1&&bd.QuC(cc1)==7)&&(cc2!=-1&&bd.QuC(cc2)==7)){
 						g.fillStyle=this.BDlinecolor;
 						if(this.vnop("b"+id+"_bds_",1)){
-							if     (bd.border[id].cy%2==1){ g.fillRect(bd.border[id].px()                , bd.border[id].py()-int(k.cheight/2), 1         , k.cheight+1);}
-							else if(bd.border[id].cx%2==1){ g.fillRect(bd.border[id].px()-int(k.cwidth/2), bd.border[id].py()                 , k.cwidth+1, 1          );}
+							if     (bd.border[id].cy%2==1){ g.fillRect(bd.border[id].px()               , bd.border[id].py()-mf(k.cheight/2), 1         , k.cheight+1);}
+							else if(bd.border[id].cx%2==1){ g.fillRect(bd.border[id].px()-mf(k.cwidth/2), bd.border[id].py()                , k.cwidth+1, 1          );}
 						}
 					}
 				}
 				else if(menu.getVal('disptype')==2){
-					if((cc1!=-1&&bd.getQuesCell(cc1)==7)&&(cc2!=-1&&bd.getQuesCell(cc2)==7)){
+					if((cc1!=-1&&bd.QuC(cc1)==7)&&(cc2!=-1&&bd.QuC(cc2)==7)){
 						g.fillStyle="rgb(127,127,127)";
 						if(g.vml){
 							if(this.vnop("b"+id+"_bds_",1)){
-								if     (bd.border[id].cy%2==1){ g.fillRect(bd.border[id].px()                , bd.border[id].py()-int(k.cheight/2), 1         , k.cheight+1);}
-								else if(bd.border[id].cx%2==1){ g.fillRect(bd.border[id].px()-int(k.cwidth/2), bd.border[id].py()                 , k.cwidth+1, 1          );}
+								if     (bd.border[id].cy%2==1){ g.fillRect(bd.border[id].px()               , bd.border[id].py()-mf(k.cheight/2), 1         , k.cheight+1);}
+								else if(bd.border[id].cx%2==1){ g.fillRect(bd.border[id].px()-mf(k.cwidth/2), bd.border[id].py()                , k.cwidth+1, 1          );}
 							}
 						}
 						else{
-							var dotmax = int(k.cwidth/10)+3;
-							var dotCount = (int(k.cwidth/dotmax)>=1?int(k.cwidth/dotmax):1);
+							var dotmax = mf(k.cwidth/10)+3;
+							var dotCount = (mf(k.cwidth/dotmax)>=1?mf(k.cwidth/dotmax):1);
 							var dotSize  = k.cwidth/(dotCount*2);
 							if     (bd.border[id].cy%2==1){ 
-								for(var j=0;j<k.cheight+1;j+=(2*dotSize)){ g.fillRect(bd.border[id].px(), int(bd.border[id].py()-k.cheight/2+j), 1, int(dotSize));}
+								for(var j=0;j<k.cheight+1;j+=(2*dotSize)){ g.fillRect(bd.border[id].px(), mf(bd.border[id].py()-k.cheight/2+j), 1, mf(dotSize));}
 							}
 							else if(bd.border[id].cx%2==1){ 
-								for(var j=0;j<k.cwidth+1 ;j+=(2*dotSize)){ g.fillRect(int(bd.border[id].px()-k.cwidth/2+j), bd.border[id].py(), int(dotSize), 1);}
+								for(var j=0;j<k.cwidth+1 ;j+=(2*dotSize)){ g.fillRect(mf(bd.border[id].px()-k.cwidth/2+j), bd.border[id].py(), mf(dotSize), 1);}
 							}
 						}
 					}
@@ -262,16 +251,16 @@ Puzzle.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.getQuesCell(c)==7 && bd.getQnumCell(c)==-1 && bd.getQansCell(c)==-1){
-					if(bd.getErrorCell(c)==1){ g.fillStyle = this.errcolor1;}
+				if(bd.QuC(c)==7 && bd.QnC(c)==-1 && bd.QaC(c)==-1){
+					if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
 					else{ g.fillStyle = this.Cellcolor;}
 					g.beginPath();
-					g.arc(bd.cell[c].px()+int(k.cwidth/2), bd.cell[c].py()+int(k.cheight/2), rsize , 0, Math.PI*2, false);
+					g.arc(bd.cell[c].px()+mf(k.cwidth/2), bd.cell[c].py()+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
 					if(this.vnop("c"+c+"_cira_",1)){ g.fill();}
 
 					g.fillStyle = "white";
 					g.beginPath();
-					g.arc(bd.cell[c].px()+int(k.cwidth/2), bd.cell[c].py()+int(k.cheight/2), rsize2, 0, Math.PI*2, false);
+					g.arc(bd.cell[c].px()+mf(k.cwidth/2), bd.cell[c].py()+mf(k.cheight/2), rsize2, 0, Math.PI*2, false);
 					if(this.vnop("c"+c+"_cirb_",1)){ g.fill();}
 				}
 				else{ this.vhide("c"+c+"_cira_"); this.vhide("c"+c+"_cirb_");}
@@ -283,9 +272,9 @@ Puzzle.prototype = {
 			var csize = k.cwidth*0.20;
 			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+6,y2*2+6,f_true);
 			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i], cc1=bd.getcc1(id), cc2=bd.getcc2(id);
+				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
 
-				if((menu.getVal('disptype')==3 || bd.getQsubBorder(id)>=0)&&((cc1!=-1&&bd.getQuesCell(cc1)==7)&&(cc2!=-1&&bd.getQuesCell(cc2)==7))){
+				if((menu.getVal('disptype')==3 || bd.QsB(id)>=0)&&((cc1!=-1&&bd.QuC(cc1)==7)&&(cc2!=-1&&bd.QuC(cc2)==7))){
 					g.fillStyle = "white";
 					if(this.vnop("b"+id+"_bbse_",1)){ g.fillRect(bd.border[id].px()-csize, bd.border[id].py()-csize, 2*csize+1, 2*csize+1);}
 				}
@@ -294,18 +283,18 @@ Puzzle.prototype = {
 		};
 
 		pc.getNumberColor = function(cc){	//オーバーライド
-			if(bd.getErrorCell(cc)==1 || bd.getErrorCell(cc)==4){ return this.fontErrcolor;   }
-			else if(bd.getQnumCell(cc)!=-1){ return this.fontcolor;      }
-			else if(bd.getQansCell(cc)!=-1){ return this.fontAnscolor;   }
+			if(bd.ErC(cc)==1 || bd.ErC(cc)==4){ return this.fontErrcolor;   }
+			else if(bd.QnC(cc)!=-1){ return this.fontcolor;      }
+			else if(bd.QaC(cc)!=-1){ return this.fontAnscolor;   }
 			return this.fontcolor;
 		};
 		pc.drawNumbersBD = function(x1,y1,x2,y2){
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
 			for(var i=0;i<idlist.length;i++){
 				var id=idlist[i];
-				if(bd.getQsubBorder(id)>=0){
+				if(bd.QsB(id)>=0){
 					if(!bd.border[id].numobj){ bd.border[id].numobj = this.CreateDOMAndSetNop();}
-					this.dispnumBorder1(id, bd.border[id].numobj, 101, ""+bd.getQsubBorder(id), 0.35 ,this.borderfontcolor);
+					this.dispnumBorder1(id, bd.border[id].numobj, 101, ""+bd.QsB(id), 0.35 ,this.borderfontcolor);
 				}
 				else if(bd.border[id].numobj){ bd.border[id].numobj.hide();}
 			}
@@ -317,7 +306,7 @@ Puzzle.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.getQuesCell(c)!=7){ continue;}
+				if(bd.QuC(c)!=7){ continue;}
 				this.drawBorder1x(0                , 2*bd.cell[c].cy+1,(bd.cell[c].cx==0)        );
 				this.drawBorder1x(2*k.qcols        , 2*bd.cell[c].cy+1,(bd.cell[c].cx==k.qcols-1));
 				this.drawBorder1x(2*bd.cell[c].cx+1, 0                ,(bd.cell[c].cy==0)        );
@@ -328,12 +317,12 @@ Puzzle.prototype = {
 		pc.drawChassis_souko = function(x1,y1,x2,y2){
 			for(var cx=x1-1;cx<=x2+1;cx++){
 				for(var cy=y1-1;cy<=y2+1;cy++){
-					var c=bd.getcnum(cx,cy);
-					if( (c==-1 || bd.getQuesCell(c)!=7) && (
-						bd.getQuesCell(bd.getcnum(cx-1,cy))==7 || bd.getQuesCell(bd.getcnum(cx+1,cy))==7 || 
-						bd.getQuesCell(bd.getcnum(cx,cy-1))==7 || bd.getQuesCell(bd.getcnum(cx,cy+1))==7 || 
-						bd.getQuesCell(bd.getcnum(cx-1,cy-1))==7 || bd.getQuesCell(bd.getcnum(cx+1,cy-1))==7 || 
-						bd.getQuesCell(bd.getcnum(cx-1,cy+1))==7 || bd.getQuesCell(bd.getcnum(cx+1,cy+1))==7 ) )
+					var c=bd.cnum(cx,cy);
+					if( (c==-1 || bd.QuC(c)!=7) && (
+						bd.QuC(bd.cnum(cx-1,cy  ))==7 || bd.QuC(bd.cnum(cx+1,  cy))==7 || 
+						bd.QuC(bd.cnum(cx  ,cy-1))==7 || bd.QuC(bd.cnum(cx  ,cy+1))==7 || 
+						bd.QuC(bd.cnum(cx-1,cy-1))==7 || bd.QuC(bd.cnum(cx+1,cy-1))==7 || 
+						bd.QuC(bd.cnum(cx-1,cy+1))==7 || bd.QuC(bd.cnum(cx+1,cy+1))==7 ) )
 					{
 						g.fillStyle = "rgb(127,127,127)";
 						if(this.vnop("bx"+cx+"y"+cy+"_full_",1)){ g.fillRect(k.p0.x+k.cwidth*cx, k.p0.y+k.cheight*cy, k.cwidth, k.cheight);}
@@ -359,143 +348,146 @@ Puzzle.prototype = {
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
-	pzlinput : function(type, bstr){
-		if(type==0 || type==1){
-			bstr = this.decodeBoard(bstr);
-			bstr = enc.decodeNumber16(bstr);
+	encode_init : function(){
+		enc.pzlimport = function(type, bstr){
+			if(type==0 || type==1){
+				bstr = this.decodeBoard(bstr);
+				bstr = this.decodeNumber16(bstr);
 
-			if     (enc.pzlflag.indexOf("h")>=0){ menu.setVal('disptype',2);}
-			else if(enc.pzlflag.indexOf("t")>=0){ menu.setVal('disptype',3);}
-		}
-	},
-
-	pzloutput : function(type){
-		if(type==0)     { document.urloutput.ta.value = enc.getURLbase()+"?"+k.puzzleid+this.pzldata(0);}
-		else if(type==1){ document.urloutput.ta.value = enc.getDocbase()+k.puzzleid+"/sa/m.html?"+this.pzldata(1);}
-		else if(type==3){ document.urloutput.ta.value = enc.getURLbase()+"?m+"+k.puzzleid+this.pzldata(0);}
-	},
-	pzldata : function(type){
-		return this.encodeBosanowa();
-	},
-
-	//---------------------------------------------------------
-	decodeBoard : function(bstr,type){
-		var c=0, i;
-		for(i=0;i<bstr.length;i++){
-			var num = parseInt(bstr.charAt(i),32);
-			for(w=0;w<5;w++){ if((i*5+w)<bd.cell.length){ bd.setQuesCell(i*5+w,(num&Math.pow(2,4-w)?0:7));} }
-			if((i*5+5)>=k.qcols*k.qrows){ break;}
-		}
-		return bstr.substring(i+1,bstr.length);
-	},
-	encodeBosanowa : function(type){
-		var x1=9999, x2=-1, y1=9999, y2=-1;
-		for(var c=0;c<bd.cell.length;c++){
-			if(bd.getQuesCell(c)!=7){ continue;}
-			if(x1>bd.cell[c].cx){ x1=bd.cell[c].cx;}
-			if(x2<bd.cell[c].cx){ x2=bd.cell[c].cx;}
-			if(y1>bd.cell[c].cy){ y1=bd.cell[c].cy;}
-			if(y2<bd.cell[c].cy){ y2=bd.cell[c].cy;}
-		}
-
-		var cm="", count=0, pass=0;
-		for(var cy=y1;cy<=y2;cy++){
-			for(var cx=x1;cx<=x2;cx++){
-				var c=bd.getcnum(cx,cy);
-				if(bd.getQuesCell(c)==0){ pass+=Math.pow(2,4-count);}
-				count++; if(count==5){ cm += pass.toString(32); count=0; pass=0;}
+				if     (this.checkpflag("h")){ menu.setVal('disptype',2);}
+				else if(this.checkpflag("t")){ menu.setVal('disptype',3);}
 			}
-		}
-		if(count>0){ cm += pass.toString(32);}
+		};
 
-		count=0;
-		for(var cy=y1;cy<=y2;cy++){
-			for(var cx=x1;cx<=x2;cx++){
-				pstr = "";
-				var val = bd.getQnumCell(bd.getcnum(cx,cy));
+		enc.pzlexport = function(type){
+			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata(0);}
+			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?"+this.pzldata(1);}
+			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata(0);}
+		};
+		enc.pzldata = function(type){
+			return this.encodeBosanowa();
+		};
 
-				if     (val==-2         ){ pstr = ".";}
-				else if(val>= 0&&val< 16){ pstr =       val.toString(16);}
-				else if(val>=16&&val<256){ pstr = "-" + val.toString(16);}
-				else{ count++;}
-
-				if(count==0){ cm += pstr;}
-				else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
+		//---------------------------------------------------------
+		enc.decodeBoard = function(bstr,type){
+			for(var i=0;i<bstr.length;i++){
+				var num = parseInt(bstr.charAt(i),32);
+				for(var w=0;w<5;w++){ if((i*5+w)<bd.cell.length){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?0:7));} }
+				if((i*5+5)>=k.qcols*k.qrows){ break;}
 			}
-		}
-		if(count>0){ cm+=(15+count).toString(36);}
+			return bstr.substring(i+1,bstr.length);
+		};
+		enc.encodeBosanowa = function(type){
+			var x1=9999, x2=-1, y1=9999, y2=-1;
+			for(var c=0;c<bd.cell.length;c++){
+				if(bd.QuC(c)!=7){ continue;}
+				if(x1>bd.cell[c].cx){ x1=bd.cell[c].cx;}
+				if(x2<bd.cell[c].cx){ x2=bd.cell[c].cx;}
+				if(y1>bd.cell[c].cy){ y1=bd.cell[c].cy;}
+				if(y2<bd.cell[c].cy){ y2=bd.cell[c].cy;}
+			}
 
-		var pzlflag="";
-		if     (menu.getVal('disptype')==2){ pzlflag="/h";}
-		else if(menu.getVal('disptype')==3){ pzlflag="/t";}
+			var cm="", count=0, pass=0;
+			for(var cy=y1;cy<=y2;cy++){
+				for(var cx=x1;cx<=x2;cx++){
+					var c=bd.cnum(cx,cy);
+					if(bd.QuC(c)==0){ pass+=Math.pow(2,4-count);}
+					count++; if(count==5){ cm += pass.toString(32); count=0; pass=0;}
+				}
+			}
+			if(count>0){ cm += pass.toString(32);}
 
-		return ""+pzlflag+"/"+(x2-x1+1)+"/"+(y2-y1+1)+"/"+cm;
-	},
+			count=0;
+			for(var cy=y1;cy<=y2;cy++){
+				for(var cx=x1;cx<=x2;cx++){
+					var pstr = "";
+					var val = bd.QnC(bd.cnum(cx,cy));
 
-	//---------------------------------------------------------
-	decodeOthers : function(array){
-		if(array.length<4*k.qrows-1){ return false;}
-		fio.decodeCell( function(c,ca){
-			if(ca!="."){ bd.setQuesCell(c, 7);}
-			if(ca!="0"&&ca!="."){ bd.setQnumCell(c, parseInt(ca));}
-		},array.slice(0,k.qrows));
-		fio.decodeCell( function(c,ca){
-			if(ca!="0"&&ca!="."){ bd.setQansCell(c, parseInt(ca));}
-		},array.slice(k.qrows,2*k.qrows));
-		fio.decodeBorder( function(id,ca){
-			if(ca!="."){ bd.setQsubBorder(id, parseInt(ca));}
-		},array.slice(2*k.qrows,4*k.qrows-1));
-		return true;
-	},
-	encodeOthers : function(){
-		return fio.encodeCell(function(c){
-			if(bd.getQuesCell(c)!=7){ return ". ";}
-			if(bd.getQnumCell(c)< 0){ return "0 ";}
-			else{ return ""+bd.getQnumCell(c).toString()+" ";}
-		})+fio.encodeCell( function(c){
-			if(bd.getQuesCell(c)!=7 || bd.getQnumCell(c)!=-1){ return ". ";}
-			if(bd.getQansCell(c)< 0){ return "0 ";}
-			else{ return ""+bd.getQansCell(c).toString()+" ";}
-		})+fio.encodeBorder( function(id){
-			var cc1=bd.getcc1(id), cc2=bd.getcc2(id);
-			if((cc1==-1||bd.getQuesCell(cc1)!=7)||(cc2==-1||bd.getQuesCell(cc2)!=7)){ return ". ";}
-			if(bd.getQsubBorder(id)==-1){ return ". ";}
-			else{ return ""+bd.getQsubBorder(id).toString()+" ";}
-		});
+					if     (val==-2         ){ pstr = ".";}
+					else if(val>= 0&&val< 16){ pstr =       val.toString(16);}
+					else if(val>=16&&val<256){ pstr = "-" + val.toString(16);}
+					else{ count++;}
+
+					if(count==0){ cm += pstr;}
+					else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
+				}
+			}
+			if(count>0){ cm+=(15+count).toString(36);}
+
+			var pzlflag="";
+			if     (menu.getVal('disptype')==2){ pzlflag="/h";}
+			else if(menu.getVal('disptype')==3){ pzlflag="/t";}
+
+			return ""+pzlflag+"/"+(x2-x1+1)+"/"+(y2-y1+1)+"/"+cm;
+		};
+
+		//---------------------------------------------------------
+		fio.decodeOthers = function(array){
+			if(array.length<4*k.qrows-1){ return false;}
+			this.decodeCell( function(c,ca){
+				if(ca!="."){ bd.sQuC(c, 7);}
+				if(ca!="0"&&ca!="."){ bd.sQnC(c, parseInt(ca));}
+			},array.slice(0,k.qrows));
+			this.decodeCell( function(c,ca){
+				if(ca!="0"&&ca!="."){ bd.sQaC(c, parseInt(ca));}
+			},array.slice(k.qrows,2*k.qrows));
+			this.decodeBorder( function(id,ca){
+				if(ca!="."){ bd.sQsB(id, parseInt(ca));}
+			},array.slice(2*k.qrows,4*k.qrows-1));
+			return true;
+		};
+		fio.encodeOthers = function(){
+			return this.encodeCell(function(c){
+				if(bd.QuC(c)!=7){ return ". ";}
+				if(bd.QnC(c)< 0){ return "0 ";}
+				else{ return ""+bd.QnC(c).toString()+" ";}
+			})+this.encodeCell( function(c){
+				if(bd.QuC(c)!=7 || bd.QnC(c)!=-1){ return ". ";}
+				if(bd.QaC(c)< 0){ return "0 ";}
+				else{ return ""+bd.QaC(c).toString()+" ";}
+			})+this.encodeBorder( function(id){
+				var cc1=bd.cc1(id), cc2=bd.cc2(id);
+				if((cc1==-1||bd.QuC(cc1)!=7)||(cc2==-1||bd.QuC(cc2)!=7)){ return ". ";}
+				if(bd.QsB(id)==-1){ return ". ";}
+				else{ return ""+bd.QsB(id).toString()+" ";}
+			});
+		};
 	},
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	check : function(){
+	answer_init : function(){
+		ans.checkAns = function(){
 
-		if( !this.checkNumbers() ){
-			ans.setAlert('数字とその隣の数字の差の合計が合っていません。', 'Sum of the differences between the number and adjacent numbers is not equal to the number.'); return false;
-		}
+			if( !this.checkNumbers() ){
+				this.setAlert('数字とその隣の数字の差の合計が合っていません。', 'Sum of the differences between the number and adjacent numbers is not equal to the number.'); return false;
+			}
 
-		if( !ans.checkAllCell(function(c){ return (bd.getQuesCell(c)==7 && bd.getQnumCell(c)==-1 && bd.getQansCell(c)==-1);}) ){
-			ans.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
-		}
+			if( !this.checkAllCell(function(c){ return (bd.QuC(c)==7 && bd.QnC(c)==-1 && bd.QaC(c)==-1);}) ){
+				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
+			}
 
-		return true;
-	},
-	check1st : function(){ return ans.checkAllCell(function(c){ return (bd.getQuesCell(c)==7 && bd.getQnumCell(c)==-1 && bd.getQansCell(c)==-1);});},
+			return true;
+		};
+		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)==7 && bd.QnC(c)==-1 && bd.QaC(c)==-1);});};
 
-	getNum : function(cc){
-		if(cc<0||cc>=bd.cell.length){ return -1;}
-		if(bd.getQnumCell(cc)!=-1){ return bd.getQnumCell(cc);}
-		return bd.getQansCell(cc);
-	},
-	checkNumbers : function(){
-		for(var c=0;c<bd.cells.length;c++){
-			if(bd.getQuesCell(c)!=7||this.getNum(c)==-1){ continue;}
-			var sum=0, cc=-1;
-			var cc=bd.cell[c].up(); if(cc!=-1&&bd.getQuesCell(cc)==7){ if(this.getNum(cc)!=-1){ sum+=Math.abs(this.getNum(c)-this.getNum(cc)); }else{ continue;} }
-			var cc=bd.cell[c].dn(); if(cc!=-1&&bd.getQuesCell(cc)==7){ if(this.getNum(cc)!=-1){ sum+=Math.abs(this.getNum(c)-this.getNum(cc)); }else{ continue;} }
-			var cc=bd.cell[c].lt(); if(cc!=-1&&bd.getQuesCell(cc)==7){ if(this.getNum(cc)!=-1){ sum+=Math.abs(this.getNum(c)-this.getNum(cc)); }else{ continue;} }
-			var cc=bd.cell[c].rt(); if(cc!=-1&&bd.getQuesCell(cc)==7){ if(this.getNum(cc)!=-1){ sum+=Math.abs(this.getNum(c)-this.getNum(cc)); }else{ continue;} }
+		ans.getNum = function(cc){
+			if(cc<0||cc>=bd.cell.length){ return -1;}
+			if(bd.QnC(cc)!=-1){ return bd.QnC(cc);}
+			return bd.QaC(cc);
+		};
+		ans.checkNumbers = function(){
+			for(var c=0;c<bd.cells.length;c++){
+				if(bd.QuC(c)!=7||this.getNum(c)==-1){ continue;}
+				var sum=0, cc=-1;
+				var cc=bd.up(c); if(cc!=-1&&bd.QuC(cc)==7){ if(this.getNum(cc)!=-1){ sum+=Math.abs(this.getNum(c)-this.getNum(cc)); }else{ continue;} }
+				var cc=bd.dn(c); if(cc!=-1&&bd.QuC(cc)==7){ if(this.getNum(cc)!=-1){ sum+=Math.abs(this.getNum(c)-this.getNum(cc)); }else{ continue;} }
+				var cc=bd.lt(c); if(cc!=-1&&bd.QuC(cc)==7){ if(this.getNum(cc)!=-1){ sum+=Math.abs(this.getNum(c)-this.getNum(cc)); }else{ continue;} }
+				var cc=bd.rt(c); if(cc!=-1&&bd.QuC(cc)==7){ if(this.getNum(cc)!=-1){ sum+=Math.abs(this.getNum(c)-this.getNum(cc)); }else{ continue;} }
 
-			if(this.getNum(c)!=sum){ bd.setErrorCell([c],1); return false;}
-		}
-		return true;
+				if(this.getNum(c)!=sum){ bd.sErC([c],1); return false;}
+			}
+			return true;
+		};
 	}
 };

@@ -1,54 +1,44 @@
 //
-// パズル固有スクリプト部 コージュン版 cojun.js v3.1.9p1
+// パズル固有スクリプト部 コージュン版 cojun.js v3.2.0
 //
+Puzzles.cojun = function(){ };
+Puzzles.cojun.prototype = {
+	setting : function(){
+		// グローバル変数の初期設定
+		if(!k.qcols){ k.qcols = 8;}	// 盤面の横幅
+		if(!k.qrows){ k.qrows = 8;}	// 盤面の縦幅
+		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-function setting(){
-	// グローバル変数の初期設定
-	if(!k.qcols){ k.qcols = 8;}	// 盤面の横幅
-	if(!k.qrows){ k.qrows = 8;}	// 盤面の縦幅
-	k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.iscross      = 0;		// 1:Crossが操作可能なパズル
+		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
+		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-	k.iscross      = 0;		// 1:Crossが操作可能なパズル
-	k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-	k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
+		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
+		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
-	k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-	k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-	k.isborderCross   = 0;	// 1:線が交差するパズル
-	k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-	k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.dispzero      = 0;	// 1:0を表示するかどうか
 
-	k.dispzero      = 0;	// 1:0を表示するかどうか
+		k.isDispHatena  = 1;	// 1:qnumが-2のときに？を表示する
+		k.isAnsNumber   = 1;	// 1:回答に数字を入力するパズル
+		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
+		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
+		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
+		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
 
-	k.isDispHatena  = 1;	// 1:qnumが-2のときに？を表示する
-	k.isAnsNumber   = 1;	// 1:回答に数字を入力するパズル
-	k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-	k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-	k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-	k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
+		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
 
-	k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-	k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-	k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
+		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
-	k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-	k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
+		k.fstruct = ["borderques", "cellqnum", "cellqanssub"];
 
-	k.fstruct = ["borderques", "cellqnum", "cellqanssub"];
-
-	//k.def_csize = 36;
-	//k.def_psize = 24;
-}
-
-//-------------------------------------------------------------
-// Puzzle個別クラスの定義
-Puzzle = function(){
-	this.prefix();
-};
-Puzzle.prototype = {
-	prefix : function(){
-		this.input_init();
-		this.graphic_init();
+		//k.def_csize = 36;
+		//k.def_psize = 24;
 
 		base.setTitle("コージュン","Cojun");
 		base.setExpression("キーボードやマウスで数字を入力できます。",
@@ -57,10 +47,6 @@ Puzzle.prototype = {
 	},
 	menufix : function(){
 		if(k.callmode=="pmake"){ kp.defaultdisp = true;}
-	},
-	postfix : function(){
-		room.setEnable();
-		this.roommaxfunc = function(cc,mode){ return room.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -94,6 +80,9 @@ Puzzle.prototype = {
 
 		kp.generate(0, true, true, '');
 		kp.kpinput = function(ca){ kc.key_inputqnum(ca,99);};
+
+		room.setEnable();
+		bd.roommaxfunc = function(cc,mode){ return room.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -123,74 +112,78 @@ Puzzle.prototype = {
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
-	pzlinput : function(type, bstr){
-		if(type==0 || type==1){
-			bstr = enc.decodeBorder(bstr);
-			bstr = enc.decodeNumber16(bstr);
-		}
-	},
-	pzloutput : function(type){
-		if(type==0)     { document.urloutput.ta.value = enc.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-		else if(type==1){ document.urloutput.ta.value = enc.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-		else if(type==3){ document.urloutput.ta.value = enc.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-	},
-	pzldata : function(){
-		return "/"+k.qcols+"/"+k.qrows+"/"+enc.encodeBorder()+enc.encodeNumber16();
+	encode_init : function(){
+		enc.pzlimport = function(type, bstr){
+			if(type==0 || type==1){
+				bstr = this.decodeBorder(bstr);
+				bstr = this.decodeNumber16(bstr);
+			}
+		};
+		enc.pzlexport = function(type){
+			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
+			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
+			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
+		};
+		enc.pzldata = function(){
+			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeBorder()+this.encodeNumber16();
+		};
 	},
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	check : function(){
+	answer_init : function(){
+		ans.checkAns = function(){
 
-		var rarea = ans.searchRarea();
-		if( !this.checkDifferentNumber(rarea) ){
-			ans.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
-		}
-
-		if( !ans.checkSideCell(function(c1,c2){ return (puz.getNum(c1)>0 && puz.getNum(c1)==puz.getNum(c2));}) ){
-			ans.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
-		}
-
-		if( !this.checkUpperNumber(rarea) ){
-			ans.setAlert('同じ部屋で上に小さい数字が乗っています。','There is an small number on big number in a room.'); return false;
-		}
-
-		if( !ans.checkAllCell(function(c){ return (puz.getNum(c)==-1);}) ){
-			ans.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
-		}
-
-		return true;
-	},
-	check1st : function(){ return ans.checkAllCell(function(c){ return (puz.getNum(c)==-1);});},
-
-	checkDifferentNumber : function(area){
-		for(var r=1;r<=area.max;r++){
-			var d = new Array();
-			for(var i=1;i<=99;i++){ d[i]=-1;}
-			for(var i=0;i<area.room[r].length;i++){
-				var val=this.getNum(area.room[r][i]);
-				if     (val==-1 || val==-2){ continue;}
-				else if(d[val]==-1){ d[val] = area.room[r][i]; continue;}
-
-				bd.setErrorCell(area.room[r],1);
-				return false;
+			var rarea = this.searchRarea();
+			if( !this.checkDifferentNumber(rarea) ){
+				this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 			}
-		}
-		return true;
-	},
-	checkUpperNumber : function(area){
-		for(var c=0;c<bd.cell.length-k.qcols;c++){
-			var dc = bd.cell[c].dn();
-			if(area.check[c]!=area.check[dc] || this.getNum(c)<=0 || this.getNum(dc)<=0){ continue;}
-			if(this.getNum(dc)>this.getNum(c)){
-				bd.setErrorCell([c,dc],1);
-				return false;
+
+			if( !this.checkSideCell(function(c1,c2){ return (this.getNum(c1)>0 && this.getNum(c1)==this.getNum(c2));}.bind(this)) ){
+				this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
 			}
-		}
-		return true;
-	},
-	getNum : function(cc){
-		if(cc<0||cc>=bd.cell.length){ return -1;}
-		return (bd.getQnumCell(cc)!=-1?bd.getQnumCell(cc):bd.getQansCell(cc));
+
+			if( !this.checkUpperNumber(rarea) ){
+				this.setAlert('同じ部屋で上に小さい数字が乗っています。','There is an small number on big number in a room.'); return false;
+			}
+
+			if( !this.checkAllCell(function(c){ return (this.getNum(c)==-1);}.bind(this)) ){
+				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
+			}
+
+			return true;
+		};
+		ans.check1st = function(){ return this.checkAllCell(function(c){ return (this.getNum(c)==-1);});};
+
+		ans.checkDifferentNumber = function(area){
+			for(var r=1;r<=area.max;r++){
+				var d = new Array();
+				for(var i=1;i<=99;i++){ d[i]=-1;}
+				for(var i=0;i<area.room[r].length;i++){
+					var val=this.getNum(area.room[r][i]);
+					if     (val==-1 || val==-2){ continue;}
+					else if(d[val]==-1){ d[val] = area.room[r][i]; continue;}
+
+					bd.sErC(area.room[r],1);
+					return false;
+				}
+			}
+			return true;
+		};
+		ans.checkUpperNumber = function(area){
+			for(var c=0;c<bd.cell.length-k.qcols;c++){
+				var dc = bd.dn(c);
+				if(area.check[c]!=area.check[dc] || this.getNum(c)<=0 || this.getNum(dc)<=0){ continue;}
+				if(this.getNum(dc)>this.getNum(c)){
+					bd.sErC([c,dc],1);
+					return false;
+				}
+			}
+			return true;
+		};
+		ans.getNum = function(cc){
+			if(cc<0||cc>=bd.cell.length){ return -1;}
+			return (bd.QnC(cc)!=-1?bd.QnC(cc):bd.QaC(cc));
+		};
 	}
 };

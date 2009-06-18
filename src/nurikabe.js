@@ -1,53 +1,43 @@
 //
-// パズル固有スクリプト部 ぬりかべ版 nurikabe.js v3.1.9p2
+// パズル固有スクリプト部 ぬりかべ版 nurikabe.js v3.2.0
 //
+Puzzles.nurikabe = function(){ };
+Puzzles.nurikabe.prototype = {
+	setting : function(){
+		// グローバル変数の初期設定
+		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
+		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
+		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-function setting(){
-	// グローバル変数の初期設定
-	if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-	if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-	k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.iscross      = 0;		// 1:Crossが操作可能なパズル
+		k.isborder     = 0;		// 1:Border/Lineが操作可能なパズル
+		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-	k.iscross      = 0;		// 1:Crossが操作可能なパズル
-	k.isborder     = 0;		// 1:Border/Lineが操作可能なパズル
-	k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
+		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
+		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
-	k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-	k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-	k.isborderCross   = 0;	// 1:線が交差するパズル
-	k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-	k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.dispzero      = 0;	// 1:0を表示するかどうか
+		k.isDispHatena  = 1;	// 1:qnumが-2のときに？を表示する
+		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
+		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
+		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
+		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
+		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
 
-	k.dispzero      = 0;	// 1:0を表示するかどうか
-	k.isDispHatena  = 1;	// 1:qnumが-2のときに？を表示する
-	k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-	k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-	k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-	k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-	k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.BlackCell     = 1;	// 1:黒マスを入力するパズル
+		k.NumberIsWhite = 1;	// 1:数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
 
-	k.BlackCell     = 1;	// 1:黒マスを入力するパズル
-	k.NumberIsWhite = 1;	// 1:数字のあるマスが黒マスにならないパズル
-	k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
+		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-	k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-	k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
+		k.fstruct = ["cellqnumans"];
 
-	k.fstruct = ["cellqnumans"];
-
-	//k.def_csize = 36;
-	//k.def_psize = 24;
-}
-
-//-------------------------------------------------------------
-// Puzzle個別クラスの定義
-Puzzle = function(){
-	this.prefix();
-};
-Puzzle.prototype = {
-	prefix : function(){
-		this.input_init();
-		this.graphic_init();
+		//k.def_csize = 36;
+		//k.def_psize = 24;
 
 		base.setTitle("ぬりかべ","Nurikabe");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
@@ -58,7 +48,6 @@ Puzzle.prototype = {
 		menu.addUseToFlags();
 		menu.addRedBlockToFlags();
 	},
-	postfix : function(){ },
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
@@ -118,77 +107,80 @@ Puzzle.prototype = {
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
-	pzlinput : function(type, bstr){
-		if(type==0 || type==1){ bstr = enc.decodeNumber16(bstr);}
-		else if(type==2)      { bstr = this.decodeKanpen(bstr); }
-	},
-	decodeKanpen : function(bstr){
-		bstr = (bstr.split("_")).join(" ");
-		fio.decodeCell( function(c,ca){
-			if(ca != "."){ bd.setQnumCell(c, parseInt(ca));}
-		},bstr.split("/"));
-		return "";
-	},
+	encode_init : function(){
+		enc.pzlimport = function(type, bstr){
+			if(type==0 || type==1){ bstr = this.decodeNumber16(bstr);}
+			else if(type==2)      { bstr = this.decodeKanpen(bstr); }
+		};
+		enc.decodeKanpen = function(bstr){
+			bstr = (bstr.split("_")).join(" ");
+			fio.decodeCell( function(c,ca){
+				if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+			},bstr.split("/"));
+			return "";
+		};
 
-	pzloutput : function(type){
-		if(type==0)     { document.urloutput.ta.value = enc.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-		else if(type==1){ document.urloutput.ta.value = enc.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-		else if(type==2){ document.urloutput.ta.value = enc.kanpenbase()+"nurikabe.html?problem="+this.pzldataKanpen();}
-		else if(type==3){ document.urloutput.ta.value = enc.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-	},
-	pzldata : function(){
-		return "/"+k.qcols+"/"+k.qrows+"/"+enc.encodeNumber16();
-	},
-	pzldataKanpen : function(){
-		return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
-			if     (bd.getQnumCell(c)>=0) { return (bd.getQnumCell(c).toString() + "_");}
-			else                          { return "._";}
-		});
-	},
+		enc.pzlexport = function(type){
+			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
+			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
+			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"nurikabe.html?problem="+this.pzldataKanpen();}
+			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
+		},
+		enc.pzldata = function(){
+			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeNumber16();
+		};
+		enc.pzldataKanpen = function(){
+			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
+				return (bd.QnC(c)>=0)?(bd.QnC(c).toString() + "_"):"._";
+			});
+		};
 
-	//---------------------------------------------------------
-	// スリリン用になっている
-	kanpenOpen : function(array){
-		fio.decodeCell( function(c,ca){
-			if     (ca == "#"){ bd.setQansCell(c, 1);}
-			else if(ca == "+"){ bd.setQsubCell(c, 1);}
-			else if(ca != "."){ bd.setQnumCell(c, parseInt(ca));}
-		},array.slice(0,k.qrows));
-	},
-	kanpenSave : function(){
-		return ""+fio.encodeCell( function(c){
-			if     (bd.getQnumCell(c)>=0) { return (bd.getQnumCell(c).toString() + " ");}
-			else if(bd.getQansCell(c)==1) { return "# ";}
-			else if(bd.getQsubCell(c)==1) { return "+ ";}
-			else                          { return ". ";}
-		});
+		//---------------------------------------------------------
+		// スリリン用になっている
+		fio.kanpenOpen = function(array){
+			this.decodeCell( function(c,ca){
+				if     (ca == "#"){ bd.sQaC(c, 1);}
+				else if(ca == "+"){ bd.sQsC(c, 1);}
+				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+			},array.slice(0,k.qrows));
+		};
+		fio.kanpenSave = function(){
+			return ""+this.encodeCell( function(c){
+				if     (bd.QnC(c)>=0){ return (bd.QnC(c).toString() + " ");}
+				else if(bd.QaC(c)==1){ return "# ";}
+				else if(bd.QsC(c)==1){ return "+ ";}
+				else                 { return ". ";}
+			});
+		};
 	},
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	check : function(){
+	answer_init : function(){
+		ans.checkAns = function(){
 
-		if( !ans.check2x2Block( function(id){ return (bd.getQansCell(id)==1);} ) ){
-			ans.setAlert('2x2の黒マスのかたまりがあります。','There is a 2x2 block of black cells.'); return false;
+			if( !this.check2x2Block( function(id){ return (bd.QaC(id)==1);} ) ){
+				this.setAlert('2x2の黒マスのかたまりがあります。','There is a 2x2 block of black cells.'); return false;
+			}
+
+			var warea = this.searchWarea();
+			if( !this.checkQnumsInArea(warea, function(a){ return (a==0);}) ){
+				this.setAlert('数字の入っていないシマがあります。','An area of white cells has no numbers.'); return false;
+			}
+
+			if( !this.linkBWarea( this.searchBarea() ) ){
+				this.setAlert('黒マスが分断されています。','Black cells are devided,'); return false;
+			}
+
+			if( !this.checkQnumsInArea(warea, function(a){ return (a>=2);}) ){
+				this.setAlert('1つのシマに2つ以上の数字が入っています。','An area of white cells has plural numbers.'); return false;
+			}
+
+			if( !this.checkNumberAndSize(warea) ){
+				this.setAlert('数字とシマの面積が違います。','The number is not equal to the number of the size of the area.'); return false;
+			}
+
+			return true;
 		}
-
-		var warea = ans.searchWarea();
-		if( !ans.checkQnumsInArea(warea, function(a){ return (a==0);}) ){
-			ans.setAlert('数字の入っていないシマがあります。','An area of white cells has no numbers.'); return false;
-		}
-
-		if( !ans.linkBWarea( ans.searchBarea() ) ){
-			ans.setAlert('黒マスが分断されています。','Black cells are devided,'); return false;
-		}
-
-		if( !ans.checkQnumsInArea(warea, function(a){ return (a>=2);}) ){
-			ans.setAlert('1つのシマに2つ以上の数字が入っています。','An area of white cells has plural numbers.'); return false;
-		}
-
-		if( !ans.checkNumberAndSize(warea) ){
-			ans.setAlert('数字とシマの面積が違います。','The number is not equal to the number of the size of the area.'); return false;
-		}
-
-		return true;
 	}
 };

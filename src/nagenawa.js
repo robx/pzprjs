@@ -1,53 +1,43 @@
 //
-// パズル固有スクリプト部 なげなわ版 nagenawa.js v3.1.9p1
+// パズル固有スクリプト部 なげなわ版 nagenawa.js v3.2.0
 //
+Puzzles.nagenawa = function(){ };
+Puzzles.nagenawa.prototype = {
+	setting : function(){
+		// グローバル変数の初期設定
+		if(!k.qcols){ k.qcols = 8;}	// 盤面の横幅
+		if(!k.qrows){ k.qrows = 8;}	// 盤面の縦幅
+		k.irowake = 1;			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-function setting(){
-	// グローバル変数の初期設定
-	if(!k.qcols){ k.qcols = 8;}	// 盤面の横幅
-	if(!k.qrows){ k.qrows = 8;}	// 盤面の縦幅
-	k.irowake = 1;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.iscross      = 0;		// 1:Crossが操作可能なパズル
+		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
+		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-	k.iscross      = 0;		// 1:Crossが操作可能なパズル
-	k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-	k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
+		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
+		k.isborderCross   = 1;	// 1:線が交差するパズル
+		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
-	k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-	k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-	k.isborderCross   = 1;	// 1:線が交差するパズル
-	k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
-	k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.dispzero      = 1;	// 1:0を表示するかどうか
+		k.isDispHatena  = 1;	// 1:qnumが-2のときに？を表示する
+		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
+		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
+		k.isOneNumber   = 1;	// 1:部屋の問題の数字が1つだけ入るパズル
+		k.isDispNumUL   = 1;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
+		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
 
-	k.dispzero      = 1;	// 1:0を表示するかどうか
-	k.isDispHatena  = 1;	// 1:qnumが-2のときに？を表示する
-	k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-	k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-	k.isOneNumber   = 1;	// 1:部屋の問題の数字が1つだけ入るパズル
-	k.isDispNumUL   = 1;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-	k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.BlackCell     = 1;	// 1:黒マスを入力するパズル
+		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
 
-	k.BlackCell     = 1;	// 1:黒マスを入力するパズル
-	k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-	k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
+		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
-	k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-	k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
+		k.fstruct = ["arearoom","cellqnum","borderline","cellqsub"];
 
-	k.fstruct = ["arearoom","cellqnum","borderline","cellqansnum"];
-
-	//k.def_csize = 36;
-	//k.def_psize = 24;
-}
-
-//-------------------------------------------------------------
-// Puzzle個別クラスの定義
-Puzzle = function(){
-	this.prefix();
-};
-Puzzle.prototype = {
-	prefix : function(){
-		this.input_init();
-		this.graphic_init();
+		//k.def_csize = 36;
+		//k.def_psize = 24;
 
 		base.setTitle("なげなわ","Nagenawa");
 		base.setExpression("　ドラッグで線が、マスのクリックで○×(補助記号)が入力できます。",
@@ -57,7 +47,6 @@ Puzzle.prototype = {
 	menufix : function(){
 		menu.addRedLineToFlags();
 	},
-	postfix : function(){ },
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
@@ -134,74 +123,78 @@ Puzzle.prototype = {
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
-	pzlinput : function(type, bstr){
-		if(type==0 || type==1){
-			bstr = enc.decodeBorder(bstr);
-			bstr = enc.decodeRoomNumber16(bstr);
-		}
-	},
-	pzloutput : function(type){
-		if(type==0)     { document.urloutput.ta.value = enc.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-		else if(type==1){ document.urloutput.ta.value = enc.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-		else if(type==3){ document.urloutput.ta.value = enc.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-	},
-	pzldata : function(){
-		return "/"+k.qcols+"/"+k.qrows+"/"+enc.encodeBorder()+enc.encodeRoomNumber16();
+	encode_init : function(){
+		enc.pzlimport = function(type, bstr){
+			if(type==0 || type==1){
+				bstr = this.decodeBorder(bstr);
+				bstr = this.decodeRoomNumber16(bstr);
+			}
+		};
+		enc.pzlexport = function(type){
+			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
+			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
+			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
+		};
+		enc.pzldata = function(){
+			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeBorder()+this.encodeRoomNumber16();
+		};
 	},
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	check : function(){
+	answer_init : function(){
+		ans.checkAns = function(){
 
-		var cnt=0; var i;
-		for(i=0;i<bd.border.length;i++){ if(bd.getLineBorder(i)==1){ cnt++;} }
-		if( cnt==0 ){ ans.setAlert('線が引かれていません。','There is no line on the board.'); return false;}
+			var cnt=0;
+			for(var i=0;i<bd.border.length;i++){ if(bd.LiB(i)==1){ cnt++;} }
+			if( cnt==0 ){ this.setAlert('線が引かれていません。','There is no line on the board.'); return false;}
 
-		var rarea = ans.searchRarea();
-		if( !ans.checkOneNumber(rarea, function(top,lcnt){ return (top>=0 && top<lcnt);}, function(cc){ return ans.lcnts.cell[cc]>0;}) ){
-			ans.setAlert('数字のある部屋と線が通過するマスの数が違います。','The number of the cells that is passed any line in the room and the number written in the room is diffrerent.'); return false;
-		}
-
-		if( !ans.checkLcntCell(3) ){
-			ans.setAlert('分岐している線があります。','There is a branch line.'); return false;
-		}
-		if( !ans.checkLcntCell(1) ){
-			ans.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
-		}
-
-		if( !ans.checkOneNumber(rarea, function(top,lcnt){ return (top>=0 && top>lcnt);}, function(cc){ return ans.lcnts.cell[cc]>0;}) ){
-			ans.setAlert('数字のある部屋と線が通過するマスの数が違います。','The number of the cells that is passed any line in the room and the number written in the room is diffrerent.'); return false;
-		}
-
-		if( !this.checkAllLoopRect() ){
-			ans.setAlert('長方形か正方形でない輪っかがあります。','There is a non-rectangle loop.'); return false;
-		}
-
-		return true;
-	},
-
-	checkAllLoopRect : function(){
-		var xarea = ans.searchXarea();
-		for(var r=1;r<=xarea.max;r++){
-			if(!this.isLoopRect(xarea.room[r])){
-				bd.setErrorBorder(bd.borders,2);
-				bd.setErrorBorder(xarea.room[r],1);
-				return false;
+			var rarea = this.searchRarea();
+			if( !this.checkOneNumber(rarea, function(top,lcnt){ return (top>=0 && top<lcnt);}, function(cc){ return this.lcnts.cell[cc]>0;}.bind(this)) ){
+				this.setAlert('数字のある部屋と線が通過するマスの数が違います。','The number of the cells that is passed any line in the room and the number written in the room is diffrerent.'); return false;
 			}
-		}
-		return true;
-	},
-	isLoopRect : function(list){
-		var x1=2*k.qcols; var x2=0; var y1=2*k.qrows; var y2=0;
-		for(var i=0;i<list.length;i++){
-			if(x1>bd.border[list[i]].cx){ x1=bd.border[list[i]].cx;}
-			if(x2<bd.border[list[i]].cx){ x2=bd.border[list[i]].cx;}
-			if(y1>bd.border[list[i]].cy){ y1=bd.border[list[i]].cy;}
-			if(y2<bd.border[list[i]].cy){ y2=bd.border[list[i]].cy;}
-		}
-		for(var i=0;i<list.length;i++){
-			if(bd.border[list[i]].cx!=x1 && bd.border[list[i]].cx!=x2 && bd.border[list[i]].cy!=y1 && bd.border[list[i]].cy!=y2){ return false;}
-		}
-		return true;
+
+			if( !this.checkLcntCell(3) ){
+				this.setAlert('分岐している線があります。','There is a branch line.'); return false;
+			}
+			if( !this.checkLcntCell(1) ){
+				this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
+			}
+
+			if( !this.checkOneNumber(rarea, function(top,lcnt){ return (top>=0 && top>lcnt);}, function(cc){ return this.lcnts.cell[cc]>0;}.bind(this)) ){
+				this.setAlert('数字のある部屋と線が通過するマスの数が違います。','The number of the cells that is passed any line in the room and the number written in the room is diffrerent.'); return false;
+			}
+
+			if( !this.checkAllLoopRect() ){
+				this.setAlert('長方形か正方形でない輪っかがあります。','There is a non-rectangle loop.'); return false;
+			}
+
+			return true;
+		};
+
+		ans.checkAllLoopRect = function(){
+			var xarea = this.searchXarea();
+			for(var r=1;r<=xarea.max;r++){
+				if(!this.isLoopRect(xarea.room[r])){
+					bd.sErB(bd.borders,2);
+					bd.sErB(xarea.room[r],1);
+					return false;
+				}
+			}
+			return true;
+		};
+		ans.isLoopRect = function(list){
+			var x1=2*k.qcols; var x2=0; var y1=2*k.qrows; var y2=0;
+			for(var i=0;i<list.length;i++){
+				if(x1>bd.border[list[i]].cx){ x1=bd.border[list[i]].cx;}
+				if(x2<bd.border[list[i]].cx){ x2=bd.border[list[i]].cx;}
+				if(y1>bd.border[list[i]].cy){ y1=bd.border[list[i]].cy;}
+				if(y2<bd.border[list[i]].cy){ y2=bd.border[list[i]].cy;}
+			}
+			for(var i=0;i<list.length;i++){
+				if(bd.border[list[i]].cx!=x1 && bd.border[list[i]].cx!=x2 && bd.border[list[i]].cy!=y1 && bd.border[list[i]].cy!=y2){ return false;}
+			}
+			return true;
+		};
 	}
 };
