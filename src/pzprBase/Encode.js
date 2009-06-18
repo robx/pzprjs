@@ -1,18 +1,21 @@
-// Encode.js v3.1.9p1
+// Encode.js v3.2.0
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
+//    p.html?(pid)/(qdata)
+//                  qdata -> [(pflag)/](cols)/(rows)/(bstr)
 //---------------------------------------------------------------------------
 // URLエンコード/デコード
 // Encodeクラス
 Encode = function(search){
-	this.pid = "";			// 入力されたURLのID部分
-	this.pzldata = "";		// 入力されたURLの問題部分
+	this.uri = [];
+	this.uri.pid = "";			// 入力されたURLのID部分
+	this.uri.qdata = "";		// 入力されたURLの問題部分
 
-	this.pzlflag = "";		// 入力されたURLのフラグ部分
-	this.pzlcols = 0;		// 入力されたURLの横幅部分
-	this.pzlrows = 0;		// 入力されたURLの縦幅部分
-	this.bbox = "";			// 入力されたURLの盤面部分
+	this.uri.pflag = "";		// 入力されたURLのフラグ部分
+	this.uri.cols = 0;			// 入力されたURLの横幅部分
+	this.uri.rows = 0;			// 入力されたURLの縦幅部分
+	this.uri.bstr = "";			// 入力されたURLの盤面部分
 
 	this.first_decode(search);
 };
@@ -20,15 +23,16 @@ Encode.prototype = {
 	//---------------------------------------------------------------------------
 	// enc.init()         Encodeオブジェクトで持つ値を初期化する
 	// enc.first_decode() はじめにURLを解析してpuzzleidやエディタかplayerかを判断する
-	// enc.pzlinput()     "URLを入力"から呼ばれて、各パズルのpzlinput関数を呼び出す
+	// enc.pzlinput()     "URLを入力"または起動時の設定完了後に呼ばれて、各パズルのpzlinput関数を呼び出す
+	// enc.pzlimport()    各パズルのURL入力用(オーバーライド用)
 	//---------------------------------------------------------------------------
 	init : function(){
-		this.pid = "";
-		this.pzldata = "";
-		this.pzlflag = "";
-		this.pzlcols = 0;
-		this.pzlrows = 0;
-		this.bbox = "";
+		this.uri.pid = "";
+		this.uri.qdata = "";
+		this.uri.pflag = "";
+		this.uri.cols = 0;
+		this.uri.rows = 0;
+		this.uri.bstr = "";
 	},
 	first_decode : function(search){
 		if(search.length>0){
@@ -37,33 +41,33 @@ Encode.prototype = {
 				search = search.substring(3, search.length);
 			}
 			else{
-				k.callmode = "pplay"; k.mode = 3;
+				k.callmode = ((!k.scriptcheck)?"pplay":"pmake"); k.mode = 3;
 				search = search.substring(1, search.length);
 			}
 			this.data_decode(search, 0)
 		}
 	},
 	pzlinput : function(type){
-		if(k.puzzleid=="icebarn" && puz.arrowin==-1 && puz.arrowout==-1){
-			puz.inputarrowin (0 + (k.qcols-1)*k.qrows+k.qcols*(k.qrows-1), 1);
-			puz.inputarrowout(2 + (k.qcols-1)*k.qrows+k.qcols*(k.qrows-1), 1);
+		if(k.puzzleid=="icebarn" && bd.arrowin==-1 && bd.arrowout==-1){
+			bd.inputarrowin (0 + bd.bdinside, 1);
+			bd.inputarrowout(2 + bd.bdinside, 1);
 		}
 
-		if(enc.bbox){
-			var bstr = enc.bbox;
-
-			puz.pzlinput(type, bstr);
+		if(this.uri.bstr){
+			this.pzlimport(type, this.uri.bstr);
 
 			bd.ansclear();
 			um.allerase();
 
-			base.resize_canvas_first();
+			base.resize_canvas_onload();
 		}
 	},
+	pzlimport : function(type){ },	// オーバーライド用
 
 	//---------------------------------------------------------------------------
 	// enc.get_search()   入力されたURLの?以下の部分を返す
-	// enc.data_decode()  pzldata部をpzlflag,bbox等の部分に分割する
+	// enc.data_decode()  pzlURI部をpflag,bstr等の部分に分割する
+	// enc.checkpflag()   pflagに指定した文字列が含まれているか調べる
 	//---------------------------------------------------------------------------
 	get_search : function(url){
 		var type = 0;	// 0はぱずぷれv3とする
@@ -107,69 +111,70 @@ Encode.prototype = {
 			var idx = search.indexOf("/", 0);
 
 			if(idx==-1){
-				this.pid = search.substring(0, search.length);
-				this.pzldata = "";
+				this.uri.pid = search.substring(0, search.length);
+				this.uri.qdata = "";
 				return;
 			}
 
-			this.pid = search.substring(0, idx);
+			this.uri.pid = search.substring(0, idx);
 			if(type==0){
-				this.pzldata = search.substring(idx+1, search.length);
+				this.uri.qdata = search.substring(idx+1, search.length);
 			}
 			else if(type==1){
-				this.pzldata = search;
+				this.uri.qdata = search;
 			}
 
-			var inp = this.pzldata.split("/");
+			var inp = this.uri.qdata.split("/");
 			if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
 
 			if(inp.length==3){
-				this.pzlflag = inp.shift();
-				this.pzlcols = parseInt(inp.shift());
-				this.pzlrows = parseInt(inp.shift());
+				this.uri.pflag = inp.shift();
+				this.uri.cols = parseInt(inp.shift());
+				this.uri.rows = parseInt(inp.shift());
 			}
 			else if(inp.length>=4){
-				this.pzlflag = inp.shift();
-				this.pzlcols = parseInt(inp.shift());
-				this.pzlrows = parseInt(inp.shift());
-				this.bbox = inp.join("/");
+				this.uri.pflag = inp.shift();
+				this.uri.cols = parseInt(inp.shift());
+				this.uri.rows = parseInt(inp.shift());
+				this.uri.bstr = inp.join("/");
 			}
 		}
 		else if(type==2){
-			this.pid = "heyawake";
+			//this.uri.pid = "heyawake";
 			var idx = search.indexOf("=", 0);
-			this.pzldata = search.substring(idx+1, search.length);
+			this.uri.qdata = search.substring(idx+1, search.length);
 
-			var inp = this.pzldata.split("/");
+			var inp = this.uri.qdata.split("/");
 
 			if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
 
-			this.pzlflag = inp.shift();
+			this.uri.pflag = inp.shift();
 			if(k.puzzleid!="sudoku"){
-				this.pzlrows = parseInt(inp.shift());
-				this.pzlcols = parseInt(inp.shift());
-				if(k.puzzleid=="kakuro"){ this.pzlrows--; this.pzlcols--;}
+				this.uri.rows = parseInt(inp.shift());
+				this.uri.cols = parseInt(inp.shift());
+				if(k.puzzleid=="kakuro"){ this.uri.rows--; this.uri.cols--;}
 			}
 			else{
-				this.pzlrows = this.pzlcols = parseInt(inp.shift());
+				this.uri.rows = this.uri.cols = parseInt(inp.shift());
 			}
-			this.bbox = inp.join("/");
+			this.uri.bstr = inp.join("/");
 		}
 		else if(type==4){
-			this.pid = "heyawake";
+			this.uri.pid = "heyawake";
 			var idx = search.indexOf("=", 0);
-			this.pzldata = search.substring(idx+1, search.length);
+			this.uri.qdata = search.substring(idx+1, search.length);
 
-			var inp = this.pzldata.split("/");
+			var inp = this.uri.qdata.split("/");
 
-			this.pzlflag = "";
+			this.uri.pflag = "";
 			var inp0 = inp.shift().split("x");
-			this.pzlcols = parseInt(inp0[0]);
-			this.pzlrows = parseInt(inp0[1]);
-			this.bbox = inp.join("/");
+			this.uri.cols = parseInt(inp0[0]);
+			this.uri.rows = parseInt(inp0[1]);
+			this.uri.bstr = inp.join("/");
 		}
 
 	},
+	checkpflag : function(ca){ return (this.uri.pflag.indexOf(ca)>=0);},
 
 	//---------------------------------------------------------------------------
 	// enc.decode4()  quesが0～4までの場合、デコードする
@@ -220,9 +225,9 @@ Encode.prototype = {
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if     (this.include(ca,"0","9")){ bd.setQnumCell(c, parseInt(bstr.substring(i,i+1),10)); c++;}
+			if     (this.include(ca,"0","9")){ bd.sQnC(c, parseInt(bstr.substring(i,i+1),10)); c++;}
 			else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-9);}
-			else if(ca == '.'){ bd.setQnumCell(c, -2); c++;}
+			else if(ca == '.'){ bd.sQnC(c, -2); c++;}
 			else{ c++;}
 
 			if(c > bd.cell.length){ break;}
@@ -233,7 +238,7 @@ Encode.prototype = {
 		var cm="", count=0;
 		for(var i=0;i<bd.cell.length;i++){
 			pstr = "";
-			var val = bd.getQnumCell(i);
+			var val = bd.QnC(i);
 
 			if     (val==  -2            ){ pstr = ".";}
 			else if(val>=   0 && val<  10){ pstr =       val.toString(10);}
@@ -256,12 +261,12 @@ Encode.prototype = {
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if(this.include(ca,"0","9")||this.include(ca,"a","f")){ bd.setQnumCell(c, parseInt(bstr.substring(i,i+1),16)); c++;}
-			else if(ca == '.'){ bd.setQnumCell(c, -2);                                        c++;      }
-			else if(ca == '-'){ bd.setQnumCell(c, parseInt(bstr.substring(i+1,i+3),16));      c++; i+=2;}
-			else if(ca == '+'){ bd.setQnumCell(c, parseInt(bstr.substring(i+1,i+4),16));      c++; i+=3;}
-			else if(ca == '='){ bd.setQnumCell(c, parseInt(bstr.substring(i+1,i+4),16)+4096); c++; i+=3;}
-			else if(ca == '%'){ bd.setQnumCell(c, parseInt(bstr.substring(i+1,i+4),16)+8192); c++; i+=3;}
+			if(this.include(ca,"0","9")||this.include(ca,"a","f")){ bd.sQnC(c, parseInt(bstr.substring(i,i+1),16)); c++;}
+			else if(ca == '.'){ bd.sQnC(c, -2);                                        c++;      }
+			else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),16));      c++; i+=2;}
+			else if(ca == '+'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+4),16));      c++; i+=3;}
+			else if(ca == '='){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+4),16)+4096); c++; i+=3;}
+			else if(ca == '%'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+4),16)+8192); c++; i+=3;}
 			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-15);}
 			else{ c++;}
 
@@ -273,7 +278,7 @@ Encode.prototype = {
 		var count=0, cm="";
 		for(var i=0;i<bd.cell.length;i++){
 			pstr = "";
-			var val = bd.getQnumCell(i);
+			var val = bd.QnC(i);
 
 			if     (val==  -2            ){ pstr = ".";}
 			else if(val>=   0 && val<  16){ pstr =       val.toString(16);}
@@ -301,13 +306,13 @@ Encode.prototype = {
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if(this.include(ca,"0","9")||this.include(ca,"a","f")){ bd.setQnumCell(room.getTopOfRoom(r), parseInt(bstr.substring(i,i+1),16)); r++;}
-			else if(ca == '-'){ bd.setQnumCell(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+3),16));      r++; i+=2;}
-			else if(ca == '+'){ bd.setQnumCell(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16));      r++; i+=3;}
-			else if(ca == '='){ bd.setQnumCell(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+4096); r++; i+=3;}
-			else if(ca == '%'){ bd.setQnumCell(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+8192); r++; i+=3;}
-			else if(ca == '*'){ bd.setQnumCell(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+12240); r++; i+=4;}
-			else if(ca == '$'){ bd.setQnumCell(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+77776); r++; i+=5;}
+			if(this.include(ca,"0","9")||this.include(ca,"a","f")){ bd.sQnC(room.getTopOfRoom(r), parseInt(bstr.substring(i,i+1),16)); r++;}
+			else if(ca == '-'){ bd.sQnC(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+3),16));      r++; i+=2;}
+			else if(ca == '+'){ bd.sQnC(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16));      r++; i+=3;}
+			else if(ca == '='){ bd.sQnC(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+4096); r++; i+=3;}
+			else if(ca == '%'){ bd.sQnC(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+8192); r++; i+=3;}
+			else if(ca == '*'){ bd.sQnC(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+12240); r++; i+=4;}
+			else if(ca == '$'){ bd.sQnC(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+77776); r++; i+=5;}
 			else if(ca >= 'g' && ca <= 'z'){ r += (parseInt(ca,36)-15);}
 			else{ r++;}
 
@@ -320,7 +325,7 @@ Encode.prototype = {
 		var count=0, cm="";
 		for(var i=1;i<=room.rareamax;i++){
 			var pstr = "";
-			var val = bd.getQnumCell(room.getTopOfRoom(i));
+			var val = bd.QnC(room.getTopOfRoom(i));
 
 			if     (val>=     0 && val<    16){ pstr =       val.toString(16);}
 			else if(val>=    16 && val<   256){ pstr = "-" + val.toString(16);}
@@ -348,17 +353,17 @@ Encode.prototype = {
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if     (ca=='0'){ bd.setQnumCell(c, parseInt(bstr.substring(i+1,i+2),16)); c++; i++; }
-			else if(ca=='5'){ bd.setQnumCell(c, parseInt(bstr.substring(i+1,i+3),16)); c++; i+=2;}
+			if     (ca=='0'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+2),16)); c++; i++; }
+			else if(ca=='5'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),16)); c++; i+=2;}
 			else if(this.include(ca,"1","4")){
-				bd.setDirecCell(c, parseInt(ca,16));
-				if(bstr.charAt(i+1)!="."){ bd.setQnumCell(c, parseInt(bstr.substring(i+1,i+2),16));}
-				else{ bd.setQnumCell(c,-2);}
+				bd.sDiC(c, parseInt(ca,16));
+				if(bstr.charAt(i+1)!="."){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+2),16));}
+				else{ bd.sQnC(c,-2);}
 				c++; i++;
 			}
 			else if(this.include(ca,"6","9")){
-				bd.setDirecCell(c, parseInt(ca,16)-5);
-				bd.setQnumCell (c, parseInt(bstr.substring(i+1,i+3),16));
+				bd.sDiC(c, parseInt(ca,16)-5);
+				bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),16));
 				c++; i+=2;
 			}
 			else if(ca>='a' && ca<='z'){ c+=(parseInt(ca,36)-9);}
@@ -372,10 +377,10 @@ Encode.prototype = {
 		var cm = "", count = 0;
 		for(var c=0;c<bd.cell.length;c++){
 			var pstr="";
-			if(bd.getQnumCell(c)!=-1){
-				if     (bd.getQnumCell(c)==-2){ pstr=((bd.getDirecCell(c)==0?0:bd.getDirecCell(c)  )+".");}
-				else if(bd.getQnumCell(c)< 16){ pstr=((bd.getDirecCell(c)==0?0:bd.getDirecCell(c)  )+bd.getQnumCell(c).toString(16));}
-				else if(bd.getQnumCell(c)<256){ pstr=((bd.getDirecCell(c)==0?5:bd.getDirecCell(c)+5)+bd.getQnumCell(c).toString(16));}
+			if(bd.QnC(c)!=-1){
+				if     (bd.QnC(c)==-2){ pstr=((bd.DiC(c)==0?0:bd.DiC(c)  )+".");}
+				else if(bd.QnC(c)< 16){ pstr=((bd.DiC(c)==0?0:bd.DiC(c)  )+bd.QnC(c).toString(16));}
+				else if(bd.QnC(c)<256){ pstr=((bd.DiC(c)==0?5:bd.DiC(c)+5)+bd.QnC(c).toString(16));}
 			}
 			else{ pstr=" "; count++;}
 
@@ -396,15 +401,15 @@ Encode.prototype = {
 		var pos1, pos2;
 
 		if(bstr){
-			pos1 = Math.min(int(((k.qcols-1)*k.qrows+4)/5)     , bstr.length);
-			pos2 = Math.min(int((k.qcols*(k.qrows-1)+4)/5)+pos1, bstr.length);
+			pos1 = Math.min(mf(((k.qcols-1)*k.qrows+4)/5)     , bstr.length);
+			pos2 = Math.min(mf((k.qcols*(k.qrows-1)+4)/5)+pos1, bstr.length);
 		}
 		else{ pos1 = 0; pos2 = 0;}
 
 		for(var i=0;i<pos1;i++){
 			var ca = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
-				if(i*5+w<(k.qcols-1)*k.qrows){ bd.setQuesBorder(i*5+w,(ca&Math.pow(2,4-w)?1:0));}
+				if(i*5+w<(k.qcols-1)*k.qrows){ bd.sQuB(i*5+w,(ca&Math.pow(2,4-w)?1:0));}
 			}
 		}
 
@@ -412,7 +417,7 @@ Encode.prototype = {
 		for(var i=0;i<pos2-pos1;i++){
 			var ca = parseInt(bstr.charAt(i+pos1),32);
 			for(var w=0;w<5;w++){
-				if(i*5+w<k.qcols*(k.qrows-1)){ bd.setQuesBorder(i*5+w+oft,(ca&Math.pow(2,4-w)?1:0));}
+				if(i*5+w<k.qcols*(k.qrows-1)){ bd.sQuB(i*5+w+oft,(ca&Math.pow(2,4-w)?1:0));}
 			}
 		}
 
@@ -424,14 +429,14 @@ Encode.prototype = {
 
 		num = 0; pass = 0;
 		for(var i=0;i<(k.qcols-1)*k.qrows;i++){
-			if(bd.getQuesBorder(i)==1){ pass+=Math.pow(2,4-num);}
+			if(bd.QuB(i)==1){ pass+=Math.pow(2,4-num);}
 			num++; if(num==5){ cm += pass.toString(32); num=0; pass=0;}
 		}
 		if(num>0){ cm += pass.toString(32);}
 
 		num = 0; pass = 0;
-		for(var i=(k.qcols-1)*k.qrows;i<(k.qcols-1)*k.qrows+k.qcols*(k.qrows-1);i++){
-			if(bd.getQuesBorder(i)==1){ pass+=Math.pow(2,4-num);}
+		for(var i=(k.qcols-1)*k.qrows;i<bd.bdinside;i++){
+			if(bd.QuB(i)==1){ pass+=Math.pow(2,4-num);}
 			num++; if(num==5){ cm += pass.toString(32); num=0; pass=0;}
 		}
 		if(num>0){ cm += pass.toString(32);}
@@ -450,11 +455,11 @@ Encode.prototype = {
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","z")){
 				cc += (parseInt(ca,36)+1);
-				var cx = (k.isoutsidecross==1?    cc%(k.qcols+1) :    cc%(k.qcols-1) +1);
-				var cy = (k.isoutsidecross==1?int(cc/(k.qcols+1)):int(cc/(k.qcols-1))+1);
+				var cx = (k.isoutsidecross==1?   cc%(k.qcols+1) :   cc%(k.qcols-1) +1);
+				var cy = (k.isoutsidecross==1?mf(cc/(k.qcols+1)):mf(cc/(k.qcols-1))+1);
 
 				if(cy>=k.qrows+(k.isoutsidecross==1?1:0)){ i++; break;}
-				bd.setQnumCross(bd.getxnum(cx,cy), 1);
+				bd.sQnX(bd.xnum(cx,cy), 1);
 			}
 			else if(ca == '.'){ cc += 36;}
 			else{ cc++;}
@@ -467,10 +472,10 @@ Encode.prototype = {
 		var cm = "", count = 0;
 		for(var i=0;i<(k.isoutsidecross==1?(k.qcols+1)*(k.qrows+1):(k.qcols-1)*(k.qrows-1));i++){
 			var pstr = "";
-			var cx = (k.isoutsidecross==1?    i%(k.qcols+1) :    i%(k.qcols-1) +1);
-			var cy = (k.isoutsidecross==1?int(i/(k.qcols+1)):int(i/(k.qcols-1))+1);
+			var cx = (k.isoutsidecross==1?   i%(k.qcols+1) :   i%(k.qcols-1) +1);
+			var cy = (k.isoutsidecross==1?mf(i/(k.qcols+1)):mf(i/(k.qcols-1))+1);
 
-			if(bd.getQnumCross(bd.getxnum(cx,cy))==1){ pstr = ".";}
+			if(bd.QnX(bd.xnum(cx,cy))==1){ pstr = ".";}
 			else{ pstr=" "; count++;}
 
 			if(pstr!=" "){ cm += count.toString(36); count=0;}
@@ -485,16 +490,15 @@ Encode.prototype = {
 	// enc.decodecross_old() Crossの問題部をデコードする(旧形式)
 	//---------------------------------------------------------------------------
 	decodecross_old : function(bstr){
-		var i=0;
-		for(i=0;i<Math.min(bstr.length, bd.cross.length);i++){
-			if(this.bbox.charAt(i)=="0"){ bd.setQnumCross(i,0);}
-			else if(this.bbox.charAt(i)=="1"){ bd.setQnumCross(i,1);}
-			else if(this.bbox.charAt(i)=="2"){ bd.setQnumCross(i,2);}
-			else if(this.bbox.charAt(i)=="3"){ bd.setQnumCross(i,3);}
-			else if(this.bbox.charAt(i)=="4"){ bd.setQnumCross(i,4);}
-			else{ bd.setQnumCross(i,-1);}
+		for(var i=0;i<Math.min(bstr.length, bd.cross.length);i++){
+			if     (bstr.charAt(i)=="0"){ bd.sQnX(i,0);}
+			else if(bstr.charAt(i)=="1"){ bd.sQnX(i,1);}
+			else if(bstr.charAt(i)=="2"){ bd.sQnX(i,2);}
+			else if(bstr.charAt(i)=="3"){ bd.sQnX(i,3);}
+			else if(bstr.charAt(i)=="4"){ bd.sQnX(i,4);}
+			else{ bd.sQnX(i,-1);}
 		}
-		for(var j=bstr.length;j<bd.cross.length;j++){ bd.setQnumCross(j,-1);}
+		for(var j=bstr.length;j<bd.cross.length;j++){ bd.sQnX(j,-1);}
 
 		return bstr.substring(i,bstr.length);
 	},
@@ -505,8 +509,8 @@ Encode.prototype = {
 	// enc.getDocbase() このスクリプトが置いてあるドメイン名を表示する
 	// enc.kanpenbase() カンペンのドメイン名を表示する
 	//---------------------------------------------------------------------------
-	include : function(char, bottom, up){
-		if(bottom <= char && char <= up) return true;
+	include : function(ca, bottom, up){
+		if(bottom <= ca && ca <= up) return true;
 		return false;
 	},
 	getURLbase : function(){ return "http://indi.s58.xrea.com/pzpr/v3/p.html";},
