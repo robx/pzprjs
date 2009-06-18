@@ -1,4 +1,4 @@
-// Undo.js v3.1.9p2
+// Undo.js v3.2.0
 
 //---------------------------------------------------------------------------
 // ÅöUndoManagerÉNÉâÉX ëÄçÏèÓïÒÇàµÇ¢ÅAUndo/RedoÇÃìÆçÏÇé¿ëïÇ∑ÇÈ
@@ -161,31 +161,31 @@ UndoManager.prototype = {
 	exec : function(ope, num){
 		var pp = ope.property;
 		if(ope.obj == 'cell'){
-			if     (pp == 'ques'){ bd.setQuesCell(ope.id, num);}
-			else if(pp == 'qnum'){ bd.setQnumCell(ope.id, num);}
-			else if(pp == 'direc'){ bd.setDirecCell(ope.id, num);}
-			else if(pp == 'qans'){ bd.setQansCell(ope.id, num);}
-			else if(pp == 'qsub'){ bd.setQsubCell(ope.id, num);}
+			if     (pp == 'ques'){ bd.sQuC(ope.id, num);}
+			else if(pp == 'qnum'){ bd.sQnC(ope.id, num);}
+			else if(pp == 'direc'){ bd.sDiC(ope.id, num);}
+			else if(pp == 'qans'){ bd.sQaC(ope.id, num);}
+			else if(pp == 'qsub'){ bd.sQsC(ope.id, num);}
 			else if(pp == 'numobj'){ bd.cell[ope.id].numobj = num;}
 			else if(pp == 'numobj2'){ bd.cell[ope.id].numobj2 = num;}
 			this.paintStack(bd.cell[ope.id].cx, bd.cell[ope.id].cy, bd.cell[ope.id].cx, bd.cell[ope.id].cy);
 		}
 		else if(ope.obj == 'excell'){
-			if     (pp == 'qnum'){ bd.setQnumEXcell(ope.id, num);}
-			else if(pp == 'direc'){ bd.setDirecEXcell(ope.id, num);}
+			if     (pp == 'qnum'){ bd.sQnE(ope.id, num);}
+			else if(pp == 'direc'){ bd.sDiE(ope.id, num);}
 		}
 		else if(ope.obj == 'cross'){
-			if     (pp == 'ques'){ bd.setQuesCross(ope.id, num);}
-			else if(pp == 'qnum'){ bd.setQnumCross(ope.id, num);}
+			if     (pp == 'ques'){ bd.sQuX(ope.id, num);}
+			else if(pp == 'qnum'){ bd.sQnX(ope.id, num);}
 			else if(pp == 'numobj'){ bd.cross[ope.id].numobj = num;}
 			this.paintStack(bd.cross[ope.id].cx-1, bd.cross[ope.id].cy-1, bd.cross[ope.id].cx, bd.cross[ope.id].cy);
 		}
 		else if(ope.obj == 'border'){
-			if     (pp == 'ques'){ bd.setQuesBorder(ope.id, num);}
-			else if(pp == 'qnum'){ bd.setQnumBorder(ope.id, num);}
-			else if(pp == 'qans'){ bd.setQansBorder(ope.id, num);}
-			else if(pp == 'qsub'){ bd.setQsubBorder(ope.id, num);}
-			else if(pp == 'line'){ bd.setLineBorder(ope.id, num);}
+			if     (pp == 'ques'){ bd.sQuB(ope.id, num);}
+			else if(pp == 'qnum'){ bd.sQnB(ope.id, num);}
+			else if(pp == 'qans'){ bd.sQaB(ope.id, num);}
+			else if(pp == 'qsub'){ bd.sQsB(ope.id, num);}
+			else if(pp == 'line'){ bd.sLiB(ope.id, num);}
 			else if(pp == 'color'){ bd.border[ope.id].color = num;}
 			this.paintBorder(ope.id);
 		}
@@ -217,12 +217,12 @@ UndoManager.prototype = {
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
 		if(bd.border[id].cx%2==1){
-			this.paintStack(int((bd.border[id].cx-1)/2)-1, int(bd.border[id].cy/2)-1,
-							int((bd.border[id].cx-1)/2)+1, int(bd.border[id].cy/2)   );
+			this.paintStack(mf((bd.border[id].cx-1)/2)-1, mf(bd.border[id].cy/2)-1,
+							mf((bd.border[id].cx-1)/2)+1, mf(bd.border[id].cy/2)   );
 		}
 		else{
-			this.paintStack(int(bd.border[id].cx/2)-1, int((bd.border[id].cy-1)/2)-1,
-							int(bd.border[id].cx/2)  , int((bd.border[id].cy-1)/2)+1 );
+			this.paintStack(mf(bd.border[id].cx/2)-1, mf((bd.border[id].cy-1)/2)-1,
+							mf(bd.border[id].cx/2)  , mf((bd.border[id].cy-1)/2)+1 );
 		}
 	},
 	paintStack : function(x1,y1,x2,y2){

@@ -1,4 +1,4 @@
-// Filesys.js v3.1.9p3
+// Filesys.js v3.2.0
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -43,8 +43,8 @@ FileIO.prototype = {
 		var row = parseInt(arrays.shift(), 10), col;
 		if(k.puzzleid!="sudoku"){ col=parseInt(arrays.shift(), 10);}else{ col=row;}
 
-		if     (row>0 && col>0 && k.puzzleid!="kakuro"){ menu.ex.newboard2(col, row);}
-		else if(row>0 && col>0 && k.puzzleid=="kakuro"){ menu.ex.newboard2(col-1, row-1);}
+		if     (row>0 && col>0 && (type==1 || k.puzzleid!="kakuro")){ menu.ex.newboard2(col, row);}
+		else if(row>0 && col>0){ menu.ex.newboard2(col-1, row-1);}
 		else{ um.enableRecord(); return;}
 
 		um.disableRecord();
@@ -71,7 +71,7 @@ FileIO.prototype = {
 				else if(k.fstruct[item] == "borderans"    && line>=2*k.qrows-1){ this.decodeBorderAns(stacks);     }
 				else if(k.fstruct[item] == "borderans2"   && line>=2*k.qrows+1){ this.decodeBorderAns2(stacks);    }
 				else if(k.fstruct[item] == "arearoom"     && line>=k.qrows+1  ){ this.decodeAreaRoom(stacks);      }
-				else if(k.fstruct[item] == "others" && puz.decodeOthers(stacks) ){ }
+				else if(k.fstruct[item] == "others" && this.decodeOthers(stacks) ){ }
 				else{ continue;}
 
 				// decodeしたあとの処理
@@ -81,7 +81,7 @@ FileIO.prototype = {
 			}
 		}
 		else if(type==2){
-			puz.kanpenOpen(arrays);
+			this.kanpenOpen(arrays);
 		}
 
 		um.enableRecord();
@@ -94,8 +94,8 @@ FileIO.prototype = {
 	filesave : function(type){
 		var fname = prompt("保存するファイル名を入力して下さい。", k.puzzleid+".txt");
 		if(!fname){ return;}
-		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|']; var i;
-		for(i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;} }
+		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
+		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;} }
 
 		document.fileform2.filename.value = fname;
 
@@ -106,8 +106,8 @@ FileIO.prototype = {
 		document.fileform2.ques.value = this.filesavestr(type);
 
 		if(type==1){
-			if(!k.isKanpenExist || k.puzzleid=="lits"){ document.fileform2.urlstr.value = enc.getURLbase() + "?" + k.puzzleid + puz.pzldata();}
-			else{ puz.pzloutput(2); document.fileform2.urlstr.value = document.urloutput.ta.value;}
+			if(!k.isKanpenExist || k.puzzleid=="lits"){ document.fileform2.urlstr.value = enc.getURLbase() + "?" + k.puzzleid + enc.pzldata();}
+			else{ enc.pzlexport(2); document.fileform2.urlstr.value = document.urloutput.ta.value;}
 		}
 		else if(type==2){
 			document.fileform2.urlstr.value = "";
@@ -120,9 +120,9 @@ FileIO.prototype = {
 
 		if(type==1){
 			str = "pzprv3/"+k.puzzleid+"/"+k.qrows+"/"+k.qcols+"/";
+			if(k.puzzleid=="sudoku"){ str = "pzprv3/"+k.puzzleid+"/"+k.qcols+"/";}
 
-			var i;
-			for(i=0;i<k.fstruct.length;i++){
+			for(var i=0;i<k.fstruct.length;i++){
 				if     (k.fstruct[i] == "cellques41_42" ){ str += this.encodeCellQues41_42(); }
 				else if(k.fstruct[i] == "cellqnum"      ){ str += this.encodeCellQnum();      }
 				else if(k.fstruct[i] == "cellqnum51"    ){ str += this.encodeCellQnum51();    }
@@ -138,14 +138,14 @@ FileIO.prototype = {
 				else if(k.fstruct[i] == "borderans"     ){ str += this.encodeBorderAns();     }
 				else if(k.fstruct[i] == "borderans2"    ){ str += this.encodeBorderAns2();    }
 				else if(k.fstruct[i] == "arearoom"      ){ str += this.encodeAreaRoom();      }
-				else if(k.fstruct[i] == "others"        ){ str += puz.encodeOthers();         }
+				else if(k.fstruct[i] == "others"        ){ str += this.encodeOthers();         }
 			}
 		}
 		else if(type==2){
 			if     (k.puzzleid=="kakuro"){ str = ""+(k.qrows+1)+"/"+(k.qcols+1)+"/";}
 			else if(k.puzzleid=="sudoku"){ str = ""+k.qrows+"/";}
 			else                         { str = ""+k.qrows+"/"+k.qcols+"/";}
-			str += puz.kanpenSave();
+			str += this.kanpenSave();
 		}
 
 		return str;
@@ -157,8 +157,7 @@ FileIO.prototype = {
 	retarray : function(str){
 		var array1 = str.split(" ");
 		var array2 = new Array();
-		var i;
-		for(i=0;i<array1.length;i++){ if(array1[i]!=""){ array2.push(array1[i]);} }
+		for(var i=0;i<array1.length;i++){ if(array1[i]!=""){ array2.push(array1[i]);} }
 		return array2;
 	},
 
@@ -172,17 +171,17 @@ FileIO.prototype = {
 	decodeObj : function(func, stack, width, getid){
 		var item = new Array();
 		for(var i=0;i<stack.length;i++){ item = item.concat( this.retarray( stack[i] ) );    }
-		for(var i=0;i<item.length;i++) { func(getid(i%width,int(i/width)), item[i]);}
+		for(var i=0;i<item.length;i++) { func(getid(i%width,mf(i/width)), item[i]);}
 	},
-	decodeCell   : function(func, stack){ this.decodeObj(func, stack, k.qcols  , function(cx,cy){return bd.getcnum(cx,cy);});},
-	decodeCross  : function(func, stack){ this.decodeObj(func, stack, k.qcols+1, function(cx,cy){return bd.getxnum(cx,cy);});},
+	decodeCell   : function(func, stack){ this.decodeObj(func, stack, k.qcols  , function(cx,cy){return bd.cnum(cx,cy);});},
+	decodeCross  : function(func, stack){ this.decodeObj(func, stack, k.qcols+1, function(cx,cy){return bd.xnum(cx,cy);});},
 	decodeBorder : function(func, stack){
-		this.decodeObj(func, stack.slice(0      ,k.qrows    ), k.qcols-1, function(cx,cy){return bd.getbnum(2*cx+2,2*cy+1);});
-		this.decodeObj(func, stack.slice(k.qrows,2*k.qrows-1), k.qcols  , function(cx,cy){return bd.getbnum(2*cx+1,2*cy+2);});
+		this.decodeObj(func, stack.slice(0      ,k.qrows    ), k.qcols-1, function(cx,cy){return bd.bnum(2*cx+2,2*cy+1);});
+		this.decodeObj(func, stack.slice(k.qrows,2*k.qrows-1), k.qcols  , function(cx,cy){return bd.bnum(2*cx+1,2*cy+2);});
 	},
 	decodeBorder2: function(func, stack){
-		this.decodeObj(func, stack.slice(0      ,k.qrows    ), k.qcols+1, function(cx,cy){return bd.getbnum(2*cx  ,2*cy+1);});
-		this.decodeObj(func, stack.slice(k.qrows,2*k.qrows+1), k.qcols  , function(cx,cy){return bd.getbnum(2*cx+1,2*cy  );});
+		this.decodeObj(func, stack.slice(0      ,k.qrows    ), k.qcols+1, function(cx,cy){return bd.bnum(2*cx  ,2*cy+1);});
+		this.decodeObj(func, stack.slice(k.qrows,2*k.qrows+1), k.qcols  , function(cx,cy){return bd.bnum(2*cx+1,2*cy  );});
 	},
 
 	//---------------------------------------------------------------------------
@@ -200,15 +199,15 @@ FileIO.prototype = {
 		}
 		return str;
 	},
-	encodeCell   : function(func){ return this.encodeObj(func, k.qcols  , k.qrows  , function(cx,cy){return bd.getcnum(cx,cy);});},
-	encodeCross  : function(func){ return this.encodeObj(func, k.qcols+1, k.qrows+1, function(cx,cy){return bd.getxnum(cx,cy);});},
+	encodeCell   : function(func){ return this.encodeObj(func, k.qcols  , k.qrows  , function(cx,cy){return bd.cnum(cx,cy);});},
+	encodeCross  : function(func){ return this.encodeObj(func, k.qcols+1, k.qrows+1, function(cx,cy){return bd.xnum(cx,cy);});},
 	encodeBorder : function(func){
-		return this.encodeObj(func, k.qcols-1, k.qrows  , function(cx,cy){return bd.getbnum(2*cx+2,2*cy+1);})
-			 + this.encodeObj(func, k.qcols  , k.qrows-1, function(cx,cy){return bd.getbnum(2*cx+1,2*cy+2);});
+		return this.encodeObj(func, k.qcols-1, k.qrows  , function(cx,cy){return bd.bnum(2*cx+2,2*cy+1);})
+			 + this.encodeObj(func, k.qcols  , k.qrows-1, function(cx,cy){return bd.bnum(2*cx+1,2*cy+2);});
 	},
 	encodeBorder2: function(func){
-		return this.encodeObj(func, k.qcols+1, k.qrows  , function(cx,cy){return bd.getbnum(2*cx  ,2*cy+1);})
-			 + this.encodeObj(func, k.qcols  , k.qrows+1, function(cx,cy){return bd.getbnum(2*cx+1,2*cy  );});
+		return this.encodeObj(func, k.qcols+1, k.qrows  , function(cx,cy){return bd.bnum(2*cx  ,2*cy+1);})
+			 + this.encodeObj(func, k.qcols  , k.qrows+1, function(cx,cy){return bd.bnum(2*cx+1,2*cy  );});
 	},
 
 	//---------------------------------------------------------------------------
@@ -217,17 +216,17 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQues41_42 : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "-"){ bd.setQnumCell(c, -2);}
-			else if(ca == "1"){ bd.setQuesCell(c, 41);}
-			else if(ca == "2"){ bd.setQuesCell(c, 42);}
+			if     (ca == "-"){ bd.sQnC(c, -2);}
+			else if(ca == "1"){ bd.sQuC(c, 41);}
+			else if(ca == "2"){ bd.sQuC(c, 42);}
 		},stack);
 	},
 	encodeCellQues41_42 : function(){
 		return this.encodeCell( function(c){
-			if     (bd.getQuesCell(c)==41){ return "1 ";}
-			else if(bd.getQuesCell(c)==42){ return "2 ";}
-			else if(bd.getQnumCell(c)==-2){ return "- ";}
-			else                          { return ". ";}
+			if     (bd.QuC(c)==41){ return "1 ";}
+			else if(bd.QuC(c)==42){ return "2 ";}
+			else if(bd.QnC(c)==-2){ return "- ";}
+			else                  { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -236,15 +235,15 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQnum : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "-"){ bd.setQnumCell(c, -2);}
-			else if(ca != "."){ bd.setQnumCell(c, parseInt(ca));}
+			if     (ca == "-"){ bd.sQnC(c, -2);}
+			else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
 		},stack);
 	},
 	encodeCellQnum : function(){
 		return this.encodeCell( function(c){
-			if     (bd.getQnumCell(c)>=0) { return (bd.getQnumCell(c).toString() + " ");}
-			else if(bd.getQnumCell(c)==-2){ return "- ";}
-			else                          { return ". ";}
+			if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
+			else if(bd.QnC(c)==-2){ return "- ";}
+			else                  { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -253,15 +252,15 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQnumb : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "5"){ bd.setQnumCell(c, -2);}
-			else if(ca != "."){ bd.setQnumCell(c, parseInt(ca));}
+			if     (ca == "5"){ bd.sQnC(c, -2);}
+			else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
 		},stack);
 	},
 	encodeCellQnumb : function(){
 		return this.encodeCell( function(c){
-			if     (bd.getQnumCell(c)>=0) { return (bd.getQnumCell(c).toString() + " ");}
-			else if(bd.getQnumCell(c)==-2){ return "5 ";}
-			else                          { return ". ";}
+			if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
+			else if(bd.QnC(c)==-2){ return "5 ";}
+			else                  { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -270,19 +269,19 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQnumAns : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "#"){ bd.setQansCell(c, 1);}
-			else if(ca == "+"){ bd.setQsubCell(c, 1);}
-			else if(ca == "-"){ bd.setQnumCell(c, -2);}
-			else if(ca != "."){ bd.setQnumCell(c, parseInt(ca));}
+			if     (ca == "#"){ bd.sQaC(c, 1);}
+			else if(ca == "+"){ bd.sQsC(c, 1);}
+			else if(ca == "-"){ bd.sQnC(c, -2);}
+			else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
 		},stack);
 	},
 	encodeCellQnumAns : function(){
 		return this.encodeCell( function(c){
-			if     (bd.getQnumCell(c)>=0) { return (bd.getQnumCell(c).toString() + " ");}
-			else if(bd.getQnumCell(c)==-2){ return "- ";}
-			else if(bd.getQansCell(c)==1) { return "# ";}
-			else if(bd.getQsubCell(c)==1) { return "+ ";}
-			else                          { return ". ";}
+			if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
+			else if(bd.QnC(c)==-2){ return "- ";}
+			else if(bd.QaC(c)==1) { return "# ";}
+			else if(bd.QsC(c)==1) { return "+ ";}
+			else                  { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -293,16 +292,16 @@ FileIO.prototype = {
 		this.decodeCell( function(c,ca){
 			if(ca != "."){
 				var inp = ca.split(",");
-				bd.setDirecCell(c, (inp[0]!="0"?parseInt(inp[0]): 0));
-				bd.setQnumCell (c, (inp[1]!="-"?parseInt(inp[1]):-2));
+				bd.sDiC(c, (inp[0]!="0"?parseInt(inp[0]): 0));
+				bd.sQnC(c, (inp[1]!="-"?parseInt(inp[1]):-2));
 			}
 		},stack);
 	},
 	encodeCellDirecQnum : function(){
 		return this.encodeCell( function(c){
-			if(bd.getQnumCell(c)!=-1){
-				var ca1 = (bd.getDirecCell(c)!=0?(bd.getDirecCell(c)).toString():"0");
-				var ca2 = (bd.getQnumCell(c)!=-2?(bd.getQnumCell(c) ).toString():"-");
+			if(bd.QnC(c)!=-1){
+				var ca1 = (bd.DiC(c)!= 0?(bd.DiC(c)).toString():"0");
+				var ca2 = (bd.QnC(c)!=-2?(bd.QnC(c)).toString():"-");
 				return ""+ca1+","+ca2+" ";
 			}
 			else{ return ". ";}
@@ -314,15 +313,15 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellAns : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "#"){ bd.setQansCell(c, 1);}
-			else if(ca == "+"){ bd.setQsubCell(c, 1);}
+			if     (ca == "#"){ bd.sQaC(c, 1);}
+			else if(ca == "+"){ bd.sQsC(c, 1);}
 		},stack);
 	},
 	encodeCellAns : function(){
 		return this.encodeCell( function(c){
-			if     (bd.getQansCell(c)==1){ return "# ";}
-			else if(bd.getQsubCell(c)==1){ return "+ ";}
-			else                         { return ". ";}
+			if     (bd.QaC(c)==1){ return "# ";}
+			else if(bd.QsC(c)==1){ return "+ ";}
+			else                 { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -331,22 +330,22 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQanssub : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "+"){ bd.setQsubCell(c, 1);}
-			else if(ca == "-"){ bd.setQsubCell(c, 2);}
-			else if(ca == "="){ bd.setQsubCell(c, 3);}
-			else if(ca == "%"){ bd.setQsubCell(c, 4);}
-			else if(ca != "."){ bd.setQansCell(c, parseInt(ca));}
+			if     (ca == "+"){ bd.sQsC(c, 1);}
+			else if(ca == "-"){ bd.sQsC(c, 2);}
+			else if(ca == "="){ bd.sQsC(c, 3);}
+			else if(ca == "%"){ bd.sQsC(c, 4);}
+			else if(ca != "."){ bd.sQaC(c, parseInt(ca));}
 		},stack);
 	},
 	encodeCellQanssub : function(){
 		return this.encodeCell( function(c){
-			//if(bd.getQuesCell(c)!=0 || bd.getQnumCell(c)!=-1){ return ". ";}
-			if     (bd.getQansCell(c)!=-1){ return (bd.getQansCell(c).toString() + " ");}
-			else if(bd.getQsubCell(c)==1 ){ return "+ ";}
-			else if(bd.getQsubCell(c)==2 ){ return "- ";}
-			else if(bd.getQsubCell(c)==3 ){ return "= ";}
-			else if(bd.getQsubCell(c)==4 ){ return "% ";}
-			else                          { return ". ";}
+			//if(bd.QuC(c)!=0 || bd.QnC(c)!=-1){ return ". ";}
+			if     (bd.QaC(c)!=-1){ return (bd.QaC(c).toString() + " ");}
+			else if(bd.QsC(c)==1 ){ return "+ ";}
+			else if(bd.QsC(c)==2 ){ return "- ";}
+			else if(bd.QsC(c)==3 ){ return "= ";}
+			else if(bd.QsC(c)==4 ){ return "% ";}
+			else                  { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -355,13 +354,13 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQsub : function(stack){
 		this.decodeCell( function(c,ca){
-			if(ca != "0"){ bd.setQsubCell(c, parseInt(ca));}
+			if(ca != "0"){ bd.sQsC(c, parseInt(ca));}
 		},stack);
 	},
 	encodeCellQsub : function(){
 		return this.encodeCell( function(c){
-			if     (bd.getQsubCell(c)>0){ return (bd.getQsubCell(c).toString() + " ");}
-			else                        { return "0 ";}
+			if     (bd.QsC(c)>0){ return (bd.QsC(c).toString() + " ");}
+			else                { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -370,15 +369,15 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCrossNum : function(stack){
 		this.decodeCross( function(c,ca){
-			if     (ca == "-"){ bd.setQnumCross(c, -2);}
-			else if(ca != "."){ bd.setQnumCross(c, parseInt(ca));}
+			if     (ca == "-"){ bd.sQnX(c, -2);}
+			else if(ca != "."){ bd.sQnX(c, parseInt(ca));}
 		},stack);
 	},
 	encodeCrossNum : function(){
 		return this.encodeCross( function(c){
-			if     (bd.getQnumCross(c)>=0) { return (bd.getQnumCross(c).toString() + " ");}
-			else if(bd.getQnumCross(c)==-2){ return "- ";}
-			else                           { return ". ";}
+			if     (bd.QnX(c)>=0) { return (bd.QnX(c).toString() + " ");}
+			else if(bd.QnX(c)==-2){ return "- ";}
+			else                  { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -387,13 +386,13 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeBorderQues : function(stack){
 		this.decodeBorder( function(c,ca){
-			if(ca == "1"){ bd.setQuesBorder(c, 1);}
+			if(ca == "1"){ bd.sQuB(c, 1);}
 		},stack);
 	},
 	encodeBorderQues : function(){
 		return this.encodeBorder( function(c){
-			if     (bd.getQuesBorder(c)==1){ return "1 ";}
-			else                           { return "0 ";}
+			if     (bd.QuB(c)==1){ return "1 ";}
+			else                 { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -402,15 +401,15 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeBorderLine : function(stack){
 		this.decodeBorder( function(c,ca){
-			if     (ca == "-1"){ bd.setQsubBorder(c, 2);}
-			else if(ca != "0" ){ bd.setLineBorder(c, parseInt(ca));}
+			if     (ca == "-1"){ bd.sQsB(c, 2);}
+			else if(ca != "0" ){ bd.sLiB(c, parseInt(ca));}
 		},stack);
 	},
 	encodeBorderLine : function(){
 		return this.encodeBorder( function(c){
-			if     (bd.getLineBorder(c)> 0){ return ""+bd.getLineBorder(c)+" ";}
-			else if(bd.getQsubBorder(c)==2){ return "-1 ";}
-			else                           { return "0 ";}
+			if     (bd.LiB(c)> 0){ return ""+bd.LiB(c)+" ";}
+			else if(bd.QsB(c)==2){ return "-1 ";}
+			else                 { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -419,17 +418,17 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeBorderAns : function(stack){
 		this.decodeBorder( function(c,ca){
-			if     (ca == "1" ){ bd.setQansBorder(c, 1);}
-			else if(ca == "2" ){ bd.setQansBorder(c, 1); bd.setQsubBorder(c, 1);}
-			else if(ca == "-1"){ bd.setQsubBorder(c, 1);}
+			if     (ca == "1" ){ bd.sQaB(c, 1);}
+			else if(ca == "2" ){ bd.sQaB(c, 1); bd.sQsB(c, 1);}
+			else if(ca == "-1"){ bd.sQsB(c, 1);}
 		},stack);
 	},
 	encodeBorderAns : function(){
 		return this.encodeBorder( function(c){
-			if     (bd.getQansBorder(c)==1 && bd.getQsubBorder(c)==1){ return "2 ";}
-			else if(bd.getQansBorder(c)==1){ return "1 ";}
-			else if(bd.getQsubBorder(c)==1){ return "-1 ";}
-			else                           { return "0 ";}
+			if     (bd.QaB(c)==1 && bd.QsB(c)==1){ return "2 ";}
+			else if(bd.QaB(c)==1){ return "1 ";}
+			else if(bd.QsB(c)==1){ return "-1 ";}
+			else                 { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -438,19 +437,19 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeBorderAns2 : function(stack){
 		this.decodeBorder2( function(c,ca){
-			if     (ca == "1" ){ bd.setQansBorder(c, 1);}
-			else if(ca == "2" ){ bd.setQsubBorder(c, 1);}
-			else if(ca == "3" ){ bd.setQansBorder(c, 1); bd.setQsubBorder(c, 1);}
-			else if(ca == "-1"){ bd.setQsubBorder(c, 2);}
+			if     (ca == "1" ){ bd.sQaB(c, 1);}
+			else if(ca == "2" ){ bd.sQsB(c, 1);}
+			else if(ca == "3" ){ bd.sQaB(c, 1); bd.sQsB(c, 1);}
+			else if(ca == "-1"){ bd.sQsB(c, 2);}
 		},stack);
 	},
 	encodeBorderAns2 : function(){
 		return this.encodeBorder2( function(c){
-			if     (bd.getQansBorder(c)==1 && bd.getQsubBorder(c)==1){ return "3 ";}
-			else if(bd.getQsubBorder(c)==1){ return "2 ";}
-			else if(bd.getQansBorder(c)==1){ return "1 ";}
-			else if(bd.getQsubBorder(c)==2){ return "-1 ";}
-			else                           { return "0 ";}
+			if     (bd.QaB(c)==1 && bd.QsB(c)==1){ return "3 ";}
+			else if(bd.QsB(c)==1){ return "2 ";}
+			else if(bd.QaB(c)==1){ return "1 ";}
+			else if(bd.QsB(c)==2){ return "-1 ";}
+			else                 { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -463,18 +462,22 @@ FileIO.prototype = {
 			room.cell[c] = parseInt(ca)+1;
 		},stack);
 
-		var c;
-		k.isOneNumber = 0;
-		for(c=0;c<k.qcols*k.qrows;c++){
-			if(bd.cell[c].dn()!=-1 && room.getRoomID(c) != room.getRoomID(bd.cell[c].dn())){ bd.setQuesBorder(bd.cell[c].db(),1); }
-			if(bd.cell[c].rt()!=-1 && room.getRoomID(c) != room.getRoomID(bd.cell[c].rt())){ bd.setQuesBorder(bd.cell[c].rb(),1); }
+		var saved = room.isenable;
+		room.isenable = false;
+		for(var c=0;c<k.qcols*k.qrows;c++){
+			if(bd.dn(c)!=-1 && room.getRoomID(c) != room.getRoomID(bd.dn(c))){ bd.sQuB(bd.db(c),1); }
+			if(bd.rt(c)!=-1 && room.getRoomID(c) != room.getRoomID(bd.rt(c))){ bd.sQuB(bd.rb(c),1); }
 		}
-		k.isOneNumber = 1;
+		room.isenable = room.isenable;
 
 		room.resetRarea();
 	},
 	encodeAreaRoom : function(){
+		var saved = room.isenable;
+		room.isenable = true;
 		room.resetRarea();
+		room.isenable = saved;
+
 		var str = ""+room.rareamax+"/";
 		return str + this.encodeCell( function(c){
 			return ((room.getRoomID(c)-1) + " ");
@@ -489,16 +492,16 @@ FileIO.prototype = {
 		var item = new Array();
 		for(var i=0;i<stack.length;i++){ item = item.concat( fio.retarray( stack[i] ) );}
 		for(var i=0;i<item.length;i++) {
-			var cx=i%(k.qcols+1)-1, cy=int(i/(k.qcols+1))-1;
+			var cx=i%(k.qcols+1)-1, cy=mf(i/(k.qcols+1))-1;
 			if(item[i]!="."){
-				if     (cy==-1){ bd.setDirecEXcell(bd.getexnum(cx,cy), parseInt(item[i]));}
-				else if(cx==-1){ bd.setQnumEXcell (bd.getexnum(cx,cy), parseInt(item[i]));}
+				if     (cy==-1){ bd.sDiE(bd.exnum(cx,cy), parseInt(item[i]));}
+				else if(cx==-1){ bd.sQnE(bd.exnum(cx,cy), parseInt(item[i]));}
 				else{
 					var inp = item[i].split(",");
-					var c = bd.getcnum(cx,cy);
-					puz.set51cell(c, true);
-					bd.setQnumCell(c, inp[0]);
-					bd.setDirecCell(c, inp[1]);
+					var c = bd.cnum(cx,cy);
+					mv.set51cell(c, true);
+					bd.sQnC(c, inp[0]);
+					bd.sDiC(c, inp[1]);
 				}
 			}
 		}
@@ -508,11 +511,11 @@ FileIO.prototype = {
 		for(var cy=-1;cy<k.qrows;cy++){
 			for(var cx=-1;cx<k.qcols;cx++){
 				if     (cx==-1 && cy==-1){ str += "0 ";}
-				else if(cy==-1){ str += (""+bd.getDirecEXcell(bd.getexnum(cx,cy)).toString()+" ");}
-				else if(cx==-1){ str += (""+bd.getQnumEXcell (bd.getexnum(cx,cy)).toString()+" ");}
+				else if(cy==-1){ str += (""+bd.DiE(bd.exnum(cx,cy)).toString()+" ");}
+				else if(cx==-1){ str += (""+bd.QnE(bd.exnum(cx,cy)).toString()+" ");}
 				else{
-					var c = bd.getcnum(cx,cy);
-					if(bd.getQuesCell(c)==51){ str += (""+bd.getQnumCell(c).toString()+","+bd.getDirecCell(c).toString()+" ");}
+					var c = bd.cnum(cx,cy);
+					if(bd.QuC(c)==51){ str += (""+bd.QnC(c).toString()+","+bd.DiC(c).toString()+" ");}
 					else{ str += ". ";}
 				}
 			}
@@ -648,7 +651,7 @@ FileIO.prototype = {
 			else{ count=this.DBlist.length;}
 
 			this.dbmgr.open('pzprv3_manage');
-			this.dbmgr.execute('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)',[k.puzzleid,'1.0',count,int((new Date()).getTime()/1000)]);
+			this.dbmgr.execute('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)',[k.puzzleid,'1.0',count,mf((new Date()).getTime()/1000)]);
 			this.dbmgr.close();
 		}
 		else if(this.DBtype==2){
@@ -660,7 +663,7 @@ FileIO.prototype = {
 			else{ count=this.DBlist.length;}
 
 			this.dbmgr.transaction(function(tx){
-				tx.executeSql('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)',[k.puzzleid,'1.0',count,int((new Date()).getTime()/1000)]);
+				tx.executeSql('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)',[k.puzzleid,'1.0',count,mf((new Date()).getTime()/1000)]);
 			});
 		}
 	},
@@ -832,7 +835,7 @@ FileIO.prototype = {
 		var id = this.getDataID();
 		if(this.DBtype==0 || (id!=-1 && !confirm("このデータに上書きしますか？"))){ return;}
 
-		var time = int((new Date()).getTime()/1000);
+		var time = mf((new Date()).getTime()/1000);
 		var pdata = this.filesavestr(1);
 		var str = "";
 		if(id==-1){ str = prompt("コメントがある場合は入力してください。",""); if(str==null){ str="";} }

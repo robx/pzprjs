@@ -1,4 +1,4 @@
-// KeyInput.js v3.1.9p3
+// KeyInput.js v3.2.0
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -145,6 +145,7 @@ KeyEvent.prototype = {
 			if     (k.mode==1 && !this.isSHIFT){ k.mode=3; menu.setVal('mode',3); flag = true;}
 			else if(k.mode==3 &&  this.isSHIFT){ k.mode=1; menu.setVal('mode',1); flag = true;}
 		}
+		if(k.scriptcheck && this.ca=='F7'){ accheck1(); flag = true;}
 
 		return flag;
 	},
@@ -176,8 +177,8 @@ KeyEvent.prototype = {
 		else if(ca == 'right' && tcx+mv <= tc.maxx){ tc.incTCX(mv); flag = true;}
 
 		if(flag){
-			pc.paint(int(tcx/2)-1, int(tcy/2)-1, int(tcx/2), int(tcy/2));
-			pc.paint(int(tc.cursolx/2)-1, int(tc.cursoly/2)-1, int(tc.cursolx/2), int(tc.cursoly/2));
+			pc.paint(mf(tcx/2)-1, mf(tcy/2)-1, mf(tcx/2), mf(tcy/2));
+			pc.paint(mf(tc.cursolx/2)-1, mf(tc.cursoly/2)-1, mf(tc.cursolx/2), mf(tc.cursoly/2));
 			this.tcMoved = true;
 		}
 		return flag;
@@ -192,20 +193,20 @@ KeyEvent.prototype = {
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
 
-			if(bd.getQnumCross(cc)<=0){
-				if(num<=max){ bd.setQnumCross(cc,num);}
+			if(bd.QnX(cc)<=0){
+				if(num<=max){ bd.sQnX(cc,num);}
 			}
 			else{
-				if(bd.getQnumCross(cc)*10+num<=max){ bd.setQnumCross(cc,bd.getQnumCross(cc)*10+num);}
-				else if(num<=max){ bd.setQnumCross(cc,num);}
+				if(bd.QnX(cc)*10+num<=max){ bd.sQnX(cc,bd.QnX(cc)*10+num);}
+				else if(num<=max){ bd.sQnX(cc,num);}
 			}
 		}
 		else if(ca=='-'){
-			if(bd.getQnumCross(cc)!=-2){ bd.setQnumCross(cc,-2);}
-			else{ bd.setQnumCross(cc,-1);}
+			if(bd.QnX(cc)!=-2){ bd.sQnX(cc,-2);}
+			else{ bd.sQnX(cc,-1);}
 		}
 		else if(ca==' '){
-			bd.setQnumCross(cc,-1);
+			bd.sQnX(cc,-1);
 		}
 		else{ return;}
 
@@ -219,32 +220,32 @@ KeyEvent.prototype = {
 	key_inputqnum : function(ca, max){
 		var cc = tc.getTCC();
 		if(k.mode==1 && k.isOneNumber){ cc = room.getTopOfRoomByCell(cc);}
-		if(puz.roommaxfunc){ max = puz.roommaxfunc(cc,k.mode);}
+		if(bd.roommaxfunc){ max = bd.roommaxfunc(cc,k.mode);}
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
-			if(k.mode==3){ bd.setDirecCell(cc,0);}
+			if(k.mode==3){ bd.sDiC(cc,0);}
 
 			if(this.getnum(cc)<=0 || this.prev!=cc){
-				if(num<=max){ if(k.NumberIsWhite){ bd.setQansCell(cc,-1);} this.setnum(cc,num);}
+				if(num<=max){ if(k.NumberIsWhite){ bd.sQaC(cc,-1);} this.setnum(cc,num);}
 			}
 			else{
 				if(this.getnum(cc)*10+num<=max){ this.setnum(cc,this.getnum(cc)*10+num);}
 				else if(num<=max){ this.setnum(cc,num);}
 			}
-			if(bd.getQnumCell(cc)!=-1 && k.NumberIsWhite){ bd.setQansCell(cc,-1); if(pc.bcolor=="white"){ bd.setQsubCell(cc,0);} }
-			if(k.isAnsNumber){ if(k.mode==1){ bd.setQansCell(cc,-1);} bd.setQsubCell(cc,0); }
+			if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
+			if(k.isAnsNumber){ if(k.mode==1){ bd.sQaC(cc,-1);} bd.sQsC(cc,0); }
 		}
 		else if(ca=='-'){
-			if(k.mode==1 && bd.getQnumCell(cc)!=-2){ this.setnum(cc,-2);}
+			if(k.mode==1 && bd.QnC(cc)!=-2){ this.setnum(cc,-2);}
 			else{ this.setnum(cc,-1);}
-			if(bd.getQnumCell(cc)!=-1 && k.NumberIsWhite){ bd.setQansCell(cc,-1); if(pc.bcolor=="white"){ bd.setQsubCell(cc,0);} }
-			if(k.isAnsNumber){ bd.setQsubCell(cc,0);}
+			if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
+			if(k.isAnsNumber){ bd.sQsC(cc,0);}
 		}
 		else if(ca==' '){
 			this.setnum(cc,-1);
-			if(bd.getQnumCell(cc)!=-1 && k.NumberIsWhite){ bd.setQansCell(cc,-1); if(pc.bcolor=="white"){ bd.setQsubCell(cc,0);} }
-			if(k.isAnsNumber){ bd.setQsubCell(cc,0);}
+			if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
+			if(k.isAnsNumber){ bd.sQsC(cc,0);}
 		}
 		else{ return;}
 
@@ -252,8 +253,8 @@ KeyEvent.prototype = {
 		pc.paintCell(cc);
 	},
 
-	setnum : function(cc,val){ if(k.dispzero || val!=0){ (k.mode==1 ? bd.setQnumCell(cc,val) : bd.setQansCell(cc,val));} },
-	getnum : function(cc){ return (k.mode==1 ? bd.getQnumCell(cc) : bd.getQansCell(cc));},
+	setnum : function(cc,val){ if(k.dispzero || val!=0){ (k.mode==1 ? bd.sQnC(cc,val) : bd.sQaC(cc,val));} },
+	getnum : function(cc){ return (k.mode==1 ? bd.QnC(cc) : bd.QaC(cc));},
 
 	//---------------------------------------------------------------------------
 	// kc.key_inputdirec()  四方向の矢印などを設定する
@@ -262,17 +263,17 @@ KeyEvent.prototype = {
 		if(!this.isSHIFT){ return false;}
 
 		var cc = tc.getTCC();
-		if(bd.getQnumCell(cc)==-1){ return false;}
+		if(bd.QnC(cc)==-1){ return false;}
 
 		var flag = false;
 
-		if     (ca == 'up'   ){ bd.setDirecCell(cc, (bd.getDirecCell(cc)!=1?1:0)); flag = true;}
-		else if(ca == 'down' ){ bd.setDirecCell(cc, (bd.getDirecCell(cc)!=2?2:0)); flag = true;}
-		else if(ca == 'left' ){ bd.setDirecCell(cc, (bd.getDirecCell(cc)!=3?3:0)); flag = true;}
-		else if(ca == 'right'){ bd.setDirecCell(cc, (bd.getDirecCell(cc)!=4?4:0)); flag = true;}
+		if     (ca == 'up'   ){ bd.sDiC(cc, (bd.DiC(cc)!=1?1:0)); flag = true;}
+		else if(ca == 'down' ){ bd.sDiC(cc, (bd.DiC(cc)!=2?2:0)); flag = true;}
+		else if(ca == 'left' ){ bd.sDiC(cc, (bd.DiC(cc)!=3?3:0)); flag = true;}
+		else if(ca == 'right'){ bd.sDiC(cc, (bd.DiC(cc)!=4?4:0)); flag = true;}
 
 		if(flag){
-			pc.paint(int(tc.cursolx/2), int(tc.cursoly/2), int(tc.cursolx/2), int(tc.cursoly/2));
+			pc.paint(mf(tc.cursolx/2), mf(tc.cursoly/2), mf(tc.cursolx/2), mf(tc.cursoly/2));
 			this.tcMoved = true;
 		}
 		return flag;
@@ -287,11 +288,11 @@ KeyEvent.prototype = {
 		if(this.chtarget(ca)){ return;}
 
 		var cc = tc.getTCC(), ex = -1;
-		if(cc==-1){ ex = bd.getexnum(tc.getTCX(),tc.getTCY());}
+		if(cc==-1){ ex = bd.exnum(tc.getTCX(),tc.getTCY());}
 		var target = this.detectTarget(cc,ex);
-		if(target==-1 || (cc!=-1 && bd.getQuesCell(cc)==51)){
+		if(target==-1 || (cc!=-1 && bd.QuC(cc)==51)){
 			if(ca=='q' && cc!=-1){
-				mv.set51cell(cc,(bd.getQuesCell(cc)!=51));
+				mv.set51cell(cc,(bd.QuC(cc)!=51));
 				pc.paint(tc.getTCX()-1,tc.getTCY()-1,tc.getTCX()+1,tc.getTCY()+1);
 				return;
 			}
@@ -318,12 +319,12 @@ KeyEvent.prototype = {
 		if(cc!=-1){ pc.paintCell(tc.getTCC());}else{ pc.paint(tc.getTCX(),tc.getTCY(),tc.getTCX(),tc.getTCY());}
 	},
 	setnum51 : function(cc,ex,target,val){
-		if(cc!=-1){ (target==2 ? bd.setQnumCell(cc,val) : bd.setDirecCell(cc,val));}
-		else      { (target==2 ? bd.setQnumEXcell(ex,val) : bd.setDirecEXcell(ex,val));}
+		if(cc!=-1){ (target==2 ? bd.sQnC(cc,val) : bd.sDiC(cc,val));}
+		else      { (target==2 ? bd.sQnE(ex,val) : bd.sDiE(ex,val));}
 	},
 	getnum51 : function(cc,ex,target){
-		if(cc!=-1){ return (target==2 ? bd.getQnumCell(cc) : bd.getDirecCell(cc));}
-		else      { return (target==2 ? bd.getQnumEXcell(ex) : bd.getDirecEXcell(ex));}
+		if(cc!=-1){ return (target==2 ? bd.QnC(cc) : bd.DiC(cc));}
+		else      { return (target==2 ? bd.QnE(ex) : bd.DiE(ex));}
 	},
 
 	//---------------------------------------------------------------------------
@@ -338,17 +339,17 @@ KeyEvent.prototype = {
 		return true;
 	},
 	detectTarget : function(cc,ex){
-		if((cc==-1 && ex==-1) || (cc!=-1 && bd.getQuesCell(cc)!=51)){ return -1;}
+		if((cc==-1 && ex==-1) || (cc!=-1 && bd.QuC(cc)!=51)){ return -1;}
 		if(cc==bd.cell.length-1 || ex==k.qcols+k.qrows){ return -1;}
 		if(cc!=-1){
-			if	  ((bd.cell[cc].rt()==-1 || bd.getQuesCell(bd.cell[cc].rt())==51) &&
-				   (bd.cell[cc].dn()==-1 || bd.getQuesCell(bd.cell[cc].dn())==51)){ return -1;}
-			else if(bd.cell[cc].rt()==-1 || bd.getQuesCell(bd.cell[cc].rt())==51){ return 4;}
-			else if(bd.cell[cc].dn()==-1 || bd.getQuesCell(bd.cell[cc].dn())==51){ return 2;}
+			if	  ((bd.rt(cc)==-1 || bd.QuC(bd.rt(cc))==51) &&
+				   (bd.dn(cc)==-1 || bd.QuC(bd.dn(cc))==51)){ return -1;}
+			else if(bd.rt(cc)==-1 || bd.QuC(bd.rt(cc))==51){ return 4;}
+			else if(bd.dn(cc)==-1 || bd.QuC(bd.dn(cc))==51){ return 2;}
 		}
 		else if(ex!=-1){
-			if	  ((bd.excell[ex].cy==-1 && bd.getQuesCell(bd.excell[ex].cx)==51) ||
-				   (bd.excell[ex].cx==-1 && bd.getQuesCell(bd.excell[ex].cy*k.qcols)==51)){ return -1;}
+			if	  ((bd.excell[ex].cy==-1 && bd.QuC(bd.excell[ex].cx)==51) ||
+				   (bd.excell[ex].cx==-1 && bd.QuC(bd.excell[ex].cy*k.qcols)==51)){ return -1;}
 			else if(bd.excell[ex].cy==-1){ return 4;}
 			else if(bd.excell[ex].cx==-1){ return 2;}
 		}
@@ -527,9 +528,9 @@ KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
 	resize : function(){
 		var tfunc = function(el,tsize){
-			el.css("width"    , ""+int(tsize*0.90)+"px")
-			  .css("height"   , ""+int(tsize*0.90)+"px")
-			  .css("font-size", ""+int(tsize*0.70)+"px");
+			el.css("width"    , ""+mf(tsize*0.90)+"px")
+			  .css("height"   , ""+mf(tsize*0.90)+"px")
+			  .css("font-size", ""+mf(tsize*0.70)+"px");
 		};
 		var ifunc = function(el,cx,cy,bsize){
 			el.css("width" , ""+(bsize*kp.imgCR[0])+"px")
@@ -541,7 +542,7 @@ KeyPopup.prototype = {
 
 		if(k.def_csize>=24){
 			$.each(this.tds , function(i,obj){ tfunc(obj, k.def_csize);} );
-			$.each(this.imgs, function(i,obj){ ifunc(obj.el,obj.cx,obj.cy,int(k.def_csize*0.90));} );
+			$.each(this.imgs, function(i,obj){ ifunc(obj.el,obj.cx,obj.cy,mf(k.def_csize*0.90));} );
 		}
 		else{
 			$.each(this.tds , function(i,obj){ tfunc(obj, 22);} );
@@ -599,17 +600,17 @@ TCell.prototype = {
 		if(pos.x<this.minx || this.maxx<pos.x || pos.y<this.miny || this.maxy<pos.y){ return;}
 		this.cursolx = pos.x; this.cursoly = pos.y;
 	},
-	getTCC : function(){ return bd.getcnum(int((this.cursolx-1)/2), int((this.cursoly-1)/2));},
+	getTCC : function(){ return bd.cnum(mf((this.cursolx-1)/2), mf((this.cursoly-1)/2));},
 	setTCC : function(id){
 		if(id<0 || bd.cell.length<=id){ return;}
 		this.cursolx = bd.cell[id].cx*2+1; this.cursoly = bd.cell[id].cy*2+1;
 	},
-	getTXC : function(){ return bd.getxnum(int(this.cursolx/2), int(this.cursoly/2));},
+	getTXC : function(){ return bd.xnum(mf(this.cursolx/2), mf(this.cursoly/2));},
 	setTXC : function(id){
 		if(!k.iscross || id<0 || bd.cross.length<=id){ return;}
 		this.cursolx = bd.cross[id].cx*2; this.cursoly = bd.cross[id].cy*2;
 	},
-	getTBC : function(){ return bd.getbnum(this.cursolx, this.cursoly);},
+	getTBC : function(){ return bd.bnum(this.cursolx, this.cursoly);},
 	setTBC : function(id){
 		if(!k.isborder || id<0 || bd.border.length<=id){ return;}
 		this.cursolx = bd.border[id].cx*2; this.cursoly = bd.border[id].cy;
