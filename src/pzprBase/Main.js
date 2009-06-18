@@ -1,4 +1,4 @@
-// Main.js v3.1.9p3
+// Main.js v3.2.0
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -17,12 +17,12 @@ PBase.prototype = {
 	//   このファイルが呼ばれたときに実行される関数 -> onLoad前の最小限の設定を行う
 	//---------------------------------------------------------------------------
 	preload_func : function(){
-		// URLの取得 -> URLの?以下ををpuzzleid部とpzldata部に分割(内部でurl_decode()呼んでいる)
+		// URLの取得 -> URLの?以下ををpuzzleid部とpzlURI部に分割(内部でurl_decode()呼んでいる)
 		enc = new Encode(location.search);
-		k.puzzleid = enc.pid;
+		k.puzzleid = enc.uri.pid;
 		if(!k.puzzleid){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
-		if(enc.pzlcols){ k.qcols = enc.pzlcols;}
-		if(enc.pzlrows){ k.qrows = enc.pzlrows;}
+		if(enc.uri.cols){ k.qcols = enc.uri.cols;}
+		if(enc.uri.rows){ k.qrows = enc.uri.rows;}
 
 		// Gears_init.jsの読み込み
 		fio = new FileIO();
@@ -49,7 +49,8 @@ PBase.prototype = {
 	onload_func : function(){
 		this.initCanvas();
 
-		setting();				// パズル固有の変数設定(デフォルト等)
+		puz = new Puzzles[k.puzzleid]();	// パズル固有オブジェクト
+		puz.setting();					// パズル固有の変数設定(デフォルト等)
 
 		// クラス初期化
 		bd = new Board();		// 盤面オブジェクト
@@ -61,24 +62,21 @@ PBase.prototype = {
 		tc = new TCell();		// キー入力のターゲット管理オブジェクト
 		ans = new AnsCheck();	// 正解判定オブジェクト
 		um = new UndoManager();	// 操作情報管理オブジェクト
-		puz = new Puzzle();		// パズル固有オブジェクト
 		room = new Rooms();		// 部屋情報のオブジェクト
 		lang = new LangMgr();	// 言語情報オブジェクト
 		fio.initDataBase();		// データベースの設定
 		menu = new Menu();		// メニューを扱うオブジェクト
 		pp = new Properties();	// メニュー関係の設定値を保持するオブジェクト
 
-		this.doc_design();							// デザイン変更関連関数の呼び出し
+		this.doc_design();		// デザイン変更関連関数の呼び出し
 
-		enc.pzlinput(0);							// URLからパズルのデータを読み出す
-		if(!enc.bbox){ this.resize_canvas_first();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
-
-		puz.postfix();		// 各パズルごとの設定(後付け分)
-		this.setEvents();	// イベントをくっつける
+		enc.pzlinput(0);									// URLからパズルのデータを読み出す
+		if(!enc.uri.bstr){ this.resize_canvas_onload();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
 
 		if(document.domain=='indi.s58.xrea.com' && k.callmode=='pplay'){ this.accesslog();}	// アクセスログをとってみる
 		if(typeof testonly_func == 'function'){ testonly_func();}							// テスト用
 
+		this.setEvents();	// イベントをくっつける
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
 	},
 	setEvents : function(){
@@ -90,6 +88,12 @@ PBase.prototype = {
 	initSilverlight : function(sender){
 		sender.AddEventListener("KeyDown", kc.e_SLkeydown.bind(kc));
 		sender.AddEventListener("KeyUp",   kc.e_SLkeyup.bind(kc));
+	},
+	postfix : function(){
+		puz.input_init();
+		puz.graphic_init();
+		puz.encode_init();
+		puz.answer_init();
 	},
 
 	//---------------------------------------------------------------------------
@@ -114,6 +118,7 @@ PBase.prototype = {
 		}
 
 		k.autocheck = (k.callmode!="pmake");
+		this.postfix();			// 各パズルごとの設定(後付け分)
 		menu.menuinit();
 		um.enb_btn();
 	},
@@ -127,11 +132,11 @@ PBase.prototype = {
 	setFloatbgcolor : function(color){ this.floatbgcolor = color;},
 
 	//---------------------------------------------------------------------------
-	// base.initCanvas()          Canvasの設定を行う
-	// base.resize_canvas_only()  ウィンドウのLoad/Resize時の処理。Canvas/表示するマス目の大きさを設定する。
-	// base.resize_canvas()       resize_canvas_only()+Canvasの再描画
-	// base.resize_canvas_first() 初期化中にpaint再描画が起こらないように、resize_canvasを呼び出す
-	// base.getWindowSize()       ウィンドウの大きさを返す
+	// base.initCanvas()           Canvasの設定を行う
+	// base.resize_canvas_only()   ウィンドウのLoad/Resize時の処理。Canvas/表示するマス目の大きさを設定する。
+	// base.resize_canvas()        resize_canvas_only()+Canvasの再描画
+	// base.resize_canvas_onload() 初期化中にpaint再描画が起こらないように、resize_canvasを呼び出す
+	// base.getWindowSize()        ウィンドウの大きさを返す
 	//---------------------------------------------------------------------------
 	initCanvas : function(){
 		k.IEMargin = (k.br.IE)?(new Pos(4, 4)):(new Pos(0, 0));
@@ -159,21 +164,21 @@ PBase.prototype = {
 		var ci2 = Math.round((wsize.x-k.p0.x*2)/(k.def_csize)*2.25);
 
 		if(k.qcols < ci0){				// 特に縮小しないとき
-			k.cwidth = k.cheight = int(k.def_csize*cratio);
+			k.cwidth = k.cheight = mf(k.def_csize*cratio);
 			$("#main").css("width",'80%');
 		}
 		else if(k.qcols < ci1){			// ウィンドウの幅75%に入る場合 フォントのサイズは3/4まで縮めてよい
-			k.cwidth = k.cheight = int(k.def_csize*cratio*(1-0.25*((k.qcols-ci0)/(ci1-ci0))));
-			k.p0.x = k.p0.y = int(k.def_psize*(k.cwidth/k.def_csize));
+			k.cwidth = k.cheight = mf(k.def_csize*cratio*(1-0.25*((k.qcols-ci0)/(ci1-ci0))));
+			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
 			$("#main").css("width",'80%');
 		}
 		else if(k.qcols < ci2){			// mainのtableを広げるとき
-			k.cwidth = k.cheight = int(k.def_csize*cratio*(0.75-0.35*((k.qcols-ci1)/(ci2-ci1))));
-			k.p0.x = k.p0.y = int(k.def_psize*(k.cwidth/k.def_csize));
+			k.cwidth = k.cheight = mf(k.def_csize*cratio*(0.75-0.35*((k.qcols-ci1)/(ci2-ci1))));
+			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
 			$("#main").css("width",""+(k.p0.x*2+k.qcols*k.cwidth+12)+"px");
 		}
 		else{							// 標準サイズの40%にするとき(自動調整の下限)
-			k.cwidth = k.cheight = int(k.def_csize*0.4);
+			k.cwidth = k.cheight = mf(k.def_csize*0.4);
 			k.p0 = new Pos(k.def_psize*0.4, k.def_psize*0.4);
 			$("#main").css("width",'96%');
 		}
@@ -184,8 +189,8 @@ PBase.prototype = {
 
 		// extendxell==1の時は上下の間隔を広げる (extendxell==2はdef_psizeで調整)
 		if(k.isextendcell==1){
-			k.p0.x += int(k.cwidth*0.45);
-			k.p0.y += int(k.cheight*0.45);
+			k.p0.x += mf(k.cwidth*0.45);
+			k.p0.y += mf(k.cheight*0.45);
 		}
 
 		k.cv_oft.x = this.cv_obj.offset().left;
@@ -207,9 +212,9 @@ PBase.prototype = {
 		pc.flushCanvasAll();
 		pc.paintAll();
 	},
-	resize_canvas_first : function(){
+	resize_canvas_onload : function(){
 		if(!k.br.IE || pc.already()){ this.resize_canvas();}
-		else{ uuCanvas.ready(this.resize_canvas.bind(base));}
+		else{ uuCanvas.ready(this.resize_canvas.bind(this));}
 	},
 	getWindowSize : function(){
 		if(document.all){
@@ -231,7 +236,7 @@ PBase.prototype = {
 		refer = refer.replace(/\=/g,"%3d");
 		refer = refer.replace(/\//g,"%2f");
 
-		$.post("./record.cgi", "pid="+k.puzzleid+"&pzldata="+enc.pzldata+"&referer="+refer);
+		$.post("./record.cgi", "pid="+k.puzzleid+"&pzldata="+enc.uri.qdata+"&referer="+refer);
 	}
 };
 
