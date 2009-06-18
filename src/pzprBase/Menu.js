@@ -1,4 +1,4 @@
-// Menu.js v3.1.9p3
+// Menu.js v3.2.0
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -228,7 +228,8 @@ Menu.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// menu.createFloatMenu()  登録されたサブメニューからフロートメニューを作成する
+	// menu.createFloatMenu() 登録されたサブメニューからフロートメニューを作成する
+	// menu.getFloatpanel()   指定されたIDを持つフロートメニューを返す(ない場合は作成する)
 	//---------------------------------------------------------------------------
 	createFloats : function(){
 		var last=0;
@@ -237,13 +238,7 @@ Menu.prototype = {
 			if(!pp.flags[idname]){ continue;}
 
 			var menuid = pp.flags[idname].parent;
-			if(!this.floatpanel[menuid]){
-				this.floatpanel[menuid] = newEL("div")
-					.attr("class", 'floatmenu').attr("id",'float_'+menuid).appendTo($("#popup_parent"))
-					.css("background-color", base.floatbgcolor).css("z-index",101)
-					.mouseout(this.floatmenuout.ebind(this)).hide();
-			}
-			var floats = this.floatpanel[menuid];
+			var floats = this.getFloatpanel(menuid);
 
 			if(menuid=='setting'){
 				if(last>0 && last!=pp.type(idname)){ $("<div class=\"smenusep\">&nbsp;</div>").appendTo(floats);}
@@ -256,6 +251,7 @@ Menu.prototype = {
 			else if(pp.type(idname)==1){
 				smenu = newEL("div").attr("class", 'smenu').css("font-weight","900").css("font-size",'10pt')
 									.hover(this.submenuhover.ebind(this,idname), this.submenuout.ebind(this,idname));
+				this.getFloatpanel(idname);
 			}
 			else{
 				smenu = newEL("div").attr("class", 'smenu')
@@ -267,6 +263,15 @@ Menu.prototype = {
 			this.setdisplay(idname);
 		}
 		this.floatpanel[menuid] = floats;
+	},
+	getFloatpanel : function(id){
+		if(!this.floatpanel[id]){
+			this.floatpanel[id] = newEL("div")
+				.attr("class", 'floatmenu').attr("id",'float_'+id).appendTo($("#popup_parent"))
+				.css("background-color", base.floatbgcolor).css("z-index",101)
+				.mouseout(this.floatmenuout.ebind(this)).hide();
+		}
+		return this.floatpanel[id];
 	},
 
 	//---------------------------------------------------------------------------
@@ -653,6 +658,11 @@ Properties.prototype = {
 		as('jumptop', 'other');
 		as('jumpblog', 'other');
 
+		if(typeof testonly_func == 'function'){
+			ap('sep_t','other');
+			au('eval','other',0,[]);
+		}
+
 		this.setStringToFlags();
 	},
 	setStringToFlags : function(){
@@ -704,6 +714,8 @@ Properties.prototype = {
 		sm('jumpv3', 'ぱずぷれv3のページへ', 'Jump to PUZ-PRE v3 page');
 		sm('jumptop', '連続発破保管庫TOPへ', 'Jump to indi.s58.xrea.com');
 		sm('jumpblog', 'はっぱ日記(blog)へ', 'Jump to my blog');
+
+		sm('eval', 'テスト用', 'for Evaluation');
 	},
 
 //--------------------------------------------------------------------------------------------------------------
@@ -713,7 +725,7 @@ Properties.prototype = {
 		urloutput : function(){ menu.pop = $("#pop1_3"); document.urloutput.ta.value = "";},
 		filesave  : function(){ menu.ex.filesave();},
 		database  : function(){ menu.pop = $("#pop1_8"); fio.getDataTableList();},
-		filesave2 : function(){ if(puz.kanpenSave){ menu.ex.filesave2();}},
+		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave2();}},
 		adjust    : function(){ menu.pop = $("#pop2_1");},
 		turn      : function(){ menu.pop = $("#pop2_2");},
 		credit    : function(){ menu.pop = $("#pop3_1");},
@@ -742,7 +754,7 @@ Properties.prototype = {
 			else{ if(!menu.pop){ document.fileform.filebox.click();}}
 		},
 		fileopen2 : function(){
-			if(!puz.kanpenOpen){ return;}
+			if(!fio.kanpenOpen){ return;}
 			document.fileform.pencilbox.value = "1";
 			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = $("#pop1_4");}}
 			else{ if(!menu.pop){ document.fileform.filebox.click();}}
