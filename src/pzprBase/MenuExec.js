@@ -1,4 +1,4 @@
-// MenuExec.js v3.1.9p3
+// MenuExec.js v3.2.0
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -33,8 +33,8 @@ MenuExec.prototype = {
 		if(menu.pop){
 			var col,row;
 			if(k.puzzleid!="sudoku"){
-				col = int(parseInt(document.newboard.col.value));
-				row = int(parseInt(document.newboard.row.value));
+				col = mf(parseInt(document.newboard.col.value));
+				row = mf(parseInt(document.newboard.row.value));
 			}
 			else{
 				if     (document.newboard.size[0].checked){ col=row= 9;}
@@ -50,26 +50,25 @@ MenuExec.prototype = {
 	},
 	newboard2 : function(col,row){
 		// 既存のサイズより小さいならdeleteする
-		var n;
-		for(n=k.qcols*k.qrows-1;n>=col*row;n--){
+		for(var n=k.qcols*k.qrows-1;n>=col*row;n--){
 			if(bd.cell[n].numobj) { bd.cell[n].numobj.remove();}
 			if(bd.cell[n].numobj2){ bd.cell[n].numobj2.remove();}
 			delete bd.cell[n]; bd.cell.pop(); bd.cells.pop();
 		}
-		if(k.iscross){ for(n=(k.qcols+1)*(k.qrows+1)-1;n>=(col+1)*(row+1);n--){
+		if(k.iscross){ for(var n=(k.qcols+1)*(k.qrows+1)-1;n>=(col+1)*(row+1);n--){
 			if(bd.cross[n].numobj){ bd.cross[n].numobj.remove();}
 			delete bd.cross[n]; bd.cross.pop(); bd.crosses.pop();
 		}}
-		if(k.isborder){ for(n=this.bdcnt(k.qcols,k.qrows)-1;n>=this.bdcnt(col,row);n--){
+		if(k.isborder){ for(var n=this.bdcnt(k.qcols,k.qrows)-1;n>=this.bdcnt(col,row);n--){
 			if(bd.border[n].numobj){ bd.border[n].numobj.remove();}
 			delete bd.border[n]; bd.border.pop(); bd.borders.pop();
 		}}
-		if(k.isextendcell==1){ for(n=k.qcols+k.qrows;n>=col+row+1;n--){
+		if(k.isextendcell==1){ for(var n=k.qcols+k.qrows;n>=col+row+1;n--){
 			if(bd.excell[n].numobj) { bd.excell[n].numobj.remove();}
 			if(bd.excell[n].numobj2){ bd.excell[n].numobj2.remove();}
 			delete bd.excell[n]; bd.excell.pop();
 		}}
-		else if(k.isextendcell==2){ for(n=2*k.qcols+2*k.qrows+3;n>=2*col+2*row+4;n--){
+		else if(k.isextendcell==2){ for(var n=2*k.qcols+2*k.qrows+3;n>=2*col+2*row+4;n--){
 			if(bd.excell[n].numobj) { bd.excell[n].numobj.remove();}
 			if(bd.excell[n].numobj2){ bd.excell[n].numobj2.remove();}
 			delete bd.excell[n]; bd.excell.pop();
@@ -84,11 +83,15 @@ MenuExec.prototype = {
 
 		// サイズの変更
 		if(k.puzzleid=="icebarn"){
-			if(puz.arrowin<k.qcols){ if(puz.arrowin>col){ puz.arrowin=col-1;} }
-			else{ if(puz.arrowin>col+row){ puz.arrowin=col+row-1;} }
-			if(puz.arrowout<k.qcols){ if(puz.arrowout>col){ puz.arrowout=col-1;} }
-			else{ if(puz.arrowout>col+row){ puz.arrowout=col+row-1;} }
-			if(puz.arrowin==puz.arrowout){ puz.arrowin--;}
+			if(bd.arrowin<k.qcols){ if(bd.arrowin>col){ bd.arrowin=col-1;} }
+			else{ if(bd.arrowin>col+row){ bd.arrowin=col+row-1;} }
+			if(bd.arrowout<k.qcols){ if(bd.arrowout>col){ bd.arrowout=col-1;} }
+			else{ if(bd.arrowout>col+row){ bd.arrowout=col+row-1;} }
+			if(bd.arrowin==bd.arrowout){ bd.arrowin--;}
+		}
+		if(k.puzzleid=="slalom"){
+			bd.startid = 0;
+			bd.hinfo.generateAll();
 		}
 		tc.maxx += (col-k.qcols)*2;
 		tc.maxy += (row-k.qrows)*2;
@@ -100,10 +103,10 @@ MenuExec.prototype = {
 		if(k.isborder){ for(var i=0;i<bd.border.length;i++){ bd.border[i].allclear(i);} }
 		if(k.isextendcell!=0){ for(var i=0;i<bd.excell.length;i++){ bd.excell[i].allclear();} }
 
-		room.resetRarea();
-
 		um.allerase();
 		bd.setposAll();
+
+		room.resetRarea();
 
 		ans.reset();
 	},
@@ -117,7 +120,7 @@ MenuExec.prototype = {
 	urlinput : function(e){
 		if(menu.pop){
 			var type = enc.get_search(document.urlinput.ta.value);
-			if(enc.pzlcols && enc.pzlrows){ this.newboard2(enc.pzlcols, enc.pzlrows);}
+			if(enc.uri.cols && enc.uri.rows){ this.newboard2(enc.uri.cols, enc.uri.rows);}
 			enc.pzlinput(type);
 			room.resetRarea();
 
@@ -128,11 +131,11 @@ MenuExec.prototype = {
 	urloutput : function(e){
 		if(menu.pop){
 			switch(getSrcElement(e).name){
-				case "pzprv3":     puz.pzloutput(0); break;
-				case "pzprapplet": puz.pzloutput(1); break;
-				case "kanpen":     puz.pzloutput(2); break;
-				case "pzprv3edit": puz.pzloutput(3); break;
-				case "heyaapp":    puz.pzloutput(4); break;
+				case "pzprv3":     enc.pzlexport(0); break;
+				case "pzprapplet": enc.pzlexport(1); break;
+				case "kanpen":     enc.pzlexport(2); break;
+				case "pzprv3edit": enc.pzlexport(3); break;
+				case "heyaapp":    enc.pzlexport(4); break;
 			}
 		}
 	},
@@ -166,9 +169,9 @@ MenuExec.prototype = {
 			var csize = parseInt(document.dispsize.cs.value);
 
 			if(csize>0){
-				k.def_psize = int(csize*(k.def_psize/k.def_csize));
+				k.def_psize = mf(csize*(k.def_psize/k.def_csize));
 				if(k.def_psize==0){ k.def_psize=1;}
-				k.def_csize = int(csize);
+				k.def_csize = mf(csize);
 			}
 			menu.popclose();
 			base.resize_canvas();	// Canvasを更新する
@@ -303,27 +306,27 @@ MenuExec.prototype = {
 		for(var i=0;i<bd.border.length;i++){
 			var source = -1;
 			if(k.isborderAsLine==0){
-				if     (key=='up' && bd.border[i].cy==1          ){ source = bd.getbnum(bd.border[i].cx, 3          );}
-				else if(key=='dn' && bd.border[i].cy==2*k.qrows-1){ source = bd.getbnum(bd.border[i].cx, 2*k.qrows-3);}
-				else if(key=='lt' && bd.border[i].cx==1          ){ source = bd.getbnum(3,           bd.border[i].cy);}
-				else if(key=='rt' && bd.border[i].cx==2*k.qcols-1){ source = bd.getbnum(2*k.qcols-3, bd.border[i].cy);}
+				if     (key=='up' && bd.border[i].cy==1          ){ source = bd.bnum(bd.border[i].cx, 3          );}
+				else if(key=='dn' && bd.border[i].cy==2*k.qrows-1){ source = bd.bnum(bd.border[i].cx, 2*k.qrows-3);}
+				else if(key=='lt' && bd.border[i].cx==1          ){ source = bd.bnum(3,           bd.border[i].cy);}
+				else if(key=='rt' && bd.border[i].cx==2*k.qcols-1){ source = bd.bnum(2*k.qcols-3, bd.border[i].cy);}
 
 				if(source!=-1){
-					bd.setQuesBorder(i, bd.getQuesBorder(source));
-					bd.setQansBorder(i, bd.getQansBorder(source));
+					bd.sQuB(i, bd.QuB(source));
+					bd.sQaB(i, bd.QaB(source));
 				}
 			}
 			else{
-				if     (key=='up' && bd.border[i].cy==2          ){ source = bd.getbnum(bd.border[i].cx, 0        );}
-				else if(key=='dn' && bd.border[i].cy==2*k.qrows-2){ source = bd.getbnum(bd.border[i].cx, 2*k.qrows);}
-				else if(key=='lt' && bd.border[i].cx==2          ){ source = bd.getbnum(0,         bd.border[i].cy);}
-				else if(key=='rt' && bd.border[i].cx==2*k.qcols-2){ source = bd.getbnum(2*k.qcols, bd.border[i].cy);}
+				if     (key=='up' && bd.border[i].cy==2          ){ source = bd.bnum(bd.border[i].cx, 0        );}
+				else if(key=='dn' && bd.border[i].cy==2*k.qrows-2){ source = bd.bnum(bd.border[i].cx, 2*k.qrows);}
+				else if(key=='lt' && bd.border[i].cx==2          ){ source = bd.bnum(0,         bd.border[i].cy);}
+				else if(key=='rt' && bd.border[i].cx==2*k.qcols-2){ source = bd.bnum(2*k.qcols, bd.border[i].cy);}
 
 				if(source!=-1){
-					bd.setQuesBorder(i, bd.getQuesBorder(source));
-					bd.setQansBorder(i, bd.getQansBorder(source));
-					bd.setQuesBorder(source,  0);
-					bd.setQansBorder(source, -1);
+					bd.sQuB(i, bd.QuB(source));
+					bd.sQaB(i, bd.QaB(source));
+					bd.sQuB(source,  0);
+					bd.sQaB(source, -1);
 				}
 			}
 		}
@@ -345,10 +348,10 @@ MenuExec.prototype = {
 				if(bd.cell[i].numobj) { bd.cell[i].numobj.hide();}
 				if(bd.cell[i].numobj2){ bd.cell[i].numobj2.hide();}
 				if(!bd.isNullCell(i)){ um.addOpe('cell', 'cell', i, bd.cell[i], 0);}
-				if(k.isOneNumber && bd.getQnumCell(i)!=-1){
+				if(k.isOneNumber && bd.QnC(i)!=-1){
 					qnums.push(new Array());
 					qnums[qnums.length-1].areaid=room.getRoomID(i);
-					qnums[qnums.length-1].val=bd.getQnumCell(i);
+					qnums[qnums.length-1].val=bd.QnC(i);
 				}
 				margin++;
 			}
@@ -398,7 +401,7 @@ MenuExec.prototype = {
 
 		bd.setposAll();
 		if(k.isOneNumber){
-			for(var i=0;i<qnums.length;i++){ bd.setQnumCell(room.getTopOfRoom(qnums[i].areaid), qnums[i].val);}
+			for(var i=0;i<qnums.length;i++){ bd.sQnC(room.getTopOfRoom(qnums[i].areaid), qnums[i].val);}
 		}
 		this.adjustSpecial2(6,key);
 	},
@@ -406,16 +409,16 @@ MenuExec.prototype = {
 		for(var i=0;i<bd.border.length;i++){
 			var source = -1;
 			if(k.isborderAsLine==1){
-				if     (key=='up' && bd.border[i].cy==0        ){ source = bd.getbnum(bd.border[i].cx, 2          );}
-				else if(key=='dn' && bd.border[i].cy==2*k.qrows){ source = bd.getbnum(bd.border[i].cx, 2*k.qrows-2);}
-				else if(key=='lt' && bd.border[i].cx==0        ){ source = bd.getbnum(2,           bd.border[i].cy);}
-				else if(key=='rt' && bd.border[i].cx==2*k.qcols){ source = bd.getbnum(2*k.qcols-2, bd.border[i].cy);}
+				if     (key=='up' && bd.border[i].cy==0        ){ source = bd.bnum(bd.border[i].cx, 2          );}
+				else if(key=='dn' && bd.border[i].cy==2*k.qrows){ source = bd.bnum(bd.border[i].cx, 2*k.qrows-2);}
+				else if(key=='lt' && bd.border[i].cx==0        ){ source = bd.bnum(2,           bd.border[i].cy);}
+				else if(key=='rt' && bd.border[i].cx==2*k.qcols){ source = bd.bnum(2*k.qcols-2, bd.border[i].cy);}
 
 				if(source!=-1){
-					bd.setQuesBorder(i, bd.getQuesBorder(source));
-					bd.setQansBorder(i, bd.getQansBorder(source));
-					bd.setQuesBorder(source,  0);
-					bd.setQansBorder(source, -1);
+					bd.sQuB(i, bd.QuB(source));
+					bd.sQaB(i, bd.QaB(source));
+					bd.sQuB(source,  0);
+					bd.sQaB(source, -1);
 				}
 			}
 		}
@@ -454,44 +457,44 @@ MenuExec.prototype = {
 
 		for(var cy=ry1;cy<(ry2+ry1)/2;cy++){
 			for(var cx=rx1;cx<=rx2;cx++){
-				var c = bd.cell[bd.getcnum(cx,cy)];
-				bd.cell[bd.getcnum(cx,cy)] = bd.cell[bd.getcnum(cx,(ry1+ry2)-cy)];
-				bd.cell[bd.getcnum(cx,(ry1+ry2)-cy)] = c;
+				var c = bd.cell[bd.cnum(cx,cy)];
+				bd.cell[bd.cnum(cx,cy)] = bd.cell[bd.cnum(cx,(ry1+ry2)-cy)];
+				bd.cell[bd.cnum(cx,(ry1+ry2)-cy)] = c;
 			}
 		}
 		if(k.iscross){
 			for(var cy=ry1;cy<(ry2+ry1+1)/2;cy++){
 				for(var cx=rx1;cx<=rx2+1;cx++){
-					var c = bd.cross[bd.getxnum(cx,cy)];
-					bd.cross[bd.getxnum(cx,cy)] = bd.cross[bd.getxnum(cx,(ry1+ry2+1)-cy)];
-					bd.cross[bd.getxnum(cx,(ry1+ry2+1)-cy)] = c;
+					var c = bd.cross[bd.xnum(cx,cy)];
+					bd.cross[bd.xnum(cx,cy)] = bd.cross[bd.xnum(cx,(ry1+ry2+1)-cy)];
+					bd.cross[bd.xnum(cx,(ry1+ry2+1)-cy)] = c;
 				}
 			}
 		}
 		if(k.isborder){
 			for(var cy=ry1*2;cy<(ry2+ry1)*2/2+1;cy++){
 				for(var cx=rx1*2;cx<=(rx2+1)*2;cx++){
-					if(bd.getbnum(cx,cy)==-1){ continue;}
-					var c = bd.border[bd.getbnum(cx,cy)];
-					bd.border[bd.getbnum(cx,cy)] = bd.border[bd.getbnum(cx,(ry1+ry2+1)*2-cy)];
-					bd.border[bd.getbnum(cx,(ry1+ry2+1)*2-cy)] = c;
+					if(bd.bnum(cx,cy)==-1){ continue;}
+					var c = bd.border[bd.bnum(cx,cy)];
+					bd.border[bd.bnum(cx,cy)] = bd.border[bd.bnum(cx,(ry1+ry2+1)*2-cy)];
+					bd.border[bd.bnum(cx,(ry1+ry2+1)*2-cy)] = c;
 				}
 			}
 		}
 		if(k.isextendcell==1){
 			for(var cy=ry1;cy<(ry2+ry1)/2;cy++){
-				var c = bd.excell[bd.getexnum(-1,cy)];
-				bd.excell[bd.getexnum(-1,cy)] = bd.excell[bd.getexnum(-1,(ry1+ry2)-cy)];
-				bd.excell[bd.getexnum(-1,(ry1+ry2)-cy)] = c;
+				var c = bd.excell[bd.exnum(-1,cy)];
+				bd.excell[bd.exnum(-1,cy)] = bd.excell[bd.exnum(-1,(ry1+ry2)-cy)];
+				bd.excell[bd.exnum(-1,(ry1+ry2)-cy)] = c;
 			}
 		}
 		else if(k.isextendcell==2){
 			for(var cy=ry1-1;cy<(ry2+ry1)/2;cy++){
 				for(var cx=rx1-1;cx<=rx2+1;cx++){
-					if(bd.getexnum(cx,cy)==-1){ continue;}
-					var c = bd.excell[bd.getexnum(cx,cy)];
-					bd.excell[bd.getexnum(cx,cy)] = bd.excell[bd.getexnum(cx,(ry1+ry2)-cy)];
-					bd.excell[bd.getexnum(cx,(ry1+ry2)-cy)] = c;
+					if(bd.exnum(cx,cy)==-1){ continue;}
+					var c = bd.excell[bd.exnum(cx,cy)];
+					bd.excell[bd.exnum(cx,cy)] = bd.excell[bd.exnum(cx,(ry1+ry2)-cy)];
+					bd.excell[bd.exnum(cx,(ry1+ry2)-cy)] = c;
 				}
 			}
 		}
@@ -506,44 +509,44 @@ MenuExec.prototype = {
 
 		for(var cx=rx1;cx<(rx2+rx1)/2;cx++){
 			for(var cy=ry1;cy<=ry2;cy++){
-				var c = bd.cell[bd.getcnum(cx,cy)];
-				bd.cell[bd.getcnum(cx,cy)] = bd.cell[bd.getcnum((rx1+rx2)-cx,cy)];
-				bd.cell[bd.getcnum((rx1+rx2)-cx,cy)] = c;
+				var c = bd.cell[bd.cnum(cx,cy)];
+				bd.cell[bd.cnum(cx,cy)] = bd.cell[bd.cnum((rx1+rx2)-cx,cy)];
+				bd.cell[bd.cnum((rx1+rx2)-cx,cy)] = c;
 			}
 		}
 		if(k.iscross){
 			for(var cx=rx1;cx<(rx2+rx1+1)/2;cx++){
 				for(var cy=ry1;cy<=ry2+1;cy++){
-					var c = bd.cross[bd.getxnum(cx,cy)];
-					bd.cross[bd.getxnum(cx,cy)] = bd.cross[bd.getxnum((rx1+rx2+1)-cx,cy)];
-					bd.cross[bd.getxnum((rx1+rx2+1)-cx,cy)] = c;
+					var c = bd.cross[bd.xnum(cx,cy)];
+					bd.cross[bd.xnum(cx,cy)] = bd.cross[bd.xnum((rx1+rx2+1)-cx,cy)];
+					bd.cross[bd.xnum((rx1+rx2+1)-cx,cy)] = c;
 				}
 			}
 		}
 		if(k.isborder){
 			for(var cx=rx1*2;cx<(rx2+rx1)*2/2+1;cx++){
 				for(var cy=ry1*2;cy<=(ry2+1)*2;cy++){
-					if(bd.getbnum(cx,cy)==-1){ continue;}
-					var c = bd.border[bd.getbnum(cx,cy)];
-					bd.border[bd.getbnum(cx,cy)] = bd.border[bd.getbnum((rx1+rx2+1)*2-cx,cy)];
-					bd.border[bd.getbnum((rx1+rx2+1)*2-cx,cy)] = c;
+					if(bd.bnum(cx,cy)==-1){ continue;}
+					var c = bd.border[bd.bnum(cx,cy)];
+					bd.border[bd.bnum(cx,cy)] = bd.border[bd.bnum((rx1+rx2+1)*2-cx,cy)];
+					bd.border[bd.bnum((rx1+rx2+1)*2-cx,cy)] = c;
 				}
 			}
 		}
 		if(k.isextendcell==1){
 			for(var cx=rx1;cx<(rx2+rx1)/2;cx++){
-				var c = bd.excell[bd.getexnum(cx,-1)];
-				bd.excell[bd.getexnum(cx,-1)] = bd.excell[bd.getexnum((rx1+rx2)-cx,-1)];
-				bd.excell[bd.getexnum((rx1+rx2)-cx,-1)] = c;
+				var c = bd.excell[bd.exnum(cx,-1)];
+				bd.excell[bd.exnum(cx,-1)] = bd.excell[bd.exnum((rx1+rx2)-cx,-1)];
+				bd.excell[bd.exnum((rx1+rx2)-cx,-1)] = c;
 			}
 		}
 		else if(k.isextendcell==2){
 			for(var cx=rx1-1;cx<(rx2+rx1)/2;cx++){
 				for(var cy=ry1-1;cy<=ry2+1;cy++){
-					if(bd.getexnum(cx,cy)==-1){ continue;}
-					var c = bd.excell[bd.getexnum(cx,cy)];
-					bd.excell[bd.getexnum(cx,cy)] = bd.excell[bd.getexnum((rx1+rx2)-cx,cy)];
-					bd.excell[bd.getexnum((rx1+rx2)-cx,cy)] = c;
+					if(bd.exnum(cx,cy)==-1){ continue;}
+					var c = bd.excell[bd.exnum(cx,cy)];
+					bd.excell[bd.exnum(cx,cy)] = bd.excell[bd.exnum((rx1+rx2)-cx,cy)];
+					bd.excell[bd.exnum((rx1+rx2)-cx,cy)] = c;
 				}
 			}
 		}
@@ -572,8 +575,8 @@ MenuExec.prototype = {
 			tmp = bd.cell[source]; target = source;
 			while(true){
 //				alert(""+(bd.cell[target].cy)+" "+(bd.cell[target].cx));
-				if(f==1){ nex = bd.getcnum2(bd.cell[target].cy, (ry2+ry1)-bd.cell[target].cx, k.qrows, k.qcols);}
-				else{ nex = bd.getcnum2((rx2+rx1)-bd.cell[target].cy, bd.cell[target].cx, k.qrows, k.qcols);}
+				if(f==1){ nex = bd.cnum2(bd.cell[target].cy, (ry2+ry1)-bd.cell[target].cx, k.qrows, k.qcols);}
+				else{ nex = bd.cnum2((rx2+rx1)-bd.cell[target].cy, bd.cell[target].cx, k.qrows, k.qcols);}
 				if(nex==source){ break;}
 				bd.cell[target] = bd.cell[nex]; ch[target]=0; cnt--; target = nex;
 			}
@@ -587,9 +590,9 @@ MenuExec.prototype = {
 				for(source=0;source<(k.qcols+1)*(k.qrows+1);source++){ if(ch[source]==1){ break;}}
 				tmp = bd.cross[source]; target = source;
 				while(true){
-					nex = bd.getxnum2(bd.cross[target].cy, (ry2+ry1+1)-bd.cross[target].cx, k.qrows, k.qcols);
-					if(f==1){ nex = bd.getxnum2(bd.cross[target].cy, (ry2+ry1+1)-bd.cross[target].cx, k.qrows, k.qcols);}
-					else{ nex = bd.getxnum2((rx2+rx1+1)-bd.cross[target].cy, bd.cross[target].cx, k.qrows, k.qcols);}
+					nex = bd.xnum2(bd.cross[target].cy, (ry2+ry1+1)-bd.cross[target].cx, k.qrows, k.qcols);
+					if(f==1){ nex = bd.xnum2(bd.cross[target].cy, (ry2+ry1+1)-bd.cross[target].cx, k.qrows, k.qcols);}
+					else{ nex = bd.xnum2((rx2+rx1+1)-bd.cross[target].cy, bd.cross[target].cx, k.qrows, k.qcols);}
 					if(nex==source){ break;}
 					bd.cross[target] = bd.cross[nex]; ch[target]=0; cnt--; target = nex;
 				}
@@ -597,16 +600,16 @@ MenuExec.prototype = {
 			}
 		}
 		if(k.isborder){
-			cnt = (k.qcols-1)*k.qrows+k.qcols*(k.qrows-1)+(k.isoutsideborder==0?0:2*(k.qcols+k.qrows));
+			cnt = bd.bdinside+(k.isoutsideborder==0?0:2*(k.qcols+k.qrows));
 			ch = new Array(); for(var i=0;i<cnt;i++){ ch[i]=1;}
 			while(cnt>0){
 				var tmp, source, prev, target, nex;
-				for(source=0;source<(k.qcols-1)*k.qrows+k.qcols*(k.qrows-1)+(k.isoutsideborder==0?0:2*(k.qcols+k.qrows));source++){ if(ch[source]==1){ break;}}
+				for(source=0;source<bd.bdinside+(k.isoutsideborder==0?0:2*(k.qcols+k.qrows));source++){ if(ch[source]==1){ break;}}
 				tmp = bd.border[source]; target = source;
 				while(true){
-					nex = bd.getbnum2(bd.border[target].cy, (ry2+ry1+1)*2-bd.border[target].cx, k.qrows, k.qcols);
-					if(f==1){ nex = bd.getbnum2(bd.border[target].cy, (ry2+ry1+1)*2-bd.border[target].cx, k.qrows, k.qcols);}
-					else{ nex = bd.getbnum2((rx2+rx1+1)*2-bd.border[target].cy, bd.border[target].cx, k.qrows, k.qcols);}
+					nex = bd.bnum2(bd.border[target].cy, (ry2+ry1+1)*2-bd.border[target].cx, k.qrows, k.qcols);
+					if(f==1){ nex = bd.bnum2(bd.border[target].cy, (ry2+ry1+1)*2-bd.border[target].cx, k.qrows, k.qcols);}
+					else{ nex = bd.bnum2((rx2+rx1+1)*2-bd.border[target].cy, bd.border[target].cx, k.qrows, k.qcols);}
 					if(nex==source){ break;}
 					bd.border[target] = bd.border[nex]; ch[target]=0; cnt--; target = nex;
 				}
@@ -621,8 +624,8 @@ MenuExec.prototype = {
 				for(source=0;source<2*(k.qcols+k.qrows)+4;source++){ if(ch[source]==1){ break;}}
 				tmp = bd.excell[source]; target = source;
 				while(true){
-					if(f==1){ nex = bd.getexnum2(bd.excell[target].cy, (ry2+ry1)-bd.excell[target].cx, k.qrows, k.qcols);}
-					else{ nex = bd.getexnum2((rx2+rx1)-bd.excell[target].cy, bd.excell[target].cx, k.qrows, k.qcols);}
+					if(f==1){ nex = bd.exnum2(bd.excell[target].cy, (ry2+ry1)-bd.excell[target].cx, k.qrows, k.qcols);}
+					else{ nex = bd.exnum2((rx2+rx1)-bd.excell[target].cy, bd.excell[target].cx, k.qrows, k.qcols);}
 					if(nex==source){ break;}
 					bd.excell[target] = bd.excell[nex]; ch[target]=0; cnt--; target = nex;
 				}
@@ -646,47 +649,47 @@ MenuExec.prototype = {
 		um.disableRecord();
 		for(var cy=ry1;cy<=ry2;cy++){
 			for(var cx=rx1;cx<=rx2;cx++){
-				var c = bd.getcnum(cx,cy);
+				var c = bd.cnum(cx,cy);
 
 				switch(type){
 				case 1: // 上下反転
 					if(true){
-						var val = ({2:5,3:4,4:3,5:2,104:107,105:106,106:105,107:104})[bd.getQuesCell(c)];
-						if(!isNaN(val)){ bd.setQuesCell(c,val);}
+						var val = ({2:5,3:4,4:3,5:2,104:107,105:106,106:105,107:104})[bd.QuC(c)];
+						if(!isNaN(val)){ bd.sQuC(c,val);}
 					}
 					if(k.isextendcell!=1){
-						var val = ({1:2,2:1})[bd.getDirecCell(c)];
-						if(!isNaN(val)){ bd.setDirecCell(c,val);}
+						var val = ({1:2,2:1})[bd.DiC(c)];
+						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
 					break;
 				case 2: // 左右反転
 					if(true){
-						var val = ({2:3,3:2,4:5,5:4,104:105,105:104,106:107,107:106})[bd.getQuesCell(c)];
-						if(!isNaN(val)){ bd.setQuesCell(c,val);}
+						var val = ({2:3,3:2,4:5,5:4,104:105,105:104,106:107,107:106})[bd.QuC(c)];
+						if(!isNaN(val)){ bd.sQuC(c,val);}
 					}
 					if(k.isextendcell!=1){
-						var val = ({3:4,4:3})[bd.getDirecCell(c)];
-						if(!isNaN(val)){ bd.setDirecCell(c,val);}
+						var val = ({3:4,4:3})[bd.DiC(c)];
+						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
 					break;
 				case 3: // 右90°反転
 					if(true){
-						var val = {2:5,3:2,4:3,5:4,21:22,22:21,102:103,103:102,104:107,105:104,106:105,107:106}[bd.getQuesCell(c)];
-						if(!isNaN(val)){ bd.setQuesCell(c,val);}
+						var val = {2:5,3:2,4:3,5:4,21:22,22:21,102:103,103:102,104:107,105:104,106:105,107:106}[bd.QuC(c)];
+						if(!isNaN(val)){ bd.sQuC(c,val);}
 					}
 					if(k.isextendcell!=1){
-						var val = {1:4,2:3,3:1,4:2}[bd.getDirecCell(c)];
-						if(!isNaN(val)){ bd.setDirecCell(c,val);}
+						var val = {1:4,2:3,3:1,4:2}[bd.DiC(c)];
+						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
 					break;
 				case 4: // 左90°反転
 					if(true){
-						var val = {2:3,3:4,4:5,5:2,21:22,22:21,102:103,103:102,104:105,105:106,106:107,107:104}[bd.getQuesCell(c)];
-						if(!isNaN(val)){ bd.setQuesCell(c,val);}
+						var val = {2:3,3:4,4:5,5:2,21:22,22:21,102:103,103:102,104:105,105:106,106:107,107:104}[bd.QuC(c)];
+						if(!isNaN(val)){ bd.sQuC(c,val);}
 					}
 					if(k.isextendcell!=1){
-						var val = {1:3,2:4,3:2,4:1}[bd.getDirecCell(c)];
-						if(!isNaN(val)){ bd.setDirecCell(c,val);}
+						var val = {1:3,2:4,3:2,4:1}[bd.DiC(c)];
+						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
 					break;
 				}
@@ -699,15 +702,15 @@ MenuExec.prototype = {
 		this.qnumh = new Array();
 
 		for(var cy=0;cy<=k.qrows-1;cy++){
-			this.qnumw[cy] = [bd.getQnumEXcell(bd.getexnum(-1,cy))];
+			this.qnumw[cy] = [bd.QnE(bd.exnum(-1,cy))];
 			for(var cx=0;cx<=k.qcols-1;cx++){
-				if(bd.getQuesCell(bd.getcnum(cx,cy))==51){ this.qnumw[cy].push(bd.getQnumCell(bd.getcnum(cx,cy)));}
+				if(bd.QuC(bd.cnum(cx,cy))==51){ this.qnumw[cy].push(bd.QnC(bd.cnum(cx,cy)));}
 			}
 		}
 		for(var cx=0;cx<=k.qcols-1;cx++){
-			this.qnumh[cx] = [bd.getDirecEXcell(bd.getexnum(cx,-1))];
+			this.qnumh[cx] = [bd.DiE(bd.exnum(cx,-1))];
 			for(var cy=0;cy<=k.qrows-1;cy++){
-				if(bd.getQuesCell(bd.getcnum(cx,cy))==51){ this.qnumh[cx].push(bd.getDirecCell(bd.getcnum(cx,cy)));}
+				if(bd.QuC(bd.cnum(cx,cy))==51){ this.qnumh[cx].push(bd.DiC(bd.cnum(cx,cy)));}
 			}
 		}
 	},
@@ -718,50 +721,50 @@ MenuExec.prototype = {
 		case 1: // 上下反転
 			for(var cx=0;cx<=k.qcols-1;cx++){
 				idx = 1; this.qnumh[cx] = this.qnumh[cx].reverse();
-				bd.setDirecEXcell(bd.getexnum(cx,-1), this.qnumh[cx][0]);
+				bd.sDiE(bd.exnum(cx,-1), this.qnumh[cx][0]);
 				for(var cy=0;cy<=k.qrows-1;cy++){
-					if(bd.getQuesCell(bd.getcnum(cx,cy))==51){ bd.setDirecCell(bd.getcnum(cx,cy), this.qnumh[cx][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sDiC(bd.cnum(cx,cy), this.qnumh[cx][idx]); idx++;}
 				}
 			}
 			break;
 		case 2: // 左右反転
 			for(var cy=0;cy<=k.qrows-1;cy++){
 				idx = 1; this.qnumw[cy] = this.qnumw[cy].reverse();
-				bd.setQnumEXcell(bd.getexnum(-1,cy), this.qnumw[cy][0]);
+				bd.sQnE(bd.exnum(-1,cy), this.qnumw[cy][0]);
 				for(var cx=0;cx<=k.qcols-1;cx++){
-					if(bd.getQuesCell(bd.getcnum(cx,cy))==51){ bd.setQnumCell(bd.getcnum(cx,cy), this.qnumw[cy][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sQnC(bd.cnum(cx,cy), this.qnumw[cy][idx]); idx++;}
 				}
 			}
 			break;
 		case 3: // 右90°反転
 			for(var cy=0;cy<=k.qrows-1;cy++){
 				idx = 1; this.qnumh[cy] = this.qnumh[cy].reverse();
-				bd.setQnumEXcell(bd.getexnum(-1,cy), this.qnumh[cy][0]);
+				bd.sQnE(bd.exnum(-1,cy), this.qnumh[cy][0]);
 				for(var cx=0;cx<=k.qcols-1;cx++){
-					if(bd.getQuesCell(bd.getcnum(cx,cy))==51){ bd.setQnumCell(bd.getcnum(cx,cy), this.qnumh[cy][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sQnC(bd.cnum(cx,cy), this.qnumh[cy][idx]); idx++;}
 				}
 			}
 			for(var cx=0;cx<=k.qcols-1;cx++){
 				idx = 1;
-				bd.setDirecEXcell(bd.getexnum(cx,-1), this.qnumw[k.qcols-1-cx][0]);
+				bd.sDiE(bd.exnum(cx,-1), this.qnumw[k.qcols-1-cx][0]);
 				for(var cy=0;cy<=k.qrows-1;cy++){
-					if(bd.getQuesCell(bd.getcnum(cx,cy))==51){ bd.setDirecCell(bd.getcnum(cx,cy), this.qnumw[k.qcols-1-cx][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sDiC(bd.cnum(cx,cy), this.qnumw[k.qcols-1-cx][idx]); idx++;}
 				}
 			}
 			break;
 		case 4: // 左90°反転
 			for(var cy=0;cy<=k.qrows-1;cy++){
 				idx = 1;
-				bd.setQnumEXcell(bd.getexnum(-1,cy), this.qnumh[k.qrows-1-cy][0]);
+				bd.sQnE(bd.exnum(-1,cy), this.qnumh[k.qrows-1-cy][0]);
 				for(var cx=0;cx<=k.qcols-1;cx++){
-					if(bd.getQuesCell(bd.getcnum(cx,cy))==51){ bd.setQnumCell(bd.getcnum(cx,cy), this.qnumh[k.qrows-1-cy][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sQnC(bd.cnum(cx,cy), this.qnumh[k.qrows-1-cy][idx]); idx++;}
 				}
 			}
 			for(var cx=0;cx<=k.qcols-1;cx++){
 				idx = 1; this.qnumw[cx] = this.qnumw[cx].reverse();
-				bd.setDirecEXcell(bd.getexnum(cx,-1), this.qnumw[cx][0]);
+				bd.sDiE(bd.exnum(cx,-1), this.qnumw[cx][0]);
 				for(var cy=0;cy<=k.qrows-1;cy++){
-					if(bd.getQuesCell(bd.getcnum(cx,cy))==51){ bd.setDirecCell(bd.getcnum(cx,cy), this.qnumw[cx][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sDiC(bd.cnum(cx,cy), this.qnumw[cx][idx]); idx++;}
 				}
 			}
 			break;
@@ -779,15 +782,15 @@ MenuExec.prototype = {
 		if(confirm(lang.isJP()?"回答を消去しますか？":"Do you want to erase the Answer?")){
 			um.newOperation(true);
 			for(i=0;i<bd.cell.length;i++){
-				if(bd.getQansCell(i)!=0){ um.addOpe('cell','qans',i,bd.getQansCell(i),0);}
-				if(bd.getQsubCell(i)!=0){ um.addOpe('cell','qsub',i,bd.getQsubCell(i),0);}
+				if(bd.QaC(i)!=0){ um.addOpe('cell','qans',i,bd.QaC(i),0);}
+				if(bd.QsC(i)!=0){ um.addOpe('cell','qsub',i,bd.QsC(i),0);}
 			}
 			if(k.isborder){
 				var val = (k.puzzleid!="bosanowa"?0:-1);
 				for(i=0;i<bd.border.length;i++){
-					if(bd.getQansBorder(i)!=0){ um.addOpe('border','qans',i,bd.getQansBorder(i),0);}
-					if(bd.getQsubBorder(i)!=val){ um.addOpe('border','qsub',i,bd.getQsubBorder(i),val);}
-					if(bd.getLineBorder(i)!=0){ um.addOpe('border','line',i,bd.getLineBorder(i),0);}
+					if(bd.QaB(i)!=0){ um.addOpe('border','qans',i,bd.QaB(i),0);}
+					if(bd.QsB(i)!=val){ um.addOpe('border','qsub',i,bd.QsB(i),val);}
+					if(bd.LiB(i)!=0){ um.addOpe('border','line',i,bd.LiB(i),0);}
 				}
 			}
 			if(!g.vml){ pc.flushCanvasAll();}
@@ -798,12 +801,12 @@ MenuExec.prototype = {
 		if(confirm(lang.isJP()?"補助記号を消去しますか？":"Do you want to erase the auxiliary marks?")){
 			um.newOperation(true);
 			for(i=0;i<bd.cell.length;i++){
-				if(bd.getQsubCell(i)!=0){ um.addOpe('cell','qsub',i,bd.getQsubCell(i),0);}
+				if(bd.QsC(i)!=0){ um.addOpe('cell','qsub',i,bd.QsC(i),0);}
 			}
 			if(k.isborder){
 				var val = (k.puzzleid!="bosanowa"?0:-1);
 				for(i=0;i<bd.border.length;i++){
-					if(bd.getQsubBorder(i)!=val){ um.addOpe('border','qsub',i,bd.getQsubBorder(i),val);}
+					if(bd.QsB(i)!=val){ um.addOpe('border','qsub',i,bd.QsB(i),val);}
 				}
 			}
 			if(!g.vml){ pc.flushCanvasAll();}
