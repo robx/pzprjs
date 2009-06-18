@@ -32,7 +32,7 @@ closedir PAR;
 
 $reduce = 1;
 
-$version = 'v3.2.0p4';
+$version = 'v3.2.0p3';
 @dates = localtime(time);
 $datestr = sprintf("%04d-%02d-%02d",1900+$dates[5],1+$dates[4],$dates[3]);
 
@@ -62,25 +62,29 @@ $datestr = sprintf("%04d-%02d-%02d",1900+$dates[5],1+$dates[4],$dates[3]);
  */
 EOR
 
-open OUT, ">pzprBase_Full.js";
+open OUT, ">../pzprBase.js";
+open FULL, ">../pzprBase_Full.js";
 print OUT $notice;
+print FULL $notice;
+
 if($ARGV[0] eq '-D'){
 	push @files1, 'testonly.js';
+
 	print OUT "// pzplBase.js テスト用\n";
+	print FULL "// pzplBase.js テスト用\n";
 }
+
+print FULL "\n\nvar pzprversion = \"$version\";\n\n";
 print OUT "var pzprversion=\"$version\";";
 &output(\@files1,1);
 close OUT;
+close FULL;
 
-open OUT, ">puzzles_Full.js";
+open OUT, ">../puzzles.js";
+open FULL, ">../puzzles_Full.js";
 &output(\@files2,2);
 close OUT;
-
-system("java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar -o ./pzprBase.js ./pzprBase_Full.js");
-system("java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar -o ./puzzles.js ./puzzles_Full.js");
-
-@fl = ('pzprBase.js','pzprBase_Full.js','puzzles.js','puzzles_Full.js');
-foreach(@fl){ system("copy /Y .\\$_ .."); unlink($_);}
+close FULL;
 
 sub output(){
 	my @files = @{$_[0]};
@@ -93,11 +97,27 @@ sub output(){
 			print("$1 $2\n");
 			while(<SRC>){
 				my $sline = $_;
-				print OUT $sline;
+				print FULL $sline;
+				
+				$sline =~ tr/\r\n//d;
+				$sline =~ s/\t//g;
+				$sline =~ s/^\/\/.*//g;
+				$sline =~ s/([^\\\:])\/\/.*/$1/g;
+				$sline =~ s/[ ]*$//;
+				$sline =~ s/^[ ]//;
+				$sline =~ s/[ ]*(\:|\;|\.|\,|\=+|\|+|\&+|\+|\(|\)|\{|\}|\[|\]|\<|\>|\?)[ ]*/$1/g;
+				$sline =~ s/[ ]{2,}\-[ ]*/\-/g;
+				if($sline){ print OUT $sline;}
+#				if($sline){
+#					if($l>=4500 && $l<4600){ print OUT $sline;}
+#					else{ print OUT "$sline\n";}
+#					$l++;
+#				}
 			}
 			close SRC;
 		}
 		else{
+			print FULL "document.writeln(\"<script type=\\\"text/javascript\\\" src=\\\"src/pzprBase/$_\\\"></script>\");\n";
 			print OUT "document.writeln(\"<script type=\\\"text/javascript\\\" src=\\\"src/pzprBase/$_\\\"></script>\");\n";
 		}
 	}
