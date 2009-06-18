@@ -1,4 +1,4 @@
-// MouseInput.js v3.1.9p3
+// MouseInput.js v3.2.0
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -117,22 +117,22 @@ MouseEvent.prototype = {
 	crossid : function(p){
 		var pos = this.crosspos(p,0.5);
 		if(pos.x<0 || pos.x>2*k.qcols || pos.y<0 || pos.y>2*k.qrows){ return -1;}
-		return int((pos.x/2)+(pos.y/2)*(k.qcols+1));
+		return mf((pos.x/2)+(pos.y/2)*(k.qcols+1));
 	},
 	cellpos : function(p){	// crosspos(p,0)でも代替はできる
-		return new Pos(int((p.x-k.p0.x)/k.cwidth), int((p.y-k.p0.y)/k.cheight));
+		return new Pos(mf((p.x-k.p0.x)/k.cwidth), mf((p.y-k.p0.y)/k.cheight));
 	},
 	crosspos : function(p,rc){
 		var pm = rc*k.cwidth;
-		var cx = int((p.x-k.p0.x+pm)/k.cwidth), cy = int((p.y-k.p0.y+pm)/k.cheight);
-		var dx = (p.x-k.p0.x+pm)%k.cwidth,      dy = (p.y-k.p0.y+pm)%k.cheight;
+		var cx = mf((p.x-k.p0.x+pm)/k.cwidth), cy = mf((p.y-k.p0.y+pm)/k.cheight);
+		var dx = (p.x-k.p0.x+pm)%k.cwidth,     dy = (p.y-k.p0.y+pm)%k.cheight;
 
 		return new Pos(cx*2+(dx<2*pm?0:1), cy*2+(dy<2*pm?0:1));
 	},
 
 	borderid : function(p,centerflag){
-		var cx = int((p.x-k.p0.x)/k.cwidth), cy = int((p.y-k.p0.y)/k.cheight);
-		var dx = (p.x-k.p0.x)%k.cwidth,      dy = (p.y-k.p0.y)%k.cheight;
+		var cx = mf((p.x-k.p0.x)/k.cwidth), cy = mf((p.y-k.p0.y)/k.cheight);
+		var dx = (p.x-k.p0.x)%k.cwidth,     dy = (p.y-k.p0.y)%k.cheight;
 		if(centerflag){
 			if(!k.isborderAsLine){
 				var m1=0.15*k.cwidth, m2=0.85*k.cwidth;
@@ -145,12 +145,12 @@ MouseEvent.prototype = {
 		}
 
 		if(dx<k.cwidth-dy){	//左上
-			if(dx>dy){ return bd.getbnum(2*cx+1,2*cy  );}	//右上
-			else     { return bd.getbnum(2*cx  ,2*cy+1);}	//左下
+			if(dx>dy){ return bd.bnum(2*cx+1,2*cy  );}	//右上
+			else     { return bd.bnum(2*cx  ,2*cy+1);}	//左下
 		}
 		else{	//右下
-			if(dx>dy){ return bd.getbnum(2*cx+2,2*cy+1);}	//右上
-			else     { return bd.getbnum(2*cx+1,2*cy+2);}	//左下
+			if(dx>dy){ return bd.bnum(2*cx+2,2*cy+1);}	//右上
+			else     { return bd.bnum(2*cx+1,2*cy+2);}	//左下
 		}
 		return -1;
 	},
@@ -224,31 +224,31 @@ MouseEvent.prototype = {
 
 		this.mouseCell = cc; 
 
-		if(k.NumberIsWhite==1 && bd.getQnumCell(cc)!=-1 && (this.inputData==1||(this.inputData==2 && pc.bcolor=="white"))){ return;}
+		if(k.NumberIsWhite==1 && bd.QnC(cc)!=-1 && (this.inputData==1||(this.inputData==2 && pc.bcolor=="white"))){ return;}
 		if(k.RBBlackCell==1 && this.inputData==1){
 			if(this.firstPos.x == -1 && this.firstPos.y == -1){ this.firstPos = new Pos(bd.cell[cc].cx, bd.cell[cc].cy);}
 			if((this.firstPos.x+this.firstPos.y) % 2 != (bd.cell[cc].cx+bd.cell[cc].cy) % 2){ return;}
 		}
 
-		bd.setQansCell(cc, (this.inputData==1?1:-1));
-		bd.setQsubCell(cc, (this.inputData==2?1:0));
+		bd.sQaC(cc, (this.inputData==1?1:-1));
+		bd.sQsC(cc, (this.inputData==2?1:0));
 
 		pc.paintCell(cc);
 	},
 	decIC : function(cc){
 		if(menu.getVal('use')==1){
-			if(this.btn.Left){ this.inputData=((bd.getQansCell(cc)!=1) ? 1 : 0); }
-			else if(this.btn.Right){ this.inputData=((bd.getQsubCell(cc)!=1) ? 2 : 0); }
+			if(this.btn.Left){ this.inputData=((bd.QaC(cc)!=1) ? 1 : 0); }
+			else if(this.btn.Right){ this.inputData=((bd.QsC(cc)!=1) ? 2 : 0); }
 		}
 		else if(menu.getVal('use')==2){
 			if(this.btn.Left){
-				if(bd.getQansCell(cc) == 1) this.inputData=2;
-				else if(bd.getQsubCell(cc) == 1) this.inputData=0;
+				if(bd.QaC(cc) == 1) this.inputData=2;
+				else if(bd.QsC(cc) == 1) this.inputData=0;
 				else this.inputData=1;
 			}
 			else if(this.btn.Right){
-				if(bd.getQansCell(cc) == 1) this.inputData=0;
-				else if(bd.getQsubCell(cc) == 1) this.inputData=1;
+				if(bd.QaC(cc) == 1) this.inputData=0;
+				else if(bd.QsC(cc) == 1) this.inputData=1;
 				else this.inputData=2;
 			}
 		}
@@ -276,54 +276,54 @@ MouseEvent.prototype = {
 		pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
 	},
 	inputqnum1 : function(cc,max){
-		var qflag = (k.isDispHatena||k.puzzleid=="lightup"||k.puzzleid=="shakashaka"||k.puzzleid=="snakes");
+		var qflag = (k.isDispHatena||k.puzzleid=="lightup"||k.puzzleid=="shakashaka"||k.puzzleid=="snakes"||k.puzzleid=="shugaku");
 		if(k.isOneNumber){
 			cc = room.getTopOfRoomByCell(cc);
 			if(room.getCntOfRoomByCell(cc)<max){ max = room.getCntOfRoomByCell(cc);}
 		}
-		if(puz.roommaxfunc){ max = puz.roommaxfunc(cc,1);}
+		if(bd.roommaxfunc){ max = bd.roommaxfunc(cc,1);}
 
 		if(this.btn.Left){
-			if(bd.getQnumCell(cc)==max){ bd.setQnumCell(cc,-1);}
-			else if(bd.getQnumCell(cc)==-1){ bd.setQnumCell(cc,(qflag?-2:(k.dispzero?0:1)));}
-			else if(bd.getQnumCell(cc)==-2){ bd.setQnumCell(cc,(k.dispzero?0:1));}
-			else{ bd.setQnumCell(cc,bd.getQnumCell(cc)+1);}
+			if(bd.QnC(cc)==max){ bd.sQnC(cc,-1);}
+			else if(bd.QnC(cc)==-1){ bd.sQnC(cc,(qflag?-2:(k.dispzero?0:1)));}
+			else if(bd.QnC(cc)==-2){ bd.sQnC(cc,(k.dispzero?0:1));}
+			else{ bd.sQnC(cc,bd.QnC(cc)+1);}
 		}
 		else if(this.btn.Right){
-			if(bd.getQnumCell(cc)==-1){ bd.setQnumCell(cc,max);}
-			else if(bd.getQnumCell(cc)==-2){ bd.setQnumCell(cc,-1);}
-			else if(bd.getQnumCell(cc)==(k.dispzero?0:1)){ bd.setQnumCell(cc,(qflag?-2:-1));}
-			else{ bd.setQnumCell(cc,bd.getQnumCell(cc)-1);}
+			if(bd.QnC(cc)==-1){ bd.sQnC(cc,max);}
+			else if(bd.QnC(cc)==-2){ bd.sQnC(cc,-1);}
+			else if(bd.QnC(cc)==(k.dispzero?0:1)){ bd.sQnC(cc,(qflag?-2:-1));}
+			else{ bd.sQnC(cc,bd.QnC(cc)-1);}
 		}
-		if(bd.getQnumCell(cc)!=-1 && k.NumberIsWhite){ bd.setQansCell(cc,-1); if(pc.bcolor=="white"){ bd.setQsubCell(cc,0);} }
-		if(k.isAnsNumber){ bd.setQansCell(cc,-1); bd.setQsubCell(cc,0);}
+		if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
+		if(k.isAnsNumber){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
 
 		return cc;
 	},
 	inputqnum3 : function(cc,max){
-		if(bd.getQnumCell(cc)!=-1){ return cc;}
-		if(puz.roommaxfunc){ max = puz.roommaxfunc(cc,3);}
-		bd.setDirecCell(cc,0);
+		if(bd.QnC(cc)!=-1){ return cc;}
+		if(bd.roommaxfunc){ max = bd.roommaxfunc(cc,3);}
+		bd.sDiC(cc,0);
 
 		if(this.btn.Left){
 			if(k.NumberWithMB){
-				if     (bd.getQansCell(cc)==max){ bd.setQansCell(cc,-1); bd.setQsubCell(cc,1); return cc;}
-				else if(bd.getQsubCell(cc)==1)  { bd.setQansCell(cc,-1); bd.setQsubCell(cc,2); return cc;}
-				else if(bd.getQsubCell(cc)==2)  { bd.setQansCell(cc,-1); bd.setQsubCell(cc,0); return cc;}
+				if     (bd.QaC(cc)==max){ bd.sQaC(cc,-1); bd.sQsC(cc,1); return cc;}
+				else if(bd.QsC(cc)==1)  { bd.sQaC(cc,-1); bd.sQsC(cc,2); return cc;}
+				else if(bd.QsC(cc)==2)  { bd.sQaC(cc,-1); bd.sQsC(cc,0); return cc;}
 			}
-			if     (bd.getQansCell(cc)==max){ bd.setQansCell(cc,-1);                  }
-			else if(bd.getQansCell(cc)==-1) { bd.setQansCell(cc,(k.dispzero?0:1));    }
-			else                            { bd.setQansCell(cc,bd.getQansCell(cc)+1);}
+			if     (bd.QaC(cc)==max){ bd.sQaC(cc,-1);              }
+			else if(bd.QaC(cc)==-1) { bd.sQaC(cc,(k.dispzero?0:1));}
+			else                    { bd.sQaC(cc,bd.QaC(cc)+1);    }
 		}
 		else if(this.btn.Right){
 			if(k.NumberWithMB){
-				if     (bd.getQsubCell(cc)==1) { bd.setQansCell(cc,max); bd.setQsubCell(cc,0); return cc;}
-				else if(bd.getQsubCell(cc)==2) { bd.setQansCell(cc,-1);  bd.setQsubCell(cc,1); return cc;}
-				else if(bd.getQansCell(cc)==-1){ bd.setQansCell(cc,-1);  bd.setQsubCell(cc,2); return cc;}
+				if     (bd.QsC(cc)==1) { bd.sQaC(cc,max); bd.sQsC(cc,0); return cc;}
+				else if(bd.QsC(cc)==2) { bd.sQaC(cc,-1);  bd.sQsC(cc,1); return cc;}
+				else if(bd.QaC(cc)==-1){ bd.sQaC(cc,-1);  bd.sQsC(cc,2); return cc;}
 			}
-			if     (bd.getQansCell(cc)==-1)              { bd.setQansCell(cc,max);}
-			else if(bd.getQansCell(cc)==(k.dispzero?0:1)){ bd.setQansCell(cc,-1); }
-			else                                         { bd.setQansCell(cc,bd.getQansCell(cc)-1);}
+			if     (bd.QaC(cc)==-1)              { bd.sQaC(cc,max);}
+			else if(bd.QaC(cc)==(k.dispzero?0:1)){ bd.sQaC(cc,-1); }
+			else                                 { bd.sQaC(cc,bd.QaC(cc)-1);}
 		}
 		return cc;
 	},
@@ -346,15 +346,15 @@ MouseEvent.prototype = {
 		else{
 			if(this.btn.Left){
 				for(i=0;i<array.length-1;i++){
-					if(!flag && bd.getQuesCell(cc)==array[i]){ bd.setQuesCell(cc,array[i+1]); flag=true;}
+					if(!flag && bd.QuC(cc)==array[i]){ bd.sQuC(cc,array[i+1]); flag=true;}
 				}
-				if(!flag && bd.getQuesCell(cc)==array[array.length-1]){ bd.setQuesCell(cc,array[0]); flag=true;}
+				if(!flag && bd.QuC(cc)==array[array.length-1]){ bd.sQuC(cc,array[0]); flag=true;}
 			}
 			else if(this.btn.Right){
 				for(i=array.length;i>0;i--){
-					if(!flag && bd.getQuesCell(cc)==array[i]){ bd.setQuesCell(cc,array[i-1]); flag=true;}
+					if(!flag && bd.QuC(cc)==array[i]){ bd.sQuC(cc,array[i-1]); flag=true;}
 				}
-				if(!flag && bd.getQuesCell(cc)==array[0]){ bd.setQuesCell(cc,array[array.length-1]); flag=true;}
+				if(!flag && bd.QuC(cc)==array[0]){ bd.sQuC(cc,array[array.length-1]); flag=true;}
 			}
 		}
 
@@ -369,14 +369,14 @@ MouseEvent.prototype = {
 		if(cc==-1){ return;}
 
 		if(this.btn.Left){
-			if(bd.getQsubCell(cc)==0){ bd.setQsubCell(cc, 1);}
-			else if(bd.getQsubCell(cc)==1){ bd.setQsubCell(cc, 2);}
-			else{ bd.setQsubCell(cc, 0);}
+			if     (bd.QsC(cc)==0){ bd.sQsC(cc, 1);}
+			else if(bd.QsC(cc)==1){ bd.sQsC(cc, 2);}
+			else{ bd.sQsC(cc, 0);}
 		}
 		else if(this.btn.Right){
-			if(bd.getQsubCell(cc)==0){ bd.setQsubCell(cc, 2);}
-			else if(bd.getQsubCell(cc)==2){ bd.setQsubCell(cc, 1);}
-			else{ bd.setQsubCell(cc, 0);}
+			if     (bd.QsC(cc)==0){ bd.sQsC(cc, 2);}
+			else if(bd.QsC(cc)==2){ bd.sQsC(cc, 1);}
+			else{ bd.sQsC(cc, 0);}
 		}
 		pc.paintCell(cc);
 	},
@@ -389,15 +389,15 @@ MouseEvent.prototype = {
 		if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 		var inp = 0;
-		var cc = bd.getcnum(this.mouseCell.x, this.mouseCell.y);
-		if(cc!=-1 && bd.getQnumCell(cc)!=-1){
+		var cc = bd.cnum(this.mouseCell.x, this.mouseCell.y);
+		if(cc!=-1 && bd.QnC(cc)!=-1){
 			if     (pos.y-this.mouseCell.y==-1){ inp=1;}
 			else if(pos.y-this.mouseCell.y== 1){ inp=2;}
 			else if(pos.x-this.mouseCell.x==-1){ inp=3;}
 			else if(pos.x-this.mouseCell.x== 1){ inp=4;}
 			else{ return;}
 
-			bd.setDirecCell(cc, (bd.getDirecCell(cc)!=inp?inp:0));
+			bd.sDiC(cc, (bd.DiC(cc)!=inp?inp:0));
 
 			pc.paintCell(cc);
 		}
@@ -409,7 +409,7 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	inputtile : function(x,y){
 		var cc = this.cellid(new Pos(x,y));
-		if(cc==-1 || cc==this.mouseCell || bd.getQuesCell(cc)==51){ return;}
+		if(cc==-1 || cc==this.mouseCell || bd.QuC(cc)==51){ return;}
 		if(this.inputData==-1){ this.decIC(cc);}
 
 		this.mouseCell = cc; 
@@ -418,9 +418,9 @@ MouseEvent.prototype = {
 		var c;
 
 		for(c=0;c<k.qcols*k.qrows;c++){
-			if(area.check[c] == areaid && (this.inputData==1 || bd.getQsubCell(c)!=3)){
-				bd.setQansCell(c, (this.inputData==1?1:-1));
-				bd.setQsubCell(c, (this.inputData==2?1:0));
+			if(area.check[c] == areaid && (this.inputData==1 || bd.QsC(c)!=3)){
+				bd.sQaC(c, (this.inputData==1?1:-1));
+				bd.sQsC(c, (this.inputData==2?1:0));
 			}
 		}
 
@@ -435,7 +435,7 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	input51 : function(x,y){
 		var pos = this.cellpos(new Pos(x,y));
-		var cc = bd.getcnum(pos.x, pos.y);
+		var cc = bd.cnum(pos.x, pos.y);
 
 		if((pos.x==-1 && pos.y>=-1 && pos.y<=k.qrows-1) || (pos.y==-1 && pos.x>=-1 && pos.x<=k.qcols-1)){
 			var tcx=tc.getTCX(), tcy=tc.getTCY();
@@ -451,7 +451,7 @@ MouseEvent.prototype = {
 		}
 		else if(cc!=-1){
 			if(this.btn.Left){
-				if(bd.getQuesCell(cc)!=51){ this.set51cell(cc,true);}
+				if(bd.QuC(cc)!=51){ this.set51cell(cc,true);}
 				else{ kc.chtarget('shift');}
 			}
 			else if(this.btn.Right){ this.set51cell(cc,false);}
@@ -463,16 +463,16 @@ MouseEvent.prototype = {
 	// ※とりあえずカックロ用
 	set51cell : function(cc,val){
 		if(val==true){
-			bd.setQuesCell(cc,51);
-			bd.setQnumCell(cc,0);
-			bd.setDirecCell(cc,0);
-			bd.setQansCell(cc,-1);
+			bd.sQuC(cc,51);
+			bd.sQnC(cc,0);
+			bd.sDiC(cc,0);
+			bd.sQaC(cc,-1);
 		}
 		else{
-			bd.setQuesCell(cc,0);
-			bd.setQnumCell(cc,0);
-			bd.setDirecCell(cc,0);
-			bd.setQansCell(cc,-1);
+			bd.sQuC(cc,0);
+			bd.sQnC(cc,0);
+			bd.sDiC(cc,0);
+			bd.sQaC(cc,-1);
 		}
 	},
 
@@ -486,12 +486,12 @@ MouseEvent.prototype = {
 
 		if(cc==tc.getTXC()){
 			if(this.btn.Left){
-				if(bd.getQnumCross(cc)==4){ bd.setQnumCross(cc,-2);}
-				else{ bd.setQnumCross(cc,bd.getQnumCross(cc)+1);}
+				if(bd.QnX(cc)==4){ bd.sQnX(cc,-2);}
+				else{ bd.sQnX(cc,bd.QnX(cc)+1);}
 			}
 			else if(this.btn.Right){
-				if(bd.getQnumCross(cc)==-2){ bd.setQnumCross(cc,4);}
-				else{ bd.setQnumCross(cc,bd.getQnumCross(cc)-1);}
+				if(bd.QnX(cc)==-2){ bd.sQnX(cc,4);}
+				else{ bd.sQnX(cc,bd.QnX(cc)-1);}
 			}
 		}
 		else{
@@ -507,14 +507,13 @@ MouseEvent.prototype = {
 	inputcrossMark : function(x,y){
 		var pos = this.crosspos(new Pos(x,y), 0.24);
 		if(pos.x%2!=0 || pos.y%2!=0){ return;}
-		if(pos.x<(k.isoutsidecross==0?0:2) || pos.x>(k.isoutsidecross==0?2*k.qcols:2*k.qcols-2)){ return;}
-		if(pos.y<(k.isoutsidecross==0?0:2) || pos.y>(k.isoutsidecross==0?2*k.qrows:2*k.qrows-2)){ return;}
+		if(pos.x<(k.isoutsidecross==1?0:2) || pos.x>(k.isoutsidecross==1?2*k.qcols:2*k.qcols-2)){ return;}
+		if(pos.y<(k.isoutsidecross==1?0:2) || pos.y>(k.isoutsidecross==1?2*k.qrows:2*k.qrows-2)){ return;}
 
-		var cc = bd.getxnum(int(pos.x/2),int(pos.y/2));
+		var cc = bd.xnum(mf(pos.x/2),mf(pos.y/2));
 
 		um.disCombine = 1;
-		if(bd.getQnumCross(cc)==1){ bd.setQnumCross(cc,-1);}
-		else{ bd.setQnumCross(cc,1);}
+		bd.sQnX(cc,(bd.QnX(cc)==1)?-1:1);
 		um.disCombine = 0;
 
 		pc.paint(bd.cross[cc].cx-1, bd.cross[cc].cy-1, bd.cross[cc].cx, bd.cross[cc].cy);
@@ -530,8 +529,8 @@ MouseEvent.prototype = {
 		var pos = this.crosspos(new Pos(x,y), 0.35);
 		if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
-		var id = bd.getbnum(pos.x, pos.y);
-		if(id==-1 && this.mouseCell.x){ id = bd.getbnum(this.mouseCell.x, this.mouseCell.y);}
+		var id = bd.bnum(pos.x, pos.y);
+		if(id==-1 && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
 
 		if(this.mouseCell!=-1 && id!=-1){
 			if((pos.x%2==0 && this.mouseCell.x==pos.x && Math.abs(this.mouseCell.y-pos.y)==1) ||
@@ -540,16 +539,16 @@ MouseEvent.prototype = {
 				this.mouseCell=-1;
 
 				if(this.inputData==-1){
-					if     (flag==0){ this.inputData=(bd.getQuesBorder(id)==0?1:0);}
-					else if(flag==1){ this.inputData=(bd.getQansBorder(id)==0?1:0);}
+					if     (flag==0){ this.inputData=(bd.QuB(id)==0?1:0);}
+					else if(flag==1){ this.inputData=(bd.QaB(id)==0?1:0);}
 				}
 
 				if(flag==0){
-					if(this.inputData!=-1){ bd.setQuesBorder(id, this.inputData); bd.setQansBorder(id, 0);}
+					if(this.inputData!=-1){ bd.sQuB(id, this.inputData); bd.sQaB(id, 0);}
 				}
-				else if(flag==1 && bd.getQuesBorder(id)==0){
-					if     (this.inputData==1){ bd.setQansBorder(id, 1); if(k.isborderAsLine){ bd.setQsubBorder(id, 0);} }
-					else if(this.inputData==0){ bd.setQansBorder(id, 0);}
+				else if(flag==1 && bd.QuB(id)==0){
+					if     (this.inputData==1){ bd.sQaB(id, 1); if(k.isborderAsLine){ bd.sQsB(id, 0);} }
+					else if(this.inputData==0){ bd.sQaB(id, 0);}
 				}
 				pc.paintBorder(id);
 			}
@@ -571,10 +570,10 @@ MouseEvent.prototype = {
 		if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 		var id = -1;
-		if     (pos.y-this.mouseCell.y==-1){ id=bd.getbnum(this.mouseCell.x*2+1,this.mouseCell.y*2  );}
-		else if(pos.y-this.mouseCell.y== 1){ id=bd.getbnum(this.mouseCell.x*2+1,this.mouseCell.y*2+2);}
-		else if(pos.x-this.mouseCell.x==-1){ id=bd.getbnum(this.mouseCell.x*2  ,this.mouseCell.y*2+1);}
-		else if(pos.x-this.mouseCell.x== 1){ id=bd.getbnum(this.mouseCell.x*2+2,this.mouseCell.y*2+1);}
+		if     (pos.y-this.mouseCell.y==-1){ id=bd.bnum(this.mouseCell.x*2+1,this.mouseCell.y*2  );}
+		else if(pos.y-this.mouseCell.y== 1){ id=bd.bnum(this.mouseCell.x*2+1,this.mouseCell.y*2+2);}
+		else if(pos.x-this.mouseCell.x==-1){ id=bd.bnum(this.mouseCell.x*2  ,this.mouseCell.y*2+1);}
+		else if(pos.x-this.mouseCell.x== 1){ id=bd.bnum(this.mouseCell.x*2+2,this.mouseCell.y*2+1);}
 
 		this.mouseCell = pos;
 		if(this.inputData==2 || this.inputData==3){ this.inputpeke2(id);}
@@ -584,15 +583,15 @@ MouseEvent.prototype = {
 		}
 	},
 	inputLine2 : function(id){
-		if(this.inputData==-1){ this.inputData=(bd.getLineBorder(id)==0?1:0);}
-		if     (this.inputData==1){ bd.setLineBorder(id, 1); bd.setQsubBorder(id, 0);}
-		else if(this.inputData==0){ bd.setLineBorder(id, 0); bd.setQsubBorder(id, 0);}
+		if(this.inputData==-1){ this.inputData=(bd.LiB(id)==0?1:0);}
+		if     (this.inputData==1){ bd.sLiB(id, 1); bd.sQsB(id, 0);}
+		else if(this.inputData==0){ bd.sLiB(id, 0); bd.sQsB(id, 0);}
 		pc.paintLine(id);
 	},
 	inputqsub2 : function(id){
-		if(this.inputData==-1){ this.inputData=(bd.getQsubBorder(id)==0?1:0);}
-		if     (this.inputData==1){ bd.setQsubBorder(id, 1);}
-		else if(this.inputData==0){ bd.setQsubBorder(id, 0);}
+		if(this.inputData==-1){ this.inputData=(bd.QsB(id)==0?1:0);}
+		if     (this.inputData==1){ bd.sQsB(id, 1);}
+		else if(this.inputData==0){ bd.sQsB(id, 0);}
 		pc.paintLine(id);
 	},
 
@@ -602,16 +601,16 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	inputpeke : function(x,y){
 		var pos = this.crosspos(new Pos(x,y), 0.22);
-		var id = bd.getbnum(pos.x, pos.y);
+		var id = bd.bnum(pos.x, pos.y);
 		if(id==-1 || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
 
 		this.mouseCell = pos;
 		this.inputpeke2(id);
 	},
 	inputpeke2 : function(id){
-		if(this.inputData==-1){ if(bd.getQsubBorder(id)==0){ this.inputData=2;}else{ this.inputData=3;} }
-		if     (this.inputData==2){ if(k.isborderAsLine==0){ bd.setLineBorder(id, 0);}else{ bd.setQansBorder(id, 0);} bd.setQsubBorder(id, 2);}
-		else if(this.inputData==3){ if(k.isborderAsLine==0){ bd.setLineBorder(id, 0);}else{ bd.setQansBorder(id, 0);} bd.setQsubBorder(id, 0);}
+		if(this.inputData==-1){ if(bd.QsB(id)==0){ this.inputData=2;}else{ this.inputData=3;} }
+		if     (this.inputData==2){ if(k.isborderAsLine==0){ bd.sLiB(id, 0);}else{ bd.sQaB(id, 0);} bd.sQsB(id, 2);}
+		else if(this.inputData==3){ if(k.isborderAsLine==0){ bd.sLiB(id, 0);}else{ bd.sQaB(id, 0);} bd.sQsB(id, 0);}
 		pc.paintLine(id);
 	},
 
@@ -625,18 +624,18 @@ MouseEvent.prototype = {
 	dispRed : function(x,y){
 		var cc = this.cellid(new Pos(x,y));
 		this.mouseReset();
-		if(cc==-1 || cc==this.mouseCell || bd.getQansCell(cc)!=1){ return;}
-		mv.dr0(function(c){ return (c!=-1 && bd.getQansCell(c)==1 && bd.getErrorCell(c)==0);},cc,1);
+		if(cc==-1 || cc==this.mouseCell || bd.QaC(cc)!=1){ return;}
+		mv.dr0(function(c){ return (c!=-1 && bd.QaC(c)==1 && bd.ErC(c)==0);},cc,1);
 		ans.errDisp = true;
 		pc.paintAll();
 	},
 	dr0 : function(func, cc, num){
-		if(cc==-1 || bd.getErrorCell(cc)!=0){ return;}
-		bd.setErrorCell([cc],num);
-		if( func(bd.cell[cc].up()) ){ arguments.callee(func, bd.cell[cc].up(), num);}
-		if( func(bd.cell[cc].dn()) ){ arguments.callee(func, bd.cell[cc].dn(), num);}
-		if( func(bd.cell[cc].lt()) ){ arguments.callee(func, bd.cell[cc].lt(), num);}
-		if( func(bd.cell[cc].rt()) ){ arguments.callee(func, bd.cell[cc].rt(), num);}
+		if(bd.ErC(cc)!=0){ return;}
+		bd.sErC([cc],num);
+		if( func(bd.up(cc)) ){ this.dr0(func, bd.up(cc), num);}
+		if( func(bd.dn(cc)) ){ this.dr0(func, bd.dn(cc), num);}
+		if( func(bd.lt(cc)) ){ this.dr0(func, bd.lt(cc), num);}
+		if( func(bd.rt(cc)) ){ this.dr0(func, bd.rt(cc), num);}
 		return;
 	},
 
@@ -645,11 +644,11 @@ MouseEvent.prototype = {
 		if(id==this.mouseCell||id==-1){ return;}
 		this.mouseCell = id;
 
-		if(((k.isborderAsLine==0?bd.getLineBorder:bd.getQansBorder).bind(bd))(id)<=0){ return;}
+		if(((k.isborderAsLine==0?bd.LiB:bd.QaB).bind(bd))(id)<=0){ return;}
 		this.mousereset();
 
 		var idlist = (k.isborderCross?ans.LineList:this.LineListNotCross.bind(this))(id);
-		bd.setErrorBorder(bd.borders,2); bd.setErrorBorder(idlist,1);
+		bd.sErB(bd.borders,2); bd.sErB(idlist,1);
 		ans.errDisp = true;
 		pc.paintAll();
 	},
@@ -662,26 +661,26 @@ MouseEvent.prototype = {
 	},
 	lc0 : function(idlist,bx,by,dir){
 		var include  = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
-		var func     = (k.isborderAsLine==0?bd.getLineBorder:bd.getQansBorder).bind(bd);
-		var lcntfunc = (k.isborderAsLine==0?function(bx,by){ return ans.lcntCell(bd.getcnum(int(bx/2),int(by/2)));}
-										   :function(bx,by){ return bd.lcntCross(int(bx/2),int(by/2));});
+		var func     = (k.isborderAsLine==0?bd.LiB:bd.QaB).bind(bd);
+		var lcntfunc = (k.isborderAsLine==0?function(bx,by){ return ans.lcntCell(bd.cnum(mf(bx/2),mf(by/2)));}
+										   :function(bx,by){ return bd.lcntCross(mf(bx/2),mf(by/2));});
 		while(1){
 			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 			if((bx+by)%2==0){
 				if(lcntfunc(bx,by)>=3){
-					if(func(bd.getbnum(bx,by-1))>0){ this.lc0(idlist,bx,by,1);}
-					if(func(bd.getbnum(bx,by+1))>0){ this.lc0(idlist,bx,by,2);}
-					if(func(bd.getbnum(bx-1,by))>0){ this.lc0(idlist,bx,by,3);}
-					if(func(bd.getbnum(bx+1,by))>0){ this.lc0(idlist,bx,by,4);}
+					if(func(bd.bnum(bx,by-1))>0){ this.lc0(idlist,bx,by,1);}
+					if(func(bd.bnum(bx,by+1))>0){ this.lc0(idlist,bx,by,2);}
+					if(func(bd.bnum(bx-1,by))>0){ this.lc0(idlist,bx,by,3);}
+					if(func(bd.bnum(bx+1,by))>0){ this.lc0(idlist,bx,by,4);}
 					break;
 				}
-				else if(dir!=1 && func(bd.getbnum(bx,by+1))>0){ dir=2;}
-				else if(dir!=2 && func(bd.getbnum(bx,by-1))>0){ dir=1;}
-				else if(dir!=3 && func(bd.getbnum(bx+1,by))>0){ dir=4;}
-				else if(dir!=4 && func(bd.getbnum(bx-1,by))>0){ dir=3;}
+				else if(dir!=1 && func(bd.bnum(bx,by+1))>0){ dir=2;}
+				else if(dir!=2 && func(bd.bnum(bx,by-1))>0){ dir=1;}
+				else if(dir!=3 && func(bd.bnum(bx+1,by))>0){ dir=4;}
+				else if(dir!=4 && func(bd.bnum(bx-1,by))>0){ dir=3;}
 			}
 			else{
-				var id = bd.getbnum(bx,by);
+				var id = bd.bnum(bx,by);
 				if(include(idlist,id) || func(id)<=0){ break;}
 				idlist.push(id);
 			}
