@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META NAME="robots" CONTENTS="nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<TITLE>ぱずぷれv3</TITLE>
+<link rel="stylesheet" href="../../top.css" type="text/css" />
+<style type="text/css">
+<!--
+	li.lunch { color:black;}
+	li.lunch2{ color:#333333;}
+	li.testa { color:blue; }
+	li.omopa { color:green;}
+	li.nigun { color:lime; }
+	li.subpa { color:gray; }
+	li.orig  { color:#afafaf; }
+	td.lists { padding:4pt 0pt 12pt 4pt; vertical-align:top;}
+//-->
+</style>
+<script type="text/javascript">
+<!--
+	var kanpen = ['nurikabe', 'mashu', 'numlin', 'yajirin', 'ripple', 'shikaku', 'kurodoko', 'hitori', 'hashikake', 'sudoku', 'kakuro'];
+	var a = true;
+
+	function disp(){
+		for(var i=0;i<kanpen.length;i++){
+			if(a){ document.getElementById(kanpen[i]).style.display = 'none';}
+			else { document.getElementById(kanpen[i]).style.display = 'list-item';}
+		}
+		a = !a;
+	}
+//-->
+</script>
+</HEAD>
+<BODY background="../bg.gif">
+
+<div class=main>
+
+<h2 id=title>ぱずぷれv3 エディタリンク</h2>
+
+<table border=0 class=exp><tr><td class=exp>
+<p class=expression>
+　ぱずぷれ<small>(仮称)</small>はニコリに載っている/載っていたパズルを作成したり、遊んだりするWebアプリです。
+もともとJavaAppletで開発していたのですが、昨今のIT事情を考えてJavaScriptで開発し直すことにしました。
+</p>
+<p class=expression style="margin-top:4pt;">
+　スクリプトの作成はFireFox3.0.11、Google Chrome2.0で行っており、動作確認はSafari3.2.3、
+InternetExplorer6、たまにOpera9.64でも行っております。
+</p>
+<p class=expression style="margin-top:4pt;">
+ただし、InternetExplorerおよびSleipnir等のIEコンポーネント使用ブラウザは
+描画処理が多少重いですので、それ以外のブラウザの使用を推奨いたします。
+なお、IEでの描画処理には<a href="http://code.google.com/p/uupaa-js-spinoff/">uuCanvas.js v1.0</a>を
+使用させていただいており、<a href="http://www.microsoft.com/japan/Silverlight/">Silverlight</a>を
+使うと描画処理が数倍程度速くなるようです。
+</p>
+</td></tr></table>
+
+<table border=0 class=exp><tr><td class=exp>
+<table border=0 width=100%><tr>
+
+<td class="lists" style="background-color:#ffdfdf;">
+<b>黒マス配置系</b>
+<ul>
+<li class="lunch" id="nurikabe"><a href="p.html?m+nurikabe">ぬりかべ</a></li>
+<li class="testa"><a href="p.html?m+tasquare">たすくえあ</a></li>
+<li class="omopa"><a href="p.html?m+tawa">たわむれんが</a></li>
+<li class="nigun"><a href="p.html?m+creek">クリーク</a></li>
+<li class="nigun"><a href="p.html?m+mochikoro">モチコロ</a></li>
+<li class="subpa"><a href="p.html?m+nuribou">ぬりぼう</a></li>
+<li class="orig"><a href="p.html?m+mochinyoro">モチにょろ</a></li>
+</ul>
+</td>
+
+<td class="lists" style="background-color:#ffdfdf;">
+<b>領域＋黒マス系</b>
+<ul>
+<li class="lunch"><a href="p.html?m+lits">ＬＩＴＳ</a></li>
+<li class="lunch2"><a href="p.html?m+tilepaint">タイルペイント</a></li>
+<li class="omopa"><a href="p.html?m+norinori">のりのり</a></li>
+<li class="nigun"><a href="p.html?m+shimaguni">島国</a></li>
+<li class="subpa"><a href="p.html?m+paintarea">ペイントエリア</a></li>
+<li class="subpa"><a href="p.html?m+chocona">チョコナ</a></li>
+</ul>
+</td>
+
+<td class="lists" style="background-color:#ffdfdf;">
+<b>連黒分断禁系</b>
+<ul>
+<li class="lunch"><a href="p.html?m+heyawake">へやわけ</a></li>
+<li class="lunch2" id="hitori"><a href="p.html?m+hitori">ひとりにしてくれ</a></li>
+<li class="lunch2" id="kurodoko"><a href="p.html?m+kurodoko">黒マスはどこだ</a></li>
+<li class="nigun"><a href="p.html?m+yajikazu">やじさんかずさん</a></li>
+<li class="subpa"><a href="p.html?m+kurochute">クロシュート</a></li>
+<li class="orig"><a href="p.html?m+ayeheya">∀人∃ＨＥＹＡ</a></li>
+</ul>
+</td>
+
+</tr>
+
+<tr>
+
+<td class="lists" style="background-color:#dfdfff;">
+<b>ループ系</b>
+<ul>
+<li class="lunch"><a href="p.html?m+slither">スリザーリンク</a></li>
+<li class="lunch" id="mashu"><a href="p.html?m+mashu">ましゅ</a></li>
+<li class="lunch" id="yajirin"><a href="p.html?m+yajirin">ヤジリン</a></li>
+<li class="lunch2"><a href="p.html?m+slalom">スラローム</a></li>
+<li class="omopa"><a href="p.html?m+mejilink">メジリンク</a></li>
+<li class="nigun"><a href="p.html?m+bag">バッグ</a></li>
+<li class="nigun"><a href="p.html?m+country">カントリーロード</a></li>
+</ul>
+</td>
+
+<td class="lists" style="background-color:#dfdfff;">
+<b>交差ありループ系</b>
+<ul>
+<li class="testa"><a href="p.html?m+icebarn">アイスバーン</a></li>
+<li class="nigun"><a href="p.html?m+reflect">リフレクトリンク</a></li>
+<li class="subpa"><a href="p.html?m+pipelink">パイプリンク</a></li>
+<li class="subpa"><a href="p.html?m+loopsp">環状線スペシャル</a></li>
+<li class="subpa"><a href="p.html?m+barns">バーンズ</a></li>
+<li class="subpa"><a href="p.html?m+nagenawa">なげなわ</a></li>
+</ul>
+</td>
+
+<td class="lists" style="background-color:#ccffcc;">
+<b>領域分割系</b>
+<ul>
+<li class="lunch"><a href="p.html?m+tentaisho">天体ショー</a></li>
+<li class="lunch2" id="shikaku"><a href="p.html?m+shikaku">四角に切れ</a></li>
+<li class="omopa"><a href="p.html?m+shwolf">ヤギとオオカミ</a></li>
+<li class="omopa"><a href="p.html?m+kramma">快刀乱麻</a></li>
+<li class="nigun"><a href="p.html?m+bdblock">ボーダーブロック</a></li>
+<li class="subpa"><a href="p.html?m+nawabari">なわばり</a></li>
+<li class="subpa"><a href="p.html?m+triplace">トリプレイス</a></li>
+</ul>
+</td>
+
+</tr>
+
+<tr>
+
+<td class="lists" style="background-color:#dfdfdf;">
+<b>数字系</b>
+<ul>
+<li class="lunch" id="kakuro"><a href="p.html?m+kakuro">カックロ</a></li>
+<li class="lunch2"><a href="p.html?m+minarism">マイナリズム</a></li>
+<li class="nigun"><a href="p.html?m+sukoro">数コロ</a></li>
+<li class="subpa"><a href="p.html?m+kakuru">カックル</a></li>
+<li class="subpa"><a href="p.html?m+view">ヴィウ</a></li>
+<li class="subpa"><a href="p.html?m+bosanowa">ボサノワ</a></li>
+</ul>
+</td>
+
+<td class="lists" style="background-color:#dfdfdf;">
+<b>領域＋数字系</b>
+<ul>
+<li class="lunch" id="sudoku"><a href="p.html?m+sudoku">数独</a></li>
+<li class="lunch"><a href="p.html?m+fillomino">フィルオミノ</a></li>
+<li class="lunch" id="ripple"><a href="p.html?m+ripple">波及効果</a></li>
+<li class="lunch2"><a href="p.html?m+factors">因子の部屋</a></li>
+<li class="omopa"><a href="p.html?m+cojun">コージュン</a></li>
+<li class="subpa"><a href="p.html?m+nanro">ナンロー</a></li>
+</ul>
+</td>
+
+<td class="lists" style="background-color:#ccffcc;">
+<b>タタミ系</b>
+<ul>
+<li class="omopa"><a href="p.html?m+usotatami">ウソタタミ</a></li>
+<li class="nigun"><a href="p.html?m+tatamibari">タタミバリ</a></li>
+<li class="subpa"><a href="p.html?m+fillmat">フィルマット</a></li>
+</ul>
+</td>
+
+</tr>
+
+<tr>
+
+<td class="lists" style="background-color:#ffffcc;">
+<b>線を引く</b>
+<ul>
+<li class="nigun"><a href="p.html?m+gokigen">ごきげんななめ</a></li>
+<li class="nigun"><a href="p.html?m+tateyoko">タテボーヨコボー</a></li>
+<li class="nigun"><a href="p.html?m+kaero">お家へ帰ろう</a></li>
+<li class="subpa"><a href="p.html?m+bonsan">へやぼん/ぼんさん</a></li>
+</ul>
+</td>
+
+<td class="lists" style="background-color:#ffffcc;">
+<b>線でつなぐ</b>
+<ul>
+<li class="lunch" id="numlin"><a href="p.html?m+numlin">ナンバーリンク</a></li>
+<li class="lunch2" id="hashikake"><a href="p.html?m+hashikake">橋をかけろ</a></li>
+<li class="nigun"><a href="p.html?m+firefly">ホタルビーム</a></li>
+<li class="subpa"><a href="p.html?m+wblink">シロクロリンク</a></li>
+<li class="subpa"><a href="p.html?m+ichimaga">(磁石)イチマガ</a></li>
+<li class="subpa"><a href="p.html?m+kusabi">クサビリンク</a></li>
+</ul>
+</td>
+
+<td class="lists" style="background-color:#ffffcc;">
+<font color=seagreen><b></b></font>
+<b>その他</b>
+<ul>
+<li class="lunch"><a href="p.html?m+lightup">美術館</a></li>
+<li class="testa"><a href="p.html?m+shakashaka">シャカシャカ</a></li>
+<li class="omopa"><a href="p.html?m+snakes">へびいちご</a></li>
+<li class="nigun"><a href="p.html?m+kinkonkan">キンコンカン</a></li>
+<li class="subpa"><a href="p.html?m+hakoiri">はこいり○△□</a></li>
+<li class="subpa"><a href="p.html?m+shugaku">修学旅行の夜</a></li>
+</ul>
+</td>
+
+</tr>
+</table>
+</td></tr></table>
+
+<table border=0 class=exp><tr><td class=exp>
+URLジェネレータ、ぱずぷれ(仮称)は<a href="../">こちら</a><br>
+ぱずぷれv3で作成しているスクリプト(JavaScrpitファイル)のダウンロードは<a href="src.zip">こちら</a><br>
+ぱずぷれv3、ぱずぷれアプレットのアクセス数集計は<a href="logview.php">こちら</a><br>
+<a href="src.zip">ReleaseNotes</a> <a href="src.zip">ReleaseNotes(pzprBase.js)</a>
+</td></tr></table>
+
+<hr>
+
+<p class=back><a href="../">TOPへ戻る</a> <span style="color:white;" onClick="javascript:disp(0);">display</span></p>
+
+</div>
+</BODY>
+</HTML>
+
+<script type="text/javascript">
+<!--
+	disp();
+//-->
+</script>

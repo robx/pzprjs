@@ -1,0 +1,118 @@
+#! c:/perl/bin/perl
+
+use CGI;
+
+#&decode();
+
+my $q = new CGI;
+
+if($q->param('operation') eq 'save'){
+	printf("Content-type: application/octet-stream\n");
+	printf("Content-Disposition: attachment; filename=\"%s\"\n", $q->param('filename'));
+	printf("\n");
+
+	#$rn = '';
+	#if($q->param('platform') eq 'Win'){ $rn = "\015\012";}
+	#elsif($q->param('platform') eq 'Mac'){ $rn = "\015";}
+	#else{ $rn = "\012";}
+
+	$rn = "\012";
+
+	my @lines = split(/\//, $q->param('ques'));
+
+	if($#lines>=3){
+		for(@lines){ printf "$_$rn";}
+	}
+
+	if($q->param('urlstr')){
+		printf "$rn";
+		printf "%s$rn",$q->param('urlstr');
+	}
+}
+else{
+	my($buffer);
+
+	my($str);
+
+	# POSTサイズの上限
+	$CGI::POST_MAX = 128 * 1024; # 128KB
+
+	# ファイル取得
+	my $FH = $q->upload('filebox');
+
+	# MIMEタイプ取得
+	my $mimetype = $q->uploadInfo($FH)->{'Content-Type'};
+
+	# HTML出力
+
+	printf("Content-type: text/html\n\n");
+
+	while(read($FH, $buffer, 1024)){
+		$str .= $buffer;
+	}
+	close ($FH) if ($CGI::OS ne 'UNIX'); # Windowsプラットフォーム用
+
+	#$str = join(',', map("\"$_\"", split(/[\r\n]+/, $str)));
+
+	my @lines0 = split(/[\r\n]+/, $str);
+	my @lines = ();
+	foreach(@lines0){
+		#if($_ eq ''){ last;}
+		push @lines, $_;
+	}
+	$str = join(',', map("\"$_\"", @lines));
+
+	print <<"EOL";
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META NAME="robots" CONTENTS="noindex,nofollow">
+<script type="text/javascript">
+<!--
+EOL
+	if   ($q->param('pencilbox')==0){ printf("if(parent.fio){ parent.fio.fileopen([$str], 1);}\n");}
+	elsif($q->param('pencilbox')==1){ printf("if(parent.fio){ parent.fio.fileopen([$str], 2);}\n");}
+	print <<"EOL";
+//-->
+</script>
+</HEAD>
+<BODY>
+ファイルを読み込みました。
+</BODY>
+</HTML>
+EOL
+}
+
+exit(0);
+
+#---------------
+# デコード処理 |
+#---------------
+
+sub decode{
+    my($encoding) = @_;
+    $method = $ENV{'REQUEST_METHOD'};
+    local($query, $key, $val, @in);
+
+    if($method eq 'GET') { $query = $ENV{'QUERY_STRING'}; }
+    elsif($method eq 'POST') { read(STDIN, $query, $ENV{'CONTENT_LENGTH'}); }
+
+    local(@query) = split(/&/, $query);
+    foreach(@query){
+        tr/+/ /;
+        ($key, $val) = split(/=/);
+
+        # %HH 形式の部分のデコード
+
+        $key =~ s/%([A-Fa-f0-9][A-Fa-f0-9])/pack("c", hex($1))/ge;
+        $val =~ s/%([A-Fa-f0-9][A-Fa-f0-9])/pack("c", hex($1))/ge;
+        $val =~ s/\r\n/\n/g;
+
+        # jcode.pl を使うときは＃をはずす．．．
+        #jcode'convert(*key, $encoding) if ($encoding);
+        #jcode'convert(*val, $encoding) if ($encoding);
+
+        $in{$key} = $val;
+    }
+    return *in;
+}

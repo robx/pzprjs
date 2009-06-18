@@ -1,0 +1,85 @@
+@charset "Shift_JIS" ;
+
+	BODY{ background:; color:black; line-height:120%; text-align:center;}
+
+	/* メインのウィンドウ扱い */
+	div.main{width:80%;background-color: white; text-align:center;
+			margin:auto;margin-top:8pt; padding-bottom:6pt; border: 2pt green solid;}
+
+	div#mainbox  { margin:auto;}
+	div#bottombox{ text-align:left; margin-left:6pt;}
+
+	/* メニュー画面 */
+	div.flag{ display:inline; cursor:pointer; }
+	div.flagsel{ display:inline; cursor:pointer; color:maroon; font-weight:bold;
+				background-color:#efefef;}
+
+	div.menu{ display:inline; color:blue; text-decoration:underline; cursor:pointer;}
+	div.menusel{ display:inline; color:maroon; text-decoration:underline; font-weight:bold;
+				background-color:#efefef; cursor:pointer;}
+	div.menunull{ display:inline; color:silver; cursor:pointer;}
+
+	blockquote#menupanel{ display:block; font-size:11pt; background-color: #efefef; margin:0pt; padding:2pt 4pt 2pt 4pt;}
+
+	blockquote#expression{ margin: 6pt 12pt 0pt 12pt;}
+	blockquote#usepanel{ margin:2pt 0pt 0pt 6pt;}
+	blockquote#modepanel{ margin:2pt 0pt 0pt 6pt;}
+	blockquote#checkpanel{ margin:4pt 0pt 0pt 16pt;}
+	blockquote#timerpanel{ margin:2pt 0pt 0pt 6pt;}
+
+	/* 中身 */
+	h2#title{ text-align:center;margin:16pt 0pt 24pt 0pt;}
+
+	div.exp{ width:380pt; margin:auto; margin-bottom:8pt; padding: 0pt 0pt 8pt 0pt; text-align:left; border: 1px red solid;}
+
+	div.ques{ margin:auto; margin-top:16pt; margin-bottom:16pt; text-align:center;}
+
+	div#divques{ position:relative;}
+	div#btnarea{ position:relative;}
+
+	canvas#puzzle_canvas{ border:1px silver solid; cursor:default;}
+
+	div.divnum{ display:inline; position:absolute; cursor:default; line-height:100%; }
+
+	/* ○○へ戻る の部分 */
+	p.back{ text-align:left; margin: 4pt auto 6pt 12pt;}
+
+	/* ポップアップウィンドウ */
+	div.floatmenu{ visibility:hidden; display:inline; text-align:left; font-size:11pt;
+				   background-color: blue; margin:0pt; padding:2pt; position:absolute; z-index:101;}
+
+/*	div.smenu{ display:inline; font-size:11pt; background-color: white; margin:1pt; padding:0pt;} */
+	div.smenu{ display:block; text-align:left; background-color: white; color:black; cursor:pointer;
+				margin:0pt; padding:1pt 8pt 0pt 4pt;}
+	div.smenusel{ display:block; text-align:left; background-color: #ffe8e8; color:black; text-decoration:underline; cursor:pointer;
+				margin:0pt; padding:1pt 8pt 0pt 4pt;}
+	div.smenunull{ display:block; text-align:left; background-color: #dfdfdf; color:gray; cursor:default;
+				margin:0pt; padding:1pt 8pt 0pt 4pt;}
+	* html div.smenusep { display:inline; line-height:2pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;}
+	*:first_child+html div.smenusep { display:inline; line-height:2pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;}
+	div.smenusep { display:block; height:3pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;}
+
+	div.popup{ visibility:hidden; display:inline; text-align:left; font-size:11pt; line-height:160%;
+				 background-color: #efefff; margin:0pt; border: 1px black solid; position:absolute;
+				 left:0pt; top:0pt; z-index:100;}
+	div.credit{ line-height:110%; margin:4pt 0pt 2pt 4pt;}
+
+	div.titlebar{ display:block; text-align:left; background-color: gray; color:white; cursor:pointer;
+					margin:0pt; padding-top:1pt; padding-bottom:1pt; padding-left:5pt; font-size:11pt;}
+
+	form{ margin:2pt 8pt 4pt 4pt; padding:0pt;}
+	div#btnarea input[type="button"]{ height:18pt;}
+	input[type="button"]{ height:16pt;}
+
+	iframe#fileiopanel{ width:200px; height:200px; position:absolute; top:0px; left:-10000px;}
+	form#fileform2    { width:100px; height:100px; position:absolute; top:0px; left:-9000px; }
+
+	td.kpnum { width:32px; height:32px; font-size:24px; text-align:center; vertical-align:middle; background-color:white; cursol:default;}
+	td.kpimg { width:32px; height:32px; text-align:left; vertical-align:top; background-color:white; cursol:default;}
+	img.kp   { position:absolute; overflow:hidden;}
+
+	/* aタグ 背景とか */
+	a:link{ color:blue;}
+	a:active{ color:red;}
+	a:visited{ color:#336666;}
+	a:hover{ color:aqua;}

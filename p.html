@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META NAME="robots" CONTENTS="noindex,nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<link rel="stylesheet" href="sc7.css" type="text/css" />
+<script type="text/xaml" id="xaml"><?xml version="1.0"?>
+  <Canvas xmlns="http://schemas.microsoft.com/client/2007"></Canvas></script>
+<!--[if IE]><script type="text/javascript" src="src/uuCanvas.js"></script><![endif]-->
+<script type="text/javascript" src="src/jquery.js"></script>
+<script type="text/javascript" src="src/pzprBase.js"></script>  <!-- ぱずぷれv3共通ファイルの読み込み/専用ファイルも中で行う -->
+<TITLE>読み込み中です... - ぱずぷれv3</TITLE>
+</HEAD>
+
+<BODY>
+<p style="position:absolute;width:40%;margin:0pt;text-align:left;"><span id="translation">English</span></p>
+
+<div id=main class=main>
+
+<h2 id=title2>読み込み中です...</h2>
+
+<div class="exp" id="menuboard">
+	<blockquote id="menupanel"></blockquote>
+	<blockquote id="expression">
+		ファイルの読み込み中です...
+	</blockquote>
+	<hr id="separator1" style="margin-top:6pt; margin-bottom:6pt;">
+	<blockquote id="usepanel"></blockquote>
+	<blockquote id="checkpanel"></blockquote>
+	<hr id="separator2" style="margin-top:6pt; margin-bottom:6pt;">
+	<blockquote id="timerpanel">
+		経過時間：00:00
+	</blockquote>
+</div>
+
+<div class="ques" id="quesboard">
+	<div id=divques>
+		<canvas id="puzzle_canvas" width="1" height="1">
+		</canvas>
+	</div>
+
+	<div id="btnarea">
+		<input type="button" id="btncheck" value="チェック">　
+		<input type="button" id="btnundo" value="戻"
+	   ><input type="button" id="btnredo" value="進">　
+		<input type="button" id="btnclear" value="回答消去"
+	   ><input type="button" id="btnclear2" value="補助消去">　
+	</div>
+</div>
+
+</div> <!-- div#main close. -->
+
+<!-- ここから下はサブメニューのポップアップ用です(その他もここに追加されていきます。) -->
+<div id="popup_parent">
+
+<div class="popup" id="pop1_1">
+<div class="titlebar" id="bar1_1">&nbsp;盤面の新規作成</div>
+<form name="newboard">
+<span id="pop1_1_cap0">盤面を新規作成します。</span><br>
+<span id="pop1_1_cap1">よこ</span><input type="text" name="col" value="" size="3" maxlength="3" />
+<span id="pop1_1_cap2">たて</span><input type="text" name="row" value="" size="3" maxlength="3" /><br>
+<input type="button" name="newboard" value="新規作成" /><input type="button" name="cancel" value="キャンセル" />
+</form>
+</div>
+
+<div class="popup" id="pop1_2">
+<div class="titlebar" id="bar1_2">&nbsp;URL入力</div>
+<form name="urlinput">
+<span id="pop1_2_cap0">URLから問題を読み込みます。</span><br>
+<textarea name="ta" cols="48" rows="8" wrap="hard"></textarea><br>
+<input type="button" name="urlinput" value="読み込む" /><input type="button" name="cancel" value="キャンセル" />
+</form>
+</div>
+
+<div class="popup" id="pop1_3">
+<div class="titlebar" id="bar1_3">&nbsp;URL出力</div>
+<form name="urloutput">
+<textarea name="ta" cols="48" rows="8" wrap="hard" readonly></textarea><br>
+<input type="button" name="openurl" value="URLから開く" />
+<input type="button" name="close" value="閉じる" />
+</form>
+</div>
+
+<div class="popup" id="pop1_4">
+<div class="titlebar" id="bar1_4">&nbsp;ファイルを開く</div>
+<form name="fileform" id="fileform" action="fileio.xcg" method="post" onsubmit="return false;" enctype="multipart/form-data" target="fileiopanel">
+<span id="pop1_4_cap0">ファイル選択</span><br>
+<input type="file" name="filebox" id="filebox"><br>
+<input type="button" name="close" value="閉じる" />
+<input type="hidden" name="pencilbox" value="0">
+<input type="hidden" name="operation" value="open">
+</form>
+</div>
+
+<div class="popup" id="pop1_8">
+<div class="titlebar" id="bar1_8">&nbsp;データベースの管理</div>
+<form name="database">
+<table border="0"><tr>
+<td rowspan="3" style="padding-right:12pt;">
+<select name="sorts"></select>
+<input type="button" name="tableup" value="▲" />
+<input type="button" name="tabledn" value="▼" />
+<br><br>
+<select name="datalist" size="8" style="width:100%;"></select>
+</td>
+<td colspan="2" style="vertical-align:middle;">
+<span id="pop1_8_com" style="font-size:10pt;">コメント:</span><br>
+<textarea name="comtext" cols="24" rows="3" wrap="hard" style="background-color:#dfdfdf;" readonly></textarea><br>
+</td></tr>
+<tr><td rowspan="2" style="vertical-align:bottom;padding-right:8pt;">
+<input type="button" name="save" value="盤面を保存" /><br>
+<input type="button" name="comedit" value="コメントを編集する" /><br>
+<input type="button" name="difedit" value="難易度を設定する" /><br>
+<input type="button" name="open" value="データを読み込む" />
+</td>
+<td style="vertical-align:top;padding-top:4pt;">
+<input type="button" name="del" value="削除" style="color:red;" /><br>
+</td></tr>
+<tr><td style="vertical-align:bottom;">
+<input type="button" name="close" value="閉じる" />
+</td></tr>
+</table>
+</form>
+</div>
+
+<div class="popup" id="pop2_1">
+<div class="titlebar" id="bar2_1">&nbsp;盤面の調整</div>
+<form name="adjust">
+<span id="pop2_1_cap0">盤面の調整を行います。</span><br>
+<span id="pop2_1_cap1">拡大</span>
+<input type="button" name="expandup" value="上" /><input type="button" name="expanddn" value="下" />
+<input type="button" name="expandlt" value="左" /><input type="button" name="expandrt" value="右" /><br>
+<span id="pop2_1_cap2">縮小</span>
+<input type="button" name="reduceup" value="上" /><input type="button" name="reducedn" value="下" />
+<input type="button" name="reducelt" value="左" /><input type="button" name="reducert" value="右" /><br>
+<br>
+<input type="button" name="close" value="閉じる" />
+</form>
+</div>
+
+<div class="popup" id="pop2_2">
+<div class="titlebar" id="bar2_2">&nbsp;反転・回転</div>
+<form name="flip">
+<span id="pop2_2_cap0">盤面の回転・反転を行います。</span><br>
+<input type="button" name="turnl" value="左90°回転" /><input type="button" name="turnr" value="右90°回転" /><br>
+<input type="button" name="flipy" value="上下反転" /><input type="button" name="flipx" value="左右反転" /><br>
+<br>
+<input type="button" name="close" value="閉じる" />
+</form>
+</div>
+
+<div class="popup" id="pop4_1">
+<div class="titlebar" id="bar4_1">&nbsp;表示サイズの変更</div>
+<form name="dispsize" onsubmit="return false;">
+<span id="pop4_1_cap0">表示サイズを変更します。</span><br>
+<span id="pop4_1_cap1">表示サイズ</span><input type="text" name="cs" value="" size="3" maxlength="3" /><br>
+<input type="button" name="dispsize" value="変更する" /><input type="button" name="cancel" value="キャンセル" />
+</form>
+</div>
+
+<div class="popup" id="pop3_1">
+<div class="titlebar" id="bar3_1">&nbsp;credit</div>
+<div class="credit" id="credit3_1"></div>
+<form name="credit">
+<input type="button" name="close" value="閉じる" />
+</form>
+</div>
+
+</div> <!-- div#popup_parent close. -->
+<!-- ここまでポップアップ -->
+
+<!-- ここから下はCanvasに表示する文字用です -->
+<div id="numobj_parent"></div>
+<!-- ここまで -->
+
+<!-- ここからファイル出力用フォーム/入出力用インラインフレーム -->
+<iframe id="fileiopanel" src="about:blank" style="width:200px;height:200px;position:absolute;top:0px;left:-10000px" name="fileiopanel"></iframe>
+<form name="fileform2" id="fileform2" action="fileio.xcg" method="post" onsubmit="return false;"
+style="width:100px;height:100px;position:absolute;top:0px;left:-9000px" target="fileiopanel">
+<input type="hidden" name="operation" value="save">
+<input type="hidden" name="filename" value="">
+<input type="hidden" name="ques" value="">
+<input type="hidden" name="urlstr" value="">
+<input type="hidden" name="platform" value="">
+</form>
+<!-- ここまで -->
+
+<hr id="bottomhr" style="margin-top:6pt; margin-bottom:4pt;display:none;">
+<textarea id="testtest" cols="96" rows="24" wrap="hard" style="display:none;"></textarea><br>
+
+</BODY>
+</HTML>
