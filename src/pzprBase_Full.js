@@ -5,8 +5,8 @@
  * written in JavaScript.
  * 
  * @author  happa.
- * @version v3.2.0
- * @date    2009-06-19
+ * @version v3.2.0p1
+ * @date    2009-06-26
  * 
  * This script uses following libraries.
  *  jquery.js (version 1.3.2)
@@ -21,7 +21,7 @@
  * http://indi.s58.xrea.com/pzpr/v3/LICENCE.HTML
  * 
  */
-var pzprversion="v3.2.0p4";
+var pzprversion="v3.2.0p1";
 //----------------------------------------------------------------------------
 // ★グローバル変数
 //---------------------------------------------------------------------------
@@ -2741,7 +2741,6 @@ MouseEvent.prototype = {
 	// mv.inputQues() Cellのquesデータをarrayのとおりに入力する
 	//---------------------------------------------------------------------------
 	inputQues : function(x,y,array){
-		var i;
 		var cc = this.cellid(new Pos(x,y));
 		if(cc==-1){ return;}
 
@@ -2754,13 +2753,13 @@ MouseEvent.prototype = {
 		}
 		else{
 			if(this.btn.Left){
-				for(i=0;i<array.length-1;i++){
+				for(var i=0;i<array.length-1;i++){
 					if(!flag && bd.QuC(cc)==array[i]){ bd.sQuC(cc,array[i+1]); flag=true;}
 				}
 				if(!flag && bd.QuC(cc)==array[array.length-1]){ bd.sQuC(cc,array[0]); flag=true;}
 			}
 			else if(this.btn.Right){
-				for(i=array.length;i>0;i--){
+				for(var i=array.length;i>0;i--){
 					if(!flag && bd.QuC(cc)==array[i]){ bd.sQuC(cc,array[i-1]); flag=true;}
 				}
 				if(!flag && bd.QuC(cc)==array[0]){ bd.sQuC(cc,array[array.length-1]); flag=true;}
@@ -2824,9 +2823,8 @@ MouseEvent.prototype = {
 		this.mouseCell = cc; 
 		var area = ans.searchRarea();
 		var areaid = area.check[cc];
-		var c;
 
-		for(c=0;c<k.qcols*k.qrows;c++){
+		for(var c=0;c<k.qcols*k.qrows;c++){
 			if(area.check[c] == areaid && (this.inputData==1 || bd.QsC(c)!=3)){
 				bd.sQaC(c, (this.inputData==1?1:-1));
 				bd.sQsC(c, (this.inputData==2?1:0));
@@ -3242,7 +3240,11 @@ KeyEvent.prototype = {
 			if     (k.mode==1 && !this.isSHIFT){ k.mode=3; menu.setVal('mode',3); flag = true;}
 			else if(k.mode==3 &&  this.isSHIFT){ k.mode=1; menu.setVal('mode',1); flag = true;}
 		}
-		if(k.scriptcheck && this.ca=='F7'){ accheck1(); flag = true;}
+		if(k.scriptcheck){
+			if(this.isCTRL && this.ca=='F7'){ accheck1();  flag = true;}
+			if(this.isCTRL && this.ca=='F8'){ disptest(0); flag = true;}
+			if(this.isCTRL && this.ca=='F9'){ disptest(1); flag = true;}
+		}
 
 		return flag;
 	},
@@ -4634,7 +4636,7 @@ FileIO.prototype = {
 	decodeBorderLine : function(stack){
 		this.decodeBorder( function(c,ca){
 			if     (ca == "-1"){ bd.sQsB(c, 2);}
-			else if(ca != "0" ){ bd.sLiB(c, parseInt(ca));}
+			else if(ca != "0" ){ bd.sLiB(c, parseInt(ca)); if(bd.LiB(c)==0){ bd.border[c].line=parseInt(ca);}}	// fix
 		},stack);
 	},
 	encodeBorderLine : function(){
@@ -5850,7 +5852,7 @@ UndoManager.prototype = {
 		}
 	},
 	allerase : function(){
-		for(i=this.ope.length-1;i>=0;i--){ this.ope.pop();}
+		for(var i=this.ope.length-1;i>=0;i--){ this.ope.pop();}
 		this.current  = 0;
 		this.anscount = 0;
 		this.enb_btn();
@@ -5896,8 +5898,7 @@ UndoManager.prototype = {
 			var lastid = this.ope.length-1;
 
 			if(this.current < this.ope.length){
-				var i;
-				for(i=this.ope.length-1;i>=this.current;i--){ this.ope.pop();}
+				for(var i=this.ope.length-1;i>=this.current;i--){ this.ope.pop();}
 				lastid = -1;
 			}
 			else if(this.undoonly!=1){ lastid!=-1;}
@@ -7028,10 +7029,10 @@ MenuExec.prototype = {
 				case "expanddn": this.expanddn(); break;
 				case "expandlt": this.expandlt(); break;
 				case "expandrt": this.expandrt(); break;
-				case "reduceup": um.undoonly = 1; if(k.qrows>1){ this.reduceup();}else{f=false;} um.undoonly = 0; break;
-				case "reducedn": um.undoonly = 1; if(k.qrows>1){ this.reducedn();}else{f=false;} um.undoonly = 0; break;
-				case "reducelt": um.undoonly = 1; if(k.qcols>1){ this.reducelt();}else{f=false;} um.undoonly = 0; break;
-				case "reducert": um.undoonly = 1; if(k.qcols>1){ this.reducert();}else{f=false;} um.undoonly = 0; break;
+				case "reduceup": um.undoonly = 1; f=this.reduceup(); um.undoonly = 0; break;
+				case "reducedn": um.undoonly = 1; f=this.reducedn(); um.undoonly = 0; break;
+				case "reducelt": um.undoonly = 1; f=this.reducelt(); um.undoonly = 0; break;
+				case "reducert": um.undoonly = 1; f=this.reducert(); um.undoonly = 0; break;
 			}
 
 			if(f&&getSrcElement(e).name.indexOf("reduce")!=-1){ um.addOpe('board', getSrcElement(e).name, 0, 0, 1);}
@@ -7073,6 +7074,7 @@ MenuExec.prototype = {
 			}
 		}
 		if(k.isborder){
+			bd.bdinside = (k.qcols-1)*k.qrows+k.qcols*(k.qrows-1);
 			margin = 2*number-1+(k.isoutsideborder==0?0:2); ncount = bd.border.length;
 			for(var i=0;i<margin;i++){ bd.border.push(new Border()); bd.border[ncount+i].cellinit(ncount+i); bd.borders.push(ncount+i);} 
 			for(var i=0;i<bd.border.length;i++){ bd.setposBorder(i);}
@@ -7133,11 +7135,13 @@ MenuExec.prototype = {
 		}
 	},
 
-	reduceup : function(){ this.reduce(k.qcols, 'r', function(cx,cy,f){ return (cy==0);}        ,	function(bx,by){ return (by==1)||(by==2);}                     ,'up'); },
-	reducedn : function(){ this.reduce(k.qcols, 'r', function(cx,cy,f){ return (cy==k.qrows-1+f);},	function(bx,by){ return (by==2*k.qrows-1)||(by==2*k.qrows-2);} ,'dn'); },
-	reducelt : function(){ this.reduce(k.qrows, 'c', function(cx,cy,f){ return (cx==0);}        ,	function(bx,by){ return (bx==1)||(bx==2);}                     ,'lt'); },
-	reducert : function(){ this.reduce(k.qrows, 'c', function(cx,cy,f){ return (cx==k.qcols-1+f);},	function(bx,by){ return (bx==2*k.qcols-1)||(bx==2*k.qcols-2);} ,'rt'); },
+	reduceup : function(){ return this.reduce(k.qcols, 'r', function(cx,cy,f){ return (cy==0);}        ,	function(bx,by){ return (by==1)||(by==2);}                     ,'up'); },
+	reducedn : function(){ return this.reduce(k.qcols, 'r', function(cx,cy,f){ return (cy==k.qrows-1+f);},	function(bx,by){ return (by==2*k.qrows-1)||(by==2*k.qrows-2);} ,'dn'); },
+	reducelt : function(){ return this.reduce(k.qrows, 'c', function(cx,cy,f){ return (cx==0);}        ,	function(bx,by){ return (bx==1)||(bx==2);}                     ,'lt'); },
+	reducert : function(){ return this.reduce(k.qrows, 'c', function(cx,cy,f){ return (cx==k.qcols-1+f);},	function(bx,by){ return (bx==2*k.qcols-1)||(bx==2*k.qcols-2);} ,'rt'); },
 	reduce : function(number, rc, func, func2, key){
+		if((rc=='c'&&k.qcols==1)||(rc=='r'&&k.qrows==1)){ return false;}
+
 		this.adjustSpecial(6,key);
 
 		var margin = 0;
@@ -7173,6 +7177,7 @@ MenuExec.prototype = {
 			for(var i=0;i<number+1;i++){ bd.cross.pop(); bd.crosses.pop();}
 		}
 		if(k.isborder){
+			bd.bdinside = (k.qcols-1)*k.qrows+k.qcols*(k.qrows-1);
 			margin = 0;
 			for(var i=0;i<bd.border.length;i++){
 				if(func2(bd.border[i].cx, bd.border[i].cy)){
@@ -7205,6 +7210,7 @@ MenuExec.prototype = {
 			for(var i=0;i<qnums.length;i++){ bd.sQnC(room.getTopOfRoom(qnums[i].areaid), qnums[i].val);}
 		}
 		this.adjustSpecial2(6,key);
+		return true;
 	},
 	reduceborder : function(key){
 		for(var i=0;i<bd.border.length;i++){
@@ -7582,13 +7588,13 @@ MenuExec.prototype = {
 	ACconfirm : function(){
 		if(confirm(lang.isJP()?"回答を消去しますか？":"Do you want to erase the Answer?")){
 			um.newOperation(true);
-			for(i=0;i<bd.cell.length;i++){
+			for(var i=0;i<bd.cell.length;i++){
 				if(bd.QaC(i)!=0){ um.addOpe('cell','qans',i,bd.QaC(i),0);}
 				if(bd.QsC(i)!=0){ um.addOpe('cell','qsub',i,bd.QsC(i),0);}
 			}
 			if(k.isborder){
 				var val = (k.puzzleid!="bosanowa"?0:-1);
-				for(i=0;i<bd.border.length;i++){
+				for(var i=0;i<bd.border.length;i++){
 					if(bd.QaB(i)!=0){ um.addOpe('border','qans',i,bd.QaB(i),0);}
 					if(bd.QsB(i)!=val){ um.addOpe('border','qsub',i,bd.QsB(i),val);}
 					if(bd.LiB(i)!=0){ um.addOpe('border','line',i,bd.LiB(i),0);}
@@ -7601,12 +7607,12 @@ MenuExec.prototype = {
 	ASconfirm : function(){
 		if(confirm(lang.isJP()?"補助記号を消去しますか？":"Do you want to erase the auxiliary marks?")){
 			um.newOperation(true);
-			for(i=0;i<bd.cell.length;i++){
+			for(var i=0;i<bd.cell.length;i++){
 				if(bd.QsC(i)!=0){ um.addOpe('cell','qsub',i,bd.QsC(i),0);}
 			}
 			if(k.isborder){
 				var val = (k.puzzleid!="bosanowa"?0:-1);
-				for(i=0;i<bd.border.length;i++){
+				for(var i=0;i<bd.border.length;i++){
 					if(bd.QsB(i)!=val){ um.addOpe('border','qsub',i,bd.QsB(i),val);}
 				}
 			}
