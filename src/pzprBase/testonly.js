@@ -1,17 +1,16 @@
-// testonly.js v3.2.0
+// testonly.js v3.2.0p1
 
-//k.scriptcheck=true;
+k.scriptcheck = true;
+//k.callmode = "pmake";
 
 	function testonly_func(){
 		$("#float_eval")//.append("<font color=white>&nbsp;性能測定</font><br>\n")
 						.append("<div class=\"smenu_tmp\" id=\"perfeval\">&nbsp;正答判定時間</div>\n")
 						.append("<div class=\"smenu_tmp\" id=\"painteval\">&nbsp;paintAll()時間</div>\n")
 						.append("<div class=\"smenu_tmp\" id=\"resizeeval\">&nbsp;resize描画時間</div>\n");
-		if(k.scriptcheck){ $("#float_eval").append("<div class=\"smenu_tmp\" id=\"sccheck\">&nbsp;enc, fioチェック</div>\n");}
 		$("#perfeval").click(perfeval);
 		$("#painteval").click(painteval);
 		$("#resizeeval").click(resizeeval);
-		if(k.scriptcheck){ $("#sccheck").click(sccheck);}
 
 		$("div.smenu_tmp").each(function(){
 			$(this).hover(menu.submenuhover.ebind(menu), menu.submenuout.ebind(menu));
@@ -20,14 +19,37 @@
 		});
 
 		if(k.scriptcheck){
-alert(k.scriptcheck);
-			$("#bottomhr").css("display","block");
-			//$("#bottombox").css("display","block");
-			//$("#testtest").css("display","block").attr("rows","12");
-			base.resize_canvas_onload();
+			var tf = {	//testfunc
+				titlebardown : function(e){
+					menu.isptitle = 1;
+					menu.offset.x = mv.pointerX(e) - parseInt($("#poptest").css("left"));
+					menu.offset.y = mv.pointerY(e) - parseInt($("#poptest").css("top"));
+				},
+				titlebarup   : function(e){ menu.isptitle = 0; },
+				titlebarout  : function(e){ if(!menu.insideOf($("#poptest"), e)){ menu.isptitle = 0;} },
+				titlebarmove : function(e){
+					if(menu.isptitle){
+						$("#poptest").css("left", (mv.pointerX(e) - menu.offset.x));
+						$("#poptest").css("top" , (mv.pointerY(e) - menu.offset.y));
+					}
+				}
+			};
+			newEL('div').attr("class","popup").attr("id","poptest")
+						.append( newEL('div').attr("class","titlebar").attr("id","bartest").html("&nbsp;pop_test") )
+						.append( newEL('textarea').attr("id","testarea").attr("rows","32").attr("cols","40").attr("wrap","off") )
+						.append( newEL('br') )
+						.append( newEL('input').attr("type","button").attr("id","testcheck").attr("value","テスト").click(sccheck) )
+						.append( ' ' )
+						.append( newEL('input').attr("type","button").attr("id","testfile").attr("value","File")
+											   .click(function(){ $("#testarea").val(""); addTextarea(fio.filesavestr(1).replace(/\//g,"\n"));}) )
+						.append( newEL('input').attr("type","button").attr("id","testload").attr("value","Load")
+											   .click(function(){ fio.fileopen($("#testarea").val().split("\n"),1);} ) )
+						.append( ' ' )
+						.append( newEL('input').attr("type","button").attr("id","testclose").attr("value","閉じる").click(function(e){ $("#poptest").hide();} ) )
+						.appendTo($("#popup_parent"));
+			$("#bartest").mousedown(tf.titlebardown).mouseup(tf.titlebarup)
+						 .mouseout(tf.titlebarout).mousemove(tf.titlebarmove).unselectable();
 		}
-		//$("#testtest").html("");
-		//addTextarea(fio.filesavestr(1).replace(/\//g,"\n"));
 	}
 
 	function perfeval(){
@@ -54,7 +76,14 @@ alert(k.scriptcheck);
 	}
 
 	if(k.scriptcheck){
-	function sccheck(){
+	function disptest(type){
+		$("#poptest").css("visibility","visible").css("left", "40px").css("top", "80px").show();
+		if(type==1){ sccheck();}
+	}
+
+	function sccheck(e){
+		if(menu.getVal('autocheck')){ menu.setVal('autocheck',false);}
+		$("#testarea").val("");
 		var phase = 10, n=0, alstr='', qstr='';
 		var tim = setInterval(function(){
 		//Encode test--------------------------------------------------------------
@@ -74,113 +103,181 @@ alert(k.scriptcheck);
 				if(inp==ta){ addTextarea("Encode test   = pass");}
 				else       { addTextarea("Encode test   = failure...\n "+inp+"\n "+ta);}
 
-				if(acs[k.puzzleid]){ phase = 20;}else{ phase = 30;}
+				setTimeout(function(){
+					if(acs[k.puzzleid]){ phase = 20;}else{ phase = 30;}
+				},100);
 			})();
 			break;
 		//Answer test--------------------------------------------------------------
 		case 20:
-			alstr = acs[k.puzzleid][n][0];
-			qstr  = acs[k.puzzleid][n][1];
-			fio.fileopen(acs[k.puzzleid][n][1].split("/"),1);
-			phase = 21;
-			break;
-		case 21:
-			ans.inCheck = true;
-			ans.alstr = { jp:'' ,en:''};
-			ans.checkAns();
-			pc.paintAll();
-			ans.inCheck = false;
+			(function(){
+				alstr = acs[k.puzzleid][n][0];
+				qstr  = acs[k.puzzleid][n][1];
+				fio.fileopen(acs[k.puzzleid][n][1].split("/"),1);
+				setTimeout(function(){
+					ans.inCheck = true;
+					ans.alstr = { jp:'' ,en:''};
+					ans.checkAns();
+					pc.paintAll();
+					ans.inCheck = false;
 
-			var iserror = false, misstr = false;
-			                    for(var c=0;c<bd.cell.length  ;c++){if(bd.cell[c].error!=0  ){ iserror = true;}}
-			if(k.isextendcell){ for(var c=0;c<bd.excell.length;c++){if(bd.excell[c].error!=0){ iserror = true;}}}
-			if(k.iscross)     { for(var c=0;c<bd.cross.length ;c++){if(bd.cross[c].error!=0 ){ iserror = true;}}}
-			if(k.isborder)    { for(var i=0;i<bd.border.length;i++){if(bd.border[i].error!=0){ iserror = true;}}}
-			if(ans.alstr.jp != acs[k.puzzleid][n][0]){ misstr = true;}
-			if(acs[k.puzzleid][n][0] != ""){ iserror = !iserror;}
-			addTextarea("Answer test "+(n+1)+" = "+((!iserror&&!misstr)?"pass":"failure...")+" \""+acs[k.puzzleid][n][0]+"\"");
+					var iserror = false, misstr = false;
+					                    for(var c=0;c<bd.cell.length  ;c++){if(bd.cell[c].error!=0  ){ iserror = true;}}
+					if(k.isextendcell){ for(var c=0;c<bd.excell.length;c++){if(bd.excell[c].error!=0){ iserror = true;}}}
+					if(k.iscross)     { for(var c=0;c<bd.cross.length ;c++){if(bd.cross[c].error!=0 ){ iserror = true;}}}
+					if(k.isborder)    { for(var i=0;i<bd.border.length;i++){if(bd.border[i].error!=0){ iserror = true;}}}
+					if(ans.alstr.jp != acs[k.puzzleid][n][0]){ misstr = true;}
+					if(acs[k.puzzleid][n][0] != ""){ iserror = !iserror;}
+					addTextarea("Answer test "+(n+1)+" = "+((!iserror&&!misstr)?"pass":"failure...")+" \""+acs[k.puzzleid][n][0]+"\"");
 
-			n++;
-			if(n>=acs[k.puzzleid].length){ phase=30;}else{ phase=20;}
+					n++;
+					if(n>=acs[k.puzzleid].length){ phase=30;}else{ phase=20;}
+				},100);
+			})();
 			break;
 		//FileIO test--------------------------------------------------------------
 		case 30:
 			(function(){
 				var outputstr = fio.filesavestr(1).replace(/\//g,"\n");
-				//addTextarea(fio.filesavestr(1).replace(/\//g,"\n"));
 
-				var bd2 = new Board;
-				for(var c=0;c<bd.cell.length;c++){
-					bd2.cell[c].ques =bd.cell[c].ques;
-					bd2.cell[c].qnum =bd.cell[c].qnum;
-					bd2.cell[c].direc=bd.cell[c].direc;
-					bd2.cell[c].qans =bd.cell[c].qans;
-					bd2.cell[c].qsub =bd.cell[c].qsub;
-				}
-				if(k.isextendcell){
-					for(var c=0;c<bd.excell.length;c++){
-						bd2.excell[c].qnum =bd.excell[c].qnum;
-						bd2.excell[c].direc=bd.excell[c].direc;
-					}
-				}
-				if(k.iscross){
-					for(var c=0;c<bd.cross.length;c++){
-						bd2.cross[c].ques=bd.cross[c].ques;
-						bd2.cross[c].qnum=bd.cross[c].qnum;
-					}
-				}
-				if(k.isborder){
-					for(var i=0;i<bd.border.length;i++){
-						bd2.border[i].ques=bd.border[i].ques;
-						bd2.border[i].qnum=bd.border[i].qnum;
-						bd2.border[i].qans=bd.border[i].qans;
-						bd2.border[i].qsub=bd.border[i].qsub;
-						bd2.border[i].line=bd.border[i].line;
-					}
-				}
+				var bd2 = bd_freezecopy();
 
 				menu.ex.newboard2(1,1);
 				base.resize_canvas();
 
 				setTimeout(function(){
 					fio.fileopen(outputstr.split("\n"),1);
-
-					var result = true;
-					for(var c=0;c<bd.cell.length;c++){
-						if(bd.cell[c].ques !=bd2.cell[c].ques ){ result = false;}
-						if(bd.cell[c].qnum !=bd2.cell[c].qnum ){ result = false;}
-						if(bd.cell[c].direc!=bd2.cell[c].direc){ result = false;}
-						if(bd.cell[c].qans !=bd2.cell[c].qans ){ result = false;}
-						if(bd.cell[c].qsub !=bd2.cell[c].qsub ){ result = false;}
-					}
-					if(k.isextendcell){
-						for(var c=0;c<bd.excell.length;c++){
-							if(bd.excell[c].qnum !=bd2.excell[c].qnum ){ result = false;}
-							if(bd.excell[c].direc!=bd2.excell[c].direc){ result = false;}
-						}
-					}
-					if(k.iscross){
-						for(var c=0;c<bd.cross.length;c++){
-							if(bd.cross[c].ques!=bd2.cross[c].ques){ result = false;}
-							if(bd.cross[c].qnum!=bd2.cross[c].qnum){ result = false;}
-						}
-					}
-					if(k.isborder){
-						for(var i=0;i<bd.border.length;i++){
-							if(bd.border[i].ques!=bd2.border[i].ques){ result = false;}
-							if(bd.border[i].qnum!=bd2.border[i].qnum){ result = false;}
-							if(bd.border[i].qans!=bd2.border[i].qans){ result = false;}
-							if(bd.border[i].qsub!=bd2.border[i].qsub){ result = false;}
-							if(bd.border[i].line!=bd2.border[i].line){ result = false;}
-						}
-					}
-					addTextarea("FileIO test   = "+(result?"pass":"failure..."));
+					addTextarea("FileIO test   = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					phase = (k.puzzleid != 'tawa')?40:50;
 				},100);
-
-				clearInterval(tim);
 			})();
 			break;
+		//Turn test--------------------------------------------------------------
+		case 40:
+			(function(){
+				var bd2 = bd_freezecopy();
+				var func = function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'turnr'}});};
+				func();
+				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
+					addTextarea("TurnR test 1  = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					phase = 41;
+				},100); },100); },100);
+			})();
+			break;
+		case 41:
+			(function(){
+				var bd2 = bd_freezecopy();
+				var func = function(){ um.undo();};
+				func();
+				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
+					addTextarea("TurnR test 2  = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					phase = 45;
+				},100); },100); },100);
+			})();
+			break;
+		case 45:
+			(function(){
+				var bd2 = bd_freezecopy();
+				var func = function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'turnl'}});};
+				func();
+				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
+					addTextarea("TurnL test 1  = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					phase = 46;
+				},100); },100); },100);
+			})();
+			break;
+		case 46:
+			(function(){
+				var bd2 = bd_freezecopy();
+				var func = function(){ um.undo();};
+				func();
+				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
+					addTextarea("TurnL test 2  = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					phase = 50;
+				},100); },100); },100);
+			})();
+			break;
+		//Flip test--------------------------------------------------------------
+		case 50:
+			(function(){
+				var bd2 = bd_freezecopy();
+				menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'flipx'}});
+
+				setTimeout(function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'flipx'}});
+					addTextarea("FlipX test 1  = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					phase = 51;
+				},100);
+			})();
+			break;
+		case 51:
+			(function(){
+				var bd2 = bd_freezecopy();
+				um.undo();
+
+				setTimeout(function(){ um.undo();
+					addTextarea("FlipX test 2  = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					phase = 55;
+				},100);
+			})();
+			break;
+		case 55:
+			(function(){
+				var bd2 = bd_freezecopy();
+				menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'flipy'}});
+
+				setTimeout(function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'flipy'}});
+					addTextarea("FlipY test 1  = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					phase = 56;
+				},100);
+			})();
+			break;
+		case 56:
+			(function(){
+				var bd2 = bd_freezecopy();
+				um.undo();
+
+				setTimeout(function(){ um.undo();
+					addTextarea("FlipY test 2  = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					phase = 60;
+				},100);
+			})();
+			break;
+		//Adjust end--------------------------------------------------------------
+		case 60:
+			(function(){
+				var bd2 = bd_freezecopy();
+				var func = function(nid){ menu.pop = $("#pop2_1"); menu.ex.popupadjust({srcElement:{name:nid}});};
+				setTimeout(function(){ func('expandup'); setTimeout(function(){ func('expandrt');
+				setTimeout(function(){ func('expanddn'); setTimeout(function(){ func('expandlt');
+				setTimeout(function(){ func('reduceup'); setTimeout(function(){ func('reducert');
+				setTimeout(function(){ func('reducedn'); setTimeout(function(){ func('reducelt');
+					addTextarea("Adjust test 1 = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					phase = 61;
+				},100); },100); },100); },100); },100); },100); },100); },100);
+			})();
+			break;
+		case 61: // ワンクッション置く
+			setTimeout(function(){ phase = 62;},50);
+			break;
+		case 62:
+			(function(){
+				var bd2 = bd_freezecopy();
+				var func = function(){ um.undo();};
+				func();
+				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
+				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
+					addTextarea("Adjust test 2 = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					phase = 90;
+				},100); },100); },100); },100); },100); },100); },100);
+			})();
+			break;
+		//test end--------------------------------------------------------------
+		case 90:
+			clearInterval(tim);
+			addTextarea("Test end.");
+			break;
 		}
+		phase=0;
 		},1000);
 	}
 	function accheck1(){
@@ -196,7 +293,72 @@ alert(k.scriptcheck);
 		addTextarea("\t\t\t[\""+ans.alstr.jp+"\",\""+outputstr+"\"],");
 	}
 
-	function addTextarea(str){ $("#testtest").html($("#testtest").html()+str+"\n");}
+	function addTextarea(str){ $("#testarea").val($("#testarea").val()+str+"\n");}
+
+	function bd_freezecopy(){
+		var bd2 = new Board;
+		for(var c=0;c<bd.cell.length;c++){
+			bd2.cell[c].ques =bd.cell[c].ques;
+			bd2.cell[c].qnum =bd.cell[c].qnum;
+			bd2.cell[c].direc=bd.cell[c].direc;
+			bd2.cell[c].qans =bd.cell[c].qans;
+			bd2.cell[c].qsub =bd.cell[c].qsub;
+		}
+		if(k.isextendcell){
+			for(var c=0;c<bd.excell.length;c++){
+				bd2.excell[c].qnum =bd.excell[c].qnum;
+				bd2.excell[c].direc=bd.excell[c].direc;
+			}
+		}
+		if(k.iscross){
+			for(var c=0;c<bd.cross.length;c++){
+				bd2.cross[c].ques=bd.cross[c].ques;
+				bd2.cross[c].qnum=bd.cross[c].qnum;
+			}
+		}
+		if(k.isborder){
+			for(var i=0;i<bd.border.length;i++){
+				bd2.border[i].ques=bd.border[i].ques;
+				bd2.border[i].qnum=bd.border[i].qnum;
+				bd2.border[i].qans=bd.border[i].qans;
+				bd2.border[i].qsub=bd.border[i].qsub;
+				bd2.border[i].line=bd.border[i].line;
+			}
+		}
+		return bd2;
+	}
+	function bd_compare(bd1,bd2){
+		var result = true;
+		for(var c=0;c<bd1.cell.length;c++){
+			if(bd1.cell[c].ques !=bd2.cell[c].ques ){ result = false;}
+			if(bd1.cell[c].qnum !=bd2.cell[c].qnum ){ result = false;}
+			if(bd1.cell[c].direc!=bd2.cell[c].direc){ result = false;}
+			if(bd1.cell[c].qans !=bd2.cell[c].qans ){ result = false;}
+			if(bd1.cell[c].qsub !=bd2.cell[c].qsub ){ result = false;}
+		}
+		if(k.isextendcell){
+			for(var c=0;c<bd1.excell.length;c++){
+				if(bd1.excell[c].qnum !=bd2.excell[c].qnum ){ result = false;}
+				if(bd1.excell[c].direc!=bd2.excell[c].direc){ result = false;}
+			}
+		}
+		if(k.iscross){
+			for(var c=0;c<bd1.cross.length;c++){
+				if(bd1.cross[c].ques!=bd2.cross[c].ques){ result = false;}
+				if(bd1.cross[c].qnum!=bd2.cross[c].qnum){ result = false;}
+			}
+		}
+		if(k.isborder){
+			for(var i=0;i<bd1.border.length;i++){
+				if(bd1.border[i].ques!=bd2.border[i].ques){ result = false;}
+				if(bd1.border[i].qnum!=bd2.border[i].qnum){ result = false;}
+				if(bd1.border[i].qans!=bd2.border[i].qans){ result = false;}
+				if(bd1.border[i].qsub!=bd2.border[i].qsub){ result = false;}
+				if(bd1.border[i].line!=bd2.border[i].line){ result = false;}
+			}
+		}
+		return result;
+	}
 
 	var acs = {
 		ayeheya : [
@@ -732,6 +894,12 @@ alert(k.scriptcheck);
 			["黒マスに繋がる線の数が正しくありません。","pzprv3/tateyoko/5/5/. . 3 . . /. e . e 2 /. . 5 . . /2 a . b . /. . 3 . . /0 0 0 0 0 /0 . 0 . 0 /2 2 2 2 2 /0 . 0 . 0 /0 0 0 0 0 /"],
 			["何も入っていないマスがあります。","pzprv3/tateyoko/5/5/. . 3 . . /. e . e 2 /. . 5 . . /2 a . b . /. . 3 . . /1 2 2 2 1 /1 . 1 . 1 /2 2 2 2 2 /1 . 2 . 2 /1 2 2 2 0 /"],
 			["","pzprv3/tateyoko/5/5/. . 3 . . /. e . e 2 /. . 5 . . /2 a . b . /. . 3 . . /1 2 2 2 1 /1 . 1 . 1 /2 2 2 2 2 /1 . 2 . 2 /1 2 2 2 1 /"]
+		],
+		tawa : [
+			["数字の周りに入っている黒マスの数が違います。","pzprv3/tawa/5/5/0/. 2 . . 2 /. . 3 . /. . . . . /. 5 . . /2 . . . 2 /"],
+			["黒マスの下に黒マスがありません。","pzprv3/tawa/5/5/0/. 2 . # 2 /. . 3 # /. . . . . /. 5 . # /2 . . # 2 /"],
+			["黒マスが横に3マス以上続いています。","pzprv3/tawa/5/5/0/. 2 . # 2 /. . 3 # /# # # # . /. 5 . # /2 . . # 2 /"],
+			["","pzprv3/tawa/5/5/0/# 2 + # 2 /# + 3 # /+ # # + # /# 5 # # /2 # + # 2 /"]
 		],
 		tentaisho : [
 			["星を線が通過しています。","pzprv3/tentaisho/5/5/1...2...1/........./2....1..2/........./.1...2..1/........./......1../..2....../2.....2../1 0 0 0 /1 0 0 0 /1 0 0 0 /1 0 0 0 /1 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /"],
