@@ -1,4 +1,4 @@
-// MouseInput.js v3.2.0
+// MouseInput.js v3.2.0p1
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -332,7 +332,6 @@ MouseEvent.prototype = {
 	// mv.inputQues() Cellのquesデータをarrayのとおりに入力する
 	//---------------------------------------------------------------------------
 	inputQues : function(x,y,array){
-		var i;
 		var cc = this.cellid(new Pos(x,y));
 		if(cc==-1){ return;}
 
@@ -345,13 +344,13 @@ MouseEvent.prototype = {
 		}
 		else{
 			if(this.btn.Left){
-				for(i=0;i<array.length-1;i++){
+				for(var i=0;i<array.length-1;i++){
 					if(!flag && bd.QuC(cc)==array[i]){ bd.sQuC(cc,array[i+1]); flag=true;}
 				}
 				if(!flag && bd.QuC(cc)==array[array.length-1]){ bd.sQuC(cc,array[0]); flag=true;}
 			}
 			else if(this.btn.Right){
-				for(i=array.length;i>0;i--){
+				for(var i=array.length;i>0;i--){
 					if(!flag && bd.QuC(cc)==array[i]){ bd.sQuC(cc,array[i-1]); flag=true;}
 				}
 				if(!flag && bd.QuC(cc)==array[0]){ bd.sQuC(cc,array[array.length-1]); flag=true;}
@@ -415,9 +414,8 @@ MouseEvent.prototype = {
 		this.mouseCell = cc; 
 		var area = ans.searchRarea();
 		var areaid = area.check[cc];
-		var c;
 
-		for(c=0;c<k.qcols*k.qrows;c++){
+		for(var c=0;c<k.qcols*k.qrows;c++){
 			if(area.check[c] == areaid && (this.inputData==1 || bd.QsC(c)!=3)){
 				bd.sQaC(c, (this.inputData==1?1:-1));
 				bd.sQsC(c, (this.inputData==2?1:0));

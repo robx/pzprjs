@@ -1,4 +1,4 @@
-// Undo.js v3.2.0
+// Undo.js v3.2.0p1
 
 //---------------------------------------------------------------------------
 // šUndoManagerƒNƒ‰ƒX ‘€ìî•ñ‚ðˆµ‚¢AUndo/Redo‚Ì“®ì‚ðŽÀ‘•‚·‚é
@@ -54,7 +54,7 @@ UndoManager.prototype = {
 		}
 	},
 	allerase : function(){
-		for(i=this.ope.length-1;i>=0;i--){ this.ope.pop();}
+		for(var i=this.ope.length-1;i>=0;i--){ this.ope.pop();}
 		this.current  = 0;
 		this.anscount = 0;
 		this.enb_btn();
@@ -100,8 +100,7 @@ UndoManager.prototype = {
 			var lastid = this.ope.length-1;
 
 			if(this.current < this.ope.length){
-				var i;
-				for(i=this.ope.length-1;i>=this.current;i--){ this.ope.pop();}
+				for(var i=this.ope.length-1;i>=this.current;i--){ this.ope.pop();}
 				lastid = -1;
 			}
 			else if(this.undoonly!=1){ lastid!=-1;}
