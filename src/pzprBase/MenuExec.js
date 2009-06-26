@@ -1,4 +1,4 @@
-// MenuExec.js v3.2.0
+// MenuExec.js v3.2.0p1
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -227,10 +227,10 @@ MenuExec.prototype = {
 				case "expanddn": this.expanddn(); break;
 				case "expandlt": this.expandlt(); break;
 				case "expandrt": this.expandrt(); break;
-				case "reduceup": um.undoonly = 1; if(k.qrows>1){ this.reduceup();}else{f=false;} um.undoonly = 0; break;
-				case "reducedn": um.undoonly = 1; if(k.qrows>1){ this.reducedn();}else{f=false;} um.undoonly = 0; break;
-				case "reducelt": um.undoonly = 1; if(k.qcols>1){ this.reducelt();}else{f=false;} um.undoonly = 0; break;
-				case "reducert": um.undoonly = 1; if(k.qcols>1){ this.reducert();}else{f=false;} um.undoonly = 0; break;
+				case "reduceup": um.undoonly = 1; f=this.reduceup(); um.undoonly = 0; break;
+				case "reducedn": um.undoonly = 1; f=this.reducedn(); um.undoonly = 0; break;
+				case "reducelt": um.undoonly = 1; f=this.reducelt(); um.undoonly = 0; break;
+				case "reducert": um.undoonly = 1; f=this.reducert(); um.undoonly = 0; break;
 			}
 
 			if(f&&getSrcElement(e).name.indexOf("reduce")!=-1){ um.addOpe('board', getSrcElement(e).name, 0, 0, 1);}
@@ -272,6 +272,7 @@ MenuExec.prototype = {
 			}
 		}
 		if(k.isborder){
+			bd.bdinside = (k.qcols-1)*k.qrows+k.qcols*(k.qrows-1);
 			margin = 2*number-1+(k.isoutsideborder==0?0:2); ncount = bd.border.length;
 			for(var i=0;i<margin;i++){ bd.border.push(new Border()); bd.border[ncount+i].cellinit(ncount+i); bd.borders.push(ncount+i);} 
 			for(var i=0;i<bd.border.length;i++){ bd.setposBorder(i);}
@@ -332,11 +333,13 @@ MenuExec.prototype = {
 		}
 	},
 
-	reduceup : function(){ this.reduce(k.qcols, 'r', function(cx,cy,f){ return (cy==0);}        ,	function(bx,by){ return (by==1)||(by==2);}                     ,'up'); },
-	reducedn : function(){ this.reduce(k.qcols, 'r', function(cx,cy,f){ return (cy==k.qrows-1+f);},	function(bx,by){ return (by==2*k.qrows-1)||(by==2*k.qrows-2);} ,'dn'); },
-	reducelt : function(){ this.reduce(k.qrows, 'c', function(cx,cy,f){ return (cx==0);}        ,	function(bx,by){ return (bx==1)||(bx==2);}                     ,'lt'); },
-	reducert : function(){ this.reduce(k.qrows, 'c', function(cx,cy,f){ return (cx==k.qcols-1+f);},	function(bx,by){ return (bx==2*k.qcols-1)||(bx==2*k.qcols-2);} ,'rt'); },
+	reduceup : function(){ return this.reduce(k.qcols, 'r', function(cx,cy,f){ return (cy==0);}        ,	function(bx,by){ return (by==1)||(by==2);}                     ,'up'); },
+	reducedn : function(){ return this.reduce(k.qcols, 'r', function(cx,cy,f){ return (cy==k.qrows-1+f);},	function(bx,by){ return (by==2*k.qrows-1)||(by==2*k.qrows-2);} ,'dn'); },
+	reducelt : function(){ return this.reduce(k.qrows, 'c', function(cx,cy,f){ return (cx==0);}        ,	function(bx,by){ return (bx==1)||(bx==2);}                     ,'lt'); },
+	reducert : function(){ return this.reduce(k.qrows, 'c', function(cx,cy,f){ return (cx==k.qcols-1+f);},	function(bx,by){ return (bx==2*k.qcols-1)||(bx==2*k.qcols-2);} ,'rt'); },
 	reduce : function(number, rc, func, func2, key){
+		if((rc=='c'&&k.qcols==1)||(rc=='r'&&k.qrows==1)){ return false;}
+
 		this.adjustSpecial(6,key);
 
 		var margin = 0;
@@ -372,6 +375,7 @@ MenuExec.prototype = {
 			for(var i=0;i<number+1;i++){ bd.cross.pop(); bd.crosses.pop();}
 		}
 		if(k.isborder){
+			bd.bdinside = (k.qcols-1)*k.qrows+k.qcols*(k.qrows-1);
 			margin = 0;
 			for(var i=0;i<bd.border.length;i++){
 				if(func2(bd.border[i].cx, bd.border[i].cy)){
@@ -404,6 +408,7 @@ MenuExec.prototype = {
 			for(var i=0;i<qnums.length;i++){ bd.sQnC(room.getTopOfRoom(qnums[i].areaid), qnums[i].val);}
 		}
 		this.adjustSpecial2(6,key);
+		return true;
 	},
 	reduceborder : function(key){
 		for(var i=0;i<bd.border.length;i++){
@@ -781,13 +786,13 @@ MenuExec.prototype = {
 	ACconfirm : function(){
 		if(confirm(lang.isJP()?"回答を消去しますか？":"Do you want to erase the Answer?")){
 			um.newOperation(true);
-			for(i=0;i<bd.cell.length;i++){
+			for(var i=0;i<bd.cell.length;i++){
 				if(bd.QaC(i)!=0){ um.addOpe('cell','qans',i,bd.QaC(i),0);}
 				if(bd.QsC(i)!=0){ um.addOpe('cell','qsub',i,bd.QsC(i),0);}
 			}
 			if(k.isborder){
 				var val = (k.puzzleid!="bosanowa"?0:-1);
-				for(i=0;i<bd.border.length;i++){
+				for(var i=0;i<bd.border.length;i++){
 					if(bd.QaB(i)!=0){ um.addOpe('border','qans',i,bd.QaB(i),0);}
 					if(bd.QsB(i)!=val){ um.addOpe('border','qsub',i,bd.QsB(i),val);}
 					if(bd.LiB(i)!=0){ um.addOpe('border','line',i,bd.LiB(i),0);}
@@ -800,12 +805,12 @@ MenuExec.prototype = {
 	ASconfirm : function(){
 		if(confirm(lang.isJP()?"補助記号を消去しますか？":"Do you want to erase the auxiliary marks?")){
 			um.newOperation(true);
-			for(i=0;i<bd.cell.length;i++){
+			for(var i=0;i<bd.cell.length;i++){
 				if(bd.QsC(i)!=0){ um.addOpe('cell','qsub',i,bd.QsC(i),0);}
 			}
 			if(k.isborder){
 				var val = (k.puzzleid!="bosanowa"?0:-1);
-				for(i=0;i<bd.border.length;i++){
+				for(var i=0;i<bd.border.length;i++){
 					if(bd.QsB(i)!=val){ um.addOpe('border','qsub',i,bd.QsB(i),val);}
 				}
 			}
