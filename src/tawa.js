@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たわむれんが版 tawa.js v3.2.0β2
+// パズル固有スクリプト部 たわむれんが版 tawa.js v3.2.0
 //
 Puzzles.tawa = function(){ };
 Puzzles.tawa.prototype = {
@@ -43,22 +43,49 @@ Puzzles.tawa.prototype = {
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
 						   " Left Click to input black cells, Right Click to input determined white cells.");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
+	},
+	setting_lap : function(){	// 処理が大きくなったので分割
+		menu.ex.clap = 3;
+		bd.lap = menu.ex.clap;	// 2段目は => 0:左右引っ込み 1:右のみ出っ張り 2:左のみ出っ張り 3:左右出っ張り
 
-		var inhtml = "<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n";
-		inhtml += "<input type=\"text\" name=\"col\" value=\"\" size=\"3\" maxlength=\"3\" /> <span id=\"pop1_1_cap1x\">一番上の段のセルの数</span><br>\n";
-		inhtml += "<input type=\"text\" name=\"row\" value=\"\" size=\"3\" maxlength=\"3\" /> <span id=\"pop1_1_cap2x\">高さ</span><br>\n";
-		inhtml += "<input type=\"radio\" name=\"lap\" value=\"0\">その1\n";
-		inhtml += "<input type=\"radio\" name=\"lap\" value=\"3\" checked>その2\n";
-		inhtml += "<input type=\"radio\" name=\"lap\" value=\"1\">その3\n";
-		inhtml += "<input type=\"radio\" name=\"lap\" value=\"2\">その4<br>\n";
-		inhtml += "<input type=\"button\" name=\"newboard\" value=\"新規作成\" /><input type=\"button\" name=\"cancel\" value=\"キャンセル\" />\n";
+		pp.funcs.newboard = function(){
+			menu.pop = $("#pop1_1");
+			pp.funcs.clickimg({0:0,1:2,2:3,3:1}[bd.lap]);
+			document.newboard.col.value = (k.qcols+(bd.lap==3?1:0));
+			document.newboard.row.value = k.qrows;
+			k.enableKey = false;
+		};
+		pp.funcs.clickimg = function(num){
+			$("img.clickimg").parent().css("background-color","");
+			$("#nb"+num).parent().css("background-color","red");
+			menu.ex.clap = num;
+		};
 
-		$(document.newboard).html(inhtml);
+		$(document.newboard).html(
+			  "<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n"
+			+ "<input type=\"text\" name=\"col\" value=\"\" size=\"3\" maxlength=\"3\" /> <span id=\"pop1_1_cap1x\">横幅 (黄色の数)</span><br>\n"
+			+ "<input type=\"text\" name=\"row\" value=\"\" size=\"3\" maxlength=\"3\" /> <span id=\"pop1_1_cap2x\">高さ</span><br>\n"
+			+ "<table border=\"0\" cellpadding=\"0\" cellspacing=\"2\" style=\"margin-top:4pt;margin-bottom:4pt;\">"
+			+ "<tr id=\"laps\" style=\"padding-bottom:2px;\">\n"
+			+ "</tr></table>\n"
+			+ "<input type=\"button\" name=\"newboard\" value=\"新規作成\" /><input type=\"button\" name=\"cancel\" value=\"キャンセル\" />\n"
+		);
+		var cw=32, bw=2;
+		for(var i=0;i<=3;i++){
+			newEL('td').append(
+				newEL('div').append(
+					newEL('img').attr("src",'./src/img/tawa_nb.gif').attr("class","clickimg").attr("id","nb"+i)
+								.css("left","-"+(i*cw)+"px").css("clip", "rect(0px,"+((i+1)*cw)+"px,"+cw+"px,"+(i*cw)+"px)")
+								.css("position","absolute").css("margin",""+bw+"px")
+								.click(pp.funcs.clickimg.bind(pp,i)).unselectable()
+				).css("position","relative").css("display","block").css("width",""+(cw+bw*2)+"px").css("height",""+(cw+bw*2)+"px")
+			).appendTo($("#laps"));
+		}
 	},
 	menufix : function(){
 		menu.addUseToFlags();
-		menu.addLabels($("#pop1_1_cap1x"), "一番上の段のセルの数", "# of cells on the top row");
-		menu.addLabels($("#pop1_1_cap2x"), "高さ",                 "Height");
+		menu.addLabels($("#pop1_1_cap1x"), "横幅 (黄色の数)", "Width (Yellows)");
+		menu.addLabels($("#pop1_1_cap2x"), "高さ",            "Height");
 	},
 
 	//---------------------------------------------------------
@@ -121,7 +148,7 @@ Puzzles.tawa.prototype = {
 			};
 		}
 
-		bd.lap = 3;	// 2段目は => 0:左右引っ込み 1:右のみ出っ張り 2:左のみ出っ張り 3:左右出っ張り
+		this.setting_lap();
 
 		tc.getTCC = function(){ return bd.cnum(this.cursolx, mf((this.cursoly-1)/2));}.bind(tc);
 		tc.setTCC = function(id){
@@ -205,35 +232,30 @@ Puzzles.tawa.prototype = {
 			if(menu.pop){
 				var col = mf(parseInt(document.newboard.col.value));
 				var row = mf(parseInt(document.newboard.row.value));
-				for(var i=0;i<=3;i++){
-					if(document.newboard.lap[i].checked){ bd.lap = document.newboard.lap[i].value;}
-				}
+				var slap = {0:0,1:3,2:1,3:2}[this.clap];
 
-				if(col>0 && row>0 && !(col==1 && bd.lap==0)){ this.newboard2(col,row);}
+				if(col==1 && (slap==0||slap==3)){ menu.popclose(); return;}
+				if(slap==3){ col--;}
+				if(col>0 && row>0){ bd.lap = slap; this.newboard2(col,row);}
 				menu.popclose();
 				base.resize_canvas();				// Canvasを更新する
 			}
 		};
 		menu.ex.newboard2 = function(col,row){
-			var total1 = 0;
-			if     (bd.lap==0){ total1 = mf(k.qrows*0.5)*(2*k.qcols-1)+((k.qrows%2==1)?k.qcols:0);}
-			else if(bd.lap==3){ total1 = mf(k.qrows*0.5)*(2*k.qcols+1)+((k.qrows%2==1)?k.qcols:0);}
-			else{ total1 = k.qcols*k.qrows;}
-
-			var total2 = 0;
-			if     (bd.lap==0){ total2 = mf(row*0.5)*(2*col-1)+((row%2==1)?col:0);}
-			else if(bd.lap==3){ total2 = mf(row*0.5)*(2*col+1)+((row%2==1)?col:0);}
-			else{ total2 = col*row;}
+			var total = 0;
+			if     (bd.lap==0){ total = mf(row*0.5)*(2*col-1)+((row%2==1)?col:0);}
+			else if(bd.lap==3){ total = mf(row*0.5)*(2*col+1)+((row%2==1)?col:0);}
+			else{ total = col*row;}
 
 			// 既存のサイズより小さいならdeleteする
-			for(var n=Math.max(total1,bd.cell.length)-1;n>=total2;n--){
+			for(var n=bd.cell.length-1;n>=total;n--){
 				if(bd.cell[n].numobj) { bd.cell[n].numobj.remove();}
 				if(bd.cell[n].numobj2){ bd.cell[n].numobj2.remove();}
 				delete bd.cell[n]; bd.cell.pop(); bd.cells.pop();
 			}
 
 			// 既存のサイズより大きいならnewを行う
-			for(var i=total1;i<total2;i++){ bd.cell.push(new Cell()); bd.cells.push(i);}
+			for(var i=bd.cell.length;i<total;i++){ bd.cell.push(new Cell()); bd.cells.push(i);}
 
 			// サイズの変更
 			//tc.maxy += (row-k.qrows)*2;
@@ -269,7 +291,7 @@ Puzzles.tawa.prototype = {
 			else if(rc=='r'){
 				k.qrows++;
 				tc.maxy+=2;
-				if(bd.lap==1||bd.lap==2||k.qrows%2==1){ margin = k.qcols;}
+				if(bd.lap==1||bd.lap==2){ margin = k.qcols;}
 				else if(bd.lap==0){ margin = k.qcols-1;}
 				else if(bd.lap==3){ margin = k.qcols+1;}
 
@@ -297,14 +319,12 @@ Puzzles.tawa.prototype = {
 		};
 		// 盤面の縮小
 		menu.ex.reduce = function(number, rc, func, func2, key){
-			if(k.qcols==1 && bd.lap!=3){ return;}
-
-			var margin = 0;
-			var qnums = new Array();
+			if((k.qcols==1 && rc=='c' && bd.lap!=3)||(rc=='r'&&k.qrows==1)){ return false;}
 
 			if     (key=='lt'){ func = function(cx,cy,f){ return (cx<=0);};}
 			else if(key=='rt'){ func = function(cx,cy,f){ return (cx>=tc.maxx);};}
 
+			var margin = 0;
 			for(var i=0;i<bd.cell.length;i++){
 				if(func(bd.cell[i].cx, bd.cell[i].cy, 0)){
 					if(bd.cell[i].numobj) { bd.cell[i].numobj.hide();}
@@ -338,6 +358,7 @@ Puzzles.tawa.prototype = {
 
 			bd.setposAll();
 			tc.setAlign();
+			return true;
 		};
 		// 回転・反転(上下反転)
 		menu.ex.flipy = function(rx1,ry1,rx2,ry2){

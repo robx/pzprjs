@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.2.0
+// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.2.0p1
 //
 Puzzles.shugaku = function(){ };
 Puzzles.shugaku.prototype = {
@@ -179,26 +179,26 @@ Puzzles.shugaku.prototype = {
 			switch(type){
 			case 1: // 上下反転
 				for(var cc=0;cc<bd.cell.length;cc++){
-					var val = {12:13,13:12,17:18,18:17}[bd.QaC(c)];
-					if(!isNaN(val)){ bd.cell[c].qans = val;}
+					var val = {12:13,13:12,17:18,18:17}[bd.QaC(cc)];
+					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case 2: // 左右反転
 				for(var cc=0;cc<bd.cell.length;cc++){
-					var val = {14:15,15:14,19:20,20:19}[bd.QaC(c)];
-					if(!isNaN(val)){ bd.cell[c].qans = val;}
+					var val = {14:15,15:14,19:20,20:19}[bd.QaC(cc)];
+					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case 3: // 右90°反転
 				for(var cc=0;cc<bd.cell.length;cc++){
-					var val = {12:15,15:13,13:14,14:12,17:20,20:18,18:19,19:17}[bd.QaC(c)];
-					if(!isNaN(val)){ bd.cell[c].qans = val;}
+					var val = {12:15,15:13,13:14,14:12,17:20,20:18,18:19,19:17}[bd.QaC(cc)];
+					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case 4: // 左90°反転
 				for(var cc=0;cc<bd.cell.length;cc++){
-					var val = {12:14,14:13,13:15,15:12,17:19,19:18,18:20,20:17}[bd.QaC(c)];
-					if(!isNaN(val)){ bd.cell[c].qans = val;}
+					var val = {12:14,14:13,13:15,15:12,17:19,19:18,18:20,20:17}[bd.QaC(cc)];
+					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case 5: // 盤面拡大
@@ -206,6 +206,7 @@ Puzzles.shugaku.prototype = {
 			case 6: // 盤面縮小
 				break;
 			}
+			um.enableRecord();
 		}
 	},
 

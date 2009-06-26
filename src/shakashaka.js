@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.2.0
+// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.2.0p1
 //
 Puzzles.shakashaka = function(){ };
 Puzzles.shakashaka.prototype = {
@@ -163,26 +163,26 @@ Puzzles.shakashaka.prototype = {
 			switch(type){
 			case 1: // 上下反転
 				for(var cc=0;cc<bd.cell.length;cc++){
-					var val = {2:5,3:4,4:3,5:2}[bd.QaC(c)];
-					if(!isNaN(val)){ bd.cell[c].qans = val;}
+					var val = {2:5,3:4,4:3,5:2}[bd.QaC(cc)];
+					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case 2: // 左右反転
 				for(var cc=0;cc<bd.cell.length;cc++){
-					var val = {2:3,3:2,4:5,5:4}[bd.QaC(c)];
-					if(!isNaN(val)){ bd.cell[c].qans = val;}
+					var val = {2:3,3:2,4:5,5:4}[bd.QaC(cc)];
+					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case 3: // 右90°反転
 				for(var cc=0;cc<bd.cell.length;cc++){
-					var val = {2:3,3:4,4:5,5:2}[bd.QaC(c)];
-					if(!isNaN(val)){ bd.cell[c].qans = val;}
+					var val = {2:5,3:2,4:3,5:4}[bd.QaC(cc)];
+					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case 4: // 左90°反転
 				for(var cc=0;cc<bd.cell.length;cc++){
-					var val = {2:5,3:2,4:3,5:4}[bd.QaC(c)];
-					if(!isNaN(val)){ bd.cell[c].qans = val;}
+					var val = {2:3,3:4,4:5,5:2}[bd.QaC(cc)];
+					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case 5: // 盤面拡大
