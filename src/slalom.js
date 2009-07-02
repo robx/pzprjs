@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.2.0
+// パズル固有スクリプト部 スラローム版 slalom.js v3.2.0p1
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -258,12 +258,16 @@ Puzzles.slalom.prototype = {
 				bd.startid = bd.cnum2(cy,k.qcols-1-cx,k.qrows,k.qcols);
 				break;
 			case 5: // 盤面拡大
+				if     (key=='up'){ bd.startid = bd.cnum2(cx  ,cy+1,k.qcols,k.qrows+1);}
+				else if(key=='dn'){ bd.startid = bd.cnum2(cx  ,cy  ,k.qcols,k.qrows+1);}
+				else if(key=='lt'){ bd.startid = bd.cnum2(cx+1,cy  ,k.qcols+1,k.qrows);}
+				else if(key=='rt'){ bd.startid = bd.cnum2(cx  ,cy  ,k.qcols+1,k.qrows);}
 				break;
 			case 6: // 盤面縮小
-				if     (key=='up' && cy==0        ){ bd.startid = bd.cnum(cx  ,cy+1);}
-				else if(key=='dn' && cy==k.qrows-1){ bd.startid = bd.cnum(cx  ,cy-1);}
-				else if(key=='lt' && cx==0        ){ bd.startid = bd.cnum(cx+1,cy  );}
-				else if(key=='rt' && cx==k.qcols-1){ bd.startid = bd.cnum(cx-1,cy  );}
+				if     (key=='dn' && cy<k.qrows-1){ bd.startid = bd.cnum2(cx  ,cy  ,k.qcols,k.qrows-1);}
+				else if(key=='up' || key=='dn')   { bd.startid = bd.cnum2(cx  ,cy-1,k.qcols,k.qrows-1);}
+				else if(key=='rt' && cx<k.qcols-1){ bd.startid = bd.cnum2(cx  ,cy  ,k.qcols-1,k.qrows);}
+				else if(key=='lt' || key=='rt')   { bd.startid = bd.cnum2(cx-1,cy  ,k.qcols-1,k.qrows);}
 				break;
 			}
 			um.enableRecord();

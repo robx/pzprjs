@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 波及効果版 ripple.js v3.2.0
+// パズル固有スクリプト部 波及効果版 ripple.js v3.2.0p1
 //
 Puzzles.ripple = function(){ };
 Puzzles.ripple.prototype = {
@@ -81,7 +81,7 @@ Puzzles.ripple.prototype = {
 		kp.kpinput = function(ca){ kc.key_inputqnum(ca,99);};
 
 		room.setEnable();
-		mv.roommaxfunc = function(cc,mode){ return room.getCntOfRoomByCell(cc);};
+		bd.roommaxfunc = function(cc,mode){ return room.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------

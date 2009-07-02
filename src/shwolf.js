@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤギとオオカミ版 shwolf.js v3.2.0
+// パズル固有スクリプト部 ヤギとオオカミ版 shwolf.js v3.2.0p1
 //
 Puzzles.shwolf = function(){ };
 Puzzles.shwolf.prototype = {
@@ -153,40 +153,38 @@ Puzzles.shwolf.prototype = {
 			this.drawChassis(x1,y1,x2,y2);
 		};
 
-		pc.divimg = new Array();
-
 		pc.drawSheepWolf = function(x1,y1,x2,y2){
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QuC(c)==-2){
-					if(this.divimg[c]){ this.divimg[c].hide();}
+					if(bd.cell[c].numobj2){ bd.cell[c].numobj2.hide();}
 					this.dispnumCell_General(c);
 					continue;
 				}
 				else if(bd.cell[c].numobj){ bd.cell[c].numobj.hide();}
 
-				if(bd.QuC(c)!=41&&bd.QuC(c)!=42){ if(this.divimg[c]){ this.divimg[c].hide();} continue;}
-				if(!this.divimg[c]){
+				if(bd.QuC(c)!=41&&bd.QuC(c)!=42){ if(bd.cell[c].numobj2){ bd.cell[c].numobj2.hide();} continue;}
+				if(!bd.cell[c].numobj2){
 					var img = newEL('img').attr("src",'./src/img/shwolf_obj.gif').unselectable();
 					var div = newEL('div').css("position","relative").css("display","inline").unselectable();
-					this.divimg[c] = this.CreateDOMAndSetNop().append(div.append(img));
+					bd.cell[c].numobj2 = this.CreateDOMAndSetNop().append(div.append(img));
 				}
 
-				var Opera = k.br.Opera; // Operaは表示がずれるらしい
-				var div = this.divimg[c];
 				var ipos  = {41:0,42:1}[bd.QuC(c)];
-				var isize = k.cwidth;
+				var el = bd.cell[c].numobj2.children().children().get(0);
+				el.style.width  = ""+(2*k.cwidth)+"px";
+				el.style.height = ""+(k.cheight)+"px";
+				el.style.left   = "-"+mf((ipos+0.5)*k.cwidth)+"px";
+				el.style.top    = ""+mf((!k.br.Opera?0:15)-k.cwidth/2)+"px";
+				el.style.clip   = "rect(1px,"+(k.cwidth*(ipos+1))+"px,"+k.cwidth+"px,"+(k.cwidth*ipos+1)+"px)";
+				el.style.position = 'absolute';
 
-				div.children().children().css("width" , ""+(2*k.cwidth)+"px").css("height", ""+(k.cheight)+"px")
-							  .css("top" , ""+mf(0-isize/2+(!Opera?0:15))+"px")
-							  .css("left"  , "-"+mf((ipos+0.5)*isize)+"px")
-							  .css("clip", "rect(1px,"+(isize*(ipos+1))+"px,"+isize+"px,"+(isize*ipos+1)+"px)")
-							  .css("position","absolute");
-
-				var wid = div.width(), hgt = div.height();
-				div.css("left", k.cv_oft.x+bd.cell[c].px()+mf((k.cwidth-wid) /2)+2)
-				   .css("top" , k.cv_oft.y+bd.cell[c].py()+mf((k.cheight-hgt)/2)+1).show();
+				el = bd.cell[c].numobj2.context;
+				el.style.display = 'inline';
+				var wid = el.clientWidth, hgt = el.clientHeight;
+				el.style.left = k.cv_oft.x+bd.cell[c].px()+mf((k.cwidth-wid) /2)+2;
+				el.style.top  = k.cv_oft.y+bd.cell[c].py()+mf((k.cheight-hgt)/2)+1;
 			}
 			this.vinc();
 		};

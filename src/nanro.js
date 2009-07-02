@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンロー版 nanro.js v3.2.0
+// パズル固有スクリプト部 ナンロー版 nanro.js v3.2.0p1
 //
 Puzzles.nanro = function(){ };
 Puzzles.nanro.prototype = {
@@ -153,7 +153,7 @@ Puzzles.nanro.prototype = {
 		kp.kpinput = function(ca){ kc.keyinput(ca,99);};
 
 		room.setEnable();
-		mv.roommaxfunc = function(cc,mode){ return room.getCntOfRoomByCell(cc);};
+		bd.roommaxfunc = function(cc,mode){ return room.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------

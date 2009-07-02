@@ -167,7 +167,7 @@ Puzzles.tateyoko.prototype = {
 			}
 			um.enableRecord();
 		};
-		mv.roommaxfunc = function(cc,mode){ return (bd.QuC(cc)==1?4:Math.max(k.qcols,k.qrows));};
+		bd.roommaxfunc = function(cc,mode){ return (bd.QuC(cc)==1?4:Math.max(k.qcols,k.qrows));};
 	},
 
 	//---------------------------------------------------------

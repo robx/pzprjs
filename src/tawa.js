@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たわむれんが版 tawa.js v3.2.0
+// パズル固有スクリプト部 たわむれんが版 tawa.js v3.2.0p1
 //
 Puzzles.tawa = function(){ };
 Puzzles.tawa.prototype = {
@@ -273,7 +273,7 @@ Puzzles.tawa.prototype = {
 		};
 
 		// 盤面の拡大
-		menu.ex.expand = function(number, rc, func, func2, key){
+		menu.ex.expand = function(number, rc, key){
 			var margin = 0;
 			if(rc=='c'){
 				if(key=='lt'){
@@ -301,6 +301,8 @@ Puzzles.tawa.prototype = {
 				}
 			}
 
+			var tf = ((key=='up'||key=='lt')?1:-1);
+			var func = function(cx,cy){ var ty=(k.qrows-1)/2; return (ty+tf*(cy-ty)==0);};
 			if     (key=='lt'){ func = function(cx,cy,f){ return (cx<=0);};}
 			else if(key=='rt'){ func = function(cx,cy,f){ return (cx>=tc.maxx);};}
 
@@ -308,7 +310,7 @@ Puzzles.tawa.prototype = {
 			for(var i=0;i<margin;i++){ bd.cell.push(new Cell()); bd.cell[ncount+i].cellinit(ncount+i); bd.cells.push(ncount+i);} 
 			for(var i=0;i<bd.cell.length;i++){ bd.setposCell(i);}
 			for(var i=bd.cell.length-1;i>=0;i--){
-				if(i-margin<0 || func(bd.cell[i].cx, bd.cell[i].cy, 0)){
+				if(i-margin<0 || func(bd.cell[i].cx, bd.cell[i].cy)){
 					bd.cell[i] = new Cell(); bd.cell[i].cellinit(i); margin--;
 				}
 				else if(margin>0){ bd.cell[i] = bd.cell[i-margin];}
@@ -318,15 +320,17 @@ Puzzles.tawa.prototype = {
 			tc.setAlign();
 		};
 		// 盤面の縮小
-		menu.ex.reduce = function(number, rc, func, func2, key){
+		menu.ex.reduce = function(number, rc, key){
 			if((k.qcols==1 && rc=='c' && bd.lap!=3)||(rc=='r'&&k.qrows==1)){ return false;}
 
+			var tf = ((key=='up'||key=='lt')?1:-1);
+			var func = function(cx,cy){ var ty=(k.qrows-1)/2; return (ty+tf*(cy-ty)==0);};
 			if     (key=='lt'){ func = function(cx,cy,f){ return (cx<=0);};}
 			else if(key=='rt'){ func = function(cx,cy,f){ return (cx>=tc.maxx);};}
 
 			var margin = 0;
 			for(var i=0;i<bd.cell.length;i++){
-				if(func(bd.cell[i].cx, bd.cell[i].cy, 0)){
+				if(func(bd.cell[i].cx, bd.cell[i].cy)){
 					if(bd.cell[i].numobj) { bd.cell[i].numobj.hide();}
 					if(bd.cell[i].numobj2){ bd.cell[i].numobj2.hide();}
 					if(!bd.isNullCell(i)){ um.addOpe('cell', 'cell', i, bd.cell[i], 0);}
