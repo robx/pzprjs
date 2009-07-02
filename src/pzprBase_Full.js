@@ -6,7 +6,7 @@
  * 
  * @author  happa.
  * @version v3.2.0p1
- * @date    2009-06-26
+ * @date    2009-07-02
  * 
  * This script uses following libraries.
  *  jquery.js (version 1.3.2)
@@ -3240,11 +3240,7 @@ KeyEvent.prototype = {
 			if     (k.mode==1 && !this.isSHIFT){ k.mode=3; menu.setVal('mode',3); flag = true;}
 			else if(k.mode==3 &&  this.isSHIFT){ k.mode=1; menu.setVal('mode',1); flag = true;}
 		}
-		if(k.scriptcheck){
-			if(this.isCTRL && this.ca=='F7'){ accheck1();  flag = true;}
-			if(this.isCTRL && this.ca=='F8'){ disptest(0); flag = true;}
-			if(this.isCTRL && this.ca=='F9'){ disptest(1); flag = true;}
-		}
+		if(k.scriptcheck && debug){ flag = (flag || debug.keydown(this.ca));}
 
 		return flag;
 	},
@@ -4279,7 +4275,7 @@ FileIO.prototype = {
 
 		if     (row>0 && col>0 && (type==1 || k.puzzleid!="kakuro")){ menu.ex.newboard2(col, row);}
 		else if(row>0 && col>0){ menu.ex.newboard2(col-1, row-1);}
-		else{ um.enableRecord(); return;}
+		else{ return;}
 
 		um.disableRecord();
 
@@ -4702,7 +4698,7 @@ FileIO.prototype = {
 			if(bd.dn(c)!=-1 && room.getRoomID(c) != room.getRoomID(bd.dn(c))){ bd.sQuB(bd.db(c),1); }
 			if(bd.rt(c)!=-1 && room.getRoomID(c) != room.getRoomID(bd.rt(c))){ bd.sQuB(bd.rb(c),1); }
 		}
-		room.isenable = room.isenable;
+		room.isenable = saved;
 
 		room.resetRarea();
 	},
@@ -6688,11 +6684,6 @@ Properties.prototype = {
 		as('jumptop', 'other');
 		as('jumpblog', 'other');
 
-		if(typeof testonly_func == 'function'){
-			ap('sep_t','other');
-			au('eval','other',0,[]);
-		}
-
 		this.setStringToFlags();
 	},
 	setStringToFlags : function(){
@@ -7042,31 +7033,41 @@ MenuExec.prototype = {
 			base.resize_canvas();				// Canvasを更新する
 		}
 	},
-	expandup : function(){ this.expand(k.qcols, 'r', function(cx,cy,f){ return (cy==0);}          , function(bx,by){ return (by==1)||(by==2);},                     'up' ); },
-	expanddn : function(){ this.expand(k.qcols, 'r', function(cx,cy,f){ return (cy==k.qrows-1+f);}, function(bx,by){ return (by==2*k.qrows-1)||(by==2*k.qrows-2);}, 'dn' ); },
-	expandlt : function(){ this.expand(k.qrows, 'c', function(cx,cy,f){ return (cx==0);}          , function(bx,by){ return (bx==1)||(bx==2);},                     'lt' ); },
-	expandrt : function(){ this.expand(k.qrows, 'c', function(cx,cy,f){ return (cx==k.qcols-1+f);}, function(bx,by){ return (bx==2*k.qcols-1)||(bx==2*k.qcols-2);}, 'rt' ); },
-	expand : function(number, rc, func, func2, key){
+	expandup : function(){ this.expand(k.qcols, 'r', 'up' ); },
+	expanddn : function(){ this.expand(k.qcols, 'r', 'dn' ); },
+	expandlt : function(){ this.expand(k.qrows, 'c', 'lt' ); },
+	expandrt : function(){ this.expand(k.qrows, 'c', 'rt' ); },
+	expand : function(number, rc, key){
 		this.adjustSpecial(5,key);
+		this.adjustGeneral(5,'',0,0,k.qcols-1,k.qrows-1);
 
 		if(rc=='c'){ k.qcols++; tc.maxx+=2;}else if(rc=='r'){ k.qrows++; tc.maxy+=2;}
 
+		var tf = ((key=='up'||key=='lt')?1:-1);
+		var func;
+		if     (rc=='r'){ func = function(cx,cy){ var ty=(k.qrows-1)/2; return (ty+tf*(cy-ty)==0);};}
+		else if(rc=='c'){ func = function(cx,cy){ var tx=(k.qcols-1)/2; return (tx+tf*(cx-tx)==0);};}
+
 		var margin = number; var ncount = bd.cell.length;
-		for(var i=0;i<margin;i++){ bd.cell.push(new Cell()); bd.cell[ncount+i].cellinit(ncount+i); bd.cells.push(ncount+i);} 
+		for(var i=0;i<margin;i++){ bd.cell.push(new Cell()); bd.cells.push(ncount+i);} 
 		for(var i=0;i<bd.cell.length;i++){ bd.setposCell(i);}
 		for(var i=bd.cell.length-1;i>=0;i--){
-			if(i-margin<0 || func(bd.cell[i].cx, bd.cell[i].cy, 0)){
+			if(i-margin<0 || func(bd.cell[i].cx, bd.cell[i].cy)){
 				bd.cell[i] = new Cell(); bd.cell[i].cellinit(i); margin--;
 			}
 			else if(margin>0){ bd.cell[i] = bd.cell[i-margin];}
 			if(margin==0){ break;}
 		}
 		if(k.iscross){
+			var func2, oc = k.isoutsidecross?0:1;
+			if     (rc=='r'){ func2 = function(cx,cy){ var ty=k.qrows/2; return (ty+tf*(cy-ty)==oc);};}
+			else if(rc=='c'){ func2 = function(cx,cy){ var tx=k.qcols/2; return (tx+tf*(cx-tx)==oc);};}
+
 			margin = number+1; ncount = bd.cross.length;
-			for(var i=0;i<margin;i++){ bd.cross.push(new Cross()); bd.cross[ncount+i].cellinit(ncount+i); bd.crosses.push(ncount+i);} 
+			for(var i=0;i<margin;i++){ bd.cross.push(new Cross()); bd.crosses.push(ncount+i);} 
 			for(var i=0;i<bd.cross.length;i++){ bd.setposCross(i);}
 			for(var i=bd.cross.length-1;i>=0;i--){
-				if(i-margin<0 || func(bd.cross[i].cx, bd.cross[i].cy, 1)){
+				if(i-margin<0 || func2(bd.cross[i].cx, bd.cross[i].cy)){
 					bd.cross[i] = new Cross(); bd.cross[i].cellinit(i); margin--;
 				}
 				else if(margin>0){ bd.cross[i] = bd.cross[i-margin];}
@@ -7074,9 +7075,13 @@ MenuExec.prototype = {
 			}
 		}
 		if(k.isborder){
+			var func2;
+			if     (rc=='r'){ func2 = function(cx,cy){ var h=k.qrows+tf*(cy-k.qrows); return (h==1||h==2);};}
+			else if(rc=='c'){ func2 = function(cx,cy){ var w=k.qcols+tf*(cx-k.qcols); return (w==1||w==2);};}
+
 			bd.bdinside = (k.qcols-1)*k.qrows+k.qcols*(k.qrows-1);
 			margin = 2*number-1+(k.isoutsideborder==0?0:2); ncount = bd.border.length;
-			for(var i=0;i<margin;i++){ bd.border.push(new Border()); bd.border[ncount+i].cellinit(ncount+i); bd.borders.push(ncount+i);} 
+			for(var i=0;i<margin;i++){ bd.border.push(new Border()); bd.borders.push(ncount+i);} 
 			for(var i=0;i<bd.border.length;i++){ bd.setposBorder(i);}
 			for(var i=bd.border.length-1;i>=0;i--){
 				if(i-margin<0 || func2(bd.border[i].cx, bd.border[i].cy)){
@@ -7088,11 +7093,11 @@ MenuExec.prototype = {
 		}
 		if(k.isextendcell!=0){
 			margin = k.isextendcell; ncount = bd.excell.length;
-			for(var i=0;i<margin;i++){ bd.excell.push(new Cell()); bd.excell[ncount+i].cellinit(ncount+i);} 
+			for(var i=0;i<margin;i++){ bd.excell.push(new Cell());}
 			for(var i=0;i<bd.excell.length;i++){ bd.setposEXcell(i);}
 			for(var i=bd.excell.length-1;i>=0;i--){
-				if(i-margin<0 || func(bd.excell[i].cx, bd.excell[i].cy, 0)){
-					bd.excell[i] = new Cell(); bd.excell[i].allclear(); bd.excell[i].qnum=0; bd.setposEXcell(i); margin--;
+				if(i-margin<0 || func(bd.excell[i].cx, bd.excell[i].cy)){
+					bd.excell[i] = new Cell(); bd.excell[i].allclear(); bd.excell[i].qnum=-1; margin--;
 				}
 				else if(margin>0){ bd.excell[i] = bd.excell[i-margin];}
 				if(margin==0){ break;}
@@ -7106,6 +7111,7 @@ MenuExec.prototype = {
 		this.adjustSpecial2(5,key);
 	},
 	expandborder : function(key){
+		if(k.puzzleid=='icebarn'||k.puzzleid=='minarism'){ return;}
 		for(var i=0;i<bd.border.length;i++){
 			var source = -1;
 			if(k.isborderAsLine==0){
@@ -7126,26 +7132,31 @@ MenuExec.prototype = {
 				else if(key=='rt' && bd.border[i].cx==2*k.qcols-2){ source = bd.bnum(2*k.qcols, bd.border[i].cy);}
 
 				if(source!=-1){
-					bd.sQuB(i, bd.QuB(source));
-					bd.sQaB(i, bd.QaB(source));
-					bd.sQuB(source,  0);
-					bd.sQaB(source, -1);
+					bd.sQuB(i, bd.QuB(source)); bd.sQuB(source,  0);
+					bd.sQaB(i, bd.QaB(source)); bd.sQaB(source, -1);
+					bd.sQsB(i, bd.QsB(source)); bd.sQsB(source,  0);
 				}
 			}
 		}
 	},
 
-	reduceup : function(){ return this.reduce(k.qcols, 'r', function(cx,cy,f){ return (cy==0);}        ,	function(bx,by){ return (by==1)||(by==2);}                     ,'up'); },
-	reducedn : function(){ return this.reduce(k.qcols, 'r', function(cx,cy,f){ return (cy==k.qrows-1+f);},	function(bx,by){ return (by==2*k.qrows-1)||(by==2*k.qrows-2);} ,'dn'); },
-	reducelt : function(){ return this.reduce(k.qrows, 'c', function(cx,cy,f){ return (cx==0);}        ,	function(bx,by){ return (bx==1)||(bx==2);}                     ,'lt'); },
-	reducert : function(){ return this.reduce(k.qrows, 'c', function(cx,cy,f){ return (cx==k.qcols-1+f);},	function(bx,by){ return (bx==2*k.qcols-1)||(bx==2*k.qcols-2);} ,'rt'); },
-	reduce : function(number, rc, func, func2, key){
+	reduceup : function(){ return this.reduce(k.qcols, 'r', 'up'); },
+	reducedn : function(){ return this.reduce(k.qcols, 'r', 'dn'); },
+	reducelt : function(){ return this.reduce(k.qrows, 'c', 'lt'); },
+	reducert : function(){ return this.reduce(k.qrows, 'c', 'rt'); },
+	reduce : function(number, rc, key){
 		if((rc=='c'&&k.qcols==1)||(rc=='r'&&k.qrows==1)){ return false;}
 
 		this.adjustSpecial(6,key);
+		this.adjustGeneral(6,'',0,0,k.qcols-1,k.qrows-1);
 
-		var margin = 0;
 		if(k.isborder && um.isenableRecord()){ this.reduceborder(key);}
+
+		var tf = ((key=='up'||key=='lt')?1:-1);
+		var func;
+		if     (rc=='r'){ func = function(cx,cy){ var ty=(k.qrows-1)/2; return (ty+tf*(cy-ty)==0);};}
+		else if(rc=='c'){ func = function(cx,cy){ var tx=(k.qcols-1)/2; return (tx+tf*(cx-tx)==0);};}
+		var margin = 0;
 		var qnums = new Array();
 
 		for(var i=0;i<bd.cell.length;i++){
@@ -7153,10 +7164,9 @@ MenuExec.prototype = {
 				if(bd.cell[i].numobj) { bd.cell[i].numobj.hide();}
 				if(bd.cell[i].numobj2){ bd.cell[i].numobj2.hide();}
 				if(!bd.isNullCell(i)){ um.addOpe('cell', 'cell', i, bd.cell[i], 0);}
-				if(k.isOneNumber && bd.QnC(i)!=-1){
-					qnums.push(new Array());
-					qnums[qnums.length-1].areaid=room.getRoomID(i);
-					qnums[qnums.length-1].val=bd.QnC(i);
+				if(k.isOneNumber){
+					if(bd.QnC(i)!=-1){ qnums.push({ areaid:room.getRoomID(i), val:bd.QnC(i)});}
+					room.cell[i] = -1;
 				}
 				margin++;
 			}
@@ -7165,9 +7175,12 @@ MenuExec.prototype = {
 		for(var i=0;i<number;i++){ bd.cell.pop(); bd.cells.pop();}
 
 		if(k.iscross){
+			var func2, oc = k.isoutsidecross?0:1;
+			if     (rc=='r'){ func2 = function(cx,cy){ var ty=k.qrows/2; return (ty+tf*(cy-ty)==oc);};}
+			else if(rc=='c'){ func2 = function(cx,cy){ var tx=k.qcols/2; return (tx+tf*(cx-tx)==oc);};}
 			margin = 0;
 			for(var i=0;i<bd.cross.length;i++){
-				if(func(bd.cross[i].cx, bd.cross[i].cy, 1)){
+				if(func2(bd.cross[i].cx, bd.cross[i].cy)){
 					if(bd.cross[i].numobj){ bd.cross[i].numobj.hide();}
 					if(!bd.isNullCross(i)){ um.addOpe('cross', 'cross', i, bd.cross[i], 0);}
 					margin++;
@@ -7177,6 +7190,9 @@ MenuExec.prototype = {
 			for(var i=0;i<number+1;i++){ bd.cross.pop(); bd.crosses.pop();}
 		}
 		if(k.isborder){
+			var func2;
+			if     (rc=='r'){ func2 = function(cx,cy){ var h=k.qrows+tf*(cy-k.qrows); return (h==1||h==2);};}
+			else if(rc=='c'){ func2 = function(cx,cy){ var w=k.qcols+tf*(cx-k.qcols); return (w==1||w==2);};}
 			bd.bdinside = (k.qcols-1)*k.qrows+k.qcols*(k.qrows-1);
 			margin = 0;
 			for(var i=0;i<bd.border.length;i++){
@@ -7192,7 +7208,7 @@ MenuExec.prototype = {
 		if(k.isextendcell!=0){
 			margin = 0;
 			for(var i=0;i<bd.excell.length;i++){
-				if(func(bd.excell[i].cx, bd.excell[i].cy, 0)){
+				if(func(bd.excell[i].cx, bd.excell[i].cy)){
 					if(bd.excell[i].numobj) { bd.excell[i].numobj.hide();}
 					if(bd.excell[i].numobj2){ bd.excell[i].numobj2.hide();}
 					if(!bd.isNullCell(i)){ um.addOpe('excell', 'excell', i, bd.excell[i], 0);}
@@ -7207,6 +7223,7 @@ MenuExec.prototype = {
 
 		bd.setposAll();
 		if(k.isOneNumber){
+			room.resetRarea();
 			for(var i=0;i<qnums.length;i++){ bd.sQnC(room.getTopOfRoom(qnums[i].areaid), qnums[i].val);}
 		}
 		this.adjustSpecial2(6,key);
@@ -7222,10 +7239,9 @@ MenuExec.prototype = {
 				else if(key=='rt' && bd.border[i].cx==2*k.qcols){ source = bd.bnum(2*k.qcols-2, bd.border[i].cy);}
 
 				if(source!=-1){
-					bd.sQuB(i, bd.QuB(source));
-					bd.sQaB(i, bd.QaB(source));
-					bd.sQuB(source,  0);
-					bd.sQaB(source, -1);
+					bd.sQuB(i, bd.QuB(source)); bd.sQuB(source,  0);
+					bd.sQaB(i, bd.QaB(source)); bd.sQaB(source, -1);
+					bd.sQsB(i, bd.QsB(source)); bd.sQsB(source, -1);
 				}
 			}
 		}
@@ -7498,6 +7514,10 @@ MenuExec.prototype = {
 						var val = {1:3,2:4,3:2,4:1}[bd.DiC(c)];
 						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
+					break;
+				case 5: // 盤面拡大
+					break;
+				case 6: // 盤面縮小
 					break;
 				}
 			}
@@ -7965,6 +7985,7 @@ Rooms.prototype = {
 	resetRarea : function(){
 		if(!this.isEnable()){ return;}
 
+		this.cell = new Array();
 		var rarea = ans.searchRarea();
 		for(var c=0;c<bd.cell.length;c++){ this.cell[c] = rarea.check[c]; }
 		this.rareamax = rarea.max;
@@ -8003,14 +8024,17 @@ Rooms.prototype = {
 		}
 	},
 	removeLineFromRarea : function(id){
+		if(!um.isenableRecord()){ return;}	// 盤面拡大時の文字消去をfix
 		var fordel, keep;
 		var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
 		if(cc1!=-1 && cc2!=-1 && this.cell[cc1] != this.cell[cc2]){
 			var tc1 = this.getTopOfRoomByCell(cc1);
 			var tc2 = this.getTopOfRoomByCell(cc2);
 
-			if     (bd.QnC(tc1)!=-1&&bd.QnC(tc2)==-1){ bd.sQnC(tc2, bd.QnC(tc1)); pc.paintCell(tc2);}
-			else if(bd.QnC(tc1)==-1&&bd.QnC(tc2)!=-1){ bd.sQnC(tc1, bd.QnC(tc2)); pc.paintCell(tc1);}
+			if(k.isOneNumber){
+				if     (bd.QnC(tc1)!=-1&&bd.QnC(tc2)==-1){ bd.sQnC(tc2, bd.QnC(tc1)); pc.paintCell(tc2);}
+				else if(bd.QnC(tc1)==-1&&bd.QnC(tc2)!=-1){ bd.sQnC(tc1, bd.QnC(tc2)); pc.paintCell(tc1);}
+			}
 
 			var dcc = -1;
 			if(bd.cell[tc1].cx > bd.cell[tc2].cx || (bd.cell[tc1].cx == bd.cell[tc2].cx && bd.cell[tc1].cy > bd.cell[tc2].cy)){
@@ -8175,7 +8199,7 @@ PBase.prototype = {
 		if(!enc.uri.bstr){ this.resize_canvas_onload();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
 
 		if(document.domain=='indi.s58.xrea.com' && k.callmode=='pplay'){ this.accesslog();}	// アクセスログをとってみる
-		if(typeof testonly_func == 'function'){ testonly_func();}							// テスト用
+		if(k.scriptcheck && debug){ debug.testonly_func();}							// テスト用
 
 		this.setEvents();	// イベントをくっつける
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
