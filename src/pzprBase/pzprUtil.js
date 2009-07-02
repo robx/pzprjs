@@ -1,4 +1,4 @@
-// pzprUtil.js v3.2.0
+// pzprUtil.js v3.2.0p2
 
 //---------------------------------------------------------------------------
 // šColorsƒNƒ‰ƒX å‚ÉF•ª‚¯‚Ìî•ñ‚ğŠÇ—‚·‚é
@@ -343,6 +343,7 @@ Rooms.prototype = {
 	resetRarea : function(){
 		if(!this.isEnable()){ return;}
 
+		this.cell = new Array();
 		var rarea = ans.searchRarea();
 		for(var c=0;c<bd.cell.length;c++){ this.cell[c] = rarea.check[c]; }
 		this.rareamax = rarea.max;
@@ -381,14 +382,17 @@ Rooms.prototype = {
 		}
 	},
 	removeLineFromRarea : function(id){
+		if(!um.isenableRecord()){ return;}	// ”Õ–ÊŠg‘å‚Ì•¶šÁ‹‚ğfix
 		var fordel, keep;
 		var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
 		if(cc1!=-1 && cc2!=-1 && this.cell[cc1] != this.cell[cc2]){
 			var tc1 = this.getTopOfRoomByCell(cc1);
 			var tc2 = this.getTopOfRoomByCell(cc2);
 
-			if     (bd.QnC(tc1)!=-1&&bd.QnC(tc2)==-1){ bd.sQnC(tc2, bd.QnC(tc1)); pc.paintCell(tc2);}
-			else if(bd.QnC(tc1)==-1&&bd.QnC(tc2)!=-1){ bd.sQnC(tc1, bd.QnC(tc2)); pc.paintCell(tc1);}
+			if(k.isOneNumber){
+				if     (bd.QnC(tc1)!=-1&&bd.QnC(tc2)==-1){ bd.sQnC(tc2, bd.QnC(tc1)); pc.paintCell(tc2);}
+				else if(bd.QnC(tc1)==-1&&bd.QnC(tc2)!=-1){ bd.sQnC(tc1, bd.QnC(tc2)); pc.paintCell(tc1);}
+			}
 
 			var dcc = -1;
 			if(bd.cell[tc1].cx > bd.cell[tc2].cx || (bd.cell[tc1].cx == bd.cell[tc2].cx && bd.cell[tc1].cy > bd.cell[tc2].cy)){
