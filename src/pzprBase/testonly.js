@@ -1,70 +1,86 @@
-// testonly.js v3.2.0p1
+// testonly.js v3.2.0p2
 
 k.scriptcheck = true;
-//k.callmode = "pmake";
+k.callmode = "pmake";
 
-	function testonly_func(){
-		$("#float_eval")//.append("<font color=white>&nbsp;性能測定</font><br>\n")
-						.append("<div class=\"smenu_tmp\" id=\"perfeval\">&nbsp;正答判定時間</div>\n")
-						.append("<div class=\"smenu_tmp\" id=\"painteval\">&nbsp;paintAll()時間</div>\n")
-						.append("<div class=\"smenu_tmp\" id=\"resizeeval\">&nbsp;resize描画時間</div>\n");
-		$("#perfeval").click(perfeval);
-		$("#painteval").click(painteval);
-		$("#resizeeval").click(resizeeval);
+var debug = {
 
-		$("div.smenu_tmp").each(function(){
-			$(this).hover(menu.submenuhover.ebind(menu), menu.submenuout.ebind(menu));
-			this.className = "smenu";
-			$(this).css("font-size",'10pt');
-		});
-
-		if(k.scriptcheck){
-			var tf = {	//testfunc
-				titlebardown : function(e){
-					menu.isptitle = 1;
-					menu.offset.x = mv.pointerX(e) - parseInt($("#poptest").css("left"));
-					menu.offset.y = mv.pointerY(e) - parseInt($("#poptest").css("top"));
-				},
-				titlebarup   : function(e){ menu.isptitle = 0; },
-				titlebarout  : function(e){ if(!menu.insideOf($("#poptest"), e)){ menu.isptitle = 0;} },
-				titlebarmove : function(e){
-					if(menu.isptitle){
-						$("#poptest").css("left", (mv.pointerX(e) - menu.offset.x));
-						$("#poptest").css("top" , (mv.pointerY(e) - menu.offset.y));
-					}
+	testonly_func : function(){
+		var tf = {	//testfunc
+			titlebardown : function(e){
+				menu.isptitle = 1;
+				menu.offset.x = mv.pointerX(e) - parseInt($("#poptest").css("left"));
+				menu.offset.y = mv.pointerY(e) - parseInt($("#poptest").css("top"));
+			},
+			titlebarup   : function(e){ menu.isptitle = 0; },
+			titlebarout  : function(e){ if(!menu.insideOf($("#poptest"), e)){ menu.isptitle = 0;} },
+			titlebarmove : function(e){
+				if(menu.isptitle){
+					$("#poptest").css("left", (mv.pointerX(e) - menu.offset.x));
+					$("#poptest").css("top" , (mv.pointerY(e) - menu.offset.y));
 				}
-			};
-			newEL('div').attr("class","popup").attr("id","poptest")
-						.append( newEL('div').attr("class","titlebar").attr("id","bartest").html("&nbsp;pop_test") )
-						.append( newEL('textarea').attr("id","testarea").attr("rows","32").attr("cols","40").attr("wrap","off") )
-						.append( newEL('br') )
-						.append( newEL('input').attr("type","button").attr("id","testcheck").attr("value","テスト").click(sccheck) )
-						.append( ' ' )
-						.append( newEL('input').attr("type","button").attr("id","testfile").attr("value","File")
-											   .click(function(){ $("#testarea").val(""); addTextarea(fio.filesavestr(1).replace(/\//g,"\n"));}) )
-						.append( newEL('input').attr("type","button").attr("id","testload").attr("value","Load")
-											   .click(function(){ fio.fileopen($("#testarea").val().split("\n"),1);} ) )
-						.append( ' ' )
-						.append( newEL('input').attr("type","button").attr("id","testclose").attr("value","閉じる").click(function(e){ $("#poptest").hide();} ) )
-						.appendTo($("#popup_parent"));
-			$("#bartest").mousedown(tf.titlebardown).mouseup(tf.titlebarup)
-						 .mouseout(tf.titlebarout).mousemove(tf.titlebarmove).unselectable();
-		}
-	}
+			}
+		};
+		newEL('div').attr("class","popup").attr("id","poptest")
+					.append( newEL('textarea').attr("id","testarea").attr("rows","16").attr("cols","40").attr("wrap","off") )
+					.appendTo($("#popup_parent"));
 
-	function perfeval(){
-		timeeval(ans.checkAns.bind(ans));
-	}
-	function painteval(){
-		timeeval(pc.paintAll.bind(pc));
-	}
-	function resizeeval(){
-		timeeval(base.resize_canvas.bind(base));
-	}
+		$("#poptest").append( '<br>' )
+					 .append( this.newBTN("テスト",this.sccheck.bind(this)) )
+					 .append( ' ' )
+					 .append( this.newBTN("T1",this.perfeval.bind(this)) )
+					 .append( this.newBTN("T2",this.painteval.bind(this)) )
+					 .append( this.newBTN("T3",this.resizeeval.bind(this)) );
 
-	function timeeval(func){
-		var count=0;
-		var old = (new Date()).getTime();
+		$("#poptest").append( '<br>' )
+					 .append( this.newBTN("File",function(){ $("#testarea").val(""); debug.addTextarea(fio.filesavestr(1).replace(/\//g,"\n"));}) )
+					 .append( this.newBTN("Load",function(){ fio.fileopen($("#testarea").val().split("\n"),1);}) )
+					 .append( ' ' )
+					 .append( this.newBTN("消去",function(e){ $("#testarea").val("");}) )
+					 .append( ' ' )
+					 .append( this.newBTN("閉じる",function(e){ $("#poptest").hide();}) );
+		if(k.puzzleid=='country'){ $("#poptest").append( ' ' ).append( this.newBTN("Perf",this.loadperf.bind(this)) ); }
+
+		newEL('div').attr("class","titlebar").attr("id","bartest").html("&nbsp;pop_test").unselectable()
+					.mousedown(tf.titlebardown).mouseup(tf.titlebarup)
+					.mouseout(tf.titlebarout).mousemove(tf.titlebarmove).prependTo($("#poptest"));
+	},
+	btncnt : 0,
+	newBTN : function(val,func){
+		var idname = "testbutton_"+this.btncnt; this.btncnt++;
+		return newEL('input').attr("type","button").attr("id",idname).attr("value",val).click(func);
+	},
+
+	keydown : function(ca){
+		if(ca=='F7'){ this.accheck1();  return true;}
+		if(kc.isCTRL && ca=='F8'){ this.disptest(0); return true;}
+		if(kc.isCTRL && ca=='F9'){ this.disptest(1); return true;}
+		return false;
+	},
+
+	perfeval : function(){
+		this.timeeval("正答判定測定",ans.checkAns.bind(ans));
+	},
+	painteval : function(){
+		this.timeeval("描画時間測定",pc.paintAll.bind(pc));
+	},
+	resizeeval : function(){
+		this.timeeval("resize描画測定",base.resize_canvas.bind(base));
+	},
+//	turneval : function(){
+//		this.timeeval("Turn時間測定",function(){
+//			um.newOperation(true);
+//			menu.ex.turnr(0,0,k.qcols-1,k.qrows-1);
+//			um.addOpe('board', 'turnr', 0, 0, 1);
+//			tc.Adjust();
+//			room.resetRarea();
+//		});
+//		base.resize_canvas();
+//	},
+
+	timeeval : function(text,func){
+		this.addTextarea(text);
+		var count=0, old = (new Date()).getTime();
 		while((new Date()).getTime() - old < 3000){
 			count++;
 
@@ -72,19 +88,35 @@ k.scriptcheck = true;
 		}
 		var time = (new Date()).getTime() - old;
 
-		alert("測定時間 "+time+"ms\n"+"測定回数 "+count+"回\n"+"平均時間 "+(time/count)+"ms")
-	}
+		this.addTextarea("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
+	},
 
-	if(k.scriptcheck){
-	function disptest(type){
+	loadperf : function(){
+		fio.fileopen(debug.acs['perftest'][0][1].split("/"),1);
+	},
+
+	accheck1 : function(){
+		var outputstr = fio.filesavestr(1);
+
+		ans.inCheck = true;
+		ans.disableSetError();
+		ans.alstr = { jp:'' ,en:''};
+		ans.checkAns();
+		ans.enableSetError();
+		ans.inCheck = false;
+
+		this.addTextarea("\t\t\t[\""+ans.alstr.jp+"\",\""+outputstr+"\"],");
+	},
+
+	disptest : function(type){
 		$("#poptest").css("visibility","visible").css("left", "40px").css("top", "80px").show();
-		if(type==1){ sccheck();}
-	}
+		if(type==1){ this.sccheck();}
+	},
 
-	function sccheck(e){
+	sccheck : function(e){
 		if(menu.getVal('autocheck')){ menu.setVal('autocheck',false);}
-		$("#testarea").val("");
-		var phase = 10, n=0, alstr='', qstr='';
+		$("#testarea").attr("rows","32").val("");
+		var phase = 10, n=0, alstr='', qstr='', mint=80, fint=50;
 		var tim = setInterval(function(){
 		//Encode test--------------------------------------------------------------
 		switch(phase){
@@ -100,20 +132,20 @@ k.scriptcheck = true;
 				enc.pzlexport(0);
 				var ta = document.urloutput.ta.value;
 
-				if(inp==ta){ addTextarea("Encode test   = pass");}
-				else       { addTextarea("Encode test   = failure...\n "+inp+"\n "+ta);}
+				if(inp==ta){ debug.addTextarea("Encode test   = pass");}
+				else       { debug.addTextarea("Encode test   = failure...\n "+inp+"\n "+ta);}
 
 				setTimeout(function(){
-					if(acs[k.puzzleid]){ phase = 20;}else{ phase = 30;}
-				},100);
+					if(debug.acs[k.puzzleid]){ phase = 20;}else{ phase = 30;}
+				},fint);
 			})();
 			break;
 		//Answer test--------------------------------------------------------------
 		case 20:
 			(function(){
-				alstr = acs[k.puzzleid][n][0];
-				qstr  = acs[k.puzzleid][n][1];
-				fio.fileopen(acs[k.puzzleid][n][1].split("/"),1);
+				alstr = debug.acs[k.puzzleid][n][0];
+				qstr  = debug.acs[k.puzzleid][n][1];
+				fio.fileopen(debug.acs[k.puzzleid][n][1].split("/"),1);
 				setTimeout(function(){
 					ans.inCheck = true;
 					ans.alstr = { jp:'' ,en:''};
@@ -126,13 +158,13 @@ k.scriptcheck = true;
 					if(k.isextendcell){ for(var c=0;c<bd.excell.length;c++){if(bd.excell[c].error!=0){ iserror = true;}}}
 					if(k.iscross)     { for(var c=0;c<bd.cross.length ;c++){if(bd.cross[c].error!=0 ){ iserror = true;}}}
 					if(k.isborder)    { for(var i=0;i<bd.border.length;i++){if(bd.border[i].error!=0){ iserror = true;}}}
-					if(ans.alstr.jp != acs[k.puzzleid][n][0]){ misstr = true;}
-					if(acs[k.puzzleid][n][0] != ""){ iserror = !iserror;}
-					addTextarea("Answer test "+(n+1)+" = "+((!iserror&&!misstr)?"pass":"failure...")+" \""+acs[k.puzzleid][n][0]+"\"");
+					if(ans.alstr.jp != debug.acs[k.puzzleid][n][0]){ misstr = true;}
+					if(debug.acs[k.puzzleid][n][0] != ""){ iserror = !iserror;}
+					debug.addTextarea("Answer test "+(n+1)+" = "+((!iserror&&!misstr)?"pass":"failure...")+" \""+debug.acs[k.puzzleid][n][0]+"\"");
 
 					n++;
-					if(n>=acs[k.puzzleid].length){ phase=30;}else{ phase=20;}
-				},100);
+					if(n>=debug.acs[k.puzzleid].length){ phase=30;}else{ phase=20;}
+				},fint);
 			})();
 			break;
 		//FileIO test--------------------------------------------------------------
@@ -140,162 +172,149 @@ k.scriptcheck = true;
 			(function(){
 				var outputstr = fio.filesavestr(1).replace(/\//g,"\n");
 
-				var bd2 = bd_freezecopy();
+				var bd2 = debug.bd_freezecopy();
 
 				menu.ex.newboard2(1,1);
 				base.resize_canvas();
 
 				setTimeout(function(){
 					fio.fileopen(outputstr.split("\n"),1);
-					addTextarea("FileIO test   = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					debug.addTextarea("FileIO test   = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					phase = (k.puzzleid != 'tawa')?40:50;
-				},100);
+				},fint);
 			})();
 			break;
 		//Turn test--------------------------------------------------------------
 		case 40:
 			(function(){
-				var bd2 = bd_freezecopy();
-				var func = function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'turnr'}});};
+				var bd2 = debug.bd_freezecopy();
+				var func = function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'turnr'}}); menu.pop = '';};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-					addTextarea("TurnR test 1  = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					debug.addTextarea("TurnR test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					phase = 41;
-				},100); },100); },100);
+				},fint); },fint); },fint);
 			})();
 			break;
 		case 41:
 			(function(){
-				var bd2 = bd_freezecopy();
+				var bd2 = debug.bd_freezecopy();
 				var func = function(){ um.undo();};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-					addTextarea("TurnR test 2  = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					debug.addTextarea("TurnR test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					phase = 45;
-				},100); },100); },100);
+				},fint); },fint); },fint);
 			})();
 			break;
 		case 45:
 			(function(){
-				var bd2 = bd_freezecopy();
-				var func = function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'turnl'}});};
+				var bd2 = debug.bd_freezecopy();
+				var func = function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'turnl'}}); menu.pop = '';};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-					addTextarea("TurnL test 1  = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					debug.addTextarea("TurnL test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					phase = 46;
-				},100); },100); },100);
+				},fint); },fint); },fint);
 			})();
 			break;
 		case 46:
 			(function(){
-				var bd2 = bd_freezecopy();
+				var bd2 = debug.bd_freezecopy();
 				var func = function(){ um.undo();};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-					addTextarea("TurnL test 2  = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					debug.addTextarea("TurnL test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					phase = 50;
-				},100); },100); },100);
+				},fint); },fint); },fint);
 			})();
 			break;
 		//Flip test--------------------------------------------------------------
 		case 50:
 			(function(){
-				var bd2 = bd_freezecopy();
+				var bd2 = debug.bd_freezecopy();
 				menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'flipx'}});
 
-				setTimeout(function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'flipx'}});
-					addTextarea("FlipX test 1  = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+				setTimeout(function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'flipx'}}); menu.pop = '';
+					debug.addTextarea("FlipX test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					phase = 51;
-				},100);
+				},fint);
 			})();
 			break;
 		case 51:
 			(function(){
-				var bd2 = bd_freezecopy();
+				var bd2 = debug.bd_freezecopy();
 				um.undo();
 
 				setTimeout(function(){ um.undo();
-					addTextarea("FlipX test 2  = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					debug.addTextarea("FlipX test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					phase = 55;
-				},100);
+				},fint);
 			})();
 			break;
 		case 55:
 			(function(){
-				var bd2 = bd_freezecopy();
+				var bd2 = debug.bd_freezecopy();
 				menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'flipy'}});
 
-				setTimeout(function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'flipy'}});
-					addTextarea("FlipY test 1  = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+				setTimeout(function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'flipy'}}); menu.pop = '';
+					debug.addTextarea("FlipY test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					phase = 56;
-				},100);
+				},fint);
 			})();
 			break;
 		case 56:
 			(function(){
-				var bd2 = bd_freezecopy();
+				var bd2 = debug.bd_freezecopy();
 				um.undo();
 
 				setTimeout(function(){ um.undo();
-					addTextarea("FlipY test 2  = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					debug.addTextarea("FlipY test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					phase = 60;
-				},100);
+				},fint);
 			})();
 			break;
 		//Adjust end--------------------------------------------------------------
 		case 60:
 			(function(){
-				var bd2 = bd_freezecopy();
-				var func = function(nid){ menu.pop = $("#pop2_1"); menu.ex.popupadjust({srcElement:{name:nid}});};
+				var bd2 = debug.bd_freezecopy();
+				var func = function(nid){ menu.pop = $("#pop2_1"); menu.ex.popupadjust({srcElement:{name:nid}}); menu.pop = '';};
 				setTimeout(function(){ func('expandup'); setTimeout(function(){ func('expandrt');
 				setTimeout(function(){ func('expanddn'); setTimeout(function(){ func('expandlt');
 				setTimeout(function(){ func('reduceup'); setTimeout(function(){ func('reducert');
 				setTimeout(function(){ func('reducedn'); setTimeout(function(){ func('reducelt');
-					addTextarea("Adjust test 1 = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					debug.addTextarea("Adjust test 1 = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					phase = 61;
-				},100); },100); },100); },100); },100); },100); },100); },100);
+				},fint); },fint); },fint); },fint); },fint); },fint); },fint); },fint);
 			})();
 			break;
 		case 61: // ワンクッション置く
-			setTimeout(function(){ phase = 62;},50);
+			setTimeout(function(){ phase = 62;},mf(fint/2));
 			break;
 		case 62:
 			(function(){
-				var bd2 = bd_freezecopy();
+				var bd2 = debug.bd_freezecopy();
 				var func = function(){ um.undo();};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-					addTextarea("Adjust test 2 = "+(bd_compare(bd,bd2)?"pass":"failure..."));
+					debug.addTextarea("Adjust test 2 = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					phase = 90;
-				},100); },100); },100); },100); },100); },100); },100);
+				},fint); },fint); },fint); },fint); },fint); },fint); },fint);
 			})();
 			break;
 		//test end--------------------------------------------------------------
 		case 90:
 			clearInterval(tim);
-			addTextarea("Test end.");
+			debug.addTextarea("Test end.");
 			break;
 		}
 		phase=0;
-		},1000);
-	}
-	function accheck1(){
-		var outputstr = fio.filesavestr(1);
+		},mint);
+	},
+	addTextarea : function(str){ $("#testarea").val($("#testarea").val()+str+"\n");},
 
-		ans.inCheck = true;
-		ans.disableSetError();
-		ans.alstr = { jp:'' ,en:''};
-		ans.checkAns();
-		ans.enableSetError();
-		ans.inCheck = false;
-
-		addTextarea("\t\t\t[\""+ans.alstr.jp+"\",\""+outputstr+"\"],");
-	}
-
-	function addTextarea(str){ $("#testarea").val($("#testarea").val()+str+"\n");}
-
-	function bd_freezecopy(){
+	bd_freezecopy : function(){
 		var bd2 = new Board;
 		for(var c=0;c<bd.cell.length;c++){
 			bd2.cell[c].ques =bd.cell[c].ques;
@@ -326,8 +345,8 @@ k.scriptcheck = true;
 			}
 		}
 		return bd2;
-	}
-	function bd_compare(bd1,bd2){
+	},
+	bd_compare : function(bd1,bd2){
 		var result = true;
 		for(var c=0;c<bd1.cell.length;c++){
 			if(bd1.cell[c].ques !=bd2.cell[c].ques ){ result = false;}
@@ -358,9 +377,9 @@ k.scriptcheck = true;
 			}
 		}
 		return result;
-	}
+	},
 
-	var acs = {
+	acs : {
 		ayeheya : [
 			["黒マスがタテヨコに連続しています。","pzprv3/ayeheya/6/6/11/0 0 1 1 1 2 /0 0 1 1 1 3 /4 4 5 5 6 6 /7 7 5 5 6 6 /7 7 8 8 8 8 /7 7 9 10 10 10 /. . . . . . /. . . . . . /. . 2 . . . /. . . . . . /. . . . . . /. . . . . . /. . . . . . /. # . . . . /. # . . . . /. . . . . . /. . . . . . /. . . . . . /"],
 			["白マスが分断されています。","pzprv3/ayeheya/6/6/11/0 0 1 1 1 2 /0 0 1 1 1 3 /4 4 5 5 6 6 /7 7 5 5 6 6 /7 7 8 8 8 8 /7 7 9 10 10 10 /. . . . . . /. . . . . . /. . 2 . . . /. . . . . . /. . . . . . /. . . . . . /. . . . . # /. . . . # . /. . . # . . /. . # . . . /. # . . . . /# . . . . . /"],
@@ -960,7 +979,8 @@ k.scriptcheck = true;
 			["黒マスも線も引かれていないマスがあります。","pzprv3/yajirin/5/5/. . . . . /. . . . . /. . . 3,2 . /. . . . . /. . . . 1,0 /. . . . . /. . . . + /# . # . + /. . + . + /. . . . . /1 1 0 1 /1 0 1 0 /0 0 0 0 /0 1 0 1 /0 0 1 0 /1 0 1 1 1 /0 1 0 0 1 /0 1 0 0 1 /0 0 1 1 0 /"],
 			["","pzprv3/yajirin/5/5/. . . . . /. . . . . /. . . 3,2 . /. . . . . /. . . . 1,0 /. . . . . /. . . . + /# . # . + /. . + . + /. . . # . /1 1 -1 1 /1 -1 1 -1 /0 0 0 -1 /1 -1 1 1 /1 1 0 0 /1 -1 1 1 1 /0 1 0 0 1 /0 1 0 0 1 /1 -1 1 0 0 /"]
 		],
-		nulls : [
+		perftest : [
+			["","pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /"]
 		]
-	};
 	}
+};
