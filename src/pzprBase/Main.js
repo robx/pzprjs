@@ -1,4 +1,4 @@
-// Main.js v3.2.0
+// Main.js v3.2.0p2
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -74,7 +74,7 @@ PBase.prototype = {
 		if(!enc.uri.bstr){ this.resize_canvas_onload();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
 
 		if(document.domain=='indi.s58.xrea.com' && k.callmode=='pplay'){ this.accesslog();}	// アクセスログをとってみる
-		if(typeof testonly_func == 'function'){ testonly_func();}							// テスト用
+		if(k.scriptcheck && debug){ debug.testonly_func();}							// テスト用
 
 		this.setEvents();	// イベントをくっつける
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート

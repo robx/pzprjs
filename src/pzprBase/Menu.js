@@ -1,4 +1,4 @@
-// Menu.js v3.2.0
+// Menu.js v3.2.0p2
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -657,11 +657,6 @@ Properties.prototype = {
 		as('jumpv3', 'other');
 		as('jumptop', 'other');
 		as('jumpblog', 'other');
-
-		if(typeof testonly_func == 'function'){
-			ap('sep_t','other');
-			au('eval','other',0,[]);
-		}
 
 		this.setStringToFlags();
 	},
