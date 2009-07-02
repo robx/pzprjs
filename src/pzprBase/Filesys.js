@@ -1,4 +1,4 @@
-// Filesys.js v3.2.0p1
+// Filesys.js v3.2.0p2
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -45,7 +45,7 @@ FileIO.prototype = {
 
 		if     (row>0 && col>0 && (type==1 || k.puzzleid!="kakuro")){ menu.ex.newboard2(col, row);}
 		else if(row>0 && col>0){ menu.ex.newboard2(col-1, row-1);}
-		else{ um.enableRecord(); return;}
+		else{ return;}
 
 		um.disableRecord();
 
@@ -468,7 +468,7 @@ FileIO.prototype = {
 			if(bd.dn(c)!=-1 && room.getRoomID(c) != room.getRoomID(bd.dn(c))){ bd.sQuB(bd.db(c),1); }
 			if(bd.rt(c)!=-1 && room.getRoomID(c) != room.getRoomID(bd.rt(c))){ bd.sQuB(bd.rb(c),1); }
 		}
-		room.isenable = room.isenable;
+		room.isenable = saved;
 
 		room.resetRarea();
 	},
