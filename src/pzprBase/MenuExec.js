@@ -1,4 +1,4 @@
-// MenuExec.js v3.2.0p2
+// MenuExec.js v3.2.0p3
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -316,6 +316,7 @@ MenuExec.prototype = {
 		// 拡大時、境界線は代入しておく
 		if(k.isborder && um.isenableRecord()){ this.expandborder(key);}
 		this.adjustSpecial2(5,key);
+		ans.resetLcount();
 	},
 	expandborder : function(key){
 		if(k.puzzleid=='icebarn'||k.puzzleid=='minarism'){ return;}
@@ -434,6 +435,7 @@ MenuExec.prototype = {
 			for(var i=0;i<qnums.length;i++){ bd.sQnC(room.getTopOfRoom(qnums[i].areaid), qnums[i].val);}
 		}
 		this.adjustSpecial2(6,key);
+		ans.resetLcount();
 		return true;
 	},
 	reduceborder : function(key){
@@ -531,6 +533,7 @@ MenuExec.prototype = {
 
 		bd.setposAll();
 		this.adjustSpecial2(1,'');
+		ans.resetLcount();
 	},
 	// 回転・反転(左右反転)
 	flipx : function(rx1,ry1,rx2,ry2){
@@ -583,6 +586,7 @@ MenuExec.prototype = {
 
 		bd.setposAll();
 		this.adjustSpecial2(2,'');
+		ans.resetLcount();
 	},
 	// 回転・反転(右90°回転)
 	turnr : function(rx1,ry1,rx2,ry2){ this.turn2(rx1,ry1,rx2,ry2,1); },
@@ -665,6 +669,7 @@ MenuExec.prototype = {
 
 		bd.setposAll();
 		this.adjustSpecial2(f+2,'');
+		ans.resetLcount();
 	},
 
 	//------------------------------------------------------------------------------
