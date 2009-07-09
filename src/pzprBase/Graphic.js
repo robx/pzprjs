@@ -1,4 +1,4 @@
-// Graphic.js v3.2.0
+// Graphic.js v3.2.0p3
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
@@ -1104,9 +1104,15 @@ Graphic.prototype = {
 	vnop : function(vid, isfill){
 		if(g.vml){
 			if(g.elements[vid]){
-				g.elements[vid].attr("color", uuColor.parse((isfill==1?g.fillStyle:g.strokeStyle))[0]);
-				if(!this.zstable){ g.elements["p_"+vid].css("z-index",g.zidx);}
-				g.elements["p_"+vid].show();
+				var el = g.elements[vid].get(0);
+				if(el){
+					el.color = uuColor.parse((isfill==1?g.fillStyle:g.strokeStyle))[0];
+				}
+				var pel = g.elements["p_"+vid].get(0);
+				if(pel){
+					if(!this.zstable){ pel.style.zIndex = g.zidx;}
+					pel.style.display = 'inline';
+				}
 				return false;
 			}
 			g.vid = vid;
@@ -1116,7 +1122,7 @@ Graphic.prototype = {
 	vhide : function(vid){
 		if(g.vml){
 			if(!vid.shift){ vid = [vid];}
-			for(var i=0;i<vid.length;i++){ if(g.elements[vid[i]]){ g.elements["p_"+vid[i]].hide();} }
+			for(var i=0;i<vid.length;i++){ if(g.elements[vid[i]]){ g.elements["p_"+vid[i]].get(0).style.display = 'none';} }
 		}
 	},
 	vdel : function(vid){
@@ -1143,12 +1149,12 @@ Graphic.prototype = {
 	// 数字表示関数
 	CreateDOMAndSetNop : function(){
 		obj = newEL("div");
-		obj.attr("class", "divnum")
-		   .mousedown(mv.e_mousedown.ebind(mv))
+		obj.mousedown(mv.e_mousedown.ebind(mv))
 		   .mouseup(mv.e_mouseup.ebind(mv))
 		   .mousemove(mv.e_mousemove.ebind(mv))
 		   .appendTo("#numobj_parent")
 		   .unselectable();
+		obj.context.className = "divnum";
 		obj.context.oncontextmenu = function(){ return false;}; //妥協点 
 
 		return obj;
@@ -1172,7 +1178,7 @@ Graphic.prototype = {
 	// pc.dispnumBorder()       Borderに数字を記入するための値を決定する
 	//---------------------------------------------------------------------------
 	dispnumCell_General : function(id){
-		if(bd.cell[id].numobj && !this.isdispnumCell(id)){ bd.cell[id].numobj.hide(); return;}
+		if(bd.cell[id].numobj && !this.isdispnumCell(id)){ bd.cell[id].numobj.get(0).style.display = 'none'; return;}
 		if(this.isdispnumCell(id)){
 			if(!bd.cell[id].numobj){ bd.cell[id].numobj = this.CreateDOMAndSetNop();}
 			var obj = bd.cell[id].numobj;
@@ -1180,7 +1186,7 @@ Graphic.prototype = {
 			var type = 1;
 			if     (k.isDispNumUL){ type=5;}
 			else if(bd.QuC(id)>=2 && bd.QuC(id)<=5){ type=bd.QuC(id);}
-			else if(k.puzzleid=="reflect"){ obj.hide(); return;}
+			else if(k.puzzleid=="reflect"){ obj.get(0).style.display = 'none'; return;}
 
 			var num = (bd.QnC(id)!=-1 ? bd.QnC(id) : bd.QaC(id));
 
@@ -1206,14 +1212,14 @@ Graphic.prototype = {
 			if(!bd.cross[id].numobj){ bd.cross[id].numobj = this.CreateDOMAndSetNop();}
 			this.dispnumCross1(id, bd.cross[id].numobj, 101, ""+bd.QnX(id), 0.6 ,this.crossnumcolor);
 		}
-		else if(bd.cross[id].numobj){ bd.cross[id].numobj.hide();}
+		else if(bd.cross[id].numobj){ bd.cross[id].numobj.get(0).style.display = 'none';}
 	},
 	dispnumBorder : function(id){
 		if(bd.QnB(id)>0||(bd.QnB(id)==0&&k.dispzero==1)){
 			if(!bd.border[id].numobj){ bd.border[id].numobj = this.CreateDOMAndSetNop();}
 			this.dispnumBorder1(id, bd.border[id].numobj, 101, ""+bd.QnB(id), 0.45 ,this.borderfontcolor);
 		}
-		else if(bd.border[id].numobj){ bd.border[id].numobj.hide();}
+		else if(bd.border[id].numobj){ bd.border[id].numobj.get(0).style.display = 'none';}
 	},
 
 	//---------------------------------------------------------------------------
@@ -1255,7 +1261,7 @@ Graphic.prototype = {
 			el.style.top  = k.cv_oft.y+py+mf((k.cheight-hgt)/2)+(IE?3:1)+(type==7?mf(k.cheight*0.1):0);
 		}
 		else if(type==101){
-			el.style.left = k.cv_oft.x+px-wid/2+(IE?2:2)
+			el.style.left = k.cv_oft.x+px-wid/2+(IE?2:2);
 			el.style.top  = k.cv_oft.y+py-hgt/2+(IE?3:1);
 		}
 		else{
@@ -1264,45 +1270,9 @@ Graphic.prototype = {
 			if     (type==2||type==3){ el.style.top  = k.cv_oft.y+py+k.cheight-hgt+(IE?1:-1);}
 			else if(type==4||type==5){ el.style.top  = k.cv_oft.y+py              +(IE?4: 2);}
 		}
-		//if(IE && fontsize>24){ obj.css("padding-top",mf((fontsize-24)/2)).css("padding-bottom",mf((fontsize-24)/2));}
 
 		el.style.color = color;
 	},
-	/*
-	dispnum1 : function(obj, type, text, fontratio, color, px, py){
-		if(!obj){ return;}
-		var IE = k.br.IE;
-		var el = obj.context;
-
-		obj.html(text);
-
-		var fontsize = mf(k.cwidth*fontratio*pc.fontsizeratio);
-		obj.css("font-size", ""+ fontsize + 'px');
-
-		var wid = obj.width();
-		var hgt = obj.height();
-
-		if(type==1||type==6||type==7){
-			obj.css("left", k.cv_oft.x+px+mf((k.cwidth-wid) /2)+(IE?2:2)-(type==6?mf(k.cwidth *0.1):0))
-			   .css("top" , k.cv_oft.y+py+mf((k.cheight-hgt)/2)+(IE?3:1)+(type==7?mf(k.cheight*0.1):0));
-		}
-		else if(type==101){
-			obj.css("left", k.cv_oft.x+px-wid/2+(IE?2:2))
-			   .css("top" , k.cv_oft.y+py-hgt/2+(IE?3:1));
-		}
-		else{
-			if     (type==3||type==4){ obj.css("left", k.cv_oft.x+px+k.cwidth -wid+(IE?1: 0));}
-			else if(type==2||type==5){ obj.css("left", k.cv_oft.x+px              +(IE?5: 4));}
-			if     (type==2||type==3){ obj.css("top" , k.cv_oft.y+py+k.cheight-hgt+(IE?1:-1));}
-			else if(type==4||type==5){ obj.css("top" , k.cv_oft.y+py              +(IE?4: 2));}
-		}
-		//if(IE && fontsize>24){ obj.css("padding-top",mf((fontsize-24)/2)).css("padding-bottom",mf((fontsize-24)/2));}
-
-		obj.css('color',color);
-
-		obj.show();
-	},
-	*/
 
 	//---------------------------------------------------------------------------
 	// pc.drawNumbersOn51()   Cell上の[＼]に数字を記入する
@@ -1314,7 +1284,7 @@ Graphic.prototype = {
 			var c = clist[i];
 
 			if(bd.QnC(c)==-1 || bd.QuC(c)!=51 || bd.rt(c)==-1 || bd.QuC(bd.rt(c))==51){
-				if(bd.cell[c].numobj){ bd.cell[c].numobj.hide();}
+				if(bd.cell[c].numobj){ bd.cell[c].numobj.get(0).style.display = 'none';}
 			}
 			else{
 				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
@@ -1324,7 +1294,7 @@ Graphic.prototype = {
 			}
 
 			if(bd.DiC(c)==-1 || bd.QuC(c)!=51 || bd.dn(c)==-1 || bd.QuC(bd.dn(c))==51){
-				if(bd.cell[c].numobj2){ bd.cell[c].numobj2.hide();}
+				if(bd.cell[c].numobj2){ bd.cell[c].numobj2.get(0).style.display = 'none';}
 			}
 			else{
 				if(!bd.cell[c].numobj2){ bd.cell[c].numobj2 = this.CreateDOMAndSetNop();}
@@ -1342,7 +1312,7 @@ Graphic.prototype = {
 				if(c==-1){ continue;}
 
 				if(bd.QnE(c)==-1 || bd.excell[c].cy==-1 || bd.QuC(bd.excell[c].cy*k.qcols)==51){
-					if(bd.excell[c].numobj){ bd.excell[c].numobj.hide();}
+					if(bd.excell[c].numobj){ bd.excell[c].numobj.get(0).style.display = 'none';}
 				}
 				else{
 					if(!bd.excell[c].numobj){ bd.excell[c].numobj = this.CreateDOMAndSetNop();}
@@ -1352,7 +1322,7 @@ Graphic.prototype = {
 				}
 
 				if(bd.DiE(c)==-1 || bd.excell[c].cx==-1 || bd.QuC(bd.excell[c].cx)==51){
-					if(bd.excell[c].numobj2){ bd.excell[c].numobj2.hide();}
+					if(bd.excell[c].numobj2){ bd.excell[c].numobj2.get(0).style.display = 'none';}
 				}
 				else{
 					if(!bd.excell[c].numobj2){ bd.excell[c].numobj2 = this.CreateDOMAndSetNop();}
