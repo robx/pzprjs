@@ -1,4 +1,4 @@
-// Menu.js v3.2.0p2
+// Menu.js v3.2.0p3
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -29,8 +29,9 @@ Menu = function(){
 };
 Menu.prototype = {
 	//---------------------------------------------------------------------------
-	// menu.menuinit() メニュー、ボタン、サブメニュー、フロートメニュー、
-	//                 ポップアップメニューの初期設定を行う
+	// menu.menuinit()  メニュー、ボタン、サブメニュー、フロートメニュー、
+	//                  ポップアップメニューの初期設定を行う
+	// menu.menureset() メニュー用の設定を消去する
 	//---------------------------------------------------------------------------
 	menuinit : function(){
 		this.buttonarea();
@@ -38,6 +39,25 @@ Menu.prototype = {
 		this.poparea();
 
 		this.displayAll();
+	},
+
+	menureset : function(){
+		this.dispfloat  = new Array();
+		this.floatpanel = new Array();
+		this.pop        = "";
+		this.btnstack   = new Array();
+		this.labelstack = new Array();
+
+		this.popclose();
+		this.menuclear();
+
+		$("#popup_parent > .floatmenu").remove();
+		$("#menupanel,#usepanel,#checkpanel").html("");
+		if($("#btncolor2").length>0){ $("#btncolor2").remove();}
+		$("#btnclear2").nextAll().remove();
+		$("#outbtnarea").remove();
+
+		pp.reset();
 	},
 
 	//---------------------------------------------------------------------------
@@ -310,7 +330,7 @@ Menu.prototype = {
 						 .click(lang.translate.bind(lang)).unselectable();
 		if(k.callmode=="pmake"){ $("#timerpanel,#separator2").hide();}
 		if(k.irowake!=0){
-			$("#btnarea").append("　<input type=\"button\" id=\"btncolor2\" value=\"色分けしなおす\">");
+			$("#btnarea").append("<input type=\"button\" id=\"btncolor2\" value=\"色分けしなおす\">");
 			$("#btncolor2").click(col.irowakeRemake.ebind(col)).hide();
 			menu.addButtons($("#btncolor2"), "色分けしなおす", "Change the color of Line");
 		}
@@ -347,10 +367,10 @@ Menu.prototype = {
 		$(document.urlinput.cancel).click(px);
 
 		// URL出力
-		var ib = function(name, strJP, strEN, eval){
-			if(!eval) return;
+		$(document.urloutput.ta).before(newEL('div').attr('id','outbtnarea'));
+		var ib = function(name, strJP, strEN, eval){ if(!eval) return;
 			var btn = newEL('input').attr('type','button').attr("name",name).click(this.ex.urloutput.ebind(this.ex));
-			$(document.urloutput.ta).before(btn).before("<br>");
+			$("#outbtnarea").append(btn).append("<br>");
 			this.addButtons(btn, strJP, strEN);
 		}.bind(this);
 		ib('pzprv3', "ぱずぷれv3のURLを出力する", "Output PUZ-PRE v3 URL", true);
@@ -358,7 +378,7 @@ Menu.prototype = {
 		ib('kanpen', "カンペンのURLを出力する", "Output Kanpen URL", k.isKanpenExist);
 		ib('heyaapp', "へやわけアプレットのURLを出力する", "Output Heyawake-Applet URL", (k.puzzleid=="heyawake"));
 		ib('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する", "Output PUZ-PRE v3 Re-Edit URL", true);
-		$(document.urloutput.ta).before("<br>\n");
+		$("#outbtnarea").append("<br>\n");
 		$(document.urloutput.openurl).click(this.ex.openurl.ebind(this.ex));
 		$(document.urloutput.close).click(px);
 
@@ -541,6 +561,11 @@ Properties = function(){
 	this.flaglist = new Array();	// idnameの配列
 };
 Properties.prototype = {
+	reset : function(){
+		this.flags    = new Array();
+		this.flaglist = new Array();
+	},
+
 	// pp.setMenuStr() 管理パネルと選択型/チェック型サブメニューに表示する文字列を設定する
 	addSmenuToFlags : function(idname, parent)       { this.addToFlags(idname, parent, 0, 0);},
 	addCheckToFlags : function(idname, parent, first){ this.addToFlags(idname, parent, 2, first);},
