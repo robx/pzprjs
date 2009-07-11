@@ -1,4 +1,4 @@
-// Main.js v3.2.0p2
+// Main.js v3.2.0p3
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -7,9 +7,11 @@
 // PBaseクラス
 PBase = function(){
 	this.floatbgcolor = "black";
+	this.proto        = 0;	// 各クラスのprototypeがパズル用スクリプトによって変更されているか
 	this.expression   = { ja:'' ,en:''};
 	this.puzzlename   = { ja:'' ,en:''};
-	this.cv_obj = null;	// HTMLソースのCanvasを示すオブジェクト
+	this.cv_obj       = null;	// HTMLソースのCanvasを示すオブジェクト
+	this.onresizenow  = false;	// resize中かどうか
 };
 PBase.prototype = {
 	//---------------------------------------------------------------------------
@@ -20,6 +22,7 @@ PBase.prototype = {
 		// URLの取得 -> URLの?以下ををpuzzleid部とpzlURI部に分割(内部でurl_decode()呼んでいる)
 		enc = new Encode(location.search);
 		k.puzzleid = enc.uri.pid;
+		if(location.href.indexOf('for_test.html')>=0){ k.puzzleid = 'lits';}
 		if(!k.puzzleid){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
 		if(enc.uri.cols){ k.qcols = enc.uri.cols;}
 		if(enc.uri.rows){ k.qrows = enc.uri.rows;}
@@ -31,26 +34,45 @@ PBase.prototype = {
 		}
 
 		// パズル専用ファイルの読み込み
-		document.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
+		if(location.href.indexOf('for_test.html')==-1){
+			document.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
+		}
+		else{
+			document.writeln("<script type=\"text/javascript\" src=\"src/puzzles_Full.js\"></script>");
+		}
 
 		// onLoadとonResizeに動作を割り当てる
 		$(document).ready(this.onload_func.ebind(this));
-		$(window).resize(this.resize_canvas.ebind(this));
+		$(window).resize(this.onresize_func.ebind(this));
 	},
 
 	//---------------------------------------------------------------------------
 	// base.onload_func()
 	//   ページがLoadされた時の処理。各クラスのオブジェクトへの読み込み等初期設定を行う
+	// base.initObjects()
+	//   各オブジェクトの生成などの処理
 	// base.setEvents()
 	//   マウス入力、キー入力のイベントの設定を行う
 	// base.initSilverlight()
 	//   Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
+	// base.reload_func()  別スクリプトを読み込みしなおす際の処理
+	// base.postfix()      各パズルの初期化後処理を呼び出す
 	//---------------------------------------------------------------------------
 	onload_func : function(){
 		this.initCanvas();
 
+		this.initObjects();
+		this.setEvents(1);	// イベントをくっつける
+
+		if(document.domain=='indi.s58.xrea.com' && k.callmode=='pplay'){ this.accesslog();}	// アクセスログをとってみる
+		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
+	},
+	initObjects : function(){
+		this.proto = 0;
+
 		puz = new Puzzles[k.puzzleid]();	// パズル固有オブジェクト
 		puz.setting();					// パズル固有の変数設定(デフォルト等)
+		if(this.proto){ puz.protoChange();}
 
 		// クラス初期化
 		bd = new Board();		// 盤面オブジェクト
@@ -73,22 +95,42 @@ PBase.prototype = {
 		enc.pzlinput(0);									// URLからパズルのデータを読み出す
 		if(!enc.uri.bstr){ this.resize_canvas_onload();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
 
-		if(document.domain=='indi.s58.xrea.com' && k.callmode=='pplay'){ this.accesslog();}	// アクセスログをとってみる
-		if(k.scriptcheck && debug){ debug.testonly_func();}							// テスト用
-
-		this.setEvents();	// イベントをくっつける
-		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
+		if(k.scriptcheck && debug){ debug.testonly_func();}	// テスト用
 	},
-	setEvents : function(){
+	setEvents : function(first){
 		this.cv_obj.mousedown(mv.e_mousedown.ebind(mv)).mouseup(mv.e_mouseup.ebind(mv)).mousemove(mv.e_mousemove.ebind(mv));
 		this.cv_obj.context.oncontextmenu = function(){return false;};	//妥協点 
 
-		$(document).keydown(kc.e_keydown.kcbind()).keyup(kc.e_keyup.kcbind()).keypress(kc.e_keypress.kcbind());
+		if(first){
+			$(document).keydown(kc.e_keydown.kcbind()).keyup(kc.e_keyup.kcbind()).keypress(kc.e_keypress.kcbind());
+		}
 	},
 	initSilverlight : function(sender){
 		sender.AddEventListener("KeyDown", kc.e_SLkeydown.bind(kc));
 		sender.AddEventListener("KeyUp",   kc.e_SLkeyup.bind(kc));
 	},
+
+	reload_func : function(newid){
+		if(this.proto){ puz.protoOriginal();}
+
+		$("*").unbind();
+		menu.menureset();
+		$("#numobj_parent").html("");
+		if(kp.ctl[1].enable){ kp.ctl[1].el.remove();}
+		if(kp.ctl[3].enable){ kp.ctl[3].el.remove();}
+
+		k.puzzleid = newid;
+		if(!Puzzles[k.puzzleid]){
+			newEL("script").attr("type", "text/javascript")
+//						   .attr("charset", "Shift_JIS")
+						   .attr("src", "src/"+k.puzzleid+".js")
+						   .appendTo($("head"));
+		}
+
+		this.initObjects();
+		this.setEvents(0);
+	},
+
 	postfix : function(){
 		puz.input_init();
 		puz.graphic_init();
@@ -136,6 +178,7 @@ PBase.prototype = {
 	// base.resize_canvas_only()   ウィンドウのLoad/Resize時の処理。Canvas/表示するマス目の大きさを設定する。
 	// base.resize_canvas()        resize_canvas_only()+Canvasの再描画
 	// base.resize_canvas_onload() 初期化中にpaint再描画が起こらないように、resize_canvasを呼び出す
+	// base.onresize_func()        ウィンドウリサイズ時に呼ばれる関数
 	// base.getWindowSize()        ウィンドウの大きさを返す
 	//---------------------------------------------------------------------------
 	initCanvas : function(){
@@ -215,6 +258,14 @@ PBase.prototype = {
 	resize_canvas_onload : function(){
 		if(!k.br.IE || pc.already()){ this.resize_canvas();}
 		else{ uuCanvas.ready(this.resize_canvas.bind(this));}
+	},
+	onresize_func : function(){
+		if(this.onresizenow){ return;}
+		this.onresizenow = true;
+
+		this.resize_canvas();
+
+		this.onresizenow = false;
 	},
 	getWindowSize : function(){
 		if(document.all){
