@@ -1,11 +1,20 @@
-// testonly.js v3.2.0p2
+// testonly.js v3.2.0p3
 
 k.scriptcheck = true;
 k.callmode = "pmake";
 
 var debug = {
-
 	testonly_func : function(){
+		if($("#poptest").length <= 0){
+			newEL('div').attr("class","popup").attr("id","poptest")
+						.append( newEL('textarea').attr("id","testarea").attr("rows","16").attr("cols","40").attr("wrap","off") )
+						.appendTo($("#popup_parent"));
+			newEL('div').attr("class","titlebar").attr("id","bartest").html("&nbsp;pop_test").unselectable().prependTo($("#poptest"));
+		}
+		else{
+			$("#testarea").nextAll().remove();
+		}
+
 		var tf = {	//testfunc
 			titlebardown : function(e){
 				menu.isptitle = 1;
@@ -21,29 +30,24 @@ var debug = {
 				}
 			}
 		};
-		newEL('div').attr("class","popup").attr("id","poptest")
-					.append( newEL('textarea').attr("id","testarea").attr("rows","16").attr("cols","40").attr("wrap","off") )
-					.appendTo($("#popup_parent"));
+		$("#bartest").unbind().mousedown(tf.titlebardown).mouseup(tf.titlebarup)
+					 .mouseout(tf.titlebarout).mousemove(tf.titlebarmove);
 
 		$("#poptest").append( '<br>' )
-					 .append( this.newBTN("テスト",this.sccheck.bind(this)) )
+					 .append( this.newBTN("テスト",this.presccheck.bind(this)) )
 					 .append( ' ' )
 					 .append( this.newBTN("T1",this.perfeval.bind(this)) )
 					 .append( this.newBTN("T2",this.painteval.bind(this)) )
 					 .append( this.newBTN("T3",this.resizeeval.bind(this)) );
 
 		$("#poptest").append( '<br>' )
-					 .append( this.newBTN("File",function(){ $("#testarea").val(""); debug.addTextarea(fio.filesavestr(1).replace(/\//g,"\n"));}) )
-					 .append( this.newBTN("Load",function(){ fio.fileopen($("#testarea").val().split("\n"),1);}) )
+					 .append( this.newBTN("File",function(){ $("#testarea").val(""); debug.addTextarea(fio.filesavestr(2).replace(/\//g,"\n"));}) )
+					 .append( this.newBTN("Load",function(){ fio.fileopen($("#testarea").val().split("\n"),2);}) )
 					 .append( ' ' )
 					 .append( this.newBTN("消去",function(e){ $("#testarea").val("");}) )
 					 .append( ' ' )
 					 .append( this.newBTN("閉じる",function(e){ $("#poptest").hide();}) );
 		if(k.puzzleid=='country'){ $("#poptest").append( ' ' ).append( this.newBTN("Perf",this.loadperf.bind(this)) ); }
-
-		newEL('div').attr("class","titlebar").attr("id","bartest").html("&nbsp;pop_test").unselectable()
-					.mousedown(tf.titlebardown).mouseup(tf.titlebarup)
-					.mouseout(tf.titlebarout).mousemove(tf.titlebarmove).prependTo($("#poptest"));
 	},
 	btncnt : 0,
 	newBTN : function(val,func){
@@ -55,6 +59,7 @@ var debug = {
 		if(ca=='F7'){ this.accheck1();  return true;}
 		if(kc.isCTRL && ca=='F8'){ this.disptest(0); return true;}
 		if(kc.isCTRL && ca=='F9'){ this.disptest(1); return true;}
+		if(kc.isCTRL && kc.isSHIFT && ca=='F10'){ this.all_test(); return true;}
 		return false;
 	},
 
@@ -93,6 +98,38 @@ var debug = {
 
 	loadperf : function(){
 		fio.fileopen(debug.acs['perftest'][0][1].split("/"),1);
+		menu.setVal('mode',3);
+		menu.setVal('irowake',true);
+	},
+
+	all_test : function(){
+		var pnum=0;
+		debug.phase = 99;
+
+		var tam = setInterval(function(){
+			if(debug.phase != 99){ return;}
+
+			k.puzzleid = debug.urls[pnum][0];
+
+			enc.init.bind(enc)();
+			k.qcols = 0;
+			k.qrows = 0;
+
+			base.reload_func(k.puzzleid);
+
+			var type = enc.get_search.bind(enc,enc.getURLbase()+"?"+k.puzzleid+"/"+debug.urls[pnum][1])();
+			if(enc.uri.cols && enc.uri.rows){ menu.ex.newboard2(enc.uri.cols, enc.uri.rows);}
+			enc.pzlinput.bind(enc,type)();
+			room.resetRarea();
+
+			$("#testarea").attr("rows","32");
+			$("#poptest").css("visibility","visible").css("left", "40px").css("top", "80px").show();
+			debug.addTextarea("Test ("+pnum+", "+k.puzzleid+") start.");
+			debug.sccheck();
+
+			pnum++;
+			if(pnum >= debug.urls.length){ clearInterval(tam);} 
+		},300);
 	},
 
 	accheck1 : function(){
@@ -110,16 +147,21 @@ var debug = {
 
 	disptest : function(type){
 		$("#poptest").css("visibility","visible").css("left", "40px").css("top", "80px").show();
-		if(type==1){ this.sccheck();}
+		if(type==1){ this.presccheck();}
 	},
 
+	phase : 0,
+	presccheck : function(e){
+		$("#testarea").attr("rows","32").val("");
+		this.sccheck(e);
+	},
 	sccheck : function(e){
 		if(menu.getVal('autocheck')){ menu.setVal('autocheck',false);}
-		$("#testarea").attr("rows","32").val("");
-		var phase = 10, n=0, alstr='', qstr='', mint=80, fint=50;
+		var n=0, alstr='', qstr='', mint=80, fint=50;
+		this.phase = 10;
 		var tim = setInterval(function(){
 		//Encode test--------------------------------------------------------------
-		switch(phase){
+		switch(debug.phase){
 		case 10:
 			(function(){
 				var col = k.qcols;
@@ -132,11 +174,27 @@ var debug = {
 				enc.pzlexport(0);
 				var ta = document.urloutput.ta.value;
 
-				if(inp==ta){ debug.addTextarea("Encode test   = pass");}
-				else       { debug.addTextarea("Encode test   = failure...\n "+inp+"\n "+ta);}
+				debug.addTextarea("Encode test   = "+(inp==ta?"pass":"failure...\n "+inp+"\n "+ta));
 
 				setTimeout(function(){
-					if(debug.acs[k.puzzleid]){ phase = 20;}else{ phase = 30;}
+					if(k.isKanpenExist){ debug.phase = 11;}
+					else{ debug.phase = (debug.acs[k.puzzleid])?20:30;}
+				},fint);
+			})();
+			break;
+		case 11:
+			(function(){
+				var bd2 = debug.bd_freezecopy();
+
+				enc.pzlexport(2);
+				document.urlinput.ta.value = document.urloutput.ta.value;
+				menu.pop = $("#pop1_5");
+				menu.ex.urlinput({});
+
+				debug.addTextarea("Encode kanpen = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+
+				setTimeout(function(){
+					debug.phase = (debug.acs[k.puzzleid])?20:30;
 				},fint);
 			})();
 			break;
@@ -158,12 +216,19 @@ var debug = {
 					if(k.isextendcell){ for(var c=0;c<bd.excell.length;c++){if(bd.excell[c].error!=0){ iserror = true;}}}
 					if(k.iscross)     { for(var c=0;c<bd.cross.length ;c++){if(bd.cross[c].error!=0 ){ iserror = true;}}}
 					if(k.isborder)    { for(var i=0;i<bd.border.length;i++){if(bd.border[i].error!=0){ iserror = true;}}}
-					if(ans.alstr.jp != debug.acs[k.puzzleid][n][0]){ misstr = true;}
+					if(k.puzzleid=='nagenawa' && n==0){ iserror = true;}
 					if(debug.acs[k.puzzleid][n][0] != ""){ iserror = !iserror;}
+
+					if(ans.alstr.jp != debug.acs[k.puzzleid][n][0]){ misstr = true;}
+
 					debug.addTextarea("Answer test "+(n+1)+" = "+((!iserror&&!misstr)?"pass":"failure...")+" \""+debug.acs[k.puzzleid][n][0]+"\"");
 
 					n++;
-					if(n>=debug.acs[k.puzzleid].length){ phase=30;}else{ phase=20;}
+					if(n<debug.acs[k.puzzleid].length){ debug.phase = 20;}
+					else{
+						if(k.isKanpenExist && k.puzzleid!="nanro" && k.puzzleid!="ayeheya" && k.puzzleid!="kurochute"){ debug.phase = 31;}
+						else{ debug.phase = 30;}
+					}
 				},fint);
 			})();
 			break;
@@ -180,7 +245,25 @@ var debug = {
 				setTimeout(function(){
 					fio.fileopen(outputstr.split("\n"),1);
 					debug.addTextarea("FileIO test   = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
-					phase = (k.puzzleid != 'tawa')?40:50;
+
+					fio.fileopen(debug.acs[k.puzzleid][debug.acs[k.puzzleid].length-1][1].split("/"),1);
+					debug.phase = (k.puzzleid != 'tawa')?40:50;
+				},fint);
+			})();
+			break;
+		case 31:
+			(function(){
+				var outputstr = fio.filesavestr(2).replace(/\//g,"\n");
+
+				var bd2 = debug.bd_freezecopy();
+
+				menu.ex.newboard2(1,1);
+				base.resize_canvas();
+
+				setTimeout(function(){
+					fio.fileopen(outputstr.split("\n"),2);
+					debug.addTextarea("FileIO kanpen = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					debug.phase = 30;
 				},fint);
 			})();
 			break;
@@ -192,7 +275,7 @@ var debug = {
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("TurnR test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
-					phase = 41;
+					debug.phase = 41;
 				},fint); },fint); },fint);
 			})();
 			break;
@@ -203,7 +286,7 @@ var debug = {
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("TurnR test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
-					phase = 45;
+					debug.phase = 45;
 				},fint); },fint); },fint);
 			})();
 			break;
@@ -214,7 +297,7 @@ var debug = {
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("TurnL test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
-					phase = 46;
+					debug.phase = 46;
 				},fint); },fint); },fint);
 			})();
 			break;
@@ -225,7 +308,7 @@ var debug = {
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("TurnL test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
-					phase = 50;
+					debug.phase = 50;
 				},fint); },fint); },fint);
 			})();
 			break;
@@ -237,7 +320,7 @@ var debug = {
 
 				setTimeout(function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'flipx'}}); menu.pop = '';
 					debug.addTextarea("FlipX test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
-					phase = 51;
+					debug.phase = 51;
 				},fint);
 			})();
 			break;
@@ -248,7 +331,7 @@ var debug = {
 
 				setTimeout(function(){ um.undo();
 					debug.addTextarea("FlipX test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
-					phase = 55;
+					debug.phase = 55;
 				},fint);
 			})();
 			break;
@@ -259,7 +342,7 @@ var debug = {
 
 				setTimeout(function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'flipy'}}); menu.pop = '';
 					debug.addTextarea("FlipY test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
-					phase = 56;
+					debug.phase = 56;
 				},fint);
 			})();
 			break;
@@ -270,11 +353,11 @@ var debug = {
 
 				setTimeout(function(){ um.undo();
 					debug.addTextarea("FlipY test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
-					phase = 60;
+					debug.phase = 60;
 				},fint);
 			})();
 			break;
-		//Adjust end--------------------------------------------------------------
+		//Adjust test--------------------------------------------------------------
 		case 60:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
@@ -284,12 +367,12 @@ var debug = {
 				setTimeout(function(){ func('reduceup'); setTimeout(function(){ func('reducert');
 				setTimeout(function(){ func('reducedn'); setTimeout(function(){ func('reducelt');
 					debug.addTextarea("Adjust test 1 = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
-					phase = 61;
+					debug.phase = 61;
 				},fint); },fint); },fint); },fint); },fint); },fint); },fint); },fint);
 			})();
 			break;
 		case 61: // ワンクッション置く
-			setTimeout(function(){ phase = 62;},mf(fint/2));
+			setTimeout(function(){ debug.phase = 62;},mf(fint/2));
 			break;
 		case 62:
 			(function(){
@@ -299,7 +382,7 @@ var debug = {
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("Adjust test 2 = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
-					phase = 90;
+					debug.phase = 90;
 				},fint); },fint); },fint); },fint); },fint); },fint); },fint);
 			})();
 			break;
@@ -307,12 +390,14 @@ var debug = {
 		case 90:
 			clearInterval(tim);
 			debug.addTextarea("Test end.");
-			break;
+			debug.phase = 99;
+			return;
 		}
-		phase=0;
+		debug.phase=0;
 		},mint);
 	},
-	addTextarea : function(str){ $("#testarea").val($("#testarea").val()+str+"\n");},
+	taenable : true,
+	addTextarea : function(str){ if(this.taenable){ $("#testarea").val($("#testarea").val()+str+"\n");} },
 
 	bd_freezecopy : function(){
 		var bd2 = new Board;
@@ -347,13 +432,14 @@ var debug = {
 		return bd2;
 	},
 	bd_compare : function(bd1,bd2){
+		debug.taenable = false;
 		var result = true;
 		for(var c=0;c<bd1.cell.length;c++){
-			if(bd1.cell[c].ques !=bd2.cell[c].ques ){ result = false;}
-			if(bd1.cell[c].qnum !=bd2.cell[c].qnum ){ result = false;}
-			if(bd1.cell[c].direc!=bd2.cell[c].direc){ result = false;}
-			if(bd1.cell[c].qans !=bd2.cell[c].qans ){ result = false;}
-			if(bd1.cell[c].qsub !=bd2.cell[c].qsub ){ result = false;}
+			if(bd1.cell[c].ques !=bd2.cell[c].ques ){ result = false; debug.addTextarea("cell ques "+c+" "+bd1.cell[c].ques+" "+bd2.cell[c].ques);}
+			if(bd1.cell[c].qnum !=bd2.cell[c].qnum ){ result = false; debug.addTextarea("cell qnum "+c+" "+bd1.cell[c].qnum+" "+bd2.cell[c].qnum);}
+			if(bd1.cell[c].direc!=bd2.cell[c].direc){ result = false; debug.addTextarea("cell dirc "+c+" "+bd1.cell[c].direc+" "+bd2.cell[c].direc);}
+			if(bd1.cell[c].qans !=bd2.cell[c].qans ){ result = false; debug.addTextarea("cell qans "+c+" "+bd1.cell[c].qans+" "+bd2.cell[c].qans);}
+			if(bd1.cell[c].qsub !=bd2.cell[c].qsub ){ result = false; debug.addTextarea("cell qsub "+c+" "+bd1.cell[c].qsub+" "+bd2.cell[c].qsub);}
 		}
 		if(k.isextendcell){
 			for(var c=0;c<bd1.excell.length;c++){
@@ -369,13 +455,14 @@ var debug = {
 		}
 		if(k.isborder){
 			for(var i=0;i<bd1.border.length;i++){
-				if(bd1.border[i].ques!=bd2.border[i].ques){ result = false;}
-				if(bd1.border[i].qnum!=bd2.border[i].qnum){ result = false;}
-				if(bd1.border[i].qans!=bd2.border[i].qans){ result = false;}
-				if(bd1.border[i].qsub!=bd2.border[i].qsub){ result = false;}
-				if(bd1.border[i].line!=bd2.border[i].line){ result = false;}
+				if(bd1.border[i].ques!=bd2.border[i].ques){ result = false; debug.addTextarea("border ques "+i+" "+bd1.border[i].ques+" "+bd2.border[i].ques);}
+				if(bd1.border[i].qnum!=bd2.border[i].qnum){ result = false; debug.addTextarea("border qnum "+i+" "+bd1.border[i].qnum+" "+bd2.border[i].qnum);}
+				if(bd1.border[i].qans!=bd2.border[i].qans){ result = false; debug.addTextarea("border qans "+i+" "+bd1.border[i].qans+" "+bd2.border[i].qans);}
+				if(bd1.border[i].qsub!=bd2.border[i].qsub){ result = false; debug.addTextarea("border qsub "+i+" "+bd1.border[i].qsub+" "+bd2.border[i].qsub);}
+				if(bd1.border[i].line!=bd2.border[i].line){ result = false; debug.addTextarea("border line "+i+" "+bd1.border[i].line+" "+bd2.border[i].line);}
 			}
 		}
+		debug.taenable = true;
 		return result;
 	},
 
@@ -591,8 +678,8 @@ var debug = {
 			["斜線が複数引かれた部屋があります。","pzprv3/kinkonkan/4/4/5/0 0 1 1 /2 2 1 1 /2 2 3 3 /4 4 3 3 /. 2,2 1,1 . 4,1 . /3,2 . . . . . /. . . . . 1,1 /. . . . . . /3,2 . . . . 4,1 /. . . 2,2 . . /. . . . /. 1 . . /1 . . . /. . . . /"],
 			["光が同じ文字の場所へ到達しません。","pzprv3/kinkonkan/4/4/5/0 0 1 1 /2 2 1 1 /2 2 3 3 /4 4 3 3 /. 2,2 1,1 . 4,1 . /3,2 . . . . . /. . . . . 1,1 /. . . . . . /3,2 . . . . 4,1 /. . . 2,2 . . /. + . + /+ 2 + + /+ + + + /. . + 1 /"],
 			["光の反射回数が正しくありません。","pzprv3/kinkonkan/4/4/5/0 0 1 1 /2 2 1 1 /2 2 3 3 /4 4 3 3 /. 2,2 1,1 . 4,1 . /3,3 . . . . . /. . . . . 1,1 /. . . . . . /3,3 . . . . 4,1 /. . . 2,2 . . /1 + 1 + /+ 1 + + /+ + + + /2 + + 1 /"],
-			["斜線の引かれていない部屋があります。","pzprv3/kinkonkan/4/4/6/0 0 1 2 /3 3 1 2 /3 3 4 4 /5 5 4 4 /. 2,2 1,1 . 4,1 . /3,2 . . . . . /. . . . . 1,1 /. . . . . . /3,2 . . . . 4,1 /. . 47846288, 2,2 . . /1 + 1 + /+ 1 + + /+ + + + /2 + + 1 /"],
-			["","pzprv3/kinkonkan/4/4/5/0 0 1 1 /2 2 1 1 /2 2 3 3 /4 4 3 3 /. 2,2 1,1 . 4,1 . /3,2 . . . . . /. . . . . 1,1 /. . . . . . /3,2 . . . . 4,1 /. . 3, 2,2 . . /1 + 1 + /+ 1 + + /+ + + + /2 + + 1 /"]
+			["斜線の引かれていない部屋があります。","pzprv3/kinkonkan/4/4/6/0 0 1 2 /3 3 1 2 /3 3 4 4 /5 5 4 4 /. 2,2 1,1 . 4,1 . /3,2 . . . . . /. . . . . 1,1 /. . . . . . /3,2 . . . . 4,1 /. . . 2,2 . . /1 + 1 + /+ 1 + + /+ + + + /2 + + 1 /"],
+			["","pzprv3/kinkonkan/4/4/5/0 0 1 1 /2 2 1 1 /2 2 3 3 /4 4 3 3 /. 2,2 1,1 . 4,1 . /3,2 . . . . . /. . . . . 1,1 /. . . . . . /3,2 . . . . 4,1 /. . . 2,2 . . /1 + 1 + /+ 1 + + /+ + + + /2 + + 1 /"]
 		],
 		kramma : [
 			["分岐している線があります。","pzprv3/kramma/5/5/2 . . . 1 /. 1 2 . . /. 2 1 2 . /1 . 2 1 . /. 1 . . 2 /. . . . . . /. . . . 1 . /. . . 1 . . /. . 1 . . . /. 1 . . . . /. . . . . . /0 0 1 0 /0 0 1 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 0 /1 1 1 1 1 /0 0 0 0 0 /0 0 0 0 0 /"],
@@ -982,5 +1069,78 @@ var debug = {
 		perftest : [
 			["","pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /"]
 		]
-	}
+	},
+
+	urls : [
+		['ayeheya'    , '6/6/99aa8c0vu0ufk2k'],
+		['bag'        , '6/6/g3q2h3jbj3i3i2g'],
+		['barns'      , '5/5/06ec080000100'],
+		['bdblock'    , '5/5/100089082/12345o51g4i3i'],
+		['bonsan'     , '5/5/co360rr0g1h0g.j121g3h1h.g.g'],
+		['bosanowa'   , '6/5/jo9037g2n2n3g4j3i'],
+		['chocona'    , '6/6/8guumlfvo1eq33122g21g32'],
+		['cojun'      , '4/4/pd0hsoh3p3h'],
+		['country'    , '5/5/amda0uf02h12h'],
+		['creek'      , '6/6/gagaich2cgb6769dt'],
+		['factors'    , '5/5/rvvcm9jf54653-28ca2833-14'],
+		['fillmat'    , '5/5/3b3h1h1b4'],
+		['fillomino'  , '6/6/h4j53g2k5233k2g14j3h'],
+		['firefly'    , '5/5/40c21a3.a30g10a22a11c11'],
+		['gokigen'    , '4/4/iaegcgcj6a'],
+		['hakoiri'    , '5/5/4qb44qb41c3c1f23a2b1b1'],
+		['hashikake'  , '5/5/4g2i3h23k3g1g3g4g3'],
+		['heyawake'   , '6/6/lll155007rs12222j'],
+		['hitori'     , '4/4/1114142333214213'],
+		['icebarn'    , '8/8/73btfk05ovbjghzpwz9bwm/3/11'],
+		['ichimaga'   , 'm/5/5/7cgegbegbgcc'],
+		['kaero'      , '3/3/egh0BCBcAaA'],
+		['kakuro'     , '5/5/48la0.na0lh3l0Bn.0cl.c4a3'],
+		['kakuru'     , '5/5/3.a+4+mD.S.bm+g+A.3'],
+		['kinkonkan'  , '4/4/94gof0BAaDbBaCbCaAaD21122211'],
+		['kramma'     , '5/5/32223i3f2fb99i'],
+		['kurochute'  , '5/5/132k1i1i2k332'],
+		['kurodoko'   , '5/5/i7g5l2l2g4i'],
+		['kusabi'     , '5/5/311e2c12c1f3'],
+		['lightup'    , '6/6/nekcakbl'],
+		['lits'       , '4/4/9q02jg'],
+		['loopsp'     , '5/5/sgnmn1n1n2njnls'],
+		['mashu'      , '6/6/1063000i3000'],
+		['mejilink'   , '4/4/g9rm4'],
+		['minarism'   , '4/4/hhhq21pgi'],
+		['mochikoro'  , '5/5/4p2n1i1'],
+		['mochinyoro' , '5/5/l4g2m2m1'],
+		['nagenawa'   , '6/6/alrrlafbaaqu3011314g223h'],
+		['nanro'      , '4/4/6r0s1oi13n1h'],
+		['nawabari'   , '5/5/f0a1g2a1f'],
+		['norinori'   , '5/5/cag4ocjo'],
+		['numlin'     , '5/5/1j2h3m1h2j3'],
+		['nuribou'    , '5/5/1g2l1g4r7'],
+		['nurikabe'   , '5/5/g5k2o1k3g'],
+		['paintarea'  , '5/5/pmvmfuejf4k1f'],
+		['pipelink'   , '5/5/mamejan'],
+		['reflect'    , '5/5/49l20c5f24'],
+		['ripple'     , '4/4/9n8rigk14h32k'],
+		['shakashaka' , '6/6/cgbhdhegdrb'],
+		['shikaku'    , '6/6/j3g56h6t6h23g5j'],
+		['shimaguni'  , '6/6/7fe608s0e3uf3g3g2g43'],
+		['shugaku'    , '5/5/c5d462b'],
+		['shwolf'     , '5/5/0282bocb6ajf9'],
+		['slalom'     , '6/6/9314131314131a1131ag4h1/33'],
+		['slither'    , '5/5/cbcbcddad'],
+		['snakes'     , '5/5/a21g23b20b45g41a'],
+		['sudoku'     , '4/4/g1k23k3g'],
+		['sukoro'     , '5/5/2a2c4a2g2a4c2a2'],
+		['tasquare'   , '6/6/1g.i4j1i3j5i5j.i2g1'],
+		['tatamibari' , '5/5/m3g11i2g31h13g3g'],
+		['tateyoko'   , '5/5/i23i3ono2i25i22pnqi33i2'],
+		['tawa'       , '5/5/0/a2b2b3g5b2c2'],
+		['tentaisho'  , '5/5/67eh94fi65en8dbf'],
+		['tilepaint'  , '6/6/mfttf5ovqrrvzv234232243331'],
+		['triplace'   , '5/5/%2m_m%1m_.0.1....11'],
+		['usotatami'  , '5/5/1a13a2d1a1a3a121b3b2'],
+		['view'       , '5/5/m401g3g2g101m'],
+		['wblink'     , '5/5/ci6a2ln1i'],
+		['yajikazu'   , '6/6/40d23663i32h12b32a12a11c'],
+		['yajirin'    , '5/5/m32j10']
+	]
 };
