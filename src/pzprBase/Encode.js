@@ -1,4 +1,4 @@
-// Encode.js v3.2.0
+// Encode.js v3.2.0p3
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -62,7 +62,8 @@ Encode.prototype = {
 			base.resize_canvas_onload();
 		}
 	},
-	pzlimport : function(type){ },	// オーバーライド用
+	pzlimport : function(type,bstr){ },	// オーバーライド用
+	pzlexport : function(type){ },		// オーバーライド用
 
 	//---------------------------------------------------------------------------
 	// enc.get_search()   入力されたURLの?以下の部分を返す
