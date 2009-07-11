@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.0
+// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.0p1
 //
 Puzzles.kakuro = function(){ };
 Puzzles.kakuro.prototype = {
@@ -348,7 +348,9 @@ Puzzles.kakuro.prototype = {
 
 		//---------------------------------------------------------
 		fio.kanpenOpen = function(array){
-			for(var i=0;i<array.length-k.qrows;i++){ if(array[i]!=""){ enc.decode51Kanpen(array[i].replace(/ /g,"_"));} }
+			for(var i=0;i<array.length;i++){ if(array[i]==''){ array.splice(i,1); i--;} }
+
+			for(var i=0;i<=array.length-k.qrows-2;i++){ enc.decode51Kanpen(array[i].replace(/ /g,"_")); }
 
 			var cy=-1;
 			for(var i=array.length-k.qrows-1;i<array.length;i++){
@@ -376,7 +378,7 @@ Puzzles.kakuro.prototype = {
 					else if(bd.QaC(c) > 0){ cm += (bd.QaC(c).toString() + " ");}
 					else                  { cm += "0 ";}
 				}
-				cm+="/";
+				if(cy<k.qrows-1){ cm+="/";}
 			}
 			return cm;
 		};

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クロシュート版 kurochute.js v3.2.0
+// パズル固有スクリプト部 クロシュート版 kurochute.js v3.2.0p1
 //
 Puzzles.kurochute = function(){ };
 Puzzles.kurochute.prototype = {
@@ -144,7 +144,7 @@ Puzzles.kurochute.prototype = {
 		enc.decodeKanpen = function(bstr){
 			bstr = (bstr.split("_")).join(" ");
 			fio.decodeCell( function(c,ca){
-				if(ca != "0"){ bd.sQnC(c, parseInt(ca));}
+				if(ca != "."){ bd.sQnC(c, parseInt(ca));}
 			},bstr.split("/"));
 			return "";
 		};

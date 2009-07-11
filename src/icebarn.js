@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.0
+// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.0p1
 //
 Puzzles.icebarn = function(){ };
 Puzzles.icebarn.prototype = {
@@ -279,11 +279,13 @@ Puzzles.icebarn.prototype = {
 			else if(bx==2*k.qcols){ this.dispString(bd.aoutobj, "OUT", ((bx+2.0)/2)*k.cwidth+5 , ((by+1.0)/2)*k.cheight-7);}
 		};
 		pc.dispString = function(obj, text, px, py){
-			obj.css("font-size", (k.cwidth*0.55)+'px')
-			   .css("left", k.cv_oft.x + px+(!k.br.IE?2:4))
-			   .css("top", k.cv_oft.y + py+(!k.br.IE?1:5))
-			   .css("color", g.fillStyle)
-			   .html(text).show();
+			var el = obj.get(0);
+			el.style.fontSize = (k.cwidth*0.55)+'px';
+			el.style.left     = k.cv_oft.x + px+(!k.br.IE?2:4);
+			el.style.top      = k.cv_oft.y + py+(!k.br.IE?1:5);
+			el.style.color    = g.fillStyle;
+			el.style.display = 'inline';
+			el.innerHTML = text;
 		};
 
 		col.repaintParts = function(id){

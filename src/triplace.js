@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 トリプレイス版 triplace.js v3.2.0
+// パズル固有スクリプト部 トリプレイス版 triplace.js v3.2.0p1
 //
 Puzzles.triplace = function(){ };
 Puzzles.triplace.prototype = {
@@ -162,8 +162,8 @@ Puzzles.triplace.prototype = {
 		menu.ex.adjustSpecial  = menu.ex.adjustQues51_1;
 		menu.ex.adjustSpecial2 = menu.ex.adjustQues51_2;
 
-		tc.getTCX = function(){ return int((tc.cursolx-1)/2);};
-		tc.getTCY = function(){ return int((tc.cursoly-1)/2);};
+		tc.getTCX = function(){ return mf((tc.cursolx-1)/2);};
+		tc.getTCY = function(){ return mf((tc.cursoly-1)/2);};
 		tc.targetdir = 2;
 	},
 

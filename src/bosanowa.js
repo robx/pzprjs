@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.2.0
+// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.2.0p1
 //
 Puzzles.bosanowa = function(){ };
 Puzzles.bosanowa.prototype = {
@@ -296,7 +296,7 @@ Puzzles.bosanowa.prototype = {
 					if(!bd.border[id].numobj){ bd.border[id].numobj = this.CreateDOMAndSetNop();}
 					this.dispnumBorder1(id, bd.border[id].numobj, 101, ""+bd.QsB(id), 0.35 ,this.borderfontcolor);
 				}
-				else if(bd.border[id].numobj){ bd.border[id].numobj.hide();}
+				else if(bd.border[id].numobj){ bd.border[id].numobj.get(0).style.display = 'none';}
 			}
 			this.vinc();
 		};

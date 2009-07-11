@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.2.0
+// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.2.0p1
 //
 Puzzles.shikaku = function(){ };
 Puzzles.shikaku.prototype = {
@@ -154,7 +154,7 @@ Puzzles.shikaku.prototype = {
 		enc.decodeKanpen = function(bstr){
 			bstr = (bstr.split("_")).join(" ");
 			fio.decodeCell( function(c,ca){
-				if(ca != "."){ bd.dQnC(c, parseInt(ca));}
+				if(ca != "."){ bd.sQnC(c, parseInt(ca));}
 			},bstr.split("/"));
 			return "";
 		};

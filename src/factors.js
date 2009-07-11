@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 因子の部屋版 factors.js v3.2.0
+// パズル固有スクリプト部 因子の部屋版 factors.js v3.2.0p1
 //
 Puzzles.factors = function(){ };
 Puzzles.factors.prototype = {
@@ -112,7 +112,7 @@ Puzzles.factors.prototype = {
 				var c = clist[i];
 
 				if(bd.QaC(c)==-1){
-					if(bd.cell[c].numobj){ bd.cell[c].numobj.hide();}
+					if(bd.cell[c].numobj){ bd.cell[c].numobj.get(0).style.display = 'none';}
 				}
 				else{
 					var color = (bd.ErC(c)==1?this.fontErrcolor:this.fontAnscolor);
@@ -121,7 +121,7 @@ Puzzles.factors.prototype = {
 				}
 
 				if(bd.QnC(c)==-1){
-					if(bd.cell[c].numobj2){ bd.cell[c].numobj2.hide();}
+					if(bd.cell[c].numobj2){ bd.cell[c].numobj2.get(0).style.display = 'none';}
 				}
 				else{
 					if(!bd.cell[c].numobj2){ bd.cell[c].numobj2 = this.CreateDOMAndSetNop();}

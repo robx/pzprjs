@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックル版 kakuru.js v3.2.0
+// パズル固有スクリプト部 カックル版 kakuru.js v3.2.0p1
 //
 Puzzles.kakuru = function(){ };
 Puzzles.kakuru.prototype = {
@@ -365,5 +365,5 @@ Puzzles.kakuru.prototype = {
 			}
 			return true;
 		};
-	},
+	}
 };

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 メジリンク版 mejilink.js v3.2.0
+// パズル固有スクリプト部 メジリンク版 mejilink.js v3.2.0p1
 //
 Puzzles.mejilink = function(){ };
 Puzzles.mejilink.prototype = {
@@ -281,15 +281,4 @@ Puzzles.mejilink.prototype = {
 			return true;
 		};
 	}
-};
-
-Border.prototype.allclear = function(num){
-	if(num==undefined || num>=k.qcols*(k.qrows-1)+(k.qcols-1)*k.qrows){ this.ques = 0;}
-	else{ this.ques = 1;}
-	this.qnum = -1;
-	this.qans = 0;
-	this.qsub = 0;
-	this.line = 0;
-	this.color = "";
-	this.error = 0;
 };

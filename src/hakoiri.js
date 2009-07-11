@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.2.0
+// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.2.0p1
 //
 Puzzles.hakoiri = function(){ };
 Puzzles.hakoiri.prototype = {
@@ -228,7 +228,7 @@ Puzzles.hakoiri.prototype = {
 				if(num>=1 && num<=3){ text = ({1:"○",2:"△",3:"□"})[num];}
 				else if(num==-2)    { text = "?";}
 				else if(!bd.cell[c].numobj)  { continue;}
-				else{ bd.cell[c].numobj.hide(); continue;}
+				else{ bd.cell[c].numobj.get(0).style.display = 'none'; continue;}
 
 				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
 				this.dispnumCell1(c, bd.cell[c].numobj, 1, text, 0.8, this.getNumberColor(c));

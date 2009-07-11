@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.2.0
+// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.2.0p2
 //
 Puzzles.tateyoko = function(){ };
 Puzzles.tateyoko.prototype = {
@@ -163,7 +163,7 @@ Puzzles.tateyoko.prototype = {
 		menu.ex.adjustSpecial = function(type,key){
 			um.disableRecord();
 			if(type>=3 && type<=4){ // 回転だけ
-				for(var c=0;c<bd.cell.length;c++){ if(bd.QaC(c)!=0){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
+				for(var c=0;c<bd.cell.length;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
 			}
 			um.enableRecord();
 		};

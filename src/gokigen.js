@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.2.0
+// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.2.0p1
 //
 Puzzles.gokigen = function(){ };
 Puzzles.gokigen.prototype = {
@@ -43,6 +43,7 @@ Puzzles.gokigen.prototype = {
 		base.setExpression("　マウスで斜線を入力できます。",
 						   " Click to input slashes.");
 		base.setFloatbgcolor("rgb(0, 127, 0)");
+		base.proto = 1;
 	},
 	menufix : function(){
 		menu.addUseToFlags();
@@ -50,6 +51,11 @@ Puzzles.gokigen.prototype = {
 		pp.addCheckToFlags('dispred','setting',false);
 		pp.setMenuStr('dispred', '繋がりチェック', 'Continuous Check');
 		pp.setLabel  ('dispred', '線のつながりをチェックする', 'Check countinuous slashes');
+	},
+	protoChange : function(){
+	},
+	protoOriginal : function(){
+		$("#btnclear2").css("display",'inline');
 	},
 
 	//---------------------------------------------------------
@@ -120,7 +126,7 @@ Puzzles.gokigen.prototype = {
 		menu.ex.adjustSpecial = function(type,key){
 			um.disableRecord();
 			if(type>=1 && type<=4){ // 反転・回転全て
-				for(var c=0;c<bd.cell.length;c++){ if(bd.QaC(c)!=0){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
+				for(var c=0;c<bd.cell.length;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
 			}
 			um.enableRecord();
 		};

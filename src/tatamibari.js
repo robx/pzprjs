@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.2.0
+// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.2.0p1
 //
 Puzzles.tatamibari = function(){ };
 Puzzles.tatamibari.prototype = {
@@ -289,5 +289,5 @@ Puzzles.tatamibari.prototype = {
 			}
 			return rarea1;
 		};
-	},
+	}
 };

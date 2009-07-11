@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たわむれんが版 tawa.js v3.2.0p1
+// パズル固有スクリプト部 たわむれんが版 tawa.js v3.2.0p2
 //
 Puzzles.tawa = function(){ };
 Puzzles.tawa.prototype = {
@@ -43,49 +43,67 @@ Puzzles.tawa.prototype = {
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
 						   " Left Click to input black cells, Right Click to input determined white cells.");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
-	},
-	setting_lap : function(){	// 処理が大きくなったので分割
-		menu.ex.clap = 3;
-		bd.lap = menu.ex.clap;	// 2段目は => 0:左右引っ込み 1:右のみ出っ張り 2:左のみ出っ張り 3:左右出っ張り
-
-		pp.funcs.newboard = function(){
-			menu.pop = $("#pop1_1");
-			pp.funcs.clickimg({0:0,1:2,2:3,3:1}[bd.lap]);
-			document.newboard.col.value = (k.qcols+(bd.lap==3?1:0));
-			document.newboard.row.value = k.qrows;
-			k.enableKey = false;
-		};
-		pp.funcs.clickimg = function(num){
-			$("img.clickimg").parent().css("background-color","");
-			$("#nb"+num).parent().css("background-color","red");
-			menu.ex.clap = num;
-		};
-
-		$(document.newboard).html(
-			  "<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n"
-			+ "<input type=\"text\" name=\"col\" value=\"\" size=\"3\" maxlength=\"3\" /> <span id=\"pop1_1_cap1x\">横幅 (黄色の数)</span><br>\n"
-			+ "<input type=\"text\" name=\"row\" value=\"\" size=\"3\" maxlength=\"3\" /> <span id=\"pop1_1_cap2x\">高さ</span><br>\n"
-			+ "<table border=\"0\" cellpadding=\"0\" cellspacing=\"2\" style=\"margin-top:4pt;margin-bottom:4pt;\">"
-			+ "<tr id=\"laps\" style=\"padding-bottom:2px;\">\n"
-			+ "</tr></table>\n"
-			+ "<input type=\"button\" name=\"newboard\" value=\"新規作成\" /><input type=\"button\" name=\"cancel\" value=\"キャンセル\" />\n"
-		);
-		var cw=32, bw=2;
-		for(var i=0;i<=3;i++){
-			newEL('td').append(
-				newEL('div').append(
-					newEL('img').attr("src",'./src/img/tawa_nb.gif').attr("class","clickimg").attr("id","nb"+i)
-								.css("left","-"+(i*cw)+"px").css("clip", "rect(0px,"+((i+1)*cw)+"px,"+cw+"px,"+(i*cw)+"px)")
-								.css("position","absolute").css("margin",""+bw+"px")
-								.click(pp.funcs.clickimg.bind(pp,i)).unselectable()
-				).css("position","relative").css("display","block").css("width",""+(cw+bw*2)+"px").css("height",""+(cw+bw*2)+"px")
-			).appendTo($("#laps"));
-		}
+		base.proto = 1;
 	},
 	menufix : function(){
 		menu.addUseToFlags();
 		menu.addLabels($("#pop1_1_cap1x"), "横幅 (黄色の数)", "Width (Yellows)");
 		menu.addLabels($("#pop1_1_cap2x"), "高さ",            "Height");
+	},
+
+	protoChange : function(){
+		this.protofunc = {
+			cellpx  : Cell.prototype.px,
+			bdinit2 : Board.prototype.initialize2
+		};
+
+		Cell.prototype.px = function(){ return mf(k.p0.x+this.cx*k.cwidth/2);};
+		Board.prototype.initialize2 = function(){
+			var total = 0;
+			if     (this.lap==0){ total = mf(k.qrows*0.5)*(2*k.qcols-1)+((k.qrows%2==1)?k.qcols:0);}
+			else if(this.lap==3 || this.lap==undefined){ total = mf(k.qrows*0.5)*(2*k.qcols+1)+((k.qrows%2==1)?k.qcols:0);}
+			else{ total = k.qcols*k.qrows;}
+
+			this.cell = new Array();
+			this.cells = new Array();
+			for(var i=0;i<total;i++){
+				this.cell[i] = new Cell(i);
+				this.cell[i].allclear(i);
+				this.cells.push(i);
+			}
+
+			this.setposAll();
+		};
+
+		this.resize_original = base.resize_canvas_only.bind(base);
+		base.resize_canvas_only = function(){
+			puz.resize_original();
+
+			// Canvasのサイズ変更
+			this.cv_obj.attr("width",  k.p0.x*2 + k.qcols*k.cwidth + mf(bd.lap==0?0:(bd.lap==3?k.cwidth:k.cwidth/2)));
+			this.cv_obj.attr("height", k.p0.y*2 + k.qrows*k.cheight);
+
+			k.cv_oft.x = this.cv_obj.offset().left;
+			k.cv_oft.y = this.cv_obj.offset().top;
+
+			// jQuery対応:初めにCanvas内のサイズが0になり、描画されない不具合への対処
+			if(g.vml){
+				var fc = this.cv_obj.children(":first");
+				fc.css("width",  ''+this.cv_obj.attr("clientWidth") + 'px');
+				fc.css("height", ''+this.cv_obj.attr("clientHeight") + 'px');
+			}
+		};
+
+		this.newboard_html_original = $(document.newboard).html();
+	},
+	protoOriginal : function(){
+		Cell.prototype.px = this.protofunc.cellpx;
+		Board.prototype.initialize2 = this.protofunc.bdinit2;
+		base.resize_canvas_only = this.resize_original;
+		$(document.newboard).html(this.newboard_html_original);
+
+		$(document.flip.turnl).attr("disabled",false);
+		$(document.flip.turnr).attr("disabled",false);
 	},
 
 	//---------------------------------------------------------
@@ -148,7 +166,7 @@ Puzzles.tawa.prototype = {
 			};
 		}
 
-		this.setting_lap();
+		this.input_init2();
 
 		tc.getTCC = function(){ return bd.cnum(this.cursolx, mf((this.cursoly-1)/2));}.bind(tc);
 		tc.setTCC = function(id){
@@ -404,8 +422,47 @@ Puzzles.tawa.prototype = {
 			}
 			bd.setposAll();
 		};
+
 		$(document.flip.turnl).attr("disabled",true);
 		$(document.flip.turnr).attr("disabled",true);
+	},
+	input_init2 : function(){	// 処理が大きくなったので分割(input_init()から呼ばれる)
+		menu.ex.clap = 3;
+		bd.lap = menu.ex.clap;	// 2段目は => 0:左右引っ込み 1:右のみ出っ張り 2:左のみ出っ張り 3:左右出っ張り
+
+		pp.funcs.newboard = function(){
+			menu.pop = $("#pop1_1");
+			pp.funcs.clickimg({0:0,1:2,2:3,3:1}[bd.lap]);
+			document.newboard.col.value = (k.qcols+(bd.lap==3?1:0));
+			document.newboard.row.value = k.qrows;
+			k.enableKey = false;
+		};
+		pp.funcs.clickimg = function(num){
+			$("img.clickimg").parent().css("background-color","");
+			$("#nb"+num).parent().css("background-color","red");
+			menu.ex.clap = num;
+		};
+
+		$(document.newboard).html(
+			  "<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n"
+			+ "<input type=\"text\" name=\"col\" value=\"\" size=\"3\" maxlength=\"3\" /> <span id=\"pop1_1_cap1x\">横幅 (黄色の数)</span><br>\n"
+			+ "<input type=\"text\" name=\"row\" value=\"\" size=\"3\" maxlength=\"3\" /> <span id=\"pop1_1_cap2x\">高さ</span><br>\n"
+			+ "<table border=\"0\" cellpadding=\"0\" cellspacing=\"2\" style=\"margin-top:4pt;margin-bottom:4pt;\">"
+			+ "<tr id=\"laps\" style=\"padding-bottom:2px;\">\n"
+			+ "</tr></table>\n"
+			+ "<input type=\"button\" name=\"newboard\" value=\"新規作成\" /><input type=\"button\" name=\"cancel\" value=\"キャンセル\" />\n"
+		);
+		var cw=32, bw=2;
+		for(var i=0;i<=3;i++){
+			newEL('td').append(
+				newEL('div').append(
+					newEL('img').attr("src",'./src/img/tawa_nb.gif').attr("class","clickimg").attr("id","nb"+i)
+								.css("left","-"+(i*cw)+"px").css("clip", "rect(0px,"+((i+1)*cw)+"px,"+cw+"px,"+(i*cw)+"px)")
+								.css("position","absolute").css("margin",""+bw+"px")
+								.click(pp.funcs.clickimg.bind(pp,i)).unselectable()
+				).css("position","relative").css("display","block").css("width",""+(cw+bw*2)+"px").css("height",""+(cw+bw*2)+"px")
+			).appendTo($("#laps"));
+		}
 	},
 
 	//---------------------------------------------------------
@@ -489,25 +546,6 @@ Puzzles.tawa.prototype = {
 				}
 			}
 			else{ g.zidx=1;}
-		};
-
-		this.resize_original = base.resize_canvas_only.bind(base);
-		base.resize_canvas_only = function(){
-			puz.resize_original();
-
-			// Canvasのサイズ変更
-			this.cv_obj.attr("width",  k.p0.x*2 + k.qcols*k.cwidth + mf(bd.lap==0?0:(bd.lap==3?k.cwidth:k.cwidth/2)));
-			this.cv_obj.attr("height", k.p0.y*2 + k.qrows*k.cheight);
-
-			k.cv_oft.x = this.cv_obj.offset().left;
-			k.cv_oft.y = this.cv_obj.offset().top;
-
-			// jQuery対応:初めにCanvas内のサイズが0になり、描画されない不具合への対処
-			if(g.vml){
-				var fc = this.cv_obj.children(":first");
-				fc.css("width",  ''+this.cv_obj.attr("clientWidth") + 'px');
-				fc.css("height", ''+this.cv_obj.attr("clientHeight") + 'px');
-			}
 		};
 	},
 
@@ -647,23 +685,4 @@ Puzzles.tawa.prototype = {
 			return true;
 		};
 	}
-};
-
-//-------------------------------------------------------------------------
-Cell.prototype.px = function(){ return mf(k.p0.x+this.cx*k.cwidth/2);};
-Board.prototype.initialize2 = function(){
-	var total = 0;
-	if     (this.lap==0){ total = mf(k.qrows*0.5)*(2*k.qcols-1)+((k.qrows%2==1)?k.qcols:0);}
-	else if(this.lap==3 || this.lap==undefined){ total = mf(k.qrows*0.5)*(2*k.qcols+1)+((k.qrows%2==1)?k.qcols:0);}
-	else{ total = k.qcols*k.qrows;}
-
-	this.cell = new Array();
-	this.cells = new Array();
-	for(var i=0;i<total;i++){
-		this.cell[i] = new Cell(i);
-		this.cell[i].allclear(i);
-		this.cells.push(i);
-	}
-
-	this.setposAll();
 };

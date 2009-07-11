@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スリザーリンク版 slither.js v3.2.0
+// パズル固有スクリプト部 スリザーリンク版 slither.js v3.2.0p1
 //
 Puzzles.slither = function(){ };
 Puzzles.slither.prototype = {
@@ -202,8 +202,8 @@ Puzzles.slither.prototype = {
 		fio.kanpenOpen = function(array){
 			this.decodeCellQnum(array.slice(0,k.qrows));
 			var func = function(c,ca){ if(ca == "1"){ bd.sQaB(c, 1);} else if(ca == "-1"){ bd.sQsB(c, 2);} }
-			this.decodeObj(func, stack.slice(k.qrows    ,2*k.qrows+1), k.qcols  , function(cx,cy){return bd.bnum(2*cx+1,2*cy  );});
-			this.decodeObj(func, stack.slice(2*k.qrows+1,3*k.qrows+1), k.qcols+1, function(cx,cy){return bd.bnum(2*cx  ,2*cy+1);});
+			this.decodeObj(func, array.slice(k.qrows    ,2*k.qrows+1), k.qcols  , function(cx,cy){return bd.bnum(2*cx+1,2*cy  );});
+			this.decodeObj(func, array.slice(2*k.qrows+1,3*k.qrows+1), k.qcols+1, function(cx,cy){return bd.bnum(2*cx  ,2*cy+1);});
 		};
 		fio.kanpenSave = function(){
 			var func = function(c,ca){ if(bd.QaB(c)==1){ return "1 ";} else if(bd.QsB(c)==2){ return "-1 ";} else{ return "0 ";} }

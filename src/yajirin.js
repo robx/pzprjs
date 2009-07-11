@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.2.0
+// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.2.0p1
 //
 Puzzles.yajirin = function(){ };
 Puzzles.yajirin.prototype = {
@@ -161,8 +161,9 @@ Puzzles.yajirin.prototype = {
 		};
 		enc.pzldataKanpen = function(){
 			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
-				var num = (bd.QnC(c)>=0&&bd.QnC(c)<10?bd.QnC(c):0)
-				if     (bd.DiC(c)==1){ return ""+( 0+num)+"_";}
+				var num = (bd.QnC(c)>=0&&bd.QnC(c)<10?bd.QnC(c):-1)
+				if     (num==-1)     { return "._";}
+				else if(bd.DiC(c)==1){ return ""+( 0+num)+"_";}
 				else if(bd.DiC(c)==3){ return ""+(16+num)+"_";}
 				else if(bd.DiC(c)==2){ return ""+(32+num)+"_";}
 				else if(bd.DiC(c)==4){ return ""+(48+num)+"_";}
@@ -187,8 +188,9 @@ Puzzles.yajirin.prototype = {
 		};
 		fio.kanpenSave = function(){
 			return ""+this.encodeCell( function(c){
-				var num = (bd.QnC(c)>=0&&bd.QnC(c)<10?bd.QnC(c):0)
-				if     (bd.DiC(c)==1){ return ""+( 0+num)+" ";}
+				var num = (bd.QnC(c)>=0&&bd.QnC(c)<10?bd.QnC(c):-1)
+				if     (num==-1)     { return ". ";}
+				else if(bd.DiC(c)==1){ return ""+( 0+num)+" ";}
 				else if(bd.DiC(c)==3){ return ""+(16+num)+" ";}
 				else if(bd.DiC(c)==2){ return ""+(32+num)+" ";}
 				else if(bd.DiC(c)==4){ return ""+(48+num)+" ";}

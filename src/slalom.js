@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.2.0p1
+// パズル固有スクリプト部 スラローム版 slalom.js v3.2.0p2
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -356,16 +356,16 @@ Puzzles.slalom.prototype = {
 
 				for(var j=bd.cell[c].py();j<bd.cell[c].py()+k.cheight;j+=ll*2){ //たて
 					if(bd.QuC(c)==21){
-						if(this.vnop("c"+c+"_dl21_"+j,1)){ g.fillRect(bd.cell[c].px()+mf(k.cwidth/2)-lm+1, j, lw, ll);}
+						if(this.vnop("c"+c+"_dl21_"+mf(j),1)){ g.fillRect(bd.cell[c].px()+mf(k.cwidth/2)-lm+1, j, lw, ll);}
 					}
-					else{ this.vhide("c"+c+"_dl21_"+j);}
+					else{ this.vhide("c"+c+"_dl21_"+mf(j));}
 				}
 
 				for(var j=bd.cell[c].px();j<bd.cell[c].px()+k.cwidth;j+=ll*2){ //よこ
 					if(bd.QuC(c)==22){
-						if(this.vnop("c"+c+"_dl22_"+j,1)){ g.fillRect(j, bd.cell[c].py()+mf(k.cheight/2)-lm+1, ll, lw);}
+						if(this.vnop("c"+c+"_dl22_"+mf(j),1)){ g.fillRect(j, bd.cell[c].py()+mf(k.cheight/2)-lm+1, ll, lw);}
 					}
-					else{ this.vhide("c"+c+"_dl22_"+j);}
+					else{ this.vhide("c"+c+"_dl22_"+mf(j));}
 				}
 			}
 		};

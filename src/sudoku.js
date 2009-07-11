@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 数独版 sudoku.js v3.2.0
+// パズル固有スクリプト部 数独版 sudoku.js v3.2.0p1
 //
 Puzzles.sudoku = function(){ };
 Puzzles.sudoku.prototype = {
@@ -43,16 +43,25 @@ Puzzles.sudoku.prototype = {
 		base.setExpression("　キーボードやマウスで数字が入力できます。",
 						   " It is available to input number by keybord or mouse");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
-
-		var inhtml = "<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n";
-		inhtml += "<input type=\"radio\" name=\"size\" value=\"9\" checked>9×9<br>\n";
-		inhtml += "<input type=\"radio\" name=\"size\" value=\"16\">16×16<br>\n";
-		inhtml += "<input type=\"radio\" name=\"size\" value=\"25\">25×25<br>\n";
-		inhtml += "<input type=\"radio\" name=\"size\" value=\"4\">4×4<br>\n";
-		inhtml += "<input type=\"button\" name=\"newboard\" value=\"新規作成\" /><input type=\"button\" name=\"cancel\" value=\"キャンセル\" />\n";
-		$(document.newboard).html(inhtml);
+		base.proto = 1;
 	},
 	menufix : function(){ },
+
+	protoChange : function(){
+		this.newboard_html_original = $(document.newboard).html();
+
+		$(document.newboard).html(
+			  "<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n"
+			+ "<input type=\"radio\" name=\"size\" value=\"9\" checked>9×9<br>\n"
+			+ "<input type=\"radio\" name=\"size\" value=\"16\">16×16<br>\n"
+			+ "<input type=\"radio\" name=\"size\" value=\"25\">25×25<br>\n"
+			+ "<input type=\"radio\" name=\"size\" value=\"4\">4×4<br>\n"
+			+ "<input type=\"button\" name=\"newboard\" value=\"新規作成\" /><input type=\"button\" name=\"cancel\" value=\"キャンセル\" />\n"
+		);
+	},
+	protoOriginal : function(){
+		$(document.newboard).html(this.newboard_html_original);
+	},
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
