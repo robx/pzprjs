@@ -1,4 +1,4 @@
-// Board.js v3.2.0
+// Board.js v3.2.0p3
 
 //---------------------------------------------------------------------------
 // ★Cellクラス BoardクラスがCellの数だけ保持する
@@ -126,7 +126,7 @@ Border.prototype = {
 	},
 	allclear : function(num) {
 		this.ques = 0;
-		if(k.puzzleid=="mejilink" && num<bd.bdinside){ this.ques = 1;}
+		if(k.puzzleid=="mejilink" && num<k.qcols*(k.qrows-1)+(k.qcols-1)*k.qrows){ this.ques = 1;}
 		this.qnum = -1;
 		this.qans = 0;
 		this.qsub = 0;
