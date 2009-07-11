@@ -5,8 +5,8 @@
  * written in JavaScript.
  * 
  * @author  happa.
- * @version v3.2.0p1
- * @date    2009-07-02
+ * @version v3.2.0p3
+ * @date    2009-07-11
  * 
  * This script uses following libraries.
  *  jquery.js (version 1.3.2)
@@ -21,7 +21,7 @@
  * http://indi.s58.xrea.com/pzpr/v3/LICENCE.HTML
  * 
  */
-var pzprversion="v3.2.0p1";
+var pzprversion="v3.2.0p3";
 //----------------------------------------------------------------------------
 // ★グローバル変数
 //---------------------------------------------------------------------------
@@ -345,7 +345,7 @@ Border.prototype = {
 	},
 	allclear : function(num) {
 		this.ques = 0;
-		if(k.puzzleid=="mejilink" && num<bd.bdinside){ this.ques = 1;}
+		if(k.puzzleid=="mejilink" && num<k.qcols*(k.qrows-1)+(k.qcols-1)*k.qrows){ this.ques = 1;}
 		this.qnum = -1;
 		this.qans = 0;
 		this.qsub = 0;
@@ -2147,9 +2147,15 @@ Graphic.prototype = {
 	vnop : function(vid, isfill){
 		if(g.vml){
 			if(g.elements[vid]){
-				g.elements[vid].attr("color", uuColor.parse((isfill==1?g.fillStyle:g.strokeStyle))[0]);
-				if(!this.zstable){ g.elements["p_"+vid].css("z-index",g.zidx);}
-				g.elements["p_"+vid].show();
+				var el = g.elements[vid].get(0);
+				if(el){
+					el.color = uuColor.parse((isfill==1?g.fillStyle:g.strokeStyle))[0];
+				}
+				var pel = g.elements["p_"+vid].get(0);
+				if(pel){
+					if(!this.zstable){ pel.style.zIndex = g.zidx;}
+					pel.style.display = 'inline';
+				}
 				return false;
 			}
 			g.vid = vid;
@@ -2159,7 +2165,7 @@ Graphic.prototype = {
 	vhide : function(vid){
 		if(g.vml){
 			if(!vid.shift){ vid = [vid];}
-			for(var i=0;i<vid.length;i++){ if(g.elements[vid[i]]){ g.elements["p_"+vid[i]].hide();} }
+			for(var i=0;i<vid.length;i++){ if(g.elements[vid[i]]){ g.elements["p_"+vid[i]].get(0).style.display = 'none';} }
 		}
 	},
 	vdel : function(vid){
@@ -2186,12 +2192,12 @@ Graphic.prototype = {
 	// 数字表示関数
 	CreateDOMAndSetNop : function(){
 		obj = newEL("div");
-		obj.attr("class", "divnum")
-		   .mousedown(mv.e_mousedown.ebind(mv))
+		obj.mousedown(mv.e_mousedown.ebind(mv))
 		   .mouseup(mv.e_mouseup.ebind(mv))
 		   .mousemove(mv.e_mousemove.ebind(mv))
 		   .appendTo("#numobj_parent")
 		   .unselectable();
+		obj.context.className = "divnum";
 		obj.context.oncontextmenu = function(){ return false;}; //妥協点 
 
 		return obj;
@@ -2215,7 +2221,7 @@ Graphic.prototype = {
 	// pc.dispnumBorder()       Borderに数字を記入するための値を決定する
 	//---------------------------------------------------------------------------
 	dispnumCell_General : function(id){
-		if(bd.cell[id].numobj && !this.isdispnumCell(id)){ bd.cell[id].numobj.hide(); return;}
+		if(bd.cell[id].numobj && !this.isdispnumCell(id)){ bd.cell[id].numobj.get(0).style.display = 'none'; return;}
 		if(this.isdispnumCell(id)){
 			if(!bd.cell[id].numobj){ bd.cell[id].numobj = this.CreateDOMAndSetNop();}
 			var obj = bd.cell[id].numobj;
@@ -2223,7 +2229,7 @@ Graphic.prototype = {
 			var type = 1;
 			if     (k.isDispNumUL){ type=5;}
 			else if(bd.QuC(id)>=2 && bd.QuC(id)<=5){ type=bd.QuC(id);}
-			else if(k.puzzleid=="reflect"){ obj.hide(); return;}
+			else if(k.puzzleid=="reflect"){ obj.get(0).style.display = 'none'; return;}
 
 			var num = (bd.QnC(id)!=-1 ? bd.QnC(id) : bd.QaC(id));
 
@@ -2249,14 +2255,14 @@ Graphic.prototype = {
 			if(!bd.cross[id].numobj){ bd.cross[id].numobj = this.CreateDOMAndSetNop();}
 			this.dispnumCross1(id, bd.cross[id].numobj, 101, ""+bd.QnX(id), 0.6 ,this.crossnumcolor);
 		}
-		else if(bd.cross[id].numobj){ bd.cross[id].numobj.hide();}
+		else if(bd.cross[id].numobj){ bd.cross[id].numobj.get(0).style.display = 'none';}
 	},
 	dispnumBorder : function(id){
 		if(bd.QnB(id)>0||(bd.QnB(id)==0&&k.dispzero==1)){
 			if(!bd.border[id].numobj){ bd.border[id].numobj = this.CreateDOMAndSetNop();}
 			this.dispnumBorder1(id, bd.border[id].numobj, 101, ""+bd.QnB(id), 0.45 ,this.borderfontcolor);
 		}
-		else if(bd.border[id].numobj){ bd.border[id].numobj.hide();}
+		else if(bd.border[id].numobj){ bd.border[id].numobj.get(0).style.display = 'none';}
 	},
 
 	//---------------------------------------------------------------------------
@@ -2298,7 +2304,7 @@ Graphic.prototype = {
 			el.style.top  = k.cv_oft.y+py+mf((k.cheight-hgt)/2)+(IE?3:1)+(type==7?mf(k.cheight*0.1):0);
 		}
 		else if(type==101){
-			el.style.left = k.cv_oft.x+px-wid/2+(IE?2:2)
+			el.style.left = k.cv_oft.x+px-wid/2+(IE?2:2);
 			el.style.top  = k.cv_oft.y+py-hgt/2+(IE?3:1);
 		}
 		else{
@@ -2307,45 +2313,9 @@ Graphic.prototype = {
 			if     (type==2||type==3){ el.style.top  = k.cv_oft.y+py+k.cheight-hgt+(IE?1:-1);}
 			else if(type==4||type==5){ el.style.top  = k.cv_oft.y+py              +(IE?4: 2);}
 		}
-		//if(IE && fontsize>24){ obj.css("padding-top",mf((fontsize-24)/2)).css("padding-bottom",mf((fontsize-24)/2));}
 
 		el.style.color = color;
 	},
-	/*
-	dispnum1 : function(obj, type, text, fontratio, color, px, py){
-		if(!obj){ return;}
-		var IE = k.br.IE;
-		var el = obj.context;
-
-		obj.html(text);
-
-		var fontsize = mf(k.cwidth*fontratio*pc.fontsizeratio);
-		obj.css("font-size", ""+ fontsize + 'px');
-
-		var wid = obj.width();
-		var hgt = obj.height();
-
-		if(type==1||type==6||type==7){
-			obj.css("left", k.cv_oft.x+px+mf((k.cwidth-wid) /2)+(IE?2:2)-(type==6?mf(k.cwidth *0.1):0))
-			   .css("top" , k.cv_oft.y+py+mf((k.cheight-hgt)/2)+(IE?3:1)+(type==7?mf(k.cheight*0.1):0));
-		}
-		else if(type==101){
-			obj.css("left", k.cv_oft.x+px-wid/2+(IE?2:2))
-			   .css("top" , k.cv_oft.y+py-hgt/2+(IE?3:1));
-		}
-		else{
-			if     (type==3||type==4){ obj.css("left", k.cv_oft.x+px+k.cwidth -wid+(IE?1: 0));}
-			else if(type==2||type==5){ obj.css("left", k.cv_oft.x+px              +(IE?5: 4));}
-			if     (type==2||type==3){ obj.css("top" , k.cv_oft.y+py+k.cheight-hgt+(IE?1:-1));}
-			else if(type==4||type==5){ obj.css("top" , k.cv_oft.y+py              +(IE?4: 2));}
-		}
-		//if(IE && fontsize>24){ obj.css("padding-top",mf((fontsize-24)/2)).css("padding-bottom",mf((fontsize-24)/2));}
-
-		obj.css('color',color);
-
-		obj.show();
-	},
-	*/
 
 	//---------------------------------------------------------------------------
 	// pc.drawNumbersOn51()   Cell上の[＼]に数字を記入する
@@ -2357,7 +2327,7 @@ Graphic.prototype = {
 			var c = clist[i];
 
 			if(bd.QnC(c)==-1 || bd.QuC(c)!=51 || bd.rt(c)==-1 || bd.QuC(bd.rt(c))==51){
-				if(bd.cell[c].numobj){ bd.cell[c].numobj.hide();}
+				if(bd.cell[c].numobj){ bd.cell[c].numobj.get(0).style.display = 'none';}
 			}
 			else{
 				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
@@ -2367,7 +2337,7 @@ Graphic.prototype = {
 			}
 
 			if(bd.DiC(c)==-1 || bd.QuC(c)!=51 || bd.dn(c)==-1 || bd.QuC(bd.dn(c))==51){
-				if(bd.cell[c].numobj2){ bd.cell[c].numobj2.hide();}
+				if(bd.cell[c].numobj2){ bd.cell[c].numobj2.get(0).style.display = 'none';}
 			}
 			else{
 				if(!bd.cell[c].numobj2){ bd.cell[c].numobj2 = this.CreateDOMAndSetNop();}
@@ -2385,7 +2355,7 @@ Graphic.prototype = {
 				if(c==-1){ continue;}
 
 				if(bd.QnE(c)==-1 || bd.excell[c].cy==-1 || bd.QuC(bd.excell[c].cy*k.qcols)==51){
-					if(bd.excell[c].numobj){ bd.excell[c].numobj.hide();}
+					if(bd.excell[c].numobj){ bd.excell[c].numobj.get(0).style.display = 'none';}
 				}
 				else{
 					if(!bd.excell[c].numobj){ bd.excell[c].numobj = this.CreateDOMAndSetNop();}
@@ -2395,7 +2365,7 @@ Graphic.prototype = {
 				}
 
 				if(bd.DiE(c)==-1 || bd.excell[c].cx==-1 || bd.QuC(bd.excell[c].cx)==51){
-					if(bd.excell[c].numobj2){ bd.excell[c].numobj2.hide();}
+					if(bd.excell[c].numobj2){ bd.excell[c].numobj2.get(0).style.display = 'none';}
 				}
 				else{
 					if(!bd.excell[c].numobj2){ bd.excell[c].numobj2 = this.CreateDOMAndSetNop();}
@@ -3774,7 +3744,8 @@ Encode.prototype = {
 			base.resize_canvas_onload();
 		}
 	},
-	pzlimport : function(type){ },	// オーバーライド用
+	pzlimport : function(type,bstr){ },	// オーバーライド用
+	pzlexport : function(type){ },		// オーバーライド用
 
 	//---------------------------------------------------------------------------
 	// enc.get_search()   入力されたURLの?以下の部分を返す
@@ -5484,6 +5455,7 @@ AnsCheck.prototype = {
 
 	//---------------------------------------------------------------------------
 	// ans.setLcnts()      線が引かれたり消されてたりした時に、変数lcntsの内容を変更する
+	// ans.resetLcount()   回転反転・拡大縮小時にlcnt変数を再構築する
 	// ans.lcntCell()      セルに存在する線の本数を返す
 	// ans.checkLcntCell() セルから出ている線の本数について判定する
 	//---------------------------------------------------------------------------
@@ -5499,6 +5471,16 @@ AnsCheck.prototype = {
 		else{
 			if(cc1!=-1){ this.lcnts.total[this.lcnts.cell[cc1]]--; this.lcnts.cell[cc1]--; this.lcnts.total[this.lcnts.cell[cc1]]++;}
 			if(cc2!=-1){ this.lcnts.total[this.lcnts.cell[cc2]]--; this.lcnts.cell[cc2]--; this.lcnts.total[this.lcnts.cell[cc2]]++;}
+		}
+	},
+	resetLcount : function(){
+		if(k.isborder){
+			this.reset();
+			for(var id=0;id<bd.border.length;id++){
+				if((k.isCenterLine && bd.LiB(id)>0) || (!k.isCenterLine && bd.QaB(id)>0)){
+					this.setLcnts(id,1);
+				}
+			}
 		}
 	},
 
@@ -6055,8 +6037,9 @@ Menu = function(){
 };
 Menu.prototype = {
 	//---------------------------------------------------------------------------
-	// menu.menuinit() メニュー、ボタン、サブメニュー、フロートメニュー、
-	//                 ポップアップメニューの初期設定を行う
+	// menu.menuinit()  メニュー、ボタン、サブメニュー、フロートメニュー、
+	//                  ポップアップメニューの初期設定を行う
+	// menu.menureset() メニュー用の設定を消去する
 	//---------------------------------------------------------------------------
 	menuinit : function(){
 		this.buttonarea();
@@ -6064,6 +6047,25 @@ Menu.prototype = {
 		this.poparea();
 
 		this.displayAll();
+	},
+
+	menureset : function(){
+		this.dispfloat  = new Array();
+		this.floatpanel = new Array();
+		this.pop        = "";
+		this.btnstack   = new Array();
+		this.labelstack = new Array();
+
+		this.popclose();
+		this.menuclear();
+
+		$("#popup_parent > .floatmenu").remove();
+		$("#menupanel,#usepanel,#checkpanel").html("");
+		if($("#btncolor2").length>0){ $("#btncolor2").remove();}
+		$("#btnclear2").nextAll().remove();
+		$("#outbtnarea").remove();
+
+		pp.reset();
 	},
 
 	//---------------------------------------------------------------------------
@@ -6336,7 +6338,7 @@ Menu.prototype = {
 						 .click(lang.translate.bind(lang)).unselectable();
 		if(k.callmode=="pmake"){ $("#timerpanel,#separator2").hide();}
 		if(k.irowake!=0){
-			$("#btnarea").append("　<input type=\"button\" id=\"btncolor2\" value=\"色分けしなおす\">");
+			$("#btnarea").append("<input type=\"button\" id=\"btncolor2\" value=\"色分けしなおす\">");
 			$("#btncolor2").click(col.irowakeRemake.ebind(col)).hide();
 			menu.addButtons($("#btncolor2"), "色分けしなおす", "Change the color of Line");
 		}
@@ -6373,10 +6375,10 @@ Menu.prototype = {
 		$(document.urlinput.cancel).click(px);
 
 		// URL出力
-		var ib = function(name, strJP, strEN, eval){
-			if(!eval) return;
+		$(document.urloutput.ta).before(newEL('div').attr('id','outbtnarea'));
+		var ib = function(name, strJP, strEN, eval){ if(!eval) return;
 			var btn = newEL('input').attr('type','button').attr("name",name).click(this.ex.urloutput.ebind(this.ex));
-			$(document.urloutput.ta).before(btn).before("<br>");
+			$("#outbtnarea").append(btn).append("<br>");
 			this.addButtons(btn, strJP, strEN);
 		}.bind(this);
 		ib('pzprv3', "ぱずぷれv3のURLを出力する", "Output PUZ-PRE v3 URL", true);
@@ -6384,7 +6386,7 @@ Menu.prototype = {
 		ib('kanpen', "カンペンのURLを出力する", "Output Kanpen URL", k.isKanpenExist);
 		ib('heyaapp', "へやわけアプレットのURLを出力する", "Output Heyawake-Applet URL", (k.puzzleid=="heyawake"));
 		ib('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する", "Output PUZ-PRE v3 Re-Edit URL", true);
-		$(document.urloutput.ta).before("<br>\n");
+		$("#outbtnarea").append("<br>\n");
 		$(document.urloutput.openurl).click(this.ex.openurl.ebind(this.ex));
 		$(document.urloutput.close).click(px);
 
@@ -6567,6 +6569,11 @@ Properties = function(){
 	this.flaglist = new Array();	// idnameの配列
 };
 Properties.prototype = {
+	reset : function(){
+		this.flags    = new Array();
+		this.flaglist = new Array();
+	},
+
 	// pp.setMenuStr() 管理パネルと選択型/チェック型サブメニューに表示する文字列を設定する
 	addSmenuToFlags : function(idname, parent)       { this.addToFlags(idname, parent, 0, 0);},
 	addCheckToFlags : function(idname, parent, first){ this.addToFlags(idname, parent, 2, first);},
@@ -7109,6 +7116,7 @@ MenuExec.prototype = {
 		// 拡大時、境界線は代入しておく
 		if(k.isborder && um.isenableRecord()){ this.expandborder(key);}
 		this.adjustSpecial2(5,key);
+		ans.resetLcount();
 	},
 	expandborder : function(key){
 		if(k.puzzleid=='icebarn'||k.puzzleid=='minarism'){ return;}
@@ -7227,6 +7235,7 @@ MenuExec.prototype = {
 			for(var i=0;i<qnums.length;i++){ bd.sQnC(room.getTopOfRoom(qnums[i].areaid), qnums[i].val);}
 		}
 		this.adjustSpecial2(6,key);
+		ans.resetLcount();
 		return true;
 	},
 	reduceborder : function(key){
@@ -7324,6 +7333,7 @@ MenuExec.prototype = {
 
 		bd.setposAll();
 		this.adjustSpecial2(1,'');
+		ans.resetLcount();
 	},
 	// 回転・反転(左右反転)
 	flipx : function(rx1,ry1,rx2,ry2){
@@ -7376,6 +7386,7 @@ MenuExec.prototype = {
 
 		bd.setposAll();
 		this.adjustSpecial2(2,'');
+		ans.resetLcount();
 	},
 	// 回転・反転(右90°回転)
 	turnr : function(rx1,ry1,rx2,ry2){ this.turn2(rx1,ry1,rx2,ry2,1); },
@@ -7458,6 +7469,7 @@ MenuExec.prototype = {
 
 		bd.setposAll();
 		this.adjustSpecial2(f+2,'');
+		ans.resetLcount();
 	},
 
 	//------------------------------------------------------------------------------
@@ -8132,9 +8144,11 @@ LangMgr.prototype = {
 // PBaseクラス
 PBase = function(){
 	this.floatbgcolor = "black";
+	this.proto        = 0;	// 各クラスのprototypeがパズル用スクリプトによって変更されているか
 	this.expression   = { ja:'' ,en:''};
 	this.puzzlename   = { ja:'' ,en:''};
-	this.cv_obj = null;	// HTMLソースのCanvasを示すオブジェクト
+	this.cv_obj       = null;	// HTMLソースのCanvasを示すオブジェクト
+	this.onresizenow  = false;	// resize中かどうか
 };
 PBase.prototype = {
 	//---------------------------------------------------------------------------
@@ -8145,6 +8159,7 @@ PBase.prototype = {
 		// URLの取得 -> URLの?以下ををpuzzleid部とpzlURI部に分割(内部でurl_decode()呼んでいる)
 		enc = new Encode(location.search);
 		k.puzzleid = enc.uri.pid;
+		if(location.href.indexOf('for_test.html')>=0){ k.puzzleid = 'lits';}
 		if(!k.puzzleid){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
 		if(enc.uri.cols){ k.qcols = enc.uri.cols;}
 		if(enc.uri.rows){ k.qrows = enc.uri.rows;}
@@ -8156,26 +8171,45 @@ PBase.prototype = {
 		}
 
 		// パズル専用ファイルの読み込み
-		document.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
+		if(location.href.indexOf('for_test.html')==-1){
+			document.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
+		}
+		else{
+			document.writeln("<script type=\"text/javascript\" src=\"src/puzzles_Full.js\"></script>");
+		}
 
 		// onLoadとonResizeに動作を割り当てる
 		$(document).ready(this.onload_func.ebind(this));
-		$(window).resize(this.resize_canvas.ebind(this));
+		$(window).resize(this.onresize_func.ebind(this));
 	},
 
 	//---------------------------------------------------------------------------
 	// base.onload_func()
 	//   ページがLoadされた時の処理。各クラスのオブジェクトへの読み込み等初期設定を行う
+	// base.initObjects()
+	//   各オブジェクトの生成などの処理
 	// base.setEvents()
 	//   マウス入力、キー入力のイベントの設定を行う
 	// base.initSilverlight()
 	//   Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
+	// base.reload_func()  別スクリプトを読み込みしなおす際の処理
+	// base.postfix()      各パズルの初期化後処理を呼び出す
 	//---------------------------------------------------------------------------
 	onload_func : function(){
 		this.initCanvas();
 
+		this.initObjects();
+		this.setEvents(1);	// イベントをくっつける
+
+		if(document.domain=='indi.s58.xrea.com' && k.callmode=='pplay'){ this.accesslog();}	// アクセスログをとってみる
+		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
+	},
+	initObjects : function(){
+		this.proto = 0;
+
 		puz = new Puzzles[k.puzzleid]();	// パズル固有オブジェクト
 		puz.setting();					// パズル固有の変数設定(デフォルト等)
+		if(this.proto){ puz.protoChange();}
 
 		// クラス初期化
 		bd = new Board();		// 盤面オブジェクト
@@ -8198,22 +8232,42 @@ PBase.prototype = {
 		enc.pzlinput(0);									// URLからパズルのデータを読み出す
 		if(!enc.uri.bstr){ this.resize_canvas_onload();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
 
-		if(document.domain=='indi.s58.xrea.com' && k.callmode=='pplay'){ this.accesslog();}	// アクセスログをとってみる
-		if(k.scriptcheck && debug){ debug.testonly_func();}							// テスト用
-
-		this.setEvents();	// イベントをくっつける
-		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
+		if(k.scriptcheck && debug){ debug.testonly_func();}	// テスト用
 	},
-	setEvents : function(){
+	setEvents : function(first){
 		this.cv_obj.mousedown(mv.e_mousedown.ebind(mv)).mouseup(mv.e_mouseup.ebind(mv)).mousemove(mv.e_mousemove.ebind(mv));
 		this.cv_obj.context.oncontextmenu = function(){return false;};	//妥協点 
 
-		$(document).keydown(kc.e_keydown.kcbind()).keyup(kc.e_keyup.kcbind()).keypress(kc.e_keypress.kcbind());
+		if(first){
+			$(document).keydown(kc.e_keydown.kcbind()).keyup(kc.e_keyup.kcbind()).keypress(kc.e_keypress.kcbind());
+		}
 	},
 	initSilverlight : function(sender){
 		sender.AddEventListener("KeyDown", kc.e_SLkeydown.bind(kc));
 		sender.AddEventListener("KeyUp",   kc.e_SLkeyup.bind(kc));
 	},
+
+	reload_func : function(newid){
+		if(this.proto){ puz.protoOriginal();}
+
+		$("*").unbind();
+		menu.menureset();
+		$("#numobj_parent").html("");
+		if(kp.ctl[1].enable){ kp.ctl[1].el.remove();}
+		if(kp.ctl[3].enable){ kp.ctl[3].el.remove();}
+
+		k.puzzleid = newid;
+		if(!Puzzles[k.puzzleid]){
+			newEL("script").attr("type", "text/javascript")
+//						   .attr("charset", "Shift_JIS")
+						   .attr("src", "src/"+k.puzzleid+".js")
+						   .appendTo($("head"));
+		}
+
+		this.initObjects();
+		this.setEvents(0);
+	},
+
 	postfix : function(){
 		puz.input_init();
 		puz.graphic_init();
@@ -8261,6 +8315,7 @@ PBase.prototype = {
 	// base.resize_canvas_only()   ウィンドウのLoad/Resize時の処理。Canvas/表示するマス目の大きさを設定する。
 	// base.resize_canvas()        resize_canvas_only()+Canvasの再描画
 	// base.resize_canvas_onload() 初期化中にpaint再描画が起こらないように、resize_canvasを呼び出す
+	// base.onresize_func()        ウィンドウリサイズ時に呼ばれる関数
 	// base.getWindowSize()        ウィンドウの大きさを返す
 	//---------------------------------------------------------------------------
 	initCanvas : function(){
@@ -8340,6 +8395,14 @@ PBase.prototype = {
 	resize_canvas_onload : function(){
 		if(!k.br.IE || pc.already()){ this.resize_canvas();}
 		else{ uuCanvas.ready(this.resize_canvas.bind(this));}
+	},
+	onresize_func : function(){
+		if(this.onresizenow){ return;}
+		this.onresizenow = true;
+
+		this.resize_canvas();
+
+		this.onresizenow = false;
 	},
 	getWindowSize : function(){
 		if(document.all){
