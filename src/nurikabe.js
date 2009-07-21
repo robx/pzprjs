@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぬりかべ版 nurikabe.js v3.2.0
+// パズル固有スクリプト部 ぬりかべ版 nurikabe.js v3.2.0p1
 //
 Puzzles.nurikabe = function(){ };
 Puzzles.nurikabe.prototype = {
@@ -54,8 +54,8 @@ Puzzles.nurikabe.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1){
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed(x,y);}
+			else if(k.mode==1){
 				if(!kp.enabled()){ this.inputqnum(x,y,99);}
 				else{ kp.display(x,y);}
 			}

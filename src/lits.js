@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ＬＩＴＳ版 lits.js v3.2.0
+// パズル固有スクリプト部 ＬＩＴＳ版 lits.js v3.2.0p1
 //
 Puzzles.lits = function(){ };
 Puzzles.lits.prototype = {
@@ -54,8 +54,8 @@ Puzzles.lits.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1) this.inputborder(x,y);
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed(x,y);}
+			else if(k.mode==1) this.inputborder(x,y);
 			else if(k.mode==3) this.inputcell(x,y);
 		};
 		mv.mouseup = function(x,y){ };
