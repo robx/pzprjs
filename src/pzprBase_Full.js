@@ -5,8 +5,8 @@
  * written in JavaScript.
  * 
  * @author  happa.
- * @version v3.2.0p3
- * @date    2009-07-11
+ * @version v3.2.0p4
+ * @date    2009-07-27
  * 
  * This script uses following libraries.
  *  jquery.js (version 1.3.2)
@@ -21,7 +21,7 @@
  * http://indi.s58.xrea.com/pzpr/v3/LICENCE.HTML
  * 
  */
-var pzprversion="v3.2.0p3";
+var pzprversion="v3.2.0p4";
 //----------------------------------------------------------------------------
 // ★グローバル変数
 //---------------------------------------------------------------------------
@@ -2442,8 +2442,8 @@ MouseEvent.prototype = {
 		bd.errclear();
 		um.newOperation(true);
 		this.currentOpeCount = um.ope.length;
-		this.mousedown(this.pointerX(e)-k.cv_oft.x-k.IEMargin.x, this.pointerY(e)-k.cv_oft.y-k.IEMargin.y);
 		this.mousePressed = 1;
+		this.mousedown(this.pointerX(e)-k.cv_oft.x-k.IEMargin.x, this.pointerY(e)-k.cv_oft.y-k.IEMargin.y);
 		return false;
 	},
 	e_mouseup   : function(e){
@@ -2580,9 +2580,11 @@ MouseEvent.prototype = {
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	//---------------------------------------------------------------------------
 	pointerX : function(event) {
+		if(this.isWinWebKit()){ return event.pageX - 1;}
 		return event.pageX || (event.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft));
 	},
 	pointerY : function(event) {
+		if(this.isWinWebKit()){ return event.pageY - 1;}
 		return event.pageY || (event.clientY + (document.documentElement.scrollTop || document.body.scrollTop));
 	},
 	isLeftClick  : function(event) { return this.isButton(event, 0); },
@@ -3000,7 +3002,7 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	dispRed : function(x,y){
 		var cc = this.cellid(new Pos(x,y));
-		this.mouseReset();
+		this.mousereset();
 		if(cc==-1 || cc==this.mouseCell || bd.QaC(cc)!=1){ return;}
 		mv.dr0(function(c){ return (c!=-1 && bd.QaC(c)==1 && bd.ErC(c)==0);},cc,1);
 		ans.errDisp = true;
