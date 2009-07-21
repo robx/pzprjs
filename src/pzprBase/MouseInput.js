@@ -1,4 +1,4 @@
-// MouseInput.js v3.2.0p1
+// MouseInput.js v3.2.0p4
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -63,8 +63,8 @@ MouseEvent.prototype = {
 		bd.errclear();
 		um.newOperation(true);
 		this.currentOpeCount = um.ope.length;
-		this.mousedown(this.pointerX(e)-k.cv_oft.x-k.IEMargin.x, this.pointerY(e)-k.cv_oft.y-k.IEMargin.y);
 		this.mousePressed = 1;
+		this.mousedown(this.pointerX(e)-k.cv_oft.x-k.IEMargin.x, this.pointerY(e)-k.cv_oft.y-k.IEMargin.y);
 		return false;
 	},
 	e_mouseup   : function(e){
@@ -201,9 +201,11 @@ MouseEvent.prototype = {
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	//---------------------------------------------------------------------------
 	pointerX : function(event) {
+		if(this.isWinWebKit()){ return event.pageX - 1;}
 		return event.pageX || (event.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft));
 	},
 	pointerY : function(event) {
+		if(this.isWinWebKit()){ return event.pageY - 1;}
 		return event.pageY || (event.clientY + (document.documentElement.scrollTop || document.body.scrollTop));
 	},
 	isLeftClick  : function(event) { return this.isButton(event, 0); },
@@ -621,7 +623,7 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	dispRed : function(x,y){
 		var cc = this.cellid(new Pos(x,y));
-		this.mouseReset();
+		this.mousereset();
 		if(cc==-1 || cc==this.mouseCell || bd.QaC(cc)!=1){ return;}
 		mv.dr0(function(c){ return (c!=-1 && bd.QaC(c)==1 && bd.ErC(c)==0);},cc,1);
 		ans.errDisp = true;
