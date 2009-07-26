@@ -1,6 +1,6 @@
 //
 // パズル固有スクリプト部 ヤジリン版 yajirin.js v3.2.0p1
-//
+// 
 Puzzles.yajirin = function(){ };
 Puzzles.yajirin.prototype = {
 	setting : function(){
