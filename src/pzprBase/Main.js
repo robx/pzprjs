@@ -1,4 +1,4 @@
-// Main.js v3.2.0p3
+// Main.js v3.2.0p4
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -22,7 +22,7 @@ PBase.prototype = {
 		// URLの取得 -> URLの?以下ををpuzzleid部とpzlURI部に分割(内部でurl_decode()呼んでいる)
 		enc = new Encode(location.search);
 		k.puzzleid = enc.uri.pid;
-		if(location.href.indexOf('for_test.html')>=0){ k.puzzleid = 'lits';}
+		if(location.href.indexOf('for_test.html')>=0){ k.puzzleid = 'country';}
 		if(!k.puzzleid){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
 		if(enc.uri.cols){ k.qcols = enc.uri.cols;}
 		if(enc.uri.rows){ k.qrows = enc.uri.rows;}
