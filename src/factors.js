@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 因子の部屋版 factors.js v3.2.0p1
+// パズル固有スクリプト部 因子の部屋版 factors.js v3.2.0p2
 //
 Puzzles.factors = function(){ };
 Puzzles.factors.prototype = {
@@ -32,7 +32,7 @@ Puzzles.factors.prototype = {
 		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
 
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
+		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
 		k.fstruct = ["borderques", "cellqnum", "cellqanssub"];
 

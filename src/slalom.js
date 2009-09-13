@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.2.0p2
+// パズル固有スクリプト部 スラローム版 slalom.js v3.2.0p3
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -32,7 +32,7 @@ Puzzles.slalom.prototype = {
 		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
 
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
+		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
 		k.fstruct = ["others", "borderline"];
 
@@ -295,7 +295,7 @@ Puzzles.slalom.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawBDline(x1,y1,x2,y2);
 
 			this.drawGates(x1,y1,x2,y2)
 			this.drawBCells_slalom(x1,y1,x2,y2);
@@ -497,6 +497,40 @@ Puzzles.slalom.prototype = {
 			return cm;
 		};
 
+		enc.decodeKanpen = function(bstr){
+			var sv_num = new Array();
+			bstr = (bstr.split("_")).join(" ");
+			fio.decodeCell( function(c,ca){
+				sv_num[c] = -1;
+				if     (ca == "+"){ bd.startid=c;}
+				else if(ca == "|"){ bd.sQuC(c,21);}
+				else if(ca == "-"){ bd.sQuC(c,22);}
+				else if(ca != "."){
+					bd.sQuC(c, 1);
+					if(ca != "0"){
+						sv_num[c] = parseInt(ca);
+						bd.sQnC(c, sv_num[c]);
+					}
+					else{ sv_num[c] = 0;}
+				}
+			},bstr.split("/"));
+			bd.hinfo.generateAll();
+			bd.hinfo.generateGateNumber(sv_num);
+			return "";
+		};
+		enc.encodeKanpen = function(){
+			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
+				if     (bd.startid==c){ return "+_";}
+				else if(bd.QuC(c)== 1){
+					if(bd.hinfo.getPoleNumber(c)>0){ return bd.hinfo.getPoleNumber(c).toString()+"_";}
+					else{ return "0_";}
+				}
+				else if(bd.QuC(c)==21){ return "|_";}
+				else if(bd.QuC(c)==22){ return "-_";}
+				else{ return "._";}
+			});
+		};
+
 		//---------------------------------------------------------
 		fio.decodeOthers = function(array){
 			if(array.length<k.qrows){ return false;}
@@ -522,6 +556,20 @@ Puzzles.slalom.prototype = {
 				else if(bd.QuC(c)==22 && bd.QnC(c)>= 0){ return "w"+bd.QnC(c).toString()+" ";}
 				else{ return ". ";}
 			}) );
+		};
+
+		fio.kanpenOpen = function(array){
+			var barray = array.slice(0,k.qrows);
+			for(var i=0;i<barray.length;i++){ barray[i] = (barray[i].split(" ")).join("_");}
+			enc.decodeKanpen(barray.join("/"));
+			this.decodeBorderLine(array.slice(k.qrows,3*k.qrows-1));
+		};
+		fio.kanpenSave = function(){
+			var barray = enc.encodeKanpen().split("/");
+			barray.shift(); barray.shift();
+			for(var i=0;i<barray.length;i++){ barray[i] = (barray[i].split("_")).join(" ");}
+
+			return barray.join("/") + this.encodeBorderLine()+"/";
 		};
 	},
 
@@ -684,12 +732,14 @@ Hurdle.prototype = {
 		}
 		return (min<1000?min:-1);
 	},
+	// 1つのセルから、旗門が持つ数字を設定する
 	setGateNumber : function(cc,val){
 		if(cc<0 || cc>=bd.cell.length || this.gateid[cc]==-1){ return -1;}
 		var clist = this.data[this.gateid[cc]].clist;
 		for(var i=0;i<clist.length;i++){ bd.sQnC(clist[i],-1);}
 		bd.sQnC(cc,val);
 	},
+	// 黒マスに描画される数字を取得する
 	getPoleNumber : function(cc){
 		var clist = this.getConnectedGatecell(cc);
 		var min=1000;
@@ -728,8 +778,88 @@ Hurdle.prototype = {
 			this.data[this.max].val = val;
 		}
 	},
+	generateGateNumber : function(array){
+		// 変数numinfoに、[旗門ID, 数字]の組で数字を入れていく
+		var numinfo = new Array();
+		for(var c=0;c<bd.cell.length;c++){
+			var clist = this.getConnectedGatecell(c);
+			var cnt = clist.length;
+			if(cnt<=0 || array[c]<=0 || array[c]>this.max){ continue;}
+			for(var i=0;i<cnt;i++){ numinfo.push([this.getGateid(clist[i]), array[c]]);}
+		}
+
+		// 旗門nに繋がる数字が2つとも同じ数字の場合、旗門に数字をセット
+		var decnumber = new Array();
+		for(var n=1;n<=this.max;n++){
+			var gn = new Array();
+			for(var i=0;i<numinfo.length;i++){
+				if(n==numinfo[i][0]){ gn.push(numinfo[i][1]);}
+			}
+			// 物理的に、ひとつの旗門には2つまでしか数字が繋がらない
+			if(gn.length==2 && gn[0]>0 && gn[0]==gn[1]){
+				this.setGateNumber(this.data[n].clist[0],gn[0]);
+				decnumber.push(gn[0]);
+			}
+		}
+		// さっきセットされたやつをnuminfoから消す
+		for(var n=0;n<decnumber.length;n++){
+			var numtmp = new Array();
+			for(var i=0;i<numinfo.length;i++){
+				if(decnumber[n]!=numinfo[i][1]){ numtmp.push(numinfo[i]);}
+			}
+			numinfo = numtmp;
+		}
+
+		// 旗門nに繋がる数字が2つとも同じ数字、でない場合
+		while(1){
+			var numcnt = new Array();
+			var decnumber = new Array(), decgate = new Array();
+
+			for(var n=1;n<=this.max;n++){ numcnt[n]=0;}
+			for(var i=0;i<numinfo.length;i++){ numcnt[numinfo[i][1]]++;}
+
+			for(var n=1;n<=this.max;n++){
+				// numcnt[n]==0なら数字がない、2なら異なる数字が繋がっている
+				//if(numcnt[n]!=1){ continue;}
+
+				// 2で異なる数字、の場合を排除する
+				var cand=0;
+				for(var i=0;i<numinfo.length;i++){
+					if(n==numinfo[i][0]){ cand=(cand==0?numinfo[i][1]:0);}
+				}
+				// 旗門nに数字をセット
+				if(cand>0){
+					this.setGateNumber(this.data[n].clist[0], cand);
+					decnumber.push(cand);
+					decgate.push(n);
+				}
+			}
+
+			// 今回セットされたやつがなければループを抜ける
+			if(decnumber.length==0) break;
+
+			// ループする前に、さっきセットされたやつをnuminfoから消す
+			for(var n=0;n<decnumber.length;n++){
+				var numtmp = new Array();
+				for(var i=0;i<numinfo.length;i++){
+					if(decnumber[n]!=numinfo[i][1]){ numtmp.push(numinfo[i]);}
+				}
+				numinfo = numtmp;
+			}
+			for(var n=0;n<decgate.length;n++){
+				var numtmp = new Array();
+				for(var i=0;i<numinfo.length;i++){
+					if(decgate[n]!=numinfo[i][0]){ numtmp.push(numinfo[i]);}
+				}
+				numinfo = numtmp;
+			}
+		}
+
+		this.generateAll();
+	},
 
 	//---------------------------------------------------------
+	// 旗門の両端にある黒マスの場所のIDを取得する
 	getGatePole : function(gateid){
 		var clist = new Array();
 		var cc1,cc2;
@@ -746,6 +876,7 @@ Hurdle.prototype = {
 		if(cc2!=-1 && bd.QuC(cc2)==1){ clist.push(cc2);}
 		return clist;
 	},
+	// 一つながりの旗門が存在するセルのIDリストを取得する
 	getConnectedGatecell : function(cc){
 		var idlist = new Array();
 		if(bd.QuC(bd.up(cc))==21){ idlist.push(bd.up(cc));}

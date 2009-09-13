@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.0p1
+// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.0p2
 //
 Puzzles.icebarn = function(){ };
 Puzzles.icebarn.prototype = {
@@ -126,8 +126,8 @@ Puzzles.icebarn.prototype = {
 
 		if(!bd.arrowin) { bd.arrowin  = -1;}
 		if(!bd.arrowout){ bd.arrowout = -1;}
-		bd.ainobj  = pc.CreateDOMAndSetNop();
-		bd.aoutobj = pc.CreateDOMAndSetNop();
+		bd.ainobj  = pc.CreateElementAndSetNop();
+		bd.aoutobj = pc.CreateElementAndSetNop();
 		bd.inputarrowin = function(id){
 			var dir=((this.border[id].cx==0||this.border[id].cy==0)?1:2);
 			this.sQuB(this.arrowin,0);

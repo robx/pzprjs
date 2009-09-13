@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.2.0p1
+// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.2.0p2
 // 
 Puzzles.yajirin = function(){ };
 Puzzles.yajirin.prototype = {
@@ -115,7 +115,7 @@ Puzzles.yajirin.prototype = {
 		//	this.flushCanvasAll();
 
 			this.drawWhiteCells(x1,y1,x2,y2);
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawBDline(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawArrowNumbers(x1,y1,x2,y2);
@@ -189,13 +189,15 @@ Puzzles.yajirin.prototype = {
 		fio.kanpenSave = function(){
 			return ""+this.encodeCell( function(c){
 				var num = (bd.QnC(c)>=0&&bd.QnC(c)<10?bd.QnC(c):-1)
-				if     (num==-1)     { return ". ";}
+				if(num==-1){
+					if     (bd.QaC(c)==1){ return "# ";}
+					else if(bd.QsC(c)==1){ return "+ ";}
+					else                 { return ". ";}
+				}
 				else if(bd.DiC(c)==1){ return ""+( 0+num)+" ";}
 				else if(bd.DiC(c)==3){ return ""+(16+num)+" ";}
 				else if(bd.DiC(c)==2){ return ""+(32+num)+" ";}
 				else if(bd.DiC(c)==4){ return ""+(48+num)+" ";}
-				else if(bd.QaC(c)==1){ return "# ";}
-				else if(bd.QsC(c)==1){ return "+ ";}
 				else                 { return ". ";}
 			})
 			+this.encodeBorderLine();

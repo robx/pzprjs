@@ -1,12 +1,12 @@
 //
-// パズル固有スクリプト部 のりのり版 norinori.js v3.2.0
+// パズル固有スクリプト部 のりのり版 norinori.js v3.2.0p1
 //
 Puzzles.norinori = function(){ };
 Puzzles.norinori.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 8;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 8;}	// 盤面の縦幅
+		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
+		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
 		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
 		k.iscross      = 0;		// 1:Crossが操作可能なパズル
