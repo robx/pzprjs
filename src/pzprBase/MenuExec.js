@@ -1,4 +1,4 @@
-// MenuExec.js v3.2.0p3
+// MenuExec.js v3.2.0p4
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -91,7 +91,7 @@ MenuExec.prototype = {
 		}
 		if(k.puzzleid=="slalom"){
 			bd.startid = 0;
-			bd.hinfo.generateAll();
+			bd.hinfo.init();
 		}
 		tc.maxx += (col-k.qcols)*2;
 		tc.maxy += (row-k.qrows)*2;
