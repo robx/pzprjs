@@ -1,4 +1,4 @@
-// Graphic.js v3.2.0p3
+// Graphic.js v3.2.0p4
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
@@ -70,6 +70,8 @@ Graphic = function(){
 
 	this.lw = 1;	// LineWidth 境界線・Lineの太さ
 	this.lm = 1;	// LineMargin
+
+	this.textenable = false;
 };
 Graphic.prototype = {
 	//---------------------------------------------------------------------------
@@ -79,6 +81,8 @@ Graphic.prototype = {
 	onresize_func : function(){
 		this.lw = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3);
 		this.lm = mf((this.lw-1)/2);
+
+		//this.textenable = !!g.fillText;
 	},
 	already : function(){
 		if(!k.br.IE){ return true;}
@@ -1142,12 +1146,17 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.CreateDOMAndSetNop() 数字を描画する為のエレメントを生成する
-	// pc.isdispnumCell()      数字を記入できるか判定する
-	// pc.getNumberColor()     数字の色を判定する
+	// pc.CreateDOMAndSetNop()     数字を描画する為のエレメントを生成する
+	// pc.CreateElementAndSetNop() エレメントを生成する
+	// pc.isdispnumCell()          数字を記入できるか判定する
+	// pc.getNumberColor()         数字の色を判定する
 	//---------------------------------------------------------------------------
 	// 数字表示関数
 	CreateDOMAndSetNop : function(){
+		if(this.textenable){ return null;}
+		return this.CreateElementAndSetNop();
+	},
+	CreateElementAndSetNop : function(){
 		obj = newEL("div");
 		obj.mousedown(mv.e_mousedown.ebind(mv))
 		   .mouseup(mv.e_mouseup.ebind(mv))
@@ -1186,7 +1195,7 @@ Graphic.prototype = {
 			var type = 1;
 			if     (k.isDispNumUL){ type=5;}
 			else if(bd.QuC(id)>=2 && bd.QuC(id)<=5){ type=bd.QuC(id);}
-			else if(k.puzzleid=="reflect"){ obj.get(0).style.display = 'none'; return;}
+			else if(k.puzzleid=="reflect"){ if(!this.textenable){ obj.get(0).style.display = 'none';} return;}
 
 			var num = (bd.QnC(id)!=-1 ? bd.QnC(id) : bd.QaC(id));
 
@@ -1242,36 +1251,56 @@ Graphic.prototype = {
 		this.dispnum1(obj, type, text, fontratio, color, bd.border[c].px(), bd.border[c].py());
 	},
 	dispnum1 : function(obj, type, text, fontratio, color, px, py){
-		if(!obj){ return;}
-		var IE = k.br.IE;
-		var el = obj.context;
+//		if(!this.textenable){
+			if(!obj){ return;}
+			var IE = k.br.IE;
+			var el = obj.context;
 
-		el.innerHTML = text;
+			el.innerHTML = text;
 
-		var fontsize = mf(k.cwidth*fontratio*pc.fontsizeratio);
-		el.style.fontSize = (""+ fontsize + 'px');
+			var fontsize = mf(k.cwidth*fontratio*pc.fontsizeratio);
+			el.style.fontSize = (""+ fontsize + 'px');
 
-		el.style.display = 'inline';	// 先に表示しないとwid,hgt=0になって位置がずれる
+			el.style.display = 'inline';	// 先に表示しないとwid,hgt=0になって位置がずれる
 
-		var wid = el.clientWidth;
-		var hgt = el.clientHeight;
+			var wid = el.clientWidth;
+			var hgt = el.clientHeight;
 
-		if(type==1||type==6||type==7){
-			el.style.left = k.cv_oft.x+px+mf((k.cwidth-wid) /2)+(IE?2:2)-(type==6?mf(k.cwidth *0.1):0);
-			el.style.top  = k.cv_oft.y+py+mf((k.cheight-hgt)/2)+(IE?3:1)+(type==7?mf(k.cheight*0.1):0);
-		}
-		else if(type==101){
-			el.style.left = k.cv_oft.x+px-wid/2+(IE?2:2);
-			el.style.top  = k.cv_oft.y+py-hgt/2+(IE?3:1);
-		}
-		else{
-			if     (type==3||type==4){ el.style.left = k.cv_oft.x+px+k.cwidth -wid+(IE?1: 0);}
-			else if(type==2||type==5){ el.style.left = k.cv_oft.x+px              +(IE?5: 4);}
-			if     (type==2||type==3){ el.style.top  = k.cv_oft.y+py+k.cheight-hgt+(IE?1:-1);}
-			else if(type==4||type==5){ el.style.top  = k.cv_oft.y+py              +(IE?4: 2);}
-		}
+			if(type==1||type==6||type==7){
+				el.style.left = k.cv_oft.x+px+mf((k.cwidth-wid) /2)+(IE?2:2)-(type==6?mf(k.cwidth *0.1):0);
+				el.style.top  = k.cv_oft.y+py+mf((k.cheight-hgt)/2)+(IE?3:1)+(type==7?mf(k.cheight*0.1):0);
+			}
+			else if(type==101){
+				el.style.left = k.cv_oft.x+px-wid/2+(IE?2:2);
+				el.style.top  = k.cv_oft.y+py-hgt/2+(IE?3:1);
+			}
+			else{
+				if     (type==3||type==4){ el.style.left = k.cv_oft.x+px+k.cwidth -wid+(IE?1: 0);}
+				else if(type==2||type==5){ el.style.left = k.cv_oft.x+px              +(IE?5: 4);}
+				if     (type==2||type==3){ el.style.top  = k.cv_oft.y+py+k.cheight-hgt+(IE?1:-1);}
+				else if(type==4||type==5){ el.style.top  = k.cv_oft.y+py              +(IE?4: 2);}
+			}
 
-		el.style.color = color;
+			el.style.color = color;
+//		}
+//		// Nativeな方法はこっちなんだけど、計5～6%くらい遅くなる。。
+//		else{
+//			g.font = ""+mf(k.cwidth*fontratio*pc.fontsizeratio)+"px 'Serif'";
+//			g.fillStyle = color;
+//			if(type==1||type==6||type==7){
+//				g.textAlign = 'center'; g.textBaseline = 'middle';
+//				g.fillText(text, px+mf(k.cwidth/2)-(type==6?mf(k.cwidth*0.1):0), py+mf(k.cheight/2)+(type==7?mf(k.cheight*0.1):0));
+//			}
+//			else if(type==101){
+//				g.textAlign = 'center'; g.textBaseline = 'middle';
+//				g.fillText(text, px, py);
+//			}
+//			else{
+//				g.textAlign    = ((type==3||type==4)?'right':'left');
+//				g.textBaseline = ((type==2||type==3)?'alphabetic':'top');
+//				g.fillText(text, px+((type==3||type==4)?k.cwidth:3), py+((type==2||type==3)?k.cheight-1:0));
+//			}
+//		}
 	},
 
 	//---------------------------------------------------------------------------
