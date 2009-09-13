@@ -32,7 +32,7 @@ closedir PAR;
 
 $reduce = 1;
 
-$version = 'v3.2.0p4';
+$version = $ARGV[0];
 @dates = localtime(time);
 $datestr = sprintf("%04d-%02d-%02d",1900+$dates[5],1+$dates[4],$dates[3]);
 
