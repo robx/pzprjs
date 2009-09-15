@@ -1,4 +1,4 @@
-// testonly.js v3.2.0p3
+// testonly.js v3.2.0p4
 
 k.scriptcheck = true;
 k.callmode = "pmake";
@@ -1125,7 +1125,7 @@ var debug = {
 		['shimaguni'  , '6/6/7fe608s0e3uf3g3g2g43'],
 		['shugaku'    , '5/5/c5d462b'],
 		['shwolf'     , '5/5/0282bocb6ajf9'],
-		['slalom'     , '6/6/9314131314131a1131ag4h1/33'],
+		['slalom'     , 'p/6/6/9314131314131a1131ag44j11/33'],
 		['slither'    , '5/5/cbcbcddad'],
 		['snakes'     , '5/5/a21g23b20b45g41a'],
 		['sudoku'     , '4/4/g1k23k3g'],
