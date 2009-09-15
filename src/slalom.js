@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.2.0p3
+// パズル固有スクリプト部 スラローム版 slalom.js v3.2.0p4
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -94,7 +94,7 @@ Puzzles.slalom.prototype = {
 				if     (this.btn.Left ){ bd.sQuC(cc, {0:1,1:21,21:22,22:0}[bd.QuC(cc)]);}
 				else if(this.btn.Right){ bd.sQuC(cc, {0:22,22:21,21:1,1:0}[bd.QuC(cc)]);}
 			}
-			bd.hinfo.generateAll();
+			bd.hinfo.generateGates();
 			pc.drawNumbers_slalom(bd.cell[cc].cx,0,bd.cell[cc].cx,k.qcols-1);
 			pc.drawNumbers_slalom(0,bd.cell[cc].cy,k.qrows-1,bd.cell[cc].cy);
 
@@ -129,9 +129,11 @@ Puzzles.slalom.prototype = {
 				else if(this.inputData!=22 && Math.abs(pos.x-this.firstPos.x)==1){ return;}
 			}
 
-			if((this.inputData==0 || this.inputData==21 || this.inputData==22) && bd.QuC(cc)!=this.inputData){
+			if((this.inputData==0 || this.inputData==21 || this.inputData==22)
+				&& bd.QuC(cc)!=1 && bd.QuC(cc)!=this.inputData)
+			{
 				bd.sQuC(cc,this.inputData);
-				bd.hinfo.generateAll();
+				bd.hinfo.generateGates();
 				pc.drawNumbers_slalom(bd.cell[cc].cx,0,bd.cell[cc].cx,k.qcols-1);
 				pc.drawNumbers_slalom(0,bd.cell[cc].cy,k.qrows-1,bd.cell[cc].cy);
 			}
@@ -154,7 +156,7 @@ Puzzles.slalom.prototype = {
 
 			if(ca=='q'||ca=='w'||ca=='e'||ca=='r'||ca=='s'||ca==' '){
 				var old=bd.QuC(cc), newques=-1;
-				if     (ca=='q'){ newques= 1;}
+				if     (ca=='q'){ newques=(old!=1?1:0);}
 				else if(ca=='w'){ newques=21;}
 				else if(ca=='e'){ newques=22;}
 				else if(ca=='r'||ca==' '){ newques= 0;}
@@ -163,7 +165,7 @@ Puzzles.slalom.prototype = {
 				if(old==newques){ return;}
 
 				bd.sQuC(cc,newques);
-				if(old==21||old==22||newques==21||newques==22){ bd.hinfo.generateAll();}
+				if(old==21||old==22||newques==21||newques==22){ bd.hinfo.generateGates();}
 
 				var cx=bd.cell[cc].cx, cy=bd.cell[cc].cy;
 				pc.drawNumbers_slalom(cx,0,cx,k.qcols-1);
@@ -171,27 +173,9 @@ Puzzles.slalom.prototype = {
 				pc.paint(cx,cy,cx+1,cy+1);
 				pc.dispnumStartpos(bd.startid);
 			}
-			else{
-				if(bd.QuC(cc)==21 || bd.QuC(cc)==22){
-					var max = Math.min(bd.hinfo.max,99);
-					if('0'<=ca && ca<='9'){
-						var num = parseInt(ca);
-						var old = bd.hinfo.getGateNumber(cc);
-
-						if(old<=0 || this.prev!=cc){ if(num<=max){ bd.hinfo.setGateNumber(cc,num);} }
-						else{
-							if(old*10+num<=max){ bd.hinfo.setGateNumber(cc,old*10+num);}
-							else   if(num<=max){ bd.hinfo.setGateNumber(cc,num);}
-						}
-					}
-					else if(ca=='-'){ bd.hinfo.setGateNumber(cc,-1);}
-					else{ return;}
-
-					var clist = bd.hinfo.getGatePole(bd.hinfo.getGateid(cc));
-					for(var i=0;i<clist.length;i++){ pc.dispnumCell_slalom(clist[i]);}
-				}
-				this.prev = cc;
-				return;
+			else if(bd.QuC(cc)==1){
+				bd.roommaxfunc = function(cc){ return Math.min(bd.hinfo.max,99);}
+				this.key_inputqnum(ca);
 			}
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
@@ -239,7 +223,7 @@ Puzzles.slalom.prototype = {
 		};
 
 		bd.hinfo = new Hurdle();
-		bd.hinfo.generateAll();
+		bd.hinfo.init();
 
 		menu.ex.adjustSpecial = function(type,key){
 			um.disableRecord();
@@ -273,7 +257,7 @@ Puzzles.slalom.prototype = {
 			um.enableRecord();
 		};
 		menu.ex.adjustSpecial2 = function(type,key){
-			bd.hinfo.generateAll();
+			bd.hinfo.generateGates();	// 念のため
 		};
 	},
 
@@ -337,7 +321,7 @@ Puzzles.slalom.prototype = {
 			this.vinc();
 		};
 		pc.dispnumCell_slalom = function(c){
-			var num = bd.hinfo.getPoleNumber(c);
+			var num = bd.QnC(c);
 			if(num<=0){ if(bd.cell[c].numobj){ bd.cell[c].numobj.hide();} return;}
 			if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
 			this.dispnumCell1(c, bd.cell[c].numobj, 1, ""+num, 0.8, "white");
@@ -415,18 +399,23 @@ Puzzles.slalom.prototype = {
 	// URLエンコード/デコード処理
 	encode_init : function(){
 		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeSlalom(bstr);}
+			if(type==0 || type==1){
+				if(this.checkpflag("p")){ bstr = this.decodeSlalom(bstr,1);}
+				else{ bstr = this.decodeSlalom(bstr,0);}
+			}
+			else if(type==2){ bstr = this.decodeKanpen(bstr); }
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
+			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+"/p"+this.pzldata(1);}
+			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?"+this.pzldata(0);}
+			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"slalom.html?problem="+this.encodeKanpen();}
+			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+"/p"+this.pzldata(1);}
 		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeSlalom();
+		enc.pzldata = function(ver){
+			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeSlalom(ver);
 		};
 
-		enc.decodeSlalom = function(bstr){
+		enc.decodeSlalom = function(bstr,ver){
 			var array = bstr.split("/");
 
 			var c=0, i=0;
@@ -441,35 +430,62 @@ Puzzles.slalom.prototype = {
 
 				if(c >= bd.cell.length){ break;}
 			}
-			bd.hinfo.generateAll();
+			bd.hinfo.generateGates();
 
-			var i0 = i+1, r = 1;
-			for(i=i0;i<array[0].length;i++){
-				var ca = array[0].charAt(i);
+			if(ver==0){
+				var i0 = i+1, r = 1;
+				for(i=i0;i<array[0].length;i++){
+					var ca = array[0].charAt(i);
 
-				if(this.include(ca,"0","9")||this.include(ca,"a","f")){
-					bd.hinfo.setGateNumber(bd.hinfo.data[r].clist[0], parseInt(bstr.substring(i  ,i+1),16)); r++;
+					if(this.include(ca,"0","9")||this.include(ca,"a","f")){
+						bd.hinfo.data[r].number = parseInt(bstr.substring(i  ,i+1),16); r++;
+					}
+					else if(ca == '-'){
+						bd.hinfo.data[r].number = parseInt(bstr.substring(i+1,i+3),16); r++; i+=2;
+					}
+					else if(this.include(ca,"g","z")){ r+=(parseInt(ca,36)-15);}
+					else{ r++;}
+
+					if(r > bd.hinfo.max){ break;}
 				}
-				else if(ca == '-'){
-					bd.hinfo.setGateNumber(bd.hinfo.data[r].clist[0], parseInt(bstr.substring(i+1,i+3),16)); r++; i+=2;
-				}
-				else if(this.include(ca,"g","z")){ r+=(parseInt(ca,36)-15);}
-				else{ r++;}
 
-				if(r > bd.hinfo.max){ break;}
+				for(var c=0;c<bd.cell.length;c++){
+					var idlist=bd.hinfo.getConnectingGate(c), min=1000;
+					for(var i=0;i<idlist.length;i++){
+						var val=bd.hinfo.data[idlist[i]].number;
+						if(val>0){ min=Math.min(min,val);}
+					}
+					bd.sQnC(c, (min<1000?min:-1));
+				}
+			}
+			else if(ver==1){
+				var c=0, i0=i+1, spare=0;
+				for(i=i0;i<array[0].length;i++){
+					if(bd.QuC(c)!=1){ i--;}
+					else if(spare>0){ i--; spare--;}
+					else{
+						var ca = array[0].charAt(i);
+
+						if(this.include(ca,"0","9")||this.include(ca,"a","f")){ bd.sQnC(c, parseInt(bstr.substring(i,i+1),16));}
+						else if(ca=='-'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),16)); i+=2;}
+						else if(ca>='g' && ca<='z'){ spare = (parseInt(ca,36)-15) - 1;}
+					}
+					c++;
+					if(c > bd.cell.length){ break;}
+				}
 			}
 
 			bd.startid = parseInt(array[1]);
 
 			return array[0].substring(i,array[0].length);
 		};
-		enc.encodeSlalom = function(type){
+		enc.encodeSlalom = function(ver){
 			var cm="", count=0;
 			for(var i=0;i<bd.cell.length;i++){
 				var pstr="";
-				if     (bd.QuC(i) == 1){ pstr = "1";}
-				else if(bd.QuC(i) ==21){ pstr = "2";}
-				else if(bd.QuC(i) ==22){ pstr = "3";}
+				if     (bd.QuC(i)== 1){ pstr = "1";}
+				else if(bd.QuC(i)==21){ pstr = "2";}
+				else if(bd.QuC(i)==22){ pstr = "3";}
 				else{ pstr = ""; count++;}
 
 				if(count==0){ cm += pstr;}
@@ -477,20 +493,39 @@ Puzzles.slalom.prototype = {
 			}
 			if(count>0){ cm+=(3+count).toString(36);}
 
-			bd.hinfo.generateAll();
 			count=0;
-			for(var r=1;r<=bd.hinfo.max;r++){
-				var pstr = "";
-				var val = bd.hinfo.getGateNumber(bd.hinfo.data[r].clist[0]);
+			if(ver==0){
+				bd.hinfo.generateAll();
+				for(var r=1;r<=bd.hinfo.max;r++){
+					var pstr = "";
+					var val = bd.hinfo.data[r].number;
 
-				if     (val>= 0 && val< 16){ pstr =       val.toString(16);}
-				else if(val>=16 && val<256){ pstr = "-" + val.toString(16);}
-				else{ count++;}
+					if     (val>= 0 && val< 16){ pstr =       val.toString(16);}
+					else if(val>=16 && val<256){ pstr = "-" + val.toString(16);}
+					else{ count++;}
 
-				if(count==0){ cm += pstr;}
-				else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
+					if(count==0){ cm += pstr;}
+					else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
+				}
+				if(count>0){ cm+=(15+count).toString(36);}
 			}
-			if(count>0){ cm+=(15+count).toString(36);}
+			else if(ver==1){
+				for(var c=0;c<bd.cell.length;c++){
+					if(bd.QuC(c)!=1){ continue;}
+
+					var pstr = "";
+					var val = bd.QnC(c);
+
+					if     (val==-2           ){ pstr = ".";}
+					else if(val>= 0 && val< 16){ pstr =       val.toString(16);}
+					else if(val>=16 && val<256){ pstr = "-" + val.toString(16);}
+					else{ count++;}
+
+					if(count==0){ cm += pstr;}
+					else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
+				}
+				if(count>0){ cm+=(15+count).toString(36);}
+			}
 
 			cm += ("/"+bd.startid.toString());
 
@@ -498,31 +533,21 @@ Puzzles.slalom.prototype = {
 		};
 
 		enc.decodeKanpen = function(bstr){
-			var sv_num = new Array();
 			bstr = (bstr.split("_")).join(" ");
 			fio.decodeCell( function(c,ca){
-				sv_num[c] = -1;
 				if     (ca == "+"){ bd.startid=c;}
 				else if(ca == "|"){ bd.sQuC(c,21);}
 				else if(ca == "-"){ bd.sQuC(c,22);}
-				else if(ca != "."){
-					bd.sQuC(c, 1);
-					if(ca != "0"){
-						sv_num[c] = parseInt(ca);
-						bd.sQnC(c, sv_num[c]);
-					}
-					else{ sv_num[c] = 0;}
-				}
+				else if(ca != "."){ bd.sQuC(c, 1); if(ca!="0"){ bd.sQnC(c, parseInt(ca));} }
 			},bstr.split("/"));
-			bd.hinfo.generateAll();
-			bd.hinfo.generateGateNumber(sv_num);
+			bd.hinfo.generateGates();
 			return "";
 		};
 		enc.encodeKanpen = function(){
 			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
 				if     (bd.startid==c){ return "+_";}
 				else if(bd.QuC(c)== 1){
-					if(bd.hinfo.getPoleNumber(c)>0){ return bd.hinfo.getPoleNumber(c).toString()+"_";}
+					if(bd.QnC(c)>0){ return bd.QnC(c).toString()+"_";}
 					else{ return "0_";}
 				}
 				else if(bd.QuC(c)==21){ return "|_";}
@@ -534,26 +559,54 @@ Puzzles.slalom.prototype = {
 		//---------------------------------------------------------
 		fio.decodeOthers = function(array){
 			if(array.length<k.qrows){ return false;}
-			this.decodeCell( function(c,ca){
-				if     (ca == "#"){ bd.sQuC(c,1);}
-				else if(ca == "o"){ bd.startid=c;}
-				else if(ca != "."){
-					if     (ca.charAt(0)=="i"){ bd.sQuC(c,21);}
-					else if(ca.charAt(0)=="w"){ bd.sQuC(c,22);}
-					if(ca.length>1){ bd.sQnC(c, parseInt(ca.substring(1,ca.length)));}
+			if(fio.filever==0){
+				var sv_num = new Array();
+				this.decodeCell( function(c,ca){
+					sv_num[c]=-1;
+					if     (ca == "#"){ bd.sQuC(c,1);}
+					else if(ca == "o"){ bd.startid=c;}
+					else if(ca != "."){
+						if     (ca.charAt(0)=="i"){ bd.sQuC(c,21);}
+						else if(ca.charAt(0)=="w"){ bd.sQuC(c,22);}
+						if(ca.length>1){ sv_num[c] = parseInt(ca.substring(1,ca.length));}
+					}
+				},array.slice(0,k.qrows));
+				bd.hinfo.generateGates();
+
+				for(var c=0;c<bd.cell.length;c++){
+					if(sv_num[c]!=-1){ bd.hinfo.data[bd.hinfo.getGateid(c)].number = sv_num[c];}
 				}
-			},array.slice(0,k.qrows));
-			bd.hinfo.generateAll();
+				for(var c=0;c<bd.cell.length;c++){
+					var idlist=bd.hinfo.getConnectingGate(c), min=1000;
+					for(var i=0;i<idlist.length;i++){
+						var val=bd.hinfo.data[idlist[i]].number;
+						if(val>0){ min=Math.min(min,val);}
+					}
+					bd.sQnC(c, (min<1000?min:-1));
+				}
+			}
+			else if(fio.filever==1){
+				this.decodeCell( function(c,ca){
+					if     (ca == "o"){ bd.startid=c;}
+					else if(ca == "#"){ bd.sQuC(c,1);}
+					else if(ca == "i"){ bd.sQuC(c,21);}
+					else if(ca == "-"){ bd.sQuC(c,22);}
+					else if(ca != "."){ bd.sQuC(c,1); bd.sQnC(c, parseInt(ca));}
+				},array.slice(0,k.qrows));
+				bd.hinfo.generateGates();
+			}
 			return true;
 		};
 		fio.encodeOthers = function(){
+			fio.filever = 1;
 			return (""+this.encodeCell( function(c){
-				if     (bd.startid==c)       { return "o ";}
-				else if(bd.QuC(c)== 1){ return "# ";}
-				else if(bd.QuC(c)==21 && bd.QnC(c)==-1){ return "i ";}
-				else if(bd.QuC(c)==21 && bd.QnC(c)>= 0){ return "i"+bd.QnC(c).toString()+" ";}
-				else if(bd.QuC(c)==22 && bd.QnC(c)==-1){ return "w ";}
-				else if(bd.QuC(c)==22 && bd.QnC(c)>= 0){ return "w"+bd.QnC(c).toString()+" ";}
+				if     (bd.startid==c){ return "o ";}
+				else if(bd.QuC(c)== 1){
+					if(bd.QnC(c)>0){ return bd.QnC(c).toString()+" ";}
+					else{ return "# ";}
+				}
+				else if(bd.QuC(c)==21){ return "i ";}
+				else if(bd.QuC(c)==22){ return "- ";}
 				else{ return ". ";}
 			}) );
 		};
@@ -577,6 +630,7 @@ Puzzles.slalom.prototype = {
 	// 正解判定処理実行部
 	answer_init : function(){
 		ans.checkAns = function(){
+			bd.hinfo.generateAll();
 
 			if( !this.checkBCellLine() ){
 				this.setAlert('黒マスに線が通っています。','A line is over a black cell.'); return false;
@@ -665,15 +719,15 @@ Puzzles.slalom.prototype = {
 						var cc = bd.cnum(mf(bx/2),mf(by/2));
 						if(cc==bd.startid){ return true;} // ちゃんと戻ってきた
 
-						var gatenumber = bd.hinfo.getGateNumber(cc);
-						var r = bd.hinfo.getGateid(cc);
 						if(bd.QuC(cc)==21 || bd.QuC(cc)==22){
+							var r = bd.hinfo.getGateid(cc);
+							var gatenumber = bd.hinfo.data[r].number;
 							passing++;
 							if(gatenumber<=0){ } // 何もしない
 							else if(ordertype==-1){
-								if(gatenumber*2-1==bd.hinfo.max){ } // 何もしない
+								if(gatenumber*2-1==bd.hinfo.max){ } // ど真ん中の数字なら何もしない
 								else if(passing==gatenumber)               { ordertype=1;}
-								else if(passing==bd.hinfo.max+1-gatenumber){ break;      } // 逆方向なので他の方向から回る
+								else if(passing==bd.hinfo.max+1-gatenumber){ break;      } // 逆方向なので逆の方向から回る
 								else{
 									bd.sErC(bd.hinfo.data[r].clist, 4);
 									bd.sErC(bd.hinfo.getGatePole(r),1)
@@ -708,8 +762,10 @@ Puzzles.slalom.prototype = {
 //---------------------------------------------------------
 //---------------------------------------------------------
 HurdleData = function(){
-	this.clist = new Array();		// このデータに含まれるセルのリスト
-	this.x1 = this.x2 = this.y1 = this.y2 = -1; // 旗門のサイズ
+	this.clist  = new Array();		// この旗門に含まれるセルのリスト
+	this.number = -1;				// この旗門が持つ順番
+	this.val    = 0;				// この旗門の方向(21:タテ 22:ヨコ)
+	this.x1 = this.x2 = this.y1 = this.y2 = -1; // 旗門のサイズ(両端の黒マスIDを取得するのに必要)
 };
 
 Hurdle = function(){
@@ -718,36 +774,37 @@ Hurdle = function(){
 	this.data   = new Array();
 };
 Hurdle.prototype = {
+	// 旗門が持つ旗門IDを取得する
 	getGateid : function(cc){
 		if(cc<0 || cc>=bd.cell.length){ return -1;}
 		return this.gateid[cc];
 	},
-	getGateNumber : function(cc){
-		if(cc<0 || cc>=bd.cell.length || this.gateid[cc]==-1){ return -1;}
-		var clist = this.data[this.gateid[cc]].clist;
-		var min=1000;
-		for(var i=0;i<clist.length;i++){
-			var val=bd.QnC(clist[i]);
-			if(val>0){ min=Math.min(min,val);}
+
+	// 旗門の両端にある黒マスの場所のIDを取得する
+	getGatePole : function(gateid){
+		var clist = new Array();
+		var cc1,cc2;
+		if(this.data[gateid].val==21){
+			cc1 = bd.cnum(this.data[gateid].x1, this.data[gateid].y1-1);
+			cc2 = bd.cnum(this.data[gateid].x1, this.data[gateid].y2+1);
 		}
-		return (min<1000?min:-1);
-	},
-	// 1つのセルから、旗門が持つ数字を設定する
-	setGateNumber : function(cc,val){
-		if(cc<0 || cc>=bd.cell.length || this.gateid[cc]==-1){ return -1;}
-		var clist = this.data[this.gateid[cc]].clist;
-		for(var i=0;i<clist.length;i++){ bd.sQnC(clist[i],-1);}
-		bd.sQnC(cc,val);
-	},
-	// 黒マスに描画される数字を取得する
-	getPoleNumber : function(cc){
-		var clist = this.getConnectedGatecell(cc);
-		var min=1000;
-		for(var i=0;i<clist.length;i++){
-			var val=this.getGateNumber(clist[i]);
-			if(val>0){ min=Math.min(min,val);}
+		else if(this.data[gateid].val==22){
+			cc1 = bd.cnum(this.data[gateid].x1-1, this.data[gateid].y1);
+			cc2 = bd.cnum(this.data[gateid].x2+1, this.data[gateid].y1);
 		}
-		return (min<1000?min:-1);
+		else{ return new Array();}
+		if(cc1!=-1 && bd.QuC(cc1)==1){ clist.push(cc1);}
+		if(cc2!=-1 && bd.QuC(cc2)==1){ clist.push(cc2);}
+		return clist;
+	},
+	// 黒マスの周りに繋がっている旗門IDをリストにして返す
+	getConnectingGate : function(cc){
+		var idlist = new Array();
+		if(bd.QuC(bd.up(cc))==21){ idlist.push(this.gateid[bd.up(cc)]);}
+		if(bd.QuC(bd.dn(cc))==21){ idlist.push(this.gateid[bd.dn(cc)]);}
+		if(bd.QuC(bd.lt(cc))==22){ idlist.push(this.gateid[bd.lt(cc)]);}
+		if(bd.QuC(bd.rt(cc))==22){ idlist.push(this.gateid[bd.rt(cc)]);}
+		return idlist;
 	},
 
 	//---------------------------------------------------------
@@ -756,7 +813,13 @@ Hurdle.prototype = {
 		for(var c=0;c<bd.cell.length;c++){ this.gateid[c] = -1;}
 		this.data=new Array();
 	},
+
 	generateAll : function(){
+		this.generateGates();
+		this.generateGateNumber();
+	},
+
+	generateGates : function(){
 		this.init();
 		for(var c=0;c<bd.cell.length;c++){
 			if(bd.QuC(c)==0 || bd.QuC(c)==1 || this.getGateid(c)!=-1){ continue;}
@@ -778,111 +841,73 @@ Hurdle.prototype = {
 			this.data[this.max].val = val;
 		}
 	},
-	generateGateNumber : function(array){
-		// 変数numinfoに、[旗門ID, 数字]の組で数字を入れていく
-		var numinfo = new Array();
+
+	generateGateNumber : function(){
+		var nums = new Array();
+		for(var r=1;r<=this.max;r++){ nums[r] = new Array();}
+
 		for(var c=0;c<bd.cell.length;c++){
-			var clist = this.getConnectedGatecell(c);
-			var cnt = clist.length;
-			if(cnt<=0 || array[c]<=0 || array[c]>this.max){ continue;}
-			for(var i=0;i<cnt;i++){ numinfo.push([this.getGateid(clist[i]), array[c]]);}
+			var idlist = this.getConnectingGate(c);
+			if(idlist.length<=0 || bd.QnC(c)<=0 || bd.QnC(c)>this.max){ continue;}
+			for(var i=0;i<idlist.length;i++){ nums[idlist[i]].push(bd.QnC(c));}
 		}
 
-		// 旗門nに繋がる数字が2つとも同じ数字の場合、旗門に数字をセット
 		var decnumber = new Array();
-		for(var n=1;n<=this.max;n++){
-			var gn = new Array();
-			for(var i=0;i<numinfo.length;i++){
-				if(n==numinfo[i][0]){ gn.push(numinfo[i][1]);}
-			}
-			// 物理的に、ひとつの旗門には2つまでしか数字が繋がらない
-			if(gn.length==2 && gn[0]>0 && gn[0]==gn[1]){
-				this.setGateNumber(this.data[n].clist[0],gn[0]);
-				decnumber.push(gn[0]);
+		for(var n=1;n<=this.max;n++){ decnumber[n] = 0;}
+
+		// 旗門nに繋がる数字が2つとも同じ数字の場合、無条件で旗門に数字をセット
+		for(var r=1;r<=this.max;r++){
+			if(nums[r].length==2 && nums[r][0]>0 && nums[r][0]==nums[r][1]){
+				this.data[r].number = nums[r][0];
+				decnumber[nums[r][0]] = 1
+				nums[r] = [];
 			}
 		}
-		// さっきセットされたやつをnuminfoから消す
-		for(var n=0;n<decnumber.length;n++){
-			var numtmp = new Array();
-			for(var i=0;i<numinfo.length;i++){
-				if(decnumber[n]!=numinfo[i][1]){ numtmp.push(numinfo[i]);}
-			}
-			numinfo = numtmp;
+		// さっきセットされた数字を全てのnumsから消す
+		for(var r=1;r<=this.max;r++){
+			var atmp = new Array();
+			for(var i=0;i<nums[r].length;i++){ if(decnumber[nums[r][i]]!=1){ atmp.push(nums[r][i]);} }
+			nums[r] = atmp;
 		}
 
-		// 旗門nに繋がる数字が2つとも同じ数字、でない場合
+		// 旗門に繋がる2つの数字が異なる場合、もしくは1つの数字が繋がる場合
 		while(1){
+			var repeatflag = false;
+
+			var decnumber = new Array();
+			for(var n=1;n<=this.max;n++){ decnumber[n] = 0;}
+
+			// 数字がいくつ残っているか数える
 			var numcnt = new Array();
-			var decnumber = new Array(), decgate = new Array();
+			for(var n=1;n<=this.max;n++){ numcnt[n] = 0;}
+			for(var r=1;r<=this.max;r++){
+				for(var i=0;i<nums[r].length;i++){ numcnt[nums[r][i]]++;}
+			}
 
-			for(var n=1;n<=this.max;n++){ numcnt[n]=0;}
-			for(var i=0;i<numinfo.length;i++){ numcnt[numinfo[i][1]]++;}
+			// 各旗門をチェック
+			for(var r=1;r<=this.max;r++){
+				// 2つ以上の数字が繋がっている場合はダメです
+				// また、複数箇所の旗門の候補になっている場合もダメ
+				var cand=(nums[r].length==1?nums[r][0]:-1);
+				if(cand>0 && numcnt[cand]>1){ cand=-1;}
 
-			for(var n=1;n<=this.max;n++){
-				// numcnt[n]==0なら数字がない、2なら異なる数字が繋がっている
-				//if(numcnt[n]!=1){ continue;}
-
-				// 2で異なる数字、の場合を排除する
-				var cand=0;
-				for(var i=0;i<numinfo.length;i++){
-					if(n==numinfo[i][0]){ cand=(cand==0?numinfo[i][1]:0);}
-				}
-				// 旗門nに数字をセット
+				// 旗門に数字をセット
 				if(cand>0){
-					this.setGateNumber(this.data[n].clist[0], cand);
-					decnumber.push(cand);
-					decgate.push(n);
+					this.data[r].number = cand;
+					decnumber[cand] = 1;
+					nums[r] = [];
+					repeatflag = true;
 				}
 			}
 
-			// 今回セットされたやつがなければループを抜ける
-			if(decnumber.length==0) break;
+			if(!repeatflag) break;	// 今回セットされたやつがなければループを抜ける
 
-			// ループする前に、さっきセットされたやつをnuminfoから消す
-			for(var n=0;n<decnumber.length;n++){
-				var numtmp = new Array();
-				for(var i=0;i<numinfo.length;i++){
-					if(decnumber[n]!=numinfo[i][1]){ numtmp.push(numinfo[i]);}
-				}
-				numinfo = numtmp;
-			}
-			for(var n=0;n<decgate.length;n++){
-				var numtmp = new Array();
-				for(var i=0;i<numinfo.length;i++){
-					if(decgate[n]!=numinfo[i][0]){ numtmp.push(numinfo[i]);}
-				}
-				numinfo = numtmp;
+			// 再ループする前に、さっきセットされた数字を全てのnumsから消す
+			for(var r=1;r<=this.max;r++){
+				var atmp = new Array();
+				for(var i=0;i<nums[r].length;i++){ if(decnumber[nums[r][i]]!=1){ atmp.push(nums[r][i]);} }
+				nums[r] = atmp;
 			}
 		}
-
-		this.generateAll();
-	},
-
-	//---------------------------------------------------------
-	// 旗門の両端にある黒マスの場所のIDを取得する
-	getGatePole : function(gateid){
-		var clist = new Array();
-		var cc1,cc2;
-		if(this.data[gateid].val==21){
-			cc1 = bd.cnum(this.data[gateid].x1, this.data[gateid].y1-1);
-			cc2 = bd.cnum(this.data[gateid].x1, this.data[gateid].y2+1);
-		}
-		else if(this.data[gateid].val==22){
-			cc1 = bd.cnum(this.data[gateid].x1-1, this.data[gateid].y1);
-			cc2 = bd.cnum(this.data[gateid].x2+1, this.data[gateid].y1);
-		}
-		else{ return new Array();}
-		if(cc1!=-1 && bd.QuC(cc1)==1){ clist.push(cc1);}
-		if(cc2!=-1 && bd.QuC(cc2)==1){ clist.push(cc2);}
-		return clist;
-	},
-	// 一つながりの旗門が存在するセルのIDリストを取得する
-	getConnectedGatecell : function(cc){
-		var idlist = new Array();
-		if(bd.QuC(bd.up(cc))==21){ idlist.push(bd.up(cc));}
-		if(bd.QuC(bd.dn(cc))==21){ idlist.push(bd.dn(cc));}
-		if(bd.QuC(bd.lt(cc))==22){ idlist.push(bd.lt(cc));}
-		if(bd.QuC(bd.rt(cc))==22){ idlist.push(bd.rt(cc));}
-		return idlist;
 	}
 };
