@@ -5,8 +5,8 @@
  * written in JavaScript.
  * 
  * @author  happa.
- * @version v3.2.0p5
- * @date    2009-09-14
+ * @version v3.2.0p6
+ * @date    2009-09-16
  * 
  * This script uses following libraries.
  *  jquery.js (version 1.3.2)
@@ -21,7 +21,7 @@
  * http://indi.s58.xrea.com/pzpr/v3/LICENCE.HTML
  * 
  */
-var pzprversion="v3.2.0p5";
+var pzprversion="v3.2.0p6";
 //----------------------------------------------------------------------------
 // ★グローバル変数
 //---------------------------------------------------------------------------
@@ -4253,8 +4253,7 @@ Encode.prototype = {
 //     "others"        パズル別puzオブジェクトの関数を呼び出す
 //---------------------------------------------------------------------------
 FileIO = function(){
-	this.max = 0;
-	this.check = new Array();
+	this.filever = 0;
 
 	this.db = null;
 	this.dbmgr = null;
@@ -4267,8 +4266,14 @@ FileIO.prototype = {
 	// fio.fileopen()  ファイルを開く、ファイルからのデコード実行メイン関数
 	//---------------------------------------------------------------------------
 	fileopen : function(arrays, type){
+		var pgstr = '';
+		this.filever = 0;
+
 		if(type==1){
-			if(arrays.shift()!='pzprv3'){ alert('ぱずぷれv3形式のファイルではありません。');}
+			pgstr = arrays.shift();
+			if(!pgstr.match(/pzprv3\.?(\d+)?/)){ alert('ぱずぷれv3形式のファイルではありません。');}
+			if(RegExp.$1){ fio.filever = parseInt(RegExp.$1);}
+
 			if(arrays.shift()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。');}
 		}
 
@@ -4335,6 +4340,7 @@ FileIO.prototype = {
 		else if(navigator.platform.indexOf("Mac")!=-1){ document.fileform2.platform.value = "Mac";}
 		else                                          { document.fileform2.platform.value = "Others";}
 
+		this.filever = 0;
 		document.fileform2.ques.value = this.filesavestr(type);
 
 		if(type==1){
@@ -4349,29 +4355,33 @@ FileIO.prototype = {
 	},
 	filesavestr : function(type){
 		var str = "";
+		var bstr = "";
 
 		if(type==1){
+			for(var i=0;i<k.fstruct.length;i++){
+				if     (k.fstruct[i] == "cellques41_42" ){ bstr += this.encodeCellQues41_42(); }
+				else if(k.fstruct[i] == "cellqnum"      ){ bstr += this.encodeCellQnum();      }
+				else if(k.fstruct[i] == "cellqnum51"    ){ bstr += this.encodeCellQnum51();    }
+				else if(k.fstruct[i] == "cellqnumb"     ){ bstr += this.encodeCellQnumb();     }
+				else if(k.fstruct[i] == "cellqnumans"   ){ bstr += this.encodeCellQnumAns();   }
+				else if(k.fstruct[i] == "celldirecnum"  ){ bstr += this.encodeCellDirecQnum(); }
+				else if(k.fstruct[i] == "cellans"       ){ bstr += this.encodeCellAns();       }
+				else if(k.fstruct[i] == "cellqanssub"   ){ bstr += this.encodeCellQanssub();   }
+				else if(k.fstruct[i] == "cellqsub"      ){ bstr += this.encodeCellQsub();      }
+				else if(k.fstruct[i] == "crossnum"      ){ bstr += this.encodeCrossNum();      }
+				else if(k.fstruct[i] == "borderques"    ){ bstr += this.encodeBorderQues();    }
+				else if(k.fstruct[i] == "borderline"    ){ bstr += this.encodeBorderLine();    }
+				else if(k.fstruct[i] == "borderans"     ){ bstr += this.encodeBorderAns();     }
+				else if(k.fstruct[i] == "borderans2"    ){ bstr += this.encodeBorderAns2();    }
+				else if(k.fstruct[i] == "arearoom"      ){ bstr += this.encodeAreaRoom();      }
+				else if(k.fstruct[i] == "others"        ){ bstr += this.encodeOthers();         }
+			}
+
 			str = "pzprv3/"+k.puzzleid+"/"+k.qrows+"/"+k.qcols+"/";
 			if(k.puzzleid=="sudoku"){ str = "pzprv3/"+k.puzzleid+"/"+k.qcols+"/";}
+			if(this.filever!=0){ str = "pzprv3."+this.filever+"/"+k.puzzleid+"/"+k.qrows+"/"+k.qcols+"/";}
 
-			for(var i=0;i<k.fstruct.length;i++){
-				if     (k.fstruct[i] == "cellques41_42" ){ str += this.encodeCellQues41_42(); }
-				else if(k.fstruct[i] == "cellqnum"      ){ str += this.encodeCellQnum();      }
-				else if(k.fstruct[i] == "cellqnum51"    ){ str += this.encodeCellQnum51();    }
-				else if(k.fstruct[i] == "cellqnumb"     ){ str += this.encodeCellQnumb();     }
-				else if(k.fstruct[i] == "cellqnumans"   ){ str += this.encodeCellQnumAns();   }
-				else if(k.fstruct[i] == "celldirecnum"  ){ str += this.encodeCellDirecQnum(); }
-				else if(k.fstruct[i] == "cellans"       ){ str += this.encodeCellAns();       }
-				else if(k.fstruct[i] == "cellqanssub"   ){ str += this.encodeCellQanssub();   }
-				else if(k.fstruct[i] == "cellqsub"      ){ str += this.encodeCellQsub();      }
-				else if(k.fstruct[i] == "crossnum"      ){ str += this.encodeCrossNum();      }
-				else if(k.fstruct[i] == "borderques"    ){ str += this.encodeBorderQues();    }
-				else if(k.fstruct[i] == "borderline"    ){ str += this.encodeBorderLine();    }
-				else if(k.fstruct[i] == "borderans"     ){ str += this.encodeBorderAns();     }
-				else if(k.fstruct[i] == "borderans2"    ){ str += this.encodeBorderAns2();    }
-				else if(k.fstruct[i] == "arearoom"      ){ str += this.encodeAreaRoom();      }
-				else if(k.fstruct[i] == "others"        ){ str += this.encodeOthers();         }
-			}
+			str += bstr;
 		}
 		else if(type==2){
 			if     (k.puzzleid=="kakuro"){ str = ""+(k.qrows+1)+"/"+(k.qcols+1)+"/";}
