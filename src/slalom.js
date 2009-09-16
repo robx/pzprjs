@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.2.0p4
+// パズル固有スクリプト部 スラローム版 slalom.js v3.2.0p5
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -516,8 +516,7 @@ Puzzles.slalom.prototype = {
 					var pstr = "";
 					var val = bd.QnC(c);
 
-					if     (val==-2           ){ pstr = ".";}
-					else if(val>= 0 && val< 16){ pstr =       val.toString(16);}
+					if     (val>= 1 && val< 16){ pstr =       val.toString(16);}
 					else if(val>=16 && val<256){ pstr = "-" + val.toString(16);}
 					else{ count++;}
 
@@ -847,9 +846,11 @@ Hurdle.prototype = {
 		for(var r=1;r<=this.max;r++){ nums[r] = new Array();}
 
 		for(var c=0;c<bd.cell.length;c++){
-			var idlist = this.getConnectingGate(c);
-			if(idlist.length<=0 || bd.QnC(c)<=0 || bd.QnC(c)>this.max){ continue;}
-			for(var i=0;i<idlist.length;i++){ nums[idlist[i]].push(bd.QnC(c));}
+			if(bd.QuC(c)==1){
+				var idlist = this.getConnectingGate(c);
+				if(idlist.length<=0 || bd.QnC(c)<=0 || bd.QnC(c)>this.max){ continue;}
+				for(var i=0;i<idlist.length;i++){ nums[idlist[i]].push(bd.QnC(c));}
+			}
 		}
 
 		var decnumber = new Array();
@@ -877,11 +878,12 @@ Hurdle.prototype = {
 			var decnumber = new Array();
 			for(var n=1;n<=this.max;n++){ decnumber[n] = 0;}
 
-			// 数字がいくつ残っているか数える
+			// 競合していない数字がいくつ残っているか数える
 			var numcnt = new Array();
 			for(var n=1;n<=this.max;n++){ numcnt[n] = 0;}
 			for(var r=1;r<=this.max;r++){
-				for(var i=0;i<nums[r].length;i++){ numcnt[nums[r][i]]++;}
+				if(nums[r].length==1){ numcnt[nums[r][0]]++;}
+				//for(var i=0;i<nums[r].length;i++){ numcnt[nums[r][i]]++;}
 			}
 
 			// 各旗門をチェック
