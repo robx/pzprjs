@@ -1,4 +1,4 @@
-// MouseInput.js v3.2.0p4
+// MouseInput.js v3.2.0p5
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -617,6 +617,10 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// mv.dispRed() ひとつながりの黒マスを赤く表示する
 	// mv.dr0()     ひとつながりの黒マスを赤く表示する(再起呼び出し用関数)
+	// 
+	// mv.dispRBRed() ななめつながりの黒マスを赤く表示する
+	// mv.db0()       ななめつながりの黒マスを赤く表示する(再起呼び出し用関数)
+	// 
 	// mv.dispRedLine()      ひとつながりの線を赤く表示する
 	// mv.LineListNotCross() ひとつながりの線を取得(交差なしバージョン)
 	// mv.lc0()              ひとつながりの線を取得(交差無し・再帰呼び出し用関数)
@@ -636,6 +640,29 @@ MouseEvent.prototype = {
 		if( func(bd.dn(cc)) ){ this.dr0(func, bd.dn(cc), num);}
 		if( func(bd.lt(cc)) ){ this.dr0(func, bd.lt(cc), num);}
 		if( func(bd.rt(cc)) ){ this.dr0(func, bd.rt(cc), num);}
+		return;
+	},
+
+	dispRedRB : function(x,y){
+		var cc = this.cellid(new Pos(x,y));
+		this.mousereset();
+		if(cc==-1 || cc==this.mouseCell || bd.QaC(cc)!=1){ return;}
+		mv.db0(function(c){ return (c!=-1 && bd.QaC(c)==1 && bd.ErC(c)==0);},cc,1);
+		ans.errDisp = true;
+		pc.paintAll();
+	},
+	db0 : function(func, cc, num){
+		if(bd.ErC(cc)!=0){ return;}
+		bd.sErC([cc],num);
+		var cx=bd.cell[cc].cx, cy=bd.cell[cc].cy;
+		if( func(bd.cnum(cx-1,cy-1)) ){ this.db0(func, bd.cnum(cx-1,cy-1), num);}
+		if( func(bd.cnum(cx  ,cy-1)) ){ this.db0(func, bd.cnum(cx  ,cy-1), num);}
+		if( func(bd.cnum(cx+1,cy-1)) ){ this.db0(func, bd.cnum(cx+1,cy-1), num);}
+		if( func(bd.cnum(cx-1,cy  )) ){ this.db0(func, bd.cnum(cx-1,cy  ), num);}
+		if( func(bd.cnum(cx+1,cy  )) ){ this.db0(func, bd.cnum(cx+1,cy  ), num);}
+		if( func(bd.cnum(cx-1,cy+1)) ){ this.db0(func, bd.cnum(cx-1,cy+1), num);}
+		if( func(bd.cnum(cx  ,cy+1)) ){ this.db0(func, bd.cnum(cx  ,cy+1), num);}
+		if( func(bd.cnum(cx+1,cy+1)) ){ this.db0(func, bd.cnum(cx+1,cy+1), num);}
 		return;
 	},
 

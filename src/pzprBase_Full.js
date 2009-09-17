@@ -5,8 +5,8 @@
  * written in JavaScript.
  * 
  * @author  happa.
- * @version v3.2.0p6
- * @date    2009-09-16
+ * @version v3.2.0p7
+ * @date    2009-09-17
  * 
  * This script uses following libraries.
  *  jquery.js (version 1.3.2)
@@ -14,14 +14,16 @@
  *  uuCanvas.js (version 1.0)
  *  http://code.google.com/p/uupaa-js-spinoff/	uupaa.js SpinOff Project Home(Google Code)
  * 
- * For improvement of canvas drawing time, I make some change on uupaa-excanvas.js.
+ * For improvement of canvas drawing time, I make some change on uuCanvas.js.
  * Please see "//happa add.[20090608]" in uuCanvas.js.
  * 
  * This script is dual licensed under the MIT and Apache 2.0 licenses.
  * http://indi.s58.xrea.com/pzpr/v3/LICENCE.HTML
  * 
  */
-var pzprversion="v3.2.0p6";
+
+var pzprversion="v3.2.0p7";
+
 //----------------------------------------------------------------------------
 // ★グローバル変数
 //---------------------------------------------------------------------------
@@ -3025,6 +3027,10 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// mv.dispRed() ひとつながりの黒マスを赤く表示する
 	// mv.dr0()     ひとつながりの黒マスを赤く表示する(再起呼び出し用関数)
+	// 
+	// mv.dispRBRed() ななめつながりの黒マスを赤く表示する
+	// mv.db0()       ななめつながりの黒マスを赤く表示する(再起呼び出し用関数)
+	// 
 	// mv.dispRedLine()      ひとつながりの線を赤く表示する
 	// mv.LineListNotCross() ひとつながりの線を取得(交差なしバージョン)
 	// mv.lc0()              ひとつながりの線を取得(交差無し・再帰呼び出し用関数)
@@ -3044,6 +3050,29 @@ MouseEvent.prototype = {
 		if( func(bd.dn(cc)) ){ this.dr0(func, bd.dn(cc), num);}
 		if( func(bd.lt(cc)) ){ this.dr0(func, bd.lt(cc), num);}
 		if( func(bd.rt(cc)) ){ this.dr0(func, bd.rt(cc), num);}
+		return;
+	},
+
+	dispRedRB : function(x,y){
+		var cc = this.cellid(new Pos(x,y));
+		this.mousereset();
+		if(cc==-1 || cc==this.mouseCell || bd.QaC(cc)!=1){ return;}
+		mv.db0(function(c){ return (c!=-1 && bd.QaC(c)==1 && bd.ErC(c)==0);},cc,1);
+		ans.errDisp = true;
+		pc.paintAll();
+	},
+	db0 : function(func, cc, num){
+		if(bd.ErC(cc)!=0){ return;}
+		bd.sErC([cc],num);
+		var cx=bd.cell[cc].cx, cy=bd.cell[cc].cy;
+		if( func(bd.cnum(cx-1,cy-1)) ){ this.db0(func, bd.cnum(cx-1,cy-1), num);}
+		if( func(bd.cnum(cx  ,cy-1)) ){ this.db0(func, bd.cnum(cx  ,cy-1), num);}
+		if( func(bd.cnum(cx+1,cy-1)) ){ this.db0(func, bd.cnum(cx+1,cy-1), num);}
+		if( func(bd.cnum(cx-1,cy  )) ){ this.db0(func, bd.cnum(cx-1,cy  ), num);}
+		if( func(bd.cnum(cx+1,cy  )) ){ this.db0(func, bd.cnum(cx+1,cy  ), num);}
+		if( func(bd.cnum(cx-1,cy+1)) ){ this.db0(func, bd.cnum(cx-1,cy+1), num);}
+		if( func(bd.cnum(cx  ,cy+1)) ){ this.db0(func, bd.cnum(cx  ,cy+1), num);}
+		if( func(bd.cnum(cx+1,cy+1)) ){ this.db0(func, bd.cnum(cx+1,cy+1), num);}
 		return;
 	},
 
@@ -6258,6 +6287,11 @@ Menu.prototype = {
 		pp.addCheckToFlags('dispred','setting',false);
 		pp.setMenuStr('dispred', '繋がりチェック', 'Continuous Check');
 		pp.setLabel  ('dispred', '黒マスのつながりをチェックする', 'Check countinuous black cells');
+	},
+	addRedBlockRBToFlags : function(){
+		pp.addCheckToFlags('dispred','setting',false);
+		pp.setMenuStr('dispred', '繋がりチェック', 'Continuous Check');
+		pp.setLabel  ('dispred', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
 	},
 
 	//---------------------------------------------------------------------------

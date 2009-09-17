@@ -1,4 +1,4 @@
-// Menu.js v3.2.0p3
+// Menu.js v3.2.0p4
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -209,6 +209,11 @@ Menu.prototype = {
 		pp.addCheckToFlags('dispred','setting',false);
 		pp.setMenuStr('dispred', '繋がりチェック', 'Continuous Check');
 		pp.setLabel  ('dispred', '黒マスのつながりをチェックする', 'Check countinuous black cells');
+	},
+	addRedBlockRBToFlags : function(){
+		pp.addCheckToFlags('dispred','setting',false);
+		pp.setMenuStr('dispred', '繋がりチェック', 'Continuous Check');
+		pp.setLabel  ('dispred', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
 	},
 
 	//---------------------------------------------------------------------------
