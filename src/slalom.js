@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.2.0p5
+// パズル固有スクリプト部 スラローム版 slalom.js v3.2.0p6
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -93,10 +93,9 @@ Puzzles.slalom.prototype = {
 			else{
 				if     (this.btn.Left ){ bd.sQuC(cc, {0:1,1:21,21:22,22:0}[bd.QuC(cc)]);}
 				else if(this.btn.Right){ bd.sQuC(cc, {0:22,22:21,21:1,1:0}[bd.QuC(cc)]);}
+				bd.sQnC(cc,-1);
 			}
 			bd.hinfo.generateGates();
-			pc.drawNumbers_slalom(bd.cell[cc].cx,0,bd.cell[cc].cx,k.qcols-1);
-			pc.drawNumbers_slalom(0,bd.cell[cc].cy,k.qrows-1,bd.cell[cc].cy);
 
 			pc.paint(bd.cell[cc].cx, bd.cell[cc].cy, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
 			pc.dispnumStartpos(bd.startid);
@@ -134,8 +133,6 @@ Puzzles.slalom.prototype = {
 			{
 				bd.sQuC(cc,this.inputData);
 				bd.hinfo.generateGates();
-				pc.drawNumbers_slalom(bd.cell[cc].cx,0,bd.cell[cc].cx,k.qcols-1);
-				pc.drawNumbers_slalom(0,bd.cell[cc].cy,k.qrows-1,bd.cell[cc].cy);
 			}
 
 			this.firstPos = pos;
@@ -147,6 +144,7 @@ Puzzles.slalom.prototype = {
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
+			if(ca=='x' && !this.keyPressed){ this.isX=true; pc.drawNumbersOnGate(true); return;}
 			if(k.mode==3){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputqnum_slalom(ca,99);
@@ -165,11 +163,10 @@ Puzzles.slalom.prototype = {
 				if(old==newques){ return;}
 
 				bd.sQuC(cc,newques);
+				if(newques==0){ bd.sQnC(cc,-1);}
 				if(old==21||old==22||newques==21||newques==22){ bd.hinfo.generateGates();}
 
 				var cx=bd.cell[cc].cx, cy=bd.cell[cc].cy;
-				pc.drawNumbers_slalom(cx,0,cx,k.qcols-1);
-				pc.drawNumbers_slalom(0,cy,k.qrows-1,cy);
 				pc.paint(cx,cy,cx+1,cy+1);
 				pc.dispnumStartpos(bd.startid);
 			}
@@ -178,8 +175,12 @@ Puzzles.slalom.prototype = {
 				this.key_inputqnum(ca);
 			}
 		};
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
+		kc.keyup = function(ca){
+			if(ca=='z'){ this.isZ=false;}
+			if(ca=='x'){ pc.drawNumbersOnGate(false); this.isX=false;}
+		};
 		kc.isZ = false;
+		kc.isX = false;
 
 		if(k.callmode == "pmake"){
 			kp.kpgenerate = function(mode){
@@ -283,7 +284,6 @@ Puzzles.slalom.prototype = {
 
 			this.drawGates(x1,y1,x2,y2)
 			this.drawBCells_slalom(x1,y1,x2,y2);
-			this.drawNumbers_slalom(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,1);
 			this.drawLines(x1,y1,x2,y2);
@@ -304,27 +304,14 @@ Puzzles.slalom.prototype = {
 					else{ g.fillStyle = this.Cellcolor;}
 
 					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px(), bd.cell[c].py(), k.cwidth+1, k.cheight+1);}
-					this.dispnumCell_slalom(c);
+					this.dispnumCell_General(c);
 				}
-				else{ this.vhide("c"+c+"_full_");}
+				else{
+					this.vhide("c"+c+"_full_");
+					if(bd.cell[c].numobj){ bd.cell[c].numobj.get(0).style.display = 'none';}
+				}
 			}
 			this.vinc();
-		};
-
-		pc.drawNumbers_slalom = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QuC(c)!=1){ if(bd.cell[c].numobj){ bd.cell[c].numobj.hide();} continue;}
-				this.dispnumCell_slalom(c);
-			}
-			this.vinc();
-		};
-		pc.dispnumCell_slalom = function(c){
-			var num = bd.QnC(c);
-			if(num<=0){ if(bd.cell[c].numobj){ bd.cell[c].numobj.hide();} return;}
-			if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
-			this.dispnumCell1(c, bd.cell[c].numobj, 1, ""+num, 0.8, "white");
 		};
 
 		pc.drawGates = function(x1,y1,x2,y2){
@@ -392,6 +379,25 @@ Puzzles.slalom.prototype = {
 			var bx = bd.border[id].cx; var by = bd.border[id].cy;
 			pc.drawStartpos(mf((bx-by%2)/2),mf((by-bx%2)/2),mf((bx-by%2)/2),mf((by-bx%2)/2));
 			pc.drawStartpos(mf((bx+by%2)/2),mf((by+bx%2)/2),mf((bx+by%2)/2),mf((by+bx%2)/2));
+		};
+
+		pc.drawNumbersOnGate = function(keydown){
+			bd.hinfo.generateGateNumber();
+
+			for(var c=0;c<bd.cell.length;c++){
+				if(bd.QuC(c)!=21 && bd.QuC(c)!=22){ continue;}
+
+				var r = bd.hinfo.getGateid(c);
+				var num = (r>0?bd.hinfo.data[r].number:-1);
+				if(keydown && num>0){
+					if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
+					var fontratio = (num<10?0.8:(num<100?0.7:0.55));
+					this.dispnumCell1(c, bd.cell[c].numobj, 1, ""+num, fontratio ,"tomato");
+				}
+				else{
+					if(bd.cell[c].numobj){ bd.cell[c].numobj.get(0).style.display = 'none';}
+				}
+			}
 		};
 	},
 
@@ -842,9 +848,9 @@ Hurdle.prototype = {
 	},
 
 	generateGateNumber : function(){
+		// 数字がどの旗門に繋がっているかをnums配列にとってくる
 		var nums = new Array();
 		for(var r=1;r<=this.max;r++){ nums[r] = new Array();}
-
 		for(var c=0;c<bd.cell.length;c++){
 			if(bd.QuC(c)==1){
 				var idlist = this.getConnectingGate(c);
@@ -853,6 +859,12 @@ Hurdle.prototype = {
 			}
 		}
 
+		// セットされた数字を全てのnumsから消す関数
+		var delnum = function(dn){ for(var r=1;r<=this.max;r++){
+			var atmp = new Array();
+			for(var i=0;i<nums[r].length;i++){ if(dn[nums[r][i]]!=1){ atmp.push(nums[r][i]);} }
+			nums[r] = atmp;
+		} }.bind(this);
 		var decnumber = new Array();
 		for(var n=1;n<=this.max;n++){ decnumber[n] = 0;}
 
@@ -864,27 +876,18 @@ Hurdle.prototype = {
 				nums[r] = [];
 			}
 		}
-		// さっきセットされた数字を全てのnumsから消す
-		for(var r=1;r<=this.max;r++){
-			var atmp = new Array();
-			for(var i=0;i<nums[r].length;i++){ if(decnumber[nums[r][i]]!=1){ atmp.push(nums[r][i]);} }
-			nums[r] = atmp;
-		}
+		delnum(decnumber);
 
 		// 旗門に繋がる2つの数字が異なる場合、もしくは1つの数字が繋がる場合
-		while(1){
-			var repeatflag = false;
-
-			var decnumber = new Array();
+		var repeatflag = true;
+		while(repeatflag){
+			repeatflag = false;
 			for(var n=1;n<=this.max;n++){ decnumber[n] = 0;}
+			var numcnt = new Array();
 
 			// 競合していない数字がいくつ残っているか数える
-			var numcnt = new Array();
 			for(var n=1;n<=this.max;n++){ numcnt[n] = 0;}
-			for(var r=1;r<=this.max;r++){
-				if(nums[r].length==1){ numcnt[nums[r][0]]++;}
-				//for(var i=0;i<nums[r].length;i++){ numcnt[nums[r][i]]++;}
-			}
+			for(var r=1;r<=this.max;r++){ if(nums[r].length==1){ numcnt[nums[r][0]]++;} }
 
 			// 各旗門をチェック
 			for(var r=1;r<=this.max;r++){
@@ -898,18 +901,34 @@ Hurdle.prototype = {
 					this.data[r].number = cand;
 					decnumber[cand] = 1;
 					nums[r] = [];
-					repeatflag = true;
+					repeatflag = true;	//再ループする
 				}
 			}
+			delnum(decnumber);
 
-			if(!repeatflag) break;	// 今回セットされたやつがなければループを抜ける
+			// ここまででセットされたやつがあるなら、初めからループ
+			if(repeatflag){ continue;}
 
-			// 再ループする前に、さっきセットされた数字を全てのnumsから消す
+			// 重なっていても、1つだけに繋がっている数字を判定したい。。
+			for(var n=1;n<=this.max;n++){ numcnt[n] = 0;}
+			for(var r=1;r<=this.max;r++){ for(var i=0;i<nums[r].length;i++){ numcnt[nums[r][i]]++;} }
+
+			// 各旗門をチェック
 			for(var r=1;r<=this.max;r++){
-				var atmp = new Array();
-				for(var i=0;i<nums[r].length;i++){ if(decnumber[nums[r][i]]!=1){ atmp.push(nums[r][i]);} }
-				nums[r] = atmp;
+				var cand=-1;
+				for(var i=0;i<nums[r].length;i++){
+					if(numcnt[nums[r][i]]==1){ cand=(cand==-1?nums[r][i]:-1);}
+				}
+
+				// 旗門に数字をセット
+				if(cand>0){
+					this.data[r].number = cand;
+					decnumber[cand] = 1;
+					nums[r] = [];
+					repeatflag = true;	//再ループする
+				}
 			}
+			delnum(decnumber);
 		}
 	}
 };
