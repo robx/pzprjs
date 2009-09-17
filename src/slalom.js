@@ -382,7 +382,7 @@ Puzzles.slalom.prototype = {
 		};
 
 		pc.drawNumbersOnGate = function(keydown){
-			bd.hinfo.generateGateNumber();
+			if(keydown){ bd.hinfo.generateGateNumber();}
 
 			for(var c=0;c<bd.cell.length;c++){
 				if(bd.QuC(c)!=21 && bd.QuC(c)!=22){ continue;}
@@ -848,13 +848,16 @@ Hurdle.prototype = {
 	},
 
 	generateGateNumber : function(){
+		// ˆê’U‚·‚×‚Ä‚ÌŠø–å‚Ìnumber‚ðÁ‚·
+		for(var r=1;r<=this.max;r++){ this.data[r].number=-1;}
+
 		// ”Žš‚ª‚Ç‚ÌŠø–å‚ÉŒq‚ª‚Á‚Ä‚¢‚é‚©‚ðnums”z—ñ‚É‚Æ‚Á‚Ä‚­‚é
 		var nums = new Array();
 		for(var r=1;r<=this.max;r++){ nums[r] = new Array();}
 		for(var c=0;c<bd.cell.length;c++){
 			if(bd.QuC(c)==1){
+				if(bd.QnC(c)<=0 || bd.QnC(c)>this.max){ continue;}
 				var idlist = this.getConnectingGate(c);
-				if(idlist.length<=0 || bd.QnC(c)<=0 || bd.QnC(c)>this.max){ continue;}
 				for(var i=0;i<idlist.length;i++){ nums[idlist[i]].push(bd.QnC(c));}
 			}
 		}
