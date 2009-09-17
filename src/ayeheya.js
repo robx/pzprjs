@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ∀人∃ＨＥＹＡ版 ayeheya.js v3.2.0
+// パズル固有スクリプト部 ∀人∃ＨＥＹＡ版 ayeheya.js v3.2.0p1
 //
 Puzzles.ayeheya = function(){ };
 Puzzles.ayeheya.prototype = {
@@ -46,6 +46,7 @@ Puzzles.ayeheya.prototype = {
 	},
 	menufix : function(){
 		menu.addUseToFlags();
+		menu.addRedBlockRBToFlags();
 	},
 
 	//---------------------------------------------------------
@@ -53,7 +54,8 @@ Puzzles.ayeheya.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedRB(x,y);}
+			else if(k.mode==1) this.inputborder(x,y);
 			else if(k.mode==3) this.inputcell(x,y);
 		};
 		mv.mouseup = function(x,y){
@@ -71,10 +73,13 @@ Puzzles.ayeheya.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
+			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.mode==3){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputqnum(ca,99);
 		};
+		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
+		kc.isZ = false;
 
 		if(k.callmode == "pmake"){
 			kp.generate(0, true, false, '');

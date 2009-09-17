@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 やじさんかずさん版 yajikazu.js v3.2.0
+// パズル固有スクリプト部 やじさんかずさん版 yajikazu.js v3.2.0p1
 //
 Puzzles.yajikazu = function(){ };
 Puzzles.yajikazu.prototype = {
@@ -52,6 +52,7 @@ Puzzles.yajikazu.prototype = {
 	},
 	menufix : function(){
 		menu.addUseToFlags();
+		menu.addRedBlockRBToFlags();
 	},
 
 	//---------------------------------------------------------
@@ -59,7 +60,8 @@ Puzzles.yajikazu.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputdirec(x,y);
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedRB(x,y);}
+			else if(k.mode==1) this.inputdirec(x,y);
 			else if(k.mode==3) this.inputcell(x,y);
 		};
 		mv.mouseup = function(x,y){
@@ -74,11 +76,14 @@ Puzzles.yajikazu.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
+			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.mode==3){ return;}
 			if(this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputqnum(ca,99);
 		};
+		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
+		kc.isZ = false;
 	},
 
 	//---------------------------------------------------------

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ひとりにしてくれ版 hitori.js v3.2.0
+// パズル固有スクリプト部 ひとりにしてくれ版 hitori.js v3.2.0p1
 //
 Puzzles.hitori = function(){ };
 Puzzles.hitori.prototype = {
@@ -46,6 +46,7 @@ Puzzles.hitori.prototype = {
 	},
 	menufix : function(){
 		menu.addUseToFlags();
+		menu.addRedBlockRBToFlags();
 	},
 
 	//---------------------------------------------------------
@@ -53,7 +54,8 @@ Puzzles.hitori.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputqnum(x,y,Math.max(k.qcols,k.qrows));
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedRB(x,y);}
+			else if(k.mode==1) this.inputqnum(x,y,Math.max(k.qcols,k.qrows));
 			else if(k.mode==3) this.inputcell(x,y);
 		};
 		mv.mouseup = function(x,y){ };
@@ -63,11 +65,14 @@ Puzzles.hitori.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
+			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.mode==3){ return;}
 			if(this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputqnum(ca,Math.max(k.qcols,k.qrows));
 		};
+		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
+		kc.isZ = false;
 	},
 
 	//---------------------------------------------------------
