@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.0p2
+// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.0p3
 //
 Puzzles.icebarn = function(){ };
 Puzzles.icebarn.prototype = {
@@ -260,7 +260,7 @@ Puzzles.icebarn.prototype = {
 			}
 		};
 		pc.drawInOut = function(){
-			if(bd.arrowin==-1){ return;}
+			if(bd.arrowin<bd.bdinside || bd.arrowin>=bd.border.length || bd.arrowout<bd.bdinside || bd.arrowout>=bd.border.length){ return;}
 
 			if(bd.ErB(bd.arrowin)==3){ g.fillStyle = this.errcolor1;}
 			else{ g.fillStyle = this.Cellcolor;}

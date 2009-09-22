@@ -5,8 +5,8 @@
  * written in JavaScript.
  * 
  * @author  happa.
- * @version v3.2.0p7
- * @date    2009-09-17
+ * @version v3.2.0p8
+ * @date    2009-09-22
  * 
  * This script uses following libraries.
  *  jquery.js (version 1.3.2)
@@ -22,7 +22,7 @@
  * 
  */
 
-var pzprversion="v3.2.0p7";
+var pzprversion="v3.2.0p8";
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -6958,10 +6958,10 @@ MenuExec.prototype = {
 
 		// サイズの変更
 		if(k.puzzleid=="icebarn"){
-			if(bd.arrowin<k.qcols){ if(bd.arrowin>col){ bd.arrowin=col-1;} }
-			else{ if(bd.arrowin>col+row){ bd.arrowin=col+row-1;} }
-			if(bd.arrowout<k.qcols){ if(bd.arrowout>col){ bd.arrowout=col-1;} }
-			else{ if(bd.arrowout>col+row){ bd.arrowout=col+row-1;} }
+			if(bd.arrowin<k.qcols+bd.bdinside){ if(bd.arrowin>col+bd.bdinside){ bd.arrowin=col+bd.bdinside-1;} }
+			else{ if(bd.arrowin>col+row+bd.bdinside){ bd.arrowin=col+row+bd.bdinside-1;} }
+			if(bd.arrowout<k.qcols+bd.bdinside){ if(bd.arrowout>col+bd.bdinside){ bd.arrowout=col+bd.bdinside-1;} }
+			else{ if(bd.arrowout>col+row+bd.bdinside){ bd.arrowout=col+row+bd.bdinside-1;} }
 			if(bd.arrowin==bd.arrowout){ bd.arrowin--;}
 		}
 		if(k.puzzleid=="slalom"){

@@ -1,4 +1,4 @@
-// MenuExec.js v3.2.0p4
+// MenuExec.js v3.2.0p5
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -83,10 +83,10 @@ MenuExec.prototype = {
 
 		// サイズの変更
 		if(k.puzzleid=="icebarn"){
-			if(bd.arrowin<k.qcols){ if(bd.arrowin>col){ bd.arrowin=col-1;} }
-			else{ if(bd.arrowin>col+row){ bd.arrowin=col+row-1;} }
-			if(bd.arrowout<k.qcols){ if(bd.arrowout>col){ bd.arrowout=col-1;} }
-			else{ if(bd.arrowout>col+row){ bd.arrowout=col+row-1;} }
+			if(bd.arrowin<k.qcols+bd.bdinside){ if(bd.arrowin>col+bd.bdinside){ bd.arrowin=col+bd.bdinside-1;} }
+			else{ if(bd.arrowin>col+row+bd.bdinside){ bd.arrowin=col+row+bd.bdinside-1;} }
+			if(bd.arrowout<k.qcols+bd.bdinside){ if(bd.arrowout>col+bd.bdinside){ bd.arrowout=col+bd.bdinside-1;} }
+			else{ if(bd.arrowout>col+row+bd.bdinside){ bd.arrowout=col+row+bd.bdinside-1;} }
 			if(bd.arrowin==bd.arrowout){ bd.arrowin--;}
 		}
 		if(k.puzzleid=="slalom"){
