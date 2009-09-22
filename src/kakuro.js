@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.0p1
+// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.0p2
 //
 Puzzles.kakuro = function(){ };
 Puzzles.kakuro.prototype = {
@@ -422,10 +422,10 @@ Puzzles.kakuro.prototype = {
 				d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
 				num = bd.DiE([bd.exnum(cx,-1)]);
 				if(flag==1){ bd.sErE([bd.exnum(cx,-1)],1);}
-				for(var cy=0;cy<k.qrows;cy++){
+				for(var cy=0;cy<=k.qrows;cy++){
 					var cc = bd.cnum(cx,cy);
 					if(cy==k.qrows || bd.QuC(cc)==51){
-						if(flag==1 && clist.length>0 && empty==0 && cells>0 && num!=cnt){ bd.sErC(clist,1); return false;}
+						if(flag==1 && empty==0 && cells>0 && num!=cnt){ bd.sErC(clist,1); return false;}
 						if(flag==2){ for(var n=1;n<=9;n++){ if(d[n]>=2){
 							for(var i=0;i<clist.length;i++){ if(bd.QaC(clist[i])==n){ bd.sErC([clist[i]],1);} }
 							return false;
@@ -455,7 +455,7 @@ Puzzles.kakuro.prototype = {
 				for(var cx=0;cx<=k.qcols;cx++){
 					var cc = bd.cnum(cx,cy);
 					if(cx==k.qcols || bd.QuC(cc)==51){
-						if(flag==1 && clist.length>0 && empty==0 && cells>0 && num!=cnt){ bd.sErC(clist,1); return false;}
+						if(flag==1 && empty==0 && cells>0 && num!=cnt){ bd.sErC(clist,1); return false;}
 						if(flag==2){ for(var n=1;n<=9;n++){ if(d[n]>=2){
 							for(var i=0;i<clist.length;i++){ if(bd.QaC(clist[i])==n){ bd.sErC([clist[i]],1);} }
 							return false;
