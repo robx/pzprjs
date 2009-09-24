@@ -1,4 +1,4 @@
-// pzprUtil.js v3.2.0p2
+// pzprUtil.js v3.2.1
 
 //---------------------------------------------------------------------------
 // ★Colorsクラス 主に色分けの情報を管理する
@@ -66,7 +66,7 @@ Colors.prototype = {
 	setLineColor1 : function(id, cc1, cc2){
 		var setc = "";
 		if(cc1!=-1 && bd.backLine(id)!=-1){
-			if(this.lcntCell(cc1)!=3){
+			if(ans.lcntCell(cc1)!=3){
 				setc = bd.border[bd.backLine(id)].color;
 			}
 			else{
@@ -76,7 +76,7 @@ Colors.prototype = {
 			}
 		}
 		if(cc2!=-1 && bd.nextLine(id)!=-1){
-			if(this.lcntCell(cc2)!=3){
+			if(ans.lcntCell(cc2)!=3){
 				if(!setc){ setc = bd.border[bd.nextLine(id)].color;}
 				else{ this.changeColors(bd.nextLine(id), id, setc);}
 			}
@@ -94,19 +94,19 @@ Colors.prototype = {
 		var keeped = 0;
 		var firstchange = false;
 		if(cc1!=-1 && cc2!=-1){
-			if(!ans.isLoopLine(id) && cc1!=-1 && (this.lcntCell(cc1)==2 || this.lcntCell(cc1)==4)){
+			if(!ans.isLoopLine(id) && cc1!=-1 && (ans.lcntCell(cc1)==2 || ans.lcntCell(cc1)==4)){
 				keeped=1;
 			}
-			else if(cc1!=-1 && this.lcntCell(cc1)==3 && this.tshapeid(cc1)!=id){
+			else if(cc1!=-1 && ans.lcntCell(cc1)==3 && this.tshapeid(cc1)!=id){
 				this.changeColors(this.tshapeid(cc1), -1, bd.border[bd.backLine(id)].color);
 				firstchange = true;
 				if(!ans.isConnectLine(bd.nextLine(id), this.tshapeid(cc1), id)){ keeped=1;}
 			}
 			
-			if(!ans.isLoopLine(id) && cc2!=-1 && (this.lcntCell(cc2)==2 || this.lcntCell(cc2)==4) && keeped==1){
+			if(!ans.isLoopLine(id) && cc2!=-1 && (ans.lcntCell(cc2)==2 || ans.lcntCell(cc2)==4) && keeped==1){
 				this.changeColors(bd.nextLine(id), id, this.getNewLineColor());
 			}
-			else if(cc2!=-1 && this.lcntCell(cc2)==3 && this.tshapeid(cc2)!=id){
+			else if(cc2!=-1 && ans.lcntCell(cc2)==3 && this.tshapeid(cc2)!=id){
 				if(keeped==0){ this.changeColors(this.tshapeid(cc2), -1, bd.border[bd.nextLine(id)].color);}
 				else{
 					if(ans.isConnectLine(this.tshapeid(cc2),bd.nextLine(id),-1)){
@@ -131,11 +131,11 @@ Colors.prototype = {
 	lcntCell : function(id){
 		if(k.isborderAsLine==0){
 			if(id==-1 || id>=bd.cell.length){ return -1;}
-			return bd.lcntCell(bd.cell[id].cx,bd.cell[id].cy);
+			return ans.lcntCell(bd.cnum(bd.cell[id].cx,bd.cell[id].cy));
 		}
 		else{
 			if(id==-1 || id>=(k.qcols+1)*(k.qrows+1)){ return -1;}
-			return bd.lcntCross(id%(k.qcols+1), mf(id/(k.qcols+1)));
+			return ans.lcntCross(bd.xnum(id%(k.qcols+1), mf(id/(k.qcols+1))));
 		}
 	},
 	changeColors : function(startid, backid, col){
@@ -166,12 +166,12 @@ Colors.prototype = {
 		var bx, by, func;
 		if(k.isborderAsLine==0){
 			bx = cc%(k.qcols)*2+1; by = mf(cc/(k.qcols))*2+1;
-			if(cc==-1 || bd.lcntCell(bd.cell[cc].cx,bd.cell[cc].cy)!=3){ return -1;}
+			if(cc==-1 || ans.lcntCell(bd.cnum(bd.cell[cc].cx,bd.cell[cc].cy))!=3){ return -1;}
 			func = bd.LiB.bind(bd);
 		}
 		else{
 			bx = cc%(k.qcols+1)*2; by = mf(cc/(k.qcols+1))*2;
-			if(cc==-1 || bd.lcntCross(mf(bx/2),mf(by/2))!=3){ return -1;}
+			if(cc==-1 || ans.lcntCross(bd.xnum(mf(bx/2),mf(by/2)))!=3){ return -1;}
 			func = bd.QaB.bind(bd);
 		}
 
@@ -234,7 +234,7 @@ Colors.prototype = {
 		pc.zstable = false;
 	},
 	point : function(id,cc){
-		return this.lcntCell(cc)==1;
+		return ans.lcntCell(cc)==1;
 	},
 
 	//---------------------------------------------------------------------------
@@ -258,7 +258,7 @@ Colors.prototype = {
 		while(1){
 			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 			if((bx+by)%2==0){
-				var lcnt = this.lcntCell(mf(bx/2)+mf(by/2)*(k.qcols+(k.isborderAsLine==0?0:1)));
+				var lcnt = ans.lcntCell(mf(bx/2)+mf(by/2)*(k.qcols+(k.isborderAsLine==0?0:1)));
 				if(dir==0 || this.branch(bx,by,lcnt)){
 					if(line(bd.bnum(bx,by-1))>0){ this.sc0(idlist,bx,by,1)}
 					if(line(bd.bnum(bx,by+1))>0){ this.sc0(idlist,bx,by,2)}
@@ -361,21 +361,30 @@ Rooms.prototype = {
 		}
 	},
 	//--------------------------------------------------------------------------------
+	// room.lcnt()                指定された位置のCrossの上下左右のうち境界線が引かれている(ques==1 or qans==1の)数を求める
 	// room.setLineToRarea()      境界線が入力された時に、部屋のTOPにある数字をどうハンドリングするか
 	// room.removeLineFromRarea() 境界線が消された時に、部屋のTOPにある数字をどうハンドリングするか
 	// room.sr0()                 setLineToRarea()から呼ばれて、idを含む一つの部屋の領域を、指定されたareaidにする
-	//--------------------------------------------------------------------------------
+	//---------------------------------------------------------------------------
+	lcnt : function(xx,xy){
+		var func = function(id){ return (id!=-1&&((bd.QuB(id)==1)||(bd.QaB(id)==1)));};
+		var cnt = 0;
+		if(xy>0       && ( (k.isoutsideborder==0 && (xx==0 || xx==k.qcols)) || func(bd.bnum(xx*2  ,xy*2-1)) ) ){ cnt++;}
+		if(xy<k.qrows && ( (k.isoutsideborder==0 && (xx==0 || xx==k.qcols)) || func(bd.bnum(xx*2  ,xy*2+1)) ) ){ cnt++;}
+		if(xx>0       && ( (k.isoutsideborder==0 && (xy==0 || xy==k.qrows)) || func(bd.bnum(xx*2-1,xy*2  )) ) ){ cnt++;}
+		if(xx<k.qcols && ( (k.isoutsideborder==0 && (xy==0 || xy==k.qrows)) || func(bd.bnum(xx*2+1,xy*2  )) ) ){ cnt++;}
+		return cnt;
+	},
 	setLineToRarea : function(id){
-		var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
 		var bx = bd.border[id].cx, by = bd.border[id].cy;
-		if( bd.lcntCross(mf((bx-bx%2)/2), mf((by-by%2)/2))>=2 && bd.lcntCross(mf((bx+bx%2)/2), mf((by+by%2)/2))>=2
-			&& cc1!=-1 && cc2!=-1)
+		if( this.lcnt(mf((bx-bx%2)/2), mf((by-by%2)/2))>=2 && this.lcnt(mf((bx+bx%2)/2), mf((by+by%2)/2))>=2
+			&& bd.cc1(id)!=-1 && bd.cc2(id)!=-1 )
 		{
-			var keep = this.cell[cc1];
+			var keep = this.cell[bd.cc1(id)];
 			var func = function(id){ return (id!=-1 && bd.QuB(id)==0); };
 			this.rareamax++;
-			this.sr0(func, this.cell, cc2, this.rareamax);
-			if(this.cell[cc1] == this.rareamax){
+			this.sr0(func, this.cell, bd.cc2(id), this.rareamax);
+			if(this.cell[bd.cc1(id)] == this.rareamax){
 				for(var i=0;i<bd.cell.length;i++){ if(this.cell[i]==this.rareamax){ this.cell[i] = keep;} }
 				this.rareamax--;
 			}
