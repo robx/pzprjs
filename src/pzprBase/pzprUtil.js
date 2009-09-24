@@ -485,8 +485,8 @@ LangMgr.prototype = {
 		$("#title2").html(base.gettitle());
 		$("#expression").html(base.expression[this.language]);
 
-		menu.ex.dispmanstr();
 		menu.displayAll();
+		menu.ex.dispmanstr();
 
 		base.resize_canvas();
 	}

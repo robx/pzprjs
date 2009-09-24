@@ -198,12 +198,12 @@ MenuExec.prototype = {
 			if(k.irowake!=0 && menu.getVal('irowake')){ $("#btncolor2").hide();}
 			$("#menuboard").css('padding-bottom','8pt');
 		}
-		this.dispmanstr();
 		this.displaymanage = !this.displaymanage;
+		this.dispmanstr();
 	},
 	dispmanstr : function(){
-		if(this.displaymanage){ $("#ms_manarea").html(lang.isJP()?"ŠÇ——Ìˆæ‚ğ•\¦":"Show management area");}
-		else                  { $("#ms_manarea").html(lang.isJP()?"ŠÇ——Ìˆæ‚ğ‰B‚·":"Hide management area");}
+		if(!this.displaymanage){ $("#ms_manarea").html(lang.isJP()?"ŠÇ——Ìˆæ‚ğ•\¦":"Show management area");}
+		else                   { $("#ms_manarea").html(lang.isJP()?"ŠÇ——Ìˆæ‚ğ‰B‚·":"Hide management area");}
 	},
 
 	//------------------------------------------------------------------------------

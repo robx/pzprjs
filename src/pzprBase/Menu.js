@@ -1,4 +1,4 @@
-// Menu.js v3.2.0p4
+// Menu.js v3.2.1
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -86,10 +86,10 @@ Menu.prototype = {
 	},
 
 	addMenu : function(idname, strJP, strEN){
-		newEL("div").attr("class", 'menu').attr("id",'menu_'+idname).appendTo($("#menupanel"))
-					.html("["+strJP+"]").css("margin-right","4pt")
-					.hover(this.menuhover.ebind(this,idname), this.menuout.ebind(this));
-		this.addLabels($("menu_"+idname), "["+strJP+"]", "["+strEN+"]");
+		var jqel = newEL("div").attr("class", 'menu').attr("id",'menu_'+idname).appendTo($("#menupanel"))
+							   .html("["+strJP+"]").css("margin-right","4pt")
+							   .hover(this.menuhover.ebind(this,idname), this.menuout.ebind(this));
+		this.addLabels(jqel, "["+strJP+"]", "["+strEN+"]");
 	},
 	menuhover : function(e, idname){
 		this.floatmenuopen(e,idname,0);
