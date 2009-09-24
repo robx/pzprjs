@@ -1,4 +1,4 @@
-// Answer.js v3.2.0p3
+// Answer.js v3.2.1
 
 //---------------------------------------------------------------------------
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
@@ -285,6 +285,7 @@ AnsCheck.prototype = {
 	// ans.setLcnts()      線が引かれたり消されてたりした時に、変数lcntsの内容を変更する
 	// ans.resetLcount()   回転反転・拡大縮小時にlcnt変数を再構築する
 	// ans.lcntCell()      セルに存在する線の本数を返す
+	// ans.lcntCross()     交点に存在する線の本数を返す
 	// ans.checkLcntCell() セルから出ている線の本数について判定する
 	//---------------------------------------------------------------------------
 	setLcnts : function(id, val){
@@ -312,7 +313,8 @@ AnsCheck.prototype = {
 		}
 	},
 
-	lcntCell : function(cc){ return col.lcntCell(cc);},
+	lcntCell  : function(cc){ return this.lcnts.cell[cc];},
+	lcntCross : function(cc){ return this.lcnts.cell[cc];},
 	checkLcntCell : function(val){
 		if(this.lcnts.total[val]==0){ return true;}
 		for(var c=0;c<bd.cell.length;c++){
