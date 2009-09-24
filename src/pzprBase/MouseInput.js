@@ -1,4 +1,4 @@
-// MouseInput.js v3.2.0p5
+// MouseInput.js v3.2.1
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -130,16 +130,16 @@ MouseEvent.prototype = {
 		return new Pos(cx*2+(dx<2*pm?0:1), cy*2+(dy<2*pm?0:1));
 	},
 
-	borderid : function(p,centerflag){
+	borderid : function(p,spc){
 		var cx = mf((p.x-k.p0.x)/k.cwidth), cy = mf((p.y-k.p0.y)/k.cheight);
 		var dx = (p.x-k.p0.x)%k.cwidth,     dy = (p.y-k.p0.y)%k.cheight;
-		if(centerflag){
+		if(k.isborderCross){
 			if(!k.isborderAsLine){
-				var m1=0.15*k.cwidth, m2=0.85*k.cwidth;
+				var m1=spc*k.cwidth, m2=(1-spc)*k.cwidth;
 				if((dx<m1||m2<dx) && (dy<m1||m2<dy)){ return -1;}
 			}
 			else{
-				var m1=0.35*k.cwidth, m2=0.65*k.cwidth;
+				var m1=(0.5-spc)*k.cwidth, m2=(0.5+spc)*k.cwidth;
 				if(m1<dx && dx<m2 && m1<dy && dy<m2){ return -1;}
 			}
 		}
@@ -667,12 +667,37 @@ MouseEvent.prototype = {
 	},
 
 	dispRedLine : function(x,y){
-		var id = this.borderid(new Pos(x,y),!!k.isborderCross);
-		if(id==this.mouseCell||id==-1){ return;}
-		this.mouseCell = id;
-
-		if(((k.isborderAsLine==0?bd.LiB:bd.QaB).bind(bd))(id)<=0){ return;}
+		var id = this.borderid(new Pos(x,y),0.15);
 		this.mousereset();
+		if(id!=-1 && id==this.mouseCell){ return;}
+		if(id==-1 || ((k.isborderAsLine==0?bd.LiB:bd.QaB).bind(bd))(id)<=0){
+			if(k.isborderAsLine==0){
+				var cc = this.cellid(new Pos(x,y));
+				if(cc==-1 || (k.isborderCross && (ans.lcntCell(cc)==3 || ans.lcntCell(cc)==4))){ return;}
+
+				id = (function(cc){
+					if     (bd.LiB(bd.ub(cc))>0){ return bd.ub(cc);}
+					else if(bd.LiB(bd.db(cc))>0){ return bd.db(cc);}
+					else if(bd.LiB(bd.lb(cc))>0){ return bd.lb(cc);}
+					else if(bd.LiB(bd.rb(cc))>0){ return bd.rb(cc);}
+					return -1;
+				})(cc);
+			}
+			else{
+				var xc = this.crossid(new Pos(x,y));
+				if(xc==-1 || (k.isborderCross && (ans.lcntCell(xc)==3 || ans.lcntCell(xc)==4))){ return;}
+
+				id = (function(xc){
+					var bx = xc%(k.qcols+1)*2, by = mf(xc/(k.qcols+1))*2;
+					if     (bd.QaB(bd.bnum(bx-1,by))>0){ return bd.bnum(bx-1,by);}
+					else if(bd.QaB(bd.bnum(bx+1,by))>0){ return bd.bnum(bx+1,by);}
+					else if(bd.QaB(bd.bnum(bx,by-1))>0){ return bd.bnum(bx,by-1);}
+					else if(bd.QaB(bd.bnum(bx,by+1))>0){ return bd.bnum(bx,by+1);}
+					return -1;
+				})(xc);
+			}
+		}
+		if(id==-1){ return;}
 
 		var idlist = (k.isborderCross?ans.LineList:this.LineListNotCross.bind(this))(id);
 		bd.sErB(bd.borders,2); bd.sErB(idlist,1);
@@ -689,8 +714,7 @@ MouseEvent.prototype = {
 	lc0 : function(idlist,bx,by,dir){
 		var include  = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
 		var func     = (k.isborderAsLine==0?bd.LiB:bd.QaB).bind(bd);
-		var lcntfunc = (k.isborderAsLine==0?function(bx,by){ return ans.lcntCell(bd.cnum(mf(bx/2),mf(by/2)));}
-										   :function(bx,by){ return bd.lcntCross(mf(bx/2),mf(by/2));});
+		var lcntfunc = function(bx,by){ return ans.lcntCell(((k.isborderAsLine==0?bd.cnum:bd.xnum)(mf(bx/2),mf(by/2))));};
 		while(1){
 			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 			if((bx+by)%2==0){
