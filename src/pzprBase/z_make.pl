@@ -7,6 +7,11 @@ our $version = 'v3.2.0p1';
 
 sub main{
 	&input_flags();
+
+	open LOG, ">contents.txt";
+	print LOG "pzprBase.js $version contents\n";
+	close LOG;
+
 	&output_doc("document_tmp.txt");
 	&output_pzprBase();
 	if($puzzles){ &output_puzzles();}
@@ -141,6 +146,8 @@ EOR
 sub printfiles{
 	my @files = @{$_[0]};
 	my $l=0;
+	open LOG, ">>contents.txt";
+	print LOG "\n";
 	foreach(@files){
 		if($_[1]==2 || !$debug){
 			open SRC, $_;
@@ -148,12 +155,14 @@ sub printfiles{
 				my $sline = <SRC>;
 				$sline =~ /\/\/ +([^ ]+) +([^ \r\n]+)[\r\n]*/;
 				print("$1 $2\n");
+				printf(LOG "%-14s %-s\n",$1,$2);
 			}
 			elsif($_[1]==2){
 				my $sline = <SRC>; print OUT $sline;
 				$sline = <SRC>;
 				$sline =~ /(\w+\.js) +([^ \r\n]+)[\r\n]*/;
 				print("$1 $2\n");
+				printf(LOG "%-14s %-s\n",$1,$2);
 				print OUT $sline;
 				$sline = <SRC>; print OUT $sline;
 			}
@@ -167,4 +176,5 @@ sub printfiles{
 			print OUT "document.writeln(\"<script type=\\\"text/javascript\\\" src=\\\"src/pzprBase/$_\\\"></script>\");\n";
 		}
 	}
+	close LOG;
 }
