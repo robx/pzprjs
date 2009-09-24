@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 なげなわ版 nagenawa.js v3.2.0
+// パズル固有スクリプト部 なげなわ版 nagenawa.js v3.2.1
 //
 Puzzles.nagenawa = function(){ };
 Puzzles.nagenawa.prototype = {
@@ -60,7 +60,7 @@ Puzzles.nagenawa.prototype = {
 			}
 		};
 		mv.mouseup = function(x,y){
-			if(this.notInputted() && !(kc.isZ ^ menu.getVal('dispred'))){
+			if(this.notInputted()){
 				if(k.mode==1){
 					if(!kp.enabled()){ this.inputqnum(x,y,99);}
 					else{ kp.display(x,y);}
@@ -69,7 +69,6 @@ Puzzles.nagenawa.prototype = {
 			}
 		};
 		mv.mousemove = function(x,y,e){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
 			if(k.mode==1) this.inputborder(x,y);
 			else if(k.mode==3){
 				if(this.btn.Left) this.inputLine(x,y);

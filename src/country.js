@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カントリーロード版 country.js v3.2.0
+// パズル固有スクリプト部 カントリーロード版 country.js v3.2.1
 //
 Puzzles.country = function(){ };
 Puzzles.country.prototype = {
@@ -60,7 +60,7 @@ Puzzles.country.prototype = {
 			}
 		};
 		mv.mouseup = function(x,y){
-			if(this.notInputted() && !(kc.isZ ^ menu.getVal('dispred'))){
+			if(this.notInputted()){
 				if(k.mode==1){
 					if(!kp.enabled()){ this.inputqnum(x,y,99);}
 					else{ kp.display(x,y);}
@@ -69,7 +69,6 @@ Puzzles.country.prototype = {
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
 			if(k.mode==1) this.inputborder(x,y);
 			else if(k.mode==3){
 				if(this.btn.Left) this.inputLine(x,y);
@@ -92,6 +91,8 @@ Puzzles.country.prototype = {
 				kc.key_inputqnum(ca,99);
 			};
 		}
+
+		bd.roommaxfunc = function(cc,mode){ return room.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------

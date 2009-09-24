@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 メジリンク版 mejilink.js v3.2.0p1
+// パズル固有スクリプト部 メジリンク版 mejilink.js v3.2.1
 //
 Puzzles.mejilink = function(){ };
 Puzzles.mejilink.prototype = {
@@ -62,7 +62,6 @@ Puzzles.mejilink.prototype = {
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
 			if(k.mode==1) this.inputborder(x,y);
 			else if(k.mode==3){
 				if(this.btn.Left) this.inputborderans(x,y);

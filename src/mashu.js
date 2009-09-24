@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ましゅ版 mashu.js v3.2.0
+// パズル固有スクリプト部 ましゅ版 mashu.js v3.2.1
 //
 Puzzles.mashu = function(){ };
 Puzzles.mashu.prototype = {
@@ -73,7 +73,6 @@ Puzzles.mashu.prototype = {
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
 			if(k.mode==3){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);

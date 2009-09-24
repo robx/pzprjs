@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.0p3
+// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.1
 //
 Puzzles.icebarn = function(){ };
 Puzzles.icebarn.prototype = {
@@ -71,7 +71,6 @@ Puzzles.icebarn.prototype = {
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
 			if(k.mode==1){
 				if(this.btn.Left) this.inputarrow(x,y);
 				else if(this.btn.Right) this.inputIcebarn(x,y);

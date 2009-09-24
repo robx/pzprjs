@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.2.0p2
+// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.2.1
 // 
 Puzzles.yajirin = function(){ };
 Puzzles.yajirin.prototype = {
@@ -68,13 +68,12 @@ Puzzles.yajirin.prototype = {
 			}
 		};
 		mv.mouseup = function(x,y){
-			if(this.notInputted() && !(kc.isZ ^ menu.getVal('dispred'))){
+			if(this.notInputted()){
 				if(k.mode==1) this.inputqnum(x,y,99);
 				else if(k.mode==3) this.inputcell(x,y);
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
 			if(k.mode==1) this.inputdirec(x,y);
 			else if(k.mode==3){
 				if(this.btn.Left) this.inputLine(x,y);

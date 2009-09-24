@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バッグ版 bag.js v3.2.0
+// パズル固有スクリプト部 バッグ版 bag.js v3.2.1
 //
 Puzzles.bag = function(){ };
 Puzzles.bag.prototype = {
@@ -171,7 +171,7 @@ Puzzles.bag.prototype = {
 		ans.generateIarea = function(){
 			var area = new AreaInfo();
 			var cx, cy;
-			area.check[0]=(bd.lcntCross(0,0)==0?-1:1);
+			area.check[0]=(ans.lcntCross(0)==0?-1:1);
 			for(cy=0;cy<k.qrows;cy++){
 				if(cy>0){ area.check[bd.cnum(0,cy)]=area.check[bd.cnum(0,cy-1)]*(bd.QaB(bd.bnum(1,cy*2))==1?-1:1);}
 				for(cx=1;cx<k.qcols;cx++){

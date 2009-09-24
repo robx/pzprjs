@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.2.0
+// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.2.1
 //
 Puzzles.hashikake = function(){ };
 Puzzles.hashikake.prototype = {
@@ -286,7 +286,7 @@ Puzzles.hashikake.prototype = {
 			return (lcnt==3||lcnt==4) && (bd.QnC(bd.cnum(mf(bx/2),mf(by/2)))!=-1);
 		};
 		col.point = function(id,cc){
-			return this.lcntCell(cc)==1 || (this.lcntCell(cc)==3 && this.tshapeid(cc)==id);
+			return ans.lcntCell(cc)==1 || (ans.lcntCell(cc)==3 && this.tshapeid(cc)==id);
 		};
 	},
 

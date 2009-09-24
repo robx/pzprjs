@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤギとオオカミ版 shwolf.js v3.2.0p1
+// パズル固有スクリプト部 ヤギとオオカミ版 shwolf.js v3.2.1
 //
 Puzzles.shwolf = function(){ };
 Puzzles.shwolf.prototype = {
@@ -273,9 +273,9 @@ Puzzles.shwolf.prototype = {
 
 		ans.checkLcntCurve = function(){
 			for(var i=0;i<(k.qcols-1)*(k.qrows-1);i++){
-				var cx = i%(k.qcols-1)+1;
-				var cy = mf(i/(k.qcols-1))+1;
-				if(bd.lcntCross(cx, cy)==2 && bd.QnX(bd.xnum(cx, cy))!=1){
+				var cx = i%(k.qcols-1)+1, cy = mf(i/(k.qcols-1))+1;
+				var xc = bd.xnum(i%(k.qcols-1)+1, mf(i/(k.qcols-1))+1);
+				if(ans.lcntCross(xc)==2 && bd.QnX(xc)!=1){
 					if(    !(bd.QaB(bd.bnum(cx*2  ,cy*2-1))==1 && bd.QaB(bd.bnum(cx*2  ,cy*2+1))==1)
 						&& !(bd.QaB(bd.bnum(cx*2-1,cy*2  ))==1 && bd.QaB(bd.bnum(cx*2+1,cy*2  ))==1) )
 					{

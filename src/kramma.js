@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 快刀乱麻版 kramma.js v3.2.0
+// パズル固有スクリプト部 快刀乱麻版 kramma.js v3.2.1
 //
 Puzzles.kramma = function(){ };
 Puzzles.kramma.prototype = {
@@ -233,9 +233,9 @@ Puzzles.kramma.prototype = {
 
 		ans.checkLcntCurve = function(){
 			for(var i=0;i<(k.qcols-1)*(k.qrows-1);i++){
-				var cx = i%(k.qcols-1)+1;
-				var cy = mf(i/(k.qcols-1))+1;
-				if(bd.lcntCross(cx, cy)==2 && bd.QnX(bd.xnum(cx, cy))!=1){
+				var cx = i%(k.qcols-1)+1, cy = mf(i/(k.qcols-1))+1;
+				var xc = bd.xnum(cx,cy);
+				if(ans.lcntCross(xc)==2 && bd.QnX(xc)!=1){
 					if(    !(bd.QaB(bd.bnum(cx*2  ,cy*2-1))==1 && bd.QaB(bd.bnum(cx*2  ,cy*2+1))==1)
 						&& !(bd.QaB(bd.bnum(cx*2-1,cy*2  ))==1 && bd.QaB(bd.bnum(cx*2+1,cy*2  ))==1) )
 					{

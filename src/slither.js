@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スリザーリンク版 slither.js v3.2.0p1
+// パズル固有スクリプト部 スリザーリンク版 slither.js v3.2.1
 //
 Puzzles.slither = function(){ };
 Puzzles.slither.prototype = {
@@ -65,7 +65,6 @@ Puzzles.slither.prototype = {
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
 			if(k.mode==3){
 				if(this.btn.Left) this.inputborderans(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);

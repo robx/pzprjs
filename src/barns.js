@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バーンズ版 barns.js v3.2.0
+// パズル固有スクリプト部 バーンズ版 barns.js v3.2.1
 //
 Puzzles.barns = function(){ };
 Puzzles.barns.prototype = {
@@ -72,7 +72,6 @@ Puzzles.barns.prototype = {
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
 			if(k.mode==1){
 				if(this.btn.Left) this.inputborder(x,y);
 				else if(this.btn.Right) this.inputIcebarn(x,y);

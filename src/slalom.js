@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.2.0p6
+// パズル固有スクリプト部 スラローム版 slalom.js v3.2.1
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -74,7 +74,6 @@ Puzzles.slalom.prototype = {
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
 			if(k.mode==1){ this.inputGate(x,y);}
 			else if(k.mode==3){
 				if(this.btn.Left) this.inputLine(x,y);
