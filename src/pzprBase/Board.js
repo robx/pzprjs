@@ -1,4 +1,4 @@
-// Board.js v3.2.0p3
+// Board.js v3.2.1
 
 //---------------------------------------------------------------------------
 // ★Cellクラス BoardクラスがCellの数だけ保持する
@@ -434,32 +434,6 @@ Board.prototype = {
 		if(this.QaC(this.cnum(cx  , cy-1))==1){ cnt++;}
 		if(this.QaC(this.cnum(cx-1, cy  ))==1){ cnt++;}
 		if(this.QaC(this.cnum(cx  , cy  ))==1){ cnt++;}
-		return cnt;
-	},
-
-	//---------------------------------------------------------------------------
-	// bd.lcntCell()  指定された位置のCellの上下左右のうち線が引かれている(line==1の)数を求める
-	// bd.lcntCross() 指定された位置のCrossの上下左右のうち境界線が引かれている(ques==1 or qans==1の)数を求める
-	//---------------------------------------------------------------------------
-	lcntCell : function(cx,cy){
-		var cc = this.cnum(cx,cy);
-		if(cc==-1){ return 0;}
-
-		var cnt = 0;
-		if(this.LiB(this.ub(cc))>0){ cnt++;}
-		if(this.LiB(this.db(cc))>0){ cnt++;}
-		if(this.LiB(this.lb(cc))>0){ cnt++;}
-		if(this.LiB(this.rb(cc))>0){ cnt++;}
-		return cnt;
-	},
-	lcntCross : function(cx,cy){
-		var self = this;
-		var func = function(id){ return (id!=-1&&((self.QuB(id)==1)||(self.QaB(id)==1)));};
-		var cnt = 0;
-		if(cy>0       && ( (k.isoutsideborder==0 && (cx==0 || cx==k.qcols)) || func(this.bnum(cx*2  ,cy*2-1)) ) ){ cnt++;}
-		if(cy<k.qrows && ( (k.isoutsideborder==0 && (cx==0 || cx==k.qcols)) || func(this.bnum(cx*2  ,cy*2+1)) ) ){ cnt++;}
-		if(cx>0       && ( (k.isoutsideborder==0 && (cy==0 || cy==k.qrows)) || func(this.bnum(cx*2-1,cy*2  )) ) ){ cnt++;}
-		if(cx<k.qcols && ( (k.isoutsideborder==0 && (cy==0 || cy==k.qrows)) || func(this.bnum(cx*2+1,cy*2  )) ) ){ cnt++;}
 		return cnt;
 	},
 
