@@ -50,7 +50,6 @@ sub output_pzprBase{
 
 	open OUT, ">pzprBase_Full_tmp.js";
 	if($debug){
-		push @files1, 'testonly.js';
 		print OUT "// pzplBase.js テスト用\n";
 	}
 	print OUT "\nvar pzprversion=\"$version\";\n";
@@ -89,6 +88,7 @@ sub output_puzzles{
 		if($file =~ /jquery\.js/){ next;}
 		if($file =~ /Prototype\.js/){ next;}
 		if($file =~ /gears_init\.js/){ next;}
+		if($file =~ /for_test\.js/){ next;}
 
 		push @files2, "../$file";
 	}

@@ -1,4 +1,4 @@
-// testonly.js v3.2.0p4
+// for_test.js v3.2.0p4
 
 k.scriptcheck = true;
 k.callmode = "pmake";
