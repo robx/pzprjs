@@ -5,8 +5,8 @@
  * written in JavaScript.
  * 
  * @author  happa.
- * @version v3.2.0p8
- * @date    2009-09-22
+ * @version v3.2.1
+ * @date    2009-09-25
  * 
  * This script uses following libraries.
  *  jquery.js (version 1.3.2)
@@ -22,7 +22,7 @@
  * 
  */
 
-var pzprversion="v3.2.0p8";
+var pzprversion="v3.2.1";
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -655,32 +655,6 @@ Board.prototype = {
 		if(this.QaC(this.cnum(cx  , cy-1))==1){ cnt++;}
 		if(this.QaC(this.cnum(cx-1, cy  ))==1){ cnt++;}
 		if(this.QaC(this.cnum(cx  , cy  ))==1){ cnt++;}
-		return cnt;
-	},
-
-	//---------------------------------------------------------------------------
-	// bd.lcntCell()  指定された位置のCellの上下左右のうち線が引かれている(line==1の)数を求める
-	// bd.lcntCross() 指定された位置のCrossの上下左右のうち境界線が引かれている(ques==1 or qans==1の)数を求める
-	//---------------------------------------------------------------------------
-	lcntCell : function(cx,cy){
-		var cc = this.cnum(cx,cy);
-		if(cc==-1){ return 0;}
-
-		var cnt = 0;
-		if(this.LiB(this.ub(cc))>0){ cnt++;}
-		if(this.LiB(this.db(cc))>0){ cnt++;}
-		if(this.LiB(this.lb(cc))>0){ cnt++;}
-		if(this.LiB(this.rb(cc))>0){ cnt++;}
-		return cnt;
-	},
-	lcntCross : function(cx,cy){
-		var self = this;
-		var func = function(id){ return (id!=-1&&((self.QuB(id)==1)||(self.QaB(id)==1)));};
-		var cnt = 0;
-		if(cy>0       && ( (k.isoutsideborder==0 && (cx==0 || cx==k.qcols)) || func(this.bnum(cx*2  ,cy*2-1)) ) ){ cnt++;}
-		if(cy<k.qrows && ( (k.isoutsideborder==0 && (cx==0 || cx==k.qcols)) || func(this.bnum(cx*2  ,cy*2+1)) ) ){ cnt++;}
-		if(cx>0       && ( (k.isoutsideborder==0 && (cy==0 || cy==k.qrows)) || func(this.bnum(cx*2-1,cy*2  )) ) ){ cnt++;}
-		if(cx<k.qcols && ( (k.isoutsideborder==0 && (cy==0 || cy==k.qrows)) || func(this.bnum(cx*2+1,cy*2  )) ) ){ cnt++;}
 		return cnt;
 	},
 
@@ -2540,16 +2514,16 @@ MouseEvent.prototype = {
 		return new Pos(cx*2+(dx<2*pm?0:1), cy*2+(dy<2*pm?0:1));
 	},
 
-	borderid : function(p,centerflag){
+	borderid : function(p,spc){
 		var cx = mf((p.x-k.p0.x)/k.cwidth), cy = mf((p.y-k.p0.y)/k.cheight);
 		var dx = (p.x-k.p0.x)%k.cwidth,     dy = (p.y-k.p0.y)%k.cheight;
-		if(centerflag){
+		if(k.isborderCross){
 			if(!k.isborderAsLine){
-				var m1=0.15*k.cwidth, m2=0.85*k.cwidth;
+				var m1=spc*k.cwidth, m2=(1-spc)*k.cwidth;
 				if((dx<m1||m2<dx) && (dy<m1||m2<dy)){ return -1;}
 			}
 			else{
-				var m1=0.35*k.cwidth, m2=0.65*k.cwidth;
+				var m1=(0.5-spc)*k.cwidth, m2=(0.5+spc)*k.cwidth;
 				if(m1<dx && dx<m2 && m1<dy && dy<m2){ return -1;}
 			}
 		}
@@ -3077,12 +3051,37 @@ MouseEvent.prototype = {
 	},
 
 	dispRedLine : function(x,y){
-		var id = this.borderid(new Pos(x,y),!!k.isborderCross);
-		if(id==this.mouseCell||id==-1){ return;}
-		this.mouseCell = id;
-
-		if(((k.isborderAsLine==0?bd.LiB:bd.QaB).bind(bd))(id)<=0){ return;}
+		var id = this.borderid(new Pos(x,y),0.15);
 		this.mousereset();
+		if(id!=-1 && id==this.mouseCell){ return;}
+		if(id==-1 || ((k.isborderAsLine==0?bd.LiB:bd.QaB).bind(bd))(id)<=0){
+			if(k.isborderAsLine==0){
+				var cc = this.cellid(new Pos(x,y));
+				if(cc==-1 || (k.isborderCross && (ans.lcntCell(cc)==3 || ans.lcntCell(cc)==4))){ return;}
+
+				id = (function(cc){
+					if     (bd.LiB(bd.ub(cc))>0){ return bd.ub(cc);}
+					else if(bd.LiB(bd.db(cc))>0){ return bd.db(cc);}
+					else if(bd.LiB(bd.lb(cc))>0){ return bd.lb(cc);}
+					else if(bd.LiB(bd.rb(cc))>0){ return bd.rb(cc);}
+					return -1;
+				})(cc);
+			}
+			else{
+				var xc = this.crossid(new Pos(x,y));
+				if(xc==-1 || (k.isborderCross && (ans.lcntCell(xc)==3 || ans.lcntCell(xc)==4))){ return;}
+
+				id = (function(xc){
+					var bx = xc%(k.qcols+1)*2, by = mf(xc/(k.qcols+1))*2;
+					if     (bd.QaB(bd.bnum(bx-1,by))>0){ return bd.bnum(bx-1,by);}
+					else if(bd.QaB(bd.bnum(bx+1,by))>0){ return bd.bnum(bx+1,by);}
+					else if(bd.QaB(bd.bnum(bx,by-1))>0){ return bd.bnum(bx,by-1);}
+					else if(bd.QaB(bd.bnum(bx,by+1))>0){ return bd.bnum(bx,by+1);}
+					return -1;
+				})(xc);
+			}
+		}
+		if(id==-1){ return;}
 
 		var idlist = (k.isborderCross?ans.LineList:this.LineListNotCross.bind(this))(id);
 		bd.sErB(bd.borders,2); bd.sErB(idlist,1);
@@ -3099,8 +3098,7 @@ MouseEvent.prototype = {
 	lc0 : function(idlist,bx,by,dir){
 		var include  = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
 		var func     = (k.isborderAsLine==0?bd.LiB:bd.QaB).bind(bd);
-		var lcntfunc = (k.isborderAsLine==0?function(bx,by){ return ans.lcntCell(bd.cnum(mf(bx/2),mf(by/2)));}
-										   :function(bx,by){ return bd.lcntCross(mf(bx/2),mf(by/2));});
+		var lcntfunc = function(bx,by){ return ans.lcntCell(((k.isborderAsLine==0?bd.cnum:bd.xnum)(mf(bx/2),mf(by/2))));};
 		while(1){
 			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 			if((bx+by)%2==0){
@@ -4673,7 +4671,7 @@ FileIO.prototype = {
 	decodeBorderLine : function(stack){
 		this.decodeBorder( function(c,ca){
 			if     (ca == "-1"){ bd.sQsB(c, 2);}
-			else if(ca != "0" ){ bd.sLiB(c, parseInt(ca)); if(bd.LiB(c)==0){ bd.border[c].line=parseInt(ca);}}	// fix
+			else if(ca != "0" ){ bd.sLiB(c, parseInt(ca)); if(bd.LiB(c)==0){ bd.border[c].line=parseInt(ca); ans.setLcnts(c,1);}}	// fix
 		},stack);
 	},
 	encodeBorderLine : function(){
@@ -5527,6 +5525,7 @@ AnsCheck.prototype = {
 	// ans.setLcnts()      線が引かれたり消されてたりした時に、変数lcntsの内容を変更する
 	// ans.resetLcount()   回転反転・拡大縮小時にlcnt変数を再構築する
 	// ans.lcntCell()      セルに存在する線の本数を返す
+	// ans.lcntCross()     交点に存在する線の本数を返す
 	// ans.checkLcntCell() セルから出ている線の本数について判定する
 	//---------------------------------------------------------------------------
 	setLcnts : function(id, val){
@@ -5554,7 +5553,8 @@ AnsCheck.prototype = {
 		}
 	},
 
-	lcntCell : function(cc){ return col.lcntCell(cc);},
+	lcntCell  : function(cc){ return this.lcnts.cell[cc];},
+	lcntCross : function(cc){ return this.lcnts.cell[cc];},
 	checkLcntCell : function(val){
 		if(this.lcnts.total[val]==0){ return true;}
 		for(var c=0;c<bd.cell.length;c++){
@@ -6164,10 +6164,10 @@ Menu.prototype = {
 	},
 
 	addMenu : function(idname, strJP, strEN){
-		newEL("div").attr("class", 'menu').attr("id",'menu_'+idname).appendTo($("#menupanel"))
-					.html("["+strJP+"]").css("margin-right","4pt")
-					.hover(this.menuhover.ebind(this,idname), this.menuout.ebind(this));
-		this.addLabels($("menu_"+idname), "["+strJP+"]", "["+strEN+"]");
+		var jqel = newEL("div").attr("class", 'menu').attr("id",'menu_'+idname).appendTo($("#menupanel"))
+							   .html("["+strJP+"]").css("margin-right","4pt")
+							   .hover(this.menuhover.ebind(this,idname), this.menuout.ebind(this));
+		this.addLabels(jqel, "["+strJP+"]", "["+strEN+"]");
 	},
 	menuhover : function(e, idname){
 		this.floatmenuopen(e,idname,0);
@@ -6327,7 +6327,7 @@ Menu.prototype = {
 	displayAll : function(){
 		for(var i in pp.flags){ this.setdisplay(i);}
 		$.each(this.btnstack,function(i,obj){obj.el.attr("value",obj.str[lang.language]);});
-		$.each(this.labelstack,function(i,obj){obj.el.html(obj.str[lang.language]);});
+		$.each(this.labelstack,function(i,obj){ obj.el.html(obj.str[lang.language]);});
 	},
 
 	//---------------------------------------------------------------------------
@@ -7073,12 +7073,12 @@ MenuExec.prototype = {
 			if(k.irowake!=0 && menu.getVal('irowake')){ $("#btncolor2").hide();}
 			$("#menuboard").css('padding-bottom','8pt');
 		}
-		this.dispmanstr();
 		this.displaymanage = !this.displaymanage;
+		this.dispmanstr();
 	},
 	dispmanstr : function(){
-		if(this.displaymanage){ $("#ms_manarea").html(lang.isJP()?"管理領域を表示":"Show management area");}
-		else                  { $("#ms_manarea").html(lang.isJP()?"管理領域を隠す":"Hide management area");}
+		if(!this.displaymanage){ $("#ms_manarea").html(lang.isJP()?"管理領域を表示":"Show management area");}
+		else                   { $("#ms_manarea").html(lang.isJP()?"管理領域を隠す":"Hide management area");}
 	},
 
 	//------------------------------------------------------------------------------
@@ -7795,7 +7795,7 @@ Colors.prototype = {
 	setLineColor1 : function(id, cc1, cc2){
 		var setc = "";
 		if(cc1!=-1 && bd.backLine(id)!=-1){
-			if(this.lcntCell(cc1)!=3){
+			if(ans.lcntCell(cc1)!=3){
 				setc = bd.border[bd.backLine(id)].color;
 			}
 			else{
@@ -7805,7 +7805,7 @@ Colors.prototype = {
 			}
 		}
 		if(cc2!=-1 && bd.nextLine(id)!=-1){
-			if(this.lcntCell(cc2)!=3){
+			if(ans.lcntCell(cc2)!=3){
 				if(!setc){ setc = bd.border[bd.nextLine(id)].color;}
 				else{ this.changeColors(bd.nextLine(id), id, setc);}
 			}
@@ -7823,19 +7823,19 @@ Colors.prototype = {
 		var keeped = 0;
 		var firstchange = false;
 		if(cc1!=-1 && cc2!=-1){
-			if(!ans.isLoopLine(id) && cc1!=-1 && (this.lcntCell(cc1)==2 || this.lcntCell(cc1)==4)){
+			if(!ans.isLoopLine(id) && cc1!=-1 && (ans.lcntCell(cc1)==2 || ans.lcntCell(cc1)==4)){
 				keeped=1;
 			}
-			else if(cc1!=-1 && this.lcntCell(cc1)==3 && this.tshapeid(cc1)!=id){
+			else if(cc1!=-1 && ans.lcntCell(cc1)==3 && this.tshapeid(cc1)!=id){
 				this.changeColors(this.tshapeid(cc1), -1, bd.border[bd.backLine(id)].color);
 				firstchange = true;
 				if(!ans.isConnectLine(bd.nextLine(id), this.tshapeid(cc1), id)){ keeped=1;}
 			}
 			
-			if(!ans.isLoopLine(id) && cc2!=-1 && (this.lcntCell(cc2)==2 || this.lcntCell(cc2)==4) && keeped==1){
+			if(!ans.isLoopLine(id) && cc2!=-1 && (ans.lcntCell(cc2)==2 || ans.lcntCell(cc2)==4) && keeped==1){
 				this.changeColors(bd.nextLine(id), id, this.getNewLineColor());
 			}
-			else if(cc2!=-1 && this.lcntCell(cc2)==3 && this.tshapeid(cc2)!=id){
+			else if(cc2!=-1 && ans.lcntCell(cc2)==3 && this.tshapeid(cc2)!=id){
 				if(keeped==0){ this.changeColors(this.tshapeid(cc2), -1, bd.border[bd.nextLine(id)].color);}
 				else{
 					if(ans.isConnectLine(this.tshapeid(cc2),bd.nextLine(id),-1)){
@@ -7860,11 +7860,11 @@ Colors.prototype = {
 	lcntCell : function(id){
 		if(k.isborderAsLine==0){
 			if(id==-1 || id>=bd.cell.length){ return -1;}
-			return bd.lcntCell(bd.cell[id].cx,bd.cell[id].cy);
+			return ans.lcntCell(bd.cnum(bd.cell[id].cx,bd.cell[id].cy));
 		}
 		else{
 			if(id==-1 || id>=(k.qcols+1)*(k.qrows+1)){ return -1;}
-			return bd.lcntCross(id%(k.qcols+1), mf(id/(k.qcols+1)));
+			return ans.lcntCross(bd.xnum(id%(k.qcols+1), mf(id/(k.qcols+1))));
 		}
 	},
 	changeColors : function(startid, backid, col){
@@ -7895,12 +7895,12 @@ Colors.prototype = {
 		var bx, by, func;
 		if(k.isborderAsLine==0){
 			bx = cc%(k.qcols)*2+1; by = mf(cc/(k.qcols))*2+1;
-			if(cc==-1 || bd.lcntCell(bd.cell[cc].cx,bd.cell[cc].cy)!=3){ return -1;}
+			if(cc==-1 || ans.lcntCell(bd.cnum(bd.cell[cc].cx,bd.cell[cc].cy))!=3){ return -1;}
 			func = bd.LiB.bind(bd);
 		}
 		else{
 			bx = cc%(k.qcols+1)*2; by = mf(cc/(k.qcols+1))*2;
-			if(cc==-1 || bd.lcntCross(mf(bx/2),mf(by/2))!=3){ return -1;}
+			if(cc==-1 || ans.lcntCross(bd.xnum(mf(bx/2),mf(by/2)))!=3){ return -1;}
 			func = bd.QaB.bind(bd);
 		}
 
@@ -7963,7 +7963,7 @@ Colors.prototype = {
 		pc.zstable = false;
 	},
 	point : function(id,cc){
-		return this.lcntCell(cc)==1;
+		return ans.lcntCell(cc)==1;
 	},
 
 	//---------------------------------------------------------------------------
@@ -7987,7 +7987,7 @@ Colors.prototype = {
 		while(1){
 			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 			if((bx+by)%2==0){
-				var lcnt = this.lcntCell(mf(bx/2)+mf(by/2)*(k.qcols+(k.isborderAsLine==0?0:1)));
+				var lcnt = ans.lcntCell(mf(bx/2)+mf(by/2)*(k.qcols+(k.isborderAsLine==0?0:1)));
 				if(dir==0 || this.branch(bx,by,lcnt)){
 					if(line(bd.bnum(bx,by-1))>0){ this.sc0(idlist,bx,by,1)}
 					if(line(bd.bnum(bx,by+1))>0){ this.sc0(idlist,bx,by,2)}
@@ -8090,21 +8090,30 @@ Rooms.prototype = {
 		}
 	},
 	//--------------------------------------------------------------------------------
+	// room.lcnt()                指定された位置のCrossの上下左右のうち境界線が引かれている(ques==1 or qans==1の)数を求める
 	// room.setLineToRarea()      境界線が入力された時に、部屋のTOPにある数字をどうハンドリングするか
 	// room.removeLineFromRarea() 境界線が消された時に、部屋のTOPにある数字をどうハンドリングするか
 	// room.sr0()                 setLineToRarea()から呼ばれて、idを含む一つの部屋の領域を、指定されたareaidにする
-	//--------------------------------------------------------------------------------
+	//---------------------------------------------------------------------------
+	lcnt : function(xx,xy){
+		var func = function(id){ return (id!=-1&&((bd.QuB(id)==1)||(bd.QaB(id)==1)));};
+		var cnt = 0;
+		if(xy>0       && ( (k.isoutsideborder==0 && (xx==0 || xx==k.qcols)) || func(bd.bnum(xx*2  ,xy*2-1)) ) ){ cnt++;}
+		if(xy<k.qrows && ( (k.isoutsideborder==0 && (xx==0 || xx==k.qcols)) || func(bd.bnum(xx*2  ,xy*2+1)) ) ){ cnt++;}
+		if(xx>0       && ( (k.isoutsideborder==0 && (xy==0 || xy==k.qrows)) || func(bd.bnum(xx*2-1,xy*2  )) ) ){ cnt++;}
+		if(xx<k.qcols && ( (k.isoutsideborder==0 && (xy==0 || xy==k.qrows)) || func(bd.bnum(xx*2+1,xy*2  )) ) ){ cnt++;}
+		return cnt;
+	},
 	setLineToRarea : function(id){
-		var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
 		var bx = bd.border[id].cx, by = bd.border[id].cy;
-		if( bd.lcntCross(mf((bx-bx%2)/2), mf((by-by%2)/2))>=2 && bd.lcntCross(mf((bx+bx%2)/2), mf((by+by%2)/2))>=2
-			&& cc1!=-1 && cc2!=-1)
+		if( this.lcnt(mf((bx-bx%2)/2), mf((by-by%2)/2))>=2 && this.lcnt(mf((bx+bx%2)/2), mf((by+by%2)/2))>=2
+			&& bd.cc1(id)!=-1 && bd.cc2(id)!=-1 )
 		{
-			var keep = this.cell[cc1];
+			var keep = this.cell[bd.cc1(id)];
 			var func = function(id){ return (id!=-1 && bd.QuB(id)==0); };
 			this.rareamax++;
-			this.sr0(func, this.cell, cc2, this.rareamax);
-			if(this.cell[cc1] == this.rareamax){
+			this.sr0(func, this.cell, bd.cc2(id), this.rareamax);
+			if(this.cell[bd.cc1(id)] == this.rareamax){
 				for(var i=0;i<bd.cell.length;i++){ if(this.cell[i]==this.rareamax){ this.cell[i] = keep;} }
 				this.rareamax--;
 			}
@@ -8205,8 +8214,8 @@ LangMgr.prototype = {
 		$("#title2").html(base.gettitle());
 		$("#expression").html(base.expression[this.language]);
 
-		menu.ex.dispmanstr();
 		menu.displayAll();
+		menu.ex.dispmanstr();
 
 		base.resize_canvas();
 	}
@@ -8234,7 +8243,7 @@ PBase.prototype = {
 		// URLの取得 -> URLの?以下ををpuzzleid部とpzlURI部に分割(内部でurl_decode()呼んでいる)
 		enc = new Encode(location.search);
 		k.puzzleid = enc.uri.pid;
-		if(location.href.indexOf('for_test.html')>=0){ k.puzzleid = 'country';}
+		if(!k.puzzleid && location.href.indexOf('for_test.html')>=0){ k.puzzleid = 'country';}
 		if(!k.puzzleid){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
 		if(enc.uri.cols){ k.qcols = enc.uri.cols;}
 		if(enc.uri.rows){ k.qrows = enc.uri.rows;}
