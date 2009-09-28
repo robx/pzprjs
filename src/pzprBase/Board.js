@@ -532,14 +532,14 @@ Board.prototype = {
 	// bd.isnoLPup(), bd.isnoLPdown(), bd.isnoLPleft(), bd.isnoLPright()
 	//   è„â∫ç∂âEÇ™ê¸Ç™à¯ÇØÇ»Ç¢èåèÇ…Ç»Ç¡ÇƒÇ¢ÇÈÇ©îªíËÇ∑ÇÈ
 	//---------------------------------------------------------------------------
-	isLPup    : function(cc){ var qs = this.QuC(cc); return (qs==101||qs==102||qs==104||qs==105);},
-	isLPdown  : function(cc){ var qs = this.QuC(cc); return (qs==101||qs==102||qs==106||qs==107);},
-	isLPleft  : function(cc){ var qs = this.QuC(cc); return (qs==101||qs==103||qs==105||qs==106);},
-	isLPright : function(cc){ var qs = this.QuC(cc); return (qs==101||qs==103||qs==104||qs==107);},
-	isnoLPup    : function(cc){ var qs = this.QuC(cc); return (qs==1||qs==4||qs==5||qs==21||qs==103||qs==106||qs==107);},
-	isnoLPdown  : function(cc){ var qs = this.QuC(cc); return (qs==1||qs==2||qs==3||qs==21||qs==103||qs==104||qs==105);},
-	isnoLPleft  : function(cc){ var qs = this.QuC(cc); return (qs==1||qs==2||qs==5||qs==22||qs==102||qs==104||qs==107);},
-	isnoLPright : function(cc){ var qs = this.QuC(cc); return (qs==1||qs==3||qs==4||qs==22||qs==102||qs==105||qs==106);},
+	isLPup    : function(cc){ return ({101:1,102:1,104:1,105:1}[this.QuC(cc)] == 1);},
+	isLPdown  : function(cc){ return ({101:1,102:1,106:1,107:1}[this.QuC(cc)] == 1);},
+	isLPleft  : function(cc){ return ({101:1,103:1,105:1,106:1}[this.QuC(cc)] == 1);},
+	isLPright : function(cc){ return ({101:1,103:1,104:1,107:1}[this.QuC(cc)] == 1);},
+	isnoLPup    : function(cc){ return ({1:1,4:1,5:1,21:1,103:1,106:1,107:1}[this.QuC(cc)] == 1);},
+	isnoLPdown  : function(cc){ return ({1:1,2:1,3:1,21:1,103:1,104:1,105:1}[this.QuC(cc)] == 1);},
+	isnoLPleft  : function(cc){ return ({1:1,2:1,5:1,22:1,102:1,104:1,107:1}[this.QuC(cc)] == 1);},
+	isnoLPright : function(cc){ return ({1:1,3:1,4:1,22:1,102:1,105:1,106:1}[this.QuC(cc)] == 1);},
 	//---------------------------------------------------------------------------
 	// bd.isLPMarked()      LineÇÃÇ«ÇøÇÁÇ©ë§Ç…LinePartsÇ™ë∂ç›ÇµÇƒÇ¢ÇÈÇ©Ç«Ç§Ç©îªíËÇ∑ÇÈ
 	// bd.isLPCombined()    LineÇÃ2ï˚å¸Ç∆Ç‡LinePartsÇ™ë∂ç›ÇµÇƒÇ¢ÇÈÇ©Ç«Ç§Ç©îªíËÇ∑ÇÈ
@@ -548,23 +548,16 @@ Board.prototype = {
 	// bd.checkLPCombined() ê¸Ç™Ç¬Ç»Ç™Ç¡ÇƒÇ¢ÇÈÇ©Ç«Ç§Ç©å©ÇƒÅALine==1Çê›íËÇ∑ÇÈ
 	//---------------------------------------------------------------------------
 	isLPMarked : function(id){
-		return  this.isLP(id, function(cc1,cc2){ return (bd.isLPdown(cc1)||bd.isLPup(cc2));}    , function(cc1,cc2){ return (bd.isLPright(cc1)||bd.isLPleft(cc2));}    );
+		return this.border[id].cx%2==1 ? (bd.isLPdown(this.cc1(id)) || bd.isLPup(this.cc2(id))) :
+										 (bd.isLPright(this.cc1(id)) || bd.isLPleft(this.cc2(id)));
 	},
 	isLPCombined : function(id){
-		return  this.isLP(id, function(cc1,cc2){ return (bd.isLPdown(cc1)&&bd.isLPup(cc2));}    , function(cc1,cc2){ return (bd.isLPright(cc1)&&bd.isLPleft(cc2));}    );
+		return this.border[id].cx%2==1 ? (bd.isLPdown(this.cc1(id)) && bd.isLPup(this.cc2(id))) :
+										 (bd.isLPright(this.cc1(id)) && bd.isLPleft(this.cc2(id)));
 	},
 	isLineNG : function(id){
-		return !this.isLP(id, function(cc1,cc2){ return (bd.isnoLPdown(cc1)||bd.isnoLPup(cc2));}, function(cc1,cc2){ return (bd.isnoLPright(cc1)||bd.isnoLPleft(cc2));});
-	},
-	isLP : function(id,funcUD,funcLR){
-		var cc1 = this.cc1(id), cc2 = this.cc2(id);
-		if(cc1==-1||cc2==-1){ return false;}
-
-		var val1 = this.QuC(cc1);
-		var val2 = this.QuC(cc2);
-		if     (this.border[id].cx%2==1){ if(funcUD(cc1,cc2)){ return true;} } // è„â∫ä÷åW
-		else if(this.border[id].cy%2==1){ if(funcLR(cc1,cc2)){ return true;} } // ç∂âEä÷åW
-		return false;
+		return this.border[id].cx%2==1 ? (bd.isnoLPdown(this.cc1(id)) || bd.isnoLPup(this.cc2(id))) :
+										 (bd.isnoLPright(this.cc1(id)) || bd.isnoLPleft(this.cc2(id)));
 	},
 	checkLPCombined : function(cc){
 		var id;
@@ -762,7 +755,7 @@ Board.prototype = {
 	sLiB : function(id, num) {
 		if(id<0 || this.border.length<=id){ return;}
 		if(this.border[id].line == num){ return;}
-		if((num==1 && !bd.isLineNG(id))||(num!=1 && bd.isLPCombined(id))){ return;}
+		if((num==1 && bd.isLineNG(id))||(num!=1 && bd.isLPCombined(id))){ return;}
 		if(num==1 && k.puzzleid=="barns" && this.QuB(id)==1){ return;}
 		var old = this.LiB(id);
 
