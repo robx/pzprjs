@@ -1,4 +1,4 @@
-// MenuExec.js v3.2.0p5
+// MenuExec.js v3.2.2
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -821,13 +821,13 @@ MenuExec.prototype = {
 		if(confirm(lang.isJP()?"回答を消去しますか？":"Do you want to erase the Answer?")){
 			um.newOperation(true);
 			for(var i=0;i<bd.cell.length;i++){
-				if(bd.QaC(i)!=0){ um.addOpe('cell','qans',i,bd.QaC(i),0);}
+				if(bd.QaC(i)!=0){ um.addOpe('cell','qans',i,bd.QaC(i),-1);}
 				if(bd.QsC(i)!=0){ um.addOpe('cell','qsub',i,bd.QsC(i),0);}
 			}
 			if(k.isborder){
 				var val = (k.puzzleid!="bosanowa"?0:-1);
 				for(var i=0;i<bd.border.length;i++){
-					if(bd.QaB(i)!=0){ um.addOpe('border','qans',i,bd.QaB(i),0);}
+					if(bd.QaB(i)!=0){ um.addOpe('border','qans',i,bd.QaB(i),-1);}
 					if(bd.QsB(i)!=val){ um.addOpe('border','qsub',i,bd.QsB(i),val);}
 					if(bd.LiB(i)!=0){ um.addOpe('border','line',i,bd.LiB(i),0);}
 				}
