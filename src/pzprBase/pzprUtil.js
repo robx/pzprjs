@@ -1,4 +1,4 @@
-// pzprUtil.js v3.2.1
+// pzprUtil.js v3.2.2
 
 //---------------------------------------------------------------------------
 // ★Colorsクラス 主に色分けの情報を管理する
@@ -15,6 +15,8 @@ Colors.prototype = {
 	// col.getNewLineColor() 新しい色を返す
 	//---------------------------------------------------------------------------
 	getNewLineColor : function(){
+		var loopcount = 0;
+
 		while(1){
 			var Rdeg = mf(Math.random() * 384)-64; if(Rdeg<0){Rdeg=0;} if(Rdeg>255){Rdeg=255;}
 			var Gdeg = mf(Math.random() * 384)-64; if(Gdeg<0){Gdeg=0;} if(Gdeg>255){Gdeg=255;}
@@ -43,6 +45,9 @@ Colors.prototype = {
 				//alert("rgb("+Rdeg+", "+Gdeg+", "+Bdeg+")\nHLS("+mf(Hdeg)+", "+(""+mf(Ldeg*1000)*0.001).slice(0,5)+", "+(""+mf(Sdeg*1000)*0.001).slice(0,5)+")\nY("+(""+mf(Ydeg*1000)*0.001).slice(0,5)+")");
 				return "rgb("+Rdeg+","+Gdeg+","+Bdeg+")";
 			}
+
+			loopcount++;
+			if(loopcount>100){ return "rgb("+Rdeg+","+Gdeg+","+Bdeg+")";}
 		}
 	},
 
