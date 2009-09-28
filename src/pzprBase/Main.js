@@ -1,4 +1,4 @@
-// Main.js v3.2.0p5
+// Main.js v3.2.2
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -240,6 +240,7 @@ PBase.prototype = {
 		k.cv_oft.y = this.cv_obj.offset().top;
 
 		kp.resize();
+		bd.setpicAll();
 
 		pc.onresize_func();
 

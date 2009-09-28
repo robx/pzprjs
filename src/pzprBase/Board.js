@@ -1,4 +1,4 @@
-// Board.js v3.2.1
+// Board.js v3.2.2
 
 //---------------------------------------------------------------------------
 // ★Cellクラス BoardクラスがCellの数だけ保持する
@@ -8,6 +8,8 @@
 Cell = function(){
 	this.cx;	// セルのX座標を保持する
 	this.cy;	// セルのY座標を保持する
+	this.px;	// セルの描画用X座標を保持する
+	this.py;	// セルの描画用Y座標を保持する
 	this.ques;	// セルの問題データ(形状)を保持する
 	this.qnum;	// セルの問題データ(数字)を保持する
 	this.direc;	// 上下左右の方向
@@ -46,12 +48,7 @@ Cell.prototype = {
 	subclear : function(num) {
 		this.qsub = 0;
 		this.error = 0;
-	},
-	//---------------------------------------------------------------------------
-	// cell.px() cell.py() セルの左上、右上のCanvasの座標を返す
-	//---------------------------------------------------------------------------
-	px : function() { return k.p0.x+this.cx*k.cwidth;},
-	py : function() { return k.p0.y+this.cy*k.cheight;}
+	}
 };
 
 //---------------------------------------------------------------------------
@@ -60,10 +57,12 @@ Cell.prototype = {
 // ボードメンバデータの定義(2)
 // Crossクラスの定義
 Cross = function(){
-	this.cx;	// セルのX座標を保持する
-	this.cy;	// セルのY座標を保持する
-	this.ques;	// セルの問題データを保持する
-	this.qnum;	// セルの問題データ(数字)を保持する
+	this.cx;	// 交差点のX座標を保持する
+	this.cy;	// 交差点のY座標を保持する
+	this.px;	// 交差点の描画用X座標を保持する
+	this.py;	// 交差点の描画用Y座標を保持する
+	this.ques;	// 交差点の問題データを保持する
+	this.qnum;	// 交差点の問題データ(数字)を保持する
 	this.error;	// エラーデータを保持する
 	this.numobj = '';	// 数字を表示するためのエレメント
 };
@@ -88,12 +87,7 @@ Cross.prototype = {
 	},
 	subclear : function(num) {
 		this.error = 0;
-	},
-	//---------------------------------------------------------------------------
-	// cross.px() cell.py() 交差点の中心の座標を返す
-	//---------------------------------------------------------------------------
-	px : function() { return k.p0.x+this.cx*k.cwidth; },
-	py : function() { return k.p0.y+this.cy*k.cheight;}
+	}
 };
 
 //---------------------------------------------------------------------------
@@ -104,6 +98,8 @@ Cross.prototype = {
 Border = function(){
 	this.cx;	// 境界線のX座標を保持する
 	this.cy;	// 境界線のY座標を保持する
+	this.px;	// 境界線の描画X座標を保持する
+	this.py;	// 境界線の描画Y座標を保持する
 	this.ques;	// 境界線の問題データ(1:境界線あり)を保持する
 	this.qnum;	// 境界線の問題データ(数字)を保持する
 	this.qans;	// 境界線の回答データ(1:境界線あり)を保持する
@@ -147,12 +143,7 @@ Border.prototype = {
 		this.qsub = 0;
 		if(k.puzzleid=="bosanowa"){ this.qsub = -1;}
 		this.error = 0;
-	},
-	//---------------------------------------------------------------------------
-	// border.px() border.py() 境界線の中心の座標を返す
-	//---------------------------------------------------------------------------
-	px : function() { return k.p0.x+mf(this.cx*k.cwidth/2);},
-	py : function() { return k.p0.y+mf(this.cy*k.cheight/2);}
+	}
 };
 
 //---------------------------------------------------------------------------
@@ -215,7 +206,6 @@ Board.prototype = {
 	// bd.setposCross()  該当するidの交差点のcx,cyプロパティを設定する
 	// bd.setposBorder() 該当するidの境界線/Lineのcx,cyプロパティを設定する
 	// bd.setposEXCell() 該当するidのExtendセルのcx,cyプロパティを設定する
-	// bd.resize()       リサイズ時にpx,pyを初期化する
 	//---------------------------------------------------------------------------
 	// setpos関連関数 <- 各Cell等が持っているとメモリを激しく消費するのでここに置くこと.
 	setposAll : function(){
@@ -226,6 +216,8 @@ Board.prototype = {
 			for(var i=0;i<this.border.length;i++){ this.setposBorder(i);}
 		}
 		if(k.isextendcell!=0){ for(var i=0;i<this.excell.length;i++){ this.setposEXcell(i);} }
+
+		this.setpicAll();
 	},
 	setposCell : function(id){
 		this.cell[id].cx = id%k.qcols;
@@ -279,6 +271,41 @@ Board.prototype = {
 			else                             { this.excell[id].cx=-1;         this.excell[id].cy=-1;     }
 		}
 	},
+
+	//---------------------------------------------------------------------------
+	// bd.setpicAll()    全てのCell, Cross, BorderオブジェクトのsetpicCell()等を呼び出す
+	// bd.setpicCell()   該当するidのセルのpx,pyプロパティを設定する
+	// bd.setpicCross()  該当するidの交差点のpx,pyプロパティを設定する
+	// bd.setpicBorder() 該当するidの境界線/Lineのpx,pyプロパティを設定する
+	// bd.setpicEXCell() 該当するidのExtendセルのpx,pyプロパティを設定する
+	//---------------------------------------------------------------------------
+	setpicAll : function(){
+		for(var i=0;i<this.cell.length;i++){ this.setpicCell(i);}
+		if(k.iscross ){ for(var i=0;i<this.cross.length ;i++){ this.setpicCross(i); } }
+		if(k.isborder){
+			this.bdinside = (k.qcols-1)*k.qrows+k.qcols*(k.qrows-1);
+			for(var i=0;i<this.border.length;i++){ this.setpicBorder(i);}
+		}
+		if(k.isextendcell!=0){ for(var i=0;i<this.excell.length;i++){ this.setpicEXcell(i);} }
+	},
+
+	setpicCell : function(id){
+		this.cell[id].px = k.p0.x+this.cell[id].cx*k.cwidth;
+		this.cell[id].py = k.p0.y+this.cell[id].cy*k.cheight;
+	},
+	setpicCross : function(id){
+		this.cross[id].px = k.p0.x+this.cross[id].cx*k.cwidth;
+		this.cross[id].py = k.p0.y+this.cross[id].cy*k.cheight;
+	},
+	setpicBorder : function(id){
+		this.border[id].px = k.p0.x+mf(this.border[id].cx*k.cwidth/2);
+		this.border[id].py = k.p0.y+mf(this.border[id].cy*k.cheight/2);
+	},
+	setpicEXCell : function(id){
+		this.excell[id].px = k.p0.x+this.excell[id].cx*k.cwidth;
+		this.excell[id].py = k.p0.y+this.excell[id].cy*k.cheight;
+	},
+
 	//---------------------------------------------------------------------------
 	// bd.ansclear() 全てのCell, Cross, Borderオブジェクトのansclear()を呼び出し、Canvasを再描画する
 	// bd.subclear() 全てのCell, Cross, Borderオブジェクトのsubclear()を呼び出し、Canvasを再描画する

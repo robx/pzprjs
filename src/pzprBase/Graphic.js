@@ -1,4 +1,4 @@
-// Graphic.js v3.2.0p4
+// Graphic.js v3.2.2
 
 //---------------------------------------------------------------------------
 // šGraphicƒNƒ‰ƒX Canvas‚É•`‰æ‚·‚é
@@ -197,7 +197,7 @@ Graphic.prototype = {
 			else if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
 			else if(bd.ErC(c)==2){ g.fillStyle = this.errcolor2;}
 			else if(bd.ErC(c)==3){ g.fillStyle = this.errcolor3;}
-			if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px(), bd.cell[c].py(), k.cwidth+1, k.cheight+1);}
+			if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
 			this.vhide("c"+c+"_dot_");
 		}
 		this.vinc();
@@ -214,7 +214,7 @@ Graphic.prototype = {
 					g.fillStyle = this.dotcolor;
 					if(this.vnop("c"+c+"_dot_",1)){
 						g.beginPath();
-						g.arc(mf(bd.cell[c].px()+k.cwidth/2), mf(bd.cell[c].py()+k.cheight/2), dsize, 0, Math.PI*2, false);
+						g.arc(mf(bd.cell[c].px+k.cwidth/2), mf(bd.cell[c].py+k.cheight/2), dsize, 0, Math.PI*2, false);
 						g.fill();
 					}
 					if(bd.ErC(c)==0){ this.vhide("c"+c+"_full_");}
@@ -222,7 +222,7 @@ Graphic.prototype = {
 				else if(bd.ErC(c)==0){
 					g.fillStyle = this.bcolor;
 					if(this.vnop("c"+c+"_full_",1)){
-						g.fillRect(bd.cell[c].px(), bd.cell[c].py(), k.cwidth+1, k.cheight+1);
+						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
 					}
 				}
 			}
@@ -240,7 +240,7 @@ Graphic.prototype = {
 			else if(bd.QsC(c)==2){ g.fillStyle = this.qsubcolor2;}
 			else if(bd.QsC(c)==3){ g.fillStyle = this.qsubcolor3;}
 			else{ this.vhide("c"+c+"_full_"); continue;}
-			if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px(), bd.cell[c].py(), k.cwidth, k.cheight);}
+			if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);}
 		}
 		this.vinc();
 	},
@@ -253,7 +253,7 @@ Graphic.prototype = {
 		if(bd.ErC(cc)==1||bd.ErC(cc)==2){
 			if     (bd.ErC(cc)==1){ g.fillStyle = this.errbcolor1;}
 			else if(bd.ErC(cc)==2){ g.fillStyle = this.errbcolor2;}
-			if(this.vnop("c"+cc+"_full_",1)){ g.fillRect(bd.cell[cc].px(), bd.cell[cc].py(), k.cwidth, k.cheight);}
+			if(this.vnop("c"+cc+"_full_",1)){ g.fillRect(bd.cell[cc].px, bd.cell[cc].py, k.cwidth, k.cheight);}
 		}
 		else{ this.vhide("c"+cc+"_full_");}
 	},
@@ -263,7 +263,7 @@ Graphic.prototype = {
 			var c = clist[i];
 			if(bd.QuC(c)==6){
 				g.fillStyle = (bd.ErC(c)==1?this.errbcolor1:this.icecolor);
-				if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px(), bd.cell[c].py(), k.cwidth, k.cheight);}
+				if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);}
 			}
 			else{ this.vhide("c"+c+"_full_");}
 		}
@@ -276,7 +276,7 @@ Graphic.prototype = {
 			if(bd.QnC(c)!=-1){
 				if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
 				else{ g.fillStyle = this.Cellcolor;}
-				if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px(), bd.cell[c].py(), k.cwidth+1, k.cheight+1);}
+				if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
 			}
 			else if(bd.ErC(c)==0 && !(k.puzzleid=="lightup" && ans.isShined && ans.isShined(c))){ this.vhide("c"+c+"_full_");}
 			this.dispnumCell_General(c);
@@ -291,7 +291,7 @@ Graphic.prototype = {
 			var c = clist[i];
 			if(bd.QsC(c)==1){
 				g.fillStyle = this.dotcolor;
-				if(this.vnop("c"+c+"_dot_",1)){ g.fillRect(bd.cell[c].px()+mf(k.cwidth/2)-mf(ksize/2), bd.cell[c].py()+mf(k.cheight/2)-mf(ksize/2), ksize, ksize);}
+				if(this.vnop("c"+c+"_dot_",1)){ g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-mf(ksize/2), bd.cell[c].py+mf(k.cheight/2)-mf(ksize/2), ksize, ksize);}
 			}
 			else{ this.vhide("c"+c+"_dot_");}
 		}
@@ -322,7 +322,7 @@ Graphic.prototype = {
 				var ls = mf((k.cwidth-ll)/2);	//LineStart
 				var lw = (mf(k.cwidth/24)>=1?mf(k.cwidth/24):1); //LineWidth
 				var lm = mf((lw-1)/2); //LineMargin
-				var px=bd.cell[c].px(), py=bd.cell[c].py();
+				var px=bd.cell[c].px, py=bd.cell[c].py;
 
 				if((dir==1||dir==2) && this.vnop("c"+c+"_ar1_",1)){
 					px=px+k.cwidth-mf(ls*1.5)-lm; py=py+ls+1;
@@ -361,7 +361,7 @@ Graphic.prototype = {
 				else{ g.fillStyle = "white";}
 				if(this.vnop("x"+c+"_cp1_",1)){
 					g.beginPath();
-					g.arc(bd.cross[c].px(), bd.cross[c].py(), csize, 0, Math.PI*2, false);
+					g.arc(bd.cross[c].px, bd.cross[c].py, csize, 0, Math.PI*2, false);
 					g.fill();
 				}
 
@@ -370,7 +370,7 @@ Graphic.prototype = {
 				if(this.vnop("x"+c+"_cp2_",0)){
 					if(k.br.IE){
 						g.beginPath();
-						g.arc(bd.cross[c].px(), bd.cross[c].py(), csize, 0, Math.PI*2, false);
+						g.arc(bd.cross[c].px, bd.cross[c].py, csize, 0, Math.PI*2, false);
 					}
 					g.stroke();
 				}
@@ -391,7 +391,7 @@ Graphic.prototype = {
 
 				if(this.vnop("x"+c+"_cm_",1)){
 					g.beginPath();
-					g.arc(bd.cross[c].px(), bd.cross[c].py(), csize, 0, Math.PI*2, false);
+					g.arc(bd.cross[c].px, bd.cross[c].py, csize, 0, Math.PI*2, false);
 					g.fill();
 				}
 			}
@@ -454,8 +454,8 @@ Graphic.prototype = {
 			if(bd.QsB(id)==1){ g.fillStyle = this.BorderQsubcolor;}
 			else{ this.vhide("b"+id+"_qsub1_"); continue;}
 
-			if     (bd.border[id].cx%2==1){ if(this.vnop("b"+id+"_qsub1_",1)){ g.fillRect(bd.border[id].px(),                  bd.border[id].py()-mf(k.cheight/2)+m, 1,            k.cheight-2*m);} }
-			else if(bd.border[id].cy%2==1){ if(this.vnop("b"+id+"_qsub1_",1)){ g.fillRect(bd.border[id].px()-mf(k.cwidth/2)+m, bd.border[id].py(),                   k.cwidth-2*m, 1            );} }
+			if     (bd.border[id].cx%2==1){ if(this.vnop("b"+id+"_qsub1_",1)){ g.fillRect(bd.border[id].px,                  bd.border[id].py-mf(k.cheight/2)+m, 1,            k.cheight-2*m);} }
+			else if(bd.border[id].cy%2==1){ if(this.vnop("b"+id+"_qsub1_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)+m, bd.border[id].py,                   k.cwidth-2*m, 1            );} }
 		}
 		this.vinc();
 	},
@@ -476,11 +476,8 @@ Graphic.prototype = {
 			var c = clist[i];
 			if(bd.QaC(c)!=1){ for(var n=1;n<=12;n++){ this.vhide("c"+c+"_bb"+n+"_");} continue;}
 
-			var bx = 2*bd.cell[c].cx+1;
-			var by = 2*bd.cell[c].cy+1;
-
-			var px = bd.cell[c].px();
-			var py = bd.cell[c].py();
+			var bx = 2*bd.cell[c].cx+1, by = 2*bd.cell[c].cy+1;
+			var px = bd.cell[c].px, py = bd.cell[c].py;
 
 			var isUP = ((bd.QuB(bd.ub(c))!=1) && !(!k.isoutsideborder&&by<=1));
 			var isLT = ((bd.QuB(bd.lb(c))!=1) && !(!k.isoutsideborder&&bx<=1));
@@ -537,10 +534,10 @@ Graphic.prototype = {
 
 		if(!flag){ this.vhide(pid);}
 		else if(bd.border[id].cx%2==1 && this.vnop(pid,1)){
-			g.fillRect(bd.border[id].px()-lm, bd.border[id].py()-mf(k.cheight/2)-lm, lw, k.cheight+lw);
+			g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);
 		}
 		else if(bd.border[id].cy%2==1 && this.vnop(pid,1)){
-			g.fillRect(bd.border[id].px()-mf(k.cwidth/2)-lm, bd.border[id].py()-lm, k.cwidth+lw, lw);
+			g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-lm, k.cwidth+lw, lw);
 		}
 	},
 	drawPekes : function(x1,y1,x2,y2,flag){
@@ -555,18 +552,18 @@ Graphic.prototype = {
 
 			g.fillStyle = "white";
 			if((flag==0 || flag==2)){ if(this.vnop("b"+id+"_peke0_",1)){
-				g.fillRect(bd.border[id].px()-size, bd.border[id].py()-size, 2*size+1, 2*size+1);
+				g.fillRect(bd.border[id].px-size, bd.border[id].py-size, 2*size+1, 2*size+1);
 			}}
 			else{ this.vhide("b"+id+"_peke0_");}
 
 			if(flag==0 || flag==1){
 				g.lineWidth = 1;
 				if(this.vnop("b"+id+"_peke1_",0)){
-					this.inputPath([bd.border[id].px(),bd.border[id].py() ,-size+1,-size+1 ,size,size],false);
+					this.inputPath([bd.border[id].px,bd.border[id].py ,-size+1,-size+1 ,size,size],false);
 					g.stroke();
 				}
 				if(this.vnop("b"+id+"_peke2_",0)){
-					this.inputPath([bd.border[id].px(),bd.border[id].py() ,-size+1,size ,size,-size+1],false);
+					this.inputPath([bd.border[id].px,bd.border[id].py ,-size+1,size ,size,-size+1],false);
 					g.stroke();
 				}
 			}
@@ -590,7 +587,7 @@ Graphic.prototype = {
 			else if((bd.ErC(c)==1||bd.ErC(c)==4) && k.puzzleid!="shakashaka"){ g.fillStyle = this.errcolor1;}
 			else{ g.fillStyle = this.Cellcolor;}
 
-			this.drawTriangle1(bd.cell[c].px(),bd.cell[c].py(),num,bd.cell[c].cx,bd.cell[c].cy);
+			this.drawTriangle1(bd.cell[c].px,bd.cell[c].py,num,bd.cell[c].cx,bd.cell[c].cy);
 		}
 		this.vinc();
 	},
@@ -638,7 +635,7 @@ Graphic.prototype = {
 			if(bd.QsC(c)==1){
 				if(this.vnop("c"+c+"_MB1_",0)){
 					g.beginPath();
-					g.arc(bd.cell[c].px()+mf(k.cwidth/2), bd.cell[c].py()+mf(k.cheight/2), rsize, 0, Math.PI*2, false);
+					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize, 0, Math.PI*2, false);
 					g.stroke();
 				}
 			}
@@ -646,11 +643,11 @@ Graphic.prototype = {
 
 			if(bd.QsC(c)==2){
 				if(this.vnop("c"+c+"_MB2a_",0)){
-					this.inputPath([bd.cell[c].px()+mf(k.cwidth/2),bd.cell[c].py()+mf(k.cheight/2) ,-rsize,-rsize ,rsize,rsize],true);
+					this.inputPath([bd.cell[c].px+mf(k.cwidth/2),bd.cell[c].py+mf(k.cheight/2) ,-rsize,-rsize ,rsize,rsize],true);
 					g.stroke();
 				}
 				if(this.vnop("c"+c+"_MB2b_",0)){
-					this.inputPath([bd.cell[c].px()+mf(k.cwidth/2),bd.cell[c].py()+mf(k.cheight/2) ,-rsize,rsize ,rsize,-rsize],true);
+					this.inputPath([bd.cell[c].px+mf(k.cwidth/2),bd.cell[c].py+mf(k.cheight/2) ,-rsize,rsize ,rsize,-rsize],true);
 					g.stroke();
 				}
 			}
@@ -674,7 +671,7 @@ Graphic.prototype = {
 				g.fillStyle = this.Cellcolor;
 				if(this.vnop("c"+c+"_cir41a_",1)){
 					g.beginPath();
-					g.arc(mf(bd.cell[c].px()+mf(k.cwidth/2)), mf(bd.cell[c].py()+mf(k.cheight/2)), rsize , 0, Math.PI*2, false);
+					g.arc(mf(bd.cell[c].px+mf(k.cwidth/2)), mf(bd.cell[c].py+mf(k.cheight/2)), rsize , 0, Math.PI*2, false);
 					g.fill();
 				}
 			}
@@ -684,7 +681,7 @@ Graphic.prototype = {
 				g.fillStyle = "white";
 				if(this.vnop("c"+c+"_cir41b_",1)){
 					g.beginPath();
-					g.arc(mf(bd.cell[c].px()+mf(k.cwidth/2)), mf(bd.cell[c].py()+mf(k.cheight/2)), rsize2, 0, Math.PI*2, false);
+					g.arc(mf(bd.cell[c].px+mf(k.cwidth/2)), mf(bd.cell[c].py+mf(k.cheight/2)), rsize2, 0, Math.PI*2, false);
 					g.fill();
 				}
 			}
@@ -708,19 +705,19 @@ Graphic.prototype = {
 
 		var qs = bd.QuC(id);
 		if(qs==101||qs==102||qs==104||qs==105){
-			if(this.vnop("c"+id+"_lp1_",1)){ g.fillRect(bd.cell[id].px()+mf(k.cwidth/2)-1, bd.cell[id].py()                  , lw, mf((k.cheight+lw)/2));}
+			if(this.vnop("c"+id+"_lp1_",1)){ g.fillRect(bd.cell[id].px+mf(k.cwidth/2)-1, bd.cell[id].py                  , lw, mf((k.cheight+lw)/2));}
 		}
 		else{ this.vhide("c"+id+"_lp1_");}
 		if(qs==101||qs==102||qs==106||qs==107){
-			if(this.vnop("c"+id+"_lp2_",1)){ g.fillRect(bd.cell[id].px()+mf(k.cwidth/2)-1, bd.cell[id].py()+mf(k.cheight/2)-1, lw, mf((k.cheight+lw)/2));}
+			if(this.vnop("c"+id+"_lp2_",1)){ g.fillRect(bd.cell[id].px+mf(k.cwidth/2)-1, bd.cell[id].py+mf(k.cheight/2)-1, lw, mf((k.cheight+lw)/2));}
 		}
 		else{ this.vhide("c"+id+"_lp2_");}
 		if(qs==101||qs==103||qs==105||qs==106){
-			if(this.vnop("c"+id+"_lp3_",1)){ g.fillRect(bd.cell[id].px()                  , bd.cell[id].py()+mf(k.cheight/2)-1, mf((k.cwidth+lw)/2), lw);}
+			if(this.vnop("c"+id+"_lp3_",1)){ g.fillRect(bd.cell[id].px                 , bd.cell[id].py+mf(k.cheight/2)-1, mf((k.cwidth+lw)/2), lw);}
 		}
 		else{ this.vhide("c"+id+"_lp3_");}
 		if(qs==101||qs==103||qs==104||qs==107){
-			if(this.vnop("c"+id+"_lp4_",1)){ g.fillRect(bd.cell[id].px()+mf(k.cwidth/2)-1, bd.cell[id].py()+mf(k.cheight/2)-1, mf((k.cwidth+lw)/2), lw);}
+			if(this.vnop("c"+id+"_lp4_",1)){ g.fillRect(bd.cell[id].px+mf(k.cwidth/2)-1, bd.cell[id].py+mf(k.cheight/2)-1, mf((k.cwidth+lw)/2), lw);}
 		}
 		else{ this.vhide("c"+id+"_lp4_");}
 	},
@@ -739,11 +736,11 @@ Graphic.prototype = {
 				if(errdisp){
 					if(bd.ErC(c)==1){
 						g.fillStyle = this.errbcolor1;
-						if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px()+1, bd.cell[c].py()+1, k.cwidth-1, k.cheight-1);}
+						if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);}
 					}
 					else{ this.vhide("c"+c+"_full_");}
 				}
-				this.setPath51_1(c, bd.cell[c].px(), bd.cell[c].py());
+				this.setPath51_1(c, bd.cell[c].px, bd.cell[c].py);
 				if(this.vnop("c"+c+"_q51_",0)){ g.stroke();}
 			}
 			else{ this.vhide("c"+c+"_q51_");}
@@ -761,21 +758,21 @@ Graphic.prototype = {
 				if(errdisp){
 					if(bd.ErE(c)==1){
 						g.fillStyle = this.errbcolor1;
-						if(this.vnop("ex"+c+"_full_",1)){ g.fillRect(bd.excell[c].px()+1, bd.excell[c].py()+1, k.cwidth-1, k.cheight-1);}
+						if(this.vnop("ex"+c+"_full_",1)){ g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);}
 					}
 					else{ this.vhide("ex"+c+"_full_");}
 				}
 
 				g.fillStyle = this.Cellcolor;
-				this.setPath51_1(c, bd.excell[c].px(), bd.excell[c].py());
+				this.setPath51_1(c, bd.excell[c].px, bd.excell[c].py);
 				if(this.vnop("ex"+c+"_q51_",0)){ g.stroke();}
 
 				g.strokeStyle = this.Cellcolor;
 				if(bd.excell[c].cy==-1 && bd.excell[c].cx<k.qcols-1){
-					if(this.vnop("ex"+c+"_bdx_",1)){ g.fillRect(bd.excell[c].px()+k.cwidth, bd.excell[c].py(), 1, k.cheight);}
+					if(this.vnop("ex"+c+"_bdx_",1)){ g.fillRect(bd.excell[c].px+k.cwidth, bd.excell[c].py, 1, k.cheight);}
 				}
 				if(bd.excell[c].cx==-1 && bd.excell[c].cy<k.qrows-1){
-					if(this.vnop("ex"+c+"_bdy_",1)){ g.fillRect(bd.excell[c].px(), bd.excell[c].py()+k.cheight, k.cwidth, 1);}
+					if(this.vnop("ex"+c+"_bdy_",1)){ g.fillRect(bd.excell[c].px, bd.excell[c].py+k.cheight, k.cwidth, 1);}
 				}
 			}
 		}
@@ -1239,16 +1236,16 @@ Graphic.prototype = {
 	// pc.dispnum1()       ”Žš‚ð‹L“ü‚·‚é‚½‚ß‚Ì‹¤’ÊŠÖ”
 	//---------------------------------------------------------------------------
 	dispnumCell1 : function(c, obj, type, text, fontratio, color){
-		this.dispnum1(obj, type, text, fontratio, color, bd.cell[c].px(), bd.cell[c].py());
+		this.dispnum1(obj, type, text, fontratio, color, bd.cell[c].px, bd.cell[c].py);
 	},
 	dispnumEXcell1 : function(c, obj, type, text, fontratio, color){
-		this.dispnum1(obj, type, text, fontratio, color, bd.excell[c].px(), bd.excell[c].py());
+		this.dispnum1(obj, type, text, fontratio, color, bd.excell[c].px, bd.excell[c].py);
 	},
 	dispnumCross1 : function(c, obj, type, text, fontratio, color){
-		this.dispnum1(obj, type, text, fontratio, color, bd.cross[c].px(), bd.cross[c].py());
+		this.dispnum1(obj, type, text, fontratio, color, bd.cross[c].px, bd.cross[c].py);
 	},
 	dispnumBorder1 : function(c, obj, type, text, fontratio, color){
-		this.dispnum1(obj, type, text, fontratio, color, bd.border[c].px(), bd.border[c].py());
+		this.dispnum1(obj, type, text, fontratio, color, bd.border[c].px, bd.border[c].py);
 	},
 	dispnum1 : function(obj, type, text, fontratio, color, px, py){
 //		if(!this.textenable){
@@ -1347,7 +1344,7 @@ Graphic.prototype = {
 					if(!bd.excell[c].numobj){ bd.excell[c].numobj = this.CreateDOMAndSetNop();}
 					var color = (bd.ErE(c)==1?this.fontErrcolor:this.fontcolor);
 					var text = (bd.QnE(c)>=0?""+bd.QnE(c):"");
-					this.dispnum1(bd.excell[c].numobj, 4, text, 0.45, color, bd.excell[c].px()-1, bd.excell[c].py()+1);
+					this.dispnum1(bd.excell[c].numobj, 4, text, 0.45, color, bd.excell[c].px-1, bd.excell[c].py+1);
 				}
 
 				if(bd.DiE(c)==-1 || bd.excell[c].cx==-1 || bd.QuC(bd.excell[c].cx)==51){
@@ -1357,7 +1354,7 @@ Graphic.prototype = {
 					if(!bd.excell[c].numobj2){ bd.excell[c].numobj2 = this.CreateDOMAndSetNop();}
 					var color = (bd.ErE(c)==1?this.fontErrcolor:this.fontcolor);
 					var text = (bd.DiE(c)>=0?""+bd.DiE(c):"");
-					this.dispnum1(bd.excell[c].numobj2, 2, text, 0.45, color, bd.excell[c].px()-1, bd.excell[c].py()+1);
+					this.dispnum1(bd.excell[c].numobj2, 2, text, 0.45, color, bd.excell[c].px-1, bd.excell[c].py+1);
 				}
 			}
 		}
