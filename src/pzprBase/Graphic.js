@@ -7,7 +7,7 @@
 // Graphicクラスの定義
 Graphic = function(){
 	// 盤面のCellを分ける色
-	this.BDlinecolor = "black";
+	this.gridcolor = "black";
 	this.chassisflag = true;
 
 	// セルの色(黒マス)
@@ -906,16 +906,16 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawDashLines()     セルの中心から中心にひかれる点線をCanvasに描画する
-	// pc.drawDashLines2vml() セルの中心から中心にひかれる点線をCanvasに描画する(VML用)
+	// pc.drawDashLines()    セルの中心から中心にひかれる点線をCanvasに描画する
+	// pc.drawDashLinesvml() セルの中心から中心にひかれる点線をCanvasに描画する(VML用)
 	//---------------------------------------------------------------------------
 	drawDashLines : function(x1,y1,x2,y2){
-		if(k.br.IE){ this.drawDashLines2vml(x1,y1,x2,y2); return;}
+		if(k.br.IE){ this.drawDashLinesvml(x1,y1,x2,y2); return;}
 
 		if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
 		if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
 
-		g.fillStyle = this.BDlinecolor;
+		g.fillStyle = this.gridcolor;
 		for(var i=x1-1;i<=x2+1;i++){
 			for(var j=(k.p0.y+(y1-0.5)*k.cheight);j<(k.p0.y+(y2+1.5)*k.cheight);j+=6){
 				g.fillRect(k.p0.x+(i+0.5)*k.cwidth, j, 1, 3);
@@ -929,11 +929,11 @@ Graphic.prototype = {
 
 		this.vinc();
 	},
-	drawDashLines2vml : function(x1,y1,x2,y2){
+	drawDashLinesvml : function(x1,y1,x2,y2){
 		if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
 		if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
 
-//		g.fillStyle = this.BDlinecolor;
+//		g.fillStyle = this.gridcolor;
 //		g.lineWidth = 1;
 //		g.enabledash = true;
 //		for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("bdy"+i+"_",1)){
@@ -962,18 +962,18 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawBDline()     セルの枠線(実線)をCanvasに書き込む
-	// pc.drawBDline2()    セルの枠線(点線)をCanvasに書き込む
-	// pc.drawBDline2vml() セルの枠線(点線)をCanvasに書き込む(VML用)
-	// pc.drawChassis()  外枠をCanvasに書き込む
+	// pc.drawGrid()          セルの枠線(実線)をCanvasに書き込む
+	// pc.drawDashedGrid()    セルの枠線(点線)をCanvasに書き込む
+	// pc.drawDashedGridvml() セルの枠線(点線)をCanvasに書き込む(VML用)
+	// pc.drawChassis()       外枠をCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawBDline : function(x1,y1,x2,y2){
+	drawGrid : function(x1,y1,x2,y2){
 		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
 		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
 		var f=(k.isoutsideborder==0&&this.chassisflag);
 
-		g.fillStyle = this.BDlinecolor;
+		g.fillStyle = this.gridcolor;
 		var xa = f?(x1>1?x1:1)                    :(x1>0?x1:0);
 		var xb = f?(x2+1<k.qcols-1?x2+1:k.qcols-1):(x2+1<k.qcols?x2+1:k.qcols);
 		var ya = f?(y1>1?y1:1)                    :(y1>0?y1:0);
@@ -983,8 +983,8 @@ Graphic.prototype = {
 
 		this.vinc();
 	},
-	drawBDline2 : function(x1,y1,x2,y2){
-		if(k.br.IE){ this.drawBDline2vml(x1,y1,x2,y2); return;}
+	drawDashedGrid : function(x1,y1,x2,y2){
+		if(k.br.IE){ this.drawDashedGridvml(x1,y1,x2,y2); return;}
 
 		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
 		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
@@ -995,7 +995,7 @@ Graphic.prototype = {
 		var dotCount = (mf(k.cwidth/dotmax)>=1?mf(k.cwidth/dotmax):1);
 		var dotSize  = k.cwidth/(dotCount*2);
 
-		g.fillStyle = this.BDlinecolor;
+		g.fillStyle = this.gridcolor;
 		var xa = f?(x1>1?x1:1)                    :(x1>0?x1:0);
 		var xb = f?(x2+1<k.qcols-1?x2+1:k.qcols-1):(x2+1<k.qcols?x2+1:k.qcols);
 		var ya = f?(y1>1?y1:1)                    :(y1>0?y1:0);
@@ -1011,8 +1011,8 @@ Graphic.prototype = {
 			}
 		}
 	},
-	drawBDline2vml : function(x1,y1,x2,y2){
-		this.BDlinecolor = "rgb(160,160,160)";
+	drawDashedGridvml : function(x1,y1,x2,y2){
+		this.gridcolor = "rgb(160,160,160)";
 		this.drawBDline(x1,y1,x2,y2);
 
 //		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
@@ -1020,7 +1020,7 @@ Graphic.prototype = {
 //
 //		var f=(k.isoutsideborder==0&&this.chassisflag);
 //
-//		g.fillStyle = this.BDlinecolor;
+//		g.fillStyle = this.gridcolor;
 //		var xa = f?(x1>1?x1:1)                    :(x1>0?x1:0);
 //		var xb = f?(x2+1<k.qcols-1?x2+1:k.qcols-1):(x2+1<k.qcols?x2+1:k.qcols);
 //		var ya = f?(y1>1?y1:1)                    :(y1>0?y1:0);
