@@ -1,4 +1,4 @@
-// KeyInput.js v3.2.0p2
+// KeyInput.js v3.2.2α1
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -138,8 +138,8 @@ KeyEvent.prototype = {
 		if(!this.isCTRL  && e.ctrlKey ){ this.isCTRL=true;  flag = true; }
 		if(!this.isALT   && e.altKey  ){ this.isALT=true;   flag = true; }
 
-		if(this.isCTRL && this.ca=='z'){ this.inUNDO=true; flag = true; }
-		if(this.isCTRL && this.ca=='y'){ this.inREDO=true; flag = true; }
+		if(this.isCTRL && this.ca=='z'){ this.inUNDO=true; flag = true; tm.startUndoTimer();}
+		if(this.isCTRL && this.ca=='y'){ this.inREDO=true; flag = true; tm.startUndoTimer();}
 
 		if(this.ca=='F2' && k.callmode == "pmake"){ // 112～123はF1～F12キー
 			if     (k.mode==1 && !this.isSHIFT){ k.mode=3; menu.setVal('mode',3); flag = true;}

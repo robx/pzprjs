@@ -1,4 +1,4 @@
-// global.js v3.2.0
+// global.js v3.2.2
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -131,9 +131,15 @@ Function.prototype.kcbind = function(){
 Timer = function(){
 	this.st = 0;	// 最初のタイマー取得値
 	this.TID;		// タイマーID
+	this.lastseconds = 0;
+
 	this.lastOpeCnt = 0;
 	this.lastACTime = 0;
 	this.worstACCost = 0;
+
+	this.undoWaitCount = 0;
+	this.undoInterval  = (!k.br.IE?25:50);
+	this.TIDundo = null;
 
 	this.start();
 };
@@ -142,9 +148,6 @@ Timer.prototype = {
 	// tm.reset()      タイマーのカウントを0にする
 	// tm.start()      update()関数を100ms間隔で呼び出す
 	// tm.update()     100ms単位で呼び出される関数
-	// tm.updatetime() 秒数の表示を行う
-	// tm.label()      経過時間に表示する文字列を返す
-	// tm.ACchek()     自動正解判定を呼び出す
 	//---------------------------------------------------------------------------
 	reset : function(){
 		this.st = 0;
@@ -155,21 +158,23 @@ Timer.prototype = {
 	},
 	start : function(){
 		this.st = (new Date()).getTime();
-		var self = this;
-		this.TID = setInterval(this.update.bind(this),100);
+		this.TID = setInterval(this.update.bind(this), 200);
 	},
 	update : function(){
 		if(k.callmode!='pmake'){ this.updatetime();}
 
-		if(!kc.isCTRL){ kc.inUNDO=false; kc.inREDO=false;}
-
-		if     (kc.inUNDO)  { um.undo(); }
-		else if(kc.inREDO)  { um.redo(); }
-		else{ this.ACcheck();}
+		if(k.autocheck){ this.ACcheck();}
 	},
+
+	//---------------------------------------------------------------------------
+	// tm.updatetime() 秒数の表示を行う
+	// tm.label()      経過時間に表示する文字列を返す
+	//---------------------------------------------------------------------------
 	updatetime : function(){
 		var nowtime = (new Date()).getTime();
 		var seconds = mf((nowtime - this.st)/1000);
+		if(this.bseconds == seconds){ return;}
+
 		var hours   = mf(seconds/3600);
 		var minutes = mf(seconds/60) - hours*60;
 		seconds = seconds - minutes*60 - hours*3600;
@@ -179,20 +184,57 @@ Timer.prototype = {
 
 		if(hours) $("#timerpanel").html(this.label()+hours+":"+minutes+":"+seconds);
 		else $("#timerpanel").html(this.label()+minutes+":"+seconds);
+
+		this.bseconds = seconds;
 	},
 	label : function(){
 		return lang.isJP()?"経過時間：":"Time: ";
 	},
 
+	//---------------------------------------------------------------------------
+	// tm.ACcheck()    自動正解判定を呼び出す
+	//---------------------------------------------------------------------------
 	ACcheck : function(){
 		var nowms = (new Date()).getTime();
-		if(nowms - this.lastACTime > 120+(this.worstACCost<250?this.worstACCost*4:this.worstACCost*2+500) && this.lastOpeCnt != um.anscount && !ans.inCheck){
+		var ACint = 120+(this.worstACCost<250?this.worstACCost*4:this.worstACCost*2+500);
+		if(nowms - this.lastACTime > ACint && this.lastOpeCnt != um.anscount && !ans.inCheck){
 			this.lastACTime = nowms;
 			this.lastOpeCnt = um.anscount;
-			if(k.autocheck){
-				var comp = ans.autocheck();
-				if(!comp){ this.worstACCost = Math.max(this.worstACCost, ((new Date()).getTime()-nowms));}
-			}
+
+			var comp = ans.autocheck();
+			if(!comp){ this.worstACCost = Math.max(this.worstACCost, ((new Date()).getTime()-nowms));}
 		}
+	},
+
+	//---------------------------------------------------------------------------
+	// tm.startUndoTimer()  Undo/Redo呼び出しを開始する
+	// tm.stopUndoTimer()   Undo/Redo呼び出しを終了する
+	// tm.procUndo()        Undo/Redo呼び出しを実行する
+	//---------------------------------------------------------------------------
+	startUndoTimer : function(){
+		this.undoWaitCount = mf(200/this.undoInterval);
+		if(!this.TIDundo){ this.TIDundo = setInterval(this.procUndo.bind(this), this.undoInterval);}
+
+		if     (kc.inUNDO){ um.undo();}
+		else if(kc.inREDO){ um.redo();}
+	},
+	stopUndoTimer : function(){
+		kc.inUNDO=false;
+		kc.inREDO=false;
+		clearInterval(this.TIDundo);
+		this.TIDundo = null;
+	},
+
+	procUndo : function(){
+		if(!kc.isCTRL){ this.stopUndoTimer(); return;}
+
+		if(this.undoWaitCount>0){
+			if(kc.inUNDO || kc.inREDO){ this.undoWaitCount--;}
+			return;
+		}
+
+		if     (kc.inUNDO){ um.undo();}
+		else if(kc.inREDO){ um.redo();}
+		else{ this.undoWaitCount = mf(300/this.undoInterval);}
 	}
 };
