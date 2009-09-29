@@ -280,7 +280,7 @@ Board.prototype = {
 	// bd.setpicCell()   該当するidのセルのpx,pyプロパティを設定する
 	// bd.setpicCross()  該当するidの交差点のpx,pyプロパティを設定する
 	// bd.setpicBorder() 該当するidの境界線/Lineのpx,pyプロパティを設定する
-	// bd.setpicEXCell() 該当するidのExtendセルのpx,pyプロパティを設定する
+	// bd.setpicEXcell() 該当するidのExtendセルのpx,pyプロパティを設定する
 	//---------------------------------------------------------------------------
 	setpicAll : function(){
 		for(var i=0;i<this.cell.length;i++){ this.setpicCell(i);}
@@ -304,7 +304,7 @@ Board.prototype = {
 		this.border[id].px = k.p0.x+mf(this.border[id].cx*k.cwidth/2);
 		this.border[id].py = k.p0.y+mf(this.border[id].cy*k.cheight/2);
 	},
-	setpicEXCell : function(id){
+	setpicEXcell : function(id){
 		this.excell[id].px = k.p0.x+this.excell[id].cx*k.cwidth;
 		this.excell[id].py = k.p0.y+this.excell[id].cy*k.cheight;
 	},
@@ -460,16 +460,15 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	bcntCross : function(cx,cy) {
 		var cnt = 0;
-		if(this.QaC(this.cnum(cx-1, cy-1))==1){ cnt++;}
-		if(this.QaC(this.cnum(cx  , cy-1))==1){ cnt++;}
-		if(this.QaC(this.cnum(cx-1, cy  ))==1){ cnt++;}
-		if(this.QaC(this.cnum(cx  , cy  ))==1){ cnt++;}
+		if(this.isBlack(this.cnum(cx-1, cy-1))){ cnt++;}
+		if(this.isBlack(this.cnum(cx  , cy-1))){ cnt++;}
+		if(this.isBlack(this.cnum(cx-1, cy  ))){ cnt++;}
+		if(this.isBlack(this.cnum(cx  , cy  ))){ cnt++;}
 		return cnt;
 	},
 
 	//---------------------------------------------------------------------------
 	// bd.setLcnts()      線が引かれたり消されてたりした時に、変数lcntsの内容を変更する
-	// bd.resetLcount()   回転反転・拡大縮小時にlcnt変数を再構築する
 	// bd.resetLcnts()    lcnts等の変数の初期化を行う
 	// bd.lcntCell()      セルに存在する線の本数を返す
 	// bd.lcntCross()     交点に存在する線の本数を返す
@@ -868,5 +867,17 @@ Board.prototype = {
 	ErE : function(id){
 		if(id<0 || this.excell.length<=id){ return 0;}
 		return this.excell[id].error;
-	}
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.isBlack   該当するCellが黒マスかどうか返す
+	// bd.isWhite   該当するCellが白マスかどうか返す
+	// bd.setBlack  該当するCellに黒マスをセットする
+	// bd.setWhite  該当するCellに白マスをセットする
+	//---------------------------------------------------------------------------
+	isBlack : function(c){ return (bd.QaC(c)==1);},
+	isWhite : function(c){ return (c!=-1 && bd.QaC(c)!=1);},
+
+	setBlack : function(c){ bd.sQaC(c, 1);},
+	setWhite : function(c){ bd.sQaC(c,-1);}
 };

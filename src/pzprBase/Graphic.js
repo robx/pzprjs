@@ -190,7 +190,7 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	drawBlackCells : function(x1,y1,x2,y2){
 		var dsize = k.cwidth*0.06;
-		var clist = this.cellinside(x1,y1,x2,y2,function(c){ return (bd.QaC(c)==1);});
+		var clist = this.cellinside(x1,y1,x2,y2,bd.isBlack);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if     (bd.ErC(c)==0){ g.fillStyle = this.Cellcolor;}
@@ -204,7 +204,7 @@ Graphic.prototype = {
 	},
 	drawWhiteCells : function(x1,y1,x2,y2){
 		var dsize = mf(k.cwidth*0.06);
-		var clist = this.cellinside(x1,y1,x2,y2,function(c){ return (bd.QaC(c)!=1);});
+		var clist = this.cellinside(x1,y1,x2,y2,bd.isWhite);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			this.drawErrorCell1(c);
@@ -312,8 +312,8 @@ Graphic.prototype = {
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 
-			if     (bd.QaC(c)==1){ g.fillStyle = this.BCell_fontcolor;}
-			else if(bd.ErC(c)==1){ g.fillStyle = this.fontErrcolor;}
+			if     (bd.isBlack(c)){ g.fillStyle = this.BCell_fontcolor;}
+			else if(bd.ErC(c)==1) { g.fillStyle = this.fontErrcolor;}
 			else{ g.fillStyle = this.fontcolor;}
 
 			var dir = bd.DiC(c);
@@ -474,7 +474,7 @@ Graphic.prototype = {
 		var clist = this.cellinside(x1,y1,x2,y2,f_true);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if(bd.QaC(c)!=1){ for(var n=1;n<=12;n++){ this.vhide("c"+c+"_bb"+n+"_");} continue;}
+			if(!bd.isBlack(c)){ for(var n=1;n<=12;n++){ this.vhide("c"+c+"_bb"+n+"_");} continue;}
 
 			var bx = 2*bd.cell[c].cx+1, by = 2*bd.cell[c].cy+1;
 			var px = bd.cell[c].px, py = bd.cell[c].py;
@@ -1171,11 +1171,11 @@ Graphic.prototype = {
 				((bd.QnC(id)==-2 || bd.QuC(id)==-2) && k.isDispHatena) );
 	},
 	getNumberColor : function(id){
-		if     (bd.QuC(id)==-2)                              { return this.fontcolor;      }
-		else if((k.BlackCell==0?bd.QuC(id)!=0:bd.QaC(id)==1)){ return this.BCell_fontcolor;}
-		else if(bd.ErC(id)==1 || bd.ErC(id)==4)              { return this.fontErrcolor;   }
-		else if(k.isAnsNumber && bd.QnC(id)!=-1)             { return this.fontcolor;      }
-		else if(k.isAnsNumber && bd.QaC(id)!=-1)             { return this.fontAnscolor;   }
+		if     (bd.QuC(id)==-2)                               { return this.fontcolor;      }
+		else if((k.BlackCell==0?bd.QuC(id)!=0:bd.isBlack(id))){ return this.BCell_fontcolor;}
+		else if(bd.ErC(id)==1 || bd.ErC(id)==4)               { return this.fontErrcolor;   }
+		else if(k.isAnsNumber && bd.QnC(id)!=-1)              { return this.fontcolor;      }
+		else if(k.isAnsNumber && bd.QaC(id)!=-1)              { return this.fontAnscolor;   }
 		return this.fontcolor;
 	},
 	//---------------------------------------------------------------------------

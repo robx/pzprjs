@@ -279,7 +279,7 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQnumAns : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "#"){ bd.sQaC(c, 1);}
+			if     (ca == "#"){ bd.setBlack(c);}
 			else if(ca == "+"){ bd.sQsC(c, 1);}
 			else if(ca == "-"){ bd.sQnC(c, -2);}
 			else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
@@ -289,7 +289,7 @@ FileIO.prototype = {
 		return this.encodeCell( function(c){
 			if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
 			else if(bd.QnC(c)==-2){ return "- ";}
-			else if(bd.QaC(c)==1) { return "# ";}
+			else if(bd.isBlack(c)){ return "# ";}
 			else if(bd.QsC(c)==1) { return "+ ";}
 			else                  { return ". ";}
 		});
@@ -323,15 +323,15 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellAns : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "#"){ bd.sQaC(c, 1);}
-			else if(ca == "+"){ bd.sQsC(c, 1);}
+			if     (ca == "#"){ bd.setBlack(c);}
+			else if(ca == "+"){ bd.sQsC(c, 1); }
 		},stack);
 	},
 	encodeCellAns : function(){
 		return this.encodeCell( function(c){
-			if     (bd.QaC(c)==1){ return "# ";}
-			else if(bd.QsC(c)==1){ return "+ ";}
-			else                 { return ". ";}
+			if     (bd.isBlack(c)){ return "# ";}
+			else if(bd.QsC(c)==1) { return "+ ";}
+			else                  { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------

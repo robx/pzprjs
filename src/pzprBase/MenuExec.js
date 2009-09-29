@@ -316,7 +316,7 @@ MenuExec.prototype = {
 		// Šg‘åA‹«ŠEü‚Í‘ã“ü‚µ‚Ä‚¨‚­
 		if(k.isborder && um.isenableRecord()){ this.expandborder(key);}
 		this.adjustSpecial2(5,key);
-		bd.resetLcount();
+		bd.resetLcnts();
 	},
 	expandborder : function(key){
 		if(k.puzzleid=='icebarn'||k.puzzleid=='minarism'){ return;}
@@ -435,7 +435,7 @@ MenuExec.prototype = {
 			for(var i=0;i<qnums.length;i++){ bd.sQnC(room.getTopOfRoom(qnums[i].areaid), qnums[i].val);}
 		}
 		this.adjustSpecial2(6,key);
-		bd.resetLcount();
+		bd.resetLcnts();
 		return true;
 	},
 	reduceborder : function(key){
@@ -533,7 +533,7 @@ MenuExec.prototype = {
 
 		bd.setposAll();
 		this.adjustSpecial2(1,'');
-		bd.resetLcount();
+		bd.resetLcnts();
 	},
 	// ‰ñ“]E”½“](¶‰E”½“])
 	flipx : function(rx1,ry1,rx2,ry2){
@@ -586,7 +586,7 @@ MenuExec.prototype = {
 
 		bd.setposAll();
 		this.adjustSpecial2(2,'');
-		bd.resetLcount();
+		bd.resetLcnts();
 	},
 	// ‰ñ“]E”½“](‰E90‹‰ñ“])
 	turnr : function(rx1,ry1,rx2,ry2){ this.turn2(rx1,ry1,rx2,ry2,1); },
@@ -669,7 +669,7 @@ MenuExec.prototype = {
 
 		bd.setposAll();
 		this.adjustSpecial2(f+2,'');
-		bd.resetLcount();
+		bd.resetLcnts();
 	},
 
 	//------------------------------------------------------------------------------

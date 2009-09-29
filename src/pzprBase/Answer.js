@@ -354,11 +354,11 @@ AnsCheck.prototype = {
 		}
 		return true;
 	},
-	checkBlackCellCount  : function(area)          { return this.checkOneNumber(area, function(top,cnt){ return (top>=0 && top!=cnt);}, function(c){ return bd.QaC(c)== 1;} );},
+	checkBlackCellCount  : function(area)          { return this.checkOneNumber(area, function(top,cnt){ return (top>=0 && top!=cnt);}, bd.isBlack                          );},
 	checkDisconnectLine  : function(area)          { return this.checkOneNumber(area, function(top,cnt){ return (top==-1 && cnt==0); }, function(c){ return bd.QnC(c)!=-1;} );},
-	checkNumberAndSize   : function(area)          { return this.checkOneNumber(area, function(top,cnt){ return (top> 0 && top!=cnt);}, f_true); },
+	checkNumberAndSize   : function(area)          { return this.checkOneNumber(area, function(top,cnt){ return (top> 0 && top!=cnt);}, f_true                              );},
 	checkQnumsInArea     : function(area, func)    { return this.checkOneNumber(area, function(top,cnt){ return func(cnt);},            function(c){ return bd.QnC(c)!=-1;} );},
-	checkBlackCellInArea : function(area, func)    { return this.checkOneNumber(area, function(top,cnt){ return func(cnt);},            function(c){ return bd.QaC(c)== 1;} );},
+	checkBlackCellInArea : function(area, func)    { return this.checkOneNumber(area, function(top,cnt){ return func(cnt);},            bd.isBlack                          );},
 	checkNoObjectInRoom  : function(area, getvalue){ return this.checkOneNumber(area, function(top,cnt){ return (cnt==0); },            function(c){ return getvalue(c)!=-1;} );},
 
 	getQnumCellInArea : function(area, areaid){
@@ -385,11 +385,43 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// ans.checkSideAreaSize()     境界線をはさんで接する部屋のgetvalで得られるサイズが異なることを判定する
 	// ans.checkSideAreaCell()     境界線をはさんでタテヨコに接するセルの判定を行う
 	// ans.checkSeqBlocksInRoom()  部屋の中限定で、黒マスがひとつながりかどうか判定する
 	// ans.checkSameObjectInRoom() 部屋の中にgetvalueで複数種類の値が得られることを判定する
 	// ans.checkObjectRoom()       getvalueで同じ値が得られるセルが、複数の部屋の分散しているか判定する
 	//---------------------------------------------------------------------------
+	checkSideAreaSize : function(area, getval){
+		var adjs = new Array();
+		for(var r=1;r<=area.max-1;r++){
+			adjs[r] = new Array();
+			for(var s=r+1;s<=area.max;s++){ adjs[r][s]=0;}
+		}
+
+		for(var id=0;id<bd.border.length;id++){
+			if(bd.QuB(id)!=1&&bd.QaB(id)!=1){ continue;}
+			var cc1=bd.cc1(id), cc2=bd.cc2(id);
+			if(cc1==-1 && cc2==-1){ continue;}
+			var r1=area.check[cc1], r2=area.check[cc2];
+			if(r1<r2){ adjs[r1][r2]++;}
+			if(r1>r2){ adjs[r2][r1]++;}
+		}
+
+		for(var r=1;r<=area.max-1;r++){
+			for(var s=r+1;s<=area.max;s++){
+				if(adjs[r][s]==0){ continue;}
+				var a1=getval(area,r), a2=getval(area,s);
+				if(a1>0 && a2>0 && a1==a2){
+					bd.sErC(area.room[r],1);
+					bd.sErC(area.room[s],1);
+					return false;
+				}
+			}
+		}
+
+		return true;
+	},
+
 	checkSideAreaCell : function(area, func, flag){
 		for(var id=0;id<bd.border.length;id++){
 			if(bd.QuB(id)!=1&&bd.QaB(id)!=1){ continue;}
@@ -406,9 +438,8 @@ AnsCheck.prototype = {
 	checkSeqBlocksInRoom : function(rarea){
 		for(var id=1;id<=rarea.max;id++){
 			var area = new AreaInfo();
-			var func = function(id){ return (id!=-1 && bd.QaC(id)==1); };
-			for(var c=0;c<bd.cell.length;c++){ area.check.push(((rarea.check[c]==id && bd.QaC(c)==1)?0:-1));}
-			for(var c=0;c<k.qcols*k.qrows;c++){ if(area.check[c]==0){ area.max++; area.room[area.max]=new Array(); this.sc0(func, area, c, area.max);} }
+			for(var c=0;c<bd.cell.length;c++){ area.check.push(((rarea.check[c]==id && bd.isBlack(c))?0:-1));}
+			for(var c=0;c<k.qcols*k.qrows;c++){ if(area.check[c]==0){ area.max++; area.room[area.max]=new Array(); this.sc0(bd.isBlack, area, c, area.max);} }
 			if(area.max>1){
 				bd.sErC(rarea.room[id],1);
 				return false;
@@ -493,10 +524,10 @@ AnsCheck.prototype = {
 	// ans.sr0()           searchRLareaから呼ばれる再起呼び出し用関数
 	//---------------------------------------------------------------------------
 	searchWarea : function(){
-		return this.searchBWarea(function(id){ return (id!=-1 && bd.QaC(id)!=1); });
+		return this.searchBWarea(bd.isWhite);
 	},
 	searchBarea : function(){
-		return this.searchBWarea(function(id){ return (id!=-1 && bd.QaC(id)==1); });
+		return this.searchBWarea(bd.isBlack);
 	},
 	searchBWarea : function(func){
 		var area = new AreaInfo();

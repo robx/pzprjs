@@ -165,7 +165,7 @@ Colors.prototype = {
 		}
 		else{
 			bx = cc%(k.qcols+1)*2; by = mf(cc/(k.qcols+1))*2;
-			if(cc==-1 || ans.lcntCross(bd.xnum(mf(bx/2),mf(by/2)))!=3){ return -1;}
+			if(cc==-1 || bd.lcntCross(bd.xnum(mf(bx/2),mf(by/2)))!=3){ return -1;}
 			func = bd.QaB.bind(bd);
 		}
 

@@ -232,24 +232,24 @@ MouseEvent.prototype = {
 			if((this.firstPos.x+this.firstPos.y) % 2 != (bd.cell[cc].cx+bd.cell[cc].cy) % 2){ return;}
 		}
 
-		bd.sQaC(cc, (this.inputData==1?1:-1));
+		(this.inputData==1?bd.setBlack:bd.setWhite)(cc);
 		bd.sQsC(cc, (this.inputData==2?1:0));
 
 		pc.paintCell(cc);
 	},
 	decIC : function(cc){
 		if(menu.getVal('use')==1){
-			if(this.btn.Left){ this.inputData=((bd.QaC(cc)!=1) ? 1 : 0); }
+			if(this.btn.Left){ this.inputData=(bd.isWhite(cc) ? 1 : 0); }
 			else if(this.btn.Right){ this.inputData=((bd.QsC(cc)!=1) ? 2 : 0); }
 		}
 		else if(menu.getVal('use')==2){
 			if(this.btn.Left){
-				if(bd.QaC(cc) == 1) this.inputData=2;
+				if(bd.isBlack(cc)) this.inputData=2;
 				else if(bd.QsC(cc) == 1) this.inputData=0;
 				else this.inputData=1;
 			}
 			else if(this.btn.Right){
-				if(bd.QaC(cc) == 1) this.inputData=0;
+				if(bd.isBlack(cc)) this.inputData=0;
 				else if(bd.QsC(cc) == 1) this.inputData=1;
 				else this.inputData=2;
 			}
@@ -419,7 +419,7 @@ MouseEvent.prototype = {
 
 		for(var c=0;c<k.qcols*k.qrows;c++){
 			if(area.check[c] == areaid && (this.inputData==1 || bd.QsC(c)!=3)){
-				bd.sQaC(c, (this.inputData==1?1:-1));
+				(this.inputData==1?bd.setBlack:bd.setWhite)(c);
 				bd.sQsC(c, (this.inputData==2?1:0));
 			}
 		}
@@ -628,8 +628,8 @@ MouseEvent.prototype = {
 	dispRed : function(x,y){
 		var cc = this.cellid(new Pos(x,y));
 		this.mousereset();
-		if(cc==-1 || cc==this.mouseCell || bd.QaC(cc)!=1){ return;}
-		mv.dr0(function(c){ return (c!=-1 && bd.QaC(c)==1 && bd.ErC(c)==0);},cc,1);
+		if(!bd.isBlack(cc) || cc==this.mouseCell){ return;}
+		this.dr0(function(c){ return (bd.isBlack(c) && bd.ErC(c)==0);},cc,1);
 		ans.errDisp = true;
 		pc.paintAll();
 	},
@@ -646,8 +646,8 @@ MouseEvent.prototype = {
 	dispRedRB : function(x,y){
 		var cc = this.cellid(new Pos(x,y));
 		this.mousereset();
-		if(cc==-1 || cc==this.mouseCell || bd.QaC(cc)!=1){ return;}
-		mv.db0(function(c){ return (c!=-1 && bd.QaC(c)==1 && bd.ErC(c)==0);},cc,1);
+		if(!bd.isBlack(cc) || cc==this.mouseCell){ return;}
+		mv.db0(function(c){ return (bd.isBlack(c) && bd.ErC(c)==0);},cc,1);
 		ans.errDisp = true;
 		pc.paintAll();
 	},
