@@ -200,6 +200,7 @@ Board.prototype = {
 		}
 
 		this.setposAll();
+		this.resetLcnts();
 	},
 	//---------------------------------------------------------------------------
 	// bd.setposAll()    全てのCell, Cross, BorderオブジェクトのsetposCell()等を呼び出す
@@ -475,8 +476,8 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	setLcnts : function(id, val){
 		var cc1, cc2;
-		if(k.isCenterLine){ cc1 = bd.cc1(id),      cc2 = bd.cc2(id);}
-		else              { cc1 = bd.crosscc1(id), cc2 = bd.crosscc2(id);}
+		if(k.isCenterLine){ cc1 = this.cc1(id),      cc2 = this.cc2(id);}
+		else              { cc1 = this.crosscc1(id), cc2 = this.crosscc2(id);}
 
 		if(val>0){
 			if(cc1!=-1){ this.lcnts.total[this.lcnts.cell[cc1]]--; this.lcnts.cell[cc1]++; this.lcnts.total[this.lcnts.cell[cc1]]++;}
@@ -490,18 +491,18 @@ Board.prototype = {
 	resetLcnts : function(){
 		if(k.isborder){
 			if(k.isCenterLine){
-				if(bd.border){ for(var c=0;c<bd.cell.length;c++){ this.lcnts.cell[c]=0;} };
+				if(this.border){ for(var c=0;c<this.cell.length;c++){ this.lcnts.cell[c]=0;} };
 				for(var i=1;i<=4;i++){ this.lcnts.cell[i]=0;}
 				this.lcnts.total[0] = k.qcols*k.qrows;
 			}
 			else{
-				if(bd.border){ for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){ self.lcnts.cell[c]=0;} };
-				for(var i=1;i<=4;i++){ self.lcnts.cell[i]=0;}
+				if(this.border){ for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){ this.lcnts.cell[c]=0;} };
+				for(var i=1;i<=4;i++){ this.lcnts.cell[i]=0;}
 				this.lcnts.total[0] = (k.qcols+1)*(k.qrows+1);
 			}
 
-			for(var id=0;id<bd.border.length;id++){
-				if((k.isCenterLine && bd.LiB(id)>0) || (!k.isCenterLine && bd.QaB(id)>0)){
+			for(var id=0;id<this.border.length;id++){
+				if((k.isCenterLine && this.LiB(id)>0) || (!k.isCenterLine && this.QaB(id)>0)){
 					this.setLcnts(id,1);
 				}
 			}

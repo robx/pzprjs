@@ -18,7 +18,6 @@ AnsCheck = function(){
 	this.setError = true;
 	this.inAutoCheck = false;
 	this.alstr = { jp:'' ,en:''};
-	this.reset();
 };
 AnsCheck.prototype = {
 
