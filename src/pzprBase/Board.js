@@ -31,6 +31,7 @@ Cell.prototype = {
 		bd.setposCell(num);
 	},
 	allclear : function(num) {
+		this.ques = 0;
 		this.qans = -1;
 		this.qsub = 0;
 		this.ques = 0;
@@ -152,6 +153,7 @@ Border.prototype = {
 // Boardクラスの定義
 Board = function(){
 	this.bdinside = 0;		// 盤面の内側(外枠上でない)に存在する境界線の本数
+	this.lcnts = { cell:new Array(), total:new Array()};
 	this.initialize2();
 };
 Board.prototype = {
@@ -319,7 +321,7 @@ Board.prototype = {
 
 		pc.paintAll();
 
-		ans.reset();
+		this.resetLcnts();
 	},
 	subclear : function(){
 		for(var i=0;i<this.cell.length;i++){ this.cell[i].subclear(i);}
@@ -463,6 +465,51 @@ Board.prototype = {
 		if(this.QaC(this.cnum(cx  , cy  ))==1){ cnt++;}
 		return cnt;
 	},
+
+	//---------------------------------------------------------------------------
+	// bd.setLcnts()      線が引かれたり消されてたりした時に、変数lcntsの内容を変更する
+	// bd.resetLcount()   回転反転・拡大縮小時にlcnt変数を再構築する
+	// bd.resetLcnts()    lcnts等の変数の初期化を行う
+	// bd.lcntCell()      セルに存在する線の本数を返す
+	// bd.lcntCross()     交点に存在する線の本数を返す
+	//---------------------------------------------------------------------------
+	setLcnts : function(id, val){
+		var cc1, cc2;
+		if(k.isCenterLine){ cc1 = bd.cc1(id),      cc2 = bd.cc2(id);}
+		else              { cc1 = bd.crosscc1(id), cc2 = bd.crosscc2(id);}
+
+		if(val>0){
+			if(cc1!=-1){ this.lcnts.total[this.lcnts.cell[cc1]]--; this.lcnts.cell[cc1]++; this.lcnts.total[this.lcnts.cell[cc1]]++;}
+			if(cc2!=-1){ this.lcnts.total[this.lcnts.cell[cc2]]--; this.lcnts.cell[cc2]++; this.lcnts.total[this.lcnts.cell[cc2]]++;}
+		}
+		else{
+			if(cc1!=-1){ this.lcnts.total[this.lcnts.cell[cc1]]--; this.lcnts.cell[cc1]--; this.lcnts.total[this.lcnts.cell[cc1]]++;}
+			if(cc2!=-1){ this.lcnts.total[this.lcnts.cell[cc2]]--; this.lcnts.cell[cc2]--; this.lcnts.total[this.lcnts.cell[cc2]]++;}
+		}
+	},
+	resetLcnts : function(){
+		if(k.isborder){
+			if(k.isCenterLine){
+				if(bd.border){ for(var c=0;c<bd.cell.length;c++){ this.lcnts.cell[c]=0;} };
+				for(var i=1;i<=4;i++){ this.lcnts.cell[i]=0;}
+				this.lcnts.total[0] = k.qcols*k.qrows;
+			}
+			else{
+				if(bd.border){ for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){ self.lcnts.cell[c]=0;} };
+				for(var i=1;i<=4;i++){ self.lcnts.cell[i]=0;}
+				this.lcnts.total[0] = (k.qcols+1)*(k.qrows+1);
+			}
+
+			for(var id=0;id<bd.border.length;id++){
+				if((k.isCenterLine && bd.LiB(id)>0) || (!k.isCenterLine && bd.QaB(id)>0)){
+					this.setLcnts(id,1);
+				}
+			}
+		}
+	},
+
+	lcntCell  : function(cc){ return this.lcnts.cell[cc];},
+	lcntCross : function(cc){ return this.lcnts.cell[cc];},
 
 	//---------------------------------------------------------------------------
 	// bd.backLine()    指定されたIDの上側か左側から続く線のIDを返す(交差用)
@@ -696,12 +743,12 @@ Board.prototype = {
 		if(id<0 || this.border.length<=id){ return;}
 		if(this.border[id].ques == num){ return;}
 
-		if(!k.isCenterLine && num!=1){ ans.setLcnts(id, num);}
+		if(!k.isCenterLine && num!=1){ this.setLcnts(id, num);}
 
 		um.addOpe('border', 'ques', id, this.QuB(id), num);
 		this.border[id].ques = num;
 
-		if(!k.isCenterLine && num==1){ ans.setLcnts(id, num);}
+		if(!k.isCenterLine && num==1){ this.setLcnts(id, num);}
 
 		if(room.isEnable()){
 			if(num==1){ room.setLineToRarea(id);}
@@ -728,14 +775,17 @@ Board.prototype = {
 		if(this.border[id].qans == num){ return;}
 		var old = this.border[id].qans;
 
-		if(k.irowake!=0 && k.isborderAsLine && old>0 && num<=0){ col.setLineColor(id, num);}
-		if(!k.isCenterLine && num!=1){ ans.setLcnts(id, num);}
-
 		um.addOpe('border', 'qans', id, old, num);
 		this.border[id].qans = num;
 
-		if(k.irowake!=0 && k.isborderAsLine && old<=0 && num>0){ col.setLineColor(id, num);}
-		if(!k.isCenterLine && num==1){ ans.setLcnts(id, num);}
+		if     (num>0 && old<=0){
+			if(!k.isCenterLine)                 { this.setLcnts(id, num);    }
+			if(k.irowake!=0 && k.isborderAsLine){ col.setLineColor(id, num);}
+		}
+		else if(num<=0 && old>0){
+			if(k.irowake!=0 && k.isborderAsLine){ col.setLineColor(id, num);}
+			if(!k.isCenterLine)                 { this.setLcnts(id, num);    }
+		}
 	},
 	QaB : function(id){
 		if(id<0 || this.border.length<=id){ return -1;}
@@ -756,17 +806,19 @@ Board.prototype = {
 		if(id<0 || this.border.length<=id){ return;}
 		if(this.border[id].line == num){ return;}
 		if((num==1 && bd.isLineNG(id))||(num!=1 && bd.isLPCombined(id))){ return;}
-		if(num==1 && k.puzzleid=="barns" && this.QuB(id)==1){ return;}
 		var old = this.LiB(id);
-
-		if(k.irowake!=0 && old>0 && num<=0){ col.setLineColor(id, num);}
-		if(k.isCenterLine && old>0 && num<=0){ ans.setLcnts(id, num);}
 
 		um.addOpe('border', 'line', id, old, num);
 		this.border[id].line = num;
 
-		if(k.irowake!=0 && old<=0 && num>0){ col.setLineColor(id, num);}
-		if(k.isCenterLine && old<=0 && num>0){ ans.setLcnts(id, num);}
+		if     (num>0 && old<=0){
+			if(k.isCenterLine){ this.setLcnts(id, num);    }
+			if(k.irowake!=0)  { col.setLineColor(id, num);}
+		}
+		else if(num<=0 && old>0){
+			if(k.irowake!=0)  { col.setLineColor(id, num);}
+			if(k.isCenterLine){ this.setLcnts(id, num);    }
+		}
 	},
 	LiB : function(id){
 		if(id<0 || this.border.length<=id){ return -1;}

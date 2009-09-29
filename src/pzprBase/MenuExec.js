@@ -108,7 +108,7 @@ MenuExec.prototype = {
 
 		room.resetRarea();
 
-		ans.reset();
+		bd.resetLcnts();
 	},
 	bdcnt : function(col,row){ return (col-1)*row+col*(row-1)+(k.isoutsideborder==0?0:2*(col+row));},
 
@@ -316,7 +316,7 @@ MenuExec.prototype = {
 		// ägëÂéûÅAã´äEê¸ÇÕë„ì¸ÇµÇƒÇ®Ç≠
 		if(k.isborder && um.isenableRecord()){ this.expandborder(key);}
 		this.adjustSpecial2(5,key);
-		ans.resetLcount();
+		bd.resetLcount();
 	},
 	expandborder : function(key){
 		if(k.puzzleid=='icebarn'||k.puzzleid=='minarism'){ return;}
@@ -340,9 +340,9 @@ MenuExec.prototype = {
 				else if(key=='rt' && bd.border[i].cx==2*k.qcols-2){ source = bd.bnum(2*k.qcols, bd.border[i].cy);}
 
 				if(source!=-1){
-					bd.sQuB(i, bd.QuB(source)); bd.sQuB(source,  0);
-					bd.sQaB(i, bd.QaB(source)); bd.sQaB(source, -1);
-					bd.sQsB(i, bd.QsB(source)); bd.sQsB(source,  0);
+					bd.sQuB(i, bd.QuB(source)); bd.sQuB(source, 0);
+					bd.sQaB(i, bd.QaB(source)); bd.sQaB(source,-1);
+					bd.sQsB(i, bd.QsB(source)); bd.sQsB(source, 0);
 				}
 			}
 		}
@@ -435,7 +435,7 @@ MenuExec.prototype = {
 			for(var i=0;i<qnums.length;i++){ bd.sQnC(room.getTopOfRoom(qnums[i].areaid), qnums[i].val);}
 		}
 		this.adjustSpecial2(6,key);
-		ans.resetLcount();
+		bd.resetLcount();
 		return true;
 	},
 	reduceborder : function(key){
@@ -448,9 +448,9 @@ MenuExec.prototype = {
 				else if(key=='rt' && bd.border[i].cx==2*k.qcols){ source = bd.bnum(2*k.qcols-2, bd.border[i].cy);}
 
 				if(source!=-1){
-					bd.sQuB(i, bd.QuB(source)); bd.sQuB(source,  0);
-					bd.sQaB(i, bd.QaB(source)); bd.sQaB(source, -1);
-					bd.sQsB(i, bd.QsB(source)); bd.sQsB(source, -1);
+					bd.sQuB(i, bd.QuB(source)); bd.sQuB(source, 0);
+					bd.sQaB(i, bd.QaB(source)); bd.sQaB(source,-1);
+					bd.sQsB(i, bd.QsB(source)); bd.sQsB(source, 0);
 				}
 			}
 		}
@@ -533,7 +533,7 @@ MenuExec.prototype = {
 
 		bd.setposAll();
 		this.adjustSpecial2(1,'');
-		ans.resetLcount();
+		bd.resetLcount();
 	},
 	// âÒì]ÅEîΩì](ç∂âEîΩì])
 	flipx : function(rx1,ry1,rx2,ry2){
@@ -586,7 +586,7 @@ MenuExec.prototype = {
 
 		bd.setposAll();
 		this.adjustSpecial2(2,'');
-		ans.resetLcount();
+		bd.resetLcount();
 	},
 	// âÒì]ÅEîΩì](âE90ÅãâÒì])
 	turnr : function(rx1,ry1,rx2,ry2){ this.turn2(rx1,ry1,rx2,ry2,1); },
@@ -669,7 +669,7 @@ MenuExec.prototype = {
 
 		bd.setposAll();
 		this.adjustSpecial2(f+2,'');
-		ans.resetLcount();
+		bd.resetLcount();
 	},
 
 	//------------------------------------------------------------------------------
@@ -821,7 +821,7 @@ MenuExec.prototype = {
 		if(confirm(menu.isLangJP()?"âÒìöÇè¡ãéÇµÇ‹Ç∑Ç©ÅH":"Do you want to erase the Answer?")){
 			um.newOperation(true);
 			for(var i=0;i<bd.cell.length;i++){
-				if(bd.QaC(i)!=0){ um.addOpe('cell','qans',i,bd.QaC(i),-1);}
+				if(bd.QaC(i)!=-1){ um.addOpe('cell','qans',i,bd.QaC(i),-1);}
 				if(bd.QsC(i)!=0){ um.addOpe('cell','qsub',i,bd.QsC(i),0);}
 			}
 			if(k.isborder){

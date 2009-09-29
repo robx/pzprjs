@@ -18,26 +18,9 @@ AnsCheck = function(){
 	this.setError = true;
 	this.inAutoCheck = false;
 	this.alstr = { jp:'' ,en:''};
-	this.lcnts = { cell:new Array(), total:new Array()};
 	this.reset();
 };
 AnsCheck.prototype = {
-	//---------------------------------------------------------------------------
-	// ans.reset()        lcnts等の変数の初期化を行う
-	//---------------------------------------------------------------------------
-	reset : function(){
-		var self = this;
-		if(k.isCenterLine){
-			if(bd.border){ for(var c=0;c<bd.cell.length;c++){ self.lcnts.cell[c]=0;} };
-			for(var i=1;i<=4;i++){ self.lcnts.cell[i]=0;}
-			this.lcnts.total[0] = k.qcols*k.qrows;
-		}
-		else{
-			if(bd.border){ for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){ self.lcnts.cell[c]=0;} };
-			for(var i=1;i<=4;i++){ self.lcnts.cell[i]=0;}
-			this.lcnts.total[0] = (k.qcols+1)*(k.qrows+1);
-		}
-	},
 
 	//---------------------------------------------------------------------------
 	// ans.check()     答えのチェックを行う(checkAns()を呼び出す)
@@ -228,6 +211,7 @@ AnsCheck.prototype = {
 	// ans.isConnectLine() 交差あり線がひとつながりになっているかどうかを判定する
 	// ans.LineList()      交差あり線のひとつながりの線のリストを返す
 	// ans.checkOneLoop()  交差あり線が一つかどうか判定する
+	// ans.checkLcntCell() セルから出ている線の本数について判定する
 	//---------------------------------------------------------------------------
 	isLoopLine : function(startid){ return this.isConnectLine(startid, startid, -1); },
 	isConnectLine : function(startid, terminal, startback){
@@ -281,44 +265,10 @@ AnsCheck.prototype = {
 		return true;
 	},
 
-	//---------------------------------------------------------------------------
-	// ans.setLcnts()      線が引かれたり消されてたりした時に、変数lcntsの内容を変更する
-	// ans.resetLcount()   回転反転・拡大縮小時にlcnt変数を再構築する
-	// ans.lcntCell()      セルに存在する線の本数を返す
-	// ans.lcntCross()     交点に存在する線の本数を返す
-	// ans.checkLcntCell() セルから出ている線の本数について判定する
-	//---------------------------------------------------------------------------
-	setLcnts : function(id, val){
-		var cc1, cc2;
-		if(k.isCenterLine){ cc1 = bd.cc1(id),      cc2 = bd.cc2(id);}
-		else              { cc1 = bd.crosscc1(id), cc2 = bd.crosscc2(id);}
-
-		if(val>0){
-			if(cc1!=-1){ this.lcnts.total[this.lcnts.cell[cc1]]--; this.lcnts.cell[cc1]++; this.lcnts.total[this.lcnts.cell[cc1]]++;}
-			if(cc2!=-1){ this.lcnts.total[this.lcnts.cell[cc2]]--; this.lcnts.cell[cc2]++; this.lcnts.total[this.lcnts.cell[cc2]]++;}
-		}
-		else{
-			if(cc1!=-1){ this.lcnts.total[this.lcnts.cell[cc1]]--; this.lcnts.cell[cc1]--; this.lcnts.total[this.lcnts.cell[cc1]]++;}
-			if(cc2!=-1){ this.lcnts.total[this.lcnts.cell[cc2]]--; this.lcnts.cell[cc2]--; this.lcnts.total[this.lcnts.cell[cc2]]++;}
-		}
-	},
-	resetLcount : function(){
-		if(k.isborder){
-			this.reset();
-			for(var id=0;id<bd.border.length;id++){
-				if((k.isCenterLine && bd.LiB(id)>0) || (!k.isCenterLine && bd.QaB(id)>0)){
-					this.setLcnts(id,1);
-				}
-			}
-		}
-	},
-
-	lcntCell  : function(cc){ return this.lcnts.cell[cc];},
-	lcntCross : function(cc){ return this.lcnts.cell[cc];},
 	checkLcntCell : function(val){
-		if(this.lcnts.total[val]==0){ return true;}
+		if(bd.lcnts.total[val]==0){ return true;}
 		for(var c=0;c<bd.cell.length;c++){
-			if(this.lcnts.cell[c]==val){
+			if(bd.lcnts.cell[c]==val){
 				if(!this.performAsLine){ bd.sErC([c],1);}
 				else{ bd.sErB(bd.borders,2); this.setCellLineError(c,true);}
 				return false;
@@ -365,8 +315,8 @@ AnsCheck.prototype = {
 	// ans.setCellLineError() セルと周りの線にエラーフラグを設定する
 	//---------------------------------------------------------------------------
 	isLineStraight : function(cc){
-		if     (this.lcntCell(cc)==3 || this.lcntCell(cc)==4){ return true;}
-		else if(this.lcntCell(cc)==0 || this.lcntCell(cc)==1){ return false;}
+		if     (bd.lcntCell(cc)==3 || bd.lcntCell(cc)==4){ return true;}
+		else if(bd.lcntCell(cc)==0 || bd.lcntCell(cc)==1){ return false;}
 
 		if     (bd.LiB(bd.ub(cc))==1 && bd.LiB(bd.db(cc))==1){ return true;}
 		else if(bd.LiB(bd.lb(cc))==1 && bd.LiB(bd.rb(cc))==1){ return true;}
@@ -518,7 +468,7 @@ AnsCheck.prototype = {
 		for(var i=0;i<(k.qcols+1)*(k.qrows+1);i++){
 			var cx = i%(k.qcols+1), cy = mf(i/(k.qcols+1));
 			if(k.isoutsidecross==0 && k.isborderAsLine==0 && (cx==0||cy==0||cx==k.qcols||cy==k.qrows)){ continue;}
-			var lcnts = this.lcnts.cell[i] + ((k.isoutsideborder==0&&(cx==0||cy==0||cx==k.qcols||cy==k.qrows))?2:0);
+			var lcnts = bd.lcnts.cell[i] + ((k.isoutsideborder==0&&(cx==0||cy==0||cx==k.qcols||cy==k.qrows))?2:0);
 			if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(cx, cy))==1) || (bp==2&&bd.QnX(bd.xnum(cx, cy))!=1) )){
 				bd.sErB(bd.borders,2);
 				this.setCrossBorderError(cx,cy);
@@ -574,7 +524,7 @@ AnsCheck.prototype = {
 	},
 	searchRLarea : function(func, flag){
 		var area = new AreaInfo();
-		for(var c=0;c<bd.cell.length;c++){ area.check[c]=((!flag||this.lcnts.cell[c]>0)?0:-1);}
+		for(var c=0;c<bd.cell.length;c++){ area.check[c]=((!flag||bd.lcnts.cell[c]>0)?0:-1);}
 		for(var c=0;c<bd.cell.length;c++){ if(area.check[c]==0){ area.max++; area.room[area.max]=new Array(); this.sr0(func, area, c, area.max);} }
 		return area;
 	},

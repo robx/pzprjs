@@ -673,7 +673,7 @@ MouseEvent.prototype = {
 		if(id==-1 || ((k.isborderAsLine==0?bd.LiB:bd.QaB).bind(bd))(id)<=0){
 			if(k.isborderAsLine==0){
 				var cc = this.cellid(new Pos(x,y));
-				if(cc==-1 || (k.isborderCross && (ans.lcntCell(cc)==3 || ans.lcntCell(cc)==4))){ return;}
+				if(cc==-1 || (k.isborderCross && (bd.lcntCell(cc)==3 || bd.lcntCell(cc)==4))){ return;}
 
 				id = (function(cc){
 					if     (bd.LiB(bd.ub(cc))>0){ return bd.ub(cc);}
@@ -685,7 +685,7 @@ MouseEvent.prototype = {
 			}
 			else{
 				var xc = this.crossid(new Pos(x,y));
-				if(xc==-1 || (k.isborderCross && (ans.lcntCell(xc)==3 || ans.lcntCell(xc)==4))){ return;}
+				if(xc==-1 || (k.isborderCross && (bd.lcntCell(xc)==3 || bd.lcntCell(xc)==4))){ return;}
 
 				id = (function(xc){
 					var bx = xc%(k.qcols+1)*2, by = mf(xc/(k.qcols+1))*2;
@@ -714,7 +714,7 @@ MouseEvent.prototype = {
 	lc0 : function(idlist,bx,by,dir){
 		var include  = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
 		var func     = (k.isborderAsLine==0?bd.LiB:bd.QaB).bind(bd);
-		var lcntfunc = function(bx,by){ return ans.lcntCell(((k.isborderAsLine==0?bd.cnum:bd.xnum)(mf(bx/2),mf(by/2))));};
+		var lcntfunc = function(bx,by){ return bd.lcntCell(((k.isborderAsLine==0?bd.cnum:bd.xnum)(mf(bx/2),mf(by/2))));};
 		while(1){
 			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 			if((bx+by)%2==0){
