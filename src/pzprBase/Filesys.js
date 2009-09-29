@@ -1,4 +1,4 @@
-// Filesys.js v3.2.1
+// Filesys.js v3.2.2
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -410,10 +410,15 @@ FileIO.prototype = {
 	// fio.encodeBorderLine() Lineのエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeBorderLine : function(stack){
+		var svfunc = bd.isLineNG;
+		bd.isLineNG = function(id){ return false;};
+
 		this.decodeBorder( function(c,ca){
 			if     (ca == "-1"){ bd.sQsB(c, 2);}
-			else if(ca != "0" ){ bd.sLiB(c, parseInt(ca)); if(bd.LiB(c)==0){ bd.border[c].line=parseInt(ca); ans.setLcnts(c,1);}}	// fix
+			else if(ca != "0" ){ bd.sLiB(c, parseInt(ca));}
 		},stack);
+
+		bd.isLineNG = svfunc;
 	},
 	encodeBorderLine : function(){
 		return this.encodeBorder( function(c){
