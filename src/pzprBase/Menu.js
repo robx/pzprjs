@@ -1,4 +1,4 @@
-// Menu.js v3.2.1
+// Menu.js v3.2.2
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -26,6 +26,7 @@ Menu = function(){
 	this.labelstack = new Array();	// span等の文字列の情報(idnameと文字列のリスト)
 
 	this.ex = new MenuExec();
+	this.language = 'ja';
 };
 Menu.prototype = {
 	//---------------------------------------------------------------------------
@@ -248,8 +249,8 @@ Menu.prototype = {
 	},
 	displayAll : function(){
 		for(var i in pp.flags){ this.setdisplay(i);}
-		$.each(this.btnstack,function(i,obj){obj.el.attr("value",obj.str[lang.language]);});
-		$.each(this.labelstack,function(i,obj){obj.el.html(obj.str[lang.language]);});
+		$.each(this.btnstack,function(i,obj){obj.el.attr("value",obj.str[this.language]);});
+		$.each(this.labelstack,function(i,obj){obj.el.html(obj.str[this.language]);});
 	},
 
 	//---------------------------------------------------------------------------
@@ -332,7 +333,7 @@ Menu.prototype = {
 
 		$("#translation").css("position","absolute").css("cursor","pointer")
 						 .css("font-size","10pt").css("color","green").css("background-color","#dfdfdf")
-						 .click(lang.translate.bind(lang)).unselectable();
+						 .click(this.translate.bind(this)).unselectable();
 		if(k.callmode=="pmake"){ $("#timerpanel,#separator2").hide();}
 		if(k.irowake!=0){
 			$("#btnarea").append("<input type=\"button\" id=\"btncolor2\" value=\"色分けしなおす\">");
@@ -545,6 +546,43 @@ Menu.prototype = {
 		t($("#bar3_1"),      "&nbsp;credit",                 "&nbsp;credit");
 		t($("#credit3_1"), "ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\nライブラリとしてjQuery1.3.2, uuCanvas1.0, <br>Google Gearsを\n使用しています。<br>\n<br>\n",
 						   "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\nThis script use jQuery1.3.2, uuCanvas1.0, <br>Google Gears as libraries.<br>\n<br>\n");
+	},
+
+//--------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// menu.isLangJP()  言語モードを日本語にする
+	// menu.isLangEN()  言語モードを英語にする
+	//--------------------------------------------------------------------------------
+	isLangJP : function(){ return this.language == 'ja';},
+	isLangEN : function(){ return this.language == 'en';},
+
+	//--------------------------------------------------------------------------------
+	// menu.setLang()   言語を設定する
+	// menu.translate() htmlの言語を変える
+	//--------------------------------------------------------------------------------
+	setLang : function(ln){ (ln=='ja')   ?this.setJP():this.setEN();},
+	translate : function(){ (this.isJP())?this.setEN():this.setJP();},
+
+	//--------------------------------------------------------------------------------
+	// menu.setLangJP()  文章を日本語にする
+	// menu.setLangEN()  文章を英語にする
+	// menu.setLangStr() 文章を設定する
+	//--------------------------------------------------------------------------------
+	setLangJP : function(){ this.setStr('ja');},
+	setLangEN : function(){ this.setStr('en');},
+	setLangStr : function(ln){
+		this.language = ln;
+		document.title = base.gettitle();
+		$("#title2").html(base.gettitle());
+		$("#expression").html(base.expression[this.language]);
+
+		this.displayAll();
+		this.ex.dispmanstr();
+
+		base.resize_canvas();
 	}
 };
 
@@ -612,8 +650,8 @@ Properties.prototype = {
 	// pp.getVal()     各フラグのvalの値を返す
 	// pp.setVal()     各フラグの設定値を設定する
 	//---------------------------------------------------------------------------
-	getMenuStr : function(idname){ return this.flags[idname].str[lang.language].menu; },
-	getLabel   : function(idname){ return this.flags[idname].str[lang.language].label;},
+	getMenuStr : function(idname){ return this.flags[idname].str[menu.language].menu; },
+	getLabel   : function(idname){ return this.flags[idname].str[menu.language].label;},
 	type : function(idname){ return this.flags[idname].type;},
 
 	getVal : function(idname)  { return this.flags[idname]?this.flags[idname].val:0;},
@@ -763,7 +801,7 @@ Properties.prototype = {
 		mode      : function(num){ menu.ex.modechange(num);},
 		size      : function(num){ k.widthmode=num; base.resize_canvas();},
 		use       : function(num){ k.use =num;},
-		language  : function(num){ lang.setLang({0:'ja',1:'en'}[num]);},
+		language  : function(num){ menu.setLang({0:'ja',1:'en'}[num]);},
 
 		newboard : function(){
 			menu.pop = $("#pop1_1");

@@ -700,8 +700,8 @@ FileIO.prototype = {
 				var dt = new Date(); dt.setTime(row.time*1000);
 				src += (" "+this.ni(dt.getFullYear()%100)+"/"+this.ni(dt.getMonth()+1)+"/"+this.ni(dt.getDate())+" "+this.ni(dt.getHours())+":"+this.ni(dt.getMinutes()) + "&nbsp;&nbsp;");
 				src += (""+row.col+"Å~"+row.row+"&nbsp;&nbsp;");
-				if     (lang.isJP()){ src += ({0:'Å|',1:'ÇÁÇ≠ÇÁÇ≠',2:'Ç®ÇƒÇ≤ÇÎ',3:'ÇΩÇ¢Ç÷ÇÒ',4:'ÉAÉ[Éì'}[row.hard]);}
-				else if(lang.isEN()){ src += ({0:'-',1:'Easy',2:'Normal',3:'Hard',4:'Expert'}[row.hard]);}
+				if     (menu.isLangJP()){ src += ({0:'Å|',1:'ÇÁÇ≠ÇÁÇ≠',2:'Ç®ÇƒÇ≤ÇÎ',3:'ÇΩÇ¢Ç÷ÇÒ',4:'ÉAÉ[Éì'}[row.hard]);}
+				else if(menu.isLangEN()){ src += ({0:'-',1:'Easy',2:'Normal',3:'Hard',4:'Expert'}[row.hard]);}
 				html += ("<option value=\""+row.id+"\""+(this.DBsid==row.id?" selected":"")+">"+src+"</option>\n");
 			}
 			html += ("<option value=\"new\""+(this.DBsid==-1?" selected":"")+">&nbsp;&lt;êVÇµÇ≠ï€ë∂Ç∑ÇÈ&gt;</option>\n");

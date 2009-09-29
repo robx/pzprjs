@@ -202,8 +202,8 @@ MenuExec.prototype = {
 		this.dispmanstr();
 	},
 	dispmanstr : function(){
-		if(!this.displaymanage){ $("#ms_manarea").html(lang.isJP()?"管理領域を表示":"Show management area");}
-		else                   { $("#ms_manarea").html(lang.isJP()?"管理領域を隠す":"Hide management area");}
+		if(!this.displaymanage){ $("#ms_manarea").html(menu.isLangJP()?"管理領域を表示":"Show management area");}
+		else                   { $("#ms_manarea").html(menu.isLangJP()?"管理領域を隠す":"Hide management area");}
 	},
 
 	//------------------------------------------------------------------------------
@@ -818,7 +818,7 @@ MenuExec.prototype = {
 	// menu.ex.ASconfirm()  「補助消去」ボタンを押したときの処理
 	//------------------------------------------------------------------------------
 	ACconfirm : function(){
-		if(confirm(lang.isJP()?"回答を消去しますか？":"Do you want to erase the Answer?")){
+		if(confirm(menu.isLangJP()?"回答を消去しますか？":"Do you want to erase the Answer?")){
 			um.newOperation(true);
 			for(var i=0;i<bd.cell.length;i++){
 				if(bd.QaC(i)!=0){ um.addOpe('cell','qans',i,bd.QaC(i),-1);}
@@ -837,7 +837,7 @@ MenuExec.prototype = {
 		}
 	},
 	ASconfirm : function(){
-		if(confirm(lang.isJP()?"補助記号を消去しますか？":"Do you want to erase the auxiliary marks?")){
+		if(confirm(menu.isLangJP()?"補助記号を消去しますか？":"Do you want to erase the auxiliary marks?")){
 			um.newOperation(true);
 			for(var i=0;i<bd.cell.length;i++){
 				if(bd.QsC(i)!=0){ um.addOpe('cell','qsub',i,bd.QsC(i),0);}

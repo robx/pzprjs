@@ -1,4 +1,4 @@
-// Answer.js v3.2.1
+// Answer.js v3.2.2
 
 //---------------------------------------------------------------------------
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
@@ -51,14 +51,14 @@ AnsCheck.prototype = {
 		kc.keyreset();
 
 		if(!this.checkAns()){
-			alert((lang.isJP()||!this.alstr.en)?this.alstr.jp:this.alstr.en);
+			alert((menu.isLangJP()||!this.alstr.en)?this.alstr.jp:this.alstr.en);
 			this.errDisp = true;
 			pc.paintAll();
 			this.inCheck = false;
 			return false;
 		}
 
-		alert(lang.isJP()?"正解です！":"Complete!");
+		alert(menu.isLangJP()?"正解です！":"Complete!");
 		this.inCheck = false;
 		return true;
 	},
@@ -84,7 +84,7 @@ AnsCheck.prototype = {
 
 		if(this.autocheck1st() && this.checkAns() && this.inCheck){
 			mv.mousereset();
-			alert(lang.isJP()?"正解です！":"Complete!");
+			alert(menu.isLangJP()?"正解です！":"Complete!");
 			ret = true;
 			menu.setVal('autocheck',false);
 		}

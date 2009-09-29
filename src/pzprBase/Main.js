@@ -85,7 +85,6 @@ PBase.prototype = {
 		ans = new AnsCheck();	// 正解判定オブジェクト
 		um = new UndoManager();	// 操作情報管理オブジェクト
 		room = new Rooms();		// 部屋情報のオブジェクト
-		lang = new LangMgr();	// 言語情報オブジェクト
 		fio.initDataBase();		// データベースの設定
 		menu = new Menu();		// メニューを扱うオブジェクト
 		pp = new Properties();	// メニュー関係の設定値を保持するオブジェクト
@@ -165,10 +164,10 @@ PBase.prototype = {
 		um.enb_btn();
 	},
 	gettitle : function(){
-		if(k.callmode=='pmake'){ return ""+this.getPuzzleName()+(lang.isJP()?" エディタ - ぱずぷれv3":" editor - PUZ-PRE v3");}
-		else				   { return ""+this.getPuzzleName()+(lang.isJP()?" player - ぱずぷれv3"  :" player - PUZ-PRE v3");}
+		if(k.callmode=='pmake'){ return ""+this.getPuzzleName()+(menu.isLangJP()?" エディタ - ぱずぷれv3":" editor - PUZ-PRE v3");}
+		else				   { return ""+this.getPuzzleName()+(menu.isLangJP()?" player - ぱずぷれv3"  :" player - PUZ-PRE v3");}
 	},
-	getPuzzleName : function(){ return (lang.isJP()||!this.puzzlename.en)?this.puzzlename.ja:this.puzzlename.en;},
+	getPuzzleName : function(){ return (menu.isLangJP()||!this.puzzlename.en)?this.puzzlename.ja:this.puzzlename.en;},
 	setTitle      : function(strJP, strEN){ this.puzzlename.ja = strJP; this.puzzlename.en = strEN;},
 	setExpression : function(strJP, strEN){ this.expression.ja = strJP; this.expression.en = strEN;},
 	setFloatbgcolor : function(color){ this.floatbgcolor = color;},
