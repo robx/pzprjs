@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンロー版 nanro.js v3.2.0p1
+// パズル固有スクリプト部 ナンロー版 nanro.js v3.2.2
 //
 Puzzles.nanro = function(){ };
 Puzzles.nanro.prototype = {
@@ -15,7 +15,7 @@ Puzzles.nanro.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.nanro.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		k.area = { bcell:0, wcell:0, number:1};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("ナンロー","Nanro");
 		base.setExpression("　数字などをクリックして動かすことで、数字を入力することができます。右クリックしてマウスを動かして×を入力することもできます。",
@@ -75,7 +76,7 @@ Puzzles.nanro.prototype = {
 			var cc = this.cellid(new Pos(x,y));
 			if(cc==-1||cc==this.mouseCell){ return;}
 			if(this.mouseCell==-1){
-				this.inputData = ans.getNum(cc);
+				this.inputData = bd.getNum(cc);
 				if   (this.inputData==-2){ this.inputData=-4;}
 				else if(this.inputData==-1){
 					if     (bd.QsC(cc)==1){ this.inputData=-2;}
@@ -93,7 +94,7 @@ Puzzles.nanro.prototype = {
 		};
 		mv.inputDot = function(x,y){
 			var cc = this.cellid(new Pos(x,y));
-			if(cc==-1 || cc==this.mouseCell || bd.QnC(cc)!=-1 || bd.QaC(cc)!=-1){ return;}
+			if(cc==-1 || cc==this.mouseCell || bd.isNum(cc)){ return;}
 			if(this.inputData==-1){ this.inputData = (bd.QsC(cc)==2?0:2);}
 			if     (this.inputData==2){ bd.sQaC(cc,-1); bd.sQsC(cc,2);}
 			else if(this.inputData==0){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
@@ -152,16 +153,14 @@ Puzzles.nanro.prototype = {
 		kp.generate(99, true, true, kp.kpgenerate.bind(kp));
 		kp.kpinput = function(ca){ kc.keyinput(ca,99);};
 
-		room.setEnable();
-		bd.roommaxfunc = function(cc,mode){ return room.getCntOfRoomByCell(cc);};
+		area.resetArea();
+		bd.roommaxfunc = function(cc,mode){ return area.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
-
-		pc.BorderQanscolor = "rgb(0, 127, 0)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -169,7 +168,7 @@ Puzzles.nanro.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawMBs(x1,y1,x2,y2);
 			this.drawNumbers(x1,y1,x2,y2);
@@ -204,7 +203,7 @@ Puzzles.nanro.prototype = {
 
 		enc.decodeKanpen = function(bstr){
 			var barray = bstr.split("/").slice(1,k.qrows+1);
-			var carray = new Array();
+			var carray = [];
 			for(var i=0;i<k.qrows;i++){
 				var array2 = barray[i].split("_");
 				for(var j=0;j<array2.length;j++){ if(array2[j]!=""){ carray.push(array2[j]);} }
@@ -234,13 +233,13 @@ Puzzles.nanro.prototype = {
 			});
 		};
 		enc.encodeRoom_kanpen = function(){
-			var rarea = ans.searchRarea();
+			var rinfo = area.getRoomInfo();
 			var bstr = "";
 			for(var c=0;c<bd.cell.length;c++){
-				bstr += (""+(rarea.check[c]-1)+"_");
+				bstr += (""+(rinfo.id[c]-1)+"_");
 				if((c+1)%k.qcols==0){ bstr += "/";}
 			}
-			return ""+rarea.max+"/"+bstr;
+			return ""+rinfo.max+"/"+bstr;
 		};
 
 		//---------------------------------------------------------
@@ -272,78 +271,73 @@ Puzzles.nanro.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.check2x2Block( function(cc){ return (this.getNum(cc)>0);}.bind(this) ) ){
+			if( !this.check2x2Block(bd.isNum) ){
 				this.setAlert('数字が2x2のかたまりになっています。','There is a 2x2 block of numbers.'); return false;
 			}
 
-			if( !this.checkSideAreaCell(rarea, function(area,c1,c2){ return (this.getNum(c1)>0 && this.getNum(c1)==this.getNum(c2));}.bind(this), false) ){
+			if( !this.checkSideAreaCell(rinfo, bd.sameNumber, false) ){
 				this.setAlert('同じ数字が境界線を挟んで隣り合っています。','Adjacent blocks have the same number.'); return false;
 			}
 
-			var rarea = this.searchRarea2(this.searchRarea());
-			if( !this.checkErrorFlag(rarea, 4) ){
+			var rinfo = this.searchRarea2();
+			if( !this.checkErrorFlag(rinfo, 4) ){
 				this.setAlert('複数種類の数字が入っているブロックがあります。','A block has two or more kinds of numbers.'); return false;
 			}
 
-			if( !this.checkErrorFlag(rarea, 1) ){
+			if( !this.checkErrorFlag(rinfo, 1) ){
 				this.setAlert('入っている数字の数が数字より多いです。','A number is bigger than the size of block.'); return false;
 			}
 
-			if( !this.linkBWarea( this.searchBWarea(function(id){ return (id!=-1 && this.getNum(id)!=-1); }.bind(this)) ) ){
+			if( !this.checkOneArea( area.getNumberInfo() ) ){
 				this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
 			}
 
-			if( !this.checkErrorFlag(rarea, 2) ){
+			if( !this.checkErrorFlag(rinfo, 2) ){
 				this.setAlert('入っている数字の数が数字より少ないです。','A number is smaller than the size of block.'); return false;
 			}
 
-			if( !this.checkErrorFlag(rarea, 3) ){
+			if( !this.checkErrorFlag(rinfo, 3) ){
 				this.setAlert('数字が含まれていないブロックがあります。','A block has no number.'); return false;
 			}
 
 			return true;
 		};
-		//check1st : function(){ return ans.linkBWarea( ans.searchBWarea(function(id){ return (id!=-1 && puz.getNum(id)!=-1); }) );},
+		//check1st : function(){ return ans.checkOneArea( ans.searchBWarea(function(id){ return (id!=-1 && puz.getNum(id)!=-1); }) );},
 
-		ans.checkErrorFlag = function(area, val){
-			for(var id=1;id<=area.max;id++){
-				if(area.error[id]==val){
-					bd.sErC(area.room[id],1);
+		ans.checkErrorFlag = function(rinfo, val){
+			for(var id=1;id<=rinfo.max;id++){
+				if(rinfo.room[id].error==val){
+					bd.sErC(rinfo.room[id].idlist,1);
 					return false;
 				}
 			}
 			return true;
 		};
-		ans.getNum = function(cc){
-			if(cc<0||cc>=bd.cell.length){ return -1;}
-			return (bd.QnC(cc)!=-1?bd.QnC(cc):bd.QaC(cc));
-		};
 
-		ans.searchRarea2 = function(area){
-			var max = area.max;
-			area.error = new Array();
-			area.number = new Array();
-			for(var id=1;id<=max;id++){
-				area.error[id] = 0;		// 後でエラー表示するエラーのフラグ
-				area.number[id] = -1;	// そのエリアに入っている数字
-				var nums = new Array();	// キーの数字が入っている数
+		ans.searchRarea2 = function(){
+			var rinfo = area.getRoomInfo();
+			for(var id=1,max=rinfo.max;id<=max;id++){
+				var room = rinfo.room[id];
+				room.error  =  0;		// 後でエラー表示するエラーのフラグ
+				room.number = -1;		// そのエリアに入っている数字
+				var nums = [];			// キーの数字が入っている数
 				var numcnt = 0;			// エリアに入っている数字の種類数
 				var emptycell = 0;		// 数字が入っていないセルの数
 				var filled = 0;			// エリアに入っている数字
-				for(var i=0;i<area.room[id].length;i++){
-					var c = area.room[id][i];
-					var num = this.getNum(c);
+				for(var i=0;i<room.idlist.length;i++){
+					var c = room.idlist[i];
+					var num = bd.getNum(c);
 					if(num==-1){ emptycell++;}
 					else if(isNaN(nums[num])){ numcnt++; filled=num; nums[num]=1;}
 					else{ nums[num]++;}
 				}
-				if(numcnt>1)                               { area.error[id]=4;}
-				else if(numcnt==0)                         { area.error[id]=3;}
-				else if(numcnt==1 && filled < nums[filled]){ area.error[id]=1; area.number[id]=filled;}
-				else if(numcnt==1 && filled > nums[filled]){ area.error[id]=2; area.number[id]=filled;}
-				else                                       { area.error[id]=-1;area.number[id]=filled;}
+				if(numcnt>1)                               { room.error=4;}
+				else if(numcnt==0)                         { room.error=3;}
+				else if(numcnt==1 && filled < nums[filled]){ room.error=1; room.number=filled;}
+				else if(numcnt==1 && filled > nums[filled]){ room.error=2; room.number=filled;}
+				else                                       { room.error=-1;room.number=filled;}
 			}
-			return area;
+			return rinfo;
 		};
 	}
 };

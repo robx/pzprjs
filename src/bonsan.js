@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.2.0
+// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.2.2
 //
 Puzzles.bonsan = function(){ };
 Puzzles.bonsan.prototype = {
@@ -15,7 +15,7 @@ Puzzles.bonsan.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.bonsan.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("ぼんさん/へやぼん","Bonsan/Heya-Bon");
 		base.setExpression("　左ドラッグで線が、マスのクリックでセルの背景色が入力できます。",
@@ -116,8 +117,7 @@ Puzzles.bonsan.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-//		pc.errcolor1 = "rgb(192, 0, 0)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.qsubcolor1 = "rgb(224, 224, 255)";
 		pc.qsubcolor2 = "rgb(255, 255, 144)";
 		pc.fontsizeratio = 0.9;	// 数字の倍率
@@ -127,7 +127,7 @@ Puzzles.bonsan.prototype = {
 
 			this.drawQSubCells(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 			this.drawTip(x1,y1,x2,y2);
 
@@ -149,12 +149,12 @@ Puzzles.bonsan.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				this.vhide(["c"+c+"_tp1_","c"+c+"_tp2_","c"+c+"_tp3_","c"+c+"_tp4_"]);
-				if(ans.lcntCell(c)==1 && bd.QnC(c)==-1){
+				if(line.lcntCell(c)==1 && bd.QnC(c)==-1){
 					var dir=0, id=-1;
-					if     (bd.LiB(bd.ub(c))==1){ dir=2; id=bd.ub(c);}
-					else if(bd.LiB(bd.db(c))==1){ dir=1; id=bd.db(c);}
-					else if(bd.LiB(bd.lb(c))==1){ dir=4; id=bd.lb(c);}
-					else if(bd.LiB(bd.rb(c))==1){ dir=3; id=bd.rb(c);}
+					if     (bd.isLine(bd.ub(c))){ dir=2; id=bd.ub(c);}
+					else if(bd.isLine(bd.db(c))){ dir=1; id=bd.db(c);}
+					else if(bd.isLine(bd.lb(c))){ dir=4; id=bd.lb(c);}
+					else if(bd.isLine(bd.rb(c))){ dir=3; id=bd.rb(c);}
 
 					g.lineWidth = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3); //LineWidth
 					if     (bd.ErB(id)==1){ g.strokeStyle = this.errlinecolor1; g.lineWidth=g.lineWidth+1;}
@@ -162,7 +162,7 @@ Puzzles.bonsan.prototype = {
 					else                  { g.strokeStyle = this.linecolor;}
 
 					if(this.vnop("c"+c+"_tp"+dir+"_",0)){
-						var px=bd.cell[c].px()+k.cwidth/2+1, py=bd.cell[c].py()+k.cheight/2+1;
+						var px=bd.cell[c].px+k.cwidth/2+1, py=bd.cell[c].py+k.cheight/2+1;
 						if     (dir==1){ this.inputPath([px,py ,-tsize, tsize ,0,-tplus , tsize, tsize], false);}
 						else if(dir==2){ this.inputPath([px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize], false);}
 						else if(dir==3){ this.inputPath([px,py , tsize,-tsize ,-tplus,0 , tsize, tsize], false);}
@@ -185,12 +185,12 @@ Puzzles.bonsan.prototype = {
 					if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
 					else{ g.fillStyle = this.Cellcolor;}
 					g.beginPath();
-					g.arc(bd.cell[c].px()+mf(k.cwidth/2), bd.cell[c].py()+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
+					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
 					if(this.vnop("c"+c+"_cira_",1)){ g.fill();}
 
 					g.fillStyle = "white";
 					g.beginPath();
-					g.arc(bd.cell[c].px()+mf(k.cwidth/2), bd.cell[c].py()+mf(k.cheight/2), rsize2, 0, Math.PI*2, false);
+					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2, 0, Math.PI*2, false);
 					if(this.vnop("c"+c+"_cirb_",1)){ g.fill();}
 				}
 				else{ this.vhide("c"+c+"_cira_"); this.vhide("c"+c+"_cirb_");}
@@ -234,36 +234,36 @@ Puzzles.bonsan.prototype = {
 			}
 
 			this.performAsLine = false;
-			var larea = this.searchLarea();
-			if( !this.checkQnumsInArea(larea, function(a){ return (a>=2);}) ){
+			var linfo = line.getLareaInfo();
+			if( !this.checkQnumsInArea(linfo, function(a){ return (a>=2);}) ){
 				this.setAlert('○が繋がっています。','There are connected circles.'); return false;
 			}
 			if( !this.checkLineOverLetter() ){
 				this.setAlert('○の上を線が通過しています。','A line goes through a circle.'); return false;
 			}
 
-			if( !this.checkAllArea(larea, f_true, function(w,h,a){ return (w==1||h==1);} ) ){
+			if( !this.checkAllArea(linfo, f_true, function(w,h,a){ return (w==1||h==1);} ) ){
 				this.setAlert('曲がっている線があります。','A line has curve.'); return false;
 			}
-			if( !this.checkOneNumber(larea, function(num, a){ return (num>=0 && num!=a-1);}, f_true) ){
+			if( !this.checkOneNumber(linfo, function(num, a){ return (num>=0 && num!=a-1);}, f_true) ){
 				this.setAlert('数字と線の長さが違います。','The length of a line is wrong.'); return false;
 			}
 
-			var rarea = this.searchRarea();
-			this.movedPosition(larea);
-			if( !this.checkFractal(rarea) ){
+			var rinfo = area.getRoomInfo();
+			this.movedPosition(linfo);
+			if( !this.checkFractal(rinfo) ){
 				this.setAlert('部屋の中の○が点対称に配置されていません。', 'Position of circles in the room is not point symmetric.'); return false;
 			}
-			if( !this.checkNoObjectInRoom(rarea, this.getMoved.bind(this)) ){
+			if( !this.checkNoObjectInRoom(rinfo, this.getMoved.bind(this)) ){
 				this.setAlert('○のない部屋があります。','A room has no circle.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QnC(c)>=1 && this.lcntCell(c)==0);}.bind(this) ) ){
+			if( !this.checkAllCell(function(c){ return (bd.QnC(c)>=1 && line.lcntCell(c)==0);} ) ){
 				this.setAlert('○から線が出ていません。','A circle doesn\'t start any line.'); return false;
 			}
 
 			this.performAsLine = true;
-			if( !this.checkDisconnectLine(larea) ){
+			if( !this.checkDisconnectLine(linfo) ){
 				this.setAlert('○につながっていない線があります。','A line doesn\'t connect any circle.'); return false;
 			}
 
@@ -273,7 +273,7 @@ Puzzles.bonsan.prototype = {
 
 		ans.checkLineOverLetter = function(func){
 			for(var c=0;c<bd.cell.length;c++){
-				if(this.lcntCell(c)>=2 && bd.QnC(c)!=-1){
+				if(line.lcntCell(c)>=2 && bd.QnC(c)!=-1){
 					bd.sErB(bd.borders,2);
 					ans.setCellLineError(c,true);
 					return false;
@@ -282,15 +282,15 @@ Puzzles.bonsan.prototype = {
 			return true;
 		};
 
-		ans.checkFractal = function(area){
-			for(var id=1;id<=area.max;id++){
-				var d = ans.getSizeOfArea(area,id,f_true);
+		ans.checkFractal = function(rinfo){
+			for(var id=1;id<=rinfo.max;id++){
+				var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
 				var sx=d.x1+d.x2+1, sy=d.y1+d.y2+1;
 				var movex=0, movey=0;
-				for(var i=0;i<area.room[id].length;i++){
-					var c=area.room[id][i];
+				for(var i=0;i<rinfo.room[id].idlist.length;i++){
+					var c=rinfo.room[id].idlist[i];
 					if(this.getMoved(c)!=-1 ^ this.getMoved(bd.cnum(sx-bd.cell[c].cx-1, sy-bd.cell[c].cy-1))!=-1){
-						for(var a=0;a<area.room[id].length;a++){ if(this.getMoved(area.room[id][a])!=-1){ bd.sErC([area.room[id][a]],1);} }
+						for(var a=0;a<rinfo.room[id].idlist.length;a++){ if(this.getMoved(rinfo.room[id].idlist[a])!=-1){ bd.sErC([rinfo.room[id].idlist[a]],1);} }
 						return false;
 					}
 				}
@@ -298,26 +298,26 @@ Puzzles.bonsan.prototype = {
 			return true;
 		};
 
-		ans.movedPosition = function(larea){
+		ans.movedPosition = function(linfo){
 			this.before = new AreaInfo();
 			for(var c=0;c<bd.cell.length;c++){
-				if(ans.lcntCell(c)==0 && bd.QnC(c)!=-1){ this.before.check[c]=c;}
-				else{ this.before.check[c]=-1;}
+				if(line.lcntCell(c)==0 && bd.QnC(c)!=-1){ this.before.id[c]=c;}
+				else{ this.before.id[c]=-1;}
 			}
-			for(var r=1;r<=larea.max;r++){
+			for(var r=1;r<=linfo.max;r++){
 				var before=-1, after=-1;
-				if(larea.room[r].length>1){
-					for(var i=0;i<larea.room[r].length;i++){
-						var c=larea.room[r][i];
-						if(ans.lcntCell(c)==1){
+				if(linfo.room[r].idlist.length>1){
+					for(var i=0;i<linfo.room[r].idlist.length;i++){
+						var c=linfo.room[r].idlist[i];
+						if(line.lcntCell(c)==1){
 							if(bd.QnC(c)!=-1){ before=c;} else{ after=c;}
 						}
 					}
 				}
-				this.before.check[after]=before;
+				this.before.id[after]=before;
 			}
 		};
-		ans.getMoved = function(cc){ return bd.QnC(this.before.check[cc]);};
-		ans.getBeforeCell = function(cc){ return this.before.check[cc];};
+		ans.getMoved = function(cc){ return bd.QnC(this.before.id[cc]);};
+		ans.getBeforeCell = function(cc){ return this.before.id[cc];};
 	}
 };

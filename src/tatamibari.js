@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.2.0p1
+// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.2.2
 //
 Puzzles.tatamibari = function(){ };
 Puzzles.tatamibari.prototype = {
@@ -15,7 +15,7 @@ Puzzles.tatamibari.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.tatamibari.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("タタミバリ","Tatamibari");
 		base.setExpression("　左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
@@ -112,9 +113,7 @@ Puzzles.tatamibari.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
-
-		// pc.BorderQanscolor = "rgb(0, 160, 0)";
+		pc.gridcolor = pc.gridcolor_DLIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -122,7 +121,7 @@ Puzzles.tatamibari.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawMarks(x1,y1,x2,y2);
@@ -144,12 +143,12 @@ Puzzles.tatamibari.prototype = {
 				var c = clist[i];
 				var qs = bd.QuC(c);
 				if(qs==101||qs==102){
-					if(this.vnop("c"+c+"_lm1_",1)){ g.fillRect(bd.cell[c].px()+mf(k.cwidth/2)-1, bd.cell[c].py()+mf((k.cheight+lw)*0.15), lw, mf((k.cheight+lw)*0.7));}
+					if(this.vnop("c"+c+"_lm1_",1)){ g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-1, bd.cell[c].py+mf((k.cheight+lw)*0.15), lw, mf((k.cheight+lw)*0.7));}
 				}
 				else{ this.vhide("c"+c+"_lm1_");}
 
 				if(qs==101||qs==103){
-					if(this.vnop("c"+c+"_lm2_",1)){ g.fillRect(bd.cell[c].px()+mf((k.cwidth+lw)*0.15), bd.cell[c].py()+mf(k.cheight/2)-1, mf((k.cwidth+lw)*0.7), lw);}
+					if(this.vnop("c"+c+"_lm2_",1)){ g.fillRect(bd.cell[c].px+mf((k.cwidth+lw)*0.15), bd.cell[c].py+mf(k.cheight/2)-1, mf((k.cwidth+lw)*0.7), lw);}
 				}
 				else{ this.vhide("c"+c+"_lm2_");}
 			}
@@ -173,10 +172,9 @@ Puzzles.tatamibari.prototype = {
 		};
 
 		enc.decodeTatamibari = function(bstr){
-			var i, ca, c;
-			c = 0;
-			for(i=0;i<bstr.length;i++){
-				ca = bstr.charAt(i);
+			var c = 0;
+			for(var i=0;i<bstr.length;i++){
+				var ca = bstr.charAt(i);
 
 				if     (ca == '.')             { bd.sQuC(c, -2); c++;}
 				else if(ca == '1')             { bd.sQuC(c, 102); c++;}
@@ -242,26 +240,26 @@ Puzzles.tatamibari.prototype = {
 				this.setAlert('十字の交差点があります。','There is a crossing border lines,'); return false;
 			}
 
-			var rarea = this.searchRarea();
-			if( !this.checkAllArea(rarea, function(id){ return (bd.QuC(id)!=0);}, function(w,h,a){ return (a!=0);} ) ){
+			var rinfo = area.getRoomInfo();
+			if( !this.checkAllArea(rinfo, function(id){ return (bd.QuC(id)!=0);}, function(w,h,a){ return (a!=0);} ) ){
 				this.setAlert('記号の入っていないタタミがあります。','A tatami has no marks.'); return false;
 			}
 
-			if( !this.checkAllArea(this.generateTatami(rarea,101), f_true, function(w,h,a){ return (a<=0||(w*h!=a)||w==h);} ) ){
+			if( !this.checkAllArea(this.generateTatami(rinfo,101), f_true, function(w,h,a){ return (a<=0||(w*h!=a)||w==h);} ) ){
 				this.setAlert('正方形でないタタミがあります。','A tatami is not regular rectangle.'); return false;
 			}
-			if( !this.checkAllArea(this.generateTatami(rarea,103), f_true, function(w,h,a){ return (a<=0||(w*h!=a)||w>h);} ) ){
+			if( !this.checkAllArea(this.generateTatami(rinfo,103), f_true, function(w,h,a){ return (a<=0||(w*h!=a)||w>h);} ) ){
 				this.setAlert('横長ではないタタミがあります。','A tatami is not horizontally long rectangle.'); return false;
 			}
-			if( !this.checkAllArea(this.generateTatami(rarea,102), f_true, function(w,h,a){ return (a<=0||(w*h!=a)||w<h);} ) ){
+			if( !this.checkAllArea(this.generateTatami(rinfo,102), f_true, function(w,h,a){ return (a<=0||(w*h!=a)||w<h);} ) ){
 				this.setAlert('縦長ではないタタミがあります。','A tatami is not vertically long rectangle.'); return false;
 			}
 
-			if( !this.checkAllArea(rarea, function(id){ return (bd.QuC(id)!=0);}, function(w,h,a){ return (a<2);} ) ){
+			if( !this.checkAllArea(rinfo, function(id){ return (bd.QuC(id)!=0);}, function(w,h,a){ return (a<2);} ) ){
 				this.setAlert('1つのタタミに2つ以上の記号が入っています。','A tatami has plural marks.'); return false;
 			}
 
-			if( !this.isAreaRect(rarea, f_true) ){
+			if( !this.checkAreaRect(rinfo, f_true) ){
 				this.setAlert('タタミの形が長方形ではありません。','A tatami is not rectangle.'); return false;
 			}
 
@@ -272,22 +270,22 @@ Puzzles.tatamibari.prototype = {
 			return true;
 		};
 
-		ans.generateTatami = function(rarea, num){
-			var rarea1 = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){ rarea1[c]=-1;}
-			for(var r=1;r<=rarea.max;r++){
+		ans.generateTatami = function(rbase, num){
+			var rinfo = new AreaInfo();
+			for(var c=0;c<bd.cell.length;c++){ rinfo[c]=-1;}
+			for(var r=1;r<=rbase.max;r++){
 				var cnt=0; var cntall=0;
-				for(var i=0;i<rarea.room[r].length;i++){
-					if(bd.QuC(rarea.room[r][i])==num){ cnt++;   }
-					if(bd.QuC(rarea.room[r][i])!=0  ){ cntall++;}
+				for(var i=0;i<rbase.room[r].idlist.length;i++){
+					if(bd.QuC(rbase.room[r].idlist[i])==num){ cnt++;   }
+					if(bd.QuC(rbase.room[r].idlist[i])!=0  ){ cntall++;}
 				}
 				if(cnt==1 && cntall==1){
-					rarea1.max++;
-					for(var i=0;i<rarea.room[r].length;i++){ rarea1.check[rarea.room[r][i]]=rarea1.max;}
-					rarea1.room[rarea1.max] = rarea.room[r];
+					rinfo.max++;
+					for(var i=0;i<rbase.room[r].idlist.length;i++){ rinfo.id[rbase.room[r].idlist[i]]=rinfo.max;}
+					rinfo.room[rinfo.max] = {idlist:rbase.room[r].idlist};
 				}
 			}
-			return rarea1;
+			return rinfo;
 		};
 	}
 };

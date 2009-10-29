@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.2.0
+// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.2.2
 //
 Puzzles.fillomino = function(){ };
 Puzzles.fillomino.prototype = {
@@ -15,7 +15,7 @@ Puzzles.fillomino.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.fillomino.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("フィルオミノ","Fillomino");
 		base.setExpression("<small><span style=\"line-height:125%;\">　マウスの左ボタンを押しながら点線上を動かすと境界線が引けます。マスの中央から同じことをすると数字を隣のマスにコピーできます。右ボタンは補助記号です。<br>　キーボードでは同じ入力を、それぞれZキー、Xキー、Ctrlキーを押しながら矢印キーで行うことができます。</span></small>",
@@ -80,7 +81,7 @@ Puzzles.fillomino.prototype = {
 			if(this.mouseCell==-1 && pos.x%2==1 && pos.y%2==1){
 				pos = this.cellid(new Pos(x,y));
 				if(pos==-1){ return true;}
-				this.inputData = (bd.QnC(pos)!=-1?bd.QnC(pos):bd.QaC(pos));
+				this.inputData = bd.getNum(pos);
 				this.mouseCell = pos;
 				return false;
 			}
@@ -131,22 +132,22 @@ Puzzles.fillomino.prototype = {
 			if     (ca == 'up'    && bd.up(cc) != -1){
 				if(kc.isCTRL)  { bd.sQsB(bd.ub(cc),(bd.QsB(bd.ub(cc))==0?1:0)); tc.decTCY(2); flag = true;}
 				else if(kc.isZ){ bd.sQaB(bd.ub(cc),(bd.QaB(bd.ub(cc))==0?1:0)); flag = true;}
-				else if(kc.isX){ bd.sQaC(bd.up(cc),ans.getNum(cc)); tc.decTCY(2); flag = true;}
+				else if(kc.isX){ bd.sQaC(bd.up(cc),bd.getNum(cc)); tc.decTCY(2); flag = true;}
 			}
 			else if(ca == 'down'  && bd.dn(cc) != -1){
 				if(kc.isCTRL)  { bd.sQsB(bd.db(cc),(bd.QsB(bd.db(cc))==0?1:0)); tc.incTCY(2); flag = true;}
 				else if(kc.isZ){ bd.sQaB(bd.db(cc),(bd.QaB(bd.db(cc))==0?1:0)); flag = true;}
-				else if(kc.isX){ bd.sQaC(bd.dn(cc),ans.getNum(cc)); tc.incTCY(2); flag = true;}
+				else if(kc.isX){ bd.sQaC(bd.dn(cc),bd.getNum(cc)); tc.incTCY(2); flag = true;}
 			}
 			else if(ca == 'left'  && bd.lt(cc) != -1){
 				if(kc.isCTRL)  { bd.sQsB(bd.lb(cc),(bd.QsB(bd.lb(cc))==0?1:0)); tc.decTCX(2); flag = true;}
 				else if(kc.isZ){ bd.sQaB(bd.lb(cc),(bd.QaB(bd.lb(cc))==0?1:0)); kc.tcMoved = true; flag = true;}
-				else if(kc.isX){ bd.sQaC(bd.lt(cc),ans.getNum(cc)); tc.decTCX(2); kc.tcMoved = true; flag = true;}
+				else if(kc.isX){ bd.sQaC(bd.lt(cc),bd.getNum(cc)); tc.decTCX(2); kc.tcMoved = true; flag = true;}
 			}
 			else if(ca == 'right' && bd.rt(cc) != -1){
 				if(kc.isCTRL)  { bd.sQsB(bd.rb(cc),(bd.QsB(bd.rb(cc))==0?1:0)); tc.incTCX(2); flag = true;}
 				else if(kc.isZ){ bd.sQaB(bd.rb(cc),(bd.QaB(bd.rb(cc))==0?1:0)); flag = true;}
-				else if(kc.isX){ bd.sQaC(bd.rt(cc),ans.getNum(cc)); tc.incTCX(2); flag = true;}
+				else if(kc.isX){ bd.sQaC(bd.rt(cc),bd.getNum(cc)); tc.incTCX(2); flag = true;}
 			}
 
 			kc.tcMoved = flag;
@@ -164,9 +165,7 @@ Puzzles.fillomino.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
-
-		pc.BorderQanscolor = "rgb(0, 127, 0)";
+		pc.gridcolor = pc.gridcolor_DLIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -174,7 +173,7 @@ Puzzles.fillomino.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
@@ -239,8 +238,8 @@ Puzzles.fillomino.prototype = {
 		fio.generateBorder = function(){
 			for(var id=0;id<bd.border.length;id++){
 				var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
-				if(cc1!=-1 && cc2!=-1 && ans.getNum(cc1)!=-1 && ans.getNum(cc2)!=-1
-					&& ans.getNum(cc1)!=ans.getNum(cc2)){ bd.sQaB(id,1);}
+				if(cc1!=-1 && cc2!=-1 && bd.getNum(cc1)!=-1 && bd.getNum(cc2)!=-1
+					&& bd.getNum(cc1)!=bd.getNum(cc2)){ bd.sQaB(id,1);}
 				else{ bd.sQaB(id,0);}
 			}
 		};
@@ -251,116 +250,98 @@ Puzzles.fillomino.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var rarea = this.searchRarea2(this.searchRarea());
-			if( !this.checkErrorFlag(rarea, 3) ){
+			var rinfo = this.searchRarea2();
+			if( !this.checkErrorFlag(rinfo, 3) ){
 				this.setAlert('数字が含まれていないブロックがあります。','A block has no number.'); return false;
 			}
 
-			if( !this.checkErrorFlag(rarea, 1) || !this.checkAreaSize(rarea, 2) ){
+			if( !this.checkErrorFlag(rinfo, 1) || !this.checkAreaSize(rinfo, 2) ){
 				this.setAlert('ブロックの大きさより数字のほうが大きいです。','A number is bigger than the size of block.'); return false;
 			}
 
-			if( !this.checkSideArea(rarea) ){
+			if( !this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.room[r].number;}) ){
 				this.setAlert('同じ数字のブロックが辺を共有しています。','Adjacent blocks have the same number.'); return false;
 			}
 
-			if( !this.checkErrorFlag(rarea, 2) || !this.checkAreaSize(rarea, 1) ){
+			if( !this.checkErrorFlag(rinfo, 2) || !this.checkAreaSize(rinfo, 1) ){
 				this.setAlert('ブロックの大きさよりも数字が小さいです。','A number is smaller than the size of block.'); return false;
 			}
 
-			if( !this.checkErrorFlag(rarea, 4) ){
+			if( !this.checkErrorFlag(rinfo, 4) ){
 				this.setAlert('複数種類の数字が入っているブロックがあります。','A block has two or more kinds of numbers.'); return false;
 			}
 
-			if( !menu.getVal('enbnonum') && !this.checkAllCell(function(c){ return (this.getNum(c)==-1);}.bind(this)) ){
+			if( !menu.getVal('enbnonum') && !this.checkAllCell(bd.noNum) ){
 				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return (menu.getVal('enbnonum') || this.checkAllCell(function(c){ return (this.getNum(c)==-1);}.bind(this)));};
+		ans.check1st = function(){ return (menu.getVal('enbnonum') || this.checkAllCell(bd.noNum));};
 
-		ans.checkAreaSize = function(area, flag){
-			for(var id=1;id<=area.max;id++){
-				if(area.error[id]==-1||area.number[id]<=0){ continue;}
-				if     (flag==1 && area.number[id]<this.getCntOfRoom(area,id)){ bd.sErC(area.room[id],1); return false;}
-				else if(flag==2 && area.number[id]>this.getCntOfRoom(area,id)){ bd.sErC(area.room[id],1); return false;}
+		ans.checkAreaSize = function(rinfo, flag){
+			for(var id=1;id<=rinfo.max;id++){
+				var room = rinfo.room[id];
+				if(room.error==-1||room.number<=0){ continue;}
+				if     (flag==1 && room.number<room.idlist.length){ bd.sErC(room.idlist,1); return false;}
+				else if(flag==2 && room.number>room.idlist.length){ bd.sErC(room.idlist,1); return false;}
 			}
 			return true;
 		};
-		ans.checkSideArea = function(area){
-			var func = function(area, c1, c2){
-				if(area.check[c1] == area.check[c2]){ return false;}
-				var a1 = area.number[area.check[c1]];
-				var a2 = area.number[area.check[c2]];
-				return (a1>0 && a2>0 && a1==a2);
-			}
-			return this.checkSideAreaCell(area, func, true);
-		};
-		ans.checkErrorFlag = function(area, val){
-			for(var id=1;id<=area.max;id++){
-				if(area.error[id]==val){
-					bd.sErC(area.room[id],1);
+		ans.checkErrorFlag = function(rinfo, val){
+			for(var id=1;id<=rinfo.max;id++){
+				if(rinfo.room[id].error==val){
+					bd.sErC(rinfo.room[id].idlist,1);
 					return false;
 				}
 			}
 			return true;
 		};
-		ans.getNum = function(cc){
-			if(cc<0||cc>=bd.cell.length){ return -1;}
-			return (bd.QnC(cc)!=-1?bd.QnC(cc):bd.QaC(cc));
-		};
 
-		ans.searchRarea2 = function(area){
-			var max = area.max;
-			area.error = new Array();
-			area.number = new Array();
-			for(var id=1;id<=max;id++){
-				area.error[id] = 0;
-				area.number[id] = -1;
-				var nums = new Array();
+		ans.searchRarea2 = function(){
+			var rinfo = area.getRoomInfo();
+			for(var id=1,max=rinfo.max;id<=max;id++){
+				var room = rinfo.room[id];
+				room.error  =  0;
+				room.number = -1;
+				var nums = [];
 				var emptycell = 0, numcnt = 0, filled = 0;
-				for(var i=0;i<area.room[id].length;i++){
-					var c = area.room[id][i];
-					var num = this.getNum(c);
+				for(var i=0;i<room.idlist.length;i++){
+					var c = room.idlist[i];
+					var num = bd.getNum(c);
 					if(num==-1){ emptycell++;}
 					else if(isNaN(nums[num])){ numcnt++; filled=num; nums[num]=1;}
 					else{ nums[num]++;}
 				}
-				if(numcnt>1 && emptycell>0){ area.error[id]=4; continue;}
-				else if(numcnt==0)         { area.error[id]=3; continue;}
-				else if(numcnt==1 && filled < nums[filled]+emptycell){ area.error[id]=2; area.number[id]=filled; continue;}
-				else if(numcnt==1 && filled > nums[filled]+emptycell){ area.error[id]=1; area.number[id]=filled; continue;}
-				else if(numcnt==1)                                   { area.error[id]=-1;area.number[id]=filled; continue;}
+				if(numcnt>1 && emptycell>0){ room.error=4; continue;}
+				else if(numcnt==0)         { room.error=3; continue;}
+				else if(numcnt==1 && filled < nums[filled]+emptycell){ room.error=2;  room.number=filled; continue;}
+				else if(numcnt==1 && filled > nums[filled]+emptycell){ room.error=1;  room.number=filled; continue;}
+				else if(numcnt==1)                                   { room.error=-1; room.number=filled; continue;}
 
-				// ここに来るのはemptycellが0で2種類以上の数字が入っている領域のみ
-				var clist = area.room[id];
-				area.room[id] = new Array();
-				for(var i=0;i<clist.length;i++){ area.check[clist[i]] = 0;}
-				var func = function(b,c){ return (this.getNum(b)==this.getNum(c));}.bind(this)
-
-				area.number[id]=this.getNum(clist[0]);
-				this.sa0(func, area, clist[0], id);
+				// ここまで来るのはemptycellが0で2種類以上の数字が入っている領域のみ
+				// -> それぞれに別の領域idを割り当てて判定できるようにする
+				var clist = room.idlist;
+				for(var i=0;i<clist.length;i++){ rinfo.id[clist[i]] = 0;}
 				for(var i=0;i<clist.length;i++){
-					if(area.check[clist[i]]==0){
-						area.max++;
-						area.room[area.max]=new Array();
-						area.error[area.max]=0;
-						area.number[area.max]=this.getNum(clist[i]);
-						this.sa0(func, area, clist[i], area.max);
-					}
+					if(rinfo.id[clist[i]]!=0){ continue;}
+					rinfo.max++; max++;
+					rinfo.room[rinfo.max] = {idlist:[]};
+					this.sa0(rinfo, clist[i], rinfo.max);
 				}
+				// 最後に自分の情報を無効にする
+				room = {idlist:[], error:0, number:-1};
 			}
-			return area;
+			return rinfo;
 		};
-		ans.sa0 = function(func, area, i, areaid){
-			if(i==-1 || area.check[i]!=0){ return;}
-			area.check[i] = areaid;
-			area.room[areaid].push(i);
-			if( func(i,bd.up(i)) ){ this.sa0(func, area, bd.up(i), areaid);}
-			if( func(i,bd.dn(i)) ){ this.sa0(func, area, bd.dn(i), areaid);}
-			if( func(i,bd.lt(i)) ){ this.sa0(func, area, bd.lt(i), areaid);}
-			if( func(i,bd.rt(i)) ){ this.sa0(func, area, bd.rt(i), areaid);}
+		ans.sa0 = function(rinfo, i, areaid){
+			if(rinfo.id[i]!=0){ return;}
+			rinfo.id[i] = areaid;
+			rinfo.room[areaid].idlist.push(i);
+			if( bd.sameNumber(i,bd.up(i)) ){ this.sa0(rinfo, bd.up(i), areaid);}
+			if( bd.sameNumber(i,bd.dn(i)) ){ this.sa0(rinfo, bd.dn(i), areaid);}
+			if( bd.sameNumber(i,bd.lt(i)) ){ this.sa0(rinfo, bd.lt(i), areaid);}
+			if( bd.sameNumber(i,bd.rt(i)) ){ this.sa0(rinfo, bd.rt(i), areaid);}
 			return;
 		};
 	}
