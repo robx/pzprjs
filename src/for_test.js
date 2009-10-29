@@ -41,8 +41,8 @@ var debug = {
 					 .append( this.newBTN("T3",this.resizeeval.bind(this)) );
 
 		$("#poptest").append( '<br>' )
-					 .append( this.newBTN("File",function(){ $("#testarea").val(""); debug.addTextarea(fio.filesavestr(2).replace(/\//g,"\n"));}) )
-					 .append( this.newBTN("Load",function(){ fio.fileopen($("#testarea").val().split("\n"),2);}) )
+					 .append( this.newBTN("File",function(){ $("#testarea").val(""); debug.addTextarea(fio.fileencode(1).replace(/\//g,"\n"));}) )
+					 .append( this.newBTN("Load",function(){ fio.fileopen($("#testarea").val().split("\n"),1);}) )
 					 .append( ' ' )
 					 .append( this.newBTN("消去",function(e){ $("#testarea").val("");}) )
 					 .append( ' ' )
@@ -78,7 +78,7 @@ var debug = {
 //			menu.ex.turnr(0,0,k.qcols-1,k.qrows-1);
 //			um.addOpe('board', 'turnr', 0, 0, 1);
 //			tc.Adjust();
-//			room.resetRarea();
+//			area.resetArea();
 //		});
 //		base.resize_canvas();
 //	},
@@ -103,37 +103,37 @@ var debug = {
 	},
 
 	all_test : function(){
-		var pnum=0;
+		var pnum=0, term=debug.urls.length-1;
 		debug.phase = 99;
 
 		var tam = setInterval(function(){
 			if(debug.phase != 99){ return;}
 
 			k.puzzleid = debug.urls[pnum][0];
-
-			enc.init.bind(enc)();
 			k.qcols = 0;
 			k.qrows = 0;
+			k.area = { bcell:0, wcell:0, number:0};
 
 			base.reload_func(k.puzzleid);
 
-			var type = enc.get_search.bind(enc,enc.getURLbase()+"?"+k.puzzleid+"/"+debug.urls[pnum][1])();
-			if(enc.uri.cols && enc.uri.rows){ menu.ex.newboard2(enc.uri.cols, enc.uri.rows);}
-			enc.pzlinput.bind(enc,type)();
-			room.resetRarea();
+			enc.parseURI_pzpr.apply(enc, [debug.urls[pnum][1]]);
+			if(enc.uri.cols && enc.uri.rows){
+				menu.ex.newboard2(enc.uri.cols, enc.uri.rows);
+			}
+			enc.pzlinput.apply(enc);
 
 			$("#testarea").attr("rows","32");
 			$("#poptest").css("visibility","visible").css("left", "40px").css("top", "80px").show();
 			debug.addTextarea("Test ("+pnum+", "+k.puzzleid+") start.");
 			debug.sccheck();
 
+			if(pnum >= term){ clearInterval(tam);} 
 			pnum++;
-			if(pnum >= debug.urls.length){ clearInterval(tam);} 
-		},300);
+		},500);
 	},
 
 	accheck1 : function(){
-		var outputstr = fio.filesavestr(1);
+		var outputstr = fio.fileencode(1);
 
 		ans.inCheck = true;
 		ans.disableSetError();
@@ -235,7 +235,7 @@ var debug = {
 		//FileIO test--------------------------------------------------------------
 		case 30:
 			(function(){
-				var outputstr = fio.filesavestr(1).replace(/\//g,"\n");
+				var outputstr = fio.fileencode(1).replace(/\//g,"\n");
 
 				var bd2 = debug.bd_freezecopy();
 
@@ -253,7 +253,7 @@ var debug = {
 			break;
 		case 31:
 			(function(){
-				var outputstr = fio.filesavestr(2).replace(/\//g,"\n");
+				var outputstr = fio.fileencode(2).replace(/\//g,"\n");
 
 				var bd2 = debug.bd_freezecopy();
 
@@ -262,7 +262,11 @@ var debug = {
 
 				setTimeout(function(){
 					fio.fileopen(outputstr.split("\n"),2);
+
+					debug.qsubf = !(k.puzzleid=='fillomino'||k.puzzleid=='hashikake'||k.puzzleid=='kurodoko'||k.puzzleid=='shikaku'||k.puzzleid=='tentaisho');
 					debug.addTextarea("FileIO kanpen = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					debug.qsubf = true;
+
 					debug.phase = 30;
 				},fint);
 			})();
@@ -271,7 +275,7 @@ var debug = {
 		case 40:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'turnr'}}); menu.pop = '';};
+				var func = function(){ menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnr'}}); menu.pop = '';};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("TurnR test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
@@ -293,7 +297,7 @@ var debug = {
 		case 45:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'turnl'}}); menu.pop = '';};
+				var func = function(){ menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnl'}}); menu.pop = '';};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("TurnL test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
@@ -316,9 +320,9 @@ var debug = {
 		case 50:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'flipx'}});
+				menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}});
 
-				setTimeout(function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'flipx'}}); menu.pop = '';
+				setTimeout(function(){ menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}}); menu.pop = '';
 					debug.addTextarea("FlipX test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					debug.phase = 51;
 				},fint);
@@ -338,9 +342,9 @@ var debug = {
 		case 55:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'flipy'}});
+				menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}});
 
-				setTimeout(function(){ menu.pop = $("#pop2_2"); menu.ex.popupflip({srcElement:{name:'flipy'}}); menu.pop = '';
+				setTimeout(function(){ menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}}); menu.pop = '';
 					debug.addTextarea("FlipY test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					debug.phase = 56;
 				},fint);
@@ -359,6 +363,7 @@ var debug = {
 			break;
 		//Adjust test--------------------------------------------------------------
 		case 60:
+			debug.phase=0;
 			(function(){
 				var bd2 = debug.bd_freezecopy();
 				var func = function(nid){ menu.pop = $("#pop2_1"); menu.ex.popupadjust({srcElement:{name:nid}}); menu.pop = '';};
@@ -399,9 +404,11 @@ var debug = {
 	taenable : true,
 	addTextarea : function(str){ if(this.taenable){ $("#testarea").val($("#testarea").val()+str+"\n");} },
 
+	qsubf : true,
 	bd_freezecopy : function(){
-		var bd2 = new Board;
+		var bd2 = {cell:[],excell:[],cross:[],border:[]};
 		for(var c=0;c<bd.cell.length;c++){
+			bd2.cell[c] = {};
 			bd2.cell[c].ques =bd.cell[c].ques;
 			bd2.cell[c].qnum =bd.cell[c].qnum;
 			bd2.cell[c].direc=bd.cell[c].direc;
@@ -410,18 +417,21 @@ var debug = {
 		}
 		if(k.isextendcell){
 			for(var c=0;c<bd.excell.length;c++){
+				bd2.excell[c] = {};
 				bd2.excell[c].qnum =bd.excell[c].qnum;
 				bd2.excell[c].direc=bd.excell[c].direc;
 			}
 		}
 		if(k.iscross){
 			for(var c=0;c<bd.cross.length;c++){
+				bd2.cross[c] = {};
 				bd2.cross[c].ques=bd.cross[c].ques;
 				bd2.cross[c].qnum=bd.cross[c].qnum;
 			}
 		}
 		if(k.isborder){
 			for(var i=0;i<bd.border.length;i++){
+				bd2.border[i] = {};
 				bd2.border[i].ques=bd.border[i].ques;
 				bd2.border[i].qnum=bd.border[i].qnum;
 				bd2.border[i].qans=bd.border[i].qans;
@@ -432,14 +442,17 @@ var debug = {
 		return bd2;
 	},
 	bd_compare : function(bd1,bd2){
-		debug.taenable = false;
+//		debug.taenable = false;
 		var result = true;
-		for(var c=0;c<bd1.cell.length;c++){
+		for(var c=0,len=Math.min(bd1.cell.length,bd2.cell.length);c<len;c++){
 			if(bd1.cell[c].ques !=bd2.cell[c].ques ){ result = false; debug.addTextarea("cell ques "+c+" "+bd1.cell[c].ques+" "+bd2.cell[c].ques);}
 			if(bd1.cell[c].qnum !=bd2.cell[c].qnum ){ result = false; debug.addTextarea("cell qnum "+c+" "+bd1.cell[c].qnum+" "+bd2.cell[c].qnum);}
 			if(bd1.cell[c].direc!=bd2.cell[c].direc){ result = false; debug.addTextarea("cell dirc "+c+" "+bd1.cell[c].direc+" "+bd2.cell[c].direc);}
 			if(bd1.cell[c].qans !=bd2.cell[c].qans ){ result = false; debug.addTextarea("cell qans "+c+" "+bd1.cell[c].qans+" "+bd2.cell[c].qans);}
-			if(bd1.cell[c].qsub !=bd2.cell[c].qsub ){ result = false; debug.addTextarea("cell qsub "+c+" "+bd1.cell[c].qsub+" "+bd2.cell[c].qsub);}
+			if(bd1.cell[c].qsub !=bd2.cell[c].qsub ){
+				if(debug.qsubf){ result = false; debug.addTextarea("cell qsub "+c+" "+bd1.cell[c].qsub+" "+bd2.cell[c].qsub);}
+				else{ bd1.cell[c].qsub = bd2.cell[c].qsub;}
+			}
 		}
 		if(k.isextendcell){
 			for(var c=0;c<bd1.excell.length;c++){
@@ -458,11 +471,14 @@ var debug = {
 				if(bd1.border[i].ques!=bd2.border[i].ques){ result = false; debug.addTextarea("border ques "+i+" "+bd1.border[i].ques+" "+bd2.border[i].ques);}
 				if(bd1.border[i].qnum!=bd2.border[i].qnum){ result = false; debug.addTextarea("border qnum "+i+" "+bd1.border[i].qnum+" "+bd2.border[i].qnum);}
 				if(bd1.border[i].qans!=bd2.border[i].qans){ result = false; debug.addTextarea("border qans "+i+" "+bd1.border[i].qans+" "+bd2.border[i].qans);}
-				if(bd1.border[i].qsub!=bd2.border[i].qsub){ result = false; debug.addTextarea("border qsub "+i+" "+bd1.border[i].qsub+" "+bd2.border[i].qsub);}
 				if(bd1.border[i].line!=bd2.border[i].line){ result = false; debug.addTextarea("border line "+i+" "+bd1.border[i].line+" "+bd2.border[i].line);}
+				if(bd1.border[i].qsub!=bd2.border[i].qsub){
+					if(debug.qsubf){ result = false; debug.addTextarea("border qsub "+i+" "+bd1.border[i].qsub+" "+bd2.border[i].qsub);}
+					else{ bd1.border[i].qsub = bd2.border[i].qsub;}
+				}
 			}
 		}
-		debug.taenable = true;
+//		debug.taenable = true;
 		return result;
 	},
 
@@ -574,7 +590,7 @@ var debug = {
 			["複数種類の数字が入っているブロックがあります。","pzprv3/fillomino/6/6/. . 4 . . . /. 5 3 . 2 . /. . . . 5 2 /3 3 . . . . /. 2 . 1 4 . /. . . 3 . . /. . . . . . /. . . . . . /. . 3 3 . . /. . 5 5 5 . /. . 5 . . . /1 . . . . . /0 0 0 0 0 /0 1 1 0 0 /0 1 0 1 1 /0 1 0 0 1 /1 1 1 0 0 /1 0 0 0 0 /0 0 1 0 0 0 /0 0 0 1 1 0 /1 1 1 1 0 0 /0 1 0 1 1 0 /0 0 1 0 0 0 /"],
 			["ブロックの大きさより数字のほうが大きいです。","pzprv3/fillomino/6/6/. . 4 . . . /. 5 3 . 2 . /. . . . 5 2 /3 3 . . . . /. 2 . 1 4 . /. . . 3 . . /. . . . . . /. . . . . 1 /. . 3 3 . . /. . 5 5 5 . /3 . 5 . . . /1 2 3 . . . /0 1 0 0 0 /0 1 1 0 1 /0 1 0 1 1 /0 1 0 0 1 /1 1 1 1 0 /1 1 0 0 1 /0 0 1 1 1 1 /0 0 0 1 1 1 /1 1 1 1 0 0 /0 1 0 1 1 1 /1 0 1 1 1 0 /"],
 			["数字の入っていないマスがあります。","pzprv3/fillomino/6/6/. . 4 . . . /. 5 3 . 2 . /. . . . 5 2 /3 3 . . . . /. 2 . 1 4 . /. . . 3 . . /. . . . . . /. . . . . 1 /. . 3 3 . . /. . 5 5 5 2 /2 . 5 . . . /1 3 3 . 4 . /0 1 0 0 0 /0 1 1 0 1 /1 1 0 1 1 /0 1 0 0 1 /0 1 1 1 0 /1 0 0 1 0 /0 0 1 1 1 1 /1 0 0 1 1 1 /0 1 1 1 0 0 /1 1 0 1 1 1 /1 1 1 1 0 0 /"],
-			["","pzprv3/fillomino/6/6/. . 4 . . . /. 5 3 . 2 . /. . . . 5 2 /3 3 . . . . /. 2 . 1 4 . /. . . 3 . . /5 5 . 4 4 4 /5 5 . 2 . 1 /3 5 3 3 . . /. . 5 5 5 2 /2 . 5 . . 4 /1 3 3 . 4 4 /0 1 0 0 0 /0 1 1 0 1 /1 1 0 1 1 /0 1 0 0 1 /0 1 1 1 0 /1 0 0 1 0 /0 0 1 1 1 1 /1 0 0 1 1 1 /0 1 1 1 0 0 /1 1 0 1 1 1 /1 1 1 1 0 0 /"]
+			["","pzprv3/fillomino/6/6/. . 4 . . . /. 5 3 . 2 . /. . . . 5 2 /3 3 . . . . /. 2 . 1 4 . /. . . 3 . . /5 5 . 4 4 4 /5 . . 2 . 1 /3 5 3 3 . . /. . 5 5 5 2 /2 . 5 . . 4 /1 3 3 . 4 4 /0 1 0 0 0 /0 1 1 0 1 /1 1 0 1 1 /0 1 0 0 1 /0 1 1 1 0 /1 0 0 1 0 /0 0 1 1 1 1 /1 0 0 1 1 1 /0 1 1 1 0 0 /1 1 0 1 1 1 /1 1 1 1 0 0 /"]
 		],
 		firefly : [
 			["分岐している線があります。","pzprv3/firefly/5/5/4,0 . . . 2,1 /. 3,- . 3,0 . /. . . . . /. 1,0 . 2,2 . /1,1 . . . 1,1 /1 1 1 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 1 0 0 /0 0 1 0 0 /0 0 1 0 0 /0 0 0 0 0 /"],
@@ -945,7 +961,7 @@ var debug = {
 			["線が途中で途切れています。","pzprv3/slalom/6/6/. . . . . . /w # . # w4 # /w # . # w # /. . . . . . /. # # w1 # . /. . . o . . /1 1 1 1 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /1 1 1 0 0 /1 0 0 0 1 0 /1 0 0 0 1 0 /1 0 0 0 1 0 /0 0 0 1 0 0 /0 0 0 1 0 0 /"],
 			["輪っかが一つではありません。","pzprv3/slalom/6/6/. . . . . . /w # . # w4 # /w # . # w # /. . . . . . /. # # w1 # . /. . . o . . /1 1 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /1 1 0 1 1 /0 0 0 0 0 /0 0 0 1 1 /1 0 1 0 0 0 /1 0 1 0 0 0 /1 0 1 0 0 0 /0 0 0 1 0 1 /0 0 0 1 0 1 /"],
 			["線が通過していない旗門があります。","pzprv3/slalom/6/6/. . . . . . /w # . # w4 # /w # . # w # /. . . . . . /. # # w1 # . /. . . o . . /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /1 1 1 1 1 /0 0 0 0 0 /1 1 1 1 1 /0 0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /1 0 0 0 0 1 /1 0 0 0 0 1 /"],
-			["","pzprv3/slalom/6/6/. . . . . . /w # . # w4 # /w # . # w # /. . . . . . /. # # w1 # . /. . . o . . /1 1 1 1 0 /0 0 0 0 0 /0 0 0 0 0 /1 1 1 0 1 /0 0 0 0 0 /-1 -1 -1 1 1 /1 0 -1 0 1 0 /1 0 -1 0 1 0 /1 0 -1 0 1 0 /-1 0 0 1 0 1 /-1 0 0 1 0 1 /"]
+			["","pzprv3.1/slalom/6/6/. . . . . . /- # . 4 - 4 /- # . # - # /. . . . . . /. # 1 - 1 . /. . . o . . /1 1 1 1 0 /0 0 0 0 0 /0 0 0 0 0 /1 1 1 0 1 /0 0 0 0 0 /-1 -1 -1 1 1 /1 0 -1 0 1 0 /1 0 -1 0 1 0 /1 0 -1 0 1 0 /-1 0 0 1 0 1 /-1 0 0 1 0 1 /"]
 		],
 		slither : [
 			["分岐している線があります。","pzprv3/slither/5/5/2 . . 1 . /. 2 . . 1 /. . 2 . . /3 . . 3 . /. 0 . . 3 /1 0 0 0 0 0 /1 1 0 0 0 0 /1 0 0 0 0 0 /1 0 0 0 0 0 /1 0 0 0 0 0 /1 1 0 0 0 /0 1 0 0 0 /0 0 0 0 0 /1 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /"],
