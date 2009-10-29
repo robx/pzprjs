@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.2.0p2
+// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.2.2
 //
 Puzzles.tateyoko = function(){ };
 Puzzles.tateyoko.prototype = {
@@ -15,7 +15,7 @@ Puzzles.tateyoko.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.tateyoko.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
@@ -173,10 +174,9 @@ Puzzles.tateyoko.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-
-		pc.linecolor = "rgb(0,191,0)";
-		pc.errbcolor1 = "rgb(255,127,127)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
+		pc.linecolor = pc.linecolor_LIGHT;
+		pc.errbcolor1 = pc.errbcolor1_DARK;
 		pc.errbcolor2 = "white";
 
 		pc.paint = function(x1,y1,x2,y2){
@@ -185,7 +185,7 @@ Puzzles.tateyoko.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawTateyokos(x1,y1,x2,y2)
 
@@ -208,11 +208,11 @@ Puzzles.tateyoko.prototype = {
 				else{ g.fillStyle = this.linecolor;}
 
 				if(bd.QaC(c)==1){
-					if(this.vnop("c"+c+"_bar1_",1)){ g.fillRect(bd.cell[c].px()+lp, bd.cell[c].py(), lw, k.cheight+1);}
+					if(this.vnop("c"+c+"_bar1_",1)){ g.fillRect(bd.cell[c].px+lp, bd.cell[c].py, lw, k.cheight+1);}
 					this.vhide("c"+c+"_bar2_");
 				}
 				else if(bd.QaC(c)==2){
-					if(this.vnop("c"+c+"_bar2_",1)){ g.fillRect(bd.cell[c].px(), bd.cell[c].py()+lp, k.cwidth+1, lw);}
+					if(this.vnop("c"+c+"_bar2_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py+lp, k.cwidth+1, lw);}
 					this.vhide("c"+c+"_bar1_");
 				}
 				else{ this.vhide(["c"+c+"_bar1_","c"+c+"_bar2_"]);}
@@ -228,7 +228,7 @@ Puzzles.tateyoko.prototype = {
 					if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
 					else{ g.fillStyle = this.Cellcolor;}
 
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px(), bd.cell[c].py(), k.cwidth+1, k.cheight+1);}
+					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
 				}
 				else{ this.vhide("c"+c+"_full_");}
 
@@ -353,16 +353,16 @@ Puzzles.tateyoko.prototype = {
 				this.setAlert('黒マスに繋がる線の数が正しくありません。','The number of lines connected to a black cell is wrong.'); return false;
 			}
 
-			bd.sErC(bd.cells,2);
-			var barea = this.generateArea();
-			if( !this.checkQnumsInArea(barea, function(a){ return (a>=2);}) ){
+			for(var i=0;i<bd.cell.length;i++){ bd.sErC([i],2);}
+			var binfo = this.getBarInfo();
+			if( !this.checkQnumsInArea(binfo, function(a){ return (a>=2);}) ){
 				this.setAlert('1つの棒に2つ以上の数字が入っています。','A line passes plural numbers.'); return false;
 			}
 
-			if( !this.checkNumberAndSize(barea) ){
+			if( !this.checkNumberAndSize(binfo) ){
 				this.setAlert('数字と棒の長さが違います。','The number is different from the length of line.'); return false;
 			}
-			bd.sErC(bd.cells,0);
+			for(var i=0;i<bd.cell.length;i++){ bd.sErC([i],0);}
 
 			if( !this.checkBCell(2) ){
 				this.setAlert('黒マスに繋がる線の数が正しくありません。','The number of lines connected to a black cell is wrong.'); return false;
@@ -392,22 +392,22 @@ Puzzles.tateyoko.prototype = {
 			}
 			return true;
 		};
-		ans.generateArea = function(){
-			var area = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){ area.check[c]=(bd.QuC(c)==1 || bd.QaC(c)==-1?-1:0);}
+		ans.getBarInfo = function(){
+			var binfo = new AreaInfo();
+			for(var c=0;c<bd.cell.length;c++){ binfo.id[c]=(bd.QuC(c)==1 || bd.QaC(c)==-1?-1:0);}
 			for(var c=0;c<bd.cell.length;c++){
-				if(area.check[c]!=0){ continue;}
+				if(binfo.id[c]!=0){ continue;}
 				var cx=bd.cell[c].cx, cy=bd.cell[c].cy, val=bd.QaC(c);
 
-				area.max++;
-				area.room[area.max] = new Array();
+				binfo.max++;
+				binfo.room[binfo.max] = {idlist:[]};
 				while(bd.QaC(bd.cnum(cx,cy))==val){
-					area.room[area.max].push(bd.cnum(cx,cy));
-					area.check[bd.cnum(cx,cy)]=area.max;
+					binfo.room[binfo.max].idlist.push(bd.cnum(cx,cy));
+					binfo.id[bd.cnum(cx,cy)]=binfo.max;
 					if(val==1){ cy++;}else{ cx++;}
 				}
 			}
-			return area;
+			return binfo;
 		};
 	}
 };
