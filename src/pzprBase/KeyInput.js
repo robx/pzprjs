@@ -1,4 +1,4 @@
-// KeyInput.js v3.2.2α1
+// KeyInput.js v3.2.2
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -214,36 +214,34 @@ KeyEvent.prototype = {
 	},
 	//---------------------------------------------------------------------------
 	// kc.key_inputqnum() 上限maxまでの数字をCellの問題データをして入力する(keydown時)
-	// kc.setnum()        モード別に数字を設定する
-	// kc.getnum()        モード別に数字を取得する
 	//---------------------------------------------------------------------------
 	key_inputqnum : function(ca, max){
 		var cc = tc.getTCC();
-		if(k.mode==1 && k.isOneNumber){ cc = room.getTopOfRoomByCell(cc);}
+		if(k.mode==1 && k.isOneNumber){ cc = area.getTopOfRoomByCell(cc);}
 		if(bd.roommaxfunc){ max = bd.roommaxfunc(cc,k.mode);}
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
 			if(k.mode==3){ bd.sDiC(cc,0);}
 
-			if(this.getnum(cc)<=0 || this.prev!=cc){
-				if(num<=max){ if(k.NumberIsWhite){ bd.sQaC(cc,-1);} this.setnum(cc,num);}
+			if(bd.getNum(cc)<=0 || this.prev!=cc){
+				if(num<=max){ bd.setNum(cc,num);}
 			}
 			else{
-				if(this.getnum(cc)*10+num<=max){ this.setnum(cc,this.getnum(cc)*10+num);}
-				else if(num<=max){ this.setnum(cc,num);}
+				if(bd.getNum(cc)*10+num<=max){ bd.setNum(cc,bd.getNum(cc)*10+num);}
+				else if(num<=max){ bd.setNum(cc,num);}
 			}
 			if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
 			if(k.isAnsNumber){ if(k.mode==1){ bd.sQaC(cc,-1);} bd.sQsC(cc,0); }
 		}
 		else if(ca=='-'){
-			if(k.mode==1 && bd.QnC(cc)!=-2){ this.setnum(cc,-2);}
-			else{ this.setnum(cc,-1);}
+			if(k.mode==1 && bd.QnC(cc)!=-2){ bd.setNum(cc,-2);}
+			else{ bd.setNum(cc,-1);}
 			if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
 			if(k.isAnsNumber){ bd.sQsC(cc,0);}
 		}
 		else if(ca==' '){
-			this.setnum(cc,-1);
+			bd.setNum(cc,-1);
 			if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
 			if(k.isAnsNumber){ bd.sQsC(cc,0);}
 		}
@@ -252,9 +250,6 @@ KeyEvent.prototype = {
 		this.prev = cc;
 		pc.paintCell(cc);
 	},
-
-	setnum : function(cc,val){ if(k.dispzero || val!=0){ (k.mode==1 ? bd.sQnC(cc,val) : bd.sQaC(cc,val));} },
-	getnum : function(cc){ return (k.mode==1 ? bd.QnC(cc) : bd.QaC(cc));},
 
 	//---------------------------------------------------------------------------
 	// kc.key_inputdirec()  四方向の矢印などを設定する
@@ -369,10 +364,10 @@ KeyPopup = function(){
 	this.ctl = { 1:{ el:"", enable:false, target:"cell"},		// 問題入力時用popup
 				 3:{ el:"", enable:false, target:"cell"} };		// 回答入力時用popup
 	this.tdcolor = "black";
-	this.imgCR = [1,1];			// img表示用画像の横×縦のサイズ
+	this.imgCR = [1,1];		// img表示用画像の横×縦のサイズ
 
-	this.tds  = new Array();	// resize用
-	this.imgs = new Array();	// resize用
+	this.tds  = [];			// resize用
+	this.imgs = [];			// resize用
 
 	this.defaultdisp = false;
 
