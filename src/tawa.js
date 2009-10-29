@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たわむれんが版 tawa.js v3.2.0p2
+// パズル固有スクリプト部 たわむれんが版 tawa.js v3.2.2
 //
 Puzzles.tawa = function(){ };
 Puzzles.tawa.prototype = {
@@ -15,7 +15,7 @@ Puzzles.tawa.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.tawa.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("たわむれんが","Tawamurenga");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
@@ -53,24 +54,20 @@ Puzzles.tawa.prototype = {
 
 	protoChange : function(){
 		this.protofunc = {
-			cellpx  : Cell.prototype.px,
 			bdinit2 : Board.prototype.initialize2
 		};
 
-		Cell.prototype.px = function(){ return mf(k.p0.x+this.cx*k.cwidth/2);};
 		Board.prototype.initialize2 = function(){
 			var total = 0;
 			if     (this.lap==0){ total = mf(k.qrows*0.5)*(2*k.qcols-1)+((k.qrows%2==1)?k.qcols:0);}
 			else if(this.lap==3 || this.lap==undefined){ total = mf(k.qrows*0.5)*(2*k.qcols+1)+((k.qrows%2==1)?k.qcols:0);}
 			else{ total = k.qcols*k.qrows;}
 
-			this.cell = new Array();
-			this.cells = new Array();
+			this.cell = [];
 			for(var i=0;i<total;i++){
 				this.cell[i] = new Cell(i);
-				this.cell[i].allclear(i);
-				this.cells.push(i);
 			}
+			this.def.cell = new Cell(0);
 
 			this.setposAll();
 		};
@@ -97,7 +94,6 @@ Puzzles.tawa.prototype = {
 		this.newboard_html_original = $(document.newboard).html();
 	},
 	protoOriginal : function(){
-		Cell.prototype.px = this.protofunc.cellpx;
 		Board.prototype.initialize2 = this.protofunc.bdinit2;
 		base.resize_canvas_only = this.resize_original;
 		$(document.newboard).html(this.newboard_html_original);
@@ -166,267 +162,12 @@ Puzzles.tawa.prototype = {
 			};
 		}
 
-		this.input_init2();
-
-		tc.getTCC = function(){ return bd.cnum(this.cursolx, mf((this.cursoly-1)/2));}.bind(tc);
-		tc.setTCC = function(id){
-			if(id<0 || bd.cell.length<=id){ return;}
-			this.cursolx = bd.cell[id].cx; this.cursoly = bd.cell[id].cy*2+1;
-		};
-		tc.incTCY = function(mv){
-			this.cursoly+=mv;
-			if(this.cursolx==this.minx || (this.cursolx<this.maxx && mf(this.cursoly/2)%2==1)){ this.cursolx++;}
-			else{ this.cursolx--;}
-		};
-		tc.decTCY = function(mv){
-			this.cursoly-=mv;
-			if(this.cursolx==this.maxx || (this.cursolx>this.minx && mf(this.cursoly/2)%2==0)){ this.cursolx--;}
-			else{ this.cursolx++;}
-		};
-		tc.setAlign = function(){
-			this.minx = 0;
-			this.miny = 0;
-			this.maxx = (bd.lap==0?2*k.qcols-1:(bd.lap==3?2*k.qcols+1:2*k.qcols))-1;
-			this.maxy = 2*k.qrows-1;
-
-			if(bd.cnum(this.cursolx, mf(this.cursoly/2))==-1){ this.cursolx += (this.cursolx>0?-1:1);}
-		};
-		tc.setAlign();
-
-		bd.setposCell = function(id){
-			if(this.lap==0){
-				this.cell[id].cy = mf((2*id)/(2*k.qcols-1));
-				this.cell[id].cx = mf((2*id)%(2*k.qcols-1));
-			}
-			else if(this.lap==1){
-				this.cell[id].cy = mf(id/k.qcols);
-				this.cell[id].cx = mf(id%k.qcols)*2+(this.cell[id].cy%2==1?1:0);
-			}
-			else if(this.lap==2){
-				this.cell[id].cy = mf(id/k.qcols);
-				this.cell[id].cx = mf(id%k.qcols)*2+(this.cell[id].cy%2==0?1:0);
-			}
-			else if(this.lap==3){
-				this.cell[id].cy = mf((2*id+1)/(2*k.qcols+1));
-				this.cell[id].cx = mf((2*id+1)%(2*k.qcols+1));
-			}
-		};
-		bd.cnum = function(bx,cy){
-			return this.cnum2(bx,cy,k.qcols,k.qrows);
-		};
-		bd.cnum2 = function(bx,cy,qc,qr){
-			if(cy<0||cy>qr-1||bx<0||bx>tc.maxx){ return -1;}
-			else if(this.lap==0){
-				if((bx+cy)%2==0 && (bx<=tc.maxx || cy%2==0)){ return mf((bx+cy*(2*qc-1))/2);}
-			}
-			else if(this.lap==1){
-				if((bx+cy)%2==0 && (bx<=tc.maxx || cy%2==0)){ return mf(bx/2)+cy*qc;}
-			}
-			else if(this.lap==2){
-				if((bx+cy)%2==1 && (bx<=tc.maxx || cy%2==1)){ return mf(bx/2)+cy*qc;}
-			}
-			else if(this.lap==3){
-				if((bx+cy)%2==1 && (bx<=tc.maxx || cy%2==1)){ return mf((bx+cy*(2*qc+1))/2);}
-			}
-			return -1;
-		};
-		bd.initialize2();
-		tc.setTCC(0);
-
-		mv.cellid = function(p){
-			var pos = this.cellpos(p);
-			if((p.y-k.p0.y)%k.cheight==0){ return -1;} // 縦方向だけ、ぴったりは無効
-			if(pos.x<0 || pos.x>tc.maxx+1 || pos.y<0 || pos.y>k.qrows-1){ return -1;}
-
-			var cand = bd.cnum(pos.x, pos.y);
-			cand = (cand!=-1?cand:bd.cnum(pos.x-1, pos.y));
-			return cand;
-		};
-		mv.cellpos = function(p){
-			return new Pos(mf((p.x-k.p0.x)/(k.cwidth/2)), mf((p.y-k.p0.y)/k.cheight));
-		};
-
-		menu.ex.newboard = function(e){
-			if(menu.pop){
-				var col = mf(parseInt(document.newboard.col.value));
-				var row = mf(parseInt(document.newboard.row.value));
-				var slap = {0:0,1:3,2:1,3:2}[this.clap];
-
-				if(col==1 && (slap==0||slap==3)){ menu.popclose(); return;}
-				if(slap==3){ col--;}
-				if(col>0 && row>0){ bd.lap = slap; this.newboard2(col,row);}
-				menu.popclose();
-				base.resize_canvas();				// Canvasを更新する
-			}
-		};
-		menu.ex.newboard2 = function(col,row){
-			var total = 0;
-			if     (bd.lap==0){ total = mf(row*0.5)*(2*col-1)+((row%2==1)?col:0);}
-			else if(bd.lap==3){ total = mf(row*0.5)*(2*col+1)+((row%2==1)?col:0);}
-			else{ total = col*row;}
-
-			// 既存のサイズより小さいならdeleteする
-			for(var n=bd.cell.length-1;n>=total;n--){
-				if(bd.cell[n].numobj) { bd.cell[n].numobj.remove();}
-				if(bd.cell[n].numobj2){ bd.cell[n].numobj2.remove();}
-				delete bd.cell[n]; bd.cell.pop(); bd.cells.pop();
-			}
-
-			// 既存のサイズより大きいならnewを行う
-			for(var i=bd.cell.length;i<total;i++){ bd.cell.push(new Cell()); bd.cells.push(i);}
-
-			// サイズの変更
-			//tc.maxy += (row-k.qrows)*2;
-			k.qcols = col; k.qrows = row;
-			tc.setAlign();
-
-			// cellinit() = allclear()+setpos()を呼び出す
-			for(var i=0;i<bd.cell.length;i++){ bd.cell[i].allclear(i);}
-
-			um.allerase();
-			bd.setposAll();
-			tc.setTCC(0);
-
-			ans.reset();
-		};
-
-		// 盤面の拡大
-		menu.ex.expand = function(number, rc, key){
-			var margin = 0;
-			if(rc=='c'){
-				if(key=='lt'){
-					k.qcols += {0:0,1:0,2:1,3:1}[bd.lap];
-					margin   = mf((k.qrows + {0:0,1:0,2:1,3:1}[bd.lap])/2);
-					bd.lap   = {0:2,1:3,2:0,3:1}[bd.lap];
-				}
-				else if(key=='rt'){
-					k.qcols += {0:0,1:1,2:0,3:1}[bd.lap];
-					margin   = mf((k.qrows + {0:0,1:1,2:0,3:1}[bd.lap])/2);
-					bd.lap   = {0:1,1:0,2:3,3:2}[bd.lap];
-				}
-				tc.maxx++;
-			}
-			else if(rc=='r'){
-				k.qrows++;
-				tc.maxy+=2;
-				if(bd.lap==1||bd.lap==2){ margin = k.qcols;}
-				else if(bd.lap==0){ margin = k.qcols-1;}
-				else if(bd.lap==3){ margin = k.qcols+1;}
-
-				if(key=='up'){
-					k.qcols += {0:-1,1:0,2:0,3:1}[bd.lap];
-					bd.lap   = {0:3,1:2,2:1,3:0}[bd.lap];
-				}
-			}
-
-			var tf = ((key=='up'||key=='lt')?1:-1);
-			var func = function(cx,cy){ var ty=(k.qrows-1)/2; return (ty+tf*(cy-ty)==0);};
-			if     (key=='lt'){ func = function(cx,cy,f){ return (cx<=0);};}
-			else if(key=='rt'){ func = function(cx,cy,f){ return (cx>=tc.maxx);};}
-
-			var ncount = bd.cell.length;
-			for(var i=0;i<margin;i++){ bd.cell.push(new Cell()); bd.cell[ncount+i].cellinit(ncount+i); bd.cells.push(ncount+i);} 
-			for(var i=0;i<bd.cell.length;i++){ bd.setposCell(i);}
-			for(var i=bd.cell.length-1;i>=0;i--){
-				if(i-margin<0 || func(bd.cell[i].cx, bd.cell[i].cy)){
-					bd.cell[i] = new Cell(); bd.cell[i].cellinit(i); margin--;
-				}
-				else if(margin>0){ bd.cell[i] = bd.cell[i-margin];}
-				if(margin==0){ break;}
-			}
-			bd.setposAll();
-			tc.setAlign();
-		};
-		// 盤面の縮小
-		menu.ex.reduce = function(number, rc, key){
-			if((k.qcols==1 && rc=='c' && bd.lap!=3)||(rc=='r'&&k.qrows==1)){ return false;}
-
-			var tf = ((key=='up'||key=='lt')?1:-1);
-			var func = function(cx,cy){ var ty=(k.qrows-1)/2; return (ty+tf*(cy-ty)==0);};
-			if     (key=='lt'){ func = function(cx,cy,f){ return (cx<=0);};}
-			else if(key=='rt'){ func = function(cx,cy,f){ return (cx>=tc.maxx);};}
-
-			var margin = 0;
-			for(var i=0;i<bd.cell.length;i++){
-				if(func(bd.cell[i].cx, bd.cell[i].cy)){
-					if(bd.cell[i].numobj) { bd.cell[i].numobj.hide();}
-					if(bd.cell[i].numobj2){ bd.cell[i].numobj2.hide();}
-					if(!bd.isNullCell(i)){ um.addOpe('cell', 'cell', i, bd.cell[i], 0);}
-					margin++;
-				}
-				else if(margin>0){ bd.cell[i-margin] = bd.cell[i];}
-			}
-			for(var i=0;i<margin;i++){ bd.cell.pop(); bd.cells.pop();}
-
-			if(rc=='c'){
-				if(key=='lt'){
-					k.qcols -= {0:1,1:1,2:0,3:0}[bd.lap];
-					bd.lap   = {0:2,1:3,2:0,3:1}[bd.lap];
-				}
-				else if(key=='rt'){
-					k.qcols -= {0:1,1:0,2:1,3:0}[bd.lap];
-					bd.lap   = {0:1,1:0,2:3,3:2}[bd.lap];
-				}
-				tc.maxx--;
-			}
-			else if(rc=='r'){
-				k.qrows--;
-				tc.maxy-=2;
-				if(key=='up'){
-					k.qcols += {0:-1,1:0,2:0,3:1}[bd.lap];
-					bd.lap   = {0:3,1:2,2:1,3:0}[bd.lap];
-				}
-			}
-
-			bd.setposAll();
-			tc.setAlign();
-			return true;
-		};
-		// 回転・反転(上下反転)
-		menu.ex.flipy = function(rx1,ry1,rx2,ry2){
-			if(k.qrows%2==0){ bd.lap = {0:3,1:2,2:1,3:0}[bd.lap];}
-			rx2 = tc.maxx;
-
-			var cnt = bd.cell.length;
-			var ch = new Array(); for(var i=0;i<cnt;i++){ ch[i]=1;}
-			while(cnt>0){
-				var tmp, source, prev, target, nex;
-				for(source=0;source<bd.cell.length;source++){ if(ch[source]==1){ break;}}
-				tmp = bd.cell[source]; target = source;
-				while(true){
-					nex = bd.cnum2(bd.cell[target].cx, (ry2+ry1)-bd.cell[target].cy, k.qcols, k.qrows);
-					if(nex==source){ break;}
-					bd.cell[target] = bd.cell[nex]; ch[target]=0; cnt--; target = nex;
-				}
-				bd.cell[target] = tmp; ch[target]=0; cnt--; 
-			}
-			bd.setposAll();
-		};
-		// 回転・反転(左右反転)
-		menu.ex.flipx = function(rx1,ry1,rx2,ry2){
-			bd.lap = {0:0,1:2,2:1,3:3}[bd.lap];
-			rx2 = tc.maxx;
-
-			var cnt = bd.cell.length;
-			var ch = new Array(); for(var i=0;i<cnt;i++){ ch[i]=1;}
-			while(cnt>0){
-				var tmp, source, prev, target, nex;
-				for(source=0;source<bd.cell.length;source++){ if(ch[source]==1){ break;}}
-				tmp = bd.cell[source]; target = source;
-				while(true){
-					nex = bd.cnum2((rx2+rx1)-bd.cell[target].cx, bd.cell[target].cy, k.qcols, k.qrows);
-					if(nex==source){ break;}
-					bd.cell[target] = bd.cell[nex]; ch[target]=0; cnt--; target = nex;
-				}
-				bd.cell[target] = tmp; ch[target]=0; cnt--; 
-			}
-			bd.setposAll();
-		};
-
-		$(document.flip.turnl).attr("disabled",true);
-		$(document.flip.turnr).attr("disabled",true);
+		this.input_init_menu();
+		this.input_init_board();
+		this.input_init_menuex();
 	},
-	input_init2 : function(){	// 処理が大きくなったので分割(input_init()から呼ばれる)
+
+	input_init_menu : function(){	// 処理が大きくなったので分割(input_init()から呼ばれる)
 		menu.ex.clap = 3;
 		bd.lap = menu.ex.clap;	// 2段目は => 0:左右引っ込み 1:右のみ出っ張り 2:左のみ出っ張り 3:左右出っ張り
 
@@ -464,12 +205,253 @@ Puzzles.tawa.prototype = {
 			).appendTo($("#laps"));
 		}
 	},
+	input_init_board : function(){	// 処理が大きくなったので分割(input_init()から呼ばれる)
+
+		// キー移動範囲のminx,maxx,miny,maxy設定関数オーバーライド
+		// このパズルに限って、やたらとtc.maxxが参照されます。。
+		tc.getTCC = function(){ return bd.cnum(this.cursolx, mf((this.cursoly-1)/2));}.bind(tc);
+		tc.setTCC = function(id){
+			if(id<0 || bd.cell.length<=id){ return;}
+			this.cursolx = bd.cell[id].cx; this.cursoly = bd.cell[id].cy*2+1;
+		};
+		tc.incTCY = function(mv){
+			this.cursoly+=mv;
+			if(this.cursolx==this.minx || (this.cursolx<this.maxx && mf(this.cursoly/2)%2==1)){ this.cursolx++;}
+			else{ this.cursolx--;}
+		};
+		tc.decTCY = function(mv){
+			this.cursoly-=mv;
+			if(this.cursolx==this.maxx || (this.cursolx>this.minx && mf(this.cursoly/2)%2==0)){ this.cursolx--;}
+			else{ this.cursolx++;}
+		};
+		tc.setAlign = function(){
+			this.minx = 0;
+			this.miny = 0;
+			this.maxx = (bd.lap==0?2*k.qcols-1:(bd.lap==3?2*k.qcols+1:2*k.qcols))-1;
+			this.maxy = 2*k.qrows-1;
+
+			if(bd.cnum(this.cursolx, mf(this.cursoly/2))==-1){ this.cursolx += (this.cursolx>0?-1:1);}
+		};
+		tc.setAlign();	// tc.maxx等を設定し直す
+
+		// 各セルのcx,cy,px,py変数設定関数
+		bd.setposCells = function(){
+			this.cellmax = this.cell.length;
+			for(var id=0;id<bd.cellmax;id++){
+				if(this.lap==0){
+					this.cell[id].cy = mf((2*id)/(2*k.qcols-1));
+					this.cell[id].cx = mf((2*id)%(2*k.qcols-1));
+				}
+				else if(this.lap==1){
+					this.cell[id].cy = mf(id/k.qcols);
+					this.cell[id].cx = mf(id%k.qcols)*2+(this.cell[id].cy%2==1?1:0);
+				}
+				else if(this.lap==2){
+					this.cell[id].cy = mf(id/k.qcols);
+					this.cell[id].cx = mf(id%k.qcols)*2+(this.cell[id].cy%2==0?1:0);
+				}
+				else if(this.lap==3){
+					this.cell[id].cy = mf((2*id+1)/(2*k.qcols+1));
+					this.cell[id].cx = mf((2*id+1)%(2*k.qcols+1));
+				}
+			}
+		};
+		bd.setpicAll = function(){
+			for(var id=0;id<bd.cellmax;id++){
+				this.cell[id].px = k.p0.x + mf(this.cell[id].cx*k.cwidth/2);
+				this.cell[id].py = k.p0.y + this.cell[id].cy*k.cheight;
+			}
+		};
+		bd.setposAll();	// 各セルのcx,cy,px,pyを設定し直す
+
+		// PositionからのセルID取得
+		bd.cnum = function(bx,cy){
+			return this.cnum2(bx,cy,k.qcols,k.qrows);
+		};
+		bd.cnum2 = function(bx,cy,qc,qr){
+			if(cy<0||cy>qr-1||bx<0||bx>tc.maxx){ return -1;}
+			else if(this.lap==0){
+				if((bx+cy)%2==0 && (bx<=tc.maxx || cy%2==0)){ return mf((bx+cy*(2*qc-1))/2);}
+			}
+			else if(this.lap==1){
+				if((bx+cy)%2==0 && (bx<=tc.maxx || cy%2==0)){ return mf(bx/2)+cy*qc;}
+			}
+			else if(this.lap==2){
+				if((bx+cy)%2==1 && (bx<=tc.maxx || cy%2==1)){ return mf(bx/2)+cy*qc;}
+			}
+			else if(this.lap==3){
+				if((bx+cy)%2==1 && (bx<=tc.maxx || cy%2==1)){ return mf((bx+cy*(2*qc+1))/2);}
+			}
+			return -1;
+		};
+
+		// マウス入力時のセルID取得系
+		mv.cellid = function(p){
+			var pos = this.cellpos(p);
+			if((p.y-k.p0.y)%k.cheight==0){ return -1;} // 縦方向だけ、ぴったりは無効
+			if(pos.x<0 || pos.x>tc.maxx+1 || pos.y<0 || pos.y>k.qrows-1){ return -1;}
+
+			var cand = bd.cnum(pos.x, pos.y);
+			cand = (cand!=-1?cand:bd.cnum(pos.x-1, pos.y));
+			return cand;
+		};
+		mv.cellpos = function(p){
+			return new Pos(mf((p.x-k.p0.x)/(k.cwidth/2)), mf((p.y-k.p0.y)/k.cheight));
+		};
+	},
+	input_init_menuex : function(){	// 処理が大きくなったので分割(input_init()から呼ばれる)
+
+		menu.ex.newboard = function(e){
+			if(menu.pop){
+				var col = mf(parseInt(document.newboard.col.value));
+				var row = mf(parseInt(document.newboard.row.value));
+				var slap = {0:0,1:3,2:1,3:2}[this.clap];
+
+				if(col==1 && (slap==0||slap==3)){ menu.popclose(); return;}
+				if(slap==3){ col--;}
+				if(col>0 && row>0){ bd.lap = slap; this.newboard2(col,row);}
+				menu.popclose();
+				base.resize_canvas();				// Canvasを更新する
+			}
+		};
+		menu.ex.newboard2 = function(col,row){
+			var total = 0;
+			if     (bd.lap==0){ total = mf(row*0.5)*(2*col-1)+((row%2==1)?col:0);}
+			else if(bd.lap==3){ total = mf(row*0.5)*(2*col+1)+((row%2==1)?col:0);}
+			else{ total = col*row;}
+
+			// 既存のサイズより小さいならdeleteする
+			for(var n=bd.cell.length-1;n>=total;n--){
+				if(bd.cell[n].numobj) { bd.cell[n].numobj.remove();}
+				if(bd.cell[n].numobj2){ bd.cell[n].numobj2.remove();}
+				delete bd.cell[n]; bd.cell.pop();
+			}
+
+			// 既存のサイズより大きいならnewを行う
+			for(var i=bd.cell.length;i<total;i++){ bd.cell.push(new Cell(i));}
+
+			// サイズの変更
+			//tc.maxy += (row-k.qrows)*2;
+			k.qcols = col; k.qrows = row;
+			tc.setAlign();
+
+			// cellinit() = allclear()+setpos()を呼び出す
+			for(var i=0;i<bd.cell.length;i++){ bd.cell[i].allclear(i);}
+
+			um.allerase();
+			bd.setposAll();
+			tc.setTCC(0);
+
+			base.resetInfo();
+		};
+
+		// 盤面の拡大
+		menu.ex.expand = function(key){
+			// 調節用
+			var margin = 0;
+			{
+				if(key=='lt'){
+					k.qcols += {0:0,1:0,2:1,3:1}[bd.lap];
+					margin   = mf((k.qrows + {0:0,1:0,2:1,3:1}[bd.lap])/2);
+					bd.lap   = {0:2,1:3,2:0,3:1}[bd.lap];
+					tc.maxx++;
+				}
+				else if(key=='rt'){
+					k.qcols += {0:0,1:1,2:0,3:1}[bd.lap];
+					margin   = mf((k.qrows + {0:0,1:1,2:0,3:1}[bd.lap])/2);
+					bd.lap   = {0:1,1:0,2:3,3:2}[bd.lap];
+					tc.maxx++;
+				}
+				else if(key=='up'){
+					k.qrows++;
+					tc.maxy+=2;
+					if(bd.lap==1||bd.lap==2){ margin = k.qcols;}
+					else if(bd.lap==0){ margin = k.qcols-1;}
+					else if(bd.lap==3){ margin = k.qcols+1;}
+
+					k.qcols += {0:-1,1:0,2:0,3:1}[bd.lap];
+					bd.lap   = {0:3,1:2,2:1,3:0}[bd.lap];
+				}
+				else if(key=='dn'){
+					k.qrows++;
+					tc.maxy+=2;
+					if(bd.lap==1||bd.lap==2){ margin = k.qcols;}
+					else if(bd.lap==0){ margin = k.qcols-1;}
+					else if(bd.lap==3){ margin = k.qcols+1;}
+				}
+			}
+
+			// 本体。
+			var func;
+			if     (key=='up'){ func = function(id){ return (bd.cell[id].cy==0);};}
+			else if(key=='dn'){ func = function(id){ return (bd.cell[id].cy==k.qrows-1);};}
+			else if(key=='lt'){ func = function(id){ return (bd.cell[id].cx<=0);};}
+			else if(key=='rt'){ func = function(id){ return (bd.cell[id].cx>=tc.maxx);};}
+			this.expandGroup('cell', bd.cell, margin, func);
+
+			bd.setposAll();
+			tc.setAlign();
+		};
+		// 盤面の縮小
+		menu.ex.reduce = function(key){
+			// 本体。
+			var func;
+			if     (key=='up'){ func = function(id){ return (bd.cell[id].cy==0);};}
+			else if(key=='dn'){ func = function(id){ return (bd.cell[id].cy==k.qrows-1);};}
+			else if(key=='lt'){ func = function(id){ return (bd.cell[id].cx<=0);};}
+			else if(key=='rt'){ func = function(id){ return (bd.cell[id].cx>=tc.maxx);};}
+			var margin = this.reduceGroup('cell', bd.cell, func);
+
+			// 調節用
+			{
+				if(key=='lt'){
+					k.qcols -= {0:1,1:1,2:0,3:0}[bd.lap];
+					bd.lap   = {0:2,1:3,2:0,3:1}[bd.lap];
+					tc.maxx--;
+				}
+				else if(key=='rt'){
+					k.qcols -= {0:1,1:0,2:1,3:0}[bd.lap];
+					bd.lap   = {0:1,1:0,2:3,3:2}[bd.lap];
+					tc.maxx--;
+				}
+				else if(key=='up'){
+					k.qrows--;
+					tc.maxy-=2;
+					k.qcols += {0:-1,1:0,2:0,3:1}[bd.lap];
+					bd.lap   = {0:3,1:2,2:1,3:0}[bd.lap];
+				}
+				else if(key=='dn'){
+					k.qrows--;
+					tc.maxy-=2;
+				}
+			}
+
+			bd.setposAll();
+			tc.setAlign();
+			return true;
+		};
+		// 回転・反転
+		menu.ex.turnflip = function(type,d){
+			d.x2 = tc.maxx;
+			d.xx = (d.x1+d.x2); d.yy = (d.y1+d.y2);
+			if(type==1){ if(k.qrows%2==0){ bd.lap = {0:3,1:2,2:1,3:0}[bd.lap];} }
+			else if(type==2){ bd.lap = {0:0,1:2,2:1,3:3}[bd.lap];}
+
+			var func;
+			if     (type==1){ func = function(d,id){ return bd.cnum(bd.cell[id].cx, d.yy-bd.cell[id].cy);}; }
+			else if(type==2){ func = function(d,id){ return bd.cnum(d.xx-bd.cell[id].cx, bd.cell[id].cy);}; }
+			this.turnflipGroup(d, bd.cell, bd.cell.length, func);
+
+			bd.setposAll();
+		};
+
+		$(document.flip.turnl).attr("disabled",true);
+		$(document.flip.turnr).attr("disabled",true);
+	},
 
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.MBcolor = "rgb(64, 255, 64)";
-		pc.BDlinecolor = "black";
 
 		pc.paint = function(x1,y1,x2,y2){
 			x1--; x2++;
@@ -478,7 +460,7 @@ Puzzles.tawa.prototype = {
 
 			this.drawWhiteCells(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
-			this.drawBDline_tawa(x1-1,y1,x2+1,y2);
+			this.drawGrid_tawa(x1-1,y1,x2+1,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
@@ -486,14 +468,14 @@ Puzzles.tawa.prototype = {
 		};
 		pc.paintAll = function(){ if(this.already()){ this.paint(0,0,tc.maxx+1,k.qrows);} },
 
-		pc.drawBDline_tawa = function(x1,y1,x2,y2){
+		pc.drawGrid_tawa = function(x1,y1,x2,y2){
 			if(x1<0){ x1=0;} if(x2>tc.maxx+1){ x2=tc.maxx+1;}
 			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
 			var lw = mf((k.cwidth/24)>=1?(k.cwidth/24):1);
 			var lm = mf((lw-1)/2);
 
-			g.fillStyle = this.BDlinecolor;
+			g.fillStyle = this.gridcolor;
 			var xa = Math.max(x1,0), xb = Math.min(x2+1,tc.maxx+2);
 			var ya = Math.max(y1,0), yb = Math.min(y2+1,k.qrows  );
 			for(var i=ya;i<=yb;i++){
@@ -547,6 +529,14 @@ Puzzles.tawa.prototype = {
 			}
 			else{ g.zidx=1;}
 		};
+
+		bd.setpicAll = function(){
+			for(var c=0;c<bd.cell.length;c++){
+				this.cell[c].px = k.p0.x+mf(bd.cell[c].cx*k.cwidth/2);
+				this.cell[c].py = k.p0.y+bd.cell[c].cy*k.cheight;
+			}
+		};
+		bd.setpicAll();
 	},
 
 	//---------------------------------------------------------
@@ -581,7 +571,7 @@ Puzzles.tawa.prototype = {
 				for(var bx=0;bx<=tc.maxx;bx++){
 					var cc=bd.cnum(bx,cy);
 					if(cc==-1){ continue;}
-					if     (cols[n]=="#"){ bd.sQaC(cc, 1);}
+					if     (cols[n]=="#"){ bd.setBlack(cc);}
 					else if(cols[n]=="+"){ bd.sQsC(cc, 1);}
 					else if(cols[n]=="-"){ bd.sQnC(cc, -2);}
 					else if(cols[n]!="."){ bd.sQnC(cc, parseInt(cols[n]));}
@@ -598,7 +588,7 @@ Puzzles.tawa.prototype = {
 					if(cc==-1){ continue;}
 					if     (bd.QnC(cc)==-2){ bstr += "- ";}
 					else if(bd.QnC(cc)!=-1){ bstr += (""+bd.QnC(cc).toString()+" ");}
-					else if(bd.QaC(cc)== 1){ bstr += "# ";}
+					else if(bd.isBlack(cc)){ bstr += "# ";}
 					else if(bd.QsC(cc)== 1){ bstr += "+ ";}
 					else{ bstr += ". ";}
 				}
@@ -634,7 +624,7 @@ Puzzles.tawa.prototype = {
 				for(var bx=0;bx<=tc.maxx;bx++){
 					var cc = bd.cnum(bx,cy);
 					if(cc==-1){ continue;}
-					else if(bd.QaC(cc)!=1 || bd.QnC(cc)!=-1){
+					else if(bd.isWhite(cc) || bd.QnC(cc)!=-1){
 						if(clist.length>=3){ break;}
 						clist=[];
 					}
@@ -659,7 +649,7 @@ Puzzles.tawa.prototype = {
 				clist.push(bd.cnum(bd.cell[c].cx+1,bd.cell[c].cy+1));
 
 				var cnt=0;
-				for(var i=0;i<clist.length;i++){ if(bd.QaC(clist[i])==1){ cnt++;} }
+				for(var i=0;i<clist.length;i++){ if(bd.isBlack(clist[i])){ cnt++;} }
 
 				if(bd.QnC(c)!=cnt){
 					bd.sErC([c],1);
@@ -671,10 +661,10 @@ Puzzles.tawa.prototype = {
 		};
 		ans.checkUnderCells = function(){
 			for(var c=0;c<bd.cell.length;c++){
-				if(bd.QaC(c)!=1 || bd.cell[c].cy==k.qrows-1){ continue;}
+				if(bd.isWhite(c) || bd.cell[c].cy==k.qrows-1){ continue;}
 
-				if(bd.QaC(bd.cnum(bd.cell[c].cx-1,bd.cell[c].cy+1))!=1 &&
-				   bd.QaC(bd.cnum(bd.cell[c].cx+1,bd.cell[c].cy+1))!=1)
+				if(bd.isWhite(bd.cnum(bd.cell[c].cx-1,bd.cell[c].cy+1)) &&
+				   bd.isWhite(bd.cnum(bd.cell[c].cx+1,bd.cell[c].cy+1)))
 				{
 					bd.sErC([c],1);
 					bd.sErC([bd.cnum(bd.cell[c].cx-1,bd.cell[c].cy+1)],1);
