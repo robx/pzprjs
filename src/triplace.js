@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 トリプレイス版 triplace.js v3.2.0p1
+// パズル固有スクリプト部 トリプレイス版 triplace.js v3.2.2
 //
 Puzzles.triplace = function(){ };
 Puzzles.triplace.prototype = {
@@ -15,7 +15,7 @@ Puzzles.triplace.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.triplace.prototype = {
 
 		//k.def_csize = 36;
 		k.def_psize = 40;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　左ボタンで境界線が、右ボタンで補助記号が入力できます。セルのクリックか、Zキー押しながら背景色(2種類)を入力することもできます。",
@@ -86,19 +87,19 @@ Puzzles.triplace.prototype = {
 				bd.sQuC(cc,51);
 				bd.sQnC(cc,-1);
 				bd.sDiC(cc,-1);
-				bd.sQuB(bd.ub(cc),((bd.up(cc)!=-1 && bd.QuC(bd.up(cc))!=51)?1:0));
-				bd.sQuB(bd.db(cc),((bd.dn(cc)!=-1 && bd.QuC(bd.dn(cc))!=51)?1:0));
-				bd.sQuB(bd.lb(cc),((bd.lt(cc)!=-1 && bd.QuC(bd.lt(cc))!=51)?1:0));
-				bd.sQuB(bd.rb(cc),((bd.rt(cc)!=-1 && bd.QuC(bd.rt(cc))!=51)?1:0));
+				bd.sQuB(bd.ub(cc), ((bd.up(cc)!=-1 && bd.QuC(bd.up(cc))!=51)?1:0));
+				bd.sQuB(bd.db(cc), ((bd.dn(cc)!=-1 && bd.QuC(bd.dn(cc))!=51)?1:0));
+				bd.sQuB(bd.lb(cc), ((bd.lt(cc)!=-1 && bd.QuC(bd.lt(cc))!=51)?1:0));
+				bd.sQuB(bd.rb(cc), ((bd.rt(cc)!=-1 && bd.QuC(bd.rt(cc))!=51)?1:0));
 			}
 			else{
 				bd.sQuC(cc,0);
 				bd.sQnC(cc,-1);
 				bd.sDiC(cc,-1);
-				bd.sQuB(bd.ub(cc),((bd.up(cc)!=-1 && bd.QuC(bd.up(cc))==51)?1:0));
-				bd.sQuB(bd.db(cc),((bd.dn(cc)!=-1 && bd.QuC(bd.dn(cc))==51)?1:0));
-				bd.sQuB(bd.lb(cc),((bd.lt(cc)!=-1 && bd.QuC(bd.lt(cc))==51)?1:0));
-				bd.sQuB(bd.rb(cc),((bd.rt(cc)!=-1 && bd.QuC(bd.rt(cc))==51)?1:0));
+				bd.sQuB(bd.ub(cc), ((bd.up(cc)!=-1 && bd.QuC(bd.up(cc))==51)?1:0));
+				bd.sQuB(bd.db(cc), ((bd.dn(cc)!=-1 && bd.QuC(bd.dn(cc))==51)?1:0));
+				bd.sQuB(bd.lb(cc), ((bd.lt(cc)!=-1 && bd.QuC(bd.lt(cc))==51)?1:0));
+				bd.sQuB(bd.rb(cc), ((bd.rt(cc)!=-1 && bd.QuC(bd.rt(cc))==51)?1:0));
 			}
 		};
 		mv.inputBGcolor = function(x,y){
@@ -170,7 +171,7 @@ Puzzles.triplace.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.BorderQanscolor = "rgb(0, 160, 0)";
 
 		pc.paint = function(x1,y1,x2,y2){
@@ -182,9 +183,8 @@ Puzzles.triplace.prototype = {
 			this.drawEXcell(x1,y1,x2,y2,true);
 			this.drawTargetTriangle(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
-			this.drawBorders51(x1,y1,x2,y2);
 
 			this.drawChassis_ex1(x1-1,y1-1,x2,y2,false);
 
@@ -194,24 +194,6 @@ Puzzles.triplace.prototype = {
 			this.drawNumbersOn51EX(x1,y1,x2,y2);
 
 			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
-		};
-
-		// 黒い線の描画
-		pc.drawBorders51 = function(x1,y1,x2,y2){
-			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4,f_true);
-			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
-
-				this.vhide(["b"+id+"_bdm_"]);
-				if((cc1!=-1&&bd.QuC(cc1)==51)&&(cc2!=-1&&bd.QuC(cc2)==51)){
-					g.fillStyle="black";
-					if(this.vnop("b"+id+"_bdm_",1)){
-						if     (bd.border[id].cy%2==1){ g.fillRect(bd.border[id].px()               , bd.border[id].py()-mf(k.cheight/2), 1         , k.cheight+1);}
-						else if(bd.border[id].cx%2==1){ g.fillRect(bd.border[id].px()-mf(k.cwidth/2), bd.border[id].py()                , k.cwidth+1, 1          );}
-					}
-				}
-			}
-			this.vinc();
 		};
 	},
 
@@ -353,7 +335,7 @@ Puzzles.triplace.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var tiles = this.searchTParea();
+			var tiles = this.checkTileInfo();
 			if( !this.checkAllArea(tiles, f_true, function(w,h,a){ return (a>=3);} ) ){
 				this.setAlert('サイズが3マスより小さいブロックがあります。','The size of block is smaller than two.'); return false;
 			}
@@ -369,26 +351,31 @@ Puzzles.triplace.prototype = {
 			return true;
 		};
 
-		ans.searchTParea = function(){
-			var area = new AreaInfo();
-			var func = function(id){ return (id!=-1 && bd.QuB(id)==0 && bd.QaB(id)==0); };
-			for(var c=0;c<bd.cell.length;c++){ area.check[c]=(bd.QuC(c)!=51?0:-1);}
-			for(var c=0;c<bd.cell.length;c++){ if(area.check[c]==0){ area.max++; area.room[area.max]=new Array(); ans.sr0(func, area, c, area.max);} }
-			return area;
+		ans.checkTileInfo = function(){
+			var tinfo = new AreaInfo();
+			for(var c=0;c<bd.cell.length;c++){ tinfo.id[c]=(bd.QuC(c)!=51?0:-1);}
+			for(var c=0;c<bd.cell.length;c++){
+				if(tinfo.id[c]!=0){ continue;}
+				tinfo.max++;
+				tinfo[tinfo.max] = {clist:[]};
+				area.sr0(c, tinfo, bd.isBorder);
+
+				tinfo.room[tinfo.max] = {idlist:tinfo[tinfo.max].clist};
+			}
+			return tinfo;
 		};
-		ans.checkRowsCols = function(area){
+		ans.checkRowsCols = function(tiles){
 			var num, cnt, clist, counted;
 
-			var is1x3 = new Array();
-			for(var r=1;r<=area.max;r++){
-				var d = this.getSizeOfArea(area,r,f_true);
+			var is1x3 = [];
+			for(var r=1;r<=tiles.max;r++){
+				var d = ans.getSizeOfClist(tiles.room[r].idlist,f_true);
 				is1x3[r] = ((((d.x1==d.x2)||(d.y1==d.y2))&&d.cnt==3)?1:0);
 			}
 
 			for(var cy=0;cy<k.qrows;cy++){
-				cnt = 0; clist = new Array();
+				cnt = 0; clist = []; counted = [];
 				num = bd.QnE(bd.exnum(-1,cy));
-				counted = new Array();
 				bd.sErE([bd.exnum(-1,cy)],1);
 				for(var cx=0;cx<=k.qcols;cx++){
 					var cc = bd.cnum(cx,cy);
@@ -398,18 +385,16 @@ Puzzles.triplace.prototype = {
 						bd.sErE([bd.exnum(-1,cy)],0);
 						if(cx==k.qcols){ break;}
 						num = bd.QnC(cc);
-						cnt = 0; clist = new Array();
-						counted = new Array();
+						cnt = 0; clist = []; counted = [];
 					}
-					else if(is1x3[area.check[cc]]==1 && !counted[area.check[cc]]){ cnt++; counted[area.check[cc]]=true;}
+					else if(is1x3[tiles.id[cc]]==1 && !counted[tiles.id[cc]]){ cnt++; counted[tiles.id[cc]]=true;}
 					clist.push(cc);
 				}
 				bd.sErE([bd.exnum(-1,cy)],0);
 			}
 			for(var cx=0;cx<k.qcols;cx++){
-				cnt = 0; clist = new Array();
+				cnt = 0; clist = []; counted = [];
 				num = bd.DiE([bd.exnum(cx,-1)]);
-				counted = new Array();
 				bd.sErE([bd.exnum(cx,-1)],1);
 				for(var cy=0;cy<k.qrows;cy++){
 					var cc = bd.cnum(cx,cy);
@@ -419,10 +404,9 @@ Puzzles.triplace.prototype = {
 						bd.sErE([bd.exnum(cx,-1)],0);
 						if(cy==k.qrows){ break;}
 						num = bd.DiC(cc);
-						cnt = 0; clist = new Array();
-						counted = new Array();
+						cnt = 0; clist = []; counted = [];
 					}
-					else if(is1x3[area.check[cc]]==1 && !counted[area.check[cc]]){ cnt++; counted[area.check[cc]]=true;}
+					else if(is1x3[tiles.id[cc]]==1 && !counted[tiles.id[cc]]){ cnt++; counted[tiles.id[cc]]=true;}
 					clist.push(cc);
 				}
 				bd.sErE([bd.exnum(cx,-1)],0);

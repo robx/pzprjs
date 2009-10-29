@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.2.0
+// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.2.2
 //
 Puzzles.kusabi = function(){ };
 Puzzles.kusabi.prototype = {
@@ -15,7 +15,7 @@ Puzzles.kusabi.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.kusabi.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("クサビリンク","Kusabi");
 		base.setExpression("　左ドラッグで線が、右ドラッグで×印が入力できます。",
@@ -96,16 +97,14 @@ Puzzles.kusabi.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-
-		pc.errcolor1 = "rgb(192, 0, 0)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
@@ -126,7 +125,7 @@ Puzzles.kusabi.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QnC(c)!=-1){
-					var px=bd.cell[c].px()+mf(k.cwidth/2), py=bd.cell[c].py()+mf(k.cheight/2);
+					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
 
 					g.fillStyle = this.Cellcolor;
 					g.beginPath();
@@ -188,8 +187,8 @@ Puzzles.kusabi.prototype = {
 				this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 			}
 
-			var larea = this.searchLarea();
-			if( !this.checkQnumsInArea(larea, function(a){ return (a>=3);}) ){
+			var linfo = line.getLareaInfo();
+			if( !this.checkQnumsInArea(linfo, function(a){ return (a>=3);}) ){
 				this.setAlert('3つ以上の丸がつながっています。','Three or more objects are connected.'); return false;
 			}
 			if( !this.check2Line() ){
@@ -219,19 +218,19 @@ Puzzles.kusabi.prototype = {
 				this.setAlert('途切れている線があります。','There is a dead-end line.'); return false;
 			}
 
-			if( !this.checkDisconnectLine(larea) ){
+			if( !this.checkDisconnectLine(linfo) ){
 				this.setAlert('丸につながっていない線があります。','A line doesn\'t connect any circle.'); return false;
 			}
 
-			if( !this.checkNumber() ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && bd.QnC(c)!=-1);}) ){
 				this.setAlert('どこにもつながっていない丸があります。','A circle is not connected another object.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkNumber();};
+		ans.check1st = function(){ return this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && bd.QnC(c)!=-1);});};
 
-		ans.check2Line = function(){ return this.checkLine(function(i){ return (this.lcntCell(i)>=2 && bd.QnC(i)!=-1);}.bind(this)); };
+		ans.check2Line = function(){ return this.checkLine(function(i){ return (line.lcntCell(i)>=2 && bd.QnC(i)!=-1);}); };
 		ans.checkLine = function(func){
 			for(var c=0;c<bd.cell.length;c++){
 				if(func(c)){
@@ -242,23 +241,14 @@ Puzzles.kusabi.prototype = {
 			}
 			return true;
 		};
-		ans.checkNumber = function(){
-			for(var c=0;c<bd.cell.length;c++){
-				if(this.lcntCell(c)==0 && bd.QnC(c)!=-1){
-					bd.sErC(c,1);
-					return false;
-				}
-			}
-			return true;
-		};
 
 		ans.checkConnectedLine = function(){
-			var saved = {errflag:0,cells:new Array(),idlist:new Array()};
+			var saved = {errflag:0,cells:[],idlist:[]};
 			var visited = new AreaInfo();
 			for(var id=0;id<bd.border.length;id++){ visited[id]=0;}
 
 			for(var c=0;c<bd.cell.length;c++){
-				if(bd.QnC(c)==-1 || this.lcntCell(c)==0){ continue;}
+				if(bd.QnC(c)==-1 || line.lcntCell(c)==0){ continue;}
 
 				var cc      = -1;	// ループから抜けたときに到達地点のIDが入る
 				var ccnt    =  0;	// 曲がった回数
@@ -266,22 +256,22 @@ Puzzles.kusabi.prototype = {
 				var dir1    =  0;	// 最初に向かった方向
 				var length1 =  0;	// 一回曲がる前の線の長さ
 				var length2 =  0;	// 二回曲がった後の線の長さ
-				var idlist  = new Array();	// 通過したlineのリスト(エラー表示用)
+				var idlist  = [];	// 通過したlineのリスト(エラー表示用)
 				var bx=bd.cell[c].cx*2+1, by=bd.cell[c].cy*2+1;	// 現在地
 				while(1){
 					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 					if((bx+by)%2==0){
 						cc = bd.cnum(mf(bx/2),mf(by/2));
 						if(dir!=0 && bd.QnC(cc)!=-1){ break;}
-						else if(dir!=1 && bd.LiB(bd.bnum(bx,by+1))>0){ if(dir!=0&&dir!=2){ ccnt++;} dir=2;}
-						else if(dir!=2 && bd.LiB(bd.bnum(bx,by-1))>0){ if(dir!=0&&dir!=1){ ccnt++;} dir=1;}
-						else if(dir!=3 && bd.LiB(bd.bnum(bx+1,by))>0){ if(dir!=0&&dir!=4){ ccnt++;} dir=4;}
-						else if(dir!=4 && bd.LiB(bd.bnum(bx-1,by))>0){ if(dir!=0&&dir!=3){ ccnt++;} dir=3;}
+						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!=0&&dir!=2){ ccnt++;} dir=2;}
+						else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!=0&&dir!=1){ ccnt++;} dir=1;}
+						else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!=0&&dir!=4){ ccnt++;} dir=4;}
+						else if(dir!=4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!=0&&dir!=3){ ccnt++;} dir=3;}
 					}
 					else{
 						cc=-1;
 						var id = bd.bnum(bx,by);
-						if(id==-1||visited[id]!=0||bd.LiB(id)<=0){ break;}
+						if(id==-1||visited[id]!=0||!bd.isLine(id)){ break;}
 						idlist.push(id);
 						visited[id]=1;
 						if(dir1==0){ dir1=dir;}

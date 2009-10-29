@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.2.0
+// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.2.2
 //
 Puzzles.tentaisho = function(){ };
 Puzzles.tentaisho.prototype = {
@@ -15,7 +15,7 @@ Puzzles.tentaisho.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.tentaisho.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　星をクリックすると色がぬれます。",
@@ -109,7 +110,7 @@ Puzzles.tentaisho.prototype = {
 			if     (sx%2==1 && sy%2==1){ cc = bd.cnum(mf(sx/2),mf(sy/2));}
 			else if(sx%2==0 && sy%2==0){
 				var xc = bd.xnum(mf(sx/2),mf(sy/2));
-				if(ans.lcnts.cell[xc]==0){ cc = bd.cnum(mf(sx/2)-1,mf(sy/2)-1);}
+				if(line.lcntCell(xc)==0){ cc = bd.cnum(mf(sx/2)-1,mf(sy/2)-1);}
 				else{ return;}
 			}
 			else{
@@ -117,9 +118,9 @@ Puzzles.tentaisho.prototype = {
 				else{ return;}
 			}
 
-			var area = ans.getClist(cc);
-			if(mv.encolor(area,1)){
-				var d = ans.getSizeOfArea(area,1,f_true);
+			var clist = area.room[area.room.id[cc]].clist;
+			if(mv.encolor(clist)){
+				var d = ans.getSizeOfClist(clist,f_true);
 				pc.paint(d.x1, d.y1, d.x2, d.y2);
 			}
 		};
@@ -161,16 +162,16 @@ Puzzles.tentaisho.prototype = {
 		};
 
 		mv.encolorall = function(){
-			var area = ans.searchRLarea(function(id){ return (id!=-1 && bd.QaB(id)==0); }, false);
-			for(var id=1;id<=area.max;id++){ this.encolor(area,id);}
+			var rinfo = area.getRoomInfo();
+			for(var id=1;id<=rinfo.max;id++){ this.encolor(rinfo.room[id].idlist);}
 			pc.paintAll();
 		};
-		mv.encolor = function(area,id){
-			var ret = bd.getStar(ans.getInsideStar(area,id));
+		mv.encolor = function(clist){
+			var ret = bd.getStar(ans.getInsideStar(clist));
 
 			var flag = false;
-			for(var i=0;i<area.room[id].length;i++){
-				var c = area.room[id][i];
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
 				if(k.callmode=="pmake" && bd.QsC(c)==3 && ret!=2){ continue;}
 				else if(bd.QsC(c)!=(ret>0?ret:0)){
 					bd.sQsC(c,(ret>0?ret:0));
@@ -209,13 +210,13 @@ Puzzles.tentaisho.prototype = {
 			return ((sx-1)+(sy-1)*(2*k.qcols-1));
 		};
 		bd.getStar = function(id){
-			if(id<0||(2*k.qcols-1)*(2*k.qrows-1)<id){ return -1;}
+			if(id<0||(2*k.qcols-1)*(2*k.qrows-1)<=id){ return -1;}
 			var sx=id%(2*k.qcols-1)+1;
 			var sy=mf(id/(2*k.qcols-1))+1;
 
 			if     (sx%2==1 && sy%2==1){ return bd.QuC(bd.cnum(mf(sx/2),mf(sy/2)));}
 			else if(sx%2==0 && sy%2==0){ return bd.QuX(bd.xnum(mf(sx/2),mf(sy/2)));}
-			else                       { return bd.QuB(bd.bnum(sx,sy));}
+			else                       { return bd.QnB(bd.bnum(sx,sy));}
 		};
 		bd.getStarError = function(id){
 			if(id<0||(2*k.qcols-1)*(2*k.qrows-1)<id){ return -1;}
@@ -231,24 +232,28 @@ Puzzles.tentaisho.prototype = {
 			var sx=id%(2*k.qcols-1)+1;
 			var sy=mf(id/(2*k.qcols-1))+1;
 
-			if     (sx%2==1 && sy%2==1){ return bd.sQuC(bd.cnum(mf(sx/2),mf(sy/2)),val);}
-			else if(sx%2==0 && sy%2==0){ return bd.sQuX(bd.xnum(mf(sx/2),mf(sy/2)),val);}
-			else                       { return bd.sQuB(bd.bnum(sx,sy),val);}
+			if     (sx%2==1 && sy%2==1){ bd.sQuC(bd.cnum(mf(sx/2),mf(sy/2)),val);}
+			else if(sx%2==0 && sy%2==0){ bd.sQuX(bd.xnum(mf(sx/2),mf(sy/2)),val);}
+			else{
+				um.disCombine = 1;
+				bd.sQnB(bd.bnum(sx,sy),val);
+				um.disCombine = 0;
+			}
+		};
+
+		area.call_setBorder = function(id,val,type){
+			if(type=='qans'){ this.setBorder(id,val);}
 		};
 	},
 
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-
+		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.BorderQanscolor = "rgb(72, 72, 72)";
-
 		pc.qsubcolor1 = "rgb(176,255,176)";
 		pc.qsubcolor2 = "rgb(108,108,108)";
-		pc.qsubcolor3 = "rgb(192,192,192)";
-
-		pc.errbcolor1 = "rgb(255,127,127)";
+		pc.errbcolor1 = pc.errbcolor1_DARK;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -256,7 +261,7 @@ Puzzles.tentaisho.prototype = {
 
 			this.drawQSubCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawBorderAnswers(x1,y1,x2,y2);
 			this.drawBorderQsubs(x1,y1,x2,y2);
@@ -277,8 +282,8 @@ Puzzles.tentaisho.prototype = {
 					else if(bd.ErB(id)==2){ g.fillStyle = this.errBorderQanscolor2;}
 					else{ g.fillStyle = this.BorderQanscolor;}
 
-					if     (bd.border[id].cy%2==1){ if(this.vnop("b"+id+"_bd_",1)){ g.fillRect(bd.border[id].px()-lm,                bd.border[id].py()-mf(k.cheight/2)-lm, lw         , k.cheight+lw);} }
-					else if(bd.border[id].cx%2==1){ if(this.vnop("b"+id+"_bd_",1)){ g.fillRect(bd.border[id].px()-mf(k.cwidth/2)-lm, bd.border[id].py()-lm                , k.cwidth+lw, lw          );} }
+					if     (bd.border[id].cy%2==1){ if(this.vnop("b"+id+"_bd_",1)){ g.fillRect(bd.border[id].px-lm,                bd.border[id].py-mf(k.cheight/2)-lm, lw         , k.cheight+lw);} }
+					else if(bd.border[id].cx%2==1){ if(this.vnop("b"+id+"_bd_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-lm                , k.cwidth+lw, lw          );} }
 				}
 				else{ this.vhide("b"+id+"_bd_");}
 			}
@@ -417,7 +422,7 @@ Puzzles.tentaisho.prototype = {
 			enc.decodeKanpen(""+barray.join("/"));
 
 			barray = array.slice(2*k.qrows,3*k.qrows);
-			var carray = new Array();
+			var carray = [];
 			for(var a=0;a<barray.length;a++){
 				var arr = barray[a].split(" ");
 				for(var i=0;i<arr.length;i++){ if(arr[i]!=''){ carray.push(arr[i]);} }
@@ -431,10 +436,10 @@ Puzzles.tentaisho.prototype = {
 			var barray = enc.pzldataKanpen().split("/");
 			barray.shift(); barray.shift();
 
-			var rarea = ans.searchRLarea(function(id){ return (id!=-1 && bd.QaB(id)==0); }, false);
-			var bstr =  barray.join("/")+"/"+rarea.max+"/";
+			var rinfo = area.getRoomInfo();
+			var bstr =  barray.join("/")+"/"+rinfo.max+"/";
 			for(var c=0;c<bd.cell.length;c++){
-				bstr += (""+(rarea.check[c]-1)+" ");
+				bstr += (""+(rinfo.id[c]-1)+" ");
 				if((c+1)%k.qcols==0){ bstr += "/";}
 			}
 			return bstr;
@@ -446,33 +451,33 @@ Puzzles.tentaisho.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkLineOnStar() ){
+			if( !this.checkStarOnLine() ){
 				this.setAlert('星を線が通過しています。', 'A line goes over the star.'); return false;
 			}
 
-			var rarea = this.searchRLarea(function(id){ return (id!=-1 && bd.QaB(id)==0); }, false);
-			this.checkAreaStar(rarea);
-			if( !this.checkErrorFlag(rarea, -1) ){
+			var rinfo = area.getRoomInfo();
+			this.setAreaStar(rinfo);
+			if( !this.checkErrorFlag(rinfo, -1) ){
 				this.setAlert('星が含まれていない領域があります。','A block has no stars.'); return false;
 			}
 
-			if( !this.checkFractal(rarea) ){
+			if( !this.checkFractal(rinfo) ){
 				this.setAlert('領域が星を中心に点対称になっていません。', 'A area is not point symmetric about the star.'); return false;
 			}
 
-			if( !this.checkErrorFlag(rarea, -2) ){
+			if( !this.checkErrorFlag(rinfo, -2) ){
 				this.setAlert('星が複数含まれる領域があります。','A block has two or more stars.'); return false;
 			}
 
 			return true;
 		};
 
-		ans.checkLineOnStar = function(){
+		ans.checkStarOnLine = function(){
 			for(var s=0;s<(2*k.qcols-1)*(2*k.qrows-1);s++){
 				if(bd.getStar(s)<=0){ continue;}
 				var sx=s%(2*k.qcols-1)+1, sy=mf(s/(2*k.qcols-1))+1;
 				if(sx%2==0 && sy%2==0){
-					if(this.lcnts.cell[bd.xnum(mf(sx/2),mf(sy/2))]!=0){
+					if(area.lcntCross(bd.xnum(mf(sx/2),mf(sy/2)))!=0){
 						this.setCrossBorderError(mf(sx/2),mf(sy/2));
 						return false;
 					}
@@ -487,40 +492,16 @@ Puzzles.tentaisho.prototype = {
 			return true;
 		};
 
-		ans.checkFractal = function(area){
-			for(var id=1;id<=area.max;id++){
-				var sc = area.starid[id];
-				if(sc<0){ continue;}
-				var sx=sc%(2*k.qcols-1)+1, sy=mf(sc/(2*k.qcols-1))+1;
-				var movex=0, movey=0;
-				for(var i=0;i<area.room[id].length;i++){
-					var c=area.room[id][i];
-					var ccopy = bd.cnum(sx-bd.cell[c].cx-1, sy-bd.cell[c].cy-1);
-					if(ccopy==-1||area.check[c]!=area.check[ccopy]){
-						bd.sErC(area.room[id],1); return false;
-					}
-				}
-			}
-			return true;
-		};
-
-		ans.checkAreaStar = function(area){
-			area.starid = new Array();
-			for(var id=1;id<=area.max;id++){
-				area.starid[id] = this.getInsideStar(area,id);
+		ans.setAreaStar = function(rinfo){
+			rinfo.starid = [];
+			for(var id=1;id<=rinfo.max;id++){
+				rinfo.starid[id] = this.getInsideStar(rinfo.room[id].idlist);
 			}
 		};
-		ans.checkErrorFlag = function(area, val){
-			for(var id=1;id<=area.max;id++){
-				if(area.starid[id]==val){ bd.sErC(area.room[id],1); return false;}
-			}
-			return true;
-		};
-
-		ans.getInsideStar = function(area,id){
+		ans.getInsideStar = function(clist){
 			var cnt=0, ret=-1;
-			for(var i=0;i<area.room[id].length;i++){
-				var c=area.room[id][i];
+			for(var i=0;i<clist.length;i++){
+				var c=clist[i];
 				var cx = bd.cell[c].cx, cy = bd.cell[c].cy;
 				if(bd.getStar(bd.snum(cx*2+1,cy*2+1))>0){
 					cnt++; ret=bd.snum(cx*2+1,cy*2+1);
@@ -531,7 +512,7 @@ Puzzles.tentaisho.prototype = {
 				if(bd.rb(c)!=-1 && bd.QaB(bd.rb(c))==0 && bd.getStar(bd.snum(cx*2+2,cy*2+1))>0){
 					cnt++; ret=bd.snum(cx*2+2,cy*2+1);
 				}
-				if(bd.xnum(cx+1,cy+1)!=-1 && this.lcnts.cell[bd.xnum(cx+1,cy+1)]==0 && bd.getStar(bd.snum(cx*2+2,cy*2+2))>0){
+				if(bd.xnum(cx+1,cy+1)!=-1 && line.lcntCell(bd.xnum(cx+1,cy+1))==0 && bd.getStar(bd.snum(cx*2+2,cy*2+2))>0){
 					cnt++; ret=bd.snum(cx*2+2,cy*2+2);
 				}
 
@@ -539,24 +520,28 @@ Puzzles.tentaisho.prototype = {
 			}
 			return ret;
 		};
-		ans.getClist = function(cc){
-			var area = new AreaInfo();
-			var func = function(id){ return (id!=-1 && bd.QaB(id)!=1); }
-			for(var c=0;c<bd.cell.length;c++){ area.check[c]=-1;}
-			area.max=1;
-			area.room[1]=new Array();
-			this.gc0(func, area, cc);
-			return area;
+
+		ans.checkFractal = function(rinfo){
+			for(var r=1;r<=rinfo.max;r++){
+				var sc = rinfo.starid[r];
+				if(sc<0){ continue;}
+				var sx=sc%(2*k.qcols-1)+1, sy=mf(sc/(2*k.qcols-1))+1;
+				for(var i=0;i<rinfo.room[r].idlist.length;i++){
+					var c=rinfo.room[r].idlist[i];
+					var ccopy = bd.cnum(sx-bd.cell[c].cx-1, sy-bd.cell[c].cy-1);
+					if(ccopy==-1||rinfo.id[c]!=rinfo.id[ccopy]){
+						bd.sErC(rinfo.room[r].idlist,1); return false;
+					}
+				}
+			}
+			return true;
 		};
-		ans.gc0 = function(func, area, i){
-			if(area.check[i]!=-1){ return;}
-			area.check[i] = 1;
-			area.room[1].push(i);
-			if( func(bd.ub(i)) ){ this.gc0(func, area, bd.up(i));}
-			if( func(bd.db(i)) ){ this.gc0(func, area, bd.dn(i));}
-			if( func(bd.lb(i)) ){ this.gc0(func, area, bd.lt(i));}
-			if( func(bd.rb(i)) ){ this.gc0(func, area, bd.rt(i));}
-			return;
+
+		ans.checkErrorFlag = function(rinfo, val){
+			for(var id=1;id<=rinfo.max;id++){
+				if(rinfo.starid[id]==val){ bd.sErC(rinfo.room[id].idlist,1); return false;}
+			}
+			return true;
 		};
 	}
 };

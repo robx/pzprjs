@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 因子の部屋版 factors.js v3.2.0p2
+// パズル固有スクリプト部 因子の部屋版 factors.js v3.2.2
 //
 Puzzles.factors = function(){ };
 Puzzles.factors.prototype = {
@@ -15,7 +15,7 @@ Puzzles.factors.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.factors.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("因子の部屋",'Rooms of Factors');
 		base.setExpression("　キーボードやマウスで数字が入力できます。",
@@ -81,14 +82,16 @@ Puzzles.factors.prototype = {
 		kp.kpinput = function(ca){ kc.key_factors(ca,Math.max(k.qcols,k.qrows));};
 
 		bd.roommaxfunc = function(cc,mode){ return (mode==1)?999999:Math.max(k.qcols,k.qrows);};
+		bd.setNum = function(c,val){
+			if(val==0){ return;}
+			if(k.mode==1){ this.sQnC(c,val);}else{ this.sQaC(c,val);}
+		};
 	},
 
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
-
-		pc.errbcolor1 = "rgb(255, 160, 160)";
+		pc.gridcolor = pc.gridcolor_DLIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -96,7 +99,7 @@ Puzzles.factors.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawNumbers_factors(x1,y1,x2,y2);
 
@@ -163,7 +166,7 @@ Puzzles.factors.prototype = {
 				this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
 			}
 
-			if( !this.checkRoomNumber(this.searchRarea()) ){
+			if( !this.checkRoomNumber(area.getRoomInfo()) ){
 				this.setAlert('ブロックの数字と数字の積が同じではありません。','A number of room is not equal to the product of these numbers.'); return false;
 			}
 
@@ -179,19 +182,19 @@ Puzzles.factors.prototype = {
 			var cx, cy;
 
 			for(var cy=0;cy<k.qrows;cy++){
-				var clist = new Array();
+				var clist = [];
 				for(var cx=0;cx<k.qcols;cx++){ clist.push(bd.cnum(cx,cy));}
 				if(!this.checkDifferentNumberInClist(clist)){ return false;}
 			}
 			for(var cx=1;cx<k.qcols;cx++){
-				var clist = new Array();
+				var clist = [];
 				for(var cy=0;cy<k.qrows;cy++){ clist.push(bd.cnum(cx,cy));}
 				if(!this.checkDifferentNumberInClist(clist)){ return false;}
 			}
 			return true;
 		};
 		ans.checkDifferentNumberInClist = function(clist){
-			var d = new Array();
+			var d = [];
 			for(var i=1;i<=Math.max(k.qcols,k.qrows);i++){ d[i]=-1;}
 			for(var i=0;i<clist.length;i++){
 				var val=bd.QaC(clist[i]);
@@ -204,17 +207,17 @@ Puzzles.factors.prototype = {
 			return true;
 		};
 
-		ans.checkRoomNumber = function(area){
-			for(var id=1;id<=area.max;id++){
+		ans.checkRoomNumber = function(rinfo){
+			for(var id=1;id<=rinfo.max;id++){
 				var product = 1;
-				for(var i=0;i<area.room[id].length;i++){
-					if(bd.QaC(area.room[id][i])>0){ product *= bd.QaC(area.room[id][i]);}
+				for(var i=0;i<rinfo.room[id].idlist.length;i++){
+					if(bd.QaC(rinfo.room[id].idlist[i])>0){ product *= bd.QaC(rinfo.room[id].idlist[i]);}
 					else{ product = 0;}
 				}
 				if(product==0){ continue;}
 
-				if(product!=bd.QnC(ans.getTopOfRoom(area,id))){
-					bd.sErC(area.room[id],1);
+				if(product!=bd.QnC(area.getTopOfRoom(id))){
+					bd.sErC(rinfo.room[id].idlist,1);
 					return false;
 				}
 			}

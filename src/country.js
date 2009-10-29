@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カントリーロード版 country.js v3.2.1
+// パズル固有スクリプト部 カントリーロード版 country.js v3.2.2
 //
 Puzzles.country = function(){ };
 Puzzles.country.prototype = {
@@ -15,7 +15,7 @@ Puzzles.country.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 1;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.country.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("カントリーロード","Country Road");
 		base.setExpression("　ドラッグで線が、マスのクリックで○×(補助記号)が入力できます。",
@@ -91,14 +92,12 @@ Puzzles.country.prototype = {
 				kc.key_inputqnum(ca,99);
 			};
 		}
-
-		bd.roommaxfunc = function(cc,mode){ return room.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(191, 191, 191)";
+		pc.gridcolor = pc.gridcolor_SLIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -108,7 +107,7 @@ Puzzles.country.prototype = {
 
 			this.drawNumbers(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 		//	this.drawPekes(x1,y1,x2,y2,0);
@@ -152,19 +151,19 @@ Puzzles.country.prototype = {
 				this.setAlert('交差している線があります。','There is a crossing line.'); return false;
 			}
 
-			var rarea = this.searchRarea();
-			if( !this.checkRoom2( rarea ) ){
+			var rinfo = area.getRoomInfo();
+			if( !this.checkRoom2( rinfo ) ){
 				this.setAlert('線が１つの国を２回以上通っています。','A line passes a country twice or more.'); return false;
 			}
 
-			if( !this.checkOneNumber(rarea, function(top,lcnt){ return (top>0 && top!=lcnt);}, function(cc){ return ans.lcnts.cell[cc]>0;}) ){
+			if( !this.checkOneNumber(rinfo, function(top,lcnt){ return (top>0 && top!=lcnt);}, function(cc){ return line.lcntCell(cc)>0;}) ){
 				this.setAlert('数字のある国と線が通過するマスの数が違います。','The number of the cells that is passed any line in the country and the number written in the country is diffrerent.'); return false;
 			}
-			if( !this.checkOneNumber(rarea, function(top,lcnt){ return lcnt==0;}, function(cc){ return ans.lcnts.cell[cc]>0;}) ){
+			if( !this.checkOneNumber(rinfo, function(top,lcnt){ return lcnt==0;}, function(cc){ return line.lcntCell(cc)>0;}) ){
 				this.setAlert('線の通っていない国があります。','There is a country that is not passed any line.'); return false;
 			}
 
-			if( !this.checkSideAreaCell(rarea, function(area,c1,c2){ return (ans.lcnts.cell[c1]==0 && ans.lcnts.cell[c2]==0);}, false) ){
+			if( !this.checkSideAreaCell(rinfo, function(c1,c2){ return (line.lcntCell(c1)==0 && line.lcntCell(c2)==0);}, false) ){
 				this.setAlert('線が通らないマスが、太線をはさんでタテヨコにとなりあっています。','The cells that is not passed any line are adjacent over border line.'); return false;
 			}
 
@@ -179,18 +178,18 @@ Puzzles.country.prototype = {
 			return true;
 		};
 
-		ans.checkRoom2 = function(area){
-			if(area.max<=1){ return true;}
-			for(var r=1;r<=area.max;r++){
+		ans.checkRoom2 = function(rinfo){
+			if(rinfo.max<=1){ return true;}
+			for(var r=1;r<=rinfo.max;r++){
 				var cnt=0;
-				for(var i=0;i<area.room[r].length;i++){
-					var c=area.room[r][i];
-					var ub=bd.ub(c); if(bd.up(c)!=-1 && bd.QuB(ub)==1 && bd.LiB(ub)==1){ cnt++;}
-					var db=bd.db(c); if(bd.dn(c)!=-1 && bd.QuB(db)==1 && bd.LiB(db)==1){ cnt++;}
-					var lb=bd.lb(c); if(bd.lt(c)!=-1 && bd.QuB(lb)==1 && bd.LiB(lb)==1){ cnt++;}
-					var rb=bd.rb(c); if(bd.rt(c)!=-1 && bd.QuB(rb)==1 && bd.LiB(rb)==1){ cnt++;}
+				for(var i=0;i<rinfo.room[r].idlist.length;i++){
+					var c=rinfo.room[r].idlist[i];
+					var ub=bd.ub(c); if(bd.up(c)!=-1 && bd.isBorder(ub) && bd.isLine(ub)){ cnt++;}
+					var db=bd.db(c); if(bd.dn(c)!=-1 && bd.isBorder(db) && bd.isLine(db)){ cnt++;}
+					var lb=bd.lb(c); if(bd.lt(c)!=-1 && bd.isBorder(lb) && bd.isLine(lb)){ cnt++;}
+					var rb=bd.rb(c); if(bd.rt(c)!=-1 && bd.isBorder(rb) && bd.isLine(rb)){ cnt++;}
 				}
-				if(cnt>2){ bd.sErC(area.room[r],1); return false;}
+				if(cnt>2){ bd.sErC(rinfo.room[r].idlist,1); return false;}
 			}
 			return true;
 		};

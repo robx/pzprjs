@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 島国版 shimaguni.js v3.2.0
+// パズル固有スクリプト部 島国版 shimaguni.js v3.2.2
 //
 Puzzles.shimaguni = function(){ };
 Puzzles.shimaguni.prototype = {
@@ -15,7 +15,7 @@ Puzzles.shimaguni.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.shimaguni.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		k.area = { bcell:1, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("島国","Islands");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
@@ -87,18 +88,16 @@ Puzzles.shimaguni.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.bcolor = "rgb(191, 191, 255)";
 		pc.BBcolor = "rgb(191, 191, 255)";
-		pc.BCell_fontcolor = "rgb(224, 224, 224)";
-		pc.errcolor1 = "rgb(192, 0, 0)";
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
 			this.drawWhiteCells(x1,y1,x2,y2);
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -137,38 +136,28 @@ Puzzles.shimaguni.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var rarea = this.searchRarea();
-			if( !this.checkSideAreaCell(rarea, function(area,c1,c2){ return (bd.QaC(c1)==1 && bd.QaC(c2)==1);}, true) ){
+			var rinfo = area.getRoomInfo();
+			if( !this.checkSideAreaCell(rinfo, function(c1,c2){ return (bd.isBlack(c1) && bd.isBlack(c2));}, true) ){
 				this.setAlert('異なる海域にある国どうしが辺を共有しています。','Countries in other marine area share the side over border line.'); return false;
 			}
 
-			if( !this.checkSeqBlocksInRoom(rarea) ){
+			if( !this.checkSeqBlocksInRoom() ){
 				this.setAlert('1つの海域に入る国が2つ以上に分裂しています。','Countries in one marine area are devided to plural ones.'); return false;
 			}
 
-			if( !this.checkBlackCellCount(rarea) ){
+			if( !this.checkBlackCellCount(rinfo) ){
 				this.setAlert('海域内の数字と国のマス数が一致していません。','The number of black cells is not equals to the number.'); return false;
 			}
 
-			if( !this.checkSideArea(rarea) ){
+			if( !this.checkSideAreaSize(rinfo, function(rinfo,r){ return this.getCellsOfRoom(rinfo, r, bd.isBlack);}.bind(this)) ){
 				this.setAlert('隣り合う海域にある国の大きさが同じです。','The size of countries that there are in adjacent marine areas are the same.'); return false;
 			}
 
-			if( !this.checkBlackCellInArea(rarea, function(a){ return (a==0);}) ){
+			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a==0);}) ){
 				this.setAlert('黒マスのカタマリがない海域があります。','A marine area has no black cells.'); return false;
 			}
 
 			return true;
-		};
-
-		ans.checkSideArea = function(area){
-			var func = function(area, c1, c2){
-				if(area.check[c1] == area.check[c2]){ return false;}
-				var a1 = this.getCellsOfRoom(area, area.check[c1], function(id){ return (bd.QaC(id)==1);} );
-				var a2 = this.getCellsOfRoom(area, area.check[c2], function(id){ return (bd.QaC(id)==1);} );
-				return (a1!=0 && a2!=0 && a1==a2);
-			}.bind(this);
-			return this.checkSideAreaCell(area, func, true);
 		};
 	}
 };

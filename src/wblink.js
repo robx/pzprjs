@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.2.0
+// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.2.2
 //
 Puzzles.wblink = function(){ };
 Puzzles.wblink.prototype = {
@@ -15,7 +15,7 @@ Puzzles.wblink.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.wblink.prototype = {
 
 		//k.def_csize = 36;
 		k.def_psize = 16;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("シロクロリンク","Shirokuro-link");
 		base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
@@ -78,10 +79,11 @@ Puzzles.wblink.prototype = {
 
 			if(this.mouseCell!=-1 && id!=-1){
 				var idlist = this.getidlist(id);
-				if(this.inputData==-1){ this.inputData=(bd.LiB(id)==0)?1:0;}
+				if(this.inputData==-1){ this.inputData=(bd.isLine(id)?0:1);}
 				if(this.inputData> 0 && ((pos.x-this.mouseCell.x==-1)||(pos.y-this.mouseCell.y==-1))){ idlist=idlist.reverse();} // 色分けの都合上の処理
 				for(var i=0;i<idlist.length;i++){
-					if(this.inputData!=-1){ bd.sLiB(idlist[i], this.inputData); bd.sQsB(idlist[i], 0);}
+					if(this.inputData==1){ bd.setLine(idlist[i]);}
+					else                 { bd.removeLine(idlist[i]);}
 					pc.paintLine(idlist[i]);
 				}
 				this.inputData=2;
@@ -148,18 +150,17 @@ Puzzles.wblink.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(224, 224, 224)";
-		pc.errbcolor1 = "rgb(255, 127, 127)";
+		pc.gridcolor = pc.gridcolor_THIN;
+		pc.errbcolor1 = pc.errbcolor1_DARK;
+
+		pc.chassisflag = false;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			if(k.mode==1){
-				this.drawChassis_bridges(x1,y1,x2,y2);
-				this.drawBDline(x1,y1,x2,y2);
-			}
-			else{ this.hideBorder();}
+			if(k.mode==1){ this.drawGrid(x1,y1,x2,y2);}
+			else if(g.vml){ this.hideBorder();}
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
@@ -182,7 +183,7 @@ Puzzles.wblink.prototype = {
 					if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
 					else{ g.fillStyle = this.Cellcolor;}
 					if(this.vnop("c"+c+"_cir41a_",1)){
-						g.beginPath(); g.arc(bd.cell[c].px()+mf(k.cwidth/2), bd.cell[c].py()+mf(k.cheight/2), rsize , 0, Math.PI*2, false); g.fill();
+						g.beginPath(); g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false); g.fill();
 					}
 				}
 				else{ this.vhide("c"+c+"_cir41a_");}
@@ -190,7 +191,7 @@ Puzzles.wblink.prototype = {
 				if(bd.QuC(c)==41){
 					g.fillStyle = "white";
 					if(this.vnop("c"+c+"_cir41b_",1)){
-						g.beginPath(); g.arc(bd.cell[c].px()+mf(k.cwidth/2), bd.cell[c].py()+mf(k.cheight/2), rsize2, 0, Math.PI*2, false); g.fill();
+						g.beginPath(); g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2, 0, Math.PI*2, false); g.fill();
 					}
 				}
 				else{ this.vhide("c"+c+"_cir41b_");}
@@ -208,27 +209,13 @@ Puzzles.wblink.prototype = {
 
 			if(!flag){ this.vhide(pid);}
 			else if(bd.border[id].cx%2==1 && this.vnop(pid,1)){
-				g.fillRect(bd.border[id].px()-lm, bd.border[id].py()-mf(k.cheight/2)-lm, lw, k.cheight+lw);
+				g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);
 			}
 			else if(bd.border[id].cy%2==1 && this.vnop(pid,1)){
-				g.fillRect(bd.border[id].px()-mf(k.cwidth/2)-lm, bd.border[id].py()-lm, k.cwidth+lw, lw);
+				g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-lm, k.cwidth+lw, lw);
 			}
 		};
-		pc.drawChassis_bridges = function(x1,y1,x2,y2){
-			x1--; y1--; x2++; y2++;
-			if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
-
-			g.fillStyle = "rgb(224,224,224)";
-			if(x1<1)         { if(this.vnop("chs1_",1)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+y1*k.cheight    , 1, (y2-y1+1)*k.cheight+1);} }
-			if(y1<1)         { if(this.vnop("chs2_",1)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+y1*k.cheight    , (x2-x1+1)*k.cwidth+1, 1); } }
-			if(y2>=k.qrows-1){ if(this.vnop("chs3_",1)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+(y2+1)*k.cheight, (x2-x1+1)*k.cwidth+1, 1); } }
-			if(x2>=k.qcols-1){ if(this.vnop("chs4_",1)){ g.fillRect(k.p0.x+(x2+1)*k.cwidth, k.p0.y+y1*k.cheight    , 1, (y2-y1+1)*k.cheight+1);} }
-			this.vinc();
-		};
 		pc.hideBorder = function(){
-			if(!g.vml){ return;}
-			this.vhide(["chs1_","chs2_","chs3_","chs4_"]);
 			for(var i=0;i<=k.qcols;i++){ this.vhide("bdy"+i+"_");}
 			for(var i=0;i<=k.qrows;i++){ this.vhide("bdx"+i+"_");}
 		};
@@ -286,19 +273,19 @@ Puzzles.wblink.prototype = {
 				this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 			}
 
-			var larea = this.searchLarea();
-			if( !this.checkOneNumber(larea, function(a,cnt){ return (cnt>=3);}, function(c){ return (bd.QuC(c)!=0);} ) ){
+			var linfo = line.getLareaInfo();
+			if( !this.checkOneNumber(linfo, function(a,cnt){ return (cnt>=3);}, function(c){ return (bd.QuC(c)!=0);} ) ){
 				this.setAlert('3つ以上の○が繋がっています。','Three or more objects are connected.'); return false;
 			}
 
-			if( !this.checkWBcircle(larea, 41) ){
+			if( !this.checkWBcircle(linfo, 41) ){
 				this.setAlert('白丸同士が繋がっています。','Two white circles are connected.'); return false;
 			}
-			if( !this.checkWBcircle(larea, 42) ){
+			if( !this.checkWBcircle(linfo, 42) ){
 				this.setAlert('黒丸同士が繋がっています。','Two black circles are connected.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QuC(c)!=0 && this.lcntCell(c)==0);}.bind(this) ) ){
+			if( !this.checkAllCell(function(c){ return (bd.QuC(c)!=0 && line.lcntCell(c)==0);} ) ){
 				this.setAlert('○から線が出ていません。','A circle doesn\'t start any line.'); return false;
 			}
 
@@ -306,14 +293,14 @@ Puzzles.wblink.prototype = {
 		};
 		ans.check1st = function(){ return true;};
 
-		ans.checkWBcircle = function(larea,val){
-			for(var r=1;r<=larea.max;r++){
+		ans.checkWBcircle = function(linfo,val){
+			for(var r=1;r<=linfo.max;r++){
 				var tip1=-1, tip2=-1;
-				if(larea.room[r].length>1){
-					var tip1 = larea.room[r][0];
-					var tip2 = larea.room[r][larea.room[r].length-1];
+				if(linfo.room[r].idlist.length>1){
+					var tip1 = linfo.room[r].idlist[0];
+					var tip2 = linfo.room[r].idlist[linfo.room[r].idlist.length-1];
 					if(bd.QuC(tip1)==val && bd.QuC(tip2)==val){
-						bd.sErB(bd.borders,2); ans.setErrLareaById(larea,r,1);
+						bd.sErB(bd.borders,2); ans.setErrLareaById(linfo,r,1);
 						bd.sErC([tip1,tip2],1);
 						return false;
 					}
