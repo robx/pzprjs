@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ましゅ版 mashu.js v3.2.1
+// パズル固有スクリプト部 ましゅ版 mashu.js v3.2.2
 //
 Puzzles.mashu = function(){ };
 Puzzles.mashu.prototype = {
@@ -15,7 +15,7 @@ Puzzles.mashu.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.mashu.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("ましゅ","Masyu (Pearl Puzzle)");
 		base.setExpression("　左ドラッグで線が、右クリックで×印が入力できます。",
@@ -88,7 +89,7 @@ Puzzles.mashu.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -96,7 +97,7 @@ Puzzles.mashu.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawQueses41_42(x1,y1,x2,y2);
 			this.drawNumbers(x1,y1,x2,y2);
@@ -211,7 +212,7 @@ Puzzles.mashu.prototype = {
 				this.setAlert('白丸の隣で線が曲がっていません。','Lines go straight next to white pearl on each side.'); return false;
 			}
 
-			if( !this.checkPearlLine() ){
+			if( !this.checkAllCell(function(c){ return (bd.QuC(c)!=0 && line.lcntCell(c)==0);}) ){
 				this.setAlert('線が上を通っていない丸があります。','Lines don\'t pass some pearls.'); return false;
 			}
 
@@ -228,7 +229,7 @@ Puzzles.mashu.prototype = {
 
 		ans.checkWhitePearl1 = function(){
 			for(var c=0;c<bd.cell.length;c++){
-				if(bd.QuC(c)==41 && ans.lcntCell(c)==2 && !ans.isLineStraight(c)){
+				if(bd.QuC(c)==41 && line.lcntCell(c)==2 && !ans.isLineStraight(c)){
 					bd.sErB(bd.borders,2);
 					ans.setCellLineError(c,1);
 					return false;
@@ -238,7 +239,7 @@ Puzzles.mashu.prototype = {
 		};
 		ans.checkBlackPearl1 = function(){
 			for(var c=0;c<bd.cell.length;c++){
-				if(bd.QuC(c)==42 && ans.lcntCell(c)==2 && ans.isLineStraight(c)){
+				if(bd.QuC(c)==42 && line.lcntCell(c)==2 && ans.isLineStraight(c)){
 					bd.sErB(bd.borders,2);
 					ans.setCellLineError(c,1);
 					return false;
@@ -249,11 +250,11 @@ Puzzles.mashu.prototype = {
 
 		ans.checkWhitePearl2 = function(){
 			for(var c=0;c<bd.cell.length;c++){
-				if(bd.QuC(c)!=41 || ans.lcntCell(c)!=2){ continue;}
-				if(bd.LiB(bd.ub(c))==1 && ans.lcntCell(bd.up(c))==2 && !ans.isLineStraight(bd.up(c))){ continue;}
-				if(bd.LiB(bd.db(c))==1 && ans.lcntCell(bd.dn(c))==2 && !ans.isLineStraight(bd.dn(c))){ continue;}
-				if(bd.LiB(bd.lb(c))==1 && ans.lcntCell(bd.lt(c))==2 && !ans.isLineStraight(bd.lt(c))){ continue;}
-				if(bd.LiB(bd.rb(c))==1 && ans.lcntCell(bd.rt(c))==2 && !ans.isLineStraight(bd.rt(c))){ continue;}
+				if(bd.QuC(c)!=41 || line.lcntCell(c)!=2){ continue;}
+				if(bd.isLine(bd.ub(c)) && line.lcntCell(bd.up(c))==2 && !ans.isLineStraight(bd.up(c))){ continue;}
+				if(bd.isLine(bd.db(c)) && line.lcntCell(bd.dn(c))==2 && !ans.isLineStraight(bd.dn(c))){ continue;}
+				if(bd.isLine(bd.lb(c)) && line.lcntCell(bd.lt(c))==2 && !ans.isLineStraight(bd.lt(c))){ continue;}
+				if(bd.isLine(bd.rb(c)) && line.lcntCell(bd.rt(c))==2 && !ans.isLineStraight(bd.rt(c))){ continue;}
 
 				this.setErrorPearl(c);
 				return false;
@@ -262,11 +263,11 @@ Puzzles.mashu.prototype = {
 		};
 		ans.checkBlackPearl2 = function(){
 			for(var c=0;c<bd.cell.length;c++){
-				if(bd.QuC(c)!=42 || ans.lcntCell(c)!=2){ continue;}
-				if((bd.LiB(bd.ub(c))==1 && ans.lcntCell(bd.up(c))==2 && !ans.isLineStraight(bd.up(c))) ||
-				   (bd.LiB(bd.db(c))==1 && ans.lcntCell(bd.dn(c))==2 && !ans.isLineStraight(bd.dn(c))) ||
-				   (bd.LiB(bd.lb(c))==1 && ans.lcntCell(bd.lt(c))==2 && !ans.isLineStraight(bd.lt(c))) ||
-				   (bd.LiB(bd.rb(c))==1 && ans.lcntCell(bd.rt(c))==2 && !ans.isLineStraight(bd.rt(c))) ){
+				if(bd.QuC(c)!=42 || line.lcntCell(c)!=2){ continue;}
+				if((bd.isLine(bd.ub(c)) && line.lcntCell(bd.up(c))==2 && !ans.isLineStraight(bd.up(c))) ||
+				   (bd.isLine(bd.db(c)) && line.lcntCell(bd.dn(c))==2 && !ans.isLineStraight(bd.dn(c))) ||
+				   (bd.isLine(bd.lb(c)) && line.lcntCell(bd.lt(c))==2 && !ans.isLineStraight(bd.lt(c))) ||
+				   (bd.isLine(bd.rb(c)) && line.lcntCell(bd.rt(c))==2 && !ans.isLineStraight(bd.rt(c))) ){
 					this.setErrorPearl(c);
 					return false;
 				}
@@ -276,15 +277,10 @@ Puzzles.mashu.prototype = {
 		ans.setErrorPearl = function(cc){
 			bd.sErB(bd.borders,2);
 			ans.setCellLineError(cc,1);
-			if(bd.LiB(bd.ub(cc))==1){ ans.setCellLineError(bd.up(cc),0);}
-			if(bd.LiB(bd.db(cc))==1){ ans.setCellLineError(bd.dn(cc),0);}
-			if(bd.LiB(bd.lb(cc))==1){ ans.setCellLineError(bd.lt(cc),0);}
-			if(bd.LiB(bd.rb(cc))==1){ ans.setCellLineError(bd.rt(cc),0);}
-		};
-
-		ans.checkPearlLine = function(){
-			for(var c=0;c<bd.cell.length;c++){ if(bd.QuC(c)!=0 && ans.lcntCell(c)==0){ bd.sErC([c],1); return false;} }
-			return true;
+			if(bd.isLine(bd.ub(cc))){ ans.setCellLineError(bd.up(cc),0);}
+			if(bd.isLine(bd.db(cc))){ ans.setCellLineError(bd.dn(cc),0);}
+			if(bd.isLine(bd.lb(cc))){ ans.setCellLineError(bd.lt(cc),0);}
+			if(bd.isLine(bd.rb(cc))){ ans.setCellLineError(bd.rt(cc),0);}
 		};
 	}
 };
