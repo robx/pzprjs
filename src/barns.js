@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バーンズ版 barns.js v3.2.1
+// パズル固有スクリプト部 バーンズ版 barns.js v3.2.2
 //
 Puzzles.barns = function(){ };
 Puzzles.barns.prototype = {
@@ -15,7 +15,7 @@ Puzzles.barns.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 1;	// 1:線が交差するパズル
+		k.isLineCross     = 1;	// 1:線が交差するパズル
 		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -39,6 +39,7 @@ Puzzles.barns.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
@@ -90,6 +91,10 @@ Puzzles.barns.prototype = {
 			pc.paintCell(cc);
 		},
 
+		// 線を引かせたくないので上書き
+		bd.isLineNG = function(id){ return (bd.QuC(id)==1);},
+		bd.enableLineNG = true;
+
 		// キーボード入力系
 		kc.keyinput = function(ca){ if(ca=='z' && !this.keyPressed){ this.isZ=true;}};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
@@ -99,10 +104,11 @@ Puzzles.barns.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-		pc.linecolor = "rgb(0, 192, 0)";
-		pc.errcolor1 = "rgb(192, 0, 0)";
-		pc.errbcolor1 = "rgb(255, 127, 127)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
+		pc.linecolor = pc.linecolor_LIGHT;
+		pc.errbcolor1 = pc.errbcolor1_DARK;
+
+		pc.maxYdeg = 0.70;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -112,7 +118,7 @@ Puzzles.barns.prototype = {
 
 			this.drawIcebarns(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawBorders(x1,y1,x2,y2);
 
@@ -123,8 +129,6 @@ Puzzles.barns.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 		};
-
-		col.maxYdeg = 0.70;
 	},
 
 	//---------------------------------------------------------
@@ -186,10 +190,10 @@ Puzzles.barns.prototype = {
 				this.setAlert('分岐している線があります。','There is a branch line.'); return false;
 			}
 
-			if( !this.checkLineCross() ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101);}) ){
 				this.setAlert('氷の部分以外で線が交差しています。', 'A Line is crossed outside of ice.'); return false;
 			}
-			if( !this.checkLineCurve() ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !ans.isLineStraight(c));}) ){
 				this.setAlert('氷の部分で線が曲がっています。', 'A Line curve on ice.'); return false;
 			}
 
@@ -205,25 +209,6 @@ Puzzles.barns.prototype = {
 				this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
 			}
 
-			return true;
-		};
-
-		ans.checkLineCross = function(){
-			for(var c=0;c<bd.cell.length;c++){
-				if(this.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101){
-					bd.sErC([c],1);
-					return false;
-				}
-			}
-			return true;
-		};
-		ans.checkLineCurve = function(){
-			for(var c=0;c<bd.cell.length;c++){
-				if(this.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c)){
-					bd.sErC([c],1);
-					return false;
-				}
-			}
 			return true;
 		};
 	}

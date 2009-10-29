@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へびいちご版 snakes.js v3.2.0p1
+// パズル固有スクリプト部 へびいちご版 snakes.js v3.2.2
 //
 Puzzles.snakes = function(){ };
 Puzzles.snakes.prototype = {
@@ -15,7 +15,7 @@ Puzzles.snakes.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.snakes.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 16;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pmake"){
 			base.setExpression("　矢印は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
@@ -142,12 +143,9 @@ Puzzles.snakes.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.dotcolor = "rgb(255, 96, 191)";
-
-		pc.fontcolor = "white";
-		pc.BCell_fontcolor = "white";
-		pc.errbcolor2 = pc.errbcolor1;
+		pc.fontcolor = pc.fontErrcolor = "white";
 
 		pc.paint = function(x1,y1,x2,y2){
 			x1--; y1--; x2++; y2++;	// 跡が残ってしまう為
@@ -156,12 +154,10 @@ Puzzles.snakes.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 			this.drawDots(x1,y1,x2,y2);
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 
-			this.Cellcolor = this.BorderQanscolor
 			this.drawBorders_snake(x1,y1,x2,y2);
 
-			this.Cellcolor = this.BorderQuescolor
 			this.drawBCells_withoutNumber(x1-2,y1-2,x2+2,y2+2);
 			this.drawArrowNumbers(x1-2,y1-2,x2+2,y2+2);
 
@@ -192,7 +188,7 @@ Puzzles.snakes.prototype = {
 				if(bd.QnC(c)!=-1){
 					if(bd.ErC(c)!=0){ g.fillStyle = this.errcolor1;}
 					else{ g.fillStyle = this.Cellcolor;}
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px(), bd.cell[c].py(), k.cwidth+1, k.cheight+1);}
+					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
 				}
 				else if(bd.ErC(c)==0){ this.vhide("c"+c+"_full_");}
 			}
@@ -221,16 +217,16 @@ Puzzles.snakes.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var sarea = this.searchSarea();
-			if( !this.checkAllArea(sarea, f_true, function(w,h,a){ return (a==5);} ) ){
+			var sinfo = this.getSnakeInfo();
+			if( !this.checkAllArea(sinfo, f_true, function(w,h,a){ return (a==5);} ) ){
 				this.setAlert('大きさが５ではない蛇がいます。','The size of a snake is not five.'); return false;
 			}
 
-			if( !this.checkDifferentNumberInRoom(sarea) ){
+			if( !this.checkDifferentNumberInRoom(sinfo) ){
 				this.setAlert('同じ数字が入っています。','A Snake has same plural marks.'); return false;
 			}
 
-			if( !this.checkSideCell2(sarea) ){
+			if( !this.checkSideCell2(sinfo) ){
 				this.setAlert('別々の蛇が接しています。','Other snakes are adjacent.'); return false;
 			}
 
@@ -238,7 +234,7 @@ Puzzles.snakes.prototype = {
 				this.setAlert('矢印の方向にある数字が正しくありません。','The number in the direction of the arrow is not correct.'); return false;
 			}
 
-			if( !this.checkSnakesView(sarea) ){
+			if( !this.checkSnakesView(sinfo) ){
 				this.setAlert('蛇の視線の先に別の蛇がいます。','A snake can see another snake.'); return false;
 			}
 
@@ -246,45 +242,54 @@ Puzzles.snakes.prototype = {
 		};
 		ans.check1st = function(){ return true;};
 
-		ans.searchSarea = function(){
-			var area = new AreaInfo();
+		ans.getSnakeInfo = function(){
+			var sinfo = new AreaInfo();
 			var func = function(c,cc){ return (cc!=-1 && (Math.abs(bd.QaC(c)-bd.QaC(cc))==1)); };
-			for(var c=0;c<bd.cell.length;c++){ area.check[c]=(bd.QaC(c)>0?0:-1);}
-			for(var c=0;c<bd.cell.length;c++){ if(area.check[c]==0){ area.max++; area.room[area.max]=new Array(); this.ss0(func, area, c, area.max);} }
-			return area;
+			for(var c=0;c<bd.cell.length;c++){ sinfo.id[c]=(bd.QaC(c)>0?0:-1);}
+			for(var c=0;c<bd.cell.length;c++){
+				if(sinfo.id[c]!=0){ continue;}
+				sinfo.max++;
+				sinfo.room[sinfo.max] = {idlist:[]};
+				this.ss0(func, sinfo, c, sinfo.max);
+			}
+			return sinfo;
 		};
-		ans.ss0 = function(func, area, c, areaid){
-			if(area.check[c]!=0){ return;}
-			area.check[c] = areaid;
-			area.room[areaid].push(c);
-			if( func(c, bd.up(c)) ){ this.ss0(func, area, bd.up(c), areaid);}
-			if( func(c, bd.dn(c)) ){ this.ss0(func, area, bd.dn(c), areaid);}
-			if( func(c, bd.lt(c)) ){ this.ss0(func, area, bd.lt(c), areaid);}
-			if( func(c, bd.rt(c)) ){ this.ss0(func, area, bd.rt(c), areaid);}
+		ans.ss0 = function(func, sinfo, c, areaid){
+			if(sinfo.id[c]!=0){ return;}
+			sinfo.id[c] = areaid;
+			sinfo.room[areaid].idlist.push(c);
+			if( func(c, bd.up(c)) ){ this.ss0(func, sinfo, bd.up(c), areaid);}
+			if( func(c, bd.dn(c)) ){ this.ss0(func, sinfo, bd.dn(c), areaid);}
+			if( func(c, bd.lt(c)) ){ this.ss0(func, sinfo, bd.lt(c), areaid);}
+			if( func(c, bd.rt(c)) ){ this.ss0(func, sinfo, bd.rt(c), areaid);}
 			return;
 		};
 
-		ans.checkDifferentNumberInRoom = function(area){
-			for(var r=1;r<=area.max;r++){
+		ans.checkDifferentNumberInRoom = function(sinfo){
+			for(var r=1;r<=sinfo.max;r++){
 				var d = {1:0,2:0,3:0,4:0,5:0};
-				for(var i=0;i<area.room[r].length;i++){
-					var val = bd.QaC(area.room[r][i]);
+				for(var i=0;i<sinfo.room[r].idlist.length;i++){
+					var val = bd.QaC(sinfo.room[r].idlist[i]);
 					if(val==-1){ continue;}
 
 					if(d[val]==0){ d[val]++;}
-					else if(d[val]>0){ bd.sErC(area.room[r],1); return false;}
+					else if(d[val]>0){ bd.sErC(sinfo.room[r].idlist,1); return false;}
 				}
 			}
 			return true;
 		};
-		ans.checkSideCell2 = function(area){
-			var func = function(area,c1,c2){ return (area.check[c1]>0 && area.check[c2]>0 && area.check[c1]!=area.check[c2]);};
+		ans.checkSideCell2 = function(sinfo){
+			var func = function(sinfo,c1,c2){ return (sinfo.id[c1]>0 && sinfo.id[c2]>0 && sinfo.id[c1]!=sinfo.id[c2]);};
 			for(var c=0;c<bd.cell.length;c++){
-				if(bd.cell[c].cx<k.qcols-1 && func(area,c,c+1)){
-					bd.sErC(area.room[area.check[c]].concat(area.room[area.check[c+1]]),1); return false;
+				if(bd.cell[c].cx<k.qcols-1 && func(sinfo,c,c+1)){
+					bd.sErC(sinfo.room[sinfo.id[c]].idlist,1);
+					bd.sErC(sinfo.room[sinfo.id[c+1]].idlist,1);
+					return false;
 				}
-				if(bd.cell[c].cy<k.qrows-1 && func(area,c,c+k.qcols)){
-					bd.sErC(area.room[area.check[c]].concat(area.room[area.check[c+k.qcols]]),1); return false;
+				if(bd.cell[c].cy<k.qrows-1 && func(sinfo,c,c+k.qcols)){
+					bd.sErC(sinfo.room[sinfo.id[c]].idlist,1);
+					bd.sErC(sinfo.room[sinfo.id[c+k.qcols]].idlist,1);
+					return false;
 				}
 			}
 			return true;
@@ -307,27 +312,27 @@ Puzzles.snakes.prototype = {
 				else if(dir==4){ cx++; while(cx<k.qcols){ if(!func(clist)){ break;} cx++;} }
 
 				if(num==0^(cx<0||cx>=k.qcols||cy<0||cy>=k.qcols||bd.QnC(bd.cnum(cx,cy))!=-1)){
-					if(num>0){ bd.sErC(clist,2);}
-					else{ bd.sErC([c,bd.cnum(cx,cy)],2);}
+					if(num>0){ bd.sErC(clist,1);}
+					else{ bd.sErC([c,bd.cnum(cx,cy)],1);}
 					return false;
 				}
 				else if(num>0 && bd.QaC(bd.cnum(cx,cy))!=num){
-					bd.sErC([c,bd.cnum(cx,cy)],2);
+					bd.sErC([c,bd.cnum(cx,cy)],1);
 					return false;
 				}
 			}
 			return true;
 		};
-		ans.checkSnakesView = function(area){
+		ans.checkSnakesView = function(sinfo){
 			var func = function(clist){
 				var cc=bd.cnum(cx,cy); clist.push(cc);
 				if(bd.QnC(cc)!=-1 || bd.QaC(cc)>0){ return false;}
 				return true;
 			};
 
-			for(var r=1;r<=area.max;r++){
-				var c1=-1, dir=0;
-				for(var i=0;i<area.room[r].length;i++){ if(bd.QaC(area.room[r][i])==1){c1=area.room[r][i]; break;}}
+			for(var r=1;r<=sinfo.max;r++){
+				var c1=-1, dir=0, idlist = sinfo.room[r].idlist;
+				for(var i=0;i<idlist.length;i++){ if(bd.QaC(idlist[i])==1){c1=idlist[i]; break;}}
 				if     (bd.QaC(bd.dn(c1))==2){ dir=1;}
 				else if(bd.QaC(bd.up(c1))==2){ dir=2;}
 				else if(bd.QaC(bd.rt(c1))==2){ dir=3;}
@@ -339,11 +344,11 @@ Puzzles.snakes.prototype = {
 				else if(dir==3){ cx--; while(cx>=0     ){ if(!func(clist)){ break;} cx--;} }
 				else if(dir==4){ cx++; while(cx<k.qcols){ if(!func(clist)){ break;} cx++;} }
 
-				var c2 = bd.cnum(cx,cy), r2 = area.check[c2];
+				var c2 = bd.cnum(cx,cy), r2 = sinfo.id[c2];
 				if(bd.QaC(c2)>0 && bd.QnC(c2)==-1 && r2>0 && r!=r2){
-					bd.sErC(clist,2);
-					bd.sErC(area.room[r],2);
-					bd.sErC(area.room[r2],2);
+					bd.sErC(clist,1);
+					bd.sErC(idlist,1);
+					bd.sErC(sinfo.room[r2].idlist,1);
 					return false;
 				}
 			}

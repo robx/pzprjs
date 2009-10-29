@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヴィウ版 view.js v3.2.0
+// パズル固有スクリプト部 ヴィウ版 view.js v3.2.2
 //
 Puzzles.view = function(){ };
 Puzzles.view.prototype = {
@@ -15,7 +15,7 @@ Puzzles.view.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.view.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		k.area = { bcell:0, wcell:0, number:1};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("ヴィウ","View");
 		base.setExpression("　マスのクリックやキーボードで数字を入力できます。QAZキーで○、WSXキーで×を入力できます。",
@@ -125,7 +126,7 @@ Puzzles.view.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawMBs(x1,y1,x2,y2);
 			this.drawNumbers(x1,y1,x2,y2);
@@ -157,7 +158,7 @@ Puzzles.view.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkSideCell(function(c1,c2){ return (this.getNum(c1)>=0 && this.getNum(c1)==this.getNum(c2));}.bind(this)) ){
+			if( !this.checkSideCell(bd.sameNumber) ){
 				this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
 			}
 
@@ -165,11 +166,11 @@ Puzzles.view.prototype = {
 				this.setAlert('数字と、他のマスにたどり着くまでのマスの数の合計が一致していません。','Sum of four-way gaps to another number is not equal to the number.'); return false;
 			}
 
-			if( !this.linkBWarea( ans.searchBWarea(function(id){ return (id!=-1 && this.getNum(id)!=-1 && this.getNum(id)!=-3); }.bind(this)) ) ){
+			if( !this.checkOneArea( area.getNumberInfo() ) ){
 				this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
 			}
 
-			if( !this.checkMB() ){
+			if( !this.checkAllCell(function(c){ return (bd.QsC(c)==1);}) ){
 				this.setAlert('数字の入っていないマスがあります。','There is a cell that is not filled in number.'); return false;
 			}
 
@@ -178,39 +179,26 @@ Puzzles.view.prototype = {
 
 		ans.checkCellNumber = function(){
 			for(var c=0;c<bd.cell.length;c++){
-				if(this.getNum(c)<0){ continue;}
+				if(!bd.isValidNum(c)){ continue;}
 
-				var list = new Array();
+				var list = [];
 				var cnt=0;
 				var tx, ty;
 
 				tx = bd.cell[c].cx-1; ty = bd.cell[c].cy;
-				while(tx>=0)     { var cc=bd.cnum(tx,ty); if(this.getNum(cc)==-1){ cnt++; list.push(cc); tx--;} else{ break;} }
+				while(tx>=0)     { var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!=1){ cnt++; list.push(cc); tx--;} else{ break;} }
 				tx = bd.cell[c].cx+1; ty = bd.cell[c].cy;
-				while(tx<k.qcols){ var cc=bd.cnum(tx,ty); if(this.getNum(cc)==-1){ cnt++; list.push(cc); tx++;} else{ break;} }
+				while(tx<k.qcols){ var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!=1){ cnt++; list.push(cc); tx++;} else{ break;} }
 				tx = bd.cell[c].cx; ty = bd.cell[c].cy-1;
-				while(ty>=0)     { var cc=bd.cnum(tx,ty); if(this.getNum(cc)==-1){ cnt++; list.push(cc); ty--;} else{ break;} }
+				while(ty>=0)     { var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!=1){ cnt++; list.push(cc); ty--;} else{ break;} }
 				tx = bd.cell[c].cx; ty = bd.cell[c].cy+1;
-				while(ty<k.qrows){ var cc=bd.cnum(tx,ty); if(this.getNum(cc)==-1){ cnt++; list.push(cc); ty++;} else{ break;} }
+				while(ty<k.qrows){ var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!=1){ cnt++; list.push(cc); ty++;} else{ break;} }
 
-				if(this.getNum(c)!=cnt){
+				if(bd.getNum(c)!=cnt){
 					bd.sErC([c],1);
 					bd.sErC(list,2);
 					return false;
 				}
-			}
-			return true;
-		};
-		ans.getNum = function(cc){
-			if(cc<0||cc>=bd.cell.length){ return -1;}
-			if(bd.QnC(cc)!=-1){ return bd.QnC(cc);}
-			if(bd.QsC(cc)==1) { return -3;}
-			return bd.QaC(cc);
-		};
-
-		ans.checkMB = function(){
-			for(var c=0;c<bd.cell.length;c++){
-				if(bd.QsC(c)==1){ bd.sErC([c],1); return false;}
 			}
 			return true;
 		};

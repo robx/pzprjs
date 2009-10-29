@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.2.0p1
+// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.2.2
 //
 Puzzles.bosanowa = function(){ };
 Puzzles.bosanowa.prototype = {
@@ -15,7 +15,7 @@ Puzzles.bosanowa.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.bosanowa.prototype = {
 
 		//k.def_csize = 36;
 		k.def_psize = 36;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　キーボードやマウスで数字が入力できます。",
@@ -134,10 +135,10 @@ Puzzles.bosanowa.prototype = {
 			var tcp = tc.getTCP();
 			if(tcp.x%2==1&&tcp.y%2==1){
 				var cc = tc.getTCC();
-				if(k.mode==1 && ca=='w'){ bd.sQuC(cc,(bd.QuC(cc)!=7?7:0)); bd.sQnC(cc,-1); bd.sQaC(cc,-1);}
+				if(k.mode==1 && ca=='w'){ bd.sQuC(cc,(bd.QuC(cc)!=7?7:0)); bd.setNum(cc,-1);}
 				else if(bd.QuC(cc)==7 && (k.mode==3 || '0'<=ca && ca<='9')){ this.key_inputqnum(ca,255);}
-				else if(k.mode==1 && '0'<=ca && ca<='9'){ bd.sQuC(cc,7); bd.sQnC(cc,-1); this.key_inputqnum(ca,255);}
-				else if(k.mode==1 && (ca=='-'||ca==' ')){ bd.sQuC(cc,7); bd.sQnC(cc,-1);}
+				else if(k.mode==1 && '0'<=ca && ca<='9'){ bd.sQuC(cc,7); bd.setNum(cc,-1); this.key_inputqnum(ca,255);}
+				else if(k.mode==1 && (ca=='-'||ca==' ')){ bd.sQuC(cc,7); bd.setNum(cc,-1);}
 				else{ return false;}
 			}
 			else if((tcp.x+tcp.y)%2==1){
@@ -172,9 +173,6 @@ Puzzles.bosanowa.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(64, 64, 64)";
-		pc.errbcolor1 = "rgb(255, 192, 192)";
-
 		pc.borderfontcolor = "blue";
 
 		pc.paint = function(x1,y1,x2,y2){
@@ -182,7 +180,7 @@ Puzzles.bosanowa.prototype = {
 
 			if(menu.getVal('disptype')==2){ this.drawChassis_souko(x1,y1,x2,y2);}
 			if(menu.getVal('disptype')==3){ this.drawChassis_waritai(x1,y1,x2,y2);}
-			if(menu.getVal('disptype')!=1){ this.drawBorders_bosanowa(x1,y1,x2,y2);}
+			if(menu.getVal('disptype')!=1){ this.drawGrid_bosanowa(x1,y1,x2,y2);}
 
 			if(menu.getVal('disptype')==1){
 				this.drawErrorCells(x1,y1,x2,y2);
@@ -203,7 +201,7 @@ Puzzles.bosanowa.prototype = {
 			if(tc.cursolx%2==1&&tc.cursoly%2==1){ this.drawTCell(x1-1,y1-1,x2+1,y2+1);}else{ this.hideTCell();}
 		};
 
-		pc.drawBorders_bosanowa = function(x1,y1,x2,y2){
+		pc.drawGrid_bosanowa = function(x1,y1,x2,y2){
 			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4,f_true);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
@@ -212,10 +210,10 @@ Puzzles.bosanowa.prototype = {
 				if(menu.getVal('disptype')==3){
 					if((cc1!=-1&&bd.QuC(cc1)==7) ^(cc2!=-1&&bd.QuC(cc2)==7)){ this.drawBorder1(id,true);}
 					else if((cc1!=-1&&bd.QuC(cc1)==7)&&(cc2!=-1&&bd.QuC(cc2)==7)){
-						g.fillStyle=this.BDlinecolor;
+						g.fillStyle=this.gridcolor;
 						if(this.vnop("b"+id+"_bds_",1)){
-							if     (bd.border[id].cy%2==1){ g.fillRect(bd.border[id].px()               , bd.border[id].py()-mf(k.cheight/2), 1         , k.cheight+1);}
-							else if(bd.border[id].cx%2==1){ g.fillRect(bd.border[id].px()-mf(k.cwidth/2), bd.border[id].py()                , k.cwidth+1, 1          );}
+							if     (bd.border[id].cy%2==1){ g.fillRect(bd.border[id].px               , bd.border[id].py-mf(k.cheight/2), 1         , k.cheight+1);}
+							else if(bd.border[id].cx%2==1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2), bd.border[id].py                , k.cwidth+1, 1          );}
 						}
 					}
 				}
@@ -224,8 +222,8 @@ Puzzles.bosanowa.prototype = {
 						g.fillStyle="rgb(127,127,127)";
 						if(g.vml){
 							if(this.vnop("b"+id+"_bds_",1)){
-								if     (bd.border[id].cy%2==1){ g.fillRect(bd.border[id].px()               , bd.border[id].py()-mf(k.cheight/2), 1         , k.cheight+1);}
-								else if(bd.border[id].cx%2==1){ g.fillRect(bd.border[id].px()-mf(k.cwidth/2), bd.border[id].py()                , k.cwidth+1, 1          );}
+								if     (bd.border[id].cy%2==1){ g.fillRect(bd.border[id].px               , bd.border[id].py-mf(k.cheight/2), 1         , k.cheight+1);}
+								else if(bd.border[id].cx%2==1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2), bd.border[id].py                , k.cwidth+1, 1          );}
 							}
 						}
 						else{
@@ -233,10 +231,10 @@ Puzzles.bosanowa.prototype = {
 							var dotCount = (mf(k.cwidth/dotmax)>=1?mf(k.cwidth/dotmax):1);
 							var dotSize  = k.cwidth/(dotCount*2);
 							if     (bd.border[id].cy%2==1){ 
-								for(var j=0;j<k.cheight+1;j+=(2*dotSize)){ g.fillRect(bd.border[id].px(), mf(bd.border[id].py()-k.cheight/2+j), 1, mf(dotSize));}
+								for(var j=0;j<k.cheight+1;j+=(2*dotSize)){ g.fillRect(bd.border[id].px, mf(bd.border[id].py-k.cheight/2+j), 1, mf(dotSize));}
 							}
 							else if(bd.border[id].cx%2==1){ 
-								for(var j=0;j<k.cwidth+1 ;j+=(2*dotSize)){ g.fillRect(mf(bd.border[id].px()-k.cwidth/2+j), bd.border[id].py(), mf(dotSize), 1);}
+								for(var j=0;j<k.cwidth+1 ;j+=(2*dotSize)){ g.fillRect(mf(bd.border[id].px-k.cwidth/2+j), bd.border[id].py, mf(dotSize), 1);}
 							}
 						}
 					}
@@ -251,16 +249,16 @@ Puzzles.bosanowa.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QuC(c)==7 && bd.QnC(c)==-1 && bd.QaC(c)==-1){
+				if(bd.QuC(c)==7 && !bd.isNum(c)){
 					if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
 					else{ g.fillStyle = this.Cellcolor;}
 					g.beginPath();
-					g.arc(bd.cell[c].px()+mf(k.cwidth/2), bd.cell[c].py()+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
+					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
 					if(this.vnop("c"+c+"_cira_",1)){ g.fill();}
 
 					g.fillStyle = "white";
 					g.beginPath();
-					g.arc(bd.cell[c].px()+mf(k.cwidth/2), bd.cell[c].py()+mf(k.cheight/2), rsize2, 0, Math.PI*2, false);
+					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2, 0, Math.PI*2, false);
 					if(this.vnop("c"+c+"_cirb_",1)){ g.fill();}
 				}
 				else{ this.vhide("c"+c+"_cira_"); this.vhide("c"+c+"_cirb_");}
@@ -276,7 +274,7 @@ Puzzles.bosanowa.prototype = {
 
 				if((menu.getVal('disptype')==3 || bd.QsB(id)>=0)&&((cc1!=-1&&bd.QuC(cc1)==7)&&(cc2!=-1&&bd.QuC(cc2)==7))){
 					g.fillStyle = "white";
-					if(this.vnop("b"+id+"_bbse_",1)){ g.fillRect(bd.border[id].px()-csize, bd.border[id].py()-csize, 2*csize+1, 2*csize+1);}
+					if(this.vnop("b"+id+"_bbse_",1)){ g.fillRect(bd.border[id].px-csize, bd.border[id].py-csize, 2*csize+1, 2*csize+1);}
 				}
 				else{ this.vhide("b"+id+"_bbse_");}
 			}
@@ -459,35 +457,27 @@ Puzzles.bosanowa.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkNumbers() ){
+			if( !this.checkAllCell(this.isSubsNumber) ){
 				this.setAlert('数字とその隣の数字の差の合計が合っていません。', 'Sum of the differences between the number and adjacent numbers is not equal to the number.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QuC(c)==7 && bd.QnC(c)==-1 && bd.QaC(c)==-1);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.QuC(c)==7 && bd.noNum(c));}) ){
 				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)==7 && bd.QnC(c)==-1 && bd.QaC(c)==-1);});};
+		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)==7 && bd.noNum(c));});};
 
-		ans.getNum = function(cc){
-			if(cc<0||cc>=bd.cell.length){ return -1;}
-			if(bd.QnC(cc)!=-1){ return bd.QnC(cc);}
-			return bd.QaC(cc);
-		};
-		ans.checkNumbers = function(){
-			for(var c=0;c<bd.cells.length;c++){
-				if(bd.QuC(c)!=7||this.getNum(c)==-1){ continue;}
-				var sum=0, cc=-1;
-				var cc=bd.up(c); if(cc!=-1&&bd.QuC(cc)==7){ if(this.getNum(cc)!=-1){ sum+=Math.abs(this.getNum(c)-this.getNum(cc)); }else{ continue;} }
-				var cc=bd.dn(c); if(cc!=-1&&bd.QuC(cc)==7){ if(this.getNum(cc)!=-1){ sum+=Math.abs(this.getNum(c)-this.getNum(cc)); }else{ continue;} }
-				var cc=bd.lt(c); if(cc!=-1&&bd.QuC(cc)==7){ if(this.getNum(cc)!=-1){ sum+=Math.abs(this.getNum(c)-this.getNum(cc)); }else{ continue;} }
-				var cc=bd.rt(c); if(cc!=-1&&bd.QuC(cc)==7){ if(this.getNum(cc)!=-1){ sum+=Math.abs(this.getNum(c)-this.getNum(cc)); }else{ continue;} }
+		ans.isSubsNumber = function(c){
+			if(bd.QuC(c)!=7||bd.noNum(c)){ return false;}
+			var sum=0, cc=-1;
+			var cc=bd.up(c); if(cc!=-1&&bd.QuC(cc)==7){ if(bd.isNum(cc)){ sum+=Math.abs(bd.getNum(c)-bd.getNum(cc)); }else{ return false;} }
+			var cc=bd.dn(c); if(cc!=-1&&bd.QuC(cc)==7){ if(bd.isNum(cc)){ sum+=Math.abs(bd.getNum(c)-bd.getNum(cc)); }else{ return false;} }
+			var cc=bd.lt(c); if(cc!=-1&&bd.QuC(cc)==7){ if(bd.isNum(cc)){ sum+=Math.abs(bd.getNum(c)-bd.getNum(cc)); }else{ return false;} }
+			var cc=bd.rt(c); if(cc!=-1&&bd.QuC(cc)==7){ if(bd.isNum(cc)){ sum+=Math.abs(bd.getNum(c)-bd.getNum(cc)); }else{ return false;} }
 
-				if(this.getNum(c)!=sum){ bd.sErC([c],1); return false;}
-			}
-			return true;
+			return (bd.getNum(c)!=sum);
 		};
 	}
 };

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.2.0p1
+// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.2.2
 //
 Puzzles.shakashaka = function(){ };
 Puzzles.shakashaka.prototype = {
@@ -15,7 +15,7 @@ Puzzles.shakashaka.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.shakashaka.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("シャカシャカ","ShakaShaka");
 		base.setExpression("　\"クリックした位置\"ではマス目の角のほうをクリックすることで三角形が入力できます。<br>　\"ドラッグ入力\"では斜め4方向にドラッグして三角形を入力できます。",
@@ -197,10 +198,8 @@ Puzzles.shakashaka.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-
-		pc.fontcolor = "white";
-		pc.fontErrcolor = "white";
+		pc.gridcolor = pc.gridcolor_LIGHT;
+		pc.fontcolor = pc.fontErrcolor = "white";
 
 		pc.paint = function(x1,y1,x2,y2){
 			x2++; y2++;
@@ -209,7 +208,7 @@ Puzzles.shakashaka.prototype = {
 
 			this.drawWhiteCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawBCells(x1,y1,x2,y2);
 			this.drawTriangle(x1,y1,x2,y2);
@@ -241,7 +240,7 @@ Puzzles.shakashaka.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkQnumCell(function(num,bcnt){ return (num>=bcnt);}) ){
+			if( !this.checkAllCell(function(c){ return ( bd.QnC(c)>=0 && (bd.QnC(c)<ans.checkdir4Cell(c,ans.isTri)) );} ) ){
 				this.setAlert('数字のまわりにある黒い三角形の数が間違っています。','The number of triangles in four adjacent cells is bigger than it.'); return false;
 			}
 
@@ -249,44 +248,34 @@ Puzzles.shakashaka.prototype = {
 				this.setAlert('白マスが長方形(正方形)ではありません。','A mass of white cells is not rectangle.'); return false;
 			}
 
-			if( !this.checkQnumCell(function(num,bcnt){ return (num<=bcnt);}) ){
+			if( !this.checkAllCell(function(c){ return ( bd.QnC(c)>=0 && (bd.QnC(c)>ans.checkdir4Cell(c,ans.isTri)) );} ) ){
 				this.setAlert('数字のまわりにある黒い三角形の数が間違っています。','The number of triangles in four adjacent cells is smaller than it.'); return false;
 			}
 
 			return true;
 		};
-
-		ans.checkQnumCell = function(func){	//func(num,bcnt){} -> エラーならfalseを返す関数にする
-			var func2 = function(a){ return (bd.QaC(a)!=-1);};
-			for(var c=0;c<bd.cell.length;c++){
-				if(bd.QnC(c)>=0 && !func(bd.QnC(c), this.checkdir4Cell(c,func2))){
-					bd.sErC([c],1);
-					return false;
-				}
-			}
-			return true;
-		};
+		ans.isTri = function(c){ return (bd.QaC(c)!=-1);};
 
 		ans.checkWhiteArea = function(){
-			var warea = this.searchWarea_slope();
-			for(var id=1;id<=warea.max;id++){
-				var d = this.getSizeOfArea(warea,id,function(cc){ return (bd.QaC(cc)==-1);});
-				if((d.x2-d.x1+1)*(d.y2-d.y1+1)!=d.cnt && !this.isAreaRect_slope(warea,id)){
-					bd.sErC(warea.room[id],1);
+			var winfo = this.searchWarea_slope();
+			for(var id=1;id<=winfo.max;id++){
+				var d = this.getSizeOfClist(winfo.room[id].idlist,function(cc){ return (bd.QaC(cc)==-1);});
+				if((d.x2-d.x1+1)*(d.y2-d.y1+1)!=d.cnt && !this.isAreaRect_slope(winfo,id)){
+					bd.sErC(winfo.room[id].idlist,1);
 					return false;
 				}
 			}
 			return true;
 		};
-		// ここに斜め領域判定用
-		ans.isAreaRect_slope = function(area,id){
-			for(var i=0;i<area.room[id].length;i++){
-				var c = area.room[id][i];
+		// 斜め領域判定用
+		ans.isAreaRect_slope = function(winfo,id){
+			for(var i=0;i<winfo.room[id].idlist.length;i++){
+				var c = winfo.room[id].idlist[i];
 				var a = bd.QaC(c);
-				if( ((a==4||a==5)^(bd.up(c)==-1||area.check[bd.up(c)]!=id)) ||
-					((a==2||a==3)^(bd.dn(c)==-1||area.check[bd.dn(c)]!=id)) ||
-					((a==2||a==5)^(bd.lt(c)==-1||area.check[bd.lt(c)]!=id)) ||
-					((a==3||a==4)^(bd.rt(c)==-1||area.check[bd.rt(c)]!=id)) )
+				if( ((a==4||a==5)^(bd.up(c)==-1||winfo.id[bd.up(c)]!=id)) ||
+					((a==2||a==3)^(bd.dn(c)==-1||winfo.id[bd.dn(c)]!=id)) ||
+					((a==2||a==5)^(bd.lt(c)==-1||winfo.id[bd.lt(c)]!=id)) ||
+					((a==3||a==4)^(bd.rt(c)==-1||winfo.id[bd.rt(c)]!=id)) )
 				{
 					return false;
 				}
@@ -295,26 +284,25 @@ Puzzles.shakashaka.prototype = {
 		};
 
 		ans.searchWarea_slope = function(){
-			var area = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){ area.check[c]=(bd.QnC(c)==-1?0:-1);}
-			for(var c=0;c<bd.cell.length;c++){ if(area.check[c]==0){ area.max++; area.room[area.max]=new Array(); this.sw0(area, c, area.max);} }
-			return area;
+			var winfo = new AreaInfo();
+			for(var c=0;c<bd.cell.length;c++){ winfo.id[c]=(bd.QnC(c)==-1?0:-1);}
+			for(var c=0;c<bd.cell.length;c++){
+				if(winfo.id[c]!=0){ continue;}
+				winfo.max++;
+				winfo.room[winfo.max] = {idlist:[]};
+				this.sw0(winfo, c, winfo.max);
+			}
+			return winfo;
 		};
-		ans.sw0 = function(area,i,areaid){
-			if(area.check[i]!=0){ return;}
-			area.check[i] = areaid;
-			area.room[areaid].push(i);
-			var a = bd.QaC(i);
-			var b1 = bd.QaC(bd.up(i));
-			var b2 = bd.QaC(bd.dn(i));
-			var b3 = bd.QaC(bd.lt(i));
-			var b4 = bd.QaC(bd.rt(i));
+		ans.sw0 = function(winfo,i,areaid){
+			winfo.id[i] = areaid;
+			winfo.room[areaid].idlist.push(i);
+			var a = bd.QaC(i), b1 = bd.QaC(bd.up(i)), b2 = bd.QaC(bd.dn(i)), b3 = bd.QaC(bd.lt(i)), b4 = bd.QaC(bd.rt(i));
 			var cc;
-			cc=bd.up(i); if( cc!=-1 && bd.QnC(cc)==-1 && (a!=4 && a!=5) && (b1!=2 && b1!=3) ){ this.sw0(area, cc, areaid);}
-			cc=bd.dn(i); if( cc!=-1 && bd.QnC(cc)==-1 && (a!=2 && a!=3) && (b2!=4 && b2!=5) ){ this.sw0(area, cc, areaid);}
-			cc=bd.lt(i); if( cc!=-1 && bd.QnC(cc)==-1 && (a!=2 && a!=5) && (b3!=3 && b3!=4) ){ this.sw0(area, cc, areaid);}
-			cc=bd.rt(i); if( cc!=-1 && bd.QnC(cc)==-1 && (a!=3 && a!=4) && (b4!=2 && b4!=5) ){ this.sw0(area, cc, areaid);}
-			return;
+			cc=bd.up(i); if( cc!=-1 && winfo.id[cc]==0 && (a!=4 && a!=5) && (b1!=2 && b1!=3) ){ this.sw0(winfo, cc, areaid);}
+			cc=bd.dn(i); if( cc!=-1 && winfo.id[cc]==0 && (a!=2 && a!=3) && (b2!=4 && b2!=5) ){ this.sw0(winfo, cc, areaid);}
+			cc=bd.lt(i); if( cc!=-1 && winfo.id[cc]==0 && (a!=2 && a!=5) && (b3!=3 && b3!=4) ){ this.sw0(winfo, cc, areaid);}
+			cc=bd.rt(i); if( cc!=-1 && winfo.id[cc]==0 && (a!=3 && a!=4) && (b4!=2 && b4!=5) ){ this.sw0(winfo, cc, areaid);}
 		};
 	}
 };
