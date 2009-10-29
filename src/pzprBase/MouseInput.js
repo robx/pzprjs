@@ -1,4 +1,4 @@
-// MouseInput.js v3.2.1
+// MouseInput.js v3.2.2
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -133,7 +133,7 @@ MouseEvent.prototype = {
 	borderid : function(p,spc){
 		var cx = mf((p.x-k.p0.x)/k.cwidth), cy = mf((p.y-k.p0.y)/k.cheight);
 		var dx = (p.x-k.p0.x)%k.cwidth,     dy = (p.y-k.p0.y)%k.cheight;
-		if(k.isborderCross){
+		if(k.isLineCross){
 			if(!k.isborderAsLine){
 				var m1=spc*k.cwidth, m2=(1-spc)*k.cwidth;
 				if((dx<m1||m2<dx) && (dy<m1||m2<dy)){ return -1;}
@@ -232,7 +232,7 @@ MouseEvent.prototype = {
 			if((this.firstPos.x+this.firstPos.y) % 2 != (bd.cell[cc].cx+bd.cell[cc].cy) % 2){ return;}
 		}
 
-		(this.inputData==1?bd.setBlack:bd.setWhite)(cc);
+		(this.inputData==1?bd.setBlack:bd.setWhite).apply(bd,[cc]);
 		bd.sQsC(cc, (this.inputData==2?1:0));
 
 		pc.paintCell(cc);
@@ -280,8 +280,8 @@ MouseEvent.prototype = {
 	inputqnum1 : function(cc,max){
 		var qflag = (k.isDispHatena||k.puzzleid=="lightup"||k.puzzleid=="shakashaka"||k.puzzleid=="snakes"||k.puzzleid=="shugaku");
 		if(k.isOneNumber){
-			cc = room.getTopOfRoomByCell(cc);
-			if(room.getCntOfRoomByCell(cc)<max){ max = room.getCntOfRoomByCell(cc);}
+			cc = area.getTopOfRoomByCell(cc);
+			if(area.getCntOfRoomByCell(cc)<max){ max = area.getCntOfRoomByCell(cc);}
 		}
 		if(bd.roommaxfunc){ max = bd.roommaxfunc(cc,1);}
 
@@ -414,17 +414,16 @@ MouseEvent.prototype = {
 		if(this.inputData==-1){ this.decIC(cc);}
 
 		this.mouseCell = cc; 
-		var area = ans.searchRarea();
-		var areaid = area.check[cc];
+		var areaid = area.getRoomID(cc);
 
-		for(var c=0;c<k.qcols*k.qrows;c++){
-			if(area.check[c] == areaid && (this.inputData==1 || bd.QsC(c)!=3)){
-				(this.inputData==1?bd.setBlack:bd.setWhite)(c);
+		for(var i=0;i<area.room[areaid].clist.length;i++){
+			var c = area.room[areaid].clist[i];
+			if(this.inputData==1 || bd.QsC(c)!=3){
+				(this.inputData==1?bd.setBlack:bd.setWhite).apply(bd,[c]);
 				bd.sQsC(c, (this.inputData==2?1:0));
 			}
 		}
-
-		var d = ans.getSizeOfArea(area,areaid,function(a){ return true;});
+		var d = ans.getSizeOfClist(area.room[areaid].clist,function(a){ return true;});
 
 		pc.paint(d.x1, d.y1, d.x2, d.y2);
 	},
@@ -519,9 +518,9 @@ MouseEvent.prototype = {
 		pc.paint(bd.cross[cc].cx-1, bd.cross[cc].cy-1, bd.cross[cc].cx, bd.cross[cc].cy);
 	},
 	//---------------------------------------------------------------------------
-	// mv.inputborder() 盤面境界線の問題データを入力する
-	// mv.inputborder() 盤面境界線の回答データを入力する
-	// mv.inputBD()     上記二つの共通処理関数
+	// mv.inputborder()    盤面境界線の問題データを入力する
+	// mv.inputborderans() 盤面境界線の回答データを入力する
+	// mv.inputBD()        上記二つの共通処理関数
 	//---------------------------------------------------------------------------
 	inputborder : function(x,y){ this.inputBD(x,y,0);},
 	inputborderans : function(x,y){ this.inputBD(x,y,1);},
@@ -537,18 +536,11 @@ MouseEvent.prototype = {
 			   (pos.y%2==0 && this.mouseCell.y==pos.y && Math.abs(this.mouseCell.x-pos.x)==1) )
 			{
 				this.mouseCell=-1;
+				if(this.inputData==-1){ this.inputData=(bd.isBorder(id)?0:1);}
 
-				if(this.inputData==-1){
-					if     (flag==0){ this.inputData=(bd.QuB(id)==0?1:0);}
-					else if(flag==1){ this.inputData=(bd.QaB(id)==0?1:0);}
-				}
-
-				if(flag==0){
-					if(this.inputData!=-1){ bd.sQuB(id, this.inputData); bd.sQaB(id, 0);}
-				}
-				else if(flag==1 && bd.QuB(id)==0){
-					if     (this.inputData==1){ bd.sQaB(id, 1); if(k.isborderAsLine){ bd.sQsB(id, 0);} }
-					else if(this.inputData==0){ bd.sQaB(id, 0);}
+				if(k.mode==1 || (k.mode==3 && bd.QuB(id)==0)){
+					if     (this.inputData==1){ bd.setBorder(id); if(k.isborderAsLine){ bd.sQsB(id, 0);} }
+					else if(this.inputData==0){ bd.removeBorder(id);}
 				}
 				pc.paintBorder(id);
 			}
@@ -561,7 +553,7 @@ MouseEvent.prototype = {
 	// mv.inputQsubLine() 盤面の境界線用補助記号を入力する
 	// mv.inputLine1()    上記二つの共通処理関数
 	// mv.inputLine2()    盤面の線を入力用内部関数
-	// mv.inputqsub2()    界線用補助記号の入力用内部関数
+	// mv.inputqsub2()    境界線用補助記号の入力用内部関数
 	//---------------------------------------------------------------------------
 	inputLine : function(x,y){ this.inputLine1(x,y,0);},
 	inputQsubLine : function(x,y){ this.inputLine1(x,y,1);},
@@ -583,9 +575,9 @@ MouseEvent.prototype = {
 		}
 	},
 	inputLine2 : function(id){
-		if(this.inputData==-1){ this.inputData=(bd.LiB(id)==0?1:0);}
-		if     (this.inputData==1){ bd.sLiB(id, 1); bd.sQsB(id, 0);}
-		else if(this.inputData==0){ bd.sLiB(id, 0); bd.sQsB(id, 0);}
+		if(this.inputData==-1){ this.inputData=(bd.isLine(id)?0:1);}
+		if     (this.inputData==1){ bd.setLine(id);}
+		else if(this.inputData==0){ bd.removeLine(id);}
 		pc.paintLine(id);
 	},
 	inputqsub2 : function(id){
@@ -609,45 +601,22 @@ MouseEvent.prototype = {
 	},
 	inputpeke2 : function(id){
 		if(this.inputData==-1){ if(bd.QsB(id)==0){ this.inputData=2;}else{ this.inputData=3;} }
-		if     (this.inputData==2){ if(k.isborderAsLine==0){ bd.sLiB(id, 0);}else{ bd.sQaB(id, 0);} bd.sQsB(id, 2);}
-		else if(this.inputData==3){ if(k.isborderAsLine==0){ bd.sLiB(id, 0);}else{ bd.sQaB(id, 0);} bd.sQsB(id, 0);}
+		if     (this.inputData==2){ bd.setPeke(id);}
+		else if(this.inputData==3){ bd.removeLine(id);}
 		pc.paintLine(id);
 	},
 
 	//---------------------------------------------------------------------------
 	// mv.dispRed() ひとつながりの黒マスを赤く表示する
-	// mv.dr0()     ひとつながりの黒マスを赤く表示する(再起呼び出し用関数)
-	// 
-	// mv.dispRBRed() ななめつながりの黒マスを赤く表示する
-	// mv.db0()       ななめつながりの黒マスを赤く表示する(再起呼び出し用関数)
-	// 
-	// mv.dispRedLine()      ひとつながりの線を赤く表示する
-	// mv.LineListNotCross() ひとつながりの線を取得(交差なしバージョン)
-	// mv.lc0()              ひとつながりの線を取得(交差無し・再帰呼び出し用関数)
+	// mv.db0()     ななめつながりの黒マスを赤く表示する(再起呼び出し用関数)
+	// mv.dispRedLine()  ひとつながりの線を赤く表示する
 	//---------------------------------------------------------------------------
 	dispRed : function(x,y){
 		var cc = this.cellid(new Pos(x,y));
 		this.mousereset();
 		if(!bd.isBlack(cc) || cc==this.mouseCell){ return;}
-		this.dr0(function(c){ return (bd.isBlack(c) && bd.ErC(c)==0);},cc,1);
-		ans.errDisp = true;
-		pc.paintAll();
-	},
-	dr0 : function(func, cc, num){
-		if(bd.ErC(cc)!=0){ return;}
-		bd.sErC([cc],num);
-		if( func(bd.up(cc)) ){ this.dr0(func, bd.up(cc), num);}
-		if( func(bd.dn(cc)) ){ this.dr0(func, bd.dn(cc), num);}
-		if( func(bd.lt(cc)) ){ this.dr0(func, bd.lt(cc), num);}
-		if( func(bd.rt(cc)) ){ this.dr0(func, bd.rt(cc), num);}
-		return;
-	},
-
-	dispRedRB : function(x,y){
-		var cc = this.cellid(new Pos(x,y));
-		this.mousereset();
-		if(!bd.isBlack(cc) || cc==this.mouseCell){ return;}
-		mv.db0(function(c){ return (bd.isBlack(c) && bd.ErC(c)==0);},cc,1);
+		if(!k.RBBlackCell){ bd.sErC(area.bcell[area.bcell.id[cc]].clist,1);}
+		else{ this.db0(function(c){ return (bd.isBlack(c) && bd.ErC(c)==0);},cc,1);}
 		ans.errDisp = true;
 		pc.paintAll();
 	},
@@ -670,71 +639,26 @@ MouseEvent.prototype = {
 		var id = this.borderid(new Pos(x,y),0.15);
 		this.mousereset();
 		if(id!=-1 && id==this.mouseCell){ return;}
-		if(id==-1 || ((k.isborderAsLine==0?bd.LiB:bd.QaB).bind(bd))(id)<=0){
-			if(k.isborderAsLine==0){
-				var cc = this.cellid(new Pos(x,y));
-				if(cc==-1 || (k.isborderCross && (bd.lcntCell(cc)==3 || bd.lcntCell(cc)==4))){ return;}
 
-				id = (function(cc){
-					if     (bd.LiB(bd.ub(cc))>0){ return bd.ub(cc);}
-					else if(bd.LiB(bd.db(cc))>0){ return bd.db(cc);}
-					else if(bd.LiB(bd.lb(cc))>0){ return bd.lb(cc);}
-					else if(bd.LiB(bd.rb(cc))>0){ return bd.rb(cc);}
-					return -1;
-				})(cc);
-			}
-			else{
-				var xc = this.crossid(new Pos(x,y));
-				if(xc==-1 || (k.isborderCross && (bd.lcntCell(xc)==3 || bd.lcntCell(xc)==4))){ return;}
+		if(!bd.isLine(id)){
+			var cc = (k.isborderAsLine==0?this.cellid(new Pos(x,y)):this.crossid(new Pos(x,y)));
+			if(cc==-1 || (k.isLineCross && (line.lcntCell(cc)==3 || line.lcntCell(cc)==4))){ return;}
 
-				id = (function(xc){
-					var bx = xc%(k.qcols+1)*2, by = mf(xc/(k.qcols+1))*2;
-					if     (bd.QaB(bd.bnum(bx-1,by))>0){ return bd.bnum(bx-1,by);}
-					else if(bd.QaB(bd.bnum(bx+1,by))>0){ return bd.bnum(bx+1,by);}
-					else if(bd.QaB(bd.bnum(bx,by-1))>0){ return bd.bnum(bx,by-1);}
-					else if(bd.QaB(bd.bnum(bx,by+1))>0){ return bd.bnum(bx,by+1);}
-					return -1;
-				})(xc);
-			}
+			var bx, by;
+			if(k.isbordeAsLine==0){ bx = (cc%k.qcols)*2, by = mf(cc/k.qcols)*2;}
+			else{ bx = (cc%(k.qcols+1))*2, by = mf(cc/(k.qcols+1))*2;}
+			id = (function(bx,by){
+				if     (bd.isLine(bd.bnum(bx-1,by))){ return bd.bnum(bx-1,by);}
+				else if(bd.isLine(bd.bnum(bx+1,by))){ return bd.bnum(bx+1,by);}
+				else if(bd.isLine(bd.bnum(bx,by-1))){ return bd.bnum(bx,by-1);}
+				else if(bd.isLine(bd.bnum(bx,by+1))){ return bd.bnum(bx,by+1);}
+				return -1;
+			})(bx,by);
 		}
 		if(id==-1){ return;}
 
-		var idlist = (k.isborderCross?ans.LineList:this.LineListNotCross.bind(this))(id);
-		bd.sErB(bd.borders,2); bd.sErB(idlist,1);
+		bd.sErB(bd.borders,2); bd.sErB(line.data[line.data.id[id]].idlist,1);
 		ans.errDisp = true;
 		pc.paintAll();
-	},
-	LineListNotCross : function(id){
-		var idlist = [id];
-		var bx=bd.border[id].cx, by=bd.border[id].cy;
-		if((k.isborderAsLine)^(bx%2==0)){ this.lc0(idlist,bx,by,3); this.lc0(idlist,bx,by,4);}
-		else                            { this.lc0(idlist,bx,by,1); this.lc0(idlist,bx,by,2);}
-		return idlist;
-	},
-	lc0 : function(idlist,bx,by,dir){
-		var include  = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
-		var func     = (k.isborderAsLine==0?bd.LiB:bd.QaB).bind(bd);
-		var lcntfunc = function(bx,by){ return bd.lcntCell(((k.isborderAsLine==0?bd.cnum:bd.xnum)(mf(bx/2),mf(by/2))));};
-		while(1){
-			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-			if((bx+by)%2==0){
-				if(lcntfunc(bx,by)>=3){
-					if(func(bd.bnum(bx,by-1))>0){ this.lc0(idlist,bx,by,1);}
-					if(func(bd.bnum(bx,by+1))>0){ this.lc0(idlist,bx,by,2);}
-					if(func(bd.bnum(bx-1,by))>0){ this.lc0(idlist,bx,by,3);}
-					if(func(bd.bnum(bx+1,by))>0){ this.lc0(idlist,bx,by,4);}
-					break;
-				}
-				else if(dir!=1 && func(bd.bnum(bx,by+1))>0){ dir=2;}
-				else if(dir!=2 && func(bd.bnum(bx,by-1))>0){ dir=1;}
-				else if(dir!=3 && func(bd.bnum(bx+1,by))>0){ dir=4;}
-				else if(dir!=4 && func(bd.bnum(bx-1,by))>0){ dir=3;}
-			}
-			else{
-				var id = bd.bnum(bx,by);
-				if(include(idlist,id) || func(id)<=0){ break;}
-				idlist.push(id);
-			}
-		}
 	}
 };
