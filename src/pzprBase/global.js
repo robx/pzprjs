@@ -13,10 +13,7 @@ Pos.prototype = {
 var k = {
 	// 各パズルのsetting()関数で設定されるもの
 	qcols : 0, qrows : 0,	// 盤面の横幅・縦幅
-	outside   :  0,			// 1:盤面の外側にIDを用意する (削除予定:使用しないでください)
 	irowake   :  0,			// 0:色分け設定無し 1:色分けしない 2:色分けする
-	def_csize : 36,			// デフォルトのセルサイズ
-	def_psize : 24,			// デフォルトの枠外marginサイズ
 
 	iscross      : 0,		// 1:Crossが操作可能なパズル
 	isborder     : 0,		// 1:Border/Lineが操作可能なパズル
@@ -24,7 +21,7 @@ var k = {
 
 	isoutsidecross  : 1,	// 1:外枠上にCrossの配置があるパズル
 	isoutsideborder : 0,	// 1:盤面の外枠上にborderのIDを用意する
-	isborderCross   : 1,	// 1:線が交差するパズル
+	isLineCross     : 1,	// 1:線が交差するパズル
 	isCenterLine    : 0,	// 1:マスの真ん中を通る線を回答として入力するパズル
 	isborderAsLine  : 0,	// 1:境界線をlineとして扱う
 
@@ -43,6 +40,12 @@ var k = {
 	ispzprv3ONLY  : 0,		// ぱずぷれv3にしかないパズル
 	isKanpenExist : 0,		// pencilbox/カンペンにあるパズル
 
+	fstruct  : [],			// ファイルの構成
+
+	def_csize : 36,			// デフォルトのセルサイズ
+	def_psize : 24,			// デフォルトの枠外marginサイズ
+	area : { bcell:0, wcell:0, number:0, disroom:0},	// areaオブジェクトで領域を生成する
+
 	// 内部で自動的に設定されるグローバル変数
 	puzzleid  : '',			// パズルのID("creek"など)
 	callmode  : 'pmake',	// 'pmake':エディタ 'pplay':player
@@ -54,8 +57,6 @@ var k = {
 	enableKey   : true,		// キー入力は有効か
 	enableMouse : true,		// マウス入力は有効か
 	autocheck   : true,		// 回答入力時、自動的に答え合わせするか
-
-	fstruct  : new Array(),		// ファイルの構成
 
 	cwidth   : this.def_csize,	// セルの横幅
 	cheight  : this.def_csize,	// セルの縦幅
@@ -73,8 +74,8 @@ var k = {
 	scriptcheck : false	// 内部用
 };
 
-var g;						// グラフィックコンテキスト
-var Puzzles = new Array();	// パズル個別クラス
+var g;				// グラフィックコンテキスト
+var Puzzles = [];	// パズル個別クラス
 
 //---------------------------------------------------------------------------
 // ★共通グローバル関数
