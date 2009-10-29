@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.2.0
+// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.2.2
 //
 Puzzles.kaero = function(){ };
 Puzzles.kaero.prototype = {
@@ -15,7 +15,7 @@ Puzzles.kaero.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.kaero.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("お家に帰ろう","Return Home");
 		base.setExpression("　左ドラッグで線が、マスのクリックで背景色が入力できます。",
@@ -107,8 +108,7 @@ Puzzles.kaero.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-//		pc.errcolor1 = "rgb(192, 0, 0)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.qsubcolor1 = "rgb(224, 224, 255)";
 		pc.qsubcolor2 = "rgb(255, 255, 144)";
 
@@ -117,7 +117,7 @@ Puzzles.kaero.prototype = {
 
 			this.drawQSubCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 			this.drawTip(x1,y1,x2,y2);
 
@@ -140,12 +140,12 @@ Puzzles.kaero.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				this.vhide(["c"+c+"_tp1_","c"+c+"_tp2_","c"+c+"_tp3_","c"+c+"_tp4_"]);
-				if(ans.lcntCell(c)==1 && bd.QnC(c)==-1){
+				if(line.lcntCell(c)==1 && bd.QnC(c)==-1){
 					var dir=0, id=-1;
-					if     (bd.LiB(bd.ub(c))==1){ dir=2; id=bd.ub(c);}
-					else if(bd.LiB(bd.db(c))==1){ dir=1; id=bd.db(c);}
-					else if(bd.LiB(bd.lb(c))==1){ dir=4; id=bd.lb(c);}
-					else if(bd.LiB(bd.rb(c))==1){ dir=3; id=bd.rb(c);}
+					if     (bd.isLine(bd.ub(c))){ dir=2; id=bd.ub(c);}
+					else if(bd.isLine(bd.db(c))){ dir=1; id=bd.db(c);}
+					else if(bd.isLine(bd.lb(c))){ dir=4; id=bd.lb(c);}
+					else if(bd.isLine(bd.rb(c))){ dir=3; id=bd.rb(c);}
 
 					g.lineWidth = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3); //LineWidth
 					if     (bd.ErB(id)==1){ g.strokeStyle = this.errlinecolor1; g.lineWidth=g.lineWidth+1;}
@@ -153,7 +153,7 @@ Puzzles.kaero.prototype = {
 					else                  { g.strokeStyle = this.linecolor;}
 
 					if(this.vnop("c"+c+"_tp"+dir+"_",0)){
-						var px=bd.cell[c].px()+k.cwidth/2+1, py=bd.cell[c].py()+k.cheight/2+1;
+						var px=bd.cell[c].px+k.cwidth/2+1, py=bd.cell[c].py+k.cheight/2+1;
 						if     (dir==1){ this.inputPath([px,py ,-tsize, tsize ,0,-tplus , tsize, tsize], false);}
 						else if(dir==2){ this.inputPath([px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize], false);}
 						else if(dir==3){ this.inputPath([px,py , tsize,-tsize ,-tplus,0 , tsize, tsize], false);}
@@ -178,7 +178,7 @@ Puzzles.kaero.prototype = {
 					else if(bd.QsC(c)==2){ g.fillStyle = this.qsubcolor2;}
 					else                 { g.fillStyle = "white";}
 
-					if(this.vnop("c"+c+"_sq_",1)){ g.fillRect(bd.cell[c].px()+mgnw+1, bd.cell[c].py()+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);}
+					if(this.vnop("c"+c+"_sq_",1)){ g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);}
 				}
 				else{ this.vhide("c"+c+"_sq_");}
 			}
@@ -276,29 +276,29 @@ Puzzles.kaero.prototype = {
 				this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 			}
 
-			var larea = this.searchLarea();
-			if( !this.checkQnumsInArea(larea, function(a){ return (a>=2);}) ){
+			var linfo = line.getLareaInfo();
+			if( !this.checkQnumsInArea(linfo, function(a){ return (a>=2);}) ){
 				this.setAlert('アルファベットが繋がっています。','There are connected letters.'); return false;
 			}
 			if( !this.checkLineOverLetter() ){
 				this.setAlert('アルファベットの上を線が通過しています。','A line goes through a letter.'); return false;
 			}
 
-			var rarea = this.searchRarea();
-			this.movedPosition(larea);
+			var rinfo = area.getRoomInfo();
+			this.movedPosition(linfo);
 			this.performAsLine = false;
-			if( !this.checkSameObjectInRoom(rarea, this.getMoved.bind(this)) ){
+			if( !this.checkSameObjectInRoom(rinfo, this.getMoved.bind(this)) ){
 				this.setAlert('１つのブロックに異なるアルファベットが入っています。','A block has plural kinds of letters.'); return false;
 			}
-			if( !this.checkObjectRoom(rarea, this.getMoved.bind(this)) ){
+			if( !this.checkObjectRoom(rinfo, this.getMoved.bind(this)) ){
 				this.setAlert('同じアルファベットが異なるブロックに入っています。','Same kinds of letters are placed different blocks.'); return false;
 			}
-			if( !this.checkNoObjectInRoom(rarea, this.getMoved.bind(this)) ){
+			if( !this.checkNoObjectInRoom(rinfo, this.getMoved.bind(this)) ){
 				this.setAlert('アルファベットのないブロックがあります。','A block has no letters.'); return false;
 			}
 
 			this.performAsLine = true;
-			if( !this.checkDisconnectLine(larea) ){
+			if( !this.checkDisconnectLine(linfo) ){
 				this.setAlert('アルファベットにつながっていない線があります。','A line doesn\'t connect any letter.'); return false;
 			}
 
@@ -308,7 +308,7 @@ Puzzles.kaero.prototype = {
 
 		ans.checkLineOverLetter = function(func){
 			for(var c=0;c<bd.cell.length;c++){
-				if(this.lcntCell(c)>=2 && bd.QnC(c)!=-1){
+				if(line.lcntCell(c)>=2 && bd.QnC(c)!=-1){
 					bd.sErB(bd.borders,2);
 					ans.setCellLineError(c,true);
 					return false;
@@ -316,26 +316,26 @@ Puzzles.kaero.prototype = {
 			}
 			return true;
 		};
-		ans.movedPosition = function(larea){
+		ans.movedPosition = function(linfo){
 			this.before = new AreaInfo();
 			for(var c=0;c<bd.cell.length;c++){
-				if(this.lcntCell(c)==0 && bd.QnC(c)!=-1){ this.before.check[c]=c;}
-				else{ this.before.check[c]=-1;}
+				if(line.lcntCell(c)==0 && bd.QnC(c)!=-1){ this.before.id[c]=c;}
+				else{ this.before.id[c]=-1;}
 			}
-			for(var r=1;r<=larea.max;r++){
+			for(var r=1;r<=linfo.max;r++){
 				var before=-1, after=-1;
-				if(larea.room[r].length>1){
-					for(var i=0;i<larea.room[r].length;i++){
-						var c=larea.room[r][i];
-						if(this.lcntCell(c)==1){
+				if(linfo.room[r].idlist.length>1){
+					for(var i=0;i<linfo.room[r].idlist.length;i++){
+						var c=linfo.room[r].idlist[i];
+						if(line.lcntCell(c)==1){
 							if(bd.QnC(c)!=-1){ before=c;} else{ after=c;}
 						}
 					}
 				}
-				this.before.check[after]=before;
+				this.before.id[after]=before;
 			}
 		};
-		ans.getMoved = function(cc){ return bd.QnC(this.before.check[cc]);};
-		ans.getBeforeCell = function(cc){ return this.before.check[cc];};
+		ans.getMoved = function(cc){ return bd.QnC(this.before.id[cc]);};
+		ans.getBeforeCell = function(cc){ return this.before.id[cc];};
 	}
 };
