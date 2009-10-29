@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へやわけ版 heyawake.js v3.2.0p1
+// パズル固有スクリプト部 へやわけ版 heyawake.js v3.2.2
 //
 Puzzles.heyawake = function(){ };
 Puzzles.heyawake.prototype = {
@@ -15,7 +15,7 @@ Puzzles.heyawake.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.heyawake.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		k.area = { bcell:0, wcell:1, number:0, disroom:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("へやわけ","Heyawake");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
@@ -92,19 +93,16 @@ Puzzles.heyawake.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-		pc.bcolor = "rgb(127, 255, 160)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
+		pc.bcolor = pc.bcolor_GREEN;
 		pc.BBcolor = "rgb(160, 255, 191)";
-		pc.BCell_fontcolor = "rgb(224, 224, 224)";
-		pc.errcolor1 = "rgb(191, 0, 0)";
-		pc.errbcolor1 = "rgb(240, 160, 127)";
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
 			this.drawWhiteCells(x1,y1,x2,y2);
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -142,12 +140,10 @@ Puzzles.heyawake.prototype = {
 		};
 
 		enc.decodeKanpen = function(bstr){
-			var rdata = new Array();
+			var rdata = [];
 
 			var inp = bstr.split("/");
 			inp.shift();
-
-			room.isenable = false;
 
 			for(var i=0;i<inp.length;i++){
 				if(inp[i]==""){ break;}
@@ -161,19 +157,15 @@ Puzzles.heyawake.prototype = {
 				}
 			}
 			this.rdata2Border(rdata);
-
-			room.isenable = true;
 		};
 		enc.decodeHeyaApp = function(bstr){
-			var rdata = new Array();
+			var rdata = [];
 			var c=0;
 			while(c<bd.cell.length){ rdata[c]=-1; c++;}
 
 			var inp = bstr.split("/");
 			var RE1 = new RegExp("(\\d+)in(\\d+)x(\\d+)$","g");
 			var RE2 = new RegExp("(\\d+)x(\\d+)$","g");
-
-			room.isenable = false;
 
 			var i=0;
 			c=0;
@@ -193,8 +185,6 @@ Puzzles.heyawake.prototype = {
 				c++;
 			}
 			this.rdata2Border(rdata);
-
-			room.isenable = true;
 		};
 		enc.rdata2Border = function(rdata){
 			for(var id=0;id<bd.border.length;id++){
@@ -207,23 +197,23 @@ Puzzles.heyawake.prototype = {
 		enc.pzldataKanpen = function(){
 			var bstr = "";
 
-			var rarea = ans.searchRarea();
-			for(var id=1;id<=rarea.max;id++){
-				var d = ans.getSizeOfArea(rarea,id,f_true);
+			var rinfo = area.getRoomInfo();
+			for(var id=1;id<=rinfo.max;id++){
+				var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
 				if(bd.QnC(bd.cnum(d.x1,d.y1))>=0){
 					bstr += (""+d.y1+"_"+d.x1+"_"+d.y2+"_"+d.x2+"_"+bd.QnC(bd.cnum(d.x1,d.y1))+"/");
 				}
 				else{ bstr += (""+d.y1+"_"+d.x1+"_"+d.y2+"_"+d.x2+"_/");}
 			}
 
-			return ""+k.qrows+"/"+k.qcols+"/"+rarea.max+"/"+bstr;
+			return ""+k.qrows+"/"+k.qcols+"/"+rinfo.max+"/"+bstr;
 		};
 		enc.pzldataHeyaApp = function(){
-			var barray = new Array();
+			var barray = [];
 
-			var rarea = ans.searchRarea();
-			for(var id=1;id<=rarea.max;id++){
-				var d = ans.getSizeOfArea(rarea,id,f_true);
+			var rinfo = area.getRoomInfo();
+			for(var id=1;id<=rinfo.max;id++){
+				var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
 				if(bd.QnC(bd.cnum(d.x1,d.y1))>=0){
 					barray.push(""+bd.QnC(bd.cnum(d.x1,d.y1))+"in"+(d.x2-d.x1+1)+"x"+(d.y2-d.y1+1));
 				}
@@ -255,16 +245,16 @@ Puzzles.heyawake.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkSideCell(function(c1,c2){ return (bd.QaC(c1)==1 && bd.QaC(c2)==1);}) ){
+			if( !this.checkSideCell(function(c1,c2){ return (bd.isBlack(c1) && bd.isBlack(c2));}) ){
 				this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 			}
 
-			if( !this.linkBWarea( this.searchWarea() ) ){
+			if( !this.checkOneArea( area.getWCellInfo() ) ){
 				this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 			}
 
-			var rarea = this.searchRarea();
-			if( !this.checkBlackCellCount(rarea) ){
+			var rinfo = area.getRoomInfo();
+			if( !this.checkBlackCellCount(rinfo) ){
 				this.setAlert('部屋の数字と黒マスの数が一致していません。','The number of Black cells in the room and The number written in the room is different.'); return false;
 			}
 
@@ -272,7 +262,7 @@ Puzzles.heyawake.prototype = {
 				this.setAlert('白マスが3部屋連続で続いています。','White cells are continued for three consecutive room.'); return false;
 			}
 
-			if( !this.isAreaRect(rarea, f_true) ){
+			if( !this.checkAreaRect(rinfo, f_true) ){
 				this.setAlert('四角形ではない部屋があります。','There is a room whose shape is not square.'); return false;
 			}
 
@@ -286,19 +276,19 @@ Puzzles.heyawake.prototype = {
 				var cnt=-1;
 				for(var bx=1;bx<2*k.qcols;bx++){
 					if(bx%2==1){
-						if( bd.QaC(bd.cnum( mf(bx/2),mf(by/2) ))!=1 && cnt==-1 ){ cnt=0; fx=bx;}
-						else if( bd.QaC(bd.cnum( mf(bx/2),mf(by/2) ))==1 ){ cnt=-1;}
+						if( bd.isWhite(bd.cnum( mf(bx/2),mf(by/2) )) && cnt==-1 ){ cnt=0; fx=bx;}
+						else if( bd.isBlack(bd.cnum( mf(bx/2),mf(by/2) )) ){ cnt=-1;}
 
 						if( cnt==2 ){
 							for(bx=fx;bx<2*k.qcols;bx+=2){
 								var cc = bd.cnum( mf(bx/2),mf(by/2) );
-								if( bd.QaC(cc)!=1 ){ bd.sErC([cc],1);}else{ break;}
+								if( bd.isWhite(cc) ){ bd.sErC([cc],1);}else{ break;}
 							}
 							return false;
 						}
 					}
 					else{
-						if( bd.QuB(bd.bnum(bx,by))==1 && cnt>=0 ){ cnt++;}
+						if( bd.isBorder(bd.bnum(bx,by)) && cnt>=0 ){ cnt++;}
 					}
 				}
 			}
@@ -306,19 +296,19 @@ Puzzles.heyawake.prototype = {
 				var cnt=-1;
 				for(var by=1;by<2*k.qrows;by++){
 					if(by%2==1){
-						if( bd.QaC(bd.cnum( mf(bx/2),mf(by/2) ))!=1 && cnt==-1 ){ cnt=0; fy=by;}
-						else if( bd.QaC(bd.cnum( mf(bx/2),mf(by/2) ))==1 ){ cnt=-1;}
+						if( bd.isWhite(bd.cnum( mf(bx/2),mf(by/2) )) && cnt==-1 ){ cnt=0; fy=by;}
+						else if( bd.isBlack(bd.cnum( mf(bx/2),mf(by/2) )) ){ cnt=-1;}
 
 						if( cnt>=2 ){
 							for(by=fy;by<2*k.qrows;by+=2){
 								var cc = bd.cnum( mf(bx/2),mf(by/2) );
-								if( bd.QaC(cc)!=1 ){ bd.sErC([cc],1);}else{ break;}
+								if( bd.isWhite(cc) ){ bd.sErC([cc],1);}else{ break;}
 							}
 							return false;
 						}
 					}
 					else{
-						if( bd.QuB(bd.bnum(bx,by))==1 && cnt>=0 ){ cnt++;}
+						if( bd.isBorder(bd.bnum(bx,by)) && cnt>=0 ){ cnt++;}
 					}
 				}
 			}

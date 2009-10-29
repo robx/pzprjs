@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 マイナリズム版 minarism.js v3.2.0
+// パズル固有スクリプト部 マイナリズム版 minarism.js v3.2.2
 //
 Puzzles.minarism = function(){ };
 Puzzles.minarism.prototype = {
@@ -15,7 +15,7 @@ Puzzles.minarism.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.minarism.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		k.area = { bcell:0, wcell:0, number:0, disroom:1};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　キーボードやマウスで数字が入力できます。",
@@ -159,7 +160,7 @@ Puzzles.minarism.prototype = {
 			}
 			um.enableRecord();
 		};
-
+		menu.ex.expandborder = function(key){ };
 
 		tc.setAlign = function(){
 			this.cursolx -= ((this.cursolx+1)%2);
@@ -170,8 +171,7 @@ Puzzles.minarism.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-		pc.errbcolor1 = "rgb(255, 192, 192)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -179,7 +179,7 @@ Puzzles.minarism.prototype = {
 			this.drawBDMbase(x1,y1,x2,y2);
 
 			this.drawErrorCells(x1,y1,x2,y2);
-			this.drawBDline2(x1-1,y1-1,x2,y2);
+			this.drawDashedGrid(x1-1,y1-1,x2,y2);
 
 			this.drawBDMarks(x1,y1,x2,y2);
 			this.drawNumbers(x1,y1,x2,y2);
@@ -199,7 +199,7 @@ Puzzles.minarism.prototype = {
 
 				if(bd.QuB(id)!=0 || bd.QnB(id)!=-1){
 					g.fillStyle = "white";
-					g.fillRect(bd.border[id].px()-csize, bd.border[id].py()-csize, 2*csize+1, 2*csize+1);
+					g.fillRect(bd.border[id].px-csize, bd.border[id].py-csize, 2*csize+1, 2*csize+1);
 				}
 			}
 		};
@@ -214,7 +214,7 @@ Puzzles.minarism.prototype = {
 					else{ g.fillStyle = "white";}
 					if(this.vnop("b"+id+"_cp1_",1)){
 						g.beginPath();
-						g.arc(bd.border[id].px(), bd.border[id].py(), csize, 0, Math.PI*2, false);
+						g.arc(bd.border[id].px, bd.border[id].py, csize, 0, Math.PI*2, false);
 						g.fill();
 					}
 
@@ -223,7 +223,7 @@ Puzzles.minarism.prototype = {
 					if(this.vnop("b"+id+"_cp2_",0)){
 						if(k.br.IE){
 							g.beginPath();
-							g.arc(bd.border[id].px(), bd.border[id].py(), csize, 0, Math.PI*2, false);
+							g.arc(bd.border[id].px, bd.border[id].py, csize, 0, Math.PI*2, false);
 						}
 						g.stroke();
 					}
@@ -232,7 +232,7 @@ Puzzles.minarism.prototype = {
 				this.dispnumBorder(id);
 
 				if(bd.QuB(id)!=0){
-					var px=bd.border[id].px(), py=bd.border[id].py();
+					var px=bd.border[id].px, py=bd.border[id].py;
 					g.fillStyle = this.Cellcolor;
 					if(bd.QuB(id)==1){
 						this.vhide("b"+id+"_dt2_");
@@ -376,19 +376,19 @@ Puzzles.minarism.prototype = {
 			var cx, cy;
 
 			for(var cy=0;cy<k.qrows;cy++){
-				var clist = new Array();
+				var clist = [];
 				for(var cx=0;cx<k.qcols;cx++){ clist.push(bd.cnum(cx,cy));}
 				if(!this.checkDifferentNumberInClist(clist)){ return false;}
 			}
 			for(var cx=0;cx<k.qcols;cx++){
-				var clist = new Array();
+				var clist = [];
 				for(var cy=0;cy<k.qrows;cy++){ clist.push(bd.cnum(cx,cy));}
 				if(!this.checkDifferentNumberInClist(clist)){ return false;}
 			}
 			return true;
 		};
 		ans.checkDifferentNumberInClist = function(clist){
-			var d = new Array();
+			var d = [];
 			for(var i=1;i<=Math.max(k.qcols,k.qrows);i++){ d[i]=-1;}
 			for(var i=0;i<clist.length;i++){
 				var val=bd.QaC(clist[i]);
