@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ペイントエリア版 paintarea.js v3.2.0p1
+// パズル固有スクリプト部 ペイントエリア版 paintarea.js v3.2.2
 //
 Puzzles.paintarea = function(){ };
 Puzzles.paintarea.prototype = {
@@ -15,7 +15,7 @@ Puzzles.paintarea.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.paintarea.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		k.area = { bcell:1, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("ペイントエリア","Paintarea");
 		base.setExpression("　左クリックで黒タイルが、右クリックで白タイル確定タイルが入力できます。",
@@ -92,14 +93,14 @@ Puzzles.paintarea.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.bcolor = "rgb(160, 255, 160)";
+		pc.bcolor = pc.bcolor_GREEN;
 		pc.BBcolor = "rgb(127, 127, 127)";
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
 			this.drawWhiteCells(x1,y1,x2,y2);
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -138,37 +139,26 @@ Puzzles.paintarea.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( k.callmode=="pmake" && !this.checkSameObjectInRoom(this.searchRarea(), function(c){ return (bd.QaC(c)==1?1:2);}) ){
+			if( k.callmode=="pmake" && !this.checkSameObjectInRoom(area.getRoomInfo(), function(c){ return (bd.isBlack(c)?1:2);}) ){
 				this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both balck and white cells.'); return false;
 			}
 
-			var barea = this.searchBarea();
-			if( !this.linkBWarea(barea) ){
+			if( !this.checkOneArea( area.getBCellInfo() ) ){
 				this.setAlert('黒マスがひとつながりになっていません。','Black cells are devided.'); return false;
 			}
 
-			if( !this.check2x2Block( function(id){ return (bd.QaC(id)==1);} ) ){
+			if( !this.check2x2Block( bd.isBlack ) ){
 				this.setAlert('2x2の黒マスのかたまりがあります。','There is a 2x2 block of black cells.'); return false;
 			}
 
-			if( !this.checkdir4BCell(function(cn,bcnt){ return !(cn>=0 && cn!=bcnt);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)!=this.checkdir4Cell(c,bd.isBlack));}.bind(this)) ){
 				this.setAlert('数字の上下左右にある黒マスの数が間違っています。','The number is not equal to the number of black cells in four adjacent cells.'); return false;
 			}
 
-			if( !this.check2x2Block( function(id){ return (bd.QaC(id)!=1);} ) ){
+			if( !this.check2x2Block( bd.isWhite ) ){
 				this.setAlert('2x2の白マスのかたまりがあります。','There is a 2x2 block of white cells.'); return false;
 			}
 
-			return true;
-		};
-
-		ans.checkdir4BCell = function(func){
-			for(var c=0;c<bd.cell.length;c++){
-				if(bd.QnC(c)>=0 && !func(bd.QnC(c), this.checkdir4Cell(c,function(a){ return (bd.QaC(a)==1);}))){
-					bd.sErC([c],1);
-					return false;
-				}
-			}
 			return true;
 		};
 	}

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ＬＩＴＳ版 lits.js v3.2.0p1
+// パズル固有スクリプト部 ＬＩＴＳ版 lits.js v3.2.2
 //
 Puzzles.lits = function(){ };
 Puzzles.lits.prototype = {
@@ -15,7 +15,7 @@ Puzzles.lits.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.lits.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		k.area = { bcell:1, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("ＬＩＴＳ","LITS");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
@@ -73,7 +74,7 @@ Puzzles.lits.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(48, 48, 48)";
+		pc.gridcolor = "rgb(48, 48, 48)";
 		pc.Cellcolor = "rgb(96, 96, 96)";
 
 		pc.paint = function(x1,y1,x2,y2){
@@ -83,7 +84,7 @@ Puzzles.lits.prototype = {
 			this.drawWhiteCells(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawBorders(x1,y1,x2,y2);
 
@@ -114,21 +115,20 @@ Puzzles.lits.prototype = {
 			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeBorder();
 		};
 		enc.pzldataKanpen = function(){
-			var rarea = ans.searchRarea();
+			var rinfo = area.getRoomInfo();
 			var bstr = "";
 			for(var c=0;c<bd.cell.length;c++){
-				bstr += (""+(rarea.check[c]-1)+"_");
+				bstr += (""+(rinfo.id[c]-1)+"_");
 				if((c+1)%k.qcols==0){ bstr += "/";}
 			}
-			return ""+k.qrows+"/"+k.qcols+"/"+rarea.max+"/"+bstr;
+			return ""+k.qrows+"/"+k.qcols+"/"+rinfo.max+"/"+bstr;
 		};
 
 		enc.decodeKanpen = function(bstr){
 			var array1 = bstr.split("/");
 			array1.shift();
-			var array = new Array();
-			var i;
-			for(i=0;i<array1.length;i++){
+			var array = [];
+			for(var i=0;i<array1.length;i++){
 				var array2 = array1[i].split("_");
 				var j;
 				for(j=0;j<array2.length;j++){
@@ -139,15 +139,13 @@ Puzzles.lits.prototype = {
 			return "";
 		};
 		enc.decodeLITS_old = function(bstr){
-			var array = new Array();
-			var i;
-			for(i=0;i<bstr.length;i++){ array.push(bstr.charAt(i));}
+			var array = [];
+			for(var i=0;i<bstr.length;i++){ array.push(bstr.charAt(i));}
 			this.decodeLITS(array);
 			return "";
 		};
 		enc.decodeLITS = function(array){
-			var id;
-			for(id=0;id<bd.border.length;id++){
+			for(var id=0;id<bd.border.length;id++){
 				var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
 				if(cc1!=-1 && cc2!=-1 && array[cc1]!=array[cc2]){ bd.sQuB(id,1);}
 			}
@@ -175,76 +173,81 @@ Puzzles.lits.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.check2x2Block( function(id){ return (bd.QaC(id)==1);} ) ){
+			if( !this.check2x2Block( bd.isBlack ) ){
 				this.setAlert('2x2の黒マスのかたまりがあります。', 'There is a 2x2 block of black cells.'); return false;
 			}
 
-			var rarea = this.searchRarea();
-			if( !this.checkBlackCellInArea(rarea, function(a){ return (a>4);}) ){
+			var rinfo = area.getRoomInfo();
+			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a>4);}) ){
 				this.setAlert('５マス以上の黒マスがある部屋が存在します。', 'A room has five or more black cells.'); return false;
 			}
 
-			if( !this.checkSeqBlocksInRoom(rarea) ){
+			if( !this.checkSeqBlocksInRoom() ){
 				this.setAlert('1つの部屋に入る黒マスが2つ以上に分裂しています。', 'Black cells are devided in one room.'); return false;
 			}
 
-			if( !this.checkTetromino(rarea) ){
+			if( !this.checkTetromino(rinfo) ){
 				this.setAlert('同じ形のテトロミノが接しています。', 'Some Tetrominos that are the same shape are Adjacent.'); return false;
 			}
 
-			if( !this.linkBWarea( this.searchBarea() ) ){
+			if( !this.checkOneArea( area.getBCellInfo() ) ){
 				this.setAlert('黒マスが分断されています。', 'Black cells are not continued.'); return false;
 			}
 
-			if( !this.checkBlackCellInArea(rarea, function(a){ return (a==0);}) ){
+			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a==0);}) ){
 				this.setAlert('黒マスがない部屋があります。', 'A room has no black cells.'); return false;
 			}
 
-			if( !this.checkBlackCellInArea(rarea, function(a){ return (a<4);}) ){
+			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a<4);}) ){
 				this.setAlert('黒マスのカタマリが４マス未満の部屋があります。', 'A room has three or less black cells.'); return false;
 			}
 
 			return true;
 		};
 
-		ans.checkTetromino = function(rarea){
-			var tarea = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){ tarea.check[c]=-1;}
-			for(var r=1;r<=rarea.max;r++){
-				var bcells = new Array();
+		ans.checkTetromino = function(rinfo){
+			var tinfo = new AreaInfo();
+			for(var c=0;c<bd.cell.length;c++){ tinfo.id[c]=-1;}
+			for(var r=1;r<=rinfo.max;r++){
+				var bcells = [];
 				var minid = k.qcols*k.qrows;
-				for(var i=0;i<rarea.room[r].length;i++){ if(bd.QaC(rarea.room[r][i])==1){ bcells.push(rarea.room[r][i]);} }
+				for(var i=0;i<rinfo.room[r].idlist.length;i++){ if(bd.isBlack(rinfo.room[r].idlist[i])){ bcells.push(rinfo.room[r].idlist[i]);} }
 				if(bcells.length==4){
 					bcells.sort(function(a,b){ return a-b;});
 					var cx0=bd.cell[bcells[0]].cx; var cy0=bd.cell[bcells[0]].cy; var value=0;
 					for(var i=1;i<bcells.length;i++){ value += ((bd.cell[bcells[i]].cy-cy0)*10+(bd.cell[bcells[i]].cx-cx0));}
 					switch(value){
 						case 13: case 15: case 27: case 31: case 33: case 49: case 51:
-							for(var i=0;i<bcells.length;i++){ tarea.check[bcells[i]]="L";} break;
+							for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i]]="L";} break;
 						case 6: case 60:
-							for(var i=0;i<bcells.length;i++){ tarea.check[bcells[i]]="I";} break;
+							for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i]]="I";} break;
 						case 14: case 30: case 39: case 41:
-							for(var i=0;i<bcells.length;i++){ tarea.check[bcells[i]]="T";} break;
+							for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i]]="T";} break;
 						case 20: case 24: case 38: case 42:
-							for(var i=0;i<bcells.length;i++){ tarea.check[bcells[i]]="S";} break;
+							for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i]]="S";} break;
 					}
 				}
 			}
-			var area = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){ area.check[c]=(tarea.check[c]!=-1?0:-1);}
-			for(var c=0;c<bd.cell.length;c++){ if(area.check[c]==0){ area.max++; area.room[area.max]=new Array(); this.st0(area, c, area.max, tarea);} }
-			for(var r=1;r<=area.max;r++){ if(area.room[r].length>4){ bd.sErC(area.room[r],2); return false;} }
+			var dinfo = new AreaInfo();
+			for(var c=0;c<bd.cell.length;c++){ dinfo.id[c]=(tinfo.id[c]!=-1?0:-1);}
+			for(var c=0;c<bd.cell.length;c++){
+				if(dinfo.id[c]!=0){ continue;}
+				dinfo.max++;
+				dinfo.room[dinfo.max] = {idlist:[]};
+				this.st0(dinfo, c, dinfo.max, tinfo);
+			}
+			for(var r=1;r<=dinfo.max;r++){ if(dinfo.room[r].idlist.length>4){ bd.sErC(dinfo.room[r].idlist,2); return false;} }
 			return true;
 		};
-		ans.st0 = function(area,c,id,tarea){
-			if(area.check[c]!=0){ return;}
-			area.check[c] = id;
-			area.room[id].push(c);
-			var func = function(cc){ return (cc!=-1 && tarea.check[c]==tarea.check[cc]);};
-			if( func(bd.up(c)) ){ this.st0(area, bd.up(c), id, tarea);}
-			if( func(bd.dn(c)) ){ this.st0(area, bd.dn(c), id, tarea);}
-			if( func(bd.lt(c)) ){ this.st0(area, bd.lt(c), id, tarea);}
-			if( func(bd.rt(c)) ){ this.st0(area, bd.rt(c), id, tarea);}
+		ans.st0 = function(dinfo,c,id,tinfo){
+			if(dinfo.id[c]!=0){ return;}
+			dinfo.id[c] = id;
+			dinfo.room[id].idlist.push(c);
+			var func = function(cc){ return (cc!=-1 && tinfo.id[c]==tinfo.id[cc]);};
+			if( func(bd.up(c)) ){ this.st0(dinfo, bd.up(c), id, tinfo);}
+			if( func(bd.dn(c)) ){ this.st0(dinfo, bd.dn(c), id, tinfo);}
+			if( func(bd.lt(c)) ){ this.st0(dinfo, bd.lt(c), id, tinfo);}
+			if( func(bd.rt(c)) ){ this.st0(dinfo, bd.rt(c), id, tinfo);}
 			return;
 		};
 	}

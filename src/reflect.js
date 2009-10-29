@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.2.1
+// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.2.2
 //
 Puzzles.reflect = function(){ };
 Puzzles.reflect.prototype = {
@@ -15,7 +15,7 @@ Puzzles.reflect.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 1;	// 1:線が交差するパズル
+		k.isLineCross     = 1;	// 1:線が交差するパズル
 		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.reflect.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
@@ -77,6 +78,8 @@ Puzzles.reflect.prototype = {
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
 		};
+
+		bd.enableLineNG = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
@@ -139,19 +142,15 @@ Puzzles.reflect.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-
-		pc.errcolor1 = "rgb(192, 0, 0)";
-
-		pc.fontcolor = "white";
-		pc.fontErrcolor = "white";
+		pc.gridcolor = pc.gridcolor_LIGHT;
+		pc.fontcolor = pc.fontErrcolor = "white";
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
@@ -174,13 +173,13 @@ Puzzles.reflect.prototype = {
 				var lflag = (bd.border[id].cx%2==0);
 				var qs1 = bd.QuC(bd.cc1(id)), qs2 = bd.QuC(bd.cc2(id));
 
-				g.fillStyle = this.BDlinecolor;
+				g.fillStyle = this.gridcolor;
 
 				if(lflag && (qs1==3||qs1==4)&&(qs2==2||qs2==5)){
-					if(this.vnop("b"+id+"_tb_",1)){ g.fillRect(bd.border[id].px(), bd.border[id].py()-mf(k.cheight/2), 1, k.cheight);}
+					if(this.vnop("b"+id+"_tb_",1)){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight);}
 				}
 				else if(!lflag && (qs1==2||qs1==3)&&(qs2==4||qs2==5)){
-					if(this.vnop("b"+id+"_tb_",1)){ g.fillRect(bd.border[id].px()-mf(k.cwidth/2), bd.border[id].py(), k.cwidth, 1);}
+					if(this.vnop("b"+id+"_tb_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2), bd.border[id].py, k.cwidth, 1);}
 				}
 				else{ this.vhide("b"+id+"_tb_");}
 			}
@@ -195,16 +194,16 @@ Puzzles.reflect.prototype = {
 			var lw = this.lw, lm=this.lm;
 			var mgn = mf(k.cwidth*0.12);
 
-			g.fillStyle = this.BorderQuescolor;
+			g.fillStyle = this.Cellcolor;
 
 			if(bd.QuC(id)==101){
-				if(this.vnop("c"+id+"_lp1_",1)){ g.fillRect(bd.cell[id].px()+mf(k.cwidth/2)-lm, bd.cell[id].py()+mgn               , lw+2, k.cheight-2*mgn);}
-				if(this.vnop("c"+id+"_lp2_",1)){ g.fillRect(bd.cell[id].px()+mgn              , bd.cell[id].py()+mf(k.cheight/2)-lm, k.cwidth-2*mgn, lw+2);}
+				if(this.vnop("c"+id+"_lp1_",1)){ g.fillRect(bd.cell[id].px+mf(k.cwidth/2)-lm, bd.cell[id].py+mgn               , lw+2, k.cheight-2*mgn);}
+				if(this.vnop("c"+id+"_lp2_",1)){ g.fillRect(bd.cell[id].px+mgn              , bd.cell[id].py+mf(k.cheight/2)-lm, k.cwidth-2*mgn, lw+2);}
 			}
 			else{ this.vhide("c"+id+"_lp1_"); this.vhide("c"+id+"_lp2_");}
 		};
 
-		col.repaintParts = function(id){
+		line.repaintParts = function(id){
 			if(bd.isLPMarked(id)){
 				pc.draw101_1(bd.cc1(id));
 				pc.draw101_1(bd.cc2(id));
@@ -305,7 +304,7 @@ Puzzles.reflect.prototype = {
 			if( !this.checkLcntCell(3) ){
 				this.setAlert('分岐している線があります。','There is a branch line.'); return false;
 			}
-			if( !this.checkLineCross() ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=101);}) ){
 				this.setAlert('十字以外の場所で線が交差しています。','There is a crossing line out of cross mark.'); return false;
 			}
 
@@ -319,7 +318,7 @@ Puzzles.reflect.prototype = {
 				this.setAlert('三角形の数字とそこから延びる線の長さが一致していません。','A number on triangle is not equal to sum of the length of lines from it.'); return false;
 			}
 
-			if( !this.checkLineCross2() ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)!=4 && bd.QuC(c)==101);}) ){
 				this.setAlert('十字の場所で線が交差していません。','There isn\'t a crossing line on a cross mark.'); return false;
 			}
 
@@ -335,27 +334,9 @@ Puzzles.reflect.prototype = {
 		};
 		ans.check1st = function(){ return this.checkLcntCell(1);};
 
-		ans.checkLineCross = function(){
-			for(var c=0;c<bd.cell.length;c++){
-				if(this.lcntCell(c)==4 && bd.QuC(c)!=101){
-					bd.sErC([c],1);
-					return false;
-				}
-			}
-			return true;
-		};
-		ans.checkLineCross2 = function(){
-			for(var c=0;c<bd.cell.length;c++){
-				if(this.lcntCell(c)!=4 && bd.QuC(c)==101){
-					bd.sErC([c],1);
-					return false;
-				}
-			}
-			return true;
-		};
 		ans.checkTriangle = function(){
 			for(var c=0;c<bd.cell.length;c++){
-				if(this.lcntCell(c)==0 && (bd.QuC(c)>=2 && bd.QuC(c)<=5)){
+				if(line.lcntCell(c)==0 && (bd.QuC(c)>=2 && bd.QuC(c)<=5)){
 					bd.sErC([c],4);
 					return false;
 				}
@@ -367,18 +348,18 @@ Puzzles.reflect.prototype = {
 			for(var c=0;c<bd.cell.length;c++){
 				if(bd.QuC(c)<2 || bd.QuC(c)>5 || bd.QnC(c)<=0){ continue;}
 
-				var list = new Array();
+				var list = [];
 				var cnt=1;
 				var tx, ty;
 
 				bx = bd.cell[c].cx*2;   by = bd.cell[c].cy*2+1;
-				while(bx>0)        { var id=bd.bnum(bx,by); if(bd.LiB(id)==1){ cnt++; list.push(id); bx-=2;} else{ break;} }
+				while(bx>0)        { var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); bx-=2;} else{ break;} }
 				bx = bd.cell[c].cx*2+2; by = bd.cell[c].cy*2+1;
-				while(bx<k.qcols*2){ var id=bd.bnum(bx,by); if(bd.LiB(id)==1){ cnt++; list.push(id); bx+=2;} else{ break;} }
+				while(bx<k.qcols*2){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); bx+=2;} else{ break;} }
 				bx = bd.cell[c].cx*2+1; by = bd.cell[c].cy*2;
-				while(by>0)        { var id=bd.bnum(bx,by); if(bd.LiB(id)==1){ cnt++; list.push(id); by-=2;} else{ break;} }
+				while(by>0)        { var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); by-=2;} else{ break;} }
 				bx = bd.cell[c].cx*2+1; by = bd.cell[c].cy*2+2;
-				while(by<k.qrows*2){ var id=bd.bnum(bx,by); if(bd.LiB(id)==1){ cnt++; list.push(id); by+=2;} else{ break;} }
+				while(by<k.qrows*2){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); by+=2;} else{ break;} }
 
 				if(type==1?bd.QnC(c)<cnt:bd.QnC(c)>cnt){
 					bd.sErC([c],4);

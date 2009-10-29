@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.2.1
+// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.2.2
 // 
 Puzzles.yajirin = function(){ };
 Puzzles.yajirin.prototype = {
@@ -15,7 +15,7 @@ Puzzles.yajirin.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.yajirin.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pmake"){
 			base.setExpression("　矢印は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
@@ -82,10 +83,11 @@ Puzzles.yajirin.prototype = {
 		};
 
 		// 線を引かせたくないので上書き
-		bd.isnoLPup    = function(cc){ return (bd.QaC(cc)==1||bd.QnC(cc)!=-1);},
-		bd.isnoLPdown  = function(cc){ return (bd.QaC(cc)==1||bd.QnC(cc)!=-1);},
-		bd.isnoLPleft  = function(cc){ return (bd.QaC(cc)==1||bd.QnC(cc)!=-1);},
-		bd.isnoLPright = function(cc){ return (bd.QaC(cc)==1||bd.QnC(cc)!=-1);},
+		bd.isnoLPup    = function(cc){ return (bd.isBlack(cc) || bd.QnC(cc)!=-1);},
+		bd.isnoLPdown  = function(cc){ return (bd.isBlack(cc) || bd.QnC(cc)!=-1);},
+		bd.isnoLPleft  = function(cc){ return (bd.isBlack(cc) || bd.QnC(cc)!=-1);},
+		bd.isnoLPright = function(cc){ return (bd.isBlack(cc) || bd.QnC(cc)!=-1);},
+		bd.enableLineNG = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
@@ -102,11 +104,8 @@ Puzzles.yajirin.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-		pc.errbcolor1 = "rgb(255, 160, 160)";
-		pc.linecolor = "rgb(0, 127, 0)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.dotcolor = "rgb(255, 96, 191)";
-		pc.BCell_fontcolor = "rgb(96,96,96)";
 
 		pc.paint = function(x1,y1,x2,y2){
 			x2++; y2++;
@@ -114,7 +113,7 @@ Puzzles.yajirin.prototype = {
 		//	this.flushCanvasAll();
 
 			this.drawWhiteCells(x1,y1,x2,y2);
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawArrowNumbers(x1,y1,x2,y2);
@@ -173,7 +172,7 @@ Puzzles.yajirin.prototype = {
 		//---------------------------------------------------------
 		fio.kanpenOpen = function(array){
 			this.decodeCell( function(c,ca){
-				if     (ca=="#"){ bd.sQaC(c,1);}
+				if     (ca=="#"){ bd.setBlack(c);}
 				else if(ca=="+"){ bd.sQsC(c,1);}
 				else if(ca != "."){
 					var num = parseInt(ca);
@@ -189,9 +188,9 @@ Puzzles.yajirin.prototype = {
 			return ""+this.encodeCell( function(c){
 				var num = (bd.QnC(c)>=0&&bd.QnC(c)<10?bd.QnC(c):-1)
 				if(num==-1){
-					if     (bd.QaC(c)==1){ return "# ";}
-					else if(bd.QsC(c)==1){ return "+ ";}
-					else                 { return ". ";}
+					if     (bd.isBlack(c)){ return "# ";}
+					else if(bd.QsC(c)==1) { return "+ ";}
+					else                  { return ". ";}
 				}
 				else if(bd.DiC(c)==1){ return ""+( 0+num)+" ";}
 				else if(bd.DiC(c)==3){ return ""+(16+num)+" ";}
@@ -215,11 +214,11 @@ Puzzles.yajirin.prototype = {
 				this.setAlert('交差している線があります。','There is a crossing line.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (this.lcntCell(c)>0 && bd.QaC(c)==1);}.bind(this)) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)>0 && bd.isBlack(c));}) ){
 				this.setAlert('黒マスの上に線が引かれています。','Theer is a line on the black cell.'); return false;
 			}
 
-			if( !this.checkSideCell(function(c1,c2){ return (bd.QaC(c1)==1 && bd.QaC(c2)==1);}) ){
+			if( !this.checkSideCell(function(c1,c2){ return (bd.isBlack(c1) && bd.isBlack(c2));}) ){
 				this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 			}
 
@@ -235,7 +234,7 @@ Puzzles.yajirin.prototype = {
 				this.setAlert('輪っかが一つではありません。','There are plural loops.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (this.lcntCell(c)==0 && bd.QaC(c)!=1 && bd.QnC(c)==-1);}.bind(this)) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && !bd.isBlack(c) && bd.QnC(c)==-1);}) ){
 				this.setAlert('黒マスも線も引かれていないマスがあります。','Theer is an empty cell.'); return false;
 			}
 
@@ -245,13 +244,13 @@ Puzzles.yajirin.prototype = {
 
 		ans.checkArrowNumber = function(){
 			for(var c=0;c<bd.cell.length;c++){
-				if(bd.QnC(c)<0 || bd.DiC(c)==0 || bd.QaC(c)==1){ continue;}
+				if(bd.QnC(c)<0 || bd.DiC(c)==0 || bd.isBlack(c)){ continue;}
 				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, dir = bd.DiC(c);
 				var cnt=0;
-				if     (dir==1){ cy--; while(cy>=0     ){ if(bd.QaC(bd.cnum(cx,cy))==1){cnt++;} cy--;} }
-				else if(dir==2){ cy++; while(cy<k.qrows){ if(bd.QaC(bd.cnum(cx,cy))==1){cnt++;} cy++;} }
-				else if(dir==3){ cx--; while(cx>=0     ){ if(bd.QaC(bd.cnum(cx,cy))==1){cnt++;} cx--;} }
-				else if(dir==4){ cx++; while(cx<k.qcols){ if(bd.QaC(bd.cnum(cx,cy))==1){cnt++;} cx++;} }
+				if     (dir==1){ cy--; while(cy>=0     ){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cy--;} }
+				else if(dir==2){ cy++; while(cy<k.qrows){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cy++;} }
+				else if(dir==3){ cx--; while(cx>=0     ){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cx--;} }
+				else if(dir==4){ cx++; while(cx<k.qcols){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cx++;} }
 
 				if(bd.QnC(c)!=cnt){
 					bd.sErC([c],1);

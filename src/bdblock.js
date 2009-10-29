@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボーダーブロック版 bdblock.js v3.2.0
+// パズル固有スクリプト部 ボーダーブロック版 bdblock.js v3.2.2
 //
 Puzzles.bdblock = function(){ };
 Puzzles.bdblock.prototype = {
@@ -15,7 +15,7 @@ Puzzles.bdblock.prototype = {
 
 		k.isoutsidecross  = 1;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.bdblock.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("ボーダーブロック","Border Block");
 		base.setExpression("　左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
@@ -90,9 +91,7 @@ Puzzles.bdblock.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
-		if(k.br.IE){ pc.BDlinecolor = "rgb(191, 191, 191)";}
-
+		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.BorderQanscolor = "black";
 		pc.crosssize = 0.15;
 
@@ -102,7 +101,7 @@ Puzzles.bdblock.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -147,14 +146,14 @@ Puzzles.bdblock.prototype = {
 				this.setAlert('黒点以外のところで線が交差しています。','Lines are crossed out of the black point.'); return false;
 			}
 
-			rarea = this.searchRarea();
-			if( !this.checkNoObjectInRoom(rarea, bd.QnC.bind(bd)) ){
+			rinfo = area.getRoomInfo();
+			if( !this.checkNoObjectInRoom(rinfo, bd.QnC.bind(bd)) ){
 				this.setAlert('数字のないブロックがあります。','A block has no number.'); return false;
 			}
-			if( !this.checkSameObjectInRoom(rarea, bd.QnC.bind(bd)) ){
+			if( !this.checkSameObjectInRoom(rinfo, bd.QnC.bind(bd)) ){
 				this.setAlert('１つのブロックに異なる数字が入っています。','A block has dirrerent numbers.'); return false;
 			}
-			if( !this.checkObjectRoom(rarea, bd.QnC.bind(bd)) ){
+			if( !this.checkObjectRoom(rinfo, bd.QnC.bind(bd)) ){
 				this.setAlert('同じ数字が異なるブロックに入っています。','One kind of numbers is included in dirrerent blocks.'); return false;
 			}
 

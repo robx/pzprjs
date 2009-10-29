@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックル版 kakuru.js v3.2.0p1
+// パズル固有スクリプト部 カックル版 kakuru.js v3.2.2
 //
 Puzzles.kakuru = function(){ };
 Puzzles.kakuru.prototype = {
@@ -15,7 +15,7 @@ Puzzles.kakuru.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.kakuru.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　マウスやキーボードで数字が入力できます。",
@@ -141,10 +142,9 @@ Puzzles.kakuru.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
 
-		pc.linecolor = "rgb(0,191,0)";
-		pc.errbcolor1 = "rgb(255,127,127)";
+		pc.errbcolor1 = pc.errbcolor1_DARK;
 		pc.errbcolor2 = "white";
 
 		pc.paint = function(x1,y1,x2,y2){
@@ -153,7 +153,7 @@ Puzzles.kakuru.prototype = {
 			this.drawErrorCells(x1,y1,x2,y2);
 
 			this.drawBCells2(x1,y1,x2,y2);
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBCells1(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -169,7 +169,7 @@ Puzzles.kakuru.prototype = {
 				var c = clist[i];
 				if(bd.QuC(c)==1){
 					g.fillStyle = this.Cellcolor;
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px(), bd.cell[c].py(), k.cwidth+1, k.cheight+1);}
+					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
 				}
 				// drawBCells2で既にvhideされているので、ここではvhideしない
 			}
@@ -181,7 +181,7 @@ Puzzles.kakuru.prototype = {
 				var c = clist[i];
 				if(bd.QnC(c)!=-1){
 					g.fillStyle = "rgb(208, 208, 208)";
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px(), bd.cell[c].py(), k.cwidth+1, k.cheight+1);}
+					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
 				}
 				else{ this.vhide("c"+c+"_full_");}
 			}

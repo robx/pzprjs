@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 のりのり版 norinori.js v3.2.0p1
+// パズル固有スクリプト部 のりのり版 norinori.js v3.2.2
 //
 Puzzles.norinori = function(){ };
 Puzzles.norinori.prototype = {
@@ -15,7 +15,7 @@ Puzzles.norinori.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.norinori.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		k.area = { bcell:1, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("のりのり","Norinori");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
@@ -69,17 +70,16 @@ Puzzles.norinori.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.bcolor = "rgb(96, 224, 160)";
 		pc.BBcolor = "rgb(96, 127, 127)";
-		pc.errcolor1 = "rgb(192, 0, 0)";
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
 			this.drawWhiteCells(x1,y1,x2,y2);
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawBorders(x1,y1,x2,y2);
@@ -111,25 +111,25 @@ Puzzles.norinori.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var barea = this.searchBarea();
-			if( !this.checkAllArea(barea, function(id){ return (bd.QaC(id)==1);}, function(w,h,a){ return (a<=2);} ) ){
+			var binfo = area.getBCellInfo();
+			if( !this.checkAllArea(binfo, f_true, function(w,h,a){ return (a<=2);} ) ){
 				this.setAlert('２マスより大きい黒マスのカタマリがあります。','The size of a mass of black cells is over two.'); return false;
 			}
 
-			var rarea = this.searchRarea();
-			if( !this.checkBlackCellInArea(rarea, function(a){ return (a>2);}) ){
+			var rinfo = area.getRoomInfo();
+			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a>2);}) ){
 				this.setAlert('２マス以上の黒マスがある部屋が存在します。','A room has three or mode black cells.'); return false;
 			}
 
-			if( !this.checkAllArea(barea, function(id){ return (bd.QaC(id)==1);}, function(w,h,a){ return (a>=2);} ) ){
+			if( !this.checkAllArea(binfo, f_true, function(w,h,a){ return (a>=2);} ) ){
 				this.setAlert('１マスだけの黒マスのカタマリがあります。','There is a single black cell.'); return false;
 			}
 
-			if( !this.checkBlackCellInArea(rarea, function(a){ return (a==1);}) ){
+			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a==1);}) ){
 				this.setAlert('１マスしか黒マスがない部屋があります。','A room has only one black cell.'); return false;
 			}
 
-			if( !this.checkBlackCellInArea(rarea, function(a){ return (a<=0);}) ){
+			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a<=0);}) ){
 				this.setAlert('黒マスがない部屋があります。','A room has no black cell.'); return false;
 			}
 

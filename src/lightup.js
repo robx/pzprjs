@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 美術館版 lightup.js v3.2.0
+// パズル固有スクリプト部 美術館版 lightup.js v3.2.2
 //
 Puzzles.lightup = function(){ };
 Puzzles.lightup.prototype = {
@@ -15,7 +15,7 @@ Puzzles.lightup.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.lightup.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("美術館","Akari (Light Up)");
 		base.setExpression("　マウスで光源と白マス確定マスが入力できます。",
@@ -90,12 +91,11 @@ Puzzles.lightup.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-		pc.fontcolor = "white";
-		pc.fontErrcolor = "white";
-		pc.bcolor1 = "rgb(224, 255, 127)";
-		pc.errbcolor1 = "rgb(255, 127, 127)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
+		pc.fontcolor = pc.fontErrcolor = "white";
 		pc.dotcolor = "rgb(255, 63, 191)";
+
+		pc.lightcolor = "rgb(224, 255, 127)";
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -103,7 +103,7 @@ Puzzles.lightup.prototype = {
 
 			this.drawLightCells(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawBCells(x1,y1,x2,y2);
 
@@ -126,7 +126,7 @@ Puzzles.lightup.prototype = {
 					if(bd.ErC(c)!=4){ g.fillStyle = "rgb(0, 127, 96)";}
 					else{ g.fillStyle = this.errcolor1;}
 					g.beginPath();
-					g.arc(bd.cell[c].px()+mf(k.cwidth/2), bd.cell[c].py()+mf(k.cheight/2), rsize, 0, Math.PI*2, false);
+					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize, 0, Math.PI*2, false);
 					if(this.vnop("c"+c+"_AK_",1)){ g.fill();}
 				}
 				else{ this.vhide("c"+c+"_AK_");}
@@ -140,8 +140,8 @@ Puzzles.lightup.prototype = {
 				var c = clist[i];
 				if(bd.ErC(c)==1 || ans.isShined(c)){
 					if(bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else            { g.fillStyle = this.bcolor1;}
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px(), bd.cell[c].py(), k.cwidth, k.cheight);}
+					else            { g.fillStyle = this.lightcolor;}
+					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);}
 				}
 				else{ this.vhide("c"+c+"_full_");}
 			}

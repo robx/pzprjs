@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.2.1
+// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.2.2
 //
 Puzzles.loopsp = function(){ };
 Puzzles.loopsp.prototype = {
@@ -15,7 +15,7 @@ Puzzles.loopsp.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 1;	// 1:線が交差するパズル
+		k.isLineCross     = 1;	// 1:線が交差するパズル
 		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.loopsp.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　左ドラッグで線が、右クリックで×印が入力できます。",
@@ -115,6 +116,8 @@ Puzzles.loopsp.prototype = {
 			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
 		};
 
+		bd.enableLineNG = true;
+
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
@@ -183,10 +186,12 @@ Puzzles.loopsp.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-		pc.linecolor = "rgb(0, 192, 0)";
-		pc.errcolor1 = "rgb(192, 0, 0)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
+		pc.linecolor = pc.linecolor_LIGHT;
 		pc.fontsizeratio = 0.85;
+
+		pc.minYdeg = 0.36;
+		pc.maxYdeg = 0.74;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -195,11 +200,11 @@ Puzzles.loopsp.prototype = {
 			this.drawErrorCells(x1,y1,x2,y2);
 
 			if(k.br.IE){
-				this.drawBDline2(x1,y1,x2,y2);
+				this.drawDashedGrid(x1,y1,x2,y2);
 			}
 			else{
 				this.drawPekes(x1,y1,x2,y2,2);
-				this.drawBDline2(x1,y1,x2,y2);
+				this.drawDashedGrid(x1,y1,x2,y2);
 			}
 
 			this.drawLines(x1,y1,x2,y2);
@@ -227,12 +232,12 @@ Puzzles.loopsp.prototype = {
 					if(bd.cell[c].cx >= x1 && x2 >= bd.cell[c].cx && bd.cell[c].cy >= y1 && y2 >= bd.cell[c].cy){
 						g.strokeStyle = this.Cellcolor;
 						g.beginPath();
-						g.arc(bd.cell[c].px()+mf(k.cwidth/2), bd.cell[c].py()+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
+						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
 						if(this.vnop("c"+c+"_cir1_",0)){ g.stroke(); }
 					}
 					g.fillStyle = "white";
 					g.beginPath();
-					g.arc(bd.cell[c].px()+mf(k.cwidth/2), bd.cell[c].py()+mf(k.cheight/2), rsize2 , 0, Math.PI*2, false);
+					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2 , 0, Math.PI*2, false);
 					if(this.vnop("c"+c+"_cir2_",1)){ g.fill(); }
 				}
 				else{ this.vhide("c"+c+"_cir1_"); this.vhide("c"+c+"_cir2_");}
@@ -240,16 +245,12 @@ Puzzles.loopsp.prototype = {
 			this.vinc();
 		};
 
-		col.repaintParts = function(id){
+		line.repaintParts = function(id){
 			if(bd.isLPMarked(id)){
-				var bx = bd.border[id].cx, by = bd.border[id].cy;
-				pc.drawLineParts1( bd.cnum(mf((bx-by%2)/2), mf((by-bx%2)/2)) );
-				pc.drawLineParts1( bd.cnum(mf((bx+by%2)/2), mf((by+bx%2)/2)) );
+				pc.drawLineParts1( bd.cc1(id) );
+				pc.drawLineParts1( bd.cc2(id) );
 			}
 		};
-
-		col.minYdeg = 0.36;
-		col.maxYdeg = 0.74;
 	},
 
 	//---------------------------------------------------------
@@ -334,7 +335,7 @@ Puzzles.loopsp.prototype = {
 				this.setAlert('分岐している線があります。','There is a branched line.'); return false;
 			}
 
-			if( !this.checkLineCircle() ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QnC(c)!=-1);}) ){
 				this.setAlert('○の部分で線が交差しています。','The lines are crossed on the number.'); return false;
 			}
 
@@ -344,11 +345,11 @@ Puzzles.loopsp.prototype = {
 			if( !this.checkNumberLoop() ){
 				this.setAlert('同じ数字が異なるループに含まれています。','A kind of numbers are in differernt loops.'); return false;
 			}
-			if( !this.checkLoopCircle() ){
+			if( !this.checkNumberInLoop() ){
 				this.setAlert('○を含んでいないループがあります。','A loop has no numbers.'); return false;
 			}
 
-			if( !this.checkLPPlus() ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)!=4 && bd.QuC(c)==101);}) ){
 				this.setAlert('┼のマスから線が4本出ていません。','A cross-joint cell doesn\'t have four-way lines.'); return false;
 			}
 
@@ -392,44 +393,20 @@ Puzzles.loopsp.prototype = {
 				return true;
 			});
 		};
-		ans.checkLoopCircle = function(){
+		ans.checkNumberInLoop = function(){
 			return this.checkAllLoops(function(cells){
 				for(var i=0;i<cells.length;i++){ if(bd.QnC(cells[i])!=-1){ return true;} }
 				return false;
 			});
 		};
 		ans.checkAllLoops = function(func){
-			var xarea = this.searchXarea();
-			for(var r=1;r<=xarea.max;r++){
-				if(!func(this.LineList2Cell(xarea.room[r]))){
+			var xinfo = line.getLineInfo();
+			for(var r=1;r<=xinfo.max;r++){
+				if(!func(line.LineList2Clist(xinfo.room[r].idlist))){
 					bd.sErB(bd.borders,2);
-					bd.sErB(xarea.room[r],1);
+					bd.sErB(xinfo.room[r].idlist,1);
 					return false;
 				}
-			}
-			return true;
-		};
-
-		ans.LineList2Cell = function(list){
-			var cells = new Array();
-			var include = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
-			for(var i=0;i<list.length;i++){
-				var cc1 = bd.cc1(list[i]), cc2 = bd.cc2(list[i]);
-				if(cc1!=-1 && !include(cells,cc1)){ cells.push(cc1);}
-				if(cc2!=-1 && !include(cells,cc2)){ cells.push(cc2);}
-			}
-			return cells.sort(function(a,b){ return (a>b?1:-1);});
-		};
-
-		ans.checkLineCircle = function(){
-			for(var c=0;c<bd.cell.length;c++){
-				if(this.lcntCell(c)==4 && bd.QnC(c)!=-1){ bd.sErC([c],1); return false;}
-			}
-			return true;
-		};
-		ans.checkLPPlus = function(){
-			for(var c=0;c<bd.cell.length;c++){
-				if(this.lcntCell(c)!=4 && bd.QuC(c)==101){ bd.sErC([c],1); return false;}
 			}
 			return true;
 		};

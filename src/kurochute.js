@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クロシュート版 kurochute.js v3.2.0p1
+// パズル固有スクリプト部 クロシュート版 kurochute.js v3.2.2
 //
 Puzzles.kurochute = function(){ };
 Puzzles.kurochute.prototype = {
@@ -15,7 +15,7 @@ Puzzles.kurochute.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.kurochute.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 16;
+		k.area = { bcell:0, wcell:1, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("クロシュート","Kurochute");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
@@ -83,10 +84,9 @@ Puzzles.kurochute.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.qsubcolor1 = "white";
 		pc.qsubcolor2 = "rgb(255, 255, 160)";
-		pc.BCell_fontcolor = "rgb(96,96,96)";
 
 		pc.paint = function(x1,y1,x2,y2){
 			x2++; y2++;
@@ -95,7 +95,7 @@ Puzzles.kurochute.prototype = {
 
 			this.drawQSubCells(x1,y1,x2,y2);
 			this.drawDots(x1,y1,x2,y2);
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -106,14 +106,14 @@ Puzzles.kurochute.prototype = {
 		};
 		pc.drawDots = function(x1,y1,x2,y2){
 			var dsize = k.cwidth*0.06;
-			var clist = this.cellinside(x1,y1,x2,y2,function(c){ return (bd.QaC(c)!=1);});
+			var clist = this.cellinside(x1,y1,x2,y2,bd.isWhite);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QsC(c)==1){
 					g.fillStyle = this.dotcolor;
 					if(this.vnop("c"+c+"_dot_",1)){
 						g.beginPath();
-						g.arc(bd.cell[c].px()+k.cwidth/2, bd.cell[c].py()+k.cheight/2, dsize, 0, Math.PI*2, false);
+						g.arc(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, dsize, 0, Math.PI*2, false);
 						g.fill();
 					}
 				}
@@ -157,17 +157,17 @@ Puzzles.kurochute.prototype = {
 		//---------------------------------------------------------
 		fio.kanpenOpen = function(array){
 			this.decodeCell( function(c,ca){
-				if     (ca == "#"){ bd.sQaC(c, 1);}
+				if     (ca == "#"){ bd.setBlack(c);}
 				else if(ca == "+"){ bd.sQsC(c, 1);}
 				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
 			},array.slice(0,k.qrows));
 		};
 		fio.kanpenSave = function(){
 			return ""+this.encodeCell( function(c){
-				if     (bd.QnC(c)>=0){ return (bd.QnC(c).toString() + " ");}
-				else if(bd.QaC(c)==1){ return "# ";}
-				else if(bd.QsC(c)==1){ return "+ ";}
-				else                 { return ". ";}
+				if     (bd.QnC(c)>=0 ){ return (bd.QnC(c).toString() + " ");}
+				else if(bd.isBlack(c)){ return "# ";}
+				else if(bd.QsC(c)==1 ){ return "+ ";}
+				else                  { return ". ";}
 			});
 		};
 	},
@@ -177,11 +177,11 @@ Puzzles.kurochute.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkSideCell(function(c1,c2){ return (bd.QaC(c1)==1 && bd.QaC(c2)==1);}) ){
+			if( !this.checkSideCell(function(c1,c2){ return (bd.isBlack(c1) && bd.isBlack(c2));}) ){
 				this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 			}
 
-			if( !this.linkBWarea( this.searchWarea() ) ){
+			if( !this.checkOneArea( area.getWCellInfo() ) ){
 				this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 			}
 
@@ -199,10 +199,10 @@ Puzzles.kurochute.prototype = {
 			for(var c=0;c<bd.cell.length;c++){
 				if(bd.QnC(c)<0){ continue;}
 				var cx=bd.cell[c].cx, cy=bd.cell[c].cy, num=bd.QnC(c), cnt=0;
-				if(bd.QaC(bd.cnum(cx-num,cy))==1){ cnt++;}
-				if(bd.QaC(bd.cnum(cx+num,cy))==1){ cnt++;}
-				if(bd.QaC(bd.cnum(cx,cy-num))==1){ cnt++;}
-				if(bd.QaC(bd.cnum(cx,cy+num))==1){ cnt++;}
+				if(bd.isBlack(bd.cnum(cx-num,cy))){ cnt++;}
+				if(bd.isBlack(bd.cnum(cx+num,cy))){ cnt++;}
+				if(bd.isBlack(bd.cnum(cx,cy-num))){ cnt++;}
+				if(bd.isBlack(bd.cnum(cx,cy+num))){ cnt++;}
 				if(cnt!=1){
 					bd.sErC([c],4);
 					bd.sErC([bd.cnum(cx-num,cy),bd.cnum(cx+num,cy),bd.cnum(cx,cy-num),bd.cnum(cx,cy+num)],1);

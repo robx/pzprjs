@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 数コロ版 sukoro.js v3.2.0
+// パズル固有スクリプト部 数コロ版 sukoro.js v3.2.2
 //
 Puzzles.sukoro = function(){ };
 Puzzles.sukoro.prototype = {
@@ -15,7 +15,7 @@ Puzzles.sukoro.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.sukoro.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		k.area = { bcell:0, wcell:0, number:1};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("数コロ","Sukoro");
 		base.setExpression("　マスのクリックやキーボードで数字を入力できます。QAZキーで○、WSXキーで×を入力できます。",
@@ -114,7 +115,6 @@ Puzzles.sukoro.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.MBcolor = "rgb(64, 255, 64)";
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -122,7 +122,7 @@ Puzzles.sukoro.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawMBs(x1,y1,x2,y2);
 			this.drawNumbers(x1,y1,x2,y2);
@@ -154,7 +154,7 @@ Puzzles.sukoro.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkSideCell(function(c1,c2){ return (this.getNum(c1)>0 && this.getNum(c1)==this.getNum(c2));}.bind(this)) ){
+			if( !this.checkSideCell(bd.sameNumber) ){
 				this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
 			}
 
@@ -162,7 +162,7 @@ Puzzles.sukoro.prototype = {
 				this.setAlert('数字と、その数字の上下左右に入る数字の数が一致していません。','The number of numbers placed in four adjacent cells is not equal to the number.'); return false;
 			}
 
-			if( !this.linkBWarea( this.searchBWarea(function(id){ return (id!=-1 && this.getNum(id)!=-1); }.bind(this)) ) ){
+			if( !this.checkOneArea( area.getNumberInfo() ) ){
 				this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
 			}
 
@@ -171,16 +171,12 @@ Puzzles.sukoro.prototype = {
 
 		ans.checkCellNumber = function(){
 			for(var c=0;c<bd.cell.length;c++){
-				if(this.getNum(c)>=0 && this.getNum(c)!=this.checkdir4Cell(c,function(a){ return (this.getNum(a)!=-1);}.bind(this))){
+				if(bd.isValidNum(c) && bd.getNum(c)!=this.checkdir4Cell(c,bd.isNum)){
 					bd.sErC([c],1);
 					return false;
 				}
 			}
 			return true;
-		};
-		ans.getNum = function(cc){
-			if(cc<0||cc>=bd.cell.length){ return -1;}
-			return (bd.QnC(cc)!=-1?bd.QnC(cc):bd.QaC(cc));
 		};
 	}
 };

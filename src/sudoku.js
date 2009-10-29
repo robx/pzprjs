@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 数独版 sudoku.js v3.2.0p1
+// パズル固有スクリプト部 数独版 sudoku.js v3.2.2
 //
 Puzzles.sudoku = function(){ };
 Puzzles.sudoku.prototype = {
@@ -15,7 +15,7 @@ Puzzles.sudoku.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.sudoku.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("数独","Sudoku");
 		base.setExpression("　キーボードやマウスで数字が入力できます。",
@@ -112,7 +113,6 @@ Puzzles.sudoku.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		this.MBcolor = "rgb(64, 255, 64)";
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -120,7 +120,7 @@ Puzzles.sudoku.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlockBorders(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -220,32 +220,32 @@ Puzzles.sudoku.prototype = {
 				this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (this.getNum(c)==-1);}.bind(this)) ){
+			if( !this.checkAllCell(bd.noNum) ){
 				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (this.getNum(c)==-1);}.bind(this));};
+		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
 
 		ans.checkRowsCols = function(){
 			for(var cy=0;cy<k.qrows;cy++){
-				var clist = new Array();
+				var clist = [];
 				for(var cx=0;cx<k.qcols;cx++){ clist.push(bd.cnum(cx,cy));}
 				if(!this.checkDifferentNumberInClist(clist)){ return false;}
 			}
 			for(var cx=1;cx<k.qcols;cx++){
-				var clist = new Array();
+				var clist = [];
 				for(var cy=0;cy<k.qrows;cy++){ clist.push(bd.cnum(cx,cy));}
 				if(!this.checkDifferentNumberInClist(clist)){ return false;}
 			}
 			return true;
 		};
-		ans.checkRoomNumber = function(area){
+		ans.checkRoomNumber = function(){
 			var max=k.qcols;
 			var block=mf(Math.sqrt(max)+0.1);
 			for(var i=0;i<max;i++){
-				var clist = new Array();
+				var clist = [];
 				for(var cx=(i%block)*block;cx<(i%block+1)*block;cx++){
 					for(var cy=mf(i/block)*block;cy<mf(i/block+1)*block;cy++){ clist.push(bd.cnum(cx,cy));}
 				}
@@ -254,23 +254,17 @@ Puzzles.sudoku.prototype = {
 			return true;
 		};
 		ans.checkDifferentNumberInClist = function(clist){
-			var d = new Array();
+			var d = [];
 			for(var i=1;i<=Math.max(k.qcols,k.qrows);i++){ d[i]=-1;}
 			for(var i=0;i<clist.length;i++){
-				var val=this.getNum(clist[i]);
+				var val=bd.getNum(clist[i]);
 				if     (val==-1){ continue;}
-				else if(d[val]==-1){ d[val] = this.getNum(clist[i]); continue;}
+				else if(d[val]==-1){ d[val] = bd.getNum(clist[i]); continue;}
 
-				for(var j=0;j<clist.length;j++){ if(this.getNum(clist[j])==val){ bd.sErC([clist[j]],1);} }
+				for(var j=0;j<clist.length;j++){ if(bd.getNum(clist[j])==val){ bd.sErC([clist[j]],1);} }
 				return false;
 			}
 			return true;
-		};
-		ans.getNum = function(cc){
-			if(cc<0||cc>=bd.cell.length){ return -1;}
-			if(bd.QnC(cc)!=-1){ return bd.QnC(cc);}
-			if(bd.QsC(cc)==1) { return -3;}
-			return bd.QaC(cc);
 		};
 	}
 };

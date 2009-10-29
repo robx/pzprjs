@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.2.1
+// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.2.2
 //
 Puzzles.numlin = function(){ };
 Puzzles.numlin.prototype = {
@@ -15,7 +15,7 @@ Puzzles.numlin.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.numlin.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("　ナンバーリンク","Numberlink");
 		base.setExpression("　左ドラッグで線が、右ドラッグで×印が入力できます。",
@@ -92,16 +93,14 @@ Puzzles.numlin.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-
-		pc.errcolor1 = "rgb(192, 0, 0)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
@@ -126,7 +125,7 @@ Puzzles.numlin.prototype = {
 					else if(bd.ErC(c)==2){ g.fillStyle = this.errbcolor2;}
 					else                 { g.fillStyle = "white";}
 
-					if(this.vnop("c"+c+"_sq_",1)){ g.fillRect(bd.cell[c].px()+mgnw+1, bd.cell[c].py()+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);}
+					if(this.vnop("c"+c+"_sq_",1)){ g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);}
 				}
 				else{ this.vhide("c"+c+"_sq_");}
 			}
@@ -190,12 +189,12 @@ Puzzles.numlin.prototype = {
 				this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 			}
 
-			var larea = this.searchLarea();
-			if( !this.checkQnumsInArea(larea, function(a){ return (a>=3);}) ){
+			var linfo = line.getLareaInfo();
+			if( !this.checkQnumsInArea(linfo, function(a){ return (a>=3);}) ){
 				this.setAlert('3つ以上の数字がつながっています。','Three or more numbers are connected.'); return false;
 			}
 
-			if( !this.checkSameObjectInRoom(larea, bd.QnC.bind(bd)) ){
+			if( !this.checkSameObjectInRoom(linfo, bd.QnC.bind(bd)) ){
 				this.setAlert('異なる数字がつながっています。','Different numbers are connected.'); return false;
 			}
 
@@ -205,11 +204,11 @@ Puzzles.numlin.prototype = {
 			if( !this.check1Line() ){
 				this.setAlert('途切れている線があります。','There is a dead-end line.'); return false;
 			}
-			if( !this.checkDisconnectLine(larea) ){
+			if( !this.checkDisconnectLine(linfo) ){
 				this.setAlert('数字につながっていない線があります。','A line doesn\'t connect any number.'); return false;
 			}
 
-			if( !this.checkNumber() ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && bd.QnC(c)!=-1);}) ){
 				this.setAlert('どこにもつながっていない数字があります。','A number is not connected another number.'); return false;
 			}
 
@@ -217,23 +216,13 @@ Puzzles.numlin.prototype = {
 		};
 		ans.check1st = function(){ return true;};
 
-		ans.check1Line = function(){ return this.checkLine(function(i){ return (this.lcntCell(i)==1 && bd.QnC(i)==-1);}.bind(this)); };
-		ans.check2Line = function(){ return this.checkLine(function(i){ return (this.lcntCell(i)>=2 && bd.QnC(i)!=-1);}.bind(this)); };
+		ans.check1Line = function(){ return this.checkLine(function(i){ return (line.lcntCell(i)==1 && bd.QnC(i)==-1);}); };
+		ans.check2Line = function(){ return this.checkLine(function(i){ return (line.lcntCell(i)>=2 && bd.QnC(i)!=-1);}); };
 		ans.checkLine = function(func){
 			for(var c=0;c<bd.cell.length;c++){
 				if(func(c)){
 					bd.sErB(bd.borders,2);
 					ans.setCellLineError(c,true);
-					return false;
-				}
-			}
-			return true;
-		};
-
-		ans.checkNumber = function(){
-			for(var c=0;c<bd.cell.length;c++){
-				if(this.lcntCell(c)==0 && bd.QnC(c)!=-1){
-					bd.sErC(c,1);
 					return false;
 				}
 			}

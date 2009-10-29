@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.2.0p1
+// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.2.2
 //
 Puzzles.gokigen = function(){ };
 Puzzles.gokigen.prototype = {
@@ -15,7 +15,7 @@ Puzzles.gokigen.prototype = {
 
 		k.isoutsidecross  = 1;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.gokigen.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("ごきげんななめ","Gokigen-naname");
 		base.setExpression("　マウスで斜線を入力できます。",
@@ -78,14 +79,14 @@ Puzzles.gokigen.prototype = {
 			var cc = this.cellid(new Pos(x,y));
 			if(cc==-1 || bd.QaC(cc)==-1){ return;}
 
-			var area = new AreaInfo();
-			for(var i=0;i<bd.cross.length;i++){ area.check[i]=0;}
+			var check = [];
+			for(var i=0;i<bd.cross.length;i++){ check[i]=0;}
 
 			var fc = bd.xnum(bd.cell[cc].cx+(bd.QaC(cc)==1?0:1),bd.cell[cc].cy);
-			ans.searchline(area, 0, fc);
+			ans.searchline(check, 0, fc);
 			for(var c=0;c<bd.cell.length;c++){
-				if(bd.QaC(c)==1 && area.check[bd.xnum(bd.cell[c].cx  ,bd.cell[c].cy)]==1){ bd.sErC([c],2);}
-				if(bd.QaC(c)==2 && area.check[bd.xnum(bd.cell[c].cx+1,bd.cell[c].cy)]==1){ bd.sErC([c],2);}
+				if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].cx  ,bd.cell[c].cy)]==1){ bd.sErC([c],2);}
+				if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].cx+1,bd.cell[c].cy)]==1){ bd.sErC([c],2);}
 			}
 
 			ans.errDisp = true;
@@ -143,8 +144,7 @@ Puzzles.gokigen.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
-		pc.errcolor1 = "red";
+		pc.gridcolor = pc.gridcolor_DLIGHT;
 
 		pc.crosssize = 0.33;
 		pc.chassisflag = false;
@@ -155,7 +155,7 @@ Puzzles.gokigen.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawSlashes(x1,y1,x2,y2);
 
@@ -168,7 +168,7 @@ Puzzles.gokigen.prototype = {
 				var c=clist[i];
 				if(bd.QaC(c)==-1 && bd.ErC(c)==1){
 					g.fillStyle = this.errbcolor1;
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px(), bd.cell[c].py(), k.cwidth, k.cheight);}
+					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);}
 				}
 				else{ this.vhide("c"+c+"_full_");}
 			}
@@ -187,13 +187,13 @@ Puzzles.gokigen.prototype = {
 					g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
 					g.beginPath();
 					if(bd.QaC(c)==1){
-						g.moveTo(bd.cell[c].px()         , bd.cell[c].py()          );
-						g.lineTo(bd.cell[c].px()+k.cwidth, bd.cell[c].py()+k.cheight);
+						g.moveTo(bd.cell[c].px         , bd.cell[c].py          );
+						g.lineTo(bd.cell[c].px+k.cwidth, bd.cell[c].py+k.cheight);
 						this.vhide("c"+c+"_sl2_");
 					}
 					else if(bd.QaC(c)==2){
-						g.moveTo(bd.cell[c].px()+k.cwidth, bd.cell[c].py()          );
-						g.lineTo(bd.cell[c].px()         , bd.cell[c].py()+k.cheight);
+						g.moveTo(bd.cell[c].px+k.cwidth, bd.cell[c].py          );
+						g.lineTo(bd.cell[c].px         , bd.cell[c].py+k.cheight);
 						this.vhide("c"+c+"_sl1_");
 					}
 					g.closePath();
@@ -266,18 +266,18 @@ Puzzles.gokigen.prototype = {
 		};
 
 		ans.checkLoopLine = function(){
-			var area = new AreaInfo();
-			for(var i=0;i<bd.cross.length;i++){ area.check[i]=0;}
+			var check = [];
+			for(var i=0;i<bd.cross.length;i++){ check[i]=0;}
 
 			while(1){
 				var fc=-1;
-				for(var i=0;i<bd.cross.length;i++){ if(area.check[i]==0){ fc=i; break;}}
+				for(var i=0;i<bd.cross.length;i++){ if(check[i]==0){ fc=i; break;}}
 				if(fc==-1){ break;}
 
-				if(!this.searchline(area, 0, fc)){
+				if(!this.searchline(check, 0, fc)){
 					for(var c=0;c<bd.cell.length;c++){
-						if(bd.QaC(c)==1 && area.check[bd.xnum(bd.cell[c].cx  ,bd.cell[c].cy)]==1){ bd.sErC([c],1);}
-						if(bd.QaC(c)==2 && area.check[bd.xnum(bd.cell[c].cx+1,bd.cell[c].cy)]==1){ bd.sErC([c],1);}
+						if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].cx  ,bd.cell[c].cy)]==1){ bd.sErC([c],1);}
+						if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].cx+1,bd.cell[c].cy)]==1){ bd.sErC([c],1);}
 					}
 					while(1){
 						var endflag = true;
@@ -293,25 +293,25 @@ Puzzles.gokigen.prototype = {
 					}
 					return false;
 				}
-				for(var c=0;c<bd.cross.length;c++){ if(area.check[c]==1){ area.check[c]=2;} }
+				for(var c=0;c<bd.cross.length;c++){ if(check[c]==1){ check[c]=2;} }
 			}
 			return true;
 		};
-		ans.searchline = function(area, dir, c){
-			var check=true;
+		ans.searchline = function(check, dir, c){
+			var flag=true;
 			var nc, tx=bd.cross[c].cx, ty=bd.cross[c].cy;
-			area.check[c]=1;
+			check[c]=1;
 
 			nc = bd.xnum(tx-1,ty-1);
-			if(nc!=-1 && dir!=4 && bd.QaC(bd.cnum(tx-1,ty-1))==1 && (area.check[nc]!=0 || !this.searchline(area,1,nc))){ check = false;}
+			if(nc!=-1 && dir!=4 && bd.QaC(bd.cnum(tx-1,ty-1))==1 && (check[nc]!=0 || !this.searchline(check,1,nc))){ flag = false;}
 			nc = bd.xnum(tx-1,ty+1);
-			if(nc!=-1 && dir!=3 && bd.QaC(bd.cnum(tx-1,ty  ))==2 && (area.check[nc]!=0 || !this.searchline(area,2,nc))){ check = false;}
+			if(nc!=-1 && dir!=3 && bd.QaC(bd.cnum(tx-1,ty  ))==2 && (check[nc]!=0 || !this.searchline(check,2,nc))){ flag = false;}
 			nc = bd.xnum(tx+1,ty-1);
-			if(nc!=-1 && dir!=2 && bd.QaC(bd.cnum(tx  ,ty-1))==2 && (area.check[nc]!=0 || !this.searchline(area,3,nc))){ check = false;}
+			if(nc!=-1 && dir!=2 && bd.QaC(bd.cnum(tx  ,ty-1))==2 && (check[nc]!=0 || !this.searchline(check,3,nc))){ flag = false;}
 			nc = bd.xnum(tx+1,ty+1);
-			if(nc!=-1 && dir!=1 && bd.QaC(bd.cnum(tx  ,ty  ))==1 && (area.check[nc]!=0 || !this.searchline(area,4,nc))){ check = false;}
+			if(nc!=-1 && dir!=1 && bd.QaC(bd.cnum(tx  ,ty  ))==1 && (check[nc]!=0 || !this.searchline(check,4,nc))){ flag = false;}
 
-			return check;
+			return flag;
 		};
 
 		ans.checkQnumCross = function(){

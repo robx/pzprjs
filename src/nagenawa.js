@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 なげなわ版 nagenawa.js v3.2.1
+// パズル固有スクリプト部 なげなわ版 nagenawa.js v3.2.2
 //
 Puzzles.nagenawa = function(){ };
 Puzzles.nagenawa.prototype = {
@@ -15,7 +15,7 @@ Puzzles.nagenawa.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 1;	// 1:線が交差するパズル
+		k.isLineCross     = 1;	// 1:線が交差するパズル
 		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.nagenawa.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("なげなわ","Nagenawa");
 		base.setExpression("　ドラッグで線が、マスのクリックで○×(補助記号)が入力できます。",
@@ -96,8 +97,7 @@ Puzzles.nagenawa.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(191, 191, 191)";
-		pc.MBcolor = "rgb(63, 160, 255)";
+		pc.gridcolor = pc.gridcolor_SLIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -107,7 +107,7 @@ Puzzles.nagenawa.prototype = {
 
 			this.drawNumbers(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 		//	this.drawPekes(x1,y1,x2,y2,0);
@@ -145,11 +145,11 @@ Puzzles.nagenawa.prototype = {
 		ans.checkAns = function(){
 
 			var cnt=0;
-			for(var i=0;i<bd.border.length;i++){ if(bd.LiB(i)==1){ cnt++;} }
+			for(var i=0;i<bd.border.length;i++){ if(bd.isLine(i)){ cnt++;} }
 			if( cnt==0 ){ this.setAlert('線が引かれていません。','There is no line on the board.'); return false;}
 
-			var rarea = this.searchRarea();
-			if( !this.checkOneNumber(rarea, function(top,lcnt){ return (top>=0 && top<lcnt);}, function(cc){ return this.lcnts.cell[cc]>0;}.bind(this)) ){
+			var rinfo = area.getRoomInfo();
+			if( !this.checkOneNumber(rinfo, function(top,lcnt){ return (top>=0 && top<lcnt);}, function(cc){ return line.lcntCell(cc)>0;}) ){
 				this.setAlert('数字のある部屋と線が通過するマスの数が違います。','The number of the cells that is passed any line in the room and the number written in the room is diffrerent.'); return false;
 			}
 
@@ -160,7 +160,7 @@ Puzzles.nagenawa.prototype = {
 				this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
 			}
 
-			if( !this.checkOneNumber(rarea, function(top,lcnt){ return (top>=0 && top>lcnt);}, function(cc){ return this.lcnts.cell[cc]>0;}.bind(this)) ){
+			if( !this.checkOneNumber(rinfo, function(top,lcnt){ return (top>=0 && top>lcnt);}, function(cc){ return line.lcntCell(cc)>0;}) ){
 				this.setAlert('数字のある部屋と線が通過するマスの数が違います。','The number of the cells that is passed any line in the room and the number written in the room is diffrerent.'); return false;
 			}
 
@@ -172,11 +172,11 @@ Puzzles.nagenawa.prototype = {
 		};
 
 		ans.checkAllLoopRect = function(){
-			var xarea = this.searchXarea();
-			for(var r=1;r<=xarea.max;r++){
-				if(!this.isLoopRect(xarea.room[r])){
+			var xinfo = line.getLineInfo();
+			for(var r=1;r<=xinfo.max;r++){
+				if(!this.isLoopRect(xinfo.room[r].idlist)){
 					bd.sErB(bd.borders,2);
-					bd.sErB(xarea.room[r],1);
+					bd.sErB(xinfo.room[r].idlist,1);
 					return false;
 				}
 			}

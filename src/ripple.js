@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 波及効果版 ripple.js v3.2.0p1
+// パズル固有スクリプト部 波及効果版 ripple.js v3.2.2
 //
 Puzzles.ripple = function(){ };
 Puzzles.ripple.prototype = {
@@ -15,7 +15,7 @@ Puzzles.ripple.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.ripple.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("波及効果","Ripple Effect");
 			base.setExpression("　キーボードやマウスで数字が入力できます。",
@@ -80,16 +81,14 @@ Puzzles.ripple.prototype = {
 		kp.generate(0, true, true, '');
 		kp.kpinput = function(ca){ kc.key_inputqnum(ca,99);};
 
-		room.setEnable();
-		bd.roommaxfunc = function(cc,mode){ return room.getCntOfRoomByCell(cc);};
+		area.resetArea();
+		bd.roommaxfunc = function(cc,mode){ return area.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
-
-		pc.errbcolor1 = "rgb(255, 160, 160)";
+		pc.gridcolor = pc.gridcolor_DLIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -97,7 +96,7 @@ Puzzles.ripple.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
@@ -131,7 +130,7 @@ Puzzles.ripple.prototype = {
 
 		enc.decodeKanpen = function(bstr){
 			var barray = bstr.split("/").slice(1,k.qrows+1);
-			var carray = new Array();
+			var carray = [];
 			for(var i=0;i<k.qrows;i++){
 				var array2 = barray[i].split("_");
 				for(var j=0;j<array2.length;j++){ if(array2[j]!=""){ carray.push(array2[j]);} }
@@ -161,13 +160,13 @@ Puzzles.ripple.prototype = {
 			});
 		};
 		enc.encodeRoom_kanpen = function(){
-			var rarea = ans.searchRarea();
+			var rinfo = area.getRoomInfo();
 			var bstr = "";
 			for(var c=0;c<bd.cell.length;c++){
-				bstr += (""+(rarea.check[c]-1)+"_");
+				bstr += (""+(rinfo.id[c]-1)+"_");
 				if((c+1)%k.qcols==0){ bstr += "/";}
 			}
-			return ""+rarea.max+"/"+bstr;
+			return ""+rinfo.max+"/"+bstr;
 		};
 
 		//---------------------------------------------------------
@@ -199,7 +198,7 @@ Puzzles.ripple.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkDifferentNumber(ans.searchRarea()) ){
+			if( !this.checkDifferentNumber(area.getRoomInfo()) ){
 				this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 			}
 
@@ -207,53 +206,49 @@ Puzzles.ripple.prototype = {
 				this.setAlert('数字よりもその間隔が短いところがあります。','The gap of the same kind of number is smaller than the number.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (this.getNum(c)==-1);}.bind(this)) ){
+			if( !this.checkAllCell(bd.noNum) ){
 				this.setAlert('数字の入っていないマスがあります。','There is an empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (this.getNum(c)==-1);}.bind(this));};
+		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
 
-		ans.checkDifferentNumber = function(area){
-			for(var r=1;r<=area.max;r++){
-				var d = new Array();
+		ans.checkDifferentNumber = function(rinfo){
+			for(var r=1;r<=rinfo.max;r++){
+				var d = [];
 				for(var i=1;i<=99;i++){ d[i]=-1;}
-				for(var i=0;i<area.room[r].length;i++){
-					var val=this.getNum(area.room[r][i]);
+				for(var i=0;i<rinfo.room[r].idlist.length;i++){
+					var val=bd.getNum(rinfo.room[r].idlist[i]);
 					if     (val==-1 || val==-2){ continue;}
-					else if(d[val]==-1){ d[val] = area.room[r][i]; continue;}
+					else if(d[val]==-1){ d[val] = rinfo.room[r].idlist[i]; continue;}
 
-					bd.sErC(area.room[r],1);
+					bd.sErC(rinfo.room[r].idlist,1);
 					return false;
 				}
 			}
 			return true;
 		};
-		ans.checkRippleNumber = function(area){
+		ans.checkRippleNumber = function(){
 			for(var c=0;c<bd.cell.length;c++){
-				var num=this.getNum(c), cx=bd.cell[c].cx, cy=bd.cell[c].cy;
+				var num=bd.getNum(c), cx=bd.cell[c].cx, cy=bd.cell[c].cy;
 				if(num<=0){ continue;}
 				for(var i=1;i<=num;i++){
 					var tc = bd.cnum(cx+i,cy);
-					if(tc!=-1&&this.getNum(tc)==num){
+					if(tc!=-1&&bd.getNum(tc)==num){
 						bd.sErC([c,tc],1);
 						return false;
 					}
 				}
 				for(var i=1;i<=num;i++){
 					var tc = bd.cnum(cx,cy+i);
-					if(tc!=-1&&this.getNum(tc)==num){
+					if(tc!=-1&&bd.getNum(tc)==num){
 						bd.sErC([c,tc],1);
 						return false;
 					}
 				}
 			}
 			return true;
-		};
-		ans.getNum = function(cc){
-			if(cc<0||cc>=bd.cell.length){ return -1;}
-			return (bd.QnC(cc)!=-1?bd.QnC(cc):bd.QaC(cc));
 		};
 	}
 };

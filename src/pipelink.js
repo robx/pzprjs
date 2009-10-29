@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.2.1
+// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.2.2
 //
 Puzzles.pipelink = function(){ };
 Puzzles.pipelink.prototype = {
@@ -15,7 +15,7 @@ Puzzles.pipelink.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 1;	// 1:線が交差するパズル
+		k.isLineCross     = 1;	// 1:線が交差するパズル
 		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.pipelink.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
@@ -80,6 +81,8 @@ Puzzles.pipelink.prototype = {
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
 		};
+
+		bd.enableLineNG = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
@@ -137,9 +140,10 @@ Puzzles.pipelink.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-		pc.linecolor = "rgb(0, 192, 0)";
-		pc.errcolor1 = "rgb(192, 0, 0)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
+		pc.linecolor = pc.linecolor_LIGHT;
+
+		pc.minYdeg = 0.42;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -149,7 +153,7 @@ Puzzles.pipelink.prototype = {
 
 			if(this.disp==1){ this.drawIcebarns(x1,y1,x2,y2);}
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 
 			if(this.disp==1){ this.drawIceBorders(x1,y1,x2,y2);}
 			if(this.disp==0){ this.drawCircle2(x1,y1,x2,y2);}
@@ -176,7 +180,7 @@ Puzzles.pipelink.prototype = {
 				if(bd.QuC(c)==6){
 					g.strokeStyle = this.Cellcolor;
 					g.beginPath();
-					g.arc(bd.cell[c].px()+mf(k.cwidth/2), bd.cell[c].py()+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
+					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
 					if(this.vnop("c"+c+"_cir_",0)){ g.stroke(); }
 				}
 				else{ this.vhide("c"+c+"_cir_");}
@@ -191,14 +195,12 @@ Puzzles.pipelink.prototype = {
 			this.paintAll();
 		};
 
-		col.repaintParts = function(id){
+		line.repaintParts = function(id){
 			if(bd.isLPMarked(id)){
-				var bx = bd.border[id].cx; var by = bd.border[id].cy;
-				pc.drawLineParts1( bd.cnum(mf((bx-by%2)/2), mf((by-bx%2)/2)) );
-				pc.drawLineParts1( bd.cnum(mf((bx+by%2)/2), mf((by+bx%2)/2)) );
+				pc.drawLineParts1( bd.cc1(id) );
+				pc.drawLineParts1( bd.cc2(id) );
 			}
 		};
-		col.minYdeg = 0.42;
 	},
 
 	//---------------------------------------------------------
@@ -296,10 +298,10 @@ Puzzles.pipelink.prototype = {
 
 			var rice = false;
 			for(var i=0;i<bd.cell.length;i++){ if(bd.QuC(i)==6){ rice=true; break;}}
-			if( rice && !this.checkLineCross() ){
+			if( rice && !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101);}) ){
 				this.setAlert((pc.disp==0?'○':'氷')+'の部分以外で線が交差しています。','There is a crossing line out of '+(pc.disp==0?'circles':'ices')+'.'); return false;
 			}
-			if( rice && !this.checkLineCurve() ){
+			if( rice && !this.checkAllCell(function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));}.bind(this)) ){
 				ans.setAlert((pc.disp==0?'○':'氷')+'の部分で線が曲がっています。','A line curves on '+(pc.disp==0?'circles':'ices')+'.'); return false;
 			}
 
@@ -307,7 +309,7 @@ Puzzles.pipelink.prototype = {
 				this.setAlert('輪っかが一つではありません。','There are plural loops.'); return false;
 			}
 
-			if( !this.checkLPPlus() ){
+			if( !this.checkAllCell(function(c){ return (bd.QuC(c)==101 && line.lcntCell(c)!=4);}) ){
 				this.setAlert('┼のマスから線が4本出ていません。','A cross-joint cell doesn\'t have four-way lines.'); return false;
 			}
 
@@ -319,34 +321,6 @@ Puzzles.pipelink.prototype = {
 				this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
 			}
 
-			return true;
-		};
-
-		ans.checkLineCross = function(){
-			for(var c=0;c<bd.cell.length;c++){
-				if(this.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101){
-					bd.sErC([c],1);
-					return false;
-				}
-			}
-			return true;
-		};
-		ans.checkLineCurve = function(){
-			for(var c=0;c<bd.cell.length;c++){
-				if(this.lcntCell(c)==2 && bd.QuC(c)==6 && !ans.isLineStraight(c)){
-					bd.sErC([c],1);
-					return false;
-				}
-			}
-			return true;
-		};
-		ans.checkLPPlus = function(){
-			for(var c=0;c<bd.cell.length;c++){
-				if(this.lcntCell(c)!=4 && bd.QuC(c)==101){
-					bd.sErC([c],1);
-					return false;
-				}
-			}
 			return true;
 		};
 	}

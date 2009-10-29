@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 快刀乱麻版 kramma.js v3.2.1
+// パズル固有スクリプト部 快刀乱麻版 kramma.js v3.2.2
 //
 Puzzles.kramma = function(){ };
 Puzzles.kramma.prototype = {
@@ -15,7 +15,7 @@ Puzzles.kramma.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.kramma.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("快刀乱麻","KaitoRamma");
 		base.setExpression("　左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
@@ -81,14 +82,9 @@ Puzzles.kramma.prototype = {
 				   (pos.y%2==0 && this.mouseCell.y==pos.y && Math.abs(this.mouseCell.x-pos.x)==1) )
 				{
 					this.mouseCell=-1
-
-					if(this.inputData==-1){
-						if     (flag==0){ this.inputData=(bd.QUB(id)==0?1:0);}
-						else if(flag==1){ this.inputData=(bd.QaB(id)==0?1:0);}
-					}
+					if(this.inputData==-1){ this.inputData=(bd.isBorder(id)?0:1);}
 
 					var idlist = [id];
-
 					var bx1, bx2, by1, by2;
 					if(bd.border[id].cx%2==1){
 						var x;
@@ -106,14 +102,8 @@ Puzzles.kramma.prototype = {
 					for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
 
 					for(var i=0;i<idlist.length;i++){
-						if(flag==0){
-							if(this.inputData!=-1){ bd.sQuB(idlist[i], this.inputData); bd.sQaB(idlist[i], 0);}
-						}
-						else if(flag==1 && bd.QuB(id)==0){
-							if     (this.inputData==1){ bd.sQaB(idlist[i], 1); if(k.isborderAsLine){ bd.sQsB(idlist[i], 0);} }
-							else if(this.inputData==0){ bd.sQaB(idlist[i], 0);}
-						}
-						else{ return;}
+						if     (this.inputData==1){ bd.setBorder(idlist[i]);}
+						else if(this.inputData==0){ bd.removeBorder(idlist[i]);}
 						pc.paintBorder(idlist[i]);
 					}
 				}
@@ -128,9 +118,9 @@ Puzzles.kramma.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
-
+		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.BorderQanscolor = "rgb(64, 64, 255)";
+
 		pc.crosssize = 0.15;
 
 		pc.paint = function(x1,y1,x2,y2){
@@ -139,7 +129,7 @@ Puzzles.kramma.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawQueses41_42(x1,y1,x2,y2);
@@ -212,12 +202,12 @@ Puzzles.kramma.prototype = {
 				this.setAlert('線が黒点以外で曲がっています。','A line curves out of the black points.'); return false;
 			}
 
-			rarea = this.searchRarea();
-			if( !this.checkNoObjectInRoom(rarea, function(c){ return (bd.QuC(c)!=0?bd.QuC(c):-1);}) ){
+			rinfo = area.getRoomInfo();
+			if( !this.checkNoObjectInRoom(rinfo, function(c){ return (bd.QuC(c)!=0?bd.QuC(c):-1);}) ){
 				this.setAlert('白丸も黒丸も含まれない領域があります。','An area has no marks.'); return false;
 			}
 
-			if( !this.checkSameObjectInRoom(rarea, function(c){ return (bd.QuC(c)!=0?bd.QuC(c):-1);}) ){
+			if( !this.checkSameObjectInRoom(rinfo, function(c){ return (bd.QuC(c)!=0?bd.QuC(c):-1);}) ){
 				this.setAlert('白丸と黒丸が両方含まれる領域があります。','An area has both white and black circles.'); return false;
 			}
 
@@ -233,9 +223,8 @@ Puzzles.kramma.prototype = {
 
 		ans.checkLcntCurve = function(){
 			for(var i=0;i<(k.qcols-1)*(k.qrows-1);i++){
-				var cx = i%(k.qcols-1)+1, cy = mf(i/(k.qcols-1))+1;
-				var xc = bd.xnum(cx,cy);
-				if(ans.lcntCross(xc)==2 && bd.QnX(xc)!=1){
+				var cx = i%(k.qcols-1)+1, cy = mf(i/(k.qcols-1))+1, xc = bd.xnum(cx,cy);
+				if(area.lcntCross(xc)==2 && bd.QnX(xc)!=1){
 					if(    !(bd.QaB(bd.bnum(cx*2  ,cy*2-1))==1 && bd.QaB(bd.bnum(cx*2  ,cy*2+1))==1)
 						&& !(bd.QaB(bd.bnum(cx*2-1,cy*2  ))==1 && bd.QaB(bd.bnum(cx*2+1,cy*2  ))==1) )
 					{

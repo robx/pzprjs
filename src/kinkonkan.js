@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.2.0p1
+// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.2.2
 //
 Puzzles.kinkonkan = function(){ };
 Puzzles.kinkonkan.prototype = {
@@ -15,7 +15,7 @@ Puzzles.kinkonkan.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.kinkonkan.prototype = {
 
 		//k.def_csize = 36;
 		k.def_psize = 48;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　マウスのクリックで斜線などが入力できます。外側をクリックすると光が発射されます。",
@@ -130,11 +131,11 @@ Puzzles.kinkonkan.prototype = {
 			return true;
 		};
 		mv.flashlight = function(ec){
-			area = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){ area.check[c]=0;}
-			var ret = ans.checkMirror1(ec, area);
+			var ldata = [];
+			for(var c=0;c<bd.cell.length;c++){ ldata[c]=0;}
+			var ret = ans.checkMirror1(ec, ldata);
 			bd.sErE([ec,ret.dest],6);
-			for(var c=0;c<bd.cell.length;c++){ bd.sErC([c],area.check[c]);}
+			for(var c=0;c<bd.cell.length;c++){ bd.sErC([c],ldata[c]);}
 			pc.paintAll();
 		},
 
@@ -239,10 +240,8 @@ Puzzles.kinkonkan.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
 
-		pc.errcolor1 = "rgb(192, 0, 0)";
-		pc.errbcolor1 = "rgb(255, 160, 160)";
 		pc.errbcolor2 = "rgb(255, 255, 127)";
 		pc.dotcolor = "rgb(255, 96, 191)";
 
@@ -253,7 +252,7 @@ Puzzles.kinkonkan.prototype = {
 			this.drawTriangle(x1,y1,x2,y2);
 			this.drawWhiteCells_kinkonkan(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawSlashes(x1,y1,x2,y2);
@@ -271,7 +270,7 @@ Puzzles.kinkonkan.prototype = {
 				if(bd.ErC(c)==1 || bd.ErC(c)==6){
 					if     (bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
 					else if(bd.ErC(c)==6){ g.fillStyle = this.errbcolor2;}
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px(), bd.cell[c].py(), k.cwidth, k.cheight);}
+					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);}
 				}
 				else{ this.vhide("c"+c+"_full_");}
 			}
@@ -285,7 +284,7 @@ Puzzles.kinkonkan.prototype = {
 				if(bd.QsC(c)==1){
 					g.fillStyle = this.dotcolor;
 					g.beginPath();
-					g.arc(bd.cell[c].px()+k.cwidth/2, bd.cell[c].py()+k.cheight/2, dsize, 0, Math.PI*2, false);
+					g.arc(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, dsize, 0, Math.PI*2, false);
 					if(this.vnop("c"+c+"_dot_",1)){ g.fill();}
 				}
 				else{ this.vhide("c"+c+"_dot_");}
@@ -303,10 +302,10 @@ Puzzles.kinkonkan.prototype = {
 					g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
 
 					if     (bd.QaC(c)==1 && this.vnop("c"+c+"_sl1_",0)){
-						this.inputPath([bd.cell[c].px(),bd.cell[c].py(), 0,0, k.cwidth,k.cheight], true); g.stroke();
+						this.inputPath([bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight], true); g.stroke();
 					}
 					else if(bd.QaC(c)==2 && this.vnop("c"+c+"_sl2_",0)){
-						this.inputPath([bd.cell[c].px(),bd.cell[c].py(), k.cwidth,0, 0,k.cheight], true); g.stroke();
+						this.inputPath([bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight], true); g.stroke();
 					}
 				}
 			}
@@ -321,7 +320,7 @@ Puzzles.kinkonkan.prototype = {
 
 					if(bd.ErE(c)==6){
 						g.fillStyle = this.errbcolor2;
-						if(this.vnop("ex"+c+"_full_",1)){ g.fillRect(bd.excell[c].px()+1, bd.excell[c].py()+1, k.cwidth-1, k.cheight-1);}
+						if(this.vnop("ex"+c+"_full_",1)){ g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);}
 					}
 					else{ this.vhide("ex"+c+"_full_");}
 
@@ -374,7 +373,7 @@ Puzzles.kinkonkan.prototype = {
 
 		enc.decodeKinkonkan = function(bstr){
 			// 盤面外数字のデコード
-			var subint = new Array();
+			var subint = [];
 			var ec=0, a=0;
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
@@ -428,7 +427,7 @@ Puzzles.kinkonkan.prototype = {
 		//---------------------------------------------------------
 		fio.decodeOthers = function(array){
 			if(array.length<k.qrows+2){ return false;}
-			var item = new Array();
+			var item = [];
 			for(var i=0;i<array.length;i++){ item = item.concat( this.retarray( array[i] ) );    }
 			for(var i=0;i<item.length;i++) {
 				if(item[i]=="."){ continue;}
@@ -464,8 +463,8 @@ Puzzles.kinkonkan.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var rarea = this.searchRarea();
-			if( !this.checkOneNumber(rarea, function(top,lcnt){ return (lcnt>1);}, function(cc){ return bd.QaC(cc)>0;}) ){
+			var rinfo = area.getRoomInfo();
+			if( !this.checkOneNumber(rinfo, function(top,lcnt){ return (lcnt>1);}, function(cc){ return bd.QaC(cc)>0;}) ){
 				this.setAlert('斜線が複数引かれた部屋があります。', 'A room has plural mirrors.'); return false;
 			}
 
@@ -477,7 +476,7 @@ Puzzles.kinkonkan.prototype = {
 				this.setAlert('光の反射回数が正しくありません。', 'The count of refrection is wrong.'); return false;
 			}
 
-			if( !this.checkOneNumber(rarea, function(top,lcnt){ return (lcnt==0);}, function(cc){ return bd.QaC(cc)>0;}) ){
+			if( !this.checkOneNumber(rinfo, function(top,lcnt){ return (lcnt==0);}, function(cc){ return bd.QaC(cc)>0;}) ){
 				this.setAlert('斜線の引かれていない部屋があります。', 'A room has no mirrors.'); return false;
 			}
 
@@ -485,26 +484,26 @@ Puzzles.kinkonkan.prototype = {
 		};
 
 		ans.checkMirrors = function(type){
-			var d = new Array();
+			var d = [];
 			for(var ec=0;ec<2*k.qcols+2*k.qrows;ec++){
 				if(!isNaN(d[ec]) || bd.QnE(ec)==-1 || bd.DiE(ec)==0){ continue;}
-				area = new AreaInfo();
-				for(var c=0;c<bd.cell.length;c++){ area.check[c]=0;}
+				var ldata = [];
+				for(var c=0;c<bd.cell.length;c++){ ldata[c]=0;}
 
-				var ret = this.checkMirror1(ec, area);
+				var ret = this.checkMirror1(ec, ldata);
 				if( (type==1&& (bd.DiE(ec)!=bd.DiE(ret.dest)) )||
 					(type==2&&((bd.QnE(ec)!=bd.QnE(ret.dest)) || bd.QnE(ec)!=ret.cnt))
 				){
 					for(var c=0;c<bd.excell.length;c++){ bd.sErE([c],0);}
 					bd.sErE([ec,ret.dest],6);
-					for(var c=0;c<bd.cell.length;c++){ bd.sErC([c],area.check[c]);}
+					for(var c=0;c<bd.cell.length;c++){ bd.sErC([c],ldata[c]);}
 					return false;
 				}
 				d[ec]=1; d[ret.dest]=1;
 			}
 			return true;
 		};
-		ans.checkMirror1 = function(startec, area){
+		ans.checkMirror1 = function(startec, ldata){
 			var ccnt=0;
 
 			var cx=bd.excell[startec].cx, cy=bd.excell[startec].cy;
@@ -520,19 +519,19 @@ Puzzles.kinkonkan.prototype = {
 				if     (bd.exnum(cx,cy)!=-1){ break;}
 				else if(bd.QaC(cc)==1){
 					ccnt++;
-					if     (dir==1){ area.check[cc]=(!isNaN({4:1,6:1}[area.check[cc]])?6:2); dir=3;}
-					else if(dir==2){ area.check[cc]=(!isNaN({2:1,6:1}[area.check[cc]])?6:4); dir=4;}
-					else if(dir==3){ area.check[cc]=(!isNaN({2:1,6:1}[area.check[cc]])?6:4); dir=1;}
-					else if(dir==4){ area.check[cc]=(!isNaN({4:1,6:1}[area.check[cc]])?6:2); dir=2;}
+					if     (dir==1){ ldata[cc]=(!isNaN({4:1,6:1}[ldata[cc]])?6:2); dir=3;}
+					else if(dir==2){ ldata[cc]=(!isNaN({2:1,6:1}[ldata[cc]])?6:4); dir=4;}
+					else if(dir==3){ ldata[cc]=(!isNaN({2:1,6:1}[ldata[cc]])?6:4); dir=1;}
+					else if(dir==4){ ldata[cc]=(!isNaN({4:1,6:1}[ldata[cc]])?6:2); dir=2;}
 				}
 				else if(bd.QaC(cc)==2){
 					ccnt++;
-					if     (dir==1){ area.check[cc]=(!isNaN({5:1,6:1}[area.check[cc]])?6:3); dir=4;}
-					else if(dir==2){ area.check[cc]=(!isNaN({3:1,6:1}[area.check[cc]])?6:5); dir=3;}
-					else if(dir==3){ area.check[cc]=(!isNaN({5:1,6:1}[area.check[cc]])?6:3); dir=2;}
-					else if(dir==4){ area.check[cc]=(!isNaN({3:1,6:1}[area.check[cc]])?6:5); dir=1;}
+					if     (dir==1){ ldata[cc]=(!isNaN({5:1,6:1}[ldata[cc]])?6:3); dir=4;}
+					else if(dir==2){ ldata[cc]=(!isNaN({3:1,6:1}[ldata[cc]])?6:5); dir=3;}
+					else if(dir==3){ ldata[cc]=(!isNaN({5:1,6:1}[ldata[cc]])?6:3); dir=2;}
+					else if(dir==4){ ldata[cc]=(!isNaN({3:1,6:1}[ldata[cc]])?6:5); dir=1;}
 				}
-				else{ area.check[cc]=6;}
+				else{ ldata[cc]=6;}
 
 				if(ccnt>bd.cell.length){ break;} // 念のためガード条件(多分引っかからない)
 			}

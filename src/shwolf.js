@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤギとオオカミ版 shwolf.js v3.2.1
+// パズル固有スクリプト部 ヤギとオオカミ版 shwolf.js v3.2.2
 //
 Puzzles.shwolf = function(){ };
 Puzzles.shwolf.prototype = {
@@ -15,7 +15,7 @@ Puzzles.shwolf.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.shwolf.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("ヤギとオオカミ","Sheeps and Wolves");
 		base.setExpression("　左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
@@ -81,14 +82,9 @@ Puzzles.shwolf.prototype = {
 				   (pos.y%2==0 && this.mouseCell.y==pos.y && Math.abs(this.mouseCell.x-pos.x)==1) )
 				{
 					this.mouseCell=-1
-
-					if(this.inputData==-1){
-						if     (flag==0){ this.inputData=(bd.QuB(id)==0?1:0);}
-						else if(flag==1){ this.inputData=(bd.QaB(id)==0?1:0);}
-					}
+					if(this.inputData==-1){ this.inputData=(bd.isBorder(id)?0:1);}
 
 					var idlist = [id];
-
 					var bx1, bx2, by1, by2;
 					if(bd.border[id].cx%2==1){
 						var x;
@@ -106,14 +102,8 @@ Puzzles.shwolf.prototype = {
 					for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
 
 					for(var i=0;i<idlist.length;i++){
-						if(flag==0){
-							if(this.inputData!=-1){ bd.sQuB(idlist[i], this.inputData); bd.sQaB(idlist[i], 0);}
-						}
-						else if(flag==1 && bd.QuB(id)==0){
-							if     (this.inputData==1){ bd.sQaB(idlist[i], 1); if(k.isborderAsLine){ bd.sQsB(idlist[i], 0);} }
-							else if(this.inputData==0){ bd.sQaB(idlist[i], 0);}
-						}
-						else{ return;}
+						if     (this.inputData==1){ bd.setBorder(idlist[i]);}
+						else if(this.inputData==0){ bd.removeBorder(idlist[i]);}
 						pc.paintBorder(idlist[i]);
 					}
 				}
@@ -128,9 +118,9 @@ Puzzles.shwolf.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
-
+		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.BorderQanscolor = "rgb(64, 64, 255)";
+
 		pc.crosssize = 0.15;
 
 		pc.paint = function(x1,y1,x2,y2){
@@ -139,7 +129,7 @@ Puzzles.shwolf.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			//this.drawQueses41_42(x1,y1,x2,y2);
@@ -183,8 +173,8 @@ Puzzles.shwolf.prototype = {
 				el = bd.cell[c].numobj2.context;
 				el.style.display = 'inline';
 				var wid = el.clientWidth, hgt = el.clientHeight;
-				el.style.left = k.cv_oft.x+bd.cell[c].px()+mf((k.cwidth-wid) /2)+2;
-				el.style.top  = k.cv_oft.y+bd.cell[c].py()+mf((k.cheight-hgt)/2)+1;
+				el.style.left = k.cv_oft.x+bd.cell[c].px+mf((k.cwidth-wid) /2)+2;
+				el.style.top  = k.cv_oft.y+bd.cell[c].py+mf((k.cheight-hgt)/2)+1;
 			}
 			this.vinc();
 		};
@@ -254,12 +244,12 @@ Puzzles.shwolf.prototype = {
 				this.setAlert('外枠につながっていない線があります。','A line doesn\'t connect to the chassis.'); return false;
 			}
 
-			rarea = this.searchRarea();
-			if( !this.checkNoObjectInRoom(rarea, function(c){ return (bd.QuC(c)!=0?bd.QuC(c):-1);}) ){
+			var rinfo = area.getRoomInfo();
+			if( !this.checkNoObjectInRoom(rinfo, function(c){ return (bd.QuC(c)!=0?bd.QuC(c):-1);}) ){
 				this.setAlert('ヤギもオオカミもいない領域があります。','An area has neither sheeps nor wolves.'); return false;
 			}
 
-			if( !this.checkSameObjectInRoom(rarea, function(c){ return (bd.QuC(c)!=0?bd.QuC(c):-1);}) ){
+			if( !this.checkSameObjectInRoom(rinfo, function(c){ return (bd.QuC(c)!=0?bd.QuC(c):-1);}) ){
 				this.setAlert('ヤギとオオカミが両方いる領域があります。','An area has both sheeps and wolves.'); return false;
 			}
 
@@ -273,9 +263,8 @@ Puzzles.shwolf.prototype = {
 
 		ans.checkLcntCurve = function(){
 			for(var i=0;i<(k.qcols-1)*(k.qrows-1);i++){
-				var cx = i%(k.qcols-1)+1, cy = mf(i/(k.qcols-1))+1;
-				var xc = bd.xnum(i%(k.qcols-1)+1, mf(i/(k.qcols-1))+1);
-				if(ans.lcntCross(xc)==2 && bd.QnX(xc)!=1){
+				var cx = i%(k.qcols-1)+1, cy = mf(i/(k.qcols-1))+1, xc = bd.xnum(cx,cy);
+				if(area.lcntCross(xc)==2 && bd.QnX(xc)!=1){
 					if(    !(bd.QaB(bd.bnum(cx*2  ,cy*2-1))==1 && bd.QaB(bd.bnum(cx*2  ,cy*2+1))==1)
 						&& !(bd.QaB(bd.bnum(cx*2-1,cy*2  ))==1 && bd.QaB(bd.bnum(cx*2+1,cy*2  ))==1) )
 					{
@@ -288,7 +277,7 @@ Puzzles.shwolf.prototype = {
 		};
 
 		ans.checkLineChassis = function(){
-			var lines = new Array();
+			var lines = [];
 			for(var id=0;id<bd.border.length;id++){ lines[id]=bd.QaB(id);}
 			for(var bx=0;bx<=2*k.qcols;bx+=2){
 				for(var by=0;by<=2*k.qrows;by+=2){
@@ -302,7 +291,7 @@ Puzzles.shwolf.prototype = {
 			}
 			for(var id=0;id<bd.border.length;id++){
 				if(lines[id]==1){
-					var errborder = new Array();
+					var errborder = [];
 					for(var i=0;i<bd.border.length;i++){ if(lines[i]==1){ errborder.push(i);} }
 					bd.sErB(bd.borders,2);
 					bd.sErB(errborder,1);

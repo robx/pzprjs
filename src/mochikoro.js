@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 モチコロ版 mochikoro.js v3.2.0
+// パズル固有スクリプト部 モチコロ版 mochikoro.js v3.2.2
 //
 Puzzles.mochikoro = function(){ };
 Puzzles.mochikoro.prototype = {
@@ -15,7 +15,7 @@ Puzzles.mochikoro.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.mochikoro.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		k.area = { bcell:0, wcell:1, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("モチコロ","Mochikoro");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
@@ -82,14 +83,13 @@ Puzzles.mochikoro.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.bcolor = "rgb(127, 255, 127)";
-		pc.errcolor1 = "rgb(192, 0, 0)";
+		pc.bcolor = pc.bcolor_GREEN;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
 			this.drawWhiteCells(x1,y1,x2,y2);
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -121,7 +121,7 @@ Puzzles.mochikoro.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.check2x2Block( function(cc){ return (bd.QaC(cc)==1);} ) ){
+			if( !this.check2x2Block( bd.isBlack ) ){
 				this.setAlert('2x2の黒マスのかたまりがあります。','There is a block of 2x2 black cells.'); return false;
 			}
 
@@ -129,16 +129,16 @@ Puzzles.mochikoro.prototype = {
 				this.setAlert('孤立した白マスのブロックがあります。','White cells are devided.'); return false;
 			}
 
-			var warea = this.searchWarea();
-			if( !this.isAreaRect(warea, function(cc){ return (bd.QaC(cc)!=1);}) ){
+			var winfo = area.getWCellInfo();
+			if( !this.checkAreaRect(winfo, f_true) ){
 				this.setAlert('四角形でない白マスのブロックがあります。','There is a block of white cells that is not rectangle.'); return false;
 			}
 
-			if( !this.checkQnumsInArea(warea, function(a){ return (a>=2);}) ){
+			if( !this.checkQnumsInArea(winfo, function(a){ return (a>=2);}) ){
 				this.setAlert('1つのブロックに2つ以上の数字が入っています。','A block has plural numbers.'); return false;
 			}
 
-			if( !this.checkNumberAndSize(warea) ){
+			if( !this.checkNumberAndSize(winfo) ){
 				this.setAlert('数字とブロックの面積が違います。','A size of tha block and the number written in the block is differrent.'); return false;
 			}
 
@@ -146,28 +146,33 @@ Puzzles.mochikoro.prototype = {
 		};
 
 		ans.checkWareaSequent = function(){
-			var func = function(id){ return (id!=-1 && bd.QaC(id)!=1); };
-			var area = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){ area.check[c]=(func(c)?0:-1);}
-			for(var c=0;c<bd.cell.length;c++){ if(area.check[c]==0){ area.max++; area.room[area.max]=new Array(); this.sk0(func, area, c, area.max);} }
-			return ans.linkBWarea(area);
+			var winfo = new AreaInfo();
+			for(var c=0;c<bd.cell.length;c++){ winfo.id[c]=(bd.isWhite(c)?0:-1);}
+			for(var c=0;c<bd.cell.length;c++){
+				if(winfo.id[c]==0){
+					winfo.max++;
+					winfo.room[winfo.max] = {idlist:[]};
+					this.sk0(winfo, c, winfo.max);
+				}
+			}
+			return ans.checkOneArea(winfo);
 		};
-		ans.sk0 = function(func, area, i, areaid){
-			if(area.check[i]!=0){ return;}
-			area.check[i] = areaid;
-			area.room[areaid].push(i);
-			if( func(bd.up(i)) ){ this.sk0(func, area, bd.up(i), areaid);}
-			if( func(bd.dn(i)) ){ this.sk0(func, area, bd.dn(i), areaid);}
-			if( func(bd.lt(i)) ){ this.sk0(func, area, bd.lt(i), areaid);}
-			if( func(bd.rt(i)) ){ this.sk0(func, area, bd.rt(i), areaid);}
+		ans.sk0 = function(winfo, i, areaid){
+			if(winfo.id[i]!=0){ return;}
+			winfo.id[i] = areaid;
+			winfo.room[areaid].idlist.push(i);
+			if( bd.isWhite(bd.up(i)) ){ this.sk0(winfo, bd.up(i), areaid);}
+			if( bd.isWhite(bd.dn(i)) ){ this.sk0(winfo, bd.dn(i), areaid);}
+			if( bd.isWhite(bd.lt(i)) ){ this.sk0(winfo, bd.lt(i), areaid);}
+			if( bd.isWhite(bd.rt(i)) ){ this.sk0(winfo, bd.rt(i), areaid);}
 
 			if(bd.cell[i].cx>0){
-				if( func(bd.up(bd.lt(i))) ){ this.sk0(func, area, bd.up(bd.lt(i)), areaid);}
-				if( func(bd.dn(bd.lt(i))) ){ this.sk0(func, area, bd.dn(bd.lt(i)), areaid);}
+				if( bd.isWhite(bd.up(bd.lt(i))) ){ this.sk0(winfo, bd.up(bd.lt(i)), areaid);}
+				if( bd.isWhite(bd.dn(bd.lt(i))) ){ this.sk0(winfo, bd.dn(bd.lt(i)), areaid);}
 			}
 			if(bd.cell[i].cx<k.qcols-1){
-				if( func(bd.up(bd.rt(i))) ){ this.sk0(func, area, bd.up(bd.rt(i)), areaid);}
-				if( func(bd.dn(bd.rt(i))) ){ this.sk0(func, area, bd.dn(bd.rt(i)), areaid);}
+				if( bd.isWhite(bd.up(bd.rt(i))) ){ this.sk0(winfo, bd.up(bd.rt(i)), areaid);}
+				if( bd.isWhite(bd.dn(bd.rt(i))) ){ this.sk0(winfo, bd.dn(bd.rt(i)), areaid);}
 			}
 		};
 	}

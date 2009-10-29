@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ひとりにしてくれ版 hitori.js v3.2.0p1
+// パズル固有スクリプト部 ひとりにしてくれ版 hitori.js v3.2.2
 //
 Puzzles.hitori = function(){ };
 Puzzles.hitori.prototype = {
@@ -15,7 +15,7 @@ Puzzles.hitori.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.hitori.prototype = {
 
 		//k.def_csize = 36;
 		k.def_psize = 16;
+		k.area = { bcell:0, wcell:1, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("ひとりにしてくれ","Hitori");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
@@ -78,8 +79,8 @@ Puzzles.hitori.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-		pc.bcolor = "rgb(160, 255, 160)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
+		pc.bcolor = pc.bcolor_GREEN;
 		pc.BCell_fontcolor = "rgb(96,96,96)";
 
 		pc.paint = function(x1,y1,x2,y2){
@@ -88,7 +89,7 @@ Puzzles.hitori.prototype = {
 		//	this.flushCanvasAll();
 
 			this.drawWhiteCells(x1,y1,x2,y2);
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -183,11 +184,11 @@ Puzzles.hitori.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkSideCell(function(c1,c2){ return (bd.QaC(c1)==1 && bd.QaC(c2)==1);}) ){
+			if( !this.checkSideCell(function(c1,c2){ return (bd.isBlack(c1) && bd.isBlack(c2));}) ){
 				this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 			}
 
-			if( !this.linkBWarea( this.searchWarea() ) ){
+			if( !this.checkOneArea( area.getWCellInfo() ) ){
 				this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 			}
 
@@ -203,19 +204,19 @@ Puzzles.hitori.prototype = {
 			var cx, cy;
 
 			for(var cy=0;cy<k.qrows;cy++){
-				var clist = new Array();
-				for(var cx=0;cx<k.qcols;cx++){ if(bd.QaC(bd.cnum(cx,cy))!=1){ clist.push(bd.cnum(cx,cy));}}
+				var clist = [];
+				for(var cx=0;cx<k.qcols;cx++){ if(bd.isWhite(bd.cnum(cx,cy))){ clist.push(bd.cnum(cx,cy));}}
 				if(!this.checkDifferentNumberInClist(clist)){ return false;}
 			}
 			for(var cx=1;cx<k.qcols;cx++){
-				var clist = new Array();
-				for(var cy=0;cy<k.qrows;cy++){ if(bd.QaC(bd.cnum(cx,cy))!=1){ clist.push(bd.cnum(cx,cy));}}
+				var clist = [];
+				for(var cy=0;cy<k.qrows;cy++){ if(bd.isWhite(bd.cnum(cx,cy))){ clist.push(bd.cnum(cx,cy));}}
 				if(!this.checkDifferentNumberInClist(clist)){ return false;}
 			}
 			return true;
 		};
 		ans.checkDifferentNumberInClist = function(clist){
-			var d = new Array();
+			var d = [];
 			for(var i=1;i<=Math.max(k.qcols,k.qrows);i++){ d[i]=-1;}
 			for(var i=0;i<clist.length;i++){
 				var val=bd.QnC(clist[i]);

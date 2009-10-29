@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.2.1
+// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.2.2
 //
 Puzzles.hashikake = function(){ };
 Puzzles.hashikake.prototype = {
@@ -15,7 +15,7 @@ Puzzles.hashikake.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 1;	// 1:線が交差するパズル
 		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.hashikake.prototype = {
 
 		//k.def_csize = 36;
 		k.def_psize = 16;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("橋をかけろ","Bridges");
 		base.setExpression("　左ボタンで線が、右ボタンで×が入力できます。",
@@ -164,20 +165,18 @@ Puzzles.hashikake.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(224, 224, 224)";
-		pc.bcolor = "rgb(160, 255, 160)";
+		pc.gridcolor = pc.gridcolor_THIN;
+		pc.bcolor = pc.bcolor_GREEN;
 
 		pc.fontsizeratio = 0.85;
+		pc.chassisflag = false;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			if(k.mode==1){
-				this.drawChassis_bridges(x1,y1,x2,y2);
-				this.drawBDline(x1,y1,x2,y2);
-			}
-			else{ this.hideBorder();}
+			if(k.mode==1){ this.drawGrid(x1,y1,x2,y2);}
+			else if(g.vml){ this.hideBorder();}
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
@@ -211,20 +210,20 @@ Puzzles.hashikake.prototype = {
 			this.vhide(["b"+id+"_ls_","b"+id+"_ld1_","b"+id+"_ld2_"]);
 			if     (bd.border[id].cx%2==1){
 				if(bd.LiB(id)==1){
-					if(this.vnop("b"+id+"_ls_",1)){ g.fillRect(bd.border[id].px()-lm, bd.border[id].py()-mf(k.cheight/2)-1, lw, k.cheight+lw);}
+					if(this.vnop("b"+id+"_ls_",1)){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-1, lw, k.cheight+lw);}
 				}
 				else if(bd.LiB(id)==2){
-					if(this.vnop("b"+id+"_ld1_",1)){ g.fillRect(bd.border[id].px()-lm-ls, bd.border[id].py()-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-					if(this.vnop("b"+id+"_ld2_",1)){ g.fillRect(bd.border[id].px()-lm+ls, bd.border[id].py()-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
+					if(this.vnop("b"+id+"_ld1_",1)){ g.fillRect(bd.border[id].px-lm-ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
+					if(this.vnop("b"+id+"_ld2_",1)){ g.fillRect(bd.border[id].px-lm+ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
 				}
 			}
 			else if(bd.border[id].cy%2==1){
 				if(bd.LiB(id)==1){
-					if(this.vnop("b"+id+"_ls_",1)){ g.fillRect(bd.border[id].px()-mf(k.cwidth/2)-lm, bd.border[id].py()-1, k.cwidth+lw, lw);}
+					if(this.vnop("b"+id+"_ls_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-1, k.cwidth+lw, lw);}
 				}
 				else if(bd.LiB(id)==2){
-					if(this.vnop("b"+id+"_ld1_",1)){ g.fillRect(bd.border[id].px()-mf(k.cwidth/2)-lm, bd.border[id].py()-lm-ls, k.cwidth+lw, lw);}
-					if(this.vnop("b"+id+"_ld2_",1)){ g.fillRect(bd.border[id].px()-mf(k.cwidth/2)-lm, bd.border[id].py()-lm+ls, k.cwidth+lw, lw);}
+					if(this.vnop("b"+id+"_ld1_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-lm-ls, k.cwidth+lw, lw);}
+					if(this.vnop("b"+id+"_ld2_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-lm+ls, k.cwidth+lw, lw);}
 				}
 			}
 			this.vinc();
@@ -238,7 +237,7 @@ Puzzles.hashikake.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QnC(c)!=-1){
-					var px=bd.cell[c].px()+mf(k.cwidth/2), py=bd.cell[c].py()+mf(k.cheight/2);
+					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
 
 					g.fillStyle = this.Cellcolor;
 					g.beginPath();
@@ -258,36 +257,22 @@ Puzzles.hashikake.prototype = {
 			}
 			this.vinc();
 		};
-		pc.drawChassis_bridges = function(x1,y1,x2,y2){
-			x1--; y1--; x2++; y2++;
-			if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
-
-			g.fillStyle = "rgb(224,224,224)";
-			if(x1<1)         { if(this.vnop("chs1_",1)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+y1*k.cheight    , 1, (y2-y1+1)*k.cheight+1);} }
-			if(y1<1)         { if(this.vnop("chs2_",1)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+y1*k.cheight    , (x2-x1+1)*k.cwidth+1, 1); } }
-			if(y2>=k.qrows-1){ if(this.vnop("chs3_",1)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+(y2+1)*k.cheight, (x2-x1+1)*k.cwidth+1, 1); } }
-			if(x2>=k.qcols-1){ if(this.vnop("chs4_",1)){ g.fillRect(k.p0.x+(x2+1)*k.cwidth, k.p0.y+y1*k.cheight    , 1, (y2-y1+1)*k.cheight+1);} }
-			this.vinc();
-		};
 		pc.hideBorder = function(){
-			if(!g.vml){ return;}
-			this.vhide(["chs1_","chs2_","chs3_","chs4_"]);
 			for(var i=0;i<=k.qcols;i++){ this.vhide("bdy"+i+"_");}
 			for(var i=0;i<=k.qrows;i++){ this.vhide("bdx"+i+"_");}
 		};
 
-		col.repaintParts = function(id){
+		line.repaintParts = function(id){
 			var bx=bd.border[id].cx, by=bd.border[id].cy;
 			if(bd.border[id].cx%2==1){ pc.drawNumCells_bridges(mf((bx-1)/2)-1, mf(by/2)-1, mf((bx-1)/2)+1, mf(by/2));}
 			else                     { pc.drawNumCells_bridges(mf(bx/2)-1, mf((by-1)/2)-1, mf(bx/2), mf((by-1)/2)+1);}
 		};
-		col.branch = function(bx,by,lcnt){
+		line.branch = function(bx,by,lcnt){
 			return (lcnt==3||lcnt==4) && (bd.QnC(bd.cnum(mf(bx/2),mf(by/2)))!=-1);
 		};
-		col.point = function(id,cc){
-			return ans.lcntCell(cc)==1 || (ans.lcntCell(cc)==3 && this.tshapeid(cc)==id);
-		};
+		line.point = function(id,cc){
+			return this.lcntCell(cc)==1 || (this.lcntCell(cc)==3 && this.tshapeid(cc)==id);
+		}.bind(line);
 	},
 
 	//---------------------------------------------------------
@@ -365,7 +350,7 @@ Puzzles.hashikake.prototype = {
 			}
 
 			this.performAsLine = true;
-			if( !this.linkBWarea( this.searchLarea() ) ){
+			if( !this.checkOneArea( line.getLareaInfo() ) ){
 				this.setAlert('線が全体で一つながりになっていません。', 'All lines and numbers are not connected each other.'); return false;
 			}
 
@@ -381,10 +366,10 @@ Puzzles.hashikake.prototype = {
 				if(bd.QnC(cc)<0){ continue;}
 
 				var cnt = 0;
-				if(bd.ub(cc)!=-1 && bd.LiB(bd.ub(cc))>0){ cnt+=bd.LiB(bd.ub(cc));}
-				if(bd.db(cc)!=-1 && bd.LiB(bd.db(cc))>0){ cnt+=bd.LiB(bd.db(cc));}
-				if(bd.lb(cc)!=-1 && bd.LiB(bd.lb(cc))>0){ cnt+=bd.LiB(bd.lb(cc));}
-				if(bd.rb(cc)!=-1 && bd.LiB(bd.rb(cc))>0){ cnt+=bd.LiB(bd.rb(cc));}
+				if(bd.ub(cc)!=-1 && bd.isLine(bd.ub(cc))){ cnt+=bd.LiB(bd.ub(cc));}
+				if(bd.db(cc)!=-1 && bd.isLine(bd.db(cc))){ cnt+=bd.LiB(bd.db(cc));}
+				if(bd.lb(cc)!=-1 && bd.isLine(bd.lb(cc))){ cnt+=bd.LiB(bd.lb(cc));}
+				if(bd.rb(cc)!=-1 && bd.isLine(bd.rb(cc))){ cnt+=bd.LiB(bd.rb(cc));}
 
 				if((flag==1 && bd.QnC(cc)<cnt)||(flag==2 && bd.QnC(cc)>cnt)){
 					bd.sErC(cc,1);

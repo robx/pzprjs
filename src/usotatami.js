@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ウソタタミ版 usotatami.js v3.2.0
+// パズル固有スクリプト部 ウソタタミ版 usotatami.js v3.2.2
 //
 Puzzles.usotatami = function(){ };
 Puzzles.usotatami.prototype = {
@@ -15,7 +15,7 @@ Puzzles.usotatami.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.usotatami.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("ウソタタミ","Uso-tatami");
 		base.setExpression("　左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
@@ -86,9 +87,7 @@ Puzzles.usotatami.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
-
-		// pc.BorderQanscolor = "rgb(0, 160, 0)";
+		pc.gridcolor = pc.gridcolor_DLIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -96,7 +95,7 @@ Puzzles.usotatami.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -133,16 +132,16 @@ Puzzles.usotatami.prototype = {
 				this.setAlert('十字の交差点があります。','There is a crossing border line.'); return false;
 			}
 
-			var rarea = this.searchRarea();
-			if( !this.checkQnumsInArea(rarea, function(a){ return (a==0);}) ){
+			var rinfo = area.getRoomInfo();
+			if( !this.checkQnumsInArea(rinfo, function(a){ return (a==0);}) ){
 				this.setAlert('数字の入っていないタタミがあります。','A tatami has no numbers.'); return false;
 			}
 
-			if( !this.checkQnumsInArea(rarea, function(a){ return (a>=2);}) ){
+			if( !this.checkQnumsInArea(rinfo, function(a){ return (a>=2);}) ){
 				this.setAlert('1つのタタミに2つ以上の数字が入っています。','A tatami has plural numbers.'); return false;
 			}
 
-			if( !this.checkOneNumber(rarea, function(num, a){ return (num>0 && num==a);}, f_true) ){
+			if( !this.checkOneNumber(rinfo, function(num, a){ return (num>0 && num==a);}, f_true) ){
 				this.setAlert('数字とタタミの大きさが同じです。','The size of the tatami and the number is the same.'); return false;
 			}
 
@@ -150,7 +149,7 @@ Puzzles.usotatami.prototype = {
 				this.setAlert('途切れている線があります。','There is a dead-end line.'); return false;
 			}
 
-			if( !this.checkAllArea(rarea, f_true, function(w,h,a){ return (w==1 || h==1);} ) ){
+			if( !this.checkAllArea(rinfo, f_true, function(w,h,a){ return (w==1 || h==1);} ) ){
 				this.setAlert('幅が１マスではないタタミがあります。','The width of the tatami is not one.'); return false;
 			}
 

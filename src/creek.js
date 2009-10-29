@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クリーク版 creek.js v3.2.0
+// パズル固有スクリプト部 クリーク版 creek.js v3.2.2
 //
 Puzzles.creek = function(){ };
 Puzzles.creek.prototype = {
@@ -15,7 +15,7 @@ Puzzles.creek.prototype = {
 
 		k.isoutsidecross  = 1;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.creek.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		k.area = { bcell:0, wcell:1, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("クリーク","Creek");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マスを入力できます。",
@@ -89,7 +90,6 @@ Puzzles.creek.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "black";
 		pc.Cellcolor = "rgb(96, 96, 96)";
 
 		pc.crosssize = 0.35;
@@ -101,7 +101,7 @@ Puzzles.creek.prototype = {
 			this.drawBlackCells(x1,y1,x2,y2);
 			this.drawWhiteCells(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawCrosses(x1,y1,x2+1,y2+1);
@@ -135,7 +135,7 @@ Puzzles.creek.prototype = {
 			if( !this.checkQnumCross(function(cr,bcnt){ return (cr>=bcnt);}) ){
 				this.setAlert('数字のまわりにある黒マスの数が間違っています。','The number of black cells around a number on crossing is big.'); return false;
 			}
-			if( !this.linkBWarea( this.searchWarea() ) ){
+			if( !this.checkOneArea( area.getWCellInfo() ) ){
 				this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 			}
 			if( !this.checkQnumCross(function(cr,bcnt){ return (cr<=bcnt);}) ){

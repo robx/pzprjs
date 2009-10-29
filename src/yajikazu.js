@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 やじさんかずさん版 yajikazu.js v3.2.0p1
+// パズル固有スクリプト部 やじさんかずさん版 yajikazu.js v3.2.2
 //
 Puzzles.yajikazu = function(){ };
 Puzzles.yajikazu.prototype = {
@@ -15,7 +15,7 @@ Puzzles.yajikazu.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.yajikazu.prototype = {
 
 		//k.def_csize = 36;
 		k.def_psize = 16;
+		k.area = { bcell:0, wcell:1, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pmake"){
 			base.setExpression("　矢印は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
@@ -89,8 +90,8 @@ Puzzles.yajikazu.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-		pc.bcolor = "rgb(160, 255, 160)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
+		pc.bcolor = pc.bcolor_GREEN;
 		pc.BCell_fontcolor = "rgb(96,96,96)";
 
 		pc.paint = function(x1,y1,x2,y2){
@@ -99,7 +100,7 @@ Puzzles.yajikazu.prototype = {
 		//	this.flushCanvasAll();
 
 			this.drawWhiteCells(x1,y1,x2,y2);
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawArrowNumbers(x1,y1,x2,y2);
@@ -131,11 +132,11 @@ Puzzles.yajikazu.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkSideCell(function(c1,c2){ return (bd.QaC(c1)==1 && bd.QaC(c2)==1);}) ){
+			if( !this.checkSideCell(function(c1,c2){ return (bd.isBlack(c1) && bd.isBlack(c2));}) ){
 				this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 			}
 
-			if( !this.linkBWarea( this.searchWarea() ) ){
+			if( !this.checkOneArea( area.getWCellInfo() ) ){
 				this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 			}
 
@@ -149,13 +150,13 @@ Puzzles.yajikazu.prototype = {
 
 		ans.checkArrowNumber = function(){
 			for(var c=0;c<bd.cell.length;c++){
-				if(bd.QnC(c)<0 || bd.DiC(c)==0 || bd.QaC(c)==1){ continue;}
+				if(bd.QnC(c)<0 || bd.DiC(c)==0 || bd.isBlack(c)){ continue;}
 				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, dir = bd.DiC(c);
 				var cnt=0;
-				if     (dir==1){ cy--; while(cy>=0     ){ if(bd.QaC(bd.cnum(cx,cy))==1){cnt++;} cy--;} }
-				else if(dir==2){ cy++; while(cy<k.qrows){ if(bd.QaC(bd.cnum(cx,cy))==1){cnt++;} cy++;} }
-				else if(dir==3){ cx--; while(cx>=0     ){ if(bd.QaC(bd.cnum(cx,cy))==1){cnt++;} cx--;} }
-				else if(dir==4){ cx++; while(cx<k.qcols){ if(bd.QaC(bd.cnum(cx,cy))==1){cnt++;} cx++;} }
+				if     (dir==1){ cy--; while(cy>=0     ){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cy--;} }
+				else if(dir==2){ cy++; while(cy<k.qrows){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cy++;} }
+				else if(dir==3){ cx--; while(cx>=0     ){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cx--;} }
+				else if(dir==4){ cx++; while(cx<k.qcols){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cx++;} }
 
 				if(bd.QnC(c)!=cnt){
 					bd.sErC([c],1);

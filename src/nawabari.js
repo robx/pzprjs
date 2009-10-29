@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 なわばり版 nawabari.js v3.2.0
+// パズル固有スクリプト部 なわばり版 nawabari.js v3.2.2
 //
 Puzzles.nawabari = function(){ };
 Puzzles.nawabari.prototype = {
@@ -15,7 +15,7 @@ Puzzles.nawabari.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.nawabari.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("なわばり","Territory");
 		base.setExpression("　左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
@@ -86,9 +87,7 @@ Puzzles.nawabari.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
-
-		// pc.BorderQanscolor = "rgb(0, 160, 0)";
+		pc.gridcolor = pc.gridcolor_DLIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -96,7 +95,7 @@ Puzzles.nawabari.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -129,16 +128,16 @@ Puzzles.nawabari.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var rarea = this.searchRarea();
-			if( !this.isAreaRect(rarea, f_true) ){
+			var rinfo = area.getRoomInfo();
+			if( !this.checkAreaRect(rinfo, f_true) ){
 				this.setAlert('部屋の形が長方形ではありません。','There is not rectangle territory.'); return false;
 			}
 
-			if( !this.checkQnumsInArea(rarea, function(a){ return (a==0);}) ){
+			if( !this.checkQnumsInArea(rinfo, function(a){ return (a==0);}) ){
 				this.setAlert('数字の入っていない部屋があります。','A territory has no numbers.'); return false;
 			}
 
-			if( !this.checkQnumsInArea(rarea, function(a){ return (a>=2);}) ){
+			if( !this.checkQnumsInArea(rinfo, function(a){ return (a>=2);}) ){
 				this.setAlert('1つの部屋に2つ以上の数字が入っています。','A territory has plural numbers.'); return false;
 			}
 

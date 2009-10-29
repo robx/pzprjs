@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.0p2
+// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.2
 //
 Puzzles.kakuro = function(){ };
 Puzzles.kakuro.prototype = {
@@ -15,7 +15,7 @@ Puzzles.kakuro.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.kakuro.prototype = {
 
 		//k.def_csize = 36;
 		k.def_psize = 40;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　マウスやキーボードで数字が入力できます。",
@@ -120,7 +121,6 @@ Puzzles.kakuro.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		//pc.BDlinecolor = "rgb(127, 127, 127)";
 		pc.TTcolor = "rgb(255,255,127)";
 
 		pc.paint = function(x1,y1,x2,y2){
@@ -135,7 +135,7 @@ Puzzles.kakuro.prototype = {
 			this.drawEXcell(x1,y1,x2,y2,false);
 			this.drawTargetTriangle(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders51(x1,y1,x2,y2);
 
 			this.drawChassis_ex1(x1-1,y1-1,x2,y2,false);
@@ -168,7 +168,7 @@ Puzzles.kakuro.prototype = {
 				if(bd.QuC(c)!=51){ this.vhide("c"+c+"_full_"); continue;}
 				if(bd.ErC(c)!= 1){ g.fillStyle = "rgb(192,192,192)";}
 				else{ g.fillStyle = this.errbcolor1;}
-				if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px()+1, bd.cell[c].py()+1, k.cwidth-1, k.cheight-1);}
+				if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);}
 			}
 			this.vinc();
 		};
@@ -180,7 +180,7 @@ Puzzles.kakuro.prototype = {
 
 					if(bd.ErE(c)!=1){ g.fillStyle = "rgb(192,192,192)";}
 					else{ g.fillStyle = this.errbcolor1;}
-					if(this.vnop("ex"+c+"_full_",1)){ g.fillRect(bd.excell[c].px()+1, bd.excell[c].py()+1, k.cwidth-1, k.cheight-1);}
+					if(this.vnop("ex"+c+"_full_",1)){ g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);}
 				}
 			}
 			this.vinc();
@@ -418,7 +418,7 @@ Puzzles.kakuro.prototype = {
 			var num, cnt, empty, cells, clist, d;
 
 			for(var cx=0;cx<k.qcols;cx++){
-				cnt = 0; empty=0; cells=0; clist = new Array();
+				cnt = 0; empty=0; cells=0; clist = [];
 				d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
 				num = bd.DiE([bd.exnum(cx,-1)]);
 				if(flag==1){ bd.sErE([bd.exnum(cx,-1)],1);}
@@ -434,7 +434,7 @@ Puzzles.kakuro.prototype = {
 						if(flag==1){ bd.sErE([bd.exnum(cx,-1)],0);}
 						if(cy==k.qrows){ break;}
 						num = bd.DiC(cc);
-						cnt = 0; empty=0; cells=0; clist = new Array();
+						cnt = 0; empty=0; cells=0; clist = [];
 						d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
 					}
 					else if(bd.QaC(cc)>=1){
@@ -448,7 +448,7 @@ Puzzles.kakuro.prototype = {
 				if(flag==1){ bd.sErE([bd.exnum(cx,-1)],0);}
 			}
 			for(var cy=0;cy<k.qrows;cy++){
-				cnt = 0; empty=0; cells=0; clist = new Array();
+				cnt = 0; empty=0; cells=0; clist = [];
 				d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
 				num = bd.QnE(bd.exnum(-1,cy));
 				if(flag==1){ bd.sErE([bd.exnum(-1,cy)],1);}
@@ -464,7 +464,7 @@ Puzzles.kakuro.prototype = {
 						if(flag==1){ bd.sErE([bd.exnum(-1,cy)],0);}
 						if(cx==k.qcols){ break;}
 						num = bd.QnC(cc);
-						cnt = 0; empty=0; cells=0; clist = new Array();
+						cnt = 0; empty=0; cells=0; clist = [];
 						d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
 					}
 					else if(bd.QaC(cc)>=1){

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バッグ版 bag.js v3.2.1
+// パズル固有スクリプト部 バッグ版 bag.js v3.2.2
 //
 Puzzles.bag = function(){ };
 Puzzles.bag.prototype = {
@@ -13,9 +13,9 @@ Puzzles.bag.prototype = {
 		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
 		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 1;	// 1:外枠上にCrossの配置があるパズル
+		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 1;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 1;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.bag.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("バッグ", "BAG");
 		base.setExpression("　左ドラッグで線が、右クリックでセルの背景色(緑/黄色)が入力できます。",
@@ -100,11 +101,7 @@ Puzzles.bag.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
-		if(k.br.IE){ pc.BDlinecolor = "rgb(191, 191, 191)";}
-
-		pc.BorderQanscolor = "rgb(0, 160, 0)";
-		pc.fontErrcolor = "red";
+		pc.gridcolor = pc.gridcolor_DLIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -112,7 +109,7 @@ Puzzles.bag.prototype = {
 
 			this.drawQSubCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -157,11 +154,11 @@ Puzzles.bag.prototype = {
 				this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
 			}
 
-			var iarea = this.generateIarea();
-			if( !this.checkNumberInside(iarea) ){
+			var icheck = this.generateIarea();
+			if( !this.checkNumberInside(icheck) ){
 				this.setAlert('輪の内側に入っていない数字があります。','There is an outside number.'); return false;
 			}
-			if( !this.checkCellNumber(iarea) ){
+			if( !this.checkCellNumber(icheck) ){
 				this.setAlert('数字と輪の内側になる4方向のマスの合計が違います。','The number and the sum of the inside cells of four direction is different.'); return false;
 			}
 
@@ -169,42 +166,42 @@ Puzzles.bag.prototype = {
 		};
 
 		ans.generateIarea = function(){
-			var area = new AreaInfo();
+			var icheck = [];
 			var cx, cy;
-			area.check[0]=(ans.lcntCross(0)==0?-1:1);
+			icheck[0]=(line.lcntCell(0)==0?-1:1);
 			for(cy=0;cy<k.qrows;cy++){
-				if(cy>0){ area.check[bd.cnum(0,cy)]=area.check[bd.cnum(0,cy-1)]*(bd.QaB(bd.bnum(1,cy*2))==1?-1:1);}
+				if(cy>0){ icheck[bd.cnum(0,cy)]=icheck[bd.cnum(0,cy-1)]*(bd.isLine(bd.bnum(1,cy*2))?-1:1);}
 				for(cx=1;cx<k.qcols;cx++){
-					area.check[bd.cnum(cx,cy)]=area.check[bd.cnum(cx-1,cy)]*(bd.QaB(bd.bnum(cx*2,cy*2+1))==1?-1:1);
+					icheck[bd.cnum(cx,cy)]=icheck[bd.cnum(cx-1,cy)]*(bd.isLine(bd.bnum(cx*2,cy*2+1))?-1:1);
 				}
 			}
-			return area;
+			return icheck;
 		};
-		ans.checkNumberInside = function(area){
+		ans.checkNumberInside = function(icheck){
 			for(var c=0;c<bd.cell.length;c++){
-				if(area.check[c]==-1 && bd.QnC(c)!=-1){
+				if(icheck[c]==-1 && bd.QnC(c)!=-1){
 					bd.sErC([c],1);
 					return false;
 				}
 			}
 			return true;
 		};
-		ans.checkCellNumber = function(area){
+		ans.checkCellNumber = function(icheck){
 			for(var cc=0;cc<bd.cell.length;cc++){
 				if(bd.QnC(cc)<0){ continue;}
 
-				var list = new Array();
+				var list = [];
 				list.push(cc);
 				var cnt = 1;
 				var tx, ty;
 				tx = bd.cell[cc].cx-1; ty = bd.cell[cc].cy;
-				while(tx>=0)     { var c=bd.cnum(tx,ty); if(area.check[c]!=-1){ cnt++; list.push(c); tx--;} else{ break;} }
+				while(tx>=0)     { var c=bd.cnum(tx,ty); if(icheck[c]!=-1){ cnt++; list.push(c); tx--;} else{ break;} }
 				tx = bd.cell[cc].cx+1; ty = bd.cell[cc].cy;
-				while(tx<k.qcols){ var c=bd.cnum(tx,ty); if(area.check[c]!=-1){ cnt++; list.push(c); tx++;} else{ break;} }
+				while(tx<k.qcols){ var c=bd.cnum(tx,ty); if(icheck[c]!=-1){ cnt++; list.push(c); tx++;} else{ break;} }
 				tx = bd.cell[cc].cx; ty = bd.cell[cc].cy-1;
-				while(ty>=0)     { var c=bd.cnum(tx,ty); if(area.check[c]!=-1){ cnt++; list.push(c); ty--;} else{ break;} }
+				while(ty>=0)     { var c=bd.cnum(tx,ty); if(icheck[c]!=-1){ cnt++; list.push(c); ty--;} else{ break;} }
 				tx = bd.cell[cc].cx; ty = bd.cell[cc].cy+1;
-				while(ty<k.qrows){ var c=bd.cnum(tx,ty); if(area.check[c]!=-1){ cnt++; list.push(c); ty++;} else{ break;} }
+				while(ty<k.qrows){ var c=bd.cnum(tx,ty); if(icheck[c]!=-1){ cnt++; list.push(c); ty++;} else{ break;} }
 
 				if(bd.QnC(cc)!=cnt){
 					bd.sErC(list,1);

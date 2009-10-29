@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 コージュン版 cojun.js v3.2.0
+// パズル固有スクリプト部 コージュン版 cojun.js v3.2.2
 //
 Puzzles.cojun = function(){ };
 Puzzles.cojun.prototype = {
@@ -15,7 +15,7 @@ Puzzles.cojun.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -39,6 +39,7 @@ Puzzles.cojun.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("コージュン","Cojun");
 		base.setExpression("キーボードやマウスで数字を入力できます。",
@@ -81,16 +82,14 @@ Puzzles.cojun.prototype = {
 		kp.generate(0, true, true, '');
 		kp.kpinput = function(ca){ kc.key_inputqnum(ca,99);};
 
-		room.setEnable();
-		bd.roommaxfunc = function(cc,mode){ return room.getCntOfRoomByCell(cc);};
+		area.resetArea();
+		bd.roommaxfunc = function(cc,mode){ return area.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
-
-		pc.errbcolor1 = "rgb(255, 160, 160)";
+		pc.gridcolor = pc.gridcolor_DLIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -98,7 +97,7 @@ Puzzles.cojun.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
@@ -134,56 +133,52 @@ Puzzles.cojun.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var rarea = this.searchRarea();
-			if( !this.checkDifferentNumber(rarea) ){
+			var rinfo = area.getRoomInfo();
+			if( !this.checkDifferentNumber(rinfo) ){
 				this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 			}
 
-			if( !this.checkSideCell(function(c1,c2){ return (this.getNum(c1)>0 && this.getNum(c1)==this.getNum(c2));}.bind(this)) ){
+			if( !this.checkSideCell(bd.sameNumber) ){
 				this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
 			}
 
-			if( !this.checkUpperNumber(rarea) ){
+			if( !this.checkUpperNumber(rinfo) ){
 				this.setAlert('同じ部屋で上に小さい数字が乗っています。','There is an small number on big number in a room.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (this.getNum(c)==-1);}.bind(this)) ){
+			if( !this.checkAllCell(bd.noNum) ){
 				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (this.getNum(c)==-1);});};
+		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
 
-		ans.checkDifferentNumber = function(area){
-			for(var r=1;r<=area.max;r++){
-				var d = new Array();
+		ans.checkDifferentNumber = function(rinfo){
+			for(var r=1;r<=rinfo.max;r++){
+				var d = [];
 				for(var i=1;i<=99;i++){ d[i]=-1;}
-				for(var i=0;i<area.room[r].length;i++){
-					var val=this.getNum(area.room[r][i]);
+				for(var i=0;i<rinfo.room[r].idlist.length;i++){
+					var val=bd.getNum(rinfo.room[r].idlist[i]);
 					if     (val==-1 || val==-2){ continue;}
-					else if(d[val]==-1){ d[val] = area.room[r][i]; continue;}
+					else if(d[val]==-1){ d[val] = rinfo.room[r].idlist[i]; continue;}
 
-					bd.sErC(area.room[r],1);
+					bd.sErC(rinfo.room[r].idlist,1);
 					return false;
 				}
 			}
 			return true;
 		};
-		ans.checkUpperNumber = function(area){
+		ans.checkUpperNumber = function(rinfo){
 			for(var c=0;c<bd.cell.length-k.qcols;c++){
 				var dc = bd.dn(c);
-				if(area.check[c]!=area.check[dc] || this.getNum(c)<=0 || this.getNum(dc)<=0){ continue;}
-				if(this.getNum(dc)>this.getNum(c)){
+				if(rinfo.id[c]!=rinfo.id[dc] || !bd.isNum(c) || !bd.isNum(dc)){ continue;}
+				if(bd.getNum(dc)>bd.getNum(c)){
 					bd.sErC([c,dc],1);
 					return false;
 				}
 			}
 			return true;
-		};
-		ans.getNum = function(cc){
-			if(cc<0||cc>=bd.cell.length){ return -1;}
-			return (bd.QnC(cc)!=-1?bd.QnC(cc):bd.QaC(cc));
 		};
 	}
 };

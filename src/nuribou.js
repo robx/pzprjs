@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぬりぼう版 nuribou.js v3.2.0
+// パズル固有スクリプト部 ぬりぼう版 nuribou.js v3.2.2
 //
 Puzzles.nuribou = function(){ };
 Puzzles.nuribou.prototype = {
@@ -15,7 +15,7 @@ Puzzles.nuribou.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.nuribou.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		k.area = { bcell:1, wcell:1, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("ぬりぼう","Nuribou");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
@@ -82,14 +83,13 @@ Puzzles.nuribou.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.bcolor = "rgb(127, 255, 127)";
-		pc.errcolor1 = "rgb(192, 0, 0)";
+		pc.bcolor = pc.bcolor_GREEN;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
 			this.drawWhiteCells(x1,y1,x2,y2);
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -121,42 +121,42 @@ Puzzles.nuribou.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var barea = this.searchBarea();
-			if( !this.checkAllArea(barea, function(id){ return (bd.QaC(id)==1);}, function(w,h,a){ return (w==1 || h==1);} ) ){
+			var binfo = area.getBCellInfo();
+			if( !this.checkAllArea(binfo, f_true, function(w,h,a){ return (w==1 || h==1);} ) ){
 				this.setAlert('「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。','There is a mass of black cells, whose width is more than two.'); return false;
 			}
 
-			if( !this.checkCorners(barea) ){
+			if( !this.checkCorners(binfo) ){
 				this.setAlert('同じ面積の黒マスのカタマリが、角を共有しています。','Masses of black cells whose length is the same share a corner.'); return false;
 			}
 
-			var warea = this.searchWarea();
-			if( !this.checkQnumsInArea(warea, function(a){ return (a==0);}) ){
+			var winfo = area.getWCellInfo();
+			if( !this.checkQnumsInArea(winfo, function(a){ return (a==0);}) ){
 				this.setAlert('数字の入っていないシマがあります。','An area of white cells has no numbers.'); return false;
 			}
 
-			if( !this.checkQnumsInArea(warea, function(a){ return (a>=2);}) ){
+			if( !this.checkQnumsInArea(winfo, function(a){ return (a>=2);}) ){
 				this.setAlert('1つのシマに2つ以上の数字が入っています。','An area of white cells has plural numbers.'); return false;
 			}
 
-			if( !this.checkNumberAndSize(warea) ){
+			if( !this.checkNumberAndSize(winfo) ){
 				this.setAlert('数字とシマの面積が違います。','The number is not equal to the number of the size of the area.'); return false;
 			}
 
 			return true;
 		};
 
-		ans.checkCorners = function(area){
+		ans.checkCorners = function(binfo){
 			var cc1, cc2;
 			for(var c=0;c<bd.cell.length;c++){
 				if(bd.cell[c].cx==k.qcols-1 || bd.cell[c].cy==k.qrows-1){ continue;}
 				var cc1, cc2;
-				if     ( bd.QaC(c)==1 && bd.QaC(c+k.qcols+1)==1 ){ cc1 = c; cc2 = c+k.qcols+1;}
-				else if( bd.QaC(c+1)==1 && bd.QaC(c+k.qcols)==1 ){ cc1 = c+1; cc2 = c+k.qcols;}
+				if     ( bd.isBlack(c) && bd.isBlack(c+k.qcols+1) ){ cc1 = c; cc2 = c+k.qcols+1;}
+				else if( bd.isBlack(c+1) && bd.isBlack(c+k.qcols) ){ cc1 = c+1; cc2 = c+k.qcols;}
 				else{ continue;}
-				if(this.getCntOfRoom(area, area.check[cc1]) == this.getCntOfRoom(area, area.check[cc2])){
-					bd.sErC(area.room[area.check[cc1]],1);
-					bd.sErC(area.room[area.check[cc2]],1);
+				if(binfo.room[binfo.id[cc1]].idlist.length == binfo.room[binfo.id[cc2]].idlist.length){
+					bd.sErC(binfo.room[binfo.id[cc1]].idlist,1);
+					bd.sErC(binfo.room[binfo.id[cc2]].idlist,1);
 					return false;
 				}
 			}

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぬりかべ版 nurikabe.js v3.2.0p1
+// パズル固有スクリプト部 ぬりかべ版 nurikabe.js v3.2.2
 //
 Puzzles.nurikabe = function(){ };
 Puzzles.nurikabe.prototype = {
@@ -15,7 +15,7 @@ Puzzles.nurikabe.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.nurikabe.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		k.area = { bcell:1, wcell:1, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("ぬりかべ","Nurikabe");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
@@ -87,14 +88,12 @@ Puzzles.nurikabe.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-//		pc.bcolor = "rgb(127, 255, 127)";
-		pc.errcolor1 = "rgb(192, 0, 0)";
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
 			this.drawWhiteCells(x1,y1,x2,y2);
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -139,17 +138,17 @@ Puzzles.nurikabe.prototype = {
 		// スリリン用になっている
 		fio.kanpenOpen = function(array){
 			this.decodeCell( function(c,ca){
-				if     (ca == "#"){ bd.sQaC(c, 1);}
+				if     (ca == "#"){ bd.setBlack(c);}
 				else if(ca == "+"){ bd.sQsC(c, 1);}
 				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
 			},array.slice(0,k.qrows));
 		};
 		fio.kanpenSave = function(){
 			return ""+this.encodeCell( function(c){
-				if     (bd.QnC(c)>=0){ return (bd.QnC(c).toString() + " ");}
-				else if(bd.QaC(c)==1){ return "# ";}
-				else if(bd.QsC(c)==1){ return "+ ";}
-				else                 { return ". ";}
+				if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
+				else if(bd.isBlack(c)){ return "# ";}
+				else if(bd.QsC(c)==1) { return "+ ";}
+				else                  { return ". ";}
 			});
 		};
 	},
@@ -159,24 +158,24 @@ Puzzles.nurikabe.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.check2x2Block( function(id){ return (bd.QaC(id)==1);} ) ){
+			if( !this.check2x2Block( bd.isBlack ) ){
 				this.setAlert('2x2の黒マスのかたまりがあります。','There is a 2x2 block of black cells.'); return false;
 			}
 
-			var warea = this.searchWarea();
-			if( !this.checkQnumsInArea(warea, function(a){ return (a==0);}) ){
+			var winfo = area.getWCellInfo();
+			if( !this.checkQnumsInArea(winfo, function(a){ return (a==0);}) ){
 				this.setAlert('数字の入っていないシマがあります。','An area of white cells has no numbers.'); return false;
 			}
 
-			if( !this.linkBWarea( this.searchBarea() ) ){
+			if( !this.checkOneArea( area.getBCellInfo() ) ){
 				this.setAlert('黒マスが分断されています。','Black cells are devided,'); return false;
 			}
 
-			if( !this.checkQnumsInArea(warea, function(a){ return (a>=2);}) ){
+			if( !this.checkQnumsInArea(winfo, function(a){ return (a>=2);}) ){
 				this.setAlert('1つのシマに2つ以上の数字が入っています。','An area of white cells has plural numbers.'); return false;
 			}
 
-			if( !this.checkNumberAndSize(warea) ){
+			if( !this.checkNumberAndSize(winfo) ){
 				this.setAlert('数字とシマの面積が違います。','The number is not equal to the number of the size of the area.'); return false;
 			}
 

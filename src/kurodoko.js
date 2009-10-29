@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 黒マスはどこだ版 kurodoko.js v3.2.0p1
+// パズル固有スクリプト部 黒マスはどこだ版 kurodoko.js v3.2.2
 //
 Puzzles.kurodoko = function(){ };
 Puzzles.kurodoko.prototype = {
@@ -15,7 +15,7 @@ Puzzles.kurodoko.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.kurodoko.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		k.area = { bcell:0, wcell:1, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("黒どこ(黒マスはどこだ)","Kurodoko");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
@@ -87,8 +88,8 @@ Puzzles.kurodoko.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
-		pc.bcolor = "rgb(160, 255, 160)";
+		pc.gridcolor = pc.gridcolor_DLIGHT;
+		pc.bcolor = pc.bcolor_GREEN;
 
 		pc.fontsizeratio = 0.85;
 
@@ -97,7 +98,7 @@ Puzzles.kurodoko.prototype = {
 		//	this.flushCanvasAll();
 
 			this.drawWhiteCells(x1,y1,x2,y2);
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawNumCells_kurodoko(x1,y1,x2,y2);
@@ -115,7 +116,7 @@ Puzzles.kurodoko.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QnC(c)!=-1){
-					var px=bd.cell[c].px()+mf(k.cwidth/2), py=bd.cell[c].py()+mf(k.cheight/2);
+					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
 
 					g.fillStyle = this.Cellcolor;
 					g.beginPath();
@@ -169,17 +170,17 @@ Puzzles.kurodoko.prototype = {
 		//---------------------------------------------------------
 		fio.kanpenOpen = function(array){
 			this.decodeCell( function(c,ca){
-				if     (ca == "#"){ bd.sQaC(c, 1);}
+				if     (ca == "#"){ bd.setBlack(c);}
 				else if(ca == "+"){ bd.sQsC(c, 1);}
 				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
 			},array.slice(0,k.qrows));
 		};
 		fio.kanpenSave = function(){
 			return ""+this.encodeCell( function(c){
-				if     (bd.QnC(c)>=0){ return (bd.QnC(c).toString() + " ");}
-				else if(bd.QaC(c)==1){ return "# ";}
-				else if(bd.QsC(c)==1){ return "+ ";}
-				else                 { return ". ";}
+				if     (bd.QnC(c)>=0 ){ return (bd.QnC(c).toString() + " ");}
+				else if(bd.isBlack(c)){ return "# ";}
+				else if(bd.QsC(c)==1 ){ return "+ ";}
+				else                  { return ". ";}
 			});
 		};
 	},
@@ -189,38 +190,37 @@ Puzzles.kurodoko.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkSideCell(function(c1,c2){ return (bd.QaC(c1)==1 && bd.QaC(c2)==1);}) ){
+			if( !this.checkSideCell(function(c1,c2){ return (bd.isBlack(c1) && bd.isBlack(c2));}) ){
 				this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 			}
 
-			var warea = this.searchWarea();
-			if( !this.linkBWarea(warea) ){
+			if( !this.checkOneArea( area.getWCellInfo() ) ){
 				this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 			}
 
-			if( !this.checkCellNumber(warea) ){
+			if( !this.checkCellNumber() ){
 				this.setAlert('数字と黒マスにぶつかるまでの4方向のマスの合計が違います。','The number and the sum of the coutinuous white cells of four direction is different.'); return false;
 			}
 
 			return true;
 		};
 
-		ans.checkCellNumber = function(area){
+		ans.checkCellNumber = function(){
 			for(var cc=0;cc<bd.cell.length;cc++){
 				if(bd.QnC(cc)<0){ continue;}
 
-				var list = new Array();
+				var list = [];
 				list.push(cc);
 				var cnt = 1;
 				var tx, ty;
 				tx = bd.cell[cc].cx-1; ty = bd.cell[cc].cy;
-				while(tx>=0)     { var c=bd.cnum(tx,ty); if(area.check[c]!=-1){ cnt++; list.push(c); tx--;} else{ break;} }
+				while(tx>=0)     { var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ cnt++; list.push(c); tx--;} else{ break;} }
 				tx = bd.cell[cc].cx+1; ty = bd.cell[cc].cy;
-				while(tx<k.qcols){ var c=bd.cnum(tx,ty); if(area.check[c]!=-1){ cnt++; list.push(c); tx++;} else{ break;} }
+				while(tx<k.qcols){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ cnt++; list.push(c); tx++;} else{ break;} }
 				tx = bd.cell[cc].cx; ty = bd.cell[cc].cy-1;
-				while(ty>=0)     { var c=bd.cnum(tx,ty); if(area.check[c]!=-1){ cnt++; list.push(c); ty--;} else{ break;} }
+				while(ty>=0)     { var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ cnt++; list.push(c); ty--;} else{ break;} }
 				tx = bd.cell[cc].cx; ty = bd.cell[cc].cy+1;
-				while(ty<k.qrows){ var c=bd.cnum(tx,ty); if(area.check[c]!=-1){ cnt++; list.push(c); ty++;} else{ break;} }
+				while(ty<k.qrows){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ cnt++; list.push(c); ty++;} else{ break;} }
 
 				if(bd.QnC(cc)!=cnt){
 					bd.sErC(list,1);

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 フィルマット版 fillmat.js v3.2.0
+// パズル固有スクリプト部 フィルマット版 fillmat.js v3.2.2
 //
 Puzzles.fillmat = function(){ };
 Puzzles.fillmat.prototype = {
@@ -15,7 +15,7 @@ Puzzles.fillmat.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.fillmat.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("フィルマット","Fillmat");
 		base.setExpression("　左ドラッグで線が、右ドラッグで補助記号が入力できます。",
@@ -96,9 +97,7 @@ Puzzles.fillmat.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
-
-		// pc.BorderQanscolor = "rgb(0, 160, 0)";
+		pc.gridcolor = pc.gridcolor_DLIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -106,7 +105,7 @@ Puzzles.fillmat.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -143,20 +142,20 @@ Puzzles.fillmat.prototype = {
 				this.setAlert('十字の交差点があります。','There is a crossing border line.'); return false;
 			}
 
-			var rarea = this.searchRarea();
-			if( !this.checkSideArea(rarea) ){
+			var rinfo = area.getRoomInfo();
+			if( !this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.room[r].idlist.length;}) ){
 				this.setAlert('隣り合うタタミの大きさが同じです。','The same size Tatami are adjacent.'); return false;
 			}
 
-			if( !this.checkAllArea(rarea, f_true, function(w,h,a){ return (w==1 || h==1)&&a<=4;} ) ){
+			if( !this.checkAllArea(rinfo, f_true, function(w,h,a){ return (w==1 || h==1)&&a<=4;} ) ){
 				this.setAlert('「幅１マス、長さ１～４マス」ではないタタミがあります。','The width of Tatami is over 1 or the length is over 4.'); return false;
 			}
 
-			if( !this.checkQnumsInArea(rarea, function(a){ return (a>=2);}) ){
+			if( !this.checkQnumsInArea(rinfo, function(a){ return (a>=2);}) ){
 				this.setAlert('1つのタタミに2つ以上の数字が入っています。','A Tatami has two or more numbers.'); return false;
 			}
 
-			if( !this.checkNumberAndSize(rarea) ){
+			if( !this.checkNumberAndSize(rinfo) ){
 				this.setAlert('数字とタタミの大きさが違います。','The size of Tatami and the number written in Tatami is different.'); return false;
 			}
 
@@ -165,16 +164,6 @@ Puzzles.fillmat.prototype = {
 			}
 
 			return true;
-		};
-
-		ans.checkSideArea = function(area){
-			var func = function(area, c1, c2){
-				if(area.check[c1] == area.check[c2]){ return false;}
-				var a1 = this.getCntOfRoom(area, area.check[c1] );
-				var a2 = this.getCntOfRoom(area, area.check[c2] );
-				return (a1!=0 && a2!=0 && a1==a2);
-			}.bind(this);
-			return this.checkSideAreaCell(area, func, true);
 		};
 	}
 };

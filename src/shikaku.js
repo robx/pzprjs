@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.2.0p1
+// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.2.2
 //
 Puzzles.shikaku = function(){ };
 Puzzles.shikaku.prototype = {
@@ -15,7 +15,7 @@ Puzzles.shikaku.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.shikaku.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("四角に切れ","Shikaku");
 		base.setExpression("　左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
@@ -86,11 +87,9 @@ Puzzles.shikaku.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(160, 160, 160)";
-		pc.BorderQanscolor = "rgb(0, 160, 0)";
+		pc.gridcolor = pc.gridcolor_DLIGHT;
+		pc.fontcolor = pc.fontErrcolor = "white";
 
-		pc.fontcolor = "white";
-		pc.fontErrcolor = "white";
 		pc.fontsizeratio = 0.85;
 
 		pc.paint = function(x1,y1,x2,y2){
@@ -99,7 +98,7 @@ Puzzles.shikaku.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline2(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawNumCells_shikaku(x1,y1,x2,y2);
@@ -118,7 +117,7 @@ Puzzles.shikaku.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QnC(c)!=-1){
-					var px=bd.cell[c].px()+mf(k.cwidth/2), py=bd.cell[c].py()+mf(k.cheight/2);
+					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
 
 					if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
 					else{ g.fillStyle = this.Cellcolor;}
@@ -175,7 +174,7 @@ Puzzles.shikaku.prototype = {
 			this.decodeRectArea(barray);
 		};
 		fio.decodeRectArea = function(barray){
-			var rdata = new Array();
+			var rdata = [];
 			for(var i=0;i<barray.length;i++){
 				if(barray[i]==""){ break;}
 				var pce = barray[i].split(" ");
@@ -199,9 +198,9 @@ Puzzles.shikaku.prototype = {
 		};
 		fio.encodeRectArea = function(){
 			var bstr = "", rectcount = 0;
-			var rarea = ans.searchRarea();
-			for(var id=1;id<=rarea.max;id++){
-				var d = ans.getSizeOfArea(rarea,id,f_true);
+			var rinfo = area.getRoomInfo();
+			for(var id=1;id<=rinfo.max;id++){
+				var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
 				if((d.x2-d.x1+1)*(d.y2-d.y1+1)==d.cnt){
 					bstr += (""+d.y1+" "+d.x1+" "+d.y2+" "+d.x2+"/");
 					rectcount++;
@@ -216,20 +215,20 @@ Puzzles.shikaku.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var rarea = this.searchRarea();
-			if( !this.checkQnumsInArea(rarea, function(a){ return (a==0);}) ){
+			var rinfo = area.getRoomInfo();
+			if( !this.checkQnumsInArea(rinfo, function(a){ return (a==0);}) ){
 				this.setAlert('数字の入っていない領域があります。','An area has no numbers.'); return false;
 			}
 
-			if( !this.checkQnumsInArea(rarea, function(a){ return (a>=2);}) ){
+			if( !this.checkQnumsInArea(rinfo, function(a){ return (a>=2);}) ){
 				this.setAlert('1つの領域に2つ以上の数字が入っています。','An area has plural numbers.'); return false;
 			}
 
-			if( !this.checkAllArea(rarea, f_true, function(w,h,a){ return (w*h==a);} ) ){
+			if( !this.checkAllArea(rinfo, f_true, function(w,h,a){ return (w*h==a);} ) ){
 				this.setAlert('四角形ではない領域があります。','An area is not rectangle.'); return false;
 			}
 
-			if( !this.checkNumberAndSize(rarea) ){
+			if( !this.checkNumberAndSize(rinfo) ){
 				this.setAlert('数字と領域の大きさが違います。','The size of the area is not equal to the number.'); return false;
 			}
 

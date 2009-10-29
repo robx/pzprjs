@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.2.0p1
+// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.2.2
 //
 Puzzles.hakoiri = function(){ };
 Puzzles.hakoiri.prototype = {
@@ -15,7 +15,7 @@ Puzzles.hakoiri.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.hakoiri.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		k.area = { bcell:0, wcell:0, number:1};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　左クリックで記号が、右ドラッグで補助記号が入力できます。",
@@ -134,28 +135,23 @@ Puzzles.hakoiri.prototype = {
 			var flag = false;
 
 			if     ((ca=='1'||ca=='q'||ca=='a'||ca=='z')){
-				if(k.mode==1){ bd.sQnC(cc, 1); bd.sQaC(cc,-1); bd.sQsC(cc,0);}
-				else if(bd.QnC(cc)==-1){ bd.sQaC(cc,1); bd.sQsC(cc,0);}
+				bd.setNum(cc,1);
 				flag = true;
 			}
 			else if((ca=='2'||ca=='w'||ca=='s'||ca=='x')){
-				if(k.mode==1){ bd.sQnC(cc, 2); bd.sQaC(cc,-1); bd.sQsC(cc,0);}
-				else if(bd.QnC(cc)==-1){ bd.sQaC(cc,2); bd.sQsC(cc,0);}
+				bd.setNum(cc,2);
 				flag = true;
 			}
 			else if((ca=='3'||ca=='e'||ca=='d'||ca=='c')){
-				if(k.mode==1){ bd.sQnC(cc, 3); bd.sQaC(cc,-1); bd.sQsC(cc,0);}
-				else if(bd.QnC(cc)==-1){ bd.sQaC(cc,3); bd.sQsC(cc,0);}
+				bd.setNum(cc,3);
 				flag = true;
 			}
 			else if((ca=='4'||ca=='r'||ca=='f'||ca=='v')){
-				if(k.mode==1){ bd.sQnC(cc,-2); bd.sQaC(cc,-1); bd.sQsC(cc,0);}
-				else if(bd.QnC(cc)==-1){ bd.sQaC(cc,-1); bd.sQsC(cc,1);}
+				bd.setNum(cc,(k.mode==1?-2:-1));
 				flag = true;
 			}
 			else if((ca=='5'||ca=='t'||ca=='g'||ca=='b'||ca==' ')){
-				if(k.mode==1){ bd.sQnC(cc, -1); bd.sQaC(cc,-1); bd.sQsC(cc,0);}
-				else if(bd.QnC(cc)==-1){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
+				bd.setNum(cc,-1);
 				flag = true;
 			}
 			else if(ca=='-'){
@@ -200,7 +196,7 @@ Puzzles.hakoiri.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.bcolor = "rgb(160, 255, 160)";
+		pc.bcolor = pc.bcolor_GREEN;
 		pc.BBcolor = "rgb(127, 127, 127)";
 		pc.dotcolor = "rgb(255, 96, 191)";
 
@@ -209,7 +205,7 @@ Puzzles.hakoiri.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawDots(x1,y1,x2,y2);
@@ -224,7 +220,7 @@ Puzzles.hakoiri.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				var num = (bd.QnC(c)!=-1 ? bd.QnC(c) : bd.QaC(c));
+				var num = bd.getNum(c);
 				if(num>=1 && num<=3){ text = ({1:"○",2:"△",3:"□"})[num];}
 				else if(num==-2)    { text = "?";}
 				else if(!bd.cell[c].numobj)  { continue;}
@@ -265,55 +261,51 @@ Puzzles.hakoiri.prototype = {
 				this.setAlert('同じ記号がタテヨコナナメに隣接しています。','Same marks are adjacent.'); return false;
 			}
 
-			var rarea = this.searchRarea();
-			if( !this.checkAllArea(rarea, function(id){ return (this.getNum(id)!=-1);}.bind(this), function(w,h,a){ return (a<4);} ) ){
+			var rinfo = area.getRoomInfo();
+			if( !this.checkAllArea(rinfo, bd.isNum, function(w,h,a){ return (a<4);} ) ){
 				this.setAlert('1つのハコに4つ以上の記号が入っています。','A box has four or more marks.'); return false;
 			}
 
-			if( !this.checkDifferentObjectInRoom(rarea) ){
+			if( !this.checkDifferentObjectInRoom(rinfo) ){
 				this.setAlert('1つのハコに同じ記号が複数入っています。','A box has same plural marks.'); return false;
 			}
 
-			if( !this.linkBWarea( this.searchBWarea(function(id){ return (id!=-1 && this.getNum(id)!=-1); }.bind(this)) ) ){
+			if( !this.checkOneArea( area.getNumberInfo() ) ){
 				this.setAlert('タテヨコにつながっていない記号があります。','Marks are devided.'); return false;
 			}
 
-			if( !this.checkAllArea(rarea, function(id){ return (this.getNum(id)!=-1);}.bind(this), function(w,h,a){ return (a>2);} ) ){
+			if( !this.checkAllArea(rinfo, bd.isNum, function(w,h,a){ return (a>2);} ) ){
 				this.setAlert('1つのハコに2つ以下の記号しか入っていません。','A box has tow or less marks.'); return false;
 			}
 
 			return true;
 		};
 
-		ans.checkDifferentObjectInRoom = function(area){
-			for(var r=1;r<=area.max;r++){
-				var d = new Array();
+		ans.checkDifferentObjectInRoom = function(rinfo){
+			for(var r=1;r<=rinfo.max;r++){
+				var d = [];
 				d[-2]=0; d[1]=0; d[2]=0; d[3]=0;
-				for(var i=0;i<area.room[r].length;i++){
-					var val = this.getNum(area.room[r][i]);
+				for(var i=0;i<rinfo.room[r].idlist.length;i++){
+					var val = bd.getNum(rinfo.room[r].idlist[i]);
 					if(val==-1){ continue;}
 
 					if(d[val]==0){ d[val]++;}
-					else if(d[val]>0){ bd.sErC(area.room[r],1); return false;}
+					else if(d[val]>0){ bd.sErC(rinfo.room[r].idlist,1); return false;}
 				}
 			}
 			return true;
 		};
 		ans.checkAroundMarks = function(){
 			for(var c=0;c<bd.cell.length;c++){
-				if(this.getNum(c)<0){ continue;}
+				if(bd.getNum(c)<0){ continue;}
 				var cx = bd.cell[c].cx; var cy = bd.cell[c].cy; var target=0;
-				var func = function(cc){ return (cc!=-1 && this.getNum(c)==this.getNum(cc));}.bind(this);
+				var func = function(cc){ return (cc!=-1 && bd.getNum(c)==bd.getNum(cc));};
 				target = bd.cnum(cx+1,cy  ); if(func(target)){ bd.sErC([c,target],1); return false;}
 				target = bd.cnum(cx  ,cy+1); if(func(target)){ bd.sErC([c,target],1); return false;}
 				target = bd.cnum(cx-1,cy+1); if(func(target)){ bd.sErC([c,target],1); return false;}
 				target = bd.cnum(cx+1,cy+1); if(func(target)){ bd.sErC([c,target],1); return false;}
 			}
 			return true;
-		};
-		ans.getNum = function(cc){
-			if(cc<0||cc>=bd.cell.length){ return -1;}
-			return (bd.QnC(cc)!=-1?bd.QnC(cc):bd.QaC(cc));
 		};
 	}
 };
