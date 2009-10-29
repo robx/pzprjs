@@ -8,7 +8,6 @@
 Graphic = function(){
 	// 盤面のCellを分ける色
 	this.gridcolor = "black";
-	this.chassisflag = true;
 
 	// セルの色(黒マス)
 	this.Cellcolor = "black";
@@ -21,30 +20,23 @@ Graphic = function(){
 
 	this.qsubcolor1 = "rgb(160,255,160)";
 	this.qsubcolor2 = "rgb(255,255,127)";
-	this.qsubcolor3 = "rgb(192,192,255)";
+	this.qsubcolor3 = "rgb(192,192,192)";	// 絵が出るパズルの背景入力
 
 	// フォントの色(白マス/黒マス)
 	this.fontcolor = "black";
 	this.fontAnscolor = "rgb(0, 160, 0)";
 	this.fontErrcolor = "rgb(191, 0, 0)";
-	this.BCell_fontcolor = "white";
-
-	this.fontsizeratio = 1.0;	// 数字の倍率
+	this.BCell_fontcolor = "rgb(224, 224, 224)";
 
 	this.borderfontcolor = "black";
 
 	// セルの背景色(白マス)
 	this.bcolor = "white";
 	this.dotcolor = "black";
-	this.errbcolor1 = "rgb(255, 191, 191)";
+	this.errbcolor1 = "rgb(255, 160, 160)";
 	this.errbcolor2 = "rgb(64, 255, 64)";
 
 	this.icecolor = "rgb(192, 224, 255)";
-
-	// フォントの色(交点の数字)
-	this.crossnumcolor = "black";
-
-	this.crosssize = 0.4;
 
 	// ques=51のとき、入力できる場所の背景色
 	this.TTcolor = "rgb(127,255,127)";
@@ -65,13 +57,32 @@ Graphic = function(){
 	this.errlinecolor1 = "rgb(255, 0, 0)";
 	this.errlinecolor2 = "rgb(160, 160, 160)";
 
-	this.zstable   = false;
-	this.resizeflag= false;
+	// 色々なパズルで定義してた固定色
+	this.gridcolor_BLACK  = "black";
+	this.gridcolor_LIGHT  = "rgb(127, 127, 127)";	/* ほとんどはこの色を指定している */
+	this.gridcolor_DLIGHT = "rgb(160, 160, 160)";	/* 領域分割系で使ってることが多い */
+	this.gridcolor_SLIGHT = "rgb(191, 191, 191)";	/* 部屋＋線を引くパズル           */
+	this.gridcolor_THIN   = "rgb(224, 224, 224)";	/* 問題入力時のみGrid表示のパズル */
+
+	this.bcolor_GREEN = "rgb(160, 255, 160)";
+	this.errbcolor1_DARK = "rgb(127, 255, 127)";
+	this.linecolor_LIGHT = "rgb(0, 192, 0)";
+
+	// その他
+	this.fontsizeratio = 1.0;	// 数字Fontサイズの倍率
+	this.crosssize = 0.4;
 
 	this.lw = 1;	// LineWidth 境界線・Lineの太さ
 	this.lm = 1;	// LineMargin
 
-	this.textenable = false;
+	this.chassisflag = true;	// false: Gridを外枠の位置にも描画する
+	this.zstable     = false;	// 色分けの一部再描画時にtrueにする(VML用)
+	this.textenable  = false;	// 数字をg.fillText()で描画(現在はコメントアウト)
+
+	this.lastHdeg = 0;
+	this.lastYdeg = 0;
+	this.minYdeg = 0.18;
+	this.maxYdeg = 0.70;
 };
 Graphic.prototype = {
 	//---------------------------------------------------------------------------
@@ -136,7 +147,7 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	cellinside : function(x1,y1,x2,y2,func){
 		if(func==null){ func = f_true;}
-		var clist = new Array();
+		var clist = [];
 		for(var cy=y1;cy<=y2;cy++){
 			for(var cx=x1;cx<=x2;cx++){
 				var c = bd.cnum(cx,cy);
@@ -147,7 +158,7 @@ Graphic.prototype = {
 	},
 	crossinside : function(x1,y1,x2,y2,func){
 		if(func==null){ func = f_true;}
-		var clist = new Array();
+		var clist = [];
 		for(var cy=y1;cy<=y2;cy++){
 			for(var cx=x1;cx<=x2;cx++){
 				var c = bd.xnum(cx,cy);
@@ -158,7 +169,7 @@ Graphic.prototype = {
 	},
 	borderinside : function(x1,y1,x2,y2,func){
 		if(func==null){ func = f_true;}
-		var idlist = new Array();
+		var idlist = [];
 		for(var by=y1;by<=y2;by++){
 			for(var bx=x1;bx<=x2;bx++){
 				if((bx+by)%2==0){ continue;}
@@ -167,6 +178,46 @@ Graphic.prototype = {
 			}
 		}
 		return idlist;
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.getNewLineColor() 新しい色を返す
+	//---------------------------------------------------------------------------
+	getNewLineColor : function(){
+		var loopcount = 0;
+
+		while(1){
+			var Rdeg = mf(Math.random() * 384)-64; if(Rdeg<0){Rdeg=0;} if(Rdeg>255){Rdeg=255;}
+			var Gdeg = mf(Math.random() * 384)-64; if(Gdeg<0){Gdeg=0;} if(Gdeg>255){Gdeg=255;}
+			var Bdeg = mf(Math.random() * 384)-64; if(Bdeg<0){Bdeg=0;} if(Bdeg>255){Bdeg=255;}
+
+			// HLSの各組成値を求める
+			var Cmax = Math.max(Rdeg,Math.max(Gdeg,Bdeg));
+			var Cmin = Math.min(Rdeg,Math.min(Gdeg,Bdeg));
+
+			var Hdeg = 0;
+			var Ldeg = (Cmax+Cmin)*0.5 / 255;
+			var Sdeg = (Cmax==Cmin?0:(Cmax-Cmin)/((Ldeg<=0.5)?(Cmax+Cmin):(2*255-Cmax-Cmin)) );
+
+			if(Cmax==Cmin){ Hdeg = 0;}
+			else if(Rdeg>=Gdeg && Rdeg>=Bdeg){ Hdeg = (    60*(Gdeg-Bdeg)/(Cmax-Cmin)+360)%360;}
+			else if(Gdeg>=Rdeg && Gdeg>=Bdeg){ Hdeg = (120+60*(Bdeg-Rdeg)/(Cmax-Cmin)+360)%360;}
+			else if(Bdeg>=Gdeg && Bdeg>=Rdeg){ Hdeg = (240+60*(Rdeg-Gdeg)/(Cmax-Cmin)+360)%360;}
+
+			// YCbCrのYを求める
+			var Ydeg = (0.29891*Rdeg + 0.58661*Gdeg + 0.11448*Bdeg) / 255;
+
+			if( (this.minYdeg<Ydeg && Ydeg<this.maxYdeg) && (Math.abs(this.lastYdeg-Ydeg)>0.15) && (Sdeg<0.02 || 0.40<Sdeg)
+				 && (((360+this.lastHdeg-Hdeg)%360>=45)&&((360+this.lastHdeg-Hdeg)%360<=315)) ){
+				this.lastHdeg = Hdeg;
+				this.lastYdeg = Ydeg;
+				//alert("rgb("+Rdeg+", "+Gdeg+", "+Bdeg+")\nHLS("+mf(Hdeg)+", "+(""+mf(Ldeg*1000)*0.001).slice(0,5)+", "+(""+mf(Sdeg*1000)*0.001).slice(0,5)+")\nY("+(""+mf(Ydeg*1000)*0.001).slice(0,5)+")");
+				return "rgb("+Rdeg+","+Gdeg+","+Bdeg+")";
+			}
+
+			loopcount++;
+			if(loopcount>100){ return "rgb("+Rdeg+","+Gdeg+","+Bdeg+")";}
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -203,7 +254,7 @@ Graphic.prototype = {
 		this.vinc();
 	},
 	drawWhiteCells : function(x1,y1,x2,y2){
-		var dsize = mf(k.cwidth*0.06);
+		var dsize = Math.max(mf(k.cwidth*0.06),2);
 		var clist = this.cellinside(x1,y1,x2,y2,bd.isWhite);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
@@ -312,8 +363,8 @@ Graphic.prototype = {
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 
-			if     (bd.isBlack(c)){ g.fillStyle = this.BCell_fontcolor;}
-			else if(bd.ErC(c)==1) { g.fillStyle = this.fontErrcolor;}
+			if     (bd.QaC(c)==1){ g.fillStyle = this.BCell_fontcolor;}
+			else if(bd.ErC(c)==1){ g.fillStyle = this.fontErrcolor;}
 			else{ g.fillStyle = this.fontcolor;}
 
 			var dir = bd.DiC(c);
@@ -387,7 +438,7 @@ Graphic.prototype = {
 			var c = clist[i];
 			if(bd.QnX(c)==1){
 				if(bd.ErX(c)==1){ g.fillStyle = this.errcolor1;}
-				else{ g.fillStyle = this.crossnumcolor;}
+				else{ g.fillStyle = this.Cellcolor;}
 
 				if(this.vnop("x"+c+"_cm_",1)){
 					g.beginPath();
@@ -411,7 +462,7 @@ Graphic.prototype = {
 		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
-			this.drawBorder1(id, (bd.QuB(id)==1 || bd.QaB(id)==1));
+			this.drawBorder1(id, bd.isBorder(id));
 		}
 		this.vinc();
 	},
@@ -474,7 +525,7 @@ Graphic.prototype = {
 		var clist = this.cellinside(x1,y1,x2,y2,f_true);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if(!bd.isBlack(c)){ for(var n=1;n<=12;n++){ this.vhide("c"+c+"_bb"+n+"_");} continue;}
+			if(bd.QaC(c)!=1){ for(var n=1;n<=12;n++){ this.vhide("c"+c+"_bb"+n+"_");} continue;}
 
 			var bx = 2*bd.cell[c].cx+1, by = 2*bd.cell[c].cy+1;
 			var px = bd.cell[c].px, py = bd.cell[c].py;
@@ -521,7 +572,7 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	drawLines : function(x1,y1,x2,y2){
 		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
-		for(var i=0;i<idlist.length;i++){ this.drawLine1(idlist[i], (bd.LiB(idlist[i])==1));}
+		for(var i=0;i<idlist.length;i++){ this.drawLine1(idlist[i], bd.isLine(idlist[i]));}
 		this.vinc();
 	},
 	drawLine1 : function(id, flag){
@@ -809,7 +860,7 @@ Graphic.prototype = {
 		this.vinc();
 
 		if(!boldflag){
-			g.fillStyle = pc.Cellcolor;
+			g.fillStyle = this.Cellcolor;
 			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
@@ -971,13 +1022,11 @@ Graphic.prototype = {
 		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
 		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
-		var f=(k.isoutsideborder==0&&this.chassisflag);
+		var bs=((k.isoutsideborder==0&&this.chassisflag)?1:0);
 
 		g.fillStyle = this.gridcolor;
-		var xa = f?(x1>1?x1:1)                    :(x1>0?x1:0);
-		var xb = f?(x2+1<k.qcols-1?x2+1:k.qcols-1):(x2+1<k.qcols?x2+1:k.qcols);
-		var ya = f?(y1>1?y1:1)                    :(y1>0?y1:0);
-		var yb = f?(y2+1<k.qrows-1?y2+1:k.qrows-1):(y2+1<k.qrows?y2+1:k.qrows);
+		var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
+		var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
 		for(var i=xa;i<=xb;i++){ if(this.vnop("bdy"+i+"_",1)){ g.fillRect(k.p0.x+i*k.cwidth, k.p0.y+y1*k.cheight, 1, (y2-y1+1)*k.cheight+1);} }
 		for(var i=ya;i<=yb;i++){ if(this.vnop("bdx"+i+"_",1)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+i*k.cheight, (x2-x1+1)*k.cwidth+1, 1);} }
 
@@ -989,17 +1038,15 @@ Graphic.prototype = {
 		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
 		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
-		var f=(k.isoutsideborder==0&&this.chassisflag);
+		var bs=((k.isoutsideborder==0&&this.chassisflag)?1:0);
 
 		var dotmax = mf(k.cwidth/10)+3;
 		var dotCount = (mf(k.cwidth/dotmax)>=1?mf(k.cwidth/dotmax):1);
 		var dotSize  = k.cwidth/(dotCount*2);
 
 		g.fillStyle = this.gridcolor;
-		var xa = f?(x1>1?x1:1)                    :(x1>0?x1:0);
-		var xb = f?(x2+1<k.qcols-1?x2+1:k.qcols-1):(x2+1<k.qcols?x2+1:k.qcols);
-		var ya = f?(y1>1?y1:1)                    :(y1>0?y1:0);
-		var yb = f?(y2+1<k.qrows-1?y2+1:k.qrows-1):(y2+1<k.qrows?y2+1:k.qrows);
+		var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
+		var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
 		for(var i=xa;i<=xb;i++){
 			for(var j=(k.p0.y+y1*k.cheight);j<(k.p0.y+(y2+1)*k.cheight);j+=(2*dotSize)){
 				g.fillRect(k.p0.x+i*k.cwidth, mf(j), 1, mf(dotSize));
@@ -1012,19 +1059,17 @@ Graphic.prototype = {
 		}
 	},
 	drawDashedGridvml : function(x1,y1,x2,y2){
-		this.gridcolor = "rgb(160,160,160)";
-		this.drawBDline(x1,y1,x2,y2);
+		this.gridcolor = "rgb(191, 191, 191)";
+		this.drawGrid(x1,y1,x2,y2);
 
 //		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
 //		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 //
-//		var f=(k.isoutsideborder==0&&this.chassisflag);
+//		var bs=((k.isoutsideborder==0&&this.chassisflag)?1:0);
 //
 //		g.fillStyle = this.gridcolor;
-//		var xa = f?(x1>1?x1:1)                    :(x1>0?x1:0);
-//		var xb = f?(x2+1<k.qcols-1?x2+1:k.qcols-1):(x2+1<k.qcols?x2+1:k.qcols);
-//		var ya = f?(y1>1?y1:1)                    :(y1>0?y1:0);
-//		var yb = f?(y2+1<k.qrows-1?y2+1:k.qrows-1):(y2+1<k.qrows?y2+1:k.qrows);
+//		var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
+//		var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
 //		g.lineWidth = 1;
 //		g.enabledash = true;
 //		for(var i=xa;i<=xb;i++){ if(this.vnop("bdy"+i+"_",0)){
@@ -1171,11 +1216,11 @@ Graphic.prototype = {
 				((bd.QnC(id)==-2 || bd.QuC(id)==-2) && k.isDispHatena) );
 	},
 	getNumberColor : function(id){
-		if     (bd.QuC(id)==-2)                               { return this.fontcolor;      }
-		else if((k.BlackCell==0?bd.QuC(id)!=0:bd.isBlack(id))){ return this.BCell_fontcolor;}
-		else if(bd.ErC(id)==1 || bd.ErC(id)==4)               { return this.fontErrcolor;   }
-		else if(k.isAnsNumber && bd.QnC(id)!=-1)              { return this.fontcolor;      }
-		else if(k.isAnsNumber && bd.QaC(id)!=-1)              { return this.fontAnscolor;   }
+		if     (bd.QuC(id)==-2)                              { return this.fontcolor;      }
+		else if((k.BlackCell==0?bd.QuC(id)!=0:bd.QaC(id)==1)){ return this.BCell_fontcolor;}
+		else if(bd.ErC(id)==1 || bd.ErC(id)==4)              { return this.fontErrcolor;   }
+		else if(k.isAnsNumber && bd.QnC(id)!=-1)             { return this.fontcolor;      }
+		else if(k.isAnsNumber && bd.QaC(id)!=-1)             { return this.fontAnscolor;   }
 		return this.fontcolor;
 	},
 	//---------------------------------------------------------------------------
@@ -1194,7 +1239,7 @@ Graphic.prototype = {
 			else if(bd.QuC(id)>=2 && bd.QuC(id)<=5){ type=bd.QuC(id);}
 			else if(k.puzzleid=="reflect"){ if(!this.textenable){ obj.get(0).style.display = 'none';} return;}
 
-			var num = (bd.QnC(id)!=-1 ? bd.QnC(id) : bd.QaC(id));
+			var num = bd.getNum(id);
 
 			var text = (num>=0 ? ""+num : "?");
 			if(bd.QuC(id)==-2){ text = "?";}
@@ -1216,7 +1261,7 @@ Graphic.prototype = {
 	dispnumCross : function(id){
 		if(bd.QnX(id)>0||(bd.QnX(id)==0&&k.dispzero==1)){
 			if(!bd.cross[id].numobj){ bd.cross[id].numobj = this.CreateDOMAndSetNop();}
-			this.dispnumCross1(id, bd.cross[id].numobj, 101, ""+bd.QnX(id), 0.6 ,this.crossnumcolor);
+			this.dispnumCross1(id, bd.cross[id].numobj, 101, ""+bd.QnX(id), 0.6 ,this.fontcolor);
 		}
 		else if(bd.cross[id].numobj){ bd.cross[id].numobj.get(0).style.display = 'none';}
 	},
@@ -1255,7 +1300,7 @@ Graphic.prototype = {
 
 			el.innerHTML = text;
 
-			var fontsize = mf(k.cwidth*fontratio*pc.fontsizeratio);
+			var fontsize = mf(k.cwidth*fontratio*this.fontsizeratio);
 			el.style.fontSize = (""+ fontsize + 'px');
 
 			el.style.display = 'inline';	// 先に表示しないとwid,hgt=0になって位置がずれる
@@ -1282,7 +1327,7 @@ Graphic.prototype = {
 //		}
 //		// Nativeな方法はこっちなんだけど、計5～6%くらい遅くなる。。
 //		else{
-//			g.font = ""+mf(k.cwidth*fontratio*pc.fontsizeratio)+"px 'Serif'";
+//			g.font = ""+mf(k.cwidth*fontratio*this.fontsizeratio)+"px 'Serif'";
 //			g.fillStyle = color;
 //			if(type==1||type==6||type==7){
 //				g.textAlign = 'center'; g.textBaseline = 'middle';
