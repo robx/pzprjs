@@ -19,9 +19,9 @@ PBase.prototype = {
 	//   このファイルが呼ばれたときに実行される関数 -> onLoad前の最小限の設定を行う
 	//---------------------------------------------------------------------------
 	preload_func : function(){
-		// URLの取得 -> URLの?以下ををpuzzleid部とpzlURI部に分割(内部でurl_decode()呼んでいる)
-		enc = new Encode(location.search);
-		k.puzzleid = enc.uri.pid;
+		// URLの取得 -> URLの?以下ををpuzzleid部とpzlURI部に分割
+		enc = new Encode();
+		k.puzzleid = enc.first_parseURI(location.search);
 		if(!k.puzzleid && location.href.indexOf('for_test.html')>=0){ k.puzzleid = 'country';}
 		if(!k.puzzleid){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
 		if(enc.uri.cols){ k.qcols = enc.uri.cols;}
@@ -38,7 +38,7 @@ PBase.prototype = {
 			document.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
 		}
 		else{
-			document.writeln("<script type=\"text/javascript\" src=\"src/puzzles_Full.js\"></script>");
+			document.writeln("<script type=\"text/javascript\" src=\"src/puzzles.js\"></script>");
 		}
 
 		// onLoadとonResizeに動作を割り当てる
@@ -62,11 +62,12 @@ PBase.prototype = {
 		this.initCanvas();
 
 		this.initObjects();
-		this.setEvents(1);	// イベントをくっつける
+		this.setEvents(true);	// イベントをくっつける
 
 		if(document.domain=='indi.s58.xrea.com' && k.callmode=='pplay'){ this.accesslog();}	// アクセスログをとってみる
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
 	},
+
 	initObjects : function(){
 		this.proto = 0;
 
@@ -79,19 +80,20 @@ PBase.prototype = {
 		mv = new MouseEvent();	// マウス入力オブジェクト
 		kc = new KeyEvent();	// キーボード入力オブジェクト
 		kp = new KeyPopup();	// 入力パネルオブジェクト
-		col = new Colors();		// 色分け管理オブジェクト
 		pc = new Graphic();		// 描画系オブジェクト
 		tc = new TCell();		// キー入力のターゲット管理オブジェクト
 		ans = new AnsCheck();	// 正解判定オブジェクト
-		um = new UndoManager();	// 操作情報管理オブジェクト
-		room = new Rooms();		// 部屋情報のオブジェクト
+		um   = new UndoManager();	// 操作情報管理オブジェクト
+		area = new AreaManager();	// 部屋情報等管理オブジェクト
+		line = new LineManager();	// 線の情報管理オブジェクト
+
 		fio.initDataBase();		// データベースの設定
 		menu = new Menu();		// メニューを扱うオブジェクト
 		pp = new Properties();	// メニュー関係の設定値を保持するオブジェクト
 
 		this.doc_design();		// デザイン変更関連関数の呼び出し
 
-		enc.pzlinput(0);									// URLからパズルのデータを読み出す
+		enc.pzlinput();										// URLからパズルのデータを読み出す
 		if(!enc.uri.bstr){ this.resize_canvas_onload();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
 
 		if(k.scriptcheck && debug){ debug.testonly_func();}	// テスト用
@@ -126,8 +128,11 @@ PBase.prototype = {
 						   .appendTo($("head"));
 		}
 
+		enc = new Encode();
+		fio = new FileIO();
+
 		this.initObjects();
-		this.setEvents(0);
+		this.setEvents(false);
 	},
 
 	postfix : function(){
@@ -179,6 +184,7 @@ PBase.prototype = {
 	// base.resize_canvas_onload() 初期化中にpaint再描画が起こらないように、resize_canvasを呼び出す
 	// base.onresize_func()        ウィンドウリサイズ時に呼ばれる関数
 	// base.getWindowSize()        ウィンドウの大きさを返す
+	// base.resetInfo()            AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
 	//---------------------------------------------------------------------------
 	initCanvas : function(){
 		k.IEMargin = (k.br.IE)?(new Pos(4, 4)):(new Pos(0, 0));
@@ -275,6 +281,12 @@ PBase.prototype = {
 			return new Pos(innerWidth, innerHeight);
 		}
 		return new Pos(0, 0);
+	},
+
+	resetInfo : function(){
+		tc.Adjust();
+		area.resetArea();
+		line.resetLcnts();
 	},
 
 	//---------------------------------------------------------------------------
