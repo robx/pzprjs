@@ -9,6 +9,7 @@ MenuExec = function(){
 	this.displaymanage = true;
 	this.qnumw;	// Ques==51の回転･反転用
 	this.qnumh;	// Ques==51の回転･反転用
+	this.qnums;	// reduceでisOneNumber時の後処理用
 };
 MenuExec.prototype = {
 	//------------------------------------------------------------------------------
@@ -53,11 +54,11 @@ MenuExec.prototype = {
 		for(var n=k.qcols*k.qrows-1;n>=col*row;n--){
 			if(bd.cell[n].numobj) { bd.cell[n].numobj.remove();}
 			if(bd.cell[n].numobj2){ bd.cell[n].numobj2.remove();}
-			delete bd.cell[n]; bd.cell.pop(); bd.cells.pop();
+			delete bd.cell[n]; bd.cell.pop();
 		}
 		if(k.iscross){ for(var n=(k.qcols+1)*(k.qrows+1)-1;n>=(col+1)*(row+1);n--){
 			if(bd.cross[n].numobj){ bd.cross[n].numobj.remove();}
-			delete bd.cross[n]; bd.cross.pop(); bd.crosses.pop();
+			delete bd.cross[n]; bd.cross.pop();
 		}}
 		if(k.isborder){ for(var n=this.bdcnt(k.qcols,k.qrows)-1;n>=this.bdcnt(col,row);n--){
 			if(bd.border[n].numobj){ bd.border[n].numobj.remove();}
@@ -75,9 +76,9 @@ MenuExec.prototype = {
 		}}
 
 		// 既存のサイズより大きいならnewを行う
-		for(var i=k.qcols*k.qrows;i<col*row;i++){ bd.cell.push(new Cell()); bd.cells.push(i);}
-		if(k.iscross){ for(var i=(k.qcols+1)*(k.qrows+1);i<(col+1)*(row+1);i++)         { bd.cross.push(new Cross());   bd.crosses.push(i);} }
-		if(k.isborder){ for(var i=this.bdcnt(k.qcols,k.qrows);i<this.bdcnt(col,row);i++){ bd.border.push(new Border()); bd.borders.push(i);} }
+		for(var i=k.qcols*k.qrows;i<col*row;i++){ bd.cell.push(new Cell());}
+		if(k.iscross){ for(var i=(k.qcols+1)*(k.qrows+1);i<(col+1)*(row+1);i++)         { bd.cross.push(new Cross());} }
+		if(k.isborder){ for(var i=this.bdcnt(k.qcols,k.qrows);i<this.bdcnt(col,row);i++){ bd.border.push(new Border()); bd.borders[i]=i;} }
 		if(k.isextendcell==1){ for(var i=k.qcols+k.qrows+1;i<col+row+1;i++)        { bd.excell.push(new Cell());} }
 		if(k.isextendcell==2){ for(var i=2*k.qcols+2*k.qrows+4;i<2*col+2*row+4;i++){ bd.excell.push(new Cell());} }
 
@@ -106,11 +107,9 @@ MenuExec.prototype = {
 		um.allerase();
 		bd.setposAll();
 
-		room.resetRarea();
-
-		bd.resetLcnts();
+		base.resetInfo();
 	},
-	bdcnt : function(col,row){ return (col-1)*row+col*(row-1)+(k.isoutsideborder==0?0:2*(col+row));},
+	bdcnt : function(col,row){ return 2*col*row+(k.isoutsideborder==0?-(col+row):(col+row));},
 
 	//------------------------------------------------------------------------------
 	// menu.ex.urlinput()   URLを入力する
@@ -119,10 +118,9 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	urlinput : function(e){
 		if(menu.pop){
-			var type = enc.get_search(document.urlinput.ta.value);
+			enc.parseURI(document.urlinput.ta.value);
 			if(enc.uri.cols && enc.uri.rows){ this.newboard2(enc.uri.cols, enc.uri.rows);}
-			enc.pzlinput(type);
-			room.resetRarea();
+			enc.pzlinput();
 
 			tm.reset();
 			menu.popclose();
@@ -178,6 +176,24 @@ MenuExec.prototype = {
 		}
 	},
 
+	//---------------------------------------------------------------------------
+	// menu.ex.irowakeRemake() 「色分けしなおす」ボタンを押した時に色分けしなおす
+	//---------------------------------------------------------------------------
+	irowakeRemake : function(){
+		if(!menu.getVal('irowake')){ return;}
+
+		for(var i=1;i<=line.data.max;i++){
+			var idlist = line.data[i].idlist;
+			if(idlist.length>0){
+				var newColor = pc.getNewLineColor();
+				for(n=0;n<idlist.length;n++){
+					bd.border[idlist[n]].color = newColor;
+				}
+			}
+		}
+		pc.paint(0,0,k.qcols-1,k.qrows-1);
+	},
+
 	//------------------------------------------------------------------------------
 	// menu.ex.dispman()    管理領域を隠す/表示するが押された時に動作する
 	// menu.ex.dispmanstr() 管理領域を隠す/表示するにどの文字列を表示するか
@@ -207,469 +223,362 @@ MenuExec.prototype = {
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.popupadjust()  "盤面の調整"でボタンが押された時に振り分けて動作を行う
-	// menu.ex.expandup() menu.ex.expanddn() menu.ex.expandlt() menu.ex.expandrt()
-	// menu.ex.expand()       盤面の拡大を実行する
-	// menu.ex.expandborder() 盤面の拡大時、線を新しく登録する
-	// menu.ex.reduceup() menu.ex.reducedn() menu.ex.reducelt() menu.ex.reducert()
-	// menu.ex.reduce()       盤面の縮小を実行する
-	// menu.ex.reduceborder() 盤面の拡大時、線を消去したことを登録する
-	//---------------------------------------------------------------------------
+	// menu.ex.popupadjust()  "盤面の調整""回転・反転"でボタンが押された時に
+	//                        対応する関数へジャンプする
+	//------------------------------------------------------------------------------
 	popupadjust : function(e){
 		if(menu.pop){
 			um.newOperation(true);
 
-			if(getSrcElement(e).name.indexOf("expand")!=-1){ um.addOpe('board', getSrcElement(e).name, 0, 0, 1);}
-
-			var f=true;
-			switch(getSrcElement(e).name){
-				case "expandup": this.expandup(); break;
-				case "expanddn": this.expanddn(); break;
-				case "expandlt": this.expandlt(); break;
-				case "expandrt": this.expandrt(); break;
-				case "reduceup": um.undoonly = 1; f=this.reduceup(); um.undoonly = 0; break;
-				case "reducedn": um.undoonly = 1; f=this.reducedn(); um.undoonly = 0; break;
-				case "reducelt": um.undoonly = 1; f=this.reducelt(); um.undoonly = 0; break;
-				case "reducert": um.undoonly = 1; f=this.reducert(); um.undoonly = 0; break;
+			var name = getSrcElement(e).name;
+			if(name.indexOf("reduce")==0){
+				if(name=="reduceup"||name=="reducedn"){
+					if(k.qrows<=1){ return;}
+				}
+				else if(name=="reducelt"||name=="reducedn"){
+					if(k.qcols<=1 && k.puzzleid!="tawa"){ return;}
+					else if(k.qcols<=1 && k.puzzleid=="tawa" && bd.lap!=3){ return;}
+				}
 			}
 
-			if(f&&getSrcElement(e).name.indexOf("reduce")!=-1){ um.addOpe('board', getSrcElement(e).name, 0, 0, 1);}
+			switch(name){
+				case "expandup": this.expand('up'); break;
+				case "expanddn": this.expand('dn'); break;
+				case "expandlt": this.expand('lt'); break;
+				case "expandrt": this.expand('rt'); break;
+				case "reduceup": this.reduce('up'); break;
+				case "reducedn": this.reduce('dn'); break;
+				case "reducelt": this.reduce('lt'); break;
+				case "reducert": this.reduce('rt'); break;
 
-			room.resetRarea();
-			tc.Adjust();
+				case "turnl": this.turnflip(4,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); break;
+				case "turnr": this.turnflip(3,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); break;
+				case "flipy": this.turnflip(1,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); break;
+				case "flipx": this.turnflip(2,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); break;
+			}
+
+			// reduceはここ必須
+			um.addOpe('board', name, 0, 0, 1);
+
+			base.resetInfo();
 			base.resize_canvas();				// Canvasを更新する
 		}
 	},
-	expandup : function(){ this.expand(k.qcols, 'r', 'up' ); },
-	expanddn : function(){ this.expand(k.qcols, 'r', 'dn' ); },
-	expandlt : function(){ this.expand(k.qrows, 'c', 'lt' ); },
-	expandrt : function(){ this.expand(k.qrows, 'c', 'rt' ); },
-	expand : function(number, rc, key){
+
+	//------------------------------------------------------------------------------
+	// menu.ex.expand()       盤面の拡大を実行する
+	// menu.ex.expandGroup()  オブジェクトの追加を行う
+	// menu.ex.reduce()       盤面の縮小を実行する
+	// menu.ex.reduceGroup()  オブジェクトの消去を行う
+	//------------------------------------------------------------------------------
+	expand : function(key){
 		this.adjustSpecial(5,key);
-		this.adjustGeneral(5,'',0,0,k.qcols-1,k.qrows-1);
+		this.adjustGeneral(5,'',{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});
 
-		if(rc=='c'){ k.qcols++; tc.maxx+=2;}else if(rc=='r'){ k.qrows++; tc.maxy+=2;}
+		var number;
+		if     (key=='up'||key=='dn'){ number=k.qcols; k.qrows++; tc.maxy+=2;}
+		else if(key=='lt'||key=='rt'){ number=k.qrows; k.qcols++; tc.maxx+=2;}
 
-		var tf = ((key=='up'||key=='lt')?1:-1);
 		var func;
-		if     (rc=='r'){ func = function(cx,cy){ var ty=(k.qrows-1)/2; return (ty+tf*(cy-ty)==0);};}
-		else if(rc=='c'){ func = function(cx,cy){ var tx=(k.qcols-1)/2; return (tx+tf*(cx-tx)==0);};}
-
-		var margin = number; var ncount = bd.cell.length;
-		for(var i=0;i<margin;i++){ bd.cell.push(new Cell()); bd.cells.push(ncount+i);} 
-		for(var i=0;i<bd.cell.length;i++){ bd.setposCell(i);}
-		for(var i=bd.cell.length-1;i>=0;i--){
-			if(i-margin<0 || func(bd.cell[i].cx, bd.cell[i].cy)){
-				bd.cell[i] = new Cell(); bd.cell[i].cellinit(i); margin--;
-			}
-			else if(margin>0){ bd.cell[i] = bd.cell[i-margin];}
-			if(margin==0){ break;}
+		{
+			func = function(id){ return (menu.ex.distObj(key,'cell',id)==0);};
+			this.expandGroup('cell', bd.cell, number, func);
 		}
 		if(k.iscross){
-			var func2, oc = k.isoutsidecross?0:1;
-			if     (rc=='r'){ func2 = function(cx,cy){ var ty=k.qrows/2; return (ty+tf*(cy-ty)==oc);};}
-			else if(rc=='c'){ func2 = function(cx,cy){ var tx=k.qcols/2; return (tx+tf*(cx-tx)==oc);};}
-
-			margin = number+1; ncount = bd.cross.length;
-			for(var i=0;i<margin;i++){ bd.cross.push(new Cross()); bd.crosses.push(ncount+i);} 
-			for(var i=0;i<bd.cross.length;i++){ bd.setposCross(i);}
-			for(var i=bd.cross.length-1;i>=0;i--){
-				if(i-margin<0 || func2(bd.cross[i].cx, bd.cross[i].cy)){
-					bd.cross[i] = new Cross(); bd.cross[i].cellinit(i); margin--;
-				}
-				else if(margin>0){ bd.cross[i] = bd.cross[i-margin];}
-				if(margin==0){ break;}
-			}
+			var oc = k.isoutsidecross?0:1;
+			func = function(id){ return (menu.ex.distObj(key,'cross',id)==oc);};
+			this.expandGroup('cross', bd.cross, number+1, func);
 		}
 		if(k.isborder){
-			var func2;
-			if     (rc=='r'){ func2 = function(cx,cy){ var h=k.qrows+tf*(cy-k.qrows); return (h==1||h==2);};}
-			else if(rc=='c'){ func2 = function(cx,cy){ var w=k.qcols+tf*(cx-k.qcols); return (w==1||w==2);};}
+			bd.bdinside = 2*k.qcols*k.qrows-(k.qcols+k.qrows);
 
-			bd.bdinside = (k.qcols-1)*k.qrows+k.qcols*(k.qrows-1);
-			margin = 2*number-1+(k.isoutsideborder==0?0:2); ncount = bd.border.length;
-			for(var i=0;i<margin;i++){ bd.border.push(new Border()); bd.borders.push(ncount+i);} 
-			for(var i=0;i<bd.border.length;i++){ bd.setposBorder(i);}
-			for(var i=bd.border.length-1;i>=0;i--){
-				if(i-margin<0 || func2(bd.border[i].cx, bd.border[i].cy)){
-					bd.border[i] = new Border(); bd.border[i].cellinit(i); margin--;
-				}
-				else if(margin>0){ bd.border[i] = bd.border[i-margin];}
-				if(margin==0){ break;}
-			}
+			func = function(id){ var m=menu.ex.distObj(key,'border',id); return (m==1||m==2);};
+			this.expandGroup('border', bd.border, 2*number+(k.isoutsideborder==0?-1:1), func);
+			for(var len=bd.border.length,i=len-(2*number+(k.isoutsideborder==0?-1:1));i<len;i++){ bd.borders[i]=i;} 
+
+			// 拡大時に、境界線は伸ばしちゃいます。
+			if(k.isborderAsLine==0){ this.expandborder(key);}
+			else{ this.expandborderAsLine(key);}
 		}
 		if(k.isextendcell!=0){
-			margin = k.isextendcell; ncount = bd.excell.length;
-			for(var i=0;i<margin;i++){ bd.excell.push(new Cell());}
-			for(var i=0;i<bd.excell.length;i++){ bd.setposEXcell(i);}
-			for(var i=bd.excell.length-1;i>=0;i--){
-				if(i-margin<0 || func(bd.excell[i].cx, bd.excell[i].cy)){
-					bd.excell[i] = new Cell(); bd.excell[i].allclear(); bd.excell[i].qnum=-1; margin--;
-				}
-				else if(margin>0){ bd.excell[i] = bd.excell[i-margin];}
-				if(margin==0){ break;}
-			}
+			func = function(id){ return (menu.ex.distObj(key,'excell',id)==0);};
+			this.expandGroup('excell', bd.excell, k.isextendcell, func);
 		}
 
 		bd.setposAll();
 
-		// 拡大時、境界線は代入しておく
-		if(k.isborder && um.isenableRecord()){ this.expandborder(key);}
 		this.adjustSpecial2(5,key);
-		bd.resetLcnts();
 	},
-	expandborder : function(key){
-		if(k.puzzleid=='icebarn'||k.puzzleid=='minarism'){ return;}
-		for(var i=0;i<bd.border.length;i++){
-			var source = -1;
-			if(k.isborderAsLine==0){
-				if     (key=='up' && bd.border[i].cy==1          ){ source = bd.bnum(bd.border[i].cx, 3          );}
-				else if(key=='dn' && bd.border[i].cy==2*k.qrows-1){ source = bd.bnum(bd.border[i].cx, 2*k.qrows-3);}
-				else if(key=='lt' && bd.border[i].cx==1          ){ source = bd.bnum(3,           bd.border[i].cy);}
-				else if(key=='rt' && bd.border[i].cx==2*k.qcols-1){ source = bd.bnum(2*k.qcols-3, bd.border[i].cy);}
-
-				if(source!=-1){
-					bd.sQuB(i, bd.QuB(source));
-					bd.sQaB(i, bd.QaB(source));
-				}
+	expandGroup : function(type,group,margin,insfunc){
+		for(var len=group.length,i=len;i<len+margin;i++){ group.push(this.getnewObj(type,i));}
+		this.setposObj(type);
+		for(var i=group.length-1;i>=0;i--){
+			if(insfunc(i)){
+				group[i] = this.getnewObj(type,i);
+				margin--;
 			}
-			else{
-				if     (key=='up' && bd.border[i].cy==2          ){ source = bd.bnum(bd.border[i].cx, 0        );}
-				else if(key=='dn' && bd.border[i].cy==2*k.qrows-2){ source = bd.bnum(bd.border[i].cx, 2*k.qrows);}
-				else if(key=='lt' && bd.border[i].cx==2          ){ source = bd.bnum(0,         bd.border[i].cy);}
-				else if(key=='rt' && bd.border[i].cx==2*k.qcols-2){ source = bd.bnum(2*k.qcols, bd.border[i].cy);}
-
-				if(source!=-1){
-					bd.sQuB(i, bd.QuB(source)); bd.sQuB(source, 0);
-					bd.sQaB(i, bd.QaB(source)); bd.sQaB(source,-1);
-					bd.sQsB(i, bd.QsB(source)); bd.sQsB(source, 0);
-				}
-			}
+			else if(margin>0){ group[i] = group[i-margin];}
 		}
 	},
 
-	reduceup : function(){ return this.reduce(k.qcols, 'r', 'up'); },
-	reducedn : function(){ return this.reduce(k.qcols, 'r', 'dn'); },
-	reducelt : function(){ return this.reduce(k.qrows, 'c', 'lt'); },
-	reducert : function(){ return this.reduce(k.qrows, 'c', 'rt'); },
-	reduce : function(number, rc, key){
-		if((rc=='c'&&k.qcols==1)||(rc=='r'&&k.qrows==1)){ return false;}
-
+	reduce : function(key){
 		this.adjustSpecial(6,key);
-		this.adjustGeneral(6,'',0,0,k.qcols-1,k.qrows-1);
+		this.adjustGeneral(6,'',{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});
 
-		if(k.isborder && um.isenableRecord()){ this.reduceborder(key);}
-
-		var tf = ((key=='up'||key=='lt')?1:-1);
-		var func;
-		if     (rc=='r'){ func = function(cx,cy){ var ty=(k.qrows-1)/2; return (ty+tf*(cy-ty)==0);};}
-		else if(rc=='c'){ func = function(cx,cy){ var tx=(k.qcols-1)/2; return (tx+tf*(cx-tx)==0);};}
-		var margin = 0;
-		var qnums = new Array();
-
-		for(var i=0;i<bd.cell.length;i++){
-			if(func(bd.cell[i].cx, bd.cell[i].cy, 0)){
-				if(bd.cell[i].numobj) { bd.cell[i].numobj.hide();}
-				if(bd.cell[i].numobj2){ bd.cell[i].numobj2.hide();}
-				if(!bd.isNullCell(i)){ um.addOpe('cell', 'cell', i, bd.cell[i], 0);}
-				if(k.isOneNumber){
-					if(bd.QnC(i)!=-1){ qnums.push({ areaid:room.getRoomID(i), val:bd.QnC(i)});}
-					room.cell[i] = -1;
-				}
-				margin++;
-			}
-			else if(margin>0){ bd.cell[i-margin] = bd.cell[i];}
+		var func, margin;
+		{
+			this.qnums = [];
+			func = function(id){ return (menu.ex.distObj(key,'cell',id)==0);};
+			margin = this.reduceGroup('cell', bd.cell, func);
 		}
-		for(var i=0;i<number;i++){ bd.cell.pop(); bd.cells.pop();}
-
 		if(k.iscross){
-			var func2, oc = k.isoutsidecross?0:1;
-			if     (rc=='r'){ func2 = function(cx,cy){ var ty=k.qrows/2; return (ty+tf*(cy-ty)==oc);};}
-			else if(rc=='c'){ func2 = function(cx,cy){ var tx=k.qcols/2; return (tx+tf*(cx-tx)==oc);};}
-			margin = 0;
-			for(var i=0;i<bd.cross.length;i++){
-				if(func2(bd.cross[i].cx, bd.cross[i].cy)){
-					if(bd.cross[i].numobj){ bd.cross[i].numobj.hide();}
-					if(!bd.isNullCross(i)){ um.addOpe('cross', 'cross', i, bd.cross[i], 0);}
-					margin++;
-				}
-				else if(margin>0){ bd.cross[i-margin] = bd.cross[i];}
-			}
-			for(var i=0;i<number+1;i++){ bd.cross.pop(); bd.crosses.pop();}
+			var oc = k.isoutsidecross?0:1;
+			func = function(id){ return (menu.ex.distObj(key,'cross',id)==oc);};
+			margin = this.reduceGroup('cross', bd.cross, func);
 		}
 		if(k.isborder){
-			var func2;
-			if     (rc=='r'){ func2 = function(cx,cy){ var h=k.qrows+tf*(cy-k.qrows); return (h==1||h==2);};}
-			else if(rc=='c'){ func2 = function(cx,cy){ var w=k.qcols+tf*(cx-k.qcols); return (w==1||w==2);};}
-			bd.bdinside = (k.qcols-1)*k.qrows+k.qcols*(k.qrows-1);
-			margin = 0;
-			for(var i=0;i<bd.border.length;i++){
-				if(func2(bd.border[i].cx, bd.border[i].cy)){
-					if(bd.border[i].numobj){ bd.border[i].numobj.hide();}
-					if(!bd.isNullBorder(i)){ um.addOpe('border', 'border', i, bd.border[i], 0);}
-					margin++;
-				}
-				else if(margin>0){ bd.border[i-margin] = bd.border[i];}
-			}
-			for(var i=0;i<2*number-1+(k.isoutsideborder==0?0:2);i++){ bd.border.pop(); bd.borders.pop();}
+			if(k.isborderAsLine==1){ this.reduceborderAsLine(key);}
+
+			if     (key=='up'||key=='dn'){ bd.bdinside = 2*k.qcols*(k.qrows-1)-(k.qcols+k.qrows-1);}
+			else if(key=='lt'||key=='rt'){ bd.bdinside = 2*(k.qcols-1)*k.qrows-(k.qcols+k.qrows-1);}
+
+			func = function(id){ var m=menu.ex.distObj(key,'border',id); return (m==1||m==2);};
+			margin = this.reduceGroup('border', bd.border, func);
+			for(var i=0;i<margin;i++){ bd.borders.pop();}
 		}
 		if(k.isextendcell!=0){
-			margin = 0;
-			for(var i=0;i<bd.excell.length;i++){
-				if(func(bd.excell[i].cx, bd.excell[i].cy)){
-					if(bd.excell[i].numobj) { bd.excell[i].numobj.hide();}
-					if(bd.excell[i].numobj2){ bd.excell[i].numobj2.hide();}
-					if(!bd.isNullCell(i)){ um.addOpe('excell', 'excell', i, bd.excell[i], 0);}
-					margin++;
-				}
-				else if(margin>0){ bd.excell[i-margin] = bd.excell[i];}
-			}
-			for(var i=0;i<k.isextendcell;i++){ bd.excell.pop();}
+			func = function(id){ return (menu.ex.distObj(key,'excell',id)==0);};
+			margin = this.reduceGroup('excell', bd.excell, func);
 		}
 
-		if(rc=='c'){ k.qcols--; tc.maxx-=2;}else if(rc=='r'){ k.qrows--; tc.maxy-=2;}
+		if     (key=='up'||key=='dn'){ k.qrows--; tc.maxy-=2;}
+		else if(key=='lt'||key=='rt'){ k.qcols--; tc.maxx-=2;}
 
 		bd.setposAll();
+
 		if(k.isOneNumber){
-			room.resetRarea();
-			for(var i=0;i<qnums.length;i++){ bd.sQnC(room.getTopOfRoom(qnums[i].areaid), qnums[i].val);}
+			area.resetArea();
+			for(var i=0;i<this.qnums.length;i++){
+				bd.cell[area.getTopOfRoom(this.qnums[i].areaid)].qnum = this.qnums[i].val;
+			}
 		}
+
 		this.adjustSpecial2(6,key);
-		bd.resetLcnts();
-		return true;
 	},
-	reduceborder : function(key){
-		for(var i=0;i<bd.border.length;i++){
-			var source = -1;
-			if(k.isborderAsLine==1){
-				if     (key=='up' && bd.border[i].cy==0        ){ source = bd.bnum(bd.border[i].cx, 2          );}
-				else if(key=='dn' && bd.border[i].cy==2*k.qrows){ source = bd.bnum(bd.border[i].cx, 2*k.qrows-2);}
-				else if(key=='lt' && bd.border[i].cx==0        ){ source = bd.bnum(2,           bd.border[i].cy);}
-				else if(key=='rt' && bd.border[i].cx==2*k.qcols){ source = bd.bnum(2*k.qcols-2, bd.border[i].cy);}
+	reduceGroup : function(type,group,exfunc){
+		var margin=0;
+		for(var i=0;i<group.length;i++){
+			if(exfunc(i)){
+				bd.hideNumobj(type,i);
+				if(!bd.isNullObj(type,i)){ um.addObj(type,i);}
+				margin++;
 
-				if(source!=-1){
-					bd.sQuB(i, bd.QuB(source)); bd.sQuB(source, 0);
-					bd.sQaB(i, bd.QaB(source)); bd.sQaB(source,-1);
-					bd.sQsB(i, bd.QsB(source)); bd.sQsB(source, 0);
+				if(type=='cell' && k.isOneNumber){
+					if(bd.QnC(i)!=-1){ this.qnums.push({ areaid:area.getRoomID(i), val:bd.QnC(i)});}
+					area.setRoomID(i, -1);
 				}
 			}
+			else if(margin>0){ group[i-margin] = group[i];}
 		}
+		for(var i=0;i<margin;i++){ group.pop();}
+
+		return margin;
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.popupflip()   "回転・反転"でボタンが押された時の動作を指定する
-	// menu.ex.flipy()       上下反転を実行する
-	// menu.ex.flipx()       左右反転を実行する
-	// menu.ex.turnr()       右90°回転を実行する
-	// menu.ex.turnl()       左90°回転を実行する
-	// menu.ex.turn2()       turnr(),turnl()から内部的に呼ばれる回転実行部
+	// menu.ex.turnflip()      回転・反転処理を実行する
+	// menu.ex.turnflipGroup() turnflip()から内部的に呼ばれる回転実行部
 	//------------------------------------------------------------------------------
-	popupflip : function(e){
-		if(menu.pop){
-			um.newOperation(true);
+	turnflip : function(type,d){
+		d.xx = (d.x1+d.x2); d.yy = (d.y1+d.y2);
 
-			switch(getSrcElement(e).name){
-				case "turnl": this.turnl(0,0,k.qcols-1,k.qrows-1); break;
-				case "turnr": this.turnr(0,0,k.qcols-1,k.qrows-1); break;
-				case "flipy": this.flipy(0,0,k.qcols-1,k.qrows-1); break;
-				case "flipx": this.flipx(0,0,k.qcols-1,k.qrows-1); break;
-			}
+		this.adjustSpecial(type,'');
+		this.adjustGeneral(type,'',d);
 
-			um.addOpe('board', getSrcElement(e).name, 0, 0, 1);
-
-			tc.Adjust();
-			room.resetRarea();
-			base.resize_canvas();				// Canvasを更新する
+		if(type==3||type==4){
+			var tmp = k.qcols; k.qcols = k.qrows; k.qrows = tmp;
+			tmp = tc.maxx; tc.maxx = tc.maxy; tc.maxy = tmp;
+			bd.setposAll();
 		}
-	},
-	// 回転・反転(上下反転)
-	flipy : function(rx1,ry1,rx2,ry2){
-		this.adjustSpecial(1,'');
-		this.adjustGeneral(1,'',rx1,ry1,rx2,ry2);
 
-		for(var cy=ry1;cy<(ry2+ry1)/2;cy++){
-			for(var cx=rx1;cx<=rx2;cx++){
-				var c = bd.cell[bd.cnum(cx,cy)];
-				bd.cell[bd.cnum(cx,cy)] = bd.cell[bd.cnum(cx,(ry1+ry2)-cy)];
-				bd.cell[bd.cnum(cx,(ry1+ry2)-cy)] = c;
-			}
+		var func;
+		{
+			if     (type==1){ func = function(d,id){ return bd.cnum(bd.cell[id].cx, d.yy-bd.cell[id].cy);}; }
+			else if(type==2){ func = function(d,id){ return bd.cnum(d.xx-bd.cell[id].cx, bd.cell[id].cy);}; }
+			else if(type==3){ func = function(d,id){ return bd.cnum2(bd.cell[id].cy, d.yy-bd.cell[id].cx, k.qrows, k.qcols);}; }
+			else if(type==4){ func = function(d,id){ return bd.cnum2(d.xx-bd.cell[id].cy, bd.cell[id].cx, k.qrows, k.qcols);}; }
+			this.turnflipGroup(d, bd.cell, k.qcols*k.qrows, func);
 		}
 		if(k.iscross){
-			for(var cy=ry1;cy<(ry2+ry1+1)/2;cy++){
-				for(var cx=rx1;cx<=rx2+1;cx++){
-					var c = bd.cross[bd.xnum(cx,cy)];
-					bd.cross[bd.xnum(cx,cy)] = bd.cross[bd.xnum(cx,(ry1+ry2+1)-cy)];
-					bd.cross[bd.xnum(cx,(ry1+ry2+1)-cy)] = c;
-				}
-			}
+			if     (type==1){ func = function(d,id){ return bd.xnum(bd.cross[id].cx, (d.yy+1)-bd.cross[id].cy);}; }
+			else if(type==2){ func = function(d,id){ return bd.xnum((d.xx+1)-bd.cross[id].cx, bd.cross[id].cy);}; }
+			else if(type==3){ func = function(d,id){ return bd.xnum2(bd.cross[id].cy, (d.yy+1)-bd.cross[id].cx, k.qrows, k.qcols);}; }
+			else if(type==4){ func = function(d,id){ return bd.xnum2((d.xx+1)-bd.cross[id].cy, bd.cross[id].cx, k.qrows, k.qcols);}; }
+			this.turnflipGroup(d, bd.cross, (k.qcols+1)*(k.qrows+1), func);
 		}
 		if(k.isborder){
-			for(var cy=ry1*2;cy<(ry2+ry1)*2/2+1;cy++){
-				for(var cx=rx1*2;cx<=(rx2+1)*2;cx++){
-					if(bd.bnum(cx,cy)==-1){ continue;}
-					var c = bd.border[bd.bnum(cx,cy)];
-					bd.border[bd.bnum(cx,cy)] = bd.border[bd.bnum(cx,(ry1+ry2+1)*2-cy)];
-					bd.border[bd.bnum(cx,(ry1+ry2+1)*2-cy)] = c;
-				}
-			}
-		}
-		if(k.isextendcell==1){
-			for(var cy=ry1;cy<(ry2+ry1)/2;cy++){
-				var c = bd.excell[bd.exnum(-1,cy)];
-				bd.excell[bd.exnum(-1,cy)] = bd.excell[bd.exnum(-1,(ry1+ry2)-cy)];
-				bd.excell[bd.exnum(-1,(ry1+ry2)-cy)] = c;
-			}
-		}
-		else if(k.isextendcell==2){
-			for(var cy=ry1-1;cy<(ry2+ry1)/2;cy++){
-				for(var cx=rx1-1;cx<=rx2+1;cx++){
-					if(bd.exnum(cx,cy)==-1){ continue;}
-					var c = bd.excell[bd.exnum(cx,cy)];
-					bd.excell[bd.exnum(cx,cy)] = bd.excell[bd.exnum(cx,(ry1+ry2)-cy)];
-					bd.excell[bd.exnum(cx,(ry1+ry2)-cy)] = c;
-				}
-			}
-		}
-
-		bd.setposAll();
-		this.adjustSpecial2(1,'');
-		bd.resetLcnts();
-	},
-	// 回転・反転(左右反転)
-	flipx : function(rx1,ry1,rx2,ry2){
-		this.adjustSpecial(2,'');
-		this.adjustGeneral(2,'',rx1,ry1,rx2,ry2);
-
-		for(var cx=rx1;cx<(rx2+rx1)/2;cx++){
-			for(var cy=ry1;cy<=ry2;cy++){
-				var c = bd.cell[bd.cnum(cx,cy)];
-				bd.cell[bd.cnum(cx,cy)] = bd.cell[bd.cnum((rx1+rx2)-cx,cy)];
-				bd.cell[bd.cnum((rx1+rx2)-cx,cy)] = c;
-			}
-		}
-		if(k.iscross){
-			for(var cx=rx1;cx<(rx2+rx1+1)/2;cx++){
-				for(var cy=ry1;cy<=ry2+1;cy++){
-					var c = bd.cross[bd.xnum(cx,cy)];
-					bd.cross[bd.xnum(cx,cy)] = bd.cross[bd.xnum((rx1+rx2+1)-cx,cy)];
-					bd.cross[bd.xnum((rx1+rx2+1)-cx,cy)] = c;
-				}
-			}
-		}
-		if(k.isborder){
-			for(var cx=rx1*2;cx<(rx2+rx1)*2/2+1;cx++){
-				for(var cy=ry1*2;cy<=(ry2+1)*2;cy++){
-					if(bd.bnum(cx,cy)==-1){ continue;}
-					var c = bd.border[bd.bnum(cx,cy)];
-					bd.border[bd.bnum(cx,cy)] = bd.border[bd.bnum((rx1+rx2+1)*2-cx,cy)];
-					bd.border[bd.bnum((rx1+rx2+1)*2-cx,cy)] = c;
-				}
-			}
-		}
-		if(k.isextendcell==1){
-			for(var cx=rx1;cx<(rx2+rx1)/2;cx++){
-				var c = bd.excell[bd.exnum(cx,-1)];
-				bd.excell[bd.exnum(cx,-1)] = bd.excell[bd.exnum((rx1+rx2)-cx,-1)];
-				bd.excell[bd.exnum((rx1+rx2)-cx,-1)] = c;
-			}
-		}
-		else if(k.isextendcell==2){
-			for(var cx=rx1-1;cx<(rx2+rx1)/2;cx++){
-				for(var cy=ry1-1;cy<=ry2+1;cy++){
-					if(bd.exnum(cx,cy)==-1){ continue;}
-					var c = bd.excell[bd.exnum(cx,cy)];
-					bd.excell[bd.exnum(cx,cy)] = bd.excell[bd.exnum((rx1+rx2)-cx,cy)];
-					bd.excell[bd.exnum((rx1+rx2)-cx,cy)] = c;
-				}
-			}
-		}
-
-		bd.setposAll();
-		this.adjustSpecial2(2,'');
-		bd.resetLcnts();
-	},
-	// 回転・反転(右90°回転)
-	turnr : function(rx1,ry1,rx2,ry2){ this.turn2(rx1,ry1,rx2,ry2,1); },
-	// 回転・反転(左90°回転)
-	turnl : function(rx1,ry1,rx2,ry2){ this.turn2(rx1,ry1,rx2,ry2,2); },
-	turn2 : function(rx1,ry1,rx2,ry2,f){
-		this.adjustSpecial(f+2,'');
-		this.adjustGeneral(f+2,'',rx1,ry1,rx2,ry2);
-
-		var tmp = k.qcols; k.qcols = k.qrows; k.qrows = tmp;
-		tmp = tc.maxx; tc.maxx = tc.maxy; tc.maxy = tmp;
-
-		bd.setposAll();
-
-		var cnt = k.qcols*k.qrows;
-		var ch = new Array(); for(var i=0;i<cnt;i++){ ch[i]=1;}
-		while(cnt>0){
-			var tmp, source, prev, target, nex;
-			for(source=0;source<k.qcols*k.qrows;source++){ if(ch[source]==1){ break;}}
-			tmp = bd.cell[source]; target = source;
-			while(true){
-//				alert(""+(bd.cell[target].cy)+" "+(bd.cell[target].cx));
-				if(f==1){ nex = bd.cnum2(bd.cell[target].cy, (ry2+ry1)-bd.cell[target].cx, k.qrows, k.qcols);}
-				else{ nex = bd.cnum2((rx2+rx1)-bd.cell[target].cy, bd.cell[target].cx, k.qrows, k.qcols);}
-				if(nex==source){ break;}
-				bd.cell[target] = bd.cell[nex]; ch[target]=0; cnt--; target = nex;
-			}
-			bd.cell[target] = tmp; ch[target]=0; cnt--; 
-		}
-		if(k.iscross){
-			cnt = (k.qcols+1)*(k.qrows+1);
-			ch = new Array(); for(var i=0;i<cnt;i++){ ch[i]=1;}
-			while(cnt>0){
-				var tmp, source, prev, target, nex;
-				for(source=0;source<(k.qcols+1)*(k.qrows+1);source++){ if(ch[source]==1){ break;}}
-				tmp = bd.cross[source]; target = source;
-				while(true){
-					nex = bd.xnum2(bd.cross[target].cy, (ry2+ry1+1)-bd.cross[target].cx, k.qrows, k.qcols);
-					if(f==1){ nex = bd.xnum2(bd.cross[target].cy, (ry2+ry1+1)-bd.cross[target].cx, k.qrows, k.qcols);}
-					else{ nex = bd.xnum2((rx2+rx1+1)-bd.cross[target].cy, bd.cross[target].cx, k.qrows, k.qcols);}
-					if(nex==source){ break;}
-					bd.cross[target] = bd.cross[nex]; ch[target]=0; cnt--; target = nex;
-				}
-				bd.cross[target] = tmp; ch[target]=0; cnt--; 
-			}
-		}
-		if(k.isborder){
-			cnt = bd.bdinside+(k.isoutsideborder==0?0:2*(k.qcols+k.qrows));
-			ch = new Array(); for(var i=0;i<cnt;i++){ ch[i]=1;}
-			while(cnt>0){
-				var tmp, source, prev, target, nex;
-				for(source=0;source<bd.bdinside+(k.isoutsideborder==0?0:2*(k.qcols+k.qrows));source++){ if(ch[source]==1){ break;}}
-				tmp = bd.border[source]; target = source;
-				while(true){
-					nex = bd.bnum2(bd.border[target].cy, (ry2+ry1+1)*2-bd.border[target].cx, k.qrows, k.qcols);
-					if(f==1){ nex = bd.bnum2(bd.border[target].cy, (ry2+ry1+1)*2-bd.border[target].cx, k.qrows, k.qcols);}
-					else{ nex = bd.bnum2((rx2+rx1+1)*2-bd.border[target].cy, bd.border[target].cx, k.qrows, k.qcols);}
-					if(nex==source){ break;}
-					bd.border[target] = bd.border[nex]; ch[target]=0; cnt--; target = nex;
-				}
-				bd.border[target] = tmp; ch[target]=0; cnt--;
-			}
+			if     (type==1){ func = function(d,id){ return bd.bnum(bd.border[id].cx, (d.yy+1)*2-bd.border[id].cy);}; }
+			else if(type==2){ func = function(d,id){ return bd.bnum((d.xx+1)*2-bd.border[id].cx, bd.border[id].cy);}; }
+			else if(type==3){ func = function(d,id){ return bd.bnum2(bd.border[id].cy, (d.yy+1)*2-bd.border[id].cx, k.qrows, k.qcols);}; }
+			else if(type==4){ func = function(d,id){ return bd.bnum2((d.xx+1)*2-bd.border[id].cy, bd.border[id].cx, k.qrows, k.qcols);}; }
+			this.turnflipGroup(d, bd.border, bd.bdinside+(k.isoutsideborder==0?0:2*(k.qcols+k.qrows)), func);
 		}
 		if(k.isextendcell==2){
-			cnt = 2*(k.qcols+k.qrows)+4;
-			ch = new Array(); for(var i=0;i<cnt;i++){ ch[i]=1;}
-			while(cnt>0){
-				var tmp, source, prev, target, nex;
-				for(source=0;source<2*(k.qcols+k.qrows)+4;source++){ if(ch[source]==1){ break;}}
-				tmp = bd.excell[source]; target = source;
-				while(true){
-					if(f==1){ nex = bd.exnum2(bd.excell[target].cy, (ry2+ry1)-bd.excell[target].cx, k.qrows, k.qcols);}
-					else{ nex = bd.exnum2((rx2+rx1)-bd.excell[target].cy, bd.excell[target].cx, k.qrows, k.qcols);}
-					if(nex==source){ break;}
-					bd.excell[target] = bd.excell[nex]; ch[target]=0; cnt--; target = nex;
+			if     (type==1){ func = function(d,id){ return bd.exnum(bd.excell[id].cx, d.yy-bd.excell[id].cy);}; }
+			else if(type==2){ func = function(d,id){ return bd.exnum(d.xx-bd.excell[id].cx, bd.excell[id].cy);}; }
+			else if(type==3){ func = function(d,id){ return bd.exnum2(bd.excell[id].cy, d.yy-bd.excell[id].cx, k.qrows, k.qcols);}; }
+			else if(type==4){ func = function(d,id){ return bd.exnum2(d.xx-bd.excell[id].cy, bd.excell[id].cx, k.qrows, k.qcols);}; }
+			this.turnflipGroup(d, bd.excell, 2*(k.qcols+k.qrows)+4, func);
+		}
+		else if(k.isextendcell==1 && (type==1 || type==2)){
+			if(type==1){
+				for(var cy=d.y1;cy<d.yy/2;cy++){
+					var c = bd.excell[bd.exnum(-1,cy)];
+					bd.excell[bd.exnum(-1,cy)] = bd.excell[bd.exnum(-1,d.yy-cy)];
+					bd.excell[bd.exnum(-1,d.yy-cy)] = c;
 				}
-				bd.excell[target] = tmp; ch[target]=0; cnt--; 
+			}
+			else if(type==2){
+				for(var cx=d.x1;cx<d.xx/2;cx++){
+					var c = bd.excell[bd.exnum(cx,-1)];
+					bd.excell[bd.exnum(cx,-1)] = bd.excell[bd.exnum(d.xx-cx,-1)];
+					bd.excell[bd.exnum(d.xx-cx,-1)] = c;
+				}
 			}
 		}
 
 		bd.setposAll();
-		this.adjustSpecial2(f+2,'');
-		bd.resetLcnts();
+		this.adjustSpecial2(type,'');
+	},
+	turnflipGroup : function(d,group,maxcnt,getnext){
+		var ch = []; for(var i=0;i<maxcnt;i++){ ch[i]=1;}
+		for(var source=0;source<maxcnt;source++){
+			if(ch[source]==0){ continue;}
+			var tmp = group[source], target = source;
+			while(ch[target]!=0){
+				ch[target]=0;
+				var next = getnext(d,target);
+
+				if(ch[next]!=0){
+					group[target] = group[next];
+					target = next;
+				}
+				else{
+					group[target] = tmp;
+				}
+			}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.ex.expandborder()       盤面の拡大時、境界線を伸ばす
+	// menu.ex.expandborderAsLine() borderAsLine==1なパズルの盤面拡大時に線を移動する
+	// menu.ex.reduceborderAsLine() borderAsLine==1なパズルの盤面縮小時に線を移動する
+	// menu.ex.copyData()           指定したデータをコピーする
+	//---------------------------------------------------------------------------
+	expandborder : function(key){
+		if(um.undoExec){ return;} // Undo時は、後でオブジェクトを代入するので下の処理はパス
+
+		bd.setposBorders();
+		for(var i=0;i<bd.border.length;i++){
+			if(this.distObj(key,'border',i)!=1){ continue;}
+
+			var source = this.innerBorder(key,i);
+			bd.border[i].ques  = bd.border[source].ques;
+			bd.border[i].qans  = bd.border[source].qans;
+		}
+	},
+	// m==0||m==1で直接移動できそうだけど、expandGroup()と別に
+	// 関数作る必要があるので無理やり移動させる
+	expandborderAsLine : function(key){
+		bd.setposBorders();
+		for(var i=0;i<bd.border.length;i++){
+			if(this.distObj(key,'border',i)!=2){ continue;}
+
+			var source = this.outerBorder(key,i);
+			this.copyData(i,source);
+			bd.border[source].allclear(source);
+		}
+	},
+	// borderAsLine時の無理やりがなんとかかんとか
+	reduceborderAsLine : function(key){
+		for(var i=0;i<bd.border.length;i++){
+			if(this.distObj(key,'border',i)!=0){ continue;}
+
+			var source = this.innerBorder(key,i);
+			this.copyData(i,source);
+		}
+	},
+	copyData : function(id1,id2){
+		bd.border[id1].qans  = bd.border[id2].qans;
+		bd.border[id1].qsub  = bd.border[id2].qsub;
+		bd.border[id1].ques  = bd.border[id2].ques;
+		bd.border[id1].color = bd.border[id2].color;
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.ex.innerBorder()  (expand/reduceBorder用) ひとつ内側に入ったborderのidを返す
+	// menu.ex.outerBorder()  (expand/reduceBorder用) ひとつ外側に行ったborderのidを返す
+	//---------------------------------------------------------------------------
+	innerBorder : function(key,id){
+		var bx=bd.border[id].cx, by=bd.border[id].cy;
+		if     (key=='up'){ return bd.bnum(bx, by+2);}
+		else if(key=='dn'){ return bd.bnum(bx, by-2);}
+		else if(key=='lt'){ return bd.bnum(bx+2, by);}
+		else if(key=='rt'){ return bd.bnum(bx-2, by);}
+		return -1;
+	},
+	outerBorder : function(key,id){
+		var bx=bd.border[id].cx, by=bd.border[id].cy;
+		if     (key=='up'){ return bd.bnum(bx, by-2);}
+		else if(key=='dn'){ return bd.bnum(bx, by+2);}
+		else if(key=='lt'){ return bd.bnum(bx-2, by);}
+		else if(key=='rt'){ return bd.bnum(bx+2, by);}
+		return -1;
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.ex.setposObj()  指定されたタイプのsetpos関数を呼び出す
+	// menu.ex.getnewObj()  指定されたタイプの新しいオブジェクトを返す
+	// menu.ex.distObj()    上下左右いずれかの外枠との距離を求める
+	//---------------------------------------------------------------------------
+	setposObj : function(type){
+		if     (type=='cell')  { bd.setposCells();}
+		else if(type=='cross') { bd.setposCrosses();}
+		else if(type=='border'){ bd.setposBorders();}
+		else if(type=='excell'){ bd.setposEXcells();}
+	},
+	getnewObj : function(type,id){
+		if(type=='cell' || type=='excell'){ return (new Cell(id));}
+		else if(type=='cross') { return (new Cross(id));}
+		else if(type=='border'){ return (new Border(id));}
+	},
+	distObj : function(key,type,id){
+		if(type=='cell'){
+			if     (key=='up'){ return bd.cell[id].cy;}
+			else if(key=='dn'){ return (k.qrows-1)-bd.cell[id].cy;}
+			else if(key=='lt'){ return bd.cell[id].cx;}
+			else if(key=='rt'){ return (k.qcols-1)-bd.cell[id].cx;}
+		}
+		else if(type=='cross'){
+			if     (key=='up'){ return bd.cross[id].cy;}
+			else if(key=='dn'){ return k.qrows-bd.cross[id].cy;}
+			else if(key=='lt'){ return bd.cross[id].cx;}
+			else if(key=='rt'){ return k.qcols-bd.cross[id].cx;}
+		}
+		else if(type=='border'){
+			if     (key=='up'){ return bd.border[id].cy;}
+			else if(key=='dn'){ return 2*k.qrows-bd.border[id].cy;}
+			else if(key=='lt'){ return bd.border[id].cx;}
+			else if(key=='rt'){ return 2*k.qcols-bd.border[id].cx;}
+		}
+		else if(type=='excell'){
+			if     (key=='up'){ return bd.excell[id].cy;}
+			else if(key=='dn'){ return (k.qrows-1)-bd.excell[id].cy;}
+			else if(key=='lt'){ return bd.excell[id].cx;}
+			else if(key=='rt'){ return (k.qcols-1)-bd.excell[id].cx;}
+		}
+		return -1;
 	},
 
 	//------------------------------------------------------------------------------
@@ -679,11 +588,10 @@ MenuExec.prototype = {
 	// menu.ex.adjustQues51_1() [＼]セルの調整(adjustSpecial関数に代入する用)
 	// menu.ex.adjustQues51_2() [＼]セルの調整(adjustSpecial2関数に代入する用)
 	//------------------------------------------------------------------------------
-
-	adjustGeneral : function(type,key,rx1,ry1,rx2,ry2){
+	adjustGeneral : function(type,key,d){
 		um.disableRecord();
-		for(var cy=ry1;cy<=ry2;cy++){
-			for(var cx=rx1;cx<=rx2;cx++){
+		for(var cy=d.y1;cy<=d.y2;cy++){
+			for(var cx=d.x1;cx<=d.x2;cx++){
 				var c = bd.cnum(cx,cy);
 
 				switch(type){
@@ -737,8 +645,8 @@ MenuExec.prototype = {
 		um.enableRecord();
 	},
 	adjustQues51_1 : function(type,key){
-		this.qnumw = new Array();
-		this.qnumh = new Array();
+		this.qnumw = [];
+		this.qnumh = [];
 
 		for(var cy=0;cy<=k.qrows-1;cy++){
 			this.qnumw[cy] = [bd.QnE(bd.exnum(-1,cy))];
@@ -820,16 +728,17 @@ MenuExec.prototype = {
 	ACconfirm : function(){
 		if(confirm(menu.isLangJP()?"回答を消去しますか？":"Do you want to erase the Answer?")){
 			um.newOperation(true);
-			for(var i=0;i<bd.cell.length;i++){
-				if(bd.QaC(i)!=-1){ um.addOpe('cell','qans',i,bd.QaC(i),-1);}
-				if(bd.QsC(i)!=0){ um.addOpe('cell','qsub',i,bd.QsC(i),0);}
+			{
+				for(var i=0;i<bd.cell.length;i++){
+					if(bd.QaC(i)!=bd.def.cell.qans){ um.addOpe('cell','qans',i,bd.QaC(i),bd.def.cell.qans);}
+					if(bd.QsC(i)!=bd.def.cell.qsub){ um.addOpe('cell','qsub',i,bd.QsC(i),bd.def.cell.qsub);}
+				}
 			}
 			if(k.isborder){
-				var val = (k.puzzleid!="bosanowa"?0:-1);
 				for(var i=0;i<bd.border.length;i++){
-					if(bd.QaB(i)!=0){ um.addOpe('border','qans',i,bd.QaB(i),-1);}
-					if(bd.QsB(i)!=val){ um.addOpe('border','qsub',i,bd.QsB(i),val);}
-					if(bd.LiB(i)!=0){ um.addOpe('border','line',i,bd.LiB(i),0);}
+					if(bd.QaB(i)!=bd.def.border.qans){ um.addOpe('border','qans',i,bd.QaB(i),bd.def.border.qans);}
+					if(bd.LiB(i)!=bd.def.border.line){ um.addOpe('border','line',i,bd.LiB(i),bd.def.border.line);}
+					if(bd.QsB(i)!=bd.def.border.qsub){ um.addOpe('border','qsub',i,bd.QsB(i),bd.def.border.qsub);}
 				}
 			}
 			if(!g.vml){ pc.flushCanvasAll();}
@@ -839,13 +748,14 @@ MenuExec.prototype = {
 	ASconfirm : function(){
 		if(confirm(menu.isLangJP()?"補助記号を消去しますか？":"Do you want to erase the auxiliary marks?")){
 			um.newOperation(true);
-			for(var i=0;i<bd.cell.length;i++){
-				if(bd.QsC(i)!=0){ um.addOpe('cell','qsub',i,bd.QsC(i),0);}
+			{
+				for(var i=0;i<bd.cell.length;i++){
+					if(bd.QsC(i)!=bd.def.cell.qsub){ um.addOpe('cell','qsub',i,bd.QsC(i),bd.def.cell.qsub);}
+				}
 			}
 			if(k.isborder){
-				var val = (k.puzzleid!="bosanowa"?0:-1);
 				for(var i=0;i<bd.border.length;i++){
-					if(bd.QsB(i)!=val){ um.addOpe('border','qsub',i,bd.QsB(i),val);}
+					if(bd.QsB(i)!=bd.def.border.qsub){ um.addOpe('border','qsub',i,bd.QsB(i),bd.def.border.qsub);}
 				}
 			}
 			if(!g.vml){ pc.flushCanvasAll();}
