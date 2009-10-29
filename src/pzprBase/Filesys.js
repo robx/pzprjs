@@ -27,74 +27,87 @@ FileIO = function(){
 	this.dbmgr = null;
 	this.DBtype = 0;
 	this.DBsid  = -1;
-	this.DBlist = new Array();
+	this.DBlist = [];
 };
 FileIO.prototype = {
 	//---------------------------------------------------------------------------
-	// fio.fileopen()  ファイルを開く、ファイルからのデコード実行メイン関数
+	// fio.fileopen()   ファイルを開く、ファイルからのデコード実行関数
+	//                  基本の呼び出し元がiframeのcgiで、データが配列化されてきます。
+	// fio.filedecode() ファイルを開く、ファイルからのデコード実行メイン関数
 	//---------------------------------------------------------------------------
-	fileopen : function(arrays, type){
-		var pgstr = '';
+	fileopen : function(array, type){
 		this.filever = 0;
 
 		if(type==1){
-			pgstr = arrays.shift();
+			var pgstr = array.shift();
 			if(!pgstr.match(/pzprv3\.?(\d+)?/)){ alert('ぱずぷれv3形式のファイルではありません。');}
-			if(RegExp.$1){ fio.filever = parseInt(RegExp.$1);}
+			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
 
-			if(arrays.shift()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。');}
+			if(array.shift()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。');}
 		}
 
-		var row = parseInt(arrays.shift(), 10), col;
-		if(k.puzzleid!="sudoku"){ col=parseInt(arrays.shift(), 10);}else{ col=row;}
-
-		if     (row>0 && col>0 && (type==1 || k.puzzleid!="kakuro")){ menu.ex.newboard2(col, row);}
-		else if(row>0 && col>0){ menu.ex.newboard2(col-1, row-1);}
-		else{ return;}
-
 		um.disableRecord();
+		var result = this.filedecode(array,type);
+		um.enableRecord();
+
+		if(result){
+			base.resetInfo();
+			base.resize_canvas();
+		}
+	},
+	filedecode : function(array, type){
+		var row, col;
+		if(k.puzzleid!="sudoku"){
+			row = parseInt(array.shift(), 10);
+			col = parseInt(array.shift(), 10);
+			if(type==2 && k.puzzleid=="kakuro"){ row--; col--;}
+		}
+		else{
+			row = col = parseInt(array.shift(), 10);
+		}
+		if(row<=0 || col<=0){ return false;}
+		menu.ex.newboard2(col, row);
 
 		if(type==1){
-			var line = 0;
+			var l = 0;
 			var item = 0;
-			var stacks = new Array();
+			var stacks = [];
 			while(1){
-				if(arrays.length<=0){ break;}
-				stacks.push( arrays.shift() ); line++;
-				if     (k.fstruct[item] == "cellques41_42"&& line>=k.qrows    ){ this.decodeCellQues41_42(stacks); }
-				else if(k.fstruct[item] == "cellqnum"     && line>=k.qrows    ){ this.decodeCellQnum(stacks);      }
-				else if(k.fstruct[item] == "cellqnum51"   && line>=k.qrows+1  ){ this.decodeCellQnum51(stacks);    }
-				else if(k.fstruct[item] == "cellqnumb"    && line>=k.qrows    ){ this.decodeCellQnumb(stacks);     }
-				else if(k.fstruct[item] == "cellqnumans"  && line>=k.qrows    ){ this.decodeCellQnumAns(stacks);   }
-				else if(k.fstruct[item] == "celldirecnum" && line>=k.qrows    ){ this.decodeCellDirecQnum(stacks); }
-				else if(k.fstruct[item] == "cellans"      && line>=k.qrows    ){ this.decodeCellAns(stacks);       }
-				else if(k.fstruct[item] == "cellqanssub"  && line>=k.qrows    ){ this.decodeCellQanssub(stacks);   }
-				else if(k.fstruct[item] == "cellqsub"     && line>=k.qrows    ){ this.decodeCellQsub(stacks);      }
-				else if(k.fstruct[item] == "crossnum"     && line>=k.qrows+1  ){ this.decodeCrossNum(stacks);      }
-				else if(k.fstruct[item] == "borderques"   && line>=2*k.qrows-1){ this.decodeBorderQues(stacks);    }
-				else if(k.fstruct[item] == "borderline"   && line>=2*k.qrows-1){ this.decodeBorderLine(stacks);    }
-				else if(k.fstruct[item] == "borderans"    && line>=2*k.qrows-1){ this.decodeBorderAns(stacks);     }
-				else if(k.fstruct[item] == "borderans2"   && line>=2*k.qrows+1){ this.decodeBorderAns2(stacks);    }
-				else if(k.fstruct[item] == "arearoom"     && line>=k.qrows+1  ){ this.decodeAreaRoom(stacks);      }
+				if(array.length<=0){ break;}
+				stacks.push( array.shift() ); l++;
+				if     (k.fstruct[item] == "cellques41_42"&& l>=k.qrows    ){ this.decodeCellQues41_42(stacks); }
+				else if(k.fstruct[item] == "cellqnum"     && l>=k.qrows    ){ this.decodeCellQnum(stacks);      }
+				else if(k.fstruct[item] == "cellqnum51"   && l>=k.qrows+1  ){ this.decodeCellQnum51(stacks);    }
+				else if(k.fstruct[item] == "cellqnumb"    && l>=k.qrows    ){ this.decodeCellQnumb(stacks);     }
+				else if(k.fstruct[item] == "cellqnumans"  && l>=k.qrows    ){ this.decodeCellQnumAns(stacks);   }
+				else if(k.fstruct[item] == "celldirecnum" && l>=k.qrows    ){ this.decodeCellDirecQnum(stacks); }
+				else if(k.fstruct[item] == "cellans"      && l>=k.qrows    ){ this.decodeCellAns(stacks);       }
+				else if(k.fstruct[item] == "cellqanssub"  && l>=k.qrows    ){ this.decodeCellQanssub(stacks);   }
+				else if(k.fstruct[item] == "cellqsub"     && l>=k.qrows    ){ this.decodeCellQsub(stacks);      }
+				else if(k.fstruct[item] == "crossnum"     && l>=k.qrows+1  ){ this.decodeCrossNum(stacks);      }
+				else if(k.fstruct[item] == "borderques"   && l>=2*k.qrows-1){ this.decodeBorderQues(stacks);    }
+				else if(k.fstruct[item] == "borderline"   && l>=2*k.qrows-1){ this.decodeBorderLine(stacks);    }
+				else if(k.fstruct[item] == "borderans"    && l>=2*k.qrows-1){ this.decodeBorderAns(stacks);     }
+				else if(k.fstruct[item] == "borderans2"   && l>=2*k.qrows+1){ this.decodeBorderAns2(stacks);    }
+				else if(k.fstruct[item] == "arearoom"     && l>=k.qrows+1  ){ this.decodeAreaRoom(stacks);      }
 				else if(k.fstruct[item] == "others" && this.decodeOthers(stacks) ){ }
 				else{ continue;}
 
 				// decodeしたあとの処理
-				line=0;
+				l=0;
 				item++;
-				stacks = new Array();
+				stacks = [];
 			}
 		}
 		else if(type==2){
-			this.kanpenOpen(arrays);
+			this.kanpenOpen(array);
 		}
 
-		um.enableRecord();
-		base.resize_canvas();
+		return true;
 	},
 	//---------------------------------------------------------------------------
-	// fio.filesave()    ファイル保存、ファイルへのエンコード実行関数
-	// fio.filesavestr() ファイル保存、ファイルへのエンコード実行メイン関数
+	// fio.filesave()   ファイル保存、ファイルへのエンコード実行関数
+	// fio.fileencode() ファイル保存、ファイルへのエンコード実行メイン関数
 	//---------------------------------------------------------------------------
 	filesave : function(type){
 		var fname = prompt("保存するファイル名を入力して下さい。", k.puzzleid+".txt");
@@ -109,7 +122,7 @@ FileIO.prototype = {
 		else                                          { document.fileform2.platform.value = "Others";}
 
 		this.filever = 0;
-		document.fileform2.ques.value = this.filesavestr(type);
+		document.fileform2.ques.value = this.fileencode(type);
 
 		if(type==1){
 			if(!k.isKanpenExist || k.puzzleid=="lits"){ document.fileform2.urlstr.value = enc.getURLbase() + "?" + k.puzzleid + enc.pzldata();}
@@ -121,40 +134,43 @@ FileIO.prototype = {
 
 		document.fileform2.submit();
 	},
-	filesavestr : function(type){
+	fileencode : function(type){
 		var str = "";
-		var bstr = "";
+
+		var row=k.qrows, col=k.qcols;
+		if(k.puzzleid!="sudoku"){
+			if(type==2 && k.puzzleid=="kakuro"){ row++; col++;}
+			str += (""+row+"/");
+			str += (""+col+"/");
+		}
+		else{
+			str += (""+col+"/");
+		}
 
 		if(type==1){
 			for(var i=0;i<k.fstruct.length;i++){
-				if     (k.fstruct[i] == "cellques41_42" ){ bstr += this.encodeCellQues41_42(); }
-				else if(k.fstruct[i] == "cellqnum"      ){ bstr += this.encodeCellQnum();      }
-				else if(k.fstruct[i] == "cellqnum51"    ){ bstr += this.encodeCellQnum51();    }
-				else if(k.fstruct[i] == "cellqnumb"     ){ bstr += this.encodeCellQnumb();     }
-				else if(k.fstruct[i] == "cellqnumans"   ){ bstr += this.encodeCellQnumAns();   }
-				else if(k.fstruct[i] == "celldirecnum"  ){ bstr += this.encodeCellDirecQnum(); }
-				else if(k.fstruct[i] == "cellans"       ){ bstr += this.encodeCellAns();       }
-				else if(k.fstruct[i] == "cellqanssub"   ){ bstr += this.encodeCellQanssub();   }
-				else if(k.fstruct[i] == "cellqsub"      ){ bstr += this.encodeCellQsub();      }
-				else if(k.fstruct[i] == "crossnum"      ){ bstr += this.encodeCrossNum();      }
-				else if(k.fstruct[i] == "borderques"    ){ bstr += this.encodeBorderQues();    }
-				else if(k.fstruct[i] == "borderline"    ){ bstr += this.encodeBorderLine();    }
-				else if(k.fstruct[i] == "borderans"     ){ bstr += this.encodeBorderAns();     }
-				else if(k.fstruct[i] == "borderans2"    ){ bstr += this.encodeBorderAns2();    }
-				else if(k.fstruct[i] == "arearoom"      ){ bstr += this.encodeAreaRoom();      }
-				else if(k.fstruct[i] == "others"        ){ bstr += this.encodeOthers();         }
+				if     (k.fstruct[i] == "cellques41_42" ){ str += this.encodeCellQues41_42(); }
+				else if(k.fstruct[i] == "cellqnum"      ){ str += this.encodeCellQnum();      }
+				else if(k.fstruct[i] == "cellqnum51"    ){ str += this.encodeCellQnum51();    }
+				else if(k.fstruct[i] == "cellqnumb"     ){ str += this.encodeCellQnumb();     }
+				else if(k.fstruct[i] == "cellqnumans"   ){ str += this.encodeCellQnumAns();   }
+				else if(k.fstruct[i] == "celldirecnum"  ){ str += this.encodeCellDirecQnum(); }
+				else if(k.fstruct[i] == "cellans"       ){ str += this.encodeCellAns();       }
+				else if(k.fstruct[i] == "cellqanssub"   ){ str += this.encodeCellQanssub();   }
+				else if(k.fstruct[i] == "cellqsub"      ){ str += this.encodeCellQsub();      }
+				else if(k.fstruct[i] == "crossnum"      ){ str += this.encodeCrossNum();      }
+				else if(k.fstruct[i] == "borderques"    ){ str += this.encodeBorderQues();    }
+				else if(k.fstruct[i] == "borderline"    ){ str += this.encodeBorderLine();    }
+				else if(k.fstruct[i] == "borderans"     ){ str += this.encodeBorderAns();     }
+				else if(k.fstruct[i] == "borderans2"    ){ str += this.encodeBorderAns2();    }
+				else if(k.fstruct[i] == "arearoom"      ){ str += this.encodeAreaRoom();      }
+				else if(k.fstruct[i] == "others"        ){ str += this.encodeOthers();         }
 			}
 
-			str = "pzprv3/"+k.puzzleid+"/"+k.qrows+"/"+k.qcols+"/";
-			if(k.puzzleid=="sudoku"){ str = "pzprv3/"+k.puzzleid+"/"+k.qcols+"/";}
-			if(this.filever!=0){ str = "pzprv3."+this.filever+"/"+k.puzzleid+"/"+k.qrows+"/"+k.qcols+"/";}
-
-			str += bstr;
+			if(this.filever==0){ str = "pzprv3/"+k.puzzleid+"/" + str;}
+			else{ str = "pzprv3."+this.filever+"/"+k.puzzleid+"/" + str;}
 		}
 		else if(type==2){
-			if     (k.puzzleid=="kakuro"){ str = ""+(k.qrows+1)+"/"+(k.qcols+1)+"/";}
-			else if(k.puzzleid=="sudoku"){ str = ""+k.qrows+"/";}
-			else                         { str = ""+k.qrows+"/"+k.qcols+"/";}
 			str += this.kanpenSave();
 		}
 
@@ -166,7 +182,7 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	retarray : function(str){
 		var array1 = str.split(" ");
-		var array2 = new Array();
+		var array2 = [];
 		for(var i=0;i<array1.length;i++){ if(array1[i]!=""){ array2.push(array1[i]);} }
 		return array2;
 	},
@@ -179,7 +195,7 @@ FileIO.prototype = {
 	// fio.decodeBorder2() 配列で、個別文字列から個別Border(外枠上あり)の設定を行う
 	//---------------------------------------------------------------------------
 	decodeObj : function(func, stack, width, getid){
-		var item = new Array();
+		var item = [];
 		for(var i=0;i<stack.length;i++){ item = item.concat( this.retarray( stack[i] ) );    }
 		for(var i=0;i<item.length;i++) { func(getid(i%width,mf(i/width)), item[i]);}
 	},
@@ -474,28 +490,21 @@ FileIO.prototype = {
 	decodeAreaRoom : function(stack){
 		stack.shift();
 		this.decodeCell( function(c,ca){
-			room.cell[c] = parseInt(ca)+1;
+			area.setRoomID(c, parseInt(ca)+1);
 		},stack);
 
-		var saved = room.isenable;
-		room.isenable = false;
 		for(var c=0;c<k.qcols*k.qrows;c++){
-			if(bd.dn(c)!=-1 && room.getRoomID(c) != room.getRoomID(bd.dn(c))){ bd.sQuB(bd.db(c),1); }
-			if(bd.rt(c)!=-1 && room.getRoomID(c) != room.getRoomID(bd.rt(c))){ bd.sQuB(bd.rb(c),1); }
+			if(bd.dn(c)!=-1 && area.getRoomID(c) != area.getRoomID(bd.dn(c))){ bd.sQuB(bd.db(c),1); }
+			if(bd.rt(c)!=-1 && area.getRoomID(c) != area.getRoomID(bd.rt(c))){ bd.sQuB(bd.rb(c),1); }
 		}
-		room.isenable = saved;
-
-		room.resetRarea();
+		area.resetRarea();
 	},
 	encodeAreaRoom : function(){
-		var saved = room.isenable;
-		room.isenable = true;
-		room.resetRarea();
-		room.isenable = saved;
+		area.resetRarea();
 
-		var str = ""+room.rareamax+"/";
+		var str = ""+area.room.max+"/";
 		return str + this.encodeCell( function(c){
-			return ((room.getRoomID(c)-1) + " ");
+			return ((area.getRoomID(c)-1) + " ");
 		});
 	},
 
@@ -504,7 +513,7 @@ FileIO.prototype = {
 	// fio.encodeCellQnum51() [＼]のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnum51 : function(stack){
-		var item = new Array();
+		var item = [];
 		for(var i=0;i<stack.length;i++){ item = item.concat( fio.retarray( stack[i] ) );}
 		for(var i=0;i<item.length;i++) {
 			var cx=i%(k.qcols+1)-1, cy=mf(i/(k.qcols+1))-1;
@@ -631,7 +640,7 @@ FileIO.prototype = {
 	},
 
 	remakeDataBase : function(){
-		this.DBlist = new Array();
+		this.DBlist = [];
 
 		this.db.open('pzprv3_'+k.puzzleid);
 		var rs = this.db.execute('SELECT * FROM pzldata');
@@ -717,7 +726,7 @@ FileIO.prototype = {
 	},
 	ni : function(num){ return (num<10?"0"+num:""+num);},
 	getDataTableList : function(){
-		this.DBlist = new Array();
+		this.DBlist = [];
 		if(this.DBtype==1){
 			this.db.open('pzprv3_'+k.puzzleid);
 			var rs = this.db.execute('SELECT * FROM pzldata');
@@ -851,7 +860,7 @@ FileIO.prototype = {
 		if(this.DBtype==0 || (id!=-1 && !confirm("このデータに上書きしますか？"))){ return;}
 
 		var time = mf((new Date()).getTime()/1000);
-		var pdata = this.filesavestr(1);
+		var pdata = this.fileencode(1);
 		var str = "";
 		if(id==-1){ str = prompt("コメントがある場合は入力してください。",""); if(str==null){ str="";} }
 		else      { str = this.DBlist[this.getDataID()].comment;}
