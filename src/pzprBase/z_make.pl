@@ -1,6 +1,5 @@
 
 our $debug = 0;
-our $puzzles = 1;
 our $version = 'v3.2.0p1';
 
 &main();
@@ -14,23 +13,18 @@ sub main{
 
 	&output_doc("document_tmp.txt");
 	&output_pzprBase();
-	if($puzzles){ &output_puzzles();}
+	&output_puzzles();
 }
 
 sub input_flags{
 	my $cons;
 
-	print "リリース用pzprBase.jsを出力しますか？[y] ";
+	print "リリース用のファイルを出力しますか？[y] ";
 	$cons = <STDIN>;
 	$cons =~ tr/\r\n//d;
 	if($cons =~ /n/i){ $debug=1;}
 
-	print "puzzles.jsを出力しますか？[y] ";
-	$cons = <STDIN>;
-	$cons =~ tr/\r\n//d;
-	if($cons =~ /n/i){ $puzzles=0;}
-
-	print "バージョンを入力してください[v3.2.0p1] ";
+	print "バージョンを入力してください[$version] ";
 	$cons = <STDIN>;
 	$cons =~ tr/\r\n//d;
 	if($cons){ $version = $cons;}
@@ -102,10 +96,17 @@ sub output_puzzles{
 	open OUT, ">puzzles_Full.js";
 	&printfiles(\@files2,2);
 	close OUT;
-	system("java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar -o ./puzzles.js ./puzzles_Full.js");
 
-	@fl = ('puzzles.js','puzzles_Full.js');
-	foreach(@fl){ system("copy /Y .\\$_ .."); unlink($_);}
+	if(!$debug){
+		system("java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar -o ./puzzles.js ./puzzles_Full.js");
+
+		@fl = ('puzzles.js','puzzles_Full.js');
+		foreach(@fl){ system("copy /Y .\\$_ .."); unlink($_);}
+	}
+	else{
+		system("copy /Y .\\puzzles_Full.js ..\\puzzles.js");
+		unlink("puzzles_Full.js");
+	}
 }
 
 sub output_doc{
@@ -149,7 +150,7 @@ sub printfiles{
 	open LOG, ">>contents.txt";
 	print LOG "\n";
 	foreach(@files){
-		if($_[1]==2 || !$debug){
+		if(!$debug){
 			open SRC, $_;
 			if($_[1]==1){
 				my $sline = <SRC>;
