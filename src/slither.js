@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スリザーリンク版 slither.js v3.2.1
+// パズル固有スクリプト部 スリザーリンク版 slither.js v3.2.2
 //
 Puzzles.slither = function(){ };
 Puzzles.slither.prototype = {
@@ -15,7 +15,7 @@ Puzzles.slither.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 1;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 1;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 1;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.slither.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("スリザーリンク","Slitherlink");
 		base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
@@ -70,6 +71,7 @@ Puzzles.slither.prototype = {
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
 		};
+		// BAGの関数が残りっぱなしですね...
 		mv.inputBGcolor = function(x,y){
 			var cc = this.cellid(new Pos(x,y));
 			if(cc==-1 || cc==this.mouseCell){ return;}
@@ -116,16 +118,12 @@ Puzzles.slither.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BorderQanscolor = "rgb(0, 160, 0)";
-		pc.fontErrcolor = "red";
-
 		pc.crosssize = 0.05;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-		//	this.drawBDline2(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawBaseMarks(x1,y1,x2,y2);
@@ -154,15 +152,15 @@ Puzzles.slither.prototype = {
 
 			var cx = i%(k.qcols+1), cy = mf(i/(k.qcols+1));
 
-			g.fillStyle = this.crossnumcolor;
+			g.fillStyle = this.Cellcolor;
 			g.beginPath();
 			g.arc(k.p0.x+cx*k.cwidth, k.p0.x+cy*k.cheight, csize, 0, Math.PI*2, false);
 			if(this.vnop("x"+i+"_cm_",1)){ g.fill();}
 		};
 
-		col.repaintParts = function(id){
-			pc.drawBaseMark1( bd.xnum(mf((bd.border[id].cx-(bd.border[id].cx%2))/2), mf((bd.border[id].cy-(bd.border[id].cy%2))/2) ) );
-			pc.drawBaseMark1( bd.xnum(mf((bd.border[id].cx+(bd.border[id].cx%2))/2), mf((bd.border[id].cy+(bd.border[id].cy%2))/2) ) );
+		line.repaintParts = function(id){
+			pc.drawBaseMark1( bd.crosscc1(id) );
+			pc.drawBaseMark1( bd.crosscc2(id) );
 		};
 	},
 

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.2.0
+// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.2.2
 //
 Puzzles.tilepaint = function(){ };
 Puzzles.tilepaint.prototype = {
@@ -15,7 +15,7 @@ Puzzles.tilepaint.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.tilepaint.prototype = {
 
 		//k.def_csize = 36;
 		k.def_psize = 40;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　左クリックで黒タイルが、右クリックで白タイル確定タイルが入力できます。",
@@ -83,18 +84,18 @@ Puzzles.tilepaint.prototype = {
 				bd.sQuC(cc,51);
 				bd.sQnC(cc, 0);
 				bd.sDiC(cc, 0);
-				bd.sQaC(cc,-1);
+				bd.setWhite(cc);
 				bd.sQsC(cc, 0);
-				bd.sQuB(bd.ub(cc),((bd.up(cc)!=-1 && bd.QuC(bd.up(cc))!=51)?1:0));
-				bd.sQuB(bd.db(cc),((bd.dn(cc)!=-1 && bd.QuC(bd.dn(cc))!=51)?1:0));
-				bd.sQuB(bd.lb(cc),((bd.lt(cc)!=-1 && bd.QuC(bd.lt(cc))!=51)?1:0));
-				bd.sQuB(bd.rb(cc),((bd.rt(cc)!=-1 && bd.QuC(bd.rt(cc))!=51)?1:0));
+				bd.sQuB(bd.ub(cc), ((bd.up(cc)!=-1 && bd.QuC(bd.up(cc))!=51)?1:0));
+				bd.sQuB(bd.db(cc), ((bd.dn(cc)!=-1 && bd.QuC(bd.dn(cc))!=51)?1:0));
+				bd.sQuB(bd.lb(cc), ((bd.lt(cc)!=-1 && bd.QuC(bd.lt(cc))!=51)?1:0));
+				bd.sQuB(bd.rb(cc), ((bd.rt(cc)!=-1 && bd.QuC(bd.rt(cc))!=51)?1:0));
 			}
 			else{
 				bd.sQuC(cc, 0);
 				bd.sQnC(cc, 0);
 				bd.sDiC(cc, 0);
-				bd.sQaC(cc,-1);
+				bd.setWhite(cc);
 				bd.sQsC(cc, 0);
 			}
 		};
@@ -168,13 +169,9 @@ Puzzles.tilepaint.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
-
-		pc.errcolor1 = "rgb(192, 0, 0)";
-		pc.bcolor = "rgb(160, 255, 160)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
+		pc.bcolor = pc.bcolor_GREEN;
 		pc.BBcolor = "rgb(127, 127, 127)";
-
-		pc.qsubcolor3 = "rgb(192,192,192)";
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -187,7 +184,7 @@ Puzzles.tilepaint.prototype = {
 			this.drawEXcell(x1,y1,x2,y2,true);
 			this.drawTargetTriangle(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawBlackCells(x1,y1,x2,y2);
@@ -229,7 +226,7 @@ Puzzles.tilepaint.prototype = {
 
 				if(ca>='g' && ca<='z'){ cell+=(parseInt(ca,36)-15);}
 				else{
-					bd.sQuC(cell,51);
+					mv.set51cell(cell,true);
 					if     (ca=='-'){
 						bd.sDiC(cell,(bstr.charAt(i+1)!="."?parseInt(bstr.charAt(i+1),16):-1));
 						bd.sQnC(cell,parseInt(bstr.substring(i+2,i+4),16));
@@ -316,7 +313,7 @@ Puzzles.tilepaint.prototype = {
 		fio.decodeOthers = function(array){
 			if(array.length<k.qrows){ return false;}
 			this.decodeCell( function(c,ca){
-				if     (ca == "#"){ bd.sQaC(c, 1);}
+				if     (ca == "#"){ bd.setBlack(c);}
 				else if(ca == "+"){ bd.sQsC(c, 1);}
 				else if(ca == "-"){ bd.sQsC(c, 3);}
 			},array.slice(0,k.qrows));
@@ -324,10 +321,10 @@ Puzzles.tilepaint.prototype = {
 		};
 		fio.encodeOthers = function(){
 			return ""+this.encodeCell( function(c){
-				if     (bd.QaC(c)==1){ return "# ";}
-				else if(bd.QsC(c)==1){ return "+ ";}
-				else if(bd.QsC(c)==3){ return "- ";}
-				else                 { return ". ";}
+				if     (bd.isBlack(c)){ return "# ";}
+				else if(bd.QsC(c)==1) { return "+ ";}
+				else if(bd.QsC(c)==3) { return "- ";}
+				else                  { return ". ";}
 			});
 		};
 	},
@@ -337,7 +334,7 @@ Puzzles.tilepaint.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkSameObjectInRoom(this.searchRarea(), function(c){ return (bd.QaC(c)==1?1:2);}) ){
+			if( !this.checkSameObjectInRoom(area.getRoomInfo(), function(c){ return (bd.isBlack(c)?1:2);}) ){
 				this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both balck and white cells.'); return false;
 			}
 
@@ -350,7 +347,7 @@ Puzzles.tilepaint.prototype = {
 
 		ans.checkRowsCols = function(){
 			for(var cy=0;cy<k.qrows;cy++){
-				var cnt = 0, clist = new Array(), num = bd.QnE(bd.exnum(-1,cy));
+				var cnt = 0, clist = [], num = bd.QnE(bd.exnum(-1,cy));
 				bd.sErE([bd.exnum(-1,cy)],1);
 				for(var cx=0;cx<=k.qcols;cx++){
 					var cc = bd.cnum(cx,cy);
@@ -359,15 +356,15 @@ Puzzles.tilepaint.prototype = {
 
 						bd.sErE([bd.exnum(-1,cy)],0);
 						if(cx==k.qcols){ break;}
-						cnt = 0; clist = new Array(), num = bd.QnC(cc);
+						cnt = 0; clist = [], num = bd.QnC(cc);
 					}
-					else if(bd.QaC(cc)==1){ cnt++;}
+					else if(bd.isBlack(cc)){ cnt++;}
 					clist.push(cc);
 				}
 				bd.sErE([bd.exnum(-1,cy)],0);
 			}
 			for(var cx=0;cx<k.qcols;cx++){
-				var cnt = 0, clist = new Array(), num = bd.DiE([bd.exnum(cx,-1)]);
+				var cnt = 0, clist = [], num = bd.DiE([bd.exnum(cx,-1)]);
 				bd.sErE([bd.exnum(cx,-1)],1);
 				for(var cy=0;cy<k.qrows;cy++){
 					var cc = bd.cnum(cx,cy);
@@ -376,9 +373,9 @@ Puzzles.tilepaint.prototype = {
 
 						bd.sErE([bd.exnum(cx,-1)],0);
 						if(cy==k.qrows){ break;}
-						cnt = 0; clist = new Array(), num = bd.DiC(cc);
+						cnt = 0; clist = [], num = bd.DiC(cc);
 					}
-					else if(bd.QaC(cc)==1){ cnt++;}
+					else if(bd.isBlack(cc)){ cnt++;}
 					clist.push(cc);
 				}
 				bd.sErE([bd.exnum(cx,-1)],0);

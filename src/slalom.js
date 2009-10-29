@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.2.1
+// パズル固有スクリプト部 スラローム版 slalom.js v3.2.2
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -15,7 +15,7 @@ Puzzles.slalom.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isborderCross   = 0;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
@@ -38,6 +38,7 @@ Puzzles.slalom.prototype = {
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
+		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.callmode=="pplay"){
 			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
@@ -139,6 +140,8 @@ Puzzles.slalom.prototype = {
 			pc.paint(bd.cell[cc].cx, bd.cell[cc].cy, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
 			pc.dispnumStartpos(bd.startid);
 		};
+
+		bd.enableLineNG = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
@@ -264,22 +267,19 @@ Puzzles.slalom.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.BDlinecolor = "rgb(127, 127, 127)";
+		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.linecolor = "rgb(32, 32, 255)";	// 色分けなしの場合
 		pc.pekecolor = "rgb(0, 160, 0)";
 		pc.errlinecolor2 = "rgb(160, 150, 255)";
-
-		pc.errbcolor1 = "rgb(255,127,127)";
-
-		pc.fontcolor = "white";
-		pc.fontErrcolor = "white";
+		pc.errbcolor1 = pc.errbcolor1_DARK;
+		pc.fontcolor = pc.fontErrcolor = "white";
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBDline(x1,y1,x2,y2);
+			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawGates(x1,y1,x2,y2)
 			this.drawBCells_slalom(x1,y1,x2,y2);
@@ -302,7 +302,7 @@ Puzzles.slalom.prototype = {
 					if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
 					else{ g.fillStyle = this.Cellcolor;}
 
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px(), bd.cell[c].py(), k.cwidth+1, k.cheight+1);}
+					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
 					this.dispnumCell_General(c);
 				}
 				else{
@@ -324,16 +324,16 @@ Puzzles.slalom.prototype = {
 				if(bd.ErC(c)==4){ g.fillStyle = this.errcolor1;}
 				else{ g.fillStyle = this.Cellcolor;}
 
-				for(var j=bd.cell[c].py();j<bd.cell[c].py()+k.cheight;j+=ll*2){ //たて
+				for(var j=bd.cell[c].py;j<bd.cell[c].py+k.cheight;j+=ll*2){ //たて
 					if(bd.QuC(c)==21){
-						if(this.vnop("c"+c+"_dl21_"+mf(j),1)){ g.fillRect(bd.cell[c].px()+mf(k.cwidth/2)-lm+1, j, lw, ll);}
+						if(this.vnop("c"+c+"_dl21_"+mf(j),1)){ g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-lm+1, j, lw, ll);}
 					}
 					else{ this.vhide("c"+c+"_dl21_"+mf(j));}
 				}
 
-				for(var j=bd.cell[c].px();j<bd.cell[c].px()+k.cwidth;j+=ll*2){ //よこ
+				for(var j=bd.cell[c].px;j<bd.cell[c].px+k.cwidth;j+=ll*2){ //よこ
 					if(bd.QuC(c)==22){
-						if(this.vnop("c"+c+"_dl22_"+mf(j),1)){ g.fillRect(j, bd.cell[c].py()+mf(k.cheight/2)-lm+1, ll, lw);}
+						if(this.vnop("c"+c+"_dl22_"+mf(j),1)){ g.fillRect(j, bd.cell[c].py+mf(k.cheight/2)-lm+1, ll, lw);}
 					}
 					else{ this.vhide("c"+c+"_dl22_"+mf(j));}
 				}
@@ -349,7 +349,7 @@ Puzzles.slalom.prototype = {
 
 			this.vdel(["sposa_","sposb_"]);
 
-			var px=bd.cell[c].px()+mf(k.cwidth/2), py=bd.cell[c].py()+mf(k.cheight/2);
+			var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
 
 			g.fillStyle = this.Cellcolor;
 			g.beginPath();
@@ -374,7 +374,7 @@ Puzzles.slalom.prototype = {
 			this.dispnumCell1(c, bd.cell[c].numobj, 1, ""+num, fontratio, "black");
 		};
 
-		col.repaintParts = function(id){
+		line.repaintParts = function(id){
 			var bx = bd.border[id].cx; var by = bd.border[id].cy;
 			pc.drawStartpos(mf((bx-by%2)/2),mf((by-bx%2)/2),mf((bx-by%2)/2),mf((by-bx%2)/2));
 			pc.drawStartpos(mf((bx+by%2)/2),mf((by+bx%2)/2),mf((bx+by%2)/2),mf((by+bx%2)/2));
@@ -564,7 +564,7 @@ Puzzles.slalom.prototype = {
 		fio.decodeOthers = function(array){
 			if(array.length<k.qrows){ return false;}
 			if(fio.filever==0){
-				var sv_num = new Array();
+				var sv_num = [];
 				this.decodeCell( function(c,ca){
 					sv_num[c]=-1;
 					if     (ca == "#"){ bd.sQuC(c,1);}
@@ -636,7 +636,7 @@ Puzzles.slalom.prototype = {
 		ans.checkAns = function(){
 			bd.hinfo.generateAll();
 
-			if( !this.checkBCellLine() ){
+			if( !this.checkAllCell(function(c){ return (bd.QuC(c)==1 && line.lcntCell(c)>0);}) ){
 				this.setAlert('黒マスに線が通っています。','A line is over a black cell.'); return false;
 			}
 
@@ -677,18 +677,9 @@ Puzzles.slalom.prototype = {
 		ans.check1st = function(){ return this.checkLcntCell(1);};
 
 		ans.checkStartid = function(){
-			if(this.lcntCell(bd.startid)!=2){
+			if(line.lcntCell(bd.startid)!=2){
 				bd.sErC(bd.startid,1);
 				return false;
-			}
-			return true;
-		};
-		ans.checkBCellLine = function(){
-			for(var c=0;c<bd.cell.length;c++){
-				if(bd.QuC(c)==1 && this.lcntCell(c)>0){
-					bd.sErC([c],1);
-					return false;
-				}
 			}
 			return true;
 		};
@@ -696,7 +687,7 @@ Puzzles.slalom.prototype = {
 			for(var r=1;r<=bd.hinfo.max;r++){
 				var cnt=0;
 				for(var i=0;i<bd.hinfo.data[r].clist.length;i++){
-					if(this.lcntCell(bd.hinfo.data[r].clist[i])>0){ cnt++;}
+					if(line.lcntCell(bd.hinfo.data[r].clist[i])>0){ cnt++;}
 				}
 				if((type==1 && cnt>1)||(type==2 && cnt==0)){
 					bd.sErC(bd.hinfo.data[r].clist, 4);
@@ -707,11 +698,11 @@ Puzzles.slalom.prototype = {
 			return true;
 		};
 		ans.checkGateNumber = function(){
-			var sid = new Array();
-			if(bd.LiB(bd.rb(bd.startid))==1){ sid.push({id:bd.rb(bd.startid),dir:4});}
-			if(bd.LiB(bd.db(bd.startid))==1){ sid.push({id:bd.db(bd.startid),dir:2});}
-			if(bd.LiB(bd.lb(bd.startid))==1){ sid.push({id:bd.lb(bd.startid),dir:3});}
-			if(bd.LiB(bd.ub(bd.startid))==1){ sid.push({id:bd.ub(bd.startid),dir:1});}
+			var sid = [];
+			if(bd.isLine(bd.rb(bd.startid))){ sid.push({id:bd.rb(bd.startid),dir:4});}
+			if(bd.isLine(bd.db(bd.startid))){ sid.push({id:bd.db(bd.startid),dir:2});}
+			if(bd.isLine(bd.lb(bd.startid))){ sid.push({id:bd.lb(bd.startid),dir:3});}
+			if(bd.isLine(bd.ub(bd.startid))){ sid.push({id:bd.ub(bd.startid),dir:1});}
 
 			for(var i=0;i<sid.length;i++){
 				var bx=bd.border[sid[i].id].cx, by=bd.border[sid[i].id].cy;
@@ -745,15 +736,15 @@ Puzzles.slalom.prototype = {
 							}
 						}
 
-						if     (ans.lcntCell(cc)!=2){ break;}
-						else if(dir!=1 && bd.LiB(bd.bnum(bx,by+1))==1){ dir=2;}
-						else if(dir!=2 && bd.LiB(bd.bnum(bx,by-1))==1){ dir=1;}
-						else if(dir!=3 && bd.LiB(bd.bnum(bx+1,by))==1){ dir=4;}
-						else if(dir!=4 && bd.LiB(bd.bnum(bx-1,by))==1){ dir=3;}
+						if     (line.lcntCell(cc)!=2){ break;}
+						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
+						else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ dir=1;}
+						else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ dir=4;}
+						else if(dir!=4 && bd.isLine(bd.bnum(bx-1,by))){ dir=3;}
 					}
 					else{
 						var id = bd.bnum(bx,by);
-						if(bd.LiB(id)!=1){ break;} // 途切れてたら、何事もなかったように終了
+						if(!bd.isLine(id)){ break;} // 途切れてたら、何事もなかったように終了
 						else if(id==-1 || id>=bd.bdinside){ break;}
 					}
 				}
@@ -766,16 +757,16 @@ Puzzles.slalom.prototype = {
 //---------------------------------------------------------
 //---------------------------------------------------------
 HurdleData = function(){
-	this.clist  = new Array();		// この旗門に含まれるセルのリスト
-	this.number = -1;				// この旗門が持つ順番
-	this.val    = 0;				// この旗門の方向(21:タテ 22:ヨコ)
+	this.clist  = [];		// この旗門に含まれるセルのリスト
+	this.number = -1;		// この旗門が持つ順番
+	this.val    = 0;		// この旗門の方向(21:タテ 22:ヨコ)
 	this.x1 = this.x2 = this.y1 = this.y2 = -1; // 旗門のサイズ(両端の黒マスIDを取得するのに必要)
 };
 
 Hurdle = function(){
 	this.max    = 0;
-	this.gateid = new Array();
-	this.data   = new Array();
+	this.gateid = [];
+	this.data   = [];
 };
 Hurdle.prototype = {
 	// 旗門が持つ旗門IDを取得する
@@ -786,7 +777,7 @@ Hurdle.prototype = {
 
 	// 旗門の両端にある黒マスの場所のIDを取得する
 	getGatePole : function(gateid){
-		var clist = new Array();
+		var clist = [];
 		var cc1,cc2;
 		if(this.data[gateid].val==21){
 			cc1 = bd.cnum(this.data[gateid].x1, this.data[gateid].y1-1);
@@ -796,14 +787,14 @@ Hurdle.prototype = {
 			cc1 = bd.cnum(this.data[gateid].x1-1, this.data[gateid].y1);
 			cc2 = bd.cnum(this.data[gateid].x2+1, this.data[gateid].y1);
 		}
-		else{ return new Array();}
+		else{ return [];}
 		if(cc1!=-1 && bd.QuC(cc1)==1){ clist.push(cc1);}
 		if(cc2!=-1 && bd.QuC(cc2)==1){ clist.push(cc2);}
 		return clist;
 	},
 	// 黒マスの周りに繋がっている旗門IDをリストにして返す
 	getConnectingGate : function(cc){
-		var idlist = new Array();
+		var idlist = [];
 		if(bd.QuC(bd.up(cc))==21){ idlist.push(this.gateid[bd.up(cc)]);}
 		if(bd.QuC(bd.dn(cc))==21){ idlist.push(this.gateid[bd.dn(cc)]);}
 		if(bd.QuC(bd.lt(cc))==22){ idlist.push(this.gateid[bd.lt(cc)]);}
@@ -815,7 +806,7 @@ Hurdle.prototype = {
 	init : function(){
 		this.max=0;
 		for(var c=0;c<bd.cell.length;c++){ this.gateid[c] = -1;}
-		this.data=new Array();
+		this.data=[];
 	},
 
 	generateAll : function(){
@@ -851,8 +842,8 @@ Hurdle.prototype = {
 		for(var r=1;r<=this.max;r++){ this.data[r].number=-1;}
 
 		// 数字がどの旗門に繋がっているかをnums配列にとってくる
-		var nums = new Array();
-		for(var r=1;r<=this.max;r++){ nums[r] = new Array();}
+		var nums = [];
+		for(var r=1;r<=this.max;r++){ nums[r] = [];}
 		for(var c=0;c<bd.cell.length;c++){
 			if(bd.QuC(c)==1){
 				if(bd.QnC(c)<=0 || bd.QnC(c)>this.max){ continue;}
@@ -863,11 +854,11 @@ Hurdle.prototype = {
 
 		// セットされた数字を全てのnumsから消す関数
 		var delnum = function(dn){ for(var r=1;r<=this.max;r++){
-			var atmp = new Array();
+			var atmp = [];
 			for(var i=0;i<nums[r].length;i++){ if(dn[nums[r][i]]!=1){ atmp.push(nums[r][i]);} }
 			nums[r] = atmp;
 		} }.bind(this);
-		var decnumber = new Array();
+		var decnumber = [];
 		for(var n=1;n<=this.max;n++){ decnumber[n] = 0;}
 
 		// 旗門nに繋がる数字が2つとも同じ数字の場合、無条件で旗門に数字をセット
@@ -885,7 +876,7 @@ Hurdle.prototype = {
 		while(repeatflag){
 			repeatflag = false;
 			for(var n=1;n<=this.max;n++){ decnumber[n] = 0;}
-			var numcnt = new Array();
+			var numcnt = [];
 
 			// 競合していない数字がいくつ残っているか数える
 			for(var n=1;n<=this.max;n++){ numcnt[n] = 0;}
