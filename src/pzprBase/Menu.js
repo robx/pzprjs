@@ -9,21 +9,21 @@ Caption = function(){
 };
 MenuData = function(strJP, strEN){
 	this.caption = { ja: strJP, en: strEN};
-	this.smenus = new Array();
+	this.smenus = [];
 };
 
 // メニュー描画/取得/html表示系
 // Menuクラス
 Menu = function(){
-	this.dispfloat  = new Array();	// 現在表示しているフロートメニューウィンドウ(オブジェクト)
-	this.floatpanel = new Array();	// (2段目含む)フロートメニューオブジェクトのリスト
+	this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
+	this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
 	this.pop        = "";			// 現在表示しているポップアップウィンドウ(オブジェクト)
 
 	this.isptitle   = 0;			// タイトルバーが押されているか
 	this.offset = new Pos(0, 0);	// ポップアップウィンドウの左上からの位置
 
-	this.btnstack   = new Array();	// ボタンの情報(idnameと文字列のリスト)
-	this.labelstack = new Array();	// span等の文字列の情報(idnameと文字列のリスト)
+	this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
+	this.labelstack = [];			// span等の文字列の情報(idnameと文字列のリスト)
 
 	this.ex = new MenuExec();
 	this.language = 'ja';
@@ -43,11 +43,11 @@ Menu.prototype = {
 	},
 
 	menureset : function(){
-		this.dispfloat  = new Array();
-		this.floatpanel = new Array();
+		this.dispfloat  = [];
+		this.floatpanel = [];
 		this.pop        = "";
-		this.btnstack   = new Array();
-		this.labelstack = new Array();
+		this.btnstack   = [];
+		this.labelstack = [];
 
 		this.popclose();
 		this.menuclear();
@@ -249,8 +249,8 @@ Menu.prototype = {
 	},
 	displayAll : function(){
 		for(var i in pp.flags){ this.setdisplay(i);}
-		$.each(this.btnstack,function(i,obj){obj.el.attr("value",obj.str[this.language]);});
-		$.each(this.labelstack,function(i,obj){obj.el.html(obj.str[this.language]);});
+		$.each(this.btnstack,function(i,obj){obj.el.attr("value",obj.str[menu.language]);});
+		$.each(this.labelstack,function(i,obj){obj.el.html(obj.str[menu.language]);});
 	},
 
 	//---------------------------------------------------------------------------
@@ -323,7 +323,7 @@ Menu.prototype = {
 				$("#checkpanel").append("<input type=\"checkbox\" id=\"ck_"+idname+"\""+(pp.getVal(idname)?' checked':'')+"> ")
 								.append("<span id=\"cl_"+idname+"\"> "+pp.getLabel(idname)+"</span>");
 				if(idname=="irowake"){
-					$("#checkpanel").append("<input type=button id=\"ck_irowake2\" value=\"色分けしなおす\" onClick=\"javascript:col.irowakeRemake();\">");
+					$("#checkpanel").append("<input type=button id=\"ck_irowake2\" value=\"色分けしなおす\" onClick=\"javascript:menu.ex.irowakeRemake();\">");
 					this.addButtons($("#ck_irowake2"), "色分けしなおす", "Change the color of Line");
 				}
 				$("#checkpanel").append("<br>\n");
@@ -337,7 +337,7 @@ Menu.prototype = {
 		if(k.callmode=="pmake"){ $("#timerpanel,#separator2").hide();}
 		if(k.irowake!=0){
 			$("#btnarea").append("<input type=\"button\" id=\"btncolor2\" value=\"色分けしなおす\">");
-			$("#btncolor2").click(col.irowakeRemake.ebind(col)).hide();
+			$("#btncolor2").click(menu.ex.irowakeRemake).hide();
 			menu.addButtons($("#btncolor2"), "色分けしなおす", "Change the color of Line");
 		}
 	},
@@ -420,11 +420,10 @@ Menu.prototype = {
 		$(document.adjust.close   ).click(px);
 
 		// 反転・回転
-		var pf = this.ex.popupflip.ebind(this.ex);
-		$(document.flip.turnl).click(pf);
-		$(document.flip.turnr).click(pf);
-		$(document.flip.flipy).click(pf);
-		$(document.flip.flipx).click(pf);
+		$(document.flip.turnl).click(pa);
+		$(document.flip.turnr).click(pa);
+		$(document.flip.flipy).click(pa);
+		$(document.flip.flipx).click(pa);
 		$(document.flip.close).click(px);
 
 		// credit
@@ -563,16 +562,16 @@ Menu.prototype = {
 	// menu.setLang()   言語を設定する
 	// menu.translate() htmlの言語を変える
 	//--------------------------------------------------------------------------------
-	setLang : function(ln){ (ln=='ja')   ?this.setJP():this.setEN();},
-	translate : function(){ (this.isJP())?this.setEN():this.setJP();},
+	setLang : function(ln){ (ln=='ja')       ?this.setLangJP():this.setLangEN();},
+	translate : function(){ (this.isLangJP())?this.setLangEN():this.setLangJP();},
 
 	//--------------------------------------------------------------------------------
 	// menu.setLangJP()  文章を日本語にする
 	// menu.setLangEN()  文章を英語にする
 	// menu.setLangStr() 文章を設定する
 	//--------------------------------------------------------------------------------
-	setLangJP : function(){ this.setStr('ja');},
-	setLangEN : function(){ this.setStr('en');},
+	setLangJP : function(){ this.setLangStr('ja');},
+	setLangEN : function(){ this.setLangStr('en');},
 	setLangStr : function(ln){
 		this.language = ln;
 		document.title = base.gettitle();
@@ -600,13 +599,13 @@ SSData = function(){
 	//this.func   = null;
 };
 Properties = function(){
-	this.flags    = new Array();	// サブメニュー項目の情報(SSDataクラスのオブジェクトの配列になる)
-	this.flaglist = new Array();	// idnameの配列
+	this.flags    = [];	// サブメニュー項目の情報(SSDataクラスのオブジェクトの配列になる)
+	this.flaglist = [];	// idnameの配列
 };
 Properties.prototype = {
 	reset : function(){
-		this.flags    = new Array();
-		this.flaglist = new Array();
+		this.flags    = [];
+		this.flaglist = [];
 	},
 
 	// pp.setMenuStr() 管理パネルと選択型/チェック型サブメニューに表示する文字列を設定する
@@ -795,7 +794,7 @@ Properties.prototype = {
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
 		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},
-		irowake   : function(){ col.irowakeClick();},
+		irowake   : function(){ menu.ex.irowakeRemake();},
 		manarea   : function(){ menu.ex.dispman();},
 		autocheck : function(val){ k.autocheck = !k.autocheck;},
 		mode      : function(num){ menu.ex.modechange(num);},
