@@ -4,12 +4,6 @@
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
 //---------------------------------------------------------------------------
 
-AreaInfo = function(){
-	this.max = 0;
-	this.check = new Array();
-	this.room  = new Array();
-};
-
 // 回答チェッククラス
 // AnsCheckクラス
 AnsCheck = function(){
@@ -101,24 +95,24 @@ AnsCheck.prototype = {
 		return cnt;
 	},
 
-	setErrLareaByCell : function(area, c, val){ this.setErrLareaById(area, area.check[c], val); },
-	setErrLareaById : function(area, areaid, val){
-		var blist = new Array();
+	setErrLareaByCell : function(cinfo, c, val){ this.setErrLareaById(cinfo, cinfo.id[c], val); },
+	setErrLareaById : function(cinfo, areaid, val){
+		var blist = [];
 		for(var id=0;id<bd.border.length;id++){
-			if(bd.LiB(id)!=1){ continue;}
+			if(!bd.isLine(id)){ continue;}
 			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
-			if(cc1!=-1 && cc2!=-1 && area.check[cc1]==areaid && area.check[cc1]==area.check[cc2]){ blist.push(id);}
+			if(cc1!=-1 && cc2!=-1 && cinfo.id[cc1]==areaid && cinfo.id[cc1]==cinfo.id[cc2]){ blist.push(id);}
 		}
 		bd.sErB(blist,val);
 
-		var clist = new Array();
-		for(var c=0;c<bd.cell.length;c++){ if(area.check[c]==areaid && bd.QnC(c)!=-1){ clist.push(c);} }
+		var clist = [];
+		for(var c=0;c<bd.cell.length;c++){ if(cinfo.id[c]==areaid && bd.QnC(c)!=-1){ clist.push(c);} }
 		bd.sErC(clist,4);
 	},
 
 	//---------------------------------------------------------------------------
 	// ans.checkAllCell()   条件func==trueになるマスがあったらエラーを設定する
-	// ans.linkBWarea()     白マス/黒マス/線がひとつながりかどうかを判定する
+	// ans.checkOneArea()   白マス/黒マス/線がひとつながりかどうかを判定する
 	// ans.check2x2Block()  2x2のセルが全て条件func==trueの時、エラーを設定する
 	// ans.checkSideCell()  隣り合った2つのセルが条件func==trueの時、エラーを設定する
 	//---------------------------------------------------------------------------
@@ -128,10 +122,10 @@ AnsCheck.prototype = {
 		}
 		return true;
 	},
-	linkBWarea : function(area){
-		if(area.max>1){
-			if(this.performAsLine){ bd.sErB(bd.borders,2); this.setErrLareaByCell(area,1,1); }
-			if(!this.performAsLine || k.puzzleid=="firefly"){ bd.sErC(area.room[1],1);}
+	checkOneArea : function(cinfo){
+		if(cinfo.max>1){
+			if(this.performAsLine){ bd.sErB(bd.borders,2); this.setErrLareaByCell(cinfo,1,1); }
+			if(!this.performAsLine || k.puzzleid=="firefly"){ bd.sErC(cinfo.room[1].idlist,1);}
 			return false;
 		}
 		return true;
@@ -160,24 +154,20 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.isAreaRect()     すべてのfuncを満たすマスで構成されるエリアが四角形であるかどうか判定する
+	// ans.checkAreaRect()  すべてのfuncを満たすマスで構成されるエリアが四角形であるかどうか判定する
 	// ans.checkAllArea()   すべてのfuncを満たすマスで構成されるエリアがサイズ条件func2を満たすかどうか判定する
-	// ans.getSizeOfArea()  指定されたareaの上下左右の端と、その中で条件funcを満たすセルの大きさを返す
 	// ans.getSizeOfClist() 指定されたCellのリストの上下左右の端と、その中で条件funcを満たすセルの大きさを返す
 	//---------------------------------------------------------------------------
-	isAreaRect : function(area, func){ return this.checkAllArea(area, func, function(w,h,a){ return (w*h==a)}); },
-	checkAllArea : function(area, func, func2){
-		for(var id=1;id<=area.max;id++){
-			var d = this.getSizeOfArea(area,id,func);
+	checkAreaRect : function(cinfo, func){ return this.checkAllArea(cinfo, func, function(w,h,a){ return (w*h==a)}); },
+	checkAllArea : function(cinfo, func, func2){
+		for(var id=1;id<=cinfo.max;id++){
+			var d = this.getSizeOfClist(cinfo.room[id].idlist,func);
 			if(!func2(d.x2-d.x1+1, d.y2-d.y1+1, d.cnt)){
-				bd.sErC(area.room[id],1);
+				bd.sErC(cinfo.room[id].idlist,1);
 				return false;
 			}
 		}
 		return true;
-	},
-	getSizeOfArea : function(area, id, func){
-		return this.getSizeOfClist(area.room[id], func);
 	},
 	getSizeOfClist : function(clist, func){
 		var d = { x1:k.qcols, x2:-1, y1:k.qrows, y2:-1, cnt:0 };
@@ -206,74 +196,46 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.isLoopLine()    交差あり線がループになっているかどうかを判定する
-	// ans.isConnectLine() 交差あり線がひとつながりになっているかどうかを判定する
-	// ans.LineList()      交差あり線のひとつながりの線のリストを返す
 	// ans.checkOneLoop()  交差あり線が一つかどうか判定する
 	// ans.checkLcntCell() セルから出ている線の本数について判定する
+	// ans.isLineStraight()   セルの上で線が直進しているか判定する
+	// ans.setCellLineError() セルと周りの線にエラーフラグを設定する
 	//---------------------------------------------------------------------------
-	isLoopLine : function(startid){ return this.isConnectLine(startid, startid, -1); },
-	isConnectLine : function(startid, terminal, startback){
-		var forward = -1;
-		var backward = startback;
-		var here = startid;
-		if(startid==-1){ return false;}
-		while(k.qcols*k.qrows*3){
-			forward = bd.forwardLine(here, backward);
-			backward = here; here = forward;
-			if(forward==terminal || forward==startid || forward==-1){ break;}
-		}
-
-		if(forward==terminal){ return true;}
-		return false;
-	},
-
-	LineList : function(startid){
-		if(startid==-1||startid==null){ return [];}
-		var lists = [startid];
-		var forward,backward, here;
-		if(bd.backLine(startid)!=-1){
-			here = startid;
-			backward = bd.nextLine(startid);
-			while(k.qcols*k.qrows*3){
-				forward = bd.forwardLine(here, backward);
-				backward = here; here = forward;
-				if(forward==startid || forward==-1){ break;}
-				lists.push(forward);
-			}
-		}
-		if(forward!=startid && bd.nextLine(startid)!=-1){
-			here = startid;
-			backward = bd.backLine(startid);
-			while(k.qcols*k.qrows*3){
-				forward = bd.forwardLine(here, backward);
-				backward = here; here = forward;
-				if(forward==startid || forward==-1){ break;}
-				lists.push(forward);
-			}
-		}
-		return lists;
-	},
 	checkOneLoop : function(){
-		var xarea = this.searchXarea();
-		if(xarea.max>1){
+		var xinfo = line.getLineInfo();
+		if(xinfo.max>1){
 			bd.sErB(bd.borders,2);
-			bd.sErB(xarea.room[1],1);
+			bd.sErB(xinfo.room[1].idlist,1);
 			return false;
 		}
 		return true;
 	},
 
 	checkLcntCell : function(val){
-		if(bd.lcnts.total[val]==0){ return true;}
+		if(line.ltotal[val]==0){ return true;}
 		for(var c=0;c<bd.cell.length;c++){
-			if(bd.lcnts.cell[c]==val){
+			if(line.lcnt[c]==val){
 				if(!this.performAsLine){ bd.sErC([c],1);}
 				else{ bd.sErB(bd.borders,2); this.setCellLineError(c,true);}
 				return false;
 			}
 		}
 		return true;
+	},
+
+	isLineStraight : function(cc){
+		if     (line.lcntCell(cc)==3 || line.lcntCell(cc)==4){ return true;}
+		else if(line.lcntCell(cc)==0 || line.lcntCell(cc)==1){ return false;}
+
+		if     (bd.isLine(bd.ub(cc)) && bd.isLine(bd.db(cc))){ return true;}
+		else if(bd.isLine(bd.lb(cc)) && bd.isLine(bd.rb(cc))){ return true;}
+
+		return false;
+	},
+
+	setCellLineError : function(cc, flag){
+		if(flag){ bd.sErC([cc],1);}
+		bd.sErB([bd.ub(cc),bd.db(cc),bd.lb(cc),bd.rb(cc)], 1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -289,43 +251,23 @@ AnsCheck.prototype = {
 	},
 	checkdir4Border1 : function(cc){
 		if(cc<0 || cc>=bd.cell.length){ return 0;}
-		var func = function(id){ return (id!=-1&&((bd.QuB(id)==1)||(bd.QaB(id)==1)));};
 		var cnt = 0;
 		var cx = bd.cell[cc].cx; var cy = bd.cell[cc].cy;
-		if( (k.isoutsideborder==0 && cy==0        ) || func(bd.bnum(cx*2+1,cy*2  )) ){ cnt++;}
-		if( (k.isoutsideborder==0 && cy==k.qrows-1) || func(bd.bnum(cx*2+1,cy*2+2)) ){ cnt++;}
-		if( (k.isoutsideborder==0 && cx==0        ) || func(bd.bnum(cx*2  ,cy*2+1)) ){ cnt++;}
-		if( (k.isoutsideborder==0 && cx==k.qcols-1) || func(bd.bnum(cx*2+2,cy*2+1)) ){ cnt++;}
+		if( (k.isoutsideborder==0 && cy==0        ) || bd.isBorder(bd.bnum(cx*2+1,cy*2  )) ){ cnt++;}
+		if( (k.isoutsideborder==0 && cy==k.qrows-1) || bd.isBorder(bd.bnum(cx*2+1,cy*2+2)) ){ cnt++;}
+		if( (k.isoutsideborder==0 && cx==0        ) || bd.isBorder(bd.bnum(cx*2  ,cy*2+1)) ){ cnt++;}
+		if( (k.isoutsideborder==0 && cx==k.qcols-1) || bd.isBorder(bd.bnum(cx*2+2,cy*2+1)) ){ cnt++;}
 		return cnt;
 	},
 
 	checkenableLineParts : function(val){
 		var func = function(i){
-			return ((bd.ub(i)!=-1 && bd.LiB(bd.ub(i))==1 && bd.isnoLPup(i)) ||
-					(bd.db(i)!=-1 && bd.LiB(bd.db(i))==1 && bd.isnoLPdown(i)) ||
-					(bd.lb(i)!=-1 && bd.LiB(bd.lb(i))==1 && bd.isnoLPleft(i)) ||
-					(bd.rb(i)!=-1 && bd.LiB(bd.rb(i))==1 && bd.isnoLPright(i)) ); };
+			return ((bd.ub(i)!=-1 && bd.isLine(bd.ub(i)) && bd.isnoLPup(i)) ||
+					(bd.db(i)!=-1 && bd.isLine(bd.db(i)) && bd.isnoLPdown(i)) ||
+					(bd.lb(i)!=-1 && bd.isLine(bd.lb(i)) && bd.isnoLPleft(i)) ||
+					(bd.rb(i)!=-1 && bd.isLine(bd.rb(i)) && bd.isnoLPright(i)) ); };
 		for(var i=0;i<bd.cell.length;i++){ if(func(i)){ bd.sErC([i],1); return false;} }
 		return true;
-	},
-
-	//---------------------------------------------------------------------------
-	// ans.isLineStraight()   セルの上で線が直進しているか判定する
-	// ans.setCellLineError() セルと周りの線にエラーフラグを設定する
-	//---------------------------------------------------------------------------
-	isLineStraight : function(cc){
-		if     (bd.lcntCell(cc)==3 || bd.lcntCell(cc)==4){ return true;}
-		else if(bd.lcntCell(cc)==0 || bd.lcntCell(cc)==1){ return false;}
-
-		if     (bd.LiB(bd.ub(cc))==1 && bd.LiB(bd.db(cc))==1){ return true;}
-		else if(bd.LiB(bd.lb(cc))==1 && bd.LiB(bd.rb(cc))==1){ return true;}
-
-		return false;
-	},
-
-	setCellLineError : function(cc, flag){
-		if(flag){ bd.sErC([cc],1);}
-		bd.sErB([bd.ub(cc),bd.db(cc),bd.lb(cc),bd.rb(cc)], 1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -335,52 +277,48 @@ AnsCheck.prototype = {
 	// ans.checkBlackCellCount() 領域内の数字と黒マスの数が等しいか判定する
 	// ans.checkDisconnectLine() 数字などに繋がっていない線の判定を行う
 	// ans.checkNumberAndSize()  エリアにある数字と面積が等しいか判定する
-	// ans.checkQnumsInArea()    部屋にある数字の数の判定を行う
+	// ans.checkQnumsInArea()    部屋に数字がいくつ含まれているかの判定を行う
 	// ans.checkBlackCellInArea()部屋にある黒マスの数の判定を行う
 	// ans,checkNoObjectInRoom() エリアに指定されたオブジェクトがないと判定する
 	//
 	// ans.getQnumCellInArea()   部屋の中で一番左上にある数字を返す
-	// ans.getTopOfRoom()        部屋のTOPのCellのIDを返す
 	// ans.getCntOfRoom()        部屋の面積を返す
 	// ans.getCellsOfRoom()      部屋の中でfunc==trueとなるセルの数を返す
 	//---------------------------------------------------------------------------
-	checkOneNumber : function(area, eval, func){
-		for(var id=1;id<=area.max;id++){
-			if(eval( bd.QnC(this.getQnumCellInArea(area,id)), this.getCellsOfRoom(area, id, func) )){
-				if(this.performAsLine){ bd.sErB(bd.borders,2); this.setErrLareaById(area,id,1);}
-				else{ bd.sErC(area.room[id],(k.puzzleid!="tateyoko"?1:4));}
+	checkOneNumber : function(cinfo, eval, func){
+		for(var id=1;id<=cinfo.max;id++){
+			if(eval( bd.QnC(this.getQnumCellInArea(cinfo,id)), this.getCellsOfRoom(cinfo, id, func) )){
+				if(this.performAsLine){ bd.sErB(bd.borders,2); this.setErrLareaById(cinfo,id,1);}
+				else{ bd.sErC(cinfo.room[id].idlist,(k.puzzleid!="tateyoko"?1:4));}
 				return false;
 			}
 		}
 		return true;
 	},
-	checkBlackCellCount  : function(area)          { return this.checkOneNumber(area, function(top,cnt){ return (top>=0 && top!=cnt);}, bd.isBlack                          );},
-	checkDisconnectLine  : function(area)          { return this.checkOneNumber(area, function(top,cnt){ return (top==-1 && cnt==0); }, function(c){ return bd.QnC(c)!=-1;} );},
-	checkNumberAndSize   : function(area)          { return this.checkOneNumber(area, function(top,cnt){ return (top> 0 && top!=cnt);}, f_true                              );},
-	checkQnumsInArea     : function(area, func)    { return this.checkOneNumber(area, function(top,cnt){ return func(cnt);},            function(c){ return bd.QnC(c)!=-1;} );},
-	checkBlackCellInArea : function(area, func)    { return this.checkOneNumber(area, function(top,cnt){ return func(cnt);},            bd.isBlack                          );},
-	checkNoObjectInRoom  : function(area, getvalue){ return this.checkOneNumber(area, function(top,cnt){ return (cnt==0); },            function(c){ return getvalue(c)!=-1;} );},
+	checkBlackCellCount  : function(cinfo)          { return this.checkOneNumber(cinfo, function(top,cnt){ return (top>=0 && top!=cnt);}, bd.isBlack);},
+	checkDisconnectLine  : function(cinfo)          { return this.checkOneNumber(cinfo, function(top,cnt){ return (top==-1 && cnt==0); }, bd.isNum  );},
+	checkNumberAndSize   : function(cinfo)          { return this.checkOneNumber(cinfo, function(top,cnt){ return (top> 0 && top!=cnt);}, f_true    );},
+	checkQnumsInArea     : function(cinfo, func)    { return this.checkOneNumber(cinfo, function(top,cnt){ return func(cnt);},            bd.isNum  );},
+	checkBlackCellInArea : function(cinfo, func)    { return this.checkOneNumber(cinfo, function(top,cnt){ return func(cnt);},            bd.isBlack);},
+	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkOneNumber(cinfo, function(top,cnt){ return (cnt==0); },            function(c){ return getvalue(c)!=-1;} );},
 
-	getQnumCellInArea : function(area, areaid){
-		if(k.isOneNumber){ return this.getTopOfRoom(area,areaid); }
-		for(var i=0;i<area.room[areaid].length;i++){ if(bd.QnC(area.room[areaid][i])!=-1){ return area.room[areaid][i];} }
+	getQnumCellInArea : function(cinfo, areaid){
+		if(k.isOneNumber){ return area.getTopOfRoomByCell(cinfo.room[areaid].idlist[0]); }
+		for(var i=0;i<cinfo.room[areaid].idlist.length;i++){
+			if(bd.QnC(cinfo.room[areaid].idlist[i])!=-1){
+				return cinfo.room[areaid].idlist[i];
+			}
+		}
 		return -1;
 	},
-	getTopOfRoom : function(area, areaid){
-		var cc=-1;
-		var ccx=k.qcols;
-		for(var i=0;i<area.room[areaid].length;i++){
-			var c = area.room[areaid][i];
-			if(bd.cell[c].cx < ccx){ cc=c; ccx=bd.cell[c].cx; }
-		}
-		return cc;
+	getCntOfRoom : function(cinfo, areaid){
+		return cinfo.room[areaid].idlist.length;
 	},
-	getCntOfRoom : function(area, areaid){
-		return area.room[areaid].length;
-	},
-	getCellsOfRoom : function(area, areaid, func){
+	getCellsOfRoom : function(cinfo, areaid, func){
 		var cnt=0;
-		for(var i=0;i<area.room[areaid].length;i++){ if(func(area.room[areaid][i])){ cnt++;} }
+		for(var i=0;i<cinfo.room[areaid].idlist.length;i++){
+			if(func(cinfo.room[areaid].idlist[i])){ cnt++;}
+		}
 		return cnt;
 	},
 
@@ -391,29 +329,31 @@ AnsCheck.prototype = {
 	// ans.checkSameObjectInRoom() 部屋の中にgetvalueで複数種類の値が得られることを判定する
 	// ans.checkObjectRoom()       getvalueで同じ値が得られるセルが、複数の部屋の分散しているか判定する
 	//---------------------------------------------------------------------------
-	checkSideAreaSize : function(area, getval){
-		var adjs = new Array();
-		for(var r=1;r<=area.max-1;r++){
-			adjs[r] = new Array();
-			for(var s=r+1;s<=area.max;s++){ adjs[r][s]=0;}
+	checkSideAreaSize : function(rinfo, getval){
+		var adjs = [];
+		for(var r=1;r<=rinfo.max-1;r++){
+			adjs[r] = [];
+			for(var s=r+1;s<=rinfo.max;s++){ adjs[r][s]=0;}
 		}
 
 		for(var id=0;id<bd.border.length;id++){
-			if(bd.QuB(id)!=1&&bd.QaB(id)!=1){ continue;}
+			if(!bd.isBorder(id)){ continue;}
 			var cc1=bd.cc1(id), cc2=bd.cc2(id);
-			if(cc1==-1 && cc2==-1){ continue;}
-			var r1=area.check[cc1], r2=area.check[cc2];
-			if(r1<r2){ adjs[r1][r2]++;}
-			if(r1>r2){ adjs[r2][r1]++;}
+			if(cc1==-1 || cc2==-1){ continue;}
+			var r1=rinfo.id[cc1], r2=rinfo.id[cc2];
+			try{
+				if(r1<r2){ adjs[r1][r2]++;}
+				if(r1>r2){ adjs[r2][r1]++;}
+			}catch(e){ alert([r1,r2]); throw 0;}
 		}
 
-		for(var r=1;r<=area.max-1;r++){
-			for(var s=r+1;s<=area.max;s++){
+		for(var r=1;r<=rinfo.max-1;r++){
+			for(var s=r+1;s<=rinfo.max;s++){
 				if(adjs[r][s]==0){ continue;}
-				var a1=getval(area,r), a2=getval(area,s);
+				var a1=getval(rinfo,r), a2=getval(rinfo,s);
 				if(a1>0 && a2>0 && a1==a2){
-					bd.sErC(area.room[r],1);
-					bd.sErC(area.room[s],1);
+					bd.sErC(rinfo.room[r].idlist,1);
+					bd.sErC(rinfo.room[s].idlist,1);
 					return false;
 				}
 			}
@@ -422,44 +362,49 @@ AnsCheck.prototype = {
 		return true;
 	},
 
-	checkSideAreaCell : function(area, func, flag){
+	checkSideAreaCell : function(rinfo, func, flag){
 		for(var id=0;id<bd.border.length;id++){
-			if(bd.QuB(id)!=1&&bd.QaB(id)!=1){ continue;}
+			if(!bd.isBorder(id)){ continue;}
 			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
-			if(cc1!=-1 && cc2!=-1 && func(area, cc1, cc2)){
+			if(cc1!=-1 && cc2!=-1 && func(cc1, cc2)){
 				if(!flag){ bd.sErC([cc1,cc2],1);}
-				else{ bd.sErC(area.room[area.check[cc1]],1); bd.sErC(area.room[area.check[cc2]],1); }
+				else{ bd.sErC(area.room[area.room.id[cc1]].clist,1); bd.sErC(area.room[area.room.id[cc2]].clist,1); }
 				return false;
 			}
 		}
 		return true;
 	},
 
-	checkSeqBlocksInRoom : function(rarea){
-		for(var id=1;id<=rarea.max;id++){
-			var area = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){ area.check.push(((rarea.check[c]==id && bd.isBlack(c))?0:-1));}
-			for(var c=0;c<k.qcols*k.qrows;c++){ if(area.check[c]==0){ area.max++; area.room[area.max]=new Array(); this.sc0(bd.isBlack, area, c, area.max);} }
-			if(area.max>1){
-				bd.sErC(rarea.room[id],1);
+	checkSeqBlocksInRoom : function(){
+		for(var id=1;id<=area.room.max;id++){
+			var data = {max:0,id:[]};
+			for(var c=0;c<bd.cell.length;c++){ data.id[c] = ((area.room.id[c]==id && bd.isBlack(c))?0:-1);}
+			for(var c=0;c<k.qcols*k.qrows;c++){
+				if(data.id[c]!=0){ continue;}
+				data.max++;
+				data[data.max] = {clist:[]};
+				area.sc0(c, data);
+			}
+			if(data.max>1){
+				bd.sErC(area.room[id].clist,1);
 				return false;
 			}
 		}
 		return true;
 	},
 
-	checkSameObjectInRoom : function(area, getvalue){
-		var d = new Array();
-		for(var i=1;i<=area.max;i++){ d[i]=-1;}
+	checkSameObjectInRoom : function(rinfo, getvalue){
+		var d = [];
+		for(var i=1;i<=rinfo.max;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cell.length;c++){
-			if(area.check[c]==-1 || getvalue(c)==-1){ continue;}
-			if(d[area.check[c]]==-1 && getvalue(c)!=-1){ d[area.check[c]] = getvalue(c);}
-			else if(d[area.check[c]]!=getvalue(c)){
-				if(this.performAsLine){ bd.sErB(bd.borders,2); this.setErrLareaByCell(area,c,1);}
-				else{ bd.sErC(area.room[area.check[c]],1);}
+			if(rinfo.id[c]==-1 || getvalue(c)==-1){ continue;}
+			if(d[rinfo.id[c]]==-1 && getvalue(c)!=-1){ d[rinfo.id[c]] = getvalue(c);}
+			else if(d[rinfo.id[c]]!=getvalue(c)){
+				if(this.performAsLine){ bd.sErB(bd.borders,2); this.setErrLareaByCell(rinfo,c,1);}
+				else{ bd.sErC(rinfo.room[rinfo.id[c]].idlist,1);}
 				if(k.puzzleid=="kaero"){
 					for(var cc=0;cc<bd.cell.length;cc++){
-						if(area.check[c]==area.check[cc] && this.getBeforeCell(cc)!=-1 && area.check[c]!=area.check[this.getBeforeCell(cc)]){
+						if(rinfo.id[c]==rinfo.id[cc] && this.getBeforeCell(cc)!=-1 && rinfo.id[c]!=rinfo.id[this.getBeforeCell(cc)]){
 							bd.sErC([this.getBeforeCell(cc)],4);
 						}
 					}
@@ -469,19 +414,19 @@ AnsCheck.prototype = {
 		}
 		return true;
 	},
-	checkObjectRoom : function(area, getvalue){
-		var d = new Array();
+	checkObjectRoom : function(rinfo, getvalue){
+		var d = [];
 		var dmax = 0;
 		for(var c=0;c<bd.cell.length;c++){ if(dmax<getvalue(c)){ dmax=getvalue(c);} }
 		for(var i=0;i<=dmax;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cell.length;c++){
 			if(getvalue(c)==-1){ continue;}
-			if(d[getvalue(c)]==-1){ d[getvalue(c)] = area.check[c];}
-			else if(d[getvalue(c)]!=area.check[c]){
-				var clist = new Array();
+			if(d[getvalue(c)]==-1){ d[getvalue(c)] = rinfo.id[c];}
+			else if(d[getvalue(c)]!=rinfo.id[c]){
+				var clist = [];
 				for(var cc=0;cc<bd.cell.length;cc++){
 					if(k.puzzleid=="kaero"){ if(getvalue(c)==bd.QnC(cc)){ clist.push(cc);}}
-					else{ if(area.check[c]==area.check[cc] || d[getvalue(c)]==area.check[cc]){ clist.push(cc);} }
+					else{ if(rinfo.id[c]==rinfo.id[cc] || d[getvalue(c)]==rinfo.id[cc]){ clist.push(cc);} }
 				}
 				bd.sErC(clist,1);
 				return false;
@@ -498,7 +443,7 @@ AnsCheck.prototype = {
 		for(var i=0;i<(k.qcols+1)*(k.qrows+1);i++){
 			var cx = i%(k.qcols+1), cy = mf(i/(k.qcols+1));
 			if(k.isoutsidecross==0 && k.isborderAsLine==0 && (cx==0||cy==0||cx==k.qcols||cy==k.qrows)){ continue;}
-			var lcnts = bd.lcnts.cell[i] + ((k.isoutsideborder==0&&(cx==0||cy==0||cx==k.qcols||cy==k.qrows))?2:0);
+			var lcnts = (!k.isborderAsLine?area.lcnt[i]:line.lcnt[i]);
 			if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(cx, cy))==1) || (bp==2&&bd.QnX(bd.xnum(cx, cy))!=1) )){
 				bd.sErB(bd.borders,2);
 				this.setCrossBorderError(cx,cy);
@@ -510,78 +455,5 @@ AnsCheck.prototype = {
 	setCrossBorderError : function(cx,cy){
 		if(k.iscross){ bd.sErX([bd.xnum(cx, cy)], 1);}
 		bd.sErB([bd.bnum(cx*2,cy*2-1),bd.bnum(cx*2,cy*2+1),bd.bnum(cx*2-1,cy*2),bd.bnum(cx*2+1,cy*2)], 1);
-	},
-
-	//---------------------------------------------------------------------------
-	// ans.searchWarea()   盤面の白マスのエリア情報をAreaInfo(cell)オブジェクトで取得する
-	// ans.searchBarea()   盤面の黒マスのエリア情報をAreaInfo(cell)オブジェクトで取得する
-	// ans.searchBWarea()  searchWarea, searchBareaから呼ばれる関数
-	// ans.sc0()           searchBWareaから呼ばれる再帰呼び出し用関数
-	//
-	// ans.searchRarea()   盤面の境界線で区切られた部屋情報をAreaInfo(cell)オブジェクトで取得する
-	// ans.searchLarea()   盤面上に引かれている線でつながったエリア情報をAreaInfo(cell)オブジェクトで取得する
-	// ans.searchRLrea()   searchRarea, searchLareaから呼ばれる関数
-	// ans.sr0()           searchRLareaから呼ばれる再起呼び出し用関数
-	//---------------------------------------------------------------------------
-	searchWarea : function(){
-		return this.searchBWarea(bd.isWhite);
-	},
-	searchBarea : function(){
-		return this.searchBWarea(bd.isBlack);
-	},
-	searchBWarea : function(func){
-		var area = new AreaInfo();
-		for(var c=0;c<bd.cell.length;c++){ area.check[c]=(func(c)?0:-1);}
-		for(var c=0;c<bd.cell.length;c++){ if(area.check[c]==0){ area.max++; area.room[area.max]=new Array(); this.sc0(func, area, c, area.max);} }
-		return area;
-	},
-	sc0 : function(func, area, i, areaid){
-		if(area.check[i]!=0){ return;}
-		area.check[i] = areaid;
-		area.room[areaid].push(i);
-		if( func(bd.up(i)) ){ this.sc0(func, area, bd.up(i), areaid);}
-		if( func(bd.dn(i)) ){ this.sc0(func, area, bd.dn(i), areaid);}
-		if( func(bd.lt(i)) ){ this.sc0(func, area, bd.lt(i), areaid);}
-		if( func(bd.rt(i)) ){ this.sc0(func, area, bd.rt(i), areaid);}
-		return;
-	},
-
-	searchRarea : function(){
-		return this.searchRLarea(function(id){ return (id!=-1 && bd.QuB(id)==0 && bd.QaB(id)==0); }, false);
-	},
-	searchLarea : function(){
-		return this.searchRLarea(function(id){ return (id!=-1 && bd.LiB(id)>0); }, true);
-	},
-	searchRLarea : function(func, flag){
-		var area = new AreaInfo();
-		for(var c=0;c<bd.cell.length;c++){ area.check[c]=((!flag||bd.lcnts.cell[c]>0)?0:-1);}
-		for(var c=0;c<bd.cell.length;c++){ if(area.check[c]==0){ area.max++; area.room[area.max]=new Array(); this.sr0(func, area, c, area.max);} }
-		return area;
-	},
-	sr0 : function(func, area, i, areaid){
-		if(area.check[i]!=0){ return;}
-		area.check[i] = areaid;
-		area.room[areaid].push(i);
-		if( func(bd.ub(i)) ){ this.sr0(func, area, bd.up(i), areaid);}
-		if( func(bd.db(i)) ){ this.sr0(func, area, bd.dn(i), areaid);}
-		if( func(bd.lb(i)) ){ this.sr0(func, area, bd.lt(i), areaid);}
-		if( func(bd.rb(i)) ){ this.sr0(func, area, bd.rt(i), areaid);}
-		return;
-	},
-
-	//---------------------------------------------------------------------------
-	// ans.searchXarea()   交差あり線のつながり情報をAreaInfo(border)オブジェクトで取得する
-	// ans.setLineArea()   1つのつながった線にエリア情報をセットする
-	//---------------------------------------------------------------------------
-	searchXarea : function(){
-		var area = new AreaInfo();
-		for(var id=0;id<bd.border.length;id++){ area.check[id]=((k.isborderAsLine==0?bd.LiB(id)==1:bd.QaB(id)==1)?0:-1); }
-		for(var id=0;id<bd.border.length;id++){ if(area.check[id]==0){ this.setLineArea(area, this.LineList(id), area.max);} }
-		return area;
-	},
-	setLineArea : function(area, idlist, areaid){
-		area.max++;
-		area.room[area.max] = idlist;
-		for(var i=0;i<idlist.length;i++){if(idlist[i]>=0 && bd.border.length>idlist[i]){ area.check[idlist[i]] = area.max;} }
 	}
 };
