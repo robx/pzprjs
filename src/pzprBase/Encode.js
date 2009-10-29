@@ -1,4 +1,4 @@
-// Encode.js v3.2.0p3
+// Encode.js v3.2.2
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -7,174 +7,156 @@
 //---------------------------------------------------------------------------
 // URLエンコード/デコード
 // Encodeクラス
-Encode = function(search){
-	this.uri = [];
-	this.uri.pid = "";			// 入力されたURLのID部分
-	this.uri.qdata = "";		// 入力されたURLの問題部分
+Encode = function(){
+	this.uri = {};
 
-	this.uri.pflag = "";		// 入力されたURLのフラグ部分
-	this.uri.cols = 0;			// 入力されたURLの横幅部分
-	this.uri.rows = 0;			// 入力されたURLの縦幅部分
-	this.uri.bstr = "";			// 入力されたURLの盤面部分
+	this.uri.type;		// 入力されたURLのサイト指定部分
+	this.uri.qdata;		// 入力されたURLの問題部分
 
-	this.first_decode(search);
+	this.uri.pflag;		// 入力されたURLのフラグ部分
+	this.uri.cols;		// 入力されたURLの横幅部分
+	this.uri.rows;		// 入力されたURLの縦幅部分
+	this.uri.bstr;		// 入力されたURLの盤面部分
 };
 Encode.prototype = {
 	//---------------------------------------------------------------------------
-	// enc.init()         Encodeオブジェクトで持つ値を初期化する
-	// enc.first_decode() はじめにURLを解析してpuzzleidやエディタかplayerかを判断する
-	// enc.pzlinput()     "URLを入力"または起動時の設定完了後に呼ばれて、各パズルのpzlinput関数を呼び出す
-	// enc.pzlimport()    各パズルのURL入力用(オーバーライド用)
+	// enc.init()           Encodeオブジェクトで持つ値を初期化する
+	// enc.first_parseURI() 起動時にURLを解析して、puzzleidの抽出やエディタ/player判定を行う
+	// enc.parseURI()       入力されたURLがどのサイト用か判定してthis.uriに値を保存する
+	// enc.parseURI_xxx()   pzlURI部をpflag,bstr等の部分に分割する
 	//---------------------------------------------------------------------------
 	init : function(){
-		this.uri.pid = "";
+		this.uri.type = 0;
 		this.uri.qdata = "";
+
 		this.uri.pflag = "";
 		this.uri.cols = 0;
 		this.uri.rows = 0;
 		this.uri.bstr = "";
 	},
-	first_decode : function(search){
-		if(search.length>0){
-			if(search.substring(0,3)=="?m+"){
-				k.callmode = "pmake"; k.mode = 1;
-				search = search.substring(3, search.length);
+
+	first_parseURI : function(search){
+		if(search.length<=0){ return "";}
+
+		this.init();
+
+		if(search.substring(0,3)=="?m+" || search.substring(0,3)=="?m/"){
+			k.mode = 1;
+			k.callmode = "pmake";
+			search = search.substring(3, search.length);
+		}
+		else{
+			k.mode = 3;
+			k.callmode = ((!k.scriptcheck)?"pplay":"pmake");
+			search = search.substring(1, search.length);
+		}
+
+		var qs = search.indexOf("/");
+		if(qs>=0){
+			this.parseURI_pzpr(search.substring(qs+1,search.length));
+			return search.substring(0,qs);
+		}
+
+		return search;
+	},
+	parseURI : function(url){
+		this.init();
+
+		// ぱずぷれの場合
+		if(url.match(/indi\.s58\.xrea\.com/)){
+			// ぱずぷれv3のURL
+			if(!url.match(/\/(sa|sc)\//)){
+				this.parseURI_pzpr(url.substring(url.indexOf("/", url.indexOf("?"))+1,url.length));
+			}
+			// ぱずぷれアプレットのURL
+			else{
+				this.parseURI_pzpr(url.substring(url.indexOf("?"),url.length)+1);
+				this.uri.type = 1; // 1はぱずぷれアプレット/URLジェネレータ
+			}
+		}
+		// カンペンの場合
+		else if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
+			// カンペンだけどデータ形式はへやわけアプレット
+			if(url.indexOf("?heyawake=")>=0){
+				this.parseURI_heyaapp(url.substring(url.indexOf("?heyawake=")+10,url.length));
+			}
+			// カンペンだけどデータ形式はぱずぷれ
+			else if(url.indexOf("?pzpr=")>=0){
+				this.parseURI_pzpr(url.substring(url.indexOf("?pzpr=")+6,url.length));
 			}
 			else{
-				k.callmode = ((!k.scriptcheck)?"pplay":"pmake"); k.mode = 3;
-				search = search.substring(1, search.length);
+				this.parseURI_kanpen(url.substring(url.indexOf("?problem=")+9,url.length));
 			}
-			this.data_decode(search, 0)
+		}
+		// へやわけアプレットの場合
+		else if(url.match(/www\.geocities(\.co)?\.jp\/heyawake/)){
+			this.parseURI_heyaapp(url.substring(url.indexOf("?problem=")+9,url.length));
 		}
 	},
-	pzlinput : function(type){
+	parseURI_pzpr : function(qstr){
+		this.uri.type = 0; // 0はぱずぷれv3
+		this.uri.qdata = qstr;
+		var inp = qstr.split("/");
+		if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
+
+		this.uri.pflag = inp.shift();
+		this.uri.cols = parseInt(inp.shift());
+		this.uri.rows = parseInt(inp.shift());
+		this.uri.bstr = inp.join("/");
+	},
+	parseURI_kanpen : function(qstr){
+		this.uri.type = 2; // 2はカンペン
+		this.uri.qdata = qstr;
+		var inp = qstr.split("/");
+
+		if(k.puzzleid=="sudoku"){
+			this.uri.rows = this.uri.cols = parseInt(inp.shift());
+		}
+		else{
+			this.uri.rows = parseInt(inp.shift());
+			this.uri.cols = parseInt(inp.shift());
+			if(k.puzzleid=="kakuro"){ this.uri.rows--; this.uri.cols--;}
+		}
+		this.uri.bstr = inp.join("/");
+	},
+	parseURI_heyaapp : function(qstr){
+		this.uri.type = 4; // 4はへやわけアプレット
+		this.uri.qdata = qstr;
+		var inp = qstr.split("/");
+
+		var size = inp.shift().split("x");
+		this.uri.cols = parseInt(size[0]);
+		this.uri.rows = parseInt(size[1]);
+		this.uri.bstr = inp.join("/");
+	},
+
+	//---------------------------------------------------------------------------
+	// enc.pzlinput()     data_decode()を行った後に呼び出し、各パズルのpzlinput関数を呼び出す
+	// enc.pzlimport()    各パズルのURL入力用(オーバーライド用)
+	// enc.pzlexport()    各パズルのURL出力用(オーバーライド用)
+	// enc.checkpflag()   pflagに指定した文字列が含まれているか調べる
+	//---------------------------------------------------------------------------
+	pzlinput : function(){
 		if(k.puzzleid=="icebarn" && bd.arrowin==-1 && bd.arrowout==-1){
 			bd.inputarrowin (0 + bd.bdinside, 1);
 			bd.inputarrowout(2 + bd.bdinside, 1);
 		}
 
 		if(this.uri.bstr){
-			this.pzlimport(type, this.uri.bstr);
+			um.disableRecord();
+			this.pzlimport(this.uri.type, this.uri.bstr);
+			um.enableRecord();
 
 			bd.ansclear();
 			um.allerase();
 
+			base.resetInfo();
 			base.resize_canvas_onload();
 		}
 	},
 	pzlimport : function(type,bstr){ },	// オーバーライド用
 	pzlexport : function(type){ },		// オーバーライド用
 
-	//---------------------------------------------------------------------------
-	// enc.get_search()   入力されたURLの?以下の部分を返す
-	// enc.data_decode()  pzlURI部をpflag,bstr等の部分に分割する
-	// enc.checkpflag()   pflagに指定した文字列が含まれているか調べる
-	//---------------------------------------------------------------------------
-	get_search : function(url){
-		var type = 0;	// 0はぱずぷれv3とする
-		if(url.indexOf("indi.s58.xrea.com", 0)>=0){
-			if(url.indexOf("/sa/", 0)>=0 || url.indexOf("/sc/", 0)>=0){ type = 1;} // 1はぱずぷれ/URLジェネレータとする
-		}
-		else if(url.indexOf("www.kanpen.net", 0)>=0 || url.indexOf("www.geocities.jp/pencil_applet", 0)>=0 ){
-			// カンペンだけどURLはへやわけアプレット
-			if(url.indexOf("heyawake=", 0)>=0){
-				url = "http://www.geocities.jp/heyawake/?problem="+url.substring(url.indexOf("heyawake=", 0)+9,url.length);
-				type = 4;
-			}
-			// カンペンだけどURLはぱずぷれ
-			else if(url.indexOf("pzpr=", 0)>=0){
-				url = "http://indi.s58.xrea.com/"+k.puzzleid+"/sa/q.html?"+url.substring(url.indexOf("pzpr=", 0)+5,url.length);
-				type = 0;
-			}
-			else{ type = 2;} // 2はカンペンとする
-		}
-		else if(url.indexOf("www.geocities.jp/heyawake", 0)>=0 || url.indexOf("www.geocities.co.jp/heyawake", 0)>=0){
-			type = 4; // 4はへやわけアプレット
-		}
-
-		var qus;
-		if(type!=2){ qus = url.indexOf("?", 0);}
-		else if(url.indexOf("www.kanpen.net", 0)>=0){ qus = url.indexOf("www.kanpen.net", 0);}
-		else if(url.indexOf("www.geocities.jp/pencil_applet", 0)>=0){ qus = url.indexOf("www.geocities.jp/pencil_applet", 0);}
-
-		if(qus>=0){
-			this.data_decode(url.substring(qus+1,url.length), type);
-		}
-		else{
-			this.init();
-		}
-		return type;
-	},
-	data_decode : function(search, type){
-		this.init();
-
-		if(type==0||type==1){
-			var idx = search.indexOf("/", 0);
-
-			if(idx==-1){
-				this.uri.pid = search.substring(0, search.length);
-				this.uri.qdata = "";
-				return;
-			}
-
-			this.uri.pid = search.substring(0, idx);
-			if(type==0){
-				this.uri.qdata = search.substring(idx+1, search.length);
-			}
-			else if(type==1){
-				this.uri.qdata = search;
-			}
-
-			var inp = this.uri.qdata.split("/");
-			if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
-
-			if(inp.length==3){
-				this.uri.pflag = inp.shift();
-				this.uri.cols = parseInt(inp.shift());
-				this.uri.rows = parseInt(inp.shift());
-			}
-			else if(inp.length>=4){
-				this.uri.pflag = inp.shift();
-				this.uri.cols = parseInt(inp.shift());
-				this.uri.rows = parseInt(inp.shift());
-				this.uri.bstr = inp.join("/");
-			}
-		}
-		else if(type==2){
-			//this.uri.pid = "heyawake";
-			var idx = search.indexOf("=", 0);
-			this.uri.qdata = search.substring(idx+1, search.length);
-
-			var inp = this.uri.qdata.split("/");
-
-			if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
-
-			this.uri.pflag = inp.shift();
-			if(k.puzzleid!="sudoku"){
-				this.uri.rows = parseInt(inp.shift());
-				this.uri.cols = parseInt(inp.shift());
-				if(k.puzzleid=="kakuro"){ this.uri.rows--; this.uri.cols--;}
-			}
-			else{
-				this.uri.rows = this.uri.cols = parseInt(inp.shift());
-			}
-			this.uri.bstr = inp.join("/");
-		}
-		else if(type==4){
-			this.uri.pid = "heyawake";
-			var idx = search.indexOf("=", 0);
-			this.uri.qdata = search.substring(idx+1, search.length);
-
-			var inp = this.uri.qdata.split("/");
-
-			this.uri.pflag = "";
-			var inp0 = inp.shift().split("x");
-			this.uri.cols = parseInt(inp0[0]);
-			this.uri.rows = parseInt(inp0[1]);
-			this.uri.bstr = inp.join("/");
-		}
-
-	},
 	checkpflag : function(ca){ return (this.uri.pflag.indexOf(ca)>=0);},
 
 	//---------------------------------------------------------------------------
@@ -302,31 +284,31 @@ Encode.prototype = {
 	// enc.encodeRoomNumber16()  部屋＋部屋の一つのquesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeRoomNumber16 : function(bstr){
-		room.resetRarea();
+		area.resetRarea();
 		var r = 1, i=0;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if(this.include(ca,"0","9")||this.include(ca,"a","f")){ bd.sQnC(room.getTopOfRoom(r), parseInt(bstr.substring(i,i+1),16)); r++;}
-			else if(ca == '-'){ bd.sQnC(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+3),16));      r++; i+=2;}
-			else if(ca == '+'){ bd.sQnC(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16));      r++; i+=3;}
-			else if(ca == '='){ bd.sQnC(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+4096); r++; i+=3;}
-			else if(ca == '%'){ bd.sQnC(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+8192); r++; i+=3;}
-			else if(ca == '*'){ bd.sQnC(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+12240); r++; i+=4;}
-			else if(ca == '$'){ bd.sQnC(room.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+77776); r++; i+=5;}
+			if(this.include(ca,"0","9")||this.include(ca,"a","f")){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i,i+1),16)); r++;}
+			else if(ca == '-'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+3),16));      r++; i+=2;}
+			else if(ca == '+'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16));      r++; i+=3;}
+			else if(ca == '='){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+4096); r++; i+=3;}
+			else if(ca == '%'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+8192); r++; i+=3;}
+			else if(ca == '*'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+12240); r++; i+=4;}
+			else if(ca == '$'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+77776); r++; i+=5;}
 			else if(ca >= 'g' && ca <= 'z'){ r += (parseInt(ca,36)-15);}
 			else{ r++;}
 
-			if(r > room.rareamax){ break;}
+			if(r > area.room.max){ break;}
 		}
 		return bstr.substring(i,bstr.length);
 	},
 	encodeRoomNumber16 : function(){
-		room.resetRarea();
+		area.resetRarea();
 		var count=0, cm="";
-		for(var i=1;i<=room.rareamax;i++){
+		for(var i=1;i<=area.room.max;i++){
 			var pstr = "";
-			var val = bd.QnC(room.getTopOfRoom(i));
+			var val = bd.QnC(area.getTopOfRoom(i));
 
 			if     (val>=     0 && val<    16){ pstr =       val.toString(16);}
 			else if(val>=    16 && val<   256){ pstr = "-" + val.toString(16);}
@@ -422,6 +404,7 @@ Encode.prototype = {
 			}
 		}
 
+		area.resetRarea();
 		return bstr.substring(pos2,bstr.length);
 	},
 	encodeBorder : function(){
