@@ -12,6 +12,7 @@ PBase = function(){
 	this.puzzlename   = { ja:'' ,en:''};
 	this.cv_obj       = null;	// HTMLソースのCanvasを示すオブジェクト
 	this.onresizenow  = false;	// resize中かどうか
+	this.initProcess  = true;	// 初期化中かどうか
 };
 PBase.prototype = {
 	//---------------------------------------------------------------------------
@@ -66,6 +67,8 @@ PBase.prototype = {
 
 		if(document.domain=='indi.s58.xrea.com' && k.callmode=='pplay'){ this.accesslog();}	// アクセスログをとってみる
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
+
+		this.initProcess = false;
 	},
 
 	initObjects : function(){
@@ -112,6 +115,8 @@ PBase.prototype = {
 	},
 
 	reload_func : function(newid){
+		this.initProcess = true;
+
 		if(this.proto){ puz.protoOriginal();}
 
 		$("*").unbind();
@@ -133,6 +138,8 @@ PBase.prototype = {
 
 		this.initObjects();
 		this.setEvents(false);
+
+		this.initProcess = false;
 	},
 
 	postfix : function(){
@@ -245,7 +252,7 @@ PBase.prototype = {
 		k.cv_oft.y = this.cv_obj.offset().top;
 
 		kp.resize();
-		bd.setpicAll();
+		bd.setposAll();
 
 		pc.onresize_func();
 
