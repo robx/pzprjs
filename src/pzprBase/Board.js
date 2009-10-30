@@ -144,63 +144,73 @@ Border.prototype = {
 //---------------------------------------------------------------------------
 // Boardクラスの定義
 Board = function(){
-	this.bdinside = 0;		// 盤面の内側(外枠上でない)に存在する境界線の本数
+	this.cell   = [];
+	this.cross  = [];
+	this.border = [];
+	this.excell = [];
 
 	this.cellmax   = 0;		// セルの数
 	this.crossmax  = 0;		// 交点の数
 	this.bdmax     = 0;		// 境界線の数
 	this.excellmax = 0;		// 拡張セルの数
 
-	this.enableLineNG = false;
-	this.def = {};			// デフォルトのセルなど
+	this.bdinside = 0;		// 盤面の内側(外枠上でない)に存在する境界線の本数
 
-	this.initialize2();
+	this.enableLineNG = false;
+	this.def = {cell:new Cell(0), cross:new Cross(0), border:new Border(0)};			// デフォルトのセルなど
+
+	this.initBoardSize(k.qcols,k.qrows);
+	this.override();
 };
 Board.prototype = {
 	//---------------------------------------------------------------------------
-	// bd.initialize2()  起動時にデータの初期化を行う
+	// bd.initBoardSize() 盤面のサイズの変更を行う
+	// bd.initGroup()     数を比較して、オブジェクトの追加か削除を行う
+	// bd.initSpecial()   パズル個別で初期化を行いたい処理を入力する
 	//---------------------------------------------------------------------------
-	initialize2 : function(){
-		// Cellの情報を初期化
-		this.cell = [];
-		this.cellmax = (k.qcols*k.qrows);
-		for(var i=0;i<this.cellmax;i++){
-			this.cell[i] = new Cell(i);
+	initBoardSize : function(col,row){
+		{
+			this.initGroup('cell',   this.cell,   col*row);
 		}
-		this.def.cell = new Cell(0);
-
 		if(k.iscross){
-			this.cross = [];	// Crossを定義
-			this.crossmax = (k.qcols+1)*(k.qrows+1);
-			for(var i=0;i<this.crossmax;i++){
-				this.cross[i] = new Cross(i);
-			}
-			this.def.cross = new Cross(0);
+			this.initGroup('cross',  this.cross,  (col+1)*(row+1));
 		}
-
 		if(k.isborder){
-			this.border = [];	// Border/Lineを定義
-			this.borders = [];
-			this.bdinside = 2*k.qcols*k.qrows-(k.qcols+k.qrows);
-			this.bdmax    = this.bdinside+(k.isoutsideborder==0?0:2*(k.qcols+k.qrows));
-			for(var i=0;i<this.bdmax;i++){
-				this.border[i] = new Border(i);
-				this.borders[i] = i;
-			}
-			this.def.border = new Border(0);
+			this.initGroup('border', this.border, 2*col*row+(k.isoutsideborder==0?-1:1)*(col+row));
+		}
+		if(k.isextendcell==1){
+			this.initGroup('excell', this.excell, col+row+1);
+		}
+		else if(k.isextendcell==2){
+			this.initGroup('excell', this.excell, 2*col+2*row+4);
 		}
 
-		if(k.isextendcell!=0){
-			this.excell = [];
-			this.excellmax = (k.isextendcell==1?k.qcols+k.qrows+1:2*k.qcols+2*k.qrows+4);
-			for(var i=0;i<this.excellmax;i++){
-				this.excell[i] = new Cell(i);
-			}
+		this.initSpecial(col,row);
+
+		// 各種サイズの変更
+		if(!base.initProcess){
+			tc.maxx += (col-k.qcols)*2;
+			tc.maxy += (row-k.qrows)*2;
 		}
+		k.qcols = col;
+		k.qrows = row;
 
 		this.setposAll();
-		this.override();
+		if(!base.initProcess){ this.allclear();}
 	},
+	initGroup : function(type, group, len){
+		var clen = group.length;
+		// 既存のサイズより小さくなるならdeleteする
+		if(clen>len){
+			for(var id=clen-1;id>=len;id--){ this.hideNumobj(type,id); delete group[id]; group.pop();}
+		}
+		// 既存のサイズより大きくなるなら追加する
+		else if(clen<len){
+			for(var id=clen;id<len;id++){ group.push(this.getnewObj(type,id));}
+		}
+	},
+	initSpecial : function(){ },
+
 	//---------------------------------------------------------------------------
 	// bd.setposAll()    全てのCell, Cross, BorderオブジェクトのsetposCell()等を呼び出す
 	//                   盤面の新規作成や、拡大/縮小/回転/反転時などに呼び出される
@@ -215,152 +225,136 @@ Board.prototype = {
 		if(k.iscross)        { this.setposCrosses();}
 		if(k.isborder)       { this.setposBorders();}
 		if(k.isextendcell!=0){ this.setposEXcells();}
-
-		this.setpicAll();
 	},
 	setposCells : function(){
+		var x0=k.p0.x, y0=k.p0.y;
 		this.cellmax = this.cell.length;
-		for(var id=0;id<this.cell.length;id++){
-			this.cell[id].cx = id%k.qcols;
-			this.cell[id].cy = mf(id/k.qcols);
+		for(var id=0;id<this.cellmax;id++){
+			var obj = this.cell[id];
+			obj.cx = id%k.qcols;
+			obj.cy = mf(id/k.qcols);
+			obj.px = x0 + mf(obj.cx*k.cwidth);
+			obj.py = y0 + mf(obj.cy*k.cheight);
 		}
 	},
 	setposCrosses : function(){
+		var x0=k.p0.x, y0=k.p0.y;
 		this.crossmax = this.cross.length;
-		for(var id=0;id<this.cross.length;id++){
-			this.cross[id].cx = id%(k.qcols+1);
-			this.cross[id].cy = mf(id/(k.qcols+1));
+		for(var id=0;id<this.crossmax;id++){
+			var obj = this.cross[id];
+			obj.cx = id%(k.qcols+1);
+			obj.cy = mf(id/(k.qcols+1));
+			obj.px = x0 + mf(obj.cx*k.cwidth);
+			obj.py = y0 + mf(obj.cy*k.cheight);
 		}
 	},
 	setposBorders : function(){
+		var x0=k.p0.x, y0=k.p0.y;
 		this.bdinside = 2*k.qcols*k.qrows-(k.qcols+k.qrows);
 		this.bdmax = this.border.length;
-		for(var id=0;id<this.border.length;id++){
+		for(var id=0;id<this.bdmax;id++){
+			var obj = this.border[id];
 			if(id>=0 && id<(k.qcols-1)*k.qrows){
-				this.border[id].cx = (id%(k.qcols-1))*2+2;
-				this.border[id].cy = mf(id/(k.qcols-1))*2+1;
+				obj.cx = (id%(k.qcols-1))*2+2;
+				obj.cy = mf(id/(k.qcols-1))*2+1;
 			}
 			else if(id>=(k.qcols-1)*k.qrows && id<this.bdinside){
-				this.border[id].cx = (id-(k.qcols-1)*k.qrows)%k.qcols*2+1;
-				this.border[id].cy = mf((id-(k.qcols-1)*k.qrows)/k.qcols)*2+2;
+				obj.cx = (id-(k.qcols-1)*k.qrows)%k.qcols*2+1;
+				obj.cy = mf((id-(k.qcols-1)*k.qrows)/k.qcols)*2+2;
 			}
 			else if(id>=this.bdinside && id<this.bdinside+k.qcols){
-				this.border[id].cx = (id-this.bdinside)*2+1;
-				this.border[id].cy = 0;
+				obj.cx = (id-this.bdinside)*2+1;
+				obj.cy = 0;
 			}
 			else if(id>=this.bdinside+k.qcols && id<this.bdinside+2*k.qcols){
-				this.border[id].cx = (id-this.bdinside-k.qcols)*2+1;
-				this.border[id].cy = k.qrows*2;
+				obj.cx = (id-this.bdinside-k.qcols)*2+1;
+				obj.cy = k.qrows*2;
 			}
 			else if(id>=this.bdinside+2*k.qcols && id<this.bdinside+2*k.qcols+k.qrows){
-				this.border[id].cx = 0;
-				this.border[id].cy = (id-this.bdinside-2*k.qcols)*2+1;
+				obj.cx = 0;
+				obj.cy = (id-this.bdinside-2*k.qcols)*2+1;
 			}
 			else if(id>=this.bdinside+2*k.qcols+k.qrows && id<this.bdinside+2*(k.qcols+k.qrows)){
-				this.border[id].cx = k.qcols*2;
-				this.border[id].cy = (id-this.bdinside-2*k.qcols-k.qrows)*2+1;
+				obj.cx = k.qcols*2;
+				obj.cy = (id-this.bdinside-2*k.qcols-k.qrows)*2+1;
 			}
+			obj.px = x0 + mf(obj.cx*k.cwidth/2);
+			obj.py = y0 + mf(obj.cy*k.cheight/2);
 		}
 	},
 	setposEXcells : function(){
+		var x0=k.p0.x, y0=k.p0.y;
 		this.excellmax = this.excell.length;
-		for(var id=0;id<this.excell.length;id++){
+		for(var id=0;id<this.excellmax;id++){
+			var obj = this.excell[id];
 			if(k.isextendcell==1){
-				if     (id<k.qcols)        { this.excell[id].cx=id; this.excell[id].cy=-1;        }
-				else if(id<k.qcols+k.qrows){ this.excell[id].cx=-1; this.excell[id].cy=id-k.qcols;}
-				else                       { this.excell[id].cx=-1; this.excell[id].cy=-1;        }
+				if     (id<k.qcols)        { obj.cx=id; obj.cy=-1;        }
+				else if(id<k.qcols+k.qrows){ obj.cx=-1; obj.cy=id-k.qcols;}
+				else                       { obj.cx=-1; obj.cy=-1;        }
 			}
 			else if(k.isextendcell==2){
-				if     (id<  k.qcols)            { this.excell[id].cx=id;         this.excell[id].cy=-1;                  }
-				else if(id<2*k.qcols)            { this.excell[id].cx=id-k.qcols; this.excell[id].cy=k.qrows;             }
-				else if(id<2*k.qcols+  k.qrows)  { this.excell[id].cx=-1;         this.excell[id].cy=id-2*k.qcols;        }
-				else if(id<2*k.qcols+2*k.qrows)  { this.excell[id].cx=k.qcols;    this.excell[id].cy=id-2*k.qcols-k.qrows;}
-				else if(id<2*k.qcols+2*k.qrows+1){ this.excell[id].cx=-1;         this.excell[id].cy=-1;     }
-				else if(id<2*k.qcols+2*k.qrows+2){ this.excell[id].cx=k.qcols;    this.excell[id].cy=-1;     }
-				else if(id<2*k.qcols+2*k.qrows+3){ this.excell[id].cx=-1;         this.excell[id].cy=k.qrows;}
-				else if(id<2*k.qcols+2*k.qrows+4){ this.excell[id].cx=k.qcols;    this.excell[id].cy=k.qrows;}
-				else                             { this.excell[id].cx=-1;         this.excell[id].cy=-1;     }
+				if     (id<  k.qcols)            { obj.cx=id;         obj.cy=-1;                  }
+				else if(id<2*k.qcols)            { obj.cx=id-k.qcols; obj.cy=k.qrows;             }
+				else if(id<2*k.qcols+  k.qrows)  { obj.cx=-1;         obj.cy=id-2*k.qcols;        }
+				else if(id<2*k.qcols+2*k.qrows)  { obj.cx=k.qcols;    obj.cy=id-2*k.qcols-k.qrows;}
+				else if(id<2*k.qcols+2*k.qrows+1){ obj.cx=-1;         obj.cy=-1;     }
+				else if(id<2*k.qcols+2*k.qrows+2){ obj.cx=k.qcols;    obj.cy=-1;     }
+				else if(id<2*k.qcols+2*k.qrows+3){ obj.cx=-1;         obj.cy=k.qrows;}
+				else if(id<2*k.qcols+2*k.qrows+4){ obj.cx=k.qcols;    obj.cy=k.qrows;}
+				else                             { obj.cx=-1;         obj.cy=-1;     }
 			}
+			obj.px = x0 + obj.cx*k.cwidth;
+			obj.py = y0 + obj.cy*k.cheight;
 		}
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.setpicAll()  全てのCell, Cross, Borderオブジェクトのpx,pyを設定する
-	//---------------------------------------------------------------------------
-	setpicAll : function(){
-		var x0=k.p0.x, y0=k.p0.y, id;
-
-		id=0;
-		for(var cy=0,py=y0;cy<k.qrows;cy++){
-			for(var cx=0,px=x0;cx<k.qcols;cx++){
-				this.cell[id].px = px;
-				this.cell[id].py = py;
-				id++; px+=k.cwidth;
-			}
-			py+=k.cheight;
-		}
-		if(k.iscross){
-			id=0;
-			for(var cy=0,py=y0;cy<=k.qrows;cy++){
-				for(var cx=0,px=x0;cx<=k.qcols;cx++){
-					this.cross[id].px = px;
-					this.cross[id].py = py;
-					id++; px+=k.cwidth;
-				}
-				py+=k.cheight;
-			}
-		}
-		if(k.isborder){
-			for(var id=0;id<this.bdmax;id++){
-				this.border[id].px = x0+mf(this.border[id].cx*k.cwidth/2);
-				this.border[id].py = y0+mf(this.border[id].cy*k.cheight/2);
-			}
-		}
-		if(k.isextendcell!=0){
-			for(var id=0;id<this.excellmax;id++){
-				this.excell[id].px = x0+this.excell[id].cx*k.cwidth;
-				this.excell[id].py = y0+this.excell[id].cy*k.cheight;
-			}
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// bd.ansclear() 全てのCell, Cross, Borderオブジェクトのansclear()を呼び出し、Canvasを再描画する
-	// bd.subclear() 全てのCell, Cross, Borderオブジェクトのsubclear()を呼び出し、Canvasを再描画する
+	// bd.allclear() 全てのCell, Cross, Borderオブジェクトのallclear()を呼び出す
+	// bd.ansclear() 全てのCell, Cross, Borderオブジェクトのansclear()を呼び出す
+	// bd.subclear() 全てのCell, Cross, Borderオブジェクトのsubclear()を呼び出す
 	// bd.errclear() 全てのCell, Cross, Borderオブジェクトのerrorプロパティを0にして、Canvasを再描画する
 	//---------------------------------------------------------------------------
+	allclear : function(){
+		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].allclear(i);}
+		for(var i=0;i<this.crossmax ;i++){ this.cross[i].allclear(i);}
+		for(var i=0;i<this.bdmax    ;i++){ this.border[i].allclear(i);}
+		for(var i=0;i<this.excellmax;i++){ this.excell[i].allclear(i);}
+	},
 	ansclear : function(){
-		for(var i=0;i<this.cellmax;i++){ this.cell[i].ansclear(i);}
-		if(k.iscross ){ for(var i=0;i<this.crossmax;i++){ this.cross[i].ansclear(i); } }
-		if(k.isborder){ for(var i=0;i<this.bdmax;i++){ this.border[i].ansclear(i);} }
-		if(k.isextendcell!=0){ for(var i=0;i<this.excellmax;i++){ this.excell[i].ansclear(i);} }
-
-		pc.paintAll();
-		base.resetInfo();
+		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].ansclear(i);}
+		for(var i=0;i<this.crossmax ;i++){ this.cross[i].ansclear(i);}
+		for(var i=0;i<this.bdmax    ;i++){ this.border[i].ansclear(i);}
+		for(var i=0;i<this.excellmax;i++){ this.excell[i].ansclear(i);}
 	},
 	subclear : function(){
-		for(var i=0;i<this.cellmax;i++){ this.cell[i].subclear(i);}
-		if(k.iscross ){ for(var i=0;i<this.crossmax;i++){ this.cross[i].subclear(i); } }
-		if(k.isborder){ for(var i=0;i<this.bdmax;i++){ this.border[i].subclear(i);} }
-		if(k.isextendcell!=0){ for(var i=0;i<this.excellmax;i++){ this.excell[i].subclear(i);} }
-
-		pc.paintAll();
+		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].subclear(i);}
+		for(var i=0;i<this.crossmax ;i++){ this.cross[i].subclear(i);}
+		for(var i=0;i<this.bdmax    ;i++){ this.border[i].subclear(i);}
+		for(var i=0;i<this.excellmax;i++){ this.excell[i].subclear(i);}
 	},
+
 	errclear : function(){
 		if(!ans.errDisp){ return;}
 
-		for(var i=0;i<this.cellmax;i++){ this.cell[i].error=0;}
-		if(k.iscross ){ for(var i=0;i<this.crossmax;i++){ this.cross[i].error=0; } }
-		if(k.isborder){ for(var i=0;i<this.bdmax;i++){ this.border[i].error=0;} }
-		if(k.isextendcell!=0){ for(var i=0;i<this.excellmax;i++){ this.excell[i].error=0;} }
+		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].error=0;}
+		for(var i=0;i<this.crossmax ;i++){ this.cross[i].error=0;}
+		for(var i=0;i<this.bdmax    ;i++){ this.border[i].error=0;}
+		for(var i=0;i<this.excellmax;i++){ this.excell[i].error=0;}
 
 		ans.errDisp = false;
 		pc.paintAll();
 	},
+
 	//---------------------------------------------------------------------------
+	// bd.getnewObj()   指定されたタイプの新しいオブジェクトを返す
 	// bd.isNullObj()   指定したオブジェクトが初期値と同じか判断する
 	// bd.hideNumobj()  指定したオブジェクトのnumobjを隠す
 	//---------------------------------------------------------------------------
+	getnewObj : function(type,id){
+		if(type=='cell' || type=='excell'){ return (new Cell(id));}
+		else if(type=='cross') { return (new Cross(id));}
+		else if(type=='border'){ return (new Border(id));}
+	},
 	isNullObj : function(type,id){
 		if(type=='cell'){
 			return ((this.cell[id].qans == this.def.cell.qans)&&
@@ -559,7 +553,7 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// Cell関連Get/Set関数 <- 各Cellが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuC : function(id, num) {
-		if(id<0 || this.cell.length<=id){ return;}
+		if(id<0 || this.cellmax<=id){ return;}
 
 		um.addOpe('cell', 'ques', id, this.cell[id].ques, num);
 		this.cell[id].ques = num;
@@ -567,11 +561,11 @@ Board.prototype = {
 		if(k.puzzleid=="pipelink"||k.puzzleid=="loopsp"){ this.checkLPCombined(id);}
 	},
 	QuC : function(id){
-		if(id<0 || this.cell.length<=id){ return -1;}
+		if(id<0 || this.cellmax<=id){ return -1;}
 		return this.cell[id].ques;
 	},
 	sQnC : function(id, num) {
-		if(id<0 || this.cell.length<=id){ return;}
+		if(id<0 || this.cellmax<=id){ return;}
 		if(k.dispzero==0 && num==0){ return;}
 
 		var old = this.cell[id].qnum;
@@ -582,11 +576,11 @@ Board.prototype = {
 		if(k.puzzleid=="lightup" && ((old==-1)^(num==-1))){ mv.paintAkari(id);}
 	},
 	QnC : function(id){
-		if(id<0 || this.cell.length<=id){ return -1;}
+		if(id<0 || this.cellmax<=id){ return -1;}
 		return this.cell[id].qnum;
 	},
 	sQaC : function(id, num) {
-		if(id<0 || this.cell.length<=id){ return;}
+		if(id<0 || this.cellmax<=id){ return;}
 
 		var old = this.cell[id].qans;
 		um.addOpe('cell', 'qans', id, old, num);
@@ -597,27 +591,27 @@ Board.prototype = {
 		if(k.puzzleid=="lightup" && ((old==1)^(num==1))){ mv.paintAkari(id);}
 	},
 	QaC : function(id){
-		if(id<0 || this.cell.length<=id){ return -1;}
+		if(id<0 || this.cellmax<=id){ return -1;}
 		return this.cell[id].qans;
 	},
 	sQsC : function(id, num) {
-		if(id<0 || this.cell.length<=id){ return;}
+		if(id<0 || this.cellmax<=id){ return;}
 
 		um.addOpe('cell', 'qsub', id, this.cell[id].qsub, num);
 		this.cell[id].qsub = num;
 	},
 	QsC : function(id){
-		if(id<0 || this.cell.length<=id){ return -1;}
+		if(id<0 || this.cellmax<=id){ return -1;}
 		return this.cell[id].qsub;
 	},
 	sDiC : function(id, num) {
-		if(id<0 || this.cell.length<=id){ return;}
+		if(id<0 || this.cellmax<=id){ return;}
 
 		um.addOpe('cell', 'direc', id, this.cell[id].direc, num);
 		this.cell[id].direc = num;
 	},
 	DiC : function(id){
-		if(id<0 || this.cell.length<=id){ return -1;}
+		if(id<0 || this.cellmax<=id){ return -1;}
 		return this.cell[id].direc;
 	},
 	//---------------------------------------------------------------------------
@@ -626,21 +620,21 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// EXcell関連Get/Set関数
 	sQnE : function(id, num) {
-		if(id<0 || this.excell.length<=id){ return;}
+		if(id<0 || this.excellmax<=id){ return;}
 		um.addOpe('excell', 'qnum', id, this.excell[id].qnum, num);
 		this.excell[id].qnum = num;
 	},
 	QnE : function(id){
-		if(id<0 || this.excell.length<=id){ return -1;}
+		if(id<0 || this.excellmax<=id){ return -1;}
 		return this.excell[id].qnum;
 	},
 	sDiE : function(id, num) {
-		if(id<0 || this.excell.length<=id){ return;}
+		if(id<0 || this.excellmax<=id){ return;}
 		um.addOpe('excell', 'direc', id, this.excell[id].direc, num);
 		this.excell[id].direc = num;
 	},
 	DiE : function(id){
-		if(id<0 || this.excell.length<=id){ return -1;}
+		if(id<0 || this.excellmax<=id){ return -1;}
 		return this.excell[id].direc;
 	},
 
@@ -650,23 +644,23 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// Cross関連Get/Set関数 <- 各Crossが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuX : function(id, num) {
-		if(id<0 || this.cross.length<=id){ return;}
+		if(id<0 || this.crossmax<=id){ return;}
 
 		um.addOpe('cross', 'ques', id, this.cross[id].ques, num);
 		this.cross[id].ques = num;
 	},
 	QuX : function(id){
-		if(id<0 || this.cross.length<=id){ return -1;}
+		if(id<0 || this.crossmax<=id){ return -1;}
 		return this.cross[id].ques;
 	},
 	sQnX : function(id, num) {
-		if(id<0 || this.cross.length<=id){ return;}
+		if(id<0 || this.crossmax<=id){ return;}
 
 		um.addOpe('cross', 'qnum', id, this.cross[id].qnum, num);
 		this.cross[id].qnum = num;
 	},
 	QnX : function(id){
-		if(id<0 || this.cross.length<=id){ return -1;}
+		if(id<0 || this.crossmax<=id){ return -1;}
 		return this.cross[id].qnum;
 	},
 
@@ -679,7 +673,7 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// Border関連Get/Set関数 <- 各Borderが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuB : function(id, num) {
-		if(id<0 || this.border.length<=id){ return;}
+		if(id<0 || this.bdmax<=id){ return;}
 
 		var old = this.border[id].ques;
 		um.addOpe('border', 'ques', id, old, num);
@@ -688,21 +682,21 @@ Board.prototype = {
 		if(num>0 ^ old>0){ area.call_setBorder(id,num,'ques');}
 	},
 	QuB : function(id){
-		if(id<0 || this.border.length<=id){ return -1;}
+		if(id<0 || this.bdmax<=id){ return -1;}
 		return this.border[id].ques;
 	},
 	sQnB : function(id, num) {
-		if(id<0 || this.border.length<=id){ return;}
+		if(id<0 || this.bdmax<=id){ return;}
 
 		um.addOpe('border', 'qnum', id, this.border[id].qnum, num);
 		this.border[id].qnum = num;
 	},
 	QnB : function(id){
-		if(id<0 || this.border.length<=id){ return -1;}
+		if(id<0 || this.bdmax<=id){ return -1;}
 		return this.border[id].qnum;
 	},
 	sQaB : function(id, num) {
-		if(id<0 || this.border.length<=id){ return;}
+		if(id<0 || this.bdmax<=id){ return;}
 		if(this.border[id].ques!=0){ return;}
 
 		var old = this.border[id].qans;
@@ -715,21 +709,21 @@ Board.prototype = {
 		}
 	},
 	QaB : function(id){
-		if(id<0 || this.border.length<=id){ return -1;}
+		if(id<0 || this.bdmax<=id){ return -1;}
 		return this.border[id].qans;
 	},
 	sQsB : function(id, num) {
-		if(id<0 || this.border.length<=id){ return;}
+		if(id<0 || this.bdmax<=id){ return;}
 
 		um.addOpe('border', 'qsub', id, this.border[id].qsub, num);
 		this.border[id].qsub = num;
 	},
 	QsB : function(id){
-		if(id<0 || this.border.length<=id){ return -1;}
+		if(id<0 || this.bdmax<=id){ return -1;}
 		return this.border[id].qsub;
 	},
 	sLiB : function(id, num) {
-		if(id<0 || this.border.length<=id){ return;}
+		if(id<0 || this.bdmax<=id){ return;}
 		if(this.enableLineNG && (num==1?bd.isLineNG:bd.isLPCombined)(id)){ return;}
 
 		var old = this.border[id].line;
@@ -739,7 +733,7 @@ Board.prototype = {
 		if(num>0 ^ old>0){ line.setLine(id,num);}
 	},
 	LiB : function(id){
-		if(id<0 || this.border.length<=id){ return -1;}
+		if(id<0 || this.bdmax<=id){ return -1;}
 		return this.border[id].line;
 	},
 
@@ -748,43 +742,49 @@ Board.prototype = {
 	// sErX / ErX : bd.setErrorCross()  / bd.getErrorCross()  該当するCrossのerrorを設定する/返す
 	// sErB / ErB : bd.setErrorBorder() / bd.getErrorBorder() 該当するBorderのerrorを設定する/返す
 	// sErE / ErE : bd.setErrorEXcell() / bd.getErrorEXcell() 該当するEXcellのerrorを設定する/返す
+	// sErBAll() すべてのborderにエラー値を設定する
 	//---------------------------------------------------------------------------
 	// Get/SetError関数(setは配列で入力)
 	sErC : function(idlist, num) {
 		if(!ans.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
-		for(var i=0;i<idlist.length;i++){ if(idlist[i]>=0 && this.cell.length>idlist[i]){ this.cell[idlist[i]].error = num;} }
+		for(var i=0;i<idlist.length;i++){ if(idlist[i]>=0 && this.cellmax>idlist[i]){ this.cell[idlist[i]].error = num;} }
 	},
 	ErC : function(id){
-		if(id<0 || this.cell.length<=id){ return 0;}
+		if(id<0 || this.cellmax<=id){ return 0;}
 		return this.cell[id].error;
 	},
 	sErX : function(idlist, num) {
 		if(!ans.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
-		for(var i=0;i<idlist.length;i++){ if(idlist[i]>=0 && this.cross.length>idlist[i]){ this.cross[idlist[i]].error = num;} }
+		for(var i=0;i<idlist.length;i++){ if(idlist[i]>=0 && this.crossmax>idlist[i]){ this.cross[idlist[i]].error = num;} }
 	},
 	ErX : function(id){
-		if(id<0 || this.cross.length<=id){ return 0;}
+		if(id<0 || this.crossmax<=id){ return 0;}
 		return this.cross[id].error;
 	},
 	sErB : function(idlist, num) {
 		if(!ans.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
-		for(var i=0;i<idlist.length;i++){ if(idlist[i]>=0 && this.border.length>idlist[i]){ this.border[idlist[i]].error = num;} }
+		for(var i=0;i<idlist.length;i++){ if(idlist[i]>=0 && this.bdmax>idlist[i]){ this.border[idlist[i]].error = num;} }
 	},
 	ErB : function(id){
-		if(id<0 || this.border.length<=id){ return 0;}
+		if(id<0 || this.bdmax<=id){ return 0;}
 		return this.border[id].error;
 	},
 	sErE : function(idlist, num) {
 		if(!ans.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
-		for(var i=0;i<idlist.length;i++){ if(idlist[i]>=0 && this.excell.length>idlist[i]){ this.excell[idlist[i]].error = num;} }
+		for(var i=0;i<idlist.length;i++){ if(idlist[i]>=0 && this.excellmax>idlist[i]){ this.excell[idlist[i]].error = num;} }
 	},
 	ErE : function(id){
-		if(id<0 || this.excell.length<=id){ return 0;}
+		if(id<0 || this.excellmax<=id){ return 0;}
 		return this.excell[id].error;
+	},
+
+	sErBAll : function(num){
+		if(!ans.isenableSetError()){ return;}
+		for(var i=0;i<bd.bdmax;i++){ this.border[i].error = num;}
 	},
 
 	//---------------------------------------------------------------------------
