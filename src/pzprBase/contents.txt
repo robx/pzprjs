@@ -1,10 +1,10 @@
-pzprBase.js v3.2.2a1 contents
+pzprBase.js v3.2.2a2 contents
 
 global.js      v3.2.2
 Board.js       v3.2.2
 Graphic.js     v3.2.2
 MouseInput.js  v3.2.2
-KeyInput.js    v3.2.2ƒ¿1
+KeyInput.js    v3.2.2
 Encode.js      v3.2.2
 Filesys.js     v3.2.2
 Answer.js      v3.2.2
