@@ -278,14 +278,14 @@ Puzzles.loopsp.prototype = {
 				else if(ca >= 'n' && ca <= 'z'){ c += (parseInt(ca,36)-22);}
 				else{ c++;}
 
-				if(c > bd.cell.length){ break;}
+				if(c > bd.cellmax){ break;}
 			}
 
 			return bstr.substring(i,bstr.length);
 		};
 		enc.encodeLoopsp = function(){
 			var cm="", pstr="", count=0;
-			for(var i=0;i<bd.cell.length;i++){
+			for(var i=0;i<bd.cellmax;i++){
 				if     (bd.QnC(i)== -2                  ){ pstr = ".";}
 				else if(bd.QnC(i)>=  0 && bd.QnC(i)<  16){ pstr =       bd.QnC(i).toString(16);}
 				else if(bd.QnC(i)>= 16 && bd.QnC(i)< 256){ pstr = "-" + bd.QnC(i).toString(16);}
@@ -384,9 +384,9 @@ Puzzles.loopsp.prototype = {
 				var include = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
 				for(var i=0;i<cells.length;i++){ if(bd.QnC(cells[i])>=1){ number = bd.QnC(cells[i]); break;} }
 				if(number==-1){ return true;}
-				for(var c=0;c<bd.cell.length;c++){
+				for(var c=0;c<bd.cellmax;c++){
 					if(bd.QnC(c)==number && !include(cells,c)){
-						for(var cc=0;cc<bd.cell.length;cc++){ if(bd.QnC(cc)==number){ bd.sErC([cc],1);} }
+						for(var cc=0;cc<bd.cellmax;cc++){ if(bd.QnC(cc)==number){ bd.sErC([cc],1);} }
 						return false;
 					}
 				}
@@ -403,7 +403,7 @@ Puzzles.loopsp.prototype = {
 			var xinfo = line.getLineInfo();
 			for(var r=1;r<=xinfo.max;r++){
 				if(!func(line.LineList2Clist(xinfo.room[r].idlist))){
-					bd.sErB(bd.borders,2);
+					bd.sErBAll(2);
 					bd.sErB(xinfo.room[r].idlist,1);
 					return false;
 				}

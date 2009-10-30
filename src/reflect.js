@@ -245,7 +245,7 @@ Puzzles.reflect.prototype = {
 				else if(ca >= 'a' && ca <= 'z'){ c += (parseInt(ca,36)-9);}
 				else{ c++;}
 
-				if(c > bd.cell.length){ break;}
+				if(c > bd.cellmax){ break;}
 			}
 
 			return bstr.substring(i,bstr.length);
@@ -253,7 +253,7 @@ Puzzles.reflect.prototype = {
 		enc.encodeReflectlink = function(type){
 			var cm="", pstr="";
 			var count=0;
-			for(var i=0;i<bd.cell.length;i++){
+			for(var i=0;i<bd.cellmax;i++){
 				if     (bd.QuC(i)==101){ pstr = "5";}
 				else if(bd.QuC(i)>=2 && bd.QuC(i)<=5){
 					var val = bd.QnC(i);
@@ -335,7 +335,7 @@ Puzzles.reflect.prototype = {
 		ans.check1st = function(){ return this.checkLcntCell(1);};
 
 		ans.checkTriangle = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(line.lcntCell(c)==0 && (bd.QuC(c)>=2 && bd.QuC(c)<=5)){
 					bd.sErC([c],4);
 					return false;
@@ -345,7 +345,7 @@ Puzzles.reflect.prototype = {
 		};
 
 		ans.checkTriNumber = function(type){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)<2 || bd.QuC(c)>5 || bd.QnC(c)<=0){ continue;}
 
 				var list = [];
@@ -363,7 +363,7 @@ Puzzles.reflect.prototype = {
 
 				if(type==1?bd.QnC(c)<cnt:bd.QnC(c)>cnt){
 					bd.sErC([c],4);
-					bd.sErB(bd.borders,2);
+					bd.sErBAll(2);
 					bd.sErB(list,1);
 					return false;
 				}

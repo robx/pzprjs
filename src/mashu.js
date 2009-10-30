@@ -50,7 +50,7 @@ Puzzles.mashu.prototype = {
 		pp.setMenuStr('uramashu', '— ‚Ü‚µ‚ã', 'Ura-Mashu');
 		pp.setLabel  ('uramashu', '— ‚Ü‚µ‚ã‚É‚·‚é', 'Change to Ura-Mashu');
 		pp.funcs['uramashu'] = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if     (bd.QuC(c)==41){ bd.sQuC(c,42);}
 				else if(bd.QuC(c)==42){ bd.sQuC(c,41);}
 			}
@@ -142,7 +142,7 @@ Puzzles.mashu.prototype = {
 		};
 		enc.encodeCircle = function(flag){
 			var cm="", num=0, pass=0;
-			for(var i=0;i<bd.cell.length;i++){
+			for(var i=0;i<bd.cellmax;i++){
 				if     (bd.QuC(i)==41){ pass+=(  Math.pow(3,2-num));}
 				else if(bd.QuC(i)==42){ pass+=(2*Math.pow(3,2-num));}
 				num++; if(num==3){ cm += pass.toString(27); num=0; pass=0;}
@@ -228,9 +228,9 @@ Puzzles.mashu.prototype = {
 		};
 
 		ans.checkWhitePearl1 = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==41 && line.lcntCell(c)==2 && !ans.isLineStraight(c)){
-					bd.sErB(bd.borders,2);
+					bd.sErBAll(2);
 					ans.setCellLineError(c,1);
 					return false;
 				}
@@ -238,9 +238,9 @@ Puzzles.mashu.prototype = {
 			return true;
 		};
 		ans.checkBlackPearl1 = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==42 && line.lcntCell(c)==2 && ans.isLineStraight(c)){
-					bd.sErB(bd.borders,2);
+					bd.sErBAll(2);
 					ans.setCellLineError(c,1);
 					return false;
 				}
@@ -249,7 +249,7 @@ Puzzles.mashu.prototype = {
 		};
 
 		ans.checkWhitePearl2 = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)!=41 || line.lcntCell(c)!=2){ continue;}
 				if(bd.isLine(bd.ub(c)) && line.lcntCell(bd.up(c))==2 && !ans.isLineStraight(bd.up(c))){ continue;}
 				if(bd.isLine(bd.db(c)) && line.lcntCell(bd.dn(c))==2 && !ans.isLineStraight(bd.dn(c))){ continue;}
@@ -262,7 +262,7 @@ Puzzles.mashu.prototype = {
 			return true;
 		};
 		ans.checkBlackPearl2 = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)!=42 || line.lcntCell(c)!=2){ continue;}
 				if((bd.isLine(bd.ub(c)) && line.lcntCell(bd.up(c))==2 && !ans.isLineStraight(bd.up(c))) ||
 				   (bd.isLine(bd.db(c)) && line.lcntCell(bd.dn(c))==2 && !ans.isLineStraight(bd.dn(c))) ||
@@ -275,7 +275,7 @@ Puzzles.mashu.prototype = {
 			return true;
 		};
 		ans.setErrorPearl = function(cc){
-			bd.sErB(bd.borders,2);
+			bd.sErBAll(2);
 			ans.setCellLineError(cc,1);
 			if(bd.isLine(bd.ub(cc))){ ans.setCellLineError(bd.up(cc),0);}
 			if(bd.isLine(bd.db(cc))){ ans.setCellLineError(bd.dn(cc),0);}

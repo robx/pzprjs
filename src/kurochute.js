@@ -196,7 +196,7 @@ Puzzles.kurochute.prototype = {
 		ans.checkCellNumber = function(){
 			var cx, cy;
 
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)<0){ continue;}
 				var cx=bd.cell[c].cx, cy=bd.cell[c].cy, num=bd.QnC(c), cnt=0;
 				if(bd.isBlack(bd.cnum(cx-num,cy))){ cnt++;}

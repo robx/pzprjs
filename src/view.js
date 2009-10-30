@@ -178,7 +178,7 @@ Puzzles.view.prototype = {
 		};
 
 		ans.checkCellNumber = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(!bd.isValidNum(c)){ continue;}
 
 				var list = [];

@@ -148,7 +148,7 @@ Puzzles.nuribou.prototype = {
 
 		ans.checkCorners = function(binfo){
 			var cc1, cc2;
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.cell[c].cx==k.qcols-1 || bd.cell[c].cy==k.qrows-1){ continue;}
 				var cc1, cc2;
 				if     ( bd.isBlack(c) && bd.isBlack(c+k.qcols+1) ){ cc1 = c; cc2 = c+k.qcols+1;}

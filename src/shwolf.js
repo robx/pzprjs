@@ -214,7 +214,7 @@ Puzzles.shwolf.prototype = {
 		};
 		enc.encodeCircle = function(){
 			var cm = "", num = 0, pass = 0;
-			for(var i=0;i<bd.cell.length;i++){
+			for(var i=0;i<bd.cellmax;i++){
 				if     (bd.QuC(i)==41){ pass+=(  Math.pow(3,2-num));}
 				else if(bd.QuC(i)==42){ pass+=(2*Math.pow(3,2-num));}
 				num++; if(num==3){ cm += pass.toString(27); num=0; pass=0;}
@@ -278,7 +278,7 @@ Puzzles.shwolf.prototype = {
 
 		ans.checkLineChassis = function(){
 			var lines = [];
-			for(var id=0;id<bd.border.length;id++){ lines[id]=bd.QaB(id);}
+			for(var id=0;id<bd.bdmax;id++){ lines[id]=bd.QaB(id);}
 			for(var bx=0;bx<=2*k.qcols;bx+=2){
 				for(var by=0;by<=2*k.qrows;by+=2){
 					if((bx==0||bx==2*k.qcols)^(by==0||by==2*k.qrows)){
@@ -289,11 +289,11 @@ Puzzles.shwolf.prototype = {
 					}
 				}
 			}
-			for(var id=0;id<bd.border.length;id++){
+			for(var id=0;id<bd.bdmax;id++){
 				if(lines[id]==1){
 					var errborder = [];
-					for(var i=0;i<bd.border.length;i++){ if(lines[i]==1){ errborder.push(i);} }
-					bd.sErB(bd.borders,2);
+					for(var i=0;i<bd.bdmax;i++){ if(lines[i]==1){ errborder.push(i);} }
+					bd.sErBAll(2);
 					bd.sErB(errborder,1);
 					return false;
 				}

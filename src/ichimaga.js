@@ -243,9 +243,9 @@ Puzzles.ichimaga.prototype = {
 
 		ans.checkLcntCell = function(val){
 			if(line.ltotal[val]==0){ return true;}
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 && line.lcntCell(c)==val){
-					bd.sErB(bd.borders,2);
+					bd.sErBAll(2);
 					this.setCellLineError(c,false);
 					return false;
 				}
@@ -256,9 +256,9 @@ Puzzles.ichimaga.prototype = {
 		ans.checkFireflies = function(){
 			var saved = {errflag:0,cells:[],idlist:[],check:[]};
 			var visited = [];
-			for(var i=0;i<bd.border.length;i++){ saved.check[i]=0; visited[i]=0;}
+			for(var i=0;i<bd.bdmax;i++){ saved.check[i]=0; visited[i]=0;}
 
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1){ continue;}
 
 				var bx=bd.cell[c].cx*2+1, by=bd.cell[c].cy*2+1;
@@ -312,7 +312,7 @@ Puzzles.ichimaga.prototype = {
 		ans.checkErrorFlag = function(saved, val){
 			if(saved.errflag==val){
 				bd.sErC(saved.cells,1);
-				bd.sErB(bd.borders,2);
+				bd.sErBAll(2);
 				bd.sErB(saved.idlist,1);
 				return false;
 			}
@@ -322,17 +322,17 @@ Puzzles.ichimaga.prototype = {
 		ans.checkConnectedLine = function(){
 			var lcnt=0;
 			var visited = new AreaInfo();
-			for(var id=0;id<bd.border.length;id++){ if(bd.isLine(id)){ visited.id[id]=0; lcnt++;}else{ visited.id[id]=-1;} }
+			for(var id=0;id<bd.bdmax;id++){ if(bd.isLine(id)){ visited.id[id]=0; lcnt++;}else{ visited.id[id]=-1;} }
 			var fc=-1;
-			for(var c=0;c<bd.cell.length;c++){ if(bd.QnC(c)!=-1 && line.lcntCell(c)>0){ fc=c; break;} }
+			for(var c=0;c<bd.cellmax;c++){ if(bd.QnC(c)!=-1 && line.lcntCell(c)>0){ fc=c; break;} }
 			if(fc==-1){ return true;}
 
 			this.cl0(visited.id, bd.cell[fc].cx*2+1, bd.cell[fc].cy*2+1,0);
 			var lcnt2=0, idlist=[];
-			for(var id=0;id<bd.border.length;id++){ if(visited.id[id]==1){ lcnt2++; idlist.push(id);} }
+			for(var id=0;id<bd.bdmax;id++){ if(visited.id[id]==1){ lcnt2++; idlist.push(id);} }
 
 			if(lcnt!=lcnt2){
-				bd.sErB(bd.borders,2);
+				bd.sErBAll(2);
 				bd.sErB(idlist,1);
 				return false;
 			}

@@ -164,7 +164,7 @@ Puzzles.tasquare.prototype = {
 		};
 
 		ans.isNumberSquare = function(binfo, flag){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if((flag==0?(bd.QnC(c)<0):(bd.QnC(c)!=-2))){ continue;}
 				var cnt = 0;
 				if(bd.isBlack(bd.up(c))){ cnt += binfo.room[binfo.id[bd.up(c)]].idlist.length;}

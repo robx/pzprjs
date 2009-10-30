@@ -362,7 +362,7 @@ Puzzles.hashikake.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkCellNumber = function(flag){
-			for(var cc=0;cc<bd.cell.length;cc++){
+			for(var cc=0;cc<bd.cellmax;cc++){
 				if(bd.QnC(cc)<0){ continue;}
 
 				var cnt = 0;

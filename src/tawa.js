@@ -54,22 +54,29 @@ Puzzles.tawa.prototype = {
 
 	protoChange : function(){
 		this.protofunc = {
-			bdinit2 : Board.prototype.initialize2
+			bdinit : Board.prototype.initBoardSize
 		};
 
-		Board.prototype.initialize2 = function(){
+		Board.prototype.initBoardSize = function(col,row){
 			var total = 0;
-			if     (this.lap==0){ total = mf(k.qrows*0.5)*(2*k.qcols-1)+((k.qrows%2==1)?k.qcols:0);}
-			else if(this.lap==3 || this.lap==undefined){ total = mf(k.qrows*0.5)*(2*k.qcols+1)+((k.qrows%2==1)?k.qcols:0);}
-			else{ total = k.qcols*k.qrows;}
+			if     (this.lap==0){ total = mf(row*0.5)*(2*col-1)+((row%2==1)?col:0);}
+			else if(this.lap==3 || this.lap==undefined){ total = mf(row*0.5)*(2*col+1)+((row%2==1)?col:0);}
+			else{ total = col*row;}
 
-			this.cell = [];
-			for(var i=0;i<total;i++){
-				this.cell[i] = new Cell(i);
+			this.initGroup('cell', this.cell, total);
+
+			// サイズの変更
+			k.qcols = col;
+			k.qrows = row;
+
+			// たわむれんが固有処理
+			if(!base.initProcess){
+				tc.setAlign();
+				tc.setTCC(0);
 			}
-			this.def.cell = new Cell(0);
 
 			this.setposAll();
+			if(!base.initProcess){ this.allclear();}
 		};
 
 		this.resize_original = base.resize_canvas_only.bind(base);
@@ -94,7 +101,7 @@ Puzzles.tawa.prototype = {
 		this.newboard_html_original = $(document.newboard).html();
 	},
 	protoOriginal : function(){
-		Board.prototype.initialize2 = this.protofunc.bdinit2;
+		Board.prototype.initBoardSize = this.protofunc.bdinit;
 		base.resize_canvas_only = this.resize_original;
 		$(document.newboard).html(this.newboard_html_original);
 
@@ -168,8 +175,7 @@ Puzzles.tawa.prototype = {
 	},
 
 	input_init_menu : function(){	// 処理が大きくなったので分割(input_init()から呼ばれる)
-		menu.ex.clap = 3;
-		bd.lap = menu.ex.clap;	// 2段目は => 0:左右引っ込み 1:右のみ出っ張り 2:左のみ出っ張り 3:左右出っ張り
+		menu.ex.clap = 3;	// bd.lapの初期値(新規作成で選ぶ時用)
 
 		pp.funcs.newboard = function(){
 			menu.pop = $("#pop1_1");
@@ -211,7 +217,7 @@ Puzzles.tawa.prototype = {
 		// このパズルに限って、やたらとtc.maxxが参照されます。。
 		tc.getTCC = function(){ return bd.cnum(this.cursolx, mf((this.cursoly-1)/2));}.bind(tc);
 		tc.setTCC = function(id){
-			if(id<0 || bd.cell.length<=id){ return;}
+			if(id<0 || bd.cellmax<=id){ return;}
 			this.cursolx = bd.cell[id].cx; this.cursoly = bd.cell[id].cy*2+1;
 		};
 		tc.incTCY = function(mv){
@@ -232,37 +238,32 @@ Puzzles.tawa.prototype = {
 
 			if(bd.cnum(this.cursolx, mf(this.cursoly/2))==-1){ this.cursolx += (this.cursolx>0?-1:1);}
 		};
-		tc.setAlign();	// tc.maxx等を設定し直す
 
 		// 各セルのcx,cy,px,py変数設定関数
 		bd.setposCells = function(){
 			this.cellmax = this.cell.length;
-			for(var id=0;id<bd.cellmax;id++){
+			for(var id=0;id<this.cellmax;id++){
+				var obj = this.cell[id];
 				if(this.lap==0){
-					this.cell[id].cy = mf((2*id)/(2*k.qcols-1));
-					this.cell[id].cx = mf((2*id)%(2*k.qcols-1));
+					obj.cy = mf((2*id)/(2*k.qcols-1));
+					obj.cx = mf((2*id)%(2*k.qcols-1));
 				}
 				else if(this.lap==1){
-					this.cell[id].cy = mf(id/k.qcols);
-					this.cell[id].cx = mf(id%k.qcols)*2+(this.cell[id].cy%2==1?1:0);
+					obj.cy = mf(id/k.qcols);
+					obj.cx = mf(id%k.qcols)*2+(obj.cy%2==1?1:0);
 				}
 				else if(this.lap==2){
-					this.cell[id].cy = mf(id/k.qcols);
-					this.cell[id].cx = mf(id%k.qcols)*2+(this.cell[id].cy%2==0?1:0);
+					obj.cy = mf(id/k.qcols);
+					obj.cx = mf(id%k.qcols)*2+(obj.cy%2==0?1:0);
 				}
 				else if(this.lap==3){
-					this.cell[id].cy = mf((2*id+1)/(2*k.qcols+1));
-					this.cell[id].cx = mf((2*id+1)%(2*k.qcols+1));
+					obj.cy = mf((2*id+1)/(2*k.qcols+1));
+					obj.cx = mf((2*id+1)%(2*k.qcols+1));
 				}
+				obj.px = k.p0.x + mf(obj.cx*k.cwidth/2);
+				obj.py = k.p0.y + obj.cy*k.cheight;
 			}
 		};
-		bd.setpicAll = function(){
-			for(var id=0;id<bd.cellmax;id++){
-				this.cell[id].px = k.p0.x + mf(this.cell[id].cx*k.cwidth/2);
-				this.cell[id].py = k.p0.y + this.cell[id].cy*k.cheight;
-			}
-		};
-		bd.setposAll();	// 各セルのcx,cy,px,pyを設定し直す
 
 		// PositionからのセルID取得
 		bd.cnum = function(bx,cy){
@@ -284,6 +285,13 @@ Puzzles.tawa.prototype = {
 			}
 			return -1;
 		};
+
+		bd.lap = menu.ex.clap;	// 2段目は => 0:左右引っ込み 1:右のみ出っ張り 2:左のみ出っ張り 3:左右出っ張り
+		bd.setLap = function(val){
+			bd.lap = val;
+			tc.setAlign();
+		};
+		bd.setLap(bd.lap);
 
 		// マウス入力時のセルID取得系
 		mv.cellid = function(p){
@@ -309,40 +317,16 @@ Puzzles.tawa.prototype = {
 
 				if(col==1 && (slap==0||slap==3)){ menu.popclose(); return;}
 				if(slap==3){ col--;}
-				if(col>0 && row>0){ bd.lap = slap; this.newboard2(col,row);}
-				menu.popclose();
-				base.resize_canvas();				// Canvasを更新する
+
+				if(col>0 && row>0){
+					bd.setLap(slap);
+					bd.initBoardSize(col,row);
+
+					um.allerase();
+					menu.popclose();
+					base.resize_canvas();				// Canvasを更新する
+				}
 			}
-		};
-		menu.ex.newboard2 = function(col,row){
-			var total = 0;
-			if     (bd.lap==0){ total = mf(row*0.5)*(2*col-1)+((row%2==1)?col:0);}
-			else if(bd.lap==3){ total = mf(row*0.5)*(2*col+1)+((row%2==1)?col:0);}
-			else{ total = col*row;}
-
-			// 既存のサイズより小さいならdeleteする
-			for(var n=bd.cell.length-1;n>=total;n--){
-				if(bd.cell[n].numobj) { bd.cell[n].numobj.remove();}
-				if(bd.cell[n].numobj2){ bd.cell[n].numobj2.remove();}
-				delete bd.cell[n]; bd.cell.pop();
-			}
-
-			// 既存のサイズより大きいならnewを行う
-			for(var i=bd.cell.length;i<total;i++){ bd.cell.push(new Cell(i));}
-
-			// サイズの変更
-			//tc.maxy += (row-k.qrows)*2;
-			k.qcols = col; k.qrows = row;
-			tc.setAlign();
-
-			// cellinit() = allclear()+setpos()を呼び出す
-			for(var i=0;i<bd.cell.length;i++){ bd.cell[i].allclear(i);}
-
-			um.allerase();
-			bd.setposAll();
-			tc.setTCC(0);
-
-			base.resetInfo();
 		};
 
 		// 盤面の拡大
@@ -428,7 +412,6 @@ Puzzles.tawa.prototype = {
 
 			bd.setposAll();
 			tc.setAlign();
-			return true;
 		};
 		// 回転・反転
 		menu.ex.turnflip = function(type,d){
@@ -440,9 +423,10 @@ Puzzles.tawa.prototype = {
 			var func;
 			if     (type==1){ func = function(d,id){ return bd.cnum(bd.cell[id].cx, d.yy-bd.cell[id].cy);}; }
 			else if(type==2){ func = function(d,id){ return bd.cnum(d.xx-bd.cell[id].cx, bd.cell[id].cy);}; }
-			this.turnflipGroup(d, bd.cell, bd.cell.length, func);
+			this.turnflipGroup(d, bd.cell, bd.cellmax, func);
 
 			bd.setposAll();
+			tc.setAlign();
 		};
 
 		$(document.flip.turnl).attr("disabled",true);
@@ -529,14 +513,6 @@ Puzzles.tawa.prototype = {
 			}
 			else{ g.zidx=1;}
 		};
-
-		bd.setpicAll = function(){
-			for(var c=0;c<bd.cell.length;c++){
-				this.cell[c].px = k.p0.x+mf(bd.cell[c].cx*k.cwidth/2);
-				this.cell[c].py = k.p0.y+bd.cell[c].cy*k.cheight;
-			}
-		};
-		bd.setpicAll();
 	},
 
 	//---------------------------------------------------------
@@ -556,15 +532,18 @@ Puzzles.tawa.prototype = {
 
 		enc.decodeTawamurenga = function(bstr){
 			var barray = bstr.split("/");
-			bd.lap = parseInt(barray[0]);
-			menu.ex.newboard2(enc.uri.cols, enc.uri.rows);
+
+			bd.setLap(parseInt(barray[0]));
+			tc.setAlign();	// tc.maxx等を設定し直す
+
+			bd.initBoardSize(this.uri.cols, this.uri.rows);
 			return this.decodeNumber10(barray[1]);
 		};
 
 		//---------------------------------------------------------
 		fio.decodeOthers = function(array){
 			if(array.length<k.qrows+1){ return false;}
-			bd.lap = parseInt(array[0]);
+			bd.setLap(parseInt(array[0]));
 			for(var cy=0;cy<k.qrows;cy++){
 				var cols = array[cy+1].split(" ");
 				var n=0;
@@ -638,7 +617,7 @@ Puzzles.tawa.prototype = {
 			return true;
 		};
 		ans.checkNumbers = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1||bd.QnC(c)==-2){ continue;}
 				var clist = [];
 				clist.push(bd.cnum(bd.cell[c].cx-1,bd.cell[c].cy-1));
@@ -660,7 +639,7 @@ Puzzles.tawa.prototype = {
 			return true;
 		};
 		ans.checkUnderCells = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.isWhite(c) || bd.cell[c].cy==k.qrows-1){ continue;}
 
 				if(bd.isWhite(bd.cnum(bd.cell[c].cx-1,bd.cell[c].cy+1)) &&

@@ -245,7 +245,7 @@ Puzzles.triplace.prototype = {
 						cell++; i+=1;
 					}
 				}
-				if(cell>=bd.cell.length){ a=i+1; break;}
+				if(cell>=bd.cellmax){ a=i+1; break;}
 			}
 
 			// 盤面外数字のデコード
@@ -272,7 +272,7 @@ Puzzles.triplace.prototype = {
 
 			// 盤面内側の数字部分のエンコード
 			var count=0;
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				var pstr = "";
 
 				if(bd.QuC(c)==51){
@@ -353,8 +353,8 @@ Puzzles.triplace.prototype = {
 
 		ans.checkTileInfo = function(){
 			var tinfo = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){ tinfo.id[c]=(bd.QuC(c)!=51?0:-1);}
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){ tinfo.id[c]=(bd.QuC(c)!=51?0:-1);}
+			for(var c=0;c<bd.cellmax;c++){
 				if(tinfo.id[c]!=0){ continue;}
 				tinfo.max++;
 				tinfo[tinfo.max] = {clist:[]};

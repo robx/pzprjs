@@ -208,16 +208,16 @@ Puzzles.firefly.prototype = {
 				this.setAlert('”’ŠÛ‚ÌA•“_‚Å‚È‚¢•”•ª‚Ç‚¤‚µ‚ª‚­‚Á‚Â‚¢‚Ä‚¢‚Ü‚·B', 'Fireflies are connected without a line starting from black point.'); return false;
 			}
 
-			bd.sErB(bd.borders,0);
+			bd.sErBAll(0);
 			return true;
 		};
 		ans.check1st = function(){ return true;};
 
 		ans.checkLcntCell = function(val){
 			if(line.ltotal[val]==0){ return true;}
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 && line.lcntCell(c)==val){
-					bd.sErB(bd.borders,2);
+					bd.sErBAll(2);
 					ans.setCellLineError(c,false);
 					return false;
 				}
@@ -225,7 +225,7 @@ Puzzles.firefly.prototype = {
 			return true;
 		};
 		ans.checkFireflyBeam = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 || bd.DiC(c)==0){ continue;}
 				if((bd.DiC(c)==1 && !bd.isLine(bd.ub(c))) || (bd.DiC(c)==2 && !bd.isLine(bd.db(c))) ||
 				   (bd.DiC(c)==3 && !bd.isLine(bd.lb(c))) || (bd.DiC(c)==4 && !bd.isLine(bd.rb(c))) )
@@ -238,11 +238,11 @@ Puzzles.firefly.prototype = {
 		};
 		ans.checkStrangeLine = function(saved){
 			var idlist = [];
-			for(var id=0;id<bd.border.length;id++){
+			for(var id=0;id<bd.bdmax;id++){
 				if(bd.isLine(id) && saved.check[id]!=2){ idlist.push(id);}
 			}
 			if(idlist.length>0){
-				bd.sErB(bd.borders,2);
+				bd.sErBAll(2);
 				bd.sErB(idlist,1);
 				return false;
 			}
@@ -251,9 +251,9 @@ Puzzles.firefly.prototype = {
 
 		ans.checkFireflies = function(){
 			var saved = {errflag:0,cells:[],idlist:[],check:[]};
-			for(var i=0;i<bd.border.length;i++){ saved.check[i]=0;}
+			for(var i=0;i<bd.bdmax;i++){ saved.check[i]=0;}
 
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 || bd.DiC(c)==0){ continue;}
 
 				var ccnt=0;
@@ -298,7 +298,7 @@ Puzzles.firefly.prototype = {
 		ans.checkErrorFlag = function(saved, val){
 			if(saved.errflag==val){
 				bd.sErC(saved.cells,1);
-				bd.sErB(bd.borders,2);
+				bd.sErBAll(2);
 				bd.sErB(saved.idlist,1);
 				return false;
 			}

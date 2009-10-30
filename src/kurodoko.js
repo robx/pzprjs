@@ -206,7 +206,7 @@ Puzzles.kurodoko.prototype = {
 		};
 
 		ans.checkCellNumber = function(){
-			for(var cc=0;cc<bd.cell.length;cc++){
+			for(var cc=0;cc<bd.cellmax;cc++){
 				if(bd.QnC(cc)<0){ continue;}
 
 				var list = [];

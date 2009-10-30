@@ -245,8 +245,8 @@ Puzzles.snakes.prototype = {
 		ans.getSnakeInfo = function(){
 			var sinfo = new AreaInfo();
 			var func = function(c,cc){ return (cc!=-1 && (Math.abs(bd.QaC(c)-bd.QaC(cc))==1)); };
-			for(var c=0;c<bd.cell.length;c++){ sinfo.id[c]=(bd.QaC(c)>0?0:-1);}
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){ sinfo.id[c]=(bd.QaC(c)>0?0:-1);}
+			for(var c=0;c<bd.cellmax;c++){
 				if(sinfo.id[c]!=0){ continue;}
 				sinfo.max++;
 				sinfo.room[sinfo.max] = {idlist:[]};
@@ -280,7 +280,7 @@ Puzzles.snakes.prototype = {
 		};
 		ans.checkSideCell2 = function(sinfo){
 			var func = function(sinfo,c1,c2){ return (sinfo.id[c1]>0 && sinfo.id[c2]>0 && sinfo.id[c1]!=sinfo.id[c2]);};
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.cell[c].cx<k.qcols-1 && func(sinfo,c,c+1)){
 					bd.sErC(sinfo.room[sinfo.id[c]].idlist,1);
 					bd.sErC(sinfo.room[sinfo.id[c+1]].idlist,1);
@@ -302,7 +302,7 @@ Puzzles.snakes.prototype = {
 				return true;
 			};
 
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)<0 || bd.DiC(c)==0){ continue;}
 				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, dir = bd.DiC(c);
 				var num=bd.QnC(c), clist=[c];

@@ -153,15 +153,15 @@ Puzzles.barns.prototype = {
 			var c = 0;
 			for(var i=0;i<bstr.length;i++){
 				var ca = parseInt(bstr.charAt(i),32);
-				for(var w=0;w<5;w++){ if((i*5+w)<bd.cell.length){ bd.sQuC(i*5+w,(ca&Math.pow(2,4-w)?6:0));} }
-				if((i*5+5)>=bd.cell.length){ break;}
+				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(ca&Math.pow(2,4-w)?6:0));} }
+				if((i*5+5)>=bd.cellmax){ break;}
 			}
 			return bstr.substring(i+1,bstr.length);
 		};
 		enc.encodeBarns = function(){
 			var cm = "";
 			var num = 0, pass = 0;
-			for(var i=0;i<bd.cell.length;i++){
+			for(var i=0;i<bd.cellmax;i++){
 				if(bd.QuC(i)==6){ pass+=Math.pow(2,4-num);}
 				num++; if(num==5){ cm += pass.toString(32); num=0; pass=0;}
 			}

@@ -179,25 +179,25 @@ Puzzles.shugaku.prototype = {
 			um.disableRecord();
 			switch(type){
 			case 1: // è„â∫îΩì]
-				for(var cc=0;cc<bd.cell.length;cc++){
+				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {12:13,13:12,17:18,18:17}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case 2: // ç∂âEîΩì]
-				for(var cc=0;cc<bd.cell.length;cc++){
+				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {14:15,15:14,19:20,20:19}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case 3: // âE90ÅãîΩì]
-				for(var cc=0;cc<bd.cell.length;cc++){
+				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {12:15,15:13,13:14,14:12,17:20,20:18,18:19,19:17}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case 4: // ç∂90ÅãîΩì]
-				for(var cc=0;cc<bd.cell.length;cc++){
+				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {12:14,14:13,13:15,15:12,17:19,19:18,18:20,20:17}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
@@ -401,13 +401,13 @@ Puzzles.shugaku.prototype = {
 				if     (ca>='0' && ca<='4'){ bd.sQnC(c, parseInt(ca,36)); c++;}
 				else if(ca=='5')           { bd.sQnC(c, -2);              c++;}
 				else{ c += (parseInt(ca,36)-5);}
-				if(c>=bd.cell.length){ break;}
+				if(c>=bd.cellmax){ break;}
 			}
 			return bstr.substring(i,bstr.length);
 		};
 		enc.pzldataShugaku = function(){
 			var cm="", count=0;
-			for(var i=0;i<bd.cell.length;i++){
+			for(var i=0;i<bd.cellmax;i++){
 				var pstr = "";
 				var val = bd.QnC(i);
 
@@ -485,7 +485,7 @@ Puzzles.shugaku.prototype = {
 		};
 
 		ans.checkKitamakura = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QaC(c)==13){
 					bd.sErC([c,bd.dn(c)],1);
 					return false;
@@ -495,7 +495,7 @@ Puzzles.shugaku.prototype = {
 		};
 
 		ans.checkFutonAisle = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 && bd.QaC(c)>=12 && bd.QaC(c)<=15){
 					var adj=-1;
 					switch(bd.QaC(c)){

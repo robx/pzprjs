@@ -272,9 +272,9 @@ Puzzles.bonsan.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkLineOverLetter = function(func){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(line.lcntCell(c)>=2 && bd.QnC(c)!=-1){
-					bd.sErB(bd.borders,2);
+					bd.sErBAll(2);
 					ans.setCellLineError(c,true);
 					return false;
 				}
@@ -300,7 +300,7 @@ Puzzles.bonsan.prototype = {
 
 		ans.movedPosition = function(linfo){
 			this.before = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(line.lcntCell(c)==0 && bd.QnC(c)!=-1){ this.before.id[c]=c;}
 				else{ this.before.id[c]=-1;}
 			}

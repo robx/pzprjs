@@ -248,7 +248,7 @@ Puzzles.tilepaint.prototype = {
 						cell++; i+=1;
 					}
 				}
-				if(cell>=bd.cell.length){ a=i+1; break;}
+				if(cell>=bd.cellmax){ a=i+1; break;}
 			}
 
 			// 盤面外数字のデコード
@@ -275,7 +275,7 @@ Puzzles.tilepaint.prototype = {
 
 			// 盤面内側の数字部分のエンコード
 			var count=0;
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				var pstr = "";
 
 				if(bd.QuC(c)==51){

@@ -240,13 +240,13 @@ Puzzles.kaero.prototype = {
 				else if(this.include(ca,'a','z')){ c+=(parseInt(ca,36)-9);}
 				else{ c++;}
 
-				if(c >= bd.cell.length){ a=i+1; break;}
+				if(c >= bd.cellmax){ a=i+1; break;}
 			}
 			return bstr.substring(a,bstr.length);
 		};
 		enc.encodeKaero = function(){
 			var cm="", count=0;
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				var pstr = "";
 				var qnum = bd.QnC(c);
 				if     (qnum==-2){ pstr = ".";}
@@ -307,9 +307,9 @@ Puzzles.kaero.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkLineOverLetter = function(func){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(line.lcntCell(c)>=2 && bd.QnC(c)!=-1){
-					bd.sErB(bd.borders,2);
+					bd.sErBAll(2);
 					ans.setCellLineError(c,true);
 					return false;
 				}
@@ -318,7 +318,7 @@ Puzzles.kaero.prototype = {
 		};
 		ans.movedPosition = function(linfo){
 			this.before = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(line.lcntCell(c)==0 && bd.QnC(c)!=-1){ this.before.id[c]=c;}
 				else{ this.before.id[c]=-1;}
 			}

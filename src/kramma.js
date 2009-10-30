@@ -176,7 +176,7 @@ Puzzles.kramma.prototype = {
 		};
 		enc.encodeCircle = function(){
 			var cm="", num=0, pass=0;
-			for(var i=0;i<bd.cell.length;i++){
+			for(var i=0;i<bd.cellmax;i++){
 				if     (bd.QuC(i)==41){ pass+=(  Math.pow(3,2-num));}
 				else if(bd.QuC(i)==42){ pass+=(2*Math.pow(3,2-num));}
 				num++; if(num==3){ cm += pass.toString(27); num=0; pass=0;}

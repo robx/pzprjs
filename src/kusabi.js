@@ -232,9 +232,9 @@ Puzzles.kusabi.prototype = {
 
 		ans.check2Line = function(){ return this.checkLine(function(i){ return (line.lcntCell(i)>=2 && bd.QnC(i)!=-1);}); };
 		ans.checkLine = function(func){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(func(c)){
-					bd.sErB(bd.borders,2);
+					bd.sErBAll(2);
 					ans.setCellLineError(c,true);
 					return false;
 				}
@@ -245,9 +245,9 @@ Puzzles.kusabi.prototype = {
 		ans.checkConnectedLine = function(){
 			var saved = {errflag:0,cells:[],idlist:[]};
 			var visited = new AreaInfo();
-			for(var id=0;id<bd.border.length;id++){ visited[id]=0;}
+			for(var id=0;id<bd.bdmax;id++){ visited[id]=0;}
 
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 || line.lcntCell(c)==0){ continue;}
 
 				var cc      = -1;	// ループから抜けたときに到達地点のIDが入る
@@ -317,7 +317,7 @@ Puzzles.kusabi.prototype = {
 		ans.checkErrorFlag = function(saved, val){
 			if(saved.errflag==val){
 				bd.sErC(saved.cells,1);
-				bd.sErB(bd.borders,2);
+				bd.sErBAll(2);
 				bd.sErB(saved.idlist,1);
 				return false;
 			}

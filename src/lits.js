@@ -117,7 +117,7 @@ Puzzles.lits.prototype = {
 		enc.pzldataKanpen = function(){
 			var rinfo = area.getRoomInfo();
 			var bstr = "";
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				bstr += (""+(rinfo.id[c]-1)+"_");
 				if((c+1)%k.qcols==0){ bstr += "/";}
 			}
@@ -145,7 +145,7 @@ Puzzles.lits.prototype = {
 			return "";
 		};
 		enc.decodeLITS = function(array){
-			for(var id=0;id<bd.border.length;id++){
+			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
 				if(cc1!=-1 && cc2!=-1 && array[cc1]!=array[cc2]){ bd.sQuB(id,1);}
 			}
@@ -207,7 +207,7 @@ Puzzles.lits.prototype = {
 
 		ans.checkTetromino = function(rinfo){
 			var tinfo = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){ tinfo.id[c]=-1;}
+			for(var c=0;c<bd.cellmax;c++){ tinfo.id[c]=-1;}
 			for(var r=1;r<=rinfo.max;r++){
 				var bcells = [];
 				var minid = k.qcols*k.qrows;
@@ -229,8 +229,8 @@ Puzzles.lits.prototype = {
 				}
 			}
 			var dinfo = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){ dinfo.id[c]=(tinfo.id[c]!=-1?0:-1);}
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){ dinfo.id[c]=(tinfo.id[c]!=-1?0:-1);}
+			for(var c=0;c<bd.cellmax;c++){
 				if(dinfo.id[c]!=0){ continue;}
 				dinfo.max++;
 				dinfo.room[dinfo.max] = {idlist:[]};

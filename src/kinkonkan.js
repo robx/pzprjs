@@ -132,10 +132,10 @@ Puzzles.kinkonkan.prototype = {
 		};
 		mv.flashlight = function(ec){
 			var ldata = [];
-			for(var c=0;c<bd.cell.length;c++){ ldata[c]=0;}
+			for(var c=0;c<bd.cellmax;c++){ ldata[c]=0;}
 			var ret = ans.checkMirror1(ec, ldata);
 			bd.sErE([ec,ret.dest],6);
-			for(var c=0;c<bd.cell.length;c++){ bd.sErC([c],ldata[c]);}
+			for(var c=0;c<bd.cellmax;c++){ bd.sErC([c],ldata[c]);}
 			pc.paintAll();
 		},
 
@@ -217,7 +217,7 @@ Puzzles.kinkonkan.prototype = {
 		menu.ex.adjustSpecial = function(type,key){
 			um.disableRecord();
 			if(type>=1 && type<=4){ // ”½“]E‰ñ“]‘S‚Ä
-				for(var c=0;c<bd.cell.length;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
+				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
 			}
 			um.enableRecord();
 		};
@@ -383,7 +383,7 @@ Puzzles.kinkonkan.prototype = {
 				else if(this.include(ca,'a','z')){ ec+=(parseInt(ca,36)-9);}
 				else{ ec++;}
 
-				if(ec >= bd.excell.length-4){ a=i+1; break;}
+				if(ec >= bd.excellmax-4){ a=i+1; break;}
 			}
 			ec=0;
 			for(var i=a;i<bstr.length;i++){
@@ -488,15 +488,15 @@ Puzzles.kinkonkan.prototype = {
 			for(var ec=0;ec<2*k.qcols+2*k.qrows;ec++){
 				if(!isNaN(d[ec]) || bd.QnE(ec)==-1 || bd.DiE(ec)==0){ continue;}
 				var ldata = [];
-				for(var c=0;c<bd.cell.length;c++){ ldata[c]=0;}
+				for(var c=0;c<bd.cellmax;c++){ ldata[c]=0;}
 
 				var ret = this.checkMirror1(ec, ldata);
 				if( (type==1&& (bd.DiE(ec)!=bd.DiE(ret.dest)) )||
 					(type==2&&((bd.QnE(ec)!=bd.QnE(ret.dest)) || bd.QnE(ec)!=ret.cnt))
 				){
-					for(var c=0;c<bd.excell.length;c++){ bd.sErE([c],0);}
+					for(var c=0;c<bd.excellmax;c++){ bd.sErE([c],0);}
 					bd.sErE([ec,ret.dest],6);
-					for(var c=0;c<bd.cell.length;c++){ bd.sErC([c],ldata[c]);}
+					for(var c=0;c<bd.cellmax;c++){ bd.sErC([c],ldata[c]);}
 					return false;
 				}
 				d[ec]=1; d[ret.dest]=1;
@@ -533,7 +533,7 @@ Puzzles.kinkonkan.prototype = {
 				}
 				else{ ldata[cc]=6;}
 
-				if(ccnt>bd.cell.length){ break;} // ”O‚Ì‚½‚ßƒK[ƒhğŒ(‘½•ªˆø‚Á‚©‚©‚ç‚È‚¢)
+				if(ccnt>bd.cellmax){ break;} // ”O‚Ì‚½‚ßƒK[ƒhğŒ(‘½•ªˆø‚Á‚©‚©‚ç‚È‚¢)
 			}
 
 			return {cnt:ccnt, dest:bd.exnum(cx,cy)};

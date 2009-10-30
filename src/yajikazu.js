@@ -149,7 +149,7 @@ Puzzles.yajikazu.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkArrowNumber = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)<0 || bd.DiC(c)==0 || bd.isBlack(c)){ continue;}
 				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, dir = bd.DiC(c);
 				var cnt=0;

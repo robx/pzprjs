@@ -192,7 +192,7 @@ Puzzles.tentaisho.prototype = {
 					if(bd.QsC(i)==1){ um.addOpe('cell','qsub',i,bd.QsC(i),0);}
 				}
 				if(k.isborder){
-					for(i=0;i<bd.border.length;i++){
+					for(i=0;i<bd.bdmax;i++){
 						if(bd.QsB(i)!=0){ um.addOpe('border','qsub',i,bd.QsB(i),0);}
 					}
 				}
@@ -427,7 +427,7 @@ Puzzles.tentaisho.prototype = {
 				var arr = barray[a].split(" ");
 				for(var i=0;i<arr.length;i++){ if(arr[i]!=''){ carray.push(arr[i]);} }
 			}
-			for(var id=0;id<bd.border.length;id++){
+			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
 				bd.sQaB(id,(cc1!=-1 && cc2!=-1 && carray[cc1]!=carray[cc2])?1:0);
 			}
@@ -438,7 +438,7 @@ Puzzles.tentaisho.prototype = {
 
 			var rinfo = area.getRoomInfo();
 			var bstr =  barray.join("/")+"/"+rinfo.max+"/";
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				bstr += (""+(rinfo.id[c]-1)+" ");
 				if((c+1)%k.qcols==0){ bstr += "/";}
 			}

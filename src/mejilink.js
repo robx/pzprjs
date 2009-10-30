@@ -166,20 +166,20 @@ Puzzles.mejilink.prototype = {
 		};
 
 		enc.decodeMejilink = function(bstr){
-			var pos = bstr?Math.min(mf((bd.border.length+4)/5),bstr.length):0;
+			var pos = bstr?Math.min(mf((bd.bdmax+4)/5),bstr.length):0;
 			for(var i=0;i<pos;i++){
 				var ca = parseInt(bstr.charAt(i),32);
 				for(var w=0;w<5;w++){
-					if(i*5+w<bd.borders.length){ bd.sQuB(i*5+w,(ca&Math.pow(2,4-w)?1:0));}
+					if(i*5+w<bd.bdmax){ bd.sQuB(i*5+w,(ca&Math.pow(2,4-w)?1:0));}
 				}
 			}
 			return bstr.substring(pos,bstr.length);
 		};
 		enc.encodeMejilink = function(){
 			var count = 0;
-			for(var i=bd.bdinside;i<bd.border.length;i++){ if(bd.QuB(i)==1) count++;}
+			for(var i=bd.bdinside;i<bd.bdmax;i++){ if(bd.QuB(i)==1) count++;}
 			var num=0, pass=0, cm="";
-			for(var i=0;i<(count==0?bd.bdinside:bd.border.length);i++){
+			for(var i=0;i<(count==0?bd.bdinside:bd.bdmax);i++){
 				if(bd.QuB(i)==1){ pass+=Math.pow(2,4-num);}
 				num++; if(num==5){ cm += pass.toString(32); num=0; pass=0;}
 			}
@@ -245,7 +245,7 @@ Puzzles.mejilink.prototype = {
 					if(bd.isLine(bd.bnum(cx*2  ,cy*2-1))){ cnt++;}
 					if(bd.isLine(bd.bnum(cx*2  ,cy*2+1))){ cnt++;}
 					if(cnt==val){
-						bd.sErB(bd.borders,2);
+						bd.sErBAll(2);
 						ans.setCrossBorderError(cx,cy);
 						return false;
 					}
@@ -255,8 +255,8 @@ Puzzles.mejilink.prototype = {
 		};
 		ans.checkDotLength = function(){
 			var tarea = new AreaInfo();
-			for(var cc=0;cc<bd.cell.length;cc++){ tarea.id[cc]=0;}
-			for(var cc=0;cc<bd.cell.length;cc++){
+			for(var cc=0;cc<bd.cellmax;cc++){ tarea.id[cc]=0;}
+			for(var cc=0;cc<bd.cellmax;cc++){
 				if(tarea.id[cc]!=0){ continue;}
 				tarea.max++;
 				tarea[tarea.max] = {clist:[]};
@@ -267,7 +267,7 @@ Puzzles.mejilink.prototype = {
 
 			var tcount = [];
 			for(var r=1;r<=tarea.max;r++){ tcount[r]=0;}
-			for(var id=0;id<bd.border.length;id++){
+			for(var id=0;id<bd.bdmax;id++){
 				if(bd.QuB(id)==1 && id>=bd.bdinside){
 					var cc1=bd.cc1(id), cc2=bd.cc2(id);
 					if(cc1!=-1){ tcount[tarea.id[cc1]]-=(2*k.qcols*k.qrows);}

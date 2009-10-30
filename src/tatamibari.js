@@ -183,7 +183,7 @@ Puzzles.tatamibari.prototype = {
 				else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-15);}
 				else{ c++;}
 
-				if(c > bd.cell.length){ break;}
+				if(c > bd.cellmax){ break;}
 			}
 
 			return bstr.substring(i,bstr.length);
@@ -194,7 +194,7 @@ Puzzles.tatamibari.prototype = {
 			var pstr="";
 
 			count=0;
-			for(i=0;i<bd.cell.length;i++){
+			for(i=0;i<bd.cellmax;i++){
 				if     (bd.QuC(i) ==  -2){ pstr = ".";}
 				else if(bd.QuC(i) == 101){ pstr = "3";}
 				else if(bd.QuC(i) == 102){ pstr = "1";}
@@ -272,7 +272,7 @@ Puzzles.tatamibari.prototype = {
 
 		ans.generateTatami = function(rbase, num){
 			var rinfo = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){ rinfo[c]=-1;}
+			for(var c=0;c<bd.cellmax;c++){ rinfo[c]=-1;}
 			for(var r=1;r<=rbase.max;r++){
 				var cnt=0; var cntall=0;
 				for(var i=0;i<rbase.room[r].idlist.length;i++){

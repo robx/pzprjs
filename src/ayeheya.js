@@ -160,7 +160,7 @@ Puzzles.ayeheya.prototype = {
 		enc.decodeHeyaApp = function(bstr){
 			var rdata = [];
 			var c=0;
-			while(c<bd.cell.length){ rdata[c]=-1; c++;}
+			while(c<bd.cellmax){ rdata[c]=-1; c++;}
 
 			var inp = bstr.split("/");
 			var RE1 = new RegExp("(\\d+)in(\\d+)x(\\d+)$","g");
@@ -168,7 +168,7 @@ Puzzles.ayeheya.prototype = {
 
 			var i=0;
 			c=0;
-			while(c<bd.cell.length){
+			while(c<bd.cellmax){
 				if(rdata[c]==-1){
 					var width, height;
 					if     (inp[i].match(RE1)){ width = parseInt(RegExp.$2); height = parseInt(RegExp.$3); bd.sQnC(bd.cnum(bd.cell[c].cx,bd.cell[c].cy), parseInt(RegExp.$1)); }
@@ -186,7 +186,7 @@ Puzzles.ayeheya.prototype = {
 			this.rdata2Border(rdata);
 		};
 		enc.rdata2Border = function(rdata){
-			for(var id=0;id<bd.border.length;id++){
+			for(var id=0;id<bd.bdmax;id++){
 				var cc1=bd.cc1(id), cc2=bd.cc2(id);
 				if(cc1!=-1 && cc2!=-1 && rdata[cc1]!=rdata[cc2]){ bd.sQuB(id,1);}
 			}

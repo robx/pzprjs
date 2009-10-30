@@ -151,8 +151,8 @@ Puzzles.mochinyoro.prototype = {
 
 		ans.checkWareaSequent = function(){
 			var winfo = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){ winfo.id[c]=(bd.isWhite(c)?0:-1);}
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){ winfo.id[c]=(bd.isWhite(c)?0:-1);}
+			for(var c=0;c<bd.cellmax;c++){
 				if(winfo.id[c]==0){
 					winfo.max++;
 					winfo.room[winfo.max] = {idlist:[]};

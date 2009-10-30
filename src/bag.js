@@ -178,7 +178,7 @@ Puzzles.bag.prototype = {
 			return icheck;
 		};
 		ans.checkNumberInside = function(icheck){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(icheck[c]==-1 && bd.QnC(c)!=-1){
 					bd.sErC([c],1);
 					return false;
@@ -187,7 +187,7 @@ Puzzles.bag.prototype = {
 			return true;
 		};
 		ans.checkCellNumber = function(icheck){
-			for(var cc=0;cc<bd.cell.length;cc++){
+			for(var cc=0;cc<bd.cellmax;cc++){
 				if(bd.QnC(cc)<0){ continue;}
 
 				var list = [];

@@ -117,9 +117,6 @@ var debug = {
 			base.reload_func(k.puzzleid);
 
 			enc.parseURI_pzpr.apply(enc, [debug.urls[pnum][1]]);
-			if(enc.uri.cols && enc.uri.rows){
-				menu.ex.newboard2(enc.uri.cols, enc.uri.rows);
-			}
 			enc.pzlinput.apply(enc);
 
 			$("#testarea").attr("rows","32");
@@ -212,10 +209,10 @@ var debug = {
 					ans.inCheck = false;
 
 					var iserror = false, misstr = false;
-					                    for(var c=0;c<bd.cell.length  ;c++){if(bd.cell[c].error!=0  ){ iserror = true;}}
-					if(k.isextendcell){ for(var c=0;c<bd.excell.length;c++){if(bd.excell[c].error!=0){ iserror = true;}}}
-					if(k.iscross)     { for(var c=0;c<bd.cross.length ;c++){if(bd.cross[c].error!=0 ){ iserror = true;}}}
-					if(k.isborder)    { for(var i=0;i<bd.border.length;i++){if(bd.border[i].error!=0){ iserror = true;}}}
+					                    for(var c=0;c<bd.cellmax  ;c++){if(bd.cell[c].error!=0  ){ iserror = true;}}
+					if(k.isextendcell){ for(var c=0;c<bd.excellmax;c++){if(bd.excell[c].error!=0){ iserror = true;}}}
+					if(k.iscross)     { for(var c=0;c<bd.crossmax ;c++){if(bd.cross[c].error!=0 ){ iserror = true;}}}
+					if(k.isborder)    { for(var i=0;i<bd.bdmax    ;i++){if(bd.border[i].error!=0){ iserror = true;}}}
 					if(k.puzzleid=='nagenawa' && n==0){ iserror = true;}
 					if(debug.acs[k.puzzleid][n][0] != ""){ iserror = !iserror;}
 
@@ -239,7 +236,8 @@ var debug = {
 
 				var bd2 = debug.bd_freezecopy();
 
-				menu.ex.newboard2(1,1);
+				bd.initBoardSize(1,1);
+				base.resetInfo();
 				base.resize_canvas();
 
 				setTimeout(function(){
@@ -257,7 +255,8 @@ var debug = {
 
 				var bd2 = debug.bd_freezecopy();
 
-				menu.ex.newboard2(1,1);
+				bd.initBoardSize(1,1);
+				base.resetInfo();
 				base.resize_canvas();
 
 				setTimeout(function(){
@@ -407,7 +406,7 @@ var debug = {
 	qsubf : true,
 	bd_freezecopy : function(){
 		var bd2 = {cell:[],excell:[],cross:[],border:[]};
-		for(var c=0;c<bd.cell.length;c++){
+		for(var c=0;c<bd.cellmax;c++){
 			bd2.cell[c] = {};
 			bd2.cell[c].ques =bd.cell[c].ques;
 			bd2.cell[c].qnum =bd.cell[c].qnum;
@@ -416,21 +415,21 @@ var debug = {
 			bd2.cell[c].qsub =bd.cell[c].qsub;
 		}
 		if(k.isextendcell){
-			for(var c=0;c<bd.excell.length;c++){
+			for(var c=0;c<bd.excellmax;c++){
 				bd2.excell[c] = {};
 				bd2.excell[c].qnum =bd.excell[c].qnum;
 				bd2.excell[c].direc=bd.excell[c].direc;
 			}
 		}
 		if(k.iscross){
-			for(var c=0;c<bd.cross.length;c++){
+			for(var c=0;c<bd.crossmax;c++){
 				bd2.cross[c] = {};
 				bd2.cross[c].ques=bd.cross[c].ques;
 				bd2.cross[c].qnum=bd.cross[c].qnum;
 			}
 		}
 		if(k.isborder){
-			for(var i=0;i<bd.border.length;i++){
+			for(var i=0;i<bd.bdmax;i++){
 				bd2.border[i] = {};
 				bd2.border[i].ques=bd.border[i].ques;
 				bd2.border[i].qnum=bd.border[i].qnum;

@@ -216,13 +216,13 @@ Puzzles.kakuru.prototype = {
 				else if(ca!='.'){ bd.sQnC(cell,this.decval(ca)); cell++;}
 				else{ cell++;}
 
-				if(cell>=bd.cell.length){ break;}
+				if(cell>=bd.cellmax){ break;}
 			}
 			return bstr.substring(i,bstr.length);
 		};
 		enc.encodeKakuru = function(type){
 			var cm="", count=0;
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				var pstr="";
 				if     (bd.QuC(c)==1){ pstr = "+";}
 				else if(bd.QnC(c)!=-1){
@@ -308,7 +308,7 @@ Puzzles.kakuru.prototype = {
 		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)==0 && bd.QnC(c)==-1 && bd.QaC(c)==-1);});};
 
 		ans.checkAroundPrenums = function(type){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==1 || bd.QnC(c)<=0){ continue;}
 
 				var clist=[c], d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
@@ -334,7 +334,7 @@ Puzzles.kakuru.prototype = {
 			return true;
 		};
 		ans.checkNumber = function(type){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==1 || bd.QnC(c)<=0){ continue;}
 
 				var cnt=0, clist=[c];
@@ -354,7 +354,7 @@ Puzzles.kakuru.prototype = {
 			return true;
 		};
 		ans.checkAroundNumbers = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QaC(c)<=0){ continue;}
 				var cx = bd.cell[c].cx; var cy = bd.cell[c].cy; var target=0;
 				var func = function(cc){ return (cc!=-1 && bd.QaC(c)==bd.QaC(cc));};

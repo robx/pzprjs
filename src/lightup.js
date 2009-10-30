@@ -227,7 +227,7 @@ Puzzles.lightup.prototype = {
 		};
 
 		ans.checkQnumCell = function(func){	//func(crn,bcnt){} -> ƒGƒ‰[‚È‚çfalse‚ğ•Ô‚·ŠÖ”‚É‚·‚é
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)>=0 && func( bd.QnC(c), this.checkdir4Cell(c,function(a){ return (bd.QaC(a)==1);}))){
 					bd.sErC([c],1);
 					return false;
@@ -237,7 +237,7 @@ Puzzles.lightup.prototype = {
 		};
 
 		ans.checkShinedCell = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 && !this.isShined(c)){
 					bd.sErC([c],1);
 					return false;

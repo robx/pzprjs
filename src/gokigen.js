@@ -80,11 +80,11 @@ Puzzles.gokigen.prototype = {
 			if(cc==-1 || bd.QaC(cc)==-1){ return;}
 
 			var check = [];
-			for(var i=0;i<bd.cross.length;i++){ check[i]=0;}
+			for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
 
 			var fc = bd.xnum(bd.cell[cc].cx+(bd.QaC(cc)==1?0:1),bd.cell[cc].cy);
 			ans.searchline(check, 0, fc);
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].cx  ,bd.cell[c].cy)]==1){ bd.sErC([c],2);}
 				if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].cx+1,bd.cell[c].cy)]==1){ bd.sErC([c],2);}
 			}
@@ -127,7 +127,7 @@ Puzzles.gokigen.prototype = {
 		menu.ex.adjustSpecial = function(type,key){
 			um.disableRecord();
 			if(type>=1 && type<=4){ // ”½“]E‰ñ“]‘S‚Ä
-				for(var c=0;c<bd.cell.length;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
+				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
 			}
 			um.enableRecord();
 		};
@@ -267,15 +267,15 @@ Puzzles.gokigen.prototype = {
 
 		ans.checkLoopLine = function(){
 			var check = [];
-			for(var i=0;i<bd.cross.length;i++){ check[i]=0;}
+			for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
 
 			while(1){
 				var fc=-1;
-				for(var i=0;i<bd.cross.length;i++){ if(check[i]==0){ fc=i; break;}}
+				for(var i=0;i<bd.crossmax;i++){ if(check[i]==0){ fc=i; break;}}
 				if(fc==-1){ break;}
 
 				if(!this.searchline(check, 0, fc)){
-					for(var c=0;c<bd.cell.length;c++){
+					for(var c=0;c<bd.cellmax;c++){
 						if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].cx  ,bd.cell[c].cy)]==1){ bd.sErC([c],1);}
 						if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].cx+1,bd.cell[c].cy)]==1){ bd.sErC([c],1);}
 					}
@@ -293,7 +293,7 @@ Puzzles.gokigen.prototype = {
 					}
 					return false;
 				}
-				for(var c=0;c<bd.cross.length;c++){ if(check[c]==1){ check[c]=2;} }
+				for(var c=0;c<bd.crossmax;c++){ if(check[c]==1){ check[c]=2;} }
 			}
 			return true;
 		};
@@ -315,7 +315,7 @@ Puzzles.gokigen.prototype = {
 		};
 
 		ans.checkQnumCross = function(){
-			for(var c=0;c<bd.cross.length;c++){
+			for(var c=0;c<bd.crossmax;c++){
 				if(bd.QnX(c)>=0 && bd.QnX(c)!=this.scntCross(c)){
 					bd.sErX([c],1);
 					return false;

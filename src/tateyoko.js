@@ -164,7 +164,7 @@ Puzzles.tateyoko.prototype = {
 		menu.ex.adjustSpecial = function(type,key){
 			um.disableRecord();
 			if(type>=3 && type<=4){ // ‰ñ“]‚¾‚¯
-				for(var c=0;c<bd.cell.length;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
+				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
 			}
 			um.enableRecord();
 		};
@@ -275,13 +275,13 @@ Puzzles.tateyoko.prototype = {
 				else if(ca=="i"){ c+=(parseInt(bstr.charAt(i+1),16)); i++;}
 				else{ c++;}
 
-				if(c>=bd.cell.length){ break;}
+				if(c>=bd.cellmax){ break;}
 			}
 			return bstr.substring(i,bstr.length);
 		};
 		enc.encodeTateyoko = function(type){
 			var cm="", count=0;
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				var pstr="";
 				if(bd.QuC(c)==0){
 					if     (bd.QnC(c)==-1){ count++;}
@@ -353,7 +353,7 @@ Puzzles.tateyoko.prototype = {
 				this.setAlert('•ƒ}ƒX‚ÉŒq‚ª‚éü‚Ì”‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB','The number of lines connected to a black cell is wrong.'); return false;
 			}
 
-			for(var i=0;i<bd.cell.length;i++){ bd.sErC([i],2);}
+			for(var i=0;i<bd.cellmax;i++){ bd.sErC([i],2);}
 			var binfo = this.getBarInfo();
 			if( !this.checkQnumsInArea(binfo, function(a){ return (a>=2);}) ){
 				this.setAlert('1‚Â‚Ì–_‚É2‚ÂˆÈã‚Ì”š‚ª“ü‚Á‚Ä‚¢‚Ü‚·B','A line passes plural numbers.'); return false;
@@ -362,7 +362,7 @@ Puzzles.tateyoko.prototype = {
 			if( !this.checkNumberAndSize(binfo) ){
 				this.setAlert('”š‚Æ–_‚Ì’·‚³‚ªˆá‚¢‚Ü‚·B','The number is different from the length of line.'); return false;
 			}
-			for(var i=0;i<bd.cell.length;i++){ bd.sErC([i],0);}
+			for(var i=0;i<bd.cellmax;i++){ bd.sErC([i],0);}
 
 			if( !this.checkBCell(2) ){
 				this.setAlert('•ƒ}ƒX‚ÉŒq‚ª‚éü‚Ì”‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB','The number of lines connected to a black cell is wrong.'); return false;
@@ -377,7 +377,7 @@ Puzzles.tateyoko.prototype = {
 		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)==0 && bd.QaC(c)==-1);});};
 
 		ans.checkBCell = function(type){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==1 && bd.QnC(c)>=0){
 					var cnt1=0, cnt2=0;
 					if(bd.QaC(bd.up(c))==1){ cnt1++;} else if(bd.up(c)==-1 || bd.QaC(bd.up(c))==2){ cnt2++;}
@@ -394,8 +394,8 @@ Puzzles.tateyoko.prototype = {
 		};
 		ans.getBarInfo = function(){
 			var binfo = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){ binfo.id[c]=(bd.QuC(c)==1 || bd.QaC(c)==-1?-1:0);}
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){ binfo.id[c]=(bd.QuC(c)==1 || bd.QaC(c)==-1?-1:0);}
+			for(var c=0;c<bd.cellmax;c++){
 				if(binfo.id[c]!=0){ continue;}
 				var cx=bd.cell[c].cx, cy=bd.cell[c].cy, val=bd.QaC(c);
 

@@ -156,7 +156,7 @@ Puzzles.minarism.prototype = {
 		menu.ex.adjustSpecial = function(type,key){
 			um.disableRecord();
 			if(type>=1 && type<=4){ // ”½“]E‰ñ“]‘S‚Ä
-				for(var c=0;c<bd.border.length;c++){ if(bd.QuC(c)!=0){ bd.sQuC(c,{1:2,2:1}[bd.QuC(c)]); } }
+				for(var c=0;c<bd.bdmax;c++){ if(bd.QuC(c)!=0){ bd.sQuC(c,{1:2,2:1}[bd.QuC(c)]); } }
 			}
 			um.enableRecord();
 		};
@@ -298,13 +298,13 @@ Puzzles.minarism.prototype = {
 		};
 		enc.encodeMinarism = function(type){
 			var cm="", count=0, mgn=0;
-			for(var id=0;id<bd.border.length+(type==0?0:k.qcols);id++){
+			for(var id=0;id<bd.bdmax+(type==0?0:k.qcols);id++){
 				if(type==1){
 					if(id>0 && id<=(k.qcols-1)*k.qrows && id%(k.qcols-1)==0){ count++;}
 					if(id==(k.qcols-1)*k.qrows){ if(count>0){ cm+=(17+count).toString(36); count=0;} cm += "/";}
 				}
 
-				if(id<bd.border.length){
+				if(id<bd.bdmax){
 					var pstr = "";
 					var val  = bd.QuB(id);
 					var qnum = bd.QnB(id);
@@ -414,7 +414,7 @@ Puzzles.minarism.prototype = {
 			});
 		};
 		ans.checkBDSideCell = function(func){
-			for(var id=0;id<bd.border.length;id++){
+			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.cc1(id);
 				var cc2 = bd.cc2(id);
 				if(bd.QaC(cc1)>0 && bd.QaC(cc2)>0 && func(id,cc1,cc2)){ bd.sErC([cc1,cc2],1); return false;}

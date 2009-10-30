@@ -236,7 +236,7 @@ Puzzles.fillomino.prototype = {
 			});
 		};
 		fio.generateBorder = function(){
-			for(var id=0;id<bd.border.length;id++){
+			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
 				if(cc1!=-1 && cc2!=-1 && bd.getNum(cc1)!=-1 && bd.getNum(cc2)!=-1
 					&& bd.getNum(cc1)!=bd.getNum(cc2)){ bd.sQaB(id,1);}

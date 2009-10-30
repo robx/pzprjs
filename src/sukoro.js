@@ -170,7 +170,7 @@ Puzzles.sukoro.prototype = {
 		};
 
 		ans.checkCellNumber = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.isValidNum(c) && bd.getNum(c)!=this.checkdir4Cell(c,bd.isNum)){
 					bd.sErC([c],1);
 					return false;

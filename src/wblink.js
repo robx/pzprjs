@@ -252,7 +252,7 @@ Puzzles.wblink.prototype = {
 		};
 		enc.encodeCircle = function(flag){
 			var cm = "", num = 0, pass = 0;
-			for(var i=0;i<bd.cell.length;i++){
+			for(var i=0;i<bd.cellmax;i++){
 				if     (bd.QuC(i)==41){ pass+=(  Math.pow(3,2-num));}
 				else if(bd.QuC(i)==42){ pass+=(2*Math.pow(3,2-num));}
 				num++; if(num==3){ cm += pass.toString(27); num=0; pass=0;}
@@ -300,7 +300,8 @@ Puzzles.wblink.prototype = {
 					var tip1 = linfo.room[r].idlist[0];
 					var tip2 = linfo.room[r].idlist[linfo.room[r].idlist.length-1];
 					if(bd.QuC(tip1)==val && bd.QuC(tip2)==val){
-						bd.sErB(bd.borders,2); ans.setErrLareaById(linfo,r,1);
+						bd.sErBAll(2);
+						ans.setErrLareaById(linfo,r,1);
 						bd.sErC([tip1,tip2],1);
 						return false;
 					}

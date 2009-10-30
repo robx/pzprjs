@@ -128,13 +128,13 @@ Puzzles.hitori.prototype = {
 				else if(ca == '%'){ bd.sQnC(c, -2);                                   c++;      }
 				else{ c++;}
 
-				if(c > bd.cell.length){ break;}
+				if(c > bd.cellmax){ break;}
 			}
 			return bstr.substring(i,bstr.length);
 		};
 		enc.encodeHitori = function(bstr){
 			var count=0, cm="";
-			for(var i=0;i<bd.cell.length;i++){
+			for(var i=0;i<bd.cellmax;i++){
 				var pstr = "";
 				var val = bd.QnC(i);
 

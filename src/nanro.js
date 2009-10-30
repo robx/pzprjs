@@ -219,7 +219,7 @@ Puzzles.nanro.prototype = {
 			return "";
 		};
 		enc.decodeRoom_kanpen = function(array){
-			for(var id=0;id<bd.border.length;id++){
+			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
 				if(cc1!=-1 && cc2!=-1 && array[cc1]!=array[cc2]){ bd.sQuB(id,1);}
 				else{ bd.sQuB(id,0);}
@@ -235,7 +235,7 @@ Puzzles.nanro.prototype = {
 		enc.encodeRoom_kanpen = function(){
 			var rinfo = area.getRoomInfo();
 			var bstr = "";
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				bstr += (""+(rinfo.id[c]-1)+"_");
 				if((c+1)%k.qcols==0){ bstr += "/";}
 			}

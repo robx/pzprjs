@@ -163,25 +163,25 @@ Puzzles.shakashaka.prototype = {
 			um.disableRecord();
 			switch(type){
 			case 1: // è„â∫îΩì]
-				for(var cc=0;cc<bd.cell.length;cc++){
+				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {2:5,3:4,4:3,5:2}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case 2: // ç∂âEîΩì]
-				for(var cc=0;cc<bd.cell.length;cc++){
+				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {2:3,3:2,4:5,5:4}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case 3: // âE90ÅãîΩì]
-				for(var cc=0;cc<bd.cell.length;cc++){
+				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {2:5,3:2,4:3,5:4}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case 4: // ç∂90ÅãîΩì]
-				for(var cc=0;cc<bd.cell.length;cc++){
+				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {2:3,3:4,4:5,5:2}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
@@ -285,8 +285,8 @@ Puzzles.shakashaka.prototype = {
 
 		ans.searchWarea_slope = function(){
 			var winfo = new AreaInfo();
-			for(var c=0;c<bd.cell.length;c++){ winfo.id[c]=(bd.QnC(c)==-1?0:-1);}
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){ winfo.id[c]=(bd.QnC(c)==-1?0:-1);}
+			for(var c=0;c<bd.cellmax;c++){
 				if(winfo.id[c]!=0){ continue;}
 				winfo.max++;
 				winfo.room[winfo.max] = {idlist:[]};

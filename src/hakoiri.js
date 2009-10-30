@@ -296,7 +296,7 @@ Puzzles.hakoiri.prototype = {
 			return true;
 		};
 		ans.checkAroundMarks = function(){
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.getNum(c)<0){ continue;}
 				var cx = bd.cell[c].cx; var cy = bd.cell[c].cy; var target=0;
 				var func = function(cc){ return (cc!=-1 && bd.getNum(c)==bd.getNum(cc));};

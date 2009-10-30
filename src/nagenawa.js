@@ -145,7 +145,7 @@ Puzzles.nagenawa.prototype = {
 		ans.checkAns = function(){
 
 			var cnt=0;
-			for(var i=0;i<bd.border.length;i++){ if(bd.isLine(i)){ cnt++;} }
+			for(var i=0;i<bd.bdmax;i++){ if(bd.isLine(i)){ cnt++;} }
 			if( cnt==0 ){ this.setAlert('ü‚ªˆø‚©‚ê‚Ä‚¢‚Ü‚¹‚ñB','There is no line on the board.'); return false;}
 
 			var rinfo = area.getRoomInfo();
@@ -175,7 +175,7 @@ Puzzles.nagenawa.prototype = {
 			var xinfo = line.getLineInfo();
 			for(var r=1;r<=xinfo.max;r++){
 				if(!this.isLoopRect(xinfo.room[r].idlist)){
-					bd.sErB(bd.borders,2);
+					bd.sErBAll(2);
 					bd.sErB(xinfo.room[r].idlist,1);
 					return false;
 				}

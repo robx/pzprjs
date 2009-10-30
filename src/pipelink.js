@@ -232,7 +232,7 @@ Puzzles.pipelink.prototype = {
 				else if(ca>='h' && ca<='z'){ c += (parseInt(ca,36)-16);}
 				else{ c++;}
 
-				if(c > bd.cell.length){ break;}
+				if(c > bd.cellmax){ break;}
 			}
 
 			return bstr.substring(i,bstr.length);
@@ -243,7 +243,7 @@ Puzzles.pipelink.prototype = {
 			var pstr="";
 
 			count=0;
-			for(var i=0;i<bd.cell.length;i++){
+			for(var i=0;i<bd.cellmax;i++){
 				if     (bd.QuC(i) == -2){ pstr = ".";}
 				else if(bd.QuC(i) ==  6 && type==1){
 					var icur;
@@ -297,7 +297,7 @@ Puzzles.pipelink.prototype = {
 			}
 
 			var rice = false;
-			for(var i=0;i<bd.cell.length;i++){ if(bd.QuC(i)==6){ rice=true; break;}}
+			for(var i=0;i<bd.cellmax;i++){ if(bd.QuC(i)==6){ rice=true; break;}}
 			if( rice && !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101);}) ){
 				this.setAlert((pc.disp==0?'›':'•X')+'‚Ì•”•ªˆÈŠO‚Åü‚ªŒð·‚µ‚Ä‚¢‚Ü‚·B','There is a crossing line out of '+(pc.disp==0?'circles':'ices')+'.'); return false;
 			}

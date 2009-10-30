@@ -170,7 +170,7 @@ Puzzles.cojun.prototype = {
 			return true;
 		};
 		ans.checkUpperNumber = function(rinfo){
-			for(var c=0;c<bd.cell.length-k.qcols;c++){
+			for(var c=0;c<bd.cellmax-k.qcols;c++){
 				var dc = bd.dn(c);
 				if(rinfo.id[c]!=rinfo.id[dc] || !bd.isNum(c) || !bd.isNum(dc)){ continue;}
 				if(bd.getNum(dc)>bd.getNum(c)){

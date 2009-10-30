@@ -370,14 +370,14 @@ Puzzles.bosanowa.prototype = {
 		enc.decodeBoard = function(bstr,type){
 			for(var i=0;i<bstr.length;i++){
 				var num = parseInt(bstr.charAt(i),32);
-				for(var w=0;w<5;w++){ if((i*5+w)<bd.cell.length){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?0:7));} }
+				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?0:7));} }
 				if((i*5+5)>=k.qcols*k.qrows){ break;}
 			}
 			return bstr.substring(i+1,bstr.length);
 		};
 		enc.encodeBosanowa = function(type){
 			var x1=9999, x2=-1, y1=9999, y2=-1;
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)!=7){ continue;}
 				if(x1>bd.cell[c].cx){ x1=bd.cell[c].cx;}
 				if(x2<bd.cell[c].cx){ x2=bd.cell[c].cx;}

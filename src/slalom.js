@@ -141,8 +141,6 @@ Puzzles.slalom.prototype = {
 			pc.dispnumStartpos(bd.startid);
 		};
 
-		bd.enableLineNG = true;
-
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
@@ -215,6 +213,8 @@ Puzzles.slalom.prototype = {
 			};
 		}
 
+		bd.enableLineNG = true;
+
 		bd.startid = 0;
 		bd.inputstartid = function(cc){
 			if(cc!=this.startid){
@@ -227,6 +227,13 @@ Puzzles.slalom.prototype = {
 
 		bd.hinfo = new Hurdle();
 		bd.hinfo.init();
+
+		bd.initSpecial = function(col,row){
+			if(!base.initProcess){
+				bd.startid = 0;
+				bd.hinfo.init();
+			}
+		};
 
 		menu.ex.adjustSpecial = function(type,key){
 			um.disableRecord();
@@ -383,7 +390,7 @@ Puzzles.slalom.prototype = {
 		pc.drawNumbersOnGate = function(keydown){
 			if(keydown){ bd.hinfo.generateGateNumber();}
 
-			for(var c=0;c<bd.cell.length;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)!=21 && bd.QuC(c)!=22){ continue;}
 
 				var r = bd.hinfo.getGateid(c);
@@ -433,7 +440,7 @@ Puzzles.slalom.prototype = {
 				else if(this.include(ca,"4","9")||this.include(ca,"a","z")){ c += (parseInt(ca,36)-3);}
 				else{ c++;}
 
-				if(c >= bd.cell.length){ break;}
+				if(c >= bd.cellmax){ break;}
 			}
 			bd.hinfo.generateGates();
 
@@ -454,7 +461,7 @@ Puzzles.slalom.prototype = {
 					if(r > bd.hinfo.max){ break;}
 				}
 
-				for(var c=0;c<bd.cell.length;c++){
+				for(var c=0;c<bd.cellmax;c++){
 					var idlist=bd.hinfo.getConnectingGate(c), min=1000;
 					for(var i=0;i<idlist.length;i++){
 						var val=bd.hinfo.data[idlist[i]].number;
@@ -476,7 +483,7 @@ Puzzles.slalom.prototype = {
 						else if(ca>='g' && ca<='z'){ spare = (parseInt(ca,36)-15) - 1;}
 					}
 					c++;
-					if(c > bd.cell.length){ break;}
+					if(c > bd.cellmax){ break;}
 				}
 			}
 
@@ -486,7 +493,7 @@ Puzzles.slalom.prototype = {
 		};
 		enc.encodeSlalom = function(ver){
 			var cm="", count=0;
-			for(var i=0;i<bd.cell.length;i++){
+			for(var i=0;i<bd.cellmax;i++){
 				var pstr="";
 				if     (bd.QuC(i)== 1){ pstr = "1";}
 				else if(bd.QuC(i)==21){ pstr = "2";}
@@ -515,7 +522,7 @@ Puzzles.slalom.prototype = {
 				if(count>0){ cm+=(15+count).toString(36);}
 			}
 			else if(ver==1){
-				for(var c=0;c<bd.cell.length;c++){
+				for(var c=0;c<bd.cellmax;c++){
 					if(bd.QuC(c)!=1){ continue;}
 
 					var pstr = "";
@@ -577,10 +584,10 @@ Puzzles.slalom.prototype = {
 				},array.slice(0,k.qrows));
 				bd.hinfo.generateGates();
 
-				for(var c=0;c<bd.cell.length;c++){
+				for(var c=0;c<bd.cellmax;c++){
 					if(sv_num[c]!=-1){ bd.hinfo.data[bd.hinfo.getGateid(c)].number = sv_num[c];}
 				}
-				for(var c=0;c<bd.cell.length;c++){
+				for(var c=0;c<bd.cellmax;c++){
 					var idlist=bd.hinfo.getConnectingGate(c), min=1000;
 					for(var i=0;i<idlist.length;i++){
 						var val=bd.hinfo.data[idlist[i]].number;
@@ -771,7 +778,7 @@ Hurdle = function(){
 Hurdle.prototype = {
 	// 旗門が持つ旗門IDを取得する
 	getGateid : function(cc){
-		if(cc<0 || cc>=bd.cell.length){ return -1;}
+		if(cc<0 || cc>=bd.cellmax){ return -1;}
 		return this.gateid[cc];
 	},
 
@@ -805,7 +812,7 @@ Hurdle.prototype = {
 	//---------------------------------------------------------
 	init : function(){
 		this.max=0;
-		for(var c=0;c<bd.cell.length;c++){ this.gateid[c] = -1;}
+		for(var c=0;c<bd.cellmax;c++){ this.gateid[c] = -1;}
 		this.data=[];
 	},
 
@@ -816,7 +823,7 @@ Hurdle.prototype = {
 
 	generateGates : function(){
 		this.init();
-		for(var c=0;c<bd.cell.length;c++){
+		for(var c=0;c<bd.cellmax;c++){
 			if(bd.QuC(c)==0 || bd.QuC(c)==1 || this.getGateid(c)!=-1){ continue;}
 
 			var cx=bd.cell[c].cx, cy=bd.cell[c].cy;
@@ -844,7 +851,7 @@ Hurdle.prototype = {
 		// 数字がどの旗門に繋がっているかをnums配列にとってくる
 		var nums = [];
 		for(var r=1;r<=this.max;r++){ nums[r] = [];}
-		for(var c=0;c<bd.cell.length;c++){
+		for(var c=0;c<bd.cellmax;c++){
 			if(bd.QuC(c)==1){
 				if(bd.QnC(c)<=0 || bd.QnC(c)>this.max){ continue;}
 				var idlist = this.getConnectingGate(c);

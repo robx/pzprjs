@@ -156,6 +156,18 @@ Puzzles.icebarn.prototype = {
 		bd.setArrow = function(id,val){ this.sQuB(id,val);};
 		bd.isArrow  = function(id){ return (this.QuB(id)>0);};
 
+		bd.initSpecial = function(col,row){
+			if(!base.initProcess){
+				if(bd.arrowin<k.qcols+bd.bdinside){ if(bd.arrowin>col+bd.bdinside){ bd.arrowin=col+bd.bdinside-1;} }
+				else{ if(bd.arrowin>col+row+bd.bdinside){ bd.arrowin=col+row+bd.bdinside-1;} }
+
+				if(bd.arrowout<k.qcols+bd.bdinside){ if(bd.arrowout>col+bd.bdinside){ bd.arrowout=col+bd.bdinside-1;} }
+				else{ if(bd.arrowout>col+row+bd.bdinside){ bd.arrowout=col+row+bd.bdinside-1;} }
+
+				if(bd.arrowin==bd.arrowout){ bd.arrowin--;}
+			}
+		}
+
 		menu.ex.adjustSpecial = function(type,key){
 			um.disableRecord();
 			var ibx=bd.border[bd.arrowin ].cx, iby=bd.border[bd.arrowin ].cy;
@@ -164,28 +176,28 @@ Puzzles.icebarn.prototype = {
 			case 1: // è„â∫îΩì]
 				bd.arrowin  = bd.bnum(ibx,2*k.qrows-iby);
 				bd.arrowout = bd.bnum(obx,2*k.qrows-oby);
-				for(var id=0;id<bd.border.length;id++){
+				for(var id=0;id<bd.bdmax;id++){
 					if(bd.border[id].cx%2==1&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
 			case 2: // ç∂âEîΩì]
 				bd.arrowin  = bd.bnum(2*k.qcols-ibx,iby);
 				bd.arrowout = bd.bnum(2*k.qcols-obx,oby);
-				for(var id=0;id<bd.border.length;id++){
+				for(var id=0;id<bd.bdmax;id++){
 					if(bd.border[id].cx%2==0&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
 			case 3: // âE90ÅãîΩì]
 				bd.arrowin  = bd.bnum2(2*k.qrows-iby,ibx,k.qrows,k.qcols);
 				bd.arrowout = bd.bnum2(2*k.qrows-oby,obx,k.qrows,k.qcols);
-				for(var id=0;id<bd.border.length;id++){
+				for(var id=0;id<bd.bdmax;id++){
 					if(bd.border[id].cx%2==1&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
 			case 4: // ç∂90ÅãîΩì]
 				bd.arrowin  = bd.bnum2(iby,2*k.qcols-ibx,k.qrows,k.qcols);
 				bd.arrowout = bd.bnum2(oby,2*k.qcols-obx,k.qrows,k.qcols);
-				for(var id=0;id<bd.border.length;id++){
+				for(var id=0;id<bd.bdmax;id++){
 					if(bd.border[id].cx%2==0&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
@@ -265,7 +277,7 @@ Puzzles.icebarn.prototype = {
 			}
 		};
 		pc.drawInOut = function(){
-			if(bd.arrowin<bd.bdinside || bd.arrowin>=bd.border.length || bd.arrowout<bd.bdinside || bd.arrowout>=bd.border.length){ return;}
+			if(bd.arrowin<bd.bdinside || bd.arrowin>=bd.bdmax || bd.arrowout<bd.bdinside || bd.arrowout>=bd.bdmax){ return;}
 
 			if(bd.ErB(bd.arrowin)==3){ g.fillStyle = this.errcolor1;}
 			else{ g.fillStyle = this.Cellcolor;}
@@ -321,7 +333,7 @@ Puzzles.icebarn.prototype = {
 			var a=0;
 			for(var i=0;i<barray[0].length;i++){
 				var num = parseInt(barray[0].charAt(i),32);
-				for(var w=0;w<5;w++){ if((i*5+w)<bd.cell.length){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?6:0));} }
+				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?6:0));} }
 				if((i*5+5)>=k.qcols*k.qrows){ a=i+1; break;}
 			}
 
@@ -411,7 +423,7 @@ Puzzles.icebarn.prototype = {
 			var c=0;
 			for(var i=0;i<barray[0].length;i++){
 				var ca = parseInt(barray[0].charAt(i),16);
-				for(var w=0;w<4;w++){ if((i*4+w)<bd.cell.length){ bd.sQuC(i*4+w,(ca&Math.pow(2,3-w)?6:0));} }
+				for(var w=0;w<4;w++){ if((i*4+w)<bd.cellmax){ bd.sQuC(i*4+w,(ca&Math.pow(2,3-w)?6:0));} }
 				if((i*4+4)>=k.qcols*k.qrows){ break;}
 			}
 
@@ -556,8 +568,8 @@ Puzzles.icebarn.prototype = {
 
 		ans.getIceArea = function(){
 			iarea = new AreaInfo();
-			for(var cc=0;cc<bd.cell.length;cc++){ iarea.id[cc]=(bd.QuC(cc)==6?0:-1); }
-			for(var cc=0;cc<bd.cell.length;cc++){
+			for(var cc=0;cc<bd.cellmax;cc++){ iarea.id[cc]=(bd.QuC(cc)==6?0:-1); }
+			for(var cc=0;cc<bd.cellmax;cc++){
 				if(iarea.id[cc]!=0){ continue;}
 				iarea.max++;
 				iarea[iarea.max] = {clist:[]};
@@ -569,7 +581,7 @@ Puzzles.icebarn.prototype = {
 		};
 
 		ans.checkAllArrow = function(){
-			for(var id=0;id<bd.border.length;id++){
+			for(var id=0;id<bd.bdmax;id++){
 				if(bd.isArrow(id) && !bd.isLine(id)){
 					bd.sErB([id],3);
 					return false;
@@ -586,7 +598,7 @@ Puzzles.icebarn.prototype = {
 			if(dir==0){ return -1;}
 			if(!bd.isLine(bd.arrowin)){ bd.sErB([bd.arrowin],3); return 1;}
 
-			bd.sErB(bd.borders,2);
+			bd.sErBAll(2);
 			bd.sErB([bd.arrowin],1);
 
 			while(1){
@@ -612,7 +624,7 @@ Puzzles.icebarn.prototype = {
 				}
 			}
 
-			bd.sErB(bd.borders,0);
+			bd.sErBAll(0);
 
 			return 0;
 		};
