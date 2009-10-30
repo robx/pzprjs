@@ -43,7 +43,7 @@ LineManager.prototype = {
 
 		// lcnt, ltotal変数(配列)初期化
 		if(k.isCenterLine){
-			for(var c=0;c<bd.cell.length;c++){ this.lcnt[c]=0;}
+			for(var c=0;c<bd.cellmax;c++){ this.lcnt[c]=0;}
 			this.ltotal=[(k.qcols*k.qrows), 0, 0, 0, 0];
 		}
 		else{
@@ -53,14 +53,14 @@ LineManager.prototype = {
 
 		// その他の変数初期化
 		this.data = {max:0,id:[]};
-		for(var id=0;id<bd.border.length;id++){ this.data.id[id] = -1;}
+		for(var id=0;id<bd.bdmax;id++){ this.data.id[id] = -1;}
 	},
 
 	resetLcnts : function(){
 		if(this.disable){ return;}
 
 		this.init();
-		for(var id=0;id<bd.border.length;id++){ this.data.id[id] = (bd.isLine(id)?0:-1);
+		for(var id=0;id<bd.bdmax;id++){ this.data.id[id] = (bd.isLine(id)?0:-1);
 			if(bd.isLine(id)){
 				this.data.id[id] = 0;
 
@@ -72,7 +72,7 @@ LineManager.prototype = {
 				if(cc2!=-1){ this.ltotal[this.lcnt[cc2]]--; this.lcnt[cc2]++; this.ltotal[this.lcnt[cc2]]++;}
 			}
 		}
-		for(var id=0;id<bd.border.length;id++){
+		for(var id=0;id<bd.bdmax;id++){
 			if(this.data.id[id]!=0){ continue;}	// 既にidがついていたらスルー
 			var bx=bd.border[id].cx, by=bd.border[id].cy;
 			this.data.max++;
@@ -391,8 +391,8 @@ LineManager.prototype = {
 	//--------------------------------------------------------------------------------
 	getLineInfo : function(){
 		var info = new AreaInfo();
-		for(var id=0;id<bd.border.length;id++){ info.id[id]=(bd.isLine(id)?0:-1);}
-		for(var id=0;id<bd.border.length;id++){
+		for(var id=0;id<bd.bdmax;id++){ info.id[id]=(bd.isLine(id)?0:-1);}
+		for(var id=0;id<bd.bdmax;id++){
 			if(info.id[id]!=0){ continue;}
 			info.max++;
 			info.room[info.max] = {idlist:this.data[this.data.id[id]].idlist}; /* 参照だけなのでconcat()じゃなくてよい */
@@ -404,8 +404,8 @@ LineManager.prototype = {
 	},
 	getLareaInfo : function(){
 		var linfo = new AreaInfo();
-		for(var c=0;c<bd.cell.length;c++){ linfo.id[c]=(this.lcnt[c]>0?0:-1);}
-		for(var c=0;c<bd.cell.length;c++){
+		for(var c=0;c<bd.cellmax;c++){ linfo.id[c]=(this.lcnt[c]>0?0:-1);}
+		for(var c=0;c<bd.cellmax;c++){
 			if(linfo.id[c]!=0){ continue;}
 			linfo.max++;
 			linfo.room[linfo.max] = {idlist:[]};
@@ -487,7 +487,7 @@ AreaManager.prototype = {
 	initRarea : function(){
 		// 部屋情報初期化
 		this.room = {max:1,id:[],1:{top:0,clist:[]}};
-		for(var c=0;c<bd.cell.length;c++){ this.room.id[c] = 1; this.room[1].clist[c] = c;}
+		for(var c=0;c<bd.cellmax;c++){ this.room.id[c] = 1; this.room[1].clist[c] = c;}
 
 		// lcnt変数初期化
 		this.lcnt = [];
@@ -500,7 +500,7 @@ AreaManager.prototype = {
 		}
 
 		if(this.disroom){ return;}
-		for(var id=0;id<bd.border.length;id++){
+		for(var id=0;id<bd.bdmax;id++){
 			if(bd.isBorder(id)){
 				var cc1 = bd.crosscc1(id), cc2 = bd.crosscc2(id);
 				if(cc1!=-1){ this.lcnt[cc1]++;}
@@ -513,8 +513,8 @@ AreaManager.prototype = {
 
 		this.initRarea();
 		this.room.max = 0;
-		for(var cc=0;cc<bd.cell.length;cc++){ this.room.id[cc]=0;}
-		for(var cc=0;cc<bd.cell.length;cc++){
+		for(var cc=0;cc<bd.cellmax;cc++){ this.room.id[cc]=0;}
+		for(var cc=0;cc<bd.cellmax;cc++){
 			if(this.room.id[cc]!=0){ continue;}
 			this.room.max++;
 			this.room[this.room.max] = {top:-1,clist:[]};
@@ -668,15 +668,15 @@ AreaManager.prototype = {
 	//--------------------------------------------------------------------------------
 	initBarea : function(){
 		this.bcell = {max:0,id:[]};
-		for(var c=0;c<bd.cell.length;c++){
+		for(var c=0;c<bd.cellmax;c++){
 			this.bcell.id[c] = -1;
 		}
 	},
 	resetBarea : function(){
 		this.initBarea();
-		if(!this.numberColony){ for(var cc=0;cc<bd.cell.length;cc++){ this.bcell.id[cc]=(bd.isBlack(cc)?0:-1);} }
-		else                  { for(var cc=0;cc<bd.cell.length;cc++){ this.bcell.id[cc]=(bd.isNum(cc)  ?0:-1);} }
-		for(var cc=0;cc<bd.cell.length;cc++){
+		if(!this.numberColony){ for(var cc=0;cc<bd.cellmax;cc++){ this.bcell.id[cc]=(bd.isBlack(cc)?0:-1);} }
+		else                  { for(var cc=0;cc<bd.cellmax;cc++){ this.bcell.id[cc]=(bd.isNum(cc)  ?0:-1);} }
+		for(var cc=0;cc<bd.cellmax;cc++){
 			if(this.bcell.id[cc]!=0){ continue;}
 			this.bcell.max++;
 			this.bcell[this.bcell.max] = {clist:[]};
@@ -686,7 +686,7 @@ AreaManager.prototype = {
 
 	initWarea : function(){
 		this.wcell = {max:1,id:[],1:{clist:[]}};
-		for(var c=0;c<bd.cell.length;c++){
+		for(var c=0;c<bd.cellmax;c++){
 			this.wcell.id[c] = 1;
 			this.wcell[1].clist[c]=c;
 		}
@@ -694,8 +694,8 @@ AreaManager.prototype = {
 	resetWarea : function(){
 		this.initWarea();
 		this.wcell.max = 0;
-		for(var cc=0;cc<bd.cell.length;cc++){ this.wcell.id[cc]=(bd.isWhite(cc)?0:-1); }
-		for(var cc=0;cc<bd.cell.length;cc++){
+		for(var cc=0;cc<bd.cellmax;cc++){ this.wcell.id[cc]=(bd.isWhite(cc)?0:-1); }
+		for(var cc=0;cc<bd.cellmax;cc++){
 			if(this.wcell.id[cc]!=0){ continue;}
 			this.wcell.max++;
 			this.wcell[this.wcell.max] = {clist:[]};
@@ -818,8 +818,8 @@ AreaManager.prototype = {
 	getNumberInfo : function(){ return this.getAreaInfo(this.bcell);},
 	getAreaInfo : function(block){
 		var info = new AreaInfo();
-		for(var c=0;c<bd.cell.length;c++){ info.id[c]=(block.id[c]>0?0:-1);}
-		for(var c=0;c<bd.cell.length;c++){
+		for(var c=0;c<bd.cellmax;c++){ info.id[c]=(block.id[c]>0?0:-1);}
+		for(var c=0;c<bd.cellmax;c++){
 			if(info.id[c]!=0){ continue;}
 			info.max++;
 			var clist = block[block.id[c]].clist;

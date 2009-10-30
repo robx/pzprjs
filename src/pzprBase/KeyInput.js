@@ -335,7 +335,7 @@ KeyEvent.prototype = {
 	},
 	detectTarget : function(cc,ex){
 		if((cc==-1 && ex==-1) || (cc!=-1 && bd.QuC(cc)!=51)){ return -1;}
-		if(cc==bd.cell.length-1 || ex==k.qcols+k.qrows){ return -1;}
+		if(cc==bd.cellmax-1 || ex==k.qcols+k.qrows){ return -1;}
 		if(cc!=-1){
 			if	  ((bd.rt(cc)==-1 || bd.QuC(bd.rt(cc))==51) &&
 				   (bd.dn(cc)==-1 || bd.QuC(bd.dn(cc))==51)){ return -1;}
@@ -597,17 +597,17 @@ TCell.prototype = {
 	},
 	getTCC : function(){ return bd.cnum(mf((this.cursolx-1)/2), mf((this.cursoly-1)/2));},
 	setTCC : function(id){
-		if(id<0 || bd.cell.length<=id){ return;}
+		if(id<0 || bd.cellmax<=id){ return;}
 		this.cursolx = bd.cell[id].cx*2+1; this.cursoly = bd.cell[id].cy*2+1;
 	},
 	getTXC : function(){ return bd.xnum(mf(this.cursolx/2), mf(this.cursoly/2));},
 	setTXC : function(id){
-		if(!k.iscross || id<0 || bd.cross.length<=id){ return;}
+		if(!k.iscross || id<0 || bd.crossmax<=id){ return;}
 		this.cursolx = bd.cross[id].cx*2; this.cursoly = bd.cross[id].cy*2;
 	},
 	getTBC : function(){ return bd.bnum(this.cursolx, this.cursoly);},
 	setTBC : function(id){
-		if(!k.isborder || id<0 || bd.border.length<=id){ return;}
+		if(!k.isborder || id<0 || bd.bdmax<=id){ return;}
 		this.cursolx = bd.border[id].cx*2; this.cursoly = bd.border[id].cy;
 	}
 };

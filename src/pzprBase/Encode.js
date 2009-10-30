@@ -142,6 +142,9 @@ Encode.prototype = {
 			bd.inputarrowout(2 + bd.bdinside, 1);
 		}
 
+		if(this.uri.cols && this.uri.rows){
+			bd.initBoardSize(this.uri.cols, this.uri.rows);
+		}
 		if(this.uri.bstr){
 			um.disableRecord();
 			this.pzlimport(this.uri.type, this.uri.bstr);
@@ -213,13 +216,13 @@ Encode.prototype = {
 			else if(ca == '.'){ bd.sQnC(c, -2); c++;}
 			else{ c++;}
 
-			if(c > bd.cell.length){ break;}
+			if(c > bd.cellmax){ break;}
 		}
 		return bstr.substring(i,bstr.length);
 	},
 	encodeNumber10 : function(){
 		var cm="", count=0;
-		for(var i=0;i<bd.cell.length;i++){
+		for(var i=0;i<bd.cellmax;i++){
 			pstr = "";
 			var val = bd.QnC(i);
 
@@ -253,13 +256,13 @@ Encode.prototype = {
 			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-15);}
 			else{ c++;}
 
-			if(c > bd.cell.length){ break;}
+			if(c > bd.cellmax){ break;}
 		}
 		return bstr.substring(i,bstr.length);
 	},
 	encodeNumber16 : function(){
 		var count=0, cm="";
-		for(var i=0;i<bd.cell.length;i++){
+		for(var i=0;i<bd.cellmax;i++){
 			pstr = "";
 			var val = bd.QnC(i);
 
@@ -352,13 +355,13 @@ Encode.prototype = {
 			else if(ca>='a' && ca<='z'){ c+=(parseInt(ca,36)-9);}
 			else{ c++;}
 
-			if(c > bd.cell.length){ break;}
+			if(c > bd.cellmax){ break;}
 		}
 		return bstr.substring(i,bstr.length);
 	},
 	encodeArrowNumber16 : function(){
 		var cm = "", count = 0;
-		for(var c=0;c<bd.cell.length;c++){
+		for(var c=0;c<bd.cellmax;c++){
 			var pstr="";
 			if(bd.QnC(c)!=-1){
 				if     (bd.QnC(c)==-2){ pstr=((bd.DiC(c)==0?0:bd.DiC(c)  )+".");}
@@ -474,7 +477,7 @@ Encode.prototype = {
 	// enc.decodecross_old() Crossの問題部をデコードする(旧形式)
 	//---------------------------------------------------------------------------
 	decodecross_old : function(bstr){
-		for(var i=0;i<Math.min(bstr.length, bd.cross.length);i++){
+		for(var i=0;i<Math.min(bstr.length, bd.crossmax);i++){
 			if     (bstr.charAt(i)=="0"){ bd.sQnX(i,0);}
 			else if(bstr.charAt(i)=="1"){ bd.sQnX(i,1);}
 			else if(bstr.charAt(i)=="2"){ bd.sQnX(i,2);}
@@ -482,7 +485,7 @@ Encode.prototype = {
 			else if(bstr.charAt(i)=="4"){ bd.sQnX(i,4);}
 			else{ bd.sQnX(i,-1);}
 		}
-		for(var j=bstr.length;j<bd.cross.length;j++){ bd.sQnX(j,-1);}
+		for(var j=bstr.length;j<bd.crossmax;j++){ bd.sQnX(j,-1);}
 
 		return bstr.substring(i,bstr.length);
 	},

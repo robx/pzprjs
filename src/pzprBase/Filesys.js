@@ -49,6 +49,7 @@ FileIO.prototype = {
 		um.disableRecord();
 		var result = this.filedecode(array,type);
 		um.enableRecord();
+		um.allerase();
 
 		if(result){
 			base.resetInfo();
@@ -66,7 +67,7 @@ FileIO.prototype = {
 			row = col = parseInt(array.shift(), 10);
 		}
 		if(row<=0 || col<=0){ return false;}
-		menu.ex.newboard2(col, row);
+		bd.initBoardSize(col, row);
 
 		if(type==1){
 			var l = 0;

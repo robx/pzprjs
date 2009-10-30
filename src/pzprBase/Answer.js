@@ -86,7 +86,7 @@ AnsCheck.prototype = {
 	// ans.setErrLareaById()   ひとつながりになった線が存在するマスにエラーを設定する
 	//---------------------------------------------------------------------------
 	checkdir4Cell : function(cc, func){
-		if(cc<0 || cc>=bd.cell.length){ return 0;}
+		if(cc<0 || cc>=bd.cellmax){ return 0;}
 		var cnt = 0;
 		if(bd.up(cc)!=-1 && func(bd.up(cc))){ cnt++;}
 		if(bd.dn(cc)!=-1 && func(bd.dn(cc))){ cnt++;}
@@ -98,7 +98,7 @@ AnsCheck.prototype = {
 	setErrLareaByCell : function(cinfo, c, val){ this.setErrLareaById(cinfo, cinfo.id[c], val); },
 	setErrLareaById : function(cinfo, areaid, val){
 		var blist = [];
-		for(var id=0;id<bd.border.length;id++){
+		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isLine(id)){ continue;}
 			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
 			if(cc1!=-1 && cc2!=-1 && cinfo.id[cc1]==areaid && cinfo.id[cc1]==cinfo.id[cc2]){ blist.push(id);}
@@ -106,7 +106,7 @@ AnsCheck.prototype = {
 		bd.sErB(blist,val);
 
 		var clist = [];
-		for(var c=0;c<bd.cell.length;c++){ if(cinfo.id[c]==areaid && bd.QnC(c)!=-1){ clist.push(c);} }
+		for(var c=0;c<bd.cellmax;c++){ if(cinfo.id[c]==areaid && bd.QnC(c)!=-1){ clist.push(c);} }
 		bd.sErC(clist,4);
 	},
 
@@ -117,21 +117,21 @@ AnsCheck.prototype = {
 	// ans.checkSideCell()  隣り合った2つのセルが条件func==trueの時、エラーを設定する
 	//---------------------------------------------------------------------------
 	checkAllCell : function(func){
-		for(var c=0;c<bd.cell.length;c++){
+		for(var c=0;c<bd.cellmax;c++){
 			if(func(c)){ bd.sErC([c],1); return false;}
 		}
 		return true;
 	},
 	checkOneArea : function(cinfo){
 		if(cinfo.max>1){
-			if(this.performAsLine){ bd.sErB(bd.borders,2); this.setErrLareaByCell(cinfo,1,1); }
+			if(this.performAsLine){ bd.sErBAll(2); this.setErrLareaByCell(cinfo,1,1); }
 			if(!this.performAsLine || k.puzzleid=="firefly"){ bd.sErC(cinfo.room[1].idlist,1);}
 			return false;
 		}
 		return true;
 	},
 	check2x2Block : function(func){
-		for(var c=0;c<bd.cell.length;c++){
+		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].cx<k.qcols-1 && bd.cell[c].cy<k.qrows-1){
 				if( func(c) && func(c+1) && func(c+k.qcols) && func(c+k.qcols+1) ){
 					bd.sErC([c,c+1,c+k.qcols,c+k.qcols+1],1);
@@ -142,7 +142,7 @@ AnsCheck.prototype = {
 		return true;
 	},
 	checkSideCell : function(func){
-		for(var c=0;c<bd.cell.length;c++){
+		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].cx<k.qcols-1 && func(c,c+1)){
 				bd.sErC([c,c+1],1); return false;
 			}
@@ -185,7 +185,7 @@ AnsCheck.prototype = {
 	// ans.checkQnumCross()  crossが条件func==falseの時、エラーを設定する
 	//---------------------------------------------------------------------------
 	checkQnumCross : function(func){	//func(cr,bcnt){} -> エラーならfalseを返す関数にする
-		for(var c=0;c<bd.cross.length;c++){
+		for(var c=0;c<bd.crossmax;c++){
 			if(bd.QnX(c)<0){ continue;}
 			if(!func(bd.QnX(c), bd.bcntCross(bd.cross[c].cx, bd.cross[c].cy))){
 				bd.sErX([c],1);
@@ -204,7 +204,7 @@ AnsCheck.prototype = {
 	checkOneLoop : function(){
 		var xinfo = line.getLineInfo();
 		if(xinfo.max>1){
-			bd.sErB(bd.borders,2);
+			bd.sErBAll(2);
 			bd.sErB(xinfo.room[1].idlist,1);
 			return false;
 		}
@@ -213,10 +213,10 @@ AnsCheck.prototype = {
 
 	checkLcntCell : function(val){
 		if(line.ltotal[val]==0){ return true;}
-		for(var c=0;c<bd.cell.length;c++){
+		for(var c=0;c<bd.cellmax;c++){
 			if(line.lcnt[c]==val){
 				if(!this.performAsLine){ bd.sErC([c],1);}
-				else{ bd.sErB(bd.borders,2); this.setCellLineError(c,true);}
+				else{ bd.sErBAll(2); this.setCellLineError(c,true);}
 				return false;
 			}
 		}
@@ -244,13 +244,13 @@ AnsCheck.prototype = {
 	// ans.checkenableLineParts() '一部があかされている'線の部分に、線が引かれているか判定する
 	//---------------------------------------------------------------------------
 	checkdir4Border : function(){
-		for(var c=0;c<bd.cell.length;c++){
+		for(var c=0;c<bd.cellmax;c++){
 			if(bd.QnC(c)>=0 && this.checkdir4Border1(c)!=bd.QnC(c)){ bd.sErC([c],1); return false;}
 		}
 		return true;
 	},
 	checkdir4Border1 : function(cc){
-		if(cc<0 || cc>=bd.cell.length){ return 0;}
+		if(cc<0 || cc>=bd.cellmax){ return 0;}
 		var cnt = 0;
 		var cx = bd.cell[cc].cx; var cy = bd.cell[cc].cy;
 		if( (k.isoutsideborder==0 && cy==0        ) || bd.isBorder(bd.bnum(cx*2+1,cy*2  )) ){ cnt++;}
@@ -266,7 +266,7 @@ AnsCheck.prototype = {
 					(bd.db(i)!=-1 && bd.isLine(bd.db(i)) && bd.isnoLPdown(i)) ||
 					(bd.lb(i)!=-1 && bd.isLine(bd.lb(i)) && bd.isnoLPleft(i)) ||
 					(bd.rb(i)!=-1 && bd.isLine(bd.rb(i)) && bd.isnoLPright(i)) ); };
-		for(var i=0;i<bd.cell.length;i++){ if(func(i)){ bd.sErC([i],1); return false;} }
+		for(var i=0;i<bd.cellmax;i++){ if(func(i)){ bd.sErC([i],1); return false;} }
 		return true;
 	},
 
@@ -288,7 +288,7 @@ AnsCheck.prototype = {
 	checkOneNumber : function(cinfo, eval, func){
 		for(var id=1;id<=cinfo.max;id++){
 			if(eval( bd.QnC(this.getQnumCellInArea(cinfo,id)), this.getCellsOfRoom(cinfo, id, func) )){
-				if(this.performAsLine){ bd.sErB(bd.borders,2); this.setErrLareaById(cinfo,id,1);}
+				if(this.performAsLine){ bd.sErBAll(2); this.setErrLareaById(cinfo,id,1);}
 				else{ bd.sErC(cinfo.room[id].idlist,(k.puzzleid!="tateyoko"?1:4));}
 				return false;
 			}
@@ -336,7 +336,7 @@ AnsCheck.prototype = {
 			for(var s=r+1;s<=rinfo.max;s++){ adjs[r][s]=0;}
 		}
 
-		for(var id=0;id<bd.border.length;id++){
+		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isBorder(id)){ continue;}
 			var cc1=bd.cc1(id), cc2=bd.cc2(id);
 			if(cc1==-1 || cc2==-1){ continue;}
@@ -363,7 +363,7 @@ AnsCheck.prototype = {
 	},
 
 	checkSideAreaCell : function(rinfo, func, flag){
-		for(var id=0;id<bd.border.length;id++){
+		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isBorder(id)){ continue;}
 			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
 			if(cc1!=-1 && cc2!=-1 && func(cc1, cc2)){
@@ -378,7 +378,7 @@ AnsCheck.prototype = {
 	checkSeqBlocksInRoom : function(){
 		for(var id=1;id<=area.room.max;id++){
 			var data = {max:0,id:[]};
-			for(var c=0;c<bd.cell.length;c++){ data.id[c] = ((area.room.id[c]==id && bd.isBlack(c))?0:-1);}
+			for(var c=0;c<bd.cellmax;c++){ data.id[c] = ((area.room.id[c]==id && bd.isBlack(c))?0:-1);}
 			for(var c=0;c<k.qcols*k.qrows;c++){
 				if(data.id[c]!=0){ continue;}
 				data.max++;
@@ -396,14 +396,14 @@ AnsCheck.prototype = {
 	checkSameObjectInRoom : function(rinfo, getvalue){
 		var d = [];
 		for(var i=1;i<=rinfo.max;i++){ d[i]=-1;}
-		for(var c=0;c<bd.cell.length;c++){
+		for(var c=0;c<bd.cellmax;c++){
 			if(rinfo.id[c]==-1 || getvalue(c)==-1){ continue;}
 			if(d[rinfo.id[c]]==-1 && getvalue(c)!=-1){ d[rinfo.id[c]] = getvalue(c);}
 			else if(d[rinfo.id[c]]!=getvalue(c)){
-				if(this.performAsLine){ bd.sErB(bd.borders,2); this.setErrLareaByCell(rinfo,c,1);}
+				if(this.performAsLine){ bd.sErBAll(2); this.setErrLareaByCell(rinfo,c,1);}
 				else{ bd.sErC(rinfo.room[rinfo.id[c]].idlist,1);}
 				if(k.puzzleid=="kaero"){
-					for(var cc=0;cc<bd.cell.length;cc++){
+					for(var cc=0;cc<bd.cellmax;cc++){
 						if(rinfo.id[c]==rinfo.id[cc] && this.getBeforeCell(cc)!=-1 && rinfo.id[c]!=rinfo.id[this.getBeforeCell(cc)]){
 							bd.sErC([this.getBeforeCell(cc)],4);
 						}
@@ -417,14 +417,14 @@ AnsCheck.prototype = {
 	checkObjectRoom : function(rinfo, getvalue){
 		var d = [];
 		var dmax = 0;
-		for(var c=0;c<bd.cell.length;c++){ if(dmax<getvalue(c)){ dmax=getvalue(c);} }
+		for(var c=0;c<bd.cellmax;c++){ if(dmax<getvalue(c)){ dmax=getvalue(c);} }
 		for(var i=0;i<=dmax;i++){ d[i]=-1;}
-		for(var c=0;c<bd.cell.length;c++){
+		for(var c=0;c<bd.cellmax;c++){
 			if(getvalue(c)==-1){ continue;}
 			if(d[getvalue(c)]==-1){ d[getvalue(c)] = rinfo.id[c];}
 			else if(d[getvalue(c)]!=rinfo.id[c]){
 				var clist = [];
-				for(var cc=0;cc<bd.cell.length;cc++){
+				for(var cc=0;cc<bd.cellmax;cc++){
 					if(k.puzzleid=="kaero"){ if(getvalue(c)==bd.QnC(cc)){ clist.push(cc);}}
 					else{ if(rinfo.id[c]==rinfo.id[cc] || d[getvalue(c)]==rinfo.id[cc]){ clist.push(cc);} }
 				}
@@ -445,7 +445,7 @@ AnsCheck.prototype = {
 			if(k.isoutsidecross==0 && k.isborderAsLine==0 && (cx==0||cy==0||cx==k.qcols||cy==k.qrows)){ continue;}
 			var lcnts = (!k.isborderAsLine?area.lcnt[i]:line.lcnt[i]);
 			if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(cx, cy))==1) || (bp==2&&bd.QnX(bd.xnum(cx, cy))!=1) )){
-				bd.sErB(bd.borders,2);
+				bd.sErBAll(2);
 				this.setCrossBorderError(cx,cy);
 				return false;
 			}

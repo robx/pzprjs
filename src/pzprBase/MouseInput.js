@@ -657,7 +657,7 @@ MouseEvent.prototype = {
 		}
 		if(id==-1){ return;}
 
-		bd.sErB(bd.borders,2); bd.sErB(line.data[line.data.id[id]].idlist,1);
+		bd.sErBAll(2); bd.sErB(line.data[line.data.id[id]].idlist,1);
 		ans.errDisp = true;
 		pc.paintAll();
 	}
