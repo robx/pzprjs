@@ -27,8 +27,6 @@ MenuExec.prototype = {
 
 	//------------------------------------------------------------------------------
 	// menu.ex.newboard()  新規盤面を作成する
-	// menu.ex.newboard2() サイズ(col×row)の新規盤面を作成する(実行部)
-	// menu.ex.bdcnt()     borderの数を返す(newboard2()から呼ばれる)
 	//------------------------------------------------------------------------------
 	newboard : function(e){
 		if(menu.pop){
@@ -44,72 +42,13 @@ MenuExec.prototype = {
 				else if(document.newboard.size[3].checked){ col=row= 4;}
 			}
 
-			if(col>0 && row>0){ this.newboard2(col,row);}
+			if(col>0 && row>0){ bd.initBoardSize(col,row);}
+			um.allerase();
 			menu.popclose();
+			base.resetInfo();
 			base.resize_canvas();				// Canvasを更新する
 		}
 	},
-	newboard2 : function(col,row){
-		// 既存のサイズより小さいならdeleteする
-		for(var n=k.qcols*k.qrows-1;n>=col*row;n--){
-			if(bd.cell[n].numobj) { bd.cell[n].numobj.remove();}
-			if(bd.cell[n].numobj2){ bd.cell[n].numobj2.remove();}
-			delete bd.cell[n]; bd.cell.pop();
-		}
-		if(k.iscross){ for(var n=(k.qcols+1)*(k.qrows+1)-1;n>=(col+1)*(row+1);n--){
-			if(bd.cross[n].numobj){ bd.cross[n].numobj.remove();}
-			delete bd.cross[n]; bd.cross.pop();
-		}}
-		if(k.isborder){ for(var n=this.bdcnt(k.qcols,k.qrows)-1;n>=this.bdcnt(col,row);n--){
-			if(bd.border[n].numobj){ bd.border[n].numobj.remove();}
-			delete bd.border[n]; bd.border.pop(); bd.borders.pop();
-		}}
-		if(k.isextendcell==1){ for(var n=k.qcols+k.qrows;n>=col+row+1;n--){
-			if(bd.excell[n].numobj) { bd.excell[n].numobj.remove();}
-			if(bd.excell[n].numobj2){ bd.excell[n].numobj2.remove();}
-			delete bd.excell[n]; bd.excell.pop();
-		}}
-		else if(k.isextendcell==2){ for(var n=2*k.qcols+2*k.qrows+3;n>=2*col+2*row+4;n--){
-			if(bd.excell[n].numobj) { bd.excell[n].numobj.remove();}
-			if(bd.excell[n].numobj2){ bd.excell[n].numobj2.remove();}
-			delete bd.excell[n]; bd.excell.pop();
-		}}
-
-		// 既存のサイズより大きいならnewを行う
-		for(var i=k.qcols*k.qrows;i<col*row;i++){ bd.cell.push(new Cell());}
-		if(k.iscross){ for(var i=(k.qcols+1)*(k.qrows+1);i<(col+1)*(row+1);i++)         { bd.cross.push(new Cross());} }
-		if(k.isborder){ for(var i=this.bdcnt(k.qcols,k.qrows);i<this.bdcnt(col,row);i++){ bd.border.push(new Border()); bd.borders[i]=i;} }
-		if(k.isextendcell==1){ for(var i=k.qcols+k.qrows+1;i<col+row+1;i++)        { bd.excell.push(new Cell());} }
-		if(k.isextendcell==2){ for(var i=2*k.qcols+2*k.qrows+4;i<2*col+2*row+4;i++){ bd.excell.push(new Cell());} }
-
-		// サイズの変更
-		if(k.puzzleid=="icebarn"){
-			if(bd.arrowin<k.qcols+bd.bdinside){ if(bd.arrowin>col+bd.bdinside){ bd.arrowin=col+bd.bdinside-1;} }
-			else{ if(bd.arrowin>col+row+bd.bdinside){ bd.arrowin=col+row+bd.bdinside-1;} }
-			if(bd.arrowout<k.qcols+bd.bdinside){ if(bd.arrowout>col+bd.bdinside){ bd.arrowout=col+bd.bdinside-1;} }
-			else{ if(bd.arrowout>col+row+bd.bdinside){ bd.arrowout=col+row+bd.bdinside-1;} }
-			if(bd.arrowin==bd.arrowout){ bd.arrowin--;}
-		}
-		if(k.puzzleid=="slalom"){
-			bd.startid = 0;
-			bd.hinfo.init();
-		}
-		tc.maxx += (col-k.qcols)*2;
-		tc.maxy += (row-k.qrows)*2;
-		k.qcols = col; k.qrows = row;
-
-		// cellinit() = allclear()+setpos()を呼び出す
-		for(var i=0;i<bd.cell.length;i++){ bd.cell[i].allclear(i);}
-		if(k.iscross){ for(var i=0;i<bd.cross.length;i++){ bd.cross[i].allclear(i);} }
-		if(k.isborder){ for(var i=0;i<bd.border.length;i++){ bd.border[i].allclear(i);} }
-		if(k.isextendcell!=0){ for(var i=0;i<bd.excell.length;i++){ bd.excell[i].allclear();} }
-
-		um.allerase();
-		bd.setposAll();
-
-		base.resetInfo();
-	},
-	bdcnt : function(col,row){ return 2*col*row+(k.isoutsideborder==0?-(col+row):(col+row));},
 
 	//------------------------------------------------------------------------------
 	// menu.ex.urlinput()   URLを入力する
@@ -119,7 +58,6 @@ MenuExec.prototype = {
 	urlinput : function(e){
 		if(menu.pop){
 			enc.parseURI(document.urlinput.ta.value);
-			if(enc.uri.cols && enc.uri.rows){ this.newboard2(enc.uri.cols, enc.uri.rows);}
 			enc.pzlinput();
 
 			tm.reset();
@@ -294,7 +232,6 @@ MenuExec.prototype = {
 
 			func = function(id){ var m=menu.ex.distObj(key,'border',id); return (m==1||m==2);};
 			this.expandGroup('border', bd.border, 2*number+(k.isoutsideborder==0?-1:1), func);
-			for(var len=bd.border.length,i=len-(2*number+(k.isoutsideborder==0?-1:1));i<len;i++){ bd.borders[i]=i;} 
 
 			// 拡大時に、境界線は伸ばしちゃいます。
 			if(k.isborderAsLine==0){ this.expandborder(key);}
@@ -310,11 +247,11 @@ MenuExec.prototype = {
 		this.adjustSpecial2(5,key);
 	},
 	expandGroup : function(type,group,margin,insfunc){
-		for(var len=group.length,i=len;i<len+margin;i++){ group.push(this.getnewObj(type,i));}
+		for(var len=group.length,i=len;i<len+margin;i++){ group.push(bd.getnewObj(type,i));}
 		this.setposObj(type);
 		for(var i=group.length-1;i>=0;i--){
 			if(insfunc(i)){
-				group[i] = this.getnewObj(type,i);
+				group[i] = bd.getnewObj(type,i);
 				margin--;
 			}
 			else if(margin>0){ group[i] = group[i-margin];}
@@ -344,7 +281,6 @@ MenuExec.prototype = {
 
 			func = function(id){ var m=menu.ex.distObj(key,'border',id); return (m==1||m==2);};
 			margin = this.reduceGroup('border', bd.border, func);
-			for(var i=0;i<margin;i++){ bd.borders.pop();}
 		}
 		if(k.isextendcell!=0){
 			func = function(id){ return (menu.ex.distObj(key,'excell',id)==0);};
@@ -480,7 +416,7 @@ MenuExec.prototype = {
 		if(um.undoExec){ return;} // Undo時は、後でオブジェクトを代入するので下の処理はパス
 
 		bd.setposBorders();
-		for(var i=0;i<bd.border.length;i++){
+		for(var i=0;i<bd.bdmax;i++){
 			if(this.distObj(key,'border',i)!=1){ continue;}
 
 			var source = this.innerBorder(key,i);
@@ -492,7 +428,7 @@ MenuExec.prototype = {
 	// 関数作る必要があるので無理やり移動させる
 	expandborderAsLine : function(key){
 		bd.setposBorders();
-		for(var i=0;i<bd.border.length;i++){
+		for(var i=0;i<bd.bdmax;i++){
 			if(this.distObj(key,'border',i)!=2){ continue;}
 
 			var source = this.outerBorder(key,i);
@@ -502,7 +438,7 @@ MenuExec.prototype = {
 	},
 	// borderAsLine時の無理やりがなんとかかんとか
 	reduceborderAsLine : function(key){
-		for(var i=0;i<bd.border.length;i++){
+		for(var i=0;i<bd.bdmax;i++){
 			if(this.distObj(key,'border',i)!=0){ continue;}
 
 			var source = this.innerBorder(key,i);
@@ -539,7 +475,6 @@ MenuExec.prototype = {
 
 	//---------------------------------------------------------------------------
 	// menu.ex.setposObj()  指定されたタイプのsetpos関数を呼び出す
-	// menu.ex.getnewObj()  指定されたタイプの新しいオブジェクトを返す
 	// menu.ex.distObj()    上下左右いずれかの外枠との距離を求める
 	//---------------------------------------------------------------------------
 	setposObj : function(type){
@@ -547,11 +482,6 @@ MenuExec.prototype = {
 		else if(type=='cross') { bd.setposCrosses();}
 		else if(type=='border'){ bd.setposBorders();}
 		else if(type=='excell'){ bd.setposEXcells();}
-	},
-	getnewObj : function(type,id){
-		if(type=='cell' || type=='excell'){ return (new Cell(id));}
-		else if(type=='cross') { return (new Cross(id));}
-		else if(type=='border'){ return (new Border(id));}
 	},
 	distObj : function(key,type,id){
 		if(type=='cell'){
@@ -729,37 +659,41 @@ MenuExec.prototype = {
 		if(confirm(menu.isLangJP()?"回答を消去しますか？":"Do you want to erase the Answer?")){
 			um.newOperation(true);
 			{
-				for(var i=0;i<bd.cell.length;i++){
+				for(var i=0;i<bd.cellmax;i++){
 					if(bd.QaC(i)!=bd.def.cell.qans){ um.addOpe('cell','qans',i,bd.QaC(i),bd.def.cell.qans);}
 					if(bd.QsC(i)!=bd.def.cell.qsub){ um.addOpe('cell','qsub',i,bd.QsC(i),bd.def.cell.qsub);}
 				}
 			}
 			if(k.isborder){
-				for(var i=0;i<bd.border.length;i++){
+				for(var i=0;i<bd.bdmax;i++){
 					if(bd.QaB(i)!=bd.def.border.qans){ um.addOpe('border','qans',i,bd.QaB(i),bd.def.border.qans);}
 					if(bd.LiB(i)!=bd.def.border.line){ um.addOpe('border','line',i,bd.LiB(i),bd.def.border.line);}
 					if(bd.QsB(i)!=bd.def.border.qsub){ um.addOpe('border','qsub',i,bd.QsB(i),bd.def.border.qsub);}
 				}
 			}
 			if(!g.vml){ pc.flushCanvasAll();}
+
 			bd.ansclear();
+			base.resetInfo();
+			pc.paintAll();
 		}
 	},
 	ASconfirm : function(){
 		if(confirm(menu.isLangJP()?"補助記号を消去しますか？":"Do you want to erase the auxiliary marks?")){
 			um.newOperation(true);
 			{
-				for(var i=0;i<bd.cell.length;i++){
+				for(var i=0;i<bd.cellmax;i++){
 					if(bd.QsC(i)!=bd.def.cell.qsub){ um.addOpe('cell','qsub',i,bd.QsC(i),bd.def.cell.qsub);}
 				}
 			}
 			if(k.isborder){
-				for(var i=0;i<bd.border.length;i++){
+				for(var i=0;i<bd.bdmax;i++){
 					if(bd.QsB(i)!=bd.def.border.qsub){ um.addOpe('border','qsub',i,bd.QsB(i),bd.def.border.qsub);}
 				}
 			}
 			if(!g.vml){ pc.flushCanvasAll();}
 			bd.subclear();
+			pc.paintAll();
 		}
 	}
 };
