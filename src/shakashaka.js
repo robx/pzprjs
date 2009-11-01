@@ -223,7 +223,7 @@ Puzzles.shakashaka.prototype = {
 	// URLエンコード/デコード処理
 	encode_init : function(){
 		enc.pzlimport = function(type, bstr){
-			bstr = this.decode4(bstr, bd.sQnC.bind(bd), k.qcols*k.qrows);
+			bstr = this.decode4Cell(bstr);
 		};
 		enc.pzlexport = function(type){
 			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
@@ -231,7 +231,7 @@ Puzzles.shakashaka.prototype = {
 			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
 		};
 		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encode4(bd.QnC.bind(bd), k.qcols*k.qrows);
+			return "/"+k.qcols+"/"+k.qrows+"/"+this.encode4Cell();
 		};
 	},
 

@@ -153,7 +153,7 @@ Puzzles.lightup.prototype = {
 	// URLエンコード/デコード処理
 	encode_init : function(){
 		enc.pzlimport = function(type, bstr){
-			if(type==0||type==1){ bstr = this.decode4(bstr, bd.sQnC.bind(bd), k.qcols*k.qrows);}
+			if(type==0||type==1){ bstr = this.decode4Cell(bstr);}
 			else if(type==2)    { bstr = this.decodeKanpen(bstr); }
 		};
 		enc.pzlexport= function(type){
@@ -163,7 +163,7 @@ Puzzles.lightup.prototype = {
 			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
 		};
 		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encode4(bd.QnC.bind(bd), k.qcols*k.qrows);
+			return "/"+k.qcols+"/"+k.qrows+"/"+this.encode4Cell();
 		};
 
 		enc.decodeKanpen = function(bstr){

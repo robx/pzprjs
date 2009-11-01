@@ -140,7 +140,7 @@ Puzzles.ichimaga.prototype = {
 	// URLエンコード/デコード処理
 	encode_init : function(){
 		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ this.decode4(bstr, bd.sQnC.bind(bd), k.qcols*k.qrows);}
+			if(type==0 || type==1){ this.decode4Cell(bstr);}
 
 			if(k.callmode=="pmake"){
 				if     (this.checkpflag("m")){ menu.setVal('puztype',2);}
@@ -165,7 +165,7 @@ Puzzles.ichimaga.prototype = {
 			if     (menu.getVal('puztype')==2){ pzlflag="/m";}
 			else if(menu.getVal('puztype')==3){ pzlflag="/x";}
 
-			return ""+pzlflag+"/"+k.qcols+"/"+k.qrows+"/"+this.encode4(bd.QnC.bind(bd), k.qcols*k.qrows);
+			return ""+pzlflag+"/"+k.qcols+"/"+k.qrows+"/"+this.encode4Cell();
 		};
 
 		//---------------------------------------------------------

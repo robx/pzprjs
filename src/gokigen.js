@@ -210,7 +210,7 @@ Puzzles.gokigen.prototype = {
 	encode_init : function(){
 		enc.pzlimport = function(type, bstr){
 			if((type==1 && this.checkpflag("c")) || (type==0 && !this.checkpflag("d"))){
-				bstr = this.decode4(bstr, bd.sQnX.bind(bd), (k.qcols+1)*(k.qrows+1));
+				bstr = this.decode4Cross(bstr);
 			}
 			else{ bstr = this.decodecross_old(bstr);}
 		};
@@ -220,7 +220,7 @@ Puzzles.gokigen.prototype = {
 			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
 		};
 		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encode4(bd.QnX.bind(bd), (k.qcols+1)*(k.qrows+1));
+			return "/"+k.qcols+"/"+k.qrows+"/"+this.encode4Cross();
 		};
 	},
 
