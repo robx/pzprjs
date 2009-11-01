@@ -153,7 +153,7 @@ Puzzles.icebarn.prototype = {
 			this.setArrow(this.arrowout, ((dir+1)%2)+1);
 		};
 		bd.getArrow = function(id){ return this.QuB(id); };
-		bd.setArrow = function(id,val){ this.sQuB(id,val);};
+		bd.setArrow = function(id,val){ if(id!==-1){ this.sQuB(id,val);}};
 		bd.isArrow  = function(id){ return (this.QuB(id)>0);};
 
 		bd.initSpecial = function(col,row){

@@ -410,5 +410,16 @@ Puzzles.loopsp.prototype = {
 			}
 			return true;
 		};
+
+		line.LineList2Clist = function(idlist){
+			var clist = [];
+			clist.include = function(val){ for(var i=0,len=this.length;i<len;i++){ if(this[i]==val) return true;} return false;};
+			for(var i=0,len=idlist.length;i<len;i++){
+				var cc1 = bd.cc1(idlist[i]), cc2 = bd.cc2(idlist[i]);
+				if(cc1!=-1 && !clist.include(cc1)){ clist.push(cc1);}
+				if(cc2!=-1 && !clist.include(cc2)){ clist.push(cc2);}
+			}
+			return clist;
+		};
 	}
 };

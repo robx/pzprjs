@@ -86,7 +86,7 @@ Puzzles.kurochute.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.qsubcolor1 = "white";
-		pc.qsubcolor2 = "rgb(255, 255, 160)";
+		pc.qsubcolor2 = "rgb(224, 224, 224)";
 
 		pc.paint = function(x1,y1,x2,y2){
 			x2++; y2++;
