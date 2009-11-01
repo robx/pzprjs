@@ -55,7 +55,7 @@ Puzzles.heyawake.prototype = {
 	input_init : function(){
 		// ƒ}ƒEƒX“ü—ÍŒn
 		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedRB(x,y);}
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed(x,y);}
 			else if(k.mode==1) this.inputborder(x,y);
 			else if(k.mode==3) this.inputcell(x,y);
 		};

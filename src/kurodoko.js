@@ -55,7 +55,7 @@ Puzzles.kurodoko.prototype = {
 	input_init : function(){
 		// ƒ}ƒEƒX“ü—ÍŒn
 		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedRB(x,y);}
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed(x,y);}
 			else if(k.mode==1){
 				if(!kp.enabled()){ this.inputqnum(x,y,k.qcols+k.qrows-1);}
 				else{ kp.display(x,y);}
