@@ -38,7 +38,7 @@ FileIO.prototype = {
 	fileopen : function(array, type){
 		this.filever = 0;
 
-		if(type==1){
+		if(type===1){
 			var pgstr = array.shift();
 			if(!pgstr.match(/pzprv3\.?(\d+)?/)){ alert('ぱずぷれv3形式のファイルではありません。');}
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
@@ -46,9 +46,9 @@ FileIO.prototype = {
 			if(array.shift()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。');}
 		}
 
-		um.disableRecord();
+		um.disableRecord(); um.disableInfo();
 		var result = this.filedecode(array,type);
-		um.enableRecord();
+		um.enableRecord(); um.enableInfo();
 		um.allerase();
 
 		if(result){
@@ -58,10 +58,10 @@ FileIO.prototype = {
 	},
 	filedecode : function(array, type){
 		var row, col;
-		if(k.puzzleid!="sudoku"){
+		if(k.puzzleid!=="sudoku"){
 			row = parseInt(array.shift(), 10);
 			col = parseInt(array.shift(), 10);
-			if(type==2 && k.puzzleid=="kakuro"){ row--; col--;}
+			if(type===2 && k.puzzleid==="kakuro"){ row--; col--;}
 		}
 		else{
 			row = col = parseInt(array.shift(), 10);
@@ -69,29 +69,29 @@ FileIO.prototype = {
 		if(row<=0 || col<=0){ return false;}
 		bd.initBoardSize(col, row);
 
-		if(type==1){
+		if(type===1){
 			var l = 0;
 			var item = 0;
 			var stacks = [];
 			while(1){
 				if(array.length<=0){ break;}
 				stacks.push( array.shift() ); l++;
-				if     (k.fstruct[item] == "cellques41_42"&& l>=k.qrows    ){ this.decodeCellQues41_42(stacks); }
-				else if(k.fstruct[item] == "cellqnum"     && l>=k.qrows    ){ this.decodeCellQnum(stacks);      }
-				else if(k.fstruct[item] == "cellqnum51"   && l>=k.qrows+1  ){ this.decodeCellQnum51(stacks);    }
-				else if(k.fstruct[item] == "cellqnumb"    && l>=k.qrows    ){ this.decodeCellQnumb(stacks);     }
-				else if(k.fstruct[item] == "cellqnumans"  && l>=k.qrows    ){ this.decodeCellQnumAns(stacks);   }
-				else if(k.fstruct[item] == "celldirecnum" && l>=k.qrows    ){ this.decodeCellDirecQnum(stacks); }
-				else if(k.fstruct[item] == "cellans"      && l>=k.qrows    ){ this.decodeCellAns(stacks);       }
-				else if(k.fstruct[item] == "cellqanssub"  && l>=k.qrows    ){ this.decodeCellQanssub(stacks);   }
-				else if(k.fstruct[item] == "cellqsub"     && l>=k.qrows    ){ this.decodeCellQsub(stacks);      }
-				else if(k.fstruct[item] == "crossnum"     && l>=k.qrows+1  ){ this.decodeCrossNum(stacks);      }
-				else if(k.fstruct[item] == "borderques"   && l>=2*k.qrows-1){ this.decodeBorderQues(stacks);    }
-				else if(k.fstruct[item] == "borderline"   && l>=2*k.qrows-1){ this.decodeBorderLine(stacks);    }
-				else if(k.fstruct[item] == "borderans"    && l>=2*k.qrows-1){ this.decodeBorderAns(stacks);     }
-				else if(k.fstruct[item] == "borderans2"   && l>=2*k.qrows+1){ this.decodeBorderAns2(stacks);    }
-				else if(k.fstruct[item] == "arearoom"     && l>=k.qrows+1  ){ this.decodeAreaRoom(stacks);      }
-				else if(k.fstruct[item] == "others" && this.decodeOthers(stacks) ){ }
+				if     (k.fstruct[item] === "cellques41_42"&& l>=k.qrows    ){ this.decodeCellQues41_42(stacks); }
+				else if(k.fstruct[item] === "cellqnum"     && l>=k.qrows    ){ this.decodeCellQnum(stacks);      }
+				else if(k.fstruct[item] === "cellqnum51"   && l>=k.qrows+1  ){ this.decodeCellQnum51(stacks);    }
+				else if(k.fstruct[item] === "cellqnumb"    && l>=k.qrows    ){ this.decodeCellQnumb(stacks);     }
+				else if(k.fstruct[item] === "cellqnumans"  && l>=k.qrows    ){ this.decodeCellQnumAns(stacks);   }
+				else if(k.fstruct[item] === "celldirecnum" && l>=k.qrows    ){ this.decodeCellDirecQnum(stacks); }
+				else if(k.fstruct[item] === "cellans"      && l>=k.qrows    ){ this.decodeCellAns(stacks);       }
+				else if(k.fstruct[item] === "cellqanssub"  && l>=k.qrows    ){ this.decodeCellQanssub(stacks);   }
+				else if(k.fstruct[item] === "cellqsub"     && l>=k.qrows    ){ this.decodeCellQsub(stacks);      }
+				else if(k.fstruct[item] === "crossnum"     && l>=k.qrows+1  ){ this.decodeCrossNum(stacks);      }
+				else if(k.fstruct[item] === "borderques"   && l>=2*k.qrows-1){ this.decodeBorderQues(stacks);    }
+				else if(k.fstruct[item] === "borderline"   && l>=2*k.qrows-1){ this.decodeBorderLine(stacks);    }
+				else if(k.fstruct[item] === "borderans"    && l>=2*k.qrows-1){ this.decodeBorderAns(stacks);     }
+				else if(k.fstruct[item] === "borderans2"   && l>=2*k.qrows+1){ this.decodeBorderAns2(stacks);    }
+				else if(k.fstruct[item] === "arearoom"     && l>=k.qrows+1  ){ this.decodeAreaRoom(stacks);      }
+				else if(k.fstruct[item] === "others" && this.decodeOthers(stacks) ){ }
 				else{ continue;}
 
 				// decodeしたあとの処理
@@ -100,7 +100,7 @@ FileIO.prototype = {
 				stacks = [];
 			}
 		}
-		else if(type==2){
+		else if(type===2){
 			this.kanpenOpen(array);
 		}
 
@@ -118,18 +118,18 @@ FileIO.prototype = {
 
 		document.fileform2.filename.value = fname;
 
-		if     (navigator.platform.indexOf("Win")!=-1){ document.fileform2.platform.value = "Win";}
-		else if(navigator.platform.indexOf("Mac")!=-1){ document.fileform2.platform.value = "Mac";}
-		else                                          { document.fileform2.platform.value = "Others";}
+		if     (navigator.platform.indexOf("Win")!==-1){ document.fileform2.platform.value = "Win";}
+		else if(navigator.platform.indexOf("Mac")!==-1){ document.fileform2.platform.value = "Mac";}
+		else                                           { document.fileform2.platform.value = "Others";}
 
 		this.filever = 0;
 		document.fileform2.ques.value = this.fileencode(type);
 
-		if(type==1){
-			if(!k.isKanpenExist || k.puzzleid=="lits"){ document.fileform2.urlstr.value = enc.getURLbase() + "?" + k.puzzleid + enc.pzldata();}
+		if(type===1){
+			if(!k.isKanpenExist || k.puzzleid==="lits"){ document.fileform2.urlstr.value = enc.getURLbase() + "?" + k.puzzleid + enc.pzldata();}
 			else{ enc.pzlexport(2); document.fileform2.urlstr.value = document.urloutput.ta.value;}
 		}
-		else if(type==2){
+		else if(type===2){
 			document.fileform2.urlstr.value = "";
 		}
 
@@ -139,8 +139,8 @@ FileIO.prototype = {
 		var str = "";
 
 		var row=k.qrows, col=k.qcols;
-		if(k.puzzleid!="sudoku"){
-			if(type==2 && k.puzzleid=="kakuro"){ row++; col++;}
+		if(k.puzzleid!=="sudoku"){
+			if(type===2 && k.puzzleid==="kakuro"){ row++; col++;}
 			str += (""+row+"/");
 			str += (""+col+"/");
 		}
@@ -148,30 +148,30 @@ FileIO.prototype = {
 			str += (""+col+"/");
 		}
 
-		if(type==1){
+		if(type===1){
 			for(var i=0;i<k.fstruct.length;i++){
-				if     (k.fstruct[i] == "cellques41_42" ){ str += this.encodeCellQues41_42(); }
-				else if(k.fstruct[i] == "cellqnum"      ){ str += this.encodeCellQnum();      }
-				else if(k.fstruct[i] == "cellqnum51"    ){ str += this.encodeCellQnum51();    }
-				else if(k.fstruct[i] == "cellqnumb"     ){ str += this.encodeCellQnumb();     }
-				else if(k.fstruct[i] == "cellqnumans"   ){ str += this.encodeCellQnumAns();   }
-				else if(k.fstruct[i] == "celldirecnum"  ){ str += this.encodeCellDirecQnum(); }
-				else if(k.fstruct[i] == "cellans"       ){ str += this.encodeCellAns();       }
-				else if(k.fstruct[i] == "cellqanssub"   ){ str += this.encodeCellQanssub();   }
-				else if(k.fstruct[i] == "cellqsub"      ){ str += this.encodeCellQsub();      }
-				else if(k.fstruct[i] == "crossnum"      ){ str += this.encodeCrossNum();      }
-				else if(k.fstruct[i] == "borderques"    ){ str += this.encodeBorderQues();    }
-				else if(k.fstruct[i] == "borderline"    ){ str += this.encodeBorderLine();    }
-				else if(k.fstruct[i] == "borderans"     ){ str += this.encodeBorderAns();     }
-				else if(k.fstruct[i] == "borderans2"    ){ str += this.encodeBorderAns2();    }
-				else if(k.fstruct[i] == "arearoom"      ){ str += this.encodeAreaRoom();      }
-				else if(k.fstruct[i] == "others"        ){ str += this.encodeOthers();         }
+				if     (k.fstruct[i] === "cellques41_42" ){ str += this.encodeCellQues41_42(); }
+				else if(k.fstruct[i] === "cellqnum"      ){ str += this.encodeCellQnum();      }
+				else if(k.fstruct[i] === "cellqnum51"    ){ str += this.encodeCellQnum51();    }
+				else if(k.fstruct[i] === "cellqnumb"     ){ str += this.encodeCellQnumb();     }
+				else if(k.fstruct[i] === "cellqnumans"   ){ str += this.encodeCellQnumAns();   }
+				else if(k.fstruct[i] === "celldirecnum"  ){ str += this.encodeCellDirecQnum(); }
+				else if(k.fstruct[i] === "cellans"       ){ str += this.encodeCellAns();       }
+				else if(k.fstruct[i] === "cellqanssub"   ){ str += this.encodeCellQanssub();   }
+				else if(k.fstruct[i] === "cellqsub"      ){ str += this.encodeCellQsub();      }
+				else if(k.fstruct[i] === "crossnum"      ){ str += this.encodeCrossNum();      }
+				else if(k.fstruct[i] === "borderques"    ){ str += this.encodeBorderQues();    }
+				else if(k.fstruct[i] === "borderline"    ){ str += this.encodeBorderLine();    }
+				else if(k.fstruct[i] === "borderans"     ){ str += this.encodeBorderAns();     }
+				else if(k.fstruct[i] === "borderans2"    ){ str += this.encodeBorderAns2();    }
+				else if(k.fstruct[i] === "arearoom"      ){ str += this.encodeAreaRoom();      }
+				else if(k.fstruct[i] === "others"        ){ str += this.encodeOthers();         }
 			}
 
-			if(this.filever==0){ str = "pzprv3/"+k.puzzleid+"/" + str;}
+			if(this.filever===0){ str = "pzprv3/"+k.puzzleid+"/" + str;}
 			else{ str = "pzprv3."+this.filever+"/"+k.puzzleid+"/" + str;}
 		}
-		else if(type==2){
+		else if(type===2){
 			str += this.kanpenSave();
 		}
 
@@ -243,17 +243,17 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQues41_42 : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "-"){ bd.sQnC(c, -2);}
-			else if(ca == "1"){ bd.sQuC(c, 41);}
-			else if(ca == "2"){ bd.sQuC(c, 42);}
+			if     (ca === "-"){ bd.sQnC(c, -2);}
+			else if(ca === "1"){ bd.sQuC(c, 41);}
+			else if(ca === "2"){ bd.sQuC(c, 42);}
 		},stack);
 	},
 	encodeCellQues41_42 : function(){
 		return this.encodeCell( function(c){
-			if     (bd.QuC(c)==41){ return "1 ";}
-			else if(bd.QuC(c)==42){ return "2 ";}
-			else if(bd.QnC(c)==-2){ return "- ";}
-			else                  { return ". ";}
+			if     (bd.QuC(c)===41){ return "1 ";}
+			else if(bd.QuC(c)===42){ return "2 ";}
+			else if(bd.QnC(c)===-2){ return "- ";}
+			else                   { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -262,15 +262,15 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQnum : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "-"){ bd.sQnC(c, -2);}
-			else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+			if     (ca === "-"){ bd.sQnC(c, -2);}
+			else if(ca !== "."){ bd.sQnC(c, parseInt(ca));}
 		},stack);
 	},
 	encodeCellQnum : function(){
 		return this.encodeCell( function(c){
-			if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
-			else if(bd.QnC(c)==-2){ return "- ";}
-			else                  { return ". ";}
+			if     (bd.QnC(c)>=0)  { return (bd.QnC(c).toString() + " ");}
+			else if(bd.QnC(c)===-2){ return "- ";}
+			else                   { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -279,15 +279,15 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQnumb : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "5"){ bd.sQnC(c, -2);}
-			else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+			if     (ca === "5"){ bd.sQnC(c, -2);}
+			else if(ca !== "."){ bd.sQnC(c, parseInt(ca));}
 		},stack);
 	},
 	encodeCellQnumb : function(){
 		return this.encodeCell( function(c){
-			if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
-			else if(bd.QnC(c)==-2){ return "5 ";}
-			else                  { return ". ";}
+			if     (bd.QnC(c)>=0)  { return (bd.QnC(c).toString() + " ");}
+			else if(bd.QnC(c)===-2){ return "5 ";}
+			else                   { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -296,18 +296,18 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQnumAns : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "#"){ bd.setBlack(c);}
-			else if(ca == "+"){ bd.sQsC(c, 1);}
-			else if(ca == "-"){ bd.sQnC(c, -2);}
-			else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+			if     (ca === "#"){ bd.setBlack(c);}
+			else if(ca === "+"){ bd.sQsC(c, 1);}
+			else if(ca === "-"){ bd.sQnC(c, -2);}
+			else if(ca !== "."){ bd.sQnC(c, parseInt(ca));}
 		},stack);
 	},
 	encodeCellQnumAns : function(){
 		return this.encodeCell( function(c){
 			if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
-			else if(bd.QnC(c)==-2){ return "- ";}
+			else if(bd.QnC(c)===-2){return "- ";}
 			else if(bd.isBlack(c)){ return "# ";}
-			else if(bd.QsC(c)==1) { return "+ ";}
+			else if(bd.QsC(c)===1){ return "+ ";}
 			else                  { return ". ";}
 		});
 	},
@@ -317,18 +317,18 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellDirecQnum : function(stack){
 		this.decodeCell( function(c,ca){
-			if(ca != "."){
+			if(ca !== "."){
 				var inp = ca.split(",");
-				bd.sDiC(c, (inp[0]!="0"?parseInt(inp[0]): 0));
-				bd.sQnC(c, (inp[1]!="-"?parseInt(inp[1]):-2));
+				bd.sDiC(c, (inp[0]!=="0"?parseInt(inp[0]): 0));
+				bd.sQnC(c, (inp[1]!=="-"?parseInt(inp[1]):-2));
 			}
 		},stack);
 	},
 	encodeCellDirecQnum : function(){
 		return this.encodeCell( function(c){
-			if(bd.QnC(c)!=-1){
-				var ca1 = (bd.DiC(c)!= 0?(bd.DiC(c)).toString():"0");
-				var ca2 = (bd.QnC(c)!=-2?(bd.QnC(c)).toString():"-");
+			if(bd.QnC(c)!==-1){
+				var ca1 = (bd.DiC(c)!== 0?(bd.DiC(c)).toString():"0");
+				var ca2 = (bd.QnC(c)!==-2?(bd.QnC(c)).toString():"-");
 				return ""+ca1+","+ca2+" ";
 			}
 			else{ return ". ";}
@@ -340,14 +340,14 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellAns : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "#"){ bd.setBlack(c);}
-			else if(ca == "+"){ bd.sQsC(c, 1); }
+			if     (ca === "#"){ bd.setBlack(c);}
+			else if(ca === "+"){ bd.sQsC(c, 1); }
 		},stack);
 	},
 	encodeCellAns : function(){
 		return this.encodeCell( function(c){
 			if     (bd.isBlack(c)){ return "# ";}
-			else if(bd.QsC(c)==1) { return "+ ";}
+			else if(bd.QsC(c)===1){ return "+ ";}
 			else                  { return ". ";}
 		});
 	},
@@ -357,22 +357,22 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQanssub : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "+"){ bd.sQsC(c, 1);}
-			else if(ca == "-"){ bd.sQsC(c, 2);}
-			else if(ca == "="){ bd.sQsC(c, 3);}
-			else if(ca == "%"){ bd.sQsC(c, 4);}
-			else if(ca != "."){ bd.sQaC(c, parseInt(ca));}
+			if     (ca === "+"){ bd.sQsC(c, 1);}
+			else if(ca === "-"){ bd.sQsC(c, 2);}
+			else if(ca === "="){ bd.sQsC(c, 3);}
+			else if(ca === "%"){ bd.sQsC(c, 4);}
+			else if(ca !== "."){ bd.sQaC(c, parseInt(ca));}
 		},stack);
 	},
 	encodeCellQanssub : function(){
 		return this.encodeCell( function(c){
 			//if(bd.QuC(c)!=0 || bd.QnC(c)!=-1){ return ". ";}
-			if     (bd.QaC(c)!=-1){ return (bd.QaC(c).toString() + " ");}
-			else if(bd.QsC(c)==1 ){ return "+ ";}
-			else if(bd.QsC(c)==2 ){ return "- ";}
-			else if(bd.QsC(c)==3 ){ return "= ";}
-			else if(bd.QsC(c)==4 ){ return "% ";}
-			else                  { return ". ";}
+			if     (bd.QaC(c)!==-1){ return (bd.QaC(c).toString() + " ");}
+			else if(bd.QsC(c)===1 ){ return "+ ";}
+			else if(bd.QsC(c)===2 ){ return "- ";}
+			else if(bd.QsC(c)===3 ){ return "= ";}
+			else if(bd.QsC(c)===4 ){ return "% ";}
+			else                   { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -396,15 +396,15 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCrossNum : function(stack){
 		this.decodeCross( function(c,ca){
-			if     (ca == "-"){ bd.sQnX(c, -2);}
-			else if(ca != "."){ bd.sQnX(c, parseInt(ca));}
+			if     (ca === "-"){ bd.sQnX(c, -2);}
+			else if(ca !== "."){ bd.sQnX(c, parseInt(ca));}
 		},stack);
 	},
 	encodeCrossNum : function(){
 		return this.encodeCross( function(c){
-			if     (bd.QnX(c)>=0) { return (bd.QnX(c).toString() + " ");}
-			else if(bd.QnX(c)==-2){ return "- ";}
-			else                  { return ". ";}
+			if     (bd.QnX(c)>=0)  { return (bd.QnX(c).toString() + " ");}
+			else if(bd.QnX(c)===-2){ return "- ";}
+			else                   { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -413,13 +413,13 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeBorderQues : function(stack){
 		this.decodeBorder( function(c,ca){
-			if(ca == "1"){ bd.sQuB(c, 1);}
+			if(ca === "1"){ bd.sQuB(c, 1);}
 		},stack);
 	},
 	encodeBorderQues : function(){
 		return this.encodeBorder( function(c){
-			if     (bd.QuB(c)==1){ return "1 ";}
-			else                 { return "0 ";}
+			if     (bd.QuB(c)===1){ return "1 ";}
+			else                  { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -431,17 +431,17 @@ FileIO.prototype = {
 		bd.isLineNG = function(id){ return false;};
 
 		this.decodeBorder( function(c,ca){
-			if     (ca == "-1"){ bd.sQsB(c, 2);}
-			else if(ca != "0" ){ bd.sLiB(c, parseInt(ca));}
+			if     (ca === "-1"){ bd.sQsB(c, 2);}
+			else if(ca !== "0" ){ bd.sLiB(c, parseInt(ca));}
 		},stack);
 
 		bd.isLineNG = svfunc;
 	},
 	encodeBorderLine : function(){
 		return this.encodeBorder( function(c){
-			if     (bd.LiB(c)> 0){ return ""+bd.LiB(c)+" ";}
-			else if(bd.QsB(c)==2){ return "-1 ";}
-			else                 { return "0 ";}
+			if     (bd.LiB(c)>  0){ return ""+bd.LiB(c)+" ";}
+			else if(bd.QsB(c)===2){ return "-1 ";}
+			else                  { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -450,17 +450,17 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeBorderAns : function(stack){
 		this.decodeBorder( function(c,ca){
-			if     (ca == "1" ){ bd.sQaB(c, 1);}
-			else if(ca == "2" ){ bd.sQaB(c, 1); bd.sQsB(c, 1);}
-			else if(ca == "-1"){ bd.sQsB(c, 1);}
+			if     (ca === "1" ){ bd.sQaB(c, 1);}
+			else if(ca === "2" ){ bd.sQaB(c, 1); bd.sQsB(c, 1);}
+			else if(ca === "-1"){ bd.sQsB(c, 1);}
 		},stack);
 	},
 	encodeBorderAns : function(){
 		return this.encodeBorder( function(c){
-			if     (bd.QaB(c)==1 && bd.QsB(c)==1){ return "2 ";}
-			else if(bd.QaB(c)==1){ return "1 ";}
-			else if(bd.QsB(c)==1){ return "-1 ";}
-			else                 { return "0 ";}
+			if     (bd.QaB(c)===1 && bd.QsB(c)===1){ return "2 ";}
+			else if(bd.QaB(c)===1){ return "1 ";}
+			else if(bd.QsB(c)===1){ return "-1 ";}
+			else                  { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -469,19 +469,19 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeBorderAns2 : function(stack){
 		this.decodeBorder2( function(c,ca){
-			if     (ca == "1" ){ bd.sQaB(c, 1);}
-			else if(ca == "2" ){ bd.sQsB(c, 1);}
-			else if(ca == "3" ){ bd.sQaB(c, 1); bd.sQsB(c, 1);}
-			else if(ca == "-1"){ bd.sQsB(c, 2);}
+			if     (ca === "1" ){ bd.sQaB(c, 1);}
+			else if(ca === "2" ){ bd.sQsB(c, 1);}
+			else if(ca === "3" ){ bd.sQaB(c, 1); bd.sQsB(c, 1);}
+			else if(ca === "-1"){ bd.sQsB(c, 2);}
 		},stack);
 	},
 	encodeBorderAns2 : function(){
 		return this.encodeBorder2( function(c){
-			if     (bd.QaB(c)==1 && bd.QsB(c)==1){ return "3 ";}
-			else if(bd.QsB(c)==1){ return "2 ";}
-			else if(bd.QaB(c)==1){ return "1 ";}
-			else if(bd.QsB(c)==2){ return "-1 ";}
-			else                 { return "0 ";}
+			if     (bd.QaB(c)===1 && bd.QsB(c)===1){ return "3 ";}
+			else if(bd.QsB(c)===1){ return "2 ";}
+			else if(bd.QaB(c)===1){ return "1 ";}
+			else if(bd.QsB(c)===2){ return "-1 ";}
+			else                  { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -489,14 +489,17 @@ FileIO.prototype = {
 	// fio.encodeAreaRoom() 部屋のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeAreaRoom : function(stack){
+		var number = [];
+		for(var c=0;c<bd.cellmax;c++){ number[c]=0;}
+
 		stack.shift();
 		this.decodeCell( function(c,ca){
-			area.setRoomID(c, parseInt(ca)+1);
+			number[c] = parseInt(ca)+1;
 		},stack);
 
 		for(var c=0;c<k.qcols*k.qrows;c++){
-			if(bd.dn(c)!=-1 && area.getRoomID(c) != area.getRoomID(bd.dn(c))){ bd.sQuB(bd.db(c),1); }
-			if(bd.rt(c)!=-1 && area.getRoomID(c) != area.getRoomID(bd.rt(c))){ bd.sQuB(bd.rb(c),1); }
+			if(bd.dn(c)!==-1 && number[c]!==number[bd.dn(c)]){ bd.sQuB(bd.db(c),1); }
+			if(bd.rt(c)!==-1 && number[c]!==number[bd.rt(c)]){ bd.sQuB(bd.rb(c),1); }
 		}
 		area.resetRarea();
 	},
@@ -519,8 +522,8 @@ FileIO.prototype = {
 		for(var i=0;i<item.length;i++) {
 			var cx=i%(k.qcols+1)-1, cy=mf(i/(k.qcols+1))-1;
 			if(item[i]!="."){
-				if     (cy==-1){ bd.sDiE(bd.exnum(cx,cy), parseInt(item[i]));}
-				else if(cx==-1){ bd.sQnE(bd.exnum(cx,cy), parseInt(item[i]));}
+				if     (cy===-1){ bd.sDiE(bd.exnum(cx,cy), parseInt(item[i]));}
+				else if(cx===-1){ bd.sQnE(bd.exnum(cx,cy), parseInt(item[i]));}
 				else{
 					var inp = item[i].split(",");
 					var c = bd.cnum(cx,cy);
@@ -535,12 +538,12 @@ FileIO.prototype = {
 		var str = "";
 		for(var cy=-1;cy<k.qrows;cy++){
 			for(var cx=-1;cx<k.qcols;cx++){
-				if     (cx==-1 && cy==-1){ str += "0 ";}
-				else if(cy==-1){ str += (""+bd.DiE(bd.exnum(cx,cy)).toString()+" ");}
-				else if(cx==-1){ str += (""+bd.QnE(bd.exnum(cx,cy)).toString()+" ");}
+				if     (cx===-1 && cy==-1){ str += "0 ";}
+				else if(cy===-1){ str += (""+bd.DiE(bd.exnum(cx,cy)).toString()+" ");}
+				else if(cx===-1){ str += (""+bd.QnE(bd.exnum(cx,cy)).toString()+" ");}
 				else{
 					var c = bd.cnum(cx,cy);
-					if(bd.QuC(c)==51){ str += (""+bd.QnC(c).toString()+","+bd.DiC(c).toString()+" ");}
+					if(bd.QuC(c)===51){ str += (""+bd.QnC(c).toString()+","+bd.DiC(c).toString()+" ");}
 					else{ str += ". ";}
 				}
 			}
@@ -584,8 +587,8 @@ FileIO.prototype = {
 	// fio.updateManager() 更新時間を更新する
 	//---------------------------------------------------------------------------
 	initDataBase : function(){
-		if(this.DBtype==0){ return false;}
-		else if(this.DBtype==1){
+		if(this.DBtype===0){ return false;}
+		else if(this.DBtype===1){
 			this.dbmgr = google.gears.factory.create('beta.database', '1.0');
 			this.dbmgr.open('pzprv3_manage');
 			this.dbmgr.execute('CREATE TABLE IF NOT EXISTS manage (puzzleid primary key,version,count,lastupdate)');
@@ -598,7 +601,7 @@ FileIO.prototype = {
 			this.db.execute('CREATE TABLE IF NOT EXISTS pzldata (id int primary key,col,row,hard,pdata,time,comment)');
 			this.db.close();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			this.dbmgr = openDataBase('pzprv3_manage', '1.0');
 			this.dbmgr.transaction(function(tx){
 				tx.executeSql('CREATE TABLE IF NOT EXISTS manage (puzzleid primary key,version,count,lastupdate)');
@@ -620,7 +623,7 @@ FileIO.prototype = {
 		return true;
 	},
 	dropDataBase : function(){
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			this.dbmgr.open('pzprv3_manage');
 			this.dbmgr.execute('DELETE FROM manage WHERE puzzleid=?',[k.puzzleid]);
 			this.dbmgr.close();
@@ -629,7 +632,7 @@ FileIO.prototype = {
 			this.db.execute('DROP TABLE IF EXISTS pzldata');
 			this.db.close();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			this.dbmgr.transaction(function(tx){
 				tx.executeSql('DELETE FROM manage WHERE puzzleid=?',[k.puzzleid]);
 			});
@@ -666,7 +669,7 @@ FileIO.prototype = {
 
 	updateManager : function(flag){
 		var count = -1;
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			if(!flag){
 				this.db.open('pzprv3_'+k.puzzleid);
 				var rs = this.db.execute('SELECT COUNT(*) FROM pzldata');
@@ -679,7 +682,7 @@ FileIO.prototype = {
 			this.dbmgr.execute('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)',[k.puzzleid,'1.0',count,mf((new Date()).getTime()/1000)]);
 			this.dbmgr.close();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			if(!flag){
 				this.db.transaction(function(tx){
 					tx.executeSql('SELECT COUNT(*) FROM pzldata',function(){},function(tx,rs){ count = rs.rows[0];});
@@ -728,7 +731,7 @@ FileIO.prototype = {
 	ni : function(num){ return (num<10?"0"+num:""+num);},
 	getDataTableList : function(){
 		this.DBlist = [];
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			this.db.open('pzprv3_'+k.puzzleid);
 			var rs = this.db.execute('SELECT * FROM pzldata');
 			while(rs.isValidRow()){
@@ -741,7 +744,7 @@ FileIO.prototype = {
 			this.db.close();
 			this.displayDataTableList();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			var self = this;
 			this.db.transaction(function(tx){
 				tx.executeSql('SELECT * FROM pzldata',[],function(tx,rs){
@@ -759,13 +762,13 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	upDataTable : function(){
 		var selected = this.getDataID();
-		if(this.DBtype==0 || selected==-1 || selected==0){ return;}
+		if(this.DBtype===0 || selected===-1 || selected===0){ return;}
 
 		this.convertDataTableID(selected, selected-1);
 	},
 	downDataTable : function(){
 		var selected = this.getDataID();
-		if(this.DBtype==0 || selected==-1 || selected==this.DBlist.length-1){ return;}
+		if(this.DBtype===0 || selected===-1 || selected===this.DBlist.length-1){ return;}
 
 		this.convertDataTableID(selected, selected+1);
 	},
@@ -777,7 +780,7 @@ FileIO.prototype = {
 		this.DBlist[selected].id = tid;
 		this.DBlist[target].id   = sid;
 
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			this.db.open('pzprv3_'+k.puzzleid);
 			this.db.execute('UPDATE pzldata SET id=? WHERE ID==?',[0  ,sid]);
 			this.db.execute('UPDATE pzldata SET id=? WHERE ID==?',[sid,tid]);
@@ -786,7 +789,7 @@ FileIO.prototype = {
 
 			this.displayDataTableList();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			var self = this;
 			this.db.transaction(function(tx){
 				tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[0  ,sid]);
@@ -805,7 +808,7 @@ FileIO.prototype = {
 	getDataID : function(){
 		if(document.database.datalist.value!="new" && document.database.datalist.value!=""){
 			for(var i=0;i<this.DBlist.length;i++){
-				if(this.DBlist[i].id==document.database.datalist.value){ return i;}
+				if(this.DBlist[i].id===document.database.datalist.value){ return i;}
 			}
 		}
 		return -1;
@@ -821,12 +824,12 @@ FileIO.prototype = {
 			this.DBsid = -1;
 		}
 
-		document.database.tableup.disabled = (document.database.sorts.value!='idlist' || this.DBsid==-1 || this.DBsid==1);
-		document.database.tabledn.disabled = (document.database.sorts.value!='idlist' || this.DBsid==-1 || this.DBsid==this.DBlist.length);
-		document.database.comedit.disabled = (this.DBsid==-1);
-		document.database.difedit.disabled = (this.DBsid==-1);
-		document.database.open.disabled    = (this.DBsid==-1);
-		document.database.del.disabled     = (this.DBsid==-1);
+		document.database.tableup.disabled = (document.database.sorts.value!=='idlist' || this.DBsid===-1 || this.DBsid===1);
+		document.database.tabledn.disabled = (document.database.sorts.value!=='idlist' || this.DBsid===-1 || this.DBsid===this.DBlist.length);
+		document.database.comedit.disabled = (this.DBsid===-1);
+		document.database.difedit.disabled = (this.DBsid===-1);
+		document.database.open.disabled    = (this.DBsid===-1);
+		document.database.del.disabled     = (this.DBsid===-1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -835,9 +838,9 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	openDataTable : function(){
 		var id = this.getDataID();
-		if(id==-1 || !confirm("このデータを読み込みますか？ (現在の盤面は破棄されます)")){ return;}
+		if(id===-1 || !confirm("このデータを読み込みますか？ (現在の盤面は破棄されます)")){ return;}
 
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			this.db.open('pzprv3_'+k.puzzleid);
 
 			var id = this.getDataID();
@@ -847,7 +850,7 @@ FileIO.prototype = {
 			rs.close();
 			this.db.close();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			var self = this;
 			this.db.transaction(function(tx){
 				tx.executeSql('SELECT * FROM pzldata WHERE ID==?',[self.DBlist[id].id],
@@ -858,17 +861,17 @@ FileIO.prototype = {
 	},
 	saveDataTable : function(){
 		var id = this.getDataID();
-		if(this.DBtype==0 || (id!=-1 && !confirm("このデータに上書きしますか？"))){ return;}
+		if(this.DBtype===0 || (id!==-1 && !confirm("このデータに上書きしますか？"))){ return;}
 
 		var time = mf((new Date()).getTime()/1000);
 		var pdata = this.fileencode(1);
 		var str = "";
-		if(id==-1){ str = prompt("コメントがある場合は入力してください。",""); if(str==null){ str="";} }
-		else      { str = this.DBlist[this.getDataID()].comment;}
+		if(id===-1){ str = prompt("コメントがある場合は入力してください。",""); if(str==null){ str="";} }
+		else       { str = this.DBlist[this.getDataID()].comment;}
 
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			this.db.open('pzprv3_'+k.puzzleid);
-			if(id==-1){
+			if(id===-1){
 				id = this.DBlist.length+1;
 				this.db.execute('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',[id,k.qcols,k.qrows,0,pdata,time,str]);
 			}
@@ -879,9 +882,9 @@ FileIO.prototype = {
 			this.db.close();
 			this.getDataTableList();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			var self = this;
-			if(id==-1){
+			if(id===-1){
 				id = this.DBlist.length+1;
 				this.db.transaction(function(tx){
 					tx.executeSql('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',[id,k.qcols,k.qrows,0,pdata,time,str]);
@@ -904,14 +907,14 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	editComment : function(){
 		var id = this.getDataID();
-		if(this.DBtype==0 || id==-1){ return;}
+		if(this.DBtype===0 || id===-1){ return;}
 
 		var str = prompt("この問題に対するコメントを入力してください。",this.DBlist[id].comment);
 		if(str==null){ return;}
 
 		this.DBlist[id].comment = str;
 
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			this.db.open('pzprv3_'+k.puzzleid);
 
 			this.db.execute('UPDATE pzldata SET comment=? WHERE ID==?',[str,this.DBlist[id].id]);
@@ -919,7 +922,7 @@ FileIO.prototype = {
 
 			this.displayDataTableList();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			var self = this;
 			this.db.transaction(function(tx){
 				tx.executeSql('UPDATE pzldata SET comment=? WHERE ID==?',[str,self.DBlist[id].id]);
@@ -930,14 +933,14 @@ FileIO.prototype = {
 	},
 	editDifficult : function(){
 		var id = this.getDataID();
-		if(this.DBtype==0 || id==-1){ return;}
+		if(this.DBtype===0 || id===-1){ return;}
 
 		var hard = prompt("この問題の難易度を設定してください。\n[0:なし 1:らくらく 2:おてごろ 3:たいへん 4:アゼン]",this.DBlist[id].hard);
 		if(hard==null){ return;}
 
-		this.DBlist[id].hard = ((hard=='1'||hard=='2'||hard=='3'||hard=='4')?hard:0);
+		this.DBlist[id].hard = ((hard==='1'||hard==='2'||hard==='3'||hard==='4')?hard:0);
 
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			this.db.open('pzprv3_'+k.puzzleid);
 
 			this.db.execute('UPDATE pzldata SET hard=? WHERE ID==?',[hard,this.DBlist[id].id]);
@@ -945,7 +948,7 @@ FileIO.prototype = {
 
 			this.displayDataTableList();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			var self = this;
 			this.db.transaction(function(tx){
 				tx.executeSql('UPDATE pzldata SET hard=? WHERE ID==?',[hard,self.DBlist[id].id]);
@@ -960,9 +963,9 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	deleteDataTable : function(){
 		var id = this.getDataID();
-		if(this.DBtype==0 || id==-1 || !confirm("このデータを完全に削除しますか？")){ return;}
+		if(this.DBtype===0 || id===-1 || !confirm("このデータを完全に削除しますか？")){ return;}
 
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			this.db.open('pzprv3_'+k.puzzleid);
 
 			this.db.execute('DELETE FROM pzldata WHERE ID==?',[this.DBlist[id].id]);
@@ -978,7 +981,7 @@ FileIO.prototype = {
 			this.db.close();
 			this.displayDataTableList();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			var self = this;
 			this.db.transaction(function(tx){
 				tx.executeSql('DELETE FROM pzldata WHERE ID==?',[self.DBlist[id].id]);

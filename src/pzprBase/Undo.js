@@ -19,6 +19,7 @@ UndoManager = function(){
 	this.ope = [];			// Operationクラスを保持する配列
 	this.current = 0;		// 現在の表示操作番号を保持する
 	this.disrec = 0;		// このクラスからの呼び出し時は1にする
+	this.disinfo = 0;		// LineManager, AreaManagerを呼び出さないようにする
 	this.chainflag = 0;		// 前のOperationとくっつけて、一回のUndo/Redoで変化できるようにする
 	this.disCombine = 0;	// 数字がくっついてしまうので、それを一時的に無効にするためのフラグ
 
@@ -47,6 +48,10 @@ UndoManager.prototype = {
 	disableRecord : function(){ this.disrec++; },
 	enableRecord  : function(){ if(this.disrec>0){ this.disrec--;} },
 	isenableRecord : function(){ return (this.disrec==0);},
+
+	disableInfo : function(){ this.disinfo++; },
+	enableInfo  : function(){ if(this.disinfo>0){ this.disinfo--;} },
+	isenableInfo : function(){ return (this.disinfo==0);},
 
 	enb_btn : function(){
 		if(!this.ope.length){
@@ -156,12 +161,16 @@ UndoManager.prototype = {
 		if(this.reqReset){
 			this.reqReset=false;
 
+			bd.setposAll();
 			base.resetInfo();
 			base.resize_canvas();
 		}
+		else{
+			pc.paint(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
+		}
 		this.enableRecord();
+		this.enableInfo();
 		this.enb_btn();
-		pc.paint(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
 	},
 	exec : function(ope, num){
 		var pp = ope.property;
@@ -198,6 +207,7 @@ UndoManager.prototype = {
 			this.paintBorder(ope.id);
 		}
 		else if(ope.obj == 'board'){
+			this.disableInfo();
 			if     (pp == 'expandup'){ if(num==1){ menu.ex.expand('up');}else{ menu.ex.reduce('up');} }
 			else if(pp == 'expanddn'){ if(num==1){ menu.ex.expand('dn');}else{ menu.ex.reduce('dn');} }
 			else if(pp == 'expandlt'){ if(num==1){ menu.ex.expand('lt');}else{ menu.ex.reduce('lt');} }

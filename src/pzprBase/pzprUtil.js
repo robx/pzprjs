@@ -20,7 +20,7 @@ LineManager = function(){
 	this.lcnt    = [];
 	this.ltotal  = [];
 
-	this.disable = (!k.isCenterLine && !k.isborderAsLine);
+	this.disableLine = (!k.isCenterLine && !k.isborderAsLine);
 	this.data    = {};	// 線id情報
 
 	this.typeA = 'A';
@@ -39,7 +39,7 @@ LineManager.prototype = {
 	// line.lcntCell()    セルに存在する線の本数を返す
 	//---------------------------------------------------------------------------
 	init : function(){
-		if(this.disable){ return;}
+		if(this.disableLine){ return;}
 
 		// lcnt, ltotal変数(配列)初期化
 		if(k.isCenterLine){
@@ -57,7 +57,7 @@ LineManager.prototype = {
 	},
 
 	resetLcnts : function(){
-		if(this.disable){ return;}
+		if(this.disableLine){ return;}
 
 		this.init();
 		for(var id=0;id<bd.bdmax;id++){ this.data.id[id] = (bd.isLine(id)?0:-1);
@@ -91,11 +91,11 @@ LineManager.prototype = {
 	//---------------------------------------------------------------------------
 	gettype : function(cc,id,val){
 		if(!k.isLineCross){
-			return ((this.lcnt[cc]==(0+val))?this.typeA:this.typeB);
+			return ((this.lcnt[cc]===(0+val))?this.typeA:this.typeB);
 		}
 		else{
-			if(cc===-1 || this.lcnt[cc]==(0+val) || (this.lcnt[cc]==(2+val) && this.isTpos(cc,id))){ return this.typeA;}
-			else if(this.lcnt[cc]==(1+val) || this.lcnt[cc]==(3+val)){ return this.typeB;}
+			if(cc===-1 || this.lcnt[cc]===(0+val) || (this.lcnt[cc]===(2+val) && this.isTpos(cc,id))){ return this.typeA;}
+			else if(this.lcnt[cc]===(1+val) || this.lcnt[cc]===(3+val)){ return this.typeB;}
 			return this.typeC;
 		}
 	},
@@ -133,7 +133,7 @@ LineManager.prototype = {
 	// line.repaintParts()   repaintLine()関数で、さらに上から描画しなおしたい処理を書く
 	//---------------------------------------------------------------------------
 	setLine : function(id, val){
-		if(this.disable || !um.isenableRecord()){ return;}
+		if(this.disableLine){ return;}
 		val = (val>0?1:0);
 
 		var cc1, cc2;
@@ -165,21 +165,21 @@ LineManager.prototype = {
 		var type1 = this.gettype(cc1,id,val), type2 = this.gettype(cc2,id,val);
 		if(val>0){
 			// (A)+(A)の場合 -> 新しい線idを割り当てる
-			if(type1==this.typeA && type2==this.typeA){
+			if(type1===this.typeA && type2===this.typeA){
 				this.data.max++;
 				this.data[this.data.max] = {idlist:[id]};
 				this.data.id[id] = this.data.max;
 				bd.border[id].color = pc.getNewLineColor();
 			}
 			// (A)+(B)の場合 -> 既存の線にくっつける
-			else if((type1==this.typeA && type2==this.typeB) || (type1==this.typeB && type2==this.typeA)){
+			else if((type1===this.typeA && type2===this.typeB) || (type1===this.typeB && type2===this.typeA)){
 				var bid = (this.getbid(id,1))[0];
 				this.data[this.data.id[bid]].idlist.push(id);
 				this.data.id[id] = this.data.id[bid];
 				bd.border[id].color = bd.border[bid].color;
 			}
 			// (B)+(B)の場合 -> くっついた線で、大きい方の線idに統一する
-			else if(!k.isLineCross || (type1==this.typeB && type2==this.typeB)){
+			else if(!k.isLineCross || (type1===this.typeB && type2===this.typeB)){
 				this.addLineInfo(id);
 			}
 			// その他の場合
@@ -189,15 +189,15 @@ LineManager.prototype = {
 		}
 		else{
 			// (A)+(A)の場合 -> 線id自体を消滅させる
-			if(type1==this.typeA && type2==this.typeA){
+			if(type1===this.typeA && type2===this.typeA){
 				this.data[this.data.id[id]] = {idlist:[]};
 				this.data.id[id] = -1;
 				bd.border[id].color = "";
 			}
 			// (A)+(B)の場合 -> 既存の線から取り除く
-			else if((type1==this.typeA && type2==this.typeB) || (type1==this.typeB && type2==this.typeA)){
+			else if((type1===this.typeA && type2===this.typeB) || (type1===this.typeB && type2===this.typeA)){
 				var ownid = this.data.id[id], idlist = this.data[ownid].idlist;
-				for(var i=0;i<idlist.length;i++){ if(idlist[i]==id){ idlist.splice(i,1); break;} }
+				for(var i=0;i<idlist.length;i++){ if(idlist[i]===id){ idlist.splice(i,1); break;} }
 				this.data.id[id] = -1;
 				bd.border[id].color = "";
 			}
@@ -225,7 +225,7 @@ LineManager.prototype = {
 			// つながった線は全て同じIDにする
 			var longidlist  = this.data[longid].idlist;
 			var shortidlist = this.data[shortid].idlist;
-			for(var n=0;n<shortidlist.length;n++){
+			for(var n=0,len=shortidlist.length;n<len;n++){
 				longidlist.push(shortidlist[n]);
 				dataid[shortidlist[n]] = longid;
 			}
@@ -235,10 +235,10 @@ LineManager.prototype = {
 			dataid[id] = longid;
 
 			// 色を同じにする
-			for(var i=0;i<longidlist.length;i++){
+			for(var i=0,len=longidlist.length;i<len;i++){
 				bd.border[longidlist[i]].color = newColor;
 			}
-			this.repaintLine(longid);
+			this.repaintLine(longidlist);
 		}
 		else{
 			this.data[did[0]].idlist.push(id);
@@ -254,28 +254,28 @@ LineManager.prototype = {
 		var longColor = bd.border[bid[0]].color; // 周りで一番長い線の色を保持する
 
 		// つながった線の線情報を0にする
-		for(var i=0;i<bid.length;i++){
+		for(var i=0,len=bid.length;i<len;i++){
 			var lid = dataid[bid[i]];
 			if(lid<=0){ continue;}
 			var idlist = this.data[lid].idlist;
 			if(this.data[longid].idlist.length < idlist.length){
 				longid=lid; longColor=bd.border[bid[i]].color;
 			}
-			for(var n=0;n<idlist.length;n++){ dataid[idlist[n]] = 0;}
+			for(var n=0,len2=idlist.length;n<len2;n++){ dataid[idlist[n]] = 0;}
 			this.data[lid] = {idlist:[]};
 		}
 
 		dataid[id] = (val>0?0:-1);
-		if(val==1){ bid.unshift(id);}
+		if(val===1){ bid.unshift(id);}
 
 		// 新しいidを設定する
 		var oldmax = this.data.max;
-		for(var i=0;i<bid.length;i++){
+		for(var i=0,len=bid.length;i<len;i++){
 			if(dataid[bid[i]]!=0){ continue;}	// 既にidがついていたらスルー
 			var bx=bd.border[bid[i]].cx, by=bd.border[bid[i]].cy;
 			this.data.max++; this.data[this.data.max] = {idlist:[]};
-			if(k.isCenterLine^(bx%2==0)){ this.lc0(bx,by+1,1,this.data.max); this.lc0(bx,by,2,this.data.max);}
-			else                        { this.lc0(bx+1,by,3,this.data.max); this.lc0(bx,by,4,this.data.max);}
+			if(k.isCenterLine^(bx%2===0)){ this.lc0(bx,by+1,1,this.data.max); this.lc0(bx,by,2,this.data.max);}
+			else                         { this.lc0(bx+1,by,3,this.data.max); this.lc0(bx,by,4,this.data.max);}
 		}
 
 		// 新しい色を設定して、再描画する
@@ -283,12 +283,12 @@ LineManager.prototype = {
 		if(this.data.max>longid || k.isLineCross){
 			for(var i=oldmax+2;i<=this.data.max;i++){ if(this.data[longid].idlist.length < this.data[i].idlist.length){ longid=i;} }
 			for(var i=oldmax+1;i<=this.data.max;i++){
-				var newColor = (i==longid?longColor:pc.getNewLineColor());
+				var newColor = (i===longid?longColor:pc.getNewLineColor());
 				var idlist = this.data[i].idlist;
 				for(var n=0,len=idlist.length;n<len;n++){
 					bd.border[idlist[n]].color = newColor;
-					this.repaintLine(i);
 				}
+				this.repaintLine(idlist);
 			}
 		}
 		else{
@@ -296,12 +296,12 @@ LineManager.prototype = {
 		}
 	},
 
-	repaintLine : function(lineid){
+	repaintLine : function(idlist){
 		if(!menu.getVal('irowake')){ return;}
-		for(var i=0;i<this.data[lineid].idlist.length;i++){
-			var id = this.data[lineid].idlist[i];
-			if(k.isCenterLine){ pc.drawLine1(id,true);}else{ pc.drawBorder1(id,true);}
-			if(!g.vml){ this.repaintParts(id);}
+		for(var i=0,len=idlist.length;i<len;i++){
+			if(k.isCenterLine){ pc.drawLine1  (idlist[i],true);}
+			else			  { pc.drawBorder1(idlist[i],true);}
+			if(!g.vml){ this.repaintParts(idlist[i]);}
 		}
 	},
 	repaintParts : function(id){ }, // オーバーライド用
@@ -313,7 +313,7 @@ LineManager.prototype = {
 	getbid : function(id,val){
 		var bid = [];
 		var bx=bd.border[id].cx, by=bd.border[id].cy;
-		var dx =((k.isCenterLine^(bx%2==0))?2:0), dy=(2-dx);	// (dx,dy) = (2,0) or (0,2)
+		var dx =((k.isCenterLine^(bx%2===0))?2:0), dy=(2-dx);	// (dx,dy) = (2,0) or (0,2)
 
 		var i;
 		if(!k.isLineCross){
@@ -327,11 +327,11 @@ LineManager.prototype = {
 		else{
 			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
 			if(!k.isCenterLine){ cc1 = bd.crosscc1(id); cc2 = bd.crosscc2(id);}
-			// 現在、k.isLineCross==1でk.isborderAsLine==1(k.isCenterLine==0)のパズルはないはず
+			// k.isLineCross==1でk.isborderAsLine==1(->k.isCenterLine==0)のパズルは作ってないはず
 			// 該当するのもスリザーボックスくらいだったような、、
 
-			if(cc1!=-1){
-				if(this.lcnt[cc1]==(1+val) || (this.lcnt[cc1]==(2+val) && !this.isTpos(cc1,id))){
+			if(cc1!==-1){
+				if(this.lcnt[cc1]===(1+val) || (this.lcnt[cc1]===(2+val) && !this.isTpos(cc1,id))){
 					i = bd.bnum(bx-dy,   by-dx  ); if(bd.isLine(i)){ bid.push(i);} // cc1からのstraight
 					i = bd.bnum(bx-1,    by-1   ); if(bd.isLine(i)){ bid.push(i);} // cc1からのcurve1
 					i = bd.bnum(bx+dx-1, by+dy-1); if(bd.isLine(i)){ bid.push(i);} // cc1からのcurve2
@@ -340,8 +340,8 @@ LineManager.prototype = {
 					i = bd.bnum(bx-dy,   by-dx  ); if(bd.isLine(i)){ bid.push(i);} // cc1からのstraight
 				}
 			}
-			if(cc2!=-1){
-				if(this.lcnt[cc2]==(1+val) || (this.lcnt[cc2]==(2+val) && !this.isTpos(cc2,id))){
+			if(cc2!==-1){
+				if(this.lcnt[cc2]===(1+val) || (this.lcnt[cc2]===(2+val) && !this.isTpos(cc2,id))){
 					i = bd.bnum(bx+dy,   by+dx  ); if(bd.isLine(i)){ bid.push(i);} // cc2からのstraight
 					i = bd.bnum(bx+1,    by+1   ); if(bd.isLine(i)){ bid.push(i);} // cc2からのcurve1
 					i = bd.bnum(bx-dx+1, by-dy+1); if(bd.isLine(i)){ bid.push(i);} // cc2からのcurve2
@@ -358,7 +358,7 @@ LineManager.prototype = {
 	lc0 : function(bx,by,dir,newid){
 		while(1){
 			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-			if((bx+by)%2==0){
+			if((bx+by)%2===0){
 				if(this.branch(bx,by)){
 					if(bd.isLine(bd.bnum(bx,by-1))){ this.lc0(bx,by,1,newid);}
 					if(bd.isLine(bd.bnum(bx,by+1))){ this.lc0(bx,by,2,newid);}
@@ -387,7 +387,6 @@ LineManager.prototype = {
 	// line.getLineInfo()    線情報をAreaInfo型のオブジェクトで返す
 	// line.getLareaInfo()   同じ線がまたがるセルの情報をAreaInfo型のオブジェクトで返す
 	//                       (これだけは旧型の生成方法でやってます)
-	// line.LineList2Clist() 線がまたがるセルのidリストを返す
 	//--------------------------------------------------------------------------------
 	getLineInfo : function(){
 		var info = new AreaInfo();
@@ -416,21 +415,10 @@ LineManager.prototype = {
 	sr0 : function(linfo, i, areaid){
 		linfo.id[i] = areaid;
 		linfo.room[areaid].idlist.push(i);
-		if( bd.isLine(bd.ub(i)) && linfo.id[bd.up(i)]==0 ){ this.sr0(linfo, bd.up(i), areaid);}
-		if( bd.isLine(bd.db(i)) && linfo.id[bd.dn(i)]==0 ){ this.sr0(linfo, bd.dn(i), areaid);}
-		if( bd.isLine(bd.lb(i)) && linfo.id[bd.lt(i)]==0 ){ this.sr0(linfo, bd.lt(i), areaid);}
-		if( bd.isLine(bd.rb(i)) && linfo.id[bd.rt(i)]==0 ){ this.sr0(linfo, bd.rt(i), areaid);}
-	},
-
-	LineList2Clist : function(idlist){
-		var clist = [];
-		clist.include = function(val){ for(var i=0;i<this.length;i++){ if(this[i]==val) return true;} return false;};
-		for(var i=0;i<idlist.length;i++){
-			var cc1 = bd.cc1(idlist[i]), cc2 = bd.cc2(idlist[i]);
-			if(cc1!=-1 && !clist.include(cc1)){ clist.push(cc1);}
-			if(cc2!=-1 && !clist.include(cc2)){ clist.push(cc2);}
-		}
-		return clist;
+		if( bd.isLine(bd.ub(i)) && linfo.id[bd.up(i)]===0 ){ this.sr0(linfo, bd.up(i), areaid);}
+		if( bd.isLine(bd.db(i)) && linfo.id[bd.dn(i)]===0 ){ this.sr0(linfo, bd.dn(i), areaid);}
+		if( bd.isLine(bd.lb(i)) && linfo.id[bd.lt(i)]===0 ){ this.sr0(linfo, bd.lt(i), areaid);}
+		if( bd.isLine(bd.rb(i)) && linfo.id[bd.rt(i)]===0 ){ this.sr0(linfo, bd.rt(i), areaid);}
 	}
 };
 
@@ -493,9 +481,9 @@ AreaManager.prototype = {
 		this.lcnt = [];
 		for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){
 			this.lcnt[c]=0;
-			if(k.isoutsideborder==0){
+			if(k.isoutsideborder===0){
 				var xx=c%(k.qcols+1), xy=mf(c/(k.qcols+1));
-				if(xx==0 || xx==k.qcols || xy==0 || xy==k.qrows){ this.lcnt[c]=2;}
+				if(xx===0 || xx===k.qcols || xy===0 || xy===k.qrows){ this.lcnt[c]=2;}
 			}
 		}
 
@@ -503,8 +491,8 @@ AreaManager.prototype = {
 		for(var id=0;id<bd.bdmax;id++){
 			if(bd.isBorder(id)){
 				var cc1 = bd.crosscc1(id), cc2 = bd.crosscc2(id);
-				if(cc1!=-1){ this.lcnt[cc1]++;}
-				if(cc2!=-1){ this.lcnt[cc2]++;}
+				if(cc1!==-1){ this.lcnt[cc1]++;}
+				if(cc2!==-1){ this.lcnt[cc2]++;}
 			}
 		}
 	},
@@ -526,15 +514,15 @@ AreaManager.prototype = {
 			for(var r=1;r<=this.room.max;r++){
 				this.setTopOfRoom(r);
 
-				var val = -1;
-				for(var i=0,len=this.room[r].clist.length;i<len;i++){
-					var c = this.room[r].clist[i];
-					if(this.room.id[c]==r && bd.QnC(c)!=-1){
-						if(val==-1){ val = bd.QnC(c);}
-						if(this.getTopOfRoom(r)!=c){ bd.sQnC(c, -1);}
+				var val = -1, clist = this.room[r].clist;
+				for(var i=0,len=clist.length;i<len;i++){
+					var c = clist[i];
+					if(this.room.id[c]===r && bd.cell[c].qnum!==-1){
+						if(val===-1){ val = bd.cell[c].qnum;}
+						if(this.getTopOfRoom(r)!==c){ bd.sQnC(c, -1);}
 					}
 				}
-				if(val!=-1 && bd.QnC(this.getTopOfRoom(r))==-1){ bd.sQnC(this.getTopOfRoom(r), val);}
+				if(val!==-1 && bd.QnC(this.getTopOfRoom(r))===-1){ bd.sQnC(this.getTopOfRoom(r), val);}
 			}
 		}
 	},
@@ -542,13 +530,13 @@ AreaManager.prototype = {
 	lcntCross : function(id){ return this.lcnt[id];},
 
 	getRoomID : function(cc){ return this.room.id[cc];},
-	setRoomID : function(cc,val){ this.room.id[cc] = val;},
+//	setRoomID : function(cc,val){ this.room.id[cc] = val;},
 
 	getTopOfRoomByCell : function(cc){ return this.room[this.room.id[cc]].top;},
 	getTopOfRoom       : function(id){ return this.room[id].top;},
 
 	getCntOfRoomByCell : function(cc){ return this.room[this.room.id[cc]].clist.length;},
-	getCntOfRoom       : function(id){ return this.room[id].clist.length;},
+//	getCntOfRoom       : function(id){ return this.room[id].clist.length;},
 
 	//--------------------------------------------------------------------------------
 	// area.setBorder()    境界線が引かれたり消されてたりした時に、変数lcntの内容を変更する
@@ -559,7 +547,7 @@ AreaManager.prototype = {
 		this.setBorder(id,val);
 	},
 	setBorder : function(id,val){
-		if(this.disroom || !um.isenableRecord()){ return;}
+		if(this.disroom){ return;}
 		val = (val>0?1:0);
 
 		var cc1, cc2, xc1 = bd.crosscc1(id), xc2 = bd.crosscc2(id);
@@ -567,9 +555,9 @@ AreaManager.prototype = {
 		if(val>0){
 			this.lcnt[xc1]++; this.lcnt[xc2]++;
 
-			if(this.lcnt[xc1]==1 || this.lcnt[xc2]==1){ return;}
+			if(this.lcnt[xc1]===1 || this.lcnt[xc2]===1){ return;}
 			cc1 = bd.cc1(id); cc2 = bd.cc2(id);
-			if(cc1==-1 || cc2==-1 || roomid[cc1]!=roomid[cc2]){ return;}
+			if(cc1===-1 || cc2===-1 || roomid[cc1]!==roomid[cc2]){ return;}
 
 			var baseid = roomid[cc1];
 
@@ -579,7 +567,7 @@ AreaManager.prototype = {
 			this.sr0(cc2,room,bd.isBorder);
 
 			// 部屋が分割されていなかったら、元に戻して終了
-			if(roomid[cc1] == room.max){
+			if(roomid[cc1] === room.max){
 				for(var i=0,len=room[room.max].clist.length;i<len;i++){
 					roomid[room[room.max].clist[i]] = baseid;
 				}
@@ -597,7 +585,7 @@ AreaManager.prototype = {
 
 			// TOPの情報を設定する
 			if(k.isOneNumber){
-				if(roomid[room[baseid].top]==baseid){
+				if(roomid[room[baseid].top]===baseid){
 					this.setTopOfRoom(room.max);
 				}
 				else{
@@ -609,9 +597,9 @@ AreaManager.prototype = {
 		else{
 			this.lcnt[xc1]--; this.lcnt[xc2]--;
 
-			if(this.lcnt[xc1]==0 || this.lcnt[xc2]==0){ return;}
+			if(this.lcnt[xc1]===0 || this.lcnt[xc2]===0){ return;}
 			cc1 = bd.cc1(id); cc2 = bd.cc2(id);
-			if(cc1==-1 || cc2==-1 || roomid[cc1]==roomid[cc2]){ return;}
+			if(cc1===-1 || cc2===-1 || roomid[cc1]===roomid[cc2]){ return;}
 
 			// k.isOneNumberの時 どっちの数字を残すかは、TOP同士の位置で比較する
 			if(k.isOneNumber){
@@ -619,13 +607,13 @@ AreaManager.prototype = {
 
 				var tc1 = room[roomid[cc1]].top, tc2 = room[roomid[cc2]].top;
 				var tcx1 = bd.cell[tc1].cx, tcx2 = bd.cell[tc2].cx;
-				if(tcx1 > tcx2 || (tcx1 == tcx2 && tc1 > tc2)){ merged = tc1; keep = tc2;}
-				else                                          { merged = tc2; keep = tc1;}
+				if(tcx1>tcx2 || (tcx1===tcx2 && tc1>tc2)){ merged = tc1; keep = tc2;}
+				else                                     { merged = tc2; keep = tc1;}
 
 				// 消える部屋のほうの数字を消す
-				if(bd.QnC(merged)!=-1){
+				if(bd.QnC(merged)!==-1){
 					// 数字が消える部屋にしかない場合 -> 残るほうに移動させる
-					if(bd.QnC(keep)==-1){ bd.sQnC(keep, bd.QnC(merged)); pc.paintCell(keep);}
+					if(bd.QnC(keep)===-1){ bd.sQnC(keep, bd.QnC(merged)); pc.paintCell(keep);}
 					bd.sQnC(merged,-1); pc.paintCell(merged);
 				}
 			}
@@ -654,10 +642,10 @@ AreaManager.prototype = {
 		data.id[c] = data.max;
 		data[data.max].clist.push(c);
 		var tc;
-		tc=bd.up(c); if( tc!=-1 && data.id[tc]!=data.max && !func(bd.ub(c)) ){ this.sr0(tc,data,func);}
-		tc=bd.dn(c); if( tc!=-1 && data.id[tc]!=data.max && !func(bd.db(c)) ){ this.sr0(tc,data,func);}
-		tc=bd.lt(c); if( tc!=-1 && data.id[tc]!=data.max && !func(bd.lb(c)) ){ this.sr0(tc,data,func);}
-		tc=bd.rt(c); if( tc!=-1 && data.id[tc]!=data.max && !func(bd.rb(c)) ){ this.sr0(tc,data,func);}
+		tc=bd.up(c); if( tc!==-1 && data.id[tc]!==data.max && !func(bd.ub(c)) ){ this.sr0(tc,data,func);}
+		tc=bd.dn(c); if( tc!==-1 && data.id[tc]!==data.max && !func(bd.db(c)) ){ this.sr0(tc,data,func);}
+		tc=bd.lt(c); if( tc!==-1 && data.id[tc]!==data.max && !func(bd.lb(c)) ){ this.sr0(tc,data,func);}
+		tc=bd.rt(c); if( tc!==-1 && data.id[tc]!==data.max && !func(bd.rb(c)) ){ this.sr0(tc,data,func);}
 	},
 
 	//--------------------------------------------------------------------------------
@@ -709,8 +697,6 @@ AreaManager.prototype = {
 	// area.sc0()        初期idを含む一つの領域内のareaidを指定されたものにする
 	//--------------------------------------------------------------------------------
 	setCell : function(cc,val){
-		if(!um.isenableRecord()){ return;}
-
 		if(val>0){
 			if(this.bblock){ this.setBWCell(cc,1,this.bcell);}
 			if(this.wblock){ this.setBWCell(cc,0,this.wcell);}
@@ -722,21 +708,21 @@ AreaManager.prototype = {
 	},
 	setBWCell : function(cc,val,data){
 		var cid = [], dataid = data.id, tc;
-		tc=bd.up(cc); if(tc!=-1 && dataid[tc]!=-1){ cid.push(tc);}
-		tc=bd.dn(cc); if(tc!=-1 && dataid[tc]!=-1){ cid.push(tc);}
-		tc=bd.lt(cc); if(tc!=-1 && dataid[tc]!=-1){ cid.push(tc);}
-		tc=bd.rt(cc); if(tc!=-1 && dataid[tc]!=-1){ cid.push(tc);}
+		tc=bd.up(cc); if(tc!==-1 && dataid[tc]!==-1){ cid.push(tc);}
+		tc=bd.dn(cc); if(tc!==-1 && dataid[tc]!==-1){ cid.push(tc);}
+		tc=bd.lt(cc); if(tc!==-1 && dataid[tc]!==-1){ cid.push(tc);}
+		tc=bd.rt(cc); if(tc!==-1 && dataid[tc]!==-1){ cid.push(tc);}
 
 		// 新たに黒マス(白マス)になった時
 		if(val>0){
 			// まわりに黒マス(白マス)がない時は新しいIDで登録です
-			if(cid.length==0){
+			if(cid.length===0){
 				data.max++;
 				data[data.max] = {clist:[cc]};
 				dataid[cc] = data.max;
 			}
 			// 1方向にあるときは、そこにくっつけばよい
-			else if(cid.length==1){
+			else if(cid.length===1){
 				data[dataid[cid[0]]].clist.push(cc);
 				dataid[cc] = dataid[cid[0]];
 			}
@@ -749,7 +735,7 @@ AreaManager.prototype = {
 				}
 				// つながった黒マス(白マス)は全て同じIDにする
 				for(var i=0;i<cid.length;i++){
-					if(dataid[cid[i]]==largeid){ continue;}
+					if(dataid[cid[i]]===largeid){ continue;}
 					var clist = data[dataid[cid[i]]].clist;
 					for(var n=0,len=clist.length;n<len;n++){
 						dataid[clist[n]] = largeid;
@@ -765,14 +751,14 @@ AreaManager.prototype = {
 		// 黒マス(白マス)ではなくなった時
 		else{
 			// まわりに黒マス(白マス)がない時は情報を消去するだけ
-			if(cid.length==0){
+			if(cid.length===0){
 				data[dataid[cc]].clist = [];
 				dataid[cc] = -1;
 			}
 			// まわり1方向の時も自分を消去するだけでよい
-			else if(cid.length==1){
+			else if(cid.length===1){
 				var ownid = dataid[cc], clist = data[ownid].clist;
-				for(var i=0;i<clist.length;i++){ if(clist[i]==cc){ clist.splice(i,1); break;} }
+				for(var i=0;i<clist.length;i++){ if(clist[i]===cc){ clist.splice(i,1); break;} }
 				dataid[cc] = -1;
 			}
 			// 2方向以上の時は考慮が必要
@@ -787,7 +773,7 @@ AreaManager.prototype = {
 
 				// まわりのIDが0なセルに黒マス(白マス)IDをセットしていく
 				for(var i=0;i<cid.length;i++){
-					if(dataid[cid[i]]!=0){ continue;}
+					if(dataid[cid[i]]!==0){ continue;}
 					data.max++;
 					data[data.max] = {clist:[]};
 					this.sc0(cid[i],data);
@@ -799,10 +785,10 @@ AreaManager.prototype = {
 		data.id[c] = data.max;
 		data[data.max].clist.push(c);
 		var tc;
-		tc=bd.up(c); if( tc!=-1 && data.id[tc]==0 ){ this.sc0(tc,data);}
-		tc=bd.dn(c); if( tc!=-1 && data.id[tc]==0 ){ this.sc0(tc,data);}
-		tc=bd.lt(c); if( tc!=-1 && data.id[tc]==0 ){ this.sc0(tc,data);}
-		tc=bd.rt(c); if( tc!=-1 && data.id[tc]==0 ){ this.sc0(tc,data);}
+		tc=bd.up(c); if( tc!==-1 && data.id[tc]===0 ){ this.sc0(tc,data);}
+		tc=bd.dn(c); if( tc!==-1 && data.id[tc]===0 ){ this.sc0(tc,data);}
+		tc=bd.lt(c); if( tc!==-1 && data.id[tc]===0 ){ this.sc0(tc,data);}
+		tc=bd.rt(c); if( tc!==-1 && data.id[tc]===0 ){ this.sc0(tc,data);}
 	},
 
 	//--------------------------------------------------------------------------------

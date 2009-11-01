@@ -31,7 +31,7 @@ MenuExec.prototype = {
 	newboard : function(e){
 		if(menu.pop){
 			var col,row;
-			if(k.puzzleid!="sudoku"){
+			if(k.puzzleid!=="sudoku"){
 				col = mf(parseInt(document.newboard.col.value));
 				row = mf(parseInt(document.newboard.row.value));
 			}
@@ -77,7 +77,9 @@ MenuExec.prototype = {
 	},
 	openurl : function(e){
 		if(menu.pop){
-			if(document.urloutput.ta.value!=''){ var win = window.open(document.urloutput.ta.value, '', '');}
+			if(document.urloutput.ta.value!==''){
+				var win = window.open(document.urloutput.ta.value, '', '');
+			}
 		}
 	},
 
@@ -106,7 +108,7 @@ MenuExec.prototype = {
 
 			if(csize>0){
 				k.def_psize = mf(csize*(k.def_psize/k.def_csize));
-				if(k.def_psize==0){ k.def_psize=1;}
+				if(k.def_psize===0){ k.def_psize=1;}
 				k.def_csize = mf(csize);
 			}
 			menu.popclose();
@@ -138,7 +140,7 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	dispman : function(e){
 		var idlist = ['expression','usepanel','checkpanel'];
-		var sparatorlist = (k.callmode=="pmake")?['separator1']:['separator1','separator2'];
+		var sparatorlist = (k.callmode==="pmake")?['separator1']:['separator1','separator2'];
 
 		if(this.displaymanage){
 			for(var i=0;i<idlist.length;i++){ $("#"+idlist[i]).hide(800, base.resize_canvas.bind(base));}
@@ -169,16 +171,17 @@ MenuExec.prototype = {
 			um.newOperation(true);
 
 			var name = getSrcElement(e).name;
-			if(name.indexOf("reduce")==0){
-				if(name=="reduceup"||name=="reducedn"){
+			if(name.indexOf("reduce")===0){
+				if(name==="reduceup"||name==="reducedn"){
 					if(k.qrows<=1){ return;}
 				}
-				else if(name=="reducelt"||name=="reducedn"){
-					if(k.qcols<=1 && k.puzzleid!="tawa"){ return;}
-					else if(k.qcols<=1 && k.puzzleid=="tawa" && bd.lap!=3){ return;}
+				else if(name==="reducelt"||name==="reducedn"){
+					if(k.qcols<=1 && k.puzzleid!=="tawa"){ return;}
+					else if(k.qcols<=1 && k.puzzleid==="tawa" && bd.lap!==3){ return;}
 				}
 			}
 
+			um.disableInfo();
 			switch(name){
 				case "expandup": this.expand('up'); break;
 				case "expanddn": this.expand('dn'); break;
@@ -194,11 +197,12 @@ MenuExec.prototype = {
 				case "flipy": this.turnflip(1,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); break;
 				case "flipx": this.turnflip(2,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); break;
 			}
+			um.enableInfo();
 
 			// reduce‚Í‚±‚±•K{
 			um.addOpe('board', name, 0, 0, 1);
 
-			base.resetInfo();
+			if(!um.undoExec){ base.resetInfo();}
 			base.resize_canvas();				// Canvas‚ðXV‚·‚é
 		}
 	},
@@ -214,31 +218,31 @@ MenuExec.prototype = {
 		this.adjustGeneral(5,'',{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});
 
 		var number;
-		if     (key=='up'||key=='dn'){ number=k.qcols; k.qrows++; tc.maxy+=2;}
-		else if(key=='lt'||key=='rt'){ number=k.qrows; k.qcols++; tc.maxx+=2;}
+		if     (key==='up'||key==='dn'){ number=k.qcols; k.qrows++; tc.maxy+=2;}
+		else if(key==='lt'||key==='rt'){ number=k.qrows; k.qcols++; tc.maxx+=2;}
 
 		var func;
 		{
-			func = function(id){ return (menu.ex.distObj(key,'cell',id)==0);};
+			func = function(id){ return (menu.ex.distObj(key,'cell',id)===0);};
 			this.expandGroup('cell', bd.cell, number, func);
 		}
 		if(k.iscross){
 			var oc = k.isoutsidecross?0:1;
-			func = function(id){ return (menu.ex.distObj(key,'cross',id)==oc);};
+			func = function(id){ return (menu.ex.distObj(key,'cross',id)===oc);};
 			this.expandGroup('cross', bd.cross, number+1, func);
 		}
 		if(k.isborder){
 			bd.bdinside = 2*k.qcols*k.qrows-(k.qcols+k.qrows);
 
-			func = function(id){ var m=menu.ex.distObj(key,'border',id); return (m==1||m==2);};
-			this.expandGroup('border', bd.border, 2*number+(k.isoutsideborder==0?-1:1), func);
+			func = function(id){ var m=menu.ex.distObj(key,'border',id); return (m===1||m===2);};
+			this.expandGroup('border', bd.border, 2*number+(k.isoutsideborder===0?-1:1), func);
 
 			// Šg‘åŽž‚ÉA‹«ŠEü‚ÍL‚Î‚µ‚¿‚á‚¢‚Ü‚·B
-			if(k.isborderAsLine==0){ this.expandborder(key);}
+			if(k.isborderAsLine===0){ this.expandborder(key);}
 			else{ this.expandborderAsLine(key);}
 		}
-		if(k.isextendcell!=0){
-			func = function(id){ return (menu.ex.distObj(key,'excell',id)==0);};
+		if(k.isextendcell!==0){
+			func = function(id){ return (menu.ex.distObj(key,'excell',id)===0);};
 			this.expandGroup('excell', bd.excell, k.isextendcell, func);
 		}
 
@@ -265,37 +269,36 @@ MenuExec.prototype = {
 		var func, margin;
 		{
 			this.qnums = [];
-			func = function(id){ return (menu.ex.distObj(key,'cell',id)==0);};
+			func = function(id){ return (menu.ex.distObj(key,'cell',id)===0);};
 			margin = this.reduceGroup('cell', bd.cell, func);
 		}
 		if(k.iscross){
 			var oc = k.isoutsidecross?0:1;
-			func = function(id){ return (menu.ex.distObj(key,'cross',id)==oc);};
+			func = function(id){ return (menu.ex.distObj(key,'cross',id)===oc);};
 			margin = this.reduceGroup('cross', bd.cross, func);
 		}
 		if(k.isborder){
-			if(k.isborderAsLine==1){ this.reduceborderAsLine(key);}
+			if(k.isborderAsLine===1){ this.reduceborderAsLine(key);}
 
-			if     (key=='up'||key=='dn'){ bd.bdinside = 2*k.qcols*(k.qrows-1)-(k.qcols+k.qrows-1);}
-			else if(key=='lt'||key=='rt'){ bd.bdinside = 2*(k.qcols-1)*k.qrows-(k.qcols+k.qrows-1);}
+			if     (key==='up'||key==='dn'){ bd.bdinside = 2*k.qcols*(k.qrows-1)-(k.qcols+k.qrows-1);}
+			else if(key==='lt'||key==='rt'){ bd.bdinside = 2*(k.qcols-1)*k.qrows-(k.qcols+k.qrows-1);}
 
-			func = function(id){ var m=menu.ex.distObj(key,'border',id); return (m==1||m==2);};
+			func = function(id){ var m=menu.ex.distObj(key,'border',id); return (m===1||m===2);};
 			margin = this.reduceGroup('border', bd.border, func);
 		}
-		if(k.isextendcell!=0){
-			func = function(id){ return (menu.ex.distObj(key,'excell',id)==0);};
+		if(k.isextendcell!==0){
+			func = function(id){ return (menu.ex.distObj(key,'excell',id)===0);};
 			margin = this.reduceGroup('excell', bd.excell, func);
 		}
 
-		if     (key=='up'||key=='dn'){ k.qrows--; tc.maxy-=2;}
-		else if(key=='lt'||key=='rt'){ k.qcols--; tc.maxx-=2;}
+		if     (key==='up'||key==='dn'){ k.qrows--; tc.maxy-=2;}
+		else if(key==='lt'||key==='rt'){ k.qcols--; tc.maxx-=2;}
 
 		bd.setposAll();
-
 		if(k.isOneNumber){
 			area.resetArea();
 			for(var i=0;i<this.qnums.length;i++){
-				bd.cell[area.getTopOfRoom(this.qnums[i].areaid)].qnum = this.qnums[i].val;
+				bd.sQnC(area.getTopOfRoom(this.qnums[i].areaid), this.qnums[i].val);
 			}
 		}
 
@@ -309,9 +312,9 @@ MenuExec.prototype = {
 				if(!bd.isNullObj(type,i)){ um.addObj(type,i);}
 				margin++;
 
-				if(type=='cell' && k.isOneNumber){
-					if(bd.QnC(i)!=-1){ this.qnums.push({ areaid:area.getRoomID(i), val:bd.QnC(i)});}
-					area.setRoomID(i, -1);
+				if(type==='cell' && k.isOneNumber){
+					if(bd.QnC(i)!==-1){ this.qnums.push({ areaid:area.getRoomID(i), val:bd.QnC(i)});}
+					//area.setRoomID(i, -1);
 				}
 			}
 			else if(margin>0){ group[i-margin] = group[i];}
@@ -331,7 +334,7 @@ MenuExec.prototype = {
 		this.adjustSpecial(type,'');
 		this.adjustGeneral(type,'',d);
 
-		if(type==3||type==4){
+		if(type===3||type===4){
 			var tmp = k.qcols; k.qcols = k.qrows; k.qrows = tmp;
 			tmp = tc.maxx; tc.maxx = tc.maxy; tc.maxy = tmp;
 			bd.setposAll();
@@ -339,42 +342,42 @@ MenuExec.prototype = {
 
 		var func;
 		{
-			if     (type==1){ func = function(d,id){ return bd.cnum(bd.cell[id].cx, d.yy-bd.cell[id].cy);}; }
-			else if(type==2){ func = function(d,id){ return bd.cnum(d.xx-bd.cell[id].cx, bd.cell[id].cy);}; }
-			else if(type==3){ func = function(d,id){ return bd.cnum2(bd.cell[id].cy, d.yy-bd.cell[id].cx, k.qrows, k.qcols);}; }
-			else if(type==4){ func = function(d,id){ return bd.cnum2(d.xx-bd.cell[id].cy, bd.cell[id].cx, k.qrows, k.qcols);}; }
+			if     (type===1){ func = function(d,id){ return bd.cnum(bd.cell[id].cx, d.yy-bd.cell[id].cy);}; }
+			else if(type===2){ func = function(d,id){ return bd.cnum(d.xx-bd.cell[id].cx, bd.cell[id].cy);}; }
+			else if(type===3){ func = function(d,id){ return bd.cnum2(bd.cell[id].cy, d.yy-bd.cell[id].cx, k.qrows, k.qcols);}; }
+			else if(type===4){ func = function(d,id){ return bd.cnum2(d.xx-bd.cell[id].cy, bd.cell[id].cx, k.qrows, k.qcols);}; }
 			this.turnflipGroup(d, bd.cell, k.qcols*k.qrows, func);
 		}
 		if(k.iscross){
-			if     (type==1){ func = function(d,id){ return bd.xnum(bd.cross[id].cx, (d.yy+1)-bd.cross[id].cy);}; }
-			else if(type==2){ func = function(d,id){ return bd.xnum((d.xx+1)-bd.cross[id].cx, bd.cross[id].cy);}; }
-			else if(type==3){ func = function(d,id){ return bd.xnum2(bd.cross[id].cy, (d.yy+1)-bd.cross[id].cx, k.qrows, k.qcols);}; }
-			else if(type==4){ func = function(d,id){ return bd.xnum2((d.xx+1)-bd.cross[id].cy, bd.cross[id].cx, k.qrows, k.qcols);}; }
+			if     (type===1){ func = function(d,id){ return bd.xnum(bd.cross[id].cx, (d.yy+1)-bd.cross[id].cy);}; }
+			else if(type===2){ func = function(d,id){ return bd.xnum((d.xx+1)-bd.cross[id].cx, bd.cross[id].cy);}; }
+			else if(type===3){ func = function(d,id){ return bd.xnum2(bd.cross[id].cy, (d.yy+1)-bd.cross[id].cx, k.qrows, k.qcols);}; }
+			else if(type===4){ func = function(d,id){ return bd.xnum2((d.xx+1)-bd.cross[id].cy, bd.cross[id].cx, k.qrows, k.qcols);}; }
 			this.turnflipGroup(d, bd.cross, (k.qcols+1)*(k.qrows+1), func);
 		}
 		if(k.isborder){
-			if     (type==1){ func = function(d,id){ return bd.bnum(bd.border[id].cx, (d.yy+1)*2-bd.border[id].cy);}; }
-			else if(type==2){ func = function(d,id){ return bd.bnum((d.xx+1)*2-bd.border[id].cx, bd.border[id].cy);}; }
-			else if(type==3){ func = function(d,id){ return bd.bnum2(bd.border[id].cy, (d.yy+1)*2-bd.border[id].cx, k.qrows, k.qcols);}; }
-			else if(type==4){ func = function(d,id){ return bd.bnum2((d.xx+1)*2-bd.border[id].cy, bd.border[id].cx, k.qrows, k.qcols);}; }
-			this.turnflipGroup(d, bd.border, bd.bdinside+(k.isoutsideborder==0?0:2*(k.qcols+k.qrows)), func);
+			if     (type===1){ func = function(d,id){ return bd.bnum(bd.border[id].cx, (d.yy+1)*2-bd.border[id].cy);}; }
+			else if(type===2){ func = function(d,id){ return bd.bnum((d.xx+1)*2-bd.border[id].cx, bd.border[id].cy);}; }
+			else if(type===3){ func = function(d,id){ return bd.bnum2(bd.border[id].cy, (d.yy+1)*2-bd.border[id].cx, k.qrows, k.qcols);}; }
+			else if(type===4){ func = function(d,id){ return bd.bnum2((d.xx+1)*2-bd.border[id].cy, bd.border[id].cx, k.qrows, k.qcols);}; }
+			this.turnflipGroup(d, bd.border, bd.bdinside+(k.isoutsideborder===0?0:2*(k.qcols+k.qrows)), func);
 		}
-		if(k.isextendcell==2){
-			if     (type==1){ func = function(d,id){ return bd.exnum(bd.excell[id].cx, d.yy-bd.excell[id].cy);}; }
-			else if(type==2){ func = function(d,id){ return bd.exnum(d.xx-bd.excell[id].cx, bd.excell[id].cy);}; }
-			else if(type==3){ func = function(d,id){ return bd.exnum2(bd.excell[id].cy, d.yy-bd.excell[id].cx, k.qrows, k.qcols);}; }
-			else if(type==4){ func = function(d,id){ return bd.exnum2(d.xx-bd.excell[id].cy, bd.excell[id].cx, k.qrows, k.qcols);}; }
+		if(k.isextendcell===2){
+			if     (type===1){ func = function(d,id){ return bd.exnum(bd.excell[id].cx, d.yy-bd.excell[id].cy);}; }
+			else if(type===2){ func = function(d,id){ return bd.exnum(d.xx-bd.excell[id].cx, bd.excell[id].cy);}; }
+			else if(type===3){ func = function(d,id){ return bd.exnum2(bd.excell[id].cy, d.yy-bd.excell[id].cx, k.qrows, k.qcols);}; }
+			else if(type===4){ func = function(d,id){ return bd.exnum2(d.xx-bd.excell[id].cy, bd.excell[id].cx, k.qrows, k.qcols);}; }
 			this.turnflipGroup(d, bd.excell, 2*(k.qcols+k.qrows)+4, func);
 		}
-		else if(k.isextendcell==1 && (type==1 || type==2)){
-			if(type==1){
+		else if(k.isextendcell===1 && (type===1 || type===2)){
+			if(type===1){
 				for(var cy=d.y1;cy<d.yy/2;cy++){
 					var c = bd.excell[bd.exnum(-1,cy)];
 					bd.excell[bd.exnum(-1,cy)] = bd.excell[bd.exnum(-1,d.yy-cy)];
 					bd.excell[bd.exnum(-1,d.yy-cy)] = c;
 				}
 			}
-			else if(type==2){
+			else if(type===2){
 				for(var cx=d.x1;cx<d.xx/2;cx++){
 					var c = bd.excell[bd.exnum(cx,-1)];
 					bd.excell[bd.exnum(cx,-1)] = bd.excell[bd.exnum(d.xx-cx,-1)];
@@ -389,13 +392,13 @@ MenuExec.prototype = {
 	turnflipGroup : function(d,group,maxcnt,getnext){
 		var ch = []; for(var i=0;i<maxcnt;i++){ ch[i]=1;}
 		for(var source=0;source<maxcnt;source++){
-			if(ch[source]==0){ continue;}
+			if(ch[source]===0){ continue;}
 			var tmp = group[source], target = source;
-			while(ch[target]!=0){
+			while(ch[target]!==0){
 				ch[target]=0;
 				var next = getnext(d,target);
 
-				if(ch[next]!=0){
+				if(ch[next]!==0){
 					group[target] = group[next];
 					target = next;
 				}
@@ -417,7 +420,7 @@ MenuExec.prototype = {
 
 		bd.setposBorders();
 		for(var i=0;i<bd.bdmax;i++){
-			if(this.distObj(key,'border',i)!=1){ continue;}
+			if(this.distObj(key,'border',i)!==1){ continue;}
 
 			var source = this.innerBorder(key,i);
 			bd.border[i].ques  = bd.border[source].ques;
@@ -429,7 +432,7 @@ MenuExec.prototype = {
 	expandborderAsLine : function(key){
 		bd.setposBorders();
 		for(var i=0;i<bd.bdmax;i++){
-			if(this.distObj(key,'border',i)!=2){ continue;}
+			if(this.distObj(key,'border',i)!==2){ continue;}
 
 			var source = this.outerBorder(key,i);
 			this.copyData(i,source);
@@ -439,7 +442,7 @@ MenuExec.prototype = {
 	// borderAsLineŽž‚Ì–³—‚â‚è‚ª‚È‚ñ‚Æ‚©‚©‚ñ‚Æ‚©
 	reduceborderAsLine : function(key){
 		for(var i=0;i<bd.bdmax;i++){
-			if(this.distObj(key,'border',i)!=0){ continue;}
+			if(this.distObj(key,'border',i)!==0){ continue;}
 
 			var source = this.innerBorder(key,i);
 			this.copyData(i,source);
@@ -458,18 +461,18 @@ MenuExec.prototype = {
 	//---------------------------------------------------------------------------
 	innerBorder : function(key,id){
 		var bx=bd.border[id].cx, by=bd.border[id].cy;
-		if     (key=='up'){ return bd.bnum(bx, by+2);}
-		else if(key=='dn'){ return bd.bnum(bx, by-2);}
-		else if(key=='lt'){ return bd.bnum(bx+2, by);}
-		else if(key=='rt'){ return bd.bnum(bx-2, by);}
+		if     (key==='up'){ return bd.bnum(bx, by+2);}
+		else if(key==='dn'){ return bd.bnum(bx, by-2);}
+		else if(key==='lt'){ return bd.bnum(bx+2, by);}
+		else if(key==='rt'){ return bd.bnum(bx-2, by);}
 		return -1;
 	},
 	outerBorder : function(key,id){
 		var bx=bd.border[id].cx, by=bd.border[id].cy;
-		if     (key=='up'){ return bd.bnum(bx, by-2);}
-		else if(key=='dn'){ return bd.bnum(bx, by+2);}
-		else if(key=='lt'){ return bd.bnum(bx-2, by);}
-		else if(key=='rt'){ return bd.bnum(bx+2, by);}
+		if     (key==='up'){ return bd.bnum(bx, by-2);}
+		else if(key==='dn'){ return bd.bnum(bx, by+2);}
+		else if(key==='lt'){ return bd.bnum(bx-2, by);}
+		else if(key==='rt'){ return bd.bnum(bx+2, by);}
 		return -1;
 	},
 
@@ -478,35 +481,35 @@ MenuExec.prototype = {
 	// menu.ex.distObj()    ã‰º¶‰E‚¢‚¸‚ê‚©‚ÌŠO˜g‚Æ‚Ì‹——£‚ð‹‚ß‚é
 	//---------------------------------------------------------------------------
 	setposObj : function(type){
-		if     (type=='cell')  { bd.setposCells();}
-		else if(type=='cross') { bd.setposCrosses();}
-		else if(type=='border'){ bd.setposBorders();}
-		else if(type=='excell'){ bd.setposEXcells();}
+		if     (type==='cell')  { bd.setposCells();}
+		else if(type==='cross') { bd.setposCrosses();}
+		else if(type==='border'){ bd.setposBorders();}
+		else if(type==='excell'){ bd.setposEXcells();}
 	},
 	distObj : function(key,type,id){
-		if(type=='cell'){
-			if     (key=='up'){ return bd.cell[id].cy;}
-			else if(key=='dn'){ return (k.qrows-1)-bd.cell[id].cy;}
-			else if(key=='lt'){ return bd.cell[id].cx;}
-			else if(key=='rt'){ return (k.qcols-1)-bd.cell[id].cx;}
+		if(type==='cell'){
+			if     (key==='up'){ return bd.cell[id].cy;}
+			else if(key==='dn'){ return (k.qrows-1)-bd.cell[id].cy;}
+			else if(key==='lt'){ return bd.cell[id].cx;}
+			else if(key==='rt'){ return (k.qcols-1)-bd.cell[id].cx;}
 		}
-		else if(type=='cross'){
-			if     (key=='up'){ return bd.cross[id].cy;}
-			else if(key=='dn'){ return k.qrows-bd.cross[id].cy;}
-			else if(key=='lt'){ return bd.cross[id].cx;}
-			else if(key=='rt'){ return k.qcols-bd.cross[id].cx;}
+		else if(type==='cross'){
+			if     (key==='up'){ return bd.cross[id].cy;}
+			else if(key==='dn'){ return k.qrows-bd.cross[id].cy;}
+			else if(key==='lt'){ return bd.cross[id].cx;}
+			else if(key==='rt'){ return k.qcols-bd.cross[id].cx;}
 		}
-		else if(type=='border'){
-			if     (key=='up'){ return bd.border[id].cy;}
-			else if(key=='dn'){ return 2*k.qrows-bd.border[id].cy;}
-			else if(key=='lt'){ return bd.border[id].cx;}
-			else if(key=='rt'){ return 2*k.qcols-bd.border[id].cx;}
+		else if(type==='border'){
+			if     (key==='up'){ return bd.border[id].cy;}
+			else if(key==='dn'){ return 2*k.qrows-bd.border[id].cy;}
+			else if(key==='lt'){ return bd.border[id].cx;}
+			else if(key==='rt'){ return 2*k.qcols-bd.border[id].cx;}
 		}
-		else if(type=='excell'){
-			if     (key=='up'){ return bd.excell[id].cy;}
-			else if(key=='dn'){ return (k.qrows-1)-bd.excell[id].cy;}
-			else if(key=='lt'){ return bd.excell[id].cx;}
-			else if(key=='rt'){ return (k.qcols-1)-bd.excell[id].cx;}
+		else if(type==='excell'){
+			if     (key==='up'){ return bd.excell[id].cy;}
+			else if(key==='dn'){ return (k.qrows-1)-bd.excell[id].cy;}
+			else if(key==='lt'){ return bd.excell[id].cx;}
+			else if(key==='rt'){ return (k.qcols-1)-bd.excell[id].cx;}
 		}
 		return -1;
 	},
@@ -530,7 +533,7 @@ MenuExec.prototype = {
 						var val = ({2:5,3:4,4:3,5:2,104:107,105:106,106:105,107:104})[bd.QuC(c)];
 						if(!isNaN(val)){ bd.sQuC(c,val);}
 					}
-					if(k.isextendcell!=1){
+					if(k.isextendcell!==1){
 						var val = ({1:2,2:1})[bd.DiC(c)];
 						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
@@ -540,7 +543,7 @@ MenuExec.prototype = {
 						var val = ({2:3,3:2,4:5,5:4,104:105,105:104,106:107,107:106})[bd.QuC(c)];
 						if(!isNaN(val)){ bd.sQuC(c,val);}
 					}
-					if(k.isextendcell!=1){
+					if(k.isextendcell!==1){
 						var val = ({3:4,4:3})[bd.DiC(c)];
 						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
@@ -550,7 +553,7 @@ MenuExec.prototype = {
 						var val = {2:5,3:2,4:3,5:4,21:22,22:21,102:103,103:102,104:107,105:104,106:105,107:106}[bd.QuC(c)];
 						if(!isNaN(val)){ bd.sQuC(c,val);}
 					}
-					if(k.isextendcell!=1){
+					if(k.isextendcell!==1){
 						var val = {1:4,2:3,3:1,4:2}[bd.DiC(c)];
 						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
@@ -560,7 +563,7 @@ MenuExec.prototype = {
 						var val = {2:3,3:4,4:5,5:2,21:22,22:21,102:103,103:102,104:105,105:106,106:107,107:104}[bd.QuC(c)];
 						if(!isNaN(val)){ bd.sQuC(c,val);}
 					}
-					if(k.isextendcell!=1){
+					if(k.isextendcell!==1){
 						var val = {1:3,2:4,3:2,4:1}[bd.DiC(c)];
 						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
@@ -581,13 +584,13 @@ MenuExec.prototype = {
 		for(var cy=0;cy<=k.qrows-1;cy++){
 			this.qnumw[cy] = [bd.QnE(bd.exnum(-1,cy))];
 			for(var cx=0;cx<=k.qcols-1;cx++){
-				if(bd.QuC(bd.cnum(cx,cy))==51){ this.qnumw[cy].push(bd.QnC(bd.cnum(cx,cy)));}
+				if(bd.QuC(bd.cnum(cx,cy))===51){ this.qnumw[cy].push(bd.QnC(bd.cnum(cx,cy)));}
 			}
 		}
 		for(var cx=0;cx<=k.qcols-1;cx++){
 			this.qnumh[cx] = [bd.DiE(bd.exnum(cx,-1))];
 			for(var cy=0;cy<=k.qrows-1;cy++){
-				if(bd.QuC(bd.cnum(cx,cy))==51){ this.qnumh[cx].push(bd.DiC(bd.cnum(cx,cy)));}
+				if(bd.QuC(bd.cnum(cx,cy))===51){ this.qnumh[cx].push(bd.DiC(bd.cnum(cx,cy)));}
 			}
 		}
 	},
@@ -600,7 +603,7 @@ MenuExec.prototype = {
 				idx = 1; this.qnumh[cx] = this.qnumh[cx].reverse();
 				bd.sDiE(bd.exnum(cx,-1), this.qnumh[cx][0]);
 				for(var cy=0;cy<=k.qrows-1;cy++){
-					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sDiC(bd.cnum(cx,cy), this.qnumh[cx][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sDiC(bd.cnum(cx,cy), this.qnumh[cx][idx]); idx++;}
 				}
 			}
 			break;
@@ -609,7 +612,7 @@ MenuExec.prototype = {
 				idx = 1; this.qnumw[cy] = this.qnumw[cy].reverse();
 				bd.sQnE(bd.exnum(-1,cy), this.qnumw[cy][0]);
 				for(var cx=0;cx<=k.qcols-1;cx++){
-					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sQnC(bd.cnum(cx,cy), this.qnumw[cy][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sQnC(bd.cnum(cx,cy), this.qnumw[cy][idx]); idx++;}
 				}
 			}
 			break;
@@ -618,14 +621,14 @@ MenuExec.prototype = {
 				idx = 1; this.qnumh[cy] = this.qnumh[cy].reverse();
 				bd.sQnE(bd.exnum(-1,cy), this.qnumh[cy][0]);
 				for(var cx=0;cx<=k.qcols-1;cx++){
-					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sQnC(bd.cnum(cx,cy), this.qnumh[cy][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sQnC(bd.cnum(cx,cy), this.qnumh[cy][idx]); idx++;}
 				}
 			}
 			for(var cx=0;cx<=k.qcols-1;cx++){
 				idx = 1;
 				bd.sDiE(bd.exnum(cx,-1), this.qnumw[k.qcols-1-cx][0]);
 				for(var cy=0;cy<=k.qrows-1;cy++){
-					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sDiC(bd.cnum(cx,cy), this.qnumw[k.qcols-1-cx][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sDiC(bd.cnum(cx,cy), this.qnumw[k.qcols-1-cx][idx]); idx++;}
 				}
 			}
 			break;
@@ -634,14 +637,14 @@ MenuExec.prototype = {
 				idx = 1;
 				bd.sQnE(bd.exnum(-1,cy), this.qnumh[k.qrows-1-cy][0]);
 				for(var cx=0;cx<=k.qcols-1;cx++){
-					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sQnC(bd.cnum(cx,cy), this.qnumh[k.qrows-1-cy][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sQnC(bd.cnum(cx,cy), this.qnumh[k.qrows-1-cy][idx]); idx++;}
 				}
 			}
 			for(var cx=0;cx<=k.qcols-1;cx++){
 				idx = 1; this.qnumw[cx] = this.qnumw[cx].reverse();
 				bd.sDiE(bd.exnum(cx,-1), this.qnumw[cx][0]);
 				for(var cy=0;cy<=k.qrows-1;cy++){
-					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sDiC(bd.cnum(cx,cy), this.qnumw[cx][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sDiC(bd.cnum(cx,cy), this.qnumw[cx][idx]); idx++;}
 				}
 			}
 			break;
@@ -660,15 +663,15 @@ MenuExec.prototype = {
 			um.newOperation(true);
 			{
 				for(var i=0;i<bd.cellmax;i++){
-					if(bd.QaC(i)!=bd.def.cell.qans){ um.addOpe('cell','qans',i,bd.QaC(i),bd.def.cell.qans);}
-					if(bd.QsC(i)!=bd.def.cell.qsub){ um.addOpe('cell','qsub',i,bd.QsC(i),bd.def.cell.qsub);}
+					if(bd.cell[i].qans!==bd.defcell.qans){ um.addOpe('cell','qans',i,bd.cell[i].qans,bd.defcell.qans);}
+					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe('cell','qsub',i,bd.cell[i].qsub,bd.defcell.qsub);}
 				}
 			}
 			if(k.isborder){
 				for(var i=0;i<bd.bdmax;i++){
-					if(bd.QaB(i)!=bd.def.border.qans){ um.addOpe('border','qans',i,bd.QaB(i),bd.def.border.qans);}
-					if(bd.LiB(i)!=bd.def.border.line){ um.addOpe('border','line',i,bd.LiB(i),bd.def.border.line);}
-					if(bd.QsB(i)!=bd.def.border.qsub){ um.addOpe('border','qsub',i,bd.QsB(i),bd.def.border.qsub);}
+					if(bd.border[i].qans!==bd.defborder.qans){ um.addOpe('border','qans',i,bd.border[i].qans,bd.defborder.qans);}
+					if(bd.border[i].line!==bd.defborder.line){ um.addOpe('border','line',i,bd.border[i].line,bd.defborder.line);}
+					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe('border','qsub',i,bd.border[i].qsub,bd.defborder.qsub);}
 				}
 			}
 			if(!g.vml){ pc.flushCanvasAll();}
@@ -683,12 +686,12 @@ MenuExec.prototype = {
 			um.newOperation(true);
 			{
 				for(var i=0;i<bd.cellmax;i++){
-					if(bd.QsC(i)!=bd.def.cell.qsub){ um.addOpe('cell','qsub',i,bd.QsC(i),bd.def.cell.qsub);}
+					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe('cell','qsub',i,bd.cell[i].qsub,bd.defcell.qsub);}
 				}
 			}
 			if(k.isborder){
 				for(var i=0;i<bd.bdmax;i++){
-					if(bd.QsB(i)!=bd.def.border.qsub){ um.addOpe('border','qsub',i,bd.QsB(i),bd.def.border.qsub);}
+					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe('border','qsub',i,bd.border[i].qsub,bd.defborder.qsub);}
 				}
 			}
 			if(!g.vml){ pc.flushCanvasAll();}

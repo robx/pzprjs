@@ -146,9 +146,9 @@ Encode.prototype = {
 			bd.initBoardSize(this.uri.cols, this.uri.rows);
 		}
 		if(this.uri.bstr){
-			um.disableRecord();
+			um.disableRecord(); um.disableInfo();
 			this.pzlimport(this.uri.type, this.uri.bstr);
-			um.enableRecord();
+			um.enableRecord(); um.enableInfo();
 
 			bd.ansclear();
 			um.allerase();
@@ -163,34 +163,74 @@ Encode.prototype = {
 	checkpflag : function(ca){ return (this.uri.pflag.indexOf(ca)>=0);},
 
 	//---------------------------------------------------------------------------
-	// enc.decode4()  quesが0～4までの場合、デコードする
-	// enc.encode4()  quesが0～4までの場合、問題部をエンコードする
+	// enc.decode4Cell()  quesが0～4までの場合、デコードする
+	// enc.encode4Cell()  quesが0～4までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
-	decode4 : function(bstr, func, max){
-		var cell=0, i=0;
+	decode4Cell : function(bstr){
+		var c=0, i=0;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
-			if     (this.include(ca,"0","4")){ func(cell, parseInt(ca,16));    cell++; }
-			else if(this.include(ca,"5","9")){ func(cell, parseInt(ca,16)-5);  cell+=2;}
-			else if(this.include(ca,"a","e")){ func(cell, parseInt(ca,16)-10); cell+=3;}
-			else if(this.include(ca,"g","z")){ cell+=(parseInt(ca,36)-15);}
-			else if(ca=="."){ func(cell, -2); cell++;}
+			if     (this.include(ca,"0","4")){ bd.sQnC(c, parseInt(ca,16));    c++; }
+			else if(this.include(ca,"5","9")){ bd.sQnC(c, parseInt(ca,16)-5);  c+=2;}
+			else if(this.include(ca,"a","e")){ bd.sQnC(c, parseInt(ca,16)-10); c+=3;}
+			else if(this.include(ca,"g","z")){ c+=(parseInt(ca,36)-15);}
+			else if(ca=="."){ bd.sQnC(c, -2); c++;}
 
-			if(cell>=max){ break;}
+			if(c>=bd.cellmax){ break;}
 		}
 		return bstr.substring(i+1,bstr.length);
 	},
-	encode4 : function(func, max){
+	encode4Cell : function(){
 		var count = 0, cm = "";
-		for(var i=0;i<max;i++){
+		for(var i=0;i<bd.cellmax;i++){
 			var pstr = "";
 
-			if(func(i)>=0){
-				if(func(i+1)>=0||func(i+1)==-2){ pstr=""+func(i).toString(16);}
-				else if(func(i+2)>=0||func(i+2)==-2){ pstr=""+(5+func(i)).toString(16); i++;}
-				else{ pstr=""+(10+func(i)).toString(16); i+=2;}
+			if(bd.QnC(i)>=0){
+				if     (i<bd.cellmax-1&&(bd.QnC(i+1)>=0||bd.QnC(i+1)==-2)){ pstr=""+bd.QnC(i).toString(16);}
+				else if(i<bd.cellmax-2&&(bd.QnC(i+2)>=0||bd.QnC(i+2)==-2)){ pstr=""+(5+bd.QnC(i)).toString(16); i++;}
+				else{ pstr=""+(10+bd.QnC(i)).toString(16); i+=2;}
 			}
-			else if(func(i)==-2){ pstr=".";}
+			else if(bd.QnC(i)==-2){ pstr=".";}
+			else{ pstr=" "; count++;}
+
+			if(count==0)      { cm += pstr;}
+			else if(pstr!=" "){ cm += ((count+15).toString(36)+pstr); count=0;}
+			else if(count==20){ cm += "z"; count=0;}
+		}
+		if(count>0){ cm += ((count+15).toString(36));}
+
+		return cm;
+	},
+
+	//---------------------------------------------------------------------------
+	// enc.decode4Cross()  quesが0～4までの場合、デコードする
+	// enc.encode4Cross()  quesが0～4までの場合、問題部をエンコードする
+	//---------------------------------------------------------------------------
+	decode4Cross : function(bstr){
+		var c=0, i=0;
+		for(i=0;i<bstr.length;i++){
+			var ca = bstr.charAt(i);
+			if     (this.include(ca,"0","4")){ bd.sQnX(c, parseInt(ca,16));    c++; }
+			else if(this.include(ca,"5","9")){ bd.sQnX(c, parseInt(ca,16)-5);  c+=2;}
+			else if(this.include(ca,"a","e")){ bd.sQnX(c, parseInt(ca,16)-10); c+=3;}
+			else if(this.include(ca,"g","z")){ c+=(parseInt(ca,36)-15);}
+			else if(ca=="."){ bd.sQnX(c, -2); c++;}
+
+			if(c>=bd.crossmax){ break;}
+		}
+		return bstr.substring(i+1,bstr.length);
+	},
+	encode4Cross : function(){
+		var count = 0, cm = "";
+		for(var i=0;i<bd.crossmax;i++){
+			var pstr = "";
+
+			if(bd.QnX(i)>=0){
+				if     (i<bd.crossmax-1&&(bd.QnX(i+1)>=0||bd.QnX(i+1)==-2)){ pstr=""+bd.QnX(i).toString(16);}
+				else if(i<bd.crossmax-2&&(bd.QnX(i+2)>=0||bd.QnX(i+2)==-2)){ pstr=""+(5+bd.QnX(i)).toString(16); i++;}
+				else{ pstr=""+(10+bd.QnX(i)).toString(16); i+=2;}
+			}
+			else if(bd.QnX(i)==-2){ pstr=".";}
 			else{ pstr=" "; count++;}
 
 			if(count==0)      { cm += pstr;}
@@ -247,7 +287,8 @@ Encode.prototype = {
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if(this.include(ca,"0","9")||this.include(ca,"a","f")){ bd.sQnC(c, parseInt(bstr.substring(i,i+1),16)); c++;}
+			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
+							  { bd.sQnC(c, parseInt(bstr.substring(i,  i+1),16));      c++;}
 			else if(ca == '.'){ bd.sQnC(c, -2);                                        c++;      }
 			else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),16));      c++; i+=2;}
 			else if(ca == '+'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+4),16));      c++; i+=3;}
@@ -292,7 +333,8 @@ Encode.prototype = {
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if(this.include(ca,"0","9")||this.include(ca,"a","f")){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i,i+1),16)); r++;}
+			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
+							  { bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i,  i+1),16));      r++;}
 			else if(ca == '-'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+3),16));      r++; i+=2;}
 			else if(ca == '+'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16));      r++; i+=3;}
 			else if(ca == '='){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+4096); r++; i+=3;}

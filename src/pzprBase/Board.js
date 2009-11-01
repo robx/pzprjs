@@ -33,9 +33,9 @@ Cell.prototype = {
 		this.qsub = 0;
 		this.ques = 0;
 		this.qnum = -1;
-		if(k.puzzleid=="tilepaint"||k.puzzleid=="kakuro"){ this.qnum = 0;}
+		if(k.puzzleid==="tilepaint"||k.puzzleid==="kakuro"){ this.qnum = 0;}
 		this.direc = 0;
-		if(k.puzzleid=="triplace"){ this.direc = -1;}
+		if(k.puzzleid==="triplace"){ this.direc = -1;}
 		this.error = 0;
 	},
 	ansclear : function(num) {
@@ -114,12 +114,12 @@ Border.prototype = {
 	//---------------------------------------------------------------------------
 	allclear : function(num) {
 		this.ques = 0;
-		if(k.puzzleid=="mejilink" && num<k.qcols*(k.qrows-1)+(k.qcols-1)*k.qrows){ this.ques = 1;}
+		if(k.puzzleid==="mejilink" && num<k.qcols*(k.qrows-1)+(k.qcols-1)*k.qrows){ this.ques = 1;}
 		this.qnum = -1;
-		if(k.puzzleid=="tentaisho"){ this.qnum = 0;}
+		if(k.puzzleid==="tentaisho"){ this.qnum = 0;}
 		this.qans = 0;
 		this.qsub = 0;
-		if(k.puzzleid=="bosanowa"){ this.qsub = -1;}
+		if(k.puzzleid==="bosanowa"){ this.qsub = -1;}
 		this.line = 0;
 		this.color = "";
 		this.error = 0;
@@ -127,14 +127,14 @@ Border.prototype = {
 	ansclear : function(num) {
 		this.qans = 0;
 		this.qsub = 0;
-		if(k.puzzleid=="bosanowa"){ this.qsub = -1;}
+		if(k.puzzleid==="bosanowa"){ this.qsub = -1;}
 		this.line = 0;
 		this.color = "";
 		this.error = 0;
 	},
 	subclear : function(num) {
 		this.qsub = 0;
-		if(k.puzzleid=="bosanowa"){ this.qsub = -1;}
+		if(k.puzzleid==="bosanowa"){ this.qsub = -1;}
 		this.error = 0;
 	}
 };
@@ -156,8 +156,12 @@ Board = function(){
 
 	this.bdinside = 0;		// 盤面の内側(外枠上でない)に存在する境界線の本数
 
+	// デフォルトのセルなど
+	this.defcell   = new Cell(0);
+	this.defcross  = new Cross(0);
+	this.defborder = new Border(0);
+
 	this.enableLineNG = false;
-	this.def = {cell:new Cell(0), cross:new Cross(0), border:new Border(0)};			// デフォルトのセルなど
 
 	this.initBoardSize(k.qcols,k.qrows);
 	this.override();
@@ -176,12 +180,12 @@ Board.prototype = {
 			this.initGroup('cross',  this.cross,  (col+1)*(row+1));
 		}
 		if(k.isborder){
-			this.initGroup('border', this.border, 2*col*row+(k.isoutsideborder==0?-1:1)*(col+row));
+			this.initGroup('border', this.border, 2*col*row+(k.isoutsideborder===0?-1:1)*(col+row));
 		}
-		if(k.isextendcell==1){
+		if(k.isextendcell===1){
 			this.initGroup('excell', this.excell, col+row+1);
 		}
-		else if(k.isextendcell==2){
+		else if(k.isextendcell===2){
 			this.initGroup('excell', this.excell, 2*col+2*row+4);
 		}
 
@@ -287,12 +291,12 @@ Board.prototype = {
 		this.excellmax = this.excell.length;
 		for(var id=0;id<this.excellmax;id++){
 			var obj = this.excell[id];
-			if(k.isextendcell==1){
+			if(k.isextendcell===1){
 				if     (id<k.qcols)        { obj.cx=id; obj.cy=-1;        }
 				else if(id<k.qcols+k.qrows){ obj.cx=-1; obj.cy=id-k.qcols;}
 				else                       { obj.cx=-1; obj.cy=-1;        }
 			}
-			else if(k.isextendcell==2){
+			else if(k.isextendcell===2){
 				if     (id<  k.qcols)            { obj.cx=id;         obj.cy=-1;                  }
 				else if(id<2*k.qcols)            { obj.cx=id-k.qcols; obj.cy=k.qrows;             }
 				else if(id<2*k.qcols+  k.qrows)  { obj.cx=-1;         obj.cy=id-2*k.qcols;        }
@@ -351,47 +355,47 @@ Board.prototype = {
 	// bd.hideNumobj()  指定したオブジェクトのnumobjを隠す
 	//---------------------------------------------------------------------------
 	getnewObj : function(type,id){
-		if(type=='cell' || type=='excell'){ return (new Cell(id));}
-		else if(type=='cross') { return (new Cross(id));}
-		else if(type=='border'){ return (new Border(id));}
+		if(type==='cell' || type==='excell'){ return (new Cell(id));}
+		else if(type==='cross') { return (new Cross(id));}
+		else if(type==='border'){ return (new Border(id));}
 	},
 	isNullObj : function(type,id){
-		if(type=='cell'){
-			return ((this.cell[id].qans == this.def.cell.qans)&&
-					(this.cell[id].qsub == this.def.cell.qsub)&&
-					(this.cell[id].ques == this.def.cell.ques)&&
-					(this.cell[id].qnum == this.def.cell.qnum)&&
-					(this.cell[id].direc== this.def.cell.direc));
+		if(type==='cell'){
+			return ((this.cell[id].qans === this.defcell.qans)&&
+					(this.cell[id].qsub === this.defcell.qsub)&&
+					(this.cell[id].ques === this.defcell.ques)&&
+					(this.cell[id].qnum === this.defcell.qnum)&&
+					(this.cell[id].direc=== this.defcell.direc));
 		}
-		else if(type=='cross') {
-			return (this.cross[id].qnum==this.def.cross.qnum);
+		else if(type==='cross') {
+			return (this.cross[id].qnum===this.defcross.qnum);
 		}
-		else if(type=='border'){
-			return ((this.border[id].qans == this.def.border.qans)&&
-					(this.border[id].qsub == this.def.border.qsub)&&
-					(this.border[id].ques == this.def.border.ques)&&
-					(this.border[id].qnum == this.def.border.qnum)&&
-					(this.border[id].line == this.def.border.line));
+		else if(type==='border'){
+			return ((this.border[id].qans === this.defborder.qans)&&
+					(this.border[id].qsub === this.defborder.qsub)&&
+					(this.border[id].ques === this.defborder.ques)&&
+					(this.border[id].qnum === this.defborder.qnum)&&
+					(this.border[id].line === this.defborder.line));
 		}
-		else if(type=='excell'){
-			return ((this.excell[id].qnum == this.def.cell.qnum)&&
-					(this.excell[id].direc== this.def.cell.direc));
+		else if(type==='excell'){
+			return ((this.excell[id].qnum === this.defcell.qnum)&&
+					(this.excell[id].direc=== this.defcell.direc));
 		}
 		return true;
 	},
 
 	hideNumobj : function(type,id){
-		if(type=='cell'){
+		if(type==='cell'){
 			if(this.cell[id].numobj) { this.cell[id].numobj.hide();}
 			if(this.cell[id].numobj2){ this.cell[id].numobj2.hide();}
 		}
-		else if(type=='cross') {
+		else if(type==='cross') {
 			if(this.cross[id].numobj){ this.cross[id].numobj.hide();}
 		}
-		else if(type=='border'){
+		else if(type==='border'){
 			if(this.border[id].numobj){ this.border[id].numobj.hide();}
 		}
-		else if(type=='excell'){
+		else if(type==='excell'){
 			if(this.excell[id].numobj) { this.excell[id].numobj.hide();}
 			if(this.excell[id].numobj2){ this.excell[id].numobj2.hide();}
 		}
@@ -424,14 +428,14 @@ Board.prototype = {
 	},
 	bnum2 : function(cx,cy,qc,qr){
 		if(cx>=1&&cx<=qc*2-1&&cy>=1&&cy<=qr*2-1){
-			if(cx%2==0 && cy%2==1){ return mf((cx-1)/2)+mf((cy-1)/2)*(qc-1);}
-			else if(cx%2==1 && cy%2==0){ return mf((cx-1)/2)+mf((cy-2)/2)*qc+(qc-1)*qr;}
+			if(cx%2===0 && cy%2===1){ return mf((cx-1)/2)+mf((cy-1)/2)*(qc-1);}
+			else if(cx%2===1 && cy%2===0){ return mf((cx-1)/2)+mf((cy-2)/2)*qc+(qc-1)*qr;}
 		}
 		else if(k.isoutsideborder==1){
-			if     (cy==0   &&cx%2==1&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+mf((cx-1)/2);}
-			else if(cy==2*qr&&cx%2==1&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+mf((cx-1)/2);}
-			else if(cx==0   &&cy%2==1&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+mf((cy-1)/2);}
-			else if(cx==2*qc&&cy%2==1&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+mf((cy-1)/2);}
+			if     (cy===0   &&cx%2===1&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+mf((cx-1)/2);}
+			else if(cy===2*qr&&cx%2===1&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+mf((cx-1)/2);}
+			else if(cx===0   &&cy%2===1&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+mf((cy-1)/2);}
+			else if(cx===2*qc&&cy%2===1&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+mf((cy-1)/2);}
 		}
 		return -1;
 	},
@@ -439,20 +443,20 @@ Board.prototype = {
 		return this.exnum2(cx,cy,k.qcols,k.qrows);
 	},
 	exnum2 : function(cx,cy,qc,qr){
-		if(k.isextendcell==1){
-			if(cx==-1&&cy==-1){ return qc+qr;}
-			else if(cy==-1&&cx>=0&&cx<qc){ return cx;}
-			else if(cx==-1&&cy>=0&&cy<qr){ return qc+cy;}
+		if(k.isextendcell===1){
+			if(cx===-1&&cy===-1){ return qc+qr;}
+			else if(cy===-1&&cx>=0&&cx<qc){ return cx;}
+			else if(cx===-1&&cy>=0&&cy<qr){ return qc+cy;}
 		}
-		else if(k.isextendcell==2){
-			if     (cy==-1&&cx>=0&&cx<qc){ return cx;}
-			else if(cy==qr&&cx>=0&&cx<qc){ return qc+cx;}
-			else if(cx==-1&&cy>=0&&cy<qr){ return 2*qc+cy;}
-			else if(cx==qc&&cy>=0&&cy<qr){ return 2*qc+qr+cy;}
-			else if(cx==-1&&cy==-1){ return 2*qc+2*qr;}
-			else if(cx==qc&&cy==-1){ return 2*qc+2*qr+1;}
-			else if(cx==-1&&cy==qr){ return 2*qc+2*qr+2;}
-			else if(cx==qc&&cy==qr){ return 2*qc+2*qr+3;}
+		else if(k.isextendcell===2){
+			if     (cy===-1&&cx>=0&&cx<qc){ return cx;}
+			else if(cy===qr&&cx>=0&&cx<qc){ return qc+cx;}
+			else if(cx===-1&&cy>=0&&cy<qr){ return 2*qc+cy;}
+			else if(cx===qc&&cy>=0&&cy<qr){ return 2*qc+qr+cy;}
+			else if(cx===-1&&cy===-1){ return 2*qc+2*qr;}
+			else if(cx===qc&&cy===-1){ return 2*qc+2*qr+1;}
+			else if(cx===-1&&cy===qr){ return 2*qc+2*qr+2;}
+			else if(cx===qc&&cy===qr){ return 2*qc+2*qr+3;}
 		}
 		return -1;
 	},
@@ -509,14 +513,14 @@ Board.prototype = {
 	// bd.isnoLPup(), bd.isnoLPdown(), bd.isnoLPleft(), bd.isnoLPright()
 	//   上下左右が線が引けない条件になっているか判定する
 	//---------------------------------------------------------------------------
-	isLPup    : function(cc){ return ({101:1,102:1,104:1,105:1}[this.QuC(cc)] == 1);},
-	isLPdown  : function(cc){ return ({101:1,102:1,106:1,107:1}[this.QuC(cc)] == 1);},
-	isLPleft  : function(cc){ return ({101:1,103:1,105:1,106:1}[this.QuC(cc)] == 1);},
-	isLPright : function(cc){ return ({101:1,103:1,104:1,107:1}[this.QuC(cc)] == 1);},
-	isnoLPup    : function(cc){ return ({1:1,4:1,5:1,21:1,103:1,106:1,107:1}[this.QuC(cc)] == 1);},
-	isnoLPdown  : function(cc){ return ({1:1,2:1,3:1,21:1,103:1,104:1,105:1}[this.QuC(cc)] == 1);},
-	isnoLPleft  : function(cc){ return ({1:1,2:1,5:1,22:1,102:1,104:1,107:1}[this.QuC(cc)] == 1);},
-	isnoLPright : function(cc){ return ({1:1,3:1,4:1,22:1,102:1,105:1,106:1}[this.QuC(cc)] == 1);},
+	isLPup    : function(cc){ return ({101:1,102:1,104:1,105:1}[this.QuC(cc)] === 1);},
+	isLPdown  : function(cc){ return ({101:1,102:1,106:1,107:1}[this.QuC(cc)] === 1);},
+	isLPleft  : function(cc){ return ({101:1,103:1,105:1,106:1}[this.QuC(cc)] === 1);},
+	isLPright : function(cc){ return ({101:1,103:1,104:1,107:1}[this.QuC(cc)] === 1);},
+	isnoLPup    : function(cc){ return ({1:1,4:1,5:1,21:1,103:1,106:1,107:1}[this.QuC(cc)] === 1);},
+	isnoLPdown  : function(cc){ return ({1:1,2:1,3:1,21:1,103:1,104:1,105:1}[this.QuC(cc)] === 1);},
+	isnoLPleft  : function(cc){ return ({1:1,2:1,5:1,22:1,102:1,104:1,107:1}[this.QuC(cc)] === 1);},
+	isnoLPright : function(cc){ return ({1:1,3:1,4:1,22:1,102:1,105:1,106:1}[this.QuC(cc)] === 1);},
 	//---------------------------------------------------------------------------
 	// bd.isLPMarked()      Lineのどちらか側にLinePartsが存在しているかどうか判定する
 	// bd.isLPCombined()    Lineの2方向ともLinePartsが存在しているかどうか判定する
@@ -525,23 +529,23 @@ Board.prototype = {
 	// bd.checkLPCombined() 線がつながっているかどうか見て、Line==1を設定する
 	//---------------------------------------------------------------------------
 	isLPMarked : function(id){
-		return bd.border[id].cx%2==1 ? (bd.isLPdown(bd.cc1(id)) || bd.isLPup(bd.cc2(id))) :
-									   (bd.isLPright(bd.cc1(id)) || bd.isLPleft(bd.cc2(id)));
+		return bd.border[id].cx%2===1 ? (bd.isLPdown(bd.cc1(id)) || bd.isLPup(bd.cc2(id))) :
+										(bd.isLPright(bd.cc1(id)) || bd.isLPleft(bd.cc2(id)));
 	},
 	isLPCombined : function(id){
-		return bd.border[id].cx%2==1 ? (bd.isLPdown(bd.cc1(id)) && bd.isLPup(bd.cc2(id))) :
-									   (bd.isLPright(bd.cc1(id)) && bd.isLPleft(bd.cc2(id)));
+		return bd.border[id].cx%2===1 ? (bd.isLPdown(bd.cc1(id)) && bd.isLPup(bd.cc2(id))) :
+										(bd.isLPright(bd.cc1(id)) && bd.isLPleft(bd.cc2(id)));
 	},
 	isLineNG : function(id){
-		return bd.border[id].cx%2==1 ? (bd.isnoLPdown(bd.cc1(id)) || bd.isnoLPup(bd.cc2(id))) :
-									   (bd.isnoLPright(bd.cc1(id)) || bd.isnoLPleft(bd.cc2(id)));
+		return bd.border[id].cx%2===1 ? (bd.isnoLPdown(bd.cc1(id)) || bd.isnoLPup(bd.cc2(id))) :
+										(bd.isnoLPright(bd.cc1(id)) || bd.isnoLPleft(bd.cc2(id)));
 	},
 	checkLPCombined : function(cc){
 		var id;
-		id = this.ub(cc); if(id!=-1 && this.LiB(id)==0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.db(cc); if(id!=-1 && this.LiB(id)==0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.lb(cc); if(id!=-1 && this.LiB(id)==0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.rb(cc); if(id!=-1 && this.LiB(id)==0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+		id = this.ub(cc); if(id!==-1 && this.LiB(id)===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+		id = this.db(cc); if(id!==-1 && this.LiB(id)===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+		id = this.lb(cc); if(id!==-1 && this.LiB(id)===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+		id = this.rb(cc); if(id!==-1 && this.LiB(id)===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -553,90 +557,67 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// Cell関連Get/Set関数 <- 各Cellが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuC : function(id, num) {
-		if(id<0 || this.cellmax<=id){ return;}
-
 		um.addOpe('cell', 'ques', id, this.cell[id].ques, num);
 		this.cell[id].ques = num;
 
-		if(k.puzzleid=="pipelink"||k.puzzleid=="loopsp"){ this.checkLPCombined(id);}
-	},
-	QuC : function(id){
-		if(id<0 || this.cellmax<=id){ return -1;}
-		return this.cell[id].ques;
+		if(k.puzzleid==="pipelink"||k.puzzleid==="loopsp"){ this.checkLPCombined(id);}
 	},
 	sQnC : function(id, num) {
-		if(id<0 || this.cellmax<=id){ return;}
-		if(k.dispzero==0 && num==0){ return;}
+		if(k.dispzero===0 && num===0){ return;}
 
 		var old = this.cell[id].qnum;
 		um.addOpe('cell', 'qnum', id, old, num);
 		this.cell[id].qnum = num;
 
-		if(area.numberColony && (num!=-1 ^ area.bcell.id[id]!=-1)){ area.setCell(id,(num!=-1?1:0));}
-		if(k.puzzleid=="lightup" && ((old==-1)^(num==-1))){ mv.paintAkari(id);}
-	},
-	QnC : function(id){
-		if(id<0 || this.cellmax<=id){ return -1;}
-		return this.cell[id].qnum;
+		if(um.isenableInfo() &&
+			(area.numberColony && (num!==-1 ^ area.bcell.id[id]!==-1))
+		){ area.setCell(id,(num!==-1?1:0));}
+
+		if(k.puzzleid==="lightup" && ((old===-1)^(num===-1))){ mv.paintAkari(id);}
 	},
 	sQaC : function(id, num) {
-		if(id<0 || this.cellmax<=id){ return;}
-
 		var old = this.cell[id].qans;
 		um.addOpe('cell', 'qans', id, old, num);
 		this.cell[id].qans = num;
 
-		if((area.bblock && (num!=-1 ^ area.bcell.id[id]!=-1)) || 
-		   (area.wblock && (num==-1 ^ area.wcell.id[id]!=-1))){ area.setCell(id,(num!=-1?1:0));}
+		if(um.isenableInfo() && (
+			(area.bblock && (num!==-1 ^ area.bcell.id[id]!==-1)) || 
+			(area.wblock && (num===-1 ^ area.wcell.id[id]!==-1))
+		)){ area.setCell(id,(num!==-1?1:0));}
+
 		if(k.puzzleid=="lightup" && ((old==1)^(num==1))){ mv.paintAkari(id);}
 	},
-	QaC : function(id){
-		if(id<0 || this.cellmax<=id){ return -1;}
-		return this.cell[id].qans;
-	},
 	sQsC : function(id, num) {
-		if(id<0 || this.cellmax<=id){ return;}
-
 		um.addOpe('cell', 'qsub', id, this.cell[id].qsub, num);
 		this.cell[id].qsub = num;
 	},
-	QsC : function(id){
-		if(id<0 || this.cellmax<=id){ return -1;}
-		return this.cell[id].qsub;
-	},
 	sDiC : function(id, num) {
-		if(id<0 || this.cellmax<=id){ return;}
-
 		um.addOpe('cell', 'direc', id, this.cell[id].direc, num);
 		this.cell[id].direc = num;
 	},
-	DiC : function(id){
-		if(id<0 || this.cellmax<=id){ return -1;}
-		return this.cell[id].direc;
-	},
+
+	QuC : function(id){ return (id!==-1?this.cell[id].ques:-1);},
+	QnC : function(id){ return (id!==-1?this.cell[id].qnum:-1);},
+	QaC : function(id){ return (id!==-1?this.cell[id].qans:-1);},
+	QsC : function(id){ return (id!==-1?this.cell[id].qsub:-1);},
+	DiC : function(id){ return (id!==-1?this.cell[id].direc:-1);},
+
 	//---------------------------------------------------------------------------
 	// sQnE / QnE : bd.setQnumEXcell() / bd.getQnumEXcell()  該当するEXCellのqnumを設定する/返す
 	// sDiE / DiE : bd.setDirecEXcell()/ bd.getDirecEXcell() 該当するEXCellのdirecを設定する/返す
 	//---------------------------------------------------------------------------
 	// EXcell関連Get/Set関数
 	sQnE : function(id, num) {
-		if(id<0 || this.excellmax<=id){ return;}
 		um.addOpe('excell', 'qnum', id, this.excell[id].qnum, num);
 		this.excell[id].qnum = num;
 	},
-	QnE : function(id){
-		if(id<0 || this.excellmax<=id){ return -1;}
-		return this.excell[id].qnum;
-	},
 	sDiE : function(id, num) {
-		if(id<0 || this.excellmax<=id){ return;}
 		um.addOpe('excell', 'direc', id, this.excell[id].direc, num);
 		this.excell[id].direc = num;
 	},
-	DiE : function(id){
-		if(id<0 || this.excellmax<=id){ return -1;}
-		return this.excell[id].direc;
-	},
+
+	QnE : function(id){ return (id!==-1?this.excell[id].qnum:-1);},
+	DiE : function(id){ return (id!==-1?this.excell[id].direc:-1);},
 
 	//---------------------------------------------------------------------------
 	// sQuX / QuX : bd.setQuesCross(id,num) / bd.getQuesCross() 該当するCrossのquesを設定する/返す
@@ -644,25 +625,16 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// Cross関連Get/Set関数 <- 各Crossが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuX : function(id, num) {
-		if(id<0 || this.crossmax<=id){ return;}
-
 		um.addOpe('cross', 'ques', id, this.cross[id].ques, num);
 		this.cross[id].ques = num;
 	},
-	QuX : function(id){
-		if(id<0 || this.crossmax<=id){ return -1;}
-		return this.cross[id].ques;
-	},
 	sQnX : function(id, num) {
-		if(id<0 || this.crossmax<=id){ return;}
-
 		um.addOpe('cross', 'qnum', id, this.cross[id].qnum, num);
 		this.cross[id].qnum = num;
 	},
-	QnX : function(id){
-		if(id<0 || this.crossmax<=id){ return -1;}
-		return this.cross[id].qnum;
-	},
+
+	QuX : function(id){ return (id!==-1?this.cross[id].ques:-1);},
+	QnX : function(id){ return (id!==-1?this.cross[id].qnum:-1);},
 
 	//---------------------------------------------------------------------------
 	// sQuB / QuB : bd.setQuesBorder() / bd.getQuesBorder() 該当するBorderのquesを設定する/返す
@@ -673,69 +645,47 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// Border関連Get/Set関数 <- 各Borderが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuB : function(id, num) {
-		if(id<0 || this.bdmax<=id){ return;}
-
 		var old = this.border[id].ques;
 		um.addOpe('border', 'ques', id, old, num);
 		this.border[id].ques = num;
 
-		if(num>0 ^ old>0){ area.call_setBorder(id,num,'ques');}
-	},
-	QuB : function(id){
-		if(id<0 || this.bdmax<=id){ return -1;}
-		return this.border[id].ques;
+		if(um.isenableInfo() && (num>0 ^ old>0)){ area.call_setBorder(id,num,'ques');}
 	},
 	sQnB : function(id, num) {
-		if(id<0 || this.bdmax<=id){ return;}
-
 		um.addOpe('border', 'qnum', id, this.border[id].qnum, num);
 		this.border[id].qnum = num;
 	},
-	QnB : function(id){
-		if(id<0 || this.bdmax<=id){ return -1;}
-		return this.border[id].qnum;
-	},
 	sQaB : function(id, num) {
-		if(id<0 || this.bdmax<=id){ return;}
 		if(this.border[id].ques!=0){ return;}
 
 		var old = this.border[id].qans;
 		um.addOpe('border', 'qans', id, old, num);
 		this.border[id].qans = num;
 
-		if(num>0 ^ old>0){
+		if(um.isenableInfo() && (num>0 ^ old>0)){
 			if(k.isborderAsLine){ line.setLine(id,num);}
 			else                { area.call_setBorder(id,num,'qans');}
 		}
 	},
-	QaB : function(id){
-		if(id<0 || this.bdmax<=id){ return -1;}
-		return this.border[id].qans;
-	},
 	sQsB : function(id, num) {
-		if(id<0 || this.bdmax<=id){ return;}
-
 		um.addOpe('border', 'qsub', id, this.border[id].qsub, num);
 		this.border[id].qsub = num;
 	},
-	QsB : function(id){
-		if(id<0 || this.bdmax<=id){ return -1;}
-		return this.border[id].qsub;
-	},
 	sLiB : function(id, num) {
-		if(id<0 || this.bdmax<=id){ return;}
 		if(this.enableLineNG && (num==1?bd.isLineNG:bd.isLPCombined)(id)){ return;}
 
 		var old = this.border[id].line;
 		um.addOpe('border', 'line', id, old, num);
 		this.border[id].line = num;
 
-		if(num>0 ^ old>0){ line.setLine(id,num);}
+		if(um.isenableInfo() && (num>0 ^ old>0)){ line.setLine(id,num);}
 	},
-	LiB : function(id){
-		if(id<0 || this.bdmax<=id){ return -1;}
-		return this.border[id].line;
-	},
+
+	QuB : function(id){ return (id!==-1?this.border[id].ques:-1);},
+	QnB : function(id){ return (id!==-1?this.border[id].qnum:-1);},
+	QaB : function(id){ return (id!==-1?this.border[id].qans:-1);},
+	QsB : function(id){ return (id!==-1?this.border[id].qsub:-1);},
+	LiB : function(id){ return (id!==-1?this.border[id].line:-1);},
 
 	//---------------------------------------------------------------------------
 	// sErC / ErC : bd.setErrorCell()   / bd.getErrorCell()   該当するCellのerrorを設定する/返す
@@ -748,69 +698,59 @@ Board.prototype = {
 	sErC : function(idlist, num) {
 		if(!ans.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
-		for(var i=0;i<idlist.length;i++){ if(idlist[i]>=0 && this.cellmax>idlist[i]){ this.cell[idlist[i]].error = num;} }
-	},
-	ErC : function(id){
-		if(id<0 || this.cellmax<=id){ return 0;}
-		return this.cell[id].error;
+		for(var i=0;i<idlist.length;i++){ if(idlist[i]!==-1){ this.cell[idlist[i]].error = num;} }
 	},
 	sErX : function(idlist, num) {
 		if(!ans.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
-		for(var i=0;i<idlist.length;i++){ if(idlist[i]>=0 && this.crossmax>idlist[i]){ this.cross[idlist[i]].error = num;} }
-	},
-	ErX : function(id){
-		if(id<0 || this.crossmax<=id){ return 0;}
-		return this.cross[id].error;
+		for(var i=0;i<idlist.length;i++){ if(idlist[i]!==-1){ this.cross[idlist[i]].error = num;} }
 	},
 	sErB : function(idlist, num) {
 		if(!ans.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
-		for(var i=0;i<idlist.length;i++){ if(idlist[i]>=0 && this.bdmax>idlist[i]){ this.border[idlist[i]].error = num;} }
-	},
-	ErB : function(id){
-		if(id<0 || this.bdmax<=id){ return 0;}
-		return this.border[id].error;
+		for(var i=0;i<idlist.length;i++){ if(idlist[i]!==-1){ this.border[idlist[i]].error = num;} }
 	},
 	sErE : function(idlist, num) {
 		if(!ans.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
-		for(var i=0;i<idlist.length;i++){ if(idlist[i]>=0 && this.excellmax>idlist[i]){ this.excell[idlist[i]].error = num;} }
+		for(var i=0;i<idlist.length;i++){ if(idlist[i]!==-1){ this.excell[idlist[i]].error = num;} }
 	},
-	ErE : function(id){
-		if(id<0 || this.excellmax<=id){ return 0;}
-		return this.excell[id].error;
-	},
-
 	sErBAll : function(num){
 		if(!ans.isenableSetError()){ return;}
 		for(var i=0;i<bd.bdmax;i++){ this.border[i].error = num;}
 	},
+
+	ErC : function(id){ return (id!==-1?this.cell[id].error:0);},
+	ErX : function(id){ return (id!==-1?this.cross[id].error:0);},
+	ErB : function(id){ return (id!==-1?this.border[id].error:0);},
+	ErE : function(id){ return (id!==-1?this.excell[id].error:0);},
 
 	//---------------------------------------------------------------------------
 	// bd.override()  条件フラグを見て関数をオーバーライドする
 	//---------------------------------------------------------------------------
 	override : function(){
 		if(k.isborderAsLine){
-			this.isLine     = function(id){ return (bd.QaB(id)>0);};
+			this.isLine     = function(id){ return (id!==-1 && bd.border[id].qans>0);};
 			this.setLine    = function(id){ this.sQaB(id, 1); this.sQsB(id, 0);};
 			this.setPeke    = function(id){ this.sQaB(id, 0); this.sQsB(id, 2);};
 			this.removeLine = function(id){ this.sQaB(id, 0); this.sQsB(id, 0);};
 		}
 		if(!k.isAnsNumber){
-			this.isNum      = function(c){ return (bd.QnC(c)!=-1);};
-			this.noNum      = function(c){ return (bd.QnC(c)==-1);};
-			this.isValidNum = function(c){ return (bd.QnC(c)>= 0);};
+			this.isNum      = function(c){ return (c!==-1 && bd.cell[c].qnum!==-1);};
+			this.noNum      = function(c){ return (c===-1 || bd.cell[c].qnum===-1);};
+			this.isValidNum = function(c){ return (c!==-1 && bd.cell[c].qnum>=  0);};
 
-			this.getNum = function(c)    { return bd.QnC(c);};
-			this.setNum = function(c,val){ if(k.dispzero || val!=0){ this.sQnC(c,val);} };
+			this.getNum = function(c)    { return (c!==-1?this.cell[c].qnum:-1);};
 			if(k.NumberIsWhite){
-				this.setNum = function(c,val){ if(k.dispzero || val!=0){ this.sQnC(c,val); this.sQaC(c,-1);} };
+				this.setNum = function(c,val){ if(k.dispzero || val!==0){ this.sQnC(c,val); this.sQaC(c,-1);} };
+			}
+			else{
+				this.setNum = function(c,val){ if(k.dispzero || val!==0){ this.sQnC(c,val);} };
 			}
 		}
 		else{
 			if(k.NumberIsWhite){
-				this.setNum = function(c){ this.sQnC(c,val); this.sQaC(c,-1);}
+				this.setNum = function(c,val){ this.sQnC(c,val); this.sQaC(c,-1);}
 			}
 		}
 	},
@@ -821,8 +761,8 @@ Board.prototype = {
 	// bd.setBlack()  該当するCellに黒マスをセットする
 	// bd.setWhite()  該当するCellに白マスをセットする
 	//---------------------------------------------------------------------------
-	isBlack : function(c){ return (bd.QaC(c)==1);},
-	isWhite : function(c){ return (c!=-1 && bd.QaC(c)!=1);},
+	isBlack : function(c){ return (c!==-1 && bd.cell[c].qans===1);},
+	isWhite : function(c){ return (c!==-1 && bd.cell[c].qans!==1);},
 
 	setBlack : function(c){ this.sQaC(c, 1);},
 	setWhite : function(c){ this.sQaC(c,-1);},
@@ -835,16 +775,16 @@ Board.prototype = {
 	// bd.getNum()     該当するCellの数字を返す
 	// bd.setNum()     該当するCellに数字を設定する
 	//---------------------------------------------------------------------------
-	isNum      : function(c){ return (bd.QnC(c)!=-1 || bd.QaC(c)!=-1);},
-	noNum      : function(c){ return (bd.QnC(c)==-1 && bd.QaC(c)==-1);},
-	isValidNum : function(c){ return (bd.QnC(c)>=0 || (bd.QnC(c)==-1 && bd.QaC(c)>=0));},
-	sameNumber : function(c1,c2){ return (bd.isValidNum(c1) && (bd.getNum(c1) == bd.getNum(c2)));},
+	isNum      : function(c){ return (c!==-1 && (bd.cell[c].qnum!==-1 || bd.cell[c].qans!==-1));},
+	noNum      : function(c){ return (c===-1 || (bd.cell[c].qnum===-1 && bd.cell[c].qans===-1));},
+	isValidNum : function(c){ return (c!==-1 && (bd.cell[c].qnum>=  0 ||(bd.cell[c].qans>=0 && bd.cell[c].qnum===-1)));},
+	sameNumber : function(c1,c2){ return (bd.isValidNum(c1) && (bd.getNum(c1)===bd.getNum(c2)));},
 
-	getNum : function(c){ return (this.QnC(c)!=-1?this.QnC(c):this.QaC(c));},
+	getNum : function(c){ return (this.cell[c].qnum!==-1?this.cell[c].qnum:this.cell[c].qans);},
 	setNum : function(c,val){
 		if(k.dispzero || val!=0){
-			if(k.mode==1){ this.sQnC(c,val); this.sQaC(c,bd.def.cell.qnum);}
-			else if(this.QnC(c)==bd.def.cell.qnum){ this.sQaC(c,val);}
+			if(k.mode==1){ this.sQnC(c,val); this.sQaC(c,bd.defcell.qnum);}
+			else if(this.cell[c].qnum===bd.defcell.qnum){ this.sQaC(c,val);}
 			this.sQsC(c,0);
 		}
 	},
@@ -856,11 +796,7 @@ Board.prototype = {
 	// bd.setPeke()     該当するBorderに×をつける
 	// bd.removeLine()  該当するBorderから線を消す
 	//---------------------------------------------------------------------------
-	isLine : function(id){
-		try{ return (bd.border[id].line>0);}catch(e){}
-		return false;
-	},
-
+	isLine     : function(id){ return (id!==-1 && bd.border[id].line>0);},
 	setLine    : function(id){ this.sLiB(id, 1); this.sQsB(id, 0);},
 	setPeke    : function(id){ this.sLiB(id, 0); this.sQsB(id, 2);},
 	removeLine : function(id){ this.sLiB(id, 0); this.sQsB(id, 0);},
@@ -873,17 +809,16 @@ Board.prototype = {
 	// bd.removeBsub()   該当するBorderから境界線用の補助記号をはずす
 	//---------------------------------------------------------------------------
 	isBorder : function(id){
-		try{ return (bd.border[id].ques>0 || bd.border[id].qans>0);}catch(e){}
-		return false;
+		return (id!==-1 && (bd.border[id].ques>0 || bd.border[id].qans>0));
 	},
 
 	setBorder    : function(id){
-		if(k.mode==1){ this.sQuB(id,1); this.sQaB(id,0);}
-		else if(this.QuB(id)!=1){ this.sQaB(id,1);}
+		if(k.mode===1){ this.sQuB(id,1); this.sQaB(id,0);}
+		else if(this.QuB(id)!==1){ this.sQaB(id,1);}
 	},
 	removeBorder : function(id){
-		if(k.mode==1){ this.sQuB(id,0); this.sQaB(id,0);}
-		else if(this.QuB(id)!=1){ this.sQaB(id,0);}
+		if(k.mode===1){ this.sQuB(id,0); this.sQaB(id,0);}
+		else if(this.QuB(id)!==1){ this.sQaB(id,0);}
 	},
 	setBsub      : function(id){ this.sQsB(id,1);},
 	removeBsub   : function(id){ this.sQsB(id,0);}

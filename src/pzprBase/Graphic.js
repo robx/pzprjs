@@ -16,7 +16,7 @@ Graphic = function(){
 	this.errcolor3 = "rgb(0, 191, 0)";
 
 	// ƒZƒ‹‚Ì›~‚ÌF(•â•‹L†)
-	this.MBcolor = "rgb(255, 127, 64)";
+	this.MBcolor = "rgb(255, 160, 127)";
 
 	this.qsubcolor1 = "rgb(160,255,160)";
 	this.qsubcolor2 = "rgb(255,255,127)";
