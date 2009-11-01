@@ -156,7 +156,7 @@ Puzzles.minarism.prototype = {
 		menu.ex.adjustSpecial = function(type,key){
 			um.disableRecord();
 			if(type>=1 && type<=4){ // ”½“]E‰ñ“]‘S‚Ä
-				for(var c=0;c<bd.bdmax;c++){ if(bd.QuC(c)!=0){ bd.sQuC(c,{1:2,2:1}[bd.QuC(c)]); } }
+				for(var c=0;c<bd.bdmax;c++){ if(bd.QuB(c)!=0){ bd.sQuB(c,{1:2,2:1}[bd.QuB(c)]); } }
 			}
 			um.enableRecord();
 		};
