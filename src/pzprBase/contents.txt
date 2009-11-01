@@ -1,4 +1,4 @@
-pzprBase.js v3.2.2a2 contents
+pzprBase.js v3.2.2 contents
 
 global.js      v3.2.2
 Board.js       v3.2.2

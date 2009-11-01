@@ -5,8 +5,8 @@
  * written in JavaScript.
  * 
  * @author  happa.
- * @version v3.2.2α2
- * @date    2009-10-30
+ * @version v3.2.2
+ * @date    2009-11-02
  * 
  * This script uses following libraries.
  *  jquery.js (version 1.3.2)
@@ -22,7 +22,7 @@
  * 
  */
 
-var pzprversion="v3.2.2α2";
+var pzprversion="v3.2.2";
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -297,9 +297,9 @@ Cell.prototype = {
 		this.qsub = 0;
 		this.ques = 0;
 		this.qnum = -1;
-		if(k.puzzleid=="tilepaint"||k.puzzleid=="kakuro"){ this.qnum = 0;}
+		if(k.puzzleid==="tilepaint"||k.puzzleid==="kakuro"){ this.qnum = 0;}
 		this.direc = 0;
-		if(k.puzzleid=="triplace"){ this.direc = -1;}
+		if(k.puzzleid==="triplace"){ this.direc = -1;}
 		this.error = 0;
 	},
 	ansclear : function(num) {
@@ -378,12 +378,12 @@ Border.prototype = {
 	//---------------------------------------------------------------------------
 	allclear : function(num) {
 		this.ques = 0;
-		if(k.puzzleid=="mejilink" && num<k.qcols*(k.qrows-1)+(k.qcols-1)*k.qrows){ this.ques = 1;}
+		if(k.puzzleid==="mejilink" && num<k.qcols*(k.qrows-1)+(k.qcols-1)*k.qrows){ this.ques = 1;}
 		this.qnum = -1;
-		if(k.puzzleid=="tentaisho"){ this.qnum = 0;}
+		if(k.puzzleid==="tentaisho"){ this.qnum = 0;}
 		this.qans = 0;
 		this.qsub = 0;
-		if(k.puzzleid=="bosanowa"){ this.qsub = -1;}
+		if(k.puzzleid==="bosanowa"){ this.qsub = -1;}
 		this.line = 0;
 		this.color = "";
 		this.error = 0;
@@ -391,14 +391,14 @@ Border.prototype = {
 	ansclear : function(num) {
 		this.qans = 0;
 		this.qsub = 0;
-		if(k.puzzleid=="bosanowa"){ this.qsub = -1;}
+		if(k.puzzleid==="bosanowa"){ this.qsub = -1;}
 		this.line = 0;
 		this.color = "";
 		this.error = 0;
 	},
 	subclear : function(num) {
 		this.qsub = 0;
-		if(k.puzzleid=="bosanowa"){ this.qsub = -1;}
+		if(k.puzzleid==="bosanowa"){ this.qsub = -1;}
 		this.error = 0;
 	}
 };
@@ -420,8 +420,12 @@ Board = function(){
 
 	this.bdinside = 0;		// 盤面の内側(外枠上でない)に存在する境界線の本数
 
+	// デフォルトのセルなど
+	this.defcell   = new Cell(0);
+	this.defcross  = new Cross(0);
+	this.defborder = new Border(0);
+
 	this.enableLineNG = false;
-	this.def = {cell:new Cell(0), cross:new Cross(0), border:new Border(0)};			// デフォルトのセルなど
 
 	this.initBoardSize(k.qcols,k.qrows);
 	this.override();
@@ -440,12 +444,12 @@ Board.prototype = {
 			this.initGroup('cross',  this.cross,  (col+1)*(row+1));
 		}
 		if(k.isborder){
-			this.initGroup('border', this.border, 2*col*row+(k.isoutsideborder==0?-1:1)*(col+row));
+			this.initGroup('border', this.border, 2*col*row+(k.isoutsideborder===0?-1:1)*(col+row));
 		}
-		if(k.isextendcell==1){
+		if(k.isextendcell===1){
 			this.initGroup('excell', this.excell, col+row+1);
 		}
-		else if(k.isextendcell==2){
+		else if(k.isextendcell===2){
 			this.initGroup('excell', this.excell, 2*col+2*row+4);
 		}
 
@@ -551,12 +555,12 @@ Board.prototype = {
 		this.excellmax = this.excell.length;
 		for(var id=0;id<this.excellmax;id++){
 			var obj = this.excell[id];
-			if(k.isextendcell==1){
+			if(k.isextendcell===1){
 				if     (id<k.qcols)        { obj.cx=id; obj.cy=-1;        }
 				else if(id<k.qcols+k.qrows){ obj.cx=-1; obj.cy=id-k.qcols;}
 				else                       { obj.cx=-1; obj.cy=-1;        }
 			}
-			else if(k.isextendcell==2){
+			else if(k.isextendcell===2){
 				if     (id<  k.qcols)            { obj.cx=id;         obj.cy=-1;                  }
 				else if(id<2*k.qcols)            { obj.cx=id-k.qcols; obj.cy=k.qrows;             }
 				else if(id<2*k.qcols+  k.qrows)  { obj.cx=-1;         obj.cy=id-2*k.qcols;        }
@@ -615,47 +619,47 @@ Board.prototype = {
 	// bd.hideNumobj()  指定したオブジェクトのnumobjを隠す
 	//---------------------------------------------------------------------------
 	getnewObj : function(type,id){
-		if(type=='cell' || type=='excell'){ return (new Cell(id));}
-		else if(type=='cross') { return (new Cross(id));}
-		else if(type=='border'){ return (new Border(id));}
+		if(type==='cell' || type==='excell'){ return (new Cell(id));}
+		else if(type==='cross') { return (new Cross(id));}
+		else if(type==='border'){ return (new Border(id));}
 	},
 	isNullObj : function(type,id){
-		if(type=='cell'){
-			return ((this.cell[id].qans == this.def.cell.qans)&&
-					(this.cell[id].qsub == this.def.cell.qsub)&&
-					(this.cell[id].ques == this.def.cell.ques)&&
-					(this.cell[id].qnum == this.def.cell.qnum)&&
-					(this.cell[id].direc== this.def.cell.direc));
+		if(type==='cell'){
+			return ((this.cell[id].qans === this.defcell.qans)&&
+					(this.cell[id].qsub === this.defcell.qsub)&&
+					(this.cell[id].ques === this.defcell.ques)&&
+					(this.cell[id].qnum === this.defcell.qnum)&&
+					(this.cell[id].direc=== this.defcell.direc));
 		}
-		else if(type=='cross') {
-			return (this.cross[id].qnum==this.def.cross.qnum);
+		else if(type==='cross') {
+			return (this.cross[id].qnum===this.defcross.qnum);
 		}
-		else if(type=='border'){
-			return ((this.border[id].qans == this.def.border.qans)&&
-					(this.border[id].qsub == this.def.border.qsub)&&
-					(this.border[id].ques == this.def.border.ques)&&
-					(this.border[id].qnum == this.def.border.qnum)&&
-					(this.border[id].line == this.def.border.line));
+		else if(type==='border'){
+			return ((this.border[id].qans === this.defborder.qans)&&
+					(this.border[id].qsub === this.defborder.qsub)&&
+					(this.border[id].ques === this.defborder.ques)&&
+					(this.border[id].qnum === this.defborder.qnum)&&
+					(this.border[id].line === this.defborder.line));
 		}
-		else if(type=='excell'){
-			return ((this.excell[id].qnum == this.def.cell.qnum)&&
-					(this.excell[id].direc== this.def.cell.direc));
+		else if(type==='excell'){
+			return ((this.excell[id].qnum === this.defcell.qnum)&&
+					(this.excell[id].direc=== this.defcell.direc));
 		}
 		return true;
 	},
 
 	hideNumobj : function(type,id){
-		if(type=='cell'){
+		if(type==='cell'){
 			if(this.cell[id].numobj) { this.cell[id].numobj.hide();}
 			if(this.cell[id].numobj2){ this.cell[id].numobj2.hide();}
 		}
-		else if(type=='cross') {
+		else if(type==='cross') {
 			if(this.cross[id].numobj){ this.cross[id].numobj.hide();}
 		}
-		else if(type=='border'){
+		else if(type==='border'){
 			if(this.border[id].numobj){ this.border[id].numobj.hide();}
 		}
-		else if(type=='excell'){
+		else if(type==='excell'){
 			if(this.excell[id].numobj) { this.excell[id].numobj.hide();}
 			if(this.excell[id].numobj2){ this.excell[id].numobj2.hide();}
 		}
@@ -688,14 +692,14 @@ Board.prototype = {
 	},
 	bnum2 : function(cx,cy,qc,qr){
 		if(cx>=1&&cx<=qc*2-1&&cy>=1&&cy<=qr*2-1){
-			if(cx%2==0 && cy%2==1){ return mf((cx-1)/2)+mf((cy-1)/2)*(qc-1);}
-			else if(cx%2==1 && cy%2==0){ return mf((cx-1)/2)+mf((cy-2)/2)*qc+(qc-1)*qr;}
+			if(cx%2===0 && cy%2===1){ return mf((cx-1)/2)+mf((cy-1)/2)*(qc-1);}
+			else if(cx%2===1 && cy%2===0){ return mf((cx-1)/2)+mf((cy-2)/2)*qc+(qc-1)*qr;}
 		}
 		else if(k.isoutsideborder==1){
-			if     (cy==0   &&cx%2==1&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+mf((cx-1)/2);}
-			else if(cy==2*qr&&cx%2==1&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+mf((cx-1)/2);}
-			else if(cx==0   &&cy%2==1&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+mf((cy-1)/2);}
-			else if(cx==2*qc&&cy%2==1&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+mf((cy-1)/2);}
+			if     (cy===0   &&cx%2===1&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+mf((cx-1)/2);}
+			else if(cy===2*qr&&cx%2===1&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+mf((cx-1)/2);}
+			else if(cx===0   &&cy%2===1&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+mf((cy-1)/2);}
+			else if(cx===2*qc&&cy%2===1&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+mf((cy-1)/2);}
 		}
 		return -1;
 	},
@@ -703,20 +707,20 @@ Board.prototype = {
 		return this.exnum2(cx,cy,k.qcols,k.qrows);
 	},
 	exnum2 : function(cx,cy,qc,qr){
-		if(k.isextendcell==1){
-			if(cx==-1&&cy==-1){ return qc+qr;}
-			else if(cy==-1&&cx>=0&&cx<qc){ return cx;}
-			else if(cx==-1&&cy>=0&&cy<qr){ return qc+cy;}
+		if(k.isextendcell===1){
+			if(cx===-1&&cy===-1){ return qc+qr;}
+			else if(cy===-1&&cx>=0&&cx<qc){ return cx;}
+			else if(cx===-1&&cy>=0&&cy<qr){ return qc+cy;}
 		}
-		else if(k.isextendcell==2){
-			if     (cy==-1&&cx>=0&&cx<qc){ return cx;}
-			else if(cy==qr&&cx>=0&&cx<qc){ return qc+cx;}
-			else if(cx==-1&&cy>=0&&cy<qr){ return 2*qc+cy;}
-			else if(cx==qc&&cy>=0&&cy<qr){ return 2*qc+qr+cy;}
-			else if(cx==-1&&cy==-1){ return 2*qc+2*qr;}
-			else if(cx==qc&&cy==-1){ return 2*qc+2*qr+1;}
-			else if(cx==-1&&cy==qr){ return 2*qc+2*qr+2;}
-			else if(cx==qc&&cy==qr){ return 2*qc+2*qr+3;}
+		else if(k.isextendcell===2){
+			if     (cy===-1&&cx>=0&&cx<qc){ return cx;}
+			else if(cy===qr&&cx>=0&&cx<qc){ return qc+cx;}
+			else if(cx===-1&&cy>=0&&cy<qr){ return 2*qc+cy;}
+			else if(cx===qc&&cy>=0&&cy<qr){ return 2*qc+qr+cy;}
+			else if(cx===-1&&cy===-1){ return 2*qc+2*qr;}
+			else if(cx===qc&&cy===-1){ return 2*qc+2*qr+1;}
+			else if(cx===-1&&cy===qr){ return 2*qc+2*qr+2;}
+			else if(cx===qc&&cy===qr){ return 2*qc+2*qr+3;}
 		}
 		return -1;
 	},
@@ -773,14 +777,14 @@ Board.prototype = {
 	// bd.isnoLPup(), bd.isnoLPdown(), bd.isnoLPleft(), bd.isnoLPright()
 	//   上下左右が線が引けない条件になっているか判定する
 	//---------------------------------------------------------------------------
-	isLPup    : function(cc){ return ({101:1,102:1,104:1,105:1}[this.QuC(cc)] == 1);},
-	isLPdown  : function(cc){ return ({101:1,102:1,106:1,107:1}[this.QuC(cc)] == 1);},
-	isLPleft  : function(cc){ return ({101:1,103:1,105:1,106:1}[this.QuC(cc)] == 1);},
-	isLPright : function(cc){ return ({101:1,103:1,104:1,107:1}[this.QuC(cc)] == 1);},
-	isnoLPup    : function(cc){ return ({1:1,4:1,5:1,21:1,103:1,106:1,107:1}[this.QuC(cc)] == 1);},
-	isnoLPdown  : function(cc){ return ({1:1,2:1,3:1,21:1,103:1,104:1,105:1}[this.QuC(cc)] == 1);},
-	isnoLPleft  : function(cc){ return ({1:1,2:1,5:1,22:1,102:1,104:1,107:1}[this.QuC(cc)] == 1);},
-	isnoLPright : function(cc){ return ({1:1,3:1,4:1,22:1,102:1,105:1,106:1}[this.QuC(cc)] == 1);},
+	isLPup    : function(cc){ return ({101:1,102:1,104:1,105:1}[this.QuC(cc)] === 1);},
+	isLPdown  : function(cc){ return ({101:1,102:1,106:1,107:1}[this.QuC(cc)] === 1);},
+	isLPleft  : function(cc){ return ({101:1,103:1,105:1,106:1}[this.QuC(cc)] === 1);},
+	isLPright : function(cc){ return ({101:1,103:1,104:1,107:1}[this.QuC(cc)] === 1);},
+	isnoLPup    : function(cc){ return ({1:1,4:1,5:1,21:1,103:1,106:1,107:1}[this.QuC(cc)] === 1);},
+	isnoLPdown  : function(cc){ return ({1:1,2:1,3:1,21:1,103:1,104:1,105:1}[this.QuC(cc)] === 1);},
+	isnoLPleft  : function(cc){ return ({1:1,2:1,5:1,22:1,102:1,104:1,107:1}[this.QuC(cc)] === 1);},
+	isnoLPright : function(cc){ return ({1:1,3:1,4:1,22:1,102:1,105:1,106:1}[this.QuC(cc)] === 1);},
 	//---------------------------------------------------------------------------
 	// bd.isLPMarked()      Lineのどちらか側にLinePartsが存在しているかどうか判定する
 	// bd.isLPCombined()    Lineの2方向ともLinePartsが存在しているかどうか判定する
@@ -789,23 +793,23 @@ Board.prototype = {
 	// bd.checkLPCombined() 線がつながっているかどうか見て、Line==1を設定する
 	//---------------------------------------------------------------------------
 	isLPMarked : function(id){
-		return bd.border[id].cx%2==1 ? (bd.isLPdown(bd.cc1(id)) || bd.isLPup(bd.cc2(id))) :
-									   (bd.isLPright(bd.cc1(id)) || bd.isLPleft(bd.cc2(id)));
+		return bd.border[id].cx%2===1 ? (bd.isLPdown(bd.cc1(id)) || bd.isLPup(bd.cc2(id))) :
+										(bd.isLPright(bd.cc1(id)) || bd.isLPleft(bd.cc2(id)));
 	},
 	isLPCombined : function(id){
-		return bd.border[id].cx%2==1 ? (bd.isLPdown(bd.cc1(id)) && bd.isLPup(bd.cc2(id))) :
-									   (bd.isLPright(bd.cc1(id)) && bd.isLPleft(bd.cc2(id)));
+		return bd.border[id].cx%2===1 ? (bd.isLPdown(bd.cc1(id)) && bd.isLPup(bd.cc2(id))) :
+										(bd.isLPright(bd.cc1(id)) && bd.isLPleft(bd.cc2(id)));
 	},
 	isLineNG : function(id){
-		return bd.border[id].cx%2==1 ? (bd.isnoLPdown(bd.cc1(id)) || bd.isnoLPup(bd.cc2(id))) :
-									   (bd.isnoLPright(bd.cc1(id)) || bd.isnoLPleft(bd.cc2(id)));
+		return bd.border[id].cx%2===1 ? (bd.isnoLPdown(bd.cc1(id)) || bd.isnoLPup(bd.cc2(id))) :
+										(bd.isnoLPright(bd.cc1(id)) || bd.isnoLPleft(bd.cc2(id)));
 	},
 	checkLPCombined : function(cc){
 		var id;
-		id = this.ub(cc); if(id!=-1 && this.LiB(id)==0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.db(cc); if(id!=-1 && this.LiB(id)==0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.lb(cc); if(id!=-1 && this.LiB(id)==0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.rb(cc); if(id!=-1 && this.LiB(id)==0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+		id = this.ub(cc); if(id!==-1 && this.LiB(id)===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+		id = this.db(cc); if(id!==-1 && this.LiB(id)===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+		id = this.lb(cc); if(id!==-1 && this.LiB(id)===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+		id = this.rb(cc); if(id!==-1 && this.LiB(id)===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -817,90 +821,67 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// Cell関連Get/Set関数 <- 各Cellが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuC : function(id, num) {
-		if(id<0 || this.cellmax<=id){ return;}
-
 		um.addOpe('cell', 'ques', id, this.cell[id].ques, num);
 		this.cell[id].ques = num;
 
-		if(k.puzzleid=="pipelink"||k.puzzleid=="loopsp"){ this.checkLPCombined(id);}
-	},
-	QuC : function(id){
-		if(id<0 || this.cellmax<=id){ return -1;}
-		return this.cell[id].ques;
+		if(k.puzzleid==="pipelink"||k.puzzleid==="loopsp"){ this.checkLPCombined(id);}
 	},
 	sQnC : function(id, num) {
-		if(id<0 || this.cellmax<=id){ return;}
-		if(k.dispzero==0 && num==0){ return;}
+		if(k.dispzero===0 && num===0){ return;}
 
 		var old = this.cell[id].qnum;
 		um.addOpe('cell', 'qnum', id, old, num);
 		this.cell[id].qnum = num;
 
-		if(area.numberColony && (num!=-1 ^ area.bcell.id[id]!=-1)){ area.setCell(id,(num!=-1?1:0));}
-		if(k.puzzleid=="lightup" && ((old==-1)^(num==-1))){ mv.paintAkari(id);}
-	},
-	QnC : function(id){
-		if(id<0 || this.cellmax<=id){ return -1;}
-		return this.cell[id].qnum;
+		if(um.isenableInfo() &&
+			(area.numberColony && (num!==-1 ^ area.bcell.id[id]!==-1))
+		){ area.setCell(id,(num!==-1?1:0));}
+
+		if(k.puzzleid==="lightup" && ((old===-1)^(num===-1))){ mv.paintAkari(id);}
 	},
 	sQaC : function(id, num) {
-		if(id<0 || this.cellmax<=id){ return;}
-
 		var old = this.cell[id].qans;
 		um.addOpe('cell', 'qans', id, old, num);
 		this.cell[id].qans = num;
 
-		if((area.bblock && (num!=-1 ^ area.bcell.id[id]!=-1)) || 
-		   (area.wblock && (num==-1 ^ area.wcell.id[id]!=-1))){ area.setCell(id,(num!=-1?1:0));}
+		if(um.isenableInfo() && (
+			(area.bblock && (num!==-1 ^ area.bcell.id[id]!==-1)) || 
+			(area.wblock && (num===-1 ^ area.wcell.id[id]!==-1))
+		)){ area.setCell(id,(num!==-1?1:0));}
+
 		if(k.puzzleid=="lightup" && ((old==1)^(num==1))){ mv.paintAkari(id);}
 	},
-	QaC : function(id){
-		if(id<0 || this.cellmax<=id){ return -1;}
-		return this.cell[id].qans;
-	},
 	sQsC : function(id, num) {
-		if(id<0 || this.cellmax<=id){ return;}
-
 		um.addOpe('cell', 'qsub', id, this.cell[id].qsub, num);
 		this.cell[id].qsub = num;
 	},
-	QsC : function(id){
-		if(id<0 || this.cellmax<=id){ return -1;}
-		return this.cell[id].qsub;
-	},
 	sDiC : function(id, num) {
-		if(id<0 || this.cellmax<=id){ return;}
-
 		um.addOpe('cell', 'direc', id, this.cell[id].direc, num);
 		this.cell[id].direc = num;
 	},
-	DiC : function(id){
-		if(id<0 || this.cellmax<=id){ return -1;}
-		return this.cell[id].direc;
-	},
+
+	QuC : function(id){ return (id!==-1?this.cell[id].ques:-1);},
+	QnC : function(id){ return (id!==-1?this.cell[id].qnum:-1);},
+	QaC : function(id){ return (id!==-1?this.cell[id].qans:-1);},
+	QsC : function(id){ return (id!==-1?this.cell[id].qsub:-1);},
+	DiC : function(id){ return (id!==-1?this.cell[id].direc:-1);},
+
 	//---------------------------------------------------------------------------
 	// sQnE / QnE : bd.setQnumEXcell() / bd.getQnumEXcell()  該当するEXCellのqnumを設定する/返す
 	// sDiE / DiE : bd.setDirecEXcell()/ bd.getDirecEXcell() 該当するEXCellのdirecを設定する/返す
 	//---------------------------------------------------------------------------
 	// EXcell関連Get/Set関数
 	sQnE : function(id, num) {
-		if(id<0 || this.excellmax<=id){ return;}
 		um.addOpe('excell', 'qnum', id, this.excell[id].qnum, num);
 		this.excell[id].qnum = num;
 	},
-	QnE : function(id){
-		if(id<0 || this.excellmax<=id){ return -1;}
-		return this.excell[id].qnum;
-	},
 	sDiE : function(id, num) {
-		if(id<0 || this.excellmax<=id){ return;}
 		um.addOpe('excell', 'direc', id, this.excell[id].direc, num);
 		this.excell[id].direc = num;
 	},
-	DiE : function(id){
-		if(id<0 || this.excellmax<=id){ return -1;}
-		return this.excell[id].direc;
-	},
+
+	QnE : function(id){ return (id!==-1?this.excell[id].qnum:-1);},
+	DiE : function(id){ return (id!==-1?this.excell[id].direc:-1);},
 
 	//---------------------------------------------------------------------------
 	// sQuX / QuX : bd.setQuesCross(id,num) / bd.getQuesCross() 該当するCrossのquesを設定する/返す
@@ -908,25 +889,16 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// Cross関連Get/Set関数 <- 各Crossが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuX : function(id, num) {
-		if(id<0 || this.crossmax<=id){ return;}
-
 		um.addOpe('cross', 'ques', id, this.cross[id].ques, num);
 		this.cross[id].ques = num;
 	},
-	QuX : function(id){
-		if(id<0 || this.crossmax<=id){ return -1;}
-		return this.cross[id].ques;
-	},
 	sQnX : function(id, num) {
-		if(id<0 || this.crossmax<=id){ return;}
-
 		um.addOpe('cross', 'qnum', id, this.cross[id].qnum, num);
 		this.cross[id].qnum = num;
 	},
-	QnX : function(id){
-		if(id<0 || this.crossmax<=id){ return -1;}
-		return this.cross[id].qnum;
-	},
+
+	QuX : function(id){ return (id!==-1?this.cross[id].ques:-1);},
+	QnX : function(id){ return (id!==-1?this.cross[id].qnum:-1);},
 
 	//---------------------------------------------------------------------------
 	// sQuB / QuB : bd.setQuesBorder() / bd.getQuesBorder() 該当するBorderのquesを設定する/返す
@@ -937,69 +909,47 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// Border関連Get/Set関数 <- 各Borderが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuB : function(id, num) {
-		if(id<0 || this.bdmax<=id){ return;}
-
 		var old = this.border[id].ques;
 		um.addOpe('border', 'ques', id, old, num);
 		this.border[id].ques = num;
 
-		if(num>0 ^ old>0){ area.call_setBorder(id,num,'ques');}
-	},
-	QuB : function(id){
-		if(id<0 || this.bdmax<=id){ return -1;}
-		return this.border[id].ques;
+		if(um.isenableInfo() && (num>0 ^ old>0)){ area.call_setBorder(id,num,'ques');}
 	},
 	sQnB : function(id, num) {
-		if(id<0 || this.bdmax<=id){ return;}
-
 		um.addOpe('border', 'qnum', id, this.border[id].qnum, num);
 		this.border[id].qnum = num;
 	},
-	QnB : function(id){
-		if(id<0 || this.bdmax<=id){ return -1;}
-		return this.border[id].qnum;
-	},
 	sQaB : function(id, num) {
-		if(id<0 || this.bdmax<=id){ return;}
 		if(this.border[id].ques!=0){ return;}
 
 		var old = this.border[id].qans;
 		um.addOpe('border', 'qans', id, old, num);
 		this.border[id].qans = num;
 
-		if(num>0 ^ old>0){
+		if(um.isenableInfo() && (num>0 ^ old>0)){
 			if(k.isborderAsLine){ line.setLine(id,num);}
 			else                { area.call_setBorder(id,num,'qans');}
 		}
 	},
-	QaB : function(id){
-		if(id<0 || this.bdmax<=id){ return -1;}
-		return this.border[id].qans;
-	},
 	sQsB : function(id, num) {
-		if(id<0 || this.bdmax<=id){ return;}
-
 		um.addOpe('border', 'qsub', id, this.border[id].qsub, num);
 		this.border[id].qsub = num;
 	},
-	QsB : function(id){
-		if(id<0 || this.bdmax<=id){ return -1;}
-		return this.border[id].qsub;
-	},
 	sLiB : function(id, num) {
-		if(id<0 || this.bdmax<=id){ return;}
 		if(this.enableLineNG && (num==1?bd.isLineNG:bd.isLPCombined)(id)){ return;}
 
 		var old = this.border[id].line;
 		um.addOpe('border', 'line', id, old, num);
 		this.border[id].line = num;
 
-		if(num>0 ^ old>0){ line.setLine(id,num);}
+		if(um.isenableInfo() && (num>0 ^ old>0)){ line.setLine(id,num);}
 	},
-	LiB : function(id){
-		if(id<0 || this.bdmax<=id){ return -1;}
-		return this.border[id].line;
-	},
+
+	QuB : function(id){ return (id!==-1?this.border[id].ques:-1);},
+	QnB : function(id){ return (id!==-1?this.border[id].qnum:-1);},
+	QaB : function(id){ return (id!==-1?this.border[id].qans:-1);},
+	QsB : function(id){ return (id!==-1?this.border[id].qsub:-1);},
+	LiB : function(id){ return (id!==-1?this.border[id].line:-1);},
 
 	//---------------------------------------------------------------------------
 	// sErC / ErC : bd.setErrorCell()   / bd.getErrorCell()   該当するCellのerrorを設定する/返す
@@ -1012,69 +962,59 @@ Board.prototype = {
 	sErC : function(idlist, num) {
 		if(!ans.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
-		for(var i=0;i<idlist.length;i++){ if(idlist[i]>=0 && this.cellmax>idlist[i]){ this.cell[idlist[i]].error = num;} }
-	},
-	ErC : function(id){
-		if(id<0 || this.cellmax<=id){ return 0;}
-		return this.cell[id].error;
+		for(var i=0;i<idlist.length;i++){ if(idlist[i]!==-1){ this.cell[idlist[i]].error = num;} }
 	},
 	sErX : function(idlist, num) {
 		if(!ans.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
-		for(var i=0;i<idlist.length;i++){ if(idlist[i]>=0 && this.crossmax>idlist[i]){ this.cross[idlist[i]].error = num;} }
-	},
-	ErX : function(id){
-		if(id<0 || this.crossmax<=id){ return 0;}
-		return this.cross[id].error;
+		for(var i=0;i<idlist.length;i++){ if(idlist[i]!==-1){ this.cross[idlist[i]].error = num;} }
 	},
 	sErB : function(idlist, num) {
 		if(!ans.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
-		for(var i=0;i<idlist.length;i++){ if(idlist[i]>=0 && this.bdmax>idlist[i]){ this.border[idlist[i]].error = num;} }
-	},
-	ErB : function(id){
-		if(id<0 || this.bdmax<=id){ return 0;}
-		return this.border[id].error;
+		for(var i=0;i<idlist.length;i++){ if(idlist[i]!==-1){ this.border[idlist[i]].error = num;} }
 	},
 	sErE : function(idlist, num) {
 		if(!ans.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
-		for(var i=0;i<idlist.length;i++){ if(idlist[i]>=0 && this.excellmax>idlist[i]){ this.excell[idlist[i]].error = num;} }
+		for(var i=0;i<idlist.length;i++){ if(idlist[i]!==-1){ this.excell[idlist[i]].error = num;} }
 	},
-	ErE : function(id){
-		if(id<0 || this.excellmax<=id){ return 0;}
-		return this.excell[id].error;
-	},
-
 	sErBAll : function(num){
 		if(!ans.isenableSetError()){ return;}
 		for(var i=0;i<bd.bdmax;i++){ this.border[i].error = num;}
 	},
+
+	ErC : function(id){ return (id!==-1?this.cell[id].error:0);},
+	ErX : function(id){ return (id!==-1?this.cross[id].error:0);},
+	ErB : function(id){ return (id!==-1?this.border[id].error:0);},
+	ErE : function(id){ return (id!==-1?this.excell[id].error:0);},
 
 	//---------------------------------------------------------------------------
 	// bd.override()  条件フラグを見て関数をオーバーライドする
 	//---------------------------------------------------------------------------
 	override : function(){
 		if(k.isborderAsLine){
-			this.isLine     = function(id){ return (bd.QaB(id)>0);};
+			this.isLine     = function(id){ return (id!==-1 && bd.border[id].qans>0);};
 			this.setLine    = function(id){ this.sQaB(id, 1); this.sQsB(id, 0);};
 			this.setPeke    = function(id){ this.sQaB(id, 0); this.sQsB(id, 2);};
 			this.removeLine = function(id){ this.sQaB(id, 0); this.sQsB(id, 0);};
 		}
 		if(!k.isAnsNumber){
-			this.isNum      = function(c){ return (bd.QnC(c)!=-1);};
-			this.noNum      = function(c){ return (bd.QnC(c)==-1);};
-			this.isValidNum = function(c){ return (bd.QnC(c)>= 0);};
+			this.isNum      = function(c){ return (c!==-1 && bd.cell[c].qnum!==-1);};
+			this.noNum      = function(c){ return (c===-1 || bd.cell[c].qnum===-1);};
+			this.isValidNum = function(c){ return (c!==-1 && bd.cell[c].qnum>=  0);};
 
-			this.getNum = function(c)    { return bd.QnC(c);};
-			this.setNum = function(c,val){ if(k.dispzero || val!=0){ this.sQnC(c,val);} };
+			this.getNum = function(c)    { return (c!==-1?this.cell[c].qnum:-1);};
 			if(k.NumberIsWhite){
-				this.setNum = function(c,val){ if(k.dispzero || val!=0){ this.sQnC(c,val); this.sQaC(c,-1);} };
+				this.setNum = function(c,val){ if(k.dispzero || val!==0){ this.sQnC(c,val); this.sQaC(c,-1);} };
+			}
+			else{
+				this.setNum = function(c,val){ if(k.dispzero || val!==0){ this.sQnC(c,val);} };
 			}
 		}
 		else{
 			if(k.NumberIsWhite){
-				this.setNum = function(c){ this.sQnC(c,val); this.sQaC(c,-1);}
+				this.setNum = function(c,val){ this.sQnC(c,val); this.sQaC(c,-1);}
 			}
 		}
 	},
@@ -1085,8 +1025,8 @@ Board.prototype = {
 	// bd.setBlack()  該当するCellに黒マスをセットする
 	// bd.setWhite()  該当するCellに白マスをセットする
 	//---------------------------------------------------------------------------
-	isBlack : function(c){ return (bd.QaC(c)==1);},
-	isWhite : function(c){ return (c!=-1 && bd.QaC(c)!=1);},
+	isBlack : function(c){ return (c!==-1 && bd.cell[c].qans===1);},
+	isWhite : function(c){ return (c!==-1 && bd.cell[c].qans!==1);},
 
 	setBlack : function(c){ this.sQaC(c, 1);},
 	setWhite : function(c){ this.sQaC(c,-1);},
@@ -1099,16 +1039,16 @@ Board.prototype = {
 	// bd.getNum()     該当するCellの数字を返す
 	// bd.setNum()     該当するCellに数字を設定する
 	//---------------------------------------------------------------------------
-	isNum      : function(c){ return (bd.QnC(c)!=-1 || bd.QaC(c)!=-1);},
-	noNum      : function(c){ return (bd.QnC(c)==-1 && bd.QaC(c)==-1);},
-	isValidNum : function(c){ return (bd.QnC(c)>=0 || (bd.QnC(c)==-1 && bd.QaC(c)>=0));},
-	sameNumber : function(c1,c2){ return (bd.isValidNum(c1) && (bd.getNum(c1) == bd.getNum(c2)));},
+	isNum      : function(c){ return (c!==-1 && (bd.cell[c].qnum!==-1 || bd.cell[c].qans!==-1));},
+	noNum      : function(c){ return (c===-1 || (bd.cell[c].qnum===-1 && bd.cell[c].qans===-1));},
+	isValidNum : function(c){ return (c!==-1 && (bd.cell[c].qnum>=  0 ||(bd.cell[c].qans>=0 && bd.cell[c].qnum===-1)));},
+	sameNumber : function(c1,c2){ return (bd.isValidNum(c1) && (bd.getNum(c1)===bd.getNum(c2)));},
 
-	getNum : function(c){ return (this.QnC(c)!=-1?this.QnC(c):this.QaC(c));},
+	getNum : function(c){ return (this.cell[c].qnum!==-1?this.cell[c].qnum:this.cell[c].qans);},
 	setNum : function(c,val){
 		if(k.dispzero || val!=0){
-			if(k.mode==1){ this.sQnC(c,val); this.sQaC(c,bd.def.cell.qnum);}
-			else if(this.QnC(c)==bd.def.cell.qnum){ this.sQaC(c,val);}
+			if(k.mode==1){ this.sQnC(c,val); this.sQaC(c,bd.defcell.qnum);}
+			else if(this.cell[c].qnum===bd.defcell.qnum){ this.sQaC(c,val);}
 			this.sQsC(c,0);
 		}
 	},
@@ -1120,11 +1060,7 @@ Board.prototype = {
 	// bd.setPeke()     該当するBorderに×をつける
 	// bd.removeLine()  該当するBorderから線を消す
 	//---------------------------------------------------------------------------
-	isLine : function(id){
-		try{ return (bd.border[id].line>0);}catch(e){}
-		return false;
-	},
-
+	isLine     : function(id){ return (id!==-1 && bd.border[id].line>0);},
 	setLine    : function(id){ this.sLiB(id, 1); this.sQsB(id, 0);},
 	setPeke    : function(id){ this.sLiB(id, 0); this.sQsB(id, 2);},
 	removeLine : function(id){ this.sLiB(id, 0); this.sQsB(id, 0);},
@@ -1137,17 +1073,16 @@ Board.prototype = {
 	// bd.removeBsub()   該当するBorderから境界線用の補助記号をはずす
 	//---------------------------------------------------------------------------
 	isBorder : function(id){
-		try{ return (bd.border[id].ques>0 || bd.border[id].qans>0);}catch(e){}
-		return false;
+		return (id!==-1 && (bd.border[id].ques>0 || bd.border[id].qans>0));
 	},
 
 	setBorder    : function(id){
-		if(k.mode==1){ this.sQuB(id,1); this.sQaB(id,0);}
-		else if(this.QuB(id)!=1){ this.sQaB(id,1);}
+		if(k.mode===1){ this.sQuB(id,1); this.sQaB(id,0);}
+		else if(this.QuB(id)!==1){ this.sQaB(id,1);}
 	},
 	removeBorder : function(id){
-		if(k.mode==1){ this.sQuB(id,0); this.sQaB(id,0);}
-		else if(this.QuB(id)!=1){ this.sQaB(id,0);}
+		if(k.mode===1){ this.sQuB(id,0); this.sQaB(id,0);}
+		else if(this.QuB(id)!==1){ this.sQaB(id,0);}
 	},
 	setBsub      : function(id){ this.sQsB(id,1);},
 	removeBsub   : function(id){ this.sQsB(id,0);}
@@ -1169,7 +1104,7 @@ Graphic = function(){
 	this.errcolor3 = "rgb(0, 191, 0)";
 
 	// セルの○×の色(補助記号)
-	this.MBcolor = "rgb(255, 127, 64)";
+	this.MBcolor = "rgb(255, 160, 127)";
 
 	this.qsubcolor1 = "rgb(160,255,160)";
 	this.qsubcolor2 = "rgb(255,255,127)";
@@ -3981,9 +3916,9 @@ Encode.prototype = {
 			bd.initBoardSize(this.uri.cols, this.uri.rows);
 		}
 		if(this.uri.bstr){
-			um.disableRecord();
+			um.disableRecord(); um.disableInfo();
 			this.pzlimport(this.uri.type, this.uri.bstr);
-			um.enableRecord();
+			um.enableRecord(); um.enableInfo();
 
 			bd.ansclear();
 			um.allerase();
@@ -3998,34 +3933,74 @@ Encode.prototype = {
 	checkpflag : function(ca){ return (this.uri.pflag.indexOf(ca)>=0);},
 
 	//---------------------------------------------------------------------------
-	// enc.decode4()  quesが0～4までの場合、デコードする
-	// enc.encode4()  quesが0～4までの場合、問題部をエンコードする
+	// enc.decode4Cell()  quesが0～4までの場合、デコードする
+	// enc.encode4Cell()  quesが0～4までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
-	decode4 : function(bstr, func, max){
-		var cell=0, i=0;
+	decode4Cell : function(bstr){
+		var c=0, i=0;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
-			if     (this.include(ca,"0","4")){ func(cell, parseInt(ca,16));    cell++; }
-			else if(this.include(ca,"5","9")){ func(cell, parseInt(ca,16)-5);  cell+=2;}
-			else if(this.include(ca,"a","e")){ func(cell, parseInt(ca,16)-10); cell+=3;}
-			else if(this.include(ca,"g","z")){ cell+=(parseInt(ca,36)-15);}
-			else if(ca=="."){ func(cell, -2); cell++;}
+			if     (this.include(ca,"0","4")){ bd.sQnC(c, parseInt(ca,16));    c++; }
+			else if(this.include(ca,"5","9")){ bd.sQnC(c, parseInt(ca,16)-5);  c+=2;}
+			else if(this.include(ca,"a","e")){ bd.sQnC(c, parseInt(ca,16)-10); c+=3;}
+			else if(this.include(ca,"g","z")){ c+=(parseInt(ca,36)-15);}
+			else if(ca=="."){ bd.sQnC(c, -2); c++;}
 
-			if(cell>=max){ break;}
+			if(c>=bd.cellmax){ break;}
 		}
 		return bstr.substring(i+1,bstr.length);
 	},
-	encode4 : function(func, max){
+	encode4Cell : function(){
 		var count = 0, cm = "";
-		for(var i=0;i<max;i++){
+		for(var i=0;i<bd.cellmax;i++){
 			var pstr = "";
 
-			if(func(i)>=0){
-				if(func(i+1)>=0||func(i+1)==-2){ pstr=""+func(i).toString(16);}
-				else if(func(i+2)>=0||func(i+2)==-2){ pstr=""+(5+func(i)).toString(16); i++;}
-				else{ pstr=""+(10+func(i)).toString(16); i+=2;}
+			if(bd.QnC(i)>=0){
+				if     (i<bd.cellmax-1&&(bd.QnC(i+1)>=0||bd.QnC(i+1)==-2)){ pstr=""+bd.QnC(i).toString(16);}
+				else if(i<bd.cellmax-2&&(bd.QnC(i+2)>=0||bd.QnC(i+2)==-2)){ pstr=""+(5+bd.QnC(i)).toString(16); i++;}
+				else{ pstr=""+(10+bd.QnC(i)).toString(16); i+=2;}
 			}
-			else if(func(i)==-2){ pstr=".";}
+			else if(bd.QnC(i)==-2){ pstr=".";}
+			else{ pstr=" "; count++;}
+
+			if(count==0)      { cm += pstr;}
+			else if(pstr!=" "){ cm += ((count+15).toString(36)+pstr); count=0;}
+			else if(count==20){ cm += "z"; count=0;}
+		}
+		if(count>0){ cm += ((count+15).toString(36));}
+
+		return cm;
+	},
+
+	//---------------------------------------------------------------------------
+	// enc.decode4Cross()  quesが0～4までの場合、デコードする
+	// enc.encode4Cross()  quesが0～4までの場合、問題部をエンコードする
+	//---------------------------------------------------------------------------
+	decode4Cross : function(bstr){
+		var c=0, i=0;
+		for(i=0;i<bstr.length;i++){
+			var ca = bstr.charAt(i);
+			if     (this.include(ca,"0","4")){ bd.sQnX(c, parseInt(ca,16));    c++; }
+			else if(this.include(ca,"5","9")){ bd.sQnX(c, parseInt(ca,16)-5);  c+=2;}
+			else if(this.include(ca,"a","e")){ bd.sQnX(c, parseInt(ca,16)-10); c+=3;}
+			else if(this.include(ca,"g","z")){ c+=(parseInt(ca,36)-15);}
+			else if(ca=="."){ bd.sQnX(c, -2); c++;}
+
+			if(c>=bd.crossmax){ break;}
+		}
+		return bstr.substring(i+1,bstr.length);
+	},
+	encode4Cross : function(){
+		var count = 0, cm = "";
+		for(var i=0;i<bd.crossmax;i++){
+			var pstr = "";
+
+			if(bd.QnX(i)>=0){
+				if     (i<bd.crossmax-1&&(bd.QnX(i+1)>=0||bd.QnX(i+1)==-2)){ pstr=""+bd.QnX(i).toString(16);}
+				else if(i<bd.crossmax-2&&(bd.QnX(i+2)>=0||bd.QnX(i+2)==-2)){ pstr=""+(5+bd.QnX(i)).toString(16); i++;}
+				else{ pstr=""+(10+bd.QnX(i)).toString(16); i+=2;}
+			}
+			else if(bd.QnX(i)==-2){ pstr=".";}
 			else{ pstr=" "; count++;}
 
 			if(count==0)      { cm += pstr;}
@@ -4082,7 +4057,8 @@ Encode.prototype = {
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if(this.include(ca,"0","9")||this.include(ca,"a","f")){ bd.sQnC(c, parseInt(bstr.substring(i,i+1),16)); c++;}
+			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
+							  { bd.sQnC(c, parseInt(bstr.substring(i,  i+1),16));      c++;}
 			else if(ca == '.'){ bd.sQnC(c, -2);                                        c++;      }
 			else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),16));      c++; i+=2;}
 			else if(ca == '+'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+4),16));      c++; i+=3;}
@@ -4127,7 +4103,8 @@ Encode.prototype = {
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if(this.include(ca,"0","9")||this.include(ca,"a","f")){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i,i+1),16)); r++;}
+			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
+							  { bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i,  i+1),16));      r++;}
 			else if(ca == '-'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+3),16));      r++; i+=2;}
 			else if(ca == '+'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16));      r++; i+=3;}
 			else if(ca == '='){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+4096); r++; i+=3;}
@@ -4378,7 +4355,7 @@ FileIO.prototype = {
 	fileopen : function(array, type){
 		this.filever = 0;
 
-		if(type==1){
+		if(type===1){
 			var pgstr = array.shift();
 			if(!pgstr.match(/pzprv3\.?(\d+)?/)){ alert('ぱずぷれv3形式のファイルではありません。');}
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
@@ -4386,9 +4363,9 @@ FileIO.prototype = {
 			if(array.shift()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。');}
 		}
 
-		um.disableRecord();
+		um.disableRecord(); um.disableInfo();
 		var result = this.filedecode(array,type);
-		um.enableRecord();
+		um.enableRecord(); um.enableInfo();
 		um.allerase();
 
 		if(result){
@@ -4398,10 +4375,10 @@ FileIO.prototype = {
 	},
 	filedecode : function(array, type){
 		var row, col;
-		if(k.puzzleid!="sudoku"){
+		if(k.puzzleid!=="sudoku"){
 			row = parseInt(array.shift(), 10);
 			col = parseInt(array.shift(), 10);
-			if(type==2 && k.puzzleid=="kakuro"){ row--; col--;}
+			if(type===2 && k.puzzleid==="kakuro"){ row--; col--;}
 		}
 		else{
 			row = col = parseInt(array.shift(), 10);
@@ -4409,29 +4386,29 @@ FileIO.prototype = {
 		if(row<=0 || col<=0){ return false;}
 		bd.initBoardSize(col, row);
 
-		if(type==1){
+		if(type===1){
 			var l = 0;
 			var item = 0;
 			var stacks = [];
 			while(1){
 				if(array.length<=0){ break;}
 				stacks.push( array.shift() ); l++;
-				if     (k.fstruct[item] == "cellques41_42"&& l>=k.qrows    ){ this.decodeCellQues41_42(stacks); }
-				else if(k.fstruct[item] == "cellqnum"     && l>=k.qrows    ){ this.decodeCellQnum(stacks);      }
-				else if(k.fstruct[item] == "cellqnum51"   && l>=k.qrows+1  ){ this.decodeCellQnum51(stacks);    }
-				else if(k.fstruct[item] == "cellqnumb"    && l>=k.qrows    ){ this.decodeCellQnumb(stacks);     }
-				else if(k.fstruct[item] == "cellqnumans"  && l>=k.qrows    ){ this.decodeCellQnumAns(stacks);   }
-				else if(k.fstruct[item] == "celldirecnum" && l>=k.qrows    ){ this.decodeCellDirecQnum(stacks); }
-				else if(k.fstruct[item] == "cellans"      && l>=k.qrows    ){ this.decodeCellAns(stacks);       }
-				else if(k.fstruct[item] == "cellqanssub"  && l>=k.qrows    ){ this.decodeCellQanssub(stacks);   }
-				else if(k.fstruct[item] == "cellqsub"     && l>=k.qrows    ){ this.decodeCellQsub(stacks);      }
-				else if(k.fstruct[item] == "crossnum"     && l>=k.qrows+1  ){ this.decodeCrossNum(stacks);      }
-				else if(k.fstruct[item] == "borderques"   && l>=2*k.qrows-1){ this.decodeBorderQues(stacks);    }
-				else if(k.fstruct[item] == "borderline"   && l>=2*k.qrows-1){ this.decodeBorderLine(stacks);    }
-				else if(k.fstruct[item] == "borderans"    && l>=2*k.qrows-1){ this.decodeBorderAns(stacks);     }
-				else if(k.fstruct[item] == "borderans2"   && l>=2*k.qrows+1){ this.decodeBorderAns2(stacks);    }
-				else if(k.fstruct[item] == "arearoom"     && l>=k.qrows+1  ){ this.decodeAreaRoom(stacks);      }
-				else if(k.fstruct[item] == "others" && this.decodeOthers(stacks) ){ }
+				if     (k.fstruct[item] === "cellques41_42"&& l>=k.qrows    ){ this.decodeCellQues41_42(stacks); }
+				else if(k.fstruct[item] === "cellqnum"     && l>=k.qrows    ){ this.decodeCellQnum(stacks);      }
+				else if(k.fstruct[item] === "cellqnum51"   && l>=k.qrows+1  ){ this.decodeCellQnum51(stacks);    }
+				else if(k.fstruct[item] === "cellqnumb"    && l>=k.qrows    ){ this.decodeCellQnumb(stacks);     }
+				else if(k.fstruct[item] === "cellqnumans"  && l>=k.qrows    ){ this.decodeCellQnumAns(stacks);   }
+				else if(k.fstruct[item] === "celldirecnum" && l>=k.qrows    ){ this.decodeCellDirecQnum(stacks); }
+				else if(k.fstruct[item] === "cellans"      && l>=k.qrows    ){ this.decodeCellAns(stacks);       }
+				else if(k.fstruct[item] === "cellqanssub"  && l>=k.qrows    ){ this.decodeCellQanssub(stacks);   }
+				else if(k.fstruct[item] === "cellqsub"     && l>=k.qrows    ){ this.decodeCellQsub(stacks);      }
+				else if(k.fstruct[item] === "crossnum"     && l>=k.qrows+1  ){ this.decodeCrossNum(stacks);      }
+				else if(k.fstruct[item] === "borderques"   && l>=2*k.qrows-1){ this.decodeBorderQues(stacks);    }
+				else if(k.fstruct[item] === "borderline"   && l>=2*k.qrows-1){ this.decodeBorderLine(stacks);    }
+				else if(k.fstruct[item] === "borderans"    && l>=2*k.qrows-1){ this.decodeBorderAns(stacks);     }
+				else if(k.fstruct[item] === "borderans2"   && l>=2*k.qrows+1){ this.decodeBorderAns2(stacks);    }
+				else if(k.fstruct[item] === "arearoom"     && l>=k.qrows+1  ){ this.decodeAreaRoom(stacks);      }
+				else if(k.fstruct[item] === "others" && this.decodeOthers(stacks) ){ }
 				else{ continue;}
 
 				// decodeしたあとの処理
@@ -4440,7 +4417,7 @@ FileIO.prototype = {
 				stacks = [];
 			}
 		}
-		else if(type==2){
+		else if(type===2){
 			this.kanpenOpen(array);
 		}
 
@@ -4458,18 +4435,18 @@ FileIO.prototype = {
 
 		document.fileform2.filename.value = fname;
 
-		if     (navigator.platform.indexOf("Win")!=-1){ document.fileform2.platform.value = "Win";}
-		else if(navigator.platform.indexOf("Mac")!=-1){ document.fileform2.platform.value = "Mac";}
-		else                                          { document.fileform2.platform.value = "Others";}
+		if     (navigator.platform.indexOf("Win")!==-1){ document.fileform2.platform.value = "Win";}
+		else if(navigator.platform.indexOf("Mac")!==-1){ document.fileform2.platform.value = "Mac";}
+		else                                           { document.fileform2.platform.value = "Others";}
 
 		this.filever = 0;
 		document.fileform2.ques.value = this.fileencode(type);
 
-		if(type==1){
-			if(!k.isKanpenExist || k.puzzleid=="lits"){ document.fileform2.urlstr.value = enc.getURLbase() + "?" + k.puzzleid + enc.pzldata();}
+		if(type===1){
+			if(!k.isKanpenExist || k.puzzleid==="lits"){ document.fileform2.urlstr.value = enc.getURLbase() + "?" + k.puzzleid + enc.pzldata();}
 			else{ enc.pzlexport(2); document.fileform2.urlstr.value = document.urloutput.ta.value;}
 		}
-		else if(type==2){
+		else if(type===2){
 			document.fileform2.urlstr.value = "";
 		}
 
@@ -4479,8 +4456,8 @@ FileIO.prototype = {
 		var str = "";
 
 		var row=k.qrows, col=k.qcols;
-		if(k.puzzleid!="sudoku"){
-			if(type==2 && k.puzzleid=="kakuro"){ row++; col++;}
+		if(k.puzzleid!=="sudoku"){
+			if(type===2 && k.puzzleid==="kakuro"){ row++; col++;}
 			str += (""+row+"/");
 			str += (""+col+"/");
 		}
@@ -4488,30 +4465,30 @@ FileIO.prototype = {
 			str += (""+col+"/");
 		}
 
-		if(type==1){
+		if(type===1){
 			for(var i=0;i<k.fstruct.length;i++){
-				if     (k.fstruct[i] == "cellques41_42" ){ str += this.encodeCellQues41_42(); }
-				else if(k.fstruct[i] == "cellqnum"      ){ str += this.encodeCellQnum();      }
-				else if(k.fstruct[i] == "cellqnum51"    ){ str += this.encodeCellQnum51();    }
-				else if(k.fstruct[i] == "cellqnumb"     ){ str += this.encodeCellQnumb();     }
-				else if(k.fstruct[i] == "cellqnumans"   ){ str += this.encodeCellQnumAns();   }
-				else if(k.fstruct[i] == "celldirecnum"  ){ str += this.encodeCellDirecQnum(); }
-				else if(k.fstruct[i] == "cellans"       ){ str += this.encodeCellAns();       }
-				else if(k.fstruct[i] == "cellqanssub"   ){ str += this.encodeCellQanssub();   }
-				else if(k.fstruct[i] == "cellqsub"      ){ str += this.encodeCellQsub();      }
-				else if(k.fstruct[i] == "crossnum"      ){ str += this.encodeCrossNum();      }
-				else if(k.fstruct[i] == "borderques"    ){ str += this.encodeBorderQues();    }
-				else if(k.fstruct[i] == "borderline"    ){ str += this.encodeBorderLine();    }
-				else if(k.fstruct[i] == "borderans"     ){ str += this.encodeBorderAns();     }
-				else if(k.fstruct[i] == "borderans2"    ){ str += this.encodeBorderAns2();    }
-				else if(k.fstruct[i] == "arearoom"      ){ str += this.encodeAreaRoom();      }
-				else if(k.fstruct[i] == "others"        ){ str += this.encodeOthers();         }
+				if     (k.fstruct[i] === "cellques41_42" ){ str += this.encodeCellQues41_42(); }
+				else if(k.fstruct[i] === "cellqnum"      ){ str += this.encodeCellQnum();      }
+				else if(k.fstruct[i] === "cellqnum51"    ){ str += this.encodeCellQnum51();    }
+				else if(k.fstruct[i] === "cellqnumb"     ){ str += this.encodeCellQnumb();     }
+				else if(k.fstruct[i] === "cellqnumans"   ){ str += this.encodeCellQnumAns();   }
+				else if(k.fstruct[i] === "celldirecnum"  ){ str += this.encodeCellDirecQnum(); }
+				else if(k.fstruct[i] === "cellans"       ){ str += this.encodeCellAns();       }
+				else if(k.fstruct[i] === "cellqanssub"   ){ str += this.encodeCellQanssub();   }
+				else if(k.fstruct[i] === "cellqsub"      ){ str += this.encodeCellQsub();      }
+				else if(k.fstruct[i] === "crossnum"      ){ str += this.encodeCrossNum();      }
+				else if(k.fstruct[i] === "borderques"    ){ str += this.encodeBorderQues();    }
+				else if(k.fstruct[i] === "borderline"    ){ str += this.encodeBorderLine();    }
+				else if(k.fstruct[i] === "borderans"     ){ str += this.encodeBorderAns();     }
+				else if(k.fstruct[i] === "borderans2"    ){ str += this.encodeBorderAns2();    }
+				else if(k.fstruct[i] === "arearoom"      ){ str += this.encodeAreaRoom();      }
+				else if(k.fstruct[i] === "others"        ){ str += this.encodeOthers();         }
 			}
 
-			if(this.filever==0){ str = "pzprv3/"+k.puzzleid+"/" + str;}
+			if(this.filever===0){ str = "pzprv3/"+k.puzzleid+"/" + str;}
 			else{ str = "pzprv3."+this.filever+"/"+k.puzzleid+"/" + str;}
 		}
-		else if(type==2){
+		else if(type===2){
 			str += this.kanpenSave();
 		}
 
@@ -4583,17 +4560,17 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQues41_42 : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "-"){ bd.sQnC(c, -2);}
-			else if(ca == "1"){ bd.sQuC(c, 41);}
-			else if(ca == "2"){ bd.sQuC(c, 42);}
+			if     (ca === "-"){ bd.sQnC(c, -2);}
+			else if(ca === "1"){ bd.sQuC(c, 41);}
+			else if(ca === "2"){ bd.sQuC(c, 42);}
 		},stack);
 	},
 	encodeCellQues41_42 : function(){
 		return this.encodeCell( function(c){
-			if     (bd.QuC(c)==41){ return "1 ";}
-			else if(bd.QuC(c)==42){ return "2 ";}
-			else if(bd.QnC(c)==-2){ return "- ";}
-			else                  { return ". ";}
+			if     (bd.QuC(c)===41){ return "1 ";}
+			else if(bd.QuC(c)===42){ return "2 ";}
+			else if(bd.QnC(c)===-2){ return "- ";}
+			else                   { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -4602,15 +4579,15 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQnum : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "-"){ bd.sQnC(c, -2);}
-			else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+			if     (ca === "-"){ bd.sQnC(c, -2);}
+			else if(ca !== "."){ bd.sQnC(c, parseInt(ca));}
 		},stack);
 	},
 	encodeCellQnum : function(){
 		return this.encodeCell( function(c){
-			if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
-			else if(bd.QnC(c)==-2){ return "- ";}
-			else                  { return ". ";}
+			if     (bd.QnC(c)>=0)  { return (bd.QnC(c).toString() + " ");}
+			else if(bd.QnC(c)===-2){ return "- ";}
+			else                   { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -4619,15 +4596,15 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQnumb : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "5"){ bd.sQnC(c, -2);}
-			else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+			if     (ca === "5"){ bd.sQnC(c, -2);}
+			else if(ca !== "."){ bd.sQnC(c, parseInt(ca));}
 		},stack);
 	},
 	encodeCellQnumb : function(){
 		return this.encodeCell( function(c){
-			if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
-			else if(bd.QnC(c)==-2){ return "5 ";}
-			else                  { return ". ";}
+			if     (bd.QnC(c)>=0)  { return (bd.QnC(c).toString() + " ");}
+			else if(bd.QnC(c)===-2){ return "5 ";}
+			else                   { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -4636,18 +4613,18 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQnumAns : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "#"){ bd.setBlack(c);}
-			else if(ca == "+"){ bd.sQsC(c, 1);}
-			else if(ca == "-"){ bd.sQnC(c, -2);}
-			else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+			if     (ca === "#"){ bd.setBlack(c);}
+			else if(ca === "+"){ bd.sQsC(c, 1);}
+			else if(ca === "-"){ bd.sQnC(c, -2);}
+			else if(ca !== "."){ bd.sQnC(c, parseInt(ca));}
 		},stack);
 	},
 	encodeCellQnumAns : function(){
 		return this.encodeCell( function(c){
 			if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
-			else if(bd.QnC(c)==-2){ return "- ";}
+			else if(bd.QnC(c)===-2){return "- ";}
 			else if(bd.isBlack(c)){ return "# ";}
-			else if(bd.QsC(c)==1) { return "+ ";}
+			else if(bd.QsC(c)===1){ return "+ ";}
 			else                  { return ". ";}
 		});
 	},
@@ -4657,18 +4634,18 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellDirecQnum : function(stack){
 		this.decodeCell( function(c,ca){
-			if(ca != "."){
+			if(ca !== "."){
 				var inp = ca.split(",");
-				bd.sDiC(c, (inp[0]!="0"?parseInt(inp[0]): 0));
-				bd.sQnC(c, (inp[1]!="-"?parseInt(inp[1]):-2));
+				bd.sDiC(c, (inp[0]!=="0"?parseInt(inp[0]): 0));
+				bd.sQnC(c, (inp[1]!=="-"?parseInt(inp[1]):-2));
 			}
 		},stack);
 	},
 	encodeCellDirecQnum : function(){
 		return this.encodeCell( function(c){
-			if(bd.QnC(c)!=-1){
-				var ca1 = (bd.DiC(c)!= 0?(bd.DiC(c)).toString():"0");
-				var ca2 = (bd.QnC(c)!=-2?(bd.QnC(c)).toString():"-");
+			if(bd.QnC(c)!==-1){
+				var ca1 = (bd.DiC(c)!== 0?(bd.DiC(c)).toString():"0");
+				var ca2 = (bd.QnC(c)!==-2?(bd.QnC(c)).toString():"-");
 				return ""+ca1+","+ca2+" ";
 			}
 			else{ return ". ";}
@@ -4680,14 +4657,14 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellAns : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "#"){ bd.setBlack(c);}
-			else if(ca == "+"){ bd.sQsC(c, 1); }
+			if     (ca === "#"){ bd.setBlack(c);}
+			else if(ca === "+"){ bd.sQsC(c, 1); }
 		},stack);
 	},
 	encodeCellAns : function(){
 		return this.encodeCell( function(c){
 			if     (bd.isBlack(c)){ return "# ";}
-			else if(bd.QsC(c)==1) { return "+ ";}
+			else if(bd.QsC(c)===1){ return "+ ";}
 			else                  { return ". ";}
 		});
 	},
@@ -4697,22 +4674,22 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQanssub : function(stack){
 		this.decodeCell( function(c,ca){
-			if     (ca == "+"){ bd.sQsC(c, 1);}
-			else if(ca == "-"){ bd.sQsC(c, 2);}
-			else if(ca == "="){ bd.sQsC(c, 3);}
-			else if(ca == "%"){ bd.sQsC(c, 4);}
-			else if(ca != "."){ bd.sQaC(c, parseInt(ca));}
+			if     (ca === "+"){ bd.sQsC(c, 1);}
+			else if(ca === "-"){ bd.sQsC(c, 2);}
+			else if(ca === "="){ bd.sQsC(c, 3);}
+			else if(ca === "%"){ bd.sQsC(c, 4);}
+			else if(ca !== "."){ bd.sQaC(c, parseInt(ca));}
 		},stack);
 	},
 	encodeCellQanssub : function(){
 		return this.encodeCell( function(c){
 			//if(bd.QuC(c)!=0 || bd.QnC(c)!=-1){ return ". ";}
-			if     (bd.QaC(c)!=-1){ return (bd.QaC(c).toString() + " ");}
-			else if(bd.QsC(c)==1 ){ return "+ ";}
-			else if(bd.QsC(c)==2 ){ return "- ";}
-			else if(bd.QsC(c)==3 ){ return "= ";}
-			else if(bd.QsC(c)==4 ){ return "% ";}
-			else                  { return ". ";}
+			if     (bd.QaC(c)!==-1){ return (bd.QaC(c).toString() + " ");}
+			else if(bd.QsC(c)===1 ){ return "+ ";}
+			else if(bd.QsC(c)===2 ){ return "- ";}
+			else if(bd.QsC(c)===3 ){ return "= ";}
+			else if(bd.QsC(c)===4 ){ return "% ";}
+			else                   { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -4736,15 +4713,15 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCrossNum : function(stack){
 		this.decodeCross( function(c,ca){
-			if     (ca == "-"){ bd.sQnX(c, -2);}
-			else if(ca != "."){ bd.sQnX(c, parseInt(ca));}
+			if     (ca === "-"){ bd.sQnX(c, -2);}
+			else if(ca !== "."){ bd.sQnX(c, parseInt(ca));}
 		},stack);
 	},
 	encodeCrossNum : function(){
 		return this.encodeCross( function(c){
-			if     (bd.QnX(c)>=0) { return (bd.QnX(c).toString() + " ");}
-			else if(bd.QnX(c)==-2){ return "- ";}
-			else                  { return ". ";}
+			if     (bd.QnX(c)>=0)  { return (bd.QnX(c).toString() + " ");}
+			else if(bd.QnX(c)===-2){ return "- ";}
+			else                   { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -4753,13 +4730,13 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeBorderQues : function(stack){
 		this.decodeBorder( function(c,ca){
-			if(ca == "1"){ bd.sQuB(c, 1);}
+			if(ca === "1"){ bd.sQuB(c, 1);}
 		},stack);
 	},
 	encodeBorderQues : function(){
 		return this.encodeBorder( function(c){
-			if     (bd.QuB(c)==1){ return "1 ";}
-			else                 { return "0 ";}
+			if     (bd.QuB(c)===1){ return "1 ";}
+			else                  { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -4771,17 +4748,17 @@ FileIO.prototype = {
 		bd.isLineNG = function(id){ return false;};
 
 		this.decodeBorder( function(c,ca){
-			if     (ca == "-1"){ bd.sQsB(c, 2);}
-			else if(ca != "0" ){ bd.sLiB(c, parseInt(ca));}
+			if     (ca === "-1"){ bd.sQsB(c, 2);}
+			else if(ca !== "0" ){ bd.sLiB(c, parseInt(ca));}
 		},stack);
 
 		bd.isLineNG = svfunc;
 	},
 	encodeBorderLine : function(){
 		return this.encodeBorder( function(c){
-			if     (bd.LiB(c)> 0){ return ""+bd.LiB(c)+" ";}
-			else if(bd.QsB(c)==2){ return "-1 ";}
-			else                 { return "0 ";}
+			if     (bd.LiB(c)>  0){ return ""+bd.LiB(c)+" ";}
+			else if(bd.QsB(c)===2){ return "-1 ";}
+			else                  { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -4790,17 +4767,17 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeBorderAns : function(stack){
 		this.decodeBorder( function(c,ca){
-			if     (ca == "1" ){ bd.sQaB(c, 1);}
-			else if(ca == "2" ){ bd.sQaB(c, 1); bd.sQsB(c, 1);}
-			else if(ca == "-1"){ bd.sQsB(c, 1);}
+			if     (ca === "1" ){ bd.sQaB(c, 1);}
+			else if(ca === "2" ){ bd.sQaB(c, 1); bd.sQsB(c, 1);}
+			else if(ca === "-1"){ bd.sQsB(c, 1);}
 		},stack);
 	},
 	encodeBorderAns : function(){
 		return this.encodeBorder( function(c){
-			if     (bd.QaB(c)==1 && bd.QsB(c)==1){ return "2 ";}
-			else if(bd.QaB(c)==1){ return "1 ";}
-			else if(bd.QsB(c)==1){ return "-1 ";}
-			else                 { return "0 ";}
+			if     (bd.QaB(c)===1 && bd.QsB(c)===1){ return "2 ";}
+			else if(bd.QaB(c)===1){ return "1 ";}
+			else if(bd.QsB(c)===1){ return "-1 ";}
+			else                  { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -4809,19 +4786,19 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeBorderAns2 : function(stack){
 		this.decodeBorder2( function(c,ca){
-			if     (ca == "1" ){ bd.sQaB(c, 1);}
-			else if(ca == "2" ){ bd.sQsB(c, 1);}
-			else if(ca == "3" ){ bd.sQaB(c, 1); bd.sQsB(c, 1);}
-			else if(ca == "-1"){ bd.sQsB(c, 2);}
+			if     (ca === "1" ){ bd.sQaB(c, 1);}
+			else if(ca === "2" ){ bd.sQsB(c, 1);}
+			else if(ca === "3" ){ bd.sQaB(c, 1); bd.sQsB(c, 1);}
+			else if(ca === "-1"){ bd.sQsB(c, 2);}
 		},stack);
 	},
 	encodeBorderAns2 : function(){
 		return this.encodeBorder2( function(c){
-			if     (bd.QaB(c)==1 && bd.QsB(c)==1){ return "3 ";}
-			else if(bd.QsB(c)==1){ return "2 ";}
-			else if(bd.QaB(c)==1){ return "1 ";}
-			else if(bd.QsB(c)==2){ return "-1 ";}
-			else                 { return "0 ";}
+			if     (bd.QaB(c)===1 && bd.QsB(c)===1){ return "3 ";}
+			else if(bd.QsB(c)===1){ return "2 ";}
+			else if(bd.QaB(c)===1){ return "1 ";}
+			else if(bd.QsB(c)===2){ return "-1 ";}
+			else                  { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -4829,14 +4806,17 @@ FileIO.prototype = {
 	// fio.encodeAreaRoom() 部屋のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeAreaRoom : function(stack){
+		var number = [];
+		for(var c=0;c<bd.cellmax;c++){ number[c]=0;}
+
 		stack.shift();
 		this.decodeCell( function(c,ca){
-			area.setRoomID(c, parseInt(ca)+1);
+			number[c] = parseInt(ca)+1;
 		},stack);
 
 		for(var c=0;c<k.qcols*k.qrows;c++){
-			if(bd.dn(c)!=-1 && area.getRoomID(c) != area.getRoomID(bd.dn(c))){ bd.sQuB(bd.db(c),1); }
-			if(bd.rt(c)!=-1 && area.getRoomID(c) != area.getRoomID(bd.rt(c))){ bd.sQuB(bd.rb(c),1); }
+			if(bd.dn(c)!==-1 && number[c]!==number[bd.dn(c)]){ bd.sQuB(bd.db(c),1); }
+			if(bd.rt(c)!==-1 && number[c]!==number[bd.rt(c)]){ bd.sQuB(bd.rb(c),1); }
 		}
 		area.resetRarea();
 	},
@@ -4859,8 +4839,8 @@ FileIO.prototype = {
 		for(var i=0;i<item.length;i++) {
 			var cx=i%(k.qcols+1)-1, cy=mf(i/(k.qcols+1))-1;
 			if(item[i]!="."){
-				if     (cy==-1){ bd.sDiE(bd.exnum(cx,cy), parseInt(item[i]));}
-				else if(cx==-1){ bd.sQnE(bd.exnum(cx,cy), parseInt(item[i]));}
+				if     (cy===-1){ bd.sDiE(bd.exnum(cx,cy), parseInt(item[i]));}
+				else if(cx===-1){ bd.sQnE(bd.exnum(cx,cy), parseInt(item[i]));}
 				else{
 					var inp = item[i].split(",");
 					var c = bd.cnum(cx,cy);
@@ -4875,12 +4855,12 @@ FileIO.prototype = {
 		var str = "";
 		for(var cy=-1;cy<k.qrows;cy++){
 			for(var cx=-1;cx<k.qcols;cx++){
-				if     (cx==-1 && cy==-1){ str += "0 ";}
-				else if(cy==-1){ str += (""+bd.DiE(bd.exnum(cx,cy)).toString()+" ");}
-				else if(cx==-1){ str += (""+bd.QnE(bd.exnum(cx,cy)).toString()+" ");}
+				if     (cx===-1 && cy==-1){ str += "0 ";}
+				else if(cy===-1){ str += (""+bd.DiE(bd.exnum(cx,cy)).toString()+" ");}
+				else if(cx===-1){ str += (""+bd.QnE(bd.exnum(cx,cy)).toString()+" ");}
 				else{
 					var c = bd.cnum(cx,cy);
-					if(bd.QuC(c)==51){ str += (""+bd.QnC(c).toString()+","+bd.DiC(c).toString()+" ");}
+					if(bd.QuC(c)===51){ str += (""+bd.QnC(c).toString()+","+bd.DiC(c).toString()+" ");}
 					else{ str += ". ";}
 				}
 			}
@@ -4924,8 +4904,8 @@ FileIO.prototype = {
 	// fio.updateManager() 更新時間を更新する
 	//---------------------------------------------------------------------------
 	initDataBase : function(){
-		if(this.DBtype==0){ return false;}
-		else if(this.DBtype==1){
+		if(this.DBtype===0){ return false;}
+		else if(this.DBtype===1){
 			this.dbmgr = google.gears.factory.create('beta.database', '1.0');
 			this.dbmgr.open('pzprv3_manage');
 			this.dbmgr.execute('CREATE TABLE IF NOT EXISTS manage (puzzleid primary key,version,count,lastupdate)');
@@ -4938,7 +4918,7 @@ FileIO.prototype = {
 			this.db.execute('CREATE TABLE IF NOT EXISTS pzldata (id int primary key,col,row,hard,pdata,time,comment)');
 			this.db.close();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			this.dbmgr = openDataBase('pzprv3_manage', '1.0');
 			this.dbmgr.transaction(function(tx){
 				tx.executeSql('CREATE TABLE IF NOT EXISTS manage (puzzleid primary key,version,count,lastupdate)');
@@ -4960,7 +4940,7 @@ FileIO.prototype = {
 		return true;
 	},
 	dropDataBase : function(){
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			this.dbmgr.open('pzprv3_manage');
 			this.dbmgr.execute('DELETE FROM manage WHERE puzzleid=?',[k.puzzleid]);
 			this.dbmgr.close();
@@ -4969,7 +4949,7 @@ FileIO.prototype = {
 			this.db.execute('DROP TABLE IF EXISTS pzldata');
 			this.db.close();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			this.dbmgr.transaction(function(tx){
 				tx.executeSql('DELETE FROM manage WHERE puzzleid=?',[k.puzzleid]);
 			});
@@ -5006,7 +4986,7 @@ FileIO.prototype = {
 
 	updateManager : function(flag){
 		var count = -1;
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			if(!flag){
 				this.db.open('pzprv3_'+k.puzzleid);
 				var rs = this.db.execute('SELECT COUNT(*) FROM pzldata');
@@ -5019,7 +4999,7 @@ FileIO.prototype = {
 			this.dbmgr.execute('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)',[k.puzzleid,'1.0',count,mf((new Date()).getTime()/1000)]);
 			this.dbmgr.close();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			if(!flag){
 				this.db.transaction(function(tx){
 					tx.executeSql('SELECT COUNT(*) FROM pzldata',function(){},function(tx,rs){ count = rs.rows[0];});
@@ -5068,7 +5048,7 @@ FileIO.prototype = {
 	ni : function(num){ return (num<10?"0"+num:""+num);},
 	getDataTableList : function(){
 		this.DBlist = [];
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			this.db.open('pzprv3_'+k.puzzleid);
 			var rs = this.db.execute('SELECT * FROM pzldata');
 			while(rs.isValidRow()){
@@ -5081,7 +5061,7 @@ FileIO.prototype = {
 			this.db.close();
 			this.displayDataTableList();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			var self = this;
 			this.db.transaction(function(tx){
 				tx.executeSql('SELECT * FROM pzldata',[],function(tx,rs){
@@ -5099,13 +5079,13 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	upDataTable : function(){
 		var selected = this.getDataID();
-		if(this.DBtype==0 || selected==-1 || selected==0){ return;}
+		if(this.DBtype===0 || selected===-1 || selected===0){ return;}
 
 		this.convertDataTableID(selected, selected-1);
 	},
 	downDataTable : function(){
 		var selected = this.getDataID();
-		if(this.DBtype==0 || selected==-1 || selected==this.DBlist.length-1){ return;}
+		if(this.DBtype===0 || selected===-1 || selected===this.DBlist.length-1){ return;}
 
 		this.convertDataTableID(selected, selected+1);
 	},
@@ -5117,7 +5097,7 @@ FileIO.prototype = {
 		this.DBlist[selected].id = tid;
 		this.DBlist[target].id   = sid;
 
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			this.db.open('pzprv3_'+k.puzzleid);
 			this.db.execute('UPDATE pzldata SET id=? WHERE ID==?',[0  ,sid]);
 			this.db.execute('UPDATE pzldata SET id=? WHERE ID==?',[sid,tid]);
@@ -5126,7 +5106,7 @@ FileIO.prototype = {
 
 			this.displayDataTableList();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			var self = this;
 			this.db.transaction(function(tx){
 				tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[0  ,sid]);
@@ -5145,7 +5125,7 @@ FileIO.prototype = {
 	getDataID : function(){
 		if(document.database.datalist.value!="new" && document.database.datalist.value!=""){
 			for(var i=0;i<this.DBlist.length;i++){
-				if(this.DBlist[i].id==document.database.datalist.value){ return i;}
+				if(this.DBlist[i].id===document.database.datalist.value){ return i;}
 			}
 		}
 		return -1;
@@ -5161,12 +5141,12 @@ FileIO.prototype = {
 			this.DBsid = -1;
 		}
 
-		document.database.tableup.disabled = (document.database.sorts.value!='idlist' || this.DBsid==-1 || this.DBsid==1);
-		document.database.tabledn.disabled = (document.database.sorts.value!='idlist' || this.DBsid==-1 || this.DBsid==this.DBlist.length);
-		document.database.comedit.disabled = (this.DBsid==-1);
-		document.database.difedit.disabled = (this.DBsid==-1);
-		document.database.open.disabled    = (this.DBsid==-1);
-		document.database.del.disabled     = (this.DBsid==-1);
+		document.database.tableup.disabled = (document.database.sorts.value!=='idlist' || this.DBsid===-1 || this.DBsid===1);
+		document.database.tabledn.disabled = (document.database.sorts.value!=='idlist' || this.DBsid===-1 || this.DBsid===this.DBlist.length);
+		document.database.comedit.disabled = (this.DBsid===-1);
+		document.database.difedit.disabled = (this.DBsid===-1);
+		document.database.open.disabled    = (this.DBsid===-1);
+		document.database.del.disabled     = (this.DBsid===-1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -5175,9 +5155,9 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	openDataTable : function(){
 		var id = this.getDataID();
-		if(id==-1 || !confirm("このデータを読み込みますか？ (現在の盤面は破棄されます)")){ return;}
+		if(id===-1 || !confirm("このデータを読み込みますか？ (現在の盤面は破棄されます)")){ return;}
 
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			this.db.open('pzprv3_'+k.puzzleid);
 
 			var id = this.getDataID();
@@ -5187,7 +5167,7 @@ FileIO.prototype = {
 			rs.close();
 			this.db.close();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			var self = this;
 			this.db.transaction(function(tx){
 				tx.executeSql('SELECT * FROM pzldata WHERE ID==?',[self.DBlist[id].id],
@@ -5198,17 +5178,17 @@ FileIO.prototype = {
 	},
 	saveDataTable : function(){
 		var id = this.getDataID();
-		if(this.DBtype==0 || (id!=-1 && !confirm("このデータに上書きしますか？"))){ return;}
+		if(this.DBtype===0 || (id!==-1 && !confirm("このデータに上書きしますか？"))){ return;}
 
 		var time = mf((new Date()).getTime()/1000);
 		var pdata = this.fileencode(1);
 		var str = "";
-		if(id==-1){ str = prompt("コメントがある場合は入力してください。",""); if(str==null){ str="";} }
-		else      { str = this.DBlist[this.getDataID()].comment;}
+		if(id===-1){ str = prompt("コメントがある場合は入力してください。",""); if(str==null){ str="";} }
+		else       { str = this.DBlist[this.getDataID()].comment;}
 
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			this.db.open('pzprv3_'+k.puzzleid);
-			if(id==-1){
+			if(id===-1){
 				id = this.DBlist.length+1;
 				this.db.execute('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',[id,k.qcols,k.qrows,0,pdata,time,str]);
 			}
@@ -5219,9 +5199,9 @@ FileIO.prototype = {
 			this.db.close();
 			this.getDataTableList();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			var self = this;
-			if(id==-1){
+			if(id===-1){
 				id = this.DBlist.length+1;
 				this.db.transaction(function(tx){
 					tx.executeSql('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',[id,k.qcols,k.qrows,0,pdata,time,str]);
@@ -5244,14 +5224,14 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	editComment : function(){
 		var id = this.getDataID();
-		if(this.DBtype==0 || id==-1){ return;}
+		if(this.DBtype===0 || id===-1){ return;}
 
 		var str = prompt("この問題に対するコメントを入力してください。",this.DBlist[id].comment);
 		if(str==null){ return;}
 
 		this.DBlist[id].comment = str;
 
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			this.db.open('pzprv3_'+k.puzzleid);
 
 			this.db.execute('UPDATE pzldata SET comment=? WHERE ID==?',[str,this.DBlist[id].id]);
@@ -5259,7 +5239,7 @@ FileIO.prototype = {
 
 			this.displayDataTableList();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			var self = this;
 			this.db.transaction(function(tx){
 				tx.executeSql('UPDATE pzldata SET comment=? WHERE ID==?',[str,self.DBlist[id].id]);
@@ -5270,14 +5250,14 @@ FileIO.prototype = {
 	},
 	editDifficult : function(){
 		var id = this.getDataID();
-		if(this.DBtype==0 || id==-1){ return;}
+		if(this.DBtype===0 || id===-1){ return;}
 
 		var hard = prompt("この問題の難易度を設定してください。\n[0:なし 1:らくらく 2:おてごろ 3:たいへん 4:アゼン]",this.DBlist[id].hard);
 		if(hard==null){ return;}
 
-		this.DBlist[id].hard = ((hard=='1'||hard=='2'||hard=='3'||hard=='4')?hard:0);
+		this.DBlist[id].hard = ((hard==='1'||hard==='2'||hard==='3'||hard==='4')?hard:0);
 
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			this.db.open('pzprv3_'+k.puzzleid);
 
 			this.db.execute('UPDATE pzldata SET hard=? WHERE ID==?',[hard,this.DBlist[id].id]);
@@ -5285,7 +5265,7 @@ FileIO.prototype = {
 
 			this.displayDataTableList();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			var self = this;
 			this.db.transaction(function(tx){
 				tx.executeSql('UPDATE pzldata SET hard=? WHERE ID==?',[hard,self.DBlist[id].id]);
@@ -5300,9 +5280,9 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	deleteDataTable : function(){
 		var id = this.getDataID();
-		if(this.DBtype==0 || id==-1 || !confirm("このデータを完全に削除しますか？")){ return;}
+		if(this.DBtype===0 || id===-1 || !confirm("このデータを完全に削除しますか？")){ return;}
 
-		if(this.DBtype==1){
+		if(this.DBtype===1){
 			this.db.open('pzprv3_'+k.puzzleid);
 
 			this.db.execute('DELETE FROM pzldata WHERE ID==?',[this.DBlist[id].id]);
@@ -5318,7 +5298,7 @@ FileIO.prototype = {
 			this.db.close();
 			this.displayDataTableList();
 		}
-		else if(this.DBtype==2){
+		else if(this.DBtype===2){
 			var self = this;
 			this.db.transaction(function(tx){
 				tx.executeSql('DELETE FROM pzldata WHERE ID==?',[self.DBlist[id].id]);
@@ -5813,6 +5793,7 @@ UndoManager = function(){
 	this.ope = [];			// Operationクラスを保持する配列
 	this.current = 0;		// 現在の表示操作番号を保持する
 	this.disrec = 0;		// このクラスからの呼び出し時は1にする
+	this.disinfo = 0;		// LineManager, AreaManagerを呼び出さないようにする
 	this.chainflag = 0;		// 前のOperationとくっつけて、一回のUndo/Redoで変化できるようにする
 	this.disCombine = 0;	// 数字がくっついてしまうので、それを一時的に無効にするためのフラグ
 
@@ -5841,6 +5822,10 @@ UndoManager.prototype = {
 	disableRecord : function(){ this.disrec++; },
 	enableRecord  : function(){ if(this.disrec>0){ this.disrec--;} },
 	isenableRecord : function(){ return (this.disrec==0);},
+
+	disableInfo : function(){ this.disinfo++; },
+	enableInfo  : function(){ if(this.disinfo>0){ this.disinfo--;} },
+	isenableInfo : function(){ return (this.disinfo==0);},
 
 	enb_btn : function(){
 		if(!this.ope.length){
@@ -5950,12 +5935,16 @@ UndoManager.prototype = {
 		if(this.reqReset){
 			this.reqReset=false;
 
+			bd.setposAll();
 			base.resetInfo();
 			base.resize_canvas();
 		}
+		else{
+			pc.paint(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
+		}
 		this.enableRecord();
+		this.enableInfo();
 		this.enb_btn();
-		pc.paint(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
 	},
 	exec : function(ope, num){
 		var pp = ope.property;
@@ -5992,6 +5981,7 @@ UndoManager.prototype = {
 			this.paintBorder(ope.id);
 		}
 		else if(ope.obj == 'board'){
+			this.disableInfo();
 			if     (pp == 'expandup'){ if(num==1){ menu.ex.expand('up');}else{ menu.ex.reduce('up');} }
 			else if(pp == 'expanddn'){ if(num==1){ menu.ex.expand('dn');}else{ menu.ex.reduce('dn');} }
 			else if(pp == 'expandlt'){ if(num==1){ menu.ex.expand('lt');}else{ menu.ex.reduce('lt');} }
@@ -6898,7 +6888,7 @@ MenuExec.prototype = {
 	newboard : function(e){
 		if(menu.pop){
 			var col,row;
-			if(k.puzzleid!="sudoku"){
+			if(k.puzzleid!=="sudoku"){
 				col = mf(parseInt(document.newboard.col.value));
 				row = mf(parseInt(document.newboard.row.value));
 			}
@@ -6944,7 +6934,9 @@ MenuExec.prototype = {
 	},
 	openurl : function(e){
 		if(menu.pop){
-			if(document.urloutput.ta.value!=''){ var win = window.open(document.urloutput.ta.value, '', '');}
+			if(document.urloutput.ta.value!==''){
+				var win = window.open(document.urloutput.ta.value, '', '');
+			}
 		}
 	},
 
@@ -6973,7 +6965,7 @@ MenuExec.prototype = {
 
 			if(csize>0){
 				k.def_psize = mf(csize*(k.def_psize/k.def_csize));
-				if(k.def_psize==0){ k.def_psize=1;}
+				if(k.def_psize===0){ k.def_psize=1;}
 				k.def_csize = mf(csize);
 			}
 			menu.popclose();
@@ -7005,7 +6997,7 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	dispman : function(e){
 		var idlist = ['expression','usepanel','checkpanel'];
-		var sparatorlist = (k.callmode=="pmake")?['separator1']:['separator1','separator2'];
+		var sparatorlist = (k.callmode==="pmake")?['separator1']:['separator1','separator2'];
 
 		if(this.displaymanage){
 			for(var i=0;i<idlist.length;i++){ $("#"+idlist[i]).hide(800, base.resize_canvas.bind(base));}
@@ -7036,16 +7028,17 @@ MenuExec.prototype = {
 			um.newOperation(true);
 
 			var name = getSrcElement(e).name;
-			if(name.indexOf("reduce")==0){
-				if(name=="reduceup"||name=="reducedn"){
+			if(name.indexOf("reduce")===0){
+				if(name==="reduceup"||name==="reducedn"){
 					if(k.qrows<=1){ return;}
 				}
-				else if(name=="reducelt"||name=="reducedn"){
-					if(k.qcols<=1 && k.puzzleid!="tawa"){ return;}
-					else if(k.qcols<=1 && k.puzzleid=="tawa" && bd.lap!=3){ return;}
+				else if(name==="reducelt"||name==="reducedn"){
+					if(k.qcols<=1 && k.puzzleid!=="tawa"){ return;}
+					else if(k.qcols<=1 && k.puzzleid==="tawa" && bd.lap!==3){ return;}
 				}
 			}
 
+			um.disableInfo();
 			switch(name){
 				case "expandup": this.expand('up'); break;
 				case "expanddn": this.expand('dn'); break;
@@ -7061,11 +7054,12 @@ MenuExec.prototype = {
 				case "flipy": this.turnflip(1,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); break;
 				case "flipx": this.turnflip(2,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); break;
 			}
+			um.enableInfo();
 
 			// reduceはここ必須
 			um.addOpe('board', name, 0, 0, 1);
 
-			base.resetInfo();
+			if(!um.undoExec){ base.resetInfo();}
 			base.resize_canvas();				// Canvasを更新する
 		}
 	},
@@ -7081,31 +7075,31 @@ MenuExec.prototype = {
 		this.adjustGeneral(5,'',{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});
 
 		var number;
-		if     (key=='up'||key=='dn'){ number=k.qcols; k.qrows++; tc.maxy+=2;}
-		else if(key=='lt'||key=='rt'){ number=k.qrows; k.qcols++; tc.maxx+=2;}
+		if     (key==='up'||key==='dn'){ number=k.qcols; k.qrows++; tc.maxy+=2;}
+		else if(key==='lt'||key==='rt'){ number=k.qrows; k.qcols++; tc.maxx+=2;}
 
 		var func;
 		{
-			func = function(id){ return (menu.ex.distObj(key,'cell',id)==0);};
+			func = function(id){ return (menu.ex.distObj(key,'cell',id)===0);};
 			this.expandGroup('cell', bd.cell, number, func);
 		}
 		if(k.iscross){
 			var oc = k.isoutsidecross?0:1;
-			func = function(id){ return (menu.ex.distObj(key,'cross',id)==oc);};
+			func = function(id){ return (menu.ex.distObj(key,'cross',id)===oc);};
 			this.expandGroup('cross', bd.cross, number+1, func);
 		}
 		if(k.isborder){
 			bd.bdinside = 2*k.qcols*k.qrows-(k.qcols+k.qrows);
 
-			func = function(id){ var m=menu.ex.distObj(key,'border',id); return (m==1||m==2);};
-			this.expandGroup('border', bd.border, 2*number+(k.isoutsideborder==0?-1:1), func);
+			func = function(id){ var m=menu.ex.distObj(key,'border',id); return (m===1||m===2);};
+			this.expandGroup('border', bd.border, 2*number+(k.isoutsideborder===0?-1:1), func);
 
 			// 拡大時に、境界線は伸ばしちゃいます。
-			if(k.isborderAsLine==0){ this.expandborder(key);}
+			if(k.isborderAsLine===0){ this.expandborder(key);}
 			else{ this.expandborderAsLine(key);}
 		}
-		if(k.isextendcell!=0){
-			func = function(id){ return (menu.ex.distObj(key,'excell',id)==0);};
+		if(k.isextendcell!==0){
+			func = function(id){ return (menu.ex.distObj(key,'excell',id)===0);};
 			this.expandGroup('excell', bd.excell, k.isextendcell, func);
 		}
 
@@ -7132,37 +7126,36 @@ MenuExec.prototype = {
 		var func, margin;
 		{
 			this.qnums = [];
-			func = function(id){ return (menu.ex.distObj(key,'cell',id)==0);};
+			func = function(id){ return (menu.ex.distObj(key,'cell',id)===0);};
 			margin = this.reduceGroup('cell', bd.cell, func);
 		}
 		if(k.iscross){
 			var oc = k.isoutsidecross?0:1;
-			func = function(id){ return (menu.ex.distObj(key,'cross',id)==oc);};
+			func = function(id){ return (menu.ex.distObj(key,'cross',id)===oc);};
 			margin = this.reduceGroup('cross', bd.cross, func);
 		}
 		if(k.isborder){
-			if(k.isborderAsLine==1){ this.reduceborderAsLine(key);}
+			if(k.isborderAsLine===1){ this.reduceborderAsLine(key);}
 
-			if     (key=='up'||key=='dn'){ bd.bdinside = 2*k.qcols*(k.qrows-1)-(k.qcols+k.qrows-1);}
-			else if(key=='lt'||key=='rt'){ bd.bdinside = 2*(k.qcols-1)*k.qrows-(k.qcols+k.qrows-1);}
+			if     (key==='up'||key==='dn'){ bd.bdinside = 2*k.qcols*(k.qrows-1)-(k.qcols+k.qrows-1);}
+			else if(key==='lt'||key==='rt'){ bd.bdinside = 2*(k.qcols-1)*k.qrows-(k.qcols+k.qrows-1);}
 
-			func = function(id){ var m=menu.ex.distObj(key,'border',id); return (m==1||m==2);};
+			func = function(id){ var m=menu.ex.distObj(key,'border',id); return (m===1||m===2);};
 			margin = this.reduceGroup('border', bd.border, func);
 		}
-		if(k.isextendcell!=0){
-			func = function(id){ return (menu.ex.distObj(key,'excell',id)==0);};
+		if(k.isextendcell!==0){
+			func = function(id){ return (menu.ex.distObj(key,'excell',id)===0);};
 			margin = this.reduceGroup('excell', bd.excell, func);
 		}
 
-		if     (key=='up'||key=='dn'){ k.qrows--; tc.maxy-=2;}
-		else if(key=='lt'||key=='rt'){ k.qcols--; tc.maxx-=2;}
+		if     (key==='up'||key==='dn'){ k.qrows--; tc.maxy-=2;}
+		else if(key==='lt'||key==='rt'){ k.qcols--; tc.maxx-=2;}
 
 		bd.setposAll();
-
 		if(k.isOneNumber){
 			area.resetArea();
 			for(var i=0;i<this.qnums.length;i++){
-				bd.cell[area.getTopOfRoom(this.qnums[i].areaid)].qnum = this.qnums[i].val;
+				bd.sQnC(area.getTopOfRoom(this.qnums[i].areaid), this.qnums[i].val);
 			}
 		}
 
@@ -7176,9 +7169,9 @@ MenuExec.prototype = {
 				if(!bd.isNullObj(type,i)){ um.addObj(type,i);}
 				margin++;
 
-				if(type=='cell' && k.isOneNumber){
-					if(bd.QnC(i)!=-1){ this.qnums.push({ areaid:area.getRoomID(i), val:bd.QnC(i)});}
-					area.setRoomID(i, -1);
+				if(type==='cell' && k.isOneNumber){
+					if(bd.QnC(i)!==-1){ this.qnums.push({ areaid:area.getRoomID(i), val:bd.QnC(i)});}
+					//area.setRoomID(i, -1);
 				}
 			}
 			else if(margin>0){ group[i-margin] = group[i];}
@@ -7198,7 +7191,7 @@ MenuExec.prototype = {
 		this.adjustSpecial(type,'');
 		this.adjustGeneral(type,'',d);
 
-		if(type==3||type==4){
+		if(type===3||type===4){
 			var tmp = k.qcols; k.qcols = k.qrows; k.qrows = tmp;
 			tmp = tc.maxx; tc.maxx = tc.maxy; tc.maxy = tmp;
 			bd.setposAll();
@@ -7206,42 +7199,42 @@ MenuExec.prototype = {
 
 		var func;
 		{
-			if     (type==1){ func = function(d,id){ return bd.cnum(bd.cell[id].cx, d.yy-bd.cell[id].cy);}; }
-			else if(type==2){ func = function(d,id){ return bd.cnum(d.xx-bd.cell[id].cx, bd.cell[id].cy);}; }
-			else if(type==3){ func = function(d,id){ return bd.cnum2(bd.cell[id].cy, d.yy-bd.cell[id].cx, k.qrows, k.qcols);}; }
-			else if(type==4){ func = function(d,id){ return bd.cnum2(d.xx-bd.cell[id].cy, bd.cell[id].cx, k.qrows, k.qcols);}; }
+			if     (type===1){ func = function(d,id){ return bd.cnum(bd.cell[id].cx, d.yy-bd.cell[id].cy);}; }
+			else if(type===2){ func = function(d,id){ return bd.cnum(d.xx-bd.cell[id].cx, bd.cell[id].cy);}; }
+			else if(type===3){ func = function(d,id){ return bd.cnum2(bd.cell[id].cy, d.yy-bd.cell[id].cx, k.qrows, k.qcols);}; }
+			else if(type===4){ func = function(d,id){ return bd.cnum2(d.xx-bd.cell[id].cy, bd.cell[id].cx, k.qrows, k.qcols);}; }
 			this.turnflipGroup(d, bd.cell, k.qcols*k.qrows, func);
 		}
 		if(k.iscross){
-			if     (type==1){ func = function(d,id){ return bd.xnum(bd.cross[id].cx, (d.yy+1)-bd.cross[id].cy);}; }
-			else if(type==2){ func = function(d,id){ return bd.xnum((d.xx+1)-bd.cross[id].cx, bd.cross[id].cy);}; }
-			else if(type==3){ func = function(d,id){ return bd.xnum2(bd.cross[id].cy, (d.yy+1)-bd.cross[id].cx, k.qrows, k.qcols);}; }
-			else if(type==4){ func = function(d,id){ return bd.xnum2((d.xx+1)-bd.cross[id].cy, bd.cross[id].cx, k.qrows, k.qcols);}; }
+			if     (type===1){ func = function(d,id){ return bd.xnum(bd.cross[id].cx, (d.yy+1)-bd.cross[id].cy);}; }
+			else if(type===2){ func = function(d,id){ return bd.xnum((d.xx+1)-bd.cross[id].cx, bd.cross[id].cy);}; }
+			else if(type===3){ func = function(d,id){ return bd.xnum2(bd.cross[id].cy, (d.yy+1)-bd.cross[id].cx, k.qrows, k.qcols);}; }
+			else if(type===4){ func = function(d,id){ return bd.xnum2((d.xx+1)-bd.cross[id].cy, bd.cross[id].cx, k.qrows, k.qcols);}; }
 			this.turnflipGroup(d, bd.cross, (k.qcols+1)*(k.qrows+1), func);
 		}
 		if(k.isborder){
-			if     (type==1){ func = function(d,id){ return bd.bnum(bd.border[id].cx, (d.yy+1)*2-bd.border[id].cy);}; }
-			else if(type==2){ func = function(d,id){ return bd.bnum((d.xx+1)*2-bd.border[id].cx, bd.border[id].cy);}; }
-			else if(type==3){ func = function(d,id){ return bd.bnum2(bd.border[id].cy, (d.yy+1)*2-bd.border[id].cx, k.qrows, k.qcols);}; }
-			else if(type==4){ func = function(d,id){ return bd.bnum2((d.xx+1)*2-bd.border[id].cy, bd.border[id].cx, k.qrows, k.qcols);}; }
-			this.turnflipGroup(d, bd.border, bd.bdinside+(k.isoutsideborder==0?0:2*(k.qcols+k.qrows)), func);
+			if     (type===1){ func = function(d,id){ return bd.bnum(bd.border[id].cx, (d.yy+1)*2-bd.border[id].cy);}; }
+			else if(type===2){ func = function(d,id){ return bd.bnum((d.xx+1)*2-bd.border[id].cx, bd.border[id].cy);}; }
+			else if(type===3){ func = function(d,id){ return bd.bnum2(bd.border[id].cy, (d.yy+1)*2-bd.border[id].cx, k.qrows, k.qcols);}; }
+			else if(type===4){ func = function(d,id){ return bd.bnum2((d.xx+1)*2-bd.border[id].cy, bd.border[id].cx, k.qrows, k.qcols);}; }
+			this.turnflipGroup(d, bd.border, bd.bdinside+(k.isoutsideborder===0?0:2*(k.qcols+k.qrows)), func);
 		}
-		if(k.isextendcell==2){
-			if     (type==1){ func = function(d,id){ return bd.exnum(bd.excell[id].cx, d.yy-bd.excell[id].cy);}; }
-			else if(type==2){ func = function(d,id){ return bd.exnum(d.xx-bd.excell[id].cx, bd.excell[id].cy);}; }
-			else if(type==3){ func = function(d,id){ return bd.exnum2(bd.excell[id].cy, d.yy-bd.excell[id].cx, k.qrows, k.qcols);}; }
-			else if(type==4){ func = function(d,id){ return bd.exnum2(d.xx-bd.excell[id].cy, bd.excell[id].cx, k.qrows, k.qcols);}; }
+		if(k.isextendcell===2){
+			if     (type===1){ func = function(d,id){ return bd.exnum(bd.excell[id].cx, d.yy-bd.excell[id].cy);}; }
+			else if(type===2){ func = function(d,id){ return bd.exnum(d.xx-bd.excell[id].cx, bd.excell[id].cy);}; }
+			else if(type===3){ func = function(d,id){ return bd.exnum2(bd.excell[id].cy, d.yy-bd.excell[id].cx, k.qrows, k.qcols);}; }
+			else if(type===4){ func = function(d,id){ return bd.exnum2(d.xx-bd.excell[id].cy, bd.excell[id].cx, k.qrows, k.qcols);}; }
 			this.turnflipGroup(d, bd.excell, 2*(k.qcols+k.qrows)+4, func);
 		}
-		else if(k.isextendcell==1 && (type==1 || type==2)){
-			if(type==1){
+		else if(k.isextendcell===1 && (type===1 || type===2)){
+			if(type===1){
 				for(var cy=d.y1;cy<d.yy/2;cy++){
 					var c = bd.excell[bd.exnum(-1,cy)];
 					bd.excell[bd.exnum(-1,cy)] = bd.excell[bd.exnum(-1,d.yy-cy)];
 					bd.excell[bd.exnum(-1,d.yy-cy)] = c;
 				}
 			}
-			else if(type==2){
+			else if(type===2){
 				for(var cx=d.x1;cx<d.xx/2;cx++){
 					var c = bd.excell[bd.exnum(cx,-1)];
 					bd.excell[bd.exnum(cx,-1)] = bd.excell[bd.exnum(d.xx-cx,-1)];
@@ -7256,13 +7249,13 @@ MenuExec.prototype = {
 	turnflipGroup : function(d,group,maxcnt,getnext){
 		var ch = []; for(var i=0;i<maxcnt;i++){ ch[i]=1;}
 		for(var source=0;source<maxcnt;source++){
-			if(ch[source]==0){ continue;}
+			if(ch[source]===0){ continue;}
 			var tmp = group[source], target = source;
-			while(ch[target]!=0){
+			while(ch[target]!==0){
 				ch[target]=0;
 				var next = getnext(d,target);
 
-				if(ch[next]!=0){
+				if(ch[next]!==0){
 					group[target] = group[next];
 					target = next;
 				}
@@ -7284,7 +7277,7 @@ MenuExec.prototype = {
 
 		bd.setposBorders();
 		for(var i=0;i<bd.bdmax;i++){
-			if(this.distObj(key,'border',i)!=1){ continue;}
+			if(this.distObj(key,'border',i)!==1){ continue;}
 
 			var source = this.innerBorder(key,i);
 			bd.border[i].ques  = bd.border[source].ques;
@@ -7296,7 +7289,7 @@ MenuExec.prototype = {
 	expandborderAsLine : function(key){
 		bd.setposBorders();
 		for(var i=0;i<bd.bdmax;i++){
-			if(this.distObj(key,'border',i)!=2){ continue;}
+			if(this.distObj(key,'border',i)!==2){ continue;}
 
 			var source = this.outerBorder(key,i);
 			this.copyData(i,source);
@@ -7306,7 +7299,7 @@ MenuExec.prototype = {
 	// borderAsLine時の無理やりがなんとかかんとか
 	reduceborderAsLine : function(key){
 		for(var i=0;i<bd.bdmax;i++){
-			if(this.distObj(key,'border',i)!=0){ continue;}
+			if(this.distObj(key,'border',i)!==0){ continue;}
 
 			var source = this.innerBorder(key,i);
 			this.copyData(i,source);
@@ -7325,18 +7318,18 @@ MenuExec.prototype = {
 	//---------------------------------------------------------------------------
 	innerBorder : function(key,id){
 		var bx=bd.border[id].cx, by=bd.border[id].cy;
-		if     (key=='up'){ return bd.bnum(bx, by+2);}
-		else if(key=='dn'){ return bd.bnum(bx, by-2);}
-		else if(key=='lt'){ return bd.bnum(bx+2, by);}
-		else if(key=='rt'){ return bd.bnum(bx-2, by);}
+		if     (key==='up'){ return bd.bnum(bx, by+2);}
+		else if(key==='dn'){ return bd.bnum(bx, by-2);}
+		else if(key==='lt'){ return bd.bnum(bx+2, by);}
+		else if(key==='rt'){ return bd.bnum(bx-2, by);}
 		return -1;
 	},
 	outerBorder : function(key,id){
 		var bx=bd.border[id].cx, by=bd.border[id].cy;
-		if     (key=='up'){ return bd.bnum(bx, by-2);}
-		else if(key=='dn'){ return bd.bnum(bx, by+2);}
-		else if(key=='lt'){ return bd.bnum(bx-2, by);}
-		else if(key=='rt'){ return bd.bnum(bx+2, by);}
+		if     (key==='up'){ return bd.bnum(bx, by-2);}
+		else if(key==='dn'){ return bd.bnum(bx, by+2);}
+		else if(key==='lt'){ return bd.bnum(bx-2, by);}
+		else if(key==='rt'){ return bd.bnum(bx+2, by);}
 		return -1;
 	},
 
@@ -7345,35 +7338,35 @@ MenuExec.prototype = {
 	// menu.ex.distObj()    上下左右いずれかの外枠との距離を求める
 	//---------------------------------------------------------------------------
 	setposObj : function(type){
-		if     (type=='cell')  { bd.setposCells();}
-		else if(type=='cross') { bd.setposCrosses();}
-		else if(type=='border'){ bd.setposBorders();}
-		else if(type=='excell'){ bd.setposEXcells();}
+		if     (type==='cell')  { bd.setposCells();}
+		else if(type==='cross') { bd.setposCrosses();}
+		else if(type==='border'){ bd.setposBorders();}
+		else if(type==='excell'){ bd.setposEXcells();}
 	},
 	distObj : function(key,type,id){
-		if(type=='cell'){
-			if     (key=='up'){ return bd.cell[id].cy;}
-			else if(key=='dn'){ return (k.qrows-1)-bd.cell[id].cy;}
-			else if(key=='lt'){ return bd.cell[id].cx;}
-			else if(key=='rt'){ return (k.qcols-1)-bd.cell[id].cx;}
+		if(type==='cell'){
+			if     (key==='up'){ return bd.cell[id].cy;}
+			else if(key==='dn'){ return (k.qrows-1)-bd.cell[id].cy;}
+			else if(key==='lt'){ return bd.cell[id].cx;}
+			else if(key==='rt'){ return (k.qcols-1)-bd.cell[id].cx;}
 		}
-		else if(type=='cross'){
-			if     (key=='up'){ return bd.cross[id].cy;}
-			else if(key=='dn'){ return k.qrows-bd.cross[id].cy;}
-			else if(key=='lt'){ return bd.cross[id].cx;}
-			else if(key=='rt'){ return k.qcols-bd.cross[id].cx;}
+		else if(type==='cross'){
+			if     (key==='up'){ return bd.cross[id].cy;}
+			else if(key==='dn'){ return k.qrows-bd.cross[id].cy;}
+			else if(key==='lt'){ return bd.cross[id].cx;}
+			else if(key==='rt'){ return k.qcols-bd.cross[id].cx;}
 		}
-		else if(type=='border'){
-			if     (key=='up'){ return bd.border[id].cy;}
-			else if(key=='dn'){ return 2*k.qrows-bd.border[id].cy;}
-			else if(key=='lt'){ return bd.border[id].cx;}
-			else if(key=='rt'){ return 2*k.qcols-bd.border[id].cx;}
+		else if(type==='border'){
+			if     (key==='up'){ return bd.border[id].cy;}
+			else if(key==='dn'){ return 2*k.qrows-bd.border[id].cy;}
+			else if(key==='lt'){ return bd.border[id].cx;}
+			else if(key==='rt'){ return 2*k.qcols-bd.border[id].cx;}
 		}
-		else if(type=='excell'){
-			if     (key=='up'){ return bd.excell[id].cy;}
-			else if(key=='dn'){ return (k.qrows-1)-bd.excell[id].cy;}
-			else if(key=='lt'){ return bd.excell[id].cx;}
-			else if(key=='rt'){ return (k.qcols-1)-bd.excell[id].cx;}
+		else if(type==='excell'){
+			if     (key==='up'){ return bd.excell[id].cy;}
+			else if(key==='dn'){ return (k.qrows-1)-bd.excell[id].cy;}
+			else if(key==='lt'){ return bd.excell[id].cx;}
+			else if(key==='rt'){ return (k.qcols-1)-bd.excell[id].cx;}
 		}
 		return -1;
 	},
@@ -7397,7 +7390,7 @@ MenuExec.prototype = {
 						var val = ({2:5,3:4,4:3,5:2,104:107,105:106,106:105,107:104})[bd.QuC(c)];
 						if(!isNaN(val)){ bd.sQuC(c,val);}
 					}
-					if(k.isextendcell!=1){
+					if(k.isextendcell!==1){
 						var val = ({1:2,2:1})[bd.DiC(c)];
 						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
@@ -7407,7 +7400,7 @@ MenuExec.prototype = {
 						var val = ({2:3,3:2,4:5,5:4,104:105,105:104,106:107,107:106})[bd.QuC(c)];
 						if(!isNaN(val)){ bd.sQuC(c,val);}
 					}
-					if(k.isextendcell!=1){
+					if(k.isextendcell!==1){
 						var val = ({3:4,4:3})[bd.DiC(c)];
 						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
@@ -7417,7 +7410,7 @@ MenuExec.prototype = {
 						var val = {2:5,3:2,4:3,5:4,21:22,22:21,102:103,103:102,104:107,105:104,106:105,107:106}[bd.QuC(c)];
 						if(!isNaN(val)){ bd.sQuC(c,val);}
 					}
-					if(k.isextendcell!=1){
+					if(k.isextendcell!==1){
 						var val = {1:4,2:3,3:1,4:2}[bd.DiC(c)];
 						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
@@ -7427,7 +7420,7 @@ MenuExec.prototype = {
 						var val = {2:3,3:4,4:5,5:2,21:22,22:21,102:103,103:102,104:105,105:106,106:107,107:104}[bd.QuC(c)];
 						if(!isNaN(val)){ bd.sQuC(c,val);}
 					}
-					if(k.isextendcell!=1){
+					if(k.isextendcell!==1){
 						var val = {1:3,2:4,3:2,4:1}[bd.DiC(c)];
 						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
@@ -7448,13 +7441,13 @@ MenuExec.prototype = {
 		for(var cy=0;cy<=k.qrows-1;cy++){
 			this.qnumw[cy] = [bd.QnE(bd.exnum(-1,cy))];
 			for(var cx=0;cx<=k.qcols-1;cx++){
-				if(bd.QuC(bd.cnum(cx,cy))==51){ this.qnumw[cy].push(bd.QnC(bd.cnum(cx,cy)));}
+				if(bd.QuC(bd.cnum(cx,cy))===51){ this.qnumw[cy].push(bd.QnC(bd.cnum(cx,cy)));}
 			}
 		}
 		for(var cx=0;cx<=k.qcols-1;cx++){
 			this.qnumh[cx] = [bd.DiE(bd.exnum(cx,-1))];
 			for(var cy=0;cy<=k.qrows-1;cy++){
-				if(bd.QuC(bd.cnum(cx,cy))==51){ this.qnumh[cx].push(bd.DiC(bd.cnum(cx,cy)));}
+				if(bd.QuC(bd.cnum(cx,cy))===51){ this.qnumh[cx].push(bd.DiC(bd.cnum(cx,cy)));}
 			}
 		}
 	},
@@ -7467,7 +7460,7 @@ MenuExec.prototype = {
 				idx = 1; this.qnumh[cx] = this.qnumh[cx].reverse();
 				bd.sDiE(bd.exnum(cx,-1), this.qnumh[cx][0]);
 				for(var cy=0;cy<=k.qrows-1;cy++){
-					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sDiC(bd.cnum(cx,cy), this.qnumh[cx][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sDiC(bd.cnum(cx,cy), this.qnumh[cx][idx]); idx++;}
 				}
 			}
 			break;
@@ -7476,7 +7469,7 @@ MenuExec.prototype = {
 				idx = 1; this.qnumw[cy] = this.qnumw[cy].reverse();
 				bd.sQnE(bd.exnum(-1,cy), this.qnumw[cy][0]);
 				for(var cx=0;cx<=k.qcols-1;cx++){
-					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sQnC(bd.cnum(cx,cy), this.qnumw[cy][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sQnC(bd.cnum(cx,cy), this.qnumw[cy][idx]); idx++;}
 				}
 			}
 			break;
@@ -7485,14 +7478,14 @@ MenuExec.prototype = {
 				idx = 1; this.qnumh[cy] = this.qnumh[cy].reverse();
 				bd.sQnE(bd.exnum(-1,cy), this.qnumh[cy][0]);
 				for(var cx=0;cx<=k.qcols-1;cx++){
-					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sQnC(bd.cnum(cx,cy), this.qnumh[cy][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sQnC(bd.cnum(cx,cy), this.qnumh[cy][idx]); idx++;}
 				}
 			}
 			for(var cx=0;cx<=k.qcols-1;cx++){
 				idx = 1;
 				bd.sDiE(bd.exnum(cx,-1), this.qnumw[k.qcols-1-cx][0]);
 				for(var cy=0;cy<=k.qrows-1;cy++){
-					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sDiC(bd.cnum(cx,cy), this.qnumw[k.qcols-1-cx][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sDiC(bd.cnum(cx,cy), this.qnumw[k.qcols-1-cx][idx]); idx++;}
 				}
 			}
 			break;
@@ -7501,14 +7494,14 @@ MenuExec.prototype = {
 				idx = 1;
 				bd.sQnE(bd.exnum(-1,cy), this.qnumh[k.qrows-1-cy][0]);
 				for(var cx=0;cx<=k.qcols-1;cx++){
-					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sQnC(bd.cnum(cx,cy), this.qnumh[k.qrows-1-cy][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sQnC(bd.cnum(cx,cy), this.qnumh[k.qrows-1-cy][idx]); idx++;}
 				}
 			}
 			for(var cx=0;cx<=k.qcols-1;cx++){
 				idx = 1; this.qnumw[cx] = this.qnumw[cx].reverse();
 				bd.sDiE(bd.exnum(cx,-1), this.qnumw[cx][0]);
 				for(var cy=0;cy<=k.qrows-1;cy++){
-					if(bd.QuC(bd.cnum(cx,cy))==51){ bd.sDiC(bd.cnum(cx,cy), this.qnumw[cx][idx]); idx++;}
+					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sDiC(bd.cnum(cx,cy), this.qnumw[cx][idx]); idx++;}
 				}
 			}
 			break;
@@ -7527,15 +7520,15 @@ MenuExec.prototype = {
 			um.newOperation(true);
 			{
 				for(var i=0;i<bd.cellmax;i++){
-					if(bd.QaC(i)!=bd.def.cell.qans){ um.addOpe('cell','qans',i,bd.QaC(i),bd.def.cell.qans);}
-					if(bd.QsC(i)!=bd.def.cell.qsub){ um.addOpe('cell','qsub',i,bd.QsC(i),bd.def.cell.qsub);}
+					if(bd.cell[i].qans!==bd.defcell.qans){ um.addOpe('cell','qans',i,bd.cell[i].qans,bd.defcell.qans);}
+					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe('cell','qsub',i,bd.cell[i].qsub,bd.defcell.qsub);}
 				}
 			}
 			if(k.isborder){
 				for(var i=0;i<bd.bdmax;i++){
-					if(bd.QaB(i)!=bd.def.border.qans){ um.addOpe('border','qans',i,bd.QaB(i),bd.def.border.qans);}
-					if(bd.LiB(i)!=bd.def.border.line){ um.addOpe('border','line',i,bd.LiB(i),bd.def.border.line);}
-					if(bd.QsB(i)!=bd.def.border.qsub){ um.addOpe('border','qsub',i,bd.QsB(i),bd.def.border.qsub);}
+					if(bd.border[i].qans!==bd.defborder.qans){ um.addOpe('border','qans',i,bd.border[i].qans,bd.defborder.qans);}
+					if(bd.border[i].line!==bd.defborder.line){ um.addOpe('border','line',i,bd.border[i].line,bd.defborder.line);}
+					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe('border','qsub',i,bd.border[i].qsub,bd.defborder.qsub);}
 				}
 			}
 			if(!g.vml){ pc.flushCanvasAll();}
@@ -7550,12 +7543,12 @@ MenuExec.prototype = {
 			um.newOperation(true);
 			{
 				for(var i=0;i<bd.cellmax;i++){
-					if(bd.QsC(i)!=bd.def.cell.qsub){ um.addOpe('cell','qsub',i,bd.QsC(i),bd.def.cell.qsub);}
+					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe('cell','qsub',i,bd.cell[i].qsub,bd.defcell.qsub);}
 				}
 			}
 			if(k.isborder){
 				for(var i=0;i<bd.bdmax;i++){
-					if(bd.QsB(i)!=bd.def.border.qsub){ um.addOpe('border','qsub',i,bd.QsB(i),bd.def.border.qsub);}
+					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe('border','qsub',i,bd.border[i].qsub,bd.defborder.qsub);}
 				}
 			}
 			if(!g.vml){ pc.flushCanvasAll();}
@@ -7585,7 +7578,7 @@ LineManager = function(){
 	this.lcnt    = [];
 	this.ltotal  = [];
 
-	this.disable = (!k.isCenterLine && !k.isborderAsLine);
+	this.disableLine = (!k.isCenterLine && !k.isborderAsLine);
 	this.data    = {};	// 線id情報
 
 	this.typeA = 'A';
@@ -7604,7 +7597,7 @@ LineManager.prototype = {
 	// line.lcntCell()    セルに存在する線の本数を返す
 	//---------------------------------------------------------------------------
 	init : function(){
-		if(this.disable){ return;}
+		if(this.disableLine){ return;}
 
 		// lcnt, ltotal変数(配列)初期化
 		if(k.isCenterLine){
@@ -7622,7 +7615,7 @@ LineManager.prototype = {
 	},
 
 	resetLcnts : function(){
-		if(this.disable){ return;}
+		if(this.disableLine){ return;}
 
 		this.init();
 		for(var id=0;id<bd.bdmax;id++){ this.data.id[id] = (bd.isLine(id)?0:-1);
@@ -7656,11 +7649,11 @@ LineManager.prototype = {
 	//---------------------------------------------------------------------------
 	gettype : function(cc,id,val){
 		if(!k.isLineCross){
-			return ((this.lcnt[cc]==(0+val))?this.typeA:this.typeB);
+			return ((this.lcnt[cc]===(0+val))?this.typeA:this.typeB);
 		}
 		else{
-			if(cc===-1 || this.lcnt[cc]==(0+val) || (this.lcnt[cc]==(2+val) && this.isTpos(cc,id))){ return this.typeA;}
-			else if(this.lcnt[cc]==(1+val) || this.lcnt[cc]==(3+val)){ return this.typeB;}
+			if(cc===-1 || this.lcnt[cc]===(0+val) || (this.lcnt[cc]===(2+val) && this.isTpos(cc,id))){ return this.typeA;}
+			else if(this.lcnt[cc]===(1+val) || this.lcnt[cc]===(3+val)){ return this.typeB;}
 			return this.typeC;
 		}
 	},
@@ -7698,7 +7691,7 @@ LineManager.prototype = {
 	// line.repaintParts()   repaintLine()関数で、さらに上から描画しなおしたい処理を書く
 	//---------------------------------------------------------------------------
 	setLine : function(id, val){
-		if(this.disable || !um.isenableRecord()){ return;}
+		if(this.disableLine){ return;}
 		val = (val>0?1:0);
 
 		var cc1, cc2;
@@ -7730,21 +7723,21 @@ LineManager.prototype = {
 		var type1 = this.gettype(cc1,id,val), type2 = this.gettype(cc2,id,val);
 		if(val>0){
 			// (A)+(A)の場合 -> 新しい線idを割り当てる
-			if(type1==this.typeA && type2==this.typeA){
+			if(type1===this.typeA && type2===this.typeA){
 				this.data.max++;
 				this.data[this.data.max] = {idlist:[id]};
 				this.data.id[id] = this.data.max;
 				bd.border[id].color = pc.getNewLineColor();
 			}
 			// (A)+(B)の場合 -> 既存の線にくっつける
-			else if((type1==this.typeA && type2==this.typeB) || (type1==this.typeB && type2==this.typeA)){
+			else if((type1===this.typeA && type2===this.typeB) || (type1===this.typeB && type2===this.typeA)){
 				var bid = (this.getbid(id,1))[0];
 				this.data[this.data.id[bid]].idlist.push(id);
 				this.data.id[id] = this.data.id[bid];
 				bd.border[id].color = bd.border[bid].color;
 			}
 			// (B)+(B)の場合 -> くっついた線で、大きい方の線idに統一する
-			else if(!k.isLineCross || (type1==this.typeB && type2==this.typeB)){
+			else if(!k.isLineCross || (type1===this.typeB && type2===this.typeB)){
 				this.addLineInfo(id);
 			}
 			// その他の場合
@@ -7754,15 +7747,15 @@ LineManager.prototype = {
 		}
 		else{
 			// (A)+(A)の場合 -> 線id自体を消滅させる
-			if(type1==this.typeA && type2==this.typeA){
+			if(type1===this.typeA && type2===this.typeA){
 				this.data[this.data.id[id]] = {idlist:[]};
 				this.data.id[id] = -1;
 				bd.border[id].color = "";
 			}
 			// (A)+(B)の場合 -> 既存の線から取り除く
-			else if((type1==this.typeA && type2==this.typeB) || (type1==this.typeB && type2==this.typeA)){
+			else if((type1===this.typeA && type2===this.typeB) || (type1===this.typeB && type2===this.typeA)){
 				var ownid = this.data.id[id], idlist = this.data[ownid].idlist;
-				for(var i=0;i<idlist.length;i++){ if(idlist[i]==id){ idlist.splice(i,1); break;} }
+				for(var i=0;i<idlist.length;i++){ if(idlist[i]===id){ idlist.splice(i,1); break;} }
 				this.data.id[id] = -1;
 				bd.border[id].color = "";
 			}
@@ -7790,7 +7783,7 @@ LineManager.prototype = {
 			// つながった線は全て同じIDにする
 			var longidlist  = this.data[longid].idlist;
 			var shortidlist = this.data[shortid].idlist;
-			for(var n=0;n<shortidlist.length;n++){
+			for(var n=0,len=shortidlist.length;n<len;n++){
 				longidlist.push(shortidlist[n]);
 				dataid[shortidlist[n]] = longid;
 			}
@@ -7800,10 +7793,10 @@ LineManager.prototype = {
 			dataid[id] = longid;
 
 			// 色を同じにする
-			for(var i=0;i<longidlist.length;i++){
+			for(var i=0,len=longidlist.length;i<len;i++){
 				bd.border[longidlist[i]].color = newColor;
 			}
-			this.repaintLine(longid);
+			this.repaintLine(longidlist);
 		}
 		else{
 			this.data[did[0]].idlist.push(id);
@@ -7819,28 +7812,28 @@ LineManager.prototype = {
 		var longColor = bd.border[bid[0]].color; // 周りで一番長い線の色を保持する
 
 		// つながった線の線情報を0にする
-		for(var i=0;i<bid.length;i++){
+		for(var i=0,len=bid.length;i<len;i++){
 			var lid = dataid[bid[i]];
 			if(lid<=0){ continue;}
 			var idlist = this.data[lid].idlist;
 			if(this.data[longid].idlist.length < idlist.length){
 				longid=lid; longColor=bd.border[bid[i]].color;
 			}
-			for(var n=0;n<idlist.length;n++){ dataid[idlist[n]] = 0;}
+			for(var n=0,len2=idlist.length;n<len2;n++){ dataid[idlist[n]] = 0;}
 			this.data[lid] = {idlist:[]};
 		}
 
 		dataid[id] = (val>0?0:-1);
-		if(val==1){ bid.unshift(id);}
+		if(val===1){ bid.unshift(id);}
 
 		// 新しいidを設定する
 		var oldmax = this.data.max;
-		for(var i=0;i<bid.length;i++){
+		for(var i=0,len=bid.length;i<len;i++){
 			if(dataid[bid[i]]!=0){ continue;}	// 既にidがついていたらスルー
 			var bx=bd.border[bid[i]].cx, by=bd.border[bid[i]].cy;
 			this.data.max++; this.data[this.data.max] = {idlist:[]};
-			if(k.isCenterLine^(bx%2==0)){ this.lc0(bx,by+1,1,this.data.max); this.lc0(bx,by,2,this.data.max);}
-			else                        { this.lc0(bx+1,by,3,this.data.max); this.lc0(bx,by,4,this.data.max);}
+			if(k.isCenterLine^(bx%2===0)){ this.lc0(bx,by+1,1,this.data.max); this.lc0(bx,by,2,this.data.max);}
+			else                         { this.lc0(bx+1,by,3,this.data.max); this.lc0(bx,by,4,this.data.max);}
 		}
 
 		// 新しい色を設定して、再描画する
@@ -7848,12 +7841,12 @@ LineManager.prototype = {
 		if(this.data.max>longid || k.isLineCross){
 			for(var i=oldmax+2;i<=this.data.max;i++){ if(this.data[longid].idlist.length < this.data[i].idlist.length){ longid=i;} }
 			for(var i=oldmax+1;i<=this.data.max;i++){
-				var newColor = (i==longid?longColor:pc.getNewLineColor());
+				var newColor = (i===longid?longColor:pc.getNewLineColor());
 				var idlist = this.data[i].idlist;
 				for(var n=0,len=idlist.length;n<len;n++){
 					bd.border[idlist[n]].color = newColor;
-					this.repaintLine(i);
 				}
+				this.repaintLine(idlist);
 			}
 		}
 		else{
@@ -7861,12 +7854,12 @@ LineManager.prototype = {
 		}
 	},
 
-	repaintLine : function(lineid){
+	repaintLine : function(idlist){
 		if(!menu.getVal('irowake')){ return;}
-		for(var i=0;i<this.data[lineid].idlist.length;i++){
-			var id = this.data[lineid].idlist[i];
-			if(k.isCenterLine){ pc.drawLine1(id,true);}else{ pc.drawBorder1(id,true);}
-			if(!g.vml){ this.repaintParts(id);}
+		for(var i=0,len=idlist.length;i<len;i++){
+			if(k.isCenterLine){ pc.drawLine1  (idlist[i],true);}
+			else			  { pc.drawBorder1(idlist[i],true);}
+			if(!g.vml){ this.repaintParts(idlist[i]);}
 		}
 	},
 	repaintParts : function(id){ }, // オーバーライド用
@@ -7878,7 +7871,7 @@ LineManager.prototype = {
 	getbid : function(id,val){
 		var bid = [];
 		var bx=bd.border[id].cx, by=bd.border[id].cy;
-		var dx =((k.isCenterLine^(bx%2==0))?2:0), dy=(2-dx);	// (dx,dy) = (2,0) or (0,2)
+		var dx =((k.isCenterLine^(bx%2===0))?2:0), dy=(2-dx);	// (dx,dy) = (2,0) or (0,2)
 
 		var i;
 		if(!k.isLineCross){
@@ -7892,11 +7885,11 @@ LineManager.prototype = {
 		else{
 			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
 			if(!k.isCenterLine){ cc1 = bd.crosscc1(id); cc2 = bd.crosscc2(id);}
-			// 現在、k.isLineCross==1でk.isborderAsLine==1(k.isCenterLine==0)のパズルはないはず
+			// k.isLineCross==1でk.isborderAsLine==1(->k.isCenterLine==0)のパズルは作ってないはず
 			// 該当するのもスリザーボックスくらいだったような、、
 
-			if(cc1!=-1){
-				if(this.lcnt[cc1]==(1+val) || (this.lcnt[cc1]==(2+val) && !this.isTpos(cc1,id))){
+			if(cc1!==-1){
+				if(this.lcnt[cc1]===(1+val) || (this.lcnt[cc1]===(2+val) && !this.isTpos(cc1,id))){
 					i = bd.bnum(bx-dy,   by-dx  ); if(bd.isLine(i)){ bid.push(i);} // cc1からのstraight
 					i = bd.bnum(bx-1,    by-1   ); if(bd.isLine(i)){ bid.push(i);} // cc1からのcurve1
 					i = bd.bnum(bx+dx-1, by+dy-1); if(bd.isLine(i)){ bid.push(i);} // cc1からのcurve2
@@ -7905,8 +7898,8 @@ LineManager.prototype = {
 					i = bd.bnum(bx-dy,   by-dx  ); if(bd.isLine(i)){ bid.push(i);} // cc1からのstraight
 				}
 			}
-			if(cc2!=-1){
-				if(this.lcnt[cc2]==(1+val) || (this.lcnt[cc2]==(2+val) && !this.isTpos(cc2,id))){
+			if(cc2!==-1){
+				if(this.lcnt[cc2]===(1+val) || (this.lcnt[cc2]===(2+val) && !this.isTpos(cc2,id))){
 					i = bd.bnum(bx+dy,   by+dx  ); if(bd.isLine(i)){ bid.push(i);} // cc2からのstraight
 					i = bd.bnum(bx+1,    by+1   ); if(bd.isLine(i)){ bid.push(i);} // cc2からのcurve1
 					i = bd.bnum(bx-dx+1, by-dy+1); if(bd.isLine(i)){ bid.push(i);} // cc2からのcurve2
@@ -7923,7 +7916,7 @@ LineManager.prototype = {
 	lc0 : function(bx,by,dir,newid){
 		while(1){
 			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-			if((bx+by)%2==0){
+			if((bx+by)%2===0){
 				if(this.branch(bx,by)){
 					if(bd.isLine(bd.bnum(bx,by-1))){ this.lc0(bx,by,1,newid);}
 					if(bd.isLine(bd.bnum(bx,by+1))){ this.lc0(bx,by,2,newid);}
@@ -7952,7 +7945,6 @@ LineManager.prototype = {
 	// line.getLineInfo()    線情報をAreaInfo型のオブジェクトで返す
 	// line.getLareaInfo()   同じ線がまたがるセルの情報をAreaInfo型のオブジェクトで返す
 	//                       (これだけは旧型の生成方法でやってます)
-	// line.LineList2Clist() 線がまたがるセルのidリストを返す
 	//--------------------------------------------------------------------------------
 	getLineInfo : function(){
 		var info = new AreaInfo();
@@ -7981,21 +7973,10 @@ LineManager.prototype = {
 	sr0 : function(linfo, i, areaid){
 		linfo.id[i] = areaid;
 		linfo.room[areaid].idlist.push(i);
-		if( bd.isLine(bd.ub(i)) && linfo.id[bd.up(i)]==0 ){ this.sr0(linfo, bd.up(i), areaid);}
-		if( bd.isLine(bd.db(i)) && linfo.id[bd.dn(i)]==0 ){ this.sr0(linfo, bd.dn(i), areaid);}
-		if( bd.isLine(bd.lb(i)) && linfo.id[bd.lt(i)]==0 ){ this.sr0(linfo, bd.lt(i), areaid);}
-		if( bd.isLine(bd.rb(i)) && linfo.id[bd.rt(i)]==0 ){ this.sr0(linfo, bd.rt(i), areaid);}
-	},
-
-	LineList2Clist : function(idlist){
-		var clist = [];
-		clist.include = function(val){ for(var i=0;i<this.length;i++){ if(this[i]==val) return true;} return false;};
-		for(var i=0;i<idlist.length;i++){
-			var cc1 = bd.cc1(idlist[i]), cc2 = bd.cc2(idlist[i]);
-			if(cc1!=-1 && !clist.include(cc1)){ clist.push(cc1);}
-			if(cc2!=-1 && !clist.include(cc2)){ clist.push(cc2);}
-		}
-		return clist;
+		if( bd.isLine(bd.ub(i)) && linfo.id[bd.up(i)]===0 ){ this.sr0(linfo, bd.up(i), areaid);}
+		if( bd.isLine(bd.db(i)) && linfo.id[bd.dn(i)]===0 ){ this.sr0(linfo, bd.dn(i), areaid);}
+		if( bd.isLine(bd.lb(i)) && linfo.id[bd.lt(i)]===0 ){ this.sr0(linfo, bd.lt(i), areaid);}
+		if( bd.isLine(bd.rb(i)) && linfo.id[bd.rt(i)]===0 ){ this.sr0(linfo, bd.rt(i), areaid);}
 	}
 };
 
@@ -8058,9 +8039,9 @@ AreaManager.prototype = {
 		this.lcnt = [];
 		for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){
 			this.lcnt[c]=0;
-			if(k.isoutsideborder==0){
+			if(k.isoutsideborder===0){
 				var xx=c%(k.qcols+1), xy=mf(c/(k.qcols+1));
-				if(xx==0 || xx==k.qcols || xy==0 || xy==k.qrows){ this.lcnt[c]=2;}
+				if(xx===0 || xx===k.qcols || xy===0 || xy===k.qrows){ this.lcnt[c]=2;}
 			}
 		}
 
@@ -8068,8 +8049,8 @@ AreaManager.prototype = {
 		for(var id=0;id<bd.bdmax;id++){
 			if(bd.isBorder(id)){
 				var cc1 = bd.crosscc1(id), cc2 = bd.crosscc2(id);
-				if(cc1!=-1){ this.lcnt[cc1]++;}
-				if(cc2!=-1){ this.lcnt[cc2]++;}
+				if(cc1!==-1){ this.lcnt[cc1]++;}
+				if(cc2!==-1){ this.lcnt[cc2]++;}
 			}
 		}
 	},
@@ -8091,15 +8072,15 @@ AreaManager.prototype = {
 			for(var r=1;r<=this.room.max;r++){
 				this.setTopOfRoom(r);
 
-				var val = -1;
-				for(var i=0,len=this.room[r].clist.length;i<len;i++){
-					var c = this.room[r].clist[i];
-					if(this.room.id[c]==r && bd.QnC(c)!=-1){
-						if(val==-1){ val = bd.QnC(c);}
-						if(this.getTopOfRoom(r)!=c){ bd.sQnC(c, -1);}
+				var val = -1, clist = this.room[r].clist;
+				for(var i=0,len=clist.length;i<len;i++){
+					var c = clist[i];
+					if(this.room.id[c]===r && bd.cell[c].qnum!==-1){
+						if(val===-1){ val = bd.cell[c].qnum;}
+						if(this.getTopOfRoom(r)!==c){ bd.sQnC(c, -1);}
 					}
 				}
-				if(val!=-1 && bd.QnC(this.getTopOfRoom(r))==-1){ bd.sQnC(this.getTopOfRoom(r), val);}
+				if(val!==-1 && bd.QnC(this.getTopOfRoom(r))===-1){ bd.sQnC(this.getTopOfRoom(r), val);}
 			}
 		}
 	},
@@ -8107,13 +8088,13 @@ AreaManager.prototype = {
 	lcntCross : function(id){ return this.lcnt[id];},
 
 	getRoomID : function(cc){ return this.room.id[cc];},
-	setRoomID : function(cc,val){ this.room.id[cc] = val;},
+//	setRoomID : function(cc,val){ this.room.id[cc] = val;},
 
 	getTopOfRoomByCell : function(cc){ return this.room[this.room.id[cc]].top;},
 	getTopOfRoom       : function(id){ return this.room[id].top;},
 
 	getCntOfRoomByCell : function(cc){ return this.room[this.room.id[cc]].clist.length;},
-	getCntOfRoom       : function(id){ return this.room[id].clist.length;},
+//	getCntOfRoom       : function(id){ return this.room[id].clist.length;},
 
 	//--------------------------------------------------------------------------------
 	// area.setBorder()    境界線が引かれたり消されてたりした時に、変数lcntの内容を変更する
@@ -8124,7 +8105,7 @@ AreaManager.prototype = {
 		this.setBorder(id,val);
 	},
 	setBorder : function(id,val){
-		if(this.disroom || !um.isenableRecord()){ return;}
+		if(this.disroom){ return;}
 		val = (val>0?1:0);
 
 		var cc1, cc2, xc1 = bd.crosscc1(id), xc2 = bd.crosscc2(id);
@@ -8132,9 +8113,9 @@ AreaManager.prototype = {
 		if(val>0){
 			this.lcnt[xc1]++; this.lcnt[xc2]++;
 
-			if(this.lcnt[xc1]==1 || this.lcnt[xc2]==1){ return;}
+			if(this.lcnt[xc1]===1 || this.lcnt[xc2]===1){ return;}
 			cc1 = bd.cc1(id); cc2 = bd.cc2(id);
-			if(cc1==-1 || cc2==-1 || roomid[cc1]!=roomid[cc2]){ return;}
+			if(cc1===-1 || cc2===-1 || roomid[cc1]!==roomid[cc2]){ return;}
 
 			var baseid = roomid[cc1];
 
@@ -8144,7 +8125,7 @@ AreaManager.prototype = {
 			this.sr0(cc2,room,bd.isBorder);
 
 			// 部屋が分割されていなかったら、元に戻して終了
-			if(roomid[cc1] == room.max){
+			if(roomid[cc1] === room.max){
 				for(var i=0,len=room[room.max].clist.length;i<len;i++){
 					roomid[room[room.max].clist[i]] = baseid;
 				}
@@ -8162,7 +8143,7 @@ AreaManager.prototype = {
 
 			// TOPの情報を設定する
 			if(k.isOneNumber){
-				if(roomid[room[baseid].top]==baseid){
+				if(roomid[room[baseid].top]===baseid){
 					this.setTopOfRoom(room.max);
 				}
 				else{
@@ -8174,9 +8155,9 @@ AreaManager.prototype = {
 		else{
 			this.lcnt[xc1]--; this.lcnt[xc2]--;
 
-			if(this.lcnt[xc1]==0 || this.lcnt[xc2]==0){ return;}
+			if(this.lcnt[xc1]===0 || this.lcnt[xc2]===0){ return;}
 			cc1 = bd.cc1(id); cc2 = bd.cc2(id);
-			if(cc1==-1 || cc2==-1 || roomid[cc1]==roomid[cc2]){ return;}
+			if(cc1===-1 || cc2===-1 || roomid[cc1]===roomid[cc2]){ return;}
 
 			// k.isOneNumberの時 どっちの数字を残すかは、TOP同士の位置で比較する
 			if(k.isOneNumber){
@@ -8184,13 +8165,13 @@ AreaManager.prototype = {
 
 				var tc1 = room[roomid[cc1]].top, tc2 = room[roomid[cc2]].top;
 				var tcx1 = bd.cell[tc1].cx, tcx2 = bd.cell[tc2].cx;
-				if(tcx1 > tcx2 || (tcx1 == tcx2 && tc1 > tc2)){ merged = tc1; keep = tc2;}
-				else                                          { merged = tc2; keep = tc1;}
+				if(tcx1>tcx2 || (tcx1===tcx2 && tc1>tc2)){ merged = tc1; keep = tc2;}
+				else                                     { merged = tc2; keep = tc1;}
 
 				// 消える部屋のほうの数字を消す
-				if(bd.QnC(merged)!=-1){
+				if(bd.QnC(merged)!==-1){
 					// 数字が消える部屋にしかない場合 -> 残るほうに移動させる
-					if(bd.QnC(keep)==-1){ bd.sQnC(keep, bd.QnC(merged)); pc.paintCell(keep);}
+					if(bd.QnC(keep)===-1){ bd.sQnC(keep, bd.QnC(merged)); pc.paintCell(keep);}
 					bd.sQnC(merged,-1); pc.paintCell(merged);
 				}
 			}
@@ -8219,10 +8200,10 @@ AreaManager.prototype = {
 		data.id[c] = data.max;
 		data[data.max].clist.push(c);
 		var tc;
-		tc=bd.up(c); if( tc!=-1 && data.id[tc]!=data.max && !func(bd.ub(c)) ){ this.sr0(tc,data,func);}
-		tc=bd.dn(c); if( tc!=-1 && data.id[tc]!=data.max && !func(bd.db(c)) ){ this.sr0(tc,data,func);}
-		tc=bd.lt(c); if( tc!=-1 && data.id[tc]!=data.max && !func(bd.lb(c)) ){ this.sr0(tc,data,func);}
-		tc=bd.rt(c); if( tc!=-1 && data.id[tc]!=data.max && !func(bd.rb(c)) ){ this.sr0(tc,data,func);}
+		tc=bd.up(c); if( tc!==-1 && data.id[tc]!==data.max && !func(bd.ub(c)) ){ this.sr0(tc,data,func);}
+		tc=bd.dn(c); if( tc!==-1 && data.id[tc]!==data.max && !func(bd.db(c)) ){ this.sr0(tc,data,func);}
+		tc=bd.lt(c); if( tc!==-1 && data.id[tc]!==data.max && !func(bd.lb(c)) ){ this.sr0(tc,data,func);}
+		tc=bd.rt(c); if( tc!==-1 && data.id[tc]!==data.max && !func(bd.rb(c)) ){ this.sr0(tc,data,func);}
 	},
 
 	//--------------------------------------------------------------------------------
@@ -8274,8 +8255,6 @@ AreaManager.prototype = {
 	// area.sc0()        初期idを含む一つの領域内のareaidを指定されたものにする
 	//--------------------------------------------------------------------------------
 	setCell : function(cc,val){
-		if(!um.isenableRecord()){ return;}
-
 		if(val>0){
 			if(this.bblock){ this.setBWCell(cc,1,this.bcell);}
 			if(this.wblock){ this.setBWCell(cc,0,this.wcell);}
@@ -8287,21 +8266,21 @@ AreaManager.prototype = {
 	},
 	setBWCell : function(cc,val,data){
 		var cid = [], dataid = data.id, tc;
-		tc=bd.up(cc); if(tc!=-1 && dataid[tc]!=-1){ cid.push(tc);}
-		tc=bd.dn(cc); if(tc!=-1 && dataid[tc]!=-1){ cid.push(tc);}
-		tc=bd.lt(cc); if(tc!=-1 && dataid[tc]!=-1){ cid.push(tc);}
-		tc=bd.rt(cc); if(tc!=-1 && dataid[tc]!=-1){ cid.push(tc);}
+		tc=bd.up(cc); if(tc!==-1 && dataid[tc]!==-1){ cid.push(tc);}
+		tc=bd.dn(cc); if(tc!==-1 && dataid[tc]!==-1){ cid.push(tc);}
+		tc=bd.lt(cc); if(tc!==-1 && dataid[tc]!==-1){ cid.push(tc);}
+		tc=bd.rt(cc); if(tc!==-1 && dataid[tc]!==-1){ cid.push(tc);}
 
 		// 新たに黒マス(白マス)になった時
 		if(val>0){
 			// まわりに黒マス(白マス)がない時は新しいIDで登録です
-			if(cid.length==0){
+			if(cid.length===0){
 				data.max++;
 				data[data.max] = {clist:[cc]};
 				dataid[cc] = data.max;
 			}
 			// 1方向にあるときは、そこにくっつけばよい
-			else if(cid.length==1){
+			else if(cid.length===1){
 				data[dataid[cid[0]]].clist.push(cc);
 				dataid[cc] = dataid[cid[0]];
 			}
@@ -8314,7 +8293,7 @@ AreaManager.prototype = {
 				}
 				// つながった黒マス(白マス)は全て同じIDにする
 				for(var i=0;i<cid.length;i++){
-					if(dataid[cid[i]]==largeid){ continue;}
+					if(dataid[cid[i]]===largeid){ continue;}
 					var clist = data[dataid[cid[i]]].clist;
 					for(var n=0,len=clist.length;n<len;n++){
 						dataid[clist[n]] = largeid;
@@ -8330,14 +8309,14 @@ AreaManager.prototype = {
 		// 黒マス(白マス)ではなくなった時
 		else{
 			// まわりに黒マス(白マス)がない時は情報を消去するだけ
-			if(cid.length==0){
+			if(cid.length===0){
 				data[dataid[cc]].clist = [];
 				dataid[cc] = -1;
 			}
 			// まわり1方向の時も自分を消去するだけでよい
-			else if(cid.length==1){
+			else if(cid.length===1){
 				var ownid = dataid[cc], clist = data[ownid].clist;
-				for(var i=0;i<clist.length;i++){ if(clist[i]==cc){ clist.splice(i,1); break;} }
+				for(var i=0;i<clist.length;i++){ if(clist[i]===cc){ clist.splice(i,1); break;} }
 				dataid[cc] = -1;
 			}
 			// 2方向以上の時は考慮が必要
@@ -8352,7 +8331,7 @@ AreaManager.prototype = {
 
 				// まわりのIDが0なセルに黒マス(白マス)IDをセットしていく
 				for(var i=0;i<cid.length;i++){
-					if(dataid[cid[i]]!=0){ continue;}
+					if(dataid[cid[i]]!==0){ continue;}
 					data.max++;
 					data[data.max] = {clist:[]};
 					this.sc0(cid[i],data);
@@ -8364,10 +8343,10 @@ AreaManager.prototype = {
 		data.id[c] = data.max;
 		data[data.max].clist.push(c);
 		var tc;
-		tc=bd.up(c); if( tc!=-1 && data.id[tc]==0 ){ this.sc0(tc,data);}
-		tc=bd.dn(c); if( tc!=-1 && data.id[tc]==0 ){ this.sc0(tc,data);}
-		tc=bd.lt(c); if( tc!=-1 && data.id[tc]==0 ){ this.sc0(tc,data);}
-		tc=bd.rt(c); if( tc!=-1 && data.id[tc]==0 ){ this.sc0(tc,data);}
+		tc=bd.up(c); if( tc!==-1 && data.id[tc]===0 ){ this.sc0(tc,data);}
+		tc=bd.dn(c); if( tc!==-1 && data.id[tc]===0 ){ this.sc0(tc,data);}
+		tc=bd.lt(c); if( tc!==-1 && data.id[tc]===0 ){ this.sc0(tc,data);}
+		tc=bd.rt(c); if( tc!==-1 && data.id[tc]===0 ){ this.sc0(tc,data);}
 	},
 
 	//--------------------------------------------------------------------------------
