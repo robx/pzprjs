@@ -111,7 +111,7 @@ Graphic.prototype = {
 	paintAll : function(){ if(this.already()){ this.paint(-1,-1,k.qcols,k.qrows);} },
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
-		if(bd.border[id].cx%2==1){
+		if(bd.border[id].cx%2===1){
 			this.paint(mf((bd.border[id].cx-1)/2)-1, mf(bd.border[id].cy/2)-1,
 					   mf((bd.border[id].cx-1)/2)+1, mf(bd.border[id].cy/2)   );
 		}
@@ -122,7 +122,7 @@ Graphic.prototype = {
 	},
 	paintLine : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
-		if(bd.border[id].cx%2==1){
+		if(bd.border[id].cx%2===1){
 			this.paint(mf((bd.border[id].cx-1)/2), mf(bd.border[id].cy/2)-1,
 					   mf((bd.border[id].cx-1)/2), mf(bd.border[id].cy/2)   );
 		}
@@ -172,7 +172,7 @@ Graphic.prototype = {
 		var idlist = [];
 		for(var by=y1;by<=y2;by++){
 			for(var bx=x1;bx<=x2;bx++){
-				if((bx+by)%2==0){ continue;}
+				if((bx+by)%2===0){ continue;}
 				var id = bd.bnum(bx,by);
 				if(id!=-1 && func(id)){ idlist.push(id);}
 			}
@@ -197,7 +197,7 @@ Graphic.prototype = {
 
 			var Hdeg = 0;
 			var Ldeg = (Cmax+Cmin)*0.5 / 255;
-			var Sdeg = (Cmax==Cmin?0:(Cmax-Cmin)/((Ldeg<=0.5)?(Cmax+Cmin):(2*255-Cmax-Cmin)) );
+			var Sdeg = (Cmax===Cmin?0:(Cmax-Cmin)/((Ldeg<=0.5)?(Cmax+Cmin):(2*255-Cmax-Cmin)) );
 
 			if(Cmax==Cmin){ Hdeg = 0;}
 			else if(Rdeg>=Gdeg && Rdeg>=Bdeg){ Hdeg = (    60*(Gdeg-Bdeg)/(Cmax-Cmin)+360)%360;}
@@ -227,7 +227,7 @@ Graphic.prototype = {
 		g.beginPath();
 		g.moveTo(mf(parray[0]+parray[2]), mf(parray[1]+parray[3]));
 		for(var i=4;i<parray.length;i+=2){ g.lineTo(mf(parray[0]+parray[i+0]), mf(parray[1]+parray[i+1]));}
-		if(isClose==1){ g.closePath();}
+		if(isClose===1){ g.closePath();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -244,10 +244,10 @@ Graphic.prototype = {
 		var clist = this.cellinside(x1,y1,x2,y2,bd.isBlack);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if     (bd.ErC(c)==0){ g.fillStyle = this.Cellcolor;}
-			else if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
-			else if(bd.ErC(c)==2){ g.fillStyle = this.errcolor2;}
-			else if(bd.ErC(c)==3){ g.fillStyle = this.errcolor3;}
+			if     (bd.ErC(c)===0){ g.fillStyle = this.Cellcolor;}
+			else if(bd.ErC(c)===1){ g.fillStyle = this.errcolor1;}
+			else if(bd.ErC(c)===2){ g.fillStyle = this.errcolor2;}
+			else if(bd.ErC(c)===3){ g.fillStyle = this.errcolor3;}
 			if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
 			this.vhide("c"+c+"_dot_");
 		}
@@ -260,24 +260,24 @@ Graphic.prototype = {
 			var c = clist[i];
 			this.drawErrorCell1(c);
 
-			if(bd.QsC(c)==1){
-				if(this.bcolor=="white"){
+			if(bd.QsC(c)===1){
+				if(this.bcolor==="white"){
 					g.fillStyle = this.dotcolor;
 					if(this.vnop("c"+c+"_dot_",1)){
 						g.beginPath();
 						g.arc(mf(bd.cell[c].px+k.cwidth/2), mf(bd.cell[c].py+k.cheight/2), dsize, 0, Math.PI*2, false);
 						g.fill();
 					}
-					if(bd.ErC(c)==0){ this.vhide("c"+c+"_full_");}
+					if(bd.ErC(c)===0){ this.vhide("c"+c+"_full_");}
 				}
-				else if(bd.ErC(c)==0){
+				else if(bd.ErC(c)===0){
 					g.fillStyle = this.bcolor;
 					if(this.vnop("c"+c+"_full_",1)){
 						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
 					}
 				}
 			}
-			else{ if(bd.ErC(c)==0){ this.vhide("c"+c+"_full_");} this.vhide("c"+c+"_dot_");}
+			else{ if(bd.ErC(c)===0){ this.vhide("c"+c+"_full_");} this.vhide("c"+c+"_dot_");}
 		}
 		this.vinc();
 	},
@@ -285,11 +285,11 @@ Graphic.prototype = {
 		var clist = this.cellinside(x1,y1,x2,y2,f_true);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if     (bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-			else if(bd.ErC(c)==2){ g.fillStyle = this.errbcolor2;}
-			else if(bd.QsC(c)==1){ g.fillStyle = this.qsubcolor1;}
-			else if(bd.QsC(c)==2){ g.fillStyle = this.qsubcolor2;}
-			else if(bd.QsC(c)==3){ g.fillStyle = this.qsubcolor3;}
+			if     (bd.ErC(c)===1){ g.fillStyle = this.errbcolor1;}
+			else if(bd.ErC(c)===2){ g.fillStyle = this.errbcolor2;}
+			else if(bd.QsC(c)===1){ g.fillStyle = this.qsubcolor1;}
+			else if(bd.QsC(c)===2){ g.fillStyle = this.qsubcolor2;}
+			else if(bd.QsC(c)===3){ g.fillStyle = this.qsubcolor3;}
 			else{ this.vhide("c"+c+"_full_"); continue;}
 			if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);}
 		}
@@ -301,9 +301,9 @@ Graphic.prototype = {
 		this.vinc();
 	},
 	drawErrorCell1 : function(cc){
-		if(bd.ErC(cc)==1||bd.ErC(cc)==2){
-			if     (bd.ErC(cc)==1){ g.fillStyle = this.errbcolor1;}
-			else if(bd.ErC(cc)==2){ g.fillStyle = this.errbcolor2;}
+		if(bd.ErC(cc)===1||bd.ErC(cc)===2){
+			if     (bd.ErC(cc)===1){ g.fillStyle = this.errbcolor1;}
+			else if(bd.ErC(cc)===2){ g.fillStyle = this.errbcolor2;}
 			if(this.vnop("c"+cc+"_full_",1)){ g.fillRect(bd.cell[cc].px, bd.cell[cc].py, k.cwidth, k.cheight);}
 		}
 		else{ this.vhide("c"+cc+"_full_");}
@@ -312,8 +312,8 @@ Graphic.prototype = {
 		var clist = this.cellinside(x1,y1,x2,y2,f_true);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if(bd.QuC(c)==6){
-				g.fillStyle = (bd.ErC(c)==1?this.errbcolor1:this.icecolor);
+			if(bd.QuC(c)===6){
+				g.fillStyle = (bd.ErC(c)===1?this.errbcolor1:this.icecolor);
 				if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);}
 			}
 			else{ this.vhide("c"+c+"_full_");}
@@ -324,12 +324,12 @@ Graphic.prototype = {
 		var clist = this.cellinside(x1,y1,x2,y2,f_true);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if(bd.QnC(c)!=-1){
-				if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
+			if(bd.QnC(c)!==-1){
+				if(bd.ErC(c)===1){ g.fillStyle = this.errcolor1;}
 				else{ g.fillStyle = this.Cellcolor;}
 				if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
 			}
-			else if(bd.ErC(c)==0 && !(k.puzzleid=="lightup" && ans.isShined && ans.isShined(c))){ this.vhide("c"+c+"_full_");}
+			else if(bd.ErC(c)===0 && !(k.puzzleid==="lightup" && ans.isShined && ans.isShined(c))){ this.vhide("c"+c+"_full_");}
 			this.dispnumCell_General(c);
 		}
 		this.vinc();
@@ -340,7 +340,7 @@ Graphic.prototype = {
 		var clist = this.cellinside(x1,y1,x2,y2,f_true);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if(bd.QsC(c)==1){
+			if(bd.QsC(c)===1){
 				g.fillStyle = this.dotcolor;
 				if(this.vnop("c"+c+"_dot_",1)){ g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-mf(ksize/2), bd.cell[c].py+mf(k.cheight/2)-mf(ksize/2), ksize, ksize);}
 			}
@@ -363,33 +363,33 @@ Graphic.prototype = {
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 
-			if     (bd.QaC(c)==1){ g.fillStyle = this.BCell_fontcolor;}
-			else if(bd.ErC(c)==1){ g.fillStyle = this.fontErrcolor;}
+			if     (bd.QaC(c)===1){ g.fillStyle = this.BCell_fontcolor;}
+			else if(bd.ErC(c)===1){ g.fillStyle = this.fontErrcolor;}
 			else{ g.fillStyle = this.fontcolor;}
 
 			var dir = bd.DiC(c);
-			if(bd.QnC(c)!=-1 && (bd.QnC(c)!=-2||k.isDispHatena) && dir!=0){
+			if(bd.QnC(c)!==-1 && (bd.QnC(c)!==-2||k.isDispHatena) && dir!=0){
 				var ll = mf(k.cwidth*0.7); 	//LineLength
 				var ls = mf((k.cwidth-ll)/2);	//LineStart
 				var lw = (mf(k.cwidth/24)>=1?mf(k.cwidth/24):1); //LineWidth
 				var lm = mf((lw-1)/2); //LineMargin
 				var px=bd.cell[c].px, py=bd.cell[c].py;
 
-				if((dir==1||dir==2) && this.vnop("c"+c+"_ar1_",1)){
+				if((dir===1||dir===2) && this.vnop("c"+c+"_ar1_",1)){
 					px=px+k.cwidth-mf(ls*1.5)-lm; py=py+ls+1;
 					g.fillRect(px, py+(dir==1?ls:0), lw, ll-ls);
 					px+=lw/2;
 				}
-				if((dir==3||dir==4) && this.vnop("c"+c+"_ar3_",1)){
+				if((dir===3||dir===4) && this.vnop("c"+c+"_ar3_",1)){
 					px=px+ls+1; py=py+mf(ls*1.5)-lm;
 					g.fillRect(px+(dir==3?ls:0), py, ll-ls, lw);
 					py+=lw/2;
 				}
 
-				if(dir==1){ if(this.vnop("c"+c+"_dt1_",1)){ this.inputPath([px   ,py     ,0,0  ,-ll/6   ,ll/3  , ll/6  , ll/3], true); g.fill();} }else{ this.vhide("c"+c+"_dt1_");}
-				if(dir==2){ if(this.vnop("c"+c+"_dt2_",1)){ this.inputPath([px   ,py+ll  ,0,0  ,-ll/6  ,-ll/3  , ll/6  ,-ll/3], true); g.fill();} }else{ this.vhide("c"+c+"_dt2_");}
-				if(dir==3){ if(this.vnop("c"+c+"_dt3_",1)){ this.inputPath([px   ,py     ,0,0  , ll*0.3,-ll/6  , ll*0.3, ll/6], true); g.fill();} }else{ this.vhide("c"+c+"_dt3_");}
-				if(dir==4){ if(this.vnop("c"+c+"_dt4_",1)){ this.inputPath([px+ll,py     ,0,0  ,-ll*0.3,-ll/6  ,-ll*0.3, ll/6], true); g.fill();} }else{ this.vhide("c"+c+"_dt4_");}
+				if(dir===1){ if(this.vnop("c"+c+"_dt1_",1)){ this.inputPath([px   ,py     ,0,0  ,-ll/6   ,ll/3  , ll/6  , ll/3], true); g.fill();} }else{ this.vhide("c"+c+"_dt1_");}
+				if(dir===2){ if(this.vnop("c"+c+"_dt2_",1)){ this.inputPath([px   ,py+ll  ,0,0  ,-ll/6  ,-ll/3  , ll/6  ,-ll/3], true); g.fill();} }else{ this.vhide("c"+c+"_dt2_");}
+				if(dir===3){ if(this.vnop("c"+c+"_dt3_",1)){ this.inputPath([px   ,py     ,0,0  , ll*0.3,-ll/6  , ll*0.3, ll/6], true); g.fill();} }else{ this.vhide("c"+c+"_dt3_");}
+				if(dir===4){ if(this.vnop("c"+c+"_dt4_",1)){ this.inputPath([px+ll,py     ,0,0  ,-ll*0.3,-ll/6  ,-ll*0.3, ll/6], true); g.fill();} }else{ this.vhide("c"+c+"_dt4_");}
 			}
 			else{ this.vhide(["c"+c+"_ar1_","c"+c+"_ar3_","c"+c+"_dt1_","c"+c+"_dt2_","c"+c+"_dt3_","c"+c+"_dt4_"]);}
 
@@ -407,8 +407,8 @@ Graphic.prototype = {
 		var clist = this.crossinside(x1,y1,x2,y2,f_true);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if(bd.QnX(c)!=-1){
-				if(bd.ErX(c)==1){ g.fillStyle = this.errcolor1;}
+			if(bd.QnX(c)!==-1){
+				if(bd.ErX(c)===1){ g.fillStyle = this.errcolor1;}
 				else{ g.fillStyle = "white";}
 				if(this.vnop("x"+c+"_cp1_",1)){
 					g.beginPath();
@@ -436,8 +436,8 @@ Graphic.prototype = {
 		var clist = this.crossinside(x1-1,y1-1,x2+1,y2+1,f_true);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if(bd.QnX(c)==1){
-				if(bd.ErX(c)==1){ g.fillStyle = this.errcolor1;}
+			if(bd.QnX(c)===1){
+				if(bd.ErX(c)===1){ g.fillStyle = this.errcolor1;}
 				else{ g.fillStyle = this.Cellcolor;}
 
 				if(this.vnop("x"+c+"_cm_",1)){
@@ -471,19 +471,19 @@ Graphic.prototype = {
 		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i], cc1 = bd.cc1(id), cc2 = bd.cc2(id);
-			this.drawBorder1x(bd.border[id].cx,bd.border[id].cy,(cc1!=-1&&cc2!=-1&&(bd.QuC(cc1)==6^bd.QuC(cc2)==6)));
+			this.drawBorder1x(bd.border[id].cx,bd.border[id].cy,(cc1!==-1&&cc2!==-1&&(bd.QuC(cc1)===6^bd.QuC(cc2)===6)));
 		}
 		this.vinc();
 	},
 	drawBorder1 : function(id, flag){
 		var addlw=0;
-		if(bd.QaB(id)!=1){ g.fillStyle = this.BorderQuescolor;}
-		else if(bd.QaB(id)==1){
-			if     (k.isborderAsLine==0 && bd.ErB(id)==1){ g.fillStyle = this.errcolor1;}
-			else if(k.isborderAsLine==0 && bd.ErB(id)==2){ g.fillStyle = this.errBorderQanscolor2;}
-			else if(k.isborderAsLine==1 && bd.ErB(id)==1){ g.fillStyle = this.errlinecolor1; this.lw++; addlw++;}
-			else if(k.isborderAsLine==1 && bd.ErB(id)==2){ g.fillStyle = this.errlinecolor2;}
-			else if(k.isborderAsLine==0 || k.irowake==0 || !menu.getVal('irowake') || !bd.border[id].color){ g.fillStyle = this.BorderQanscolor;}
+		if(bd.QaB(id)!==1){ g.fillStyle = this.BorderQuescolor;}
+		else if(bd.QaB(id)===1){
+			if     (k.isborderAsLine===0 && bd.ErB(id)===1){ g.fillStyle = this.errcolor1;}
+			else if(k.isborderAsLine===0 && bd.ErB(id)===2){ g.fillStyle = this.errBorderQanscolor2;}
+			else if(k.isborderAsLine===1 && bd.ErB(id)===1){ g.fillStyle = this.errlinecolor1; this.lw++; addlw++;}
+			else if(k.isborderAsLine===1 && bd.ErB(id)===2){ g.fillStyle = this.errlinecolor2;}
+			else if(k.isborderAsLine===0 || k.irowake===0 || !menu.getVal('irowake') || !bd.border[id].color){ g.fillStyle = this.BorderQanscolor;}
 			else{ g.fillStyle = bd.border[id].color;}
 		}
 		this.drawBorder1x(bd.border[id].cx,bd.border[id].cy,flag);
@@ -493,8 +493,8 @@ Graphic.prototype = {
 		//var lw = this.lw, lm = this.lm, pid = "b"+bx+"_"+by+"_bd_";
 		var pid = "b"+bx+"_"+by+"_bd_";
 		if(!flag){ this.vhide(pid);}
-		else if(by%2==1){ if(this.vnop(pid,1)){ g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-this.lm, k.p0.x+mf((by-1)*k.cheight/2)-this.lm, this.lw, k.cheight+this.lw);} }
-		else if(bx%2==1){ if(this.vnop(pid,1)){ g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-this.lm, k.p0.x+mf(by*k.cheight/2)-this.lm, k.cwidth+this.lw,  this.lw);} }
+		else if(by%2===1){ if(this.vnop(pid,1)){ g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-this.lm, k.p0.x+mf((by-1)*k.cheight/2)-this.lm, this.lw, k.cheight+this.lw);} }
+		else if(bx%2===1){ if(this.vnop(pid,1)){ g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-this.lm, k.p0.x+mf(by*k.cheight/2)-this.lm, k.cwidth+this.lw,  this.lw);} }
 	},
 
 	drawBorderQsubs : function(x1,y1,x2,y2){
@@ -502,11 +502,11 @@ Graphic.prototype = {
 		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
-			if(bd.QsB(id)==1){ g.fillStyle = this.BorderQsubcolor;}
+			if(bd.QsB(id)===1){ g.fillStyle = this.BorderQsubcolor;}
 			else{ this.vhide("b"+id+"_qsub1_"); continue;}
 
-			if     (bd.border[id].cx%2==1){ if(this.vnop("b"+id+"_qsub1_",1)){ g.fillRect(bd.border[id].px,                  bd.border[id].py-mf(k.cheight/2)+m, 1,            k.cheight-2*m);} }
-			else if(bd.border[id].cy%2==1){ if(this.vnop("b"+id+"_qsub1_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)+m, bd.border[id].py,                   k.cwidth-2*m, 1            );} }
+			if     (bd.border[id].cx%2===1){ if(this.vnop("b"+id+"_qsub1_",1)){ g.fillRect(bd.border[id].px,                  bd.border[id].py-mf(k.cheight/2)+m, 1,            k.cheight-2*m);} }
+			else if(bd.border[id].cy%2===1){ if(this.vnop("b"+id+"_qsub1_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)+m, bd.border[id].py,                   k.cwidth-2*m, 1            );} }
 		}
 		this.vinc();
 	},
@@ -530,15 +530,15 @@ Graphic.prototype = {
 			var bx = 2*bd.cell[c].cx+1, by = 2*bd.cell[c].cy+1;
 			var px = bd.cell[c].px, py = bd.cell[c].py;
 
-			var isUP = ((bd.QuB(bd.ub(c))!=1) && !(!k.isoutsideborder&&by<=1));
-			var isLT = ((bd.QuB(bd.lb(c))!=1) && !(!k.isoutsideborder&&bx<=1));
-			var isRT = ((bd.QuB(bd.rb(c))!=1) && !(!k.isoutsideborder&&bx>=2*k.qcols-1));
-			var isDN = ((bd.QuB(bd.db(c))!=1) && !(!k.isoutsideborder&&by>=2*k.qrows-1));
+			var isUP = ((bd.QuB(bd.ub(c))!==1) && !(!k.isoutsideborder&&by<=1));
+			var isLT = ((bd.QuB(bd.lb(c))!==1) && !(!k.isoutsideborder&&bx<=1));
+			var isRT = ((bd.QuB(bd.rb(c))!==1) && !(!k.isoutsideborder&&bx>=2*k.qcols-1));
+			var isDN = ((bd.QuB(bd.db(c))!==1) && !(!k.isoutsideborder&&by>=2*k.qrows-1));
 
-			var isUL = (bd.QuB(bd.bnum(bx-2,by-1))!=1 && bd.QuB(bd.bnum(bx-1,by-2))!=1);
-			var isUR = (bd.QuB(bd.bnum(bx+2,by-1))!=1 && bd.QuB(bd.bnum(bx+1,by-2))!=1);
-			var isDL = (bd.QuB(bd.bnum(bx-2,by+1))!=1 && bd.QuB(bd.bnum(bx-1,by+2))!=1);
-			var isDR = (bd.QuB(bd.bnum(bx+2,by+1))!=1 && bd.QuB(bd.bnum(bx+1,by+2))!=1);
+			var isUL = (bd.QuB(bd.bnum(bx-2,by-1))!==1 && bd.QuB(bd.bnum(bx-1,by-2))!==1);
+			var isUR = (bd.QuB(bd.bnum(bx+2,by-1))!==1 && bd.QuB(bd.bnum(bx+1,by-2))!==1);
+			var isDL = (bd.QuB(bd.bnum(bx-2,by+1))!==1 && bd.QuB(bd.bnum(bx-1,by+2))!==1);
+			var isDR = (bd.QuB(bd.bnum(bx+2,by+1))!==1 && bd.QuB(bd.bnum(bx+1,by+2))!==1);
 
 			if(!isLT){ if(this.vnop("c"+c+"_bb1_",1)){ g.fillRect(px   +lm, py   +lm, 1    ,ch-lw);} }else{ this.vhide("c"+c+"_bb1_");}
 			if(!isRT){ if(this.vnop("c"+c+"_bb2_",1)){ g.fillRect(px+cw-lm, py   +lm, 1    ,ch-lw);} }else{ this.vhide("c"+c+"_bb2_");}
@@ -578,16 +578,16 @@ Graphic.prototype = {
 	drawLine1 : function(id, flag){
 		var lw = this.lw, lm = this.lm, pid = "b"+id+"_line_";
 
-		if     (bd.ErB(id)==1){ g.fillStyle = this.errlinecolor1; lw++;}
-		else if(bd.ErB(id)==2){ g.fillStyle = this.errlinecolor2;}
-		else if(k.irowake==0 || !menu.getVal('irowake') || !bd.border[id].color){ g.fillStyle = this.linecolor;}
+		if     (bd.ErB(id)===1){ g.fillStyle = this.errlinecolor1; lw++;}
+		else if(bd.ErB(id)===2){ g.fillStyle = this.errlinecolor2;}
+		else if(k.irowake===0 || !menu.getVal('irowake') || !bd.border[id].color){ g.fillStyle = this.linecolor;}
 		else{ g.fillStyle = bd.border[id].color;}
 
 		if(!flag){ this.vhide(pid);}
-		else if(bd.border[id].cx%2==1 && this.vnop(pid,1)){
+		else if(bd.border[id].cx%2===1 && this.vnop(pid,1)){
 			g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);
 		}
-		else if(bd.border[id].cy%2==1 && this.vnop(pid,1)){
+		else if(bd.border[id].cy%2===1 && this.vnop(pid,1)){
 			g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-lm, k.cwidth+lw, lw);
 		}
 	},
@@ -598,16 +598,16 @@ Graphic.prototype = {
 		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
-			if(bd.QsB(id)==2){ g.strokeStyle = this.pekecolor;}
+			if(bd.QsB(id)===2){ g.strokeStyle = this.pekecolor;}
 			else{ this.vhide(["b"+id+"_peke0_","b"+id+"_peke1_","b"+id+"_peke2_"]); continue;}
 
 			g.fillStyle = "white";
-			if((flag==0 || flag==2)){ if(this.vnop("b"+id+"_peke0_",1)){
+			if((flag===0 || flag===2)){ if(this.vnop("b"+id+"_peke0_",1)){
 				g.fillRect(bd.border[id].px-size, bd.border[id].py-size, 2*size+1, 2*size+1);
 			}}
 			else{ this.vhide("b"+id+"_peke0_");}
 
-			if(flag==0 || flag==1){
+			if(flag===0 || flag===1){
 				g.lineWidth = 1;
 				if(this.vnop("b"+id+"_peke1_",0)){
 					this.inputPath([bd.border[id].px,bd.border[id].py ,-size+1,-size+1 ,size,size],false);
@@ -631,11 +631,11 @@ Graphic.prototype = {
 		var clist = this.cellinside(x1,y1,x2,y2,f_true);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			var num = (bd.QuC(c)!=0?bd.QuC(c):bd.QaC(c));
-			if(k.puzzleid=="kinkonkan"){ num=bd.ErC(c); }
+			var num = (bd.QuC(c)!==0?bd.QuC(c):bd.QaC(c));
+			if(k.puzzleid==="kinkonkan"){ num=bd.ErC(c); }
 
-			if(k.puzzleid=="kinkonkan"){ g.fillStyle=this.errbcolor2; }
-			else if((bd.ErC(c)==1||bd.ErC(c)==4) && k.puzzleid!="shakashaka"){ g.fillStyle = this.errcolor1;}
+			if(k.puzzleid==="kinkonkan"){ g.fillStyle=this.errbcolor2; }
+			else if((bd.ErC(c)===1||bd.ErC(c)===4) && k.puzzleid!=="shakashaka"){ g.fillStyle = this.errcolor1;}
 			else{ g.fillStyle = this.Cellcolor;}
 
 			this.drawTriangle1(bd.cell[c].px,bd.cell[c].py,num,bd.cell[c].cx,bd.cell[c].cy);
@@ -643,26 +643,26 @@ Graphic.prototype = {
 		this.vinc();
 	},
 	drawTriangle1 : function(px,py,num,cx,cy){
-		var mgn = (k.puzzleid=="reflect"?1:0);
+		var mgn = (k.puzzleid==="reflect"?1:0);
 		var header = "c"+cx+"_"+cy;
 
 		if(num>=2 && num<=5){
-			if(num==2){ if(this.vnop(header+"_tri2_",1)){
+			if(num===2){ if(this.vnop(header+"_tri2_",1)){
 				this.inputPath([px,py ,mgn,mgn ,mgn,k.cheight+1 ,k.cwidth+1,k.cheight+1],true); g.fill();
 			}}
 			else{ this.vhide(header+"_tri2_");}
 
-			if(num==3){ if(this.vnop(header+"_tri3_",1)){
+			if(num===3){ if(this.vnop(header+"_tri3_",1)){
 				this.inputPath([px,py ,k.cwidth+1,mgn ,mgn,k.cheight+1 ,k.cwidth+1,k.cheight+1],true); g.fill();
 			}}
 			else{ this.vhide(header+"_tri3_");}
 
-			if(num==4){ if(this.vnop(header+"_tri4_",1)){
+			if(num===4){ if(this.vnop(header+"_tri4_",1)){
 				this.inputPath([px,py ,mgn,mgn ,k.cwidth+1,mgn ,k.cwidth+1,k.cheight+1],true); g.fill();
 			}}
 			else{ this.vhide(header+"_tri4_");}
 
-			if(num==5){ if(this.vnop(header+"_tri5_",1)){
+			if(num===5){ if(this.vnop(header+"_tri5_",1)){
 				this.inputPath([px,py ,mgn,mgn ,k.cwidth+1,mgn ,mgn,k.cheight+1],true); g.fill();
 			}}
 			else{ this.vhide(header+"_tri5_");}
@@ -683,7 +683,7 @@ Graphic.prototype = {
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 
-			if(bd.QsC(c)==1){
+			if(bd.QsC(c)===1){
 				if(this.vnop("c"+c+"_MB1_",0)){
 					g.beginPath();
 					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize, 0, Math.PI*2, false);
@@ -692,7 +692,7 @@ Graphic.prototype = {
 			}
 			else{ this.vhide("c"+c+"_MB1_");}
 
-			if(bd.QsC(c)==2){
+			if(bd.QsC(c)===2){
 				if(this.vnop("c"+c+"_MB2a_",0)){
 					this.inputPath([bd.cell[c].px+mf(k.cwidth/2),bd.cell[c].py+mf(k.cheight/2) ,-rsize,-rsize ,rsize,rsize],true);
 					g.stroke();
@@ -718,7 +718,7 @@ Graphic.prototype = {
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 
-			if(bd.QuC(c)==41 || bd.QuC(c)==42){
+			if(bd.QuC(c)===41 || bd.QuC(c)===42){
 				g.fillStyle = this.Cellcolor;
 				if(this.vnop("c"+c+"_cir41a_",1)){
 					g.beginPath();
@@ -728,7 +728,7 @@ Graphic.prototype = {
 			}
 			else{ this.vhide("c"+c+"_cir41a_");}
 
-			if(bd.QuC(c)==41){
+			if(bd.QuC(c)===41){
 				g.fillStyle = "white";
 				if(this.vnop("c"+c+"_cir41b_",1)){
 					g.beginPath();
@@ -755,19 +755,19 @@ Graphic.prototype = {
 		g.fillStyle = this.BorderQuescolor;
 
 		var qs = bd.QuC(id);
-		if(qs==101||qs==102||qs==104||qs==105){
+		if(qs===101||qs===102||qs===104||qs===105){
 			if(this.vnop("c"+id+"_lp1_",1)){ g.fillRect(bd.cell[id].px+mf(k.cwidth/2)-1, bd.cell[id].py                  , lw, mf((k.cheight+lw)/2));}
 		}
 		else{ this.vhide("c"+id+"_lp1_");}
-		if(qs==101||qs==102||qs==106||qs==107){
+		if(qs===101||qs===102||qs===106||qs===107){
 			if(this.vnop("c"+id+"_lp2_",1)){ g.fillRect(bd.cell[id].px+mf(k.cwidth/2)-1, bd.cell[id].py+mf(k.cheight/2)-1, lw, mf((k.cheight+lw)/2));}
 		}
 		else{ this.vhide("c"+id+"_lp2_");}
-		if(qs==101||qs==103||qs==105||qs==106){
+		if(qs===101||qs===103||qs===105||qs===106){
 			if(this.vnop("c"+id+"_lp3_",1)){ g.fillRect(bd.cell[id].px                 , bd.cell[id].py+mf(k.cheight/2)-1, mf((k.cwidth+lw)/2), lw);}
 		}
 		else{ this.vhide("c"+id+"_lp3_");}
-		if(qs==101||qs==103||qs==104||qs==107){
+		if(qs===101||qs===103||qs===104||qs===107){
 			if(this.vnop("c"+id+"_lp4_",1)){ g.fillRect(bd.cell[id].px+mf(k.cwidth/2)-1, bd.cell[id].py+mf(k.cheight/2)-1, mf((k.cwidth+lw)/2), lw);}
 		}
 		else{ this.vhide("c"+id+"_lp4_");}
@@ -783,9 +783,9 @@ Graphic.prototype = {
 		var clist = this.cellinside(x1,y1,x2,y2,f_true);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if(bd.QuC(c)==51){
+			if(bd.QuC(c)===51){
 				if(errdisp){
-					if(bd.ErC(c)==1){
+					if(bd.ErC(c)===1){
 						g.fillStyle = this.errbcolor1;
 						if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);}
 					}
@@ -804,10 +804,10 @@ Graphic.prototype = {
 		for(var cx=x1-1;cx<=x2;cx++){
 			for(var cy=y1-1;cy<=y2;cy++){
 				var c = bd.exnum(cx,cy);
-				if(c==-1){ continue;}
+				if(c===-1){ continue;}
 
 				if(errdisp){
-					if(bd.ErE(c)==1){
+					if(bd.ErE(c)===1){
 						g.fillStyle = this.errbcolor1;
 						if(this.vnop("ex"+c+"_full_",1)){ g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);}
 					}
@@ -819,10 +819,10 @@ Graphic.prototype = {
 				if(this.vnop("ex"+c+"_q51_",0)){ g.stroke();}
 
 				g.strokeStyle = this.Cellcolor;
-				if(bd.excell[c].cy==-1 && bd.excell[c].cx<k.qcols-1){
+				if(bd.excell[c].cy===-1 && bd.excell[c].cx<k.qcols-1){
 					if(this.vnop("ex"+c+"_bdx_",1)){ g.fillRect(bd.excell[c].px+k.cwidth, bd.excell[c].py, 1, k.cheight);}
 				}
-				if(bd.excell[c].cx==-1 && bd.excell[c].cy<k.qrows-1){
+				if(bd.excell[c].cx===-1 && bd.excell[c].cy<k.qrows-1){
 					if(this.vnop("ex"+c+"_bdy_",1)){ g.fillRect(bd.excell[c].px, bd.excell[c].py+k.cheight, k.cwidth, 1);}
 				}
 			}
@@ -864,9 +864,9 @@ Graphic.prototype = {
 			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QuC(c)==51){ continue;}
-				if(bd.cell[c].cx==0){ this.drawBorder1x(0                , 2*bd.cell[c].cy+1, true);}
-				if(bd.cell[c].cy==0){ this.drawBorder1x(2*bd.cell[c].cx+1, 0                , true);}
+				if(bd.QuC(c)===51){ continue;}
+				if(bd.cell[c].cx===0){ this.drawBorder1x(0                , 2*bd.cell[c].cy+1, true);}
+				if(bd.cell[c].cy===0){ this.drawBorder1x(2*bd.cell[c].cx+1, 0                , true);}
 			}
 			this.vinc();
 		}
@@ -890,7 +890,7 @@ Graphic.prototype = {
 		var w = (k.cwidth<32?2:mf(k.cwidth/16));
 
 		this.vdel(["tc1_","tc2_","tc3_","tc4_"]);
-		g.fillStyle = (k.mode==1?"rgb(255,64,64)":"rgb(64,64,255)");
+		g.fillStyle = (k.mode===1?"rgb(255,64,64)":"rgb(64,64,255)");
 		if(this.vnop("tc1_",0)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
 		if(this.vnop("tc2_",0)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
 		if(this.vnop("tc3_",0)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
@@ -907,7 +907,7 @@ Graphic.prototype = {
 		var w = (k.cwidth<32?2:mf(k.cwidth/16));
 
 		this.vdel(["tx1_","tx2_","tx3_","tx4_"]);
-		g.fillStyle = (k.mode==1?"rgb(255,64,64)":"rgb(64,64,255)");
+		g.fillStyle = (k.mode===1?"rgb(255,64,64)":"rgb(64,64,255)");
 		if(this.vnop("tx1_",0)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
 		if(this.vnop("tx2_",0)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
 		if(this.vnop("tx3_",0)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
@@ -925,7 +925,7 @@ Graphic.prototype = {
 		var size = mf(k.cwidth*0.28);
 
 		this.vdel(["tb1_","tb2_","tb3_","tb4_"]);
-		g.fillStyle = (k.mode==1?"rgb(255,64,64)":"rgb(64,64,255)");
+		g.fillStyle = (k.mode===1?"rgb(255,64,64)":"rgb(64,64,255)");
 		if(this.vnop("tb1_",0)){ g.fillRect(px-size  , py-size  , size*2, 1);}
 		if(this.vnop("tb2_",0)){ g.fillRect(px-size  , py-size  , 1, size*2);}
 		if(this.vnop("tb3_",0)){ g.fillRect(px-size  , py+size-w, size*2, 1);}
@@ -938,17 +938,17 @@ Graphic.prototype = {
 	hideTBorder : function(){ this.vhide(["tb1_","tb2_","tb3_","tb4_"]);},
 
 	drawTargetTriangle : function(x1,y1,x2,y2){
-		if(k.mode==3){ return;}
+		if(k.mode===3){ return;}
 
 		if(tc.cursolx < x1*2 || x2*2+2 < tc.cursolx){ return;}
 		if(tc.cursoly < y1*2 || y2*2+2 < tc.cursoly){ return;}
 
 		var cc = tc.getTCC(), ex = -1;
-		if(cc==-1){ ex = bd.exnum(tc.getTCX(),tc.getTCY());}
+		if(cc===-1){ ex = bd.exnum(tc.getTCX(),tc.getTCY());}
 		var target = kc.detectTarget(cc,ex);
-		if(target==-1){ return;}
+		if(target===-1){ return;}
 
-		var num = target==2?4:2;
+		var num = target===2?4:2;
 
 		g.fillStyle = this.TTcolor;
 		this.drawTriangle1(k.p0.x+tc.getTCX()*k.cwidth, k.p0.y+tc.getTCY()*k.cheight, num, tc.getTCX(), tc.getTCY());
@@ -1022,7 +1022,7 @@ Graphic.prototype = {
 		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
 		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
-		var bs=((k.isoutsideborder==0&&this.chassisflag)?1:0);
+		var bs=((k.isoutsideborder===0&&this.chassisflag)?1:0);
 
 		g.fillStyle = this.gridcolor;
 		var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
@@ -1038,7 +1038,7 @@ Graphic.prototype = {
 		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
 		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
-		var bs=((k.isoutsideborder==0&&this.chassisflag)?1:0);
+		var bs=((k.isoutsideborder===0&&this.chassisflag)?1:0);
 
 		var dotmax = mf(k.cwidth/10)+3;
 		var dotCount = (mf(k.cwidth/dotmax)>=1?mf(k.cwidth/dotmax):1);
@@ -1115,8 +1115,8 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	flushCanvas : function(x1,y1,x2,y2){
 		if(!g.vml){
-			if(((k.isextendcell==0&&x1<=0&&y1<=0)||(k.isextendcell!=0&&x1<=-1&&y1<=-1)) &&
-			   ((k.isextendcell!=2&&x2>=k.qcols-1&&y2>=k.qrows-1)||(k.isextendcell==2&&x2>=k.qcols&&y2>=k.qrows))
+			if(((k.isextendcell===0&&x1<=0&&y1<=0)||(k.isextendcell!==0&&x1<=-1&&y1<=-1)) &&
+			   ((k.isextendcell!==2&&x2>=k.qcols-1&&y2>=k.qrows-1)||(k.isextendcell===2&&x2>=k.qcols&&y2>=k.qrows))
 			){
 				this.flushCanvasAll();
 			}
@@ -1152,7 +1152,7 @@ Graphic.prototype = {
 			if(g.elements[vid]){
 				var el = g.elements[vid].get(0);
 				if(el){
-					el.color = uuColor.parse((isfill==1?g.fillStyle:g.strokeStyle))[0];
+					el.color = uuColor.parse((isfill===1?g.fillStyle:g.strokeStyle))[0];
 				}
 				var pel = g.elements["p_"+vid].get(0);
 				if(pel){
@@ -1211,16 +1211,16 @@ Graphic.prototype = {
 		return obj;
 	},
 	isdispnumCell : function(id){
-		return ( (bd.QnC(id)>0 || (bd.QnC(id)==0 && k.dispzero)) || 
-				((bd.QaC(id)>0 || (bd.QaC(id)==0 && k.dispzero)) && k.isAnsNumber) ||
-				((bd.QnC(id)==-2 || bd.QuC(id)==-2) && k.isDispHatena) );
+		return ( (bd.QnC(id)>0 || (bd.QnC(id)===0 && k.dispzero)) || 
+				((bd.QaC(id)>0 || (bd.QaC(id)===0 && k.dispzero)) && k.isAnsNumber) ||
+				((bd.QnC(id)===-2 || bd.QuC(id)===-2) && k.isDispHatena) );
 	},
 	getNumberColor : function(id){
-		if     (bd.QuC(id)==-2)                              { return this.fontcolor;      }
-		else if((k.BlackCell==0?bd.QuC(id)!=0:bd.QaC(id)==1)){ return this.BCell_fontcolor;}
-		else if(bd.ErC(id)==1 || bd.ErC(id)==4)              { return this.fontErrcolor;   }
-		else if(k.isAnsNumber && bd.QnC(id)!=-1)             { return this.fontcolor;      }
-		else if(k.isAnsNumber && bd.QaC(id)!=-1)             { return this.fontAnscolor;   }
+		if     (bd.QuC(id)===-2)                                { return this.fontcolor;      }
+		else if((k.BlackCell===0?bd.QuC(id)!==0:bd.QaC(id)===1)){ return this.BCell_fontcolor;}
+		else if(bd.ErC(id)===1 || bd.ErC(id)===4)               { return this.fontErrcolor;   }
+		else if(k.isAnsNumber && bd.QnC(id)!==-1)               { return this.fontcolor;      }
+		else if(k.isAnsNumber && bd.QaC(id)!==-1)               { return this.fontAnscolor;   }
 		return this.fontcolor;
 	},
 	//---------------------------------------------------------------------------
@@ -1237,20 +1237,20 @@ Graphic.prototype = {
 			var type = 1;
 			if     (k.isDispNumUL){ type=5;}
 			else if(bd.QuC(id)>=2 && bd.QuC(id)<=5){ type=bd.QuC(id);}
-			else if(k.puzzleid=="reflect"){ if(!this.textenable){ obj.get(0).style.display = 'none';} return;}
+			else if(k.puzzleid==="reflect"){ if(!this.textenable){ obj.get(0).style.display = 'none';} return;}
 
 			var num = bd.getNum(id);
 
 			var text = (num>=0 ? ""+num : "?");
-			if(bd.QuC(id)==-2){ text = "?";}
+			if(bd.QuC(id)===-2){ text = "?";}
 
 			var fontratio = 0.45;
-			if(type==1){ fontratio = (num<10?0.8:(num<100?0.7:0.55));}
-			if(k.isArrowNumber==1){
+			if(type===1){ fontratio = (num<10?0.8:(num<100?0.7:0.55));}
+			if(k.isArrowNumber===1){
 				var dir = bd.DiC(id);
-				if(dir!=0){ fontratio *= 0.85;}
-				if     (dir==1||dir==2){ type=6;}
-				else if(dir==3||dir==4){ type=7;}
+				if(dir!==0){ fontratio *= 0.85;}
+				if     (dir===1||dir===2){ type=6;}
+				else if(dir===3||dir===4){ type=7;}
 			}
 
 			var color = this.getNumberColor(id);
@@ -1259,14 +1259,14 @@ Graphic.prototype = {
 		}
 	},
 	dispnumCross : function(id){
-		if(bd.QnX(id)>0||(bd.QnX(id)==0&&k.dispzero==1)){
+		if(bd.QnX(id)>0||(bd.QnX(id)===0&&k.dispzero===1)){
 			if(!bd.cross[id].numobj){ bd.cross[id].numobj = this.CreateDOMAndSetNop();}
 			this.dispnumCross1(id, bd.cross[id].numobj, 101, ""+bd.QnX(id), 0.6 ,this.fontcolor);
 		}
 		else if(bd.cross[id].numobj){ bd.cross[id].numobj.get(0).style.display = 'none';}
 	},
 	dispnumBorder : function(id){
-		if(bd.QnB(id)>0||(bd.QnB(id)==0&&k.dispzero==1)){
+		if(bd.QnB(id)>0||(bd.QnB(id)===0&&k.dispzero===1)){
 			if(!bd.border[id].numobj){ bd.border[id].numobj = this.CreateDOMAndSetNop();}
 			this.dispnumBorder1(id, bd.border[id].numobj, 101, ""+bd.QnB(id), 0.45 ,this.borderfontcolor);
 		}
@@ -1308,19 +1308,19 @@ Graphic.prototype = {
 			var wid = el.clientWidth;
 			var hgt = el.clientHeight;
 
-			if(type==1||type==6||type==7){
-				el.style.left = k.cv_oft.x+px+mf((k.cwidth-wid) /2)+(IE?2:2)-(type==6?mf(k.cwidth *0.1):0);
-				el.style.top  = k.cv_oft.y+py+mf((k.cheight-hgt)/2)+(IE?3:1)+(type==7?mf(k.cheight*0.1):0);
+			if(type===1||type===6||type===7){
+				el.style.left = k.cv_oft.x+px+mf((k.cwidth-wid) /2)+(IE?2:2)-(type===6?mf(k.cwidth *0.1):0);
+				el.style.top  = k.cv_oft.y+py+mf((k.cheight-hgt)/2)+(IE?3:1)+(type===7?mf(k.cheight*0.1):0);
 			}
-			else if(type==101){
+			else if(type===101){
 				el.style.left = k.cv_oft.x+px-wid/2+(IE?2:2);
 				el.style.top  = k.cv_oft.y+py-hgt/2+(IE?3:1);
 			}
 			else{
-				if     (type==3||type==4){ el.style.left = k.cv_oft.x+px+k.cwidth -wid+(IE?1: 0);}
-				else if(type==2||type==5){ el.style.left = k.cv_oft.x+px              +(IE?5: 4);}
-				if     (type==2||type==3){ el.style.top  = k.cv_oft.y+py+k.cheight-hgt+(IE?1:-1);}
-				else if(type==4||type==5){ el.style.top  = k.cv_oft.y+py              +(IE?4: 2);}
+				if     (type===3||type===4){ el.style.left = k.cv_oft.x+px+k.cwidth -wid+(IE?1: 0);}
+				else if(type===2||type===5){ el.style.left = k.cv_oft.x+px              +(IE?5: 4);}
+				if     (type===2||type===3){ el.style.top  = k.cv_oft.y+py+k.cheight-hgt+(IE?1:-1);}
+				else if(type===4||type===5){ el.style.top  = k.cv_oft.y+py              +(IE?4: 2);}
 			}
 
 			el.style.color = color;
@@ -1354,22 +1354,22 @@ Graphic.prototype = {
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 
-			if(bd.QnC(c)==-1 || bd.QuC(c)!=51 || bd.rt(c)==-1 || bd.QuC(bd.rt(c))==51){
+			if(bd.QnC(c)===-1 || bd.QuC(c)!==51 || bd.rt(c)===-1 || bd.QuC(bd.rt(c))===51){
 				if(bd.cell[c].numobj){ bd.cell[c].numobj.get(0).style.display = 'none';}
 			}
 			else{
 				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
-				var color = (bd.ErC(c)==1?this.fontErrcolor:this.fontcolor);
+				var color = (bd.ErC(c)===1?this.fontErrcolor:this.fontcolor);
 				var text = (bd.QnC(c)>=0?""+bd.QnC(c):"");
 				this.dispnumCell1(c, bd.cell[c].numobj, 4, text, 0.45, color);
 			}
 
-			if(bd.DiC(c)==-1 || bd.QuC(c)!=51 || bd.dn(c)==-1 || bd.QuC(bd.dn(c))==51){
+			if(bd.DiC(c)===-1 || bd.QuC(c)!==51 || bd.dn(c)===-1 || bd.QuC(bd.dn(c))===51){
 				if(bd.cell[c].numobj2){ bd.cell[c].numobj2.get(0).style.display = 'none';}
 			}
 			else{
 				if(!bd.cell[c].numobj2){ bd.cell[c].numobj2 = this.CreateDOMAndSetNop();}
-				var color = (bd.ErC(c)==1?this.fontErrcolor:this.fontcolor);
+				var color = (bd.ErC(c)===1?this.fontErrcolor:this.fontcolor);
 				var text = (bd.DiC(c)>=0?""+bd.DiC(c):"");
 				this.dispnumCell1(c, bd.cell[c].numobj2, 2, text, 0.45, color);
 			}
@@ -1382,22 +1382,22 @@ Graphic.prototype = {
 				var c = bd.exnum(cx,cy);
 				if(c==-1){ continue;}
 
-				if(bd.QnE(c)==-1 || bd.excell[c].cy==-1 || bd.QuC(bd.excell[c].cy*k.qcols)==51){
+				if(bd.QnE(c)===-1 || bd.excell[c].cy===-1 || bd.QuC(bd.excell[c].cy*k.qcols)===51){
 					if(bd.excell[c].numobj){ bd.excell[c].numobj.get(0).style.display = 'none';}
 				}
 				else{
 					if(!bd.excell[c].numobj){ bd.excell[c].numobj = this.CreateDOMAndSetNop();}
-					var color = (bd.ErE(c)==1?this.fontErrcolor:this.fontcolor);
+					var color = (bd.ErE(c)===1?this.fontErrcolor:this.fontcolor);
 					var text = (bd.QnE(c)>=0?""+bd.QnE(c):"");
 					this.dispnum1(bd.excell[c].numobj, 4, text, 0.45, color, bd.excell[c].px-1, bd.excell[c].py+1);
 				}
 
-				if(bd.DiE(c)==-1 || bd.excell[c].cx==-1 || bd.QuC(bd.excell[c].cx)==51){
+				if(bd.DiE(c)===-1 || bd.excell[c].cx===-1 || bd.QuC(bd.excell[c].cx)===51){
 					if(bd.excell[c].numobj2){ bd.excell[c].numobj2.get(0).style.display = 'none';}
 				}
 				else{
 					if(!bd.excell[c].numobj2){ bd.excell[c].numobj2 = this.CreateDOMAndSetNop();}
-					var color = (bd.ErE(c)==1?this.fontErrcolor:this.fontcolor);
+					var color = (bd.ErE(c)===1?this.fontErrcolor:this.fontcolor);
 					var text = (bd.DiE(c)>=0?""+bd.DiE(c):"");
 					this.dispnum1(bd.excell[c].numobj2, 2, text, 0.45, color, bd.excell[c].px-1, bd.excell[c].py+1);
 				}
