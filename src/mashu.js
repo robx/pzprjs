@@ -158,6 +158,7 @@ Puzzles.mashu.prototype = {
 				if     (ca == "1"){ bd.sQuC(c, 41);}
 				else if(ca == "2"){ bd.sQuC(c, 42);}
 			},bstr.split("/"));
+			if(menu.getVal('uramashu')){ (pp.funcs['uramashu'])();}
 			return "";
 		};
 		enc.pzldataKanpen = function(){
@@ -175,6 +176,7 @@ Puzzles.mashu.prototype = {
 				else if(ca == "2"){ bd.sQuC(c, 42);}
 			},array.slice(0,k.qrows));
 			this.decodeBorderLine(array.slice(k.qrows,3*k.qrows-1));
+			if(menu.getVal('uramashu')){ (pp.funcs['uramashu'])();}
 		};
 		fio.kanpenSave = function(){
 			return ""+this.encodeCell( function(c){
