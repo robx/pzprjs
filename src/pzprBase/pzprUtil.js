@@ -213,13 +213,22 @@ LineManager.prototype = {
 		var dataid = this.data.id;
 
 		// この関数の突入条件より、bid.lengthは必ず2になる
+		// →ならなかった... くっつく線のIDは必ず2になる
 		var bid = this.getbid(id,1);
-		var did = [dataid[bid[0]], dataid[bid[1]]];
+		var did = [dataid[bid[0]], -1];
+		for(var i=0;i<bid.length;i++){
+			if(did[0]!=dataid[bid[i]]){
+				did[1]=dataid[bid[i]];
+				break;
+			}
+		}
+
 		var newColor = bd.border[bid[0]].color;
-		if(did[0]!=did[1]){
+		if(did[1] != -1){
 			var longid = did[0], shortid = did[1];
 			if(this.data[did[0]].idlist.length < this.data[did[1]].idlist.length){
-				longid=did[1]; shortid=did[0]; newColor=bd.border[bid[1]].color;
+				longid=did[1]; shortid=did[0];
+				newColor=bd.border[bid[1]].color;
 			}
 
 			// つながった線は全て同じIDにする
@@ -229,7 +238,7 @@ LineManager.prototype = {
 				longidlist.push(shortidlist[n]);
 				dataid[shortidlist[n]] = longid;
 			}
-			shortidlist = [];
+			this.data[shortid].idlist = [];
 
 			longidlist.push(id);
 			dataid[id] = longid;
