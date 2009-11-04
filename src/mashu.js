@@ -137,14 +137,15 @@ Puzzles.mashu.prototype = {
 					}
 				}
 			}
+			if(menu.getVal('uramashu')){ (pp.funcs['uramashu'])();}
 
 			return bstr.substring(pos,bstr.length);
 		};
 		enc.encodeCircle = function(flag){
-			var cm="", num=0, pass=0;
+			var cm="", num=0, pass=0, isura=menu.getVal('uramashu');
 			for(var i=0;i<bd.cellmax;i++){
-				if     (bd.QuC(i)==41){ pass+=(  Math.pow(3,2-num));}
-				else if(bd.QuC(i)==42){ pass+=(2*Math.pow(3,2-num));}
+				if     (bd.QuC(i)==(!isura?41:42)){ pass+=(  Math.pow(3,2-num));}
+				else if(bd.QuC(i)==(!isura?42:41)){ pass+=(2*Math.pow(3,2-num));}
 				num++; if(num==3){ cm += pass.toString(27); num=0; pass=0;}
 			}
 			if(num>0){ cm += pass.toString(27);}
@@ -162,10 +163,11 @@ Puzzles.mashu.prototype = {
 			return "";
 		};
 		enc.pzldataKanpen = function(){
+			var isura=menu.getVal('uramashu');
 			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
-				if     (bd.QuC(c)==41){ return "1_";}
-				else if(bd.QuC(c)==42){ return "2_";}
-				else                  { return "._";}
+				if     (bd.QuC(c)==(!isura?41:42)){ return "1_";}
+				else if(bd.QuC(c)==(!isura?42:41)){ return "2_";}
+				else                              { return "._";}
 			});
 		};
 
@@ -179,10 +181,11 @@ Puzzles.mashu.prototype = {
 			if(menu.getVal('uramashu')){ (pp.funcs['uramashu'])();}
 		};
 		fio.kanpenSave = function(){
+			var isura=menu.getVal('uramashu');
 			return ""+this.encodeCell( function(c){
-				if     (bd.QuC(c)==41){ return "1 ";}
-				else if(bd.QuC(c)==42){ return "2 ";}
-				else                  { return ". ";}
+				if     (bd.QuC(c)==(!isura?41:42)){ return "1 ";}
+				else if(bd.QuC(c)==(!isura?42:41)){ return "2 ";}
+				else                              { return ". ";}
 			})
 			+this.encodeBorderLine();
 		};
