@@ -7,9 +7,11 @@ our $version = 'v3.2.0p1';
 sub main{
 	&input_flags();
 
-	open LOG, ">contents.txt";
-	print LOG "pzprBase.js $version contents\n";
-	close LOG;
+	if(!$debug){ 
+		open LOG, ">contents.txt";
+		print LOG "pzprBase.js $version contents\n";
+		close LOG;
+	}
 
 	&output_doc("document_tmp.txt");
 	&output_pzprBase();
@@ -147,8 +149,7 @@ EOR
 sub printfiles{
 	my @files = @{$_[0]};
 	my $l=0;
-	open LOG, ">>contents.txt";
-	print LOG "\n";
+	if(!$debug){ open LOG, ">>contents.txt"; print LOG "\n";}
 	foreach(@files){
 		if(!$debug){
 			open SRC, $_;
@@ -177,5 +178,5 @@ sub printfiles{
 			print OUT "document.writeln(\"<script type=\\\"text/javascript\\\" src=\\\"src/pzprBase/$_\\\"></script>\");\n";
 		}
 	}
-	close LOG;
+	if(!$debug){ close LOG;}
 }
