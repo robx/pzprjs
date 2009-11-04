@@ -15,7 +15,7 @@ Puzzles.slither.prototype = {
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
 		k.isoutsideborder = 1;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 1;	// 1:線が交差するパズル
+		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 1;	// 1:境界線をlineとして扱う
 
