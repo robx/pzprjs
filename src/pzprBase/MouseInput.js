@@ -159,37 +159,33 @@ MouseEvent.prototype = {
 	// mv.isLeft()      左クリックされたかどうかを返す。Shiftキー押し中は左右逆になっている。
 	// mv.isMiddle()    中ボタンクリックされたかどうかを返す。
 	// mv.isRight()     右クリックされたかどうかを返す。Shiftキー押し中は左右逆になっている。
-	// mv.isWinWebKit() isLeftで特殊処理を行うかの内部関数
 	//---------------------------------------------------------------------------
 	isLeft : function(e){
 		if(!((kc.isSHIFT) ^ menu.getVal('lrcheck'))){
-			if(!this.isWinWebKit()){ return this.isLeftClick(e);}
+			if(!k.br.WinWebKit){ return this.isLeftClick(e);}
 			else if(e.button == 0){ return true;}
 		}
 		else{
-			if(!this.isWinWebKit()){ return this.isRightClick(e);}
+			if(!k.br.WinWebKit){ return this.isRightClick(e);}
 			else if(e.button == 2){ return true;}
 		}
 		return false;
 	},
 	isMiddle : function(e){
-		if(!this.isWinWebKit()){ return this.isMiddleClick(e);}
+		if(!k.br.WinWebKit){ return this.isMiddleClick(e);}
 		else if(e.button == 1){ return true;}
 		return false;
 	},
 	isRight : function(e){
 		if(!((kc.isSHIFT) ^ menu.getVal('lrcheck'))){
-			if(!this.isWinWebKit()){ return this.isRightClick(e);}
+			if(!k.br.WinWebKit){ return this.isRightClick(e);}
 			else if(e.button == 2){ return true;}
 		}
 		else{
-			if(!this.isWinWebKit()){ return this.isLeftClick(e);}
+			if(!k.br.WinWebKit){ return this.isLeftClick(e);}
 			else if(e.button == 0){ return true;}
 		}
 		return false;
-	},
-	isWinWebKit : function(){
-		return (navigator.userAgent.indexOf('Win')!=-1 && k.br.WebKit);
 	},
 
 	//---------------------------------------------------------------------------
@@ -201,11 +197,11 @@ MouseEvent.prototype = {
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	//---------------------------------------------------------------------------
 	pointerX : function(event) {
-		if(this.isWinWebKit()){ return event.pageX - 1;}
+		if(k.br.WinWebKit){ return event.pageX - 1;}
 		return event.pageX || (event.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft));
 	},
 	pointerY : function(event) {
-		if(this.isWinWebKit()){ return event.pageY - 1;}
+		if(k.br.WinWebKit){ return event.pageY - 1;}
 		return event.pageY || (event.clientY + (document.documentElement.scrollTop || document.body.scrollTop));
 	},
 	isLeftClick  : function(event) { return this.isButton(event, 0); },

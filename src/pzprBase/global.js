@@ -69,7 +69,8 @@ var k = {
 		IE    : !!(window.attachEvent && !window.opera),
 		Opera : !!window.opera,
 		WebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1,
-		Gecko : navigator.userAgent.indexOf('Gecko') > -1 && navigator.userAgent.indexOf('KHTML') == -1
+		Gecko : navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1,
+		WinWebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1
 	},
 	scriptcheck : false	// “à•”—p
 };
