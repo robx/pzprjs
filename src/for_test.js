@@ -1,4 +1,4 @@
-// for_test.js v3.2.0p4
+// for_test.js v3.2.2
 
 k.scriptcheck = true;
 k.callmode = "pmake";
@@ -170,6 +170,9 @@ var debug = {
 
 				enc.pzlexport(0);
 				var ta = document.urloutput.ta.value;
+
+				// ‚È‚º‚©Opera‚Ítextareaã‚Ì‰üs‚ªÀÛ‚Ì‰üsˆµ‚¢‚É‚È‚Á‚Ä‚µ‚Ü‚¤‚Á‚Û‚¢
+				if(k.br.Opera){ ta = ta.replace(/(\r|\n)/g,"");}
 
 				debug.addTextarea("Encode test   = "+(inp==ta?"pass":"failure...\n "+inp+"\n "+ta));
 

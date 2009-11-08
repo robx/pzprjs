@@ -62,6 +62,9 @@ Encode.prototype = {
 	parseURI : function(url){
 		this.init();
 
+		// ‚È‚º‚©Opera‚Ítextareaã‚Ì‰üs‚ªÀÛ‚Ì‰üsˆµ‚¢‚É‚È‚Á‚Ä‚µ‚Ü‚¤‚Á‚Û‚¢
+		if(k.br.Opera){ url = url.replace(/(\r|\n)/g,"");}
+
 		// ‚Ï‚¸‚Õ‚ê‚Ìê‡
 		if(url.match(/indi\.s58\.xrea\.com/)){
 			// ‚Ï‚¸‚Õ‚êv3‚ÌURL
