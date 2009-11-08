@@ -1590,7 +1590,8 @@ function VML2D(elm) {
   this.vid = "";  // happa add. [20090608]
   this.vml = 1;   // happa add. [20090608]
   this.zidx = 0;  // happa add. [20090608]
-  this.elements = [];  // happa add. [20090608]
+  this.elements  = [];  // happa add. [20090608]
+  this.pelements = [];  // happa add. [20091106]
 };
 
 _mix(VML2D.prototype, _super, {
@@ -1811,10 +1812,10 @@ _mix(VML2D.prototype, _super, {
       this._history.push(this._clipPath ? (vml = this._clippy(vml)) : vml);
     this._elm.insertAdjacentHTML("BeforeEnd", vml);
 
-    if(this.vml==2){ alert(vml);}	// happa for debug
+    //if(this.vml==2){ alert(vml);}	// happa for debug
 
-    if(!this.elements["p_"+this.vid]){ this.elements["p_"+this.vid] = $("#p_"+this.vid);}	// happa add.[20090608]
-    if(!this.elements[""+this.vid])  { this.elements[""+this.vid]   = $("#"+this.vid);}		// happa add.[20090608]
+    if(!this.pelements[this.vid]){ this.pelements[this.vid] = _doc.getElementById("p_"+this.vid);}	// happa add.[20090608]
+    if(!this.elements[this.vid]) { this.elements[this.vid]  = _doc.getElementById(this.vid);}	// happa add.[20090608]
   },
 
   _lfill: function(style, path, wire, mix, zindex, shadowColor) {
