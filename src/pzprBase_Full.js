@@ -6,7 +6,7 @@
  * 
  * @author  happa.
  * @version v3.2.2
- * @date    2009-11-05
+ * @date    2009-11-09
  * 
  * This script uses following libraries.
  *  jquery.js (version 1.3.2)
@@ -93,7 +93,8 @@ var k = {
 		IE    : !!(window.attachEvent && !window.opera),
 		Opera : !!window.opera,
 		WebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1,
-		Gecko : navigator.userAgent.indexOf('Gecko') > -1 && navigator.userAgent.indexOf('KHTML') == -1
+		Gecko : navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1,
+		WinWebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1
 	},
 	scriptcheck : false	// 内部用
 };
@@ -650,18 +651,18 @@ Board.prototype = {
 
 	hideNumobj : function(type,id){
 		if(type==='cell'){
-			if(this.cell[id].numobj) { this.cell[id].numobj.hide();}
-			if(this.cell[id].numobj2){ this.cell[id].numobj2.hide();}
+			pc.hideEL(this.cell[id].numobj);
+			pc.hideEL(this.cell[id].numobj2);
 		}
 		else if(type==='cross') {
-			if(this.cross[id].numobj){ this.cross[id].numobj.hide();}
+			pc.hideEL(this.cross[id].numobj);
 		}
 		else if(type==='border'){
-			if(this.border[id].numobj){ this.border[id].numobj.hide();}
+			pc.hideEL(this.border[id].numobj);
 		}
 		else if(type==='excell'){
-			if(this.excell[id].numobj) { this.excell[id].numobj.hide();}
-			if(this.excell[id].numobj2){ this.excell[id].numobj2.hide();}
+			pc.hideEL(this.excell[id].numobj);
+			pc.hideEL(this.excell[id].numobj2);
 		}
 	},
 
@@ -1162,6 +1163,7 @@ Graphic = function(){
 
 	this.lw = 1;	// LineWidth 境界線・Lineの太さ
 	this.lm = 1;	// LineMargin
+	this.addlw = 0;	// エラー時に線の太さを広げる
 
 	this.chassisflag = true;	// false: Gridを外枠の位置にも描画する
 	this.zstable     = false;	// 色分けの一部再描画時にtrueにする(VML用)
@@ -1564,34 +1566,36 @@ Graphic.prototype = {
 		this.vinc();
 	},
 	drawBorder1 : function(id, flag){
-		var addlw=0;
 		if(bd.QaB(id)!==1){ g.fillStyle = this.BorderQuescolor;}
 		else if(bd.QaB(id)===1){
-			if     (k.isborderAsLine===0 && bd.ErB(id)===1){ g.fillStyle = this.errcolor1;}
-			else if(k.isborderAsLine===0 && bd.ErB(id)===2){ g.fillStyle = this.errBorderQanscolor2;}
-			else if(k.isborderAsLine===1 && bd.ErB(id)===1){ g.fillStyle = this.errlinecolor1; this.lw++; addlw++;}
-			else if(k.isborderAsLine===1 && bd.ErB(id)===2){ g.fillStyle = this.errlinecolor2;}
-			else if(k.isborderAsLine===0 || k.irowake===0 || !menu.getVal('irowake') || !bd.border[id].color){ g.fillStyle = this.BorderQanscolor;}
-			else{ g.fillStyle = bd.border[id].color;}
+			if(k.isborderAsLine===1){ g.fillStyle = this.getLineColor(id);}
+			else{
+				if     (bd.ErB(id)===1){ g.fillStyle = this.errcolor1;          }
+				else if(bd.ErB(id)===2){ g.fillStyle = this.errBorderQanscolor2;}
+				else                   { g.fillStyle = this.BorderQanscolor;    }
+			}
 		}
+
 		this.drawBorder1x(bd.border[id].cx,bd.border[id].cy,flag);
-		this.lw -= addlw;
 	},
 	drawBorder1x : function(bx,by,flag){
-		//var lw = this.lw, lm = this.lm, pid = "b"+bx+"_"+by+"_bd_";
-		var pid = "b"+bx+"_"+by+"_bd_";
-		if(!flag){ this.vhide(pid);}
-		else if(by%2===1){ if(this.vnop(pid,1)){ g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-this.lm, k.p0.x+mf((by-1)*k.cheight/2)-this.lm, this.lw, k.cheight+this.lw);} }
-		else if(bx%2===1){ if(this.vnop(pid,1)){ g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-this.lm, k.p0.x+mf(by*k.cheight/2)-this.lm, k.cwidth+this.lw,  this.lw);} }
+		var lw = this.lw + this.addlw, lm = this.lm, pid = "b"+bx+"_"+by+"_bd_";
+		if(!flag){ this.vhide(pid); return;}
+
+		if(this.vnop(pid,1)){
+			if     (by%2===1){ g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-lm, k.p0.x+mf((by-1)*k.cheight/2)-lm, lw, k.cheight+lw);}
+			else if(bx%2===1){ g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-lm, k.p0.x+mf(by*k.cheight/2)-lm, k.cwidth+lw,  lw);}
+		}
 	},
 
 	drawBorderQsubs : function(x1,y1,x2,y2){
 		var m = mf(k.cwidth*0.15); //Margin
+		g.fillStyle = this.BorderQsubcolor;
+
 		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
-			if(bd.QsB(id)===1){ g.fillStyle = this.BorderQsubcolor;}
-			else{ this.vhide("b"+id+"_qsub1_"); continue;}
+			if(bd.QsB(id)!==1){ this.vhide("b"+id+"_qsub1_"); continue;}
 
 			if     (bd.border[id].cx%2===1){ if(this.vnop("b"+id+"_qsub1_",1)){ g.fillRect(bd.border[id].px,                  bd.border[id].py-mf(k.cheight/2)+m, 1,            k.cheight-2*m);} }
 			else if(bd.border[id].cy%2===1){ if(this.vnop("b"+id+"_qsub1_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)+m, bd.border[id].py,                   k.cwidth-2*m, 1            );} }
@@ -1654,9 +1658,10 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawLines()   回答の線をCanvasに書き込む
-	// pc.drawLine1()   回答の線をCanvasに書き込む(1カ所のみ)
-	// pc.drawPekes()   境界線上の×をCanvasに書き込む
+	// pc.drawLines()    回答の線をCanvasに書き込む
+	// pc.drawLine1()    回答の線をCanvasに書き込む(1カ所のみ)
+	// pc.getLineColor() 描画する線の色を設定する
+	// pc.drawPekes()    境界線上の×をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawLines : function(x1,y1,x2,y2){
 		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
@@ -1666,10 +1671,8 @@ Graphic.prototype = {
 	drawLine1 : function(id, flag){
 		var lw = this.lw, lm = this.lm, pid = "b"+id+"_line_";
 
-		if     (bd.ErB(id)===1){ g.fillStyle = this.errlinecolor1; lw++;}
-		else if(bd.ErB(id)===2){ g.fillStyle = this.errlinecolor2;}
-		else if(k.irowake===0 || !menu.getVal('irowake') || !bd.border[id].color){ g.fillStyle = this.linecolor;}
-		else{ g.fillStyle = bd.border[id].color;}
+		g.fillStyle = this.getLineColor(id);
+		lw += this.addlw;
 
 		if(!flag){ this.vhide(pid);}
 		else if(bd.border[id].cx%2===1 && this.vnop(pid,1)){
@@ -1679,15 +1682,22 @@ Graphic.prototype = {
 			g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-lm, k.cwidth+lw, lw);
 		}
 	},
+	getLineColor : function(id){
+		this.addlw = 0;
+		if     (bd.ErB(id)===1){ this.addlw=1; return this.errlinecolor1;}
+		else if(bd.ErB(id)===2){ return this.errlinecolor2;}
+		else if(k.irowake===0 || !menu.getVal('irowake') || !bd.border[id].color){ return this.linecolor;}
+		return bd.border[id].color;
+	},
 	drawPekes : function(x1,y1,x2,y2,flag){
 		var size = mf(k.cwidth*0.15);
 		if(size<3){ size=3;}
+		g.strokeStyle = this.pekecolor;
 
 		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
-			if(bd.QsB(id)===2){ g.strokeStyle = this.pekecolor;}
-			else{ this.vhide(["b"+id+"_peke0_","b"+id+"_peke1_","b"+id+"_peke2_"]); continue;}
+			if(bd.QsB(id)!==2){ this.vhide(["b"+id+"_peke0_","b"+id+"_peke1_","b"+id+"_peke2_"]); continue;}
 
 			g.fillStyle = "white";
 			if((flag===0 || flag===2)){ if(this.vnop("b"+id+"_peke0_",1)){
@@ -2218,8 +2228,8 @@ Graphic.prototype = {
 	// excanvasの場合、これを描画しないとVML要素が選択されてしまう
 	flushCanvasAll : function(){
 		if(g.vml){
-			g.zidx=0; g.vid="bg_"; g.elements = [];	// VML用
-			//g.clearRect(); 						// excanvas用
+			g.zidx=0; g.vid="bg_"; g.pelements = []; g.elements = [];	// VML用
+			//g.clearRect(); 											// excanvas用
 		}
 		if(k.br.IE){ g._clear();}	// uuCanvas用特殊処理
 
@@ -2233,51 +2243,52 @@ Graphic.prototype = {
 	// pc.vhide() VMLで既に描画されているオブジェクトを隠す
 	// pc.vdel()  VMLで既に描画されているオブジェクトを削除する
 	// pc.vinc()  z-indexに設定される値を+1する
+	//  ※IE以外ではf_trueになっています。
 	//---------------------------------------------------------------------------
 	// excanvas関係関数
-	vnop : function(vid, isfill){
-		if(g.vml){
-			if(g.elements[vid]){
-				var el = g.elements[vid].get(0);
-				if(el){
-					el.color = uuColor.parse((isfill===1?g.fillStyle:g.strokeStyle))[0];
-				}
-				var pel = g.elements["p_"+vid].get(0);
-				if(pel){
-					if(!this.zstable){ pel.style.zIndex = g.zidx;}
-					pel.style.display = 'inline';
-				}
-				return false;
+	vnop : (!k.br.IE ? f_true : function(vid, isfill){
+		if(g.elements[vid]){
+			var el = g.elements[vid];
+			if(el){ el.color = uuColor.parse((isfill===1?g.fillStyle:g.strokeStyle))[0];}
+
+			var pel = g.pelements[vid];
+			if(pel){
+				if(!this.zstable){ pel.style.zIndex = g.zidx;}
+				pel.style.display = 'inline';
 			}
-			g.vid = vid;
+			return false;
 		}
+		g.vid = vid;
 		return true;
-	},
-	vhide : function(vid){
-		if(g.vml){
-			if(!vid.shift){ vid = [vid];}
-			for(var i=0;i<vid.length;i++){ if(g.elements[vid[i]]){ g.elements["p_"+vid[i]].get(0).style.display = 'none';} }
+	}),
+	vhide : (!k.br.IE ? f_true : function(vid){
+		if(typeof vid === 'string'){
+			this.hideEL(g.pelements[vid]);
 		}
-	},
-	vdel : function(vid){
-		if(g.vml){
-			if(!vid.shift){ vid = [vid];}
+		else{
 			for(var i=0;i<vid.length;i++){
-				if(g.elements[vid[i]]){
-					g.elements["p_"+vid[i]].remove();
-					g.elements["p_"+vid[i]]=null;
-					g.elements[vid[i]]=null;
-				}
+				this.hideEL(g.pelements[vid[i]]);
 			}
 		}
-	},
-	vinc : function(){
-		if(g.vml){ g.vid = ""; g.zidx++;}
-	},
+	}),
+	vdel : (!k.br.IE ? f_true : function(vid){
+		for(var i=0;i<vid.length;i++){
+			if(g.elements[vid[i]]){
+				$(g.pelements[vid[i]]).remove();
+				g.pelements[vid[i]]=null;
+				g.elements[vid[i]]=null;
+			}
+		}
+	}),
+	vinc : (!k.br.IE ? f_true : function(){
+		g.vid = ""; g.zidx++;
+	}),
 
 	//---------------------------------------------------------------------------
 	// pc.CreateDOMAndSetNop()     数字を描画する為のエレメントを生成する
 	// pc.CreateElementAndSetNop() エレメントを生成する
+	// pc.showEL()                 エレメントを表示する
+	// pc.hideEL()                 エレメントを隠す
 	// pc.isdispnumCell()          数字を記入できるか判定する
 	// pc.getNumberColor()         数字の色を判定する
 	//---------------------------------------------------------------------------
@@ -2296,8 +2307,11 @@ Graphic.prototype = {
 		obj.context.className = "divnum";
 		obj.context.oncontextmenu = function(){ return false;}; //妥協点 
 
-		return obj;
+		return obj.context;
 	},
+	showEL : function(el){ el.style.display = 'inline'; },	// 条件見なくてもよさそう。
+	hideEL : function(el){ if(!!el){ el.style.display = 'none';} },
+
 	isdispnumCell : function(id){
 		return ( (bd.QnC(id)>0 || (bd.QnC(id)===0 && k.dispzero)) || 
 				((bd.QaC(id)>0 || (bd.QaC(id)===0 && k.dispzero)) && k.isAnsNumber) ||
@@ -2317,48 +2331,46 @@ Graphic.prototype = {
 	// pc.dispnumBorder()       Borderに数字を記入するための値を決定する
 	//---------------------------------------------------------------------------
 	dispnumCell_General : function(id){
-		if(bd.cell[id].numobj && !this.isdispnumCell(id)){ bd.cell[id].numobj.get(0).style.display = 'none'; return;}
-		if(this.isdispnumCell(id)){
-			if(!bd.cell[id].numobj){ bd.cell[id].numobj = this.CreateDOMAndSetNop();}
-			var obj = bd.cell[id].numobj;
+		if(!this.isdispnumCell(id)){ this.hideEL(bd.cell[id].numobj); return;}
 
-			var type = 1;
-			if     (k.isDispNumUL){ type=5;}
-			else if(bd.QuC(id)>=2 && bd.QuC(id)<=5){ type=bd.QuC(id);}
-			else if(k.puzzleid==="reflect"){ if(!this.textenable){ obj.get(0).style.display = 'none';} return;}
+		if(!bd.cell[id].numobj){ bd.cell[id].numobj = this.CreateDOMAndSetNop();}
 
-			var num = bd.getNum(id);
+		var type = 1;
+		if     (k.isDispNumUL){ type=5;}
+		else if(bd.QuC(id)>=2 && bd.QuC(id)<=5){ type=bd.QuC(id);}
+		else if(k.puzzleid==="reflect"){ if(!this.textenable){ this.hideEL(obj);} return;}
 
-			var text = (num>=0 ? ""+num : "?");
-			if(bd.QuC(id)===-2){ text = "?";}
+		var num = bd.getNum(id);
 
-			var fontratio = 0.45;
-			if(type===1){ fontratio = (num<10?0.8:(num<100?0.7:0.55));}
-			if(k.isArrowNumber===1){
-				var dir = bd.DiC(id);
-				if(dir!==0){ fontratio *= 0.85;}
-				if     (dir===1||dir===2){ type=6;}
-				else if(dir===3||dir===4){ type=7;}
-			}
+		var text = (num>=0 ? ""+num : "?");
+		if(bd.QuC(id)===-2){ text = "?";}
 
-			var color = this.getNumberColor(id);
-
-			this.dispnumCell1(id, obj, type, text, fontratio, color);
+		var fontratio = 0.45;
+		if(type===1){ fontratio = (num<10?0.8:(num<100?0.7:0.55));}
+		if(k.isArrowNumber===1){
+			var dir = bd.DiC(id);
+			if(dir!==0){ fontratio *= 0.85;}
+			if     (dir===1||dir===2){ type=6;}
+			else if(dir===3||dir===4){ type=7;}
 		}
+
+		var color = this.getNumberColor(id);
+
+		this.dispnumCell1(id, bd.cell[id].numobj, type, text, fontratio, color);
 	},
 	dispnumCross : function(id){
 		if(bd.QnX(id)>0||(bd.QnX(id)===0&&k.dispzero===1)){
 			if(!bd.cross[id].numobj){ bd.cross[id].numobj = this.CreateDOMAndSetNop();}
 			this.dispnumCross1(id, bd.cross[id].numobj, 101, ""+bd.QnX(id), 0.6 ,this.fontcolor);
 		}
-		else if(bd.cross[id].numobj){ bd.cross[id].numobj.get(0).style.display = 'none';}
+		else{ this.hideEL(bd.cross[id].numobj);}
 	},
 	dispnumBorder : function(id){
 		if(bd.QnB(id)>0||(bd.QnB(id)===0&&k.dispzero===1)){
 			if(!bd.border[id].numobj){ bd.border[id].numobj = this.CreateDOMAndSetNop();}
 			this.dispnumBorder1(id, bd.border[id].numobj, 101, ""+bd.QnB(id), 0.45 ,this.borderfontcolor);
 		}
-		else if(bd.border[id].numobj){ bd.border[id].numobj.get(0).style.display = 'none';}
+		else{ this.hideEL(bd.border[id].numobj);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -2368,30 +2380,29 @@ Graphic.prototype = {
 	// pc.dispnumBorder1() Borderに数字を記入するためdispnum1関数に値を渡す
 	// pc.dispnum1()       数字を記入するための共通関数
 	//---------------------------------------------------------------------------
-	dispnumCell1 : function(c, obj, type, text, fontratio, color){
-		this.dispnum1(obj, type, text, fontratio, color, bd.cell[c].px, bd.cell[c].py);
+	dispnumCell1 : function(c, el, type, text, fontratio, color){
+		this.dispnum1(el, type, text, fontratio, color, bd.cell[c].px, bd.cell[c].py);
 	},
-	dispnumEXcell1 : function(c, obj, type, text, fontratio, color){
-		this.dispnum1(obj, type, text, fontratio, color, bd.excell[c].px, bd.excell[c].py);
+	dispnumEXcell1 : function(c, el, type, text, fontratio, color){
+		this.dispnum1(el, type, text, fontratio, color, bd.excell[c].px, bd.excell[c].py);
 	},
-	dispnumCross1 : function(c, obj, type, text, fontratio, color){
-		this.dispnum1(obj, type, text, fontratio, color, bd.cross[c].px, bd.cross[c].py);
+	dispnumCross1 : function(c, el, type, text, fontratio, color){
+		this.dispnum1(el, type, text, fontratio, color, bd.cross[c].px, bd.cross[c].py);
 	},
-	dispnumBorder1 : function(c, obj, type, text, fontratio, color){
-		this.dispnum1(obj, type, text, fontratio, color, bd.border[c].px, bd.border[c].py);
+	dispnumBorder1 : function(c, el, type, text, fontratio, color){
+		this.dispnum1(el, type, text, fontratio, color, bd.border[c].px, bd.border[c].py);
 	},
-	dispnum1 : function(obj, type, text, fontratio, color, px, py){
+	dispnum1 : function(el, type, text, fontratio, color, px, py){
 //		if(!this.textenable){
-			if(!obj){ return;}
+			if(!el){ return;}
 			var IE = k.br.IE;
-			var el = obj.context;
 
 			el.innerHTML = text;
 
 			var fontsize = mf(k.cwidth*fontratio*this.fontsizeratio);
 			el.style.fontSize = (""+ fontsize + 'px');
 
-			el.style.display = 'inline';	// 先に表示しないとwid,hgt=0になって位置がずれる
+			this.showEL(el);	// 先に表示しないとwid,hgt=0になって位置がずれる
 
 			var wid = el.clientWidth;
 			var hgt = el.clientHeight;
@@ -2443,7 +2454,7 @@ Graphic.prototype = {
 			var c = clist[i];
 
 			if(bd.QnC(c)===-1 || bd.QuC(c)!==51 || bd.rt(c)===-1 || bd.QuC(bd.rt(c))===51){
-				if(bd.cell[c].numobj){ bd.cell[c].numobj.get(0).style.display = 'none';}
+				this.hideEL(bd.cell[c].numobj);
 			}
 			else{
 				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
@@ -2453,7 +2464,7 @@ Graphic.prototype = {
 			}
 
 			if(bd.DiC(c)===-1 || bd.QuC(c)!==51 || bd.dn(c)===-1 || bd.QuC(bd.dn(c))===51){
-				if(bd.cell[c].numobj2){ bd.cell[c].numobj2.get(0).style.display = 'none';}
+				this.hideEL(bd.cell[c].numobj2);
 			}
 			else{
 				if(!bd.cell[c].numobj2){ bd.cell[c].numobj2 = this.CreateDOMAndSetNop();}
@@ -2471,7 +2482,7 @@ Graphic.prototype = {
 				if(c==-1){ continue;}
 
 				if(bd.QnE(c)===-1 || bd.excell[c].cy===-1 || bd.QuC(bd.excell[c].cy*k.qcols)===51){
-					if(bd.excell[c].numobj){ bd.excell[c].numobj.get(0).style.display = 'none';}
+					this.hideEL(bd.excell[c].numobj);
 				}
 				else{
 					if(!bd.excell[c].numobj){ bd.excell[c].numobj = this.CreateDOMAndSetNop();}
@@ -2481,7 +2492,7 @@ Graphic.prototype = {
 				}
 
 				if(bd.DiE(c)===-1 || bd.excell[c].cx===-1 || bd.QuC(bd.excell[c].cx)===51){
-					if(bd.excell[c].numobj2){ bd.excell[c].numobj2.get(0).style.display = 'none';}
+					this.hideEL(bd.excell[c].numobj2);
 				}
 				else{
 					if(!bd.excell[c].numobj2){ bd.excell[c].numobj2 = this.CreateDOMAndSetNop();}
@@ -2654,37 +2665,33 @@ MouseEvent.prototype = {
 	// mv.isLeft()      左クリックされたかどうかを返す。Shiftキー押し中は左右逆になっている。
 	// mv.isMiddle()    中ボタンクリックされたかどうかを返す。
 	// mv.isRight()     右クリックされたかどうかを返す。Shiftキー押し中は左右逆になっている。
-	// mv.isWinWebKit() isLeftで特殊処理を行うかの内部関数
 	//---------------------------------------------------------------------------
 	isLeft : function(e){
 		if(!((kc.isSHIFT) ^ menu.getVal('lrcheck'))){
-			if(!this.isWinWebKit()){ return this.isLeftClick(e);}
+			if(!k.br.WinWebKit){ return this.isLeftClick(e);}
 			else if(e.button == 0){ return true;}
 		}
 		else{
-			if(!this.isWinWebKit()){ return this.isRightClick(e);}
+			if(!k.br.WinWebKit){ return this.isRightClick(e);}
 			else if(e.button == 2){ return true;}
 		}
 		return false;
 	},
 	isMiddle : function(e){
-		if(!this.isWinWebKit()){ return this.isMiddleClick(e);}
+		if(!k.br.WinWebKit){ return this.isMiddleClick(e);}
 		else if(e.button == 1){ return true;}
 		return false;
 	},
 	isRight : function(e){
 		if(!((kc.isSHIFT) ^ menu.getVal('lrcheck'))){
-			if(!this.isWinWebKit()){ return this.isRightClick(e);}
+			if(!k.br.WinWebKit){ return this.isRightClick(e);}
 			else if(e.button == 2){ return true;}
 		}
 		else{
-			if(!this.isWinWebKit()){ return this.isLeftClick(e);}
+			if(!k.br.WinWebKit){ return this.isLeftClick(e);}
 			else if(e.button == 0){ return true;}
 		}
 		return false;
-	},
-	isWinWebKit : function(){
-		return (navigator.userAgent.indexOf('Win')!=-1 && k.br.WebKit);
 	},
 
 	//---------------------------------------------------------------------------
@@ -2696,11 +2703,11 @@ MouseEvent.prototype = {
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	//---------------------------------------------------------------------------
 	pointerX : function(event) {
-		if(this.isWinWebKit()){ return event.pageX - 1;}
+		if(k.br.WinWebKit){ return event.pageX - 1;}
 		return event.pageX || (event.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft));
 	},
 	pointerY : function(event) {
-		if(this.isWinWebKit()){ return event.pageY - 1;}
+		if(k.br.WinWebKit){ return event.pageY - 1;}
 		return event.pageY || (event.clientY + (document.documentElement.scrollTop || document.body.scrollTop));
 	},
 	isLeftClick  : function(event) { return this.isButton(event, 0); },
@@ -3831,6 +3838,9 @@ Encode.prototype = {
 	},
 	parseURI : function(url){
 		this.init();
+
+		// なぜかOperaはtextarea上の改行が実際の改行扱いになってしまうっぽい
+		if(k.br.Opera){ url = url.replace(/(\r|\n)/g,"");}
 
 		// ぱずぷれの場合
 		if(url.match(/indi\.s58\.xrea\.com/)){
@@ -8195,13 +8205,14 @@ AreaManager.prototype = {
 		}
 	},
 	setTopOfRoom : function(roomid){
-		var cc=-1, cx=k.qcols;
+		var cc=-1, cx=k.qcols, cy=k.qrows;
 		var clist = this.room[roomid].clist;
 		for(var i=0;i<clist.length;i++){
-			if(bd.cell[clist[i]].cx<cx){
-				cc=clist[i];
-				cx=bd.cell[clist[i]].cx;
-			}
+			var tc = bd.cell[clist[i]];
+			if(tc.cx>cx || (tc.cx==cx && tc.cy>=cy)){ continue;}
+			cc=clist[i];
+			cx=tc.cx;
+			cy=tc.cy;
 		}
 		this.room[roomid].top = cc;
 	},
