@@ -637,13 +637,14 @@ AreaManager.prototype = {
 		}
 	},
 	setTopOfRoom : function(roomid){
-		var cc=-1, cx=k.qcols;
+		var cc=-1, cx=k.qcols, cy=k.qrows;
 		var clist = this.room[roomid].clist;
 		for(var i=0;i<clist.length;i++){
-			if(bd.cell[clist[i]].cx<cx){
-				cc=clist[i];
-				cx=bd.cell[clist[i]].cx;
-			}
+			var tc = bd.cell[clist[i]];
+			if(tc.cx>cx || (tc.cx==cx && tc.cy>=cy)){ continue;}
+			cc=clist[i];
+			cx=tc.cx;
+			cy=tc.cy;
 		}
 		this.room[roomid].top = cc;
 	},
