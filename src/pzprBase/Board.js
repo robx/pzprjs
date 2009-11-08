@@ -386,18 +386,18 @@ Board.prototype = {
 
 	hideNumobj : function(type,id){
 		if(type==='cell'){
-			if(this.cell[id].numobj) { this.cell[id].numobj.hide();}
-			if(this.cell[id].numobj2){ this.cell[id].numobj2.hide();}
+			pc.hideEL(this.cell[id].numobj);
+			pc.hideEL(this.cell[id].numobj2);
 		}
 		else if(type==='cross') {
-			if(this.cross[id].numobj){ this.cross[id].numobj.hide();}
+			pc.hideEL(this.cross[id].numobj);
 		}
 		else if(type==='border'){
-			if(this.border[id].numobj){ this.border[id].numobj.hide();}
+			pc.hideEL(this.border[id].numobj);
 		}
 		else if(type==='excell'){
-			if(this.excell[id].numobj) { this.excell[id].numobj.hide();}
-			if(this.excell[id].numobj2){ this.excell[id].numobj2.hide();}
+			pc.hideEL(this.excell[id].numobj);
+			pc.hideEL(this.excell[id].numobj2);
 		}
 	},
 
