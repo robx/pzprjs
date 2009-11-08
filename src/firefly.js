@@ -130,7 +130,7 @@ Puzzles.firefly.prototype = {
 					g.arc(px, py, rsize2, 0, Math.PI*2, false);
 					if(this.vnop("c"+c+"_cirb_",1)){ g.fill(); }
 
-					this.vdel("c"+c+"_circ_");
+					this.vdel(["c"+c+"_circ_"]);
 					g.fillStyle = this.Cellcolor;
 					switch(bd.DiC(c)){
 						case 1: py-=(rsize-1); break;
@@ -144,7 +144,7 @@ Puzzles.firefly.prototype = {
 						if(this.vnop("c"+c+"_circ_",1)){ g.fill();}
 					}
 				}
-				else{ this.vhide(["c"+c+"_cira_","c"+c+"_cirb_"]); this.vdel("c"+c+"_circ_");}
+				else{ this.vhide(["c"+c+"_cira_","c"+c+"_cirb_"]); this.vdel(["c"+c+"_circ_"]);}
 
 				this.dispnumCell_General(c);
 			}

@@ -199,12 +199,9 @@ Puzzles.hashikake.prototype = {
 		pc.drawLine1 = function(id, flag){
 			var lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3); //LineWidth
 
-			if     (bd.ErB(id)==1){ g.fillStyle = this.errlinecolor1; lw++;}
-			else if(bd.ErB(id)==2){ g.fillStyle = this.errlinecolor2;}
-			else if(k.irowake==0 || !menu.getVal('irowake') || !bd.border[id].color){ g.fillStyle = this.linecolor;}
-			else{ g.fillStyle = bd.border[id].color;}
+			g.fillStyle = this.getLineColor(id);
 
-			var lm = mf((lw-1)/2); //LineMargin
+			var lm = mf((lw-1)/2) + this.addlw; //LineMargin
 			var ls = mf(lw*1.5);
 
 			this.vhide(["b"+id+"_ls_","b"+id+"_ld1_","b"+id+"_ld2_"]);

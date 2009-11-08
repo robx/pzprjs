@@ -198,7 +198,6 @@ Puzzles.kakuro.prototype = {
 					var text = (bd.QaC(c)>0?""+bd.QaC(c):"");
 					this.dispnumCell1(c, bd.cell[c].numobj, 1, text, 0.80, color);
 				}
-				//else if(bd.cell[c].numobj){ bd.cell[c].numobj.hide();}
 			}
 			this.vinc();
 		};

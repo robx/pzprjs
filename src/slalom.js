@@ -314,7 +314,7 @@ Puzzles.slalom.prototype = {
 				}
 				else{
 					this.vhide("c"+c+"_full_");
-					if(bd.cell[c].numobj){ bd.cell[c].numobj.get(0).style.display = 'none';}
+					this.hideEL(bd.cell[c].numobj);
 				}
 			}
 			this.vinc();
@@ -375,7 +375,8 @@ Puzzles.slalom.prototype = {
 		};
 		pc.dispnumStartpos = function(c){
 			var num = bd.hinfo.max;
-			if(num<0){ if(bd.cell[c].numobj){ bd.cell[c].numobj.hide();} return;}
+			if(num<0){ this.hideEL(bd.cell[c].numobj); return;}
+
 			if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
 			var fontratio = (num<10?0.75:0.66);
 			this.dispnumCell1(c, bd.cell[c].numobj, 1, ""+num, fontratio, "black");
@@ -387,6 +388,7 @@ Puzzles.slalom.prototype = {
 			pc.drawStartpos(mf((bx+by%2)/2),mf((by+bx%2)/2),mf((bx+by%2)/2),mf((by+bx%2)/2));
 		};
 
+		// Xキー押した時に数字を表示するメソッド
 		pc.drawNumbersOnGate = function(keydown){
 			if(keydown){ bd.hinfo.generateGateNumber();}
 
@@ -395,14 +397,11 @@ Puzzles.slalom.prototype = {
 
 				var r = bd.hinfo.getGateid(c);
 				var num = (r>0?bd.hinfo.data[r].number:-1);
-				if(keydown && num>0){
-					if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
-					var fontratio = (num<10?0.8:(num<100?0.7:0.55));
-					this.dispnumCell1(c, bd.cell[c].numobj, 1, ""+num, fontratio ,"tomato");
-				}
-				else{
-					if(bd.cell[c].numobj){ bd.cell[c].numobj.get(0).style.display = 'none';}
-				}
+				if(!keydown || num<=0){ this.hideEL(bd.cell[c].numobj); continue;}
+
+				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
+				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
+				this.dispnumCell1(c, bd.cell[c].numobj, 1, ""+num, fontratio ,"tomato");
 			}
 		};
 	},

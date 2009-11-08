@@ -223,8 +223,7 @@ Puzzles.hakoiri.prototype = {
 				var num = bd.getNum(c);
 				if(num>=1 && num<=3){ text = ({1:"›",2:"¢",3:" "})[num];}
 				else if(num==-2)    { text = "?";}
-				else if(!bd.cell[c].numobj)  { continue;}
-				else{ bd.cell[c].numobj.get(0).style.display = 'none'; continue;}
+				else{ this.hideEL(bd.cell[c].numobj); continue;}
 
 				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
 				this.dispnumCell1(c, bd.cell[c].numobj, 1, text, 0.8, this.getNumberColor(c));

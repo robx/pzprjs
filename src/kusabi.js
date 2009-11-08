@@ -148,8 +148,7 @@ Puzzles.kusabi.prototype = {
 				var c = clist[i];
 				var num = bd.QnC(c);
 				if(num>=1 && num<=3){ text = ({1:"“¯",2:"’Z",3:"’·"})[num];}
-				else if(!bd.cell[c].numobj)   { continue;}
-				else{ bd.cell[c].numobj.hide(); continue;}
+				else{ this.hideEL(bd.cell[c].numobj); continue;}
 
 				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
 				this.dispnumCell1(c, bd.cell[c].numobj, 1, text, 0.65, this.getNumberColor(c));

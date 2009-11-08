@@ -114,18 +114,14 @@ Puzzles.factors.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
-				if(bd.QaC(c)==-1){
-					if(bd.cell[c].numobj){ bd.cell[c].numobj.get(0).style.display = 'none';}
-				}
+				if(bd.QaC(c)==-1){ this.hideEL(bd.cell[c].numobj);}
 				else{
 					var color = (bd.ErC(c)==1?this.fontErrcolor:this.fontAnscolor);
 					if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
 					this.dispnumCell1(c, bd.cell[c].numobj, 1, (""+bd.QaC(c)), (bd.QaC(c)<10?0.8:0.7), color);
 				}
 
-				if(bd.QnC(c)==-1){
-					if(bd.cell[c].numobj2){ bd.cell[c].numobj2.get(0).style.display = 'none';}
-				}
+				if(bd.QnC(c)==-1){ this.hideEL(bd.cell[c].numobj2);}
 				else{
 					if(!bd.cell[c].numobj2){ bd.cell[c].numobj2 = this.CreateDOMAndSetNop();}
 					var size = 0.45;

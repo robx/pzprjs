@@ -233,7 +233,7 @@ Puzzles.tateyoko.prototype = {
 				else{ this.vhide("c"+c+"_full_");}
 
 				var num = bd.QnC(c);
-				if(num==-1){ if(bd.cell[c].numobj){ bd.cell[c].numobj.hide();} continue;}
+				if(num==-1){ this.hideEL(bd.cell[c].numobj); continue;}
 				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
 
 				var color = this.fontcolor;

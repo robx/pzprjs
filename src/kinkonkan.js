@@ -324,9 +324,7 @@ Puzzles.kinkonkan.prototype = {
 					}
 					else{ this.vhide("ex"+c+"_full_");}
 
-					if(bd.DiE(c)==0 && bd.QnE(c)==-1){
-						if(bd.excell[c].numobj){ bd.excell[c].numobj.hide();}
-					}
+					if(bd.DiE(c)==0 && bd.QnE(c)==-1){ this.hideEL(bd.excell[c].numobj);}
 					else{
 						if(!bd.excell[c].numobj){ bd.excell[c].numobj = this.CreateDOMAndSetNop();}
 						var num=bd.QnE(c), canum=bd.DiE(c);

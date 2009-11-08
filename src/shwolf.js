@@ -136,45 +136,49 @@ Puzzles.shwolf.prototype = {
 			this.drawSheepWolf(x1,y1,x2,y2);
 			this.drawCrossMarks(x1,y1,x2+1,y2+1);
 
-			this.drawNumbers(x1,y1,x2,y2);
-
 			this.drawBorderQsubs(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 		};
 
+		// numobj:？表示用 numobj2:画像表示用
 		pc.drawSheepWolf = function(x1,y1,x2,y2){
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QuC(c)==-2){
-					if(bd.cell[c].numobj2){ bd.cell[c].numobj2.hide();}
+				if(bd.QuC(c)==0){
+					this.hideEL(bd.cell[c].numobj);
+					this.hideEL(bd.cell[c].numobj2);
+				}
+				else if(bd.QuC(c)==-2){
 					this.dispnumCell_General(c);
-					continue;
+					this.hideEL(bd.cell[c].numobj2);
 				}
-				else if(bd.cell[c].numobj){ bd.cell[c].numobj.hide();}
+				else{
+					this.hideEL(bd.cell[c].numobj);
 
-				if(bd.QuC(c)!=41&&bd.QuC(c)!=42){ if(bd.cell[c].numobj2){ bd.cell[c].numobj2.hide();} continue;}
-				if(!bd.cell[c].numobj2){
-					var img = newEL('img').attr("src",'./src/img/shwolf_obj.gif').unselectable();
-					var div = newEL('div').css("position","relative").css("display","inline").unselectable();
-					bd.cell[c].numobj2 = this.CreateDOMAndSetNop().append(div.append(img));
+					if(!bd.cell[c].numobj2){
+						var _img  = newEL('img').attr("src",'./src/img/shwolf_obj.gif').unselectable();
+						var _sdiv = newEL('div').css("position","relative").css("display","inline").unselectable();
+						bd.cell[c].numobj2 = $(this.CreateDOMAndSetNop()).append(_sdiv.append(_img)).context;
+						bd.cell[c].imgobj  = _img.context; // 勝手に追加しちゃいます悪影響はないと思いますごめんなさい＞＜
+					}
+					div = bd.cell[c].numobj2;
+					img = bd.cell[c].imgobj;
+
+					var ipos  = {41:0,42:1}[bd.QuC(c)];
+					img.style.width  = ""+(2*k.cwidth)+"px";
+					img.style.height = ""+(k.cheight)+"px";
+					img.style.left   = "-"+mf((ipos+0.5)*k.cwidth)+"px";
+					img.style.top    = ""+mf((!k.br.Opera?0:15)-k.cwidth/2)+"px";
+					img.style.clip   = "rect(1px,"+(k.cwidth*(ipos+1))+"px,"+k.cwidth+"px,"+(k.cwidth*ipos+1)+"px)";
+					img.style.position = 'absolute';
+
+					this.showEL(div);
+					var wid = div.clientWidth, hgt = div.clientHeight;
+					div.style.left = k.cv_oft.x+bd.cell[c].px+mf((k.cwidth-wid) /2)+2;
+					div.style.top  = k.cv_oft.y+bd.cell[c].py+mf((k.cheight-hgt)/2)+1;
 				}
-
-				var ipos  = {41:0,42:1}[bd.QuC(c)];
-				var el = bd.cell[c].numobj2.children().children().get(0);
-				el.style.width  = ""+(2*k.cwidth)+"px";
-				el.style.height = ""+(k.cheight)+"px";
-				el.style.left   = "-"+mf((ipos+0.5)*k.cwidth)+"px";
-				el.style.top    = ""+mf((!k.br.Opera?0:15)-k.cwidth/2)+"px";
-				el.style.clip   = "rect(1px,"+(k.cwidth*(ipos+1))+"px,"+k.cwidth+"px,"+(k.cwidth*ipos+1)+"px)";
-				el.style.position = 'absolute';
-
-				el = bd.cell[c].numobj2.context;
-				el.style.display = 'inline';
-				var wid = el.clientWidth, hgt = el.clientHeight;
-				el.style.left = k.cv_oft.x+bd.cell[c].px+mf((k.cwidth-wid) /2)+2;
-				el.style.top  = k.cv_oft.y+bd.cell[c].py+mf((k.cheight-hgt)/2)+1;
 			}
 			this.vinc();
 		};

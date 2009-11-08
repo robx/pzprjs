@@ -188,9 +188,7 @@ Puzzles.kaero.prototype = {
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QnC(c)==-1){
-					if(bd.cell[c].numobj){ bd.cell[c].numobj.hide();}
-				}
+				if(bd.QnC(c)==-1){ this.hideEL(bd.cell[c].numobj);}
 				else{
 					if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
 					var num=bd.QnC(c);

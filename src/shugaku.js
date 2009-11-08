@@ -326,7 +326,7 @@ Puzzles.shugaku.prototype = {
 		};
 
 		pc.drawTarget = function(x1,y1,x2,y2){
-			this.vdel("t1_"); this.vdel("t2_"); this.vdel("t3_"); this.vdel("t4_");
+			this.vdel(["t1_","t2_","t3_","t4_"]);
 			if(mv.firstPos.x==-1 && mv.firstPos.y==-1){ this.vinc(); this.vinc(); this.vinc(); return;}
 			var cc=mv.mouseCell;
 			if(cc==-1){ return;}

@@ -294,7 +294,7 @@ Puzzles.bosanowa.prototype = {
 					if(!bd.border[id].numobj){ bd.border[id].numobj = this.CreateDOMAndSetNop();}
 					this.dispnumBorder1(id, bd.border[id].numobj, 101, ""+bd.QsB(id), 0.35 ,this.borderfontcolor);
 				}
-				else if(bd.border[id].numobj){ bd.border[id].numobj.get(0).style.display = 'none';}
+				else{ this.hideEL(bd.border[id].numobj);}
 			}
 			this.vinc();
 		};

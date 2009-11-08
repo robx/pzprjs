@@ -295,14 +295,13 @@ Puzzles.icebarn.prototype = {
 			else if(bx==0)        { this.dispString(bd.aoutobj, "OUT", ((bx+0.5)/2)*k.cwidth-19, ((by+1.0)/2)*k.cheight-7);}
 			else if(bx==2*k.qcols){ this.dispString(bd.aoutobj, "OUT", ((bx+2.0)/2)*k.cwidth+5 , ((by+1.0)/2)*k.cheight-7);}
 		};
-		pc.dispString = function(obj, text, px, py){
-			var el = obj.get(0);
+		pc.dispString = function(el, text, px, py){
 			el.style.fontSize = (k.cwidth*0.55)+'px';
 			el.style.left     = k.cv_oft.x + px+(!k.br.IE?2:4);
 			el.style.top      = k.cv_oft.y + py+(!k.br.IE?1:5);
 			el.style.color    = g.fillStyle;
-			el.style.display = 'inline';
-			el.innerHTML = text;
+			el.innerHTML      = text;
+			this.showEL(el);
 		};
 
 		line.repaintParts = function(id){

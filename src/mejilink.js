@@ -133,12 +133,7 @@ Puzzles.mejilink.prototype = {
 				if(cc2==-1 || bd.ErC(cc2)==0){ g.fillStyle = this.BorderQuescolor;}
 				else{ g.fillStyle = this.errbcolor1;}
 			}
-			else if(bd.isLine(id)){
-				if     (bd.ErB(id)==1){ g.fillStyle = this.errlinecolor1; lw++;}
-				else if(bd.ErB(id)==2){ g.fillStyle = this.errlinecolor2;}
-				else if(!menu.getVal('irowake') || !bd.border[id].color){ g.fillStyle = this.BorderQanscolor;}
-				else{ g.fillStyle = bd.border[id].color;}
-			}
+			else if(bd.isLine(id)){ g.fillStyle = this.getLineColor(id); lw += this.addlw;}
 
 			if     (bd.border[id].cy%2==1){ if(this.vnop(vmlid,1)){ g.fillRect(bd.border[id].px-lm,                bd.border[id].py-mf(k.cheight/2)-lm, lw         , k.cheight+lw);} }
 			else if(bd.border[id].cx%2==1){ if(this.vnop(vmlid,1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-lm                , k.cwidth+lw, lw          );} }
