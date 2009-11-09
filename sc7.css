@@ -74,8 +74,8 @@
 	iframe#fileiopanel{ width:200px; height:200px; position:absolute; top:0px; left:-10000px;}
 	form#fileform2    { width:100px; height:100px; position:absolute; top:0px; left:-9000px; }
 
-	td.kpnum { width:32px; height:32px; font-size:24px; text-align:center; vertical-align:middle; background-color:white; cursol:default;}
-	td.kpimg { width:32px; height:32px; text-align:left; vertical-align:top; background-color:white; cursol:default;}
+	td.kpnum { width:32px; height:32px; font-size:24px; text-align:center; vertical-align:middle; background-color:white; cursor:default;}
+	td.kpimg { width:32px; height:32px; text-align:left; vertical-align:top; background-color:white; cursor:default;}
 	img.kp   { position:absolute; overflow:hidden;}
 
 	/* aƒ^ƒO ”wŒi‚Æ‚© */
