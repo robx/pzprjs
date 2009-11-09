@@ -15,6 +15,9 @@
 	li.subpa { color:gray; }
 	li.orig  { color:#afafaf; }
 	td.lists { padding:4pt 0pt 12pt 4pt; vertical-align:top;}
+
+	a.kakushi { text-decoration:none; color:lime; }
+	a.kakushi:hover { text-decoration:none; color:yellow; }
 //-->
 </style>
 <script type="text/javascript">
@@ -41,18 +44,22 @@
 <table border=0 class=exp><tr><td class=exp>
 <p class=expression>
 　ぱずぷれ<small>(仮称)</small>はニコリに載っている/載っていたパズルを作成したり、遊んだりするWebアプリです。
-もともとJavaAppletで開発していたのですが、昨今のIT事情を考えてJavaScriptで開発し直すことにしました。
+もともとJavaAppletで開発していたのですが、現在はJavaScriptで開発しています。
 </p>
 <p class=expression style="margin-top:4pt;">
-　スクリプトの作成はFireFox3.0.11、Google Chrome2.0で行っており、動作確認はSafari3.2.3、
-InternetExplorer6、たまにOpera9.64でも行っております。
+　スクリプトの作成は主にFireFox3.5.4、Safari4.0.3で行っており、動作確認はGoogle Chrome3.0、
+InternetExplorer6.0/8.0、たまにFirefox3.0やOpera9.64/10.01でも行っております。
 </p>
 <p class=expression style="margin-top:4pt;">
 ただし、InternetExplorerおよびSleipnir等のIEコンポーネント使用ブラウザは
 描画処理が多少重いですので、それ以外のブラウザの使用を推奨いたします。
 なお、IEでの描画処理には<a href="http://code.google.com/p/uupaa-js-spinoff/">uuCanvas.js v1.0</a>を
-使用させていただいており、<a href="http://www.microsoft.com/japan/Silverlight/">Silverlight</a>を
-使うと描画処理が数倍程度速くなるようです。
+使用させていただいております。<a href="http://www.microsoft.com/japan/Silverlight/">Silverlight</a>を
+使うと、リサイズ時等の描画処理が数倍程度速くなるようです。
+</p>
+<p class=expression style="margin-top:4pt;">
+　また、主にメニューの動作や、イベント処理において<a href="http://jquery.com/">jQuery 1.3.2</a>を
+使用させていただいております。
 </p>
 </td></tr></table>
 
@@ -230,6 +237,7 @@ URLジェネレータ、ぱずぷれ(仮称)は<a href="../">こちら</a><br>
 <p class=back><a href="../">TOPへ戻る</a> <span style="color:white;" onClick="javascript:disp(0);">display</span></p>
 
 </div>
+<a class="kakushi" href="p.html?m+renban">_</a>
 </BODY>
 </HTML>
 
