@@ -1,7 +1,8 @@
-// for_test.js v3.2.2
+// for_test.js v3.2.3
 
 k.scriptcheck = true;
-k.callmode = "pmake";
+k.EDITOR = true;
+k.PLAYER = false;
 
 var debug = {
 	testonly_func : function(){
