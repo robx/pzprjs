@@ -1,4 +1,4 @@
-// global.js v3.2.2
+// global.js v3.2.3
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -48,11 +48,14 @@ var k = {
 
 	// 内部で自動的に設定されるグローバル変数
 	puzzleid  : '',			// パズルのID("creek"など)
-	callmode  : 'pmake',	// 'pmake':エディタ 'pplay':player
-	mode      : 3,			// 1:問題配置モード 3:回答モード
 	use       : 1,			// 操作方法
 	irowake   : 0,			// 線の色分けをするかしないか
 	widthmode : 2,			// Canvasの横幅をどうするか
+
+	EDITOR    : true,		// エディタモード
+	PLAYER    : false,		// playerモード
+	editmode  : true,		// 問題配置モード
+	playmode  : false,		// 回答モード
 
 	enableKey   : true,		// キー入力は有効か
 	enableMouse : true,		// マウス入力は有効か
@@ -72,7 +75,25 @@ var k = {
 		Gecko : navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1,
 		WinWebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1
 	},
-	scriptcheck : false	// 内部用
+
+	// const値
+	CELL   : 'cell',
+	CROSS  : 'cross',
+	BORDER : 'border',
+	EXCELL : 'excell',
+
+	UP : 1,		// up
+	DN : 2,		// down
+	LT : 3,		// left
+	RT : 4,		// right
+
+	KEYUP : 'up',
+	KEYDN : 'down',
+	KEYLT : 'left',
+	KEYRT : 'right',
+
+	// for_test.js用
+	scriptcheck : false
 };
 
 var g;				// グラフィックコンテキスト
@@ -163,7 +184,7 @@ Timer.prototype = {
 		this.TID = setInterval(this.update.bind(this), 200);
 	},
 	update : function(){
-		if(k.callmode!='pmake'){ this.updatetime();}
+		if(k.PLAYER){ this.updatetime();}
 
 		if(k.autocheck){ this.ACcheck();}
 	},
@@ -214,7 +235,7 @@ Timer.prototype = {
 	// tm.procUndo()        Undo/Redo呼び出しを実行する
 	//---------------------------------------------------------------------------
 	startUndoTimer : function(){
-		this.undoWaitCount = mf(200/this.undoInterval);
+		this.undoWaitCount = mf(300/this.undoInterval);
 		if(!this.TIDundo){ this.TIDundo = setInterval(this.procUndo.bind(this), this.undoInterval);}
 
 		if     (kc.inUNDO){ um.undo();}
