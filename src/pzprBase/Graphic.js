@@ -1,4 +1,4 @@
-// Graphic.js v3.2.2
+// Graphic.js v3.2.3
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
@@ -376,21 +376,21 @@ Graphic.prototype = {
 				var lm = mf((lw-1)/2); //LineMargin
 				var px=bd.cell[c].px, py=bd.cell[c].py;
 
-				if((dir===1||dir===2) && this.vnop("c"+c+"_ar1_",1)){
+				if((dir===k.UP||dir===k.DN) && this.vnop("c"+c+"_ar1_",1)){
 					px=px+k.cwidth-mf(ls*1.5)-lm; py=py+ls+1;
 					g.fillRect(px, py+(dir==1?ls:0), lw, ll-ls);
 					px+=lw/2;
 				}
-				if((dir===3||dir===4) && this.vnop("c"+c+"_ar3_",1)){
+				if((dir===k.LT||dir===k.RT) && this.vnop("c"+c+"_ar3_",1)){
 					px=px+ls+1; py=py+mf(ls*1.5)-lm;
 					g.fillRect(px+(dir==3?ls:0), py, ll-ls, lw);
 					py+=lw/2;
 				}
 
-				if(dir===1){ if(this.vnop("c"+c+"_dt1_",1)){ this.inputPath([px   ,py     ,0,0  ,-ll/6   ,ll/3  , ll/6  , ll/3], true); g.fill();} }else{ this.vhide("c"+c+"_dt1_");}
-				if(dir===2){ if(this.vnop("c"+c+"_dt2_",1)){ this.inputPath([px   ,py+ll  ,0,0  ,-ll/6  ,-ll/3  , ll/6  ,-ll/3], true); g.fill();} }else{ this.vhide("c"+c+"_dt2_");}
-				if(dir===3){ if(this.vnop("c"+c+"_dt3_",1)){ this.inputPath([px   ,py     ,0,0  , ll*0.3,-ll/6  , ll*0.3, ll/6], true); g.fill();} }else{ this.vhide("c"+c+"_dt3_");}
-				if(dir===4){ if(this.vnop("c"+c+"_dt4_",1)){ this.inputPath([px+ll,py     ,0,0  ,-ll*0.3,-ll/6  ,-ll*0.3, ll/6], true); g.fill();} }else{ this.vhide("c"+c+"_dt4_");}
+				if(dir===k.UP){ if(this.vnop("c"+c+"_dt1_",1)){ this.inputPath([px   ,py     ,0,0  ,-ll/6   ,ll/3  , ll/6  , ll/3], true); g.fill();} }else{ this.vhide("c"+c+"_dt1_");}
+				if(dir===k.DN){ if(this.vnop("c"+c+"_dt2_",1)){ this.inputPath([px   ,py+ll  ,0,0  ,-ll/6  ,-ll/3  , ll/6  ,-ll/3], true); g.fill();} }else{ this.vhide("c"+c+"_dt2_");}
+				if(dir===k.LT){ if(this.vnop("c"+c+"_dt3_",1)){ this.inputPath([px   ,py     ,0,0  , ll*0.3,-ll/6  , ll*0.3, ll/6], true); g.fill();} }else{ this.vhide("c"+c+"_dt3_");}
+				if(dir===k.RT){ if(this.vnop("c"+c+"_dt4_",1)){ this.inputPath([px+ll,py     ,0,0  ,-ll*0.3,-ll/6  ,-ll*0.3, ll/6], true); g.fill();} }else{ this.vhide("c"+c+"_dt4_");}
 			}
 			else{ this.vhide(["c"+c+"_ar1_","c"+c+"_ar3_","c"+c+"_dt1_","c"+c+"_dt2_","c"+c+"_dt3_","c"+c+"_dt4_"]);}
 
@@ -882,6 +882,7 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// pc.drawTarget()  入力対象となる場所を描画する
 	// pc.drawTCell()   Cellのキーボードからの入力対象をCanvasに書き込む
 	// pc.drawTCross()  Crossのキーボードからの入力対象をCanvasに書き込む
 	// pc.drawTBorder() Borderのキーボードからの入力対象をCanvasに書き込む
@@ -890,6 +891,11 @@ Graphic.prototype = {
 	// pc.hideTBorder() キーボードからの入力対象を隠す
 	// pc.drawTargetTriangle() [＼]のうち入力対象のほうに背景色をつける
 	//---------------------------------------------------------------------------
+	drawTarget : function(x1,y1,x2,y2){
+		if(k.editmode){ this.drawTCell(x1,y1,x2+1,y2+1);}
+		else{ this.hideTCell();}
+	},
+
 	drawTCell : function(x1,y1,x2,y2){
 		if(tc.cursolx < x1*2 || x2*2+2 < tc.cursolx){ return;}
 		if(tc.cursoly < y1*2 || y2*2+2 < tc.cursoly){ return;}
@@ -899,7 +905,7 @@ Graphic.prototype = {
 		var w = (k.cwidth<32?2:mf(k.cwidth/16));
 
 		this.vdel(["tc1_","tc2_","tc3_","tc4_"]);
-		g.fillStyle = (k.mode===1?"rgb(255,64,64)":"rgb(64,64,255)");
+		g.fillStyle = (k.editmode?"rgb(255,64,64)":"rgb(64,64,255)");
 		if(this.vnop("tc1_",0)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
 		if(this.vnop("tc2_",0)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
 		if(this.vnop("tc3_",0)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
@@ -916,7 +922,7 @@ Graphic.prototype = {
 		var w = (k.cwidth<32?2:mf(k.cwidth/16));
 
 		this.vdel(["tx1_","tx2_","tx3_","tx4_"]);
-		g.fillStyle = (k.mode===1?"rgb(255,64,64)":"rgb(64,64,255)");
+		g.fillStyle = (k.editmode?"rgb(255,64,64)":"rgb(64,64,255)");
 		if(this.vnop("tx1_",0)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
 		if(this.vnop("tx2_",0)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
 		if(this.vnop("tx3_",0)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
@@ -934,7 +940,7 @@ Graphic.prototype = {
 		var size = mf(k.cwidth*0.28);
 
 		this.vdel(["tb1_","tb2_","tb3_","tb4_"]);
-		g.fillStyle = (k.mode===1?"rgb(255,64,64)":"rgb(64,64,255)");
+		g.fillStyle = (k.editmode?"rgb(255,64,64)":"rgb(64,64,255)");
 		if(this.vnop("tb1_",0)){ g.fillRect(px-size  , py-size  , size*2, 1);}
 		if(this.vnop("tb2_",0)){ g.fillRect(px-size  , py-size  , 1, size*2);}
 		if(this.vnop("tb3_",0)){ g.fillRect(px-size  , py+size-w, size*2, 1);}
@@ -947,7 +953,7 @@ Graphic.prototype = {
 	hideTBorder : function(){ this.vhide(["tb1_","tb2_","tb3_","tb4_"]);},
 
 	drawTargetTriangle : function(x1,y1,x2,y2){
-		if(k.mode===3){ return;}
+		if(k.playmode){ return;}
 
 		if(tc.cursolx < x1*2 || x2*2+2 < tc.cursolx){ return;}
 		if(tc.cursoly < y1*2 || y2*2+2 < tc.cursoly){ return;}
@@ -1261,8 +1267,8 @@ Graphic.prototype = {
 		if(k.isArrowNumber===1){
 			var dir = bd.DiC(id);
 			if(dir!==0){ fontratio *= 0.85;}
-			if     (dir===1||dir===2){ type=6;}
-			else if(dir===3||dir===4){ type=7;}
+			if     (dir===k.UP||dir===k.DN){ type=6;}
+			else if(dir===k.LT||dir===k.RT){ type=7;}
 		}
 
 		var color = this.getNumberColor(id);
@@ -1327,6 +1333,7 @@ Graphic.prototype = {
 				el.style.top  = k.cv_oft.y+py-hgt/2+(IE?3:1);
 			}
 			else{
+				if(type==52||type==54){ px--; py++; type-=50;}	// excellの[＼]対応..
 				if     (type===3||type===4){ el.style.left = k.cv_oft.x+px+k.cwidth -wid+(IE?1: 0);}
 				else if(type===2||type===5){ el.style.left = k.cv_oft.x+px              +(IE?5: 4);}
 				if     (type===2||type===3){ el.style.top  = k.cv_oft.y+py+k.cheight-hgt+(IE?1:-1);}
@@ -1356,63 +1363,46 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawNumbersOn51()   Cell上の[＼]に数字を記入する
-	// pc.drawNumbersOn51EX() EXCell上の[＼]に数字を記入する
+	// pc.drawNumbersOn51()   [＼]に数字を記入する
+	// pc.drawNumbersOn51_1() 1つの[＼]に数字を記入する
 	//---------------------------------------------------------------------------
 	drawNumbersOn51 : function(x1,y1,x2,y2){
-		var clist = this.cellinside(x1,y1,x2,y2,f_true);
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-
-			if(bd.QnC(c)===-1 || bd.QuC(c)!==51 || bd.rt(c)===-1 || bd.QuC(bd.rt(c))===51){
-				this.hideEL(bd.cell[c].numobj);
+		for(var cx=x1-1;cx<=x2;cx++){ for(var cy=y1-1;cy<=y2;cy++){
+			var c = bd.cnum(cx,cy);
+			// cell上だった場合
+			if(c!==-1){
+				if(bd.QuC(c)===51){
+					this.drawNumbersOn51_1(bd.cell[c], bd.rt(c), bd.dn(c), 0)
+				}
+				else{
+					this.hideEL(bd.cell[c].numobj);
+					this.hideEL(bd.cell[c].numobj2);
+				}
 			}
 			else{
-				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
-				var color = (bd.ErC(c)===1?this.fontErrcolor:this.fontcolor);
-				var text = (bd.QnC(c)>=0?""+bd.QnC(c):"");
-				this.dispnumCell1(c, bd.cell[c].numobj, 4, text, 0.45, color);
+				c = bd.exnum(cx,cy);
+				// excell上だった場合
+				if(c!==-1){
+					this.drawNumbersOn51_1(bd.excell[c], bd.excell[c].cy*k.qcols, bd.excell[c].cx, 50)
+				}
 			}
+		}}
 
-			if(bd.DiC(c)===-1 || bd.QuC(c)!==51 || bd.dn(c)===-1 || bd.QuC(bd.dn(c))===51){
-				this.hideEL(bd.cell[c].numobj2);
-			}
-			else{
-				if(!bd.cell[c].numobj2){ bd.cell[c].numobj2 = this.CreateDOMAndSetNop();}
-				var color = (bd.ErC(c)===1?this.fontErrcolor:this.fontcolor);
-				var text = (bd.DiC(c)>=0?""+bd.DiC(c):"");
-				this.dispnumCell1(c, bd.cell[c].numobj2, 2, text, 0.45, color);
-			}
-		}
 		this.vinc();
 	},
-	drawNumbersOn51EX : function(x1,y1,x2,y2){
-		for(var cx=x1-1;cx<=x2;cx++){
-			for(var cy=y1-1;cy<=y2;cy++){
-				var c = bd.exnum(cx,cy);
-				if(c==-1){ continue;}
+	drawNumbersOn51_1 : function(obj, rt, dn, add){
+		var val,err,grd,nb,el,type,str;
+		for(var i=0;i<2;i++){
+			if(i===0){ val=obj.qnum,  err=obj.error, guard=obj.cy, nb=rt, type=add+4, str='numobj'; }	// 1回目は右向き
+			if(i===1){ val=obj.direc, err=obj.error, guard=obj.cx, nb=dn, type=add+2, str='numobj2';}	// 2回目は下向き
 
-				if(bd.QnE(c)===-1 || bd.excell[c].cy===-1 || bd.QuC(bd.excell[c].cy*k.qcols)===51){
-					this.hideEL(bd.excell[c].numobj);
-				}
-				else{
-					if(!bd.excell[c].numobj){ bd.excell[c].numobj = this.CreateDOMAndSetNop();}
-					var color = (bd.ErE(c)===1?this.fontErrcolor:this.fontcolor);
-					var text = (bd.QnE(c)>=0?""+bd.QnE(c):"");
-					this.dispnum1(bd.excell[c].numobj, 4, text, 0.45, color, bd.excell[c].px-1, bd.excell[c].py+1);
-				}
-
-				if(bd.DiE(c)===-1 || bd.excell[c].cx===-1 || bd.QuC(bd.excell[c].cx)===51){
-					this.hideEL(bd.excell[c].numobj2);
-				}
-				else{
-					if(!bd.excell[c].numobj2){ bd.excell[c].numobj2 = this.CreateDOMAndSetNop();}
-					var color = (bd.ErE(c)===1?this.fontErrcolor:this.fontcolor);
-					var text = (bd.DiE(c)>=0?""+bd.DiE(c):"");
-					this.dispnum1(bd.excell[c].numobj2, 2, text, 0.45, color, bd.excell[c].px-1, bd.excell[c].py+1);
-				}
+			if(val===-1 || guard===-1 || nb===-1 || bd.QuC(nb)===51){ this.hideEL(obj[str]);}
+			else{
+				if(!obj[str]){ obj[str] = this.CreateDOMAndSetNop();}
+				var color = (err===1?this.fontErrcolor:this.fontcolor);
+				var text = (val>=0?""+val:"");
+				this.dispnum1(obj[str], type, text, 0.45, color, obj.px, obj.py);
 			}
 		}
-		this.vinc();
 	}
 };
