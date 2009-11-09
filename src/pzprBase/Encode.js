@@ -1,4 +1,4 @@
-// Encode.js v3.2.2
+// Encode.js v3.2.3
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -41,13 +41,17 @@ Encode.prototype = {
 		this.init();
 
 		if(search.substring(0,3)=="?m+" || search.substring(0,3)=="?m/"){
-			k.mode = 1;
-			k.callmode = "pmake";
+			k.editmode = true;
+			k.playmode = false;
+			k.EDITOR = true;
+			k.PLAYER = false;
 			search = search.substring(3, search.length);
 		}
 		else{
-			k.mode = 3;
-			k.callmode = ((!k.scriptcheck)?"pplay":"pmake");
+			k.editmode = false;
+			k.playmode = true;
+			k.EDITOR = !!k.scriptcheck;
+			k.PLAYER =  !k.scriptcheck;
 			search = search.substring(1, search.length);
 		}
 

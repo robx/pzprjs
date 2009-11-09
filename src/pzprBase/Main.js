@@ -1,4 +1,4 @@
-// Main.js v3.2.2
+// Main.js v3.2.3
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -65,7 +65,7 @@ PBase.prototype = {
 		this.initObjects();
 		this.setEvents(true);	// イベントをくっつける
 
-		if(document.domain=='indi.s58.xrea.com' && k.callmode=='pplay'){ this.accesslog();}	// アクセスログをとってみる
+		if(document.domain=='indi.s58.xrea.com' && k.PLAYER){ this.accesslog();}	// アクセスログをとってみる
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
 
 		this.initProcess = false;
@@ -170,14 +170,14 @@ PBase.prototype = {
 			$("hr").each(function(){ $(this).css("margin",'0pt');});
 		}
 
-		k.autocheck = (k.callmode!="pmake");
+		k.autocheck = k.PLAYER;
 		this.postfix();			// 各パズルごとの設定(後付け分)
 		menu.menuinit();
 		um.enb_btn();
 	},
 	gettitle : function(){
-		if(k.callmode=='pmake'){ return ""+this.getPuzzleName()+(menu.isLangJP()?" エディタ - ぱずぷれv3":" editor - PUZ-PRE v3");}
-		else				   { return ""+this.getPuzzleName()+(menu.isLangJP()?" player - ぱずぷれv3"  :" player - PUZ-PRE v3");}
+		if(k.EDITOR){ return ""+this.getPuzzleName()+(menu.isLangJP()?" エディタ - ぱずぷれv3":" editor - PUZ-PRE v3");}
+		else		{ return ""+this.getPuzzleName()+(menu.isLangJP()?" player - ぱずぷれv3"  :" player - PUZ-PRE v3");}
 	},
 	getPuzzleName : function(){ return (menu.isLangJP()||!this.puzzlename.en)?this.puzzlename.ja:this.puzzlename.en;},
 	setTitle      : function(strJP, strEN){ this.puzzlename.ja = strJP; this.puzzlename.en = strEN;},

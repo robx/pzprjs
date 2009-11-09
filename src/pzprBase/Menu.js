@@ -1,4 +1,4 @@
-// Menu.js v3.2.2
+// Menu.js v3.2.3
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -79,8 +79,8 @@ Menu.prototype = {
 		this.createFloats();
 
 		$("#expression").html(base.expression.ja);
-		if(k.callmode=="pplay"){ $("#ms_newboard,#ms_urloutput").attr("class", "smenunull");}
-		if(k.callmode=="pplay"){ $("#ms_adjust").attr("class", "smenunull");}
+		if(k.PLAYER){ $("#ms_newboard,#ms_urloutput").attr("class", "smenunull");}
+		if(k.PLAYER){ $("#ms_adjust").attr("class", "smenunull");}
 		$("#ms_jumpv3,#ms_jumptop,#ms_jumpblog").css("font-size",'10pt').css("padding-left",'8pt');
 
 		this.managearea();
@@ -334,7 +334,7 @@ Menu.prototype = {
 		$("#translation").css("position","absolute").css("cursor","pointer")
 						 .css("font-size","10pt").css("color","green").css("background-color","#dfdfdf")
 						 .click(this.translate.bind(this)).unselectable();
-		if(k.callmode=="pmake"){ $("#timerpanel,#separator2").hide();}
+		if(k.EDITOR){ $("#timerpanel,#separator2").hide();}
 		if(k.irowake!=0){
 			$("#btnarea").append("<input type=\"button\" id=\"btncolor2\" value=\"色分けしなおす\">");
 			$("#btncolor2").click(menu.ex.irowakeRemake).hide();
@@ -675,7 +675,7 @@ Properties.prototype = {
 			ai = this.addUseChildrenToFlags.bind(this),
 			ap = this.addSeparatorToFlags.bind(this);
 
-		au('mode','setting',k.mode,[1,3]);
+		au('mode','setting',(k.editmode?1:3),[1,3]);
 
 		puz.menufix();	// 各パズルごとのメニュー追加
 
@@ -683,7 +683,7 @@ Properties.prototype = {
 		ac('lrcheck','setting',false);
 		ac('keypopup','setting',kp.defaultdisp);
 		au('language','setting',0,[0,1]);
-		if(k.callmode=="pplay"){ delete this.flags['mode'];}
+		if(k.PLAYER){ delete this.flags['mode'];}
 		if(!kp.ctl[1].enable && !kp.ctl[3].enable){ delete this.flags['keypopup'];}
 
 		as('newboard', 'file');
@@ -827,7 +827,7 @@ Properties.prototype = {
 			k.enableKey = false;
 		},
 		keypopup : function(){
-			var f = kp.ctl[k.mode].enable;
+			var f = kp.ctl[pp.flags['mode'].val].enable;
 			$("#ck_keypopup").attr("disabled", f?"":"true");
 			$("#cl_keypopup").css("color",f?"black":"silver");
 		}

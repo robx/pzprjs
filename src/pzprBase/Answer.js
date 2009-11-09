@@ -1,4 +1,4 @@
-// Answer.js v3.2.2
+// Answer.js v3.2.3
 
 //---------------------------------------------------------------------------
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
@@ -51,7 +51,7 @@ AnsCheck.prototype = {
 	// ans.isenableSetError() 盤面のオブジェクトにエラーフラグを設定できるかどうかを返す
 	//---------------------------------------------------------------------------
 	autocheck : function(){
-		if(!k.autocheck || k.mode!=3 || this.inCheck){ return;}
+		if(!k.autocheck || k.editmode || this.inCheck){ return;}
 
 		var ret = false;
 

@@ -1,4 +1,4 @@
-// MouseInput.js v3.2.2
+// MouseInput.js v3.2.3
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -85,8 +85,8 @@ MouseEvent.prototype = {
 		um.newOperation(false);
 	},
 	modeflip : function(input){
-		if(k.callmode!="pmake"){ return;}
-		menu.setVal('mode', (k.mode==3?1:3));
+		if(k.PLAYER){ return;}
+		menu.setVal('mode', (k.playmode?1:3));
 	},
 
 	//---------------------------------------------------------------------------
@@ -256,12 +256,12 @@ MouseEvent.prototype = {
 	// mv.inputqnum1() Cellのqnum(問題数字データ)に数字を入力する。
 	// mv.inputqnum3() Cellのqans(問題数字データ)に数字を入力する。
 	//---------------------------------------------------------------------------
-	inputqnum : function(x,y,max){
+	inputqnum : function(x,y){
 		var cc = this.cellid(new Pos(x,y));
 		if(cc==-1 || cc==this.mouseCell){ return;}
 
 		if(cc==tc.getTCC()){
-			cc = (k.mode==3 ? this.inputqnum3(cc,max) : this.inputqnum1(cc,max));
+			cc = (k.playmode ? this.inputqnum3(cc) : this.inputqnum1(cc));
 		}
 		else{
 			var cc0 = tc.getTCC();
@@ -273,13 +273,13 @@ MouseEvent.prototype = {
 
 		pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
 	},
-	inputqnum1 : function(cc,max){
+	inputqnum1 : function(cc){
 		var qflag = (k.isDispHatena||k.puzzleid=="lightup"||k.puzzleid=="shakashaka"||k.puzzleid=="snakes"||k.puzzleid=="shugaku");
 		if(k.isOneNumber){
 			cc = area.getTopOfRoomByCell(cc);
 			if(area.getCntOfRoomByCell(cc)<max){ max = area.getCntOfRoomByCell(cc);}
 		}
-		if(bd.roommaxfunc){ max = bd.roommaxfunc(cc,1);}
+		var max = bd.nummaxfunc(cc);
 
 		if(this.btn.Left){
 			if(bd.QnC(cc)==max){ bd.sQnC(cc,-1);}
@@ -298,9 +298,9 @@ MouseEvent.prototype = {
 
 		return cc;
 	},
-	inputqnum3 : function(cc,max){
+	inputqnum3 : function(cc){
 		if(bd.QnC(cc)!=-1){ return cc;}
-		if(bd.roommaxfunc){ max = bd.roommaxfunc(cc,3);}
+		var max = bd.nummaxfunc(cc);
 		bd.sDiC(cc,0);
 
 		if(this.btn.Left){
@@ -388,10 +388,10 @@ MouseEvent.prototype = {
 		var inp = 0;
 		var cc = bd.cnum(this.mouseCell.x, this.mouseCell.y);
 		if(cc!=-1 && bd.QnC(cc)!=-1){
-			if     (pos.y-this.mouseCell.y==-1){ inp=1;}
-			else if(pos.y-this.mouseCell.y== 1){ inp=2;}
-			else if(pos.x-this.mouseCell.x==-1){ inp=3;}
-			else if(pos.x-this.mouseCell.x== 1){ inp=4;}
+			if     (pos.y-this.mouseCell.y==-1){ inp=k.UP;}
+			else if(pos.y-this.mouseCell.y== 1){ inp=k.DN;}
+			else if(pos.x-this.mouseCell.x==-1){ inp=k.LT;}
+			else if(pos.x-this.mouseCell.x== 1){ inp=k.RT;}
 			else{ return;}
 
 			bd.sDiC(cc, (bd.DiC(cc)!=inp?inp:0));
@@ -534,11 +534,12 @@ MouseEvent.prototype = {
 				this.mouseCell=-1;
 				if(this.inputData==-1){ this.inputData=(bd.isBorder(id)?0:1);}
 
-				if(k.mode==1 || (k.mode==3 && bd.QuB(id)==0)){
+				if(!(k.playmode && bd.QuB(id)!==0)){
 					if     (this.inputData==1){ bd.setBorder(id); if(k.isborderAsLine){ bd.sQsB(id, 0);} }
 					else if(this.inputData==0){ bd.removeBorder(id);}
+
+					pc.paintBorder(id);
 				}
-				pc.paintBorder(id);
 			}
 		}
 		this.mouseCell = pos;

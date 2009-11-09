@@ -1,4 +1,4 @@
-// Undo.js v3.2.2
+// Undo.js v3.2.3
 
 //---------------------------------------------------------------------------
 // ★UndoManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
@@ -94,7 +94,7 @@ UndoManager.prototype = {
 
 		// 前回と同じ場所なら前回の更新のみ
 		if(lastid>=0 && this.ope[lastid].obj == obj && this.ope[lastid].property == property && this.ope[lastid].id == id && this.ope[lastid].num == old
-			&& this.disCombine==0 && ( (obj == 'cell' && ( property=='qnum' || (property=='qans' && k.isAnsNumber) )) || obj == 'cross')
+			&& this.disCombine==0 && ( (obj == k.CELL && ( property=='qnum' || (property=='qans' && k.isAnsNumber) )) || obj == k.CROSS)
 		)
 		{
 			this.ope[lastid].num = num;
@@ -111,10 +111,10 @@ UndoManager.prototype = {
 	},
 	addObj : function(type, id){
 		var old, obj;
-		if     (type=='cell')  { old = new Cell();   obj = bd.cell[id];  }
-		else if(type=='cross') { old = new Cross();  obj = bd.cross[id]; }
-		else if(type=='border'){ old = new Border(); obj = bd.border[id];}
-		else if(type=='excell'){ old = new Cell();   obj = bd.excell[id];}
+		if     (type==k.CELL)  { old = new Cell();   obj = bd.cell[id];  }
+		else if(type==k.CROSS) { old = new Cross();  obj = bd.cross[id]; }
+		else if(type==k.BORDER){ old = new Border(); obj = bd.border[id];}
+		else if(type==k.EXCELL){ old = new Cell();   obj = bd.excell[id];}
 		for(var i in obj){ old[i] = obj[i];}
 		this.addOpe(type, type, id, old, null);
 	},
@@ -174,7 +174,7 @@ UndoManager.prototype = {
 	},
 	exec : function(ope, num){
 		var pp = ope.property;
-		if(ope.obj == 'cell'){
+		if(ope.obj == k.CELL){
 			if     (pp == 'ques'){ bd.sQuC(ope.id, num);}
 			else if(pp == 'qnum'){ bd.sQnC(ope.id, num);}
 			else if(pp == 'direc'){ bd.sDiC(ope.id, num);}
@@ -182,40 +182,40 @@ UndoManager.prototype = {
 			else if(pp == 'qsub'){ bd.sQsC(ope.id, num);}
 			else if(pp == 'numobj'){ bd.cell[ope.id].numobj = num;}
 			else if(pp == 'numobj2'){ bd.cell[ope.id].numobj2 = num;}
-			else if(pp == 'cell' && !!num){ bd.cell[ope.id] = num;}
+			else if(pp == k.CELL && !!num){ bd.cell[ope.id] = num;}
 			this.paintStack(bd.cell[ope.id].cx, bd.cell[ope.id].cy, bd.cell[ope.id].cx, bd.cell[ope.id].cy);
 		}
-		else if(ope.obj == 'excell'){
+		else if(ope.obj == k.EXCELL){
 			if     (pp == 'qnum'){ bd.sQnE(ope.id, num);}
 			else if(pp == 'direc'){ bd.sDiE(ope.id, num);}
-			else if(pp == 'excell' && !!num){ bd.excell[ope.id] = num;}
+			else if(pp == k.EXCELL && !!num){ bd.excell[ope.id] = num;}
 		}
-		else if(ope.obj == 'cross'){
+		else if(ope.obj == k.CROSS){
 			if     (pp == 'ques'){ bd.sQuX(ope.id, num);}
 			else if(pp == 'qnum'){ bd.sQnX(ope.id, num);}
 			else if(pp == 'numobj'){ bd.cross[ope.id].numobj = num;}
-			else if(pp == 'cross' && !!num){ bd.cross[ope.id] = num;}
+			else if(pp == k.CROSS && !!num){ bd.cross[ope.id] = num;}
 			this.paintStack(bd.cross[ope.id].cx-1, bd.cross[ope.id].cy-1, bd.cross[ope.id].cx, bd.cross[ope.id].cy);
 		}
-		else if(ope.obj == 'border'){
+		else if(ope.obj == k.BORDER){
 			if     (pp == 'ques'){ bd.sQuB(ope.id, num);}
 			else if(pp == 'qnum'){ bd.sQnB(ope.id, num);}
 			else if(pp == 'qans'){ bd.sQaB(ope.id, num);}
 			else if(pp == 'qsub'){ bd.sQsB(ope.id, num);}
 			else if(pp == 'line'){ bd.sLiB(ope.id, num);}
-			else if(pp == 'border' && !!num){ bd.border[ope.id] = num;}
+			else if(pp == k.BORDER && !!num){ bd.border[ope.id] = num;}
 			this.paintBorder(ope.id);
 		}
 		else if(ope.obj == 'board'){
 			this.disableInfo();
-			if     (pp == 'expandup'){ if(num==1){ menu.ex.expand('up');}else{ menu.ex.reduce('up');} }
-			else if(pp == 'expanddn'){ if(num==1){ menu.ex.expand('dn');}else{ menu.ex.reduce('dn');} }
-			else if(pp == 'expandlt'){ if(num==1){ menu.ex.expand('lt');}else{ menu.ex.reduce('lt');} }
-			else if(pp == 'expandrt'){ if(num==1){ menu.ex.expand('rt');}else{ menu.ex.reduce('rt');} }
-			else if(pp == 'reduceup'){ if(num==1){ menu.ex.reduce('up');}else{ menu.ex.expand('up');} }
-			else if(pp == 'reducedn'){ if(num==1){ menu.ex.reduce('dn');}else{ menu.ex.expand('dn');} }
-			else if(pp == 'reducelt'){ if(num==1){ menu.ex.reduce('lt');}else{ menu.ex.expand('lt');} }
-			else if(pp == 'reducert'){ if(num==1){ menu.ex.reduce('rt');}else{ menu.ex.expand('rt');} }
+			if     (pp == 'expandup'){ if(num==1){ menu.ex.expand(k.UP);}else{ menu.ex.reduce(k.UP);} }
+			else if(pp == 'expanddn'){ if(num==1){ menu.ex.expand(k.DN);}else{ menu.ex.reduce(k.DN);} }
+			else if(pp == 'expandlt'){ if(num==1){ menu.ex.expand(k.LT);}else{ menu.ex.reduce(k.LT);} }
+			else if(pp == 'expandrt'){ if(num==1){ menu.ex.expand(k.RT);}else{ menu.ex.reduce(k.RT);} }
+			else if(pp == 'reduceup'){ if(num==1){ menu.ex.reduce(k.UP);}else{ menu.ex.expand(k.UP);} }
+			else if(pp == 'reducedn'){ if(num==1){ menu.ex.reduce(k.DN);}else{ menu.ex.expand(k.DN);} }
+			else if(pp == 'reducelt'){ if(num==1){ menu.ex.reduce(k.LT);}else{ menu.ex.expand(k.LT);} }
+			else if(pp == 'reducert'){ if(num==1){ menu.ex.reduce(k.RT);}else{ menu.ex.expand(k.RT);} }
 
 			else if(pp == 'flipy'){ menu.ex.turnflip(1,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});}
 			else if(pp == 'flipx'){ menu.ex.turnflip(2,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});}
