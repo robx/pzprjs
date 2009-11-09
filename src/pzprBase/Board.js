@@ -1,4 +1,4 @@
-// Board.js v3.2.2
+// Board.js v3.2.3
 
 //---------------------------------------------------------------------------
 // ★Cellクラス BoardクラスがCellの数だけ保持する
@@ -156,6 +156,8 @@ Board = function(){
 
 	this.bdinside = 0;		// 盤面の内側(外枠上でない)に存在する境界線の本数
 
+	this.maxnum   = 99;		// 入力できる最大の数字
+
 	// デフォルトのセルなど
 	this.defcell   = new Cell(0);
 	this.defcross  = new Cross(0);
@@ -174,19 +176,19 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	initBoardSize : function(col,row){
 		{
-			this.initGroup('cell',   this.cell,   col*row);
+			this.initGroup(k.CELL,   this.cell,   col*row);
 		}
 		if(k.iscross){
-			this.initGroup('cross',  this.cross,  (col+1)*(row+1));
+			this.initGroup(k.CROSS,  this.cross,  (col+1)*(row+1));
 		}
 		if(k.isborder){
-			this.initGroup('border', this.border, 2*col*row+(k.isoutsideborder===0?-1:1)*(col+row));
+			this.initGroup(k.BORDER, this.border, 2*col*row+(k.isoutsideborder===0?-1:1)*(col+row));
 		}
 		if(k.isextendcell===1){
-			this.initGroup('excell', this.excell, col+row+1);
+			this.initGroup(k.EXCELL, this.excell, col+row+1);
 		}
 		else if(k.isextendcell===2){
-			this.initGroup('excell', this.excell, 2*col+2*row+4);
+			this.initGroup(k.EXCELL, this.excell, 2*col+2*row+4);
 		}
 
 		this.initSpecial(col,row);
@@ -355,29 +357,29 @@ Board.prototype = {
 	// bd.hideNumobj()  指定したオブジェクトのnumobjを隠す
 	//---------------------------------------------------------------------------
 	getnewObj : function(type,id){
-		if(type==='cell' || type==='excell'){ return (new Cell(id));}
-		else if(type==='cross') { return (new Cross(id));}
-		else if(type==='border'){ return (new Border(id));}
+		if(type===k.CELL || type===k.EXCELL){ return (new Cell(id));}
+		else if(type===k.CROSS) { return (new Cross(id));}
+		else if(type===k.BORDER){ return (new Border(id));}
 	},
 	isNullObj : function(type,id){
-		if(type==='cell'){
+		if(type===k.CELL){
 			return ((this.cell[id].qans === this.defcell.qans)&&
 					(this.cell[id].qsub === this.defcell.qsub)&&
 					(this.cell[id].ques === this.defcell.ques)&&
 					(this.cell[id].qnum === this.defcell.qnum)&&
 					(this.cell[id].direc=== this.defcell.direc));
 		}
-		else if(type==='cross') {
+		else if(type===k.CROSS) {
 			return (this.cross[id].qnum===this.defcross.qnum);
 		}
-		else if(type==='border'){
+		else if(type===k.BORDER){
 			return ((this.border[id].qans === this.defborder.qans)&&
 					(this.border[id].qsub === this.defborder.qsub)&&
 					(this.border[id].ques === this.defborder.ques)&&
 					(this.border[id].qnum === this.defborder.qnum)&&
 					(this.border[id].line === this.defborder.line));
 		}
-		else if(type==='excell'){
+		else if(type===k.EXCELL){
 			return ((this.excell[id].qnum === this.defcell.qnum)&&
 					(this.excell[id].direc=== this.defcell.direc));
 		}
@@ -385,17 +387,17 @@ Board.prototype = {
 	},
 
 	hideNumobj : function(type,id){
-		if(type==='cell'){
+		if(type===k.CELL){
 			pc.hideEL(this.cell[id].numobj);
 			pc.hideEL(this.cell[id].numobj2);
 		}
-		else if(type==='cross') {
+		else if(type===k.CROSS) {
 			pc.hideEL(this.cross[id].numobj);
 		}
-		else if(type==='border'){
+		else if(type===k.BORDER){
 			pc.hideEL(this.border[id].numobj);
 		}
-		else if(type==='excell'){
+		else if(type===k.EXCELL){
 			pc.hideEL(this.excell[id].numobj);
 			pc.hideEL(this.excell[id].numobj2);
 		}
@@ -542,10 +544,17 @@ Board.prototype = {
 	},
 	checkLPCombined : function(cc){
 		var id;
-		id = this.ub(cc); if(id!==-1 && this.LiB(id)===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.db(cc); if(id!==-1 && this.LiB(id)===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.lb(cc); if(id!==-1 && this.LiB(id)===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.rb(cc); if(id!==-1 && this.LiB(id)===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+		id = this.ub(cc); if(id!==-1 && this.border[id].line===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+		id = this.db(cc); if(id!==-1 && this.border[id].line===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+		id = this.lb(cc); if(id!==-1 && this.border[id].line===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+		id = this.rb(cc); if(id!==-1 && this.border[id].line===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.nummaxfunc() 入力できる数字の最大値を返す
+	//---------------------------------------------------------------------------
+	nummaxfunc : function(cc){
+		return this.maxnum;
 	},
 
 	//---------------------------------------------------------------------------
@@ -557,7 +566,7 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// Cell関連Get/Set関数 <- 各Cellが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuC : function(id, num) {
-		um.addOpe('cell', 'ques', id, this.cell[id].ques, num);
+		um.addOpe(k.CELL, 'ques', id, this.cell[id].ques, num);
 		this.cell[id].ques = num;
 
 		if(k.puzzleid==="pipelink"||k.puzzleid==="loopsp"){ this.checkLPCombined(id);}
@@ -566,7 +575,7 @@ Board.prototype = {
 		if(k.dispzero===0 && num===0){ return;}
 
 		var old = this.cell[id].qnum;
-		um.addOpe('cell', 'qnum', id, old, num);
+		um.addOpe(k.CELL, 'qnum', id, old, num);
 		this.cell[id].qnum = num;
 
 		if(um.isenableInfo() &&
@@ -577,7 +586,7 @@ Board.prototype = {
 	},
 	sQaC : function(id, num) {
 		var old = this.cell[id].qans;
-		um.addOpe('cell', 'qans', id, old, num);
+		um.addOpe(k.CELL, 'qans', id, old, num);
 		this.cell[id].qans = num;
 
 		if(um.isenableInfo() && (
@@ -588,11 +597,11 @@ Board.prototype = {
 		if(k.puzzleid=="lightup" && ((old==1)^(num==1))){ mv.paintAkari(id);}
 	},
 	sQsC : function(id, num) {
-		um.addOpe('cell', 'qsub', id, this.cell[id].qsub, num);
+		um.addOpe(k.CELL, 'qsub', id, this.cell[id].qsub, num);
 		this.cell[id].qsub = num;
 	},
 	sDiC : function(id, num) {
-		um.addOpe('cell', 'direc', id, this.cell[id].direc, num);
+		um.addOpe(k.CELL, 'direc', id, this.cell[id].direc, num);
 		this.cell[id].direc = num;
 	},
 
@@ -608,11 +617,11 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// EXcell関連Get/Set関数
 	sQnE : function(id, num) {
-		um.addOpe('excell', 'qnum', id, this.excell[id].qnum, num);
+		um.addOpe(k.EXCELL, 'qnum', id, this.excell[id].qnum, num);
 		this.excell[id].qnum = num;
 	},
 	sDiE : function(id, num) {
-		um.addOpe('excell', 'direc', id, this.excell[id].direc, num);
+		um.addOpe(k.EXCELL, 'direc', id, this.excell[id].direc, num);
 		this.excell[id].direc = num;
 	},
 
@@ -625,11 +634,11 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// Cross関連Get/Set関数 <- 各Crossが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuX : function(id, num) {
-		um.addOpe('cross', 'ques', id, this.cross[id].ques, num);
+		um.addOpe(k.CROSS, 'ques', id, this.cross[id].ques, num);
 		this.cross[id].ques = num;
 	},
 	sQnX : function(id, num) {
-		um.addOpe('cross', 'qnum', id, this.cross[id].qnum, num);
+		um.addOpe(k.CROSS, 'qnum', id, this.cross[id].qnum, num);
 		this.cross[id].qnum = num;
 	},
 
@@ -646,20 +655,20 @@ Board.prototype = {
 	// Border関連Get/Set関数 <- 各Borderが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuB : function(id, num) {
 		var old = this.border[id].ques;
-		um.addOpe('border', 'ques', id, old, num);
+		um.addOpe(k.BORDER, 'ques', id, old, num);
 		this.border[id].ques = num;
 
 		if(um.isenableInfo() && (num>0 ^ old>0)){ area.call_setBorder(id,num,'ques');}
 	},
 	sQnB : function(id, num) {
-		um.addOpe('border', 'qnum', id, this.border[id].qnum, num);
+		um.addOpe(k.BORDER, 'qnum', id, this.border[id].qnum, num);
 		this.border[id].qnum = num;
 	},
 	sQaB : function(id, num) {
 		if(this.border[id].ques!=0){ return;}
 
 		var old = this.border[id].qans;
-		um.addOpe('border', 'qans', id, old, num);
+		um.addOpe(k.BORDER, 'qans', id, old, num);
 		this.border[id].qans = num;
 
 		if(um.isenableInfo() && (num>0 ^ old>0)){
@@ -668,14 +677,14 @@ Board.prototype = {
 		}
 	},
 	sQsB : function(id, num) {
-		um.addOpe('border', 'qsub', id, this.border[id].qsub, num);
+		um.addOpe(k.BORDER, 'qsub', id, this.border[id].qsub, num);
 		this.border[id].qsub = num;
 	},
 	sLiB : function(id, num) {
 		if(this.enableLineNG && (num==1?bd.isLineNG:bd.isLPCombined)(id)){ return;}
 
 		var old = this.border[id].line;
-		um.addOpe('border', 'line', id, old, num);
+		um.addOpe(k.BORDER, 'line', id, old, num);
 		this.border[id].line = num;
 
 		if(um.isenableInfo() && (num>0 ^ old>0)){ line.setLine(id,num);}
@@ -783,7 +792,7 @@ Board.prototype = {
 	getNum : function(c){ return (this.cell[c].qnum!==-1?this.cell[c].qnum:this.cell[c].qans);},
 	setNum : function(c,val){
 		if(k.dispzero || val!=0){
-			if(k.mode==1){ this.sQnC(c,val); this.sQaC(c,bd.defcell.qnum);}
+			if(k.editmode){ this.sQnC(c,val); this.sQaC(c,bd.defcell.qnum);}
 			else if(this.cell[c].qnum===bd.defcell.qnum){ this.sQaC(c,val);}
 			this.sQsC(c,0);
 		}
@@ -813,11 +822,11 @@ Board.prototype = {
 	},
 
 	setBorder    : function(id){
-		if(k.mode===1){ this.sQuB(id,1); this.sQaB(id,0);}
+		if(k.editmode){ this.sQuB(id,1); this.sQaB(id,0);}
 		else if(this.QuB(id)!==1){ this.sQaB(id,1);}
 	},
 	removeBorder : function(id){
-		if(k.mode===1){ this.sQuB(id,0); this.sQaB(id,0);}
+		if(k.editmode){ this.sQuB(id,0); this.sQaB(id,0);}
 		else if(this.QuB(id)!==1){ this.sQaB(id,0);}
 	},
 	setBsub      : function(id){ this.sQsB(id,1);},
