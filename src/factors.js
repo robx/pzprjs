@@ -46,7 +46,7 @@ Puzzles.factors.prototype = {
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){
-		if(k.callmode=="pmake"){ kp.defaultdisp = true;}
+		if(k.EDITOR){ kp.defaultdisp = true;}
 	},
 
 	//---------------------------------------------------------
@@ -54,37 +54,37 @@ Puzzles.factors.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1) this.borderinput = this.inputborder(x,y);
-			if(k.mode==3){
-				if(!kp.enabled()){ this.inputqnum(x,y,99);}
+			if(k.editmode) this.borderinput = this.inputborder(x,y);
+			if(k.playmode){
+				if(!kp.enabled()){ this.inputqnum(x,y);}
 				else{ kp.display(x,y);}
 			}
 		};
 		mv.mouseup = function(x,y){
 			if(this.notInputted()){
-				if(k.mode==1){
-					if(!kp.enabled()){ this.inputqnum(x,y,99);}
+				if(k.editmode){
+					if(!kp.enabled()){ this.inputqnum(x,y);}
 					else{ kp.display(x,y);}
 				}
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==1 && this.btn.Left) this.inputborder(x,y);
+			if(k.editmode && this.btn.Left) this.inputborder(x,y);
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 
 		kp.generate(0, true, true, '');
 		kp.kpinput = function(ca){ kc.key_factors(ca,Math.max(k.qcols,k.qrows));};
 
-		bd.roommaxfunc = function(cc,mode){ return (mode==1)?999999:Math.max(k.qcols,k.qrows);};
+		bd.nummaxfunc = function(cc){ return k.editmode?999999:Math.max(k.qcols,k.qrows);};
 		bd.setNum = function(c,val){
 			if(val==0){ return;}
-			if(k.mode==1){ this.sQnC(c,val);}else{ this.sQaC(c,val);}
+			if(k.editmode){ this.sQnC(c,val);}else{ this.sQaC(c,val);}
 		};
 	},
 

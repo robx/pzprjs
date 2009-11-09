@@ -40,19 +40,19 @@ Puzzles.pipelink.prototype = {
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　問題の記号はQWEASDFの各キーで入力できます。<br>Rキーや-キーで消去できます。1キーで記号を入力できます。",
 							   " Press each QWEASDF key to input question. <br> Press 'R' or '-' key to erase. '1' keys to input circles.");
+		}
+		else{
+			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
+							   " Left Button Drag to input black cells, Right Click to input a cross.");
 		}
 		base.setTitle("パイプリンク","Pipelink");
 		base.setFloatbgcolor("rgb(0, 191, 0)");
 	},
 	menufix : function(){
-		if(k.callmode=="pmake"){ kp.defaultdisp = true;}
+		if(k.EDITOR){ kp.defaultdisp = true;}
 		$("#btnarea").append("<input type=\"button\" id=\"btncircle\" value=\"○\" onClick=\"javascript:pc.changedisp();\">");
 		menu.addButtons($("#btncircle").unselectable(),"○","○");
 		menu.addRedLineToFlags();
@@ -65,18 +65,18 @@ Puzzles.pipelink.prototype = {
 		// マウス入力系
 		mv.mousedown = function(x,y){
 			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1){
+			if(k.editmode){
 				if(!kp.enabled()){ this.inputQues(x,y,[0,101,102,103,104,105,106,107,-2]);}
 				else{ kp.display(x,y);}
 			}
-			else if(k.mode==3){
+			else if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(k.mode==3){
+			if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
@@ -87,12 +87,12 @@ Puzzles.pipelink.prototype = {
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			kc.key_inputLineParts(ca);
 		};
 		kc.key_inputLineParts = function(ca){
-			if(k.mode!=1){ return false;}
+			if(k.playmode){ return false;}
 			var cc = tc.getTCC();
 
 			if     (ca=='q'){ bd.sQuC(cc,101); }
@@ -114,7 +114,7 @@ Puzzles.pipelink.prototype = {
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				this.inputcol('num','knumq','q','╋');
 				this.inputcol('num','knumw','w','┃');
@@ -132,7 +132,7 @@ Puzzles.pipelink.prototype = {
 				this.inputcol('num','knum.','1','○');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
 			kp.kpinput = function(ca){ kc.key_inputLineParts(ca);};
 		}
 	},
@@ -169,7 +169,7 @@ Puzzles.pipelink.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawCircle2 = function(x1,y1,x2,y2){

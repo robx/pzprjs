@@ -52,18 +52,18 @@ Puzzles.bag.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1){
-				if(!kp.enabled()){ this.inputqnum(x,y,Math.min(99,k.qcols+k.qrows-1));}
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum(x,y);}
 				else{ kp.display(x,y);}
 			}
-			else if(k.mode==3){
+			else if(k.playmode){
 				if(this.btn.Left) this.inputborderans(x,y);
 				else if(this.btn.Right) this.inputBGcolor(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(k.mode==3){
+			if(k.playmode){
 				if(this.btn.Left) this.inputborderans(x,y);
 				else if(this.btn.Right) this.inputBGcolor(x,y);
 			}
@@ -85,17 +85,19 @@ Puzzles.bag.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,Math.min(99,k.qcols+k.qrows-1));
+			this.key_inputqnum(ca);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(0, true, false, '');
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,Math.min(99,k.qcols+k.qrows-1));
+				kc.key_inputqnum(ca);
 			};
 		}
+
+		bd.nummaxfunc = function(cc){ return Math.min(bd.maxnum,k.qcols+k.qrows-1);};
 	},
 
 	//---------------------------------------------------------
@@ -114,7 +116,7 @@ Puzzles.bag.prototype = {
 
 			this.drawNumbers(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 

@@ -41,13 +41,13 @@ Puzzles.barns.prototype = {
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　左ドラッグで境界線が、右クリックで氷が入力できます。",
 							   " Left Button Drag to input border lines, Right Click to input ice.");
+		}
+		else{
+			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
+							   " Left Button Drag to input black cells, Right Click to input a cross.");
 		}
 		base.setTitle("バーンズ","Barns");
 		base.setFloatbgcolor("rgb(0, 0, 191)");
@@ -62,22 +62,22 @@ Puzzles.barns.prototype = {
 		// マウス入力系
 		mv.mousedown = function(x,y){
 			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1){
+			if(k.editmode){
 				if(this.btn.Left) this.inputborder(x,y);
 				else if(this.btn.Right) this.inputIcebarn(x,y);
 			}
-			else if(k.mode==3){
+			else if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(k.mode==1){
+			if(k.editmode){
 				if(this.btn.Left) this.inputborder(x,y);
 				else if(this.btn.Right) this.inputIcebarn(x,y);
 			}
-			else if(k.mode==3){
+			else if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}

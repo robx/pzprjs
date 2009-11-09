@@ -40,13 +40,13 @@ Puzzles.triplace.prototype = {
 		k.def_psize = 40;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　左ボタンで境界線が、右ボタンで補助記号が入力できます。セルのクリックか、Zキー押しながら背景色(2種類)を入力することもできます。",
-							   " Left Button Drag to input border lines, Right Click to auxiliary marks. Click cell or Click with Pressing Z key to input background color.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　左ボタンで境界線が、右ボタンで補助記号が入力できます。数字を入力する場所はSHIFTキーを押すと切り替えられます。",
 							   " Left Button Drag to input border lines, Right Click to auxiliary marks. Press SHIFT key to change the side of inputting numbers.");
+		}
+		else{
+			base.setExpression("　左ボタンで境界線が、右ボタンで補助記号が入力できます。セルのクリックか、Zキー押しながら背景色(2種類)を入力することもできます。",
+							   " Left Button Drag to input border lines, Right Click to auxiliary marks. Click cell or Click with Pressing Z key to input background color.");
 		}
 		base.setTitle("トリプレイス","Tri-place");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
@@ -58,11 +58,11 @@ Puzzles.triplace.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1){
+			if(k.editmode){
 				if(!kp.enabled()){ this.input51(x,y);}
 				else{ kp.display(x,y);}
 			}
-			else if(k.mode==3){
+			else if(k.playmode){
 				if(!kc.isZ){
 					if(this.btn.Left) this.inputborderans(x,y);
 					else if(this.btn.Right) this.inputQsubLine(x,y);
@@ -71,10 +71,10 @@ Puzzles.triplace.prototype = {
 			}
 		};
 		mv.mouseup = function(x,y){
-			if(k.mode==3 && this.notInputted()) this.inputBGcolor(x,y);
+			if(k.playmode && this.notInputted()) this.inputBGcolor(x,y);
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==3){
+			if(k.playmode){
 				if(!kc.isZ){
 					if(this.btn.Left) this.inputborderans(x,y);
 					else if(this.btn.Right) this.inputQsubLine(x,y);
@@ -124,7 +124,7 @@ Puzzles.triplace.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){
+			if(k.playmode){
 				if(ca=='z' && !this.keyPressed){ this.isZ=true; }
 				return;
 			}
@@ -135,7 +135,7 @@ Puzzles.triplace.prototype = {
 
 		kc.isZ = false;
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				this.inputcol('image','knumq','-',[0,0]);
 				this.inputcol('num','knum_',' ',' ');
@@ -153,10 +153,10 @@ Puzzles.triplace.prototype = {
 				this.inputcol('num','knum0','0','0');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,99);
+				kc.key_inputqnum(ca);
 			};
 		}
 
@@ -191,9 +191,8 @@ Puzzles.triplace.prototype = {
 			this.drawBorderQsubs(x1,y1,x2,y2);
 
 			this.drawNumbersOn51(x1,y1,x2,y2);
-			this.drawNumbersOn51EX(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 

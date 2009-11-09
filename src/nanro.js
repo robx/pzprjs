@@ -54,20 +54,20 @@ Puzzles.nanro.prototype = {
 	input_init : function(){
 		// ƒ}ƒEƒX“ü—ÍŒn
 		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3){
+			if(k.editmode) this.inputborder(x,y);
+			else if(k.playmode){
 				if(this.btn.Left) this.dragnumber(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){
 			if(this.notInputted()){
-				if(!kp.enabled()){ this.mouseCell=-1; this.inputqnum(x,y,99);}
+				if(!kp.enabled()){ this.mouseCell=-1; this.inputqnum(x,y);}
 				else{ kp.display(x,y);}
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3){
+			if(k.editmode) this.inputborder(x,y);
+			else if(k.playmode){
 				if(this.btn.Left) this.dragnumber(x,y);
 				else if(this.btn.Right) this.inputDot(x,y);
 			}
@@ -106,10 +106,10 @@ Puzzles.nanro.prototype = {
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
 			if(this.key_view(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 		kc.key_view = function(ca){
-			if(k.mode==1 || bd.QnC(tc.getTCC())!=-1){ return false;}
+			if(k.editmode || bd.QnC(tc.getTCC())!=-1){ return false;}
 
 			var cc = tc.getTCC();
 			var flag = false;
@@ -150,11 +150,11 @@ Puzzles.nanro.prototype = {
 			((mode==1)?this.inputcol('num','knumc',' ','') :this.inputcol('empty','knumy','',''));
 			this.insertrow();
 		};
-		kp.generate(99, true, true, kp.kpgenerate.bind(kp));
-		kp.kpinput = function(ca){ kc.keyinput(ca,99);};
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate.bind(kp));
+		kp.kpinput = function(ca){ kc.keyinput(ca);};
 
 		area.resetArea();
-		bd.roommaxfunc = function(cc,mode){ return area.getCntOfRoomByCell(cc);};
+		bd.nummaxfunc = function(cc){ return area.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------

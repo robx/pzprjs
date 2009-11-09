@@ -52,19 +52,21 @@ Puzzles.kaero.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1){ this.inputborder(x,y);}
-			else if(k.mode==3){
+			if(k.editmode){ this.inputborder(x,y);}
+			else if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){
-			if     (k.mode==1 && this.notInputted()){ this.inputqnum(x,y,99);}
-			else if(k.mode==3 && this.notInputted()){ this.inputlight(x,y);}
+			if(this.notInputted()){
+				if     (k.editmode){ this.inputqnum(x,y);}
+				else if(k.playmode){ this.inputlight(x,y);}
+			}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==1){ this.inputborder(x,y);}
-			else if(k.mode==3){
+			if(k.editmode){ this.inputborder(x,y);}
+			else if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
@@ -81,7 +83,7 @@ Puzzles.kaero.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputqnum_kaero(ca);
 		};
@@ -129,7 +131,7 @@ Puzzles.kaero.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawTip = function(x1,y1,x2,y2){

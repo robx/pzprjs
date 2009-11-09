@@ -40,19 +40,19 @@ Puzzles.reflect.prototype = {
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　問題の記号はQWEASの各キーで入力、Tキーや-キーで消去できます。",
 							   " Press each QWEAS key to input question. Press 'T' or '-' key to erase.");
+		}
+		else{
+			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
+							   " Left Button Drag to input black cells, Right Click to input a cross.");
 		}
 		base.setTitle("リフレクトリンク","Reflect Link");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){
-		if(k.callmode=="pmake"){ kp.defaultdisp = true;}
+		if(k.EDITOR){ kp.defaultdisp = true;}
 		menu.addRedLineToFlags();
 	},
 
@@ -62,18 +62,18 @@ Puzzles.reflect.prototype = {
 		// マウス入力系
 		mv.mousedown = function(x,y){
 			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1){
+			if(k.editmode){
 				if(!kp.enabled()){ this.inputQues(x,y,[0,2,3,4,5,101]);}
 				else{ kp.display(x,y);}
 			}
-			else if(k.mode==3){
+			else if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(k.mode==3){
+			if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
@@ -84,13 +84,13 @@ Puzzles.reflect.prototype = {
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			if(this.key_inputLineParts(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 		kc.key_inputLineParts = function(ca){
-			if(k.mode!=1){ return false;}
+			if(k.playmode){ return false;}
 			var cc = tc.getTCC();
 
 			if     (ca=='q'){ bd.sQuC(cc,2); bd.sQnC(cc,-1);}
@@ -107,7 +107,7 @@ Puzzles.reflect.prototype = {
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				this.inputcol('image','knumq','q',[0,0]);
 				this.inputcol('image','knumw','w',[1,0]);
@@ -130,11 +130,11 @@ Puzzles.reflect.prototype = {
 				this.inputcol('num','knum.','-','-');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
 			kp.imgCR = [4,1];
 			kp.kpinput = function(ca){
 				if(kc.key_inputLineParts(ca)){ return;}
-				kc.key_inputqnum(ca,99);
+				kc.key_inputqnum(ca);
 			};
 		}
 	},
@@ -163,7 +163,7 @@ Puzzles.reflect.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawTriangleBorder = function(x1,y1,x2,y2){

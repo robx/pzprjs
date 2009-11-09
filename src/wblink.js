@@ -52,15 +52,15 @@ Puzzles.wblink.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputQues(x,y,[0,41,42,-2]);
-			else if(k.mode==3){
+			if(k.editmode) this.inputQues(x,y,[0,41,42,-2]);
+			else if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(k.mode==3){
+			if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
@@ -127,12 +127,12 @@ Puzzles.wblink.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.input41_42(ca);
 		};
 		kc.input41_42 = function(ca){
-			if(k.mode==3){ return false;}
+			if(k.playmode){ return false;}
 
 			var cc = tc.getTCC();
 			var flag = false;
@@ -159,7 +159,7 @@ Puzzles.wblink.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			if(k.mode==1){ this.drawGrid(x1,y1,x2,y2);}
+			if(k.editmode){ this.drawGrid(x1,y1,x2,y2);}
 			else if(g.vml){ this.hideBorder();}
 
 			this.drawPekes(x1,y1,x2,y2,0);
@@ -168,7 +168,7 @@ Puzzles.wblink.prototype = {
 			this.drawQueses41_42(x1-2,y1-2,x2+1,y2+1);
 			this.drawNumbers(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawQueses41_42 = function(x1,y1,x2,y2){

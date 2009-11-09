@@ -46,7 +46,7 @@ Puzzles.ichimaga.prototype = {
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){
-		if(k.callmode=="pmake"){
+		if(k.EDITOR){
 			pp.addUseToFlags('puztype','setting',1,[1,2,3]);
 			pp.addUseChildrenToFlags('puztype','puztype');
 			pp.setMenuStr('puztype', 'パズルの種類', 'Kind of the puzzle');
@@ -62,15 +62,15 @@ Puzzles.ichimaga.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputqnum(x,y,4);
-			else if(k.mode==3){
+			if(k.editmode) this.inputqnum(x,y);
+			else if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(k.mode==3){
+			if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
@@ -78,11 +78,13 @@ Puzzles.ichimaga.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,4);
+			this.key_inputqnum(ca);
 		};
+
+		bd.maxnum = 4;
 	},
 
 	//---------------------------------------------------------
@@ -104,7 +106,7 @@ Puzzles.ichimaga.prototype = {
 
 			this.drawNumCells_circle(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawNumCells_circle = function(x1,y1,x2,y2){
@@ -142,7 +144,7 @@ Puzzles.ichimaga.prototype = {
 		enc.pzlimport = function(type, bstr){
 			if(type==0 || type==1){ this.decode4Cell(bstr);}
 
-			if(k.callmode=="pmake"){
+			if(k.EDITOR){
 				if     (this.checkpflag("m")){ menu.setVal('puztype',2);}
 				else if(this.checkpflag("x")){ menu.setVal('puztype',3);}
 				else                         { menu.setVal('puztype',1);}
@@ -172,14 +174,14 @@ Puzzles.ichimaga.prototype = {
 		fio.decodeOthers = function(array){
 			if(array.length<1){ return false;}
 
-			if(k.callmode=="pmake"){
+			if(k.EDITOR){
 				if     (array[0]=="mag")  { menu.setVal('puztype',2);}
-				else if(array[0]=="cross"){ menu.setVal('puztype',3);}
+				else if(array[0]==k.CROSS){ menu.setVal('puztype',3);}
 				else                      { menu.setVal('puztype',1);}
 			}
 			else{
 				if     (array[0]=="mag")  { base.setTitle("磁石イチマガ","Magnetic Ichimaga");}
-				else if(array[0]=="cross"){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
+				else if(array[0]==k.CROSS){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
 				else                      { base.setTitle("イチマガ","Ichimaga");}
 				document.title = base.gettitle();
 				$("#title2").html(base.gettitle());
@@ -237,9 +239,9 @@ Puzzles.ichimaga.prototype = {
 			return true;
 		};
 		ans.check1st = function(){ return true;};
-		ans.ismag    = function(){ return ((k.callmode=="pmake"&&menu.getVal('puztype')==2)||(k.callmode=="pplay"&&enc.checkpflag("m")));};
-		ans.iscross  = function(){ return ((k.callmode=="pmake"&&menu.getVal('puztype')==3)||(k.callmode=="pplay"&&enc.checkpflag("x")));};
-		ans.isnormal = function(){ return ((k.callmode=="pmake"&&menu.getVal('puztype')==1)||(k.callmode=="pplay"&&!enc.checkpflag("m")&&!enc.checkpflag("x")));};
+		ans.ismag    = function(){ return ((k.EDITOR&&menu.getVal('puztype')==2)||(k.PLAYER&&enc.checkpflag("m")));};
+		ans.iscross  = function(){ return ((k.EDITOR&&menu.getVal('puztype')==3)||(k.PLAYER&&enc.checkpflag("x")));};
+		ans.isnormal = function(){ return ((k.EDITOR&&menu.getVal('puztype')==1)||(k.PLAYER&&!enc.checkpflag("m")&&!enc.checkpflag("x")));};
 
 		ans.checkLcntCell = function(val){
 			if(line.ltotal[val]==0){ return true;}

@@ -55,18 +55,18 @@ Puzzles.slither.prototype = {
 		// マウス入力系
 		mv.mousedown = function(x,y){
 			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1){
-				if(!kp.enabled()){ this.inputqnum(x,y,3);}
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum(x,y);}
 				else{ kp.display(x,y);}
 			}
-			else if(k.mode==3){
+			else if(k.playmode){
 				if(this.btn.Left) this.inputborderans(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(k.mode==3){
+			if(k.playmode){
 				if(this.btn.Left) this.inputborderans(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
@@ -90,16 +90,16 @@ Puzzles.slither.prototype = {
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,3);
+			this.key_inputqnum(ca);
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,3);
+				kc.key_inputqnum(ca);
 			};
 			kp.kpgenerate = function(mode){
 				this.inputcol('num','knum0','0','0');
@@ -111,8 +111,10 @@ Puzzles.slither.prototype = {
 				this.inputcol('num','knum.','-','?');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
 		}
+
+		bd.maxnum = 3;
 	},
 
 	//---------------------------------------------------------
@@ -133,7 +135,7 @@ Puzzles.slither.prototype = {
 			if(k.br.IE){ this.drawPekes(x1,y1,x2,y2,1);}
 			else{ this.drawPekes(x1,y1,x2,y2,0);}
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawBaseMarks = function(x1,y1,x2,y2){

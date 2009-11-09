@@ -52,22 +52,22 @@ Puzzles.shugaku.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==3){
+			if(k.playmode){
 				if(this.btn.Left) this.inputFuton(x,y);
 				else if(this.btn.Right) this.inputcell_shugaku(x,y);
 			}
-			else if(k.mode==1){
-				if(!kp.enabled()){ this.inputqnum(x,y,4);}
+			else if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum(x,y);}
 				else{ kp.display(x,y);}
 			}
 		};
 		mv.mouseup = function(x,y){
-			if(k.mode==3){
+			if(k.playmode){
 				if(this.btn.Left) this.inputFuton2(x,y);
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==3){
+			if(k.playmode){
 				if(this.btn.Left) this.inputFuton(x,y);
 				else if(this.btn.Right) this.inputcell_shugaku(x,y);
 			}
@@ -163,17 +163,19 @@ Puzzles.shugaku.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,4);
+			this.key_inputqnum(ca);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(4, true, false, '');
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,4);
+				kc.key_inputqnum(ca);
 			};
 		}
+
+		bd.maxnum = 4;
 
 		menu.ex.adjustSpecial = function(type,key){
 			um.disableRecord();
@@ -238,7 +240,7 @@ Puzzles.shugaku.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawNumCells = function(x1,y1,x2,y2){

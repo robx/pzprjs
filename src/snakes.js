@@ -40,7 +40,7 @@ Puzzles.snakes.prototype = {
 		//k.def_psize = 16;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pmake"){
+		if(k.EDITOR){
 			base.setExpression("　矢印は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
 							   " To input Arrows, Left Button Drag or Press arrow key with SHIFT key.");
 		}
@@ -60,8 +60,8 @@ Puzzles.snakes.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputdirec(x,y);
-			else if(k.mode==3){
+			if(k.editmode) this.inputdirec(x,y);
+			else if(k.playmode){
 				if(!this.inputDot(x,y)){
 					this.dragnumber(x,y);
 				}
@@ -69,24 +69,24 @@ Puzzles.snakes.prototype = {
 		};
 		mv.mouseup = function(x,y){
 			if(this.notInputted()){
-				if(k.mode==1) this.inputqnum(x,y,5);
-				else if(k.mode==3) this.inputqnum_snakes(x,y,5);
+				if     (k.editmode) this.inputqnum(x,y);
+				else if(k.playmode) this.inputqnum_snakes(x,y);
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==1 && this.notInputted()) this.inputdirec(x,y);
-			else if(k.mode==3){
+			if(k.editmode && this.notInputted()) this.inputdirec(x,y);
+			else if(k.playmode){
 				if(!this.inputDot(x,y)){
 					this.dragnumber(x,y);
 				}
 			}
 		};
 
-		mv.inputqnum_snakes = function(x,y,max){
+		mv.inputqnum_snakes = function(x,y){
 			var cc = this.cellid(new Pos(x,y));
 			if(cc==-1){ return;}
 			k.dispzero=0;
-			cc = this.inputqnum3(cc,max);
+			cc = this.inputqnum3(cc);
 			bd.sQsC(cc,0);
 			k.dispzero=1;
 			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
@@ -133,11 +133,13 @@ Puzzles.snakes.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,5);
+			this.key_inputqnum(ca);
 		};
+
+		bd.maxnum = 5;
 	},
 
 	//---------------------------------------------------------
@@ -163,7 +165,7 @@ Puzzles.snakes.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		// 境界線の描画
@@ -306,10 +308,10 @@ Puzzles.snakes.prototype = {
 				if(bd.QnC(c)<0 || bd.DiC(c)==0){ continue;}
 				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, dir = bd.DiC(c);
 				var num=bd.QnC(c), clist=[c];
-				if     (dir==1){ cy--; while(cy>=0     ){ if(!func(clist)){ break;} cy--;} }
-				else if(dir==2){ cy++; while(cy<k.qrows){ if(!func(clist)){ break;} cy++;} }
-				else if(dir==3){ cx--; while(cx>=0     ){ if(!func(clist)){ break;} cx--;} }
-				else if(dir==4){ cx++; while(cx<k.qcols){ if(!func(clist)){ break;} cx++;} }
+				if     (dir==k.UP){ cy--; while(cy>=0     ){ if(!func(clist)){ break;} cy--;} }
+				else if(dir==k.DN){ cy++; while(cy<k.qrows){ if(!func(clist)){ break;} cy++;} }
+				else if(dir==k.LT){ cx--; while(cx>=0     ){ if(!func(clist)){ break;} cx--;} }
+				else if(dir==k.RT){ cx++; while(cx<k.qcols){ if(!func(clist)){ break;} cx++;} }
 
 				if(num==0^(cx<0||cx>=k.qcols||cy<0||cy>=k.qcols||bd.QnC(bd.cnum(cx,cy))!=-1)){
 					if(num>0){ bd.sErC(clist,1);}

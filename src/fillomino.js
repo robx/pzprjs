@@ -56,19 +56,19 @@ Puzzles.fillomino.prototype = {
 	input_init : function(){
 		// ƒ}ƒEƒX“ü—ÍŒn
 		mv.mousedown = function(x,y){
-			if(k.mode==3){
+			if(k.playmode){
 				if(this.btn.Left){ this.borderinput = this.inputborder_fillomino(x,y);}
 				else if(this.btn.Right) this.inputQsubLine(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){
 			if(this.notInputted()){
-				if(!kp.enabled()){ this.mouseCell=-1; 	this.inputqnum(x,y,99);}
+				if(!kp.enabled()){ this.mouseCell=-1; 	this.inputqnum(x,y);}
 				else{ kp.display(x,y);}
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==3){
+			if(k.playmode){
 				if(this.btn.Left){
 					if(this.borderinput){ this.inputborder_fillomino(x,y);}
 					else{ this.dragnumber(x,y);}
@@ -119,32 +119,32 @@ Puzzles.fillomino.prototype = {
 			if(kc.key_fillomino(ca)){ return;}
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(ca=='x' && !this.keyPressed){ this.isX=true; return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 		kc.keyup    = function(ca){ if(ca=='z'){ this.isZ=false;} if(ca=='x'){ this.isX=false;}};
 		kc.key_fillomino = function(ca){
-			if(k.mode==1){ return false;}
+			if(k.editmode){ return false;}
 
 			var cc = tc.getTCC();
 			if(cc==-1){ return;}
 			var flag = false;
 
-			if     (ca == 'up'    && bd.up(cc) != -1){
+			if     (ca == k.KEYUP && bd.up(cc) != -1){
 				if(kc.isCTRL)  { bd.sQsB(bd.ub(cc),(bd.QsB(bd.ub(cc))==0?1:0)); tc.decTCY(2); flag = true;}
 				else if(kc.isZ){ bd.sQaB(bd.ub(cc),(bd.QaB(bd.ub(cc))==0?1:0)); flag = true;}
 				else if(kc.isX){ bd.sQaC(bd.up(cc),bd.getNum(cc)); tc.decTCY(2); flag = true;}
 			}
-			else if(ca == 'down'  && bd.dn(cc) != -1){
+			else if(ca == k.KEYDN && bd.dn(cc) != -1){
 				if(kc.isCTRL)  { bd.sQsB(bd.db(cc),(bd.QsB(bd.db(cc))==0?1:0)); tc.incTCY(2); flag = true;}
 				else if(kc.isZ){ bd.sQaB(bd.db(cc),(bd.QaB(bd.db(cc))==0?1:0)); flag = true;}
 				else if(kc.isX){ bd.sQaC(bd.dn(cc),bd.getNum(cc)); tc.incTCY(2); flag = true;}
 			}
-			else if(ca == 'left'  && bd.lt(cc) != -1){
+			else if(ca == k.KEYLT && bd.lt(cc) != -1){
 				if(kc.isCTRL)  { bd.sQsB(bd.lb(cc),(bd.QsB(bd.lb(cc))==0?1:0)); tc.decTCX(2); flag = true;}
 				else if(kc.isZ){ bd.sQaB(bd.lb(cc),(bd.QaB(bd.lb(cc))==0?1:0)); kc.tcMoved = true; flag = true;}
 				else if(kc.isX){ bd.sQaC(bd.lt(cc),bd.getNum(cc)); tc.decTCX(2); kc.tcMoved = true; flag = true;}
 			}
-			else if(ca == 'right' && bd.rt(cc) != -1){
+			else if(ca == k.KEYRT && bd.rt(cc) != -1){
 				if(kc.isCTRL)  { bd.sQsB(bd.rb(cc),(bd.QsB(bd.rb(cc))==0?1:0)); tc.incTCX(2); flag = true;}
 				else if(kc.isZ){ bd.sQaB(bd.rb(cc),(bd.QaB(bd.rb(cc))==0?1:0)); flag = true;}
 				else if(kc.isX){ bd.sQaC(bd.rt(cc),bd.getNum(cc)); tc.incTCX(2); flag = true;}
@@ -159,7 +159,7 @@ Puzzles.fillomino.prototype = {
 		kc.isZ = false;
 
 		kp.generate(0, true, true, '');
-		kp.kpinput = function(ca){ kc.key_inputqnum(ca,99);};
+		kp.kpinput = function(ca){ kc.key_inputqnum(ca);};
 	},
 
 	//---------------------------------------------------------

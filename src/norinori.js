@@ -54,13 +54,13 @@ Puzzles.norinori.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3) this.inputcell(x,y);
+			if     (k.editmode) this.inputborder(x,y);
+			else if(k.playmode) this.inputcell(x,y);
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3) this.inputcell(x,y);
+			if     (k.editmode) this.inputborder(x,y);
+			else if(k.playmode) this.inputcell(x,y);
 		};
 
 		// キーボード入力系

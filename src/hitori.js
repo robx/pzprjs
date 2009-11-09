@@ -56,24 +56,26 @@ Puzzles.hitori.prototype = {
 		// マウス入力系
 		mv.mousedown = function(x,y){
 			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed(x,y);}
-			else if(k.mode==1) this.inputqnum(x,y,Math.max(k.qcols,k.qrows));
-			else if(k.mode==3) this.inputcell(x,y);
+			else if(k.editmode) this.inputqnum(x,y);
+			else if(k.playmode) this.inputcell(x,y);
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(k.mode==3) this.inputcell(x,y);
+			if(k.playmode) this.inputcell(x,y);
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,Math.max(k.qcols,k.qrows));
+			this.key_inputqnum(ca);
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
+
+		bd.nummaxfunc = function(cc){ return Math.max(k.qcols,k.qrows);};
 	},
 
 	//---------------------------------------------------------
@@ -96,7 +98,7 @@ Puzzles.hitori.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 

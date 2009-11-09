@@ -40,13 +40,13 @@ Puzzles.slalom.prototype = {
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　問題の記号はQWEの各キーで入力、Rキーで消去できます。数字は点線上でキーボード入力です。○はSキーか、マウスドラッグで移動出来ます。黒マスはマウスの左クリック、点線はドラッグでも入力できます。",
 							   " Press each QWE key to input question marks and R key to erase a mark. Type number key on dotted line to input numbers. Type S key or Left Button Drag to move circle. Left Click to input black cells. Left Button Drag out of circles to also input dotted line.");
+		}
+		else{
+			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
+							   " Left Button Drag to input black cells, Right Click to input a cross.");
 		}
 		base.setTitle("スラローム","Slalom");
 		base.setFloatbgcolor("rgb(96, 96, 255)");
@@ -61,22 +61,22 @@ Puzzles.slalom.prototype = {
 		// マウス入力系
 		mv.mousedown = function(x,y){
 			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1){ this.inputGate(x,y);}
-			else if(k.mode==3){
+			if(k.editmode){ this.inputGate(x,y);}
+			else if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){
-			if(k.mode==1){
+			if(k.editmode){
 				if(this.inputData==10){ this.inputStartid_up(x,y); }
 				else if(this.notInputted() && !kp.enabled()){ this.inputQues_slalom(x,y);}
 				else if(this.notInputted()){ kp.display(x,y);}
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==1){ this.inputGate(x,y);}
-			else if(k.mode==3){
+			if(k.editmode){ this.inputGate(x,y);}
+			else if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
@@ -145,9 +145,9 @@ Puzzles.slalom.prototype = {
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(ca=='x' && !this.keyPressed){ this.isX=true; pc.drawNumbersOnGate(true); return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum_slalom(ca,99);
+			this.key_inputqnum_slalom(ca);
 		};
 		kc.key_inputqnum_slalom = function(ca){
 			var cc = tc.getTCC();
@@ -171,7 +171,7 @@ Puzzles.slalom.prototype = {
 				pc.dispnumStartpos(bd.startid);
 			}
 			else if(bd.QuC(cc)==1){
-				bd.roommaxfunc = function(cc){ return Math.min(bd.hinfo.max,99);}
+				bd.nummaxfunc = function(cc){ return Math.min(bd.hinfo.max,bd.maxnum);}
 				this.key_inputqnum(ca);
 			}
 		};
@@ -182,7 +182,7 @@ Puzzles.slalom.prototype = {
 		kc.isZ = false;
 		kc.isX = false;
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				this.inputcol('image','knumq','q',[0,0]);
 				this.inputcol('image','knums','s',[1,0]);
@@ -206,7 +206,7 @@ Puzzles.slalom.prototype = {
 				this.inputcol('num','knum_',' ',' ');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
 			kp.imgCR = [4,1];
 			kp.kpinput = function(ca){
 				kc.key_inputqnum_slalom(ca);
@@ -252,16 +252,16 @@ Puzzles.slalom.prototype = {
 				bd.startid = bd.cnum2(cy,k.qcols-1-cx,k.qrows,k.qcols);
 				break;
 			case 5: // 盤面拡大
-				if     (key=='up'){ bd.startid = bd.cnum2(cx  ,cy+1,k.qcols,k.qrows+1);}
-				else if(key=='dn'){ bd.startid = bd.cnum2(cx  ,cy  ,k.qcols,k.qrows+1);}
-				else if(key=='lt'){ bd.startid = bd.cnum2(cx+1,cy  ,k.qcols+1,k.qrows);}
-				else if(key=='rt'){ bd.startid = bd.cnum2(cx  ,cy  ,k.qcols+1,k.qrows);}
+				if     (key==k.UP){ bd.startid = bd.cnum2(cx  ,cy+1,k.qcols,k.qrows+1);}
+				else if(key==k.DN){ bd.startid = bd.cnum2(cx  ,cy  ,k.qcols,k.qrows+1);}
+				else if(key==k.LT){ bd.startid = bd.cnum2(cx+1,cy  ,k.qcols+1,k.qrows);}
+				else if(key==k.RT){ bd.startid = bd.cnum2(cx  ,cy  ,k.qcols+1,k.qrows);}
 				break;
 			case 6: // 盤面縮小
-				if     (key=='dn' && cy<k.qrows-1){ bd.startid = bd.cnum2(cx  ,cy  ,k.qcols,k.qrows-1);}
-				else if(key=='up' || key=='dn')   { bd.startid = bd.cnum2(cx  ,cy-1,k.qcols,k.qrows-1);}
-				else if(key=='rt' && cx<k.qcols-1){ bd.startid = bd.cnum2(cx  ,cy  ,k.qcols-1,k.qrows);}
-				else if(key=='lt' || key=='rt')   { bd.startid = bd.cnum2(cx-1,cy  ,k.qcols-1,k.qrows);}
+				if     (key==k.DN && cy<k.qrows-1){ bd.startid = bd.cnum2(cx  ,cy  ,k.qcols,k.qrows-1);}
+				else if(key==k.UP || key==k.DN)   { bd.startid = bd.cnum2(cx  ,cy-1,k.qcols,k.qrows-1);}
+				else if(key==k.RT && cx<k.qcols-1){ bd.startid = bd.cnum2(cx  ,cy  ,k.qcols-1,k.qrows);}
+				else if(key==k.LT || key==k.RT)   { bd.startid = bd.cnum2(cx-1,cy  ,k.qcols-1,k.qrows);}
 				break;
 			}
 			um.enableRecord();
@@ -298,7 +298,7 @@ Puzzles.slalom.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawBCells_slalom = function(x1,y1,x2,y2){

@@ -62,25 +62,25 @@ Puzzles.shakashaka.prototype = {
 		mv.mousedown = function(x,y){
 			this.firstPos = new Pos(x,y);
 
-			if(k.mode==3) this.inputTriangle(x,y,0);
-			if(k.mode==1){
-				if(!kp.enabled()){ this.inputqnum(x,y,4);}
+			if(k.playmode) this.inputTriangle(x,y,0);
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum(x,y);}
 				else{ kp.display(x,y);}
 			}
 		};
 		mv.mouseup = function(x,y){
-			if(k.mode==3 && k.use==2 && this.notInputted()){
+			if(k.playmode && k.use==2 && this.notInputted()){
 				this.inputTriangle(x,y,1);
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==3 && k.use==2 && this.firstPos.x != -1 && this.firstPos.y != -1){
+			if(k.playmode && k.use==2 && this.firstPos.x != -1 && this.firstPos.y != -1){
 				this.inputTriangle(x,y,0);
 			}
 		};
 		mv.inputTriangle = function(x,y,flag){
 			var cc = this.cellid( new Pos(x,y) );
-			if(k.mode==3 && k.use==2){ cc = this.cellid( new Pos(this.firstPos.x,this.firstPos.y) );}
+			if(k.playmode && k.use==2){ cc = this.cellid( new Pos(this.firstPos.x,this.firstPos.y) );}
 
 			if(cc==-1 || (k.use!=2 && cc==this.mouseCell)){ return;}
 			if(bd.QnC(cc)!=-1){ return;}
@@ -147,17 +147,19 @@ Puzzles.shakashaka.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,4);
+			this.key_inputqnum(ca);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(2, true, false, '');
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,4);
+				kc.key_inputqnum(ca);
 			};
 		}
+
+		bd.maxnum = 4;
 
 		menu.ex.adjustSpecial = function(type,key){
 			um.disableRecord();
@@ -215,7 +217,7 @@ Puzzles.shakashaka.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 

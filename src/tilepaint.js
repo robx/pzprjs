@@ -40,13 +40,13 @@ Puzzles.tilepaint.prototype = {
 		k.def_psize = 40;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　左クリックで黒タイルが、右クリックで白タイル確定タイルが入力できます。",
-							   " Left Click to input black tile, Right Click to determined white tile.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　左クリックで境界線や数字のブロックが、右クリックで下絵が入力できます。数字を入力する場所はSHIFTキーを押すと切り替えられます。",
 							   " Left Click to input border lines or number block, Right Click to paint a design. Press SHIFT key to change the side of inputting numbers.");
+		}
+		else{
+			base.setExpression("　左クリックで黒タイルが、右クリックで白タイル確定タイルが入力できます。",
+							   " Left Click to input black tile, Right Click to determined white tile.");
 		}
 		base.setTitle("タイルペイント","TilePaint");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
@@ -60,24 +60,24 @@ Puzzles.tilepaint.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1){
+			if(k.editmode){
 				if     (this.btn.Left)  this.inputborder(x,y);
 				else if(this.btn.Right) this.inputBGcolor1(x,y);
 			}
-			else if(k.mode==3) this.inputtile(x,y);
+			else if(k.playmode) this.inputtile(x,y);
 		};
 		mv.mouseup = function(x,y){
-			if(k.mode==1 && this.notInputted()){
+			if(k.editmode && this.notInputted()){
 				if(!kp.enabled()){ this.input51(x,y);}
 				else{ kp.display(x,y);}
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==1){
+			if(k.editmode){
 				if     (this.btn.Left)  this.inputborder(x,y);
 				else if(this.btn.Right) this.inputBGcolor1(x,y);
 			}
-			else if(k.mode==3) this.inputtile(x,y);
+			else if(k.playmode) this.inputtile(x,y);
 		};
 		mv.set51cell = function(cc,val){
 			if(val==true){
@@ -111,12 +111,12 @@ Puzzles.tilepaint.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.inputnumber51(ca,{2:(k.qcols-tc.getTCX()-1), 4:(k.qrows-tc.getTCY()-1)});
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				this.inputcol('image','knumq','-',[0,0]);
 				this.inputcol('num','knum_',' ',' ');
@@ -134,10 +134,10 @@ Puzzles.tilepaint.prototype = {
 				this.inputcol('num','knum0','0','0');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,99);
+				kc.key_inputqnum(ca);
 			};
 		}
 
@@ -146,7 +146,7 @@ Puzzles.tilepaint.prototype = {
 			if(confirm("補助記号を消去しますか？")){
 				um.chainflag=0;
 				for(var i=0;i<k.qcols*k.qrows;i++){
-					if(bd.QsC(i)==1){ um.addOpe('cell','qsub',i,bd.QsC(i),0);}
+					if(bd.QsC(i)==1){ um.addOpe(k.CELL,'qsub',i,bd.QsC(i),0);}
 				}
 				if(!g.vml){ pc.flushCanvasAll();}
 
@@ -192,11 +192,10 @@ Puzzles.tilepaint.prototype = {
 			this.drawChassis_ex1(x1-1,y1-1,x2,y2,true);
 
 			this.drawNumbersOn51(x1,y1,x2,y2);
-			this.drawNumbersOn51EX(x1,y1,x2,y2);
 
 			this.drawBoxBorders(x1-1,y1-1,x2+1,y2+1,1);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 

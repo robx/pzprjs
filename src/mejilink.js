@@ -55,16 +55,16 @@ Puzzles.mejilink.prototype = {
 		// ƒ}ƒEƒX“ü—ÍŒn
 		mv.mousedown = function(x,y){
 			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3){
+			if(k.editmode) this.inputborder(x,y);
+			else if(k.playmode){
 				if(this.btn.Left) this.inputborderans(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3){
+			if(k.editmode) this.inputborder(x,y);
+			else if(k.playmode){
 				if(this.btn.Left) this.inputborderans(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}

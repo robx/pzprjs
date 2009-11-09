@@ -40,13 +40,13 @@ Puzzles.bosanowa.prototype = {
 		k.def_psize = 36;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　キーボードやマウスで数字が入力できます。",
-							   " It is available to input number by keybord or mouse.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　キーボードで数字および、Wキーで数字を入力するマス/しないマスの切り替えが来出ます。",
 							   " It is able to input number of question by keyboard, and 'W' key toggles cell that is able to be inputted number or not.");
+		}
+		else{
+			base.setExpression("　キーボードやマウスで数字が入力できます。",
+							   " It is available to input number by keybord or mouse.");
 		}
 		base.setTitle("ボサノワ","Bosanowa");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
@@ -67,8 +67,8 @@ Puzzles.bosanowa.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if     (k.mode==1) this.inputqnum_bosanowa(x,y);
-			else if(k.mode==3) this.inputqnum_bosanowa(x,y);
+			if     (k.editmode) this.inputqnum_bosanowa(x,y);
+			else if(k.playmode) this.inputqnum_bosanowa(x,y);
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){ };
@@ -82,7 +82,7 @@ Puzzles.bosanowa.prototype = {
 				var max = 255;
 				if(pos.x%2==1&&pos.y%2==1){
 					var cc = bd.cnum(mf((pos.x-1)/2),mf((pos.y-1)/2));
-					if(k.mode==1){
+					if(k.editmode){
 						if(this.btn.Left){
 							if     (bd.QuC(cc)==0)       { this.setval(cc,-1); bd.sQuC(cc,7);}
 							else if(this.getval(cc)==max){ this.setval(cc,-1); bd.sQuC(cc,0);}
@@ -96,7 +96,7 @@ Puzzles.bosanowa.prototype = {
 							else{ this.setval(cc,this.getval(cc)-1);}
 						}
 					}
-					if(k.mode==3 && bd.QuC(cc)==7){
+					if(k.playmode && bd.QuC(cc)==7){
 						if(this.btn.Left){
 							if     (this.getval(cc)==max){ this.setval(cc,-1);}
 							else if(this.getval(cc)==-1) { this.setval(cc, 1);}
@@ -117,12 +117,12 @@ Puzzles.bosanowa.prototype = {
 			pc.paint(mf(pos.x/2)-1,mf(pos.y/2)-1,mf(pos.x/2)+1,mf(pos.y/2)+1);
 		};
 		mv.setval = function(cc,val){
-			if     (k.mode==1){ bd.sQnC(cc,val);}
-			else if(k.mode==3){ bd.sQaC(cc,val);}
+			if     (k.editmode){ bd.sQnC(cc,val);}
+			else if(k.playmode){ bd.sQaC(cc,val);}
 		};
 		mv.getval = function(cc){
-			if     (k.mode==1){ return bd.QnC(cc);}
-			else if(k.mode==3){ return bd.QaC(cc);}
+			if     (k.editmode){ return bd.QnC(cc);}
+			else if(k.playmode){ return bd.QaC(cc);}
 			return -1;
 		};
 
@@ -135,10 +135,10 @@ Puzzles.bosanowa.prototype = {
 			var tcp = tc.getTCP();
 			if(tcp.x%2==1&&tcp.y%2==1){
 				var cc = tc.getTCC();
-				if(k.mode==1 && ca=='w'){ bd.sQuC(cc,(bd.QuC(cc)!=7?7:0)); bd.setNum(cc,-1);}
-				else if(bd.QuC(cc)==7 && (k.mode==3 || '0'<=ca && ca<='9')){ this.key_inputqnum(ca,255);}
-				else if(k.mode==1 && '0'<=ca && ca<='9'){ bd.sQuC(cc,7); bd.setNum(cc,-1); this.key_inputqnum(ca,255);}
-				else if(k.mode==1 && (ca=='-'||ca==' ')){ bd.sQuC(cc,7); bd.setNum(cc,-1);}
+				if(k.editmode && ca=='w'){ bd.sQuC(cc,(bd.QuC(cc)!=7?7:0)); bd.setNum(cc,-1);}
+				else if(bd.QuC(cc)==7 && (k.playmode || '0'<=ca && ca<='9')){ this.key_inputqnum(ca);}
+				else if(k.editmode && '0'<=ca && ca<='9'){ bd.sQuC(cc,7); bd.setNum(cc,-1); this.key_inputqnum(ca);}
+				else if(k.editmode && (ca=='-'||ca==' ')){ bd.sQuC(cc,7); bd.setNum(cc,-1);}
 				else{ return false;}
 			}
 			else if((tcp.x+tcp.y)%2==1){
@@ -147,12 +147,12 @@ Puzzles.bosanowa.prototype = {
 				if((cc1==-1||bd.QuC(cc1)!=7)||(cc2==-1||bd.QuC(cc2)!=7)){ return false;}
 				if('0'<=ca && ca<='9'){
 					var num = parseInt(ca);
-					var max = 99;
+					var qsubmax = 99;
 
-					if(bd.QsB(id)<=0 || this.prev!=id){ if(num<=max){ bd.sQsB(id,num);}}
+					if(bd.QsB(id)<=0 || this.prev!=id){ if(num<=qsubmax){ bd.sQsB(id,num);}}
 					else{
-						if(bd.QsB(id)*10+num<=max){ bd.sQsB(id,bd.QsB(id)*10+num);}
-						else if(num<=max){ bd.sQsB(id,num);}
+						if(bd.QsB(id)*10+num<=qsubmax){ bd.sQsB(id,bd.QsB(id)*10+num);}
+						else if(num<=qsubmax){ bd.sQsB(id,num);}
 					}
 					this.prev=id;
 				}
@@ -167,7 +167,9 @@ Puzzles.bosanowa.prototype = {
 
 		tc.cursolx = k.qcols-1-k.qcols%2;
 		tc.cursoly = k.qrows-1-k.qrows%2;
-		if(k.callmode=="pmake"){ bd.sQuC(tc.getTCC(),7);}
+		if(k.EDITOR){ bd.sQuC(tc.getTCC(),7);}
+
+		bd.maxnum=255;
 	},
 
 	//---------------------------------------------------------
@@ -195,10 +197,9 @@ Puzzles.bosanowa.prototype = {
 			this.drawNumbers(x1,y1,x2,y2);
 			this.drawNumbersBD(x1,y1,x2,y2);
 
-			if(k.callmode=="pmake"){ this.drawChassis_bosanowa(x1,y1,x2,y2);}
+			if(k.EDITOR){ this.drawChassis_bosanowa(x1,y1,x2,y2);}
 
-			if(tc.cursolx%2==0||tc.cursoly%2==0){ this.drawTBorder(x1-1,y1-1,x2+1,y2+1);}else{ this.hideTBorder();}
-			if(tc.cursolx%2==1&&tc.cursoly%2==1){ this.drawTCell(x1-1,y1-1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget_bosanowa(x1,y1,x2,y2);
 		};
 
 		pc.drawGrid_bosanowa = function(x1,y1,x2,y2){
@@ -341,6 +342,17 @@ Puzzles.bosanowa.prototype = {
 			if(y2>=k.qrows-1){ if(this.vnop("chs3_",1)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+(y2+1)*k.cheight, (x2-x1+1)*k.cwidth+1, 1); } }
 			if(x2>=k.qcols-1){ if(this.vnop("chs4_",1)){ g.fillRect(k.p0.x+(x2+1)*k.cwidth, k.p0.y+y1*k.cheight    , 1, (y2-y1+1)*k.cheight+1);} }
 			this.vinc();
+		};
+
+		pc.drawTarget_bosanowa = function(x1,y1,x2,y2){
+			if(tc.cursolx%2==1&&tc.cursoly%2==1){
+				this.drawTCell(x1-1,y1-1,x2+1,y2+1);
+				this.hideTBorder();
+			}
+			else{
+				this.hideTCell();
+				this.drawTBorder(x1-1,y1-1,x2+1,y2+1);
+			}
 		};
 	},
 

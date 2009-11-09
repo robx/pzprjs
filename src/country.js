@@ -55,23 +55,23 @@ Puzzles.country.prototype = {
 		// マウス入力系
 		mv.mousedown = function(x,y){
 			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3){
+			if(k.editmode) this.inputborder(x,y);
+			else if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){
 			if(this.notInputted()){
-				if(k.mode==1){
-					if(!kp.enabled()){ this.inputqnum(x,y,99);}
+				if(k.editmode){
+					if(!kp.enabled()){ this.inputqnum(x,y);}
 					else{ kp.display(x,y);}
 				}
-				else if(k.mode==3) this.inputMB(x,y);
+				else if(k.playmode) this.inputMB(x,y);
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3){
+			if(k.editmode) this.inputborder(x,y);
+			else if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 			}
 		};
@@ -79,19 +79,21 @@ Puzzles.country.prototype = {
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(0, true, false, '');
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,99);
+				kc.key_inputqnum(ca);
 			};
 		}
+
+		bd.nummaxfunc = function(cc){ return area.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -116,7 +118,7 @@ Puzzles.country.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 

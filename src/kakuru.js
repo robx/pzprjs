@@ -40,13 +40,13 @@ Puzzles.kakuru.prototype = {
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　マウスやキーボードで数字が入力できます。",
-							   " It is available to input number by keybord or mouse");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　黒マスはQキーで入力できます。",
 							   " Press 'Q' key to input black cell.");
+		}
+		else{
+			base.setExpression("　マウスやキーボードで数字が入力できます。",
+							   " It is available to input number by keybord or mouse");
 		}
 		base.setTitle("カックル","Kakuru");
 		base.setFloatbgcolor("rgb(96, 255, 96)");
@@ -58,18 +58,18 @@ Puzzles.kakuru.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1 && !kp.enabled()){
+			if(k.editmode && !kp.enabled()){
 				if(this.notInputted() && kp.enabled()){ kp.display(x,y);}
 				else{ this.inputqnum_kakuru(x,y);}
 			}
-			else if(k.mode==3){ this.inputqnum_kakuru(x,y);}
+			else if(k.playmode){ this.inputqnum_kakuru(x,y);}
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){ };
 		mv.inputqnum_kakuru = function(x,y){
 			var cc = this.cellid(new Pos(x,y));
 			if(cc==-1 || (bd.QuC(cc)==1 && cc==tc.getTCC())){ return;}
-			this.inputqnum(x,y,(k.mode==1?44:9));
+			this.inputqnum(x,y);
 		};
 
 		// キーボード入力系
@@ -82,18 +82,18 @@ Puzzles.kakuru.prototype = {
 
 			if('0'<=ca && ca<='9'){
 				if(bd.QuC(cc)==1){ return;}
-				this.key_inputqnum(ca,(k.mode==1?44:9));
+				this.key_inputqnum(ca);
 			}
 			else if(ca=='-'){
 				if(bd.QuC(cc)==1){ return;}
-				if(k.mode==1){ bd.sQnC(cc,(bd.QnC(cc)!=-2?-2:-1));}
+				if(k.editmode){ bd.sQnC(cc,(bd.QnC(cc)!=-2?-2:-1));}
 				else{ bd.sQaC(cc,-1);}
 			}
 			else if(ca==' '){
-				if(k.mode==1){ bd.sQuC(cc,0); bd.sQnC(cc,-1);}
+				if(k.editmode){ bd.sQuC(cc,0); bd.sQnC(cc,-1);}
 				else{ bd.sQaC(cc,-1);}
 			}
-			else if(k.mode==1 && (ca=='q'||ca=='q1'||ca=='q2')){
+			else if(k.editmode && (ca=='q'||ca=='q1'||ca=='q2')){
 				if(ca=='q'){ ca = (bd.QuC(cc)!=1?'q1':'q2');}
 				if(ca=='q1'){
 					bd.sQuC(cc, 1);
@@ -107,7 +107,7 @@ Puzzles.kakuru.prototype = {
 			pc.paintCell(cc);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				if(mode==1){
 					this.inputcol('num','knumq1','q1','■');
@@ -132,11 +132,13 @@ Puzzles.kakuru.prototype = {
 				this.inputcol('num','knum.',' ',' ');
 				this.insertrow();
 			};
-			kp.generate(99, true, true, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate.bind(kp));
 			kp.kpinput = function(ca){
 				kc.key_inputqnum_tateyoko(ca);
 			};
 		}
+
+		bd.nummaxfunc = function(cc){ return (k.editmode?44:9);};
 	},
 
 	//---------------------------------------------------------

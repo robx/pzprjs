@@ -63,7 +63,7 @@ Puzzles.tawa.prototype = {
 			else if(this.lap==3 || this.lap==undefined){ total = mf(row*0.5)*(2*col+1)+((row%2==1)?col:0);}
 			else{ total = col*row;}
 
-			this.initGroup('cell', this.cell, total);
+			this.initGroup(k.CELL, this.cell, total);
 
 			// サイズの変更
 			k.qcols = col;
@@ -114,30 +114,30 @@ Puzzles.tawa.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1){
-				if(!kp.enabled()){ this.inputqnum(x,y,6);}
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum(x,y);}
 				else{ kp.display(x,y);}
 			}
-			else if(k.mode==3) this.inputcell(x,y);
+			else if(k.playmode) this.inputcell(x,y);
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(k.mode==3) this.inputcell(x,y);
+			if(k.playmode) this.inputcell(x,y);
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,6);
+			this.key_inputqnum(ca);
 		};
 		// xを2倍で渡したい為オーバーライド
 		kc.moveTC = function(ca,mv){
 			var tcx = tc.cursolx, tcy = tc.cursoly, flag = false;
-			if     (ca == 'up'    && tcy-mv >= tc.miny){ tc.decTCY(mv); flag = true;}
-			else if(ca == 'down'  && tcy+mv <= tc.maxy){ tc.incTCY(mv); flag = true;}
-			else if(ca == 'left'  && tcx-mv >= tc.minx){ tc.decTCX(mv); flag = true;}
-			else if(ca == 'right' && tcx+mv <= tc.maxx){ tc.incTCX(mv); flag = true;}
+			if     (ca == k.KEYUP && tcy-mv >= tc.miny){ tc.decTCY(mv); flag = true;}
+			else if(ca == k.KEYDN && tcy+mv <= tc.maxy){ tc.incTCY(mv); flag = true;}
+			else if(ca == k.KEYLT && tcx-mv >= tc.minx){ tc.decTCX(mv); flag = true;}
+			else if(ca == k.KEYRT && tcx+mv <= tc.maxx){ tc.incTCX(mv); flag = true;}
 
 			if(flag){
 				pc.paint(tcx-1, mf(tcy/2)-1, tcx, mf(tcy/2));
@@ -162,16 +162,18 @@ Puzzles.tawa.prototype = {
 			this.insertrow();
 		};
 
-		if(k.callmode=="pmake"){
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+		if(k.EDITOR){
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,Math.max(k.qcols,k.qrows));
+				kc.key_inputqnum(ca);
 			};
 		}
 
 		this.input_init_menu();
 		this.input_init_board();
 		this.input_init_menuex();
+
+		bd.maxnum = 6;
 	},
 
 	input_init_menu : function(){	// 処理が大きくなったので分割(input_init()から呼ばれる)
@@ -334,19 +336,19 @@ Puzzles.tawa.prototype = {
 			// 調節用
 			var margin = 0;
 			{
-				if(key=='lt'){
+				if(key==k.LT){
 					k.qcols += {0:0,1:0,2:1,3:1}[bd.lap];
 					margin   = mf((k.qrows + {0:0,1:0,2:1,3:1}[bd.lap])/2);
 					bd.lap   = {0:2,1:3,2:0,3:1}[bd.lap];
 					tc.maxx++;
 				}
-				else if(key=='rt'){
+				else if(key==k.RT){
 					k.qcols += {0:0,1:1,2:0,3:1}[bd.lap];
 					margin   = mf((k.qrows + {0:0,1:1,2:0,3:1}[bd.lap])/2);
 					bd.lap   = {0:1,1:0,2:3,3:2}[bd.lap];
 					tc.maxx++;
 				}
-				else if(key=='up'){
+				else if(key==k.UP){
 					k.qrows++;
 					tc.maxy+=2;
 					if(bd.lap==1||bd.lap==2){ margin = k.qcols;}
@@ -356,7 +358,7 @@ Puzzles.tawa.prototype = {
 					k.qcols += {0:-1,1:0,2:0,3:1}[bd.lap];
 					bd.lap   = {0:3,1:2,2:1,3:0}[bd.lap];
 				}
-				else if(key=='dn'){
+				else if(key==k.DN){
 					k.qrows++;
 					tc.maxy+=2;
 					if(bd.lap==1||bd.lap==2){ margin = k.qcols;}
@@ -367,11 +369,11 @@ Puzzles.tawa.prototype = {
 
 			// 本体。
 			var func;
-			if     (key=='up'){ func = function(id){ return (bd.cell[id].cy==0);};}
-			else if(key=='dn'){ func = function(id){ return (bd.cell[id].cy==k.qrows-1);};}
-			else if(key=='lt'){ func = function(id){ return (bd.cell[id].cx<=0);};}
-			else if(key=='rt'){ func = function(id){ return (bd.cell[id].cx>=tc.maxx);};}
-			this.expandGroup('cell', bd.cell, margin, func);
+			if     (key==k.UP){ func = function(id){ return (bd.cell[id].cy==0);};}
+			else if(key==k.DN){ func = function(id){ return (bd.cell[id].cy==k.qrows-1);};}
+			else if(key==k.LT){ func = function(id){ return (bd.cell[id].cx<=0);};}
+			else if(key==k.RT){ func = function(id){ return (bd.cell[id].cx>=tc.maxx);};}
+			this.expandGroup(k.CELL, bd.cell, margin, func);
 
 			bd.setposAll();
 			tc.setAlign();
@@ -380,31 +382,31 @@ Puzzles.tawa.prototype = {
 		menu.ex.reduce = function(key){
 			// 本体。
 			var func;
-			if     (key=='up'){ func = function(id){ return (bd.cell[id].cy==0);};}
-			else if(key=='dn'){ func = function(id){ return (bd.cell[id].cy==k.qrows-1);};}
-			else if(key=='lt'){ func = function(id){ return (bd.cell[id].cx<=0);};}
-			else if(key=='rt'){ func = function(id){ return (bd.cell[id].cx>=tc.maxx);};}
-			var margin = this.reduceGroup('cell', bd.cell, func);
+			if     (key==k.UP){ func = function(id){ return (bd.cell[id].cy==0);};}
+			else if(key==k.DN){ func = function(id){ return (bd.cell[id].cy==k.qrows-1);};}
+			else if(key==k.LT){ func = function(id){ return (bd.cell[id].cx<=0);};}
+			else if(key==k.RT){ func = function(id){ return (bd.cell[id].cx>=tc.maxx);};}
+			var margin = this.reduceGroup(k.CELL, bd.cell, func);
 
 			// 調節用
 			{
-				if(key=='lt'){
+				if(key==k.LT){
 					k.qcols -= {0:1,1:1,2:0,3:0}[bd.lap];
 					bd.lap   = {0:2,1:3,2:0,3:1}[bd.lap];
 					tc.maxx--;
 				}
-				else if(key=='rt'){
+				else if(key==k.RT){
 					k.qcols -= {0:1,1:0,2:1,3:0}[bd.lap];
 					bd.lap   = {0:1,1:0,2:3,3:2}[bd.lap];
 					tc.maxx--;
 				}
-				else if(key=='up'){
+				else if(key==k.UP){
 					k.qrows--;
 					tc.maxy-=2;
 					k.qcols += {0:-1,1:0,2:0,3:1}[bd.lap];
 					bd.lap   = {0:3,1:2,2:1,3:0}[bd.lap];
 				}
-				else if(key=='dn'){
+				else if(key==k.DN){
 					k.qrows--;
 					tc.maxy-=2;
 				}
@@ -448,7 +450,7 @@ Puzzles.tawa.prototype = {
 
 			this.drawNumbers(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell_tawa(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget_tawa(x1,y1,x2,y2);
 		};
 		pc.paintAll = function(){ if(this.already()){ this.paint(0,0,tc.maxx+1,k.qrows);} },
 
@@ -483,7 +485,9 @@ Puzzles.tawa.prototype = {
 			this.vinc();
 		};
 
-		pc.drawTCell_tawa = function(x1,y1,x2,y2){
+		pc.drawTarget_tawa = function(x1,y1,x2,y2){
+			if(k.playmode){ this.hideTCell(); return;}
+
 			if(tc.cursolx < x1   || x2  +1 < tc.cursolx){ return;}
 			if(tc.cursoly < y1*2 || y2*2+2 < tc.cursoly){ return;}
 
@@ -492,7 +496,7 @@ Puzzles.tawa.prototype = {
 			var w = (k.cwidth<32?2:mf(k.cwidth/16));
 
 			this.vdel(["tc1_","tc2_","tc3_","tc4_"]);
-			g.fillStyle = (k.mode==1?"rgb(255,64,64)":"rgb(64,64,255)");
+			g.fillStyle = (k.editmode?"rgb(255,64,64)":"rgb(64,64,255)");
 			if(this.vnop("tc1_",0)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
 			if(this.vnop("tc2_",0)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
 			if(this.vnop("tc3_",0)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}

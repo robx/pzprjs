@@ -52,18 +52,18 @@ Puzzles.tatamibari.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1){
+			if(k.editmode){
 				if(!kp.enabled()){ this.inputQues(x,y,[0,101,102,103,-2]);}
 				else{ kp.display(x,y);}
 			}
-			else if(k.mode==3){
+			else if(k.playmode){
 				if(this.btn.Left) this.inputborderans(x,y);
 				else if(this.btn.Right) this.inputQsubLine(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(k.mode==3){
+			if(k.playmode){
 				if(this.btn.Left) this.inputborderans(x,y);
 				else if(this.btn.Right) this.inputQsubLine(x,y);
 			}
@@ -71,12 +71,12 @@ Puzzles.tatamibari.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputMarks(ca);
 		};
 		kc.key_inputMarks = function(ca){
-			if(k.mode!=1){ return false;}
+			if(k.playmode){ return false;}
 			var cc = tc.getTCC();
 
 			if     (ca=='q'||ca=='1'){ bd.sQuC(cc,101); }
@@ -91,7 +91,7 @@ Puzzles.tatamibari.prototype = {
 			return true;
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				this.inputcol('num','knumq','q','╋');
 				this.inputcol('num','knumw','w','┃');
@@ -102,7 +102,7 @@ Puzzles.tatamibari.prototype = {
 				this.inputcol('empty','knumx','','');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
 			kp.kpinput = function(ca){
 				kc.key_inputMarks(ca);
 			};
@@ -131,7 +131,7 @@ Puzzles.tatamibari.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawMarks = function(x1,y1,x2,y2){

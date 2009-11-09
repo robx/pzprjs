@@ -40,13 +40,13 @@ Puzzles.tateyoko.prototype = {
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　黒マスはQキーで入力できます。数字はキーボード及びマウスで入力できます。",
 							   " Press Q key to input black cells. It is available to input number by keybord or mouse.");
+		}
+		else{
+			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
+							   " Left Button Drag to input black cells, Right Click to input a cross.");
 		}
 		base.setTitle("タテボーヨコボー","Tatebo-Yokobo");
 		base.setFloatbgcolor("rgb(96, 255, 96)");
@@ -58,15 +58,15 @@ Puzzles.tateyoko.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1 && !kp.enabled()){ this.inputqnum(x,y,99);}
-			else if(k.mode==3){ this.inputTateyoko(x,y);}
+			if(k.editmode && !kp.enabled()){ this.inputqnum(x,y);}
+			else if(k.playmode){ this.inputTateyoko(x,y);}
 		};
 		mv.mouseup = function(x,y){
-			if(k.mode==1 && this.notInputted() && kp.enabled()){ kp.display(x,y);}
-			else if(k.mode==3 && this.notInputted()){ this.clickTateyoko(x,y);}
+			if(k.editmode && this.notInputted() && kp.enabled()){ kp.display(x,y);}
+			else if(k.playmode && this.notInputted()){ this.clickTateyoko(x,y);}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==3){ this.inputTateyoko(x,y);}
+			if(k.playmode){ this.inputTateyoko(x,y);}
 		};
 		mv.inputTateyoko = function(x,y){
 			var pos = this.crosspos(new Pos(x,y),0.30);
@@ -110,10 +110,10 @@ Puzzles.tateyoko.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			if(this.key_inputqnum_tateyoko(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 		kc.key_inputqnum_tateyoko = function(ca){
 			var cc = tc.getTCC();
@@ -132,7 +132,7 @@ Puzzles.tateyoko.prototype = {
 			return true;
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				this.inputcol('num','knumq1','q1','■');
 				this.inputcol('num','knumq2','q2','□');
@@ -155,7 +155,7 @@ Puzzles.tateyoko.prototype = {
 				this.inputcol('num','knum.',' ',' ');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
 			kp.kpinput = function(ca){
 				kc.key_inputqnum_tateyoko(ca);
 			};
@@ -168,7 +168,7 @@ Puzzles.tateyoko.prototype = {
 			}
 			um.enableRecord();
 		};
-		bd.roommaxfunc = function(cc,mode){ return (bd.QuC(cc)==1?4:Math.max(k.qcols,k.qrows));};
+		bd.nummaxfunc = function(cc){ return (bd.QuC(cc)==1?4:Math.max(k.qcols,k.qrows));};
 	},
 
 	//---------------------------------------------------------
@@ -193,7 +193,7 @@ Puzzles.tateyoko.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawTateyokos = function(x1,y1,x2,y2){

@@ -52,22 +52,20 @@ Puzzles.sukoro.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(!kp.enabled()){ this.inputqnum(x,y,4);}
+			if(!kp.enabled()){ this.inputqnum(x,y);}
 			else{ kp.display(x,y);}
 		};
 		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			//this.inputqnum(x,y,4);
-		};
+		mv.mousemove = function(x,y){ };
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
 			if(kc.key_sukoro(ca)){ return;}
-			this.key_inputqnum(ca,4);
+			this.key_inputqnum(ca);
 		};
 		kc.key_sukoro = function(ca){
-			if(k.mode==1 || bd.QnC(tc.getTCC())!=-1){ return false;}
+			if(k.editmode || bd.QnC(tc.getTCC())!=-1){ return false;}
 
 			var cc = tc.getTCC();
 			var flag = false;
@@ -105,11 +103,13 @@ Puzzles.sukoro.prototype = {
 				this.insertrow();
 			}
 		};
-		kp.generate(99, true, true, kp.kpgenerate.bind(kp));
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate.bind(kp));
 		kp.kpinput = function(ca){
 			if(kc.key_sukoro(ca)){ return;}
-			kc.key_inputqnum(ca,4);
+			kc.key_inputqnum(ca);
 		};
+
+		bd.maxnum = 4;
 	},
 
 	//---------------------------------------------------------

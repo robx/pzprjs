@@ -54,35 +54,37 @@ Puzzles.chocona.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3) this.inputcell(x,y);
+			if     (k.editmode) this.inputborder(x,y);
+			else if(k.playmode) this.inputcell(x,y);
 		};
 		mv.mouseup = function(x,y){
 			if(this.notInputted()){
-				if(k.mode==1){
-					if(!kp.enabled()){ this.inputqnum(x,y,99);}
+				if(k.editmode){
+					if(!kp.enabled()){ this.inputqnum(x,y);}
 					else{ kp.display(x,y);}
 				}
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3) this.inputcell(x,y);
+			if     (k.editmode) this.inputborder(x,y);
+			else if(k.playmode) this.inputcell(x,y);
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(0, true, false, '');
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,99);
+				kc.key_inputqnum(ca);
 			};
 		}
+
+		bd.nummaxfunc = function(cc){ return area.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -107,7 +109,7 @@ Puzzles.chocona.prototype = {
 
 			this.drawBoxBorders(x1-1,y1-1,x2+1,y2+1,0);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 

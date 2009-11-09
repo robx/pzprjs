@@ -52,22 +52,20 @@ Puzzles.view.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(!kp.enabled()){ this.inputqnum(x,y,Math.min(k.qcols+k.qrows-2,99));}
+			if(!kp.enabled()){ this.inputqnum(x,y);}
 			else{ kp.display(x,y);}
 		};
 		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			//this.inputqnum(x,y,Math.min(k.qcols+k.qrows-2,99));
-		};
+		mv.mousemove = function(x,y){ };
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
 			if(kc.key_view(ca)){ return;}
-			this.key_inputqnum(ca,Math.min(k.qcols+k.qrows-2,99));
+			this.key_inputqnum(ca);
 		};
 		kc.key_view = function(ca){
-			if(k.mode==1 || bd.QnC(tc.getTCC())!=-1){ return false;}
+			if(k.editmode || bd.QnC(tc.getTCC())!=-1){ return false;}
 
 			var cc = tc.getTCC();
 			var flag = false;
@@ -108,11 +106,13 @@ Puzzles.view.prototype = {
 			((mode==1)?this.inputcol('num','knum.','-','?'):this.inputcol('empty','knumz','',''));
 			this.insertrow();
 		};
-		kp.generate(99, true, true, kp.kpgenerate.bind(kp));
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate.bind(kp));
 		kp.kpinput = function(ca){
 			if(kc.key_view(ca)){ return;}
-			kc.key_inputqnum(ca,Math.min(k.qcols+k.qrows-2,99));
+			kc.key_inputqnum(ca);
 		};
+
+		bd.nummaxfunc = function(cc){ return Math.min(k.qcols+k.qrows-2,bd.maxnum);};
 	},
 
 	//---------------------------------------------------------

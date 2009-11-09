@@ -40,13 +40,13 @@ Puzzles.hakoiri.prototype = {
 		//k.def_psize = 24;
 		k.area = { bcell:0, wcell:0, number:1};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　左クリックで記号が、右ドラッグで補助記号が入力できます。",
-							   " Left Click to input answers, Right Button Drag to input auxiliary marks.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　キーボードの左側や-キー等で、記号の入力ができます。",
 							   " Press left side of the keyboard or '-' key to input marks.");
+		}
+		else{
+			base.setExpression("　左クリックで記号が、右ドラッグで補助記号が入力できます。",
+							   " Left Click to input answers, Right Button Drag to input auxiliary marks.");
 		}
 		base.setTitle("はこいり○△□","Triplets");
 		base.setFloatbgcolor("rgb(127, 160, 96)");
@@ -60,21 +60,21 @@ Puzzles.hakoiri.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3){
+			if(k.editmode) this.inputborder(x,y);
+			else if(k.playmode){
 				if(!kp.enabled() || this.btn.Right) this.inputmark(x,y);
 				else kp.display(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){
-			if(k.mode==1 && this.notInputted()){
-				if(!kp.enabled()) this.inputqnum(x,y,3);
+			if(k.editmode && this.notInputted()){
+				if(!kp.enabled()) this.inputqnum(x,y);
 				else if(this.btn.Left){ kp.display(x,y);}
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3 && this.btn.Right) this.inputDot(x,y);
+			if(k.editmode) this.inputborder(x,y);
+			else if(k.playmode && this.btn.Right) this.inputDot(x,y);
 		};
 
 		mv.inputmark = function(x,y){
@@ -147,7 +147,7 @@ Puzzles.hakoiri.prototype = {
 				flag = true;
 			}
 			else if((ca=='4'||ca=='r'||ca=='f'||ca=='v')){
-				bd.setNum(cc,(k.mode==1?-2:-1));
+				bd.setNum(cc,(k.editmode?-2:-1));
 				flag = true;
 			}
 			else if((ca=='5'||ca=='t'||ca=='g'||ca=='b'||ca==' ')){
@@ -155,7 +155,7 @@ Puzzles.hakoiri.prototype = {
 				flag = true;
 			}
 			else if(ca=='-'){
-				if(k.mode==1){ bd.sQnC(cc,(bd.QnC(cc)!=-2?-2:-1)); bd.sQaC(cc,-1); bd.sQsC(cc,0);}
+				if(k.editmode){ bd.sQnC(cc,(bd.QnC(cc)!=-2?-2:-1)); bd.sQaC(cc,-1); bd.sQsC(cc,0);}
 				else if(bd.QnC(cc)==-1){ bd.sQaC(cc,-1); bd.sQsC(cc,(bd.QsC(cc)!=1?1:0));}
 				flag = true;
 			}
@@ -189,8 +189,10 @@ Puzzles.hakoiri.prototype = {
 				this.insertrow();
 			}
 		};
-		kp.generate(99, true, true, kp.kpgenerate.bind(kp));
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate.bind(kp));
 		kp.kpinput = function(ca){ kc.key_hakoiri(ca);};
+
+		bd.maxnum = 3;
 	},
 
 	//---------------------------------------------------------

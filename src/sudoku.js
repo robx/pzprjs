@@ -69,7 +69,7 @@ Puzzles.sudoku.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(!kp.enabled()){ this.inputqnum(x,y,Math.max(k.qcols,k.qrows));}
+			if(!kp.enabled()){ this.inputqnum(x,y);}
 			else{ kp.display(x,y);}
 		};
 		mv.mouseup = function(x,y){ };
@@ -78,7 +78,7 @@ Puzzles.sudoku.prototype = {
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,Math.max(k.qcols,k.qrows));
+			this.key_inputqnum(ca);
 		};
 
 		kp.kpgenerate = function(mode){
@@ -104,10 +104,12 @@ Puzzles.sudoku.prototype = {
 			this.inputcol('num','knum0','0','0');
 			this.insertrow();
 		};
-		kp.generate(99, true, true, kp.kpgenerate.bind(kp));
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate.bind(kp));
 		kp.kpinput = function(ca){
-			kc.key_inputqnum(ca,Math.max(k.qcols,k.qrows));
+			kc.key_inputqnum(ca);
 		};
+
+		bd.nummaxfunc = function(cc){ return Math.max(k.qcols,k.qrows);};
 	},
 
 	//---------------------------------------------------------

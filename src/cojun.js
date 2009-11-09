@@ -47,7 +47,7 @@ Puzzles.cojun.prototype = {
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){
-		if(k.callmode=="pmake"){ kp.defaultdisp = true;}
+		if(k.EDITOR){ kp.defaultdisp = true;}
 	},
 
 	//---------------------------------------------------------
@@ -55,35 +55,35 @@ Puzzles.cojun.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1) this.borderinput = this.inputborder(x,y);
-			if(k.mode==3){
-				if(!kp.enabled()){ this.inputqnum(x,y,99);}
+			if(k.playmode) this.borderinput = this.inputborder(x,y);
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum(x,y);}
 				else{ kp.display(x,y);}
 			}
 		};
 		mv.mouseup = function(x,y){
 			if(this.notInputted()){
-				if(k.mode==1){
-					if(!kp.enabled()){ this.inputqnum(x,y,99);}
+				if(k.editmode){
+					if(!kp.enabled()){ this.inputqnum(x,y);}
 					else{ kp.display(x,y);}
 				}
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==1 && this.btn.Left) this.inputborder(x,y);
+			if(k.editmode && this.btn.Left) this.inputborder(x,y);
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 
 		kp.generate(0, true, true, '');
-		kp.kpinput = function(ca){ kc.key_inputqnum(ca,99);};
+		kp.kpinput = function(ca){ kc.key_inputqnum(ca);};
 
 		area.resetArea();
-		bd.roommaxfunc = function(cc,mode){ return area.getCntOfRoomByCell(cc);};
+		bd.nummaxfunc = function(cc){ return area.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -157,7 +157,7 @@ Puzzles.cojun.prototype = {
 		ans.checkDifferentNumber = function(rinfo){
 			for(var r=1;r<=rinfo.max;r++){
 				var d = [];
-				for(var i=1;i<=99;i++){ d[i]=-1;}
+				for(var i=1;i<=bd.maxnum;i++){ d[i]=-1;}
 				for(var i=0;i<rinfo.room[r].idlist.length;i++){
 					var val=bd.getNum(rinfo.room[r].idlist[i]);
 					if     (val==-1 || val==-2){ continue;}

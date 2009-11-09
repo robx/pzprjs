@@ -40,13 +40,13 @@ Puzzles.kinkonkan.prototype = {
 		k.def_psize = 48;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　マウスのクリックで斜線などが入力できます。外側をクリックすると光が発射されます。",
-							   " Click to input mirrors or auxiliary marks. Click Outside of the board to give off the light.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　マウスの左ボタンで境界線が入力できます。外側のアルファベットは、同じキーを何回か押して大文字小文字／色違いの計4種類を入力できます。",
 							   " Left Click to input border lines. It is able to change outside alphabets to four type that is either capital or lower, is either black or blue type by pressing the same key.");
+		}
+		else{
+			base.setExpression("　マウスのクリックで斜線などが入力できます。外側をクリックすると光が発射されます。",
+							   " Click to input mirrors or auxiliary marks. Click Outside of the board to give off the light.");
 		}
 		base.setTitle("キンコンカン","Kin-Kon-Kan");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
@@ -58,10 +58,10 @@ Puzzles.kinkonkan.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1){
+			if(k.editmode){
 				if(!this.clickexcell(x,y)){ this.inputborder(x,y);}
 			}
-			else if(k.mode==3){
+			else if(k.playmode){
 				this.inputslash(x,y);
 			}
 		};
@@ -69,8 +69,8 @@ Puzzles.kinkonkan.prototype = {
 			if(this.inputData==12){ ans.errDisp=true; bd.errclear();}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==1 && this.btn.Left) this.inputborder(x,y);
-			else if(k.mode==3 && this.inputData!=-1) this.inputslash(x,y);
+			if     (k.editmode && this.btn.Left) this.inputborder(x,y);
+			else if(k.playmode && this.inputData!=-1) this.inputslash(x,y);
 		};
 		mv.inputslash = function(x,y){
 			var cc = this.cellid(new Pos(x,y));
@@ -141,7 +141,7 @@ Puzzles.kinkonkan.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputexcell(ca);
 		};
@@ -187,19 +187,19 @@ Puzzles.kinkonkan.prototype = {
 			var cc0 = tc.getTCC(), tcp = tc.getTCP();
 			var flag = true;
 
-			if     (ca == 'up'){
+			if     (ca == k.KEYUP){
 				if(tcp.y==tc.maxy && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.cursoly=tc.miny;}
 				else if(tcp.y>tc.miny){ tc.decTCY(2);}else{ flag=false;}
 			}
-			else if(ca == 'down'){
+			else if(ca == k.KEYDN){
 				if(tcp.y==tc.miny && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.cursoly=tc.maxy;}
 				else if(tcp.y<tc.maxy){ tc.incTCY(2);}else{ flag=false;}
 			}
-			else if(ca == 'left'){
+			else if(ca == k.KEYLT){
 				if(tcp.x==tc.maxx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.cursolx=tc.minx;}
 				else if(tcp.x>tc.minx){ tc.decTCX(2);}else{ flag=false;}
 			}
-			else if(ca == 'right'){
+			else if(ca == k.KEYRT){
 				if(tcp.x==tc.minx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.cursolx=tc.maxx;}
 				else if(tcp.x<tc.maxx){ tc.incTCX(2);}else{ flag=false;}
 			}
@@ -260,7 +260,7 @@ Puzzles.kinkonkan.prototype = {
 			this.drawEXcells(x1,y1,x2,y2);
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1-1,y1-1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1-1,y1-1,x2,y2);
 		};
 
 		pc.drawErrorCells_kinkonkan = function(x1,y1,x2,y2){

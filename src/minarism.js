@@ -40,13 +40,13 @@ Puzzles.minarism.prototype = {
 		//k.def_psize = 24;
 		k.area = { bcell:0, wcell:0, number:0, disroom:1};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　キーボードやマウスで数字が入力できます。",
-							   " It is available to input number by keybord or mouse");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　キーボードで数字および、QWキーで不等号が入力できます。不等号はマウスのドラッグで、数字はクリックでも入力できます。",
 							   " It is able to input number of question by keyboard, and 'QW' key to input inequality mark. It is also available to Left Button Drag to input inequality mark, to Click to input number.");
+		}
+		else{
+			base.setExpression("　キーボードやマウスで数字が入力できます。",
+							   " It is available to input number by keybord or mouse");
 		}
 		base.setTitle("マイナリズム","Minarism");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
@@ -58,14 +58,14 @@ Puzzles.minarism.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1 && this.btn.Left) this.inputmark1(x,y);
-			else if(k.mode==3) this.inputqnum(x,y,Math.max(k.qcols,k.qrows));
+			if(k.editmode && this.btn.Left) this.inputmark1(x,y);
+			else if(k.playmode) this.inputqnum(x,y);
 		};
 		mv.mouseup = function(x,y){
-			if(k.mode==1 && this.notInputted()) this.inputmark(x,y);
+			if(k.editmode && this.notInputted()) this.inputmark(x,y);
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==1 && this.btn.Left) this.inputmark1(x,y);
+			if(k.editmode && this.btn.Left) this.inputmark1(x,y);
 		};
 
 		mv.inputmark1 = function(x,y){
@@ -123,11 +123,11 @@ Puzzles.minarism.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if     (k.mode==1 && this.moveTBorder(ca)){ return;}
-			else if(k.mode==3 && this.moveTCell(ca)){ return;}
+			if     (k.editmode && this.moveTBorder(ca)){ return;}
+			else if(k.playmode && this.moveTCell(ca)){ return;}
 
-			if     (k.mode==1){ this.key_inputmark(ca);}
-			else if(k.mode==3){ this.key_inputqnum(ca, Math.max(k.qcols,k.qrows));}
+			if     (k.editmode){ this.key_inputmark(ca);}
+			else if(k.playmode){ this.key_inputqnum(ca);}
 		};
 		kc.key_inputmark = function(ca){
 			var id = tc.getTBC();
@@ -166,6 +166,8 @@ Puzzles.minarism.prototype = {
 			this.cursolx -= ((this.cursolx+1)%2);
 			this.cursoly -= ((this.cursoly+1)%2);
 		};
+
+		bd.nummaxfunc = function(cc){ return Math.max(k.qcols,k.qrows);};
 	},
 
 	//---------------------------------------------------------
@@ -186,8 +188,7 @@ Puzzles.minarism.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTBorder(x1-1,y1-1,x2+1,y2+1);}else{ this.hideTBorder();}
-			if(k.mode==3){ this.drawTCell(x1-1,y1-1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget_minarism(x1,y1,x2,y2);
 		};
 
 		pc.drawBDMbase = function(x1,y1,x2,y2){
@@ -254,6 +255,17 @@ Puzzles.minarism.prototype = {
 				else{ this.vhide(["b"+id+"_dt1_","b"+id+"_dt2_"]);}
 			}
 			this.vinc();
+		};
+
+		pc.drawTarget_minarism = function(x1,y1,x2,y2){
+			if(k.editmode){
+				this.drawTBorder(x1-1,y1-1,x2+1,y2+1);
+				this.hideTCell();
+			}
+			else{
+				this.hideTBorder();
+				this.drawTCell(x1-1,y1-1,x2+1,y2+1);
+			}
 		};
 	},
 

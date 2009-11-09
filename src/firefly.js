@@ -40,7 +40,7 @@ Puzzles.firefly.prototype = {
 		k.def_psize = 16;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pmake"){
+		if(k.EDITOR){
 			base.setExpression("　黒点は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
 							   " To input black marks, Left Button Drag or Press arrow key with SHIFT key.");
 		}
@@ -58,20 +58,20 @@ Puzzles.firefly.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputdirec(x,y);
-			else if(k.mode==3){
+			if(k.editmode) this.inputdirec(x,y);
+			else if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){
-			if(k.mode==1 && this.notInputted() && bd.cnum(this.mouseCell.x,this.mouseCell.y)==this.cellid(new Pos(x,y))) this.inputqnum(x,y,99);
+			if(k.editmode && this.notInputted() && bd.cnum(this.mouseCell.x,this.mouseCell.y)==this.cellid(new Pos(x,y))) this.inputqnum(x,y);
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==1){
+			if(k.editmode){
 				if(this.notInputted()) this.inputdirec(x,y);
 			}
-			else if(k.mode==3){
+			else if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
@@ -79,10 +79,10 @@ Puzzles.firefly.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 	},
 
@@ -105,7 +105,7 @@ Puzzles.firefly.prototype = {
 
 			this.drawNumCells_firefly(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawNumCells_firefly = function(x1,y1,x2,y2){
@@ -133,10 +133,10 @@ Puzzles.firefly.prototype = {
 					this.vdel(["c"+c+"_circ_"]);
 					g.fillStyle = this.Cellcolor;
 					switch(bd.DiC(c)){
-						case 1: py-=(rsize-1); break;
-						case 2: py+=(rsize-1); break;
-						case 3: px-=(rsize-1); break;
-						case 4: px+=(rsize-1); break;
+						case k.UP: py-=(rsize-1); break;
+						case k.DN: py+=(rsize-1); break;
+						case k.LT: px-=(rsize-1); break;
+						case k.RT: px+=(rsize-1); break;
 					}
 					if(bd.DiC(c)!=0){
 						g.beginPath();
@@ -227,8 +227,8 @@ Puzzles.firefly.prototype = {
 		ans.checkFireflyBeam = function(){
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 || bd.DiC(c)==0){ continue;}
-				if((bd.DiC(c)==1 && !bd.isLine(bd.ub(c))) || (bd.DiC(c)==2 && !bd.isLine(bd.db(c))) ||
-				   (bd.DiC(c)==3 && !bd.isLine(bd.lb(c))) || (bd.DiC(c)==4 && !bd.isLine(bd.rb(c))) )
+				if((bd.DiC(c)==k.UP && !bd.isLine(bd.ub(c))) || (bd.DiC(c)==k.DN && !bd.isLine(bd.db(c))) ||
+				   (bd.DiC(c)==k.LT && !bd.isLine(bd.lb(c))) || (bd.DiC(c)==k.RT && !bd.isLine(bd.rb(c))) )
 				{
 					bd.sErC([c],1);
 					return false;
@@ -286,8 +286,8 @@ Puzzles.firefly.prototype = {
 				else if(idlist.length>0 && (bx+by)%2==0 && bd.QnC(c)!=-2 && bd.QnC(c)!=ccnt && saved.errflag<=1){
 					saved = {errflag:2,cells:[c],idlist:idlist,check:saved.check};
 				}
-				else if(((bd.DiC(cc)==1 && dir==2) || (bd.DiC(cc)==2 && dir==1) ||
-						 (bd.DiC(cc)==3 && dir==4) || (bd.DiC(cc)==4 && dir==3) ) && (bx+by)%2==0 && saved.errflag<=2 )
+				else if(((bd.DiC(cc)==k.UP && dir==k.DN) || (bd.DiC(cc)==k.DN && dir==k.UP) ||
+						 (bd.DiC(cc)==k.LT && dir==k.RT) || (bd.DiC(cc)==k.RT && dir==k.LT) ) && (bx+by)%2==0 && saved.errflag<=2 )
 				{
 					saved = {errflag:3,cells:[c,cc],idlist:idlist,check:saved.check};
 					return saved;

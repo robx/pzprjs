@@ -46,7 +46,7 @@ Puzzles.renban.prototype = {
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){
-		if(k.callmode=="pmake"){ kp.defaultdisp = true;}
+		if(k.EDITOR){ kp.defaultdisp = true;}
 	},
 
 	//---------------------------------------------------------
@@ -54,32 +54,32 @@ Puzzles.renban.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1) this.borderinput = this.inputborder(x,y);
-			if(k.mode==3){
-				if(!kp.enabled()){ this.inputqnum(x,y,99);}
+			if(k.editmode) this.borderinput = this.inputborder(x,y);
+			if(k.playmode){
+				if(!kp.enabled()){ this.inputqnum(x,y);}
 				else{ kp.display(x,y);}
 			}
 		};
 		mv.mouseup = function(x,y){
 			if(this.notInputted()){
-				if(k.mode==1){
-					if(!kp.enabled()){ this.inputqnum(x,y,99);}
+				if(k.editmode){
+					if(!kp.enabled()){ this.inputqnum(x,y);}
 					else{ kp.display(x,y);}
 				}
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==1 && this.btn.Left) this.inputborder(x,y);
+			if(k.editmode && this.btn.Left) this.inputborder(x,y);
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 
 		kp.generate(0, true, true, '');
-		kp.kpinput = function(ca){ kc.key_inputqnum(ca,99);};
+		kp.kpinput = function(ca){ kc.key_inputqnum(ca);};
 	},
 
 	//---------------------------------------------------------
@@ -159,7 +159,7 @@ Puzzles.renban.prototype = {
 		ans.checkDifferentNumber = function(rinfo){
 			for(var r=1;r<=rinfo.max;r++){
 				var d = [], idlist = rinfo.room[r].idlist;
-				for(var i=1;i<=99;i++){ d[i]=-1;}
+				for(var i=1;i<=bd.maxnum;i++){ d[i]=-1;}
 				for(var i=0,len=idlist.length;i<len;i++){
 					var val=bd.getNum(idlist[i]);
 					if     (val===-1 || val===-2){ continue;}
@@ -175,7 +175,7 @@ Puzzles.renban.prototype = {
 			for(var r=1;r<=rinfo.max;r++){
 				var idlist = rinfo.room[r].idlist
 				if(idlist.length<=1){ continue;}
-				var max=-1, min=99, breakflag=false;
+				var max=-1, min=bd.maxnum, breakflag=false;
 				for(var i=0,len=idlist.length;i<len;i++){
 					var val=bd.getNum(idlist[i]);
 					if(val===-1 || val===-2){ breakflag=true; break;}

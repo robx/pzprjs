@@ -40,13 +40,13 @@ Puzzles.icebarn.prototype = {
 		k.def_psize = 36;
 		k.area = { bcell:0, wcell:0, number:0, disroom:1};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　左ドラッグで矢印が、右クリックで氷が入力できます。",
 							   " Left Button Drag to input arrows, Right Click to input ice.");
+		}
+		else{
+			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
+							   " Left Button Drag to input black cells, Right Click to input a cross.");
 		}
 		base.setTitle("アイスバーン","Icebarn");
 		base.setFloatbgcolor("rgb(0, 0, 127)");
@@ -61,22 +61,22 @@ Puzzles.icebarn.prototype = {
 		// マウス入力系
 		mv.mousedown = function(x,y){
 			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1){
+			if(k.editmode){
 				if(this.btn.Left) this.inputarrow(x,y);
 				else if(this.btn.Right) this.inputIcebarn(x,y);
 			}
-			else if(k.mode==3){
+			else if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(k.mode==1){
+			if(k.editmode){
 				if(this.btn.Left) this.inputarrow(x,y);
 				else if(this.btn.Right) this.inputIcebarn(x,y);
 			}
-			else if(k.mode==3){
+			else if(k.playmode){
 				if(this.btn.Left) this.inputLine(x,y);
 				else if(this.btn.Right) this.inputpeke(x,y);
 			}
@@ -202,12 +202,12 @@ Puzzles.icebarn.prototype = {
 				}
 				break;
 			case 5: // 盤面拡大
-				bd.arrowin  += (key=='up'||key=='dn'?2*k.qcols-1:2*k.qrows-1);
-				bd.arrowout += (key=='up'||key=='dn'?2*k.qcols-1:2*k.qrows-1);
+				bd.arrowin  += (key==k.UP||key==k.DN?2*k.qcols-1:2*k.qrows-1);
+				bd.arrowout += (key==k.UP||key==k.DN?2*k.qcols-1:2*k.qrows-1);
 				break;
 			case 6: // 盤面縮小
-				bd.arrowin  -= (key=='up'||key=='dn'?2*k.qcols-1:2*k.qrows-1);
-				bd.arrowout -= (key=='up'||key=='dn'?2*k.qcols-1:2*k.qrows-1);
+				bd.arrowin  -= (key==k.UP||key==k.DN?2*k.qcols-1:2*k.qrows-1);
+				bd.arrowout -= (key==k.UP||key==k.DN?2*k.qcols-1:2*k.qrows-1);
 				break;
 			}
 

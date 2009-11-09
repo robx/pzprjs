@@ -54,27 +54,27 @@ Puzzles.creek.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==3) this.inputcell(x,y);
-			else if(k.mode==1){
+			if(k.playmode) this.inputcell(x,y);
+			else if(k.editmode){
 				if(!kp.enabled()){ this.inputcross(x,y);}
 				else{ kp.display(x,y);}
 			}
 		};
 		mv.mouseup = function(x,y){ };
 		mv.mousemove = function(x,y){
-			if(k.mode==3) this.inputcell(x,y);
+			if(k.playmode) this.inputcell(x,y);
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCross(ca)){ return;}
 			this.key_inputcross(ca,4);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(4, true, false, '');
-			kp.ctl[1].target = "cross";
+			kp.ctl[1].target = k.CROSS;
 			kp.kpinput = function(ca){
 				kc.key_inputcross(ca,4);
 			};
@@ -105,7 +105,11 @@ Puzzles.creek.prototype = {
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawCrosses(x1,y1,x2+1,y2+1);
-			if(k.mode==1){ this.drawTCross(x1,y1,x2+1,y2+1);}else{ this.hideTCross();}
+			this.drawTarget_creek(x1,y1,x2,y2);
+		};
+		pc.drawTarget_creek = function(x1,y1,x2,y2){
+			if(k.editmode){ this.drawTCross(x1,y1,x2+1,y2+1);}
+			else{ this.hideTCross();}
 		};
 	},
 

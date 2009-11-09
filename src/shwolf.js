@@ -52,19 +52,19 @@ Puzzles.shwolf.prototype = {
 	input_init : function(){
 		// ƒ}ƒEƒX“ü—ÍŒn
 		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputcrossMark(x,y);
-			else if(k.mode==3){
+			if(k.editmode) this.inputcrossMark(x,y);
+			else if(k.playmode){
 				if(this.btn.Left) this.inputborderans(x,y);
 				else if(this.btn.Right) this.inputQsubLine(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){
 			if(this.notInputted()){
-				if(k.mode==1) this.inputQues(x,y,[0,41,42,-2]);
+				if(k.editmode) this.inputQues(x,y,[0,41,42,-2]);
 			}
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==3){
+			if(k.playmode){
 				if(this.btn.Left) this.inputborderans(x,y);
 				else if(this.btn.Right) this.inputQsubLine(x,y);
 			}

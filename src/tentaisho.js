@@ -40,19 +40,19 @@ Puzzles.tentaisho.prototype = {
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　星をクリックすると色がぬれます。",
-							   " Click star to paint.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　問題作成モード時に、マウスの右ボタンで下絵を描くことが出来ます。この背景色は「星をクリック」や「色をつける」ボタンで上書きされます。",
 							   " In edit mode, it is able to paint a design by Right Click. This background color is superscripted by clicking star or pressing 'Color up' button.");
+		}
+		else{
+			base.setExpression("　星をクリックすると色がぬれます。",
+							   " Click star to paint.");
 		}
 		base.setTitle("天体ショー","Tentaisho");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){
-		if(k.callmode=='pmake'){
+		if(k.EDITOR){
 			pp.addCheckToFlags('discolor','setting',false);
 			pp.setMenuStr('discolor', '色分け無効化', 'Disable color');
 			pp.setLabel  ('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
@@ -67,23 +67,23 @@ Puzzles.tentaisho.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(x,y){
-			if(k.mode==1){
+			if(k.editmode){
 				if(this.btn.Left) this.inputstar(x,y);
 				else if(this.btn.Right) this.inputBGcolor1(x,y);
 			}
-			else if(k.mode==3){
+			else if(k.playmode){
 				if(this.btn.Left) this.inputborder_tentaisho(x,y);
 				else if(this.btn.Right) this.inputQsubLine(x,y);
 			}
 		};
 		mv.mouseup = function(x,y){
-			if(k.mode==3 && this.notInputted()) this.inputBGcolor3(x,y);
+			if(k.playmode && this.notInputted()) this.inputBGcolor3(x,y);
 		};
 		mv.mousemove = function(x,y){
-			if(k.mode==1){
+			if(k.editmode){
 				if(this.btn.Right) this.inputBGcolor1(x,y);
 			}
-			else if(k.mode==3){
+			else if(k.playmode){
 				if(this.btn.Left) this.inputborder_tentaisho(x,y);
 				else if(this.btn.Right) this.inputQsubLine(x,y);
 			}
@@ -98,7 +98,7 @@ Puzzles.tentaisho.prototype = {
 			pc.paintCell(cc);
 		};
 		mv.inputBGcolor3 = function(x,y){
-			if(k.callmode=='pmake'){ if(menu.getVal('discolor')){ return;} }
+			if(k.EDITOR){ if(menu.getVal('discolor')){ return;} }
 
 			var pos = this.crosspos(new Pos(x,y), 0.34);
 			var id = bd.snum(pos.x, pos.y);
@@ -172,7 +172,7 @@ Puzzles.tentaisho.prototype = {
 			var flag = false;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(k.callmode=="pmake" && bd.QsC(c)==3 && ret!=2){ continue;}
+				if(k.EDITOR && bd.QsC(c)==3 && ret!=2){ continue;}
 				else if(bd.QsC(c)!=(ret>0?ret:0)){
 					bd.sQsC(c,(ret>0?ret:0));
 					flag = true;
@@ -189,11 +189,11 @@ Puzzles.tentaisho.prototype = {
 			if(confirm("補助記号を消去しますか？")){
 				um.chainflag=0;
 				for(i=0;i<k.qcols*k.qrows;i++){
-					if(bd.QsC(i)==1){ um.addOpe('cell','qsub',i,bd.QsC(i),0);}
+					if(bd.QsC(i)==1){ um.addOpe(k.CELL,'qsub',i,bd.QsC(i),0);}
 				}
 				if(k.isborder){
 					for(i=0;i<bd.bdmax;i++){
-						if(bd.QsB(i)!=0){ um.addOpe('border','qsub',i,bd.QsB(i),0);}
+						if(bd.QsB(i)!=0){ um.addOpe(k.BORDER,'qsub',i,bd.QsB(i),0);}
 					}
 				}
 				if(!g.vml){ pc.flushCanvasAll();}
