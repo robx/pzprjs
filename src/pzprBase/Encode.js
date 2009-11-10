@@ -73,7 +73,8 @@ Encode.prototype = {
 			}
 			// ぱずぷれアプレットのURL
 			else{
-				this.parseURI_pzpr(url.substring(url.indexOf("?"),url.length)+1);
+				alert(url);
+				this.parseURI_pzpr(url.substring(url.indexOf("?"),url.length));
 				this.uri.type = 1; // 1はぱずぷれアプレット/URLジェネレータ
 			}
 		}
