@@ -78,12 +78,9 @@ Puzzles.shakashaka.prototype = {
 		};
 		mv.inputTriangle = function(use2step){
 			var cc;
-			if(k.use!=2 || k.use2step==0){
+			if(k.use!=2 || use2step==0){
 				cc = this.cellid();
-				if(cc==-1 || bd.QnC(cc)!=-1){
-					this.mousereset();
-					return;
-				}
+				if(cc==-1 || bd.QnC(cc)!=-1){ this.mousereset(); return;}
 			}
 
 			if(k.use==1){
@@ -108,7 +105,7 @@ Puzzles.shakashaka.prototype = {
 				}
 			}
 			else if(k.use==2){
-				if(k.use2step==0){
+				if(use2step==0){
 					// 最初はどこのセルをクリックしたか取得するだけ
 					this.firstPos = new Pos(this.inputX, this.inputY);
 					this.mouseCell = cc;
@@ -116,6 +113,7 @@ Puzzles.shakashaka.prototype = {
 				}
 
 				var dx=(this.inputX-this.firstPos.x), dy=(this.inputY-this.firstPos.y);
+				cc = this.mouseCell;
 
 				if(use2step==1){
 					// 一定以上動いていたら三角形を入力
@@ -126,16 +124,16 @@ Puzzles.shakashaka.prototype = {
 					else if(dx>= moves && dy<=-moves){ this.inputData=4;}
 
 					if(this.inputData!=-1){
-						bd.sQaC(this.mouseCell, (bd.QaC(cc)!=this.inputData)?this.inputData:-1);
-						bd.sQsC(this.mouseCell, 0);
+						bd.sQaC(cc, (bd.QaC(cc)!=this.inputData)?this.inputData:-1);
+						bd.sQsC(cc, 0);
 						this.mousereset();
 					}
 				}
 				else if(use2step==2){
 					// ほとんど動いていなかった場合は・を入力
 					if(Math.abs(dx)<=3 && Math.abs(dy)<=3){
-						bd.sQaC(this.mouseCell, -1);
-						bd.sQsC(this.mouseCell, (bd.QsC(cc)==1?0:1));
+						bd.sQaC(cc, -1);
+						bd.sQsC(cc, (bd.QsC(cc)==1?0:1));
 					}
 				}
 			}

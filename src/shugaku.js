@@ -86,7 +86,7 @@ Puzzles.shugaku.prototype = {
 				var old = this.inputData;
 				if(this.mouseCell==cc){ this.inputData = 1;}
 				else{
-					var mx=pos.x-this.firstPos.x, my=pos.y-this.firstPos.y;
+					var mx=this.inputX-this.firstPos.x, my=this.inputY-this.firstPos.y;
 					if     (cc==-1){ /* nop */ }
 					else if(mx-my>0 && mx+my>0){ this.inputData = (bd.QnC(bd.rt(this.mouseCell))==-1?5:6);}
 					else if(mx-my>0 && mx+my<0){ this.inputData = (bd.QnC(bd.up(this.mouseCell))==-1?2:6);}
