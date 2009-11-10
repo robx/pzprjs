@@ -45,6 +45,7 @@ Encode.prototype = {
 			k.playmode = false;
 			k.EDITOR = true;
 			k.PLAYER = false;
+			k.autocheck = false;
 			search = search.substring(3, search.length);
 		}
 		else{
@@ -52,6 +53,7 @@ Encode.prototype = {
 			k.playmode = true;
 			k.EDITOR = !!k.scriptcheck;
 			k.PLAYER =  !k.scriptcheck;
+			k.autocheck = true;
 			search = search.substring(1, search.length);
 		}
 

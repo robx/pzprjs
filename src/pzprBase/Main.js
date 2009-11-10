@@ -170,7 +170,6 @@ PBase.prototype = {
 			$("hr").each(function(){ $(this).css("margin",'0pt');});
 		}
 
-		k.autocheck = k.PLAYER;
 		this.postfix();			// 各パズルごとの設定(後付け分)
 		menu.menuinit();
 		um.enb_btn();
