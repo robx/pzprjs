@@ -1191,7 +1191,7 @@ Graphic.prototype = {
 	vdel : (!k.br.IE ? f_true : function(vid){
 		for(var i=0;i<vid.length;i++){
 			if(g.elements[vid[i]]){
-				$(g.pelements[vid[i]]).remove();
+				g._elm.removeChild(g.pelements[vid[i]]);	// uuCanvas‚Íg._elm‚ÉparentNode‚ª‘¶Ý‚·‚é
 				g.pelements[vid[i]]=null;
 				g.elements[vid[i]]=null;
 			}
