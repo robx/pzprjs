@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックル版 kakuru.js v3.2.2
+// パズル固有スクリプト部 カックル版 kakuru.js v3.2.3
 //
 Puzzles.kakuru = function(){ };
 Puzzles.kakuru.prototype = {
@@ -57,19 +57,19 @@ Puzzles.kakuru.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
+		mv.mousedown = function(){
 			if(k.editmode && !kp.enabled()){
-				if(this.notInputted() && kp.enabled()){ kp.display(x,y);}
-				else{ this.inputqnum_kakuru(x,y);}
+				if(this.notInputted() && kp.enabled()){ kp.display();}
+				else{ this.inputqnum_kakuru();}
 			}
-			else if(k.playmode){ this.inputqnum_kakuru(x,y);}
+			else if(k.playmode){ this.inputqnum_kakuru();}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){ };
-		mv.inputqnum_kakuru = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){ };
+		mv.inputqnum_kakuru = function(){
+			var cc = this.cellid();
 			if(cc==-1 || (bd.QuC(cc)==1 && cc==tc.getTCC())){ return;}
-			this.inputqnum(x,y);
+			this.inputqnum();
 		};
 
 		// キーボード入力系

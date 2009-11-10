@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ホタルビーム版 firefly.js v3.2.2
+// パズル固有スクリプト部 ホタルビーム版 firefly.js v3.2.3
 //
 Puzzles.firefly = function(){ };
 Puzzles.firefly.prototype = {
@@ -57,25 +57,26 @@ Puzzles.firefly.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.editmode) this.inputdirec(x,y);
+		mv.mousedown = function(){
+			if(k.editmode) this.inputdirec();
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){
-			if(k.editmode && this.notInputted() && bd.cnum(this.mouseCell.x,this.mouseCell.y)==this.cellid(new Pos(x,y))) this.inputqnum(x,y);
+		mv.mouseup = function(){
+			if(k.editmode && this.notInputted() && bd.cnum(this.mouseCell.x,this.mouseCell.y)==this.cellid()) this.inputqnum();
 		};
-		mv.mousemove = function(x,y){
+		mv.mousemove = function(){
 			if(k.editmode){
-				if(this.notInputted()) this.inputdirec(x,y);
+				if(this.notInputted()) this.inputdirec();
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){

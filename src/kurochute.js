@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クロシュート版 kurochute.js v3.2.2
+// パズル固有スクリプト部 クロシュート版 kurochute.js v3.2.3
 //
 Puzzles.kurochute = function(){ };
 Puzzles.kurochute.prototype = {
@@ -53,18 +53,18 @@ Puzzles.kurochute.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if     (k.editmode) this.inputqnum(x,y);
-			else if(k.playmode) this.inputcell(x,y);
+		mv.mousedown = function(){
+			if     (k.editmode) this.inputqnum();
+			else if(k.playmode) this.inputcell();
 		};
-		mv.mouseup = function(x,y){
-			if(k.playmode && this.notInputted()) this.inputqsub(x,y);
+		mv.mouseup = function(){
+			if(k.playmode && this.notInputted()) this.inputqsub();
 		};
-		mv.mousemove = function(x,y){
-			if(k.playmode) this.inputcell(x,y);
+		mv.mousemove = function(){
+			if(k.playmode) this.inputcell();
 		};
-		mv.inputqsub = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputqsub = function(){
+			var cc = this.cellid();
 			if(cc==-1){ return;}
 
 			if     (bd.QsC(cc)==0){ bd.sQsC(cc,2);}
@@ -88,7 +88,7 @@ Puzzles.kurochute.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.qsubcolor1 = "white";
-		pc.qsubcolor2 = "rgb(224, 224, 224)";
+		pc.qsubcolor2 = pc.bcolor_GREEN;
 
 		pc.paint = function(x1,y1,x2,y2){
 			x2++; y2++;

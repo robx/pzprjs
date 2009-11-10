@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.2.2
+// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.2.3
 //
 Puzzles.bonsan = function(){ };
 Puzzles.bonsan.prototype = {
@@ -51,29 +51,29 @@ Puzzles.bonsan.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.editmode){ this.inputborder(x,y);}
+		mv.mousedown = function(){
+			if(k.editmode){ this.inputborder();}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
+				if(this.btn.Left) this.inputLine();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
 				if(k.editmode){
-					if(!kp.enabled()){this.inputqnum(x,y);}
-					else{ kp.display(x,y);}
+					if(!kp.enabled()){this.inputqnum();}
+					else{ kp.display();}
 				}
-				else if(k.playmode){ this.inputlight(x,y);}
+				else if(k.playmode){ this.inputlight();}
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.editmode){ this.inputborder(x,y);}
+		mv.mousemove = function(){
+			if(k.editmode){ this.inputborder();}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
+				if(this.btn.Left) this.inputLine();
 			}
 		};
-		mv.inputlight = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputlight = function(){
+			var cc = this.cellid();
 			if(cc==-1){ return;}
 
 			if     (bd.QsC(cc)==0){ bd.sQsC(cc, (this.btn.Left?1:2));}
@@ -81,6 +81,7 @@ Puzzles.bonsan.prototype = {
 			else if(bd.QsC(cc)==2){ bd.sQsC(cc, (this.btn.Left?0:1));}
 			pc.paintCell(cc);
 		};
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){

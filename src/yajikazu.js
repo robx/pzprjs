@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 やじさんかずさん版 yajikazu.js v3.2.2
+// パズル固有スクリプト部 やじさんかずさん版 yajikazu.js v3.2.3
 //
 Puzzles.yajikazu = function(){ };
 Puzzles.yajikazu.prototype = {
@@ -60,19 +60,19 @@ Puzzles.yajikazu.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed(x,y);}
-			else if(k.editmode) this.inputdirec(x,y);
-			else if(k.playmode) this.inputcell(x,y);
+		mv.mousedown = function(){
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed();}
+			else if(k.editmode) this.inputdirec();
+			else if(k.playmode) this.inputcell();
 		};
-		mv.mouseup = function(x,y){
-			if(k.editmode && this.notInputted() && bd.cnum(this.mouseCell.x,this.mouseCell.y)==this.cellid(new Pos(x,y))) this.inputqnum(x,y);
+		mv.mouseup = function(){
+			if(k.editmode && this.notInputted() && bd.cnum(this.mouseCell.x,this.mouseCell.y)==this.cellid()) this.inputqnum();
 		};
-		mv.mousemove = function(x,y){
+		mv.mousemove = function(){
 			if(k.editmode){
-				if(this.notInputted()) this.inputdirec(x,y);
+				if(this.notInputted()) this.inputdirec();
 			}
-			else if(k.playmode) this.inputcell(x,y);
+			else if(k.playmode) this.inputcell();
 		};
 
 		// キーボード入力系

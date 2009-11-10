@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へびいちご版 snakes.js v3.2.2
+// パズル固有スクリプト部 へびいちご版 snakes.js v3.2.3
 //
 Puzzles.snakes = function(){ };
 Puzzles.snakes.prototype = {
@@ -59,31 +59,31 @@ Puzzles.snakes.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.editmode) this.inputdirec(x,y);
+		mv.mousedown = function(){
+			if(k.editmode) this.inputdirec();
 			else if(k.playmode){
-				if(!this.inputDot(x,y)){
-					this.dragnumber(x,y);
+				if(!this.inputDot()){
+					this.dragnumber();
 				}
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if     (k.editmode) this.inputqnum(x,y);
-				else if(k.playmode) this.inputqnum_snakes(x,y);
+				if     (k.editmode) this.inputqnum();
+				else if(k.playmode) this.inputqnum_snakes();
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.editmode && this.notInputted()) this.inputdirec(x,y);
+		mv.mousemove = function(){
+			if(k.editmode && this.notInputted()) this.inputdirec();
 			else if(k.playmode){
-				if(!this.inputDot(x,y)){
-					this.dragnumber(x,y);
+				if(!this.inputDot()){
+					this.dragnumber();
 				}
 			}
 		};
 
-		mv.inputqnum_snakes = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputqnum_snakes = function(){
+			var cc = this.cellid();
 			if(cc==-1){ return;}
 			k.dispzero=0;
 			cc = this.inputqnum3(cc);
@@ -91,8 +91,8 @@ Puzzles.snakes.prototype = {
 			k.dispzero=1;
 			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
 		},
-		mv.dragnumber = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.dragnumber = function(){
+			var cc = this.cellid();
 			if(cc==-1||cc==this.mouseCell){ return;}
 			if(this.mouseCell==-1){
 				this.inputData = bd.QaC(cc)!=-1?bd.QaC(cc):10;
@@ -113,8 +113,8 @@ Puzzles.snakes.prototype = {
 				pc.paintCell(cc);
 			}
 		};
-		mv.inputDot = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputDot = function(){
+			var cc = this.cellid();
 			if(!this.btn.Right||cc==-1||cc==this.mouseCell||this.inputData>=0){ return false;}
 
 			if(this.inputData==-1){
@@ -130,6 +130,7 @@ Puzzles.snakes.prototype = {
 			this.mouseCell = cc;
 			return true;
 		};
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){

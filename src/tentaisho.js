@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.2.2
+// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.2.3
 //
 Puzzles.tentaisho = function(){ };
 Puzzles.tentaisho.prototype = {
@@ -66,41 +66,41 @@ Puzzles.tentaisho.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
+		mv.mousedown = function(){
 			if(k.editmode){
-				if(this.btn.Left) this.inputstar(x,y);
-				else if(this.btn.Right) this.inputBGcolor1(x,y);
+				if(this.btn.Left) this.inputstar();
+				else if(this.btn.Right) this.inputBGcolor1();
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputborder_tentaisho(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+				if(this.btn.Left) this.inputborder_tentaisho();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
-		mv.mouseup = function(x,y){
-			if(k.playmode && this.notInputted()) this.inputBGcolor3(x,y);
+		mv.mouseup = function(){
+			if(k.playmode && this.notInputted()) this.inputBGcolor3();
 		};
-		mv.mousemove = function(x,y){
+		mv.mousemove = function(){
 			if(k.editmode){
-				if(this.btn.Right) this.inputBGcolor1(x,y);
+				if(this.btn.Right) this.inputBGcolor1();
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputborder_tentaisho(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+				if(this.btn.Left) this.inputborder_tentaisho();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
 
-		mv.inputBGcolor1 = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputBGcolor1 = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell){ return;}
 			if(this.inputData==-1){ this.inputData=(bd.QsC(cc)==0)?3:0;}
 			bd.sQsC(cc, this.inputData);
 			this.mouseCell = cc; 
 			pc.paintCell(cc);
 		};
-		mv.inputBGcolor3 = function(x,y){
+		mv.inputBGcolor3 = function(){
 			if(k.EDITOR){ if(menu.getVal('discolor')){ return;} }
 
-			var pos = this.crosspos(new Pos(x,y), 0.34);
+			var pos = this.crosspos(0.34);
 			var id = bd.snum(pos.x, pos.y);
 			if(id==-1 || bd.getStar(id)==0){ return;}
 
@@ -124,8 +124,8 @@ Puzzles.tentaisho.prototype = {
 				pc.paint(d.x1, d.y1, d.x2, d.y2);
 			}
 		};
-		mv.inputborder_tentaisho = function(x,y){
-			var pos = this.crosspos(new Pos(x,y), 0.34);
+		mv.inputborder_tentaisho = function(){
+			var pos = this.crosspos(0.34);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = bd.bnum(pos.x, pos.y);
@@ -146,8 +146,8 @@ Puzzles.tentaisho.prototype = {
 			}
 			this.mouseCell = pos;
 		};
-		mv.inputstar = function(x,y){
-			var pos = this.crosspos(new Pos(x,y), 0.25);
+		mv.inputstar = function(){
+			var pos = this.crosspos(0.25);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = bd.snum(pos.x, pos.y);

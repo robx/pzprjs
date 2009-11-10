@@ -360,8 +360,6 @@ KeyEvent.prototype = {
 // キー入力用Popupウィンドウ
 // KeyPopupクラス
 KeyPopup = function(){
-	this.x = -1;
-	this.y = -1;
 	this.ctl = { 1:{ el:"", enable:false, target:k.CELL},		// 問題入力時用popup
 				 3:{ el:"", enable:false, target:k.CELL} };		// 回答入力時用popup
 	this.tdcolor = "black";
@@ -484,19 +482,16 @@ KeyPopup.prototype = {
 	// kp.inputnumber() kpinput関数を呼び出してキーポップアップを隠す
 	// kp.hide()        キーポップアップを隠す
 	//---------------------------------------------------------------------------
-	display : function(x,y){
+	display : function(){
 		var mode = menu.getVal('mode');
 		if(this.ctl[mode].el && this.ctl[mode].enable && menu.getVal('keypopup') && mv.btn.Left){
-			this.x = x;
-			this.y = y;
-
-			this.ctl[mode].el.css("left", k.cv_oft.x + x - 3 + k.IEMargin.x);
-			this.ctl[mode].el.css("top" , k.cv_oft.y + y - 3 + k.IEMargin.y);
+			this.ctl[mode].el.css("left", k.cv_oft.x + mv.inputX - 3 + k.IEMargin.x);
+			this.ctl[mode].el.css("top" , k.cv_oft.y + mv.inputY - 3 + k.IEMargin.y);
 			this.ctl[mode].el.css("z-index", 100);
 
 			if(this.ctl[mode].target==k.CELL){
 				var cc0 = tc.getTCC();
-				var cc = mv.cellid(new Pos(this.x,this.y));
+				var cc = mv.cellid();
 				if(cc==-1){ return;}
 				tc.setTCC(cc);
 				pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
@@ -504,7 +499,7 @@ KeyPopup.prototype = {
 			}
 			else if(this.ctl[mode].target==k.CROSS){
 				var cc0 = tc.getTXC();
-				var cc = mv.crossid(new Pos(this.x,this.y));
+				var cc = mv.crossid();
 				if(cc==-1){ return;}
 				tc.setTXC(cc);
 				pc.paint(bd.cross[cc].cx-1, bd.cross[cc].cy-1, bd.cross[cc].cx, bd.cross[cc].cy);

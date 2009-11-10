@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.2.2
+// パズル固有スクリプト部 スラローム版 slalom.js v3.2.3
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -59,31 +59,31 @@ Puzzles.slalom.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.editmode){ this.inputGate(x,y);}
+		mv.mousedown = function(){
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
+			if(k.editmode){ this.inputGate();}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(k.editmode){
-				if(this.inputData==10){ this.inputStartid_up(x,y); }
-				else if(this.notInputted() && !kp.enabled()){ this.inputQues_slalom(x,y);}
-				else if(this.notInputted()){ kp.display(x,y);}
+				if(this.inputData==10){ this.inputStartid_up(); }
+				else if(this.notInputted() && !kp.enabled()){ this.inputQues_slalom();}
+				else if(this.notInputted()){ kp.display();}
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.editmode){ this.inputGate(x,y);}
+		mv.mousemove = function(){
+			if(k.editmode){ this.inputGate();}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 
-		mv.inputQues_slalom = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputQues_slalom = function(){
+			var cc = this.cellid();
 			if(cc==-1){ return;}
 
 			if(cc!=tc.getTCC()){
@@ -100,14 +100,14 @@ Puzzles.slalom.prototype = {
 			pc.paint(bd.cell[cc].cx, bd.cell[cc].cy, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
 			pc.dispnumStartpos(bd.startid);
 		};
-		mv.inputStartid_up = function(x,y){
+		mv.inputStartid_up = function(){
 			this.inputData = -1;
 			var cc0 = bd.startid;
 			pc.paintCell(cc0);
 		};
-		mv.inputGate = function(x,y){
-			var pos = this.crosspos(new Pos(x,y),0.30);
-			var cc  = this.cellid(new Pos(x,y));
+		mv.inputGate = function(){
+			var pos = this.crosspos(0.30);
+			var cc  = this.cellid();
 			if(cc==-1){ return;}
 			if(pos.x==this.firstPos.x && pos.y==this.firstPos.y && cc==this.mouseCell){ return;}
 
@@ -171,7 +171,6 @@ Puzzles.slalom.prototype = {
 				pc.dispnumStartpos(bd.startid);
 			}
 			else if(bd.QuC(cc)==1){
-				bd.nummaxfunc = function(cc){ return Math.min(bd.hinfo.max,bd.maxnum);}
 				this.key_inputqnum(ca);
 			}
 		};
@@ -234,6 +233,9 @@ Puzzles.slalom.prototype = {
 				bd.hinfo.init();
 			}
 		};
+
+		bd.maxnum = 255;
+		bd.nummaxfunc = function(cc){ return Math.min(bd.hinfo.max,bd.maxnum);}
 
 		menu.ex.adjustSpecial = function(type,key){
 			um.disableRecord();

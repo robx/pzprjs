@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.2.2
+// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.2.3
 //
 Puzzles.gokigen = function(){ };
 Puzzles.gokigen.prototype = {
@@ -63,20 +63,20 @@ Puzzles.gokigen.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
+		mv.mousedown = function(){
 			if(k.playmode){
-				if(!(kc.isZ ^ menu.getVal('dispred'))){ this.inputslash(x,y);}
-				else{ this.dispBlue(x,y);}
+				if(!(kc.isZ ^ menu.getVal('dispred'))){ this.inputslash();}
+				else{ this.dispBlue();}
 			}
 			else if(k.editmode){
-				if(!kp.enabled()){ this.inputcross(x,y);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.inputcross();}
+				else{ kp.display();}
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){ };
-		mv.dispBlue = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){ };
+		mv.dispBlue = function(){
+			var cc = this.cellid();
 			if(cc==-1 || bd.QaC(cc)==-1){ return;}
 
 			var check = [];
@@ -92,8 +92,8 @@ Puzzles.gokigen.prototype = {
 			ans.errDisp = true;
 			pc.paintAll();
 		};
-		mv.inputslash = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputslash = function(){
+			var cc = this.cellid();
 			if(cc==-1){ return;}
 
 			if     (k.use==1){ bd.sQaC(cc, (bd.QaC(cc)!=(this.btn.Left?1:2)?(this.btn.Left?1:2):-1));}

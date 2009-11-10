@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.2.2
+// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.2.3
 //
 Puzzles.fillomino = function(){ };
 Puzzles.fillomino.prototype = {
@@ -55,31 +55,31 @@ Puzzles.fillomino.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
+		mv.mousedown = function(){
 			if(k.playmode){
-				if(this.btn.Left){ this.borderinput = this.inputborder_fillomino(x,y);}
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+				if(this.btn.Left){ this.borderinput = this.inputborder_fillomino();}
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(!kp.enabled()){ this.mouseCell=-1; 	this.inputqnum(x,y);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.mouseCell=-1; 	this.inputqnum();}
+				else{ kp.display();}
 			}
 		};
-		mv.mousemove = function(x,y){
+		mv.mousemove = function(){
 			if(k.playmode){
 				if(this.btn.Left){
-					if(this.borderinput){ this.inputborder_fillomino(x,y);}
-					else{ this.dragnumber(x,y);}
+					if(this.borderinput){ this.inputborder_fillomino();}
+					else{ this.dragnumber();}
 				}
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
-		mv.inputborder_fillomino = function(x,y){
-			var pos = this.crosspos(new Pos(x,y), 0.25);
+		mv.inputborder_fillomino = function(){
+			var pos = this.crosspos(0.25);
 			if(this.mouseCell==-1 && pos.x%2==1 && pos.y%2==1){
-				pos = this.cellid(new Pos(x,y));
+				pos = this.cellid();
 				if(pos==-1){ return true;}
 				this.inputData = bd.getNum(pos);
 				this.mouseCell = pos;
@@ -105,8 +105,8 @@ Puzzles.fillomino.prototype = {
 			this.mouseCell = pos;
 			return true;
 		};
-		mv.dragnumber = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.dragnumber = function(){
+			var cc = this.cellid();
 			if(cc==-1||cc==this.mouseCell){ return;}
 			bd.sQaC(cc, this.inputData);
 			this.mouseCell = cc;

@@ -6,45 +6,28 @@
 // パズル共通 マウス入力部
 // MouseEventクラスを定義
 var MouseEvent = function(){
-	this.mousePressed;
+	this.inputX;
+	this.inputY;
 	this.mouseCell;
 	this.inputData;
-	this.clickBtn;
-	this.currentOpeCount;
 	this.firstPos;
-	this.btn;
-	this.isButton={};
+	this.btn = {};
 	this.mousereset();
 
-	this.isButton = function(){ };
-	if(k.br.IE){
-		this.isButton = function(event,code){ return event.button == {0:1,1:4,2:2}[code];};
-	}
-	else if (k.br.WebKit) {
-		this.isButton = function(event, code) {
-			if     (code==0){ return event.which == 1 && !event.metaKey;}
-			else if(code==1){ return event.which == 1 && event.metaKey; }
-			return false;
-		};
-	}
-	else {
-		this.isButton = function(event, code){
-			return event.which?(event.which === code + 1):(event.button === code);
-		};
-	}
+	this.enableInputHatena = !!k.isDispHatena;
+	this.inputQuesDirectly = false;
 };
 MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// mv.mousereset() マウス入力に関する情報を初期化する
 	//---------------------------------------------------------------------------
 	mousereset : function(){
-		this.mousePressed = 0;
+		this.inputX = -1;
+		this.inputY = -1;
 		this.mouseCell = -1;
 		this.inputData = -1;
-		this.clickBtn = -1;
-		this.currentOpeCount = 0;
 		this.firstPos = new Pos(-1, -1);
-		this.btn = { Left: false, Middle: false, Right: false };
+		this.btn = { Left:false, Middle:false, Right:false};
 	},
 
 	//---------------------------------------------------------------------------
@@ -52,41 +35,37 @@ MouseEvent.prototype = {
 	// mv.e_mouseup()   Canvas上でマウスのボタンを放した際のイベント共通処理
 	// mv.e_mousemove() Canvas上でマウスを動かした際のイベント共通処理
 	// mv.e_mouseout()  マウスカーソルがウィンドウから離れた際のイベント共通処理
-	// mv.modeflip()    中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
 	//イベントハンドラから呼び出される
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
 	e_mousedown : function(e){
 		if(!k.enableMouse){ return;}
-		this.btn = { Left: this.isLeft(e), Middle: this.isMiddle(e), Right: this.isRight(e) };
+		this.setButtonFlag(e);
 		if(this.btn.Middle){ this.modeflip(); return;} //中ボタン
-		bd.errclear();
+		if(ans.errDisp){ bd.errclear();}
 		um.newOperation(true);
-		this.currentOpeCount = um.ope.length;
-		this.mousePressed = 1;
-		this.mousedown(this.pointerX(e)-k.cv_oft.x-k.IEMargin.x, this.pointerY(e)-k.cv_oft.y-k.IEMargin.y);
+		this.setposition(e);
+		this.mousedown();	// 各パズルのルーチンへ
 		return false;
 	},
 	e_mouseup   : function(e){
-		if(!k.enableMouse || this.btn.Middle || this.mousePressed!=1){ return;}
+		if(!k.enableMouse || this.btn.Middle || (!this.btn.Left && !this.btn.Right)){ return;}
 		um.newOperation(false);
-		this.mouseup  (this.pointerX(e)-k.cv_oft.x-k.IEMargin.x, this.pointerY(e)-k.cv_oft.y-k.IEMargin.y);
+		this.setposition(e);
+		this.mouseup();		// 各パズルのルーチンへ
 		this.mousereset();
 		return false;
 	},
 	e_mousemove : function(e){
-		if(!k.enableMouse || this.btn.Middle || this.mousePressed!=1){ return;}
+		if(!k.enableMouse || this.btn.Middle || (!this.btn.Left && !this.btn.Right)){ return;}
 		um.newOperation(false);
-		this.mousemove(this.pointerX(e)-k.cv_oft.x-k.IEMargin.x, this.pointerY(e)-k.cv_oft.y-k.IEMargin.y);
+		this.setposition(e);
+		this.mousemove();	// 各パズルのルーチンへ
 	},
 	e_mouseout : function(e) {
 //		if (k.br.IE){ var e=window.event;}
 //		this.mousereset();
 		um.newOperation(false);
-	},
-	modeflip : function(input){
-		if(k.PLAYER){ return;}
-		menu.setVal('mode', (k.playmode?1:3));
 	},
 
 	//---------------------------------------------------------------------------
@@ -95,44 +74,86 @@ MouseEvent.prototype = {
 	// mv.mousemove() Canvas上でマウスを動かした際のイベント処理。各パズルのファイルでオーバーライドされる。
 	//---------------------------------------------------------------------------
 	//オーバーライド用
-	mousedown : function(x,y){ },
-	mouseup   : function(x,y){ },
-	mousemove : function(x,y){ },
+	mousedown : function(){ },
+	mouseup   : function(){ },
+	mousemove : function(){ },
+
+	//---------------------------------------------------------------------------
+	// mv.setButtonFlag() 左/中/右ボタンが押されているか設定する
+	//---------------------------------------------------------------------------
+	setButtonFlag : function(e){
+		if(k.br.WebKit && !k.br.WinWebKit && e.which!==1){ this.btn = { Left:false, Middle:false, Right:false};}
+		else if(k.br.IE)       { this.btn = { Left:(e.button===1), Middle:(e.button===4), Right:(e.button===2)}; }
+		else if(k.br.WinWebKit){ this.btn = { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)}; }
+		else if(k.br.WebKit)   { this.btn = { Left:(!e.metaKey)  , Middle:false         , Right:(!!e.metaKey) }; }
+		else if(!!e.which)     { this.btn = { Left:(e.which ===1), Middle:(e.which ===2), Right:(e.which ===3)}; }
+		else                   { this.btn = { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)}; }
+
+		// SHIFTキーを押している時は左右ボタン反転
+		if(((kc.isSHIFT)^menu.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
+			this.btn.Left  = !this.btn.Left;
+			this.btn.Right = !this.btn.Right;
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// mv.setposition()   イベントが起こった座標をinputX, inputY変数に代入
+	// mv.pointerX()      イベントが起こったX座標を取得する
+	// mv.pointerY()      イベントが起こったY座標を取得する
+	// mv.notInputted()   盤面への入力が行われたかどうか判定する
+	// mv.modeflip()      中ボタンでモードを変更するときの処理
+	//---------------------------------------------------------------------------
+	setposition : function(e){
+		this.inputX = this.pointerX(e)-k.cv_oft.x-k.p0.x-k.IEMargin.x;
+		this.inputY = this.pointerY(e)-k.cv_oft.y-k.p0.y-k.IEMargin.y;
+	},
+	pointerX : function(event) {
+		if(k.br.WinWebKit){ return event.pageX - 1;}
+		return event.pageX || (event.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft));
+	},
+	pointerY : function(event) {
+		if(k.br.WinWebKit){ return event.pageY - 1;}
+		return event.pageY || (event.clientY + (document.documentElement.scrollTop || document.body.scrollTop));
+	},
+
+	notInputted : function(){ return !um.changeflag;},
+	modeflip : function(input){
+		if(k.PLAYER){ return;}
+		menu.setVal('mode', (k.playmode?1:3));
+	},
 
 	// 共通関数
 	//---------------------------------------------------------------------------
-	// mv.cellid()   Pos(x,y)がどのセルのIDに該当するかを返す
-	// mv.crossid()  Pos(x,y)がどの交差点のIDに該当するかを返す
-	// mv.cellpos()  Pos(x,y)が仮想セル上でどこの(X,Y)に該当するかを返す
-	// mv.crosspos() Pos(x,y)が仮想セル上でどこの(X*2,Y*2)に該当するかを返す。
+	// mv.cellid()   入力された位置がどのセルのIDに該当するかを返す
+	// mv.crossid()  入力された位置がどの交差点のIDに該当するかを返す
+	// mv.cellpos()  入力された位置が仮想セル上でどこの(X,Y)に該当するかを返す
+	// mv.crosspos() 入力された位置が仮想セル上でどこの(X*2,Y*2)に該当するかを返す。
 	//               外枠の左上が(0,0)で右下は(k.qcols*2,k.qrows*2)。rcは0～0.5のパラメータ。
-	// mv.borderid() Pos(x,y)がどの境界線・LineのIDに該当するかを返す(クリック用)
+	// mv.borderid() 入力された位置がどの境界線・LineのIDに該当するかを返す(クリック用)
 	//---------------------------------------------------------------------------
-	cellid : function(p){
-		var pos = this.cellpos(p);
-		if((p.x-k.p0.x)%k.cwidth==0 || (p.y-k.p0.y)%k.cheight==0){ return -1;} // ぴったりは無効
-		if(pos.x<0 || pos.x>k.qcols-1 || pos.y<0 || pos.y>k.qrows-1){ return -1;}
-		return pos.x+pos.y*k.qcols;
+	cellid : function(){
+		var pos = this.cellpos();
+		if(this.inputX%k.cwidth==0 || this.inputY%k.cheight==0){ return -1;} // ぴったりは無効
+		return bd.cnum(pos.x,pos.y);
 	},
-	crossid : function(p){
-		var pos = this.crosspos(p,0.5);
-		if(pos.x<0 || pos.x>2*k.qcols || pos.y<0 || pos.y>2*k.qrows){ return -1;}
-		return mf((pos.x/2)+(pos.y/2)*(k.qcols+1));
+	crossid : function(){
+		var pos = this.crosspos(0.5);
+		return bd.xnum(mf(pos.x/2),mf(pos.y/2));
 	},
-	cellpos : function(p){	// crosspos(p,0)でも代替はできる
-		return new Pos(mf((p.x-k.p0.x)/k.cwidth), mf((p.y-k.p0.y)/k.cheight));
+	cellpos : function(){	// crosspos(p,0)でも代替はできる
+		return new Pos(mf(this.inputX/k.cwidth), mf(this.inputY/k.cheight));
 	},
-	crosspos : function(p,rc){
+	crosspos : function(rc){
 		var pm = rc*k.cwidth;
-		var cx = mf((p.x-k.p0.x+pm)/k.cwidth), cy = mf((p.y-k.p0.y+pm)/k.cheight);
-		var dx = (p.x-k.p0.x+pm)%k.cwidth,     dy = (p.y-k.p0.y+pm)%k.cheight;
+		var cx = mf((this.inputX+pm)/k.cwidth), cy = mf((this.inputY+pm)/k.cheight);
+		var dx = (this.inputX+pm)%k.cwidth,     dy = (this.inputY+pm)%k.cheight;
 
 		return new Pos(cx*2+(dx<2*pm?0:1), cy*2+(dy<2*pm?0:1));
 	},
 
-	borderid : function(p,spc){
-		var cx = mf((p.x-k.p0.x)/k.cwidth), cy = mf((p.y-k.p0.y)/k.cheight);
-		var dx = (p.x-k.p0.x)%k.cwidth,     dy = (p.y-k.p0.y)%k.cheight;
+	borderid : function(spc){
+		var cx = mf(this.inputX/k.cwidth), cy = mf(this.inputY/k.cheight);
+		var dx = this.inputX%k.cwidth,     dy = this.inputY%k.cheight;
 		if(k.isLineCross){
 			if(!k.isborderAsLine){
 				var m1=spc*k.cwidth, m2=(1-spc)*k.cwidth;
@@ -156,67 +177,11 @@ MouseEvent.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.isLeft()      左クリックされたかどうかを返す。Shiftキー押し中は左右逆になっている。
-	// mv.isMiddle()    中ボタンクリックされたかどうかを返す。
-	// mv.isRight()     右クリックされたかどうかを返す。Shiftキー押し中は左右逆になっている。
-	//---------------------------------------------------------------------------
-	isLeft : function(e){
-		if(!((kc.isSHIFT) ^ menu.getVal('lrcheck'))){
-			if(!k.br.WinWebKit){ return this.isLeftClick(e);}
-			else if(e.button == 0){ return true;}
-		}
-		else{
-			if(!k.br.WinWebKit){ return this.isRightClick(e);}
-			else if(e.button == 2){ return true;}
-		}
-		return false;
-	},
-	isMiddle : function(e){
-		if(!k.br.WinWebKit){ return this.isMiddleClick(e);}
-		else if(e.button == 1){ return true;}
-		return false;
-	},
-	isRight : function(e){
-		if(!((kc.isSHIFT) ^ menu.getVal('lrcheck'))){
-			if(!k.br.WinWebKit){ return this.isRightClick(e);}
-			else if(e.button == 2){ return true;}
-		}
-		else{
-			if(!k.br.WinWebKit){ return this.isLeftClick(e);}
-			else if(e.button == 0){ return true;}
-		}
-		return false;
-	},
-
-	//---------------------------------------------------------------------------
-	// mv.pointerX()      イベントが起こったX座標を取得する
-	// mv.pointerY()      イベントが起こったY座標を取得する
-	// mv.isLeftClick()   左クリック判定
-	// mv.isMiddleClick() 中クリック判定
-	// mv.isRightClick()  右クリック判定
-	// mv.notInputted()   盤面への入力が行われたかどうか判定する
-	//---------------------------------------------------------------------------
-	pointerX : function(event) {
-		if(k.br.WinWebKit){ return event.pageX - 1;}
-		return event.pageX || (event.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft));
-	},
-	pointerY : function(event) {
-		if(k.br.WinWebKit){ return event.pageY - 1;}
-		return event.pageY || (event.clientY + (document.documentElement.scrollTop || document.body.scrollTop));
-	},
-	isLeftClick  : function(event) { return this.isButton(event, 0); },
-	isMiddleClick: function(event) { return this.isButton(event, 1); },
-	isRightClick : function(event) { return this.isButton(event, 2); },
-
-	//notInputted : function(){ return (this.currentOpeCount==um.ope.length);},
-	notInputted : function(){ return !um.changeflag;},
-
-	//---------------------------------------------------------------------------
 	// mv.inputcell() Cellのqans(回答データ)に0/1/2のいずれかを入力する。
 	// mv.decIC()     0/1/2どれを入力すべきかを決定する。
 	//---------------------------------------------------------------------------
-	inputcell : function(x,y){
-		var cc = this.cellid(new Pos(x,y));
+	inputcell : function(){
+		var cc = this.cellid();
 		if(cc==-1 || cc==this.mouseCell){ return;}
 		if(this.inputData==-1){ this.decIC(cc);}
 
@@ -256,8 +221,8 @@ MouseEvent.prototype = {
 	// mv.inputqnum1() Cellのqnum(問題数字データ)に数字を入力する。
 	// mv.inputqnum3() Cellのqans(問題数字データ)に数字を入力する。
 	//---------------------------------------------------------------------------
-	inputqnum : function(x,y){
-		var cc = this.cellid(new Pos(x,y));
+	inputqnum : function(){
+		var cc = this.cellid();
 		if(cc==-1 || cc==this.mouseCell){ return;}
 
 		if(cc==tc.getTCC()){
@@ -274,23 +239,19 @@ MouseEvent.prototype = {
 		pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
 	},
 	inputqnum1 : function(cc){
-		var qflag = (k.isDispHatena||k.puzzleid=="lightup"||k.puzzleid=="shakashaka"||k.puzzleid=="snakes"||k.puzzleid=="shugaku");
-		if(k.isOneNumber){
-			cc = area.getTopOfRoomByCell(cc);
-			if(area.getCntOfRoomByCell(cc)<max){ max = area.getCntOfRoomByCell(cc);}
-		}
+		if(k.isOneNumber){ cc = area.getTopOfRoomByCell(cc);}
 		var max = bd.nummaxfunc(cc);
 
 		if(this.btn.Left){
 			if(bd.QnC(cc)==max){ bd.sQnC(cc,-1);}
-			else if(bd.QnC(cc)==-1){ bd.sQnC(cc,(qflag?-2:(k.dispzero?0:1)));}
+			else if(bd.QnC(cc)==-1){ bd.sQnC(cc,(this.enableInputHatena?-2:(k.dispzero?0:1)));}
 			else if(bd.QnC(cc)==-2){ bd.sQnC(cc,(k.dispzero?0:1));}
 			else{ bd.sQnC(cc,bd.QnC(cc)+1);}
 		}
 		else if(this.btn.Right){
 			if(bd.QnC(cc)==-1){ bd.sQnC(cc,max);}
 			else if(bd.QnC(cc)==-2){ bd.sQnC(cc,-1);}
-			else if(bd.QnC(cc)==(k.dispzero?0:1)){ bd.sQnC(cc,(qflag?-2:-1));}
+			else if(bd.QnC(cc)==(k.dispzero?0:1)){ bd.sQnC(cc,(this.enableInputHatena?-2:-1));}
 			else{ bd.sQnC(cc,bd.QnC(cc)-1);}
 		}
 		if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
@@ -329,12 +290,12 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// mv.inputQues() Cellのquesデータをarrayのとおりに入力する
 	//---------------------------------------------------------------------------
-	inputQues : function(x,y,array){
-		var cc = this.cellid(new Pos(x,y));
+	inputQues : function(array){
+		var cc = this.cellid();
 		if(cc==-1){ return;}
 
 		var flag=false;
-		if(cc!=tc.getTCC() && k.puzzleid!="kramma" && k.puzzleid!="shwolf" && k.puzzleid!="mashu"){
+		if(cc!=tc.getTCC() && !this.inputQuesDirectly){
 			var cc0 = tc.getTCC();
 			tc.setTCC(cc);
 			pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
@@ -361,8 +322,8 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// mv.inputMB()   Cellのqsub(補助記号)の○, ×データを入力する
 	//---------------------------------------------------------------------------
-	inputMB : function(x,y){
-		var cc = this.cellid(new Pos(x,y));
+	inputMB : function(){
+		var cc = this.cellid();
 		if(cc==-1){ return;}
 
 		if(this.btn.Left){
@@ -381,8 +342,8 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// mv.inputdirec() Cellのdirec(方向)のデータを入力する
 	//---------------------------------------------------------------------------
-	inputdirec : function(x,y){
-		var pos = this.cellpos(new Pos(x,y));
+	inputdirec : function(){
+		var pos = this.cellpos();
 		if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 		var inp = 0;
@@ -404,8 +365,8 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// mv.inputtile()  黒タイル、白タイルを入力する
 	//---------------------------------------------------------------------------
-	inputtile : function(x,y){
-		var cc = this.cellid(new Pos(x,y));
+	inputtile : function(){
+		var cc = this.cellid();
 		if(cc==-1 || cc==this.mouseCell || bd.QuC(cc)==51){ return;}
 		if(this.inputData==-1){ this.decIC(cc);}
 
@@ -428,8 +389,8 @@ MouseEvent.prototype = {
 	// mv.input51()   [＼]を作ったり消したりする
 	// mv.set51cell() [＼]を作成・消去するときの共通処理関数(カックロ以外はオーバーライドされる)
 	//---------------------------------------------------------------------------
-	input51 : function(x,y){
-		var pos = this.cellpos(new Pos(x,y));
+	input51 : function(){
+		var pos = this.cellpos();
 		var cc = bd.cnum(pos.x, pos.y);
 
 		if((pos.x==-1 && pos.y>=-1 && pos.y<=k.qrows-1) || (pos.y==-1 && pos.x>=-1 && pos.x<=k.qcols-1)){
@@ -475,8 +436,8 @@ MouseEvent.prototype = {
 	// mv.inputcross()     Crossのques(問題データ)に0～4を入力する。
 	// mv.inputcrossMark() Crossの黒点を入力する。
 	//---------------------------------------------------------------------------
-	inputcross : function(x,y){
-		var cc = this.crossid(new Pos(x,y));
+	inputcross : function(){
+		var cc = this.crossid();
 		if(cc==-1 || cc==this.mouseCell){ return;}
 
 		if(cc==tc.getTXC()){
@@ -499,8 +460,8 @@ MouseEvent.prototype = {
 
 		pc.paint(bd.cross[cc].cx-1, bd.cross[cc].cy-1, bd.cross[cc].cx, bd.cross[cc].cy);
 	},
-	inputcrossMark : function(x,y){
-		var pos = this.crosspos(new Pos(x,y), 0.24);
+	inputcrossMark : function(){
+		var pos = this.crosspos(0.24);
 		if(pos.x%2!=0 || pos.y%2!=0){ return;}
 		if(pos.x<(k.isoutsidecross==1?0:2) || pos.x>(k.isoutsidecross==1?2*k.qcols:2*k.qcols-2)){ return;}
 		if(pos.y<(k.isoutsidecross==1?0:2) || pos.y>(k.isoutsidecross==1?2*k.qrows:2*k.qrows-2)){ return;}
@@ -518,10 +479,10 @@ MouseEvent.prototype = {
 	// mv.inputborderans() 盤面境界線の回答データを入力する
 	// mv.inputBD()        上記二つの共通処理関数
 	//---------------------------------------------------------------------------
-	inputborder : function(x,y){ this.inputBD(x,y,0);},
-	inputborderans : function(x,y){ this.inputBD(x,y,1);},
-	inputBD : function(x,y,flag){
-		var pos = this.crosspos(new Pos(x,y), 0.35);
+	inputborder : function(){ this.inputBD(0);},
+	inputborderans : function(){ this.inputBD(1);},
+	inputBD : function(flag){
+		var pos = this.crosspos(0.35);
 		if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 		var id = bd.bnum(pos.x, pos.y);
@@ -552,10 +513,10 @@ MouseEvent.prototype = {
 	// mv.inputLine2()    盤面の線を入力用内部関数
 	// mv.inputqsub2()    境界線用補助記号の入力用内部関数
 	//---------------------------------------------------------------------------
-	inputLine : function(x,y){ this.inputLine1(x,y,0);},
-	inputQsubLine : function(x,y){ this.inputLine1(x,y,1);},
-	inputLine1 : function(x,y,flag){
-		var pos = this.cellpos(new Pos(x,y));
+	inputLine : function(){ this.inputLine1(0);},
+	inputQsubLine : function(){ this.inputLine1(1);},
+	inputLine1 : function(flag){
+		var pos = this.cellpos();
 		if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 		var id = -1;
@@ -588,8 +549,8 @@ MouseEvent.prototype = {
 	// mv.inputpeke()   盤面の線が通らないことを示す×を入力する
 	// mv.inputpeke2()  盤面の線が通らないことを示す×を入力する(inputLine1からも呼ばれる)
 	//---------------------------------------------------------------------------
-	inputpeke : function(x,y){
-		var pos = this.crosspos(new Pos(x,y), 0.22);
+	inputpeke : function(){
+		var pos = this.crosspos(0.22);
 		var id = bd.bnum(pos.x, pos.y);
 		if(id==-1 || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
 
@@ -608,8 +569,8 @@ MouseEvent.prototype = {
 	// mv.db0()     ななめつながりの黒マスを赤く表示する(再起呼び出し用関数)
 	// mv.dispRedLine()  ひとつながりの線を赤く表示する
 	//---------------------------------------------------------------------------
-	dispRed : function(x,y){
-		var cc = this.cellid(new Pos(x,y));
+	dispRed : function(){
+		var cc = this.cellid();
 		this.mousereset();
 		if(!bd.isBlack(cc) || cc==this.mouseCell){ return;}
 		if(!k.RBBlackCell){ bd.sErC(area.bcell[area.bcell.id[cc]].clist,1);}
@@ -632,13 +593,13 @@ MouseEvent.prototype = {
 		return;
 	},
 
-	dispRedLine : function(x,y){
-		var id = this.borderid(new Pos(x,y),0.15);
+	dispRedLine : function(){
+		var id = this.borderid(0.15);
 		this.mousereset();
 		if(id!=-1 && id==this.mouseCell){ return;}
 
 		if(!bd.isLine(id)){
-			var cc = (k.isborderAsLine==0?this.cellid(new Pos(x,y)):this.crossid(new Pos(x,y)));
+			var cc = (k.isborderAsLine==0?this.cellid():this.crossid());
 			if(cc==-1 || (k.isLineCross && (line.lcntCell(cc)==3 || line.lcntCell(cc)==4))){ return;}
 
 			var bx, by;

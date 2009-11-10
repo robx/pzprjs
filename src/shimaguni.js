@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 島国版 shimaguni.js v3.2.2
+// パズル固有スクリプト部 島国版 shimaguni.js v3.2.3
 //
 Puzzles.shimaguni = function(){ };
 Puzzles.shimaguni.prototype = {
@@ -53,21 +53,21 @@ Puzzles.shimaguni.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if     (k.editmode) this.inputborder(x,y);
-			else if(k.playmode) this.inputcell(x,y);
+		mv.mousedown = function(){
+			if     (k.editmode) this.inputborder();
+			else if(k.playmode) this.inputcell();
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
 				if(k.editmode){
-					if(!kp.enabled()){ this.inputqnum(x,y);}
-					else{ kp.display(x,y);}
+					if(!kp.enabled()){ this.inputqnum();}
+					else{ kp.display();}
 				}
 			}
 		};
-		mv.mousemove = function(x,y){
-			if     (k.editmode) this.inputborder(x,y);
-			else if(k.playmode) this.inputcell(x,y);
+		mv.mousemove = function(){
+			if     (k.editmode) this.inputborder();
+			else if(k.playmode) this.inputcell();
 		};
 
 		// キーボード入力系
@@ -84,7 +84,7 @@ Puzzles.shimaguni.prototype = {
 			};
 		}
 
-		bd.nummaxfunc = function(cc){ return area.getCntOfRoomByCell(cc);};
+		bd.nummaxfunc = function(cc){ return Math.min(this.maxnum, area.getCntOfRoomByCell(cc));};
 	},
 
 	//---------------------------------------------------------

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 黒マスはどこだ版 kurodoko.js v3.2.2
+// パズル固有スクリプト部 黒マスはどこだ版 kurodoko.js v3.2.3
 //
 Puzzles.kurodoko = function(){ };
 Puzzles.kurodoko.prototype = {
@@ -54,17 +54,17 @@ Puzzles.kurodoko.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed(x,y);}
+		mv.mousedown = function(){
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed();}
 			else if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum(x,y);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
-			else if(k.playmode) this.inputcell(x,y);
+			else if(k.playmode) this.inputcell();
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.playmode) this.inputcell(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode) this.inputcell();
 		};
 
 		// キーボード入力系

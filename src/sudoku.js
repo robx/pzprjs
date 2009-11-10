@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 数独版 sudoku.js v3.2.2
+// パズル固有スクリプト部 数独版 sudoku.js v3.2.3
 //
 Puzzles.sudoku = function(){ };
 Puzzles.sudoku.prototype = {
@@ -68,12 +68,12 @@ Puzzles.sudoku.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(!kp.enabled()){ this.inputqnum(x,y);}
-			else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(!kp.enabled()){ this.inputqnum();}
+			else{ kp.display();}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){ };
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){ };
 
 		// キーボード入力系
 		kc.keyinput = function(ca){

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 モチコロ版 mochikoro.js v3.2.2
+// パズル固有スクリプト部 モチコロ版 mochikoro.js v3.2.3
 //
 Puzzles.mochikoro = function(){ };
 Puzzles.mochikoro.prototype = {
@@ -53,16 +53,16 @@ Puzzles.mochikoro.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
+		mv.mousedown = function(){
 			if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum(x,y);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
-			else if(k.playmode) this.inputcell(x,y);
+			else if(k.playmode) this.inputcell();
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.playmode) this.inputcell(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode) this.inputcell();
 		};
 
 		// キーボード入力系

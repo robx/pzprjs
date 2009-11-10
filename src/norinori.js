@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 のりのり版 norinori.js v3.2.2
+// パズル固有スクリプト部 のりのり版 norinori.js v3.2.3
 //
 Puzzles.norinori = function(){ };
 Puzzles.norinori.prototype = {
@@ -53,14 +53,14 @@ Puzzles.norinori.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if     (k.editmode) this.inputborder(x,y);
-			else if(k.playmode) this.inputcell(x,y);
+		mv.mousedown = function(){
+			if     (k.editmode) this.inputborder();
+			else if(k.playmode) this.inputcell();
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if     (k.editmode) this.inputborder(x,y);
-			else if(k.playmode) this.inputcell(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if     (k.editmode) this.inputborder();
+			else if(k.playmode) this.inputcell();
 		};
 
 		// キーボード入力系

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.2.2
+// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.2.3
 //
 Puzzles.hashikake = function(){ };
 Puzzles.hashikake.prototype = {
@@ -51,26 +51,26 @@ Puzzles.hashikake.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
+		mv.mousedown = function(){
 			if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum(x,y);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
 			if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 
-		mv.inputLine = function(x,y){
-			var pos = this.cellpos(new Pos(x,y));
+		mv.inputLine = function(){
+			var pos = this.cellpos();
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = -1;
@@ -115,8 +115,8 @@ Puzzles.hashikake.prototype = {
 			return idlist;
 		};
 
-		mv.inputpeke = function(x,y){
-			var pos = this.crosspos(new Pos(x,y), 0.22);
+		mv.inputpeke = function(){
+			var pos = this.crosspos(0.22);
 			var id = bd.bnum(pos.x, pos.y);
 			if(id==-1 || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
 
@@ -131,6 +131,7 @@ Puzzles.hashikake.prototype = {
 			if(idlist.length==0){ pc.paintBorder(id);}
 			this.mouseCell = pos;
 		},
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){

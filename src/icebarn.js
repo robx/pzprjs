@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.2
+// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.3
 //
 Puzzles.icebarn = function(){ };
 Puzzles.icebarn.prototype = {
@@ -59,38 +59,39 @@ Puzzles.icebarn.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
+		mv.mousedown = function(){
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode){
-				if(this.btn.Left) this.inputarrow(x,y);
-				else if(this.btn.Right) this.inputIcebarn(x,y);
+				if(this.btn.Left) this.inputarrow();
+				else if(this.btn.Right) this.inputIcebarn();
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
 			if(k.editmode){
-				if(this.btn.Left) this.inputarrow(x,y);
-				else if(this.btn.Right) this.inputIcebarn(x,y);
+				if(this.btn.Left) this.inputarrow();
+				else if(this.btn.Right) this.inputIcebarn();
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.inputIcebarn = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputIcebarn = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell){ return;}
 			if(this.inputData==-1){ this.inputData = (bd.QuC(cc)==6?0:6);}
 
 			bd.sQuC(cc, this.inputData);
 			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+			this.mouseCell = cc;
 		};
-		mv.inputarrow = function(x,y){
-			var pos = this.cellpos(new Pos(x,y));
+		mv.inputarrow = function(){
+			var pos = this.cellpos();
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = -1;
@@ -263,17 +264,22 @@ Puzzles.icebarn.prototype = {
 			var ll = mf(k.cwidth*0.35); //LineLength
 			var lw = (mf(k.cwidth/24)>=1?mf(k.cwidth/24):1); //LineWidth
 			var lm = mf((lw-1)/2); //LineMargin
-			var px=bd.border[id].px; var py=bd.border[id].py;
+			var ad=bd.getArrow(id), px=bd.border[id].px; var py=bd.border[id].py;
 
+			this.vhide(["b"+id+"_dt1_","b"+id+"_dt2_"]);
 			if(bd.border[id].cx%2==1){
 				if(this.vnop("b"+id+"_ar_",1)){ g.fillRect(px-lm, py-ll, lw, ll*2);}
-				if     (bd.getArrow(id)==1){ if(this.vnop("b"+id+"_dt1_",1)){ this.inputPath([px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4], true); g.fill();} }
-				else if(bd.getArrow(id)==2){ if(this.vnop("b"+id+"_dt2_",1)){ this.inputPath([px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4], true); g.fill();} }
+				switch(bd.getArrow(id)){
+					case 1: if(this.vnop("b"+id+"_dt1_",1)){ this.inputPath([px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4], true); g.fill();} break;
+					case 2: if(this.vnop("b"+id+"_dt2_",1)){ this.inputPath([px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4], true); g.fill();} break;
+				}
 			}
 			else if(bd.border[id].cy%2==1){
 				if(this.vnop("b"+id+"_ar_",1)){ g.fillRect(px-ll, py-lm, ll*2, lw);}
-				if     (bd.getArrow(id)==1){ if(this.vnop("b"+id+"_dt1_",1)){ this.inputPath([px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2], true); g.fill();} }
-				else if(bd.getArrow(id)==2){ if(this.vnop("b"+id+"_dt2_",1)){ this.inputPath([px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2], true); g.fill();} }
+				switch(bd.getArrow(id)){
+					case 1: if(this.vnop("b"+id+"_dt1_",1)){ this.inputPath([px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2], true); g.fill();} break;
+					case 2: if(this.vnop("b"+id+"_dt2_",1)){ this.inputPath([px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2], true); g.fill();} break;
+				}
 			}
 		};
 		pc.drawInOut = function(){

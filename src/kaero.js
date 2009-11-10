@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.2.2
+// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.2.3
 //
 Puzzles.kaero = function(){ };
 Puzzles.kaero.prototype = {
@@ -51,28 +51,28 @@ Puzzles.kaero.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.editmode){ this.inputborder(x,y);}
+		mv.mousedown = function(){
+			if(k.editmode){ this.inputborder();}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if     (this.btn.Left)  this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if     (k.editmode){ this.inputqnum(x,y);}
-				else if(k.playmode){ this.inputlight(x,y);}
+				if     (k.editmode){ this.inputqnum();}
+				else if(k.playmode){ this.inputlight();}
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.editmode){ this.inputborder(x,y);}
+		mv.mousemove = function(){
+			if(k.editmode){ this.inputborder();}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if     (this.btn.Left)  this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.inputlight = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputlight = function(){
+			var cc = this.cellid();
 			if(cc==-1){ return;}
 
 			if     (bd.QsC(cc)==0){ bd.sQsC(cc, (this.btn.Left?1:2));}
@@ -89,7 +89,6 @@ Puzzles.kaero.prototype = {
 		};
 		kc.key_inputqnum_kaero = function(ca){
 			var c = tc.getTCC();
-			var max = 104;
 
 			if('a'<=ca && ca<='z'){
 				var num = parseInt(ca,36)-10;
@@ -105,6 +104,7 @@ Puzzles.kaero.prototype = {
 			this.prev = c;
 			pc.paintCell(tc.getTCC());
 		};
+		bd.maxnum=52;
 	},
 
 	//---------------------------------------------------------
@@ -190,20 +190,21 @@ Puzzles.kaero.prototype = {
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QnC(c)==-1){ this.hideEL(bd.cell[c].numobj);}
-				else{
-					if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
-					var num=bd.QnC(c);
+				if(bd.QnC(c)==-1){ this.hideEL(bd.cell[c].numobj); continue;}
 
-					var color = this.fontErrcolor;
-					if(bd.ErC(c)==0){ color=this.fontcolor;}
+				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
+				var num=bd.QnC(c);
 
-					var text="";
-					if     (num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
-					else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
+				var color = this.fontErrcolor;
+				if(bd.ErC(c)==0){ color=this.fontcolor;}
 
-					this.dispnumCell1(c, bd.cell[c].numobj, 1, text, 0.85, color);
-				}
+				var text="";
+				if     (num==-2)         { text ="?";}
+				else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
+				else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
+				else{ text+=num;}
+
+				this.dispnumCell1(c, bd.cell[c].numobj, 1, text, 0.85, color);
 			}
 			this.vinc();
 		};

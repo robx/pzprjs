@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.2.2
+// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.2.3
 //
 Puzzles.tilepaint = function(){ };
 Puzzles.tilepaint.prototype = {
@@ -59,25 +59,25 @@ Puzzles.tilepaint.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
+		mv.mousedown = function(){
 			if(k.editmode){
-				if     (this.btn.Left)  this.inputborder(x,y);
-				else if(this.btn.Right) this.inputBGcolor1(x,y);
+				if     (this.btn.Left)  this.inputborder();
+				else if(this.btn.Right) this.inputBGcolor1();
 			}
-			else if(k.playmode) this.inputtile(x,y);
+			else if(k.playmode) this.inputtile();
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(k.editmode && this.notInputted()){
-				if(!kp.enabled()){ this.input51(x,y);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.input51();}
+				else{ kp.display();}
 			}
 		};
-		mv.mousemove = function(x,y){
+		mv.mousemove = function(){
 			if(k.editmode){
-				if     (this.btn.Left)  this.inputborder(x,y);
-				else if(this.btn.Right) this.inputBGcolor1(x,y);
+				if     (this.btn.Left)  this.inputborder();
+				else if(this.btn.Right) this.inputBGcolor1();
 			}
-			else if(k.playmode) this.inputtile(x,y);
+			else if(k.playmode) this.inputtile();
 		};
 		mv.set51cell = function(cc,val){
 			if(val==true){
@@ -100,8 +100,8 @@ Puzzles.tilepaint.prototype = {
 			}
 		};
 
-		mv.inputBGcolor1 = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputBGcolor1 = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell || bd.QuC(cc)==51){ return;}
 			if(this.inputData==-1){ this.inputData=(bd.QsC(cc)==0)?3:0;}
 			bd.sQsC(cc, this.inputData);

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 トリプレイス版 triplace.js v3.2.2
+// パズル固有スクリプト部 トリプレイス版 triplace.js v3.2.3
 //
 Puzzles.triplace = function(){ };
 Puzzles.triplace.prototype = {
@@ -57,29 +57,29 @@ Puzzles.triplace.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
+		mv.mousedown = function(){
 			if(k.editmode){
-				if(!kp.enabled()){ this.input51(x,y);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.input51();}
+				else{ kp.display();}
 			}
 			else if(k.playmode){
 				if(!kc.isZ){
-					if(this.btn.Left) this.inputborderans(x,y);
-					else if(this.btn.Right) this.inputQsubLine(x,y);
+					if(this.btn.Left) this.inputborderans();
+					else if(this.btn.Right) this.inputQsubLine();
 				}
-				else this.inputBGcolor(x,y);
+				else this.inputBGcolor();
 			}
 		};
-		mv.mouseup = function(x,y){
-			if(k.playmode && this.notInputted()) this.inputBGcolor(x,y);
+		mv.mouseup = function(){
+			if(k.playmode && this.notInputted()) this.inputBGcolor();
 		};
-		mv.mousemove = function(x,y){
+		mv.mousemove = function(){
 			if(k.playmode){
 				if(!kc.isZ){
-					if(this.btn.Left) this.inputborderans(x,y);
-					else if(this.btn.Right) this.inputQsubLine(x,y);
+					if(this.btn.Left) this.inputborderans();
+					else if(this.btn.Right) this.inputQsubLine();
 				}
-				else this.inputBGcolor(x,y);
+				else this.inputBGcolor();
 			}
 		};
 		mv.set51cell = function(cc,val){
@@ -102,8 +102,8 @@ Puzzles.triplace.prototype = {
 				if(bd.rb(cc)!==-1){ bd.sQuB(bd.rb(cc), ((bd.rt(cc)!=-1 && bd.QuC(bd.rt(cc))==51)?1:0));}
 			}
 		};
-		mv.inputBGcolor = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputBGcolor = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell || bd.QuC(cc)==51){ return;}
 			if(this.inputData==-1){
 				if(this.btn.Left){

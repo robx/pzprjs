@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 コージュン版 cojun.js v3.2.2
+// パズル固有スクリプト部 コージュン版 cojun.js v3.2.3
 //
 Puzzles.cojun = function(){ };
 Puzzles.cojun.prototype = {
@@ -54,23 +54,23 @@ Puzzles.cojun.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.playmode) this.borderinput = this.inputborder(x,y);
+		mv.mousedown = function(){
+			if(k.playmode) this.borderinput = this.inputborder();
 			if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum(x,y);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
 				if(k.editmode){
-					if(!kp.enabled()){ this.inputqnum(x,y);}
-					else{ kp.display(x,y);}
+					if(!kp.enabled()){ this.inputqnum();}
+					else{ kp.display();}
 				}
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.editmode && this.btn.Left) this.inputborder(x,y);
+		mv.mousemove = function(){
+			if(k.editmode && this.btn.Left) this.inputborder();
 		};
 
 		// キーボード入力系

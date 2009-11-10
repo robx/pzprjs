@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 美術館版 lightup.js v3.2.2
+// パズル固有スクリプト部 美術館版 lightup.js v3.2.3
 //
 Puzzles.lightup = function(){ };
 Puzzles.lightup.prototype = {
@@ -53,18 +53,16 @@ Puzzles.lightup.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			this.firstPos = new Pos(x,y);
-
-			if(k.playmode) this.inputcell(x,y);
+		mv.mousedown = function(){
+			if(k.playmode) this.inputcell();
 			else if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum(x,y);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.playmode && this.btn.Right) this.inputcell(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode && this.btn.Right) this.inputcell();
 		};
 		mv.paintAkari = function(id){
 			if(k.br.IE && !uuCanvas.already()){ return;}
@@ -72,6 +70,7 @@ Puzzles.lightup.prototype = {
 			pc.paint(d.x1,bd.cell[id].cy,d.x2,bd.cell[id].cy);
 			pc.paint(bd.cell[id].cx,d.y1,bd.cell[id].cx,d.y2);
 		};
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){

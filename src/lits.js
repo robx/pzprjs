@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ＬＩＴＳ版 lits.js v3.2.2
+// パズル固有スクリプト部 ＬＩＴＳ版 lits.js v3.2.3
 //
 Puzzles.lits = function(){ };
 Puzzles.lits.prototype = {
@@ -54,15 +54,15 @@ Puzzles.lits.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed(x,y);}
-			else if(k.editmode) this.inputborder(x,y);
-			else if(k.playmode) this.inputcell(x,y);
+		mv.mousedown = function(){
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed();}
+			else if(k.editmode) this.inputborder();
+			else if(k.playmode) this.inputcell();
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if     (k.editmode) this.inputborder(x,y);
-			else if(k.playmode) this.inputcell(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if     (k.editmode) this.inputborder();
+			else if(k.playmode) this.inputcell();
 		};
 
 		// キーボード入力系

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たわむれんが版 tawa.js v3.2.2
+// パズル固有スクリプト部 たわむれんが版 tawa.js v3.2.3
 //
 Puzzles.tawa = function(){ };
 Puzzles.tawa.prototype = {
@@ -113,16 +113,16 @@ Puzzles.tawa.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
+		mv.mousedown = function(){
 			if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum(x,y);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
-			else if(k.playmode) this.inputcell(x,y);
+			else if(k.playmode) this.inputcell();
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.playmode) this.inputcell(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode) this.inputcell();
 		};
 
 		// キーボード入力系
@@ -296,17 +296,17 @@ Puzzles.tawa.prototype = {
 		bd.setLap(bd.lap);
 
 		// マウス入力時のセルID取得系
-		mv.cellid = function(p){
-			var pos = this.cellpos(p);
-			if((p.y-k.p0.y)%k.cheight==0){ return -1;} // 縦方向だけ、ぴったりは無効
+		mv.cellid = function(){
+			var pos = this.cellpos();
+			if(this.inputY%k.cheight==0){ return -1;} // 縦方向だけ、ぴったりは無効
 			if(pos.x<0 || pos.x>tc.maxx+1 || pos.y<0 || pos.y>k.qrows-1){ return -1;}
 
 			var cand = bd.cnum(pos.x, pos.y);
 			cand = (cand!=-1?cand:bd.cnum(pos.x-1, pos.y));
 			return cand;
 		};
-		mv.cellpos = function(p){
-			return new Pos(mf((p.x-k.p0.x)/(k.cwidth/2)), mf((p.y-k.p0.y)/k.cheight));
+		mv.cellpos = function(){
+			return new Pos(mf(this.inputX/(k.cwidth/2)), mf(this.inputY/k.cheight));
 		};
 	},
 	input_init_menuex : function(){	// 処理が大きくなったので分割(input_init()から呼ばれる)
