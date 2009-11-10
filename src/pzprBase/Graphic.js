@@ -1367,7 +1367,7 @@ Graphic.prototype = {
 	// pc.drawNumbersOn51_1() 1‚Â‚Ì[_]‚É”š‚ğ‹L“ü‚·‚é
 	//---------------------------------------------------------------------------
 	drawNumbersOn51 : function(x1,y1,x2,y2){
-		for(var cx=x1-1;cx<=x2;cx++){ for(var cy=y1-1;cy<=y2;cy++){
+		for(var cx=x1;cx<=x2;cx++){ for(var cy=y1;cy<=y2;cy++){
 			var c = bd.cnum(cx,cy);
 			// cellã‚¾‚Á‚½ê‡
 			if(c!==-1){
