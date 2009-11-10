@@ -39,8 +39,8 @@ MouseEvent.prototype = {
 	// mv.mousereset() ƒ}ƒEƒX“ü—Í‚ÉŠÖ‚·‚éî•ñ‚ğ‰Šú‰»‚·‚é
 	//---------------------------------------------------------------------------
 	mousereset : function(){
-		this.mouseX = -1;
-		this.mouseY = -1;
+		this.inputX = -1;
+		this.inputY = -1;
 		this.mouseCell = -1;
 		this.inputData = -1;
 		this.firstPos = new Pos(-1, -1);
