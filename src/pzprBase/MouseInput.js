@@ -151,7 +151,7 @@ MouseEvent.prototype = {
 	},
 	setposition : function(e){
 		this.inputX = this.pointerX(e)-k.cv_oft.x-k.p0.x-k.IEMargin.x;
-		this.inputY = this.pointerY(e)-k.cv_oft.y-k.p0.y--k.IEMargin.y;
+		this.inputY = this.pointerY(e)-k.cv_oft.y-k.p0.y-k.IEMargin.y;
 	},
 
 	notInputted : function(){ return !um.changeflag;},
