@@ -368,6 +368,8 @@ Graphic.prototype = {
 			else if(bd.ErC(c)===1){ g.fillStyle = this.fontErrcolor;}
 			else{ g.fillStyle = this.fontcolor;}
 
+			this.vhide(["c"+c+"_ar1_","c"+c+"_ar3_","c"+c+"_dt1_","c"+c+"_dt2_","c"+c+"_dt3_","c"+c+"_dt4_"]);
+
 			var dir = bd.DiC(c);
 			if(bd.QnC(c)!==-1 && (bd.QnC(c)!==-2||k.isDispHatena) && dir!=0){
 				var ll = mf(k.cwidth*0.7); 	//LineLength
@@ -376,23 +378,24 @@ Graphic.prototype = {
 				var lm = mf((lw-1)/2); //LineMargin
 				var px=bd.cell[c].px, py=bd.cell[c].py;
 
-				if((dir===k.UP||dir===k.DN) && this.vnop("c"+c+"_ar1_",1)){
+				if(dir===k.UP||dir===k.DN){
 					px=px+k.cwidth-mf(ls*1.5)-lm; py=py+ls+1;
-					g.fillRect(px, py+(dir==1?ls:0), lw, ll-ls);
-					px+=lw/2;
+					if(this.vnop("c"+c+"_ar1_",1)){ g.fillRect(px, py, lw, ll);}
+					px+=mf(lw/2);
 				}
-				if((dir===k.LT||dir===k.RT) && this.vnop("c"+c+"_ar3_",1)){
+				if(dir===k.LT||dir===k.RT){
 					px=px+ls+1; py=py+mf(ls*1.5)-lm;
-					g.fillRect(px+(dir==3?ls:0), py, ll-ls, lw);
-					py+=lw/2;
+					if(this.vnop("c"+c+"_ar3_",1)){ g.fillRect(px, py, ll, lw);}
+					py+=mf(lw/2);
 				}
 
-				if(dir===k.UP){ if(this.vnop("c"+c+"_dt1_",1)){ this.inputPath([px   ,py     ,0,0  ,-ll/6   ,ll/3  , ll/6  , ll/3], true); g.fill();} }else{ this.vhide("c"+c+"_dt1_");}
-				if(dir===k.DN){ if(this.vnop("c"+c+"_dt2_",1)){ this.inputPath([px   ,py+ll  ,0,0  ,-ll/6  ,-ll/3  , ll/6  ,-ll/3], true); g.fill();} }else{ this.vhide("c"+c+"_dt2_");}
-				if(dir===k.LT){ if(this.vnop("c"+c+"_dt3_",1)){ this.inputPath([px   ,py     ,0,0  , ll*0.3,-ll/6  , ll*0.3, ll/6], true); g.fill();} }else{ this.vhide("c"+c+"_dt3_");}
-				if(dir===k.RT){ if(this.vnop("c"+c+"_dt4_",1)){ this.inputPath([px+ll,py     ,0,0  ,-ll*0.3,-ll/6  ,-ll*0.3, ll/6], true); g.fill();} }else{ this.vhide("c"+c+"_dt4_");}
+				switch(dir){
+					case k.UP: if(this.vnop("c"+c+"_dt1_",1)){ this.inputPath([px   ,py     ,0,0  ,-ll/6, ll/3  , ll/6, ll/3], true); g.fill();} break;
+					case k.DN: if(this.vnop("c"+c+"_dt2_",1)){ this.inputPath([px   ,py+ll  ,0,0  ,-ll/6,-ll/3  , ll/6,-ll/3], true); g.fill();} break;
+					case k.LT: if(this.vnop("c"+c+"_dt3_",1)){ this.inputPath([px   ,py     ,0,0  , ll/3,-ll/6  , ll/3, ll/6], true); g.fill();} break;
+					case k.RT: if(this.vnop("c"+c+"_dt4_",1)){ this.inputPath([px+ll,py     ,0,0  ,-ll/3,-ll/6  ,-ll/3, ll/6], true); g.fill();} break;
+				}
 			}
-			else{ this.vhide(["c"+c+"_ar1_","c"+c+"_ar3_","c"+c+"_dt1_","c"+c+"_dt2_","c"+c+"_dt3_","c"+c+"_dt4_"]);}
 
 			this.dispnumCell_General(c);
 		}
@@ -647,13 +650,12 @@ Graphic.prototype = {
 			else if((bd.ErC(c)===1||bd.ErC(c)===4) && k.puzzleid!=="shakashaka"){ g.fillStyle = this.errcolor1;}
 			else{ g.fillStyle = this.Cellcolor;}
 
-			this.drawTriangle1(bd.cell[c].px,bd.cell[c].py,num,bd.cell[c].cx,bd.cell[c].cy);
+			this.drawTriangle1(bd.cell[c].px,bd.cell[c].py,num,bd.cell[c].cx,bd.cell[c].cy,("c"+bd.cell[c].cx+"_"+bd.cell[c].cy));
 		}
 		this.vinc();
 	},
-	drawTriangle1 : function(px,py,num,cx,cy){
+	drawTriangle1 : function(px,py,num,cx,cy,header){
 		var mgn = (k.puzzleid==="reflect"?1:0);
-		var header = "c"+cx+"_"+cy;
 
 		if(num>=2 && num<=5){
 			if(num===2){ if(this.vnop(header+"_tri2_",1)){
@@ -953,6 +955,8 @@ Graphic.prototype = {
 	hideTBorder : function(){ this.vhide(["tb1_","tb2_","tb3_","tb4_"]);},
 
 	drawTargetTriangle : function(x1,y1,x2,y2){
+		this.vdel(["target_tri2_","target_tri3_","target_tri4_","target_tri5_"]);
+
 		if(k.playmode){ return;}
 
 		if(tc.cursolx < x1*2 || x2*2+2 < tc.cursolx){ return;}
@@ -961,12 +965,13 @@ Graphic.prototype = {
 		var cc = tc.getTCC(), ex = -1;
 		if(cc===-1){ ex = bd.exnum(tc.getTCX(),tc.getTCY());}
 		var target = kc.detectTarget(cc,ex);
+
 		if(target===-1){ return;}
 
 		var num = target===2?4:2;
 
 		g.fillStyle = this.TTcolor;
-		this.drawTriangle1(k.p0.x+tc.getTCX()*k.cwidth, k.p0.y+tc.getTCY()*k.cheight, num, tc.getTCX(), tc.getTCY());
+		this.drawTriangle1(k.p0.x+tc.getTCX()*k.cwidth, k.p0.y+tc.getTCY()*k.cheight, num, tc.getTCX(), tc.getTCY(), "target");
 
 		this.vinc();
 	},
@@ -1255,7 +1260,7 @@ Graphic.prototype = {
 		var type = 1;
 		if     (k.isDispNumUL){ type=5;}
 		else if(bd.QuC(id)>=2 && bd.QuC(id)<=5){ type=bd.QuC(id);}
-		else if(k.puzzleid==="reflect"){ if(!this.textenable){ this.hideEL(obj);} return;}
+		else if(k.puzzleid==="reflect"){ if(!this.textenable){ this.hideEL(bd.cell[id].numobj);} return;}
 
 		var num = bd.getNum(id);
 
