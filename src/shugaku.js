@@ -234,7 +234,7 @@ Puzzles.shugaku.prototype = {
 
 			this.drawBlackCells(x1,y1,x2,y2);
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTargetFuton(x1,y1,x2,y2);
 
 			this.drawNumCells(x1,y1,x2,y2);
 
@@ -327,7 +327,7 @@ Puzzles.shugaku.prototype = {
 			this.vinc();
 		};
 
-		pc.drawTarget = function(x1,y1,x2,y2){
+		pc.drawTargetFuton = function(x1,y1,x2,y2){
 			this.vdel(["t1_","t2_","t3_","t4_"]);
 			if(mv.firstPos.x==-1 && mv.firstPos.y==-1){ this.vinc(); this.vinc(); this.vinc(); return;}
 			var cc=mv.mouseCell;
