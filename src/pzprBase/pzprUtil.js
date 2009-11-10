@@ -307,10 +307,19 @@ LineManager.prototype = {
 
 	repaintLine : function(idlist){
 		if(!menu.getVal('irowake')){ return;}
-		for(var i=0,len=idlist.length;i<len;i++){
-			if(k.isCenterLine){ pc.drawLine1  (idlist[i],true);}
-			else			  { pc.drawBorder1(idlist[i],true);}
-			if(!g.vml){ this.repaintParts(idlist[i]);}
+		var paintfunc = (k.isCenterLine?pc.drawLine1:pc.drawBorder1).bind(pc);
+		if(g.vml){
+			pc.zstable = true;
+			for(var i=0,len=idlist.length;i<len;i++){
+				paintfunc(idlist[i],true);
+			}
+			pc.zstable = false;
+		}
+		else{
+			for(var i=0,len=idlist.length;i<len;i++){
+				paintfunc(idlist[i],true);
+				this.repaintParts(idlist[i]);
+			}
 		}
 	},
 	repaintParts : function(id){ }, // オーバーライド用
