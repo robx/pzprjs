@@ -54,7 +54,7 @@ Puzzles.kaero.prototype = {
 		mv.mousedown = function(){
 			if(k.editmode){ this.inputborder();}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine();
+				if     (this.btn.Left)  this.inputLine();
 				else if(this.btn.Right) this.inputpeke();
 			}
 		};
@@ -67,7 +67,7 @@ Puzzles.kaero.prototype = {
 		mv.mousemove = function(){
 			if(k.editmode){ this.inputborder();}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine();
+				if     (this.btn.Left)  this.inputLine();
 				else if(this.btn.Right) this.inputpeke();
 			}
 		};
@@ -89,7 +89,6 @@ Puzzles.kaero.prototype = {
 		};
 		kc.key_inputqnum_kaero = function(ca){
 			var c = tc.getTCC();
-			var max = 104;
 
 			if('a'<=ca && ca<='z'){
 				var num = parseInt(ca,36)-10;
@@ -105,6 +104,7 @@ Puzzles.kaero.prototype = {
 			this.prev = c;
 			pc.paintCell(tc.getTCC());
 		};
+		bd.maxnum=52;
 	},
 
 	//---------------------------------------------------------
@@ -190,20 +190,21 @@ Puzzles.kaero.prototype = {
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QnC(c)==-1){ this.hideEL(bd.cell[c].numobj);}
-				else{
-					if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
-					var num=bd.QnC(c);
+				if(bd.QnC(c)==-1){ this.hideEL(bd.cell[c].numobj); continue;}
 
-					var color = this.fontErrcolor;
-					if(bd.ErC(c)==0){ color=this.fontcolor;}
+				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
+				var num=bd.QnC(c);
 
-					var text="";
-					if     (num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
-					else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
+				var color = this.fontErrcolor;
+				if(bd.ErC(c)==0){ color=this.fontcolor;}
 
-					this.dispnumCell1(c, bd.cell[c].numobj, 1, text, 0.85, color);
-				}
+				var text="";
+				if     (num==-2)         { text ="?";}
+				else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
+				else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
+				else{ text+=num;}
+
+				this.dispnumCell1(c, bd.cell[c].numobj, 1, text, 0.85, color);
 			}
 			this.vinc();
 		};

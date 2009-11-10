@@ -59,7 +59,7 @@ Puzzles.bosanowa.prototype = {
 		pp.setMenuStr('disptype_1', 'ニコリ紙面形式', 'Original Type');
 		pp.setMenuStr('disptype_2', '倉庫番形式', 'Sokoban Type');
 		pp.setMenuStr('disptype_3', 'ワリタイ形式', 'Waritai type');
-		pp.funcs['disptype'] = function(){ pc.paintAll();};
+		pp.funcs['disptype'] = function(){ if(g.vml){ pc.flushCanvasAll();} pc.paintAll();};
 	},
 
 	//---------------------------------------------------------
