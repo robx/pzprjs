@@ -14,23 +14,6 @@ var MouseEvent = function(){
 	this.btn = {};
 	this.mousereset();
 
-	this.isButton;
-	if(k.br.IE){
-		this.isButton = function(event,code){ return event.button == {0:1,1:4,2:2}[code];};
-	}
-	else if (k.br.WebKit) {
-		this.isButton = function(event, code) {
-			if     (code==0){ return event.which == 1 && !event.metaKey;}
-			else if(code==1){ return event.which == 1 && event.metaKey; }
-			return false;
-		};
-	}
-	else {
-		this.isButton = function(event, code){
-			return event.which?(event.which === code + 1):(event.button === code);
-		};
-	}
-
 	this.enableInputHatena = !!k.isDispHatena;
 	this.inputQuesDirectly = false;
 };
@@ -44,7 +27,7 @@ MouseEvent.prototype = {
 		this.mouseCell = -1;
 		this.inputData = -1;
 		this.firstPos = new Pos(-1, -1);
-		this.btn = { Left: false, Middle: false, Right: false };
+		this.btn = { Left:false, Middle:false, Right:false};
 	},
 
 	//---------------------------------------------------------------------------
@@ -57,9 +40,9 @@ MouseEvent.prototype = {
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
 	e_mousedown : function(e){
 		if(!k.enableMouse){ return;}
-		this.btn = { Left: this.isLeft(e), Middle: this.isMiddle(e), Right: this.isRight(e) };
+		this.setButtonFlag(e);
 		if(this.btn.Middle){ this.modeflip(); return;} //中ボタン
-		bd.errclear();
+		if(ans.errDisp){ bd.errclear();}
 		um.newOperation(true);
 		this.setposition(e);
 		this.mousedown();	// 各パズルのルーチンへ
@@ -69,8 +52,8 @@ MouseEvent.prototype = {
 		if(!k.enableMouse || this.btn.Middle || (!this.btn.Left && !this.btn.Right)){ return;}
 		um.newOperation(false);
 		this.setposition(e);
-		this.mouseup();
-		this.mousereset();	// 各パズルのルーチンへ
+		this.mouseup();		// 各パズルのルーチンへ
+		this.mousereset();
 		return false;
 	},
 	e_mousemove : function(e){
@@ -96,51 +79,34 @@ MouseEvent.prototype = {
 	mousemove : function(){ },
 
 	//---------------------------------------------------------------------------
-	// mv.isLeft()      左クリックされたかどうかを返す。Shiftキー押し中は左右逆になっている。
-	// mv.isMiddle()    中ボタンクリックされたかどうかを返す。
-	// mv.isRight()     右クリックされたかどうかを返す。Shiftキー押し中は左右逆になっている。
-	// mv.isLeftClick()   左クリック判定
-	// mv.isMiddleClick() 中クリック判定
-	// mv.isRightClick()  右クリック判定
+	// mv.setButtonFlag() 左/中/右ボタンが押されているか設定する
 	//---------------------------------------------------------------------------
-	isLeft : function(e){
-		if(!((kc.isSHIFT) ^ menu.getVal('lrcheck'))){
-			if(!k.br.WinWebKit){ return this.isLeftClick(e);}
-			else if(e.button == 0){ return true;}
+	setButtonFlag : function(e){
+		if(k.br.WebKit && !k.br.WinWebKit && e.which!==1){ this.btn = { Left:false, Middle:false, Right:false};}
+		else if(k.br.IE)       { this.btn = { Left:(e.button===1), Middle:(e.button===4), Right:(e.button===2)}; }
+		else if(k.br.WinWebKit){ this.btn = { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)}; }
+		else if(k.br.WebKit)   { this.btn = { Left:(!e.metaKey)  , Middle:false         , Right:(!!e.metaKey) }; }
+		else if(!!e.which)     { this.btn = { Left:(e.which ===1), Middle:(e.which ===2), Right:(e.which ===3)}; }
+		else                   { this.btn = { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)}; }
+
+		// SHIFTキーを押している時は左右ボタン反転
+		if(((kc.isSHIFT)^menu.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
+			this.btn.Left  = !this.btn.Left;
+			this.btn.Right = !this.btn.Right;
 		}
-		else{
-			if(!k.br.WinWebKit){ return this.isRightClick(e);}
-			else if(e.button == 2){ return true;}
-		}
-		return false;
 	},
-	isMiddle : function(e){
-		if(!k.br.WinWebKit){ return this.isMiddleClick(e);}
-		else if(e.button == 1){ return true;}
-		return false;
-	},
-	isRight : function(e){
-		if(!((kc.isSHIFT) ^ menu.getVal('lrcheck'))){
-			if(!k.br.WinWebKit){ return this.isRightClick(e);}
-			else if(e.button == 2){ return true;}
-		}
-		else{
-			if(!k.br.WinWebKit){ return this.isLeftClick(e);}
-			else if(e.button == 0){ return true;}
-		}
-		return false;
-	},
-	isLeftClick  : function(event){ return this.isButton(event, 0);},
-	isMiddleClick: function(event){ return this.isButton(event, 1);},
-	isRightClick : function(event){ return this.isButton(event, 2);},
 
 	//---------------------------------------------------------------------------
+	// mv.setposition()   イベントが起こった座標をinputX, inputY変数に代入
 	// mv.pointerX()      イベントが起こったX座標を取得する
 	// mv.pointerY()      イベントが起こったY座標を取得する
-	// mv.setposition()   イベントが起こった座標をinputX, inputY変数に代入
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
+	setposition : function(e){
+		this.inputX = this.pointerX(e)-k.cv_oft.x-k.p0.x-k.IEMargin.x;
+		this.inputY = this.pointerY(e)-k.cv_oft.y-k.p0.y-k.IEMargin.y;
+	},
 	pointerX : function(event) {
 		if(k.br.WinWebKit){ return event.pageX - 1;}
 		return event.pageX || (event.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft));
@@ -148,10 +114,6 @@ MouseEvent.prototype = {
 	pointerY : function(event) {
 		if(k.br.WinWebKit){ return event.pageY - 1;}
 		return event.pageY || (event.clientY + (document.documentElement.scrollTop || document.body.scrollTop));
-	},
-	setposition : function(e){
-		this.inputX = this.pointerX(e)-k.cv_oft.x-k.p0.x-k.IEMargin.x;
-		this.inputY = this.pointerY(e)-k.cv_oft.y-k.p0.y-k.IEMargin.y;
 	},
 
 	notInputted : function(){ return !um.changeflag;},
