@@ -49,7 +49,6 @@ var k = {
 	// 内部で自動的に設定されるグローバル変数
 	puzzleid  : '',			// パズルのID("creek"など)
 	use       : 1,			// 操作方法
-	irowake   : 0,			// 線の色分けをするかしないか
 	widthmode : 2,			// Canvasの横幅をどうするか
 
 	EDITOR    : true,		// エディタモード
