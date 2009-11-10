@@ -64,6 +64,7 @@ Puzzles.tasquare.prototype = {
 		mv.mousemove = function(){
 			if(k.playmode) this.inputcell();
 		};
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
