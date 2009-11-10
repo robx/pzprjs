@@ -81,6 +81,7 @@ Puzzles.bonsan.prototype = {
 			else if(bd.QsC(cc)==2){ bd.sQsC(cc, (this.btn.Left?0:1));}
 			pc.paintCell(cc);
 		};
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){

@@ -76,6 +76,7 @@ Puzzles.firefly.prototype = {
 				else if(this.btn.Right) this.inputpeke();
 			}
 		};
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){

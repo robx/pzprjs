@@ -131,6 +131,7 @@ Puzzles.hashikake.prototype = {
 			if(idlist.length==0){ pc.paintBorder(id);}
 			this.mouseCell = pos;
 		},
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
