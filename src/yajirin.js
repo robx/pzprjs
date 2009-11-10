@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.2.2
+// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.2.3
 // 
 Puzzles.yajirin = function(){ };
 Puzzles.yajirin.prototype = {
@@ -60,25 +60,25 @@ Puzzles.yajirin.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.editmode) this.inputdirec(x,y);
+		mv.mousedown = function(){
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
+			if(k.editmode) this.inputdirec();
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if     (k.editmode) this.inputqnum(x,y);
-				else if(k.playmode) this.inputcell(x,y);
+				if     (k.editmode) this.inputqnum();
+				else if(k.playmode) this.inputcell();
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.editmode) this.inputdirec(x,y);
+		mv.mousemove = function(){
+			if(k.editmode) this.inputdirec();
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 

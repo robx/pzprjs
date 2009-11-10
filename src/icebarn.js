@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.2
+// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.3
 //
 Puzzles.icebarn = function(){ };
 Puzzles.icebarn.prototype = {
@@ -59,38 +59,38 @@ Puzzles.icebarn.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
+		mv.mousedown = function(){
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode){
-				if(this.btn.Left) this.inputarrow(x,y);
-				else if(this.btn.Right) this.inputIcebarn(x,y);
+				if(this.btn.Left) this.inputarrow();
+				else if(this.btn.Right) this.inputIcebarn();
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
 			if(k.editmode){
-				if(this.btn.Left) this.inputarrow(x,y);
-				else if(this.btn.Right) this.inputIcebarn(x,y);
+				if(this.btn.Left) this.inputarrow();
+				else if(this.btn.Right) this.inputIcebarn();
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.inputIcebarn = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputIcebarn = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell){ return;}
 			if(this.inputData==-1){ this.inputData = (bd.QuC(cc)==6?0:6);}
 
 			bd.sQuC(cc, this.inputData);
 			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
 		};
-		mv.inputarrow = function(x,y){
-			var pos = this.cellpos(new Pos(x,y));
+		mv.inputarrow = function(){
+			var pos = this.cellpos();
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = -1;

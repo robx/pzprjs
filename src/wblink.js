@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.2.2
+// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.2.3
 //
 Puzzles.wblink = function(){ };
 Puzzles.wblink.prototype = {
@@ -51,24 +51,24 @@ Puzzles.wblink.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.editmode) this.inputQues(x,y,[0,41,42,-2]);
+		mv.mousedown = function(){
+			if(k.editmode) this.inputQues([0,41,42,-2]);
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
 			if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 
-		mv.inputLine = function(x,y){
+		mv.inputLine = function(){
 			if(this.inputData==2){ return;}
-			var pos = this.cellpos(new Pos(x,y));
+			var pos = this.cellpos();
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = -1;
@@ -108,8 +108,8 @@ Puzzles.wblink.prototype = {
 			return idlist;
 		};
 
-		mv.inputpeke = function(x,y){
-			var pos = this.crosspos(new Pos(x,y), 0.22);
+		mv.inputpeke = function(){
+			var pos = this.crosspos(0.22);
 			var id = bd.bnum(pos.x, pos.y);
 			if(id==-1 || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
 

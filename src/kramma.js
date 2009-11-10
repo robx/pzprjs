@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 快刀乱麻版 kramma.js v3.2.2
+// パズル固有スクリプト部 快刀乱麻版 kramma.js v3.2.3
 //
 Puzzles.kramma = function(){ };
 Puzzles.kramma.prototype = {
@@ -51,27 +51,27 @@ Puzzles.kramma.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.editmode) this.inputcrossMark(x,y);
+		mv.mousedown = function(){
+			if(k.editmode) this.inputcrossMark();
 			else if(k.playmode){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.editmode) this.inputQues(x,y,[0,41,42,-2]);
+				if(k.editmode) this.inputQues([0,41,42,-2]);
 			}
 		};
-		mv.mousemove = function(x,y){
+		mv.mousemove = function(){
 			if(k.playmode){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
 		// オーバーライド
-		mv.inputBD = function(x,y,flag){
-			var pos = this.crosspos(new Pos(x,y), 0.35);
+		mv.inputBD = function(flag){
+			var pos = this.crosspos(0.35);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = bd.bnum(pos.x, pos.y);
@@ -87,15 +87,15 @@ Puzzles.kramma.prototype = {
 					var idlist = [id];
 					var bx1, bx2, by1, by2;
 					if(bd.border[id].cx%2==1){
-						var x;
-						x = bd.border[id].cx; while(x>=0        ){ if(bd.QnX(bd.xnum(mf(x/2)  ,mf(bd.border[id].cy/2)))==1){ x-=2; break;} x-=2;} bx1 = x+2;
-						x = bd.border[id].cx; while(x<=2*k.qcols){ if(bd.QnX(bd.xnum(mf(x/2)+1,mf(bd.border[id].cy/2)))==1){ x+=2; break;} x+=2;} bx2 = x-2;
+						var bx;
+						bx = bd.border[id].cx; while(bx>=0        ){ if(bd.QnX(bd.xnum(mf(bx/2)  ,mf(bd.border[id].cy/2)))==1){ bx-=2; break;} bx-=2;} bx1 = bx+2;
+						bx = bd.border[id].cx; while(bx<=2*k.qcols){ if(bd.QnX(bd.xnum(mf(bx/2)+1,mf(bd.border[id].cy/2)))==1){ bx+=2; break;} bx+=2;} bx2 = bx-2;
 						by1 = by2 = bd.border[id].cy;
 					}
 					else if(bd.border[id].cy%2==1){
-						var y;
-						y = bd.border[id].cy; while(y>=0        ){ if(bd.QnX(bd.xnum(mf(bd.border[id].cx/2),mf(y/2)  ))==1){ y-=2; break;} y-=2;} by1 = y+2;
-						y = bd.border[id].cy; while(y<=2*k.qrows){ if(bd.QnX(bd.xnum(mf(bd.border[id].cx/2),mf(y/2)+1))==1){ y+=2; break;} y+=2;} by2 = y-2;
+						var by;
+						by = bd.border[id].cy; while(by>=0        ){ if(bd.QnX(bd.xnum(mf(bd.border[id].cx/2),mf(by/2)  ))==1){ by-=2; break;} by-=2;} by1 = by+2;
+						by = bd.border[id].cy; while(by<=2*k.qrows){ if(bd.QnX(bd.xnum(mf(bd.border[id].cx/2),mf(by/2)+1))==1){ by+=2; break;} by+=2;} by2 = by-2;
 						bx1 = bx2 = bd.border[id].cx;
 					}
 					idlist = [];
@@ -110,6 +110,7 @@ Puzzles.kramma.prototype = {
 			}
 			this.mouseCell = pos;
 		};
+		mv.inputQuesDirectly = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){ };

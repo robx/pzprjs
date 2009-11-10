@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.2.2
+// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.2.3
 //
 Puzzles.tateyoko = function(){ };
 Puzzles.tateyoko.prototype = {
@@ -57,20 +57,20 @@ Puzzles.tateyoko.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.editmode && !kp.enabled()){ this.inputqnum(x,y);}
-			else if(k.playmode){ this.inputTateyoko(x,y);}
+		mv.mousedown = function(){
+			if(k.editmode && !kp.enabled()){ this.inputqnum();}
+			else if(k.playmode){ this.inputTateyoko();}
 		};
-		mv.mouseup = function(x,y){
-			if(k.editmode && this.notInputted() && kp.enabled()){ kp.display(x,y);}
-			else if(k.playmode && this.notInputted()){ this.clickTateyoko(x,y);}
+		mv.mouseup = function(){
+			if(k.editmode && this.notInputted() && kp.enabled()){ kp.display();}
+			else if(k.playmode && this.notInputted()){ this.clickTateyoko();}
 		};
-		mv.mousemove = function(x,y){
-			if(k.playmode){ this.inputTateyoko(x,y);}
+		mv.mousemove = function(){
+			if(k.playmode){ this.inputTateyoko();}
 		};
-		mv.inputTateyoko = function(x,y){
-			var pos = this.crosspos(new Pos(x,y),0.30);
-			var cc  = this.cellid(new Pos(x,y));
+		mv.inputTateyoko = function(){
+			var pos = this.crosspos(0.30);
+			var cc  = this.cellid();
 			if(cc==-1){ return;}
 			if(this.mouseCell==-1 || bd.QuC(cc)==1){ this.firstPos = pos; this.mouseCell = cc; return;}
 			if(pos.x==this.firstPos.x && pos.y==this.firstPos.y && cc==this.mouseCell){ return;}
@@ -91,8 +91,8 @@ Puzzles.tateyoko.prototype = {
 			this.mouseCell = cc;
 			pc.paintCell(cc);
 		};
-		mv.clickTateyoko = function(x,y){
-			var cc  = this.cellid(new Pos(x,y));
+		mv.clickTateyoko = function(){
+			var cc  = this.cellid();
 			if(cc==-1 || bd.QuC(cc)==1){ return;}
 
 			if(this.btn.Left){

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボーダーブロック版 bdblock.js v3.2.2
+// パズル固有スクリプト部 ボーダーブロック版 bdblock.js v3.2.3
 //
 Puzzles.bdblock = function(){ };
 Puzzles.bdblock.prototype = {
@@ -51,25 +51,25 @@ Puzzles.bdblock.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.editmode) this.inputcrossMark(x,y);
+		mv.mousedown = function(){
+			if(k.editmode) this.inputcrossMark();
 			else if(k.playmode){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
 				if(k.editmode){
-					if(!kp.enabled()){ this.inputqnum(x,y);}
-					else{ kp.display(x,y);}
+					if(!kp.enabled()){ this.inputqnum();}
+					else{ kp.display();}
 				}
 			}
 		};
-		mv.mousemove = function(x,y){
+		mv.mousemove = function(){
 			if(k.playmode){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
 

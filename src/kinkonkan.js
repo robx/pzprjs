@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.2.2
+// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.2.3
 //
 Puzzles.kinkonkan = function(){ };
 Puzzles.kinkonkan.prototype = {
@@ -57,24 +57,24 @@ Puzzles.kinkonkan.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
+		mv.mousedown = function(){
 			if(k.editmode){
-				if(!this.clickexcell(x,y)){ this.inputborder(x,y);}
+				if(!this.clickexcell()){ this.inputborder();}
 			}
 			else if(k.playmode){
-				this.inputslash(x,y);
+				this.inputslash();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.inputData==12){ ans.errDisp=true; bd.errclear();}
 		};
-		mv.mousemove = function(x,y){
-			if     (k.editmode && this.btn.Left) this.inputborder(x,y);
-			else if(k.playmode && this.inputData!=-1) this.inputslash(x,y);
+		mv.mousemove = function(){
+			if     (k.editmode && this.btn.Left) this.inputborder();
+			else if(k.playmode && this.inputData!=-1) this.inputslash();
 		};
-		mv.inputslash = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
-			if(cc==-1){ this.inputflash(x,y); return;}
+		mv.inputslash = function(){
+			var cc = this.cellid();
+			if(cc==-1){ this.inputflash(); return;}
 
 			if     (this.inputData== 3){ bd.sQaC(cc,-1); bd.sQsC(cc,1);}
 			else if(this.inputData== 4){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
@@ -94,8 +94,8 @@ Puzzles.kinkonkan.prototype = {
 
 			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
 		};
-		mv.inputflash = function(x,y){
-			var pos = this.cellpos(new Pos(x,y));
+		mv.inputflash = function(){
+			var pos = this.cellpos();
 			var ec = bd.exnum(pos.x,pos.y)
 			if(ec==-1 || this.mouseCell==ec || (this.inputData!=11 && this.inputData!=-1)){ return;}
 
@@ -109,8 +109,8 @@ Puzzles.kinkonkan.prototype = {
 			this.mouseCell=ec;
 			return;
 		};
-		mv.clickexcell = function(x,y){
-			var pos = this.cellpos(new Pos(x,y));
+		mv.clickexcell = function(){
+			var pos = this.cellpos();
 			var ec = bd.exnum(pos.x, pos.y);
 			if(ec<0 || 2*k.qcols+2*k.qrows+4<=ec){ return false;}
 			var ec0 = tc.getTCC();

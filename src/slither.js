@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スリザーリンク版 slither.js v3.2.2
+// パズル固有スクリプト部 スリザーリンク版 slither.js v3.2.3
 //
 Puzzles.slither = function(){ };
 Puzzles.slither.prototype = {
@@ -53,27 +53,27 @@ Puzzles.slither.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
+		mv.mousedown = function(){
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum(x,y);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
 			if(k.playmode){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 		// BAGの関数が残りっぱなしですね...
-		mv.inputBGcolor = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputBGcolor = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell){ return;}
 			if(this.inputData==-1){
 				if     (bd.QsC(cc)==0){ this.inputData=1;}

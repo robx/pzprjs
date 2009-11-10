@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.2.2
+// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.2.3
 //
 Puzzles.hakoiri = function(){ };
 Puzzles.hakoiri.prototype = {
@@ -59,26 +59,26 @@ Puzzles.hakoiri.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.editmode) this.inputborder(x,y);
+		mv.mousedown = function(){
+			if(k.editmode) this.inputborder();
 			else if(k.playmode){
-				if(!kp.enabled() || this.btn.Right) this.inputmark(x,y);
-				else kp.display(x,y);
+				if(!kp.enabled() || this.btn.Right) this.inputmark();
+				else kp.display();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(k.editmode && this.notInputted()){
-				if(!kp.enabled()) this.inputqnum(x,y);
-				else if(this.btn.Left){ kp.display(x,y);}
+				if(!kp.enabled()) this.inputqnum();
+				else if(this.btn.Left){ kp.display();}
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.editmode) this.inputborder(x,y);
-			else if(k.playmode && this.btn.Right) this.inputDot(x,y);
+		mv.mousemove = function(){
+			if(k.editmode) this.inputborder();
+			else if(k.playmode && this.btn.Right) this.inputDot();
 		};
 
-		mv.inputmark = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputmark = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell){ return;}
 
 			if(cc==tc.getTCC()){
@@ -113,8 +113,8 @@ Puzzles.hakoiri.prototype = {
 			if(bd.QsC(cc)==1){ this.inputData=1;}
 		};
 
-		mv.inputDot = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputDot = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell || this.inputData!=1 || bd.QnC(cc)!=-1){ return;}
 			var cc0 = tc.getTCC(); tc.setTCC(cc);
 			bd.sQaC(cc,-1);

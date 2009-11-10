@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.2
+// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.3
 //
 Puzzles.kakuro = function(){ };
 Puzzles.kakuro.prototype = {
@@ -57,15 +57,15 @@ Puzzles.kakuro.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
+		mv.mousedown = function(){
 			if(k.editmode){
-				if(!kp.enabled()){ this.input51(x,y);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.input51();}
+				else{ kp.display();}
 			}
-			else if(k.playmode) this.inputqnum(x,y);
+			else if(k.playmode) this.inputqnum();
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){ };
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){ };
 
 		// キーボード入力系
 		kc.keyinput = function(ca){

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンロー版 nanro.js v3.2.2
+// パズル固有スクリプト部 ナンロー版 nanro.js v3.2.3
 //
 Puzzles.nanro = function(){ };
 Puzzles.nanro.prototype = {
@@ -53,27 +53,27 @@ Puzzles.nanro.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.editmode) this.inputborder(x,y);
+		mv.mousedown = function(){
+			if(k.editmode) this.inputborder();
 			else if(k.playmode){
-				if(this.btn.Left) this.dragnumber(x,y);
+				if(this.btn.Left) this.dragnumber();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(!kp.enabled()){ this.mouseCell=-1; this.inputqnum(x,y);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.mouseCell=-1; this.inputqnum();}
+				else{ kp.display();}
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.editmode) this.inputborder(x,y);
+		mv.mousemove = function(){
+			if(k.editmode) this.inputborder();
 			else if(k.playmode){
-				if(this.btn.Left) this.dragnumber(x,y);
-				else if(this.btn.Right) this.inputDot(x,y);
+				if(this.btn.Left) this.dragnumber();
+				else if(this.btn.Right) this.inputDot();
 			}
 		};
-		mv.dragnumber = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.dragnumber = function(){
+			var cc = this.cellid();
 			if(cc==-1||cc==this.mouseCell){ return;}
 			if(this.mouseCell==-1){
 				this.inputData = bd.getNum(cc);
@@ -92,8 +92,8 @@ Puzzles.nanro.prototype = {
 				pc.paintCell(cc);
 			}
 		};
-		mv.inputDot = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputDot = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell || bd.isNum(cc)){ return;}
 			if(this.inputData==-1){ this.inputData = (bd.QsC(cc)==2?0:2);}
 			if     (this.inputData==2){ bd.sQaC(cc,-1); bd.sQsC(cc,2);}

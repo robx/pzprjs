@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.2.2
+// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.2.3
 //
 Puzzles.pipelink = function(){ };
 Puzzles.pipelink.prototype = {
@@ -63,22 +63,22 @@ Puzzles.pipelink.prototype = {
 	input_init : function(){
 		// マウス入力系
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
+		mv.mousedown = function(){
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode){
-				if(!kp.enabled()){ this.inputQues(x,y,[0,101,102,103,104,105,106,107,-2]);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.inputQues([0,101,102,103,104,105,106,107,-2]);}
+				else{ kp.display();}
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
 			if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.2.2
+// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.2.3
 //
 Puzzles.tatamibari = function(){ };
 Puzzles.tatamibari.prototype = {
@@ -51,21 +51,21 @@ Puzzles.tatamibari.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
+		mv.mousedown = function(){
 			if(k.editmode){
-				if(!kp.enabled()){ this.inputQues(x,y,[0,101,102,103,-2]);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.inputQues([0,101,102,103,-2]);}
+				else{ kp.display();}
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
 			if(k.playmode){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
 

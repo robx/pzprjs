@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.2.2
+// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.2.3
 //
 Puzzles.kusabi = function(){ };
 Puzzles.kusabi.prototype = {
@@ -51,21 +51,21 @@ Puzzles.kusabi.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
+		mv.mousedown = function(){
 			if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum(x,y);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
 			if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 

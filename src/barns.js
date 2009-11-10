@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バーンズ版 barns.js v3.2.2
+// パズル固有スクリプト部 バーンズ版 barns.js v3.2.3
 //
 Puzzles.barns = function(){ };
 Puzzles.barns.prototype = {
@@ -60,30 +60,30 @@ Puzzles.barns.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
+		mv.mousedown = function(){
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode){
-				if(this.btn.Left) this.inputborder(x,y);
-				else if(this.btn.Right) this.inputIcebarn(x,y);
+				if(this.btn.Left) this.inputborder();
+				else if(this.btn.Right) this.inputIcebarn();
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
 			if(k.editmode){
-				if(this.btn.Left) this.inputborder(x,y);
-				else if(this.btn.Right) this.inputIcebarn(x,y);
+				if(this.btn.Left) this.inputborder();
+				else if(this.btn.Right) this.inputIcebarn();
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.inputIcebarn = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputIcebarn = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell){ return;}
 			if(this.inputData==-1){ this.inputData = (bd.QuC(cc)==6?0:6);}
 

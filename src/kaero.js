@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.2.2
+// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.2.3
 //
 Puzzles.kaero = function(){ };
 Puzzles.kaero.prototype = {
@@ -51,28 +51,28 @@ Puzzles.kaero.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.editmode){ this.inputborder(x,y);}
+		mv.mousedown = function(){
+			if(k.editmode){ this.inputborder();}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if     (k.editmode){ this.inputqnum(x,y);}
-				else if(k.playmode){ this.inputlight(x,y);}
+				if     (k.editmode){ this.inputqnum();}
+				else if(k.playmode){ this.inputlight();}
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.editmode){ this.inputborder(x,y);}
+		mv.mousemove = function(){
+			if(k.editmode){ this.inputborder();}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.inputlight = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputlight = function(){
+			var cc = this.cellid();
 			if(cc==-1){ return;}
 
 			if     (bd.QsC(cc)==0){ bd.sQsC(cc, (this.btn.Left?1:2));}

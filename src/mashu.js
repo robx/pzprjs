@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ましゅ版 mashu.js v3.2.2
+// パズル固有スクリプト部 ましゅ版 mashu.js v3.2.3
 //
 Puzzles.mashu = function(){ };
 Puzzles.mashu.prototype = {
@@ -64,21 +64,22 @@ Puzzles.mashu.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.editmode) this.inputQues(x,y,[0,41,42,-2]);
+		mv.mousedown = function(){
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
+			if(k.editmode) this.inputQues([0,41,42,-2]);
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
 			if(k.playmode){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
+		mv.inputQuesDirectly = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){ if(ca=='z' && !this.keyPressed){ this.isZ=true;} };

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.2.2
+// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.2.3
 //
 Puzzles.bosanowa = function(){ };
 Puzzles.bosanowa.prototype = {
@@ -66,15 +66,14 @@ Puzzles.bosanowa.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if     (k.editmode) this.inputqnum_bosanowa(x,y);
-			else if(k.playmode) this.inputqnum_bosanowa(x,y);
+		mv.mousedown = function(){
+			this.inputqnum_bosanowa();
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){ };
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){ };
 
-		mv.inputqnum_bosanowa = function(x,y){
-			var pos = this.crosspos(new Pos(x,y),0.31);
+		mv.inputqnum_bosanowa = function(){
+			var pos = this.crosspos(0.31);
 			if(pos.x<tc.minx||pos.x>tc.maxx||pos.y<tc.miny||pos.y>tc.maxy){ return;}
 			var tcp = tc.getTCP();
 

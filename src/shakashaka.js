@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.2.2
+// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.2.3
 //
 Puzzles.shakashaka = function(){ };
 Puzzles.shakashaka.prototype = {
@@ -59,36 +59,37 @@ Puzzles.shakashaka.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			this.firstPos = new Pos(x,y);
-
-			if(k.playmode) this.inputTriangle(x,y,0);
+		mv.mousedown = function(){
+			if(k.playmode) this.inputTriangle(0);
 			if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum(x,y);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(k.playmode && k.use==2 && this.notInputted()){
-				this.inputTriangle(x,y,1);
+				this.inputTriangle(2);
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.playmode && k.use==2 && this.firstPos.x != -1 && this.firstPos.y != -1){
-				this.inputTriangle(x,y,0);
+		mv.mousemove = function(){
+			if(k.playmode && k.use==2 && this.mouseCell!=-1){
+				this.inputTriangle(1);
 			}
 		};
-		mv.inputTriangle = function(x,y,flag){
-			var cc = this.cellid( new Pos(x,y) );
-			if(k.playmode && k.use==2){ cc = this.cellid( new Pos(this.firstPos.x,this.firstPos.y) );}
-
-			if(cc==-1 || (k.use!=2 && cc==this.mouseCell)){ return;}
-			if(bd.QnC(cc)!=-1){ return;}
+		mv.inputTriangle = function(use2step){
+			var cc;
+			if(k.use!=2 || k.use2step==0){
+				cc = this.cellid();
+				if(cc==-1 || bd.QnC(cc)!=-1){
+					this.mousereset();
+					return;
+				}
+			}
 
 			if(k.use==1){
 				if(this.btn.Left){
-					var xpos = x - k.p0.x-bd.cell[cc].cx*k.cwidth;
-					var ypos = y - k.p0.y-bd.cell[cc].cy*k.cheight;
+					var xpos = this.inputX - bd.cell[cc].cx*k.cwidth;
+					var ypos = this.inputY - bd.cell[cc].cy*k.cheight;
 					if(xpos>0&&xpos<=k.cwidth/2){
 						if(ypos>0&&ypos<=k.cheight/2){ this.inputData = 5;}
 						else if(ypos>k.cheight/2){ this.inputData = 2;}
@@ -107,21 +108,34 @@ Puzzles.shakashaka.prototype = {
 				}
 			}
 			else if(k.use==2){
-				if(flag==0){
+				if(k.use2step==0){
+					// 最初はどこのセルをクリックしたか取得するだけ
+					this.firstPos = new Pos(this.inputX, this.inputY);
+					this.mouseCell = cc;
+					return;
+				}
+
+				var dx=(this.inputX-this.firstPos.x), dy=(this.inputY-this.firstPos.y);
+
+				if(use2step==1){
+					// 一定以上動いていたら三角形を入力
 					var moves = 12;
-					if(x-this.firstPos.x <= -moves){
-						if     (y-this.firstPos.y >=  moves){ bd.sQaC(cc,(bd.QaC(cc)!=2)?2:-1); bd.sQsC(cc,0); this.mousereset();}
-						else if(y-this.firstPos.y <= -moves){ bd.sQaC(cc,(bd.QaC(cc)!=5)?5:-1); bd.sQsC(cc,0); this.mousereset();}
-					}
-					else if(x-this.firstPos.x >= moves){
-						if     (y-this.firstPos.y >=  moves){ bd.sQaC(cc,(bd.QaC(cc)!=3)?3:-1); bd.sQsC(cc,0); this.mousereset();}
-						else if(y-this.firstPos.y <= -moves){ bd.sQaC(cc,(bd.QaC(cc)!=4)?4:-1); bd.sQsC(cc,0); this.mousereset();}
+					if     (dx<=-moves && dy>= moves){ this.inputData=2;}
+					else if(dx<=-moves && dy<=-moves){ this.inputData=5;}
+					else if(dx>= moves && dy>= moves){ this.inputData=3;}
+					else if(dx>= moves && dy<=-moves){ this.inputData=4;}
+
+					if(this.inputData!=-1){
+						bd.sQaC(this.mouseCell, (bd.QaC(cc)!=this.inputData)?this.inputData:-1);
+						bd.sQsC(this.mouseCell, 0);
+						this.mousereset();
 					}
 				}
-				else if(flag==1){
-					if(Math.abs(x-this.firstPos.x) <= 3 && Math.abs(y-this.firstPos.y) <= 3){
-						if(bd.QsC(cc)==1){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
-						else{ bd.sQaC(cc,-1); bd.sQsC(cc,1);}
+				else if(use2step==2){
+					// ほとんど動いていなかった場合は・を入力
+					if(Math.abs(dx)<=3 && Math.abs(dy)<=3){
+						bd.sQaC(this.mouseCell, -1);
+						bd.sQsC(this.mouseCell, (bd.QsC(cc)==1?0:1));
 					}
 				}
 			}
@@ -140,10 +154,9 @@ Puzzles.shakashaka.prototype = {
 				}
 			}
 
-			this.mouseCell = cc;
-
 			pc.paintCell(cc);
 		};
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){

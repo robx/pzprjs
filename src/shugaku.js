@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.2.2
+// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.2.3
 //
 Puzzles.shugaku = function(){ };
 Puzzles.shugaku.prototype = {
@@ -51,36 +51,35 @@ Puzzles.shugaku.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
+		mv.mousedown = function(){
 			if(k.playmode){
-				if(this.btn.Left) this.inputFuton(x,y);
-				else if(this.btn.Right) this.inputcell_shugaku(x,y);
+				if(this.btn.Left) this.inputFuton();
+				else if(this.btn.Right) this.inputcell_shugaku();
 			}
 			else if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum(x,y);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(k.playmode){
-				if(this.btn.Left) this.inputFuton2(x,y);
+				if(this.btn.Left) this.inputFuton2();
 			}
 		};
-		mv.mousemove = function(x,y){
+		mv.mousemove = function(){
 			if(k.playmode){
-				if(this.btn.Left) this.inputFuton(x,y);
-				else if(this.btn.Right) this.inputcell_shugaku(x,y);
+				if(this.btn.Left) this.inputFuton();
+				else if(this.btn.Right) this.inputcell_shugaku();
 			}
 		};
-		mv.inputFuton = function(x,y){
-			var pos = new Pos(x,y);
-			var cc = this.cellid(pos);
+		mv.inputFuton = function(){
+			var cc = this.cellid();
 
 			if(this.firstPos.x==-1 && this.firstPos.y==-1){
 				if(cc==-1 || bd.QnC(cc)!=-1){ return;}
 				this.mouseCell = cc;
 				this.inputData = 1;
-				this.firstPos = pos;
+				this.firstPos = new Pos(this.inputX, this.inputY);
 				pc.paint(bd.cell[cc].cx, bd.cell[cc].cy, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
 			}
 			else{
@@ -97,7 +96,7 @@ Puzzles.shugaku.prototype = {
 				if(old!=this.inputData){ pc.paint(bd.cell[this.mouseCell].cx-2, bd.cell[this.mouseCell].cy-2, bd.cell[this.mouseCell].cx+2, bd.cell[this.mouseCell].cy+2);}
 			}
 		};
-		mv.inputFuton2 = function(x,y){
+		mv.inputFuton2 = function(){
 			if(this.mouseCell==-1 || (this.firstPos.x==-1 && this.firstPos.y==-1)){ return;}
 			var cc=this.mouseCell
 
@@ -122,8 +121,8 @@ Puzzles.shugaku.prototype = {
 			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
 		};
 
-		mv.inputcell_shugaku = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputcell_shugaku = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell || bd.QnC(cc)!=-1){ return;}
 			if(this.inputData==-1){
 				if     (bd.QaC(cc)==1){ this.inputData = 2;}
@@ -160,6 +159,7 @@ Puzzles.shugaku.prototype = {
 			}
 			return -1;
 		};
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 マイナリズム版 minarism.js v3.2.2
+// パズル固有スクリプト部 マイナリズム版 minarism.js v3.2.3
 //
 Puzzles.minarism = function(){ };
 Puzzles.minarism.prototype = {
@@ -57,19 +57,19 @@ Puzzles.minarism.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.editmode && this.btn.Left) this.inputmark1(x,y);
-			else if(k.playmode) this.inputqnum(x,y);
+		mv.mousedown = function(){
+			if(k.editmode && this.btn.Left) this.inputmark1();
+			else if(k.playmode) this.inputqnum();
 		};
-		mv.mouseup = function(x,y){
-			if(k.editmode && this.notInputted()) this.inputmark(x,y);
+		mv.mouseup = function(){
+			if(k.editmode && this.notInputted()) this.inputmark();
 		};
-		mv.mousemove = function(x,y){
-			if(k.editmode && this.btn.Left) this.inputmark1(x,y);
+		mv.mousemove = function(){
+			if(k.editmode && this.btn.Left) this.inputmark1();
 		};
 
-		mv.inputmark1 = function(x,y){
-			var pos = this.cellpos(new Pos(x,y));
+		mv.inputmark1 = function(){
+			var pos = this.cellpos();
 			if(bd.cnum(pos.x,pos.y)==-1){ return;}
 
 			var id=-1;
@@ -84,8 +84,8 @@ Puzzles.minarism.prototype = {
 			bd.sQuB(id,(this.inputData!=bd.QuB(id)?this.inputData:0));
 			pc.paintBorder(id);
 		};
-		mv.inputmark = function(x,y){
-			var pos = this.crosspos(new Pos(x,y),0.33);
+		mv.inputmark = function(){
+			var pos = this.crosspos(0.33);
 			if(pos.x<tc.minx || tc.maxx<pos.x || pos.y<tc.miny || tc.maxy<pos.y){ return;}
 			var id = bd.bnum(pos.x, pos.y);
 

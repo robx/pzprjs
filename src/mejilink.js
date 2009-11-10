@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 メジリンク版 mejilink.js v3.2.2
+// パズル固有スクリプト部 メジリンク版 mejilink.js v3.2.3
 //
 Puzzles.mejilink = function(){ };
 Puzzles.mejilink.prototype = {
@@ -53,20 +53,20 @@ Puzzles.mejilink.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.editmode) this.inputborder(x,y);
+		mv.mousedown = function(){
+			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
+			if(k.editmode) this.inputborder();
 			else if(k.playmode){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.editmode) this.inputborder(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.editmode) this.inputborder();
 			else if(k.playmode){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 
