@@ -151,40 +151,54 @@ Function.prototype.kcbind = function(){
 // ★Timerクラス
 //---------------------------------------------------------------------------
 Timer = function(){
-	this.st = 0;	// 最初のタイマー取得値
-	this.TID;		// タイマーID
-	this.lastseconds = 0;
+	// ** 一般タイマー
+	this.TID;				// タイマーID
+	this.timerInterval = (!k.br.IE?100:200);
 
-	this.lastOpeCnt = 0;
-	this.lastACTime = 0;
-	this.worstACCost = 0;
+	this.st       = 0;		// タイマースタート時のgetTime()取得値(ミリ秒)
+	this.current  = 0;		// 現在のgetTime()取得値(ミリ秒)
 
-	this.undoWaitCount = 0;
-	this.undoInterval  = (!k.br.IE?25:50);
-	this.TIDundo = null;
+	// 経過時間表示用変数
+	this.bseconds = 0;		// 前回ラベルに表示した時間(秒数)
+	this.timerEL = document.getElementById("timerpanel");
 
+	// 自動正答判定用変数
+	this.lastAnsCnt  = 0;	// 前回正答判定した時の、UndoManagerに記録されてた問題/回答入力のカウント
+	this.worstACCost = 0;	// 正答判定にかかった時間の最悪値(ミリ秒)
+	this.nextACtime  = 0;	// 次に自動正答判定ルーチンに入ることが可能になる時間
+
+	// 一般タイマースタート
 	this.start();
+
+	// ** Undoタイマー
+	this.TIDundo = null;	// タイマーID
+	this.undoInterval = (!k.br.IE?25:50);
+
+	// Undo/Redo用変数
+	this.undoStartCount = mf(300/this.undoInterval);	// 1回目にwaitを多く入れるための値
+	this.undoWaitCount = this.undoStartCount;
 };
 Timer.prototype = {
 	//---------------------------------------------------------------------------
-	// tm.reset()      タイマーのカウントを0にする
-	// tm.start()      update()関数を100ms間隔で呼び出す
-	// tm.update()     100ms単位で呼び出される関数
+	// tm.reset()      タイマーのカウントを0にして、スタートする
+	// tm.start()      update()関数を200ms間隔で呼び出す
+	// tm.update()     200ms単位で呼び出される関数
 	//---------------------------------------------------------------------------
 	reset : function(){
-		this.st = 0;
-		this.prev = clearInterval(this.TID);
-		$("#timerpanel").html(this.label()+"00:00");
 		this.worstACCost = 0;
+		this.timerEL.innerHTML(this.label()+"00:00");
+
+		clearInterval(this.TID);
 		this.start();
 	},
 	start : function(){
 		this.st = (new Date()).getTime();
-		this.TID = setInterval(this.update.bind(this), 200);
+		this.TID = setInterval(this.update.bind(this), this.timerInterval);
 	},
 	update : function(){
-		if(k.PLAYER){ this.updatetime();}
+		this.current = (new Date()).getTime();
 
+		if(k.PLAYER){ this.updatetime();}
 		if(k.autocheck){ this.ACcheck();}
 	},
 
@@ -193,8 +207,7 @@ Timer.prototype = {
 	// tm.label()      経過時間に表示する文字列を返す
 	//---------------------------------------------------------------------------
 	updatetime : function(){
-		var nowtime = (new Date()).getTime();
-		var seconds = mf((nowtime - this.st)/1000);
+		var seconds = mf((this.current - this.st)/1000);
 		if(this.bseconds == seconds){ return;}
 
 		var hours   = mf(seconds/3600);
@@ -204,8 +217,7 @@ Timer.prototype = {
 		if(minutes < 10) minutes = "0" + minutes;
 		if(seconds < 10) seconds = "0" + seconds;
 
-		if(hours) $("#timerpanel").html(this.label()+hours+":"+minutes+":"+seconds);
-		else $("#timerpanel").html(this.label()+minutes+":"+seconds);
+		this.timerEL.innerHTML = [this.label(), (!!hours?hours+":":""), minutes, ":", seconds].join('');
 
 		this.bseconds = seconds;
 	},
@@ -217,14 +229,12 @@ Timer.prototype = {
 	// tm.ACcheck()    自動正解判定を呼び出す
 	//---------------------------------------------------------------------------
 	ACcheck : function(){
-		var nowms = (new Date()).getTime();
-		var ACint = 120+(this.worstACCost<250?this.worstACCost*4:this.worstACCost*2+500);
-		if(nowms - this.lastACTime > ACint && this.lastOpeCnt != um.anscount && !ans.inCheck){
-			this.lastACTime = nowms;
-			this.lastOpeCnt = um.anscount;
+		if(this.current>this.nextACtime && this.lastAnsCnt!=um.anscount && !ans.inCheck){
+			this.lastAnsCnt = um.anscount;
+			if(!ans.autocheck()){ return;}
 
-			var comp = ans.autocheck();
-			if(!comp){ this.worstACCost = Math.max(this.worstACCost, ((new Date()).getTime()-nowms));}
+			this.worstACCost = Math.max(this.worstACCost, ((new Date()).getTime()-this.current));
+			this.nextACtime = this.current + (this.worstACCost<250 ? this.worstACCost*4+120 : this.worstACCost*2+620);
 		}
 	},
 
@@ -234,7 +244,7 @@ Timer.prototype = {
 	// tm.procUndo()        Undo/Redo呼び出しを実行する
 	//---------------------------------------------------------------------------
 	startUndoTimer : function(){
-		this.undoWaitCount = mf(300/this.undoInterval);
+		this.undoWaitCount = this.undoStartCount;
 		if(!this.TIDundo){ this.TIDundo = setInterval(this.procUndo.bind(this), this.undoInterval);}
 
 		if     (kc.inUNDO){ um.undo();}
@@ -248,15 +258,9 @@ Timer.prototype = {
 	},
 
 	procUndo : function(){
-		if(!kc.isCTRL){ this.stopUndoTimer(); return;}
-
-		if(this.undoWaitCount>0){
-			if(kc.inUNDO || kc.inREDO){ this.undoWaitCount--;}
-			return;
-		}
-
-		if     (kc.inUNDO){ um.undo();}
+		if(!kc.isCTRL || (!kc.inUNDO && !kc.inREDO)){ this.stopUndoTimer();}
+		else if(this.undoWaitCount>0)               { this.undoWaitCount--;}
+		else if(kc.inUNDO){ um.undo();}
 		else if(kc.inREDO){ um.redo();}
-		else{ this.undoWaitCount = mf(300/this.undoInterval);}
 	}
 };
