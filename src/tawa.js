@@ -496,7 +496,7 @@ Puzzles.tawa.prototype = {
 			var w = (k.cwidth<32?2:mf(k.cwidth/16));
 
 			this.vdel(["tc1_","tc2_","tc3_","tc4_"]);
-			g.fillStyle = (k.editmode?"rgb(255,64,64)":"rgb(64,64,255)");
+			g.fillStyle = this.targetColor1;
 			if(this.vnop("tc1_",0)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
 			if(this.vnop("tc2_",0)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
 			if(this.vnop("tc3_",0)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}

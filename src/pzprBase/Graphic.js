@@ -57,6 +57,10 @@ Graphic = function(){
 	this.errlinecolor1 = "rgb(255, 0, 0)";
 	this.errlinecolor2 = "rgb(160, 160, 160)";
 
+	// 入力ターゲットの色
+	this.targetColor1 = "rgb(255, 64,  64)";
+	this.targetColor3 = "rgb(64,  64, 255)";
+
 	// 色々なパズルで定義してた固定色
 	this.gridcolor_BLACK  = "black";
 	this.gridcolor_LIGHT  = "rgb(127, 127, 127)";	/* ほとんどはこの色を指定している */
@@ -907,7 +911,7 @@ Graphic.prototype = {
 		var w = (k.cwidth<32?2:mf(k.cwidth/16));
 
 		this.vdel(["tc1_","tc2_","tc3_","tc4_"]);
-		g.fillStyle = (k.editmode?"rgb(255,64,64)":"rgb(64,64,255)");
+		g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
 		if(this.vnop("tc1_",0)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
 		if(this.vnop("tc2_",0)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
 		if(this.vnop("tc3_",0)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
@@ -924,7 +928,7 @@ Graphic.prototype = {
 		var w = (k.cwidth<32?2:mf(k.cwidth/16));
 
 		this.vdel(["tx1_","tx2_","tx3_","tx4_"]);
-		g.fillStyle = (k.editmode?"rgb(255,64,64)":"rgb(64,64,255)");
+		g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
 		if(this.vnop("tx1_",0)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
 		if(this.vnop("tx2_",0)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
 		if(this.vnop("tx3_",0)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
@@ -942,7 +946,7 @@ Graphic.prototype = {
 		var size = mf(k.cwidth*0.28);
 
 		this.vdel(["tb1_","tb2_","tb3_","tb4_"]);
-		g.fillStyle = (k.editmode?"rgb(255,64,64)":"rgb(64,64,255)");
+		g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
 		if(this.vnop("tb1_",0)){ g.fillRect(px-size  , py-size  , size*2, 1);}
 		if(this.vnop("tb2_",0)){ g.fillRect(px-size  , py-size  , 1, size*2);}
 		if(this.vnop("tb3_",0)){ g.fillRect(px-size  , py+size-w, size*2, 1);}
@@ -1025,7 +1029,7 @@ Graphic.prototype = {
 //
 //		g.fillStyle = "white";
 
-		g.fillStyle = "rgb(192,192,192)";
+		g.fillStyle = this.gridcolor_SLIGHT;
 		for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("bdy"+i+"_1_",1)){ g.fillRect(k.p0.x+(i+0.5)*k.cwidth, k.p0.y+(y1-0.5)*k.cheight, 1, (y2-y1+2)*k.cheight+1);} }
 		for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("bdx"+i+"_1_",1)){ g.fillRect(k.p0.x+(x1-0.5)*k.cwidth, k.p0.y+(i+0.5)*k.cheight, (x2-x1+2)*k.cwidth+1, 1);} }
 
@@ -1079,7 +1083,7 @@ Graphic.prototype = {
 		}
 	},
 	drawDashedGridvml : function(x1,y1,x2,y2){
-		this.gridcolor = "rgb(191, 191, 191)";
+		this.gridcolor = this.gridcolor_SLIGHT;
 		this.drawGrid(x1,y1,x2,y2);
 
 //		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
