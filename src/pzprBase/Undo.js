@@ -94,7 +94,7 @@ UndoManager.prototype = {
 
 		// 前回と同じ場所なら前回の更新のみ
 		if(lastid>=0 && this.ope[lastid].obj == obj && this.ope[lastid].property == property && this.ope[lastid].id == id && this.ope[lastid].num == old
-			&& this.disCombine==0 && ( (obj == k.CELL && ( property=='qnum' || (property=='qans' && k.isAnsNumber) )) || obj == k.CROSS)
+			&& this.disCombine==0 && ( (obj == k.CELL && ( property==k.QNUM || (property==k.QANS && k.isAnsNumber) )) || obj == k.CROSS)
 		)
 		{
 			this.ope[lastid].num = num;
@@ -105,7 +105,7 @@ UndoManager.prototype = {
 			if(this.chainflag==0){ this.chainflag = 1;}
 		}
 
-		if(property!='qsub' && property!='color'){ this.anscount++;}
+		if(property!=k.QSUB){ this.anscount++;}
 		this.changeflag = true;
 		this.enb_btn();
 	},
@@ -130,13 +130,17 @@ UndoManager.prototype = {
 		this.undoExec = true;
 		this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
 		this.disableRecord();
+
 		while(this.current>0){
-			this.exec(this.ope[this.current-1], this.ope[this.current-1].old);
-			if(this.ope[this.current-1].property!='qsub' && this.ope[this.current-1].property!='color'){ this.anscount--;}
+			var ope = this.ope[this.current-1];
+
+			this.exec(ope, ope.old);
+			if(ope.property!=k.QSUB){ this.anscount--;}
 			this.current--;
 
 			if(!this.ope[this.current].chain){ break;}
 		}
+
 		this.postproc();
 		this.undoExec = false;
 		if(this.current==0){ kc.inUNDO=false;}
@@ -146,13 +150,17 @@ UndoManager.prototype = {
 		this.redoExec = true;
 		this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
 		this.disableRecord();
+
 		while(this.current<this.ope.length){
-			this.exec(this.ope[this.current], this.ope[this.current].num);
-			if(this.ope[this.current].property!='qsub' && this.ope[this.current].property!='color'){ this.anscount++;}
+			var ope = this.ope[this.current];
+
+			this.exec(ope, ope.num);
+			if(ope.property!=k.QSUB){ this.anscount++;}
 			this.current++;
 
 			if(this.current<this.ope.length && !this.ope[this.current].chain){ break;}
 		}
+
 		this.postproc();
 		this.redoExec = false;
 		if(this.ope.length==0){ kc.inREDO=false;}
@@ -175,38 +183,35 @@ UndoManager.prototype = {
 	exec : function(ope, num){
 		var pp = ope.property;
 		if(ope.obj == k.CELL){
-			if     (pp == 'ques'){ bd.sQuC(ope.id, num);}
-			else if(pp == 'qnum'){ bd.sQnC(ope.id, num);}
-			else if(pp == 'direc'){ bd.sDiC(ope.id, num);}
-			else if(pp == 'qans'){ bd.sQaC(ope.id, num);}
-			else if(pp == 'qsub'){ bd.sQsC(ope.id, num);}
-			else if(pp == 'numobj'){ bd.cell[ope.id].numobj = num;}
-			else if(pp == 'numobj2'){ bd.cell[ope.id].numobj2 = num;}
+			if     (pp == k.QUES){ bd.sQuC(ope.id, num);}
+			else if(pp == k.QNUM){ bd.sQnC(ope.id, num);}
+			else if(pp == k.DIREC){ bd.sDiC(ope.id, num);}
+			else if(pp == k.QANS){ bd.sQaC(ope.id, num);}
+			else if(pp == k.QSUB){ bd.sQsC(ope.id, num);}
 			else if(pp == k.CELL && !!num){ bd.cell[ope.id] = num;}
 			this.paintStack(bd.cell[ope.id].cx, bd.cell[ope.id].cy, bd.cell[ope.id].cx, bd.cell[ope.id].cy);
 		}
 		else if(ope.obj == k.EXCELL){
-			if     (pp == 'qnum'){ bd.sQnE(ope.id, num);}
-			else if(pp == 'direc'){ bd.sDiE(ope.id, num);}
+			if     (pp == k.QNUM){ bd.sQnE(ope.id, num);}
+			else if(pp == k.DIREC){ bd.sDiE(ope.id, num);}
 			else if(pp == k.EXCELL && !!num){ bd.excell[ope.id] = num;}
 		}
 		else if(ope.obj == k.CROSS){
-			if     (pp == 'ques'){ bd.sQuX(ope.id, num);}
-			else if(pp == 'qnum'){ bd.sQnX(ope.id, num);}
-			else if(pp == 'numobj'){ bd.cross[ope.id].numobj = num;}
+			if     (pp == k.QUES){ bd.sQuX(ope.id, num);}
+			else if(pp == k.QNUM){ bd.sQnX(ope.id, num);}
 			else if(pp == k.CROSS && !!num){ bd.cross[ope.id] = num;}
 			this.paintStack(bd.cross[ope.id].cx-1, bd.cross[ope.id].cy-1, bd.cross[ope.id].cx, bd.cross[ope.id].cy);
 		}
 		else if(ope.obj == k.BORDER){
-			if     (pp == 'ques'){ bd.sQuB(ope.id, num);}
-			else if(pp == 'qnum'){ bd.sQnB(ope.id, num);}
-			else if(pp == 'qans'){ bd.sQaB(ope.id, num);}
-			else if(pp == 'qsub'){ bd.sQsB(ope.id, num);}
-			else if(pp == 'line'){ bd.sLiB(ope.id, num);}
+			if     (pp == k.QUES){ bd.sQuB(ope.id, num);}
+			else if(pp == k.QNUM){ bd.sQnB(ope.id, num);}
+			else if(pp == k.QANS){ bd.sQaB(ope.id, num);}
+			else if(pp == k.QSUB){ bd.sQsB(ope.id, num);}
+			else if(pp == k.LINE){ bd.sLiB(ope.id, num);}
 			else if(pp == k.BORDER && !!num){ bd.border[ope.id] = num;}
 			this.paintBorder(ope.id);
 		}
-		else if(ope.obj == 'board'){
+		else if(ope.obj == k.BOARD){
 			this.disableInfo();
 			if     (pp == 'expandup'){ if(num==1){ menu.ex.expand(k.UP);}else{ menu.ex.reduce(k.UP);} }
 			else if(pp == 'expanddn'){ if(num==1){ menu.ex.expand(k.DN);}else{ menu.ex.reduce(k.DN);} }

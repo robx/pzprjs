@@ -201,7 +201,7 @@ MenuExec.prototype = {
 			um.enableInfo();
 
 			// reduce‚Í‚±‚±•K{
-			um.addOpe('board', name, 0, 0, 1);
+			um.addOpe(k.BOARD, name, 0, 0, 1);
 
 			if(!um.undoExec){ base.resetInfo();}
 			base.resize_canvas();				// Canvas‚ğXV‚·‚é
@@ -664,15 +664,15 @@ MenuExec.prototype = {
 			um.newOperation(true);
 			{
 				for(var i=0;i<bd.cellmax;i++){
-					if(bd.cell[i].qans!==bd.defcell.qans){ um.addOpe(k.CELL,'qans',i,bd.cell[i].qans,bd.defcell.qans);}
-					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe(k.CELL,'qsub',i,bd.cell[i].qsub,bd.defcell.qsub);}
+					if(bd.cell[i].qans!==bd.defcell.qans){ um.addOpe(k.CELL,k.QANS,i,bd.cell[i].qans,bd.defcell.qans);}
+					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe(k.CELL,k.QSUB,i,bd.cell[i].qsub,bd.defcell.qsub);}
 				}
 			}
 			if(k.isborder){
 				for(var i=0;i<bd.bdmax;i++){
-					if(bd.border[i].qans!==bd.defborder.qans){ um.addOpe(k.BORDER,'qans',i,bd.border[i].qans,bd.defborder.qans);}
-					if(bd.border[i].line!==bd.defborder.line){ um.addOpe(k.BORDER,'line',i,bd.border[i].line,bd.defborder.line);}
-					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,'qsub',i,bd.border[i].qsub,bd.defborder.qsub);}
+					if(bd.border[i].qans!==bd.defborder.qans){ um.addOpe(k.BORDER,k.QANS,i,bd.border[i].qans,bd.defborder.qans);}
+					if(bd.border[i].line!==bd.defborder.line){ um.addOpe(k.BORDER,k.LINE,i,bd.border[i].line,bd.defborder.line);}
+					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,k.QSUB,i,bd.border[i].qsub,bd.defborder.qsub);}
 				}
 			}
 			if(!g.vml){ pc.flushCanvasAll();}
@@ -687,12 +687,12 @@ MenuExec.prototype = {
 			um.newOperation(true);
 			{
 				for(var i=0;i<bd.cellmax;i++){
-					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe(k.CELL,'qsub',i,bd.cell[i].qsub,bd.defcell.qsub);}
+					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe(k.CELL,k.QSUB,i,bd.cell[i].qsub,bd.defcell.qsub);}
 				}
 			}
 			if(k.isborder){
 				for(var i=0;i<bd.bdmax;i++){
-					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,'qsub',i,bd.border[i].qsub,bd.defborder.qsub);}
+					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,k.QSUB,i,bd.border[i].qsub,bd.defborder.qsub);}
 				}
 			}
 			if(!g.vml){ pc.flushCanvasAll();}

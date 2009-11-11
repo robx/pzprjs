@@ -566,7 +566,7 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// Cell関連Get/Set関数 <- 各Cellが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuC : function(id, num) {
-		um.addOpe(k.CELL, 'ques', id, this.cell[id].ques, num);
+		um.addOpe(k.CELL, k.QUES, id, this.cell[id].ques, num);
 		this.cell[id].ques = num;
 
 		if(k.puzzleid==="pipelink"||k.puzzleid==="loopsp"){ this.checkLPCombined(id);}
@@ -575,7 +575,7 @@ Board.prototype = {
 		if(k.dispzero===0 && num===0){ return;}
 
 		var old = this.cell[id].qnum;
-		um.addOpe(k.CELL, 'qnum', id, old, num);
+		um.addOpe(k.CELL, k.QNUM, id, old, num);
 		this.cell[id].qnum = num;
 
 		if(um.isenableInfo() &&
@@ -586,7 +586,7 @@ Board.prototype = {
 	},
 	sQaC : function(id, num) {
 		var old = this.cell[id].qans;
-		um.addOpe(k.CELL, 'qans', id, old, num);
+		um.addOpe(k.CELL, k.QANS, id, old, num);
 		this.cell[id].qans = num;
 
 		if(um.isenableInfo() && (
@@ -597,11 +597,11 @@ Board.prototype = {
 		if(k.puzzleid=="lightup" && ((old==1)^(num==1))){ mv.paintAkari(id);}
 	},
 	sQsC : function(id, num) {
-		um.addOpe(k.CELL, 'qsub', id, this.cell[id].qsub, num);
+		um.addOpe(k.CELL, k.QSUB, id, this.cell[id].qsub, num);
 		this.cell[id].qsub = num;
 	},
 	sDiC : function(id, num) {
-		um.addOpe(k.CELL, 'direc', id, this.cell[id].direc, num);
+		um.addOpe(k.CELL, k.DIREC, id, this.cell[id].direc, num);
 		this.cell[id].direc = num;
 	},
 
@@ -617,11 +617,11 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// EXcell関連Get/Set関数
 	sQnE : function(id, num) {
-		um.addOpe(k.EXCELL, 'qnum', id, this.excell[id].qnum, num);
+		um.addOpe(k.EXCELL, k.QNUM, id, this.excell[id].qnum, num);
 		this.excell[id].qnum = num;
 	},
 	sDiE : function(id, num) {
-		um.addOpe(k.EXCELL, 'direc', id, this.excell[id].direc, num);
+		um.addOpe(k.EXCELL, k.DIREC, id, this.excell[id].direc, num);
 		this.excell[id].direc = num;
 	},
 
@@ -634,11 +634,11 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// Cross関連Get/Set関数 <- 各Crossが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuX : function(id, num) {
-		um.addOpe(k.CROSS, 'ques', id, this.cross[id].ques, num);
+		um.addOpe(k.CROSS, k.QUES, id, this.cross[id].ques, num);
 		this.cross[id].ques = num;
 	},
 	sQnX : function(id, num) {
-		um.addOpe(k.CROSS, 'qnum', id, this.cross[id].qnum, num);
+		um.addOpe(k.CROSS, k.QNUM, id, this.cross[id].qnum, num);
 		this.cross[id].qnum = num;
 	},
 
@@ -655,36 +655,36 @@ Board.prototype = {
 	// Border関連Get/Set関数 <- 各Borderが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuB : function(id, num) {
 		var old = this.border[id].ques;
-		um.addOpe(k.BORDER, 'ques', id, old, num);
+		um.addOpe(k.BORDER, k.QUES, id, old, num);
 		this.border[id].ques = num;
 
-		if(um.isenableInfo() && (num>0 ^ old>0)){ area.call_setBorder(id,num,'ques');}
+		if(um.isenableInfo() && (num>0 ^ old>0)){ area.call_setBorder(id,num,k.QUES);}
 	},
 	sQnB : function(id, num) {
-		um.addOpe(k.BORDER, 'qnum', id, this.border[id].qnum, num);
+		um.addOpe(k.BORDER, k.QNUM, id, this.border[id].qnum, num);
 		this.border[id].qnum = num;
 	},
 	sQaB : function(id, num) {
 		if(this.border[id].ques!=0){ return;}
 
 		var old = this.border[id].qans;
-		um.addOpe(k.BORDER, 'qans', id, old, num);
+		um.addOpe(k.BORDER, k.QANS, id, old, num);
 		this.border[id].qans = num;
 
 		if(um.isenableInfo() && (num>0 ^ old>0)){
 			if(k.isborderAsLine){ line.setLine(id,num);}
-			else                { area.call_setBorder(id,num,'qans');}
+			else                { area.call_setBorder(id,num,k.QANS);}
 		}
 	},
 	sQsB : function(id, num) {
-		um.addOpe(k.BORDER, 'qsub', id, this.border[id].qsub, num);
+		um.addOpe(k.BORDER, k.QSUB, id, this.border[id].qsub, num);
 		this.border[id].qsub = num;
 	},
 	sLiB : function(id, num) {
 		if(this.enableLineNG && (num==1?bd.isLineNG:bd.isLPCombined)(id)){ return;}
 
 		var old = this.border[id].line;
-		um.addOpe(k.BORDER, 'line', id, old, num);
+		um.addOpe(k.BORDER, k.LINE, id, old, num);
 		this.border[id].line = num;
 
 		if(um.isenableInfo() && (num>0 ^ old>0)){ line.setLine(id,num);}

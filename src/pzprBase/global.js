@@ -76,10 +76,18 @@ var k = {
 	},
 
 	// const’l
+	BOARD  : 'board',
 	CELL   : 'cell',
 	CROSS  : 'cross',
 	BORDER : 'border',
 	EXCELL : 'excell',
+
+	QUES  : 'ques',
+	QNUM  : 'qnum',
+	DIREC : 'direc',
+	QANS  : 'qans',
+	LINE  : 'line',
+	QSUB  : 'qsub',
 
 	UP : 1,		// up
 	DN : 2,		// down

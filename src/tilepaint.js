@@ -146,7 +146,7 @@ Puzzles.tilepaint.prototype = {
 			if(confirm("•â•‹L†‚ğÁ‹‚µ‚Ü‚·‚©H")){
 				um.chainflag=0;
 				for(var i=0;i<k.qcols*k.qrows;i++){
-					if(bd.QsC(i)==1){ um.addOpe(k.CELL,'qsub',i,bd.QsC(i),0);}
+					if(bd.QsC(i)==1){ um.addOpe(k.CELL,k.QSUB,i,bd.QsC(i),0);}
 				}
 				if(!g.vml){ pc.flushCanvasAll();}
 

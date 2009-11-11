@@ -189,11 +189,11 @@ Puzzles.tentaisho.prototype = {
 			if(confirm("•â•‹L†‚ğÁ‹‚µ‚Ü‚·‚©H")){
 				um.chainflag=0;
 				for(i=0;i<k.qcols*k.qrows;i++){
-					if(bd.QsC(i)==1){ um.addOpe(k.CELL,'qsub',i,bd.QsC(i),0);}
+					if(bd.QsC(i)==1){ um.addOpe(k.CELL,k.QSUB,i,bd.QsC(i),0);}
 				}
 				if(k.isborder){
 					for(i=0;i<bd.bdmax;i++){
-						if(bd.QsB(i)!=0){ um.addOpe(k.BORDER,'qsub',i,bd.QsB(i),0);}
+						if(bd.QsB(i)!=0){ um.addOpe(k.BORDER,k.QSUB,i,bd.QsB(i),0);}
 					}
 				}
 				if(!g.vml){ pc.flushCanvasAll();}
@@ -242,7 +242,7 @@ Puzzles.tentaisho.prototype = {
 		};
 
 		area.call_setBorder = function(id,val,type){
-			if(type=='qans'){ this.setBorder(id,val);}
+			if(type==k.QANS){ this.setBorder(id,val);}
 		};
 	},
 
