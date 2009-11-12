@@ -136,18 +136,19 @@ Puzzles.sudoku.prototype = {
 
 			var max=k.qcols;
 			var block=mf(Math.sqrt(max)+0.1);
+			var headers = ["bbx_", "bby_"];
 
 			if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
 			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
 			g.fillStyle = "black";
 			for(var i=1;i<block;i++){
-				if(x1-1<=i*block&&i*block<=x2+1){ if(this.vnop("bbx"+i+"_")){
+				if(x1-1<=i*block&&i*block<=x2+1){ if(this.vnop(headers[0]+i)){
 					g.fillRect(k.p0.x+i*block*k.cwidth-lw+1, k.p0.y+y1*k.cheight-lw+1, lw, (y2-y1+1)*k.cheight+2*lw-1);
 				}}
 			}
 			for(var i=1;i<block;i++){
-				if(y1-1<=i*block&&i*block<=y2+1){ if(this.vnop("bby"+i+"_")){
+				if(y1-1<=i*block&&i*block<=y2+1){ if(this.vnop(headers[1]+i)){
 					g.fillRect(k.p0.x+x1*k.cwidth-lw+1, k.p0.y+i*block*k.cheight-lw+1, (x2-x1+1)*k.cwidth+2*lw-1, lw);
 				}}
 			}

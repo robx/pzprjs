@@ -207,13 +207,14 @@ Puzzles.minarism.prototype = {
 		pc.drawBDMarks = function(x1,y1,x2,y2){
 			var csize = k.cwidth*0.27;
 			var ssize = k.cwidth*0.22;
+			var headers = ["b_cp1_", "b_cp2_", "b_dt1_", "b_dt2_"];
+
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 				if(bd.QnB(id)!=-1){
-					if(bd.ErB(id)==1){ g.fillStyle = this.errcolor1;}
-					else{ g.fillStyle = "white";}
-					if(this.vnop("b"+id+"_cp1_",1)){
+					g.fillStyle = (bd.ErB(id)==1 ? this.errcolor1 : "white");
+					if(this.vnop(headers[0]+id,1)){
 						g.beginPath();
 						g.arc(bd.border[id].px, bd.border[id].py, csize, 0, Math.PI*2, false);
 						g.fill();
@@ -221,7 +222,7 @@ Puzzles.minarism.prototype = {
 
 					g.lineWidth = 1;
 					g.strokeStyle = "black";
-					if(this.vnop("b"+id+"_cp2_",0)){
+					if(this.vnop(headers[1]+id,0)){
 						if(k.br.IE){
 							g.beginPath();
 							g.arc(bd.border[id].px, bd.border[id].py, csize, 0, Math.PI*2, false);
@@ -229,30 +230,31 @@ Puzzles.minarism.prototype = {
 						g.stroke();
 					}
 				}
-				else{ this.vhide(["b"+id+"_cp1_","b"+id+"_cp2_"]);}
+				else{ this.vhide([headers[0]+id, headers[1]+id]);}
+
 				this.dispnumBorder(id);
 
 				if(bd.QuB(id)!=0){
 					var px=bd.border[id].px, py=bd.border[id].py;
 					g.fillStyle = this.Cellcolor;
 					if(bd.QuB(id)==1){
-						this.vhide("b"+id+"_dt2_");
-						if(this.vnop("b"+id+"_dt1_",1)){
-							if(bd.border[id].cx%2==1){ this.inputPath([px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize], false);}
-							else                     { this.inputPath([px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize], false);}
+						if(this.vnop(headers[2]+id,1)){
+							if(bd.border[id].cx&1){ this.inputPath([px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize], false);}
+							else                  { this.inputPath([px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize], false);}
 							g.stroke();
 						}
 					}
-					else if(bd.QuB(id)==2){
-						this.vhide("b"+id+"_dt1_");
-						if(this.vnop("b"+id+"_dt2_",1)){
-							if(bd.border[id].cx%2==1){ this.inputPath([px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize], false);}
-							else                     { this.inputPath([px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize], false);}
+					else{ this.vhide(headers[3]+id);}
+					if(bd.QuB(id)==2){
+						if(this.vnop(headers[3]+id,1)){
+							if(bd.border[id].cx&1){ this.inputPath([px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize], false);}
+							else                  { this.inputPath([px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize], false);}
 							g.stroke();
 						}
 					}
+					else{ this.vhide(headers[2]+id);}
 				}
-				else{ this.vhide(["b"+id+"_dt1_","b"+id+"_dt2_"]);}
+				else{ this.vhide([headers[2]+id, headers[3]+id]);}
 			}
 			this.vinc();
 		};

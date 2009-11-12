@@ -27,8 +27,8 @@ Puzzles.slalom.prototype = {
 		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
 		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
 
-		k.BlackCell     = 1;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 1;	// 1:数字のあるマスが黒マスにならないパズル
+		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
+		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
 		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
 
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
@@ -304,18 +304,20 @@ Puzzles.slalom.prototype = {
 		};
 
 		pc.drawBCells_slalom = function(x1,y1,x2,y2){
+			var header = "c_full_";
+
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QuC(c)==1){
-					if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
-					else{ g.fillStyle = this.Cellcolor;}
-
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
-					this.dispnumCell_General(c);
+					g.fillStyle = (bd.ErC(c)==1 ? this.errcolor1 : this.Cellcolor);
+					if(this.vnop(header+c,1)){
+						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
+					}
+					this.dispnumCell(c);
 				}
 				else{
-					this.vhide("c"+c+"_full_");
+					this.vhide(header+c);
 					this.hideEL(bd.cell[c].numobj);
 				}
 			}
@@ -326,62 +328,69 @@ Puzzles.slalom.prototype = {
 			var lw = (mf(k.cwidth/10)>=3?mf(k.cwidth/10):3); //LineWidth
 			var lm = mf((lw-1)/2)+1; //LineMargin
 			var ll = lw*1.1;	//LineLength
+			var headers = ["c_dl21", "c_dl22"];
 
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.ErC(c)==4){ g.fillStyle = this.errcolor1;}
-				else{ g.fillStyle = this.Cellcolor;}
+				g.fillStyle = (bd.ErC(c)==4 ? this.errcolor1 : this.Cellcolor);
 
-				for(var j=bd.cell[c].py;j<bd.cell[c].py+k.cheight;j+=ll*2){ //たて
+				for(var j=bd.cell[c].py,max=bd.cell[c].py+k.cheight;j<max;j+=ll*2){ //たて
 					if(bd.QuC(c)==21){
-						if(this.vnop("c"+c+"_dl21_"+mf(j),1)){ g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-lm+1, j, lw, ll);}
+						if(this.vnop([headers[0],c,mf(j)].join("_"),1)){
+							g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-lm+1, j, lw, ll);
+						}
 					}
-					else{ this.vhide("c"+c+"_dl21_"+mf(j));}
+					else{ this.vhide([headers[0],c,mf(j)].join("_"));}
 				}
 
-				for(var j=bd.cell[c].px;j<bd.cell[c].px+k.cwidth;j+=ll*2){ //よこ
+				for(var j=bd.cell[c].px,max=bd.cell[c].px+k.cwidth;j<max;j+=ll*2){ //よこ
 					if(bd.QuC(c)==22){
-						if(this.vnop("c"+c+"_dl22_"+mf(j),1)){ g.fillRect(j, bd.cell[c].py+mf(k.cheight/2)-lm+1, ll, lw);}
+						if(this.vnop([headers[1],c,mf(j)].join("_"),1)){
+							g.fillRect(j, bd.cell[c].py+mf(k.cheight/2)-lm+1, ll, lw);
+						}
 					}
-					else{ this.vhide("c"+c+"_dl22_"+mf(j));}
+					else{ this.vhide([headers[1],c,mf(j)].join("_"));}
 				}
 			}
 		};
 
 		pc.drawStartpos = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.40;
-			var rsize2 = k.cwidth*0.36;
-
 			var c = bd.startid;
 			if(bd.cell[c].cx<x1-2 || x2+2<bd.cell[c].cx || bd.cell[c].cy<y1-2 || y2+2<bd.cell[c].cy){ return;}
 
-			this.vdel(["sposa_","sposb_"]);
+			var rsize  = k.cwidth*0.45;
+			var rsize2 = k.cwidth*0.40;
+			var vids = ["sposa_","sposb_"];
+			this.vdel(vids);
 
 			var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
 
 			g.fillStyle = this.Cellcolor;
-			g.beginPath();
-			g.arc(px, py, k.cwidth*0.45, 0, Math.PI*2, false);
-			if(this.vnop("sposa_",1)){ g.fill(); }
+			if(this.vnop(vids[0],1)){
+				g.beginPath();
+				g.arc(px, py, rsize, 0, Math.PI*2, false);
+				g.fill();
+			}
 
-			if(mv.inputData==10){ g.fillStyle = this.errbcolor1;}
-			else{ g.fillStyle = "white";}
-			g.beginPath();
-			g.arc(px, py, k.cwidth*0.40, 0, Math.PI*2, false);
-			if(this.vnop("sposb_",1)){ g.fill(); }
+			g.fillStyle = (mv.inputData==10 ? this.errbcolor1 : "white");
+			if(this.vnop(vids[1],1)){
+				g.beginPath();
+				g.arc(px, py, rsize2, 0, Math.PI*2, false);
+				g.fill();
+			}
 
 			this.dispnumStartpos(c);
 
 			this.vinc();
 		};
 		pc.dispnumStartpos = function(c){
-			var num = bd.hinfo.max;
-			if(num<0){ this.hideEL(bd.cell[c].numobj); return;}
+			var num = bd.hinfo.max, obj = bd.cell[c];
+			if(num<0){ this.hideEL(obj.numobj); return;}
 
-			if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
+			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 			var fontratio = (num<10?0.75:0.66);
-			this.dispnumCell1(c, bd.cell[c].numobj, 1, ""+num, fontratio, "black");
+			this.dispnum(obj.numobj, 1, ""+num, fontratio, "black", obj.px, obj.py);
 		};
 
 		line.repaintParts = function(id){
@@ -396,14 +405,15 @@ Puzzles.slalom.prototype = {
 
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)!=21 && bd.QuC(c)!=22){ continue;}
+				var obj = bd.cell[c];
 
 				var r = bd.hinfo.getGateid(c);
 				var num = (r>0?bd.hinfo.data[r].number:-1);
-				if(!keydown || num<=0){ this.hideEL(bd.cell[c].numobj); continue;}
+				if(!keydown || num<=0){ this.hideEL(obj.numobj); continue;}
 
-				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
+				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
-				this.dispnumCell1(c, bd.cell[c].numobj, 1, ""+num, fontratio ,"tomato");
+				this.dispnum(c, obj.numobj, 1, ""+num, fontratio ,"tomato", obj.px, obj.py);
 			}
 		};
 	},

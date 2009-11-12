@@ -113,6 +113,7 @@ Puzzles.firefly.prototype = {
 			var rsize  = k.cwidth*0.40;
 			var rsize2 = k.cwidth*0.36;
 			var rsize3 = k.cwidth*0.10;
+			var headers = ["c_cira_", "c_cirb_", "c_circ_"];
 
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
 			for(var i=0;i<clist.length;i++){
@@ -121,33 +122,38 @@ Puzzles.firefly.prototype = {
 					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
 
 					g.fillStyle = this.Cellcolor;
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cira_",1)){ g.fill(); }
-
-					if(bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else{ g.fillStyle = "white";}
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cirb_",1)){ g.fill(); }
-
-					this.vdel(["c"+c+"_circ_"]);
-					g.fillStyle = this.Cellcolor;
-					switch(bd.DiC(c)){
-						case k.UP: py-=(rsize-1); break;
-						case k.DN: py+=(rsize-1); break;
-						case k.LT: px-=(rsize-1); break;
-						case k.RT: px+=(rsize-1); break;
-					}
-					if(bd.DiC(c)!=0){
+					if(this.vnop(headers[0]+c,1)){
 						g.beginPath();
-						g.arc(px, py, rsize3 , 0, Math.PI*2, false);
-						if(this.vnop("c"+c+"_circ_",1)){ g.fill();}
+						g.arc(px, py, rsize , 0, Math.PI*2, false);
+						g.fill();
+					}
+
+					g.fillStyle = (bd.ErC(c)==1 ? this.errbcolor1 : "white");
+					if(this.vnop(headers[1]+c,1)){
+						g.beginPath();
+						g.arc(px, py, rsize2, 0, Math.PI*2, false);
+						g.fill();
+					}
+
+					this.vdel([headers[2]+c]);
+					if(bd.DiC(c)!=0){
+						g.fillStyle = this.Cellcolor;
+						switch(bd.DiC(c)){
+							case k.UP: py-=(rsize-1); break;
+							case k.DN: py+=(rsize-1); break;
+							case k.LT: px-=(rsize-1); break;
+							case k.RT: px+=(rsize-1); break;
+						}
+						if(this.vnop(headers[2]+c,1)){
+							g.beginPath();
+							g.arc(px, py, rsize3 , 0, Math.PI*2, false);
+							g.fill();
+						}
 					}
 				}
-				else{ this.vhide(["c"+c+"_cira_","c"+c+"_cirb_"]); this.vdel(["c"+c+"_circ_"]);}
+				else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c]);}
 
-				this.dispnumCell_General(c);
+				this.dispnumCell(c);
 			}
 			this.vinc();
 		};
@@ -263,7 +269,7 @@ Puzzles.firefly.prototype = {
 				var bx=bd.cell[c].cx*2+1, by=bd.cell[c].cy*2+1;
 				while(1){
 					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-					if((bx+by)%2==0){
+					if(!((bx+by)&1)){
 						var cc = bd.cnum(mf(bx/2),mf(by/2));
 						if     (bd.QnC(cc)!=-1){ break;}
 						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!=2){ ccnt++;} dir=2;}
@@ -281,14 +287,14 @@ Puzzles.firefly.prototype = {
 				for(var i=0;i<idlist.length;i++){ saved.check[idlist[i]]=2;}
 
 				var cc = bd.cnum(mf(bx/2),mf(by/2));
-				if(idlist.length>0 && (bx+by)%2==1 && saved.errflag==0){
+				if(idlist.length>0 && ((bx+by)&1) && saved.errflag==0){
 					saved = {errflag:1,cells:[c],idlist:idlist,check:saved.check};
 				}
-				else if(idlist.length>0 && (bx+by)%2==0 && bd.QnC(c)!=-2 && bd.QnC(c)!=ccnt && saved.errflag<=1){
+				else if(idlist.length>0 && (!((bx+by)&1)) && bd.QnC(c)!=-2 && bd.QnC(c)!=ccnt && saved.errflag<=1){
 					saved = {errflag:2,cells:[c],idlist:idlist,check:saved.check};
 				}
 				else if(((bd.DiC(cc)==k.UP && dir==k.DN) || (bd.DiC(cc)==k.DN && dir==k.UP) ||
-						 (bd.DiC(cc)==k.LT && dir==k.RT) || (bd.DiC(cc)==k.RT && dir==k.LT) ) && (bx+by)%2==0 && saved.errflag<=2 )
+						 (bd.DiC(cc)==k.LT && dir==k.RT) || (bd.DiC(cc)==k.RT && dir==k.LT) ) && (!((bx+by)&1)) && saved.errflag<=2 )
 				{
 					saved = {errflag:3,cells:[c,cc],idlist:idlist,check:saved.check};
 					return saved;

@@ -163,18 +163,25 @@ Puzzles.gokigen.prototype = {
 			this.drawTarget_gokigen(x1,y1,x2,y2);
 		};
 		pc.drawErrorCells = function(x1,y1,x2,y2){
+			var header = "c_full_";
+
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c=clist[i];
 				if(bd.QaC(c)==-1 && bd.ErC(c)==1){
 					g.fillStyle = this.errbcolor1;
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);}
+					if(this.vnop(header+c,1)){
+						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
+					}
 				}
-				else{ this.vhide("c"+c+"_full_");}
+				else{ this.vhide(header+c);}
 			}
 			this.vinc();
 		},
 		pc.drawSlashes = function(x1,y1,x2,y2){
+			var headers = ["c_sl1_", "c_sl2_"];
+			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
+
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
@@ -184,22 +191,23 @@ Puzzles.gokigen.prototype = {
 					else if(bd.ErC(c)==2){ g.strokeStyle = this.errcolor2;}
 					else                 { g.strokeStyle = this.Cellcolor;}
 
-					g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
-					g.beginPath();
 					if(bd.QaC(c)==1){
-						g.moveTo(bd.cell[c].px         , bd.cell[c].py          );
-						g.lineTo(bd.cell[c].px+k.cwidth, bd.cell[c].py+k.cheight);
-						this.vhide("c"+c+"_sl2_");
+						if(this.vnop(headers[0]+c,0)){
+							this.inputPath([bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight], true);
+							g.stroke();
+						}
 					}
-					else if(bd.QaC(c)==2){
-						g.moveTo(bd.cell[c].px+k.cwidth, bd.cell[c].py          );
-						g.lineTo(bd.cell[c].px         , bd.cell[c].py+k.cheight);
-						this.vhide("c"+c+"_sl1_");
+					else{ this.vhide(headers[0]+c);}
+
+					if(bd.QaC(c)==2){
+						if(this.vnop(headers[1]+c,0)){
+							this.inputPath([bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight], true);
+							g.stroke();
+						}
 					}
-					g.closePath();
-					if(this.vnop("c"+c+"_sl"+bd.QaC(c)+"_",0)){ g.stroke();}
+					else{ this.vhide(headers[1]+c);}
 				}
-				else{ this.vhide(["c"+c+"_sl1_", "c"+c+"_sl2_"]);}
+				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
 			this.vinc();
 		};

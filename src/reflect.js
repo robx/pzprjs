@@ -27,8 +27,8 @@ Puzzles.reflect.prototype = {
 		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
 		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
 
-		k.BlackCell     = 1;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 1;	// 1:数字のあるマスが黒マスにならないパズル
+		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
+		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
 		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
 
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
@@ -167,21 +167,25 @@ Puzzles.reflect.prototype = {
 		};
 
 		pc.drawTriangleBorder = function(x1,y1,x2,y2){
+			var header = "b_tb_";
+
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+4,y2*2+4,f_true);
 			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i];
-				var lflag = (bd.border[id].cx%2==0);
+				var id = idlist[i], lflag = !(bd.border[id].cx&1);
 				var qs1 = bd.QuC(bd.cc1(id)), qs2 = bd.QuC(bd.cc2(id));
 
 				g.fillStyle = this.gridcolor;
-
 				if(lflag && (qs1==3||qs1==4)&&(qs2==2||qs2==5)){
-					if(this.vnop("b"+id+"_tb_",1)){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight);}
+					if(this.vnop(header+id,1)){
+						g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight);
+					}
 				}
 				else if(!lflag && (qs1==2||qs1==3)&&(qs2==4||qs2==5)){
-					if(this.vnop("b"+id+"_tb_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2), bd.border[id].py, k.cwidth, 1);}
+					if(this.vnop(header+id,1)){
+						g.fillRect(bd.border[id].px-mf(k.cwidth/2), bd.border[id].py, k.cwidth, 1);
+					}
 				}
-				else{ this.vhide("b"+id+"_tb_");}
+				else{ this.vhide(header+id);}
 			}
 			this.vinc();
 		};
@@ -191,17 +195,22 @@ Puzzles.reflect.prototype = {
 			this.vinc();
 		};
 		pc.draw101_1 = function(id){
-			var lw = this.lw, lm=this.lm;
-			var mgn = mf(k.cwidth*0.12);
-
-			g.fillStyle = this.Cellcolor;
+			var vids = ["c_lp1_"+id, "c_lp2_"+id];
 
 			if(bd.QuC(id)==101){
-				if(this.vnop("c"+id+"_lp1_",1)){ g.fillRect(bd.cell[id].px+mf(k.cwidth/2)-lm, bd.cell[id].py+mgn               , lw+2, k.cheight-2*mgn);}
-				if(this.vnop("c"+id+"_lp2_",1)){ g.fillRect(bd.cell[id].px+mgn              , bd.cell[id].py+mf(k.cheight/2)-lm, k.cwidth-2*mgn, lw+2);}
+				var lw = this.lw, lm=this.lm, mgn = mf(k.cwidth*0.12);
+				g.fillStyle = this.Cellcolor;
+
+				if(this.vnop(vids[0],1)){
+					g.fillRect(bd.cell[id].px+mf(k.cwidth/2)-lm, bd.cell[id].py+mgn               , lw+2, k.cheight-2*mgn);
+				}
+				if(this.vnop(vids[1],1)){
+					g.fillRect(bd.cell[id].px+mgn              , bd.cell[id].py+mf(k.cheight/2)-lm, k.cwidth-2*mgn, lw+2);
+				}
 			}
-			else{ this.vhide("c"+id+"_lp1_"); this.vhide("c"+id+"_lp2_");}
+			else{ this.vhide(vids);}
 		};
+		pc.isdispnumCell = function(id){ return ((bd.QuC(id)>=2 && bd.QuC(id)<=5) && bd.QnC(id)>0);};
 
 		line.repaintParts = function(id){
 			if(bd.isLPMarked(id)){

@@ -137,11 +137,12 @@ Puzzles.kaero.prototype = {
 		pc.drawTip = function(x1,y1,x2,y2){
 			var tsize = k.cwidth*0.30;
 			var tplus = k.cwidth*0.05;
+			var header = "c_tip_";
 
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				this.vhide(["c"+c+"_tp1_","c"+c+"_tp2_","c"+c+"_tp3_","c"+c+"_tp4_"]);
+				this.vdel([header+c]);
 				if(line.lcntCell(c)==1 && bd.QnC(c)==-1){
 					var dir=0, id=-1;
 					if     (bd.isLine(bd.ub(c))){ dir=2; id=bd.ub(c);}
@@ -154,7 +155,7 @@ Puzzles.kaero.prototype = {
 					else if(bd.ErB(id)==2){ g.strokeStyle = this.errlinecolor2;}
 					else                  { g.strokeStyle = this.linecolor;}
 
-					if(this.vnop("c"+c+"_tp"+dir+"_",0)){
+					if(this.vnop(header+c,0)){
 						var px=bd.cell[c].px+k.cwidth/2+1, py=bd.cell[c].py+k.cheight/2+1;
 						if     (dir==1){ this.inputPath([px,py ,-tsize, tsize ,0,-tplus , tsize, tsize], false);}
 						else if(dir==2){ this.inputPath([px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize], false);}
@@ -169,6 +170,7 @@ Puzzles.kaero.prototype = {
 		pc.drawCellSquare = function(x1,y1,x2,y2){
 			var mgnw = mf(k.cwidth*0.15);
 			var mgnh = mf(k.cheight*0.15);
+			var header = "c_sq_";
 
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
 			for(var i=0;i<clist.length;i++){
@@ -180,19 +182,21 @@ Puzzles.kaero.prototype = {
 					else if(bd.QsC(c)==2){ g.fillStyle = this.qsubcolor2;}
 					else                 { g.fillStyle = "white";}
 
-					if(this.vnop("c"+c+"_sq_",1)){ g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);}
+					if(this.vnop(header+c,1)){
+						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
+					}
 				}
-				else{ this.vhide("c"+c+"_sq_");}
+				else{ this.vhide(header+c);}
 			}
 			this.vinc();
 		};
 		pc.drawNumbers_kaero = function(x1,y1,x2,y2){
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)==-1){ this.hideEL(bd.cell[c].numobj); continue;}
+				var c = clist[i], obj = bd.cell[c];
+				if(bd.QnC(c)==-1){ this.hideEL(obj.numobj); continue;}
 
-				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
+				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 				var num=bd.QnC(c);
 
 				var color = this.fontErrcolor;
@@ -204,7 +208,7 @@ Puzzles.kaero.prototype = {
 				else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
 				else{ text+=num;}
 
-				this.dispnumCell1(c, bd.cell[c].numobj, 1, text, 0.85, color);
+				this.dispnum(obj.numobj, 1, text, 0.85, color, obj.px, obj.py);
 			}
 			this.vinc();
 		};

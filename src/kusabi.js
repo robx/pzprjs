@@ -101,6 +101,7 @@ Puzzles.kusabi.prototype = {
 	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
+		pc.circleratio = [0.40, 0.40];
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -112,51 +113,19 @@ Puzzles.kusabi.prototype = {
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawNumCells_kusabi(x1,y1,x2,y2);
-			this.drawNumbers_kusabi(x1,y1,x2,y2);
+			this.drawCircledNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
 		};
+		pc.dispnumCell = function(id){
+			var num = bd.QnC(id), obj = bd.cell[id];
+			if(num>=1 && num<=3){ text = ({1:"“¯",2:"’Z",3:"’·"})[num];}
+			else{ this.hideEL(obj.numobj); return;}
 
-		pc.drawNumCells_kusabi = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.42;
-			var rsize2 = k.cwidth*0.36;
-
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
-
-					g.fillStyle = this.Cellcolor;
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cira_",1)){ g.fill(); }
-
-					if(bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else{ g.fillStyle = "white";}
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cirb_",1)){ g.fill(); }
-				}
-				else{ this.vhide(["c"+c+"_cira_", "c"+c+"_cirb_"]);}
-			}
-			this.vinc();
-		};
-		pc.drawNumbers_kusabi = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				var num = bd.QnC(c);
-				if(num>=1 && num<=3){ text = ({1:"“¯",2:"’Z",3:"’·"})[num];}
-				else{ this.hideEL(bd.cell[c].numobj); continue;}
-
-				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
-				this.dispnumCell1(c, bd.cell[c].numobj, 1, text, 0.65, this.getNumberColor(c));
-			}
-			this.vinc();
+			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+			this.dispnum(obj.numobj, 1, text, 0.65, this.getNumberColor(id), obj.px, obj.py);
 		};
 	},
 

@@ -146,26 +146,28 @@ Puzzles.shwolf.prototype = {
 		pc.drawSheepWolf = function(x1,y1,x2,y2){
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
+				var c = clist[i], obj = bd.cell[c];
 				if(bd.QuC(c)==0){
-					this.hideEL(bd.cell[c].numobj);
-					this.hideEL(bd.cell[c].numobj2);
+					this.hideEL(obj.numobj);
+					this.hideEL(obj.numobj2);
 				}
 				else if(bd.QuC(c)==-2){
-					this.dispnumCell_General(c);
-					this.hideEL(bd.cell[c].numobj2);
+					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+					this.dispnum(obj.numobj, 1, "?", 0.8, this.fontcolor, obj.px, obj.py);
+
+					this.hideEL(obj.numobj2);
 				}
 				else{
-					this.hideEL(bd.cell[c].numobj);
+					this.hideEL(obj.numobj);
 
-					if(!bd.cell[c].numobj2){
+					if(!obj.numobj2){
 						var _img  = newEL('img').attr("src",'./src/img/shwolf_obj.gif').unselectable();
 						var _sdiv = newEL('div').css("position","relative").css("display","inline").unselectable();
-						bd.cell[c].numobj2 = $(this.CreateDOMAndSetNop()).append(_sdiv.append(_img)).context;
-						bd.cell[c].imgobj  = _img.context; // ŸŽè‚É’Ç‰Á‚µ‚¿‚á‚¢‚Ü‚·ˆ«‰e‹¿‚Í‚È‚¢‚ÆŽv‚¢‚Ü‚·‚²‚ß‚ñ‚È‚³‚¢„ƒ
+						obj.numobj2 = $(this.CreateDOMAndSetNop()).append(_sdiv.append(_img)).context;
+						obj.imgobj  = _img.context; // ŸŽè‚É’Ç‰Á‚µ‚¿‚á‚¢‚Ü‚·ˆ«‰e‹¿‚Í‚È‚¢‚ÆŽv‚¢‚Ü‚·‚²‚ß‚ñ‚È‚³‚¢„ƒ
 					}
-					div = bd.cell[c].numobj2;
-					img = bd.cell[c].imgobj;
+					div = obj.numobj2;
+					img = obj.imgobj;
 
 					var ipos  = {41:0,42:1}[bd.QuC(c)];
 					img.style.width  = ""+(2*k.cwidth)+"px";
@@ -183,6 +185,7 @@ Puzzles.shwolf.prototype = {
 			}
 			this.vinc();
 		};
+		pc.isdispnumCell = f_true;
 	},
 
 	//---------------------------------------------------------

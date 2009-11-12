@@ -94,6 +94,7 @@ Puzzles.ichimaga.prototype = {
 
 		pc.fontErrcolor = pc.fontcolor;
 		pc.fontsizeratio = 0.85;
+		pc.circleratio = [0.38, 0.38];
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -104,37 +105,9 @@ Puzzles.ichimaga.prototype = {
 
 			this.drawPekes(x1,y1,x2,y2,0);
 
-			this.drawNumCells_circle(x1,y1,x2,y2);
+			this.drawCircledNumbers(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
-		};
-
-		pc.drawNumCells_circle = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.40;
-			var rsize2 = k.cwidth*0.36;
-
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
-
-					g.fillStyle = this.Cellcolor;
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cira_",1)){ g.fill(); }
-
-					if(bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else{ g.fillStyle = "white";}
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cirb_",1)){ g.fill(); }
-				}
-				else{ this.vhide(["c"+c+"_cira_", "c"+c+"_cirb_"]);}
-
-				this.dispnumCell_General(c);
-			}
-			this.vinc();
 		};
 	},
 

@@ -101,7 +101,7 @@ Puzzles.mashu.prototype = {
 			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawQueses41_42(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawQuesHatenas(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);

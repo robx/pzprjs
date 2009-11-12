@@ -94,6 +94,7 @@ Puzzles.kurodoko.prototype = {
 		pc.bcolor = pc.bcolor_GREEN;
 
 		pc.fontsizeratio = 0.85;
+		pc.circleratio = [0.42, 0.42];
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -103,39 +104,11 @@ Puzzles.kurodoko.prototype = {
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
-			this.drawNumCells_kurodoko(x1,y1,x2,y2);
+			this.drawCircledNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
-		};
-
-		pc.drawNumCells_kurodoko = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.45;
-			var rsize2 = k.cwidth*0.40;
-
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
-
-					g.fillStyle = this.Cellcolor;
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cira_",1)){ g.fill(); }
-
-					if(bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else{ g.fillStyle = "white";}
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cirb_",1)){ g.fill(); }
-				}
-				else{ this.vhide(["c"+c+"_cira_", "c"+c+"_cirb_"]);}
-
-				this.dispnumCell_General(c);
-			}
-			this.vinc();
 		};
 	},
 

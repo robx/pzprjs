@@ -68,6 +68,7 @@ Puzzles.shikaku.prototype = {
 				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
@@ -90,7 +91,9 @@ Puzzles.shikaku.prototype = {
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.fontcolor = pc.fontErrcolor = "white";
 
+		pc.circledicolor = "black";
 		pc.fontsizeratio = 0.85;
+		pc.circleratio = [0, 0.40];
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -101,35 +104,12 @@ Puzzles.shikaku.prototype = {
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
-			this.drawNumCells_shikaku(x1,y1,x2,y2);
+			this.drawCircledNumbers(x1,y1,x2,y2);
 			this.drawBorderQsubs(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
-		};
-
-		pc.drawNumCells_shikaku = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.40;
-			var rsize2 = k.cwidth*0.36;
-
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
-
-					if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
-					else{ g.fillStyle = this.Cellcolor;}
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cir_",1)){ g.fill(); }
-				}
-				else{ this.vhide("c"+c+"_cir_");}
-
-				this.dispnumCell_General(c);
-			}
-			this.vinc();
 		};
 	},
 

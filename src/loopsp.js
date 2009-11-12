@@ -189,6 +189,7 @@ Puzzles.loopsp.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.linecolor = pc.linecolor_LIGHT;
 		pc.fontsizeratio = 0.85;
+		pc.circleratio = [0.38, 0.30];
 
 		pc.minYdeg = 0.36;
 		pc.maxYdeg = 0.74;
@@ -209,8 +210,7 @@ Puzzles.loopsp.prototype = {
 
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawCircle2(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawCircledNumbers(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,1);
 
@@ -219,30 +219,6 @@ Puzzles.loopsp.prototype = {
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
-		};
-
-		pc.drawCircle2 = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.40;
-			var rsize2 = k.cwidth*0.30;
-
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					if(bd.cell[c].cx >= x1 && x2 >= bd.cell[c].cx && bd.cell[c].cy >= y1 && y2 >= bd.cell[c].cy){
-						g.strokeStyle = this.Cellcolor;
-						g.beginPath();
-						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
-						if(this.vnop("c"+c+"_cir1_",0)){ g.stroke(); }
-					}
-					g.fillStyle = "white";
-					g.beginPath();
-					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2 , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cir2_",1)){ g.fill(); }
-				}
-				else{ this.vhide("c"+c+"_cir1_"); this.vhide("c"+c+"_cir2_");}
-			}
-			this.vinc();
 		};
 
 		line.repaintParts = function(id){

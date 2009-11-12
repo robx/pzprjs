@@ -112,22 +112,22 @@ Puzzles.factors.prototype = {
 		pc.drawNumbers_factors = function(x1,y1,x2,y2){
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
+				var c = clist[i], obj = bd.cell[c];
 
-				if(bd.QaC(c)==-1){ this.hideEL(bd.cell[c].numobj);}
+				if(bd.QaC(c)==-1){ this.hideEL(obj.numobj);}
 				else{
 					var color = (bd.ErC(c)==1?this.fontErrcolor:this.fontAnscolor);
-					if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
-					this.dispnumCell1(c, bd.cell[c].numobj, 1, (""+bd.QaC(c)), (bd.QaC(c)<10?0.8:0.7), color);
+					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+					this.dispnum(obj.numobj, 1, (""+bd.QaC(c)), (bd.QaC(c)<10?0.8:0.7), color, obj.px, obj.py);
 				}
 
-				if(bd.QnC(c)==-1){ this.hideEL(bd.cell[c].numobj2);}
+				if(bd.QnC(c)==-1){ this.hideEL(obj.numobj2);}
 				else{
-					if(!bd.cell[c].numobj2){ bd.cell[c].numobj2 = this.CreateDOMAndSetNop();}
+					if(!obj.numobj2){ obj.numobj2 = this.CreateDOMAndSetNop();}
 					var size = 0.45;
 					if     (bd.QnC(c)>=100000){ size = 0.30;}
 					else if(bd.QnC(c)>= 10000){ size = 0.36;}
-					this.dispnumCell1(c, bd.cell[c].numobj2, 5, (""+bd.QnC(c)), size, this.fontcolor);
+					this.dispnum(obj.numobj2, 5, (""+bd.QnC(c)), size, this.fontcolor, obj.px, obj.py);
 				}
 			}
 			this.vinc();

@@ -211,26 +211,21 @@ Puzzles.hakoiri.prototype = {
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawDots(x1,y1,x2,y2);
-			this.drawNumbers_hakoiri(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawTCell(x1,y1,x2+1,y2+1);
 		};
 
-		pc.drawNumbers_hakoiri = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				var num = bd.getNum(c);
-				if(num>=1 && num<=3){ text = ({1:"›",2:"¢",3:" "})[num];}
-				else if(num==-2)    { text = "?";}
-				else{ this.hideEL(bd.cell[c].numobj); continue;}
+		pc.dispnumCell = function(c){
+			var num = bd.getNum(c), obj = bd.cell[c];
+			if(num>=1 && num<=3){ text = ({1:"›",2:"¢",3:" "})[num];}
+			else if(num==-2)    { text = "?";}
+			else{ this.hideEL(obj.numobj); return;}
 
-				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
-				this.dispnumCell1(c, bd.cell[c].numobj, 1, text, 0.8, this.getNumberColor(c));
-			}
-			this.vinc();
+			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+			this.dispnum(obj.numobj, 1, text, 0.8, this.getNumberColor(c), obj.px, obj.py);
 		};
 	},
 

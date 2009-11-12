@@ -27,7 +27,7 @@ Puzzles.tateyoko.prototype = {
 		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
 		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
 
-		k.BlackCell     = 1;	// 1:黒マスを入力するパズル
+		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
 		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
 		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
 
@@ -197,6 +197,8 @@ Puzzles.tateyoko.prototype = {
 		};
 
 		pc.drawTateyokos = function(x1,y1,x2,y2){
+			var headers = ["c_bar1_", "c_bar2_"];
+
 			var clist = this.cellinside(x1,y1,x2,y2,function(c){ return (bd.QaC(c)!=0);});
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
@@ -207,38 +209,47 @@ Puzzles.tateyoko.prototype = {
 				else if(bd.ErC(c)==2){ g.fillStyle = this.errlinecolor2;}
 				else{ g.fillStyle = this.linecolor;}
 
-				if(bd.QaC(c)==1){
-					if(this.vnop("c"+c+"_bar1_",1)){ g.fillRect(bd.cell[c].px+lp, bd.cell[c].py, lw, k.cheight+1);}
-					this.vhide("c"+c+"_bar2_");
+				if(bd.QaC(c)!==-1){
+					if(bd.QaC(c)===1){
+						if(this.vnop(headers[0]+c,1)){
+							g.fillRect(bd.cell[c].px+lp, bd.cell[c].py, lw, k.cheight+1);
+						}
+					}
+					else{ this.vhide(headers[0]+c);}
+
+					if(bd.QaC(c)===2){
+						if(this.vnop(headers[1]+c,1)){
+							g.fillRect(bd.cell[c].px, bd.cell[c].py+lp, k.cwidth+1,  lw);
+						}
+					}
+					else{ this.vhide(headers[1]+c);}
 				}
-				else if(bd.QaC(c)==2){
-					if(this.vnop("c"+c+"_bar2_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py+lp, k.cwidth+1, lw);}
-					this.vhide("c"+c+"_bar1_");
-				}
-				else{ this.vhide(["c"+c+"_bar1_","c"+c+"_bar2_"]);}
+				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
 			this.vinc();
 		};
 
 		pc.drawNumbers_tateyoko = function(x1,y1,x2,y2){
+			var header = "c_full_";
+
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
+				var c = clist[i], obj = bd.cell[c];
 				if(bd.QuC(c)==1){
-					if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
-					else{ g.fillStyle = this.Cellcolor;}
-
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
+					g.fillStyle = (bd.ErC(c)==1 ? this.errcolor1 : this.Cellcolor);
+					if(this.vnop(header+c,1)){
+						g.fillRect(obj.px, obj.py, k.cwidth+1, k.cheight+1);
+					}
 				}
-				else{ this.vhide("c"+c+"_full_");}
+				else{ this.vhide(header+c);}
 
 				var num = bd.QnC(c);
-				if(num==-1){ this.hideEL(bd.cell[c].numobj); continue;}
-				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
+				if(num==-1){ this.hideEL(obj.numobj); continue;}
+				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 
 				var color = this.fontcolor;
 				if(bd.QuC(c)==1){ color = "white";}
-				this.dispnumCell1(c, bd.cell[c].numobj, 1, (num!=-2?""+num:"?"), (num<10?0.8:0.75), color);
+				this.dispnum(obj.numobj, 1, (num!=-2?""+num:"?"), (num<10?0.8:0.75), color, obj.px, obj.py);
 			}
 			this.vinc();
 		};

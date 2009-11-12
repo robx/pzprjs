@@ -119,32 +119,38 @@ Puzzles.lightup.prototype = {
 		pc.drawAkari = function(x1,y1,x2,y2){
 			var rsize = k.cwidth*0.40;
 			var ksize = k.cwidth*0.15;
+			var lampcolor = "rgb(0, 127, 96)";
+			var header = "c_AK_";
 
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QaC(c)==1){
-					if(bd.ErC(c)!=4){ g.fillStyle = "rgb(0, 127, 96)";}
-					else{ g.fillStyle = this.errcolor1;}
-					g.beginPath();
-					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize, 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_AK_",1)){ g.fill();}
+					g.fillStyle = (bd.ErC(c)!==4 ? lampcolor : this.errcolor1);
+					if(this.vnop(header+c,1)){
+						g.beginPath();
+						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize, 0, Math.PI*2, false);
+						g.fill();
+					}
 				}
-				else{ this.vhide("c"+c+"_AK_");}
+				else{ this.vhide(header+c);}
 			}
 			this.vinc();
 		};
 
 		pc.drawLightCells = function(x1,y1,x2,y2){
+			var header = "c_full_";
+
 			var clist = this.cellinside(x1,y1,x2,y2,function(c){ return (bd.QnC(c)==-1);});
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.ErC(c)==1 || ans.isShined(c)){
-					if(bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else            { g.fillStyle = this.lightcolor;}
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);}
+					g.fillStyle = (bd.ErC(c)===4 ? this.errbcolor1 : this.lightcolor);
+					if(this.vnop(header+c,1)){
+						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
+					}
 				}
-				else{ this.vhide("c"+c+"_full_");}
+				else{ this.vhide(header+c);}
 			}
 			this.vinc();
 		};

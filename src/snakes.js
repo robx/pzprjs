@@ -185,15 +185,18 @@ Puzzles.snakes.prototype = {
 			this.vinc();
 		};
 		pc.drawBCells_withoutNumber = function(x1,y1,x2,y2){
+			var header = "c_full_";
+
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QnC(c)!=-1){
-					if(bd.ErC(c)!=0){ g.fillStyle = this.errcolor1;}
-					else{ g.fillStyle = this.Cellcolor;}
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
+					g.fillStyle = (bd.ErC(c)!=0 ? this.errcolor1 : this.Cellcolor);
+					if(this.vnop(header+c,1)){
+						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
+					}
 				}
-				else if(bd.ErC(c)==0){ this.vhide("c"+c+"_full_");}
+				else if(bd.ErC(c)==0){ this.vhide(header+c);}
 			}
 			this.vinc();
 		};

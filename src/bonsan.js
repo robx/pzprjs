@@ -124,6 +124,7 @@ Puzzles.bonsan.prototype = {
 		pc.qsubcolor1 = "rgb(224, 224, 255)";
 		pc.qsubcolor2 = "rgb(255, 255, 144)";
 		pc.fontsizeratio = 0.9;	// êîéöÇÃî{ó¶
+		pc.circleratio = [0.38, 0.38];
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -137,7 +138,7 @@ Puzzles.bonsan.prototype = {
 			//this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawNumCells(x1,y1,x2,y2);
+			this.drawCircledNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
@@ -147,11 +148,12 @@ Puzzles.bonsan.prototype = {
 		pc.drawTip = function(x1,y1,x2,y2){
 			var tsize = k.cwidth*0.30;
 			var tplus = k.cwidth*0.05;
+			var header = "c_tip_";
 
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				this.vhide(["c"+c+"_tp1_","c"+c+"_tp2_","c"+c+"_tp3_","c"+c+"_tp4_"]);
+				this.vdel([header+c]);
 				if(line.lcntCell(c)==1 && bd.QnC(c)==-1){
 					var dir=0, id=-1;
 					if     (bd.isLine(bd.ub(c))){ dir=2; id=bd.ub(c);}
@@ -164,7 +166,7 @@ Puzzles.bonsan.prototype = {
 					else if(bd.ErB(id)==2){ g.strokeStyle = this.errlinecolor2;}
 					else                  { g.strokeStyle = this.linecolor;}
 
-					if(this.vnop("c"+c+"_tp"+dir+"_",0)){
+					if(this.vnop(header+c,0)){
 						var px=bd.cell[c].px+k.cwidth/2+1, py=bd.cell[c].py+k.cheight/2+1;
 						if     (dir==1){ this.inputPath([px,py ,-tsize, tsize ,0,-tplus , tsize, tsize], false);}
 						else if(dir==2){ this.inputPath([px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize], false);}
@@ -173,32 +175,6 @@ Puzzles.bonsan.prototype = {
 						g.stroke();
 					}
 				}
-			}
-			this.vinc();
-		};
-
-		pc.drawNumCells = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.40;
-			var rsize2 = k.cwidth*0.35;
-
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
-					else{ g.fillStyle = this.Cellcolor;}
-					g.beginPath();
-					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cira_",1)){ g.fill();}
-
-					g.fillStyle = "white";
-					g.beginPath();
-					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2, 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cirb_",1)){ g.fill();}
-				}
-				else{ this.vhide("c"+c+"_cira_"); this.vhide("c"+c+"_cirb_");}
-
-				this.dispnumCell_General(c);
 			}
 			this.vinc();
 		};

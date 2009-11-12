@@ -163,25 +163,33 @@ Puzzles.kakuro.prototype = {
 		};
 
 		pc.drawBGcolor51 = function(x1,y1,x2,y2){
+			var header = "c_full_";
+
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QuC(c)!=51){ this.vhide("c"+c+"_full_"); continue;}
-				if(bd.ErC(c)!= 1){ g.fillStyle = "rgb(192,192,192)";}
-				else{ g.fillStyle = this.errbcolor1;}
-				if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);}
+				if(bd.QuC(c)===51){
+					g.fillStyle = (bd.ErC(c)!==1 ? "rgb(192,192,192)" : this.errbcolor1);
+					if(this.vnop(header+c,1)){
+						g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);
+					}
+				}
+				else{ this.vhide(header+c);}
 			}
 			this.vinc();
 		};
 		pc.drawBGcolorEX = function(x1,y1,x2,y2){
+			var header = "ex_full_";
+
 			for(var cx=x1-1;cx<=x2;cx++){
 				for(var cy=y1-1;cy<=y2;cy++){
 					var c = bd.exnum(cx,cy);
 					if(c==-1){ continue;}
 
-					if(bd.ErE(c)!=1){ g.fillStyle = "rgb(192,192,192)";}
-					else{ g.fillStyle = this.errbcolor1;}
-					if(this.vnop("ex"+c+"_full_",1)){ g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);}
+					g.fillStyle = (bd.ErE(c)!==1 ? "rgb(192,192,192)" : this.errbcolor1);
+					if(this.vnop(header+c,1)){
+						g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);
+					}
 				}
 			}
 			this.vinc();
@@ -194,10 +202,11 @@ Puzzles.kakuro.prototype = {
 				var target = ((k.editmode&&c==tc.getTCC())?kc.detectTarget(c,-1):-1);
 
 				if(bd.QuC(c)!=51 && bd.QaC(c)>0){
-					if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
+					var obj = bd.cell[c];
+					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 					var color = (bd.ErC(c)==1?this.fontErrcolor:this.fontAnscolor);
 					var text = (bd.QaC(c)>0?""+bd.QaC(c):"");
-					this.dispnumCell1(c, bd.cell[c].numobj, 1, text, 0.80, color);
+					this.dispnum(obj.numobj, 1, text, 0.80, color, obj.px, obj.py);
 				}
 			}
 			this.vinc();

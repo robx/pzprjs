@@ -100,12 +100,12 @@ Puzzles.hashikake.prototype = {
 		mv.getidlist = function(id){
 			var idlist=[], bx1, bx2, by1, by2;
 			var cc1=bd.cc1(id), cx=bd.cell[cc1].cx, cy=bd.cell[cc1].cy;
-			if(bd.border[id].cx%2==1){
+			if(bd.border[id].cx&1){
 				while(cy>=0         && bd.QnC(bd.cnum(cx,cy  ))==-1){ cy--;} by1=2*cy+2;
 				while(cy<=k.qrows-1 && bd.QnC(bd.cnum(cx,cy+1))==-1){ cy++;} by2=2*cy+2;
 				bx1 = bx2 = bd.border[id].cx;
 			}
-			else if(bd.border[id].cy%2==1){
+			else if(bd.border[id].cy&1){
 				while(cx>=0         && bd.QnC(bd.cnum(cx  ,cy))==-1){ cx--;} bx1=2*cx+2;
 				while(cx<=k.qcols-1 && bd.QnC(bd.cnum(cx+1,cy))==-1){ cx++;} bx2=2*cx+2;
 				by1 = by2 = bd.border[id].cy;
@@ -172,6 +172,7 @@ Puzzles.hashikake.prototype = {
 		pc.bcolor = pc.bcolor_GREEN;
 
 		pc.fontsizeratio = 0.85;
+		pc.circleratio = [0.44, 0.44];
 		pc.chassisflag = false;
 
 		pc.paint = function(x1,y1,x2,y2){
@@ -179,93 +180,55 @@ Puzzles.hashikake.prototype = {
 		//	this.flushCanvasAll();
 
 			if(k.editmode){ this.drawGrid(x1,y1,x2,y2);}
-			else if(g.vml){ this.hideBorder();}
+			else if(g.vml){ this.hideGrid();}
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawNumCells_bridges(x1,y1,x2,y2);
+			this.drawCircledNumbers(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		// オーバーライド
-		pc.drawLines = function(x1,y1,x2,y2){
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
-			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i];
-				if(bd.LiB(id)!=0){ this.drawLine1(id, true);}
-				else{ this.vhide(["b"+id+"_ls_","b"+id+"_ld1_","b"+id+"_ld2_"]);}
-			}
-			this.vinc();
-		};
 		pc.drawLine1 = function(id, flag){
-			var lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3); //LineWidth
+			var vids = ["b_line_"+id,"b_dline1_"+id,"b_dline2_"+id];
+			if(!flag){ this.vhide(vids); return;}
 
+			var lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3);	//LineWidth
+			var lm = mf((lw-1)/2) + this.addlw;				//LineMargin
+			var ls = mf(lw*1.5);							//LineSpace
 			g.fillStyle = this.getLineColor(id);
 
-			var lm = mf((lw-1)/2) + this.addlw; //LineMargin
-			var ls = mf(lw*1.5);
+			if(bd.LiB(id)==1){
+				if(this.vnop(vids[0],1)){
+					if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
+					if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
+				}
+			}
+			else{ this.vhide(vids[0]);}
 
-			this.vhide(["b"+id+"_ls_","b"+id+"_ld1_","b"+id+"_ld2_"]);
-			if     (bd.border[id].cx%2==1){
-				if(bd.LiB(id)==1){
-					if(this.vnop("b"+id+"_ls_",1)){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-1, lw, k.cheight+lw);}
+			if(bd.LiB(id)==2){
+				if(this.vnop(vids[1],1)){
+					if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm-ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
+					if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm-ls, k.cwidth+lw,  lw);}
 				}
-				else if(bd.LiB(id)==2){
-					if(this.vnop("b"+id+"_ld1_",1)){ g.fillRect(bd.border[id].px-lm-ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-					if(this.vnop("b"+id+"_ld2_",1)){ g.fillRect(bd.border[id].px-lm+ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-				}
-			}
-			else if(bd.border[id].cy%2==1){
-				if(bd.LiB(id)==1){
-					if(this.vnop("b"+id+"_ls_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-1, k.cwidth+lw, lw);}
-				}
-				else if(bd.LiB(id)==2){
-					if(this.vnop("b"+id+"_ld1_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-lm-ls, k.cwidth+lw, lw);}
-					if(this.vnop("b"+id+"_ld2_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-lm+ls, k.cwidth+lw, lw);}
+				if(this.vnop(vids[2],1)){
+					if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm+ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
+					if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm+ls, k.cwidth+lw,  lw);}
 				}
 			}
-			this.vinc();
+			else{ this.vhide([vids[1], vids[2]]);}
 		};
-
-		pc.drawNumCells_bridges = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.45;
-			var rsize2 = k.cwidth*0.40;
-
-			var clist = this.cellinside(x1-2,y1-2,x2+1,y2+1,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
-
-					g.fillStyle = this.Cellcolor;
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cira_",1)){ g.fill(); }
-
-					if     (bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else if(bd.QsC(c)==1){ g.fillStyle = this.qsubbcolor1;}
-					else{ g.fillStyle = "white";}
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cirb_",1)){ g.fill(); }
-				}
-				else{ this.vhide(["c"+c+"_cira_", "c"+c+"_cirb_"]);}
-
-				this.dispnumCell_General(c);
-			}
-			this.vinc();
-		};
-		pc.hideBorder = function(){
-			for(var i=0;i<=k.qcols;i++){ this.vhide("bdy"+i+"_");}
-			for(var i=0;i<=k.qrows;i++){ this.vhide("bdx"+i+"_");}
+		pc.hideGrid = function(){
+			for(var i=0;i<=k.qcols;i++){ this.vhide("bdy_"+i);}
+			for(var i=0;i<=k.qrows;i++){ this.vhide("bdx_"+i);}
 		};
 
 		line.repaintParts = function(id){
 			var bx=bd.border[id].cx, by=bd.border[id].cy;
-			if(bd.border[id].cx%2==1){ pc.drawNumCells_bridges(mf((bx-1)/2)-1, mf(by/2)-1, mf((bx-1)/2)+1, mf(by/2));}
-			else                     { pc.drawNumCells_bridges(mf(bx/2)-1, mf((by-1)/2)-1, mf(bx/2), mf((by-1)/2)+1);}
+			if(bd.border[id].cx&1){ pc.drawNumCells_bridges(mf((bx-1)/2)-1, mf(by/2)-1, mf((bx-1)/2)+1, mf(by/2));}
+			else                  { pc.drawNumCells_bridges(mf(bx/2)-1, mf((by-1)/2)-1, mf(bx/2), mf((by-1)/2)+1);}
 		};
 		line.branch = function(bx,by,lcnt){
 			return (lcnt==3||lcnt==4) && (bd.QnC(bd.cnum(mf(bx/2),mf(by/2)))!=-1);

@@ -158,7 +158,7 @@ Puzzles.pipelink.prototype = {
 			if(this.disp==1){ this.drawIceBorders(x1,y1,x2,y2);}
 			if(this.disp==0){ this.drawCircle2(x1,y1,x2,y2);}
 
-			this.drawNumbers(x1,y1,x2,y2); // ÅHï\é¶óp
+			this.drawQuesHatenas(x1,y1,x2,y2);
 
 			this.drawLines(x1,y1,x2,y2);
 
@@ -174,16 +174,20 @@ Puzzles.pipelink.prototype = {
 
 		pc.drawCircle2 = function(x1,y1,x2,y2){
 			var rsize  = k.cwidth*0.40;
+			var header = "c_cir_";
+
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QuC(c)==6){
 					g.strokeStyle = this.Cellcolor;
-					g.beginPath();
-					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cir_",0)){ g.stroke(); }
+					if(this.vnop(header+c,0)){
+						g.beginPath();
+						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
+						g.stroke();
+					}
 				}
-				else{ this.vhide("c"+c+"_cir_");}
+				else{ this.vhide(header+c);}
 			}
 			this.vinc();
 		};

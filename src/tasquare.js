@@ -107,17 +107,22 @@ Puzzles.tasquare.prototype = {
 		pc.drawCellSquare = function(x1,y1,x2,y2){
 			var mgnw = mf(k.cwidth*0.1);
 			var mgnh = mf(k.cheight*0.1);
+			var headers = ["c_sq1_", "c_sq2_"]
 
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QnC(c)!=-1){
 					g.fillStyle = "black";
-					if(this.vnop("c"+c+"_sq1_",1)){ g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);}
-					g.fillStyle = "white";
-					if(this.vnop("c"+c+"_sq2_",1)){ g.fillRect(bd.cell[c].px+mgnw+2, bd.cell[c].py+mgnh+2, k.cwidth-mgnw*2-3, k.cheight-mgnh*2-3);}
+					if(this.vnop(headers[0]+c,1)){
+						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
+					}
+					g.fillStyle = (bd.ErC(c)==1 ? this.errbcolor1 : "white");
+					if(this.vnop(headers[1]+c,1)){
+						g.fillRect(bd.cell[c].px+mgnw+2, bd.cell[c].py+mgnh+2, k.cwidth-mgnw*2-3, k.cheight-mgnh*2-3);
+					}
 				}
-				else{ this.vhide("c"+c+"_sq1_"); this.vhide("c"+c+"_sq2_");}
+				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
 			this.vinc();
 		};

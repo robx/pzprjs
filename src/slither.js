@@ -149,15 +149,18 @@ Puzzles.slither.prototype = {
 			this.vinc();
 		};
 		pc.drawBaseMark1 = function(i){
-			var lw = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3); //LineWidth
-			var csize = mf((lw+1)/2);
-
-			var cx = i%(k.qcols+1), cy = mf(i/(k.qcols+1));
+			var vid = "x_cm_"+i;
 
 			g.fillStyle = this.Cellcolor;
-			g.beginPath();
-			g.arc(k.p0.x+cx*k.cwidth, k.p0.x+cy*k.cheight, csize, 0, Math.PI*2, false);
-			if(this.vnop("x"+i+"_cm_",1)){ g.fill();}
+			if(this.vnop(vid,1)){
+				var lw = ((k.cwidth/12)>=3?(k.cwidth/12):3); //LineWidth
+				var csize = mf((lw+1)/2);
+				var cx = i%(k.qcols+1); var cy = mf(i/(k.qcols+1));
+
+				g.beginPath();
+				g.arc(k.p0.x+cx*k.cwidth, k.p0.x+cy*k.cheight, csize, 0, Math.PI*2, false);
+				g.fill();
+			}
 		};
 
 		line.repaintParts = function(id){

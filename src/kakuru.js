@@ -154,9 +154,8 @@ Puzzles.kakuru.prototype = {
 
 			this.drawErrorCells(x1,y1,x2,y2);
 
-			this.drawBCells2(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBCells1(x1,y1,x2,y2);
+			this.drawBCells_kakuru(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
@@ -165,27 +164,25 @@ Puzzles.kakuru.prototype = {
 			this.drawTCell(x1,y1,x2+1,y2+1);
 		};
 
-		pc.drawBCells1 = function(x1,y1,x2,y2){
+		pc.drawBCells_kakuru = function(x1,y1,x2,y2){
+			var header = "c_full_";
+
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QuC(c)==1){
+				if(bd.QuC(c)===1){
 					g.fillStyle = this.Cellcolor;
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
+					if(this.vnop(header+c,1)){
+						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
+					}
 				}
-				// drawBCells2‚ÅŠù‚Évhide‚³‚ê‚Ä‚¢‚é‚Ì‚ÅA‚±‚±‚Å‚Ívhide‚µ‚È‚¢
-			}
-			this.vinc();
-		};
-		pc.drawBCells2 = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
+				else if(bd.QnC(c)!==-1){
 					g.fillStyle = "rgb(208, 208, 208)";
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
+					if(this.vnop(header+c,1)){
+						g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);
+					}
 				}
-				else{ this.vhide("c"+c+"_full_");}
+				else{ this.vhide(header+c);}
 			}
 			this.vinc();
 		};

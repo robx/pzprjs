@@ -108,18 +108,20 @@ Puzzles.kurochute.prototype = {
 		};
 		pc.drawDots = function(x1,y1,x2,y2){
 			var dsize = k.cwidth*0.06;
+			var header = "c_dot_";
+
 			var clist = this.cellinside(x1,y1,x2,y2,bd.isWhite);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QsC(c)==1){
 					g.fillStyle = this.dotcolor;
-					if(this.vnop("c"+c+"_dot_",1)){
+					if(this.vnop(header+c,1)){
 						g.beginPath();
 						g.arc(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, dsize, 0, Math.PI*2, false);
 						g.fill();
 					}
 				}
-				else{ this.vhide("c"+c+"_dot_");}
+				else{ this.vhide(header+c);}
 			}
 			this.vinc();
 		};

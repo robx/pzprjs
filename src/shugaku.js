@@ -218,6 +218,9 @@ Puzzles.shugaku.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.errbcolor1 = pc.errbcolor1_DARK;
+		pc.bgcolor = "rgb(208, 208, 208)";
+		pc.targetbgcolor = "rgb(255, 192, 192)";
+		pc.circleratio = [0.44, 0.44];
 
 		pc.paint = function(x1,y1,x2,y2){
 			x1--; y1--; x2++; y2++;	// UndoéûÇ…ê’Ç™écÇ¡ÇƒÇµÇ‹Ç§à◊
@@ -236,64 +239,50 @@ Puzzles.shugaku.prototype = {
 
 			this.drawTargetFuton(x1,y1,x2,y2);
 
-			this.drawNumCells(x1,y1,x2,y2);
+			this.drawCircledNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		pc.drawNumCells = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.45;
-			var rsize2 = k.cwidth*0.40;
-
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
-					else{ g.fillStyle = this.Cellcolor;}
-					g.beginPath();
-					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cira_",1)){ g.fill();}
-
-					g.fillStyle = "white";
-					g.beginPath();
-					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2, 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cirb_",1)){ g.fill();}
-				}
-				else{ this.vhide("c"+c+"_cira_"); this.vhide("c"+c+"_cirb_");}
-
-				this.dispnumCell_General(c);
-			}
-			this.vinc();
-		};
-
 		pc.drawFutons = function(x1,y1,x2,y2){
+			var header = "c_full_";
+
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QaC(c)>=11){
 					g.fillStyle = (bd.ErC(c)==1?this.errbcolor1:"white");
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
+					if(this.vnop(header+c,1)){
+						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
+					}
 				}
-				else{ this.vhide("c"+c+"_full_");}
+				else{ this.vhide(header+c);}
 
-				this.drawPillow1(c,0);
+				this.drawPillow1(c,false);
 			}
 			this.vinc();
 		};
-		pc.drawPillow1 = function(cc,flag){
+		pc.drawPillow1 = function(cc,inputting){
 			var mgnw = mf(k.cwidth*0.15);
 			var mgnh = mf(k.cheight*0.15);
+			var headers = ["c_sq1_", "c_sq2_"];
 
-			if(flag==1 || (bd.QaC(cc)>=11 && bd.QaC(cc)<=15)){
+			if(inputting || (bd.QaC(cc)>=11 && bd.QaC(cc)<=15)){
 				g.fillStyle = "black";
-				if(this.vnop("c"+cc+"_sq1_",1)){ g.fillRect(bd.cell[cc].px+mgnw+1, bd.cell[cc].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);}
-				g.fillStyle = (flag==1?"rgb(255,192,192)":(bd.ErC(cc)==1||flag==1?this.errbcolor1:"white"));
-				if(this.vnop("c"+cc+"_sq2_",1)){ g.fillRect(bd.cell[cc].px+mgnw+2, bd.cell[cc].py+mgnh+2, k.cwidth-mgnw*2-3, k.cheight-mgnh*2-3);}
+				if(this.vnop("c"+cc+"_sq1_",1)){
+					g.fillRect(bd.cell[cc].px+mgnw+1, bd.cell[cc].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
+				}
+
+				if     (inputting)    { g.fillStyle = this.targetbgcolor;}
+				else if(bd.ErC(cc)==1){ g.fillStyle = this.errbcolor1;   }
+				else                  { g.fillStyle = "white";}
+				if(this.vnop("c"+cc+"_sq2_",1)){
+					g.fillRect(bd.cell[cc].px+mgnw+2, bd.cell[cc].py+mgnh+2, k.cwidth-mgnw*2-3, k.cheight-mgnh*2-3);
+				}
 			}
-			else{ this.vhide("c"+cc+"_sq1_"); this.vhide("c"+cc+"_sq2_");}
+			else{ this.vhide([headers[0]+cc, headers[1]+cc]);}
 		};
 
 		pc.drawFutonBorders = function(x1,y1,x2,y2){
@@ -302,66 +291,79 @@ Puzzles.shugaku.prototype = {
 			var domb1 = {11:1,13:1,14:1,15:1,16:1,18:1,19:1,20:1};
 			var doma2 = {11:1,12:1,13:1,14:1,16:1,17:1,18:1,19:1};
 			var domb2 = {11:1,12:1,13:1,15:1,16:1,17:1,18:1,20:1};
+			var header = "b_bd";
+			g.fillStyle = "black";
 
 			for(var by=Math.min(1,y1*2-2);by<=Math.max(2*k.qrows-1,y2*2+2);by++){
 				for(var bx=Math.min(1,x1*2-2);bx<=Math.max(2*k.qcols-1,x2*2+2);bx++){
-					if((bx+by)%2==0){ continue;}
+					if(!((bx+by)&1)){ continue;}
 					var a = bd.QaC( bd.cnum(mf((bx-by%2)/2), mf((by-bx%2)/2)) );
 					var b = bd.QaC( bd.cnum(mf((bx+by%2)/2), mf((by+bx%2)/2)) );
+					var vid = [header,bx,by].join("_");
 
-					if     (bx%2==1&&(!isNaN(doma1[a])||!isNaN(domb1[b]))){
-						g.fillStyle = "black";
-						if(this.vnop("b"+bx+"_"+by+"_bd_",1)){
+					if     ((bx&1) && !(isNaN(doma1[a])&&isNaN(domb1[b]))){
+						if(this.vnop(vid,1)){
 							g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-lm, k.p0.x+mf(by*k.cheight/2)-lm, k.cwidth+lw, lw);
 						}
 					}
-					else if(by%2==1&&(!isNaN(doma2[a])||!isNaN(domb2[b]))){
-						g.fillStyle = "black";
-						if(this.vnop("b"+bx+"_"+by+"_bd_",1)){
+					else if((by&1) && !(isNaN(doma2[a])&&isNaN(domb2[b]))){
+						if(this.vnop(vid,1)){
 							g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-lm, k.p0.x+mf((by-1)*k.cheight/2)-lm, lw, k.cheight+lw);
 						}
 					}
-					else{ this.vhide("b"+bx+"_"+by+"_bd_");}
+					else{ this.vhide(vid);}
 				}
 			}
 			this.vinc();
 		};
 
 		pc.drawTargetFuton = function(x1,y1,x2,y2){
-			this.vdel(["t1_","t2_","t3_","t4_"]);
-			if(mv.firstPos.x==-1 && mv.firstPos.y==-1){ this.vinc(); this.vinc(); this.vinc(); return;}
 			var cc=mv.mouseCell;
-			if(cc==-1){ return;}
-			var adj=mv.getTargetADJ();
+			var inputting = ((mv.firstPos.x!==-1 || mv.firstPos.y!==-1) && cc!==-1);
 
-			if(cc!=-1){
-				g.fillStyle = "rgb(255,192,192)";
-				if(this.vnop("c"+cc+"_full_",1)){ g.fillRect(bd.cell[cc].px, bd.cell[cc].py, k.cwidth+1, k.cheight+1);}
-			}
-			else{ this.vhide("c"+cc+"_full_");}
+			// ì¸óÕíÜÇ”Ç∆ÇÒÇÃîwåiÉJÉâÅ[ï`âÊ
+			if(inputting){
+				var header = "c_full_";
+				g.fillStyle = this.targetbgcolor;
 
-			if(adj!=-1){
-				g.fillStyle = "rgb(255,192,192)";
-				if(this.vnop("c"+adj+"_full_",1)){ g.fillRect(bd.cell[adj].px, bd.cell[adj].py, k.cwidth+1, k.cheight+1);}
+				if(cc!=-1){
+					if(this.vnop(header+cc,1)){
+						g.fillRect(bd.cell[cc].px, bd.cell[cc].py, k.cwidth+1, k.cheight+1);
+					}
+				}
+				else{ this.vhide(header+cc);}
+
+				var adj=mv.getTargetADJ();
+				if(adj!=-1){
+					if(this.vnop(header+adj,1)){
+						g.fillRect(bd.cell[adj].px, bd.cell[adj].py, k.cwidth+1, k.cheight+1);
+					}
+				}
+				else{ this.vhide(header+adj);}
 			}
-			else{ this.vhide("c"+adj+"_full_");}
 			this.vinc();
 
-			this.drawPillow1(cc,1);
+			// ì¸óÕíÜÇ”Ç∆ÇÒÇÃÇ‹Ç≠ÇÁï`âÊ
+			if(inputting){
+				this.drawPillow1(cc,true);
+			}
 			this.vinc();
 
-			var lw = this.lw, lm = this.lm;
-			var px = k.p0.x+(adj==-1?bd.cell[cc].cx:Math.min(bd.cell[cc].cx,bd.cell[adj].cx))*k.cwidth;
-			var py = k.p0.y+(adj==-1?bd.cell[cc].cy:Math.min(bd.cell[cc].cy,bd.cell[adj].cy))*k.cheight;
-			var wid = (mv.inputData==4||mv.inputData==5?2:1)*k.cwidth;
-			var hgt = (mv.inputData==2||mv.inputData==3?2:1)*k.cheight;
+			// ì¸óÕíÜÇ”Ç∆ÇÒÇÃé¸ÇËÇÃã´äEê¸ï`âÊ
+			this.vdel(["tbd1_","tbd2_","tbd3_","tbd4_"]);
+			if(inputting){
+				var lw = this.lw, lm = this.lm;
+				var px = k.p0.x+(adj==-1?bd.cell[cc].cx:Math.min(bd.cell[cc].cx,bd.cell[adj].cx))*k.cwidth;
+				var py = k.p0.y+(adj==-1?bd.cell[cc].cy:Math.min(bd.cell[cc].cy,bd.cell[adj].cy))*k.cheight;
+				var wid = (mv.inputData==4||mv.inputData==5?2:1)*k.cwidth;
+				var hgt = (mv.inputData==2||mv.inputData==3?2:1)*k.cheight;
 
-			g.fillStyle = "black";
-			if(this.vnop("t1_",1)){ g.fillRect(px-lm    , py-lm    , wid+lw, lw);}
-			if(this.vnop("t2_",1)){ g.fillRect(px-lm    , py-lm    , lw, hgt+lw);}
-			if(this.vnop("t3_",1)){ g.fillRect(px+wid-lm, py-lm    , lw, hgt+lw);}
-			if(this.vnop("t4_",1)){ g.fillRect(px-lm    , py+hgt-lm, wid+lw, lw);}
-
+				g.fillStyle = "black";
+				if(this.vnop("tbd1_",1)){ g.fillRect(px-lm    , py-lm    , wid+lw, lw);}
+				if(this.vnop("tbd2_",1)){ g.fillRect(px-lm    , py-lm    , lw, hgt+lw);}
+				if(this.vnop("tbd3_",1)){ g.fillRect(px+wid-lm, py-lm    , lw, hgt+lw);}
+				if(this.vnop("tbd4_",1)){ g.fillRect(px-lm    , py+hgt-lm, wid+lw, lw);}
+			}
 			this.vinc();
 		};
 
@@ -369,13 +371,15 @@ Puzzles.shugaku.prototype = {
 			if(!g.vml){
 				x1=(x1>=0?x1:0); x2=(x2<=k.qcols-1?x2:k.qcols-1);
 				y1=(y1>=0?y1:0); y2=(y2<=k.qrows-1?y2:k.qrows-1);
-				g.fillStyle = "rgb(208, 208, 208)";
+				g.fillStyle = this.bgcolor;
 				g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth, (y2-y1+1)*k.cheight);
 			}
 			else{
 				g.zidx=1;
-				g.fillStyle = "rgb(208, 208, 208)";
-				if(this.vnop("boardfull",1)){ g.fillRect(k.p0.x, k.p0.y, k.qcols*k.cwidth, k.qrows*k.cheight);}
+				g.fillStyle = this.bgcolor;
+				if(this.vnop("boardfull",1)){
+					g.fillRect(k.p0.x, k.p0.y, k.qcols*k.cwidth, k.qrows*k.cheight);
+				}
 				this.vinc();
 			}
 		};

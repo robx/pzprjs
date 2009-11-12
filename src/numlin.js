@@ -116,6 +116,7 @@ Puzzles.numlin.prototype = {
 		pc.drawCellSquare = function(x1,y1,x2,y2){
 			var mgnw = mf(k.cwidth*0.15);
 			var mgnh = mf(k.cheight*0.15);
+			var header = "c_sq_";
 
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
 			for(var i=0;i<clist.length;i++){
@@ -125,9 +126,11 @@ Puzzles.numlin.prototype = {
 					else if(bd.ErC(c)==2){ g.fillStyle = this.errbcolor2;}
 					else                 { g.fillStyle = "white";}
 
-					if(this.vnop("c"+c+"_sq_",1)){ g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);}
+					if(this.vnop(header+c,1)){
+						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
+					}
 				}
-				else{ this.vhide("c"+c+"_sq_");}
+				else{ this.vhide(header+c);}
 			}
 			this.vinc();
 		};

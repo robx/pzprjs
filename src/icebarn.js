@@ -178,28 +178,28 @@ Puzzles.icebarn.prototype = {
 				bd.arrowin  = bd.bnum(ibx,2*k.qrows-iby);
 				bd.arrowout = bd.bnum(obx,2*k.qrows-oby);
 				for(var id=0;id<bd.bdmax;id++){
-					if(bd.border[id].cx%2==1&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
+					if((bd.border[id].cx&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
 			case 2: // ¶‰E”½“]
 				bd.arrowin  = bd.bnum(2*k.qcols-ibx,iby);
 				bd.arrowout = bd.bnum(2*k.qcols-obx,oby);
 				for(var id=0;id<bd.bdmax;id++){
-					if(bd.border[id].cx%2==0&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
+					if((bd.border[id].cy&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
 			case 3: // ‰E90‹”½“]
 				bd.arrowin  = bd.bnum2(2*k.qrows-iby,ibx,k.qrows,k.qcols);
 				bd.arrowout = bd.bnum2(2*k.qrows-oby,obx,k.qrows,k.qcols);
 				for(var id=0;id<bd.bdmax;id++){
-					if(bd.border[id].cx%2==1&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
+					if((bd.border[id].cx&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
 			case 4: // ¶90‹”½“]
 				bd.arrowin  = bd.bnum2(iby,2*k.qcols-ibx,k.qrows,k.qcols);
 				bd.arrowout = bd.bnum2(oby,2*k.qcols-obx,k.qrows,k.qcols);
 				for(var id=0;id<bd.bdmax;id++){
-					if(bd.border[id].cx%2==0&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
+					if((bd.border[id].cy&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
 			case 5: // ”Õ–ÊŠg‘å
@@ -250,37 +250,40 @@ Puzzles.icebarn.prototype = {
 		};
 		pc.drawArrows = function(x1,y1,x2,y2){
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+4,y2*2+4,f_true);
-			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i];
-				if(!bd.isArrow(id)){ this.vhide(["b"+id+"_ar_","b"+id+"_dt1_","b"+id+"_dt2_"]);}
-				else{ this.drawArrow1(id);}
-			}
+			for(var i=0;i<idlist.length;i++){ this.drawArrow1(idlist[i], bd.isArrow(idlist[i]));}
 			this.vinc();
 		};
-		pc.drawArrow1 = function(id){
-			if(bd.ErB(id)==3){ g.fillStyle = this.errcolor1;}
-			else{ g.fillStyle = this.Cellcolor;}
+		pc.drawArrow1 = function(id, flag){
+			var vids = ["b_ar_"+id,"b_dt1_"+id,"b_dt2_"+id];
+			if(!flag){ this.vhide(vids); return;}
 
-			var ll = mf(k.cwidth*0.35); //LineLength
-			var lw = (mf(k.cwidth/24)>=1?mf(k.cwidth/24):1); //LineWidth
-			var lm = mf((lw-1)/2); //LineMargin
-			var ad=bd.getArrow(id), px=bd.border[id].px; var py=bd.border[id].py;
+			var ll = mf(k.cwidth*0.35);							//LineLength
+			var lw = (mf(k.cwidth/24)>=1?mf(k.cwidth/24):1);	//LineWidth
+			var lm = mf((lw-1)/2);								//LineMargin
+			var px=bd.border[id].px; var py=bd.border[id].py;
 
-			this.vhide(["b"+id+"_dt1_","b"+id+"_dt2_"]);
-			if(bd.border[id].cx%2==1){
-				if(this.vnop("b"+id+"_ar_",1)){ g.fillRect(px-lm, py-ll, lw, ll*2);}
-				switch(bd.getArrow(id)){
-					case 1: if(this.vnop("b"+id+"_dt1_",1)){ this.inputPath([px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4], true); g.fill();} break;
-					case 2: if(this.vnop("b"+id+"_dt2_",1)){ this.inputPath([px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4], true); g.fill();} break;
+			g.fillStyle = (bd.ErB(id)==3 ? this.errcolor1 : this.Cellcolor);
+			if(this.vnop(vids[0],1)){
+				if(bd.border[id].cx&1){ g.fillRect(px-lm, py-ll, lw, ll*2);}
+				if(bd.border[id].cy&1){ g.fillRect(px-ll, py-lm, ll*2, lw);}
+			}
+
+			if(bd.getArrow(id)===1){
+				if(this.vnop(vids[1],1)){
+					if(bd.border[id].cx&1){ this.inputPath([px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4], true);}
+					if(bd.border[id].cy&1){ this.inputPath([px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2], true);}
+					g.fill();
 				}
 			}
-			else if(bd.border[id].cy%2==1){
-				if(this.vnop("b"+id+"_ar_",1)){ g.fillRect(px-ll, py-lm, ll*2, lw);}
-				switch(bd.getArrow(id)){
-					case 1: if(this.vnop("b"+id+"_dt1_",1)){ this.inputPath([px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2], true); g.fill();} break;
-					case 2: if(this.vnop("b"+id+"_dt2_",1)){ this.inputPath([px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2], true); g.fill();} break;
+			else{ this.vhide(vids[1]);}
+			if(bd.getArrow(id)===2){
+				if(this.vnop(vids[2],1)){
+					if(bd.border[id].cx&1){ this.inputPath([px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4], true);}
+					if(bd.border[id].cy&1){ this.inputPath([px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2], true);}
+					g.fill();
 				}
 			}
+			else{ this.vhide(vids[2]);}
 		};
 		pc.drawInOut = function(){
 			if(bd.arrowin<bd.bdinside || bd.arrowin>=bd.bdmax || bd.arrowout<bd.bdinside || bd.arrowout>=bd.bdmax){ return;}
@@ -311,7 +314,7 @@ Puzzles.icebarn.prototype = {
 		};
 
 		line.repaintParts = function(id){
-			if(bd.isArrow(id)){ pc.drawArrow1(id);}
+			if(bd.isArrow(id)){ pc.drawArrow1(id,true);}
 		};
 	},
 
@@ -608,7 +611,7 @@ Puzzles.icebarn.prototype = {
 
 			while(1){
 				switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-				if((bx+by)%2==0){
+				if(!((bx+by)&1)){
 					var cc = bd.cnum(mf(bx/2),mf(by/2));
 					if(bd.QuC(cc)!=6){
 						if     (line.lcntCell(cc)!=2){ dir=dir;}

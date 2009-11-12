@@ -264,69 +264,91 @@ Puzzles.kinkonkan.prototype = {
 		};
 
 		pc.drawErrorCells_kinkonkan = function(x1,y1,x2,y2){
+			var header = "c_full_";
+
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.ErC(c)==1 || bd.ErC(c)==6){
 					if     (bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
 					else if(bd.ErC(c)==6){ g.fillStyle = this.errbcolor2;}
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);}
+					if(this.vnop(header+c,1)){
+						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
+					}
 				}
-				else{ this.vhide("c"+c+"_full_");}
+				else{ this.vhide(header+c);}
 			}
 			this.vinc();
 		};
 		pc.drawWhiteCells_kinkonkan = function(x1,y1,x2,y2){
 			var dsize = k.cwidth*0.06;
+			var header = "c_dot_";
+
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QsC(c)==1){
 					g.fillStyle = this.dotcolor;
-					g.beginPath();
-					g.arc(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, dsize, 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_dot_",1)){ g.fill();}
+					if(this.vnop(header+c,1)){
+						g.beginPath();
+						g.arc(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, dsize, 0, Math.PI*2, false);
+						g.fill();
+					}
 				}
-				else{ this.vhide("c"+c+"_dot_");}
+				else{ this.vhide(header+c);}
 			}
 			this.vinc();
 		}
 		pc.drawSlashes = function(x1,y1,x2,y2){
+			var headers = ["c_sl1_", "c_sl2_"];
+			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
+
 			var clist = this.cellinside(x1,y1,x2,y2,f_true);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
-				this.vhide(["c"+c+"_sl1_","c"+c+"_sl2_"]);
 				if(bd.QaC(c)!=-1){
 					g.strokeStyle = this.Cellcolor;
-					g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
-
-					if     (bd.QaC(c)==1 && this.vnop("c"+c+"_sl1_",0)){
-						this.inputPath([bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight], true); g.stroke();
+					if(bd.QaC(c)==1){
+						if(this.vnop(headers[0]+c,0)){
+							this.inputPath([bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight], true);
+							g.stroke();
+						}
 					}
-					else if(bd.QaC(c)==2 && this.vnop("c"+c+"_sl2_",0)){
-						this.inputPath([bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight], true); g.stroke();
+					else{ this.vhide(headers[0]+c);}
+					if(bd.QaC(c)==2){
+						if(this.vnop(headers[1]+c,0)){
+							this.inputPath([bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight], true);
+							g.stroke();
+						}
 					}
+					else{ this.vhide(headers[1]+c);}
 				}
+				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
 			this.vinc();
 		};
 
 		pc.drawEXcells = function(x1,y1,x2,y2){
+			var header = "ex_full_";
+
 			for(var cx=x1;cx<=x2;cx++){
 				for(var cy=y1;cy<=y2;cy++){
 					var c = bd.exnum(cx,cy);
 					if(c<0 || 2*k.qcols+2*k.qrows<=c){ continue;}
+					var obj = bd.excell[c];
 
 					if(bd.ErE(c)==6){
 						g.fillStyle = this.errbcolor2;
-						if(this.vnop("ex"+c+"_full_",1)){ g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);}
+						if(this.vnop(header+c,1)){
+							g.fillRect(obj.px+1, obj.py+1, k.cwidth-1, k.cheight-1);
+						}
 					}
-					else{ this.vhide("ex"+c+"_full_");}
+					else{ this.vhide(header+c);}
 
-					if(bd.DiE(c)==0 && bd.QnE(c)==-1){ this.hideEL(bd.excell[c].numobj);}
+					if(bd.DiE(c)==0 && bd.QnE(c)==-1){ this.hideEL(obj.numobj);}
 					else{
-						if(!bd.excell[c].numobj){ bd.excell[c].numobj = this.CreateDOMAndSetNop();}
+						if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 						var num=bd.QnE(c), canum=bd.DiE(c);
 
 						var color = this.fontErrcolor;
@@ -342,9 +364,8 @@ Puzzles.kinkonkan.prototype = {
 						else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
 						if(num>=0){ text+=num.toString(10);}
 
-						this.dispnumEXcell1(c, bd.excell[c].numobj, 1, text, fontratio, color);
+						this.dispnum(obj.numobj, 1, text, fontratio, color, obj.px, obj.py);
 					}
-					//bd.getDirecEXcell(c)
 				}
 			}
 			this.vinc();
