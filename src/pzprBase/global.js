@@ -74,6 +74,7 @@ var k = {
 		Gecko : navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1,
 		WinWebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1
 	},
+	vml : !!(window.attachEvent && !window.opera) && !uuMeta.slver,
 
 	// const’l
 	BOARD  : 'board',
@@ -194,7 +195,7 @@ Timer.prototype = {
 	//---------------------------------------------------------------------------
 	reset : function(){
 		this.worstACCost = 0;
-		this.timerEL.innerHTML(this.label()+"00:00");
+		this.timerEL.innerHTML = this.label()+"00:00";
 
 		clearInterval(this.TID);
 		this.start();
