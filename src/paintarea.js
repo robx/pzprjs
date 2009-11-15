@@ -152,7 +152,7 @@ Puzzles.paintarea.prototype = {
 				this.setAlert('2x2の黒マスのかたまりがあります。','There is a 2x2 block of black cells.'); return false;
 			}
 
-			if( !this.checkAllCell(binder(this, function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)!=this.checkdir4Cell(c,bd.isBlack));})) ){
+			if( !this.checkAllCell(ee.binder(this, function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)!=this.checkdir4Cell(c,bd.isBlack));})) ){
 				this.setAlert('数字の上下左右にある黒マスの数が間違っています。','The number is not equal to the number of black cells in four adjacent cells.'); return false;
 			}
 

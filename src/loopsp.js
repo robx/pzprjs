@@ -178,7 +178,7 @@ Puzzles.loopsp.prototype = {
 				this.inputcol('num','knum0','0','0');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.kpinput = function(ca){ kc.key_inputLineParts(ca);};
 		}
 	},

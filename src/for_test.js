@@ -8,16 +8,16 @@ var debug = {
 	testonly_func : function(){
 		menu.titlebarfunc(getEL("bartest"));
 
-		document.testform.starttest.onclick = binder(this, this.presccheck);
-		document.testform.t1.onclick        = binder(this, this.perfeval);
-		document.testform.t2.onclick        = binder(this, this.painteval);
-		document.testform.t3.onclick        = binder(this, this.resizeeval);
+		document.testform.starttest.onclick = ee.binder(this, this.presccheck);
+		document.testform.t1.onclick        = ee.binder(this, this.perfeval);
+		document.testform.t2.onclick        = ee.binder(this, this.painteval);
+		document.testform.t3.onclick        = ee.binder(this, this.resizeeval);
 
 		document.testform.filesave.onclick  = function(){ getEL("testarea").value=''; debug.addTextarea(fio.fileencode(1).replace(/\//g,"\n"));};
 		document.testform.fileopen.onclick  = function(){ fio.fileopen(getEL("testarea").value.split("\n"),1);};
 		document.testform.erasetext.onclick = function(e){ getEL("testarea").value='';};
 		document.testform.close.onclick     = function(e){ getEL("poptest").style.display = 'none';};
-		document.testform.perfload.onclick  = binder(this, this.loadperf);
+		document.testform.perfload.onclick  = ee.binder(this, this.loadperf);
 
 		document.testform.perfload.display = (k.puzzleid!=='country' ? 'none' : 'inline');
 	},
@@ -31,13 +31,13 @@ var debug = {
 	},
 
 	perfeval : function(){
-		this.timeeval("³“š”»’è‘ª’è",binder(ans, ans.checkAns));
+		this.timeeval("³“š”»’è‘ª’è",ee.binder(ans, ans.checkAns));
 	},
 	painteval : function(){
-		this.timeeval("•`‰æŠÔ‘ª’è",binder(pc, pc.paintAll));
+		this.timeeval("•`‰æŠÔ‘ª’è",ee.binder(pc, pc.paintAll));
 	},
 	resizeeval : function(){
-		this.timeeval("resize•`‰æ‘ª’è",binder(base, base.resize_canvas));
+		this.timeeval("resize•`‰æ‘ª’è",ee.binder(base, base.resize_canvas));
 	},
 	timeeval : function(text,func){
 		this.addTextarea(text);
@@ -59,7 +59,7 @@ var debug = {
 	},
 
 	all_test : function(){
-		var pnum=52, term=debug.urls.length-1;
+		var pnum=0, term=debug.urls.length-1;
 		debug.phase = 99;
 
 		var tam = setInterval(function(){
@@ -100,7 +100,7 @@ var debug = {
 
 		k.puzzleid = newid;
 		if(!Puzzles[k.puzzleid]){
-			var _script = newEL('script');
+			var _script = ee.newEL('script');
 			_script.type = 'text/javascript';
 //			_script.charset = 'Shift_JIS';
 			_script.src = "src/"+k.puzzleid+".js";

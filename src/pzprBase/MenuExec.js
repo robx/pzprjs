@@ -67,7 +67,7 @@ MenuExec.prototype = {
 	},
 	urloutput : function(e){
 		if(menu.pop){
-			switch(menu.getSrcElement(e).name){
+			switch(ee.getSrcElement(e).name){
 				case "pzprv3":     enc.pzlexport(0); break;
 				case "pzprapplet": enc.pzlexport(1); break;
 				case "kanpen":     enc.pzlexport(2); break;
@@ -144,13 +144,13 @@ MenuExec.prototype = {
 		var sparatorlist = k.EDITOR ? ['separator1'] : ['separator1','separator2'];
 
 		if(this.displaymanage){
-			for(var i=0;i<idlist.length;i++){ $("#"+idlist[i]).hide(800, binder(base,base.resize_canvas));}
+			for(var i=0;i<idlist.length;i++){ $("#"+idlist[i]).hide(800, ee.binder(base,base.resize_canvas));}
 			for(var i=0;i<sparatorlist.length;i++){ $("#"+sparatorlist[i]).hide();}
 			if(k.irowake!=0 && menu.getVal('irowake')){ $("#btncolor2").show();}
 			getEL("menuboard").style.paddingBottom = '0pt';
 		}
 		else{
-			for(var i=0;i<idlist.length;i++){ $("#"+idlist[i]).show(800, binder(base,base.resize_canvas));}
+			for(var i=0;i<idlist.length;i++){ $("#"+idlist[i]).show(800, ee.binder(base,base.resize_canvas));}
 			for(var i=0;i<sparatorlist.length;i++){ $("#"+sparatorlist[i]).show();}
 			if(k.irowake!=0 && menu.getVal('irowake')){ $("#btncolor2").hide();}
 			getEL("menuboard").style.paddingBottom = '8pt';
@@ -171,7 +171,7 @@ MenuExec.prototype = {
 		if(menu.pop){
 			um.newOperation(true);
 
-			var name = menu.getSrcElement(e).name;
+			var name = ee.getSrcElement(e).name;
 			if(name.indexOf("reduce")===0){
 				if(name==="reduceup"||name==="reducedn"){
 					if(k.qrows<=1){ return;}

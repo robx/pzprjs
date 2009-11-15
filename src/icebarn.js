@@ -127,8 +127,8 @@ Puzzles.icebarn.prototype = {
 
 		if(!bd.arrowin) { bd.arrowin  = -1;}
 		if(!bd.arrowout){ bd.arrowout = -1;}
-		bd.ainobj  = pc.CreateElementAndSetNop();
-		bd.aoutobj = pc.CreateElementAndSetNop();
+		bd.ainobj  = ee.CreateElementAndSetNop();
+		bd.aoutobj = ee.CreateElementAndSetNop();
 		bd.inputarrowin = function(id){
 			var dir=((this.border[id].cx==0||this.border[id].cy==0)?1:2);
 			this.setArrow(this.arrowin,0);
@@ -529,7 +529,7 @@ Puzzles.icebarn.prototype = {
 			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101);}) ){
 				this.setAlert('•X‚Ì•”•ªˆÈŠO‚Åü‚ªŒğ·‚µ‚Ä‚¢‚Ü‚·B', 'A Line is crossed outside of ice.'); return false;
 			}
-			if( !this.checkAllCell(binder(this, function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));})) ){
+			if( !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));})) ){
 				this.setAlert('•X‚Ì•”•ª‚Åü‚ª‹È‚ª‚Á‚Ä‚¢‚Ü‚·B', 'A Line curve on ice.'); return false;
 			}
 

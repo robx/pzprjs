@@ -96,7 +96,7 @@ Puzzles.kakuro.prototype = {
 				this.inputcol('num','knum0','0','0');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
 				kc.key_inputqnum(ca);
@@ -191,7 +191,7 @@ Puzzles.kakuro.prototype = {
 
 				if(bd.cell[c].ques!=51 && bd.cell[c].qans>0){
 					var obj = bd.cell[c];
-					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+					if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
 					var color = (bd.cell[c].error===1 ? this.fontErrcolor : this.fontAnscolor);
 					var text  = ""+bd.cell[c].qans;
 					this.dispnum(obj.numobj, 1, text, 0.80, color, obj.px, obj.py);

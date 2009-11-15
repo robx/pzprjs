@@ -132,7 +132,7 @@ Puzzles.kakuru.prototype = {
 				this.inputcol('num','knum.',' ',' ');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, true, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
 			kp.kpinput = function(ca){
 				kc.key_inputqnum_tateyoko(ca);
 			};

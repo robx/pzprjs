@@ -397,17 +397,17 @@ KeyPopup.prototype = {
 	gentable : function(mode, type, func){
 		this.ctl[mode].enable = true;
 		this.ctl[mode].el     = getEL("keypopup"+mode);
-		this.ctl[mode].el.onmouseout = ebinder(this, this.hide);
+		this.ctl[mode].el.onmouseout = ee.ebinder(this, this.hide);
 
-		var table = newEL('table');
+		var table = ee.newEL('table');
 		table.cellSpacing = '2pt';
 		this.ctl[mode].el.appendChild(table);
 
-		this.tbodytmp = newEL('tbody');
+		this.tbodytmp = ee.newEL('tbody');
 		table.appendChild(this.tbodytmp);
 
 		this.trtmp = null;
-		if(func)							  { func(mode);                }
+		if(func)							  { func.apply(kp, [mode]);}
 		else if(type==0 || type==3)			  { this.gentable10(mode,type);}
 		else if(type==1 || type==2 || type==4){ this.gentable4 (mode,type);}
 	},
@@ -450,35 +450,35 @@ KeyPopup.prototype = {
 	// kp.insertrow() テーブルの行を追加する
 	//---------------------------------------------------------------------------
 	inputcol : function(type, id, ca, disp){
-		if(!this.trtmp){ this.trtmp = newEL('tr');}
+		if(!this.trtmp){ this.trtmp = ee.newEL('tr');}
 		var _td = null;
 		if(type==='num'){
-			_td    = unselectable(newEL('td'));
+			_td    = ee.newELx('td').unselectable().el;
 			_td.id = id;
 			_td.className   = 'kpnum';
 			_td.style.color = this.tdcolor;
 			_td.innerHTML   = disp;
-			_td.onclick     = ebinder(this, this.inputnumber, [ca]);
+			_td.onclick     = ee.ebinder(this, this.inputnumber, [ca]);
 		}
 		else if(type==='empty'){
-			_td    = unselectable(newEL('td'));
+			_td    = ee.newELx('td').unselectable().el;
 			_td.id = id;
 		}
 		else if(type==='image'){
-			var _img = unselectable(newEL('img'));
+			var _img = ee.newELx('img').unselectable().el;
 			_img.id = ""+id+"_i";
 			_img.className = 'kp';
 			_img.src       = "./src/img/"+k.puzzleid+"_kp.gif";
 
-			var _div = unselectable(newEL('div'));
+			var _div = ee.newELx('div').unselectable().el;
 			_div.position = 'relative';
 			_div.display  = 'inline';
 			_div.appendChild(_img);
 
-			_td    = unselectable(newEL('td'));
+			_td    = ee.newELx('td').unselectable().el;
 			_td.id = id;
 			_td.className = 'kpimg';
-			_td.onclick   = ebinder(this, this.inputnumber, [ca]);
+			_td.onclick   = ee.ebinder(this, this.inputnumber, [ca]);
 			_td.appendChild(_div);
 
 			this.imgs.push({'el':_img, 'cx':disp[0], 'cy':disp[1]});

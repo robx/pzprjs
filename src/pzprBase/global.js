@@ -105,69 +105,395 @@ var k = {
 };
 k.IEMargin = (k.br.IE ? k.IEMargin : new Pos(0,0));
 
-var g;				// グラフィックコンテキスト
-var Puzzles = [];	// パズル個別クラス
-
 //---------------------------------------------------------------------------
 // ★共通グローバル関数
 //---------------------------------------------------------------------------
+var g;				// グラフィックコンテキスト
+var Puzzles = [];	// パズル個別クラス
+var _doc = document;
+
 	//---------------------------------------------------------------------------
-	// newEL(tag)      新しいtagのHTMLエレメントを表すjQueryオブジェクトを作成する
-	// unselectable()  エレメントを文字列選択で選択できないようにする
 	// mf()            小数点以下を切捨てる(旧int())
 	// f_true()        trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
 	//---------------------------------------------------------------------------
-var _doc = document;
-function newEL(tag)  { return _doc.createElement(tag);}
-function getEL(id)   { return _doc.getElementById(id);}
-
-var unselectable = (
-	 (k.br.Gecko)  ? function(el){ el.style.MozUserSelect = 'none';   el.style.userSelect = 'none'; return el;}
-	:(k.br.WebKit) ? function(el){ el.style.KhtmlUserSelect = 'none'; el.style.userSelect = 'none'; return el;}
-	:                function(el){ el.unselectable = 'on'; return el;}
-);
-
 var mf = Math.floor;
 function f_true(){ return true;}
+function getEL(id){ return _doc.getElementById(id);}
 
-	//---------------------------------------------------------------------------
-	// toArray()   argumentsをarrayに変換する(binder用)
-	// binder()    関数にthisを紐付けする
-	// ebinder()   関数にthisを紐付けする(イベント用)
-	// kcbinder()  関数にthisを紐付けする(キーボードイベント用)
-	//---------------------------------------------------------------------------
-function toArray(array){
-	if(!array){ return [];}
-	var args = [];
-	for(var i=0;i<array.length;i++){ args[i]=array[i];}
-	return args;
-}
-function binder(){
-	var args=toArray(arguments), obj = args.shift(), __method = args.shift();
-	return function(){
-		var ret = __method.apply(obj, toArray(args[0]).concat(toArray(arguments)));
-		return ret;
-	}
-};
-function ebinder(){
-	var args=toArray(arguments), obj = args.shift(), __method = args.shift();
-	return function(e){
-		var ret = __method.apply(obj, [e||window.event].concat(toArray(args[0])).concat(toArray(arguments)));
-		return ret;
-	}
-};
-function kcbinder(){
-	var args=toArray(arguments), __method = args.shift();
-	return function(e){
-		ret = __method.apply(kc, [e||window.event].concat(toArray(args[0])).concat(toArray(arguments)));
-		if(kc.tcMoved){
-			if(k.br.Gecko||k.br.WebKit){ e.preventDefault();}
-			else if(!k.br.IE){ e.returnValue = false;}
-			else{ return false;}
+(function(){
+
+// definition
+var
+	// local scope
+	_doc = document,
+	_win = this,
+
+	// browsers
+	_IE     = k.br.IE,
+	_Gecko  = k.br.Gecko,
+	_WebKit = k.br.WebKit,
+
+	/* ここからクラス定義です  varでドット付きは、最左辺に置けません */
+
+	// define and map _ElementManager class
+	_ELm = _ElementManager = _win.ee = function(id){
+		if(!_elx[id]){
+			if(typeof id === 'string'){
+				_elx[id] = new _ELx(_doc.getElementById(id));
+			}
+			else{ _elx[id] = new _ELx(id);}
 		}
-		return ret;
+		return _elx[id];
+	},
+	_elx = _ElementManager._cache = {},
+
+	// define and map _ElementManager.ElementExt class
+	_ELx = _ElementManager.ElementExt = function(el){
+		this.el     = el;
+		this.parent = el.parentNode;
+		this.pdisp  = 'none';
+	},
+
+	// Utility functions
+	_extend = function(obj, ads){
+		for(var name in ads){ obj[name] = ads[name];}
+	},
+	_toArray = function(args){
+		if(!args){ return [];}
+		var array = [];
+		for(var i=0,len=args.length;i<len;i++){ array[i]=args[i];}
+		return array;
+	}
+;
+
+// implementation of _ElementManage class
+_extend( _ElementManager, {
+
+	//----------------------------------------------------------------------
+	clean : function(){
+		this._cache = null;
+		this._cache = {};
+	},
+
+	//----------------------------------------------------------------------
+	get : function(id){
+		if(!_elx[id]){ _elx[id] = new _ELx(_doc.getElementById(id));}
+		return _elx[id];
+	},
+	getEL : function(id){
+		if(!_elx[id]){ _elx[id] = new _ELx(_doc.getElementById(id));}
+		return _elx[id].el;
+	},
+
+	//----------------------------------------------------------------------
+	newELx : function(tag){ return new _ELx(_doc.createElement(tag));},
+	newEL  : function(tag){ return _doc.createElement(tag);},
+	newBTNx : function(idname, name, firstval){
+		var elx = new _ELx(_doc.createElement('input'));
+		var el = elx.el;
+		el.type  = 'button';
+		if(!!idname){ el.id    = idname;}
+		if(!!name)  { el.name  = name;}
+		el.value = firstval;
+		if(!!idname){ _elx[idname] = elx;}
+		return elx;
+	},
+	newBTN : function(idname, name, firstval){
+		var el = _doc.createElement('input');
+		el.type  = 'button';
+		if(!!idname){ el.id    = idname;}
+		if(!!name)  { el.name  = name;}
+		el.value = firstval;
+		return el;
+	},
+
+	CreateDOMAndSetNop : function(){
+		return (!pc.textenable ? this.CreateElementAndSetNop() : null);
+	},
+	CreateElementAndSetNop : function(){
+		var el = _doc.createElement('div');
+		el.className = 'divnum';
+		(new _ELx(el)).unselectable();
+		base.numparent.appendChild(el);
+		return el;
+	},
+
+	//----------------------------------------------------------------------
+	replaceChildrenClass : function(parent, before, after){
+		var el = parent.firstChild;
+		while(!!el){ if(el.className===before){ el.className = after;} }
+	},
+
+	//----------------------------------------------------------------------
+	getSrcElement : function(e){
+		return e.target || e.srcElement;
+	},
+
+	binder : function(){
+		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift();
+		return function(){
+			return __method.apply(obj, _toArray(args).concat(_toArray(arguments)));
+		}
+	},
+	ebinder : function(){
+		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift();
+		return function(e){
+			return __method.apply(obj, [e||_win.event].concat(_toArray(args)).concat(_toArray(arguments)));
+		}
+	},
+	kcbinder : function(){
+		var args=_toArray(arguments), __method = args.shift();
+		return function(e){
+			ret = __method.apply(kc, [e||_win.event].concat(_toArray(args)).concat(_toArray(arguments)));
+			if(kc.tcMoved){
+				if(_Gecko||_WebKit){ e.preventDefault();}
+				else if(_IE){ return false;}
+				else{ e.returnValue = false;}
+			}
+			return ret;
+		}
+	},
+
+	//----------------------------------------------------------------------
+	windowWidth : (
+		((_doc.all) ?
+			function(){ return _doc.body.clientWidth;}
+		:(_doc.layers || _doc.getElementById)?
+			function(){ return innerWidth;}
+		:
+			function(){ return 0;}
+		)
+	),
+	windowHeight : (
+		((_doc.all) ?
+			function(){ return _doc.body.clientHeight;}
+		:(_doc.layers || _doc.getElementById)?
+			function(){ return innerHeight;}
+		:
+			function(){ return 0;}
+		)
+	)
+});
+
+// implementation of _ElementManager.ElementExt class
+_ElementManager.ElementExt.prototype = {
+
+	show : function(){
+		if(!this.pdisp && this.el.style.display!=='none'){
+			this.pdisp = this.el.style.display;
+		}
+		this.el.style.display = (this.pdisp!=='none' ? this.pdisp : 'inline');
+		return this;
+	},
+	hide : function(){
+		if(!this.pdisp && this.el.style.display!=='none'){
+			this.pdisp = this.el.style.display;
+		}
+		this.el.style.display = 'none';
+		return this;
+	},
+
+	remove : function(){
+		this.parent.removechild(this.el);
+		return this;
+	},
+
+	//----------------------------------------------------------------------
+	set : function(cname, idname, styles){
+		this.el.className = cname;
+		this.el.id = idname;
+		for(var name in styles){ this.el.style[name] = styles[name];}
+		return this;
+	},
+	unselectable : (
+		((_Gecko) ?
+			function(){
+				this.el.style.MozUserSelect = 'none';
+				this.el.style.UserSelect    = 'none';
+				return this;
+			}
+		:(_WebKit) ?
+			function(){
+				this.el.style.KhtmlUserSelect = 'none';
+				this.el.style.UserSelect      = 'none';
+				return this;
+			}
+		:
+			function(){
+				this.attr("unselectable", "on");
+				return this;
+			}
+		)
+	),
+
+	//----------------------------------------------------------------------
+	getClass : function(cname){
+		return this.el.className;
+	},
+	getId : function(idname){
+		return this.el.id;
+	},
+	getStyle : function(name){
+		return this.el.style[name];
+	},
+
+	setClass : function(cname){
+		this.el.className = cname;
+		return this;
+	},
+	setId : function(idname){
+		this.el.id = id;
+		return this;
+	},
+	setStyle : function(name, val){
+		this.el.style[name] = val;
+		return this;
+	},
+
+	setStyles : function(styles){
+		for(var name in styles){ this.el.style[name] = styles[name];}
+		return this;
+	},
+	setEvents : (
+		((false && _win.addEventListener) ?
+			function(funcs){
+				for(var name in funcs){ this.el.addEventListener(name, funcs[name], false);}
+				return this;
+			}
+		:(false && _win.attachEvent) ?
+			function(funcs){
+				for(var name in funcs){ this.el.attachEvent(name, funcs[name]);}
+				return this;
+			}
+		:
+			function(funcs){
+				for(var name in funcs){ this.el['on'+name] = funcs[name];}
+				return this;
+			}
+		)
+	),
+
+	//----------------------------------------------------------------------
+	getRect : (
+		((!!document.getBoundingClientRect) ?
+			((!_IE) ?
+				function(){
+					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
+					var left   = rect.left   + _win.scrollX;
+					var top    = rect.top    + _win.scrollY;
+					var right  = rect.right  + _win.scrollX;
+					var bottom = rect.bottom + _win.scrollY;
+					return { top:top, bottom:bottom, left:left, right:right};
+				}
+			:
+				function(){
+					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
+					var left   = rect.left   + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
+					var top    = rect.top    + ((_body.scrollTop  || _html.scrollTop ) - _html.clientTop );
+					var right  = rect.right  + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
+					var bottom = rect.bottom + ((_body.scrollTop  || _html.scrollTop ) - _html.clientTop );
+					return { top:top, bottom:bottom, left:left, right:right};
+				}
+			)
+		:
+			function(){
+				var left = 0, top = 0, el = this.el;
+				while(!!el){
+					left += +(el.offsetLeft || el.clientLeft);
+					top  += +(el.offsetTop  || el.clientTop );
+					el = el.offsetParent;
+				}
+				var right  = left + (this.el.offsetWidth  || this.el.clientWidth);
+				var bottom = top  + (this.el.offsetHeight || this.el.clientHeight);
+				return { top:top, bottom:bottom, left:left, right:right};
+			}
+		)
+	),
+	getWidth  : function(){ return this.el.offsetWidth  || this.el.clientWidth; },
+	getHeight : function(){ return this.el.offsetHeight || this.el.clientHeight;},
+
+	//----------------------------------------------------------------------
+	getText : (
+		((!_IE) ?
+			// el.textContent -> IE以外対応してて、標準はこっち
+			function(){ return this.el.textContent;}
+		:
+			// el.innerText   -> Firefox以外は対応してるけど標準じゃない
+			function(){ return this.el.innerText;}
+		)
+	),
+	setText : (
+		((!_IE) ?
+			function(text){
+				this.el.textContent = text;
+				return this;
+			}
+		:
+			function(text){
+				this.el.innerText = text;
+				return this;
+			}
+		)
+	),
+	appendText : (
+		((!_IE) ?
+			function(text){
+				var sel = _doc.createElement('span');
+				sel.textContent = text;
+				this.el.appendChild(sel);
+				return this;
+			}
+		:
+			function(text){
+				var sel = _doc.createElement('span');
+				sel.innerText = text;
+				this.el.appendChild(sel);
+				return this;
+			}
+		)
+	),
+
+	getHTML : function(){
+		return innerHTML;
+	},
+	setHTML : function(html){
+		this.el.innerHTML = html;
+		return this;
+	},
+	appendHTML : function(html){
+		var sel = _doc.createElement('span');
+		sel.innerHTML = html;
+		this.el.appendChild(sel);
+		return this;
+	},
+
+	//----------------------------------------------------------------------
+	// el.prevousSibling -> 同じparentNodeの中で直前にある要素を返す もともと最初ならnull
+	// el.nextSibling    -> 同じparentNodeの中で直後にある要素を返す もともと最後ならnull
+	// parent.insertBefore(el,el2) -> el2の直前にelを挿入 el2がnullだとapendChildと同じ
+	append : function(elx){
+		this.el.appendChild(elx.el);
+		return this;
+	},
+	appendEL : function(el){
+		this.el.appendChild(el);
+		return this;
+	},
+	appendTo : function(elx){
+		elx.el.appendChild(this.el);
+		return this;
+	},
+	insertBefore : function(baseel){
+		this.parent.insertBefore(this.el,baseel);
+		return this;
+	},
+	insertAfter : function(baseel){
+		this.parent.insertBefore(this.el,baseel.nextSibling);
+		return this;
 	}
 };
+
+})();
 
 //---------------------------------------------------------------------------
 // ★Timerクラス
@@ -215,7 +541,7 @@ Timer.prototype = {
 	},
 	start : function(){
 		this.st = (new Date()).getTime();
-		this.TID = setInterval(binder(this, this.update), this.timerInterval);
+		this.TID = setInterval(ee.binder(this, this.update), this.timerInterval);
 	},
 	update : function(){
 		this.current = (new Date()).getTime();
@@ -267,7 +593,7 @@ Timer.prototype = {
 	//---------------------------------------------------------------------------
 	startUndoTimer : function(){
 		this.undoWaitCount = this.undoStartCount;
-		if(!this.TIDundo){ this.TIDundo = setInterval(binder(this, this.procUndo), this.undoInterval);}
+		if(!this.TIDundo){ this.TIDundo = setInterval(ee.binder(this, this.procUndo), this.undoInterval);}
 
 		if     (kc.inUNDO){ um.undo();}
 		else if(kc.inREDO){ um.redo();}

@@ -189,7 +189,7 @@ Puzzles.hakoiri.prototype = {
 				this.insertrow();
 			}
 		};
-		kp.generate(kp.ORIGINAL, true, true, binder(kp, kp.kpgenerate));
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
 		kp.kpinput = function(ca){ kc.key_hakoiri(ca);};
 
 		bd.maxnum = 3;
@@ -223,7 +223,7 @@ Puzzles.hakoiri.prototype = {
 			else if(num==-2)    { text = "?";}
 			else{ this.hideEL(obj.numobj); return;}
 
-			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+			if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
 			this.dispnum(obj.numobj, 1, text, 0.8, this.getNumberColor(c), obj.px, obj.py);
 		};
 	},

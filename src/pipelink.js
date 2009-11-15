@@ -54,7 +54,7 @@ Puzzles.pipelink.prototype = {
 	menufix : function(){
 		if(k.EDITOR){ kp.defaultdisp = true;}
 		getEL('btnarea').appendChild(menu.createButton('btncircle','','›'))
-		menu.addButtons(getEL("btncircle"),binder(pc, pc.changedisp),"›","›");
+		menu.addButtons(getEL("btncircle"),ee.binder(pc, pc.changedisp),"›","›");
 		menu.addRedLineToFlags();
 	},
 
@@ -132,7 +132,7 @@ Puzzles.pipelink.prototype = {
 				this.inputcol('num','knum.','1','›');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.kpinput = function(ca){ kc.key_inputLineParts(ca);};
 		}
 	},
@@ -307,7 +307,7 @@ Puzzles.pipelink.prototype = {
 			if( rice && !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101);}) ){
 				this.setAlert((pc.disp==0?'›':'•X')+'‚Ì•”•ªˆÈŠO‚Åü‚ªŒğ·‚µ‚Ä‚¢‚Ü‚·B','There is a crossing line out of '+(pc.disp==0?'circles':'ices')+'.'); return false;
 			}
-			if( rice && !this.checkAllCell(binder(this, function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));})) ){
+			if( rice && !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));})) ){
 				ans.setAlert((pc.disp==0?'›':'•X')+'‚Ì•”•ª‚Åü‚ª‹È‚ª‚Á‚Ä‚¢‚Ü‚·B','A line curves on '+(pc.disp==0?'circles':'ices')+'.'); return false;
 			}
 

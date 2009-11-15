@@ -196,7 +196,7 @@ Puzzles.kaero.prototype = {
 				var c = clist[i], obj = bd.cell[c];
 				if(bd.cell[c].qnum===-1){ this.hideEL(obj.numobj); continue;}
 
-				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+				if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
 				var num=bd.cell[c].qnum;
 
 				var color = (bd.cell[c].error===0 ? this.fontcolor : this.fontErrcolor);
@@ -291,13 +291,13 @@ Puzzles.kaero.prototype = {
 			var rinfo = area.getRoomInfo();
 			this.movedPosition(linfo);
 			this.performAsLine = false;
-			if( !this.checkSameObjectInRoom(rinfo, binder(this, this.getMoved)) ){
+			if( !this.checkSameObjectInRoom(rinfo, ee.binder(this, this.getMoved)) ){
 				this.setAlert('１つのブロックに異なるアルファベットが入っています。','A block has plural kinds of letters.'); return false;
 			}
-			if( !this.checkObjectRoom(rinfo, binder(this, this.getMoved)) ){
+			if( !this.checkObjectRoom(rinfo, ee.binder(this, this.getMoved)) ){
 				this.setAlert('同じアルファベットが異なるブロックに入っています。','Same kinds of letters are placed different blocks.'); return false;
 			}
-			if( !this.checkNoObjectInRoom(rinfo, binder(this, this.getMoved)) ){
+			if( !this.checkNoObjectInRoom(rinfo, ee.binder(this, this.getMoved)) ){
 				this.setAlert('アルファベットのないブロックがあります。','A block has no letters.'); return false;
 			}
 

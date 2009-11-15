@@ -44,8 +44,8 @@ PBase.prototype = {
 		}
 
 		// onLoadとonResizeに動作を割り当てる
-		window.onload   = ebinder(this, this.onload_func);
-		window.onresize = ebinder(this, this.onresize_func);
+		window.onload   = ee.ebinder(this, this.onload_func);
+		window.onresize = ee.ebinder(this, this.onresize_func);
 	},
 
 	//---------------------------------------------------------------------------
@@ -69,7 +69,7 @@ PBase.prototype = {
 	},
 
 	initCanvas : function(){
-		this.canvas = unselectable(getEL('puzzle_canvas')); // Canvas
+		this.canvas = ee('puzzle_canvas').unselectable().el; // Canvas
 		this.numparent = getEL('numobj_parent');			// 数字表示用
 		g = this.canvas.getContext("2d");
 	},
@@ -105,25 +105,25 @@ PBase.prototype = {
 		if(k.scriptcheck && debug){ debug.testonly_func();}	// テスト用
 	},
 	setEvents : function(first){
-		this.canvas.onmousedown   = ebinder(mv, mv.e_mousedown);
-		this.canvas.onmousemove   = ebinder(mv, mv.e_mousemove);
-		this.canvas.onmouseup     = ebinder(mv, mv.e_mouseup  );
+		this.canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+		this.canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+		this.canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
 		this.canvas.oncontextmenu = function(){ return false;};
 
-		this.numparent.onmousedown   = ebinder(mv, mv.e_mousedown);
-		this.numparent.onmousemove   = ebinder(mv, mv.e_mousemove);
-		this.numparent.onmouseup     = ebinder(mv, mv.e_mouseup  );
+		this.numparent.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+		this.numparent.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+		this.numparent.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
 		this.numparent.oncontextmenu = function(){ return false;};
 
 		if(first){
-			document.onkeydown  = kcbinder(kc.e_keydown);
-			document.onkeyup    = kcbinder(kc.e_keyup);
-			document.onkeypress = kcbinder(kc.e_keypress);
+			document.onkeydown  = ee.kcbinder(kc.e_keydown);
+			document.onkeyup    = ee.kcbinder(kc.e_keyup);
+			document.onkeypress = ee.kcbinder(kc.e_keypress);
 		}
 	},
 	initSilverlight : function(sender){
-		sender.AddEventListener("KeyDown", kcbinder(kc.e_SLkeydown));
-		sender.AddEventListener("KeyUp",   kcbinder(kc.e_SLkeyup));
+		sender.AddEventListener("KeyDown", ee.kcbinder(kc.e_SLkeydown));
+		sender.AddEventListener("KeyUp",   ee.kcbinder(kc.e_SLkeyup));
 	},
 
 	//---------------------------------------------------------------------------
@@ -216,8 +216,9 @@ PBase.prototype = {
 			k.p0.y += mf(k.cheight*0.45);
 		}
 
-		k.cv_oft.x = menu.getLeft(this.canvas);
-		k.cv_oft.y = menu.getTop(this.canvas);
+		var rect = ee('puzzle_canvas').getRect();
+		k.cv_oft.x = rect.left;
+		k.cv_oft.y = rect.top;
 
 		kp.resize();
 		bd.setposAll();
@@ -238,7 +239,7 @@ PBase.prototype = {
 	},
 	resize_canvas_onload : function(){
 		if(!k.br.IE || pc.already()){ this.resize_canvas();}
-		else{ uuCanvas.ready(binder(this, this.resize_canvas));}
+		else{ uuCanvas.ready(ee.binder(this, this.resize_canvas));}
 	},
 	onresize_func : function(){
 		if(this.onresizenow){ return;}

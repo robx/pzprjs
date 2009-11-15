@@ -79,7 +79,7 @@ Puzzles.tawa.prototype = {
 			if(!base.initProcess){ this.allclear();}
 		};
 
-		this.resize_original = binder(base, base.resize_canvas_only);
+		this.resize_original = ee.binder(base, base.resize_canvas_only);
 		base.resize_canvas_only = function(){
 			puz.resize_original();
 
@@ -164,7 +164,7 @@ Puzzles.tawa.prototype = {
 		};
 
 		if(k.EDITOR){
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.kpinput = function(ca){
 				kc.key_inputqnum(ca);
 			};
@@ -205,7 +205,7 @@ Puzzles.tawa.prototype = {
 
 		var cw=32, bw=2;
 		for(var i=0;i<=3;i++){
-			var _img = unselectable(newEL('img'));
+			var _img = ee.newELx('img').unselectable().el;
 			_img.src            = './src/img/tawa_nb.gif';
 			_img.className      = 'clickimg';
 			_img.id             = 'nb'+i;
@@ -213,16 +213,16 @@ Puzzles.tawa.prototype = {
 			_img.style.left     = "-"+(i*cw)+"px";
 			_img.style.clip     = "rect(0px,"+((i+1)*cw)+"px,"+cw+"px,"+(i*cw)+"px)";
 			_img.style.margin   = ""+bw+"px";
-			_img.onclick        = binder(pp, pp.funcs.clickimg, [i])
+			_img.onclick        = ee.binder(pp, pp.funcs.clickimg, [i])
 
-			var _div = newEL('div');
+			var _div = ee.newEL('div');
 			_div.style.position = 'relative';
 			_div.style.display  = 'block';
 			_div.style.width    = ""+(cw+bw*2)+"px";
 			_div.style.height   = ""+(cw+bw*2)+"px";
 			_div.appendChild(_img);
 
-			var _td = newEL('td');
+			var _td = ee.newEL('td');
 			_td.appendChild(_div);
 
 			getEL('laps').appendChild(_td);
@@ -232,7 +232,7 @@ Puzzles.tawa.prototype = {
 
 		// キー移動範囲のminx,maxx,miny,maxy設定関数オーバーライド
 		// このパズルに限って、やたらとtc.maxxが参照されます。。
-		tc.getTCC = binder(tc, function(){ return bd.cnum(this.cursolx, mf((this.cursoly-1)/2));});
+		tc.getTCC = ee.binder(tc, function(){ return bd.cnum(this.cursolx, mf((this.cursoly-1)/2));});
 		tc.setTCC = function(id){
 			if(id<0 || bd.cellmax<=id){ return;}
 			this.cursolx = bd.cell[id].cx; this.cursoly = bd.cell[id].cy*2+1;

@@ -150,7 +150,7 @@ Puzzles.nanro.prototype = {
 			((mode==1)?this.inputcol('num','knumc',' ','') :this.inputcol('empty','knumy','',''));
 			this.insertrow();
 		};
-		kp.generate(kp.ORIGINAL, true, true, binder(kp, kp.kpgenerate));
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
 		kp.kpinput = function(ca){ kc.keyinput(ca);};
 
 		area.resetArea();

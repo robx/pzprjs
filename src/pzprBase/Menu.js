@@ -33,8 +33,6 @@ Menu.prototype = {
 	// menu.menuinit()      メニュー、ボタン、サブメニュー、フロートメニュー、
 	//                      ポップアップメニューの初期設定を行う
 	// menu.menureset()     メニュー用の設定を消去する
-	// menu.getSrcElement() イベントを起こしたエレメントを返す
-	// menu.spanEL()        spanタグ＋innerHTMLだけ設定してエレメントを返す
 	//---------------------------------------------------------------------------
 	menuinit : function(){
 		this.buttonarea();
@@ -69,15 +67,6 @@ Menu.prototype = {
 		pp.reset();
 	},
 
-	getSrcElement : function(event){
-		return event.target || event.srcElement;
-	},
-	spanEL : function(str){
-		var el = newEL('span');
-		el.innerHTML = str;
-		return el;
-	},
-
 	//---------------------------------------------------------------------------
 	// menu.menuarea()   メニューの初期設定を行う
 	// menu.addMenu()    メニューの情報を変数に登録する
@@ -107,13 +96,13 @@ Menu.prototype = {
 	},
 
 	addMenu : function(idname, strJP, strEN){
-		var el = newEL('div');
+		var el = ee.newEL('div');
 		el.className = 'menu';
 		el.id        = 'menu_'+idname;
 		el.innerHTML = "["+strJP+"]";
 		el.style.marginRight = "4pt";
-		el.onmouseover = ebinder(this, this.menuhover, [idname]);
-		el.onmouseout  = ebinder(this, this.menuout);
+		el.onmouseover = ee.ebinder(this, this.menuhover, [idname]);
+		el.onmouseout  = ee.ebinder(this, this.menuout);
 		getEL('menupanel').appendChild(el);
 
 		this.addLabels(el, "["+strJP+"]", "["+strEN+"]");
@@ -121,7 +110,7 @@ Menu.prototype = {
 	menuhover : function(e, idname){
 		this.floatmenuopen(e,idname,0);
 		$("div.menusel").attr("class", "menu");
-		this.getSrcElement(e).className = "menusel";
+		ee.getSrcElement(e).className = "menusel";
 	},
 	menuout   : function(e){
 		if(!this.insideOfMenu(e)){
@@ -140,15 +129,15 @@ Menu.prototype = {
 	// menu.checkclick()    管理領域のチェックボタンが押されたとき、チェック型の設定を設定する
 	//---------------------------------------------------------------------------
 	submenuhover : function(e, idname){
-		if(this.getSrcElement(e).className==="smenu"){ this.getSrcElement(e).className="smenusel";}
+		if(ee.getSrcElement(e).className==="smenu"){ ee.getSrcElement(e).className="smenusel";}
 		if(pp.flags[idname] && pp.type(idname)==1){ this.floatmenuopen(e,idname,this.dispfloat.length);}
 	},
 	submenuout   : function(e, idname){
-		if(this.getSrcElement(e).className==="smenusel"){ this.getSrcElement(e).className="smenu";}
+		if(ee.getSrcElement(e).className==="smenusel"){ ee.getSrcElement(e).className="smenu";}
 		if(pp.flags[idname] && pp.type(idname)==1){ this.floatmenuout(e);}
 	},
 	submenuclick : function(e, idname){
-		if(this.getSrcElement(e).className==="smenunull"){ return;}
+		if(ee.getSrcElement(e).className==="smenunull"){ return;}
 		this.menuclear();
 		this.floatmenuclose(0);
 
@@ -182,15 +171,16 @@ Menu.prototype = {
 
 		if(depth>0 && !this.dispfloat[depth-1]){ return;}
 
-		var src = this.getSrcElement(e);
+		var src = ee.getSrcElement(e);
 		var _float = this.floatpanel[idname];
+		var rect = ee(_float).getRect();
 		if(depth==0){
-			_float.style.left = this.getLeft(src) - 3 + k.IEMargin.x;
-			_float.style.top  = this.getBottom(src) + (k.br.IE?-2:1);
+			_float.style.left = rect.left - 3 + k.IEMargin.x;
+			_float.style.top  = rect.bottom + (k.br.IE?-2:1);
 		}
 		else{
-			_float.style.left = this.getRight(src) - 2;
-			_float.style.top  = this.getTop(src) + (k.br.IE?-5:-2);
+			_float.style.left = rect.right - 2;
+			_float.style.top  = rect.top + (k.br.IE?-5:-2);
 		}
 		_float.style.zIndex   = 101+depth;
 		_float.style.display  = 'inline';
@@ -225,12 +215,14 @@ Menu.prototype = {
 	insideOf : function(el, e){
 		var ex = mv.pointerX(e)+(k.br.WinWebKit?1:0);
 		var ey = mv.pointerY(e)+(k.br.WinWebKit?1:0);
-		return (ex>=this.getLeft(el) && ex<=this.getRight(el) && ey>=this.getTop(el) && ey<=this.getBottom(el));
+		var rect = ee(el).getRect();
+		return (ex>=rect.left && ex<=rect.right && ey>=rect.top && ey<=rect.bottom);
 	},
 	insideOfMenu : function(e){
 		var ex = mv.pointerX(e)+(k.br.WinWebKit?1:0);
 		var ey = mv.pointerY(e)+(k.br.WinWebKit?1:0);
-		return (ex>=this.getLeft(getEL('menu_file')) && ex<=this.getRight(getEL('menu_other')) && ey>=this.getTop(getEL('menu_file')));
+		var rect_f = ee('menu_file').getRect(), rect_o = ee('menu_other').getRect();
+		return (ex>=rect_f.left && ex<=rect_o.right && ey>=rect_f.top);
 	},
 	//---------------------------------------------------------------------------
 	// menu.getTop()         要素の上座標を取得する
@@ -350,7 +342,7 @@ Menu.prototype = {
 
 			if(menuid=='setting'){
 				if(last>0 && last!=pp.type(idname)){
-					var _sep = newEL('div');
+					var _sep = ee.newEL('div');
 					_sep.className = 'smenusep';
 					_sep.innerHTML = '&nbsp;';
 					floats.appendChild(_sep);
@@ -360,29 +352,29 @@ Menu.prototype = {
 
 			var smenu;
 			if     (pp.type(idname)==5){
-				smenu = newEL('div');
+				smenu = ee.newEL('div');
 				smenu.className = 'smenusep';
 				smenu.innerHTML = '&nbsp;';
 			}
 			else if(pp.type(idname)==3){
-				smenu = newEL('span');
+				smenu = ee.newEL('span');
 				smenu.style.color = 'white';
 			}
 			else if(pp.type(idname)==1){
-				smenu = newEL('div');
+				smenu = ee.newEL('div');
 				smenu.className  = 'smenu';
 				smenu.style.fontWeight = '900';
 				smenu.style.fontSize   = '10pt';
-				smenu.onmouseover = ebinder(this, this.submenuhover, [idname]);
-				smenu.onmouseout  = ebinder(this, this.submenuout,   [idname]);
+				smenu.onmouseover = ee.ebinder(this, this.submenuhover, [idname]);
+				smenu.onmouseout  = ee.ebinder(this, this.submenuout,   [idname]);
 				this.getFloatpanel(idname);
 			}
 			else{
-				smenu = newEL('div');
+				smenu = ee.newEL('div');
 				smenu.className  = 'smenu';
-				smenu.onmouseover = ebinder(this, this.submenuhover, [idname]);
-				smenu.onmouseout  = ebinder(this, this.submenuout,   [idname]);
-				smenu.onclick     = ebinder(this, this.submenuclick, [idname]);
+				smenu.onmouseover = ee.ebinder(this, this.submenuhover, [idname]);
+				smenu.onmouseout  = ee.ebinder(this, this.submenuout,   [idname]);
+				smenu.onclick     = ee.ebinder(this, this.submenuclick, [idname]);
 				this.getFloatpanel(idname);
 				if(pp.type(idname)!=0){
 					smenu.style.fontSize    = '10pt';
@@ -398,10 +390,10 @@ Menu.prototype = {
 	},
 	getFloatpanel : function(id){
 		if(!this.floatpanel[id]){
-			var _float = newEL("div");
+			var _float = ee.newEL("div");
 			_float.className = 'floatmenu';
 			_float.id        = 'float_'+id;
-			_float.onmouseout = ebinder(this, this.floatmenuout);
+			_float.onmouseout = ee.ebinder(this, this.floatmenuout);
 			_float.style.zIndex = 101;
 			_float.style.backgroundColor = base.floatbgcolor;
 			getEL('float_parent').appendChild(_float);
@@ -421,69 +413,65 @@ Menu.prototype = {
 			if(!pp.flags[idname] || !pp.getLabel(idname)){ continue;}
 
 			if(pp.type(idname)==1){
-				var up = getEL("usepanel");
+				var plx = ee("usepanel");
 
-				var _el = newEL('span');
+				var _el = ee.newEL('span');
 				_el.id = "cl_" + idname;
 				_el.innerHTML = pp.getLabel(idname);
-				up.appendChild(_el);
-
-				up.appendChild(this.spanEL(" |&nbsp;"));
+				plx.appendEL(_el);
+				plx.appendHTML(" |&nbsp;");
 
 				for(var i=0;i<pp.flags[idname].child.length;i++){
 					var num = pp.flags[idname].child[i];
-					var el = unselectable(newEL('div'));
-					el.className = ((num==pp.getVal(idname))?"flagsel":"flag");
-					el.id        = "up_"+idname+"_"+num;
-					el.innerHTML = pp.getMenuStr(""+idname+"_"+num);
-					el.onclick   = binder(pp, pp.setVal, [idname,num]);
-					up.appendChild(el);
-
-					up.appendChild(this.spanEL(" "));
+					ee.newELx('div')
+					  .set(((num==pp.getVal(idname))?"flagsel":"flag"),"up_"+idname+"_"+num,{})
+					  .unselectable().setText(pp.getMenuStr(""+idname+"_"+num))
+					  .setEvents({click:ee.binder(pp, pp.setVal, [idname,num])}).appendTo(plx);
+					ee('usepanel').appendHTML(" ");
 				}
 
-				up.appendChild(newEL('br'));
+				plx.appendEL(ee.newEL('br'));
 			}
 			else if(pp.type(idname)==2){
-				var cp = getEL("checkpanel");
+				var cpx = ee("checkpanel");
 
-				var _el = newEL('input');
+				var _el = ee.newEL('input');
 				_el.type  = 'checkbox';
 				_el.id    = "ck_" + idname;
 				_el.check = '';
-				_el.onclick = binder(this, this.checkclick, [idname]);
-				cp.appendChild(_el)
+				_el.onclick = ee.binder(this, this.checkclick, [idname]);
+				cpx.appendEL(_el)
 
-				cp.appendChild(this.spanEL(" "));
+				cpx.appendHTML(" ");
 
-				_el = newEL('span');
+				_el = ee.newEL('span');
 				_el.id = "cl_" + idname;
 				_el.innerHTML = pp.getLabel(idname);
-				cp.appendChild(_el);
+				cpx.appendEL(_el);
 
-				if(idname=="irowake"){
-					cp.appendChild(this.createButton('ck_irowake2','','色分けしなおす'));
-					this.addButtons(getEL("ck_irowake2"), binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
+				if(idname==="irowake"){
+					cpx.appendEL(ee.newBTN('ck_irowake2','','色分けしなおす'));
+					this.addButtons(getEL("ck_irowake2"), ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
 				}
 
-				cp.appendChild(newEL('br'));
+				cpx.appendEL(ee.newEL('br'));
 			}
 		}
 
-		var _tr = unselectable(getEL('translation'));
+		var _tr = ee('translation').unselectable().el;
 		_tr.style.position = 'absolute';
 		_tr.style.cursor   = 'pointer';
 		_tr.style.fontSize = '10pt';
 		_tr.style.color    = 'green';
 		_tr.style.backgroundColor = '#dfdfdf';
-		_tr.onclick = binder(this, this.translate);
+		_tr.onclick = ee.binder(this, this.translate);
 
 		if(k.EDITOR){
 			$("#timerpanel,#separator2").hide();
 		}
 		if(k.irowake!=0){
 			getEL('btnarea').appendChild(menu.createButton('btncolor2','','色分けしなおす'))
-			this.addButtons(getEL("btncolor2"), binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
+			this.addButtons(getEL("btncolor2"), ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
 			$("#btncolor2").hide();
 		}
 	},
@@ -502,53 +490,53 @@ Menu.prototype = {
 
 		//---------------------------------------------------------------------------
 		//// formボタンのイベント
-		var px = ebinder(this, this.popclose);
+		var px = ee.ebinder(this, this.popclose);
 
 		// 盤面の新規作成
-		document.newboard.newboard.onclick = ebinder(this.ex, this.ex.newboard);
+		document.newboard.newboard.onclick = ee.ebinder(this.ex, this.ex.newboard);
 		document.newboard.cancel.onclick   = px;
 
 		// URL入力
-		document.urlinput.urlinput.onclick = ebinder(this.ex, this.ex.urlinput);
+		document.urlinput.urlinput.onclick = ee.ebinder(this.ex, this.ex.urlinput);
 		document.urlinput.cancel.onclick   = px;
 
 		// URL出力
 		var _div = getEL('urlbuttonarea');
-		var ib = binder(this, function(name, strJP, strEN, eval){
+		var ib = ee.binder(this, function(name, strJP, strEN, eval){
 			if(eval===false) return;
 			var el = menu.createButton('', name, strJP);
-			this.addButtons(el, ebinder(this.ex, this.ex.urloutput), strJP, strEN);
+			this.addButtons(el, ee.ebinder(this.ex, this.ex.urloutput), strJP, strEN);
 			_div.appendChild(el)
-			_div.appendChild(newEL('br'));
+			_div.appendChild(ee.newEL('br'));
 		});
 		ib('pzprv3',     "ぱずぷれv3のURLを出力する",           "Output PUZ-PRE v3 URL",          true);
 		ib('pzprapplet', "ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", !k.ispzprv3ONLY);
 		ib('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              !!k.isKanpenExist);
 		ib('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (k.puzzleid==="heyawake"));
 		ib('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
-		getEL("urlbuttonarea").appendChild(newEL('br'));
+		getEL("urlbuttonarea").appendChild(ee.newEL('br'));
 
-		this.addButtons(document.urloutput.openurl, ebinder(this.ex, this.ex.openurl), "このURLを開く", "Open this URL on another window/tab");
-		this.addButtons(document.urloutput.close,   px,                                "閉じる", "Close");
+		this.addButtons(document.urloutput.openurl, ee.ebinder(this.ex, this.ex.openurl), "このURLを開く", "Open this URL on another window/tab");
+		this.addButtons(document.urloutput.close,   px,                                   "閉じる", "Close");
 
 		// ファイル入力
-		document.fileform.filebox.onchange = ebinder(this.ex, this.ex.fileopen);
+		document.fileform.filebox.onchange = ee.ebinder(this.ex, this.ex.fileopen);
 		document.fileform.close.onclick    = px;
 
 		// データベースを開く
-		document.database.sorts   .onchange = ebinder(fio, fio.displayDataTableList);
-		document.database.datalist.onchange = ebinder(fio, fio.selectDataTable);
-		document.database.tableup.onclick   = ebinder(fio, fio.upDataTable);
-		document.database.tabledn.onclick   = ebinder(fio, fio.downDataTable);
-		document.database.open   .onclick   = ebinder(fio, fio.openDataTable);
-		document.database.save   .onclick   = ebinder(fio, fio.saveDataTable);
-		document.database.comedit.onclick   = ebinder(fio, fio.editComment);
-		document.database.difedit.onclick   = ebinder(fio, fio.editDifficult);
-		document.database.del    .onclick   = ebinder(fio, fio.deleteDataTable);
+		document.database.sorts   .onchange = ee.ebinder(fio, fio.displayDataTableList);
+		document.database.datalist.onchange = ee.ebinder(fio, fio.selectDataTable);
+		document.database.tableup.onclick   = ee.ebinder(fio, fio.upDataTable);
+		document.database.tabledn.onclick   = ee.ebinder(fio, fio.downDataTable);
+		document.database.open   .onclick   = ee.ebinder(fio, fio.openDataTable);
+		document.database.save   .onclick   = ee.ebinder(fio, fio.saveDataTable);
+		document.database.comedit.onclick   = ee.ebinder(fio, fio.editComment);
+		document.database.difedit.onclick   = ee.ebinder(fio, fio.editDifficult);
+		document.database.del    .onclick   = ee.ebinder(fio, fio.deleteDataTable);
 		document.database.close  .onclick   = px;
 
 		// 盤面の調整
-		var pa = ebinder(this.ex, this.ex.popupadjust);
+		var pa = ee.ebinder(this.ex, this.ex.popupadjust);
 		document.adjust.expandup.onclick = pa;
 		document.adjust.expanddn.onclick = pa;
 		document.adjust.expandlt.onclick = pa;
@@ -570,7 +558,7 @@ Menu.prototype = {
 		document.credit.close.onclick = px;
 
 		// 表示サイズ
-		document.dispsize.dispsize.onclick = ebinder(this, this.ex.dispsize);
+		document.dispsize.dispsize.onclick = ee.ebinder(this, this.ex.dispsize);
 		document.dispsize.cancel.onclick   = px;
 	},
 	popclose : function(){
@@ -591,16 +579,16 @@ Menu.prototype = {
 	// menu.titlebarmove() Popupタイトルバーからマウスを動かしたときポップアップメニューを動かす
 	//---------------------------------------------------------------------------
 	titlebarfunc : function(bar){
-		bar.onmousedown = ebinder(menu, menu.titlebardown);
-		bar.onmouseup   = ebinder(menu, menu.titlebarup);
-		bar.onmouseout  = ebinder(menu, menu.titlebarout);
-		bar.onmousemove = ebinder(menu, menu.titlebarmove);
+		bar.onmousedown = ee.ebinder(menu, menu.titlebardown);
+		bar.onmouseup   = ee.ebinder(menu, menu.titlebarup);
+		bar.onmouseout  = ee.ebinder(menu, menu.titlebarout);
+		bar.onmousemove = ee.ebinder(menu, menu.titlebarmove);
 
-		unselectable(bar);
+		ee(bar).unselectable().el;
 	},
 
 	titlebardown : function(e){
-		var pop = this.getSrcElement(e).parentNode;
+		var pop = ee.getSrcElement(e).parentNode;
 		this.isptitle = 1;
 		this.offset.x = mv.pointerX(e) - parseInt(pop.style.left);
 		this.offset.y = mv.pointerY(e) - parseInt(pop.style.top);
@@ -609,11 +597,11 @@ Menu.prototype = {
 		this.isptitle = 0;
 	},
 	titlebarout  : function(e){
-		var pop = this.getSrcElement(e).parentNode;
+		var pop = ee.getSrcElement(e).parentNode;
 		if(!this.insideOf(pop, e)){ this.isptitle = 0;}
 	},
 	titlebarmove : function(e){
-		var pop = this.getSrcElement(e).parentNode;
+		var pop = ee.getSrcElement(e).parentNode;
 		if(pop && this.isptitle){
 			pop.style.left = mv.pointerX(e) - this.offset.x;
 			pop.style.top  = mv.pointerY(e) - this.offset.y;
@@ -633,17 +621,17 @@ Menu.prototype = {
 	// menu.setDefaultLabels()  ラベルをspanstackに設定する
 	//---------------------------------------------------------------------------
 	buttonarea : function(){
-		this.addButtons(getEL("btncheck"),  binder(ans, ans.check),             "チェック", "Check");
-		this.addButtons(getEL("btnundo"),   binder(um, um.undo),                "戻",       "<-");
-		this.addButtons(getEL("btnredo"),   binder(um, um.redo),                "進",       "->");
-		this.addButtons(getEL("btnclear"),  binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
-		this.addButtons(getEL("btnclear2"), binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
+		this.addButtons(getEL("btncheck"),  ee.binder(ans, ans.check),             "チェック", "Check");
+		this.addButtons(getEL("btnundo"),   ee.binder(um, um.undo),                "戻",       "<-");
+		this.addButtons(getEL("btnredo"),   ee.binder(um, um.redo),                "進",       "->");
+		this.addButtons(getEL("btnclear"),  ee.binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
+		this.addButtons(getEL("btnclear2"), ee.binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
 
 		this.setDefaultButtons();
 		this.setDefaultLabels();
 	},
 	createButton : function(id, name, val){
-		var _btn = newEL('input');
+		var _btn = ee.newEL('input');
 		_btn.type  = 'button';
 		if(!!id)  { _btn.id   = id;}
 		if(!!name){ _btn.name = name;}
@@ -654,14 +642,14 @@ Menu.prototype = {
 
 	addButtons : function(el, func, strJP, strEN){
 		if(!!func) el.onclick = func;
-		this.btnstack.push({el:unselectable(el), str:{ja:strJP, en:strEN}});
+		this.btnstack.push({el:ee(el).unselectable().el, str:{ja:strJP, en:strEN}});
 	},
 	addLabels  : function(el, strJP, strEN){
 		this.labelstack.push({el:el, str:{ja:strJP, en:strEN}});
 	},
 
 	setDefaultButtons : function(){
-		var t = binder(this, this.addButtons);
+		var t = ee.binder(this, this.addButtons);
 		t(document.newboard.newboard, null, "新規作成",   "Create");
 		t(document.newboard.cancel,   null, "キャンセル", "Cancel");
 		t(document.urlinput.urlinput, null, "読み込む",   "Import");
@@ -692,7 +680,7 @@ Menu.prototype = {
 		t(document.credit.close,      null, "閉じる",     "OK");
 	},
 	setDefaultLabels : function(){
-		var t = binder(this, this.addLabels);
+		var t = ee.binder(this, this.addLabels);
 		t(getEL("translation"), "English",                     "日本語");
 		t(getEL("bar1_1"),      "盤面の新規作成",              "Createing New Board");
 		t(getEL("pop1_1_cap0"), "盤面を新規作成します。",      "Create New Board.");
@@ -840,12 +828,12 @@ Properties.prototype = {
 	// pp.setStringToFlags() 設定値に文字列を登録する
 	//---------------------------------------------------------------------------
 	setDefaultFlags : function(){
-		var as = binder(this, this.addSmenuToFlags),
-			au = binder(this, this.addUseToFlags),
-			ac = binder(this, this.addCheckToFlags),
-			aa = binder(this, this.addCaptionToFlags),
-			ai = binder(this, this.addUseChildrenToFlags),
-			ap = binder(this, this.addSeparatorToFlags);
+		var as = ee.binder(this, this.addSmenuToFlags),
+			au = ee.binder(this, this.addUseToFlags),
+			ac = ee.binder(this, this.addCheckToFlags),
+			aa = ee.binder(this, this.addCaptionToFlags),
+			ai = ee.binder(this, this.addUseChildrenToFlags),
+			ap = ee.binder(this, this.addSeparatorToFlags);
 
 		au('mode','setting',(k.editmode?1:3),[1,3]);
 
@@ -900,8 +888,8 @@ Properties.prototype = {
 		this.setStringToFlags();
 	},
 	setStringToFlags : function(){
-		var sm = binder(this, this.setMenuStr),
-			sl = binder(this, this.setLabel);
+		var sm = ee.binder(this, this.setMenuStr),
+			sl = ee.binder(this, this.setLabel);
 
 		sm('size',   '表示サイズ',  'Cell Size');
 		sm('size_0', 'サイズ 極小', 'Ex Small');

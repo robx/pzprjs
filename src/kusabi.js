@@ -88,7 +88,7 @@ Puzzles.kusabi.prototype = {
 				this.inputcol('empty','knumx','','');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.kpinput = function(ca){
 				kc.key_inputqnum(ca);
 			};
@@ -123,7 +123,7 @@ Puzzles.kusabi.prototype = {
 			if(num>=1 && num<=3){ text = ({1:"“¯",2:"’Z",3:"’·"})[num];}
 			else{ this.hideEL(obj.numobj); return;}
 
-			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+			if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
 			this.dispnum(obj.numobj, 1, text, 0.65, this.getNumberColor(id), obj.px, obj.py);
 		};
 	},

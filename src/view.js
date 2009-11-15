@@ -106,7 +106,7 @@ Puzzles.view.prototype = {
 			((mode==1)?this.inputcol('num','knum.','-','?'):this.inputcol('empty','knumz','',''));
 			this.insertrow();
 		};
-		kp.generate(kp.ORIGINAL, true, true, binder(kp, kp.kpgenerate));
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
 		kp.kpinput = function(ca){
 			if(kc.key_view(ca)){ return;}
 			kc.key_inputqnum(ca);

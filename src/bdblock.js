@@ -146,13 +146,13 @@ Puzzles.bdblock.prototype = {
 			}
 
 			rinfo = area.getRoomInfo();
-			if( !this.checkNoObjectInRoom(rinfo, binder(bd, bd.QnC)) ){
+			if( !this.checkNoObjectInRoom(rinfo, ee.binder(bd, bd.QnC)) ){
 				this.setAlert('数字のないブロックがあります。','A block has no number.'); return false;
 			}
-			if( !this.checkSameObjectInRoom(rinfo, binder(bd, bd.QnC)) ){
+			if( !this.checkSameObjectInRoom(rinfo, ee.binder(bd, bd.QnC)) ){
 				this.setAlert('１つのブロックに異なる数字が入っています。','A block has dirrerent numbers.'); return false;
 			}
-			if( !this.checkObjectRoom(rinfo, binder(bd, bd.QnC)) ){
+			if( !this.checkObjectRoom(rinfo, ee.binder(bd, bd.QnC)) ){
 				this.setAlert('同じ数字が異なるブロックに入っています。','One kind of numbers is included in dirrerent blocks.'); return false;
 			}
 

@@ -205,7 +205,7 @@ Puzzles.slalom.prototype = {
 				this.inputcol('num','knum_',' ',' ');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.imgCR = [4,1];
 			kp.kpinput = function(ca){
 				kc.key_inputqnum_slalom(ca);
@@ -387,7 +387,7 @@ Puzzles.slalom.prototype = {
 			var num = bd.hinfo.max, obj = bd.cell[c];
 			if(num<0){ this.hideEL(obj.numobj); return;}
 
-			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+			if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
 			var fontratio = (num<10?0.75:0.66);
 			this.dispnum(obj.numobj, 1, ""+num, fontratio, "black", obj.px, obj.py);
 		};
@@ -410,7 +410,7 @@ Puzzles.slalom.prototype = {
 				var num = (r>0?bd.hinfo.data[r].number:-1);
 				if(!keydown || num<=0){ this.hideEL(obj.numobj); continue;}
 
-				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+				if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
 				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
 				this.dispnum(obj.numobj, 1, ""+num, fontratio ,"tomato", obj.px, obj.py);
 			}
@@ -870,7 +870,7 @@ Hurdle.prototype = {
 		}
 
 		// セットされた数字を全てのnumsから消す関数
-		var delnum = binder(this, function(dn){ for(var r=1;r<=this.max;r++){
+		var delnum = ee.binder(this, function(dn){ for(var r=1;r<=this.max;r++){
 			var atmp = [];
 			for(var i=0;i<nums[r].length;i++){ if(dn[nums[r][i]]!=1){ atmp.push(nums[r][i]);} }
 			nums[r] = atmp;

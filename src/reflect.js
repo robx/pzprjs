@@ -130,7 +130,7 @@ Puzzles.reflect.prototype = {
 				this.inputcol('num','knum.','-','-');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.imgCR = [4,1];
 			kp.kpinput = function(ca){
 				if(kc.key_inputLineParts(ca)){ return;}

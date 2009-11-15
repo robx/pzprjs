@@ -156,7 +156,7 @@ Puzzles.hashikake.prototype = {
 				this.inputcol('num','knum.','-','Åõ');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.kpinput = function(ca){
 				kc.key_inputqnum(ca);
 			};
@@ -233,7 +233,7 @@ Puzzles.hashikake.prototype = {
 		line.branch = function(bx,by,lcnt){
 			return (lcnt==3||lcnt==4) && (bd.QnC(bd.cnum(mf(bx/2),mf(by/2)))!=-1);
 		};
-		line.point = binder(line, function(id,cc){
+		line.point = ee.binder(line, function(id,cc){
 			return this.lcntCell(cc)==1 || (this.lcntCell(cc)==3 && this.tshapeid(cc)==id);
 		});
 	},

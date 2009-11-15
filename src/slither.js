@@ -111,7 +111,7 @@ Puzzles.slither.prototype = {
 				this.inputcol('num','knum.','-','?');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 		}
 
 		bd.maxnum = 3;

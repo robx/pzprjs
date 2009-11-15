@@ -196,7 +196,7 @@ Puzzles.numlin.prototype = {
 				this.setAlert('3‚ÂˆÈã‚Ì”š‚ª‚Â‚È‚ª‚Á‚Ä‚¢‚Ü‚·B','Three or more numbers are connected.'); return false;
 			}
 
-			if( !this.checkSameObjectInRoom(linfo, binder(bd, bd.QnC)) ){
+			if( !this.checkSameObjectInRoom(linfo, ee.binder(bd, bd.QnC)) ){
 				this.setAlert('ˆÙ‚È‚é”š‚ª‚Â‚È‚ª‚Á‚Ä‚¢‚Ü‚·B','Different numbers are connected.'); return false;
 			}
 

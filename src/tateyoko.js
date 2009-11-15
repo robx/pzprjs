@@ -155,7 +155,7 @@ Puzzles.tateyoko.prototype = {
 				this.inputcol('num','knum.',' ',' ');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.kpinput = function(ca){
 				kc.key_inputqnum_tateyoko(ca);
 			};
@@ -245,7 +245,7 @@ Puzzles.tateyoko.prototype = {
 
 				var num = bd.cell[c].qnum;
 				if(num===-1){ this.hideEL(obj.numobj); continue;}
-				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+				if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
 
 				var color = this.fontcolor;
 				if(bd.cell[c].ques==1){ color = "white";}

@@ -153,7 +153,7 @@ Puzzles.triplace.prototype = {
 				this.inputcol('num','knum0','0','0');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
 				kc.key_inputqnum(ca);

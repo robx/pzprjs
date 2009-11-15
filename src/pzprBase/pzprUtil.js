@@ -307,7 +307,7 @@ LineManager.prototype = {
 
 	repaintLine : function(idlist){
 		if(!menu.getVal('irowake')){ return;}
-		var paintfunc = binder(pc, (k.isCenterLine?pc.drawLine1:pc.drawBorder1));
+		var paintfunc = ee.binder(pc, (k.isCenterLine?pc.drawLine1:pc.drawBorder1));
 		if(g.vml){
 			pc.zstable = true;
 			for(var i=0,len=idlist.length;i<len;i++){

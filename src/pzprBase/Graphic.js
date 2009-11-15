@@ -479,7 +479,7 @@ Graphic.prototype = {
 		for(var id=0;id<clist.length;id++){
 			var obj = bd.cell[id];
 			if(bd.cell[id].ques!==-2){ this.hideEL(obj.numobj); continue;}
-			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+			if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
 			var color = (bd.cell[id].error===1 ? this.fontErrcolor : this.fontcolor);
 			this.dispnum(obj.numobj, 1, "?", 0.8, color, obj.px, obj.py);
 		}
@@ -1340,25 +1340,12 @@ Graphic.prototype = {
 	}),
 
 	//---------------------------------------------------------------------------
-	// pc.CreateDOMAndSetNop()     数字を描画する為のエレメントを生成する
-	// pc.CreateElementAndSetNop() エレメントを生成する
 	// pc.showEL()                 エレメントを表示する
 	// pc.hideEL()                 エレメントを隠す
 	// pc.isdispnumCell()          数字を記入できるか判定する
 	// pc.getNumberColor()         数字の色を判定する
 	//---------------------------------------------------------------------------
 	// 数字表示関数
-	CreateDOMAndSetNop : function(){
-		if(this.textenable){ return null;}
-		return this.CreateElementAndSetNop();
-	},
-	CreateElementAndSetNop : function(){
-		var el = newEL("div");
-		el.className = "divnum";
-		base.numparent.appendChild(el);
-
-		return unselectable(el);
-	},
 	showEL : function(el){ el.style.display = 'inline'; },	// 条件見なくてもよさそう。
 	hideEL : function(el){ if(!!el){ el.style.display = 'none';} },
 
@@ -1404,7 +1391,7 @@ Graphic.prototype = {
 	dispnumCell : function(id){
 		var obj = bd.cell[id];
 		if(!this.isdispnumCell(id)){ this.hideEL(obj.numobj); return;}
-		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+		if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
 
 		var type = (!k.isDispNumUL ? 1 : 5);
 		if(bd.cell[id].ques>=2 && bd.cell[id].ques<=5){ type=bd.cell[id].ques;}
@@ -1426,7 +1413,7 @@ Graphic.prototype = {
 	dispnumCross : function(id){
 		var obj = bd.cross[id];
 		if(bd.cross[id].qnum>0||(bd.cross[id].qnum===0&&k.dispzero===1)){
-			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+			if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
 			this.dispnum(obj.numobj, 101, ""+bd.cross[id].qnum, 0.6 ,this.fontcolor, obj.px, obj.py);
 		}
 		else{ this.hideEL(obj.numobj);}
@@ -1434,7 +1421,7 @@ Graphic.prototype = {
 	dispnumBorder : function(id){
 		var obj = bd.border[id];
 		if(bd.border[id].qnum>0||(bd.border[id].qnum===0&&k.dispzero===1)){
-			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+			if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
 			this.dispnum(obj.numobj, 101, ""+bd.border[id].qnum, 0.45 ,this.borderfontcolor, obj.px, obj.py);
 		}
 		else{ this.hideEL(obj.numobj);}
@@ -1532,7 +1519,7 @@ Graphic.prototype = {
 
 			if(val===-1 || guard===-1 || nb===-1 || bd.cell[nb].ques===51){ this.hideEL(obj[str]);}
 			else{
-				if(!obj[str]){ obj[str] = this.CreateDOMAndSetNop();}
+				if(!obj[str]){ obj[str] = ee.CreateDOMAndSetNop();}
 				var color = (err===1?this.fontErrcolor:this.fontcolor);
 				var text = (val>=0?""+val:"");
 				this.dispnum(obj[str], type, text, 0.45, color, obj.px, obj.py);
