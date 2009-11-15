@@ -107,6 +107,7 @@ Puzzles.barns.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.linecolor = pc.linecolor_LIGHT;
 		pc.errbcolor1 = pc.errbcolor1_DARK;
+		pc.setBGCellColorFunc('icebarn');
 
 		pc.maxYdeg = 0.70;
 
@@ -114,18 +115,12 @@ Puzzles.barns.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
-			this.drawIcebarns(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
-
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawLines(x1,y1,x2,y2);
-
-			if(k.br.IE){ this.drawPekes(x1,y1,x2,y2,1);}
-			else{ this.drawPekes(x1,y1,x2,y2,0);}
+			this.drawPekes(x1,y1,x2,y2,(k.br.IE?1:0));
 
 			this.drawChassis(x1,y1,x2,y2);
 		};
@@ -156,7 +151,7 @@ Puzzles.barns.prototype = {
 				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(ca&Math.pow(2,4-w)?6:0));} }
 				if((i*5+5)>=bd.cellmax){ break;}
 			}
-			return bstr.substring(i+1,bstr.length);
+			return bstr.substr(i+1);
 		};
 		enc.encodeBarns = function(){
 			var cm = "";

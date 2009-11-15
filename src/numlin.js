@@ -98,8 +98,7 @@ Puzzles.numlin.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,0);
@@ -118,7 +117,7 @@ Puzzles.numlin.prototype = {
 			var mgnh = mf(k.cheight*0.15);
 			var header = "c_sq_";
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
+			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QnC(c)!=-1){
@@ -197,7 +196,7 @@ Puzzles.numlin.prototype = {
 				this.setAlert('3‚ÂˆÈã‚Ì”Žš‚ª‚Â‚È‚ª‚Á‚Ä‚¢‚Ü‚·B','Three or more numbers are connected.'); return false;
 			}
 
-			if( !this.checkSameObjectInRoom(linfo, bd.QnC.bind(bd)) ){
+			if( !this.checkSameObjectInRoom(linfo, binder(bd, bd.QnC)) ){
 				this.setAlert('ˆÙ‚È‚é”Žš‚ª‚Â‚È‚ª‚Á‚Ä‚¢‚Ü‚·B','Different numbers are connected.'); return false;
 			}
 

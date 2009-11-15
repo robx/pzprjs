@@ -222,8 +222,8 @@ Puzzles.kinkonkan.prototype = {
 			um.enableRecord();
 		};
 
-		tc.getTCC = function(){ return bd.exnum(mf((this.cursolx-1)/2), mf((this.cursoly-1)/2));}.bind(tc);
-		tc.setTCC = function(id){
+		tc.getTCC = function(){ return binder(tc, bd.exnum(mf((this.cursolx-1)/2), mf((this.cursoly-1)/2)));};
+		tc.setTCC = binder(tc, function(id){
 			if(id<0 || 2*k.qcols+2*k.qrows+4<=id){ return;}
 			if     (id<  k.qcols)            { this.cursolx=2*id+1;           this.cursoly=this.miny;                 }
 			else if(id<2*k.qcols)            { this.cursolx=2*(id-k.qcols)+1; this.cursoly=this.maxy;                 }
@@ -233,7 +233,7 @@ Puzzles.kinkonkan.prototype = {
 			else if(id<2*k.qcols+2*k.qrows+2){ this.cursolx=this.maxx; this.cursoly=this.miny;}
 			else if(id<2*k.qcols+2*k.qrows+3){ this.cursolx=this.minx; this.cursoly=this.maxy;}
 			else if(id<2*k.qcols+2*k.qrows+4){ this.cursolx=this.maxx; this.cursoly=this.maxy;}
-		}.bind(tc);
+		});
 		tc.setTCC(0);
 	},
 
@@ -249,74 +249,57 @@ Puzzles.kinkonkan.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 
 			this.drawErrorCells_kinkonkan(x1,y1,x2,y2);
-			this.drawTriangle(x1,y1,x2,y2);
-			this.drawWhiteCells_kinkonkan(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2);
 
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawSlashes(x1,y1,x2,y2);
 
-			this.drawEXcells(x1,y1,x2,y2);
+			this.drawEXcells_kinkonkan(x1,y1,x2,y2);
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawTarget(x1-1,y1-1,x2,y2);
 		};
 
 		pc.drawErrorCells_kinkonkan = function(x1,y1,x2,y2){
-			var header = "c_full_";
+			var headers = ["c_full_", "c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_", "c_full_"];
 
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.ErC(c)==1 || bd.ErC(c)==6){
-					if     (bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else if(bd.ErC(c)==6){ g.fillStyle = this.errbcolor2;}
-					if(this.vnop(header+c,1)){
-						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
+				var c = clist[i], err = bd.cell[c].error;
+				if(err!==0){
+					if     (err==1){ g.fillStyle = this.errbcolor1;}
+					else if(err>=2){ g.fillStyle = this.errbcolor2;}
+					if(err===1 || err===6){
+						if(this.vnop(headers[err-1]+c,1)){
+							g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
+						}
 					}
+					else{ this.drawTriangle1(bd.cell[c].px, bd.cell[c].py, err, headers[err-1]+c);}
 				}
-				else{ this.vhide(header+c);}
+				else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c, headers[4]+c, headers[5]+c]);}
 			}
 			this.vinc();
 		};
-		pc.drawWhiteCells_kinkonkan = function(x1,y1,x2,y2){
-			var dsize = k.cwidth*0.06;
-			var header = "c_dot_";
-
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QsC(c)==1){
-					g.fillStyle = this.dotcolor;
-					if(this.vnop(header+c,1)){
-						g.beginPath();
-						g.arc(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, dsize, 0, Math.PI*2, false);
-						g.fill();
-					}
-				}
-				else{ this.vhide(header+c);}
-			}
-			this.vinc();
-		}
 		pc.drawSlashes = function(x1,y1,x2,y2){
 			var headers = ["c_sl1_", "c_sl2_"];
 			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
 
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
-				if(bd.QaC(c)!=-1){
+				if(bd.cell[c].qans!=-1){
 					g.strokeStyle = this.Cellcolor;
-					if(bd.QaC(c)==1){
+					if(bd.cell[c].qans==1){
 						if(this.vnop(headers[0]+c,0)){
 							this.inputPath([bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight], true);
 							g.stroke();
 						}
 					}
 					else{ this.vhide(headers[0]+c);}
-					if(bd.QaC(c)==2){
+					if(bd.cell[c].qans==2){
 						if(this.vnop(headers[1]+c,0)){
 							this.inputPath([bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight], true);
 							g.stroke();
@@ -329,43 +312,41 @@ Puzzles.kinkonkan.prototype = {
 			this.vinc();
 		};
 
-		pc.drawEXcells = function(x1,y1,x2,y2){
+		pc.drawEXcells_kinkonkan = function(x1,y1,x2,y2){
 			var header = "ex_full_";
 
-			for(var cx=x1;cx<=x2;cx++){
-				for(var cy=y1;cy<=y2;cy++){
-					var c = bd.exnum(cx,cy);
-					if(c<0 || 2*k.qcols+2*k.qrows<=c){ continue;}
-					var obj = bd.excell[c];
+			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+			for(var i=0;i<exlist.length;i++){
+				var c = exlist[i];
+				var obj = bd.excell[c];
 
-					if(bd.ErE(c)==6){
-						g.fillStyle = this.errbcolor2;
-						if(this.vnop(header+c,1)){
-							g.fillRect(obj.px+1, obj.py+1, k.cwidth-1, k.cheight-1);
-						}
+				if(bd.excell[c].error==6){
+					g.fillStyle = this.errbcolor2;
+					if(this.vnop(header+c,1)){
+						g.fillRect(obj.px+1, obj.py+1, k.cwidth-1, k.cheight-1);
 					}
-					else{ this.vhide(header+c);}
+				}
+				else{ this.vhide(header+c);}
 
-					if(bd.DiE(c)==0 && bd.QnE(c)==-1){ this.hideEL(obj.numobj);}
-					else{
-						if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-						var num=bd.QnE(c), canum=bd.DiE(c);
+				if(bd.excell[c].direc==0 && bd.excell[c].qnum==-1){ this.hideEL(obj.numobj);}
+				else{
+					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+					var num=bd.excell[c].qnum, canum=bd.excell[c].direc;
 
-						var color = this.fontErrcolor;
-						if(bd.ErE(c)!=1){ color=(canum<=52?this.fontcolor:this.fontAnscolor);}
+					var color = this.fontErrcolor;
+					if(bd.excell[c].error!==1){ color=(canum<=52?this.fontcolor:this.fontAnscolor);}
 
-						var fontratio = 0.66;
-						if(canum>0&&num>=10){ fontratio = 0.55;}
+					var fontratio = 0.66;
+					if(canum>0&&num>=10){ fontratio = 0.55;}
 
-						var text="";
-						if     (canum> 0&&canum<= 26){ text+=(canum+ 9).toString(36).toUpperCase();}
-						else if(canum>26&&canum<= 52){ text+=(canum-17).toString(36).toLowerCase();}
-						else if(canum>52&&canum<= 78){ text+=(canum-43).toString(36).toUpperCase();}
-						else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
-						if(num>=0){ text+=num.toString(10);}
+					var text="";
+					if     (canum> 0&&canum<= 26){ text+=(canum+ 9).toString(36).toUpperCase();}
+					else if(canum>26&&canum<= 52){ text+=(canum-17).toString(36).toLowerCase();}
+					else if(canum>52&&canum<= 78){ text+=(canum-43).toString(36).toUpperCase();}
+					else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
+					if(num>=0){ text+=num.toString(10);}
 
-						this.dispnum(obj.numobj, 1, text, fontratio, color, obj.px, obj.py);
-					}
+					this.dispnum(obj.numobj, 1, text, fontratio, color, obj.px, obj.py);
 				}
 			}
 			this.vinc();
@@ -407,13 +388,13 @@ Puzzles.kinkonkan.prototype = {
 			ec=0;
 			for(var i=a;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
-				if     (ca == '.'){ bd.sQnE(subint[ec], -2);                                   ec++;      }
-				else if(ca == '-'){ bd.sQnE(subint[ec], parseInt(bstr.substring(i+1,i+3),16)); ec++; i+=2;}
-				else              { bd.sQnE(subint[ec], parseInt(bstr.substring(i  ,i+1),16)); ec++;      }
+				if     (ca == '.'){ bd.sQnE(subint[ec], -2);                              ec++;      }
+				else if(ca == '-'){ bd.sQnE(subint[ec], parseInt(bstr.substr(i+1,2),16)); ec++; i+=2;}
+				else              { bd.sQnE(subint[ec], parseInt(bstr.substr(i  ,1),16)); ec++;      }
 				if(ec >= subint.length){ a=i+1; break;}
 			}
 
-			return bstr.substring(a,bstr.length);
+			return bstr.substr(a);
 		};
 		enc.encodeKinkonkan = function(type){
 			var cm="", cm2="";

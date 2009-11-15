@@ -72,7 +72,7 @@ Puzzles.slither.prototype = {
 			}
 		};
 		// BAGの関数が残りっぱなしですね...
-		mv.inputBGcolor = function(){
+/*		mv.inputBGcolor = function(){
 			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell){ return;}
 			if(this.inputData==-1){
@@ -86,7 +86,7 @@ Puzzles.slither.prototype = {
 
 			pc.paintCell(cc);
 		};
-
+*/
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
@@ -111,7 +111,7 @@ Puzzles.slither.prototype = {
 				this.inputcol('num','knum.','-','?');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
 		}
 
 		bd.maxnum = 3;
@@ -120,7 +120,7 @@ Puzzles.slither.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.crosssize = 0.05;
+		//pc.setBGCellColorFunc('qsub2'); // BAGの残り
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -132,8 +132,7 @@ Puzzles.slither.prototype = {
 
 			this.drawNumbers(x1,y1,x2,y2);
 
-			if(k.br.IE){ this.drawPekes(x1,y1,x2,y2,1);}
-			else{ this.drawPekes(x1,y1,x2,y2,0);}
+			this.drawPekes(x1,y1,x2,y2,(k.br.IE?1:0));
 
 			this.drawTarget(x1,y1,x2,y2);
 		};

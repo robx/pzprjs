@@ -57,9 +57,8 @@ Puzzles.tentaisho.prototype = {
 			pp.setMenuStr('discolor', '色分け無効化', 'Disable color');
 			pp.setLabel  ('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
 		}
-
-		$("#btnarea").append("<input type=\"button\" id=\"btncolor\" value=\"色をつける\" onClick=\"javascript:mv.encolorall();\">");
-		menu.addButtons($("#btncolor").unselectable(),"色をつける","Color up");
+		getEL('btnarea').appendChild(menu.createButton('btncolor','','色をつける'))
+		menu.addButtons(getEL("btncolor"),binder(mv, mv.encolorall),"色をつける","Color up");
 	},
 
 	//---------------------------------------------------------
@@ -254,13 +253,13 @@ Puzzles.tentaisho.prototype = {
 		pc.qsubcolor1 = "rgb(176,255,176)";
 		pc.qsubcolor2 = "rgb(108,108,108)";
 		pc.errbcolor1 = pc.errbcolor1_DARK;
+		pc.setBGCellColorFunc('qsub3');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawQSubCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawBorderAnswers(x1,y1,x2,y2);
@@ -275,13 +274,13 @@ Puzzles.tentaisho.prototype = {
 			var lw = this.lw, lm = this.lm;
 			var header = "b_bd_";
 
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
+			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
-				if(bd.QaB(id)==1){
-					if     (bd.ErB(id)==1){ g.fillStyle = this.errcolor1;}
-					else if(bd.ErB(id)==2){ g.fillStyle = this.errBorderQanscolor2;}
-					else{ g.fillStyle = this.BorderQanscolor;}
+				if(bd.border[id].qans==1){
+					if     (bd.border[id].error==1){ g.fillStyle = this.errcolor1;}
+					else if(bd.border[id].error==2){ g.fillStyle = this.errBorderQanscolor2;}
+					else                           { g.fillStyle = this.BorderQanscolor;}
 
 					if(this.vnop(header+id,1)){
 						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm,  lw, k.cheight+lw);}
@@ -360,7 +359,7 @@ Puzzles.tentaisho.prototype = {
 
 				if(s>=(2*k.qcols-1)*(2*k.qrows-1)){ break;}
 			}
-			return bstr.substring(i+1,bstr.length);
+			return bstr.substr(i+1);
 		};
 		enc.encodeStar = function(){
 			var count = 0;

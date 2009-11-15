@@ -189,7 +189,7 @@ Puzzles.hakoiri.prototype = {
 				this.insertrow();
 			}
 		};
-		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate.bind(kp));
+		kp.generate(kp.ORIGINAL, true, true, binder(kp, kp.kpgenerate));
 		kp.kpinput = function(ca){ kc.key_hakoiri(ca);};
 
 		bd.maxnum = 3;
@@ -205,12 +205,11 @@ Puzzles.hakoiri.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
-			this.drawDots(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2);
 			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);

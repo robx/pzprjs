@@ -155,7 +155,7 @@ Puzzles.tateyoko.prototype = {
 				this.inputcol('num','knum.',' ',' ');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
 			kp.kpinput = function(ca){
 				kc.key_inputqnum_tateyoko(ca);
 			};
@@ -183,8 +183,7 @@ Puzzles.tateyoko.prototype = {
 			x2++; y2++;
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawTateyokos(x1,y1,x2,y2)
@@ -199,7 +198,7 @@ Puzzles.tateyoko.prototype = {
 		pc.drawTateyokos = function(x1,y1,x2,y2){
 			var headers = ["c_bar1_", "c_bar2_"];
 
-			var clist = this.cellinside(x1,y1,x2,y2,function(c){ return (bd.QaC(c)!=0);});
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				var lw = (mf(k.cwidth/6)>=3?mf(k.cwidth/6):3); //LineWidth
@@ -232,7 +231,7 @@ Puzzles.tateyoko.prototype = {
 		pc.drawNumbers_tateyoko = function(x1,y1,x2,y2){
 			var header = "c_full_";
 
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
 				if(bd.QuC(c)==1){
@@ -282,13 +281,13 @@ Puzzles.tateyoko.prototype = {
 				else if(ca=='s'){ bd.sQuC(c,1); bd.sQnC(c,4); c++;}
 				else if(ca=='x'){ bd.sQuC(c,1); c++;}
 				else if(this.include(ca,"0","9")||this.include(ca,"a","f")){ bd.sQnC(c,parseInt(ca,16)); c++;}
-				else if(ca=="-"){ bd.sQnC(c,parseInt(bstr.substring(i+1,i+3),16)); c++; i+=2;}
+				else if(ca=="-"){ bd.sQnC(c,parseInt(bstr.substr(i+1,2),16)); c++; i+=2;}
 				else if(ca=="i"){ c+=(parseInt(bstr.charAt(i+1),16)); i++;}
 				else{ c++;}
 
 				if(c>=bd.cellmax){ break;}
 			}
-			return bstr.substring(i,bstr.length);
+			return bstr.substr(i);
 		};
 		enc.encodeTateyoko = function(type){
 			var cm="", count=0;

@@ -53,8 +53,8 @@ Puzzles.pipelink.prototype = {
 	},
 	menufix : function(){
 		if(k.EDITOR){ kp.defaultdisp = true;}
-		$("#btnarea").append("<input type=\"button\" id=\"btncircle\" value=\"›\" onClick=\"javascript:pc.changedisp();\">");
-		menu.addButtons($("#btncircle").unselectable(),"›","›");
+		getEL('btnarea').appendChild(menu.createButton('btncircle','','›'))
+		menu.addButtons(getEL("btncircle"),binder(pc, pc.changedisp),"›","›");
 		menu.addRedLineToFlags();
 	},
 
@@ -132,7 +132,7 @@ Puzzles.pipelink.prototype = {
 				this.inputcol('num','knum.','1','›');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
 			kp.kpinput = function(ca){ kc.key_inputLineParts(ca);};
 		}
 	},
@@ -149,10 +149,7 @@ Puzzles.pipelink.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
-			if(this.disp==1){ this.drawIcebarns(x1,y1,x2,y2);}
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
 			if(this.disp==1){ this.drawIceBorders(x1,y1,x2,y2);}
@@ -162,8 +159,7 @@ Puzzles.pipelink.prototype = {
 
 			this.drawLines(x1,y1,x2,y2);
 
-			if(k.br.IE){ this.drawPekes(x1,y1,x2,y2,1);}
-			else{ this.drawPekes(x1,y1,x2,y2,0);}
+			this.drawPekes(x1,y1,x2,y2,(k.br.IE?1:0));
 
 			this.drawLineParts(x1-2,y1-2,x2+2,y2+2);
 
@@ -172,14 +168,20 @@ Puzzles.pipelink.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
+		pc.setBGCellColor = function(c){
+			if     (bd.cell[c].error===1)               { g.fillStyle = this.errbcolor1; return true;}
+			else if(bd.cell[c].ques===6 && this.disp==1){ g.fillStyle = this.icecolor;   return true;}
+			return false;
+		};
+
 		pc.drawCircle2 = function(x1,y1,x2,y2){
 			var rsize  = k.cwidth*0.40;
 			var header = "c_cir_";
 
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QuC(c)==6){
+				if(bd.cell[c].ques==6){
 					g.strokeStyle = this.Cellcolor;
 					if(this.vnop(header+c,0)){
 						g.beginPath();
@@ -194,8 +196,8 @@ Puzzles.pipelink.prototype = {
 
 		pc.disp = 0;
 		pc.changedisp = function(){
-			if     (this.disp==1){ $("#btncircle").attr("value", "›"); this.disp=0;}
-			else if(this.disp==0){ $("#btncircle").attr("value", "¡"); this.disp=1;}
+			if     (this.disp==1){ getEL("btncircle").value="›"; this.disp=0;}
+			else if(this.disp==0){ getEL("btncircle").value="¡"; this.disp=1;}
 			this.paintAll();
 		};
 
@@ -239,7 +241,7 @@ Puzzles.pipelink.prototype = {
 				if(c > bd.cellmax){ break;}
 			}
 
-			return bstr.substring(i,bstr.length);
+			return bstr.substr(i);
 		};
 		enc.encodePipelink = function(type){
 			var count, pass;
@@ -305,7 +307,7 @@ Puzzles.pipelink.prototype = {
 			if( rice && !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101);}) ){
 				this.setAlert((pc.disp==0?'›':'•X')+'‚Ì•”•ªˆÈŠO‚Åü‚ªŒğ·‚µ‚Ä‚¢‚Ü‚·B','There is a crossing line out of '+(pc.disp==0?'circles':'ices')+'.'); return false;
 			}
-			if( rice && !this.checkAllCell(function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));}.bind(this)) ){
+			if( rice && !this.checkAllCell(binder(this, function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));})) ){
 				ans.setAlert((pc.disp==0?'›':'•X')+'‚Ì•”•ª‚Åü‚ª‹È‚ª‚Á‚Ä‚¢‚Ü‚·B','A line curves on '+(pc.disp==0?'circles':'ices')+'.'); return false;
 			}
 

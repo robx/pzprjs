@@ -98,9 +98,7 @@ Puzzles.creek.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawBlackCells(x1,y1,x2,y2);
-			this.drawWhiteCells(x1,y1,x2,y2);
-
+			this.drawBWCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawChassis(x1,y1,x2,y2);
 

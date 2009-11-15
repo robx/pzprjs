@@ -96,7 +96,7 @@ Puzzles.kakuro.prototype = {
 				this.inputcol('num','knum0','0','0');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
 				kc.key_inputqnum(ca);
@@ -128,13 +128,11 @@ Puzzles.kakuro.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawQSubCells(x1,y1,x2,y2);
-
-			this.drawBGcolor51(x1,y1,x2,y2);
+			this.drawBWCells(x1,y1,x2,y2);
 			this.drawBGcolorEX(x1,y1,x2,y2);
 
 			this.draw51(x1,y1,x2,y2,false);
-			this.drawEXcell(x1,y1,x2,y2,false);
+			this.draw51EXcells(x1,y1,x2,y2,false);
 			this.drawTargetTriangle(x1,y1,x2,y2);
 
 			this.drawGrid(x1,y1,x2,y2);
@@ -148,10 +146,33 @@ Puzzles.kakuro.prototype = {
 			this.drawTCell(x1,y1,x2+1,y2+1);
 		};
 
+		// オーバーライド drawBWCells用
+		pc.setCellColor = function(cc){
+			var err = bd.cell[cc].error, _f = (bd.cell[cc].ques===51);
+			if     ( _f && err===0){ g.fillStyle = "rgb(192,192,192)"; return false;}
+			else if( _f && err===1){ g.fillStyle = this.errbcolor1;    return false;}
+			else if(!_f && err===1){ g.fillStyle = this.errbcolor1;    return false;}
+			g.fillStyle = "white"; return false;
+		};
+		pc.drawBGcolorEX = function(x1,y1,x2,y2){
+			var header = "ex_full_";
+
+			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+			for(var i=0;i<exlist.length;i++){
+				var c = exlist[i];
+
+				g.fillStyle = (bd.excell[c].error!==1 ? "rgb(192,192,192)" : this.errbcolor1);
+				if(this.vnop(header+c,1)){
+					g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);
+				}
+			}
+			this.vinc();
+		};
+
 		// 境界線の描画
 		pc.drawBorders51 = function(x1,y1,x2,y2){
 			g.fillStyle = pc.Cellcolor;
-			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1,f_true);
+			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], rt=bd.rt(c), dn=bd.dn(c);
 				var cx=bd.cell[c].cx, cy=bd.cell[c].cy;
@@ -162,50 +183,17 @@ Puzzles.kakuro.prototype = {
 			this.vinc();
 		};
 
-		pc.drawBGcolor51 = function(x1,y1,x2,y2){
-			var header = "c_full_";
-
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QuC(c)===51){
-					g.fillStyle = (bd.ErC(c)!==1 ? "rgb(192,192,192)" : this.errbcolor1);
-					if(this.vnop(header+c,1)){
-						g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);
-					}
-				}
-				else{ this.vhide(header+c);}
-			}
-			this.vinc();
-		};
-		pc.drawBGcolorEX = function(x1,y1,x2,y2){
-			var header = "ex_full_";
-
-			for(var cx=x1-1;cx<=x2;cx++){
-				for(var cy=y1-1;cy<=y2;cy++){
-					var c = bd.exnum(cx,cy);
-					if(c==-1){ continue;}
-
-					g.fillStyle = (bd.ErE(c)!==1 ? "rgb(192,192,192)" : this.errbcolor1);
-					if(this.vnop(header+c,1)){
-						g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);
-					}
-				}
-			}
-			this.vinc();
-		};
-
 		pc.drawNumbers_kakuro = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				var target = ((k.editmode&&c==tc.getTCC())?kc.detectTarget(c,-1):-1);
 
-				if(bd.QuC(c)!=51 && bd.QaC(c)>0){
+				if(bd.cell[c].ques!=51 && bd.cell[c].qans>0){
 					var obj = bd.cell[c];
 					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-					var color = (bd.ErC(c)==1?this.fontErrcolor:this.fontAnscolor);
-					var text = (bd.QaC(c)>0?""+bd.QaC(c):"");
+					var color = (bd.cell[c].error==1 ? this.fontErrcolor : this.fontAnscolor);
+					var text  = ""+bd.cell[c].qans;
 					this.dispnum(obj.numobj, 1, text, 0.80, color, obj.px, obj.py);
 				}
 			}
@@ -269,7 +257,7 @@ Puzzles.kakuro.prototype = {
 				i--;
 			}
 
-			return bstr.substring(a,bstr.length);
+			return bstr.substr(a);
 		};
 		enc.encodeKakuro = function(type){
 			var cm="";
@@ -398,7 +386,7 @@ Puzzles.kakuro.prototype = {
 					if(cx==-1||cy==-1||bd.QuC(bd.cnum(cx,cy))==51){ cm+=enc.encode51Kanpen(cx,cy);}
 				}
 			}
-			return ""+cm.substring(1,cm.length).replace(/_/g," ");
+			return ""+cm.substr(1).replace(/_/g," ");
 		};
 	},
 

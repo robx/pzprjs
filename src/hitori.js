@@ -90,9 +90,8 @@ Puzzles.hitori.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawWhiteCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+			this.drawBWCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
@@ -125,14 +124,14 @@ Puzzles.hitori.prototype = {
 			for(i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
-				if(this.include(ca,"0","9")||this.include(ca,"a","z")){ bd.sQnC(c, parseInt(bstr.substring(i,i+1),36)); c++;}
-				else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),36)); c++; i+=2;}
+				if(this.include(ca,"0","9")||this.include(ca,"a","z")){ bd.sQnC(c, parseInt(bstr.substr(i,1),36)); c++;}
+				else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),36)); c++; i+=2;}
 				else if(ca == '%'){ bd.sQnC(c, -2);                                   c++;      }
 				else{ c++;}
 
 				if(c > bd.cellmax){ break;}
 			}
-			return bstr.substring(i,bstr.length);
+			return bstr.substr(i);
 		};
 		enc.encodeHitori = function(bstr){
 			var count=0, cm="";

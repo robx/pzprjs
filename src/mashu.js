@@ -96,8 +96,7 @@ Puzzles.mashu.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawQueses41_42(x1,y1,x2,y2);
@@ -140,7 +139,7 @@ Puzzles.mashu.prototype = {
 			}
 			if(menu.getVal('uramashu')){ (pp.funcs['uramashu'])();}
 
-			return bstr.substring(pos,bstr.length);
+			return bstr.substr(pos);
 		};
 		enc.encodeCircle = function(flag){
 			var cm="", num=0, pass=0, isura=menu.getVal('uramashu');

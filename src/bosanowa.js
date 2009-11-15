@@ -184,13 +184,13 @@ Puzzles.bosanowa.prototype = {
 			if(menu.getVal('disptype')!=1){ this.drawGrid_bosanowa(x1,y1,x2,y2);}
 
 			if(menu.getVal('disptype')==1){
-				this.drawErrorCells(x1,y1,x2,y2);
+				this.drawBGCells(x1,y1,x2,y2);
 				this.drawCircles_bosanowa(x1,y1,x2,y2);
 				this.drawBDnumbase(x1,y1,x2,y2);
 			}
 			else{
 				this.drawBDnumbase(x1,y1,x2,y2);
-				this.drawErrorCells(x1,y1,x2,y2);
+				this.drawBGCells(x1,y1,x2,y2);
 			}
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -204,7 +204,7 @@ Puzzles.bosanowa.prototype = {
 		pc.drawGrid_bosanowa = function(x1,y1,x2,y2){
 			var header = "b_bds_";
 
-			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4,f_true);
+			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
 
@@ -253,7 +253,7 @@ Puzzles.bosanowa.prototype = {
 			var rsize2 = k.cwidth*0.42;
 			var headers = ["c_cira_", "c_cirb_"];
 
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QuC(c)==7 && !bd.isNum(c)){
@@ -280,7 +280,7 @@ Puzzles.bosanowa.prototype = {
 			var csize = k.cwidth*0.20;
 			var header = "b_bbse_";
 
-			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+6,y2*2+6,f_true);
+			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+6,y2*2+6);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
 
@@ -301,7 +301,7 @@ Puzzles.bosanowa.prototype = {
 			return this.fontcolor;
 		};
 		pc.drawNumbersBD = function(x1,y1,x2,y2){
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
+			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id=idlist[i], obj=bd.border[id];
 				if(bd.QsB(id)>=0){
@@ -315,7 +315,7 @@ Puzzles.bosanowa.prototype = {
 
 		pc.drawChassis_waritai = function(x1,y1,x2,y2){
 			g.fillStyle = pc.Cellcolor;
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QuC(c)!=7){ continue;}
@@ -402,7 +402,7 @@ Puzzles.bosanowa.prototype = {
 				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?0:7));} }
 				if((i*5+5)>=k.qcols*k.qrows){ break;}
 			}
-			return bstr.substring(i+1,bstr.length);
+			return bstr.substr(i+1);
 		};
 		enc.encodeBosanowa = function(type){
 			var x1=9999, x2=-1, y1=9999, y2=-1;

@@ -99,9 +99,8 @@ Puzzles.yajikazu.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawWhiteCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+			this.drawBWCells(x1,y1,x2,y2);
 
 			this.drawArrowNumbers(x1,y1,x2,y2);
 

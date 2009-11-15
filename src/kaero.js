@@ -113,16 +113,16 @@ Puzzles.kaero.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.qsubcolor1 = "rgb(224, 224, 255)";
 		pc.qsubcolor2 = "rgb(255, 255, 144)";
+		pc.setBGCellColorFunc('qsub2');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawQSubCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
-			this.drawTip(x1,y1,x2,y2);
 
+			this.drawTip(x1,y1,x2,y2);
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
 
@@ -139,11 +139,11 @@ Puzzles.kaero.prototype = {
 			var tplus = k.cwidth*0.05;
 			var header = "c_tip_";
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
+			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				this.vdel([header+c]);
-				if(line.lcntCell(c)==1 && bd.QnC(c)==-1){
+				if(line.lcntCell(c)==1 && bd.cell[c].qnum==-1){
 					var dir=0, id=-1;
 					if     (bd.isLine(bd.ub(c))){ dir=2; id=bd.ub(c);}
 					else if(bd.isLine(bd.db(c))){ dir=1; id=bd.db(c);}
@@ -151,9 +151,9 @@ Puzzles.kaero.prototype = {
 					else if(bd.isLine(bd.rb(c))){ dir=3; id=bd.rb(c);}
 
 					g.lineWidth = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3); //LineWidth
-					if     (bd.ErB(id)==1){ g.strokeStyle = this.errlinecolor1; g.lineWidth=g.lineWidth+1;}
-					else if(bd.ErB(id)==2){ g.strokeStyle = this.errlinecolor2;}
-					else                  { g.strokeStyle = this.linecolor;}
+					if     (bd.border[id].error==1){ g.strokeStyle = this.errlinecolor1; g.lineWidth=g.lineWidth+1;}
+					else if(bd.border[id].error==2){ g.strokeStyle = this.errlinecolor2;}
+					else                           { g.strokeStyle = this.linecolor;}
 
 					if(this.vnop(header+c,0)){
 						var px=bd.cell[c].px+k.cwidth/2+1, py=bd.cell[c].py+k.cheight/2+1;
@@ -172,7 +172,7 @@ Puzzles.kaero.prototype = {
 			var mgnh = mf(k.cheight*0.15);
 			var header = "c_sq_";
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
+			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QnC(c)!=-1){
@@ -191,7 +191,7 @@ Puzzles.kaero.prototype = {
 			this.vinc();
 		};
 		pc.drawNumbers_kaero = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
+			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
 				if(bd.QnC(c)==-1){ this.hideEL(obj.numobj); continue;}
@@ -247,7 +247,7 @@ Puzzles.kaero.prototype = {
 
 				if(c >= bd.cellmax){ a=i+1; break;}
 			}
-			return bstr.substring(a,bstr.length);
+			return bstr.substring(a);
 		};
 		enc.encodeKaero = function(){
 			var cm="", count=0;
@@ -292,13 +292,13 @@ Puzzles.kaero.prototype = {
 			var rinfo = area.getRoomInfo();
 			this.movedPosition(linfo);
 			this.performAsLine = false;
-			if( !this.checkSameObjectInRoom(rinfo, this.getMoved.bind(this)) ){
+			if( !this.checkSameObjectInRoom(rinfo, binder(this, this.getMoved)) ){
 				this.setAlert('１つのブロックに異なるアルファベットが入っています。','A block has plural kinds of letters.'); return false;
 			}
-			if( !this.checkObjectRoom(rinfo, this.getMoved.bind(this)) ){
+			if( !this.checkObjectRoom(rinfo, binder(this, this.getMoved)) ){
 				this.setAlert('同じアルファベットが異なるブロックに入っています。','Same kinds of letters are placed different blocks.'); return false;
 			}
-			if( !this.checkNoObjectInRoom(rinfo, this.getMoved.bind(this)) ){
+			if( !this.checkNoObjectInRoom(rinfo, binder(this, this.getMoved)) ){
 				this.setAlert('アルファベットのないブロックがあります。','A block has no letters.'); return false;
 			}
 

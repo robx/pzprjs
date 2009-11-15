@@ -205,7 +205,7 @@ Puzzles.slalom.prototype = {
 				this.inputcol('num','knum_',' ',' ');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
 			kp.imgCR = [4,1];
 			kp.kpinput = function(ca){
 				kc.key_inputqnum_slalom(ca);
@@ -286,8 +286,7 @@ Puzzles.slalom.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawGates(x1,y1,x2,y2)
@@ -306,7 +305,7 @@ Puzzles.slalom.prototype = {
 		pc.drawBCells_slalom = function(x1,y1,x2,y2){
 			var header = "c_full_";
 
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QuC(c)==1){
@@ -330,7 +329,7 @@ Puzzles.slalom.prototype = {
 			var ll = lw*1.1;	//LineLength
 			var headers = ["c_dl21", "c_dl22"];
 
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				g.fillStyle = (bd.ErC(c)==4 ? this.errcolor1 : this.Cellcolor);
@@ -413,7 +412,7 @@ Puzzles.slalom.prototype = {
 
 				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
-				this.dispnum(c, obj.numobj, 1, ""+num, fontratio ,"tomato", obj.px, obj.py);
+				this.dispnum(obj.numobj, 1, ""+num, fontratio ,"tomato", obj.px, obj.py);
 			}
 		};
 	},
@@ -461,10 +460,10 @@ Puzzles.slalom.prototype = {
 					var ca = array[0].charAt(i);
 
 					if(this.include(ca,"0","9")||this.include(ca,"a","f")){
-						bd.hinfo.data[r].number = parseInt(bstr.substring(i  ,i+1),16); r++;
+						bd.hinfo.data[r].number = parseInt(bstr.substr(i  ,1),16); r++;
 					}
 					else if(ca == '-'){
-						bd.hinfo.data[r].number = parseInt(bstr.substring(i+1,i+3),16); r++; i+=2;
+						bd.hinfo.data[r].number = parseInt(bstr.substr(i+1,2),16); r++; i+=2;
 					}
 					else if(this.include(ca,"g","z")){ r+=(parseInt(ca,36)-15);}
 					else{ r++;}
@@ -489,8 +488,8 @@ Puzzles.slalom.prototype = {
 					else{
 						var ca = array[0].charAt(i);
 
-						if(this.include(ca,"0","9")||this.include(ca,"a","f")){ bd.sQnC(c, parseInt(bstr.substring(i,i+1),16));}
-						else if(ca=='-'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),16)); i+=2;}
+						if(this.include(ca,"0","9")||this.include(ca,"a","f")){ bd.sQnC(c, parseInt(bstr.substr(i,1),16));}
+						else if(ca=='-'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),16)); i+=2;}
 						else if(ca>='g' && ca<='z'){ spare = (parseInt(ca,36)-15) - 1;}
 					}
 					c++;
@@ -500,7 +499,7 @@ Puzzles.slalom.prototype = {
 
 			bd.startid = parseInt(array[1]);
 
-			return array[0].substring(i,array[0].length);
+			return array[0].substr(i);
 		};
 		enc.encodeSlalom = function(ver){
 			var cm="", count=0;
@@ -590,7 +589,7 @@ Puzzles.slalom.prototype = {
 					else if(ca != "."){
 						if     (ca.charAt(0)=="i"){ bd.sQuC(c,21);}
 						else if(ca.charAt(0)=="w"){ bd.sQuC(c,22);}
-						if(ca.length>1){ sv_num[c] = parseInt(ca.substring(1,ca.length));}
+						if(ca.length>1){ sv_num[c] = parseInt(ca.substr(1));}
 					}
 				},array.slice(0,k.qrows));
 				bd.hinfo.generateGates();
@@ -871,11 +870,11 @@ Hurdle.prototype = {
 		}
 
 		// セットされた数字を全てのnumsから消す関数
-		var delnum = function(dn){ for(var r=1;r<=this.max;r++){
+		var delnum = binder(this, function(dn){ for(var r=1;r<=this.max;r++){
 			var atmp = [];
 			for(var i=0;i<nums[r].length;i++){ if(dn[nums[r][i]]!=1){ atmp.push(nums[r][i]);} }
 			nums[r] = atmp;
-		} }.bind(this);
+		} });
 		var decnumber = [];
 		for(var n=1;n<=this.max;n++){ decnumber[n] = 0;}
 

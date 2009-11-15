@@ -67,14 +67,14 @@ Puzzles.reflect.prototype = {
 				else{ kp.display();}
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine();
+				if     (this.btn.Left)  this.inputLine();
 				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 		mv.mouseup = function(){ };
 		mv.mousemove = function(){
 			if(k.playmode){
-				if(this.btn.Left) this.inputLine();
+				if     (this.btn.Left)  this.inputLine();
 				else if(this.btn.Right) this.inputpeke();
 			}
 		};
@@ -130,7 +130,7 @@ Puzzles.reflect.prototype = {
 				this.inputcol('num','knum.','-','-');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
 			kp.imgCR = [4,1];
 			kp.kpinput = function(ca){
 				if(kc.key_inputLineParts(ca)){ return;}
@@ -148,8 +148,7 @@ Puzzles.reflect.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,0);
@@ -169,7 +168,7 @@ Puzzles.reflect.prototype = {
 		pc.drawTriangleBorder = function(x1,y1,x2,y2){
 			var header = "b_tb_";
 
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+4,y2*2+4,f_true);
+			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+4,y2*2+4);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], lflag = !(bd.border[id].cx&1);
 				var qs1 = bd.QuC(bd.cc1(id)), qs2 = bd.QuC(bd.cc2(id));
@@ -190,7 +189,7 @@ Puzzles.reflect.prototype = {
 			this.vinc();
 		};
 		pc.draw101 = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
+			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){ this.draw101_1(clist[i]);}
 			this.vinc();
 		};
@@ -243,12 +242,12 @@ Puzzles.reflect.prototype = {
 				if     (ca == '5'){ bd.sQuC(c, 101); c++;}
 				else if(ca >= '1' && ca <= '4'){
 					bd.sQuC(c, parseInt(ca)+1);
-					bd.sQnC(c, parseInt(bstr.substring(i+1,i+2),16));
+					bd.sQnC(c, parseInt(bstr.substr(i+1,1),16));
 					c++; i++;
 				}
 				else if(ca >= '6' && ca <= '9'){
 					bd.sQuC(c, parseInt(ca)-4);
-					bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),16));
+					bd.sQnC(c, parseInt(bstr.substr(i+1,2),16));
 					c++; i+=2;
 				}
 				else if(ca >= 'a' && ca <= 'z'){ c += (parseInt(ca,36)-9);}
@@ -257,7 +256,7 @@ Puzzles.reflect.prototype = {
 				if(c > bd.cellmax){ break;}
 			}
 
-			return bstr.substring(i,bstr.length);
+			return bstr.substr(i);
 		};
 		enc.encodeReflectlink = function(type){
 			var cm="", pstr="";
@@ -287,7 +286,7 @@ Puzzles.reflect.prototype = {
 				if(ca == "+"){ bd.sQuC(c, 101);}
 				else if(ca != "."){
 					bd.sQuC(c, parseInt(ca.charAt(0))+1);
-					if(ca.length>1){ bd.sQnC(c, parseInt(ca.substring(1,ca.length)));}
+					if(ca.length>1){ bd.sQnC(c, parseInt(ca.substr(1)));}
 				}
 			},array.slice(0,k.qrows));
 			return true;

@@ -82,21 +82,17 @@ Puzzles.mejilink.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.BorderQuescolor = "white";
 
-		pc.crosssize = 0.05;
-
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawBaseMarks(x1,y1,x2,y2);
 
-			if(k.br.IE){ this.drawPekes(x1,y1,x2,y2,1);}
-			else{ this.drawPekes(x1,y1,x2,y2,0);}
+			this.drawPekes(x1,y1,x2,y2,(k.br.IE?1:0));
 		};
 
 		pc.drawBaseMarks = function(x1,y1,x2,y2){
@@ -142,7 +138,7 @@ Puzzles.mejilink.prototype = {
 
 			if(!isline){
 				var cc2=bd.cc2(id);
-				g.fillStyle = ((cc2==-1 || bd.ErC(cc2)==0) ? this.BorderQuescolor : this.errbcolor1);
+				g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.BorderQuescolor : this.errbcolor1);
 				if(this.vnop(headers[1]+id,1)){
 					var lw = this.lw + this.addlw, lm = this.lm;
 					if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
@@ -180,7 +176,7 @@ Puzzles.mejilink.prototype = {
 					if(i*5+w<bd.bdmax){ bd.sQuB(i*5+w,(ca&Math.pow(2,4-w)?1:0));}
 				}
 			}
-			return bstr.substring(pos,bstr.length);
+			return bstr.substr(pos);
 		};
 		enc.encodeMejilink = function(){
 			var count = 0;

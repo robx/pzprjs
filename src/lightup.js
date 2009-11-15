@@ -109,7 +109,7 @@ Puzzles.lightup.prototype = {
 			this.drawBCells(x1,y1,x2,y2);
 
 			this.drawAkari(x1,y1,x2,y2);
-			this.drawDots(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
@@ -122,7 +122,7 @@ Puzzles.lightup.prototype = {
 			var lampcolor = "rgb(0, 127, 96)";
 			var header = "c_AK_";
 
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QaC(c)==1){
@@ -141,7 +141,7 @@ Puzzles.lightup.prototype = {
 		pc.drawLightCells = function(x1,y1,x2,y2){
 			var header = "c_full_";
 
-			var clist = this.cellinside(x1,y1,x2,y2,function(c){ return (bd.QnC(c)==-1);});
+			var clist = this.cellinside_cond(x1,y1,x2,y2,function(c){ return (bd.QnC(c)==-1);});
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.ErC(c)==1 || ans.isShined(c)){

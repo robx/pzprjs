@@ -180,7 +180,7 @@ Puzzles.minarism.prototype = {
 
 			this.drawBDMbase(x1,y1,x2,y2);
 
-			this.drawErrorCells(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1-1,y1-1,x2,y2);
 
 			this.drawBDMarks(x1,y1,x2,y2);
@@ -194,7 +194,7 @@ Puzzles.minarism.prototype = {
 		pc.drawBDMbase = function(x1,y1,x2,y2){
 			if(g.vml){ return;}
 			var csize = k.cwidth*0.29;
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
+			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 
@@ -209,7 +209,7 @@ Puzzles.minarism.prototype = {
 			var ssize = k.cwidth*0.22;
 			var headers = ["b_cp1_", "b_cp2_", "b_dt1_", "b_dt2_"];
 
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
+			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 				if(bd.QnB(id)!=-1){
@@ -298,7 +298,7 @@ Puzzles.minarism.prototype = {
 				}
 
 				if     (this.include(ca,'0','9')||this.include(ca,'a','f')){ bd.sQnB(id-mgn, parseInt(ca,16)); id++;}
-				else if(ca=="-"){ bd.sQnB(id-mgn, parseInt(bstr.substring(i+1,i+3),16)); id++; i+=2;}
+				else if(ca=="-"){ bd.sQnB(id-mgn, parseInt(bstr.substr(i+1,2),16)); id++; i+=2;}
 				else if(ca=="g"){ bd.sQuB(id-mgn, ((type==0 || id<k.qcols*k.qrows)?1:2)); id++;}
 				else if(ca=="h"){ bd.sQuB(id-mgn, ((type==0 || id<k.qcols*k.qrows)?2:1)); id++;}
 				else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-17);}
@@ -308,7 +308,7 @@ Puzzles.minarism.prototype = {
 
 				if(id >= 2*k.qcols*k.qrows){ a=i+1; break;}
 			}
-			return bstr.substring(a,bstr.length);
+			return bstr.substr(a);
 		};
 		enc.encodeMinarism = function(type){
 			var cm="", count=0, mgn=0;

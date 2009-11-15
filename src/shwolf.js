@@ -128,12 +128,10 @@ Puzzles.shwolf.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
-			//this.drawQueses41_42(x1,y1,x2,y2);
 			this.drawSheepWolf(x1,y1,x2,y2);
 			this.drawCrossMarks(x1,y1,x2+1,y2+1);
 
@@ -144,7 +142,7 @@ Puzzles.shwolf.prototype = {
 
 		// numobj:？表示用 numobj2:画像表示用
 		pc.drawSheepWolf = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
 				if(bd.QuC(c)==0){
@@ -161,10 +159,17 @@ Puzzles.shwolf.prototype = {
 					this.hideEL(obj.numobj);
 
 					if(!obj.numobj2){
-						var _img  = newEL('img').attr("src",'./src/img/shwolf_obj.gif').unselectable();
-						var _sdiv = newEL('div').css("position","relative").css("display","inline").unselectable();
-						obj.numobj2 = $(this.CreateDOMAndSetNop()).append(_sdiv.append(_img)).context;
-						obj.imgobj  = _img.context; // 勝手に追加しちゃいます悪影響はないと思いますごめんなさい＞＜
+						var _img  = unselectable(newEL('img'));
+						_img.src = './src/img/shwolf_obj.gif';
+
+						var _sdiv = unselectable(newEL('div'));
+						_sdiv.style.position = 'relative';
+						_sdiv.style.display = 'inline';
+						_sdiv.appendChild(_img);
+
+						obj.numobj2 = this.CreateDOMAndSetNop();
+						obj.numobj2.appendChild(_sdiv);
+						obj.imgobj  = _img; // 勝手に追加しちゃいます悪影響はないと思いますごめんなさい＞＜
 					}
 					div = obj.numobj2;
 					img = obj.imgobj;
@@ -218,7 +223,7 @@ Puzzles.shwolf.prototype = {
 				}
 			}
 
-			return bstr.substring(pos,bstr.length);
+			return bstr.substr(pos);
 		};
 		enc.encodeCircle = function(){
 			var cm = "", num = 0, pass = 0;

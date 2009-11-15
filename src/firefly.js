@@ -115,7 +115,7 @@ Puzzles.firefly.prototype = {
 			var rsize3 = k.cwidth*0.10;
 			var headers = ["c_cira_", "c_cirb_", "c_circ_"];
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
+			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QnC(c)!=-1){

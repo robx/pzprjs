@@ -219,9 +219,8 @@ Puzzles.shakashaka.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawWhiteCells(x1,y1,x2,y2);
-
 			this.drawDashedGrid(x1,y1,x2,y2);
+			this.drawBWCells(x1,y1,x2,y2);
 
 			this.drawBCells(x1,y1,x2,y2);
 			this.drawTriangle(x1,y1,x2,y2);
@@ -229,6 +228,12 @@ Puzzles.shakashaka.prototype = {
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
+		};
+
+		// drawBWCells用 オーバーライド
+		pc.setCellColor = function(cc){
+			if(bd.ErC(cc)===1){ g.fillStyle = this.errbcolor1; return false;}
+			g.fillStyle = "white"; return false;
 		};
 	},
 

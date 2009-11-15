@@ -211,6 +211,16 @@ Puzzles.shugaku.prototype = {
 			}
 			um.enableRecord();
 		}
+
+		bd.sQaC = function(id, num){
+			var old = this.cell[id].qans;
+			um.addOpe(k.CELL, k.QANS, id, old, num);
+			this.cell[id].qans = num;
+
+			if(um.isenableInfo() && (num===1 ^ area.bcell.id[id]!==-1)){
+				area.setCell(id,(num===1?1:0));
+			}
+		};
 	},
 
 	//---------------------------------------------------------
@@ -228,14 +238,11 @@ Puzzles.shugaku.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawWhiteCells(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
+			this.drawBWCells(x1,y1,x2,y2);
 
 			this.drawFutons(x1,y1,x2,y2);
-
-			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawFutonBorders(x1,y1,x2,y2);
-
-			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawTargetFuton(x1,y1,x2,y2);
 
@@ -249,36 +256,36 @@ Puzzles.shugaku.prototype = {
 		pc.drawFutons = function(x1,y1,x2,y2){
 			var header = "c_full_";
 
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QaC(c)>=11){
-					g.fillStyle = (bd.ErC(c)==1?this.errbcolor1:"white");
+				if(bd.cell[c].qans>=11){
+					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 					if(this.vnop(header+c,1)){
-						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
+						g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);
 					}
 				}
-				else{ this.vhide(header+c);}
+				else if(bd.cell[c].qans!==1){ this.vhide(header+c);}
 
-				this.drawPillow1(c,false);
+				this.drawPillow1(c, (bd.cell[c].qans>=11 && bd.cell[c].qans<=15), false);
 			}
 			this.vinc();
 		};
-		pc.drawPillow1 = function(cc,inputting){
+		pc.drawPillow1 = function(cc, flag, inputting){
 			var mgnw = mf(k.cwidth*0.15);
 			var mgnh = mf(k.cheight*0.15);
 			var headers = ["c_sq1_", "c_sq2_"];
 
-			if(inputting || (bd.QaC(cc)>=11 && bd.QaC(cc)<=15)){
+			if(flag){
 				g.fillStyle = "black";
-				if(this.vnop("c"+cc+"_sq1_",1)){
+				if(this.vnop(headers[0]+cc,1)){
 					g.fillRect(bd.cell[cc].px+mgnw+1, bd.cell[cc].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
 				}
 
-				if     (inputting)    { g.fillStyle = this.targetbgcolor;}
-				else if(bd.ErC(cc)==1){ g.fillStyle = this.errbcolor1;   }
-				else                  { g.fillStyle = "white";}
-				if(this.vnop("c"+cc+"_sq2_",1)){
+				if     (inputting)            { g.fillStyle = this.targetbgcolor;}
+				else if(bd.cell[cc].error===1){ g.fillStyle = this.errbcolor1;   }
+				else                          { g.fillStyle = "white";}
+				if(this.vnop(headers[1]+cc,1)){
 					g.fillRect(bd.cell[cc].px+mgnw+2, bd.cell[cc].py+mgnh+2, k.cwidth-mgnw*2-3, k.cheight-mgnh*2-3);
 				}
 			}
@@ -328,7 +335,7 @@ Puzzles.shugaku.prototype = {
 
 				if(cc!=-1){
 					if(this.vnop(header+cc,1)){
-						g.fillRect(bd.cell[cc].px, bd.cell[cc].py, k.cwidth+1, k.cheight+1);
+						g.fillRect(bd.cell[cc].px+1, bd.cell[cc].py+1, k.cwidth-1, k.cheight-1);
 					}
 				}
 				else{ this.vhide(header+cc);}
@@ -336,7 +343,7 @@ Puzzles.shugaku.prototype = {
 				var adj=mv.getTargetADJ();
 				if(adj!=-1){
 					if(this.vnop(header+adj,1)){
-						g.fillRect(bd.cell[adj].px, bd.cell[adj].py, k.cwidth+1, k.cheight+1);
+						g.fillRect(bd.cell[adj].px+1, bd.cell[adj].py+1, k.cwidth-1, k.cheight-1);
 					}
 				}
 				else{ this.vhide(header+adj);}
@@ -345,7 +352,7 @@ Puzzles.shugaku.prototype = {
 
 			// 入力中ふとんのまくら描画
 			if(inputting){
-				this.drawPillow1(cc,true);
+				this.drawPillow1(cc,true,true);
 			}
 			this.vinc();
 
@@ -409,7 +416,7 @@ Puzzles.shugaku.prototype = {
 				else{ c += (parseInt(ca,36)-5);}
 				if(c>=bd.cellmax){ break;}
 			}
-			return bstr.substring(i,bstr.length);
+			return bstr.substr(i);
 		};
 		enc.pzldataShugaku = function(){
 			var cm="", count=0;
@@ -463,7 +470,7 @@ Puzzles.shugaku.prototype = {
 				this.setAlert('2x2の黒マスのかたまりがあります。', 'There is a 2x2 block of black cells.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)<this.checkdir4Cell(c,function(a){ return (bd.QaC(a)>=11&&bd.QaC(a)<=15);}));}.bind(this)) ){
+			if( !this.checkAllCell(binder(this, function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)<this.checkdir4Cell(c,function(a){ return (bd.QaC(a)>=11&&bd.QaC(a)<=15);}));})) ){
 				this.setAlert('柱のまわりにある枕の数が間違っています。', 'The number of pillows around the number is wrong.'); return false;
 			}
 
@@ -479,7 +486,7 @@ Puzzles.shugaku.prototype = {
 				this.setAlert('黒マスが分断されています。', 'Aisle is divided.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)>this.checkdir4Cell(c,function(a){ return (bd.QaC(a)>=11&&bd.QaC(a)<=15);}));}.bind(this)) ){
+			if( !this.checkAllCell(binder(this, function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)>this.checkdir4Cell(c,function(a){ return (bd.QaC(a)>=11&&bd.QaC(a)<=15);}));})) ){
 				this.setAlert('柱のまわりにある枕の数が間違っています。', 'The number of pillows around the number is wrong.'); return false;
 			}
 

@@ -101,9 +101,8 @@ Puzzles.paintarea.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawWhiteCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+			this.drawBWCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
@@ -153,7 +152,7 @@ Puzzles.paintarea.prototype = {
 				this.setAlert('2x2の黒マスのかたまりがあります。','There is a 2x2 block of black cells.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)!=this.checkdir4Cell(c,bd.isBlack));}.bind(this)) ){
+			if( !this.checkAllCell(binder(this, function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)!=this.checkdir4Cell(c,bd.isBlack));})) ){
 				this.setAlert('数字の上下左右にある黒マスの数が間違っています。','The number is not equal to the number of black cells in four adjacent cells.'); return false;
 			}
 

@@ -155,8 +155,8 @@ Puzzles.snakes.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-			this.drawDots(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawBorders_snake(x1,y1,x2,y2);
@@ -173,7 +173,7 @@ Puzzles.snakes.prototype = {
 		pc.drawBorders_snake = function(x1,y1,x2,y2){
 			var func  = function(c){ return (bd.QnC(c)==-1 && bd.QaC(c)>0);};
 			var func2 = function(c1,c2){ return (bd.QaC(c1)>0 && bd.QaC(c2)>0 && (Math.abs(bd.QaC(c1)-bd.QaC(c2))!=1));};
-			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1,f_true);
+			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
 			g.fillStyle = this.BorderQanscolor;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], rt=bd.rt(c), dn=bd.dn(c);
@@ -187,7 +187,7 @@ Puzzles.snakes.prototype = {
 		pc.drawBCells_withoutNumber = function(x1,y1,x2,y2){
 			var header = "c_full_";
 
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QnC(c)!=-1){

@@ -220,7 +220,7 @@ Puzzles.wblink.prototype = {
 				}
 			}
 
-			return bstr.substring(pos,bstr.length);
+			return bstr.substr(pos);
 		};
 		enc.encodeCircle = function(flag){
 			var cm = "", num = 0, pass = 0;

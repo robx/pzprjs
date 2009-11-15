@@ -56,7 +56,7 @@ Puzzles.gokigen.prototype = {
 	protoChange : function(){
 	},
 	protoOriginal : function(){
-		$("#btnclear2").css("display",'inline');
+		getEL("btnclear2").style.display = 'inline';
 	},
 
 	//---------------------------------------------------------
@@ -132,7 +132,7 @@ Puzzles.gokigen.prototype = {
 			um.enableRecord();
 		};
 
-		$("#btnclear2").css("display",'none');
+		getEL("btnclear2").style.display = 'none';
 
 		tc.minx = 0;
 		tc.miny = 0;
@@ -153,8 +153,7 @@ Puzzles.gokigen.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawErrorCells_gokigen(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawSlashes(x1,y1,x2,y2);
@@ -162,10 +161,10 @@ Puzzles.gokigen.prototype = {
 			this.drawCrosses(x1,y1,x2+1,y2+1);
 			this.drawTarget_gokigen(x1,y1,x2,y2);
 		};
-		pc.drawErrorCells = function(x1,y1,x2,y2){
+		pc.drawErrorCells_gokigen = function(x1,y1,x2,y2){
 			var header = "c_full_";
 
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c=clist[i];
 				if(bd.QaC(c)==-1 && bd.ErC(c)==1){
@@ -182,7 +181,7 @@ Puzzles.gokigen.prototype = {
 			var headers = ["c_sl1_", "c_sl2_"];
 			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
 
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
@@ -294,7 +293,7 @@ Puzzles.gokigen.prototype = {
 					}
 					while(1){
 						var endflag = true;
-						var clist = pc.cellinside(0,0,k.qcols-1,k.qrows-1,function(c){ return (bd.ErC(c)==1);});
+						var clist = pc.cellinside_cond(0,0,k.qcols-1,k.qrows-1,function(c){ return (bd.ErC(c)==1);});
 						for(var i=0;i<clist.length;i++){
 							var c = clist[i];
 							var cc1, cc2, cx=bd.cell[c].cx, cy=bd.cell[c].cy;

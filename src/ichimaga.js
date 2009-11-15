@@ -127,7 +127,7 @@ Puzzles.ichimaga.prototype = {
 				else if(this.checkpflag("x")){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
 				else                         { base.setTitle("イチマガ","Ichimaga");}
 				document.title = base.gettitle();
-				$("#title2").html(base.gettitle());
+				getEL("title2").innerHTML = base.gettitle();
 			}
 		};
 		enc.pzlexport = function(type){
@@ -157,7 +157,7 @@ Puzzles.ichimaga.prototype = {
 				else if(array[0]==k.CROSS){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
 				else                      { base.setTitle("イチマガ","Ichimaga");}
 				document.title = base.gettitle();
-				$("#title2").html(base.gettitle());
+				getEL("title2").innerHTML = base.gettitle();
 			}
 			return true;
 		};

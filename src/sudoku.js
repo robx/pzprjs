@@ -49,19 +49,19 @@ Puzzles.sudoku.prototype = {
 	menufix : function(){ },
 
 	protoChange : function(){
-		this.newboard_html_original = $(document.newboard).html();
+		this.newboard_html_original = document.newboard.innerHTML;
 
-		$(document.newboard).html(
-			  "<span id=\"pop1_1_cap0\">î’ñ ÇêVãKçÏê¨ÇµÇ‹Ç∑ÅB</span><br>\n"
-			+ "<input type=\"radio\" name=\"size\" value=\"9\" checked>9Å~9<br>\n"
-			+ "<input type=\"radio\" name=\"size\" value=\"16\">16Å~16<br>\n"
-			+ "<input type=\"radio\" name=\"size\" value=\"25\">25Å~25<br>\n"
-			+ "<input type=\"radio\" name=\"size\" value=\"4\">4Å~4<br>\n"
-			+ "<input type=\"button\" name=\"newboard\" value=\"êVãKçÏê¨\" /><input type=\"button\" name=\"cancel\" value=\"ÉLÉÉÉìÉZÉã\" />\n"
-		);
+		document.newboard.innerHTML =
+			["<span id=\"pop1_1_cap0\">î’ñ ÇêVãKçÏê¨ÇµÇ‹Ç∑ÅB</span><br>\n",
+			 "<input type=\"radio\" name=\"size\" value=\"9\" checked>9Å~9<br>\n",
+			 "<input type=\"radio\" name=\"size\" value=\"16\">16Å~16<br>\n",
+			 "<input type=\"radio\" name=\"size\" value=\"25\">25Å~25<br>\n",
+			 "<input type=\"radio\" name=\"size\" value=\"4\">4Å~4<br>\n",
+			 "<input type=\"button\" name=\"newboard\" value=\"êVãKçÏê¨\" /><input type=\"button\" name=\"cancel\" value=\"ÉLÉÉÉìÉZÉã\" />\n"
+			].join('');
 	},
 	protoOriginal : function(){
-		$(document.newboard).html(this.newboard_html_original);
+		document.newboard.innerHTML = this.newboard_html_original;
 	},
 
 	//---------------------------------------------------------
@@ -104,7 +104,7 @@ Puzzles.sudoku.prototype = {
 			this.inputcol('num','knum0','0','0');
 			this.insertrow();
 		};
-		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate.bind(kp));
+		kp.generate(kp.ORIGINAL, true, true, binder(kp, kp.kpgenerate));
 		kp.kpinput = function(ca){
 			kc.key_inputqnum(ca);
 		};
@@ -120,8 +120,7 @@ Puzzles.sudoku.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlockBorders(x1,y1,x2,y2);
 

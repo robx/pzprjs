@@ -134,7 +134,7 @@ Puzzles.tilepaint.prototype = {
 				this.inputcol('num','knum0','0','0');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
 				kc.key_inputqnum(ca);
@@ -176,18 +176,14 @@ Puzzles.tilepaint.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawWhiteCells(x1,y1,x2,y2);
-
-			this.drawQSubCells(x1,y1,x2,y2);
-
 			this.draw51(x1,y1,x2,y2,true);
-			this.drawEXcell(x1,y1,x2,y2,true);
+			this.draw51EXcells(x1,y1,x2,y2,true);
 			this.drawTargetTriangle(x1,y1,x2,y2);
 
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBWCells(x1,y1,x2,y2);
 
-			this.drawBlackCells(x1,y1,x2,y2);
+			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawChassis_ex1(x1-1,y1-1,x2,y2,true);
 
@@ -196,6 +192,18 @@ Puzzles.tilepaint.prototype = {
 			this.drawBoxBorders(x1-1,y1-1,x2+1,y2+1,1);
 
 			this.drawTarget(x1,y1,x2,y2);
+		};
+
+		// オーバーライド drawBWCells用
+		pc.setCellColor = function(cc){
+			var _b = bd.isBlack(cc), err = bd.ErC(cc), qs = bd.QsC(cc);
+
+			if     ( _b && err===0){ g.fillStyle = this.Cellcolor; return true;}
+			else if( _b && err===1){ g.fillStyle = this.errcolor1; return true;}
+			else if(!_b && err===1){ g.fillStyle = this.errbcolor1; return false;}
+			else if(!_b && qs ===1){ g.fillStyle = this.bcolor;     return false;}
+			else if(!_b && qs ===3){ g.fillStyle = this.qsubcolor3; return false;}
+			g.fillStyle = "white"; return false;
 		};
 	},
 
@@ -228,17 +236,17 @@ Puzzles.tilepaint.prototype = {
 					mv.set51cell(cell,true);
 					if     (ca=='-'){
 						bd.sDiC(cell,(bstr.charAt(i+1)!="."?parseInt(bstr.charAt(i+1),16):-1));
-						bd.sQnC(cell,parseInt(bstr.substring(i+2,i+4),16));
+						bd.sQnC(cell,parseInt(bstr.substr(i+2,2),16));
 						cell++; i+=3;
 					}
 					else if(ca=='+'){
-						bd.sDiC(cell,parseInt(bstr.substring(i+1,i+3),16));
+						bd.sDiC(cell,parseInt(bstr.substr(i+1,2),16));
 						bd.sQnC(cell,(bstr.charAt(i+3)!="."?parseInt(bstr.charAt(i+3),16):-1));
 						cell++; i+=3;
 					}
 					else if(ca=='='){
-						bd.sDiC(cell,parseInt(bstr.substring(i+1,i+3),16));
-						bd.sQnC(cell,parseInt(bstr.substring(i+3,i+5),16));
+						bd.sDiC(cell,parseInt(bstr.substr(i+1,2),16));
+						bd.sQnC(cell,parseInt(bstr.substr(i+3,2),16));
 						cell++; i+=4;
 					}
 					else{
@@ -255,19 +263,19 @@ Puzzles.tilepaint.prototype = {
 			for(var i=a;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 				if     (ca=='.'){ bd.sDiE(cell,-1); cell++;}
-				else if(ca=='-'){ bd.sDiE(cell,parseInt(bstr.substring(i+1,i+3),16)); cell++; i+=2;}
+				else if(ca=='-'){ bd.sDiE(cell,parseInt(bstr.substr(i+1,1),16)); cell++; i+=2;}
 				else            { bd.sDiE(cell,parseInt(ca,16)); cell++;}
 				if(cell>=k.qcols){ a=i+1; break;}
 			}
 			for(var i=a;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 				if     (ca=='.'){ bd.sQnE(cell,-1); cell++;}
-				else if(ca=='-'){ bd.sQnE(cell,parseInt(bstr.substring(i+1,i+3),16)); cell++; i+=2;}
+				else if(ca=='-'){ bd.sQnE(cell,parseInt(bstr.substr(i+1,2),16)); cell++; i+=2;}
 				else            { bd.sQnE(cell,parseInt(ca,16)); cell++;}
 				if(cell>=k.qcols+k.qrows){ a=i+1; break;}
 			}
 
-			return bstr.substring(a,bstr.length);
+			return bstr.substr(a);
 		};
 		enc.encodeTilePaint = function(type){
 			var cm="";

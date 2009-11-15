@@ -178,7 +178,7 @@ Puzzles.loopsp.prototype = {
 				this.inputcol('num','knum0','0','0');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
 			kp.kpinput = function(ca){ kc.key_inputLineParts(ca);};
 		}
 	},
@@ -198,8 +198,7 @@ Puzzles.loopsp.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			if(k.br.IE){
 				this.drawDashedGrid(x1,y1,x2,y2);
 			}
@@ -248,8 +247,8 @@ Puzzles.loopsp.prototype = {
 				var ca = bstr.charAt(i);
 
 				if     (ca == '.'){ bd.sQnC(c, -2); c++;}
-				else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),16)); c++; i+=2;}
-				else if((ca >= '0' && ca <= '9')||(ca >= 'a' && ca <= 'f')){ bd.sQnC(c, parseInt(bstr.substring(i,i+1),16)); c++;}
+				else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),16)); c++; i+=2;}
+				else if((ca >= '0' && ca <= '9')||(ca >= 'a' && ca <= 'f')){ bd.sQnC(c, parseInt(bstr.substr(i,1),16)); c++;}
 				else if(ca >= 'g' && ca <= 'm'){ bd.sQuC(c, (parseInt(ca,36)+85)); c++;}
 				else if(ca >= 'n' && ca <= 'z'){ c += (parseInt(ca,36)-22);}
 				else{ c++;}
@@ -257,7 +256,7 @@ Puzzles.loopsp.prototype = {
 				if(c > bd.cellmax){ break;}
 			}
 
-			return bstr.substring(i,bstr.length);
+			return bstr.substr(i);
 		};
 		enc.encodeLoopsp = function(){
 			var cm="", pstr="", count=0;

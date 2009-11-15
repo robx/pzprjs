@@ -95,10 +95,8 @@ Puzzles.kurochute.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawQSubCells(x1,y1,x2,y2);
-			this.drawDots(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+			this.drawBWCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
@@ -106,24 +104,17 @@ Puzzles.kurochute.prototype = {
 
 			this.drawTarget(x1,y1,x2,y2);
 		};
-		pc.drawDots = function(x1,y1,x2,y2){
-			var dsize = k.cwidth*0.06;
-			var header = "c_dot_";
 
-			var clist = this.cellinside(x1,y1,x2,y2,bd.isWhite);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QsC(c)==1){
-					g.fillStyle = this.dotcolor;
-					if(this.vnop(header+c,1)){
-						g.beginPath();
-						g.arc(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, dsize, 0, Math.PI*2, false);
-						g.fill();
-					}
-				}
-				else{ this.vhide(header+c);}
-			}
-			this.vinc();
+		// オーバーライド drawBWCells用
+		pc.setCellColor = function(cc){
+			var _b = bd.isBlack(cc), err = bd.ErC(cc);
+
+			if     ( _b && err===0){ g.fillStyle = this.Cellcolor; return true;}
+			else if( _b && err===1){ g.fillStyle = this.errcolor1; return true;}
+			else if( _b && err===2){ g.fillStyle = this.errcolor2; return true;}
+			else if(!_b && err===1){ g.fillStyle = this.errbcolor1; return false;}
+			else if(bd.QsC(cc)===2){ g.fillStyle = this.qsubcolor2; return false;}
+			g.fillStyle = "white"; return false;
 		};
 	},
 

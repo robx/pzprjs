@@ -223,6 +223,7 @@ Puzzles.icebarn.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.linecolor = pc.linecolor_LIGHT;
 		pc.errcolor1 = "red";
+		pc.setBGCellColorFunc('icebarn');
 
 		pc.maxYdeg = 0.70;
 
@@ -230,16 +231,12 @@ Puzzles.icebarn.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
-			this.drawIcebarns(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawIceBorders(x1,y1,x2,y2);
 
 			this.drawLines(x1,y1,x2,y2);
-
 			this.drawPekes(x1,y1,x2,y2,1);
 
 			this.drawArrows(x1,y1,x2,y2);
@@ -248,6 +245,7 @@ Puzzles.icebarn.prototype = {
 
 			this.drawInOut();
 		};
+
 		pc.drawArrows = function(x1,y1,x2,y2){
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+4,y2*2+4,f_true);
 			for(var i=0;i<idlist.length;i++){ this.drawArrow1(idlist[i], bd.isArrow(idlist[i]));}
@@ -288,21 +286,19 @@ Puzzles.icebarn.prototype = {
 		pc.drawInOut = function(){
 			if(bd.arrowin<bd.bdinside || bd.arrowin>=bd.bdmax || bd.arrowout<bd.bdinside || bd.arrowout>=bd.bdmax){ return;}
 
-			if(bd.ErB(bd.arrowin)==3){ g.fillStyle = this.errcolor1;}
-			else{ g.fillStyle = this.Cellcolor;}
+			g.fillStyle = (bd.border[bd.arrowin].error===3 ? this.errcolor1 : this.Cellcolor);
 			var bx = bd.border[bd.arrowin].cx, by = bd.border[bd.arrowin].cy;
-			if     (by==0)        { this.dispString(bd.ainobj, "IN", ((bx+1.3)/2)*k.cwidth+3 , ((by+0.5)/2)*k.cheight-5);}
-			else if(by==2*k.qrows){ this.dispString(bd.ainobj, "IN", ((bx+1.3)/2)*k.cwidth+3 , ((by+2.0)/2)*k.cheight+12);}
-			else if(bx==0)        { this.dispString(bd.ainobj, "IN", ((bx+1.0)/2)*k.cwidth-12, ((by+1.0)/2)*k.cheight-7);}
-			else if(bx==2*k.qcols){ this.dispString(bd.ainobj, "IN", ((bx+2.0)/2)*k.cwidth+6 , ((by+1.0)/2)*k.cheight-7);}
+			if     (by===0)        { this.dispString(bd.ainobj, "IN", ((bx+1.3)/2)*k.cwidth+3 , ((by+0.5)/2)*k.cheight-5);}
+			else if(by===2*k.qrows){ this.dispString(bd.ainobj, "IN", ((bx+1.3)/2)*k.cwidth+3 , ((by+2.0)/2)*k.cheight+12);}
+			else if(bx===0)        { this.dispString(bd.ainobj, "IN", ((bx+1.0)/2)*k.cwidth-12, ((by+1.0)/2)*k.cheight-7);}
+			else if(bx===2*k.qcols){ this.dispString(bd.ainobj, "IN", ((bx+2.0)/2)*k.cwidth+6 , ((by+1.0)/2)*k.cheight-7);}
 
-			if(bd.ErB(bd.arrowout)==3){ g.fillStyle = this.errcolor1;}
-			else{ g.fillStyle = this.Cellcolor;}
+			g.fillStyle = (bd.border[bd.arrowout].error===3 ? this.errcolor1 : this.Cellcolor);
 			var bx = bd.border[bd.arrowout].cx, by = bd.border[bd.arrowout].cy;
-			if     (by==0)        { this.dispString(bd.aoutobj, "OUT", ((bx+1.0)/2)*k.cwidth-2 , ((by+0.5)/2)*k.cheight-5);}
-			else if(by==2*k.qrows){ this.dispString(bd.aoutobj, "OUT", ((bx+1.0)/2)*k.cwidth-2 , ((by+2.0)/2)*k.cheight+12);}
-			else if(bx==0)        { this.dispString(bd.aoutobj, "OUT", ((bx+0.5)/2)*k.cwidth-19, ((by+1.0)/2)*k.cheight-7);}
-			else if(bx==2*k.qcols){ this.dispString(bd.aoutobj, "OUT", ((bx+2.0)/2)*k.cwidth+5 , ((by+1.0)/2)*k.cheight-7);}
+			if     (by===0)        { this.dispString(bd.aoutobj, "OUT", ((bx+1.0)/2)*k.cwidth-2 , ((by+0.5)/2)*k.cheight-5);}
+			else if(by===2*k.qrows){ this.dispString(bd.aoutobj, "OUT", ((bx+1.0)/2)*k.cwidth-2 , ((by+2.0)/2)*k.cheight+12);}
+			else if(bx===0)        { this.dispString(bd.aoutobj, "OUT", ((bx+0.5)/2)*k.cwidth-19, ((by+1.0)/2)*k.cheight-7);}
+			else if(bx===2*k.qcols){ this.dispString(bd.aoutobj, "OUT", ((bx+2.0)/2)*k.cwidth+5 , ((by+1.0)/2)*k.cheight-7);}
 		};
 		pc.dispString = function(el, text, px, py){
 			el.style.fontSize = (k.cwidth*0.55)+'px';
@@ -533,7 +529,7 @@ Puzzles.icebarn.prototype = {
 			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101);}) ){
 				this.setAlert('ïXÇÃïîï™à»äOÇ≈ê¸Ç™åç∑ÇµÇƒÇ¢Ç‹Ç∑ÅB', 'A Line is crossed outside of ice.'); return false;
 			}
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));}.bind(this)) ){
+			if( !this.checkAllCell(binder(this, function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));})) ){
 				this.setAlert('ïXÇÃïîï™Ç≈ê¸Ç™ã»Ç™Ç¡ÇƒÇ¢Ç‹Ç∑ÅB', 'A Line curve on ice.'); return false;
 			}
 

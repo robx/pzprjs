@@ -102,7 +102,7 @@ Puzzles.tatamibari.prototype = {
 				this.inputcol('empty','knumx','','');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
 			kp.kpinput = function(ca){
 				kc.key_inputMarks(ca);
 			};
@@ -119,8 +119,7 @@ Puzzles.tatamibari.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
@@ -139,7 +138,7 @@ Puzzles.tatamibari.prototype = {
 			var headers = ["c_lp1_", "c_lp2_"];
 			g.fillStyle = this.BorderQuescolor;
 
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				var qs = bd.QuC(c);
@@ -191,7 +190,7 @@ Puzzles.tatamibari.prototype = {
 				if(c > bd.cellmax){ break;}
 			}
 
-			return bstr.substring(i,bstr.length);
+			return bstr.substr(i);
 		};
 		enc.encodeTatamibari = function(){
 			var count, pass, i;

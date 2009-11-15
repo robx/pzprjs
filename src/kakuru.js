@@ -132,7 +132,7 @@ Puzzles.kakuru.prototype = {
 				this.inputcol('num','knum.',' ',' ');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, true, binder(kp, kp.kpgenerate));
 			kp.kpinput = function(ca){
 				kc.key_inputqnum_tateyoko(ca);
 			};
@@ -152,10 +152,8 @@ Puzzles.kakuru.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBCells_kakuru(x1,y1,x2,y2);
+			this.drawBWCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
@@ -164,27 +162,14 @@ Puzzles.kakuru.prototype = {
 			this.drawTCell(x1,y1,x2+1,y2+1);
 		};
 
-		pc.drawBCells_kakuru = function(x1,y1,x2,y2){
-			var header = "c_full_";
-
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QuC(c)===1){
-					g.fillStyle = this.Cellcolor;
-					if(this.vnop(header+c,1)){
-						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
-					}
-				}
-				else if(bd.QnC(c)!==-1){
-					g.fillStyle = "rgb(208, 208, 208)";
-					if(this.vnop(header+c,1)){
-						g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);
-					}
-				}
-				else{ this.vhide(header+c);}
-			}
-			this.vinc();
+		// オーバーライド drawBWCells用
+		pc.setCellColor = function(cc){
+			var err = bd.ErC(cc), _u = (bd.QuC(cc)===1);
+			if     ( _u &&  err===0){ g.fillStyle = this.Cellcolor; return true;}
+			else if( _u &&  err===1){ g.fillStyle = this.errcolor1; return true;}
+			else if(bd.QnC(cc)!==-1){ g.fillStyle = "rgb(208, 208, 208)"; return false;}
+			else if(!_u &&  err===1){ g.fillStyle = this.errbcolor1;      return false;}
+			g.fillStyle = "white"; return false;
 		};
 	},
 
@@ -217,7 +202,7 @@ Puzzles.kakuru.prototype = {
 
 				if(cell>=bd.cellmax){ break;}
 			}
-			return bstr.substring(i,bstr.length);
+			return bstr.substr(i);
 		};
 		enc.encodeKakuru = function(type){
 			var cm="", count=0;

@@ -97,8 +97,7 @@ Puzzles.factors.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawNumbers_factors(x1,y1,x2,y2);
@@ -110,7 +109,7 @@ Puzzles.factors.prototype = {
 			this.drawTCell(x1,y1,x2+1,y2+1);
 		};
 		pc.drawNumbers_factors = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
 

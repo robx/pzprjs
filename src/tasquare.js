@@ -91,9 +91,8 @@ Puzzles.tasquare.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawWhiteCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+			this.drawBWCells(x1,y1,x2,y2);
 
 			this.drawCellSquare(x1,y1,x2,y2);
 
@@ -109,7 +108,7 @@ Puzzles.tasquare.prototype = {
 			var mgnh = mf(k.cheight*0.1);
 			var headers = ["c_sq1_", "c_sq2_"]
 
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QnC(c)!=-1){
