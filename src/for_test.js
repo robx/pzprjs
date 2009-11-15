@@ -6,54 +6,20 @@ k.PLAYER = false;
 
 var debug = {
 	testonly_func : function(){
-		if($("#poptest").length <= 0){
-			newEL('div').attr("class","popup").attr("id","poptest")
-						.append( newEL('textarea').attr("id","testarea").attr("rows","16").attr("cols","40").attr("wrap","off") )
-						.appendTo($("#popup_parent"));
-			newEL('div').attr("class","titlebar").attr("id","bartest").html("&nbsp;pop_test").unselectable().prependTo($("#poptest"));
-		}
-		else{
-			$("#testarea").nextAll().remove();
-		}
+		menu.titlebarfunc(getEL("bartest"));
 
-		var tf = {	//testfunc
-			titlebardown : function(e){
-				menu.isptitle = 1;
-				menu.offset.x = mv.pointerX(e) - parseInt($("#poptest").css("left"));
-				menu.offset.y = mv.pointerY(e) - parseInt($("#poptest").css("top"));
-			},
-			titlebarup   : function(e){ menu.isptitle = 0; },
-			titlebarout  : function(e){ if(!menu.insideOf($("#poptest"), e)){ menu.isptitle = 0;} },
-			titlebarmove : function(e){
-				if(menu.isptitle){
-					$("#poptest").css("left", (mv.pointerX(e) - menu.offset.x));
-					$("#poptest").css("top" , (mv.pointerY(e) - menu.offset.y));
-				}
-			}
-		};
-		$("#bartest").unbind().mousedown(tf.titlebardown).mouseup(tf.titlebarup)
-					 .mouseout(tf.titlebarout).mousemove(tf.titlebarmove);
+		document.testform.starttest.onclick = binder(this, this.presccheck);
+		document.testform.t1.onclick        = binder(this, this.perfeval);
+		document.testform.t2.onclick        = binder(this, this.painteval);
+		document.testform.t3.onclick        = binder(this, this.resizeeval);
 
-		$("#poptest").append( '<br>' )
-					 .append( this.newBTN("ÉeÉXÉg",this.presccheck.bind(this)) )
-					 .append( ' ' )
-					 .append( this.newBTN("T1",this.perfeval.bind(this)) )
-					 .append( this.newBTN("T2",this.painteval.bind(this)) )
-					 .append( this.newBTN("T3",this.resizeeval.bind(this)) );
+		document.testform.filesave.onclick  = function(){ getEL("testarea").value=''; debug.addTextarea(fio.fileencode(1).replace(/\//g,"\n"));};
+		document.testform.fileopen.onclick  = function(){ fio.fileopen(getEL("testarea").value.split("\n"),1);};
+		document.testform.erasetext.onclick = function(e){ getEL("testarea").value='';};
+		document.testform.close.onclick     = function(e){ getEL("poptest").style.display = 'none';};
+		document.testform.perfload.onclick  = binder(this, this.loadperf);
 
-		$("#poptest").append( '<br>' )
-					 .append( this.newBTN("File",function(){ $("#testarea").val(""); debug.addTextarea(fio.fileencode(1).replace(/\//g,"\n"));}) )
-					 .append( this.newBTN("Load",function(){ fio.fileopen($("#testarea").val().split("\n"),1);}) )
-					 .append( ' ' )
-					 .append( this.newBTN("è¡ãé",function(e){ $("#testarea").val("");}) )
-					 .append( ' ' )
-					 .append( this.newBTN("ï¬Ç∂ÇÈ",function(e){ $("#poptest").hide();}) );
-		if(k.puzzleid=='country'){ $("#poptest").append( ' ' ).append( this.newBTN("Perf",this.loadperf.bind(this)) ); }
-	},
-	btncnt : 0,
-	newBTN : function(val,func){
-		var idname = "testbutton_"+this.btncnt; this.btncnt++;
-		return newEL('input').attr("type","button").attr("id",idname).attr("value",val).click(func);
+		document.testform.perfload.display = (k.puzzleid!=='country' ? 'none' : 'inline');
 	},
 
 	keydown : function(ca){
@@ -65,25 +31,14 @@ var debug = {
 	},
 
 	perfeval : function(){
-		this.timeeval("ê≥ìöîªíËë™íË",ans.checkAns.bind(ans));
+		this.timeeval("ê≥ìöîªíËë™íË",binder(ans, ans.checkAns));
 	},
 	painteval : function(){
-		this.timeeval("ï`âÊéûä‘ë™íË",pc.paintAll.bind(pc));
+		this.timeeval("ï`âÊéûä‘ë™íË",binder(pc, pc.paintAll));
 	},
 	resizeeval : function(){
-		this.timeeval("resizeï`âÊë™íË",base.resize_canvas.bind(base));
+		this.timeeval("resizeï`âÊë™íË",binder(base, base.resize_canvas));
 	},
-//	turneval : function(){
-//		this.timeeval("Turnéûä‘ë™íË",function(){
-//			um.newOperation(true);
-//			menu.ex.turnr(0,0,k.qcols-1,k.qrows-1);
-//			um.addOpe('board', 'turnr', 0, 0, 1);
-//			tc.Adjust();
-//			area.resetArea();
-//		});
-//		base.resize_canvas();
-//	},
-
 	timeeval : function(text,func){
 		this.addTextarea(text);
 		var count=0, old = (new Date()).getTime();
@@ -115,19 +70,50 @@ var debug = {
 			k.qrows = 0;
 			k.area = { bcell:0, wcell:0, number:0};
 
-			base.reload_func(k.puzzleid);
+			this.reload_func(k.puzzleid);
 
 			enc.parseURI_pzpr.apply(enc, [debug.urls[pnum][1]]);
 			enc.pzlinput.apply(enc);
 
-			$("#testarea").attr("rows","32");
-			$("#poptest").css("visibility","visible").css("left", "40px").css("top", "80px").show();
+			getEL("testarea").rows = "32";
+			var _pop = getEL('poptest');
+			_pop.style.display = 'inline';
+			_pop.style.left = '40px';
+			_pop.style.top  = '80px';
 			debug.addTextarea("Test ("+pnum+", "+k.puzzleid+") start.");
 			debug.sccheck();
 
 			if(pnum >= term){ clearInterval(tam);} 
 			pnum++;
 		},500);
+	},
+
+	reload_func : function(newid){
+		this.initProcess = true;
+
+		if(this.proto){ puz.protoOriginal();}
+
+		menu.menureset();
+		base.numparent.innerHTML = '';
+		if(kp.ctl[1].enable){ getEL('popup_parent').removeChild(kp.ctl[1].el);}
+		if(kp.ctl[3].enable){ getEL('popup_parent').removeChild(kp.ctl[3].el);}
+
+		k.puzzleid = newid;
+		if(!Puzzles[k.puzzleid]){
+			var _script = newEL('script');
+			_script.type = 'text/javascript';
+//			_script.charset = 'Shift_JIS';
+			_script.src = "src/"+k.puzzleid+".js";
+			_doc.body.appendChild(_script);	// headÇ∂Ç·Ç»Ç¢ÇØÇ«ÅAÅAÇµÇÂÇ§Ç™Ç»Ç¢Ç©ÇüÅBÅB
+		}
+
+		enc = new Encode();
+		fio = new FileIO();
+
+		this.initObjects();
+		this.setEvents(false);
+
+		this.initProcess = false;
 	},
 
 	accheck1 : function(){
@@ -144,13 +130,17 @@ var debug = {
 	},
 
 	disptest : function(type){
-		$("#poptest").css("visibility","visible").css("left", "40px").css("top", "80px").show();
+		var _pop = getEL('poptest');
+		_pop.style.display = 'inline';
+		_pop.style.left = '40px';
+		_pop.style.top  = '80px';
 		if(type==1){ this.presccheck();}
 	},
 
 	phase : 0,
 	presccheck : function(e){
-		$("#testarea").attr("rows","32").val("");
+		getEL("testarea").rows = "32";
+		getEL("testarea").value = "";
 		this.sccheck(e);
 	},
 	sccheck : function(e){
@@ -189,7 +179,7 @@ var debug = {
 
 				enc.pzlexport(2);
 				document.urlinput.ta.value = document.urloutput.ta.value;
-				menu.pop = $("#pop1_5");
+				menu.pop = getEL("pop1_5");
 				menu.ex.urlinput({});
 
 				debug.addTextarea("Encode kanpen = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
@@ -278,7 +268,7 @@ var debug = {
 		case 40:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(){ menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnr'}}); menu.pop = '';};
+				var func = function(){ menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnr'}}); menu.pop = '';};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("TurnR test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
@@ -300,7 +290,7 @@ var debug = {
 		case 45:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(){ menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnl'}}); menu.pop = '';};
+				var func = function(){ menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnl'}}); menu.pop = '';};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("TurnL test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
@@ -323,9 +313,9 @@ var debug = {
 		case 50:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}});
+				menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}});
 
-				setTimeout(function(){ menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}}); menu.pop = '';
+				setTimeout(function(){ menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}}); menu.pop = '';
 					debug.addTextarea("FlipX test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					debug.phase = 51;
 				},fint);
@@ -345,9 +335,9 @@ var debug = {
 		case 55:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}});
+				menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}});
 
-				setTimeout(function(){ menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}}); menu.pop = '';
+				setTimeout(function(){ menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}}); menu.pop = '';
 					debug.addTextarea("FlipY test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					debug.phase = 56;
 				},fint);
@@ -369,7 +359,7 @@ var debug = {
 			debug.phase=0;
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(nid){ menu.pop = $("#pop2_1"); menu.ex.popupadjust({srcElement:{name:nid}}); menu.pop = '';};
+				var func = function(nid){ menu.pop = getEL("pop2_1"); menu.ex.popupadjust({srcElement:{name:nid}}); menu.pop = '';};
 				setTimeout(function(){ func('expandup'); setTimeout(function(){ func('expandrt');
 				setTimeout(function(){ func('expanddn'); setTimeout(function(){ func('expandlt');
 				setTimeout(function(){ func('reduceup'); setTimeout(function(){ func('reducert');
@@ -405,7 +395,7 @@ var debug = {
 		},mint);
 	},
 	taenable : true,
-	addTextarea : function(str){ if(this.taenable){ $("#testarea").val($("#testarea").val()+str+"\n");} },
+	addTextarea : function(str){ if(this.taenable){ getEL('testarea').value += (str+"\n");} },
 
 	qsubf : true,
 	bd_freezecopy : function(){
