@@ -30,13 +30,16 @@ Menu = function(){
 };
 Menu.prototype = {
 	//---------------------------------------------------------------------------
-	// menu.menuinit()  メニュー、ボタン、サブメニュー、フロートメニュー、
-	//                  ポップアップメニューの初期設定を行う
-	// menu.menureset() メニュー用の設定を消去する
+	// menu.menuinit()      メニュー、ボタン、サブメニュー、フロートメニュー、
+	//                      ポップアップメニューの初期設定を行う
+	// menu.menureset()     メニュー用の設定を消去する
+	// menu.getSrcElement() イベントを起こしたエレメントを返す
+	// menu.spanEL()        spanタグ＋innerHTMLだけ設定してエレメントを返す
 	//---------------------------------------------------------------------------
 	menuinit : function(){
 		this.buttonarea();
 		this.menuarea();
+		this.managearea();
 		this.poparea();
 
 		this.displayAll();
@@ -51,14 +54,28 @@ Menu.prototype = {
 
 		this.popclose();
 		this.menuclear();
+		this.floatmenuclose(0);
 
-		$("#popup_parent > .floatmenu").remove();
-		$("#menupanel,#usepanel,#checkpanel").html("");
-		if($("#btncolor2").length>0){ $("#btncolor2").remove();}
+		getEL("float_parent").innerHTML;
+
+		if(!!getEL("btncolor2")){ getEL('btnarea').removeChild(getEL('btncolor2'));}
 		$("#btnclear2").nextAll().remove();
 		$("#outbtnarea").remove();
 
+		getEL('menupanel') .innerHTML = '';
+		getEL('usepanel')  .innerHTML = '';
+		getEL('checkpanel').innerHTML = '';
+
 		pp.reset();
+	},
+
+	getSrcElement : function(event){
+		return event.target || event.srcElement;
+	},
+	spanEL : function(str){
+		var el = newEL('span');
+		el.innerHTML = str;
+		return el;
 	},
 
 	//---------------------------------------------------------------------------
@@ -78,31 +95,42 @@ Menu.prototype = {
 		pp.setDefaultFlags();
 		this.createFloats();
 
-		$("#expression").html(base.expression.ja);
-		if(k.PLAYER){ $("#ms_newboard,#ms_urloutput").attr("class", "smenunull");}
-		if(k.PLAYER){ $("#ms_adjust").attr("class", "smenunull");}
-		$("#ms_jumpv3,#ms_jumptop,#ms_jumpblog").css("font-size",'10pt').css("padding-left",'8pt');
-
-		this.managearea();
+		getEL("expression").innerHTML = base.expression.ja;
+		if(k.PLAYER){
+			getEL('ms_newboard').className = 'smenunull';
+			getEL('ms_urloutput').className = 'smenunull';
+			getEL('ms_adjust').className = 'smenunull';
+		}
+		getEL('ms_jumpv3')  .style.fontSize = '10pt'; getEL('ms_jumpv3')  .style.paddingLeft = '8pt';
+		getEL('ms_jumptop') .style.fontSize = '10pt'; getEL('ms_jumptop') .style.paddingLeft = '8pt';
+		getEL('ms_jumpblog').style.fontSize = '10pt'; getEL('ms_jumpblog').style.paddingLeft = '8pt';
 	},
 
 	addMenu : function(idname, strJP, strEN){
-		var jqel = newEL("div").attr("class", 'menu').attr("id",'menu_'+idname).appendTo($("#menupanel"))
-							   .html("["+strJP+"]").css("margin-right","4pt")
-							   .hover(this.menuhover.ebind(this,idname), this.menuout.ebind(this));
-		this.addLabels(jqel, "["+strJP+"]", "["+strEN+"]");
+		var el = newEL('div');
+		el.className = 'menu';
+		el.id        = 'menu_'+idname;
+		el.innerHTML = "["+strJP+"]";
+		el.style.marginRight = "4pt";
+		el.onmouseover = ebinder(this, this.menuhover, [idname]);
+		el.onmouseout  = ebinder(this, this.menuout);
+		getEL('menupanel').appendChild(el);
+
+		this.addLabels(el, "["+strJP+"]", "["+strEN+"]");
 	},
 	menuhover : function(e, idname){
 		this.floatmenuopen(e,idname,0);
 		$("div.menusel").attr("class", "menu");
-		$(getSrcElement(e)).attr("class", "menusel");
+		this.getSrcElement(e).className = "menusel";
 	},
-	menuout   : function(e){ if(!this.insideOfMenu(e)){ this.menuclear();} },
+	menuout   : function(e){
+		if(!this.insideOfMenu(e)){
+			this.menuclear();
+			this.floatmenuclose(0);
+		}
+	},
 	menuclear : function(){
 		$("div.menusel").attr("class", "menu");
-		$("div.smenusel").attr("class", "smenu");
-		$("#popup_parent > .floatmenu").hide();
-		this.dispfloat = [];
 	},
 
 	//---------------------------------------------------------------------------
@@ -112,29 +140,34 @@ Menu.prototype = {
 	// menu.checkclick()    管理領域のチェックボタンが押されたとき、チェック型の設定を設定する
 	//---------------------------------------------------------------------------
 	submenuhover : function(e, idname){
-		if($(getSrcElement(e)).attr("class")=="smenu"){ $(getSrcElement(e)).attr("class", "smenusel");}
+		if(this.getSrcElement(e).className==="smenu"){ this.getSrcElement(e).className="smenusel";}
 		if(pp.flags[idname] && pp.type(idname)==1){ this.floatmenuopen(e,idname,this.dispfloat.length);}
 	},
 	submenuout   : function(e, idname){
-		if($(getSrcElement(e)).attr("class")=="smenusel"){ $(getSrcElement(e)).attr("class", "smenu");}
+		if(this.getSrcElement(e).className==="smenusel"){ this.getSrcElement(e).className="smenu";}
 		if(pp.flags[idname] && pp.type(idname)==1){ this.floatmenuout(e);}
 	},
 	submenuclick : function(e, idname){
-		if($(getSrcElement(e)).attr("class") == "smenunull"){ return;}
+		if(this.getSrcElement(e).className==="smenunull"){ return;}
 		this.menuclear();
+		this.floatmenuclose(0);
 
 		if(pp.type(idname)==0){
 			this.popclose();							// 表示しているウィンドウがある場合は閉じる
 			if(pp.funcs[idname]){ pp.funcs[idname]();}	// この中でthis.popupenuも設定されます。
 			if(this.pop){
-				this.pop.css("left", mv.pointerX(e) - 8 + k.IEMargin.x)
-						.css("top",  mv.pointerY(e) - 8 + k.IEMargin.y).css("visibility", "visible");
+				var _pop = this.pop;
+				_pop.style.left = mv.pointerX(e) - 8 + k.IEMargin.x;
+				_pop.style.top  = mv.pointerY(e) - 8 + k.IEMargin.y;
+				_pop.style.display = 'inline';
 			}
 		}
 		else if(pp.type(idname)==4){ this.setVal(pp.flags[idname].parent, pp.getVal(idname));}
 		else if(pp.type(idname)==2){ this.setVal(idname, !pp.getVal(idname));}
 	},
-	checkclick : function(idname){ this.setVal(idname, $("#ck_"+idname).attr("checked"));},
+	checkclick : function(idname){
+		this.setVal(idname, getEL("ck_"+idname).checked);
+	},
 
 	//---------------------------------------------------------------------------
 	// menu.floatmenuopen()  マウスがメニュー項目上に来た時にフロートメニューを表示する
@@ -144,47 +177,87 @@ Menu.prototype = {
 	// menu.insideOfMenu()   マウスがメニュー領域の中にいるか判定する
 	//---------------------------------------------------------------------------
 	floatmenuopen : function(e, idname, depth){
+		if(depth===0){ this.menuclear();}
 		this.floatmenuclose(depth);
-		var src = $(getSrcElement(e));
 
-		if(depth==0||this.dispfloat[depth-1]){
-			if(depth==0){ this.floatpanel[idname].css("left", src.offset().left - 3 + k.IEMargin.x).css("top" , src.offset().top + src.height());}
-			else        { this.floatpanel[idname].css("left", src.offset().left + src.width())     .css("top",  src.offset().top - 3);}
-			this.floatpanel[idname].css("z-index",101+depth).css("visibility", "visible").show();
-			this.dispfloat.push(idname);
+		if(depth>0 && !this.dispfloat[depth-1]){ return;}
+
+		var src = this.getSrcElement(e);
+		var _float = this.floatpanel[idname];
+		if(depth==0){
+			_float.style.left = this.getLeft(src) - 3 + k.IEMargin.x;
+			_float.style.top  = this.getBottom(src) + (k.br.IE?-2:1);
 		}
+		else{
+			_float.style.left = this.getRight(src) - 2;
+			_float.style.top  = this.getTop(src) + (k.br.IE?-5:-2);
+		}
+		_float.style.zIndex   = 101+depth;
+		_float.style.display  = 'inline';
+
+		this.dispfloat.push(_float);
 	},
 	// マウスが離れたときにフロートメニューをクローズする
 	// フロート->メニュー側に外れた時は、関数終了直後にfloatmenuopen()が呼ばれる
 	floatmenuclose : function(depth){
-		if(depth==0){ this.menuclear(); return;}
 		for(var i=this.dispfloat.length-1;i>=depth;i--){
-			if(this.dispfloat[i]){
-				$("#ms_"+this.dispfloat[i]).attr("class", "smenu");
-				this.floatpanel[this.dispfloat[i]].hide();
-				this.dispfloat.pop();
+			if(i!==0){
+				var parentsmenuid = "ms_" + this.dispfloat[i].id.substr(6);
+				getEL(parentsmenuid).className = 'smenu';
 			}
+			this.dispfloat[i].style.display = 'none';
+			this.dispfloat.pop();
 		}
-	},
-	floatmenuout : function(e){
-		for(var i=this.dispfloat.length-1;i>=0;i--){
-			if(this.insideOf(this.floatpanel[this.dispfloat[i]],e)){ this.floatmenuclose(i+1); return;}
-		}
-		this.menuclear();
 	},
 
-	insideOf : function(jqobj, e){
-		var LT = new Pos(jqobj.offset().left, jqobj.offset().top);
-		var ev = new Pos(mv.pointerX(e), mv.pointerY(e));
-		return !(ev.x<=LT.x || ev.x>=LT.x+jqobj.width() || ev.y<=LT.y || ev.y>=LT.y+jqobj.height());
+	floatmenuout : function(e){
+		for(var i=this.dispfloat.length-1;i>=0;i--){
+			if(this.insideOf(this.dispfloat[i],e)){
+				this.floatmenuclose(i+1);
+				return;
+			}
+		}
+		// ここに来るのはすべて消える場合
+		this.menuclear();
+		this.floatmenuclose(0);
+	},
+
+	insideOf : function(el, e){
+		var ex = mv.pointerX(e)+(k.br.WinWebKit?1:0);
+		var ey = mv.pointerY(e)+(k.br.WinWebKit?1:0);
+		return (ex>=this.getLeft(el) && ex<=this.getRight(el) && ey>=this.getTop(el) && ey<=this.getBottom(el));
 	},
 	insideOfMenu : function(e){
-		var upperLimit = $("#menu_file").offset().top;
-		var leftLimit  = $("#menu_file").offset().left;
-		var rightLimit = $("#menu_other").offset().left + $("#menu_other").width();
-		var ex = mv.pointerX(e), ey = mv.pointerY(e);
-		return (ex>leftLimit && ex<rightLimit && ey>upperLimit);
+		var ex = mv.pointerX(e)+(k.br.WinWebKit?1:0);
+		var ey = mv.pointerY(e)+(k.br.WinWebKit?1:0);
+		return (ex>=this.getLeft(getEL('menu_file')) && ex<=this.getRight(getEL('menu_other')) && ey>=this.getTop(getEL('menu_file')));
 	},
+	//---------------------------------------------------------------------------
+	// menu.getTop()         要素の上座標を取得する
+	// menu.getBottom()      要素の下座標を取得する
+	// menu.getLeft()        要素の左座標を取得する
+	// menu.getRight()       要素の右座標を取得する
+	// menu.getWidth()       要素の横幅を取得する
+	// menu.getHeight()      要素の縦幅を取得する
+	//---------------------------------------------------------------------------
+	getTop    : function(el){
+		var _html = _doc.documentElement, _body = _doc.body;
+		return el.getBoundingClientRect().top + ((_body.scrollTop || _html.scrollTop) - _html.clientTop);
+	},
+	getBottom : function(el){
+		var _html = _doc.documentElement, _body = _doc.body;
+		return el.getBoundingClientRect().top + ((_body.scrollTop || _html.scrollTop) - _html.clientTop) + el.offsetHeight;
+	},
+	getLeft   : function(el){
+		var _html = document.documentElement, _body = _doc.body;
+		return el.getBoundingClientRect().left + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
+	},
+	getRight  : function(el){
+		var _html = document.documentElement, _body = _doc.body;
+		return el.getBoundingClientRect().left + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft) + el.offsetWidth;
+	},
+	getWidth  : function(el){ return el.offsetWidth;},
+	getHeight : function(el){ return el.offsetHeight;},
 
 	//---------------------------------------------------------------------------
 	// menu.addUseToFlags()      「操作方法」サブメニュー登録用共通関数
@@ -227,30 +300,39 @@ Menu.prototype = {
 	setVal : function(idname, newval){ pp.setVal(idname,newval);},
 	setdisplay : function(idname){
 		if(pp.type(idname)==0||pp.type(idname)==3){
-			if($("#ms_"+idname)){ $("#ms_"+idname).html(pp.getMenuStr(idname));}
+			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = pp.getMenuStr(idname);}
 		}
 		else if(pp.type(idname)==1){
-			if($("#ms_"+idname)){ $("#ms_"+idname).html("&nbsp;"+pp.getMenuStr(idname));}	// メニュー上の表記の設定
-			$("#cl_"+idname).html(pp.getLabel(idname));									// 管理領域上の表記の設定
-			for(var i=0;i<pp.flags[idname].child.length;i++){ this.setdisplay(""+idname+"_"+pp.flags[idname].child[i]);}
+			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = "&nbsp;"+pp.getMenuStr(idname);}	// メニュー上の表記の設定
+			if(getEL("cl_"+idname)){ getEL("cl_"+idname).innerHTML = pp.getLabel(idname);}				// 管理領域上の表記の設定
+			for(var i=0,len=pp.flags[idname].child.length;i<len;i++){ this.setdisplay(""+idname+"_"+pp.flags[idname].child[i]);}
 		}
 		else if(pp.type(idname)==4){
 			var issel = (pp.getVal(idname) == pp.getVal(pp.flags[idname].parent));
 			var cap = pp.getMenuStr(idname);
-			$("#ms_"+idname).html((issel?"+":"&nbsp;")+cap);					// メニューの項目
-			$("#up_"+idname).html(cap).attr("class", issel?"flagsel":"flag");	// 管理領域の項目
+			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = (issel?"+":"&nbsp;")+cap;}	// メニューの項目
+			if(getEL("up_"+idname)){															// 管理領域の項目
+				getEL("up_"+idname).innerHTML = cap;
+				getEL("up_"+idname).className = (issel?"flagsel":"flag");
+			}
 		}
 		else if(pp.type(idname)==2){
 			var flag = pp.getVal(idname);
-			if($("#ms_"+idname)){ $("#ms_"+idname).html((flag?"+":"&nbsp;")+pp.getMenuStr(idname));}	// メニュー
-			$("#ck_"+idname).attr("checked",flag);			// 管理領域(チェックボックス)
-			$("#cl_"+idname).html(pp.getLabel(idname));		// 管理領域(ラベル)
+			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = (flag?"+":"&nbsp;")+pp.getMenuStr(idname);}	// メニュー
+			if(getEL("ck_"+idname)){ getEL("ck_"+idname).checked = flag;}						// 管理領域(チェックボックス)
+			if(getEL("cl_"+idname)){ getEL("cl_"+idname).innerHTML = pp.getLabel(idname);}		// 管理領域(ラベル)
 		}
 	},
 	displayAll : function(){
 		for(var i in pp.flags){ this.setdisplay(i);}
-		$.each(this.btnstack,function(i,obj){obj.el.attr("value",obj.str[menu.language]);});
-		$.each(this.labelstack,function(i,obj){obj.el.html(obj.str[menu.language]);});
+		for(var i=0,len=this.btnstack.length;i<len;i++){
+			if(!this.btnstack[i].el){ continue;}
+			this.btnstack[i].el.value = this.btnstack[i].str[menu.language];
+		}
+		for(var i=0,len=this.labelstack.length;i<len;i++){
+			if(!this.labelstack[i].el){ continue;}
+			this.labelstack[i].el.innerHTML = this.labelstack[i].str[menu.language];
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -267,35 +349,65 @@ Menu.prototype = {
 			var floats = this.getFloatpanel(menuid);
 
 			if(menuid=='setting'){
-				if(last>0 && last!=pp.type(idname)){ $("<div class=\"smenusep\">&nbsp;</div>").appendTo(floats);}
+				if(last>0 && last!=pp.type(idname)){
+					var _sep = newEL('div');
+					_sep.className = 'smenusep';
+					_sep.innerHTML = '&nbsp;';
+					floats.appendChild(_sep);
+				}
 				last=pp.type(idname);
 			}
 
 			var smenu;
-			if     (pp.type(idname)==5){ smenu = $("<div class=\"smenusep\">&nbsp;</div>");}
-			else if(pp.type(idname)==3){ smenu = newEL("span").css("color", 'white');}
+			if     (pp.type(idname)==5){
+				smenu = newEL('div');
+				smenu.className = 'smenusep';
+				smenu.innerHTML = '&nbsp;';
+			}
+			else if(pp.type(idname)==3){
+				smenu = newEL('span');
+				smenu.style.color = 'white';
+			}
 			else if(pp.type(idname)==1){
-				smenu = newEL("div").attr("class", 'smenu').css("font-weight","900").css("font-size",'10pt')
-									.hover(this.submenuhover.ebind(this,idname), this.submenuout.ebind(this,idname));
+				smenu = newEL('div');
+				smenu.className  = 'smenu';
+				smenu.style.fontWeight = '900';
+				smenu.style.fontSize   = '10pt';
+				smenu.onmouseover = ebinder(this, this.submenuhover, [idname]);
+				smenu.onmouseout  = ebinder(this, this.submenuout,   [idname]);
 				this.getFloatpanel(idname);
 			}
 			else{
-				smenu = newEL("div").attr("class", 'smenu')
-									.hover(this.submenuhover.ebind(this,idname), this.submenuout.ebind(this,idname))
-									.click(this.submenuclick.ebind(this,idname));
-				if(pp.type(idname)!=0){ smenu.css("font-size",'10pt').css("padding-left",'6pt');}
+				smenu = newEL('div');
+				smenu.className  = 'smenu';
+				smenu.onmouseover = ebinder(this, this.submenuhover, [idname]);
+				smenu.onmouseout  = ebinder(this, this.submenuout,   [idname]);
+				smenu.onclick     = ebinder(this, this.submenuclick, [idname]);
+				this.getFloatpanel(idname);
+				if(pp.type(idname)!=0){
+					smenu.style.fontSize    = '10pt';
+					smenu.style.paddingLeft = '6pt';
+				}
 			}
-			smenu.attr("id","ms_"+idname).appendTo(floats);
+			smenu.id = "ms_"+idname;
+			floats.appendChild(smenu);
+
 			this.setdisplay(idname);
 		}
 		this.floatpanel[menuid] = floats;
 	},
 	getFloatpanel : function(id){
 		if(!this.floatpanel[id]){
-			this.floatpanel[id] = newEL("div")
-				.attr("class", 'floatmenu').attr("id",'float_'+id).appendTo($("#popup_parent"))
-				.css("background-color", base.floatbgcolor).css("z-index",101)
-				.mouseout(this.floatmenuout.ebind(this)).hide();
+			var _float = newEL("div");
+			_float.className = 'floatmenu';
+			_float.id        = 'float_'+id;
+			_float.onmouseout = ebinder(this, this.floatmenuout);
+			_float.style.zIndex = 101;
+			_float.style.backgroundColor = base.floatbgcolor;
+			getEL('float_parent').appendChild(_float);
+
+			this.floatpanel[id] = _float;
+			//$(_float).hide();
 		}
 		return this.floatpanel[id];
 	},
@@ -309,36 +421,70 @@ Menu.prototype = {
 			if(!pp.flags[idname] || !pp.getLabel(idname)){ continue;}
 
 			if(pp.type(idname)==1){
-				$("#usepanel").append("<span id=\"cl_"+idname+"\">"+pp.getLabel(idname)+"</span> |&nbsp;");
+				var up = getEL("usepanel");
+
+				var _el = newEL('span');
+				_el.id = "cl_" + idname;
+				_el.innerHTML = pp.getLabel(idname);
+				up.appendChild(_el);
+
+				up.appendChild(this.spanEL(" |&nbsp;"));
+
 				for(var i=0;i<pp.flags[idname].child.length;i++){
 					var num = pp.flags[idname].child[i];
-					var el = newEL('div').attr("class",((num==pp.getVal(idname))?"flagsel":"flag")).attr("id","up_"+idname+"_"+num)
-										 .html(pp.getMenuStr(""+idname+"_"+num)).appendTo($("#usepanel"))
-										 .click(pp.setVal.bind(pp,idname,num)).unselectable();
-					$("#usepanel").append(" ");
+					var el = unselectable(newEL('div'));
+					el.className = ((num==pp.getVal(idname))?"flagsel":"flag");
+					el.id        = "up_"+idname+"_"+num;
+					el.innerHTML = pp.getMenuStr(""+idname+"_"+num);
+					el.onclick   = binder(pp, pp.setVal, [idname,num]);
+					up.appendChild(el);
+
+					up.appendChild(this.spanEL(" "));
 				}
-				$("#usepanel").append("<br>\n");
+
+				up.appendChild(newEL('br'));
 			}
 			else if(pp.type(idname)==2){
-				$("#checkpanel").append("<input type=\"checkbox\" id=\"ck_"+idname+"\""+(pp.getVal(idname)?' checked':'')+"> ")
-								.append("<span id=\"cl_"+idname+"\"> "+pp.getLabel(idname)+"</span>");
+				var cp = getEL("checkpanel");
+
+				var _el = newEL('input');
+				_el.type  = 'checkbox';
+				_el.id    = "ck_" + idname;
+				_el.check = '';
+				_el.onclick = binder(this, this.checkclick, [idname]);
+				cp.appendChild(_el)
+
+				cp.appendChild(this.spanEL(" "));
+
+				_el = newEL('span');
+				_el.id = "cl_" + idname;
+				_el.innerHTML = pp.getLabel(idname);
+				cp.appendChild(_el);
+
 				if(idname=="irowake"){
-					$("#checkpanel").append("<input type=button id=\"ck_irowake2\" value=\"色分けしなおす\" onClick=\"javascript:menu.ex.irowakeRemake();\">");
-					this.addButtons($("#ck_irowake2"), "色分けしなおす", "Change the color of Line");
+					cp.appendChild(this.createButton('ck_irowake2','','色分けしなおす'));
+					this.addButtons(getEL("ck_irowake2"), binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
 				}
-				$("#checkpanel").append("<br>\n");
-				$("#ck_"+idname).click(this.checkclick.bind(this,idname));
+
+				cp.appendChild(newEL('br'));
 			}
 		}
 
-		$("#translation").css("position","absolute").css("cursor","pointer")
-						 .css("font-size","10pt").css("color","green").css("background-color","#dfdfdf")
-						 .click(this.translate.bind(this)).unselectable();
-		if(k.EDITOR){ $("#timerpanel,#separator2").hide();}
+		var _tr = unselectable(getEL('translation'));
+		_tr.style.position = 'absolute';
+		_tr.style.cursor   = 'pointer';
+		_tr.style.fontSize = '10pt';
+		_tr.style.color    = 'green';
+		_tr.style.backgroundColor = '#dfdfdf';
+		_tr.onclick = binder(this, this.translate);
+
+		if(k.EDITOR){
+			$("#timerpanel,#separator2").hide();
+		}
 		if(k.irowake!=0){
-			$("#btnarea").append("<input type=\"button\" id=\"btncolor2\" value=\"色分けしなおす\">");
-			$("#btncolor2").click(menu.ex.irowakeRemake).hide();
-			menu.addButtons($("#btncolor2"), "色分けしなおす", "Change the color of Line");
+			getEL('btnarea').appendChild(menu.createButton('btncolor2','','色分けしなおす'))
+			this.addButtons(getEL("btncolor2"), binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
+			$("#btncolor2").hide();
 		}
 	},
 
@@ -351,91 +497,85 @@ Menu.prototype = {
 	// menu.popclose()    ポップアップメニューを閉じる
 	//---------------------------------------------------------------------------
 	poparea : function(){
-		var self = this;
-		// Popupメニューを動かすイベント
-		var popupfunc = function(){
-			$(this).mousedown(self.titlebardown.ebind(self)).mouseup(self.titlebarup.ebind(self))
-				   .mouseout(self.titlebarout.ebind(self)).mousemove(self.titlebarmove.ebind(self))
-				   .unselectable();
-		};
-		$("div.titlebar,#credir3_1").each(popupfunc);
+
+		$("div.titlebar,#credir3_1").each(function(){ menu.titlebarfunc(this);});
 
 		//---------------------------------------------------------------------------
 		//// formボタンのイベント
-		var px = this.popclose.ebind(this);
+		var px = ebinder(this, this.popclose);
 
 		// 盤面の新規作成
-		$(document.newboard.newboard).click(this.ex.newboard.ebind(this.ex));
-		$(document.newboard.cancel).click(px);
+		document.newboard.newboard.onclick = ebinder(this.ex, this.ex.newboard);
+		document.newboard.cancel.onclick   = px;
 
 		// URL入力
-		$(document.urlinput.urlinput).click(this.ex.urlinput.ebind(this.ex));
-		$(document.urlinput.cancel).click(px);
+		document.urlinput.urlinput.onclick = ebinder(this.ex, this.ex.urlinput);
+		document.urlinput.cancel.onclick   = px;
 
 		// URL出力
-		$(document.urloutput.ta).before(newEL('div').attr('id','outbtnarea'));
-		var ib = function(name, strJP, strEN, eval){ if(!eval) return;
-			var btn = newEL('input').attr('type','button').attr("name",name).click(this.ex.urloutput.ebind(this.ex));
-			$("#outbtnarea").append(btn).append("<br>");
-			this.addButtons(btn, strJP, strEN);
-		}.bind(this);
-		ib('pzprv3', "ぱずぷれv3のURLを出力する", "Output PUZ-PRE v3 URL", true);
-		ib('pzprapplet', "ぱずぷれ\(アプレット\)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", !k.ispzprv3ONLY);
-		ib('kanpen', "カンペンのURLを出力する", "Output Kanpen URL", k.isKanpenExist);
-		ib('heyaapp', "へやわけアプレットのURLを出力する", "Output Heyawake-Applet URL", (k.puzzleid=="heyawake"));
-		ib('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する", "Output PUZ-PRE v3 Re-Edit URL", true);
-		$("#outbtnarea").append("<br>\n");
-		$(document.urloutput.openurl).click(this.ex.openurl.ebind(this.ex));
-		$(document.urloutput.close).click(px);
+		var _div = getEL('urlbuttonarea');
+		var ib = binder(this, function(name, strJP, strEN, eval){
+			if(eval===false) return;
+			var el = menu.createButton('', name, strJP);
+			this.addButtons(el, ebinder(this.ex, this.ex.urloutput), strJP, strEN);
+			_div.appendChild(el)
+			_div.appendChild(newEL('br'));
+		});
+		ib('pzprv3',     "ぱずぷれv3のURLを出力する",           "Output PUZ-PRE v3 URL",          true);
+		ib('pzprapplet', "ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", !k.ispzprv3ONLY);
+		ib('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              !!k.isKanpenExist);
+		ib('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (k.puzzleid==="heyawake"));
+		ib('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
+		getEL("urlbuttonarea").appendChild(newEL('br'));
 
-		this.addButtons($(document.urloutput.openurl), "このURLを開く", "Open this URL on another window/tab");
-		this.addButtons($(document.urloutput.close),   "閉じる", "Close");
+		this.addButtons(document.urloutput.openurl, ebinder(this.ex, this.ex.openurl), "このURLを開く", "Open this URL on another window/tab");
+		this.addButtons(document.urloutput.close,   px,                                "閉じる", "Close");
 
 		// ファイル入力
-		$(document.fileform.filebox).change(this.ex.fileopen.ebind(this.ex));
-		$(document.fileform.close).click(px);
+		document.fileform.filebox.onchange = ebinder(this.ex, this.ex.fileopen);
+		document.fileform.close.onclick    = px;
 
 		// データベースを開く
-		$(document.database.sorts   ).change(fio.displayDataTableList.ebind(fio));
-		$(document.database.datalist).change(fio.selectDataTable.ebind(fio));
-		$(document.database.tableup ).click(fio.upDataTable.ebind(fio));
-		$(document.database.tabledn ).click(fio.downDataTable.ebind(fio));
-		$(document.database.open    ).click(fio.openDataTable.ebind(fio));
-		$(document.database.save    ).click(fio.saveDataTable.ebind(fio));
-		$(document.database.comedit ).click(fio.editComment.ebind(fio));
-		$(document.database.difedit ).click(fio.editDifficult.ebind(fio));
-		$(document.database.del     ).click(fio.deleteDataTable.ebind(fio));
-		$(document.database.close   ).click(px);
+		document.database.sorts   .onchange = ebinder(fio, fio.displayDataTableList);
+		document.database.datalist.onchange = ebinder(fio, fio.selectDataTable);
+		document.database.tableup.onclick   = ebinder(fio, fio.upDataTable);
+		document.database.tabledn.onclick   = ebinder(fio, fio.downDataTable);
+		document.database.open   .onclick   = ebinder(fio, fio.openDataTable);
+		document.database.save   .onclick   = ebinder(fio, fio.saveDataTable);
+		document.database.comedit.onclick   = ebinder(fio, fio.editComment);
+		document.database.difedit.onclick   = ebinder(fio, fio.editDifficult);
+		document.database.del    .onclick   = ebinder(fio, fio.deleteDataTable);
+		document.database.close  .onclick   = px;
 
 		// 盤面の調整
-		var pa = this.ex.popupadjust.ebind(this.ex);
-		$(document.adjust.expandup).click(pa);
-		$(document.adjust.expanddn).click(pa);
-		$(document.adjust.expandlt).click(pa);
-		$(document.adjust.expandrt).click(pa);
-		$(document.adjust.reduceup).click(pa);
-		$(document.adjust.reducedn).click(pa);
-		$(document.adjust.reducelt).click(pa);
-		$(document.adjust.reducert).click(pa);
-		$(document.adjust.close   ).click(px);
+		var pa = ebinder(this.ex, this.ex.popupadjust);
+		document.adjust.expandup.onclick = pa;
+		document.adjust.expanddn.onclick = pa;
+		document.adjust.expandlt.onclick = pa;
+		document.adjust.expandrt.onclick = pa;
+		document.adjust.reduceup.onclick = pa;
+		document.adjust.reducedn.onclick = pa;
+		document.adjust.reducelt.onclick = pa;
+		document.adjust.reducert.onclick = pa;
+		document.adjust.close   .onclick = px;
 
 		// 反転・回転
-		$(document.flip.turnl).click(pa);
-		$(document.flip.turnr).click(pa);
-		$(document.flip.flipy).click(pa);
-		$(document.flip.flipx).click(pa);
-		$(document.flip.close).click(px);
+		document.flip.turnl.onclick = pa;
+		document.flip.turnr.onclick = pa;
+		document.flip.flipy.onclick = pa;
+		document.flip.flipx.onclick = pa;
+		document.flip.close.onclick = px;
 
 		// credit
-		$(document.credit.close).click(px);
+		document.credit.close.onclick = px;
 
 		// 表示サイズ
-		$(document.dispsize.dispsize).click(this.ex.dispsize.ebind(this));
-		$(document.dispsize.cancel).click(px);
+		document.dispsize.dispsize.onclick = ebinder(this, this.ex.dispsize);
+		document.dispsize.cancel.onclick   = px;
 	},
 	popclose : function(){
 		if(this.pop){
-			this.pop.css("visibility","hidden");
+			this.pop.style.display = "none";
 			this.pop = '';
 			this.menuclear();
 			this.isptitle = 0;
@@ -444,22 +584,39 @@ Menu.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// menu.titlebarfunc() 下の4つのイベントをイベントハンドラにくっつける
 	// menu.titlebardown() Popupタイトルバーをクリックしたときの動作を行う
 	// menu.titlebarup()   Popupタイトルバーでボタンを離したときの動作を行う
 	// menu.titlebarout()  Popupタイトルバーからマウスが離れたときの動作を行う
 	// menu.titlebarmove() Popupタイトルバーからマウスを動かしたときポップアップメニューを動かす
 	//---------------------------------------------------------------------------
-	titlebardown : function(e){
-		this.isptitle = 1;
-		this.offset.x = mv.pointerX(e) - parseInt(this.pop.css("left"));
-		this.offset.y = mv.pointerY(e) - parseInt(this.pop.css("top"));
+	titlebarfunc : function(bar){
+		bar.onmousedown = ebinder(menu, menu.titlebardown);
+		bar.onmouseup   = ebinder(menu, menu.titlebarup);
+		bar.onmouseout  = ebinder(menu, menu.titlebarout);
+		bar.onmousemove = ebinder(menu, menu.titlebarmove);
+
+		unselectable(bar);
 	},
-	titlebarup   : function(e){ this.isptitle = 0; },
-	titlebarout  : function(e){ if(this.pop && !this.insideOf(this.pop, e)){ this.isptitle = 0;} },
+
+	titlebardown : function(e){
+		var pop = this.getSrcElement(e).parentNode;
+		this.isptitle = 1;
+		this.offset.x = mv.pointerX(e) - parseInt(pop.style.left);
+		this.offset.y = mv.pointerY(e) - parseInt(pop.style.top);
+	},
+	titlebarup   : function(e){
+		this.isptitle = 0;
+	},
+	titlebarout  : function(e){
+		var pop = this.getSrcElement(e).parentNode;
+		if(!this.insideOf(pop, e)){ this.isptitle = 0;}
+	},
 	titlebarmove : function(e){
-		if(this.pop && this.isptitle){
-			this.pop.css("left", (mv.pointerX(e) - this.offset.x));
-			this.pop.css("top" , (mv.pointerY(e) - this.offset.y));
+		var pop = this.getSrcElement(e).parentNode;
+		if(pop && this.isptitle){
+			pop.style.left = mv.pointerX(e) - this.offset.x;
+			pop.style.top  = mv.pointerY(e) - this.offset.y;
 		}
 	},
 
@@ -469,82 +626,97 @@ Menu.prototype = {
 
 	//---------------------------------------------------------------------------
 	// menu.buttonarea()        ボタンの初期設定を行う
+	// menu.createButton()      指定したid, name, ラベルを持ったボタンを作成する
 	// menu.addButtons()        ボタンの情報を変数に登録する
 	// menu.addLAbels()         ラベルの情報を変数に登録する
 	// menu.setDefaultButtons() ボタンをbtnstackに設定する
 	// menu.setDefaultLabels()  ラベルをspanstackに設定する
 	//---------------------------------------------------------------------------
 	buttonarea : function(){
-		this.addButtons($("#btncheck").click(ans.check.bind(ans)),              "チェック", "Check");
-		this.addButtons($("#btnundo").click(um.undo.bind(um)),                  "戻",       "<-");
-		this.addButtons($("#btnredo").click(um.redo.bind(um)),                  "進",       "->");
-		this.addButtons($("#btnclear").click(menu.ex.ACconfirm.bind(menu.ex)),  "回答消去", "Erase Answer");
-		this.addButtons($("#btnclear2").click(menu.ex.ASconfirm.bind(menu.ex)), "補助消去", "Erase Auxiliary Marks");
-		$("#btnarea,#btnundo,#btnredo,#btnclear,#btnclear2").unselectable();
+		this.addButtons(getEL("btncheck"),  binder(ans, ans.check),             "チェック", "Check");
+		this.addButtons(getEL("btnundo"),   binder(um, um.undo),                "戻",       "<-");
+		this.addButtons(getEL("btnredo"),   binder(um, um.redo),                "進",       "->");
+		this.addButtons(getEL("btnclear"),  binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
+		this.addButtons(getEL("btnclear2"), binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
 
 		this.setDefaultButtons();
 		this.setDefaultLabels();
 	},
-	addButtons : function(jqel, strJP, strEN){ this.btnstack.push({el:jqel, str:{ja:strJP, en:strEN}}); },
-	addLabels  : function(jqel, strJP, strEN){ this.labelstack.push({el:jqel, str:{ja:strJP, en:strEN}}); },
+	createButton : function(id, name, val){
+		var _btn = newEL('input');
+		_btn.type  = 'button';
+		if(!!id)  { _btn.id   = id;}
+		if(!!name){ _btn.name = name;}
+		_btn.value = val;
+
+		return _btn;
+	},
+
+	addButtons : function(el, func, strJP, strEN){
+		if(!!func) el.onclick = func;
+		this.btnstack.push({el:unselectable(el), str:{ja:strJP, en:strEN}});
+	},
+	addLabels  : function(el, strJP, strEN){
+		this.labelstack.push({el:el, str:{ja:strJP, en:strEN}});
+	},
 
 	setDefaultButtons : function(){
-		var t = this.addButtons.bind(this);
-		t($(document.newboard.newboard), "新規作成",   "Create");
-		t($(document.newboard.cancel),   "キャンセル", "Cancel");
-		t($(document.urlinput.urlinput), "読み込む",   "Import");
-		t($(document.urlinput.cancel),   "キャンセル", "Cancel");
-		t($(document.fileform.button),   "閉じる",     "Close");
-		t($(document.database.save),     "盤面を保存", "Save");
-		t($(document.database.comedit),  "コメントを編集する", "Edit Comment");
-		t($(document.database.difedit),  "難易度を設定する",   "Set difficulty");
-		t($(document.database.open),     "データを読み込む",   "Load");
-		t($(document.database.del),      "削除",       "Delete");
-		t($(document.database.close),    "閉じる",     "Close");
-		t($(document.adjust.expandup),   "上",         "UP");
-		t($(document.adjust.expanddn),   "下",         "Down");
-		t($(document.adjust.expandlt),   "左",         "Left");
-		t($(document.adjust.expandrt),   "右",         "Right");
-		t($(document.adjust.reduceup),   "上",         "UP");
-		t($(document.adjust.reducedn),   "下",         "Down");
-		t($(document.adjust.reducelt),   "左",         "Left");
-		t($(document.adjust.reducert),   "右",         "Right");
-		t($(document.adjust.close),      "閉じる",     "Close");
-		t($(document.flip.turnl),        "左90°回転", "Turn left by 90 degree");
-		t($(document.flip.turnr),        "右90°回転", "Turn right by 90 degree");
-		t($(document.flip.flipy),        "上下反転",   "Flip upside down");
-		t($(document.flip.flipx),        "左右反転",   "Flip leftside right");
-		t($(document.flip.close),        "閉じる",     "Close");
-		t($(document.dispsize.dispsize), "変更する",   "Change");
-		t($(document.dispsize.cancel),   "キャンセル", "Cancel");
-		t($(document.credit.close),      "閉じる",     "OK");
+		var t = binder(this, this.addButtons);
+		t(document.newboard.newboard, null, "新規作成",   "Create");
+		t(document.newboard.cancel,   null, "キャンセル", "Cancel");
+		t(document.urlinput.urlinput, null, "読み込む",   "Import");
+		t(document.urlinput.cancel,   null, "キャンセル", "Cancel");
+		t(document.fileform.close,    null, "閉じる",     "Close");
+		t(document.database.save,     null, "盤面を保存", "Save");
+		t(document.database.comedit,  null, "コメントを編集する", "Edit Comment");
+		t(document.database.difedit,  null, "難易度を設定する",   "Set difficulty");
+		t(document.database.open,     null, "データを読み込む",   "Load");
+		t(document.database.del,      null, "削除",       "Delete");
+		t(document.database.close,    null, "閉じる",     "Close");
+		t(document.adjust.expandup,   null, "上",         "UP");
+		t(document.adjust.expanddn,   null, "下",         "Down");
+		t(document.adjust.expandlt,   null, "左",         "Left");
+		t(document.adjust.expandrt,   null, "右",         "Right");
+		t(document.adjust.reduceup,   null, "上",         "UP");
+		t(document.adjust.reducedn,   null, "下",         "Down");
+		t(document.adjust.reducelt,   null, "左",         "Left");
+		t(document.adjust.reducert,   null, "右",         "Right");
+		t(document.adjust.close,      null, "閉じる",     "Close");
+		t(document.flip.turnl,        null, "左90°回転", "Turn left by 90 degree");
+		t(document.flip.turnr,        null, "右90°回転", "Turn right by 90 degree");
+		t(document.flip.flipy,        null, "上下反転",   "Flip upside down");
+		t(document.flip.flipx,        null, "左右反転",   "Flip leftside right");
+		t(document.flip.close,        null, "閉じる",     "Close");
+		t(document.dispsize.dispsize, null, "変更する",   "Change");
+		t(document.dispsize.cancel,   null, "キャンセル", "Cancel");
+		t(document.credit.close,      null, "閉じる",     "OK");
 	},
 	setDefaultLabels : function(){
-		var t = this.addLabels.bind(this);
-		t($("#translation"), "English",                      "日本語");
-		t($("#bar1_1"),      "&nbsp;盤面の新規作成",         "&nbsp;Createing New Board");
-		t($("#pop1_1_cap0"), "盤面を新規作成します。",       "Create New Board.");
-		t($("#pop1_1_cap1"), "よこ",                         "Cols");
-		t($("#pop1_1_cap2"), "たて",                         "Rows");
-		t($("#bar1_2"),      "&nbsp;URL入力",                "&nbsp;Import from URL");
-		t($("#pop1_2_cap0"), "URLから問題を読み込みます。",  "Import a question from URL.");
-		t($("#bar1_3"),      "&nbsp;URL出力",                "&nbsp;Export URL");
-		t($("#bar1_4"),      "&nbsp;ファイルを開く",         "&nbsp;Open file");
-		t($("#pop1_4_cap0"), "ファイル選択",                 "Choose file");
-		t($("#bar1_8"),      "&nbsp;データベースの管理",     "&nbsp;Database Management");
-		t($("#pop1_8_com"),  "コメント:",                    "Comment:");
-		t($("#bar2_1"),      "&nbsp;盤面の調整",             "&nbsp;Adjust the board");
-		t($("#pop2_1_cap0"), "盤面の調整を行います。",       "Adjust the board.");
-		t($("#pop2_1_cap1"), "拡大",                         "Expand");
-		t($("#pop2_1_cap2"), "縮小",                         "Reduce");
-		t($("#bar2_2"),      "&nbsp;反転・回転",             "&nbsp;Flip/Turn the board");
-		t($("#pop2_2_cap0"), "盤面の回転・反転を行います。", "Flip/Turn the board.");
-		t($("#bar4_1"),      "&nbsp;表示サイズの変更",       "&nbsp;Change size");
-		t($("#pop4_1_cap0"), "表示サイズを変更します。",     "Change the display size.");
-		t($("#pop4_1_cap1"), "表示サイズ",                   "Display size");
-		t($("#bar3_1"),      "&nbsp;credit",                 "&nbsp;credit");
-		t($("#credit3_1"), "ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\nライブラリとしてjQuery1.3.2, uuCanvas1.0, <br>Google Gearsを\n使用しています。<br>\n<br>\n",
-						   "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\nThis script use jQuery1.3.2, uuCanvas1.0, <br>Google Gears as libraries.<br>\n<br>\n");
+		var t = binder(this, this.addLabels);
+		t(getEL("translation"), "English",                     "日本語");
+		t(getEL("bar1_1"),      "盤面の新規作成",              "Createing New Board");
+		t(getEL("pop1_1_cap0"), "盤面を新規作成します。",      "Create New Board.");
+		t(getEL("pop1_1_cap1"), "よこ",                        "Cols");
+		t(getEL("pop1_1_cap2"), "たて",                        "Rows");
+		t(getEL("bar1_2"),      "URL入力",                     "Import from URL");
+		t(getEL("pop1_2_cap0"), "URLから問題を読み込みます。", "Import a question from URL.");
+		t(getEL("bar1_3"),      "URL出力",                     "Export URL");
+		t(getEL("bar1_4"),      "ファイルを開く",              "Open file");
+		t(getEL("pop1_4_cap0"), "ファイル選択",                "Choose file");
+		t(getEL("bar1_8"),      "データベースの管理",          "Database Management");
+		t(getEL("pop1_8_com"),  "コメント:",                   "Comment:");
+		t(getEL("bar2_1"),      "盤面の調整",                  "Adjust the board");
+		t(getEL("pop2_1_cap0"), "盤面の調整を行います。",      "Adjust the board.");
+		t(getEL("pop2_1_cap1"), "拡大",                        "Expand");
+		t(getEL("pop2_1_cap2"), "縮小",                        "Reduce");
+		t(getEL("bar2_2"),      "反転・回転",                  "Flip/Turn the board");
+		t(getEL("pop2_2_cap0"), "盤面の回転・反転を行います。","Flip/Turn the board.");
+		t(getEL("bar4_1"),      "表示サイズの変更",            "Change size");
+		t(getEL("pop4_1_cap0"), "表示サイズを変更します。",    "Change the display size.");
+		t(getEL("pop4_1_cap1"), "表示サイズ",                  "Display size");
+		t(getEL("bar3_1"),      "credit",                      "credit");
+		t(getEL("credit3_1"), "ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\nライブラリとしてjQuery1.3.2, uuCanvas1.0, <br>Google Gearsを\n使用しています。<br>\n<br>\n",
+							  "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\nThis script use jQuery1.3.2, uuCanvas1.0, <br>Google Gears as libraries.<br>\n<br>\n");
 	},
 
 //--------------------------------------------------------------------------------------------------------------
@@ -575,8 +747,8 @@ Menu.prototype = {
 	setLangStr : function(ln){
 		this.language = ln;
 		document.title = base.gettitle();
-		$("#title2").html(base.gettitle());
-		$("#expression").html(base.expression[this.language]);
+		getEL("title2").innerHTML = base.gettitle();
+		getEL("expression").innerHTML = base.expression[this.language];
 
 		this.displayAll();
 		this.ex.dispmanstr();
@@ -668,12 +840,12 @@ Properties.prototype = {
 	// pp.setStringToFlags() 設定値に文字列を登録する
 	//---------------------------------------------------------------------------
 	setDefaultFlags : function(){
-		var as = this.addSmenuToFlags.bind(this),
-			au = this.addUseToFlags.bind(this),
-			ac = this.addCheckToFlags.bind(this),
-			aa = this.addCaptionToFlags.bind(this),
-			ai = this.addUseChildrenToFlags.bind(this),
-			ap = this.addSeparatorToFlags.bind(this);
+		var as = binder(this, this.addSmenuToFlags),
+			au = binder(this, this.addUseToFlags),
+			ac = binder(this, this.addCheckToFlags),
+			aa = binder(this, this.addCaptionToFlags),
+			ai = binder(this, this.addUseChildrenToFlags),
+			ap = binder(this, this.addSeparatorToFlags);
 
 		au('mode','setting',(k.editmode?1:3),[1,3]);
 
@@ -686,14 +858,14 @@ Properties.prototype = {
 		if(k.PLAYER){ delete this.flags['mode'];}
 		if(!kp.ctl[1].enable && !kp.ctl[3].enable){ delete this.flags['keypopup'];}
 
-		as('newboard', 'file');
-		as('urlinput', 'file');
+		as('newboard',  'file');
+		as('urlinput',  'file');
 		as('urloutput', 'file');
-		ap('sep_2','file');
-		as('fileopen', 'file');
-		as('filesave', 'file');
-		as('database', 'file');
-		ap('sep_3','file');
+		ap('sep_2',     'file');
+		as('fileopen',  'file');
+		as('filesave',  'file');
+		as('database',  'file');
+		ap('sep_3',     'file');
 		as('fileopen2', 'file');
 		as('filesave2', 'file');
 		if(fio.DBtype==0){ delete this.flags['database'];}
@@ -702,49 +874,49 @@ Properties.prototype = {
 		}
 
 		as('adjust', 'edit');
-		as('turn', 'edit');
+		as('turn',   'edit');
 
-		au('size','disp',k.widthmode,[0,1,2,3,4]);
-		ap('sep_4','disp');
+		au('size',   'disp',k.widthmode,[0,1,2,3,4]);
+		ap('sep_4',  'disp');
 		ac('irowake','disp',(k.irowake==2?true:false));
-		ap('sep_5','disp');
-		as('manarea', 'disp');
+		ap('sep_5',  'disp');
+		as('manarea','disp');
 		if(k.irowake==0){ delete this.flags['irowake']; delete this.flags['sep_4'];}
 
-		as('dispsize', 'size');
-		aa('cap_dispmode', 'size');
+		as('dispsize',    'size');
+		aa('cap_dispmode','size');
 		ai('size','size');
 
 		ai('mode','mode');
 
 		ai('language','language');
 
-		as('credit', 'other');
+		as('credit',      'other');
 		aa('cap_others1', 'other');
-		as('jumpv3', 'other');
-		as('jumptop', 'other');
-		as('jumpblog', 'other');
+		as('jumpv3',      'other');
+		as('jumptop',     'other');
+		as('jumpblog',    'other');
 
 		this.setStringToFlags();
 	},
 	setStringToFlags : function(){
-		var sm = this.setMenuStr.bind(this),
-			sl = this.setLabel.bind(this);
+		var sm = binder(this, this.setMenuStr),
+			sl = binder(this, this.setLabel);
 
-		sm('size', '表示サイズ', 'Cell Size');
+		sm('size',   '表示サイズ',  'Cell Size');
 		sm('size_0', 'サイズ 極小', 'Ex Small');
-		sm('size_1', 'サイズ 小', 'Small');
+		sm('size_1', 'サイズ 小',   'Small');
 		sm('size_2', 'サイズ 標準', 'Normal');
-		sm('size_3', 'サイズ 大', 'Large');
+		sm('size_3', 'サイズ 大',   'Large');
 		sm('size_4', 'サイズ 特大', 'Ex Large');
 
 		sm('irowake', '線の色分け', 'Color coding');
 		sl('irowake', '線の色分けをする', 'Color each lines');
 
-		sm('mode', 'モード', 'mode');
-		sl('mode', 'モード', 'mode');
-		sm('mode_1', '問題作成モード', 'Edit mode');
-		sm('mode_3', '回答モード', 'Answer mode');
+		sm('mode',   'モード', 'mode');
+		sl('mode',   'モード', 'mode');
+		sm('mode_1', '問題作成モード', 'Edit mode'  );
+		sm('mode_3', '回答モード',     'Answer mode');
 
 		sm('autocheck', '正答自動判定', 'Auto Answer Check');
 
@@ -754,28 +926,28 @@ Properties.prototype = {
 		sm('keypopup', 'パネル入力', 'Panel inputting');
 		sl('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
 
-		sm('language', '言語', 'Language');
-		sm('language_0', '日本語', '日本語');
+		sm('language',   '言語',    'Language');
+		sm('language_0', '日本語',  '日本語');
 		sm('language_1', 'English', 'English');
 
-		sm('newboard', '新規作成', 'New Board');
-		sm('urlinput', 'URL入力', 'Import from URL');
-		sm('urloutput', 'URL出力', 'Export URL');
-		sm('fileopen', 'ファイルを開く', 'Open the file');
-		sm('filesave', 'ファイル保存', 'Save the file as ...');
-		sm('database', 'データベースの管理', 'Database Management');
-		sm('fileopen2', 'pencilboxのファイルを開く', 'Open the pencilbox file');
-		sm('filesave2', 'pencilboxのファイルを保存', 'Save the pencilbox file as ...');
-		sm('adjust', '盤面の調整', 'Adjust the Board');
-		sm('turn', '反転・回転', 'Filp/Turn the Board');
-		sm('dispsize', 'サイズ指定', 'Cell Size');
-		sm('cap_dispmode', '&nbsp;表示モード', '&nbsp;Display mode');
-		sm('manarea', '管理領域を隠す', 'Hide Management Area');
-		sm('credit', 'ぱずぷれv3について', 'About PUZ-PRE v3');
-		sm('cap_others1', '&nbsp;リンク', '&nbsp;Link');
-		sm('jumpv3', 'ぱずぷれv3のページへ', 'Jump to PUZ-PRE v3 page');
-		sm('jumptop', '連続発破保管庫TOPへ', 'Jump to indi.s58.xrea.com');
-		sm('jumpblog', 'はっぱ日記(blog)へ', 'Jump to my blog');
+		sm('newboard',     '新規作成',                  'New Board');
+		sm('urlinput',     'URL入力',                   'Import from URL');
+		sm('urloutput',    'URL出力',                   'Export URL');
+		sm('fileopen',     'ファイルを開く',            'Open the file');
+		sm('filesave',     'ファイル保存',              'Save the file as ...');
+		sm('database',     'データベースの管理',        'Database Management');
+		sm('fileopen2',    'pencilboxのファイルを開く', 'Open the pencilbox file');
+		sm('filesave2',    'pencilboxのファイルを保存', 'Save the pencilbox file as ...');
+		sm('adjust',       '盤面の調整',                'Adjust the Board');
+		sm('turn',         '反転・回転',                'Filp/Turn the Board');
+		sm('dispsize',     'サイズ指定',                'Cell Size');
+		sm('cap_dispmode', '表示モード',                'Display mode');
+		sm('manarea',      '管理領域を隠す',            'Hide Management Area');
+		sm('credit',       'ぱずぷれv3について',        'About PUZ-PRE v3');
+		sm('cap_others1',  'リンク',                    'Link');
+		sm('jumpv3',       'ぱずぷれv3のページへ',      'Jump to PUZ-PRE v3 page');
+		sm('jumptop',      '連続発破保管庫TOPへ',       'Jump to indi.s58.xrea.com');
+		sm('jumpblog',     'はっぱ日記(blog)へ',        'Jump to my blog');
 
 		sm('eval', 'テスト用', 'for Evaluation');
 	},
@@ -783,14 +955,14 @@ Properties.prototype = {
 //--------------------------------------------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
 	funcs : {
-		urlinput  : function(){ menu.pop = $("#pop1_2");},
-		urloutput : function(){ menu.pop = $("#pop1_3"); document.urloutput.ta.value = "";},
+		urlinput  : function(){ menu.pop = getEL("pop1_2");},
+		urloutput : function(){ menu.pop = getEL("pop1_3"); document.urloutput.ta.value = "";},
 		filesave  : function(){ menu.ex.filesave();},
-		database  : function(){ menu.pop = $("#pop1_8"); fio.getDataTableList();},
+		database  : function(){ menu.pop = getEL("pop1_8"); fio.getDataTableList();},
 		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave2();}},
-		adjust    : function(){ menu.pop = $("#pop2_1");},
-		turn      : function(){ menu.pop = $("#pop2_2");},
-		credit    : function(){ menu.pop = $("#pop3_1");},
+		adjust    : function(){ menu.pop = getEL("pop2_1");},
+		turn      : function(){ menu.pop = getEL("pop2_2");},
+		credit    : function(){ menu.pop = getEL("pop3_1");},
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
 		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},
@@ -803,7 +975,7 @@ Properties.prototype = {
 		language  : function(num){ menu.setLang({0:'ja',1:'en'}[num]);},
 
 		newboard : function(){
-			menu.pop = $("#pop1_1");
+			menu.pop = getEL("pop1_1");
 			if(k.puzzleid!="sudoku"){
 				document.newboard.col.value = k.qcols;
 				document.newboard.row.value = k.qrows;
@@ -812,24 +984,24 @@ Properties.prototype = {
 		},
 		fileopen : function(){
 			document.fileform.pencilbox.value = "0";
-			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = $("#pop1_4");}}
+			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = getEL("pop1_4");}}
 			else{ if(!menu.pop){ document.fileform.filebox.click();}}
 		},
 		fileopen2 : function(){
 			if(!fio.kanpenOpen){ return;}
 			document.fileform.pencilbox.value = "1";
-			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = $("#pop1_4");}}
+			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = getEL("pop1_4");}}
 			else{ if(!menu.pop){ document.fileform.filebox.click();}}
 		},
 		dispsize : function(){
-			menu.pop = $("#pop4_1");
+			menu.pop = getEL("pop4_1");
 			document.dispsize.cs.value = k.def_csize;
 			k.enableKey = false;
 		},
 		keypopup : function(){
 			var f = kp.ctl[pp.flags['mode'].val].enable;
-			$("#ck_keypopup").attr("disabled", f?"":"true");
-			$("#cl_keypopup").css("color",f?"black":"silver");
+			getEL("ck_keypopup").disabled    = (f?"":"true");
+			getEL("cl_keypopup").style.color = (f?"black":"silver");
 		}
 	}
 };

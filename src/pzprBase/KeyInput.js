@@ -360,8 +360,8 @@ KeyEvent.prototype = {
 // キー入力用Popupウィンドウ
 // KeyPopupクラス
 KeyPopup = function(){
-	this.ctl = { 1:{ el:"", enable:false, target:k.CELL},		// 問題入力時用popup
-				 3:{ el:"", enable:false, target:k.CELL} };		// 回答入力時用popup
+	this.ctl = { 1:{ el:null, enable:false, target:k.CELL},		// 問題入力時用popup
+				 3:{ el:null, enable:false, target:k.CELL} };	// 回答入力時用popup
 	this.tdcolor = "black";
 	this.imgCR = [1,1];		// img表示用画像の横×縦のサイズ
 
@@ -396,13 +396,21 @@ KeyPopup.prototype = {
 
 	gentable : function(mode, type, func){
 		this.ctl[mode].enable = true;
-		this.ctl[mode].el = newEL('div').attr("class", "popup")
-										.css("padding", "3pt").css("background-color", "silver")
-										.mouseout(this.hide.ebind(this))
-										.appendTo($("#popup_parent"));
+		var el = newEL('div');
+		el.className  = "popup";
+		el.id         = "keypopup"+mode;
+		el.onmouseout = ebinder(this, this.hide);
+		el.style.padding = '3pt';
+		el.style.backgroundColor = 'silver';
+		this.ctl[mode].el = el;
+		getEL('popup_parent').appendChild(el)
 
-		var table = newEL('table').attr("cellspacing", "2pt").appendTo(this.ctl[mode].el);
-		this.tbodytmp = newEL('tbody').appendTo(table);
+		var table = newEL('table');
+		table.cellSpacing = '2pt';
+		el.appendChild(table);
+
+		this.tbodytmp = newEL('tbody');
+		table.appendChild(this.tbodytmp);
 
 		this.trtmp = null;
 		if(func)							  { func(mode);                }
@@ -449,30 +457,47 @@ KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
 	inputcol : function(type, id, ca, disp){
 		if(!this.trtmp){ this.trtmp = newEL('tr');}
-		var td = null;
-		if(type=='num'){
-			td = newEL('td').attr("id",id).attr("class","kpnum")
-						   .html(disp).css("color", this.tdcolor)
-						   .click(this.inputnumber.ebind(this, ca));
+		var _td = null;
+		if(type==='num'){
+			_td    = unselectable(newEL('td'));
+			_td.id = id;
+			_td.className   = 'kpnum';
+			_td.style.color = this.tdcolor;
+			_td.innerHTML   = disp;
+			_td.onclick     = ebinder(this, this.inputnumber, [ca]);
 		}
-		else if(type=='empty'){
-			td = newEL('td').attr("id",id);
+		else if(type==='empty'){
+			_td    = unselectable(newEL('td'));
+			_td.id = id;
 		}
-		else if(type=='image'){
-			var img = newEL('img').attr("id", ""+id+"_i").attr("class","kp").attr("src", "./src/img/"+k.puzzleid+"_kp.gif").unselectable();
-			var div = newEL('div').css("position",'relative').css("display",'inline').unselectable().append(img);
-			var td = newEL('td').attr("id",id).attr("class","kpimg").click(this.inputnumber.ebind(this, ca)).append(div);
-			this.imgs.push({'el':img, 'cx':disp[0], 'cy':disp[1]});
+		else if(type==='image'){
+			var _img = unselectable(newEL('img'));
+			_img.id = ""+id+"_i";
+			_img.className = 'kp';
+			_img.src       = "./src/img/"+k.puzzleid+"_kp.gif";
+
+			var _div = unselectable(newEL('div'));
+			_div.position = 'relative';
+			_div.display  = 'inline';
+			_div.appendChild(_img);
+
+			_td    = unselectable(newEL('td'));
+			_td.id = id;
+			_td.className = 'kpimg';
+			_td.onclick   = ebinder(this, this.inputnumber, [ca]);
+			_td.appendChild(_div);
+
+			this.imgs.push({'el':_img, 'cx':disp[0], 'cy':disp[1]});
 		}
 
-		if(td){
-			this.tds.push(td);
-			td.appendTo(this.trtmp).unselectable();
+		if(_td){
+			this.tds.push(_td);
+			this.trtmp.appendChild(_td);
 		}
 	},
 	insertrow : function(){
 		if(this.trtmp){
-			this.tbodytmp.append(this.trtmp);
+			this.tbodytmp.appendChild(this.trtmp);
 			this.trtmp = null;
 		}
 	},
@@ -485,9 +510,9 @@ KeyPopup.prototype = {
 	display : function(){
 		var mode = menu.getVal('mode');
 		if(this.ctl[mode].el && this.ctl[mode].enable && menu.getVal('keypopup') && mv.btn.Left){
-			this.ctl[mode].el.css("left", k.cv_oft.x + mv.inputX - 3 + k.IEMargin.x);
-			this.ctl[mode].el.css("top" , k.cv_oft.y + mv.inputY - 3 + k.IEMargin.y);
-			this.ctl[mode].el.css("z-index", 100);
+			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputX - 3 + k.IEMargin.x;
+			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputY - 3 + k.IEMargin.y;
+			this.ctl[mode].el.style.zIndex = 100;
 
 			if(this.ctl[mode].target==k.CELL){
 				var cc0 = tc.getTCC();
@@ -506,16 +531,18 @@ KeyPopup.prototype = {
 				pc.paint(bd.cross[cc0].cx-1, bd.cross[cc0].cy-1, bd.cross[cc0].cx, bd.cross[cc0].cy);
 			}
 
-			this.ctl[mode].el.css("visibility","visible");
+			this.ctl[mode].el.style.display = 'inline';
 		}
 	},
 	inputnumber : function(e, ca){
 		this.kpinput(ca);
-		this.ctl[menu.getVal('mode')].el.css("visibility","hidden");
+		this.ctl[menu.getVal('mode')].el.style.display = 'none';
 	},
 	hide : function(e){
 		var mode = menu.getVal('mode');
-		if(this.ctl[mode].el && !menu.insideOf(this.ctl[mode].el, e)){ this.ctl[mode].el.css("visibility","hidden");}
+		if(!!this.ctl[mode].el && !menu.insideOf(this.ctl[mode].el, e)){
+			this.ctl[mode].el.style.display = 'none';
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -523,25 +550,25 @@ KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
 	resize : function(){
 		var tfunc = function(el,tsize){
-			el.css("width"    , ""+mf(tsize*0.90)+"px")
-			  .css("height"   , ""+mf(tsize*0.90)+"px")
-			  .css("font-size", ""+mf(tsize*0.70)+"px");
+			el.style.width    = ""+mf(tsize*0.90)+"px"
+			el.style.height   = ""+mf(tsize*0.90)+"px"
+			el.style.fontSize = ""+mf(tsize*0.70)+"px";
 		};
-		var ifunc = function(el,cx,cy,bsize){
-			el.css("width" , ""+(bsize*kp.imgCR[0])+"px")
-			  .css("height", ""+(bsize*kp.imgCR[1])+"px")
-			  .css("clip"  , "rect("+(bsize*cy+1)+"px,"+(bsize*(cx+1))+"px,"+(bsize*(cy+1))+"px,"+(bsize*cx+1)+"px)")
-			  .css("top"   , "-"+(cy*bsize+1)+"px")
-			  .css("left"  , "-"+(cx*bsize+1)+"px");
+		var ifunc = function(obj,bsize){
+			obj.el.style.width  = ""+(bsize*kp.imgCR[0])+"px";
+			obj.el.style.height = ""+(bsize*kp.imgCR[1])+"px";
+			obj.el.style.clip   = "rect("+(bsize*obj.cy+1)+"px,"+(bsize*(obj.cx+1))+"px,"+(bsize*(obj.cy+1))+"px,"+(bsize*obj.cx+1)+"px)";
+			obj.el.style.top    = "-"+(obj.cy*bsize+1)+"px";
+			obj.el.style.left   = "-"+(obj.cx*bsize+1)+"px";
 		};
 
 		if(k.def_csize>=24){
-			$.each(this.tds , function(i,obj){ tfunc(obj, k.def_csize);} );
-			$.each(this.imgs, function(i,obj){ ifunc(obj.el,obj.cx,obj.cy,mf(k.def_csize*0.90));} );
+			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  k.def_csize);}
+			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], mf(k.def_csize*0.90));}
 		}
 		else{
-			$.each(this.tds , function(i,obj){ tfunc(obj, 22);} );
-			$.each(this.imgs, function(i,obj){ ifunc(obj.el,obj.cx,obj.cy,18);} );
+			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  22);}
+			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], 18);}
 		}
 	}
 };

@@ -54,17 +54,8 @@ UndoManager.prototype = {
 	isenableInfo : function(){ return (this.disinfo==0);},
 
 	enb_btn : function(){
-		if(!this.ope.length){
-			$("#btnundo").attr("disabled","true");
-			$("#btnredo").attr("disabled","true");
-		}
-		else{
-			if(!this.current){ $("#btnundo").attr("disabled","true");}
-			else{ $("#btnundo").attr("disabled","");}
-
-			if(this.current==this.ope.length){ $("#btnredo").attr("disabled","true");}
-			else{ $("#btnredo").attr("disabled","");}
-		}
+		getEL("btnundo").disabled = ((!this.ope.length || this.current==0)               ? 'true' : '');
+		getEL("btnredo").disabled = ((!this.ope.length || this.current==this.ope.length) ? 'true' : '');
 	},
 	allerase : function(){
 		for(var i=this.ope.length-1;i>=0;i--){ this.ope.pop();}

@@ -10,7 +10,8 @@ PBase = function(){
 	this.proto        = 0;	// 各クラスのprototypeがパズル用スクリプトによって変更されているか
 	this.expression   = { ja:'' ,en:''};
 	this.puzzlename   = { ja:'' ,en:''};
-	this.cv_obj       = null;	// HTMLソースのCanvasを示すオブジェクト
+	this.canvas       = null;	// HTMLソースのCanvasを示すエレメント
+	this.numparent    = null;	// 'numobj_parent'を示すエレメント
 	this.onresizenow  = false;	// resize中かどうか
 	this.initProcess  = true;	// 初期化中かどうか
 };
@@ -43,25 +44,21 @@ PBase.prototype = {
 		}
 
 		// onLoadとonResizeに動作を割り当てる
-		$(document).ready(this.onload_func.ebind(this));
-		$(window).resize(this.onresize_func.ebind(this));
+		window.onload   = ebinder(this, this.onload_func);
+		window.onresize = ebinder(this, this.onresize_func);
 	},
 
 	//---------------------------------------------------------------------------
 	// base.onload_func()
 	//   ページがLoadされた時の処理。各クラスのオブジェクトへの読み込み等初期設定を行う
-	// base.initObjects()
-	//   各オブジェクトの生成などの処理
-	// base.setEvents()
-	//   マウス入力、キー入力のイベントの設定を行う
-	// base.initSilverlight()
-	//   Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
-	// base.reload_func()  別スクリプトを読み込みしなおす際の処理
-	// base.postfix()      各パズルの初期化後処理を呼び出す
+	// 
+	// base.initCanvas()  Canvas関連の初期化
+	// base.initObjects() 各オブジェクトの生成などの処理
+	// base.setEvents()   マウス入力、キー入力のイベントの設定を行う
+	// base.initSilverlight() Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
 	//---------------------------------------------------------------------------
 	onload_func : function(){
 		this.initCanvas();
-
 		this.initObjects();
 		this.setEvents(true);	// イベントをくっつける
 
@@ -69,6 +66,12 @@ PBase.prototype = {
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
 
 		this.initProcess = false;
+	},
+
+	initCanvas : function(){
+		this.canvas = unselectable(getEL('puzzle_canvas')); // Canvas
+		this.numparent = getEL('numobj_parent');			// 数字表示用
+		g = this.canvas.getContext("2d");
 	},
 
 	initObjects : function(){
@@ -102,55 +105,30 @@ PBase.prototype = {
 		if(k.scriptcheck && debug){ debug.testonly_func();}	// テスト用
 	},
 	setEvents : function(first){
-		this.cv_obj.mousedown(mv.e_mousedown.ebind(mv)).mouseup(mv.e_mouseup.ebind(mv)).mousemove(mv.e_mousemove.ebind(mv));
-		this.cv_obj.context.oncontextmenu = function(){return false;};	//妥協点 
+		this.canvas.onmousedown   = ebinder(mv, mv.e_mousedown);
+		this.canvas.onmousemove   = ebinder(mv, mv.e_mousemove);
+		this.canvas.onmouseup     = ebinder(mv, mv.e_mouseup  );
+		this.canvas.oncontextmenu = function(){ return false;};
+
+		this.numparent.onmousedown   = ebinder(mv, mv.e_mousedown);
+		this.numparent.onmousemove   = ebinder(mv, mv.e_mousemove);
+		this.numparent.onmouseup     = ebinder(mv, mv.e_mouseup  );
+		this.numparent.oncontextmenu = function(){ return false;};
 
 		if(first){
-			$(document).keydown(kc.e_keydown.kcbind()).keyup(kc.e_keyup.kcbind()).keypress(kc.e_keypress.kcbind());
+			document.onkeydown  = kcbinder(kc.e_keydown);
+			document.onkeyup    = kcbinder(kc.e_keyup);
+			document.onkeypress = kcbinder(kc.e_keypress);
 		}
 	},
 	initSilverlight : function(sender){
-		sender.AddEventListener("KeyDown", kc.e_SLkeydown.bind(kc));
-		sender.AddEventListener("KeyUp",   kc.e_SLkeyup.bind(kc));
-	},
-
-	reload_func : function(newid){
-		this.initProcess = true;
-
-		if(this.proto){ puz.protoOriginal();}
-
-		$("*").unbind();
-		menu.menureset();
-		$("#numobj_parent").html("");
-		if(kp.ctl[1].enable){ kp.ctl[1].el.remove();}
-		if(kp.ctl[3].enable){ kp.ctl[3].el.remove();}
-
-		k.puzzleid = newid;
-		if(!Puzzles[k.puzzleid]){
-			newEL("script").attr("type", "text/javascript")
-//						   .attr("charset", "Shift_JIS")
-						   .attr("src", "src/"+k.puzzleid+".js")
-						   .appendTo($("head"));
-		}
-
-		enc = new Encode();
-		fio = new FileIO();
-
-		this.initObjects();
-		this.setEvents(false);
-
-		this.initProcess = false;
-	},
-
-	postfix : function(){
-		puz.input_init();
-		puz.graphic_init();
-		puz.encode_init();
-		puz.answer_init();
+		sender.AddEventListener("KeyDown", kcbinder(kc.e_SLkeydown));
+		sender.AddEventListener("KeyUp",   kcbinder(kc.e_SLkeyup));
 	},
 
 	//---------------------------------------------------------------------------
 	// base.doc_design()       onload_func()で呼ばれる。htmlなどの設定を行う
+	// base.postfix()          各パズルの初期化後処理を呼び出す
 	// base.gettitle()         現在開いているタイトルを返す
 	// base.getPuzzleName()    現在開いているパズルの名前を返す
 	// base.setTitle()         パズルの名前を設定する
@@ -161,19 +139,26 @@ PBase.prototype = {
 	doc_design : function(){
 		this.resize_canvas_only();	// Canvasのサイズ設定
 
-		document.title = this.gettitle();
-		$("#title2").html(this.gettitle());
+		_doc.title = this.gettitle();
+		getEL("title2").innerHTML = this.gettitle();
 
-		$("body").css("background-image","url(../../"+k.puzzleid+"/bg.gif)");
+		_doc.body.style.backgroundImage = "url(../../"+k.puzzleid+"/bg.gif)";
 		if(k.br.IE){
-			$("#title2").css("margin-top","24px");
-			$("hr").each(function(){ $(this).css("margin",'0pt');});
+			getEL("title2").style.marginTop = "24px";
+			$("hr").each(function(){ $(this).context.style.margin = '0pt';});
 		}
 
 		this.postfix();			// 各パズルごとの設定(後付け分)
 		menu.menuinit();
 		um.enb_btn();
 	},
+	postfix : function(){
+		puz.input_init();
+		puz.graphic_init();
+		puz.encode_init();
+		puz.answer_init();
+	},
+
 	gettitle : function(){
 		if(k.EDITOR){ return ""+this.getPuzzleName()+(menu.isLangJP()?" エディタ - ぱずぷれv3":" editor - PUZ-PRE v3");}
 		else		{ return ""+this.getPuzzleName()+(menu.isLangJP()?" player - ぱずぷれv3"  :" player - PUZ-PRE v3");}
@@ -184,7 +169,6 @@ PBase.prototype = {
 	setFloatbgcolor : function(color){ this.floatbgcolor = color;},
 
 	//---------------------------------------------------------------------------
-	// base.initCanvas()           Canvasの設定を行う
 	// base.resize_canvas_only()   ウィンドウのLoad/Resize時の処理。Canvas/表示するマス目の大きさを設定する。
 	// base.resize_canvas()        resize_canvas_only()+Canvasの再描画
 	// base.resize_canvas_onload() 初期化中にpaint再描画が起こらないように、resize_canvasを呼び出す
@@ -192,21 +176,6 @@ PBase.prototype = {
 	// base.getWindowSize()        ウィンドウの大きさを返す
 	// base.resetInfo()            AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
 	//---------------------------------------------------------------------------
-	initCanvas : function(){
-		k.IEMargin = (k.br.IE)?(new Pos(4, 4)):(new Pos(0, 0));
-
-		var canvas = document.getElementById('puzzle_canvas');	// Canvasオブジェクト生成
-
-		// jQueryだと読み込み順の関係でinitElementされなくなるため、initElementしなおす
-		if(k.br.IE){
-			canvas = uuCanvas.init(canvas,!uuMeta.slver);		// uuCanvas用
-//			canvas = uuCanvas.init(canvas,true);				// uuCanvas(強制VMLモード)用
-//			canvas = G_vmlCanvasManager.initElement(canvas);	// excanvas用
-		}
-		g = canvas.getContext("2d");
-
-		this.cv_obj = $(canvas).unselectable();
-	},
 	resize_canvas_only : function(){
 		var wsize = this.getWindowSize();
 		k.p0 = new Pos(k.def_psize, k.def_psize);
@@ -219,27 +188,27 @@ PBase.prototype = {
 
 		if(k.qcols < ci0){				// 特に縮小しないとき
 			k.cwidth = k.cheight = mf(k.def_csize*cratio);
-			$("#main").css("width",'80%');
+			getEL("main").style.width = '80%';
 		}
 		else if(k.qcols < ci1){			// ウィンドウの幅75%に入る場合 フォントのサイズは3/4まで縮めてよい
 			k.cwidth = k.cheight = mf(k.def_csize*cratio*(1-0.25*((k.qcols-ci0)/(ci1-ci0))));
 			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-			$("#main").css("width",'80%');
+			getEL("main").style.width = '80%';
 		}
 		else if(k.qcols < ci2){			// mainのtableを広げるとき
 			k.cwidth = k.cheight = mf(k.def_csize*cratio*(0.75-0.35*((k.qcols-ci1)/(ci2-ci1))));
 			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-			$("#main").css("width",""+(k.p0.x*2+k.qcols*k.cwidth+12)+"px");
+			getEL("main").style.width = ""+(k.p0.x*2+k.qcols*k.cwidth+12)+"px";
 		}
 		else{							// 標準サイズの40%にするとき(自動調整の下限)
 			k.cwidth = k.cheight = mf(k.def_csize*0.4);
 			k.p0 = new Pos(k.def_psize*0.4, k.def_psize*0.4);
-			$("#main").css("width",'96%');
+			getEL("main").style.width = '96%';
 		}
 
 		// Canvasのサイズ変更
-		this.cv_obj.attr("width",  k.p0.x*2 + k.qcols*k.cwidth);
-		this.cv_obj.attr("height", k.p0.y*2 + k.qrows*k.cheight);
+		this.canvas.width  = k.p0.x*2 + k.qcols*k.cwidth;
+		this.canvas.height = k.p0.y*2 + k.qrows*k.cheight;
 
 		// extendxell==1の時は上下の間隔を広げる (extendxell==2はdef_psizeで調整)
 		if(k.isextendcell==1){
@@ -247,19 +216,19 @@ PBase.prototype = {
 			k.p0.y += mf(k.cheight*0.45);
 		}
 
-		k.cv_oft.x = this.cv_obj.offset().left;
-		k.cv_oft.y = this.cv_obj.offset().top;
+		k.cv_oft.x = menu.getLeft(this.canvas);
+		k.cv_oft.y = menu.getTop(this.canvas);
 
 		kp.resize();
 		bd.setposAll();
 
 		pc.onresize_func();
 
-		// jQuery対応:初めにCanvas内のサイズが0になり、描画されない不具合への対処
+		// VML使う時に、なんかCanvas外の枠線が消えてしまうので残しておきます.
 		if(g.vml){
-			var fc = this.cv_obj.children(":first");
-			fc.css("width",  ''+this.cv_obj.attr("clientWidth") + 'px');
-			fc.css("height", ''+this.cv_obj.attr("clientHeight") + 'px');
+			var fc = this.canvas.firstChild;
+			fc.style.width  = ''+this.canvas.clientWidth  + 'px';
+			fc.style.height = ''+this.canvas.clientHeight + 'px';
 		}
 	},
 	resize_canvas : function(){
@@ -269,7 +238,7 @@ PBase.prototype = {
 	},
 	resize_canvas_onload : function(){
 		if(!k.br.IE || pc.already()){ this.resize_canvas();}
-		else{ uuCanvas.ready(this.resize_canvas.bind(this));}
+		else{ uuCanvas.ready(binder(this, this.resize_canvas));}
 	},
 	onresize_func : function(){
 		if(this.onresizenow){ return;}

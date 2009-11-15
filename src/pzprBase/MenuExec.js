@@ -67,7 +67,7 @@ MenuExec.prototype = {
 	},
 	urloutput : function(e){
 		if(menu.pop){
-			switch(getSrcElement(e).name){
+			switch(menu.getSrcElement(e).name){
 				case "pzprv3":     enc.pzlexport(0); break;
 				case "pzprapplet": enc.pzlexport(1); break;
 				case "kanpen":     enc.pzlexport(2); break;
@@ -141,26 +141,26 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	dispman : function(e){
 		var idlist = ['expression','usepanel','checkpanel'];
-		var sparatorlist = k.EDITOR?['separator1']:['separator1','separator2'];
+		var sparatorlist = k.EDITOR ? ['separator1'] : ['separator1','separator2'];
 
 		if(this.displaymanage){
-			for(var i=0;i<idlist.length;i++){ $("#"+idlist[i]).hide(800, base.resize_canvas.bind(base));}
+			for(var i=0;i<idlist.length;i++){ $("#"+idlist[i]).hide(800, binder(base,base.resize_canvas));}
 			for(var i=0;i<sparatorlist.length;i++){ $("#"+sparatorlist[i]).hide();}
 			if(k.irowake!=0 && menu.getVal('irowake')){ $("#btncolor2").show();}
-			$("#menuboard").css('padding-bottom','0pt');
+			getEL("menuboard").style.paddingBottom = '0pt';
 		}
 		else{
-			for(var i=0;i<idlist.length;i++){ $("#"+idlist[i]).show(800, base.resize_canvas.bind(base));}
+			for(var i=0;i<idlist.length;i++){ $("#"+idlist[i]).show(800, binder(base,base.resize_canvas));}
 			for(var i=0;i<sparatorlist.length;i++){ $("#"+sparatorlist[i]).show();}
 			if(k.irowake!=0 && menu.getVal('irowake')){ $("#btncolor2").hide();}
-			$("#menuboard").css('padding-bottom','8pt');
+			getEL("menuboard").style.paddingBottom = '8pt';
 		}
 		this.displaymanage = !this.displaymanage;
 		this.dispmanstr();
 	},
 	dispmanstr : function(){
-		if(!this.displaymanage){ $("#ms_manarea").html(menu.isLangJP()?"ŠÇ——Ìˆæ‚ð•\Ž¦":"Show management area");}
-		else                   { $("#ms_manarea").html(menu.isLangJP()?"ŠÇ——Ìˆæ‚ð‰B‚·":"Hide management area");}
+		if(!this.displaymanage){ getEL("ms_manarea").innerHTML = menu.isLangJP()?"ŠÇ——Ìˆæ‚ð•\Ž¦":"Show management area";}
+		else                   { getEL("ms_manarea").innerHTML = menu.isLangJP()?"ŠÇ——Ìˆæ‚ð‰B‚·":"Hide management area";}
 	},
 
 	//------------------------------------------------------------------------------
@@ -171,7 +171,7 @@ MenuExec.prototype = {
 		if(menu.pop){
 			um.newOperation(true);
 
-			var name = getSrcElement(e).name;
+			var name = menu.getSrcElement(e).name;
 			if(name.indexOf("reduce")===0){
 				if(name==="reduceup"||name==="reducedn"){
 					if(k.qrows<=1){ return;}

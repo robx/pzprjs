@@ -65,7 +65,7 @@ var k = {
 
 	p0       : new Pos(this.def_psize, this.def_psize),	// Canvas中での盤面の左上座標
 	cv_oft   : new Pos(0, 0),	// Canvasのwindow内での左上座標
-	IEMargin : new Pos(4, 4),	// マウス入力等でずれる件のmargin
+	IEMargin : new Pos(2, 2),	// マウス入力等でずれる件のmargin
 
 	br:{
 		IE    : !!(window.attachEvent && !window.opera),
@@ -103,6 +103,7 @@ var k = {
 	// for_test.js用
 	scriptcheck : false
 };
+k.IEMargin = (k.br.IE ? k.IEMargin : new Pos(0,0));
 
 var g;				// グラフィックコンテキスト
 var Puzzles = [];	// パズル個別クラス
@@ -112,46 +113,58 @@ var Puzzles = [];	// パズル個別クラス
 //---------------------------------------------------------------------------
 	//---------------------------------------------------------------------------
 	// newEL(tag)      新しいtagのHTMLエレメントを表すjQueryオブジェクトを作成する
-	// unselectable()  jQueryオブジェクトを文字列選択不可にする(メソッドチェーン記述用)
-	// getSrcElement() イベントを起こしたエレメントを返す
+	// unselectable()  エレメントを文字列選択で選択できないようにする
 	// mf()            小数点以下を切捨てる(旧int())
 	// f_true()        trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
 	//---------------------------------------------------------------------------
-function newEL(tag){ return $(document.createElement(tag));}
-$.fn.unselectable = function(){
-	if     (k.br.Gecko) { this.css("-moz-user-select","none"  ).css("user-select","none");}
-	else if(k.br.WebKit){ this.css("-khtml-user-select","none").css("user-select","none");}
-	else{ this.attr("unselectable", "on");}
-	return this;
-};
-function getSrcElement(event){ return event.target || event.srcElement;}
+var _doc = document;
+function newEL(tag)  { return _doc.createElement(tag);}
+function getEL(id)   { return _doc.getElementById(id);}
+
+var unselectable = (
+	 (k.br.Gecko)  ? function(el){ el.style.MozUserSelect = 'none';   el.style.userSelect = 'none'; return el;}
+	:(k.br.WebKit) ? function(el){ el.style.KhtmlUserSelect = 'none'; el.style.userSelect = 'none'; return el;}
+	:                function(el){ el.unselectable = 'on'; return el;}
+);
 
 var mf = Math.floor;
 function f_true(){ return true;}
 
 	//---------------------------------------------------------------------------
-	// toArray()         配列にする(bindで使う)
-	// Function.bind()   thisを関数に紐付けする
-	// Function.ebind()  thisを関数に紐付けする(イベント用)
-	// Function.kcbind() thisを関数に紐付けする(キーボードイベント用)
+	// toArray()   argumentsをarrayに変換する(binder用)
+	// binder()    関数にthisを紐付けする
+	// ebinder()   関数にthisを紐付けする(イベント用)
+	// kcbinder()  関数にthisを紐付けする(キーボードイベント用)
 	//---------------------------------------------------------------------------
-function toArray(inp){ var args=[]; for(var i=0;i<inp.length;i++){ args[i] = inp[i];} return args;}
-
-Function.prototype.bind = function(){
-	var args=toArray(arguments);
-	var __method = this, obj = args.shift();
-	return function(){ return __method.apply(obj, args.concat(toArray(arguments)));}
+function toArray(array){
+	if(!array){ return [];}
+	var args = [];
+	for(var i=0;i<array.length;i++){ args[i]=array[i];}
+	return args;
+}
+function binder(){
+	var args=toArray(arguments), obj = args.shift(), __method = args.shift();
+	return function(){
+		var ret = __method.apply(obj, toArray(args[0]).concat(toArray(arguments)));
+		return ret;
+	}
 };
-Function.prototype.ebind = function(){
-	var args=toArray(arguments);
-	var __method = this, obj = args.shift();
-	return function(e){ return __method.apply(obj, [e||window.event].concat(args).concat(toArray(arguments)));}
-};
-Function.prototype.kcbind = function(){
-	var args=toArray(arguments), __method = this;
+function ebinder(){
+	var args=toArray(arguments), obj = args.shift(), __method = args.shift();
 	return function(e){
-		ret = __method.apply(kc, [e||window.event].concat(args).concat(toArray(arguments)));
-		if(kc.tcMoved){ if(k.br.Gecko||k.br.WebKit){ e.preventDefault();}else if(k.br.IE){ return false;}else{ e.returnValue = false;} }
+		var ret = __method.apply(obj, [e||window.event].concat(toArray(args[0])).concat(toArray(arguments)));
+		return ret;
+	}
+};
+function kcbinder(){
+	var args=toArray(arguments), __method = args.shift();
+	return function(e){
+		ret = __method.apply(kc, [e||window.event].concat(toArray(args[0])).concat(toArray(arguments)));
+		if(kc.tcMoved){
+			if(k.br.Gecko||k.br.WebKit){ e.preventDefault();}
+			else if(!k.br.IE){ e.returnValue = false;}
+			else{ return false;}
+		}
 		return ret;
 	}
 };
@@ -169,7 +182,7 @@ Timer = function(){
 
 	// 経過時間表示用変数
 	this.bseconds = 0;		// 前回ラベルに表示した時間(秒数)
-	this.timerEL = document.getElementById("timerpanel");
+	this.timerEL = getEL("timerpanel");
 
 	// 自動正答判定用変数
 	this.lastAnsCnt  = 0;	// 前回正答判定した時の、UndoManagerに記録されてた問題/回答入力のカウント
@@ -202,7 +215,7 @@ Timer.prototype = {
 	},
 	start : function(){
 		this.st = (new Date()).getTime();
-		this.TID = setInterval(this.update.bind(this), this.timerInterval);
+		this.TID = setInterval(binder(this, this.update), this.timerInterval);
 	},
 	update : function(){
 		this.current = (new Date()).getTime();
@@ -254,7 +267,7 @@ Timer.prototype = {
 	//---------------------------------------------------------------------------
 	startUndoTimer : function(){
 		this.undoWaitCount = this.undoStartCount;
-		if(!this.TIDundo){ this.TIDundo = setInterval(this.procUndo.bind(this), this.undoInterval);}
+		if(!this.TIDundo){ this.TIDundo = setInterval(binder(this, this.procUndo), this.undoInterval);}
 
 		if     (kc.inUNDO){ um.undo();}
 		else if(kc.inREDO){ um.redo();}
