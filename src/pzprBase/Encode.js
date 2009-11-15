@@ -40,13 +40,13 @@ Encode.prototype = {
 
 		this.init();
 
-		if(search.substring(0,3)=="?m+" || search.substring(0,3)=="?m/"){
+		if(search.substr(0,3)=="?m+" || search.substr(0,3)=="?m/"){
 			k.editmode = true;
 			k.playmode = false;
 			k.EDITOR = true;
 			k.PLAYER = false;
 			k.autocheck = false;
-			search = search.substring(3, search.length);
+			search = search.substr(3);
 		}
 		else{
 			k.editmode = false;
@@ -54,13 +54,13 @@ Encode.prototype = {
 			k.EDITOR = !!k.scriptcheck;
 			k.PLAYER =  !k.scriptcheck;
 			k.autocheck = true;
-			search = search.substring(1, search.length);
+			search = search.substr(1);
 		}
 
 		var qs = search.indexOf("/");
 		if(qs>=0){
-			this.parseURI_pzpr(search.substring(qs+1,search.length));
-			return search.substring(0,qs);
+			this.parseURI_pzpr(search.substr(qs+1));
+			return search.substr(0,qs);
 		}
 
 		return search;
@@ -75,11 +75,11 @@ Encode.prototype = {
 		if(url.match(/indi\.s58\.xrea\.com/)){
 			// ぱずぷれv3のURL
 			if(!url.match(/\/(sa|sc)\//)){
-				this.parseURI_pzpr(url.substring(url.indexOf("/", url.indexOf("?"))+1,url.length));
+				this.parseURI_pzpr(url.substr(url.indexOf("/", url.indexOf("?"))+1));
 			}
 			// ぱずぷれアプレットのURL
 			else{
-				this.parseURI_pzpr(url.substring(url.indexOf("?"),url.length)+1);
+				this.parseURI_pzpr(url.substr(url.indexOf("?"))+1);
 				this.uri.type = 1; // 1はぱずぷれアプレット/URLジェネレータ
 			}
 		}
@@ -87,19 +87,19 @@ Encode.prototype = {
 		else if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
 			// カンペンだけどデータ形式はへやわけアプレット
 			if(url.indexOf("?heyawake=")>=0){
-				this.parseURI_heyaapp(url.substring(url.indexOf("?heyawake=")+10,url.length));
+				this.parseURI_heyaapp(url.substr(url.indexOf("?heyawake=")+10));
 			}
 			// カンペンだけどデータ形式はぱずぷれ
 			else if(url.indexOf("?pzpr=")>=0){
-				this.parseURI_pzpr(url.substring(url.indexOf("?pzpr=")+6,url.length));
+				this.parseURI_pzpr(url.substr(url.indexOf("?pzpr=")+6));
 			}
 			else{
-				this.parseURI_kanpen(url.substring(url.indexOf("?problem=")+9,url.length));
+				this.parseURI_kanpen(url.substr(url.indexOf("?problem=")+9));
 			}
 		}
 		// へやわけアプレットの場合
 		else if(url.match(/www\.geocities(\.co)?\.jp\/heyawake/)){
-			this.parseURI_heyaapp(url.substring(url.indexOf("?problem=")+9,url.length));
+			this.parseURI_heyaapp(url.substr(url.indexOf("?problem=")+9));
 		}
 	},
 	parseURI_pzpr : function(qstr){
@@ -187,7 +187,7 @@ Encode.prototype = {
 
 			if(c>=bd.cellmax){ break;}
 		}
-		return bstr.substring(i+1,bstr.length);
+		return bstr.substr(i+1);
 	},
 	encode4Cell : function(){
 		var count = 0, cm = "";
@@ -227,7 +227,7 @@ Encode.prototype = {
 
 			if(c>=bd.crossmax){ break;}
 		}
-		return bstr.substring(i+1,bstr.length);
+		return bstr.substr(i+1);
 	},
 	encode4Cross : function(){
 		var count = 0, cm = "";
@@ -260,14 +260,14 @@ Encode.prototype = {
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if     (this.include(ca,"0","9")){ bd.sQnC(c, parseInt(bstr.substring(i,i+1),10)); c++;}
+			if     (this.include(ca,"0","9")){ bd.sQnC(c, parseInt(bstr.substr(i,1),10)); c++;}
 			else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-9);}
 			else if(ca == '.'){ bd.sQnC(c, -2); c++;}
 			else{ c++;}
 
 			if(c > bd.cellmax){ break;}
 		}
-		return bstr.substring(i,bstr.length);
+		return bstr.substr(i);
 	},
 	encodeNumber10 : function(){
 		var cm="", count=0;
@@ -297,18 +297,18 @@ Encode.prototype = {
 			var ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { bd.sQnC(c, parseInt(bstr.substring(i,  i+1),16));      c++;}
-			else if(ca == '.'){ bd.sQnC(c, -2);                                        c++;      }
-			else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),16));      c++; i+=2;}
-			else if(ca == '+'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+4),16));      c++; i+=3;}
-			else if(ca == '='){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+4),16)+4096); c++; i+=3;}
-			else if(ca == '%'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+4),16)+8192); c++; i+=3;}
+							  { bd.sQnC(c, parseInt(bstr.substr(i,  1),16));      c++;}
+			else if(ca == '.'){ bd.sQnC(c, -2);                                   c++;      }
+			else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),16));      c++; i+=2;}
+			else if(ca == '+'){ bd.sQnC(c, parseInt(bstr.substr(i+1,3),16));      c++; i+=3;}
+			else if(ca == '='){ bd.sQnC(c, parseInt(bstr.substr(i+1,3),16)+4096); c++; i+=3;}
+			else if(ca == '%'){ bd.sQnC(c, parseInt(bstr.substr(i+1,3),16)+8192); c++; i+=3;}
 			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-15);}
 			else{ c++;}
 
 			if(c > bd.cellmax){ break;}
 		}
-		return bstr.substring(i,bstr.length);
+		return bstr.substr(i);
 	},
 	encodeNumber16 : function(){
 		var count=0, cm="";
@@ -343,19 +343,19 @@ Encode.prototype = {
 			var ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i,  i+1),16));      r++;}
-			else if(ca == '-'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+3),16));      r++; i+=2;}
-			else if(ca == '+'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16));      r++; i+=3;}
-			else if(ca == '='){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+4096); r++; i+=3;}
-			else if(ca == '%'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+8192); r++; i+=3;}
-			else if(ca == '*'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+12240); r++; i+=4;}
-			else if(ca == '$'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+77776); r++; i+=5;}
+							  { bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i,  1),16));      r++;}
+			else if(ca == '-'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,2),16));      r++; i+=2;}
+			else if(ca == '+'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,3),16));      r++; i+=3;}
+			else if(ca == '='){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,3),16)+4096); r++; i+=3;}
+			else if(ca == '%'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,3),16)+8192); r++; i+=3;}
+			else if(ca == '*'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,3),16)+12240); r++; i+=4;}
+			else if(ca == '$'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,3),16)+77776); r++; i+=5;}
 			else if(ca >= 'g' && ca <= 'z'){ r += (parseInt(ca,36)-15);}
 			else{ r++;}
 
 			if(r > area.room.max){ break;}
 		}
-		return bstr.substring(i,bstr.length);
+		return bstr.substr(i);
 	},
 	encodeRoomNumber16 : function(){
 		area.resetRarea();
@@ -390,17 +390,17 @@ Encode.prototype = {
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if     (ca=='0'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+2),16)); c++; i++; }
-			else if(ca=='5'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),16)); c++; i+=2;}
+			if     (ca=='0'){ bd.sQnC(c, parseInt(bstr.substr(i+1,1),16)); c++; i++; }
+			else if(ca=='5'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),16)); c++; i+=2;}
 			else if(this.include(ca,"1","4")){
 				bd.sDiC(c, parseInt(ca,16));
-				if(bstr.charAt(i+1)!="."){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+2),16));}
+				if(bstr.charAt(i+1)!="."){ bd.sQnC(c, parseInt(bstr.substr(i+1,1),16));}
 				else{ bd.sQnC(c,-2);}
 				c++; i++;
 			}
 			else if(this.include(ca,"6","9")){
 				bd.sDiC(c, parseInt(ca,16)-5);
-				bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),16));
+				bd.sQnC(c, parseInt(bstr.substr(i+1,2),16));
 				c++; i+=2;
 			}
 			else if(ca>='a' && ca<='z'){ c+=(parseInt(ca,36)-9);}
@@ -408,7 +408,7 @@ Encode.prototype = {
 
 			if(c > bd.cellmax){ break;}
 		}
-		return bstr.substring(i,bstr.length);
+		return bstr.substr(i);
 	},
 	encodeArrowNumber16 : function(){
 		var cm = "", count = 0;
@@ -459,7 +459,7 @@ Encode.prototype = {
 		}
 
 		area.resetRarea();
-		return bstr.substring(pos2,bstr.length);
+		return bstr.substr(pos2);
 	},
 	encodeBorder : function(){
 		var num, pass;
@@ -504,7 +504,7 @@ Encode.prototype = {
 
 			if(cc >= (k.isoutsidecross==1?(k.qcols+1)*(k.qrows+1):(k.qcols-1)*(k.qrows-1))-1){ i++; break;}
 		}
-		return bstr.substring(i, bstr.length);
+		return bstr.substr(i);
 	},
 	encodeCrossMark : function(){
 		var cm = "", count = 0;
@@ -538,7 +538,7 @@ Encode.prototype = {
 		}
 		for(var j=bstr.length;j<bd.crossmax;j++){ bd.sQnX(j,-1);}
 
-		return bstr.substring(i,bstr.length);
+		return bstr.substr(i);
 	},
 
 	//---------------------------------------------------------------------------

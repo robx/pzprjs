@@ -166,7 +166,7 @@ Board = function(){
 	this.enableLineNG = false;
 
 	this.initBoardSize(k.qcols,k.qrows);
-	this.override();
+	this.setFunctions();
 };
 Board.prototype = {
 	//---------------------------------------------------------------------------
@@ -430,14 +430,14 @@ Board.prototype = {
 	},
 	bnum2 : function(cx,cy,qc,qr){
 		if(cx>=1&&cx<=qc*2-1&&cy>=1&&cy<=qr*2-1){
-			if(cx%2===0 && cy%2===1){ return mf((cx-1)/2)+mf((cy-1)/2)*(qc-1);}
-			else if(cx%2===1 && cy%2===0){ return mf((cx-1)/2)+mf((cy-2)/2)*qc+(qc-1)*qr;}
+			if     (!(cx&1) &&  (cy&1)){ return mf((cx-1)/2)+mf((cy-1)/2)*(qc-1);}
+			else if( (cx&1) && !(cy&1)){ return mf((cx-1)/2)+mf((cy-2)/2)*qc+(qc-1)*qr;}
 		}
 		else if(k.isoutsideborder==1){
-			if     (cy===0   &&cx%2===1&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+mf((cx-1)/2);}
-			else if(cy===2*qr&&cx%2===1&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+mf((cx-1)/2);}
-			else if(cx===0   &&cy%2===1&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+mf((cy-1)/2);}
-			else if(cx===2*qc&&cy%2===1&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+mf((cy-1)/2);}
+			if     (cy===0   &&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+mf((cx-1)/2);}
+			else if(cy===2*qr&&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+mf((cx-1)/2);}
+			else if(cx===0   &&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+mf((cy-1)/2);}
+			else if(cx===2*qc&&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+mf((cy-1)/2);}
 		}
 		return -1;
 	},
@@ -531,16 +531,16 @@ Board.prototype = {
 	// bd.checkLPCombined() ü‚ª‚Â‚È‚ª‚Á‚Ä‚¢‚é‚©‚Ç‚¤‚©Œ©‚ÄALine==1‚ðÝ’è‚·‚é
 	//---------------------------------------------------------------------------
 	isLPMarked : function(id){
-		return bd.border[id].cx%2===1 ? (bd.isLPdown(bd.cc1(id)) || bd.isLPup(bd.cc2(id))) :
-										(bd.isLPright(bd.cc1(id)) || bd.isLPleft(bd.cc2(id)));
+		return bd.border[id].cx&1 ? (bd.isLPdown(bd.cc1(id)) || bd.isLPup(bd.cc2(id))) :
+									(bd.isLPright(bd.cc1(id)) || bd.isLPleft(bd.cc2(id)));
 	},
 	isLPCombined : function(id){
-		return bd.border[id].cx%2===1 ? (bd.isLPdown(bd.cc1(id)) && bd.isLPup(bd.cc2(id))) :
-										(bd.isLPright(bd.cc1(id)) && bd.isLPleft(bd.cc2(id)));
+		return bd.border[id].cx&1 ? (bd.isLPdown(bd.cc1(id)) && bd.isLPup(bd.cc2(id))) :
+									(bd.isLPright(bd.cc1(id)) && bd.isLPleft(bd.cc2(id)));
 	},
 	isLineNG : function(id){
-		return bd.border[id].cx%2===1 ? (bd.isnoLPdown(bd.cc1(id)) || bd.isnoLPup(bd.cc2(id))) :
-										(bd.isnoLPright(bd.cc1(id)) || bd.isnoLPleft(bd.cc2(id)));
+		return bd.border[id].cx&1 ? (bd.isnoLPdown(bd.cc1(id)) || bd.isnoLPup(bd.cc2(id))) :
+									(bd.isnoLPright(bd.cc1(id)) || bd.isnoLPleft(bd.cc2(id)));
 	},
 	checkLPCombined : function(cc){
 		var id;
@@ -735,33 +735,86 @@ Board.prototype = {
 	ErE : function(id){ return (id!==-1?this.excell[id].error:0);},
 
 	//---------------------------------------------------------------------------
-	// bd.override()  ðŒƒtƒ‰ƒO‚ðŒ©‚ÄŠÖ”‚ðƒI[ƒo[ƒ‰ƒCƒh‚·‚é
+	// bd.setFunctions()  ðŒƒtƒ‰ƒO‚ðŒ©‚ÄŠÖ”‚ðÝ’è‚·‚é
 	//---------------------------------------------------------------------------
-	override : function(){
-		if(k.isborderAsLine){
-			this.isLine     = function(id){ return (id!==-1 && bd.border[id].qans>0);};
-			this.setLine    = function(id){ this.sQaB(id, 1); this.sQsB(id, 0);};
-			this.setPeke    = function(id){ this.sQaB(id, 0); this.sQsB(id, 2);};
-			this.removeLine = function(id){ this.sQaB(id, 0); this.sQsB(id, 0);};
-		}
-		if(!k.isAnsNumber){
-			this.isNum      = function(c){ return (c!==-1 && bd.cell[c].qnum!==-1);};
-			this.noNum      = function(c){ return (c===-1 || bd.cell[c].qnum===-1);};
-			this.isValidNum = function(c){ return (c!==-1 && bd.cell[c].qnum>=  0);};
+	setFunctions : function(){
+		//-----------------------------------------------------------------------
+		// bd.isLine()      ŠY“–‚·‚éBorder‚Éline‚ªˆø‚©‚ê‚Ä‚¢‚é‚©”»’è‚·‚é
+		// bd.setLine()     ŠY“–‚·‚éBorder‚Éü‚ðˆø‚­
+		// bd.setPeke()     ŠY“–‚·‚éBorder‚É~‚ð‚Â‚¯‚é
+		// bd.removeLine()  ŠY“–‚·‚éBorder‚©‚çü‚ðÁ‚·
+		//-----------------------------------------------------------------------
+		this.isLine = (
+			(!k.isborderAsLine) ? function(id){ return (id!==-1 && bd.border[id].line>0);}
+								: function(id){ return (id!==-1 && bd.border[id].qans>0);}
+		);
+		this.setLine = (
+			(!k.isborderAsLine) ? function(id){ this.sLiB(id, 1); this.sQsB(id, 0);}
+								: function(id){ this.sQaB(id, 1); this.sQsB(id, 0);}
+		);
+		this.setPeke = (
+			(!k.isborderAsLine) ? function(id){ this.sLiB(id, 0); this.sQsB(id, 2);}
+								: function(id){ this.sQaB(id, 0); this.sQsB(id, 2);}
+		);
+		this.removeLine = (
+			(!k.isborderAsLine) ? function(id){ this.sLiB(id, 0); this.sQsB(id, 0);}
+								: function(id){ this.sQaB(id, 0); this.sQsB(id, 0);}
+		);
 
-			this.getNum = function(c)    { return (c!==-1?this.cell[c].qnum:-1);};
-			if(k.NumberIsWhite){
-				this.setNum = function(c,val){ if(k.dispzero || val!==0){ this.sQnC(c,val); this.sQaC(c,-1);} };
-			}
-			else{
-				this.setNum = function(c,val){ if(k.dispzero || val!==0){ this.sQnC(c,val);} };
-			}
-		}
-		else{
-			if(k.NumberIsWhite){
-				this.setNum = function(c,val){ this.sQnC(c,val); this.sQaC(c,-1);}
-			}
-		}
+		//-----------------------------------------------------------------------
+		// bd.isNum()      ŠY“–‚·‚éCell‚É”Žš‚ª‚ ‚é‚©•Ô‚·
+		// bd.noNum()      ŠY“–‚·‚éCell‚É”Žš‚ª‚È‚¢‚©•Ô‚·
+		// bd.isValidNum() ŠY“–‚·‚éCell‚É0ˆÈã‚Ì”Žš‚ª‚ ‚é‚©•Ô‚·
+		// bd.sameNumber() ‚Q‚Â‚ÌCell‚É“¯‚¶—LŒø‚È”Žš‚ª‚ ‚é‚©•Ô‚·
+		//-----------------------------------------------------------------------
+		this.isNum = (
+			(k.isAnsNumber) ? function(c){ return (c!==-1 && (bd.cell[c].qnum!==-1 || bd.cell[c].qans!==-1));}
+							: function(c){ return (c!==-1 &&  bd.cell[c].qnum!==-1);}
+		);
+		this.noNum = (
+			(k.isAnsNumber) ? function(c){ return (c===-1 || (bd.cell[c].qnum===-1 && bd.cell[c].qans===-1));}
+							: function(c){ return (c===-1 ||  bd.cell[c].qnum===-1);}
+		);
+		this.isValidNum = (
+			(k.isAnsNumber) ? function(c){ return (c!==-1 && (bd.cell[c].qnum>=  0 ||(bd.cell[c].qans>=0 && bd.cell[c].qnum===-1)));}
+							: function(c){ return (c!==-1 &&  bd.cell[c].qnum>=  0);}
+		);
+		this.sameNumber     = function(c1,c2){ return (bd.isValidNum(c1) && (bd.getNum(c1)===bd.getNum(c2)));};
+
+		//-----------------------------------------------------------------------
+		// bd.getNum()     ŠY“–‚·‚éCell‚Ì”Žš‚ð•Ô‚·
+		// bd.setNum()     ŠY“–‚·‚éCell‚É”Žš‚ðÝ’è‚·‚é
+		//-----------------------------------------------------------------------
+		this.getNum = (
+			(k.isAnsNumber) ? function(c){ return (c!==-1 ? this.cell[c].qnum!==-1 ? this.cell[c].qnum : this.cell[c].qans : -1);}
+							: function(c){ return (c!==-1 ? this.cell[c].qnum : -1);}
+		);
+		this.setNum = (
+			((k.NumberIsWhite) ?
+				function(c,val){
+					if(!k.dispzero && val===0){ return;}
+					this.sQnC(c,val);
+					this.sQaC(c,bd.defcell.qnum);
+				}
+			:(k.isAnsNumber) ?
+				function(c,val){
+					if(!k.dispzero && val===0){ return;}
+					if(k.editmode){
+						this.sQnC(c,val);
+						this.sQaC(c,bd.defcell.qnum);
+					}
+					else if(this.cell[c].qnum===bd.defcell.qnum){
+						this.sQaC(c,val);
+					}
+					this.sQsC(c,0);
+				}
+			:
+				function(c,val){
+					if(!k.dispzero && val===0){ return;}
+					this.sQnC(c,val);
+				}
+			)
+		);
 	},
 
 	//---------------------------------------------------------------------------
@@ -777,47 +830,13 @@ Board.prototype = {
 	setWhite : function(c){ this.sQaC(c,-1);},
 
 	//---------------------------------------------------------------------------
-	// bd.isNum()      ŠY“–‚·‚éCell‚É”Žš‚ª‚ ‚é‚©•Ô‚·
-	// bd.noNum()      ŠY“–‚·‚éCell‚É”Žš‚ª‚È‚¢‚©•Ô‚·
-	// bd.isValidNum() ŠY“–‚·‚éCell‚É0ˆÈã‚Ì”Žš‚ª‚ ‚é‚©•Ô‚·
-	// bd.sameNumber() ‚Q‚Â‚ÌCell‚É“¯‚¶—LŒø‚È”Žš‚ª‚ ‚é‚©•Ô‚·
-	// bd.getNum()     ŠY“–‚·‚éCell‚Ì”Žš‚ð•Ô‚·
-	// bd.setNum()     ŠY“–‚·‚éCell‚É”Žš‚ðÝ’è‚·‚é
-	//---------------------------------------------------------------------------
-	isNum      : function(c){ return (c!==-1 && (bd.cell[c].qnum!==-1 || bd.cell[c].qans!==-1));},
-	noNum      : function(c){ return (c===-1 || (bd.cell[c].qnum===-1 && bd.cell[c].qans===-1));},
-	isValidNum : function(c){ return (c!==-1 && (bd.cell[c].qnum>=  0 ||(bd.cell[c].qans>=0 && bd.cell[c].qnum===-1)));},
-	sameNumber : function(c1,c2){ return (bd.isValidNum(c1) && (bd.getNum(c1)===bd.getNum(c2)));},
-
-	getNum : function(c){ return (this.cell[c].qnum!==-1?this.cell[c].qnum:this.cell[c].qans);},
-	setNum : function(c,val){
-		if(k.dispzero || val!=0){
-			if(k.editmode){ this.sQnC(c,val); this.sQaC(c,bd.defcell.qnum);}
-			else if(this.cell[c].qnum===bd.defcell.qnum){ this.sQaC(c,val);}
-			this.sQsC(c,0);
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// bd.isLine()      ŠY“–‚·‚éBorder‚Éline‚ªˆø‚©‚ê‚Ä‚¢‚é‚©”»’è‚·‚é
-	//                  (k.isborderAsLineŽž‚ÍƒI[ƒo[ƒ‰ƒCƒh‚³‚ê‚Ü‚·)
-	// bd.setLine()     ŠY“–‚·‚éBorder‚Éü‚ðˆø‚­
-	// bd.setPeke()     ŠY“–‚·‚éBorder‚É~‚ð‚Â‚¯‚é
-	// bd.removeLine()  ŠY“–‚·‚éBorder‚©‚çü‚ðÁ‚·
-	//---------------------------------------------------------------------------
-	isLine     : function(id){ return (id!==-1 && bd.border[id].line>0);},
-	setLine    : function(id){ this.sLiB(id, 1); this.sQsB(id, 0);},
-	setPeke    : function(id){ this.sLiB(id, 0); this.sQsB(id, 2);},
-	removeLine : function(id){ this.sLiB(id, 0); this.sQsB(id, 0);},
-
-	//---------------------------------------------------------------------------
 	// bd.isBorder()     ŠY“–‚·‚éBorder‚É‹«ŠEü‚ªˆø‚©‚ê‚Ä‚¢‚é‚©”»’è‚·‚é
 	// bd.setBorder()    ŠY“–‚·‚éBorder‚É‹«ŠEü‚ðˆø‚­
 	// bd.removeBorder() ŠY“–‚·‚éBorder‚©‚çü‚ðÁ‚·
 	// bd.setBsub()      ŠY“–‚·‚éBorder‚É‹«ŠEü—p‚Ì•â•‹L†‚ð‚Â‚¯‚é
 	// bd.removeBsub()   ŠY“–‚·‚éBorder‚©‚ç‹«ŠEü—p‚Ì•â•‹L†‚ð‚Í‚¸‚·
 	//---------------------------------------------------------------------------
-	isBorder : function(id){
+	isBorder     : function(id){
 		return (id!==-1 && (bd.border[id].ques>0 || bd.border[id].qans>0));
 	},
 

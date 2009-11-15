@@ -16,6 +16,9 @@ var MouseEvent = function(){
 
 	this.enableInputHatena = !!k.isDispHatena;
 	this.inputQuesDirectly = false;
+
+	this.docEL  = document.documentElement;
+	this.bodyEL = document.body;
 };
 MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
@@ -40,8 +43,14 @@ MouseEvent.prototype = {
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
 	e_mousedown : function(e){
 		if(!k.enableMouse){ return;}
+
 		this.setButtonFlag(e);
+		// SHIFTキーを押している時は左右ボタン反転
+		if(((kc.isSHIFT)^menu.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
+			this.btn.Left = !this.btn.Left; this.btn.Right = !this.btn.Right;
+		}
 		if(this.btn.Middle){ this.modeflip(); return;} //中ボタン
+
 		if(ans.errDisp){ bd.errclear();}
 		um.newOperation(true);
 		this.setposition(e);
@@ -81,20 +90,22 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// mv.setButtonFlag() 左/中/右ボタンが押されているか設定する
 	//---------------------------------------------------------------------------
-	setButtonFlag : function(e){
-		if(k.br.WebKit && !k.br.WinWebKit && e.which!==1){ this.btn = { Left:false, Middle:false, Right:false};}
-		else if(k.br.IE)       { this.btn = { Left:(e.button===1), Middle:(e.button===4), Right:(e.button===2)}; }
-		else if(k.br.WinWebKit){ this.btn = { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)}; }
-		else if(k.br.WebKit)   { this.btn = { Left:(!e.metaKey)  , Middle:false         , Right:(!!e.metaKey) }; }
-		else if(!!e.which)     { this.btn = { Left:(e.which ===1), Middle:(e.which ===2), Right:(e.which ===3)}; }
-		else                   { this.btn = { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)}; }
-
-		// SHIFTキーを押している時は左右ボタン反転
-		if(((kc.isSHIFT)^menu.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
-			this.btn.Left  = !this.btn.Left;
-			this.btn.Right = !this.btn.Right;
-		}
-	},
+	setButtonFlag : (
+		((k.br.IE) ?
+			function(e){ this.btn = { Left:(e.button===1), Middle:(e.button===4), Right:(e.button===2)};}
+		:(k.br.WinWebKit) ?
+			function(e){ this.btn = { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)};}
+		:(k.br.WebKit) ?
+			function(e){
+				this.btn = { Left:(e.which===1 && !e.metaKey), Middle:false, Right:(e.which===1 && !!e.metaKey) };
+			}
+		:
+			function(e){
+				this.btn = (!!e.which ? { Left:(e.which ===1), Middle:(e.which ===2), Right:(e.which ===3)}
+									  : { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)});
+			}
+		)
+	),
 
 	//---------------------------------------------------------------------------
 	// mv.setposition()   イベントが起こった座標をinputX, inputY変数に代入
@@ -103,24 +114,43 @@ MouseEvent.prototype = {
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
-	setposition : function(e){
-		this.inputX = this.pointerX(e)-k.cv_oft.x-k.p0.x-k.IEMargin.x;
-		this.inputY = this.pointerY(e)-k.cv_oft.y-k.p0.y-k.IEMargin.y;
-	},
-	pointerX : function(event) {
-		if(k.br.WinWebKit){ return event.pageX - 1;}
-		return event.pageX || (event.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft));
-	},
-	pointerY : function(event) {
-		if(k.br.WinWebKit){ return event.pageY - 1;}
-		return event.pageY || (event.clientY + (document.documentElement.scrollTop || document.body.scrollTop));
-	},
+	setposition : (
+		((k.br.WinWebKit) ?
+			function(e){
+				this.inputX = e.pageX-1 -k.cv_oft.x-k.p0.x-k.IEMargin.x;
+				this.inputY = e.pageY-1 -k.cv_oft.y-k.p0.y-k.IEMargin.y;
+			}
+		:(!k.br.IE) ?
+			function(e){
+				this.inputX = e.pageX   -k.cv_oft.x-k.p0.x-k.IEMargin.x;
+				this.inputY = e.pageY   -k.cv_oft.y-k.p0.y-k.IEMargin.y;
+			}
+		:
+			function(e){
+				this.inputX = e.clientX + (this.docEL.scrollLeft || this.bodyEL.scrollLeft) -k.cv_oft.x-k.p0.x-k.IEMargin.x;
+				this.inputY = e.clientY + (this.docEL.scrollTop  || this.bodyEL.scrollTop ) -k.cv_oft.y-k.p0.y-k.IEMargin.y;
+			}
+		)
+	),
+	pointerX : (
+		(k.br.WinWebKit) ?
+			function(e){ return e.pageX - 1;}
+		:(!k.br.IE) ?
+			function(e){ return e.pageX;}
+		:
+			function(e){ return e.clientX + (this.docEL.scrollLeft || this.bodyEL.scrollLeft);}
+	),
+	pointerY : (
+		(k.br.WinWebKit) ?
+			function(e){ return e.pageY - 1;}
+		:(!k.br.IE) ?
+			function(e){ return e.pageY;}
+		:
+			function(e){ return e.clientY + (this.docEL.scrollTop  || this.bodyEL.scrollTop);}
+	),
 
 	notInputted : function(){ return !um.changeflag;},
-	modeflip : function(input){
-		if(k.PLAYER){ return;}
-		menu.setVal('mode', (k.playmode?1:3));
-	},
+	modeflip    : function(){ if(k.EDITOR){ menu.setVal('mode', (k.playmode?1:3));} },
 
 	// 共通関数
 	//---------------------------------------------------------------------------
@@ -223,10 +253,18 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	inputqnum : function(){
 		var cc = this.cellid();
-		if(cc==-1 || cc==this.mouseCell){ return;}
+		if(cc===-1 || cc===this.mouseCell){ return;}
 
-		if(cc==tc.getTCC()){
-			cc = (k.playmode ? this.inputqnum3(cc) : this.inputqnum1(cc));
+		if(cc===tc.getTCC()){
+			cc =(k.playmode ?
+					(k.NumberWithMB ?
+						this.inputqnum3withMB(cc)
+					:
+						this.inputqnum3(cc)
+					)
+				:
+					this.inputqnum1(cc)
+				);
 		}
 		else{
 			var cc0 = tc.getTCC();
@@ -243,15 +281,15 @@ MouseEvent.prototype = {
 		var max = bd.nummaxfunc(cc);
 
 		if(this.btn.Left){
-			if(bd.QnC(cc)==max){ bd.sQnC(cc,-1);}
-			else if(bd.QnC(cc)==-1){ bd.sQnC(cc,(this.enableInputHatena?-2:(k.dispzero?0:1)));}
-			else if(bd.QnC(cc)==-2){ bd.sQnC(cc,(k.dispzero?0:1));}
+			if(bd.QnC(cc)===max){ bd.sQnC(cc,-1);}
+			else if(bd.QnC(cc)===-1){ bd.sQnC(cc,(this.enableInputHatena?-2:(k.dispzero?0:1)));}
+			else if(bd.QnC(cc)===-2){ bd.sQnC(cc,(k.dispzero?0:1));}
 			else{ bd.sQnC(cc,bd.QnC(cc)+1);}
 		}
 		else if(this.btn.Right){
-			if(bd.QnC(cc)==-1){ bd.sQnC(cc,max);}
-			else if(bd.QnC(cc)==-2){ bd.sQnC(cc,-1);}
-			else if(bd.QnC(cc)==(k.dispzero?0:1)){ bd.sQnC(cc,(this.enableInputHatena?-2:-1));}
+			if(bd.QnC(cc)===-1){ bd.sQnC(cc,max);}
+			else if(bd.QnC(cc)===-2){ bd.sQnC(cc,-1);}
+			else if(bd.QnC(cc)===(k.dispzero?0:1)){ bd.sQnC(cc,(this.enableInputHatena?-2:-1));}
 			else{ bd.sQnC(cc,bd.QnC(cc)-1);}
 		}
 		if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
@@ -260,29 +298,39 @@ MouseEvent.prototype = {
 		return cc;
 	},
 	inputqnum3 : function(cc){
-		if(bd.QnC(cc)!=-1){ return cc;}
+		if(bd.QnC(cc)!==-1){ return cc;}
 		var max = bd.nummaxfunc(cc);
 		bd.sDiC(cc,0);
 
 		if(this.btn.Left){
-			if(k.NumberWithMB){
-				if     (bd.QaC(cc)==max){ bd.sQaC(cc,-1); bd.sQsC(cc,1); return cc;}
-				else if(bd.QsC(cc)==1)  { bd.sQaC(cc,-1); bd.sQsC(cc,2); return cc;}
-				else if(bd.QsC(cc)==2)  { bd.sQaC(cc,-1); bd.sQsC(cc,0); return cc;}
-			}
-			if     (bd.QaC(cc)==max){ bd.sQaC(cc,-1);              }
-			else if(bd.QaC(cc)==-1) { bd.sQaC(cc,(k.dispzero?0:1));}
-			else                    { bd.sQaC(cc,bd.QaC(cc)+1);    }
+			if     (bd.QaC(cc)===max){ bd.sQaC(cc,-1);              }
+			else if(bd.QaC(cc)===-1) { bd.sQaC(cc,(k.dispzero?0:1));}
+			else                     { bd.sQaC(cc,bd.QaC(cc)+1);    }
 		}
 		else if(this.btn.Right){
-			if(k.NumberWithMB){
-				if     (bd.QsC(cc)==1) { bd.sQaC(cc,max); bd.sQsC(cc,0); return cc;}
-				else if(bd.QsC(cc)==2) { bd.sQaC(cc,-1);  bd.sQsC(cc,1); return cc;}
-				else if(bd.QaC(cc)==-1){ bd.sQaC(cc,-1);  bd.sQsC(cc,2); return cc;}
-			}
-			if     (bd.QaC(cc)==-1)              { bd.sQaC(cc,max);}
-			else if(bd.QaC(cc)==(k.dispzero?0:1)){ bd.sQaC(cc,-1); }
-			else                                 { bd.sQaC(cc,bd.QaC(cc)-1);}
+			if     (bd.QaC(cc)===-1)              { bd.sQaC(cc,max);}
+			else if(bd.QaC(cc)===(k.dispzero?0:1)){ bd.sQaC(cc,-1); }
+			else                                  { bd.sQaC(cc,bd.QaC(cc)-1);}
+		}
+		return cc;
+	},
+	inputqnum3withMB : function(cc){
+		if(bd.QnC(cc)!==-1){ return cc;}
+		var max = bd.nummaxfunc(cc);
+
+		if(this.btn.Left){
+			if     (bd.QaC(cc)===max){ bd.sQaC(cc,-1); bd.sQsC(cc,1);}
+			else if(bd.QsC(cc)===1)  { bd.sQaC(cc,-1); bd.sQsC(cc,2);}
+			else if(bd.QsC(cc)===2)  { bd.sQaC(cc,-1); bd.sQsC(cc,0);}
+			else if(bd.QaC(cc)===-1) { bd.sQaC(cc,(k.dispzero?0:1)); }
+			else                     { bd.sQaC(cc,bd.QaC(cc)+1);     }
+		}
+		else if(this.btn.Right){
+			if     (bd.QsC(cc)===1) { bd.sQaC(cc,max); bd.sQsC(cc,0);}
+			else if(bd.QsC(cc)===2) { bd.sQaC(cc,-1);  bd.sQsC(cc,1);}
+			else if(bd.QaC(cc)===-1){ bd.sQaC(cc,-1);  bd.sQsC(cc,2);}
+			else if(bd.QaC(cc)===(k.dispzero?0:1)){ bd.sQaC(cc,-1);  }
+			else                    { bd.sQaC(cc,bd.QaC(cc)-1);      }
 		}
 		return cc;
 	},
@@ -380,7 +428,7 @@ MouseEvent.prototype = {
 				bd.sQsC(c, (this.inputData==2?1:0));
 			}
 		}
-		var d = ans.getSizeOfClist(area.room[areaid].clist,function(a){ return true;});
+		var d = ans.getSizeOfClist(area.room[areaid].clist,f_true);
 
 		pc.paint(d.x1, d.y1, d.x2, d.y2);
 	},

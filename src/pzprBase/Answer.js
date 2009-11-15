@@ -285,9 +285,10 @@ AnsCheck.prototype = {
 	// ans.getCntOfRoom()        •”‰®‚Ì–ÊÏ‚ğ•Ô‚·
 	// ans.getCellsOfRoom()      •”‰®‚Ì’†‚Åfunc==true‚Æ‚È‚éƒZƒ‹‚Ì”‚ğ•Ô‚·
 	//---------------------------------------------------------------------------
-	checkOneNumber : function(cinfo, eval, func){
+	checkOneNumber : function(cinfo, evalfunc, func){
 		for(var id=1;id<=cinfo.max;id++){
-			if(eval( bd.QnC(this.getQnumCellInArea(cinfo,id)), this.getCellsOfRoom(cinfo, id, func) )){
+			var top = bd.QnC(k.isOneNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0]) : this.getQnumCellInArea(cinfo,id));
+			if( evalfunc(top, this.getCellsOfRoom(cinfo, id, func)) ){
 				if(this.performAsLine){ bd.sErBAll(2); this.setErrLareaById(cinfo,id,1);}
 				else{ bd.sErC(cinfo.room[id].idlist,(k.puzzleid!="tateyoko"?1:4));}
 				return false;
@@ -303,11 +304,9 @@ AnsCheck.prototype = {
 	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkOneNumber(cinfo, function(top,cnt){ return (cnt==0); },            function(c){ return getvalue(c)!=-1;} );},
 
 	getQnumCellInArea : function(cinfo, areaid){
-		if(k.isOneNumber){ return area.getTopOfRoomByCell(cinfo.room[areaid].idlist[0]); }
-		for(var i=0;i<cinfo.room[areaid].idlist.length;i++){
-			if(bd.QnC(cinfo.room[areaid].idlist[i])!=-1){
-				return cinfo.room[areaid].idlist[i];
-			}
+		var idlist = cinfo.room[areaid].idlist;
+		for(var i=0,len=idlist.length;i<len;i++){
+			if(bd.QnC(idlist[i])!=-1){ return idlist[i];}
 		}
 		return -1;
 	},
@@ -315,10 +314,8 @@ AnsCheck.prototype = {
 		return cinfo.room[areaid].idlist.length;
 	},
 	getCellsOfRoom : function(cinfo, areaid, func){
-		var cnt=0;
-		for(var i=0;i<cinfo.room[areaid].idlist.length;i++){
-			if(func(cinfo.room[areaid].idlist[i])){ cnt++;}
-		}
+		var cnt=0, idlist = cinfo.room[areaid].idlist;
+		for(var i=0,len=idlist.length;i<len;i++){ if(func(idlist[i])){ cnt++;}}
 		return cnt;
 	},
 
