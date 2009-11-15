@@ -232,19 +232,19 @@ _extend( _ElementManager, {
 	binder : function(){
 		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift();
 		return function(){
-			return __method.apply(obj, _toArray(args).concat(_toArray(arguments)));
+			return __method.apply(obj, (args.length>0?args[0]:[]).concat(_toArray(arguments)));
 		}
 	},
 	ebinder : function(){
-		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift();
+		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift(), rest = (args.length>0?args[0]:[]);
 		return function(e){
-			return __method.apply(obj, [e||_win.event].concat(_toArray(args)).concat(_toArray(arguments)));
+			return __method.apply(obj, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
 		}
 	},
 	kcbinder : function(){
-		var args=_toArray(arguments), __method = args.shift();
+		var args=_toArray(arguments), __method = args.shift(), rest = (args.length>0?args[0]:[]);
 		return function(e){
-			ret = __method.apply(kc, [e||_win.event].concat(_toArray(args)).concat(_toArray(arguments)));
+			ret = __method.apply(kc, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
 			if(kc.tcMoved){
 				if(_Gecko||_WebKit){ e.preventDefault();}
 				else if(_IE){ return false;}

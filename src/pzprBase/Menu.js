@@ -423,11 +423,14 @@ Menu.prototype = {
 
 				for(var i=0;i<pp.flags[idname].child.length;i++){
 					var num = pp.flags[idname].child[i];
-					ee.newELx('div')
-					  .set(((num==pp.getVal(idname))?"flagsel":"flag"),"up_"+idname+"_"+num,{})
-					  .unselectable().setText(pp.getMenuStr(""+idname+"_"+num))
-					  .setEvents({click:ee.binder(pp, pp.setVal, [idname,num])}).appendTo(plx);
-					ee('usepanel').appendHTML(" ");
+					var _el = ee.newELx('div').unselectable().el;
+					_el.className = ((num==pp.getVal(idname))?"flagsel":"flag");
+					_el.id        = "up_"+idname+"_"+num;
+					_el.innerHTML = pp.getMenuStr(""+idname+"_"+num);
+					_el.onclick   = ee.binder(pp, pp.setVal, [idname,num]);
+
+					plx.appendEL(_el);
+					plx.appendHTML(" ");
 				}
 
 				plx.appendEL(ee.newEL('br'));
