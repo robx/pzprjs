@@ -153,30 +153,24 @@ Puzzles.gokigen.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells_gokigen(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
 
 			this.drawSlashes(x1,y1,x2,y2);
 
 			this.drawCrosses(x1,y1,x2+1,y2+1);
 			this.drawTarget_gokigen(x1,y1,x2,y2);
 		};
-		pc.drawErrorCells_gokigen = function(x1,y1,x2,y2){
-			var header = "c_full_";
 
-			var clist = this.cellinside(x1,y1,x2,y2);
-			for(var i=0;i<clist.length;i++){
-				var c=clist[i];
-				if(bd.QaC(c)==-1 && bd.ErC(c)==1){
-					g.fillStyle = this.errbcolor1;
-					if(this.vnop(header+c,1)){
-						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
-					}
-				}
-				else{ this.vhide(header+c);}
+		// オーバーライド
+		pc.setBGCellColor = function(c){
+			if(bd.cell[c].qans==-1 && bd.cell[c].error===1){
+				g.fillStyle = this.errbcolor1;
+				return true;
 			}
-			this.vinc();
-		},
+			return false;
+		};
+
 		pc.drawSlashes = function(x1,y1,x2,y2){
 			var headers = ["c_sl1_", "c_sl2_"];
 			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
