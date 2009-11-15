@@ -59,18 +59,18 @@ var debug = {
 	},
 
 	all_test : function(){
-		var pnum=0, term=debug.urls.length-1;
+		var pnum=52, term=debug.urls.length-1;
 		debug.phase = 99;
 
 		var tam = setInterval(function(){
 			if(debug.phase != 99){ return;}
 
-			k.puzzleid = debug.urls[pnum][0];
+			var newid = debug.urls[pnum][0];
 			k.qcols = 0;
 			k.qrows = 0;
 			k.area = { bcell:0, wcell:0, number:0};
 
-			this.reload_func(k.puzzleid);
+			debug.reload_func(newid);
 
 			enc.parseURI_pzpr.apply(enc, [debug.urls[pnum][1]]);
 			enc.pzlinput.apply(enc);
@@ -80,7 +80,7 @@ var debug = {
 			_pop.style.display = 'inline';
 			_pop.style.left = '40px';
 			_pop.style.top  = '80px';
-			debug.addTextarea("Test ("+pnum+", "+k.puzzleid+") start.");
+			debug.addTextarea("Test ("+pnum+", "+newid+") start.");
 			debug.sccheck();
 
 			if(pnum >= term){ clearInterval(tam);} 
@@ -89,14 +89,14 @@ var debug = {
 	},
 
 	reload_func : function(newid){
-		this.initProcess = true;
+		base.initProcess = true;
 
-		if(this.proto){ puz.protoOriginal();}
+		if(base.proto){ puz.protoOriginal();}
 
 		menu.menureset();
 		base.numparent.innerHTML = '';
-		if(kp.ctl[1].enable){ getEL('popup_parent').removeChild(kp.ctl[1].el);}
-		if(kp.ctl[3].enable){ getEL('popup_parent').removeChild(kp.ctl[3].el);}
+		if(kp.ctl[1].enable){ kp.ctl[1].el.innerHTML = '';}
+		if(kp.ctl[3].enable){ kp.ctl[3].el.innerHTML = '';}
 
 		k.puzzleid = newid;
 		if(!Puzzles[k.puzzleid]){
@@ -110,10 +110,10 @@ var debug = {
 		enc = new Encode();
 		fio = new FileIO();
 
-		this.initObjects();
-		this.setEvents(false);
+		base.initObjects();
+		base.setEvents(false);
 
-		this.initProcess = false;
+		base.initProcess = false;
 	},
 
 	accheck1 : function(){

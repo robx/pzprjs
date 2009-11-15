@@ -3769,18 +3769,12 @@ KeyPopup.prototype = {
 
 	gentable : function(mode, type, func){
 		this.ctl[mode].enable = true;
-		var el = newEL('div');
-		el.className  = "popup";
-		el.id         = "keypopup"+mode;
-		el.onmouseout = ebinder(this, this.hide);
-		el.style.padding = '3pt';
-		el.style.backgroundColor = 'silver';
-		this.ctl[mode].el = el;
-		getEL('popup_parent').appendChild(el)
+		this.ctl[mode].el     = getEL("keypopup"+mode);
+		this.ctl[mode].el.onmouseout = ebinder(this, this.hide);
 
 		var table = newEL('table');
 		table.cellSpacing = '2pt';
-		el.appendChild(table);
+		this.ctl[mode].el.appendChild(table);
 
 		this.tbodytmp = newEL('tbody');
 		table.appendChild(this.tbodytmp);
