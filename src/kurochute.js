@@ -107,13 +107,13 @@ Puzzles.kurochute.prototype = {
 
 		// オーバーライド drawBWCells用
 		pc.setCellColor = function(cc){
-			var _b = bd.isBlack(cc), err = bd.ErC(cc);
+			var _b = bd.isBlack(cc), err = bd.cell[cc].error;
 
 			if     ( _b && err===0){ g.fillStyle = this.Cellcolor; return true;}
 			else if( _b && err===1){ g.fillStyle = this.errcolor1; return true;}
 			else if( _b && err===2){ g.fillStyle = this.errcolor2; return true;}
 			else if(!_b && err===1){ g.fillStyle = this.errbcolor1; return false;}
-			else if(bd.QsC(cc)===2){ g.fillStyle = this.qsubcolor2; return false;}
+			else if(bd.cell[cc].qsub===2){ g.fillStyle = this.qsubcolor2; return false;}
 			g.fillStyle = "white"; return false;
 		};
 	},

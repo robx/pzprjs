@@ -119,7 +119,7 @@ Puzzles.kusabi.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 		pc.dispnumCell = function(id){
-			var num = bd.QnC(id), obj = bd.cell[id];
+			var num = bd.cell[id].qnum, obj = bd.cell[id];
 			if(num>=1 && num<=3){ text = ({1:"“¯",2:"’Z",3:"’·"})[num];}
 			else{ this.hideEL(obj.numobj); return;}
 

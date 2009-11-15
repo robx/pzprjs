@@ -482,14 +482,15 @@ Puzzles.tawa.prototype = {
 			for(var i=ya;i<=yb;i++){
 				if(this.vnop(headers[0]+i,1)){
 					var redx = 0, redw = 0;
-					if     ((bd.lap==3 && (i==0||(i==k.qrows&&i%2==1))) || (bd.lap==0 && (i==k.qrows&&i%2==0))){ redx=1; redw=2;}
-					else if((bd.lap==2 && (i==0||(i==k.qrows&&i%2==1))) || (bd.lap==1 && (i==k.qrows&&i%2==0))){ redx=1; redw=1;}
-					else if((bd.lap==1 && (i==0||(i==k.qrows&&i%2==1))) || (bd.lap==2 && (i==k.qrows&&i%2==0))){ redx=0; redw=1;}
+					if     ((bd.lap===3 && (i===0||(i===k.qrows&&(i&1)))) || (bd.lap===0 && (i===k.qrows&&!(i&1)))){ redx=1; redw=2;}
+					else if((bd.lap===2 && (i===0||(i===k.qrows&&(i&1)))) || (bd.lap===1 && (i===k.qrows&&!(i&1)))){ redx=1; redw=1;}
+					else if((bd.lap===1 && (i===0||(i===k.qrows&&(i&1)))) || (bd.lap===2 && (i===k.qrows&&!(i&1)))){ redx=0; redw=1;}
 					g.fillRect(mf(k.p0.x+(x1+redx)*k.cwidth/2-lm), mf(k.p0.y+i*k.cheight-lm), (x2-x1+1-redw)*k.cwidth/2+1, lw);
 				}
 				if(i>k.qrows-1){ break;}
+
 				var xs = xa;
-				if((bd.lap==2 || bd.lap==3) ^ !((i%2==1)^(xs%2==0))){ xs++;}
+				if((bd.lap===2 || bd.lap===3) ^ ((i&1)!==(xs&1))){ xs++;}
 				for(var j=xs;j<=xb;j+=2){
 					if(this.vnop([headers[1],i,j].join(""),1)){
 						g.fillRect(mf(k.p0.x+j*k.cwidth/2-lm), mf(k.p0.y+i*k.cheight-lm), lw, k.cheight+1);

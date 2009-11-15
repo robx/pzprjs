@@ -171,16 +171,22 @@ Puzzles.snakes.prototype = {
 
 		// ‹«ŠEü‚Ì•`‰æ
 		pc.drawBorders_snake = function(x1,y1,x2,y2){
-			var func  = function(c){ return (bd.QnC(c)==-1 && bd.QaC(c)>0);};
-			var func2 = function(c1,c2){ return (bd.QaC(c1)>0 && bd.QaC(c2)>0 && (Math.abs(bd.QaC(c1)-bd.QaC(c2))!=1));};
+			var func  = function(c1,c2){
+				if(c2===-1){ return false;}
+				if(bd.cell[c1].qnum!==-1 || bd.cell[c2].qnum!==-1) { return false;}
+				if(bd.cell[c1].qans===-1 && bd.cell[c2].qans===-1) { return false;}
+				if((bd.cell[c1].qans===-1)^(bd.cell[c2].qans===-1)){ return true;}
+				return (Math.abs(bd.cell[c1].qans-bd.cell[c2].qans)!==1);
+			};
+
 			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
 			g.fillStyle = this.BorderQanscolor;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], rt=bd.rt(c), dn=bd.dn(c);
 				var cx=bd.cell[c].cx, cy=bd.cell[c].cy;
 
-				this.drawBorder1x(2*cx+2,2*cy+1,(rt!=-1&&((func(c)^func(rt))||func2(c,rt))));
-				this.drawBorder1x(2*cx+1,2*cy+2,(dn!=-1&&((func(c)^func(dn))||func2(c,dn))));
+				this.drawBorder1x(2*cx+2,2*cy+1,func(c,rt));
+				this.drawBorder1x(2*cx+1,2*cy+2,func(c,dn));
 			}
 			this.vinc();
 		};
@@ -190,13 +196,13 @@ Puzzles.snakes.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					g.fillStyle = (bd.ErC(c)!=0 ? this.errcolor1 : this.Cellcolor);
+				if(bd.cell[c].qnum!==-1){
+					g.fillStyle = (bd.cell[c].error!==0 ? this.errcolor1 : this.Cellcolor);
 					if(this.vnop(header+c,1)){
 						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
 					}
 				}
-				else if(bd.ErC(c)==0){ this.vhide(header+c);}
+				else if(bd.cell[c].error===0){ this.vhide(header+c);}
 			}
 			this.vinc();
 		};

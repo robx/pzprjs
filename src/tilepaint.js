@@ -196,7 +196,7 @@ Puzzles.tilepaint.prototype = {
 
 		// オーバーライド drawBWCells用
 		pc.setCellColor = function(cc){
-			var _b = bd.isBlack(cc), err = bd.ErC(cc), qs = bd.QsC(cc);
+			var _b = bd.isBlack(cc), err = bd.cell[cc].error, qs = bd.cell[cc].qsub;
 
 			if     ( _b && err===0){ g.fillStyle = this.Cellcolor; return true;}
 			else if( _b && err===1){ g.fillStyle = this.errcolor1; return true;}

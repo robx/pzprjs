@@ -164,7 +164,7 @@ Puzzles.gokigen.prototype = {
 
 		// オーバーライド
 		pc.setBGCellColor = function(c){
-			if(bd.cell[c].qans==-1 && bd.cell[c].error===1){
+			if(bd.cell[c].qans===-1 && bd.cell[c].error===1){
 				g.fillStyle = this.errbcolor1;
 				return true;
 			}
@@ -179,12 +179,12 @@ Puzzles.gokigen.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
-				if(bd.QaC(c)!=-1){
-					if     (bd.ErC(c)==1){ g.strokeStyle = this.errcolor1;}
-					else if(bd.ErC(c)==2){ g.strokeStyle = this.errcolor2;}
-					else                 { g.strokeStyle = this.Cellcolor;}
+				if(bd.cell[c].qans!=-1){
+					if     (bd.cell[c].error==1){ g.strokeStyle = this.errcolor1;}
+					else if(bd.cell[c].error==2){ g.strokeStyle = this.errcolor2;}
+					else                        { g.strokeStyle = this.Cellcolor;}
 
-					if(bd.QaC(c)==1){
+					if(bd.cell[c].qans==1){
 						if(this.vnop(headers[0]+c,0)){
 							this.inputPath([bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight], true);
 							g.stroke();
@@ -192,7 +192,7 @@ Puzzles.gokigen.prototype = {
 					}
 					else{ this.vhide(headers[0]+c);}
 
-					if(bd.QaC(c)==2){
+					if(bd.cell[c].qans==2){
 						if(this.vnop(headers[1]+c,0)){
 							this.inputPath([bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight], true);
 							g.stroke();

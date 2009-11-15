@@ -118,7 +118,7 @@ Puzzles.firefly.prototype = {
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QnC(c)!=-1){
+				if(bd.cell[c].qnum!=-1){
 					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
 
 					g.fillStyle = this.Cellcolor;
@@ -128,7 +128,7 @@ Puzzles.firefly.prototype = {
 						g.fill();
 					}
 
-					g.fillStyle = (bd.ErC(c)==1 ? this.errbcolor1 : "white");
+					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 					if(this.vnop(headers[1]+c,1)){
 						g.beginPath();
 						g.arc(px, py, rsize2, 0, Math.PI*2, false);
@@ -136,9 +136,9 @@ Puzzles.firefly.prototype = {
 					}
 
 					this.vdel([headers[2]+c]);
-					if(bd.DiC(c)!=0){
+					if(bd.cell[c].direc!=0){
 						g.fillStyle = this.Cellcolor;
-						switch(bd.DiC(c)){
+						switch(bd.cell[c].direc){
 							case k.UP: py-=(rsize-1); break;
 							case k.DN: py+=(rsize-1); break;
 							case k.LT: px-=(rsize-1); break;

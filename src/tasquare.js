@@ -111,12 +111,12 @@ Puzzles.tasquare.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QnC(c)!=-1){
+				if(bd.cell[c].qnum!==-1){
 					g.fillStyle = "black";
 					if(this.vnop(headers[0]+c,1)){
 						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
 					}
-					g.fillStyle = (bd.ErC(c)==1 ? this.errbcolor1 : "white");
+					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 					if(this.vnop(headers[1]+c,1)){
 						g.fillRect(bd.cell[c].px+mgnw+2, bd.cell[c].py+mgnh+2, k.cwidth-mgnw*2-3, k.cheight-mgnh*2-3);
 					}

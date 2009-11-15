@@ -174,12 +174,12 @@ Puzzles.reflect.prototype = {
 				var qs1 = bd.QuC(bd.cc1(id)), qs2 = bd.QuC(bd.cc2(id));
 
 				g.fillStyle = this.gridcolor;
-				if(lflag && (qs1==3||qs1==4)&&(qs2==2||qs2==5)){
+				if(lflag && (qs1===3||qs1===4)&&(qs2===2||qs2===5)){
 					if(this.vnop(header+id,1)){
 						g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight);
 					}
 				}
-				else if(!lflag && (qs1==2||qs1==3)&&(qs2==4||qs2==5)){
+				else if(!lflag && (qs1===2||qs1===3)&&(qs2===4||qs2===5)){
 					if(this.vnop(header+id,1)){
 						g.fillRect(bd.border[id].px-mf(k.cwidth/2), bd.border[id].py, k.cwidth, 1);
 					}
@@ -196,15 +196,15 @@ Puzzles.reflect.prototype = {
 		pc.draw101_1 = function(id){
 			var vids = ["c_lp1_"+id, "c_lp2_"+id];
 
-			if(bd.QuC(id)==101){
+			if(bd.cell[id].ques===101){
 				var lw = this.lw, lm=this.lm, mgn = mf(k.cwidth*0.12);
 				g.fillStyle = this.Cellcolor;
 
 				if(this.vnop(vids[0],1)){
-					g.fillRect(bd.cell[id].px+mf(k.cwidth/2)-lm, bd.cell[id].py+mgn               , lw+2, k.cheight-2*mgn);
+					g.fillRect(bd.cell[id].px+mf(k.cwidth/2)-lm,  bd.cell[id].py+mgn,  lw+2, k.cheight-2*mgn);
 				}
 				if(this.vnop(vids[1],1)){
-					g.fillRect(bd.cell[id].px+mgn              , bd.cell[id].py+mf(k.cheight/2)-lm, k.cwidth-2*mgn, lw+2);
+					g.fillRect(bd.cell[id].px+mgn, bd.cell[id].py+mf(k.cheight/2)-lm,  k.cwidth-2*mgn, lw+2);
 				}
 			}
 			else{ this.vhide(vids);}

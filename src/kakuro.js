@@ -177,8 +177,8 @@ Puzzles.kakuro.prototype = {
 				var c = clist[i], rt=bd.rt(c), dn=bd.dn(c);
 				var cx=bd.cell[c].cx, cy=bd.cell[c].cy;
 
-				this.drawBorder1x(2*cx+2,2*cy+1,(rt!=-1&&((bd.QuC(c)==51)^(bd.QuC(rt)==51))));
-				this.drawBorder1x(2*cx+1,2*cy+2,(dn!=-1&&((bd.QuC(c)==51)^(bd.QuC(dn)==51))));
+				this.drawBorder1x(2*cx+2,2*cy+1,(rt!=-1&&((bd.cell[c].ques===51)^(bd.cell[rt].ques===51))));
+				this.drawBorder1x(2*cx+1,2*cy+2,(dn!=-1&&((bd.cell[c].ques===51)^(bd.cell[dn].ques===51))));
 			}
 			this.vinc();
 		};
@@ -187,12 +187,12 @@ Puzzles.kakuro.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				var target = ((k.editmode&&c==tc.getTCC())?kc.detectTarget(c,-1):-1);
+				var target = ((k.editmode&&c===tc.getTCC())?kc.detectTarget(c,-1):-1);
 
 				if(bd.cell[c].ques!=51 && bd.cell[c].qans>0){
 					var obj = bd.cell[c];
 					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-					var color = (bd.cell[c].error==1 ? this.fontErrcolor : this.fontAnscolor);
+					var color = (bd.cell[c].error===1 ? this.fontErrcolor : this.fontAnscolor);
 					var text  = ""+bd.cell[c].qans;
 					this.dispnum(obj.numobj, 1, text, 0.80, color, obj.px, obj.py);
 				}

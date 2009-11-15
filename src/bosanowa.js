@@ -209,9 +209,9 @@ Puzzles.bosanowa.prototype = {
 				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
 
 				this.vhide(header+id);
-				if(menu.getVal('disptype')==3){
-					if((cc1!=-1&&bd.QuC(cc1)==7) ^(cc2!=-1&&bd.QuC(cc2)==7)){ this.drawBorder1(id,true);}
-					else if((cc1!=-1&&bd.QuC(cc1)==7)&&(cc2!=-1&&bd.QuC(cc2)==7)){
+				if(menu.getVal('disptype')===3){
+					if     ((cc1!==-1&&bd.cell[cc1].ques===7) ^(cc2!==-1&&bd.cell[cc2].ques===7)){ this.drawBorder1(id,true);}
+					else if((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7)){
 						g.fillStyle=this.gridcolor;
 						if(this.vnop(header+id,1)){
 							if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
@@ -219,8 +219,8 @@ Puzzles.bosanowa.prototype = {
 						}
 					}
 				}
-				else if(menu.getVal('disptype')==2){
-					if((cc1!=-1&&bd.QuC(cc1)==7)&&(cc2!=-1&&bd.QuC(cc2)==7)){
+				else if(menu.getVal('disptype')===2){
+					if((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7)){
 						g.fillStyle="rgb(127,127,127)";
 						if(g.vml){
 							if(this.vnop(header+id,1)){
@@ -256,8 +256,8 @@ Puzzles.bosanowa.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QuC(c)==7 && !bd.isNum(c)){
-					g.fillStyle = (bd.ErC(c)==1 ? this.errcolor1 : this.Cellcolor);
+				if(bd.cell[c].ques===7 && !bd.isNum(c)){
+					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
 					if(this.vnop(headers[0]+c,1)){
 						g.beginPath();
 						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
@@ -284,7 +284,8 @@ Puzzles.bosanowa.prototype = {
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
 
-				if((menu.getVal('disptype')==3 || bd.QsB(id)>=0)&&((cc1!=-1&&bd.QuC(cc1)==7)&&(cc2!=-1&&bd.QuC(cc2)==7))){
+				if((menu.getVal('disptype')==3 || bd.border[id].qsub>=0)&&
+				  ((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7))){
 					g.fillStyle = "white";
 					if(this.vnop(header+id,1)){
 						g.fillRect(bd.border[id].px-csize, bd.border[id].py-csize, 2*csize+1, 2*csize+1);
@@ -295,16 +296,16 @@ Puzzles.bosanowa.prototype = {
 		};
 
 		pc.getNumberColor = function(cc){	//オーバーライド
-			if(bd.ErC(cc)==1 || bd.ErC(cc)==4){ return this.fontErrcolor;   }
-			else if(bd.QnC(cc)!=-1){ return this.fontcolor;      }
-			else if(bd.QaC(cc)!=-1){ return this.fontAnscolor;   }
+			if(bd.cell[cc].error===1 || bd.cell[cc].error===4){ return this.fontErrcolor;   }
+			else if(bd.cell[cc].qnum!==-1){ return this.fontcolor;      }
+			else if(bd.cell[cc].qans!==-1){ return this.fontAnscolor;   }
 			return this.fontcolor;
 		};
 		pc.drawNumbersBD = function(x1,y1,x2,y2){
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id=idlist[i], obj=bd.border[id];
-				if(bd.QsB(id)>=0){
+				if(bd.border[id].qsub>=0){
 					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 					this.dispnum(obj.numobj, 101, ""+bd.QsB(id), 0.35 ,this.borderfontcolor, obj.px, obj.py);
 				}
@@ -318,11 +319,11 @@ Puzzles.bosanowa.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QuC(c)!=7){ continue;}
-				this.drawBorder1x(0                , 2*bd.cell[c].cy+1,(bd.cell[c].cx==0)        );
-				this.drawBorder1x(2*k.qcols        , 2*bd.cell[c].cy+1,(bd.cell[c].cx==k.qcols-1));
-				this.drawBorder1x(2*bd.cell[c].cx+1, 0                ,(bd.cell[c].cy==0)        );
-				this.drawBorder1x(2*bd.cell[c].cx+1, 2*k.qrows        ,(bd.cell[c].cy==k.qrows-1));
+				if(bd.cell[c].ques!==7){ continue;}
+				this.drawBorder1x(0                , 2*bd.cell[c].cy+1,(bd.cell[c].cx===0)        );
+				this.drawBorder1x(2*k.qcols        , 2*bd.cell[c].cy+1,(bd.cell[c].cx===k.qcols-1));
+				this.drawBorder1x(2*bd.cell[c].cx+1, 0                ,(bd.cell[c].cy===0)        );
+				this.drawBorder1x(2*bd.cell[c].cx+1, 2*k.qrows        ,(bd.cell[c].cy===k.qrows-1));
 			}
 			this.vinc();
 		};
@@ -332,11 +333,11 @@ Puzzles.bosanowa.prototype = {
 			for(var cx=x1-1;cx<=x2+1;cx++){
 				for(var cy=y1-1;cy<=y2+1;cy++){
 					var c=bd.cnum(cx,cy);
-					if( (c==-1 || bd.QuC(c)!=7) && (
-						bd.QuC(bd.cnum(cx-1,cy  ))==7 || bd.QuC(bd.cnum(cx+1,  cy))==7 || 
-						bd.QuC(bd.cnum(cx  ,cy-1))==7 || bd.QuC(bd.cnum(cx  ,cy+1))==7 || 
-						bd.QuC(bd.cnum(cx-1,cy-1))==7 || bd.QuC(bd.cnum(cx+1,cy-1))==7 || 
-						bd.QuC(bd.cnum(cx-1,cy+1))==7 || bd.QuC(bd.cnum(cx+1,cy+1))==7 ) )
+					if( (c==-1 || bd.cell[c].ques!=7) && (
+						bd.QuC(bd.cnum(cx-1,cy  ))===7 || bd.QuC(bd.cnum(cx+1,  cy))===7 || 
+						bd.QuC(bd.cnum(cx  ,cy-1))===7 || bd.QuC(bd.cnum(cx  ,cy+1))===7 || 
+						bd.QuC(bd.cnum(cx-1,cy-1))===7 || bd.QuC(bd.cnum(cx+1,cy-1))===7 || 
+						bd.QuC(bd.cnum(cx-1,cy+1))===7 || bd.QuC(bd.cnum(cx+1,cy+1))===7 ) )
 					{
 						g.fillStyle = "rgb(127,127,127)";
 						if(this.vnop(header+c,1)){

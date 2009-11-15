@@ -320,7 +320,7 @@ Puzzles.kinkonkan.prototype = {
 				var c = exlist[i];
 				var obj = bd.excell[c];
 
-				if(bd.excell[c].error==6){
+				if(bd.excell[c].error===6){
 					g.fillStyle = this.errbcolor2;
 					if(this.vnop(header+c,1)){
 						g.fillRect(obj.px+1, obj.py+1, k.cwidth-1, k.cheight-1);
@@ -328,7 +328,7 @@ Puzzles.kinkonkan.prototype = {
 				}
 				else{ this.vhide(header+c);}
 
-				if(bd.excell[c].direc==0 && bd.excell[c].qnum==-1){ this.hideEL(obj.numobj);}
+				if(bd.excell[c].direc===0 && bd.excell[c].qnum===-1){ this.hideEL(obj.numobj);}
 				else{
 					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 					var num=bd.excell[c].qnum, canum=bd.excell[c].direc;

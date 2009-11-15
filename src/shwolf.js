@@ -145,11 +145,11 @@ Puzzles.shwolf.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
-				if(bd.QuC(c)==0){
+				if(bd.cell[c].ques===0){
 					this.hideEL(obj.numobj);
 					this.hideEL(obj.numobj2);
 				}
-				else if(bd.QuC(c)==-2){
+				else if(bd.cell[c].ques===-2){
 					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 					this.dispnum(obj.numobj, 1, "?", 0.8, this.fontcolor, obj.px, obj.py);
 
@@ -174,7 +174,7 @@ Puzzles.shwolf.prototype = {
 					div = obj.numobj2;
 					img = obj.imgobj;
 
-					var ipos  = {41:0,42:1}[bd.QuC(c)];
+					var ipos = {41:0,42:1}[bd.QuC(c)];
 					img.style.width  = ""+(2*k.cwidth)+"px";
 					img.style.height = ""+(k.cheight)+"px";
 					img.style.left   = "-"+mf((ipos+0.5)*k.cwidth)+"px";

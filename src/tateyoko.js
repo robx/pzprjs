@@ -204,19 +204,20 @@ Puzzles.tateyoko.prototype = {
 				var lw = (mf(k.cwidth/6)>=3?mf(k.cwidth/6):3); //LineWidth
 				var lp = mf((k.cwidth-lw)/2); //LinePadding
 
-				if     (bd.ErC(c)==1||bd.ErC(c)==4){ g.fillStyle = this.errlinecolor1; lw++;}
-				else if(bd.ErC(c)==2){ g.fillStyle = this.errlinecolor2;}
+				var err = bd.cell[c].error;
+				if     (err===1||err===4){ g.fillStyle = this.errlinecolor1; lw++;}
+				else if(err===2){ g.fillStyle = this.errlinecolor2;}
 				else{ g.fillStyle = this.linecolor;}
 
-				if(bd.QaC(c)!==-1){
-					if(bd.QaC(c)===1){
+				if(bd.cell[c].qans!==-1){
+					if(bd.cell[c].qans===1){
 						if(this.vnop(headers[0]+c,1)){
 							g.fillRect(bd.cell[c].px+lp, bd.cell[c].py, lw, k.cheight+1);
 						}
 					}
 					else{ this.vhide(headers[0]+c);}
 
-					if(bd.QaC(c)===2){
+					if(bd.cell[c].qans===2){
 						if(this.vnop(headers[1]+c,1)){
 							g.fillRect(bd.cell[c].px, bd.cell[c].py+lp, k.cwidth+1,  lw);
 						}
@@ -234,20 +235,20 @@ Puzzles.tateyoko.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
-				if(bd.QuC(c)==1){
-					g.fillStyle = (bd.ErC(c)==1 ? this.errcolor1 : this.Cellcolor);
+				if(bd.cell[c].ques===1){
+					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
 					if(this.vnop(header+c,1)){
 						g.fillRect(obj.px, obj.py, k.cwidth+1, k.cheight+1);
 					}
 				}
 				else{ this.vhide(header+c);}
 
-				var num = bd.QnC(c);
-				if(num==-1){ this.hideEL(obj.numobj); continue;}
+				var num = bd.cell[c].qnum;
+				if(num===-1){ this.hideEL(obj.numobj); continue;}
 				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 
 				var color = this.fontcolor;
-				if(bd.QuC(c)==1){ color = "white";}
+				if(bd.cell[c].ques==1){ color = "white";}
 				this.dispnum(obj.numobj, 1, (num!=-2?""+num:"?"), (num<10?0.8:0.75), color, obj.px, obj.py);
 			}
 			this.vinc();

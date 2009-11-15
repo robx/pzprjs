@@ -143,7 +143,7 @@ Puzzles.kaero.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				this.vdel([header+c]);
-				if(line.lcntCell(c)==1 && bd.cell[c].qnum==-1){
+				if(line.lcntCell(c)===1 && bd.cell[c].qnum===-1){
 					var dir=0, id=-1;
 					if     (bd.isLine(bd.ub(c))){ dir=2; id=bd.ub(c);}
 					else if(bd.isLine(bd.db(c))){ dir=1; id=bd.db(c);}
@@ -151,16 +151,16 @@ Puzzles.kaero.prototype = {
 					else if(bd.isLine(bd.rb(c))){ dir=3; id=bd.rb(c);}
 
 					g.lineWidth = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3); //LineWidth
-					if     (bd.border[id].error==1){ g.strokeStyle = this.errlinecolor1; g.lineWidth=g.lineWidth+1;}
-					else if(bd.border[id].error==2){ g.strokeStyle = this.errlinecolor2;}
-					else                           { g.strokeStyle = this.linecolor;}
+					if     (bd.border[id].error===1){ g.strokeStyle = this.errlinecolor1; g.lineWidth=g.lineWidth+1;}
+					else if(bd.border[id].error===2){ g.strokeStyle = this.errlinecolor2;}
+					else                            { g.strokeStyle = this.linecolor;}
 
 					if(this.vnop(header+c,0)){
 						var px=bd.cell[c].px+k.cwidth/2+1, py=bd.cell[c].py+k.cheight/2+1;
-						if     (dir==1){ this.inputPath([px,py ,-tsize, tsize ,0,-tplus , tsize, tsize], false);}
-						else if(dir==2){ this.inputPath([px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize], false);}
-						else if(dir==3){ this.inputPath([px,py , tsize,-tsize ,-tplus,0 , tsize, tsize], false);}
-						else if(dir==4){ this.inputPath([px,py ,-tsize,-tsize , tplus,0 ,-tsize, tsize], false);}
+						if     (dir===1){ this.inputPath([px,py ,-tsize, tsize ,0,-tplus , tsize, tsize], false);}
+						else if(dir===2){ this.inputPath([px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize], false);}
+						else if(dir===3){ this.inputPath([px,py , tsize,-tsize ,-tplus,0 , tsize, tsize], false);}
+						else if(dir===4){ this.inputPath([px,py ,-tsize,-tsize , tplus,0 ,-tsize, tsize], false);}
 						g.stroke();
 					}
 				}
@@ -176,11 +176,11 @@ Puzzles.kaero.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QnC(c)!=-1){
-					if     (bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else if(bd.ErC(c)==2){ g.fillStyle = this.errbcolor2;}
-					else if(bd.QsC(c)==1){ g.fillStyle = this.qsubcolor1;}
-					else if(bd.QsC(c)==2){ g.fillStyle = this.qsubcolor2;}
-					else                 { g.fillStyle = "white";}
+					if     (bd.cell[c].error===1){ g.fillStyle = this.errbcolor1;}
+					else if(bd.cell[c].error===2){ g.fillStyle = this.errbcolor2;}
+					else if(bd.cell[c].qsub ===1){ g.fillStyle = this.qsubcolor1;}
+					else if(bd.cell[c].qsub ===2){ g.fillStyle = this.qsubcolor2;}
+					else                         { g.fillStyle = "white";}
 
 					if(this.vnop(header+c,1)){
 						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
@@ -194,13 +194,12 @@ Puzzles.kaero.prototype = {
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
-				if(bd.QnC(c)==-1){ this.hideEL(obj.numobj); continue;}
+				if(bd.cell[c].qnum===-1){ this.hideEL(obj.numobj); continue;}
 
 				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-				var num=bd.QnC(c);
+				var num=bd.cell[c].qnum;
 
-				var color = this.fontErrcolor;
-				if(bd.ErC(c)==0){ color=this.fontcolor;}
+				var color = (bd.cell[c].error===0 ? this.fontcolor : this.fontErrcolor);
 
 				var text="";
 				if     (num==-2)         { text ="?";}

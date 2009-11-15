@@ -260,7 +260,7 @@ Puzzles.icebarn.prototype = {
 			var lm = mf((lw-1)/2);								//LineMargin
 			var px=bd.border[id].px; var py=bd.border[id].py;
 
-			g.fillStyle = (bd.ErB(id)==3 ? this.errcolor1 : this.Cellcolor);
+			g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.Cellcolor);
 			if(this.vnop(vids[0],1)){
 				if(bd.border[id].cx&1){ g.fillRect(px-lm, py-ll, lw, ll*2);}
 				if(bd.border[id].cy&1){ g.fillRect(px-ll, py-lm, ll*2, lw);}

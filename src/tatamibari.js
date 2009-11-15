@@ -141,15 +141,15 @@ Puzzles.tatamibari.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				var qs = bd.QuC(c);
-				if(qs==101||qs==102){
+				var qs = bd.cell[c].ques;
+				if(qs===101||qs===102){
 					if(this.vnop(headers[0]+c,1)){
 						g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-1, bd.cell[c].py+mf((k.cheight+lw)*0.15), lw, mf((k.cheight+lw)*0.7));
 					}
 				}
 				else{ this.vhide(headers[0]+c);}
 
-				if(qs==101||qs==103){
+				if(qs===101||qs===103){
 					if(this.vnop(headers[1]+c,1)){
 						g.fillRect(bd.cell[c].px+mf((k.cwidth+lw)*0.15), bd.cell[c].py+mf(k.cheight/2)-1, mf((k.cwidth+lw)*0.7), lw);
 					}

@@ -198,7 +198,7 @@ Puzzles.minarism.prototype = {
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 
-				if(bd.QuB(id)!=0 || bd.QnB(id)!=-1){
+				if(bd.border[id].ques!=0 || bd.border[id].qnum!=-1){
 					g.fillStyle = "white";
 					g.fillRect(bd.border[id].px-csize, bd.border[id].py-csize, 2*csize+1, 2*csize+1);
 				}
@@ -212,8 +212,8 @@ Puzzles.minarism.prototype = {
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
-				if(bd.QnB(id)!=-1){
-					g.fillStyle = (bd.ErB(id)==1 ? this.errcolor1 : "white");
+				if(bd.border[id].qnum!=-1){
+					g.fillStyle = (bd.border[id].error==1 ? this.errcolor1 : "white");
 					if(this.vnop(headers[0]+id,1)){
 						g.beginPath();
 						g.arc(bd.border[id].px, bd.border[id].py, csize, 0, Math.PI*2, false);
@@ -234,10 +234,10 @@ Puzzles.minarism.prototype = {
 
 				this.dispnumBorder(id);
 
-				if(bd.QuB(id)!=0){
+				if(bd.border[id].ques!==0){
 					var px=bd.border[id].px, py=bd.border[id].py;
 					g.fillStyle = this.Cellcolor;
-					if(bd.QuB(id)==1){
+					if(bd.border[id].ques===1){
 						if(this.vnop(headers[2]+id,1)){
 							if(bd.border[id].cx&1){ this.inputPath([px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize], false);}
 							else                  { this.inputPath([px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize], false);}
@@ -245,7 +245,7 @@ Puzzles.minarism.prototype = {
 						}
 					}
 					else{ this.vhide(headers[3]+id);}
-					if(bd.QuB(id)==2){
+					if(bd.border[id].ques===2){
 						if(this.vnop(headers[3]+id,1)){
 							if(bd.border[id].cx&1){ this.inputPath([px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize], false);}
 							else                  { this.inputPath([px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize], false);}

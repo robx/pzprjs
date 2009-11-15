@@ -181,7 +181,7 @@ Puzzles.pipelink.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.cell[c].ques==6){
+				if(bd.cell[c].ques===6){
 					g.strokeStyle = this.Cellcolor;
 					if(this.vnop(header+c,0)){
 						g.beginPath();
@@ -196,8 +196,8 @@ Puzzles.pipelink.prototype = {
 
 		pc.disp = 0;
 		pc.changedisp = function(){
-			if     (this.disp==1){ getEL("btncircle").value="›"; this.disp=0;}
-			else if(this.disp==0){ getEL("btncircle").value="¡"; this.disp=1;}
+			if     (this.disp===1){ getEL("btncircle").value="›"; this.disp=0;}
+			else if(this.disp===0){ getEL("btncircle").value="¡"; this.disp=1;}
 			this.paintAll();
 		};
 

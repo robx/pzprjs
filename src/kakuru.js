@@ -164,7 +164,7 @@ Puzzles.kakuru.prototype = {
 
 		// オーバーライド drawBWCells用
 		pc.setCellColor = function(cc){
-			var err = bd.ErC(cc), _u = (bd.QuC(cc)===1);
+			var err = bd.cell[cc].error, _u = (bd.cell[cc].ques===1);
 			if     ( _u &&  err===0){ g.fillStyle = this.Cellcolor; return true;}
 			else if( _u &&  err===1){ g.fillStyle = this.errcolor1; return true;}
 			else if(bd.QnC(cc)!==-1){ g.fillStyle = "rgb(208, 208, 208)"; return false;}

@@ -120,10 +120,10 @@ Puzzles.numlin.prototype = {
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					if     (bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else if(bd.ErC(c)==2){ g.fillStyle = this.errbcolor2;}
-					else                 { g.fillStyle = "white";}
+				if(bd.cell[c].qnum!==-1){
+					if     (bd.cell[c].error===1){ g.fillStyle = this.errbcolor1;}
+					else if(bd.cell[c].error===2){ g.fillStyle = this.errbcolor2;}
+					else                         { g.fillStyle = "white";}
 
 					if(this.vnop(header+c,1)){
 						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);

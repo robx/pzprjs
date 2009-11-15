@@ -176,9 +176,10 @@ Puzzles.wblink.prototype = {
 			var vid = "b_line_"+id;
 			if(!flag){ this.vhide(vid); return;}
 
-			if     (bd.ErB(id)==1){ g.fillStyle = this.errlinecolor1; lw++;}
-			else if(bd.ErB(id)==2){ g.fillStyle = this.errlinecolor2;}
+			if     (bd.border[id].error===1){ g.fillStyle = this.errlinecolor1; lw++;}
+			else if(bd.border[id].error===2){ g.fillStyle = this.errlinecolor2;}
 			else{ g.fillStyle = this.linecolor;}
+
 			if(this.vnop(vid,1)){
 				var lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3); //LineWidth
 				var lm = mf((lw-1)/2); //LineMargin

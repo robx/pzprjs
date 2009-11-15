@@ -308,8 +308,8 @@ Puzzles.slalom.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QuC(c)==1){
-					g.fillStyle = (bd.ErC(c)==1 ? this.errcolor1 : this.Cellcolor);
+				if(bd.cell[c].ques===1){
+					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
 					if(this.vnop(header+c,1)){
 						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
 					}
@@ -332,10 +332,10 @@ Puzzles.slalom.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				g.fillStyle = (bd.ErC(c)==4 ? this.errcolor1 : this.Cellcolor);
+				g.fillStyle = (bd.cell[c].error===4 ? this.errcolor1 : this.Cellcolor);
 
 				for(var j=bd.cell[c].py,max=bd.cell[c].py+k.cheight;j<max;j+=ll*2){ //‚½‚Ä
-					if(bd.QuC(c)==21){
+					if(bd.cell[c].ques===21){
 						if(this.vnop([headers[0],c,mf(j)].join("_"),1)){
 							g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-lm+1, j, lw, ll);
 						}
@@ -344,7 +344,7 @@ Puzzles.slalom.prototype = {
 				}
 
 				for(var j=bd.cell[c].px,max=bd.cell[c].px+k.cwidth;j<max;j+=ll*2){ //‚æ‚±
-					if(bd.QuC(c)==22){
+					if(bd.cell[c].ques===22){
 						if(this.vnop([headers[1],c,mf(j)].join("_"),1)){
 							g.fillRect(j, bd.cell[c].py+mf(k.cheight/2)-lm+1, ll, lw);
 						}
@@ -403,7 +403,7 @@ Puzzles.slalom.prototype = {
 			if(keydown){ bd.hinfo.generateGateNumber();}
 
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QuC(c)!=21 && bd.QuC(c)!=22){ continue;}
+				if(bd.cell[c].ques!==21 && bd.cell[c].ques!==22){ continue;}
 				var obj = bd.cell[c];
 
 				var r = bd.hinfo.getGateid(c);

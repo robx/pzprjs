@@ -277,10 +277,10 @@ Puzzles.tentaisho.prototype = {
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
-				if(bd.border[id].qans==1){
-					if     (bd.border[id].error==1){ g.fillStyle = this.errcolor1;}
-					else if(bd.border[id].error==2){ g.fillStyle = this.errBorderQanscolor2;}
-					else                           { g.fillStyle = this.BorderQanscolor;}
+				if(bd.border[id].qans===1){
+					if     (bd.border[id].error===1){ g.fillStyle = this.errcolor1;}
+					else if(bd.border[id].error===2){ g.fillStyle = this.errBorderQanscolor2;}
+					else                            { g.fillStyle = this.BorderQanscolor;}
 
 					if(this.vnop(header+id,1)){
 						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm,  lw, k.cheight+lw);}
@@ -303,7 +303,7 @@ Puzzles.tentaisho.prototype = {
 
 					var id = bd.snum(x,y);
 
-					if(bd.getStar(id)==1 || bd.getStar(id)==2){
+					if(bd.getStar(id)===1 || bd.getStar(id)===2){
 						var iserr = bd.getStarError(id);
 						g.fillStyle = (iserr ? this.errcolor1 : this.Cellcolor);
 						if(this.vnop(headers[0]+id,1)){
@@ -314,7 +314,7 @@ Puzzles.tentaisho.prototype = {
 					}
 					else{ this.vhide(headers[0]+id);}
 
-					if(bd.getStar(id)==1){
+					if(bd.getStar(id)===1){
 						g.fillStyle = (iserr ? this.errbcolor1 : "white");
 						if(this.vnop(headers[1]+id,1)){
 							g.beginPath();

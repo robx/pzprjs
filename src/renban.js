@@ -106,7 +106,7 @@ Puzzles.renban.prototype = {
 		// ƒGƒ‰[‚ÉÔ‚­•\¦‚µ‚½‚¢‚Ì‚Åã‘‚«
 		pc.drawBorder1 = function(id,flag){
 			g.fillStyle = this.BorderQuescolor;
-			if(bd.ErB(id)===1){ g.fillStyle = this.errcolor1;}
+			if(bd.border[id].error===1){ g.fillStyle = this.errcolor1;}
 			this.drawBorder1x(bd.border[id].cx,bd.border[id].cy,flag);
 		};
 	},

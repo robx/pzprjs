@@ -200,7 +200,7 @@ Puzzles.hashikake.prototype = {
 			var ls = mf(lw*1.5);							//LineSpace
 			g.fillStyle = this.getLineColor(id);
 
-			if(bd.LiB(id)==1){
+			if(bd.border[id].line==1){
 				if(this.vnop(vids[0],1)){
 					if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
 					if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
@@ -208,7 +208,7 @@ Puzzles.hashikake.prototype = {
 			}
 			else{ this.vhide(vids[0]);}
 
-			if(bd.LiB(id)==2){
+			if(bd.border[id].line==2){
 				if(this.vnop(vids[1],1)){
 					if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm-ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
 					if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm-ls, k.cwidth+lw,  lw);}

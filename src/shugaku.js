@@ -360,10 +360,10 @@ Puzzles.shugaku.prototype = {
 			this.vdel(["tbd1_","tbd2_","tbd3_","tbd4_"]);
 			if(inputting){
 				var lw = this.lw, lm = this.lm;
-				var px = k.p0.x+(adj==-1?bd.cell[cc].cx:Math.min(bd.cell[cc].cx,bd.cell[adj].cx))*k.cwidth;
-				var py = k.p0.y+(adj==-1?bd.cell[cc].cy:Math.min(bd.cell[cc].cy,bd.cell[adj].cy))*k.cheight;
-				var wid = (mv.inputData==4||mv.inputData==5?2:1)*k.cwidth;
-				var hgt = (mv.inputData==2||mv.inputData==3?2:1)*k.cheight;
+				var px = k.p0.x+(adj===-1?bd.cell[cc].cx:Math.min(bd.cell[cc].cx,bd.cell[adj].cx))*k.cwidth;
+				var py = k.p0.y+(adj===-1?bd.cell[cc].cy:Math.min(bd.cell[cc].cy,bd.cell[adj].cy))*k.cheight;
+				var wid = (mv.inputData===4||mv.inputData===5?2:1)*k.cwidth;
+				var hgt = (mv.inputData===2||mv.inputData===3?2:1)*k.cheight;
 
 				g.fillStyle = "black";
 				if(this.vnop("tbd1_",1)){ g.fillRect(px-lm    , py-lm    , wid+lw, lw);}

@@ -232,7 +232,7 @@ Puzzles.shakashaka.prototype = {
 
 		// drawBWCells用 オーバーライド
 		pc.setCellColor = function(cc){
-			if(bd.ErC(cc)===1){ g.fillStyle = this.errbcolor1; return false;}
+			if(bd.cell[cc].error===1){ g.fillStyle = this.errbcolor1; return false;}
 			g.fillStyle = "white"; return false;
 		};
 	},
