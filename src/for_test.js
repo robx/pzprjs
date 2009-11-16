@@ -59,7 +59,7 @@ var debug = {
 	},
 
 	all_test : function(){
-		var pnum=52, term=debug.urls.length-1;
+		var pnum=0, term=debug.urls.length-1;
 		debug.phase = 99;
 
 		var tam = setInterval(function(){
