@@ -305,23 +305,43 @@ LineManager.prototype = {
 		}
 	},
 
-	repaintLine : function(idlist){
-		if(!menu.getVal('irowake')){ return;}
-		var paintfunc = binder(pc, (k.isCenterLine?pc.drawLine1:pc.drawBorder1));
-		if(g.vml){
-			pc.zstable = true;
-			for(var i=0,len=idlist.length;i<len;i++){
-				paintfunc(idlist[i],true);
+	repaintLine : (
+		((!k.vml) ?
+			function(idlist){
+				if(!menu.getVal('irowake')){ return;}
+
+				if(k.isCenterLine){
+					for(var i=0,len=idlist.length;i<len;i++){
+						pc.drawLine1(idlist[i],true);
+						this.repaintParts(idlist[i]);
+					}
+				}
+				else{
+					for(var i=0,len=idlist.length;i<len;i++){
+						pc.drawBorder1x(bd.border[idlist[i]].cx,bd.border[idlist[i]].cy,true);
+						this.repaintParts(idlist[i]);
+					}
+				}
 			}
-			pc.zstable = false;
-		}
-		else{
-			for(var i=0,len=idlist.length;i<len;i++){
-				paintfunc(idlist[i],true);
-				this.repaintParts(idlist[i]);
+		:
+			function(idlist){
+				if(!menu.getVal('irowake')){ return;}
+
+				pc.zstable = true;
+				if(k.isCenterLine){
+					for(var i=0,len=idlist.length;i<len;i++){
+						pc.drawLine1(idlist[i],true);
+					}
+				}
+				else{
+					for(var i=0,len=idlist.length;i<len;i++){
+						pc.drawBorder1x(bd.border[idlist[i]].cx,bd.border[idlist[i]].cy,true);
+					}
+				}
+				pc.zstable = false;
 			}
-		}
-	},
+		)
+	),
 	repaintParts : function(id){ }, // オーバーライド用
 
 	//---------------------------------------------------------------------------
