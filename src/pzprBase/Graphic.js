@@ -585,34 +585,34 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawBorders()     境界線をCanvasに書き込む
-	// pc.drawIceBorders()  アイスバーンの境界線をCanvasに書き込む
-	// pc.drawBorder1x()    (x,y)を指定して1カ所の境界線をCanvasに書き込む
-	// pc.drawBorderQsubs() 境界線用の補助記号をCanvasに書き込む
+	// pc.drawBorders()       境界線をCanvasに書き込む
+	// pc.drawBordersAsLine() k.isborderAsLine===1の時、線をCanvasに書き込む
+	// pc.drawIceBorders()    アイスバーンの境界線をCanvasに書き込む
+	// pc.drawBorder1x()      (x,y)を指定して1カ所の境界線をCanvasに書き込む
+	// pc.drawBorderQsubs()   境界線用の補助記号をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawBorders : function(x1,y1,x2,y2){
 		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
-		if(k.isborderAsLine!==1){
-			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i];
+		for(var i=0;i<idlist.length;i++){
+			var id = idlist[i];
 
-				if     (bd.border[id].qans !==1){ g.fillStyle = this.BorderQuescolor;    }
-				else if(bd.border[id].error===1){ g.fillStyle = this.errcolor1;          }
-				else if(bd.border[id].error===2){ g.fillStyle = this.errBorderQanscolor2;}
-				else                            { g.fillStyle = this.BorderQanscolor;    }
+			if     (bd.border[id].qans !==1){ g.fillStyle = this.BorderQuescolor;    }
+			else if(bd.border[id].error===1){ g.fillStyle = this.errcolor1;          }
+			else if(bd.border[id].error===2){ g.fillStyle = this.errBorderQanscolor2;}
+			else                            { g.fillStyle = this.BorderQanscolor;    }
 
-				this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, bd.isBorder(id));
-			}
+			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, bd.isBorder(id));
 		}
-		else{
-			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i];
+	},
+	drawBordersAsLine : function(x1,y1,x2,y2){
+		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+		for(var i=0;i<idlist.length;i++){
+			var id = idlist[i];
 
-				if(bd.border[id].qans!==1){ g.fillStyle = this.BorderQuescolor; }
-				else                      { g.fillStyle = this.getLineColor(id);}
+			if(bd.border[id].qans!==1){ g.fillStyle = this.BorderQuescolor; }
+			else                      { g.fillStyle = this.getLineColor(id);}
 
-				this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, bd.isBorder(id));
-			}
+			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, bd.isBorder(id));
 		}
 		this.vinc();
 	},

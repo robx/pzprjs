@@ -112,7 +112,7 @@ Puzzles.bag.prototype = {
 
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBordersAsLine(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
