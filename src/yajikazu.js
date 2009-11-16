@@ -93,14 +93,16 @@ Puzzles.yajikazu.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.bcolor = pc.bcolor_GREEN;
 		pc.BCell_fontcolor = "rgb(96,96,96)";
+		pc.setBGCellColorFunc('qsub1');
 
 		pc.paint = function(x1,y1,x2,y2){
 			x2++; y2++;
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBWCells(x1,y1,x2,y2);
+			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawArrowNumbers(x1,y1,x2,y2);
 

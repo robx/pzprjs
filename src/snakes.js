@@ -149,6 +149,7 @@ Puzzles.snakes.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.dotcolor = "rgb(255, 96, 191)";
 		pc.fontcolor = pc.fontErrcolor = "white";
+		pc.setCellColorFunc('qnum');
 
 		pc.paint = function(x1,y1,x2,y2){
 			x1--; y1--; x2++; y2++;	// ê’Ç™écÇ¡ÇƒÇµÇ‹Ç§à◊
@@ -161,7 +162,7 @@ Puzzles.snakes.prototype = {
 
 			this.drawBorders_snake(x1,y1,x2,y2);
 
-			this.drawBCells_withoutNumber(x1-2,y1-2,x2+2,y2+2);
+			this.drawBlackCells(x1,y1,x2,y2);
 			this.drawArrowNumbers(x1-2,y1-2,x2+2,y2+2);
 
 			this.drawChassis(x1,y1,x2,y2);
@@ -187,22 +188,6 @@ Puzzles.snakes.prototype = {
 
 				this.drawBorder1x(2*cx+2,2*cy+1,func(c,rt));
 				this.drawBorder1x(2*cx+1,2*cy+2,func(c,dn));
-			}
-			this.vinc();
-		};
-		pc.drawBCells_withoutNumber = function(x1,y1,x2,y2){
-			var header = "c_full_";
-
-			var clist = this.cellinside(x1,y1,x2,y2);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.cell[c].qnum!==-1){
-					g.fillStyle = (bd.cell[c].error!==0 ? this.errcolor1 : this.Cellcolor);
-					if(this.vnop(header+c,1)){
-						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
-					}
-				}
-				else if(bd.cell[c].error===0){ this.vhide(header+c);}
 			}
 			this.vinc();
 		};

@@ -210,7 +210,10 @@ Puzzles.bosanowa.prototype = {
 
 				this.vhide(header+id);
 				if(menu.getVal('disptype')===3){
-					if     ((cc1!==-1&&bd.cell[cc1].ques===7) ^(cc2!==-1&&bd.cell[cc2].ques===7)){ this.drawBorder1(id,true);}
+					if     ((cc1!==-1&&bd.cell[cc1].ques===7) ^(cc2!==-1&&bd.cell[cc2].ques===7)){
+						g.fillStyle=this.BorderQuescolor;
+						this.drawBorder1x(bd.border[id].cx,bd.border[id].cy,true);
+					}
 					else if((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7)){
 						g.fillStyle=this.gridcolor;
 						if(this.vnop(header+id,1)){

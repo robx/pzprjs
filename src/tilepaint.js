@@ -172,6 +172,7 @@ Puzzles.tilepaint.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.bcolor = pc.bcolor_GREEN;
 		pc.BBcolor = "rgb(127, 127, 127)";
+		pc.setBGCellColorFunc('qsub3');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -180,8 +181,9 @@ Puzzles.tilepaint.prototype = {
 			this.draw51EXcells(x1,y1,x2,y2,true);
 			this.drawTargetTriangle(x1,y1,x2,y2);
 
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBWCells(x1,y1,x2,y2);
+			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawBorders(x1,y1,x2,y2);
 
@@ -189,21 +191,9 @@ Puzzles.tilepaint.prototype = {
 
 			this.drawNumbersOn51(x1,y1,x2,y2);
 
-			this.drawBoxBorders(x1-1,y1-1,x2+1,y2+1,1);
+			this.drawBoxBorders(x1,y1,x2,y2,true);
 
 			this.drawTarget(x1,y1,x2,y2);
-		};
-
-		// オーバーライド drawBWCells用
-		pc.setCellColor = function(cc){
-			var _b = bd.isBlack(cc), err = bd.cell[cc].error, qs = bd.cell[cc].qsub;
-
-			if     ( _b && err===0){ g.fillStyle = this.Cellcolor; return true;}
-			else if( _b && err===1){ g.fillStyle = this.errcolor1; return true;}
-			else if(!_b && err===1){ g.fillStyle = this.errbcolor1; return false;}
-			else if(!_b && qs ===1){ g.fillStyle = this.bcolor;     return false;}
-			else if(!_b && qs ===3){ g.fillStyle = this.qsubcolor3; return false;}
-			g.fillStyle = "white"; return false;
 		};
 	},
 

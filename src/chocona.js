@@ -92,13 +92,15 @@ Puzzles.chocona.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.bcolor = pc.bcolor_GREEN;
+		pc.setBGCellColorFunc('qsub1');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBWCells(x1,y1,x2,y2);
+			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
@@ -106,7 +108,7 @@ Puzzles.chocona.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			this.drawBoxBorders(x1-1,y1-1,x2+1,y2+1,0);
+			this.drawBoxBorders(x1,y1,x2,y2,false);
 
 			this.drawTarget(x1,y1,x2,y2);
 		};

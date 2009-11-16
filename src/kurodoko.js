@@ -92,6 +92,7 @@ Puzzles.kurodoko.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.bcolor = pc.bcolor_GREEN;
+		pc.setBGCellColorFunc('qsub1');
 
 		pc.fontsizeratio = 0.85;
 		pc.circleratio = [0.42, 0.42];
@@ -100,8 +101,9 @@ Puzzles.kurodoko.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBWCells(x1,y1,x2,y2);
+			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawCircledNumbers(x1,y1,x2,y2);
 

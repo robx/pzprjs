@@ -95,6 +95,7 @@ Puzzles.lightup.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.fontcolor = pc.fontErrcolor = "white";
 		pc.dotcolor = "rgb(255, 63, 191)";
+		pc.setCellColorFunc('qnum');
 
 		pc.lightcolor = "rgb(224, 255, 127)";
 
@@ -106,7 +107,8 @@ Puzzles.lightup.prototype = {
 
 			this.drawGrid(x1,y1,x2,y2);
 
-			this.drawBCells(x1,y1,x2,y2);
+			this.drawBlackCells(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawAkari(x1,y1,x2,y2);
 			this.drawDotCells(x1,y1,x2,y2);
@@ -145,7 +147,7 @@ Puzzles.lightup.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].error===1 || ans.isShined(c)){
-					g.fillStyle = (bd.cell[c].error===4 ? this.errbcolor1 : this.lightcolor);
+					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : this.lightcolor);
 					if(this.vnop(header+c,1)){
 						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
 					}

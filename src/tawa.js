@@ -453,14 +453,16 @@ Puzzles.tawa.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
+		pc.setBGCellColorFunc('qans1');
 
 		pc.paint = function(x1,y1,x2,y2){
 			x1--; x2++;
 			this.flushCanvas_tawa(x1+1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
+			this.drawBGCells(x1,y1,x2,y2);
+			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawGrid_tawa(x1,y1,x2,y2);
-			this.drawBWCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 

@@ -213,27 +213,24 @@ Puzzles.shakashaka.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.fontcolor = pc.fontErrcolor = "white";
+		pc.setCellColorFunc('qnum');
 
 		pc.paint = function(x1,y1,x2,y2){
 			x2++; y2++;
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
+			this.drawBGCells(x1,y1,x2,y2);
+			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBWCells(x1,y1,x2,y2);
+			this.drawBlackCells(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
-			this.drawBCells(x1,y1,x2,y2);
 			this.drawTriangle(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
-		};
-
-		// drawBWCells用 オーバーライド
-		pc.setCellColor = function(cc){
-			if(bd.cell[cc].error===1){ g.fillStyle = this.errbcolor1; return false;}
-			g.fillStyle = "white"; return false;
 		};
 	},
 

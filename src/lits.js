@@ -76,12 +76,14 @@ Puzzles.lits.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = "rgb(48, 48, 48)";
 		pc.Cellcolor = "rgb(96, 96, 96)";
+		pc.setBGCellColorFunc('qans2');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawBWCells(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
+			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawBorders(x1,y1,x2,y2);
