@@ -171,9 +171,8 @@ Menu.prototype = {
 
 		if(depth>0 && !this.dispfloat[depth-1]){ return;}
 
-		var src = ee.getSrcElement(e);
+		var rect = ee(ee.getSrcElement(e).id).getRect();
 		var _float = this.floatpanel[idname];
-		var rect = ee(_float).getRect();
 		if(depth==0){
 			_float.style.left = rect.left - 3 + k.IEMargin.x;
 			_float.style.top  = rect.bottom + (k.br.IE?-2:1);
@@ -215,7 +214,7 @@ Menu.prototype = {
 	insideOf : function(el, e){
 		var ex = mv.pointerX(e)+(k.br.WinWebKit?1:0);
 		var ey = mv.pointerY(e)+(k.br.WinWebKit?1:0);
-		var rect = ee(el).getRect();
+		var rect = ee(el.id).getRect();
 		return (ex>=rect.left && ex<=rect.right && ey>=rect.top && ey<=rect.bottom);
 	},
 	insideOfMenu : function(e){
@@ -351,7 +350,7 @@ Menu.prototype = {
 			}
 
 			var smenu;
-			if     (pp.istype(idname, pp.SEPARATOR)){
+			if     (pp.istype(idname, pp.SEPARATE)){
 				smenu = ee.newEL('div');
 				smenu.className = 'smenusep';
 				smenu.innerHTML = '&nbsp;';
