@@ -130,18 +130,18 @@ Menu.prototype = {
 	//---------------------------------------------------------------------------
 	submenuhover : function(e, idname){
 		if(ee.getSrcElement(e).className==="smenu"){ ee.getSrcElement(e).className="smenusel";}
-		if(pp.flags[idname] && pp.type(idname)==1){ this.floatmenuopen(e,idname,this.dispfloat.length);}
+		if(pp.flags[idname] && pp.istype(idname, pp.SELECT)){ this.floatmenuopen(e,idname,this.dispfloat.length);}
 	},
 	submenuout   : function(e, idname){
 		if(ee.getSrcElement(e).className==="smenusel"){ ee.getSrcElement(e).className="smenu";}
-		if(pp.flags[idname] && pp.type(idname)==1){ this.floatmenuout(e);}
+		if(pp.flags[idname] && pp.istype(idname, pp.SELECT)){ this.floatmenuout(e);}
 	},
 	submenuclick : function(e, idname){
 		if(ee.getSrcElement(e).className==="smenunull"){ return;}
 		this.menuclear();
 		this.floatmenuclose(0);
 
-		if(pp.type(idname)==0){
+		if(pp.istype(idname, pp.SMENU)){
 			this.popclose();							// 表示しているウィンドウがある場合は閉じる
 			if(pp.funcs[idname]){ pp.funcs[idname]();}	// この中でthis.popupenuも設定されます。
 			if(this.pop){
@@ -151,8 +151,8 @@ Menu.prototype = {
 				_pop.style.display = 'inline';
 			}
 		}
-		else if(pp.type(idname)==4){ this.setVal(pp.flags[idname].parent, pp.getVal(idname));}
-		else if(pp.type(idname)==2){ this.setVal(idname, !pp.getVal(idname));}
+		else if(pp.istype(idname, pp.CHILD)){ this.setVal(pp.flags[idname].parent, pp.getVal(idname));}
+		else if(pp.istype(idname, pp.CHECK)){ this.setVal(idname, !pp.getVal(idname));}
 	},
 	checkclick : function(idname){
 		this.setVal(idname, getEL("ck_"+idname).checked);
@@ -291,15 +291,15 @@ Menu.prototype = {
 	getVal : function(idname)  { return pp.getVal(idname);},
 	setVal : function(idname, newval){ pp.setVal(idname,newval);},
 	setdisplay : function(idname){
-		if(pp.type(idname)==0||pp.type(idname)==3){
+		if(pp.istype(idname, pp.SMENU)||pp.istype(idname, pp.LABEL)){
 			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = pp.getMenuStr(idname);}
 		}
-		else if(pp.type(idname)==1){
+		else if(pp.istype(idname, pp.SELECT)){
 			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = "&nbsp;"+pp.getMenuStr(idname);}	// メニュー上の表記の設定
 			if(getEL("cl_"+idname)){ getEL("cl_"+idname).innerHTML = pp.getLabel(idname);}				// 管理領域上の表記の設定
 			for(var i=0,len=pp.flags[idname].child.length;i<len;i++){ this.setdisplay(""+idname+"_"+pp.flags[idname].child[i]);}
 		}
-		else if(pp.type(idname)==4){
+		else if(pp.istype(idname, pp.CHILD)){
 			var issel = (pp.getVal(idname) == pp.getVal(pp.flags[idname].parent));
 			var cap = pp.getMenuStr(idname);
 			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = (issel?"+":"&nbsp;")+cap;}	// メニューの項目
@@ -308,7 +308,7 @@ Menu.prototype = {
 				getEL("up_"+idname).className = (issel?"flagsel":"flag");
 			}
 		}
-		else if(pp.type(idname)==2){
+		else if(pp.istype(idname, pp.CHECK)){
 			var flag = pp.getVal(idname);
 			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = (flag?"+":"&nbsp;")+pp.getMenuStr(idname);}	// メニュー
 			if(getEL("ck_"+idname)){ getEL("ck_"+idname).checked = flag;}						// 管理領域(チェックボックス)
@@ -351,16 +351,16 @@ Menu.prototype = {
 			}
 
 			var smenu;
-			if     (pp.type(idname)==5){
+			if     (pp.istype(idname, pp.SEPARATOR)){
 				smenu = ee.newEL('div');
 				smenu.className = 'smenusep';
 				smenu.innerHTML = '&nbsp;';
 			}
-			else if(pp.type(idname)==3){
+			else if(pp.istype(idname, pp.LABEL)){
 				smenu = ee.newEL('span');
 				smenu.style.color = 'white';
 			}
-			else if(pp.type(idname)==1){
+			else if(pp.istype(idname, pp.SELECT)){
 				smenu = ee.newEL('div');
 				smenu.className  = 'smenu';
 				smenu.style.fontWeight = '900';
@@ -376,7 +376,7 @@ Menu.prototype = {
 				smenu.onmouseout  = ee.ebinder(this, this.submenuout,   [idname]);
 				smenu.onclick     = ee.ebinder(this, this.submenuclick, [idname]);
 				this.getFloatpanel(idname);
-				if(pp.type(idname)!=0){
+				if(!pp.istype(idname, pp.SMENU)){
 					smenu.style.fontSize    = '10pt';
 					smenu.style.paddingLeft = '6pt';
 				}
@@ -412,7 +412,7 @@ Menu.prototype = {
 			var idname = pp.flaglist[n];
 			if(!pp.flags[idname] || !pp.getLabel(idname)){ continue;}
 
-			if(pp.type(idname)==1){
+			if(pp.istype(idname, pp.SELECT)){
 				var plx = ee("usepanel");
 
 				var _el = ee.newEL('span');
@@ -435,7 +435,7 @@ Menu.prototype = {
 
 				plx.appendEL(ee.newEL('br'));
 			}
-			else if(pp.type(idname)==2){
+			else if(pp.istype(idname, pp.CHECK)){
 				var cpx = ee("checkpanel");
 
 				var _el = ee.newEL('input');
@@ -764,6 +764,14 @@ SSData = function(){
 Properties = function(){
 	this.flags    = [];	// サブメニュー項目の情報(SSDataクラスのオブジェクトの配列になる)
 	this.flaglist = [];	// idnameの配列
+
+	// const
+	this.SMENU    = 0;
+	this.SELECT   = 1;
+	this.CHECK    = 2;
+	this.LABEL    = 3;
+	this.CHILD    = 4;
+	this.SEPARATE = 5;
 };
 Properties.prototype = {
 	reset : function(){
@@ -772,19 +780,19 @@ Properties.prototype = {
 	},
 
 	// pp.setMenuStr() 管理パネルと選択型/チェック型サブメニューに表示する文字列を設定する
-	addSmenuToFlags : function(idname, parent)       { this.addToFlags(idname, parent, 0, 0);},
-	addCheckToFlags : function(idname, parent, first){ this.addToFlags(idname, parent, 2, first);},
-	addCaptionToFlags     : function(idname, parent) { this.addToFlags(idname, parent, 3, 0);},
-	addSeparatorToFlags   : function(idname, parent) { this.addToFlags(idname, parent, 5, 0);},
+	addSmenuToFlags : function(idname, parent)       { this.addToFlags(idname, parent, this.SMENU, 0);},
+	addCheckToFlags : function(idname, parent, first){ this.addToFlags(idname, parent, this.CHECK, first);},
+	addCaptionToFlags     : function(idname, parent) { this.addToFlags(idname, parent, this.LABEL, 0);},
+	addSeparatorToFlags   : function(idname, parent) { this.addToFlags(idname, parent, this.SEPARATE, 0);},
 	addUseToFlags   : function(idname, parent, first, child){
-		this.addToFlags(idname, parent, 1, first);
+		this.addToFlags(idname, parent, this.SELECT, first);
 		this.flags[idname].child = child;
 	},
 	addUseChildrenToFlags : function(idname, parent){
 		if(!this.flags[idname]){ return;}
 		for(var i=0;i<this.flags[idname].child.length;i++){
 			var num = this.flags[idname].child[i];
-			this.addToFlags(""+idname+"_"+num, parent, 4, num);
+			this.addToFlags(""+idname+"_"+num, parent, this.CHILD, num);
 		}
 	},
 	addToFlags : function(idname, parent, type, first){
@@ -809,17 +817,20 @@ Properties.prototype = {
 	// pp.getMenuStr() 管理パネルと選択型/チェック型サブメニューに表示する文字列を返す
 	// pp.getLabel()   管理パネルとチェック型サブメニューに表示する文字列を返す
 	// pp.type()       設定値のサブメニュータイプを返す
+	// pp.istype()     設定値のサブメニュータイプが指定された値かどうかを返す
+	//
 	// pp.getVal()     各フラグのvalの値を返す
 	// pp.setVal()     各フラグの設定値を設定する
 	//---------------------------------------------------------------------------
 	getMenuStr : function(idname){ return this.flags[idname].str[menu.language].menu; },
 	getLabel   : function(idname){ return this.flags[idname].str[menu.language].label;},
-	type : function(idname){ return this.flags[idname].type;},
+	type   : function(idname)     { return this.flags[idname].type;},
+	istype : function(idname,type){ return (this.flags[idname].type===type);},
 
 	getVal : function(idname)  { return this.flags[idname]?this.flags[idname].val:0;},
 	setVal : function(idname, newval){
 		if(!this.flags[idname]){ return;}
-		else if(this.type(idname)==1 || this.type(idname)==2){
+		else if(this.flags[idname].type===this.CHECK || this.flags[idname].type===this.SELECT){
 			this.flags[idname].val = newval;
 			menu.setdisplay(idname);
 			if(this.funcs[idname]){ this.funcs[idname](newval);}
