@@ -109,8 +109,6 @@ MouseEvent.prototype = {
 
 	//---------------------------------------------------------------------------
 	// mv.setposition()   イベントが起こった座標をinputX, inputY変数に代入
-	// mv.pointerX()      イベントが起こったX座標を取得する
-	// mv.pointerY()      イベントが起こったY座標を取得する
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
@@ -131,22 +129,6 @@ MouseEvent.prototype = {
 				this.inputY = e.clientY + (this.docEL.scrollTop  || this.bodyEL.scrollTop ) -k.cv_oft.y-k.p0.y-k.IEMargin.y;
 			}
 		)
-	),
-	pointerX : (
-		(k.br.WinWebKit) ?
-			function(e){ return e.pageX - 1;}
-		:(!k.br.IE) ?
-			function(e){ return e.pageX;}
-		:
-			function(e){ return e.clientX + (this.docEL.scrollLeft || this.bodyEL.scrollLeft);}
-	),
-	pointerY : (
-		(k.br.WinWebKit) ?
-			function(e){ return e.pageY - 1;}
-		:(!k.br.IE) ?
-			function(e){ return e.pageY;}
-		:
-			function(e){ return e.clientY + (this.docEL.scrollTop  || this.bodyEL.scrollTop);}
 	),
 
 	notInputted : function(){ return !um.changeflag;},

@@ -225,7 +225,7 @@ Puzzles.tawa.prototype = {
 			var _td = ee.newEL('td');
 			_td.appendChild(_div);
 
-			getEL('laps').appendChild(_td);
+			ee('laps').appendEL(_td);
 		}
 	},
 	input_init_board : function(){	// ˆ—‚ª‘å‚«‚­‚È‚Á‚½‚Ì‚Å•ªŠ„(input_init()‚©‚çŒÄ‚Î‚ê‚é)

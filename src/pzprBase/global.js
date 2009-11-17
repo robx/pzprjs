@@ -233,7 +233,22 @@ _extend( _ElementManager, {
 	getSrcElement : function(e){
 		return e.target || e.srcElement;
 	},
+	pageX : (
+		((!k.br.IE) ?
+			function(e){ return e.pageX;}
+		:
+			function(e){ return e.clientX + (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);}
+		)
+	),
+	pageY : (
+		((!k.br.IE) ?
+			function(e){ return e.pageY;}
+		:
+			function(e){ return e.clientY + (_doc.documentElement.scrollTop  || _doc.body.scrollTop);}
+		)
+	),
 
+	//----------------------------------------------------------------------
 	binder : function(){
 		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift();
 		return function(){
@@ -469,6 +484,10 @@ _ElementManager.ElementExt.prototype = {
 		var sel = _doc.createElement('span');
 		sel.innerHTML = html;
 		this.el.appendChild(sel);
+		return this;
+	},
+	appendBR : function(html){
+		this.el.appendChild(_doc.createElement('br'));
 		return this;
 	},
 

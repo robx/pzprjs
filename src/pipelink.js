@@ -53,8 +53,7 @@ Puzzles.pipelink.prototype = {
 	},
 	menufix : function(){
 		if(k.EDITOR){ kp.defaultdisp = true;}
-		getEL('btnarea').appendChild(menu.createButton('btncircle','','›'))
-		menu.addButtons(getEL("btncircle"),ee.binder(pc, pc.changedisp),"›","›");
+		menu.newBTNx(ee('btnarea'), 'btncircle','',"›","›",ee.binder(pc, pc.changedisp));
 		menu.addRedLineToFlags();
 	},
 

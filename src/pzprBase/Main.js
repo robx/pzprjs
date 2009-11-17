@@ -173,18 +173,17 @@ PBase.prototype = {
 	// base.resize_canvas()        resize_canvas_only()+Canvasの再描画
 	// base.resize_canvas_onload() 初期化中にpaint再描画が起こらないように、resize_canvasを呼び出す
 	// base.onresize_func()        ウィンドウリサイズ時に呼ばれる関数
-	// base.getWindowSize()        ウィンドウの大きさを返す
 	// base.resetInfo()            AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
 	//---------------------------------------------------------------------------
 	resize_canvas_only : function(){
-		var wsize = this.getWindowSize();
+		var wwidth = ee.windowWidth();
 		k.p0 = new Pos(k.def_psize, k.def_psize);
 
 		// セルのサイズの決定
 		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[k.widthmode];
-		var ci0 = Math.round((wsize.x-k.p0.x*2)/(k.def_csize*cratio)*0.75);
-		var ci1 = Math.round((wsize.x-k.p0.x*2)/(k.def_csize*cratio));
-		var ci2 = Math.round((wsize.x-k.p0.x*2)/(k.def_csize)*2.25);
+		var ci0 = Math.round((wwidth-k.p0.x*2)/(k.def_csize*cratio)*0.75);
+		var ci1 = Math.round((wwidth-k.p0.x*2)/(k.def_csize*cratio));
+		var ci2 = Math.round((wwidth-k.p0.x*2)/(k.def_csize)*2.25);
 
 		if(k.qcols < ci0){				// 特に縮小しないとき
 			k.cwidth = k.cheight = mf(k.def_csize*cratio);
@@ -248,15 +247,6 @@ PBase.prototype = {
 		this.resize_canvas();
 
 		this.onresizenow = false;
-	},
-	getWindowSize : function(){
-		if(document.all){
-			return new Pos(document.body.clientWidth, document.body.clientHeight);
-		}
-		else if(document.layers || document.getElementById){
-			return new Pos(innerWidth, innerHeight);
-		}
-		return new Pos(0, 0);
 	},
 
 	resetInfo : function(){

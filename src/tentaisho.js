@@ -57,8 +57,7 @@ Puzzles.tentaisho.prototype = {
 			pp.setMenuStr('discolor', '色分け無効化', 'Disable color');
 			pp.setLabel  ('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
 		}
-		getEL('btnarea').appendChild(menu.createButton('btncolor','','色をつける'))
-		menu.addButtons(getEL("btncolor"),ee.binder(mv, mv.encolorall),"色をつける","Color up");
+		menu.newBTNx(ee('btnarea'), 'btncolor','', "色をつける", "Color up", ee.binder(mv, mv.encolorall));
 	},
 
 	//---------------------------------------------------------

@@ -103,7 +103,7 @@ Menu.prototype = {
 		el.style.marginRight = "4pt";
 		el.onmouseover = ee.ebinder(this, this.menuhover, [idname]);
 		el.onmouseout  = ee.ebinder(this, this.menuout);
-		getEL('menupanel').appendChild(el);
+		ee('menupanel').appendEL(el);
 
 		this.addLabels(el, "["+strJP+"]", "["+strEN+"]");
 	},
@@ -146,8 +146,8 @@ Menu.prototype = {
 			if(pp.funcs[idname]){ pp.funcs[idname]();}	// この中でthis.popupenuも設定されます。
 			if(this.pop){
 				var _pop = this.pop;
-				_pop.style.left = mv.pointerX(e) - 8 + k.IEMargin.x;
-				_pop.style.top  = mv.pointerY(e) - 8 + k.IEMargin.y;
+				_pop.style.left = ee.pageX(e) - 8 + k.IEMargin.x;
+				_pop.style.top  = ee.pageY(e) - 8 + k.IEMargin.y;
 				_pop.style.display = 'inline';
 			}
 		}
@@ -212,14 +212,14 @@ Menu.prototype = {
 	},
 
 	insideOf : function(el, e){
-		var ex = mv.pointerX(e)+(k.br.WinWebKit?1:0);
-		var ey = mv.pointerY(e)+(k.br.WinWebKit?1:0);
+		var ex = ee.pageX(e);
+		var ey = ee.pageY(e);
 		var rect = ee(el.id).getRect();
 		return (ex>=rect.left && ex<=rect.right && ey>=rect.top && ey<=rect.bottom);
 	},
 	insideOfMenu : function(e){
-		var ex = mv.pointerX(e)+(k.br.WinWebKit?1:0);
-		var ey = mv.pointerY(e)+(k.br.WinWebKit?1:0);
+		var ex = ee.pageX(e);
+		var ey = ee.pageY(e);
 		var rect_f = ee('menu_file').getRect(), rect_o = ee('menu_other').getRect();
 		return (ex>=rect_f.left && ex<=rect_o.right && ey>=rect_f.top);
 	},
@@ -395,7 +395,7 @@ Menu.prototype = {
 			_float.onmouseout = ee.ebinder(this, this.floatmenuout);
 			_float.style.zIndex = 101;
 			_float.style.backgroundColor = base.floatbgcolor;
-			getEL('float_parent').appendChild(_float);
+			ee('float_parent').appendEL(_float);
 
 			this.floatpanel[id] = _float;
 			//$(_float).hide();
@@ -432,7 +432,7 @@ Menu.prototype = {
 					plx.appendHTML(" ");
 				}
 
-				plx.appendEL(ee.newEL('br'));
+				plx.appendBR();
 			}
 			else if(pp.istype(idname, pp.CHECK)){
 				var cpx = ee("checkpanel");
@@ -452,11 +452,10 @@ Menu.prototype = {
 				cpx.appendEL(_el);
 
 				if(idname==="irowake"){
-					cpx.appendEL(ee.newBTN('ck_irowake2','','色分けしなおす'));
-					this.addButtons(getEL("ck_irowake2"), ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
+					this.newBTNx(cpx, 'ck_btn_irowake2','', "色分けしなおす", "Change the color of Line", ee.binder(menu.ex, menu.ex.irowakeRemake));
 				}
 
-				cpx.appendEL(ee.newEL('br'));
+				cpx.appendBR();
 			}
 		}
 
@@ -472,8 +471,7 @@ Menu.prototype = {
 			$("#timerpanel,#separator2").hide();
 		}
 		if(k.irowake!=0){
-			getEL('btnarea').appendChild(menu.createButton('btncolor2','','色分けしなおす'))
-			this.addButtons(getEL("btncolor2"), ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
+			this.newBTNx(ee('btnarea'), 'btncolor2','', "色分けしなおす", "Change the color of Line", ee.binder(menu.ex, menu.ex.irowakeRemake));
 			$("#btncolor2").hide();
 		}
 	},
@@ -503,20 +501,18 @@ Menu.prototype = {
 		document.urlinput.cancel.onclick   = px;
 
 		// URL出力
-		var _div = getEL('urlbuttonarea');
+		var _divx = ee('urlbuttonarea');
 		var ib = ee.binder(this, function(name, strJP, strEN, eval){
 			if(eval===false) return;
-			var el = menu.createButton('', name, strJP);
-			this.addButtons(el, ee.ebinder(this.ex, this.ex.urloutput), strJP, strEN);
-			_div.appendChild(el)
-			_div.appendChild(ee.newEL('br'));
+			this.newBTNx(_divx, '', name, strJP, strEN, ee.ebinder(this.ex, this.ex.urloutput));
+			_divx.appendBR();
 		});
 		ib('pzprv3',     "ぱずぷれv3のURLを出力する",           "Output PUZ-PRE v3 URL",          true);
 		ib('pzprapplet', "ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", !k.ispzprv3ONLY);
 		ib('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              !!k.isKanpenExist);
 		ib('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (k.puzzleid==="heyawake"));
 		ib('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
-		getEL("urlbuttonarea").appendChild(ee.newEL('br'));
+		ee("urlbuttonarea").appendBR();
 
 		this.addButtons(document.urloutput.openurl, ee.ebinder(this.ex, this.ex.openurl), "このURLを開く", "Open this URL on another window/tab");
 		this.addButtons(document.urloutput.close,   px,                                   "閉じる", "Close");
@@ -592,8 +588,8 @@ Menu.prototype = {
 	titlebardown : function(e){
 		var pop = ee.getSrcElement(e).parentNode;
 		this.isptitle = 1;
-		this.offset.x = mv.pointerX(e) - parseInt(pop.style.left);
-		this.offset.y = mv.pointerY(e) - parseInt(pop.style.top);
+		this.offset.x = ee.pageX(e) - parseInt(pop.style.left);
+		this.offset.y = ee.pageY(e) - parseInt(pop.style.top);
 	},
 	titlebarup   : function(e){
 		this.isptitle = 0;
@@ -616,9 +612,9 @@ Menu.prototype = {
 
 	//---------------------------------------------------------------------------
 	// menu.buttonarea()        ボタンの初期設定を行う
-	// menu.createButton()      指定したid, name, ラベルを持ったボタンを作成する
+	// menu.addBTNx()           指定したid, name, ラベルを持ったボタンを作成して登録する
 	// menu.addButtons()        ボタンの情報を変数に登録する
-	// menu.addLAbels()         ラベルの情報を変数に登録する
+	// menu.addLabels()         ラベルの情報を変数に登録する
 	// menu.setDefaultButtons() ボタンをbtnstackに設定する
 	// menu.setDefaultLabels()  ラベルをspanstackに設定する
 	//---------------------------------------------------------------------------
@@ -632,14 +628,10 @@ Menu.prototype = {
 		this.setDefaultButtons();
 		this.setDefaultLabels();
 	},
-	createButton : function(id, name, val){
-		var _btn = ee.newEL('input');
-		_btn.type  = 'button';
-		if(!!id)  { _btn.id   = id;}
-		if(!!name){ _btn.name = name;}
-		_btn.value = val;
-
-		return _btn;
+	newBTNx: function(parentelx, id, name, strJP, strEN, func){
+		var el = ee.newBTN(id, name, strJP);
+		this.addButtons(el, func, strJP, strEN);
+		parentelx.appendEL(el);
 	},
 
 	addButtons : function(el, func, strJP, strEN){
