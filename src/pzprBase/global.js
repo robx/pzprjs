@@ -340,7 +340,7 @@ _ElementManager.ElementExt.prototype = {
 			}
 		:
 			function(){
-				this.attr("unselectable", "on");
+				this.el.unselectable = "on";
 				return this;
 			}
 		)

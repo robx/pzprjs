@@ -141,22 +141,28 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	dispman : function(e){
 		var idlist = ['expression','usepanel','checkpanel'];
-		var sparatorlist = k.EDITOR ? ['separator1'] : ['separator1','separator2'];
+		var seplist = k.EDITOR ? ['separator1'] : ['separator1','separator2'];
 
 		if(this.displaymanage){
-			for(var i=0;i<idlist.length;i++){ $("#"+idlist[i]).hide(800, ee.binder(base,base.resize_canvas));}
-			for(var i=0;i<sparatorlist.length;i++){ $("#"+sparatorlist[i]).hide();}
-			if(k.irowake!=0 && menu.getVal('irowake')){ $("#btncolor2").show();}
-			getEL("menuboard").style.paddingBottom = '0pt';
+			for(var i=0;i<idlist.length;i++)            { ee(idlist[i]).el.style.display = 'none';}
+			for(var i=0;i<seplist.length;i++)          { ee(seplist[i]).el.style.display = 'none';}
+			if(k.irowake!=0 && menu.getVal('irowake')){ ee('btncolor2').el.style.display = 'inline';}
+			ee('menuboard').el.style.paddingBottom = '0pt';
 		}
 		else{
-			for(var i=0;i<idlist.length;i++){ $("#"+idlist[i]).show(800, ee.binder(base,base.resize_canvas));}
-			for(var i=0;i<sparatorlist.length;i++){ $("#"+sparatorlist[i]).show();}
-			if(k.irowake!=0 && menu.getVal('irowake')){ $("#btncolor2").hide();}
-			getEL("menuboard").style.paddingBottom = '8pt';
+			for(var i=0;i<idlist.length;i++)            { ee(idlist[i]).el.style.display = 'block';}
+			for(var i=0;i<seplist.length;i++)          { ee(seplist[i]).el.style.display = 'block';}
+			if(k.irowake!=0 && menu.getVal('irowake')){ ee("btncolor2").el.style.display = 'none';}
+			ee('menuboard').el.style.paddingBottom = '8pt';
 		}
 		this.displaymanage = !this.displaymanage;
 		this.dispmanstr();
+
+		base.resize_canvas_only();	// canvasの左上座標等を更新
+		bd.setposAll();	// 各セルのpx,py座標を更新
+
+		if(g.vml){ pc.flushCanvasAll();}	// VMLの位置がずれるので消さないと。。
+		pc.paintAll();	// 再描画
 	},
 	dispmanstr : function(){
 		if(!this.displaymanage){ getEL("ms_manarea").innerHTML = menu.isLangJP()?"管理領域を表示":"Show management area";}

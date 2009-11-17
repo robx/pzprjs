@@ -140,12 +140,13 @@ PBase.prototype = {
 		this.resize_canvas_only();	// Canvasのサイズ設定
 
 		_doc.title = this.gettitle();
-		getEL("title2").innerHTML = this.gettitle();
+		ee('title2').setText(this.gettitle());
 
 		_doc.body.style.backgroundImage = "url(../../"+k.puzzleid+"/bg.gif)";
 		if(k.br.IE){
-			getEL("title2").style.marginTop = "24px";
-			$("hr").each(function(){ $(this).context.style.margin = '0pt';});
+			ee('title2').el.style.marginTop = "24px";
+			ee('separator1').el.style.margin = '0pt';
+			ee('separator2').el.style.margin = '0pt';
 		}
 
 		this.postfix();			// 各パズルごとの設定(後付け分)
@@ -265,7 +266,20 @@ PBase.prototype = {
 		refer = refer.replace(/\=/g,"%3d");
 		refer = refer.replace(/\//g,"%2f");
 
-		$.post("./record.cgi", "pid="+k.puzzleid+"&pzldata="+enc.uri.qdata+"&referer="+refer);
+		// 送信
+		var xmlhttp = false;
+		if(typeof ActiveXObject != "undefined"){
+			try { xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");}
+			catch (e) { xmlhttp = false;}
+		}
+		if(!xmlhttp && typeof XMLHttpRequest != "undefined") {
+			xmlhttp = new XMLHttpRequest();
+		}
+		if(xmlhttp){
+			xmlhttp.open("GET", ["./record.cgi", "?pid=",k.puzzleid, "&pzldata=",enc.uri.qdata, "&referer=",refer].join(''));
+			xmlhttp.onreadystatechange = function(){};
+			xmlhttp.send(null);
+		}
 	}
 };
 
