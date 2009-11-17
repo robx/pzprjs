@@ -137,13 +137,18 @@ var
 
 	// define and map _ElementManager class
 	_ELm = _ElementManager = _win.ee = function(id){
-		if(!_elx[id]){
-			if(typeof id === 'string'){
-				_elx[id] = new _ELx(_doc.getElementById(id));
-			}
-			else{ _elx[id] = new _ELx(id);}
+		if(typeof id === 'string'){
+			if(!_elx[id]){ _elx[id] = new _ELx(_doc.getElementById(id));}
+			return _elx[id];
 		}
-		return _elx[id];
+
+		var el = id;
+		if(!!el.id){
+			if(!_elx[el.id]){ _elx[el.id] = new _ELx(el);}
+			return _elx[el.id];
+		}
+
+		return new _ELx(el);
 	},
 	_elx = _ElementManager._cache = {},
 
