@@ -150,7 +150,7 @@ Puzzles.shwolf.prototype = {
 					this.hideEL(obj.numobj2);
 				}
 				else if(bd.cell[c].ques===-2){
-					if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
+					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 					this.dispnum(obj.numobj, 1, "?", 0.8, this.fontcolor, obj.px, obj.py);
 
 					this.hideEL(obj.numobj2);
@@ -167,7 +167,7 @@ Puzzles.shwolf.prototype = {
 						_sdiv.style.display = 'inline';
 						_sdiv.appendChild(_img);
 
-						obj.numobj2 = ee.CreateDOMAndSetNop();
+						obj.numobj2 = this.CreateDOMAndSetNop();
 						obj.numobj2.appendChild(_sdiv);
 						obj.imgobj  = _img; // èüéËÇ…í«â¡ÇµÇøÇ·Ç¢Ç‹Ç∑à´âeãøÇÕÇ»Ç¢Ç∆évÇ¢Ç‹Ç∑Ç≤ÇﬂÇÒÇ»Ç≥Ç¢ÅÑÅÉ
 					}

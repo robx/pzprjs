@@ -306,7 +306,7 @@ Puzzles.bosanowa.prototype = {
 			for(var i=0;i<idlist.length;i++){
 				var id=idlist[i], obj=bd.border[id];
 				if(bd.border[id].qsub>=0){
-					if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
+					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 					this.dispnum(obj.numobj, 101, ""+bd.QsB(id), 0.35 ,this.borderfontcolor, obj.px, obj.py);
 				}
 				else{ this.hideEL(obj.numobj);}

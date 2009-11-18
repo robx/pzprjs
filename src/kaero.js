@@ -196,7 +196,7 @@ Puzzles.kaero.prototype = {
 				var c = clist[i], obj = bd.cell[c];
 				if(bd.cell[c].qnum===-1){ this.hideEL(obj.numobj); continue;}
 
-				if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
+				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 				var num=bd.cell[c].qnum;
 
 				var color = (bd.cell[c].error===0 ? this.fontcolor : this.fontErrcolor);

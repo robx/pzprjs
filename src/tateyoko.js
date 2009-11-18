@@ -245,7 +245,7 @@ Puzzles.tateyoko.prototype = {
 
 				var num = bd.cell[c].qnum;
 				if(num===-1){ this.hideEL(obj.numobj); continue;}
-				if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
+				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 
 				var color = this.fontcolor;
 				if(bd.cell[c].ques==1){ color = "white";}

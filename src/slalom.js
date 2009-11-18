@@ -387,7 +387,7 @@ Puzzles.slalom.prototype = {
 			var num = bd.hinfo.max, obj = bd.cell[c];
 			if(num<0){ this.hideEL(obj.numobj); return;}
 
-			if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
+			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 			var fontratio = (num<10?0.75:0.66);
 			this.dispnum(obj.numobj, 1, ""+num, fontratio, "black", obj.px, obj.py);
 		};
@@ -410,7 +410,7 @@ Puzzles.slalom.prototype = {
 				var num = (r>0?bd.hinfo.data[r].number:-1);
 				if(!keydown || num<=0){ this.hideEL(obj.numobj); continue;}
 
-				if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
+				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
 				this.dispnum(obj.numobj, 1, ""+num, fontratio ,"tomato", obj.px, obj.py);
 			}

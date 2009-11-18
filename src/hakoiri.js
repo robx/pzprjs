@@ -223,7 +223,7 @@ Puzzles.hakoiri.prototype = {
 			else if(num==-2)    { text = "?";}
 			else{ this.hideEL(obj.numobj); return;}
 
-			if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
+			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 			this.dispnum(obj.numobj, 1, text, 0.8, this.getNumberColor(c), obj.px, obj.py);
 		};
 	},

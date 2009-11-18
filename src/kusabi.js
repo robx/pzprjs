@@ -123,7 +123,7 @@ Puzzles.kusabi.prototype = {
 			if(num>=1 && num<=3){ text = ({1:"“¯",2:"’Z",3:"’·"})[num];}
 			else{ this.hideEL(obj.numobj); return;}
 
-			if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
+			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 			this.dispnum(obj.numobj, 1, text, 0.65, this.getNumberColor(id), obj.px, obj.py);
 		};
 	},

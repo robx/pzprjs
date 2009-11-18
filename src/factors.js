@@ -116,14 +116,14 @@ Puzzles.factors.prototype = {
 				if(bd.cell[c].qans==-1){ this.hideEL(obj.numobj);}
 				else{
 					var color = (bd.cell[c].error==1?this.fontErrcolor:this.fontAnscolor);
-					if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
+					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 					var size = (bd.cell[c].qans<10?0.8:0.7);
 					this.dispnum(obj.numobj, 1, (""+bd.cell[c].qans), size, color, obj.px, obj.py);
 				}
 
 				if(bd.cell[c].qnum==-1){ this.hideEL(obj.numobj2);}
 				else{
-					if(!obj.numobj2){ obj.numobj2 = ee.CreateDOMAndSetNop();}
+					if(!obj.numobj2){ obj.numobj2 = this.CreateDOMAndSetNop();}
 					var size = 0.45;
 					if     (bd.QnC(c)>=100000){ size = 0.30;}
 					else if(bd.QnC(c)>= 10000){ size = 0.36;}

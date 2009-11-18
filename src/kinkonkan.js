@@ -330,7 +330,7 @@ Puzzles.kinkonkan.prototype = {
 
 				if(bd.excell[c].direc===0 && bd.excell[c].qnum===-1){ this.hideEL(obj.numobj);}
 				else{
-					if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
+					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 					var num=bd.excell[c].qnum, canum=bd.excell[c].direc;
 
 					var color = this.fontErrcolor;

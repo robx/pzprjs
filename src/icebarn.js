@@ -127,8 +127,8 @@ Puzzles.icebarn.prototype = {
 
 		if(!bd.arrowin) { bd.arrowin  = -1;}
 		if(!bd.arrowout){ bd.arrowout = -1;}
-		bd.ainobj  = ee.CreateElementAndSetNop();
-		bd.aoutobj = ee.CreateElementAndSetNop();
+		bd.ainobj  = ee.createEL(pc.EL_NUMOBJ,'');
+		bd.aoutobj = ee.createEL(pc.EL_NUMOBJ,'');
 		bd.inputarrowin = function(id){
 			var dir=((this.border[id].cx==0||this.border[id].cy==0)?1:2);
 			this.setArrow(this.arrowin,0);

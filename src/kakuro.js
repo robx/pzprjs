@@ -191,7 +191,7 @@ Puzzles.kakuro.prototype = {
 
 				if(bd.cell[c].ques!=51 && bd.cell[c].qans>0){
 					var obj = bd.cell[c];
-					if(!obj.numobj){ obj.numobj = ee.CreateDOMAndSetNop();}
+					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 					var color = (bd.cell[c].error===1 ? this.fontErrcolor : this.fontAnscolor);
 					var text  = ""+bd.cell[c].qans;
 					this.dispnum(obj.numobj, 1, text, 0.80, color, obj.px, obj.py);
