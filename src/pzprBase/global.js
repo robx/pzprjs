@@ -150,13 +150,22 @@ var
 
 		return new _ELx(el);
 	},
-	_elx = _ElementManager._cache = {},
+	_elx = _ElementManager._cache    = {},
+	_elp = _ElementManager._template = [],
+	_elpcnt = _ElementManager._tempcnt = 0;
 
 	// define and map _ElementManager.ElementExt class
 	_ELx = _ElementManager.ElementExt = function(el){
 		this.el     = el;
 		this.parent = el.parentNode;
 		this.pdisp  = 'none';
+	},
+	_ELp = _ElementManager.ElementTemplate = function(parent, tag, attr, style, func){
+		this.parent  = parent;
+		this.tagName = tag;
+		this.attr    = attr;
+		this.style   = style;
+		this.func    = func;
 	},
 
 	// Utility functions
@@ -212,14 +221,41 @@ _extend( _ElementManager, {
 		return el;
 	},
 
-	CreateDOMAndSetNop : function(){
-		return (!pc.textenable ? this.CreateElementAndSetNop() : null);
+	//----------------------------------------------------------------------
+	addTemplate : function(parent, tag, attr_i, style_i, func_i){
+		if(!tag){ return;}
+
+		if(typeof parent == 'string'){ parent = ee(parent).el;}
+		var attr  = {};
+		var style = (style_i || {});
+		var func  = (func_i  || {});
+
+		if(!!attr_i){
+			for(var name in attr_i){
+				if(name==='unselectable' && attr_i[name]==='on'){
+					if     (_Gecko) { style['UserSelect'] = style['MozUserSelect'] = 'none';}
+					else if(_WebKit){ style['UserSelect'] = style['KhtmlUserSelect'] = 'none';}
+					else{ attr['unselectable'] = 'on';}
+				}
+				else if(name==='class'){ attr['className'] = attr_i['class'];}
+				else{ attr[name] = attr_i[name];}
+			}
+		}
+
+		_elp[_elpcnt++] = new _ELp(parent, tag, attr, style, func_i);
+		return (_elpcnt-1);
 	},
-	CreateElementAndSetNop : function(){
-		var el = _doc.createElement('div');
-		el.className = 'divnum';
-		(new _ELx(el)).unselectable();
-		base.numparent.appendChild(el);
+	createEL : function(tid, id){
+		if(!_elp[tid]){ return null;}
+
+		var temp = _elp[tid];
+		var el = _doc.createElement(temp.tagName);
+		temp.parent.appendChild(el);
+
+		if(!!id){ el.id = id;}
+		for(var name in temp.attr) { el[name]       = temp.attr[name]; }
+		for(var name in temp.style){ el.style[name] = temp.style[name];}
+		for(var name in temp.func) { el["on"+name]  = temp.func[name]; }
 		return el;
 	},
 
