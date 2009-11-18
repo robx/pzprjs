@@ -224,12 +224,6 @@ _extend( _ElementManager, {
 	},
 
 	//----------------------------------------------------------------------
-	replaceChildrenClass : function(parent, before, after){
-		var el = parent.firstChild;
-		while(!!el){ if(el.className===before){ el.className = after;} }
-	},
-
-	//----------------------------------------------------------------------
 	getSrcElement : function(e){
 		return e.target || e.srcElement;
 	},
@@ -433,6 +427,26 @@ _ElementManager.ElementExt.prototype = {
 	getHeight : function(){ return this.el.offsetHeight || this.el.clientHeight;},
 
 	//----------------------------------------------------------------------
+	replaceChildrenClass : function(before, after){
+		var el = this.el.firstChild;
+		while(!!el){
+			if(el.className===before){ el.className = after;}
+			el = el.nextSibling;
+		}
+	},
+
+	removeNextAll : function(targetbase){
+		var el = this.el.lastChild;
+		while(!!el){
+			if(el===targetbase){ break;}
+			if(!!el){ this.parent.removeChild(el);}else{ break;}
+
+			el = this.el.lastChild;
+		}
+		return this;
+	},
+
+	//----------------------------------------------------------------------
 	getText : (
 		((!_IE) ?
 			// el.textContent -> IEˆÈŠO‘Î‰ž‚µ‚Ä‚ÄA•W€‚Í‚±‚Á‚¿
@@ -480,6 +494,12 @@ _ElementManager.ElementExt.prototype = {
 		this.el.innerHTML = html;
 		return this;
 	},
+
+	//----------------------------------------------------------------------
+	// el.prevousSibling -> “¯‚¶parentNode‚Ì’†‚Å’¼‘O‚É‚ ‚é—v‘f‚ð•Ô‚· ‚à‚Æ‚à‚ÆÅ‰‚È‚çnull
+	// el.nextSibling    -> “¯‚¶parentNode‚Ì’†‚Å’¼Œã‚É‚ ‚é—v‘f‚ð•Ô‚· ‚à‚Æ‚à‚ÆÅŒã‚È‚çnull
+	// parent.insertBefore(el,el2) -> el2‚Ì’¼‘O‚Éel‚ð‘}“ü el2‚ªnull‚¾‚ÆapendChild‚Æ“¯‚¶
+
 	appendHTML : function(html){
 		var sel = _doc.createElement('span');
 		sel.innerHTML = html;
@@ -490,11 +510,6 @@ _ElementManager.ElementExt.prototype = {
 		this.el.appendChild(_doc.createElement('br'));
 		return this;
 	},
-
-	//----------------------------------------------------------------------
-	// el.prevousSibling -> “¯‚¶parentNode‚Ì’†‚Å’¼‘O‚É‚ ‚é—v‘f‚ð•Ô‚· ‚à‚Æ‚à‚ÆÅ‰‚È‚çnull
-	// el.nextSibling    -> “¯‚¶parentNode‚Ì’†‚Å’¼Œã‚É‚ ‚é—v‘f‚ð•Ô‚· ‚à‚Æ‚à‚ÆÅŒã‚È‚çnull
-	// parent.insertBefore(el,el2) -> el2‚Ì’¼‘O‚Éel‚ð‘}“ü el2‚ªnull‚¾‚ÆapendChild‚Æ“¯‚¶
 	append : function(elx){
 		this.el.appendChild(elx.el);
 		return this;
@@ -503,10 +518,13 @@ _ElementManager.ElementExt.prototype = {
 		this.el.appendChild(el);
 		return this;
 	},
+
 	appendTo : function(elx){
 		elx.el.appendChild(this.el);
+		this.parent = elx.el;
 		return this;
 	},
+
 	insertBefore : function(baseel){
 		this.parent.insertBefore(this.el,baseel);
 		return this;

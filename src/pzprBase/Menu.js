@@ -57,8 +57,8 @@ Menu.prototype = {
 		getEL("float_parent").innerHTML;
 
 		if(!!getEL("btncolor2")){ getEL('btnarea').removeChild(getEL('btncolor2'));}
-		$("#btnclear2").nextAll().remove();
-		$("#outbtnarea").remove();
+		ee('btnarea').removeNextAll(ee('btnclear').el);
+		ee('outbtnarea').remove();
 
 		getEL('menupanel') .innerHTML = '';
 		getEL('usepanel')  .innerHTML = '';
@@ -109,7 +109,7 @@ Menu.prototype = {
 	},
 	menuhover : function(e, idname){
 		this.floatmenuopen(e,idname,0);
-		$("div.menusel").attr("class", "menu");
+		ee('menupanel').replaceChildrenClass('menusel','menu');
 		ee.getSrcElement(e).className = "menusel";
 	},
 	menuout   : function(e){
@@ -119,7 +119,7 @@ Menu.prototype = {
 		}
 	},
 	menuclear : function(){
-		$("div.menusel").attr("class", "menu");
+		ee('menupanel').replaceChildrenClass('menusel','menu');
 	},
 
 	//---------------------------------------------------------------------------
@@ -398,7 +398,6 @@ Menu.prototype = {
 			ee('float_parent').appendEL(_float);
 
 			this.floatpanel[id] = _float;
-			//$(_float).hide();
 		}
 		return this.floatpanel[id];
 	},
@@ -468,11 +467,12 @@ Menu.prototype = {
 		_tr.onclick = ee.binder(this, this.translate);
 
 		if(k.EDITOR){
-			$("#timerpanel,#separator2").hide();
+			ee('timerpanel').el.style.display = 'none';
+			ee('separator2').el.style.display = 'none';
 		}
 		if(k.irowake!=0){
 			this.newBTNx(ee('btnarea'), 'btncolor2','', "色分けしなおす", "Change the color of Line", ee.binder(menu.ex, menu.ex.irowakeRemake));
-			$("#btncolor2").hide();
+			ee('btncolor2').el.style.display = 'none';
 		}
 	},
 
@@ -486,7 +486,20 @@ Menu.prototype = {
 	//---------------------------------------------------------------------------
 	poparea : function(){
 
-		$("div.titlebar,#credir3_1").each(function(){ menu.titlebarfunc(this);});
+		// タイトルバーを動かせるようにする
+		var pop = ee('popup_parent').el.firstChild;
+		while(!!pop){
+			var _el = pop.firstChild;
+			while(!!_el){
+				if(_el.className==='titlebar'){
+					this.titlebarfunc(_el);
+					break;
+				}
+				_el = _el.nextSibling;
+			}
+			pop = pop.nextSibling;
+		}
+		this.titlebarfunc(ee('credit3_1').el);
 
 		//---------------------------------------------------------------------------
 		//// formボタンのイベント
@@ -577,10 +590,10 @@ Menu.prototype = {
 	// menu.titlebarmove() Popupタイトルバーからマウスを動かしたときポップアップメニューを動かす
 	//---------------------------------------------------------------------------
 	titlebarfunc : function(bar){
-		bar.onmousedown = ee.ebinder(menu, menu.titlebardown);
-		bar.onmouseup   = ee.ebinder(menu, menu.titlebarup);
-		bar.onmouseout  = ee.ebinder(menu, menu.titlebarout);
-		bar.onmousemove = ee.ebinder(menu, menu.titlebarmove);
+		bar.onmousedown = ee.ebinder(this, this.titlebardown);
+		bar.onmouseup   = ee.ebinder(this, this.titlebarup);
+		bar.onmouseout  = ee.ebinder(this, this.titlebarout);
+		bar.onmousemove = ee.ebinder(this, this.titlebarmove);
 
 		ee(bar).unselectable().el;
 	},
@@ -601,8 +614,8 @@ Menu.prototype = {
 	titlebarmove : function(e){
 		var pop = ee.getSrcElement(e).parentNode;
 		if(pop && this.isptitle){
-			pop.style.left = mv.pointerX(e) - this.offset.x;
-			pop.style.top  = mv.pointerY(e) - this.offset.y;
+			pop.style.left = ee.pageX(e) - this.offset.x;
+			pop.style.top  = ee.pageY(e) - this.offset.y;
 		}
 	},
 
