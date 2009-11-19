@@ -185,8 +185,11 @@ _extend( _ElementManager, {
 
 	//----------------------------------------------------------------------
 	clean : function(){
-		this._cache = null;
-		this._cache = {};
+		_elx = null;
+		_elx = {};
+		_elpcnt  = 0;
+		_elp = null;
+		_elp = [];
 	},
 
 	//----------------------------------------------------------------------
@@ -200,32 +203,12 @@ _extend( _ElementManager, {
 	},
 
 	//----------------------------------------------------------------------
-	newELx : function(tag){ return new _ELx(_doc.createElement(tag));},
-	newEL  : function(tag){ return _doc.createElement(tag);},
-	newBTNx : function(idname, name, firstval){
-		var elx = new _ELx(_doc.createElement('input'));
-		var el = elx.el;
-		el.type  = 'button';
-		if(!!idname){ el.id    = idname;}
-		if(!!name)  { el.name  = name;}
-		el.value = firstval;
-		if(!!idname){ _elx[idname] = elx;}
-		return elx;
-	},
-	newBTN : function(idname, name, firstval){
-		var el = _doc.createElement('input');
-		el.type  = 'button';
-		if(!!idname){ el.id    = idname;}
-		if(!!name)  { el.name  = name;}
-		el.value = firstval;
-		return el;
-	},
-
-	//----------------------------------------------------------------------
 	addTemplate : function(parent, tag, attr_i, style_i, func_i){
 		if(!tag){ return;}
 
-		if(typeof parent == 'string'){ parent = ee(parent).el;}
+		if(!parent){ parent = null;}
+		else if(typeof parent == 'string'){ parent = ee(parent).el;}
+
 		var attr  = {};
 		var style = (style_i || {});
 		var func  = (func_i  || {});
@@ -237,7 +220,6 @@ _extend( _ElementManager, {
 					else if(_WebKit){ style['UserSelect'] = style['KhtmlUserSelect'] = 'none';}
 					else{ attr['unselectable'] = 'on';}
 				}
-				else if(name==='class'){ attr['className'] = attr_i['class'];}
 				else{ attr[name] = attr_i[name];}
 			}
 		}
@@ -250,7 +232,7 @@ _extend( _ElementManager, {
 
 		var temp = _elp[tid];
 		var el = _doc.createElement(temp.tagName);
-		temp.parent.appendChild(el);
+		if(!!temp.parent){ temp.parent.appendChild(el);}
 
 		if(!!id){ el.id = id;}
 		for(var name in temp.attr) { el[name]       = temp.attr[name]; }
@@ -475,7 +457,7 @@ _ElementManager.ElementExt.prototype = {
 		var el = this.el.lastChild;
 		while(!!el){
 			if(el===targetbase){ break;}
-			if(!!el){ this.parent.removeChild(el);}else{ break;}
+			if(!!el){ this.el.removeChild(el);}else{ break;}
 
 			el = this.el.lastChild;
 		}
@@ -535,23 +517,22 @@ _ElementManager.ElementExt.prototype = {
 	// el.prevousSibling -> “¯‚¶parentNode‚Ì’†‚Å’¼‘O‚É‚ ‚é—v‘f‚ð•Ô‚· ‚à‚Æ‚à‚ÆÅ‰‚È‚çnull
 	// el.nextSibling    -> “¯‚¶parentNode‚Ì’†‚Å’¼Œã‚É‚ ‚é—v‘f‚ð•Ô‚· ‚à‚Æ‚à‚ÆÅŒã‚È‚çnull
 	// parent.insertBefore(el,el2) -> el2‚Ì’¼‘O‚Éel‚ð‘}“ü el2‚ªnull‚¾‚ÆapendChild‚Æ“¯‚¶
-
 	appendHTML : function(html){
 		var sel = _doc.createElement('span');
 		sel.innerHTML = html;
 		this.el.appendChild(sel);
 		return this;
 	},
-	appendBR : function(html){
+	appendBR : function(){
 		this.el.appendChild(_doc.createElement('br'));
-		return this;
-	},
-	append : function(elx){
-		this.el.appendChild(elx.el);
 		return this;
 	},
 	appendEL : function(el){
 		this.el.appendChild(el);
+		return this;
+	},
+	append : function(elx){
+		this.el.appendChild(elx.el);
 		return this;
 	},
 
@@ -562,11 +543,11 @@ _ElementManager.ElementExt.prototype = {
 	},
 
 	insertBefore : function(baseel){
-		this.parent.insertBefore(this.el,baseel);
+		baseel.parentNode.insertBefore(this.el,baseel);
 		return this;
 	},
 	insertAfter : function(baseel){
-		this.parent.insertBefore(this.el,baseel.nextSibling);
+		baseel.parentNode.insertBefore(this.el,baseel.nextSibling);
 		return this;
 	}
 };
