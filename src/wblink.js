@@ -241,7 +241,7 @@ Puzzles.wblink.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			this.performAsLine = true;
+			this.performAsLine = false;
 			if( !this.checkLcntCell(4) ){
 				this.setAlert('ü‚ªŒğ·‚µ‚Ä‚¢‚Ü‚·B','There is a crossing line.'); return false;
 			}

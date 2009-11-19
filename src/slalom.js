@@ -290,7 +290,9 @@ Puzzles.slalom.prototype = {
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawGates(x1,y1,x2,y2)
-			this.drawBCells_slalom(x1,y1,x2,y2);
+
+			this.drawBlackCells(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,1);
 			this.drawLines(x1,y1,x2,y2);
@@ -302,25 +304,13 @@ Puzzles.slalom.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		pc.drawBCells_slalom = function(x1,y1,x2,y2){
-			var header = "c_full_";
-
-			var clist = this.cellinside(x1,y1,x2,y2);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.cell[c].ques===1){
-					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
-					if(this.vnop(header+c,1)){
-						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
-					}
-					this.dispnumCell(c);
-				}
-				else{
-					this.vhide(header+c);
-					this.hideEL(bd.cell[c].numobj);
-				}
-			}
-			this.vinc();
+		// オーバーライド drawBlackCells用
+		pc.setCellColor = function(cc){
+			var err = bd.cell[cc].error;
+			if(bd.cell[cc].ques!==1){ return false;}
+			else if(err===0)        { g.fillStyle = this.Cellcolor; return true;}
+			else if(err===1)        { g.fillStyle = this.errcolor1; return true;}
+			return false;
 		};
 
 		pc.drawGates = function(x1,y1,x2,y2){

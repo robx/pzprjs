@@ -112,8 +112,10 @@ Puzzles.yajirin.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
+			this.drawBGCells(x1,y1,x2,y2);
+			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBWCells(x1,y1,x2,y2);
+			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawArrowNumbers(x1,y1,x2,y2);
 

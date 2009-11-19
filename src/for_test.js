@@ -75,7 +75,7 @@ var debug = {
 			enc.parseURI_pzpr.apply(enc, [debug.urls[pnum][1]]);
 			enc.pzlinput.apply(enc);
 
-			eeL('testarea').el.rows = "32";
+			ee('testarea').el.rows = "32";
 			var _pop_style = ee('poptest').el.style;
 			_pop_style.display = 'inline';
 			_pop_style.left = '40px';

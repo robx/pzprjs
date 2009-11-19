@@ -133,8 +133,8 @@ Puzzles.kakuro.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawBWCells(x1,y1,x2,y2);
-			this.drawBGcolorEX(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
+			this.drawBGEXcells(x1,y1,x2,y2);
 
 			this.draw51(x1,y1,x2,y2,false);
 			this.draw51EXcells(x1,y1,x2,y2,false);
@@ -151,15 +151,15 @@ Puzzles.kakuro.prototype = {
 			this.drawTCell(x1,y1,x2+1,y2+1);
 		};
 
-		// オーバーライド drawBWCells用
-		pc.setCellColor = function(cc){
+		// オーバーライド drawBGCells用
+		pc.setBGCellColor = function(cc){
 			var err = bd.cell[cc].error, _f = (bd.cell[cc].ques===51);
-			if     ( _f && err===0){ g.fillStyle = "rgb(192,192,192)"; return false;}
-			else if( _f && err===1){ g.fillStyle = this.errbcolor1;    return false;}
-			else if(!_f && err===1){ g.fillStyle = this.errbcolor1;    return false;}
-			g.fillStyle = "white"; return false;
+			if     ( _f && err===0){ g.fillStyle = "rgb(192,192,192)"; return true;}
+			else if( _f && err===1){ g.fillStyle = this.errbcolor1;    return true;}
+			else if(!_f && err===1){ g.fillStyle = this.errbcolor1;    return true;}
+			return false;
 		};
-		pc.drawBGcolorEX = function(x1,y1,x2,y2){
+		pc.drawBGEXcells = function(x1,y1,x2,y2){
 			var header = "ex_full_";
 
 			var exlist = this.excellinside(x1-1,y1-1,x2,y2);

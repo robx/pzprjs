@@ -400,7 +400,7 @@ _ElementManager.ElementExt.prototype = {
 	},
 
 	remove : function(){
-		this.parent.removechild(this.el);
+		this.parent.removeChild(this.el);
 		return this;
 	},
 	removeNextAll : function(targetbase){
@@ -444,11 +444,13 @@ _ElementManager.ElementExt.prototype = {
 	},
 
 	insertBefore : function(baseel){
-		baseel.parentNode.insertBefore(this.el,baseel);
+		this.parent = baseel.parentNode;
+		this.parent.insertBefore(this.el,baseel);
 		return this;
 	},
 	insertAfter : function(baseel){
-		baseel.parentNode.insertBefore(this.el,baseel.nextSibling);
+		this.parent = baseel.parentNode;
+		this.parent.insertBefore(this.el,baseel.nextSibling);
 		return this;
 	}
 };

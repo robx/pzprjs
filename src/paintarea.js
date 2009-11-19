@@ -97,12 +97,14 @@ Puzzles.paintarea.prototype = {
 	graphic_init : function(){
 		pc.bcolor = pc.bcolor_GREEN;
 		pc.BBcolor = "rgb(127, 127, 127)";
+		pc.setBGCellColorFunc('qans1');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBWCells(x1,y1,x2,y2);
+			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
@@ -110,7 +112,7 @@ Puzzles.paintarea.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			this.drawBoxBorders(x1-1,y1-1,x2+1,y2+1,0);
+			this.drawBoxBorders(x1,y1,x2,y2,true);
 
 			this.drawTarget(x1,y1,x2,y2);
 		};

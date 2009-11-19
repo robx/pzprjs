@@ -152,8 +152,9 @@ Puzzles.kakuru.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBWCells(x1,y1,x2,y2);
+			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
@@ -162,14 +163,16 @@ Puzzles.kakuru.prototype = {
 			this.drawTCell(x1,y1,x2+1,y2+1);
 		};
 
-		// オーバーライド drawBWCells用
+		// オーバーライド drawBGCells用
+		pc.setBGCellColor = function(cc){
+			if     (bd.cell[cc].qnum !==-1){ g.fillStyle = "rgb(208, 208, 208)"; return true;}
+			else if(bd.cell[cc].error=== 1){ g.fillStyle = this.errbcolor1;      return true;}
+			return false;
+		};
+		// オーバーライド drawBlackCells用
 		pc.setCellColor = function(cc){
-			var err = bd.cell[cc].error, _u = (bd.cell[cc].ques===1);
-			if     ( _u &&  err===0){ g.fillStyle = this.Cellcolor; return true;}
-			else if( _u &&  err===1){ g.fillStyle = this.errcolor1; return true;}
-			else if(bd.QnC(cc)!==-1){ g.fillStyle = "rgb(208, 208, 208)"; return false;}
-			else if(!_u &&  err===1){ g.fillStyle = this.errbcolor1;      return false;}
-			g.fillStyle = "white"; return false;
+			if(bd.cell[cc].ques===1){ g.fillStyle = this.Cellcolor; return true;}
+			return false;
 		};
 	},
 

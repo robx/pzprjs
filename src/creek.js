@@ -91,6 +91,7 @@ Puzzles.creek.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.Cellcolor = "rgb(96, 96, 96)";
+		pc.setBGCellColorFunc('qans1');
 
 		pc.crosssize = 0.35;
 
@@ -98,8 +99,10 @@ Puzzles.creek.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawBWCells(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
+			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
+
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawCrosses(x1,y1,x2+1,y2+1);

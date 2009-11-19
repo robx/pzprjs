@@ -86,7 +86,7 @@ Menu.prototype = {
 
 		ee('float_parent').el.innerHTML;
 
-		if(!!ee('btncolor2').el){ ee('btncolor2').remove();}
+		if(!!ee('btncolor2')){ ee('btncolor2').remove();}
 		ee('btnarea').removeNextAll(ee('btnclear2').el);
 
 		ee('menupanel') .el.innerHTML = '';
@@ -574,8 +574,10 @@ Menu.prototype = {
 		func = ee.ebinder(this.ex, this.ex.newboard);
 		lab(ee('bar1_1').el,      "盤面の新規作成",         "Createing New Board");
 		lab(ee('pop1_1_cap0').el, "盤面を新規作成します。", "Create New Board.");
-		lab(ee('pop1_1_cap1').el, "よこ",                   "Cols");
-		lab(ee('pop1_1_cap2').el, "たて",                   "Rows");
+		if(k.puzzleid!=='sudoku' && k.puzzleid!=='tawa'){
+			lab(ee('pop1_1_cap1').el, "よこ",                   "Cols");
+			lab(ee('pop1_1_cap2').el, "たて",                   "Rows");
+		}
 		btn(document.newboard.newboard, func,  "新規作成",   "Create");
 		btn(document.newboard.cancel,   close, "キャンセル", "Cancel");
 

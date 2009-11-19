@@ -88,7 +88,7 @@ Puzzles.mejilink.prototype = {
 
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBorders_mejilink(x1,y1,x2,y2);
 
 			this.drawBaseMarks(x1,y1,x2,y2);
 
@@ -121,31 +121,40 @@ Puzzles.mejilink.prototype = {
 		};
 
 		// オーバーライド
-		pc.drawBorder1 = function(id,flag){
+		pc.drawBorders_mejilink = function(x1,y1,x2,y2){
 			var headers = ["b_bd_", "b_wbd_"];
-			if(!flag){ this.vhide([headers[0]+id, headers[1]+id]); return;}
 
-			var isline = bd.isLine(id);
-			if(isline){
-				g.fillStyle = this.getLineColor(id);
-				if(this.vnop(headers[0]+id,1)){
-					var lw = this.lw + this.addlw, lm = this.lm;
-					if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-					else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
+			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+			for(var i=0;i<idlist.length;i++){
+				var id = idlist[i];
+				if(bd.border[id].ques===0 && bd.border[id].qans===0){
+					this.vhide([headers[0]+id, headers[1]+id]);
+					continue;
 				}
-			}
-			else{ this.vhide(headers[0]+id);}
 
-			if(!isline){
-				var cc2=bd.cc2(id);
-				g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.BorderQuescolor : this.errbcolor1);
-				if(this.vnop(headers[1]+id,1)){
-					var lw = this.lw + this.addlw, lm = this.lm;
-					if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
-					else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2),  bd.border[id].py, k.cwidth+1,  1);}
+				var isline = bd.isLine(id);
+				if(isline){
+					g.fillStyle = this.getLineColor(id);
+					if(this.vnop(headers[0]+id,1)){
+						var lw = this.lw + this.addlw, lm = this.lm;
+						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
+						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
+					}
 				}
+				else{ this.vhide(headers[0]+id);}
+
+				if(!isline){
+					var cc2=bd.cc2(id);
+					g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.BorderQuescolor : this.errbcolor1);
+					if(this.vnop(headers[1]+id,1)){
+						var lw = this.lw + this.addlw, lm = this.lm;
+						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
+						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2),  bd.border[id].py, k.cwidth+1,  1);}
+					}
+				}
+				else{ this.vhide(headers[1]+id);}
 			}
-			else{ this.vhide(headers[1]+id);}
+			this.vinc();
 		};
 
 		line.repaintParts = function(id){

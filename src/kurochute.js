@@ -87,7 +87,6 @@ Puzzles.kurochute.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
-		pc.qsubcolor1 = "white";
 		pc.qsubcolor2 = pc.bcolor_GREEN;
 
 		pc.paint = function(x1,y1,x2,y2){
@@ -95,8 +94,10 @@ Puzzles.kurochute.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
+			this.drawBGCells(x1,y1,x2,y2);
+			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBWCells(x1,y1,x2,y2);
+			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
@@ -105,16 +106,12 @@ Puzzles.kurochute.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		// オーバーライド drawBWCells用
-		pc.setCellColor = function(cc){
-			var _b = bd.isBlack(cc), err = bd.cell[cc].error;
-
-			if     ( _b && err===0){ g.fillStyle = this.Cellcolor; return true;}
-			else if( _b && err===1){ g.fillStyle = this.errcolor1; return true;}
-			else if( _b && err===2){ g.fillStyle = this.errcolor2; return true;}
-			else if(!_b && err===1){ g.fillStyle = this.errbcolor1; return false;}
-			else if(bd.cell[cc].qsub===2){ g.fillStyle = this.qsubcolor2; return false;}
-			g.fillStyle = "white"; return false;
+		// オーバーライド drawBGCells用 (qsub==1は表示しない..)
+		pc.setBGCellColor = function(cc){
+			var cell = bd.cell[cc];
+			if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
+			else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2; return true;}
+			return false;
 		};
 	},
 

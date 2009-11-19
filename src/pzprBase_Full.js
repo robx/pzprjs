@@ -6,7 +6,7 @@
  * 
  * @author  happa.
  * @version v3.2.3
- * @date    2009-11-15
+ * @date    2009-11-20
  * 
  * This script uses following libraries.
  *  jquery.js (version 1.3.2)
@@ -129,69 +129,355 @@ var k = {
 };
 k.IEMargin = (k.br.IE ? k.IEMargin : new Pos(0,0));
 
+//---------------------------------------------------------------------------
+// ★その他のグローバル変数
+//---------------------------------------------------------------------------
 var g;				// グラフィックコンテキスト
 var Puzzles = [];	// パズル個別クラス
+var _doc = document;
 
 //---------------------------------------------------------------------------
 // ★共通グローバル関数
+// mf()            小数点以下を切捨てる(旧int())
+// f_true()        trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
 //---------------------------------------------------------------------------
-	//---------------------------------------------------------------------------
-	// newEL(tag)      新しいtagのHTMLエレメントを表すjQueryオブジェクトを作成する
-	// unselectable()  エレメントを文字列選択で選択できないようにする
-	// mf()            小数点以下を切捨てる(旧int())
-	// f_true()        trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
-	//---------------------------------------------------------------------------
-var _doc = document;
-function newEL(tag)  { return _doc.createElement(tag);}
-function getEL(id)   { return _doc.getElementById(id);}
-
-var unselectable = (
-	 (k.br.Gecko)  ? function(el){ el.style.MozUserSelect = 'none';   el.style.userSelect = 'none'; return el;}
-	:(k.br.WebKit) ? function(el){ el.style.KhtmlUserSelect = 'none'; el.style.userSelect = 'none'; return el;}
-	:                function(el){ el.unselectable = 'on'; return el;}
-);
-
 var mf = Math.floor;
 function f_true(){ return true;}
 
-	//---------------------------------------------------------------------------
-	// toArray()   argumentsをarrayに変換する(binder用)
-	// binder()    関数にthisを紐付けする
-	// ebinder()   関数にthisを紐付けする(イベント用)
-	// kcbinder()  関数にthisを紐付けする(キーボードイベント用)
-	//---------------------------------------------------------------------------
-function toArray(array){
-	if(!array){ return [];}
-	var args = [];
-	for(var i=0;i<array.length;i++){ args[i]=array[i];}
-	return args;
-}
-function binder(){
-	var args=toArray(arguments), obj = args.shift(), __method = args.shift();
-	return function(){
-		var ret = __method.apply(obj, toArray(args[0]).concat(toArray(arguments)));
-		return ret;
-	}
-};
-function ebinder(){
-	var args=toArray(arguments), obj = args.shift(), __method = args.shift();
-	return function(e){
-		var ret = __method.apply(obj, [e||window.event].concat(toArray(args[0])).concat(toArray(arguments)));
-		return ret;
-	}
-};
-function kcbinder(){
-	var args=toArray(arguments), __method = args.shift();
-	return function(e){
-		ret = __method.apply(kc, [e||window.event].concat(toArray(args[0])).concat(toArray(arguments)));
-		if(kc.tcMoved){
-			if(k.br.Gecko||k.br.WebKit){ e.preventDefault();}
-			else if(!k.br.IE){ e.returnValue = false;}
-			else{ return false;}
+//---------------------------------------------------------------------------
+// ★ElementManagerクラス Element関係の処理
+//    ee() 指定したidのElementExtを取得する
+//---------------------------------------------------------------------------
+(function(){
+
+// definition
+var
+	// local scope
+	_doc = document,
+	_win = this,
+
+	// browsers
+	_IE     = k.br.IE,
+	_Gecko  = k.br.Gecko,
+	_WebKit = k.br.WebKit,
+
+	/* ここからクラス定義です  varでドット付きは、最左辺に置けません */
+
+	// define and map _ElementManager class
+	_ELm = _ElementManager = _win.ee = function(id){
+		if(typeof id === 'string'){
+			if(!_elx[id]){
+				var el = _doc.getElementById(id);
+				if(!el){ return null;}
+				_elx[id] = new _ELx(el);
+			}
+			return _elx[id];
 		}
-		return ret;
+
+		var el = id;
+		if(!!el.id){
+			if(!_elx[el.id]){ _elx[el.id] = new _ELx(el);}
+			return _elx[el.id];
+		}
+
+		return ((!!el) ? new _ELx(el) : null);
+	},
+	_elx = _ElementManager._cache    = {},
+	_elp = _ElementManager._template = [],
+	_elpcnt = _ElementManager._tempcnt = 0;
+
+	// define and map _ElementManager.ElementExt class
+	_ELx = _ElementManager.ElementExt = function(el){
+		this.el     = el;
+		this.parent = el.parentNode;
+		this.pdisp  = 'none';
+	},
+	_ELp = _ElementManager.ElementTemplate = function(parent, tag, attr, style, func){
+		this.parent  = parent;
+		this.tagName = tag;
+		this.attr    = attr;
+		this.style   = style;
+		this.func    = func;
+	},
+
+	// Utility functions
+	_extend = function(obj, ads){
+		for(var name in ads){ obj[name] = ads[name];}
+	},
+	_toArray = function(args){
+		if(!args){ return [];}
+		var array = [];
+		for(var i=0,len=args.length;i<len;i++){ array[i]=args[i];}
+		return array;
+	}
+;
+
+// implementation of _ElementManage class
+_extend( _ElementManager, {
+
+	//----------------------------------------------------------------------
+	// ee.clean()  内部用の変数を初期化する
+	//----------------------------------------------------------------------
+	clean : function(){
+		_elx = null;
+		_elx = {};
+		_elpcnt  = 0;
+		_elp = null;
+		_elp = [];
+	},
+
+	//----------------------------------------------------------------------
+	// ee.addTemplate()  指定した内容のElementTemplateを作成してIDを返す
+	// ee.createEL()     ElementTemplateからエレメントを作成して返す
+	//----------------------------------------------------------------------
+	addTemplate : function(parent, tag, attr_i, style_i, func_i){
+		if(!tag){ return;}
+
+		if(!parent){ parent = null;}
+		else if(typeof parent == 'string'){ parent = ee(parent).el;}
+
+		var attr  = {};
+		var style = (style_i || {});
+		var func  = (func_i  || {});
+
+		if(!!attr_i){
+			for(var name in attr_i){
+				if(name==='unselectable' && attr_i[name]==='on'){
+					if     (_Gecko) { style['UserSelect'] = style['MozUserSelect'] = 'none';}
+					else if(_WebKit){ style['UserSelect'] = style['KhtmlUserSelect'] = 'none';}
+					else{ attr['unselectable'] = 'on';}
+				}
+				else{ attr[name] = attr_i[name];}
+			}
+		}
+
+		_elp[_elpcnt++] = new _ELp(parent, tag, attr, style, func_i);
+		return (_elpcnt-1);
+	},
+	createEL : function(tid, id){
+		if(!_elp[tid]){ return null;}
+
+		var temp = _elp[tid];
+		var el = _doc.createElement(temp.tagName);
+		if(!!temp.parent){ temp.parent.appendChild(el);}
+
+		if(!!id){ el.id = id;}
+		for(var name in temp.attr) { el[name]       = temp.attr[name]; }
+		for(var name in temp.style){ el.style[name] = temp.style[name];}
+		for(var name in temp.func) { el["on"+name]  = temp.func[name]; }
+		return el;
+	},
+
+	//----------------------------------------------------------------------
+	// ee.getSrcElement() イベントが起こったエレメントを返す
+	// ee.pageX()         イベントが起こったページ上のX座標を返す
+	// ee.pageY()         イベントが起こったページ上のY座標を返す
+	// ee.windowWidth()   ウィンドウの幅を返す
+	// ee.windowHeight()  ウィンドウの高さを返す
+	//----------------------------------------------------------------------
+	getSrcElement : function(e){
+		return e.target || e.srcElement;
+	},
+	pageX : (
+		((!k.br.IE) ?
+			function(e){ return e.pageX;}
+		:
+			function(e){ return e.clientX + (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);}
+		)
+	),
+	pageY : (
+		((!k.br.IE) ?
+			function(e){ return e.pageY;}
+		:
+			function(e){ return e.clientY + (_doc.documentElement.scrollTop  || _doc.body.scrollTop);}
+		)
+	),
+
+	windowWidth : (
+		((_doc.all) ?
+			function(){ return _doc.body.clientWidth;}
+		:(_doc.layers || _doc.getElementById)?
+			function(){ return innerWidth;}
+		:
+			function(){ return 0;}
+		)
+	),
+	windowHeight : (
+		((_doc.all) ?
+			function(){ return _doc.body.clientHeight;}
+		:(_doc.layers || _doc.getElementById)?
+			function(){ return innerHeight;}
+		:
+			function(){ return 0;}
+		)
+	),
+
+	//----------------------------------------------------------------------
+	// ee.binder()   thisをbindする
+	// ee.ebinder()  thisとイベントをbindする
+	// ee.kcbinder() kcとイベントをbindする
+	//----------------------------------------------------------------------
+	binder : function(){
+		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift();
+		return function(){
+			return __method.apply(obj, (args.length>0?args[0]:[]).concat(_toArray(arguments)));
+		}
+	},
+	ebinder : function(){
+		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift(), rest = (args.length>0?args[0]:[]);
+		return function(e){
+			return __method.apply(obj, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
+		}
+	},
+	kcbinder : function(){
+		var args=_toArray(arguments), __method = args.shift(), rest = (args.length>0?args[0]:[]);
+		return function(e){
+			ret = __method.apply(kc, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
+			if(kc.tcMoved){
+				if(_Gecko||_WebKit){ e.preventDefault();}
+				else if(_IE){ return false;}
+				else{ e.returnValue = false;}
+			}
+			return ret;
+		}
+	}
+});
+
+// implementation of _ElementManager.ElementExt class
+_ElementManager.ElementExt.prototype = {
+	//----------------------------------------------------------------------
+	// ee.getRect()   エレメントの四辺の座標を返す
+	// ee.getWidth()  エレメントの幅を返す
+	// ee.getHeight() エレメントの高さを返す
+	//----------------------------------------------------------------------
+	getRect : (
+		((!!document.getBoundingClientRect) ?
+			((!_IE) ?
+				function(){
+					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
+					var left   = rect.left   + _win.scrollX;
+					var top    = rect.top    + _win.scrollY;
+					var right  = rect.right  + _win.scrollX;
+					var bottom = rect.bottom + _win.scrollY;
+					return { top:top, bottom:bottom, left:left, right:right};
+				}
+			:
+				function(){
+					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
+					var left   = rect.left   + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
+					var top    = rect.top    + ((_body.scrollTop  || _html.scrollTop ) - _html.clientTop );
+					var right  = rect.right  + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
+					var bottom = rect.bottom + ((_body.scrollTop  || _html.scrollTop ) - _html.clientTop );
+					return { top:top, bottom:bottom, left:left, right:right};
+				}
+			)
+		:
+			function(){
+				var left = 0, top = 0, el = this.el;
+				while(!!el){
+					left += +(el.offsetLeft || el.clientLeft);
+					top  += +(el.offsetTop  || el.clientTop );
+					el = el.offsetParent;
+				}
+				var right  = left + (this.el.offsetWidth  || this.el.clientWidth);
+				var bottom = top  + (this.el.offsetHeight || this.el.clientHeight);
+				return { top:top, bottom:bottom, left:left, right:right};
+			}
+		)
+	),
+	getWidth  : function(){ return this.el.offsetWidth  || this.el.clientWidth; },
+	getHeight : function(){ return this.el.offsetHeight || this.el.clientHeight;},
+
+	//----------------------------------------------------------------------
+	// ee.unselectable()         エレメントを選択できなくする
+	// ee.replaceChildrenClass() 子要素のクラスを変更する
+	// ee.remove()               エレメントを削除する
+	// ee.removeNextAll()        同じ親要素を持ち、自分より後ろにあるエレメントを削除する
+	//----------------------------------------------------------------------
+	unselectable : (
+		((_Gecko) ?
+			function(){
+				this.el.style.MozUserSelect = 'none';
+				this.el.style.UserSelect    = 'none';
+				return this;
+			}
+		:(_WebKit) ?
+			function(){
+				this.el.style.KhtmlUserSelect = 'none';
+				this.el.style.UserSelect      = 'none';
+				return this;
+			}
+		:
+			function(){
+				this.el.unselectable = "on";
+				return this;
+			}
+		)
+	),
+
+	replaceChildrenClass : function(before, after){
+		var el = this.el.firstChild;
+		while(!!el){
+			if(el.className===before){ el.className = after;}
+			el = el.nextSibling;
+		}
+	},
+
+	remove : function(){
+		this.parent.removechild(this.el);
+		return this;
+	},
+	removeNextAll : function(targetbase){
+		var el = this.el.lastChild;
+		while(!!el){
+			if(el===targetbase){ break;}
+			if(!!el){ this.el.removeChild(el);}else{ break;}
+
+			el = this.el.lastChild;
+		}
+		return this;
+	},
+
+	//----------------------------------------------------------------------
+	// ee.appendHTML() 指定したHTMLを持つspanエレメントを子要素の末尾に追加する
+	// ee.appendBR()   <BR>を子要素の末尾に追加する
+	// ee.appendEL()   指定したエレメントを子要素の末尾に追加する
+	// ee.appendTo()   自分を指定した親要素の末尾に追加する
+	// ee.insertBefore() エレメントを自分の前に追加する
+	// ee.insertAfter()  エレメントを自分の後ろに追加する
+	//----------------------------------------------------------------------
+	appendHTML : function(html){
+		var sel = _doc.createElement('span');
+		sel.innerHTML = html;
+		this.el.appendChild(sel);
+		return this;
+	},
+	appendBR : function(){
+		this.el.appendChild(_doc.createElement('br'));
+		return this;
+	},
+	appendEL : function(el){
+		this.el.appendChild(el);
+		return this;
+	},
+
+	appendTo : function(elx){
+		elx.el.appendChild(this.el);
+		this.parent = elx.el;
+		return this;
+	},
+
+	insertBefore : function(baseel){
+		baseel.parentNode.insertBefore(this.el,baseel);
+		return this;
+	},
+	insertAfter : function(baseel){
+		baseel.parentNode.insertBefore(this.el,baseel.nextSibling);
+		return this;
 	}
 };
+
+})();
 
 //---------------------------------------------------------------------------
 // ★Timerクラス
@@ -206,7 +492,7 @@ Timer = function(){
 
 	// 経過時間表示用変数
 	this.bseconds = 0;		// 前回ラベルに表示した時間(秒数)
-	this.timerEL = getEL("timerpanel");
+	this.timerEL = ee('timerpanel').el;
 
 	// 自動正答判定用変数
 	this.lastAnsCnt  = 0;	// 前回正答判定した時の、UndoManagerに記録されてた問題/回答入力のカウント
@@ -239,7 +525,7 @@ Timer.prototype = {
 	},
 	start : function(){
 		this.st = (new Date()).getTime();
-		this.TID = setInterval(binder(this, this.update), this.timerInterval);
+		this.TID = setInterval(ee.binder(this, this.update), this.timerInterval);
 	},
 	update : function(){
 		this.current = (new Date()).getTime();
@@ -291,7 +577,7 @@ Timer.prototype = {
 	//---------------------------------------------------------------------------
 	startUndoTimer : function(){
 		this.undoWaitCount = this.undoStartCount;
-		if(!this.TIDundo){ this.TIDundo = setInterval(binder(this, this.procUndo), this.undoInterval);}
+		if(!this.TIDundo){ this.TIDundo = setInterval(ee.binder(this, this.procUndo), this.undoInterval);}
 
 		if     (kc.inUNDO){ um.undo();}
 		else if(kc.inREDO){ um.redo();}
@@ -1256,6 +1542,9 @@ Graphic = function(){
 	this.minYdeg = 0.18;
 	this.maxYdeg = 0.70;
 
+	var numobj_attr = {className:'divnum', unselectable:'on'};
+	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', numobj_attr, null, null);
+
 	this.setFunctions();
 };
 Graphic.prototype = {
@@ -1417,49 +1706,52 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawBWCells()    Cellの■と背景色/・をCanvasに書き込む
-	// pc.setCellColor()   drawBWCellsで描画する色を設定する
-	// pc.drawBGCells()    [CellのQsub or Error or アイスバーン]の背景色をCanvasに書き込む
-	// pc.drawBGCellColor()背景色を設定する
-	// pc.drawDotCells()  ・だけをCanvasに書き込む
-	// pc.drawBCells()     Cellの黒マス＋黒マス上の数字をCanvasに書き込む
+	// pc.drawBlackCells() Cellの、境界線の上から描画される■黒マスをCanvasに書き込む
+	// pc.setCellColor()   前景色の設定・描画判定する
+	// pc.setCellColorFunc()   pc.setCellColor関数を設定する
+	//
+	// pc.drawBGCells()    Cellの、境界線の下に描画される背景色をCanvasに書き込む
+	// pc.setBGCellColor() 背景色の設定・描画判定する
+	// pc.setBGCellColorFunc() pc.setBGCellColor関数を設定する
 	//---------------------------------------------------------------------------
-	drawBWCells : function(x1,y1,x2,y2){
-		var dsize = k.cwidth*0.06; dsize=(dsize>2?dsize:2);
-		var headers = ["c_full_", "c_dot_"];
+	// err==2になるlitsは、drawBGCellsで描画してます。。
+	drawBlackCells : function(x1,y1,x2,y2){
+		var header = "c_fullb_";
 
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			this.vhide([headers[0]+c, headers[1]+c]);
-
-			var m = this.setCellColor(c);
-			if(g.fillStyle!=="white" && this.vnop(headers[0]+c,1)){
-				g.fillRect(bd.cell[c].px+!m, bd.cell[c].py+!m, k.cwidth+(m?1:-1), k.cheight+(m?1:-1));
+			if(this.setCellColor(c)){
+				if(this.vnop(header+c,1)){
+					g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
+				}
 			}
-
-			// この下は・表示部
-			if(this.bcolor!=="white" || bd.cell[c].qsub!==1){ continue;}
-			g.fillStyle = this.dotcolor;
-			if(this.vnop(headers[1]+c,1)){
-				g.beginPath();
-				g.arc(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, dsize, 0, Math.PI*2, false);
-				g.fill();
-			}
+			else{ this.vhide(header+c); continue;}
 		}
 		this.vinc();
 	},
-	setCellColor : function(cc){
-		var _b = bd.isBlack(cc), err = bd.cell[cc].error;
-
-		if     ( _b && err===0){ g.fillStyle = this.Cellcolor; return true;}
-		else if( _b && err===1){ g.fillStyle = this.errcolor1; return true;}
-		else if( _b && err===2){ g.fillStyle = this.errcolor2; return true;}
-		else if( _b && err===3){ g.fillStyle = this.errcolor3; return true;}
-		else if(!_b && err===1){ g.fillStyle = this.errbcolor1; return false;}
-		else if(!_b && err===2){ g.fillStyle = this.errbcolor2; return false;}
-		else if(bd.cell[cc].qsub===1){ g.fillStyle = this.bcolor;     return false;}
-		g.fillStyle = "white"; return false;
+	// 'qans'用
+	setCellColor : function(c){
+		var err = bd.cell[c].error;
+		if(bd.cell[c].qans!==1){ return false;}
+		else if(err===0){ g.fillStyle = this.Cellcolor; return true;}
+		else if(err===1){ g.fillStyle = this.errcolor1; return true;}
+		return false;
+	},
+	setCellColorFunc : function(type){
+		switch(type){
+		case 'qnum':
+			this.setCellColor = function(c){
+				var err = bd.cell[c].error;
+				if(bd.cell[c].qnum===-1){ return false;}
+				else if(err===0){ g.fillStyle = this.Cellcolor; return true;}
+				else if(err===1){ g.fillStyle = this.errcolor1; return true;}
+				return false;
+			};
+			break;
+		default:
+			break;
+		}
 	},
 
 	drawBGCells : function(x1,y1,x2,y2){
@@ -1468,78 +1760,119 @@ Graphic.prototype = {
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if(!this.setBGCellColor(c)){ this.vhide(header+c); continue;}
-
-			if(this.vnop(header+c,1)){
-				g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);
+			if(this.setBGCellColor(c)){
+				if(this.vnop(header+c,1)){
+					g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
+				}
 			}
+			else{ this.vhide(header+c); continue;}
 		}
 		this.vinc();
+	},
+	// 'error1'用
+	setBGCellColor : function(c){
+		if(bd.cell[c].error===1){ g.fillStyle = this.errbcolor1; return true;}
+		return false;
 	},
 	setBGCellColorFunc : function(type){
 		switch(type){
 		case 'error2':
 			this.setBGCellColor = function(c){
-				if     (bd.cell[c].error===1){ g.fillStyle = this.errbcolor1; return true;}
-				else if(bd.cell[c].error===2){ g.fillStyle = this.errbcolor2; return true;}
+				var cell = bd.cell[c];
+				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
+				else if(cell.error===2){ g.fillStyle = this.errbcolor2; return true;}
 				return false;
 			}
 			break;
+		case 'qans1':
+			this.setBGCellColor = function(c){
+				var cell = bd.cell[c];
+				if(cell.qans===1){
+					g.fillStyle = (cell.error===1 ? this.errcolor1 : this.Cellcolor);
+					return true;
+				}
+				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
+				else if(cell.qsub ===1 && this.bcolor!=="white"){ g.fillStyle = this.bcolor; return true;}
+				return false;
+			};
+			break;
+		case 'qans2':
+			this.setBGCellColor = function(c){
+				var cell = bd.cell[c];
+				if(cell.qans===1){
+					if     (cell.error===0){ g.fillStyle = this.Cellcolor;}
+					else if(cell.error===1){ g.fillStyle = this.errcolor1;}
+					else if(cell.error===2){ g.fillStyle = this.errcolor2;}
+					return true;
+				}
+				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
+				else if(cell.qsub ===1 && this.bcolor!=="white"){ g.fillStyle = this.bcolor; return true;}
+				return false;
+			};
+			break;
+		case 'qsub1':
+			this.setBGCellColor = function(c){
+				var cell = bd.cell[c];
+				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
+				else if(cell.qsub ===1){ g.fillStyle = this.bcolor;     return true;}
+				return false;
+			};
+			break;
 		case 'qsub2':
 			this.setBGCellColor = function(c){
-				if     (bd.cell[c].error===1){ g.fillStyle = this.errbcolor1; return true;}
-				else if(bd.cell[c].qsub ===1){ g.fillStyle = this.qsubcolor1; return true;}
-				else if(bd.cell[c].qsub ===2){ g.fillStyle = this.qsubcolor2; return true;}
+				var cell = bd.cell[c];
+				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
+				else if(cell.qsub ===1){ g.fillStyle = this.qsubcolor1; return true;}
+				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2; return true;}
 				return false;
 			};
 			break;
 		case 'qsub3':
 			this.setBGCellColor = function(c){
-				if     (bd.cell[c].error===1){ g.fillStyle = this.errbcolor1; return true;}
-				else if(bd.cell[c].qsub ===1){ g.fillStyle = this.qsubcolor1; return true;}
-				else if(bd.cell[c].qsub ===2){ g.fillStyle = this.qsubcolor2; return true;}
-				else if(bd.cell[c].qsub ===3){ g.fillStyle = this.qsubcolor3; return true;}
+				var cell = bd.cell[c];
+				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
+				else if(cell.qsub ===1){ g.fillStyle = this.qsubcolor1; return true;}
+				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2; return true;}
+				else if(cell.qsub ===3){ g.fillStyle = this.qsubcolor3; return true;}
 				return false;
 			};
 			break;
 		case 'icebarn':
 			this.setBGCellColor = function(c){
-				if     (bd.cell[c].error===1){ g.fillStyle = this.errbcolor1; return true;}
-				else if(bd.cell[c].ques ===6){ g.fillStyle = this.icecolor;   return true;}
+				var cell = bd.cell[c];
+				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
+				else if(cell.ques ===6){ g.fillStyle = this.icecolor;   return true;}
 				return false;
 			};
 			break;
 		default:
-			this.setBGCellColor = function(c){
-				if(bd.cell[c].error===1){ g.fillStyle = this.errbcolor1; return true;}
-				return false;
-			}
 			break;
 		}
 	},
-	setBGCellColor : function(c){
-		if(bd.cell[c].error===1){ g.fillStyle = this.errbcolor1; return true;}
-		return false;
-	},
 
-	drawBCells : function(x1,y1,x2,y2){
-		var header = "c_full_";
+	//---------------------------------------------------------------------------
+	// pc.drawRDotCells()  ・だけをCanvasに書き込む(・用)
+	// pc.drawDotCells()   ・だけをCanvasに書き込む(小さい四角形用)
+	//---------------------------------------------------------------------------
+	drawRDotCells : function(x1,y1,x2,y2){
+		var dsize = k.cwidth*0.06; dsize=(dsize>2?dsize:2);
+		var header = "c_rdot_";
 
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if(bd.cell[c].qnum!==-1){
-				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+			if(bd.cell[c].qsub===1){
+				g.fillStyle = this.dotcolor;
 				if(this.vnop(header+c,1)){
-					g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
+					g.beginPath();
+					g.arc(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, dsize, 0, Math.PI*2, false);
+					g.fill();
 				}
 			}
-			else if(bd.cell[c].error===0 && !(k.puzzleid==="lightup" && ans.isShined && ans.isShined(c))){ this.vhide(header+c);}
-			this.dispnumCell(c);
+			else{ this.vhide(header+c);}
 		}
 		this.vinc();
 	},
-
 	drawDotCells : function(x1,y1,x2,y2){
 		var ksize = k.cwidth*0.15;
 		var header = "c_dot_";
@@ -1704,38 +2037,49 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawBorders()     境界線をCanvasに書き込む
-	// pc.drawIceBorders()  アイスバーンの境界線をCanvasに書き込む
-	// pc.drawBorder1()     idを指定して1カ所の境界線をCanvasに書き込む
-	// pc.drawBorder1x()    x,yを指定して1カ所の境界線をCanvasに書き込む
-	// pc.drawBorderQsubs() 境界線用の補助記号をCanvasに書き込む
+	// pc.drawBorders()       境界線をCanvasに書き込む
+	// pc.drawBordersAsLine() k.isborderAsLine===1の時、線をCanvasに書き込む
+	// pc.drawIceBorders()    アイスバーンの境界線をCanvasに書き込む
+	// pc.drawBorder1x()      (x,y)を指定して1カ所の境界線をCanvasに書き込む
+	// pc.drawBorderQsubs()   境界線用の補助記号をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawBorders : function(x1,y1,x2,y2){
 		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
-		for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i], bd.isBorder(idlist[i]));}
+		for(var i=0;i<idlist.length;i++){
+			var id = idlist[i];
+
+			if     (bd.border[id].qans !==1){ g.fillStyle = this.BorderQuescolor;    }
+			else if(bd.border[id].error===1){ g.fillStyle = this.errcolor1;          }
+			else if(bd.border[id].error===2){ g.fillStyle = this.errBorderQanscolor2;}
+			else                            { g.fillStyle = this.BorderQanscolor;    }
+
+			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, bd.isBorder(id));
+		}
+	},
+	drawBordersAsLine : function(x1,y1,x2,y2){
+		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+		for(var i=0;i<idlist.length;i++){
+			var id = idlist[i];
+
+			if(bd.border[id].qans!==1){ g.fillStyle = this.BorderQuescolor; }
+			else                      { g.fillStyle = this.getLineColor(id);}
+
+			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, bd.isBorder(id));
+		}
 		this.vinc();
 	},
 	drawIceBorders : function(x1,y1,x2,y2){
-		g.fillStyle = pc.Cellcolor;
+		g.fillStyle = this.Cellcolor;
 		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i], cc1 = bd.cc1(id), cc2 = bd.cc2(id);
-			this.drawBorder1x(bd.border[id].cx,bd.border[id].cy,(cc1!==-1&&cc2!==-1&&(bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)));
+
+			var flag = (cc1!==-1 && cc2!==-1 && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6));
+			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, flag);
 		}
 		this.vinc();
 	},
-	drawBorder1 : function(id, flag){
-		if(bd.border[id].qans!==1){ g.fillStyle = this.BorderQuescolor;}
-		else{
-			if(k.isborderAsLine===1){ g.fillStyle = this.getLineColor(id);}
-			else{
-				if     (bd.border[id].error===1){ g.fillStyle = this.errcolor1;          }
-				else if(bd.border[id].error===2){ g.fillStyle = this.errBorderQanscolor2;}
-				else                            { g.fillStyle = this.BorderQanscolor;    }
-			}
-		}
-		this.drawBorder1x(bd.border[id].cx,bd.border[id].cy,flag);
-	},
+
 	drawBorder1x : function(bx,by,flag){
 		var vid = ["b_bd", bx, by].join("_");
 		if(!flag){ this.vhide(vid); return;}
@@ -1775,47 +2119,54 @@ Graphic.prototype = {
 		var lw = this.lw, lm = this.lm+1;
 		var cw = k.cwidth;
 		var ch = k.cheight;
+		var chars = ['u','d','l','r'];
 
 		g.fillStyle = this.BBcolor;
 
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.cell[c].qans!=1){ for(var n=1;n<=12;n++){ this.vhide("c_bb"+n+"_"+c);} continue;}
+			var c = clist[i], vids=[];
+			for(var n=0;n<12;n++){ vids[n]=['c_bb',n,c].join('_');}
+			if(bd.cell[c].qans!==1){ this.vhide(vids); continue;}
 
-			var bx = 2*bd.cell[c].cx+1, by = 2*bd.cell[c].cy+1;
+			var cx = bd.cell[c].cx, cy = bd.cell[c].cy, bx = 2*cx+1, by = 2*cy+1;
 			var px = bd.cell[c].px, py = bd.cell[c].py;
 
-			var isUP = ((bd.QuB(bd.ub(c))!==1) && !(!k.isoutsideborder&&by<=1));
-			var isLT = ((bd.QuB(bd.lb(c))!==1) && !(!k.isoutsideborder&&bx<=1));
-			var isRT = ((bd.QuB(bd.rb(c))!==1) && !(!k.isoutsideborder&&bx>=2*k.qcols-1));
-			var isDN = ((bd.QuB(bd.db(c))!==1) && !(!k.isoutsideborder&&by>=2*k.qrows-1));
+			// この関数を呼ぶ場合は全てk.isoutsideborder===0なので
+			// 外枠用の考慮部分を削除しています。
+			var UPin = (cy>0), DNin = (cy<k.qrows-1);
+			var LTin = (cx>0), RTin = (cx<k.qcols-1);
 
-			var isUL = (bd.QuB(bd.bnum(bx-2,by-1))!==1 && bd.QuB(bd.bnum(bx-1,by-2))!==1);
-			var isUR = (bd.QuB(bd.bnum(bx+2,by-1))!==1 && bd.QuB(bd.bnum(bx+1,by-2))!==1);
-			var isDL = (bd.QuB(bd.bnum(bx-2,by+1))!==1 && bd.QuB(bd.bnum(bx-1,by+2))!==1);
-			var isDR = (bd.QuB(bd.bnum(bx+2,by+1))!==1 && bd.QuB(bd.bnum(bx+1,by+2))!==1);
+			var isUP = (!UPin || bd.border[bd.bnum(bx  ,by-1)].ques===1);
+			var isDN = (!DNin || bd.border[bd.bnum(bx  ,by+1)].ques===1);
+			var isLT = (!LTin || bd.border[bd.bnum(bx-1,by  )].ques===1);
+			var isRT = (!RTin || bd.border[bd.bnum(bx+1,by  )].ques===1);
 
-			if(!isLT){ if(this.vnop("c_bb1_"+c,1)){ g.fillRect(px   +lm, py   +lm, 1    ,ch-lw);} }else{ this.vhide("c_bb1_"+c);}
-			if(!isRT){ if(this.vnop("c_bb2_"+c,1)){ g.fillRect(px+cw-lm, py   +lm, 1    ,ch-lw);} }else{ this.vhide("c_bb2_"+c);}
-			if(!isUP){ if(this.vnop("c_bb3_"+c,1)){ g.fillRect(px   +lm, py   +lm, cw-lw,1    );} }else{ this.vhide("c_bb3_"+c);}
-			if(!isDN){ if(this.vnop("c_bb4_"+c,1)){ g.fillRect(px   +lm, py+ch-lm, cw-lw,1    );} }else{ this.vhide("c_bb4_"+c);}
+			var isUL = (!UPin || !LTin || bd.border[bd.bnum(bx-2,by-1)].ques===1 || bd.border[bd.bnum(bx-1,by-2)].ques===1);
+			var isUR = (!UPin || !RTin || bd.border[bd.bnum(bx+2,by-1)].ques===1 || bd.border[bd.bnum(bx+1,by-2)].ques===1);
+			var isDL = (!DNin || !LTin || bd.border[bd.bnum(bx-2,by+1)].ques===1 || bd.border[bd.bnum(bx-1,by+2)].ques===1);
+			var isDR = (!DNin || !RTin || bd.border[bd.bnum(bx+2,by+1)].ques===1 || bd.border[bd.bnum(bx+1,by+2)].ques===1);
+
+			if(isUP){ if(this.vnop(vids[0],1)){ g.fillRect(px   +lm, py   +lm, cw-lw,1    );} }else{ this.vhide(vids[0]);}
+			if(isDN){ if(this.vnop(vids[1],1)){ g.fillRect(px   +lm, py+ch-lm, cw-lw,1    );} }else{ this.vhide(vids[1]);}
+			if(isLT){ if(this.vnop(vids[2],1)){ g.fillRect(px   +lm, py   +lm, 1    ,ch-lw);} }else{ this.vhide(vids[2]);}
+			if(isRT){ if(this.vnop(vids[3],1)){ g.fillRect(px+cw-lm, py   +lm, 1    ,ch-lw);} }else{ this.vhide(vids[3]);}
 
 			if(tileflag){
-				if(isLT&&!(isUL&&isUP)){ if(this.vnop("c_bb5_"+c,1)){ g.fillRect(px   -lm, py   +lm, lw+1,1   );} }else{ this.vhide("c_bb5_"+c);}
-				if(isLT&&!(isDL&&isDN)){ if(this.vnop("c_bb6_"+c,1)){ g.fillRect(px   -lm, py+ch-lm, lw+1,1   );} }else{ this.vhide("c_bb6_"+c);}
-				if(isUP&&!(isUL&&isLT)){ if(this.vnop("c_bb7_"+c,1)){ g.fillRect(px   +lm, py   -lm, 1   ,lw+1);} }else{ this.vhide("c_bb7_"+c);}
-				if(isUP&&!(isUR&&isRT)){ if(this.vnop("c_bb8_"+c,1)){ g.fillRect(px+cw-lm, py   -lm, 1   ,lw+1);} }else{ this.vhide("c_bb8_"+c);}
+				if(!isUP&&(isUL||isLT)){ if(this.vnop(vids[4],1)){ g.fillRect(px   +lm, py   -lm, 1   ,lw+1);} }else{ this.vhide(vids[4]);}
+				if(!isUP&&(isUR||isRT)){ if(this.vnop(vids[5],1)){ g.fillRect(px+cw-lm, py   -lm, 1   ,lw+1);} }else{ this.vhide(vids[5]);}
+				if(!isLT&&(isUL||isUP)){ if(this.vnop(vids[6],1)){ g.fillRect(px   -lm, py   +lm, lw+1,1   );} }else{ this.vhide(vids[6]);}
+				if(!isLT&&(isDL||isDN)){ if(this.vnop(vids[7],1)){ g.fillRect(px   -lm, py+ch-lm, lw+1,1   );} }else{ this.vhide(vids[7]);}
 			}
 			else{
-				if(isLT&&!(isUL&&isUP)){ if(this.vnop("c_bb5_" +c,1)){ g.fillRect(px      , py   +lm, lm+1,1   );} }else{ this.vhide("c_bb5_" +c); }
-				if(isLT&&!(isDL&&isDN)){ if(this.vnop("c_bb6_" +c,1)){ g.fillRect(px      , py+ch-lm, lm+1,1   );} }else{ this.vhide("c_bb6_" +c); }
-				if(isUP&&!(isUL&&isLT)){ if(this.vnop("c_bb7_" +c,1)){ g.fillRect(px   +lm, py      , 1   ,lm+1);} }else{ this.vhide("c_bb7_" +c); }
-				if(isUP&&!(isUR&&isRT)){ if(this.vnop("c_bb8_" +c,1)){ g.fillRect(px+cw-lm, py      , 1   ,lm+1);} }else{ this.vhide("c_bb8_" +c); }
-				if(isRT&&!(isUR&&isUP)){ if(this.vnop("c_bb9_" +c,1)){ g.fillRect(px+cw-lm, py   +lm, lm+1,1   );} }else{ this.vhide("c_bb9_" +c); }
-				if(isRT&&!(isDR&&isDN)){ if(this.vnop("c_bb10_"+c,1)){ g.fillRect(px+cw-lm, py+ch-lm, lm+1,1   );} }else{ this.vhide("c_bb10_"+c);}
-				if(isDN&&!(isDL&&isLT)){ if(this.vnop("c_bb11_"+c,1)){ g.fillRect(px   +lm, py+ch-lm, 1   ,lm+1);} }else{ this.vhide("c_bb11_"+c);}
-				if(isDN&&!(isDR&&isRT)){ if(this.vnop("c_bb12_"+c,1)){ g.fillRect(px+cw-lm, py+ch-lm, 1   ,lm+1);} }else{ this.vhide("c_bb12_"+c);}
+				if(!isUP&&(isUL||isLT)){ if(this.vnop(vids[4] ,1)){ g.fillRect(px   +lm, py      , 1   ,lm+1);} }else{ this.vhide(vids[4] );}
+				if(!isUP&&(isUR||isRT)){ if(this.vnop(vids[5] ,1)){ g.fillRect(px+cw-lm, py      , 1   ,lm+1);} }else{ this.vhide(vids[5] );}
+				if(!isDN&&(isDL||isLT)){ if(this.vnop(vids[6] ,1)){ g.fillRect(px   +lm, py+ch-lm, 1   ,lm+1);} }else{ this.vhide(vids[6] );}
+				if(!isDN&&(isDR||isRT)){ if(this.vnop(vids[7] ,1)){ g.fillRect(px+cw-lm, py+ch-lm, 1   ,lm+1);} }else{ this.vhide(vids[7] );}
+				if(!isLT&&(isUL||isUP)){ if(this.vnop(vids[8] ,1)){ g.fillRect(px      , py   +lm, lm+1,1   );} }else{ this.vhide(vids[8] );}
+				if(!isLT&&(isDL||isDN)){ if(this.vnop(vids[9] ,1)){ g.fillRect(px      , py+ch-lm, lm+1,1   );} }else{ this.vhide(vids[9] );}
+				if(!isRT&&(isUR||isUP)){ if(this.vnop(vids[10],1)){ g.fillRect(px+cw-lm, py   +lm, lm+1,1   );} }else{ this.vhide(vids[10]);}
+				if(!isRT&&(isDR||isDN)){ if(this.vnop(vids[11],1)){ g.fillRect(px+cw-lm, py+ch-lm, lm+1,1   );} }else{ this.vhide(vids[11]);}
 			}
 		}
 		this.vinc();
@@ -1847,7 +2198,7 @@ Graphic.prototype = {
 		this.addlw = 0;
 		if     (bd.border[id].error===1){ this.addlw=1; return this.errlinecolor1;}
 		else if(bd.border[id].error===2){ return this.errlinecolor2;}
-		else if(k.irowake===0 || !menu.getVal('irowake') || !bd.border[id].color){ return this.linecolor;}
+		else if(k.irowake===0 || !pp.getVal('irowake') || !bd.border[id].color){ return this.linecolor;}
 		return bd.border[id].color;
 	},
 	drawPekes : function(x1,y1,x2,y2,flag){
@@ -2438,14 +2789,14 @@ Graphic.prototype = {
 			((!k.br.IE) ?
 				function(){
 					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(0, 0, menu.getWidth(base.canvas), menu.getHeight(base.canvas));
+					g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
 					this.vinc();
 				}
 			:
 				function(){
 					g._clear();	// uuCanvas用特殊処理
 					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(0, 0, menu.getWidth(base.canvas), menu.getHeight(base.canvas));
+					g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
 					this.vinc();
 				}
 			)
@@ -2454,7 +2805,7 @@ Graphic.prototype = {
 				g.zidx=0; g.vid="bg_"; g.pelements = []; g.elements = [];	// VML用
 				g._clear();													// uuCanvas用特殊処理
 				g.fillStyle = "rgb(255, 255, 255)";
-				g.fillRect(0, 0, menu.getWidth(base.canvas), menu.getHeight(base.canvas));
+				g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
 				this.vinc();
 			}
 		)
@@ -2503,25 +2854,17 @@ Graphic.prototype = {
 	}),
 
 	//---------------------------------------------------------------------------
-	// pc.CreateDOMAndSetNop()     数字を描画する為のエレメントを生成する
-	// pc.CreateElementAndSetNop() エレメントを生成する
-	// pc.showEL()                 エレメントを表示する
-	// pc.hideEL()                 エレメントを隠す
-	// pc.isdispnumCell()          数字を記入できるか判定する
-	// pc.getNumberColor()         数字の色を判定する
+	// pc.CreateDOMAndSetNop()  数字表示用のエレメントを返す
+	// pc.showEL()              エレメントを表示する
+	// pc.hideEL()              エレメントを隠す
+	// pc.isdispnumCell()       数字を記入できるか判定する
+	// pc.getNumberColor()      数字の色を判定する
 	//---------------------------------------------------------------------------
 	// 数字表示関数
 	CreateDOMAndSetNop : function(){
-		if(this.textenable){ return null;}
-		return this.CreateElementAndSetNop();
+		return (!pc.textenable ? ee.createEL(pc.EL_NUMOBJ,'') : null);
 	},
-	CreateElementAndSetNop : function(){
-		var el = newEL("div");
-		el.className = "divnum";
-		base.numparent.appendChild(el);
 
-		return unselectable(el);
-	},
 	showEL : function(el){ el.style.display = 'inline'; },	// 条件見なくてもよさそう。
 	hideEL : function(el){ if(!!el){ el.style.display = 'none';} },
 
@@ -2538,19 +2881,19 @@ Graphic.prototype = {
 		this.getNumberColor = (
 			((!!k.isAnsNumber) ?
 				function(id){
-					if(bd.ErC(id)===1 || bd.ErC(id)===4){ return this.fontErrcolor;}
-					return (bd.QnC(id)!==-1 ? this.fontcolor : this.fontAnscolor);
+					if(bd.cell[id].error===1 || bd.cell[id].error===4){ return this.fontErrcolor;}
+					return (bd.cell[id].qnum!==-1 ? this.fontcolor : this.fontAnscolor);
 				}
 			:(!!k.BlackCell) ?
 				function(id){
-					if(bd.QaC(id)===1){ return this.BCell_fontcolor;}
-					else if(bd.ErC(id)===1 || bd.ErC(id)===4){ return this.fontErrcolor;}
+					if(bd.cell[id].qans===1){ return this.BCell_fontcolor;}
+					else if(bd.cell[id].error===1 || bd.cell[id].error===4){ return this.fontErrcolor;}
 					return this.fontcolor;
 				}
 			:
 				function(id){
-					if(bd.QuC(id)!==0){ return this.BCell_fontcolor;}
-					else if(bd.ErC(id)===1 || bd.ErC(id)===4){ return this.fontErrcolor;}
+					if(bd.cell[id].ques!==0){ return this.BCell_fontcolor;}
+					else if(bd.cell[id].error===1 || bd.cell[id].error===4){ return this.fontErrcolor;}
 					return this.fontcolor;
 				}
 			)
@@ -2622,19 +2965,19 @@ Graphic.prototype = {
 			var hgt = el.clientHeight;
 
 			if(type===1||type===6||type===7){
-				el.style.left = k.cv_oft.x+px+mf((k.cwidth-wid) /2)+(IE?-1:2)-(type===6?mf(k.cwidth *0.1):0);
-				el.style.top  = k.cv_oft.y+py+mf((k.cheight-hgt)/2)+(IE? 1:1)+(type===7?mf(k.cheight*0.1):0);
+				el.style.left = k.cv_oft.x+px+mf((k.cwidth-wid) /2)+(IE?3:2)-(type===6?mf(k.cwidth *0.1):0);
+				el.style.top  = k.cv_oft.y+py+mf((k.cheight-hgt)/2)+(IE?3:1)+(type===7?mf(k.cheight*0.1):0);
 			}
 			else if(type===101){
-				el.style.left = k.cv_oft.x+px-wid/2+(IE?1:2);
-				el.style.top  = k.cv_oft.y+py-hgt/2+(IE?1:1);
+				el.style.left = k.cv_oft.x+px-wid/2+(IE?4:2);
+				el.style.top  = k.cv_oft.y+py-hgt/2+(IE?2:1);
 			}
 			else{
-				if(type==52||type==54){ px--; py++; type-=50;}	// excellの[＼]対応..
-				if     (type===3||type===4){ el.style.left = k.cv_oft.x+px+k.cwidth -wid+(IE?-1: 0);}
-				else if(type===2||type===5){ el.style.left = k.cv_oft.x+px              +(IE? 3: 4);}
-				if     (type===2||type===3){ el.style.top  = k.cv_oft.y+py+k.cheight-hgt+(IE?-1:-1);}
-				else if(type===4||type===5){ el.style.top  = k.cv_oft.y+py              +(IE? 2: 2);}
+				if(type==52||type==54){ px--; type-=50;}	// excellの[＼]対応..
+				if     (type===3||type===4){ el.style.left = k.cv_oft.x+px+k.cwidth -wid+(IE?1: 0);}
+				else if(type===2||type===5){ el.style.left = k.cv_oft.x+px              +(IE?5: 4);}
+				if     (type===2||type===3){ el.style.top  = k.cv_oft.y+py+k.cheight-hgt+(IE?2:-1);}
+				else if(type===4||type===5){ el.style.top  = k.cv_oft.y+py              +(IE?4: 2);}
 			}
 
 			el.style.color = color;
@@ -2750,7 +3093,7 @@ MouseEvent.prototype = {
 
 		this.setButtonFlag(e);
 		// SHIFTキーを押している時は左右ボタン反転
-		if(((kc.isSHIFT)^menu.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
+		if(((kc.isSHIFT)^pp.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
 			this.btn.Left = !this.btn.Left; this.btn.Right = !this.btn.Right;
 		}
 		if(this.btn.Middle){ this.modeflip(); return;} //中ボタン
@@ -2813,8 +3156,6 @@ MouseEvent.prototype = {
 
 	//---------------------------------------------------------------------------
 	// mv.setposition()   イベントが起こった座標をinputX, inputY変数に代入
-	// mv.pointerX()      イベントが起こったX座標を取得する
-	// mv.pointerY()      イベントが起こったY座標を取得する
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
@@ -2836,25 +3177,9 @@ MouseEvent.prototype = {
 			}
 		)
 	),
-	pointerX : (
-		(k.br.WinWebKit) ?
-			function(e){ return e.pageX - 1;}
-		:(!k.br.IE) ?
-			function(e){ return e.pageX;}
-		:
-			function(e){ return e.clientX + (this.docEL.scrollLeft || this.bodyEL.scrollLeft);}
-	),
-	pointerY : (
-		(k.br.WinWebKit) ?
-			function(e){ return e.pageY - 1;}
-		:(!k.br.IE) ?
-			function(e){ return e.pageY;}
-		:
-			function(e){ return e.clientY + (this.docEL.scrollTop  || this.bodyEL.scrollTop);}
-	),
 
 	notInputted : function(){ return !um.changeflag;},
-	modeflip    : function(){ if(k.EDITOR){ menu.setVal('mode', (k.playmode?1:3));} },
+	modeflip    : function(){ if(k.EDITOR){ pp.setVal('mode', (k.playmode?1:3));} },
 
 	// 共通関数
 	//---------------------------------------------------------------------------
@@ -2933,11 +3258,11 @@ MouseEvent.prototype = {
 		pc.paintCell(cc);
 	},
 	decIC : function(cc){
-		if(menu.getVal('use')==1){
+		if(pp.getVal('use')==1){
 			if(this.btn.Left){ this.inputData=(bd.isWhite(cc) ? 1 : 0); }
 			else if(this.btn.Right){ this.inputData=((bd.QsC(cc)!=1) ? 2 : 0); }
 		}
-		else if(menu.getVal('use')==2){
+		else if(pp.getVal('use')==2){
 			if(this.btn.Left){
 				if(bd.isBlack(cc)) this.inputData=2;
 				else if(bd.QsC(cc) == 1) this.inputData=0;
@@ -3515,8 +3840,8 @@ KeyEvent.prototype = {
 		if(this.isCTRL && this.ca=='y'){ this.inREDO=true; flag = true; tm.startUndoTimer();}
 
 		if(this.ca=='F2' && k.EDITOR){ // 112～123はF1～F12キー
-			if     (k.editmode && !this.isSHIFT){ menu.setVal('mode',3); flag = true;}
-			else if(k.playmode &&  this.isSHIFT){ menu.setVal('mode',1); flag = true;}
+			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); flag = true;}
+			else if(k.playmode &&  this.isSHIFT){ pp.setVal('mode',1); flag = true;}
 		}
 		if(k.scriptcheck && debug){ flag = (flag || debug.keydown(this.ca));}
 
@@ -3746,6 +4071,13 @@ KeyPopup = function(){
 	this.tbodytmp=null, this.trtmp=null;
 
 	this.ORIGINAL = 99;
+
+	// ElementTemplate
+	this.EL_KPNUM   = ee.addTemplate('','td', {unselectable:'on', className:'kpnum'}, null, null);
+	this.EL_KPEMPTY = ee.addTemplate('','td', {unselectable:'on'}, null, null);
+	this.EL_KPIMG   = ee.addTemplate('','td', {unselectable:'on', className:'kpimgcell'}, null, null);
+	this.EL_KPIMG_DIV = ee.addTemplate('','div', {unselectable:'on', className:'kpimgdiv'}, null, null);
+	this.EL_KPIMG_IMG = ee.addTemplate('','img', {unselectable:'on', className:'kpimg', src:"./src/img/"+k.puzzleid+"_kp.gif"}, null, null);
 };
 KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
@@ -3754,7 +4086,7 @@ KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
 	// オーバーライド用
 	kpinput : function(ca){ },
-	enabled : function(){ return menu.getVal('keypopup');},
+	enabled : function(){ return pp.getVal('keypopup');},
 
 	//---------------------------------------------------------------------------
 	// kp.generate()   キーポップアップを生成して初期化する
@@ -3769,18 +4101,18 @@ KeyPopup.prototype = {
 
 	gentable : function(mode, type, func){
 		this.ctl[mode].enable = true;
-		this.ctl[mode].el     = getEL("keypopup"+mode);
-		this.ctl[mode].el.onmouseout = ebinder(this, this.hide);
+		this.ctl[mode].el     = ee('keypopup'+mode).el;
+		this.ctl[mode].el.onmouseout = ee.ebinder(this, this.hide);
 
-		var table = newEL('table');
+		var table = _doc.createElement('table');
 		table.cellSpacing = '2pt';
 		this.ctl[mode].el.appendChild(table);
 
-		this.tbodytmp = newEL('tbody');
+		this.tbodytmp = _doc.createElement('tbody');
 		table.appendChild(this.tbodytmp);
 
 		this.trtmp = null;
-		if(func)							  { func(mode);                }
+		if(func)							  { func.apply(kp, [mode]);}
 		else if(type==0 || type==3)			  { this.gentable10(mode,type);}
 		else if(type==1 || type==2 || type==4){ this.gentable4 (mode,type);}
 	},
@@ -3823,35 +4155,24 @@ KeyPopup.prototype = {
 	// kp.insertrow() テーブルの行を追加する
 	//---------------------------------------------------------------------------
 	inputcol : function(type, id, ca, disp){
-		if(!this.trtmp){ this.trtmp = newEL('tr');}
+		if(!this.trtmp){ this.trtmp = _doc.createElement('tr');}
 		var _td = null;
 		if(type==='num'){
-			_td    = unselectable(newEL('td'));
-			_td.id = id;
-			_td.className   = 'kpnum';
+			_td = ee.createEL(this.EL_KPNUM, id);
 			_td.style.color = this.tdcolor;
 			_td.innerHTML   = disp;
-			_td.onclick     = ebinder(this, this.inputnumber, [ca]);
+			_td.onclick     = ee.ebinder(this, this.inputnumber, [ca]);
 		}
 		else if(type==='empty'){
-			_td    = unselectable(newEL('td'));
-			_td.id = id;
+			_td = ee.createEL(this.EL_KPEMPTY, '');
 		}
 		else if(type==='image'){
-			var _img = unselectable(newEL('img'));
-			_img.id = ""+id+"_i";
-			_img.className = 'kp';
-			_img.src       = "./src/img/"+k.puzzleid+"_kp.gif";
-
-			var _div = unselectable(newEL('div'));
-			_div.position = 'relative';
-			_div.display  = 'inline';
+			var _img = ee.createEL(this.EL_KPIMG_IMG, ""+id+"_i");
+			var _div = ee.createEL(this.EL_KPIMG_DIV, '');
 			_div.appendChild(_img);
 
-			_td    = unselectable(newEL('td'));
-			_td.id = id;
-			_td.className = 'kpimg';
-			_td.onclick   = ebinder(this, this.inputnumber, [ca]);
+			_td = ee.createEL(this.EL_KPIMG, id);
+			_td.onclick   = ee.ebinder(this, this.inputnumber, [ca]);
 			_td.appendChild(_div);
 
 			this.imgs.push({'el':_img, 'cx':disp[0], 'cy':disp[1]});
@@ -3875,8 +4196,8 @@ KeyPopup.prototype = {
 	// kp.hide()        キーポップアップを隠す
 	//---------------------------------------------------------------------------
 	display : function(){
-		var mode = menu.getVal('mode');
-		if(this.ctl[mode].el && this.ctl[mode].enable && menu.getVal('keypopup') && mv.btn.Left){
+		var mode = pp.getVal('mode');
+		if(this.ctl[mode].el && this.ctl[mode].enable && pp.getVal('keypopup') && mv.btn.Left){
 			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputX - 3 + k.IEMargin.x;
 			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputY - 3 + k.IEMargin.y;
 			this.ctl[mode].el.style.zIndex = 100;
@@ -3903,10 +4224,10 @@ KeyPopup.prototype = {
 	},
 	inputnumber : function(e, ca){
 		this.kpinput(ca);
-		this.ctl[menu.getVal('mode')].el.style.display = 'none';
+		this.ctl[pp.getVal('mode')].el.style.display = 'none';
 	},
 	hide : function(e){
-		var mode = menu.getVal('mode');
+		var mode = pp.getVal('mode');
 		if(!!this.ctl[mode].el && !menu.insideOf(this.ctl[mode].el, e)){
 			this.ctl[mode].el.style.display = 'none';
 		}
@@ -5259,6 +5580,23 @@ FileIO.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// fio.clickHandler()  フォーム上のボタンが押された時、各関数にジャンプする
+	//---------------------------------------------------------------------------
+	clickHandler : function(e){
+		switch(ee.getSrcElement(e).name){
+			case 'sorts'   : this.displayDataTableList(); break;
+			case 'datalist': this.selectDataTable(); break;
+			case 'tableup' : this.upDataTable();     break;
+			case 'tabledn' : this.downDataTable();   break;
+			case 'open'    : this.openDataTable();   break;
+			case 'save'    : this.saveDataTable();   break;
+			case 'comedit' : this.editComment();     break;
+			case 'difedit' : this.editDifficult();   break;
+			case 'del'     : this.deleteDataTable(); break;
+		}
+	},
+
+	//---------------------------------------------------------------------------
 	// fio.displayDataTableList() 保存しているデータの一覧を表示する
 	// fio.ni()                   文字列で1桁なら0をつける
 	// fio.getDataTableList()     保存しているデータの一覧を取得する
@@ -5623,7 +5961,7 @@ AnsCheck.prototype = {
 			mv.mousereset();
 			alert(menu.isLangJP()?"正解です！":"Complete!");
 			ret = true;
-			menu.setVal('autocheck',false);
+			pp.setVal('autocheck',false);
 		}
 		this.enableSetError();
 		this.inCheck = false;
@@ -6070,8 +6408,8 @@ UndoManager.prototype = {
 	isenableInfo : function(){ return (this.disinfo==0);},
 
 	enb_btn : function(){
-		getEL("btnundo").disabled = ((!this.ope.length || this.current==0)               ? 'true' : '');
-		getEL("btnredo").disabled = ((!this.ope.length || this.current==this.ope.length) ? 'true' : '');
+		ee('btnundo').el.disabled = ((!this.ope.length || this.current==0)               ? 'true' : '');
+		ee('btnredo').el.disabled = ((!this.ope.length || this.current==this.ope.length) ? 'true' : '');
 	},
 	allerase : function(){
 		for(var i=this.ope.length-1;i>=0;i--){ this.ope.pop();}
@@ -6288,17 +6626,44 @@ Menu = function(){
 
 	this.ex = new MenuExec();
 	this.language = 'ja';
+
+	// ElementTemplate : メニュー領域
+	var menu_funcs = {mouseover : ee.ebinder(this, this.menuhover), mouseout  : ee.ebinder(this, this.menuout)};
+	this.EL_MENU  = ee.addTemplate('menupanel','div', {className:'menu'}, {marginRight:'4pt'}, menu_funcs);
+
+	// ElementTemplate : フロートメニュー
+	var float_funcs = {mouseout:ee.ebinder(this, this.floatmenuout)};
+	this.EL_FLOAT = ee.addTemplate('float_parent','div', {className:'floatmenu'}, {zIndex:101, backgroundColor:base.floatbgcolor}, float_funcs);
+
+	// ElementTemplate : フロートメニュー(中身)
+	var smenu_funcs  = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout), click:ee.ebinder(this, this.submenuclick)};
+	var select_funcs = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout)};
+	this.EL_SMENU    = ee.addTemplate('','div' , {className:'smenu'}, null, smenu_funcs);
+	this.EL_SELECT   = ee.addTemplate('','div' , {className:'smenu'}, {fontWeight :'900', fontSize:'10pt'}, select_funcs);
+	this.EL_SEPARATE = ee.addTemplate('','div' , {className:'smenusep', innerHTML:'&nbsp;'}, null, null);
+	this.EL_CHECK    = ee.addTemplate('','div' , {className:'smenu'}, {paddingLeft:'6pt', fontSize:'10pt'}, smenu_funcs);
+	this.EL_LABEL    = ee.addTemplate('','span', null, {color:'white'}, null);
+	this.EL_CHILD = this.EL_CHECK;
+
+	// ElementTemplate : 管理領域
+	this.EL_DIVPACK  = ee.addTemplate('','div',  null, null, null);
+	this.EL_SPAN     = ee.addTemplate('','span', {unselectable:'on'}, null, null);
+	this.EL_CHECKBOX = ee.addTemplate('','input',{type:'checkbox', check:''}, null, {click:ee.ebinder(this, this.checkclick)});
+	this.EL_SELCHILD = ee.addTemplate('','div',  {className:'flag',unselectable:'on'}, null, {click:ee.ebinder(this, this.selectclick)});
+
+	// ElementTemplate : ボタン
+	this.EL_BUTTON = ee.addTemplate('','input', {type:'button'}, null, null);
 };
 Menu.prototype = {
 	//---------------------------------------------------------------------------
-	// menu.menuinit()      メニュー、ボタン、サブメニュー、フロートメニュー、
-	//                      ポップアップメニューの初期設定を行う
-	// menu.menureset()     メニュー用の設定を消去する
-	// menu.getSrcElement() イベントを起こしたエレメントを返す
-	// menu.spanEL()        spanタグ＋innerHTMLだけ設定してエレメントを返す
+	// menu.menuinit()   メニュー、サブメニュー、フロートメニュー、ボタン、
+	//                   管理領域、ポップアップメニューの初期設定を行う
+	// menu.menureset()  メニュー用の設定を消去する
+	//
+	// menu.addButtons() ボタンの情報を変数に登録する
+	// menu.addLabels()  ラベルの情報を変数に登録する
 	//---------------------------------------------------------------------------
 	menuinit : function(){
-		this.buttonarea();
 		this.menuarea();
 		this.managearea();
 		this.poparea();
@@ -6312,77 +6677,274 @@ Menu.prototype = {
 		this.pop        = "";
 		this.btnstack   = [];
 		this.labelstack = [];
+		this.managestack = [];
 
 		this.popclose();
 		this.menuclear();
 		this.floatmenuclose(0);
 
-		getEL("float_parent").innerHTML;
+		ee('float_parent').el.innerHTML;
 
-		if(!!getEL("btncolor2")){ getEL('btnarea').removeChild(getEL('btncolor2'));}
-		$("#btnclear2").nextAll().remove();
-		$("#outbtnarea").remove();
+		if(!!ee('btncolor2').el){ ee('btncolor2').remove();}
+		ee('btnarea').removeNextAll(ee('btnclear2').el);
 
-		getEL('menupanel') .innerHTML = '';
-		getEL('usepanel')  .innerHTML = '';
-		getEL('checkpanel').innerHTML = '';
+		ee('menupanel') .el.innerHTML = '';
+		ee('usepanel')  .el.innerHTML = '';
+		ee('checkpanel').el.innerHTML = '';
 
 		pp.reset();
 	},
 
-	getSrcElement : function(event){
-		return event.target || event.srcElement;
+	addButtons : function(el, func, strJP, strEN){
+		if(!!func) el.onclick = func;
+		ee(el).unselectable();
+		this.btnstack.push({el:el, str:{ja:strJP, en:strEN}});
 	},
-	spanEL : function(str){
-		var el = newEL('span');
-		el.innerHTML = str;
-		return el;
+	addLabels  : function(el, strJP, strEN){
+		this.labelstack.push({el:el, str:{ja:strJP, en:strEN}});
 	},
 
 	//---------------------------------------------------------------------------
+	// menu.displayAll() 全てのメニュー、ボタン、ラベルに対して文字列を設定する
+	// menu.setdisplay() 管理パネルとサブメニューに表示する文字列を個別に設定する
+	//---------------------------------------------------------------------------
+	displayAll : function(){
+		for(var i in pp.flags){ this.setdisplay(i);}
+		for(var i=0,len=this.btnstack.length;i<len;i++){
+			if(!this.btnstack[i].el){ continue;}
+			this.btnstack[i].el.value = this.btnstack[i].str[menu.language];
+		}
+		for(var i=0,len=this.labelstack.length;i<len;i++){
+			if(!this.labelstack[i].el){ continue;}
+			this.labelstack[i].el.innerHTML = this.labelstack[i].str[menu.language];
+		}
+	},
+	setdisplay : function(idname){
+		switch(pp.type(idname)){
+		case pp.MENU:
+			var menu = ee('ms_'+idname);
+			if(!!menu){ menu.el.innerHTML = "["+pp.getMenuStr(idname)+"]";}
+			break;
+
+		case pp.SMENU: case pp.LABEL:
+			var smenu = ee('ms_'+idname);
+			if(!!smenu){ smenu.el.innerHTML = pp.getMenuStr(idname);}
+			break;
+
+		case pp.SELECT:
+			var smenu = ee('ms_'+idname), label = ee('cl_'+idname);
+			if(!!smenu){ smenu.el.innerHTML = "&nbsp;"+pp.getMenuStr(idname);}	// メニュー上の表記の設定
+			if(!!label){ label.el.innerHTML = pp.getLabel(idname);}			// 管理領域上の表記の設定
+			for(var i=0,len=pp.flags[idname].child.length;i<len;i++){ this.setdisplay(""+idname+"_"+pp.flags[idname].child[i]);}
+			break;
+
+		case pp.CHILD:
+			var smenu = ee('ms_'+idname), manage = ee('up_'+idname);
+			var issel = (pp.getVal(idname) == pp.getVal(pp.flags[idname].parent));
+			var cap = pp.getMenuStr(idname);
+			if(!!smenu){ smenu.el.innerHTML = (issel?"+":"&nbsp;")+cap;}	// メニューの項目
+			if(!!manage){													// 管理領域の項目
+				manage.el.innerHTML = cap;
+				manage.el.className = (issel?"flagsel":"flag");
+			}
+			break;
+
+		case pp.CHECK:
+			var smenu = ee('ms_'+idname), check = ee('ck_'+idname), label = ee('cl_'+idname);
+			var flag = pp.getVal(idname);
+			if(!!smenu){ smenu.el.innerHTML = (flag?"+":"&nbsp;")+pp.getMenuStr(idname);}	// メニュー
+			if(!!check){ check.el.checked   = flag;}					// 管理領域(チェックボックス)
+			if(!!label){ label.el.innerHTML = pp.getLabel(idname);}		// 管理領域(ラベル)
+			break;
+		}
+	},
+
+//--------------------------------------------------------------------------------------------------------------
+
+	//---------------------------------------------------------------------------
 	// menu.menuarea()   メニューの初期設定を行う
-	// menu.addMenu()    メニューの情報を変数に登録する
+	//---------------------------------------------------------------------------
+	menuarea : function(){
+		var am = ee.binder(pp, pp.addMenu),
+			as = ee.binder(pp, pp.addSmenu),
+			au = ee.binder(pp, pp.addSelect),
+			ac = ee.binder(pp, pp.addCheck),
+			aa = ee.binder(pp, pp.addCaption),
+			ai = ee.binder(pp, pp.addChild),
+			ap = ee.binder(pp, pp.addSeparator),
+			sl = ee.binder(pp, pp.setLabel);
+
+		// *ファイル ==========================================================
+		am('file', "ファイル", "File");
+
+		as('newboard', 'file', '新規作成','New Board');
+		as('urlinput', 'file', 'URL入力', 'Import from URL');
+		as('urloutput','file', 'URL出力', 'Export URL');
+		ap('sep_2', 'file');
+		as('fileopen', 'file', 'ファイルを開く','Open the file');
+		as('filesave', 'file', 'ファイル保存',  'Save the file as ...');
+		if(!!fio.DBtype){
+			as('database', 'file', 'データベースの管理', 'Database Management');
+		}
+		if(k.isKanpenExist && (k.puzzleid!=="nanro" && k.puzzleid!=="ayeheya" && k.puzzleid!=="kurochute")){
+			ap('sep_3', 'file');
+			as('fileopen2', 'file', 'pencilboxのファイルを開く', 'Open the pencilbox file');
+			as('filesave2', 'file', 'pencilboxのファイルを保存', 'Save the pencilbox file as ...');
+		}
+
+		// *編集 ==============================================================
+		am('edit', "編集", "Edit");
+
+		as('adjust', 'edit', '盤面の調整', 'Adjust the Board');
+		as('turn',   'edit', '反転・回転', 'Filp/Turn the Board');
+
+		// *表示 ==============================================================
+		am('disp', "表示", "Display");
+
+		au('size','disp',k.widthmode,[0,1,2,3,4], '表示サイズ','Cell Size');
+		ap('sep_4',  'disp');
+
+		if(!!k.irowake){
+			ac('irowake','disp',(k.irowake==2?true:false),'線の色分け','Color coding');
+			sl('irowake', '線の色分けをする', 'Color each lines');
+			ap('sep_5', 'disp');
+		}
+		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
+
+		// *表示 - 表示サイズ -------------------------------------------------
+		as('dispsize',    'size','サイズ指定','Cell Size');
+		aa('cap_dispmode','size','表示モード','Display mode');
+		ai('size_0', 'size', 'サイズ 極小', 'Ex Small');
+		ai('size_1', 'size', 'サイズ 小',   'Small');
+		ai('size_2', 'size', 'サイズ 標準', 'Normal');
+		ai('size_3', 'size', 'サイズ 大',   'Large');
+		ai('size_4', 'size', 'サイズ 特大', 'Ex Large');
+
+		// *設定 ==============================================================
+		am('setting', "設定", "Setting");
+
+		if(k.EDITOR){
+			au('mode','setting',(k.editmode?1:3),[1,3],'モード', 'mode');
+			sl('mode','モード', 'mode');
+		}
+
+		puz.menufix();	// 各パズルごとのメニュー追加
+
+		ac('autocheck','setting', k.autocheck, '正答自動判定', 'Auto Answer Check');
+		ac('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
+		sl('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
+		if(kp.ctl[1].enable || kp.ctl[3].enable){
+			ac('keypopup', 'setting', kp.defaultdisp, 'パネル入力', 'Panel inputting');
+			sl('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
+		}
+		au('language', 'setting', 0,[0,1], '言語', 'Language');
+
+		// *設定 - モード -----------------------------------------------------
+		ai('mode_1', 'mode', '問題作成モード', 'Edit mode'  );
+		ai('mode_3', 'mode', '回答モード',     'Answer mode');
+
+		// *設定 - 言語 -------------------------------------------------------
+		ai('language_0', 'language', '日本語',  '日本語');
+		ai('language_1', 'language', 'English', 'English');
+
+		// *その他 ============================================================
+		am('other', "その他", "Others");
+
+		as('credit',  'other', 'ぱずぷれv3について',   'About PUZ-PRE v3');
+		aa('cap_others1', 'other', 'リンク', 'Link');
+		as('jumpv3',  'other', 'ぱずぷれv3のページへ', 'Jump to PUZ-PRE v3 page');
+		as('jumptop', 'other', '連続発破保管庫TOPへ',  'Jump to indi.s58.xrea.com');
+		as('jumpblog','other', 'はっぱ日記(blog)へ',   'Jump to my blog');
+		//sm('eval', 'テスト用', 'for Evaluation');
+
+		this.createAllFloat();
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.addUseToFlags()       「操作方法」サブメニュー登録用共通関数
+	// menu.addRedLineToFlags()   「線のつながりをチェック」サブメニュー登録用共通関数
+	// menu.addRedBlockToFlags()  「黒マスのつながりをチェック」サブメニュー登録用共通関数
+	// menu.addRedBlockRBToFlags()「ナナメ黒マスのつながりをチェック」サブメニュー登録用共通関数
+	//---------------------------------------------------------------------------
+	addUseToFlags : function(){
+		pp.addSelect('use','setting',1,[1,2], '操作方法', 'Input Type');
+		pp.setLabel ('use', '操作方法', 'Input Type');
+
+		pp.addChild('use_1','use','左右ボタン','LR Button');
+		pp.addChild('use_2','use','1ボタン',   'One Button');
+	},
+	addRedLineToFlags : function(){
+		pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
+		pp.setLabel('dispred', '線のつながりをチェックする', 'Check countinuous lines');
+	},
+	addRedBlockToFlags : function(){
+		pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
+		pp.setLabel('dispred', '黒マスのつながりをチェックする', 'Check countinuous black cells');
+	},
+	addRedBlockRBToFlags : function(){
+		pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
+		pp.setLabel('dispred', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.createAllFloat() 登録されたサブメニューから全てのフロートメニューを作成する
+	//---------------------------------------------------------------------------
+	createAllFloat : function(){
+		for(var i=0;i<pp.flaglist.length;i++){
+			var id = pp.flaglist[i];
+			if(!pp.flags[id]){ continue;}
+
+			var smenuid = 'ms_'+id;
+			switch(pp.type(id)){
+				case pp.MENU:     smenu = ee.createEL(this.EL_MENU,    smenuid); continue; break;
+				case pp.SEPARATE: smenu = ee.createEL(this.EL_SEPARATE,smenuid); break;
+				case pp.LABEL:    smenu = ee.createEL(this.EL_LABEL,   smenuid); break;
+				case pp.SELECT:   smenu = ee.createEL(this.EL_SELECT,  smenuid); break;
+				case pp.SMENU:    smenu = ee.createEL(this.EL_SMENU,   smenuid); break;
+				case pp.CHECK:    smenu = ee.createEL(this.EL_CHECK,   smenuid); break;
+				case pp.CHILD:    smenu = ee.createEL(this.EL_CHILD,   smenuid); break;
+				default: continue; break;
+			}
+
+			var parentid = pp.flags[id].parent;
+			if(!this.floatpanel[parentid]){
+				this.floatpanel[parentid] = ee.createEL(this.EL_FLOAT, 'float_'+parentid);
+			}
+			this.floatpanel[parentid].appendChild(smenu);
+		}
+
+		// 'setting'だけはセパレータを後から挿入する
+		var el = ee('float_setting').el, fw = el.firstChild.style.fontWeight
+		for(var i=1,len=el.childNodes.length;i<len;i++){
+			var node = el.childNodes[i];
+			if(fw!=node.style.fontWeight){
+				ee(ee.createEL(this.EL_SEPARATE,'')).insertBefore(node);
+				i++; len++; // 追加したので1たしておく
+			}
+			fw=node.style.fontWeight;
+		}
+
+		// その他の調整
+		if(k.PLAYER){
+			ee('ms_newboard') .el.className = 'smenunull';
+			ee('ms_urloutput').el.className = 'smenunull';
+			ee('ms_adjust')   .el.className = 'smenunull';
+		}
+		ee('ms_jumpv3')  .el.style.fontSize = '10pt'; ee('ms_jumpv3')  .el.style.paddingLeft = '8pt';
+		ee('ms_jumptop') .el.style.fontSize = '10pt'; ee('ms_jumptop') .el.style.paddingLeft = '8pt';
+		ee('ms_jumpblog').el.style.fontSize = '10pt'; ee('ms_jumpblog').el.style.paddingLeft = '8pt';
+	},
+
+	//---------------------------------------------------------------------------
 	// menu.menuhover(e) メニューにマウスが乗ったときの表示設定を行う
 	// menu.menuout(e)   メニューからマウスが外れた時の表示設定を行う
 	// menu.menuclear()  メニュー/サブメニュー/フロートメニューを全て選択されていない状態に戻す
 	//---------------------------------------------------------------------------
-	menuarea : function(){
-		this.addMenu('file', "ファイル", "File");
-		this.addMenu('edit', "編集", "Edit");
-		this.addMenu('disp', "表示", "Display");
-		this.addMenu('setting', "設定", "Setting");
-		this.addMenu('other', "その他", "Others");
-
-		pp.setDefaultFlags();
-		this.createFloats();
-
-		getEL("expression").innerHTML = base.expression.ja;
-		if(k.PLAYER){
-			getEL('ms_newboard').className = 'smenunull';
-			getEL('ms_urloutput').className = 'smenunull';
-			getEL('ms_adjust').className = 'smenunull';
-		}
-		getEL('ms_jumpv3')  .style.fontSize = '10pt'; getEL('ms_jumpv3')  .style.paddingLeft = '8pt';
-		getEL('ms_jumptop') .style.fontSize = '10pt'; getEL('ms_jumptop') .style.paddingLeft = '8pt';
-		getEL('ms_jumpblog').style.fontSize = '10pt'; getEL('ms_jumpblog').style.paddingLeft = '8pt';
-	},
-
-	addMenu : function(idname, strJP, strEN){
-		var el = newEL('div');
-		el.className = 'menu';
-		el.id        = 'menu_'+idname;
-		el.innerHTML = "["+strJP+"]";
-		el.style.marginRight = "4pt";
-		el.onmouseover = ebinder(this, this.menuhover, [idname]);
-		el.onmouseout  = ebinder(this, this.menuout);
-		getEL('menupanel').appendChild(el);
-
-		this.addLabels(el, "["+strJP+"]", "["+strEN+"]");
-	},
-	menuhover : function(e, idname){
+	menuhover : function(e){
+		var idname = ee.getSrcElement(e).id.substr(3);
 		this.floatmenuopen(e,idname,0);
-		$("div.menusel").attr("class", "menu");
-		this.getSrcElement(e).className = "menusel";
+		ee('menupanel').replaceChildrenClass('menusel','menu');
+		ee.getSrcElement(e).className = "menusel";
 	},
 	menuout   : function(e){
 		if(!this.insideOfMenu(e)){
@@ -6391,43 +6953,35 @@ Menu.prototype = {
 		}
 	},
 	menuclear : function(){
-		$("div.menusel").attr("class", "menu");
+		ee('menupanel').replaceChildrenClass('menusel','menu');
 	},
 
 	//---------------------------------------------------------------------------
 	// menu.submenuhover(e) サブメニューにマウスが乗ったときの表示設定を行う
 	// menu.submenuout(e)   サブメニューからマウスが外れたときの表示設定を行う
 	// menu.submenuclick(e) 通常/選択型/チェック型サブメニューがクリックされたときの動作を実行する
-	// menu.checkclick()    管理領域のチェックボタンが押されたとき、チェック型の設定を設定する
 	//---------------------------------------------------------------------------
-	submenuhover : function(e, idname){
-		if(this.getSrcElement(e).className==="smenu"){ this.getSrcElement(e).className="smenusel";}
-		if(pp.flags[idname] && pp.type(idname)==1){ this.floatmenuopen(e,idname,this.dispfloat.length);}
+	submenuhover : function(e){
+		var idname = ee.getSrcElement(e).id.substr(3);
+		if(ee.getSrcElement(e).className==="smenu"){ ee.getSrcElement(e).className="smenusel";}
+		if(pp.flags[idname] && pp.type(idname)===pp.SELECT){ this.floatmenuopen(e,idname,this.dispfloat.length);}
 	},
-	submenuout   : function(e, idname){
-		if(this.getSrcElement(e).className==="smenusel"){ this.getSrcElement(e).className="smenu";}
-		if(pp.flags[idname] && pp.type(idname)==1){ this.floatmenuout(e);}
+	submenuout   : function(e){
+		var idname = ee.getSrcElement(e).id.substr(3);
+		if(ee.getSrcElement(e).className==="smenusel"){ ee.getSrcElement(e).className="smenu";}
+		if(pp.flags[idname] && pp.type(idname)===pp.SELECT){ this.floatmenuout(e);}
 	},
-	submenuclick : function(e, idname){
-		if(this.getSrcElement(e).className==="smenunull"){ return;}
+	submenuclick : function(e){
+		var idname = ee.getSrcElement(e).id.substr(3);
+		if(ee.getSrcElement(e).className==="smenunull"){ return;}
 		this.menuclear();
 		this.floatmenuclose(0);
 
-		if(pp.type(idname)==0){
-			this.popclose();							// 表示しているウィンドウがある場合は閉じる
-			if(pp.funcs[idname]){ pp.funcs[idname]();}	// この中でthis.popupenuも設定されます。
-			if(this.pop){
-				var _pop = this.pop;
-				_pop.style.left = mv.pointerX(e) - 8 + k.IEMargin.x;
-				_pop.style.top  = mv.pointerY(e) - 8 + k.IEMargin.y;
-				_pop.style.display = 'inline';
-			}
+		switch(pp.type(idname)){
+			case pp.SMENU: this.popopen(e, idname); break;
+			case pp.CHILD: pp.setVal(pp.flags[idname].parent, pp.getVal(idname)); break;
+			case pp.CHECK: pp.setVal(idname, !pp.getVal(idname)); break;
 		}
-		else if(pp.type(idname)==4){ this.setVal(pp.flags[idname].parent, pp.getVal(idname));}
-		else if(pp.type(idname)==2){ this.setVal(idname, !pp.getVal(idname));}
-	},
-	checkclick : function(idname){
-		this.setVal(idname, getEL("ck_"+idname).checked);
 	},
 
 	//---------------------------------------------------------------------------
@@ -6443,15 +6997,15 @@ Menu.prototype = {
 
 		if(depth>0 && !this.dispfloat[depth-1]){ return;}
 
-		var src = this.getSrcElement(e);
+		var rect = ee(ee.getSrcElement(e).id).getRect();
 		var _float = this.floatpanel[idname];
 		if(depth==0){
-			_float.style.left = this.getLeft(src) - 3 + k.IEMargin.x;
-			_float.style.top  = this.getBottom(src) + (k.br.IE?-2:1);
+			_float.style.left = rect.left - 3 + k.IEMargin.x;
+			_float.style.top  = rect.bottom + (k.br.IE?-2:1);
 		}
 		else{
-			_float.style.left = this.getRight(src) - 2;
-			_float.style.top  = this.getTop(src) + (k.br.IE?-5:-2);
+			_float.style.left = rect.right - 2;
+			_float.style.top  = rect.top + (k.br.IE?-5:-2);
 		}
 		_float.style.zIndex   = 101+depth;
 		_float.style.display  = 'inline';
@@ -6464,7 +7018,7 @@ Menu.prototype = {
 		for(var i=this.dispfloat.length-1;i>=depth;i--){
 			if(i!==0){
 				var parentsmenuid = "ms_" + this.dispfloat[i].id.substr(6);
-				getEL(parentsmenuid).className = 'smenu';
+				ee(parentsmenuid).el.className = 'smenu';
 			}
 			this.dispfloat[i].style.display = 'none';
 			this.dispfloat.pop();
@@ -6484,359 +7038,256 @@ Menu.prototype = {
 	},
 
 	insideOf : function(el, e){
-		var ex = mv.pointerX(e)+(k.br.WinWebKit?1:0);
-		var ey = mv.pointerY(e)+(k.br.WinWebKit?1:0);
-		return (ex>=this.getLeft(el) && ex<=this.getRight(el) && ey>=this.getTop(el) && ey<=this.getBottom(el));
+		var ex = ee.pageX(e);
+		var ey = ee.pageY(e);
+		var rect = ee(el.id).getRect();
+		return (ex>=rect.left && ex<=rect.right && ey>=rect.top && ey<=rect.bottom);
 	},
 	insideOfMenu : function(e){
-		var ex = mv.pointerX(e)+(k.br.WinWebKit?1:0);
-		var ey = mv.pointerY(e)+(k.br.WinWebKit?1:0);
-		return (ex>=this.getLeft(getEL('menu_file')) && ex<=this.getRight(getEL('menu_other')) && ey>=this.getTop(getEL('menu_file')));
+		var ex = ee.pageX(e);
+		var ey = ee.pageY(e);
+		var rect_f = ee('ms_file').getRect(), rect_o = ee('ms_other').getRect();
+		return (ex>=rect_f.left && ex<=rect_o.right && ey>=rect_f.top);
 	},
-	//---------------------------------------------------------------------------
-	// menu.getTop()         要素の上座標を取得する
-	// menu.getBottom()      要素の下座標を取得する
-	// menu.getLeft()        要素の左座標を取得する
-	// menu.getRight()       要素の右座標を取得する
-	// menu.getWidth()       要素の横幅を取得する
-	// menu.getHeight()      要素の縦幅を取得する
-	//---------------------------------------------------------------------------
-	getTop    : function(el){
-		var _html = _doc.documentElement, _body = _doc.body;
-		return el.getBoundingClientRect().top + ((_body.scrollTop || _html.scrollTop) - _html.clientTop);
-	},
-	getBottom : function(el){
-		var _html = _doc.documentElement, _body = _doc.body;
-		return el.getBoundingClientRect().top + ((_body.scrollTop || _html.scrollTop) - _html.clientTop) + el.offsetHeight;
-	},
-	getLeft   : function(el){
-		var _html = document.documentElement, _body = _doc.body;
-		return el.getBoundingClientRect().left + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
-	},
-	getRight  : function(el){
-		var _html = document.documentElement, _body = _doc.body;
-		return el.getBoundingClientRect().left + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft) + el.offsetWidth;
-	},
-	getWidth  : function(el){ return el.offsetWidth;},
-	getHeight : function(el){ return el.offsetHeight;},
+
+//--------------------------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------
-	// menu.addUseToFlags()      「操作方法」サブメニュー登録用共通関数
-	// menu.addRedLineToFlags()  「線のつながりをチェック」サブメニュー登録用共通関数
-	// menu.addRedBlockToFlags() 「黒マスのつながりをチェック」サブメニュー登録用共通関数
-	//---------------------------------------------------------------------------
-	// menu登録用の関数
-	addUseToFlags : function(){
-		pp.addUseToFlags('use','setting',1,[1,2]);
-		pp.setMenuStr('use', '操作方法', 'Input Type');
-		pp.setLabel  ('use', '操作方法', 'Input Type');
-
-		pp.addUseChildrenToFlags('use','use');
-		pp.setMenuStr('use_1', '左右ボタン', 'LR Button');
-		pp.setMenuStr('use_2', '1ボタン', 'One Button');
-	},
-	addRedLineToFlags : function(){
-		pp.addCheckToFlags('dispred','setting',false);
-		pp.setMenuStr('dispred', '繋がりチェック', 'Continuous Check');
-		pp.setLabel  ('dispred', '線のつながりをチェックする', 'Check countinuous lines');
-	},
-	addRedBlockToFlags : function(){
-		pp.addCheckToFlags('dispred','setting',false);
-		pp.setMenuStr('dispred', '繋がりチェック', 'Continuous Check');
-		pp.setLabel  ('dispred', '黒マスのつながりをチェックする', 'Check countinuous black cells');
-	},
-	addRedBlockRBToFlags : function(){
-		pp.addCheckToFlags('dispred','setting',false);
-		pp.setMenuStr('dispred', '繋がりチェック', 'Continuous Check');
-		pp.setLabel  ('dispred', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.getVal()     各フラグのvalの値を返す
-	// menu.setVal()     各フラグの設定値を設定する
-	// menu.setdisplay() 管理パネルとサブメニューに表示する文字列を設定する
-	// menu.displayAll() 全てのメニュー、ボタン、ラベルに対して文字列を設定する
-	//---------------------------------------------------------------------------
-	getVal : function(idname)  { return pp.getVal(idname);},
-	setVal : function(idname, newval){ pp.setVal(idname,newval);},
-	setdisplay : function(idname){
-		if(pp.type(idname)==0||pp.type(idname)==3){
-			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = pp.getMenuStr(idname);}
-		}
-		else if(pp.type(idname)==1){
-			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = "&nbsp;"+pp.getMenuStr(idname);}	// メニュー上の表記の設定
-			if(getEL("cl_"+idname)){ getEL("cl_"+idname).innerHTML = pp.getLabel(idname);}				// 管理領域上の表記の設定
-			for(var i=0,len=pp.flags[idname].child.length;i<len;i++){ this.setdisplay(""+idname+"_"+pp.flags[idname].child[i]);}
-		}
-		else if(pp.type(idname)==4){
-			var issel = (pp.getVal(idname) == pp.getVal(pp.flags[idname].parent));
-			var cap = pp.getMenuStr(idname);
-			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = (issel?"+":"&nbsp;")+cap;}	// メニューの項目
-			if(getEL("up_"+idname)){															// 管理領域の項目
-				getEL("up_"+idname).innerHTML = cap;
-				getEL("up_"+idname).className = (issel?"flagsel":"flag");
-			}
-		}
-		else if(pp.type(idname)==2){
-			var flag = pp.getVal(idname);
-			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = (flag?"+":"&nbsp;")+pp.getMenuStr(idname);}	// メニュー
-			if(getEL("ck_"+idname)){ getEL("ck_"+idname).checked = flag;}						// 管理領域(チェックボックス)
-			if(getEL("cl_"+idname)){ getEL("cl_"+idname).innerHTML = pp.getLabel(idname);}		// 管理領域(ラベル)
-		}
-	},
-	displayAll : function(){
-		for(var i in pp.flags){ this.setdisplay(i);}
-		for(var i=0,len=this.btnstack.length;i<len;i++){
-			if(!this.btnstack[i].el){ continue;}
-			this.btnstack[i].el.value = this.btnstack[i].str[menu.language];
-		}
-		for(var i=0,len=this.labelstack.length;i<len;i++){
-			if(!this.labelstack[i].el){ continue;}
-			this.labelstack[i].el.innerHTML = this.labelstack[i].str[menu.language];
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.createFloatMenu() 登録されたサブメニューからフロートメニューを作成する
-	// menu.getFloatpanel()   指定されたIDを持つフロートメニューを返す(ない場合は作成する)
-	//---------------------------------------------------------------------------
-	createFloats : function(){
-		var last=0;
-		for(var i=0;i<pp.flaglist.length;i++){
-			var idname = pp.flaglist[i];
-			if(!pp.flags[idname]){ continue;}
-
-			var menuid = pp.flags[idname].parent;
-			var floats = this.getFloatpanel(menuid);
-
-			if(menuid=='setting'){
-				if(last>0 && last!=pp.type(idname)){
-					var _sep = newEL('div');
-					_sep.className = 'smenusep';
-					_sep.innerHTML = '&nbsp;';
-					floats.appendChild(_sep);
-				}
-				last=pp.type(idname);
-			}
-
-			var smenu;
-			if     (pp.type(idname)==5){
-				smenu = newEL('div');
-				smenu.className = 'smenusep';
-				smenu.innerHTML = '&nbsp;';
-			}
-			else if(pp.type(idname)==3){
-				smenu = newEL('span');
-				smenu.style.color = 'white';
-			}
-			else if(pp.type(idname)==1){
-				smenu = newEL('div');
-				smenu.className  = 'smenu';
-				smenu.style.fontWeight = '900';
-				smenu.style.fontSize   = '10pt';
-				smenu.onmouseover = ebinder(this, this.submenuhover, [idname]);
-				smenu.onmouseout  = ebinder(this, this.submenuout,   [idname]);
-				this.getFloatpanel(idname);
-			}
-			else{
-				smenu = newEL('div');
-				smenu.className  = 'smenu';
-				smenu.onmouseover = ebinder(this, this.submenuhover, [idname]);
-				smenu.onmouseout  = ebinder(this, this.submenuout,   [idname]);
-				smenu.onclick     = ebinder(this, this.submenuclick, [idname]);
-				this.getFloatpanel(idname);
-				if(pp.type(idname)!=0){
-					smenu.style.fontSize    = '10pt';
-					smenu.style.paddingLeft = '6pt';
-				}
-			}
-			smenu.id = "ms_"+idname;
-			floats.appendChild(smenu);
-
-			this.setdisplay(idname);
-		}
-		this.floatpanel[menuid] = floats;
-	},
-	getFloatpanel : function(id){
-		if(!this.floatpanel[id]){
-			var _float = newEL("div");
-			_float.className = 'floatmenu';
-			_float.id        = 'float_'+id;
-			_float.onmouseout = ebinder(this, this.floatmenuout);
-			_float.style.zIndex = 101;
-			_float.style.backgroundColor = base.floatbgcolor;
-			getEL('float_parent').appendChild(_float);
-
-			this.floatpanel[id] = _float;
-			//$(_float).hide();
-		}
-		return this.floatpanel[id];
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.managearea()   管理領域の初期化を行う
+	// menu.managearea()   管理領域の初期化を行う(内容はサブメニューのものを参照)
+	// menu.checkclick()   管理領域のチェックボタンが押されたとき、チェック型の設定を設定する
+	// menu.selectclick()  選択型サブメニュー項目がクリックされたときの動作
 	//---------------------------------------------------------------------------
 	managearea : function(){
+		// usearea & checkarea
 		for(var n=0;n<pp.flaglist.length;n++){
 			var idname = pp.flaglist[n];
 			if(!pp.flags[idname] || !pp.getLabel(idname)){ continue;}
+			var _div = ee(ee.createEL(this.EL_DIVPACK,'div_'+idname));
+			//_div.el.innerHTML = "";
 
-			if(pp.type(idname)==1){
-				var up = getEL("usepanel");
-
-				var _el = newEL('span');
-				_el.id = "cl_" + idname;
-				_el.innerHTML = pp.getLabel(idname);
-				up.appendChild(_el);
-
-				up.appendChild(this.spanEL(" |&nbsp;"));
-
+			switch(pp.type(idname)){
+			case pp.SELECT:
+				_div.appendEL(ee.createEL(this.EL_SPAN, 'cl_'+idname));
+				_div.appendHTML("&nbsp;|&nbsp;");
 				for(var i=0;i<pp.flags[idname].child.length;i++){
 					var num = pp.flags[idname].child[i];
-					var el = unselectable(newEL('div'));
-					el.className = ((num==pp.getVal(idname))?"flagsel":"flag");
-					el.id        = "up_"+idname+"_"+num;
-					el.innerHTML = pp.getMenuStr(""+idname+"_"+num);
-					el.onclick   = binder(pp, pp.setVal, [idname,num]);
-					up.appendChild(el);
-
-					up.appendChild(this.spanEL(" "));
+					_div.appendEL(ee.createEL(this.EL_SELCHILD, ['up',idname,num].join("_")));
+					_div.appendHTML('&nbsp;');
 				}
+				_div.appendBR();
 
-				up.appendChild(newEL('br'));
-			}
-			else if(pp.type(idname)==2){
-				var cp = getEL("checkpanel");
+				ee('usepanel').appendEL(_div.el);
+				break;
 
-				var _el = newEL('input');
-				_el.type  = 'checkbox';
-				_el.id    = "ck_" + idname;
-				_el.check = '';
-				_el.onclick = binder(this, this.checkclick, [idname]);
-				cp.appendChild(_el)
+			case pp.CHECK:
+				_div.appendEL(ee.createEL(this.EL_CHECKBOX, 'ck_'+idname));
+				_div.appendHTML("&nbsp;");
+				_div.appendEL(ee.createEL(this.EL_SPAN, 'cl_'+idname));
+				_div.appendBR();
 
-				cp.appendChild(this.spanEL(" "));
-
-				_el = newEL('span');
-				_el.id = "cl_" + idname;
-				_el.innerHTML = pp.getLabel(idname);
-				cp.appendChild(_el);
-
-				if(idname=="irowake"){
-					cp.appendChild(this.createButton('ck_irowake2','','色分けしなおす'));
-					this.addButtons(getEL("ck_irowake2"), binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
-				}
-
-				cp.appendChild(newEL('br'));
+				ee('checkpanel').appendEL(_div.el);
+				break;
 			}
 		}
 
-		var _tr = unselectable(getEL('translation'));
-		_tr.style.position = 'absolute';
-		_tr.style.cursor   = 'pointer';
-		_tr.style.fontSize = '10pt';
-		_tr.style.color    = 'green';
-		_tr.style.backgroundColor = '#dfdfdf';
-		_tr.onclick = binder(this, this.translate);
+		// 色分けチェックボックス用の処理
+		if(k.irowake){
+			// 横にくっつけたいボタンを追加
+			var el = ee.createEL(this.EL_BUTTON, 'ck_btn_irowake');
+			this.addButtons(el, ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
+			ee('ck_btn_irowake').insertAfter(ee('cl_irowake').el);
 
+			// 色分けのやつを一番下に持ってくる
+			var el = ee('checkpanel').el.removeChild(ee('div_irowake').el);
+			ee('checkpanel').el.appendChild(el);
+		}
+
+		// 左上に出てくるやつ
+		ee('translation').unselectable().el.onclick = ee.binder(this, this.translate);
+		this.addLabels(ee('translation').el, "English", "日本語");
+
+		// 説明文の場所
+		ee('expression').el.innerHTML = base.expression.ja;
+
+		// 管理領域の表示/非表示設定
 		if(k.EDITOR){
-			$("#timerpanel,#separator2").hide();
+			ee('timerpanel').el.style.display = 'none';
+			ee('separator2').el.style.display = 'none';
 		}
+		if(!!ee('ck_keypopup')){ pp.funcs.keypopup();}
+
+		// (Canvas下) ボタンの初期設定
+		this.addButtons(ee("btncheck").el,  ee.binder(ans, ans.check),             "チェック", "Check");
+		this.addButtons(ee("btnundo").el,   ee.binder(um, um.undo),                "戻",       "<-");
+		this.addButtons(ee("btnredo").el,   ee.binder(um, um.redo),                "進",       "->");
+		this.addButtons(ee("btnclear").el,  ee.binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
+		this.addButtons(ee("btnclear2").el, ee.binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
 		if(k.irowake!=0){
-			getEL('btnarea').appendChild(menu.createButton('btncolor2','','色分けしなおす'))
-			this.addButtons(getEL("btncolor2"), binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
-			$("#btncolor2").hide();
+			var el = ee.createEL(this.EL_BUTTON, 'btncolor2');
+			this.addButtons(el, ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
+			ee('btncolor2').insertAfter(ee('btnclear2').el).el.style.display = 'none';
 		}
 	},
 
-//--------------------------------------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------------------------------
+	checkclick : function(e){
+		var el = ee.getSrcElement(e);
+		var idname = el.id.substr(3);
+		pp.setVal(idname, el.checked);
+	},
+	selectclick : function(e){
+		var list = ee.getSrcElement(e).id.split('_');
+		pp.setVal(list[1], list[2]);
+	},
+
 //--------------------------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------
-	// menu.poparea()     ポップアップメニューの初期設定を行う
-	// menu.popclose()    ポップアップメニューを閉じる
+	// menu.poparea()       ポップアップメニューの初期設定を行う
 	//---------------------------------------------------------------------------
 	poparea : function(){
 
-		$("div.titlebar,#credir3_1").each(function(){ menu.titlebarfunc(this);});
+		//=====================================================================
+		//// 各タイトルバーの動作設定
+		var pop = ee('popup_parent').el.firstChild;
+		while(!!pop){
+			var _el = pop.firstChild;
+			while(!!_el){
+				if(_el.className==='titlebar'){
+					this.titlebarfunc(_el);
+					break;
+				}
+				_el = _el.nextSibling;
+			}
+			pop = pop.nextSibling;
+		}
+		this.titlebarfunc(ee('credit3_1').el);
 
-		//---------------------------------------------------------------------------
-		//// formボタンのイベント
-		var px = ebinder(this, this.popclose);
+		//=====================================================================
+		//// formボタンの動作設定・その他のCaption設定
+		var btn = ee.binder(this, this.addButtons);
+		var lab = ee.binder(this, this.addLabels);
+		var close = ee.ebinder(this, this.popclose);
+		var func = null;
 
-		// 盤面の新規作成
-		document.newboard.newboard.onclick = ebinder(this.ex, this.ex.newboard);
-		document.newboard.cancel.onclick   = px;
+		// 盤面の新規作成 -----------------------------------------------------
+		func = ee.ebinder(this.ex, this.ex.newboard);
+		lab(ee('bar1_1').el,      "盤面の新規作成",         "Createing New Board");
+		lab(ee('pop1_1_cap0').el, "盤面を新規作成します。", "Create New Board.");
+		lab(ee('pop1_1_cap1').el, "よこ",                   "Cols");
+		lab(ee('pop1_1_cap2').el, "たて",                   "Rows");
+		btn(document.newboard.newboard, func,  "新規作成",   "Create");
+		btn(document.newboard.cancel,   close, "キャンセル", "Cancel");
 
-		// URL入力
-		document.urlinput.urlinput.onclick = ebinder(this.ex, this.ex.urlinput);
-		document.urlinput.cancel.onclick   = px;
+		// URL入力 ------------------------------------------------------------
+		func = ee.ebinder(this.ex, this.ex.urlinput);
+		lab(ee('bar1_2').el,      "URL入力",                     "Import from URL");
+		lab(ee('pop1_2_cap0').el, "URLから問題を読み込みます。", "Import a question from URL.");
+		btn(document.urlinput.urlinput, func,  "読み込む",   "Import");
+		btn(document.urlinput.cancel,   close, "キャンセル", "Cancel");
 
-		// URL出力
-		var _div = getEL('urlbuttonarea');
-		var ib = binder(this, function(name, strJP, strEN, eval){
-			if(eval===false) return;
-			var el = menu.createButton('', name, strJP);
-			this.addButtons(el, ebinder(this.ex, this.ex.urloutput), strJP, strEN);
-			_div.appendChild(el)
-			_div.appendChild(newEL('br'));
-		});
-		ib('pzprv3',     "ぱずぷれv3のURLを出力する",           "Output PUZ-PRE v3 URL",          true);
-		ib('pzprapplet', "ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", !k.ispzprv3ONLY);
-		ib('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              !!k.isKanpenExist);
-		ib('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (k.puzzleid==="heyawake"));
-		ib('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
-		getEL("urlbuttonarea").appendChild(newEL('br'));
+		// URL出力 ------------------------------------------------------------
+		func = ee.ebinder(this.ex, this.ex.urloutput);
+		lab(ee('bar1_3').el, "URL出力", "Export URL");
+		var btt = function(name, strJP, strEN, eval){
+			if(eval===false){ return;}
+			var el = ee.createEL(menu.EL_BUTTON,''); el.name = name;
+			ee('urlbuttonarea').appendEL(el).appendBR();
+			btn(el, func, strJP, strEN);
+		};
+		btt('pzprv3',     "ぱずぷれv3のURLを出力する",           "Output PUZ-PRE v3 URL",          true);
+		btt('pzprapplet', "ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", !k.ispzprv3ONLY);
+		btt('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              !!k.isKanpenExist);
+		btt('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (k.puzzleid==="heyawake"));
+		btt('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
+		ee("urlbuttonarea").appendBR();
+		func = ee.ebinder(this.ex, this.ex.openurl);
+		btn(document.urloutput.openurl, func,  "このURLを開く", "Open this URL on another window/tab");
+		btn(document.urloutput.close,   close, "閉じる", "Close");
 
-		this.addButtons(document.urloutput.openurl, ebinder(this.ex, this.ex.openurl), "このURLを開く", "Open this URL on another window/tab");
-		this.addButtons(document.urloutput.close,   px,                                "閉じる", "Close");
+		// ファイル入力 -------------------------------------------------------
+		func = ee.ebinder(this.ex, this.ex.fileopen);
+		lab(ee('bar1_4').el,      "ファイルを開く", "Open file");
+		lab(ee('pop1_4_cap0').el, "ファイル選択",   "Choose file");
+		document.fileform.filebox.onchange = func;
+		btn(document.fileform.close,    close, "閉じる",     "Close");
 
-		// ファイル入力
-		document.fileform.filebox.onchange = ebinder(this.ex, this.ex.fileopen);
-		document.fileform.close.onclick    = px;
+		// データベースを開く -------------------------------------------------
+		func = ee.ebinder(fio, fio.clickHandler);
+		lab(ee('bar1_8').el, "データベースの管理", "Database Management");
+		document.database.sorts   .onchange = func;
+		document.database.datalist.onchange = func;
+		document.database.tableup .onclick  = func;
+		document.database.tabledn .onclick  = func;
+		btn(document.database.open,     func,  "データを読み込む",   "Load");
+		btn(document.database.save,     func,  "盤面を保存",         "Save");
+		lab(ee('pop1_8_com').el, "コメント:", "Comment:");
+		btn(document.database.comedit,  func,  "コメントを編集する", "Edit Comment");
+		btn(document.database.difedit,  func,  "難易度を設定する",   "Set difficulty");
+		btn(document.database.del,      func,  "削除",               "Delete");
+		btn(document.database.close,    close, "閉じる",             "Close");
 
-		// データベースを開く
-		document.database.sorts   .onchange = ebinder(fio, fio.displayDataTableList);
-		document.database.datalist.onchange = ebinder(fio, fio.selectDataTable);
-		document.database.tableup.onclick   = ebinder(fio, fio.upDataTable);
-		document.database.tabledn.onclick   = ebinder(fio, fio.downDataTable);
-		document.database.open   .onclick   = ebinder(fio, fio.openDataTable);
-		document.database.save   .onclick   = ebinder(fio, fio.saveDataTable);
-		document.database.comedit.onclick   = ebinder(fio, fio.editComment);
-		document.database.difedit.onclick   = ebinder(fio, fio.editDifficult);
-		document.database.del    .onclick   = ebinder(fio, fio.deleteDataTable);
-		document.database.close  .onclick   = px;
+		// 盤面の調整 ---------------------------------------------------------
+		func = ee.ebinder(this.ex, this.ex.popupadjust);
+		lab(ee('bar2_1').el,      "盤面の調整",             "Adjust the board");
+		lab(ee('pop2_1_cap0').el, "盤面の調整を行います。", "Adjust the board.");
+		lab(ee('pop2_1_cap1').el, "拡大",  "Expand");
+		btn(document.adjust.expandup,   func,  "上",     "UP");
+		btn(document.adjust.expanddn,   func,  "下",     "Down");
+		btn(document.adjust.expandlt,   func,  "左",     "Left");
+		btn(document.adjust.expandrt,   func,  "右",     "Right");
+		lab(ee('pop2_1_cap2').el, "縮小", "Reduce");
+		btn(document.adjust.reduceup,   func,  "上",     "UP");
+		btn(document.adjust.reducedn,   func,  "下",     "Down");
+		btn(document.adjust.reducelt,   func,  "左",     "Left");
+		btn(document.adjust.reducert,   func,  "右",     "Right");
+		btn(document.adjust.close,      close, "閉じる", "Close");
 
-		// 盤面の調整
-		var pa = ebinder(this.ex, this.ex.popupadjust);
-		document.adjust.expandup.onclick = pa;
-		document.adjust.expanddn.onclick = pa;
-		document.adjust.expandlt.onclick = pa;
-		document.adjust.expandrt.onclick = pa;
-		document.adjust.reduceup.onclick = pa;
-		document.adjust.reducedn.onclick = pa;
-		document.adjust.reducelt.onclick = pa;
-		document.adjust.reducert.onclick = pa;
-		document.adjust.close   .onclick = px;
+		// 反転・回転 ---------------------------------------------------------
+		lab(ee('bar2_2').el,      "反転・回転",                  "Flip/Turn the board");
+		lab(ee('pop2_2_cap0').el, "盤面の回転・反転を行います。","Flip/Turn the board.");
+		btn(document.flip.turnl,  func,  "左90°回転", "Turn left by 90 degree");
+		btn(document.flip.turnr,  func,  "右90°回転", "Turn right by 90 degree");
+		btn(document.flip.flipy,  func,  "上下反転",   "Flip upside down");
+		btn(document.flip.flipx,  func,  "左右反転",   "Flip leftside right");
+		btn(document.flip.close,  close, "閉じる",     "Close");
 
-		// 反転・回転
-		document.flip.turnl.onclick = pa;
-		document.flip.turnr.onclick = pa;
-		document.flip.flipy.onclick = pa;
-		document.flip.flipx.onclick = pa;
-		document.flip.close.onclick = px;
+		// credit -------------------------------------------------------------
+		lab(ee('bar3_1').el,   "credit", "credit");
+		lab(ee('credit3_1').el,"ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\nライブラリとしてjQuery1.3.2, uuCanvas1.0, <br>Google Gearsを\n使用しています。<br>\n<br>\n",
+							   "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\nThis script use jQuery1.3.2, uuCanvas1.0, <br>Google Gears as libraries.<br>\n<br>\n");
+		btn(document.credit.close,  close, "閉じる", "OK");
 
-		// credit
-		document.credit.close.onclick = px;
+		// 表示サイズ ---------------------------------------------------------
+		func = ee.ebinder(this, this.ex.dispsize);
+		lab(ee('bar4_1').el,      "表示サイズの変更",         "Change size");
+		lab(ee('pop4_1_cap0').el, "表示サイズを変更します。", "Change the display size.");
+		lab(ee('pop4_1_cap1').el, "表示サイズ",               "Display size");
+		btn(document.dispsize.dispsize, func,  "変更する",   "Change");
+		btn(document.dispsize.cancel,   close, "キャンセル", "Cancel");
+	},
 
-		// 表示サイズ
-		document.dispsize.dispsize.onclick = ebinder(this, this.ex.dispsize);
-		document.dispsize.cancel.onclick   = px;
+	//---------------------------------------------------------------------------
+	// menu.popopen()  ポップアップメニューを開く
+	// menu.popclose() ポップアップメニューを閉じる
+	//---------------------------------------------------------------------------
+	popopen : function(e, idname){
+		// 表示しているウィンドウがある場合は閉じる
+		this.popclose();
+
+		// この中でmenu.popも設定されます。
+		if(pp.funcs[idname]){ pp.funcs[idname]();}
+
+		// ポップアップメニューを表示する
+		if(this.pop){
+			var _pop = this.pop.el;
+			_pop.style.left = ee.pageX(e) - 8 + k.IEMargin.x;
+			_pop.style.top  = ee.pageY(e) - 8 + k.IEMargin.y;
+			_pop.style.display = 'inline';
+		}
 	},
 	popclose : function(){
 		if(this.pop){
-			this.pop.style.display = "none";
+			this.pop.el.style.display = "none";
 			this.pop = '';
 			this.menuclear();
 			this.isptitle = 0;
@@ -6845,143 +7296,42 @@ Menu.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// menu.titlebarfunc() 下の4つのイベントをイベントハンドラにくっつける
-	// menu.titlebardown() Popupタイトルバーをクリックしたときの動作を行う
-	// menu.titlebarup()   Popupタイトルバーでボタンを離したときの動作を行う
-	// menu.titlebarout()  Popupタイトルバーからマウスが離れたときの動作を行う
-	// menu.titlebarmove() Popupタイトルバーからマウスを動かしたときポップアップメニューを動かす
+	// menu.titlebarfunc()  下の4つのイベントをイベントハンドラにくっつける
+	// menu.titlebardown()  タイトルバーをクリックしたときの動作を行う
+	// menu.titlebarup()    タイトルバーでボタンを離したときの動作を行う
+	// menu.titlebarout()   タイトルバーからマウスが離れたときの動作を行う
+	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす
 	//---------------------------------------------------------------------------
 	titlebarfunc : function(bar){
-		bar.onmousedown = ebinder(menu, menu.titlebardown);
-		bar.onmouseup   = ebinder(menu, menu.titlebarup);
-		bar.onmouseout  = ebinder(menu, menu.titlebarout);
-		bar.onmousemove = ebinder(menu, menu.titlebarmove);
+		bar.onmousedown = ee.ebinder(this, this.titlebardown);
+		bar.onmouseup   = ee.ebinder(this, this.titlebarup);
+		bar.onmouseout  = ee.ebinder(this, this.titlebarout);
+		bar.onmousemove = ee.ebinder(this, this.titlebarmove);
 
-		unselectable(bar);
+		ee(bar).unselectable().el;
 	},
 
 	titlebardown : function(e){
-		var pop = this.getSrcElement(e).parentNode;
+		var pop = ee.getSrcElement(e).parentNode;
 		this.isptitle = 1;
-		this.offset.x = mv.pointerX(e) - parseInt(pop.style.left);
-		this.offset.y = mv.pointerY(e) - parseInt(pop.style.top);
+		this.offset.x = ee.pageX(e) - parseInt(pop.style.left);
+		this.offset.y = ee.pageY(e) - parseInt(pop.style.top);
 	},
 	titlebarup   : function(e){
 		this.isptitle = 0;
 	},
 	titlebarout  : function(e){
-		var pop = this.getSrcElement(e).parentNode;
+		var pop = ee.getSrcElement(e).parentNode;
 		if(!this.insideOf(pop, e)){ this.isptitle = 0;}
 	},
 	titlebarmove : function(e){
-		var pop = this.getSrcElement(e).parentNode;
+		var pop = ee.getSrcElement(e).parentNode;
 		if(pop && this.isptitle){
-			pop.style.left = mv.pointerX(e) - this.offset.x;
-			pop.style.top  = mv.pointerY(e) - this.offset.y;
+			pop.style.left = ee.pageX(e) - this.offset.x;
+			pop.style.top  = ee.pageY(e) - this.offset.y;
 		}
 	},
 
-//--------------------------------------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------------------------------
-
-	//---------------------------------------------------------------------------
-	// menu.buttonarea()        ボタンの初期設定を行う
-	// menu.createButton()      指定したid, name, ラベルを持ったボタンを作成する
-	// menu.addButtons()        ボタンの情報を変数に登録する
-	// menu.addLAbels()         ラベルの情報を変数に登録する
-	// menu.setDefaultButtons() ボタンをbtnstackに設定する
-	// menu.setDefaultLabels()  ラベルをspanstackに設定する
-	//---------------------------------------------------------------------------
-	buttonarea : function(){
-		this.addButtons(getEL("btncheck"),  binder(ans, ans.check),             "チェック", "Check");
-		this.addButtons(getEL("btnundo"),   binder(um, um.undo),                "戻",       "<-");
-		this.addButtons(getEL("btnredo"),   binder(um, um.redo),                "進",       "->");
-		this.addButtons(getEL("btnclear"),  binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
-		this.addButtons(getEL("btnclear2"), binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
-
-		this.setDefaultButtons();
-		this.setDefaultLabels();
-	},
-	createButton : function(id, name, val){
-		var _btn = newEL('input');
-		_btn.type  = 'button';
-		if(!!id)  { _btn.id   = id;}
-		if(!!name){ _btn.name = name;}
-		_btn.value = val;
-
-		return _btn;
-	},
-
-	addButtons : function(el, func, strJP, strEN){
-		if(!!func) el.onclick = func;
-		this.btnstack.push({el:unselectable(el), str:{ja:strJP, en:strEN}});
-	},
-	addLabels  : function(el, strJP, strEN){
-		this.labelstack.push({el:el, str:{ja:strJP, en:strEN}});
-	},
-
-	setDefaultButtons : function(){
-		var t = binder(this, this.addButtons);
-		t(document.newboard.newboard, null, "新規作成",   "Create");
-		t(document.newboard.cancel,   null, "キャンセル", "Cancel");
-		t(document.urlinput.urlinput, null, "読み込む",   "Import");
-		t(document.urlinput.cancel,   null, "キャンセル", "Cancel");
-		t(document.fileform.close,    null, "閉じる",     "Close");
-		t(document.database.save,     null, "盤面を保存", "Save");
-		t(document.database.comedit,  null, "コメントを編集する", "Edit Comment");
-		t(document.database.difedit,  null, "難易度を設定する",   "Set difficulty");
-		t(document.database.open,     null, "データを読み込む",   "Load");
-		t(document.database.del,      null, "削除",       "Delete");
-		t(document.database.close,    null, "閉じる",     "Close");
-		t(document.adjust.expandup,   null, "上",         "UP");
-		t(document.adjust.expanddn,   null, "下",         "Down");
-		t(document.adjust.expandlt,   null, "左",         "Left");
-		t(document.adjust.expandrt,   null, "右",         "Right");
-		t(document.adjust.reduceup,   null, "上",         "UP");
-		t(document.adjust.reducedn,   null, "下",         "Down");
-		t(document.adjust.reducelt,   null, "左",         "Left");
-		t(document.adjust.reducert,   null, "右",         "Right");
-		t(document.adjust.close,      null, "閉じる",     "Close");
-		t(document.flip.turnl,        null, "左90°回転", "Turn left by 90 degree");
-		t(document.flip.turnr,        null, "右90°回転", "Turn right by 90 degree");
-		t(document.flip.flipy,        null, "上下反転",   "Flip upside down");
-		t(document.flip.flipx,        null, "左右反転",   "Flip leftside right");
-		t(document.flip.close,        null, "閉じる",     "Close");
-		t(document.dispsize.dispsize, null, "変更する",   "Change");
-		t(document.dispsize.cancel,   null, "キャンセル", "Cancel");
-		t(document.credit.close,      null, "閉じる",     "OK");
-	},
-	setDefaultLabels : function(){
-		var t = binder(this, this.addLabels);
-		t(getEL("translation"), "English",                     "日本語");
-		t(getEL("bar1_1"),      "盤面の新規作成",              "Createing New Board");
-		t(getEL("pop1_1_cap0"), "盤面を新規作成します。",      "Create New Board.");
-		t(getEL("pop1_1_cap1"), "よこ",                        "Cols");
-		t(getEL("pop1_1_cap2"), "たて",                        "Rows");
-		t(getEL("bar1_2"),      "URL入力",                     "Import from URL");
-		t(getEL("pop1_2_cap0"), "URLから問題を読み込みます。", "Import a question from URL.");
-		t(getEL("bar1_3"),      "URL出力",                     "Export URL");
-		t(getEL("bar1_4"),      "ファイルを開く",              "Open file");
-		t(getEL("pop1_4_cap0"), "ファイル選択",                "Choose file");
-		t(getEL("bar1_8"),      "データベースの管理",          "Database Management");
-		t(getEL("pop1_8_com"),  "コメント:",                   "Comment:");
-		t(getEL("bar2_1"),      "盤面の調整",                  "Adjust the board");
-		t(getEL("pop2_1_cap0"), "盤面の調整を行います。",      "Adjust the board.");
-		t(getEL("pop2_1_cap1"), "拡大",                        "Expand");
-		t(getEL("pop2_1_cap2"), "縮小",                        "Reduce");
-		t(getEL("bar2_2"),      "反転・回転",                  "Flip/Turn the board");
-		t(getEL("pop2_2_cap0"), "盤面の回転・反転を行います。","Flip/Turn the board.");
-		t(getEL("bar4_1"),      "表示サイズの変更",            "Change size");
-		t(getEL("pop4_1_cap0"), "表示サイズを変更します。",    "Change the display size.");
-		t(getEL("pop4_1_cap1"), "表示サイズ",                  "Display size");
-		t(getEL("bar3_1"),      "credit",                      "credit");
-		t(getEL("credit3_1"), "ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\nライブラリとしてjQuery1.3.2, uuCanvas1.0, <br>Google Gearsを\n使用しています。<br>\n<br>\n",
-							  "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\nThis script use jQuery1.3.2, uuCanvas1.0, <br>Google Gears as libraries.<br>\n<br>\n");
-	},
-
-//--------------------------------------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------------
@@ -7008,8 +7358,8 @@ Menu.prototype = {
 	setLangStr : function(ln){
 		this.language = ln;
 		document.title = base.gettitle();
-		getEL("title2").innerHTML = base.gettitle();
-		getEL("expression").innerHTML = base.expression[this.language];
+		ee('title2').el.innerHTML = base.gettitle();
+		ee('expression').el.innerHTML = base.expression[this.language];
 
 		this.displayAll();
 		this.ex.dispmanstr();
@@ -7017,6 +7367,8 @@ Menu.prototype = {
 		base.resize_canvas();
 	}
 };
+
+//--------------------------------------------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
 // ★Propertiesクラス 設定値の値などを保持する
@@ -7034,6 +7386,15 @@ SSData = function(){
 Properties = function(){
 	this.flags    = [];	// サブメニュー項目の情報(SSDataクラスのオブジェクトの配列になる)
 	this.flaglist = [];	// idnameの配列
+
+	// const
+	this.MENU     = 6;
+	this.SMENU    = 0;
+	this.SELECT   = 1;
+	this.CHECK    = 2;
+	this.LABEL    = 3;
+	this.CHILD    = 4;
+	this.SEPARATE = 5;
 };
 Properties.prototype = {
 	reset : function(){
@@ -7041,193 +7402,102 @@ Properties.prototype = {
 		this.flaglist = [];
 	},
 
-	// pp.setMenuStr() 管理パネルと選択型/チェック型サブメニューに表示する文字列を設定する
-	addSmenuToFlags : function(idname, parent)       { this.addToFlags(idname, parent, 0, 0);},
-	addCheckToFlags : function(idname, parent, first){ this.addToFlags(idname, parent, 2, first);},
-	addCaptionToFlags     : function(idname, parent) { this.addToFlags(idname, parent, 3, 0);},
-	addSeparatorToFlags   : function(idname, parent) { this.addToFlags(idname, parent, 5, 0);},
-	addUseToFlags   : function(idname, parent, first, child){
-		this.addToFlags(idname, parent, 1, first);
+	//---------------------------------------------------------------------------
+	// pp.addMenu()      メニュー最上位の情報を登録する
+	// pp.addSmenu()     Popupメニューを開くサブメニュー項目を登録する
+	// pp.addCaption()   Captionとして使用するサブメニュー項目を登録する
+	// pp.addSeparator() セパレータとして使用するサブメニュー項目を登録する
+	// pp.addCheck()     選択型サブメニュー項目に表示する文字列を設定する
+	// pp.addSelect()    チェック型サブメニュー項目に表示する文字列を設定する
+	// pp.addChild()     チェック型サブメニュー項目の子要素を設定する
+	//---------------------------------------------------------------------------
+	addMenu : function(idname, strJP, strEN){
+		this.addFlags(idname, '', this.MENU, 0, strJP, strEN);
+	},
+
+	addSmenu : function(idname, parent, strJP, strEN){
+		this.addFlags(idname, parent, this.SMENU, 0, strJP, strEN);
+	},
+
+	addCaption : function(idname, parent, strJP, strEN){
+		this.addFlags(idname, parent, this.LABEL, 0, strJP, strEN);
+	},
+	addSeparator : function(idname, parent){
+		this.addFlags(idname, parent, this.SEPARATE, 0, '', '');
+	},
+
+	addCheck : function(idname, parent, first, strJP, strEN){
+		this.addFlags(idname, parent, this.CHECK, first, strJP, strEN);
+	},
+	addSelect : function(idname, parent, first, child, strJP, strEN){
+		this.addFlags(idname, parent, this.SELECT, first, strJP, strEN);
 		this.flags[idname].child = child;
 	},
-	addUseChildrenToFlags : function(idname, parent){
-		if(!this.flags[idname]){ return;}
-		for(var i=0;i<this.flags[idname].child.length;i++){
-			var num = this.flags[idname].child[i];
-			this.addToFlags(""+idname+"_"+num, parent, 4, num);
-		}
+	addChild : function(idname, parent, strJP, strEN){
+		var list = idname.split("_");
+		this.addFlags(idname, list[0], this.CHILD, list[1], strJP, strEN);
 	},
-	addToFlags : function(idname, parent, type, first){
+
+	//---------------------------------------------------------------------------
+	// pp.addFlags()  上記関数の内部共通処理
+	// pp.setLabel()  管理領域に表記するラベル文字列を設定する
+	//---------------------------------------------------------------------------
+	addFlags : function(idname, parent, type, first, strJP, strEN){
 		this.flags[idname] = new SSData();
 		this.flags[idname].id     = idname;
 		this.flags[idname].type   = type;
 		this.flags[idname].val    = first;
 		this.flags[idname].parent = parent;
+		this.flags[idname].str.ja.menu = strJP;
+		this.flags[idname].str.en.menu = strEN;
 		this.flaglist.push(idname);
 	},
 
-	setMenuStr : function(idname, strJP, strEN){
-		if(!this.flags[idname]){ return;}
-		this.flags[idname].str.ja.menu = strJP; this.flags[idname].str.en.menu = strEN;
-	},
 	setLabel : function(idname, strJP, strEN){
 		if(!this.flags[idname]){ return;}
-		this.flags[idname].str.ja.label = strJP; this.flags[idname].str.en.label = strEN;
+		this.flags[idname].str.ja.label = strJP;
+		this.flags[idname].str.en.label = strEN;
 	},
 
 	//---------------------------------------------------------------------------
 	// pp.getMenuStr() 管理パネルと選択型/チェック型サブメニューに表示する文字列を返す
 	// pp.getLabel()   管理パネルとチェック型サブメニューに表示する文字列を返す
 	// pp.type()       設定値のサブメニュータイプを返す
+	// pp.istype()     設定値のサブメニュータイプが指定された値かどうかを返す
+	//
 	// pp.getVal()     各フラグのvalの値を返す
 	// pp.setVal()     各フラグの設定値を設定する
 	//---------------------------------------------------------------------------
 	getMenuStr : function(idname){ return this.flags[idname].str[menu.language].menu; },
 	getLabel   : function(idname){ return this.flags[idname].str[menu.language].label;},
-	type : function(idname){ return this.flags[idname].type;},
+	type   : function(idname)     { return this.flags[idname].type;},
+	istype : function(idname,type){ return (this.flags[idname].type===type);},
 
 	getVal : function(idname)  { return this.flags[idname]?this.flags[idname].val:0;},
 	setVal : function(idname, newval){
 		if(!this.flags[idname]){ return;}
-		else if(this.type(idname)==1 || this.type(idname)==2){
+		else if(this.flags[idname].type===this.CHECK || this.flags[idname].type===this.SELECT){
 			this.flags[idname].val = newval;
 			menu.setdisplay(idname);
 			if(this.funcs[idname]){ this.funcs[idname](newval);}
 		}
 	},
 
-	//---------------------------------------------------------------------------
-	// pp.setDefaultFlags()  設定値を登録する
-	// pp.setStringToFlags() 設定値に文字列を登録する
-	//---------------------------------------------------------------------------
-	setDefaultFlags : function(){
-		var as = binder(this, this.addSmenuToFlags),
-			au = binder(this, this.addUseToFlags),
-			ac = binder(this, this.addCheckToFlags),
-			aa = binder(this, this.addCaptionToFlags),
-			ai = binder(this, this.addUseChildrenToFlags),
-			ap = binder(this, this.addSeparatorToFlags);
-
-		au('mode','setting',(k.editmode?1:3),[1,3]);
-
-		puz.menufix();	// 各パズルごとのメニュー追加
-
-		ac('autocheck','setting',k.autocheck);
-		ac('lrcheck','setting',false);
-		ac('keypopup','setting',kp.defaultdisp);
-		au('language','setting',0,[0,1]);
-		if(k.PLAYER){ delete this.flags['mode'];}
-		if(!kp.ctl[1].enable && !kp.ctl[3].enable){ delete this.flags['keypopup'];}
-
-		as('newboard',  'file');
-		as('urlinput',  'file');
-		as('urloutput', 'file');
-		ap('sep_2',     'file');
-		as('fileopen',  'file');
-		as('filesave',  'file');
-		as('database',  'file');
-		ap('sep_3',     'file');
-		as('fileopen2', 'file');
-		as('filesave2', 'file');
-		if(fio.DBtype==0){ delete this.flags['database'];}
-		if(!k.isKanpenExist || (k.puzzleid=="nanro"||k.puzzleid=="ayeheya"||k.puzzleid=="kurochute")){
-			delete this.flags['fileopen2']; delete this.flags['filesave2']; delete this.flags['sep_3'];
-		}
-
-		as('adjust', 'edit');
-		as('turn',   'edit');
-
-		au('size',   'disp',k.widthmode,[0,1,2,3,4]);
-		ap('sep_4',  'disp');
-		ac('irowake','disp',(k.irowake==2?true:false));
-		ap('sep_5',  'disp');
-		as('manarea','disp');
-		if(k.irowake==0){ delete this.flags['irowake']; delete this.flags['sep_4'];}
-
-		as('dispsize',    'size');
-		aa('cap_dispmode','size');
-		ai('size','size');
-
-		ai('mode','mode');
-
-		ai('language','language');
-
-		as('credit',      'other');
-		aa('cap_others1', 'other');
-		as('jumpv3',      'other');
-		as('jumptop',     'other');
-		as('jumpblog',    'other');
-
-		this.setStringToFlags();
-	},
-	setStringToFlags : function(){
-		var sm = binder(this, this.setMenuStr),
-			sl = binder(this, this.setLabel);
-
-		sm('size',   '表示サイズ',  'Cell Size');
-		sm('size_0', 'サイズ 極小', 'Ex Small');
-		sm('size_1', 'サイズ 小',   'Small');
-		sm('size_2', 'サイズ 標準', 'Normal');
-		sm('size_3', 'サイズ 大',   'Large');
-		sm('size_4', 'サイズ 特大', 'Ex Large');
-
-		sm('irowake', '線の色分け', 'Color coding');
-		sl('irowake', '線の色分けをする', 'Color each lines');
-
-		sm('mode',   'モード', 'mode');
-		sl('mode',   'モード', 'mode');
-		sm('mode_1', '問題作成モード', 'Edit mode'  );
-		sm('mode_3', '回答モード',     'Answer mode');
-
-		sm('autocheck', '正答自動判定', 'Auto Answer Check');
-
-		sm('lrcheck', 'マウス左右反転', 'Mouse button inversion');
-		sl('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
-
-		sm('keypopup', 'パネル入力', 'Panel inputting');
-		sl('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
-
-		sm('language',   '言語',    'Language');
-		sm('language_0', '日本語',  '日本語');
-		sm('language_1', 'English', 'English');
-
-		sm('newboard',     '新規作成',                  'New Board');
-		sm('urlinput',     'URL入力',                   'Import from URL');
-		sm('urloutput',    'URL出力',                   'Export URL');
-		sm('fileopen',     'ファイルを開く',            'Open the file');
-		sm('filesave',     'ファイル保存',              'Save the file as ...');
-		sm('database',     'データベースの管理',        'Database Management');
-		sm('fileopen2',    'pencilboxのファイルを開く', 'Open the pencilbox file');
-		sm('filesave2',    'pencilboxのファイルを保存', 'Save the pencilbox file as ...');
-		sm('adjust',       '盤面の調整',                'Adjust the Board');
-		sm('turn',         '反転・回転',                'Filp/Turn the Board');
-		sm('dispsize',     'サイズ指定',                'Cell Size');
-		sm('cap_dispmode', '表示モード',                'Display mode');
-		sm('manarea',      '管理領域を隠す',            'Hide Management Area');
-		sm('credit',       'ぱずぷれv3について',        'About PUZ-PRE v3');
-		sm('cap_others1',  'リンク',                    'Link');
-		sm('jumpv3',       'ぱずぷれv3のページへ',      'Jump to PUZ-PRE v3 page');
-		sm('jumptop',      '連続発破保管庫TOPへ',       'Jump to indi.s58.xrea.com');
-		sm('jumpblog',     'はっぱ日記(blog)へ',        'Jump to my blog');
-
-		sm('eval', 'テスト用', 'for Evaluation');
-	},
-
 //--------------------------------------------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
 	funcs : {
-		urlinput  : function(){ menu.pop = getEL("pop1_2");},
-		urloutput : function(){ menu.pop = getEL("pop1_3"); document.urloutput.ta.value = "";},
+		urlinput  : function(){ menu.pop = ee("pop1_2");},
+		urloutput : function(){ menu.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
 		filesave  : function(){ menu.ex.filesave();},
-		database  : function(){ menu.pop = getEL("pop1_8"); fio.getDataTableList();},
+		database  : function(){ menu.pop = ee("pop1_8"); fio.getDataTableList();},
 		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave2();}},
-		adjust    : function(){ menu.pop = getEL("pop2_1");},
-		turn      : function(){ menu.pop = getEL("pop2_2");},
-		credit    : function(){ menu.pop = getEL("pop3_1");},
+		adjust    : function(){ menu.pop = ee("pop2_1");},
+		turn      : function(){ menu.pop = ee("pop2_2");},
+		credit    : function(){ menu.pop = ee("pop3_1");},
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
 		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},
-		irowake   : function(){ menu.ex.irowakeRemake();},
+		irowake   : function(){ pc.paintAll();},
 		manarea   : function(){ menu.ex.dispman();},
 		autocheck : function(val){ k.autocheck = !k.autocheck;},
 		mode      : function(num){ menu.ex.modechange(num);},
@@ -7236,7 +7506,7 @@ Properties.prototype = {
 		language  : function(num){ menu.setLang({0:'ja',1:'en'}[num]);},
 
 		newboard : function(){
-			menu.pop = getEL("pop1_1");
+			menu.pop = ee("pop1_1");
 			if(k.puzzleid!="sudoku"){
 				document.newboard.col.value = k.qcols;
 				document.newboard.row.value = k.qrows;
@@ -7245,24 +7515,24 @@ Properties.prototype = {
 		},
 		fileopen : function(){
 			document.fileform.pencilbox.value = "0";
-			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = getEL("pop1_4");}}
+			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = ee("pop1_4");}}
 			else{ if(!menu.pop){ document.fileform.filebox.click();}}
 		},
 		fileopen2 : function(){
 			if(!fio.kanpenOpen){ return;}
 			document.fileform.pencilbox.value = "1";
-			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = getEL("pop1_4");}}
+			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = ee("pop1_4");}}
 			else{ if(!menu.pop){ document.fileform.filebox.click();}}
 		},
 		dispsize : function(){
-			menu.pop = getEL("pop4_1");
+			menu.pop = ee("pop4_1");
 			document.dispsize.cs.value = k.def_csize;
 			k.enableKey = false;
 		},
 		keypopup : function(){
 			var f = kp.ctl[pp.flags['mode'].val].enable;
-			getEL("ck_keypopup").disabled    = (f?"":"true");
-			getEL("cl_keypopup").style.color = (f?"black":"silver");
+			ee('ck_keypopup').el.disabled    = (f?"":"true");
+			ee('cl_keypopup').el.style.color = (f?"black":"silver");
 		}
 	}
 };
@@ -7334,7 +7604,7 @@ MenuExec.prototype = {
 	},
 	urloutput : function(e){
 		if(menu.pop){
-			switch(menu.getSrcElement(e).name){
+			switch(ee.getSrcElement(e).name){
 				case "pzprv3":     enc.pzlexport(0); break;
 				case "pzprapplet": enc.pzlexport(1); break;
 				case "kanpen":     enc.pzlexport(2); break;
@@ -7388,7 +7658,7 @@ MenuExec.prototype = {
 	// menu.ex.irowakeRemake() 「色分けしなおす」ボタンを押した時に色分けしなおす
 	//---------------------------------------------------------------------------
 	irowakeRemake : function(){
-		if(!menu.getVal('irowake')){ return;}
+		if(!pp.getVal('irowake')){ return;}
 
 		for(var i=1;i<=line.data.max;i++){
 			var idlist = line.data[i].idlist;
@@ -7408,26 +7678,32 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	dispman : function(e){
 		var idlist = ['expression','usepanel','checkpanel'];
-		var sparatorlist = k.EDITOR ? ['separator1'] : ['separator1','separator2'];
+		var seplist = k.EDITOR ? ['separator1'] : ['separator1','separator2'];
 
 		if(this.displaymanage){
-			for(var i=0;i<idlist.length;i++){ $("#"+idlist[i]).hide(800, binder(base,base.resize_canvas));}
-			for(var i=0;i<sparatorlist.length;i++){ $("#"+sparatorlist[i]).hide();}
-			if(k.irowake!=0 && menu.getVal('irowake')){ $("#btncolor2").show();}
-			getEL("menuboard").style.paddingBottom = '0pt';
+			for(var i=0;i<idlist.length;i++)        { ee(idlist[i])  .el.style.display = 'none';}
+			for(var i=0;i<seplist.length;i++)       { ee(seplist[i]) .el.style.display = 'none';}
+			if(k.irowake!=0 && pp.getVal('irowake')){ ee('btncolor2').el.style.display = 'inline';}
+			ee('menuboard').el.style.paddingBottom = '0pt';
 		}
 		else{
-			for(var i=0;i<idlist.length;i++){ $("#"+idlist[i]).show(800, binder(base,base.resize_canvas));}
-			for(var i=0;i<sparatorlist.length;i++){ $("#"+sparatorlist[i]).show();}
-			if(k.irowake!=0 && menu.getVal('irowake')){ $("#btncolor2").hide();}
-			getEL("menuboard").style.paddingBottom = '8pt';
+			for(var i=0;i<idlist.length;i++)        { ee(idlist[i])  .el.style.display = 'block';}
+			for(var i=0;i<seplist.length;i++)       { ee(seplist[i]) .el.style.display = 'block';}
+			if(k.irowake!=0 && pp.getVal('irowake')){ ee("btncolor2").el.style.display = 'none';}
+			ee('menuboard').el.style.paddingBottom = '8pt';
 		}
 		this.displaymanage = !this.displaymanage;
 		this.dispmanstr();
+
+		base.resize_canvas_only();	// canvasの左上座標等を更新
+		bd.setposAll();	// 各セルのpx,py座標を更新
+
+		if(g.vml){ pc.flushCanvasAll();}	// VMLの位置がずれるので消さないと。。
+		pc.paintAll();	// 再描画
 	},
 	dispmanstr : function(){
-		if(!this.displaymanage){ getEL("ms_manarea").innerHTML = menu.isLangJP()?"管理領域を表示":"Show management area";}
-		else                   { getEL("ms_manarea").innerHTML = menu.isLangJP()?"管理領域を隠す":"Hide management area";}
+		if(!this.displaymanage){ ee('ms_manarea').el.innerHTML = menu.isLangJP()?"管理領域を表示":"Show management area";}
+		else                   { ee('ms_manarea').el.innerHTML = menu.isLangJP()?"管理領域を隠す":"Hide management area";}
 	},
 
 	//------------------------------------------------------------------------------
@@ -7438,7 +7714,7 @@ MenuExec.prototype = {
 		if(menu.pop){
 			um.newOperation(true);
 
-			var name = menu.getSrcElement(e).name;
+			var name = ee.getSrcElement(e).name;
 			if(name.indexOf("reduce")===0){
 				if(name==="reduceup"||name==="reducedn"){
 					if(k.qrows<=1){ return;}
@@ -8118,8 +8394,6 @@ LineManager.prototype = {
 			if(cc2!=-1){ this.ltotal[this.lcnt[cc2]]--; this.lcnt[cc2]--; this.ltotal[this.lcnt[cc2]]++;}
 		}
 
-		// if(k.br.IE && !menu.getVal('irowake')){ return;}
-
 		//---------------------------------------------------------------------------
 		// (A)くっつきなし                        (B)単純くっつき
 		//     ・      │    - 交差ありでlcnt=1     ┃      │    - 交差なしでlcnt=2～4
@@ -8274,23 +8548,46 @@ LineManager.prototype = {
 		}
 	},
 
-	repaintLine : function(idlist){
-		if(!menu.getVal('irowake')){ return;}
-		var paintfunc = binder(pc, (k.isCenterLine?pc.drawLine1:pc.drawBorder1));
-		if(g.vml){
-			pc.zstable = true;
-			for(var i=0,len=idlist.length;i<len;i++){
-				paintfunc(idlist[i],true);
+	repaintLine : (
+		((!k.vml) ?
+			function(idlist){
+				if(!pp.getVal('irowake')){ return;}
+
+				if(k.isCenterLine){
+					for(var i=0,len=idlist.length;i<len;i++){
+						pc.drawLine1(idlist[i],true);
+						this.repaintParts(idlist[i]);
+					}
+				}
+				else{
+					for(var i=0,len=idlist.length;i<len;i++){
+						var id = idlist[i];
+						if(bd.border[id].qans!==1){ g.fillStyle = pc.BorderQuescolor; }
+						else                      { g.fillStyle = pc.getLineColor(id);}
+						pc.drawBorder1x(bd.border[id].cx, bd.border[id].cy, true);
+						this.repaintParts(id);
+					}
+				}
 			}
-			pc.zstable = false;
-		}
-		else{
-			for(var i=0,len=idlist.length;i<len;i++){
-				paintfunc(idlist[i],true);
-				this.repaintParts(idlist[i]);
+		:
+			function(idlist){
+				if(!pp.getVal('irowake')){ return;}
+
+				pc.zstable = true;
+				if(k.isCenterLine){
+					for(var i=0,len=idlist.length;i<len;i++){
+						pc.drawLine1(idlist[i],true);
+					}
+				}
+				else{
+					for(var i=0,len=idlist.length;i<len;i++){
+						pc.drawBorder1x(bd.border[idlist[i]].cx,bd.border[idlist[i]].cy,true);
+					}
+				}
+				pc.zstable = false;
 			}
-		}
-	},
+		)
+	),
 	repaintParts : function(id){ }, // オーバーライド用
 
 	//---------------------------------------------------------------------------
@@ -8848,8 +9145,8 @@ PBase.prototype = {
 		}
 
 		// onLoadとonResizeに動作を割り当てる
-		window.onload   = ebinder(this, this.onload_func);
-		window.onresize = ebinder(this, this.onresize_func);
+		window.onload   = ee.ebinder(this, this.onload_func);
+		window.onresize = ee.ebinder(this, this.onresize_func);
 	},
 
 	//---------------------------------------------------------------------------
@@ -8873,8 +9170,8 @@ PBase.prototype = {
 	},
 
 	initCanvas : function(){
-		this.canvas = unselectable(getEL('puzzle_canvas')); // Canvas
-		this.numparent = getEL('numobj_parent');			// 数字表示用
+		this.canvas = ee('puzzle_canvas').unselectable().el; // Canvas
+		this.numparent = ee('numobj_parent').el;			// 数字表示用
 		g = this.canvas.getContext("2d");
 	},
 
@@ -8909,25 +9206,25 @@ PBase.prototype = {
 		if(k.scriptcheck && debug){ debug.testonly_func();}	// テスト用
 	},
 	setEvents : function(first){
-		this.canvas.onmousedown   = ebinder(mv, mv.e_mousedown);
-		this.canvas.onmousemove   = ebinder(mv, mv.e_mousemove);
-		this.canvas.onmouseup     = ebinder(mv, mv.e_mouseup  );
+		this.canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+		this.canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+		this.canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
 		this.canvas.oncontextmenu = function(){ return false;};
 
-		this.numparent.onmousedown   = ebinder(mv, mv.e_mousedown);
-		this.numparent.onmousemove   = ebinder(mv, mv.e_mousemove);
-		this.numparent.onmouseup     = ebinder(mv, mv.e_mouseup  );
+		this.numparent.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+		this.numparent.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+		this.numparent.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
 		this.numparent.oncontextmenu = function(){ return false;};
 
 		if(first){
-			document.onkeydown  = kcbinder(kc.e_keydown);
-			document.onkeyup    = kcbinder(kc.e_keyup);
-			document.onkeypress = kcbinder(kc.e_keypress);
+			document.onkeydown  = ee.kcbinder(kc.e_keydown);
+			document.onkeyup    = ee.kcbinder(kc.e_keyup);
+			document.onkeypress = ee.kcbinder(kc.e_keypress);
 		}
 	},
 	initSilverlight : function(sender){
-		sender.AddEventListener("KeyDown", kcbinder(kc.e_SLkeydown));
-		sender.AddEventListener("KeyUp",   kcbinder(kc.e_SLkeyup));
+		sender.AddEventListener("KeyDown", ee.kcbinder(kc.e_SLkeydown));
+		sender.AddEventListener("KeyUp",   ee.kcbinder(kc.e_SLkeyup));
 	},
 
 	//---------------------------------------------------------------------------
@@ -8944,12 +9241,13 @@ PBase.prototype = {
 		this.resize_canvas_only();	// Canvasのサイズ設定
 
 		_doc.title = this.gettitle();
-		getEL("title2").innerHTML = this.gettitle();
+		ee('title2').el.innerHTML = this.gettitle();
 
 		_doc.body.style.backgroundImage = "url(../../"+k.puzzleid+"/bg.gif)";
 		if(k.br.IE){
-			getEL("title2").style.marginTop = "24px";
-			$("hr").each(function(){ $(this).context.style.margin = '0pt';});
+			ee('title2').el.style.marginTop = "24px";
+			ee('separator1').el.style.margin = '0pt';
+			ee('separator2').el.style.margin = '0pt';
 		}
 
 		this.postfix();			// 各パズルごとの設定(後付け分)
@@ -8977,37 +9275,36 @@ PBase.prototype = {
 	// base.resize_canvas()        resize_canvas_only()+Canvasの再描画
 	// base.resize_canvas_onload() 初期化中にpaint再描画が起こらないように、resize_canvasを呼び出す
 	// base.onresize_func()        ウィンドウリサイズ時に呼ばれる関数
-	// base.getWindowSize()        ウィンドウの大きさを返す
 	// base.resetInfo()            AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
 	//---------------------------------------------------------------------------
 	resize_canvas_only : function(){
-		var wsize = this.getWindowSize();
+		var wwidth = ee.windowWidth();
 		k.p0 = new Pos(k.def_psize, k.def_psize);
 
 		// セルのサイズの決定
 		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[k.widthmode];
-		var ci0 = Math.round((wsize.x-k.p0.x*2)/(k.def_csize*cratio)*0.75);
-		var ci1 = Math.round((wsize.x-k.p0.x*2)/(k.def_csize*cratio));
-		var ci2 = Math.round((wsize.x-k.p0.x*2)/(k.def_csize)*2.25);
+		var ci0 = Math.round((wwidth-k.p0.x*2)/(k.def_csize*cratio)*0.75);
+		var ci1 = Math.round((wwidth-k.p0.x*2)/(k.def_csize*cratio));
+		var ci2 = Math.round((wwidth-k.p0.x*2)/(k.def_csize)*2.25);
 
 		if(k.qcols < ci0){				// 特に縮小しないとき
 			k.cwidth = k.cheight = mf(k.def_csize*cratio);
-			getEL("main").style.width = '80%';
+			ee('main').el.style.width = '80%';
 		}
 		else if(k.qcols < ci1){			// ウィンドウの幅75%に入る場合 フォントのサイズは3/4まで縮めてよい
 			k.cwidth = k.cheight = mf(k.def_csize*cratio*(1-0.25*((k.qcols-ci0)/(ci1-ci0))));
 			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-			getEL("main").style.width = '80%';
+			ee('main').el.style.width = '80%';
 		}
 		else if(k.qcols < ci2){			// mainのtableを広げるとき
 			k.cwidth = k.cheight = mf(k.def_csize*cratio*(0.75-0.35*((k.qcols-ci1)/(ci2-ci1))));
 			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-			getEL("main").style.width = ""+(k.p0.x*2+k.qcols*k.cwidth+12)+"px";
+			ee('main').el.style.width = ""+(k.p0.x*2+k.qcols*k.cwidth+12)+"px";
 		}
 		else{							// 標準サイズの40%にするとき(自動調整の下限)
 			k.cwidth = k.cheight = mf(k.def_csize*0.4);
 			k.p0 = new Pos(k.def_psize*0.4, k.def_psize*0.4);
-			getEL("main").style.width = '96%';
+			ee('main').el.style.width = '96%';
 		}
 
 		// Canvasのサイズ変更
@@ -9020,8 +9317,9 @@ PBase.prototype = {
 			k.p0.y += mf(k.cheight*0.45);
 		}
 
-		k.cv_oft.x = menu.getLeft(this.canvas);
-		k.cv_oft.y = menu.getTop(this.canvas);
+		var rect = ee('puzzle_canvas').getRect();
+		k.cv_oft.x = rect.left;
+		k.cv_oft.y = rect.top;
 
 		kp.resize();
 		bd.setposAll();
@@ -9042,7 +9340,7 @@ PBase.prototype = {
 	},
 	resize_canvas_onload : function(){
 		if(!k.br.IE || pc.already()){ this.resize_canvas();}
-		else{ uuCanvas.ready(binder(this, this.resize_canvas));}
+		else{ uuCanvas.ready(ee.binder(this, this.resize_canvas));}
 	},
 	onresize_func : function(){
 		if(this.onresizenow){ return;}
@@ -9051,15 +9349,6 @@ PBase.prototype = {
 		this.resize_canvas();
 
 		this.onresizenow = false;
-	},
-	getWindowSize : function(){
-		if(document.all){
-			return new Pos(document.body.clientWidth, document.body.clientHeight);
-		}
-		else if(document.layers || document.getElementById){
-			return new Pos(innerWidth, innerHeight);
-		}
-		return new Pos(0, 0);
 	},
 
 	resetInfo : function(){
@@ -9078,7 +9367,20 @@ PBase.prototype = {
 		refer = refer.replace(/\=/g,"%3d");
 		refer = refer.replace(/\//g,"%2f");
 
-		$.post("./record.cgi", "pid="+k.puzzleid+"&pzldata="+enc.uri.qdata+"&referer="+refer);
+		// 送信
+		var xmlhttp = false;
+		if(typeof ActiveXObject != "undefined"){
+			try { xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");}
+			catch (e) { xmlhttp = false;}
+		}
+		if(!xmlhttp && typeof XMLHttpRequest != "undefined") {
+			xmlhttp = new XMLHttpRequest();
+		}
+		if(xmlhttp){
+			xmlhttp.open("GET", ["./record.cgi", "?pid=",k.puzzleid, "&pzldata=",enc.uri.qdata, "&referer=",refer].join(''));
+			xmlhttp.onreadystatechange = function(){};
+			xmlhttp.send(null);
+		}
 	}
 };
 
