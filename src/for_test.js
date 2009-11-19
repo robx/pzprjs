@@ -181,7 +181,7 @@ var debug = {
 
 				enc.pzlexport(2);
 				document.urlinput.ta.value = document.urloutput.ta.value;
-				menu.pop = getEL("pop1_5");
+				menu.pop = ee("pop1_5");
 				menu.ex.urlinput({});
 
 				debug.addTextarea("Encode kanpen = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
@@ -270,7 +270,7 @@ var debug = {
 		case 40:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(){ menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnr'}}); menu.pop = '';};
+				var func = function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnr'}}); menu.pop = '';};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("TurnR test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
@@ -292,7 +292,7 @@ var debug = {
 		case 45:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(){ menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnl'}}); menu.pop = '';};
+				var func = function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnl'}}); menu.pop = '';};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("TurnL test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
@@ -315,9 +315,9 @@ var debug = {
 		case 50:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}});
+				menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}});
 
-				setTimeout(function(){ menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}}); menu.pop = '';
+				setTimeout(function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}}); menu.pop = '';
 					debug.addTextarea("FlipX test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					debug.phase = 51;
 				},fint);
@@ -337,9 +337,9 @@ var debug = {
 		case 55:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}});
+				menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}});
 
-				setTimeout(function(){ menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}}); menu.pop = '';
+				setTimeout(function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}}); menu.pop = '';
 					debug.addTextarea("FlipY test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					debug.phase = 56;
 				},fint);
@@ -361,7 +361,7 @@ var debug = {
 			debug.phase=0;
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(nid){ menu.pop = getEL("pop2_1"); menu.ex.popupadjust({srcElement:{name:nid}}); menu.pop = '';};
+				var func = function(nid){ menu.pop = ee("pop2_1"); menu.ex.popupadjust({srcElement:{name:nid}}); menu.pop = '';};
 				setTimeout(function(){ func('expandup'); setTimeout(function(){ func('expandrt');
 				setTimeout(function(){ func('expanddn'); setTimeout(function(){ func('expandlt');
 				setTimeout(function(){ func('reduceup'); setTimeout(function(){ func('reducert');

@@ -674,7 +674,7 @@ Menu.prototype = {
 
 		// ポップアップメニューを表示する
 		if(this.pop){
-			var _pop = this.pop;
+			var _pop = this.pop.el;
 			_pop.style.left = ee.pageX(e) - 8 + k.IEMargin.x;
 			_pop.style.top  = ee.pageY(e) - 8 + k.IEMargin.y;
 			_pop.style.display = 'inline';
@@ -682,7 +682,7 @@ Menu.prototype = {
 	},
 	popclose : function(){
 		if(this.pop){
-			this.pop.style.display = "none";
+			this.pop.el.style.display = "none";
 			this.pop = '';
 			this.menuclear();
 			this.isptitle = 0;
@@ -881,18 +881,18 @@ Properties.prototype = {
 //--------------------------------------------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
 	funcs : {
-		urlinput  : function(){ menu.pop = getEL("pop1_2");},
-		urloutput : function(){ menu.pop = getEL("pop1_3"); document.urloutput.ta.value = "";},
+		urlinput  : function(){ menu.pop = ee("pop1_2");},
+		urloutput : function(){ menu.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
 		filesave  : function(){ menu.ex.filesave();},
-		database  : function(){ menu.pop = getEL("pop1_8"); fio.getDataTableList();},
+		database  : function(){ menu.pop = ee("pop1_8"); fio.getDataTableList();},
 		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave2();}},
-		adjust    : function(){ menu.pop = getEL("pop2_1");},
-		turn      : function(){ menu.pop = getEL("pop2_2");},
-		credit    : function(){ menu.pop = getEL("pop3_1");},
+		adjust    : function(){ menu.pop = ee("pop2_1");},
+		turn      : function(){ menu.pop = ee("pop2_2");},
+		credit    : function(){ menu.pop = ee("pop3_1");},
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
 		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},
-		irowake   : function(){ menu.ex.irowakeRemake();},
+		irowake   : function(){ pc.paintAll();},
 		manarea   : function(){ menu.ex.dispman();},
 		autocheck : function(val){ k.autocheck = !k.autocheck;},
 		mode      : function(num){ menu.ex.modechange(num);},
@@ -901,7 +901,7 @@ Properties.prototype = {
 		language  : function(num){ menu.setLang({0:'ja',1:'en'}[num]);},
 
 		newboard : function(){
-			menu.pop = getEL("pop1_1");
+			menu.pop = ee("pop1_1");
 			if(k.puzzleid!="sudoku"){
 				document.newboard.col.value = k.qcols;
 				document.newboard.row.value = k.qrows;
@@ -910,17 +910,17 @@ Properties.prototype = {
 		},
 		fileopen : function(){
 			document.fileform.pencilbox.value = "0";
-			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = getEL("pop1_4");}}
+			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = ee("pop1_4");}}
 			else{ if(!menu.pop){ document.fileform.filebox.click();}}
 		},
 		fileopen2 : function(){
 			if(!fio.kanpenOpen){ return;}
 			document.fileform.pencilbox.value = "1";
-			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = getEL("pop1_4");}}
+			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = ee("pop1_4");}}
 			else{ if(!menu.pop){ document.fileform.filebox.click();}}
 		},
 		dispsize : function(){
-			menu.pop = getEL("pop4_1");
+			menu.pop = ee("pop4_1");
 			document.dispsize.cs.value = k.def_csize;
 			k.enableKey = false;
 		},

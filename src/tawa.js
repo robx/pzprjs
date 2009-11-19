@@ -182,7 +182,7 @@ Puzzles.tawa.prototype = {
 		menu.ex.clap = 3;	// bd.lapの初期値(新規作成で選ぶ時用)
 
 		pp.funcs.newboard = function(){
-			menu.pop = getEL("pop1_1");
+			menu.pop = ee("pop1_1");
 			pp.funcs.clickimg({0:0,1:2,2:3,3:1}[bd.lap]);
 			document.newboard.col.value = (k.qcols+(bd.lap==3?1:0));
 			document.newboard.row.value = k.qrows;
