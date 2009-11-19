@@ -102,7 +102,7 @@ Puzzles.tatamibari.prototype = {
 				this.inputcol('empty','knumx','','');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.kpinput = function(ca){
 				kc.key_inputMarks(ca);
 			};

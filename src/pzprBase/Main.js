@@ -44,8 +44,8 @@ PBase.prototype = {
 		}
 
 		// onLoadとonResizeに動作を割り当てる
-		window.onload   = ebinder(this, this.onload_func);
-		window.onresize = ebinder(this, this.onresize_func);
+		window.onload   = ee.ebinder(this, this.onload_func);
+		window.onresize = ee.ebinder(this, this.onresize_func);
 	},
 
 	//---------------------------------------------------------------------------
@@ -69,8 +69,8 @@ PBase.prototype = {
 	},
 
 	initCanvas : function(){
-		this.canvas = unselectable(getEL('puzzle_canvas')); // Canvas
-		this.numparent = getEL('numobj_parent');			// 数字表示用
+		this.canvas = ee('puzzle_canvas').unselectable().el; // Canvas
+		this.numparent = ee('numobj_parent').el;			// 数字表示用
 		g = this.canvas.getContext("2d");
 	},
 
@@ -105,25 +105,25 @@ PBase.prototype = {
 		if(k.scriptcheck && debug){ debug.testonly_func();}	// テスト用
 	},
 	setEvents : function(first){
-		this.canvas.onmousedown   = ebinder(mv, mv.e_mousedown);
-		this.canvas.onmousemove   = ebinder(mv, mv.e_mousemove);
-		this.canvas.onmouseup     = ebinder(mv, mv.e_mouseup  );
+		this.canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+		this.canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+		this.canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
 		this.canvas.oncontextmenu = function(){ return false;};
 
-		this.numparent.onmousedown   = ebinder(mv, mv.e_mousedown);
-		this.numparent.onmousemove   = ebinder(mv, mv.e_mousemove);
-		this.numparent.onmouseup     = ebinder(mv, mv.e_mouseup  );
+		this.numparent.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+		this.numparent.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+		this.numparent.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
 		this.numparent.oncontextmenu = function(){ return false;};
 
 		if(first){
-			document.onkeydown  = kcbinder(kc.e_keydown);
-			document.onkeyup    = kcbinder(kc.e_keyup);
-			document.onkeypress = kcbinder(kc.e_keypress);
+			document.onkeydown  = ee.kcbinder(kc.e_keydown);
+			document.onkeyup    = ee.kcbinder(kc.e_keyup);
+			document.onkeypress = ee.kcbinder(kc.e_keypress);
 		}
 	},
 	initSilverlight : function(sender){
-		sender.AddEventListener("KeyDown", kcbinder(kc.e_SLkeydown));
-		sender.AddEventListener("KeyUp",   kcbinder(kc.e_SLkeyup));
+		sender.AddEventListener("KeyDown", ee.kcbinder(kc.e_SLkeydown));
+		sender.AddEventListener("KeyUp",   ee.kcbinder(kc.e_SLkeyup));
 	},
 
 	//---------------------------------------------------------------------------
@@ -140,12 +140,13 @@ PBase.prototype = {
 		this.resize_canvas_only();	// Canvasのサイズ設定
 
 		_doc.title = this.gettitle();
-		getEL("title2").innerHTML = this.gettitle();
+		ee('title2').el.innerHTML = this.gettitle();
 
 		_doc.body.style.backgroundImage = "url(../../"+k.puzzleid+"/bg.gif)";
 		if(k.br.IE){
-			getEL("title2").style.marginTop = "24px";
-			$("hr").each(function(){ $(this).context.style.margin = '0pt';});
+			ee('title2').el.style.marginTop = "24px";
+			ee('separator1').el.style.margin = '0pt';
+			ee('separator2').el.style.margin = '0pt';
 		}
 
 		this.postfix();			// 各パズルごとの設定(後付け分)
@@ -173,37 +174,36 @@ PBase.prototype = {
 	// base.resize_canvas()        resize_canvas_only()+Canvasの再描画
 	// base.resize_canvas_onload() 初期化中にpaint再描画が起こらないように、resize_canvasを呼び出す
 	// base.onresize_func()        ウィンドウリサイズ時に呼ばれる関数
-	// base.getWindowSize()        ウィンドウの大きさを返す
 	// base.resetInfo()            AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
 	//---------------------------------------------------------------------------
 	resize_canvas_only : function(){
-		var wsize = this.getWindowSize();
+		var wwidth = ee.windowWidth();
 		k.p0 = new Pos(k.def_psize, k.def_psize);
 
 		// セルのサイズの決定
 		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[k.widthmode];
-		var ci0 = Math.round((wsize.x-k.p0.x*2)/(k.def_csize*cratio)*0.75);
-		var ci1 = Math.round((wsize.x-k.p0.x*2)/(k.def_csize*cratio));
-		var ci2 = Math.round((wsize.x-k.p0.x*2)/(k.def_csize)*2.25);
+		var ci0 = Math.round((wwidth-k.p0.x*2)/(k.def_csize*cratio)*0.75);
+		var ci1 = Math.round((wwidth-k.p0.x*2)/(k.def_csize*cratio));
+		var ci2 = Math.round((wwidth-k.p0.x*2)/(k.def_csize)*2.25);
 
 		if(k.qcols < ci0){				// 特に縮小しないとき
 			k.cwidth = k.cheight = mf(k.def_csize*cratio);
-			getEL("main").style.width = '80%';
+			ee('main').el.style.width = '80%';
 		}
 		else if(k.qcols < ci1){			// ウィンドウの幅75%に入る場合 フォントのサイズは3/4まで縮めてよい
 			k.cwidth = k.cheight = mf(k.def_csize*cratio*(1-0.25*((k.qcols-ci0)/(ci1-ci0))));
 			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-			getEL("main").style.width = '80%';
+			ee('main').el.style.width = '80%';
 		}
 		else if(k.qcols < ci2){			// mainのtableを広げるとき
 			k.cwidth = k.cheight = mf(k.def_csize*cratio*(0.75-0.35*((k.qcols-ci1)/(ci2-ci1))));
 			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-			getEL("main").style.width = ""+(k.p0.x*2+k.qcols*k.cwidth+12)+"px";
+			ee('main').el.style.width = ""+(k.p0.x*2+k.qcols*k.cwidth+12)+"px";
 		}
 		else{							// 標準サイズの40%にするとき(自動調整の下限)
 			k.cwidth = k.cheight = mf(k.def_csize*0.4);
 			k.p0 = new Pos(k.def_psize*0.4, k.def_psize*0.4);
-			getEL("main").style.width = '96%';
+			ee('main').el.style.width = '96%';
 		}
 
 		// Canvasのサイズ変更
@@ -216,8 +216,9 @@ PBase.prototype = {
 			k.p0.y += mf(k.cheight*0.45);
 		}
 
-		k.cv_oft.x = menu.getLeft(this.canvas);
-		k.cv_oft.y = menu.getTop(this.canvas);
+		var rect = ee('puzzle_canvas').getRect();
+		k.cv_oft.x = rect.left;
+		k.cv_oft.y = rect.top;
 
 		kp.resize();
 		bd.setposAll();
@@ -238,7 +239,7 @@ PBase.prototype = {
 	},
 	resize_canvas_onload : function(){
 		if(!k.br.IE || pc.already()){ this.resize_canvas();}
-		else{ uuCanvas.ready(binder(this, this.resize_canvas));}
+		else{ uuCanvas.ready(ee.binder(this, this.resize_canvas));}
 	},
 	onresize_func : function(){
 		if(this.onresizenow){ return;}
@@ -247,15 +248,6 @@ PBase.prototype = {
 		this.resize_canvas();
 
 		this.onresizenow = false;
-	},
-	getWindowSize : function(){
-		if(document.all){
-			return new Pos(document.body.clientWidth, document.body.clientHeight);
-		}
-		else if(document.layers || document.getElementById){
-			return new Pos(innerWidth, innerHeight);
-		}
-		return new Pos(0, 0);
 	},
 
 	resetInfo : function(){
@@ -274,7 +266,20 @@ PBase.prototype = {
 		refer = refer.replace(/\=/g,"%3d");
 		refer = refer.replace(/\//g,"%2f");
 
-		$.post("./record.cgi", "pid="+k.puzzleid+"&pzldata="+enc.uri.qdata+"&referer="+refer);
+		// 送信
+		var xmlhttp = false;
+		if(typeof ActiveXObject != "undefined"){
+			try { xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");}
+			catch (e) { xmlhttp = false;}
+		}
+		if(!xmlhttp && typeof XMLHttpRequest != "undefined") {
+			xmlhttp = new XMLHttpRequest();
+		}
+		if(xmlhttp){
+			xmlhttp.open("GET", ["./record.cgi", "?pid=",k.puzzleid, "&pzldata=",enc.uri.qdata, "&referer=",refer].join(''));
+			xmlhttp.onreadystatechange = function(){};
+			xmlhttp.send(null);
+		}
 	}
 };
 

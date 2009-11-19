@@ -48,13 +48,14 @@ Puzzles.tawa.prototype = {
 	},
 	menufix : function(){
 		menu.addUseToFlags();
-		menu.addLabels(getEL("pop1_1_cap1x"), "横幅 (黄色の数)", "Width (Yellows)");
-		menu.addLabels(getEL("pop1_1_cap2x"), "高さ",            "Height");
+		menu.addLabels(ee('pop1_1_cap1x').el, "横幅 (黄色の数)", "Width (Yellows)");
+		menu.addLabels(ee('pop1_1_cap2x').el, "高さ",            "Height");
 	},
 
 	protoChange : function(){
 		this.protofunc = {
-			bdinit : Board.prototype.initBoardSize
+			bdinit : Board.prototype.initBoardSize,
+			resize_original : base.resize_canvas_only
 		};
 
 		Board.prototype.initBoardSize = function(col,row){
@@ -79,16 +80,16 @@ Puzzles.tawa.prototype = {
 			if(!base.initProcess){ this.allclear();}
 		};
 
-		this.resize_original = binder(base, base.resize_canvas_only);
 		base.resize_canvas_only = function(){
-			puz.resize_original();
+			ee.binder(base, puz.protofunc.resize_original)();
 
 			// Canvasのサイズ変更
 			this.canvas.width  = k.p0.x*2 + k.qcols*k.cwidth + mf(bd.lap==0?0:(bd.lap==3?k.cwidth:k.cwidth/2));
 			this.canvas.height = k.p0.y*2 + k.qrows*k.cheight;
 
-			k.cv_oft.x = menu.getLeft(this.canvas);
-			k.cv_oft.y = menu.getTop(this.canvas);
+			var rect = ee('puzzle_canvas').getRect();
+			k.cv_oft.x = rect.left;
+			k.cv_oft.y = rect.top;
 
 			// jQuery対応:初めにCanvas内のサイズが0になり、描画されない不具合への対処
 			// あれ？いらなくなる予定？
@@ -103,7 +104,7 @@ Puzzles.tawa.prototype = {
 	},
 	protoOriginal : function(){
 		Board.prototype.initBoardSize = this.protofunc.bdinit;
-		base.resize_canvas_only = this.resize_original;
+		base.resize_canvas_only       = this.protofunc.resize_original;
 		document.newboard.innerHTML = this.newboard_html_original;
 
 		document.flip.turnl.disabled = false;
@@ -164,7 +165,7 @@ Puzzles.tawa.prototype = {
 		};
 
 		if(k.EDITOR){
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.kpinput = function(ca){
 				kc.key_inputqnum(ca);
 			};
@@ -181,15 +182,16 @@ Puzzles.tawa.prototype = {
 		menu.ex.clap = 3;	// bd.lapの初期値(新規作成で選ぶ時用)
 
 		pp.funcs.newboard = function(){
-			menu.pop = getEL("pop1_1");
+			menu.pop = ee("pop1_1");
 			pp.funcs.clickimg({0:0,1:2,2:3,3:1}[bd.lap]);
 			document.newboard.col.value = (k.qcols+(bd.lap==3?1:0));
 			document.newboard.row.value = k.qrows;
 			k.enableKey = false;
 		};
-		pp.funcs.clickimg = function(num){
-			getEL("nb"+menu.ex.clap).parentNode.style.backgroundColor = '';
-			getEL("nb"+num).parentNode.style.backgroundColor = 'red';
+		pp.funcs.clickimg = function(e){
+			var num = ee.getSrcElement(e).charAt(2);
+			ee("nb"+menu.ex.clap).parent.style.backgroundColor = '';
+			ee("nb"+num).parent.style.backgroundColor = 'red';
 			menu.ex.clap = num;
 		};
 
@@ -204,35 +206,37 @@ Puzzles.tawa.prototype = {
 			].join('');
 
 		var cw=32, bw=2;
-		for(var i=0;i<=3;i++){
-			var _img = unselectable(newEL('img'));
-			_img.src            = './src/img/tawa_nb.gif';
-			_img.className      = 'clickimg';
-			_img.id             = 'nb'+i;
-			_img.style.position = 'absolute';
-			_img.style.left     = "-"+(i*cw)+"px";
-			_img.style.clip     = "rect(0px,"+((i+1)*cw)+"px,"+cw+"px,"+(i*cw)+"px)";
-			_img.style.margin   = ""+bw+"px";
-			_img.onclick        = binder(pp, pp.funcs.clickimg, [i])
 
-			var _div = newEL('div');
-			_div.style.position = 'relative';
-			_div.style.display  = 'block';
-			_div.style.width    = ""+(cw+bw*2)+"px";
-			_div.style.height   = ""+(cw+bw*2)+"px";
+		var img_attr  = {className    : 'clickimg',
+						 src          : './src/img/tawa_nb.gif',
+						 unselectable : 'on'};
+		var img_style = {position : 'absolute', margin   : ""+bw+"px"};
+		var EL_NBIMG = ee.addTemplate('','img', img_attr, img_style, {click: ee.ebinder(pp, pp.funcs.clickimg)});
+
+		var div_style = {position : 'relative',
+						 display  : 'block',
+						 width    : ""+(cw+bw*2)+"px",
+						 height   : ""+(cw+bw*2)+"px" };
+		var EL_NBDIV = ee.addTemplate('','div', null, div_style, null);
+
+		for(var i=0;i<=3;i++){
+			var _img = ee.createEL(EL_NBIMG, 'nb'+i);
+			_img.style.left  = "-"+(i*cw)+"px";
+			_img.style.clip  = "rect(0px,"+((i+1)*cw)+"px,"+cw+"px,"+(i*cw)+"px)";
+
+			var _div = ee.createEL(EL_NBDIV,'');
 			_div.appendChild(_img);
 
-			var _td = newEL('td');
+			var _td = _doc.createElement('td');
 			_td.appendChild(_div);
-
-			getEL('laps').appendChild(_td);
+			ee('laps').appendEL(_td);
 		}
 	},
 	input_init_board : function(){	// 処理が大きくなったので分割(input_init()から呼ばれる)
 
 		// キー移動範囲のminx,maxx,miny,maxy設定関数オーバーライド
 		// このパズルに限って、やたらとtc.maxxが参照されます。。
-		tc.getTCC = binder(tc, function(){ return bd.cnum(this.cursolx, mf((this.cursoly-1)/2));});
+		tc.getTCC = ee.binder(tc, function(){ return bd.cnum(this.cursolx, mf((this.cursoly-1)/2));});
 		tc.setTCC = function(id){
 			if(id<0 || bd.cellmax<=id){ return;}
 			this.cursolx = bd.cell[id].cx; this.cursoly = bd.cell[id].cy*2+1;

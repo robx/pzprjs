@@ -118,7 +118,7 @@ Puzzles.tilepaint.prototype = {
 
 		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
-				this.inputcol('image','knumq','-',[0,0]);
+				this.inputcol('image','knumq','q',[0,0]);
 				this.inputcol('num','knum_',' ',' ');
 				this.inputcol('num','knum1','1','1');
 				this.inputcol('num','knum2','2','2');
@@ -134,26 +134,25 @@ Puzzles.tilepaint.prototype = {
 				this.inputcol('num','knum0','0','0');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca);
+				kc.inputnumber51(ca,{2:(k.qcols-tc.getTCX()-1), 4:(k.qrows-tc.getTCY()-1)});
 			};
 		}
 
 		// 一部qsubで消したくないものがあるため上書き
-		base.ASconfirm = function(){
-			if(confirm("補助記号を消去しますか？")){
-				um.chainflag=0;
-				for(var i=0;i<k.qcols*k.qrows;i++){
-					if(bd.QsC(i)==1){ um.addOpe(k.CELL,k.QSUB,i,bd.QsC(i),0);}
+		menu.ex.ASconfirm = function(){
+			if(confirm(menu.isLangJP()?"補助記号を消去しますか？":"Do you want to erase the auxiliary marks?")){
+				um.newOperation(true);
+				for(i=0;i<bd.cellmax;i++){
+					if(bd.QsC(i)===1){
+						um.addOpe(k.CELL,k.QSUB,i,bd.QsC(i),0);
+						bd.cell[i].qsub = 0;
+					}
 				}
+
 				if(!g.vml){ pc.flushCanvasAll();}
-
-				$.each(bd.cell,   function(i,cell){ cell.error=0; if(cell.qsub==1){ cell.qsub=0;} });
-				$.each(bd.border, function(i,border){ border.error=0;});
-				$.each(bd.excell, function(i,excell){ excell.error=0;});
-
 				pc.paintAll();
 			}
 		};

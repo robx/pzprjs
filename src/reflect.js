@@ -61,7 +61,7 @@ Puzzles.reflect.prototype = {
 	input_init : function(){
 		// ƒ}ƒEƒX“ü—ÍŒn
 		mv.mousedown = function(){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode){
 				if(!kp.enabled()){ this.inputQues([0,2,3,4,5,101]);}
 				else{ kp.display();}
@@ -130,7 +130,7 @@ Puzzles.reflect.prototype = {
 				this.inputcol('num','knum.','-','-');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.imgCR = [4,1];
 			kp.kpinput = function(ca){
 				if(kc.key_inputLineParts(ca)){ return;}

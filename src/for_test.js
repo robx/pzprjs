@@ -6,18 +6,18 @@ k.PLAYER = false;
 
 var debug = {
 	testonly_func : function(){
-		menu.titlebarfunc(getEL("bartest"));
+		menu.titlebarfunc(ee('bartest').el);
 
-		document.testform.starttest.onclick = binder(this, this.presccheck);
-		document.testform.t1.onclick        = binder(this, this.perfeval);
-		document.testform.t2.onclick        = binder(this, this.painteval);
-		document.testform.t3.onclick        = binder(this, this.resizeeval);
+		document.testform.starttest.onclick = ee.binder(this, this.presccheck);
+		document.testform.t1.onclick        = ee.binder(this, this.perfeval);
+		document.testform.t2.onclick        = ee.binder(this, this.painteval);
+		document.testform.t3.onclick        = ee.binder(this, this.resizeeval);
 
-		document.testform.filesave.onclick  = function(){ getEL("testarea").value=''; debug.addTextarea(fio.fileencode(1).replace(/\//g,"\n"));};
-		document.testform.fileopen.onclick  = function(){ fio.fileopen(getEL("testarea").value.split("\n"),1);};
-		document.testform.erasetext.onclick = function(e){ getEL("testarea").value='';};
-		document.testform.close.onclick     = function(e){ getEL("poptest").style.display = 'none';};
-		document.testform.perfload.onclick  = binder(this, this.loadperf);
+		document.testform.filesave.onclick  = function(){ ee('testarea').el.value=''; debug.addTextarea(fio.fileencode(1).replace(/\//g,"\n"));};
+		document.testform.fileopen.onclick  = function(){ fio.fileopen(ee('testarea').el.value.split("\n"),1);};
+		document.testform.erasetext.onclick = function(e){ ee('testarea').el.value='';};
+		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
+		document.testform.perfload.onclick  = ee.binder(this, this.loadperf);
 
 		document.testform.perfload.display = (k.puzzleid!=='country' ? 'none' : 'inline');
 	},
@@ -31,13 +31,13 @@ var debug = {
 	},
 
 	perfeval : function(){
-		this.timeeval("ê≥ìöîªíËë™íË",binder(ans, ans.checkAns));
+		this.timeeval("ê≥ìöîªíËë™íË",ee.binder(ans, ans.checkAns));
 	},
 	painteval : function(){
-		this.timeeval("ï`âÊéûä‘ë™íË",binder(pc, pc.paintAll));
+		this.timeeval("ï`âÊéûä‘ë™íË",ee.binder(pc, pc.paintAll));
 	},
 	resizeeval : function(){
-		this.timeeval("resizeï`âÊë™íË",binder(base, base.resize_canvas));
+		this.timeeval("resizeï`âÊë™íË",ee.binder(base, base.resize_canvas));
 	},
 	timeeval : function(text,func){
 		this.addTextarea(text);
@@ -54,8 +54,8 @@ var debug = {
 
 	loadperf : function(){
 		fio.fileopen(debug.acs['perftest'][0][1].split("/"),1);
-		menu.setVal('mode',3);
-		menu.setVal('irowake',true);
+		pp.setVal('mode',3);
+		pp.setVal('irowake',true);
 	},
 
 	all_test : function(){
@@ -75,11 +75,11 @@ var debug = {
 			enc.parseURI_pzpr.apply(enc, [debug.urls[pnum][1]]);
 			enc.pzlinput.apply(enc);
 
-			getEL("testarea").rows = "32";
-			var _pop = getEL('poptest');
-			_pop.style.display = 'inline';
-			_pop.style.left = '40px';
-			_pop.style.top  = '80px';
+			ee('testarea').el.rows = "32";
+			var _pop_style = ee('poptest').el.style;
+			_pop_style.display = 'inline';
+			_pop_style.left = '40px';
+			_pop_style.top  = '80px';
 			debug.addTextarea("Test ("+pnum+", "+newid+") start.");
 			debug.sccheck();
 
@@ -98,9 +98,11 @@ var debug = {
 		if(kp.ctl[1].enable){ kp.ctl[1].el.innerHTML = '';}
 		if(kp.ctl[3].enable){ kp.ctl[3].el.innerHTML = '';}
 
+		ee.clean();
+
 		k.puzzleid = newid;
 		if(!Puzzles[k.puzzleid]){
-			var _script = newEL('script');
+			var _script = _doc.createElement('script');
 			_script.type = 'text/javascript';
 //			_script.charset = 'Shift_JIS';
 			_script.src = "src/"+k.puzzleid+".js";
@@ -130,21 +132,21 @@ var debug = {
 	},
 
 	disptest : function(type){
-		var _pop = getEL('poptest');
-		_pop.style.display = 'inline';
-		_pop.style.left = '40px';
-		_pop.style.top  = '80px';
+		var _pop_style = ee('poptest').el.style;
+		_pop_style.display = 'inline';
+		_pop_style.left = '40px';
+		_pop_style.top  = '80px';
 		if(type==1){ this.presccheck();}
 	},
 
 	phase : 0,
 	presccheck : function(e){
-		getEL("testarea").rows = "32";
-		getEL("testarea").value = "";
+		ee('testarea').el.rows = "32";
+		ee('testarea').el.value = "";
 		this.sccheck(e);
 	},
 	sccheck : function(e){
-		if(menu.getVal('autocheck')){ menu.setVal('autocheck',false);}
+		if(pp.getVal('autocheck')){ pp.setVal('autocheck',false);}
 		var n=0, alstr='', qstr='', mint=80, fint=50;
 		this.phase = 10;
 		var tim = setInterval(function(){
@@ -179,7 +181,7 @@ var debug = {
 
 				enc.pzlexport(2);
 				document.urlinput.ta.value = document.urloutput.ta.value;
-				menu.pop = getEL("pop1_5");
+				menu.pop = ee("pop1_5");
 				menu.ex.urlinput({});
 
 				debug.addTextarea("Encode kanpen = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
@@ -268,7 +270,7 @@ var debug = {
 		case 40:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(){ menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnr'}}); menu.pop = '';};
+				var func = function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnr'}}); menu.pop = '';};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("TurnR test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
@@ -290,7 +292,7 @@ var debug = {
 		case 45:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(){ menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnl'}}); menu.pop = '';};
+				var func = function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnl'}}); menu.pop = '';};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("TurnL test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
@@ -313,9 +315,9 @@ var debug = {
 		case 50:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}});
+				menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}});
 
-				setTimeout(function(){ menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}}); menu.pop = '';
+				setTimeout(function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}}); menu.pop = '';
 					debug.addTextarea("FlipX test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					debug.phase = 51;
 				},fint);
@@ -335,9 +337,9 @@ var debug = {
 		case 55:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}});
+				menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}});
 
-				setTimeout(function(){ menu.pop = getEL("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}}); menu.pop = '';
+				setTimeout(function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}}); menu.pop = '';
 					debug.addTextarea("FlipY test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					debug.phase = 56;
 				},fint);
@@ -359,7 +361,7 @@ var debug = {
 			debug.phase=0;
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(nid){ menu.pop = getEL("pop2_1"); menu.ex.popupadjust({srcElement:{name:nid}}); menu.pop = '';};
+				var func = function(nid){ menu.pop = ee("pop2_1"); menu.ex.popupadjust({srcElement:{name:nid}}); menu.pop = '';};
 				setTimeout(function(){ func('expandup'); setTimeout(function(){ func('expandrt');
 				setTimeout(function(){ func('expanddn'); setTimeout(function(){ func('expandlt');
 				setTimeout(function(){ func('reduceup'); setTimeout(function(){ func('reducert');
@@ -395,7 +397,7 @@ var debug = {
 		},mint);
 	},
 	taenable : true,
-	addTextarea : function(str){ if(this.taenable){ getEL('testarea').value += (str+"\n");} },
+	addTextarea : function(str){ if(this.taenable){ ee('testarea').el.value += (str+"\n");} },
 
 	qsubf : true,
 	bd_freezecopy : function(){

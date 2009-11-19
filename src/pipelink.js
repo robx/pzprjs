@@ -53,9 +53,11 @@ Puzzles.pipelink.prototype = {
 	},
 	menufix : function(){
 		if(k.EDITOR){ kp.defaultdisp = true;}
-		getEL('btnarea').appendChild(menu.createButton('btncircle','','○'))
-		menu.addButtons(getEL("btncircle"),binder(pc, pc.changedisp),"○","○");
 		menu.addRedLineToFlags();
+
+		var el = ee.createEL(menu.EL_BUTTON, 'btncircle');
+		menu.addButtons(el, ee.binder(pc, pc.changedisp), "○", "○");
+		ee('btnarea').appendEL(el);
 	},
 
 	//---------------------------------------------------------
@@ -64,7 +66,7 @@ Puzzles.pipelink.prototype = {
 		// マウス入力系
 		// マウス入力系
 		mv.mousedown = function(){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode){
 				if(!kp.enabled()){ this.inputQues([0,101,102,103,104,105,106,107,-2]);}
 				else{ kp.display();}
@@ -132,7 +134,7 @@ Puzzles.pipelink.prototype = {
 				this.inputcol('num','knum.','1','○');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.kpinput = function(ca){ kc.key_inputLineParts(ca);};
 		}
 	},
@@ -196,8 +198,8 @@ Puzzles.pipelink.prototype = {
 
 		pc.disp = 0;
 		pc.changedisp = function(){
-			if     (this.disp===1){ getEL("btncircle").value="○"; this.disp=0;}
-			else if(this.disp===0){ getEL("btncircle").value="■"; this.disp=1;}
+			if     (this.disp===1){ ee('btncircle').el.value="○"; this.disp=0;}
+			else if(this.disp===0){ ee('btncircle').el.value="■"; this.disp=1;}
 			this.paintAll();
 		};
 
@@ -307,7 +309,7 @@ Puzzles.pipelink.prototype = {
 			if( rice && !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101);}) ){
 				this.setAlert((pc.disp==0?'○':'氷')+'の部分以外で線が交差しています。','There is a crossing line out of '+(pc.disp==0?'circles':'ices')+'.'); return false;
 			}
-			if( rice && !this.checkAllCell(binder(this, function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));})) ){
+			if( rice && !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));})) ){
 				ans.setAlert((pc.disp==0?'○':'氷')+'の部分で線が曲がっています。','A line curves on '+(pc.disp==0?'circles':'ices')+'.'); return false;
 			}
 

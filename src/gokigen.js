@@ -48,15 +48,12 @@ Puzzles.gokigen.prototype = {
 	},
 	menufix : function(){
 		menu.addUseToFlags();
-
-		pp.addCheckToFlags('dispred','setting',false);
-		pp.setMenuStr('dispred', '繋がりチェック', 'Continuous Check');
-		pp.setLabel  ('dispred', '線のつながりをチェックする', 'Check countinuous slashes');
+		menu.addRedLineToFlags();
 	},
 	protoChange : function(){
 	},
 	protoOriginal : function(){
-		getEL("btnclear2").style.display = 'inline';
+		ee('btnclear2').el.style.display = 'inline';
 	},
 
 	//---------------------------------------------------------
@@ -65,7 +62,7 @@ Puzzles.gokigen.prototype = {
 		// マウス入力系
 		mv.mousedown = function(){
 			if(k.playmode){
-				if(!(kc.isZ ^ menu.getVal('dispred'))){ this.inputslash();}
+				if(!(kc.isZ ^ pp.getVal('dispred'))){ this.inputslash();}
 				else{ this.dispBlue();}
 			}
 			else if(k.editmode){
@@ -132,7 +129,7 @@ Puzzles.gokigen.prototype = {
 			um.enableRecord();
 		};
 
-		getEL("btnclear2").style.display = 'none';
+		ee('btnclear2').el.style.display = 'none';
 
 		tc.minx = 0;
 		tc.miny = 0;

@@ -697,6 +697,23 @@ FileIO.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// fio.clickHandler()  フォーム上のボタンが押された時、各関数にジャンプする
+	//---------------------------------------------------------------------------
+	clickHandler : function(e){
+		switch(ee.getSrcElement(e).name){
+			case 'sorts'   : this.displayDataTableList(); break;
+			case 'datalist': this.selectDataTable(); break;
+			case 'tableup' : this.upDataTable();     break;
+			case 'tabledn' : this.downDataTable();   break;
+			case 'open'    : this.openDataTable();   break;
+			case 'save'    : this.saveDataTable();   break;
+			case 'comedit' : this.editComment();     break;
+			case 'difedit' : this.editDifficult();   break;
+			case 'del'     : this.deleteDataTable(); break;
+		}
+	},
+
+	//---------------------------------------------------------------------------
 	// fio.displayDataTableList() 保存しているデータの一覧を表示する
 	// fio.ni()                   文字列で1桁なら0をつける
 	// fio.getDataTableList()     保存しているデータの一覧を取得する

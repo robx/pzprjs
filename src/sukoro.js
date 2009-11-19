@@ -103,7 +103,7 @@ Puzzles.sukoro.prototype = {
 				this.insertrow();
 			}
 		};
-		kp.generate(kp.ORIGINAL, true, true, binder(kp, kp.kpgenerate));
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
 		kp.kpinput = function(ca){
 			if(kc.key_sukoro(ca)){ return;}
 			kc.key_inputqnum(ca);

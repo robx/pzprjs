@@ -47,13 +47,12 @@ Puzzles.ichimaga.prototype = {
 	},
 	menufix : function(){
 		if(k.EDITOR){
-			pp.addUseToFlags('puztype','setting',1,[1,2,3]);
-			pp.addUseChildrenToFlags('puztype','puztype');
-			pp.setMenuStr('puztype', 'パズルの種類', 'Kind of the puzzle');
-			pp.setLabel  ('puztype', 'パズルの種類', 'Kind of the puzzle');
-			pp.setMenuStr('puztype_1', 'イチマガ', 'Ichimaga');
-			pp.setMenuStr('puztype_2', '磁石イチマガ', 'Magnetic Ichimaga');
-			pp.setMenuStr('puztype_3', '交差も', 'Crossing Ichimaga');
+			pp.addSelect('puztype','setting',1,[1,2,3], 'パズルの種類', 'Kind of the puzzle');
+			pp.setLabel ('puztype', 'パズルの種類', 'Kind of the puzzle');
+
+			pp.addChild('puztype_1', 'puztype', 'イチマガ', 'Ichimaga');
+			pp.addChild('puztype_2', 'puztype', '磁石イチマガ', 'Magnetic Ichimaga');
+			pp.addChild('puztype_3', 'puztype', '交差も', 'Crossing Ichimaga');
 		}
 	},
 
@@ -118,16 +117,16 @@ Puzzles.ichimaga.prototype = {
 			if(type==0 || type==1){ this.decode4Cell(bstr);}
 
 			if(k.EDITOR){
-				if     (this.checkpflag("m")){ menu.setVal('puztype',2);}
-				else if(this.checkpflag("x")){ menu.setVal('puztype',3);}
-				else                         { menu.setVal('puztype',1);}
+				if     (this.checkpflag("m")){ pp.setVal('puztype',2);}
+				else if(this.checkpflag("x")){ pp.setVal('puztype',3);}
+				else                         { pp.setVal('puztype',1);}
 			}
 			else{
 				if     (this.checkpflag("m")){ base.setTitle("磁石イチマガ","Magnetic Ichimaga");}
 				else if(this.checkpflag("x")){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
 				else                         { base.setTitle("イチマガ","Ichimaga");}
 				document.title = base.gettitle();
-				getEL("title2").innerHTML = base.gettitle();
+				ee('title2').el.innerHTML = base.gettitle();
 			}
 		};
 		enc.pzlexport = function(type){
@@ -137,8 +136,8 @@ Puzzles.ichimaga.prototype = {
 		};
 		enc.pzldata = function(){
 			var pzlflag="";
-			if     (menu.getVal('puztype')==2){ pzlflag="/m";}
-			else if(menu.getVal('puztype')==3){ pzlflag="/x";}
+			if     (pp.getVal('puztype')==2){ pzlflag="/m";}
+			else if(pp.getVal('puztype')==3){ pzlflag="/x";}
 
 			return ""+pzlflag+"/"+k.qcols+"/"+k.qrows+"/"+this.encode4Cell();
 		};
@@ -148,22 +147,22 @@ Puzzles.ichimaga.prototype = {
 			if(array.length<1){ return false;}
 
 			if(k.EDITOR){
-				if     (array[0]=="mag")  { menu.setVal('puztype',2);}
-				else if(array[0]==k.CROSS){ menu.setVal('puztype',3);}
-				else                      { menu.setVal('puztype',1);}
+				if     (array[0]=="mag")  { pp.setVal('puztype',2);}
+				else if(array[0]==k.CROSS){ pp.setVal('puztype',3);}
+				else                      { pp.setVal('puztype',1);}
 			}
 			else{
 				if     (array[0]=="mag")  { base.setTitle("磁石イチマガ","Magnetic Ichimaga");}
 				else if(array[0]==k.CROSS){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
 				else                      { base.setTitle("イチマガ","Ichimaga");}
 				document.title = base.gettitle();
-				getEL("title2").innerHTML = base.gettitle();
+				ee('title2').el.innerHTML = base.gettitle();
 			}
 			return true;
 		};
 		fio.encodeOthers = function(){
-			if     (menu.getVal('puztype')==2){ return "mag/";}
-			else if(menu.getVal('puztype')==3){ return "cross/";}
+			if     (pp.getVal('puztype')==2){ return "mag/";}
+			else if(pp.getVal('puztype')==3){ return "cross/";}
 			return "def/";
 		};
 	},
@@ -212,9 +211,9 @@ Puzzles.ichimaga.prototype = {
 			return true;
 		};
 		ans.check1st = function(){ return true;};
-		ans.ismag    = function(){ return ((k.EDITOR&&menu.getVal('puztype')==2)||(k.PLAYER&&enc.checkpflag("m")));};
-		ans.iscross  = function(){ return ((k.EDITOR&&menu.getVal('puztype')==3)||(k.PLAYER&&enc.checkpflag("x")));};
-		ans.isnormal = function(){ return ((k.EDITOR&&menu.getVal('puztype')==1)||(k.PLAYER&&!enc.checkpflag("m")&&!enc.checkpflag("x")));};
+		ans.ismag    = function(){ return ((k.EDITOR&&pp.getVal('puztype')==2)||(k.PLAYER&&enc.checkpflag("m")));};
+		ans.iscross  = function(){ return ((k.EDITOR&&pp.getVal('puztype')==3)||(k.PLAYER&&enc.checkpflag("x")));};
+		ans.isnormal = function(){ return ((k.EDITOR&&pp.getVal('puztype')==1)||(k.PLAYER&&!enc.checkpflag("m")&&!enc.checkpflag("x")));};
 
 		ans.checkLcntCell = function(val){
 			if(line.ltotal[val]==0){ return true;}

@@ -222,8 +222,8 @@ Puzzles.kinkonkan.prototype = {
 			um.enableRecord();
 		};
 
-		tc.getTCC = function(){ return binder(tc, bd.exnum(mf((this.cursolx-1)/2), mf((this.cursoly-1)/2)));};
-		tc.setTCC = binder(tc, function(id){
+		tc.getTCC = function(){ return ee.binder(tc, bd.exnum(mf((this.cursolx-1)/2), mf((this.cursoly-1)/2)));};
+		tc.setTCC = ee.binder(tc, function(id){
 			if(id<0 || 2*k.qcols+2*k.qrows+4<=id){ return;}
 			if     (id<  k.qcols)            { this.cursolx=2*id+1;           this.cursoly=this.miny;                 }
 			else if(id<2*k.qcols)            { this.cursolx=2*(id-k.qcols)+1; this.cursoly=this.maxy;                 }

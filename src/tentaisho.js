@@ -53,12 +53,13 @@ Puzzles.tentaisho.prototype = {
 	},
 	menufix : function(){
 		if(k.EDITOR){
-			pp.addCheckToFlags('discolor','setting',false);
-			pp.setMenuStr('discolor', '色分け無効化', 'Disable color');
-			pp.setLabel  ('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
+			pp.addCheck('discolor','setting',false,'色分け無効化','Disable color');
+			pp.setLabel('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
 		}
-		getEL('btnarea').appendChild(menu.createButton('btncolor','','色をつける'))
-		menu.addButtons(getEL("btncolor"),binder(mv, mv.encolorall),"色をつける","Color up");
+
+		var el = ee.createEL(menu.EL_BUTTON, 'btncolor');
+		menu.addButtons(el, ee.binder(mv, mv.encolorall), "色をつける","Color up");
+		ee('btnarea').appendEL(el);
 	},
 
 	//---------------------------------------------------------
@@ -97,7 +98,7 @@ Puzzles.tentaisho.prototype = {
 			pc.paintCell(cc);
 		};
 		mv.inputBGcolor3 = function(){
-			if(k.EDITOR){ if(menu.getVal('discolor')){ return;} }
+			if(k.EDITOR){ if(pp.getVal('discolor')){ return;} }
 
 			var pos = this.crosspos(0.34);
 			var id = bd.snum(pos.x, pos.y);
@@ -184,23 +185,24 @@ Puzzles.tentaisho.prototype = {
 		kc.keyinput = function(ca){ };
 
 		// 一部qsubで消したくないものがあるため上書き
-		base.ASconfirm = function(){
-			if(confirm("補助記号を消去しますか？")){
-				um.chainflag=0;
-				for(i=0;i<k.qcols*k.qrows;i++){
-					if(bd.QsC(i)==1){ um.addOpe(k.CELL,k.QSUB,i,bd.QsC(i),0);}
-				}
-				if(k.isborder){
-					for(i=0;i<bd.bdmax;i++){
-						if(bd.QsB(i)!=0){ um.addOpe(k.BORDER,k.QSUB,i,bd.QsB(i),0);}
+		menu.ex.ASconfirm = function(){
+			if(confirm(menu.isLangJP()?"補助記号を消去しますか？":"Do you want to erase the auxiliary marks?")){
+				um.newOperation(true);
+				for(i=0;i<bd.cellmax;i++){
+					if(bd.QsC(i)===1){
+						um.addOpe(k.CELL,k.QSUB,i,bd.QsC(i),0);
+						bd.cell[i].qsub = 0;
 					}
 				}
+				for(i=0;i<bd.bdmax;i++){
+					if(bd.QsB(i)!==0){
+						um.addOpe(k.BORDER,k.QSUB,i,bd.QsB(i),0);
+						bd.border[i].qsub = 0;
+					}
+				}
+
 				if(!g.vml){ pc.flushCanvasAll();}
-
-				$.each(bd.cell,   function(i,cell)  { cell.error=0; if(cell.qsub==1){ cell.qsub=0;} });
-				$.each(bd.border, function(i,border){ border.error=0; border.qsub=0;});
-
-				pc.paint(0,0,k.qcols-1,k.qrows-1);
+				pc.paintAll();
 			}
 		};
 

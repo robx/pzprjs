@@ -142,8 +142,8 @@ KeyEvent.prototype = {
 		if(this.isCTRL && this.ca=='y'){ this.inREDO=true; flag = true; tm.startUndoTimer();}
 
 		if(this.ca=='F2' && k.EDITOR){ // 112～123はF1～F12キー
-			if     (k.editmode && !this.isSHIFT){ menu.setVal('mode',3); flag = true;}
-			else if(k.playmode &&  this.isSHIFT){ menu.setVal('mode',1); flag = true;}
+			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); flag = true;}
+			else if(k.playmode &&  this.isSHIFT){ pp.setVal('mode',1); flag = true;}
 		}
 		if(k.scriptcheck && debug){ flag = (flag || debug.keydown(this.ca));}
 
@@ -373,6 +373,13 @@ KeyPopup = function(){
 	this.tbodytmp=null, this.trtmp=null;
 
 	this.ORIGINAL = 99;
+
+	// ElementTemplate
+	this.EL_KPNUM   = ee.addTemplate('','td', {unselectable:'on', className:'kpnum'}, null, null);
+	this.EL_KPEMPTY = ee.addTemplate('','td', {unselectable:'on'}, null, null);
+	this.EL_KPIMG   = ee.addTemplate('','td', {unselectable:'on', className:'kpimgcell'}, null, null);
+	this.EL_KPIMG_DIV = ee.addTemplate('','div', {unselectable:'on', className:'kpimgdiv'}, null, null);
+	this.EL_KPIMG_IMG = ee.addTemplate('','img', {unselectable:'on', className:'kpimg', src:"./src/img/"+k.puzzleid+"_kp.gif"}, null, null);
 };
 KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
@@ -381,7 +388,7 @@ KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
 	// オーバーライド用
 	kpinput : function(ca){ },
-	enabled : function(){ return menu.getVal('keypopup');},
+	enabled : function(){ return pp.getVal('keypopup');},
 
 	//---------------------------------------------------------------------------
 	// kp.generate()   キーポップアップを生成して初期化する
@@ -396,18 +403,18 @@ KeyPopup.prototype = {
 
 	gentable : function(mode, type, func){
 		this.ctl[mode].enable = true;
-		this.ctl[mode].el     = getEL("keypopup"+mode);
-		this.ctl[mode].el.onmouseout = ebinder(this, this.hide);
+		this.ctl[mode].el     = ee('keypopup'+mode).el;
+		this.ctl[mode].el.onmouseout = ee.ebinder(this, this.hide);
 
-		var table = newEL('table');
+		var table = _doc.createElement('table');
 		table.cellSpacing = '2pt';
 		this.ctl[mode].el.appendChild(table);
 
-		this.tbodytmp = newEL('tbody');
+		this.tbodytmp = _doc.createElement('tbody');
 		table.appendChild(this.tbodytmp);
 
 		this.trtmp = null;
-		if(func)							  { func(mode);                }
+		if(func)							  { func.apply(kp, [mode]);}
 		else if(type==0 || type==3)			  { this.gentable10(mode,type);}
 		else if(type==1 || type==2 || type==4){ this.gentable4 (mode,type);}
 	},
@@ -450,35 +457,24 @@ KeyPopup.prototype = {
 	// kp.insertrow() テーブルの行を追加する
 	//---------------------------------------------------------------------------
 	inputcol : function(type, id, ca, disp){
-		if(!this.trtmp){ this.trtmp = newEL('tr');}
+		if(!this.trtmp){ this.trtmp = _doc.createElement('tr');}
 		var _td = null;
 		if(type==='num'){
-			_td    = unselectable(newEL('td'));
-			_td.id = id;
-			_td.className   = 'kpnum';
+			_td = ee.createEL(this.EL_KPNUM, id);
 			_td.style.color = this.tdcolor;
 			_td.innerHTML   = disp;
-			_td.onclick     = ebinder(this, this.inputnumber, [ca]);
+			_td.onclick     = ee.ebinder(this, this.inputnumber, [ca]);
 		}
 		else if(type==='empty'){
-			_td    = unselectable(newEL('td'));
-			_td.id = id;
+			_td = ee.createEL(this.EL_KPEMPTY, '');
 		}
 		else if(type==='image'){
-			var _img = unselectable(newEL('img'));
-			_img.id = ""+id+"_i";
-			_img.className = 'kp';
-			_img.src       = "./src/img/"+k.puzzleid+"_kp.gif";
-
-			var _div = unselectable(newEL('div'));
-			_div.position = 'relative';
-			_div.display  = 'inline';
+			var _img = ee.createEL(this.EL_KPIMG_IMG, ""+id+"_i");
+			var _div = ee.createEL(this.EL_KPIMG_DIV, '');
 			_div.appendChild(_img);
 
-			_td    = unselectable(newEL('td'));
-			_td.id = id;
-			_td.className = 'kpimg';
-			_td.onclick   = ebinder(this, this.inputnumber, [ca]);
+			_td = ee.createEL(this.EL_KPIMG, id);
+			_td.onclick   = ee.ebinder(this, this.inputnumber, [ca]);
 			_td.appendChild(_div);
 
 			this.imgs.push({'el':_img, 'cx':disp[0], 'cy':disp[1]});
@@ -502,8 +498,8 @@ KeyPopup.prototype = {
 	// kp.hide()        キーポップアップを隠す
 	//---------------------------------------------------------------------------
 	display : function(){
-		var mode = menu.getVal('mode');
-		if(this.ctl[mode].el && this.ctl[mode].enable && menu.getVal('keypopup') && mv.btn.Left){
+		var mode = pp.getVal('mode');
+		if(this.ctl[mode].el && this.ctl[mode].enable && pp.getVal('keypopup') && mv.btn.Left){
 			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputX - 3 + k.IEMargin.x;
 			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputY - 3 + k.IEMargin.y;
 			this.ctl[mode].el.style.zIndex = 100;
@@ -530,10 +526,10 @@ KeyPopup.prototype = {
 	},
 	inputnumber : function(e, ca){
 		this.kpinput(ca);
-		this.ctl[menu.getVal('mode')].el.style.display = 'none';
+		this.ctl[pp.getVal('mode')].el.style.display = 'none';
 	},
 	hide : function(e){
-		var mode = menu.getVal('mode');
+		var mode = pp.getVal('mode');
 		if(!!this.ctl[mode].el && !menu.insideOf(this.ctl[mode].el, e)){
 			this.ctl[mode].el.style.display = 'none';
 		}

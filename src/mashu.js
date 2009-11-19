@@ -46,9 +46,8 @@ Puzzles.mashu.prototype = {
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){
-		pp.addCheckToFlags('uramashu','setting',false);
-		pp.setMenuStr('uramashu', '— ‚Ü‚µ‚ã', 'Ura-Mashu');
-		pp.setLabel  ('uramashu', '— ‚Ü‚µ‚ã‚É‚·‚é', 'Change to Ura-Mashu');
+		pp.addCheck('uramashu','setting',false, '— ‚Ü‚µ‚ã', 'Ura-Mashu');
+		pp.setLabel('uramashu', '— ‚Ü‚µ‚ã‚É‚·‚é', 'Change to Ura-Mashu');
 		pp.funcs['uramashu'] = function(){
 			for(var c=0;c<bd.cellmax;c++){
 				if     (bd.QuC(c)==41){ bd.sQuC(c,42);}
@@ -65,7 +64,7 @@ Puzzles.mashu.prototype = {
 	input_init : function(){
 		// ƒ}ƒEƒX“ü—ÍŒn
 		mv.mousedown = function(){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode) this.inputQues([0,41,42,-2]);
 			else if(k.playmode){
 				if(this.btn.Left) this.inputLine();
@@ -137,12 +136,12 @@ Puzzles.mashu.prototype = {
 					}
 				}
 			}
-			if(menu.getVal('uramashu')){ (pp.funcs['uramashu'])();}
+			if(pp.getVal('uramashu')){ (pp.funcs['uramashu'])();}
 
 			return bstr.substr(pos);
 		};
 		enc.encodeCircle = function(flag){
-			var cm="", num=0, pass=0, isura=menu.getVal('uramashu');
+			var cm="", num=0, pass=0, isura=pp.getVal('uramashu');
 			for(var i=0;i<bd.cellmax;i++){
 				if     (bd.QuC(i)==(!isura?41:42)){ pass+=(  Math.pow(3,2-num));}
 				else if(bd.QuC(i)==(!isura?42:41)){ pass+=(2*Math.pow(3,2-num));}
@@ -159,11 +158,11 @@ Puzzles.mashu.prototype = {
 				if     (ca == "1"){ bd.sQuC(c, 41);}
 				else if(ca == "2"){ bd.sQuC(c, 42);}
 			},bstr.split("/"));
-			if(menu.getVal('uramashu')){ (pp.funcs['uramashu'])();}
+			if(pp.getVal('uramashu')){ (pp.funcs['uramashu'])();}
 			return "";
 		};
 		enc.pzldataKanpen = function(){
-			var isura=menu.getVal('uramashu');
+			var isura=pp.getVal('uramashu');
 			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
 				if     (bd.QuC(c)==(!isura?41:42)){ return "1_";}
 				else if(bd.QuC(c)==(!isura?42:41)){ return "2_";}
@@ -178,10 +177,10 @@ Puzzles.mashu.prototype = {
 				else if(ca == "2"){ bd.sQuC(c, 42);}
 			},array.slice(0,k.qrows));
 			this.decodeBorderLine(array.slice(k.qrows,3*k.qrows-1));
-			if(menu.getVal('uramashu')){ (pp.funcs['uramashu'])();}
+			if(pp.getVal('uramashu')){ (pp.funcs['uramashu'])();}
 		};
 		fio.kanpenSave = function(){
-			var isura=menu.getVal('uramashu');
+			var isura=pp.getVal('uramashu');
 			return ""+this.encodeCell( function(c){
 				if     (bd.QuC(c)==(!isura?41:42)){ return "1 ";}
 				else if(bd.QuC(c)==(!isura?42:41)){ return "2 ";}

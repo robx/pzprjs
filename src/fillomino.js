@@ -46,9 +46,8 @@ Puzzles.fillomino.prototype = {
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){
-		pp.addCheckToFlags('enbnonum','setting',false);
-		pp.setMenuStr('enbnonum', '未入力で正答判定', 'Allow Empty cell');
-		pp.setLabel  ('enbnonum', '全ての数字が入っていない状態での正答判定を許可する', 'Allow answer check with empty cell in the board.');
+		pp.addCheck('enbnonum','setting',false,'未入力で正答判定','Allow Empty cell');
+		pp.setLabel('enbnonum', '全ての数字が入っていない状態での正答判定を許可する', 'Allow answer check with empty cell in the board.');
 	},
 
 	//---------------------------------------------------------
@@ -270,13 +269,13 @@ Puzzles.fillomino.prototype = {
 				this.setAlert('複数種類の数字が入っているブロックがあります。','A block has two or more kinds of numbers.'); return false;
 			}
 
-			if( !menu.getVal('enbnonum') && !this.checkAllCell(bd.noNum) ){
+			if( !pp.getVal('enbnonum') && !this.checkAllCell(bd.noNum) ){
 				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return (menu.getVal('enbnonum') || this.checkAllCell(bd.noNum));};
+		ans.check1st = function(){ return (pp.getVal('enbnonum') || this.checkAllCell(bd.noNum));};
 
 		ans.checkAreaSize = function(rinfo, flag){
 			for(var id=1;id<=rinfo.max;id++){

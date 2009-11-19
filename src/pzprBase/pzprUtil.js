@@ -149,8 +149,6 @@ LineManager.prototype = {
 			if(cc2!=-1){ this.ltotal[this.lcnt[cc2]]--; this.lcnt[cc2]--; this.ltotal[this.lcnt[cc2]]++;}
 		}
 
-		// if(k.br.IE && !menu.getVal('irowake')){ return;}
-
 		//---------------------------------------------------------------------------
 		// (A)‚­‚Á‚Â‚«‚È‚µ                        (B)’Pƒ‚­‚Á‚Â‚«
 		//     E      „     - Œğ·‚ ‚è‚Ålcnt=1     „«      „     - Œğ·‚È‚µ‚Ålcnt=2`4
@@ -308,7 +306,7 @@ LineManager.prototype = {
 	repaintLine : (
 		((!k.vml) ?
 			function(idlist){
-				if(!menu.getVal('irowake')){ return;}
+				if(!pp.getVal('irowake')){ return;}
 
 				if(k.isCenterLine){
 					for(var i=0,len=idlist.length;i<len;i++){
@@ -328,7 +326,7 @@ LineManager.prototype = {
 			}
 		:
 			function(idlist){
-				if(!menu.getVal('irowake')){ return;}
+				if(!pp.getVal('irowake')){ return;}
 
 				pc.zstable = true;
 				if(k.isCenterLine){

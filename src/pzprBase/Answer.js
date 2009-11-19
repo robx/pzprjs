@@ -62,7 +62,7 @@ AnsCheck.prototype = {
 			mv.mousereset();
 			alert(menu.isLangJP()?"ê≥âÇ≈Ç∑ÅI":"Complete!");
 			ret = true;
-			menu.setVal('autocheck',false);
+			pp.setVal('autocheck',false);
 		}
 		this.enableSetError();
 		this.inCheck = false;

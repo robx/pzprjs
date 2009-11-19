@@ -62,7 +62,10 @@ Puzzles.kakuro.prototype = {
 				if(!kp.enabled()){ this.input51();}
 				else{ kp.display();}
 			}
-			else if(k.playmode) this.inputqnum();
+			else if(k.playmode){
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
+			}
 		};
 		mv.mouseup = function(){ };
 		mv.mousemove = function(){ };
@@ -80,7 +83,8 @@ Puzzles.kakuro.prototype = {
 
 		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
-				this.inputcol('image','knumq','-',[0,0]);
+				if(mode===3){ this.gentable10(3,0); return;}
+				this.inputcol('image','knumq','q',[0,0]);
 				this.inputcol('num','knum_',' ',' ');
 				this.inputcol('num','knum1','1','1');
 				this.inputcol('num','knum2','2','2');
@@ -96,10 +100,11 @@ Puzzles.kakuro.prototype = {
 				this.inputcol('num','knum0','0','0');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca);
+				if(k.editmode){ kc.inputnumber51(ca,{2:45,4:45});}
+				if(k.playmode){ kc.key_inputqnum(ca);}
 			};
 		}
 

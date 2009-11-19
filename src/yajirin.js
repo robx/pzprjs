@@ -61,7 +61,7 @@ Puzzles.yajirin.prototype = {
 	input_init : function(){
 		// ƒ}ƒEƒX“ü—ÍŒn
 		mv.mousedown = function(){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode) this.inputdirec();
 			else if(k.playmode){
 				if(this.btn.Left) this.inputLine();

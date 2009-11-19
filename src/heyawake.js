@@ -55,7 +55,7 @@ Puzzles.heyawake.prototype = {
 	input_init : function(){
 		// ƒ}ƒEƒX“ü—ÍŒn
 		mv.mousedown = function(){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed();}
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
 			else if(k.editmode) this.inputborder();
 			else if(k.playmode) this.inputcell();
 		};
@@ -167,16 +167,18 @@ Puzzles.heyawake.prototype = {
 			while(c<bd.cellmax){ rdata[c]=-1; c++;}
 
 			var inp = bstr.split("/");
-			var RE1 = new RegExp("(\\d+)in(\\d+)x(\\d+)$","g");
-			var RE2 = new RegExp("(\\d+)x(\\d+)$","g");
 
-			var i=0;
-			c=0;
+			var i=0; c=0;
 			while(c<bd.cellmax){
 				if(rdata[c]==-1){
 					var width, height;
-					if     (inp[i].match(RE1)){ width = parseInt(RegExp.$2); height = parseInt(RegExp.$3); bd.sQnC(bd.cnum(bd.cell[c].cx,bd.cell[c].cy), parseInt(RegExp.$1)); }
-					else if(inp[i].match(RE2)){ width = parseInt(RegExp.$1); height = parseInt(RegExp.$2); }
+					if(inp[i].match(/(\d+in)?(\d+)x(\d+)$/)){
+						width = parseInt(RegExp.$2);
+						height = parseInt(RegExp.$3);
+						if(RegExp.$1.length>0){
+							bd.sQnC(c, parseInt(RegExp.$1));
+						}
+					}
 
 					for(var cx=bd.cell[c].cx;cx<=bd.cell[c].cx+width-1;cx++){
 						for(var cy=bd.cell[c].cy;cy<=bd.cell[c].cy+height-1;cy++){

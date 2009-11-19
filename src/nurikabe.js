@@ -55,7 +55,7 @@ Puzzles.nurikabe.prototype = {
 	input_init : function(){
 		// ƒ}ƒEƒX“ü—ÍŒn
 		mv.mousedown = function(){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed();}
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
 			else if(k.editmode){
 				if(!kp.enabled()){ this.inputqnum();}
 				else{ kp.display();}

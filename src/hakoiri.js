@@ -189,7 +189,7 @@ Puzzles.hakoiri.prototype = {
 				this.insertrow();
 			}
 		};
-		kp.generate(kp.ORIGINAL, true, true, binder(kp, kp.kpgenerate));
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
 		kp.kpinput = function(ca){ kc.key_hakoiri(ca);};
 
 		bd.maxnum = 3;

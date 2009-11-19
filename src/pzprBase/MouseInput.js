@@ -46,7 +46,7 @@ MouseEvent.prototype = {
 
 		this.setButtonFlag(e);
 		// SHIFTキーを押している時は左右ボタン反転
-		if(((kc.isSHIFT)^menu.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
+		if(((kc.isSHIFT)^pp.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
 			this.btn.Left = !this.btn.Left; this.btn.Right = !this.btn.Right;
 		}
 		if(this.btn.Middle){ this.modeflip(); return;} //中ボタン
@@ -109,8 +109,6 @@ MouseEvent.prototype = {
 
 	//---------------------------------------------------------------------------
 	// mv.setposition()   イベントが起こった座標をinputX, inputY変数に代入
-	// mv.pointerX()      イベントが起こったX座標を取得する
-	// mv.pointerY()      イベントが起こったY座標を取得する
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
@@ -132,25 +130,9 @@ MouseEvent.prototype = {
 			}
 		)
 	),
-	pointerX : (
-		(k.br.WinWebKit) ?
-			function(e){ return e.pageX - 1;}
-		:(!k.br.IE) ?
-			function(e){ return e.pageX;}
-		:
-			function(e){ return e.clientX + (this.docEL.scrollLeft || this.bodyEL.scrollLeft);}
-	),
-	pointerY : (
-		(k.br.WinWebKit) ?
-			function(e){ return e.pageY - 1;}
-		:(!k.br.IE) ?
-			function(e){ return e.pageY;}
-		:
-			function(e){ return e.clientY + (this.docEL.scrollTop  || this.bodyEL.scrollTop);}
-	),
 
 	notInputted : function(){ return !um.changeflag;},
-	modeflip    : function(){ if(k.EDITOR){ menu.setVal('mode', (k.playmode?1:3));} },
+	modeflip    : function(){ if(k.EDITOR){ pp.setVal('mode', (k.playmode?1:3));} },
 
 	// 共通関数
 	//---------------------------------------------------------------------------
@@ -229,11 +211,11 @@ MouseEvent.prototype = {
 		pc.paintCell(cc);
 	},
 	decIC : function(cc){
-		if(menu.getVal('use')==1){
+		if(pp.getVal('use')==1){
 			if(this.btn.Left){ this.inputData=(bd.isWhite(cc) ? 1 : 0); }
 			else if(this.btn.Right){ this.inputData=((bd.QsC(cc)!=1) ? 2 : 0); }
 		}
-		else if(menu.getVal('use')==2){
+		else if(pp.getVal('use')==2){
 			if(this.btn.Left){
 				if(bd.isBlack(cc)) this.inputData=2;
 				else if(bd.QsC(cc) == 1) this.inputData=0;

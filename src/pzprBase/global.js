@@ -105,69 +105,357 @@ var k = {
 };
 k.IEMargin = (k.br.IE ? k.IEMargin : new Pos(0,0));
 
+//---------------------------------------------------------------------------
+// ★その他のグローバル変数
+//---------------------------------------------------------------------------
 var g;				// グラフィックコンテキスト
 var Puzzles = [];	// パズル個別クラス
+var _doc = document;
 
 //---------------------------------------------------------------------------
 // ★共通グローバル関数
+// mf()            小数点以下を切捨てる(旧int())
+// f_true()        trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
 //---------------------------------------------------------------------------
-	//---------------------------------------------------------------------------
-	// newEL(tag)      新しいtagのHTMLエレメントを表すjQueryオブジェクトを作成する
-	// unselectable()  エレメントを文字列選択で選択できないようにする
-	// mf()            小数点以下を切捨てる(旧int())
-	// f_true()        trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
-	//---------------------------------------------------------------------------
-var _doc = document;
-function newEL(tag)  { return _doc.createElement(tag);}
-function getEL(id)   { return _doc.getElementById(id);}
-
-var unselectable = (
-	 (k.br.Gecko)  ? function(el){ el.style.MozUserSelect = 'none';   el.style.userSelect = 'none'; return el;}
-	:(k.br.WebKit) ? function(el){ el.style.KhtmlUserSelect = 'none'; el.style.userSelect = 'none'; return el;}
-	:                function(el){ el.unselectable = 'on'; return el;}
-);
-
 var mf = Math.floor;
 function f_true(){ return true;}
 
-	//---------------------------------------------------------------------------
-	// toArray()   argumentsをarrayに変換する(binder用)
-	// binder()    関数にthisを紐付けする
-	// ebinder()   関数にthisを紐付けする(イベント用)
-	// kcbinder()  関数にthisを紐付けする(キーボードイベント用)
-	//---------------------------------------------------------------------------
-function toArray(array){
-	if(!array){ return [];}
-	var args = [];
-	for(var i=0;i<array.length;i++){ args[i]=array[i];}
-	return args;
-}
-function binder(){
-	var args=toArray(arguments), obj = args.shift(), __method = args.shift();
-	return function(){
-		var ret = __method.apply(obj, toArray(args[0]).concat(toArray(arguments)));
-		return ret;
-	}
-};
-function ebinder(){
-	var args=toArray(arguments), obj = args.shift(), __method = args.shift();
-	return function(e){
-		var ret = __method.apply(obj, [e||window.event].concat(toArray(args[0])).concat(toArray(arguments)));
-		return ret;
-	}
-};
-function kcbinder(){
-	var args=toArray(arguments), __method = args.shift();
-	return function(e){
-		ret = __method.apply(kc, [e||window.event].concat(toArray(args[0])).concat(toArray(arguments)));
-		if(kc.tcMoved){
-			if(k.br.Gecko||k.br.WebKit){ e.preventDefault();}
-			else if(!k.br.IE){ e.returnValue = false;}
-			else{ return false;}
+//---------------------------------------------------------------------------
+// ★ElementManagerクラス Element関係の処理
+//    ee() 指定したidのElementExtを取得する
+//---------------------------------------------------------------------------
+(function(){
+
+// definition
+var
+	// local scope
+	_doc = document,
+	_win = this,
+
+	// browsers
+	_IE     = k.br.IE,
+	_Gecko  = k.br.Gecko,
+	_WebKit = k.br.WebKit,
+
+	/* ここからクラス定義です  varでドット付きは、最左辺に置けません */
+
+	// define and map _ElementManager class
+	_ELm = _ElementManager = _win.ee = function(id){
+		if(typeof id === 'string'){
+			if(!_elx[id]){
+				var el = _doc.getElementById(id);
+				if(!el){ return null;}
+				_elx[id] = new _ELx(el);
+			}
+			return _elx[id];
 		}
-		return ret;
+
+		var el = id;
+		if(!!el.id){
+			if(!_elx[el.id]){ _elx[el.id] = new _ELx(el);}
+			return _elx[el.id];
+		}
+
+		return ((!!el) ? new _ELx(el) : null);
+	},
+	_elx = _ElementManager._cache    = {},
+	_elp = _ElementManager._template = [],
+	_elpcnt = _ElementManager._tempcnt = 0;
+
+	// define and map _ElementManager.ElementExt class
+	_ELx = _ElementManager.ElementExt = function(el){
+		this.el     = el;
+		this.parent = el.parentNode;
+		this.pdisp  = 'none';
+	},
+	_ELp = _ElementManager.ElementTemplate = function(parent, tag, attr, style, func){
+		this.parent  = parent;
+		this.tagName = tag;
+		this.attr    = attr;
+		this.style   = style;
+		this.func    = func;
+	},
+
+	// Utility functions
+	_extend = function(obj, ads){
+		for(var name in ads){ obj[name] = ads[name];}
+	},
+	_toArray = function(args){
+		if(!args){ return [];}
+		var array = [];
+		for(var i=0,len=args.length;i<len;i++){ array[i]=args[i];}
+		return array;
+	}
+;
+
+// implementation of _ElementManage class
+_extend( _ElementManager, {
+
+	//----------------------------------------------------------------------
+	// ee.clean()  内部用の変数を初期化する
+	//----------------------------------------------------------------------
+	clean : function(){
+		_elx = null;
+		_elx = {};
+		_elpcnt  = 0;
+		_elp = null;
+		_elp = [];
+	},
+
+	//----------------------------------------------------------------------
+	// ee.addTemplate()  指定した内容のElementTemplateを作成してIDを返す
+	// ee.createEL()     ElementTemplateからエレメントを作成して返す
+	//----------------------------------------------------------------------
+	addTemplate : function(parent, tag, attr_i, style_i, func_i){
+		if(!tag){ return;}
+
+		if(!parent){ parent = null;}
+		else if(typeof parent == 'string'){ parent = ee(parent).el;}
+
+		var attr  = {};
+		var style = (style_i || {});
+		var func  = (func_i  || {});
+
+		if(!!attr_i){
+			for(var name in attr_i){
+				if(name==='unselectable' && attr_i[name]==='on'){
+					if     (_Gecko) { style['UserSelect'] = style['MozUserSelect'] = 'none';}
+					else if(_WebKit){ style['UserSelect'] = style['KhtmlUserSelect'] = 'none';}
+					else{ attr['unselectable'] = 'on';}
+				}
+				else{ attr[name] = attr_i[name];}
+			}
+		}
+
+		_elp[_elpcnt++] = new _ELp(parent, tag, attr, style, func_i);
+		return (_elpcnt-1);
+	},
+	createEL : function(tid, id){
+		if(!_elp[tid]){ return null;}
+
+		var temp = _elp[tid];
+		var el = _doc.createElement(temp.tagName);
+		if(!!temp.parent){ temp.parent.appendChild(el);}
+
+		if(!!id){ el.id = id;}
+		for(var name in temp.attr) { el[name]       = temp.attr[name]; }
+		for(var name in temp.style){ el.style[name] = temp.style[name];}
+		for(var name in temp.func) { el["on"+name]  = temp.func[name]; }
+		return el;
+	},
+
+	//----------------------------------------------------------------------
+	// ee.getSrcElement() イベントが起こったエレメントを返す
+	// ee.pageX()         イベントが起こったページ上のX座標を返す
+	// ee.pageY()         イベントが起こったページ上のY座標を返す
+	// ee.windowWidth()   ウィンドウの幅を返す
+	// ee.windowHeight()  ウィンドウの高さを返す
+	//----------------------------------------------------------------------
+	getSrcElement : function(e){
+		return e.target || e.srcElement;
+	},
+	pageX : (
+		((!k.br.IE) ?
+			function(e){ return e.pageX;}
+		:
+			function(e){ return e.clientX + (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);}
+		)
+	),
+	pageY : (
+		((!k.br.IE) ?
+			function(e){ return e.pageY;}
+		:
+			function(e){ return e.clientY + (_doc.documentElement.scrollTop  || _doc.body.scrollTop);}
+		)
+	),
+
+	windowWidth : (
+		((_doc.all) ?
+			function(){ return _doc.body.clientWidth;}
+		:(_doc.layers || _doc.getElementById)?
+			function(){ return innerWidth;}
+		:
+			function(){ return 0;}
+		)
+	),
+	windowHeight : (
+		((_doc.all) ?
+			function(){ return _doc.body.clientHeight;}
+		:(_doc.layers || _doc.getElementById)?
+			function(){ return innerHeight;}
+		:
+			function(){ return 0;}
+		)
+	),
+
+	//----------------------------------------------------------------------
+	// ee.binder()   thisをbindする
+	// ee.ebinder()  thisとイベントをbindする
+	// ee.kcbinder() kcとイベントをbindする
+	//----------------------------------------------------------------------
+	binder : function(){
+		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift();
+		return function(){
+			return __method.apply(obj, (args.length>0?args[0]:[]).concat(_toArray(arguments)));
+		}
+	},
+	ebinder : function(){
+		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift(), rest = (args.length>0?args[0]:[]);
+		return function(e){
+			return __method.apply(obj, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
+		}
+	},
+	kcbinder : function(){
+		var args=_toArray(arguments), __method = args.shift(), rest = (args.length>0?args[0]:[]);
+		return function(e){
+			ret = __method.apply(kc, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
+			if(kc.tcMoved){
+				if(_Gecko||_WebKit){ e.preventDefault();}
+				else if(_IE){ return false;}
+				else{ e.returnValue = false;}
+			}
+			return ret;
+		}
+	}
+});
+
+// implementation of _ElementManager.ElementExt class
+_ElementManager.ElementExt.prototype = {
+	//----------------------------------------------------------------------
+	// ee.getRect()   エレメントの四辺の座標を返す
+	// ee.getWidth()  エレメントの幅を返す
+	// ee.getHeight() エレメントの高さを返す
+	//----------------------------------------------------------------------
+	getRect : (
+		((!!document.getBoundingClientRect) ?
+			((!_IE) ?
+				function(){
+					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
+					var left   = rect.left   + _win.scrollX;
+					var top    = rect.top    + _win.scrollY;
+					var right  = rect.right  + _win.scrollX;
+					var bottom = rect.bottom + _win.scrollY;
+					return { top:top, bottom:bottom, left:left, right:right};
+				}
+			:
+				function(){
+					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
+					var left   = rect.left   + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
+					var top    = rect.top    + ((_body.scrollTop  || _html.scrollTop ) - _html.clientTop );
+					var right  = rect.right  + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
+					var bottom = rect.bottom + ((_body.scrollTop  || _html.scrollTop ) - _html.clientTop );
+					return { top:top, bottom:bottom, left:left, right:right};
+				}
+			)
+		:
+			function(){
+				var left = 0, top = 0, el = this.el;
+				while(!!el){
+					left += +(el.offsetLeft || el.clientLeft);
+					top  += +(el.offsetTop  || el.clientTop );
+					el = el.offsetParent;
+				}
+				var right  = left + (this.el.offsetWidth  || this.el.clientWidth);
+				var bottom = top  + (this.el.offsetHeight || this.el.clientHeight);
+				return { top:top, bottom:bottom, left:left, right:right};
+			}
+		)
+	),
+	getWidth  : function(){ return this.el.offsetWidth  || this.el.clientWidth; },
+	getHeight : function(){ return this.el.offsetHeight || this.el.clientHeight;},
+
+	//----------------------------------------------------------------------
+	// ee.unselectable()         エレメントを選択できなくする
+	// ee.replaceChildrenClass() 子要素のクラスを変更する
+	// ee.remove()               エレメントを削除する
+	// ee.removeNextAll()        同じ親要素を持ち、自分より後ろにあるエレメントを削除する
+	//----------------------------------------------------------------------
+	unselectable : (
+		((_Gecko) ?
+			function(){
+				this.el.style.MozUserSelect = 'none';
+				this.el.style.UserSelect    = 'none';
+				return this;
+			}
+		:(_WebKit) ?
+			function(){
+				this.el.style.KhtmlUserSelect = 'none';
+				this.el.style.UserSelect      = 'none';
+				return this;
+			}
+		:
+			function(){
+				this.el.unselectable = "on";
+				return this;
+			}
+		)
+	),
+
+	replaceChildrenClass : function(before, after){
+		var el = this.el.firstChild;
+		while(!!el){
+			if(el.className===before){ el.className = after;}
+			el = el.nextSibling;
+		}
+	},
+
+	remove : function(){
+		this.parent.removeChild(this.el);
+		return this;
+	},
+	removeNextAll : function(targetbase){
+		var el = this.el.lastChild;
+		while(!!el){
+			if(el===targetbase){ break;}
+			if(!!el){ this.el.removeChild(el);}else{ break;}
+
+			el = this.el.lastChild;
+		}
+		return this;
+	},
+
+	//----------------------------------------------------------------------
+	// ee.appendHTML() 指定したHTMLを持つspanエレメントを子要素の末尾に追加する
+	// ee.appendBR()   <BR>を子要素の末尾に追加する
+	// ee.appendEL()   指定したエレメントを子要素の末尾に追加する
+	// ee.appendTo()   自分を指定した親要素の末尾に追加する
+	// ee.insertBefore() エレメントを自分の前に追加する
+	// ee.insertAfter()  エレメントを自分の後ろに追加する
+	//----------------------------------------------------------------------
+	appendHTML : function(html){
+		var sel = _doc.createElement('span');
+		sel.innerHTML = html;
+		this.el.appendChild(sel);
+		return this;
+	},
+	appendBR : function(){
+		this.el.appendChild(_doc.createElement('br'));
+		return this;
+	},
+	appendEL : function(el){
+		this.el.appendChild(el);
+		return this;
+	},
+
+	appendTo : function(elx){
+		elx.el.appendChild(this.el);
+		this.parent = elx.el;
+		return this;
+	},
+
+	insertBefore : function(baseel){
+		this.parent = baseel.parentNode;
+		this.parent.insertBefore(this.el,baseel);
+		return this;
+	},
+	insertAfter : function(baseel){
+		this.parent = baseel.parentNode;
+		this.parent.insertBefore(this.el,baseel.nextSibling);
+		return this;
 	}
 };
+
+})();
 
 //---------------------------------------------------------------------------
 // ★Timerクラス
@@ -182,7 +470,7 @@ Timer = function(){
 
 	// 経過時間表示用変数
 	this.bseconds = 0;		// 前回ラベルに表示した時間(秒数)
-	this.timerEL = getEL("timerpanel");
+	this.timerEL = ee('timerpanel').el;
 
 	// 自動正答判定用変数
 	this.lastAnsCnt  = 0;	// 前回正答判定した時の、UndoManagerに記録されてた問題/回答入力のカウント
@@ -215,7 +503,7 @@ Timer.prototype = {
 	},
 	start : function(){
 		this.st = (new Date()).getTime();
-		this.TID = setInterval(binder(this, this.update), this.timerInterval);
+		this.TID = setInterval(ee.binder(this, this.update), this.timerInterval);
 	},
 	update : function(){
 		this.current = (new Date()).getTime();
@@ -267,7 +555,7 @@ Timer.prototype = {
 	//---------------------------------------------------------------------------
 	startUndoTimer : function(){
 		this.undoWaitCount = this.undoStartCount;
-		if(!this.TIDundo){ this.TIDundo = setInterval(binder(this, this.procUndo), this.undoInterval);}
+		if(!this.TIDundo){ this.TIDundo = setInterval(ee.binder(this, this.procUndo), this.undoInterval);}
 
 		if     (kc.inUNDO){ um.undo();}
 		else if(kc.inREDO){ um.redo();}

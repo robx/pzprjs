@@ -104,7 +104,7 @@ Puzzles.sudoku.prototype = {
 			this.inputcol('num','knum0','0','0');
 			this.insertrow();
 		};
-		kp.generate(kp.ORIGINAL, true, true, binder(kp, kp.kpgenerate));
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
 		kp.kpinput = function(ca){
 			kc.key_inputqnum(ca);
 		};

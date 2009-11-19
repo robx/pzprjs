@@ -54,7 +54,7 @@ Puzzles.numlin.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode){
 				if(!kp.enabled()){ this.inputqnum();}
 				else{ kp.display();}
@@ -196,7 +196,7 @@ Puzzles.numlin.prototype = {
 				this.setAlert('3つ以上の数字がつながっています。','Three or more numbers are connected.'); return false;
 			}
 
-			if( !this.checkSameObjectInRoom(linfo, binder(bd, bd.QnC)) ){
+			if( !this.checkSameObjectInRoom(linfo, ee.binder(bd, bd.QnC)) ){
 				this.setAlert('異なる数字がつながっています。','Different numbers are connected.'); return false;
 			}
 

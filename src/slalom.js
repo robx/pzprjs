@@ -60,7 +60,7 @@ Puzzles.slalom.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode){ this.inputGate();}
 			else if(k.playmode){
 				if(this.btn.Left) this.inputLine();
@@ -205,7 +205,7 @@ Puzzles.slalom.prototype = {
 				this.inputcol('num','knum_',' ',' ');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, binder(kp, kp.kpgenerate));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.imgCR = [4,1];
 			kp.kpinput = function(ca){
 				kc.key_inputqnum_slalom(ca);
@@ -860,7 +860,7 @@ Hurdle.prototype = {
 		}
 
 		// セットされた数字を全てのnumsから消す関数
-		var delnum = binder(this, function(dn){ for(var r=1;r<=this.max;r++){
+		var delnum = ee.binder(this, function(dn){ for(var r=1;r<=this.max;r++){
 			var atmp = [];
 			for(var i=0;i<nums[r].length;i++){ if(dn[nums[r][i]]!=1){ atmp.push(nums[r][i]);} }
 			nums[r] = atmp;

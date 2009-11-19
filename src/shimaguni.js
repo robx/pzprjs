@@ -152,7 +152,7 @@ Puzzles.shimaguni.prototype = {
 				this.setAlert('ŠCˆæ“à‚Ì”š‚Æ‘‚Ìƒ}ƒX”‚ªˆê’v‚µ‚Ä‚¢‚Ü‚¹‚ñB','The number of black cells is not equals to the number.'); return false;
 			}
 
-			if( !this.checkSideAreaSize(rinfo, binder(this, function(rinfo,r){ return this.getCellsOfRoom(rinfo, r, bd.isBlack);})) ){
+			if( !this.checkSideAreaSize(rinfo, ee.binder(this, function(rinfo,r){ return this.getCellsOfRoom(rinfo, r, bd.isBlack);})) ){
 				this.setAlert('—×‚è‡‚¤ŠCˆæ‚É‚ ‚é‘‚Ì‘å‚«‚³‚ª“¯‚¶‚Å‚·B','The size of countries that there are in adjacent marine areas are the same.'); return false;
 			}
 
