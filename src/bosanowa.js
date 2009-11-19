@@ -52,13 +52,12 @@ Puzzles.bosanowa.prototype = {
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){
-		pp.addUseToFlags('disptype','setting',1,[1,2,3]);
-		pp.addUseChildrenToFlags('disptype','disptype');
-		pp.setMenuStr('disptype', '表示形式', 'Display');
-		pp.setLabel  ('disptype', '表示形式', 'Display');
-		pp.setMenuStr('disptype_1', 'ニコリ紙面形式', 'Original Type');
-		pp.setMenuStr('disptype_2', '倉庫番形式', 'Sokoban Type');
-		pp.setMenuStr('disptype_3', 'ワリタイ形式', 'Waritai type');
+		pp.addSelect('disptype','setting',1,[1,2,3],'表示形式','Display');
+		pp.setLabel ('disptype', '表示形式', 'Display');
+
+		pp.addChild('disptype_1', 'disptype', 'ニコリ紙面形式', 'Original Type');
+		pp.addChild('disptype_2', 'disptype', '倉庫番形式',     'Sokoban Type');
+		pp.addChild('disptype_3', 'disptype', 'ワリタイ形式',   'Waritai type');
 		pp.funcs['disptype'] = function(){ if(g.vml){ pc.flushCanvasAll();} pc.paintAll();};
 	},
 

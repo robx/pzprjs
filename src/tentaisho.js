@@ -53,11 +53,13 @@ Puzzles.tentaisho.prototype = {
 	},
 	menufix : function(){
 		if(k.EDITOR){
-			pp.addCheckToFlags('discolor','setting',false);
-			pp.setMenuStr('discolor', '色分け無効化', 'Disable color');
-			pp.setLabel  ('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
+			pp.addCheck('discolor','setting',false,'色分け無効化','Disable color');
+			pp.setLabel('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
 		}
-		menu.newBTNx(ee('btnarea'), 'btncolor','', "色をつける", "Color up", ee.binder(mv, mv.encolorall));
+
+		var el = ee.createEL(menu.EL_BUTTON, 'btncolor');
+		menu.addButtons(el, ee.binder(mv, mv.encolorall), "色をつける","Color up");
+		ee('btnarea').appendEL(el);
 	},
 
 	//---------------------------------------------------------

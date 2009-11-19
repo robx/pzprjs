@@ -48,10 +48,7 @@ Puzzles.gokigen.prototype = {
 	},
 	menufix : function(){
 		menu.addUseToFlags();
-
-		pp.addCheckToFlags('dispred','setting',false);
-		pp.setMenuStr('dispred', '繋がりチェック', 'Continuous Check');
-		pp.setLabel  ('dispred', '線のつながりをチェックする', 'Check countinuous slashes');
+		menu.addRedLineToFlags();
 	},
 	protoChange : function(){
 	},

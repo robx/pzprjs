@@ -118,7 +118,7 @@ Puzzles.tilepaint.prototype = {
 
 		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
-				this.inputcol('image','knumq','-',[0,0]);
+				this.inputcol('image','knumq','q',[0,0]);
 				this.inputcol('num','knum_',' ',' ');
 				this.inputcol('num','knum1','1','1');
 				this.inputcol('num','knum2','2','2');
@@ -137,7 +137,7 @@ Puzzles.tilepaint.prototype = {
 			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca);
+				kc.inputnumber51(ca,{2:(k.qcols-tc.getTCX()-1), 4:(k.qrows-tc.getTCY()-1)});
 			};
 		}
 

@@ -46,9 +46,8 @@ Puzzles.mashu.prototype = {
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){
-		pp.addCheckToFlags('uramashu','setting',false);
-		pp.setMenuStr('uramashu', '— ‚Ü‚µ‚ã', 'Ura-Mashu');
-		pp.setLabel  ('uramashu', '— ‚Ü‚µ‚ã‚É‚·‚é', 'Change to Ura-Mashu');
+		pp.addCheck('uramashu','setting',false, '— ‚Ü‚µ‚ã', 'Ura-Mashu');
+		pp.setLabel('uramashu', '— ‚Ü‚µ‚ã‚É‚·‚é', 'Change to Ura-Mashu');
 		pp.funcs['uramashu'] = function(){
 			for(var c=0;c<bd.cellmax;c++){
 				if     (bd.QuC(c)==41){ bd.sQuC(c,42);}

@@ -46,13 +46,12 @@ Puzzles.shakashaka.prototype = {
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 	},
 	menufix : function(){
-		pp.addUseToFlags('use','setting',1,[1,2,3]);
-		pp.addUseChildrenToFlags('use','use');
-		pp.setMenuStr('use', '三角形の入力方法', 'Input Triangle Type');
-		pp.setLabel  ('use', '三角形の入力方法', 'Input Triangle Type');
-		pp.setMenuStr('use_1', 'クリックした位置', 'Position of Cell');
-		pp.setMenuStr('use_2', 'ドラッグ入力', 'Drag Type');
-		pp.setMenuStr('use_3', '1ボタン', 'One Button');
+		pp.addSelect('use','setting',1,[1,2,3], '三角形の入力方法', 'Input Triangle Type');
+		pp.setLabel ('use', '三角形の入力方法', 'Input Triangle Type');
+
+		pp.addChild('use_1', 'use', 'クリックした位置', 'Position of Cell');
+		pp.addChild('use_2', 'use', 'ドラッグ入力', 'Drag Type');
+		pp.addChild('use_3', 'use', '1ボタン', 'One Button');
 	},
 
 	//---------------------------------------------------------

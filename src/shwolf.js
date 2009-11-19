@@ -140,6 +140,9 @@ Puzzles.shwolf.prototype = {
 			this.drawChassis(x1,y1,x2,y2);
 		};
 
+		pc.EL_IMAGE  = ee.addTemplate('','img',{src:'./src/img/shwolf_obj.gif',unselectable:'on'},{position:'absolute'},null);
+		pc.EL_DIVIMG = ee.addTemplate('','div',{unselectable:'on'},{position:'relative', display:'inline'},null);
+
 		// numobj:？表示用 numobj2:画像表示用
 		pc.drawSheepWolf = function(x1,y1,x2,y2){
 			var clist = this.cellinside(x1,y1,x2,y2);
@@ -159,12 +162,8 @@ Puzzles.shwolf.prototype = {
 					this.hideEL(obj.numobj);
 
 					if(!obj.numobj2){
-						var _img  = ee.newELx('img').unselectable().el;
-						_img.src = './src/img/shwolf_obj.gif';
-
-						var _sdiv = ee.newELx('div').unselectable().el;
-						_sdiv.style.position = 'relative';
-						_sdiv.style.display = 'inline';
+						var _img  = ee.createEL(pc.EL_IMAGE ,'');
+						var _sdiv = ee.createEL(pc.EL_DIVIMG,'');
 						_sdiv.appendChild(_img);
 
 						obj.numobj2 = this.CreateDOMAndSetNop();
@@ -180,7 +179,6 @@ Puzzles.shwolf.prototype = {
 					img.style.left   = "-"+mf((ipos+0.5)*k.cwidth)+"px";
 					img.style.top    = ""+mf((!k.br.Opera?0:15)-k.cwidth/2)+"px";
 					img.style.clip   = "rect(1px,"+(k.cwidth*(ipos+1))+"px,"+k.cwidth+"px,"+(k.cwidth*ipos+1)+"px)";
-					img.style.position = 'absolute';
 
 					this.showEL(div);
 					var wid = div.clientWidth, hgt = div.clientHeight;

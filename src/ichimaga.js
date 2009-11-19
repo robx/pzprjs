@@ -47,13 +47,12 @@ Puzzles.ichimaga.prototype = {
 	},
 	menufix : function(){
 		if(k.EDITOR){
-			pp.addUseToFlags('puztype','setting',1,[1,2,3]);
-			pp.addUseChildrenToFlags('puztype','puztype');
-			pp.setMenuStr('puztype', 'パズルの種類', 'Kind of the puzzle');
-			pp.setLabel  ('puztype', 'パズルの種類', 'Kind of the puzzle');
-			pp.setMenuStr('puztype_1', 'イチマガ', 'Ichimaga');
-			pp.setMenuStr('puztype_2', '磁石イチマガ', 'Magnetic Ichimaga');
-			pp.setMenuStr('puztype_3', '交差も', 'Crossing Ichimaga');
+			pp.addSelect('puztype','setting',1,[1,2,3], 'パズルの種類', 'Kind of the puzzle');
+			pp.setLabel ('puztype', 'パズルの種類', 'Kind of the puzzle');
+
+			pp.addChild('puztype_1', 'puztype', 'イチマガ', 'Ichimaga');
+			pp.addChild('puztype_2', 'puztype', '磁石イチマガ', 'Magnetic Ichimaga');
+			pp.addChild('puztype_3', 'puztype', '交差も', 'Crossing Ichimaga');
 		}
 	},
 

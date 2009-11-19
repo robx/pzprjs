@@ -46,9 +46,8 @@ Puzzles.fillomino.prototype = {
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){
-		pp.addCheckToFlags('enbnonum','setting',false);
-		pp.setMenuStr('enbnonum', '–¢“ü—Í‚Å³“š”»’è', 'Allow Empty cell');
-		pp.setLabel  ('enbnonum', '‘S‚Ä‚Ì”š‚ª“ü‚Á‚Ä‚¢‚È‚¢ó‘Ô‚Å‚Ì³“š”»’è‚ğ‹–‰Â‚·‚é', 'Allow answer check with empty cell in the board.');
+		pp.addCheck('enbnonum','setting',false,'–¢“ü—Í‚Å³“š”»’è','Allow Empty cell');
+		pp.setLabel('enbnonum', '‘S‚Ä‚Ì”š‚ª“ü‚Á‚Ä‚¢‚È‚¢ó‘Ô‚Å‚Ì³“š”»’è‚ğ‹–‰Â‚·‚é', 'Allow answer check with empty cell in the board.');
 	},
 
 	//---------------------------------------------------------
