@@ -140,7 +140,7 @@ PBase.prototype = {
 		this.resize_canvas_only();	// CanvasÇÃÉTÉCÉYê›íË
 
 		_doc.title = this.gettitle();
-		ee('title2').setText(this.gettitle());
+		ee('title2').innerHTML = this.gettitle();
 
 		_doc.body.style.backgroundImage = "url(../../"+k.puzzleid+"/bg.gif)";
 		if(k.br.IE){

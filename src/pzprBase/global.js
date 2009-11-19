@@ -106,19 +106,24 @@ var k = {
 k.IEMargin = (k.br.IE ? k.IEMargin : new Pos(0,0));
 
 //---------------------------------------------------------------------------
-// ★共通グローバル関数
+// ★その他のグローバル変数
 //---------------------------------------------------------------------------
 var g;				// グラフィックコンテキスト
 var Puzzles = [];	// パズル個別クラス
 var _doc = document;
 
-	//---------------------------------------------------------------------------
-	// mf()            小数点以下を切捨てる(旧int())
-	// f_true()        trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
-	//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+// ★共通グローバル関数
+// mf()            小数点以下を切捨てる(旧int())
+// f_true()        trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
+//---------------------------------------------------------------------------
 var mf = Math.floor;
 function f_true(){ return true;}
 
+//---------------------------------------------------------------------------
+// ★ElementManagerクラス Element関係の処理
+//    ee() 指定したidのElementExtを取得する
+//---------------------------------------------------------------------------
 (function(){
 
 // definition
@@ -187,6 +192,8 @@ var
 _extend( _ElementManager, {
 
 	//----------------------------------------------------------------------
+	// ee.clean()  内部用の変数を初期化する
+	//----------------------------------------------------------------------
 	clean : function(){
 		_elx = null;
 		_elx = {};
@@ -195,6 +202,9 @@ _extend( _ElementManager, {
 		_elp = [];
 	},
 
+	//----------------------------------------------------------------------
+	// ee.addTemplate()  指定した内容のElementTemplateを作成してIDを返す
+	// ee.createEL()     ElementTemplateからエレメントを作成して返す
 	//----------------------------------------------------------------------
 	addTemplate : function(parent, tag, attr_i, style_i, func_i){
 		if(!tag){ return;}
@@ -235,6 +245,12 @@ _extend( _ElementManager, {
 	},
 
 	//----------------------------------------------------------------------
+	// ee.getSrcElement() イベントが起こったエレメントを返す
+	// ee.pageX()         イベントが起こったページ上のX座標を返す
+	// ee.pageY()         イベントが起こったページ上のY座標を返す
+	// ee.windowWidth()   ウィンドウの幅を返す
+	// ee.windowHeight()  ウィンドウの高さを返す
+	//----------------------------------------------------------------------
 	getSrcElement : function(e){
 		return e.target || e.srcElement;
 	},
@@ -253,6 +269,29 @@ _extend( _ElementManager, {
 		)
 	),
 
+	windowWidth : (
+		((_doc.all) ?
+			function(){ return _doc.body.clientWidth;}
+		:(_doc.layers || _doc.getElementById)?
+			function(){ return innerWidth;}
+		:
+			function(){ return 0;}
+		)
+	),
+	windowHeight : (
+		((_doc.all) ?
+			function(){ return _doc.body.clientHeight;}
+		:(_doc.layers || _doc.getElementById)?
+			function(){ return innerHeight;}
+		:
+			function(){ return 0;}
+		)
+	),
+
+	//----------------------------------------------------------------------
+	// ee.binder()   thisをbindする
+	// ee.ebinder()  thisとイベントをbindする
+	// ee.kcbinder() kcとイベントをbindする
 	//----------------------------------------------------------------------
 	binder : function(){
 		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift();
@@ -277,127 +316,15 @@ _extend( _ElementManager, {
 			}
 			return ret;
 		}
-	},
-
-	//----------------------------------------------------------------------
-	windowWidth : (
-		((_doc.all) ?
-			function(){ return _doc.body.clientWidth;}
-		:(_doc.layers || _doc.getElementById)?
-			function(){ return innerWidth;}
-		:
-			function(){ return 0;}
-		)
-	),
-	windowHeight : (
-		((_doc.all) ?
-			function(){ return _doc.body.clientHeight;}
-		:(_doc.layers || _doc.getElementById)?
-			function(){ return innerHeight;}
-		:
-			function(){ return 0;}
-		)
-	)
+	}
 });
 
 // implementation of _ElementManager.ElementExt class
 _ElementManager.ElementExt.prototype = {
-
-	show : function(){
-		if(!this.pdisp && this.el.style.display!=='none'){
-			this.pdisp = this.el.style.display;
-		}
-		this.el.style.display = (this.pdisp!=='none' ? this.pdisp : 'inline');
-		return this;
-	},
-	hide : function(){
-		if(!this.pdisp && this.el.style.display!=='none'){
-			this.pdisp = this.el.style.display;
-		}
-		this.el.style.display = 'none';
-		return this;
-	},
-
-	remove : function(){
-		this.parent.removechild(this.el);
-		return this;
-	},
-
 	//----------------------------------------------------------------------
-	set : function(cname, idname, styles){
-		this.el.className = cname;
-		this.el.id = idname;
-		for(var name in styles){ this.el.style[name] = styles[name];}
-		return this;
-	},
-	unselectable : (
-		((_Gecko) ?
-			function(){
-				this.el.style.MozUserSelect = 'none';
-				this.el.style.UserSelect    = 'none';
-				return this;
-			}
-		:(_WebKit) ?
-			function(){
-				this.el.style.KhtmlUserSelect = 'none';
-				this.el.style.UserSelect      = 'none';
-				return this;
-			}
-		:
-			function(){
-				this.el.unselectable = "on";
-				return this;
-			}
-		)
-	),
-
-	//----------------------------------------------------------------------
-	getClass : function(cname){
-		return this.el.className;
-	},
-	getId : function(idname){
-		return this.el.id;
-	},
-	getStyle : function(name){
-		return this.el.style[name];
-	},
-
-	setClass : function(cname){
-		this.el.className = cname;
-		return this;
-	},
-	setId : function(idname){
-		this.el.id = id;
-		return this;
-	},
-	setStyle : function(name, val){
-		this.el.style[name] = val;
-		return this;
-	},
-
-	setStyles : function(styles){
-		for(var name in styles){ this.el.style[name] = styles[name];}
-		return this;
-	},
-	setEvents : (
-		((false && _win.addEventListener) ?
-			function(funcs){
-				for(var name in funcs){ this.el.addEventListener(name, funcs[name], false);}
-				return this;
-			}
-		:(false && _win.attachEvent) ?
-			function(funcs){
-				for(var name in funcs){ this.el.attachEvent(name, funcs[name]);}
-				return this;
-			}
-		:
-			function(funcs){
-				for(var name in funcs){ this.el['on'+name] = funcs[name];}
-				return this;
-			}
-		)
-	),
-
+	// ee.getRect()   エレメントの四辺の座標を返す
+	// ee.getWidth()  エレメントの幅を返す
+	// ee.getHeight() エレメントの高さを返す
 	//----------------------------------------------------------------------
 	getRect : (
 		((!!document.getBoundingClientRect) ?
@@ -438,6 +365,32 @@ _ElementManager.ElementExt.prototype = {
 	getHeight : function(){ return this.el.offsetHeight || this.el.clientHeight;},
 
 	//----------------------------------------------------------------------
+	// ee.unselectable()         エレメントを選択できなくする
+	// ee.replaceChildrenClass() 子要素のクラスを変更する
+	// ee.remove()               エレメントを削除する
+	// ee.removeNextAll()        同じ親要素を持ち、自分より後ろにあるエレメントを削除する
+	//----------------------------------------------------------------------
+	unselectable : (
+		((_Gecko) ?
+			function(){
+				this.el.style.MozUserSelect = 'none';
+				this.el.style.UserSelect    = 'none';
+				return this;
+			}
+		:(_WebKit) ?
+			function(){
+				this.el.style.KhtmlUserSelect = 'none';
+				this.el.style.UserSelect      = 'none';
+				return this;
+			}
+		:
+			function(){
+				this.el.unselectable = "on";
+				return this;
+			}
+		)
+	),
+
 	replaceChildrenClass : function(before, after){
 		var el = this.el.firstChild;
 		while(!!el){
@@ -446,6 +399,10 @@ _ElementManager.ElementExt.prototype = {
 		}
 	},
 
+	remove : function(){
+		this.parent.removechild(this.el);
+		return this;
+	},
 	removeNextAll : function(targetbase){
 		var el = this.el.lastChild;
 		while(!!el){
@@ -458,58 +415,13 @@ _ElementManager.ElementExt.prototype = {
 	},
 
 	//----------------------------------------------------------------------
-	getText : (
-		((!_IE) ?
-			// el.textContent -> IE以外対応してて、標準はこっち
-			function(){ return this.el.textContent;}
-		:
-			// el.innerText   -> Firefox以外は対応してるけど標準じゃない
-			function(){ return this.el.innerText;}
-		)
-	),
-	setText : (
-		((!_IE) ?
-			function(text){
-				this.el.textContent = text;
-				return this;
-			}
-		:
-			function(text){
-				this.el.innerText = text;
-				return this;
-			}
-		)
-	),
-	appendText : (
-		((!_IE) ?
-			function(text){
-				var sel = _doc.createElement('span');
-				sel.textContent = text;
-				this.el.appendChild(sel);
-				return this;
-			}
-		:
-			function(text){
-				var sel = _doc.createElement('span');
-				sel.innerText = text;
-				this.el.appendChild(sel);
-				return this;
-			}
-		)
-	),
-
-	getHTML : function(){
-		return innerHTML;
-	},
-	setHTML : function(html){
-		this.el.innerHTML = html;
-		return this;
-	},
-
+	// ee.appendHTML() 指定したHTMLを持つspanエレメントを子要素の末尾に追加する
+	// ee.appendBR()   <BR>を子要素の末尾に追加する
+	// ee.appendEL()   指定したエレメントを子要素の末尾に追加する
+	// ee.appendTo()   自分を指定した親要素の末尾に追加する
+	// ee.insertBefore() エレメントを自分の前に追加する
+	// ee.insertAfter()  エレメントを自分の後ろに追加する
 	//----------------------------------------------------------------------
-	// el.prevousSibling -> 同じparentNodeの中で直前にある要素を返す もともと最初ならnull
-	// el.nextSibling    -> 同じparentNodeの中で直後にある要素を返す もともと最後ならnull
-	// parent.insertBefore(el,el2) -> el2の直前にelを挿入 el2がnullだとapendChildと同じ
 	appendHTML : function(html){
 		var sel = _doc.createElement('span');
 		sel.innerHTML = html;
@@ -522,10 +434,6 @@ _ElementManager.ElementExt.prototype = {
 	},
 	appendEL : function(el){
 		this.el.appendChild(el);
-		return this;
-	},
-	append : function(elx){
-		this.el.appendChild(elx.el);
 		return this;
 	},
 
