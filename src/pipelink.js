@@ -66,7 +66,7 @@ Puzzles.pipelink.prototype = {
 		// マウス入力系
 		// マウス入力系
 		mv.mousedown = function(){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode){
 				if(!kp.enabled()){ this.inputQues([0,101,102,103,104,105,106,107,-2]);}
 				else{ kp.display();}

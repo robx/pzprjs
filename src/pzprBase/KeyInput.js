@@ -142,8 +142,8 @@ KeyEvent.prototype = {
 		if(this.isCTRL && this.ca=='y'){ this.inREDO=true; flag = true; tm.startUndoTimer();}
 
 		if(this.ca=='F2' && k.EDITOR){ // 112～123はF1～F12キー
-			if     (k.editmode && !this.isSHIFT){ menu.setVal('mode',3); flag = true;}
-			else if(k.playmode &&  this.isSHIFT){ menu.setVal('mode',1); flag = true;}
+			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); flag = true;}
+			else if(k.playmode &&  this.isSHIFT){ pp.setVal('mode',1); flag = true;}
 		}
 		if(k.scriptcheck && debug){ flag = (flag || debug.keydown(this.ca));}
 
@@ -388,7 +388,7 @@ KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
 	// オーバーライド用
 	kpinput : function(ca){ },
-	enabled : function(){ return menu.getVal('keypopup');},
+	enabled : function(){ return pp.getVal('keypopup');},
 
 	//---------------------------------------------------------------------------
 	// kp.generate()   キーポップアップを生成して初期化する
@@ -498,8 +498,8 @@ KeyPopup.prototype = {
 	// kp.hide()        キーポップアップを隠す
 	//---------------------------------------------------------------------------
 	display : function(){
-		var mode = menu.getVal('mode');
-		if(this.ctl[mode].el && this.ctl[mode].enable && menu.getVal('keypopup') && mv.btn.Left){
+		var mode = pp.getVal('mode');
+		if(this.ctl[mode].el && this.ctl[mode].enable && pp.getVal('keypopup') && mv.btn.Left){
 			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputX - 3 + k.IEMargin.x;
 			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputY - 3 + k.IEMargin.y;
 			this.ctl[mode].el.style.zIndex = 100;
@@ -526,10 +526,10 @@ KeyPopup.prototype = {
 	},
 	inputnumber : function(e, ca){
 		this.kpinput(ca);
-		this.ctl[menu.getVal('mode')].el.style.display = 'none';
+		this.ctl[pp.getVal('mode')].el.style.display = 'none';
 	},
 	hide : function(e){
-		var mode = menu.getVal('mode');
+		var mode = pp.getVal('mode');
 		if(!!this.ctl[mode].el && !menu.insideOf(this.ctl[mode].el, e)){
 			this.ctl[mode].el.style.display = 'none';
 		}

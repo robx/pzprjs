@@ -117,9 +117,9 @@ Puzzles.ichimaga.prototype = {
 			if(type==0 || type==1){ this.decode4Cell(bstr);}
 
 			if(k.EDITOR){
-				if     (this.checkpflag("m")){ menu.setVal('puztype',2);}
-				else if(this.checkpflag("x")){ menu.setVal('puztype',3);}
-				else                         { menu.setVal('puztype',1);}
+				if     (this.checkpflag("m")){ pp.setVal('puztype',2);}
+				else if(this.checkpflag("x")){ pp.setVal('puztype',3);}
+				else                         { pp.setVal('puztype',1);}
 			}
 			else{
 				if     (this.checkpflag("m")){ base.setTitle("磁石イチマガ","Magnetic Ichimaga");}
@@ -136,8 +136,8 @@ Puzzles.ichimaga.prototype = {
 		};
 		enc.pzldata = function(){
 			var pzlflag="";
-			if     (menu.getVal('puztype')==2){ pzlflag="/m";}
-			else if(menu.getVal('puztype')==3){ pzlflag="/x";}
+			if     (pp.getVal('puztype')==2){ pzlflag="/m";}
+			else if(pp.getVal('puztype')==3){ pzlflag="/x";}
 
 			return ""+pzlflag+"/"+k.qcols+"/"+k.qrows+"/"+this.encode4Cell();
 		};
@@ -147,9 +147,9 @@ Puzzles.ichimaga.prototype = {
 			if(array.length<1){ return false;}
 
 			if(k.EDITOR){
-				if     (array[0]=="mag")  { menu.setVal('puztype',2);}
-				else if(array[0]==k.CROSS){ menu.setVal('puztype',3);}
-				else                      { menu.setVal('puztype',1);}
+				if     (array[0]=="mag")  { pp.setVal('puztype',2);}
+				else if(array[0]==k.CROSS){ pp.setVal('puztype',3);}
+				else                      { pp.setVal('puztype',1);}
 			}
 			else{
 				if     (array[0]=="mag")  { base.setTitle("磁石イチマガ","Magnetic Ichimaga");}
@@ -161,8 +161,8 @@ Puzzles.ichimaga.prototype = {
 			return true;
 		};
 		fio.encodeOthers = function(){
-			if     (menu.getVal('puztype')==2){ return "mag/";}
-			else if(menu.getVal('puztype')==3){ return "cross/";}
+			if     (pp.getVal('puztype')==2){ return "mag/";}
+			else if(pp.getVal('puztype')==3){ return "cross/";}
 			return "def/";
 		};
 	},
@@ -211,9 +211,9 @@ Puzzles.ichimaga.prototype = {
 			return true;
 		};
 		ans.check1st = function(){ return true;};
-		ans.ismag    = function(){ return ((k.EDITOR&&menu.getVal('puztype')==2)||(k.PLAYER&&enc.checkpflag("m")));};
-		ans.iscross  = function(){ return ((k.EDITOR&&menu.getVal('puztype')==3)||(k.PLAYER&&enc.checkpflag("x")));};
-		ans.isnormal = function(){ return ((k.EDITOR&&menu.getVal('puztype')==1)||(k.PLAYER&&!enc.checkpflag("m")&&!enc.checkpflag("x")));};
+		ans.ismag    = function(){ return ((k.EDITOR&&pp.getVal('puztype')==2)||(k.PLAYER&&enc.checkpflag("m")));};
+		ans.iscross  = function(){ return ((k.EDITOR&&pp.getVal('puztype')==3)||(k.PLAYER&&enc.checkpflag("x")));};
+		ans.isnormal = function(){ return ((k.EDITOR&&pp.getVal('puztype')==1)||(k.PLAYER&&!enc.checkpflag("m")&&!enc.checkpflag("x")));};
 
 		ans.checkLcntCell = function(val){
 			if(line.ltotal[val]==0){ return true;}

@@ -178,11 +178,11 @@ Puzzles.bosanowa.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			if(menu.getVal('disptype')==2){ this.drawChassis_souko(x1,y1,x2,y2);}
-			if(menu.getVal('disptype')==3){ this.drawChassis_waritai(x1,y1,x2,y2);}
-			if(menu.getVal('disptype')!=1){ this.drawGrid_bosanowa(x1,y1,x2,y2);}
+			if(pp.getVal('disptype')==2){ this.drawChassis_souko(x1,y1,x2,y2);}
+			if(pp.getVal('disptype')==3){ this.drawChassis_waritai(x1,y1,x2,y2);}
+			if(pp.getVal('disptype')!=1){ this.drawGrid_bosanowa(x1,y1,x2,y2);}
 
-			if(menu.getVal('disptype')==1){
+			if(pp.getVal('disptype')==1){
 				this.drawBGCells(x1,y1,x2,y2);
 				this.drawCircles_bosanowa(x1,y1,x2,y2);
 				this.drawBDnumbase(x1,y1,x2,y2);
@@ -208,7 +208,7 @@ Puzzles.bosanowa.prototype = {
 				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
 
 				this.vhide(header+id);
-				if(menu.getVal('disptype')===3){
+				if(pp.getVal('disptype')===3){
 					if     ((cc1!==-1&&bd.cell[cc1].ques===7) ^(cc2!==-1&&bd.cell[cc2].ques===7)){ this.drawBorder1(id,true);}
 					else if((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7)){
 						g.fillStyle=this.gridcolor;
@@ -218,7 +218,7 @@ Puzzles.bosanowa.prototype = {
 						}
 					}
 				}
-				else if(menu.getVal('disptype')===2){
+				else if(pp.getVal('disptype')===2){
 					if((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7)){
 						g.fillStyle="rgb(127,127,127)";
 						if(g.vml){
@@ -283,7 +283,7 @@ Puzzles.bosanowa.prototype = {
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
 
-				if((menu.getVal('disptype')==3 || bd.border[id].qsub>=0)&&
+				if((pp.getVal('disptype')==3 || bd.border[id].qsub>=0)&&
 				  ((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7))){
 					g.fillStyle = "white";
 					if(this.vnop(header+id,1)){
@@ -381,8 +381,8 @@ Puzzles.bosanowa.prototype = {
 				bstr = this.decodeBoard(bstr);
 				bstr = this.decodeNumber16(bstr);
 
-				if     (this.checkpflag("h")){ menu.setVal('disptype',2);}
-				else if(this.checkpflag("t")){ menu.setVal('disptype',3);}
+				if     (this.checkpflag("h")){ pp.setVal('disptype',2);}
+				else if(this.checkpflag("t")){ pp.setVal('disptype',3);}
 			}
 		};
 
@@ -442,8 +442,8 @@ Puzzles.bosanowa.prototype = {
 			if(count>0){ cm+=(15+count).toString(36);}
 
 			var pzlflag="";
-			if     (menu.getVal('disptype')==2){ pzlflag="/h";}
-			else if(menu.getVal('disptype')==3){ pzlflag="/t";}
+			if     (pp.getVal('disptype')==2){ pzlflag="/h";}
+			else if(pp.getVal('disptype')==3){ pzlflag="/t";}
 
 			return ""+pzlflag+"/"+(x2-x1+1)+"/"+(y2-y1+1)+"/"+cm;
 		};

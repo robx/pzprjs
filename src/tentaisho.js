@@ -98,7 +98,7 @@ Puzzles.tentaisho.prototype = {
 			pc.paintCell(cc);
 		};
 		mv.inputBGcolor3 = function(){
-			if(k.EDITOR){ if(menu.getVal('discolor')){ return;} }
+			if(k.EDITOR){ if(pp.getVal('discolor')){ return;} }
 
 			var pos = this.crosspos(0.34);
 			var id = bd.snum(pos.x, pos.y);

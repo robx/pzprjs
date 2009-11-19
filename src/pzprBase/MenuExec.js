@@ -121,7 +121,7 @@ MenuExec.prototype = {
 	// menu.ex.irowakeRemake() 「色分けしなおす」ボタンを押した時に色分けしなおす
 	//---------------------------------------------------------------------------
 	irowakeRemake : function(){
-		if(!menu.getVal('irowake')){ return;}
+		if(!pp.getVal('irowake')){ return;}
 
 		for(var i=1;i<=line.data.max;i++){
 			var idlist = line.data[i].idlist;
@@ -144,15 +144,15 @@ MenuExec.prototype = {
 		var seplist = k.EDITOR ? ['separator1'] : ['separator1','separator2'];
 
 		if(this.displaymanage){
-			for(var i=0;i<idlist.length;i++)            { ee(idlist[i]).el.style.display = 'none';}
-			for(var i=0;i<seplist.length;i++)          { ee(seplist[i]).el.style.display = 'none';}
-			if(k.irowake!=0 && menu.getVal('irowake')){ ee('btncolor2').el.style.display = 'inline';}
+			for(var i=0;i<idlist.length;i++)        { ee(idlist[i])  .el.style.display = 'none';}
+			for(var i=0;i<seplist.length;i++)       { ee(seplist[i]) .el.style.display = 'none';}
+			if(k.irowake!=0 && pp.getVal('irowake')){ ee('btncolor2').el.style.display = 'inline';}
 			ee('menuboard').el.style.paddingBottom = '0pt';
 		}
 		else{
-			for(var i=0;i<idlist.length;i++)            { ee(idlist[i]).el.style.display = 'block';}
-			for(var i=0;i<seplist.length;i++)          { ee(seplist[i]).el.style.display = 'block';}
-			if(k.irowake!=0 && menu.getVal('irowake')){ ee("btncolor2").el.style.display = 'none';}
+			for(var i=0;i<idlist.length;i++)        { ee(idlist[i])  .el.style.display = 'block';}
+			for(var i=0;i<seplist.length;i++)       { ee(seplist[i]) .el.style.display = 'block';}
+			if(k.irowake!=0 && pp.getVal('irowake')){ ee("btncolor2").el.style.display = 'none';}
 			ee('menuboard').el.style.paddingBottom = '8pt';
 		}
 		this.displaymanage = !this.displaymanage;

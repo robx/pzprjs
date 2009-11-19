@@ -54,8 +54,8 @@ var debug = {
 
 	loadperf : function(){
 		fio.fileopen(debug.acs['perftest'][0][1].split("/"),1);
-		menu.setVal('mode',3);
-		menu.setVal('irowake',true);
+		pp.setVal('mode',3);
+		pp.setVal('irowake',true);
 	},
 
 	all_test : function(){
@@ -146,7 +146,7 @@ var debug = {
 		this.sccheck(e);
 	},
 	sccheck : function(e){
-		if(menu.getVal('autocheck')){ menu.setVal('autocheck',false);}
+		if(pp.getVal('autocheck')){ pp.setVal('autocheck',false);}
 		var n=0, alstr='', qstr='', mint=80, fint=50;
 		this.phase = 10;
 		var tim = setInterval(function(){

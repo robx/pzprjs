@@ -60,7 +60,7 @@ Puzzles.icebarn.prototype = {
 	input_init : function(){
 		// ƒ}ƒEƒX“ü—ÍŒn
 		mv.mousedown = function(){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode){
 				if(this.btn.Left) this.inputarrow();
 				else if(this.btn.Right) this.inputIcebarn();

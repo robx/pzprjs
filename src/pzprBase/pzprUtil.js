@@ -149,8 +149,6 @@ LineManager.prototype = {
 			if(cc2!=-1){ this.ltotal[this.lcnt[cc2]]--; this.lcnt[cc2]--; this.ltotal[this.lcnt[cc2]]++;}
 		}
 
-		// if(k.br.IE && !menu.getVal('irowake')){ return;}
-
 		//---------------------------------------------------------------------------
 		// (A)‚­‚Á‚Â‚«‚È‚µ                        (B)’Pƒ‚­‚Á‚Â‚«
 		//     E      „     - Œğ·‚ ‚è‚Ålcnt=1     „«      „     - Œğ·‚È‚µ‚Ålcnt=2`4
@@ -306,7 +304,7 @@ LineManager.prototype = {
 	},
 
 	repaintLine : function(idlist){
-		if(!menu.getVal('irowake')){ return;}
+		if(!pp.getVal('irowake')){ return;}
 		var paintfunc = ee.binder(pc, (k.isCenterLine?pc.drawLine1:pc.drawBorder1));
 		if(g.vml){
 			pc.zstable = true;

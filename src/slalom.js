@@ -60,7 +60,7 @@ Puzzles.slalom.prototype = {
 	input_init : function(){
 		// ƒ}ƒEƒX“ü—ÍŒn
 		mv.mousedown = function(){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(); return;}
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode){ this.inputGate();}
 			else if(k.playmode){
 				if(this.btn.Left) this.inputLine();

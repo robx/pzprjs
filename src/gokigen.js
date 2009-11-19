@@ -62,7 +62,7 @@ Puzzles.gokigen.prototype = {
 		// ƒ}ƒEƒX“ü—ÍŒn
 		mv.mousedown = function(){
 			if(k.playmode){
-				if(!(kc.isZ ^ menu.getVal('dispred'))){ this.inputslash();}
+				if(!(kc.isZ ^ pp.getVal('dispred'))){ this.inputslash();}
 				else{ this.dispBlue();}
 			}
 			else if(k.editmode){

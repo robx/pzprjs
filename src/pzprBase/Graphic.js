@@ -687,7 +687,7 @@ Graphic.prototype = {
 		this.addlw = 0;
 		if     (bd.border[id].error===1){ this.addlw=1; return this.errlinecolor1;}
 		else if(bd.border[id].error===2){ return this.errlinecolor2;}
-		else if(k.irowake===0 || !menu.getVal('irowake') || !bd.border[id].color){ return this.linecolor;}
+		else if(k.irowake===0 || !pp.getVal('irowake') || !bd.border[id].color){ return this.linecolor;}
 		return bd.border[id].color;
 	},
 	drawPekes : function(x1,y1,x2,y2,flag){

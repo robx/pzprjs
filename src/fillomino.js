@@ -269,13 +269,13 @@ Puzzles.fillomino.prototype = {
 				this.setAlert('複数種類の数字が入っているブロックがあります。','A block has two or more kinds of numbers.'); return false;
 			}
 
-			if( !menu.getVal('enbnonum') && !this.checkAllCell(bd.noNum) ){
+			if( !pp.getVal('enbnonum') && !this.checkAllCell(bd.noNum) ){
 				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return (menu.getVal('enbnonum') || this.checkAllCell(bd.noNum));};
+		ans.check1st = function(){ return (pp.getVal('enbnonum') || this.checkAllCell(bd.noNum));};
 
 		ans.checkAreaSize = function(rinfo, flag){
 			for(var id=1;id<=rinfo.max;id++){

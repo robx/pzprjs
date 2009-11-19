@@ -46,7 +46,7 @@ MouseEvent.prototype = {
 
 		this.setButtonFlag(e);
 		// SHIFTキーを押している時は左右ボタン反転
-		if(((kc.isSHIFT)^menu.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
+		if(((kc.isSHIFT)^pp.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
 			this.btn.Left = !this.btn.Left; this.btn.Right = !this.btn.Right;
 		}
 		if(this.btn.Middle){ this.modeflip(); return;} //中ボタン
@@ -132,7 +132,7 @@ MouseEvent.prototype = {
 	),
 
 	notInputted : function(){ return !um.changeflag;},
-	modeflip    : function(){ if(k.EDITOR){ menu.setVal('mode', (k.playmode?1:3));} },
+	modeflip    : function(){ if(k.EDITOR){ pp.setVal('mode', (k.playmode?1:3));} },
 
 	// 共通関数
 	//---------------------------------------------------------------------------
@@ -211,11 +211,11 @@ MouseEvent.prototype = {
 		pc.paintCell(cc);
 	},
 	decIC : function(cc){
-		if(menu.getVal('use')==1){
+		if(pp.getVal('use')==1){
 			if(this.btn.Left){ this.inputData=(bd.isWhite(cc) ? 1 : 0); }
 			else if(this.btn.Right){ this.inputData=((bd.QsC(cc)!=1) ? 2 : 0); }
 		}
-		else if(menu.getVal('use')==2){
+		else if(pp.getVal('use')==2){
 			if(this.btn.Left){
 				if(bd.isBlack(cc)) this.inputData=2;
 				else if(bd.QsC(cc) == 1) this.inputData=0;

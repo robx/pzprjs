@@ -61,7 +61,7 @@ Puzzles.yajikazu.prototype = {
 	input_init : function(){
 		// ƒ}ƒEƒX“ü—ÍŒn
 		mv.mousedown = function(){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed();}
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
 			else if(k.editmode) this.inputdirec();
 			else if(k.playmode) this.inputcell();
 		};
