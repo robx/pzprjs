@@ -84,14 +84,14 @@ Menu.prototype = {
 		this.menuclear();
 		this.floatmenuclose(0);
 
-		getEL("float_parent").innerHTML;
+		ee('float_parent').el.innerHTML;
 
-		if(!!getEL("btncolor2")){ getEL('btnarea').removeChild(getEL('btncolor2'));}
+		if(!!ee('btncolor2').el){ ee('btncolor2').remove();}
 		ee('btnarea').removeNextAll(ee('btnclear2').el);
 
-		getEL('menupanel') .innerHTML = '';
-		getEL('usepanel')  .innerHTML = '';
-		getEL('checkpanel').innerHTML = '';
+		ee('menupanel') .el.innerHTML = '';
+		ee('usepanel')  .el.innerHTML = '';
+		ee('checkpanel').el.innerHTML = '';
 
 		pp.reset();
 	},
@@ -123,34 +123,39 @@ Menu.prototype = {
 	setdisplay : function(idname){
 		switch(pp.type(idname)){
 		case pp.MENU:
-			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = "["+pp.getMenuStr(idname)+"]";}
+			var menu = ee('ms_'+idname);
+			if(!!menu){ menu.el.innerHTML = "["+pp.getMenuStr(idname)+"]";}
 			break;
 
 		case pp.SMENU: case pp.LABEL:
-			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = pp.getMenuStr(idname);}
+			var smenu = ee('ms_'+idname);
+			if(!!smenu){ smenu.el.innerHTML = pp.getMenuStr(idname);}
 			break;
 
 		case pp.SELECT:
-			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = "&nbsp;"+pp.getMenuStr(idname);}	// メニュー上の表記の設定
-			if(getEL("cl_"+idname)){ getEL("cl_"+idname).innerHTML = pp.getLabel(idname);}				// 管理領域上の表記の設定
+			var smenu = ee('ms_'+idname), label = ee('cl_'+idname);
+			if(!!smenu){ smenu.el.innerHTML = "&nbsp;"+pp.getMenuStr(idname);}	// メニュー上の表記の設定
+			if(!!label){ label.el.innerHTML = pp.getLabel(idname);}			// 管理領域上の表記の設定
 			for(var i=0,len=pp.flags[idname].child.length;i<len;i++){ this.setdisplay(""+idname+"_"+pp.flags[idname].child[i]);}
 			break;
 
 		case pp.CHILD:
+			var smenu = ee('ms_'+idname), manage = ee('up_'+idname);
 			var issel = (pp.getVal(idname) == pp.getVal(pp.flags[idname].parent));
 			var cap = pp.getMenuStr(idname);
-			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = (issel?"+":"&nbsp;")+cap;}	// メニューの項目
-			if(getEL("up_"+idname)){															// 管理領域の項目
-				getEL("up_"+idname).innerHTML = cap;
-				getEL("up_"+idname).className = (issel?"flagsel":"flag");
+			if(!!smenu){ smenu.el.innerHTML = (issel?"+":"&nbsp;")+cap;}	// メニューの項目
+			if(!!manage){													// 管理領域の項目
+				manage.el.innerHTML = cap;
+				manage.el.className = (issel?"flagsel":"flag");
 			}
 			break;
-	
+
 		case pp.CHECK:
+			var smenu = ee('ms_'+idname), check = ee('ck_'+idname), label = ee('cl_'+idname);
 			var flag = pp.getVal(idname);
-			if(getEL("ms_"+idname)){ getEL("ms_"+idname).innerHTML = (flag?"+":"&nbsp;")+pp.getMenuStr(idname);}	// メニュー
-			if(getEL("ck_"+idname)){ getEL("ck_"+idname).checked = flag;}						// 管理領域(チェックボックス)
-			if(getEL("cl_"+idname)){ getEL("cl_"+idname).innerHTML = pp.getLabel(idname);}		// 管理領域(ラベル)
+			if(!!smenu){ smenu.el.innerHTML = (flag?"+":"&nbsp;")+pp.getMenuStr(idname);}	// メニュー
+			if(!!check){ check.el.checked   = flag;}					// 管理領域(チェックボックス)
+			if(!!label){ label.el.innerHTML = pp.getLabel(idname);}		// 管理領域(ラベル)
 			break;
 		}
 	},
@@ -322,13 +327,13 @@ Menu.prototype = {
 
 		// その他の調整
 		if(k.PLAYER){
-			getEL('ms_newboard').className  = 'smenunull';
-			getEL('ms_urloutput').className = 'smenunull';
-			getEL('ms_adjust').className    = 'smenunull';
+			ee('ms_newboard') .el.className = 'smenunull';
+			ee('ms_urloutput').el.className = 'smenunull';
+			ee('ms_adjust')   .el.className = 'smenunull';
 		}
-		getEL('ms_jumpv3')  .style.fontSize = '10pt'; getEL('ms_jumpv3')  .style.paddingLeft = '8pt';
-		getEL('ms_jumptop') .style.fontSize = '10pt'; getEL('ms_jumptop') .style.paddingLeft = '8pt';
-		getEL('ms_jumpblog').style.fontSize = '10pt'; getEL('ms_jumpblog').style.paddingLeft = '8pt';
+		ee('ms_jumpv3')  .el.style.fontSize = '10pt'; ee('ms_jumpv3')  .el.style.paddingLeft = '8pt';
+		ee('ms_jumptop') .el.style.fontSize = '10pt'; ee('ms_jumptop') .el.style.paddingLeft = '8pt';
+		ee('ms_jumpblog').el.style.fontSize = '10pt'; ee('ms_jumpblog').el.style.paddingLeft = '8pt';
 	},
 
 	//---------------------------------------------------------------------------
@@ -414,7 +419,7 @@ Menu.prototype = {
 		for(var i=this.dispfloat.length-1;i>=depth;i--){
 			if(i!==0){
 				var parentsmenuid = "ms_" + this.dispfloat[i].id.substr(6);
-				getEL(parentsmenuid).className = 'smenu';
+				ee(parentsmenuid).el.className = 'smenu';
 			}
 			this.dispfloat[i].style.display = 'none';
 			this.dispfloat.pop();
@@ -500,23 +505,24 @@ Menu.prototype = {
 
 		// 左上に出てくるやつ
 		ee('translation').unselectable().el.onclick = ee.binder(this, this.translate);
-		this.addLabels(getEL("translation"), "English", "日本語");
+		this.addLabels(ee('translation').el, "English", "日本語");
 
 		// 説明文の場所
-		getEL("expression").innerHTML = base.expression.ja;
+		ee('expression').el.innerHTML = base.expression.ja;
 
 		// 管理領域の表示/非表示設定
 		if(k.EDITOR){
 			ee('timerpanel').el.style.display = 'none';
 			ee('separator2').el.style.display = 'none';
 		}
+		if(!!ee('ck_keypopup')){ pp.funcs.keypopup();}
 
 		// (Canvas下) ボタンの初期設定
-		this.addButtons(getEL("btncheck"),  ee.binder(ans, ans.check),             "チェック", "Check");
-		this.addButtons(getEL("btnundo"),   ee.binder(um, um.undo),                "戻",       "<-");
-		this.addButtons(getEL("btnredo"),   ee.binder(um, um.redo),                "進",       "->");
-		this.addButtons(getEL("btnclear"),  ee.binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
-		this.addButtons(getEL("btnclear2"), ee.binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
+		this.addButtons(ee("btncheck").el,  ee.binder(ans, ans.check),             "チェック", "Check");
+		this.addButtons(ee("btnundo").el,   ee.binder(um, um.undo),                "戻",       "<-");
+		this.addButtons(ee("btnredo").el,   ee.binder(um, um.redo),                "進",       "->");
+		this.addButtons(ee("btnclear").el,  ee.binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
+		this.addButtons(ee("btnclear2").el, ee.binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
 		if(k.irowake!=0){
 			var el = ee.createEL(this.EL_BUTTON, 'btncolor2');
 			this.addButtons(el, ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
@@ -566,23 +572,23 @@ Menu.prototype = {
 
 		// 盤面の新規作成 -----------------------------------------------------
 		func = ee.ebinder(this.ex, this.ex.newboard);
-		lab(getEL("bar1_1"),      "盤面の新規作成",         "Createing New Board");
-		lab(getEL("pop1_1_cap0"), "盤面を新規作成します。", "Create New Board.");
-		lab(getEL("pop1_1_cap1"), "よこ",                   "Cols");
-		lab(getEL("pop1_1_cap2"), "たて",                   "Rows");
+		lab(ee('bar1_1').el,      "盤面の新規作成",         "Createing New Board");
+		lab(ee('pop1_1_cap0').el, "盤面を新規作成します。", "Create New Board.");
+		lab(ee('pop1_1_cap1').el, "よこ",                   "Cols");
+		lab(ee('pop1_1_cap2').el, "たて",                   "Rows");
 		btn(document.newboard.newboard, func,  "新規作成",   "Create");
 		btn(document.newboard.cancel,   close, "キャンセル", "Cancel");
 
 		// URL入力 ------------------------------------------------------------
 		func = ee.ebinder(this.ex, this.ex.urlinput);
-		lab(getEL("bar1_2"),      "URL入力",                     "Import from URL");
-		lab(getEL("pop1_2_cap0"), "URLから問題を読み込みます。", "Import a question from URL.");
+		lab(ee('bar1_2').el,      "URL入力",                     "Import from URL");
+		lab(ee('pop1_2_cap0').el, "URLから問題を読み込みます。", "Import a question from URL.");
 		btn(document.urlinput.urlinput, func,  "読み込む",   "Import");
 		btn(document.urlinput.cancel,   close, "キャンセル", "Cancel");
 
 		// URL出力 ------------------------------------------------------------
 		func = ee.ebinder(this.ex, this.ex.urloutput);
-		lab(getEL("bar1_3"), "URL出力", "Export URL");
+		lab(ee('bar1_3').el, "URL出力", "Export URL");
 		var btt = function(name, strJP, strEN, eval){
 			if(eval===false){ return;}
 			var el = ee.createEL(menu.EL_BUTTON,''); el.name = name;
@@ -601,21 +607,21 @@ Menu.prototype = {
 
 		// ファイル入力 -------------------------------------------------------
 		func = ee.ebinder(this.ex, this.ex.fileopen);
-		lab(getEL("bar1_4"),      "ファイルを開く", "Open file");
-		lab(getEL("pop1_4_cap0"), "ファイル選択",   "Choose file");
+		lab(ee('bar1_4').el,      "ファイルを開く", "Open file");
+		lab(ee('pop1_4_cap0').el, "ファイル選択",   "Choose file");
 		document.fileform.filebox.onchange = func;
 		btn(document.fileform.close,    close, "閉じる",     "Close");
 
 		// データベースを開く -------------------------------------------------
 		func = ee.ebinder(fio, fio.clickHandler);
-		lab(getEL("bar1_8"), "データベースの管理", "Database Management");
+		lab(ee('bar1_8').el, "データベースの管理", "Database Management");
 		document.database.sorts   .onchange = func;
 		document.database.datalist.onchange = func;
 		document.database.tableup .onclick  = func;
 		document.database.tabledn .onclick  = func;
 		btn(document.database.open,     func,  "データを読み込む",   "Load");
 		btn(document.database.save,     func,  "盤面を保存",         "Save");
-		lab(getEL("pop1_8_com"), "コメント:", "Comment:");
+		lab(ee('pop1_8_com').el, "コメント:", "Comment:");
 		btn(document.database.comedit,  func,  "コメントを編集する", "Edit Comment");
 		btn(document.database.difedit,  func,  "難易度を設定する",   "Set difficulty");
 		btn(document.database.del,      func,  "削除",               "Delete");
@@ -623,14 +629,14 @@ Menu.prototype = {
 
 		// 盤面の調整 ---------------------------------------------------------
 		func = ee.ebinder(this.ex, this.ex.popupadjust);
-		lab(getEL("bar2_1"),      "盤面の調整",             "Adjust the board");
-		lab(getEL("pop2_1_cap0"), "盤面の調整を行います。", "Adjust the board.");
-		lab(getEL("pop2_1_cap1"), "拡大",  "Expand");
+		lab(ee('bar2_1').el,      "盤面の調整",             "Adjust the board");
+		lab(ee('pop2_1_cap0').el, "盤面の調整を行います。", "Adjust the board.");
+		lab(ee('pop2_1_cap1').el, "拡大",  "Expand");
 		btn(document.adjust.expandup,   func,  "上",     "UP");
 		btn(document.adjust.expanddn,   func,  "下",     "Down");
 		btn(document.adjust.expandlt,   func,  "左",     "Left");
 		btn(document.adjust.expandrt,   func,  "右",     "Right");
-		lab(getEL("pop2_1_cap2"), "縮小", "Reduce");
+		lab(ee('pop2_1_cap2').el, "縮小", "Reduce");
 		btn(document.adjust.reduceup,   func,  "上",     "UP");
 		btn(document.adjust.reducedn,   func,  "下",     "Down");
 		btn(document.adjust.reducelt,   func,  "左",     "Left");
@@ -638,8 +644,8 @@ Menu.prototype = {
 		btn(document.adjust.close,      close, "閉じる", "Close");
 
 		// 反転・回転 ---------------------------------------------------------
-		lab(getEL("bar2_2"),      "反転・回転",                  "Flip/Turn the board");
-		lab(getEL("pop2_2_cap0"), "盤面の回転・反転を行います。","Flip/Turn the board.");
+		lab(ee('bar2_2').el,      "反転・回転",                  "Flip/Turn the board");
+		lab(ee('pop2_2_cap0').el, "盤面の回転・反転を行います。","Flip/Turn the board.");
 		btn(document.flip.turnl,  func,  "左90°回転", "Turn left by 90 degree");
 		btn(document.flip.turnr,  func,  "右90°回転", "Turn right by 90 degree");
 		btn(document.flip.flipy,  func,  "上下反転",   "Flip upside down");
@@ -647,16 +653,16 @@ Menu.prototype = {
 		btn(document.flip.close,  close, "閉じる",     "Close");
 
 		// credit -------------------------------------------------------------
-		lab(getEL("bar3_1"),   "credit", "credit");
-		lab(getEL("credit3_1"),"ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\nライブラリとしてjQuery1.3.2, uuCanvas1.0, <br>Google Gearsを\n使用しています。<br>\n<br>\n",
+		lab(ee('bar3_1').el,   "credit", "credit");
+		lab(ee('credit3_1').el,"ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\nライブラリとしてjQuery1.3.2, uuCanvas1.0, <br>Google Gearsを\n使用しています。<br>\n<br>\n",
 							   "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\nThis script use jQuery1.3.2, uuCanvas1.0, <br>Google Gears as libraries.<br>\n<br>\n");
 		btn(document.credit.close,  close, "閉じる", "OK");
 
 		// 表示サイズ ---------------------------------------------------------
 		func = ee.ebinder(this, this.ex.dispsize);
-		lab(getEL("bar4_1"),      "表示サイズの変更",         "Change size");
-		lab(getEL("pop4_1_cap0"), "表示サイズを変更します。", "Change the display size.");
-		lab(getEL("pop4_1_cap1"), "表示サイズ",               "Display size");
+		lab(ee('bar4_1').el,      "表示サイズの変更",         "Change size");
+		lab(ee('pop4_1_cap0').el, "表示サイズを変更します。", "Change the display size.");
+		lab(ee('pop4_1_cap1').el, "表示サイズ",               "Display size");
 		btn(document.dispsize.dispsize, func,  "変更する",   "Change");
 		btn(document.dispsize.cancel,   close, "キャンセル", "Cancel");
 	},
@@ -753,8 +759,8 @@ Menu.prototype = {
 	setLangStr : function(ln){
 		this.language = ln;
 		document.title = base.gettitle();
-		getEL("title2").innerHTML = base.gettitle();
-		getEL("expression").innerHTML = base.expression[this.language];
+		ee('title2').el.innerHTML = base.gettitle();
+		ee('expression').el.innerHTML = base.expression[this.language];
 
 		this.displayAll();
 		this.ex.dispmanstr();
@@ -926,8 +932,8 @@ Properties.prototype = {
 		},
 		keypopup : function(){
 			var f = kp.ctl[pp.flags['mode'].val].enable;
-			getEL("ck_keypopup").disabled    = (f?"":"true");
-			getEL("cl_keypopup").style.color = (f?"black":"silver");
+			ee('ck_keypopup').el.disabled    = (f?"":"true");
+			ee('cl_keypopup').el.style.color = (f?"black":"silver");
 		}
 	}
 };

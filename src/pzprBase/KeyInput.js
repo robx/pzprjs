@@ -403,7 +403,7 @@ KeyPopup.prototype = {
 
 	gentable : function(mode, type, func){
 		this.ctl[mode].enable = true;
-		this.ctl[mode].el     = getEL("keypopup"+mode);
+		this.ctl[mode].el     = ee('keypopup'+mode).el;
 		this.ctl[mode].el.onmouseout = ee.ebinder(this, this.hide);
 
 		var table = _doc.createElement('table');

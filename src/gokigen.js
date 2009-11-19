@@ -53,7 +53,7 @@ Puzzles.gokigen.prototype = {
 	protoChange : function(){
 	},
 	protoOriginal : function(){
-		getEL("btnclear2").style.display = 'inline';
+		ee('btnclear2').el.style.display = 'inline';
 	},
 
 	//---------------------------------------------------------
@@ -129,7 +129,7 @@ Puzzles.gokigen.prototype = {
 			um.enableRecord();
 		};
 
-		getEL("btnclear2").style.display = 'none';
+		ee('btnclear2').el.style.display = 'none';
 
 		tc.minx = 0;
 		tc.miny = 0;

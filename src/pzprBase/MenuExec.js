@@ -165,8 +165,8 @@ MenuExec.prototype = {
 		pc.paintAll();	// Ä•`‰æ
 	},
 	dispmanstr : function(){
-		if(!this.displaymanage){ getEL("ms_manarea").innerHTML = menu.isLangJP()?"ŠÇ——Ìˆæ‚ğ•\¦":"Show management area";}
-		else                   { getEL("ms_manarea").innerHTML = menu.isLangJP()?"ŠÇ——Ìˆæ‚ğ‰B‚·":"Hide management area";}
+		if(!this.displaymanage){ ee('ms_manarea').el.innerHTML = menu.isLangJP()?"ŠÇ——Ìˆæ‚ğ•\¦":"Show management area";}
+		else                   { ee('ms_manarea').el.innerHTML = menu.isLangJP()?"ŠÇ——Ìˆæ‚ğ‰B‚·":"Hide management area";}
 	},
 
 	//------------------------------------------------------------------------------

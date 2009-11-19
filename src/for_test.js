@@ -6,17 +6,17 @@ k.PLAYER = false;
 
 var debug = {
 	testonly_func : function(){
-		menu.titlebarfunc(getEL("bartest"));
+		menu.titlebarfunc(ee('bartest').el);
 
 		document.testform.starttest.onclick = ee.binder(this, this.presccheck);
 		document.testform.t1.onclick        = ee.binder(this, this.perfeval);
 		document.testform.t2.onclick        = ee.binder(this, this.painteval);
 		document.testform.t3.onclick        = ee.binder(this, this.resizeeval);
 
-		document.testform.filesave.onclick  = function(){ getEL("testarea").value=''; debug.addTextarea(fio.fileencode(1).replace(/\//g,"\n"));};
-		document.testform.fileopen.onclick  = function(){ fio.fileopen(getEL("testarea").value.split("\n"),1);};
-		document.testform.erasetext.onclick = function(e){ getEL("testarea").value='';};
-		document.testform.close.onclick     = function(e){ getEL("poptest").style.display = 'none';};
+		document.testform.filesave.onclick  = function(){ ee('testarea').el.value=''; debug.addTextarea(fio.fileencode(1).replace(/\//g,"\n"));};
+		document.testform.fileopen.onclick  = function(){ fio.fileopen(ee('testarea').el.value.split("\n"),1);};
+		document.testform.erasetext.onclick = function(e){ ee('testarea').el.value='';};
+		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
 		document.testform.perfload.onclick  = ee.binder(this, this.loadperf);
 
 		document.testform.perfload.display = (k.puzzleid!=='country' ? 'none' : 'inline');
@@ -75,11 +75,11 @@ var debug = {
 			enc.parseURI_pzpr.apply(enc, [debug.urls[pnum][1]]);
 			enc.pzlinput.apply(enc);
 
-			getEL("testarea").rows = "32";
-			var _pop = getEL('poptest');
-			_pop.style.display = 'inline';
-			_pop.style.left = '40px';
-			_pop.style.top  = '80px';
+			eeL('testarea').el.rows = "32";
+			var _pop_style = ee('poptest').el.style;
+			_pop_style.display = 'inline';
+			_pop_style.left = '40px';
+			_pop_style.top  = '80px';
 			debug.addTextarea("Test ("+pnum+", "+newid+") start.");
 			debug.sccheck();
 
@@ -132,17 +132,17 @@ var debug = {
 	},
 
 	disptest : function(type){
-		var _pop = getEL('poptest');
-		_pop.style.display = 'inline';
-		_pop.style.left = '40px';
-		_pop.style.top  = '80px';
+		var _pop_style = ee('poptest').el.style;
+		_pop_style.display = 'inline';
+		_pop_style.left = '40px';
+		_pop_style.top  = '80px';
 		if(type==1){ this.presccheck();}
 	},
 
 	phase : 0,
 	presccheck : function(e){
-		getEL("testarea").rows = "32";
-		getEL("testarea").value = "";
+		ee('testarea').el.rows = "32";
+		ee('testarea').el.value = "";
 		this.sccheck(e);
 	},
 	sccheck : function(e){
@@ -397,7 +397,7 @@ var debug = {
 		},mint);
 	},
 	taenable : true,
-	addTextarea : function(str){ if(this.taenable){ getEL('testarea').value += (str+"\n");} },
+	addTextarea : function(str){ if(this.taenable){ ee('testarea').el.value += (str+"\n");} },
 
 	qsubf : true,
 	bd_freezecopy : function(){

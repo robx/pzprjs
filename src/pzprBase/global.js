@@ -118,7 +118,6 @@ var _doc = document;
 	//---------------------------------------------------------------------------
 var mf = Math.floor;
 function f_true(){ return true;}
-function getEL(id){ return _doc.getElementById(id);}
 
 (function(){
 
@@ -138,7 +137,11 @@ var
 	// define and map _ElementManager class
 	_ELm = _ElementManager = _win.ee = function(id){
 		if(typeof id === 'string'){
-			if(!_elx[id]){ _elx[id] = new _ELx(_doc.getElementById(id));}
+			if(!_elx[id]){
+				var el = _doc.getElementById(id);
+				if(!el){ return null;}
+				_elx[id] = new _ELx(el);
+			}
 			return _elx[id];
 		}
 
@@ -148,7 +151,7 @@ var
 			return _elx[el.id];
 		}
 
-		return new _ELx(el);
+		return ((!!el) ? new _ELx(el) : null);
 	},
 	_elx = _ElementManager._cache    = {},
 	_elp = _ElementManager._template = [],
@@ -190,16 +193,6 @@ _extend( _ElementManager, {
 		_elpcnt  = 0;
 		_elp = null;
 		_elp = [];
-	},
-
-	//----------------------------------------------------------------------
-	get : function(id){
-		if(!_elx[id]){ _elx[id] = new _ELx(_doc.getElementById(id));}
-		return _elx[id];
-	},
-	getEL : function(id){
-		if(!_elx[id]){ _elx[id] = new _ELx(_doc.getElementById(id));}
-		return _elx[id].el;
 	},
 
 	//----------------------------------------------------------------------
@@ -567,7 +560,7 @@ Timer = function(){
 
 	// 経過時間表示用変数
 	this.bseconds = 0;		// 前回ラベルに表示した時間(秒数)
-	this.timerEL = getEL("timerpanel");
+	this.timerEL = ee('timerpanel').el;
 
 	// 自動正答判定用変数
 	this.lastAnsCnt  = 0;	// 前回正答判定した時の、UndoManagerに記録されてた問題/回答入力のカウント

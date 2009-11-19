@@ -48,8 +48,8 @@ Puzzles.tawa.prototype = {
 	},
 	menufix : function(){
 		menu.addUseToFlags();
-		menu.addLabels(getEL("pop1_1_cap1x"), "‰¡• (‰©F‚Ì”)", "Width (Yellows)");
-		menu.addLabels(getEL("pop1_1_cap2x"), "‚‚³",            "Height");
+		menu.addLabels(ee('pop1_1_cap1x').el, "‰¡• (‰©F‚Ì”)", "Width (Yellows)");
+		menu.addLabels(ee('pop1_1_cap2x').el, "‚‚³",            "Height");
 	},
 
 	protoChange : function(){

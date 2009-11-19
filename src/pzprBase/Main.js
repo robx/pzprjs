@@ -70,7 +70,7 @@ PBase.prototype = {
 
 	initCanvas : function(){
 		this.canvas = ee('puzzle_canvas').unselectable().el; // Canvas
-		this.numparent = getEL('numobj_parent');			// 数字表示用
+		this.numparent = ee('numobj_parent').el;			// 数字表示用
 		g = this.canvas.getContext("2d");
 	},
 
@@ -188,22 +188,22 @@ PBase.prototype = {
 
 		if(k.qcols < ci0){				// 特に縮小しないとき
 			k.cwidth = k.cheight = mf(k.def_csize*cratio);
-			getEL("main").style.width = '80%';
+			ee('main').el.style.width = '80%';
 		}
 		else if(k.qcols < ci1){			// ウィンドウの幅75%に入る場合 フォントのサイズは3/4まで縮めてよい
 			k.cwidth = k.cheight = mf(k.def_csize*cratio*(1-0.25*((k.qcols-ci0)/(ci1-ci0))));
 			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-			getEL("main").style.width = '80%';
+			ee('main').el.style.width = '80%';
 		}
 		else if(k.qcols < ci2){			// mainのtableを広げるとき
 			k.cwidth = k.cheight = mf(k.def_csize*cratio*(0.75-0.35*((k.qcols-ci1)/(ci2-ci1))));
 			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-			getEL("main").style.width = ""+(k.p0.x*2+k.qcols*k.cwidth+12)+"px";
+			ee('main').el.style.width = ""+(k.p0.x*2+k.qcols*k.cwidth+12)+"px";
 		}
 		else{							// 標準サイズの40%にするとき(自動調整の下限)
 			k.cwidth = k.cheight = mf(k.def_csize*0.4);
 			k.p0 = new Pos(k.def_psize*0.4, k.def_psize*0.4);
-			getEL("main").style.width = '96%';
+			ee('main').el.style.width = '96%';
 		}
 
 		// Canvasのサイズ変更

@@ -198,8 +198,8 @@ Puzzles.pipelink.prototype = {
 
 		pc.disp = 0;
 		pc.changedisp = function(){
-			if     (this.disp===1){ getEL("btncircle").value="Åõ"; this.disp=0;}
-			else if(this.disp===0){ getEL("btncircle").value="Å°"; this.disp=1;}
+			if     (this.disp===1){ ee('btncircle').el.value="Åõ"; this.disp=0;}
+			else if(this.disp===0){ ee('btncircle').el.value="Å°"; this.disp=1;}
 			this.paintAll();
 		};
 
