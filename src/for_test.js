@@ -98,9 +98,11 @@ var debug = {
 		if(kp.ctl[1].enable){ kp.ctl[1].el.innerHTML = '';}
 		if(kp.ctl[3].enable){ kp.ctl[3].el.innerHTML = '';}
 
+		ee.clean();
+
 		k.puzzleid = newid;
 		if(!Puzzles[k.puzzleid]){
-			var _script = ee.newEL('script');
+			var _script = _doc.createElement('script');
 			_script.type = 'text/javascript';
 //			_script.charset = 'Shift_JIS';
 			_script.src = "src/"+k.puzzleid+".js";
