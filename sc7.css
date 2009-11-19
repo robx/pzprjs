@@ -27,6 +27,10 @@
 	blockquote#checkpanel{ margin:4pt 0pt 0pt 16pt;}
 	blockquote#timerpanel{ margin:2pt 0pt 0pt 6pt;}
 
+	/* 左上のピンクのやつ */
+	p#translation_p  { position:absolute; width:40%; margin:0pt; text-align:left;}
+	span#translation { position:absolute; color:green; background-color:#dfdfdf; font-size:10pt; cursor:pointer;}
+
 	/* 中身 */
 	h2#title{ text-align:center;margin:16pt 0pt 24pt 0pt;}
 
@@ -75,8 +79,9 @@
 	form#fileform2    { width:100px; height:100px; position:absolute; top:0px; left:-9000px; }
 
 	td.kpnum { width:32px; height:32px; font-size:24px; text-align:center; vertical-align:middle; background-color:white; cursor:default;}
-	td.kpimg { width:32px; height:32px; text-align:left; vertical-align:top; background-color:white; cursor:default;}
-	img.kp   { position:absolute; overflow:hidden;}
+	td.kpimgcell { width:32px; height:32px; text-align:left; vertical-align:top; background-color:white; cursor:default;}
+	div.kpimgdiv { position:relative; display:inline;}
+	img.kpimg    { position:absolute; overflow:hidden;}
 
 	/* aタグ 背景とか */
 	a:link{ color:blue;}
