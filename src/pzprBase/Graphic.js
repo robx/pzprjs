@@ -93,7 +93,7 @@ Graphic = function(){
 	this.minYdeg = 0.18;
 	this.maxYdeg = 0.70;
 
-	var numobj_attr = {'class':'divnum', unselectable:'on'};
+	var numobj_attr = {className:'divnum', unselectable:'on'};
 	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', numobj_attr, null, null);
 
 	this.setFunctions();
@@ -1278,14 +1278,14 @@ Graphic.prototype = {
 			((!k.br.IE) ?
 				function(){
 					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(0, 0, menu.getWidth(base.canvas), menu.getHeight(base.canvas));
+					g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
 					this.vinc();
 				}
 			:
 				function(){
 					g._clear();	// uuCanvasópì¡éÍèàóù
 					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(0, 0, menu.getWidth(base.canvas), menu.getHeight(base.canvas));
+					g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
 					this.vinc();
 				}
 			)
@@ -1294,7 +1294,7 @@ Graphic.prototype = {
 				g.zidx=0; g.vid="bg_"; g.pelements = []; g.elements = [];	// VMLóp
 				g._clear();													// uuCanvasópì¡éÍèàóù
 				g.fillStyle = "rgb(255, 255, 255)";
-				g.fillRect(0, 0, menu.getWidth(base.canvas), menu.getHeight(base.canvas));
+				g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
 				this.vinc();
 			}
 		)

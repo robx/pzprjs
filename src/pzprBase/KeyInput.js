@@ -373,6 +373,13 @@ KeyPopup = function(){
 	this.tbodytmp=null, this.trtmp=null;
 
 	this.ORIGINAL = 99;
+
+	// ElementTemplate
+	this.EL_KPNUM   = ee.addTemplate('','td', {unselectable:'on', className:'kpnum'}, null, null);
+	this.EL_KPEMPTY = ee.addTemplate('','td', {unselectable:'on'}, null, null);
+	this.EL_KPIMG   = ee.addTemplate('','td', {unselectable:'on', className:'kpimgcell'}, null, null);
+	this.EL_KPIMG_DIV = ee.addTemplate('','div', {unselectable:'on', className:'kpimgdiv'}, null, null);
+	this.EL_KPIMG_IMG = ee.addTemplate('','img', {unselectable:'on', className:'kpimg', src:"./src/img/"+k.puzzleid+"_kp.gif"}, null, null);
 };
 KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
@@ -399,11 +406,11 @@ KeyPopup.prototype = {
 		this.ctl[mode].el     = getEL("keypopup"+mode);
 		this.ctl[mode].el.onmouseout = ee.ebinder(this, this.hide);
 
-		var table = ee.newEL('table');
+		var table = _doc.createElement('table');
 		table.cellSpacing = '2pt';
 		this.ctl[mode].el.appendChild(table);
 
-		this.tbodytmp = ee.newEL('tbody');
+		this.tbodytmp = _doc.createElement('tbody');
 		table.appendChild(this.tbodytmp);
 
 		this.trtmp = null;
@@ -450,34 +457,23 @@ KeyPopup.prototype = {
 	// kp.insertrow() テーブルの行を追加する
 	//---------------------------------------------------------------------------
 	inputcol : function(type, id, ca, disp){
-		if(!this.trtmp){ this.trtmp = ee.newEL('tr');}
+		if(!this.trtmp){ this.trtmp = _doc.createElement('tr');}
 		var _td = null;
 		if(type==='num'){
-			_td    = ee.newELx('td').unselectable().el;
-			_td.id = id;
-			_td.className   = 'kpnum';
+			_td = ee.createEL(this.EL_KPNUM, id);
 			_td.style.color = this.tdcolor;
 			_td.innerHTML   = disp;
 			_td.onclick     = ee.ebinder(this, this.inputnumber, [ca]);
 		}
 		else if(type==='empty'){
-			_td    = ee.newELx('td').unselectable().el;
-			_td.id = id;
+			_td = ee.createEL(this.EL_KPEMPTY, '');
 		}
 		else if(type==='image'){
-			var _img = ee.newELx('img').unselectable().el;
-			_img.id = ""+id+"_i";
-			_img.className = 'kp';
-			_img.src       = "./src/img/"+k.puzzleid+"_kp.gif";
-
-			var _div = ee.newELx('div').unselectable().el;
-			_div.position = 'relative';
-			_div.display  = 'inline';
+			var _img = ee.createEL(this.EL_KPIMG_IMG, ""+id+"_i");
+			var _div = ee.createEL(this.EL_KPIMG_DIV, '');
 			_div.appendChild(_img);
 
-			_td    = ee.newELx('td').unselectable().el;
-			_td.id = id;
-			_td.className = 'kpimg';
+			_td = ee.createEL(this.EL_KPIMG, id);
 			_td.onclick   = ee.ebinder(this, this.inputnumber, [ca]);
 			_td.appendChild(_div);
 
