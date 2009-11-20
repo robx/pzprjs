@@ -231,7 +231,7 @@ Puzzles.kusabi.prototype = {
 				while(1){
 					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 					if((bx+by)%2==0){
-						cc = bd.cnum(mf(bx/2),mf(by/2));
+						cc = bd.cnum(bx>>1,by>>1);
 						if(dir!=0 && bd.QnC(cc)!=-1){ break;}
 						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!=0&&dir!=2){ ccnt++;} dir=2;}
 						else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!=0&&dir!=1){ ccnt++;} dir=1;}

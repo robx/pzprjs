@@ -177,8 +177,8 @@ KeyEvent.prototype = {
 		else if(ca == k.KEYRT && tcx+mv <= tc.maxx){ tc.incTCX(mv); flag = true;}
 
 		if(flag){
-			pc.paint(mf(tcx/2)-1, mf(tcy/2)-1, mf(tcx/2), mf(tcy/2));
-			pc.paint(mf(tc.cursolx/2)-1, mf(tc.cursoly/2)-1, mf(tc.cursolx/2), mf(tc.cursoly/2));
+			pc.paint((tcx>>1)-1, (tcy>>1)-1, tcx>>1, tcy>>1);
+			pc.paint((tc.cursolx>>1)-1, (tc.cursoly>>1)-1, tc.cursolx>>1, tc.cursoly>>1);
 			this.tcMoved = true;
 		}
 		return flag;
@@ -269,7 +269,7 @@ KeyEvent.prototype = {
 		else if(ca == k.KEYRT){ bd.sDiC(cc, (bd.DiC(cc)!=k.RT?k.RT:0)); flag = true;}
 
 		if(flag){
-			pc.paint(mf(tc.cursolx/2), mf(tc.cursoly/2), mf(tc.cursolx/2), mf(tc.cursoly/2));
+			pc.paint(tc.cursolx>>1, tc.cursoly>>1, tc.cursolx>>1, tc.cursoly>>1);
 			this.tcMoved = true;
 		}
 		return flag;
@@ -612,12 +612,12 @@ TCell.prototype = {
 		if(pos.x<this.minx || this.maxx<pos.x || pos.y<this.miny || this.maxy<pos.y){ return;}
 		this.cursolx = pos.x; this.cursoly = pos.y;
 	},
-	getTCC : function(){ return bd.cnum(mf((this.cursolx-1)/2), mf((this.cursoly-1)/2));},
+	getTCC : function(){ return bd.cnum((this.cursolx-1)>>1, (this.cursoly-1)>>1);},
 	setTCC : function(id){
 		if(id<0 || bd.cellmax<=id){ return;}
 		this.cursolx = bd.cell[id].cx*2+1; this.cursoly = bd.cell[id].cy*2+1;
 	},
-	getTXC : function(){ return bd.xnum(mf(this.cursolx/2), mf(this.cursoly/2));},
+	getTXC : function(){ return bd.xnum(this.cursolx>>1, this.cursoly>>1);},
 	setTXC : function(id){
 		if(!k.iscross || id<0 || bd.crossmax<=id){ return;}
 		this.cursolx = bd.cross[id].cx*2; this.cursoly = bd.cross[id].cy*2;

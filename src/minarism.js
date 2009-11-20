@@ -92,8 +92,8 @@ Puzzles.minarism.prototype = {
 			if(tc.cursolx!=pos.x || tc.cursoly!=pos.y){
 				var tcx = tc.cursolx, tcy = tc.cursoly, flag = false;
 				tc.setTCP(pos);
-				pc.paint(mf(tcx/2)-1, mf(tcy/2)-1, mf(tcx/2)+1, mf(tcy/2)+1);
-				pc.paint(mf(pos.x/2)-1, mf(pos.y/2)-1, mf(pos.x/2), mf(pos.y/2));
+				pc.paint((tcx>>1)-1, (tcy>>1)-1, (tcx>>1)+1, (tcy>>1)+1);
+				pc.paint((pos.x>>1)-1, (pos.y>>1)-1, pos.x>>1, pos.y>>1);
 			}
 			else if(id!=-1){
 				this.inputbqnum(id);

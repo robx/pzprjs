@@ -79,7 +79,7 @@ Puzzles.bosanowa.prototype = {
 			if(pos.x==tcp.x&&pos.y==tcp.y){
 				var max = 255;
 				if((pos.x&1)&&(pos.y&1)){
-					var cc = bd.cnum(mf((pos.x-1)/2),mf((pos.y-1)/2));
+					var cc = bd.cnum((pos.x-1)>>1,(pos.y-1)>>1);
 					if(k.editmode){
 						if(this.btn.Left){
 							if     (bd.QuC(cc)==0)       { this.setval(cc,-1); bd.sQuC(cc,7);}
@@ -110,9 +110,9 @@ Puzzles.bosanowa.prototype = {
 			}
 			else{
 				tc.setTCP(pos);
-				pc.paint(mf(tcp.x/2)-1,mf(tcp.y/2)-1,mf(tcp.x/2)+1,mf(tcp.y/2)+1);
+				pc.paint((tcp.x>>1)-1,(tcp.y>>1)-1,(tcp.x>>1)+1,(tcp.y>>1)+1);
 			}
-			pc.paint(mf(pos.x/2)-1,mf(pos.y/2)-1,mf(pos.x/2)+1,mf(pos.y/2)+1);
+			pc.paint((pos.x>>1)-1,(pos.y>>1)-1,(pos.x>>1)+1,(pos.y>>1)+1);
 		};
 		mv.setval = function(cc,val){
 			if     (k.editmode){ bd.sQnC(cc,val);}
@@ -159,7 +159,7 @@ Puzzles.bosanowa.prototype = {
 			}
 			else{ return false;}
 
-			pc.paint(mf(tcp.x/2)-1,mf(tcp.y/2)-1,mf(tcp.x/2)+1,mf(tcp.y/2)+1);
+			pc.paint((tcp.x>>1)-1,(tcp.y>>1)-1,(tcp.x>>1)+1,(tcp.y>>1)+1);
 			return true;
 		};
 

@@ -88,14 +88,14 @@ Puzzles.shwolf.prototype = {
 					var bx1, bx2, by1, by2;
 					if(bd.border[id].cx%2==1){
 						var bx;
-						bx = bd.border[id].cx; while(bx>=0        ){ if(bd.QnX(bd.xnum(mf(bx/2)  ,mf(bd.border[id].cy/2)))==1){ bx-=2; break;} bx-=2;} bx1 = bx+2;
-						bx = bd.border[id].cx; while(bx<=2*k.qcols){ if(bd.QnX(bd.xnum(mf(bx/2)+1,mf(bd.border[id].cy/2)))==1){ bx+=2; break;} bx+=2;} bx2 = bx-2;
+						bx = bd.border[id].cx; while(bx>=0        ){ if(bd.QnX(bd.xnum((bx>>1)  ,bd.border[id].cy>>1))==1){ bx-=2; break;} bx-=2;} bx1 = bx+2;
+						bx = bd.border[id].cx; while(bx<=2*k.qcols){ if(bd.QnX(bd.xnum((bx>>1)+1,bd.border[id].cy>>1))==1){ bx+=2; break;} bx+=2;} bx2 = bx-2;
 						by1 = by2 = bd.border[id].cy;
 					}
 					else if(bd.border[id].cy%2==1){
 						var by;
-						by = bd.border[id].cy; while(by>=0        ){ if(bd.QnX(bd.xnum(mf(bd.border[id].cx/2),mf(by/2)  ))==1){ by-=2; break;} by-=2;} by1 = by+2;
-						by = bd.border[id].cy; while(by<=2*k.qrows){ if(bd.QnX(bd.xnum(mf(bd.border[id].cx/2),mf(by/2)+1))==1){ by+=2; break;} by+=2;} by2 = by-2;
+						by = bd.border[id].cy; while(by>=0        ){ if(bd.QnX(bd.xnum(bd.border[id].cx>>1,(by>>1)  ))==1){ by-=2; break;} by-=2;} by1 = by+2;
+						by = bd.border[id].cy; while(by<=2*k.qrows){ if(bd.QnX(bd.xnum(bd.border[id].cx>>1,(by>>1)+1))==1){ by+=2; break;} by+=2;} by2 = by-2;
 						bx1 = bx2 = bd.border[id].cx;
 					}
 					idlist = [];
@@ -316,7 +316,7 @@ Puzzles.shwolf.prototype = {
 			while(1){
 				switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 				if((bx+by)%2==0){
-					if(bd.QnX(bd.xnum(mf(bx/2),mf(by/2)))==1){
+					if(bd.QnX(bd.xnum(bx>>1,by>>1))==1){
 						if(bd.QaB(bd.bnum(bx,by-1))==1){ this.cl0(lines,bx,by,1);}
 						if(bd.QaB(bd.bnum(bx,by+1))==1){ this.cl0(lines,bx,by,2);}
 						if(bd.QaB(bd.bnum(bx-1,by))==1){ this.cl0(lines,bx,by,3);}

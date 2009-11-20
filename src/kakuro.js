@@ -111,13 +111,13 @@ Puzzles.kakuro.prototype = {
 		menu.ex.adjustSpecial  = menu.ex.adjustQues51_1;
 		menu.ex.adjustSpecial2 = menu.ex.adjustQues51_2;
 
-		tc.getTCX = function(){ return mf((tc.cursolx-1)/2);};
-		tc.getTCY = function(){ return mf((tc.cursoly-1)/2);};
+		tc.getTCX = function(){ return (tc.cursolx-1)>>1;};
+		tc.getTCY = function(){ return (tc.cursoly-1)>>1;};
 		tc.setAlign = function(){
 			if(k.playmode){
 				if(this.cursolx<1) this.cursolx = 1;
 				if(this.cursoly<1) this.cursoly = 1;
-				pc.paint(mf((this.cursolx-2)/2),mf((this.cursoly-2)/2),mf(this.cursolx/2),mf(this.cursoly/2));
+				pc.paint((this.cursolx-2)>>1,(this.cursoly-2)>>1,this.cursolx>>1,this.cursoly>>1);
 			}
 		};
 		tc.targetdir = 2;

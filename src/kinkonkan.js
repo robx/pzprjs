@@ -222,7 +222,7 @@ Puzzles.kinkonkan.prototype = {
 			um.enableRecord();
 		};
 
-		tc.getTCC = function(){ return ee.binder(tc, bd.exnum(mf((this.cursolx-1)/2), mf((this.cursoly-1)/2)));};
+		tc.getTCC = function(){ return ee.binder(tc, bd.exnum((this.cursolx-1)>>1, (this.cursoly-1)>>1));};
 		tc.setTCC = ee.binder(tc, function(id){
 			if(id<0 || 2*k.qcols+2*k.qrows+4<=id){ return;}
 			if     (id<  k.qcols)            { this.cursolx=2*id+1;           this.cursoly=this.miny;                 }

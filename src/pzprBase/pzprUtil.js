@@ -113,7 +113,7 @@ LineManager.prototype = {
 
 	branch    : function(bx,by){
 		if(!k.isLineCross){
-			return (this.lcntCell((k.isCenterLine?bd.cnum:bd.xnum)(mf(bx/2),mf(by/2)))>=3);
+			return (this.lcntCell((k.isCenterLine?bd.cnum:bd.xnum)(bx>>1,by>>1))>=3);
 		}
 		return false;
 	},
@@ -405,7 +405,7 @@ LineManager.prototype = {
 					if(bd.isLine(bd.bnum(bx+1,by))){ this.lc0(bx,by,4,newid);}
 					break;
 				}
-				else if(this.lcntCell((k.isCenterLine?bd.cnum:bd.xnum)(mf(bx/2),mf(by/2)))<=2){
+				else if(this.lcntCell((k.isCenterLine?bd.cnum:bd.xnum)(bx>>1,by>>1))<=2){
 					if     (dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
 					else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ dir=1;}
 					else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ dir=4;}

@@ -128,23 +128,23 @@ Graphic.prototype = {
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
 		if(bd.border[id].cx&1){
-			this.paint(mf((bd.border[id].cx-1)/2)-1, mf(bd.border[id].cy/2)-1,
-					   mf((bd.border[id].cx-1)/2)+1, mf(bd.border[id].cy/2)   );
+			this.paint(((bd.border[id].cx-1)>>1)-1, (bd.border[id].cy>>1)-1,
+					   ((bd.border[id].cx-1)>>1)+1, (bd.border[id].cy>>1)   );
 		}
 		else{
-			this.paint(mf(bd.border[id].cx/2)-1, mf((bd.border[id].cy-1)/2)-1,
-					   mf(bd.border[id].cx/2)  , mf((bd.border[id].cy-1)/2)+1 );
+			this.paint((bd.border[id].cx>>1)-1, ((bd.border[id].cy-1)>>1)-1,
+					   (bd.border[id].cx>>1)  , ((bd.border[id].cy-1)>>1)+1 );
 		}
 	},
 	paintLine : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
 		if(bd.border[id].cx&1){
-			this.paint(mf((bd.border[id].cx-1)/2), mf(bd.border[id].cy/2)-1,
-					   mf((bd.border[id].cx-1)/2), mf(bd.border[id].cy/2)   );
+			this.paint(((bd.border[id].cx-1)>>1), (bd.border[id].cy>>1)-1,
+					   ((bd.border[id].cx-1)>>1), (bd.border[id].cy>>1)   );
 		}
 		else{
-			this.paint(mf(bd.border[id].cx/2)-1, mf((bd.border[id].cy-1)/2),
-					   mf(bd.border[id].cx/2)  , mf((bd.border[id].cy-1)/2) );
+			this.paint((bd.border[id].cx>>1)-1, ((bd.border[id].cy-1)>>1),
+					   (bd.border[id].cx>>1)  , ((bd.border[id].cy-1)>>1) );
 		}
 	},
 	paintCell : function(cc){

@@ -384,8 +384,8 @@ Puzzles.slalom.prototype = {
 
 		line.repaintParts = function(id){
 			var bx = bd.border[id].cx; var by = bd.border[id].cy;
-			pc.drawStartpos(mf((bx-by%2)/2),mf((by-bx%2)/2),mf((bx-by%2)/2),mf((by-bx%2)/2));
-			pc.drawStartpos(mf((bx+by%2)/2),mf((by+bx%2)/2),mf((bx+by%2)/2),mf((by+bx%2)/2));
+			pc.drawStartpos((bx-by%2)>>1,(by-bx%2)>>1,(bx-by%2)>>1,(by-bx%2)>>1);
+			pc.drawStartpos((bx+by%2)>>1,(by+bx%2)>>1,(bx+by%2)>>1,(by+bx%2)>>1);
 		};
 
 		// Xキー押した時に数字を表示するメソッド

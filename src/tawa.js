@@ -141,8 +141,8 @@ Puzzles.tawa.prototype = {
 			else if(ca == k.KEYRT && tcx+mv <= tc.maxx){ tc.incTCX(mv); flag = true;}
 
 			if(flag){
-				pc.paint(tcx-1, mf(tcy/2)-1, tcx, mf(tcy/2));
-				pc.paint(tc.cursolx-1, mf(tc.cursoly/2)-1, tc.cursolx, mf(tc.cursoly/2));
+				pc.paint(tcx-1, (tcy>>1)-1, tcx, tcy>>1);
+				pc.paint(tc.cursolx-1, (tc.cursoly>>1)-1, tc.cursolx, tc.cursoly>>1);
 				this.tcMoved = true;
 			}
 			return flag;
@@ -235,19 +235,19 @@ Puzzles.tawa.prototype = {
 
 		// キー移動範囲のminx,maxx,miny,maxy設定関数オーバーライド
 		// このパズルに限って、やたらとtc.maxxが参照されます。。
-		tc.getTCC = ee.binder(tc, function(){ return bd.cnum(this.cursolx, mf((this.cursoly-1)/2));});
+		tc.getTCC = ee.binder(tc, function(){ return bd.cnum(this.cursolx, (this.cursoly-1)>>1);});
 		tc.setTCC = function(id){
 			if(id<0 || bd.cellmax<=id){ return;}
 			this.cursolx = bd.cell[id].cx; this.cursoly = bd.cell[id].cy*2+1;
 		};
 		tc.incTCY = function(mv){
 			this.cursoly+=mv;
-			if(this.cursolx==this.minx || (this.cursolx<this.maxx && mf(this.cursoly/2)%2==1)){ this.cursolx++;}
+			if(this.cursolx==this.minx || (this.cursolx<this.maxx && (this.cursoly>>1)%2==1)){ this.cursolx++;}
 			else{ this.cursolx--;}
 		};
 		tc.decTCY = function(mv){
 			this.cursoly-=mv;
-			if(this.cursolx==this.maxx || (this.cursolx>this.minx && mf(this.cursoly/2)%2==0)){ this.cursolx--;}
+			if(this.cursolx==this.maxx || (this.cursolx>this.minx && (this.cursoly>>1)%2==0)){ this.cursolx--;}
 			else{ this.cursolx++;}
 		};
 		tc.setAlign = function(){
@@ -256,7 +256,7 @@ Puzzles.tawa.prototype = {
 			this.maxx = (bd.lap==0?2*k.qcols-1:(bd.lap==3?2*k.qcols+1:2*k.qcols))-1;
 			this.maxy = 2*k.qrows-1;
 
-			if(bd.cnum(this.cursolx, mf(this.cursoly/2))==-1){ this.cursolx += (this.cursolx>0?-1:1);}
+			if(bd.cnum(this.cursolx, this.cursoly>>1)==-1){ this.cursolx += (this.cursolx>0?-1:1);}
 		};
 
 		// 各セルのcx,cy,px,py変数設定関数
@@ -292,16 +292,16 @@ Puzzles.tawa.prototype = {
 		bd.cnum2 = function(bx,cy,qc,qr){
 			if(cy<0||cy>qr-1||bx<0||bx>tc.maxx){ return -1;}
 			else if(this.lap==0){
-				if((bx+cy)%2==0 && (bx<=tc.maxx || cy%2==0)){ return mf((bx+cy*(2*qc-1))/2);}
+				if((bx+cy)%2==0 && (bx<=tc.maxx || cy%2==0)){ return (bx+cy*(2*qc-1))>>1;}
 			}
 			else if(this.lap==1){
-				if((bx+cy)%2==0 && (bx<=tc.maxx || cy%2==0)){ return mf(bx/2)+cy*qc;}
+				if((bx+cy)%2==0 && (bx<=tc.maxx || cy%2==0)){ return (bx>>1)+cy*qc;}
 			}
 			else if(this.lap==2){
-				if((bx+cy)%2==1 && (bx<=tc.maxx || cy%2==1)){ return mf(bx/2)+cy*qc;}
+				if((bx+cy)%2==1 && (bx<=tc.maxx || cy%2==1)){ return (bx>>1)+cy*qc;}
 			}
 			else if(this.lap==3){
-				if((bx+cy)%2==1 && (bx<=tc.maxx || cy%2==1)){ return mf((bx+cy*(2*qc+1))/2);}
+				if((bx+cy)%2==1 && (bx<=tc.maxx || cy%2==1)){ return (bx+cy*(2*qc+1))>>1;}
 			}
 			return -1;
 		};

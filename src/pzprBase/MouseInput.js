@@ -150,7 +150,7 @@ MouseEvent.prototype = {
 	},
 	crossid : function(){
 		var pos = this.crosspos(0.5);
-		return bd.xnum(mf(pos.x/2),mf(pos.y/2));
+		return bd.xnum(pos.x>>1,pos.y>>1);
 	},
 	cellpos : function(){	// crosspos(p,0)‚Å‚à‘ã‘Ö‚Í‚Å‚«‚é
 		return new Pos(mf(this.inputX/k.cwidth), mf(this.inputY/k.cheight));
@@ -496,7 +496,7 @@ MouseEvent.prototype = {
 		if(pos.x<(k.isoutsidecross==1?0:2) || pos.x>(k.isoutsidecross==1?2*k.qcols:2*k.qcols-2)){ return;}
 		if(pos.y<(k.isoutsidecross==1?0:2) || pos.y>(k.isoutsidecross==1?2*k.qrows:2*k.qrows-2)){ return;}
 
-		var cc = bd.xnum(mf(pos.x/2),mf(pos.y/2));
+		var cc = bd.xnum(pos.x>>1,pos.y>>1);
 
 		um.disCombine = 1;
 		bd.sQnX(cc,(bd.QnX(cc)==1)?-1:1);

@@ -305,8 +305,8 @@ Puzzles.shugaku.prototype = {
 			for(var by=Math.min(1,y1*2-2);by<=Math.max(2*k.qrows-1,y2*2+2);by++){
 				for(var bx=Math.min(1,x1*2-2);bx<=Math.max(2*k.qcols-1,x2*2+2);bx++){
 					if(!((bx+by)&1)){ continue;}
-					var a = bd.QaC( bd.cnum(mf((bx-by%2)/2), mf((by-bx%2)/2)) );
-					var b = bd.QaC( bd.cnum(mf((bx+by%2)/2), mf((by+bx%2)/2)) );
+					var a = bd.QaC( bd.cnum((bx-by%2)>>1, (by-bx%2)>>1) );
+					var b = bd.QaC( bd.cnum((bx+by%2)>>1, (by+bx%2)>>1) );
 					var vid = [header,bx,by].join("_");
 
 					if     ((bx&1) && !(isNaN(doma1[a])&&isNaN(domb1[b]))){
