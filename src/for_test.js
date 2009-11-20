@@ -8,24 +8,33 @@ var debug = {
 	testonly_func : function(){
 		menu.titlebarfunc(ee('bartest').el);
 
-		document.testform.starttest.onclick = ee.binder(this, this.presccheck);
+		document.testform.starttest.onclick = ee.binder(this, this.starttest);
 		document.testform.t1.onclick        = ee.binder(this, this.perfeval);
 		document.testform.t2.onclick        = ee.binder(this, this.painteval);
 		document.testform.t3.onclick        = ee.binder(this, this.resizeeval);
 
 		document.testform.filesave.onclick  = function(){ ee('testarea').el.value=''; debug.addTextarea(fio.fileencode(1).replace(/\//g,"\n"));};
 		document.testform.fileopen.onclick  = function(){ fio.fileopen(ee('testarea').el.value.split("\n"),1);};
-		document.testform.erasetext.onclick = function(e){ ee('testarea').el.value='';};
+		document.testform.erasetext.onclick = function(e){ ee('testarea').el.value=''; ee('testdiv').el.innerHTML = '';};
 		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
 		document.testform.perfload.onclick  = ee.binder(this, this.loadperf);
 
 		document.testform.perfload.display = (k.puzzleid!=='country' ? 'none' : 'inline');
+		
+		if(!ee('testdiv')){
+			var el = _doc.createElement('div');
+			el.id = 'testdiv';
+			el.style.textAlign  = 'left';
+			el.style.fontSize   = '8pt';
+			el.style.lineHeight = '100%';
+			_doc.body.appendChild(el);
+		}
 	},
 
 	keydown : function(ca){
 		if(ca=='F7'){ this.accheck1();  return true;}
-		if(kc.isCTRL && ca=='F8'){ this.disptest(0); return true;}
-		if(kc.isCTRL && ca=='F9'){ this.disptest(1); return true;}
+		if(kc.isCTRL && ca=='F8'){ this.disppoptest(); return true;}
+		if(kc.isCTRL && ca=='F9'){ this.starttest(); return true;}
 		if(kc.isCTRL && kc.isSHIFT && ca=='F10'){ this.all_test(); return true;}
 		return false;
 	},
@@ -49,7 +58,7 @@ var debug = {
 		}
 		var time = (new Date()).getTime() - old;
 
-		this.addTextarea("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
+		this.addTextarea("測定データ "+time+"ms / "+count+"回<BR>"+"平均時間   "+(time/count)+"ms")
 	},
 
 	loadperf : function(){
@@ -75,7 +84,6 @@ var debug = {
 			enc.parseURI_pzpr.apply(enc, [debug.urls[pnum][1]]);
 			enc.pzlinput.apply(enc);
 
-			ee('testarea').el.rows = "32";
 			var _pop_style = ee('poptest').el.style;
 			_pop_style.display = 'inline';
 			_pop_style.left = '40px';
@@ -131,21 +139,21 @@ var debug = {
 		this.addTextarea("\t\t\t[\""+ans.alstr.jp+"\",\""+outputstr+"\"],");
 	},
 
-	disptest : function(type){
+	disppoptest : function(){
 		var _pop_style = ee('poptest').el.style;
 		_pop_style.display = 'inline';
 		_pop_style.left = '40px';
 		_pop_style.top  = '80px';
-		if(type==1){ this.presccheck();}
+	},
+
+	starttest : function(){
+		ee('testarea').el.value = "";
+		ee('testdiv').el.innerHTML = "";
+		this.sccheck();
 	},
 
 	phase : 0,
-	presccheck : function(e){
-		ee('testarea').el.rows = "32";
-		ee('testarea').el.value = "";
-		this.sccheck(e);
-	},
-	sccheck : function(e){
+	sccheck : function(){
 		if(pp.getVal('autocheck')){ pp.setVal('autocheck',false);}
 		var n=0, alstr='', qstr='', mint=80, fint=50;
 		this.phase = 10;
@@ -167,7 +175,7 @@ var debug = {
 				// なぜかOperaはtextarea上の改行が実際の改行扱いになってしまうっぽい
 				if(k.br.Opera){ ta = ta.replace(/(\r|\n)/g,"");}
 
-				debug.addTextarea("Encode test   = "+(inp==ta?"pass":"failure...\n "+inp+"\n "+ta));
+				debug.addTextarea("Encode test   = "+(inp==ta?"pass":"failure...<BR> "+inp+"<BR> "+ta));
 
 				setTimeout(function(){
 					if(k.isKanpenExist){ debug.phase = 11;}
@@ -397,7 +405,7 @@ var debug = {
 		},mint);
 	},
 	taenable : true,
-	addTextarea : function(str){ if(this.taenable){ ee('testarea').el.value += (str+"\n");} },
+	addTextarea : function(str){ ee('testdiv').appendHTML(str).appendBR();},
 
 	qsubf : true,
 	bd_freezecopy : function(){
