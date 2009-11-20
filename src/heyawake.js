@@ -89,7 +89,25 @@ Puzzles.heyawake.prototype = {
 			};
 		}
 
-		bd.nummaxfunc = function(cc){ return Math.min(this.maxnum, area.getCntOfRoomByCell(cc));};
+		bd.maxnum = 255;
+		bd.nummaxfunc = function(cc){
+			var id = area.room.id[cc];
+			var d = ans.getSizeOfClist(area.room[id].clist,f_true);
+			var m=d.x2-d.x1+1, n=d.y2-d.y1+1; if(m>n){ var t=m;m=n;n=t;}
+			if     (m===1){ return mf((n+1)/2);}
+			else if(m===2){ return n;}
+			else if(m===3){
+				if     (n%4===0){ return (n  )/4*5  ;}
+				else if(n%4===1){ return (n-1)/4*5+2;}
+				else if(n%4===2){ return (n-2)/4*5+3;}
+				else            { return (n+1)/4*5  ;}
+			}
+			else{
+				if(((Math.log(m+1)/Math.log(2))%1===0)&&(m===n)){ return (m*n+m+n)/3;}
+				else if((m&1)&&(n&1)){ return mf((m*n+m+n-1)/3);}
+				else{ return mf((m*n+m+n-2)/3);}
+			}
+		};
 	},
 
 	//---------------------------------------------------------
@@ -281,12 +299,12 @@ Puzzles.heyawake.prototype = {
 				var cnt=-1;
 				for(var bx=1;bx<2*k.qcols;bx++){
 					if(bx%2==1){
-						if( bd.isWhite(bd.cnum( mf(bx/2),mf(by/2) )) && cnt==-1 ){ cnt=0; fx=bx;}
-						else if( bd.isBlack(bd.cnum( mf(bx/2),mf(by/2) )) ){ cnt=-1;}
+						if( bd.isWhite(bd.cnum(bx>>1,by>>1)) && cnt==-1 ){ cnt=0; fx=bx;}
+						else if( bd.isBlack(bd.cnum(bx>>1,by>>1)) ){ cnt=-1;}
 
 						if( cnt==2 ){
 							for(bx=fx;bx<2*k.qcols;bx+=2){
-								var cc = bd.cnum( mf(bx/2),mf(by/2) );
+								var cc = bd.cnum(bx>>1,by>>1);
 								if( bd.isWhite(cc) ){ bd.sErC([cc],1);}else{ break;}
 							}
 							return false;
@@ -301,12 +319,12 @@ Puzzles.heyawake.prototype = {
 				var cnt=-1;
 				for(var by=1;by<2*k.qrows;by++){
 					if(by%2==1){
-						if( bd.isWhite(bd.cnum( mf(bx/2),mf(by/2) )) && cnt==-1 ){ cnt=0; fy=by;}
-						else if( bd.isBlack(bd.cnum( mf(bx/2),mf(by/2) )) ){ cnt=-1;}
+						if( bd.isWhite(bd.cnum(bx>>1,by>>1)) && cnt==-1 ){ cnt=0; fy=by;}
+						else if( bd.isBlack(bd.cnum(bx>>1,by>>1)) ){ cnt=-1;}
 
 						if( cnt>=2 ){
 							for(by=fy;by<2*k.qrows;by+=2){
-								var cc = bd.cnum( mf(bx/2),mf(by/2) );
+								var cc = bd.cnum(bx>>1,by>>1);
 								if( bd.isWhite(cc) ){ bd.sErC([cc],1);}else{ break;}
 							}
 							return false;
