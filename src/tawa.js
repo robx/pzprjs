@@ -87,17 +87,16 @@ Puzzles.tawa.prototype = {
 			this.canvas.width  = k.p0.x*2 + k.qcols*k.cwidth + mf(bd.lap==0?0:(bd.lap==3?k.cwidth:k.cwidth/2));
 			this.canvas.height = k.p0.y*2 + k.qrows*k.cheight;
 
-			var rect = ee('puzzle_canvas').getRect();
-			k.cv_oft.x = rect.left;
-			k.cv_oft.y = rect.top;
-
-			// jQuery対応:初めにCanvas内のサイズが0になり、描画されない不具合への対処
-			// あれ？いらなくなる予定？
+			// VML使う時に、Canvas外の枠線が消えてしまうので残しておきます.
 			if(g.vml){
 				var fc = this.canvas.firstChild;
 				fc.style.width  = ''+this.canvas.clientWidth  + 'px';
 				fc.style.height = ''+this.canvas.clientHeight + 'px';
 			}
+
+			var rect = ee('puzzle_canvas').getRect();
+			k.cv_oft.x = rect.left;
+			k.cv_oft.y = rect.top;
 		};
 
 		this.newboard_html_original = document.newboard.innerHTML;
@@ -343,8 +342,9 @@ Puzzles.tawa.prototype = {
 					bd.setLap(slap);
 					bd.initBoardSize(col,row);
 
-					um.allerase();
 					menu.popclose();
+
+					um.allerase();
 					base.resize_canvas();				// Canvasを更新する
 				}
 			}

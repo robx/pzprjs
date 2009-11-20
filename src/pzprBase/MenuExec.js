@@ -44,9 +44,9 @@ MenuExec.prototype = {
 			}
 
 			if(col>0 && row>0){ bd.initBoardSize(col,row);}
-			um.allerase();
 			menu.popclose();
-			base.resetInfo();
+
+			base.resetInfo(true);
 			base.resize_canvas();				// Canvasを更新する
 		}
 	},
@@ -209,7 +209,7 @@ MenuExec.prototype = {
 			// reduceはここ必須
 			um.addOpe(k.BOARD, name, 0, 0, 1);
 
-			if(!um.undoExec){ base.resetInfo();}
+			if(!um.undoExec){ base.resetInfo(false);}
 			base.resize_canvas();				// Canvasを更新する
 		}
 	},
@@ -684,7 +684,7 @@ MenuExec.prototype = {
 			if(!g.vml){ pc.flushCanvasAll();}
 
 			bd.ansclear();
-			base.resetInfo();
+			base.resetInfo(false);
 			pc.paintAll();
 		}
 	},

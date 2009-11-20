@@ -210,6 +210,13 @@ PBase.prototype = {
 		this.canvas.width  = k.p0.x*2 + k.qcols*k.cwidth;
 		this.canvas.height = k.p0.y*2 + k.qrows*k.cheight;
 
+		// VML使う時に、Canvas外の枠線が消えてしまうので残しておきます.
+		if(g.vml){
+			var fc = this.canvas.firstChild;
+			fc.style.width  = ''+this.canvas.clientWidth  + 'px';
+			fc.style.height = ''+this.canvas.clientHeight + 'px';
+		}
+
 		// extendxell==1の時は上下の間隔を広げる (extendxell==2はdef_psizeで調整)
 		if(k.isextendcell==1){
 			k.p0.x += mf(k.cwidth*0.45);
@@ -224,13 +231,6 @@ PBase.prototype = {
 		bd.setposAll();
 
 		pc.onresize_func();
-
-		// VML使う時に、なんかCanvas外の枠線が消えてしまうので残しておきます.
-		if(g.vml){
-			var fc = this.canvas.firstChild;
-			fc.style.width  = ''+this.canvas.clientWidth  + 'px';
-			fc.style.height = ''+this.canvas.clientHeight + 'px';
-		}
 	},
 	resize_canvas : function(){
 		this.resize_canvas_only();
@@ -250,7 +250,8 @@ PBase.prototype = {
 		this.onresizenow = false;
 	},
 
-	resetInfo : function(){
+	resetInfo : function(iserase){
+		if(iserase){ um.allerase();}
 		tc.Adjust();
 		area.resetArea();
 		line.resetLcnts();

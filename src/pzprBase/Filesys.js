@@ -49,10 +49,9 @@ FileIO.prototype = {
 		um.disableRecord(); um.disableInfo();
 		var result = this.filedecode(array,type);
 		um.enableRecord(); um.enableInfo();
-		um.allerase();
 
 		if(result){
-			base.resetInfo();
+			base.resetInfo(true);
 			base.resize_canvas();
 		}
 	},

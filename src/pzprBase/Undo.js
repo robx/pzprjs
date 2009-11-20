@@ -161,7 +161,7 @@ UndoManager.prototype = {
 			this.reqReset=false;
 
 			bd.setposAll();
-			base.resetInfo();
+			base.resetInfo(false);
 			base.resize_canvas();
 		}
 		else{

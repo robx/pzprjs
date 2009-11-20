@@ -430,14 +430,14 @@ Board.prototype = {
 	},
 	bnum2 : function(cx,cy,qc,qr){
 		if(cx>=1&&cx<=qc*2-1&&cy>=1&&cy<=qr*2-1){
-			if     (!(cx&1) &&  (cy&1)){ return mf((cx-1)/2)+mf((cy-1)/2)*(qc-1);}
-			else if( (cx&1) && !(cy&1)){ return mf((cx-1)/2)+mf((cy-2)/2)*qc+(qc-1)*qr;}
+			if     (!(cx&1) &&  (cy&1)){ return ((cx-1)>>1)+((cy-1)>>1)*(qc-1);}
+			else if( (cx&1) && !(cy&1)){ return ((cx-1)>>1)+((cy-2)>>1)*qc+(qc-1)*qr;}
 		}
 		else if(k.isoutsideborder==1){
-			if     (cy===0   &&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+mf((cx-1)/2);}
-			else if(cy===2*qr&&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+mf((cx-1)/2);}
-			else if(cx===0   &&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+mf((cy-1)/2);}
-			else if(cx===2*qc&&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+mf((cy-1)/2);}
+			if     (cy===0   &&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+((cx-1)>>1);}
+			else if(cy===2*qr&&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+((cx-1)>>1);}
+			else if(cx===0   &&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+((cy-1)>>1);}
+			else if(cx===2*qc&&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+((cy-1)>>1);}
 		}
 		return -1;
 	},
@@ -485,16 +485,16 @@ Board.prototype = {
 	// bd.crosscc2() 境界線のすぐ下かすぐ右にある交差点のIDを返す
 	//---------------------------------------------------------------------------
 	cc1 : function(id){
-		return this.cnum(mf((bd.border[id].cx-(bd.border[id].cy%2))/2), mf((bd.border[id].cy-(bd.border[id].cx%2))/2) );
+		return this.cnum((bd.border[id].cx-bd.border[id].cy%2)>>1, (bd.border[id].cy-bd.border[id].cx%2)>>1);
 	},
 	cc2 : function(id){
-		return this.cnum(mf((bd.border[id].cx+(bd.border[id].cy%2))/2), mf((bd.border[id].cy+(bd.border[id].cx%2))/2) );
+		return this.cnum((bd.border[id].cx+bd.border[id].cy%2)>>1, (bd.border[id].cy+bd.border[id].cx%2)>>1);
 	},
 	crosscc1 : function(id){
-		return this.xnum(mf((bd.border[id].cx-(bd.border[id].cx%2))/2), mf((bd.border[id].cy-(bd.border[id].cy%2))/2) );
+		return this.xnum((bd.border[id].cx-bd.border[id].cx%2)>>1, (bd.border[id].cy-bd.border[id].cy%2)>>1);
 	},
 	crosscc2 : function(id){
-		return this.xnum(mf((bd.border[id].cx+(bd.border[id].cx%2))/2), mf((bd.border[id].cy+(bd.border[id].cy%2))/2) );
+		return this.xnum((bd.border[id].cx+bd.border[id].cx%2)>>1, (bd.border[id].cy+bd.border[id].cy%2)>>1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -565,12 +565,12 @@ Board.prototype = {
 	// sDiC / DiC : bd.setDirecCell()/ bd.getDirecCell() 該当するCellのdirecを設定する/返す
 	//---------------------------------------------------------------------------
 	// Cell関連Get/Set関数 <- 各Cellが持っているとメモリを激しく消費するのでここに置くこと.
+	// overwrite by pipelink.js and loopsp.js
 	sQuC : function(id, num) {
 		um.addOpe(k.CELL, k.QUES, id, this.cell[id].ques, num);
 		this.cell[id].ques = num;
-
-		if(k.puzzleid==="pipelink"||k.puzzleid==="loopsp"){ this.checkLPCombined(id);}
 	},
+	// overwrite by lightup.js
 	sQnC : function(id, num) {
 		if(k.dispzero===0 && num===0){ return;}
 
@@ -581,9 +581,8 @@ Board.prototype = {
 		if(um.isenableInfo() &&
 			(area.numberColony && (num!==-1 ^ area.bcell.id[id]!==-1))
 		){ area.setCell(id,(num!==-1?1:0));}
-
-		if(k.puzzleid==="lightup" && ((old===-1)^(num===-1))){ mv.paintAkari(id);}
 	},
+	// overwrite by lightup.js
 	sQaC : function(id, num) {
 		var old = this.cell[id].qans;
 		um.addOpe(k.CELL, k.QANS, id, old, num);
@@ -593,8 +592,6 @@ Board.prototype = {
 			(area.bblock && (num!==-1 ^ area.bcell.id[id]!==-1)) || 
 			(area.wblock && (num===-1 ^ area.wcell.id[id]!==-1))
 		)){ area.setCell(id,(num!==-1?1:0));}
-
-		if(k.puzzleid=="lightup" && ((old==1)^(num==1))){ mv.paintAkari(id);}
 	},
 	sQsC : function(id, num) {
 		um.addOpe(k.CELL, k.QSUB, id, this.cell[id].qsub, num);

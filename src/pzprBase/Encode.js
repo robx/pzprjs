@@ -160,9 +160,8 @@ Encode.prototype = {
 			um.enableRecord(); um.enableInfo();
 
 			bd.ansclear();
-			um.allerase();
 
-			base.resetInfo();
+			base.resetInfo(true);
 			base.resize_canvas_onload();
 		}
 	},
