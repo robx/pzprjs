@@ -165,26 +165,26 @@ Puzzles.kusabi.prototype = {
 				this.setAlert('ŠÛ‚Ìã‚ðü‚ª’Ê‰ß‚µ‚Ä‚¢‚Ü‚·B','A line goes through a circle.'); return false;
 			}
 
-			var saved = this.checkConnectedLine();
-			if( !this.checkErrorFlag(saved,7) ){
+			var errinfo = this.searchConnectedLine();
+			if( !this.checkErrorFlag(errinfo,7) ){
 				this.setAlert('ŠÛ‚ªƒR‚ÌŽšŒ^‚ÉŒq‚ª‚Á‚Ä‚¢‚Ü‚¹‚ñB','The shape of a line is not correct.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,6) ){
+			if( !this.checkErrorFlag(errinfo,6) ){
 				this.setAlert('Œq‚ª‚éŠÛ‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB','The type of connected circle is wrong.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,5) ){
+			if( !this.checkErrorFlag(errinfo,5) ){
 				this.setAlert('ü‚ª2‰ñˆÈã‹È‚ª‚Á‚Ä‚¢‚Ü‚·B','A line turns twice or more.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,4) ){
+			if( !this.checkErrorFlag(errinfo,4) ){
 				this.setAlert('ü‚ª2‰ñ‹È‚ª‚Á‚Ä‚¢‚Ü‚¹‚ñB','A line turns only once or lower.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,3) ){
+			if( !this.checkErrorFlag(errinfo,3) ){
 				this.setAlert('ü‚Ì’·‚³‚ª“¯‚¶‚Å‚Í‚ ‚è‚Ü‚¹‚ñB','The length of lines is differnet.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,2) ){
+			if( !this.checkErrorFlag(errinfo,2) ){
 				this.setAlert('ü‚Ì’·’Z‚ÌŽwŽ¦‚É”½‚µ‚Ä‚Ü‚·B','The length of lines is not suit for the label of object.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,1) ){
+			if( !this.checkErrorFlag(errinfo,1) ){
 				this.setAlert('“rØ‚ê‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B','There is a dead-end line.'); return false;
 			}
 
@@ -202,18 +202,21 @@ Puzzles.kusabi.prototype = {
 
 		ans.check2Line = function(){ return this.checkLine(function(i){ return (line.lcntCell(i)>=2 && bd.QnC(i)!=-1);}); };
 		ans.checkLine = function(func){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(func(c)){
-					bd.sErBAll(2);
+					if(this.inAutoCheck){ return false;}
+					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,true);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 
-		ans.checkConnectedLine = function(){
-			var saved = {errflag:0,cells:[],idlist:[]};
+		ans.searchConnectedLine = function(){
+			var errinfo = {data:[]};
+			//var saved = {errflag:0,cells:[],idlist:[]};
 			var visited = new AreaInfo();
 			for(var id=0;id<bd.bdmax;id++){ visited[id]=0;}
 
@@ -251,47 +254,46 @@ Puzzles.kusabi.prototype = {
 				}
 
 				if(idlist.length<=0){ continue;}
-				else if((cc==-1 || bd.QnC(cc)==-1) && saved.errflag==0){
-					saved = {errflag:1,cells:[c],idlist:idlist};
+				if(!((dir1==1&&dir==2)||(dir1==2&&dir==1)||(dir1==3&&dir==4)||(dir1==4&&dir==3)) && ccnt==2){
+					errinfo.data.push({errflag:7,cells:[c,cc],idlist:idlist}); continue;
 				}
-				else if((((bd.QnC(c)==2 || bd.QnC(cc)==3) && length1>=length2) ||
-						 ((bd.QnC(c)==3 || bd.QnC(cc)==2) && length1<=length2)) && ccnt==2 && cc!=-1 && saved.errflag<=1)
+				if(!((bd.QnC(c)==1 && bd.QnC(cc)==1) || (bd.QnC(c)==2 && bd.QnC(cc)==3) ||
+						  (bd.QnC(c)==3 && bd.QnC(cc)==2) || bd.QnC(c)==-2 || bd.QnC(cc)==-2) && cc!=-1 && ccnt==2)
 				{
-					saved = {errflag:2,cells:[c,cc],idlist:idlist};
+					errinfo.data.push({errflag:6,cells:[c,cc],idlist:idlist}); continue;
 				}
-				else if((bd.QnC(c)==1 || bd.QnC(cc)==1) && ccnt==2 && cc!=-1 && length1!=length2 && saved.errflag<=2){
-					saved = {errflag:3,cells:[c,cc],idlist:idlist};
+				if(ccnt>2){
+					errinfo.data.push({errflag:5,cells:[c,cc],idlist:idlist}); continue;
 				}
-				else if(ccnt<2 && cc!=-1 && saved.errflag<=3){
-					saved = {errflag:4,cells:[c,cc],idlist:idlist};
-					return saved;
+				if(ccnt<2 && cc!=-1){
+					errinfo.data.push({errflag:4,cells:[c,cc],idlist:idlist}); continue;
 				}
-				else if(ccnt>2 && saved.errflag<=3){
-					saved = {errflag:5,cells:[c,cc],idlist:idlist};
-					return saved;
+				if((bd.QnC(c)==1 || bd.QnC(cc)==1) && ccnt==2 && cc!=-1 && length1!=length2){
+					errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist}); continue;
 				}
-				else if(!((bd.QnC(c)==1 && bd.QnC(cc)==1) || (bd.QnC(c)==2 && bd.QnC(cc)==3) ||
-						  (bd.QnC(c)==3 && bd.QnC(cc)==2) || bd.QnC(c)==-2 || bd.QnC(cc)==-2) &&
-						   cc!=-1 && ccnt==2 && saved.errflag<=3)
+				if((((bd.QnC(c)==2 || bd.QnC(cc)==3) && length1>=length2) ||
+						 ((bd.QnC(c)==3 || bd.QnC(cc)==2) && length1<=length2)) && ccnt==2 && cc!=-1)
 				{
-					saved = {errflag:6,cells:[c,cc],idlist:idlist};
-					return saved;
+					errinfo.data.push({errflag:2,cells:[c,cc],idlist:idlist}); continue;
 				}
-				else if(!((dir1==1&&dir==2)||(dir1==2&&dir==1)||(dir1==3&&dir==4)||(dir1==4&&dir==3)) && ccnt==2 && saved.errflag<=3){
-					saved = {errflag:7,cells:[c,cc],idlist:idlist};
-					return saved;
+				if((cc==-1 || bd.QnC(cc)==-1)){
+					errinfo.data.push({errflag:1,cells:[c],idlist:idlist}); continue;
 				}
 			}
-			return saved;
+			return errinfo;
 		};
-		ans.checkErrorFlag = function(saved, val){
-			if(saved.errflag==val){
-				bd.sErC(saved.cells,1);
-				bd.sErBAll(2);
-				bd.sErB(saved.idlist,1);
-				return false;
+		ans.checkErrorFlag = function(errinfo, val){
+			var result = true;
+			for(var i=0,len=errinfo.data.length;i<len;i++){
+				if(errinfo.data[i].errflag!=val){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(errinfo.data[i].cells,1);
+				if(result){ bd.sErBAll(2);}
+				bd.sErB(errinfo.data[i].idlist,1);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 	}
 };

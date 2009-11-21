@@ -221,14 +221,16 @@ Puzzles.numlin.prototype = {
 		ans.check1Line = function(){ return this.checkLine(function(i){ return (line.lcntCell(i)==1 && bd.QnC(i)==-1);}); };
 		ans.check2Line = function(){ return this.checkLine(function(i){ return (line.lcntCell(i)>=2 && bd.QnC(i)!=-1);}); };
 		ans.checkLine = function(func){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(func(c)){
-					bd.sErBAll(2);
-					ans.setCellLineError(c,true);
-					return false;
-				}
+				if(!func(c)){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				if(result){ bd.sErBAll(2);}
+				ans.setCellLineError(c,true);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 	}
 };

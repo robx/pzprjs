@@ -246,6 +246,7 @@ Puzzles.wblink.prototype = {
 				this.setAlert('ü‚ªŒğ·‚µ‚Ä‚¢‚Ü‚·B','There is a crossing line.'); return false;
 			}
 
+			this.performAsLine = true;
 			var linfo = line.getLareaInfo();
 			if( !this.checkOneNumber(linfo, function(a,cnt){ return (cnt>=3);}, function(c){ return (bd.QuC(c)!=0);} ) ){
 				this.setAlert('3‚ÂˆÈã‚Ì›‚ªŒq‚ª‚Á‚Ä‚¢‚Ü‚·B','Three or more objects are connected.'); return false;
@@ -267,20 +268,21 @@ Puzzles.wblink.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkWBcircle = function(linfo,val){
+			var result = true;
 			for(var r=1;r<=linfo.max;r++){
-				var tip1=-1, tip2=-1;
-				if(linfo.room[r].idlist.length>1){
-					var tip1 = linfo.room[r].idlist[0];
-					var tip2 = linfo.room[r].idlist[linfo.room[r].idlist.length-1];
-					if(bd.QuC(tip1)==val && bd.QuC(tip2)==val){
-						bd.sErBAll(2);
-						ans.setErrLareaById(linfo,r,1);
-						bd.sErC([tip1,tip2],1);
-						return false;
-					}
-				}
+				if(linfo.room[r].idlist.length<=1){ continue;}
+
+				var tip1 = linfo.room[r].idlist[0];
+				var tip2 = linfo.room[r].idlist[linfo.room[r].idlist.length-1];
+				if(bd.QuC(tip1)!==val || bd.QuC(tip2)!==val){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				if(result){ bd.sErBAll(2);}
+				ans.setErrLareaById(linfo,r,1);
+				bd.sErC([tip1,tip2],1);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 	}
 };

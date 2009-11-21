@@ -85,4 +85,3 @@ view.js        v3.2.3
 wblink.js      v3.2.3
 yajikazu.js    v3.2.3
 yajirin.js     v3.2.3
-

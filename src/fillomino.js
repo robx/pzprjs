@@ -278,22 +278,33 @@ Puzzles.fillomino.prototype = {
 		ans.check1st = function(){ return (pp.getVal('enbnonum') || this.checkAllCell(bd.noNum));};
 
 		ans.checkAreaSize = function(rinfo, flag){
+			var result = true;
 			for(var id=1;id<=rinfo.max;id++){
 				var room = rinfo.room[id];
 				if(room.error==-1||room.number<=0){ continue;}
-				if     (flag==1 && room.number<room.idlist.length){ bd.sErC(room.idlist,1); return false;}
-				else if(flag==2 && room.number>room.idlist.length){ bd.sErC(room.idlist,1); return false;}
-			}
-			return true;
-		};
-		ans.checkErrorFlag = function(rinfo, val){
-			for(var id=1;id<=rinfo.max;id++){
-				if(rinfo.room[id].error==val){
-					bd.sErC(rinfo.room[id].idlist,1);
-					return false;
+				if     (flag==1 && room.number<room.idlist.length){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC(room.idlist,1);
+					result = false;
+				}
+				else if(flag==2 && room.number>room.idlist.length){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC(room.idlist,1);
+					result = false;
 				}
 			}
-			return true;
+			return result;
+		};
+		ans.checkErrorFlag = function(rinfo, val){
+			var result = true;
+			for(var id=1;id<=rinfo.max;id++){
+				if(rinfo.room[id].error==val){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC(rinfo.room[id].idlist,1);
+					result = false;
+				}
+			}
+			return result;
 		};
 
 		ans.searchRarea2 = function(){

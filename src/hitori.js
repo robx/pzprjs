@@ -204,19 +204,25 @@ Puzzles.hitori.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkRowsCols = function(){
-			var cx, cy;
+			var cx, cy, result = true;
 
 			for(var cy=0;cy<k.qrows;cy++){
 				var clist = [];
 				for(var cx=0;cx<k.qcols;cx++){ if(bd.isWhite(bd.cnum(cx,cy))){ clist.push(bd.cnum(cx,cy));}}
-				if(!this.checkDifferentNumberInClist(clist)){ return false;}
+				if(!this.checkDifferentNumberInClist(clist)){
+					if(this.inAutoCheck){ return false;}
+					result = false;
+				}
 			}
 			for(var cx=1;cx<k.qcols;cx++){
 				var clist = [];
 				for(var cy=0;cy<k.qrows;cy++){ if(bd.isWhite(bd.cnum(cx,cy))){ clist.push(bd.cnum(cx,cy));}}
-				if(!this.checkDifferentNumberInClist(clist)){ return false;}
+				if(!this.checkDifferentNumberInClist(clist)){
+					if(this.inAutoCheck){ return false;}
+					result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkDifferentNumberInClist = function(clist){
 			var d = [];

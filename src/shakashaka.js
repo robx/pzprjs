@@ -271,15 +271,17 @@ Puzzles.shakashaka.prototype = {
 		ans.isTri = function(c){ return (bd.QaC(c)!=-1);};
 
 		ans.checkWhiteArea = function(){
+			var result = true;
 			var winfo = this.searchWarea_slope();
 			for(var id=1;id<=winfo.max;id++){
 				var d = this.getSizeOfClist(winfo.room[id].idlist,function(cc){ return (bd.QaC(cc)==-1);});
 				if((d.x2-d.x1+1)*(d.y2-d.y1+1)!=d.cnt && !this.isAreaRect_slope(winfo,id)){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(winfo.room[id].idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		// ŽÎ‚ß—Ìˆæ”»’è—p
 		ans.isAreaRect_slope = function(winfo,id){

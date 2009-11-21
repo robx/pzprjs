@@ -148,20 +148,23 @@ Puzzles.nuribou.prototype = {
 		};
 
 		ans.checkCorners = function(binfo){
-			var cc1, cc2;
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.cell[c].cx==k.qcols-1 || bd.cell[c].cy==k.qrows-1){ continue;}
+
 				var cc1, cc2;
 				if     ( bd.isBlack(c) && bd.isBlack(c+k.qcols+1) ){ cc1 = c; cc2 = c+k.qcols+1;}
 				else if( bd.isBlack(c+1) && bd.isBlack(c+k.qcols) ){ cc1 = c+1; cc2 = c+k.qcols;}
 				else{ continue;}
+
 				if(binfo.room[binfo.id[cc1]].idlist.length == binfo.room[binfo.id[cc2]].idlist.length){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(binfo.room[binfo.id[cc1]].idlist,1);
 					bd.sErC(binfo.room[binfo.id[cc2]].idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

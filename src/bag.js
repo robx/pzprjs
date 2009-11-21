@@ -180,15 +180,18 @@ Puzzles.bag.prototype = {
 			return icheck;
 		};
 		ans.checkNumberInside = function(icheck){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(icheck[c]==-1 && bd.QnC(c)!=-1){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkCellNumber = function(icheck){
+			var result = true;
 			for(var cc=0;cc<bd.cellmax;cc++){
 				if(bd.QnC(cc)<0){ continue;}
 
@@ -206,11 +209,12 @@ Puzzles.bag.prototype = {
 				while(ty<k.qrows){ var c=bd.cnum(tx,ty); if(icheck[c]!=-1){ cnt++; list.push(c); ty++;} else{ break;} }
 
 				if(bd.QnC(cc)!=cnt){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(list,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

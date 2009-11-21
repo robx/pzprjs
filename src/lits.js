@@ -206,7 +206,7 @@ Puzzles.lits.prototype = {
 		};
 
 		ans.checkTetromino = function(rinfo){
-			var tinfo = new AreaInfo();
+			var tinfo = new AreaInfo(), result = true;
 			for(var c=0;c<bd.cellmax;c++){ tinfo.id[c]=-1;}
 			for(var r=1;r<=rinfo.max;r++){
 				var bcells = [];
@@ -236,8 +236,13 @@ Puzzles.lits.prototype = {
 				dinfo.room[dinfo.max] = {idlist:[]};
 				this.st0(dinfo, c, dinfo.max, tinfo);
 			}
-			for(var r=1;r<=dinfo.max;r++){ if(dinfo.room[r].idlist.length>4){ bd.sErC(dinfo.room[r].idlist,2); return false;} }
-			return true;
+			for(var r=1;r<=dinfo.max;r++){
+				if(dinfo.room[r].idlist.length<=4){ continue;}
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(dinfo.room[r].idlist,2);
+				result = false;
+			}
+			return result;
 		};
 		ans.st0 = function(dinfo,c,id,tinfo){
 			if(dinfo.id[c]!=0){ return;}

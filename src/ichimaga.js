@@ -7,7 +7,7 @@ Puzzles.ichimaga.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake = 1;			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
 		k.iscross      = 0;		// 1:Crossが操作可能なパズル
 		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
@@ -179,11 +179,11 @@ Puzzles.ichimaga.prototype = {
 				this.setAlert('線が交差しています。', 'There is a crossing line.'); return false;
 			}
 
-			var saved = this.checkFireflies();
-			if( !this.checkErrorFlag(saved,3) ){
+			var errinfo = this.searchFireflies();
+			if( !this.checkErrorFlag(errinfo,3) ){
 				this.setAlert('同じ数字同士が線で繋がっています。', 'Same numbers are connected each other.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,2) ){
+			if( !this.checkErrorFlag(errinfo,2) ){
 				this.setAlert('線が2回以上曲がっています。', 'The number of curves is twice or more.'); return false;
 			}
 
@@ -192,7 +192,7 @@ Puzzles.ichimaga.prototype = {
 				this.setAlert('線が全体で一つながりになっていません。', 'All lines and circles are not connected each other.'); return false;
 			}
 
-			if( !this.checkErrorFlag(saved,1) ){
+			if( !this.checkErrorFlag(errinfo,1) ){
 				this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
 			}
 
@@ -217,20 +217,22 @@ Puzzles.ichimaga.prototype = {
 
 		ans.checkLcntCell = function(val){
 			if(line.ltotal[val]==0){ return true;}
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)==-1 && line.lcntCell(c)==val){
-					bd.sErBAll(2);
-					this.setCellLineError(c,false);
-					return false;
-				}
+				if(bd.QnC(c)!==-1 || line.lcntCell(c)!==val){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				if(result){ bd.sErBAll(2);}
+				this.setCellLineError(c,false);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 
-		ans.checkFireflies = function(){
-			var saved = {errflag:0,cells:[],idlist:[],check:[]};
+		ans.searchFireflies = function(){
+			var errinfo = {data:[],check:[]};
 			var visited = [];
-			for(var i=0;i<bd.bdmax;i++){ saved.check[i]=0; visited[i]=0;}
+			for(var i=0;i<bd.bdmax;i++){ errinfo.check[i]=0; visited[i]=0;}
 
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1){ continue;}
@@ -264,33 +266,34 @@ Puzzles.ichimaga.prototype = {
 						}
 					}
 
-					for(var i=0;i<idlist.length;i++){ saved.check[idlist[i]]=2;}
+					for(var i=0;i<idlist.length;i++){ errinfo.check[idlist[i]]=2;}
 
 					var cc = bd.cnum(bx>>1,by>>1);
-					if(idlist.length>0 && (bx+by)%2==1 && saved.errflag==0){
-						saved = {errflag:1,cells:[c],idlist:idlist,check:saved.check};
+					if(this.ismag() && bd.QnC(c)!=-2 && bd.QnC(c)==bd.QnC(cc)){
+						errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist}); continue;
 					}
-					else if(idlist.length>0 && (bx+by)%2==0 && bd.QnC(c)!=-2 && ccnt>1 && saved.errflag<=1){
-						saved = {errflag:2,cells:[c,cc],idlist:idlist,check:saved.check};
-						if(!this.ismag()){ return saved;}
+					if(idlist.length>0 && (bx+by)%2==0 && bd.QnC(c)!=-2 && ccnt>1){
+						errinfo.data.push({errflag:2,cells:[c,cc],idlist:idlist}); continue;
 					}
-					else if(this.ismag() && bd.QnC(c)!=-2 && bd.QnC(c)==bd.QnC(cc) && saved.errflag<=2 )
-					{
-						saved = {errflag:3,cells:[c,cc],idlist:idlist,check:saved.check};
-						return saved;
+					if(idlist.length>0 && (bx+by)%2==1){
+						errinfo.data.push({errflag:1,cells:[c],idlist:idlist}); continue;
 					}
 				}
 			}
-			return saved;
+			return errinfo;
 		};
-		ans.checkErrorFlag = function(saved, val){
-			if(saved.errflag==val){
-				bd.sErC(saved.cells,1);
-				bd.sErBAll(2);
-				bd.sErB(saved.idlist,1);
-				return false;
+		ans.checkErrorFlag = function(errinfo, val){
+			var result = true;
+			for(var i=0,len=errinfo.data.length;i<len;i++){
+				if(errinfo.data[i].errflag!=val){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(errinfo.data[i].cells,1);
+				if(result){ bd.sErBAll(2);}
+				bd.sErB(errinfo.data[i].idlist,1);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 
 		ans.checkConnectedLine = function(){
@@ -315,7 +318,7 @@ Puzzles.ichimaga.prototype = {
 		ans.cl0 = function(check,bx,by,dir){
 			while(1){
 				switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-				if((bx+by)%2==0){
+				if(!((bx+by)&1)){
 					if(bd.QnC(bd.cnum(bx>>1,by>>1))!=-1){
 						if(bd.isLine(bd.bnum(bx,by-1))){ this.cl0(check,bx,by,1);}
 						if(bd.isLine(bd.bnum(bx,by+1))){ this.cl0(check,bx,by,2);}

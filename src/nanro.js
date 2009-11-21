@@ -304,13 +304,15 @@ Puzzles.nanro.prototype = {
 		//check1st : function(){ return ans.checkOneArea( ans.searchBWarea(function(id){ return (id!=-1 && puz.getNum(id)!=-1); }) );},
 
 		ans.checkErrorFlag = function(rinfo, val){
+			var result = true;
 			for(var id=1;id<=rinfo.max;id++){
-				if(rinfo.room[id].error==val){
-					bd.sErC(rinfo.room[id].idlist,1);
-					return false;
-				}
+				if(rinfo.room[id].error!==val){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(rinfo.room[id].idlist,1);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 
 		ans.searchRarea2 = function(){

@@ -178,6 +178,7 @@ Puzzles.view.prototype = {
 		};
 
 		ans.checkCellNumber = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(!bd.isValidNum(c)){ continue;}
 
@@ -195,12 +196,13 @@ Puzzles.view.prototype = {
 				while(ty<k.qrows){ var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!=1){ cnt++; list.push(cc); ty++;} else{ break;} }
 
 				if(bd.getNum(c)!=cnt){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
 					bd.sErC(list,2);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

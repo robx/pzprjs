@@ -249,6 +249,7 @@ Puzzles.mejilink.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkdir4Line_meji = function(val){
+			var result = true;
 			for(var cy=0;cy<=k.qrows;cy++){
 				for(var cx=0;cx<=k.qcols;cx++){
 					var cnt = 0;
@@ -257,15 +258,17 @@ Puzzles.mejilink.prototype = {
 					if(bd.isLine(bd.bnum(cx*2  ,cy*2-1))){ cnt++;}
 					if(bd.isLine(bd.bnum(cx*2  ,cy*2+1))){ cnt++;}
 					if(cnt==val){
-						bd.sErBAll(2);
+						if(this.inAutoCheck){ return false;}
+						if(result){ bd.sErBAll(2);}
 						ans.setCrossBorderError(cx,cy);
-						return false;
+						result = false;
 					}
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkDotLength = function(){
+			var result = true;
 			var tarea = new AreaInfo();
 			for(var cc=0;cc<bd.cellmax;cc++){ tarea.id[cc]=0;}
 			for(var cc=0;cc<bd.cellmax;cc++){
@@ -293,11 +296,12 @@ Puzzles.mejilink.prototype = {
 			}
 			for(var r=1;r<=tarea.max;r++){
 				if(tcount[r]>=0 && tcount[r]!=tarea.room[r].idlist.length){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(tarea.room[r].idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

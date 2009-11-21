@@ -299,7 +299,7 @@ Puzzles.lightup.prototype = {
 		};
 
 		ans.checkRowsCols = function(){
-			var fx, fy;
+			var fx, fy, result = true;
 			for(var cy=0;cy<k.qrows;cy++){
 				var cnt=0;
 				for(var cx=0;cx<k.qcols;cx++){
@@ -307,12 +307,13 @@ Puzzles.lightup.prototype = {
 					else if( bd.QaC(bd.cnum(cx,cy))==1 ){ cnt++; if(cnt==1){ fx=cx;} }
 
 					if( cnt>=2 ){
+						if(this.inAutoCheck){ return false;}
 						for(var cx=fx;cx<k.qcols;cx++){
 							var cc = bd.cnum(cx,cy);
 							if( bd.QnC(cc)!=-1 ){ break;}
 							else if( bd.QaC(cc)==1 ){ bd.sErC([cc],4);}
 						}
-						return false;
+						result = false;
 					}
 				}
 			}
@@ -323,17 +324,18 @@ Puzzles.lightup.prototype = {
 					else if( bd.QaC(bd.cnum(cx,cy))==1 ){ cnt++; if(cnt==1){ fy=cy;} }
 
 					if( cnt>=2 ){
+						if(this.inAutoCheck){ return false;}
 						for(var cy=fy;cy<k.qrows;cy++){
 							var cc = bd.cnum(cx,cy);
 							if( bd.QnC(cc)!=-1 ){ break;}
 							else if( bd.QaC(cc)==1 ){ bd.sErC([cc],4);}
 						}
-						return false;
+						result = false;
 					}
 				}
 			}
 
-			return true;
+			return result;
 		};
 	}
 };

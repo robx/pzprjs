@@ -335,7 +335,7 @@ Puzzles.triplace.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var tiles = this.checkTileInfo();
+			var tiles = this.getTileInfo();
 			if( !this.checkAllArea(tiles, f_true, function(w,h,a){ return (a>=3);} ) ){
 				this.setAlert('サイズが3マスより小さいブロックがあります。','The size of block is smaller than two.'); return false;
 			}
@@ -351,7 +351,7 @@ Puzzles.triplace.prototype = {
 			return true;
 		};
 
-		ans.checkTileInfo = function(){
+		ans.getTileInfo = function(){
 			var tinfo = new AreaInfo();
 			for(var c=0;c<bd.cellmax;c++){ tinfo.id[c]=(bd.QuC(c)!=51?0:-1);}
 			for(var c=0;c<bd.cellmax;c++){

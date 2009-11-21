@@ -154,6 +154,7 @@ Puzzles.cojun.prototype = {
 		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
 
 		ans.checkDifferentNumber = function(rinfo){
+			var result = true;
 			for(var r=1;r<=rinfo.max;r++){
 				var d = [];
 				for(var i=1;i<=bd.maxnum;i++){ d[i]=-1;}
@@ -162,22 +163,25 @@ Puzzles.cojun.prototype = {
 					if     (val==-1 || val==-2){ continue;}
 					else if(d[val]==-1){ d[val] = rinfo.room[r].idlist[i]; continue;}
 
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(rinfo.room[r].idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkUpperNumber = function(rinfo){
+			var result = true;
 			for(var c=0;c<bd.cellmax-k.qcols;c++){
 				var dc = bd.dn(c);
 				if(rinfo.id[c]!=rinfo.id[dc] || !bd.isNum(c) || !bd.isNum(dc)){ continue;}
 				if(bd.getNum(dc)>bd.getNum(c)){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c,dc],1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

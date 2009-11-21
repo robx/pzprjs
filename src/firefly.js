@@ -7,7 +7,7 @@ Puzzles.firefly.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake = 1;			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
 		k.iscross      = 0;		// 1:Crossが操作可能なパズル
 		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
@@ -187,14 +187,14 @@ Puzzles.firefly.prototype = {
 				this.setAlert('線が交差しています。', 'There is a crossing line.'); return false;
 			}
 
-			var saved = this.checkFireflies();
-			if( !this.checkErrorFlag(saved,3) ){
+			var errinfo = this.searchFireflies();
+			if( !this.checkErrorFlag(errinfo,3) ){
 				this.setAlert('黒点同士が線で繋がっています。', 'Black points are connected each other.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,2) ){
+			if( !this.checkErrorFlag(errinfo,2) ){
 				this.setAlert('線の曲がった回数が数字と違っています。', 'The number of curves is different from a firefly\'s number.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,1) ){
+			if( !this.checkErrorFlag(errinfo,1) ){
 				this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
 			}
 
@@ -211,7 +211,7 @@ Puzzles.firefly.prototype = {
 				this.setAlert('ホタルから線が出ていません。', 'There is a lonely firefly.'); return false;
 			}
 
-			if( !this.checkStrangeLine(saved) ){
+			if( !this.checkStrangeLine(errinfo) ){
 				this.setAlert('白丸の、黒点でない部分どうしがくっついています。', 'Fireflies are connected without a line starting from black point.'); return false;
 			}
 
@@ -221,32 +221,36 @@ Puzzles.firefly.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkLcntCell = function(val){
+			var result = true;
 			if(line.ltotal[val]==0){ return true;}
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 && line.lcntCell(c)==val){
-					bd.sErBAll(2);
+					if(this.inAutoCheck){ return false;}
+					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,false);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkFireflyBeam = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 || bd.DiC(c)==0){ continue;}
 				if((bd.DiC(c)==k.UP && !bd.isLine(bd.ub(c))) || (bd.DiC(c)==k.DN && !bd.isLine(bd.db(c))) ||
 				   (bd.DiC(c)==k.LT && !bd.isLine(bd.lb(c))) || (bd.DiC(c)==k.RT && !bd.isLine(bd.rb(c))) )
 				{
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
-		ans.checkStrangeLine = function(saved){
+		ans.checkStrangeLine = function(errinfo){
 			var idlist = [];
 			for(var id=0;id<bd.bdmax;id++){
-				if(bd.isLine(id) && saved.check[id]!=2){ idlist.push(id);}
+				if(bd.isLine(id) && errinfo.check[id]!=2){ idlist.push(id);}
 			}
 			if(idlist.length>0){
 				bd.sErBAll(2);
@@ -256,9 +260,9 @@ Puzzles.firefly.prototype = {
 			return true;
 		};
 
-		ans.checkFireflies = function(){
-			var saved = {errflag:0,cells:[],idlist:[],check:[]};
-			for(var i=0;i<bd.bdmax;i++){ saved.check[i]=0;}
+		ans.searchFireflies = function(){
+			var errinfo={data:[],check:[]};
+			for(var i=0;i<bd.bdmax;i++){ errinfo.check[i]=0;}
 
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 || bd.DiC(c)==0){ continue;}
@@ -284,32 +288,35 @@ Puzzles.firefly.prototype = {
 					}
 				}
 
-				for(var i=0;i<idlist.length;i++){ saved.check[idlist[i]]=2;}
+				for(var i=0;i<idlist.length;i++){ errinfo.check[idlist[i]]=2;}
 
 				var cc = bd.cnum(bx>>1,by>>1);
-				if(idlist.length>0 && ((bx+by)&1) && saved.errflag==0){
-					saved = {errflag:1,cells:[c],idlist:idlist,check:saved.check};
-				}
-				else if(idlist.length>0 && (!((bx+by)&1)) && bd.QnC(c)!=-2 && bd.QnC(c)!=ccnt && saved.errflag<=1){
-					saved = {errflag:2,cells:[c],idlist:idlist,check:saved.check};
-				}
-				else if(((bd.DiC(cc)==k.UP && dir==k.DN) || (bd.DiC(cc)==k.DN && dir==k.UP) ||
-						 (bd.DiC(cc)==k.LT && dir==k.RT) || (bd.DiC(cc)==k.RT && dir==k.LT) ) && (!((bx+by)&1)) && saved.errflag<=2 )
+				if(((bd.DiC(cc)==k.UP && dir==k.DN) || (bd.DiC(cc)==k.DN && dir==k.UP) ||
+					(bd.DiC(cc)==k.LT && dir==k.RT) || (bd.DiC(cc)==k.RT && dir==k.LT) ) && (!((bx+by)&1)))
 				{
-					saved = {errflag:3,cells:[c,cc],idlist:idlist,check:saved.check};
-					return saved;
+					errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist}); continue;
+				}
+				if(idlist.length>0 && (!((bx+by)&1)) && bd.QnC(c)!=-2 && bd.QnC(c)!=ccnt){
+					errinfo.data.push({errflag:2,cells:[c],idlist:idlist}); continue;
+				}
+				if(idlist.length>0 && ((bx+by)&1)){
+					errinfo.data.push({errflag:1,cells:[c],idlist:idlist}); continue;
 				}
 			}
-			return saved;
+			return errinfo;
 		};
-		ans.checkErrorFlag = function(saved, val){
-			if(saved.errflag==val){
-				bd.sErC(saved.cells,1);
-				bd.sErBAll(2);
-				bd.sErB(saved.idlist,1);
-				return false;
+		ans.checkErrorFlag = function(errinfo, val){
+			var result = true;
+			for(var i=0,len=errinfo.data.length;i<len;i++){
+				if(errinfo.data[i].errflag!=val){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(errinfo.data[i].cells,1);
+				if(result){ bd.sErBAll(2);}
+				bd.sErB(errinfo.data[i].idlist,1);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 	}
 };

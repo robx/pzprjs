@@ -277,6 +277,7 @@ Puzzles.hakoiri.prototype = {
 		};
 
 		ans.checkDifferentObjectInRoom = function(rinfo){
+			result = true;
 			for(var r=1;r<=rinfo.max;r++){
 				var d = [];
 				d[-2]=0; d[1]=0; d[2]=0; d[3]=0;
@@ -284,23 +285,33 @@ Puzzles.hakoiri.prototype = {
 					var val = bd.getNum(rinfo.room[r].idlist[i]);
 					if(val==-1){ continue;}
 
-					if(d[val]==0){ d[val]++;}
-					else if(d[val]>0){ bd.sErC(rinfo.room[r].idlist,1); return false;}
+					if(d[val]==0){ d[val]++; continue;}
+
+					if(this.inAutoCheck){ return false;}
+					bd.sErC(rinfo.room[r].idlist,1);
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkAroundMarks = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.getNum(c)<0){ continue;}
-				var cx = bd.cell[c].cx; var cy = bd.cell[c].cy; var target=0;
+				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, target=0, clist=[c];
 				var func = function(cc){ return (cc!=-1 && bd.getNum(c)==bd.getNum(cc));};
-				target = bd.cnum(cx+1,cy  ); if(func(target)){ bd.sErC([c,target],1); return false;}
-				target = bd.cnum(cx  ,cy+1); if(func(target)){ bd.sErC([c,target],1); return false;}
-				target = bd.cnum(cx-1,cy+1); if(func(target)){ bd.sErC([c,target],1); return false;}
-				target = bd.cnum(cx+1,cy+1); if(func(target)){ bd.sErC([c,target],1); return false;}
+				target = bd.cnum(cx+1,cy  ); if(func(target)){ clist.push(target);}
+				target = bd.cnum(cx  ,cy+1); if(func(target)){ clist.push(target);}
+				target = bd.cnum(cx-1,cy+1); if(func(target)){ clist.push(target);}
+				target = bd.cnum(cx+1,cy+1); if(func(target)){ clist.push(target);}
+
+				if(clist.length>1){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC(clist,1);
+					result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

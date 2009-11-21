@@ -175,19 +175,25 @@ Puzzles.factors.prototype = {
 		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QaC(c)==-1);});};
 
 		ans.checkRowsCols = function(){
-			var cx, cy;
+			var cx, cy, result = true;
 
 			for(var cy=0;cy<k.qrows;cy++){
 				var clist = [];
 				for(var cx=0;cx<k.qcols;cx++){ clist.push(bd.cnum(cx,cy));}
-				if(!this.checkDifferentNumberInClist(clist)){ return false;}
+				if(!this.checkDifferentNumberInClist(clist)){
+					if(this.inAutoCheck){ return false;}
+					result = false;
+				}
 			}
 			for(var cx=1;cx<k.qcols;cx++){
 				var clist = [];
 				for(var cy=0;cy<k.qrows;cy++){ clist.push(bd.cnum(cx,cy));}
-				if(!this.checkDifferentNumberInClist(clist)){ return false;}
+				if(!this.checkDifferentNumberInClist(clist)){
+					if(this.inAutoCheck){ return false;}
+					result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkDifferentNumberInClist = function(clist){
 			var d = [];
@@ -204,6 +210,7 @@ Puzzles.factors.prototype = {
 		};
 
 		ans.checkRoomNumber = function(rinfo){
+			var result = true;
 			for(var id=1;id<=rinfo.max;id++){
 				var product = 1;
 				for(var i=0;i<rinfo.room[id].idlist.length;i++){
@@ -213,11 +220,12 @@ Puzzles.factors.prototype = {
 				if(product==0){ continue;}
 
 				if(product!=bd.QnC(area.getTopOfRoom(id))){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(rinfo.room[id].idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

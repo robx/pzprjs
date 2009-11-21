@@ -150,26 +150,26 @@ Puzzles.yajikazu.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkArrowNumber = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)<0 || bd.DiC(c)==0 || bd.isBlack(c)){ continue;}
 				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, dir = bd.DiC(c);
-				var cnt=0;
-				if     (dir==k.UP){ cy--; while(cy>=0     ){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cy--;} }
-				else if(dir==k.DN){ cy++; while(cy<k.qrows){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cy++;} }
-				else if(dir==k.LT){ cx--; while(cx>=0     ){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cx--;} }
-				else if(dir==k.RT){ cx++; while(cx<k.qcols){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cx++;} }
+				var cnt=0, clist = [];
+				if     (dir==k.UP){ cy--; while(cy>=0     ){ clist.push(bd.cnum(cx,cy)); cy--;} }
+				else if(dir==k.DN){ cy++; while(cy<k.qrows){ clist.push(bd.cnum(cx,cy)); cy++;} }
+				else if(dir==k.LT){ cx--; while(cx>=0     ){ clist.push(bd.cnum(cx,cy)); cx--;} }
+				else if(dir==k.RT){ cx++; while(cx<k.qcols){ clist.push(bd.cnum(cx,cy)); cx++;} }
+
+				for(var i=0;i<clist.length;i++){ if(bd.isBlack(clist[i])){ cnt++;} }
 
 				if(bd.QnC(c)!=cnt){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
-					cx = bd.cell[c].cx, cy = bd.cell[c].cy;
-					if     (dir==k.UP){ cy--; while(cy>=0     ){ bd.sErC([bd.cnum(cx,cy)],1); cy--;} }
-					else if(dir==k.DN){ cy++; while(cy<k.qrows){ bd.sErC([bd.cnum(cx,cy)],1); cy++;} }
-					else if(dir==k.LT){ cx--; while(cx>=0     ){ bd.sErC([bd.cnum(cx,cy)],1); cx--;} }
-					else if(dir==k.RT){ cx++; while(cx<k.qcols){ bd.sErC([bd.cnum(cx,cy)],1); cx++;} }
-					return false;
+					bd.sErC(clist,1);
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

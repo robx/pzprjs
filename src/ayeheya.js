@@ -284,18 +284,20 @@ Puzzles.ayeheya.prototype = {
 		};
 
 		ans.checkFractal = function(rinfo){
+			var result = true;
 			for(var r=1;r<=rinfo.max;r++){
 				var d = ans.getSizeOfClist(rinfo.room[r].idlist,f_true);
 				var sx=d.x1+d.x2+1, sy=d.y1+d.y2+1;
 				for(var i=0;i<rinfo.room[r].idlist.length;i++){
 					var c=rinfo.room[r].idlist[i];
 					if(bd.isBlack(c) ^ bd.isBlack(bd.cnum(sx-bd.cell[c].cx-1, sy-bd.cell[c].cy-1))){
+						if(this.inAutoCheck){ return false;}
 						bd.sErC(rinfo.room[r].idlist,1);
-						return false;
+						result = false;
 					}
 				}
 			}
-			return true;
+			return result;
 		};
 
 		ans.checkRowsCols = function(){

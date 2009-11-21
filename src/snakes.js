@@ -263,6 +263,7 @@ Puzzles.snakes.prototype = {
 		};
 
 		ans.checkDifferentNumberInRoom = function(sinfo){
+			var result = true;
 			for(var r=1;r<=sinfo.max;r++){
 				var d = {1:0,2:0,3:0,4:0,5:0};
 				for(var i=0;i<sinfo.room[r].idlist.length;i++){
@@ -270,29 +271,37 @@ Puzzles.snakes.prototype = {
 					if(val==-1){ continue;}
 
 					if(d[val]==0){ d[val]++;}
-					else if(d[val]>0){ bd.sErC(sinfo.room[r].idlist,1); return false;}
+					else if(d[val]>0){
+						if(this.inAutoCheck){ return false;}
+						bd.sErC(sinfo.room[r].idlist,1);
+						result = false;
+					}
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkSideCell2 = function(sinfo){
+			var result = true;
 			var func = function(sinfo,c1,c2){ return (sinfo.id[c1]>0 && sinfo.id[c2]>0 && sinfo.id[c1]!=sinfo.id[c2]);};
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.cell[c].cx<k.qcols-1 && func(sinfo,c,c+1)){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(sinfo.room[sinfo.id[c]].idlist,1);
 					bd.sErC(sinfo.room[sinfo.id[c+1]].idlist,1);
-					return false;
+					result = false;
 				}
 				if(bd.cell[c].cy<k.qrows-1 && func(sinfo,c,c+k.qcols)){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(sinfo.room[sinfo.id[c]].idlist,1);
 					bd.sErC(sinfo.room[sinfo.id[c+k.qcols]].idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 
 		ans.checkArrowNumber = function(){
+			var result = true;
 			var func = function(clist){
 				var cc=bd.cnum(cx,cy); clist.push(cc);
 				if(bd.QnC(cc)!=-1 || bd.QaC(cc)>0){ return false;}
@@ -309,18 +318,21 @@ Puzzles.snakes.prototype = {
 				else if(dir==k.RT){ cx++; while(cx<k.qcols){ if(!func(clist)){ break;} cx++;} }
 
 				if(num==0^(cx<0||cx>=k.qcols||cy<0||cy>=k.qcols||bd.QnC(bd.cnum(cx,cy))!=-1)){
+					if(this.inAutoCheck){ return false;}
 					if(num>0){ bd.sErC(clist,1);}
 					else{ bd.sErC([c,bd.cnum(cx,cy)],1);}
-					return false;
+					result = false;
 				}
 				else if(num>0 && bd.QaC(bd.cnum(cx,cy))!=num){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c,bd.cnum(cx,cy)],1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkSnakesView = function(sinfo){
+			var result = true;
 			var func = function(clist){
 				var cc=bd.cnum(cx,cy); clist.push(cc);
 				if(bd.QnC(cc)!=-1 || bd.QaC(cc)>0){ return false;}
@@ -343,13 +355,14 @@ Puzzles.snakes.prototype = {
 
 				var c2 = bd.cnum(cx,cy), r2 = sinfo.id[c2];
 				if(bd.QaC(c2)>0 && bd.QnC(c2)==-1 && r2>0 && r!=r2){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(clist,1);
 					bd.sErC(idlist,1);
 					bd.sErC(sinfo.room[r2].idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

@@ -295,6 +295,7 @@ Puzzles.kakuru.prototype = {
 		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)==0 && bd.QnC(c)==-1 && bd.QaC(c)==-1);});};
 
 		ans.checkAroundPrenums = function(type){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==1 || bd.QnC(c)<=0){ continue;}
 
@@ -312,15 +313,17 @@ Puzzles.kakuru.prototype = {
 
 				for(var n=1;n<=9;n++){
 					if(d[n]>1){
+						if(this.inAutoCheck){ return false;}
 						bd.sErC([c],1);
 						for(i=0;i<clist.length;i++){ if(bd.QaC(clist[i])==n){ bd.sErC(clist[i],1);} }
-						return false;
+						result = false;
 					}
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkNumber = function(type){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==1 || bd.QnC(c)<=0){ continue;}
 
@@ -336,21 +339,30 @@ Puzzles.kakuru.prototype = {
 				cc=bd.cnum(cx  ,cy+1); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
 				cc=bd.cnum(cx+1,cy+1); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
 
-				if(bd.QnC(c)!=cnt){ bd.sErC(clist,1); return false;}
+				if(bd.QnC(c)!=cnt){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC(clist,1); result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkAroundNumbers = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QaC(c)<=0){ continue;}
-				var cx = bd.cell[c].cx; var cy = bd.cell[c].cy; var target=0;
+				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, target=0, clist = [c];
 				var func = function(cc){ return (cc!=-1 && bd.QaC(c)==bd.QaC(cc));};
-				target=bd.cnum(cx+1,cy  ); if(func(target)){ bd.sErC([c,target],1); return false;}
-				target=bd.cnum(cx  ,cy+1); if(func(target)){ bd.sErC([c,target],1); return false;}
-				target=bd.cnum(cx-1,cy+1); if(func(target)){ bd.sErC([c,target],1); return false;}
-				target=bd.cnum(cx+1,cy+1); if(func(target)){ bd.sErC([c,target],1); return false;}
+				target=bd.cnum(cx+1,cy  ); if(func(target)){ clist.push(target);}
+				target=bd.cnum(cx  ,cy+1); if(func(target)){ clist.push(target);}
+				target=bd.cnum(cx-1,cy+1); if(func(target)){ clist.push(target);}
+				target=bd.cnum(cx+1,cy+1); if(func(target)){ clist.push(target);}
+
+				if(clist.length>1){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC(clist,1); result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

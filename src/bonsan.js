@@ -252,14 +252,16 @@ Puzzles.bonsan.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkLineOverLetter = function(func){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(line.lcntCell(c)>=2 && bd.QnC(c)!=-1){
-					bd.sErBAll(2);
+					if(this.inAutoCheck){ return false;}
+					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,true);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 
 		ans.checkFractal = function(rinfo){

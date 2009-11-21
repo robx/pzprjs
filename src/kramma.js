@@ -222,18 +222,20 @@ Puzzles.kramma.prototype = {
 		};
 
 		ans.checkLcntCurve = function(){
+			var result = true;
 			for(var i=0;i<(k.qcols-1)*(k.qrows-1);i++){
 				var cx = i%(k.qcols-1)+1, cy = mf(i/(k.qcols-1))+1, xc = bd.xnum(cx,cy);
 				if(area.lcntCross(xc)==2 && bd.QnX(xc)!=1){
 					if(    !(bd.QaB(bd.bnum(cx*2  ,cy*2-1))==1 && bd.QaB(bd.bnum(cx*2  ,cy*2+1))==1)
 						&& !(bd.QaB(bd.bnum(cx*2-1,cy*2  ))==1 && bd.QaB(bd.bnum(cx*2+1,cy*2  ))==1) )
 					{
+						if(this.inAutoCheck){ return false;}
 						this.setCrossBorderError(cx,cy);
-						return false;
+						result = false;
 					}
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

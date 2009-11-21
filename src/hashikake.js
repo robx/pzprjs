@@ -325,6 +325,7 @@ Puzzles.hashikake.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkCellNumber = function(flag){
+			var result = true;
 			for(var cc=0;cc<bd.cellmax;cc++){
 				if(bd.QnC(cc)<0){ continue;}
 
@@ -335,11 +336,12 @@ Puzzles.hashikake.prototype = {
 				if(bd.rb(cc)!=-1 && bd.isLine(bd.rb(cc))){ cnt+=bd.LiB(bd.rb(cc));}
 
 				if((flag==1 && bd.QnC(cc)<cnt)||(flag==2 && bd.QnC(cc)>cnt)){
-					bd.sErC(cc,1);
-					return false;
+					if(this.inAutoCheck){ return false;}
+					bd.sErC([cc],1);
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

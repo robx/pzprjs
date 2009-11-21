@@ -691,18 +691,20 @@ Puzzles.slalom.prototype = {
 			return true;
 		};
 		ans.checkGateLine = function(type){
+			var result = true;
 			for(var r=1;r<=bd.hinfo.max;r++){
 				var cnt=0;
 				for(var i=0;i<bd.hinfo.data[r].clist.length;i++){
 					if(line.lcntCell(bd.hinfo.data[r].clist[i])>0){ cnt++;}
 				}
 				if((type==1 && cnt>1)||(type==2 && cnt==0)){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(bd.hinfo.data[r].clist, 4);
 					bd.sErC(bd.hinfo.getGatePole(r),1)
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkGateNumber = function(){
 			var sid = [];

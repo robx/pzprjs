@@ -533,7 +533,7 @@ Puzzles.icebarn.prototype = {
 				this.setAlert('氷の部分で線が曲がっています。', 'A Line curve on ice.'); return false;
 			}
 
-			var flag = this.checkLine();
+			var flag = this.searchLine();
 			if( flag==-1 ){
 				this.setAlert('スタート位置を特定できませんでした。', 'The system can\'t detect start position.'); return false;
 			}
@@ -585,16 +585,18 @@ Puzzles.icebarn.prototype = {
 		};
 
 		ans.checkAllArrow = function(){
+			var result = true;
 			for(var id=0;id<bd.bdmax;id++){
 				if(bd.isArrow(id) && !bd.isLine(id)){
+					if(this.inAutoCheck){ return false;}
 					bd.sErB([id],3);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 
-		ans.checkLine = function(){
+		ans.searchLine = function(){
 			var bx=bd.border[bd.arrowin].cx, by=bd.border[bd.arrowin].cy;
 			var dir=0;
 			if     (by==0){ dir=2;}else if(by==2*k.qrows){ dir=1;}

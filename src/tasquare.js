@@ -159,35 +159,35 @@ Puzzles.tasquare.prototype = {
 				this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 			}
 
-			if( !this.isNumberSquare(binfo,0) ){
+			if( !this.checkNumberSquare(binfo,true) ){
 				this.setAlert('数字とそれに接する黒マスの大きさの合計が一致しません。','Sum of the adjacent masses of black cells is not equal to the number.'); return false;
 			}
 
-			if( !this.isNumberSquare(binfo,1) ){
+			if( !this.checkNumberSquare(binfo,false) ){
 				this.setAlert('数字のない□に黒マスが接していません。','No black cells are adjacent to square mark without numbers.'); return false;
 			}
 
 			return true;
 		};
 
-		ans.isNumberSquare = function(binfo, flag){
+		ans.checkNumberSquare = function(binfo, flag){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if((flag==0?(bd.QnC(c)<0):(bd.QnC(c)!=-2))){ continue;}
-				var cnt = 0;
-				if(bd.isBlack(bd.up(c))){ cnt += binfo.room[binfo.id[bd.up(c)]].idlist.length;}
-				if(bd.isBlack(bd.dn(c))){ cnt += binfo.room[binfo.id[bd.dn(c)]].idlist.length;}
-				if(bd.isBlack(bd.lt(c))){ cnt += binfo.room[binfo.id[bd.lt(c)]].idlist.length;}
-				if(bd.isBlack(bd.rt(c))){ cnt += binfo.room[binfo.id[bd.rt(c)]].idlist.length;}
-				if(bd.QnC(c)>=0?(bd.QnC(c)!=cnt):(cnt==0)){
-					if(bd.isBlack(bd.up(c))){ bd.sErC(binfo.room[binfo.id[bd.up(c)]].idlist,1); }
-					if(bd.isBlack(bd.dn(c))){ bd.sErC(binfo.room[binfo.id[bd.dn(c)]].idlist,1); }
-					if(bd.isBlack(bd.lt(c))){ bd.sErC(binfo.room[binfo.id[bd.lt(c)]].idlist,1); }
-					if(bd.isBlack(bd.rt(c))){ bd.sErC(binfo.room[binfo.id[bd.rt(c)]].idlist,1); }
+				if((flag?(bd.QnC(c)<0):(bd.QnC(c)!==-2))){ continue;}
+				var clist=[];
+				if(bd.isBlack(bd.up(c))){ clist = clist.concat(binfo.room[binfo.id[bd.up(c)]].idlist);}
+				if(bd.isBlack(bd.dn(c))){ clist = clist.concat(binfo.room[binfo.id[bd.dn(c)]].idlist);}
+				if(bd.isBlack(bd.lt(c))){ clist = clist.concat(binfo.room[binfo.id[bd.lt(c)]].idlist);}
+				if(bd.isBlack(bd.rt(c))){ clist = clist.concat(binfo.room[binfo.id[bd.rt(c)]].idlist);}
+
+				if(flag?(clist.length!==bd.QnC(c)):(clist.length===0)){
+					if(ans.inAutoCheck){ return false;}
+					bd.sErC(clist,1);
 					bd.sErC([c],1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

@@ -485,23 +485,26 @@ Puzzles.tentaisho.prototype = {
 		};
 
 		ans.checkStarOnLine = function(){
+			var result = true;
 			for(var s=0;s<(2*k.qcols-1)*(2*k.qrows-1);s++){
 				if(bd.getStar(s)<=0){ continue;}
 				var sx=s%(2*k.qcols-1)+1, sy=mf(s/(2*k.qcols-1))+1;
 				if(!(sx&1) && !(sy&1)){
 					if(area.lcntCross(bd.xnum(sx>>1,sy>>1))!=0){
+						if(this.inAutoCheck){ return false;}
 						this.setCrossBorderError(sx>>1,sy>>1);
-						return false;
+						result = false;
 					}
 				}
 				else if((sx+sy)&1){
 					if(bd.QaB(bd.bnum(sx,sy))!=0){
+						if(this.inAutoCheck){ return false;}
 						bd.sErB(bd.bnum(sx,sy),1);
-						return false;
+						result = false;
 					}
 				}
 			}
-			return true;
+			return result;
 		};
 
 		ans.setAreaStar = function(rinfo){
@@ -534,6 +537,7 @@ Puzzles.tentaisho.prototype = {
 		};
 
 		ans.checkFractal = function(rinfo){
+			var result = true;
 			for(var r=1;r<=rinfo.max;r++){
 				var sc = rinfo.starid[r];
 				if(sc<0){ continue;}
@@ -542,18 +546,24 @@ Puzzles.tentaisho.prototype = {
 					var c=rinfo.room[r].idlist[i];
 					var ccopy = bd.cnum(sx-bd.cell[c].cx-1, sy-bd.cell[c].cy-1);
 					if(ccopy==-1||rinfo.id[c]!=rinfo.id[ccopy]){
-						bd.sErC(rinfo.room[r].idlist,1); return false;
+						if(this.inAutoCheck){ return false;}
+						bd.sErC(rinfo.room[r].idlist,1); result = false;
 					}
 				}
 			}
-			return true;
+			return result;
 		};
 
 		ans.checkErrorFlag = function(rinfo, val){
+			var result = true;
 			for(var id=1;id<=rinfo.max;id++){
-				if(rinfo.starid[id]==val){ bd.sErC(rinfo.room[id].idlist,1); return false;}
+				if(rinfo.starid[id]!==val){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(rinfo.room[id].idlist,1);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 	}
 };

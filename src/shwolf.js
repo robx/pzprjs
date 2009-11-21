@@ -273,21 +273,24 @@ Puzzles.shwolf.prototype = {
 		ans.check1st = function(){ return this.checkLcntCross(1,0);};
 
 		ans.checkLcntCurve = function(){
+			var result = true;
 			for(var i=0;i<(k.qcols-1)*(k.qrows-1);i++){
 				var cx = i%(k.qcols-1)+1, cy = mf(i/(k.qcols-1))+1, xc = bd.xnum(cx,cy);
 				if(area.lcntCross(xc)==2 && bd.QnX(xc)!=1){
 					if(    !(bd.QaB(bd.bnum(cx*2  ,cy*2-1))==1 && bd.QaB(bd.bnum(cx*2  ,cy*2+1))==1)
 						&& !(bd.QaB(bd.bnum(cx*2-1,cy*2  ))==1 && bd.QaB(bd.bnum(cx*2+1,cy*2  ))==1) )
 					{
+						if(this.inAutoCheck){ return false;}
 						this.setCrossBorderError(cx,cy);
-						return false;
+						result = false;
 					}
 				}
 			}
-			return true;
+			return result;
 		};
 
 		ans.checkLineChassis = function(){
+			var result = true;
 			var lines = [];
 			for(var id=0;id<bd.bdmax;id++){ lines[id]=bd.QaB(id);}
 			for(var bx=0;bx<=2*k.qcols;bx+=2){
@@ -301,21 +304,22 @@ Puzzles.shwolf.prototype = {
 				}
 			}
 			for(var id=0;id<bd.bdmax;id++){
-				if(lines[id]==1){
-					var errborder = [];
-					for(var i=0;i<bd.bdmax;i++){ if(lines[i]==1){ errborder.push(i);} }
-					bd.sErBAll(2);
-					bd.sErB(errborder,1);
-					return false;
-				}
+				if(lines[id]!==1){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				var errborder = [];
+				for(var i=0;i<bd.bdmax;i++){ if(lines[i]==1){ errborder.push(i);} }
+				if(result){ bd.sErBAll(2);}
+				bd.sErB(errborder,1);
+				result = false;
 			}
 
-			return true;
+			return result;
 		};
 		ans.cl0 = function(lines,bx,by,dir){
 			while(1){
 				switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-				if((bx+by)%2==0){
+				if(!((bx+by)&1)){
 					if(bd.QnX(bd.xnum(bx>>1,by>>1))==1){
 						if(bd.QaB(bd.bnum(bx,by-1))==1){ this.cl0(lines,bx,by,1);}
 						if(bd.QaB(bd.bnum(bx,by+1))==1){ this.cl0(lines,bx,by,2);}

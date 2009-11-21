@@ -624,6 +624,7 @@ Puzzles.tawa.prototype = {
 		};
 
 		ans.checkThreeBlackCells = function(){
+			var result = true;
 			for(var cy=0;cy<k.qrows;cy++){
 				var clist = [];
 				for(var bx=0;bx<=tc.maxx;bx++){
@@ -636,13 +637,15 @@ Puzzles.tawa.prototype = {
 					else{ clist.push(cc);}
 				}
 				if(clist.length>=3){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(clist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkNumbers = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1||bd.QnC(c)==-2){ continue;}
 				var clist = [];
@@ -657,27 +660,30 @@ Puzzles.tawa.prototype = {
 				for(var i=0;i<clist.length;i++){ if(bd.isBlack(clist[i])){ cnt++;} }
 
 				if(bd.QnC(c)!=cnt){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
 					bd.sErC(clist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkUnderCells = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.isWhite(c) || bd.cell[c].cy==k.qrows-1){ continue;}
 
 				if(bd.isWhite(bd.cnum(bd.cell[c].cx-1,bd.cell[c].cy+1)) &&
 				   bd.isWhite(bd.cnum(bd.cell[c].cx+1,bd.cell[c].cy+1)))
 				{
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
 					bd.sErC([bd.cnum(bd.cell[c].cx-1,bd.cell[c].cy+1)],1);
 					bd.sErC([bd.cnum(bd.cell[c].cx+1,bd.cell[c].cy+1)],1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

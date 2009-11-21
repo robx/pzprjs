@@ -174,15 +174,17 @@ Puzzles.nagenawa.prototype = {
 		};
 
 		ans.checkAllLoopRect = function(){
+			var result = true;
 			var xinfo = line.getLineInfo();
 			for(var r=1;r<=xinfo.max;r++){
-				if(!this.isLoopRect(xinfo.room[r].idlist)){
-					bd.sErBAll(2);
-					bd.sErB(xinfo.room[r].idlist,1);
-					return false;
-				}
+				if(this.isLoopRect(xinfo.room[r].idlist)){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				if(result){ bd.sErBAll(2);}
+				bd.sErB(xinfo.room[r].idlist,1);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 		ans.isLoopRect = function(list){
 			var x1=2*k.qcols; var x2=0; var y1=2*k.qrows; var y2=0;

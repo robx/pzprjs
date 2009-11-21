@@ -186,22 +186,23 @@ Puzzles.kurochute.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkCellNumber = function(){
-			var cx, cy;
+			var cx, cy, result = true;
 
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)<0){ continue;}
-				var cx=bd.cell[c].cx, cy=bd.cell[c].cy, num=bd.QnC(c), cnt=0;
-				if(bd.isBlack(bd.cnum(cx-num,cy))){ cnt++;}
-				if(bd.isBlack(bd.cnum(cx+num,cy))){ cnt++;}
-				if(bd.isBlack(bd.cnum(cx,cy-num))){ cnt++;}
-				if(bd.isBlack(bd.cnum(cx,cy+num))){ cnt++;}
-				if(cnt!=1){
+				var cx=bd.cell[c].cx, cy=bd.cell[c].cy, num=bd.QnC(c), clist=[];
+				if(bd.isBlack(bd.cnum(cx-num,cy))){ clist.push(bd.cnum(cx-num,cy));}
+				if(bd.isBlack(bd.cnum(cx+num,cy))){ clist.push(bd.cnum(cx+num,cy));}
+				if(bd.isBlack(bd.cnum(cx,cy-num))){ clist.push(bd.cnum(cx,cy-num));}
+				if(bd.isBlack(bd.cnum(cx,cy+num))){ clist.push(bd.cnum(cx,cy+num));}
+				if(clist.length>1){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],4);
-					bd.sErC([bd.cnum(cx-num,cy),bd.cnum(cx+num,cy),bd.cnum(cx,cy-num),bd.cnum(cx,cy+num)],1);
-					return false;
+					bd.sErC(clist,1);
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

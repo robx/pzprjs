@@ -417,7 +417,7 @@ Puzzles.kakuro.prototype = {
 		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)!=51 && bd.QaC(c)<=0);});};
 
 		ans.checkRowsCols = function(flag){
-			var num, cnt, empty, cells, clist, d;
+			var num, cnt, empty, cells, clist, d, result = true;
 
 			for(var cx=0;cx<k.qcols;cx++){
 				cnt = 0; empty=0; cells=0; clist = [];
@@ -427,10 +427,15 @@ Puzzles.kakuro.prototype = {
 				for(var cy=0;cy<=k.qrows;cy++){
 					var cc = bd.cnum(cx,cy);
 					if(cy==k.qrows || bd.QuC(cc)==51){
-						if(flag==1 && empty==0 && cells>0 && num!=cnt){ bd.sErC(clist,1); return false;}
+						if(flag==1 && empty==0 && cells>0 && num!=cnt){
+							if(this.inAutoCheck){ return false;}
+							bd.sErC(clist,1);
+							result = false;
+						}
 						if(flag==2){ for(var n=1;n<=9;n++){ if(d[n]>=2){
+							if(this.inAutoCheck){ return false;}
 							for(var i=0;i<clist.length;i++){ if(bd.QaC(clist[i])==n){ bd.sErC([clist[i]],1);} }
-							return false;
+							result = false;
 						}}}
 
 						if(flag==1){ bd.sErE([bd.exnum(cx,-1)],0);}
@@ -457,10 +462,15 @@ Puzzles.kakuro.prototype = {
 				for(var cx=0;cx<=k.qcols;cx++){
 					var cc = bd.cnum(cx,cy);
 					if(cx==k.qcols || bd.QuC(cc)==51){
-						if(flag==1 && empty==0 && cells>0 && num!=cnt){ bd.sErC(clist,1); return false;}
+						if(flag==1 && empty==0 && cells>0 && num!=cnt){
+							if(this.inAutoCheck){ return false;}
+							bd.sErC(clist,1);
+							result = false;
+						}
 						if(flag==2){ for(var n=1;n<=9;n++){ if(d[n]>=2){
+							if(this.inAutoCheck){ return false;}
 							for(var i=0;i<clist.length;i++){ if(bd.QaC(clist[i])==n){ bd.sErC([clist[i]],1);} }
-							return false;
+							result = false;
 						}}}
 
 						if(flag==1){ bd.sErE([bd.exnum(-1,cy)],0);}
@@ -480,7 +490,7 @@ Puzzles.kakuro.prototype = {
 				if(flag==1){ bd.sErE([bd.exnum(-1,cy)],0);}
 			}
 
-			return true;
+			return result;
 		};
 	}
 };

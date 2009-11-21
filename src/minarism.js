@@ -387,19 +387,25 @@ Puzzles.minarism.prototype = {
 		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QaC(c)==-1);});};
 
 		ans.checkRowsCols = function(){
-			var cx, cy;
+			var cx, cy, result = true;
 
 			for(var cy=0;cy<k.qrows;cy++){
 				var clist = [];
 				for(var cx=0;cx<k.qcols;cx++){ clist.push(bd.cnum(cx,cy));}
-				if(!this.checkDifferentNumberInClist(clist)){ return false;}
+				if(!this.checkDifferentNumberInClist(clist)){
+					if(this.inAutoCheck){ return false;}
+					result = false;
+				}
 			}
 			for(var cx=0;cx<k.qcols;cx++){
 				var clist = [];
 				for(var cy=0;cy<k.qrows;cy++){ clist.push(bd.cnum(cx,cy));}
-				if(!this.checkDifferentNumberInClist(clist)){ return false;}
+				if(!this.checkDifferentNumberInClist(clist)){
+					if(this.inAutoCheck){ return false;}
+					result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkDifferentNumberInClist = function(clist){
 			var d = [];
@@ -428,12 +434,17 @@ Puzzles.minarism.prototype = {
 			});
 		};
 		ans.checkBDSideCell = function(func){
+			var result = true;
 			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.cc1(id);
 				var cc2 = bd.cc2(id);
-				if(bd.QaC(cc1)>0 && bd.QaC(cc2)>0 && func(id,cc1,cc2)){ bd.sErC([cc1,cc2],1); return false;}
+				if(bd.QaC(cc1)>0 && bd.QaC(cc2)>0 && func(id,cc1,cc2)){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC([cc1,cc2],1);
+					result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

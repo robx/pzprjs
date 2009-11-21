@@ -269,7 +269,7 @@ Puzzles.gokigen.prototype = {
 		};
 
 		ans.checkLoopLine = function(){
-			var check = [];
+			var check = [], result = true;
 			for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
 
 			while(1){
@@ -294,11 +294,12 @@ Puzzles.gokigen.prototype = {
 						}
 						if(endflag){ break;}
 					}
-					return false;
+					if(this.inAutoCheck){ return false;}
+					result = false;
 				}
 				for(var c=0;c<bd.crossmax;c++){ if(check[c]==1){ check[c]=2;} }
 			}
-			return true;
+			return result;
 		};
 		ans.searchline = function(check, dir, c){
 			var flag=true;
@@ -318,13 +319,15 @@ Puzzles.gokigen.prototype = {
 		};
 
 		ans.checkQnumCross = function(){
+			var result = true;
 			for(var c=0;c<bd.crossmax;c++){
 				if(bd.QnX(c)>=0 && bd.QnX(c)!=this.scntCross(c)){
+					if(this.inAutoCheck){ return false;}
 					bd.sErX([c],1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

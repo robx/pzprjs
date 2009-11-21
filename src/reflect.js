@@ -343,16 +343,19 @@ Puzzles.reflect.prototype = {
 		ans.check1st = function(){ return this.checkLcntCell(1);};
 
 		ans.checkTriangle = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(line.lcntCell(c)==0 && (bd.QuC(c)>=2 && bd.QuC(c)<=5)){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],4);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 
 		ans.checkTriNumber = function(type){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)<2 || bd.QuC(c)>5 || bd.QnC(c)<=0){ continue;}
 
@@ -370,13 +373,14 @@ Puzzles.reflect.prototype = {
 				while(by<k.qrows*2){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); by+=2;} else{ break;} }
 
 				if(type==1?bd.QnC(c)<cnt:bd.QnC(c)>cnt){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],4);
-					bd.sErBAll(2);
+					if(result){ bd.sErBAll(2);}
 					bd.sErB(list,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

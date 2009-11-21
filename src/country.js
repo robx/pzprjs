@@ -181,6 +181,7 @@ Puzzles.country.prototype = {
 
 		ans.checkRoom2 = function(rinfo){
 			if(rinfo.max<=1){ return true;}
+			var result = true;
 			for(var r=1;r<=rinfo.max;r++){
 				var cnt=0;
 				for(var i=0;i<rinfo.room[r].idlist.length;i++){
@@ -190,9 +191,13 @@ Puzzles.country.prototype = {
 					var lb=bd.lb(c); if(bd.lt(c)!=-1 && bd.isBorder(lb) && bd.isLine(lb)){ cnt++;}
 					var rb=bd.rb(c); if(bd.rt(c)!=-1 && bd.isBorder(rb) && bd.isLine(rb)){ cnt++;}
 				}
-				if(cnt>2){ bd.sErC(rinfo.room[r].idlist,1); return false;}
+				if(cnt>2){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC(rinfo.room[r].idlist,1);
+					result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

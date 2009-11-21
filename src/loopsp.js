@@ -383,15 +383,17 @@ Puzzles.loopsp.prototype = {
 			});
 		};
 		ans.checkAllLoops = function(func){
+			var result = true;
 			var xinfo = line.getLineInfo();
 			for(var r=1;r<=xinfo.max;r++){
-				if(!func(line.LineList2Clist(xinfo.room[r].idlist))){
-					bd.sErBAll(2);
-					bd.sErB(xinfo.room[r].idlist,1);
-					return false;
-				}
+				if(func(line.LineList2Clist(xinfo.room[r].idlist))){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				if(result){ bd.sErBAll(2);}
+				bd.sErB(xinfo.room[r].idlist,1);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 
 		line.LineList2Clist = function(idlist){

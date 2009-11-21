@@ -157,7 +157,7 @@ Puzzles.sukoro.prototype = {
 				this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
 			}
 
-			if( !this.checkCellNumber() ){
+			if( !this.checkAllCell( function(c){ return (bd.isValidNum(c) && bd.getNum(c)!=ans.checkdir4Cell(c,bd.isNum));} ) ){
 				this.setAlert('数字と、その数字の上下左右に入る数字の数が一致していません。','The number of numbers placed in four adjacent cells is not equal to the number.'); return false;
 			}
 
@@ -165,16 +165,6 @@ Puzzles.sukoro.prototype = {
 				this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
 			}
 
-			return true;
-		};
-
-		ans.checkCellNumber = function(){
-			for(var c=0;c<bd.cellmax;c++){
-				if(bd.isValidNum(c) && bd.getNum(c)!=this.checkdir4Cell(c,bd.isNum)){
-					bd.sErC([c],1);
-					return false;
-				}
-			}
 			return true;
 		};
 	}

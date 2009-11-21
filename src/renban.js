@@ -160,6 +160,7 @@ Puzzles.renban.prototype = {
 		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
 
 		ans.checkDifferentNumber = function(rinfo){
+			var result = true;
 			for(var r=1;r<=rinfo.max;r++){
 				var d = [], idlist = rinfo.room[r].idlist;
 				for(var i=1;i<=bd.maxnum;i++){ d[i]=-1;}
@@ -168,13 +169,15 @@ Puzzles.renban.prototype = {
 					if     (val===-1 || val===-2){ continue;}
 					else if(d[val]===-1){ d[val] = idlist[i]; continue;}
 
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkNumbersInRoom = function(rinfo){
+			var result = true;
 			for(var r=1;r<=rinfo.max;r++){
 				var idlist = rinfo.room[r].idlist
 				if(idlist.length<=1){ continue;}
@@ -188,14 +191,16 @@ Puzzles.renban.prototype = {
 				if(breakflag){ break;}
 
 				if(idlist.length !== (max-min)+1){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 
 		ans.checkBorderSideNumber = function(){
+			var result = true;
 			// ü‚Ì’·‚³‚ðŽæ“¾‚·‚é
 			var rdata = new AreaInfo();
 			for(var i=0;i<bd.bdmax;i++){ rdata.id[i] = (bd.isBorder(i)?0:-1);}
@@ -222,12 +227,13 @@ Puzzles.renban.prototype = {
 				if(val1<=0 || val2<=0){ continue;}
 
 				if(Math.abs(val1-val2)!==rdata.room[rdata.id[i]].idlist.length){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([cc1,cc2],1);
 					bd.sErB(rdata.room[rdata.id[i]].idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

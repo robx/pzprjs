@@ -214,6 +214,7 @@ Puzzles.ripple.prototype = {
 		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
 
 		ans.checkDifferentNumber = function(rinfo){
+			var result = true;
 			for(var r=1;r<=rinfo.max;r++){
 				var d = [];
 				for(var i=1;i<=bd.maxnum;i++){ d[i]=-1;}
@@ -222,32 +223,36 @@ Puzzles.ripple.prototype = {
 					if     (val==-1 || val==-2){ continue;}
 					else if(d[val]==-1){ d[val] = rinfo.room[r].idlist[i]; continue;}
 
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(rinfo.room[r].idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkRippleNumber = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				var num=bd.getNum(c), cx=bd.cell[c].cx, cy=bd.cell[c].cy;
 				if(num<=0){ continue;}
 				for(var i=1;i<=num;i++){
 					var tc = bd.cnum(cx+i,cy);
-					if(tc!=-1&&bd.getNum(tc)==num){
+					if(tc!=-1 && bd.getNum(tc)==num){
+						if(this.inAutoCheck){ return false;}
 						bd.sErC([c,tc],1);
-						return false;
+						result = false;
 					}
 				}
 				for(var i=1;i<=num;i++){
 					var tc = bd.cnum(cx,cy+i);
-					if(tc!=-1&&bd.getNum(tc)==num){
+					if(tc!=-1 && bd.getNum(tc)==num){
+						if(this.inAutoCheck){ return false;}
 						bd.sErC([c,tc],1);
-						return false;
+						result = false;
 					}
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

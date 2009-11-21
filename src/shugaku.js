@@ -499,16 +499,19 @@ Puzzles.shugaku.prototype = {
 		};
 
 		ans.checkKitamakura = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QaC(c)==13){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c,bd.dn(c)],1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 
 		ans.checkFutonAisle = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 && bd.QaC(c)>=12 && bd.QaC(c)<=15){
 					var adj=-1;
@@ -521,12 +524,13 @@ Puzzles.shugaku.prototype = {
 					if( this.checkdir4Cell(c  ,function(a){ return (bd.QaC(a)==1)})==0 &&
 						this.checkdir4Cell(adj,function(a){ return (bd.QaC(a)==1)})==0 )
 					{
+						if(this.inAutoCheck){ return false;}
 						bd.sErC([c,adj],1);
-						return false;
+						result = false;
 					}
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

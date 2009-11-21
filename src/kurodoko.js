@@ -182,28 +182,27 @@ Puzzles.kurodoko.prototype = {
 		};
 
 		ans.checkCellNumber = function(){
+			var result = true;
 			for(var cc=0;cc<bd.cellmax;cc++){
 				if(bd.QnC(cc)<0){ continue;}
 
-				var list = [];
-				list.push(cc);
-				var cnt = 1;
-				var tx, ty;
+				var tx, ty, list = [cc];
 				tx = bd.cell[cc].cx-1; ty = bd.cell[cc].cy;
-				while(tx>=0)     { var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ cnt++; list.push(c); tx--;} else{ break;} }
+				while(tx>=0)     { var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); tx--;} else{ break;} }
 				tx = bd.cell[cc].cx+1; ty = bd.cell[cc].cy;
-				while(tx<k.qcols){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ cnt++; list.push(c); tx++;} else{ break;} }
+				while(tx<k.qcols){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); tx++;} else{ break;} }
 				tx = bd.cell[cc].cx; ty = bd.cell[cc].cy-1;
-				while(ty>=0)     { var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ cnt++; list.push(c); ty--;} else{ break;} }
+				while(ty>=0)     { var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); ty--;} else{ break;} }
 				tx = bd.cell[cc].cx; ty = bd.cell[cc].cy+1;
-				while(ty<k.qrows){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ cnt++; list.push(c); ty++;} else{ break;} }
+				while(ty<k.qrows){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); ty++;} else{ break;} }
 
-				if(bd.QnC(cc)!=cnt){
+				if(bd.QnC(cc)!=list.length){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(list,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };
