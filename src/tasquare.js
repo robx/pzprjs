@@ -10,7 +10,7 @@ Puzzles.tasquare.prototype = {
 		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
 		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
+		k.isborder     = 0;		// 1:Border/Lineが操作可能なパズル
 		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
