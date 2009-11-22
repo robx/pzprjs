@@ -6,11 +6,9 @@
  * 
  * @author  happa.
  * @version v3.2.3
- * @date    2009-11-21
+ * @date    2009-11-22
  * 
- * This script uses following libraries.
- *  jquery.js (version 1.3.2)
- *  http://jquery.com/
+ * This script uses following library.
  *  uuCanvas.js (version 1.0)
  *  http://code.google.com/p/uupaa-js-spinoff/	uupaa.js SpinOff Project Home(Google Code)
  * 
@@ -1717,6 +1715,7 @@ Graphic.prototype = {
 	drawBlackCells : function(x1,y1,x2,y2){
 		var header = "c_fullb_";
 
+		if(!k.br.IE && !k.isborder){ x1--; y1--; x2++; y2++;}
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
@@ -2237,6 +2236,7 @@ Graphic.prototype = {
 	drawTriangle : function(x1,y1,x2,y2){
 		var headers = ["c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_"];
 
+		if(!k.br.IE && k.puzzleid!=='reflect'){ x1--; y1--; x2++; y2++;}
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
@@ -6712,7 +6712,7 @@ Menu.prototype = {
 		this.menuclear();
 		this.floatmenuclose(0);
 
-		ee('float_parent').el.innerHTML;
+		ee('float_parent').el.innerHTML = '';
 
 		if(!!ee('btncolor2')){ ee('btncolor2').remove();}
 		ee('btnarea').removeNextAll(ee('btnclear2').el);
@@ -6838,6 +6838,7 @@ Menu.prototype = {
 			sl('irowake', '線の色分けをする', 'Color each lines');
 			ap('sep_5', 'disp');
 		}
+		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
 
 		// *表示 - 表示サイズ -------------------------------------------------
@@ -7017,7 +7018,7 @@ Menu.prototype = {
 	// menu.floatmenuopen()  マウスがメニュー項目上に来た時にフロートメニューを表示する
 	// menu.floatmenuclose() フロートメニューをcloseする
 	// menu.floatmenuout(e)  マウスがフロートメニューを離れた時にフロートメニューをcloseする
-	// menu.insideOf()       イベントeがjQueryオブジェクトjqobjの範囲内で起こったか？
+	// menu.insideOf()       イベントeがエレメントの範囲内で起こったか？
 	// menu.insideOfMenu()   マウスがメニュー領域の中にいるか判定する
 	//---------------------------------------------------------------------------
 	floatmenuopen : function(e, idname, depth){
@@ -7284,8 +7285,8 @@ Menu.prototype = {
 
 		// credit -------------------------------------------------------------
 		lab(ee('bar3_1').el,   "credit", "credit");
-		lab(ee('credit3_1').el,"ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\nライブラリとしてjQuery1.3.2, uuCanvas1.0, <br>Google Gearsを\n使用しています。<br>\n<br>\n",
-							   "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\nThis script use jQuery1.3.2, uuCanvas1.0, <br>Google Gears as libraries.<br>\n<br>\n");
+		lab(ee('credit3_1').el,"ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\nライブラリとしてuuCanvas1.0, Google Gearsを使用しています。<br>\n<br>\n",
+							   "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\nThis script use uuCanvas1.0 and Google Gears as libraries.&nbsp;<br>\n<br>\n");
 		btn(document.credit.close,  close, "閉じる", "OK");
 
 		// 表示サイズ ---------------------------------------------------------
@@ -7533,6 +7534,7 @@ Properties.prototype = {
 		autocheck : function(val){ k.autocheck = !k.autocheck;},
 		mode      : function(num){ menu.ex.modechange(num);},
 		size      : function(num){ k.widthmode=num; base.resize_canvas();},
+		repaint   : function(num){ base.resize_canvas();},
 		use       : function(num){ k.use =num;},
 		language  : function(num){ menu.setLang({0:'ja',1:'en'}[num]);},
 
@@ -9370,7 +9372,7 @@ PBase.prototype = {
 		pc.paintAll();
 	},
 	resize_canvas_onload : function(){
-		if(!k.br.IE || pc.already()){ this.resize_canvas();}
+		if(pc.already()){ this.resize_canvas();}
 		else{ uuCanvas.ready(ee.binder(this, this.resize_canvas));}
 	},
 	onresize_func : function(){
