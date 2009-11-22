@@ -351,8 +351,8 @@ _ElementManager.ElementExt.prototype = {
 			function(){
 				var left = 0, top = 0, el = this.el;
 				while(!!el){
-					left += +(el.offsetLeft || el.clientLeft);
-					top  += +(el.offsetTop  || el.clientTop );
+					left += +(!isNaN(el.offsetLeft) ? el.offsetLeft : el.clientLeft);
+					top  += +(!isNaN(el.offsetTop)  ? el.offsetTop  : el.clientTop );
 					el = el.offsetParent;
 				}
 				var right  = left + (this.el.offsetWidth  || this.el.clientWidth);
