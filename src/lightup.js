@@ -148,7 +148,7 @@ Puzzles.lightup.prototype = {
 				}
 			}
 
-			if(!k.br.IE || uuCanvas.already()){
+			if(pc.already()){
 				pc.paint(d.x1,cy,d.x2,cy);
 				pc.paint(cx,d.y1,cx,d.y2);
 			}

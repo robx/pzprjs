@@ -238,7 +238,7 @@ PBase.prototype = {
 		pc.paintAll();
 	},
 	resize_canvas_onload : function(){
-		if(!k.br.IE || pc.already()){ this.resize_canvas();}
+		if(pc.already()){ this.resize_canvas();}
 		else{ uuCanvas.ready(ee.binder(this, this.resize_canvas));}
 	},
 	onresize_func : function(){
