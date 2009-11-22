@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 黒マスはどこだ版 kurodoko.js v3.2.2
+// パズル固有スクリプト部 黒マスはどこだ版 kurodoko.js v3.2.3
 //
 Puzzles.kurodoko = function(){ };
 Puzzles.kurodoko.prototype = {
@@ -54,35 +54,37 @@ Puzzles.kurodoko.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed(x,y);}
-			else if(k.mode==1){
-				if(!kp.enabled()){ this.inputqnum(x,y,k.qcols+k.qrows-1);}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
+			else if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
-			else if(k.mode==3) this.inputcell(x,y);
+			else if(k.playmode) this.inputcell();
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3) this.inputcell(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode) this.inputcell();
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,k.qcols+k.qrows-1);
+			this.key_inputqnum(ca);
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(0, true, false, '');
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,k.qcols+k.qrows-1);
+				kc.key_inputqnum(ca);
 			};
 		}
+
+		bd.nummaxfunc = function(cc){ return k.qcols+k.qrows-1;};
 	},
 
 	//---------------------------------------------------------
@@ -90,50 +92,24 @@ Puzzles.kurodoko.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.bcolor = pc.bcolor_GREEN;
+		pc.setBGCellColorFunc('qsub1');
 
 		pc.fontsizeratio = 0.85;
+		pc.circleratio = [0.42, 0.42];
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawWhiteCells(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
-			this.drawNumCells_kurodoko(x1,y1,x2,y2);
+			this.drawCircledNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
-		};
-
-		pc.drawNumCells_kurodoko = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.45;
-			var rsize2 = k.cwidth*0.40;
-
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
-
-					g.fillStyle = this.Cellcolor;
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cira_",1)){ g.fill(); }
-
-					if(bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else{ g.fillStyle = "white";}
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cirb_",1)){ g.fill(); }
-				}
-				else{ this.vhide(["c"+c+"_cira_", "c"+c+"_cirb_"]);}
-
-				this.dispnumCell_General(c);
-			}
-			this.vinc();
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 
@@ -206,28 +182,27 @@ Puzzles.kurodoko.prototype = {
 		};
 
 		ans.checkCellNumber = function(){
+			var result = true;
 			for(var cc=0;cc<bd.cellmax;cc++){
 				if(bd.QnC(cc)<0){ continue;}
 
-				var list = [];
-				list.push(cc);
-				var cnt = 1;
-				var tx, ty;
+				var tx, ty, list = [cc];
 				tx = bd.cell[cc].cx-1; ty = bd.cell[cc].cy;
-				while(tx>=0)     { var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ cnt++; list.push(c); tx--;} else{ break;} }
+				while(tx>=0)     { var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); tx--;} else{ break;} }
 				tx = bd.cell[cc].cx+1; ty = bd.cell[cc].cy;
-				while(tx<k.qcols){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ cnt++; list.push(c); tx++;} else{ break;} }
+				while(tx<k.qcols){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); tx++;} else{ break;} }
 				tx = bd.cell[cc].cx; ty = bd.cell[cc].cy-1;
-				while(ty>=0)     { var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ cnt++; list.push(c); ty--;} else{ break;} }
+				while(ty>=0)     { var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); ty--;} else{ break;} }
 				tx = bd.cell[cc].cx; ty = bd.cell[cc].cy+1;
-				while(ty<k.qrows){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ cnt++; list.push(c); ty++;} else{ break;} }
+				while(ty<k.qrows){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); ty++;} else{ break;} }
 
-				if(bd.QnC(cc)!=cnt){
+				if(bd.QnC(cc)!=list.length){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(list,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

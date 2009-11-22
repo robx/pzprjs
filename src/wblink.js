@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.2.2
+// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.2.3
 //
 Puzzles.wblink = function(){ };
 Puzzles.wblink.prototype = {
@@ -51,24 +51,24 @@ Puzzles.wblink.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputQues(x,y,[0,41,42,-2]);
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mousedown = function(){
+			if(k.editmode) this.inputQues([0,41,42,-2]);
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 
-		mv.inputLine = function(x,y){
+		mv.inputLine = function(){
 			if(this.inputData==2){ return;}
-			var pos = this.cellpos(new Pos(x,y));
+			var pos = this.cellpos();
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = -1;
@@ -93,12 +93,12 @@ Puzzles.wblink.prototype = {
 		mv.getidlist = function(id){
 			var idlist=[], bx1, bx2, by1, by2;
 			var cc1=bd.cc1(id), cx=bd.cell[cc1].cx, cy=bd.cell[cc1].cy;
-			if(bd.border[id].cx%2==1){
+			if(bd.border[id].cx&1){
 				while(cy>=0         && bd.QuC(bd.cnum(cx,cy  ))==0){ cy--;} by1=2*cy+2;
 				while(cy<=k.qrows-1 && bd.QuC(bd.cnum(cx,cy+1))==0){ cy++;} by2=2*cy+2;
 				bx1 = bx2 = bd.border[id].cx;
 			}
-			else if(bd.border[id].cy%2==1){
+			else if(bd.border[id].cy&1){
 				while(cx>=0         && bd.QuC(bd.cnum(cx  ,cy))==0){ cx--;} bx1=2*cx+2;
 				while(cx<=k.qcols-1 && bd.QuC(bd.cnum(cx+1,cy))==0){ cx++;} bx2=2*cx+2;
 				by1 = by2 = bd.border[id].cy;
@@ -108,8 +108,8 @@ Puzzles.wblink.prototype = {
 			return idlist;
 		};
 
-		mv.inputpeke = function(x,y){
-			var pos = this.crosspos(new Pos(x,y), 0.22);
+		mv.inputpeke = function(){
+			var pos = this.crosspos(0.22);
 			var id = bd.bnum(pos.x, pos.y);
 			if(id==-1 || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
 
@@ -127,12 +127,12 @@ Puzzles.wblink.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.input41_42(ca);
 		};
 		kc.input41_42 = function(ca){
-			if(k.mode==3){ return false;}
+			if(k.playmode){ return false;}
 
 			var cc = tc.getTCC();
 			var flag = false;
@@ -151,7 +151,8 @@ Puzzles.wblink.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_THIN;
-		pc.errbcolor1 = pc.errbcolor1_DARK;
+		pc.errbcolor1 = "white";
+		pc.circleratio = [0.35, 0.30];
 
 		pc.chassisflag = false;
 
@@ -159,65 +160,37 @@ Puzzles.wblink.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			if(k.mode==1){ this.drawGrid(x1,y1,x2,y2);}
-			else if(g.vml){ this.hideBorder();}
+			if(k.editmode){ this.drawGrid(x1,y1,x2,y2);}
+			else if(g.vml){ this.hideGrid();}
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
 
 			this.drawQueses41_42(x1-2,y1-2,x2+1,y2+1);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawQuesHatenas(x1-2,y1-2,x2+1,y2+1);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		pc.drawQueses41_42 = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.35;
-			var rsize2 = k.cwidth*0.30;
-
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-
-				if(bd.QuC(c)==41 || bd.QuC(c)==42){
-					if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
-					else{ g.fillStyle = this.Cellcolor;}
-					if(this.vnop("c"+c+"_cir41a_",1)){
-						g.beginPath(); g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false); g.fill();
-					}
-				}
-				else{ this.vhide("c"+c+"_cir41a_");}
-
-				if(bd.QuC(c)==41){
-					g.fillStyle = "white";
-					if(this.vnop("c"+c+"_cir41b_",1)){
-						g.beginPath(); g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2, 0, Math.PI*2, false); g.fill();
-					}
-				}
-				else{ this.vhide("c"+c+"_cir41b_");}
-			}
-			this.vinc();
-		};
 		pc.drawLine1 = function(id, flag){
-			var lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3); //LineWidth
-			var lm = mf((lw-1)/2); //LineMargin
-			var pid = "b"+id+"_line_";
+			var vid = "b_line_"+id;
+			if(!flag){ this.vhide(vid); return;}
 
-			if     (bd.ErB(id)==1){ g.fillStyle = this.errlinecolor1; lw++;}
-			else if(bd.ErB(id)==2){ g.fillStyle = this.errlinecolor2;}
+			if     (bd.border[id].error===1){ g.fillStyle = this.errlinecolor1; lw++;}
+			else if(bd.border[id].error===2){ g.fillStyle = this.errlinecolor2;}
 			else{ g.fillStyle = this.linecolor;}
 
-			if(!flag){ this.vhide(pid);}
-			else if(bd.border[id].cx%2==1 && this.vnop(pid,1)){
-				g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);
-			}
-			else if(bd.border[id].cy%2==1 && this.vnop(pid,1)){
-				g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-lm, k.cwidth+lw, lw);
+			if(this.vnop(vid,1)){
+				var lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3); //LineWidth
+				var lm = mf((lw-1)/2); //LineMargin
+
+				if     (bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
+				else if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
 			}
 		};
-		pc.hideBorder = function(){
-			for(var i=0;i<=k.qcols;i++){ this.vhide("bdy"+i+"_");}
-			for(var i=0;i<=k.qrows;i++){ this.vhide("bdx"+i+"_");}
+		pc.hideGrid = function(){
+			for(var i=0;i<=k.qcols;i++){ this.vhide("bdy_"+i);}
+			for(var i=0;i<=k.qrows;i++){ this.vhide("bdx_"+i);}
 		};
 	},
 
@@ -248,7 +221,7 @@ Puzzles.wblink.prototype = {
 				}
 			}
 
-			return bstr.substring(pos,bstr.length);
+			return bstr.substr(pos);
 		};
 		enc.encodeCircle = function(flag){
 			var cm = "", num = 0, pass = 0;
@@ -268,11 +241,12 @@ Puzzles.wblink.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			this.performAsLine = true;
+			this.performAsLine = false;
 			if( !this.checkLcntCell(4) ){
 				this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 			}
 
+			this.performAsLine = true;
 			var linfo = line.getLareaInfo();
 			if( !this.checkOneNumber(linfo, function(a,cnt){ return (cnt>=3);}, function(c){ return (bd.QuC(c)!=0);} ) ){
 				this.setAlert('3つ以上の○が繋がっています。','Three or more objects are connected.'); return false;
@@ -294,20 +268,21 @@ Puzzles.wblink.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkWBcircle = function(linfo,val){
+			var result = true;
 			for(var r=1;r<=linfo.max;r++){
-				var tip1=-1, tip2=-1;
-				if(linfo.room[r].idlist.length>1){
-					var tip1 = linfo.room[r].idlist[0];
-					var tip2 = linfo.room[r].idlist[linfo.room[r].idlist.length-1];
-					if(bd.QuC(tip1)==val && bd.QuC(tip2)==val){
-						bd.sErBAll(2);
-						ans.setErrLareaById(linfo,r,1);
-						bd.sErC([tip1,tip2],1);
-						return false;
-					}
-				}
+				if(linfo.room[r].idlist.length<=1){ continue;}
+
+				var tip1 = linfo.room[r].idlist[0];
+				var tip2 = linfo.room[r].idlist[linfo.room[r].idlist.length-1];
+				if(bd.QuC(tip1)!==val || bd.QuC(tip2)!==val){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				if(result){ bd.sErBAll(2);}
+				ans.setErrLareaById(linfo,r,1);
+				bd.sErC([tip1,tip2],1);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 	}
 };

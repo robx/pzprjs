@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バーンズ版 barns.js v3.2.2
+// パズル固有スクリプト部 バーンズ版 barns.js v3.2.3
 //
 Puzzles.barns = function(){ };
 Puzzles.barns.prototype = {
@@ -41,13 +41,13 @@ Puzzles.barns.prototype = {
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　左ドラッグで境界線が、右クリックで氷が入力できます。",
 							   " Left Button Drag to input border lines, Right Click to input ice.");
+		}
+		else{
+			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
+							   " Left Button Drag to input black cells, Right Click to input a cross.");
 		}
 		base.setTitle("バーンズ","Barns");
 		base.setFloatbgcolor("rgb(0, 0, 191)");
@@ -60,30 +60,30 @@ Puzzles.barns.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1){
-				if(this.btn.Left) this.inputborder(x,y);
-				else if(this.btn.Right) this.inputIcebarn(x,y);
+		mv.mousedown = function(){
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
+			if(k.editmode){
+				if(this.btn.Left) this.inputborder();
+				else if(this.btn.Right) this.inputIcebarn();
 			}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
-			}
-		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==1){
-				if(this.btn.Left) this.inputborder(x,y);
-				else if(this.btn.Right) this.inputIcebarn(x,y);
-			}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.inputIcebarn = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.editmode){
+				if(this.btn.Left) this.inputborder();
+				else if(this.btn.Right) this.inputIcebarn();
+			}
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
+			}
+		};
+		mv.inputIcebarn = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell){ return;}
 			if(this.inputData==-1){ this.inputData = (bd.QuC(cc)==6?0:6);}
 
@@ -107,6 +107,7 @@ Puzzles.barns.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.linecolor = pc.linecolor_LIGHT;
 		pc.errbcolor1 = pc.errbcolor1_DARK;
+		pc.setBGCellColorFunc('icebarn');
 
 		pc.maxYdeg = 0.70;
 
@@ -114,18 +115,12 @@ Puzzles.barns.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
-			this.drawIcebarns(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
-
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawLines(x1,y1,x2,y2);
-
-			if(k.br.IE){ this.drawPekes(x1,y1,x2,y2,1);}
-			else{ this.drawPekes(x1,y1,x2,y2,0);}
+			this.drawPekes(x1,y1,x2,y2,(k.br.IE?1:0));
 
 			this.drawChassis(x1,y1,x2,y2);
 		};
@@ -156,7 +151,7 @@ Puzzles.barns.prototype = {
 				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(ca&Math.pow(2,4-w)?6:0));} }
 				if((i*5+5)>=bd.cellmax){ break;}
 			}
-			return bstr.substring(i+1,bstr.length);
+			return bstr.substr(i+1);
 		};
 		enc.encodeBarns = function(){
 			var cm = "";

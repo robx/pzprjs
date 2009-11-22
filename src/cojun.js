@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 コージュン版 cojun.js v3.2.2
+// パズル固有スクリプト部 コージュン版 cojun.js v3.2.3
 //
 Puzzles.cojun = function(){ };
 Puzzles.cojun.prototype = {
@@ -47,43 +47,43 @@ Puzzles.cojun.prototype = {
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){
-		if(k.callmode=="pmake"){ kp.defaultdisp = true;}
+		if(k.EDITOR){ kp.defaultdisp = true;}
 	},
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1) this.borderinput = this.inputborder(x,y);
-			if(k.mode==3){
-				if(!kp.enabled()){ this.inputqnum(x,y,99);}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(k.playmode) this.borderinput = this.inputborder();
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.mode==1){
-					if(!kp.enabled()){ this.inputqnum(x,y,99);}
-					else{ kp.display(x,y);}
+				if(k.editmode){
+					if(!kp.enabled()){ this.inputqnum();}
+					else{ kp.display();}
 				}
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==1 && this.btn.Left) this.inputborder(x,y);
+		mv.mousemove = function(){
+			if(k.editmode && this.btn.Left) this.inputborder();
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 
 		kp.generate(0, true, true, '');
-		kp.kpinput = function(ca){ kc.key_inputqnum(ca,99);};
+		kp.kpinput = function(ca){ kc.key_inputqnum(ca);};
 
 		area.resetArea();
-		bd.roommaxfunc = function(cc,mode){ return area.getCntOfRoomByCell(cc);};
+		bd.nummaxfunc = function(cc){ return area.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -95,8 +95,7 @@ Puzzles.cojun.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -155,30 +154,34 @@ Puzzles.cojun.prototype = {
 		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
 
 		ans.checkDifferentNumber = function(rinfo){
+			var result = true;
 			for(var r=1;r<=rinfo.max;r++){
 				var d = [];
-				for(var i=1;i<=99;i++){ d[i]=-1;}
+				for(var i=1;i<=bd.maxnum;i++){ d[i]=-1;}
 				for(var i=0;i<rinfo.room[r].idlist.length;i++){
 					var val=bd.getNum(rinfo.room[r].idlist[i]);
 					if     (val==-1 || val==-2){ continue;}
 					else if(d[val]==-1){ d[val] = rinfo.room[r].idlist[i]; continue;}
 
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(rinfo.room[r].idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkUpperNumber = function(rinfo){
+			var result = true;
 			for(var c=0;c<bd.cellmax-k.qcols;c++){
 				var dc = bd.dn(c);
 				if(rinfo.id[c]!=rinfo.id[dc] || !bd.isNum(c) || !bd.isNum(dc)){ continue;}
 				if(bd.getNum(dc)>bd.getNum(c)){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c,dc],1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

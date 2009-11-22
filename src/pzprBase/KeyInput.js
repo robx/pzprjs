@@ -1,4 +1,4 @@
-// KeyInput.js v3.2.2
+// KeyInput.js v3.2.3
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -104,10 +104,10 @@ KeyEvent.prototype = {
 	// kc.getKeyCode() 入力されたキーのコードを数字で返す
 	//---------------------------------------------------------------------------
 	getchar : function(e, keycode){
-		if     (e.keyCode == 38)            { return 'up';   }
-		else if(e.keyCode == 40)            { return 'down'; }
-		else if(e.keyCode == 37)            { return 'left'; }
-		else if(e.keyCode == 39)            { return 'right';}
+		if     (e.keyCode == 38)            { return k.KEYUP;}
+		else if(e.keyCode == 40)            { return k.KEYDN;}
+		else if(e.keyCode == 37)            { return k.KEYLT;}
+		else if(e.keyCode == 39)            { return k.KEYRT;}
 		else if(48<=keycode && keycode<=57) { return (keycode - 48).toString(36);}
 		else if(65<=keycode && keycode<=90) { return (keycode - 55).toString(36);} //アルファベット
 		else if(96<=keycode && keycode<=105){ return (keycode - 96).toString(36);} //テンキー対応
@@ -141,9 +141,9 @@ KeyEvent.prototype = {
 		if(this.isCTRL && this.ca=='z'){ this.inUNDO=true; flag = true; tm.startUndoTimer();}
 		if(this.isCTRL && this.ca=='y'){ this.inREDO=true; flag = true; tm.startUndoTimer();}
 
-		if(this.ca=='F2' && k.callmode == "pmake"){ // 112～123はF1～F12キー
-			if     (k.mode==1 && !this.isSHIFT){ k.mode=3; menu.setVal('mode',3); flag = true;}
-			else if(k.mode==3 &&  this.isSHIFT){ k.mode=1; menu.setVal('mode',1); flag = true;}
+		if(this.ca=='F2' && k.EDITOR){ // 112～123はF1～F12キー
+			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); flag = true;}
+			else if(k.playmode &&  this.isSHIFT){ pp.setVal('mode',1); flag = true;}
 		}
 		if(k.scriptcheck && debug){ flag = (flag || debug.keydown(this.ca));}
 
@@ -171,14 +171,14 @@ KeyEvent.prototype = {
 	moveTBorder : function(ca){ return this.moveTC(ca,1);},
 	moveTC : function(ca,mv){
 		var tcx = tc.cursolx, tcy = tc.cursoly, flag = false;
-		if     (ca == 'up'    && tcy-mv >= tc.miny){ tc.decTCY(mv); flag = true;}
-		else if(ca == 'down'  && tcy+mv <= tc.maxy){ tc.incTCY(mv); flag = true;}
-		else if(ca == 'left'  && tcx-mv >= tc.minx){ tc.decTCX(mv); flag = true;}
-		else if(ca == 'right' && tcx+mv <= tc.maxx){ tc.incTCX(mv); flag = true;}
+		if     (ca == k.KEYUP && tcy-mv >= tc.miny){ tc.decTCY(mv); flag = true;}
+		else if(ca == k.KEYDN && tcy+mv <= tc.maxy){ tc.incTCY(mv); flag = true;}
+		else if(ca == k.KEYLT && tcx-mv >= tc.minx){ tc.decTCX(mv); flag = true;}
+		else if(ca == k.KEYRT && tcx+mv <= tc.maxx){ tc.incTCX(mv); flag = true;}
 
 		if(flag){
-			pc.paint(mf(tcx/2)-1, mf(tcy/2)-1, mf(tcx/2), mf(tcy/2));
-			pc.paint(mf(tc.cursolx/2)-1, mf(tc.cursoly/2)-1, mf(tc.cursolx/2), mf(tc.cursoly/2));
+			pc.paint((tcx>>1)-1, (tcy>>1)-1, tcx>>1, tcy>>1);
+			pc.paint((tc.cursolx>>1)-1, (tc.cursoly>>1)-1, tc.cursolx>>1, tc.cursoly>>1);
 			this.tcMoved = true;
 		}
 		return flag;
@@ -187,8 +187,9 @@ KeyEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// kc.key_inputcross() 上限maxまでの数字をCrossの問題データをして入力する(keydown時)
 	//---------------------------------------------------------------------------
-	key_inputcross : function(ca, max){
+	key_inputcross : function(ca){
 		var cc = tc.getTXC();
+		var max = bd.nummaxfunc(cc);
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
@@ -215,14 +216,14 @@ KeyEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// kc.key_inputqnum() 上限maxまでの数字をCellの問題データをして入力する(keydown時)
 	//---------------------------------------------------------------------------
-	key_inputqnum : function(ca, max){
+	key_inputqnum : function(ca){
 		var cc = tc.getTCC();
-		if(k.mode==1 && k.isOneNumber){ cc = area.getTopOfRoomByCell(cc);}
-		if(bd.roommaxfunc){ max = bd.roommaxfunc(cc,k.mode);}
+		if(k.editmode && k.isOneNumber){ cc = area.getTopOfRoomByCell(cc);}
+		var max = bd.nummaxfunc(cc);
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
-			if(k.mode==3){ bd.sDiC(cc,0);}
+			if(k.playmode){ bd.sDiC(cc,0);}
 
 			if(bd.getNum(cc)<=0 || this.prev!=cc){
 				if(num<=max){ bd.setNum(cc,num);}
@@ -232,10 +233,10 @@ KeyEvent.prototype = {
 				else if(num<=max){ bd.setNum(cc,num);}
 			}
 			if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
-			if(k.isAnsNumber){ if(k.mode==1){ bd.sQaC(cc,-1);} bd.sQsC(cc,0); }
+			if(k.isAnsNumber){ if(k.editmode){ bd.sQaC(cc,-1);} bd.sQsC(cc,0); }
 		}
 		else if(ca=='-'){
-			if(k.mode==1 && bd.QnC(cc)!=-2){ bd.setNum(cc,-2);}
+			if(k.editmode && bd.QnC(cc)!=-2){ bd.setNum(cc,-2);}
 			else{ bd.setNum(cc,-1);}
 			if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
 			if(k.isAnsNumber){ bd.sQsC(cc,0);}
@@ -262,13 +263,13 @@ KeyEvent.prototype = {
 
 		var flag = false;
 
-		if     (ca == 'up'   ){ bd.sDiC(cc, (bd.DiC(cc)!=1?1:0)); flag = true;}
-		else if(ca == 'down' ){ bd.sDiC(cc, (bd.DiC(cc)!=2?2:0)); flag = true;}
-		else if(ca == 'left' ){ bd.sDiC(cc, (bd.DiC(cc)!=3?3:0)); flag = true;}
-		else if(ca == 'right'){ bd.sDiC(cc, (bd.DiC(cc)!=4?4:0)); flag = true;}
+		if     (ca == k.KEYUP){ bd.sDiC(cc, (bd.DiC(cc)!=k.UP?k.UP:0)); flag = true;}
+		else if(ca == k.KEYDN){ bd.sDiC(cc, (bd.DiC(cc)!=k.DN?k.DN:0)); flag = true;}
+		else if(ca == k.KEYLT){ bd.sDiC(cc, (bd.DiC(cc)!=k.LT?k.LT:0)); flag = true;}
+		else if(ca == k.KEYRT){ bd.sDiC(cc, (bd.DiC(cc)!=k.RT?k.RT:0)); flag = true;}
 
 		if(flag){
-			pc.paint(mf(tc.cursolx/2), mf(tc.cursoly/2), mf(tc.cursolx/2), mf(tc.cursoly/2));
+			pc.paint(tc.cursolx>>1, tc.cursoly>>1, tc.cursolx>>1, tc.cursoly>>1);
 			this.tcMoved = true;
 		}
 		return flag;
@@ -359,10 +360,8 @@ KeyEvent.prototype = {
 // キー入力用Popupウィンドウ
 // KeyPopupクラス
 KeyPopup = function(){
-	this.x = -1;
-	this.y = -1;
-	this.ctl = { 1:{ el:"", enable:false, target:"cell"},		// 問題入力時用popup
-				 3:{ el:"", enable:false, target:"cell"} };		// 回答入力時用popup
+	this.ctl = { 1:{ el:null, enable:false, target:k.CELL},		// 問題入力時用popup
+				 3:{ el:null, enable:false, target:k.CELL} };	// 回答入力時用popup
 	this.tdcolor = "black";
 	this.imgCR = [1,1];		// img表示用画像の横×縦のサイズ
 
@@ -372,6 +371,15 @@ KeyPopup = function(){
 	this.defaultdisp = false;
 
 	this.tbodytmp=null, this.trtmp=null;
+
+	this.ORIGINAL = 99;
+
+	// ElementTemplate
+	this.EL_KPNUM   = ee.addTemplate('','td', {unselectable:'on', className:'kpnum'}, null, null);
+	this.EL_KPEMPTY = ee.addTemplate('','td', {unselectable:'on'}, null, null);
+	this.EL_KPIMG   = ee.addTemplate('','td', {unselectable:'on', className:'kpimgcell'}, null, null);
+	this.EL_KPIMG_DIV = ee.addTemplate('','div', {unselectable:'on', className:'kpimgdiv'}, null, null);
+	this.EL_KPIMG_IMG = ee.addTemplate('','img', {unselectable:'on', className:'kpimg', src:"./src/img/"+k.puzzleid+"_kp.gif"}, null, null);
 };
 KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
@@ -380,7 +388,7 @@ KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
 	// オーバーライド用
 	kpinput : function(ca){ },
-	enabled : function(){ return menu.getVal('keypopup');},
+	enabled : function(){ return pp.getVal('keypopup');},
 
 	//---------------------------------------------------------------------------
 	// kp.generate()   キーポップアップを生成して初期化する
@@ -389,22 +397,24 @@ KeyPopup.prototype = {
 	// kp.gentable4()  キーポップアップの0～4を入力できるテーブルを作成する
 	//---------------------------------------------------------------------------
 	generate : function(type, enablemake, enableplay, func){
-		if(enablemake && k.callmode=="pmake"){ this.gentable(1, type, func);}
-		if(enableplay)                       { this.gentable(3, type, func);}
+		if(enablemake && k.EDITOR){ this.gentable(1, type, func);}
+		if(enableplay)            { this.gentable(3, type, func);}
 	},
 
 	gentable : function(mode, type, func){
 		this.ctl[mode].enable = true;
-		this.ctl[mode].el = newEL('div').attr("class", "popup")
-										.css("padding", "3pt").css("background-color", "silver")
-										.mouseout(this.hide.ebind(this))
-										.appendTo($("#popup_parent"));
+		this.ctl[mode].el     = ee('keypopup'+mode).el;
+		this.ctl[mode].el.onmouseout = ee.ebinder(this, this.hide);
 
-		var table = newEL('table').attr("cellspacing", "2pt").appendTo(this.ctl[mode].el);
-		this.tbodytmp = newEL('tbody').appendTo(table);
+		var table = _doc.createElement('table');
+		table.cellSpacing = '2pt';
+		this.ctl[mode].el.appendChild(table);
+
+		this.tbodytmp = _doc.createElement('tbody');
+		table.appendChild(this.tbodytmp);
 
 		this.trtmp = null;
-		if(func)							  { func(mode);                }
+		if(func)							  { func.apply(kp, [mode]);}
 		else if(type==0 || type==3)			  { this.gentable10(mode,type);}
 		else if(type==1 || type==2 || type==4){ this.gentable4 (mode,type);}
 	},
@@ -447,31 +457,37 @@ KeyPopup.prototype = {
 	// kp.insertrow() テーブルの行を追加する
 	//---------------------------------------------------------------------------
 	inputcol : function(type, id, ca, disp){
-		if(!this.trtmp){ this.trtmp = newEL('tr');}
-		var td = null;
-		if(type=='num'){
-			td = newEL('td').attr("id",id).attr("class","kpnum")
-						   .html(disp).css("color", this.tdcolor)
-						   .click(this.inputnumber.ebind(this, ca));
+		if(!this.trtmp){ this.trtmp = _doc.createElement('tr');}
+		var _td = null;
+		if(type==='num'){
+			_td = ee.createEL(this.EL_KPNUM, id);
+			_td.style.color = this.tdcolor;
+			_td.innerHTML   = disp;
+			_td.onclick     = ee.ebinder(this, this.inputnumber, [ca]);
 		}
-		else if(type=='empty'){
-			td = newEL('td').attr("id",id);
+		else if(type==='empty'){
+			_td = ee.createEL(this.EL_KPEMPTY, '');
 		}
-		else if(type=='image'){
-			var img = newEL('img').attr("id", ""+id+"_i").attr("class","kp").attr("src", "./src/img/"+k.puzzleid+"_kp.gif").unselectable();
-			var div = newEL('div').css("position",'relative').css("display",'inline').unselectable().append(img);
-			var td = newEL('td').attr("id",id).attr("class","kpimg").click(this.inputnumber.ebind(this, ca)).append(div);
-			this.imgs.push({'el':img, 'cx':disp[0], 'cy':disp[1]});
+		else if(type==='image'){
+			var _img = ee.createEL(this.EL_KPIMG_IMG, ""+id+"_i");
+			var _div = ee.createEL(this.EL_KPIMG_DIV, '');
+			_div.appendChild(_img);
+
+			_td = ee.createEL(this.EL_KPIMG, id);
+			_td.onclick   = ee.ebinder(this, this.inputnumber, [ca]);
+			_td.appendChild(_div);
+
+			this.imgs.push({'el':_img, 'cx':disp[0], 'cy':disp[1]});
 		}
 
-		if(td){
-			this.tds.push(td);
-			td.appendTo(this.trtmp).unselectable();
+		if(_td){
+			this.tds.push(_td);
+			this.trtmp.appendChild(_td);
 		}
 	},
 	insertrow : function(){
 		if(this.trtmp){
-			this.tbodytmp.append(this.trtmp);
+			this.tbodytmp.appendChild(this.trtmp);
 			this.trtmp = null;
 		}
 	},
@@ -481,41 +497,42 @@ KeyPopup.prototype = {
 	// kp.inputnumber() kpinput関数を呼び出してキーポップアップを隠す
 	// kp.hide()        キーポップアップを隠す
 	//---------------------------------------------------------------------------
-	display : function(x,y){
-		if(this.ctl[k.mode].el && this.ctl[k.mode].enable && menu.getVal('keypopup') && mv.btn.Left){
-			this.x = x;
-			this.y = y;
+	display : function(){
+		var mode = pp.getVal('mode');
+		if(this.ctl[mode].el && this.ctl[mode].enable && pp.getVal('keypopup') && mv.btn.Left){
+			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputX - 3 + k.IEMargin.x;
+			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputY - 3 + k.IEMargin.y;
+			this.ctl[mode].el.style.zIndex = 100;
 
-			this.ctl[k.mode].el.css("left", k.cv_oft.x + x - 3 + k.IEMargin.x);
-			this.ctl[k.mode].el.css("top" , k.cv_oft.y + y - 3 + k.IEMargin.y);
-			this.ctl[k.mode].el.css("z-index", 100);
-
-			if(this.ctl[k.mode].target=="cell"){
+			if(this.ctl[mode].target==k.CELL){
 				var cc0 = tc.getTCC();
-				var cc = mv.cellid(new Pos(this.x,this.y));
+				var cc = mv.cellid();
 				if(cc==-1){ return;}
 				tc.setTCC(cc);
 				pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
 				pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
 			}
-			else if(this.ctl[k.mode].target=="cross"){
+			else if(this.ctl[mode].target==k.CROSS){
 				var cc0 = tc.getTXC();
-				var cc = mv.crossid(new Pos(this.x,this.y));
+				var cc = mv.crossid();
 				if(cc==-1){ return;}
 				tc.setTXC(cc);
 				pc.paint(bd.cross[cc].cx-1, bd.cross[cc].cy-1, bd.cross[cc].cx, bd.cross[cc].cy);
 				pc.paint(bd.cross[cc0].cx-1, bd.cross[cc0].cy-1, bd.cross[cc0].cx, bd.cross[cc0].cy);
 			}
 
-			this.ctl[k.mode].el.css("visibility","visible");
+			this.ctl[mode].el.style.display = 'inline';
 		}
 	},
 	inputnumber : function(e, ca){
 		this.kpinput(ca);
-		this.ctl[k.mode].el.css("visibility","hidden");
+		this.ctl[pp.getVal('mode')].el.style.display = 'none';
 	},
 	hide : function(e){
-		if(this.ctl[k.mode].el && !menu.insideOf(this.ctl[k.mode].el, e)){ this.ctl[k.mode].el.css("visibility","hidden");}
+		var mode = pp.getVal('mode');
+		if(!!this.ctl[mode].el && !menu.insideOf(this.ctl[mode].el, e)){
+			this.ctl[mode].el.style.display = 'none';
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -523,25 +540,25 @@ KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
 	resize : function(){
 		var tfunc = function(el,tsize){
-			el.css("width"    , ""+mf(tsize*0.90)+"px")
-			  .css("height"   , ""+mf(tsize*0.90)+"px")
-			  .css("font-size", ""+mf(tsize*0.70)+"px");
+			el.style.width    = ""+mf(tsize*0.90)+"px"
+			el.style.height   = ""+mf(tsize*0.90)+"px"
+			el.style.fontSize = ""+mf(tsize*0.70)+"px";
 		};
-		var ifunc = function(el,cx,cy,bsize){
-			el.css("width" , ""+(bsize*kp.imgCR[0])+"px")
-			  .css("height", ""+(bsize*kp.imgCR[1])+"px")
-			  .css("clip"  , "rect("+(bsize*cy+1)+"px,"+(bsize*(cx+1))+"px,"+(bsize*(cy+1))+"px,"+(bsize*cx+1)+"px)")
-			  .css("top"   , "-"+(cy*bsize+1)+"px")
-			  .css("left"  , "-"+(cx*bsize+1)+"px");
+		var ifunc = function(obj,bsize){
+			obj.el.style.width  = ""+(bsize*kp.imgCR[0])+"px";
+			obj.el.style.height = ""+(bsize*kp.imgCR[1])+"px";
+			obj.el.style.clip   = "rect("+(bsize*obj.cy+1)+"px,"+(bsize*(obj.cx+1))+"px,"+(bsize*(obj.cy+1))+"px,"+(bsize*obj.cx+1)+"px)";
+			obj.el.style.top    = "-"+(obj.cy*bsize+1)+"px";
+			obj.el.style.left   = "-"+(obj.cx*bsize+1)+"px";
 		};
 
 		if(k.def_csize>=24){
-			$.each(this.tds , function(i,obj){ tfunc(obj, k.def_csize);} );
-			$.each(this.imgs, function(i,obj){ ifunc(obj.el,obj.cx,obj.cy,mf(k.def_csize*0.90));} );
+			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  k.def_csize);}
+			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], mf(k.def_csize*0.90));}
 		}
 		else{
-			$.each(this.tds , function(i,obj){ tfunc(obj, 22);} );
-			$.each(this.imgs, function(i,obj){ ifunc(obj.el,obj.cx,obj.cy,18);} );
+			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  22);}
+			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], 18);}
 		}
 	}
 };
@@ -595,12 +612,12 @@ TCell.prototype = {
 		if(pos.x<this.minx || this.maxx<pos.x || pos.y<this.miny || this.maxy<pos.y){ return;}
 		this.cursolx = pos.x; this.cursoly = pos.y;
 	},
-	getTCC : function(){ return bd.cnum(mf((this.cursolx-1)/2), mf((this.cursoly-1)/2));},
+	getTCC : function(){ return bd.cnum((this.cursolx-1)>>1, (this.cursoly-1)>>1);},
 	setTCC : function(id){
 		if(id<0 || bd.cellmax<=id){ return;}
 		this.cursolx = bd.cell[id].cx*2+1; this.cursoly = bd.cell[id].cy*2+1;
 	},
-	getTXC : function(){ return bd.xnum(mf(this.cursolx/2), mf(this.cursoly/2));},
+	getTXC : function(){ return bd.xnum(this.cursolx>>1, this.cursoly>>1);},
 	setTXC : function(id){
 		if(!k.iscross || id<0 || bd.crossmax<=id){ return;}
 		this.cursolx = bd.cross[id].cx*2; this.cursoly = bd.cross[id].cy*2;

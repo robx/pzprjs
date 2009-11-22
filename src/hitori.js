@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ひとりにしてくれ版 hitori.js v3.2.2
+// パズル固有スクリプト部 ひとりにしてくれ版 hitori.js v3.2.3
 //
 Puzzles.hitori = function(){ };
 Puzzles.hitori.prototype = {
@@ -54,26 +54,28 @@ Puzzles.hitori.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed(x,y);}
-			else if(k.mode==1) this.inputqnum(x,y,Math.max(k.qcols,k.qrows));
-			else if(k.mode==3) this.inputcell(x,y);
+		mv.mousedown = function(){
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
+			else if(k.editmode) this.inputqnum();
+			else if(k.playmode) this.inputcell();
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3) this.inputcell(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode) this.inputcell();
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,Math.max(k.qcols,k.qrows));
+			this.key_inputqnum(ca);
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
+
+		bd.nummaxfunc = function(cc){ return Math.max(k.qcols,k.qrows);};
 	},
 
 	//---------------------------------------------------------
@@ -82,13 +84,14 @@ Puzzles.hitori.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.bcolor = pc.bcolor_GREEN;
 		pc.BCell_fontcolor = "rgb(96,96,96)";
+		pc.setBGCellColorFunc('qsub1');
 
 		pc.paint = function(x1,y1,x2,y2){
 			x2++; y2++;
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawWhiteCells(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
@@ -96,7 +99,7 @@ Puzzles.hitori.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 
@@ -123,14 +126,14 @@ Puzzles.hitori.prototype = {
 			for(i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
-				if(this.include(ca,"0","9")||this.include(ca,"a","z")){ bd.sQnC(c, parseInt(bstr.substring(i,i+1),36)); c++;}
-				else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),36)); c++; i+=2;}
+				if(this.include(ca,"0","9")||this.include(ca,"a","z")){ bd.sQnC(c, parseInt(bstr.substr(i,1),36)); c++;}
+				else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),36)); c++; i+=2;}
 				else if(ca == '%'){ bd.sQnC(c, -2);                                   c++;      }
 				else{ c++;}
 
 				if(c > bd.cellmax){ break;}
 			}
-			return bstr.substring(i,bstr.length);
+			return bstr.substr(i);
 		};
 		enc.encodeHitori = function(bstr){
 			var count=0, cm="";
@@ -201,19 +204,25 @@ Puzzles.hitori.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkRowsCols = function(){
-			var cx, cy;
+			var cx, cy, result = true;
 
 			for(var cy=0;cy<k.qrows;cy++){
 				var clist = [];
 				for(var cx=0;cx<k.qcols;cx++){ if(bd.isWhite(bd.cnum(cx,cy))){ clist.push(bd.cnum(cx,cy));}}
-				if(!this.checkDifferentNumberInClist(clist)){ return false;}
+				if(!this.checkDifferentNumberInClist(clist)){
+					if(this.inAutoCheck){ return false;}
+					result = false;
+				}
 			}
 			for(var cx=1;cx<k.qcols;cx++){
 				var clist = [];
 				for(var cy=0;cy<k.qrows;cy++){ if(bd.isWhite(bd.cnum(cx,cy))){ clist.push(bd.cnum(cx,cy));}}
-				if(!this.checkDifferentNumberInClist(clist)){ return false;}
+				if(!this.checkDifferentNumberInClist(clist)){
+					if(this.inAutoCheck){ return false;}
+					result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkDifferentNumberInClist = function(clist){
 			var d = [];

@@ -5,12 +5,10 @@
  * written in JavaScript.
  * 
  * @author  happa.
- * @version v3.2.2
- * @date    2009-11-09
+ * @version v3.2.3
+ * @date    2009-11-22
  * 
- * This script uses following libraries.
- *  jquery.js (version 1.3.2)
- *  http://jquery.com/
+ * This script uses following library.
  *  uuCanvas.js (version 1.0)
  *  http://code.google.com/p/uupaa-js-spinoff/	uupaa.js SpinOff Project Home(Google Code)
  * 
@@ -22,7 +20,7 @@
  * 
  */
 
-var pzprversion="v3.2.2";
+var pzprversion="v3.2.3";
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -72,11 +70,13 @@ var k = {
 
 	// 内部で自動的に設定されるグローバル変数
 	puzzleid  : '',			// パズルのID("creek"など)
-	callmode  : 'pmake',	// 'pmake':エディタ 'pplay':player
-	mode      : 3,			// 1:問題配置モード 3:回答モード
 	use       : 1,			// 操作方法
-	irowake   : 0,			// 線の色分けをするかしないか
 	widthmode : 2,			// Canvasの横幅をどうするか
+
+	EDITOR    : true,		// エディタモード
+	PLAYER    : false,		// playerモード
+	editmode  : true,		// 問題配置モード
+	playmode  : false,		// 回答モード
 
 	enableKey   : true,		// キー入力は有効か
 	enableMouse : true,		// マウス入力は有効か
@@ -87,7 +87,7 @@ var k = {
 
 	p0       : new Pos(this.def_psize, this.def_psize),	// Canvas中での盤面の左上座標
 	cv_oft   : new Pos(0, 0),	// Canvasのwindow内での左上座標
-	IEMargin : new Pos(4, 4),	// マウス入力等でずれる件のmargin
+	IEMargin : new Pos(2, 2),	// マウス入力等でずれる件のmargin
 
 	br:{
 		IE    : !!(window.attachEvent && !window.opera),
@@ -96,99 +96,441 @@ var k = {
 		Gecko : navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1,
 		WinWebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1
 	},
-	scriptcheck : false	// 内部用
-};
+	vml : !!(window.attachEvent && !window.opera) && !uuMeta.slver,
 
+	// const値
+	BOARD  : 'board',
+	CELL   : 'cell',
+	CROSS  : 'cross',
+	BORDER : 'border',
+	EXCELL : 'excell',
+
+	QUES  : 'ques',
+	QNUM  : 'qnum',
+	DIREC : 'direc',
+	QANS  : 'qans',
+	LINE  : 'line',
+	QSUB  : 'qsub',
+
+	UP : 1,		// up
+	DN : 2,		// down
+	LT : 3,		// left
+	RT : 4,		// right
+
+	KEYUP : 'up',
+	KEYDN : 'down',
+	KEYLT : 'left',
+	KEYRT : 'right',
+
+	// for_test.js用
+	scriptcheck : false
+};
+k.IEMargin = (k.br.IE ? k.IEMargin : new Pos(0,0));
+
+//---------------------------------------------------------------------------
+// ★その他のグローバル変数
+//---------------------------------------------------------------------------
 var g;				// グラフィックコンテキスト
 var Puzzles = [];	// パズル個別クラス
+var _doc = document;
 
 //---------------------------------------------------------------------------
 // ★共通グローバル関数
+// mf()            小数点以下を切捨てる(旧int())
+// f_true()        trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
 //---------------------------------------------------------------------------
-	//---------------------------------------------------------------------------
-	// newEL(tag)      新しいtagのHTMLエレメントを表すjQueryオブジェクトを作成する
-	// unselectable()  jQueryオブジェクトを文字列選択不可にする(メソッドチェーン記述用)
-	// getSrcElement() イベントを起こしたエレメントを返す
-	// mf()            小数点以下を切捨てる(旧int())
-	// f_true()        trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
-	//---------------------------------------------------------------------------
-function newEL(tag){ return $(document.createElement(tag));}
-$.fn.unselectable = function(){
-	if     (k.br.Gecko) { this.css("-moz-user-select","none"  ).css("user-select","none");}
-	else if(k.br.WebKit){ this.css("-khtml-user-select","none").css("user-select","none");}
-	else{ this.attr("unselectable", "on");}
-	return this;
-};
-function getSrcElement(event){ return event.target || event.srcElement;}
-
 var mf = Math.floor;
 function f_true(){ return true;}
 
-	//---------------------------------------------------------------------------
-	// toArray()         配列にする(bindで使う)
-	// Function.bind()   thisを関数に紐付けする
-	// Function.ebind()  thisを関数に紐付けする(イベント用)
-	// Function.kcbind() thisを関数に紐付けする(キーボードイベント用)
-	//---------------------------------------------------------------------------
-function toArray(inp){ var args=[]; for(var i=0;i<inp.length;i++){ args[i] = inp[i];} return args;}
+//---------------------------------------------------------------------------
+// ★ElementManagerクラス Element関係の処理
+//    ee() 指定したidのElementExtを取得する
+//---------------------------------------------------------------------------
+(function(){
 
-Function.prototype.bind = function(){
-	var args=toArray(arguments);
-	var __method = this, obj = args.shift();
-	return function(){ return __method.apply(obj, args.concat(toArray(arguments)));}
-};
-Function.prototype.ebind = function(){
-	var args=toArray(arguments);
-	var __method = this, obj = args.shift();
-	return function(e){ return __method.apply(obj, [e||window.event].concat(args).concat(toArray(arguments)));}
-};
-Function.prototype.kcbind = function(){
-	var args=toArray(arguments), __method = this;
-	return function(e){
-		ret = __method.apply(kc, [e||window.event].concat(args).concat(toArray(arguments)));
-		if(kc.tcMoved){ if(k.br.Gecko||k.br.WebKit){ e.preventDefault();}else if(k.br.IE){ return false;}else{ e.returnValue = false;} }
-		return ret;
+// definition
+var
+	// local scope
+	_doc = document,
+	_win = this,
+
+	// browsers
+	_IE     = k.br.IE,
+	_Gecko  = k.br.Gecko,
+	_WebKit = k.br.WebKit,
+
+	/* ここからクラス定義です  varでドット付きは、最左辺に置けません */
+
+	// define and map _ElementManager class
+	_ELm = _ElementManager = _win.ee = function(id){
+		if(typeof id === 'string'){
+			if(!_elx[id]){
+				var el = _doc.getElementById(id);
+				if(!el){ return null;}
+				_elx[id] = new _ELx(el);
+			}
+			return _elx[id];
+		}
+
+		var el = id;
+		if(!!el.id){
+			if(!_elx[el.id]){ _elx[el.id] = new _ELx(el);}
+			return _elx[el.id];
+		}
+
+		return ((!!el) ? new _ELx(el) : null);
+	},
+	_elx = _ElementManager._cache    = {},
+	_elp = _ElementManager._template = [],
+	_elpcnt = _ElementManager._tempcnt = 0;
+
+	// define and map _ElementManager.ElementExt class
+	_ELx = _ElementManager.ElementExt = function(el){
+		this.el     = el;
+		this.parent = el.parentNode;
+		this.pdisp  = 'none';
+	},
+	_ELp = _ElementManager.ElementTemplate = function(parent, tag, attr, style, func){
+		this.parent  = parent;
+		this.tagName = tag;
+		this.attr    = attr;
+		this.style   = style;
+		this.func    = func;
+	},
+
+	// Utility functions
+	_extend = function(obj, ads){
+		for(var name in ads){ obj[name] = ads[name];}
+	},
+	_toArray = function(args){
+		if(!args){ return [];}
+		var array = [];
+		for(var i=0,len=args.length;i<len;i++){ array[i]=args[i];}
+		return array;
+	}
+;
+
+// implementation of _ElementManage class
+_extend( _ElementManager, {
+
+	//----------------------------------------------------------------------
+	// ee.clean()  内部用の変数を初期化する
+	//----------------------------------------------------------------------
+	clean : function(){
+		_elx = null;
+		_elx = {};
+		_elpcnt  = 0;
+		_elp = null;
+		_elp = [];
+	},
+
+	//----------------------------------------------------------------------
+	// ee.addTemplate()  指定した内容のElementTemplateを作成してIDを返す
+	// ee.createEL()     ElementTemplateからエレメントを作成して返す
+	//----------------------------------------------------------------------
+	addTemplate : function(parent, tag, attr_i, style_i, func_i){
+		if(!tag){ return;}
+
+		if(!parent){ parent = null;}
+		else if(typeof parent == 'string'){ parent = ee(parent).el;}
+
+		var attr  = {};
+		var style = (style_i || {});
+		var func  = (func_i  || {});
+
+		if(!!attr_i){
+			for(var name in attr_i){
+				if(name==='unselectable' && attr_i[name]==='on'){
+					if     (_Gecko) { style['UserSelect'] = style['MozUserSelect'] = 'none';}
+					else if(_WebKit){ style['UserSelect'] = style['KhtmlUserSelect'] = 'none';}
+					else{ attr['unselectable'] = 'on';}
+				}
+				else{ attr[name] = attr_i[name];}
+			}
+		}
+
+		_elp[_elpcnt++] = new _ELp(parent, tag, attr, style, func_i);
+		return (_elpcnt-1);
+	},
+	createEL : function(tid, id){
+		if(!_elp[tid]){ return null;}
+
+		var temp = _elp[tid];
+		var el = _doc.createElement(temp.tagName);
+		if(!!temp.parent){ temp.parent.appendChild(el);}
+
+		if(!!id){ el.id = id;}
+		for(var name in temp.attr) { el[name]       = temp.attr[name]; }
+		for(var name in temp.style){ el.style[name] = temp.style[name];}
+		for(var name in temp.func) { el["on"+name]  = temp.func[name]; }
+		return el;
+	},
+
+	//----------------------------------------------------------------------
+	// ee.getSrcElement() イベントが起こったエレメントを返す
+	// ee.pageX()         イベントが起こったページ上のX座標を返す
+	// ee.pageY()         イベントが起こったページ上のY座標を返す
+	// ee.windowWidth()   ウィンドウの幅を返す
+	// ee.windowHeight()  ウィンドウの高さを返す
+	//----------------------------------------------------------------------
+	getSrcElement : function(e){
+		return e.target || e.srcElement;
+	},
+	pageX : (
+		((!k.br.IE) ?
+			function(e){ return e.pageX;}
+		:
+			function(e){ return e.clientX + (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);}
+		)
+	),
+	pageY : (
+		((!k.br.IE) ?
+			function(e){ return e.pageY;}
+		:
+			function(e){ return e.clientY + (_doc.documentElement.scrollTop  || _doc.body.scrollTop);}
+		)
+	),
+
+	windowWidth : (
+		((_doc.all) ?
+			function(){ return _doc.body.clientWidth;}
+		:(_doc.layers || _doc.getElementById)?
+			function(){ return innerWidth;}
+		:
+			function(){ return 0;}
+		)
+	),
+	windowHeight : (
+		((_doc.all) ?
+			function(){ return _doc.body.clientHeight;}
+		:(_doc.layers || _doc.getElementById)?
+			function(){ return innerHeight;}
+		:
+			function(){ return 0;}
+		)
+	),
+
+	//----------------------------------------------------------------------
+	// ee.binder()   thisをbindする
+	// ee.ebinder()  thisとイベントをbindする
+	// ee.kcbinder() kcとイベントをbindする
+	//----------------------------------------------------------------------
+	binder : function(){
+		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift();
+		return function(){
+			return __method.apply(obj, (args.length>0?args[0]:[]).concat(_toArray(arguments)));
+		}
+	},
+	ebinder : function(){
+		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift(), rest = (args.length>0?args[0]:[]);
+		return function(e){
+			return __method.apply(obj, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
+		}
+	},
+	kcbinder : function(){
+		var args=_toArray(arguments), __method = args.shift(), rest = (args.length>0?args[0]:[]);
+		return function(e){
+			ret = __method.apply(kc, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
+			if(kc.tcMoved){
+				if(_Gecko||_WebKit){ e.preventDefault();}
+				else if(_IE){ return false;}
+				else{ e.returnValue = false;}
+			}
+			return ret;
+		}
+	}
+});
+
+// implementation of _ElementManager.ElementExt class
+_ElementManager.ElementExt.prototype = {
+	//----------------------------------------------------------------------
+	// ee.getRect()   エレメントの四辺の座標を返す
+	// ee.getWidth()  エレメントの幅を返す
+	// ee.getHeight() エレメントの高さを返す
+	//----------------------------------------------------------------------
+	getRect : (
+		((!!document.getBoundingClientRect) ?
+			((!_IE) ?
+				function(){
+					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
+					var left   = rect.left   + _win.scrollX;
+					var top    = rect.top    + _win.scrollY;
+					var right  = rect.right  + _win.scrollX;
+					var bottom = rect.bottom + _win.scrollY;
+					return { top:top, bottom:bottom, left:left, right:right};
+				}
+			:
+				function(){
+					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
+					var left   = rect.left   + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
+					var top    = rect.top    + ((_body.scrollTop  || _html.scrollTop ) - _html.clientTop );
+					var right  = rect.right  + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
+					var bottom = rect.bottom + ((_body.scrollTop  || _html.scrollTop ) - _html.clientTop );
+					return { top:top, bottom:bottom, left:left, right:right};
+				}
+			)
+		:
+			function(){
+				var left = 0, top = 0, el = this.el;
+				while(!!el){
+					left += +(el.offsetLeft || el.clientLeft);
+					top  += +(el.offsetTop  || el.clientTop );
+					el = el.offsetParent;
+				}
+				var right  = left + (this.el.offsetWidth  || this.el.clientWidth);
+				var bottom = top  + (this.el.offsetHeight || this.el.clientHeight);
+				return { top:top, bottom:bottom, left:left, right:right};
+			}
+		)
+	),
+	getWidth  : function(){ return this.el.offsetWidth  || this.el.clientWidth; },
+	getHeight : function(){ return this.el.offsetHeight || this.el.clientHeight;},
+
+	//----------------------------------------------------------------------
+	// ee.unselectable()         エレメントを選択できなくする
+	// ee.replaceChildrenClass() 子要素のクラスを変更する
+	// ee.remove()               エレメントを削除する
+	// ee.removeNextAll()        同じ親要素を持ち、自分より後ろにあるエレメントを削除する
+	//----------------------------------------------------------------------
+	unselectable : (
+		((_Gecko) ?
+			function(){
+				this.el.style.MozUserSelect = 'none';
+				this.el.style.UserSelect    = 'none';
+				return this;
+			}
+		:(_WebKit) ?
+			function(){
+				this.el.style.KhtmlUserSelect = 'none';
+				this.el.style.UserSelect      = 'none';
+				return this;
+			}
+		:
+			function(){
+				this.el.unselectable = "on";
+				return this;
+			}
+		)
+	),
+
+	replaceChildrenClass : function(before, after){
+		var el = this.el.firstChild;
+		while(!!el){
+			if(el.className===before){ el.className = after;}
+			el = el.nextSibling;
+		}
+	},
+
+	remove : function(){
+		this.parent.removeChild(this.el);
+		return this;
+	},
+	removeNextAll : function(targetbase){
+		var el = this.el.lastChild;
+		while(!!el){
+			if(el===targetbase){ break;}
+			if(!!el){ this.el.removeChild(el);}else{ break;}
+
+			el = this.el.lastChild;
+		}
+		return this;
+	},
+
+	//----------------------------------------------------------------------
+	// ee.appendHTML() 指定したHTMLを持つspanエレメントを子要素の末尾に追加する
+	// ee.appendBR()   <BR>を子要素の末尾に追加する
+	// ee.appendEL()   指定したエレメントを子要素の末尾に追加する
+	// ee.appendTo()   自分を指定した親要素の末尾に追加する
+	// ee.insertBefore() エレメントを自分の前に追加する
+	// ee.insertAfter()  エレメントを自分の後ろに追加する
+	//----------------------------------------------------------------------
+	appendHTML : function(html){
+		var sel = _doc.createElement('span');
+		sel.innerHTML = html;
+		this.el.appendChild(sel);
+		return this;
+	},
+	appendBR : function(){
+		this.el.appendChild(_doc.createElement('br'));
+		return this;
+	},
+	appendEL : function(el){
+		this.el.appendChild(el);
+		return this;
+	},
+
+	appendTo : function(elx){
+		elx.el.appendChild(this.el);
+		this.parent = elx.el;
+		return this;
+	},
+
+	insertBefore : function(baseel){
+		this.parent = baseel.parentNode;
+		this.parent.insertBefore(this.el,baseel);
+		return this;
+	},
+	insertAfter : function(baseel){
+		this.parent = baseel.parentNode;
+		this.parent.insertBefore(this.el,baseel.nextSibling);
+		return this;
 	}
 };
+
+})();
 
 //---------------------------------------------------------------------------
 // ★Timerクラス
 //---------------------------------------------------------------------------
 Timer = function(){
-	this.st = 0;	// 最初のタイマー取得値
-	this.TID;		// タイマーID
-	this.lastseconds = 0;
+	// ** 一般タイマー
+	this.TID;				// タイマーID
+	this.timerInterval = (!k.br.IE?100:200);
 
-	this.lastOpeCnt = 0;
-	this.lastACTime = 0;
-	this.worstACCost = 0;
+	this.st       = 0;		// タイマースタート時のgetTime()取得値(ミリ秒)
+	this.current  = 0;		// 現在のgetTime()取得値(ミリ秒)
 
-	this.undoWaitCount = 0;
-	this.undoInterval  = (!k.br.IE?25:50);
-	this.TIDundo = null;
+	// 経過時間表示用変数
+	this.bseconds = 0;		// 前回ラベルに表示した時間(秒数)
+	this.timerEL = ee('timerpanel').el;
 
+	// 自動正答判定用変数
+	this.lastAnsCnt  = 0;	// 前回正答判定した時の、UndoManagerに記録されてた問題/回答入力のカウント
+	this.worstACCost = 0;	// 正答判定にかかった時間の最悪値(ミリ秒)
+	this.nextACtime  = 0;	// 次に自動正答判定ルーチンに入ることが可能になる時間
+
+	// 一般タイマースタート
 	this.start();
+
+	// ** Undoタイマー
+	this.TIDundo = null;	// タイマーID
+	this.undoInterval = (!k.br.IE?25:50);
+
+	// Undo/Redo用変数
+	this.undoStartCount = mf(300/this.undoInterval);	// 1回目にwaitを多く入れるための値
+	this.undoWaitCount = this.undoStartCount;
 };
 Timer.prototype = {
 	//---------------------------------------------------------------------------
-	// tm.reset()      タイマーのカウントを0にする
-	// tm.start()      update()関数を100ms間隔で呼び出す
-	// tm.update()     100ms単位で呼び出される関数
+	// tm.reset()      タイマーのカウントを0にして、スタートする
+	// tm.start()      update()関数を200ms間隔で呼び出す
+	// tm.update()     200ms単位で呼び出される関数
 	//---------------------------------------------------------------------------
 	reset : function(){
-		this.st = 0;
-		this.prev = clearInterval(this.TID);
-		$("#timerpanel").html(this.label()+"00:00");
 		this.worstACCost = 0;
+		this.timerEL.innerHTML = this.label()+"00:00";
+
+		clearInterval(this.TID);
 		this.start();
 	},
 	start : function(){
 		this.st = (new Date()).getTime();
-		this.TID = setInterval(this.update.bind(this), 200);
+		this.TID = setInterval(ee.binder(this, this.update), this.timerInterval);
 	},
 	update : function(){
-		if(k.callmode!='pmake'){ this.updatetime();}
+		this.current = (new Date()).getTime();
 
+		if(k.PLAYER){ this.updatetime();}
 		if(k.autocheck){ this.ACcheck();}
 	},
 
@@ -197,8 +539,7 @@ Timer.prototype = {
 	// tm.label()      経過時間に表示する文字列を返す
 	//---------------------------------------------------------------------------
 	updatetime : function(){
-		var nowtime = (new Date()).getTime();
-		var seconds = mf((nowtime - this.st)/1000);
+		var seconds = mf((this.current - this.st)/1000);
 		if(this.bseconds == seconds){ return;}
 
 		var hours   = mf(seconds/3600);
@@ -208,8 +549,7 @@ Timer.prototype = {
 		if(minutes < 10) minutes = "0" + minutes;
 		if(seconds < 10) seconds = "0" + seconds;
 
-		if(hours) $("#timerpanel").html(this.label()+hours+":"+minutes+":"+seconds);
-		else $("#timerpanel").html(this.label()+minutes+":"+seconds);
+		this.timerEL.innerHTML = [this.label(), (!!hours?hours+":":""), minutes, ":", seconds].join('');
 
 		this.bseconds = seconds;
 	},
@@ -221,14 +561,12 @@ Timer.prototype = {
 	// tm.ACcheck()    自動正解判定を呼び出す
 	//---------------------------------------------------------------------------
 	ACcheck : function(){
-		var nowms = (new Date()).getTime();
-		var ACint = 120+(this.worstACCost<250?this.worstACCost*4:this.worstACCost*2+500);
-		if(nowms - this.lastACTime > ACint && this.lastOpeCnt != um.anscount && !ans.inCheck){
-			this.lastACTime = nowms;
-			this.lastOpeCnt = um.anscount;
+		if(this.current>this.nextACtime && this.lastAnsCnt!=um.anscount && !ans.inCheck){
+			this.lastAnsCnt = um.anscount;
+			if(!ans.autocheck()){ return;}
 
-			var comp = ans.autocheck();
-			if(!comp){ this.worstACCost = Math.max(this.worstACCost, ((new Date()).getTime()-nowms));}
+			this.worstACCost = Math.max(this.worstACCost, ((new Date()).getTime()-this.current));
+			this.nextACtime = this.current + (this.worstACCost<250 ? this.worstACCost*4+120 : this.worstACCost*2+620);
 		}
 	},
 
@@ -238,8 +576,8 @@ Timer.prototype = {
 	// tm.procUndo()        Undo/Redo呼び出しを実行する
 	//---------------------------------------------------------------------------
 	startUndoTimer : function(){
-		this.undoWaitCount = mf(200/this.undoInterval);
-		if(!this.TIDundo){ this.TIDundo = setInterval(this.procUndo.bind(this), this.undoInterval);}
+		this.undoWaitCount = this.undoStartCount;
+		if(!this.TIDundo){ this.TIDundo = setInterval(ee.binder(this, this.procUndo), this.undoInterval);}
 
 		if     (kc.inUNDO){ um.undo();}
 		else if(kc.inREDO){ um.redo();}
@@ -252,16 +590,10 @@ Timer.prototype = {
 	},
 
 	procUndo : function(){
-		if(!kc.isCTRL){ this.stopUndoTimer(); return;}
-
-		if(this.undoWaitCount>0){
-			if(kc.inUNDO || kc.inREDO){ this.undoWaitCount--;}
-			return;
-		}
-
-		if     (kc.inUNDO){ um.undo();}
+		if(!kc.isCTRL || (!kc.inUNDO && !kc.inREDO)){ this.stopUndoTimer();}
+		else if(this.undoWaitCount>0)               { this.undoWaitCount--;}
+		else if(kc.inUNDO){ um.undo();}
 		else if(kc.inREDO){ um.redo();}
-		else{ this.undoWaitCount = mf(300/this.undoInterval);}
 	}
 };
 
@@ -421,6 +753,8 @@ Board = function(){
 
 	this.bdinside = 0;		// 盤面の内側(外枠上でない)に存在する境界線の本数
 
+	this.maxnum   = 99;		// 入力できる最大の数字
+
 	// デフォルトのセルなど
 	this.defcell   = new Cell(0);
 	this.defcross  = new Cross(0);
@@ -429,7 +763,7 @@ Board = function(){
 	this.enableLineNG = false;
 
 	this.initBoardSize(k.qcols,k.qrows);
-	this.override();
+	this.setFunctions();
 };
 Board.prototype = {
 	//---------------------------------------------------------------------------
@@ -439,19 +773,19 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	initBoardSize : function(col,row){
 		{
-			this.initGroup('cell',   this.cell,   col*row);
+			this.initGroup(k.CELL,   this.cell,   col*row);
 		}
 		if(k.iscross){
-			this.initGroup('cross',  this.cross,  (col+1)*(row+1));
+			this.initGroup(k.CROSS,  this.cross,  (col+1)*(row+1));
 		}
 		if(k.isborder){
-			this.initGroup('border', this.border, 2*col*row+(k.isoutsideborder===0?-1:1)*(col+row));
+			this.initGroup(k.BORDER, this.border, 2*col*row+(k.isoutsideborder===0?-1:1)*(col+row));
 		}
 		if(k.isextendcell===1){
-			this.initGroup('excell', this.excell, col+row+1);
+			this.initGroup(k.EXCELL, this.excell, col+row+1);
 		}
 		else if(k.isextendcell===2){
-			this.initGroup('excell', this.excell, 2*col+2*row+4);
+			this.initGroup(k.EXCELL, this.excell, 2*col+2*row+4);
 		}
 
 		this.initSpecial(col,row);
@@ -620,29 +954,29 @@ Board.prototype = {
 	// bd.hideNumobj()  指定したオブジェクトのnumobjを隠す
 	//---------------------------------------------------------------------------
 	getnewObj : function(type,id){
-		if(type==='cell' || type==='excell'){ return (new Cell(id));}
-		else if(type==='cross') { return (new Cross(id));}
-		else if(type==='border'){ return (new Border(id));}
+		if(type===k.CELL || type===k.EXCELL){ return (new Cell(id));}
+		else if(type===k.CROSS) { return (new Cross(id));}
+		else if(type===k.BORDER){ return (new Border(id));}
 	},
 	isNullObj : function(type,id){
-		if(type==='cell'){
+		if(type===k.CELL){
 			return ((this.cell[id].qans === this.defcell.qans)&&
 					(this.cell[id].qsub === this.defcell.qsub)&&
 					(this.cell[id].ques === this.defcell.ques)&&
 					(this.cell[id].qnum === this.defcell.qnum)&&
 					(this.cell[id].direc=== this.defcell.direc));
 		}
-		else if(type==='cross') {
+		else if(type===k.CROSS) {
 			return (this.cross[id].qnum===this.defcross.qnum);
 		}
-		else if(type==='border'){
+		else if(type===k.BORDER){
 			return ((this.border[id].qans === this.defborder.qans)&&
 					(this.border[id].qsub === this.defborder.qsub)&&
 					(this.border[id].ques === this.defborder.ques)&&
 					(this.border[id].qnum === this.defborder.qnum)&&
 					(this.border[id].line === this.defborder.line));
 		}
-		else if(type==='excell'){
+		else if(type===k.EXCELL){
 			return ((this.excell[id].qnum === this.defcell.qnum)&&
 					(this.excell[id].direc=== this.defcell.direc));
 		}
@@ -650,17 +984,17 @@ Board.prototype = {
 	},
 
 	hideNumobj : function(type,id){
-		if(type==='cell'){
+		if(type===k.CELL){
 			pc.hideEL(this.cell[id].numobj);
 			pc.hideEL(this.cell[id].numobj2);
 		}
-		else if(type==='cross') {
+		else if(type===k.CROSS) {
 			pc.hideEL(this.cross[id].numobj);
 		}
-		else if(type==='border'){
+		else if(type===k.BORDER){
 			pc.hideEL(this.border[id].numobj);
 		}
-		else if(type==='excell'){
+		else if(type===k.EXCELL){
 			pc.hideEL(this.excell[id].numobj);
 			pc.hideEL(this.excell[id].numobj2);
 		}
@@ -693,14 +1027,14 @@ Board.prototype = {
 	},
 	bnum2 : function(cx,cy,qc,qr){
 		if(cx>=1&&cx<=qc*2-1&&cy>=1&&cy<=qr*2-1){
-			if(cx%2===0 && cy%2===1){ return mf((cx-1)/2)+mf((cy-1)/2)*(qc-1);}
-			else if(cx%2===1 && cy%2===0){ return mf((cx-1)/2)+mf((cy-2)/2)*qc+(qc-1)*qr;}
+			if     (!(cx&1) &&  (cy&1)){ return ((cx-1)>>1)+((cy-1)>>1)*(qc-1);}
+			else if( (cx&1) && !(cy&1)){ return ((cx-1)>>1)+((cy-2)>>1)*qc+(qc-1)*qr;}
 		}
 		else if(k.isoutsideborder==1){
-			if     (cy===0   &&cx%2===1&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+mf((cx-1)/2);}
-			else if(cy===2*qr&&cx%2===1&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+mf((cx-1)/2);}
-			else if(cx===0   &&cy%2===1&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+mf((cy-1)/2);}
-			else if(cx===2*qc&&cy%2===1&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+mf((cy-1)/2);}
+			if     (cy===0   &&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+((cx-1)>>1);}
+			else if(cy===2*qr&&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+((cx-1)>>1);}
+			else if(cx===0   &&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+((cy-1)>>1);}
+			else if(cx===2*qc&&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+((cy-1)>>1);}
 		}
 		return -1;
 	},
@@ -748,16 +1082,16 @@ Board.prototype = {
 	// bd.crosscc2() 境界線のすぐ下かすぐ右にある交差点のIDを返す
 	//---------------------------------------------------------------------------
 	cc1 : function(id){
-		return this.cnum(mf((bd.border[id].cx-(bd.border[id].cy%2))/2), mf((bd.border[id].cy-(bd.border[id].cx%2))/2) );
+		return this.cnum((bd.border[id].cx-bd.border[id].cy%2)>>1, (bd.border[id].cy-bd.border[id].cx%2)>>1);
 	},
 	cc2 : function(id){
-		return this.cnum(mf((bd.border[id].cx+(bd.border[id].cy%2))/2), mf((bd.border[id].cy+(bd.border[id].cx%2))/2) );
+		return this.cnum((bd.border[id].cx+bd.border[id].cy%2)>>1, (bd.border[id].cy+bd.border[id].cx%2)>>1);
 	},
 	crosscc1 : function(id){
-		return this.xnum(mf((bd.border[id].cx-(bd.border[id].cx%2))/2), mf((bd.border[id].cy-(bd.border[id].cy%2))/2) );
+		return this.xnum((bd.border[id].cx-bd.border[id].cx%2)>>1, (bd.border[id].cy-bd.border[id].cy%2)>>1);
 	},
 	crosscc2 : function(id){
-		return this.xnum(mf((bd.border[id].cx+(bd.border[id].cx%2))/2), mf((bd.border[id].cy+(bd.border[id].cy%2))/2) );
+		return this.xnum((bd.border[id].cx+bd.border[id].cx%2)>>1, (bd.border[id].cy+bd.border[id].cy%2)>>1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -794,23 +1128,30 @@ Board.prototype = {
 	// bd.checkLPCombined() 線がつながっているかどうか見て、Line==1を設定する
 	//---------------------------------------------------------------------------
 	isLPMarked : function(id){
-		return bd.border[id].cx%2===1 ? (bd.isLPdown(bd.cc1(id)) || bd.isLPup(bd.cc2(id))) :
-										(bd.isLPright(bd.cc1(id)) || bd.isLPleft(bd.cc2(id)));
+		return bd.border[id].cx&1 ? (bd.isLPdown(bd.cc1(id)) || bd.isLPup(bd.cc2(id))) :
+									(bd.isLPright(bd.cc1(id)) || bd.isLPleft(bd.cc2(id)));
 	},
 	isLPCombined : function(id){
-		return bd.border[id].cx%2===1 ? (bd.isLPdown(bd.cc1(id)) && bd.isLPup(bd.cc2(id))) :
-										(bd.isLPright(bd.cc1(id)) && bd.isLPleft(bd.cc2(id)));
+		return bd.border[id].cx&1 ? (bd.isLPdown(bd.cc1(id)) && bd.isLPup(bd.cc2(id))) :
+									(bd.isLPright(bd.cc1(id)) && bd.isLPleft(bd.cc2(id)));
 	},
 	isLineNG : function(id){
-		return bd.border[id].cx%2===1 ? (bd.isnoLPdown(bd.cc1(id)) || bd.isnoLPup(bd.cc2(id))) :
-										(bd.isnoLPright(bd.cc1(id)) || bd.isnoLPleft(bd.cc2(id)));
+		return bd.border[id].cx&1 ? (bd.isnoLPdown(bd.cc1(id)) || bd.isnoLPup(bd.cc2(id))) :
+									(bd.isnoLPright(bd.cc1(id)) || bd.isnoLPleft(bd.cc2(id)));
 	},
 	checkLPCombined : function(cc){
 		var id;
-		id = this.ub(cc); if(id!==-1 && this.LiB(id)===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.db(cc); if(id!==-1 && this.LiB(id)===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.lb(cc); if(id!==-1 && this.LiB(id)===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.rb(cc); if(id!==-1 && this.LiB(id)===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+		id = this.ub(cc); if(id!==-1 && this.border[id].line===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+		id = this.db(cc); if(id!==-1 && this.border[id].line===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+		id = this.lb(cc); if(id!==-1 && this.border[id].line===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+		id = this.rb(cc); if(id!==-1 && this.border[id].line===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.nummaxfunc() 入力できる数字の最大値を返す
+	//---------------------------------------------------------------------------
+	nummaxfunc : function(cc){
+		return this.maxnum;
 	},
 
 	//---------------------------------------------------------------------------
@@ -821,43 +1162,40 @@ Board.prototype = {
 	// sDiC / DiC : bd.setDirecCell()/ bd.getDirecCell() 該当するCellのdirecを設定する/返す
 	//---------------------------------------------------------------------------
 	// Cell関連Get/Set関数 <- 各Cellが持っているとメモリを激しく消費するのでここに置くこと.
+	// overwrite by pipelink.js and loopsp.js
 	sQuC : function(id, num) {
-		um.addOpe('cell', 'ques', id, this.cell[id].ques, num);
+		um.addOpe(k.CELL, k.QUES, id, this.cell[id].ques, num);
 		this.cell[id].ques = num;
-
-		if(k.puzzleid==="pipelink"||k.puzzleid==="loopsp"){ this.checkLPCombined(id);}
 	},
+	// overwrite by lightup.js
 	sQnC : function(id, num) {
 		if(k.dispzero===0 && num===0){ return;}
 
 		var old = this.cell[id].qnum;
-		um.addOpe('cell', 'qnum', id, old, num);
+		um.addOpe(k.CELL, k.QNUM, id, old, num);
 		this.cell[id].qnum = num;
 
 		if(um.isenableInfo() &&
 			(area.numberColony && (num!==-1 ^ area.bcell.id[id]!==-1))
 		){ area.setCell(id,(num!==-1?1:0));}
-
-		if(k.puzzleid==="lightup" && ((old===-1)^(num===-1))){ mv.paintAkari(id);}
 	},
+	// overwrite by lightup.js
 	sQaC : function(id, num) {
 		var old = this.cell[id].qans;
-		um.addOpe('cell', 'qans', id, old, num);
+		um.addOpe(k.CELL, k.QANS, id, old, num);
 		this.cell[id].qans = num;
 
 		if(um.isenableInfo() && (
 			(area.bblock && (num!==-1 ^ area.bcell.id[id]!==-1)) || 
 			(area.wblock && (num===-1 ^ area.wcell.id[id]!==-1))
 		)){ area.setCell(id,(num!==-1?1:0));}
-
-		if(k.puzzleid=="lightup" && ((old==1)^(num==1))){ mv.paintAkari(id);}
 	},
 	sQsC : function(id, num) {
-		um.addOpe('cell', 'qsub', id, this.cell[id].qsub, num);
+		um.addOpe(k.CELL, k.QSUB, id, this.cell[id].qsub, num);
 		this.cell[id].qsub = num;
 	},
 	sDiC : function(id, num) {
-		um.addOpe('cell', 'direc', id, this.cell[id].direc, num);
+		um.addOpe(k.CELL, k.DIREC, id, this.cell[id].direc, num);
 		this.cell[id].direc = num;
 	},
 
@@ -873,11 +1211,11 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// EXcell関連Get/Set関数
 	sQnE : function(id, num) {
-		um.addOpe('excell', 'qnum', id, this.excell[id].qnum, num);
+		um.addOpe(k.EXCELL, k.QNUM, id, this.excell[id].qnum, num);
 		this.excell[id].qnum = num;
 	},
 	sDiE : function(id, num) {
-		um.addOpe('excell', 'direc', id, this.excell[id].direc, num);
+		um.addOpe(k.EXCELL, k.DIREC, id, this.excell[id].direc, num);
 		this.excell[id].direc = num;
 	},
 
@@ -890,11 +1228,11 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// Cross関連Get/Set関数 <- 各Crossが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuX : function(id, num) {
-		um.addOpe('cross', 'ques', id, this.cross[id].ques, num);
+		um.addOpe(k.CROSS, k.QUES, id, this.cross[id].ques, num);
 		this.cross[id].ques = num;
 	},
 	sQnX : function(id, num) {
-		um.addOpe('cross', 'qnum', id, this.cross[id].qnum, num);
+		um.addOpe(k.CROSS, k.QNUM, id, this.cross[id].qnum, num);
 		this.cross[id].qnum = num;
 	},
 
@@ -911,36 +1249,36 @@ Board.prototype = {
 	// Border関連Get/Set関数 <- 各Borderが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuB : function(id, num) {
 		var old = this.border[id].ques;
-		um.addOpe('border', 'ques', id, old, num);
+		um.addOpe(k.BORDER, k.QUES, id, old, num);
 		this.border[id].ques = num;
 
-		if(um.isenableInfo() && (num>0 ^ old>0)){ area.call_setBorder(id,num,'ques');}
+		if(um.isenableInfo() && (num>0 ^ old>0)){ area.call_setBorder(id,num,k.QUES);}
 	},
 	sQnB : function(id, num) {
-		um.addOpe('border', 'qnum', id, this.border[id].qnum, num);
+		um.addOpe(k.BORDER, k.QNUM, id, this.border[id].qnum, num);
 		this.border[id].qnum = num;
 	},
 	sQaB : function(id, num) {
 		if(this.border[id].ques!=0){ return;}
 
 		var old = this.border[id].qans;
-		um.addOpe('border', 'qans', id, old, num);
+		um.addOpe(k.BORDER, k.QANS, id, old, num);
 		this.border[id].qans = num;
 
 		if(um.isenableInfo() && (num>0 ^ old>0)){
 			if(k.isborderAsLine){ line.setLine(id,num);}
-			else                { area.call_setBorder(id,num,'qans');}
+			else                { area.call_setBorder(id,num,k.QANS);}
 		}
 	},
 	sQsB : function(id, num) {
-		um.addOpe('border', 'qsub', id, this.border[id].qsub, num);
+		um.addOpe(k.BORDER, k.QSUB, id, this.border[id].qsub, num);
 		this.border[id].qsub = num;
 	},
 	sLiB : function(id, num) {
 		if(this.enableLineNG && (num==1?bd.isLineNG:bd.isLPCombined)(id)){ return;}
 
 		var old = this.border[id].line;
-		um.addOpe('border', 'line', id, old, num);
+		um.addOpe(k.BORDER, k.LINE, id, old, num);
 		this.border[id].line = num;
 
 		if(um.isenableInfo() && (num>0 ^ old>0)){ line.setLine(id,num);}
@@ -991,33 +1329,86 @@ Board.prototype = {
 	ErE : function(id){ return (id!==-1?this.excell[id].error:0);},
 
 	//---------------------------------------------------------------------------
-	// bd.override()  条件フラグを見て関数をオーバーライドする
+	// bd.setFunctions()  条件フラグを見て関数を設定する
 	//---------------------------------------------------------------------------
-	override : function(){
-		if(k.isborderAsLine){
-			this.isLine     = function(id){ return (id!==-1 && bd.border[id].qans>0);};
-			this.setLine    = function(id){ this.sQaB(id, 1); this.sQsB(id, 0);};
-			this.setPeke    = function(id){ this.sQaB(id, 0); this.sQsB(id, 2);};
-			this.removeLine = function(id){ this.sQaB(id, 0); this.sQsB(id, 0);};
-		}
-		if(!k.isAnsNumber){
-			this.isNum      = function(c){ return (c!==-1 && bd.cell[c].qnum!==-1);};
-			this.noNum      = function(c){ return (c===-1 || bd.cell[c].qnum===-1);};
-			this.isValidNum = function(c){ return (c!==-1 && bd.cell[c].qnum>=  0);};
+	setFunctions : function(){
+		//-----------------------------------------------------------------------
+		// bd.isLine()      該当するBorderにlineが引かれているか判定する
+		// bd.setLine()     該当するBorderに線を引く
+		// bd.setPeke()     該当するBorderに×をつける
+		// bd.removeLine()  該当するBorderから線を消す
+		//-----------------------------------------------------------------------
+		this.isLine = (
+			(!k.isborderAsLine) ? function(id){ return (id!==-1 && bd.border[id].line>0);}
+								: function(id){ return (id!==-1 && bd.border[id].qans>0);}
+		);
+		this.setLine = (
+			(!k.isborderAsLine) ? function(id){ this.sLiB(id, 1); this.sQsB(id, 0);}
+								: function(id){ this.sQaB(id, 1); this.sQsB(id, 0);}
+		);
+		this.setPeke = (
+			(!k.isborderAsLine) ? function(id){ this.sLiB(id, 0); this.sQsB(id, 2);}
+								: function(id){ this.sQaB(id, 0); this.sQsB(id, 2);}
+		);
+		this.removeLine = (
+			(!k.isborderAsLine) ? function(id){ this.sLiB(id, 0); this.sQsB(id, 0);}
+								: function(id){ this.sQaB(id, 0); this.sQsB(id, 0);}
+		);
 
-			this.getNum = function(c)    { return (c!==-1?this.cell[c].qnum:-1);};
-			if(k.NumberIsWhite){
-				this.setNum = function(c,val){ if(k.dispzero || val!==0){ this.sQnC(c,val); this.sQaC(c,-1);} };
-			}
-			else{
-				this.setNum = function(c,val){ if(k.dispzero || val!==0){ this.sQnC(c,val);} };
-			}
-		}
-		else{
-			if(k.NumberIsWhite){
-				this.setNum = function(c,val){ this.sQnC(c,val); this.sQaC(c,-1);}
-			}
-		}
+		//-----------------------------------------------------------------------
+		// bd.isNum()      該当するCellに数字があるか返す
+		// bd.noNum()      該当するCellに数字がないか返す
+		// bd.isValidNum() 該当するCellに0以上の数字があるか返す
+		// bd.sameNumber() ２つのCellに同じ有効な数字があるか返す
+		//-----------------------------------------------------------------------
+		this.isNum = (
+			(k.isAnsNumber) ? function(c){ return (c!==-1 && (bd.cell[c].qnum!==-1 || bd.cell[c].qans!==-1));}
+							: function(c){ return (c!==-1 &&  bd.cell[c].qnum!==-1);}
+		);
+		this.noNum = (
+			(k.isAnsNumber) ? function(c){ return (c===-1 || (bd.cell[c].qnum===-1 && bd.cell[c].qans===-1));}
+							: function(c){ return (c===-1 ||  bd.cell[c].qnum===-1);}
+		);
+		this.isValidNum = (
+			(k.isAnsNumber) ? function(c){ return (c!==-1 && (bd.cell[c].qnum>=  0 ||(bd.cell[c].qans>=0 && bd.cell[c].qnum===-1)));}
+							: function(c){ return (c!==-1 &&  bd.cell[c].qnum>=  0);}
+		);
+		this.sameNumber     = function(c1,c2){ return (bd.isValidNum(c1) && (bd.getNum(c1)===bd.getNum(c2)));};
+
+		//-----------------------------------------------------------------------
+		// bd.getNum()     該当するCellの数字を返す
+		// bd.setNum()     該当するCellに数字を設定する
+		//-----------------------------------------------------------------------
+		this.getNum = (
+			(k.isAnsNumber) ? function(c){ return (c!==-1 ? this.cell[c].qnum!==-1 ? this.cell[c].qnum : this.cell[c].qans : -1);}
+							: function(c){ return (c!==-1 ? this.cell[c].qnum : -1);}
+		);
+		this.setNum = (
+			((k.NumberIsWhite) ?
+				function(c,val){
+					if(!k.dispzero && val===0){ return;}
+					this.sQnC(c,val);
+					this.sQaC(c,bd.defcell.qnum);
+				}
+			:(k.isAnsNumber) ?
+				function(c,val){
+					if(!k.dispzero && val===0){ return;}
+					if(k.editmode){
+						this.sQnC(c,val);
+						this.sQaC(c,bd.defcell.qnum);
+					}
+					else if(this.cell[c].qnum===bd.defcell.qnum){
+						this.sQaC(c,val);
+					}
+					this.sQsC(c,0);
+				}
+			:
+				function(c,val){
+					if(!k.dispzero && val===0){ return;}
+					this.sQnC(c,val);
+				}
+			)
+		);
 	},
 
 	//---------------------------------------------------------------------------
@@ -1033,56 +1424,22 @@ Board.prototype = {
 	setWhite : function(c){ this.sQaC(c,-1);},
 
 	//---------------------------------------------------------------------------
-	// bd.isNum()      該当するCellに数字があるか返す
-	// bd.noNum()      該当するCellに数字がないか返す
-	// bd.isValidNum() 該当するCellに0以上の数字があるか返す
-	// bd.sameNumber() ２つのCellに同じ有効な数字があるか返す
-	// bd.getNum()     該当するCellの数字を返す
-	// bd.setNum()     該当するCellに数字を設定する
-	//---------------------------------------------------------------------------
-	isNum      : function(c){ return (c!==-1 && (bd.cell[c].qnum!==-1 || bd.cell[c].qans!==-1));},
-	noNum      : function(c){ return (c===-1 || (bd.cell[c].qnum===-1 && bd.cell[c].qans===-1));},
-	isValidNum : function(c){ return (c!==-1 && (bd.cell[c].qnum>=  0 ||(bd.cell[c].qans>=0 && bd.cell[c].qnum===-1)));},
-	sameNumber : function(c1,c2){ return (bd.isValidNum(c1) && (bd.getNum(c1)===bd.getNum(c2)));},
-
-	getNum : function(c){ return (this.cell[c].qnum!==-1?this.cell[c].qnum:this.cell[c].qans);},
-	setNum : function(c,val){
-		if(k.dispzero || val!=0){
-			if(k.mode==1){ this.sQnC(c,val); this.sQaC(c,bd.defcell.qnum);}
-			else if(this.cell[c].qnum===bd.defcell.qnum){ this.sQaC(c,val);}
-			this.sQsC(c,0);
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// bd.isLine()      該当するBorderにlineが引かれているか判定する
-	//                  (k.isborderAsLine時はオーバーライドされます)
-	// bd.setLine()     該当するBorderに線を引く
-	// bd.setPeke()     該当するBorderに×をつける
-	// bd.removeLine()  該当するBorderから線を消す
-	//---------------------------------------------------------------------------
-	isLine     : function(id){ return (id!==-1 && bd.border[id].line>0);},
-	setLine    : function(id){ this.sLiB(id, 1); this.sQsB(id, 0);},
-	setPeke    : function(id){ this.sLiB(id, 0); this.sQsB(id, 2);},
-	removeLine : function(id){ this.sLiB(id, 0); this.sQsB(id, 0);},
-
-	//---------------------------------------------------------------------------
 	// bd.isBorder()     該当するBorderに境界線が引かれているか判定する
 	// bd.setBorder()    該当するBorderに境界線を引く
 	// bd.removeBorder() 該当するBorderから線を消す
 	// bd.setBsub()      該当するBorderに境界線用の補助記号をつける
 	// bd.removeBsub()   該当するBorderから境界線用の補助記号をはずす
 	//---------------------------------------------------------------------------
-	isBorder : function(id){
+	isBorder     : function(id){
 		return (id!==-1 && (bd.border[id].ques>0 || bd.border[id].qans>0));
 	},
 
 	setBorder    : function(id){
-		if(k.mode===1){ this.sQuB(id,1); this.sQaB(id,0);}
+		if(k.editmode){ this.sQuB(id,1); this.sQaB(id,0);}
 		else if(this.QuB(id)!==1){ this.sQaB(id,1);}
 	},
 	removeBorder : function(id){
-		if(k.mode===1){ this.sQuB(id,0); this.sQaB(id,0);}
+		if(k.editmode){ this.sQuB(id,0); this.sQaB(id,0);}
 		else if(this.QuB(id)!==1){ this.sQaB(id,0);}
 	},
 	setBsub      : function(id){ this.sQsB(id,1);},
@@ -1103,6 +1460,9 @@ Graphic = function(){
 	this.errcolor1 = "rgb(224, 0, 0)";
 	this.errcolor2 = "rgb(64, 64, 255)";
 	this.errcolor3 = "rgb(0, 191, 0)";
+
+	// セルの丸数字の中に書く色
+	this.circledcolor = "white";
 
 	// セルの○×の色(補助記号)
 	this.MBcolor = "rgb(255, 160, 127)";
@@ -1146,6 +1506,10 @@ Graphic = function(){
 	this.errlinecolor1 = "rgb(255, 0, 0)";
 	this.errlinecolor2 = "rgb(160, 160, 160)";
 
+	// 入力ターゲットの色
+	this.targetColor1 = "rgb(255, 64,  64)";
+	this.targetColor3 = "rgb(64,  64, 255)";
+
 	// 色々なパズルで定義してた固定色
 	this.gridcolor_BLACK  = "black";
 	this.gridcolor_LIGHT  = "rgb(127, 127, 127)";	/* ほとんどはこの色を指定している */
@@ -1154,12 +1518,13 @@ Graphic = function(){
 	this.gridcolor_THIN   = "rgb(224, 224, 224)";	/* 問題入力時のみGrid表示のパズル */
 
 	this.bcolor_GREEN = "rgb(160, 255, 160)";
-	this.errbcolor1_DARK = "rgb(127, 255, 127)";
+	this.errbcolor1_DARK = "rgb(255, 127, 127)";
 	this.linecolor_LIGHT = "rgb(0, 192, 0)";
 
 	// その他
 	this.fontsizeratio = 1.0;	// 数字Fontサイズの倍率
 	this.crosssize = 0.4;
+	this.circleratio = [0.40, 0.34];
 
 	this.lw = 1;	// LineWidth 境界線・Lineの太さ
 	this.lm = 1;	// LineMargin
@@ -1173,6 +1538,11 @@ Graphic = function(){
 	this.lastYdeg = 0;
 	this.minYdeg = 0.18;
 	this.maxYdeg = 0.70;
+
+	var numobj_attr = {className:'divnum', unselectable:'on'};
+	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', numobj_attr, null, null);
+
+	this.setFunctions();
 };
 Graphic.prototype = {
 	//---------------------------------------------------------------------------
@@ -1185,10 +1555,9 @@ Graphic.prototype = {
 
 		//this.textenable = !!g.fillText;
 	},
-	already : function(){
-		if(!k.br.IE){ return true;}
+	already : (!k.br.IE ? f_true : function(){
 		return uuCanvas.already();
-	},
+	}),
 	//---------------------------------------------------------------------------
 	// pc.paint()       座標(x1,y1)-(x2,y2)を再描画する。各パズルのファイルでオーバーライドされる。
 	// pc.paintAll()    全体を再描画する
@@ -1198,27 +1567,30 @@ Graphic.prototype = {
 	// pc.paintEXcell() 指定されたEXCellを再描画する
 	//---------------------------------------------------------------------------
 	paint : function(x1,y1,x2,y2){ }, //オーバーライド用
-	paintAll : function(){ if(this.already()){ this.paint(-1,-1,k.qcols,k.qrows);} },
+	paintAll : (
+		(!k.br.IE) ? function(){ this.paint(-1,-1,k.qcols,k.qrows); }
+				   : function(){ if(this.already()){ this.paint(-1,-1,k.qcols,k.qrows);} }
+	),
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
-		if(bd.border[id].cx%2===1){
-			this.paint(mf((bd.border[id].cx-1)/2)-1, mf(bd.border[id].cy/2)-1,
-					   mf((bd.border[id].cx-1)/2)+1, mf(bd.border[id].cy/2)   );
+		if(bd.border[id].cx&1){
+			this.paint(((bd.border[id].cx-1)>>1)-1, (bd.border[id].cy>>1)-1,
+					   ((bd.border[id].cx-1)>>1)+1, (bd.border[id].cy>>1)   );
 		}
 		else{
-			this.paint(mf(bd.border[id].cx/2)-1, mf((bd.border[id].cy-1)/2)-1,
-					   mf(bd.border[id].cx/2)  , mf((bd.border[id].cy-1)/2)+1 );
+			this.paint((bd.border[id].cx>>1)-1, ((bd.border[id].cy-1)>>1)-1,
+					   (bd.border[id].cx>>1)  , ((bd.border[id].cy-1)>>1)+1 );
 		}
 	},
 	paintLine : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
-		if(bd.border[id].cx%2===1){
-			this.paint(mf((bd.border[id].cx-1)/2), mf(bd.border[id].cy/2)-1,
-					   mf((bd.border[id].cx-1)/2), mf(bd.border[id].cy/2)   );
+		if(bd.border[id].cx&1){
+			this.paint(((bd.border[id].cx-1)>>1), (bd.border[id].cy>>1)-1,
+					   ((bd.border[id].cx-1)>>1), (bd.border[id].cy>>1)   );
 		}
 		else{
-			this.paint(mf(bd.border[id].cx/2)-1, mf((bd.border[id].cy-1)/2),
-					   mf(bd.border[id].cx/2)  , mf((bd.border[id].cy-1)/2) );
+			this.paint((bd.border[id].cx>>1)-1, ((bd.border[id].cy-1)>>1),
+					   (bd.border[id].cx>>1)  , ((bd.border[id].cy-1)>>1) );
 		}
 	},
 	paintCell : function(cc){
@@ -1234,40 +1606,50 @@ Graphic.prototype = {
 	// pc.cellinside()   座標(x1,y1)-(x2,y2)に含まれるCellのIDリストを取得する
 	// pc.crossinside()  座標(x1,y1)-(x2,y2)に含まれるCrossのIDリストを取得する
 	// pc.borderinside() 座標(x1,y1)-(x2,y2)に含まれるBorderのIDリストを取得する
+	// pc.excellinside() 座標(x1,y1)-(x2,y2)に含まれるExcellのIDリストを取得する
+	// pc.cellinside_cond() 座標(x1,y1)-(x2,y2)に含まれる条件付きCellのIDリストを取得する
 	//---------------------------------------------------------------------------
-	cellinside : function(x1,y1,x2,y2,func){
-		if(func==null){ func = f_true;}
+	cellinside : function(x1,y1,x2,y2){
 		var clist = [];
-		for(var cy=y1;cy<=y2;cy++){
-			for(var cx=x1;cx<=x2;cx++){
-				var c = bd.cnum(cx,cy);
-				if(c!=-1 && func(c)){ clist.push(c);}
-			}
-		}
+		for(var cy=y1;cy<=y2;cy++){ for(var cx=x1;cx<=x2;cx++){
+			var c = bd.cnum(cx,cy);
+			if(c!==-1){ clist.push(c);}
+		}}
 		return clist;
 	},
-	crossinside : function(x1,y1,x2,y2,func){
-		if(func==null){ func = f_true;}
+	crossinside : function(x1,y1,x2,y2){
 		var clist = [];
-		for(var cy=y1;cy<=y2;cy++){
-			for(var cx=x1;cx<=x2;cx++){
-				var c = bd.xnum(cx,cy);
-				if(c!=-1 && func(c)){ clist.push(c);}
-			}
-		}
+		for(var cy=y1;cy<=y2;cy++){ for(var cx=x1;cx<=x2;cx++){
+			var c = bd.xnum(cx,cy);
+			if(c!==-1){ clist.push(c);}
+		}}
 		return clist;
 	},
-	borderinside : function(x1,y1,x2,y2,func){
-		if(func==null){ func = f_true;}
+	borderinside : function(x1,y1,x2,y2){
 		var idlist = [];
-		for(var by=y1;by<=y2;by++){
-			for(var bx=x1;bx<=x2;bx++){
-				if((bx+by)%2===0){ continue;}
-				var id = bd.bnum(bx,by);
-				if(id!=-1 && func(id)){ idlist.push(id);}
-			}
-		}
+		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
+			if(bx&1===by&1){ continue;}
+			var id = bd.bnum(bx,by);
+			if(id!==-1){ idlist.push(id);}
+		}}
 		return idlist;
+	},
+	excellinside : function(x1,y1,x2,y2){
+		var exlist = [];
+		for(var cy=y1;cy<=y2;cy++){ for(var cx=x1;cx<=x2;cx++){
+			var c = bd.exnum(cx,cy);
+			if(c!==-1){ exlist.push(c);}
+		}}
+		return exlist;
+	},
+
+	cellinside_cond : function(x1,y1,x2,y2,func){
+		var clist = [];
+		for(var cy=y1;cy<=y2;cy++){ for(var cx=x1;cx<=x2;cx++){
+			var c = bd.cnum(cx,cy);
+			if(c!==-1 && func(c)){ clist.push(c);}
+		}}
+		return clist;
 	},
 
 	//---------------------------------------------------------------------------
@@ -1317,124 +1699,192 @@ Graphic.prototype = {
 		g.beginPath();
 		g.moveTo(mf(parray[0]+parray[2]), mf(parray[1]+parray[3]));
 		for(var i=4;i<parray.length;i+=2){ g.lineTo(mf(parray[0]+parray[i+0]), mf(parray[1]+parray[i+1]));}
-		if(isClose===1){ g.closePath();}
+		if(isClose){ g.closePath();}
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawBlackCells() Cellの■をCanvasに書き込む
-	// pc.drawWhiteCells() 背景色/・(pc.bcolor=="white"の場合)をCanvasに書き込む
-	// pc.drawQsubCells()  CellのQsubの背景色をCanvasに書き込む
-	// pc.drawErrorCells() Error時にCellの背景色をCanvasに書き込む
-	// pc.drawErrorCell1() Error時にCellの背景色をCanvasに書き込む(1マスのみ)
-	// pc.drawIcebarns()   アイスバーンの背景色をCanvasに書き込む
-	// pc.drawBCells()     Cellの黒マス＋黒マス上の数字をCanvasに書き込む
+	// pc.drawBlackCells() Cellの、境界線の上から描画される■黒マスをCanvasに書き込む
+	// pc.setCellColor()   前景色の設定・描画判定する
+	// pc.setCellColorFunc()   pc.setCellColor関数を設定する
+	//
+	// pc.drawBGCells()    Cellの、境界線の下に描画される背景色をCanvasに書き込む
+	// pc.setBGCellColor() 背景色の設定・描画判定する
+	// pc.setBGCellColorFunc() pc.setBGCellColor関数を設定する
 	//---------------------------------------------------------------------------
+	// err==2になるlitsは、drawBGCellsで描画してます。。
 	drawBlackCells : function(x1,y1,x2,y2){
-		var dsize = k.cwidth*0.06;
-		var clist = this.cellinside(x1,y1,x2,y2,bd.isBlack);
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if     (bd.ErC(c)===0){ g.fillStyle = this.Cellcolor;}
-			else if(bd.ErC(c)===1){ g.fillStyle = this.errcolor1;}
-			else if(bd.ErC(c)===2){ g.fillStyle = this.errcolor2;}
-			else if(bd.ErC(c)===3){ g.fillStyle = this.errcolor3;}
-			if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
-			this.vhide("c"+c+"_dot_");
-		}
-		this.vinc();
-	},
-	drawWhiteCells : function(x1,y1,x2,y2){
-		var dsize = Math.max(mf(k.cwidth*0.06),2);
-		var clist = this.cellinside(x1,y1,x2,y2,bd.isWhite);
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			this.drawErrorCell1(c);
+		var header = "c_fullb_";
 
-			if(bd.QsC(c)===1){
-				if(this.bcolor==="white"){
-					g.fillStyle = this.dotcolor;
-					if(this.vnop("c"+c+"_dot_",1)){
-						g.beginPath();
-						g.arc(mf(bd.cell[c].px+k.cwidth/2), mf(bd.cell[c].py+k.cheight/2), dsize, 0, Math.PI*2, false);
-						g.fill();
-					}
-					if(bd.ErC(c)===0){ this.vhide("c"+c+"_full_");}
-				}
-				else if(bd.ErC(c)===0){
-					g.fillStyle = this.bcolor;
-					if(this.vnop("c"+c+"_full_",1)){
-						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
-					}
+		if(!k.br.IE && !k.isborder){ x1--; y1--; x2++; y2++;}
+		var clist = this.cellinside(x1,y1,x2,y2);
+		for(var i=0;i<clist.length;i++){
+			var c = clist[i];
+			if(this.setCellColor(c)){
+				if(this.vnop(header+c,1)){
+					g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
 				}
 			}
-			else{ if(bd.ErC(c)===0){ this.vhide("c"+c+"_full_");} this.vhide("c"+c+"_dot_");}
+			else{ this.vhide(header+c); continue;}
 		}
 		this.vinc();
 	},
-	drawQSubCells : function(x1,y1,x2,y2){
-		var clist = this.cellinside(x1,y1,x2,y2,f_true);
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if     (bd.ErC(c)===1){ g.fillStyle = this.errbcolor1;}
-			else if(bd.ErC(c)===2){ g.fillStyle = this.errbcolor2;}
-			else if(bd.QsC(c)===1){ g.fillStyle = this.qsubcolor1;}
-			else if(bd.QsC(c)===2){ g.fillStyle = this.qsubcolor2;}
-			else if(bd.QsC(c)===3){ g.fillStyle = this.qsubcolor3;}
-			else{ this.vhide("c"+c+"_full_"); continue;}
-			if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);}
+	// 'qans'用
+	setCellColor : function(c){
+		var err = bd.cell[c].error;
+		if(bd.cell[c].qans!==1){ return false;}
+		else if(err===0){ g.fillStyle = this.Cellcolor; return true;}
+		else if(err===1){ g.fillStyle = this.errcolor1; return true;}
+		return false;
+	},
+	setCellColorFunc : function(type){
+		switch(type){
+		case 'qnum':
+			this.setCellColor = function(c){
+				var err = bd.cell[c].error;
+				if(bd.cell[c].qnum===-1){ return false;}
+				else if(err===0){ g.fillStyle = this.Cellcolor; return true;}
+				else if(err===1){ g.fillStyle = this.errcolor1; return true;}
+				return false;
+			};
+			break;
+		default:
+			break;
 		}
-		this.vinc();
 	},
-	drawErrorCells : function(x1,y1,x2,y2){
-		var clist = this.cellinside(x1,y1,x2,y2,f_true);
-		for(var i=0;i<clist.length;i++){ this.drawErrorCell1(clist[i]);}
-		this.vinc();
-	},
-	drawErrorCell1 : function(cc){
-		if(bd.ErC(cc)===1||bd.ErC(cc)===2){
-			if     (bd.ErC(cc)===1){ g.fillStyle = this.errbcolor1;}
-			else if(bd.ErC(cc)===2){ g.fillStyle = this.errbcolor2;}
-			if(this.vnop("c"+cc+"_full_",1)){ g.fillRect(bd.cell[cc].px, bd.cell[cc].py, k.cwidth, k.cheight);}
-		}
-		else{ this.vhide("c"+cc+"_full_");}
-	},
-	drawIcebarns : function(x1,y1,x2,y2){
-		var clist = this.cellinside(x1,y1,x2,y2,f_true);
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.QuC(c)===6){
-				g.fillStyle = (bd.ErC(c)===1?this.errbcolor1:this.icecolor);
-				if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);}
-			}
-			else{ this.vhide("c"+c+"_full_");}
-		}
-		this.vinc();
-	},
-	drawBCells : function(x1,y1,x2,y2){
-		var clist = this.cellinside(x1,y1,x2,y2,f_true);
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.QnC(c)!==-1){
-				if(bd.ErC(c)===1){ g.fillStyle = this.errcolor1;}
-				else{ g.fillStyle = this.Cellcolor;}
-				if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
-			}
-			else if(bd.ErC(c)===0 && !(k.puzzleid==="lightup" && ans.isShined && ans.isShined(c))){ this.vhide("c"+c+"_full_");}
-			this.dispnumCell_General(c);
-		}
-		this.vinc();
-	},
-	drawDots : function(x1,y1,x2,y2){
-		var ksize = k.cwidth*0.15;
 
-		var clist = this.cellinside(x1,y1,x2,y2,f_true);
+	drawBGCells : function(x1,y1,x2,y2){
+		var header = "c_full_";
+
+		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if(bd.QsC(c)===1){
+			if(this.setBGCellColor(c)){
+				if(this.vnop(header+c,1)){
+					g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
+				}
+			}
+			else{ this.vhide(header+c); continue;}
+		}
+		this.vinc();
+	},
+	// 'error1'用
+	setBGCellColor : function(c){
+		if(bd.cell[c].error===1){ g.fillStyle = this.errbcolor1; return true;}
+		return false;
+	},
+	setBGCellColorFunc : function(type){
+		switch(type){
+		case 'error2':
+			this.setBGCellColor = function(c){
+				var cell = bd.cell[c];
+				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
+				else if(cell.error===2){ g.fillStyle = this.errbcolor2; return true;}
+				return false;
+			}
+			break;
+		case 'qans1':
+			this.setBGCellColor = function(c){
+				var cell = bd.cell[c];
+				if(cell.qans===1){
+					g.fillStyle = (cell.error===1 ? this.errcolor1 : this.Cellcolor);
+					return true;
+				}
+				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
+				else if(cell.qsub ===1 && this.bcolor!=="white"){ g.fillStyle = this.bcolor; return true;}
+				return false;
+			};
+			break;
+		case 'qans2':
+			this.setBGCellColor = function(c){
+				var cell = bd.cell[c];
+				if(cell.qans===1){
+					if     (cell.error===0){ g.fillStyle = this.Cellcolor;}
+					else if(cell.error===1){ g.fillStyle = this.errcolor1;}
+					else if(cell.error===2){ g.fillStyle = this.errcolor2;}
+					return true;
+				}
+				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
+				else if(cell.qsub ===1 && this.bcolor!=="white"){ g.fillStyle = this.bcolor; return true;}
+				return false;
+			};
+			break;
+		case 'qsub1':
+			this.setBGCellColor = function(c){
+				var cell = bd.cell[c];
+				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
+				else if(cell.qsub ===1){ g.fillStyle = this.bcolor;     return true;}
+				return false;
+			};
+			break;
+		case 'qsub2':
+			this.setBGCellColor = function(c){
+				var cell = bd.cell[c];
+				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
+				else if(cell.qsub ===1){ g.fillStyle = this.qsubcolor1; return true;}
+				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2; return true;}
+				return false;
+			};
+			break;
+		case 'qsub3':
+			this.setBGCellColor = function(c){
+				var cell = bd.cell[c];
+				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
+				else if(cell.qsub ===1){ g.fillStyle = this.qsubcolor1; return true;}
+				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2; return true;}
+				else if(cell.qsub ===3){ g.fillStyle = this.qsubcolor3; return true;}
+				return false;
+			};
+			break;
+		case 'icebarn':
+			this.setBGCellColor = function(c){
+				var cell = bd.cell[c];
+				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
+				else if(cell.ques ===6){ g.fillStyle = this.icecolor;   return true;}
+				return false;
+			};
+			break;
+		default:
+			break;
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.drawRDotCells()  ・だけをCanvasに書き込む(・用)
+	// pc.drawDotCells()   ・だけをCanvasに書き込む(小さい四角形用)
+	//---------------------------------------------------------------------------
+	drawRDotCells : function(x1,y1,x2,y2){
+		var dsize = k.cwidth*0.06; dsize=(dsize>2?dsize:2);
+		var header = "c_rdot_";
+
+		var clist = this.cellinside(x1,y1,x2,y2);
+		for(var i=0;i<clist.length;i++){
+			var c = clist[i];
+			if(bd.cell[c].qsub===1){
 				g.fillStyle = this.dotcolor;
-				if(this.vnop("c"+c+"_dot_",1)){ g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-mf(ksize/2), bd.cell[c].py+mf(k.cheight/2)-mf(ksize/2), ksize, ksize);}
+				if(this.vnop(header+c,1)){
+					g.beginPath();
+					g.arc(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, dsize, 0, Math.PI*2, false);
+					g.fill();
+				}
 			}
-			else{ this.vhide("c"+c+"_dot_");}
+			else{ this.vhide(header+c);}
+		}
+		this.vinc();
+	},
+	drawDotCells : function(x1,y1,x2,y2){
+		var ksize = k.cwidth*0.15;
+		var header = "c_dot_";
+
+		var clist = this.cellinside(x1,y1,x2,y2);
+		for(var i=0;i<clist.length;i++){
+			var c = clist[i];
+			if(bd.cell[c].qsub===1){
+				g.fillStyle = this.dotcolor;
+				if(this.vnop(header+c,1)){
+					g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-mf(ksize/2), bd.cell[c].py+mf(k.cheight/2)-mf(ksize/2), ksize, ksize);
+				}
+			}
+			else{ this.vhide(header+c);}
 		}
 		this.vinc();
 	},
@@ -1442,48 +1892,90 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	// pc.drawNumbers()      Cellの数字をCanvasに書き込む
 	// pc.drawArrowNumbers() Cellの数字と矢印をCanvasに書き込む
+	// pc.drawQuesHatenas()  ques===-2の時に？をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawNumbers : function(x1,y1,x2,y2){
-		var clist = this.cellinside(x1,y1,x2,y2,f_true);
-		for(var i=0;i<clist.length;i++){ this.dispnumCell_General(clist[i]);}
+		var clist = this.cellinside(x1,y1,x2,y2);
+		for(var i=0;i<clist.length;i++){ this.dispnumCell(clist[i]);}
 		this.vinc();
 	},
 	drawArrowNumbers : function(x1,y1,x2,y2){
-		var clist = this.cellinside(x1,y1,x2,y2,f_true);
+		var headers = ["c_ar1_", "c_dt1_", "c_dt2_", "c_ar3_", "c_dt3_", "c_dt4_"];
+		var ll = mf(k.cwidth*0.7);							//LineLength
+		var ls = mf((k.cwidth-ll)/2);						//LineStart
+		var lw = (mf(k.cwidth/24)>=1?mf(k.cwidth/24):1);	//LineWidth
+		var lm = mf((lw-1)/2);								//LineMargin
+
+		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 
-			if     (bd.QaC(c)===1){ g.fillStyle = this.BCell_fontcolor;}
-			else if(bd.ErC(c)===1){ g.fillStyle = this.fontErrcolor;}
-			else{ g.fillStyle = this.fontcolor;}
+			if     (bd.cell[c].qans ===1){ g.fillStyle = this.BCell_fontcolor;}
+			else if(bd.cell[c].error===1){ g.fillStyle = this.fontErrcolor;}
+			else                         { g.fillStyle = this.fontcolor;}
 
-			var dir = bd.DiC(c);
-			if(bd.QnC(c)!==-1 && (bd.QnC(c)!==-2||k.isDispHatena) && dir!=0){
-				var ll = mf(k.cwidth*0.7); 	//LineLength
-				var ls = mf((k.cwidth-ll)/2);	//LineStart
-				var lw = (mf(k.cwidth/24)>=1?mf(k.cwidth/24):1); //LineWidth
-				var lm = mf((lw-1)/2); //LineMargin
+			var dir = bd.cell[c].direc;
+			if(bd.cell[c].qnum!==-1 && (bd.cell[c].qnum!==-2||k.isDispHatena) && dir!=0){
 				var px=bd.cell[c].px, py=bd.cell[c].py;
 
-				if((dir===1||dir===2) && this.vnop("c"+c+"_ar1_",1)){
-					px=px+k.cwidth-mf(ls*1.5)-lm; py=py+ls+1;
-					g.fillRect(px, py+(dir==1?ls:0), lw, ll-ls);
-					px+=lw/2;
-				}
-				if((dir===3||dir===4) && this.vnop("c"+c+"_ar3_",1)){
-					px=px+ls+1; py=py+mf(ls*1.5)-lm;
-					g.fillRect(px+(dir==3?ls:0), py, ll-ls, lw);
-					py+=lw/2;
-				}
+				if(dir===k.UP||dir===k.DN){
+					px+=(k.cwidth-mf(ls*1.5)-lm); py+=(ls+1);
+					if(this.vnop(headers[0]+c,1)){ g.fillRect(px, py, lw, ll);}
+					px+=mf(lw/2);
 
-				if(dir===1){ if(this.vnop("c"+c+"_dt1_",1)){ this.inputPath([px   ,py     ,0,0  ,-ll/6   ,ll/3  , ll/6  , ll/3], true); g.fill();} }else{ this.vhide("c"+c+"_dt1_");}
-				if(dir===2){ if(this.vnop("c"+c+"_dt2_",1)){ this.inputPath([px   ,py+ll  ,0,0  ,-ll/6  ,-ll/3  , ll/6  ,-ll/3], true); g.fill();} }else{ this.vhide("c"+c+"_dt2_");}
-				if(dir===3){ if(this.vnop("c"+c+"_dt3_",1)){ this.inputPath([px   ,py     ,0,0  , ll*0.3,-ll/6  , ll*0.3, ll/6], true); g.fill();} }else{ this.vhide("c"+c+"_dt3_");}
-				if(dir===4){ if(this.vnop("c"+c+"_dt4_",1)){ this.inputPath([px+ll,py     ,0,0  ,-ll*0.3,-ll/6  ,-ll*0.3, ll/6], true); g.fill();} }else{ this.vhide("c"+c+"_dt4_");}
+					if(dir===k.UP){
+						if(this.vnop(headers[1]+c,1)){
+							this.inputPath([px,py     ,0,0 ,-ll/6, ll/3 ,ll/6, ll/3], true);
+							g.fill();
+						}
+					}
+					else{ this.vhide(headers[1]+c);}
+					if(dir===k.DN){
+						if(this.vnop(headers[2]+c,1)){
+							this.inputPath([px,py+ll  ,0,0 ,-ll/6,-ll/3 ,ll/6,-ll/3], true);
+							g.fill();
+						}
+					}
+					else{ this.vhide(headers[2]+c);}
+				}
+				else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c]);}
+
+				if(dir===k.LT||dir===k.RT){
+					px+=(ls+1); py+=(mf(ls*1.5)-lm);
+					if(this.vnop(headers[3]+c,1)){ g.fillRect(px, py, ll, lw);}
+					py+=mf(lw/2);
+
+					if(dir===k.LT){
+						if(this.vnop(headers[4]+c,1)){
+							this.inputPath([px   ,py  ,0,0 , ll/3,-ll/6 , ll/3,ll/6], true);
+							g.fill();
+						}
+					}
+					else{ this.vhide(headers[4]+c);}
+					if(dir===k.RT){
+						if(this.vnop(headers[5]+c,1)){
+							this.inputPath([px+ll,py  ,0,0 ,-ll/3,-ll/6 ,-ll/3,ll/6], true);
+							g.fill();
+						}
+					}
+					else{ this.vhide(headers[5]+c);}
+				}
+				else{ this.vhide([headers[3]+c, headers[4]+c, headers[5]+c]);}
 			}
-			else{ this.vhide(["c"+c+"_ar1_","c"+c+"_ar3_","c"+c+"_dt1_","c"+c+"_dt2_","c"+c+"_dt3_","c"+c+"_dt4_"]);}
+			else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c, headers[4]+c, headers[5]+c]);}
 
-			this.dispnumCell_General(c);
+			this.dispnumCell(c);
+		}
+		this.vinc();
+	},
+	drawQuesHatenas : function(x1,y1,x2,y2){
+		var clist = this.cellinside(x1,y1,x2,y2);
+		for(var id=0;id<clist.length;id++){
+			var obj = bd.cell[id];
+			if(bd.cell[id].ques!==-2){ this.hideEL(obj.numobj); continue;}
+			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+			var color = (bd.cell[id].error===1 ? this.fontErrcolor : this.fontcolor);
+			this.dispnum(obj.numobj, 1, "?", 0.8, color, obj.px, obj.py);
 		}
 		this.vinc();
 	},
@@ -1494,21 +1986,22 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	drawCrosses : function(x1,y1,x2,y2){
 		var csize = mf(k.cwidth*this.crosssize+1);
-		var clist = this.crossinside(x1,y1,x2,y2,f_true);
+		var headers = ["x_cp1_", "x_cp2_"];
+		g.lineWidth = 1;
+
+		var clist = this.crossinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if(bd.QnX(c)!==-1){
-				if(bd.ErX(c)===1){ g.fillStyle = this.errcolor1;}
-				else{ g.fillStyle = "white";}
-				if(this.vnop("x"+c+"_cp1_",1)){
+			if(bd.cross[c].qnum!==-1){
+				g.fillStyle = (bd.cross[c].error===1 ? this.errcolor1 : "white");
+				if(this.vnop(headers[0]+c,1)){
 					g.beginPath();
 					g.arc(bd.cross[c].px, bd.cross[c].py, csize, 0, Math.PI*2, false);
 					g.fill();
 				}
 
-				g.lineWidth = 1;
 				g.strokeStyle = "black";
-				if(this.vnop("x"+c+"_cp2_",0)){
+				if(this.vnop(headers[1]+c,0)){
 					if(k.br.IE){
 						g.beginPath();
 						g.arc(bd.cross[c].px, bd.cross[c].py, csize, 0, Math.PI*2, false);
@@ -1516,89 +2009,102 @@ Graphic.prototype = {
 					g.stroke();
 				}
 			}
-			else{ this.vhide(["x"+c+"_cp1_", "x"+c+"_cp2_"]);}
+			else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			this.dispnumCross(c);
 		}
 		this.vinc();
 	},
 	drawCrossMarks : function(x1,y1,x2,y2){
 		var csize = k.cwidth*this.crosssize;
-		var clist = this.crossinside(x1-1,y1-1,x2+1,y2+1,f_true);
+		var header = "x_cm_";
+
+		var clist = this.crossinside(x1-1,y1-1,x2+1,y2+1);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if(bd.QnX(c)===1){
-				if(bd.ErX(c)===1){ g.fillStyle = this.errcolor1;}
-				else{ g.fillStyle = this.Cellcolor;}
-
-				if(this.vnop("x"+c+"_cm_",1)){
+			if(bd.cross[c].qnum===1){
+				g.fillStyle = (bd.cross[c].error===1 ? this.errcolor1 : this.Cellcolor);
+				if(this.vnop(header+c,1)){
 					g.beginPath();
 					g.arc(bd.cross[c].px, bd.cross[c].py, csize, 0, Math.PI*2, false);
 					g.fill();
 				}
 			}
-			else{ this.vhide("x"+c+"_cm_");}
+			else{ this.vhide(header+c);}
 		}
 		this.vinc();
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawBorders()     境界線をCanvasに書き込む
-	// pc.drawIceBorders()  アイスバーンの境界線をCanvasに書き込む
-	// pc.drawBorder1()     idを指定して1カ所の境界線をCanvasに書き込む
-	// pc.drawBorder1x()    x,yを指定して1カ所の境界線をCanvasに書き込む
-	// pc.drawBorderQsubs() 境界線用の補助記号をCanvasに書き込む
+	// pc.drawBorders()       境界線をCanvasに書き込む
+	// pc.drawBordersAsLine() k.isborderAsLine===1の時、線をCanvasに書き込む
+	// pc.drawIceBorders()    アイスバーンの境界線をCanvasに書き込む
+	// pc.drawBorder1x()      (x,y)を指定して1カ所の境界線をCanvasに書き込む
+	// pc.drawBorderQsubs()   境界線用の補助記号をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawBorders : function(x1,y1,x2,y2){
-		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
+		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
-			this.drawBorder1(id, bd.isBorder(id));
+
+			if     (bd.border[id].qans !==1){ g.fillStyle = this.BorderQuescolor;    }
+			else if(bd.border[id].error===1){ g.fillStyle = this.errcolor1;          }
+			else if(bd.border[id].error===2){ g.fillStyle = this.errBorderQanscolor2;}
+			else                            { g.fillStyle = this.BorderQanscolor;    }
+
+			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, bd.isBorder(id));
+		}
+	},
+	drawBordersAsLine : function(x1,y1,x2,y2){
+		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+		for(var i=0;i<idlist.length;i++){
+			var id = idlist[i];
+
+			if(bd.border[id].qans!==1){ g.fillStyle = this.BorderQuescolor; }
+			else                      { g.fillStyle = this.getLineColor(id);}
+
+			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, bd.isBorder(id));
 		}
 		this.vinc();
 	},
 	drawIceBorders : function(x1,y1,x2,y2){
-		g.fillStyle = pc.Cellcolor;
-		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
+		g.fillStyle = this.Cellcolor;
+		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i], cc1 = bd.cc1(id), cc2 = bd.cc2(id);
-			this.drawBorder1x(bd.border[id].cx,bd.border[id].cy,(cc1!==-1&&cc2!==-1&&(bd.QuC(cc1)===6^bd.QuC(cc2)===6)));
+
+			var flag = (cc1!==-1 && cc2!==-1 && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6));
+			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, flag);
 		}
 		this.vinc();
 	},
-	drawBorder1 : function(id, flag){
-		if(bd.QaB(id)!==1){ g.fillStyle = this.BorderQuescolor;}
-		else if(bd.QaB(id)===1){
-			if(k.isborderAsLine===1){ g.fillStyle = this.getLineColor(id);}
-			else{
-				if     (bd.ErB(id)===1){ g.fillStyle = this.errcolor1;          }
-				else if(bd.ErB(id)===2){ g.fillStyle = this.errBorderQanscolor2;}
-				else                   { g.fillStyle = this.BorderQanscolor;    }
-			}
-		}
 
-		this.drawBorder1x(bd.border[id].cx,bd.border[id].cy,flag);
-	},
 	drawBorder1x : function(bx,by,flag){
-		var lw = this.lw + this.addlw, lm = this.lm, pid = "b"+bx+"_"+by+"_bd_";
-		if(!flag){ this.vhide(pid); return;}
+		var vid = ["b_bd", bx, by].join("_");
+		if(!flag){ this.vhide(vid); return;}
 
-		if(this.vnop(pid,1)){
-			if     (by%2===1){ g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-lm, k.p0.x+mf((by-1)*k.cheight/2)-lm, lw, k.cheight+lw);}
-			else if(bx%2===1){ g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-lm, k.p0.x+mf(by*k.cheight/2)-lm, k.cwidth+lw,  lw);}
+		if(this.vnop(vid,1)){
+			var lw = this.lw + this.addlw, lm = this.lm;
+
+			if     (by&1){ g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-lm, k.p0.x+mf((by-1)*k.cheight/2)-lm, lw, k.cheight+lw);}
+			else if(bx&1){ g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-lm, k.p0.x+mf(by*k.cheight/2)-lm, k.cwidth+lw,  lw);}
 		}
 	},
 
 	drawBorderQsubs : function(x1,y1,x2,y2){
 		var m = mf(k.cwidth*0.15); //Margin
+		var header = "b_qsub1_";
 		g.fillStyle = this.BorderQsubcolor;
 
-		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
+		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
-			if(bd.QsB(id)!==1){ this.vhide("b"+id+"_qsub1_"); continue;}
-
-			if     (bd.border[id].cx%2===1){ if(this.vnop("b"+id+"_qsub1_",1)){ g.fillRect(bd.border[id].px,                  bd.border[id].py-mf(k.cheight/2)+m, 1,            k.cheight-2*m);} }
-			else if(bd.border[id].cy%2===1){ if(this.vnop("b"+id+"_qsub1_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)+m, bd.border[id].py,                   k.cwidth-2*m, 1            );} }
+			if(bd.border[id].qsub===1){
+				if(this.vnop(header+id,1)){
+					if     (bd.border[id].cx&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2)+m, 1,k.cheight-2*m);}
+					else if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)+m,  bd.border[id].py, k.cwidth-2*m, 1);}
+				}
+			}
+			else{ this.vhide(header+id);}
 		}
 		this.vinc();
 	},
@@ -1611,47 +2117,54 @@ Graphic.prototype = {
 		var lw = this.lw, lm = this.lm+1;
 		var cw = k.cwidth;
 		var ch = k.cheight;
+		var chars = ['u','d','l','r'];
 
 		g.fillStyle = this.BBcolor;
 
-		var clist = this.cellinside(x1,y1,x2,y2,f_true);
+		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.QaC(c)!=1){ for(var n=1;n<=12;n++){ this.vhide("c"+c+"_bb"+n+"_");} continue;}
+			var c = clist[i], vids=[];
+			for(var n=0;n<12;n++){ vids[n]=['c_bb',n,c].join('_');}
+			if(bd.cell[c].qans!==1){ this.vhide(vids); continue;}
 
-			var bx = 2*bd.cell[c].cx+1, by = 2*bd.cell[c].cy+1;
+			var cx = bd.cell[c].cx, cy = bd.cell[c].cy, bx = 2*cx+1, by = 2*cy+1;
 			var px = bd.cell[c].px, py = bd.cell[c].py;
 
-			var isUP = ((bd.QuB(bd.ub(c))!==1) && !(!k.isoutsideborder&&by<=1));
-			var isLT = ((bd.QuB(bd.lb(c))!==1) && !(!k.isoutsideborder&&bx<=1));
-			var isRT = ((bd.QuB(bd.rb(c))!==1) && !(!k.isoutsideborder&&bx>=2*k.qcols-1));
-			var isDN = ((bd.QuB(bd.db(c))!==1) && !(!k.isoutsideborder&&by>=2*k.qrows-1));
+			// この関数を呼ぶ場合は全てk.isoutsideborder===0なので
+			// 外枠用の考慮部分を削除しています。
+			var UPin = (cy>0), DNin = (cy<k.qrows-1);
+			var LTin = (cx>0), RTin = (cx<k.qcols-1);
 
-			var isUL = (bd.QuB(bd.bnum(bx-2,by-1))!==1 && bd.QuB(bd.bnum(bx-1,by-2))!==1);
-			var isUR = (bd.QuB(bd.bnum(bx+2,by-1))!==1 && bd.QuB(bd.bnum(bx+1,by-2))!==1);
-			var isDL = (bd.QuB(bd.bnum(bx-2,by+1))!==1 && bd.QuB(bd.bnum(bx-1,by+2))!==1);
-			var isDR = (bd.QuB(bd.bnum(bx+2,by+1))!==1 && bd.QuB(bd.bnum(bx+1,by+2))!==1);
+			var isUP = (!UPin || bd.border[bd.bnum(bx  ,by-1)].ques===1);
+			var isDN = (!DNin || bd.border[bd.bnum(bx  ,by+1)].ques===1);
+			var isLT = (!LTin || bd.border[bd.bnum(bx-1,by  )].ques===1);
+			var isRT = (!RTin || bd.border[bd.bnum(bx+1,by  )].ques===1);
 
-			if(!isLT){ if(this.vnop("c"+c+"_bb1_",1)){ g.fillRect(px   +lm, py   +lm, 1    ,ch-lw);} }else{ this.vhide("c"+c+"_bb1_");}
-			if(!isRT){ if(this.vnop("c"+c+"_bb2_",1)){ g.fillRect(px+cw-lm, py   +lm, 1    ,ch-lw);} }else{ this.vhide("c"+c+"_bb2_");}
-			if(!isUP){ if(this.vnop("c"+c+"_bb3_",1)){ g.fillRect(px   +lm, py   +lm, cw-lw,1    );} }else{ this.vhide("c"+c+"_bb3_");}
-			if(!isDN){ if(this.vnop("c"+c+"_bb4_",1)){ g.fillRect(px   +lm, py+ch-lm, cw-lw,1    );} }else{ this.vhide("c"+c+"_bb4_");}
+			var isUL = (!UPin || !LTin || bd.border[bd.bnum(bx-2,by-1)].ques===1 || bd.border[bd.bnum(bx-1,by-2)].ques===1);
+			var isUR = (!UPin || !RTin || bd.border[bd.bnum(bx+2,by-1)].ques===1 || bd.border[bd.bnum(bx+1,by-2)].ques===1);
+			var isDL = (!DNin || !LTin || bd.border[bd.bnum(bx-2,by+1)].ques===1 || bd.border[bd.bnum(bx-1,by+2)].ques===1);
+			var isDR = (!DNin || !RTin || bd.border[bd.bnum(bx+2,by+1)].ques===1 || bd.border[bd.bnum(bx+1,by+2)].ques===1);
+
+			if(isUP){ if(this.vnop(vids[0],1)){ g.fillRect(px   +lm, py   +lm, cw-lw,1    );} }else{ this.vhide(vids[0]);}
+			if(isDN){ if(this.vnop(vids[1],1)){ g.fillRect(px   +lm, py+ch-lm, cw-lw,1    );} }else{ this.vhide(vids[1]);}
+			if(isLT){ if(this.vnop(vids[2],1)){ g.fillRect(px   +lm, py   +lm, 1    ,ch-lw);} }else{ this.vhide(vids[2]);}
+			if(isRT){ if(this.vnop(vids[3],1)){ g.fillRect(px+cw-lm, py   +lm, 1    ,ch-lw);} }else{ this.vhide(vids[3]);}
 
 			if(tileflag){
-				if(isLT&&!(isUL&&isUP)){ if(this.vnop("c"+c+"_bb5_",1)){ g.fillRect(px   -lm, py   +lm, lw+1,1   );} }else{ this.vhide("c"+c+"_bb5_");}
-				if(isLT&&!(isDL&&isDN)){ if(this.vnop("c"+c+"_bb6_",1)){ g.fillRect(px   -lm, py+ch-lm, lw+1,1   );} }else{ this.vhide("c"+c+"_bb6_");}
-				if(isUP&&!(isUL&&isLT)){ if(this.vnop("c"+c+"_bb7_",1)){ g.fillRect(px   +lm, py   -lm, 1   ,lw+1);} }else{ this.vhide("c"+c+"_bb7_");}
-				if(isUP&&!(isUR&&isRT)){ if(this.vnop("c"+c+"_bb8_",1)){ g.fillRect(px+cw-lm, py   -lm, 1   ,lw+1);} }else{ this.vhide("c"+c+"_bb8_");}
+				if(!isUP&&(isUL||isLT)){ if(this.vnop(vids[4],1)){ g.fillRect(px   +lm, py   -lm, 1   ,lw+1);} }else{ this.vhide(vids[4]);}
+				if(!isUP&&(isUR||isRT)){ if(this.vnop(vids[5],1)){ g.fillRect(px+cw-lm, py   -lm, 1   ,lw+1);} }else{ this.vhide(vids[5]);}
+				if(!isLT&&(isUL||isUP)){ if(this.vnop(vids[6],1)){ g.fillRect(px   -lm, py   +lm, lw+1,1   );} }else{ this.vhide(vids[6]);}
+				if(!isLT&&(isDL||isDN)){ if(this.vnop(vids[7],1)){ g.fillRect(px   -lm, py+ch-lm, lw+1,1   );} }else{ this.vhide(vids[7]);}
 			}
 			else{
-				if(isLT&&!(isUL&&isUP)){ if(this.vnop("c"+c+"_bb5_" ,1)){ g.fillRect(px      , py   +lm, lm+1,1   );} }else{ this.vhide("c"+c+"_bb5_"); }
-				if(isLT&&!(isDL&&isDN)){ if(this.vnop("c"+c+"_bb6_" ,1)){ g.fillRect(px      , py+ch-lm, lm+1,1   );} }else{ this.vhide("c"+c+"_bb6_"); }
-				if(isUP&&!(isUL&&isLT)){ if(this.vnop("c"+c+"_bb7_" ,1)){ g.fillRect(px   +lm, py      , 1   ,lm+1);} }else{ this.vhide("c"+c+"_bb7_"); }
-				if(isUP&&!(isUR&&isRT)){ if(this.vnop("c"+c+"_bb8_" ,1)){ g.fillRect(px+cw-lm, py      , 1   ,lm+1);} }else{ this.vhide("c"+c+"_bb8_"); }
-				if(isRT&&!(isUR&&isUP)){ if(this.vnop("c"+c+"_bb9_" ,1)){ g.fillRect(px+cw-lm, py   +lm, lm+1,1   );} }else{ this.vhide("c"+c+"_bb9_"); }
-				if(isRT&&!(isDR&&isDN)){ if(this.vnop("c"+c+"_bb10_",1)){ g.fillRect(px+cw-lm, py+ch-lm, lm+1,1   );} }else{ this.vhide("c"+c+"_bb10_");}
-				if(isDN&&!(isDL&&isLT)){ if(this.vnop("c"+c+"_bb11_",1)){ g.fillRect(px   +lm, py+ch-lm, 1   ,lm+1);} }else{ this.vhide("c"+c+"_bb11_");}
-				if(isDN&&!(isDR&&isRT)){ if(this.vnop("c"+c+"_bb12_",1)){ g.fillRect(px+cw-lm, py+ch-lm, 1   ,lm+1);} }else{ this.vhide("c"+c+"_bb12_");}
+				if(!isUP&&(isUL||isLT)){ if(this.vnop(vids[4] ,1)){ g.fillRect(px   +lm, py      , 1   ,lm+1);} }else{ this.vhide(vids[4] );}
+				if(!isUP&&(isUR||isRT)){ if(this.vnop(vids[5] ,1)){ g.fillRect(px+cw-lm, py      , 1   ,lm+1);} }else{ this.vhide(vids[5] );}
+				if(!isDN&&(isDL||isLT)){ if(this.vnop(vids[6] ,1)){ g.fillRect(px   +lm, py+ch-lm, 1   ,lm+1);} }else{ this.vhide(vids[6] );}
+				if(!isDN&&(isDR||isRT)){ if(this.vnop(vids[7] ,1)){ g.fillRect(px+cw-lm, py+ch-lm, 1   ,lm+1);} }else{ this.vhide(vids[7] );}
+				if(!isLT&&(isUL||isUP)){ if(this.vnop(vids[8] ,1)){ g.fillRect(px      , py   +lm, lm+1,1   );} }else{ this.vhide(vids[8] );}
+				if(!isLT&&(isDL||isDN)){ if(this.vnop(vids[9] ,1)){ g.fillRect(px      , py+ch-lm, lm+1,1   );} }else{ this.vhide(vids[9] );}
+				if(!isRT&&(isUR||isUP)){ if(this.vnop(vids[10],1)){ g.fillRect(px+cw-lm, py   +lm, lm+1,1   );} }else{ this.vhide(vids[10]);}
+				if(!isRT&&(isDR||isDN)){ if(this.vnop(vids[11],1)){ g.fillRect(px+cw-lm, py+ch-lm, lm+1,1   );} }else{ this.vhide(vids[11]);}
 			}
 		}
 		this.vinc();
@@ -1664,59 +2177,54 @@ Graphic.prototype = {
 	// pc.drawPekes()    境界線上の×をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawLines : function(x1,y1,x2,y2){
-		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
+		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 		for(var i=0;i<idlist.length;i++){ this.drawLine1(idlist[i], bd.isLine(idlist[i]));}
 		this.vinc();
 	},
 	drawLine1 : function(id, flag){
-		var lw = this.lw, lm = this.lm, pid = "b"+id+"_line_";
+		var vid = "b_line_"+id;
+		if(!flag){ this.vhide(vid); return;}
 
 		g.fillStyle = this.getLineColor(id);
-		lw += this.addlw;
-
-		if(!flag){ this.vhide(pid);}
-		else if(bd.border[id].cx%2===1 && this.vnop(pid,1)){
-			g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);
-		}
-		else if(bd.border[id].cy%2===1 && this.vnop(pid,1)){
-			g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-lm, k.cwidth+lw, lw);
+		if(this.vnop(vid,1)){
+			var lw = this.lw + this.addlw, lm = this.lm;
+			if     (bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
+			else if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
 		}
 	},
 	getLineColor : function(id){
 		this.addlw = 0;
-		if     (bd.ErB(id)===1){ this.addlw=1; return this.errlinecolor1;}
-		else if(bd.ErB(id)===2){ return this.errlinecolor2;}
-		else if(k.irowake===0 || !menu.getVal('irowake') || !bd.border[id].color){ return this.linecolor;}
+		if     (bd.border[id].error===1){ this.addlw=1; return this.errlinecolor1;}
+		else if(bd.border[id].error===2){ return this.errlinecolor2;}
+		else if(k.irowake===0 || !pp.getVal('irowake') || !bd.border[id].color){ return this.linecolor;}
 		return bd.border[id].color;
 	},
 	drawPekes : function(x1,y1,x2,y2,flag){
-		var size = mf(k.cwidth*0.15);
-		if(size<3){ size=3;}
+		var size = mf(k.cwidth*0.15); if(size<3){ size=3;}
+		var headers = ["b_peke0_", "b_peke1_"];
 		g.strokeStyle = this.pekecolor;
+		g.lineWidth = 1;
 
-		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
+		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
-			if(bd.QsB(id)!==2){ this.vhide(["b"+id+"_peke0_","b"+id+"_peke1_","b"+id+"_peke2_"]); continue;}
+			if(bd.border[id].qsub!==2){ this.vhide([headers[0]+id, headers[1]+id]); continue;}
 
 			g.fillStyle = "white";
-			if((flag===0 || flag===2)){ if(this.vnop("b"+id+"_peke0_",1)){
-				g.fillRect(bd.border[id].px-size, bd.border[id].py-size, 2*size+1, 2*size+1);
-			}}
-			else{ this.vhide("b"+id+"_peke0_");}
+			if(flag===0 || flag===2){
+				if(this.vnop(headers[0]+id,1)){
+					g.fillRect(bd.border[id].px-size, bd.border[id].py-size, 2*size+1, 2*size+1);
+				}
+			}
+			else{ this.vhide(headers[0]+id);}
 
 			if(flag===0 || flag===1){
-				g.lineWidth = 1;
-				if(this.vnop("b"+id+"_peke1_",0)){
-					this.inputPath([bd.border[id].px,bd.border[id].py ,-size+1,-size+1 ,size,size],false);
-					g.stroke();
-				}
-				if(this.vnop("b"+id+"_peke2_",0)){
-					this.inputPath([bd.border[id].px,bd.border[id].py ,-size+1,size ,size,-size+1],false);
+				if(this.vnop(headers[1]+id,0)){
+					this.inputPath([bd.border[id].px,bd.border[id].py ,-size+1,-size+1 ,0,0 ,-size+1,size ,size,-size+1 ,0,0 ,size,size ,-size+1,-size+1],false);
 					g.stroke();
 				}
 			}
-			else{ this.vhide(["b"+id+"_peke1_","b"+id+"_peke2_"]);}
+			else{ this.vhide(headers[1]+id);}
 		}
 		this.vinc();
 	},
@@ -1726,46 +2234,42 @@ Graphic.prototype = {
 	// pc.drawTriangle1()  三角形をCanvasに書き込む(1マスのみ)
 	//---------------------------------------------------------------------------
 	drawTriangle : function(x1,y1,x2,y2){
-		var clist = this.cellinside(x1,y1,x2,y2,f_true);
+		var headers = ["c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_"];
+
+		if(!k.br.IE && k.puzzleid!=='reflect'){ x1--; y1--; x2++; y2++;}
+		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			var num = (bd.QuC(c)!==0?bd.QuC(c):bd.QaC(c));
-			if(k.puzzleid==="kinkonkan"){ num=bd.ErC(c); }
+			var num = (bd.cell[c].ques!==0?bd.cell[c].ques:bd.cell[c].qans);
 
-			if(k.puzzleid==="kinkonkan"){ g.fillStyle=this.errbcolor2; }
-			else if((bd.ErC(c)===1||bd.ErC(c)===4) && k.puzzleid!=="shakashaka"){ g.fillStyle = this.errcolor1;}
-			else{ g.fillStyle = this.Cellcolor;}
+			this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
+			if(num>=2 && num<=5){
+				switch(k.puzzleid){
+				case 'reflect':
+					g.fillStyle = ((bd.cell[c].error===1||bd.cell[c].error===4) ? this.errcolor1 : this.Cellcolor);
+					break;
+				default:
+					g.fillStyle = this.Cellcolor;
+					break;
+				}
 
-			this.drawTriangle1(bd.cell[c].px,bd.cell[c].py,num,bd.cell[c].cx,bd.cell[c].cy);
+				var cx=bd.cell[c].cx, cy=bd.cell[c].cy;
+				this.drawTriangle1(bd.cell[c].px,bd.cell[c].py,num,headers[num-2]+c);
+			}
 		}
 		this.vinc();
 	},
-	drawTriangle1 : function(px,py,num,cx,cy){
-		var mgn = (k.puzzleid==="reflect"?1:0);
-		var header = "c"+cx+"_"+cy;
-
-		if(num>=2 && num<=5){
-			if(num===2){ if(this.vnop(header+"_tri2_",1)){
-				this.inputPath([px,py ,mgn,mgn ,mgn,k.cheight+1 ,k.cwidth+1,k.cheight+1],true); g.fill();
-			}}
-			else{ this.vhide(header+"_tri2_");}
-
-			if(num===3){ if(this.vnop(header+"_tri3_",1)){
-				this.inputPath([px,py ,k.cwidth+1,mgn ,mgn,k.cheight+1 ,k.cwidth+1,k.cheight+1],true); g.fill();
-			}}
-			else{ this.vhide(header+"_tri3_");}
-
-			if(num===4){ if(this.vnop(header+"_tri4_",1)){
-				this.inputPath([px,py ,mgn,mgn ,k.cwidth+1,mgn ,k.cwidth+1,k.cheight+1],true); g.fill();
-			}}
-			else{ this.vhide(header+"_tri4_");}
-
-			if(num===5){ if(this.vnop(header+"_tri5_",1)){
-				this.inputPath([px,py ,mgn,mgn ,k.cwidth+1,mgn ,mgn,k.cheight+1],true); g.fill();
-			}}
-			else{ this.vhide(header+"_tri5_");}
+	drawTriangle1 : function(px,py,num,vid){
+		if(this.vnop(vid,1)){
+			var mgn = (k.puzzleid==="reflect"?1:0);
+			switch(num){
+				case 2: this.inputPath([px,py ,mgn,mgn        ,mgn,k.cheight+1 ,k.cwidth+1,k.cheight+1],true); break;
+				case 3: this.inputPath([px,py ,k.cwidth+1,mgn ,mgn,k.cheight+1 ,k.cwidth+1,k.cheight+1],true); break;
+				case 4: this.inputPath([px,py ,mgn,mgn        ,k.cwidth+1,mgn  ,k.cwidth+1,k.cheight+1],true); break;
+				case 5: this.inputPath([px,py ,mgn,mgn        ,k.cwidth+1,mgn  ,mgn       ,k.cheight+1],true); break;
+			}
+			g.fill();
 		}
-		else{ this.vhide([header+"_tri2_",header+"_tri3_",header+"_tri4_",header+"_tri5_"]);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -1776,65 +2280,100 @@ Graphic.prototype = {
 		g.lineWidth = 1;
 
 		var rsize = k.cwidth*0.35;
+		var headers = ["c_MB1_", "c_MB2a_"];
 
-		var clist = this.cellinside(x1,y1,x2,y2,f_true);
+		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
+			if(bd.cell[c].qsub===0){ this.vhide([headers[0]+c, headers[1]+c]); continue;}
 
-			if(bd.QsC(c)===1){
-				if(this.vnop("c"+c+"_MB1_",0)){
+			switch(bd.cell[c].qsub){
+			case 1:
+				if(this.vnop(headers[0]+c,0)){
 					g.beginPath();
 					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize, 0, Math.PI*2, false);
 					g.stroke();
 				}
-			}
-			else{ this.vhide("c"+c+"_MB1_");}
-
-			if(bd.QsC(c)===2){
-				if(this.vnop("c"+c+"_MB2a_",0)){
-					this.inputPath([bd.cell[c].px+mf(k.cwidth/2),bd.cell[c].py+mf(k.cheight/2) ,-rsize,-rsize ,rsize,rsize],true);
+				this.vhide(headers[1]+c);
+				break;
+			case 2:
+				if(this.vnop(headers[1]+c,0)){
+					this.inputPath([bd.cell[c].px+mf(k.cwidth/2),bd.cell[c].py+mf(k.cheight/2) ,-rsize,-rsize ,0,0 ,-rsize,rsize ,rsize,-rsize ,0,0 ,rsize,rsize ,-rsize,-rsize],true);
 					g.stroke();
 				}
-				if(this.vnop("c"+c+"_MB2b_",0)){
-					this.inputPath([bd.cell[c].px+mf(k.cwidth/2),bd.cell[c].py+mf(k.cheight/2) ,-rsize,rsize ,rsize,-rsize],true);
-					g.stroke();
-				}
+				this.vhide(headers[0]+c);
+				break;
 			}
-			else{ this.vhide(["c"+c+"_MB2a_", "c"+c+"_MB2b_"]);}
 		}
 		this.vinc();
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawQueses41_42()  Cell上の黒丸と白丸をCanvasに書き込む
+	// pc.drawQueses41_42()    Cell上の黒丸と白丸をCanvasに書き込む
+	// pc.drawCircledNumbers() Cell上の丸数字を書き込む
 	//---------------------------------------------------------------------------
 	drawQueses41_42 : function(x1,y1,x2,y2){
-		var rsize  = mf(k.cwidth*0.40);
-		var rsize2 = mf(k.cwidth*0.34);
+		var rsize  = mf(k.cwidth*this.circleratio[0]);
+		var rsize2 = mf(k.cwidth*this.circleratio[1]);
+		var mgnx = mf(k.cwidth/2), mgny = mf(k.cheight/2);
+		var headers = ["c_cir41a_", "c_cir41b_"];
 
-		var clist = this.cellinside(x1,y1,x2,y2,f_true);
+		var clist = this.cellinside(x1,y1,x2,y2);
+		for(var i=0;i<clist.length;i++){
+			var c = clist[i], px = bd.cell[c].px+mgnx, py = bd.cell[c].py+mgny;
+
+			if(bd.cell[c].ques===41 || bd.cell[c].ques===42){
+				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+				if(this.vnop(headers[0]+c,1)){
+					g.beginPath();
+					g.arc(px, py, rsize , 0, Math.PI*2, false);
+					g.fill();
+				}
+			}
+			else{ this.vhide(headers[0]+c);}
+
+			if(bd.cell[c].ques===41){
+				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
+				if(this.vnop(headers[1]+c,1)){
+					g.beginPath();
+					g.arc(px, py, rsize2, 0, Math.PI*2, false);
+					g.fill();
+				}
+			}
+			else{ this.vhide(headers[1]+c);}
+		}
+		this.vinc();
+	},
+	drawCircledNumbers : function(x1,y1,x2,y2){
+		var rsize  = k.cwidth*this.circleratio[0];
+		var rsize2 = k.cwidth*this.circleratio[1];
+		var mgnx = mf(k.cwidth/2), mgny = mf(k.cheight/2);
+		var headers = ["c_cira_", "c_cirb_"];
+
+		g.lineWidth = k.cwidth*0.05;
+		var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
+			if(bd.cell[c].qnum!=-1){
+				var px=bd.cell[c].px+mgnx, py=bd.cell[c].py+mgny;
 
-			if(bd.QuC(c)===41 || bd.QuC(c)===42){
-				g.fillStyle = this.Cellcolor;
-				if(this.vnop("c"+c+"_cir41a_",1)){
+				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : this.circledcolor);
+				if(this.vnop(headers[1]+c,1)){
 					g.beginPath();
-					g.arc(mf(bd.cell[c].px+mf(k.cwidth/2)), mf(bd.cell[c].py+mf(k.cheight/2)), rsize , 0, Math.PI*2, false);
+					g.arc(px, py, rsize2, 0, Math.PI*2, false);
 					g.fill();
 				}
-			}
-			else{ this.vhide("c"+c+"_cir41a_");}
 
-			if(bd.QuC(c)===41){
-				g.fillStyle = "white";
-				if(this.vnop("c"+c+"_cir41b_",1)){
+				g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+				if(this.vnop(headers[0]+c,0)){
 					g.beginPath();
-					g.arc(mf(bd.cell[c].px+mf(k.cwidth/2)), mf(bd.cell[c].py+mf(k.cheight/2)), rsize2, 0, Math.PI*2, false);
-					g.fill();
+					g.arc(px, py, rsize , 0, Math.PI*2, false);
+					g.stroke();
 				}
 			}
-			else{ this.vhide("c"+c+"_cir41b_");}
+			else{ this.vhide([headers[0]+c, headers[1]+c]);}
+
+			this.dispnumCell(c);
 		}
 		this.vinc();
 	},
@@ -1844,96 +2383,102 @@ Graphic.prototype = {
 	// pc.drawLineParts1()  ╋などをCanvasに書き込む(1マスのみ)
 	//---------------------------------------------------------------------------
 	drawLineParts : function(x1,y1,x2,y2){
-		var clist = this.cellinside(x1,y1,x2,y2,f_true);
+		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){ this.drawLineParts1(clist[i]);}
 		this.vinc();
 	},
 	drawLineParts1 : function(id){
-		var lw = this.lw;
+		var vids = ["c_lp1_"+id, "c_lp2_"+id, "c_lp3_"+id, "c_lp4_"+id];
+		if(qs<101 || qs>107){ this.vhide(vids); return;}
+
+		var hh = mf(k.cheight/2), hw = mf(k.cwidth/2);
+		var hhp = mf((this.lw+k.cheight)/2), hwp = mf((this.lw+k.cwidth)/2);
+		var px = bd.cell[id].px, py = bd.cell[id].py;
 		g.fillStyle = this.BorderQuescolor;
 
-		var qs = bd.QuC(id);
-		if(qs===101||qs===102||qs===104||qs===105){
-			if(this.vnop("c"+id+"_lp1_",1)){ g.fillRect(bd.cell[id].px+mf(k.cwidth/2)-1, bd.cell[id].py                  , lw, mf((k.cheight+lw)/2));}
-		}
-		else{ this.vhide("c"+id+"_lp1_");}
-		if(qs===101||qs===102||qs===106||qs===107){
-			if(this.vnop("c"+id+"_lp2_",1)){ g.fillRect(bd.cell[id].px+mf(k.cwidth/2)-1, bd.cell[id].py+mf(k.cheight/2)-1, lw, mf((k.cheight+lw)/2));}
-		}
-		else{ this.vhide("c"+id+"_lp2_");}
-		if(qs===101||qs===103||qs===105||qs===106){
-			if(this.vnop("c"+id+"_lp3_",1)){ g.fillRect(bd.cell[id].px                 , bd.cell[id].py+mf(k.cheight/2)-1, mf((k.cwidth+lw)/2), lw);}
-		}
-		else{ this.vhide("c"+id+"_lp3_");}
-		if(qs===101||qs===103||qs===104||qs===107){
-			if(this.vnop("c"+id+"_lp4_",1)){ g.fillRect(bd.cell[id].px+mf(k.cwidth/2)-1, bd.cell[id].py+mf(k.cheight/2)-1, mf((k.cwidth+lw)/2), lw);}
-		}
-		else{ this.vhide("c"+id+"_lp4_");}
+		var qs = bd.cell[id].ques, flag  = {101:15, 102:3, 103:12, 104:9, 105:5, 106:6, 107:10}[qs];
+		if(flag&1){ if(this.vnop(vids[0],1)){ g.fillRect(px+hw-1, py     , this.lw, hhp);} }else{ this.vhide(vids[0]);}
+		if(flag&2){ if(this.vnop(vids[1],1)){ g.fillRect(px+hw-1, py+hh-1, this.lw, hhp);} }else{ this.vhide(vids[1]);}
+		if(flag&4){ if(this.vnop(vids[2],1)){ g.fillRect(px     , py+hh-1, hwp, this.lw);} }else{ this.vhide(vids[2]);}
+		if(flag&8){ if(this.vnop(vids[3],1)){ g.fillRect(px+hw-1, py+hh-1, hwp, this.lw);} }else{ this.vhide(vids[3]);}
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.draw51()      [＼]をCanvasに書き込む
-	// pc.drawEXcell()  EXCell上の[＼]をCanvasに書き込む
-	// pc.setPath51_1() drawEXcellで使う斜線を設定する
-	// pc.drawChassis_ex1()   k.isextencdell==1で増える外枠をCanvasに描画する
+	// pc.draw51()          [＼]をCanvasに書き込む
+	// pc.draw51EXcell()    EXCell上の[＼]をCanvasに書き込む
+	// pc.drawChassis_ex1() k.isextencdell==1で増える外枠をCanvasに描画する
 	//---------------------------------------------------------------------------
 	draw51 : function(x1,y1,x2,y2,errdisp){
-		var clist = this.cellinside(x1,y1,x2,y2,f_true);
+		var headers = ["c_full_", "c_q51_"];
+
+		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if(bd.QuC(c)===51){
+			if(bd.cell[c].ques===51){
 				if(errdisp){
-					if(bd.ErC(c)===1){
+					if(bd.cell[c].error===1){
 						g.fillStyle = this.errbcolor1;
-						if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);}
+						if(this.vnop(headers[0]+c,1)){
+							g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);
+						}
 					}
-					else{ this.vhide("c"+c+"_full_");}
+					else{ this.vhide(headers[0]+c);}
 				}
-				this.setPath51_1(c, bd.cell[c].px, bd.cell[c].py);
-				if(this.vnop("c"+c+"_q51_",0)){ g.stroke();}
-			}
-			else{ this.vhide("c"+c+"_q51_");}
-		}
-		this.vinc();
-	},
-	drawEXcell : function(x1,y1,x2,y2,errdisp){
-		var lw = this.lw;
-
-		for(var cx=x1-1;cx<=x2;cx++){
-			for(var cy=y1-1;cy<=y2;cy++){
-				var c = bd.exnum(cx,cy);
-				if(c===-1){ continue;}
-
-				if(errdisp){
-					if(bd.ErE(c)===1){
-						g.fillStyle = this.errbcolor1;
-						if(this.vnop("ex"+c+"_full_",1)){ g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);}
-					}
-					else{ this.vhide("ex"+c+"_full_");}
-				}
-
-				g.fillStyle = this.Cellcolor;
-				this.setPath51_1(c, bd.excell[c].px, bd.excell[c].py);
-				if(this.vnop("ex"+c+"_q51_",0)){ g.stroke();}
-
 				g.strokeStyle = this.Cellcolor;
-				if(bd.excell[c].cy===-1 && bd.excell[c].cx<k.qcols-1){
-					if(this.vnop("ex"+c+"_bdx_",1)){ g.fillRect(bd.excell[c].px+k.cwidth, bd.excell[c].py, 1, k.cheight);}
+				if(this.vnop(headers[1]+c,0)){
+					g.lineWidth = 1;
+					this.inputPath([bd.cell[c].px,bd.cell[c].py, 1,1, k.cwidth,k.cheight], true);
+					g.stroke();
 				}
-				if(bd.excell[c].cx===-1 && bd.excell[c].cy<k.qrows-1){
-					if(this.vnop("ex"+c+"_bdy_",1)){ g.fillRect(bd.excell[c].px, bd.excell[c].py+k.cheight, k.cwidth, 1);}
-				}
+			}
+			else{
+				if(bd.cell[c].qsub===0 && bd.cell[c].error===0){ this.vhide(headers[0]+c);}
+				this.vhide(headers[1]+c);
 			}
 		}
 		this.vinc();
 	},
-	setPath51_1 : function(c,px,py){
-		g.strokeStyle = this.Cellcolor;
-		g.lineWidth = 1;
-		g.beginPath();
-		g.moveTo(px+1       , py+1        );
-		g.lineTo(px+k.cwidth, py+k.cheight);
-		g.closePath();
+	draw51EXcells : function(x1,y1,x2,y2,errdisp){
+		var lw = this.lw;
+		var headers = ["ex_full_", "ex_q51_", "ex_bdx_", "ex_bdy_"];
+
+		var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+		for(var i=0;i<exlist.length;i++){
+			var c = exlist[i];
+
+			var px = bd.excell[c].px, py = bd.excell[c].py;
+			if(errdisp){
+				if(bd.excell[c].error===1){
+					g.fillStyle = this.errbcolor1;
+					if(this.vnop(headers[0]+c,1)){
+						g.fillRect(px+1, py+1, k.cwidth-1, k.cheight-1);
+					}
+				}
+				else{ this.vhide(headers[0]+c);}
+			}
+
+			g.strokeStyle = this.Cellcolor;
+			if(this.vnop(headers[1]+c,0)){
+				g.lineWidth = 1;
+				this.inputPath([px,py, 1,1, k.cwidth,k.cheight], true);
+				g.stroke();
+			}
+
+			g.fillStyle = this.Cellcolor;
+			if(bd.excell[c].cy===-1 && bd.excell[c].cx<k.qcols-1){
+				if(this.vnop(headers[2]+c,1)){
+					g.fillRect(px+k.cwidth, py, 1, k.cheight);
+				}
+			}
+			else{ this.vhide(headers[2]+c);}
+			if(bd.excell[c].cx===-1 && bd.excell[c].cy<k.qrows-1){
+				if(this.vnop(headers[3]+c,1)){
+					g.fillRect(px, py+k.cheight, k.cwidth, 1);
+				}
+			}
+			else{ this.vhide(headers[3]+c);}
+		}
+		this.vinc();
 	},
 
 	drawChassis_ex1 : function(x1,y1,x2,y2,boldflag){
@@ -1959,18 +2504,19 @@ Graphic.prototype = {
 
 		if(!boldflag){
 			g.fillStyle = this.Cellcolor;
-			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1,f_true);
+			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QuC(c)===51){ continue;}
-				if(bd.cell[c].cx===0){ this.drawBorder1x(0                , 2*bd.cell[c].cy+1, true);}
-				if(bd.cell[c].cy===0){ this.drawBorder1x(2*bd.cell[c].cx+1, 0                , true);}
+				if(bd.cell[c].ques===51){ continue;}
+				if(bd.cell[c].cx===0){ this.drawBorder1x(0, 2*bd.cell[c].cy+1, true);}
+				if(bd.cell[c].cy===0){ this.drawBorder1x(2*bd.cell[c].cx+1, 0, true);}
 			}
 			this.vinc();
 		}
 	},
 
 	//---------------------------------------------------------------------------
+	// pc.drawTarget()  入力対象となる場所を描画する
 	// pc.drawTCell()   Cellのキーボードからの入力対象をCanvasに書き込む
 	// pc.drawTCross()  Crossのキーボードからの入力対象をCanvasに書き込む
 	// pc.drawTBorder() Borderのキーボードからの入力対象をCanvasに書き込む
@@ -1979,6 +2525,11 @@ Graphic.prototype = {
 	// pc.hideTBorder() キーボードからの入力対象を隠す
 	// pc.drawTargetTriangle() [＼]のうち入力対象のほうに背景色をつける
 	//---------------------------------------------------------------------------
+	drawTarget : function(x1,y1,x2,y2){
+		if(k.editmode){ this.drawTCell(x1,y1,x2+1,y2+1);}
+		else{ this.hideTCell();}
+	},
+
 	drawTCell : function(x1,y1,x2,y2){
 		if(tc.cursolx < x1*2 || x2*2+2 < tc.cursolx){ return;}
 		if(tc.cursoly < y1*2 || y2*2+2 < tc.cursoly){ return;}
@@ -1988,7 +2539,7 @@ Graphic.prototype = {
 		var w = (k.cwidth<32?2:mf(k.cwidth/16));
 
 		this.vdel(["tc1_","tc2_","tc3_","tc4_"]);
-		g.fillStyle = (k.mode===1?"rgb(255,64,64)":"rgb(64,64,255)");
+		g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
 		if(this.vnop("tc1_",0)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
 		if(this.vnop("tc2_",0)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
 		if(this.vnop("tc3_",0)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
@@ -2005,7 +2556,7 @@ Graphic.prototype = {
 		var w = (k.cwidth<32?2:mf(k.cwidth/16));
 
 		this.vdel(["tx1_","tx2_","tx3_","tx4_"]);
-		g.fillStyle = (k.mode===1?"rgb(255,64,64)":"rgb(64,64,255)");
+		g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
 		if(this.vnop("tx1_",0)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
 		if(this.vnop("tx2_",0)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
 		if(this.vnop("tx3_",0)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
@@ -2023,7 +2574,7 @@ Graphic.prototype = {
 		var size = mf(k.cwidth*0.28);
 
 		this.vdel(["tb1_","tb2_","tb3_","tb4_"]);
-		g.fillStyle = (k.mode===1?"rgb(255,64,64)":"rgb(64,64,255)");
+		g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
 		if(this.vnop("tb1_",0)){ g.fillRect(px-size  , py-size  , size*2, 1);}
 		if(this.vnop("tb2_",0)){ g.fillRect(px-size  , py-size  , 1, size*2);}
 		if(this.vnop("tb3_",0)){ g.fillRect(px-size  , py+size-w, size*2, 1);}
@@ -2036,7 +2587,10 @@ Graphic.prototype = {
 	hideTBorder : function(){ this.vhide(["tb1_","tb2_","tb3_","tb4_"]);},
 
 	drawTargetTriangle : function(x1,y1,x2,y2){
-		if(k.mode===3){ return;}
+		var vid = "target_triangle";
+		this.vdel([vid]);
+
+		if(k.playmode){ return;}
 
 		if(tc.cursolx < x1*2 || x2*2+2 < tc.cursolx){ return;}
 		if(tc.cursoly < y1*2 || y2*2+2 < tc.cursoly){ return;}
@@ -2046,75 +2600,74 @@ Graphic.prototype = {
 		var target = kc.detectTarget(cc,ex);
 		if(target===-1){ return;}
 
-		var num = target===2?4:2;
-
 		g.fillStyle = this.TTcolor;
-		this.drawTriangle1(k.p0.x+tc.getTCX()*k.cwidth, k.p0.y+tc.getTCY()*k.cheight, num, tc.getTCX(), tc.getTCY());
+		this.drawTriangle1(k.p0.x+tc.getTCX()*k.cwidth, k.p0.y+tc.getTCY()*k.cheight, (target===2?4:2), vid);
 
 		this.vinc();
 	},
 
 	//---------------------------------------------------------------------------
 	// pc.drawDashLines()    セルの中心から中心にひかれる点線をCanvasに描画する
-	// pc.drawDashLinesvml() セルの中心から中心にひかれる点線をCanvasに描画する(VML用)
 	//---------------------------------------------------------------------------
-	drawDashLines : function(x1,y1,x2,y2){
-		if(k.br.IE){ this.drawDashLinesvml(x1,y1,x2,y2); return;}
+	drawDashLines : (
+		((!k.br.IE) ?
+			function(x1,y1,x2,y2){
+				if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
+				if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
 
-		if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
-		if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
+				g.fillStyle = this.gridcolor;
+				for(var i=x1-1;i<=x2+1;i++){
+					for(var j=(k.p0.y+(y1-0.5)*k.cheight);j<(k.p0.y+(y2+1.5)*k.cheight);j+=6){
+						g.fillRect(k.p0.x+(i+0.5)*k.cwidth, j, 1, 3);
+					}
+				}
+				for(var i=y1-1;i<=y2+1;i++){
+					for(var j=(k.p0.x+(x1-0.5)*k.cwidth);j<(k.p0.x+(x2+1.5)*k.cwidth);j+=6){
+						g.fillRect(j, k.p0.y+(i+0.5)*k.cheight, 3, 1);
+					}
+				}
 
-		g.fillStyle = this.gridcolor;
-		for(var i=x1-1;i<=x2+1;i++){
-			for(var j=(k.p0.y+(y1-0.5)*k.cheight);j<(k.p0.y+(y2+1.5)*k.cheight);j+=6){
-				g.fillRect(k.p0.x+(i+0.5)*k.cwidth, j, 1, 3);
+				this.vinc();
 			}
-		}
-		for(var i=y1-1;i<=y2+1;i++){
-			for(var j=(k.p0.x+(x1-0.5)*k.cwidth);j<(k.p0.x+(x2+1.5)*k.cwidth);j+=6){
-				g.fillRect(j, k.p0.y+(i+0.5)*k.cheight, 3, 1);
+		:
+			function(x1,y1,x2,y2){
+				if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
+				if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
+
+/*				g.fillStyle = this.gridcolor;
+				g.lineWidth = 1;
+				g.enabledash = true;
+				for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("bdy"+i+"_",1)){
+					g.beginPath()
+					g.moveTo(k.p0.x+(i+0.5)*k.cwidth, k.p0.y+(y1-0.5)*k.cheight);
+					g.lineTo(k.p0.x+(i+0.5)*k.cwidth, k.p0.y+(y2+1.5)*k.cheight);
+					g.closePath()
+					g.stroke()
+				} }
+				for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("bdx"+i+"_",1)){
+					g.beginPath()
+					g.moveTo(k.p0.x+(x1-0.5)*k.cwidth, k.p0.y+( i+0.5)*k.cheight);
+					g.lineTo(k.p0.x+(x2+1.5)*k.cwidth, k.p0.y+( i+0.5)*k.cheight);
+					g.closePath()
+					g.stroke()
+				} }
+				g.enabledash = false;
+
+				g.fillStyle = "white";
+*/
+				g.fillStyle = this.gridcolor_SLIGHT;
+				for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("cliney_"+i,1)){ g.fillRect(k.p0.x+(i+0.5)*k.cwidth, k.p0.y+(y1-0.5)*k.cheight, 1, (y2-y1+2)*k.cheight+1);} }
+				for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("clinex_"+i,1)){ g.fillRect(k.p0.x+(x1-0.5)*k.cwidth, k.p0.y+(i+0.5)*k.cheight, (x2-x1+2)*k.cwidth+1, 1);} }
+
+				this.vinc();
 			}
-		}
-
-		this.vinc();
-	},
-	drawDashLinesvml : function(x1,y1,x2,y2){
-		if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
-		if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
-
-//		g.fillStyle = this.gridcolor;
-//		g.lineWidth = 1;
-//		g.enabledash = true;
-//		for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("bdy"+i+"_",1)){
-//			g.beginPath()
-//			g.moveTo(k.p0.x+(i+0.5)*k.cwidth, k.p0.y+(y1-0.5)*k.cheight);
-//			g.lineTo(k.p0.x+(i+0.5)*k.cwidth, k.p0.y+(y2+1.5)*k.cheight);
-//			g.closePath()
-//			g.stroke()
-//		} }
-//		for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("bdx"+i+"_",1)){
-//			g.beginPath()
-//			g.moveTo(k.p0.x+(x1-0.5)*k.cwidth, k.p0.y+( i+0.5)*k.cheight);
-//			g.lineTo(k.p0.x+(x2+1.5)*k.cwidth, k.p0.y+( i+0.5)*k.cheight);
-//			g.closePath()
-//			g.stroke()
-//		} }
-//		g.enabledash = false;
-//
-//		g.fillStyle = "white";
-
-		g.fillStyle = "rgb(192,192,192)";
-		for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("bdy"+i+"_1_",1)){ g.fillRect(k.p0.x+(i+0.5)*k.cwidth, k.p0.y+(y1-0.5)*k.cheight, 1, (y2-y1+2)*k.cheight+1);} }
-		for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("bdx"+i+"_1_",1)){ g.fillRect(k.p0.x+(x1-0.5)*k.cwidth, k.p0.y+(i+0.5)*k.cheight, (x2-x1+2)*k.cwidth+1, 1);} }
-
-		this.vinc();
-	},
+		)
+	),
 
 	//---------------------------------------------------------------------------
-	// pc.drawGrid()          セルの枠線(実線)をCanvasに書き込む
-	// pc.drawDashedGrid()    セルの枠線(点線)をCanvasに書き込む
-	// pc.drawDashedGridvml() セルの枠線(点線)をCanvasに書き込む(VML用)
-	// pc.drawChassis()       外枠をCanvasに書き込む
+	// pc.drawGrid()        セルの枠線(実線)をCanvasに書き込む
+	// pc.drawDashedGrid()  セルの枠線(点線)をCanvasに書き込む
+	// pc.drawChassis()     外枠をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawGrid : function(x1,y1,x2,y2){
 		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
@@ -2125,73 +2678,76 @@ Graphic.prototype = {
 		g.fillStyle = this.gridcolor;
 		var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
 		var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
-		for(var i=xa;i<=xb;i++){ if(this.vnop("bdy"+i+"_",1)){ g.fillRect(k.p0.x+i*k.cwidth, k.p0.y+y1*k.cheight, 1, (y2-y1+1)*k.cheight+1);} }
-		for(var i=ya;i<=yb;i++){ if(this.vnop("bdx"+i+"_",1)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+i*k.cheight, (x2-x1+1)*k.cwidth+1, 1);} }
+		for(var i=xa;i<=xb;i++){ if(this.vnop("bdy_"+i,1)){ g.fillRect(k.p0.x+i*k.cwidth, k.p0.y+y1*k.cheight, 1, (y2-y1+1)*k.cheight+1);} }
+		for(var i=ya;i<=yb;i++){ if(this.vnop("bdx_"+i,1)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+i*k.cheight, (x2-x1+1)*k.cwidth+1, 1);} }
 
 		this.vinc();
 	},
-	drawDashedGrid : function(x1,y1,x2,y2){
-		if(k.br.IE){ this.drawDashedGridvml(x1,y1,x2,y2); return;}
+	drawDashedGrid : (
+		((!k.br.IE) ?
+			function(x1,y1,x2,y2){
+				if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
+				if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
-		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
+				var bs=((k.isoutsideborder===0&&this.chassisflag)?1:0);
 
-		var bs=((k.isoutsideborder===0&&this.chassisflag)?1:0);
+				var dotmax = mf(k.cwidth/10)+3;
+				var dotCount = (mf(k.cwidth/dotmax)>=1?mf(k.cwidth/dotmax):1);
+				var dotSize  = k.cwidth/(dotCount*2);
 
-		var dotmax = mf(k.cwidth/10)+3;
-		var dotCount = (mf(k.cwidth/dotmax)>=1?mf(k.cwidth/dotmax):1);
-		var dotSize  = k.cwidth/(dotCount*2);
-
-		g.fillStyle = this.gridcolor;
-		var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
-		var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
-		for(var i=xa;i<=xb;i++){
-			for(var j=(k.p0.y+y1*k.cheight);j<(k.p0.y+(y2+1)*k.cheight);j+=(2*dotSize)){
-				g.fillRect(k.p0.x+i*k.cwidth, mf(j), 1, mf(dotSize));
+				g.fillStyle = this.gridcolor;
+				var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
+				var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
+				for(var i=xa;i<=xb;i++){
+					for(var j=(k.p0.y+y1*k.cheight);j<(k.p0.y+(y2+1)*k.cheight);j+=(2*dotSize)){
+						g.fillRect(k.p0.x+i*k.cwidth, mf(j), 1, mf(dotSize));
+					}
+				}
+				for(var i=ya;i<=yb;i++){
+					for(var j=(k.p0.x+x1*k.cwidth);j<(k.p0.x+(x2+1)*k.cwidth);j+=(2*dotSize)){
+						g.fillRect(mf(j), k.p0.y+i*k.cheight, mf(dotSize), 1);
+					}
+				}
 			}
-		}
-		for(var i=ya;i<=yb;i++){
-			for(var j=(k.p0.x+x1*k.cwidth);j<(k.p0.x+(x2+1)*k.cwidth);j+=(2*dotSize)){
-				g.fillRect(mf(j), k.p0.y+i*k.cheight, mf(dotSize), 1);
-			}
-		}
-	},
-	drawDashedGridvml : function(x1,y1,x2,y2){
-		this.gridcolor = "rgb(191, 191, 191)";
-		this.drawGrid(x1,y1,x2,y2);
+		:
+			function(x1,y1,x2,y2){
+				this.gridcolor = this.gridcolor_SLIGHT;
+				this.drawGrid(x1,y1,x2,y2);
 
-//		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-//		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
-//
-//		var bs=((k.isoutsideborder==0&&this.chassisflag)?1:0);
-//
-//		g.fillStyle = this.gridcolor;
-//		var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
-//		var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
-//		g.lineWidth = 1;
-//		g.enabledash = true;
-//		for(var i=xa;i<=xb;i++){ if(this.vnop("bdy"+i+"_",0)){
-//			g.beginPath()
-//			g.moveTo(mf(k.p0.x+i*k.cwidth+0.0), mf(k.p0.y+ y1   *k.cheight));
-//			g.lineTo(mf(k.p0.x+i*k.cwidth+0.0), mf(k.p0.y+(y2+1)*k.cheight));
-//			g.closePath()
-//			g.stroke()
-//		} }
-//		for(var i=ya;i<=yb;i++){ if(this.vnop("bdx"+i+"_",0)){
-//			g.beginPath()
-//			g.moveTo(mf(k.p0.x+ x1   *k.cwidth), mf(k.p0.y+i*k.cheight));
-//			g.lineTo(mf(k.p0.x+(x2+1)*k.cwidth), mf(k.p0.y+i*k.cheight));
-//			g.closePath()
-//			g.stroke()
-//		} }
-//		g.enabledash = false;
-//
-//		g.fillStyle = "white";
-//		for(var i=xa;i<=xb;i++){ if(this.vnop("bdy"+i+"_1_",1)){ g.fillRect(k.p0.x+i*k.cwidth, k.p0.y+y1*k.cheight, 1, (y2-y1+1)*k.cheight+1);} }
-//		for(var i=ya;i<=yb;i++){ if(this.vnop("bdx"+i+"_1_",1)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+i*k.cheight, (x2-x1+1)*k.cwidth+1, 1);} }
-//
-//		this.vinc();
-	},
+/*				if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
+				if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
+
+				var bs=((k.isoutsideborder==0&&this.chassisflag)?1:0);
+
+				g.fillStyle = this.gridcolor;
+				var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
+				var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
+				g.lineWidth = 1;
+				g.enabledash = true;
+				for(var i=xa;i<=xb;i++){ if(this.vnop("bdy"+i+"_",0)){
+					g.beginPath()
+					g.moveTo(mf(k.p0.x+i*k.cwidth+0.0), mf(k.p0.y+ y1   *k.cheight));
+					g.lineTo(mf(k.p0.x+i*k.cwidth+0.0), mf(k.p0.y+(y2+1)*k.cheight));
+					g.closePath()
+					g.stroke()
+				} }
+				for(var i=ya;i<=yb;i++){ if(this.vnop("bdx"+i+"_",0)){
+					g.beginPath()
+					g.moveTo(mf(k.p0.x+ x1   *k.cwidth), mf(k.p0.y+i*k.cheight));
+					g.lineTo(mf(k.p0.x+(x2+1)*k.cwidth), mf(k.p0.y+i*k.cheight));
+					g.closePath()
+					g.stroke()
+				} }
+				g.enabledash = false;
+
+				g.fillStyle = "white";
+				for(var i=xa;i<=xb;i++){ if(this.vnop("bdy"+i+"_1_",1)){ g.fillRect(k.p0.x+i*k.cwidth, k.p0.y+y1*k.cheight, 1, (y2-y1+1)*k.cheight+1);} }
+				for(var i=ya;i<=yb;i++){ if(this.vnop("bdx"+i+"_1_",1)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+i*k.cheight, (x2-x1+1)*k.cwidth+1, 1);} }
+
+				this.vinc();
+*/			}
+		)
+	),
 
 	drawChassis : function(x1,y1,x2,y2){
 		var lw = this.lw;
@@ -2211,32 +2767,48 @@ Graphic.prototype = {
 	// pc.flushCanvas()    指定された領域を白で塗りつぶす
 	// pc.flushCanvasAll() Canvas全面を白で塗りつぶす
 	//---------------------------------------------------------------------------
-	flushCanvas : function(x1,y1,x2,y2){
-		if(!g.vml){
-			if(((k.isextendcell===0&&x1<=0&&y1<=0)||(k.isextendcell!==0&&x1<=-1&&y1<=-1)) &&
-			   ((k.isextendcell!==2&&x2>=k.qcols-1&&y2>=k.qrows-1)||(k.isextendcell===2&&x2>=k.qcols&&y2>=k.qrows))
-			){
-				this.flushCanvasAll();
+	flushCanvas : (
+		((!k.vml) ?
+			function(x1,y1,x2,y2){
+				if     (k.isextendcell===0 && x1<= 0 && y1<= 0 && x2>=k.qcols-1 && y2>=k.qrows-1){ this.flushCanvasAll();}
+				else if(k.isextendcell===1 && x1<=-1 && y1<=-1 && x2>=k.qcols-1 && y2>=k.qrows-1){ this.flushCanvasAll();}
+				else if(k.isextendcell===2 && x1<=-1 && y1<=-1 && x2>=k.qcols   && y2>=k.qrows  ){ this.flushCanvasAll();}
+				else{
+					g.fillStyle = "rgb(255, 255, 255)";
+					g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth, (y2-y1+1)*k.cheight);
+				}
 			}
-			else{
-				g.fillStyle = "rgb(255, 255, 255)";
-				g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth, (y2-y1+1)*k.cheight);
-			}
-		}
-		else{ g.zidx=1;}
-	},
+		:
+			function(x1,y1,x2,y2){ g.zidx=1;}
+		)
+	),
 	// excanvasの場合、これを描画しないとVML要素が選択されてしまう
-	flushCanvasAll : function(){
-		if(g.vml){
-			g.zidx=0; g.vid="bg_"; g.pelements = []; g.elements = [];	// VML用
-			//g.clearRect(); 											// excanvas用
-		}
-		if(k.br.IE){ g._clear();}	// uuCanvas用特殊処理
-
-		g.fillStyle = "rgb(255, 255, 255)";
-		g.fillRect(0, 0, base.cv_obj.width(), base.cv_obj.height());
-		this.vinc();
-	},
+	flushCanvasAll : (
+		((!k.vml) ?
+			((!k.br.IE) ?
+				function(){
+					g.fillStyle = "rgb(255, 255, 255)";
+					g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
+					this.vinc();
+				}
+			:
+				function(){
+					g._clear();	// uuCanvas用特殊処理
+					g.fillStyle = "rgb(255, 255, 255)";
+					g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
+					this.vinc();
+				}
+			)
+		:
+			function(){
+				g.zidx=0; g.vid="bg_"; g.pelements = []; g.elements = [];	// VML用
+				g._clear();													// uuCanvas用特殊処理
+				g.fillStyle = "rgb(255, 255, 255)";
+				g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
+				this.vinc();
+			}
+		)
+	),
 
 	//---------------------------------------------------------------------------
 	// pc.vnop()  VMLで既に描画されているオブジェクトを再描画せず、色は設定する
@@ -2246,153 +2818,137 @@ Graphic.prototype = {
 	//  ※IE以外ではf_trueになっています。
 	//---------------------------------------------------------------------------
 	// excanvas関係関数
-	vnop : (!k.br.IE ? f_true : function(vid, isfill){
+	vnop : (!k.vml ? f_true : function(vid, isfill){
 		if(g.elements[vid]){
 			var el = g.elements[vid];
-			if(el){ el.color = uuColor.parse((isfill===1?g.fillStyle:g.strokeStyle))[0];}
+			el.color = uuColor.parse(isfill===1?g.fillStyle:g.strokeStyle)[0];
 
 			var pel = g.pelements[vid];
-			if(pel){
-				if(!this.zstable){ pel.style.zIndex = g.zidx;}
-				pel.style.display = 'inline';
-			}
+			if(!this.zstable){ pel.style.zIndex = g.zidx;}
+			pel.style.display = 'inline';
 			return false;
 		}
 		g.vid = vid;
 		return true;
 	}),
-	vhide : (!k.br.IE ? f_true : function(vid){
-		if(typeof vid === 'string'){
-			this.hideEL(g.pelements[vid]);
-		}
-		else{
-			for(var i=0;i<vid.length;i++){
-				this.hideEL(g.pelements[vid[i]]);
-			}
-		}
-	}),
-	vdel : (!k.br.IE ? f_true : function(vid){
+	vhide : (!k.vml ? f_true : function(vid){
+		if(typeof vid === 'string'){ vid = [vid];}
 		for(var i=0;i<vid.length;i++){
 			if(g.elements[vid[i]]){
-				$(g.pelements[vid[i]]).remove();
-				g.pelements[vid[i]]=null;
-				g.elements[vid[i]]=null;
+				g.pelements[vid[i]].style.display = 'none';
 			}
 		}
 	}),
-	vinc : (!k.br.IE ? f_true : function(){
+	vdel : (!k.vml ? f_true : function(vid){
+		for(var i=0;i<vid.length;i++){
+			if(g.elements[vid[i]]){
+				g._elm.removeChild(g.pelements[vid[i]]);	// uuCanvasはg._elmにparentNodeを保持してる
+				g.pelements[vid[i]]=null;
+				g.elements[vid[i]] =null;
+			}
+		}
+	}),
+	vinc : (!k.vml ? f_true : function(){
 		g.vid = ""; g.zidx++;
 	}),
 
 	//---------------------------------------------------------------------------
-	// pc.CreateDOMAndSetNop()     数字を描画する為のエレメントを生成する
-	// pc.CreateElementAndSetNop() エレメントを生成する
-	// pc.showEL()                 エレメントを表示する
-	// pc.hideEL()                 エレメントを隠す
-	// pc.isdispnumCell()          数字を記入できるか判定する
-	// pc.getNumberColor()         数字の色を判定する
+	// pc.CreateDOMAndSetNop()  数字表示用のエレメントを返す
+	// pc.showEL()              エレメントを表示する
+	// pc.hideEL()              エレメントを隠す
+	// pc.isdispnumCell()       数字を記入できるか判定する
+	// pc.getNumberColor()      数字の色を判定する
 	//---------------------------------------------------------------------------
 	// 数字表示関数
 	CreateDOMAndSetNop : function(){
-		if(this.textenable){ return null;}
-		return this.CreateElementAndSetNop();
+		return (!pc.textenable ? ee.createEL(pc.EL_NUMOBJ,'') : null);
 	},
-	CreateElementAndSetNop : function(){
-		obj = newEL("div");
-		obj.mousedown(mv.e_mousedown.ebind(mv))
-		   .mouseup(mv.e_mouseup.ebind(mv))
-		   .mousemove(mv.e_mousemove.ebind(mv))
-		   .appendTo("#numobj_parent")
-		   .unselectable();
-		obj.context.className = "divnum";
-		obj.context.oncontextmenu = function(){ return false;}; //妥協点 
 
-		return obj.context;
-	},
 	showEL : function(el){ el.style.display = 'inline'; },	// 条件見なくてもよさそう。
 	hideEL : function(el){ if(!!el){ el.style.display = 'none';} },
 
-	isdispnumCell : function(id){
-		return ( (bd.QnC(id)>0 || (bd.QnC(id)===0 && k.dispzero)) || 
-				((bd.QaC(id)>0 || (bd.QaC(id)===0 && k.dispzero)) && k.isAnsNumber) ||
-				((bd.QnC(id)===-2 || bd.QuC(id)===-2) && k.isDispHatena) );
+	setFunctions : function(){
+		this.isdispnumCell = (
+			((!!k.isDispHatena) ?
+				(!!k.dispzero) ? function(id){ var num=bd.getNum(id); return (num>=0 || num===-2);}
+							   : function(id){ var num=bd.getNum(id); return (num> 0 || num===-2);}
+			:
+				(!!k.dispzero) ? function(id){ var num=bd.getNum(id); return (num>=0);}
+							   : function(id){ var num=bd.getNum(id); return (num> 0);}
+			)
+		);
+		this.getNumberColor = (
+			((!!k.isAnsNumber) ?
+				function(id){
+					if(bd.cell[id].error===1 || bd.cell[id].error===4){ return this.fontErrcolor;}
+					return (bd.cell[id].qnum!==-1 ? this.fontcolor : this.fontAnscolor);
+				}
+			:(!!k.BlackCell) ?
+				function(id){
+					if(bd.cell[id].qans===1){ return this.BCell_fontcolor;}
+					else if(bd.cell[id].error===1 || bd.cell[id].error===4){ return this.fontErrcolor;}
+					return this.fontcolor;
+				}
+			:
+				function(id){
+					if(bd.cell[id].ques!==0){ return this.BCell_fontcolor;}
+					else if(bd.cell[id].error===1 || bd.cell[id].error===4){ return this.fontErrcolor;}
+					return this.fontcolor;
+				}
+			)
+		);
 	},
-	getNumberColor : function(id){
-		if     (bd.QuC(id)===-2)                                { return this.fontcolor;      }
-		else if((k.BlackCell===0?bd.QuC(id)!==0:bd.QaC(id)===1)){ return this.BCell_fontcolor;}
-		else if(bd.ErC(id)===1 || bd.ErC(id)===4)               { return this.fontErrcolor;   }
-		else if(k.isAnsNumber && bd.QnC(id)!==-1)               { return this.fontcolor;      }
-		else if(k.isAnsNumber && bd.QaC(id)!==-1)               { return this.fontAnscolor;   }
-		return this.fontcolor;
-	},
-	//---------------------------------------------------------------------------
-	// pc.dispnumCell_General() Cellに数字を記入するための値を決定する
-	// pc.dispnumCross()        Crossに数字を記入するための値を決定する
-	// pc.dispnumBorder()       Borderに数字を記入するための値を決定する
-	//---------------------------------------------------------------------------
-	dispnumCell_General : function(id){
-		if(!this.isdispnumCell(id)){ this.hideEL(bd.cell[id].numobj); return;}
+	isdispnumCell  : f_true,
+	getNumberColor : function(){ return this.fontcolor;},
 
-		if(!bd.cell[id].numobj){ bd.cell[id].numobj = this.CreateDOMAndSetNop();}
+	//---------------------------------------------------------------------------
+	// pc.dispnumCell()   Cellに数字を記入するための値を決定する
+	// pc.dispnumCross()  Crossに数字を記入するための値を決定する
+	// pc.dispnumBorder() Borderに数字を記入するための値を決定する
+	//---------------------------------------------------------------------------
+	dispnumCell : function(id){
+		var obj = bd.cell[id];
+		if(!this.isdispnumCell(id)){ this.hideEL(obj.numobj); return;}
+		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 
-		var type = 1;
-		if     (k.isDispNumUL){ type=5;}
-		else if(bd.QuC(id)>=2 && bd.QuC(id)<=5){ type=bd.QuC(id);}
-		else if(k.puzzleid==="reflect"){ if(!this.textenable){ this.hideEL(obj);} return;}
+		var type = (!k.isDispNumUL ? 1 : 5);
+		if(bd.cell[id].ques>=2 && bd.cell[id].ques<=5){ type=bd.cell[id].ques;}
 
 		var num = bd.getNum(id);
-
 		var text = (num>=0 ? ""+num : "?");
-		if(bd.QuC(id)===-2){ text = "?";}
 
 		var fontratio = 0.45;
 		if(type===1){ fontratio = (num<10?0.8:(num<100?0.7:0.55));}
 		if(k.isArrowNumber===1){
-			var dir = bd.DiC(id);
+			var dir = bd.cell[id].direc;
 			if(dir!==0){ fontratio *= 0.85;}
-			if     (dir===1||dir===2){ type=6;}
-			else if(dir===3||dir===4){ type=7;}
+			if     (dir===k.UP||dir===k.DN){ type=6;}
+			else if(dir===k.LT||dir===k.RT){ type=7;}
 		}
 
-		var color = this.getNumberColor(id);
-
-		this.dispnumCell1(id, bd.cell[id].numobj, type, text, fontratio, color);
+		this.dispnum(obj.numobj, type, text, fontratio, this.getNumberColor(id), obj.px, obj.py);
 	},
 	dispnumCross : function(id){
-		if(bd.QnX(id)>0||(bd.QnX(id)===0&&k.dispzero===1)){
-			if(!bd.cross[id].numobj){ bd.cross[id].numobj = this.CreateDOMAndSetNop();}
-			this.dispnumCross1(id, bd.cross[id].numobj, 101, ""+bd.QnX(id), 0.6 ,this.fontcolor);
+		var obj = bd.cross[id];
+		if(bd.cross[id].qnum>0||(bd.cross[id].qnum===0&&k.dispzero===1)){
+			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+			this.dispnum(obj.numobj, 101, ""+bd.cross[id].qnum, 0.6 ,this.fontcolor, obj.px, obj.py);
 		}
-		else{ this.hideEL(bd.cross[id].numobj);}
+		else{ this.hideEL(obj.numobj);}
 	},
 	dispnumBorder : function(id){
-		if(bd.QnB(id)>0||(bd.QnB(id)===0&&k.dispzero===1)){
-			if(!bd.border[id].numobj){ bd.border[id].numobj = this.CreateDOMAndSetNop();}
-			this.dispnumBorder1(id, bd.border[id].numobj, 101, ""+bd.QnB(id), 0.45 ,this.borderfontcolor);
+		var obj = bd.border[id];
+		if(bd.border[id].qnum>0||(bd.border[id].qnum===0&&k.dispzero===1)){
+			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+			this.dispnum(obj.numobj, 101, ""+bd.border[id].qnum, 0.45 ,this.borderfontcolor, obj.px, obj.py);
 		}
-		else{ this.hideEL(bd.border[id].numobj);}
+		else{ this.hideEL(obj.numobj);}
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.dispnumCell1()   Cellに数字を記入するためdispnum1関数に値を渡す
-	// pc.dispnumEXcell1() EXCellに数字を記入するためdispnum1関数に値を渡す
-	// pc.dispnumCross1()  Crossに数字を記入するためdispnum1関数に値を渡す
-	// pc.dispnumBorder1() Borderに数字を記入するためdispnum1関数に値を渡す
-	// pc.dispnum1()       数字を記入するための共通関数
+	// pc.dispnum()  数字を記入するための共通関数
 	//---------------------------------------------------------------------------
-	dispnumCell1 : function(c, el, type, text, fontratio, color){
-		this.dispnum1(el, type, text, fontratio, color, bd.cell[c].px, bd.cell[c].py);
-	},
-	dispnumEXcell1 : function(c, el, type, text, fontratio, color){
-		this.dispnum1(el, type, text, fontratio, color, bd.excell[c].px, bd.excell[c].py);
-	},
-	dispnumCross1 : function(c, el, type, text, fontratio, color){
-		this.dispnum1(el, type, text, fontratio, color, bd.cross[c].px, bd.cross[c].py);
-	},
-	dispnumBorder1 : function(c, el, type, text, fontratio, color){
-		this.dispnum1(el, type, text, fontratio, color, bd.border[c].px, bd.border[c].py);
-	},
-	dispnum1 : function(el, type, text, fontratio, color, px, py){
+	dispnum : function(el, type, text, fontratio, color, px, py){
 //		if(!this.textenable){
 			if(!el){ return;}
 			var IE = k.br.IE;
@@ -2408,17 +2964,18 @@ Graphic.prototype = {
 			var hgt = el.clientHeight;
 
 			if(type===1||type===6||type===7){
-				el.style.left = k.cv_oft.x+px+mf((k.cwidth-wid) /2)+(IE?2:2)-(type===6?mf(k.cwidth *0.1):0);
+				el.style.left = k.cv_oft.x+px+mf((k.cwidth-wid) /2)+(IE?3:2)-(type===6?mf(k.cwidth *0.1):0);
 				el.style.top  = k.cv_oft.y+py+mf((k.cheight-hgt)/2)+(IE?3:1)+(type===7?mf(k.cheight*0.1):0);
 			}
 			else if(type===101){
-				el.style.left = k.cv_oft.x+px-wid/2+(IE?2:2);
-				el.style.top  = k.cv_oft.y+py-hgt/2+(IE?3:1);
+				el.style.left = k.cv_oft.x+px-wid/2+(IE?4:2);
+				el.style.top  = k.cv_oft.y+py-hgt/2+(IE?2:1);
 			}
 			else{
+				if(type==52||type==54){ px--; type-=50;}	// excellの[＼]対応..
 				if     (type===3||type===4){ el.style.left = k.cv_oft.x+px+k.cwidth -wid+(IE?1: 0);}
 				else if(type===2||type===5){ el.style.left = k.cv_oft.x+px              +(IE?5: 4);}
-				if     (type===2||type===3){ el.style.top  = k.cv_oft.y+py+k.cheight-hgt+(IE?1:-1);}
+				if     (type===2||type===3){ el.style.top  = k.cv_oft.y+py+k.cheight-hgt+(IE?2:-1);}
 				else if(type===4||type===5){ el.style.top  = k.cv_oft.y+py              +(IE?4: 2);}
 			}
 
@@ -2445,64 +3002,47 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawNumbersOn51()   Cell上の[＼]に数字を記入する
-	// pc.drawNumbersOn51EX() EXCell上の[＼]に数字を記入する
+	// pc.drawNumbersOn51()   [＼]に数字を記入する
+	// pc.drawNumbersOn51_1() 1つの[＼]に数字を記入する
 	//---------------------------------------------------------------------------
 	drawNumbersOn51 : function(x1,y1,x2,y2){
-		var clist = this.cellinside(x1,y1,x2,y2,f_true);
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-
-			if(bd.QnC(c)===-1 || bd.QuC(c)!==51 || bd.rt(c)===-1 || bd.QuC(bd.rt(c))===51){
-				this.hideEL(bd.cell[c].numobj);
+		for(var cx=x1;cx<=x2;cx++){ for(var cy=y1;cy<=y2;cy++){
+			var c = bd.cnum(cx,cy);
+			// cell上だった場合
+			if(c!==-1){
+				if(bd.cell[c].ques===51){
+					this.drawNumbersOn51_1(bd.cell[c], bd.rt(c), bd.dn(c), 0)
+				}
+				else{
+					this.hideEL(bd.cell[c].numobj);
+					this.hideEL(bd.cell[c].numobj2);
+				}
 			}
 			else{
-				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
-				var color = (bd.ErC(c)===1?this.fontErrcolor:this.fontcolor);
-				var text = (bd.QnC(c)>=0?""+bd.QnC(c):"");
-				this.dispnumCell1(c, bd.cell[c].numobj, 4, text, 0.45, color);
+				c = bd.exnum(cx,cy);
+				// excell上だった場合
+				if(c!==-1){
+					this.drawNumbersOn51_1(bd.excell[c], bd.excell[c].cy*k.qcols, bd.excell[c].cx, 50)
+				}
 			}
+		}}
 
-			if(bd.DiC(c)===-1 || bd.QuC(c)!==51 || bd.dn(c)===-1 || bd.QuC(bd.dn(c))===51){
-				this.hideEL(bd.cell[c].numobj2);
-			}
-			else{
-				if(!bd.cell[c].numobj2){ bd.cell[c].numobj2 = this.CreateDOMAndSetNop();}
-				var color = (bd.ErC(c)===1?this.fontErrcolor:this.fontcolor);
-				var text = (bd.DiC(c)>=0?""+bd.DiC(c):"");
-				this.dispnumCell1(c, bd.cell[c].numobj2, 2, text, 0.45, color);
-			}
-		}
 		this.vinc();
 	},
-	drawNumbersOn51EX : function(x1,y1,x2,y2){
-		for(var cx=x1-1;cx<=x2;cx++){
-			for(var cy=y1-1;cy<=y2;cy++){
-				var c = bd.exnum(cx,cy);
-				if(c==-1){ continue;}
+	drawNumbersOn51_1 : function(obj, rt, dn, add){
+		var val,err,grd,nb,el,type,str;
+		for(var i=0;i<2;i++){
+			if(i===0){ val=obj.qnum,  err=obj.error, guard=obj.cy, nb=rt, type=add+4, str='numobj'; }	// 1回目は右向き
+			if(i===1){ val=obj.direc, err=obj.error, guard=obj.cx, nb=dn, type=add+2, str='numobj2';}	// 2回目は下向き
 
-				if(bd.QnE(c)===-1 || bd.excell[c].cy===-1 || bd.QuC(bd.excell[c].cy*k.qcols)===51){
-					this.hideEL(bd.excell[c].numobj);
-				}
-				else{
-					if(!bd.excell[c].numobj){ bd.excell[c].numobj = this.CreateDOMAndSetNop();}
-					var color = (bd.ErE(c)===1?this.fontErrcolor:this.fontcolor);
-					var text = (bd.QnE(c)>=0?""+bd.QnE(c):"");
-					this.dispnum1(bd.excell[c].numobj, 4, text, 0.45, color, bd.excell[c].px-1, bd.excell[c].py+1);
-				}
-
-				if(bd.DiE(c)===-1 || bd.excell[c].cx===-1 || bd.QuC(bd.excell[c].cx)===51){
-					this.hideEL(bd.excell[c].numobj2);
-				}
-				else{
-					if(!bd.excell[c].numobj2){ bd.excell[c].numobj2 = this.CreateDOMAndSetNop();}
-					var color = (bd.ErE(c)===1?this.fontErrcolor:this.fontcolor);
-					var text = (bd.DiE(c)>=0?""+bd.DiE(c):"");
-					this.dispnum1(bd.excell[c].numobj2, 2, text, 0.45, color, bd.excell[c].px-1, bd.excell[c].py+1);
-				}
+			if(val===-1 || guard===-1 || nb===-1 || bd.cell[nb].ques===51){ this.hideEL(obj[str]);}
+			else{
+				if(!obj[str]){ obj[str] = this.CreateDOMAndSetNop();}
+				var color = (err===1?this.fontErrcolor:this.fontcolor);
+				var text = (val>=0?""+val:"");
+				this.dispnum(obj[str], type, text, 0.45, color, obj.px, obj.py);
 			}
 		}
-		this.vinc();
 	}
 };
 
@@ -2512,45 +3052,31 @@ Graphic.prototype = {
 // パズル共通 マウス入力部
 // MouseEventクラスを定義
 var MouseEvent = function(){
-	this.mousePressed;
+	this.inputX;
+	this.inputY;
 	this.mouseCell;
 	this.inputData;
-	this.clickBtn;
-	this.currentOpeCount;
 	this.firstPos;
-	this.btn;
-	this.isButton={};
+	this.btn = {};
 	this.mousereset();
 
-	this.isButton = function(){ };
-	if(k.br.IE){
-		this.isButton = function(event,code){ return event.button == {0:1,1:4,2:2}[code];};
-	}
-	else if (k.br.WebKit) {
-		this.isButton = function(event, code) {
-			if     (code==0){ return event.which == 1 && !event.metaKey;}
-			else if(code==1){ return event.which == 1 && event.metaKey; }
-			return false;
-		};
-	}
-	else {
-		this.isButton = function(event, code){
-			return event.which?(event.which === code + 1):(event.button === code);
-		};
-	}
+	this.enableInputHatena = !!k.isDispHatena;
+	this.inputQuesDirectly = false;
+
+	this.docEL  = document.documentElement;
+	this.bodyEL = document.body;
 };
 MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// mv.mousereset() マウス入力に関する情報を初期化する
 	//---------------------------------------------------------------------------
 	mousereset : function(){
-		this.mousePressed = 0;
+		this.inputX = -1;
+		this.inputY = -1;
 		this.mouseCell = -1;
 		this.inputData = -1;
-		this.clickBtn = -1;
-		this.currentOpeCount = 0;
 		this.firstPos = new Pos(-1, -1);
-		this.btn = { Left: false, Middle: false, Right: false };
+		this.btn = { Left:false, Middle:false, Right:false};
 	},
 
 	//---------------------------------------------------------------------------
@@ -2558,41 +3084,43 @@ MouseEvent.prototype = {
 	// mv.e_mouseup()   Canvas上でマウスのボタンを放した際のイベント共通処理
 	// mv.e_mousemove() Canvas上でマウスを動かした際のイベント共通処理
 	// mv.e_mouseout()  マウスカーソルがウィンドウから離れた際のイベント共通処理
-	// mv.modeflip()    中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
 	//イベントハンドラから呼び出される
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
 	e_mousedown : function(e){
 		if(!k.enableMouse){ return;}
-		this.btn = { Left: this.isLeft(e), Middle: this.isMiddle(e), Right: this.isRight(e) };
+
+		this.setButtonFlag(e);
+		// SHIFTキーを押している時は左右ボタン反転
+		if(((kc.isSHIFT)^pp.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
+			this.btn.Left = !this.btn.Left; this.btn.Right = !this.btn.Right;
+		}
 		if(this.btn.Middle){ this.modeflip(); return;} //中ボタン
-		bd.errclear();
+
+		if(ans.errDisp){ bd.errclear();}
 		um.newOperation(true);
-		this.currentOpeCount = um.ope.length;
-		this.mousePressed = 1;
-		this.mousedown(this.pointerX(e)-k.cv_oft.x-k.IEMargin.x, this.pointerY(e)-k.cv_oft.y-k.IEMargin.y);
+		this.setposition(e);
+		this.mousedown();	// 各パズルのルーチンへ
 		return false;
 	},
 	e_mouseup   : function(e){
-		if(!k.enableMouse || this.btn.Middle || this.mousePressed!=1){ return;}
+		if(!k.enableMouse || this.btn.Middle || (!this.btn.Left && !this.btn.Right)){ return;}
 		um.newOperation(false);
-		this.mouseup  (this.pointerX(e)-k.cv_oft.x-k.IEMargin.x, this.pointerY(e)-k.cv_oft.y-k.IEMargin.y);
+		this.setposition(e);
+		this.mouseup();		// 各パズルのルーチンへ
 		this.mousereset();
 		return false;
 	},
 	e_mousemove : function(e){
-		if(!k.enableMouse || this.btn.Middle || this.mousePressed!=1){ return;}
+		if(!k.enableMouse || this.btn.Middle || (!this.btn.Left && !this.btn.Right)){ return;}
 		um.newOperation(false);
-		this.mousemove(this.pointerX(e)-k.cv_oft.x-k.IEMargin.x, this.pointerY(e)-k.cv_oft.y-k.IEMargin.y);
+		this.setposition(e);
+		this.mousemove();	// 各パズルのルーチンへ
 	},
 	e_mouseout : function(e) {
 //		if (k.br.IE){ var e=window.event;}
 //		this.mousereset();
 		um.newOperation(false);
-	},
-	modeflip : function(input){
-		if(k.callmode!="pmake"){ return;}
-		menu.setVal('mode', (k.mode==3?1:3));
 	},
 
 	//---------------------------------------------------------------------------
@@ -2601,44 +3129,89 @@ MouseEvent.prototype = {
 	// mv.mousemove() Canvas上でマウスを動かした際のイベント処理。各パズルのファイルでオーバーライドされる。
 	//---------------------------------------------------------------------------
 	//オーバーライド用
-	mousedown : function(x,y){ },
-	mouseup   : function(x,y){ },
-	mousemove : function(x,y){ },
+	mousedown : function(){ },
+	mouseup   : function(){ },
+	mousemove : function(){ },
+
+	//---------------------------------------------------------------------------
+	// mv.setButtonFlag() 左/中/右ボタンが押されているか設定する
+	//---------------------------------------------------------------------------
+	setButtonFlag : (
+		((k.br.IE) ?
+			function(e){ this.btn = { Left:(e.button===1), Middle:(e.button===4), Right:(e.button===2)};}
+		:(k.br.WinWebKit) ?
+			function(e){ this.btn = { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)};}
+		:(k.br.WebKit) ?
+			function(e){
+				this.btn = { Left:(e.which===1 && !e.metaKey), Middle:false, Right:(e.which===1 && !!e.metaKey) };
+			}
+		:
+			function(e){
+				this.btn = (!!e.which ? { Left:(e.which ===1), Middle:(e.which ===2), Right:(e.which ===3)}
+									  : { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)});
+			}
+		)
+	),
+
+	//---------------------------------------------------------------------------
+	// mv.setposition()   イベントが起こった座標をinputX, inputY変数に代入
+	// mv.notInputted()   盤面への入力が行われたかどうか判定する
+	// mv.modeflip()      中ボタンでモードを変更するときの処理
+	//---------------------------------------------------------------------------
+	setposition : (
+		((k.br.WinWebKit) ?
+			function(e){
+				this.inputX = e.pageX-1 -k.cv_oft.x-k.p0.x-k.IEMargin.x;
+				this.inputY = e.pageY-1 -k.cv_oft.y-k.p0.y-k.IEMargin.y;
+			}
+		:(!k.br.IE) ?
+			function(e){
+				this.inputX = e.pageX   -k.cv_oft.x-k.p0.x-k.IEMargin.x;
+				this.inputY = e.pageY   -k.cv_oft.y-k.p0.y-k.IEMargin.y;
+			}
+		:
+			function(e){
+				this.inputX = e.clientX + (this.docEL.scrollLeft || this.bodyEL.scrollLeft) -k.cv_oft.x-k.p0.x-k.IEMargin.x;
+				this.inputY = e.clientY + (this.docEL.scrollTop  || this.bodyEL.scrollTop ) -k.cv_oft.y-k.p0.y-k.IEMargin.y;
+			}
+		)
+	),
+
+	notInputted : function(){ return !um.changeflag;},
+	modeflip    : function(){ if(k.EDITOR){ pp.setVal('mode', (k.playmode?1:3));} },
 
 	// 共通関数
 	//---------------------------------------------------------------------------
-	// mv.cellid()   Pos(x,y)がどのセルのIDに該当するかを返す
-	// mv.crossid()  Pos(x,y)がどの交差点のIDに該当するかを返す
-	// mv.cellpos()  Pos(x,y)が仮想セル上でどこの(X,Y)に該当するかを返す
-	// mv.crosspos() Pos(x,y)が仮想セル上でどこの(X*2,Y*2)に該当するかを返す。
+	// mv.cellid()   入力された位置がどのセルのIDに該当するかを返す
+	// mv.crossid()  入力された位置がどの交差点のIDに該当するかを返す
+	// mv.cellpos()  入力された位置が仮想セル上でどこの(X,Y)に該当するかを返す
+	// mv.crosspos() 入力された位置が仮想セル上でどこの(X*2,Y*2)に該当するかを返す。
 	//               外枠の左上が(0,0)で右下は(k.qcols*2,k.qrows*2)。rcは0～0.5のパラメータ。
-	// mv.borderid() Pos(x,y)がどの境界線・LineのIDに該当するかを返す(クリック用)
+	// mv.borderid() 入力された位置がどの境界線・LineのIDに該当するかを返す(クリック用)
 	//---------------------------------------------------------------------------
-	cellid : function(p){
-		var pos = this.cellpos(p);
-		if((p.x-k.p0.x)%k.cwidth==0 || (p.y-k.p0.y)%k.cheight==0){ return -1;} // ぴったりは無効
-		if(pos.x<0 || pos.x>k.qcols-1 || pos.y<0 || pos.y>k.qrows-1){ return -1;}
-		return pos.x+pos.y*k.qcols;
+	cellid : function(){
+		var pos = this.cellpos();
+		if(this.inputX%k.cwidth==0 || this.inputY%k.cheight==0){ return -1;} // ぴったりは無効
+		return bd.cnum(pos.x,pos.y);
 	},
-	crossid : function(p){
-		var pos = this.crosspos(p,0.5);
-		if(pos.x<0 || pos.x>2*k.qcols || pos.y<0 || pos.y>2*k.qrows){ return -1;}
-		return mf((pos.x/2)+(pos.y/2)*(k.qcols+1));
+	crossid : function(){
+		var pos = this.crosspos(0.5);
+		return bd.xnum(pos.x>>1,pos.y>>1);
 	},
-	cellpos : function(p){	// crosspos(p,0)でも代替はできる
-		return new Pos(mf((p.x-k.p0.x)/k.cwidth), mf((p.y-k.p0.y)/k.cheight));
+	cellpos : function(){	// crosspos(p,0)でも代替はできる
+		return new Pos(mf(this.inputX/k.cwidth), mf(this.inputY/k.cheight));
 	},
-	crosspos : function(p,rc){
+	crosspos : function(rc){
 		var pm = rc*k.cwidth;
-		var cx = mf((p.x-k.p0.x+pm)/k.cwidth), cy = mf((p.y-k.p0.y+pm)/k.cheight);
-		var dx = (p.x-k.p0.x+pm)%k.cwidth,     dy = (p.y-k.p0.y+pm)%k.cheight;
+		var cx = mf((this.inputX+pm)/k.cwidth), cy = mf((this.inputY+pm)/k.cheight);
+		var dx = (this.inputX+pm)%k.cwidth,     dy = (this.inputY+pm)%k.cheight;
 
 		return new Pos(cx*2+(dx<2*pm?0:1), cy*2+(dy<2*pm?0:1));
 	},
 
-	borderid : function(p,spc){
-		var cx = mf((p.x-k.p0.x)/k.cwidth), cy = mf((p.y-k.p0.y)/k.cheight);
-		var dx = (p.x-k.p0.x)%k.cwidth,     dy = (p.y-k.p0.y)%k.cheight;
+	borderid : function(spc){
+		var cx = mf(this.inputX/k.cwidth), cy = mf(this.inputY/k.cheight);
+		var dx = this.inputX%k.cwidth,     dy = this.inputY%k.cheight;
 		if(k.isLineCross){
 			if(!k.isborderAsLine){
 				var m1=spc*k.cwidth, m2=(1-spc)*k.cwidth;
@@ -2662,67 +3235,11 @@ MouseEvent.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.isLeft()      左クリックされたかどうかを返す。Shiftキー押し中は左右逆になっている。
-	// mv.isMiddle()    中ボタンクリックされたかどうかを返す。
-	// mv.isRight()     右クリックされたかどうかを返す。Shiftキー押し中は左右逆になっている。
-	//---------------------------------------------------------------------------
-	isLeft : function(e){
-		if(!((kc.isSHIFT) ^ menu.getVal('lrcheck'))){
-			if(!k.br.WinWebKit){ return this.isLeftClick(e);}
-			else if(e.button == 0){ return true;}
-		}
-		else{
-			if(!k.br.WinWebKit){ return this.isRightClick(e);}
-			else if(e.button == 2){ return true;}
-		}
-		return false;
-	},
-	isMiddle : function(e){
-		if(!k.br.WinWebKit){ return this.isMiddleClick(e);}
-		else if(e.button == 1){ return true;}
-		return false;
-	},
-	isRight : function(e){
-		if(!((kc.isSHIFT) ^ menu.getVal('lrcheck'))){
-			if(!k.br.WinWebKit){ return this.isRightClick(e);}
-			else if(e.button == 2){ return true;}
-		}
-		else{
-			if(!k.br.WinWebKit){ return this.isLeftClick(e);}
-			else if(e.button == 0){ return true;}
-		}
-		return false;
-	},
-
-	//---------------------------------------------------------------------------
-	// mv.pointerX()      イベントが起こったX座標を取得する
-	// mv.pointerY()      イベントが起こったY座標を取得する
-	// mv.isLeftClick()   左クリック判定
-	// mv.isMiddleClick() 中クリック判定
-	// mv.isRightClick()  右クリック判定
-	// mv.notInputted()   盤面への入力が行われたかどうか判定する
-	//---------------------------------------------------------------------------
-	pointerX : function(event) {
-		if(k.br.WinWebKit){ return event.pageX - 1;}
-		return event.pageX || (event.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft));
-	},
-	pointerY : function(event) {
-		if(k.br.WinWebKit){ return event.pageY - 1;}
-		return event.pageY || (event.clientY + (document.documentElement.scrollTop || document.body.scrollTop));
-	},
-	isLeftClick  : function(event) { return this.isButton(event, 0); },
-	isMiddleClick: function(event) { return this.isButton(event, 1); },
-	isRightClick : function(event) { return this.isButton(event, 2); },
-
-	//notInputted : function(){ return (this.currentOpeCount==um.ope.length);},
-	notInputted : function(){ return !um.changeflag;},
-
-	//---------------------------------------------------------------------------
 	// mv.inputcell() Cellのqans(回答データ)に0/1/2のいずれかを入力する。
 	// mv.decIC()     0/1/2どれを入力すべきかを決定する。
 	//---------------------------------------------------------------------------
-	inputcell : function(x,y){
-		var cc = this.cellid(new Pos(x,y));
+	inputcell : function(){
+		var cc = this.cellid();
 		if(cc==-1 || cc==this.mouseCell){ return;}
 		if(this.inputData==-1){ this.decIC(cc);}
 
@@ -2740,11 +3257,11 @@ MouseEvent.prototype = {
 		pc.paintCell(cc);
 	},
 	decIC : function(cc){
-		if(menu.getVal('use')==1){
+		if(pp.getVal('use')==1){
 			if(this.btn.Left){ this.inputData=(bd.isWhite(cc) ? 1 : 0); }
 			else if(this.btn.Right){ this.inputData=((bd.QsC(cc)!=1) ? 2 : 0); }
 		}
-		else if(menu.getVal('use')==2){
+		else if(pp.getVal('use')==2){
 			if(this.btn.Left){
 				if(bd.isBlack(cc)) this.inputData=2;
 				else if(bd.QsC(cc) == 1) this.inputData=0;
@@ -2762,12 +3279,20 @@ MouseEvent.prototype = {
 	// mv.inputqnum1() Cellのqnum(問題数字データ)に数字を入力する。
 	// mv.inputqnum3() Cellのqans(問題数字データ)に数字を入力する。
 	//---------------------------------------------------------------------------
-	inputqnum : function(x,y,max){
-		var cc = this.cellid(new Pos(x,y));
-		if(cc==-1 || cc==this.mouseCell){ return;}
+	inputqnum : function(){
+		var cc = this.cellid();
+		if(cc===-1 || cc===this.mouseCell){ return;}
 
-		if(cc==tc.getTCC()){
-			cc = (k.mode==3 ? this.inputqnum3(cc,max) : this.inputqnum1(cc,max));
+		if(cc===tc.getTCC()){
+			cc =(k.playmode ?
+					(k.NumberWithMB ?
+						this.inputqnum3withMB(cc)
+					:
+						this.inputqnum3(cc)
+					)
+				:
+					this.inputqnum1(cc)
+				);
 		}
 		else{
 			var cc0 = tc.getTCC();
@@ -2779,24 +3304,20 @@ MouseEvent.prototype = {
 
 		pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
 	},
-	inputqnum1 : function(cc,max){
-		var qflag = (k.isDispHatena||k.puzzleid=="lightup"||k.puzzleid=="shakashaka"||k.puzzleid=="snakes"||k.puzzleid=="shugaku");
-		if(k.isOneNumber){
-			cc = area.getTopOfRoomByCell(cc);
-			if(area.getCntOfRoomByCell(cc)<max){ max = area.getCntOfRoomByCell(cc);}
-		}
-		if(bd.roommaxfunc){ max = bd.roommaxfunc(cc,1);}
+	inputqnum1 : function(cc){
+		if(k.isOneNumber){ cc = area.getTopOfRoomByCell(cc);}
+		var max = bd.nummaxfunc(cc);
 
 		if(this.btn.Left){
-			if(bd.QnC(cc)==max){ bd.sQnC(cc,-1);}
-			else if(bd.QnC(cc)==-1){ bd.sQnC(cc,(qflag?-2:(k.dispzero?0:1)));}
-			else if(bd.QnC(cc)==-2){ bd.sQnC(cc,(k.dispzero?0:1));}
+			if(bd.QnC(cc)===max){ bd.sQnC(cc,-1);}
+			else if(bd.QnC(cc)===-1){ bd.sQnC(cc,(this.enableInputHatena?-2:(k.dispzero?0:1)));}
+			else if(bd.QnC(cc)===-2){ bd.sQnC(cc,(k.dispzero?0:1));}
 			else{ bd.sQnC(cc,bd.QnC(cc)+1);}
 		}
 		else if(this.btn.Right){
-			if(bd.QnC(cc)==-1){ bd.sQnC(cc,max);}
-			else if(bd.QnC(cc)==-2){ bd.sQnC(cc,-1);}
-			else if(bd.QnC(cc)==(k.dispzero?0:1)){ bd.sQnC(cc,(qflag?-2:-1));}
+			if(bd.QnC(cc)===-1){ bd.sQnC(cc,max);}
+			else if(bd.QnC(cc)===-2){ bd.sQnC(cc,-1);}
+			else if(bd.QnC(cc)===(k.dispzero?0:1)){ bd.sQnC(cc,(this.enableInputHatena?-2:-1));}
 			else{ bd.sQnC(cc,bd.QnC(cc)-1);}
 		}
 		if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
@@ -2804,30 +3325,40 @@ MouseEvent.prototype = {
 
 		return cc;
 	},
-	inputqnum3 : function(cc,max){
-		if(bd.QnC(cc)!=-1){ return cc;}
-		if(bd.roommaxfunc){ max = bd.roommaxfunc(cc,3);}
+	inputqnum3 : function(cc){
+		if(bd.QnC(cc)!==-1){ return cc;}
+		var max = bd.nummaxfunc(cc);
 		bd.sDiC(cc,0);
 
 		if(this.btn.Left){
-			if(k.NumberWithMB){
-				if     (bd.QaC(cc)==max){ bd.sQaC(cc,-1); bd.sQsC(cc,1); return cc;}
-				else if(bd.QsC(cc)==1)  { bd.sQaC(cc,-1); bd.sQsC(cc,2); return cc;}
-				else if(bd.QsC(cc)==2)  { bd.sQaC(cc,-1); bd.sQsC(cc,0); return cc;}
-			}
-			if     (bd.QaC(cc)==max){ bd.sQaC(cc,-1);              }
-			else if(bd.QaC(cc)==-1) { bd.sQaC(cc,(k.dispzero?0:1));}
-			else                    { bd.sQaC(cc,bd.QaC(cc)+1);    }
+			if     (bd.QaC(cc)===max){ bd.sQaC(cc,-1);              }
+			else if(bd.QaC(cc)===-1) { bd.sQaC(cc,(k.dispzero?0:1));}
+			else                     { bd.sQaC(cc,bd.QaC(cc)+1);    }
 		}
 		else if(this.btn.Right){
-			if(k.NumberWithMB){
-				if     (bd.QsC(cc)==1) { bd.sQaC(cc,max); bd.sQsC(cc,0); return cc;}
-				else if(bd.QsC(cc)==2) { bd.sQaC(cc,-1);  bd.sQsC(cc,1); return cc;}
-				else if(bd.QaC(cc)==-1){ bd.sQaC(cc,-1);  bd.sQsC(cc,2); return cc;}
-			}
-			if     (bd.QaC(cc)==-1)              { bd.sQaC(cc,max);}
-			else if(bd.QaC(cc)==(k.dispzero?0:1)){ bd.sQaC(cc,-1); }
-			else                                 { bd.sQaC(cc,bd.QaC(cc)-1);}
+			if     (bd.QaC(cc)===-1)              { bd.sQaC(cc,max);}
+			else if(bd.QaC(cc)===(k.dispzero?0:1)){ bd.sQaC(cc,-1); }
+			else                                  { bd.sQaC(cc,bd.QaC(cc)-1);}
+		}
+		return cc;
+	},
+	inputqnum3withMB : function(cc){
+		if(bd.QnC(cc)!==-1){ return cc;}
+		var max = bd.nummaxfunc(cc);
+
+		if(this.btn.Left){
+			if     (bd.QaC(cc)===max){ bd.sQaC(cc,-1); bd.sQsC(cc,1);}
+			else if(bd.QsC(cc)===1)  { bd.sQaC(cc,-1); bd.sQsC(cc,2);}
+			else if(bd.QsC(cc)===2)  { bd.sQaC(cc,-1); bd.sQsC(cc,0);}
+			else if(bd.QaC(cc)===-1) { bd.sQaC(cc,(k.dispzero?0:1)); }
+			else                     { bd.sQaC(cc,bd.QaC(cc)+1);     }
+		}
+		else if(this.btn.Right){
+			if     (bd.QsC(cc)===1) { bd.sQaC(cc,max); bd.sQsC(cc,0);}
+			else if(bd.QsC(cc)===2) { bd.sQaC(cc,-1);  bd.sQsC(cc,1);}
+			else if(bd.QaC(cc)===-1){ bd.sQaC(cc,-1);  bd.sQsC(cc,2);}
+			else if(bd.QaC(cc)===(k.dispzero?0:1)){ bd.sQaC(cc,-1);  }
+			else                    { bd.sQaC(cc,bd.QaC(cc)-1);      }
 		}
 		return cc;
 	},
@@ -2835,12 +3366,12 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// mv.inputQues() Cellのquesデータをarrayのとおりに入力する
 	//---------------------------------------------------------------------------
-	inputQues : function(x,y,array){
-		var cc = this.cellid(new Pos(x,y));
+	inputQues : function(array){
+		var cc = this.cellid();
 		if(cc==-1){ return;}
 
 		var flag=false;
-		if(cc!=tc.getTCC() && k.puzzleid!="kramma" && k.puzzleid!="shwolf" && k.puzzleid!="mashu"){
+		if(cc!=tc.getTCC() && !this.inputQuesDirectly){
 			var cc0 = tc.getTCC();
 			tc.setTCC(cc);
 			pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
@@ -2867,8 +3398,8 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// mv.inputMB()   Cellのqsub(補助記号)の○, ×データを入力する
 	//---------------------------------------------------------------------------
-	inputMB : function(x,y){
-		var cc = this.cellid(new Pos(x,y));
+	inputMB : function(){
+		var cc = this.cellid();
 		if(cc==-1){ return;}
 
 		if(this.btn.Left){
@@ -2887,17 +3418,17 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// mv.inputdirec() Cellのdirec(方向)のデータを入力する
 	//---------------------------------------------------------------------------
-	inputdirec : function(x,y){
-		var pos = this.cellpos(new Pos(x,y));
+	inputdirec : function(){
+		var pos = this.cellpos();
 		if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 		var inp = 0;
 		var cc = bd.cnum(this.mouseCell.x, this.mouseCell.y);
 		if(cc!=-1 && bd.QnC(cc)!=-1){
-			if     (pos.y-this.mouseCell.y==-1){ inp=1;}
-			else if(pos.y-this.mouseCell.y== 1){ inp=2;}
-			else if(pos.x-this.mouseCell.x==-1){ inp=3;}
-			else if(pos.x-this.mouseCell.x== 1){ inp=4;}
+			if     (pos.y-this.mouseCell.y==-1){ inp=k.UP;}
+			else if(pos.y-this.mouseCell.y== 1){ inp=k.DN;}
+			else if(pos.x-this.mouseCell.x==-1){ inp=k.LT;}
+			else if(pos.x-this.mouseCell.x== 1){ inp=k.RT;}
 			else{ return;}
 
 			bd.sDiC(cc, (bd.DiC(cc)!=inp?inp:0));
@@ -2910,8 +3441,8 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// mv.inputtile()  黒タイル、白タイルを入力する
 	//---------------------------------------------------------------------------
-	inputtile : function(x,y){
-		var cc = this.cellid(new Pos(x,y));
+	inputtile : function(){
+		var cc = this.cellid();
 		if(cc==-1 || cc==this.mouseCell || bd.QuC(cc)==51){ return;}
 		if(this.inputData==-1){ this.decIC(cc);}
 
@@ -2925,7 +3456,7 @@ MouseEvent.prototype = {
 				bd.sQsC(c, (this.inputData==2?1:0));
 			}
 		}
-		var d = ans.getSizeOfClist(area.room[areaid].clist,function(a){ return true;});
+		var d = ans.getSizeOfClist(area.room[areaid].clist,f_true);
 
 		pc.paint(d.x1, d.y1, d.x2, d.y2);
 	},
@@ -2934,8 +3465,8 @@ MouseEvent.prototype = {
 	// mv.input51()   [＼]を作ったり消したりする
 	// mv.set51cell() [＼]を作成・消去するときの共通処理関数(カックロ以外はオーバーライドされる)
 	//---------------------------------------------------------------------------
-	input51 : function(x,y){
-		var pos = this.cellpos(new Pos(x,y));
+	input51 : function(){
+		var pos = this.cellpos();
 		var cc = bd.cnum(pos.x, pos.y);
 
 		if((pos.x==-1 && pos.y>=-1 && pos.y<=k.qrows-1) || (pos.y==-1 && pos.x>=-1 && pos.x<=k.qcols-1)){
@@ -2981,8 +3512,8 @@ MouseEvent.prototype = {
 	// mv.inputcross()     Crossのques(問題データ)に0～4を入力する。
 	// mv.inputcrossMark() Crossの黒点を入力する。
 	//---------------------------------------------------------------------------
-	inputcross : function(x,y){
-		var cc = this.crossid(new Pos(x,y));
+	inputcross : function(){
+		var cc = this.crossid();
 		if(cc==-1 || cc==this.mouseCell){ return;}
 
 		if(cc==tc.getTXC()){
@@ -3005,13 +3536,13 @@ MouseEvent.prototype = {
 
 		pc.paint(bd.cross[cc].cx-1, bd.cross[cc].cy-1, bd.cross[cc].cx, bd.cross[cc].cy);
 	},
-	inputcrossMark : function(x,y){
-		var pos = this.crosspos(new Pos(x,y), 0.24);
+	inputcrossMark : function(){
+		var pos = this.crosspos(0.24);
 		if(pos.x%2!=0 || pos.y%2!=0){ return;}
 		if(pos.x<(k.isoutsidecross==1?0:2) || pos.x>(k.isoutsidecross==1?2*k.qcols:2*k.qcols-2)){ return;}
 		if(pos.y<(k.isoutsidecross==1?0:2) || pos.y>(k.isoutsidecross==1?2*k.qrows:2*k.qrows-2)){ return;}
 
-		var cc = bd.xnum(mf(pos.x/2),mf(pos.y/2));
+		var cc = bd.xnum(pos.x>>1,pos.y>>1);
 
 		um.disCombine = 1;
 		bd.sQnX(cc,(bd.QnX(cc)==1)?-1:1);
@@ -3024,10 +3555,10 @@ MouseEvent.prototype = {
 	// mv.inputborderans() 盤面境界線の回答データを入力する
 	// mv.inputBD()        上記二つの共通処理関数
 	//---------------------------------------------------------------------------
-	inputborder : function(x,y){ this.inputBD(x,y,0);},
-	inputborderans : function(x,y){ this.inputBD(x,y,1);},
-	inputBD : function(x,y,flag){
-		var pos = this.crosspos(new Pos(x,y), 0.35);
+	inputborder : function(){ this.inputBD(0);},
+	inputborderans : function(){ this.inputBD(1);},
+	inputBD : function(flag){
+		var pos = this.crosspos(0.35);
 		if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 		var id = bd.bnum(pos.x, pos.y);
@@ -3040,11 +3571,12 @@ MouseEvent.prototype = {
 				this.mouseCell=-1;
 				if(this.inputData==-1){ this.inputData=(bd.isBorder(id)?0:1);}
 
-				if(k.mode==1 || (k.mode==3 && bd.QuB(id)==0)){
+				if(!(k.playmode && bd.QuB(id)!==0)){
 					if     (this.inputData==1){ bd.setBorder(id); if(k.isborderAsLine){ bd.sQsB(id, 0);} }
 					else if(this.inputData==0){ bd.removeBorder(id);}
+
+					pc.paintBorder(id);
 				}
-				pc.paintBorder(id);
 			}
 		}
 		this.mouseCell = pos;
@@ -3057,10 +3589,10 @@ MouseEvent.prototype = {
 	// mv.inputLine2()    盤面の線を入力用内部関数
 	// mv.inputqsub2()    境界線用補助記号の入力用内部関数
 	//---------------------------------------------------------------------------
-	inputLine : function(x,y){ this.inputLine1(x,y,0);},
-	inputQsubLine : function(x,y){ this.inputLine1(x,y,1);},
-	inputLine1 : function(x,y,flag){
-		var pos = this.cellpos(new Pos(x,y));
+	inputLine : function(){ this.inputLine1(0);},
+	inputQsubLine : function(){ this.inputLine1(1);},
+	inputLine1 : function(flag){
+		var pos = this.cellpos();
 		if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 		var id = -1;
@@ -3093,8 +3625,8 @@ MouseEvent.prototype = {
 	// mv.inputpeke()   盤面の線が通らないことを示す×を入力する
 	// mv.inputpeke2()  盤面の線が通らないことを示す×を入力する(inputLine1からも呼ばれる)
 	//---------------------------------------------------------------------------
-	inputpeke : function(x,y){
-		var pos = this.crosspos(new Pos(x,y), 0.22);
+	inputpeke : function(){
+		var pos = this.crosspos(0.22);
 		var id = bd.bnum(pos.x, pos.y);
 		if(id==-1 || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
 
@@ -3113,8 +3645,8 @@ MouseEvent.prototype = {
 	// mv.db0()     ななめつながりの黒マスを赤く表示する(再起呼び出し用関数)
 	// mv.dispRedLine()  ひとつながりの線を赤く表示する
 	//---------------------------------------------------------------------------
-	dispRed : function(x,y){
-		var cc = this.cellid(new Pos(x,y));
+	dispRed : function(){
+		var cc = this.cellid();
 		this.mousereset();
 		if(!bd.isBlack(cc) || cc==this.mouseCell){ return;}
 		if(!k.RBBlackCell){ bd.sErC(area.bcell[area.bcell.id[cc]].clist,1);}
@@ -3137,13 +3669,13 @@ MouseEvent.prototype = {
 		return;
 	},
 
-	dispRedLine : function(x,y){
-		var id = this.borderid(new Pos(x,y),0.15);
+	dispRedLine : function(){
+		var id = this.borderid(0.15);
 		this.mousereset();
 		if(id!=-1 && id==this.mouseCell){ return;}
 
 		if(!bd.isLine(id)){
-			var cc = (k.isborderAsLine==0?this.cellid(new Pos(x,y)):this.crossid(new Pos(x,y)));
+			var cc = (k.isborderAsLine==0?this.cellid():this.crossid());
 			if(cc==-1 || (k.isLineCross && (line.lcntCell(cc)==3 || line.lcntCell(cc)==4))){ return;}
 
 			var bx, by;
@@ -3269,10 +3801,10 @@ KeyEvent.prototype = {
 	// kc.getKeyCode() 入力されたキーのコードを数字で返す
 	//---------------------------------------------------------------------------
 	getchar : function(e, keycode){
-		if     (e.keyCode == 38)            { return 'up';   }
-		else if(e.keyCode == 40)            { return 'down'; }
-		else if(e.keyCode == 37)            { return 'left'; }
-		else if(e.keyCode == 39)            { return 'right';}
+		if     (e.keyCode == 38)            { return k.KEYUP;}
+		else if(e.keyCode == 40)            { return k.KEYDN;}
+		else if(e.keyCode == 37)            { return k.KEYLT;}
+		else if(e.keyCode == 39)            { return k.KEYRT;}
 		else if(48<=keycode && keycode<=57) { return (keycode - 48).toString(36);}
 		else if(65<=keycode && keycode<=90) { return (keycode - 55).toString(36);} //アルファベット
 		else if(96<=keycode && keycode<=105){ return (keycode - 96).toString(36);} //テンキー対応
@@ -3306,9 +3838,9 @@ KeyEvent.prototype = {
 		if(this.isCTRL && this.ca=='z'){ this.inUNDO=true; flag = true; tm.startUndoTimer();}
 		if(this.isCTRL && this.ca=='y'){ this.inREDO=true; flag = true; tm.startUndoTimer();}
 
-		if(this.ca=='F2' && k.callmode == "pmake"){ // 112～123はF1～F12キー
-			if     (k.mode==1 && !this.isSHIFT){ k.mode=3; menu.setVal('mode',3); flag = true;}
-			else if(k.mode==3 &&  this.isSHIFT){ k.mode=1; menu.setVal('mode',1); flag = true;}
+		if(this.ca=='F2' && k.EDITOR){ // 112～123はF1～F12キー
+			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); flag = true;}
+			else if(k.playmode &&  this.isSHIFT){ pp.setVal('mode',1); flag = true;}
 		}
 		if(k.scriptcheck && debug){ flag = (flag || debug.keydown(this.ca));}
 
@@ -3336,14 +3868,14 @@ KeyEvent.prototype = {
 	moveTBorder : function(ca){ return this.moveTC(ca,1);},
 	moveTC : function(ca,mv){
 		var tcx = tc.cursolx, tcy = tc.cursoly, flag = false;
-		if     (ca == 'up'    && tcy-mv >= tc.miny){ tc.decTCY(mv); flag = true;}
-		else if(ca == 'down'  && tcy+mv <= tc.maxy){ tc.incTCY(mv); flag = true;}
-		else if(ca == 'left'  && tcx-mv >= tc.minx){ tc.decTCX(mv); flag = true;}
-		else if(ca == 'right' && tcx+mv <= tc.maxx){ tc.incTCX(mv); flag = true;}
+		if     (ca == k.KEYUP && tcy-mv >= tc.miny){ tc.decTCY(mv); flag = true;}
+		else if(ca == k.KEYDN && tcy+mv <= tc.maxy){ tc.incTCY(mv); flag = true;}
+		else if(ca == k.KEYLT && tcx-mv >= tc.minx){ tc.decTCX(mv); flag = true;}
+		else if(ca == k.KEYRT && tcx+mv <= tc.maxx){ tc.incTCX(mv); flag = true;}
 
 		if(flag){
-			pc.paint(mf(tcx/2)-1, mf(tcy/2)-1, mf(tcx/2), mf(tcy/2));
-			pc.paint(mf(tc.cursolx/2)-1, mf(tc.cursoly/2)-1, mf(tc.cursolx/2), mf(tc.cursoly/2));
+			pc.paint((tcx>>1)-1, (tcy>>1)-1, tcx>>1, tcy>>1);
+			pc.paint((tc.cursolx>>1)-1, (tc.cursoly>>1)-1, tc.cursolx>>1, tc.cursoly>>1);
 			this.tcMoved = true;
 		}
 		return flag;
@@ -3352,8 +3884,9 @@ KeyEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// kc.key_inputcross() 上限maxまでの数字をCrossの問題データをして入力する(keydown時)
 	//---------------------------------------------------------------------------
-	key_inputcross : function(ca, max){
+	key_inputcross : function(ca){
 		var cc = tc.getTXC();
+		var max = bd.nummaxfunc(cc);
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
@@ -3380,14 +3913,14 @@ KeyEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// kc.key_inputqnum() 上限maxまでの数字をCellの問題データをして入力する(keydown時)
 	//---------------------------------------------------------------------------
-	key_inputqnum : function(ca, max){
+	key_inputqnum : function(ca){
 		var cc = tc.getTCC();
-		if(k.mode==1 && k.isOneNumber){ cc = area.getTopOfRoomByCell(cc);}
-		if(bd.roommaxfunc){ max = bd.roommaxfunc(cc,k.mode);}
+		if(k.editmode && k.isOneNumber){ cc = area.getTopOfRoomByCell(cc);}
+		var max = bd.nummaxfunc(cc);
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
-			if(k.mode==3){ bd.sDiC(cc,0);}
+			if(k.playmode){ bd.sDiC(cc,0);}
 
 			if(bd.getNum(cc)<=0 || this.prev!=cc){
 				if(num<=max){ bd.setNum(cc,num);}
@@ -3397,10 +3930,10 @@ KeyEvent.prototype = {
 				else if(num<=max){ bd.setNum(cc,num);}
 			}
 			if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
-			if(k.isAnsNumber){ if(k.mode==1){ bd.sQaC(cc,-1);} bd.sQsC(cc,0); }
+			if(k.isAnsNumber){ if(k.editmode){ bd.sQaC(cc,-1);} bd.sQsC(cc,0); }
 		}
 		else if(ca=='-'){
-			if(k.mode==1 && bd.QnC(cc)!=-2){ bd.setNum(cc,-2);}
+			if(k.editmode && bd.QnC(cc)!=-2){ bd.setNum(cc,-2);}
 			else{ bd.setNum(cc,-1);}
 			if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
 			if(k.isAnsNumber){ bd.sQsC(cc,0);}
@@ -3427,13 +3960,13 @@ KeyEvent.prototype = {
 
 		var flag = false;
 
-		if     (ca == 'up'   ){ bd.sDiC(cc, (bd.DiC(cc)!=1?1:0)); flag = true;}
-		else if(ca == 'down' ){ bd.sDiC(cc, (bd.DiC(cc)!=2?2:0)); flag = true;}
-		else if(ca == 'left' ){ bd.sDiC(cc, (bd.DiC(cc)!=3?3:0)); flag = true;}
-		else if(ca == 'right'){ bd.sDiC(cc, (bd.DiC(cc)!=4?4:0)); flag = true;}
+		if     (ca == k.KEYUP){ bd.sDiC(cc, (bd.DiC(cc)!=k.UP?k.UP:0)); flag = true;}
+		else if(ca == k.KEYDN){ bd.sDiC(cc, (bd.DiC(cc)!=k.DN?k.DN:0)); flag = true;}
+		else if(ca == k.KEYLT){ bd.sDiC(cc, (bd.DiC(cc)!=k.LT?k.LT:0)); flag = true;}
+		else if(ca == k.KEYRT){ bd.sDiC(cc, (bd.DiC(cc)!=k.RT?k.RT:0)); flag = true;}
 
 		if(flag){
-			pc.paint(mf(tc.cursolx/2), mf(tc.cursoly/2), mf(tc.cursolx/2), mf(tc.cursoly/2));
+			pc.paint(tc.cursolx>>1, tc.cursoly>>1, tc.cursolx>>1, tc.cursoly>>1);
 			this.tcMoved = true;
 		}
 		return flag;
@@ -3524,10 +4057,8 @@ KeyEvent.prototype = {
 // キー入力用Popupウィンドウ
 // KeyPopupクラス
 KeyPopup = function(){
-	this.x = -1;
-	this.y = -1;
-	this.ctl = { 1:{ el:"", enable:false, target:"cell"},		// 問題入力時用popup
-				 3:{ el:"", enable:false, target:"cell"} };		// 回答入力時用popup
+	this.ctl = { 1:{ el:null, enable:false, target:k.CELL},		// 問題入力時用popup
+				 3:{ el:null, enable:false, target:k.CELL} };	// 回答入力時用popup
 	this.tdcolor = "black";
 	this.imgCR = [1,1];		// img表示用画像の横×縦のサイズ
 
@@ -3537,6 +4068,15 @@ KeyPopup = function(){
 	this.defaultdisp = false;
 
 	this.tbodytmp=null, this.trtmp=null;
+
+	this.ORIGINAL = 99;
+
+	// ElementTemplate
+	this.EL_KPNUM   = ee.addTemplate('','td', {unselectable:'on', className:'kpnum'}, null, null);
+	this.EL_KPEMPTY = ee.addTemplate('','td', {unselectable:'on'}, null, null);
+	this.EL_KPIMG   = ee.addTemplate('','td', {unselectable:'on', className:'kpimgcell'}, null, null);
+	this.EL_KPIMG_DIV = ee.addTemplate('','div', {unselectable:'on', className:'kpimgdiv'}, null, null);
+	this.EL_KPIMG_IMG = ee.addTemplate('','img', {unselectable:'on', className:'kpimg', src:"./src/img/"+k.puzzleid+"_kp.gif"}, null, null);
 };
 KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
@@ -3545,7 +4085,7 @@ KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
 	// オーバーライド用
 	kpinput : function(ca){ },
-	enabled : function(){ return menu.getVal('keypopup');},
+	enabled : function(){ return pp.getVal('keypopup');},
 
 	//---------------------------------------------------------------------------
 	// kp.generate()   キーポップアップを生成して初期化する
@@ -3554,22 +4094,24 @@ KeyPopup.prototype = {
 	// kp.gentable4()  キーポップアップの0～4を入力できるテーブルを作成する
 	//---------------------------------------------------------------------------
 	generate : function(type, enablemake, enableplay, func){
-		if(enablemake && k.callmode=="pmake"){ this.gentable(1, type, func);}
-		if(enableplay)                       { this.gentable(3, type, func);}
+		if(enablemake && k.EDITOR){ this.gentable(1, type, func);}
+		if(enableplay)            { this.gentable(3, type, func);}
 	},
 
 	gentable : function(mode, type, func){
 		this.ctl[mode].enable = true;
-		this.ctl[mode].el = newEL('div').attr("class", "popup")
-										.css("padding", "3pt").css("background-color", "silver")
-										.mouseout(this.hide.ebind(this))
-										.appendTo($("#popup_parent"));
+		this.ctl[mode].el     = ee('keypopup'+mode).el;
+		this.ctl[mode].el.onmouseout = ee.ebinder(this, this.hide);
 
-		var table = newEL('table').attr("cellspacing", "2pt").appendTo(this.ctl[mode].el);
-		this.tbodytmp = newEL('tbody').appendTo(table);
+		var table = _doc.createElement('table');
+		table.cellSpacing = '2pt';
+		this.ctl[mode].el.appendChild(table);
+
+		this.tbodytmp = _doc.createElement('tbody');
+		table.appendChild(this.tbodytmp);
 
 		this.trtmp = null;
-		if(func)							  { func(mode);                }
+		if(func)							  { func.apply(kp, [mode]);}
 		else if(type==0 || type==3)			  { this.gentable10(mode,type);}
 		else if(type==1 || type==2 || type==4){ this.gentable4 (mode,type);}
 	},
@@ -3612,31 +4154,37 @@ KeyPopup.prototype = {
 	// kp.insertrow() テーブルの行を追加する
 	//---------------------------------------------------------------------------
 	inputcol : function(type, id, ca, disp){
-		if(!this.trtmp){ this.trtmp = newEL('tr');}
-		var td = null;
-		if(type=='num'){
-			td = newEL('td').attr("id",id).attr("class","kpnum")
-						   .html(disp).css("color", this.tdcolor)
-						   .click(this.inputnumber.ebind(this, ca));
+		if(!this.trtmp){ this.trtmp = _doc.createElement('tr');}
+		var _td = null;
+		if(type==='num'){
+			_td = ee.createEL(this.EL_KPNUM, id);
+			_td.style.color = this.tdcolor;
+			_td.innerHTML   = disp;
+			_td.onclick     = ee.ebinder(this, this.inputnumber, [ca]);
 		}
-		else if(type=='empty'){
-			td = newEL('td').attr("id",id);
+		else if(type==='empty'){
+			_td = ee.createEL(this.EL_KPEMPTY, '');
 		}
-		else if(type=='image'){
-			var img = newEL('img').attr("id", ""+id+"_i").attr("class","kp").attr("src", "./src/img/"+k.puzzleid+"_kp.gif").unselectable();
-			var div = newEL('div').css("position",'relative').css("display",'inline').unselectable().append(img);
-			var td = newEL('td').attr("id",id).attr("class","kpimg").click(this.inputnumber.ebind(this, ca)).append(div);
-			this.imgs.push({'el':img, 'cx':disp[0], 'cy':disp[1]});
+		else if(type==='image'){
+			var _img = ee.createEL(this.EL_KPIMG_IMG, ""+id+"_i");
+			var _div = ee.createEL(this.EL_KPIMG_DIV, '');
+			_div.appendChild(_img);
+
+			_td = ee.createEL(this.EL_KPIMG, id);
+			_td.onclick   = ee.ebinder(this, this.inputnumber, [ca]);
+			_td.appendChild(_div);
+
+			this.imgs.push({'el':_img, 'cx':disp[0], 'cy':disp[1]});
 		}
 
-		if(td){
-			this.tds.push(td);
-			td.appendTo(this.trtmp).unselectable();
+		if(_td){
+			this.tds.push(_td);
+			this.trtmp.appendChild(_td);
 		}
 	},
 	insertrow : function(){
 		if(this.trtmp){
-			this.tbodytmp.append(this.trtmp);
+			this.tbodytmp.appendChild(this.trtmp);
 			this.trtmp = null;
 		}
 	},
@@ -3646,41 +4194,42 @@ KeyPopup.prototype = {
 	// kp.inputnumber() kpinput関数を呼び出してキーポップアップを隠す
 	// kp.hide()        キーポップアップを隠す
 	//---------------------------------------------------------------------------
-	display : function(x,y){
-		if(this.ctl[k.mode].el && this.ctl[k.mode].enable && menu.getVal('keypopup') && mv.btn.Left){
-			this.x = x;
-			this.y = y;
+	display : function(){
+		var mode = pp.getVal('mode');
+		if(this.ctl[mode].el && this.ctl[mode].enable && pp.getVal('keypopup') && mv.btn.Left){
+			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputX - 3 + k.IEMargin.x;
+			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputY - 3 + k.IEMargin.y;
+			this.ctl[mode].el.style.zIndex = 100;
 
-			this.ctl[k.mode].el.css("left", k.cv_oft.x + x - 3 + k.IEMargin.x);
-			this.ctl[k.mode].el.css("top" , k.cv_oft.y + y - 3 + k.IEMargin.y);
-			this.ctl[k.mode].el.css("z-index", 100);
-
-			if(this.ctl[k.mode].target=="cell"){
+			if(this.ctl[mode].target==k.CELL){
 				var cc0 = tc.getTCC();
-				var cc = mv.cellid(new Pos(this.x,this.y));
+				var cc = mv.cellid();
 				if(cc==-1){ return;}
 				tc.setTCC(cc);
 				pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
 				pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
 			}
-			else if(this.ctl[k.mode].target=="cross"){
+			else if(this.ctl[mode].target==k.CROSS){
 				var cc0 = tc.getTXC();
-				var cc = mv.crossid(new Pos(this.x,this.y));
+				var cc = mv.crossid();
 				if(cc==-1){ return;}
 				tc.setTXC(cc);
 				pc.paint(bd.cross[cc].cx-1, bd.cross[cc].cy-1, bd.cross[cc].cx, bd.cross[cc].cy);
 				pc.paint(bd.cross[cc0].cx-1, bd.cross[cc0].cy-1, bd.cross[cc0].cx, bd.cross[cc0].cy);
 			}
 
-			this.ctl[k.mode].el.css("visibility","visible");
+			this.ctl[mode].el.style.display = 'inline';
 		}
 	},
 	inputnumber : function(e, ca){
 		this.kpinput(ca);
-		this.ctl[k.mode].el.css("visibility","hidden");
+		this.ctl[pp.getVal('mode')].el.style.display = 'none';
 	},
 	hide : function(e){
-		if(this.ctl[k.mode].el && !menu.insideOf(this.ctl[k.mode].el, e)){ this.ctl[k.mode].el.css("visibility","hidden");}
+		var mode = pp.getVal('mode');
+		if(!!this.ctl[mode].el && !menu.insideOf(this.ctl[mode].el, e)){
+			this.ctl[mode].el.style.display = 'none';
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -3688,25 +4237,25 @@ KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
 	resize : function(){
 		var tfunc = function(el,tsize){
-			el.css("width"    , ""+mf(tsize*0.90)+"px")
-			  .css("height"   , ""+mf(tsize*0.90)+"px")
-			  .css("font-size", ""+mf(tsize*0.70)+"px");
+			el.style.width    = ""+mf(tsize*0.90)+"px"
+			el.style.height   = ""+mf(tsize*0.90)+"px"
+			el.style.fontSize = ""+mf(tsize*0.70)+"px";
 		};
-		var ifunc = function(el,cx,cy,bsize){
-			el.css("width" , ""+(bsize*kp.imgCR[0])+"px")
-			  .css("height", ""+(bsize*kp.imgCR[1])+"px")
-			  .css("clip"  , "rect("+(bsize*cy+1)+"px,"+(bsize*(cx+1))+"px,"+(bsize*(cy+1))+"px,"+(bsize*cx+1)+"px)")
-			  .css("top"   , "-"+(cy*bsize+1)+"px")
-			  .css("left"  , "-"+(cx*bsize+1)+"px");
+		var ifunc = function(obj,bsize){
+			obj.el.style.width  = ""+(bsize*kp.imgCR[0])+"px";
+			obj.el.style.height = ""+(bsize*kp.imgCR[1])+"px";
+			obj.el.style.clip   = "rect("+(bsize*obj.cy+1)+"px,"+(bsize*(obj.cx+1))+"px,"+(bsize*(obj.cy+1))+"px,"+(bsize*obj.cx+1)+"px)";
+			obj.el.style.top    = "-"+(obj.cy*bsize+1)+"px";
+			obj.el.style.left   = "-"+(obj.cx*bsize+1)+"px";
 		};
 
 		if(k.def_csize>=24){
-			$.each(this.tds , function(i,obj){ tfunc(obj, k.def_csize);} );
-			$.each(this.imgs, function(i,obj){ ifunc(obj.el,obj.cx,obj.cy,mf(k.def_csize*0.90));} );
+			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  k.def_csize);}
+			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], mf(k.def_csize*0.90));}
 		}
 		else{
-			$.each(this.tds , function(i,obj){ tfunc(obj, 22);} );
-			$.each(this.imgs, function(i,obj){ ifunc(obj.el,obj.cx,obj.cy,18);} );
+			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  22);}
+			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], 18);}
 		}
 	}
 };
@@ -3760,12 +4309,12 @@ TCell.prototype = {
 		if(pos.x<this.minx || this.maxx<pos.x || pos.y<this.miny || this.maxy<pos.y){ return;}
 		this.cursolx = pos.x; this.cursoly = pos.y;
 	},
-	getTCC : function(){ return bd.cnum(mf((this.cursolx-1)/2), mf((this.cursoly-1)/2));},
+	getTCC : function(){ return bd.cnum((this.cursolx-1)>>1, (this.cursoly-1)>>1);},
 	setTCC : function(id){
 		if(id<0 || bd.cellmax<=id){ return;}
 		this.cursolx = bd.cell[id].cx*2+1; this.cursoly = bd.cell[id].cy*2+1;
 	},
-	getTXC : function(){ return bd.xnum(mf(this.cursolx/2), mf(this.cursoly/2));},
+	getTXC : function(){ return bd.xnum(this.cursolx>>1, this.cursoly>>1);},
 	setTXC : function(id){
 		if(!k.iscross || id<0 || bd.crossmax<=id){ return;}
 		this.cursolx = bd.cross[id].cx*2; this.cursoly = bd.cross[id].cy*2;
@@ -3817,21 +4366,27 @@ Encode.prototype = {
 
 		this.init();
 
-		if(search.substring(0,3)=="?m+" || search.substring(0,3)=="?m/"){
-			k.mode = 1;
-			k.callmode = "pmake";
-			search = search.substring(3, search.length);
+		if(search.substr(0,3)=="?m+" || search.substr(0,3)=="?m/"){
+			k.editmode = true;
+			k.playmode = false;
+			k.EDITOR = true;
+			k.PLAYER = false;
+			k.autocheck = false;
+			search = search.substr(3);
 		}
 		else{
-			k.mode = 3;
-			k.callmode = ((!k.scriptcheck)?"pplay":"pmake");
-			search = search.substring(1, search.length);
+			k.editmode = false;
+			k.playmode = true;
+			k.EDITOR = !!k.scriptcheck;
+			k.PLAYER =  !k.scriptcheck;
+			k.autocheck = true;
+			search = search.substr(1);
 		}
 
 		var qs = search.indexOf("/");
 		if(qs>=0){
-			this.parseURI_pzpr(search.substring(qs+1,search.length));
-			return search.substring(0,qs);
+			this.parseURI_pzpr(search.substr(qs+1));
+			return search.substr(0,qs);
 		}
 
 		return search;
@@ -3846,11 +4401,11 @@ Encode.prototype = {
 		if(url.match(/indi\.s58\.xrea\.com/)){
 			// ぱずぷれv3のURL
 			if(!url.match(/\/(sa|sc)\//)){
-				this.parseURI_pzpr(url.substring(url.indexOf("/", url.indexOf("?"))+1,url.length));
+				this.parseURI_pzpr(url.substr(url.indexOf("/", url.indexOf("?"))+1));
 			}
 			// ぱずぷれアプレットのURL
 			else{
-				this.parseURI_pzpr(url.substring(url.indexOf("?"),url.length)+1);
+				this.parseURI_pzpr(url.substr(url.indexOf("?")));
 				this.uri.type = 1; // 1はぱずぷれアプレット/URLジェネレータ
 			}
 		}
@@ -3858,19 +4413,19 @@ Encode.prototype = {
 		else if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
 			// カンペンだけどデータ形式はへやわけアプレット
 			if(url.indexOf("?heyawake=")>=0){
-				this.parseURI_heyaapp(url.substring(url.indexOf("?heyawake=")+10,url.length));
+				this.parseURI_heyaapp(url.substr(url.indexOf("?heyawake=")+10));
 			}
 			// カンペンだけどデータ形式はぱずぷれ
 			else if(url.indexOf("?pzpr=")>=0){
-				this.parseURI_pzpr(url.substring(url.indexOf("?pzpr=")+6,url.length));
+				this.parseURI_pzpr(url.substr(url.indexOf("?pzpr=")+6));
 			}
 			else{
-				this.parseURI_kanpen(url.substring(url.indexOf("?problem=")+9,url.length));
+				this.parseURI_kanpen(url.substr(url.indexOf("?problem=")+9));
 			}
 		}
 		// へやわけアプレットの場合
 		else if(url.match(/www\.geocities(\.co)?\.jp\/heyawake/)){
-			this.parseURI_heyaapp(url.substring(url.indexOf("?problem=")+9,url.length));
+			this.parseURI_heyaapp(url.substr(url.indexOf("?problem=")+9));
 		}
 	},
 	parseURI_pzpr : function(qstr){
@@ -3931,9 +4486,8 @@ Encode.prototype = {
 			um.enableRecord(); um.enableInfo();
 
 			bd.ansclear();
-			um.allerase();
 
-			base.resetInfo();
+			base.resetInfo(true);
 			base.resize_canvas_onload();
 		}
 	},
@@ -3958,7 +4512,7 @@ Encode.prototype = {
 
 			if(c>=bd.cellmax){ break;}
 		}
-		return bstr.substring(i+1,bstr.length);
+		return bstr.substr(i+1);
 	},
 	encode4Cell : function(){
 		var count = 0, cm = "";
@@ -3998,7 +4552,7 @@ Encode.prototype = {
 
 			if(c>=bd.crossmax){ break;}
 		}
-		return bstr.substring(i+1,bstr.length);
+		return bstr.substr(i+1);
 	},
 	encode4Cross : function(){
 		var count = 0, cm = "";
@@ -4031,14 +4585,14 @@ Encode.prototype = {
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if     (this.include(ca,"0","9")){ bd.sQnC(c, parseInt(bstr.substring(i,i+1),10)); c++;}
+			if     (this.include(ca,"0","9")){ bd.sQnC(c, parseInt(bstr.substr(i,1),10)); c++;}
 			else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-9);}
 			else if(ca == '.'){ bd.sQnC(c, -2); c++;}
 			else{ c++;}
 
 			if(c > bd.cellmax){ break;}
 		}
-		return bstr.substring(i,bstr.length);
+		return bstr.substr(i);
 	},
 	encodeNumber10 : function(){
 		var cm="", count=0;
@@ -4068,18 +4622,18 @@ Encode.prototype = {
 			var ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { bd.sQnC(c, parseInt(bstr.substring(i,  i+1),16));      c++;}
-			else if(ca == '.'){ bd.sQnC(c, -2);                                        c++;      }
-			else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),16));      c++; i+=2;}
-			else if(ca == '+'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+4),16));      c++; i+=3;}
-			else if(ca == '='){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+4),16)+4096); c++; i+=3;}
-			else if(ca == '%'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+4),16)+8192); c++; i+=3;}
+							  { bd.sQnC(c, parseInt(bstr.substr(i,  1),16));      c++;}
+			else if(ca == '.'){ bd.sQnC(c, -2);                                   c++;      }
+			else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),16));      c++; i+=2;}
+			else if(ca == '+'){ bd.sQnC(c, parseInt(bstr.substr(i+1,3),16));      c++; i+=3;}
+			else if(ca == '='){ bd.sQnC(c, parseInt(bstr.substr(i+1,3),16)+4096); c++; i+=3;}
+			else if(ca == '%'){ bd.sQnC(c, parseInt(bstr.substr(i+1,3),16)+8192); c++; i+=3;}
 			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-15);}
 			else{ c++;}
 
 			if(c > bd.cellmax){ break;}
 		}
-		return bstr.substring(i,bstr.length);
+		return bstr.substr(i);
 	},
 	encodeNumber16 : function(){
 		var count=0, cm="";
@@ -4114,19 +4668,19 @@ Encode.prototype = {
 			var ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i,  i+1),16));      r++;}
-			else if(ca == '-'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+3),16));      r++; i+=2;}
-			else if(ca == '+'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16));      r++; i+=3;}
-			else if(ca == '='){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+4096); r++; i+=3;}
-			else if(ca == '%'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+8192); r++; i+=3;}
-			else if(ca == '*'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+12240); r++; i+=4;}
-			else if(ca == '$'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substring(i+1,i+4),16)+77776); r++; i+=5;}
+							  { bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i,  1),16));      r++;}
+			else if(ca == '-'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,2),16));      r++; i+=2;}
+			else if(ca == '+'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,3),16));      r++; i+=3;}
+			else if(ca == '='){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,3),16)+4096); r++; i+=3;}
+			else if(ca == '%'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,3),16)+8192); r++; i+=3;}
+			else if(ca == '*'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,3),16)+12240); r++; i+=4;}
+			else if(ca == '$'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,3),16)+77776); r++; i+=5;}
 			else if(ca >= 'g' && ca <= 'z'){ r += (parseInt(ca,36)-15);}
 			else{ r++;}
 
 			if(r > area.room.max){ break;}
 		}
-		return bstr.substring(i,bstr.length);
+		return bstr.substr(i);
 	},
 	encodeRoomNumber16 : function(){
 		area.resetRarea();
@@ -4161,17 +4715,17 @@ Encode.prototype = {
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if     (ca=='0'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+2),16)); c++; i++; }
-			else if(ca=='5'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),16)); c++; i+=2;}
+			if     (ca=='0'){ bd.sQnC(c, parseInt(bstr.substr(i+1,1),16)); c++; i++; }
+			else if(ca=='5'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),16)); c++; i+=2;}
 			else if(this.include(ca,"1","4")){
 				bd.sDiC(c, parseInt(ca,16));
-				if(bstr.charAt(i+1)!="."){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+2),16));}
+				if(bstr.charAt(i+1)!="."){ bd.sQnC(c, parseInt(bstr.substr(i+1,1),16));}
 				else{ bd.sQnC(c,-2);}
 				c++; i++;
 			}
 			else if(this.include(ca,"6","9")){
 				bd.sDiC(c, parseInt(ca,16)-5);
-				bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),16));
+				bd.sQnC(c, parseInt(bstr.substr(i+1,2),16));
 				c++; i+=2;
 			}
 			else if(ca>='a' && ca<='z'){ c+=(parseInt(ca,36)-9);}
@@ -4179,7 +4733,7 @@ Encode.prototype = {
 
 			if(c > bd.cellmax){ break;}
 		}
-		return bstr.substring(i,bstr.length);
+		return bstr.substr(i);
 	},
 	encodeArrowNumber16 : function(){
 		var cm = "", count = 0;
@@ -4230,7 +4784,7 @@ Encode.prototype = {
 		}
 
 		area.resetRarea();
-		return bstr.substring(pos2,bstr.length);
+		return bstr.substr(pos2);
 	},
 	encodeBorder : function(){
 		var num, pass;
@@ -4275,7 +4829,7 @@ Encode.prototype = {
 
 			if(cc >= (k.isoutsidecross==1?(k.qcols+1)*(k.qrows+1):(k.qcols-1)*(k.qrows-1))-1){ i++; break;}
 		}
-		return bstr.substring(i, bstr.length);
+		return bstr.substr(i);
 	},
 	encodeCrossMark : function(){
 		var cm = "", count = 0;
@@ -4309,7 +4863,7 @@ Encode.prototype = {
 		}
 		for(var j=bstr.length;j<bd.crossmax;j++){ bd.sQnX(j,-1);}
 
-		return bstr.substring(i,bstr.length);
+		return bstr.substr(i);
 	},
 
 	//---------------------------------------------------------------------------
@@ -4376,10 +4930,9 @@ FileIO.prototype = {
 		um.disableRecord(); um.disableInfo();
 		var result = this.filedecode(array,type);
 		um.enableRecord(); um.enableInfo();
-		um.allerase();
 
 		if(result){
-			base.resetInfo();
+			base.resetInfo(true);
 			base.resize_canvas();
 		}
 	},
@@ -5024,6 +5577,23 @@ FileIO.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// fio.clickHandler()  フォーム上のボタンが押された時、各関数にジャンプする
+	//---------------------------------------------------------------------------
+	clickHandler : function(e){
+		switch(ee.getSrcElement(e).name){
+			case 'sorts'   : this.displayDataTableList(); break;
+			case 'datalist': this.selectDataTable(); break;
+			case 'tableup' : this.upDataTable();     break;
+			case 'tabledn' : this.downDataTable();   break;
+			case 'open'    : this.openDataTable();   break;
+			case 'save'    : this.saveDataTable();   break;
+			case 'comedit' : this.editComment();     break;
+			case 'difedit' : this.editDifficult();   break;
+			case 'del'     : this.deleteDataTable(); break;
+		}
+	},
+
+	//---------------------------------------------------------------------------
 	// fio.displayDataTableList() 保存しているデータの一覧を表示する
 	// fio.ni()                   文字列で1桁なら0をつける
 	// fio.getDataTableList()     保存しているデータの一覧を取得する
@@ -5336,6 +5906,7 @@ AnsCheck = function(){
 	this.performAsLine = false;
 	this.errDisp = false;
 	this.setError = true;
+	this.inCheck = false;
 	this.inAutoCheck = false;
 	this.alstr = { jp:'' ,en:''};
 };
@@ -5351,6 +5922,7 @@ AnsCheck.prototype = {
 		this.inCheck = true;
 		this.alstr = { jp:'' ,en:''};
 		kc.keyreset();
+		mv.mousereset();
 
 		if(!this.checkAns()){
 			alert((menu.isLangJP()||!this.alstr.en)?this.alstr.jp:this.alstr.en);
@@ -5377,21 +5949,21 @@ AnsCheck.prototype = {
 	// ans.isenableSetError() 盤面のオブジェクトにエラーフラグを設定できるかどうかを返す
 	//---------------------------------------------------------------------------
 	autocheck : function(){
-		if(!k.autocheck || k.mode!=3 || this.inCheck){ return;}
+		if(!k.autocheck || k.editmode || this.inCheck){ return;}
 
 		var ret = false;
 
-		this.inCheck = true;
+		this.inCheck = this.inAutoCheck = true;
 		this.disableSetError();
 
 		if(this.autocheck1st() && this.checkAns() && this.inCheck){
 			mv.mousereset();
 			alert(menu.isLangJP()?"正解です！":"Complete!");
 			ret = true;
-			menu.setVal('autocheck',false);
+			pp.setVal('autocheck',false);
 		}
 		this.enableSetError();
-		this.inCheck = false;
+		this.inCheck = this.inAutoCheck = false;
 
 		return ret;
 	},
@@ -5443,10 +6015,14 @@ AnsCheck.prototype = {
 	// ans.checkSideCell()  隣り合った2つのセルが条件func==trueの時、エラーを設定する
 	//---------------------------------------------------------------------------
 	checkAllCell : function(func){
+		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(func(c)){ bd.sErC([c],1); return false;}
+			if(func(c)){
+				if(this.inAutoCheck){ return false;}
+				bd.sErC([c],1); result = false;
+			}
 		}
-		return true;
+		return result;
 	},
 	checkOneArea : function(cinfo){
 		if(cinfo.max>1){
@@ -5457,26 +6033,31 @@ AnsCheck.prototype = {
 		return true;
 	},
 	check2x2Block : function(func){
+		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].cx<k.qcols-1 && bd.cell[c].cy<k.qrows-1){
 				if( func(c) && func(c+1) && func(c+k.qcols) && func(c+k.qcols+1) ){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c,c+1,c+k.qcols,c+k.qcols+1],1);
-					return false;
+					result = false;
 				}
 			}
 		}
-		return true;
+		return result;
 	},
 	checkSideCell : function(func){
+		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].cx<k.qcols-1 && func(c,c+1)){
-				bd.sErC([c,c+1],1); return false;
+				if(this.inAutoCheck){ return false;}
+				bd.sErC([c,c+1],1); result = false;
 			}
 			if(bd.cell[c].cy<k.qrows-1 && func(c,c+k.qcols)){
-				bd.sErC([c,c+k.qcols],1); return false;
+				if(this.inAutoCheck){ return false;}
+				bd.sErC([c,c+k.qcols],1); result = false;
 			}
 		}
-		return true;
+		return result;
 	},
 
 	//---------------------------------------------------------------------------
@@ -5486,14 +6067,16 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	checkAreaRect : function(cinfo, func){ return this.checkAllArea(cinfo, func, function(w,h,a){ return (w*h==a)}); },
 	checkAllArea : function(cinfo, func, func2){
+		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
 			var d = this.getSizeOfClist(cinfo.room[id].idlist,func);
 			if(!func2(d.x2-d.x1+1, d.y2-d.y1+1, d.cnt)){
+				if(this.inAutoCheck){ return false;}
 				bd.sErC(cinfo.room[id].idlist,1);
-				return false;
+				result = false;
 			}
 		}
-		return true;
+		return result;
 	},
 	getSizeOfClist : function(clist, func){
 		var d = { x1:k.qcols, x2:-1, y1:k.qrows, y2:-1, cnt:0 };
@@ -5538,21 +6121,20 @@ AnsCheck.prototype = {
 	},
 
 	checkLcntCell : function(val){
+		var result = true;
 		if(line.ltotal[val]==0){ return true;}
 		for(var c=0;c<bd.cellmax;c++){
 			if(line.lcnt[c]==val){
+				if(this.inAutoCheck){ return false;}
 				if(!this.performAsLine){ bd.sErC([c],1);}
-				else{ bd.sErBAll(2); this.setCellLineError(c,true);}
-				return false;
+				else{ if(result){ bd.sErBAll(2);} this.setCellLineError(c,true);}
+				result = false;
 			}
 		}
-		return true;
+		return result;
 	},
 
 	isLineStraight : function(cc){
-		if     (line.lcntCell(cc)==3 || line.lcntCell(cc)==4){ return true;}
-		else if(line.lcntCell(cc)==0 || line.lcntCell(cc)==1){ return false;}
-
 		if     (bd.isLine(bd.ub(cc)) && bd.isLine(bd.db(cc))){ return true;}
 		else if(bd.isLine(bd.lb(cc)) && bd.isLine(bd.rb(cc))){ return true;}
 
@@ -5570,10 +6152,15 @@ AnsCheck.prototype = {
 	// ans.checkenableLineParts() '一部があかされている'線の部分に、線が引かれているか判定する
 	//---------------------------------------------------------------------------
 	checkdir4Border : function(){
+		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.QnC(c)>=0 && this.checkdir4Border1(c)!=bd.QnC(c)){ bd.sErC([c],1); return false;}
+			if(bd.QnC(c)>=0 && this.checkdir4Border1(c)!=bd.QnC(c)){
+				if(this.inAutoCheck){ return false;}
+				bd.sErC([c],1);
+				result = false;
+			}
 		}
-		return true;
+		return result;
 	},
 	checkdir4Border1 : function(cc){
 		if(cc<0 || cc>=bd.cellmax){ return 0;}
@@ -5587,13 +6174,19 @@ AnsCheck.prototype = {
 	},
 
 	checkenableLineParts : function(val){
+		var result = true;
 		var func = function(i){
 			return ((bd.ub(i)!=-1 && bd.isLine(bd.ub(i)) && bd.isnoLPup(i)) ||
 					(bd.db(i)!=-1 && bd.isLine(bd.db(i)) && bd.isnoLPdown(i)) ||
 					(bd.lb(i)!=-1 && bd.isLine(bd.lb(i)) && bd.isnoLPleft(i)) ||
 					(bd.rb(i)!=-1 && bd.isLine(bd.rb(i)) && bd.isnoLPright(i)) ); };
-		for(var i=0;i<bd.cellmax;i++){ if(func(i)){ bd.sErC([i],1); return false;} }
-		return true;
+		for(var i=0;i<bd.cellmax;i++){
+			if(func(i)){
+				if(this.inAutoCheck){ return false;}
+				bd.sErC([i],1); result = false;
+			}
+		}
+		return result;
 	},
 
 	//---------------------------------------------------------------------------
@@ -5611,15 +6204,18 @@ AnsCheck.prototype = {
 	// ans.getCntOfRoom()        部屋の面積を返す
 	// ans.getCellsOfRoom()      部屋の中でfunc==trueとなるセルの数を返す
 	//---------------------------------------------------------------------------
-	checkOneNumber : function(cinfo, eval, func){
+	checkOneNumber : function(cinfo, evalfunc, func){
+		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
-			if(eval( bd.QnC(this.getQnumCellInArea(cinfo,id)), this.getCellsOfRoom(cinfo, id, func) )){
-				if(this.performAsLine){ bd.sErBAll(2); this.setErrLareaById(cinfo,id,1);}
+			var top = bd.QnC(k.isOneNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0]) : this.getQnumCellInArea(cinfo,id));
+			if( evalfunc(top, this.getCellsOfRoom(cinfo, id, func)) ){
+				if(this.inAutoCheck){ return false;}
+				if(this.performAsLine){ if(result){ bd.sErBAll(2);} this.setErrLareaById(cinfo,id,1);}
 				else{ bd.sErC(cinfo.room[id].idlist,(k.puzzleid!="tateyoko"?1:4));}
-				return false;
+				result = false;
 			}
 		}
-		return true;
+		return result;
 	},
 	checkBlackCellCount  : function(cinfo)          { return this.checkOneNumber(cinfo, function(top,cnt){ return (top>=0 && top!=cnt);}, bd.isBlack);},
 	checkDisconnectLine  : function(cinfo)          { return this.checkOneNumber(cinfo, function(top,cnt){ return (top==-1 && cnt==0); }, bd.isNum  );},
@@ -5629,11 +6225,9 @@ AnsCheck.prototype = {
 	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkOneNumber(cinfo, function(top,cnt){ return (cnt==0); },            function(c){ return getvalue(c)!=-1;} );},
 
 	getQnumCellInArea : function(cinfo, areaid){
-		if(k.isOneNumber){ return area.getTopOfRoomByCell(cinfo.room[areaid].idlist[0]); }
-		for(var i=0;i<cinfo.room[areaid].idlist.length;i++){
-			if(bd.QnC(cinfo.room[areaid].idlist[i])!=-1){
-				return cinfo.room[areaid].idlist[i];
-			}
+		var idlist = cinfo.room[areaid].idlist;
+		for(var i=0,len=idlist.length;i<len;i++){
+			if(bd.QnC(idlist[i])!=-1){ return idlist[i];}
 		}
 		return -1;
 	},
@@ -5641,10 +6235,8 @@ AnsCheck.prototype = {
 		return cinfo.room[areaid].idlist.length;
 	},
 	getCellsOfRoom : function(cinfo, areaid, func){
-		var cnt=0;
-		for(var i=0;i<cinfo.room[areaid].idlist.length;i++){
-			if(func(cinfo.room[areaid].idlist[i])){ cnt++;}
-		}
+		var cnt=0, idlist = cinfo.room[areaid].idlist;
+		for(var i=0,len=idlist.length;i<len;i++){ if(func(idlist[i])){ cnt++;}}
 		return cnt;
 	},
 
@@ -5702,6 +6294,7 @@ AnsCheck.prototype = {
 	},
 
 	checkSeqBlocksInRoom : function(){
+		var result = true;
 		for(var id=1;id<=area.room.max;id++){
 			var data = {max:0,id:[]};
 			for(var c=0;c<bd.cellmax;c++){ data.id[c] = ((area.room.id[c]==id && bd.isBlack(c))?0:-1);}
@@ -5712,20 +6305,24 @@ AnsCheck.prototype = {
 				area.sc0(c, data);
 			}
 			if(data.max>1){
+				if(this.inAutoCheck){ return false;}
 				bd.sErC(area.room[id].clist,1);
-				return false;
+				result = false;
 			}
 		}
-		return true;
+		return result;
 	},
 
 	checkSameObjectInRoom : function(rinfo, getvalue){
+		var result = true;
 		var d = [];
 		for(var i=1;i<=rinfo.max;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cellmax;c++){
 			if(rinfo.id[c]==-1 || getvalue(c)==-1){ continue;}
 			if(d[rinfo.id[c]]==-1 && getvalue(c)!=-1){ d[rinfo.id[c]] = getvalue(c);}
 			else if(d[rinfo.id[c]]!=getvalue(c)){
+				if(this.inAutoCheck){ return false;}
+
 				if(this.performAsLine){ bd.sErBAll(2); this.setErrLareaByCell(rinfo,c,1);}
 				else{ bd.sErC(rinfo.room[rinfo.id[c]].idlist,1);}
 				if(k.puzzleid=="kaero"){
@@ -5735,10 +6332,10 @@ AnsCheck.prototype = {
 						}
 					}
 				}
-				return false;
+				result = false;
 			}
 		}
-		return true;
+		return result;
 	},
 	checkObjectRoom : function(rinfo, getvalue){
 		var d = [];
@@ -5766,17 +6363,19 @@ AnsCheck.prototype = {
 	// ans.setCrossBorderError() ある交点とその周り四方向にエラーフラグを設定する
 	//---------------------------------------------------------------------------
 	checkLcntCross : function(val, bp){
+		var result = true;
 		for(var i=0;i<(k.qcols+1)*(k.qrows+1);i++){
 			var cx = i%(k.qcols+1), cy = mf(i/(k.qcols+1));
 			if(k.isoutsidecross==0 && k.isborderAsLine==0 && (cx==0||cy==0||cx==k.qcols||cy==k.qrows)){ continue;}
 			var lcnts = (!k.isborderAsLine?area.lcnt[i]:line.lcnt[i]);
 			if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(cx, cy))==1) || (bp==2&&bd.QnX(bd.xnum(cx, cy))!=1) )){
-				bd.sErBAll(2);
+				if(this.inAutoCheck){ return false;}
+				if(result){ bd.sErBAll(2);}
 				this.setCrossBorderError(cx,cy);
-				return false;
+				result = false;
 			}
 		}
-		return true;
+		return result;
 	},
 	setCrossBorderError : function(cx,cy){
 		if(k.iscross){ bd.sErX([bd.xnum(cx, cy)], 1);}
@@ -5838,17 +6437,8 @@ UndoManager.prototype = {
 	isenableInfo : function(){ return (this.disinfo==0);},
 
 	enb_btn : function(){
-		if(!this.ope.length){
-			$("#btnundo").attr("disabled","true");
-			$("#btnredo").attr("disabled","true");
-		}
-		else{
-			if(!this.current){ $("#btnundo").attr("disabled","true");}
-			else{ $("#btnundo").attr("disabled","");}
-
-			if(this.current==this.ope.length){ $("#btnredo").attr("disabled","true");}
-			else{ $("#btnredo").attr("disabled","");}
-		}
+		ee('btnundo').el.disabled = ((!this.ope.length || this.current==0)               ? 'true' : '');
+		ee('btnredo').el.disabled = ((!this.ope.length || this.current==this.ope.length) ? 'true' : '');
 	},
 	allerase : function(){
 		for(var i=this.ope.length-1;i>=0;i--){ this.ope.pop();}
@@ -5878,7 +6468,7 @@ UndoManager.prototype = {
 
 		// 前回と同じ場所なら前回の更新のみ
 		if(lastid>=0 && this.ope[lastid].obj == obj && this.ope[lastid].property == property && this.ope[lastid].id == id && this.ope[lastid].num == old
-			&& this.disCombine==0 && ( (obj == 'cell' && ( property=='qnum' || (property=='qans' && k.isAnsNumber) )) || obj == 'cross')
+			&& this.disCombine==0 && ( (obj == k.CELL && ( property==k.QNUM || (property==k.QANS && k.isAnsNumber) )) || obj == k.CROSS)
 		)
 		{
 			this.ope[lastid].num = num;
@@ -5889,16 +6479,16 @@ UndoManager.prototype = {
 			if(this.chainflag==0){ this.chainflag = 1;}
 		}
 
-		if(property!='qsub' && property!='color'){ this.anscount++;}
+		if(property!=k.QSUB){ this.anscount++;}
 		this.changeflag = true;
 		this.enb_btn();
 	},
 	addObj : function(type, id){
 		var old, obj;
-		if     (type=='cell')  { old = new Cell();   obj = bd.cell[id];  }
-		else if(type=='cross') { old = new Cross();  obj = bd.cross[id]; }
-		else if(type=='border'){ old = new Border(); obj = bd.border[id];}
-		else if(type=='excell'){ old = new Cell();   obj = bd.excell[id];}
+		if     (type==k.CELL)  { old = new Cell();   obj = bd.cell[id];  }
+		else if(type==k.CROSS) { old = new Cross();  obj = bd.cross[id]; }
+		else if(type==k.BORDER){ old = new Border(); obj = bd.border[id];}
+		else if(type==k.EXCELL){ old = new Cell();   obj = bd.excell[id];}
 		for(var i in obj){ old[i] = obj[i];}
 		this.addOpe(type, type, id, old, null);
 	},
@@ -5914,13 +6504,17 @@ UndoManager.prototype = {
 		this.undoExec = true;
 		this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
 		this.disableRecord();
+
 		while(this.current>0){
-			this.exec(this.ope[this.current-1], this.ope[this.current-1].old);
-			if(this.ope[this.current-1].property!='qsub' && this.ope[this.current-1].property!='color'){ this.anscount--;}
+			var ope = this.ope[this.current-1];
+
+			this.exec(ope, ope.old);
+			if(ope.property!=k.QSUB){ this.anscount--;}
 			this.current--;
 
 			if(!this.ope[this.current].chain){ break;}
 		}
+
 		this.postproc();
 		this.undoExec = false;
 		if(this.current==0){ kc.inUNDO=false;}
@@ -5930,13 +6524,17 @@ UndoManager.prototype = {
 		this.redoExec = true;
 		this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
 		this.disableRecord();
+
 		while(this.current<this.ope.length){
-			this.exec(this.ope[this.current], this.ope[this.current].num);
-			if(this.ope[this.current].property!='qsub' && this.ope[this.current].property!='color'){ this.anscount++;}
+			var ope = this.ope[this.current];
+
+			this.exec(ope, ope.num);
+			if(ope.property!=k.QSUB){ this.anscount++;}
 			this.current++;
 
 			if(this.current<this.ope.length && !this.ope[this.current].chain){ break;}
 		}
+
 		this.postproc();
 		this.redoExec = false;
 		if(this.ope.length==0){ kc.inREDO=false;}
@@ -5946,7 +6544,7 @@ UndoManager.prototype = {
 			this.reqReset=false;
 
 			bd.setposAll();
-			base.resetInfo();
+			base.resetInfo(false);
 			base.resize_canvas();
 		}
 		else{
@@ -5958,48 +6556,45 @@ UndoManager.prototype = {
 	},
 	exec : function(ope, num){
 		var pp = ope.property;
-		if(ope.obj == 'cell'){
-			if     (pp == 'ques'){ bd.sQuC(ope.id, num);}
-			else if(pp == 'qnum'){ bd.sQnC(ope.id, num);}
-			else if(pp == 'direc'){ bd.sDiC(ope.id, num);}
-			else if(pp == 'qans'){ bd.sQaC(ope.id, num);}
-			else if(pp == 'qsub'){ bd.sQsC(ope.id, num);}
-			else if(pp == 'numobj'){ bd.cell[ope.id].numobj = num;}
-			else if(pp == 'numobj2'){ bd.cell[ope.id].numobj2 = num;}
-			else if(pp == 'cell' && !!num){ bd.cell[ope.id] = num;}
+		if(ope.obj == k.CELL){
+			if     (pp == k.QUES){ bd.sQuC(ope.id, num);}
+			else if(pp == k.QNUM){ bd.sQnC(ope.id, num);}
+			else if(pp == k.DIREC){ bd.sDiC(ope.id, num);}
+			else if(pp == k.QANS){ bd.sQaC(ope.id, num);}
+			else if(pp == k.QSUB){ bd.sQsC(ope.id, num);}
+			else if(pp == k.CELL && !!num){ bd.cell[ope.id] = num;}
 			this.paintStack(bd.cell[ope.id].cx, bd.cell[ope.id].cy, bd.cell[ope.id].cx, bd.cell[ope.id].cy);
 		}
-		else if(ope.obj == 'excell'){
-			if     (pp == 'qnum'){ bd.sQnE(ope.id, num);}
-			else if(pp == 'direc'){ bd.sDiE(ope.id, num);}
-			else if(pp == 'excell' && !!num){ bd.excell[ope.id] = num;}
+		else if(ope.obj == k.EXCELL){
+			if     (pp == k.QNUM){ bd.sQnE(ope.id, num);}
+			else if(pp == k.DIREC){ bd.sDiE(ope.id, num);}
+			else if(pp == k.EXCELL && !!num){ bd.excell[ope.id] = num;}
 		}
-		else if(ope.obj == 'cross'){
-			if     (pp == 'ques'){ bd.sQuX(ope.id, num);}
-			else if(pp == 'qnum'){ bd.sQnX(ope.id, num);}
-			else if(pp == 'numobj'){ bd.cross[ope.id].numobj = num;}
-			else if(pp == 'cross' && !!num){ bd.cross[ope.id] = num;}
+		else if(ope.obj == k.CROSS){
+			if     (pp == k.QUES){ bd.sQuX(ope.id, num);}
+			else if(pp == k.QNUM){ bd.sQnX(ope.id, num);}
+			else if(pp == k.CROSS && !!num){ bd.cross[ope.id] = num;}
 			this.paintStack(bd.cross[ope.id].cx-1, bd.cross[ope.id].cy-1, bd.cross[ope.id].cx, bd.cross[ope.id].cy);
 		}
-		else if(ope.obj == 'border'){
-			if     (pp == 'ques'){ bd.sQuB(ope.id, num);}
-			else if(pp == 'qnum'){ bd.sQnB(ope.id, num);}
-			else if(pp == 'qans'){ bd.sQaB(ope.id, num);}
-			else if(pp == 'qsub'){ bd.sQsB(ope.id, num);}
-			else if(pp == 'line'){ bd.sLiB(ope.id, num);}
-			else if(pp == 'border' && !!num){ bd.border[ope.id] = num;}
+		else if(ope.obj == k.BORDER){
+			if     (pp == k.QUES){ bd.sQuB(ope.id, num);}
+			else if(pp == k.QNUM){ bd.sQnB(ope.id, num);}
+			else if(pp == k.QANS){ bd.sQaB(ope.id, num);}
+			else if(pp == k.QSUB){ bd.sQsB(ope.id, num);}
+			else if(pp == k.LINE){ bd.sLiB(ope.id, num);}
+			else if(pp == k.BORDER && !!num){ bd.border[ope.id] = num;}
 			this.paintBorder(ope.id);
 		}
-		else if(ope.obj == 'board'){
+		else if(ope.obj == k.BOARD){
 			this.disableInfo();
-			if     (pp == 'expandup'){ if(num==1){ menu.ex.expand('up');}else{ menu.ex.reduce('up');} }
-			else if(pp == 'expanddn'){ if(num==1){ menu.ex.expand('dn');}else{ menu.ex.reduce('dn');} }
-			else if(pp == 'expandlt'){ if(num==1){ menu.ex.expand('lt');}else{ menu.ex.reduce('lt');} }
-			else if(pp == 'expandrt'){ if(num==1){ menu.ex.expand('rt');}else{ menu.ex.reduce('rt');} }
-			else if(pp == 'reduceup'){ if(num==1){ menu.ex.reduce('up');}else{ menu.ex.expand('up');} }
-			else if(pp == 'reducedn'){ if(num==1){ menu.ex.reduce('dn');}else{ menu.ex.expand('dn');} }
-			else if(pp == 'reducelt'){ if(num==1){ menu.ex.reduce('lt');}else{ menu.ex.expand('lt');} }
-			else if(pp == 'reducert'){ if(num==1){ menu.ex.reduce('rt');}else{ menu.ex.expand('rt');} }
+			if     (pp == 'expandup'){ if(num==1){ menu.ex.expand(k.UP);}else{ menu.ex.reduce(k.UP);} }
+			else if(pp == 'expanddn'){ if(num==1){ menu.ex.expand(k.DN);}else{ menu.ex.reduce(k.DN);} }
+			else if(pp == 'expandlt'){ if(num==1){ menu.ex.expand(k.LT);}else{ menu.ex.reduce(k.LT);} }
+			else if(pp == 'expandrt'){ if(num==1){ menu.ex.expand(k.RT);}else{ menu.ex.reduce(k.RT);} }
+			else if(pp == 'reduceup'){ if(num==1){ menu.ex.reduce(k.UP);}else{ menu.ex.expand(k.UP);} }
+			else if(pp == 'reducedn'){ if(num==1){ menu.ex.reduce(k.DN);}else{ menu.ex.expand(k.DN);} }
+			else if(pp == 'reducelt'){ if(num==1){ menu.ex.reduce(k.LT);}else{ menu.ex.expand(k.LT);} }
+			else if(pp == 'reducert'){ if(num==1){ menu.ex.reduce(k.RT);}else{ menu.ex.expand(k.RT);} }
 
 			else if(pp == 'flipy'){ menu.ex.turnflip(1,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});}
 			else if(pp == 'flipx'){ menu.ex.turnflip(2,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});}
@@ -6017,12 +6612,12 @@ UndoManager.prototype = {
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
 		if(bd.border[id].cx%2==1){
-			this.paintStack(mf((bd.border[id].cx-1)/2)-1, mf(bd.border[id].cy/2)-1,
-							mf((bd.border[id].cx-1)/2)+1, mf(bd.border[id].cy/2)   );
+			this.paintStack(((bd.border[id].cx-1)>>1)-1, (bd.border[id].cy>>1)-1,
+							((bd.border[id].cx-1)>>1)+1, (bd.border[id].cy>>1)   );
 		}
 		else{
-			this.paintStack(mf(bd.border[id].cx/2)-1, mf((bd.border[id].cy-1)/2)-1,
-							mf(bd.border[id].cx/2)  , mf((bd.border[id].cy-1)/2)+1 );
+			this.paintStack((bd.border[id].cx>>1)-1, ((bd.border[id].cy-1)>>1)-1,
+							(bd.border[id].cx>>1)  , ((bd.border[id].cy-1)>>1)+1 );
 		}
 	},
 	paintStack : function(x1,y1,x2,y2){
@@ -6060,16 +6655,46 @@ Menu = function(){
 
 	this.ex = new MenuExec();
 	this.language = 'ja';
+
+	// ElementTemplate : メニュー領域
+	var menu_funcs = {mouseover : ee.ebinder(this, this.menuhover), mouseout  : ee.ebinder(this, this.menuout)};
+	this.EL_MENU  = ee.addTemplate('menupanel','div', {className:'menu'}, {marginRight:'4pt'}, menu_funcs);
+
+	// ElementTemplate : フロートメニュー
+	var float_funcs = {mouseout:ee.ebinder(this, this.floatmenuout)};
+	this.EL_FLOAT = ee.addTemplate('float_parent','div', {className:'floatmenu'}, {zIndex:101, backgroundColor:base.floatbgcolor}, float_funcs);
+
+	// ElementTemplate : フロートメニュー(中身)
+	var smenu_funcs  = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout), click:ee.ebinder(this, this.submenuclick)};
+	var select_funcs = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout)};
+	this.EL_SMENU    = ee.addTemplate('','div' , {className:'smenu'}, null, smenu_funcs);
+	this.EL_SELECT   = ee.addTemplate('','div' , {className:'smenu'}, {fontWeight :'900', fontSize:'10pt'}, select_funcs);
+	this.EL_SEPARATE = ee.addTemplate('','div' , {className:'smenusep', innerHTML:'&nbsp;'}, null, null);
+	this.EL_CHECK    = ee.addTemplate('','div' , {className:'smenu'}, {paddingLeft:'6pt', fontSize:'10pt'}, smenu_funcs);
+	this.EL_LABEL    = ee.addTemplate('','span', null, {color:'white'}, null);
+	this.EL_CHILD = this.EL_CHECK;
+
+	// ElementTemplate : 管理領域
+	this.EL_DIVPACK  = ee.addTemplate('','div',  null, null, null);
+	this.EL_SPAN     = ee.addTemplate('','span', {unselectable:'on'}, null, null);
+	this.EL_CHECKBOX = ee.addTemplate('','input',{type:'checkbox', check:''}, null, {click:ee.ebinder(this, this.checkclick)});
+	this.EL_SELCHILD = ee.addTemplate('','div',  {className:'flag',unselectable:'on'}, null, {click:ee.ebinder(this, this.selectclick)});
+
+	// ElementTemplate : ボタン
+	this.EL_BUTTON = ee.addTemplate('','input', {type:'button'}, null, null);
 };
 Menu.prototype = {
 	//---------------------------------------------------------------------------
-	// menu.menuinit()  メニュー、ボタン、サブメニュー、フロートメニュー、
-	//                  ポップアップメニューの初期設定を行う
-	// menu.menureset() メニュー用の設定を消去する
+	// menu.menuinit()   メニュー、サブメニュー、フロートメニュー、ボタン、
+	//                   管理領域、ポップアップメニューの初期設定を行う
+	// menu.menureset()  メニュー用の設定を消去する
+	//
+	// menu.addButtons() ボタンの情報を変数に登録する
+	// menu.addLabels()  ラベルの情報を変数に登録する
 	//---------------------------------------------------------------------------
 	menuinit : function(){
-		this.buttonarea();
 		this.menuarea();
+		this.managearea();
 		this.poparea();
 
 		this.displayAll();
@@ -6081,394 +6706,620 @@ Menu.prototype = {
 		this.pop        = "";
 		this.btnstack   = [];
 		this.labelstack = [];
+		this.managestack = [];
 
 		this.popclose();
 		this.menuclear();
+		this.floatmenuclose(0);
 
-		$("#popup_parent > .floatmenu").remove();
-		$("#menupanel,#usepanel,#checkpanel").html("");
-		if($("#btncolor2").length>0){ $("#btncolor2").remove();}
-		$("#btnclear2").nextAll().remove();
-		$("#outbtnarea").remove();
+		ee('float_parent').el.innerHTML = '';
+
+		if(!!ee('btncolor2')){ ee('btncolor2').remove();}
+		ee('btnarea').removeNextAll(ee('btnclear2').el);
+
+		ee('menupanel') .el.innerHTML = '';
+		ee('usepanel')  .el.innerHTML = '';
+		ee('checkpanel').el.innerHTML = '';
 
 		pp.reset();
 	},
 
+	addButtons : function(el, func, strJP, strEN){
+		if(!!func) el.onclick = func;
+		ee(el).unselectable();
+		this.btnstack.push({el:el, str:{ja:strJP, en:strEN}});
+	},
+	addLabels  : function(el, strJP, strEN){
+		this.labelstack.push({el:el, str:{ja:strJP, en:strEN}});
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.displayAll() 全てのメニュー、ボタン、ラベルに対して文字列を設定する
+	// menu.setdisplay() 管理パネルとサブメニューに表示する文字列を個別に設定する
+	//---------------------------------------------------------------------------
+	displayAll : function(){
+		for(var i in pp.flags){ this.setdisplay(i);}
+		for(var i=0,len=this.btnstack.length;i<len;i++){
+			if(!this.btnstack[i].el){ continue;}
+			this.btnstack[i].el.value = this.btnstack[i].str[menu.language];
+		}
+		for(var i=0,len=this.labelstack.length;i<len;i++){
+			if(!this.labelstack[i].el){ continue;}
+			this.labelstack[i].el.innerHTML = this.labelstack[i].str[menu.language];
+		}
+	},
+	setdisplay : function(idname){
+		switch(pp.type(idname)){
+		case pp.MENU:
+			var menu = ee('ms_'+idname);
+			if(!!menu){ menu.el.innerHTML = "["+pp.getMenuStr(idname)+"]";}
+			break;
+
+		case pp.SMENU: case pp.LABEL:
+			var smenu = ee('ms_'+idname);
+			if(!!smenu){ smenu.el.innerHTML = pp.getMenuStr(idname);}
+			break;
+
+		case pp.SELECT:
+			var smenu = ee('ms_'+idname), label = ee('cl_'+idname);
+			if(!!smenu){ smenu.el.innerHTML = "&nbsp;"+pp.getMenuStr(idname);}	// メニュー上の表記の設定
+			if(!!label){ label.el.innerHTML = pp.getLabel(idname);}			// 管理領域上の表記の設定
+			for(var i=0,len=pp.flags[idname].child.length;i<len;i++){ this.setdisplay(""+idname+"_"+pp.flags[idname].child[i]);}
+			break;
+
+		case pp.CHILD:
+			var smenu = ee('ms_'+idname), manage = ee('up_'+idname);
+			var issel = (pp.getVal(idname) == pp.getVal(pp.flags[idname].parent));
+			var cap = pp.getMenuStr(idname);
+			if(!!smenu){ smenu.el.innerHTML = (issel?"+":"&nbsp;")+cap;}	// メニューの項目
+			if(!!manage){													// 管理領域の項目
+				manage.el.innerHTML = cap;
+				manage.el.className = (issel?"flagsel":"flag");
+			}
+			break;
+
+		case pp.CHECK:
+			var smenu = ee('ms_'+idname), check = ee('ck_'+idname), label = ee('cl_'+idname);
+			var flag = pp.getVal(idname);
+			if(!!smenu){ smenu.el.innerHTML = (flag?"+":"&nbsp;")+pp.getMenuStr(idname);}	// メニュー
+			if(!!check){ check.el.checked   = flag;}					// 管理領域(チェックボックス)
+			if(!!label){ label.el.innerHTML = pp.getLabel(idname);}		// 管理領域(ラベル)
+			break;
+		}
+	},
+
+//--------------------------------------------------------------------------------------------------------------
+
 	//---------------------------------------------------------------------------
 	// menu.menuarea()   メニューの初期設定を行う
-	// menu.addMenu()    メニューの情報を変数に登録する
+	//---------------------------------------------------------------------------
+	menuarea : function(){
+		var am = ee.binder(pp, pp.addMenu),
+			as = ee.binder(pp, pp.addSmenu),
+			au = ee.binder(pp, pp.addSelect),
+			ac = ee.binder(pp, pp.addCheck),
+			aa = ee.binder(pp, pp.addCaption),
+			ai = ee.binder(pp, pp.addChild),
+			ap = ee.binder(pp, pp.addSeparator),
+			sl = ee.binder(pp, pp.setLabel);
+
+		// *ファイル ==========================================================
+		am('file', "ファイル", "File");
+
+		as('newboard', 'file', '新規作成','New Board');
+		as('urlinput', 'file', 'URL入力', 'Import from URL');
+		as('urloutput','file', 'URL出力', 'Export URL');
+		ap('sep_2', 'file');
+		as('fileopen', 'file', 'ファイルを開く','Open the file');
+		as('filesave', 'file', 'ファイル保存',  'Save the file as ...');
+		if(!!fio.DBtype){
+			as('database', 'file', 'データベースの管理', 'Database Management');
+		}
+		if(k.isKanpenExist && (k.puzzleid!=="nanro" && k.puzzleid!=="ayeheya" && k.puzzleid!=="kurochute")){
+			ap('sep_3', 'file');
+			as('fileopen2', 'file', 'pencilboxのファイルを開く', 'Open the pencilbox file');
+			as('filesave2', 'file', 'pencilboxのファイルを保存', 'Save the pencilbox file as ...');
+		}
+
+		// *編集 ==============================================================
+		am('edit', "編集", "Edit");
+
+		as('adjust', 'edit', '盤面の調整', 'Adjust the Board');
+		as('turn',   'edit', '反転・回転', 'Filp/Turn the Board');
+
+		// *表示 ==============================================================
+		am('disp', "表示", "Display");
+
+		au('size','disp',k.widthmode,[0,1,2,3,4], '表示サイズ','Cell Size');
+		ap('sep_4',  'disp');
+
+		if(!!k.irowake){
+			ac('irowake','disp',(k.irowake==2?true:false),'線の色分け','Color coding');
+			sl('irowake', '線の色分けをする', 'Color each lines');
+			ap('sep_5', 'disp');
+		}
+		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
+		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
+
+		// *表示 - 表示サイズ -------------------------------------------------
+		as('dispsize',    'size','サイズ指定','Cell Size');
+		aa('cap_dispmode','size','表示モード','Display mode');
+		ai('size_0', 'size', 'サイズ 極小', 'Ex Small');
+		ai('size_1', 'size', 'サイズ 小',   'Small');
+		ai('size_2', 'size', 'サイズ 標準', 'Normal');
+		ai('size_3', 'size', 'サイズ 大',   'Large');
+		ai('size_4', 'size', 'サイズ 特大', 'Ex Large');
+
+		// *設定 ==============================================================
+		am('setting', "設定", "Setting");
+
+		if(k.EDITOR){
+			au('mode','setting',(k.editmode?1:3),[1,3],'モード', 'mode');
+			sl('mode','モード', 'mode');
+		}
+
+		puz.menufix();	// 各パズルごとのメニュー追加
+
+		ac('autocheck','setting', k.autocheck, '正答自動判定', 'Auto Answer Check');
+		ac('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
+		sl('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
+		if(kp.ctl[1].enable || kp.ctl[3].enable){
+			ac('keypopup', 'setting', kp.defaultdisp, 'パネル入力', 'Panel inputting');
+			sl('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
+		}
+		au('language', 'setting', 0,[0,1], '言語', 'Language');
+
+		// *設定 - モード -----------------------------------------------------
+		ai('mode_1', 'mode', '問題作成モード', 'Edit mode'  );
+		ai('mode_3', 'mode', '回答モード',     'Answer mode');
+
+		// *設定 - 言語 -------------------------------------------------------
+		ai('language_0', 'language', '日本語',  '日本語');
+		ai('language_1', 'language', 'English', 'English');
+
+		// *その他 ============================================================
+		am('other', "その他", "Others");
+
+		as('credit',  'other', 'ぱずぷれv3について',   'About PUZ-PRE v3');
+		aa('cap_others1', 'other', 'リンク', 'Link');
+		as('jumpv3',  'other', 'ぱずぷれv3のページへ', 'Jump to PUZ-PRE v3 page');
+		as('jumptop', 'other', '連続発破保管庫TOPへ',  'Jump to indi.s58.xrea.com');
+		as('jumpblog','other', 'はっぱ日記(blog)へ',   'Jump to my blog');
+		//sm('eval', 'テスト用', 'for Evaluation');
+
+		this.createAllFloat();
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.addUseToFlags()       「操作方法」サブメニュー登録用共通関数
+	// menu.addRedLineToFlags()   「線のつながりをチェック」サブメニュー登録用共通関数
+	// menu.addRedBlockToFlags()  「黒マスのつながりをチェック」サブメニュー登録用共通関数
+	// menu.addRedBlockRBToFlags()「ナナメ黒マスのつながりをチェック」サブメニュー登録用共通関数
+	//---------------------------------------------------------------------------
+	addUseToFlags : function(){
+		pp.addSelect('use','setting',1,[1,2], '操作方法', 'Input Type');
+		pp.setLabel ('use', '操作方法', 'Input Type');
+
+		pp.addChild('use_1','use','左右ボタン','LR Button');
+		pp.addChild('use_2','use','1ボタン',   'One Button');
+	},
+	addRedLineToFlags : function(){
+		pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
+		pp.setLabel('dispred', '線のつながりをチェックする', 'Check countinuous lines');
+	},
+	addRedBlockToFlags : function(){
+		pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
+		pp.setLabel('dispred', '黒マスのつながりをチェックする', 'Check countinuous black cells');
+	},
+	addRedBlockRBToFlags : function(){
+		pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
+		pp.setLabel('dispred', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.createAllFloat() 登録されたサブメニューから全てのフロートメニューを作成する
+	//---------------------------------------------------------------------------
+	createAllFloat : function(){
+		for(var i=0;i<pp.flaglist.length;i++){
+			var id = pp.flaglist[i];
+			if(!pp.flags[id]){ continue;}
+
+			var smenuid = 'ms_'+id;
+			switch(pp.type(id)){
+				case pp.MENU:     smenu = ee.createEL(this.EL_MENU,    smenuid); continue; break;
+				case pp.SEPARATE: smenu = ee.createEL(this.EL_SEPARATE,smenuid); break;
+				case pp.LABEL:    smenu = ee.createEL(this.EL_LABEL,   smenuid); break;
+				case pp.SELECT:   smenu = ee.createEL(this.EL_SELECT,  smenuid); break;
+				case pp.SMENU:    smenu = ee.createEL(this.EL_SMENU,   smenuid); break;
+				case pp.CHECK:    smenu = ee.createEL(this.EL_CHECK,   smenuid); break;
+				case pp.CHILD:    smenu = ee.createEL(this.EL_CHILD,   smenuid); break;
+				default: continue; break;
+			}
+
+			var parentid = pp.flags[id].parent;
+			if(!this.floatpanel[parentid]){
+				this.floatpanel[parentid] = ee.createEL(this.EL_FLOAT, 'float_'+parentid);
+			}
+			this.floatpanel[parentid].appendChild(smenu);
+		}
+
+		// 'setting'だけはセパレータを後から挿入する
+		var el = ee('float_setting').el, fw = el.firstChild.style.fontWeight
+		for(var i=1,len=el.childNodes.length;i<len;i++){
+			var node = el.childNodes[i];
+			if(fw!=node.style.fontWeight){
+				ee(ee.createEL(this.EL_SEPARATE,'')).insertBefore(node);
+				i++; len++; // 追加したので1たしておく
+			}
+			fw=node.style.fontWeight;
+		}
+
+		// その他の調整
+		if(k.PLAYER){
+			ee('ms_newboard') .el.className = 'smenunull';
+			ee('ms_urloutput').el.className = 'smenunull';
+			ee('ms_adjust')   .el.className = 'smenunull';
+		}
+		ee('ms_jumpv3')  .el.style.fontSize = '10pt'; ee('ms_jumpv3')  .el.style.paddingLeft = '8pt';
+		ee('ms_jumptop') .el.style.fontSize = '10pt'; ee('ms_jumptop') .el.style.paddingLeft = '8pt';
+		ee('ms_jumpblog').el.style.fontSize = '10pt'; ee('ms_jumpblog').el.style.paddingLeft = '8pt';
+	},
+
+	//---------------------------------------------------------------------------
 	// menu.menuhover(e) メニューにマウスが乗ったときの表示設定を行う
 	// menu.menuout(e)   メニューからマウスが外れた時の表示設定を行う
 	// menu.menuclear()  メニュー/サブメニュー/フロートメニューを全て選択されていない状態に戻す
 	//---------------------------------------------------------------------------
-	menuarea : function(){
-		this.addMenu('file', "ファイル", "File");
-		this.addMenu('edit', "編集", "Edit");
-		this.addMenu('disp', "表示", "Display");
-		this.addMenu('setting', "設定", "Setting");
-		this.addMenu('other', "その他", "Others");
-
-		pp.setDefaultFlags();
-		this.createFloats();
-
-		$("#expression").html(base.expression.ja);
-		if(k.callmode=="pplay"){ $("#ms_newboard,#ms_urloutput").attr("class", "smenunull");}
-		if(k.callmode=="pplay"){ $("#ms_adjust").attr("class", "smenunull");}
-		$("#ms_jumpv3,#ms_jumptop,#ms_jumpblog").css("font-size",'10pt').css("padding-left",'8pt');
-
-		this.managearea();
-	},
-
-	addMenu : function(idname, strJP, strEN){
-		var jqel = newEL("div").attr("class", 'menu').attr("id",'menu_'+idname).appendTo($("#menupanel"))
-							   .html("["+strJP+"]").css("margin-right","4pt")
-							   .hover(this.menuhover.ebind(this,idname), this.menuout.ebind(this));
-		this.addLabels(jqel, "["+strJP+"]", "["+strEN+"]");
-	},
-	menuhover : function(e, idname){
+	menuhover : function(e){
+		var idname = ee.getSrcElement(e).id.substr(3);
 		this.floatmenuopen(e,idname,0);
-		$("div.menusel").attr("class", "menu");
-		$(getSrcElement(e)).attr("class", "menusel");
+		ee('menupanel').replaceChildrenClass('menusel','menu');
+		ee.getSrcElement(e).className = "menusel";
 	},
-	menuout   : function(e){ if(!this.insideOfMenu(e)){ this.menuclear();} },
+	menuout   : function(e){
+		if(!this.insideOfMenu(e)){
+			this.menuclear();
+			this.floatmenuclose(0);
+		}
+	},
 	menuclear : function(){
-		$("div.menusel").attr("class", "menu");
-		$("div.smenusel").attr("class", "smenu");
-		$("#popup_parent > .floatmenu").hide();
-		this.dispfloat = [];
+		ee('menupanel').replaceChildrenClass('menusel','menu');
 	},
 
 	//---------------------------------------------------------------------------
 	// menu.submenuhover(e) サブメニューにマウスが乗ったときの表示設定を行う
 	// menu.submenuout(e)   サブメニューからマウスが外れたときの表示設定を行う
 	// menu.submenuclick(e) 通常/選択型/チェック型サブメニューがクリックされたときの動作を実行する
-	// menu.checkclick()    管理領域のチェックボタンが押されたとき、チェック型の設定を設定する
 	//---------------------------------------------------------------------------
-	submenuhover : function(e, idname){
-		if($(getSrcElement(e)).attr("class")=="smenu"){ $(getSrcElement(e)).attr("class", "smenusel");}
-		if(pp.flags[idname] && pp.type(idname)==1){ this.floatmenuopen(e,idname,this.dispfloat.length);}
+	submenuhover : function(e){
+		var idname = ee.getSrcElement(e).id.substr(3);
+		if(ee.getSrcElement(e).className==="smenu"){ ee.getSrcElement(e).className="smenusel";}
+		if(pp.flags[idname] && pp.type(idname)===pp.SELECT){ this.floatmenuopen(e,idname,this.dispfloat.length);}
 	},
-	submenuout   : function(e, idname){
-		if($(getSrcElement(e)).attr("class")=="smenusel"){ $(getSrcElement(e)).attr("class", "smenu");}
-		if(pp.flags[idname] && pp.type(idname)==1){ this.floatmenuout(e);}
+	submenuout   : function(e){
+		var idname = ee.getSrcElement(e).id.substr(3);
+		if(ee.getSrcElement(e).className==="smenusel"){ ee.getSrcElement(e).className="smenu";}
+		if(pp.flags[idname] && pp.type(idname)===pp.SELECT){ this.floatmenuout(e);}
 	},
-	submenuclick : function(e, idname){
-		if($(getSrcElement(e)).attr("class") == "smenunull"){ return;}
+	submenuclick : function(e){
+		var idname = ee.getSrcElement(e).id.substr(3);
+		if(ee.getSrcElement(e).className==="smenunull"){ return;}
 		this.menuclear();
+		this.floatmenuclose(0);
 
-		if(pp.type(idname)==0){
-			this.popclose();							// 表示しているウィンドウがある場合は閉じる
-			if(pp.funcs[idname]){ pp.funcs[idname]();}	// この中でthis.popupenuも設定されます。
-			if(this.pop){
-				this.pop.css("left", mv.pointerX(e) - 8 + k.IEMargin.x)
-						.css("top",  mv.pointerY(e) - 8 + k.IEMargin.y).css("visibility", "visible");
-			}
+		switch(pp.type(idname)){
+			case pp.SMENU: this.popopen(e, idname); break;
+			case pp.CHILD: pp.setVal(pp.flags[idname].parent, pp.getVal(idname)); break;
+			case pp.CHECK: pp.setVal(idname, !pp.getVal(idname)); break;
 		}
-		else if(pp.type(idname)==4){ this.setVal(pp.flags[idname].parent, pp.getVal(idname));}
-		else if(pp.type(idname)==2){ this.setVal(idname, !pp.getVal(idname));}
 	},
-	checkclick : function(idname){ this.setVal(idname, $("#ck_"+idname).attr("checked"));},
 
 	//---------------------------------------------------------------------------
 	// menu.floatmenuopen()  マウスがメニュー項目上に来た時にフロートメニューを表示する
 	// menu.floatmenuclose() フロートメニューをcloseする
 	// menu.floatmenuout(e)  マウスがフロートメニューを離れた時にフロートメニューをcloseする
-	// menu.insideOf()       イベントeがjQueryオブジェクトjqobjの範囲内で起こったか？
+	// menu.insideOf()       イベントeがエレメントの範囲内で起こったか？
 	// menu.insideOfMenu()   マウスがメニュー領域の中にいるか判定する
 	//---------------------------------------------------------------------------
 	floatmenuopen : function(e, idname, depth){
+		if(depth===0){ this.menuclear();}
 		this.floatmenuclose(depth);
-		var src = $(getSrcElement(e));
 
-		if(depth==0||this.dispfloat[depth-1]){
-			if(depth==0){ this.floatpanel[idname].css("left", src.offset().left - 3 + k.IEMargin.x).css("top" , src.offset().top + src.height());}
-			else        { this.floatpanel[idname].css("left", src.offset().left + src.width())     .css("top",  src.offset().top - 3);}
-			this.floatpanel[idname].css("z-index",101+depth).css("visibility", "visible").show();
-			this.dispfloat.push(idname);
+		if(depth>0 && !this.dispfloat[depth-1]){ return;}
+
+		var rect = ee(ee.getSrcElement(e).id).getRect();
+		var _float = this.floatpanel[idname];
+		if(depth==0){
+			_float.style.left = rect.left - 3 + k.IEMargin.x;
+			_float.style.top  = rect.bottom + (k.br.IE?-2:1);
 		}
+		else{
+			_float.style.left = rect.right - 2;
+			_float.style.top  = rect.top + (k.br.IE?-5:-2);
+		}
+		_float.style.zIndex   = 101+depth;
+		_float.style.display  = 'inline';
+
+		this.dispfloat.push(_float);
 	},
 	// マウスが離れたときにフロートメニューをクローズする
 	// フロート->メニュー側に外れた時は、関数終了直後にfloatmenuopen()が呼ばれる
 	floatmenuclose : function(depth){
-		if(depth==0){ this.menuclear(); return;}
 		for(var i=this.dispfloat.length-1;i>=depth;i--){
-			if(this.dispfloat[i]){
-				$("#ms_"+this.dispfloat[i]).attr("class", "smenu");
-				this.floatpanel[this.dispfloat[i]].hide();
-				this.dispfloat.pop();
+			if(i!==0){
+				var parentsmenuid = "ms_" + this.dispfloat[i].id.substr(6);
+				ee(parentsmenuid).el.className = 'smenu';
 			}
+			this.dispfloat[i].style.display = 'none';
+			this.dispfloat.pop();
 		}
 	},
+
 	floatmenuout : function(e){
 		for(var i=this.dispfloat.length-1;i>=0;i--){
-			if(this.insideOf(this.floatpanel[this.dispfloat[i]],e)){ this.floatmenuclose(i+1); return;}
+			if(this.insideOf(this.dispfloat[i],e)){
+				this.floatmenuclose(i+1);
+				return;
+			}
 		}
+		// ここに来るのはすべて消える場合
 		this.menuclear();
+		this.floatmenuclose(0);
 	},
 
-	insideOf : function(jqobj, e){
-		var LT = new Pos(jqobj.offset().left, jqobj.offset().top);
-		var ev = new Pos(mv.pointerX(e), mv.pointerY(e));
-		return !(ev.x<=LT.x || ev.x>=LT.x+jqobj.width() || ev.y<=LT.y || ev.y>=LT.y+jqobj.height());
+	insideOf : function(el, e){
+		var ex = ee.pageX(e);
+		var ey = ee.pageY(e);
+		var rect = ee(el.id).getRect();
+		return (ex>=rect.left && ex<=rect.right && ey>=rect.top && ey<=rect.bottom);
 	},
 	insideOfMenu : function(e){
-		var upperLimit = $("#menu_file").offset().top;
-		var leftLimit  = $("#menu_file").offset().left;
-		var rightLimit = $("#menu_other").offset().left + $("#menu_other").width();
-		var ex = mv.pointerX(e), ey = mv.pointerY(e);
-		return (ex>leftLimit && ex<rightLimit && ey>upperLimit);
+		var ex = ee.pageX(e);
+		var ey = ee.pageY(e);
+		var rect_f = ee('ms_file').getRect(), rect_o = ee('ms_other').getRect();
+		return (ex>=rect_f.left && ex<=rect_o.right && ey>=rect_f.top);
 	},
+
+//--------------------------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------
-	// menu.addUseToFlags()      「操作方法」サブメニュー登録用共通関数
-	// menu.addRedLineToFlags()  「線のつながりをチェック」サブメニュー登録用共通関数
-	// menu.addRedBlockToFlags() 「黒マスのつながりをチェック」サブメニュー登録用共通関数
-	//---------------------------------------------------------------------------
-	// menu登録用の関数
-	addUseToFlags : function(){
-		pp.addUseToFlags('use','setting',1,[1,2]);
-		pp.setMenuStr('use', '操作方法', 'Input Type');
-		pp.setLabel  ('use', '操作方法', 'Input Type');
-
-		pp.addUseChildrenToFlags('use','use');
-		pp.setMenuStr('use_1', '左右ボタン', 'LR Button');
-		pp.setMenuStr('use_2', '1ボタン', 'One Button');
-	},
-	addRedLineToFlags : function(){
-		pp.addCheckToFlags('dispred','setting',false);
-		pp.setMenuStr('dispred', '繋がりチェック', 'Continuous Check');
-		pp.setLabel  ('dispred', '線のつながりをチェックする', 'Check countinuous lines');
-	},
-	addRedBlockToFlags : function(){
-		pp.addCheckToFlags('dispred','setting',false);
-		pp.setMenuStr('dispred', '繋がりチェック', 'Continuous Check');
-		pp.setLabel  ('dispred', '黒マスのつながりをチェックする', 'Check countinuous black cells');
-	},
-	addRedBlockRBToFlags : function(){
-		pp.addCheckToFlags('dispred','setting',false);
-		pp.setMenuStr('dispred', '繋がりチェック', 'Continuous Check');
-		pp.setLabel  ('dispred', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.getVal()     各フラグのvalの値を返す
-	// menu.setVal()     各フラグの設定値を設定する
-	// menu.setdisplay() 管理パネルとサブメニューに表示する文字列を設定する
-	// menu.displayAll() 全てのメニュー、ボタン、ラベルに対して文字列を設定する
-	//---------------------------------------------------------------------------
-	getVal : function(idname)  { return pp.getVal(idname);},
-	setVal : function(idname, newval){ pp.setVal(idname,newval);},
-	setdisplay : function(idname){
-		if(pp.type(idname)==0||pp.type(idname)==3){
-			if($("#ms_"+idname)){ $("#ms_"+idname).html(pp.getMenuStr(idname));}
-		}
-		else if(pp.type(idname)==1){
-			if($("#ms_"+idname)){ $("#ms_"+idname).html("&nbsp;"+pp.getMenuStr(idname));}	// メニュー上の表記の設定
-			$("#cl_"+idname).html(pp.getLabel(idname));									// 管理領域上の表記の設定
-			for(var i=0;i<pp.flags[idname].child.length;i++){ this.setdisplay(""+idname+"_"+pp.flags[idname].child[i]);}
-		}
-		else if(pp.type(idname)==4){
-			var issel = (pp.getVal(idname) == pp.getVal(pp.flags[idname].parent));
-			var cap = pp.getMenuStr(idname);
-			$("#ms_"+idname).html((issel?"+":"&nbsp;")+cap);					// メニューの項目
-			$("#up_"+idname).html(cap).attr("class", issel?"flagsel":"flag");	// 管理領域の項目
-		}
-		else if(pp.type(idname)==2){
-			var flag = pp.getVal(idname);
-			if($("#ms_"+idname)){ $("#ms_"+idname).html((flag?"+":"&nbsp;")+pp.getMenuStr(idname));}	// メニュー
-			$("#ck_"+idname).attr("checked",flag);			// 管理領域(チェックボックス)
-			$("#cl_"+idname).html(pp.getLabel(idname));		// 管理領域(ラベル)
-		}
-	},
-	displayAll : function(){
-		for(var i in pp.flags){ this.setdisplay(i);}
-		$.each(this.btnstack,function(i,obj){obj.el.attr("value",obj.str[menu.language]);});
-		$.each(this.labelstack,function(i,obj){obj.el.html(obj.str[menu.language]);});
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.createFloatMenu() 登録されたサブメニューからフロートメニューを作成する
-	// menu.getFloatpanel()   指定されたIDを持つフロートメニューを返す(ない場合は作成する)
-	//---------------------------------------------------------------------------
-	createFloats : function(){
-		var last=0;
-		for(var i=0;i<pp.flaglist.length;i++){
-			var idname = pp.flaglist[i];
-			if(!pp.flags[idname]){ continue;}
-
-			var menuid = pp.flags[idname].parent;
-			var floats = this.getFloatpanel(menuid);
-
-			if(menuid=='setting'){
-				if(last>0 && last!=pp.type(idname)){ $("<div class=\"smenusep\">&nbsp;</div>").appendTo(floats);}
-				last=pp.type(idname);
-			}
-
-			var smenu;
-			if     (pp.type(idname)==5){ smenu = $("<div class=\"smenusep\">&nbsp;</div>");}
-			else if(pp.type(idname)==3){ smenu = newEL("span").css("color", 'white');}
-			else if(pp.type(idname)==1){
-				smenu = newEL("div").attr("class", 'smenu').css("font-weight","900").css("font-size",'10pt')
-									.hover(this.submenuhover.ebind(this,idname), this.submenuout.ebind(this,idname));
-				this.getFloatpanel(idname);
-			}
-			else{
-				smenu = newEL("div").attr("class", 'smenu')
-									.hover(this.submenuhover.ebind(this,idname), this.submenuout.ebind(this,idname))
-									.click(this.submenuclick.ebind(this,idname));
-				if(pp.type(idname)!=0){ smenu.css("font-size",'10pt').css("padding-left",'6pt');}
-			}
-			smenu.attr("id","ms_"+idname).appendTo(floats);
-			this.setdisplay(idname);
-		}
-		this.floatpanel[menuid] = floats;
-	},
-	getFloatpanel : function(id){
-		if(!this.floatpanel[id]){
-			this.floatpanel[id] = newEL("div")
-				.attr("class", 'floatmenu').attr("id",'float_'+id).appendTo($("#popup_parent"))
-				.css("background-color", base.floatbgcolor).css("z-index",101)
-				.mouseout(this.floatmenuout.ebind(this)).hide();
-		}
-		return this.floatpanel[id];
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.managearea()   管理領域の初期化を行う
+	// menu.managearea()   管理領域の初期化を行う(内容はサブメニューのものを参照)
+	// menu.checkclick()   管理領域のチェックボタンが押されたとき、チェック型の設定を設定する
+	// menu.selectclick()  選択型サブメニュー項目がクリックされたときの動作
 	//---------------------------------------------------------------------------
 	managearea : function(){
+		// usearea & checkarea
 		for(var n=0;n<pp.flaglist.length;n++){
 			var idname = pp.flaglist[n];
 			if(!pp.flags[idname] || !pp.getLabel(idname)){ continue;}
+			var _div = ee(ee.createEL(this.EL_DIVPACK,'div_'+idname));
+			//_div.el.innerHTML = "";
 
-			if(pp.type(idname)==1){
-				$("#usepanel").append("<span id=\"cl_"+idname+"\">"+pp.getLabel(idname)+"</span> |&nbsp;");
+			switch(pp.type(idname)){
+			case pp.SELECT:
+				_div.appendEL(ee.createEL(this.EL_SPAN, 'cl_'+idname));
+				_div.appendHTML("&nbsp;|&nbsp;");
 				for(var i=0;i<pp.flags[idname].child.length;i++){
 					var num = pp.flags[idname].child[i];
-					var el = newEL('div').attr("class",((num==pp.getVal(idname))?"flagsel":"flag")).attr("id","up_"+idname+"_"+num)
-										 .html(pp.getMenuStr(""+idname+"_"+num)).appendTo($("#usepanel"))
-										 .click(pp.setVal.bind(pp,idname,num)).unselectable();
-					$("#usepanel").append(" ");
+					_div.appendEL(ee.createEL(this.EL_SELCHILD, ['up',idname,num].join("_")));
+					_div.appendHTML('&nbsp;');
 				}
-				$("#usepanel").append("<br>\n");
-			}
-			else if(pp.type(idname)==2){
-				$("#checkpanel").append("<input type=\"checkbox\" id=\"ck_"+idname+"\""+(pp.getVal(idname)?' checked':'')+"> ")
-								.append("<span id=\"cl_"+idname+"\"> "+pp.getLabel(idname)+"</span>");
-				if(idname=="irowake"){
-					$("#checkpanel").append("<input type=button id=\"ck_irowake2\" value=\"色分けしなおす\" onClick=\"javascript:menu.ex.irowakeRemake();\">");
-					this.addButtons($("#ck_irowake2"), "色分けしなおす", "Change the color of Line");
-				}
-				$("#checkpanel").append("<br>\n");
-				$("#ck_"+idname).click(this.checkclick.bind(this,idname));
+				_div.appendBR();
+
+				ee('usepanel').appendEL(_div.el);
+				break;
+
+			case pp.CHECK:
+				_div.appendEL(ee.createEL(this.EL_CHECKBOX, 'ck_'+idname));
+				_div.appendHTML("&nbsp;");
+				_div.appendEL(ee.createEL(this.EL_SPAN, 'cl_'+idname));
+				_div.appendBR();
+
+				ee('checkpanel').appendEL(_div.el);
+				break;
 			}
 		}
 
-		$("#translation").css("position","absolute").css("cursor","pointer")
-						 .css("font-size","10pt").css("color","green").css("background-color","#dfdfdf")
-						 .click(this.translate.bind(this)).unselectable();
-		if(k.callmode=="pmake"){ $("#timerpanel,#separator2").hide();}
+		// 色分けチェックボックス用の処理
+		if(k.irowake){
+			// 横にくっつけたいボタンを追加
+			var el = ee.createEL(this.EL_BUTTON, 'ck_btn_irowake');
+			this.addButtons(el, ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
+			ee('ck_btn_irowake').insertAfter(ee('cl_irowake').el);
+
+			// 色分けのやつを一番下に持ってくる
+			var el = ee('checkpanel').el.removeChild(ee('div_irowake').el);
+			ee('checkpanel').el.appendChild(el);
+		}
+
+		// 左上に出てくるやつ
+		ee('translation').unselectable().el.onclick = ee.binder(this, this.translate);
+		this.addLabels(ee('translation').el, "English", "日本語");
+
+		// 説明文の場所
+		ee('expression').el.innerHTML = base.expression.ja;
+
+		// 管理領域の表示/非表示設定
+		if(k.EDITOR){
+			ee('timerpanel').el.style.display = 'none';
+			ee('separator2').el.style.display = 'none';
+		}
+		if(!!ee('ck_keypopup')){ pp.funcs.keypopup();}
+
+		// (Canvas下) ボタンの初期設定
+		this.addButtons(ee("btncheck").el,  ee.binder(ans, ans.check),             "チェック", "Check");
+		this.addButtons(ee("btnundo").el,   ee.binder(um, um.undo),                "戻",       "<-");
+		this.addButtons(ee("btnredo").el,   ee.binder(um, um.redo),                "進",       "->");
+		this.addButtons(ee("btnclear").el,  ee.binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
+		this.addButtons(ee("btnclear2").el, ee.binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
 		if(k.irowake!=0){
-			$("#btnarea").append("<input type=\"button\" id=\"btncolor2\" value=\"色分けしなおす\">");
-			$("#btncolor2").click(menu.ex.irowakeRemake).hide();
-			menu.addButtons($("#btncolor2"), "色分けしなおす", "Change the color of Line");
+			var el = ee.createEL(this.EL_BUTTON, 'btncolor2');
+			this.addButtons(el, ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
+			ee('btncolor2').insertAfter(ee('btnclear2').el).el.style.display = 'none';
 		}
 	},
 
-//--------------------------------------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------------------------------
+	checkclick : function(e){
+		var el = ee.getSrcElement(e);
+		var idname = el.id.substr(3);
+		pp.setVal(idname, el.checked);
+	},
+	selectclick : function(e){
+		var list = ee.getSrcElement(e).id.split('_');
+		pp.setVal(list[1], list[2]);
+	},
+
 //--------------------------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------
-	// menu.poparea()     ポップアップメニューの初期設定を行う
-	// menu.popclose()    ポップアップメニューを閉じる
+	// menu.poparea()       ポップアップメニューの初期設定を行う
 	//---------------------------------------------------------------------------
 	poparea : function(){
-		var self = this;
-		// Popupメニューを動かすイベント
-		var popupfunc = function(){
-			$(this).mousedown(self.titlebardown.ebind(self)).mouseup(self.titlebarup.ebind(self))
-				   .mouseout(self.titlebarout.ebind(self)).mousemove(self.titlebarmove.ebind(self))
-				   .unselectable();
+
+		//=====================================================================
+		//// 各タイトルバーの動作設定
+		var pop = ee('popup_parent').el.firstChild;
+		while(!!pop){
+			var _el = pop.firstChild;
+			while(!!_el){
+				if(_el.className==='titlebar'){
+					this.titlebarfunc(_el);
+					break;
+				}
+				_el = _el.nextSibling;
+			}
+			pop = pop.nextSibling;
+		}
+		this.titlebarfunc(ee('credit3_1').el);
+
+		//=====================================================================
+		//// formボタンの動作設定・その他のCaption設定
+		var btn = ee.binder(this, this.addButtons);
+		var lab = ee.binder(this, this.addLabels);
+		var close = ee.ebinder(this, this.popclose);
+		var func = null;
+
+		// 盤面の新規作成 -----------------------------------------------------
+		func = ee.ebinder(this.ex, this.ex.newboard);
+		lab(ee('bar1_1').el,      "盤面の新規作成",         "Createing New Board");
+		lab(ee('pop1_1_cap0').el, "盤面を新規作成します。", "Create New Board.");
+		if(k.puzzleid!=='sudoku' && k.puzzleid!=='tawa'){
+			lab(ee('pop1_1_cap1').el, "よこ",                   "Cols");
+			lab(ee('pop1_1_cap2').el, "たて",                   "Rows");
+		}
+		btn(document.newboard.newboard, func,  "新規作成",   "Create");
+		btn(document.newboard.cancel,   close, "キャンセル", "Cancel");
+
+		// URL入力 ------------------------------------------------------------
+		func = ee.ebinder(this.ex, this.ex.urlinput);
+		lab(ee('bar1_2').el,      "URL入力",                     "Import from URL");
+		lab(ee('pop1_2_cap0').el, "URLから問題を読み込みます。", "Import a question from URL.");
+		btn(document.urlinput.urlinput, func,  "読み込む",   "Import");
+		btn(document.urlinput.cancel,   close, "キャンセル", "Cancel");
+
+		// URL出力 ------------------------------------------------------------
+		func = ee.ebinder(this.ex, this.ex.urloutput);
+		lab(ee('bar1_3').el, "URL出力", "Export URL");
+		var btt = function(name, strJP, strEN, eval){
+			if(eval===false){ return;}
+			var el = ee.createEL(menu.EL_BUTTON,''); el.name = name;
+			ee('urlbuttonarea').appendEL(el).appendBR();
+			btn(el, func, strJP, strEN);
 		};
-		$("div.titlebar,#credir3_1").each(popupfunc);
+		btt('pzprv3',     "ぱずぷれv3のURLを出力する",           "Output PUZ-PRE v3 URL",          true);
+		btt('pzprapplet', "ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", !k.ispzprv3ONLY);
+		btt('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              !!k.isKanpenExist);
+		btt('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (k.puzzleid==="heyawake"));
+		btt('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
+		ee("urlbuttonarea").appendBR();
+		func = ee.ebinder(this.ex, this.ex.openurl);
+		btn(document.urloutput.openurl, func,  "このURLを開く", "Open this URL on another window/tab");
+		btn(document.urloutput.close,   close, "閉じる", "Close");
 
-		//---------------------------------------------------------------------------
-		//// formボタンのイベント
-		var px = this.popclose.ebind(this);
+		// ファイル入力 -------------------------------------------------------
+		func = ee.ebinder(this.ex, this.ex.fileopen);
+		lab(ee('bar1_4').el,      "ファイルを開く", "Open file");
+		lab(ee('pop1_4_cap0').el, "ファイル選択",   "Choose file");
+		document.fileform.filebox.onchange = func;
+		btn(document.fileform.close,    close, "閉じる",     "Close");
 
-		// 盤面の新規作成
-		$(document.newboard.newboard).click(this.ex.newboard.ebind(this.ex));
-		$(document.newboard.cancel).click(px);
+		// データベースを開く -------------------------------------------------
+		func = ee.ebinder(fio, fio.clickHandler);
+		lab(ee('bar1_8').el, "データベースの管理", "Database Management");
+		document.database.sorts   .onchange = func;
+		document.database.datalist.onchange = func;
+		document.database.tableup .onclick  = func;
+		document.database.tabledn .onclick  = func;
+		btn(document.database.open,     func,  "データを読み込む",   "Load");
+		btn(document.database.save,     func,  "盤面を保存",         "Save");
+		lab(ee('pop1_8_com').el, "コメント:", "Comment:");
+		btn(document.database.comedit,  func,  "コメントを編集する", "Edit Comment");
+		btn(document.database.difedit,  func,  "難易度を設定する",   "Set difficulty");
+		btn(document.database.del,      func,  "削除",               "Delete");
+		btn(document.database.close,    close, "閉じる",             "Close");
 
-		// URL入力
-		$(document.urlinput.urlinput).click(this.ex.urlinput.ebind(this.ex));
-		$(document.urlinput.cancel).click(px);
+		// 盤面の調整 ---------------------------------------------------------
+		func = ee.ebinder(this.ex, this.ex.popupadjust);
+		lab(ee('bar2_1').el,      "盤面の調整",             "Adjust the board");
+		lab(ee('pop2_1_cap0').el, "盤面の調整を行います。", "Adjust the board.");
+		lab(ee('pop2_1_cap1').el, "拡大",  "Expand");
+		btn(document.adjust.expandup,   func,  "上",     "UP");
+		btn(document.adjust.expanddn,   func,  "下",     "Down");
+		btn(document.adjust.expandlt,   func,  "左",     "Left");
+		btn(document.adjust.expandrt,   func,  "右",     "Right");
+		lab(ee('pop2_1_cap2').el, "縮小", "Reduce");
+		btn(document.adjust.reduceup,   func,  "上",     "UP");
+		btn(document.adjust.reducedn,   func,  "下",     "Down");
+		btn(document.adjust.reducelt,   func,  "左",     "Left");
+		btn(document.adjust.reducert,   func,  "右",     "Right");
+		btn(document.adjust.close,      close, "閉じる", "Close");
 
-		// URL出力
-		$(document.urloutput.ta).before(newEL('div').attr('id','outbtnarea'));
-		var ib = function(name, strJP, strEN, eval){ if(!eval) return;
-			var btn = newEL('input').attr('type','button').attr("name",name).click(this.ex.urloutput.ebind(this.ex));
-			$("#outbtnarea").append(btn).append("<br>");
-			this.addButtons(btn, strJP, strEN);
-		}.bind(this);
-		ib('pzprv3', "ぱずぷれv3のURLを出力する", "Output PUZ-PRE v3 URL", true);
-		ib('pzprapplet', "ぱずぷれ\(アプレット\)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", !k.ispzprv3ONLY);
-		ib('kanpen', "カンペンのURLを出力する", "Output Kanpen URL", k.isKanpenExist);
-		ib('heyaapp', "へやわけアプレットのURLを出力する", "Output Heyawake-Applet URL", (k.puzzleid=="heyawake"));
-		ib('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する", "Output PUZ-PRE v3 Re-Edit URL", true);
-		$("#outbtnarea").append("<br>\n");
-		$(document.urloutput.openurl).click(this.ex.openurl.ebind(this.ex));
-		$(document.urloutput.close).click(px);
+		// 反転・回転 ---------------------------------------------------------
+		lab(ee('bar2_2').el,      "反転・回転",                  "Flip/Turn the board");
+		lab(ee('pop2_2_cap0').el, "盤面の回転・反転を行います。","Flip/Turn the board.");
+		btn(document.flip.turnl,  func,  "左90°回転", "Turn left by 90 degree");
+		btn(document.flip.turnr,  func,  "右90°回転", "Turn right by 90 degree");
+		btn(document.flip.flipy,  func,  "上下反転",   "Flip upside down");
+		btn(document.flip.flipx,  func,  "左右反転",   "Flip leftside right");
+		btn(document.flip.close,  close, "閉じる",     "Close");
 
-		this.addButtons($(document.urloutput.openurl), "このURLを開く", "Open this URL on another window/tab");
-		this.addButtons($(document.urloutput.close),   "閉じる", "Close");
+		// credit -------------------------------------------------------------
+		lab(ee('bar3_1').el,   "credit", "credit");
+		lab(ee('credit3_1').el,"ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\nライブラリとしてuuCanvas1.0, Google Gearsを使用しています。<br>\n<br>\n",
+							   "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\nThis script use uuCanvas1.0 and Google Gears as libraries.&nbsp;<br>\n<br>\n");
+		btn(document.credit.close,  close, "閉じる", "OK");
 
-		// ファイル入力
-		$(document.fileform.filebox).change(this.ex.fileopen.ebind(this.ex));
-		$(document.fileform.close).click(px);
+		// 表示サイズ ---------------------------------------------------------
+		func = ee.ebinder(this, this.ex.dispsize);
+		lab(ee('bar4_1').el,      "表示サイズの変更",         "Change size");
+		lab(ee('pop4_1_cap0').el, "表示サイズを変更します。", "Change the display size.");
+		lab(ee('pop4_1_cap1').el, "表示サイズ",               "Display size");
+		btn(document.dispsize.dispsize, func,  "変更する",   "Change");
+		btn(document.dispsize.cancel,   close, "キャンセル", "Cancel");
+	},
 
-		// データベースを開く
-		$(document.database.sorts   ).change(fio.displayDataTableList.ebind(fio));
-		$(document.database.datalist).change(fio.selectDataTable.ebind(fio));
-		$(document.database.tableup ).click(fio.upDataTable.ebind(fio));
-		$(document.database.tabledn ).click(fio.downDataTable.ebind(fio));
-		$(document.database.open    ).click(fio.openDataTable.ebind(fio));
-		$(document.database.save    ).click(fio.saveDataTable.ebind(fio));
-		$(document.database.comedit ).click(fio.editComment.ebind(fio));
-		$(document.database.difedit ).click(fio.editDifficult.ebind(fio));
-		$(document.database.del     ).click(fio.deleteDataTable.ebind(fio));
-		$(document.database.close   ).click(px);
+	//---------------------------------------------------------------------------
+	// menu.popopen()  ポップアップメニューを開く
+	// menu.popclose() ポップアップメニューを閉じる
+	//---------------------------------------------------------------------------
+	popopen : function(e, idname){
+		// 表示しているウィンドウがある場合は閉じる
+		this.popclose();
 
-		// 盤面の調整
-		var pa = this.ex.popupadjust.ebind(this.ex);
-		$(document.adjust.expandup).click(pa);
-		$(document.adjust.expanddn).click(pa);
-		$(document.adjust.expandlt).click(pa);
-		$(document.adjust.expandrt).click(pa);
-		$(document.adjust.reduceup).click(pa);
-		$(document.adjust.reducedn).click(pa);
-		$(document.adjust.reducelt).click(pa);
-		$(document.adjust.reducert).click(pa);
-		$(document.adjust.close   ).click(px);
+		// この中でmenu.popも設定されます。
+		if(pp.funcs[idname]){ pp.funcs[idname]();}
 
-		// 反転・回転
-		$(document.flip.turnl).click(pa);
-		$(document.flip.turnr).click(pa);
-		$(document.flip.flipy).click(pa);
-		$(document.flip.flipx).click(pa);
-		$(document.flip.close).click(px);
-
-		// credit
-		$(document.credit.close).click(px);
-
-		// 表示サイズ
-		$(document.dispsize.dispsize).click(this.ex.dispsize.ebind(this));
-		$(document.dispsize.cancel).click(px);
+		// ポップアップメニューを表示する
+		if(this.pop){
+			var _pop = this.pop.el;
+			_pop.style.left = ee.pageX(e) - 8 + k.IEMargin.x;
+			_pop.style.top  = ee.pageY(e) - 8 + k.IEMargin.y;
+			_pop.style.display = 'inline';
+		}
 	},
 	popclose : function(){
 		if(this.pop){
-			this.pop.css("visibility","hidden");
+			this.pop.el.style.display = "none";
 			this.pop = '';
 			this.menuclear();
 			this.isptitle = 0;
@@ -6477,111 +7328,42 @@ Menu.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// menu.titlebardown() Popupタイトルバーをクリックしたときの動作を行う
-	// menu.titlebarup()   Popupタイトルバーでボタンを離したときの動作を行う
-	// menu.titlebarout()  Popupタイトルバーからマウスが離れたときの動作を行う
-	// menu.titlebarmove() Popupタイトルバーからマウスを動かしたときポップアップメニューを動かす
+	// menu.titlebarfunc()  下の4つのイベントをイベントハンドラにくっつける
+	// menu.titlebardown()  タイトルバーをクリックしたときの動作を行う
+	// menu.titlebarup()    タイトルバーでボタンを離したときの動作を行う
+	// menu.titlebarout()   タイトルバーからマウスが離れたときの動作を行う
+	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす
 	//---------------------------------------------------------------------------
-	titlebardown : function(e){
-		this.isptitle = 1;
-		this.offset.x = mv.pointerX(e) - parseInt(this.pop.css("left"));
-		this.offset.y = mv.pointerY(e) - parseInt(this.pop.css("top"));
+	titlebarfunc : function(bar){
+		bar.onmousedown = ee.ebinder(this, this.titlebardown);
+		bar.onmouseup   = ee.ebinder(this, this.titlebarup);
+		bar.onmouseout  = ee.ebinder(this, this.titlebarout);
+		bar.onmousemove = ee.ebinder(this, this.titlebarmove);
+
+		ee(bar).unselectable().el;
 	},
-	titlebarup   : function(e){ this.isptitle = 0; },
-	titlebarout  : function(e){ if(this.pop && !this.insideOf(this.pop, e)){ this.isptitle = 0;} },
+
+	titlebardown : function(e){
+		var pop = ee.getSrcElement(e).parentNode;
+		this.isptitle = 1;
+		this.offset.x = ee.pageX(e) - parseInt(pop.style.left);
+		this.offset.y = ee.pageY(e) - parseInt(pop.style.top);
+	},
+	titlebarup   : function(e){
+		this.isptitle = 0;
+	},
+	titlebarout  : function(e){
+		var pop = ee.getSrcElement(e).parentNode;
+		if(!this.insideOf(pop, e)){ this.isptitle = 0;}
+	},
 	titlebarmove : function(e){
-		if(this.pop && this.isptitle){
-			this.pop.css("left", (mv.pointerX(e) - this.offset.x));
-			this.pop.css("top" , (mv.pointerY(e) - this.offset.y));
+		var pop = ee.getSrcElement(e).parentNode;
+		if(pop && this.isptitle){
+			pop.style.left = ee.pageX(e) - this.offset.x;
+			pop.style.top  = ee.pageY(e) - this.offset.y;
 		}
 	},
 
-//--------------------------------------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------------------------------
-
-	//---------------------------------------------------------------------------
-	// menu.buttonarea()        ボタンの初期設定を行う
-	// menu.addButtons()        ボタンの情報を変数に登録する
-	// menu.addLAbels()         ラベルの情報を変数に登録する
-	// menu.setDefaultButtons() ボタンをbtnstackに設定する
-	// menu.setDefaultLabels()  ラベルをspanstackに設定する
-	//---------------------------------------------------------------------------
-	buttonarea : function(){
-		this.addButtons($("#btncheck").click(ans.check.bind(ans)),              "チェック", "Check");
-		this.addButtons($("#btnundo").click(um.undo.bind(um)),                  "戻",       "<-");
-		this.addButtons($("#btnredo").click(um.redo.bind(um)),                  "進",       "->");
-		this.addButtons($("#btnclear").click(menu.ex.ACconfirm.bind(menu.ex)),  "回答消去", "Erase Answer");
-		this.addButtons($("#btnclear2").click(menu.ex.ASconfirm.bind(menu.ex)), "補助消去", "Erase Auxiliary Marks");
-		$("#btnarea,#btnundo,#btnredo,#btnclear,#btnclear2").unselectable();
-
-		this.setDefaultButtons();
-		this.setDefaultLabels();
-	},
-	addButtons : function(jqel, strJP, strEN){ this.btnstack.push({el:jqel, str:{ja:strJP, en:strEN}}); },
-	addLabels  : function(jqel, strJP, strEN){ this.labelstack.push({el:jqel, str:{ja:strJP, en:strEN}}); },
-
-	setDefaultButtons : function(){
-		var t = this.addButtons.bind(this);
-		t($(document.newboard.newboard), "新規作成",   "Create");
-		t($(document.newboard.cancel),   "キャンセル", "Cancel");
-		t($(document.urlinput.urlinput), "読み込む",   "Import");
-		t($(document.urlinput.cancel),   "キャンセル", "Cancel");
-		t($(document.fileform.button),   "閉じる",     "Close");
-		t($(document.database.save),     "盤面を保存", "Save");
-		t($(document.database.comedit),  "コメントを編集する", "Edit Comment");
-		t($(document.database.difedit),  "難易度を設定する",   "Set difficulty");
-		t($(document.database.open),     "データを読み込む",   "Load");
-		t($(document.database.del),      "削除",       "Delete");
-		t($(document.database.close),    "閉じる",     "Close");
-		t($(document.adjust.expandup),   "上",         "UP");
-		t($(document.adjust.expanddn),   "下",         "Down");
-		t($(document.adjust.expandlt),   "左",         "Left");
-		t($(document.adjust.expandrt),   "右",         "Right");
-		t($(document.adjust.reduceup),   "上",         "UP");
-		t($(document.adjust.reducedn),   "下",         "Down");
-		t($(document.adjust.reducelt),   "左",         "Left");
-		t($(document.adjust.reducert),   "右",         "Right");
-		t($(document.adjust.close),      "閉じる",     "Close");
-		t($(document.flip.turnl),        "左90°回転", "Turn left by 90 degree");
-		t($(document.flip.turnr),        "右90°回転", "Turn right by 90 degree");
-		t($(document.flip.flipy),        "上下反転",   "Flip upside down");
-		t($(document.flip.flipx),        "左右反転",   "Flip leftside right");
-		t($(document.flip.close),        "閉じる",     "Close");
-		t($(document.dispsize.dispsize), "変更する",   "Change");
-		t($(document.dispsize.cancel),   "キャンセル", "Cancel");
-		t($(document.credit.close),      "閉じる",     "OK");
-	},
-	setDefaultLabels : function(){
-		var t = this.addLabels.bind(this);
-		t($("#translation"), "English",                      "日本語");
-		t($("#bar1_1"),      "&nbsp;盤面の新規作成",         "&nbsp;Createing New Board");
-		t($("#pop1_1_cap0"), "盤面を新規作成します。",       "Create New Board.");
-		t($("#pop1_1_cap1"), "よこ",                         "Cols");
-		t($("#pop1_1_cap2"), "たて",                         "Rows");
-		t($("#bar1_2"),      "&nbsp;URL入力",                "&nbsp;Import from URL");
-		t($("#pop1_2_cap0"), "URLから問題を読み込みます。",  "Import a question from URL.");
-		t($("#bar1_3"),      "&nbsp;URL出力",                "&nbsp;Export URL");
-		t($("#bar1_4"),      "&nbsp;ファイルを開く",         "&nbsp;Open file");
-		t($("#pop1_4_cap0"), "ファイル選択",                 "Choose file");
-		t($("#bar1_8"),      "&nbsp;データベースの管理",     "&nbsp;Database Management");
-		t($("#pop1_8_com"),  "コメント:",                    "Comment:");
-		t($("#bar2_1"),      "&nbsp;盤面の調整",             "&nbsp;Adjust the board");
-		t($("#pop2_1_cap0"), "盤面の調整を行います。",       "Adjust the board.");
-		t($("#pop2_1_cap1"), "拡大",                         "Expand");
-		t($("#pop2_1_cap2"), "縮小",                         "Reduce");
-		t($("#bar2_2"),      "&nbsp;反転・回転",             "&nbsp;Flip/Turn the board");
-		t($("#pop2_2_cap0"), "盤面の回転・反転を行います。", "Flip/Turn the board.");
-		t($("#bar4_1"),      "&nbsp;表示サイズの変更",       "&nbsp;Change size");
-		t($("#pop4_1_cap0"), "表示サイズを変更します。",     "Change the display size.");
-		t($("#pop4_1_cap1"), "表示サイズ",                   "Display size");
-		t($("#bar3_1"),      "&nbsp;credit",                 "&nbsp;credit");
-		t($("#credit3_1"), "ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\nライブラリとしてjQuery1.3.2, uuCanvas1.0, <br>Google Gearsを\n使用しています。<br>\n<br>\n",
-						   "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\nThis script use jQuery1.3.2, uuCanvas1.0, <br>Google Gears as libraries.<br>\n<br>\n");
-	},
-
-//--------------------------------------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------------
@@ -6608,8 +7390,8 @@ Menu.prototype = {
 	setLangStr : function(ln){
 		this.language = ln;
 		document.title = base.gettitle();
-		$("#title2").html(base.gettitle());
-		$("#expression").html(base.expression[this.language]);
+		ee('title2').el.innerHTML = base.gettitle();
+		ee('expression').el.innerHTML = base.expression[this.language];
 
 		this.displayAll();
 		this.ex.dispmanstr();
@@ -6617,6 +7399,8 @@ Menu.prototype = {
 		base.resize_canvas();
 	}
 };
+
+//--------------------------------------------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
 // ★Propertiesクラス 設定値の値などを保持する
@@ -6634,6 +7418,15 @@ SSData = function(){
 Properties = function(){
 	this.flags    = [];	// サブメニュー項目の情報(SSDataクラスのオブジェクトの配列になる)
 	this.flaglist = [];	// idnameの配列
+
+	// const
+	this.MENU     = 6;
+	this.SMENU    = 0;
+	this.SELECT   = 1;
+	this.CHECK    = 2;
+	this.LABEL    = 3;
+	this.CHILD    = 4;
+	this.SEPARATE = 5;
 };
 Properties.prototype = {
 	reset : function(){
@@ -6641,202 +7434,112 @@ Properties.prototype = {
 		this.flaglist = [];
 	},
 
-	// pp.setMenuStr() 管理パネルと選択型/チェック型サブメニューに表示する文字列を設定する
-	addSmenuToFlags : function(idname, parent)       { this.addToFlags(idname, parent, 0, 0);},
-	addCheckToFlags : function(idname, parent, first){ this.addToFlags(idname, parent, 2, first);},
-	addCaptionToFlags     : function(idname, parent) { this.addToFlags(idname, parent, 3, 0);},
-	addSeparatorToFlags   : function(idname, parent) { this.addToFlags(idname, parent, 5, 0);},
-	addUseToFlags   : function(idname, parent, first, child){
-		this.addToFlags(idname, parent, 1, first);
+	//---------------------------------------------------------------------------
+	// pp.addMenu()      メニュー最上位の情報を登録する
+	// pp.addSmenu()     Popupメニューを開くサブメニュー項目を登録する
+	// pp.addCaption()   Captionとして使用するサブメニュー項目を登録する
+	// pp.addSeparator() セパレータとして使用するサブメニュー項目を登録する
+	// pp.addCheck()     選択型サブメニュー項目に表示する文字列を設定する
+	// pp.addSelect()    チェック型サブメニュー項目に表示する文字列を設定する
+	// pp.addChild()     チェック型サブメニュー項目の子要素を設定する
+	//---------------------------------------------------------------------------
+	addMenu : function(idname, strJP, strEN){
+		this.addFlags(idname, '', this.MENU, 0, strJP, strEN);
+	},
+
+	addSmenu : function(idname, parent, strJP, strEN){
+		this.addFlags(idname, parent, this.SMENU, 0, strJP, strEN);
+	},
+
+	addCaption : function(idname, parent, strJP, strEN){
+		this.addFlags(idname, parent, this.LABEL, 0, strJP, strEN);
+	},
+	addSeparator : function(idname, parent){
+		this.addFlags(idname, parent, this.SEPARATE, 0, '', '');
+	},
+
+	addCheck : function(idname, parent, first, strJP, strEN){
+		this.addFlags(idname, parent, this.CHECK, first, strJP, strEN);
+	},
+	addSelect : function(idname, parent, first, child, strJP, strEN){
+		this.addFlags(idname, parent, this.SELECT, first, strJP, strEN);
 		this.flags[idname].child = child;
 	},
-	addUseChildrenToFlags : function(idname, parent){
-		if(!this.flags[idname]){ return;}
-		for(var i=0;i<this.flags[idname].child.length;i++){
-			var num = this.flags[idname].child[i];
-			this.addToFlags(""+idname+"_"+num, parent, 4, num);
-		}
+	addChild : function(idname, parent, strJP, strEN){
+		var list = idname.split("_");
+		this.addFlags(idname, list[0], this.CHILD, list[1], strJP, strEN);
 	},
-	addToFlags : function(idname, parent, type, first){
+
+	//---------------------------------------------------------------------------
+	// pp.addFlags()  上記関数の内部共通処理
+	// pp.setLabel()  管理領域に表記するラベル文字列を設定する
+	//---------------------------------------------------------------------------
+	addFlags : function(idname, parent, type, first, strJP, strEN){
 		this.flags[idname] = new SSData();
 		this.flags[idname].id     = idname;
 		this.flags[idname].type   = type;
 		this.flags[idname].val    = first;
 		this.flags[idname].parent = parent;
+		this.flags[idname].str.ja.menu = strJP;
+		this.flags[idname].str.en.menu = strEN;
 		this.flaglist.push(idname);
 	},
 
-	setMenuStr : function(idname, strJP, strEN){
-		if(!this.flags[idname]){ return;}
-		this.flags[idname].str.ja.menu = strJP; this.flags[idname].str.en.menu = strEN;
-	},
 	setLabel : function(idname, strJP, strEN){
 		if(!this.flags[idname]){ return;}
-		this.flags[idname].str.ja.label = strJP; this.flags[idname].str.en.label = strEN;
+		this.flags[idname].str.ja.label = strJP;
+		this.flags[idname].str.en.label = strEN;
 	},
 
 	//---------------------------------------------------------------------------
 	// pp.getMenuStr() 管理パネルと選択型/チェック型サブメニューに表示する文字列を返す
 	// pp.getLabel()   管理パネルとチェック型サブメニューに表示する文字列を返す
 	// pp.type()       設定値のサブメニュータイプを返す
+	// pp.istype()     設定値のサブメニュータイプが指定された値かどうかを返す
+	//
 	// pp.getVal()     各フラグのvalの値を返す
 	// pp.setVal()     各フラグの設定値を設定する
 	//---------------------------------------------------------------------------
 	getMenuStr : function(idname){ return this.flags[idname].str[menu.language].menu; },
 	getLabel   : function(idname){ return this.flags[idname].str[menu.language].label;},
-	type : function(idname){ return this.flags[idname].type;},
+	type   : function(idname)     { return this.flags[idname].type;},
+	istype : function(idname,type){ return (this.flags[idname].type===type);},
 
 	getVal : function(idname)  { return this.flags[idname]?this.flags[idname].val:0;},
 	setVal : function(idname, newval){
 		if(!this.flags[idname]){ return;}
-		else if(this.type(idname)==1 || this.type(idname)==2){
+		else if(this.flags[idname].type===this.CHECK || this.flags[idname].type===this.SELECT){
 			this.flags[idname].val = newval;
 			menu.setdisplay(idname);
 			if(this.funcs[idname]){ this.funcs[idname](newval);}
 		}
 	},
 
-	//---------------------------------------------------------------------------
-	// pp.setDefaultFlags()  設定値を登録する
-	// pp.setStringToFlags() 設定値に文字列を登録する
-	//---------------------------------------------------------------------------
-	setDefaultFlags : function(){
-		var as = this.addSmenuToFlags.bind(this),
-			au = this.addUseToFlags.bind(this),
-			ac = this.addCheckToFlags.bind(this),
-			aa = this.addCaptionToFlags.bind(this),
-			ai = this.addUseChildrenToFlags.bind(this),
-			ap = this.addSeparatorToFlags.bind(this);
-
-		au('mode','setting',k.mode,[1,3]);
-
-		puz.menufix();	// 各パズルごとのメニュー追加
-
-		ac('autocheck','setting',k.autocheck);
-		ac('lrcheck','setting',false);
-		ac('keypopup','setting',kp.defaultdisp);
-		au('language','setting',0,[0,1]);
-		if(k.callmode=="pplay"){ delete this.flags['mode'];}
-		if(!kp.ctl[1].enable && !kp.ctl[3].enable){ delete this.flags['keypopup'];}
-
-		as('newboard', 'file');
-		as('urlinput', 'file');
-		as('urloutput', 'file');
-		ap('sep_2','file');
-		as('fileopen', 'file');
-		as('filesave', 'file');
-		as('database', 'file');
-		ap('sep_3','file');
-		as('fileopen2', 'file');
-		as('filesave2', 'file');
-		if(fio.DBtype==0){ delete this.flags['database'];}
-		if(!k.isKanpenExist || (k.puzzleid=="nanro"||k.puzzleid=="ayeheya"||k.puzzleid=="kurochute")){
-			delete this.flags['fileopen2']; delete this.flags['filesave2']; delete this.flags['sep_3'];
-		}
-
-		as('adjust', 'edit');
-		as('turn', 'edit');
-
-		au('size','disp',k.widthmode,[0,1,2,3,4]);
-		ap('sep_4','disp');
-		ac('irowake','disp',(k.irowake==2?true:false));
-		ap('sep_5','disp');
-		as('manarea', 'disp');
-		if(k.irowake==0){ delete this.flags['irowake']; delete this.flags['sep_4'];}
-
-		as('dispsize', 'size');
-		aa('cap_dispmode', 'size');
-		ai('size','size');
-
-		ai('mode','mode');
-
-		ai('language','language');
-
-		as('credit', 'other');
-		aa('cap_others1', 'other');
-		as('jumpv3', 'other');
-		as('jumptop', 'other');
-		as('jumpblog', 'other');
-
-		this.setStringToFlags();
-	},
-	setStringToFlags : function(){
-		var sm = this.setMenuStr.bind(this),
-			sl = this.setLabel.bind(this);
-
-		sm('size', '表示サイズ', 'Cell Size');
-		sm('size_0', 'サイズ 極小', 'Ex Small');
-		sm('size_1', 'サイズ 小', 'Small');
-		sm('size_2', 'サイズ 標準', 'Normal');
-		sm('size_3', 'サイズ 大', 'Large');
-		sm('size_4', 'サイズ 特大', 'Ex Large');
-
-		sm('irowake', '線の色分け', 'Color coding');
-		sl('irowake', '線の色分けをする', 'Color each lines');
-
-		sm('mode', 'モード', 'mode');
-		sl('mode', 'モード', 'mode');
-		sm('mode_1', '問題作成モード', 'Edit mode');
-		sm('mode_3', '回答モード', 'Answer mode');
-
-		sm('autocheck', '正答自動判定', 'Auto Answer Check');
-
-		sm('lrcheck', 'マウス左右反転', 'Mouse button inversion');
-		sl('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
-
-		sm('keypopup', 'パネル入力', 'Panel inputting');
-		sl('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
-
-		sm('language', '言語', 'Language');
-		sm('language_0', '日本語', '日本語');
-		sm('language_1', 'English', 'English');
-
-		sm('newboard', '新規作成', 'New Board');
-		sm('urlinput', 'URL入力', 'Import from URL');
-		sm('urloutput', 'URL出力', 'Export URL');
-		sm('fileopen', 'ファイルを開く', 'Open the file');
-		sm('filesave', 'ファイル保存', 'Save the file as ...');
-		sm('database', 'データベースの管理', 'Database Management');
-		sm('fileopen2', 'pencilboxのファイルを開く', 'Open the pencilbox file');
-		sm('filesave2', 'pencilboxのファイルを保存', 'Save the pencilbox file as ...');
-		sm('adjust', '盤面の調整', 'Adjust the Board');
-		sm('turn', '反転・回転', 'Filp/Turn the Board');
-		sm('dispsize', 'サイズ指定', 'Cell Size');
-		sm('cap_dispmode', '&nbsp;表示モード', '&nbsp;Display mode');
-		sm('manarea', '管理領域を隠す', 'Hide Management Area');
-		sm('credit', 'ぱずぷれv3について', 'About PUZ-PRE v3');
-		sm('cap_others1', '&nbsp;リンク', '&nbsp;Link');
-		sm('jumpv3', 'ぱずぷれv3のページへ', 'Jump to PUZ-PRE v3 page');
-		sm('jumptop', '連続発破保管庫TOPへ', 'Jump to indi.s58.xrea.com');
-		sm('jumpblog', 'はっぱ日記(blog)へ', 'Jump to my blog');
-
-		sm('eval', 'テスト用', 'for Evaluation');
-	},
-
 //--------------------------------------------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
 	funcs : {
-		urlinput  : function(){ menu.pop = $("#pop1_2");},
-		urloutput : function(){ menu.pop = $("#pop1_3"); document.urloutput.ta.value = "";},
+		urlinput  : function(){ menu.pop = ee("pop1_2");},
+		urloutput : function(){ menu.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
 		filesave  : function(){ menu.ex.filesave();},
-		database  : function(){ menu.pop = $("#pop1_8"); fio.getDataTableList();},
+		database  : function(){ menu.pop = ee("pop1_8"); fio.getDataTableList();},
 		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave2();}},
-		adjust    : function(){ menu.pop = $("#pop2_1");},
-		turn      : function(){ menu.pop = $("#pop2_2");},
-		credit    : function(){ menu.pop = $("#pop3_1");},
+		adjust    : function(){ menu.pop = ee("pop2_1");},
+		turn      : function(){ menu.pop = ee("pop2_2");},
+		credit    : function(){ menu.pop = ee("pop3_1");},
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
 		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},
-		irowake   : function(){ menu.ex.irowakeRemake();},
+		irowake   : function(){ pc.paintAll();},
 		manarea   : function(){ menu.ex.dispman();},
 		autocheck : function(val){ k.autocheck = !k.autocheck;},
 		mode      : function(num){ menu.ex.modechange(num);},
 		size      : function(num){ k.widthmode=num; base.resize_canvas();},
+		repaint   : function(num){ base.resize_canvas();},
 		use       : function(num){ k.use =num;},
 		language  : function(num){ menu.setLang({0:'ja',1:'en'}[num]);},
 
 		newboard : function(){
-			menu.pop = $("#pop1_1");
+			menu.pop = ee("pop1_1");
 			if(k.puzzleid!="sudoku"){
 				document.newboard.col.value = k.qcols;
 				document.newboard.row.value = k.qrows;
@@ -6845,24 +7548,24 @@ Properties.prototype = {
 		},
 		fileopen : function(){
 			document.fileform.pencilbox.value = "0";
-			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = $("#pop1_4");}}
+			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = ee("pop1_4");}}
 			else{ if(!menu.pop){ document.fileform.filebox.click();}}
 		},
 		fileopen2 : function(){
 			if(!fio.kanpenOpen){ return;}
 			document.fileform.pencilbox.value = "1";
-			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = $("#pop1_4");}}
+			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = ee("pop1_4");}}
 			else{ if(!menu.pop){ document.fileform.filebox.click();}}
 		},
 		dispsize : function(){
-			menu.pop = $("#pop4_1");
+			menu.pop = ee("pop4_1");
 			document.dispsize.cs.value = k.def_csize;
 			k.enableKey = false;
 		},
 		keypopup : function(){
-			var f = kp.ctl[k.mode].enable;
-			$("#ck_keypopup").attr("disabled", f?"":"true");
-			$("#cl_keypopup").css("color",f?"black":"silver");
+			var f = kp.ctl[pp.flags['mode'].val].enable;
+			ee('ck_keypopup').el.disabled    = (f?"":"true");
+			ee('cl_keypopup').el.style.color = (f?"black":"silver");
 		}
 	}
 };
@@ -6883,7 +7586,8 @@ MenuExec.prototype = {
 	// menu.ex.modechange() モード変更時の処理を行う
 	//------------------------------------------------------------------------------
 	modechange : function(num){
-		k.mode=num;
+		k.editmode = (num==1);
+		k.playmode = (num==3);
 		kc.prev = -1;
 		ans.errDisp=true;
 		bd.errclear();
@@ -6910,9 +7614,9 @@ MenuExec.prototype = {
 			}
 
 			if(col>0 && row>0){ bd.initBoardSize(col,row);}
-			um.allerase();
 			menu.popclose();
-			base.resetInfo();
+
+			base.resetInfo(true);
 			base.resize_canvas();				// Canvasを更新する
 		}
 	},
@@ -6933,7 +7637,7 @@ MenuExec.prototype = {
 	},
 	urloutput : function(e){
 		if(menu.pop){
-			switch(getSrcElement(e).name){
+			switch(ee.getSrcElement(e).name){
 				case "pzprv3":     enc.pzlexport(0); break;
 				case "pzprapplet": enc.pzlexport(1); break;
 				case "kanpen":     enc.pzlexport(2); break;
@@ -6987,7 +7691,7 @@ MenuExec.prototype = {
 	// menu.ex.irowakeRemake() 「色分けしなおす」ボタンを押した時に色分けしなおす
 	//---------------------------------------------------------------------------
 	irowakeRemake : function(){
-		if(!menu.getVal('irowake')){ return;}
+		if(!pp.getVal('irowake')){ return;}
 
 		for(var i=1;i<=line.data.max;i++){
 			var idlist = line.data[i].idlist;
@@ -7007,26 +7711,32 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	dispman : function(e){
 		var idlist = ['expression','usepanel','checkpanel'];
-		var sparatorlist = (k.callmode==="pmake")?['separator1']:['separator1','separator2'];
+		var seplist = k.EDITOR ? ['separator1'] : ['separator1','separator2'];
 
 		if(this.displaymanage){
-			for(var i=0;i<idlist.length;i++){ $("#"+idlist[i]).hide(800, base.resize_canvas.bind(base));}
-			for(var i=0;i<sparatorlist.length;i++){ $("#"+sparatorlist[i]).hide();}
-			if(k.irowake!=0 && menu.getVal('irowake')){ $("#btncolor2").show();}
-			$("#menuboard").css('padding-bottom','0pt');
+			for(var i=0;i<idlist.length;i++)        { ee(idlist[i])  .el.style.display = 'none';}
+			for(var i=0;i<seplist.length;i++)       { ee(seplist[i]) .el.style.display = 'none';}
+			if(k.irowake!=0 && pp.getVal('irowake')){ ee('btncolor2').el.style.display = 'inline';}
+			ee('menuboard').el.style.paddingBottom = '0pt';
 		}
 		else{
-			for(var i=0;i<idlist.length;i++){ $("#"+idlist[i]).show(800, base.resize_canvas.bind(base));}
-			for(var i=0;i<sparatorlist.length;i++){ $("#"+sparatorlist[i]).show();}
-			if(k.irowake!=0 && menu.getVal('irowake')){ $("#btncolor2").hide();}
-			$("#menuboard").css('padding-bottom','8pt');
+			for(var i=0;i<idlist.length;i++)        { ee(idlist[i])  .el.style.display = 'block';}
+			for(var i=0;i<seplist.length;i++)       { ee(seplist[i]) .el.style.display = 'block';}
+			if(k.irowake!=0 && pp.getVal('irowake')){ ee("btncolor2").el.style.display = 'none';}
+			ee('menuboard').el.style.paddingBottom = '8pt';
 		}
 		this.displaymanage = !this.displaymanage;
 		this.dispmanstr();
+
+		base.resize_canvas_only();	// canvasの左上座標等を更新
+		bd.setposAll();	// 各セルのpx,py座標を更新
+
+		if(g.vml){ pc.flushCanvasAll();}	// VMLの位置がずれるので消さないと。。
+		pc.paintAll();	// 再描画
 	},
 	dispmanstr : function(){
-		if(!this.displaymanage){ $("#ms_manarea").html(menu.isLangJP()?"管理領域を表示":"Show management area");}
-		else                   { $("#ms_manarea").html(menu.isLangJP()?"管理領域を隠す":"Hide management area");}
+		if(!this.displaymanage){ ee('ms_manarea').el.innerHTML = menu.isLangJP()?"管理領域を表示":"Show management area";}
+		else                   { ee('ms_manarea').el.innerHTML = menu.isLangJP()?"管理領域を隠す":"Hide management area";}
 	},
 
 	//------------------------------------------------------------------------------
@@ -7037,7 +7747,7 @@ MenuExec.prototype = {
 		if(menu.pop){
 			um.newOperation(true);
 
-			var name = getSrcElement(e).name;
+			var name = ee.getSrcElement(e).name;
 			if(name.indexOf("reduce")===0){
 				if(name==="reduceup"||name==="reducedn"){
 					if(k.qrows<=1){ return;}
@@ -7050,14 +7760,14 @@ MenuExec.prototype = {
 
 			um.disableInfo();
 			switch(name){
-				case "expandup": this.expand('up'); break;
-				case "expanddn": this.expand('dn'); break;
-				case "expandlt": this.expand('lt'); break;
-				case "expandrt": this.expand('rt'); break;
-				case "reduceup": this.reduce('up'); break;
-				case "reducedn": this.reduce('dn'); break;
-				case "reducelt": this.reduce('lt'); break;
-				case "reducert": this.reduce('rt'); break;
+				case "expandup": this.expand(k.UP); break;
+				case "expanddn": this.expand(k.DN); break;
+				case "expandlt": this.expand(k.LT); break;
+				case "expandrt": this.expand(k.RT); break;
+				case "reduceup": this.reduce(k.UP); break;
+				case "reducedn": this.reduce(k.DN); break;
+				case "reducelt": this.reduce(k.LT); break;
+				case "reducert": this.reduce(k.RT); break;
 
 				case "turnl": this.turnflip(4,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); break;
 				case "turnr": this.turnflip(3,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); break;
@@ -7067,9 +7777,9 @@ MenuExec.prototype = {
 			um.enableInfo();
 
 			// reduceはここ必須
-			um.addOpe('board', name, 0, 0, 1);
+			um.addOpe(k.BOARD, name, 0, 0, 1);
 
-			if(!um.undoExec){ base.resetInfo();}
+			if(!um.undoExec){ base.resetInfo(false);}
 			base.resize_canvas();				// Canvasを更新する
 		}
 	},
@@ -7085,32 +7795,32 @@ MenuExec.prototype = {
 		this.adjustGeneral(5,'',{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});
 
 		var number;
-		if     (key==='up'||key==='dn'){ number=k.qcols; k.qrows++; tc.maxy+=2;}
-		else if(key==='lt'||key==='rt'){ number=k.qrows; k.qcols++; tc.maxx+=2;}
+		if     (key===k.UP||key===k.DN){ number=k.qcols; k.qrows++; tc.maxy+=2;}
+		else if(key===k.LT||key===k.RT){ number=k.qrows; k.qcols++; tc.maxx+=2;}
 
 		var func;
 		{
-			func = function(id){ return (menu.ex.distObj(key,'cell',id)===0);};
-			this.expandGroup('cell', bd.cell, number, func);
+			func = function(id){ return (menu.ex.distObj(key,k.CELL,id)===0);};
+			this.expandGroup(k.CELL, bd.cell, number, func);
 		}
 		if(k.iscross){
 			var oc = k.isoutsidecross?0:1;
-			func = function(id){ return (menu.ex.distObj(key,'cross',id)===oc);};
-			this.expandGroup('cross', bd.cross, number+1, func);
+			func = function(id){ return (menu.ex.distObj(key,k.CROSS,id)===oc);};
+			this.expandGroup(k.CROSS, bd.cross, number+1, func);
 		}
 		if(k.isborder){
 			bd.bdinside = 2*k.qcols*k.qrows-(k.qcols+k.qrows);
 
-			func = function(id){ var m=menu.ex.distObj(key,'border',id); return (m===1||m===2);};
-			this.expandGroup('border', bd.border, 2*number+(k.isoutsideborder===0?-1:1), func);
+			func = function(id){ var m=menu.ex.distObj(key,k.BORDER,id); return (m===1||m===2);};
+			this.expandGroup(k.BORDER, bd.border, 2*number+(k.isoutsideborder===0?-1:1), func);
 
 			// 拡大時に、境界線は伸ばしちゃいます。
 			if(k.isborderAsLine===0){ this.expandborder(key);}
 			else{ this.expandborderAsLine(key);}
 		}
 		if(k.isextendcell!==0){
-			func = function(id){ return (menu.ex.distObj(key,'excell',id)===0);};
-			this.expandGroup('excell', bd.excell, k.isextendcell, func);
+			func = function(id){ return (menu.ex.distObj(key,k.EXCELL,id)===0);};
+			this.expandGroup(k.EXCELL, bd.excell, k.isextendcell, func);
 		}
 
 		bd.setposAll();
@@ -7136,30 +7846,30 @@ MenuExec.prototype = {
 		var func, margin;
 		{
 			this.qnums = [];
-			func = function(id){ return (menu.ex.distObj(key,'cell',id)===0);};
-			margin = this.reduceGroup('cell', bd.cell, func);
+			func = function(id){ return (menu.ex.distObj(key,k.CELL,id)===0);};
+			margin = this.reduceGroup(k.CELL, bd.cell, func);
 		}
 		if(k.iscross){
 			var oc = k.isoutsidecross?0:1;
-			func = function(id){ return (menu.ex.distObj(key,'cross',id)===oc);};
-			margin = this.reduceGroup('cross', bd.cross, func);
+			func = function(id){ return (menu.ex.distObj(key,k.CROSS,id)===oc);};
+			margin = this.reduceGroup(k.CROSS, bd.cross, func);
 		}
 		if(k.isborder){
 			if(k.isborderAsLine===1){ this.reduceborderAsLine(key);}
 
-			if     (key==='up'||key==='dn'){ bd.bdinside = 2*k.qcols*(k.qrows-1)-(k.qcols+k.qrows-1);}
-			else if(key==='lt'||key==='rt'){ bd.bdinside = 2*(k.qcols-1)*k.qrows-(k.qcols+k.qrows-1);}
+			if     (key===k.UP||key===k.DN){ bd.bdinside = 2*k.qcols*(k.qrows-1)-(k.qcols+k.qrows-1);}
+			else if(key===k.LT||key===k.RT){ bd.bdinside = 2*(k.qcols-1)*k.qrows-(k.qcols+k.qrows-1);}
 
-			func = function(id){ var m=menu.ex.distObj(key,'border',id); return (m===1||m===2);};
-			margin = this.reduceGroup('border', bd.border, func);
+			func = function(id){ var m=menu.ex.distObj(key,k.BORDER,id); return (m===1||m===2);};
+			margin = this.reduceGroup(k.BORDER, bd.border, func);
 		}
 		if(k.isextendcell!==0){
-			func = function(id){ return (menu.ex.distObj(key,'excell',id)===0);};
-			margin = this.reduceGroup('excell', bd.excell, func);
+			func = function(id){ return (menu.ex.distObj(key,k.EXCELL,id)===0);};
+			margin = this.reduceGroup(k.EXCELL, bd.excell, func);
 		}
 
-		if     (key==='up'||key==='dn'){ k.qrows--; tc.maxy-=2;}
-		else if(key==='lt'||key==='rt'){ k.qcols--; tc.maxx-=2;}
+		if     (key===k.UP||key===k.DN){ k.qrows--; tc.maxy-=2;}
+		else if(key===k.LT||key===k.RT){ k.qcols--; tc.maxx-=2;}
 
 		bd.setposAll();
 		if(k.isOneNumber){
@@ -7179,7 +7889,7 @@ MenuExec.prototype = {
 				if(!bd.isNullObj(type,i)){ um.addObj(type,i);}
 				margin++;
 
-				if(type==='cell' && k.isOneNumber){
+				if(type===k.CELL && k.isOneNumber){
 					if(bd.QnC(i)!==-1){ this.qnums.push({ areaid:area.getRoomID(i), val:bd.QnC(i)});}
 					//area.setRoomID(i, -1);
 				}
@@ -7287,7 +7997,7 @@ MenuExec.prototype = {
 
 		bd.setposBorders();
 		for(var i=0;i<bd.bdmax;i++){
-			if(this.distObj(key,'border',i)!==1){ continue;}
+			if(this.distObj(key,k.BORDER,i)!==1){ continue;}
 
 			var source = this.innerBorder(key,i);
 			bd.border[i].ques  = bd.border[source].ques;
@@ -7299,7 +8009,7 @@ MenuExec.prototype = {
 	expandborderAsLine : function(key){
 		bd.setposBorders();
 		for(var i=0;i<bd.bdmax;i++){
-			if(this.distObj(key,'border',i)!==2){ continue;}
+			if(this.distObj(key,k.BORDER,i)!==2){ continue;}
 
 			var source = this.outerBorder(key,i);
 			this.copyData(i,source);
@@ -7309,7 +8019,7 @@ MenuExec.prototype = {
 	// borderAsLine時の無理やりがなんとかかんとか
 	reduceborderAsLine : function(key){
 		for(var i=0;i<bd.bdmax;i++){
-			if(this.distObj(key,'border',i)!==0){ continue;}
+			if(this.distObj(key,k.BORDER,i)!==0){ continue;}
 
 			var source = this.innerBorder(key,i);
 			this.copyData(i,source);
@@ -7328,18 +8038,18 @@ MenuExec.prototype = {
 	//---------------------------------------------------------------------------
 	innerBorder : function(key,id){
 		var bx=bd.border[id].cx, by=bd.border[id].cy;
-		if     (key==='up'){ return bd.bnum(bx, by+2);}
-		else if(key==='dn'){ return bd.bnum(bx, by-2);}
-		else if(key==='lt'){ return bd.bnum(bx+2, by);}
-		else if(key==='rt'){ return bd.bnum(bx-2, by);}
+		if     (key===k.UP){ return bd.bnum(bx, by+2);}
+		else if(key===k.DN){ return bd.bnum(bx, by-2);}
+		else if(key===k.LT){ return bd.bnum(bx+2, by);}
+		else if(key===k.RT){ return bd.bnum(bx-2, by);}
 		return -1;
 	},
 	outerBorder : function(key,id){
 		var bx=bd.border[id].cx, by=bd.border[id].cy;
-		if     (key==='up'){ return bd.bnum(bx, by-2);}
-		else if(key==='dn'){ return bd.bnum(bx, by+2);}
-		else if(key==='lt'){ return bd.bnum(bx-2, by);}
-		else if(key==='rt'){ return bd.bnum(bx+2, by);}
+		if     (key===k.UP){ return bd.bnum(bx, by-2);}
+		else if(key===k.DN){ return bd.bnum(bx, by+2);}
+		else if(key===k.LT){ return bd.bnum(bx-2, by);}
+		else if(key===k.RT){ return bd.bnum(bx+2, by);}
 		return -1;
 	},
 
@@ -7348,35 +8058,35 @@ MenuExec.prototype = {
 	// menu.ex.distObj()    上下左右いずれかの外枠との距離を求める
 	//---------------------------------------------------------------------------
 	setposObj : function(type){
-		if     (type==='cell')  { bd.setposCells();}
-		else if(type==='cross') { bd.setposCrosses();}
-		else if(type==='border'){ bd.setposBorders();}
-		else if(type==='excell'){ bd.setposEXcells();}
+		if     (type===k.CELL)  { bd.setposCells();}
+		else if(type===k.CROSS) { bd.setposCrosses();}
+		else if(type===k.BORDER){ bd.setposBorders();}
+		else if(type===k.EXCELL){ bd.setposEXcells();}
 	},
 	distObj : function(key,type,id){
-		if(type==='cell'){
-			if     (key==='up'){ return bd.cell[id].cy;}
-			else if(key==='dn'){ return (k.qrows-1)-bd.cell[id].cy;}
-			else if(key==='lt'){ return bd.cell[id].cx;}
-			else if(key==='rt'){ return (k.qcols-1)-bd.cell[id].cx;}
+		if(type===k.CELL){
+			if     (key===k.UP){ return bd.cell[id].cy;}
+			else if(key===k.DN){ return (k.qrows-1)-bd.cell[id].cy;}
+			else if(key===k.LT){ return bd.cell[id].cx;}
+			else if(key===k.RT){ return (k.qcols-1)-bd.cell[id].cx;}
 		}
-		else if(type==='cross'){
-			if     (key==='up'){ return bd.cross[id].cy;}
-			else if(key==='dn'){ return k.qrows-bd.cross[id].cy;}
-			else if(key==='lt'){ return bd.cross[id].cx;}
-			else if(key==='rt'){ return k.qcols-bd.cross[id].cx;}
+		else if(type===k.CROSS){
+			if     (key===k.UP){ return bd.cross[id].cy;}
+			else if(key===k.DN){ return k.qrows-bd.cross[id].cy;}
+			else if(key===k.LT){ return bd.cross[id].cx;}
+			else if(key===k.RT){ return k.qcols-bd.cross[id].cx;}
 		}
-		else if(type==='border'){
-			if     (key==='up'){ return bd.border[id].cy;}
-			else if(key==='dn'){ return 2*k.qrows-bd.border[id].cy;}
-			else if(key==='lt'){ return bd.border[id].cx;}
-			else if(key==='rt'){ return 2*k.qcols-bd.border[id].cx;}
+		else if(type===k.BORDER){
+			if     (key===k.UP){ return bd.border[id].cy;}
+			else if(key===k.DN){ return 2*k.qrows-bd.border[id].cy;}
+			else if(key===k.LT){ return bd.border[id].cx;}
+			else if(key===k.RT){ return 2*k.qcols-bd.border[id].cx;}
 		}
-		else if(type==='excell'){
-			if     (key==='up'){ return bd.excell[id].cy;}
-			else if(key==='dn'){ return (k.qrows-1)-bd.excell[id].cy;}
-			else if(key==='lt'){ return bd.excell[id].cx;}
-			else if(key==='rt'){ return (k.qcols-1)-bd.excell[id].cx;}
+		else if(type===k.EXCELL){
+			if     (key===k.UP){ return bd.excell[id].cy;}
+			else if(key===k.DN){ return (k.qrows-1)-bd.excell[id].cy;}
+			else if(key===k.LT){ return bd.excell[id].cx;}
+			else if(key===k.RT){ return (k.qcols-1)-bd.excell[id].cx;}
 		}
 		return -1;
 	},
@@ -7530,21 +8240,21 @@ MenuExec.prototype = {
 			um.newOperation(true);
 			{
 				for(var i=0;i<bd.cellmax;i++){
-					if(bd.cell[i].qans!==bd.defcell.qans){ um.addOpe('cell','qans',i,bd.cell[i].qans,bd.defcell.qans);}
-					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe('cell','qsub',i,bd.cell[i].qsub,bd.defcell.qsub);}
+					if(bd.cell[i].qans!==bd.defcell.qans){ um.addOpe(k.CELL,k.QANS,i,bd.cell[i].qans,bd.defcell.qans);}
+					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe(k.CELL,k.QSUB,i,bd.cell[i].qsub,bd.defcell.qsub);}
 				}
 			}
 			if(k.isborder){
 				for(var i=0;i<bd.bdmax;i++){
-					if(bd.border[i].qans!==bd.defborder.qans){ um.addOpe('border','qans',i,bd.border[i].qans,bd.defborder.qans);}
-					if(bd.border[i].line!==bd.defborder.line){ um.addOpe('border','line',i,bd.border[i].line,bd.defborder.line);}
-					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe('border','qsub',i,bd.border[i].qsub,bd.defborder.qsub);}
+					if(bd.border[i].qans!==bd.defborder.qans){ um.addOpe(k.BORDER,k.QANS,i,bd.border[i].qans,bd.defborder.qans);}
+					if(bd.border[i].line!==bd.defborder.line){ um.addOpe(k.BORDER,k.LINE,i,bd.border[i].line,bd.defborder.line);}
+					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,k.QSUB,i,bd.border[i].qsub,bd.defborder.qsub);}
 				}
 			}
 			if(!g.vml){ pc.flushCanvasAll();}
 
 			bd.ansclear();
-			base.resetInfo();
+			base.resetInfo(false);
 			pc.paintAll();
 		}
 	},
@@ -7553,12 +8263,12 @@ MenuExec.prototype = {
 			um.newOperation(true);
 			{
 				for(var i=0;i<bd.cellmax;i++){
-					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe('cell','qsub',i,bd.cell[i].qsub,bd.defcell.qsub);}
+					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe(k.CELL,k.QSUB,i,bd.cell[i].qsub,bd.defcell.qsub);}
 				}
 			}
 			if(k.isborder){
 				for(var i=0;i<bd.bdmax;i++){
-					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe('border','qsub',i,bd.border[i].qsub,bd.defborder.qsub);}
+					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,k.QSUB,i,bd.border[i].qsub,bd.defborder.qsub);}
 				}
 			}
 			if(!g.vml){ pc.flushCanvasAll();}
@@ -7681,7 +8391,7 @@ LineManager.prototype = {
 
 	branch    : function(bx,by){
 		if(!k.isLineCross){
-			return (this.lcntCell((k.isCenterLine?bd.cnum:bd.xnum)(mf(bx/2),mf(by/2)))>=3);
+			return (this.lcntCell((k.isCenterLine?bd.cnum:bd.xnum)(bx>>1,by>>1))>=3);
 		}
 		return false;
 	},
@@ -7716,8 +8426,6 @@ LineManager.prototype = {
 			if(cc1!=-1){ this.ltotal[this.lcnt[cc1]]--; this.lcnt[cc1]--; this.ltotal[this.lcnt[cc1]]++;}
 			if(cc2!=-1){ this.ltotal[this.lcnt[cc2]]--; this.lcnt[cc2]--; this.ltotal[this.lcnt[cc2]]++;}
 		}
-
-		// if(k.br.IE && !menu.getVal('irowake')){ return;}
 
 		//---------------------------------------------------------------------------
 		// (A)くっつきなし                        (B)単純くっつき
@@ -7873,14 +8581,46 @@ LineManager.prototype = {
 		}
 	},
 
-	repaintLine : function(idlist){
-		if(!menu.getVal('irowake')){ return;}
-		for(var i=0,len=idlist.length;i<len;i++){
-			if(k.isCenterLine){ pc.drawLine1  (idlist[i],true);}
-			else			  { pc.drawBorder1(idlist[i],true);}
-			if(!g.vml){ this.repaintParts(idlist[i]);}
-		}
-	},
+	repaintLine : (
+		((!k.vml) ?
+			function(idlist){
+				if(!pp.getVal('irowake')){ return;}
+
+				if(k.isCenterLine){
+					for(var i=0,len=idlist.length;i<len;i++){
+						pc.drawLine1(idlist[i],true);
+						this.repaintParts(idlist[i]);
+					}
+				}
+				else{
+					for(var i=0,len=idlist.length;i<len;i++){
+						var id = idlist[i];
+						if(bd.border[id].qans!==1){ g.fillStyle = pc.BorderQuescolor; }
+						else                      { g.fillStyle = pc.getLineColor(id);}
+						pc.drawBorder1x(bd.border[id].cx, bd.border[id].cy, true);
+						this.repaintParts(id);
+					}
+				}
+			}
+		:
+			function(idlist){
+				if(!pp.getVal('irowake')){ return;}
+
+				pc.zstable = true;
+				if(k.isCenterLine){
+					for(var i=0,len=idlist.length;i<len;i++){
+						pc.drawLine1(idlist[i],true);
+					}
+				}
+				else{
+					for(var i=0,len=idlist.length;i<len;i++){
+						pc.drawBorder1x(bd.border[idlist[i]].cx,bd.border[idlist[i]].cy,true);
+					}
+				}
+				pc.zstable = false;
+			}
+		)
+	),
 	repaintParts : function(id){ }, // オーバーライド用
 
 	//---------------------------------------------------------------------------
@@ -7943,7 +8683,7 @@ LineManager.prototype = {
 					if(bd.isLine(bd.bnum(bx+1,by))){ this.lc0(bx,by,4,newid);}
 					break;
 				}
-				else if(this.lcntCell((k.isCenterLine?bd.cnum:bd.xnum)(mf(bx/2),mf(by/2)))<=2){
+				else if(this.lcntCell((k.isCenterLine?bd.cnum:bd.xnum)(bx>>1,by>>1))<=2){
 					if     (dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
 					else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ dir=1;}
 					else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ dir=4;}
@@ -8404,7 +9144,8 @@ PBase = function(){
 	this.proto        = 0;	// 各クラスのprototypeがパズル用スクリプトによって変更されているか
 	this.expression   = { ja:'' ,en:''};
 	this.puzzlename   = { ja:'' ,en:''};
-	this.cv_obj       = null;	// HTMLソースのCanvasを示すオブジェクト
+	this.canvas       = null;	// HTMLソースのCanvasを示すエレメント
+	this.numparent    = null;	// 'numobj_parent'を示すエレメント
 	this.onresizenow  = false;	// resize中かどうか
 	this.initProcess  = true;	// 初期化中かどうか
 };
@@ -8437,32 +9178,34 @@ PBase.prototype = {
 		}
 
 		// onLoadとonResizeに動作を割り当てる
-		$(document).ready(this.onload_func.ebind(this));
-		$(window).resize(this.onresize_func.ebind(this));
+		window.onload   = ee.ebinder(this, this.onload_func);
+		window.onresize = ee.ebinder(this, this.onresize_func);
 	},
 
 	//---------------------------------------------------------------------------
 	// base.onload_func()
 	//   ページがLoadされた時の処理。各クラスのオブジェクトへの読み込み等初期設定を行う
-	// base.initObjects()
-	//   各オブジェクトの生成などの処理
-	// base.setEvents()
-	//   マウス入力、キー入力のイベントの設定を行う
-	// base.initSilverlight()
-	//   Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
-	// base.reload_func()  別スクリプトを読み込みしなおす際の処理
-	// base.postfix()      各パズルの初期化後処理を呼び出す
+	// 
+	// base.initCanvas()  Canvas関連の初期化
+	// base.initObjects() 各オブジェクトの生成などの処理
+	// base.setEvents()   マウス入力、キー入力のイベントの設定を行う
+	// base.initSilverlight() Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
 	//---------------------------------------------------------------------------
 	onload_func : function(){
 		this.initCanvas();
-
 		this.initObjects();
 		this.setEvents(true);	// イベントをくっつける
 
-		if(document.domain=='indi.s58.xrea.com' && k.callmode=='pplay'){ this.accesslog();}	// アクセスログをとってみる
+		if(document.domain=='indi.s58.xrea.com' && k.PLAYER){ this.accesslog();}	// アクセスログをとってみる
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
 
 		this.initProcess = false;
+	},
+
+	initCanvas : function(){
+		this.canvas = ee('puzzle_canvas').unselectable().el; // Canvas
+		this.numparent = ee('numobj_parent').el;			// 数字表示用
+		g = this.canvas.getContext("2d");
 	},
 
 	initObjects : function(){
@@ -8496,55 +9239,30 @@ PBase.prototype = {
 		if(k.scriptcheck && debug){ debug.testonly_func();}	// テスト用
 	},
 	setEvents : function(first){
-		this.cv_obj.mousedown(mv.e_mousedown.ebind(mv)).mouseup(mv.e_mouseup.ebind(mv)).mousemove(mv.e_mousemove.ebind(mv));
-		this.cv_obj.context.oncontextmenu = function(){return false;};	//妥協点 
+		this.canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+		this.canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+		this.canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
+		this.canvas.oncontextmenu = function(){ return false;};
+
+		this.numparent.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+		this.numparent.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+		this.numparent.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
+		this.numparent.oncontextmenu = function(){ return false;};
 
 		if(first){
-			$(document).keydown(kc.e_keydown.kcbind()).keyup(kc.e_keyup.kcbind()).keypress(kc.e_keypress.kcbind());
+			document.onkeydown  = ee.kcbinder(kc.e_keydown);
+			document.onkeyup    = ee.kcbinder(kc.e_keyup);
+			document.onkeypress = ee.kcbinder(kc.e_keypress);
 		}
 	},
 	initSilverlight : function(sender){
-		sender.AddEventListener("KeyDown", kc.e_SLkeydown.bind(kc));
-		sender.AddEventListener("KeyUp",   kc.e_SLkeyup.bind(kc));
-	},
-
-	reload_func : function(newid){
-		this.initProcess = true;
-
-		if(this.proto){ puz.protoOriginal();}
-
-		$("*").unbind();
-		menu.menureset();
-		$("#numobj_parent").html("");
-		if(kp.ctl[1].enable){ kp.ctl[1].el.remove();}
-		if(kp.ctl[3].enable){ kp.ctl[3].el.remove();}
-
-		k.puzzleid = newid;
-		if(!Puzzles[k.puzzleid]){
-			newEL("script").attr("type", "text/javascript")
-//						   .attr("charset", "Shift_JIS")
-						   .attr("src", "src/"+k.puzzleid+".js")
-						   .appendTo($("head"));
-		}
-
-		enc = new Encode();
-		fio = new FileIO();
-
-		this.initObjects();
-		this.setEvents(false);
-
-		this.initProcess = false;
-	},
-
-	postfix : function(){
-		puz.input_init();
-		puz.graphic_init();
-		puz.encode_init();
-		puz.answer_init();
+		sender.AddEventListener("KeyDown", ee.kcbinder(kc.e_SLkeydown));
+		sender.AddEventListener("KeyUp",   ee.kcbinder(kc.e_SLkeyup));
 	},
 
 	//---------------------------------------------------------------------------
 	// base.doc_design()       onload_func()で呼ばれる。htmlなどの設定を行う
+	// base.postfix()          各パズルの初期化後処理を呼び出す
 	// base.gettitle()         現在開いているタイトルを返す
 	// base.getPuzzleName()    現在開いているパズルの名前を返す
 	// base.setTitle()         パズルの名前を設定する
@@ -8555,23 +9273,30 @@ PBase.prototype = {
 	doc_design : function(){
 		this.resize_canvas_only();	// Canvasのサイズ設定
 
-		document.title = this.gettitle();
-		$("#title2").html(this.gettitle());
+		_doc.title = this.gettitle();
+		ee('title2').el.innerHTML = this.gettitle();
 
-		$("body").css("background-image","url(../../"+k.puzzleid+"/bg.gif)");
+		_doc.body.style.backgroundImage = "url(../../"+k.puzzleid+"/bg.gif)";
 		if(k.br.IE){
-			$("#title2").css("margin-top","24px");
-			$("hr").each(function(){ $(this).css("margin",'0pt');});
+			ee('title2').el.style.marginTop = "24px";
+			ee('separator1').el.style.margin = '0pt';
+			ee('separator2').el.style.margin = '0pt';
 		}
 
-		k.autocheck = (k.callmode!="pmake");
 		this.postfix();			// 各パズルごとの設定(後付け分)
 		menu.menuinit();
 		um.enb_btn();
 	},
+	postfix : function(){
+		puz.input_init();
+		puz.graphic_init();
+		puz.encode_init();
+		puz.answer_init();
+	},
+
 	gettitle : function(){
-		if(k.callmode=='pmake'){ return ""+this.getPuzzleName()+(menu.isLangJP()?" エディタ - ぱずぷれv3":" editor - PUZ-PRE v3");}
-		else				   { return ""+this.getPuzzleName()+(menu.isLangJP()?" player - ぱずぷれv3"  :" player - PUZ-PRE v3");}
+		if(k.EDITOR){ return ""+this.getPuzzleName()+(menu.isLangJP()?" エディタ - ぱずぷれv3":" editor - PUZ-PRE v3");}
+		else		{ return ""+this.getPuzzleName()+(menu.isLangJP()?" player - ぱずぷれv3"  :" player - PUZ-PRE v3");}
 	},
 	getPuzzleName : function(){ return (menu.isLangJP()||!this.puzzlename.en)?this.puzzlename.ja:this.puzzlename.en;},
 	setTitle      : function(strJP, strEN){ this.puzzlename.ja = strJP; this.puzzlename.en = strEN;},
@@ -8579,62 +9304,52 @@ PBase.prototype = {
 	setFloatbgcolor : function(color){ this.floatbgcolor = color;},
 
 	//---------------------------------------------------------------------------
-	// base.initCanvas()           Canvasの設定を行う
 	// base.resize_canvas_only()   ウィンドウのLoad/Resize時の処理。Canvas/表示するマス目の大きさを設定する。
 	// base.resize_canvas()        resize_canvas_only()+Canvasの再描画
 	// base.resize_canvas_onload() 初期化中にpaint再描画が起こらないように、resize_canvasを呼び出す
 	// base.onresize_func()        ウィンドウリサイズ時に呼ばれる関数
-	// base.getWindowSize()        ウィンドウの大きさを返す
 	// base.resetInfo()            AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
 	//---------------------------------------------------------------------------
-	initCanvas : function(){
-		k.IEMargin = (k.br.IE)?(new Pos(4, 4)):(new Pos(0, 0));
-
-		var canvas = document.getElementById('puzzle_canvas');	// Canvasオブジェクト生成
-
-		// jQueryだと読み込み順の関係でinitElementされなくなるため、initElementしなおす
-		if(k.br.IE){
-			canvas = uuCanvas.init(canvas,!uuMeta.slver);		// uuCanvas用
-//			canvas = uuCanvas.init(canvas,true);				// uuCanvas(強制VMLモード)用
-//			canvas = G_vmlCanvasManager.initElement(canvas);	// excanvas用
-		}
-		g = canvas.getContext("2d");
-
-		this.cv_obj = $(canvas).unselectable();
-	},
 	resize_canvas_only : function(){
-		var wsize = this.getWindowSize();
+		var wwidth = ee.windowWidth();
 		k.p0 = new Pos(k.def_psize, k.def_psize);
 
 		// セルのサイズの決定
 		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[k.widthmode];
-		var ci0 = Math.round((wsize.x-k.p0.x*2)/(k.def_csize*cratio)*0.75);
-		var ci1 = Math.round((wsize.x-k.p0.x*2)/(k.def_csize*cratio));
-		var ci2 = Math.round((wsize.x-k.p0.x*2)/(k.def_csize)*2.25);
+		var ci0 = Math.round((wwidth-k.p0.x*2)/(k.def_csize*cratio)*0.75);
+		var ci1 = Math.round((wwidth-k.p0.x*2)/(k.def_csize*cratio));
+		var ci2 = Math.round((wwidth-k.p0.x*2)/(k.def_csize)*2.25);
 
 		if(k.qcols < ci0){				// 特に縮小しないとき
 			k.cwidth = k.cheight = mf(k.def_csize*cratio);
-			$("#main").css("width",'80%');
+			ee('main').el.style.width = '80%';
 		}
 		else if(k.qcols < ci1){			// ウィンドウの幅75%に入る場合 フォントのサイズは3/4まで縮めてよい
 			k.cwidth = k.cheight = mf(k.def_csize*cratio*(1-0.25*((k.qcols-ci0)/(ci1-ci0))));
 			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-			$("#main").css("width",'80%');
+			ee('main').el.style.width = '80%';
 		}
 		else if(k.qcols < ci2){			// mainのtableを広げるとき
 			k.cwidth = k.cheight = mf(k.def_csize*cratio*(0.75-0.35*((k.qcols-ci1)/(ci2-ci1))));
 			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-			$("#main").css("width",""+(k.p0.x*2+k.qcols*k.cwidth+12)+"px");
+			ee('main').el.style.width = ""+(k.p0.x*2+k.qcols*k.cwidth+12)+"px";
 		}
 		else{							// 標準サイズの40%にするとき(自動調整の下限)
 			k.cwidth = k.cheight = mf(k.def_csize*0.4);
 			k.p0 = new Pos(k.def_psize*0.4, k.def_psize*0.4);
-			$("#main").css("width",'96%');
+			ee('main').el.style.width = '96%';
 		}
 
 		// Canvasのサイズ変更
-		this.cv_obj.attr("width",  k.p0.x*2 + k.qcols*k.cwidth);
-		this.cv_obj.attr("height", k.p0.y*2 + k.qrows*k.cheight);
+		this.canvas.width  = k.p0.x*2 + k.qcols*k.cwidth;
+		this.canvas.height = k.p0.y*2 + k.qrows*k.cheight;
+
+		// VML使う時に、Canvas外の枠線が消えてしまうので残しておきます.
+		if(g.vml){
+			var fc = this.canvas.firstChild;
+			fc.style.width  = ''+this.canvas.clientWidth  + 'px';
+			fc.style.height = ''+this.canvas.clientHeight + 'px';
+		}
 
 		// extendxell==1の時は上下の間隔を広げる (extendxell==2はdef_psizeで調整)
 		if(k.isextendcell==1){
@@ -8642,20 +9357,14 @@ PBase.prototype = {
 			k.p0.y += mf(k.cheight*0.45);
 		}
 
-		k.cv_oft.x = this.cv_obj.offset().left;
-		k.cv_oft.y = this.cv_obj.offset().top;
+		var rect = ee('puzzle_canvas').getRect();
+		k.cv_oft.x = rect.left;
+		k.cv_oft.y = rect.top;
 
 		kp.resize();
 		bd.setposAll();
 
 		pc.onresize_func();
-
-		// jQuery対応:初めにCanvas内のサイズが0になり、描画されない不具合への対処
-		if(g.vml){
-			var fc = this.cv_obj.children(":first");
-			fc.css("width",  ''+this.cv_obj.attr("clientWidth") + 'px');
-			fc.css("height", ''+this.cv_obj.attr("clientHeight") + 'px');
-		}
 	},
 	resize_canvas : function(){
 		this.resize_canvas_only();
@@ -8663,8 +9372,8 @@ PBase.prototype = {
 		pc.paintAll();
 	},
 	resize_canvas_onload : function(){
-		if(!k.br.IE || pc.already()){ this.resize_canvas();}
-		else{ uuCanvas.ready(this.resize_canvas.bind(this));}
+		if(pc.already()){ this.resize_canvas();}
+		else{ uuCanvas.ready(ee.binder(this, this.resize_canvas));}
 	},
 	onresize_func : function(){
 		if(this.onresizenow){ return;}
@@ -8674,17 +9383,9 @@ PBase.prototype = {
 
 		this.onresizenow = false;
 	},
-	getWindowSize : function(){
-		if(document.all){
-			return new Pos(document.body.clientWidth, document.body.clientHeight);
-		}
-		else if(document.layers || document.getElementById){
-			return new Pos(innerWidth, innerHeight);
-		}
-		return new Pos(0, 0);
-	},
 
-	resetInfo : function(){
+	resetInfo : function(iserase){
+		if(iserase){ um.allerase();}
 		tc.Adjust();
 		area.resetArea();
 		line.resetLcnts();
@@ -8700,7 +9401,20 @@ PBase.prototype = {
 		refer = refer.replace(/\=/g,"%3d");
 		refer = refer.replace(/\//g,"%2f");
 
-		$.post("./record.cgi", "pid="+k.puzzleid+"&pzldata="+enc.uri.qdata+"&referer="+refer);
+		// 送信
+		var xmlhttp = false;
+		if(typeof ActiveXObject != "undefined"){
+			try { xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");}
+			catch (e) { xmlhttp = false;}
+		}
+		if(!xmlhttp && typeof XMLHttpRequest != "undefined") {
+			xmlhttp = new XMLHttpRequest();
+		}
+		if(xmlhttp){
+			xmlhttp.open("GET", ["./record.cgi", "?pid=",k.puzzleid, "&pzldata=",enc.uri.qdata, "&referer=",refer].join(''));
+			xmlhttp.onreadystatechange = function(){};
+			xmlhttp.send(null);
+		}
 	}
 };
 

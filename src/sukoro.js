@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 数コロ版 sukoro.js v3.2.2
+// パズル固有スクリプト部 数コロ版 sukoro.js v3.2.3
 //
 Puzzles.sukoro = function(){ };
 Puzzles.sukoro.prototype = {
@@ -51,23 +51,21 @@ Puzzles.sukoro.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(!kp.enabled()){ this.inputqnum(x,y,4);}
-			else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(!kp.enabled()){ this.inputqnum();}
+			else{ kp.display();}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			//this.inputqnum(x,y,4);
-		};
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){ };
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
 			if(kc.key_sukoro(ca)){ return;}
-			this.key_inputqnum(ca,4);
+			this.key_inputqnum(ca);
 		};
 		kc.key_sukoro = function(ca){
-			if(k.mode==1 || bd.QnC(tc.getTCC())!=-1){ return false;}
+			if(k.editmode || bd.QnC(tc.getTCC())!=-1){ return false;}
 
 			var cc = tc.getTCC();
 			var flag = false;
@@ -105,11 +103,13 @@ Puzzles.sukoro.prototype = {
 				this.insertrow();
 			}
 		};
-		kp.generate(99, true, true, kp.kpgenerate.bind(kp));
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
 		kp.kpinput = function(ca){
 			if(kc.key_sukoro(ca)){ return;}
-			kc.key_inputqnum(ca,4);
+			kc.key_inputqnum(ca);
 		};
+
+		bd.maxnum = 4;
 	},
 
 	//---------------------------------------------------------
@@ -120,8 +120,7 @@ Puzzles.sukoro.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawMBs(x1,y1,x2,y2);
@@ -158,7 +157,7 @@ Puzzles.sukoro.prototype = {
 				this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
 			}
 
-			if( !this.checkCellNumber() ){
+			if( !this.checkAllCell( function(c){ return (bd.isValidNum(c) && bd.getNum(c)!=ans.checkdir4Cell(c,bd.isNum));} ) ){
 				this.setAlert('数字と、その数字の上下左右に入る数字の数が一致していません。','The number of numbers placed in four adjacent cells is not equal to the number.'); return false;
 			}
 
@@ -166,16 +165,6 @@ Puzzles.sukoro.prototype = {
 				this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
 			}
 
-			return true;
-		};
-
-		ans.checkCellNumber = function(){
-			for(var c=0;c<bd.cellmax;c++){
-				if(bd.isValidNum(c) && bd.getNum(c)!=this.checkdir4Cell(c,bd.isNum)){
-					bd.sErC([c],1);
-					return false;
-				}
-			}
 			return true;
 		};
 	}

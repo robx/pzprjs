@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボーダーブロック版 bdblock.js v3.2.2
+// パズル固有スクリプト部 ボーダーブロック版 bdblock.js v3.2.3
 //
 Puzzles.bdblock = function(){ };
 Puzzles.bdblock.prototype = {
@@ -51,39 +51,39 @@ Puzzles.bdblock.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputcrossMark(x,y);
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+		mv.mousedown = function(){
+			if(k.editmode) this.inputcrossMark();
+			else if(k.playmode){
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.mode==1){
-					if(!kp.enabled()){ this.inputqnum(x,y,99);}
-					else{ kp.display(x,y);}
+				if(k.editmode){
+					if(!kp.enabled()){ this.inputqnum();}
+					else{ kp.display();}
 				}
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==3){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+		mv.mousemove = function(){
+			if(k.playmode){
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(0, true, false, '');
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,99);
+				kc.key_inputqnum(ca);
 			};
 		}
 	},
@@ -99,8 +99,7 @@ Puzzles.bdblock.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
@@ -111,7 +110,7 @@ Puzzles.bdblock.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 
@@ -147,13 +146,13 @@ Puzzles.bdblock.prototype = {
 			}
 
 			rinfo = area.getRoomInfo();
-			if( !this.checkNoObjectInRoom(rinfo, bd.QnC.bind(bd)) ){
+			if( !this.checkNoObjectInRoom(rinfo, ee.binder(bd, bd.QnC)) ){
 				this.setAlert('数字のないブロックがあります。','A block has no number.'); return false;
 			}
-			if( !this.checkSameObjectInRoom(rinfo, bd.QnC.bind(bd)) ){
+			if( !this.checkSameObjectInRoom(rinfo, ee.binder(bd, bd.QnC)) ){
 				this.setAlert('１つのブロックに異なる数字が入っています。','A block has dirrerent numbers.'); return false;
 			}
-			if( !this.checkObjectRoom(rinfo, bd.QnC.bind(bd)) ){
+			if( !this.checkObjectRoom(rinfo, ee.binder(bd, bd.QnC)) ){
 				this.setAlert('同じ数字が異なるブロックに入っています。','One kind of numbers is included in dirrerent blocks.'); return false;
 			}
 

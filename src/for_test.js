@@ -1,88 +1,53 @@
-// for_test.js v3.2.2
+// for_test.js v3.2.3
 
 k.scriptcheck = true;
-k.callmode = "pmake";
+k.EDITOR = true;
+k.PLAYER = false;
 
 var debug = {
 	testonly_func : function(){
-		if($("#poptest").length <= 0){
-			newEL('div').attr("class","popup").attr("id","poptest")
-						.append( newEL('textarea').attr("id","testarea").attr("rows","16").attr("cols","40").attr("wrap","off") )
-						.appendTo($("#popup_parent"));
-			newEL('div').attr("class","titlebar").attr("id","bartest").html("&nbsp;pop_test").unselectable().prependTo($("#poptest"));
+		menu.titlebarfunc(ee('bartest').el);
+
+		document.testform.starttest.onclick = ee.binder(this, this.starttest);
+		document.testform.t1.onclick        = ee.binder(this, this.perfeval);
+		document.testform.t2.onclick        = ee.binder(this, this.painteval);
+		document.testform.t3.onclick        = ee.binder(this, this.resizeeval);
+
+		document.testform.filesave.onclick  = function(){ ee('testarea').el.value=''; debug.addTextarea(fio.fileencode(1).replace(/\//g,"\n"));};
+		document.testform.fileopen.onclick  = function(){ fio.fileopen(ee('testarea').el.value.split("\n"),1);};
+		document.testform.erasetext.onclick = function(e){ ee('testarea').el.value=''; ee('testdiv').el.innerHTML = '';};
+		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
+		document.testform.perfload.onclick  = ee.binder(this, this.loadperf);
+
+		document.testform.perfload.display = (k.puzzleid!=='country' ? 'none' : 'inline');
+		
+		if(!ee('testdiv')){
+			var el = _doc.createElement('div');
+			el.id = 'testdiv';
+			el.style.textAlign  = 'left';
+			el.style.fontSize   = '8pt';
+			el.style.lineHeight = '100%';
+			_doc.body.appendChild(el);
 		}
-		else{
-			$("#testarea").nextAll().remove();
-		}
-
-		var tf = {	//testfunc
-			titlebardown : function(e){
-				menu.isptitle = 1;
-				menu.offset.x = mv.pointerX(e) - parseInt($("#poptest").css("left"));
-				menu.offset.y = mv.pointerY(e) - parseInt($("#poptest").css("top"));
-			},
-			titlebarup   : function(e){ menu.isptitle = 0; },
-			titlebarout  : function(e){ if(!menu.insideOf($("#poptest"), e)){ menu.isptitle = 0;} },
-			titlebarmove : function(e){
-				if(menu.isptitle){
-					$("#poptest").css("left", (mv.pointerX(e) - menu.offset.x));
-					$("#poptest").css("top" , (mv.pointerY(e) - menu.offset.y));
-				}
-			}
-		};
-		$("#bartest").unbind().mousedown(tf.titlebardown).mouseup(tf.titlebarup)
-					 .mouseout(tf.titlebarout).mousemove(tf.titlebarmove);
-
-		$("#poptest").append( '<br>' )
-					 .append( this.newBTN("テスト",this.presccheck.bind(this)) )
-					 .append( ' ' )
-					 .append( this.newBTN("T1",this.perfeval.bind(this)) )
-					 .append( this.newBTN("T2",this.painteval.bind(this)) )
-					 .append( this.newBTN("T3",this.resizeeval.bind(this)) );
-
-		$("#poptest").append( '<br>' )
-					 .append( this.newBTN("File",function(){ $("#testarea").val(""); debug.addTextarea(fio.fileencode(1).replace(/\//g,"\n"));}) )
-					 .append( this.newBTN("Load",function(){ fio.fileopen($("#testarea").val().split("\n"),1);}) )
-					 .append( ' ' )
-					 .append( this.newBTN("消去",function(e){ $("#testarea").val("");}) )
-					 .append( ' ' )
-					 .append( this.newBTN("閉じる",function(e){ $("#poptest").hide();}) );
-		if(k.puzzleid=='country'){ $("#poptest").append( ' ' ).append( this.newBTN("Perf",this.loadperf.bind(this)) ); }
-	},
-	btncnt : 0,
-	newBTN : function(val,func){
-		var idname = "testbutton_"+this.btncnt; this.btncnt++;
-		return newEL('input').attr("type","button").attr("id",idname).attr("value",val).click(func);
 	},
 
 	keydown : function(ca){
 		if(ca=='F7'){ this.accheck1();  return true;}
-		if(kc.isCTRL && ca=='F8'){ this.disptest(0); return true;}
-		if(kc.isCTRL && ca=='F9'){ this.disptest(1); return true;}
+		if(kc.isCTRL && ca=='F8'){ this.disppoptest(); return true;}
+		if(kc.isCTRL && ca=='F9'){ this.starttest(); return true;}
 		if(kc.isCTRL && kc.isSHIFT && ca=='F10'){ this.all_test(); return true;}
 		return false;
 	},
 
 	perfeval : function(){
-		this.timeeval("正答判定測定",ans.checkAns.bind(ans));
+		this.timeeval("正答判定測定",ee.binder(ans, ans.checkAns));
 	},
 	painteval : function(){
-		this.timeeval("描画時間測定",pc.paintAll.bind(pc));
+		this.timeeval("描画時間測定",ee.binder(pc, pc.paintAll));
 	},
 	resizeeval : function(){
-		this.timeeval("resize描画測定",base.resize_canvas.bind(base));
+		this.timeeval("resize描画測定",ee.binder(base, base.resize_canvas));
 	},
-//	turneval : function(){
-//		this.timeeval("Turn時間測定",function(){
-//			um.newOperation(true);
-//			menu.ex.turnr(0,0,k.qcols-1,k.qrows-1);
-//			um.addOpe('board', 'turnr', 0, 0, 1);
-//			tc.Adjust();
-//			area.resetArea();
-//		});
-//		base.resize_canvas();
-//	},
-
 	timeeval : function(text,func){
 		this.addTextarea(text);
 		var count=0, old = (new Date()).getTime();
@@ -93,13 +58,13 @@ var debug = {
 		}
 		var time = (new Date()).getTime() - old;
 
-		this.addTextarea("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
+		this.addTextarea("測定データ "+time+"ms / "+count+"回<BR>"+"平均時間   "+(time/count)+"ms")
 	},
 
 	loadperf : function(){
 		fio.fileopen(debug.acs['perftest'][0][1].split("/"),1);
-		menu.setVal('mode',3);
-		menu.setVal('irowake',true);
+		pp.setVal('mode',3);
+		pp.setVal('irowake',true);
 	},
 
 	all_test : function(){
@@ -109,24 +74,56 @@ var debug = {
 		var tam = setInterval(function(){
 			if(debug.phase != 99){ return;}
 
-			k.puzzleid = debug.urls[pnum][0];
+			var newid = debug.urls[pnum][0];
 			k.qcols = 0;
 			k.qrows = 0;
 			k.area = { bcell:0, wcell:0, number:0};
 
-			base.reload_func(k.puzzleid);
+			debug.reload_func(newid);
 
 			enc.parseURI_pzpr.apply(enc, [debug.urls[pnum][1]]);
 			enc.pzlinput.apply(enc);
 
-			$("#testarea").attr("rows","32");
-			$("#poptest").css("visibility","visible").css("left", "40px").css("top", "80px").show();
-			debug.addTextarea("Test ("+pnum+", "+k.puzzleid+") start.");
+			var _pop_style = ee('poptest').el.style;
+			_pop_style.display = 'inline';
+			_pop_style.left = '40px';
+			_pop_style.top  = '80px';
+			debug.addTextarea("Test ("+pnum+", "+newid+") start.");
 			debug.sccheck();
 
 			if(pnum >= term){ clearInterval(tam);} 
 			pnum++;
 		},500);
+	},
+
+	reload_func : function(newid){
+		base.initProcess = true;
+
+		if(base.proto){ puz.protoOriginal();}
+
+		menu.menureset();
+		base.numparent.innerHTML = '';
+		if(kp.ctl[1].enable){ kp.ctl[1].el.innerHTML = '';}
+		if(kp.ctl[3].enable){ kp.ctl[3].el.innerHTML = '';}
+
+		ee.clean();
+
+		k.puzzleid = newid;
+		if(!Puzzles[k.puzzleid]){
+			var _script = _doc.createElement('script');
+			_script.type = 'text/javascript';
+//			_script.charset = 'Shift_JIS';
+			_script.src = "src/"+k.puzzleid+".js";
+			_doc.body.appendChild(_script);	// headじゃないけど、、しょうがないかぁ。。
+		}
+
+		enc = new Encode();
+		fio = new FileIO();
+
+		base.initObjects();
+		base.setEvents(false);
+
+		base.initProcess = false;
 	},
 
 	accheck1 : function(){
@@ -142,18 +139,22 @@ var debug = {
 		this.addTextarea("\t\t\t[\""+ans.alstr.jp+"\",\""+outputstr+"\"],");
 	},
 
-	disptest : function(type){
-		$("#poptest").css("visibility","visible").css("left", "40px").css("top", "80px").show();
-		if(type==1){ this.presccheck();}
+	disppoptest : function(){
+		var _pop_style = ee('poptest').el.style;
+		_pop_style.display = 'inline';
+		_pop_style.left = '40px';
+		_pop_style.top  = '80px';
+	},
+
+	starttest : function(){
+		ee('testarea').el.value = "";
+		ee('testdiv').el.innerHTML = "";
+		this.sccheck();
 	},
 
 	phase : 0,
-	presccheck : function(e){
-		$("#testarea").attr("rows","32").val("");
-		this.sccheck(e);
-	},
-	sccheck : function(e){
-		if(menu.getVal('autocheck')){ menu.setVal('autocheck',false);}
+	sccheck : function(){
+		if(pp.getVal('autocheck')){ pp.setVal('autocheck',false);}
 		var n=0, alstr='', qstr='', mint=80, fint=50;
 		this.phase = 10;
 		var tim = setInterval(function(){
@@ -174,7 +175,7 @@ var debug = {
 				// なぜかOperaはtextarea上の改行が実際の改行扱いになってしまうっぽい
 				if(k.br.Opera){ ta = ta.replace(/(\r|\n)/g,"");}
 
-				debug.addTextarea("Encode test   = "+(inp==ta?"pass":"failure...\n "+inp+"\n "+ta));
+				debug.addTextarea("Encode test   = "+(inp==ta?"pass":"failure...<BR> "+inp+"<BR> "+ta));
 
 				setTimeout(function(){
 					if(k.isKanpenExist){ debug.phase = 11;}
@@ -188,7 +189,7 @@ var debug = {
 
 				enc.pzlexport(2);
 				document.urlinput.ta.value = document.urloutput.ta.value;
-				menu.pop = $("#pop1_5");
+				menu.pop = ee("pop1_5");
 				menu.ex.urlinput({});
 
 				debug.addTextarea("Encode kanpen = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
@@ -240,7 +241,7 @@ var debug = {
 				var bd2 = debug.bd_freezecopy();
 
 				bd.initBoardSize(1,1);
-				base.resetInfo();
+				base.resetInfo(true);
 				base.resize_canvas();
 
 				setTimeout(function(){
@@ -259,7 +260,7 @@ var debug = {
 				var bd2 = debug.bd_freezecopy();
 
 				bd.initBoardSize(1,1);
-				base.resetInfo();
+				base.resetInfo(true);
 				base.resize_canvas();
 
 				setTimeout(function(){
@@ -277,7 +278,7 @@ var debug = {
 		case 40:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(){ menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnr'}}); menu.pop = '';};
+				var func = function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnr'}}); menu.pop = '';};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("TurnR test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
@@ -299,7 +300,7 @@ var debug = {
 		case 45:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(){ menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnl'}}); menu.pop = '';};
+				var func = function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnl'}}); menu.pop = '';};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("TurnL test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
@@ -322,9 +323,9 @@ var debug = {
 		case 50:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}});
+				menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}});
 
-				setTimeout(function(){ menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}}); menu.pop = '';
+				setTimeout(function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}}); menu.pop = '';
 					debug.addTextarea("FlipX test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					debug.phase = 51;
 				},fint);
@@ -344,9 +345,9 @@ var debug = {
 		case 55:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}});
+				menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}});
 
-				setTimeout(function(){ menu.pop = $("#pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}}); menu.pop = '';
+				setTimeout(function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}}); menu.pop = '';
 					debug.addTextarea("FlipY test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					debug.phase = 56;
 				},fint);
@@ -368,7 +369,7 @@ var debug = {
 			debug.phase=0;
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(nid){ menu.pop = $("#pop2_1"); menu.ex.popupadjust({srcElement:{name:nid}}); menu.pop = '';};
+				var func = function(nid){ menu.pop = ee("pop2_1"); menu.ex.popupadjust({srcElement:{name:nid}}); menu.pop = '';};
 				setTimeout(function(){ func('expandup'); setTimeout(function(){ func('expandrt');
 				setTimeout(function(){ func('expanddn'); setTimeout(function(){ func('expandlt');
 				setTimeout(function(){ func('reduceup'); setTimeout(function(){ func('reducert');
@@ -404,7 +405,7 @@ var debug = {
 		},mint);
 	},
 	taenable : true,
-	addTextarea : function(str){ if(this.taenable){ $("#testarea").val($("#testarea").val()+str+"\n");} },
+	addTextarea : function(str){ ee('testdiv').appendHTML(str).appendBR();},
 
 	qsubf : true,
 	bd_freezecopy : function(){
@@ -727,12 +728,11 @@ var debug = {
 			["3つ以上の丸がつながっています。","pzprv3/kusabi/5/5/3 1 1 . . /. . . 2 . /. . 1 2 . /. . 1 . . /. . . . 3 /0 1 1 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 1 0 0 /0 1 0 1 0 /0 1 0 0 0 /0 1 0 0 0 /0 1 1 0 0 /"],
 			["丸の上を線が通過しています。","pzprv3/kusabi/5/5/3 1 1 . . /. . . 2 . /. . 1 2 . /. . 1 . . /. . . . 3 /0 0 0 0 /1 0 0 0 /0 0 0 0 /1 1 1 1 /0 0 0 0 /0 0 0 0 0 /1 0 0 0 0 /1 0 0 0 0 /0 0 0 0 1 /"],
 			["丸がコの字型に繋がっていません。","pzprv3/kusabi/5/5/3 1 1 . . /. . . 2 . /. . 1 2 . /. . 1 . . /. . . . 3 /0 0 0 0 /0 1 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 1 0 0 0 /0 0 1 0 0 /0 0 0 0 0 /0 0 0 0 0 /"],
-			["繋がる丸が正しくありません。","pzprv3/kusabi/5/5/3 1 1 . . /. . . 2 . /. . 1 2 . /. . 1 . . /. . . . 3 /0 0 0 0 /0 0 0 0 /1 0 0 0 /0 0 1 0 /0 0 0 1 /1 1 0 0 0 /1 1 0 0 0 /-1 -1 0 0 0 /-1 -1 0 1 0 /"],
+			["繋がる丸が正しくありません。","pzprv3/kusabi/5/5/3 1 1 . . /. . . 2 . /. . 1 2 . /. . 1 . . /. . . . 3 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 1 1 0 /0 1 0 0 0 /0 1 0 0 0 /0 1 0 1 0 /0 1 0 1 0 /"],
 			["線が2回以上曲がっています。","pzprv3/kusabi/5/5/3 1 1 . . /. . . 2 . /. . 1 2 . /. . 1 . . /. . . . 3 /0 0 0 0 /0 1 1 0 /1 0 0 0 /0 0 0 0 /0 0 0 0 /1 0 0 0 0 /1 1 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /"],
 			["線が2回曲がっていません。","pzprv3/kusabi/5/5/3 1 1 . . /. . . 2 . /. . 1 2 . /. . 1 . . /. . . . 3 /0 0 0 0 /0 0 1 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 0 /0 0 1 0 0 /-1 -1 0 0 0 /-1 -1 0 0 0 /"],
-			["線の長さが同じではありません。","pzprv3/kusabi/5/5/3 1 1 . . /. . . 2 . /. . 1 2 . /. . 1 . . /. . . . 3 /0 0 0 0 /0 0 0 0 /0 0 0 1 /0 0 1 1 /0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 1 /0 0 0 0 0 /"],
-			["線の長短の指示に反してます。","pzprv3/kusabi/5/5/3 1 1 . . /. . . 2 . /. . 1 2 . /. . 1 . . /. . . . 3 /0 0 0 0 /1 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /1 1 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /"],
-			["線の長短の指示に反してます。","pzprv3/kusabi/5/5/3 1 1 . . /. . . 2 . /. . 1 2 . /. . 1 . . /. . . . 3 /0 0 0 0 /0 1 1 0 /0 1 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 0 /0 1 0 0 0 /-1 -1 0 0 0 /-1 -1 0 0 0 /"],
+			["線の長さが同じではありません。","pzprv3/kusabi/5/5/3 1 1 . . /. . . 2 . /. . 1 2 . /. . 1 . . /. . . . 3 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 1 0 0 /0 1 0 0 0 /0 1 0 0 0 /0 1 0 0 0 /0 1 1 0 0 /"],
+			["線の長短の指示に反してます。","pzprv3/kusabi/5/5/2 1 1 . . /. . . 2 . /. . 1 3 . /. . 1 . . /. . . . 3 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /1 1 1 0 /1 0 0 0 0 /1 0 0 0 0 /1 0 0 1 0 /1 0 0 1 0 /"],
 			["途切れている線があります。","pzprv3/kusabi/5/5/3 1 1 . . /. . . 2 . /. . 1 2 . /. . 1 . . /. . . . 3 /0 0 0 0 /0 1 0 0 /0 0 0 0 /0 0 0 0 /1 1 1 0 /1 1 1 0 0 /1 0 0 0 0 /1 -1 0 0 0 /1 -1 0 1 0 /"],
 			["丸につながっていない線があります。","pzprv3/kusabi/5/5/3 1 1 . . /. . . 2 . /. . 1 2 . /. . 1 . . /. . . . 3 /0 0 0 1 /0 1 0 0 /-1 1 0 0 /-1 1 0 0 /1 1 1 0 /1 1 1 0 1 /1 -1 0 0 1 /1 1 0 1 1 /1 -1 0 1 0 /"],
 			["どこにもつながっていない丸があります。","pzprv3/kusabi/5/5/3 1 1 . . /. . . 2 . /. . 1 2 . /. . 1 . . /. . . . 3 /0 0 0 0 /0 1 0 0 /-1 1 0 0 /-1 1 0 0 /1 1 1 0 /1 1 1 0 0 /1 -1 0 0 0 /1 1 0 1 0 /1 -1 0 1 0 /"],
@@ -773,7 +773,7 @@ var debug = {
 			["白丸の上で線が曲がっています。","pzprv3/mashu/6/6/. . 1 . . . /. 2 . . 1 . /. . . . . . /. . . 2 . . /. 1 . . . . /. . . . . . /0 0 1 1 0 /0 0 0 0 0 /0 0 1 1 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 1 0 0 0 /0 0 1 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /"],
 			["黒丸の上で線が直進しています。","pzprv3/mashu/6/6/. . 1 . . . /. 2 . . 1 . /. . . . . . /. . . 2 . . /. 1 . . . . /. . . . . . /0 0 0 0 0 /0 1 1 -1 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 0 /0 1 0 0 0 0 /0 1 0 1 0 0 /0 -1 0 1 0 0 /0 0 0 1 0 0 /"],
 			["黒丸の隣で線が曲がっています。","pzprv3/mashu/6/6/. . 1 . . . /. 2 . . 1 . /. . . . . . /. . . 2 . . /. 1 . . . . /. . . . . . /1 1 1 0 0 /0 1 1 -1 0 /0 0 0 0 0 /0 0 1 0 0 /0 0 0 0 0 /0 0 0 0 0 /1 0 0 0 0 0 /0 1 0 0 0 0 /0 1 0 1 0 0 /0 -1 1 0 0 0 /0 0 0 0 0 0 /"],
-			["白丸の隣で線が曲がっていません。","pzprv3/mashu/6/6/. . 1 . . . /. 2 . . 1 . /. . . . . . /. . . 2 . . /. 1 . . . . /. . . . . . /1 1 1 0 0 /0 1 1 -1 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /1 0 0 0 0 0 /0 1 0 0 0 0 /0 1 0 0 0 0 /0 -1 0 0 0 0 /0 0 0 0 0 0 /"],
+			["白丸の隣で線が曲がっていません。","pzprv3/mashu/6/6/. . 1 . . . /. 2 . . 1 . /. . . . . . /. . . 2 . . /. 1 . . . . /. . . . . . /1 1 1 1 0 /0 1 1 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /1 0 0 0 0 0 /1 1 0 0 0 0 /1 1 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /"],
 			["線が上を通っていない丸があります。","pzprv3/mashu/6/6/. . 1 . . . /. 2 . . 1 . /. . . . . . /. . . 2 . . /. 1 . . . . /. . . . . . /1 1 1 0 0 /0 1 1 -1 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /1 0 0 1 0 0 /0 1 0 0 0 0 /0 1 0 0 0 0 /0 -1 0 0 0 0 /0 0 0 0 0 0 /"],
 			["線が途中で途切れています。","pzprv3/mashu/6/6/. . 1 . . . /. 2 . . 1 . /. . . . . . /. . . 2 . . /. 1 . . . . /. . . . . . /1 1 1 0 1 /0 1 1 -1 0 /0 0 0 0 0 /0 1 0 0 0 /1 1 0 0 0 /0 0 0 0 0 /1 0 0 1 1 1 /1 1 0 0 1 1 /1 1 0 0 0 1 /1 -1 0 1 0 0 /0 0 0 1 0 0 /"],
 			["輪っかが一つではありません。","pzprv3/mashu/6/6/. . 1 . . . /. 2 . . 1 . /. . . . . . /. . . 2 . . /. 1 . . . . /. . . . . . /1 1 1 0 1 /0 1 1 -1 0 /0 0 0 0 0 /0 1 1 0 0 /1 1 0 0 0 /0 0 1 0 1 /1 0 0 1 1 1 /1 1 0 0 1 1 /1 1 0 0 1 1 /1 -1 0 1 1 1 /0 0 1 1 1 1 /"],
@@ -1078,7 +1078,7 @@ var debug = {
 			["交差している線があります。","pzprv3/yajirin/5/5/. . . . . /. . . . . /. . . 3,2 . /. . . . . /. . . . 1,0 /. . . . . /. . . . . /. . . . . /. . . . . /. . . . . /0 0 1 0 /1 1 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 1 1 0 0 /0 1 0 0 0 /0 1 0 0 0 /0 0 0 0 0 /"],
 			["黒マスの上に線が引かれています。","pzprv3/yajirin/5/5/. . . . . /. . . . . /. . . 3,2 . /. . . . . /. . . . 1,0 /. . . # . /. . . . . /# . # . . /. . . . . /. . . . . /1 1 0 1 /1 0 1 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /1 0 1 1 0 /0 1 0 0 0 /0 1 0 0 0 /0 0 0 0 0 /"],
 			["黒マスがタテヨコに連続しています。","pzprv3/yajirin/5/5/. . . . . /. . . . . /. . . 3,2 . /. . . . . /. . . . 1,0 /. . . . . /. . . . . /# . # . . /. . # . . /. . . . . /1 1 0 1 /1 0 1 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /1 0 1 1 0 /0 1 0 0 0 /0 1 0 0 0 /0 0 0 0 0 /"],
-			["矢印の方向にある黒マスの数が正しくありません。","pzprv3/yajirin/5/5/. . . . . /. . . . . /. . . 3,2 . /. . . . . /. . . . 1,0 /. . . . . /. . . . + /+ . # . + /. . + . + /. . . . . /1 1 0 1 /1 0 1 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /1 0 1 1 0 /0 1 0 0 0 /0 1 0 0 0 /0 0 0 0 0 /"],
+			["矢印の方向にある黒マスの数が正しくありません。","pzprv3/yajirin/5/5/. . . . . /. . . . . /. . . 3,2 . /. . . . . /. . . . 1,0 /. . . . . /. . . . + /# . . . + /. . + . + /. . . # . /1 1 -1 1 /1 -1 1 -1 /0 0 0 -1 /1 -1 1 1 /1 1 0 0 /1 -1 1 1 1 /0 1 0 0 1 /0 1 0 0 1 /1 -1 1 0 0 /"],
 			["途切れている線があります。","pzprv3/yajirin/5/5/. . . . . /. . . . . /. . . 3,2 . /. . . . . /. . . . 1,0 /. . . . . /. . . . + /# . # . + /. . + . + /. . . . . /1 1 0 1 /1 0 1 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /1 0 1 1 0 /0 1 0 0 0 /0 1 0 0 0 /0 0 0 0 0 /"],
 			["輪っかが一つではありません。","pzprv3/yajirin/5/5/. . . . . /. . . . . /. . . 3,2 . /. . . . . /. . . . 1,0 /. . . . . /. . . . + /# . # . + /. . + . + /. . . . . /1 1 0 1 /1 1 0 1 /0 0 0 0 /0 0 1 0 /0 0 1 0 /1 0 1 1 1 /0 0 0 0 0 /0 0 0 0 0 /0 0 1 1 0 /"],
 			["黒マスも線も引かれていないマスがあります。","pzprv3/yajirin/5/5/. . . . . /. . . . . /. . . 3,2 . /. . . . . /. . . . 1,0 /. . . . . /. . . . + /# . # . + /. . + . + /. . . . . /1 1 0 1 /1 0 1 0 /0 0 0 0 /0 1 0 1 /0 0 1 0 /1 0 1 1 1 /0 1 0 0 1 /0 1 0 0 1 /0 0 1 1 0 /"],

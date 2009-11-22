@@ -1,4 +1,4 @@
-// Undo.js v3.2.2
+// Undo.js v3.2.3
 
 //---------------------------------------------------------------------------
 // ★UndoManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
@@ -54,17 +54,8 @@ UndoManager.prototype = {
 	isenableInfo : function(){ return (this.disinfo==0);},
 
 	enb_btn : function(){
-		if(!this.ope.length){
-			$("#btnundo").attr("disabled","true");
-			$("#btnredo").attr("disabled","true");
-		}
-		else{
-			if(!this.current){ $("#btnundo").attr("disabled","true");}
-			else{ $("#btnundo").attr("disabled","");}
-
-			if(this.current==this.ope.length){ $("#btnredo").attr("disabled","true");}
-			else{ $("#btnredo").attr("disabled","");}
-		}
+		ee('btnundo').el.disabled = ((!this.ope.length || this.current==0)               ? 'true' : '');
+		ee('btnredo').el.disabled = ((!this.ope.length || this.current==this.ope.length) ? 'true' : '');
 	},
 	allerase : function(){
 		for(var i=this.ope.length-1;i>=0;i--){ this.ope.pop();}
@@ -94,7 +85,7 @@ UndoManager.prototype = {
 
 		// 前回と同じ場所なら前回の更新のみ
 		if(lastid>=0 && this.ope[lastid].obj == obj && this.ope[lastid].property == property && this.ope[lastid].id == id && this.ope[lastid].num == old
-			&& this.disCombine==0 && ( (obj == 'cell' && ( property=='qnum' || (property=='qans' && k.isAnsNumber) )) || obj == 'cross')
+			&& this.disCombine==0 && ( (obj == k.CELL && ( property==k.QNUM || (property==k.QANS && k.isAnsNumber) )) || obj == k.CROSS)
 		)
 		{
 			this.ope[lastid].num = num;
@@ -105,16 +96,16 @@ UndoManager.prototype = {
 			if(this.chainflag==0){ this.chainflag = 1;}
 		}
 
-		if(property!='qsub' && property!='color'){ this.anscount++;}
+		if(property!=k.QSUB){ this.anscount++;}
 		this.changeflag = true;
 		this.enb_btn();
 	},
 	addObj : function(type, id){
 		var old, obj;
-		if     (type=='cell')  { old = new Cell();   obj = bd.cell[id];  }
-		else if(type=='cross') { old = new Cross();  obj = bd.cross[id]; }
-		else if(type=='border'){ old = new Border(); obj = bd.border[id];}
-		else if(type=='excell'){ old = new Cell();   obj = bd.excell[id];}
+		if     (type==k.CELL)  { old = new Cell();   obj = bd.cell[id];  }
+		else if(type==k.CROSS) { old = new Cross();  obj = bd.cross[id]; }
+		else if(type==k.BORDER){ old = new Border(); obj = bd.border[id];}
+		else if(type==k.EXCELL){ old = new Cell();   obj = bd.excell[id];}
 		for(var i in obj){ old[i] = obj[i];}
 		this.addOpe(type, type, id, old, null);
 	},
@@ -130,13 +121,17 @@ UndoManager.prototype = {
 		this.undoExec = true;
 		this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
 		this.disableRecord();
+
 		while(this.current>0){
-			this.exec(this.ope[this.current-1], this.ope[this.current-1].old);
-			if(this.ope[this.current-1].property!='qsub' && this.ope[this.current-1].property!='color'){ this.anscount--;}
+			var ope = this.ope[this.current-1];
+
+			this.exec(ope, ope.old);
+			if(ope.property!=k.QSUB){ this.anscount--;}
 			this.current--;
 
 			if(!this.ope[this.current].chain){ break;}
 		}
+
 		this.postproc();
 		this.undoExec = false;
 		if(this.current==0){ kc.inUNDO=false;}
@@ -146,13 +141,17 @@ UndoManager.prototype = {
 		this.redoExec = true;
 		this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
 		this.disableRecord();
+
 		while(this.current<this.ope.length){
-			this.exec(this.ope[this.current], this.ope[this.current].num);
-			if(this.ope[this.current].property!='qsub' && this.ope[this.current].property!='color'){ this.anscount++;}
+			var ope = this.ope[this.current];
+
+			this.exec(ope, ope.num);
+			if(ope.property!=k.QSUB){ this.anscount++;}
 			this.current++;
 
 			if(this.current<this.ope.length && !this.ope[this.current].chain){ break;}
 		}
+
 		this.postproc();
 		this.redoExec = false;
 		if(this.ope.length==0){ kc.inREDO=false;}
@@ -162,7 +161,7 @@ UndoManager.prototype = {
 			this.reqReset=false;
 
 			bd.setposAll();
-			base.resetInfo();
+			base.resetInfo(false);
 			base.resize_canvas();
 		}
 		else{
@@ -174,48 +173,45 @@ UndoManager.prototype = {
 	},
 	exec : function(ope, num){
 		var pp = ope.property;
-		if(ope.obj == 'cell'){
-			if     (pp == 'ques'){ bd.sQuC(ope.id, num);}
-			else if(pp == 'qnum'){ bd.sQnC(ope.id, num);}
-			else if(pp == 'direc'){ bd.sDiC(ope.id, num);}
-			else if(pp == 'qans'){ bd.sQaC(ope.id, num);}
-			else if(pp == 'qsub'){ bd.sQsC(ope.id, num);}
-			else if(pp == 'numobj'){ bd.cell[ope.id].numobj = num;}
-			else if(pp == 'numobj2'){ bd.cell[ope.id].numobj2 = num;}
-			else if(pp == 'cell' && !!num){ bd.cell[ope.id] = num;}
+		if(ope.obj == k.CELL){
+			if     (pp == k.QUES){ bd.sQuC(ope.id, num);}
+			else if(pp == k.QNUM){ bd.sQnC(ope.id, num);}
+			else if(pp == k.DIREC){ bd.sDiC(ope.id, num);}
+			else if(pp == k.QANS){ bd.sQaC(ope.id, num);}
+			else if(pp == k.QSUB){ bd.sQsC(ope.id, num);}
+			else if(pp == k.CELL && !!num){ bd.cell[ope.id] = num;}
 			this.paintStack(bd.cell[ope.id].cx, bd.cell[ope.id].cy, bd.cell[ope.id].cx, bd.cell[ope.id].cy);
 		}
-		else if(ope.obj == 'excell'){
-			if     (pp == 'qnum'){ bd.sQnE(ope.id, num);}
-			else if(pp == 'direc'){ bd.sDiE(ope.id, num);}
-			else if(pp == 'excell' && !!num){ bd.excell[ope.id] = num;}
+		else if(ope.obj == k.EXCELL){
+			if     (pp == k.QNUM){ bd.sQnE(ope.id, num);}
+			else if(pp == k.DIREC){ bd.sDiE(ope.id, num);}
+			else if(pp == k.EXCELL && !!num){ bd.excell[ope.id] = num;}
 		}
-		else if(ope.obj == 'cross'){
-			if     (pp == 'ques'){ bd.sQuX(ope.id, num);}
-			else if(pp == 'qnum'){ bd.sQnX(ope.id, num);}
-			else if(pp == 'numobj'){ bd.cross[ope.id].numobj = num;}
-			else if(pp == 'cross' && !!num){ bd.cross[ope.id] = num;}
+		else if(ope.obj == k.CROSS){
+			if     (pp == k.QUES){ bd.sQuX(ope.id, num);}
+			else if(pp == k.QNUM){ bd.sQnX(ope.id, num);}
+			else if(pp == k.CROSS && !!num){ bd.cross[ope.id] = num;}
 			this.paintStack(bd.cross[ope.id].cx-1, bd.cross[ope.id].cy-1, bd.cross[ope.id].cx, bd.cross[ope.id].cy);
 		}
-		else if(ope.obj == 'border'){
-			if     (pp == 'ques'){ bd.sQuB(ope.id, num);}
-			else if(pp == 'qnum'){ bd.sQnB(ope.id, num);}
-			else if(pp == 'qans'){ bd.sQaB(ope.id, num);}
-			else if(pp == 'qsub'){ bd.sQsB(ope.id, num);}
-			else if(pp == 'line'){ bd.sLiB(ope.id, num);}
-			else if(pp == 'border' && !!num){ bd.border[ope.id] = num;}
+		else if(ope.obj == k.BORDER){
+			if     (pp == k.QUES){ bd.sQuB(ope.id, num);}
+			else if(pp == k.QNUM){ bd.sQnB(ope.id, num);}
+			else if(pp == k.QANS){ bd.sQaB(ope.id, num);}
+			else if(pp == k.QSUB){ bd.sQsB(ope.id, num);}
+			else if(pp == k.LINE){ bd.sLiB(ope.id, num);}
+			else if(pp == k.BORDER && !!num){ bd.border[ope.id] = num;}
 			this.paintBorder(ope.id);
 		}
-		else if(ope.obj == 'board'){
+		else if(ope.obj == k.BOARD){
 			this.disableInfo();
-			if     (pp == 'expandup'){ if(num==1){ menu.ex.expand('up');}else{ menu.ex.reduce('up');} }
-			else if(pp == 'expanddn'){ if(num==1){ menu.ex.expand('dn');}else{ menu.ex.reduce('dn');} }
-			else if(pp == 'expandlt'){ if(num==1){ menu.ex.expand('lt');}else{ menu.ex.reduce('lt');} }
-			else if(pp == 'expandrt'){ if(num==1){ menu.ex.expand('rt');}else{ menu.ex.reduce('rt');} }
-			else if(pp == 'reduceup'){ if(num==1){ menu.ex.reduce('up');}else{ menu.ex.expand('up');} }
-			else if(pp == 'reducedn'){ if(num==1){ menu.ex.reduce('dn');}else{ menu.ex.expand('dn');} }
-			else if(pp == 'reducelt'){ if(num==1){ menu.ex.reduce('lt');}else{ menu.ex.expand('lt');} }
-			else if(pp == 'reducert'){ if(num==1){ menu.ex.reduce('rt');}else{ menu.ex.expand('rt');} }
+			if     (pp == 'expandup'){ if(num==1){ menu.ex.expand(k.UP);}else{ menu.ex.reduce(k.UP);} }
+			else if(pp == 'expanddn'){ if(num==1){ menu.ex.expand(k.DN);}else{ menu.ex.reduce(k.DN);} }
+			else if(pp == 'expandlt'){ if(num==1){ menu.ex.expand(k.LT);}else{ menu.ex.reduce(k.LT);} }
+			else if(pp == 'expandrt'){ if(num==1){ menu.ex.expand(k.RT);}else{ menu.ex.reduce(k.RT);} }
+			else if(pp == 'reduceup'){ if(num==1){ menu.ex.reduce(k.UP);}else{ menu.ex.expand(k.UP);} }
+			else if(pp == 'reducedn'){ if(num==1){ menu.ex.reduce(k.DN);}else{ menu.ex.expand(k.DN);} }
+			else if(pp == 'reducelt'){ if(num==1){ menu.ex.reduce(k.LT);}else{ menu.ex.expand(k.LT);} }
+			else if(pp == 'reducert'){ if(num==1){ menu.ex.reduce(k.RT);}else{ menu.ex.expand(k.RT);} }
 
 			else if(pp == 'flipy'){ menu.ex.turnflip(1,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});}
 			else if(pp == 'flipx'){ menu.ex.turnflip(2,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});}
@@ -233,12 +229,12 @@ UndoManager.prototype = {
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
 		if(bd.border[id].cx%2==1){
-			this.paintStack(mf((bd.border[id].cx-1)/2)-1, mf(bd.border[id].cy/2)-1,
-							mf((bd.border[id].cx-1)/2)+1, mf(bd.border[id].cy/2)   );
+			this.paintStack(((bd.border[id].cx-1)>>1)-1, (bd.border[id].cy>>1)-1,
+							((bd.border[id].cx-1)>>1)+1, (bd.border[id].cy>>1)   );
 		}
 		else{
-			this.paintStack(mf(bd.border[id].cx/2)-1, mf((bd.border[id].cy-1)/2)-1,
-							mf(bd.border[id].cx/2)  , mf((bd.border[id].cy-1)/2)+1 );
+			this.paintStack((bd.border[id].cx>>1)-1, ((bd.border[id].cy-1)>>1)-1,
+							(bd.border[id].cx>>1)  , ((bd.border[id].cy-1)>>1)+1 );
 		}
 	},
 	paintStack : function(x1,y1,x2,y2){

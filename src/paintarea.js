@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ペイントエリア版 paintarea.js v3.2.2
+// パズル固有スクリプト部 ペイントエリア版 paintarea.js v3.2.3
 //
 Puzzles.paintarea = function(){ };
 Puzzles.paintarea.prototype = {
@@ -54,40 +54,42 @@ Puzzles.paintarea.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed(x,y);}
-			else if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3) this.inputtile(x,y);
+		mv.mousedown = function(){
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
+			else if(k.editmode) this.inputborder();
+			else if(k.playmode) this.inputtile();
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.mode==1){
-					if(!kp.enabled()){ this.inputqnum(x,y,4);}
-					else{ kp.display(x,y);}
+				if(k.editmode){
+					if(!kp.enabled()){ this.inputqnum();}
+					else{ kp.display();}
 				}
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3) this.inputtile(x,y);
+		mv.mousemove = function(){
+			if     (k.editmode) this.inputborder();
+			else if(k.playmode) this.inputtile();
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,4);
+			this.key_inputqnum(ca);
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(1, true, false, '');
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,4);
+				kc.key_inputqnum(ca);
 			};
 		}
+
+		bd.maxnum = 4;
 	},
 
 	//---------------------------------------------------------
@@ -95,11 +97,12 @@ Puzzles.paintarea.prototype = {
 	graphic_init : function(){
 		pc.bcolor = pc.bcolor_GREEN;
 		pc.BBcolor = "rgb(127, 127, 127)";
+		pc.setBGCellColorFunc('qans1');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawWhiteCells(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
@@ -109,9 +112,9 @@ Puzzles.paintarea.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			this.drawBoxBorders(x1-1,y1-1,x2+1,y2+1,0);
+			this.drawBoxBorders(x1,y1,x2,y2,true);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 
@@ -139,7 +142,7 @@ Puzzles.paintarea.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( k.callmode=="pmake" && !this.checkSameObjectInRoom(area.getRoomInfo(), function(c){ return (bd.isBlack(c)?1:2);}) ){
+			if( k.EDITOR && !this.checkSameObjectInRoom(area.getRoomInfo(), function(c){ return (bd.isBlack(c)?1:2);}) ){
 				this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both balck and white cells.'); return false;
 			}
 
@@ -151,7 +154,7 @@ Puzzles.paintarea.prototype = {
 				this.setAlert('2x2の黒マスのかたまりがあります。','There is a 2x2 block of black cells.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)!=this.checkdir4Cell(c,bd.isBlack));}.bind(this)) ){
+			if( !this.checkAllCell(ee.binder(this, function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)!=this.checkdir4Cell(c,bd.isBlack));})) ){
 				this.setAlert('数字の上下左右にある黒マスの数が間違っています。','The number is not equal to the number of black cells in four adjacent cells.'); return false;
 			}
 

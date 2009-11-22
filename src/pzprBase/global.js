@@ -1,4 +1,4 @@
-// global.js v3.2.2
+// global.js v3.2.3
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -48,11 +48,13 @@ var k = {
 
 	// 内部で自動的に設定されるグローバル変数
 	puzzleid  : '',			// パズルのID("creek"など)
-	callmode  : 'pmake',	// 'pmake':エディタ 'pplay':player
-	mode      : 3,			// 1:問題配置モード 3:回答モード
 	use       : 1,			// 操作方法
-	irowake   : 0,			// 線の色分けをするかしないか
 	widthmode : 2,			// Canvasの横幅をどうするか
+
+	EDITOR    : true,		// エディタモード
+	PLAYER    : false,		// playerモード
+	editmode  : true,		// 問題配置モード
+	playmode  : false,		// 回答モード
 
 	enableKey   : true,		// キー入力は有効か
 	enableMouse : true,		// マウス入力は有効か
@@ -63,7 +65,7 @@ var k = {
 
 	p0       : new Pos(this.def_psize, this.def_psize),	// Canvas中での盤面の左上座標
 	cv_oft   : new Pos(0, 0),	// Canvasのwindow内での左上座標
-	IEMargin : new Pos(4, 4),	// マウス入力等でずれる件のmargin
+	IEMargin : new Pos(2, 2),	// マウス入力等でずれる件のmargin
 
 	br:{
 		IE    : !!(window.attachEvent && !window.opera),
@@ -72,99 +74,441 @@ var k = {
 		Gecko : navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1,
 		WinWebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1
 	},
-	scriptcheck : false	// 内部用
-};
+	vml : !!(window.attachEvent && !window.opera) && !uuMeta.slver,
 
+	// const値
+	BOARD  : 'board',
+	CELL   : 'cell',
+	CROSS  : 'cross',
+	BORDER : 'border',
+	EXCELL : 'excell',
+
+	QUES  : 'ques',
+	QNUM  : 'qnum',
+	DIREC : 'direc',
+	QANS  : 'qans',
+	LINE  : 'line',
+	QSUB  : 'qsub',
+
+	UP : 1,		// up
+	DN : 2,		// down
+	LT : 3,		// left
+	RT : 4,		// right
+
+	KEYUP : 'up',
+	KEYDN : 'down',
+	KEYLT : 'left',
+	KEYRT : 'right',
+
+	// for_test.js用
+	scriptcheck : false
+};
+k.IEMargin = (k.br.IE ? k.IEMargin : new Pos(0,0));
+
+//---------------------------------------------------------------------------
+// ★その他のグローバル変数
+//---------------------------------------------------------------------------
 var g;				// グラフィックコンテキスト
 var Puzzles = [];	// パズル個別クラス
+var _doc = document;
 
 //---------------------------------------------------------------------------
 // ★共通グローバル関数
+// mf()            小数点以下を切捨てる(旧int())
+// f_true()        trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
 //---------------------------------------------------------------------------
-	//---------------------------------------------------------------------------
-	// newEL(tag)      新しいtagのHTMLエレメントを表すjQueryオブジェクトを作成する
-	// unselectable()  jQueryオブジェクトを文字列選択不可にする(メソッドチェーン記述用)
-	// getSrcElement() イベントを起こしたエレメントを返す
-	// mf()            小数点以下を切捨てる(旧int())
-	// f_true()        trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
-	//---------------------------------------------------------------------------
-function newEL(tag){ return $(document.createElement(tag));}
-$.fn.unselectable = function(){
-	if     (k.br.Gecko) { this.css("-moz-user-select","none"  ).css("user-select","none");}
-	else if(k.br.WebKit){ this.css("-khtml-user-select","none").css("user-select","none");}
-	else{ this.attr("unselectable", "on");}
-	return this;
-};
-function getSrcElement(event){ return event.target || event.srcElement;}
-
 var mf = Math.floor;
 function f_true(){ return true;}
 
-	//---------------------------------------------------------------------------
-	// toArray()         配列にする(bindで使う)
-	// Function.bind()   thisを関数に紐付けする
-	// Function.ebind()  thisを関数に紐付けする(イベント用)
-	// Function.kcbind() thisを関数に紐付けする(キーボードイベント用)
-	//---------------------------------------------------------------------------
-function toArray(inp){ var args=[]; for(var i=0;i<inp.length;i++){ args[i] = inp[i];} return args;}
+//---------------------------------------------------------------------------
+// ★ElementManagerクラス Element関係の処理
+//    ee() 指定したidのElementExtを取得する
+//---------------------------------------------------------------------------
+(function(){
 
-Function.prototype.bind = function(){
-	var args=toArray(arguments);
-	var __method = this, obj = args.shift();
-	return function(){ return __method.apply(obj, args.concat(toArray(arguments)));}
-};
-Function.prototype.ebind = function(){
-	var args=toArray(arguments);
-	var __method = this, obj = args.shift();
-	return function(e){ return __method.apply(obj, [e||window.event].concat(args).concat(toArray(arguments)));}
-};
-Function.prototype.kcbind = function(){
-	var args=toArray(arguments), __method = this;
-	return function(e){
-		ret = __method.apply(kc, [e||window.event].concat(args).concat(toArray(arguments)));
-		if(kc.tcMoved){ if(k.br.Gecko||k.br.WebKit){ e.preventDefault();}else if(k.br.IE){ return false;}else{ e.returnValue = false;} }
-		return ret;
+// definition
+var
+	// local scope
+	_doc = document,
+	_win = this,
+
+	// browsers
+	_IE     = k.br.IE,
+	_Gecko  = k.br.Gecko,
+	_WebKit = k.br.WebKit,
+
+	/* ここからクラス定義です  varでドット付きは、最左辺に置けません */
+
+	// define and map _ElementManager class
+	_ELm = _ElementManager = _win.ee = function(id){
+		if(typeof id === 'string'){
+			if(!_elx[id]){
+				var el = _doc.getElementById(id);
+				if(!el){ return null;}
+				_elx[id] = new _ELx(el);
+			}
+			return _elx[id];
+		}
+
+		var el = id;
+		if(!!el.id){
+			if(!_elx[el.id]){ _elx[el.id] = new _ELx(el);}
+			return _elx[el.id];
+		}
+
+		return ((!!el) ? new _ELx(el) : null);
+	},
+	_elx = _ElementManager._cache    = {},
+	_elp = _ElementManager._template = [],
+	_elpcnt = _ElementManager._tempcnt = 0;
+
+	// define and map _ElementManager.ElementExt class
+	_ELx = _ElementManager.ElementExt = function(el){
+		this.el     = el;
+		this.parent = el.parentNode;
+		this.pdisp  = 'none';
+	},
+	_ELp = _ElementManager.ElementTemplate = function(parent, tag, attr, style, func){
+		this.parent  = parent;
+		this.tagName = tag;
+		this.attr    = attr;
+		this.style   = style;
+		this.func    = func;
+	},
+
+	// Utility functions
+	_extend = function(obj, ads){
+		for(var name in ads){ obj[name] = ads[name];}
+	},
+	_toArray = function(args){
+		if(!args){ return [];}
+		var array = [];
+		for(var i=0,len=args.length;i<len;i++){ array[i]=args[i];}
+		return array;
+	}
+;
+
+// implementation of _ElementManage class
+_extend( _ElementManager, {
+
+	//----------------------------------------------------------------------
+	// ee.clean()  内部用の変数を初期化する
+	//----------------------------------------------------------------------
+	clean : function(){
+		_elx = null;
+		_elx = {};
+		_elpcnt  = 0;
+		_elp = null;
+		_elp = [];
+	},
+
+	//----------------------------------------------------------------------
+	// ee.addTemplate()  指定した内容のElementTemplateを作成してIDを返す
+	// ee.createEL()     ElementTemplateからエレメントを作成して返す
+	//----------------------------------------------------------------------
+	addTemplate : function(parent, tag, attr_i, style_i, func_i){
+		if(!tag){ return;}
+
+		if(!parent){ parent = null;}
+		else if(typeof parent == 'string'){ parent = ee(parent).el;}
+
+		var attr  = {};
+		var style = (style_i || {});
+		var func  = (func_i  || {});
+
+		if(!!attr_i){
+			for(var name in attr_i){
+				if(name==='unselectable' && attr_i[name]==='on'){
+					if     (_Gecko) { style['UserSelect'] = style['MozUserSelect'] = 'none';}
+					else if(_WebKit){ style['UserSelect'] = style['KhtmlUserSelect'] = 'none';}
+					else{ attr['unselectable'] = 'on';}
+				}
+				else{ attr[name] = attr_i[name];}
+			}
+		}
+
+		_elp[_elpcnt++] = new _ELp(parent, tag, attr, style, func_i);
+		return (_elpcnt-1);
+	},
+	createEL : function(tid, id){
+		if(!_elp[tid]){ return null;}
+
+		var temp = _elp[tid];
+		var el = _doc.createElement(temp.tagName);
+		if(!!temp.parent){ temp.parent.appendChild(el);}
+
+		if(!!id){ el.id = id;}
+		for(var name in temp.attr) { el[name]       = temp.attr[name]; }
+		for(var name in temp.style){ el.style[name] = temp.style[name];}
+		for(var name in temp.func) { el["on"+name]  = temp.func[name]; }
+		return el;
+	},
+
+	//----------------------------------------------------------------------
+	// ee.getSrcElement() イベントが起こったエレメントを返す
+	// ee.pageX()         イベントが起こったページ上のX座標を返す
+	// ee.pageY()         イベントが起こったページ上のY座標を返す
+	// ee.windowWidth()   ウィンドウの幅を返す
+	// ee.windowHeight()  ウィンドウの高さを返す
+	//----------------------------------------------------------------------
+	getSrcElement : function(e){
+		return e.target || e.srcElement;
+	},
+	pageX : (
+		((!k.br.IE) ?
+			function(e){ return e.pageX;}
+		:
+			function(e){ return e.clientX + (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);}
+		)
+	),
+	pageY : (
+		((!k.br.IE) ?
+			function(e){ return e.pageY;}
+		:
+			function(e){ return e.clientY + (_doc.documentElement.scrollTop  || _doc.body.scrollTop);}
+		)
+	),
+
+	windowWidth : (
+		((_doc.all) ?
+			function(){ return _doc.body.clientWidth;}
+		:(_doc.layers || _doc.getElementById)?
+			function(){ return innerWidth;}
+		:
+			function(){ return 0;}
+		)
+	),
+	windowHeight : (
+		((_doc.all) ?
+			function(){ return _doc.body.clientHeight;}
+		:(_doc.layers || _doc.getElementById)?
+			function(){ return innerHeight;}
+		:
+			function(){ return 0;}
+		)
+	),
+
+	//----------------------------------------------------------------------
+	// ee.binder()   thisをbindする
+	// ee.ebinder()  thisとイベントをbindする
+	// ee.kcbinder() kcとイベントをbindする
+	//----------------------------------------------------------------------
+	binder : function(){
+		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift();
+		return function(){
+			return __method.apply(obj, (args.length>0?args[0]:[]).concat(_toArray(arguments)));
+		}
+	},
+	ebinder : function(){
+		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift(), rest = (args.length>0?args[0]:[]);
+		return function(e){
+			return __method.apply(obj, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
+		}
+	},
+	kcbinder : function(){
+		var args=_toArray(arguments), __method = args.shift(), rest = (args.length>0?args[0]:[]);
+		return function(e){
+			ret = __method.apply(kc, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
+			if(kc.tcMoved){
+				if(_Gecko||_WebKit){ e.preventDefault();}
+				else if(_IE){ return false;}
+				else{ e.returnValue = false;}
+			}
+			return ret;
+		}
+	}
+});
+
+// implementation of _ElementManager.ElementExt class
+_ElementManager.ElementExt.prototype = {
+	//----------------------------------------------------------------------
+	// ee.getRect()   エレメントの四辺の座標を返す
+	// ee.getWidth()  エレメントの幅を返す
+	// ee.getHeight() エレメントの高さを返す
+	//----------------------------------------------------------------------
+	getRect : (
+		((!!document.getBoundingClientRect) ?
+			((!_IE) ?
+				function(){
+					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
+					var left   = rect.left   + _win.scrollX;
+					var top    = rect.top    + _win.scrollY;
+					var right  = rect.right  + _win.scrollX;
+					var bottom = rect.bottom + _win.scrollY;
+					return { top:top, bottom:bottom, left:left, right:right};
+				}
+			:
+				function(){
+					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
+					var left   = rect.left   + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
+					var top    = rect.top    + ((_body.scrollTop  || _html.scrollTop ) - _html.clientTop );
+					var right  = rect.right  + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
+					var bottom = rect.bottom + ((_body.scrollTop  || _html.scrollTop ) - _html.clientTop );
+					return { top:top, bottom:bottom, left:left, right:right};
+				}
+			)
+		:
+			function(){
+				var left = 0, top = 0, el = this.el;
+				while(!!el){
+					left += +(el.offsetLeft || el.clientLeft);
+					top  += +(el.offsetTop  || el.clientTop );
+					el = el.offsetParent;
+				}
+				var right  = left + (this.el.offsetWidth  || this.el.clientWidth);
+				var bottom = top  + (this.el.offsetHeight || this.el.clientHeight);
+				return { top:top, bottom:bottom, left:left, right:right};
+			}
+		)
+	),
+	getWidth  : function(){ return this.el.offsetWidth  || this.el.clientWidth; },
+	getHeight : function(){ return this.el.offsetHeight || this.el.clientHeight;},
+
+	//----------------------------------------------------------------------
+	// ee.unselectable()         エレメントを選択できなくする
+	// ee.replaceChildrenClass() 子要素のクラスを変更する
+	// ee.remove()               エレメントを削除する
+	// ee.removeNextAll()        同じ親要素を持ち、自分より後ろにあるエレメントを削除する
+	//----------------------------------------------------------------------
+	unselectable : (
+		((_Gecko) ?
+			function(){
+				this.el.style.MozUserSelect = 'none';
+				this.el.style.UserSelect    = 'none';
+				return this;
+			}
+		:(_WebKit) ?
+			function(){
+				this.el.style.KhtmlUserSelect = 'none';
+				this.el.style.UserSelect      = 'none';
+				return this;
+			}
+		:
+			function(){
+				this.el.unselectable = "on";
+				return this;
+			}
+		)
+	),
+
+	replaceChildrenClass : function(before, after){
+		var el = this.el.firstChild;
+		while(!!el){
+			if(el.className===before){ el.className = after;}
+			el = el.nextSibling;
+		}
+	},
+
+	remove : function(){
+		this.parent.removeChild(this.el);
+		return this;
+	},
+	removeNextAll : function(targetbase){
+		var el = this.el.lastChild;
+		while(!!el){
+			if(el===targetbase){ break;}
+			if(!!el){ this.el.removeChild(el);}else{ break;}
+
+			el = this.el.lastChild;
+		}
+		return this;
+	},
+
+	//----------------------------------------------------------------------
+	// ee.appendHTML() 指定したHTMLを持つspanエレメントを子要素の末尾に追加する
+	// ee.appendBR()   <BR>を子要素の末尾に追加する
+	// ee.appendEL()   指定したエレメントを子要素の末尾に追加する
+	// ee.appendTo()   自分を指定した親要素の末尾に追加する
+	// ee.insertBefore() エレメントを自分の前に追加する
+	// ee.insertAfter()  エレメントを自分の後ろに追加する
+	//----------------------------------------------------------------------
+	appendHTML : function(html){
+		var sel = _doc.createElement('span');
+		sel.innerHTML = html;
+		this.el.appendChild(sel);
+		return this;
+	},
+	appendBR : function(){
+		this.el.appendChild(_doc.createElement('br'));
+		return this;
+	},
+	appendEL : function(el){
+		this.el.appendChild(el);
+		return this;
+	},
+
+	appendTo : function(elx){
+		elx.el.appendChild(this.el);
+		this.parent = elx.el;
+		return this;
+	},
+
+	insertBefore : function(baseel){
+		this.parent = baseel.parentNode;
+		this.parent.insertBefore(this.el,baseel);
+		return this;
+	},
+	insertAfter : function(baseel){
+		this.parent = baseel.parentNode;
+		this.parent.insertBefore(this.el,baseel.nextSibling);
+		return this;
 	}
 };
+
+})();
 
 //---------------------------------------------------------------------------
 // ★Timerクラス
 //---------------------------------------------------------------------------
 Timer = function(){
-	this.st = 0;	// 最初のタイマー取得値
-	this.TID;		// タイマーID
-	this.lastseconds = 0;
+	// ** 一般タイマー
+	this.TID;				// タイマーID
+	this.timerInterval = (!k.br.IE?100:200);
 
-	this.lastOpeCnt = 0;
-	this.lastACTime = 0;
-	this.worstACCost = 0;
+	this.st       = 0;		// タイマースタート時のgetTime()取得値(ミリ秒)
+	this.current  = 0;		// 現在のgetTime()取得値(ミリ秒)
 
-	this.undoWaitCount = 0;
-	this.undoInterval  = (!k.br.IE?25:50);
-	this.TIDundo = null;
+	// 経過時間表示用変数
+	this.bseconds = 0;		// 前回ラベルに表示した時間(秒数)
+	this.timerEL = ee('timerpanel').el;
 
+	// 自動正答判定用変数
+	this.lastAnsCnt  = 0;	// 前回正答判定した時の、UndoManagerに記録されてた問題/回答入力のカウント
+	this.worstACCost = 0;	// 正答判定にかかった時間の最悪値(ミリ秒)
+	this.nextACtime  = 0;	// 次に自動正答判定ルーチンに入ることが可能になる時間
+
+	// 一般タイマースタート
 	this.start();
+
+	// ** Undoタイマー
+	this.TIDundo = null;	// タイマーID
+	this.undoInterval = (!k.br.IE?25:50);
+
+	// Undo/Redo用変数
+	this.undoStartCount = mf(300/this.undoInterval);	// 1回目にwaitを多く入れるための値
+	this.undoWaitCount = this.undoStartCount;
 };
 Timer.prototype = {
 	//---------------------------------------------------------------------------
-	// tm.reset()      タイマーのカウントを0にする
-	// tm.start()      update()関数を100ms間隔で呼び出す
-	// tm.update()     100ms単位で呼び出される関数
+	// tm.reset()      タイマーのカウントを0にして、スタートする
+	// tm.start()      update()関数を200ms間隔で呼び出す
+	// tm.update()     200ms単位で呼び出される関数
 	//---------------------------------------------------------------------------
 	reset : function(){
-		this.st = 0;
-		this.prev = clearInterval(this.TID);
-		$("#timerpanel").html(this.label()+"00:00");
 		this.worstACCost = 0;
+		this.timerEL.innerHTML = this.label()+"00:00";
+
+		clearInterval(this.TID);
 		this.start();
 	},
 	start : function(){
 		this.st = (new Date()).getTime();
-		this.TID = setInterval(this.update.bind(this), 200);
+		this.TID = setInterval(ee.binder(this, this.update), this.timerInterval);
 	},
 	update : function(){
-		if(k.callmode!='pmake'){ this.updatetime();}
+		this.current = (new Date()).getTime();
 
+		if(k.PLAYER){ this.updatetime();}
 		if(k.autocheck){ this.ACcheck();}
 	},
 
@@ -173,8 +517,7 @@ Timer.prototype = {
 	// tm.label()      経過時間に表示する文字列を返す
 	//---------------------------------------------------------------------------
 	updatetime : function(){
-		var nowtime = (new Date()).getTime();
-		var seconds = mf((nowtime - this.st)/1000);
+		var seconds = mf((this.current - this.st)/1000);
 		if(this.bseconds == seconds){ return;}
 
 		var hours   = mf(seconds/3600);
@@ -184,8 +527,7 @@ Timer.prototype = {
 		if(minutes < 10) minutes = "0" + minutes;
 		if(seconds < 10) seconds = "0" + seconds;
 
-		if(hours) $("#timerpanel").html(this.label()+hours+":"+minutes+":"+seconds);
-		else $("#timerpanel").html(this.label()+minutes+":"+seconds);
+		this.timerEL.innerHTML = [this.label(), (!!hours?hours+":":""), minutes, ":", seconds].join('');
 
 		this.bseconds = seconds;
 	},
@@ -197,14 +539,12 @@ Timer.prototype = {
 	// tm.ACcheck()    自動正解判定を呼び出す
 	//---------------------------------------------------------------------------
 	ACcheck : function(){
-		var nowms = (new Date()).getTime();
-		var ACint = 120+(this.worstACCost<250?this.worstACCost*4:this.worstACCost*2+500);
-		if(nowms - this.lastACTime > ACint && this.lastOpeCnt != um.anscount && !ans.inCheck){
-			this.lastACTime = nowms;
-			this.lastOpeCnt = um.anscount;
+		if(this.current>this.nextACtime && this.lastAnsCnt!=um.anscount && !ans.inCheck){
+			this.lastAnsCnt = um.anscount;
+			if(!ans.autocheck()){ return;}
 
-			var comp = ans.autocheck();
-			if(!comp){ this.worstACCost = Math.max(this.worstACCost, ((new Date()).getTime()-nowms));}
+			this.worstACCost = Math.max(this.worstACCost, ((new Date()).getTime()-this.current));
+			this.nextACtime = this.current + (this.worstACCost<250 ? this.worstACCost*4+120 : this.worstACCost*2+620);
 		}
 	},
 
@@ -214,8 +554,8 @@ Timer.prototype = {
 	// tm.procUndo()        Undo/Redo呼び出しを実行する
 	//---------------------------------------------------------------------------
 	startUndoTimer : function(){
-		this.undoWaitCount = mf(200/this.undoInterval);
-		if(!this.TIDundo){ this.TIDundo = setInterval(this.procUndo.bind(this), this.undoInterval);}
+		this.undoWaitCount = this.undoStartCount;
+		if(!this.TIDundo){ this.TIDundo = setInterval(ee.binder(this, this.procUndo), this.undoInterval);}
 
 		if     (kc.inUNDO){ um.undo();}
 		else if(kc.inREDO){ um.redo();}
@@ -228,15 +568,9 @@ Timer.prototype = {
 	},
 
 	procUndo : function(){
-		if(!kc.isCTRL){ this.stopUndoTimer(); return;}
-
-		if(this.undoWaitCount>0){
-			if(kc.inUNDO || kc.inREDO){ this.undoWaitCount--;}
-			return;
-		}
-
-		if     (kc.inUNDO){ um.undo();}
+		if(!kc.isCTRL || (!kc.inUNDO && !kc.inREDO)){ this.stopUndoTimer();}
+		else if(this.undoWaitCount>0)               { this.undoWaitCount--;}
+		else if(kc.inUNDO){ um.undo();}
 		else if(kc.inREDO){ um.redo();}
-		else{ this.undoWaitCount = mf(300/this.undoInterval);}
 	}
 };

@@ -1,39 +1,50 @@
 
 our $debug = 0;
-our $version = 'v3.2.0p1';
+our $filech = 1;
+our $version = 'v3.2.3';
 
 &main();
+exit(0);
 
 sub main{
 	&input_flags();
 
-	if(!$debug){ 
-		open LOG, ">contents.txt";
-		print LOG "pzprBase.js $version contents\n";
-		close LOG;
-	}
+	if($filech==1){
+		if(!$debug){
+			&eraseLOG();
+			&printLOG("pzprBase.js $version contents\n");
+		}
 
-	&output_doc("document_tmp.txt");
-	&output_pzprBase();
-	&output_puzzles();
+		&output_pzprBase();
+		if(!$debug){
+			&output_puzzles(); # contents.txtにファイル名出力するだけ
+		}
+	}
+	elsif($filech==2){
+		&output_puzzles();
+	}
 }
 
 sub input_flags{
-	my $cons;
+	print "どのファイルを出力しますか？ 1:pzprBase.js 2:puzzles.js [1] ";
+	$_ = <STDIN>; tr/\r\n//d;
+	if(/2/){ $filech=2;}
 
 	print "リリース用のファイルを出力しますか？[y] ";
-	$cons = <STDIN>;
-	$cons =~ tr/\r\n//d;
-	if($cons =~ /n/i){ $debug=1;}
+	$_ = <STDIN>; tr/\r\n//d;
+	if(/n/i){ $debug=1;}
 
 	print "バージョンを入力してください[$version] ";
-	$cons = <STDIN>;
-	$cons =~ tr/\r\n//d;
-	if($cons){ $version = $cons;}
+	$_ = <STDIN>; tr/\r\n//d;
+	if($_){
+		$version = $_;
+		$version =~ s/\[a\]/α/g;
+		$version =~ s/\[b\]/β/g;
+	}
 }
 
 sub output_pzprBase{
-	@files1 = (
+	my @files = (
 		'global.js',
 		'Board.js',
 		'Graphic.js',
@@ -49,37 +60,35 @@ sub output_pzprBase{
 		'Main.js'
 	);
 
-	open OUT, ">pzprBase_Full_tmp.js";
+	open OUT, ">pzprBase_body_Full.js";
 	if($debug){
 		print OUT "// pzplBase.js テスト用\n";
 	}
 	print OUT "\nvar pzprversion=\"$version\";\n";
-	&printfiles(\@files1,1);
+	&printfiles(\@files,1);
 	close OUT;
 
 	if(!$debug){
-		system("java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar -o ./pzprBase_tmp.js ./pzprBase_Full_tmp.js");
-		system("copy /Y /B .\\document_tmp.txt + .\\pzprBase_tmp.js .\\pzprBase.js");
-		system("copy /Y /B .\\document_tmp.txt + .\\pzprBase_Full_tmp.js .\\pzprBase_Full.js");
+		&output_doc("notices.txt");
 
-		unlink("pzprBase_tmp.js");
-		unlink("pzprBase_Full_tmp.js");
-		unlink("document_tmp.txt");
+		system("java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar -o ./pzprBase_body.js ./pzprBase_body_Full.js");
+		system("copy /Y /B .\\notices.txt + .\\pzprBase_body.js ..\\pzprBase.js");
+		system("copy /Y /B .\\notices.txt + .\\pzprBase_body_Full.js ..\\pzprBase_Full.js");
 
-		@fl = ('pzprBase.js','pzprBase_Full.js');
-		foreach(@fl){ system("copy /Y .\\$_ .."); unlink($_);}
+		unlink("notices.txt");
+		unlink("pzprBase_body.js");
+		unlink("pzprBase_body_Full.js");
 	}
 	else{
-		system("copy /Y .\\pzprBase_Full_tmp.js ..\\pzprBase.js");
-		unlink("pzprBase_Full_tmp.js");
-		unlink("document_tmp.txt");
+		system("copy /Y .\\pzprBase_body_Full.js ..\\pzprBase.js");
+		unlink("pzprBase_body_Full.js");
 	}
 }
 
 sub output_puzzles{
-	@files2 = ();
+	my @files = ();
 	opendir PAR, "../";
-	while($file = readdir PAR){
+	while(my $file = readdir PAR){
 		if($file !~ /\.js$/){ next;}
 		if($file =~ /p\d+\.js$/){ next;}
 		if($file =~ /pzprBase/){ next;}
@@ -91,19 +100,26 @@ sub output_puzzles{
 		if($file =~ /gears_init\.js/){ next;}
 		if($file =~ /for_test\.js/){ next;}
 
-		push @files2, "../$file";
+		push @files, "../$file";
 	}
 	closedir PAR;
+	if($filech==1){
+		&printfiles(\@files,3);
+		return;
+	}
 
 	open OUT, ">puzzles_Full.js";
-	&printfiles(\@files2,2);
+	&printfiles(\@files,2);
 	close OUT;
 
 	if(!$debug){
 		system("java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar -o ./puzzles.js ./puzzles_Full.js");
 
-		@fl = ('puzzles.js','puzzles_Full.js');
-		foreach(@fl){ system("copy /Y .\\$_ .."); unlink($_);}
+		system("copy /Y .\\puzzles.js ..");
+		system("copy /Y .\\puzzles_Full.js ..");
+
+		unlink("puzzles.js");
+		unlink("puzzles_Full.js");
 	}
 	else{
 		system("copy /Y .\\puzzles_Full.js ..\\puzzles.js");
@@ -129,9 +145,7 @@ sub output_doc{
  * \@version $version
  * \@date    $datestr
  * 
- * This script uses following libraries.
- *  jquery.js (version 1.3.2)
- *  http://jquery.com/
+ * This script uses following library.
  *  uuCanvas.js (version 1.0)
  *  http://code.google.com/p/uupaa-js-spinoff/	uupaa.js SpinOff Project Home(Google Code)
  * 
@@ -146,37 +160,75 @@ EOR
 	close DOC;
 }
 
+# ファイル出力関数
 sub printfiles{
 	my @files = @{$_[0]};
-	my $l=0;
-	if(!$debug){ open LOG, ">>contents.txt"; print LOG "\n";}
+	my $type = $_[1];
+
+	if(!$debug and $filech==1){ &printLOG("\n");}
+
 	foreach(@files){
-		if(!$debug){
-			open SRC, $_;
-			if($_[1]==1){
-				my $sline = <SRC>;
-				$sline =~ /\/\/ +([^ ]+) +([^ \r\n]+)[\r\n]*/;
-				print("$1 $2\n");
-				printf(LOG "%-14s %-s\n",$1,$2);
-			}
-			elsif($_[1]==2){
-				my $sline = <SRC>; print OUT $sline;
-				$sline = <SRC>;
-				$sline =~ /(\w+\.js) +([^ \r\n]+)[\r\n]*/;
-				print("$1 $2\n");
-				printf(LOG "%-14s %-s\n",$1,$2);
-				print OUT $sline;
-				$sline = <SRC>; print OUT $sline;
-			}
+		my $filename = $_;
+
+		if($debug){
+			print OUT "document.writeln(\"<script type=\\\"text/javascript\\\" src=\\\"src/pzprBase/$_\\\"></script>\");\n";
+			next;
+		}
+
+		# header部の処理 => バージョンを取得する
+		if($type!=2){
+			my @val = &get_version($filename, $type);
+			&printLOG(sprintf("%-14s %-s\n",@val));
+
+			# $typeが3なら、バージョンだけ書き出して終了
+			if($type==3){ next;}
+		}
+
+		# 実際の出力部
+		open SRC, $filename;
+		{
+			if($type==1){ <SRC>;}	# pzprBaseのファイルはヘッダ部を出力しない
+
+			# 変換をかけたい場合は、、この中に変換処理を入れるべし
 			while(<SRC>){
 				my $sline = $_;
 				print OUT $sline;
 			}
-			close SRC;
 		}
-		else{
-			print OUT "document.writeln(\"<script type=\\\"text/javascript\\\" src=\\\"src/pzprBase/$_\\\"></script>\");\n";
-		}
+		close SRC;
 	}
-	if(!$debug){ close LOG;}
+}
+
+# バージョン取得用関数
+sub get_version{
+	my($filename, $type) = @_;
+	my $sline = '';
+	my @ret = ();
+
+	open SRC, $filename;
+	# pzprBaseフォルダのファイルはversionが1行目
+	if($type == 1){
+		$_ = <SRC>;
+		/\/\/ +([^ ]+) +([^ \r\n]+)[\r\n]*/;
+		@ret = ($1,$2);
+	}
+	# puzzlesのファイルはversionが2行目
+	elsif($type == 3){
+		<SRC>; $_ = <SRC>;
+		/(\w+\.js) +([^ \r\n]+)[\r\n]*/;
+		@ret = ($1,$2);
+	}
+	close SRC;
+
+	return @ret;
+}
+
+sub eraseLOG{
+	open LOG, ">contents.txt";
+	close LOG;
+}
+sub printLOG{
+	open LOG, ">>contents.txt";
+	printf(LOG $_[0]);
+	close LOG;
 }

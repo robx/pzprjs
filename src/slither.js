@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スリザーリンク版 slither.js v3.2.2
+// パズル固有スクリプト部 スリザーリンク版 slither.js v3.2.3
 //
 Puzzles.slither = function(){ };
 Puzzles.slither.prototype = {
@@ -53,27 +53,27 @@ Puzzles.slither.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1){
-				if(!kp.enabled()){ this.inputqnum(x,y,3);}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+			else if(k.playmode){
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode){
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 		// BAGの関数が残りっぱなしですね...
-		mv.inputBGcolor = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+/*		mv.inputBGcolor = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell){ return;}
 			if(this.inputData==-1){
 				if     (bd.QsC(cc)==0){ this.inputData=1;}
@@ -86,20 +86,20 @@ Puzzles.slither.prototype = {
 
 			pc.paintCell(cc);
 		};
-
+*/
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,3);
+			this.key_inputqnum(ca);
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,3);
+				kc.key_inputqnum(ca);
 			};
 			kp.kpgenerate = function(mode){
 				this.inputcol('num','knum0','0','0');
@@ -111,29 +111,30 @@ Puzzles.slither.prototype = {
 				this.inputcol('num','knum.','-','?');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 		}
+
+		bd.maxnum = 3;
 	},
 
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.crosssize = 0.05;
+		//pc.setBGCellColorFunc('qsub2'); // BAGの残り
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBordersAsLine(x1,y1,x2,y2);
 
 			this.drawBaseMarks(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
-			if(k.br.IE){ this.drawPekes(x1,y1,x2,y2,1);}
-			else{ this.drawPekes(x1,y1,x2,y2,0);}
+			this.drawPekes(x1,y1,x2,y2,(k.br.IE?1:0));
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawBaseMarks = function(x1,y1,x2,y2){
@@ -147,15 +148,18 @@ Puzzles.slither.prototype = {
 			this.vinc();
 		};
 		pc.drawBaseMark1 = function(i){
-			var lw = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3); //LineWidth
-			var csize = mf((lw+1)/2);
-
-			var cx = i%(k.qcols+1), cy = mf(i/(k.qcols+1));
+			var vid = "x_cm_"+i;
 
 			g.fillStyle = this.Cellcolor;
-			g.beginPath();
-			g.arc(k.p0.x+cx*k.cwidth, k.p0.x+cy*k.cheight, csize, 0, Math.PI*2, false);
-			if(this.vnop("x"+i+"_cm_",1)){ g.fill();}
+			if(this.vnop(vid,1)){
+				var lw = ((k.cwidth/12)>=3?(k.cwidth/12):3); //LineWidth
+				var csize = mf((lw+1)/2);
+				var cx = i%(k.qcols+1); var cy = mf(i/(k.qcols+1));
+
+				g.beginPath();
+				g.arc(k.p0.x+cx*k.cwidth, k.p0.x+cy*k.cheight, csize, 0, Math.PI*2, false);
+				g.fill();
+			}
 		};
 
 		line.repaintParts = function(id){

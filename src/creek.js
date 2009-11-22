@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クリーク版 creek.js v3.2.2
+// パズル固有スクリプト部 クリーク版 creek.js v3.2.3
 //
 Puzzles.creek = function(){ };
 Puzzles.creek.prototype = {
@@ -53,28 +53,28 @@ Puzzles.creek.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==3) this.inputcell(x,y);
-			else if(k.mode==1){
-				if(!kp.enabled()){ this.inputcross(x,y);}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(k.playmode) this.inputcell();
+			else if(k.editmode){
+				if(!kp.enabled()){ this.inputcross();}
+				else{ kp.display();}
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3) this.inputcell(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode) this.inputcell();
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCross(ca)){ return;}
 			this.key_inputcross(ca,4);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(4, true, false, '');
-			kp.ctl[1].target = "cross";
+			kp.ctl[1].target = k.CROSS;
 			kp.kpinput = function(ca){
 				kc.key_inputcross(ca,4);
 			};
@@ -91,6 +91,7 @@ Puzzles.creek.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.Cellcolor = "rgb(96, 96, 96)";
+		pc.setBGCellColorFunc('qans1');
 
 		pc.crosssize = 0.35;
 
@@ -98,14 +99,18 @@ Puzzles.creek.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawBlackCells(x1,y1,x2,y2);
-			this.drawWhiteCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
+			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
+
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawCrosses(x1,y1,x2+1,y2+1);
-			if(k.mode==1){ this.drawTCross(x1,y1,x2+1,y2+1);}else{ this.hideTCross();}
+			this.drawTarget_creek(x1,y1,x2,y2);
+		};
+		pc.drawTarget_creek = function(x1,y1,x2,y2){
+			if(k.editmode){ this.drawTCross(x1,y1,x2+1,y2+1);}
+			else{ this.hideTCross();}
 		};
 	},
 

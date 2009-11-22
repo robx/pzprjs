@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.2.2
+// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.2.3
 //
 Puzzles.gokigen = function(){ };
 Puzzles.gokigen.prototype = {
@@ -48,35 +48,32 @@ Puzzles.gokigen.prototype = {
 	},
 	menufix : function(){
 		menu.addUseToFlags();
-
-		pp.addCheckToFlags('dispred','setting',false);
-		pp.setMenuStr('dispred', '繋がりチェック', 'Continuous Check');
-		pp.setLabel  ('dispred', '線のつながりをチェックする', 'Check countinuous slashes');
+		menu.addRedLineToFlags();
 	},
 	protoChange : function(){
 	},
 	protoOriginal : function(){
-		$("#btnclear2").css("display",'inline');
+		ee('btnclear2').el.style.display = 'inline';
 	},
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==3){
-				if(!(kc.isZ ^ menu.getVal('dispred'))){ this.inputslash(x,y);}
-				else{ this.dispBlue(x,y);}
+		mv.mousedown = function(){
+			if(k.playmode){
+				if(!(kc.isZ ^ pp.getVal('dispred'))){ this.inputslash();}
+				else{ this.dispBlue();}
 			}
-			else if(k.mode==1){
-				if(!kp.enabled()){ this.inputcross(x,y);}
-				else{ kp.display(x,y);}
+			else if(k.editmode){
+				if(!kp.enabled()){ this.inputcross();}
+				else{ kp.display();}
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){ };
-		mv.dispBlue = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){ };
+		mv.dispBlue = function(){
+			var cc = this.cellid();
 			if(cc==-1 || bd.QaC(cc)==-1){ return;}
 
 			var check = [];
@@ -92,8 +89,8 @@ Puzzles.gokigen.prototype = {
 			ans.errDisp = true;
 			pc.paintAll();
 		};
-		mv.inputslash = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputslash = function(){
+			var cc = this.cellid();
 			if(cc==-1){ return;}
 
 			if     (k.use==1){ bd.sQaC(cc, (bd.QaC(cc)!=(this.btn.Left?1:2)?(this.btn.Left?1:2):-1));}
@@ -108,7 +105,7 @@ Puzzles.gokigen.prototype = {
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCross(ca)){ return;}
 			this.key_inputcross(ca,4);
 		};
@@ -116,9 +113,9 @@ Puzzles.gokigen.prototype = {
 
 		kc.isZ = false;
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(4, true, false, '');
-			kp.ctl[1].target = "cross";
+			kp.ctl[1].target = k.CROSS;
 			kp.kpinput = function(ca){
 				kc.key_inputcross(ca,4);
 			};
@@ -132,7 +129,7 @@ Puzzles.gokigen.prototype = {
 			um.enableRecord();
 		};
 
-		$("#btnclear2").css("display",'none');
+		ee('btnclear2').el.style.display = 'none';
 
 		tc.minx = 0;
 		tc.miny = 0;
@@ -153,55 +150,61 @@ Puzzles.gokigen.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
 			this.drawDashedGrid(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
 
 			this.drawSlashes(x1,y1,x2,y2);
 
 			this.drawCrosses(x1,y1,x2+1,y2+1);
-			if(k.mode==1){ this.drawTCross(x1,y1,x2+1,y2+1);}else{ this.hideTCross();}
+			this.drawTarget_gokigen(x1,y1,x2,y2);
 		};
-		pc.drawErrorCells = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c=clist[i];
-				if(bd.QaC(c)==-1 && bd.ErC(c)==1){
-					g.fillStyle = this.errbcolor1;
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);}
-				}
-				else{ this.vhide("c"+c+"_full_");}
+
+		// オーバーライド
+		pc.setBGCellColor = function(c){
+			if(bd.cell[c].qans===-1 && bd.cell[c].error===1){
+				g.fillStyle = this.errbcolor1;
+				return true;
 			}
-			this.vinc();
-		},
+			return false;
+		};
+
 		pc.drawSlashes = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var headers = ["c_sl1_", "c_sl2_"];
+			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
+
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
-				if(bd.QaC(c)!=-1){
-					if     (bd.ErC(c)==1){ g.strokeStyle = this.errcolor1;}
-					else if(bd.ErC(c)==2){ g.strokeStyle = this.errcolor2;}
-					else                 { g.strokeStyle = this.Cellcolor;}
+				if(bd.cell[c].qans!=-1){
+					if     (bd.cell[c].error==1){ g.strokeStyle = this.errcolor1;}
+					else if(bd.cell[c].error==2){ g.strokeStyle = this.errcolor2;}
+					else                        { g.strokeStyle = this.Cellcolor;}
 
-					g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
-					g.beginPath();
-					if(bd.QaC(c)==1){
-						g.moveTo(bd.cell[c].px         , bd.cell[c].py          );
-						g.lineTo(bd.cell[c].px+k.cwidth, bd.cell[c].py+k.cheight);
-						this.vhide("c"+c+"_sl2_");
+					if(bd.cell[c].qans==1){
+						if(this.vnop(headers[0]+c,0)){
+							this.inputPath([bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight], true);
+							g.stroke();
+						}
 					}
-					else if(bd.QaC(c)==2){
-						g.moveTo(bd.cell[c].px+k.cwidth, bd.cell[c].py          );
-						g.lineTo(bd.cell[c].px         , bd.cell[c].py+k.cheight);
-						this.vhide("c"+c+"_sl1_");
+					else{ this.vhide(headers[0]+c);}
+
+					if(bd.cell[c].qans==2){
+						if(this.vnop(headers[1]+c,0)){
+							this.inputPath([bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight], true);
+							g.stroke();
+						}
 					}
-					g.closePath();
-					if(this.vnop("c"+c+"_sl"+bd.QaC(c)+"_",0)){ g.stroke();}
+					else{ this.vhide(headers[1]+c);}
 				}
-				else{ this.vhide(["c"+c+"_sl1_", "c"+c+"_sl2_"]);}
+				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
 			this.vinc();
+		};
+
+		pc.drawTarget_gokigen = function(x1,y1,x2,y2){
+			if(k.editmode){ this.drawTCross(x1,y1,x2+1,y2+1);}
+			else{ this.hideTCross();}
 		};
 	},
 
@@ -266,7 +269,7 @@ Puzzles.gokigen.prototype = {
 		};
 
 		ans.checkLoopLine = function(){
-			var check = [];
+			var check = [], result = true;
 			for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
 
 			while(1){
@@ -281,7 +284,7 @@ Puzzles.gokigen.prototype = {
 					}
 					while(1){
 						var endflag = true;
-						var clist = pc.cellinside(0,0,k.qcols-1,k.qrows-1,function(c){ return (bd.ErC(c)==1);});
+						var clist = pc.cellinside_cond(0,0,k.qcols-1,k.qrows-1,function(c){ return (bd.ErC(c)==1);});
 						for(var i=0;i<clist.length;i++){
 							var c = clist[i];
 							var cc1, cc2, cx=bd.cell[c].cx, cy=bd.cell[c].cy;
@@ -291,11 +294,12 @@ Puzzles.gokigen.prototype = {
 						}
 						if(endflag){ break;}
 					}
-					return false;
+					if(this.inAutoCheck){ return false;}
+					result = false;
 				}
 				for(var c=0;c<bd.crossmax;c++){ if(check[c]==1){ check[c]=2;} }
 			}
-			return true;
+			return result;
 		};
 		ans.searchline = function(check, dir, c){
 			var flag=true;
@@ -315,13 +319,15 @@ Puzzles.gokigen.prototype = {
 		};
 
 		ans.checkQnumCross = function(){
+			var result = true;
 			for(var c=0;c<bd.crossmax;c++){
 				if(bd.QnX(c)>=0 && bd.QnX(c)!=this.scntCross(c)){
+					if(this.inAutoCheck){ return false;}
 					bd.sErX([c],1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

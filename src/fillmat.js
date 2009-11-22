@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 フィルマット版 fillmat.js v3.2.2
+// パズル固有スクリプト部 フィルマット版 fillmat.js v3.2.3
 //
 Puzzles.fillmat = function(){ };
 Puzzles.fillmat.prototype = {
@@ -51,34 +51,34 @@ Puzzles.fillmat.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1){
-				if(!kp.enabled()){ this.inputqnum(x,y,4);}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+			else if(k.playmode){
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode){
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,4);
+			this.key_inputqnum(ca);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,99);
+				kc.key_inputqnum(ca);
 			};
 			kp.kpgenerate = function(mode){
 				this.inputcol('num','knum1','1','1');
@@ -90,8 +90,10 @@ Puzzles.fillmat.prototype = {
 				this.inputcol('num','knum.','-','?');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 		}
+
+		bd.maxnum = 4;
 	},
 
 	//---------------------------------------------------------
@@ -103,8 +105,7 @@ Puzzles.fillmat.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
@@ -113,7 +114,7 @@ Puzzles.fillmat.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 

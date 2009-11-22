@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ホタルビーム版 firefly.js v3.2.2
+// パズル固有スクリプト部 ホタルビーム版 firefly.js v3.2.3
 //
 Puzzles.firefly = function(){ };
 Puzzles.firefly.prototype = {
@@ -7,7 +7,7 @@ Puzzles.firefly.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake = 1;			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
 		k.iscross      = 0;		// 1:Crossが操作可能なパズル
 		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
@@ -40,7 +40,7 @@ Puzzles.firefly.prototype = {
 		k.def_psize = 16;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pmake"){
+		if(k.EDITOR){
 			base.setExpression("　黒点は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
 							   " To input black marks, Left Button Drag or Press arrow key with SHIFT key.");
 		}
@@ -57,32 +57,33 @@ Puzzles.firefly.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputdirec(x,y);
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mousedown = function(){
+			if(k.editmode) this.inputdirec();
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){
-			if(k.mode==1 && this.notInputted() && bd.cnum(this.mouseCell.x,this.mouseCell.y)==this.cellid(new Pos(x,y))) this.inputqnum(x,y,99);
+		mv.mouseup = function(){
+			if(k.editmode && this.notInputted() && bd.cnum(this.mouseCell.x,this.mouseCell.y)==this.cellid()) this.inputqnum();
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==1){
-				if(this.notInputted()) this.inputdirec(x,y);
+		mv.mousemove = function(){
+			if(k.editmode){
+				if(this.notInputted()) this.inputdirec();
 			}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 	},
 
@@ -105,48 +106,54 @@ Puzzles.firefly.prototype = {
 
 			this.drawNumCells_firefly(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawNumCells_firefly = function(x1,y1,x2,y2){
 			var rsize  = k.cwidth*0.40;
 			var rsize2 = k.cwidth*0.36;
 			var rsize3 = k.cwidth*0.10;
+			var headers = ["c_cira_", "c_cirb_", "c_circ_"];
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
+			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QnC(c)!=-1){
+				if(bd.cell[c].qnum!=-1){
 					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
 
 					g.fillStyle = this.Cellcolor;
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cira_",1)){ g.fill(); }
-
-					if(bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else{ g.fillStyle = "white";}
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cirb_",1)){ g.fill(); }
-
-					this.vdel(["c"+c+"_circ_"]);
-					g.fillStyle = this.Cellcolor;
-					switch(bd.DiC(c)){
-						case 1: py-=(rsize-1); break;
-						case 2: py+=(rsize-1); break;
-						case 3: px-=(rsize-1); break;
-						case 4: px+=(rsize-1); break;
-					}
-					if(bd.DiC(c)!=0){
+					if(this.vnop(headers[0]+c,1)){
 						g.beginPath();
-						g.arc(px, py, rsize3 , 0, Math.PI*2, false);
-						if(this.vnop("c"+c+"_circ_",1)){ g.fill();}
+						g.arc(px, py, rsize , 0, Math.PI*2, false);
+						g.fill();
+					}
+
+					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
+					if(this.vnop(headers[1]+c,1)){
+						g.beginPath();
+						g.arc(px, py, rsize2, 0, Math.PI*2, false);
+						g.fill();
+					}
+
+					this.vdel([headers[2]+c]);
+					if(bd.cell[c].direc!=0){
+						g.fillStyle = this.Cellcolor;
+						switch(bd.cell[c].direc){
+							case k.UP: py-=(rsize-1); break;
+							case k.DN: py+=(rsize-1); break;
+							case k.LT: px-=(rsize-1); break;
+							case k.RT: px+=(rsize-1); break;
+						}
+						if(this.vnop(headers[2]+c,1)){
+							g.beginPath();
+							g.arc(px, py, rsize3 , 0, Math.PI*2, false);
+							g.fill();
+						}
 					}
 				}
-				else{ this.vhide(["c"+c+"_cira_","c"+c+"_cirb_"]); this.vdel(["c"+c+"_circ_"]);}
+				else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c]);}
 
-				this.dispnumCell_General(c);
+				this.dispnumCell(c);
 			}
 			this.vinc();
 		};
@@ -180,14 +187,14 @@ Puzzles.firefly.prototype = {
 				this.setAlert('線が交差しています。', 'There is a crossing line.'); return false;
 			}
 
-			var saved = this.checkFireflies();
-			if( !this.checkErrorFlag(saved,3) ){
+			var errinfo = this.searchFireflies();
+			if( !this.checkErrorFlag(errinfo,3) ){
 				this.setAlert('黒点同士が線で繋がっています。', 'Black points are connected each other.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,2) ){
+			if( !this.checkErrorFlag(errinfo,2) ){
 				this.setAlert('線の曲がった回数が数字と違っています。', 'The number of curves is different from a firefly\'s number.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,1) ){
+			if( !this.checkErrorFlag(errinfo,1) ){
 				this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
 			}
 
@@ -204,7 +211,7 @@ Puzzles.firefly.prototype = {
 				this.setAlert('ホタルから線が出ていません。', 'There is a lonely firefly.'); return false;
 			}
 
-			if( !this.checkStrangeLine(saved) ){
+			if( !this.checkStrangeLine(errinfo) ){
 				this.setAlert('白丸の、黒点でない部分どうしがくっついています。', 'Fireflies are connected without a line starting from black point.'); return false;
 			}
 
@@ -214,32 +221,36 @@ Puzzles.firefly.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkLcntCell = function(val){
+			var result = true;
 			if(line.ltotal[val]==0){ return true;}
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 && line.lcntCell(c)==val){
-					bd.sErBAll(2);
+					if(this.inAutoCheck){ return false;}
+					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,false);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkFireflyBeam = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 || bd.DiC(c)==0){ continue;}
-				if((bd.DiC(c)==1 && !bd.isLine(bd.ub(c))) || (bd.DiC(c)==2 && !bd.isLine(bd.db(c))) ||
-				   (bd.DiC(c)==3 && !bd.isLine(bd.lb(c))) || (bd.DiC(c)==4 && !bd.isLine(bd.rb(c))) )
+				if((bd.DiC(c)==k.UP && !bd.isLine(bd.ub(c))) || (bd.DiC(c)==k.DN && !bd.isLine(bd.db(c))) ||
+				   (bd.DiC(c)==k.LT && !bd.isLine(bd.lb(c))) || (bd.DiC(c)==k.RT && !bd.isLine(bd.rb(c))) )
 				{
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
-		ans.checkStrangeLine = function(saved){
+		ans.checkStrangeLine = function(errinfo){
 			var idlist = [];
 			for(var id=0;id<bd.bdmax;id++){
-				if(bd.isLine(id) && saved.check[id]!=2){ idlist.push(id);}
+				if(bd.isLine(id) && errinfo.check[id]!=2){ idlist.push(id);}
 			}
 			if(idlist.length>0){
 				bd.sErBAll(2);
@@ -249,9 +260,9 @@ Puzzles.firefly.prototype = {
 			return true;
 		};
 
-		ans.checkFireflies = function(){
-			var saved = {errflag:0,cells:[],idlist:[],check:[]};
-			for(var i=0;i<bd.bdmax;i++){ saved.check[i]=0;}
+		ans.searchFireflies = function(){
+			var errinfo={data:[],check:[]};
+			for(var i=0;i<bd.bdmax;i++){ errinfo.check[i]=0;}
 
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 || bd.DiC(c)==0){ continue;}
@@ -262,8 +273,8 @@ Puzzles.firefly.prototype = {
 				var bx=bd.cell[c].cx*2+1, by=bd.cell[c].cy*2+1;
 				while(1){
 					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-					if((bx+by)%2==0){
-						var cc = bd.cnum(mf(bx/2),mf(by/2));
+					if(!((bx+by)&1)){
+						var cc = bd.cnum(bx>>1,by>>1);
 						if     (bd.QnC(cc)!=-1){ break;}
 						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!=2){ ccnt++;} dir=2;}
 						else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!=1){ ccnt++;} dir=1;}
@@ -277,32 +288,35 @@ Puzzles.firefly.prototype = {
 					}
 				}
 
-				for(var i=0;i<idlist.length;i++){ saved.check[idlist[i]]=2;}
+				for(var i=0;i<idlist.length;i++){ errinfo.check[idlist[i]]=2;}
 
-				var cc = bd.cnum(mf(bx/2),mf(by/2));
-				if(idlist.length>0 && (bx+by)%2==1 && saved.errflag==0){
-					saved = {errflag:1,cells:[c],idlist:idlist,check:saved.check};
-				}
-				else if(idlist.length>0 && (bx+by)%2==0 && bd.QnC(c)!=-2 && bd.QnC(c)!=ccnt && saved.errflag<=1){
-					saved = {errflag:2,cells:[c],idlist:idlist,check:saved.check};
-				}
-				else if(((bd.DiC(cc)==1 && dir==2) || (bd.DiC(cc)==2 && dir==1) ||
-						 (bd.DiC(cc)==3 && dir==4) || (bd.DiC(cc)==4 && dir==3) ) && (bx+by)%2==0 && saved.errflag<=2 )
+				var cc = bd.cnum(bx>>1,by>>1);
+				if(((bd.DiC(cc)==k.UP && dir==k.DN) || (bd.DiC(cc)==k.DN && dir==k.UP) ||
+					(bd.DiC(cc)==k.LT && dir==k.RT) || (bd.DiC(cc)==k.RT && dir==k.LT) ) && (!((bx+by)&1)))
 				{
-					saved = {errflag:3,cells:[c,cc],idlist:idlist,check:saved.check};
-					return saved;
+					errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist}); continue;
+				}
+				if(idlist.length>0 && (!((bx+by)&1)) && bd.QnC(c)!=-2 && bd.QnC(c)!=ccnt){
+					errinfo.data.push({errflag:2,cells:[c],idlist:idlist}); continue;
+				}
+				if(idlist.length>0 && ((bx+by)&1)){
+					errinfo.data.push({errflag:1,cells:[c],idlist:idlist}); continue;
 				}
 			}
-			return saved;
+			return errinfo;
 		};
-		ans.checkErrorFlag = function(saved, val){
-			if(saved.errflag==val){
-				bd.sErC(saved.cells,1);
-				bd.sErBAll(2);
-				bd.sErB(saved.idlist,1);
-				return false;
+		ans.checkErrorFlag = function(errinfo, val){
+			var result = true;
+			for(var i=0,len=errinfo.data.length;i<len;i++){
+				if(errinfo.data[i].errflag!=val){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(errinfo.data[i].cells,1);
+				if(result){ bd.sErBAll(2);}
+				bd.sErB(errinfo.data[i].idlist,1);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 	}
 };

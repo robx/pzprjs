@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.2.2
+// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.2.3
 //
 Puzzles.hashikake = function(){ };
 Puzzles.hashikake.prototype = {
@@ -51,26 +51,26 @@ Puzzles.hashikake.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1){
-				if(!kp.enabled()){ this.inputqnum(x,y,8);}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 
-		mv.inputLine = function(x,y){
-			var pos = this.cellpos(new Pos(x,y));
+		mv.inputLine = function(){
+			var pos = this.cellpos();
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = -1;
@@ -100,12 +100,12 @@ Puzzles.hashikake.prototype = {
 		mv.getidlist = function(id){
 			var idlist=[], bx1, bx2, by1, by2;
 			var cc1=bd.cc1(id), cx=bd.cell[cc1].cx, cy=bd.cell[cc1].cy;
-			if(bd.border[id].cx%2==1){
+			if(bd.border[id].cx&1){
 				while(cy>=0         && bd.QnC(bd.cnum(cx,cy  ))==-1){ cy--;} by1=2*cy+2;
 				while(cy<=k.qrows-1 && bd.QnC(bd.cnum(cx,cy+1))==-1){ cy++;} by2=2*cy+2;
 				bx1 = bx2 = bd.border[id].cx;
 			}
-			else if(bd.border[id].cy%2==1){
+			else if(bd.border[id].cy&1){
 				while(cx>=0         && bd.QnC(bd.cnum(cx  ,cy))==-1){ cx--;} bx1=2*cx+2;
 				while(cx<=k.qcols-1 && bd.QnC(bd.cnum(cx+1,cy))==-1){ cx++;} bx2=2*cx+2;
 				by1 = by2 = bd.border[id].cy;
@@ -115,8 +115,8 @@ Puzzles.hashikake.prototype = {
 			return idlist;
 		};
 
-		mv.inputpeke = function(x,y){
-			var pos = this.crosspos(new Pos(x,y), 0.22);
+		mv.inputpeke = function(){
+			var pos = this.crosspos(0.22);
 			var id = bd.bnum(pos.x, pos.y);
 			if(id==-1 || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
 
@@ -131,15 +131,16 @@ Puzzles.hashikake.prototype = {
 			if(idlist.length==0){ pc.paintBorder(id);}
 			this.mouseCell = pos;
 		},
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,8);
+			this.key_inputqnum(ca);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				this.inputcol('num','knum1','1','1');
 				this.inputcol('num','knum2','2','2');
@@ -155,11 +156,13 @@ Puzzles.hashikake.prototype = {
 				this.inputcol('num','knum.','-','○');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,8);
+				kc.key_inputqnum(ca);
 			};
 		}
+
+		bd.maxnum = 8;
 	},
 
 	//---------------------------------------------------------
@@ -169,107 +172,70 @@ Puzzles.hashikake.prototype = {
 		pc.bcolor = pc.bcolor_GREEN;
 
 		pc.fontsizeratio = 0.85;
+		pc.circleratio = [0.44, 0.44];
 		pc.chassisflag = false;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			if(k.mode==1){ this.drawGrid(x1,y1,x2,y2);}
-			else if(g.vml){ this.hideBorder();}
+			if(k.editmode){ this.drawGrid(x1,y1,x2,y2);}
+			else if(g.vml){ this.hideGrid();}
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawNumCells_bridges(x1,y1,x2,y2);
+			this.drawCircledNumbers(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		// オーバーライド
-		pc.drawLines = function(x1,y1,x2,y2){
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
-			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i];
-				if(bd.LiB(id)!=0){ this.drawLine1(id, true);}
-				else{ this.vhide(["b"+id+"_ls_","b"+id+"_ld1_","b"+id+"_ld2_"]);}
-			}
-			this.vinc();
-		};
 		pc.drawLine1 = function(id, flag){
-			var lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3); //LineWidth
+			var vids = ["b_line_"+id,"b_dline1_"+id,"b_dline2_"+id];
+			if(!flag){ this.vhide(vids); return;}
 
+			var lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3);	//LineWidth
+			var lm = mf((lw-1)/2) + this.addlw;				//LineMargin
+			var ls = mf(lw*1.5);							//LineSpace
 			g.fillStyle = this.getLineColor(id);
 
-			var lm = mf((lw-1)/2) + this.addlw; //LineMargin
-			var ls = mf(lw*1.5);
+			if(bd.border[id].line==1){
+				if(this.vnop(vids[0],1)){
+					if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
+					if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
+				}
+			}
+			else{ this.vhide(vids[0]);}
 
-			this.vhide(["b"+id+"_ls_","b"+id+"_ld1_","b"+id+"_ld2_"]);
-			if     (bd.border[id].cx%2==1){
-				if(bd.LiB(id)==1){
-					if(this.vnop("b"+id+"_ls_",1)){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-1, lw, k.cheight+lw);}
+			if(bd.border[id].line==2){
+				if(this.vnop(vids[1],1)){
+					if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm-ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
+					if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm-ls, k.cwidth+lw,  lw);}
 				}
-				else if(bd.LiB(id)==2){
-					if(this.vnop("b"+id+"_ld1_",1)){ g.fillRect(bd.border[id].px-lm-ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-					if(this.vnop("b"+id+"_ld2_",1)){ g.fillRect(bd.border[id].px-lm+ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-				}
-			}
-			else if(bd.border[id].cy%2==1){
-				if(bd.LiB(id)==1){
-					if(this.vnop("b"+id+"_ls_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-1, k.cwidth+lw, lw);}
-				}
-				else if(bd.LiB(id)==2){
-					if(this.vnop("b"+id+"_ld1_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-lm-ls, k.cwidth+lw, lw);}
-					if(this.vnop("b"+id+"_ld2_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-lm+ls, k.cwidth+lw, lw);}
+				if(this.vnop(vids[2],1)){
+					if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm+ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
+					if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm+ls, k.cwidth+lw,  lw);}
 				}
 			}
-			this.vinc();
+			else{ this.vhide([vids[1], vids[2]]);}
 		};
-
-		pc.drawNumCells_bridges = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.45;
-			var rsize2 = k.cwidth*0.40;
-
-			var clist = this.cellinside(x1-2,y1-2,x2+1,y2+1,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
-
-					g.fillStyle = this.Cellcolor;
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cira_",1)){ g.fill(); }
-
-					if     (bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else if(bd.QsC(c)==1){ g.fillStyle = this.qsubbcolor1;}
-					else{ g.fillStyle = "white";}
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cirb_",1)){ g.fill(); }
-				}
-				else{ this.vhide(["c"+c+"_cira_", "c"+c+"_cirb_"]);}
-
-				this.dispnumCell_General(c);
-			}
-			this.vinc();
-		};
-		pc.hideBorder = function(){
-			for(var i=0;i<=k.qcols;i++){ this.vhide("bdy"+i+"_");}
-			for(var i=0;i<=k.qrows;i++){ this.vhide("bdx"+i+"_");}
+		pc.hideGrid = function(){
+			for(var i=0;i<=k.qcols;i++){ this.vhide("bdy_"+i);}
+			for(var i=0;i<=k.qrows;i++){ this.vhide("bdx_"+i);}
 		};
 
 		line.repaintParts = function(id){
 			var bx=bd.border[id].cx, by=bd.border[id].cy;
-			if(bd.border[id].cx%2==1){ pc.drawNumCells_bridges(mf((bx-1)/2)-1, mf(by/2)-1, mf((bx-1)/2)+1, mf(by/2));}
-			else                     { pc.drawNumCells_bridges(mf(bx/2)-1, mf((by-1)/2)-1, mf(bx/2), mf((by-1)/2)+1);}
+			if(bd.border[id].cx&1){ pc.drawNumCells_bridges(((bx-1)>>1)-1, (by>>1)-1, ((bx-1)>>1)+1, (by>>1));}
+			else                  { pc.drawNumCells_bridges((bx>>1)-1, ((by-1)>>1)-1, (bx>>1), ((by-1)>>1)+1);}
 		};
 		line.branch = function(bx,by,lcnt){
-			return (lcnt==3||lcnt==4) && (bd.QnC(bd.cnum(mf(bx/2),mf(by/2)))!=-1);
+			return (lcnt==3||lcnt==4) && (bd.QnC(bd.cnum(bx>>1,by>>1))!=-1);
 		};
-		line.point = function(id,cc){
+		line.point = ee.binder(line, function(id,cc){
 			return this.lcntCell(cc)==1 || (this.lcntCell(cc)==3 && this.tshapeid(cc)==id);
-		}.bind(line);
+		});
 	},
 
 	//---------------------------------------------------------
@@ -359,6 +325,7 @@ Puzzles.hashikake.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkCellNumber = function(flag){
+			var result = true;
 			for(var cc=0;cc<bd.cellmax;cc++){
 				if(bd.QnC(cc)<0){ continue;}
 
@@ -369,11 +336,12 @@ Puzzles.hashikake.prototype = {
 				if(bd.rb(cc)!=-1 && bd.isLine(bd.rb(cc))){ cnt+=bd.LiB(bd.rb(cc));}
 
 				if((flag==1 && bd.QnC(cc)<cnt)||(flag==2 && bd.QnC(cc)>cnt)){
-					bd.sErC(cc,1);
-					return false;
+					if(this.inAutoCheck){ return false;}
+					bd.sErC([cc],1);
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.2.2
+// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.2.3
 //
 Puzzles.tatamibari = function(){ };
 Puzzles.tatamibari.prototype = {
@@ -51,32 +51,32 @@ Puzzles.tatamibari.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1){
-				if(!kp.enabled()){ this.inputQues(x,y,[0,101,102,103,-2]);}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputQues([0,101,102,103,-2]);}
+				else{ kp.display();}
 			}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+			else if(k.playmode){
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode){
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputMarks(ca);
 		};
 		kc.key_inputMarks = function(ca){
-			if(k.mode!=1){ return false;}
+			if(k.playmode){ return false;}
 			var cc = tc.getTCC();
 
 			if     (ca=='q'||ca=='1'){ bd.sQuC(cc,101); }
@@ -91,7 +91,7 @@ Puzzles.tatamibari.prototype = {
 			return true;
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				this.inputcol('num','knumq','q','╋');
 				this.inputcol('num','knumw','w','┃');
@@ -102,7 +102,7 @@ Puzzles.tatamibari.prototype = {
 				this.inputcol('empty','knumx','','');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.kpinput = function(ca){
 				kc.key_inputMarks(ca);
 			};
@@ -119,38 +119,42 @@ Puzzles.tatamibari.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawMarks(x1,y1,x2,y2);
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawQuesHatenas(x1,y1,x2,y2);
 			this.drawBorderQsubs(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawMarks = function(x1,y1,x2,y2){
 			var lw = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3); //LineWidth
+			var headers = ["c_lp1_", "c_lp2_"];
 			g.fillStyle = this.BorderQuescolor;
 
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				var qs = bd.QuC(c);
-				if(qs==101||qs==102){
-					if(this.vnop("c"+c+"_lm1_",1)){ g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-1, bd.cell[c].py+mf((k.cheight+lw)*0.15), lw, mf((k.cheight+lw)*0.7));}
+				var qs = bd.cell[c].ques;
+				if(qs===101||qs===102){
+					if(this.vnop(headers[0]+c,1)){
+						g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-1, bd.cell[c].py+mf((k.cheight+lw)*0.15), lw, mf((k.cheight+lw)*0.7));
+					}
 				}
-				else{ this.vhide("c"+c+"_lm1_");}
+				else{ this.vhide(headers[0]+c);}
 
-				if(qs==101||qs==103){
-					if(this.vnop("c"+c+"_lm2_",1)){ g.fillRect(bd.cell[c].px+mf((k.cwidth+lw)*0.15), bd.cell[c].py+mf(k.cheight/2)-1, mf((k.cwidth+lw)*0.7), lw);}
+				if(qs===101||qs===103){
+					if(this.vnop(headers[1]+c,1)){
+						g.fillRect(bd.cell[c].px+mf((k.cwidth+lw)*0.15), bd.cell[c].py+mf(k.cheight/2)-1, mf((k.cwidth+lw)*0.7), lw);
+					}
 				}
-				else{ this.vhide("c"+c+"_lm2_");}
+				else{ this.vhide(headers[1]+c);}
 			}
 			this.vinc();
 		};
@@ -186,7 +190,7 @@ Puzzles.tatamibari.prototype = {
 				if(c > bd.cellmax){ break;}
 			}
 
-			return bstr.substring(i,bstr.length);
+			return bstr.substr(i);
 		};
 		enc.encodeTatamibari = function(){
 			var count, pass, i;

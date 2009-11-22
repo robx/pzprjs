@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 メジリンク版 mejilink.js v3.2.2
+// パズル固有スクリプト部 メジリンク版 mejilink.js v3.2.3
 //
 Puzzles.mejilink = function(){ };
 Puzzles.mejilink.prototype = {
@@ -53,20 +53,20 @@ Puzzles.mejilink.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mousedown = function(){
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
+			if(k.editmode) this.inputborder();
+			else if(k.playmode){
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.editmode) this.inputborder();
+			else if(k.playmode){
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 
@@ -82,21 +82,17 @@ Puzzles.mejilink.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.BorderQuescolor = "white";
 
-		pc.crosssize = 0.05;
-
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBorders_mejilink(x1,y1,x2,y2);
 
 			this.drawBaseMarks(x1,y1,x2,y2);
 
-			if(k.br.IE){ this.drawPekes(x1,y1,x2,y2,1);}
-			else{ this.drawPekes(x1,y1,x2,y2,0);}
+			this.drawPekes(x1,y1,x2,y2,(k.br.IE?1:0));
 		};
 
 		pc.drawBaseMarks = function(x1,y1,x2,y2){
@@ -110,34 +106,55 @@ Puzzles.mejilink.prototype = {
 			this.vinc();
 		};
 		pc.drawBaseMark1 = function(i){
-			var lw = ((k.cwidth/12)>=3?(k.cwidth/12):3); //LineWidth
-			var csize = mf((lw+1)/2);
-
-			var cx = i%(k.qcols+1); var cy = mf(i/(k.qcols+1));
+			var vid = "x_cm_"+i;
 
 			g.fillStyle = this.Cellcolor;
-			g.beginPath();
-			g.arc(k.p0.x+cx*k.cwidth, k.p0.x+cy*k.cheight, csize, 0, Math.PI*2, false);
-			if(this.vnop("x"+i+"_cm_",1)){ g.fill();}
+			if(this.vnop(vid,1)){
+				var lw = ((k.cwidth/12)>=3?(k.cwidth/12):3); //LineWidth
+				var csize = mf((lw+1)/2);
+				var cx = i%(k.qcols+1); var cy = mf(i/(k.qcols+1));
+
+				g.beginPath();
+				g.arc(k.p0.x+cx*k.cwidth, k.p0.x+cy*k.cheight, csize, 0, Math.PI*2, false);
+				g.fill();
+			}
 		};
 
 		// オーバーライド
-		pc.drawBorder1 = function(id,flag){
-			var lw = this.lw, lm = this.lm;
-			var vmlid = "b"+id+"_bd_", vmlid2 = "b"+id+"_bd2_";
+		pc.drawBorders_mejilink = function(x1,y1,x2,y2){
+			var headers = ["b_bd_", "b_wbd_"];
 
-			if(!flag){ this.vhide([vmlid,vmlid2]); return;}
-			else if(!bd.isLine(id)){
-				lw = 1; lm = 0; vmlid = "b"+id+"_bd2_"; vmlid2 = "b"+id+"_bd_";
-				var cc2=bd.cc2(id);
-				if(cc2==-1 || bd.ErC(cc2)==0){ g.fillStyle = this.BorderQuescolor;}
-				else{ g.fillStyle = this.errbcolor1;}
+			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+			for(var i=0;i<idlist.length;i++){
+				var id = idlist[i];
+				if(bd.border[id].ques===0 && bd.border[id].qans===0){
+					this.vhide([headers[0]+id, headers[1]+id]);
+					continue;
+				}
+
+				var isline = bd.isLine(id);
+				if(isline){
+					g.fillStyle = this.getLineColor(id);
+					if(this.vnop(headers[0]+id,1)){
+						var lw = this.lw + this.addlw, lm = this.lm;
+						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
+						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
+					}
+				}
+				else{ this.vhide(headers[0]+id);}
+
+				if(!isline){
+					var cc2=bd.cc2(id);
+					g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.BorderQuescolor : this.errbcolor1);
+					if(this.vnop(headers[1]+id,1)){
+						var lw = this.lw + this.addlw, lm = this.lm;
+						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
+						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2),  bd.border[id].py, k.cwidth+1,  1);}
+					}
+				}
+				else{ this.vhide(headers[1]+id);}
 			}
-			else if(bd.isLine(id)){ g.fillStyle = this.getLineColor(id); lw += this.addlw;}
-
-			if     (bd.border[id].cy%2==1){ if(this.vnop(vmlid,1)){ g.fillRect(bd.border[id].px-lm,                bd.border[id].py-mf(k.cheight/2)-lm, lw         , k.cheight+lw);} }
-			else if(bd.border[id].cx%2==1){ if(this.vnop(vmlid,1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-lm                , k.cwidth+lw, lw          );} }
-			this.vhide(vmlid2);
+			this.vinc();
 		};
 
 		line.repaintParts = function(id){
@@ -168,7 +185,7 @@ Puzzles.mejilink.prototype = {
 					if(i*5+w<bd.bdmax){ bd.sQuB(i*5+w,(ca&Math.pow(2,4-w)?1:0));}
 				}
 			}
-			return bstr.substring(pos,bstr.length);
+			return bstr.substr(pos);
 		};
 		enc.encodeMejilink = function(){
 			var count = 0;
@@ -232,6 +249,7 @@ Puzzles.mejilink.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkdir4Line_meji = function(val){
+			var result = true;
 			for(var cy=0;cy<=k.qrows;cy++){
 				for(var cx=0;cx<=k.qcols;cx++){
 					var cnt = 0;
@@ -240,15 +258,17 @@ Puzzles.mejilink.prototype = {
 					if(bd.isLine(bd.bnum(cx*2  ,cy*2-1))){ cnt++;}
 					if(bd.isLine(bd.bnum(cx*2  ,cy*2+1))){ cnt++;}
 					if(cnt==val){
-						bd.sErBAll(2);
+						if(this.inAutoCheck){ return false;}
+						if(result){ bd.sErBAll(2);}
 						ans.setCrossBorderError(cx,cy);
-						return false;
+						result = false;
 					}
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkDotLength = function(){
+			var result = true;
 			var tarea = new AreaInfo();
 			for(var cc=0;cc<bd.cellmax;cc++){ tarea.id[cc]=0;}
 			for(var cc=0;cc<bd.cellmax;cc++){
@@ -276,11 +296,12 @@ Puzzles.mejilink.prototype = {
 			}
 			for(var r=1;r<=tarea.max;r++){
 				if(tcount[r]>=0 && tcount[r]!=tarea.room[r].idlist.length){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(tarea.room[r].idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

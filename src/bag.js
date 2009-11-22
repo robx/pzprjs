@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バッグ版 bag.js v3.2.2
+// パズル固有スクリプト部 バッグ版 bag.js v3.2.3
 //
 Puzzles.bag = function(){ };
 Puzzles.bag.prototype = {
@@ -51,25 +51,25 @@ Puzzles.bag.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1){
-				if(!kp.enabled()){ this.inputqnum(x,y,Math.min(99,k.qcols+k.qrows-1));}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputBGcolor(x,y);
-			}
-		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputBGcolor(x,y);
+			else if(k.playmode){
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputBGcolor();
 			}
 		};
-		mv.inputBGcolor = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode){
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputBGcolor();
+			}
+		};
+		mv.inputBGcolor = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell){ return;}
 			if(this.inputData==-1){
 				if     (bd.QsC(cc)==0){ this.inputData=1;}
@@ -85,36 +85,38 @@ Puzzles.bag.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,Math.min(99,k.qcols+k.qrows-1));
+			this.key_inputqnum(ca);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(0, true, false, '');
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,Math.min(99,k.qcols+k.qrows-1));
+				kc.key_inputqnum(ca);
 			};
 		}
+
+		bd.nummaxfunc = function(cc){ return Math.min(bd.maxnum,k.qcols+k.qrows-1);};
 	},
 
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
+		pc.setBGCellColorFunc('qsub2');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawQSubCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBordersAsLine(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 
@@ -178,15 +180,18 @@ Puzzles.bag.prototype = {
 			return icheck;
 		};
 		ans.checkNumberInside = function(icheck){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(icheck[c]==-1 && bd.QnC(c)!=-1){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkCellNumber = function(icheck){
+			var result = true;
 			for(var cc=0;cc<bd.cellmax;cc++){
 				if(bd.QnC(cc)<0){ continue;}
 
@@ -204,11 +209,12 @@ Puzzles.bag.prototype = {
 				while(ty<k.qrows){ var c=bd.cnum(tx,ty); if(icheck[c]!=-1){ cnt++; list.push(c); ty++;} else{ break;} }
 
 				if(bd.QnC(cc)!=cnt){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(list,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

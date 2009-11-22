@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へびいちご版 snakes.js v3.2.2
+// パズル固有スクリプト部 へびいちご版 snakes.js v3.2.3
 //
 Puzzles.snakes = function(){ };
 Puzzles.snakes.prototype = {
@@ -40,7 +40,7 @@ Puzzles.snakes.prototype = {
 		//k.def_psize = 16;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pmake"){
+		if(k.EDITOR){
 			base.setExpression("　矢印は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
 							   " To input Arrows, Left Button Drag or Press arrow key with SHIFT key.");
 		}
@@ -59,40 +59,40 @@ Puzzles.snakes.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputdirec(x,y);
-			else if(k.mode==3){
-				if(!this.inputDot(x,y)){
-					this.dragnumber(x,y);
+		mv.mousedown = function(){
+			if(k.editmode) this.inputdirec();
+			else if(k.playmode){
+				if(!this.inputDot()){
+					this.dragnumber();
 				}
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.mode==1) this.inputqnum(x,y,5);
-				else if(k.mode==3) this.inputqnum_snakes(x,y,5);
+				if     (k.editmode) this.inputqnum();
+				else if(k.playmode) this.inputqnum_snakes();
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==1 && this.notInputted()) this.inputdirec(x,y);
-			else if(k.mode==3){
-				if(!this.inputDot(x,y)){
-					this.dragnumber(x,y);
+		mv.mousemove = function(){
+			if(k.editmode && this.notInputted()) this.inputdirec();
+			else if(k.playmode){
+				if(!this.inputDot()){
+					this.dragnumber();
 				}
 			}
 		};
 
-		mv.inputqnum_snakes = function(x,y,max){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputqnum_snakes = function(){
+			var cc = this.cellid();
 			if(cc==-1){ return;}
 			k.dispzero=0;
-			cc = this.inputqnum3(cc,max);
+			cc = this.inputqnum3(cc);
 			bd.sQsC(cc,0);
 			k.dispzero=1;
 			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
 		},
-		mv.dragnumber = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.dragnumber = function(){
+			var cc = this.cellid();
 			if(cc==-1||cc==this.mouseCell){ return;}
 			if(this.mouseCell==-1){
 				this.inputData = bd.QaC(cc)!=-1?bd.QaC(cc):10;
@@ -113,8 +113,8 @@ Puzzles.snakes.prototype = {
 				pc.paintCell(cc);
 			}
 		};
-		mv.inputDot = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputDot = function(){
+			var cc = this.cellid();
 			if(!this.btn.Right||cc==-1||cc==this.mouseCell||this.inputData>=0){ return false;}
 
 			if(this.inputData==-1){
@@ -130,14 +130,17 @@ Puzzles.snakes.prototype = {
 			this.mouseCell = cc;
 			return true;
 		};
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,5);
+			this.key_inputqnum(ca);
 		};
+
+		bd.maxnum = 5;
 	},
 
 	//---------------------------------------------------------
@@ -146,51 +149,45 @@ Puzzles.snakes.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.dotcolor = "rgb(255, 96, 191)";
 		pc.fontcolor = pc.fontErrcolor = "white";
+		pc.setCellColorFunc('qnum');
 
 		pc.paint = function(x1,y1,x2,y2){
 			x1--; y1--; x2++; y2++;	// 跡が残ってしまう為
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-			this.drawDots(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawBorders_snake(x1,y1,x2,y2);
 
-			this.drawBCells_withoutNumber(x1-2,y1-2,x2+2,y2+2);
+			this.drawBlackCells(x1,y1,x2,y2);
 			this.drawArrowNumbers(x1-2,y1-2,x2+2,y2+2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		// 境界線の描画
 		pc.drawBorders_snake = function(x1,y1,x2,y2){
-			var func  = function(c){ return (bd.QnC(c)==-1 && bd.QaC(c)>0);};
-			var func2 = function(c1,c2){ return (bd.QaC(c1)>0 && bd.QaC(c2)>0 && (Math.abs(bd.QaC(c1)-bd.QaC(c2))!=1));};
-			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1,f_true);
+			var func  = function(c1,c2){
+				if(c2===-1){ return false;}
+				if(bd.cell[c1].qnum!==-1 || bd.cell[c2].qnum!==-1) { return false;}
+				if(bd.cell[c1].qans===-1 && bd.cell[c2].qans===-1) { return false;}
+				if((bd.cell[c1].qans===-1)^(bd.cell[c2].qans===-1)){ return true;}
+				return (Math.abs(bd.cell[c1].qans-bd.cell[c2].qans)!==1);
+			};
+
+			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
 			g.fillStyle = this.BorderQanscolor;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], rt=bd.rt(c), dn=bd.dn(c);
 				var cx=bd.cell[c].cx, cy=bd.cell[c].cy;
 
-				this.drawBorder1x(2*cx+2,2*cy+1,(rt!=-1&&((func(c)^func(rt))||func2(c,rt))));
-				this.drawBorder1x(2*cx+1,2*cy+2,(dn!=-1&&((func(c)^func(dn))||func2(c,dn))));
-			}
-			this.vinc();
-		};
-		pc.drawBCells_withoutNumber = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					if(bd.ErC(c)!=0){ g.fillStyle = this.errcolor1;}
-					else{ g.fillStyle = this.Cellcolor;}
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
-				}
-				else if(bd.ErC(c)==0){ this.vhide("c"+c+"_full_");}
+				this.drawBorder1x(2*cx+2,2*cy+1,func(c,rt));
+				this.drawBorder1x(2*cx+1,2*cy+2,func(c,dn));
 			}
 			this.vinc();
 		};
@@ -266,6 +263,7 @@ Puzzles.snakes.prototype = {
 		};
 
 		ans.checkDifferentNumberInRoom = function(sinfo){
+			var result = true;
 			for(var r=1;r<=sinfo.max;r++){
 				var d = {1:0,2:0,3:0,4:0,5:0};
 				for(var i=0;i<sinfo.room[r].idlist.length;i++){
@@ -273,29 +271,37 @@ Puzzles.snakes.prototype = {
 					if(val==-1){ continue;}
 
 					if(d[val]==0){ d[val]++;}
-					else if(d[val]>0){ bd.sErC(sinfo.room[r].idlist,1); return false;}
+					else if(d[val]>0){
+						if(this.inAutoCheck){ return false;}
+						bd.sErC(sinfo.room[r].idlist,1);
+						result = false;
+					}
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkSideCell2 = function(sinfo){
+			var result = true;
 			var func = function(sinfo,c1,c2){ return (sinfo.id[c1]>0 && sinfo.id[c2]>0 && sinfo.id[c1]!=sinfo.id[c2]);};
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.cell[c].cx<k.qcols-1 && func(sinfo,c,c+1)){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(sinfo.room[sinfo.id[c]].idlist,1);
 					bd.sErC(sinfo.room[sinfo.id[c+1]].idlist,1);
-					return false;
+					result = false;
 				}
 				if(bd.cell[c].cy<k.qrows-1 && func(sinfo,c,c+k.qcols)){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(sinfo.room[sinfo.id[c]].idlist,1);
 					bd.sErC(sinfo.room[sinfo.id[c+k.qcols]].idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 
 		ans.checkArrowNumber = function(){
+			var result = true;
 			var func = function(clist){
 				var cc=bd.cnum(cx,cy); clist.push(cc);
 				if(bd.QnC(cc)!=-1 || bd.QaC(cc)>0){ return false;}
@@ -306,24 +312,27 @@ Puzzles.snakes.prototype = {
 				if(bd.QnC(c)<0 || bd.DiC(c)==0){ continue;}
 				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, dir = bd.DiC(c);
 				var num=bd.QnC(c), clist=[c];
-				if     (dir==1){ cy--; while(cy>=0     ){ if(!func(clist)){ break;} cy--;} }
-				else if(dir==2){ cy++; while(cy<k.qrows){ if(!func(clist)){ break;} cy++;} }
-				else if(dir==3){ cx--; while(cx>=0     ){ if(!func(clist)){ break;} cx--;} }
-				else if(dir==4){ cx++; while(cx<k.qcols){ if(!func(clist)){ break;} cx++;} }
+				if     (dir==k.UP){ cy--; while(cy>=0     ){ if(!func(clist)){ break;} cy--;} }
+				else if(dir==k.DN){ cy++; while(cy<k.qrows){ if(!func(clist)){ break;} cy++;} }
+				else if(dir==k.LT){ cx--; while(cx>=0     ){ if(!func(clist)){ break;} cx--;} }
+				else if(dir==k.RT){ cx++; while(cx<k.qcols){ if(!func(clist)){ break;} cx++;} }
 
 				if(num==0^(cx<0||cx>=k.qcols||cy<0||cy>=k.qcols||bd.QnC(bd.cnum(cx,cy))!=-1)){
+					if(this.inAutoCheck){ return false;}
 					if(num>0){ bd.sErC(clist,1);}
 					else{ bd.sErC([c,bd.cnum(cx,cy)],1);}
-					return false;
+					result = false;
 				}
 				else if(num>0 && bd.QaC(bd.cnum(cx,cy))!=num){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c,bd.cnum(cx,cy)],1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkSnakesView = function(sinfo){
+			var result = true;
 			var func = function(clist){
 				var cc=bd.cnum(cx,cy); clist.push(cc);
 				if(bd.QnC(cc)!=-1 || bd.QaC(cc)>0){ return false;}
@@ -346,13 +355,14 @@ Puzzles.snakes.prototype = {
 
 				var c2 = bd.cnum(cx,cy), r2 = sinfo.id[c2];
 				if(bd.QaC(c2)>0 && bd.QnC(c2)==-1 && r2>0 && r!=r2){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(clist,1);
 					bd.sErC(idlist,1);
 					bd.sErC(sinfo.room[r2].idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

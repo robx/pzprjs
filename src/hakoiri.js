@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.2.2
+// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.2.3
 //
 Puzzles.hakoiri = function(){ };
 Puzzles.hakoiri.prototype = {
@@ -40,13 +40,13 @@ Puzzles.hakoiri.prototype = {
 		//k.def_psize = 24;
 		k.area = { bcell:0, wcell:0, number:1};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　左クリックで記号が、右ドラッグで補助記号が入力できます。",
-							   " Left Click to input answers, Right Button Drag to input auxiliary marks.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　キーボードの左側や-キー等で、記号の入力ができます。",
 							   " Press left side of the keyboard or '-' key to input marks.");
+		}
+		else{
+			base.setExpression("　左クリックで記号が、右ドラッグで補助記号が入力できます。",
+							   " Left Click to input answers, Right Button Drag to input auxiliary marks.");
 		}
 		base.setTitle("はこいり○△□","Triplets");
 		base.setFloatbgcolor("rgb(127, 160, 96)");
@@ -59,26 +59,26 @@ Puzzles.hakoiri.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3){
-				if(!kp.enabled() || this.btn.Right) this.inputmark(x,y);
-				else kp.display(x,y);
+		mv.mousedown = function(){
+			if(k.editmode) this.inputborder();
+			else if(k.playmode){
+				if(!kp.enabled() || this.btn.Right) this.inputmark();
+				else kp.display();
 			}
 		};
-		mv.mouseup = function(x,y){
-			if(k.mode==1 && this.notInputted()){
-				if(!kp.enabled()) this.inputqnum(x,y,3);
-				else if(this.btn.Left){ kp.display(x,y);}
+		mv.mouseup = function(){
+			if(k.editmode && this.notInputted()){
+				if(!kp.enabled()) this.inputqnum();
+				else if(this.btn.Left){ kp.display();}
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3 && this.btn.Right) this.inputDot(x,y);
+		mv.mousemove = function(){
+			if(k.editmode) this.inputborder();
+			else if(k.playmode && this.btn.Right) this.inputDot();
 		};
 
-		mv.inputmark = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputmark = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell){ return;}
 
 			if(cc==tc.getTCC()){
@@ -113,8 +113,8 @@ Puzzles.hakoiri.prototype = {
 			if(bd.QsC(cc)==1){ this.inputData=1;}
 		};
 
-		mv.inputDot = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputDot = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell || this.inputData!=1 || bd.QnC(cc)!=-1){ return;}
 			var cc0 = tc.getTCC(); tc.setTCC(cc);
 			bd.sQaC(cc,-1);
@@ -147,7 +147,7 @@ Puzzles.hakoiri.prototype = {
 				flag = true;
 			}
 			else if((ca=='4'||ca=='r'||ca=='f'||ca=='v')){
-				bd.setNum(cc,(k.mode==1?-2:-1));
+				bd.setNum(cc,(k.editmode?-2:-1));
 				flag = true;
 			}
 			else if((ca=='5'||ca=='t'||ca=='g'||ca=='b'||ca==' ')){
@@ -155,7 +155,7 @@ Puzzles.hakoiri.prototype = {
 				flag = true;
 			}
 			else if(ca=='-'){
-				if(k.mode==1){ bd.sQnC(cc,(bd.QnC(cc)!=-2?-2:-1)); bd.sQaC(cc,-1); bd.sQsC(cc,0);}
+				if(k.editmode){ bd.sQnC(cc,(bd.QnC(cc)!=-2?-2:-1)); bd.sQaC(cc,-1); bd.sQsC(cc,0);}
 				else if(bd.QnC(cc)==-1){ bd.sQaC(cc,-1); bd.sQsC(cc,(bd.QsC(cc)!=1?1:0));}
 				flag = true;
 			}
@@ -189,8 +189,10 @@ Puzzles.hakoiri.prototype = {
 				this.insertrow();
 			}
 		};
-		kp.generate(99, true, true, kp.kpgenerate.bind(kp));
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
 		kp.kpinput = function(ca){ kc.key_hakoiri(ca);};
+
+		bd.maxnum = 3;
 	},
 
 	//---------------------------------------------------------
@@ -203,32 +205,26 @@ Puzzles.hakoiri.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
-			this.drawDots(x1,y1,x2,y2);
-			this.drawNumbers_hakoiri(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawTCell(x1,y1,x2+1,y2+1);
 		};
 
-		pc.drawNumbers_hakoiri = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				var num = bd.getNum(c);
-				if(num>=1 && num<=3){ text = ({1:"○",2:"△",3:"□"})[num];}
-				else if(num==-2)    { text = "?";}
-				else{ this.hideEL(bd.cell[c].numobj); continue;}
+		pc.dispnumCell = function(c){
+			var num = bd.getNum(c), obj = bd.cell[c];
+			if(num>=1 && num<=3){ text = ({1:"○",2:"△",3:"□"})[num];}
+			else if(num==-2)    { text = "?";}
+			else{ this.hideEL(obj.numobj); return;}
 
-				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
-				this.dispnumCell1(c, bd.cell[c].numobj, 1, text, 0.8, this.getNumberColor(c));
-			}
-			this.vinc();
+			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+			this.dispnum(obj.numobj, 1, text, 0.8, this.getNumberColor(c), obj.px, obj.py);
 		};
 	},
 
@@ -281,6 +277,7 @@ Puzzles.hakoiri.prototype = {
 		};
 
 		ans.checkDifferentObjectInRoom = function(rinfo){
+			result = true;
 			for(var r=1;r<=rinfo.max;r++){
 				var d = [];
 				d[-2]=0; d[1]=0; d[2]=0; d[3]=0;
@@ -288,23 +285,33 @@ Puzzles.hakoiri.prototype = {
 					var val = bd.getNum(rinfo.room[r].idlist[i]);
 					if(val==-1){ continue;}
 
-					if(d[val]==0){ d[val]++;}
-					else if(d[val]>0){ bd.sErC(rinfo.room[r].idlist,1); return false;}
+					if(d[val]==0){ d[val]++; continue;}
+
+					if(this.inAutoCheck){ return false;}
+					bd.sErC(rinfo.room[r].idlist,1);
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkAroundMarks = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.getNum(c)<0){ continue;}
-				var cx = bd.cell[c].cx; var cy = bd.cell[c].cy; var target=0;
+				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, target=0, clist=[c];
 				var func = function(cc){ return (cc!=-1 && bd.getNum(c)==bd.getNum(cc));};
-				target = bd.cnum(cx+1,cy  ); if(func(target)){ bd.sErC([c,target],1); return false;}
-				target = bd.cnum(cx  ,cy+1); if(func(target)){ bd.sErC([c,target],1); return false;}
-				target = bd.cnum(cx-1,cy+1); if(func(target)){ bd.sErC([c,target],1); return false;}
-				target = bd.cnum(cx+1,cy+1); if(func(target)){ bd.sErC([c,target],1); return false;}
+				target = bd.cnum(cx+1,cy  ); if(func(target)){ clist.push(target);}
+				target = bd.cnum(cx  ,cy+1); if(func(target)){ clist.push(target);}
+				target = bd.cnum(cx-1,cy+1); if(func(target)){ clist.push(target);}
+				target = bd.cnum(cx+1,cy+1); if(func(target)){ clist.push(target);}
+
+				if(clist.length>1){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC(clist,1);
+					result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

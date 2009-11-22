@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤギとオオカミ版 shwolf.js v3.2.2
+// パズル固有スクリプト部 ヤギとオオカミ版 shwolf.js v3.2.3
 //
 Puzzles.shwolf = function(){ };
 Puzzles.shwolf.prototype = {
@@ -51,27 +51,27 @@ Puzzles.shwolf.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputcrossMark(x,y);
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+		mv.mousedown = function(){
+			if(k.editmode) this.inputcrossMark();
+			else if(k.playmode){
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.mode==1) this.inputQues(x,y,[0,41,42,-2]);
+				if(k.editmode) this.inputQues([0,41,42,-2]);
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==3){
-				if(this.btn.Left) this.inputborderans(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+		mv.mousemove = function(){
+			if(k.playmode){
+				if(this.btn.Left) this.inputborderans();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
 		// オーバーライド
-		mv.inputBD = function(x,y,flag){
-			var pos = this.crosspos(new Pos(x,y), 0.35);
+		mv.inputBD = function(flag){
+			var pos = this.crosspos(0.35);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = bd.bnum(pos.x, pos.y);
@@ -87,15 +87,15 @@ Puzzles.shwolf.prototype = {
 					var idlist = [id];
 					var bx1, bx2, by1, by2;
 					if(bd.border[id].cx%2==1){
-						var x;
-						x = bd.border[id].cx; while(x>=0        ){ if(bd.QnX(bd.xnum(mf(x/2)  ,mf(bd.border[id].cy/2)))==1){ x-=2; break;} x-=2;} bx1 = x+2;
-						x = bd.border[id].cx; while(x<=2*k.qcols){ if(bd.QnX(bd.xnum(mf(x/2)+1,mf(bd.border[id].cy/2)))==1){ x+=2; break;} x+=2;} bx2 = x-2;
+						var bx;
+						bx = bd.border[id].cx; while(bx>=0        ){ if(bd.QnX(bd.xnum((bx>>1)  ,bd.border[id].cy>>1))==1){ bx-=2; break;} bx-=2;} bx1 = bx+2;
+						bx = bd.border[id].cx; while(bx<=2*k.qcols){ if(bd.QnX(bd.xnum((bx>>1)+1,bd.border[id].cy>>1))==1){ bx+=2; break;} bx+=2;} bx2 = bx-2;
 						by1 = by2 = bd.border[id].cy;
 					}
 					else if(bd.border[id].cy%2==1){
-						var y;
-						y = bd.border[id].cy; while(y>=0        ){ if(bd.QnX(bd.xnum(mf(bd.border[id].cx/2),mf(y/2)  ))==1){ y-=2; break;} y-=2;} by1 = y+2;
-						y = bd.border[id].cy; while(y<=2*k.qrows){ if(bd.QnX(bd.xnum(mf(bd.border[id].cx/2),mf(y/2)+1))==1){ y+=2; break;} y+=2;} by2 = y-2;
+						var by;
+						by = bd.border[id].cy; while(by>=0        ){ if(bd.QnX(bd.xnum(bd.border[id].cx>>1,(by>>1)  ))==1){ by-=2; break;} by-=2;} by1 = by+2;
+						by = bd.border[id].cy; while(by<=2*k.qrows){ if(bd.QnX(bd.xnum(bd.border[id].cx>>1,(by>>1)+1))==1){ by+=2; break;} by+=2;} by2 = by-2;
 						bx1 = bx2 = bd.border[id].cx;
 					}
 					idlist = [];
@@ -110,6 +110,7 @@ Puzzles.shwolf.prototype = {
 			}
 			this.mouseCell = pos;
 		};
+		mv.inputQuesDirectly = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){ };
@@ -127,12 +128,10 @@ Puzzles.shwolf.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
-			//this.drawQueses41_42(x1,y1,x2,y2);
 			this.drawSheepWolf(x1,y1,x2,y2);
 			this.drawCrossMarks(x1,y1,x2+1,y2+1);
 
@@ -141,38 +140,45 @@ Puzzles.shwolf.prototype = {
 			this.drawChassis(x1,y1,x2,y2);
 		};
 
+		pc.EL_IMAGE  = ee.addTemplate('','img',{src:'./src/img/shwolf_obj.gif',unselectable:'on'},{position:'absolute'},null);
+		pc.EL_DIVIMG = ee.addTemplate('','div',{unselectable:'on'},{position:'relative', display:'inline'},null);
+
 		// numobj:？表示用 numobj2:画像表示用
 		pc.drawSheepWolf = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QuC(c)==0){
-					this.hideEL(bd.cell[c].numobj);
-					this.hideEL(bd.cell[c].numobj2);
+				var c = clist[i], obj = bd.cell[c];
+				if(bd.cell[c].ques===0){
+					this.hideEL(obj.numobj);
+					this.hideEL(obj.numobj2);
 				}
-				else if(bd.QuC(c)==-2){
-					this.dispnumCell_General(c);
-					this.hideEL(bd.cell[c].numobj2);
+				else if(bd.cell[c].ques===-2){
+					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+					this.dispnum(obj.numobj, 1, "?", 0.8, this.fontcolor, obj.px, obj.py);
+
+					this.hideEL(obj.numobj2);
 				}
 				else{
-					this.hideEL(bd.cell[c].numobj);
+					this.hideEL(obj.numobj);
 
-					if(!bd.cell[c].numobj2){
-						var _img  = newEL('img').attr("src",'./src/img/shwolf_obj.gif').unselectable();
-						var _sdiv = newEL('div').css("position","relative").css("display","inline").unselectable();
-						bd.cell[c].numobj2 = $(this.CreateDOMAndSetNop()).append(_sdiv.append(_img)).context;
-						bd.cell[c].imgobj  = _img.context; // 勝手に追加しちゃいます悪影響はないと思いますごめんなさい＞＜
+					if(!obj.numobj2){
+						var _img  = ee.createEL(pc.EL_IMAGE ,'');
+						var _sdiv = ee.createEL(pc.EL_DIVIMG,'');
+						_sdiv.appendChild(_img);
+
+						obj.numobj2 = this.CreateDOMAndSetNop();
+						obj.numobj2.appendChild(_sdiv);
+						obj.imgobj  = _img; // 勝手に追加しちゃいます悪影響はないと思いますごめんなさい＞＜
 					}
-					div = bd.cell[c].numobj2;
-					img = bd.cell[c].imgobj;
+					div = obj.numobj2;
+					img = obj.imgobj;
 
-					var ipos  = {41:0,42:1}[bd.QuC(c)];
+					var ipos = {41:0,42:1}[bd.QuC(c)];
 					img.style.width  = ""+(2*k.cwidth)+"px";
 					img.style.height = ""+(k.cheight)+"px";
 					img.style.left   = "-"+mf((ipos+0.5)*k.cwidth)+"px";
 					img.style.top    = ""+mf((!k.br.Opera?0:15)-k.cwidth/2)+"px";
 					img.style.clip   = "rect(1px,"+(k.cwidth*(ipos+1))+"px,"+k.cwidth+"px,"+(k.cwidth*ipos+1)+"px)";
-					img.style.position = 'absolute';
 
 					this.showEL(div);
 					var wid = div.clientWidth, hgt = div.clientHeight;
@@ -182,6 +188,7 @@ Puzzles.shwolf.prototype = {
 			}
 			this.vinc();
 		};
+		pc.isdispnumCell = f_true;
 	},
 
 	//---------------------------------------------------------
@@ -214,7 +221,7 @@ Puzzles.shwolf.prototype = {
 				}
 			}
 
-			return bstr.substring(pos,bstr.length);
+			return bstr.substr(pos);
 		};
 		enc.encodeCircle = function(){
 			var cm = "", num = 0, pass = 0;
@@ -266,21 +273,24 @@ Puzzles.shwolf.prototype = {
 		ans.check1st = function(){ return this.checkLcntCross(1,0);};
 
 		ans.checkLcntCurve = function(){
+			var result = true;
 			for(var i=0;i<(k.qcols-1)*(k.qrows-1);i++){
 				var cx = i%(k.qcols-1)+1, cy = mf(i/(k.qcols-1))+1, xc = bd.xnum(cx,cy);
 				if(area.lcntCross(xc)==2 && bd.QnX(xc)!=1){
 					if(    !(bd.QaB(bd.bnum(cx*2  ,cy*2-1))==1 && bd.QaB(bd.bnum(cx*2  ,cy*2+1))==1)
 						&& !(bd.QaB(bd.bnum(cx*2-1,cy*2  ))==1 && bd.QaB(bd.bnum(cx*2+1,cy*2  ))==1) )
 					{
+						if(this.inAutoCheck){ return false;}
 						this.setCrossBorderError(cx,cy);
-						return false;
+						result = false;
 					}
 				}
 			}
-			return true;
+			return result;
 		};
 
 		ans.checkLineChassis = function(){
+			var result = true;
 			var lines = [];
 			for(var id=0;id<bd.bdmax;id++){ lines[id]=bd.QaB(id);}
 			for(var bx=0;bx<=2*k.qcols;bx+=2){
@@ -294,22 +304,23 @@ Puzzles.shwolf.prototype = {
 				}
 			}
 			for(var id=0;id<bd.bdmax;id++){
-				if(lines[id]==1){
-					var errborder = [];
-					for(var i=0;i<bd.bdmax;i++){ if(lines[i]==1){ errborder.push(i);} }
-					bd.sErBAll(2);
-					bd.sErB(errborder,1);
-					return false;
-				}
+				if(lines[id]!==1){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				var errborder = [];
+				for(var i=0;i<bd.bdmax;i++){ if(lines[i]==1){ errborder.push(i);} }
+				if(result){ bd.sErBAll(2);}
+				bd.sErB(errborder,1);
+				result = false;
 			}
 
-			return true;
+			return result;
 		};
 		ans.cl0 = function(lines,bx,by,dir){
 			while(1){
 				switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-				if((bx+by)%2==0){
-					if(bd.QnX(bd.xnum(mf(bx/2),mf(by/2)))==1){
+				if(!((bx+by)&1)){
+					if(bd.QnX(bd.xnum(bx>>1,by>>1))==1){
 						if(bd.QaB(bd.bnum(bx,by-1))==1){ this.cl0(lines,bx,by,1);}
 						if(bd.QaB(bd.bnum(bx,by+1))==1){ this.cl0(lines,bx,by,2);}
 						if(bd.QaB(bd.bnum(bx-1,by))==1){ this.cl0(lines,bx,by,3);}

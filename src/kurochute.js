@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クロシュート版 kurochute.js v3.2.2
+// パズル固有スクリプト部 クロシュート版 kurochute.js v3.2.3
 //
 Puzzles.kurochute = function(){ };
 Puzzles.kurochute.prototype = {
@@ -53,18 +53,18 @@ Puzzles.kurochute.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputqnum(x,y,Math.max(k.qcols,k.qrows)-1);
-			else if(k.mode==3) this.inputcell(x,y);
+		mv.mousedown = function(){
+			if     (k.editmode) this.inputqnum();
+			else if(k.playmode) this.inputcell();
 		};
-		mv.mouseup = function(x,y){
-			if(k.mode==3 && this.notInputted()) this.inputqsub(x,y);
+		mv.mouseup = function(){
+			if(k.playmode && this.notInputted()) this.inputqsub();
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==3) this.inputcell(x,y);
+		mv.mousemove = function(){
+			if(k.playmode) this.inputcell();
 		};
-		mv.inputqsub = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputqsub = function(){
+			var cc = this.cellid();
 			if(cc==-1){ return;}
 
 			if     (bd.QsC(cc)==0){ bd.sQsC(cc,2);}
@@ -74,27 +74,28 @@ Puzzles.kurochute.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,Math.max(k.qcols,k.qrows)-1);
+			this.key_inputqnum(ca);
 		};
+
+		bd.nummaxfunc = function(cc){ return Math.max(k.qcols,k.qrows)-1;};
 	},
 
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
-		pc.qsubcolor1 = "white";
-		pc.qsubcolor2 = "rgb(224, 224, 224)";
+		pc.qsubcolor2 = pc.bcolor_GREEN;
 
 		pc.paint = function(x1,y1,x2,y2){
 			x2++; y2++;
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawQSubCells(x1,y1,x2,y2);
-			this.drawDots(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
+			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
@@ -102,24 +103,15 @@ Puzzles.kurochute.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
-		pc.drawDots = function(x1,y1,x2,y2){
-			var dsize = k.cwidth*0.06;
-			var clist = this.cellinside(x1,y1,x2,y2,bd.isWhite);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QsC(c)==1){
-					g.fillStyle = this.dotcolor;
-					if(this.vnop("c"+c+"_dot_",1)){
-						g.beginPath();
-						g.arc(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, dsize, 0, Math.PI*2, false);
-						g.fill();
-					}
-				}
-				else{ this.vhide("c"+c+"_dot_");}
-			}
-			this.vinc();
+
+		// オーバーライド drawBGCells用 (qsub==1は表示しない..)
+		pc.setBGCellColor = function(cc){
+			var cell = bd.cell[cc];
+			if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
+			else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2; return true;}
+			return false;
 		};
 	},
 
@@ -194,22 +186,23 @@ Puzzles.kurochute.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkCellNumber = function(){
-			var cx, cy;
+			var cx, cy, result = true;
 
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)<0){ continue;}
-				var cx=bd.cell[c].cx, cy=bd.cell[c].cy, num=bd.QnC(c), cnt=0;
-				if(bd.isBlack(bd.cnum(cx-num,cy))){ cnt++;}
-				if(bd.isBlack(bd.cnum(cx+num,cy))){ cnt++;}
-				if(bd.isBlack(bd.cnum(cx,cy-num))){ cnt++;}
-				if(bd.isBlack(bd.cnum(cx,cy+num))){ cnt++;}
-				if(cnt!=1){
+				var cx=bd.cell[c].cx, cy=bd.cell[c].cy, num=bd.QnC(c), clist=[];
+				if(bd.isBlack(bd.cnum(cx-num,cy))){ clist.push(bd.cnum(cx-num,cy));}
+				if(bd.isBlack(bd.cnum(cx+num,cy))){ clist.push(bd.cnum(cx+num,cy));}
+				if(bd.isBlack(bd.cnum(cx,cy-num))){ clist.push(bd.cnum(cx,cy-num));}
+				if(bd.isBlack(bd.cnum(cx,cy+num))){ clist.push(bd.cnum(cx,cy+num));}
+				if(clist.length>1){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],4);
-					bd.sErC([bd.cnum(cx-num,cy),bd.cnum(cx+num,cy),bd.cnum(cx,cy-num),bd.cnum(cx,cy+num)],1);
-					return false;
+					bd.sErC(clist,1);
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

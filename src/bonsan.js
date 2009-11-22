@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.2.2
+// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.2.3
 //
 Puzzles.bonsan = function(){ };
 Puzzles.bonsan.prototype = {
@@ -51,29 +51,29 @@ Puzzles.bonsan.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1){ this.inputborder(x,y);}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				//else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mousedown = function(){
+			if(k.editmode){ this.inputborder();}
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
 			}
 		};
-		mv.mouseup = function(x,y){
-			if     (k.mode==1 && this.notInputted()){
-				if(!kp.enabled()){this.inputqnum(x,y,Math.max(k.qcols,k.qrows)-1);}
-				else{ kp.display(x,y);}
-			}
-			else if(k.mode==3 && this.notInputted()){ this.inputlight(x,y);}
-		};
-		mv.mousemove = function(x,y){
-			if(k.mode==1){ this.inputborder(x,y);}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				//else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mouseup = function(){
+			if(this.notInputted()){
+				if(k.editmode){
+					if(!kp.enabled()){this.inputqnum();}
+					else{ kp.display();}
+				}
+				else if(k.playmode){ this.inputlight();}
 			}
 		};
-		mv.inputlight = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.mousemove = function(){
+			if(k.editmode){ this.inputborder();}
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+			}
+		};
+		mv.inputlight = function(){
+			var cc = this.cellid();
 			if(cc==-1){ return;}
 
 			if     (bd.QsC(cc)==0){ bd.sQsC(cc, (this.btn.Left?1:2));}
@@ -81,15 +81,16 @@ Puzzles.bonsan.prototype = {
 			else if(bd.QsC(cc)==2){ bd.sQsC(cc, (this.btn.Left?0:1));}
 			pc.paintCell(cc);
 		};
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca, Math.max(k.qcols,k.qrows)-1);
+			this.key_inputqnum(ca);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				this.inputcol('num','knum0','0','0');
 				this.inputcol('num','knum1','1','1');
@@ -107,11 +108,13 @@ Puzzles.bonsan.prototype = {
 				this.inputcol('num','knum9','9','9');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,4);
+				kc.key_inputqnum(ca);
 			};
 		}
+
+		bd.nummaxfunc = function(cc){ return Math.max(k.qcols,k.qrows)-1;};
 	},
 
 	//---------------------------------------------------------
@@ -120,36 +123,39 @@ Puzzles.bonsan.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.qsubcolor1 = "rgb(224, 224, 255)";
 		pc.qsubcolor2 = "rgb(255, 255, 144)";
+		pc.setBGCellColorFunc('qsub2');
+
 		pc.fontsizeratio = 0.9;	// 数字の倍率
+		pc.circleratio = [0.38, 0.38];
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawQSubCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
+
 			this.drawTip(x1,y1,x2,y2);
-
-			//this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
+			//this.drawPekes(x1,y1,x2,y2,0);
 
-			this.drawNumCells(x1,y1,x2,y2);
+			this.drawCircledNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawTip = function(x1,y1,x2,y2){
 			var tsize = k.cwidth*0.30;
 			var tplus = k.cwidth*0.05;
+			var header = "c_tip_";
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
+			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				this.vhide(["c"+c+"_tp1_","c"+c+"_tp2_","c"+c+"_tp3_","c"+c+"_tp4_"]);
-				if(line.lcntCell(c)==1 && bd.QnC(c)==-1){
+				this.vdel([header+c]);
+				if(line.lcntCell(c)==1 && bd.cell[c].qnum==-1){
 					var dir=0, id=-1;
 					if     (bd.isLine(bd.ub(c))){ dir=2; id=bd.ub(c);}
 					else if(bd.isLine(bd.db(c))){ dir=1; id=bd.db(c);}
@@ -157,11 +163,11 @@ Puzzles.bonsan.prototype = {
 					else if(bd.isLine(bd.rb(c))){ dir=3; id=bd.rb(c);}
 
 					g.lineWidth = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3); //LineWidth
-					if     (bd.ErB(id)==1){ g.strokeStyle = this.errlinecolor1; g.lineWidth=g.lineWidth+1;}
-					else if(bd.ErB(id)==2){ g.strokeStyle = this.errlinecolor2;}
-					else                  { g.strokeStyle = this.linecolor;}
+					if     (bd.border[id].error==1){ g.strokeStyle = this.errlinecolor1; g.lineWidth=g.lineWidth+1;}
+					else if(bd.border[id].error==2){ g.strokeStyle = this.errlinecolor2;}
+					else                           { g.strokeStyle = this.linecolor;}
 
-					if(this.vnop("c"+c+"_tp"+dir+"_",0)){
+					if(this.vnop(header+c,0)){
 						var px=bd.cell[c].px+k.cwidth/2+1, py=bd.cell[c].py+k.cheight/2+1;
 						if     (dir==1){ this.inputPath([px,py ,-tsize, tsize ,0,-tplus , tsize, tsize], false);}
 						else if(dir==2){ this.inputPath([px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize], false);}
@@ -170,32 +176,6 @@ Puzzles.bonsan.prototype = {
 						g.stroke();
 					}
 				}
-			}
-			this.vinc();
-		};
-
-		pc.drawNumCells = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.40;
-			var rsize2 = k.cwidth*0.35;
-
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					if(bd.ErC(c)==1){ g.fillStyle = this.errcolor1;}
-					else{ g.fillStyle = this.Cellcolor;}
-					g.beginPath();
-					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cira_",1)){ g.fill();}
-
-					g.fillStyle = "white";
-					g.beginPath();
-					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2, 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cirb_",1)){ g.fill();}
-				}
-				else{ this.vhide("c"+c+"_cira_"); this.vhide("c"+c+"_cirb_");}
-
-				this.dispnumCell_General(c);
 			}
 			this.vinc();
 		};
@@ -254,7 +234,7 @@ Puzzles.bonsan.prototype = {
 			if( !this.checkFractal(rinfo) ){
 				this.setAlert('部屋の中の○が点対称に配置されていません。', 'Position of circles in the room is not point symmetric.'); return false;
 			}
-			if( !this.checkNoObjectInRoom(rinfo, this.getMoved.bind(this)) ){
+			if( !this.checkNoObjectInRoom(rinfo, ee.binder(this, this.getMoved)) ){
 				this.setAlert('○のない部屋があります。','A room has no circle.'); return false;
 			}
 
@@ -272,14 +252,16 @@ Puzzles.bonsan.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkLineOverLetter = function(func){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(line.lcntCell(c)>=2 && bd.QnC(c)!=-1){
-					bd.sErBAll(2);
+					if(this.inAutoCheck){ return false;}
+					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,true);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 
 		ans.checkFractal = function(rinfo){

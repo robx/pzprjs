@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.2.2
+// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.2.3
 //
 Puzzles.kinkonkan = function(){ };
 Puzzles.kinkonkan.prototype = {
@@ -40,13 +40,13 @@ Puzzles.kinkonkan.prototype = {
 		k.def_psize = 48;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　マウスのクリックで斜線などが入力できます。外側をクリックすると光が発射されます。",
-							   " Click to input mirrors or auxiliary marks. Click Outside of the board to give off the light.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　マウスの左ボタンで境界線が入力できます。外側のアルファベットは、同じキーを何回か押して大文字小文字／色違いの計4種類を入力できます。",
 							   " Left Click to input border lines. It is able to change outside alphabets to four type that is either capital or lower, is either black or blue type by pressing the same key.");
+		}
+		else{
+			base.setExpression("　マウスのクリックで斜線などが入力できます。外側をクリックすると光が発射されます。",
+							   " Click to input mirrors or auxiliary marks. Click Outside of the board to give off the light.");
 		}
 		base.setTitle("キンコンカン","Kin-Kon-Kan");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
@@ -57,24 +57,24 @@ Puzzles.kinkonkan.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1){
-				if(!this.clickexcell(x,y)){ this.inputborder(x,y);}
+		mv.mousedown = function(){
+			if(k.editmode){
+				if(!this.clickexcell()){ this.inputborder();}
 			}
-			else if(k.mode==3){
-				this.inputslash(x,y);
+			else if(k.playmode){
+				this.inputslash();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.inputData==12){ ans.errDisp=true; bd.errclear();}
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==1 && this.btn.Left) this.inputborder(x,y);
-			else if(k.mode==3 && this.inputData!=-1) this.inputslash(x,y);
+		mv.mousemove = function(){
+			if     (k.editmode && this.btn.Left) this.inputborder();
+			else if(k.playmode && this.inputData!=-1) this.inputslash();
 		};
-		mv.inputslash = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
-			if(cc==-1){ this.inputflash(x,y); return;}
+		mv.inputslash = function(){
+			var cc = this.cellid();
+			if(cc==-1){ this.inputflash(); return;}
 
 			if     (this.inputData== 3){ bd.sQaC(cc,-1); bd.sQsC(cc,1);}
 			else if(this.inputData== 4){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
@@ -94,8 +94,8 @@ Puzzles.kinkonkan.prototype = {
 
 			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
 		};
-		mv.inputflash = function(x,y){
-			var pos = this.cellpos(new Pos(x,y));
+		mv.inputflash = function(){
+			var pos = this.cellpos();
 			var ec = bd.exnum(pos.x,pos.y)
 			if(ec==-1 || this.mouseCell==ec || (this.inputData!=11 && this.inputData!=-1)){ return;}
 
@@ -109,8 +109,8 @@ Puzzles.kinkonkan.prototype = {
 			this.mouseCell=ec;
 			return;
 		};
-		mv.clickexcell = function(x,y){
-			var pos = this.cellpos(new Pos(x,y));
+		mv.clickexcell = function(){
+			var pos = this.cellpos();
 			var ec = bd.exnum(pos.x, pos.y);
 			if(ec<0 || 2*k.qcols+2*k.qrows+4<=ec){ return false;}
 			var ec0 = tc.getTCC();
@@ -141,7 +141,7 @@ Puzzles.kinkonkan.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputexcell(ca);
 		};
@@ -187,19 +187,19 @@ Puzzles.kinkonkan.prototype = {
 			var cc0 = tc.getTCC(), tcp = tc.getTCP();
 			var flag = true;
 
-			if     (ca == 'up'){
+			if     (ca == k.KEYUP){
 				if(tcp.y==tc.maxy && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.cursoly=tc.miny;}
 				else if(tcp.y>tc.miny){ tc.decTCY(2);}else{ flag=false;}
 			}
-			else if(ca == 'down'){
+			else if(ca == k.KEYDN){
 				if(tcp.y==tc.miny && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.cursoly=tc.maxy;}
 				else if(tcp.y<tc.maxy){ tc.incTCY(2);}else{ flag=false;}
 			}
-			else if(ca == 'left'){
+			else if(ca == k.KEYLT){
 				if(tcp.x==tc.maxx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.cursolx=tc.minx;}
 				else if(tcp.x>tc.minx){ tc.decTCX(2);}else{ flag=false;}
 			}
-			else if(ca == 'right'){
+			else if(ca == k.KEYRT){
 				if(tcp.x==tc.minx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.cursolx=tc.maxx;}
 				else if(tcp.x<tc.maxx){ tc.incTCX(2);}else{ flag=false;}
 			}
@@ -222,8 +222,8 @@ Puzzles.kinkonkan.prototype = {
 			um.enableRecord();
 		};
 
-		tc.getTCC = function(){ return bd.exnum(mf((this.cursolx-1)/2), mf((this.cursoly-1)/2));}.bind(tc);
-		tc.setTCC = function(id){
+		tc.getTCC = function(){ return ee.binder(tc, bd.exnum((this.cursolx-1)>>1, (this.cursoly-1)>>1));};
+		tc.setTCC = ee.binder(tc, function(id){
 			if(id<0 || 2*k.qcols+2*k.qrows+4<=id){ return;}
 			if     (id<  k.qcols)            { this.cursolx=2*id+1;           this.cursoly=this.miny;                 }
 			else if(id<2*k.qcols)            { this.cursolx=2*(id-k.qcols)+1; this.cursoly=this.maxy;                 }
@@ -233,7 +233,7 @@ Puzzles.kinkonkan.prototype = {
 			else if(id<2*k.qcols+2*k.qrows+2){ this.cursolx=this.maxx; this.cursoly=this.miny;}
 			else if(id<2*k.qcols+2*k.qrows+3){ this.cursolx=this.minx; this.cursoly=this.maxy;}
 			else if(id<2*k.qcols+2*k.qrows+4){ this.cursolx=this.maxx; this.cursoly=this.maxy;}
-		}.bind(tc);
+		});
 		tc.setTCC(0);
 	},
 
@@ -249,102 +249,104 @@ Puzzles.kinkonkan.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 
 			this.drawErrorCells_kinkonkan(x1,y1,x2,y2);
-			this.drawTriangle(x1,y1,x2,y2);
-			this.drawWhiteCells_kinkonkan(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2);
 
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawSlashes(x1,y1,x2,y2);
 
-			this.drawEXcells(x1,y1,x2,y2);
+			this.drawEXcells_kinkonkan(x1,y1,x2,y2);
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1-1,y1-1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1-1,y1-1,x2,y2);
 		};
 
 		pc.drawErrorCells_kinkonkan = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var headers = ["c_full_", "c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_", "c_full_"];
+
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.ErC(c)==1 || bd.ErC(c)==6){
-					if     (bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else if(bd.ErC(c)==6){ g.fillStyle = this.errbcolor2;}
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);}
+				var c = clist[i], err = bd.cell[c].error;
+				if(err!==0){
+					if     (err==1){ g.fillStyle = this.errbcolor1;}
+					else if(err>=2){ g.fillStyle = this.errbcolor2;}
+					if(err===1 || err===6){
+						if(this.vnop(headers[err-1]+c,1)){
+							g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
+						}
+					}
+					else{ this.drawTriangle1(bd.cell[c].px, bd.cell[c].py, err, headers[err-1]+c);}
 				}
-				else{ this.vhide("c"+c+"_full_");}
+				else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c, headers[4]+c, headers[5]+c]);}
 			}
 			this.vinc();
 		};
-		pc.drawWhiteCells_kinkonkan = function(x1,y1,x2,y2){
-			var dsize = k.cwidth*0.06;
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QsC(c)==1){
-					g.fillStyle = this.dotcolor;
-					g.beginPath();
-					g.arc(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, dsize, 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_dot_",1)){ g.fill();}
-				}
-				else{ this.vhide("c"+c+"_dot_");}
-			}
-			this.vinc();
-		}
 		pc.drawSlashes = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var headers = ["c_sl1_", "c_sl2_"];
+			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
+
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
-				this.vhide(["c"+c+"_sl1_","c"+c+"_sl2_"]);
-				if(bd.QaC(c)!=-1){
+				if(bd.cell[c].qans!=-1){
 					g.strokeStyle = this.Cellcolor;
-					g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
-
-					if     (bd.QaC(c)==1 && this.vnop("c"+c+"_sl1_",0)){
-						this.inputPath([bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight], true); g.stroke();
+					if(bd.cell[c].qans==1){
+						if(this.vnop(headers[0]+c,0)){
+							this.inputPath([bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight], true);
+							g.stroke();
+						}
 					}
-					else if(bd.QaC(c)==2 && this.vnop("c"+c+"_sl2_",0)){
-						this.inputPath([bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight], true); g.stroke();
+					else{ this.vhide(headers[0]+c);}
+					if(bd.cell[c].qans==2){
+						if(this.vnop(headers[1]+c,0)){
+							this.inputPath([bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight], true);
+							g.stroke();
+						}
 					}
+					else{ this.vhide(headers[1]+c);}
 				}
+				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
 			this.vinc();
 		};
 
-		pc.drawEXcells = function(x1,y1,x2,y2){
-			for(var cx=x1;cx<=x2;cx++){
-				for(var cy=y1;cy<=y2;cy++){
-					var c = bd.exnum(cx,cy);
-					if(c<0 || 2*k.qcols+2*k.qrows<=c){ continue;}
+		pc.drawEXcells_kinkonkan = function(x1,y1,x2,y2){
+			var header = "ex_full_";
 
-					if(bd.ErE(c)==6){
-						g.fillStyle = this.errbcolor2;
-						if(this.vnop("ex"+c+"_full_",1)){ g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);}
+			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+			for(var i=0;i<exlist.length;i++){
+				var c = exlist[i];
+				var obj = bd.excell[c];
+
+				if(bd.excell[c].error===6){
+					g.fillStyle = this.errbcolor2;
+					if(this.vnop(header+c,1)){
+						g.fillRect(obj.px+1, obj.py+1, k.cwidth-1, k.cheight-1);
 					}
-					else{ this.vhide("ex"+c+"_full_");}
+				}
+				else{ this.vhide(header+c);}
 
-					if(bd.DiE(c)==0 && bd.QnE(c)==-1){ this.hideEL(bd.excell[c].numobj);}
-					else{
-						if(!bd.excell[c].numobj){ bd.excell[c].numobj = this.CreateDOMAndSetNop();}
-						var num=bd.QnE(c), canum=bd.DiE(c);
+				if(bd.excell[c].direc===0 && bd.excell[c].qnum===-1){ this.hideEL(obj.numobj);}
+				else{
+					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+					var num=bd.excell[c].qnum, canum=bd.excell[c].direc;
 
-						var color = this.fontErrcolor;
-						if(bd.ErE(c)!=1){ color=(canum<=52?this.fontcolor:this.fontAnscolor);}
+					var color = this.fontErrcolor;
+					if(bd.excell[c].error!==1){ color=(canum<=52?this.fontcolor:this.fontAnscolor);}
 
-						var fontratio = 0.66;
-						if(canum>0&&num>=10){ fontratio = 0.55;}
+					var fontratio = 0.66;
+					if(canum>0&&num>=10){ fontratio = 0.55;}
 
-						var text="";
-						if     (canum> 0&&canum<= 26){ text+=(canum+ 9).toString(36).toUpperCase();}
-						else if(canum>26&&canum<= 52){ text+=(canum-17).toString(36).toLowerCase();}
-						else if(canum>52&&canum<= 78){ text+=(canum-43).toString(36).toUpperCase();}
-						else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
-						if(num>=0){ text+=num.toString(10);}
+					var text="";
+					if     (canum> 0&&canum<= 26){ text+=(canum+ 9).toString(36).toUpperCase();}
+					else if(canum>26&&canum<= 52){ text+=(canum-17).toString(36).toLowerCase();}
+					else if(canum>52&&canum<= 78){ text+=(canum-43).toString(36).toUpperCase();}
+					else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
+					if(num>=0){ text+=num.toString(10);}
 
-						this.dispnumEXcell1(c, bd.excell[c].numobj, 1, text, fontratio, color);
-					}
-					//bd.getDirecEXcell(c)
+					this.dispnum(obj.numobj, 1, text, fontratio, color, obj.px, obj.py);
 				}
 			}
 			this.vinc();
@@ -386,13 +388,13 @@ Puzzles.kinkonkan.prototype = {
 			ec=0;
 			for(var i=a;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
-				if     (ca == '.'){ bd.sQnE(subint[ec], -2);                                   ec++;      }
-				else if(ca == '-'){ bd.sQnE(subint[ec], parseInt(bstr.substring(i+1,i+3),16)); ec++; i+=2;}
-				else              { bd.sQnE(subint[ec], parseInt(bstr.substring(i  ,i+1),16)); ec++;      }
+				if     (ca == '.'){ bd.sQnE(subint[ec], -2);                              ec++;      }
+				else if(ca == '-'){ bd.sQnE(subint[ec], parseInt(bstr.substr(i+1,2),16)); ec++; i+=2;}
+				else              { bd.sQnE(subint[ec], parseInt(bstr.substr(i  ,1),16)); ec++;      }
 				if(ec >= subint.length){ a=i+1; break;}
 			}
 
-			return bstr.substring(a,bstr.length);
+			return bstr.substr(a);
 		};
 		enc.encodeKinkonkan = function(type){
 			var cm="", cm2="";

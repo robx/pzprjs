@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぬりぼう版 nuribou.js v3.2.2
+// パズル固有スクリプト部 ぬりぼう版 nuribou.js v3.2.3
 //
 Puzzles.nuribou = function(){ };
 Puzzles.nuribou.prototype = {
@@ -53,29 +53,29 @@ Puzzles.nuribou.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1){
-				if(!kp.enabled()){ this.inputqnum(x,y,99);}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
-			else if(k.mode==3) this.inputcell(x,y);
+			else if(k.playmode) this.inputcell();
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3) this.inputcell(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode) this.inputcell();
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(0, true, false, '');
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,99);
+				kc.key_inputqnum(ca);
 			};
 		}
 	},
@@ -84,11 +84,12 @@ Puzzles.nuribou.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.bcolor = pc.bcolor_GREEN;
+		pc.setBGCellColorFunc('qsub1');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawWhiteCells(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
@@ -96,7 +97,7 @@ Puzzles.nuribou.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 
@@ -147,20 +148,23 @@ Puzzles.nuribou.prototype = {
 		};
 
 		ans.checkCorners = function(binfo){
-			var cc1, cc2;
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.cell[c].cx==k.qcols-1 || bd.cell[c].cy==k.qrows-1){ continue;}
+
 				var cc1, cc2;
 				if     ( bd.isBlack(c) && bd.isBlack(c+k.qcols+1) ){ cc1 = c; cc2 = c+k.qcols+1;}
 				else if( bd.isBlack(c+1) && bd.isBlack(c+k.qcols) ){ cc1 = c+1; cc2 = c+k.qcols;}
 				else{ continue;}
+
 				if(binfo.room[binfo.id[cc1]].idlist.length == binfo.room[binfo.id[cc2]].idlist.length){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(binfo.room[binfo.id[cc1]].idlist,1);
 					bd.sErC(binfo.room[binfo.id[cc2]].idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

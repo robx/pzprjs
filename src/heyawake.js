@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へやわけ版 heyawake.js v3.2.2
+// パズル固有スクリプト部 へやわけ版 heyawake.js v3.2.3
 //
 Puzzles.heyawake = function(){ };
 Puzzles.heyawake.prototype = {
@@ -54,40 +54,60 @@ Puzzles.heyawake.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed(x,y);}
-			else if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3) this.inputcell(x,y);
+		mv.mousedown = function(){
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
+			else if(k.editmode) this.inputborder();
+			else if(k.playmode) this.inputcell();
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.mode==1){
-					if(!kp.enabled()){ this.inputqnum(x,y,99);}
-					else{ kp.display(x,y);}
+				if(k.editmode){
+					if(!kp.enabled()){ this.inputqnum();}
+					else{ kp.display();}
 				}
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3) this.inputcell(x,y);
+		mv.mousemove = function(){
+			if     (k.editmode) this.inputborder();
+			else if(k.playmode) this.inputcell();
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(0, true, false, '');
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,99);
+				kc.key_inputqnum(ca);
 			};
 		}
+
+		bd.maxnum = 255;
+		bd.nummaxfunc = function(cc){
+			var id = area.room.id[cc];
+			var d = ans.getSizeOfClist(area.room[id].clist,f_true);
+			var m=d.x2-d.x1+1, n=d.y2-d.y1+1; if(m>n){ var t=m;m=n;n=t;}
+			if     (m===1){ return mf((n+1)/2);}
+			else if(m===2){ return n;}
+			else if(m===3){
+				if     (n%4===0){ return (n  )/4*5  ;}
+				else if(n%4===1){ return (n-1)/4*5+2;}
+				else if(n%4===2){ return (n-2)/4*5+3;}
+				else            { return (n+1)/4*5  ;}
+			}
+			else{
+				if(((Math.log(m+1)/Math.log(2))%1===0)&&(m===n)){ return (m*n+m+n)/3;}
+				else if((m&1)&&(n&1)){ return mf((m*n+m+n-1)/3);}
+				else{ return mf((m*n+m+n-2)/3);}
+			}
+		};
 	},
 
 	//---------------------------------------------------------
@@ -96,12 +116,13 @@ Puzzles.heyawake.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.bcolor = pc.bcolor_GREEN;
 		pc.BBcolor = "rgb(160, 255, 191)";
+		pc.setBGCellColorFunc('qsub1');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawWhiteCells(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
@@ -111,9 +132,9 @@ Puzzles.heyawake.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			this.drawBoxBorders(x1-1,y1-1,x2+1,y2+1,0);
+			this.drawBoxBorders(x1,y1,x2,y2,false);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 
@@ -164,16 +185,18 @@ Puzzles.heyawake.prototype = {
 			while(c<bd.cellmax){ rdata[c]=-1; c++;}
 
 			var inp = bstr.split("/");
-			var RE1 = new RegExp("(\\d+)in(\\d+)x(\\d+)$","g");
-			var RE2 = new RegExp("(\\d+)x(\\d+)$","g");
 
-			var i=0;
-			c=0;
+			var i=0; c=0;
 			while(c<bd.cellmax){
 				if(rdata[c]==-1){
 					var width, height;
-					if     (inp[i].match(RE1)){ width = parseInt(RegExp.$2); height = parseInt(RegExp.$3); bd.sQnC(bd.cnum(bd.cell[c].cx,bd.cell[c].cy), parseInt(RegExp.$1)); }
-					else if(inp[i].match(RE2)){ width = parseInt(RegExp.$1); height = parseInt(RegExp.$2); }
+					if(inp[i].match(/(\d+in)?(\d+)x(\d+)$/)){
+						width = parseInt(RegExp.$2);
+						height = parseInt(RegExp.$3);
+						if(RegExp.$1.length>0){
+							bd.sQnC(c, parseInt(RegExp.$1));
+						}
+					}
 
 					for(var cx=bd.cell[c].cx;cx<=bd.cell[c].cx+width-1;cx++){
 						for(var cy=bd.cell[c].cy;cy<=bd.cell[c].cy+height-1;cy++){
@@ -276,12 +299,12 @@ Puzzles.heyawake.prototype = {
 				var cnt=-1;
 				for(var bx=1;bx<2*k.qcols;bx++){
 					if(bx%2==1){
-						if( bd.isWhite(bd.cnum( mf(bx/2),mf(by/2) )) && cnt==-1 ){ cnt=0; fx=bx;}
-						else if( bd.isBlack(bd.cnum( mf(bx/2),mf(by/2) )) ){ cnt=-1;}
+						if( bd.isWhite(bd.cnum(bx>>1,by>>1)) && cnt==-1 ){ cnt=0; fx=bx;}
+						else if( bd.isBlack(bd.cnum(bx>>1,by>>1)) ){ cnt=-1;}
 
 						if( cnt==2 ){
 							for(bx=fx;bx<2*k.qcols;bx+=2){
-								var cc = bd.cnum( mf(bx/2),mf(by/2) );
+								var cc = bd.cnum(bx>>1,by>>1);
 								if( bd.isWhite(cc) ){ bd.sErC([cc],1);}else{ break;}
 							}
 							return false;
@@ -296,12 +319,12 @@ Puzzles.heyawake.prototype = {
 				var cnt=-1;
 				for(var by=1;by<2*k.qrows;by++){
 					if(by%2==1){
-						if( bd.isWhite(bd.cnum( mf(bx/2),mf(by/2) )) && cnt==-1 ){ cnt=0; fy=by;}
-						else if( bd.isBlack(bd.cnum( mf(bx/2),mf(by/2) )) ){ cnt=-1;}
+						if( bd.isWhite(bd.cnum(bx>>1,by>>1)) && cnt==-1 ){ cnt=0; fy=by;}
+						else if( bd.isBlack(bd.cnum(bx>>1,by>>1)) ){ cnt=-1;}
 
 						if( cnt>=2 ){
 							for(by=fy;by<2*k.qrows;by+=2){
-								var cc = bd.cnum( mf(bx/2),mf(by/2) );
+								var cc = bd.cnum(bx>>1,by>>1);
 								if( bd.isWhite(cc) ){ bd.sErC([cc],1);}else{ break;}
 							}
 							return false;

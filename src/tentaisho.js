@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.2.2
+// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.2.3
 //
 Puzzles.tentaisho = function(){ };
 Puzzles.tentaisho.prototype = {
@@ -40,81 +40,81 @@ Puzzles.tentaisho.prototype = {
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　星をクリックすると色がぬれます。",
-							   " Click star to paint.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　問題作成モード時に、マウスの右ボタンで下絵を描くことが出来ます。この背景色は「星をクリック」や「色をつける」ボタンで上書きされます。",
 							   " In edit mode, it is able to paint a design by Right Click. This background color is superscripted by clicking star or pressing 'Color up' button.");
+		}
+		else{
+			base.setExpression("　星をクリックすると色がぬれます。",
+							   " Click star to paint.");
 		}
 		base.setTitle("天体ショー","Tentaisho");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){
-		if(k.callmode=='pmake'){
-			pp.addCheckToFlags('discolor','setting',false);
-			pp.setMenuStr('discolor', '色分け無効化', 'Disable color');
-			pp.setLabel  ('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
+		if(k.EDITOR){
+			pp.addCheck('discolor','setting',false,'色分け無効化','Disable color');
+			pp.setLabel('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
 		}
 
-		$("#btnarea").append("<input type=\"button\" id=\"btncolor\" value=\"色をつける\" onClick=\"javascript:mv.encolorall();\">");
-		menu.addButtons($("#btncolor").unselectable(),"色をつける","Color up");
+		var el = ee.createEL(menu.EL_BUTTON, 'btncolor');
+		menu.addButtons(el, ee.binder(mv, mv.encolorall), "色をつける","Color up");
+		ee('btnarea').appendEL(el);
 	},
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1){
-				if(this.btn.Left) this.inputstar(x,y);
-				else if(this.btn.Right) this.inputBGcolor1(x,y);
+		mv.mousedown = function(){
+			if(k.editmode){
+				if(this.btn.Left) this.inputstar();
+				else if(this.btn.Right) this.inputBGcolor1();
 			}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputborder_tentaisho(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+			else if(k.playmode){
+				if(this.btn.Left) this.inputborder_tentaisho();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
-		mv.mouseup = function(x,y){
-			if(k.mode==3 && this.notInputted()) this.inputBGcolor3(x,y);
+		mv.mouseup = function(){
+			if(k.playmode && this.notInputted()) this.inputBGcolor3();
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==1){
-				if(this.btn.Right) this.inputBGcolor1(x,y);
+		mv.mousemove = function(){
+			if(k.editmode){
+				if(this.btn.Right) this.inputBGcolor1();
 			}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputborder_tentaisho(x,y);
-				else if(this.btn.Right) this.inputQsubLine(x,y);
+			else if(k.playmode){
+				if(this.btn.Left) this.inputborder_tentaisho();
+				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
 
-		mv.inputBGcolor1 = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputBGcolor1 = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell){ return;}
 			if(this.inputData==-1){ this.inputData=(bd.QsC(cc)==0)?3:0;}
 			bd.sQsC(cc, this.inputData);
 			this.mouseCell = cc; 
 			pc.paintCell(cc);
 		};
-		mv.inputBGcolor3 = function(x,y){
-			if(k.callmode=='pmake'){ if(menu.getVal('discolor')){ return;} }
+		mv.inputBGcolor3 = function(){
+			if(k.EDITOR){ if(pp.getVal('discolor')){ return;} }
 
-			var pos = this.crosspos(new Pos(x,y), 0.34);
+			var pos = this.crosspos(0.34);
 			var id = bd.snum(pos.x, pos.y);
 			if(id==-1 || bd.getStar(id)==0){ return;}
 
 			var cc;
 			var sx=id%(2*k.qcols-1)+1;
 			var sy=mf(id/(2*k.qcols-1))+1;
-			if     (sx%2==1 && sy%2==1){ cc = bd.cnum(mf(sx/2),mf(sy/2));}
-			else if(sx%2==0 && sy%2==0){
-				var xc = bd.xnum(mf(sx/2),mf(sy/2));
-				if(line.lcntCell(xc)==0){ cc = bd.cnum(mf(sx/2)-1,mf(sy/2)-1);}
+			if     ( (sx&1) &&  (sy&1)){ cc = bd.cnum(sx>>1,sy>>1);}
+			else if(!(sx&1) && !(sy&1)){
+				var xc = bd.xnum(sx>>1,sy>>1);
+				if(line.lcntCell(xc)==0){ cc = bd.cnum((sx>>1)-1,(sy>>1)-1);}
 				else{ return;}
 			}
 			else{
-				if(bd.QaB(bd.bnum(sx,sy))==0){ cc = bd.cnum(mf((sx-sy%2)/2), mf((sy-sx%2)/2));}
+				if(bd.QaB(bd.bnum(sx,sy))==0){ cc = bd.cnum((sx-sy%2)>>1, (sy-sx%2)>>1);}
 				else{ return;}
 			}
 
@@ -124,16 +124,16 @@ Puzzles.tentaisho.prototype = {
 				pc.paint(d.x1, d.y1, d.x2, d.y2);
 			}
 		};
-		mv.inputborder_tentaisho = function(x,y){
-			var pos = this.crosspos(new Pos(x,y), 0.34);
+		mv.inputborder_tentaisho = function(){
+			var pos = this.crosspos(0.34);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = bd.bnum(pos.x, pos.y);
 			if(id==-1 && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
 
 			if(this.mouseCell!=-1 && id!=-1){
-				if((pos.x%2==0 && this.mouseCell.x==pos.x && Math.abs(this.mouseCell.y-pos.y)==1) ||
-				   (pos.y%2==0 && this.mouseCell.y==pos.y && Math.abs(this.mouseCell.x-pos.x)==1) )
+				if((!(pos.x&1) && this.mouseCell.x==pos.x && Math.abs(this.mouseCell.y-pos.y)==1) ||
+				   (!(pos.y&1) && this.mouseCell.y==pos.y && Math.abs(this.mouseCell.x-pos.x)==1) )
 				{
 					this.mouseCell=-1
 
@@ -146,8 +146,8 @@ Puzzles.tentaisho.prototype = {
 			}
 			this.mouseCell = pos;
 		};
-		mv.inputstar = function(x,y){
-			var pos = this.crosspos(new Pos(x,y), 0.25);
+		mv.inputstar = function(){
+			var pos = this.crosspos(0.25);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = bd.snum(pos.x, pos.y);
@@ -158,7 +158,7 @@ Puzzles.tentaisho.prototype = {
 				else if(this.btn.Right){ bd.setStar(id, {0:2,1:0,2:1}[bd.getStar(id)]);}
 			}
 			this.mouseCell = pos;
-			pc.paint(mf((pos.x-1)/2),mf((pos.y-1)/2),mf((pos.x+1)/2),mf((pos.y+1)/2));
+			pc.paint((pos.x-1)>>1,(pos.y-1)>>1,(pos.x+1)>>1,(pos.y+1)>>1);
 		};
 
 		mv.encolorall = function(){
@@ -172,7 +172,7 @@ Puzzles.tentaisho.prototype = {
 			var flag = false;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(k.callmode=="pmake" && bd.QsC(c)==3 && ret!=2){ continue;}
+				if(k.EDITOR && bd.QsC(c)==3 && ret!=2){ continue;}
 				else if(bd.QsC(c)!=(ret>0?ret:0)){
 					bd.sQsC(c,(ret>0?ret:0));
 					flag = true;
@@ -185,23 +185,24 @@ Puzzles.tentaisho.prototype = {
 		kc.keyinput = function(ca){ };
 
 		// 一部qsubで消したくないものがあるため上書き
-		base.ASconfirm = function(){
-			if(confirm("補助記号を消去しますか？")){
-				um.chainflag=0;
-				for(i=0;i<k.qcols*k.qrows;i++){
-					if(bd.QsC(i)==1){ um.addOpe('cell','qsub',i,bd.QsC(i),0);}
-				}
-				if(k.isborder){
-					for(i=0;i<bd.bdmax;i++){
-						if(bd.QsB(i)!=0){ um.addOpe('border','qsub',i,bd.QsB(i),0);}
+		menu.ex.ASconfirm = function(){
+			if(confirm(menu.isLangJP()?"補助記号を消去しますか？":"Do you want to erase the auxiliary marks?")){
+				um.newOperation(true);
+				for(i=0;i<bd.cellmax;i++){
+					if(bd.QsC(i)===1){
+						um.addOpe(k.CELL,k.QSUB,i,bd.QsC(i),0);
+						bd.cell[i].qsub = 0;
 					}
 				}
+				for(i=0;i<bd.bdmax;i++){
+					if(bd.QsB(i)!==0){
+						um.addOpe(k.BORDER,k.QSUB,i,bd.QsB(i),0);
+						bd.border[i].qsub = 0;
+					}
+				}
+
 				if(!g.vml){ pc.flushCanvasAll();}
-
-				$.each(bd.cell,   function(i,cell)  { cell.error=0; if(cell.qsub==1){ cell.qsub=0;} });
-				$.each(bd.border, function(i,border){ border.error=0; border.qsub=0;});
-
-				pc.paint(0,0,k.qcols-1,k.qrows-1);
+				pc.paintAll();
 			}
 		};
 
@@ -214,8 +215,8 @@ Puzzles.tentaisho.prototype = {
 			var sx=id%(2*k.qcols-1)+1;
 			var sy=mf(id/(2*k.qcols-1))+1;
 
-			if     (sx%2==1 && sy%2==1){ return bd.QuC(bd.cnum(mf(sx/2),mf(sy/2)));}
-			else if(sx%2==0 && sy%2==0){ return bd.QuX(bd.xnum(mf(sx/2),mf(sy/2)));}
+			if     ( (sx&1) &&  (sy&1)){ return bd.QuC(bd.cnum(sx>>1,sy>>1));}
+			else if(!(sx&1) && !(sy&1)){ return bd.QuX(bd.xnum(sx>>1,sy>>1));}
 			else                       { return bd.QnB(bd.bnum(sx,sy));}
 		};
 		bd.getStarError = function(id){
@@ -223,8 +224,8 @@ Puzzles.tentaisho.prototype = {
 			var sx=id%(2*k.qcols-1)+1;
 			var sy=mf(id/(2*k.qcols-1))+1;
 
-			if     (sx%2==1 && sy%2==1){ return bd.ErC(bd.cnum(mf(sx/2),mf(sy/2)));}
-			else if(sx%2==0 && sy%2==0){ return bd.ErX(bd.xnum(mf(sx/2),mf(sy/2)));}
+			if     ( (sx&1) &&  (sy&1)){ return bd.ErC(bd.cnum(sx>>1,sy>>1));}
+			else if(!(sx&1) && !(sy&1)){ return bd.ErX(bd.xnum(sx>>1,sy>>1));}
 			else                       { return bd.ErB(bd.bnum(sx,sy));}
 		};
 		bd.setStar = function(id,val){
@@ -232,8 +233,8 @@ Puzzles.tentaisho.prototype = {
 			var sx=id%(2*k.qcols-1)+1;
 			var sy=mf(id/(2*k.qcols-1))+1;
 
-			if     (sx%2==1 && sy%2==1){ bd.sQuC(bd.cnum(mf(sx/2),mf(sy/2)),val);}
-			else if(sx%2==0 && sy%2==0){ bd.sQuX(bd.xnum(mf(sx/2),mf(sy/2)),val);}
+			if     ( (sx&1) &&  (sy&1)){ bd.sQuC(bd.cnum(sx>>1,sy>>1),val);}
+			else if(!(sx&1) && !(sy&1)){ bd.sQuX(bd.xnum(sx>>1,sy>>1),val);}
 			else{
 				um.disCombine = 1;
 				bd.sQnB(bd.bnum(sx,sy),val);
@@ -242,7 +243,7 @@ Puzzles.tentaisho.prototype = {
 		};
 
 		area.call_setBorder = function(id,val,type){
-			if(type=='qans'){ this.setBorder(id,val);}
+			if(type==k.QANS){ this.setBorder(id,val);}
 		};
 	},
 
@@ -254,13 +255,13 @@ Puzzles.tentaisho.prototype = {
 		pc.qsubcolor1 = "rgb(176,255,176)";
 		pc.qsubcolor2 = "rgb(108,108,108)";
 		pc.errbcolor1 = pc.errbcolor1_DARK;
+		pc.setBGCellColorFunc('qsub3');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawQSubCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawBorderAnswers(x1,y1,x2,y2);
@@ -273,46 +274,57 @@ Puzzles.tentaisho.prototype = {
 
 		pc.drawBorderAnswers = function(x1,y1,x2,y2){
 			var lw = this.lw, lm = this.lm;
+			var header = "b_bd_";
 
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2,f_true);
+			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
-				if(bd.QaB(id)==1){
-					if     (bd.ErB(id)==1){ g.fillStyle = this.errcolor1;}
-					else if(bd.ErB(id)==2){ g.fillStyle = this.errBorderQanscolor2;}
-					else{ g.fillStyle = this.BorderQanscolor;}
+				if(bd.border[id].qans===1){
+					if     (bd.border[id].error===1){ g.fillStyle = this.errcolor1;}
+					else if(bd.border[id].error===2){ g.fillStyle = this.errBorderQanscolor2;}
+					else                            { g.fillStyle = this.BorderQanscolor;}
 
-					if     (bd.border[id].cy%2==1){ if(this.vnop("b"+id+"_bd_",1)){ g.fillRect(bd.border[id].px-lm,                bd.border[id].py-mf(k.cheight/2)-lm, lw         , k.cheight+lw);} }
-					else if(bd.border[id].cx%2==1){ if(this.vnop("b"+id+"_bd_",1)){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm, bd.border[id].py-lm                , k.cwidth+lw, lw          );} }
+					if(this.vnop(header+id,1)){
+						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm,  lw, k.cheight+lw);}
+						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm,  k.cwidth+lw,  lw);}
+					}
 				}
-				else{ this.vhide("b"+id+"_bd_");}
+				else{ this.vhide(header+id);}
 			}
 			this.vinc();
 		};
 		pc.drawStars = function(x1,y1,x2,y2){
 			var rsize  = k.cwidth*0.18;
 			var rsize2 = k.cwidth*0.14;
+			var headers = ["s_star41a_", "s_star41b_"];
 
 			for(var y=2*y1-2;y<=2*y2+2;y++){
-				if(y<=0 || 2*k.qrows<=y){ continue;}
+				if(y<=0){ y=0; continue;} if(2*k.qrows<=y){ break;}
 				for(var x=2*x1-2;x<=2*x2+2;x++){
-					if(x<=0 || 2*k.qcols<=x){ continue;}
+					if(x<=0){ x=0; continue;} if(2*k.qcols<=x){ break;}
+
 					var id = bd.snum(x,y);
-					if(bd.getStar(id)==1 || bd.getStar(id)==2){
-						if(bd.getStarError(id)){ g.fillStyle=this.errcolor1;}
-						else{ g.fillStyle = "black";}
-						g.beginPath();
-						g.arc(k.p0.x+x*k.cwidth/2, k.p0.y+y*k.cheight/2, rsize , 0, Math.PI*2, false);
-						if(this.vnop("s"+id+"_star41a_",1)){ g.fill(); }
+
+					if(bd.getStar(id)===1 || bd.getStar(id)===2){
+						var iserr = bd.getStarError(id);
+						g.fillStyle = (iserr ? this.errcolor1 : this.Cellcolor);
+						if(this.vnop(headers[0]+id,1)){
+							g.beginPath();
+							g.arc(k.p0.x+x*k.cwidth/2, k.p0.y+y*k.cheight/2, rsize , 0, Math.PI*2, false);
+							g.fill();
+						}
 					}
-					else{ this.vhide("s"+id+"_star41a_");}
-					if(bd.getStar(id)==1){
-						g.fillStyle = "white";
-						g.beginPath();
-						g.arc(k.p0.x+x*k.cwidth/2, k.p0.y+y*k.cheight/2, rsize2, 0, Math.PI*2, false);
-						if(this.vnop("s"+id+"_star41b_",1)){ g.fill(); }
+					else{ this.vhide(headers[0]+id);}
+
+					if(bd.getStar(id)===1){
+						g.fillStyle = (iserr ? this.errbcolor1 : "white");
+						if(this.vnop(headers[1]+id,1)){
+							g.beginPath();
+							g.arc(k.p0.x+x*k.cwidth/2, k.p0.y+y*k.cheight/2, rsize2, 0, Math.PI*2, false);
+							g.fill();
+						}
 					}
-					else{ this.vhide("s"+id+"_star41b_");}
+					else{ this.vhide(headers[1]+id);}
 				}
 			}
 			this.vinc();
@@ -349,7 +361,7 @@ Puzzles.tentaisho.prototype = {
 
 				if(s>=(2*k.qcols-1)*(2*k.qrows-1)){ break;}
 			}
-			return bstr.substring(i+1,bstr.length);
+			return bstr.substr(i+1);
 		};
 		enc.encodeStar = function(){
 			var count = 0;
@@ -473,23 +485,26 @@ Puzzles.tentaisho.prototype = {
 		};
 
 		ans.checkStarOnLine = function(){
+			var result = true;
 			for(var s=0;s<(2*k.qcols-1)*(2*k.qrows-1);s++){
 				if(bd.getStar(s)<=0){ continue;}
 				var sx=s%(2*k.qcols-1)+1, sy=mf(s/(2*k.qcols-1))+1;
-				if(sx%2==0 && sy%2==0){
-					if(area.lcntCross(bd.xnum(mf(sx/2),mf(sy/2)))!=0){
-						this.setCrossBorderError(mf(sx/2),mf(sy/2));
-						return false;
+				if(!(sx&1) && !(sy&1)){
+					if(area.lcntCross(bd.xnum(sx>>1,sy>>1))!=0){
+						if(this.inAutoCheck){ return false;}
+						this.setCrossBorderError(sx>>1,sy>>1);
+						result = false;
 					}
 				}
-				else if((sx+sy)%2==1){
+				else if((sx+sy)&1){
 					if(bd.QaB(bd.bnum(sx,sy))!=0){
+						if(this.inAutoCheck){ return false;}
 						bd.sErB(bd.bnum(sx,sy),1);
-						return false;
+						result = false;
 					}
 				}
 			}
-			return true;
+			return result;
 		};
 
 		ans.setAreaStar = function(rinfo){
@@ -522,6 +537,7 @@ Puzzles.tentaisho.prototype = {
 		};
 
 		ans.checkFractal = function(rinfo){
+			var result = true;
 			for(var r=1;r<=rinfo.max;r++){
 				var sc = rinfo.starid[r];
 				if(sc<0){ continue;}
@@ -530,18 +546,24 @@ Puzzles.tentaisho.prototype = {
 					var c=rinfo.room[r].idlist[i];
 					var ccopy = bd.cnum(sx-bd.cell[c].cx-1, sy-bd.cell[c].cy-1);
 					if(ccopy==-1||rinfo.id[c]!=rinfo.id[ccopy]){
-						bd.sErC(rinfo.room[r].idlist,1); return false;
+						if(this.inAutoCheck){ return false;}
+						bd.sErC(rinfo.room[r].idlist,1); result = false;
 					}
 				}
 			}
-			return true;
+			return result;
 		};
 
 		ans.checkErrorFlag = function(rinfo, val){
+			var result = true;
 			for(var id=1;id<=rinfo.max;id++){
-				if(rinfo.starid[id]==val){ bd.sErC(rinfo.room[id].idlist,1); return false;}
+				if(rinfo.starid[id]!==val){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(rinfo.room[id].idlist,1);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 	}
 };

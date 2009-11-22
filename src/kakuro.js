@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.2
+// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.3
 //
 Puzzles.kakuro = function(){ };
 Puzzles.kakuro.prototype = {
@@ -40,13 +40,13 @@ Puzzles.kakuro.prototype = {
 		k.def_psize = 40;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　マウスやキーボードで数字が入力できます。",
-							   " It is available to input number by keybord or mouse");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　Qキーでブロックが入力できます。数字を入力する場所はSHIFTキーを押すと切り替えられます。",
 							   " 'Q' key toggles question block. Press SHIFT key to change the target side of the block to input the number.");
+		}
+		else{
+			base.setExpression("　マウスやキーボードで数字が入力できます。",
+							   " It is available to input number by keybord or mouse");
 		}
 		base.setTitle("カックロ","Kakuro");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
@@ -57,30 +57,34 @@ Puzzles.kakuro.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1){
-				if(!kp.enabled()){ this.input51(x,y);}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(k.editmode){
+				if(!kp.enabled()){ this.input51();}
+				else{ kp.display();}
 			}
-			else if(k.mode==3) this.inputqnum(x,y,9);
+			else if(k.playmode){
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
+			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){ };
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){ };
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
 
-			if(k.mode==1){ this.inputnumber51(ca,{2:45,4:45});}
+			if(k.editmode){ this.inputnumber51(ca,{2:45,4:45});}
 			else{
 				var cc = tc.getTCC();
-				if(cc!=-1&&bd.QuC(cc)!=51){ this.key_inputqnum(ca,9);}
+				if(cc!=-1&&bd.QuC(cc)!=51){ this.key_inputqnum(ca);}
 			}
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
-				this.inputcol('image','knumq','-',[0,0]);
+				if(mode===3){ this.gentable10(3,0); return;}
+				this.inputcol('image','knumq','q',[0,0]);
 				this.inputcol('num','knum_',' ',' ');
 				this.inputcol('num','knum1','1','1');
 				this.inputcol('num','knum2','2','2');
@@ -96,26 +100,29 @@ Puzzles.kakuro.prototype = {
 				this.inputcol('num','knum0','0','0');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,99);
+				if(k.editmode){ kc.inputnumber51(ca,{2:45,4:45});}
+				if(k.playmode){ kc.key_inputqnum(ca);}
 			};
 		}
 
 		menu.ex.adjustSpecial  = menu.ex.adjustQues51_1;
 		menu.ex.adjustSpecial2 = menu.ex.adjustQues51_2;
 
-		tc.getTCX = function(){ return mf((tc.cursolx-1)/2);};
-		tc.getTCY = function(){ return mf((tc.cursoly-1)/2);};
+		tc.getTCX = function(){ return (tc.cursolx-1)>>1;};
+		tc.getTCY = function(){ return (tc.cursoly-1)>>1;};
 		tc.setAlign = function(){
-			if(k.mode==3){
+			if(k.playmode){
 				if(this.cursolx<1) this.cursolx = 1;
 				if(this.cursoly<1) this.cursoly = 1;
-				pc.paint(mf((this.cursolx-2)/2),mf((this.cursoly-2)/2),mf(this.cursolx/2),mf(this.cursoly/2));
+				pc.paint((this.cursolx-2)>>1,(this.cursoly-2)>>1,this.cursolx>>1,this.cursoly>>1);
 			}
 		};
 		tc.targetdir = 2;
+
+		bd.maxnum = 9;
 	},
 
 	//---------------------------------------------------------
@@ -126,13 +133,11 @@ Puzzles.kakuro.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawQSubCells(x1,y1,x2,y2);
-
-			this.drawBGcolor51(x1,y1,x2,y2);
-			this.drawBGcolorEX(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
+			this.drawBGEXcells(x1,y1,x2,y2);
 
 			this.draw51(x1,y1,x2,y2,false);
-			this.drawEXcell(x1,y1,x2,y2,false);
+			this.draw51EXcells(x1,y1,x2,y2,false);
 			this.drawTargetTriangle(x1,y1,x2,y2);
 
 			this.drawGrid(x1,y1,x2,y2);
@@ -141,62 +146,60 @@ Puzzles.kakuro.prototype = {
 			this.drawChassis_ex1(x1-1,y1-1,x2,y2,false);
 
 			this.drawNumbersOn51(x1,y1,x2,y2);
-			this.drawNumbersOn51EX(x1,y1,x2,y2);
 			this.drawNumbers_kakuro(x1,y1,x2,y2);
 
 			this.drawTCell(x1,y1,x2+1,y2+1);
 		};
 
-		// 境界線の描画
-		pc.drawBorders51 = function(x1,y1,x2,y2){
-			g.fillStyle = pc.Cellcolor;
-			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i], rt=bd.rt(c), dn=bd.dn(c);
-				var cx=bd.cell[c].cx, cy=bd.cell[c].cy;
-
-				this.drawBorder1x(2*cx+2,2*cy+1,(rt!=-1&&((bd.QuC(c)==51)^(bd.QuC(rt)==51))));
-				this.drawBorder1x(2*cx+1,2*cy+2,(dn!=-1&&((bd.QuC(c)==51)^(bd.QuC(dn)==51))));
-			}
-			this.vinc();
+		// オーバーライド drawBGCells用
+		pc.setBGCellColor = function(cc){
+			var err = bd.cell[cc].error, _f = (bd.cell[cc].ques===51);
+			if     ( _f && err===0){ g.fillStyle = "rgb(192,192,192)"; return true;}
+			else if( _f && err===1){ g.fillStyle = this.errbcolor1;    return true;}
+			else if(!_f && err===1){ g.fillStyle = this.errbcolor1;    return true;}
+			return false;
 		};
+		pc.drawBGEXcells = function(x1,y1,x2,y2){
+			var header = "ex_full_";
 
-		pc.drawBGcolor51 = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QuC(c)!=51){ this.vhide("c"+c+"_full_"); continue;}
-				if(bd.ErC(c)!= 1){ g.fillStyle = "rgb(192,192,192)";}
-				else{ g.fillStyle = this.errbcolor1;}
-				if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);}
-			}
-			this.vinc();
-		};
-		pc.drawBGcolorEX = function(x1,y1,x2,y2){
-			for(var cx=x1-1;cx<=x2;cx++){
-				for(var cy=y1-1;cy<=y2;cy++){
-					var c = bd.exnum(cx,cy);
-					if(c==-1){ continue;}
+			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+			for(var i=0;i<exlist.length;i++){
+				var c = exlist[i];
 
-					if(bd.ErE(c)!=1){ g.fillStyle = "rgb(192,192,192)";}
-					else{ g.fillStyle = this.errbcolor1;}
-					if(this.vnop("ex"+c+"_full_",1)){ g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);}
+				g.fillStyle = (bd.excell[c].error!==1 ? "rgb(192,192,192)" : this.errbcolor1);
+				if(this.vnop(header+c,1)){
+					g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);
 				}
 			}
 			this.vinc();
 		};
 
+		// 境界線の描画
+		pc.drawBorders51 = function(x1,y1,x2,y2){
+			g.fillStyle = pc.Cellcolor;
+			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i], rt=bd.rt(c), dn=bd.dn(c);
+				var cx=bd.cell[c].cx, cy=bd.cell[c].cy;
+
+				this.drawBorder1x(2*cx+2,2*cy+1,(rt!=-1&&((bd.cell[c].ques===51)^(bd.cell[rt].ques===51))));
+				this.drawBorder1x(2*cx+1,2*cy+2,(dn!=-1&&((bd.cell[c].ques===51)^(bd.cell[dn].ques===51))));
+			}
+			this.vinc();
+		};
+
 		pc.drawNumbers_kakuro = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				var target = ((k.mode==1&&c==tc.getTCC())?kc.detectTarget(c,-1):-1);
+				var target = ((k.editmode&&c===tc.getTCC())?kc.detectTarget(c,-1):-1);
 
-				if(bd.QuC(c)!=51 && bd.QaC(c)>0){
-					if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
-					var color = (bd.ErC(c)==1?this.fontErrcolor:this.fontAnscolor);
-					var text = (bd.QaC(c)>0?""+bd.QaC(c):"");
-					this.dispnumCell1(c, bd.cell[c].numobj, 1, text, 0.80, color);
+				if(bd.cell[c].ques!=51 && bd.cell[c].qans>0){
+					var obj = bd.cell[c];
+					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+					var color = (bd.cell[c].error===1 ? this.fontErrcolor : this.fontAnscolor);
+					var text  = ""+bd.cell[c].qans;
+					this.dispnum(obj.numobj, 1, text, 0.80, color, obj.px, obj.py);
 				}
 			}
 			this.vinc();
@@ -259,7 +262,7 @@ Puzzles.kakuro.prototype = {
 				i--;
 			}
 
-			return bstr.substring(a,bstr.length);
+			return bstr.substr(a);
 		};
 		enc.encodeKakuro = function(type){
 			var cm="";
@@ -388,7 +391,7 @@ Puzzles.kakuro.prototype = {
 					if(cx==-1||cy==-1||bd.QuC(bd.cnum(cx,cy))==51){ cm+=enc.encode51Kanpen(cx,cy);}
 				}
 			}
-			return ""+cm.substring(1,cm.length).replace(/_/g," ");
+			return ""+cm.substr(1).replace(/_/g," ");
 		};
 	},
 
@@ -414,7 +417,7 @@ Puzzles.kakuro.prototype = {
 		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)!=51 && bd.QaC(c)<=0);});};
 
 		ans.checkRowsCols = function(flag){
-			var num, cnt, empty, cells, clist, d;
+			var num, cnt, empty, cells, clist, d, result = true;
 
 			for(var cx=0;cx<k.qcols;cx++){
 				cnt = 0; empty=0; cells=0; clist = [];
@@ -424,10 +427,15 @@ Puzzles.kakuro.prototype = {
 				for(var cy=0;cy<=k.qrows;cy++){
 					var cc = bd.cnum(cx,cy);
 					if(cy==k.qrows || bd.QuC(cc)==51){
-						if(flag==1 && empty==0 && cells>0 && num!=cnt){ bd.sErC(clist,1); return false;}
+						if(flag==1 && empty==0 && cells>0 && num!=cnt){
+							if(this.inAutoCheck){ return false;}
+							bd.sErC(clist,1);
+							result = false;
+						}
 						if(flag==2){ for(var n=1;n<=9;n++){ if(d[n]>=2){
+							if(this.inAutoCheck){ return false;}
 							for(var i=0;i<clist.length;i++){ if(bd.QaC(clist[i])==n){ bd.sErC([clist[i]],1);} }
-							return false;
+							result = false;
 						}}}
 
 						if(flag==1){ bd.sErE([bd.exnum(cx,-1)],0);}
@@ -454,10 +462,15 @@ Puzzles.kakuro.prototype = {
 				for(var cx=0;cx<=k.qcols;cx++){
 					var cc = bd.cnum(cx,cy);
 					if(cx==k.qcols || bd.QuC(cc)==51){
-						if(flag==1 && empty==0 && cells>0 && num!=cnt){ bd.sErC(clist,1); return false;}
+						if(flag==1 && empty==0 && cells>0 && num!=cnt){
+							if(this.inAutoCheck){ return false;}
+							bd.sErC(clist,1);
+							result = false;
+						}
 						if(flag==2){ for(var n=1;n<=9;n++){ if(d[n]>=2){
+							if(this.inAutoCheck){ return false;}
 							for(var i=0;i<clist.length;i++){ if(bd.QaC(clist[i])==n){ bd.sErC([clist[i]],1);} }
-							return false;
+							result = false;
 						}}}
 
 						if(flag==1){ bd.sErE([bd.exnum(-1,cy)],0);}
@@ -477,7 +490,7 @@ Puzzles.kakuro.prototype = {
 				if(flag==1){ bd.sErE([bd.exnum(-1,cy)],0);}
 			}
 
-			return true;
+			return result;
 		};
 	}
 };

@@ -1,4 +1,4 @@
-// Filesys.js v3.2.2
+// Filesys.js v3.2.3
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -49,10 +49,9 @@ FileIO.prototype = {
 		um.disableRecord(); um.disableInfo();
 		var result = this.filedecode(array,type);
 		um.enableRecord(); um.enableInfo();
-		um.allerase();
 
 		if(result){
-			base.resetInfo();
+			base.resetInfo(true);
 			base.resize_canvas();
 		}
 	},
@@ -693,6 +692,23 @@ FileIO.prototype = {
 			this.dbmgr.transaction(function(tx){
 				tx.executeSql('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)',[k.puzzleid,'1.0',count,mf((new Date()).getTime()/1000)]);
 			});
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.clickHandler()  フォーム上のボタンが押された時、各関数にジャンプする
+	//---------------------------------------------------------------------------
+	clickHandler : function(e){
+		switch(ee.getSrcElement(e).name){
+			case 'sorts'   : this.displayDataTableList(); break;
+			case 'datalist': this.selectDataTable(); break;
+			case 'tableup' : this.upDataTable();     break;
+			case 'tabledn' : this.downDataTable();   break;
+			case 'open'    : this.openDataTable();   break;
+			case 'save'    : this.saveDataTable();   break;
+			case 'comedit' : this.editComment();     break;
+			case 'difedit' : this.editDifficult();   break;
+			case 'del'     : this.deleteDataTable(); break;
 		}
 	},
 

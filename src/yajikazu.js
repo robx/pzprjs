@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 やじさんかずさん版 yajikazu.js v3.2.2
+// パズル固有スクリプト部 やじさんかずさん版 yajikazu.js v3.2.3
 //
 Puzzles.yajikazu = function(){ };
 Puzzles.yajikazu.prototype = {
@@ -40,7 +40,7 @@ Puzzles.yajikazu.prototype = {
 		k.def_psize = 16;
 		k.area = { bcell:0, wcell:1, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pmake"){
+		if(k.EDITOR){
 			base.setExpression("　矢印は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
 							   " To input Arrows, Left Button Drag or Press arrow key with SHIFT key.");
 		}
@@ -60,28 +60,28 @@ Puzzles.yajikazu.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed(x,y);}
-			else if(k.mode==1) this.inputdirec(x,y);
-			else if(k.mode==3) this.inputcell(x,y);
+		mv.mousedown = function(){
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
+			else if(k.editmode) this.inputdirec();
+			else if(k.playmode) this.inputcell();
 		};
-		mv.mouseup = function(x,y){
-			if(k.mode==1 && this.notInputted() && bd.cnum(this.mouseCell.x,this.mouseCell.y)==this.cellid(new Pos(x,y))) this.inputqnum(x,y,99);
+		mv.mouseup = function(){
+			if(k.editmode && this.notInputted() && bd.cnum(this.mouseCell.x,this.mouseCell.y)==this.cellid()) this.inputqnum();
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==1){
-				if(this.notInputted()) this.inputdirec(x,y);
+		mv.mousemove = function(){
+			if(k.editmode){
+				if(this.notInputted()) this.inputdirec();
 			}
-			else if(k.mode==3) this.inputcell(x,y);
+			else if(k.playmode) this.inputcell();
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
@@ -93,13 +93,14 @@ Puzzles.yajikazu.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.bcolor = pc.bcolor_GREEN;
 		pc.BCell_fontcolor = "rgb(96,96,96)";
+		pc.setBGCellColorFunc('qsub1');
 
 		pc.paint = function(x1,y1,x2,y2){
 			x2++; y2++;
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawWhiteCells(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
@@ -107,7 +108,7 @@ Puzzles.yajikazu.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 
@@ -149,26 +150,26 @@ Puzzles.yajikazu.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkArrowNumber = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)<0 || bd.DiC(c)==0 || bd.isBlack(c)){ continue;}
 				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, dir = bd.DiC(c);
-				var cnt=0;
-				if     (dir==1){ cy--; while(cy>=0     ){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cy--;} }
-				else if(dir==2){ cy++; while(cy<k.qrows){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cy++;} }
-				else if(dir==3){ cx--; while(cx>=0     ){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cx--;} }
-				else if(dir==4){ cx++; while(cx<k.qcols){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cx++;} }
+				var cnt=0, clist = [];
+				if     (dir==k.UP){ cy--; while(cy>=0     ){ clist.push(bd.cnum(cx,cy)); cy--;} }
+				else if(dir==k.DN){ cy++; while(cy<k.qrows){ clist.push(bd.cnum(cx,cy)); cy++;} }
+				else if(dir==k.LT){ cx--; while(cx>=0     ){ clist.push(bd.cnum(cx,cy)); cx--;} }
+				else if(dir==k.RT){ cx++; while(cx<k.qcols){ clist.push(bd.cnum(cx,cy)); cx++;} }
+
+				for(var i=0;i<clist.length;i++){ if(bd.isBlack(clist[i])){ cnt++;} }
 
 				if(bd.QnC(c)!=cnt){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
-					cx = bd.cell[c].cx, cy = bd.cell[c].cy;
-					if     (dir==1){ cy--; while(cy>=0     ){ bd.sErC([bd.cnum(cx,cy)],1); cy--;} }
-					else if(dir==2){ cy++; while(cy<k.qrows){ bd.sErC([bd.cnum(cx,cy)],1); cy++;} }
-					else if(dir==3){ cx--; while(cx>=0     ){ bd.sErC([bd.cnum(cx,cy)],1); cx--;} }
-					else if(dir==4){ cx++; while(cx<k.qcols){ bd.sErC([bd.cnum(cx,cy)],1); cx++;} }
-					return false;
+					bd.sErC(clist,1);
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

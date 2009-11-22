@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 数独版 sudoku.js v3.2.2
+// パズル固有スクリプト部 数独版 sudoku.js v3.2.3
 //
 Puzzles.sudoku = function(){ };
 Puzzles.sudoku.prototype = {
@@ -49,36 +49,36 @@ Puzzles.sudoku.prototype = {
 	menufix : function(){ },
 
 	protoChange : function(){
-		this.newboard_html_original = $(document.newboard).html();
+		this.newboard_html_original = document.newboard.innerHTML;
 
-		$(document.newboard).html(
-			  "<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n"
-			+ "<input type=\"radio\" name=\"size\" value=\"9\" checked>9×9<br>\n"
-			+ "<input type=\"radio\" name=\"size\" value=\"16\">16×16<br>\n"
-			+ "<input type=\"radio\" name=\"size\" value=\"25\">25×25<br>\n"
-			+ "<input type=\"radio\" name=\"size\" value=\"4\">4×4<br>\n"
-			+ "<input type=\"button\" name=\"newboard\" value=\"新規作成\" /><input type=\"button\" name=\"cancel\" value=\"キャンセル\" />\n"
-		);
+		document.newboard.innerHTML =
+			["<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n",
+			 "<input type=\"radio\" name=\"size\" value=\"9\" checked>9×9<br>\n",
+			 "<input type=\"radio\" name=\"size\" value=\"16\">16×16<br>\n",
+			 "<input type=\"radio\" name=\"size\" value=\"25\">25×25<br>\n",
+			 "<input type=\"radio\" name=\"size\" value=\"4\">4×4<br>\n",
+			 "<input type=\"button\" name=\"newboard\" value=\"新規作成\" /><input type=\"button\" name=\"cancel\" value=\"キャンセル\" />\n"
+			].join('');
 	},
 	protoOriginal : function(){
-		$(document.newboard).html(this.newboard_html_original);
+		document.newboard.innerHTML = this.newboard_html_original;
 	},
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(!kp.enabled()){ this.inputqnum(x,y,Math.max(k.qcols,k.qrows));}
-			else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(!kp.enabled()){ this.inputqnum();}
+			else{ kp.display();}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){ };
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){ };
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,Math.max(k.qcols,k.qrows));
+			this.key_inputqnum(ca);
 		};
 
 		kp.kpgenerate = function(mode){
@@ -104,10 +104,12 @@ Puzzles.sudoku.prototype = {
 			this.inputcol('num','knum0','0','0');
 			this.insertrow();
 		};
-		kp.generate(99, true, true, kp.kpgenerate.bind(kp));
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
 		kp.kpinput = function(ca){
-			kc.key_inputqnum(ca,Math.max(k.qcols,k.qrows));
+			kc.key_inputqnum(ca);
 		};
+
+		bd.nummaxfunc = function(cc){ return Math.max(k.qcols,k.qrows);};
 	},
 
 	//---------------------------------------------------------
@@ -118,8 +120,7 @@ Puzzles.sudoku.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlockBorders(x1,y1,x2,y2);
 
@@ -134,18 +135,19 @@ Puzzles.sudoku.prototype = {
 
 			var max=k.qcols;
 			var block=mf(Math.sqrt(max)+0.1);
+			var headers = ["bbx_", "bby_"];
 
 			if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
 			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
 			g.fillStyle = "black";
 			for(var i=1;i<block;i++){
-				if(x1-1<=i*block&&i*block<=x2+1){ if(this.vnop("bbx"+i+"_")){
+				if(x1-1<=i*block&&i*block<=x2+1){ if(this.vnop(headers[0]+i)){
 					g.fillRect(k.p0.x+i*block*k.cwidth-lw+1, k.p0.y+y1*k.cheight-lw+1, lw, (y2-y1+1)*k.cheight+2*lw-1);
 				}}
 			}
 			for(var i=1;i<block;i++){
-				if(y1-1<=i*block&&i*block<=y2+1){ if(this.vnop("bby"+i+"_")){
+				if(y1-1<=i*block&&i*block<=y2+1){ if(this.vnop(headers[1]+i)){
 					g.fillRect(k.p0.x+x1*k.cwidth-lw+1, k.p0.y+i*block*k.cheight-lw+1, (x2-x1+1)*k.cwidth+2*lw-1, lw);
 				}}
 			}
@@ -229,19 +231,27 @@ Puzzles.sudoku.prototype = {
 		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
 
 		ans.checkRowsCols = function(){
+			var result = true;
 			for(var cy=0;cy<k.qrows;cy++){
 				var clist = [];
 				for(var cx=0;cx<k.qcols;cx++){ clist.push(bd.cnum(cx,cy));}
-				if(!this.checkDifferentNumberInClist(clist)){ return false;}
+				if(!this.checkDifferentNumberInClist(clist)){
+					if(this.inAutoCheck){ return false;}
+					result = false;
+				}
 			}
 			for(var cx=1;cx<k.qcols;cx++){
 				var clist = [];
 				for(var cy=0;cy<k.qrows;cy++){ clist.push(bd.cnum(cx,cy));}
-				if(!this.checkDifferentNumberInClist(clist)){ return false;}
+				if(!this.checkDifferentNumberInClist(clist)){
+					if(this.inAutoCheck){ return false;}
+					result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkRoomNumber = function(){
+			var result = true;
 			var max=k.qcols;
 			var block=mf(Math.sqrt(max)+0.1);
 			for(var i=0;i<max;i++){
@@ -249,9 +259,12 @@ Puzzles.sudoku.prototype = {
 				for(var cx=(i%block)*block;cx<(i%block+1)*block;cx++){
 					for(var cy=mf(i/block)*block;cy<mf(i/block+1)*block;cy++){ clist.push(bd.cnum(cx,cy));}
 				}
-				if(!this.checkDifferentNumberInClist(clist)){ return false;}
+				if(!this.checkDifferentNumberInClist(clist)){
+					if(this.inAutoCheck){ return false;}
+					result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkDifferentNumberInClist = function(clist){
 			var d = [];

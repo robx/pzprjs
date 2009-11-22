@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たすくえあ版 tasquare.js v3.2.2
+// パズル固有スクリプト部 たすくえあ版 tasquare.js v3.2.3
 //
 Puzzles.tasquare = function(){ };
 Puzzles.tasquare.prototype = {
@@ -10,7 +10,7 @@ Puzzles.tasquare.prototype = {
 		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
 		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
+		k.isborder     = 0;		// 1:Border/Lineが操作可能なパズル
 		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
@@ -53,29 +53,30 @@ Puzzles.tasquare.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1){
-				if(!kp.enabled()){ this.inputqnum(x,y,99);}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
-			else if(k.mode==3) this.inputcell(x,y);
+			else if(k.playmode) this.inputcell();
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3) this.inputcell(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode) this.inputcell();
 		};
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(3, true, false, '');
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,99);
+				kc.key_inputqnum(ca);
 			};
 		}
 	},
@@ -90,7 +91,8 @@ Puzzles.tasquare.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawWhiteCells(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
+			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
@@ -100,23 +102,28 @@ Puzzles.tasquare.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawCellSquare = function(x1,y1,x2,y2){
 			var mgnw = mf(k.cwidth*0.1);
 			var mgnh = mf(k.cheight*0.1);
+			var headers = ["c_sq1_", "c_sq2_"]
 
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QnC(c)!=-1){
+				if(bd.cell[c].qnum!==-1){
 					g.fillStyle = "black";
-					if(this.vnop("c"+c+"_sq1_",1)){ g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);}
-					g.fillStyle = "white";
-					if(this.vnop("c"+c+"_sq2_",1)){ g.fillRect(bd.cell[c].px+mgnw+2, bd.cell[c].py+mgnh+2, k.cwidth-mgnw*2-3, k.cheight-mgnh*2-3);}
+					if(this.vnop(headers[0]+c,1)){
+						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
+					}
+					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
+					if(this.vnop(headers[1]+c,1)){
+						g.fillRect(bd.cell[c].px+mgnw+2, bd.cell[c].py+mgnh+2, k.cwidth-mgnw*2-3, k.cheight-mgnh*2-3);
+					}
 				}
-				else{ this.vhide("c"+c+"_sq1_"); this.vhide("c"+c+"_sq2_");}
+				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
 			this.vinc();
 		};
@@ -152,35 +159,35 @@ Puzzles.tasquare.prototype = {
 				this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 			}
 
-			if( !this.isNumberSquare(binfo,0) ){
+			if( !this.checkNumberSquare(binfo,true) ){
 				this.setAlert('数字とそれに接する黒マスの大きさの合計が一致しません。','Sum of the adjacent masses of black cells is not equal to the number.'); return false;
 			}
 
-			if( !this.isNumberSquare(binfo,1) ){
+			if( !this.checkNumberSquare(binfo,false) ){
 				this.setAlert('数字のない□に黒マスが接していません。','No black cells are adjacent to square mark without numbers.'); return false;
 			}
 
 			return true;
 		};
 
-		ans.isNumberSquare = function(binfo, flag){
+		ans.checkNumberSquare = function(binfo, flag){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if((flag==0?(bd.QnC(c)<0):(bd.QnC(c)!=-2))){ continue;}
-				var cnt = 0;
-				if(bd.isBlack(bd.up(c))){ cnt += binfo.room[binfo.id[bd.up(c)]].idlist.length;}
-				if(bd.isBlack(bd.dn(c))){ cnt += binfo.room[binfo.id[bd.dn(c)]].idlist.length;}
-				if(bd.isBlack(bd.lt(c))){ cnt += binfo.room[binfo.id[bd.lt(c)]].idlist.length;}
-				if(bd.isBlack(bd.rt(c))){ cnt += binfo.room[binfo.id[bd.rt(c)]].idlist.length;}
-				if(bd.QnC(c)>=0?(bd.QnC(c)!=cnt):(cnt==0)){
-					if(bd.isBlack(bd.up(c))){ bd.sErC(binfo.room[binfo.id[bd.up(c)]].idlist,1); }
-					if(bd.isBlack(bd.dn(c))){ bd.sErC(binfo.room[binfo.id[bd.dn(c)]].idlist,1); }
-					if(bd.isBlack(bd.lt(c))){ bd.sErC(binfo.room[binfo.id[bd.lt(c)]].idlist,1); }
-					if(bd.isBlack(bd.rt(c))){ bd.sErC(binfo.room[binfo.id[bd.rt(c)]].idlist,1); }
+				if((flag?(bd.QnC(c)<0):(bd.QnC(c)!==-2))){ continue;}
+				var clist=[];
+				if(bd.isBlack(bd.up(c))){ clist = clist.concat(binfo.room[binfo.id[bd.up(c)]].idlist);}
+				if(bd.isBlack(bd.dn(c))){ clist = clist.concat(binfo.room[binfo.id[bd.dn(c)]].idlist);}
+				if(bd.isBlack(bd.lt(c))){ clist = clist.concat(binfo.room[binfo.id[bd.lt(c)]].idlist);}
+				if(bd.isBlack(bd.rt(c))){ clist = clist.concat(binfo.room[binfo.id[bd.rt(c)]].idlist);}
+
+				if(flag?(clist.length!==bd.QnC(c)):(clist.length===0)){
+					if(ans.inAutoCheck){ return false;}
+					bd.sErC(clist,1);
 					bd.sErC([c],1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

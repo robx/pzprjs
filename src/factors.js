@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 因子の部屋版 factors.js v3.2.2
+// パズル固有スクリプト部 因子の部屋版 factors.js v3.2.3
 //
 Puzzles.factors = function(){ };
 Puzzles.factors.prototype = {
@@ -46,45 +46,45 @@ Puzzles.factors.prototype = {
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){
-		if(k.callmode=="pmake"){ kp.defaultdisp = true;}
+		if(k.EDITOR){ kp.defaultdisp = true;}
 	},
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1) this.borderinput = this.inputborder(x,y);
-			if(k.mode==3){
-				if(!kp.enabled()){ this.inputqnum(x,y,99);}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(k.editmode) this.borderinput = this.inputborder();
+			if(k.playmode){
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.mode==1){
-					if(!kp.enabled()){ this.inputqnum(x,y,99);}
-					else{ kp.display(x,y);}
+				if(k.editmode){
+					if(!kp.enabled()){ this.inputqnum();}
+					else{ kp.display();}
 				}
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==1 && this.btn.Left) this.inputborder(x,y);
+		mv.mousemove = function(){
+			if(k.editmode && this.btn.Left) this.inputborder();
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 
 		kp.generate(0, true, true, '');
 		kp.kpinput = function(ca){ kc.key_factors(ca,Math.max(k.qcols,k.qrows));};
 
-		bd.roommaxfunc = function(cc,mode){ return (mode==1)?999999:Math.max(k.qcols,k.qrows);};
+		bd.nummaxfunc = function(cc){ return k.editmode?999999:Math.max(k.qcols,k.qrows);};
 		bd.setNum = function(c,val){
 			if(val==0){ return;}
-			if(k.mode==1){ this.sQnC(c,val);}else{ this.sQaC(c,val);}
+			if(k.editmode){ this.sQnC(c,val);}else{ this.sQaC(c,val);}
 		};
 	},
 
@@ -97,8 +97,7 @@ Puzzles.factors.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawNumbers_factors(x1,y1,x2,y2);
@@ -110,24 +109,25 @@ Puzzles.factors.prototype = {
 			this.drawTCell(x1,y1,x2+1,y2+1);
 		};
 		pc.drawNumbers_factors = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
+				var c = clist[i], obj = bd.cell[c];
 
-				if(bd.QaC(c)==-1){ this.hideEL(bd.cell[c].numobj);}
+				if(bd.cell[c].qans==-1){ this.hideEL(obj.numobj);}
 				else{
-					var color = (bd.ErC(c)==1?this.fontErrcolor:this.fontAnscolor);
-					if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
-					this.dispnumCell1(c, bd.cell[c].numobj, 1, (""+bd.QaC(c)), (bd.QaC(c)<10?0.8:0.7), color);
+					var color = (bd.cell[c].error==1?this.fontErrcolor:this.fontAnscolor);
+					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+					var size = (bd.cell[c].qans<10?0.8:0.7);
+					this.dispnum(obj.numobj, 1, (""+bd.cell[c].qans), size, color, obj.px, obj.py);
 				}
 
-				if(bd.QnC(c)==-1){ this.hideEL(bd.cell[c].numobj2);}
+				if(bd.cell[c].qnum==-1){ this.hideEL(obj.numobj2);}
 				else{
-					if(!bd.cell[c].numobj2){ bd.cell[c].numobj2 = this.CreateDOMAndSetNop();}
+					if(!obj.numobj2){ obj.numobj2 = this.CreateDOMAndSetNop();}
 					var size = 0.45;
 					if     (bd.QnC(c)>=100000){ size = 0.30;}
 					else if(bd.QnC(c)>= 10000){ size = 0.36;}
-					this.dispnumCell1(c, bd.cell[c].numobj2, 5, (""+bd.QnC(c)), size, this.fontcolor);
+					this.dispnum(obj.numobj2, 5, (""+bd.cell[c].qnum), size, this.fontcolor, obj.px, obj.py);
 				}
 			}
 			this.vinc();
@@ -175,19 +175,25 @@ Puzzles.factors.prototype = {
 		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QaC(c)==-1);});};
 
 		ans.checkRowsCols = function(){
-			var cx, cy;
+			var cx, cy, result = true;
 
 			for(var cy=0;cy<k.qrows;cy++){
 				var clist = [];
 				for(var cx=0;cx<k.qcols;cx++){ clist.push(bd.cnum(cx,cy));}
-				if(!this.checkDifferentNumberInClist(clist)){ return false;}
+				if(!this.checkDifferentNumberInClist(clist)){
+					if(this.inAutoCheck){ return false;}
+					result = false;
+				}
 			}
 			for(var cx=1;cx<k.qcols;cx++){
 				var clist = [];
 				for(var cy=0;cy<k.qrows;cy++){ clist.push(bd.cnum(cx,cy));}
-				if(!this.checkDifferentNumberInClist(clist)){ return false;}
+				if(!this.checkDifferentNumberInClist(clist)){
+					if(this.inAutoCheck){ return false;}
+					result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkDifferentNumberInClist = function(clist){
 			var d = [];
@@ -204,6 +210,7 @@ Puzzles.factors.prototype = {
 		};
 
 		ans.checkRoomNumber = function(rinfo){
+			var result = true;
 			for(var id=1;id<=rinfo.max;id++){
 				var product = 1;
 				for(var i=0;i<rinfo.room[id].idlist.length;i++){
@@ -213,11 +220,12 @@ Puzzles.factors.prototype = {
 				if(product==0){ continue;}
 
 				if(product!=bd.QnC(area.getTopOfRoom(id))){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(rinfo.room[id].idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

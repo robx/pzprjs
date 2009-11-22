@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヴィウ版 view.js v3.2.2
+// パズル固有スクリプト部 ヴィウ版 view.js v3.2.3
 //
 Puzzles.view = function(){ };
 Puzzles.view.prototype = {
@@ -51,23 +51,21 @@ Puzzles.view.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(!kp.enabled()){ this.inputqnum(x,y,Math.min(k.qcols+k.qrows-2,99));}
-			else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(!kp.enabled()){ this.inputqnum();}
+			else{ kp.display();}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			//this.inputqnum(x,y,Math.min(k.qcols+k.qrows-2,99));
-		};
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){ };
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
 			if(kc.key_view(ca)){ return;}
-			this.key_inputqnum(ca,Math.min(k.qcols+k.qrows-2,99));
+			this.key_inputqnum(ca);
 		};
 		kc.key_view = function(ca){
-			if(k.mode==1 || bd.QnC(tc.getTCC())!=-1){ return false;}
+			if(k.editmode || bd.QnC(tc.getTCC())!=-1){ return false;}
 
 			var cc = tc.getTCC();
 			var flag = false;
@@ -108,24 +106,26 @@ Puzzles.view.prototype = {
 			((mode==1)?this.inputcol('num','knum.','-','?'):this.inputcol('empty','knumz','',''));
 			this.insertrow();
 		};
-		kp.generate(99, true, true, kp.kpgenerate.bind(kp));
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
 		kp.kpinput = function(ca){
 			if(kc.key_view(ca)){ return;}
-			kc.key_inputqnum(ca,Math.min(k.qcols+k.qrows-2,99));
+			kc.key_inputqnum(ca);
 		};
+
+		bd.nummaxfunc = function(cc){ return Math.min(k.qcols+k.qrows-2,bd.maxnum);};
 	},
 
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.errbcolor2 = "rgb(127, 255, 127)";
+		pc.setBGCellColorFunc('error2');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawMBs(x1,y1,x2,y2);
@@ -178,6 +178,7 @@ Puzzles.view.prototype = {
 		};
 
 		ans.checkCellNumber = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(!bd.isValidNum(c)){ continue;}
 
@@ -195,12 +196,13 @@ Puzzles.view.prototype = {
 				while(ty<k.qrows){ var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!=1){ cnt++; list.push(cc); ty++;} else{ break;} }
 
 				if(bd.getNum(c)!=cnt){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
 					bd.sErC(list,2);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

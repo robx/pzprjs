@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.2.2
+// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.2.3
 //
 Puzzles.shakashaka = function(){ };
 Puzzles.shakashaka.prototype = {
@@ -46,49 +46,46 @@ Puzzles.shakashaka.prototype = {
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 	},
 	menufix : function(){
-		pp.addUseToFlags('use','setting',1,[1,2,3]);
-		pp.addUseChildrenToFlags('use','use');
-		pp.setMenuStr('use', '三角形の入力方法', 'Input Triangle Type');
-		pp.setLabel  ('use', '三角形の入力方法', 'Input Triangle Type');
-		pp.setMenuStr('use_1', 'クリックした位置', 'Position of Cell');
-		pp.setMenuStr('use_2', 'ドラッグ入力', 'Drag Type');
-		pp.setMenuStr('use_3', '1ボタン', 'One Button');
+		pp.addSelect('use','setting',1,[1,2,3], '三角形の入力方法', 'Input Triangle Type');
+		pp.setLabel ('use', '三角形の入力方法', 'Input Triangle Type');
+
+		pp.addChild('use_1', 'use', 'クリックした位置', 'Position of Cell');
+		pp.addChild('use_2', 'use', 'ドラッグ入力', 'Drag Type');
+		pp.addChild('use_3', 'use', '1ボタン', 'One Button');
 	},
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			this.firstPos = new Pos(x,y);
-
-			if(k.mode==3) this.inputTriangle(x,y,0);
-			if(k.mode==1){
-				if(!kp.enabled()){ this.inputqnum(x,y,4);}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(k.playmode) this.inputTriangle(0);
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
 		};
-		mv.mouseup = function(x,y){
-			if(k.mode==3 && k.use==2 && this.notInputted()){
-				this.inputTriangle(x,y,1);
+		mv.mouseup = function(){
+			if(k.playmode && k.use==2 && this.notInputted()){
+				this.inputTriangle(2);
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==3 && k.use==2 && this.firstPos.x != -1 && this.firstPos.y != -1){
-				this.inputTriangle(x,y,0);
+		mv.mousemove = function(){
+			if(k.playmode && k.use==2 && this.mouseCell!=-1){
+				this.inputTriangle(1);
 			}
 		};
-		mv.inputTriangle = function(x,y,flag){
-			var cc = this.cellid( new Pos(x,y) );
-			if(k.mode==3 && k.use==2){ cc = this.cellid( new Pos(this.firstPos.x,this.firstPos.y) );}
-
-			if(cc==-1 || (k.use!=2 && cc==this.mouseCell)){ return;}
-			if(bd.QnC(cc)!=-1){ return;}
+		mv.inputTriangle = function(use2step){
+			var cc;
+			if(k.use!=2 || use2step==0){
+				cc = this.cellid();
+				if(cc==-1 || bd.QnC(cc)!=-1){ this.mousereset(); return;}
+			}
 
 			if(k.use==1){
 				if(this.btn.Left){
-					var xpos = x - k.p0.x-bd.cell[cc].cx*k.cwidth;
-					var ypos = y - k.p0.y-bd.cell[cc].cy*k.cheight;
+					var xpos = this.inputX - bd.cell[cc].cx*k.cwidth;
+					var ypos = this.inputY - bd.cell[cc].cy*k.cheight;
 					if(xpos>0&&xpos<=k.cwidth/2){
 						if(ypos>0&&ypos<=k.cheight/2){ this.inputData = 5;}
 						else if(ypos>k.cheight/2){ this.inputData = 2;}
@@ -107,21 +104,35 @@ Puzzles.shakashaka.prototype = {
 				}
 			}
 			else if(k.use==2){
-				if(flag==0){
+				if(use2step==0){
+					// 最初はどこのセルをクリックしたか取得するだけ
+					this.firstPos = new Pos(this.inputX, this.inputY);
+					this.mouseCell = cc;
+					return;
+				}
+
+				var dx=(this.inputX-this.firstPos.x), dy=(this.inputY-this.firstPos.y);
+				cc = this.mouseCell;
+
+				if(use2step==1){
+					// 一定以上動いていたら三角形を入力
 					var moves = 12;
-					if(x-this.firstPos.x <= -moves){
-						if     (y-this.firstPos.y >=  moves){ bd.sQaC(cc,(bd.QaC(cc)!=2)?2:-1); bd.sQsC(cc,0); this.mousereset();}
-						else if(y-this.firstPos.y <= -moves){ bd.sQaC(cc,(bd.QaC(cc)!=5)?5:-1); bd.sQsC(cc,0); this.mousereset();}
-					}
-					else if(x-this.firstPos.x >= moves){
-						if     (y-this.firstPos.y >=  moves){ bd.sQaC(cc,(bd.QaC(cc)!=3)?3:-1); bd.sQsC(cc,0); this.mousereset();}
-						else if(y-this.firstPos.y <= -moves){ bd.sQaC(cc,(bd.QaC(cc)!=4)?4:-1); bd.sQsC(cc,0); this.mousereset();}
+					if     (dx<=-moves && dy>= moves){ this.inputData=2;}
+					else if(dx<=-moves && dy<=-moves){ this.inputData=5;}
+					else if(dx>= moves && dy>= moves){ this.inputData=3;}
+					else if(dx>= moves && dy<=-moves){ this.inputData=4;}
+
+					if(this.inputData!=-1){
+						bd.sQaC(cc, (bd.QaC(cc)!=this.inputData)?this.inputData:-1);
+						bd.sQsC(cc, 0);
+						this.mousereset();
 					}
 				}
-				else if(flag==1){
-					if(Math.abs(x-this.firstPos.x) <= 3 && Math.abs(y-this.firstPos.y) <= 3){
-						if(bd.QsC(cc)==1){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
-						else{ bd.sQaC(cc,-1); bd.sQsC(cc,1);}
+				else if(use2step==2){
+					// ほとんど動いていなかった場合は・を入力
+					if(Math.abs(dx)<=3 && Math.abs(dy)<=3){
+						bd.sQaC(cc, -1);
+						bd.sQsC(cc, (bd.QsC(cc)==1?0:1));
 					}
 				}
 			}
@@ -140,24 +151,25 @@ Puzzles.shakashaka.prototype = {
 				}
 			}
 
-			this.mouseCell = cc;
-
 			pc.paintCell(cc);
 		};
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,4);
+			this.key_inputqnum(ca);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(2, true, false, '');
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,4);
+				kc.key_inputqnum(ca);
 			};
 		}
+
+		bd.maxnum = 4;
 
 		menu.ex.adjustSpecial = function(type,key){
 			um.disableRecord();
@@ -200,22 +212,24 @@ Puzzles.shakashaka.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.fontcolor = pc.fontErrcolor = "white";
+		pc.setCellColorFunc('qnum');
 
 		pc.paint = function(x1,y1,x2,y2){
 			x2++; y2++;
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawWhiteCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
+			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
+			this.drawBlackCells(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
-			this.drawBCells(x1,y1,x2,y2);
 			this.drawTriangle(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 
@@ -257,15 +271,17 @@ Puzzles.shakashaka.prototype = {
 		ans.isTri = function(c){ return (bd.QaC(c)!=-1);};
 
 		ans.checkWhiteArea = function(){
+			var result = true;
 			var winfo = this.searchWarea_slope();
 			for(var id=1;id<=winfo.max;id++){
 				var d = this.getSizeOfClist(winfo.room[id].idlist,function(cc){ return (bd.QaC(cc)==-1);});
 				if((d.x2-d.x1+1)*(d.y2-d.y1+1)!=d.cnt && !this.isAreaRect_slope(winfo,id)){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC(winfo.room[id].idlist,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		// 斜め領域判定用
 		ans.isAreaRect_slope = function(winfo,id){

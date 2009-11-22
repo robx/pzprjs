@@ -1,4 +1,4 @@
-// pzprUtil.js v3.2.2
+// pzprUtil.js v3.2.3
 
 //---------------------------------------------------------------------------
 // ★AreaInfoクラス 主に色分けの情報を管理する
@@ -113,7 +113,7 @@ LineManager.prototype = {
 
 	branch    : function(bx,by){
 		if(!k.isLineCross){
-			return (this.lcntCell((k.isCenterLine?bd.cnum:bd.xnum)(mf(bx/2),mf(by/2)))>=3);
+			return (this.lcntCell((k.isCenterLine?bd.cnum:bd.xnum)(bx>>1,by>>1))>=3);
 		}
 		return false;
 	},
@@ -148,8 +148,6 @@ LineManager.prototype = {
 			if(cc1!=-1){ this.ltotal[this.lcnt[cc1]]--; this.lcnt[cc1]--; this.ltotal[this.lcnt[cc1]]++;}
 			if(cc2!=-1){ this.ltotal[this.lcnt[cc2]]--; this.lcnt[cc2]--; this.ltotal[this.lcnt[cc2]]++;}
 		}
-
-		// if(k.br.IE && !menu.getVal('irowake')){ return;}
 
 		//---------------------------------------------------------------------------
 		// (A)くっつきなし                        (B)単純くっつき
@@ -305,14 +303,46 @@ LineManager.prototype = {
 		}
 	},
 
-	repaintLine : function(idlist){
-		if(!menu.getVal('irowake')){ return;}
-		for(var i=0,len=idlist.length;i<len;i++){
-			if(k.isCenterLine){ pc.drawLine1  (idlist[i],true);}
-			else			  { pc.drawBorder1(idlist[i],true);}
-			if(!g.vml){ this.repaintParts(idlist[i]);}
-		}
-	},
+	repaintLine : (
+		((!k.vml) ?
+			function(idlist){
+				if(!pp.getVal('irowake')){ return;}
+
+				if(k.isCenterLine){
+					for(var i=0,len=idlist.length;i<len;i++){
+						pc.drawLine1(idlist[i],true);
+						this.repaintParts(idlist[i]);
+					}
+				}
+				else{
+					for(var i=0,len=idlist.length;i<len;i++){
+						var id = idlist[i];
+						if(bd.border[id].qans!==1){ g.fillStyle = pc.BorderQuescolor; }
+						else                      { g.fillStyle = pc.getLineColor(id);}
+						pc.drawBorder1x(bd.border[id].cx, bd.border[id].cy, true);
+						this.repaintParts(id);
+					}
+				}
+			}
+		:
+			function(idlist){
+				if(!pp.getVal('irowake')){ return;}
+
+				pc.zstable = true;
+				if(k.isCenterLine){
+					for(var i=0,len=idlist.length;i<len;i++){
+						pc.drawLine1(idlist[i],true);
+					}
+				}
+				else{
+					for(var i=0,len=idlist.length;i<len;i++){
+						pc.drawBorder1x(bd.border[idlist[i]].cx,bd.border[idlist[i]].cy,true);
+					}
+				}
+				pc.zstable = false;
+			}
+		)
+	),
 	repaintParts : function(id){ }, // オーバーライド用
 
 	//---------------------------------------------------------------------------
@@ -375,7 +405,7 @@ LineManager.prototype = {
 					if(bd.isLine(bd.bnum(bx+1,by))){ this.lc0(bx,by,4,newid);}
 					break;
 				}
-				else if(this.lcntCell((k.isCenterLine?bd.cnum:bd.xnum)(mf(bx/2),mf(by/2)))<=2){
+				else if(this.lcntCell((k.isCenterLine?bd.cnum:bd.xnum)(bx>>1,by>>1))<=2){
 					if     (dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
 					else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ dir=1;}
 					else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ dir=4;}

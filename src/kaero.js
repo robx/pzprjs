@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.2.2
+// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.2.3
 //
 Puzzles.kaero = function(){ };
 Puzzles.kaero.prototype = {
@@ -51,26 +51,28 @@ Puzzles.kaero.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1){ this.inputborder(x,y);}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mousedown = function(){
+			if(k.editmode){ this.inputborder();}
+			else if(k.playmode){
+				if     (this.btn.Left)  this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){
-			if     (k.mode==1 && this.notInputted()){ this.inputqnum(x,y,99);}
-			else if(k.mode==3 && this.notInputted()){ this.inputlight(x,y);}
-		};
-		mv.mousemove = function(x,y){
-			if(k.mode==1){ this.inputborder(x,y);}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mouseup = function(){
+			if(this.notInputted()){
+				if     (k.editmode){ this.inputqnum();}
+				else if(k.playmode){ this.inputlight();}
 			}
 		};
-		mv.inputlight = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.mousemove = function(){
+			if(k.editmode){ this.inputborder();}
+			else if(k.playmode){
+				if     (this.btn.Left)  this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
+			}
+		};
+		mv.inputlight = function(){
+			var cc = this.cellid();
 			if(cc==-1){ return;}
 
 			if     (bd.QsC(cc)==0){ bd.sQsC(cc, (this.btn.Left?1:2));}
@@ -81,13 +83,12 @@ Puzzles.kaero.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputqnum_kaero(ca);
 		};
 		kc.key_inputqnum_kaero = function(ca){
 			var c = tc.getTCC();
-			var max = 104;
 
 			if('a'<=ca && ca<='z'){
 				var num = parseInt(ca,36)-10;
@@ -103,6 +104,7 @@ Puzzles.kaero.prototype = {
 			this.prev = c;
 			pc.paintCell(tc.getTCC());
 		};
+		bd.maxnum=52;
 	},
 
 	//---------------------------------------------------------
@@ -111,16 +113,16 @@ Puzzles.kaero.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.qsubcolor1 = "rgb(224, 224, 255)";
 		pc.qsubcolor2 = "rgb(255, 255, 144)";
+		pc.setBGCellColorFunc('qsub2');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawQSubCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
-			this.drawTip(x1,y1,x2,y2);
 
+			this.drawTip(x1,y1,x2,y2);
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
 
@@ -129,18 +131,19 @@ Puzzles.kaero.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawTip = function(x1,y1,x2,y2){
 			var tsize = k.cwidth*0.30;
 			var tplus = k.cwidth*0.05;
+			var header = "c_tip_";
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
+			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				this.vhide(["c"+c+"_tp1_","c"+c+"_tp2_","c"+c+"_tp3_","c"+c+"_tp4_"]);
-				if(line.lcntCell(c)==1 && bd.QnC(c)==-1){
+				this.vdel([header+c]);
+				if(line.lcntCell(c)===1 && bd.cell[c].qnum===-1){
 					var dir=0, id=-1;
 					if     (bd.isLine(bd.ub(c))){ dir=2; id=bd.ub(c);}
 					else if(bd.isLine(bd.db(c))){ dir=1; id=bd.db(c);}
@@ -148,16 +151,16 @@ Puzzles.kaero.prototype = {
 					else if(bd.isLine(bd.rb(c))){ dir=3; id=bd.rb(c);}
 
 					g.lineWidth = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3); //LineWidth
-					if     (bd.ErB(id)==1){ g.strokeStyle = this.errlinecolor1; g.lineWidth=g.lineWidth+1;}
-					else if(bd.ErB(id)==2){ g.strokeStyle = this.errlinecolor2;}
-					else                  { g.strokeStyle = this.linecolor;}
+					if     (bd.border[id].error===1){ g.strokeStyle = this.errlinecolor1; g.lineWidth=g.lineWidth+1;}
+					else if(bd.border[id].error===2){ g.strokeStyle = this.errlinecolor2;}
+					else                            { g.strokeStyle = this.linecolor;}
 
-					if(this.vnop("c"+c+"_tp"+dir+"_",0)){
+					if(this.vnop(header+c,0)){
 						var px=bd.cell[c].px+k.cwidth/2+1, py=bd.cell[c].py+k.cheight/2+1;
-						if     (dir==1){ this.inputPath([px,py ,-tsize, tsize ,0,-tplus , tsize, tsize], false);}
-						else if(dir==2){ this.inputPath([px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize], false);}
-						else if(dir==3){ this.inputPath([px,py , tsize,-tsize ,-tplus,0 , tsize, tsize], false);}
-						else if(dir==4){ this.inputPath([px,py ,-tsize,-tsize , tplus,0 ,-tsize, tsize], false);}
+						if     (dir===1){ this.inputPath([px,py ,-tsize, tsize ,0,-tplus , tsize, tsize], false);}
+						else if(dir===2){ this.inputPath([px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize], false);}
+						else if(dir===3){ this.inputPath([px,py , tsize,-tsize ,-tplus,0 , tsize, tsize], false);}
+						else if(dir===4){ this.inputPath([px,py ,-tsize,-tsize , tplus,0 ,-tsize, tsize], false);}
 						g.stroke();
 					}
 				}
@@ -167,41 +170,44 @@ Puzzles.kaero.prototype = {
 		pc.drawCellSquare = function(x1,y1,x2,y2){
 			var mgnw = mf(k.cwidth*0.15);
 			var mgnh = mf(k.cheight*0.15);
+			var header = "c_sq_";
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
+			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.QnC(c)!=-1){
-					if     (bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else if(bd.ErC(c)==2){ g.fillStyle = this.errbcolor2;}
-					else if(bd.QsC(c)==1){ g.fillStyle = this.qsubcolor1;}
-					else if(bd.QsC(c)==2){ g.fillStyle = this.qsubcolor2;}
-					else                 { g.fillStyle = "white";}
+					if     (bd.cell[c].error===1){ g.fillStyle = this.errbcolor1;}
+					else if(bd.cell[c].error===2){ g.fillStyle = this.errbcolor2;}
+					else if(bd.cell[c].qsub ===1){ g.fillStyle = this.qsubcolor1;}
+					else if(bd.cell[c].qsub ===2){ g.fillStyle = this.qsubcolor2;}
+					else                         { g.fillStyle = "white";}
 
-					if(this.vnop("c"+c+"_sq_",1)){ g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);}
+					if(this.vnop(header+c,1)){
+						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
+					}
 				}
-				else{ this.vhide("c"+c+"_sq_");}
+				else{ this.vhide(header+c);}
 			}
 			this.vinc();
 		};
 		pc.drawNumbers_kaero = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
+			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)==-1){ this.hideEL(bd.cell[c].numobj);}
-				else{
-					if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
-					var num=bd.QnC(c);
+				var c = clist[i], obj = bd.cell[c];
+				if(bd.cell[c].qnum===-1){ this.hideEL(obj.numobj); continue;}
 
-					var color = this.fontErrcolor;
-					if(bd.ErC(c)==0){ color=this.fontcolor;}
+				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+				var num=bd.cell[c].qnum;
 
-					var text="";
-					if     (num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
-					else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
+				var color = (bd.cell[c].error===0 ? this.fontcolor : this.fontErrcolor);
 
-					this.dispnumCell1(c, bd.cell[c].numobj, 1, text, 0.85, color);
-				}
+				var text="";
+				if     (num==-2)         { text ="?";}
+				else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
+				else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
+				else{ text+=num;}
+
+				this.dispnum(obj.numobj, 1, text, 0.85, color, obj.px, obj.py);
 			}
 			this.vinc();
 		};
@@ -240,7 +246,7 @@ Puzzles.kaero.prototype = {
 
 				if(c >= bd.cellmax){ a=i+1; break;}
 			}
-			return bstr.substring(a,bstr.length);
+			return bstr.substring(a);
 		};
 		enc.encodeKaero = function(){
 			var cm="", count=0;
@@ -285,13 +291,13 @@ Puzzles.kaero.prototype = {
 			var rinfo = area.getRoomInfo();
 			this.movedPosition(linfo);
 			this.performAsLine = false;
-			if( !this.checkSameObjectInRoom(rinfo, this.getMoved.bind(this)) ){
+			if( !this.checkSameObjectInRoom(rinfo, ee.binder(this, this.getMoved)) ){
 				this.setAlert('１つのブロックに異なるアルファベットが入っています。','A block has plural kinds of letters.'); return false;
 			}
-			if( !this.checkObjectRoom(rinfo, this.getMoved.bind(this)) ){
+			if( !this.checkObjectRoom(rinfo, ee.binder(this, this.getMoved)) ){
 				this.setAlert('同じアルファベットが異なるブロックに入っています。','Same kinds of letters are placed different blocks.'); return false;
 			}
-			if( !this.checkNoObjectInRoom(rinfo, this.getMoved.bind(this)) ){
+			if( !this.checkNoObjectInRoom(rinfo, ee.binder(this, this.getMoved)) ){
 				this.setAlert('アルファベットのないブロックがあります。','A block has no letters.'); return false;
 			}
 
@@ -305,14 +311,16 @@ Puzzles.kaero.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkLineOverLetter = function(func){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(line.lcntCell(c)>=2 && bd.QnC(c)!=-1){
-					bd.sErBAll(2);
+					if(this.inAutoCheck){ return false;}
+					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,true);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.movedPosition = function(linfo){
 			this.before = new AreaInfo();

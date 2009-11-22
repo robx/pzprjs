@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.2.2
+// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.2.3
 //
 Puzzles.loopsp = function(){ };
 Puzzles.loopsp.prototype = {
@@ -40,19 +40,19 @@ Puzzles.loopsp.prototype = {
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　左ドラッグで線が、右クリックで×印が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　問題の記号はQWEASDFの各キーで入力できます。<br>Rキーや-キーで消去できます。数字キーで数字を入力できます。",
 							   " Press each QWEASDF key to input question. <br> Press 'R' or '-' key to erase. Number keys to input numbers.");
+		}
+		else{
+			base.setExpression("　左ドラッグで線が、右クリックで×印が入力できます。",
+							   " Left Button Drag to input black cells, Right Click to input a cross.");
 		}
 		base.setTitle("環状線スペシャル","Loop Special");
 		base.setFloatbgcolor("rgb(0, 191, 0)");
 	},
 	menufix : function(){
-		if(k.callmode=="pmake"){ kp.defaultdisp = true;}
+		if(k.EDITOR){ kp.defaultdisp = true;}
 		menu.addRedLineToFlags();
 	},
 
@@ -60,27 +60,27 @@ Puzzles.loopsp.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1){
-				if(!kp.enabled()){ this.inputLoopsp(x,y);}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputLoopsp();}
+				else{ kp.display();}
 			}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 
-		mv.inputLoopsp = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputLoopsp = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell){ return;}
 
 			if(cc==tc.getTCC()){
@@ -92,7 +92,7 @@ Puzzles.loopsp.prototype = {
 						else if(qs==107)         { bd.sQuC(cc,0); bd.sQnC(cc,-2);}
 					}
 					else if(qn==-2){ bd.sQnC(cc,1);}
-					else if(qn<99) { bd.sQnC(cc,qn+1);}
+					else if(qn<bd.maxnum){ bd.sQnC(cc,qn+1);}
 					else{ bd.sQuC(cc,0); bd.sQnC(cc,-1);}
 				}
 				else if(this.btn.Right){
@@ -118,15 +118,23 @@ Puzzles.loopsp.prototype = {
 
 		bd.enableLineNG = true;
 
+		// オーバーライト
+		bd.sQuC = function(id, num) {
+			um.addOpe(k.CELL, k.QUES, id, this.cell[id].ques, num);
+			this.cell[id].ques = num;
+
+			this.checkLPCombined(id);
+		};
+
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			kc.key_inputLineParts(ca);
 		};
 		kc.key_inputLineParts = function(ca){
-			if(k.mode!=1){ return false;}
+			if(k.playmode){ return false;}
 			var cc = tc.getTCC();
 
 			if     (ca=='q'){ bd.sQuC(cc,101); bd.sQnC(cc,-1); }
@@ -140,7 +148,7 @@ Puzzles.loopsp.prototype = {
 			else if(ca=='f'){ bd.sQuC(cc,107); bd.sQnC(cc,-1); }
 			else if((ca>='0' && ca<='9') || ca=='-'){
 				var old = bd.QnC(cc);
-				kc.key_inputqnum(ca,99);
+				kc.key_inputqnum(ca);
 				if(old!=bd.QnC(cc)){ bd.sQuC(cc,0);}
 			}
 			else{ return false;}
@@ -151,7 +159,7 @@ Puzzles.loopsp.prototype = {
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				this.inputcol('num','knumq','q','╋');
 				this.inputcol('num','knumw','w','┃');
@@ -178,7 +186,7 @@ Puzzles.loopsp.prototype = {
 				this.inputcol('num','knum0','0','0');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.kpinput = function(ca){ kc.key_inputLineParts(ca);};
 		}
 	},
@@ -189,6 +197,7 @@ Puzzles.loopsp.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.linecolor = pc.linecolor_LIGHT;
 		pc.fontsizeratio = 0.85;
+		pc.circleratio = [0.38, 0.30];
 
 		pc.minYdeg = 0.36;
 		pc.maxYdeg = 0.74;
@@ -197,8 +206,7 @@ Puzzles.loopsp.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			if(k.br.IE){
 				this.drawDashedGrid(x1,y1,x2,y2);
 			}
@@ -209,8 +217,7 @@ Puzzles.loopsp.prototype = {
 
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawCircle2(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawCircledNumbers(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,1);
 
@@ -218,31 +225,7 @@ Puzzles.loopsp.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
-		};
-
-		pc.drawCircle2 = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.40;
-			var rsize2 = k.cwidth*0.30;
-
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					if(bd.cell[c].cx >= x1 && x2 >= bd.cell[c].cx && bd.cell[c].cy >= y1 && y2 >= bd.cell[c].cy){
-						g.strokeStyle = this.Cellcolor;
-						g.beginPath();
-						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
-						if(this.vnop("c"+c+"_cir1_",0)){ g.stroke(); }
-					}
-					g.fillStyle = "white";
-					g.beginPath();
-					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2 , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cir2_",1)){ g.fill(); }
-				}
-				else{ this.vhide("c"+c+"_cir1_"); this.vhide("c"+c+"_cir2_");}
-			}
-			this.vinc();
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		line.repaintParts = function(id){
@@ -272,8 +255,8 @@ Puzzles.loopsp.prototype = {
 				var ca = bstr.charAt(i);
 
 				if     (ca == '.'){ bd.sQnC(c, -2); c++;}
-				else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substring(i+1,i+3),16)); c++; i+=2;}
-				else if((ca >= '0' && ca <= '9')||(ca >= 'a' && ca <= 'f')){ bd.sQnC(c, parseInt(bstr.substring(i,i+1),16)); c++;}
+				else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),16)); c++; i+=2;}
+				else if((ca >= '0' && ca <= '9')||(ca >= 'a' && ca <= 'f')){ bd.sQnC(c, parseInt(bstr.substr(i,1),16)); c++;}
 				else if(ca >= 'g' && ca <= 'm'){ bd.sQuC(c, (parseInt(ca,36)+85)); c++;}
 				else if(ca >= 'n' && ca <= 'z'){ c += (parseInt(ca,36)-22);}
 				else{ c++;}
@@ -281,7 +264,7 @@ Puzzles.loopsp.prototype = {
 				if(c > bd.cellmax){ break;}
 			}
 
-			return bstr.substring(i,bstr.length);
+			return bstr.substr(i);
 		};
 		enc.encodeLoopsp = function(){
 			var cm="", pstr="", count=0;
@@ -400,15 +383,17 @@ Puzzles.loopsp.prototype = {
 			});
 		};
 		ans.checkAllLoops = function(func){
+			var result = true;
 			var xinfo = line.getLineInfo();
 			for(var r=1;r<=xinfo.max;r++){
-				if(!func(line.LineList2Clist(xinfo.room[r].idlist))){
-					bd.sErBAll(2);
-					bd.sErB(xinfo.room[r].idlist,1);
-					return false;
-				}
+				if(func(line.LineList2Clist(xinfo.room[r].idlist))){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				if(result){ bd.sErBAll(2);}
+				bd.sErB(xinfo.room[r].idlist,1);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 
 		line.LineList2Clist = function(idlist){

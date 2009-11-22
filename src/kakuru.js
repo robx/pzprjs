@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックル版 kakuru.js v3.2.2
+// パズル固有スクリプト部 カックル版 kakuru.js v3.2.3
 //
 Puzzles.kakuru = function(){ };
 Puzzles.kakuru.prototype = {
@@ -40,13 +40,13 @@ Puzzles.kakuru.prototype = {
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　マウスやキーボードで数字が入力できます。",
-							   " It is available to input number by keybord or mouse");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　黒マスはQキーで入力できます。",
 							   " Press 'Q' key to input black cell.");
+		}
+		else{
+			base.setExpression("　マウスやキーボードで数字が入力できます。",
+							   " It is available to input number by keybord or mouse");
 		}
 		base.setTitle("カックル","Kakuru");
 		base.setFloatbgcolor("rgb(96, 255, 96)");
@@ -57,19 +57,19 @@ Puzzles.kakuru.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1 && !kp.enabled()){
-				if(this.notInputted() && kp.enabled()){ kp.display(x,y);}
-				else{ this.inputqnum_kakuru(x,y);}
+		mv.mousedown = function(){
+			if(k.editmode && !kp.enabled()){
+				if(this.notInputted() && kp.enabled()){ kp.display();}
+				else{ this.inputqnum_kakuru();}
 			}
-			else if(k.mode==3){ this.inputqnum_kakuru(x,y);}
+			else if(k.playmode){ this.inputqnum_kakuru();}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){ };
-		mv.inputqnum_kakuru = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){ };
+		mv.inputqnum_kakuru = function(){
+			var cc = this.cellid();
 			if(cc==-1 || (bd.QuC(cc)==1 && cc==tc.getTCC())){ return;}
-			this.inputqnum(x,y,(k.mode==1?44:9));
+			this.inputqnum();
 		};
 
 		// キーボード入力系
@@ -82,18 +82,18 @@ Puzzles.kakuru.prototype = {
 
 			if('0'<=ca && ca<='9'){
 				if(bd.QuC(cc)==1){ return;}
-				this.key_inputqnum(ca,(k.mode==1?44:9));
+				this.key_inputqnum(ca);
 			}
 			else if(ca=='-'){
 				if(bd.QuC(cc)==1){ return;}
-				if(k.mode==1){ bd.sQnC(cc,(bd.QnC(cc)!=-2?-2:-1));}
+				if(k.editmode){ bd.sQnC(cc,(bd.QnC(cc)!=-2?-2:-1));}
 				else{ bd.sQaC(cc,-1);}
 			}
 			else if(ca==' '){
-				if(k.mode==1){ bd.sQuC(cc,0); bd.sQnC(cc,-1);}
+				if(k.editmode){ bd.sQuC(cc,0); bd.sQnC(cc,-1);}
 				else{ bd.sQaC(cc,-1);}
 			}
-			else if(k.mode==1 && (ca=='q'||ca=='q1'||ca=='q2')){
+			else if(k.editmode && (ca=='q'||ca=='q1'||ca=='q2')){
 				if(ca=='q'){ ca = (bd.QuC(cc)!=1?'q1':'q2');}
 				if(ca=='q1'){
 					bd.sQuC(cc, 1);
@@ -107,7 +107,7 @@ Puzzles.kakuru.prototype = {
 			pc.paintCell(cc);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				if(mode==1){
 					this.inputcol('num','knumq1','q1','■');
@@ -132,11 +132,13 @@ Puzzles.kakuru.prototype = {
 				this.inputcol('num','knum.',' ',' ');
 				this.insertrow();
 			};
-			kp.generate(99, true, true, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
 			kp.kpinput = function(ca){
 				kc.key_inputqnum_tateyoko(ca);
 			};
 		}
+
+		bd.nummaxfunc = function(cc){ return (k.editmode?44:9);};
 	},
 
 	//---------------------------------------------------------
@@ -150,11 +152,9 @@ Puzzles.kakuru.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
-			this.drawBCells2(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBCells1(x1,y1,x2,y2);
+			this.drawBlackCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
@@ -163,29 +163,16 @@ Puzzles.kakuru.prototype = {
 			this.drawTCell(x1,y1,x2+1,y2+1);
 		};
 
-		pc.drawBCells1 = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QuC(c)==1){
-					g.fillStyle = this.Cellcolor;
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
-				}
-				// drawBCells2で既にvhideされているので、ここではvhideしない
-			}
-			this.vinc();
+		// オーバーライド drawBGCells用
+		pc.setBGCellColor = function(cc){
+			if     (bd.cell[cc].qnum !==-1){ g.fillStyle = "rgb(208, 208, 208)"; return true;}
+			else if(bd.cell[cc].error=== 1){ g.fillStyle = this.errbcolor1;      return true;}
+			return false;
 		};
-		pc.drawBCells2 = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					g.fillStyle = "rgb(208, 208, 208)";
-					if(this.vnop("c"+c+"_full_",1)){ g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);}
-				}
-				else{ this.vhide("c"+c+"_full_");}
-			}
-			this.vinc();
+		// オーバーライド drawBlackCells用
+		pc.setCellColor = function(cc){
+			if(bd.cell[cc].ques===1){ g.fillStyle = this.Cellcolor; return true;}
+			return false;
 		};
 	},
 
@@ -218,7 +205,7 @@ Puzzles.kakuru.prototype = {
 
 				if(cell>=bd.cellmax){ break;}
 			}
-			return bstr.substring(i,bstr.length);
+			return bstr.substr(i);
 		};
 		enc.encodeKakuru = function(type){
 			var cm="", count=0;
@@ -308,6 +295,7 @@ Puzzles.kakuru.prototype = {
 		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)==0 && bd.QnC(c)==-1 && bd.QaC(c)==-1);});};
 
 		ans.checkAroundPrenums = function(type){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==1 || bd.QnC(c)<=0){ continue;}
 
@@ -325,15 +313,17 @@ Puzzles.kakuru.prototype = {
 
 				for(var n=1;n<=9;n++){
 					if(d[n]>1){
+						if(this.inAutoCheck){ return false;}
 						bd.sErC([c],1);
 						for(i=0;i<clist.length;i++){ if(bd.QaC(clist[i])==n){ bd.sErC(clist[i],1);} }
-						return false;
+						result = false;
 					}
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkNumber = function(type){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==1 || bd.QnC(c)<=0){ continue;}
 
@@ -349,21 +339,30 @@ Puzzles.kakuru.prototype = {
 				cc=bd.cnum(cx  ,cy+1); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
 				cc=bd.cnum(cx+1,cy+1); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
 
-				if(bd.QnC(c)!=cnt){ bd.sErC(clist,1); return false;}
+				if(bd.QnC(c)!=cnt){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC(clist,1); result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkAroundNumbers = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QaC(c)<=0){ continue;}
-				var cx = bd.cell[c].cx; var cy = bd.cell[c].cy; var target=0;
+				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, target=0, clist = [c];
 				var func = function(cc){ return (cc!=-1 && bd.QaC(c)==bd.QaC(cc));};
-				target=bd.cnum(cx+1,cy  ); if(func(target)){ bd.sErC([c,target],1); return false;}
-				target=bd.cnum(cx  ,cy+1); if(func(target)){ bd.sErC([c,target],1); return false;}
-				target=bd.cnum(cx-1,cy+1); if(func(target)){ bd.sErC([c,target],1); return false;}
-				target=bd.cnum(cx+1,cy+1); if(func(target)){ bd.sErC([c,target],1); return false;}
+				target=bd.cnum(cx+1,cy  ); if(func(target)){ clist.push(target);}
+				target=bd.cnum(cx  ,cy+1); if(func(target)){ clist.push(target);}
+				target=bd.cnum(cx-1,cy+1); if(func(target)){ clist.push(target);}
+				target=bd.cnum(cx+1,cy+1); if(func(target)){ clist.push(target);}
+
+				if(clist.length>1){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC(clist,1); result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

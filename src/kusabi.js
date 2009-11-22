@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.2.2
+// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.2.3
 //
 Puzzles.kusabi = function(){ };
 Puzzles.kusabi.prototype = {
@@ -51,32 +51,33 @@ Puzzles.kusabi.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1){
-				if(!kp.enabled()){ this.inputqnum(x,y,3);}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
-			}
-		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
+			}
+		};
+		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,3);
+			this.key_inputqnum(ca);
 		};
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				this.inputcol('num','knum1','1','同');
 				this.inputcol('num','knum2','2','短');
@@ -87,73 +88,43 @@ Puzzles.kusabi.prototype = {
 				this.inputcol('empty','knumx','','');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,3);
+				kc.key_inputqnum(ca);
 			};
 		}
+
+		bd.maxnum = 3;
 	},
 
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
+		pc.circleratio = [0.40, 0.40];
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawNumCells_kusabi(x1,y1,x2,y2);
-			this.drawNumbers_kusabi(x1,y1,x2,y2);
+			this.drawCircledNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
+		pc.dispnumCell = function(id){
+			var num = bd.cell[id].qnum, obj = bd.cell[id];
+			if(num>=1 && num<=3){ text = ({1:"同",2:"短",3:"長"})[num];}
+			else{ this.hideEL(obj.numobj); return;}
 
-		pc.drawNumCells_kusabi = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.42;
-			var rsize2 = k.cwidth*0.36;
-
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
-
-					g.fillStyle = this.Cellcolor;
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cira_",1)){ g.fill(); }
-
-					if(bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else{ g.fillStyle = "white";}
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cirb_",1)){ g.fill(); }
-				}
-				else{ this.vhide(["c"+c+"_cira_", "c"+c+"_cirb_"]);}
-			}
-			this.vinc();
-		};
-		pc.drawNumbers_kusabi = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				var num = bd.QnC(c);
-				if(num>=1 && num<=3){ text = ({1:"同",2:"短",3:"長"})[num];}
-				else{ this.hideEL(bd.cell[c].numobj); continue;}
-
-				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
-				this.dispnumCell1(c, bd.cell[c].numobj, 1, text, 0.65, this.getNumberColor(c));
-			}
-			this.vinc();
+			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+			this.dispnum(obj.numobj, 1, text, 0.65, this.getNumberColor(id), obj.px, obj.py);
 		};
 	},
 
@@ -194,26 +165,26 @@ Puzzles.kusabi.prototype = {
 				this.setAlert('丸の上を線が通過しています。','A line goes through a circle.'); return false;
 			}
 
-			var saved = this.checkConnectedLine();
-			if( !this.checkErrorFlag(saved,7) ){
+			var errinfo = this.searchConnectedLine();
+			if( !this.checkErrorFlag(errinfo,7) ){
 				this.setAlert('丸がコの字型に繋がっていません。','The shape of a line is not correct.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,6) ){
+			if( !this.checkErrorFlag(errinfo,6) ){
 				this.setAlert('繋がる丸が正しくありません。','The type of connected circle is wrong.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,5) ){
+			if( !this.checkErrorFlag(errinfo,5) ){
 				this.setAlert('線が2回以上曲がっています。','A line turns twice or more.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,4) ){
+			if( !this.checkErrorFlag(errinfo,4) ){
 				this.setAlert('線が2回曲がっていません。','A line turns only once or lower.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,3) ){
+			if( !this.checkErrorFlag(errinfo,3) ){
 				this.setAlert('線の長さが同じではありません。','The length of lines is differnet.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,2) ){
+			if( !this.checkErrorFlag(errinfo,2) ){
 				this.setAlert('線の長短の指示に反してます。','The length of lines is not suit for the label of object.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,1) ){
+			if( !this.checkErrorFlag(errinfo,1) ){
 				this.setAlert('途切れている線があります。','There is a dead-end line.'); return false;
 			}
 
@@ -231,18 +202,21 @@ Puzzles.kusabi.prototype = {
 
 		ans.check2Line = function(){ return this.checkLine(function(i){ return (line.lcntCell(i)>=2 && bd.QnC(i)!=-1);}); };
 		ans.checkLine = function(func){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(func(c)){
-					bd.sErBAll(2);
+					if(this.inAutoCheck){ return false;}
+					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,true);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 
-		ans.checkConnectedLine = function(){
-			var saved = {errflag:0,cells:[],idlist:[]};
+		ans.searchConnectedLine = function(){
+			var errinfo = {data:[]};
+			//var saved = {errflag:0,cells:[],idlist:[]};
 			var visited = new AreaInfo();
 			for(var id=0;id<bd.bdmax;id++){ visited[id]=0;}
 
@@ -260,7 +234,7 @@ Puzzles.kusabi.prototype = {
 				while(1){
 					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 					if((bx+by)%2==0){
-						cc = bd.cnum(mf(bx/2),mf(by/2));
+						cc = bd.cnum(bx>>1,by>>1);
 						if(dir!=0 && bd.QnC(cc)!=-1){ break;}
 						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!=0&&dir!=2){ ccnt++;} dir=2;}
 						else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!=0&&dir!=1){ ccnt++;} dir=1;}
@@ -280,47 +254,46 @@ Puzzles.kusabi.prototype = {
 				}
 
 				if(idlist.length<=0){ continue;}
-				else if((cc==-1 || bd.QnC(cc)==-1) && saved.errflag==0){
-					saved = {errflag:1,cells:[c],idlist:idlist};
+				if(!((dir1==1&&dir==2)||(dir1==2&&dir==1)||(dir1==3&&dir==4)||(dir1==4&&dir==3)) && ccnt==2){
+					errinfo.data.push({errflag:7,cells:[c,cc],idlist:idlist}); continue;
 				}
-				else if((((bd.QnC(c)==2 || bd.QnC(cc)==3) && length1>=length2) ||
-						 ((bd.QnC(c)==3 || bd.QnC(cc)==2) && length1<=length2)) && ccnt==2 && cc!=-1 && saved.errflag<=1)
+				if(!((bd.QnC(c)==1 && bd.QnC(cc)==1) || (bd.QnC(c)==2 && bd.QnC(cc)==3) ||
+						  (bd.QnC(c)==3 && bd.QnC(cc)==2) || bd.QnC(c)==-2 || bd.QnC(cc)==-2) && cc!=-1 && ccnt==2)
 				{
-					saved = {errflag:2,cells:[c,cc],idlist:idlist};
+					errinfo.data.push({errflag:6,cells:[c,cc],idlist:idlist}); continue;
 				}
-				else if((bd.QnC(c)==1 || bd.QnC(cc)==1) && ccnt==2 && cc!=-1 && length1!=length2 && saved.errflag<=2){
-					saved = {errflag:3,cells:[c,cc],idlist:idlist};
+				if(ccnt>2){
+					errinfo.data.push({errflag:5,cells:[c,cc],idlist:idlist}); continue;
 				}
-				else if(ccnt<2 && cc!=-1 && saved.errflag<=3){
-					saved = {errflag:4,cells:[c,cc],idlist:idlist};
-					return saved;
+				if(ccnt<2 && cc!=-1){
+					errinfo.data.push({errflag:4,cells:[c,cc],idlist:idlist}); continue;
 				}
-				else if(ccnt>2 && saved.errflag<=3){
-					saved = {errflag:5,cells:[c,cc],idlist:idlist};
-					return saved;
+				if((bd.QnC(c)==1 || bd.QnC(cc)==1) && ccnt==2 && cc!=-1 && length1!=length2){
+					errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist}); continue;
 				}
-				else if(!((bd.QnC(c)==1 && bd.QnC(cc)==1) || (bd.QnC(c)==2 && bd.QnC(cc)==3) ||
-						  (bd.QnC(c)==3 && bd.QnC(cc)==2) || bd.QnC(c)==-2 || bd.QnC(cc)==-2) &&
-						   cc!=-1 && ccnt==2 && saved.errflag<=3)
+				if((((bd.QnC(c)==2 || bd.QnC(cc)==3) && length1>=length2) ||
+						 ((bd.QnC(c)==3 || bd.QnC(cc)==2) && length1<=length2)) && ccnt==2 && cc!=-1)
 				{
-					saved = {errflag:6,cells:[c,cc],idlist:idlist};
-					return saved;
+					errinfo.data.push({errflag:2,cells:[c,cc],idlist:idlist}); continue;
 				}
-				else if(!((dir1==1&&dir==2)||(dir1==2&&dir==1)||(dir1==3&&dir==4)||(dir1==4&&dir==3)) && ccnt==2 && saved.errflag<=3){
-					saved = {errflag:7,cells:[c,cc],idlist:idlist};
-					return saved;
+				if((cc==-1 || bd.QnC(cc)==-1)){
+					errinfo.data.push({errflag:1,cells:[c],idlist:idlist}); continue;
 				}
 			}
-			return saved;
+			return errinfo;
 		};
-		ans.checkErrorFlag = function(saved, val){
-			if(saved.errflag==val){
-				bd.sErC(saved.cells,1);
-				bd.sErBAll(2);
-				bd.sErB(saved.idlist,1);
-				return false;
+		ans.checkErrorFlag = function(errinfo, val){
+			var result = true;
+			for(var i=0,len=errinfo.data.length;i<len;i++){
+				if(errinfo.data[i].errflag!=val){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(errinfo.data[i].cells,1);
+				if(result){ bd.sErBAll(2);}
+				bd.sErB(errinfo.data[i].idlist,1);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 	}
 };

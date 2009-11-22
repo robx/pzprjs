@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ましゅ版 mashu.js v3.2.2
+// パズル固有スクリプト部 ましゅ版 mashu.js v3.2.3
 //
 Puzzles.mashu = function(){ };
 Puzzles.mashu.prototype = {
@@ -46,9 +46,8 @@ Puzzles.mashu.prototype = {
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){
-		pp.addCheckToFlags('uramashu','setting',false);
-		pp.setMenuStr('uramashu', '裏ましゅ', 'Ura-Mashu');
-		pp.setLabel  ('uramashu', '裏ましゅにする', 'Change to Ura-Mashu');
+		pp.addCheck('uramashu','setting',false, '裏ましゅ', 'Ura-Mashu');
+		pp.setLabel('uramashu', '裏ましゅにする', 'Change to Ura-Mashu');
 		pp.funcs['uramashu'] = function(){
 			for(var c=0;c<bd.cellmax;c++){
 				if     (bd.QuC(c)==41){ bd.sQuC(c,42);}
@@ -64,21 +63,22 @@ Puzzles.mashu.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1) this.inputQues(x,y,[0,41,42,-2]);
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mousedown = function(){
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
+			if(k.editmode) this.inputQues([0,41,42,-2]);
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
+		mv.inputQuesDirectly = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){ if(ca=='z' && !this.keyPressed){ this.isZ=true;} };
@@ -95,12 +95,11 @@ Puzzles.mashu.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawQueses41_42(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawQuesHatenas(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
@@ -137,12 +136,12 @@ Puzzles.mashu.prototype = {
 					}
 				}
 			}
-			if(menu.getVal('uramashu')){ (pp.funcs['uramashu'])();}
+			if(pp.getVal('uramashu')){ (pp.funcs['uramashu'])();}
 
-			return bstr.substring(pos,bstr.length);
+			return bstr.substr(pos);
 		};
 		enc.encodeCircle = function(flag){
-			var cm="", num=0, pass=0, isura=menu.getVal('uramashu');
+			var cm="", num=0, pass=0, isura=pp.getVal('uramashu');
 			for(var i=0;i<bd.cellmax;i++){
 				if     (bd.QuC(i)==(!isura?41:42)){ pass+=(  Math.pow(3,2-num));}
 				else if(bd.QuC(i)==(!isura?42:41)){ pass+=(2*Math.pow(3,2-num));}
@@ -159,11 +158,11 @@ Puzzles.mashu.prototype = {
 				if     (ca == "1"){ bd.sQuC(c, 41);}
 				else if(ca == "2"){ bd.sQuC(c, 42);}
 			},bstr.split("/"));
-			if(menu.getVal('uramashu')){ (pp.funcs['uramashu'])();}
+			if(pp.getVal('uramashu')){ (pp.funcs['uramashu'])();}
 			return "";
 		};
 		enc.pzldataKanpen = function(){
-			var isura=menu.getVal('uramashu');
+			var isura=pp.getVal('uramashu');
 			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
 				if     (bd.QuC(c)==(!isura?41:42)){ return "1_";}
 				else if(bd.QuC(c)==(!isura?42:41)){ return "2_";}
@@ -178,10 +177,10 @@ Puzzles.mashu.prototype = {
 				else if(ca == "2"){ bd.sQuC(c, 42);}
 			},array.slice(0,k.qrows));
 			this.decodeBorderLine(array.slice(k.qrows,3*k.qrows-1));
-			if(menu.getVal('uramashu')){ (pp.funcs['uramashu'])();}
+			if(pp.getVal('uramashu')){ (pp.funcs['uramashu'])();}
 		};
 		fio.kanpenSave = function(){
-			var isura=menu.getVal('uramashu');
+			var isura=pp.getVal('uramashu');
 			return ""+this.encodeCell( function(c){
 				if     (bd.QuC(c)==(!isura?41:42)){ return "1 ";}
 				else if(bd.QuC(c)==(!isura?42:41)){ return "2 ";}
@@ -233,54 +232,66 @@ Puzzles.mashu.prototype = {
 		};
 
 		ans.checkWhitePearl1 = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==41 && line.lcntCell(c)==2 && !ans.isLineStraight(c)){
-					bd.sErBAll(2);
+					if(this.inAutoCheck){ return false;}
+					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkBlackPearl1 = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==42 && line.lcntCell(c)==2 && ans.isLineStraight(c)){
-					bd.sErBAll(2);
+					if(this.inAutoCheck){ return false;}
+					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,1);
-					return false;
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 
 		ans.checkWhitePearl2 = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)!=41 || line.lcntCell(c)!=2){ continue;}
-				if(bd.isLine(bd.ub(c)) && line.lcntCell(bd.up(c))==2 && !ans.isLineStraight(bd.up(c))){ continue;}
-				if(bd.isLine(bd.db(c)) && line.lcntCell(bd.dn(c))==2 && !ans.isLineStraight(bd.dn(c))){ continue;}
-				if(bd.isLine(bd.lb(c)) && line.lcntCell(bd.lt(c))==2 && !ans.isLineStraight(bd.lt(c))){ continue;}
-				if(bd.isLine(bd.rb(c)) && line.lcntCell(bd.rt(c))==2 && !ans.isLineStraight(bd.rt(c))){ continue;}
+				var stcnt = 0;
+				if(bd.isLine(bd.ub(c)) && line.lcntCell(bd.up(c))===2 && ans.isLineStraight(bd.up(c))){ stcnt++;}
+				if(bd.isLine(bd.db(c)) && line.lcntCell(bd.dn(c))===2 && ans.isLineStraight(bd.dn(c))){ stcnt++;}
+				if(bd.isLine(bd.lb(c)) && line.lcntCell(bd.lt(c))===2 && ans.isLineStraight(bd.lt(c))){ stcnt++;}
+				if(bd.isLine(bd.rb(c)) && line.lcntCell(bd.rt(c))===2 && ans.isLineStraight(bd.rt(c))){ stcnt++;}
 
-				this.setErrorPearl(c);
-				return false;
+				if(stcnt>=2){
+					if(this.inAutoCheck){ return false;}
+					this.setErrorPearl(c,result);
+					result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 		ans.checkBlackPearl2 = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)!=42 || line.lcntCell(c)!=2){ continue;}
 				if((bd.isLine(bd.ub(c)) && line.lcntCell(bd.up(c))==2 && !ans.isLineStraight(bd.up(c))) ||
 				   (bd.isLine(bd.db(c)) && line.lcntCell(bd.dn(c))==2 && !ans.isLineStraight(bd.dn(c))) ||
 				   (bd.isLine(bd.lb(c)) && line.lcntCell(bd.lt(c))==2 && !ans.isLineStraight(bd.lt(c))) ||
 				   (bd.isLine(bd.rb(c)) && line.lcntCell(bd.rt(c))==2 && !ans.isLineStraight(bd.rt(c))) ){
-					this.setErrorPearl(c);
-					return false;
+
+					if(this.inAutoCheck){ return false;}
+					this.setErrorPearl(c,result);
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
-		ans.setErrorPearl = function(cc){
-			bd.sErBAll(2);
+		ans.setErrorPearl = function(cc,result){
+			if(result){ bd.sErBAll(2);}
 			ans.setCellLineError(cc,1);
 			if(bd.isLine(bd.ub(cc))){ ans.setCellLineError(bd.up(cc),0);}
 			if(bd.isLine(bd.db(cc))){ ans.setCellLineError(bd.dn(cc),0);}

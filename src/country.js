@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カントリーロード版 country.js v3.2.2
+// パズル固有スクリプト部 カントリーロード版 country.js v3.2.3
 //
 Puzzles.country = function(){ };
 Puzzles.country.prototype = {
@@ -53,45 +53,47 @@ Puzzles.country.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
+		mv.mousedown = function(){
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
+			if(k.editmode) this.inputborder();
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.mode==1){
-					if(!kp.enabled()){ this.inputqnum(x,y,99);}
-					else{ kp.display(x,y);}
+				if(k.editmode){
+					if(!kp.enabled()){ this.inputqnum();}
+					else{ kp.display();}
 				}
-				else if(k.mode==3) this.inputMB(x,y);
+				else if(k.playmode) this.inputMB();
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
+		mv.mousemove = function(){
+			if(k.editmode) this.inputborder();
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
 			}
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(0, true, false, '');
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,99);
+				kc.key_inputqnum(ca);
 			};
 		}
+
+		bd.nummaxfunc = function(cc){ return Math.min(this.maxnum, area.getCntOfRoomByCell(cc));};
 	},
 
 	//---------------------------------------------------------
@@ -103,8 +105,7 @@ Puzzles.country.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawGrid(x1,y1,x2,y2);
@@ -116,7 +117,7 @@ Puzzles.country.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 
@@ -180,6 +181,7 @@ Puzzles.country.prototype = {
 
 		ans.checkRoom2 = function(rinfo){
 			if(rinfo.max<=1){ return true;}
+			var result = true;
 			for(var r=1;r<=rinfo.max;r++){
 				var cnt=0;
 				for(var i=0;i<rinfo.room[r].idlist.length;i++){
@@ -189,9 +191,13 @@ Puzzles.country.prototype = {
 					var lb=bd.lb(c); if(bd.lt(c)!=-1 && bd.isBorder(lb) && bd.isLine(lb)){ cnt++;}
 					var rb=bd.rb(c); if(bd.rt(c)!=-1 && bd.isBorder(rb) && bd.isLine(rb)){ cnt++;}
 				}
-				if(cnt>2){ bd.sErC(rinfo.room[r].idlist,1); return false;}
+				if(cnt>2){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC(rinfo.room[r].idlist,1);
+					result = false;
+				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

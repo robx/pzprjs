@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンロー版 nanro.js v3.2.2
+// パズル固有スクリプト部 ナンロー版 nanro.js v3.2.3
 //
 Puzzles.nanro = function(){ };
 Puzzles.nanro.prototype = {
@@ -53,27 +53,27 @@ Puzzles.nanro.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3){
-				if(this.btn.Left) this.dragnumber(x,y);
+		mv.mousedown = function(){
+			if(k.editmode) this.inputborder();
+			else if(k.playmode){
+				if(this.btn.Left) this.dragnumber();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(!kp.enabled()){ this.mouseCell=-1; this.inputqnum(x,y,99);}
-				else{ kp.display(x,y);}
+				if(!kp.enabled()){ this.mouseCell=-1; this.inputqnum();}
+				else{ kp.display();}
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3){
-				if(this.btn.Left) this.dragnumber(x,y);
-				else if(this.btn.Right) this.inputDot(x,y);
+		mv.mousemove = function(){
+			if(k.editmode) this.inputborder();
+			else if(k.playmode){
+				if(this.btn.Left) this.dragnumber();
+				else if(this.btn.Right) this.inputDot();
 			}
 		};
-		mv.dragnumber = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.dragnumber = function(){
+			var cc = this.cellid();
 			if(cc==-1||cc==this.mouseCell){ return;}
 			if(this.mouseCell==-1){
 				this.inputData = bd.getNum(cc);
@@ -92,8 +92,8 @@ Puzzles.nanro.prototype = {
 				pc.paintCell(cc);
 			}
 		};
-		mv.inputDot = function(x,y){
-			var cc = this.cellid(new Pos(x,y));
+		mv.inputDot = function(){
+			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell || bd.isNum(cc)){ return;}
 			if(this.inputData==-1){ this.inputData = (bd.QsC(cc)==2?0:2);}
 			if     (this.inputData==2){ bd.sQaC(cc,-1); bd.sQsC(cc,2);}
@@ -106,10 +106,10 @@ Puzzles.nanro.prototype = {
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
 			if(this.key_view(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 		kc.key_view = function(ca){
-			if(k.mode==1 || bd.QnC(tc.getTCC())!=-1){ return false;}
+			if(k.editmode || bd.QnC(tc.getTCC())!=-1){ return false;}
 
 			var cc = tc.getTCC();
 			var flag = false;
@@ -150,11 +150,11 @@ Puzzles.nanro.prototype = {
 			((mode==1)?this.inputcol('num','knumc',' ','') :this.inputcol('empty','knumy','',''));
 			this.insertrow();
 		};
-		kp.generate(99, true, true, kp.kpgenerate.bind(kp));
-		kp.kpinput = function(ca){ kc.keyinput(ca,99);};
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
+		kp.kpinput = function(ca){ kc.keyinput(ca);};
 
 		area.resetArea();
-		bd.roommaxfunc = function(cc,mode){ return area.getCntOfRoomByCell(cc);};
+		bd.nummaxfunc = function(cc){ return area.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -166,8 +166,7 @@ Puzzles.nanro.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawMBs(x1,y1,x2,y2);
@@ -305,13 +304,15 @@ Puzzles.nanro.prototype = {
 		//check1st : function(){ return ans.checkOneArea( ans.searchBWarea(function(id){ return (id!=-1 && puz.getNum(id)!=-1); }) );},
 
 		ans.checkErrorFlag = function(rinfo, val){
+			var result = true;
 			for(var id=1;id<=rinfo.max;id++){
-				if(rinfo.room[id].error==val){
-					bd.sErC(rinfo.room[id].idlist,1);
-					return false;
-				}
+				if(rinfo.room[id].error!==val){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(rinfo.room[id].idlist,1);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 
 		ans.searchRarea2 = function(){

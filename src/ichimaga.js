@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 イチマガ/磁石イチマガ版 ichimaga.js v3.2.2
+// パズル固有スクリプト部 イチマガ/磁石イチマガ版 ichimaga.js v3.2.3
 //
 Puzzles.ichimaga = function(){ };
 Puzzles.ichimaga.prototype = {
@@ -7,7 +7,7 @@ Puzzles.ichimaga.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake = 1;			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
 		k.iscross      = 0;		// 1:Crossが操作可能なパズル
 		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
@@ -46,14 +46,13 @@ Puzzles.ichimaga.prototype = {
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){
-		if(k.callmode=="pmake"){
-			pp.addUseToFlags('puztype','setting',1,[1,2,3]);
-			pp.addUseChildrenToFlags('puztype','puztype');
-			pp.setMenuStr('puztype', 'パズルの種類', 'Kind of the puzzle');
-			pp.setLabel  ('puztype', 'パズルの種類', 'Kind of the puzzle');
-			pp.setMenuStr('puztype_1', 'イチマガ', 'Ichimaga');
-			pp.setMenuStr('puztype_2', '磁石イチマガ', 'Magnetic Ichimaga');
-			pp.setMenuStr('puztype_3', '交差も', 'Crossing Ichimaga');
+		if(k.EDITOR){
+			pp.addSelect('puztype','setting',1,[1,2,3], 'パズルの種類', 'Kind of the puzzle');
+			pp.setLabel ('puztype', 'パズルの種類', 'Kind of the puzzle');
+
+			pp.addChild('puztype_1', 'puztype', 'イチマガ', 'Ichimaga');
+			pp.addChild('puztype_2', 'puztype', '磁石イチマガ', 'Magnetic Ichimaga');
+			pp.addChild('puztype_3', 'puztype', '交差も', 'Crossing Ichimaga');
 		}
 	},
 
@@ -61,28 +60,30 @@ Puzzles.ichimaga.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(k.mode==1) this.inputqnum(x,y,4);
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mousedown = function(){
+			if(k.editmode) this.inputqnum();
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,4);
+			this.key_inputqnum(ca);
 		};
+
+		bd.maxnum = 4;
 	},
 
 	//---------------------------------------------------------
@@ -92,6 +93,7 @@ Puzzles.ichimaga.prototype = {
 
 		pc.fontErrcolor = pc.fontcolor;
 		pc.fontsizeratio = 0.85;
+		pc.circleratio = [0.38, 0.38];
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -102,37 +104,9 @@ Puzzles.ichimaga.prototype = {
 
 			this.drawPekes(x1,y1,x2,y2,0);
 
-			this.drawNumCells_circle(x1,y1,x2,y2);
+			this.drawCircledNumbers(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
-		};
-
-		pc.drawNumCells_circle = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.40;
-			var rsize2 = k.cwidth*0.36;
-
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
-
-					g.fillStyle = this.Cellcolor;
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cira_",1)){ g.fill(); }
-
-					if(bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else{ g.fillStyle = "white";}
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cirb_",1)){ g.fill(); }
-				}
-				else{ this.vhide(["c"+c+"_cira_", "c"+c+"_cirb_"]);}
-
-				this.dispnumCell_General(c);
-			}
-			this.vinc();
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 
@@ -142,17 +116,17 @@ Puzzles.ichimaga.prototype = {
 		enc.pzlimport = function(type, bstr){
 			if(type==0 || type==1){ this.decode4Cell(bstr);}
 
-			if(k.callmode=="pmake"){
-				if     (this.checkpflag("m")){ menu.setVal('puztype',2);}
-				else if(this.checkpflag("x")){ menu.setVal('puztype',3);}
-				else                         { menu.setVal('puztype',1);}
+			if(k.EDITOR){
+				if     (this.checkpflag("m")){ pp.setVal('puztype',2);}
+				else if(this.checkpflag("x")){ pp.setVal('puztype',3);}
+				else                         { pp.setVal('puztype',1);}
 			}
 			else{
 				if     (this.checkpflag("m")){ base.setTitle("磁石イチマガ","Magnetic Ichimaga");}
 				else if(this.checkpflag("x")){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
 				else                         { base.setTitle("イチマガ","Ichimaga");}
 				document.title = base.gettitle();
-				$("#title2").html(base.gettitle());
+				ee('title2').el.innerHTML = base.gettitle();
 			}
 		};
 		enc.pzlexport = function(type){
@@ -162,8 +136,8 @@ Puzzles.ichimaga.prototype = {
 		};
 		enc.pzldata = function(){
 			var pzlflag="";
-			if     (menu.getVal('puztype')==2){ pzlflag="/m";}
-			else if(menu.getVal('puztype')==3){ pzlflag="/x";}
+			if     (pp.getVal('puztype')==2){ pzlflag="/m";}
+			else if(pp.getVal('puztype')==3){ pzlflag="/x";}
 
 			return ""+pzlflag+"/"+k.qcols+"/"+k.qrows+"/"+this.encode4Cell();
 		};
@@ -172,23 +146,23 @@ Puzzles.ichimaga.prototype = {
 		fio.decodeOthers = function(array){
 			if(array.length<1){ return false;}
 
-			if(k.callmode=="pmake"){
-				if     (array[0]=="mag")  { menu.setVal('puztype',2);}
-				else if(array[0]=="cross"){ menu.setVal('puztype',3);}
-				else                      { menu.setVal('puztype',1);}
+			if(k.EDITOR){
+				if     (array[0]=="mag")  { pp.setVal('puztype',2);}
+				else if(array[0]==k.CROSS){ pp.setVal('puztype',3);}
+				else                      { pp.setVal('puztype',1);}
 			}
 			else{
 				if     (array[0]=="mag")  { base.setTitle("磁石イチマガ","Magnetic Ichimaga");}
-				else if(array[0]=="cross"){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
+				else if(array[0]==k.CROSS){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
 				else                      { base.setTitle("イチマガ","Ichimaga");}
 				document.title = base.gettitle();
-				$("#title2").html(base.gettitle());
+				ee('title2').el.innerHTML = base.gettitle();
 			}
 			return true;
 		};
 		fio.encodeOthers = function(){
-			if     (menu.getVal('puztype')==2){ return "mag/";}
-			else if(menu.getVal('puztype')==3){ return "cross/";}
+			if     (pp.getVal('puztype')==2){ return "mag/";}
+			else if(pp.getVal('puztype')==3){ return "cross/";}
 			return "def/";
 		};
 	},
@@ -205,11 +179,11 @@ Puzzles.ichimaga.prototype = {
 				this.setAlert('線が交差しています。', 'There is a crossing line.'); return false;
 			}
 
-			var saved = this.checkFireflies();
-			if( !this.checkErrorFlag(saved,3) ){
+			var errinfo = this.searchFireflies();
+			if( !this.checkErrorFlag(errinfo,3) ){
 				this.setAlert('同じ数字同士が線で繋がっています。', 'Same numbers are connected each other.'); return false;
 			}
-			if( !this.checkErrorFlag(saved,2) ){
+			if( !this.checkErrorFlag(errinfo,2) ){
 				this.setAlert('線が2回以上曲がっています。', 'The number of curves is twice or more.'); return false;
 			}
 
@@ -218,7 +192,7 @@ Puzzles.ichimaga.prototype = {
 				this.setAlert('線が全体で一つながりになっていません。', 'All lines and circles are not connected each other.'); return false;
 			}
 
-			if( !this.checkErrorFlag(saved,1) ){
+			if( !this.checkErrorFlag(errinfo,1) ){
 				this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
 			}
 
@@ -237,26 +211,28 @@ Puzzles.ichimaga.prototype = {
 			return true;
 		};
 		ans.check1st = function(){ return true;};
-		ans.ismag    = function(){ return ((k.callmode=="pmake"&&menu.getVal('puztype')==2)||(k.callmode=="pplay"&&enc.checkpflag("m")));};
-		ans.iscross  = function(){ return ((k.callmode=="pmake"&&menu.getVal('puztype')==3)||(k.callmode=="pplay"&&enc.checkpflag("x")));};
-		ans.isnormal = function(){ return ((k.callmode=="pmake"&&menu.getVal('puztype')==1)||(k.callmode=="pplay"&&!enc.checkpflag("m")&&!enc.checkpflag("x")));};
+		ans.ismag    = function(){ return ((k.EDITOR&&pp.getVal('puztype')==2)||(k.PLAYER&&enc.checkpflag("m")));};
+		ans.iscross  = function(){ return ((k.EDITOR&&pp.getVal('puztype')==3)||(k.PLAYER&&enc.checkpflag("x")));};
+		ans.isnormal = function(){ return ((k.EDITOR&&pp.getVal('puztype')==1)||(k.PLAYER&&!enc.checkpflag("m")&&!enc.checkpflag("x")));};
 
 		ans.checkLcntCell = function(val){
 			if(line.ltotal[val]==0){ return true;}
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)==-1 && line.lcntCell(c)==val){
-					bd.sErBAll(2);
-					this.setCellLineError(c,false);
-					return false;
-				}
+				if(bd.QnC(c)!==-1 || line.lcntCell(c)!==val){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				if(result){ bd.sErBAll(2);}
+				this.setCellLineError(c,false);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 
-		ans.checkFireflies = function(){
-			var saved = {errflag:0,cells:[],idlist:[],check:[]};
+		ans.searchFireflies = function(){
+			var errinfo = {data:[],check:[]};
 			var visited = [];
-			for(var i=0;i<bd.bdmax;i++){ saved.check[i]=0; visited[i]=0;}
+			for(var i=0;i<bd.bdmax;i++){ errinfo.check[i]=0; visited[i]=0;}
 
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1){ continue;}
@@ -274,7 +250,7 @@ Puzzles.ichimaga.prototype = {
 					while(1){
 						switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 						if((bx+by)%2==0){
-							var cc = bd.cnum(mf(bx/2),mf(by/2));
+							var cc = bd.cnum(bx>>1,by>>1);
 							if     (bd.QnC(cc)!=-1){ break;}
 							else if(line.lcntCell(cc)==4){ }
 							else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!=2){ ccnt++;} dir=2;}
@@ -290,33 +266,34 @@ Puzzles.ichimaga.prototype = {
 						}
 					}
 
-					for(var i=0;i<idlist.length;i++){ saved.check[idlist[i]]=2;}
+					for(var i=0;i<idlist.length;i++){ errinfo.check[idlist[i]]=2;}
 
-					var cc = bd.cnum(mf(bx/2),mf(by/2));
-					if(idlist.length>0 && (bx+by)%2==1 && saved.errflag==0){
-						saved = {errflag:1,cells:[c],idlist:idlist,check:saved.check};
+					var cc = bd.cnum(bx>>1,by>>1);
+					if(this.ismag() && bd.QnC(c)!=-2 && bd.QnC(c)==bd.QnC(cc)){
+						errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist}); continue;
 					}
-					else if(idlist.length>0 && (bx+by)%2==0 && bd.QnC(c)!=-2 && ccnt>1 && saved.errflag<=1){
-						saved = {errflag:2,cells:[c,cc],idlist:idlist,check:saved.check};
-						if(!this.ismag()){ return saved;}
+					if(idlist.length>0 && (bx+by)%2==0 && bd.QnC(c)!=-2 && ccnt>1){
+						errinfo.data.push({errflag:2,cells:[c,cc],idlist:idlist}); continue;
 					}
-					else if(this.ismag() && bd.QnC(c)!=-2 && bd.QnC(c)==bd.QnC(cc) && saved.errflag<=2 )
-					{
-						saved = {errflag:3,cells:[c,cc],idlist:idlist,check:saved.check};
-						return saved;
+					if(idlist.length>0 && (bx+by)%2==1){
+						errinfo.data.push({errflag:1,cells:[c],idlist:idlist}); continue;
 					}
 				}
 			}
-			return saved;
+			return errinfo;
 		};
-		ans.checkErrorFlag = function(saved, val){
-			if(saved.errflag==val){
-				bd.sErC(saved.cells,1);
-				bd.sErBAll(2);
-				bd.sErB(saved.idlist,1);
-				return false;
+		ans.checkErrorFlag = function(errinfo, val){
+			var result = true;
+			for(var i=0,len=errinfo.data.length;i<len;i++){
+				if(errinfo.data[i].errflag!=val){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(errinfo.data[i].cells,1);
+				if(result){ bd.sErBAll(2);}
+				bd.sErB(errinfo.data[i].idlist,1);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 
 		ans.checkConnectedLine = function(){
@@ -341,15 +318,15 @@ Puzzles.ichimaga.prototype = {
 		ans.cl0 = function(check,bx,by,dir){
 			while(1){
 				switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-				if((bx+by)%2==0){
-					if(bd.QnC(bd.cnum(mf(bx/2),mf(by/2)))!=-1){
+				if(!((bx+by)&1)){
+					if(bd.QnC(bd.cnum(bx>>1,by>>1))!=-1){
 						if(bd.isLine(bd.bnum(bx,by-1))){ this.cl0(check,bx,by,1);}
 						if(bd.isLine(bd.bnum(bx,by+1))){ this.cl0(check,bx,by,2);}
 						if(bd.isLine(bd.bnum(bx-1,by))){ this.cl0(check,bx,by,3);}
 						if(bd.isLine(bd.bnum(bx+1,by))){ this.cl0(check,bx,by,4);}
 						break;
 					}
-					else if(line.lcntCell(bd.cnum(mf(bx/2),mf(by/2)))==4){ }
+					else if(line.lcntCell(bd.cnum(bx>>1,by>>1))==4){ }
 					else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
 					else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ dir=1;}
 					else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ dir=4;}

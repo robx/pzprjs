@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.2.2
+// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.2.3
 // 
 Puzzles.yajirin = function(){ };
 Puzzles.yajirin.prototype = {
@@ -40,7 +40,7 @@ Puzzles.yajirin.prototype = {
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pmake"){
+		if(k.EDITOR){
 			base.setExpression("　矢印は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
 							   " To input Arrows, Left Button Drag or Press arrow key with SHIFT key.");
 		}
@@ -60,25 +60,25 @@ Puzzles.yajirin.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1) this.inputdirec(x,y);
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mousedown = function(){
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
+			if(k.editmode) this.inputdirec();
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){
+		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.mode==1) this.inputqnum(x,y,99);
-				else if(k.mode==3) this.inputcell(x,y);
+				if     (k.editmode) this.inputqnum();
+				else if(k.playmode) this.inputcell();
 			}
 		};
-		mv.mousemove = function(x,y){
-			if(k.mode==1) this.inputdirec(x,y);
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mousemove = function(){
+			if(k.editmode) this.inputdirec();
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 
@@ -92,10 +92,10 @@ Puzzles.yajirin.prototype = {
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
@@ -112,7 +112,8 @@ Puzzles.yajirin.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawWhiteCells(x1,y1,x2,y2);
+			this.drawBGCells(x1,y1,x2,y2);
+			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
@@ -123,7 +124,7 @@ Puzzles.yajirin.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 
@@ -160,12 +161,12 @@ Puzzles.yajirin.prototype = {
 		enc.pzldataKanpen = function(){
 			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
 				var num = (bd.QnC(c)>=0&&bd.QnC(c)<10?bd.QnC(c):-1)
-				if     (num==-1)     { return "._";}
-				else if(bd.DiC(c)==1){ return ""+( 0+num)+"_";}
-				else if(bd.DiC(c)==3){ return ""+(16+num)+"_";}
-				else if(bd.DiC(c)==2){ return ""+(32+num)+"_";}
-				else if(bd.DiC(c)==4){ return ""+(48+num)+"_";}
-				else                 { return "._";}
+				if     (num==-1)        { return "._";}
+				else if(bd.DiC(c)==k.UP){ return ""+( 0+num)+"_";}
+				else if(bd.DiC(c)==k.LT){ return ""+(16+num)+"_";}
+				else if(bd.DiC(c)==k.DN){ return ""+(32+num)+"_";}
+				else if(bd.DiC(c)==k.RT){ return ""+(48+num)+"_";}
+				else                    { return "._";}
 			});
 		};
 
@@ -176,10 +177,10 @@ Puzzles.yajirin.prototype = {
 				else if(ca=="+"){ bd.sQsC(c,1);}
 				else if(ca != "."){
 					var num = parseInt(ca);
-					if     (num<16){ bd.sDiC(c,1); bd.sQnC(c,num   );}
-					else if(num<32){ bd.sDiC(c,3); bd.sQnC(c,num-16);}
-					else if(num<48){ bd.sDiC(c,2); bd.sQnC(c,num-32);}
-					else if(num<64){ bd.sDiC(c,4); bd.sQnC(c,num-48);}
+					if     (num<16){ bd.sDiC(c,k.UP); bd.sQnC(c,num   );}
+					else if(num<32){ bd.sDiC(c,k.LT); bd.sQnC(c,num-16);}
+					else if(num<48){ bd.sDiC(c,k.DN); bd.sQnC(c,num-32);}
+					else if(num<64){ bd.sDiC(c,k.RT); bd.sQnC(c,num-48);}
 				}
 			},array.slice(0,k.qrows));
 			this.decodeBorderLine(array.slice(k.qrows,3*k.qrows-1));
@@ -192,11 +193,11 @@ Puzzles.yajirin.prototype = {
 					else if(bd.QsC(c)==1) { return "+ ";}
 					else                  { return ". ";}
 				}
-				else if(bd.DiC(c)==1){ return ""+( 0+num)+" ";}
-				else if(bd.DiC(c)==3){ return ""+(16+num)+" ";}
-				else if(bd.DiC(c)==2){ return ""+(32+num)+" ";}
-				else if(bd.DiC(c)==4){ return ""+(48+num)+" ";}
-				else                 { return ". ";}
+				else if(bd.DiC(c)==k.UP){ return ""+( 0+num)+" ";}
+				else if(bd.DiC(c)==k.LT){ return ""+(16+num)+" ";}
+				else if(bd.DiC(c)==k.DN){ return ""+(32+num)+" ";}
+				else if(bd.DiC(c)==k.RT){ return ""+(48+num)+" ";}
+				else                    { return ". ";}
 			})
 			+this.encodeBorderLine();
 		};
@@ -222,12 +223,12 @@ Puzzles.yajirin.prototype = {
 				this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 			}
 
-			if( !this.checkArrowNumber() ){
-				this.setAlert('矢印の方向にある黒マスの数が正しくありません。','The number of black cells are not correct.'); return false;
-			}
-
 			if( !this.checkLcntCell(1) ){
 				this.setAlert('途切れている線があります。','There is a dead-end line.'); return false;
+			}
+
+			if( !this.checkArrowNumber() ){
+				this.setAlert('矢印の方向にある黒マスの数が正しくありません。','The number of black cells are not correct.'); return false;
 			}
 
 			if( !this.checkOneLoop() ){
@@ -243,26 +244,26 @@ Puzzles.yajirin.prototype = {
 		ans.check1st = function(){ return this.checkLcntCell(1);};
 
 		ans.checkArrowNumber = function(){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)<0 || bd.DiC(c)==0 || bd.isBlack(c)){ continue;}
 				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, dir = bd.DiC(c);
-				var cnt=0;
-				if     (dir==1){ cy--; while(cy>=0     ){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cy--;} }
-				else if(dir==2){ cy++; while(cy<k.qrows){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cy++;} }
-				else if(dir==3){ cx--; while(cx>=0     ){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cx--;} }
-				else if(dir==4){ cx++; while(cx<k.qcols){ if(bd.isBlack(bd.cnum(cx,cy))){cnt++;} cx++;} }
+				var cnt=0, clist = [];
+				if     (dir==k.UP){ cy--; while(cy>=0     ){ clist.push(bd.cnum(cx,cy)); cy--;} }
+				else if(dir==k.DN){ cy++; while(cy<k.qrows){ clist.push(bd.cnum(cx,cy)); cy++;} }
+				else if(dir==k.LT){ cx--; while(cx>=0     ){ clist.push(bd.cnum(cx,cy)); cx--;} }
+				else if(dir==k.RT){ cx++; while(cx<k.qcols){ clist.push(bd.cnum(cx,cy)); cx++;} }
+
+				for(var i=0;i<clist.length;i++){ if(bd.isBlack(clist[i])){ cnt++;} }
 
 				if(bd.QnC(c)!=cnt){
+					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
-					cx = bd.cell[c].cx, cy = bd.cell[c].cy;
-					if     (dir==1){ cy--; while(cy>=0     ){ bd.sErC([bd.cnum(cx,cy)],1); cy--;} }
-					else if(dir==2){ cy++; while(cy<k.qrows){ bd.sErC([bd.cnum(cx,cy)],1); cy++;} }
-					else if(dir==3){ cx--; while(cx>=0     ){ bd.sErC([bd.cnum(cx,cy)],1); cx--;} }
-					else if(dir==4){ cx++; while(cx<k.qcols){ bd.sErC([bd.cnum(cx,cy)],1); cx++;} }
-					return false;
+					bd.sErC(clist,1);
+					result = false;
 				}
 			}
-			return true;
+			return result;
 		};
 	}
 };

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.2.2
+// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.2.3
 //
 Puzzles.numlin = function(){ };
 Puzzles.numlin.prototype = {
@@ -53,39 +53,39 @@ Puzzles.numlin.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1){
-				if(!kp.enabled()){ this.inputqnum(x,y,99);}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputqnum();}
+				else{ kp.display();}
 			}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca,99);
+			this.key_inputqnum(ca);
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.generate(0, true, false, '');
 			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca,99);
+				kc.key_inputqnum(ca);
 			};
 		}
 	},
@@ -98,8 +98,7 @@ Puzzles.numlin.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,0);
@@ -110,24 +109,27 @@ Puzzles.numlin.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawCellSquare = function(x1,y1,x2,y2){
 			var mgnw = mf(k.cwidth*0.15);
 			var mgnh = mf(k.cheight*0.15);
+			var header = "c_sq_";
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2,f_true);
+			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					if     (bd.ErC(c)==1){ g.fillStyle = this.errbcolor1;}
-					else if(bd.ErC(c)==2){ g.fillStyle = this.errbcolor2;}
-					else                 { g.fillStyle = "white";}
+				if(bd.cell[c].qnum!==-1){
+					if     (bd.cell[c].error===1){ g.fillStyle = this.errbcolor1;}
+					else if(bd.cell[c].error===2){ g.fillStyle = this.errbcolor2;}
+					else                         { g.fillStyle = "white";}
 
-					if(this.vnop("c"+c+"_sq_",1)){ g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);}
+					if(this.vnop(header+c,1)){
+						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
+					}
 				}
-				else{ this.vhide("c"+c+"_sq_");}
+				else{ this.vhide(header+c);}
 			}
 			this.vinc();
 		};
@@ -194,7 +196,7 @@ Puzzles.numlin.prototype = {
 				this.setAlert('3つ以上の数字がつながっています。','Three or more numbers are connected.'); return false;
 			}
 
-			if( !this.checkSameObjectInRoom(linfo, bd.QnC.bind(bd)) ){
+			if( !this.checkSameObjectInRoom(linfo, ee.binder(bd, bd.QnC)) ){
 				this.setAlert('異なる数字がつながっています。','Different numbers are connected.'); return false;
 			}
 
@@ -219,14 +221,16 @@ Puzzles.numlin.prototype = {
 		ans.check1Line = function(){ return this.checkLine(function(i){ return (line.lcntCell(i)==1 && bd.QnC(i)==-1);}); };
 		ans.check2Line = function(){ return this.checkLine(function(i){ return (line.lcntCell(i)>=2 && bd.QnC(i)!=-1);}); };
 		ans.checkLine = function(func){
+			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(func(c)){
-					bd.sErBAll(2);
-					ans.setCellLineError(c,true);
-					return false;
-				}
+				if(!func(c)){ continue;}
+
+				if(this.inAutoCheck){ return false;}
+				if(result){ bd.sErBAll(2);}
+				ans.setCellLineError(c,true);
+				result = false;
 			}
-			return true;
+			return result;
 		};
 	}
 };

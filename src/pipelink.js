@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.2.2
+// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.2.3
 //
 Puzzles.pipelink = function(){ };
 Puzzles.pipelink.prototype = {
@@ -40,22 +40,24 @@ Puzzles.pipelink.prototype = {
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		if(k.callmode=="pplay"){
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
-		else{
+		if(k.EDITOR){
 			base.setExpression("　問題の記号はQWEASDFの各キーで入力できます。<br>Rキーや-キーで消去できます。1キーで記号を入力できます。",
 							   " Press each QWEASDF key to input question. <br> Press 'R' or '-' key to erase. '1' keys to input circles.");
+		}
+		else{
+			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
+							   " Left Button Drag to input black cells, Right Click to input a cross.");
 		}
 		base.setTitle("パイプリンク","Pipelink");
 		base.setFloatbgcolor("rgb(0, 191, 0)");
 	},
 	menufix : function(){
-		if(k.callmode=="pmake"){ kp.defaultdisp = true;}
-		$("#btnarea").append("<input type=\"button\" id=\"btncircle\" value=\"○\" onClick=\"javascript:pc.changedisp();\">");
-		menu.addButtons($("#btncircle").unselectable(),"○","○");
+		if(k.EDITOR){ kp.defaultdisp = true;}
 		menu.addRedLineToFlags();
+
+		var el = ee.createEL(menu.EL_BUTTON, 'btncircle');
+		menu.addButtons(el, ee.binder(pc, pc.changedisp), "○", "○");
+		ee('btnarea').appendEL(el);
 	},
 
 	//---------------------------------------------------------
@@ -63,36 +65,44 @@ Puzzles.pipelink.prototype = {
 	input_init : function(){
 		// マウス入力系
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRedLine(x,y); return;}
-			if(k.mode==1){
-				if(!kp.enabled()){ this.inputQues(x,y,[0,101,102,103,104,105,106,107,-2]);}
-				else{ kp.display(x,y);}
+		mv.mousedown = function(){
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
+			if(k.editmode){
+				if(!kp.enabled()){ this.inputQues([0,101,102,103,104,105,106,107,-2]);}
+				else{ kp.display();}
 			}
-			else if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+			else if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==3){
-				if(this.btn.Left) this.inputLine(x,y);
-				else if(this.btn.Right) this.inputpeke(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if(k.playmode){
+				if(this.btn.Left) this.inputLine();
+				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 
 		bd.enableLineNG = true;
 
+		// オーバーライト
+		bd.sQuC = function(id, num) {
+			um.addOpe(k.CELL, k.QUES, id, this.cell[id].ques, num);
+			this.cell[id].ques = num;
+
+			this.checkLPCombined(id);
+		};
+
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(k.mode==3){ return;}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			kc.key_inputLineParts(ca);
 		};
 		kc.key_inputLineParts = function(ca){
-			if(k.mode!=1){ return false;}
+			if(k.playmode){ return false;}
 			var cc = tc.getTCC();
 
 			if     (ca=='q'){ bd.sQuC(cc,101); }
@@ -114,7 +124,7 @@ Puzzles.pipelink.prototype = {
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
 
-		if(k.callmode == "pmake"){
+		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				this.inputcol('num','knumq','q','╋');
 				this.inputcol('num','knumw','w','┃');
@@ -132,7 +142,7 @@ Puzzles.pipelink.prototype = {
 				this.inputcol('num','knum.','1','○');
 				this.insertrow();
 			};
-			kp.generate(99, true, false, kp.kpgenerate.bind(kp));
+			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.kpinput = function(ca){ kc.key_inputLineParts(ca);};
 		}
 	},
@@ -149,49 +159,55 @@ Puzzles.pipelink.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawErrorCells(x1,y1,x2,y2);
-
-			if(this.disp==1){ this.drawIcebarns(x1,y1,x2,y2);}
-
+			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
 			if(this.disp==1){ this.drawIceBorders(x1,y1,x2,y2);}
 			if(this.disp==0){ this.drawCircle2(x1,y1,x2,y2);}
 
-			this.drawNumbers(x1,y1,x2,y2); // ？表示用
+			this.drawQuesHatenas(x1,y1,x2,y2);
 
 			this.drawLines(x1,y1,x2,y2);
 
-			if(k.br.IE){ this.drawPekes(x1,y1,x2,y2,1);}
-			else{ this.drawPekes(x1,y1,x2,y2,0);}
+			this.drawPekes(x1,y1,x2,y2,(k.br.IE?1:0));
 
 			this.drawLineParts(x1-2,y1-2,x2+2,y2+2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			if(k.mode==1){ this.drawTCell(x1,y1,x2+1,y2+1);}else{ this.hideTCell();}
+			this.drawTarget(x1,y1,x2,y2);
+		};
+
+		pc.setBGCellColor = function(c){
+			if     (bd.cell[c].error===1)               { g.fillStyle = this.errbcolor1; return true;}
+			else if(bd.cell[c].ques===6 && this.disp==1){ g.fillStyle = this.icecolor;   return true;}
+			return false;
 		};
 
 		pc.drawCircle2 = function(x1,y1,x2,y2){
 			var rsize  = k.cwidth*0.40;
-			var clist = this.cellinside(x1,y1,x2,y2,f_true);
+			var header = "c_cir_";
+
+			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.QuC(c)==6){
+				if(bd.cell[c].ques===6){
 					g.strokeStyle = this.Cellcolor;
-					g.beginPath();
-					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
-					if(this.vnop("c"+c+"_cir_",0)){ g.stroke(); }
+					if(this.vnop(header+c,0)){
+						g.beginPath();
+						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
+						g.stroke();
+					}
 				}
-				else{ this.vhide("c"+c+"_cir_");}
+				else{ this.vhide(header+c);}
 			}
 			this.vinc();
 		};
 
 		pc.disp = 0;
 		pc.changedisp = function(){
-			if     (this.disp==1){ $("#btncircle").attr("value", "○"); this.disp=0;}
-			else if(this.disp==0){ $("#btncircle").attr("value", "■"); this.disp=1;}
+			if     (this.disp===1){ ee('btncircle').el.value="○"; this.disp=0;}
+			else if(this.disp===0){ ee('btncircle').el.value="■"; this.disp=1;}
 			this.paintAll();
 		};
 
@@ -235,7 +251,7 @@ Puzzles.pipelink.prototype = {
 				if(c > bd.cellmax){ break;}
 			}
 
-			return bstr.substring(i,bstr.length);
+			return bstr.substr(i);
 		};
 		enc.encodePipelink = function(type){
 			var count, pass;
@@ -301,7 +317,7 @@ Puzzles.pipelink.prototype = {
 			if( rice && !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101);}) ){
 				this.setAlert((pc.disp==0?'○':'氷')+'の部分以外で線が交差しています。','There is a crossing line out of '+(pc.disp==0?'circles':'ices')+'.'); return false;
 			}
-			if( rice && !this.checkAllCell(function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));}.bind(this)) ){
+			if( rice && !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));})) ){
 				ans.setAlert((pc.disp==0?'○':'氷')+'の部分で線が曲がっています。','A line curves on '+(pc.disp==0?'circles':'ices')+'.'); return false;
 			}
 

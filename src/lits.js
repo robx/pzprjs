@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ＬＩＴＳ版 lits.js v3.2.2
+// パズル固有スクリプト部 ＬＩＴＳ版 lits.js v3.2.3
 //
 Puzzles.lits = function(){ };
 Puzzles.lits.prototype = {
@@ -54,15 +54,15 @@ Puzzles.lits.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(x,y){
-			if(kc.isZ ^ menu.getVal('dispred')){ this.dispRed(x,y);}
-			else if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3) this.inputcell(x,y);
+		mv.mousedown = function(){
+			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
+			else if(k.editmode) this.inputborder();
+			else if(k.playmode) this.inputcell();
 		};
-		mv.mouseup = function(x,y){ };
-		mv.mousemove = function(x,y){
-			if(k.mode==1) this.inputborder(x,y);
-			else if(k.mode==3) this.inputcell(x,y);
+		mv.mouseup = function(){ };
+		mv.mousemove = function(){
+			if     (k.editmode) this.inputborder();
+			else if(k.playmode) this.inputcell();
 		};
 
 		// キーボード入力系
@@ -76,14 +76,14 @@ Puzzles.lits.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = "rgb(48, 48, 48)";
 		pc.Cellcolor = "rgb(96, 96, 96)";
+		pc.setBGCellColorFunc('qans2');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawWhiteCells(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
-
+			this.drawBGCells(x1,y1,x2,y2);
+			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawBorders(x1,y1,x2,y2);
@@ -206,7 +206,7 @@ Puzzles.lits.prototype = {
 		};
 
 		ans.checkTetromino = function(rinfo){
-			var tinfo = new AreaInfo();
+			var tinfo = new AreaInfo(), result = true;
 			for(var c=0;c<bd.cellmax;c++){ tinfo.id[c]=-1;}
 			for(var r=1;r<=rinfo.max;r++){
 				var bcells = [];
@@ -236,8 +236,13 @@ Puzzles.lits.prototype = {
 				dinfo.room[dinfo.max] = {idlist:[]};
 				this.st0(dinfo, c, dinfo.max, tinfo);
 			}
-			for(var r=1;r<=dinfo.max;r++){ if(dinfo.room[r].idlist.length>4){ bd.sErC(dinfo.room[r].idlist,2); return false;} }
-			return true;
+			for(var r=1;r<=dinfo.max;r++){
+				if(dinfo.room[r].idlist.length<=4){ continue;}
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(dinfo.room[r].idlist,2);
+				result = false;
+			}
+			return result;
 		};
 		ans.st0 = function(dinfo,c,id,tinfo){
 			if(dinfo.id[c]!=0){ return;}
