@@ -84,7 +84,7 @@ Menu.prototype = {
 		this.menuclear();
 		this.floatmenuclose(0);
 
-		ee('float_parent').el.innerHTML;
+		ee('float_parent').el.innerHTML = '';
 
 		if(!!ee('btncolor2')){ ee('btncolor2').remove();}
 		ee('btnarea').removeNextAll(ee('btnclear2').el);
@@ -210,6 +210,7 @@ Menu.prototype = {
 			sl('irowake', '線の色分けをする', 'Color each lines');
 			ap('sep_5', 'disp');
 		}
+		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
 
 		// *表示 - 表示サイズ -------------------------------------------------
@@ -389,7 +390,7 @@ Menu.prototype = {
 	// menu.floatmenuopen()  マウスがメニュー項目上に来た時にフロートメニューを表示する
 	// menu.floatmenuclose() フロートメニューをcloseする
 	// menu.floatmenuout(e)  マウスがフロートメニューを離れた時にフロートメニューをcloseする
-	// menu.insideOf()       イベントeがjQueryオブジェクトjqobjの範囲内で起こったか？
+	// menu.insideOf()       イベントeがエレメントの範囲内で起こったか？
 	// menu.insideOfMenu()   マウスがメニュー領域の中にいるか判定する
 	//---------------------------------------------------------------------------
 	floatmenuopen : function(e, idname, depth){
@@ -656,8 +657,8 @@ Menu.prototype = {
 
 		// credit -------------------------------------------------------------
 		lab(ee('bar3_1').el,   "credit", "credit");
-		lab(ee('credit3_1').el,"ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\nライブラリとしてjQuery1.3.2, uuCanvas1.0, <br>Google Gearsを\n使用しています。<br>\n<br>\n",
-							   "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\nThis script use jQuery1.3.2, uuCanvas1.0, <br>Google Gears as libraries.<br>\n<br>\n");
+		lab(ee('credit3_1').el,"ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\nライブラリとしてuuCanvas1.0, Google Gearsを使用しています。<br>\n<br>\n",
+							   "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\nThis script use uuCanvas1.0 and Google Gears as libraries.&nbsp;<br>\n<br>\n");
 		btn(document.credit.close,  close, "閉じる", "OK");
 
 		// 表示サイズ ---------------------------------------------------------
@@ -905,6 +906,7 @@ Properties.prototype = {
 		autocheck : function(val){ k.autocheck = !k.autocheck;},
 		mode      : function(num){ menu.ex.modechange(num);},
 		size      : function(num){ k.widthmode=num; base.resize_canvas();},
+		repaint   : function(num){ base.resize_canvas();},
 		use       : function(num){ k.use =num;},
 		language  : function(num){ menu.setLang({0:'ja',1:'en'}[num]);},
 

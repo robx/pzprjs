@@ -145,9 +145,7 @@ sub output_doc{
  * \@version $version
  * \@date    $datestr
  * 
- * This script uses following libraries.
- *  jquery.js (version 1.3.2)
- *  http://jquery.com/
+ * This script uses following library.
  *  uuCanvas.js (version 1.0)
  *  http://code.google.com/p/uupaa-js-spinoff/	uupaa.js SpinOff Project Home(Google Code)
  * 
@@ -167,7 +165,7 @@ sub printfiles{
 	my @files = @{$_[0]};
 	my $type = $_[1];
 
-	if(!$debug){ &printLOG("\n");}
+	if(!$debug and $filech==1){ &printLOG("\n");}
 
 	foreach(@files){
 		my $filename = $_;
