@@ -1,4 +1,4 @@
-// Menu.js v3.2.3
+// Menu.js v3.2.4
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -19,7 +19,7 @@ Menu = function(){
 	this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
 	this.pop        = "";			// 現在表示しているポップアップウィンドウ(オブジェクト)
 
-	this.isptitle   = 0;			// タイトルバーが押されているか
+	this.movingpop  = "";			// 移動中のポップアップメニュー
 	this.offset = new Pos(0, 0);	// ポップアップウィンドウの左上からの位置
 
 	this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
@@ -564,6 +564,9 @@ Menu.prototype = {
 		}
 		this.titlebarfunc(ee('credit3_1').el);
 
+		document.onmousemove = ee.ebinder(this,this.titlebarmove);
+		document.onmouseup   = ee.ebinder(this,this.titlebarup);
+
 		//=====================================================================
 		//// formボタンの動作設定・その他のCaption設定
 		var btn = ee.binder(this, this.addButtons);
@@ -694,43 +697,37 @@ Menu.prototype = {
 			this.pop.el.style.display = "none";
 			this.pop = '';
 			this.menuclear();
-			this.isptitle = 0;
+			this.movingpop = "";
 			k.enableKey = true;
 		}
 	},
 
 	//---------------------------------------------------------------------------
 	// menu.titlebarfunc()  下の4つのイベントをイベントハンドラにくっつける
-	// menu.titlebardown()  タイトルバーをクリックしたときの動作を行う
-	// menu.titlebarup()    タイトルバーでボタンを離したときの動作を行う
-	// menu.titlebarout()   タイトルバーからマウスが離れたときの動作を行う
-	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす
+	// menu.titlebardown()  タイトルバーをクリックしたときの動作を行う(タイトルバーにbind)
+	// menu.titlebarup()    タイトルバーでボタンを離したときの動作を行う(documentにbind)
+	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
 	//---------------------------------------------------------------------------
 	titlebarfunc : function(bar){
 		bar.onmousedown = ee.ebinder(this, this.titlebardown);
-		bar.onmouseup   = ee.ebinder(this, this.titlebarup);
-		bar.onmouseout  = ee.ebinder(this, this.titlebarout);
-		bar.onmousemove = ee.ebinder(this, this.titlebarmove);
-
 		ee(bar).unselectable().el;
 	},
 
 	titlebardown : function(e){
 		var pop = ee.getSrcElement(e).parentNode;
-		this.isptitle = 1;
+		this.movingpop = pop;
 		this.offset.x = ee.pageX(e) - parseInt(pop.style.left);
 		this.offset.y = ee.pageY(e) - parseInt(pop.style.top);
 	},
-	titlebarup   : function(e){
-		this.isptitle = 0;
-	},
-	titlebarout  : function(e){
-		var pop = ee.getSrcElement(e).parentNode;
-		if(!this.insideOf(pop, e)){ this.isptitle = 0;}
+	titlebarup : function(e){
+		var pop = this.movingpop;
+		if(!!pop){
+			this.movingpop = "";
+		}
 	},
 	titlebarmove : function(e){
-		var pop = ee.getSrcElement(e).parentNode;
-		if(pop && this.isptitle){
+		var pop = this.movingpop;
+		if(!!pop){
 			pop.style.left = ee.pageX(e) - this.offset.x;
 			pop.style.top  = ee.pageY(e) - this.offset.y;
 		}

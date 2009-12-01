@@ -1,4 +1,4 @@
-// global.js v3.2.3
+// global.js v3.2.4
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -305,14 +305,26 @@ _extend( _ElementManager, {
 			return __method.apply(obj, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
 		}
 	},
+	mvbinder : function(){
+		var args=_toArray(arguments), __method = args.shift(), rest = (args.length>0?args[0]:[]);
+		return function(e){
+			__method.apply(mv, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
+
+			// マウス系はdocumentに割り当てられているので、イベント伝播を停止する
+			if(!_IE){ e.stopPropagation();}
+			else    { e.cancelBubble = true;}
+			return false;
+		}
+	},
 	kcbinder : function(){
 		var args=_toArray(arguments), __method = args.shift(), rest = (args.length>0?args[0]:[]);
 		return function(e){
 			ret = __method.apply(kc, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
+
+			// キーボード系はdocumentに割り当てられているので、preventDefaultで回避する
 			if(kc.tcMoved){
 				if(_Gecko||_WebKit){ e.preventDefault();}
-				else if(_IE){ return false;}
-				else{ e.returnValue = false;}
+				else               { e.returnValue = false;}
 			}
 			return ret;
 		}

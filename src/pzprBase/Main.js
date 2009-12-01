@@ -1,4 +1,4 @@
-// Main.js v3.2.3
+// Main.js v3.2.4
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -105,14 +105,14 @@ PBase.prototype = {
 		if(k.scriptcheck && debug){ debug.testonly_func();}	// テスト用
 	},
 	setEvents : function(first){
-		this.canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
-		this.canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
-		this.canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
+		this.canvas.onmousedown   = ee.mvbinder(mv.e_mousedown);
+		this.canvas.onmousemove   = ee.mvbinder(mv.e_mousemove);
+		this.canvas.onmouseup     = ee.mvbinder(mv.e_mouseup  );
 		this.canvas.oncontextmenu = function(){ return false;};
 
-		this.numparent.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
-		this.numparent.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
-		this.numparent.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
+		this.numparent.onmousedown   = ee.mvbinder(mv.e_mousedown);
+		this.numparent.onmousemove   = ee.mvbinder(mv.e_mousemove);
+		this.numparent.onmouseup     = ee.mvbinder(mv.e_mouseup  );
 		this.numparent.oncontextmenu = function(){ return false;};
 
 		if(first){
