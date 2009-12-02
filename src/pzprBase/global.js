@@ -1,4 +1,4 @@
-// global.js v3.2.4
+// global.js v3.2.3p1
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -291,7 +291,6 @@ _extend( _ElementManager, {
 	//----------------------------------------------------------------------
 	// ee.binder()   thisをbindする
 	// ee.ebinder()  thisとイベントをbindする
-	// ee.kcbinder() kcとイベントをbindする
 	//----------------------------------------------------------------------
 	binder : function(){
 		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift();
@@ -305,30 +304,21 @@ _extend( _ElementManager, {
 			return __method.apply(obj, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
 		}
 	},
-	mvbinder : function(){
-		var args=_toArray(arguments), __method = args.shift(), rest = (args.length>0?args[0]:[]);
-		return function(e){
-			__method.apply(mv, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
 
-			// マウス系はdocumentに割り当てられているので、イベント伝播を停止する
-			if(!_IE){ e.stopPropagation();}
-			else    { e.cancelBubble = true;}
-			return false;
-		}
-	},
-	kcbinder : function(){
-		var args=_toArray(arguments), __method = args.shift(), rest = (args.length>0?args[0]:[]);
-		return function(e){
-			ret = __method.apply(kc, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
-
-			// キーボード系はdocumentに割り当てられているので、preventDefaultで回避する
-			if(kc.tcMoved){
-				if(_Gecko||_WebKit){ e.preventDefault();}
-				else               { e.returnValue = false;}
-			}
-			return ret;
-		}
-	}
+	//----------------------------------------------------------------------
+	// ee.stopPropagation() イベントの起こったエレメントより上にイベントを
+	//                      伝播させないようにする
+	// ee.preventDefault()  イベントの起こったエレメントで、デフォルトの
+	//                      イベントが起こらないようにする
+	//----------------------------------------------------------------------
+	stopPropagation : (
+		(!_IE) ? function(e){ e.stopPropagation();}
+		:        function(e){ e.cancelBubble = true;}
+	),
+	preventDefault : (
+		(_Gecko || _WebKit) ? function(e){ e.preventDefault();}
+		:                     function(e){ e.returnValue = false;}
+	)
 });
 
 // implementation of _ElementManager.ElementExt class

@@ -1,4 +1,4 @@
-// Menu.js v3.2.4
+// Menu.js v3.2.3p1
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -343,6 +343,8 @@ Menu.prototype = {
 	// menu.menuclear()  メニュー/サブメニュー/フロートメニューを全て選択されていない状態に戻す
 	//---------------------------------------------------------------------------
 	menuhover : function(e){
+		if(!!this.movingpop){ return true;}
+
 		var idname = ee.getSrcElement(e).id.substr(3);
 		this.floatmenuopen(e,idname,0);
 		ee('menupanel').replaceChildrenClass('menusel','menu');

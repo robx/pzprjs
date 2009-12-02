@@ -1,4 +1,4 @@
-// MouseInput.js v3.2.3
+// MouseInput.js v3.2.3p1
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -42,34 +42,47 @@ MouseEvent.prototype = {
 	//イベントハンドラから呼び出される
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
 	e_mousedown : function(e){
-		if(!k.enableMouse){ return;}
-
-		this.setButtonFlag(e);
-		// SHIFTキーを押している時は左右ボタン反転
-		if(((kc.isSHIFT)^pp.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
-			this.btn.Left = !this.btn.Left; this.btn.Right = !this.btn.Right;
+		if(k.enableMouse){
+			this.setButtonFlag(e);
+			// SHIFTキーを押している時は左右ボタン反転
+			if(((kc.isSHIFT)^pp.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
+				this.btn.Left = !this.btn.Left; this.btn.Right = !this.btn.Right;
+			}
+			if(this.btn.Middle){ this.modeflip();} //中ボタン
+			else{
+				if(ans.errDisp){ bd.errclear();}
+				um.newOperation(true);
+				this.setposition(e);
+				this.mousedown();	// 各パズルのルーチンへ
+			}
 		}
-		if(this.btn.Middle){ this.modeflip(); return;} //中ボタン
-
-		if(ans.errDisp){ bd.errclear();}
-		um.newOperation(true);
-		this.setposition(e);
-		this.mousedown();	// 各パズルのルーチンへ
+		ee.stopPropagation(e);
+		ee.preventDefault(e);
 		return false;
 	},
 	e_mouseup   : function(e){
-		if(!k.enableMouse || this.btn.Middle || (!this.btn.Left && !this.btn.Right)){ return;}
-		um.newOperation(false);
-		this.setposition(e);
-		this.mouseup();		// 各パズルのルーチンへ
-		this.mousereset();
+		if(k.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
+			um.newOperation(false);
+			this.setposition(e);
+			this.mouseup();		// 各パズルのルーチンへ
+			this.mousereset();
+		}
+		ee.stopPropagation(e);
+		ee.preventDefault(e);
 		return false;
 	},
 	e_mousemove : function(e){
-		if(!k.enableMouse || this.btn.Middle || (!this.btn.Left && !this.btn.Right)){ return;}
-		um.newOperation(false);
-		this.setposition(e);
-		this.mousemove();	// 各パズルのルーチンへ
+		// ポップアップメニュー移動中は当該処理が最優先
+		if(!!menu.movingpop){ return true;}
+
+		if(k.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
+			um.newOperation(false);
+			this.setposition(e);
+			this.mousemove();	// 各パズルのルーチンへ
+		}
+		ee.stopPropagation(e);
+		ee.preventDefault(e);
+		return false;
 	},
 	e_mouseout : function(e) {
 //		if (k.br.IE){ var e=window.event;}

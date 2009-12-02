@@ -1,4 +1,4 @@
-// KeyInput.js v3.2.3
+// KeyInput.js v3.2.3p1
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -43,37 +43,43 @@ KeyEvent.prototype = {
 	// この3つのキーイベントはwindowから呼び出される(kcをbindしている)
 	// 48～57は0～9キー、65～90はa～z、96～105はテンキー、112～123はF1～F12キー
 	e_keydown : function(e){
-		if(!k.enableKey){ return;}
+		if(k.enableKey){
+			um.newOperation(true);
+			this.ca = this.getchar(e, this.getKeyCode(e));
+			this.tcMoved = false;
+			if(!this.isZ){ bd.errclear();}
 
-		um.newOperation(true);
-		this.ca = this.getchar(e, this.getKeyCode(e));
-		this.tcMoved = false;
-		if(!this.isZ){ bd.errclear();}
-
-		if(this.keydown_common(e)){ return false;}
-		if(this.ca){ this.keyinput(this.ca);} //kc.keydown(e.modifier, String.fromCharCode(e.which), e);
-
-		this.keyPressed = true;
+			if(!this.keydown_common(e)){
+				if(this.ca){ this.keyinput(this.ca);}	// 各パズルのルーチンへ
+				this.keyPressed = true;
+			}
+		}
+		ee.preventDefault(e);
+		return false;
 	},
-	e_keyup : function(e)    {
-		if(!k.enableKey){ return;}
+	e_keyup : function(e){
+		if(k.enableKey){
+			um.newOperation(false);
+			this.ca = this.getchar(e, this.getKeyCode(e));
+			this.keyPressed = false;
 
-		um.newOperation(false);
-		this.ca = this.getchar(e, this.getKeyCode(e));
-
-		this.keyPressed = false;
-
-		if(this.keyup_common(e)){ return false;}
-		if(this.ca){ this.keyup(this.ca);} //kc.keyup(e.modifier, String.fromCharCode(e.which), e);
+			if(!this.keyup_common(e)){
+				if(this.ca){ this.keyup(this.ca);}	// 各パズルのルーチンへ
+			}
+		}
+		ee.preventDefault(e);
+		return false;
 	},
 	//(keypressのみ)45は-(マイナス)
-	e_keypress : function(e)    {
-		if(!k.enableKey){ return;}
+	e_keypress : function(e){
+		if(k.enableKey){
+			um.newOperation(false);
+			this.ca = this.getcharp(e, this.getKeyCode(e));
 
-		um.newOperation(false);
-		this.ca = this.getcharp(e, this.getKeyCode(e));
-
-		if(this.ca){ this.keyinput(this.ca);}
+			if(this.ca){ this.keyinput(this.ca);}	// 各パズルのルーチンへ
+		}
+		ee.preventDefault(e);
+		return false;
 	},
 
 	//---------------------------------------------------------------------------
@@ -82,11 +88,12 @@ KeyEvent.prototype = {
 	//---------------------------------------------------------------------------
 	e_SLkeydown : function(sender,keyEventArgs){
 		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
-						altKey:false, returnValue:false, preventEvent:f_true };
+						altKey:false, returnValue:false, preventDefault:f_true };
 		return this.e_keydown(emulate);
 	},
 	e_SLkeyup : function(sender,keyEventArgs){
-		var emulate = {keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl, altKey:false};
+		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
+						altKey:false, returnValue:false, preventDefault:f_true };
 		return this.e_keyup(emulate);
 	},
 

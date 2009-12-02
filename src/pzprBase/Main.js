@@ -1,4 +1,4 @@
-// Main.js v3.2.4
+// Main.js v3.2.3p1
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -105,25 +105,25 @@ PBase.prototype = {
 		if(k.scriptcheck && debug){ debug.testonly_func();}	// テスト用
 	},
 	setEvents : function(first){
-		this.canvas.onmousedown   = ee.mvbinder(mv.e_mousedown);
-		this.canvas.onmousemove   = ee.mvbinder(mv.e_mousemove);
-		this.canvas.onmouseup     = ee.mvbinder(mv.e_mouseup  );
+		this.canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+		this.canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+		this.canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
 		this.canvas.oncontextmenu = function(){ return false;};
 
-		this.numparent.onmousedown   = ee.mvbinder(mv.e_mousedown);
-		this.numparent.onmousemove   = ee.mvbinder(mv.e_mousemove);
-		this.numparent.onmouseup     = ee.mvbinder(mv.e_mouseup  );
+		this.numparent.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+		this.numparent.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+		this.numparent.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
 		this.numparent.oncontextmenu = function(){ return false;};
 
 		if(first){
-			document.onkeydown  = ee.kcbinder(kc.e_keydown);
-			document.onkeyup    = ee.kcbinder(kc.e_keyup);
-			document.onkeypress = ee.kcbinder(kc.e_keypress);
+			document.onkeydown  = ee.ebinder(kc, kc.e_keydown);
+			document.onkeyup    = ee.ebinder(kc, kc.e_keyup);
+			document.onkeypress = ee.ebinder(kc, kc.e_keypress);
 		}
 	},
 	initSilverlight : function(sender){
-		sender.AddEventListener("KeyDown", ee.kcbinder(kc.e_SLkeydown));
-		sender.AddEventListener("KeyUp",   ee.kcbinder(kc.e_SLkeyup));
+		sender.AddEventListener("KeyDown", ee.ebinder(kc, kc.e_SLkeydown));
+		sender.AddEventListener("KeyUp",   ee.ebinder(kc, kc.e_SLkeyup));
 	},
 
 	//---------------------------------------------------------------------------
