@@ -235,7 +235,7 @@ Puzzles.tawa.prototype = {
 
 		// キー移動範囲のminx,maxx,miny,maxy設定関数オーバーライド
 		// このパズルに限って、やたらとtc.maxxが参照されます。。
-		tc.getTCC = ee.binder(tc, function(){ return bd.cnum(this.cursolx, (this.cursoly-1)>>1);});
+		tc.getTCC = ee.binder(tc, function(){ return bd.cnum(this.cursolx, this.cursoly>>1);});
 		tc.setTCC = function(id){
 			if(id<0 || bd.cellmax<=id){ return;}
 			this.cursolx = bd.cell[id].cx; this.cursoly = bd.cell[id].cy*2+1;

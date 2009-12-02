@@ -612,7 +612,7 @@ TCell.prototype = {
 		if(pos.x<this.minx || this.maxx<pos.x || pos.y<this.miny || this.maxy<pos.y){ return;}
 		this.cursolx = pos.x; this.cursoly = pos.y;
 	},
-	getTCC : function(){ return bd.cnum((this.cursolx-1)>>1, (this.cursoly-1)>>1);},
+	getTCC : function(){ return bd.cnum(this.cursolx>>1, this.cursoly>>1);},
 	setTCC : function(id){
 		if(id<0 || bd.cellmax<=id){ return;}
 		this.cursolx = bd.cell[id].cx*2+1; this.cursoly = bd.cell[id].cy*2+1;
