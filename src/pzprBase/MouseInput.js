@@ -293,7 +293,7 @@ MouseEvent.prototype = {
 		return cc;
 	},
 	inputqnum3 : function(cc){
-		if(bd.QnC(cc)!==-1){ return cc;}
+		if(bd.QnC(cc)!==bd.defcell.qnum){ return cc;}
 		var max = bd.nummaxfunc(cc);
 		bd.sDiC(cc,0);
 

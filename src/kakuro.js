@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.3
+// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.3p1
 //
 Puzzles.kakuro = function(){ };
 Puzzles.kakuro.prototype = {
@@ -19,7 +19,7 @@ Puzzles.kakuro.prototype = {
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
 
-		k.dispzero      = 1;	// 1:0を表示するかどうか
+		k.dispzero      = 0;	// 1:0を表示するかどうか
 		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
 		k.isAnsNumber   = 1;	// 1:回答に数字を入力するパズル
 		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
@@ -123,6 +123,12 @@ Puzzles.kakuro.prototype = {
 		tc.targetdir = 2;
 
 		bd.maxnum = 9;
+
+		// オーバーライト
+		bd.sQnC = function(id, num) {
+			um.addOpe(k.CELL, k.QNUM, id, this.cell[id].qnum, num);
+			this.cell[id].qnum = num;
+		};
 	},
 
 	//---------------------------------------------------------

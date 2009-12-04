@@ -1,4 +1,4 @@
-// Board.js v3.2.3
+// Board.js v3.2.3p1
 
 //---------------------------------------------------------------------------
 // ★Cellクラス BoardクラスがCellの数だけ保持する
@@ -570,7 +570,7 @@ Board.prototype = {
 		um.addOpe(k.CELL, k.QUES, id, this.cell[id].ques, num);
 		this.cell[id].ques = num;
 	},
-	// overwrite by lightup.js
+	// overwrite by lightup.js and kakuro.js
 	sQnC : function(id, num) {
 		if(k.dispzero===0 && num===0){ return;}
 
