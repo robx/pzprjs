@@ -507,8 +507,8 @@ KeyPopup.prototype = {
 	display : function(){
 		var mode = pp.getVal('mode');
 		if(this.ctl[mode].el && this.ctl[mode].enable && pp.getVal('keypopup') && mv.btn.Left){
-			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputX - 3 + k.IEMargin.x;
-			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputY - 3 + k.IEMargin.y;
+			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputPos.x - 3 + k.IEMargin.x;
+			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputPos.y - 3 + k.IEMargin.y;
 			this.ctl[mode].el.style.zIndex = 100;
 
 			if(this.ctl[mode].target==k.CELL){

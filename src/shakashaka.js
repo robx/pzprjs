@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.2.3
+// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.2.3p1
 //
 Puzzles.shakashaka = function(){ };
 Puzzles.shakashaka.prototype = {
@@ -84,8 +84,8 @@ Puzzles.shakashaka.prototype = {
 
 			if(k.use==1){
 				if(this.btn.Left){
-					var xpos = this.inputX - bd.cell[cc].cx*k.cwidth;
-					var ypos = this.inputY - bd.cell[cc].cy*k.cheight;
+					var xpos = this.inputPos.x - bd.cell[cc].cx*k.cwidth;
+					var ypos = this.inputPos.y - bd.cell[cc].cy*k.cheight;
 					if(xpos>0&&xpos<=k.cwidth/2){
 						if(ypos>0&&ypos<=k.cheight/2){ this.inputData = 5;}
 						else if(ypos>k.cheight/2){ this.inputData = 2;}
@@ -106,12 +106,12 @@ Puzzles.shakashaka.prototype = {
 			else if(k.use==2){
 				if(use2step==0){
 					// 最初はどこのセルをクリックしたか取得するだけ
-					this.firstPos = new Pos(this.inputX, this.inputY);
+					this.firstPos = this.inputPos.clone();
 					this.mouseCell = cc;
 					return;
 				}
 
-				var dx=(this.inputX-this.firstPos.x), dy=(this.inputY-this.firstPos.y);
+				var dx=(this.inputPos.x-this.firstPos.x), dy=(this.inputPos.y-this.firstPos.y);
 				cc = this.mouseCell;
 
 				if(use2step==1){

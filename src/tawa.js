@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たわむれんが版 tawa.js v3.2.3
+// パズル固有スクリプト部 たわむれんが版 tawa.js v3.2.3p1
 //
 Puzzles.tawa = function(){ };
 Puzzles.tawa.prototype = {
@@ -324,7 +324,7 @@ Puzzles.tawa.prototype = {
 			return cand;
 		};
 		mv.cellpos = function(){
-			return new Pos(mf(this.inputX/(k.cwidth/2)), mf(this.inputY/k.cheight));
+			return new Pos(mf(this.inputPos.x/(k.cwidth/2)), mf(this.inputPos.y/k.cheight));
 		};
 	},
 	input_init_menuex : function(){	// 処理が大きくなったので分割(input_init()から呼ばれる)

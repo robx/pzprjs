@@ -6,8 +6,7 @@
 // パズル共通 マウス入力部
 // MouseEventクラスを定義
 var MouseEvent = function(){
-	this.inputX;
-	this.inputY;
+	this.inputPos;
 	this.mouseCell;
 	this.inputData;
 	this.firstPos;
@@ -25,8 +24,7 @@ MouseEvent.prototype = {
 	// mv.mousereset() マウス入力に関する情報を初期化する
 	//---------------------------------------------------------------------------
 	mousereset : function(){
-		this.inputX = -1;
-		this.inputY = -1;
+		this.inputPos = new Pos(-1, -1);
 		this.mouseCell = -1;
 		this.inputData = -1;
 		this.firstPos = new Pos(-1, -1);
@@ -121,25 +119,25 @@ MouseEvent.prototype = {
 	),
 
 	//---------------------------------------------------------------------------
-	// mv.setposition()   イベントが起こった座標をinputX, inputY変数に代入
+	// mv.setposition()   イベントが起こった座標をinputPosに代入
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
 	setposition : (
 		((k.br.WinWebKit) ?
 			function(e){
-				this.inputX = e.pageX-1 -k.cv_oft.x-k.p0.x-k.IEMargin.x;
-				this.inputY = e.pageY-1 -k.cv_oft.y-k.p0.y-k.IEMargin.y;
+				this.inputPos.x = e.pageX-1 -k.cv_oft.x-k.p0.x-k.IEMargin.x;
+				this.inputPos.y = e.pageY-1 -k.cv_oft.y-k.p0.y-k.IEMargin.y;
 			}
 		:(!k.br.IE) ?
 			function(e){
-				this.inputX = e.pageX   -k.cv_oft.x-k.p0.x-k.IEMargin.x;
-				this.inputY = e.pageY   -k.cv_oft.y-k.p0.y-k.IEMargin.y;
+				this.inputPos.x = e.pageX   -k.cv_oft.x-k.p0.x-k.IEMargin.x;
+				this.inputPos.y = e.pageY   -k.cv_oft.y-k.p0.y-k.IEMargin.y;
 			}
 		:
 			function(e){
-				this.inputX = e.clientX + (this.docEL.scrollLeft || this.bodyEL.scrollLeft) -k.cv_oft.x-k.p0.x-k.IEMargin.x;
-				this.inputY = e.clientY + (this.docEL.scrollTop  || this.bodyEL.scrollTop ) -k.cv_oft.y-k.p0.y-k.IEMargin.y;
+				this.inputPos.x = e.clientX + (this.docEL.scrollLeft || this.bodyEL.scrollLeft) -k.cv_oft.x-k.p0.x-k.IEMargin.x;
+				this.inputPos.y = e.clientY + (this.docEL.scrollTop  || this.bodyEL.scrollTop ) -k.cv_oft.y-k.p0.y-k.IEMargin.y;
 			}
 		)
 	),
@@ -158,7 +156,7 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	cellid : function(){
 		var pos = this.cellpos();
-		if(this.inputX%k.cwidth==0 || this.inputY%k.cheight==0){ return -1;} // ぴったりは無効
+		if(this.inputPos.x%k.cwidth==0 || this.inputPos.y%k.cheight==0){ return -1;} // ぴったりは無効
 		return bd.cnum(pos.x,pos.y);
 	},
 	crossid : function(){
@@ -166,19 +164,19 @@ MouseEvent.prototype = {
 		return bd.xnum(pos.x>>1,pos.y>>1);
 	},
 	cellpos : function(){	// crosspos(p,0)でも代替はできる
-		return new Pos(mf(this.inputX/k.cwidth), mf(this.inputY/k.cheight));
+		return new Pos(mf(this.inputPos.x/k.cwidth), mf(this.inputPos.y/k.cheight));
 	},
 	crosspos : function(rc){
 		var pm = rc*k.cwidth;
-		var cx = mf((this.inputX+pm)/k.cwidth), cy = mf((this.inputY+pm)/k.cheight);
-		var dx = (this.inputX+pm)%k.cwidth,     dy = (this.inputY+pm)%k.cheight;
+		var cx = mf((this.inputPos.x+pm)/k.cwidth), cy = mf((this.inputPos.y+pm)/k.cheight);
+		var dx = (this.inputPos.x+pm)%k.cwidth,     dy = (this.inputPos.y+pm)%k.cheight;
 
 		return new Pos(cx*2+(dx<2*pm?0:1), cy*2+(dy<2*pm?0:1));
 	},
 
 	borderid : function(spc){
-		var cx = mf(this.inputX/k.cwidth), cy = mf(this.inputY/k.cheight);
-		var dx = this.inputX%k.cwidth,     dy = this.inputY%k.cheight;
+		var cx = mf(this.inputPos.x/k.cwidth), cy = mf(this.inputPos.y/k.cheight);
+		var dx = this.inputPos.x%k.cwidth,     dy = this.inputPos.y%k.cheight;
 		if(k.isLineCross){
 			if(!k.isborderAsLine){
 				var m1=spc*k.cwidth, m2=(1-spc)*k.cwidth;

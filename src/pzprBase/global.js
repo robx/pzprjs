@@ -6,7 +6,8 @@
 // Posクラス
 Pos = function(xx,yy){ this.x = xx; this.y = yy;};
 Pos.prototype = {
-	set : function(xx,yy){ this.x = xx; this.y = yy;}
+	set : function(xx,yy){ this.x = xx; this.y = yy;},
+	clone : function(){ return new Pos(this.x, this.y);}
 };
 
 // 各種パラメータの定義
