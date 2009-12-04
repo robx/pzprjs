@@ -1,4 +1,4 @@
-// Graphic.js v3.2.3
+// Graphic.js v3.2.3p1
 
 //---------------------------------------------------------------------------
 // ÅöGraphicÉNÉâÉX CanvasÇ…ï`âÊÇ∑ÇÈ
@@ -269,7 +269,7 @@ Graphic.prototype = {
 	drawBlackCells : function(x1,y1,x2,y2){
 		var header = "c_fullb_";
 
-		if(!k.br.IE && !k.isborder){ x1--; y1--; x2++; y2++;}
+		if(!k.br.IE && (!k.isborder || k.puzzleid=='yajirin' || k.puzzleid=='slalom')){ x1--; y1--; x2++; y2++;}
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
