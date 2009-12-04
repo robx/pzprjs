@@ -1,4 +1,4 @@
-// Graphic.js v3.2.3
+// Graphic.js v3.2.3p1
 
 //---------------------------------------------------------------------------
 // šGraphicƒNƒ‰ƒX Canvas‚É•`‰æ‚·‚é
@@ -128,23 +128,23 @@ Graphic.prototype = {
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
 		if(bd.border[id].cx&1){
-			this.paint(((bd.border[id].cx-1)>>1)-1, (bd.border[id].cy>>1)-1,
-					   ((bd.border[id].cx-1)>>1)+1, (bd.border[id].cy>>1)   );
+			this.paint((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
+					   (bd.border[id].cx>>1)+1, (bd.border[id].cy>>1)   );
 		}
 		else{
-			this.paint((bd.border[id].cx>>1)-1, ((bd.border[id].cy-1)>>1)-1,
-					   (bd.border[id].cx>>1)  , ((bd.border[id].cy-1)>>1)+1 );
+			this.paint((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
+					   (bd.border[id].cx>>1)  , (bd.border[id].cy>>1)+1 );
 		}
 	},
 	paintLine : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
 		if(bd.border[id].cx&1){
-			this.paint(((bd.border[id].cx-1)>>1), (bd.border[id].cy>>1)-1,
-					   ((bd.border[id].cx-1)>>1), (bd.border[id].cy>>1)   );
+			this.paint((bd.border[id].cx>>1), (bd.border[id].cy>>1)-1,
+					   (bd.border[id].cx>>1), (bd.border[id].cy>>1)   );
 		}
 		else{
-			this.paint((bd.border[id].cx>>1)-1, ((bd.border[id].cy-1)>>1),
-					   (bd.border[id].cx>>1)  , ((bd.border[id].cy-1)>>1) );
+			this.paint((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1),
+					   (bd.border[id].cx>>1)  , (bd.border[id].cy>>1) );
 		}
 	},
 	paintCell : function(cc){
@@ -269,7 +269,7 @@ Graphic.prototype = {
 	drawBlackCells : function(x1,y1,x2,y2){
 		var header = "c_fullb_";
 
-		if(!k.br.IE && !k.isborder){ x1--; y1--; x2++; y2++;}
+		if(!k.br.IE && (!k.isborder || k.puzzleid=='yajirin' || k.puzzleid=='slalom')){ x1--; y1--; x2++; y2++;}
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
@@ -1085,8 +1085,8 @@ Graphic.prototype = {
 	},
 
 	drawTCell : function(x1,y1,x2,y2){
-		if(tc.cursolx < x1*2 || x2*2+2 < tc.cursolx){ return;}
-		if(tc.cursoly < y1*2 || y2*2+2 < tc.cursoly){ return;}
+		if(tc.cursolx < x1*2-2 || x2*2+4 < tc.cursolx){ return;}
+		if(tc.cursoly < y1*2-2 || y2*2+4 < tc.cursoly){ return;}
 
 		var px = k.p0.x + mf((tc.cursolx-1)*k.cwidth/2);
 		var py = k.p0.y + mf((tc.cursoly-1)*k.cheight/2);

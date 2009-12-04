@@ -1,4 +1,4 @@
-// MouseInput.js v3.2.3
+// MouseInput.js v3.2.3p1
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -6,8 +6,7 @@
 // パズル共通 マウス入力部
 // MouseEventクラスを定義
 var MouseEvent = function(){
-	this.inputX;
-	this.inputY;
+	this.inputPos;
 	this.mouseCell;
 	this.inputData;
 	this.firstPos;
@@ -25,8 +24,7 @@ MouseEvent.prototype = {
 	// mv.mousereset() マウス入力に関する情報を初期化する
 	//---------------------------------------------------------------------------
 	mousereset : function(){
-		this.inputX = -1;
-		this.inputY = -1;
+		this.inputPos = new Pos(-1, -1);
 		this.mouseCell = -1;
 		this.inputData = -1;
 		this.firstPos = new Pos(-1, -1);
@@ -42,34 +40,47 @@ MouseEvent.prototype = {
 	//イベントハンドラから呼び出される
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
 	e_mousedown : function(e){
-		if(!k.enableMouse){ return;}
-
-		this.setButtonFlag(e);
-		// SHIFTキーを押している時は左右ボタン反転
-		if(((kc.isSHIFT)^pp.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
-			this.btn.Left = !this.btn.Left; this.btn.Right = !this.btn.Right;
+		if(k.enableMouse){
+			this.setButtonFlag(e);
+			// SHIFTキーを押している時は左右ボタン反転
+			if(((kc.isSHIFT)^pp.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
+				this.btn.Left = !this.btn.Left; this.btn.Right = !this.btn.Right;
+			}
+			if(this.btn.Middle){ this.modeflip();} //中ボタン
+			else{
+				if(ans.errDisp){ bd.errclear();}
+				um.newOperation(true);
+				this.setposition(e);
+				this.mousedown();	// 各パズルのルーチンへ
+			}
 		}
-		if(this.btn.Middle){ this.modeflip(); return;} //中ボタン
-
-		if(ans.errDisp){ bd.errclear();}
-		um.newOperation(true);
-		this.setposition(e);
-		this.mousedown();	// 各パズルのルーチンへ
+		ee.stopPropagation(e);
+		ee.preventDefault(e);
 		return false;
 	},
 	e_mouseup   : function(e){
-		if(!k.enableMouse || this.btn.Middle || (!this.btn.Left && !this.btn.Right)){ return;}
-		um.newOperation(false);
-		this.setposition(e);
-		this.mouseup();		// 各パズルのルーチンへ
-		this.mousereset();
+		if(k.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
+			um.newOperation(false);
+			this.setposition(e);
+			this.mouseup();		// 各パズルのルーチンへ
+			this.mousereset();
+		}
+		ee.stopPropagation(e);
+		ee.preventDefault(e);
 		return false;
 	},
 	e_mousemove : function(e){
-		if(!k.enableMouse || this.btn.Middle || (!this.btn.Left && !this.btn.Right)){ return;}
-		um.newOperation(false);
-		this.setposition(e);
-		this.mousemove();	// 各パズルのルーチンへ
+		// ポップアップメニュー移動中は当該処理が最優先
+		if(!!menu.movingpop){ return true;}
+
+		if(k.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
+			um.newOperation(false);
+			this.setposition(e);
+			this.mousemove();	// 各パズルのルーチンへ
+		}
+		ee.stopPropagation(e);
+		ee.preventDefault(e);
+		return false;
 	},
 	e_mouseout : function(e) {
 //		if (k.br.IE){ var e=window.event;}
@@ -108,25 +119,25 @@ MouseEvent.prototype = {
 	),
 
 	//---------------------------------------------------------------------------
-	// mv.setposition()   イベントが起こった座標をinputX, inputY変数に代入
+	// mv.setposition()   イベントが起こった座標をinputPosに代入
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
 	setposition : (
 		((k.br.WinWebKit) ?
 			function(e){
-				this.inputX = e.pageX-1 -k.cv_oft.x-k.p0.x-k.IEMargin.x;
-				this.inputY = e.pageY-1 -k.cv_oft.y-k.p0.y-k.IEMargin.y;
+				this.inputPos.x = e.pageX-1 -k.cv_oft.x-k.p0.x-k.IEMargin.x;
+				this.inputPos.y = e.pageY-1 -k.cv_oft.y-k.p0.y-k.IEMargin.y;
 			}
 		:(!k.br.IE) ?
 			function(e){
-				this.inputX = e.pageX   -k.cv_oft.x-k.p0.x-k.IEMargin.x;
-				this.inputY = e.pageY   -k.cv_oft.y-k.p0.y-k.IEMargin.y;
+				this.inputPos.x = e.pageX   -k.cv_oft.x-k.p0.x-k.IEMargin.x;
+				this.inputPos.y = e.pageY   -k.cv_oft.y-k.p0.y-k.IEMargin.y;
 			}
 		:
 			function(e){
-				this.inputX = e.clientX + (this.docEL.scrollLeft || this.bodyEL.scrollLeft) -k.cv_oft.x-k.p0.x-k.IEMargin.x;
-				this.inputY = e.clientY + (this.docEL.scrollTop  || this.bodyEL.scrollTop ) -k.cv_oft.y-k.p0.y-k.IEMargin.y;
+				this.inputPos.x = e.clientX + (this.docEL.scrollLeft || this.bodyEL.scrollLeft) -k.cv_oft.x-k.p0.x-k.IEMargin.x;
+				this.inputPos.y = e.clientY + (this.docEL.scrollTop  || this.bodyEL.scrollTop ) -k.cv_oft.y-k.p0.y-k.IEMargin.y;
 			}
 		)
 	),
@@ -145,7 +156,7 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	cellid : function(){
 		var pos = this.cellpos();
-		if(this.inputX%k.cwidth==0 || this.inputY%k.cheight==0){ return -1;} // ぴったりは無効
+		if(this.inputPos.x%k.cwidth==0 || this.inputPos.y%k.cheight==0){ return -1;} // ぴったりは無効
 		return bd.cnum(pos.x,pos.y);
 	},
 	crossid : function(){
@@ -153,19 +164,19 @@ MouseEvent.prototype = {
 		return bd.xnum(pos.x>>1,pos.y>>1);
 	},
 	cellpos : function(){	// crosspos(p,0)でも代替はできる
-		return new Pos(mf(this.inputX/k.cwidth), mf(this.inputY/k.cheight));
+		return new Pos(mf(this.inputPos.x/k.cwidth), mf(this.inputPos.y/k.cheight));
 	},
 	crosspos : function(rc){
 		var pm = rc*k.cwidth;
-		var cx = mf((this.inputX+pm)/k.cwidth), cy = mf((this.inputY+pm)/k.cheight);
-		var dx = (this.inputX+pm)%k.cwidth,     dy = (this.inputY+pm)%k.cheight;
+		var cx = mf((this.inputPos.x+pm)/k.cwidth), cy = mf((this.inputPos.y+pm)/k.cheight);
+		var dx = (this.inputPos.x+pm)%k.cwidth,     dy = (this.inputPos.y+pm)%k.cheight;
 
 		return new Pos(cx*2+(dx<2*pm?0:1), cy*2+(dy<2*pm?0:1));
 	},
 
 	borderid : function(spc){
-		var cx = mf(this.inputX/k.cwidth), cy = mf(this.inputY/k.cheight);
-		var dx = this.inputX%k.cwidth,     dy = this.inputY%k.cheight;
+		var cx = mf(this.inputPos.x/k.cwidth), cy = mf(this.inputPos.y/k.cheight);
+		var dx = this.inputPos.x%k.cwidth,     dy = this.inputPos.y%k.cheight;
 		if(k.isLineCross){
 			if(!k.isborderAsLine){
 				var m1=spc*k.cwidth, m2=(1-spc)*k.cwidth;
@@ -280,7 +291,7 @@ MouseEvent.prototype = {
 		return cc;
 	},
 	inputqnum3 : function(cc){
-		if(bd.QnC(cc)!==-1){ return cc;}
+		if(bd.QnC(cc)!==bd.defcell.qnum){ return cc;}
 		var max = bd.nummaxfunc(cc);
 		bd.sDiC(cc,0);
 

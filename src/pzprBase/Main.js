@@ -1,4 +1,4 @@
-// Main.js v3.2.3
+// Main.js v3.2.3p1
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -116,14 +116,14 @@ PBase.prototype = {
 		this.numparent.oncontextmenu = function(){ return false;};
 
 		if(first){
-			document.onkeydown  = ee.kcbinder(kc.e_keydown);
-			document.onkeyup    = ee.kcbinder(kc.e_keyup);
-			document.onkeypress = ee.kcbinder(kc.e_keypress);
+			document.onkeydown  = ee.ebinder(kc, kc.e_keydown);
+			document.onkeyup    = ee.ebinder(kc, kc.e_keyup);
+			document.onkeypress = ee.ebinder(kc, kc.e_keypress);
 		}
 	},
 	initSilverlight : function(sender){
-		sender.AddEventListener("KeyDown", ee.kcbinder(kc.e_SLkeydown));
-		sender.AddEventListener("KeyUp",   ee.kcbinder(kc.e_SLkeyup));
+		sender.AddEventListener("KeyDown", ee.ebinder(kc, kc.e_SLkeydown));
+		sender.AddEventListener("KeyUp",   ee.ebinder(kc, kc.e_SLkeyup));
 	},
 
 	//---------------------------------------------------------------------------

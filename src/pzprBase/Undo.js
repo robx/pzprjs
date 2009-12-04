@@ -229,12 +229,12 @@ UndoManager.prototype = {
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
 		if(bd.border[id].cx%2==1){
-			this.paintStack(((bd.border[id].cx-1)>>1)-1, (bd.border[id].cy>>1)-1,
-							((bd.border[id].cx-1)>>1)+1, (bd.border[id].cy>>1)   );
+			this.paintStack((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
+							(bd.border[id].cx>>1)+1, (bd.border[id].cy>>1)   );
 		}
 		else{
-			this.paintStack((bd.border[id].cx>>1)-1, ((bd.border[id].cy-1)>>1)-1,
-							(bd.border[id].cx>>1)  , ((bd.border[id].cy-1)>>1)+1 );
+			this.paintStack((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
+							(bd.border[id].cx>>1)  , (bd.border[id].cy>>1)+1 );
 		}
 	},
 	paintStack : function(x1,y1,x2,y2){

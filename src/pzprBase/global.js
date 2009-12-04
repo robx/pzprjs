@@ -1,4 +1,4 @@
-// global.js v3.2.3
+// global.js v3.2.3p1
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -6,7 +6,8 @@
 // Posクラス
 Pos = function(xx,yy){ this.x = xx; this.y = yy;};
 Pos.prototype = {
-	set : function(xx,yy){ this.x = xx; this.y = yy;}
+	set : function(xx,yy){ this.x = xx; this.y = yy;},
+	clone : function(){ return new Pos(this.x, this.y);}
 };
 
 // 各種パラメータの定義
@@ -291,7 +292,6 @@ _extend( _ElementManager, {
 	//----------------------------------------------------------------------
 	// ee.binder()   thisをbindする
 	// ee.ebinder()  thisとイベントをbindする
-	// ee.kcbinder() kcとイベントをbindする
 	//----------------------------------------------------------------------
 	binder : function(){
 		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift();
@@ -305,18 +305,21 @@ _extend( _ElementManager, {
 			return __method.apply(obj, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
 		}
 	},
-	kcbinder : function(){
-		var args=_toArray(arguments), __method = args.shift(), rest = (args.length>0?args[0]:[]);
-		return function(e){
-			ret = __method.apply(kc, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
-			if(kc.tcMoved){
-				if(_Gecko||_WebKit){ e.preventDefault();}
-				else if(_IE){ return false;}
-				else{ e.returnValue = false;}
-			}
-			return ret;
-		}
-	}
+
+	//----------------------------------------------------------------------
+	// ee.stopPropagation() イベントの起こったエレメントより上にイベントを
+	//                      伝播させないようにする
+	// ee.preventDefault()  イベントの起こったエレメントで、デフォルトの
+	//                      イベントが起こらないようにする
+	//----------------------------------------------------------------------
+	stopPropagation : (
+		(!_IE) ? function(e){ e.stopPropagation();}
+		:        function(e){ e.cancelBubble = true;}
+	),
+	preventDefault : (
+		(_Gecko || _WebKit) ? function(e){ e.preventDefault();}
+		:                     function(e){ e.returnValue = false;}
+	)
 });
 
 // implementation of _ElementManager.ElementExt class

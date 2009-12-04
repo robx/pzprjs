@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.2.3
+// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.2.3p1
 //
 Puzzles.tateyoko = function(){ };
 Puzzles.tateyoko.prototype = {
@@ -69,27 +69,47 @@ Puzzles.tateyoko.prototype = {
 			if(k.playmode){ this.inputTateyoko();}
 		};
 		mv.inputTateyoko = function(){
-			var pos = this.crosspos(0.30);
-			var cc  = this.cellid();
+			var cc   = this.cellid();
 			if(cc==-1){ return;}
-			if(this.mouseCell==-1 || bd.QuC(cc)==1){ this.firstPos = pos; this.mouseCell = cc; return;}
-			if(pos.x==this.firstPos.x && pos.y==this.firstPos.y && cc==this.mouseCell){ return;}
+			var cpos = this.cellpos();
 
-			if(this.inputData==-1){
-				if     (Math.abs(pos.y-this.firstPos.y)==1){ this.inputData=1;}
-				else if(Math.abs(pos.x-this.firstPos.x)==1){ this.inputData=2;}
-				if(bd.QaC(cc)==this.inputData){ this.inputData=0;}
+			var input=false;
+
+			// 初回はこの中に入ってきます。
+			if(this.mouseCell==-1){ this.firstPos = this.inputPos.clone();}
+			// 黒マス上なら何もしない
+			else if(bd.QuC(cc)==1){ }
+			// まだ入力されていない(1つめの入力の)場合
+			else if(this.inputData==-1){
+				if(cc==this.mouseCell){
+					pos = this.inputPos.clone();
+					if     (Math.abs(pos.y-this.firstPos.y)>=8){ this.inputData=1; input=true;}
+					else if(Math.abs(pos.x-this.firstPos.x)>=8){ this.inputData=2; input=true;}
+				}
+				else{
+					if     (Math.abs(cpos.y-this.prevCPos.y)==1){ this.inputData=1; input=true;}
+					else if(Math.abs(cpos.x-this.prevCPos.x)==1){ this.inputData=2; input=true;}
+				}
+
+				if(input){
+					if(bd.QaC(cc)==this.inputData){ this.inputData=0;}
+					this.firstPos = new Pos(-1,-1);
+ 				}
 			}
-			else{
-				if     (this.inputData!=1 && Math.abs(pos.y-this.firstPos.y)==1){ return;}
-				else if(this.inputData!=2 && Math.abs(pos.x-this.firstPos.x)==1){ return;}
+			// 入力し続けていて、別のマスに移動した場合
+			else if(cc!==this.mouseCell){
+				if(this.inputData==0){ this.inputData=0; input=true;}
+				else if(Math.abs(cpos.y-this.prevCPos.y)==1){ this.inputData=1; input=true;}
+				else if(Math.abs(cpos.x-this.prevCPos.x)==1){ this.inputData=2; input=true;}
 			}
 
-			if(bd.QaC(cc)!=this.inputData){ bd.sQaC(cc,(this.inputData!=0?this.inputData:-1));}
-
-			this.firstPos = pos;
+			// 描画・後処理
+			if(input){
+				bd.sQaC(cc,(this.inputData!=0?this.inputData:-1));
+				pc.paintCell(cc);
+			}
+			this.prevCPos  = cpos;
 			this.mouseCell = cc;
-			pc.paintCell(cc);
 		};
 		mv.clickTateyoko = function(){
 			var cc  = this.cellid();
@@ -107,6 +127,7 @@ Puzzles.tateyoko.prototype = {
 			}
 			pc.paintCell(cc);
 		};
+		mv.prevCPos = new Pos(-1,-1);
 
 		// キーボード入力系
 		kc.keyinput = function(ca){

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.2.3
+// パズル固有スクリプト部 スラローム版 slalom.js v3.2.3p1
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -106,40 +106,64 @@ Puzzles.slalom.prototype = {
 			pc.paintCell(cc0);
 		};
 		mv.inputGate = function(){
-			var pos = this.crosspos(0.30);
-			var cc  = this.cellid();
+			var cc   = this.cellid();
 			if(cc==-1){ return;}
-			if(pos.x==this.firstPos.x && pos.y==this.firstPos.y && cc==this.mouseCell){ return;}
+			var cpos = this.cellpos();
 
-			if(this.inputData==-1){
-				if(bd.startid==cc){ this.inputData=10;}
-				if     (Math.abs(pos.y-this.firstPos.y)==1){ this.inputData=21;}
-				else if(Math.abs(pos.x-this.firstPos.x)==1){ this.inputData=22;}
-				if(bd.QuC(cc)==this.inputData){ this.inputData=0;}
+			var input=false;
+
+			// 初回はこの中に入ってきます。
+			if(this.mouseCell==-1){
+				if(cc===bd.startid){ this.inputData=10; input=true;}
+				else{ this.firstPos = this.inputPos.clone();}
 			}
+			// 黒マス上なら何もしない
+			else if(bd.QuC(cc)==1){ }
+			// startposの入力中の場合
 			else if(this.inputData==10){
-				if(bd.QuC(cc)==1){ return;}
-				var cc0 = bd.startid;
-				bd.startid=cc;
-				pc.paintCell(cc0);
+				if(cc!==this.mouseCell){
+					var cc0 = bd.startid;
+					bd.startid=cc;
+					pc.paintCell(cc0);
+					input=true;
+				}
 			}
-			else{
-				if     (this.inputData!=21 && Math.abs(pos.y-this.firstPos.y)==1){ return;}
-				else if(this.inputData!=22 && Math.abs(pos.x-this.firstPos.x)==1){ return;}
+			// まだ入力されていない(1つめの入力の)場合
+			else if(this.inputData==-1){
+				if(cc==this.mouseCell){
+					pos = this.inputPos.clone();
+					if     (Math.abs(pos.y-this.firstPos.y)>=8){ this.inputData=21; input=true;}
+					else if(Math.abs(pos.x-this.firstPos.x)>=8){ this.inputData=22; input=true;}
+				}
+				else{
+					if     (Math.abs(cpos.y-this.prevCPos.y)==1){ this.inputData=21; input=true;}
+					else if(Math.abs(cpos.x-this.prevCPos.x)==1){ this.inputData=22; input=true;}
+				}
+
+				if(input){
+					if(bd.QuC(cc)==this.inputData){ this.inputData=0;}
+					this.firstPos = new Pos(-1,-1);
+ 				}
+			}
+			// 入力し続けていて、別のマスに移動した場合
+			else if(cc!==this.mouseCell){
+				if(this.inputData==0){ this.inputData=0; input=true;}
+				else if(Math.abs(cpos.y-this.prevCPos.y)==1){ this.inputData=21; input=true;}
+				else if(Math.abs(cpos.x-this.prevCPos.x)==1){ this.inputData=22; input=true;}
 			}
 
-			if((this.inputData==0 || this.inputData==21 || this.inputData==22)
-				&& bd.QuC(cc)!=1 && bd.QuC(cc)!=this.inputData)
-			{
-				bd.sQuC(cc,this.inputData);
+			// 描画・後処理
+			if(input){
+				if(this.inputData!==10){ bd.sQuC(cc,this.inputData);}
 				bd.hinfo.generateGates();
-			}
 
-			this.firstPos = pos;
+				pc.paint(bd.cell[cc].cx, bd.cell[cc].cy, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+				pc.dispnumStartpos(bd.startid);
+			}
+			this.prevCPos  = cpos;
 			this.mouseCell = cc;
-			pc.paint(bd.cell[cc].cx, bd.cell[cc].cy, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
-			pc.dispnumStartpos(bd.startid);
 		};
+		mv.prevCPos = new Pos(-1,-1);
 
 		// キーボード入力系
 		kc.keyinput = function(ca){

@@ -227,8 +227,8 @@ Puzzles.hashikake.prototype = {
 
 		line.repaintParts = function(id){
 			var bx=bd.border[id].cx, by=bd.border[id].cy;
-			if(bd.border[id].cx&1){ pc.drawNumCells_bridges(((bx-1)>>1)-1, (by>>1)-1, ((bx-1)>>1)+1, (by>>1));}
-			else                  { pc.drawNumCells_bridges((bx>>1)-1, ((by-1)>>1)-1, (bx>>1), ((by-1)>>1)+1);}
+			if(bd.border[id].cx&1){ pc.drawNumCells_bridges((bx>>1)-1, (by>>1)-1, (bx>>1)+1, (by>>1)  );}
+			else                  { pc.drawNumCells_bridges((bx>>1)-1, (by>>1)-1, (bx>>1),   (by>>1)+1);}
 		};
 		line.branch = function(bx,by,lcnt){
 			return (lcnt==3||lcnt==4) && (bd.QnC(bd.cnum(bx>>1,by>>1))!=-1);

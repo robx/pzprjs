@@ -5,8 +5,8 @@
  * written in JavaScript.
  * 
  * @author  happa.
- * @version v3.2.3
- * @date    2009-11-22
+ * @version v3.2.3p1
+ * @date    2009-12-05
  * 
  * This script uses following library.
  *  uuCanvas.js (version 1.0)
@@ -20,7 +20,7 @@
  * 
  */
 
-var pzprversion="v3.2.3";
+var pzprversion="v3.2.3p1";
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -28,7 +28,8 @@ var pzprversion="v3.2.3";
 // Posクラス
 Pos = function(xx,yy){ this.x = xx; this.y = yy;};
 Pos.prototype = {
-	set : function(xx,yy){ this.x = xx; this.y = yy;}
+	set : function(xx,yy){ this.x = xx; this.y = yy;},
+	clone : function(){ return new Pos(this.x, this.y);}
 };
 
 // 各種パラメータの定義
@@ -313,7 +314,6 @@ _extend( _ElementManager, {
 	//----------------------------------------------------------------------
 	// ee.binder()   thisをbindする
 	// ee.ebinder()  thisとイベントをbindする
-	// ee.kcbinder() kcとイベントをbindする
 	//----------------------------------------------------------------------
 	binder : function(){
 		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift();
@@ -327,18 +327,21 @@ _extend( _ElementManager, {
 			return __method.apply(obj, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
 		}
 	},
-	kcbinder : function(){
-		var args=_toArray(arguments), __method = args.shift(), rest = (args.length>0?args[0]:[]);
-		return function(e){
-			ret = __method.apply(kc, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
-			if(kc.tcMoved){
-				if(_Gecko||_WebKit){ e.preventDefault();}
-				else if(_IE){ return false;}
-				else{ e.returnValue = false;}
-			}
-			return ret;
-		}
-	}
+
+	//----------------------------------------------------------------------
+	// ee.stopPropagation() イベントの起こったエレメントより上にイベントを
+	//                      伝播させないようにする
+	// ee.preventDefault()  イベントの起こったエレメントで、デフォルトの
+	//                      イベントが起こらないようにする
+	//----------------------------------------------------------------------
+	stopPropagation : (
+		(!_IE) ? function(e){ e.stopPropagation();}
+		:        function(e){ e.cancelBubble = true;}
+	),
+	preventDefault : (
+		(_Gecko || _WebKit) ? function(e){ e.preventDefault();}
+		:                     function(e){ e.returnValue = false;}
+	)
 });
 
 // implementation of _ElementManager.ElementExt class
@@ -1027,14 +1030,14 @@ Board.prototype = {
 	},
 	bnum2 : function(cx,cy,qc,qr){
 		if(cx>=1&&cx<=qc*2-1&&cy>=1&&cy<=qr*2-1){
-			if     (!(cx&1) &&  (cy&1)){ return ((cx-1)>>1)+((cy-1)>>1)*(qc-1);}
-			else if( (cx&1) && !(cy&1)){ return ((cx-1)>>1)+((cy-2)>>1)*qc+(qc-1)*qr;}
+			if     (!(cx&1) &&  (cy&1)){ return ((cx>>1)-1)+(cy>>1)*(qc-1);}
+			else if( (cx&1) && !(cy&1)){ return (cx>>1)+((cy>>1)-1)*qc+(qc-1)*qr;}
 		}
 		else if(k.isoutsideborder==1){
-			if     (cy===0   &&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+((cx-1)>>1);}
-			else if(cy===2*qr&&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+((cx-1)>>1);}
-			else if(cx===0   &&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+((cy-1)>>1);}
-			else if(cx===2*qc&&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+((cy-1)>>1);}
+			if     (cy===0   &&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+(cx>>1);}
+			else if(cy===2*qr&&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+(cx>>1);}
+			else if(cx===0   &&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+(cy>>1);}
+			else if(cx===2*qc&&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+(cy>>1);}
 		}
 		return -1;
 	},
@@ -1167,7 +1170,7 @@ Board.prototype = {
 		um.addOpe(k.CELL, k.QUES, id, this.cell[id].ques, num);
 		this.cell[id].ques = num;
 	},
-	// overwrite by lightup.js
+	// overwrite by lightup.js and kakuro.js
 	sQnC : function(id, num) {
 		if(k.dispzero===0 && num===0){ return;}
 
@@ -1574,23 +1577,23 @@ Graphic.prototype = {
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
 		if(bd.border[id].cx&1){
-			this.paint(((bd.border[id].cx-1)>>1)-1, (bd.border[id].cy>>1)-1,
-					   ((bd.border[id].cx-1)>>1)+1, (bd.border[id].cy>>1)   );
+			this.paint((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
+					   (bd.border[id].cx>>1)+1, (bd.border[id].cy>>1)   );
 		}
 		else{
-			this.paint((bd.border[id].cx>>1)-1, ((bd.border[id].cy-1)>>1)-1,
-					   (bd.border[id].cx>>1)  , ((bd.border[id].cy-1)>>1)+1 );
+			this.paint((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
+					   (bd.border[id].cx>>1)  , (bd.border[id].cy>>1)+1 );
 		}
 	},
 	paintLine : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
 		if(bd.border[id].cx&1){
-			this.paint(((bd.border[id].cx-1)>>1), (bd.border[id].cy>>1)-1,
-					   ((bd.border[id].cx-1)>>1), (bd.border[id].cy>>1)   );
+			this.paint((bd.border[id].cx>>1), (bd.border[id].cy>>1)-1,
+					   (bd.border[id].cx>>1), (bd.border[id].cy>>1)   );
 		}
 		else{
-			this.paint((bd.border[id].cx>>1)-1, ((bd.border[id].cy-1)>>1),
-					   (bd.border[id].cx>>1)  , ((bd.border[id].cy-1)>>1) );
+			this.paint((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1),
+					   (bd.border[id].cx>>1)  , (bd.border[id].cy>>1) );
 		}
 	},
 	paintCell : function(cc){
@@ -1715,7 +1718,7 @@ Graphic.prototype = {
 	drawBlackCells : function(x1,y1,x2,y2){
 		var header = "c_fullb_";
 
-		if(!k.br.IE && !k.isborder){ x1--; y1--; x2++; y2++;}
+		if(!k.br.IE && (!k.isborder || k.puzzleid=='yajirin' || k.puzzleid=='slalom')){ x1--; y1--; x2++; y2++;}
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
@@ -2531,8 +2534,8 @@ Graphic.prototype = {
 	},
 
 	drawTCell : function(x1,y1,x2,y2){
-		if(tc.cursolx < x1*2 || x2*2+2 < tc.cursolx){ return;}
-		if(tc.cursoly < y1*2 || y2*2+2 < tc.cursoly){ return;}
+		if(tc.cursolx < x1*2-2 || x2*2+4 < tc.cursolx){ return;}
+		if(tc.cursoly < y1*2-2 || y2*2+4 < tc.cursoly){ return;}
 
 		var px = k.p0.x + mf((tc.cursolx-1)*k.cwidth/2);
 		var py = k.p0.y + mf((tc.cursoly-1)*k.cheight/2);
@@ -3052,8 +3055,7 @@ Graphic.prototype = {
 // パズル共通 マウス入力部
 // MouseEventクラスを定義
 var MouseEvent = function(){
-	this.inputX;
-	this.inputY;
+	this.inputPos;
 	this.mouseCell;
 	this.inputData;
 	this.firstPos;
@@ -3071,8 +3073,7 @@ MouseEvent.prototype = {
 	// mv.mousereset() マウス入力に関する情報を初期化する
 	//---------------------------------------------------------------------------
 	mousereset : function(){
-		this.inputX = -1;
-		this.inputY = -1;
+		this.inputPos = new Pos(-1, -1);
 		this.mouseCell = -1;
 		this.inputData = -1;
 		this.firstPos = new Pos(-1, -1);
@@ -3088,34 +3089,47 @@ MouseEvent.prototype = {
 	//イベントハンドラから呼び出される
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
 	e_mousedown : function(e){
-		if(!k.enableMouse){ return;}
-
-		this.setButtonFlag(e);
-		// SHIFTキーを押している時は左右ボタン反転
-		if(((kc.isSHIFT)^pp.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
-			this.btn.Left = !this.btn.Left; this.btn.Right = !this.btn.Right;
+		if(k.enableMouse){
+			this.setButtonFlag(e);
+			// SHIFTキーを押している時は左右ボタン反転
+			if(((kc.isSHIFT)^pp.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
+				this.btn.Left = !this.btn.Left; this.btn.Right = !this.btn.Right;
+			}
+			if(this.btn.Middle){ this.modeflip();} //中ボタン
+			else{
+				if(ans.errDisp){ bd.errclear();}
+				um.newOperation(true);
+				this.setposition(e);
+				this.mousedown();	// 各パズルのルーチンへ
+			}
 		}
-		if(this.btn.Middle){ this.modeflip(); return;} //中ボタン
-
-		if(ans.errDisp){ bd.errclear();}
-		um.newOperation(true);
-		this.setposition(e);
-		this.mousedown();	// 各パズルのルーチンへ
+		ee.stopPropagation(e);
+		ee.preventDefault(e);
 		return false;
 	},
 	e_mouseup   : function(e){
-		if(!k.enableMouse || this.btn.Middle || (!this.btn.Left && !this.btn.Right)){ return;}
-		um.newOperation(false);
-		this.setposition(e);
-		this.mouseup();		// 各パズルのルーチンへ
-		this.mousereset();
+		if(k.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
+			um.newOperation(false);
+			this.setposition(e);
+			this.mouseup();		// 各パズルのルーチンへ
+			this.mousereset();
+		}
+		ee.stopPropagation(e);
+		ee.preventDefault(e);
 		return false;
 	},
 	e_mousemove : function(e){
-		if(!k.enableMouse || this.btn.Middle || (!this.btn.Left && !this.btn.Right)){ return;}
-		um.newOperation(false);
-		this.setposition(e);
-		this.mousemove();	// 各パズルのルーチンへ
+		// ポップアップメニュー移動中は当該処理が最優先
+		if(!!menu.movingpop){ return true;}
+
+		if(k.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
+			um.newOperation(false);
+			this.setposition(e);
+			this.mousemove();	// 各パズルのルーチンへ
+		}
+		ee.stopPropagation(e);
+		ee.preventDefault(e);
+		return false;
 	},
 	e_mouseout : function(e) {
 //		if (k.br.IE){ var e=window.event;}
@@ -3154,25 +3168,25 @@ MouseEvent.prototype = {
 	),
 
 	//---------------------------------------------------------------------------
-	// mv.setposition()   イベントが起こった座標をinputX, inputY変数に代入
+	// mv.setposition()   イベントが起こった座標をinputPosに代入
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
 	setposition : (
 		((k.br.WinWebKit) ?
 			function(e){
-				this.inputX = e.pageX-1 -k.cv_oft.x-k.p0.x-k.IEMargin.x;
-				this.inputY = e.pageY-1 -k.cv_oft.y-k.p0.y-k.IEMargin.y;
+				this.inputPos.x = e.pageX-1 -k.cv_oft.x-k.p0.x-k.IEMargin.x;
+				this.inputPos.y = e.pageY-1 -k.cv_oft.y-k.p0.y-k.IEMargin.y;
 			}
 		:(!k.br.IE) ?
 			function(e){
-				this.inputX = e.pageX   -k.cv_oft.x-k.p0.x-k.IEMargin.x;
-				this.inputY = e.pageY   -k.cv_oft.y-k.p0.y-k.IEMargin.y;
+				this.inputPos.x = e.pageX   -k.cv_oft.x-k.p0.x-k.IEMargin.x;
+				this.inputPos.y = e.pageY   -k.cv_oft.y-k.p0.y-k.IEMargin.y;
 			}
 		:
 			function(e){
-				this.inputX = e.clientX + (this.docEL.scrollLeft || this.bodyEL.scrollLeft) -k.cv_oft.x-k.p0.x-k.IEMargin.x;
-				this.inputY = e.clientY + (this.docEL.scrollTop  || this.bodyEL.scrollTop ) -k.cv_oft.y-k.p0.y-k.IEMargin.y;
+				this.inputPos.x = e.clientX + (this.docEL.scrollLeft || this.bodyEL.scrollLeft) -k.cv_oft.x-k.p0.x-k.IEMargin.x;
+				this.inputPos.y = e.clientY + (this.docEL.scrollTop  || this.bodyEL.scrollTop ) -k.cv_oft.y-k.p0.y-k.IEMargin.y;
 			}
 		)
 	),
@@ -3191,7 +3205,7 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	cellid : function(){
 		var pos = this.cellpos();
-		if(this.inputX%k.cwidth==0 || this.inputY%k.cheight==0){ return -1;} // ぴったりは無効
+		if(this.inputPos.x%k.cwidth==0 || this.inputPos.y%k.cheight==0){ return -1;} // ぴったりは無効
 		return bd.cnum(pos.x,pos.y);
 	},
 	crossid : function(){
@@ -3199,19 +3213,19 @@ MouseEvent.prototype = {
 		return bd.xnum(pos.x>>1,pos.y>>1);
 	},
 	cellpos : function(){	// crosspos(p,0)でも代替はできる
-		return new Pos(mf(this.inputX/k.cwidth), mf(this.inputY/k.cheight));
+		return new Pos(mf(this.inputPos.x/k.cwidth), mf(this.inputPos.y/k.cheight));
 	},
 	crosspos : function(rc){
 		var pm = rc*k.cwidth;
-		var cx = mf((this.inputX+pm)/k.cwidth), cy = mf((this.inputY+pm)/k.cheight);
-		var dx = (this.inputX+pm)%k.cwidth,     dy = (this.inputY+pm)%k.cheight;
+		var cx = mf((this.inputPos.x+pm)/k.cwidth), cy = mf((this.inputPos.y+pm)/k.cheight);
+		var dx = (this.inputPos.x+pm)%k.cwidth,     dy = (this.inputPos.y+pm)%k.cheight;
 
 		return new Pos(cx*2+(dx<2*pm?0:1), cy*2+(dy<2*pm?0:1));
 	},
 
 	borderid : function(spc){
-		var cx = mf(this.inputX/k.cwidth), cy = mf(this.inputY/k.cheight);
-		var dx = this.inputX%k.cwidth,     dy = this.inputY%k.cheight;
+		var cx = mf(this.inputPos.x/k.cwidth), cy = mf(this.inputPos.y/k.cheight);
+		var dx = this.inputPos.x%k.cwidth,     dy = this.inputPos.y%k.cheight;
 		if(k.isLineCross){
 			if(!k.isborderAsLine){
 				var m1=spc*k.cwidth, m2=(1-spc)*k.cwidth;
@@ -3326,7 +3340,7 @@ MouseEvent.prototype = {
 		return cc;
 	},
 	inputqnum3 : function(cc){
-		if(bd.QnC(cc)!==-1){ return cc;}
+		if(bd.QnC(cc)!==bd.defcell.qnum){ return cc;}
 		var max = bd.nummaxfunc(cc);
 		bd.sDiC(cc,0);
 
@@ -3740,37 +3754,42 @@ KeyEvent.prototype = {
 	// この3つのキーイベントはwindowから呼び出される(kcをbindしている)
 	// 48～57は0～9キー、65～90はa～z、96～105はテンキー、112～123はF1～F12キー
 	e_keydown : function(e){
-		if(!k.enableKey){ return;}
+		if(k.enableKey){
+			um.newOperation(true);
+			this.ca = this.getchar(e, this.getKeyCode(e));
+			this.tcMoved = false;
+			if(!this.isZ){ bd.errclear();}
 
-		um.newOperation(true);
-		this.ca = this.getchar(e, this.getKeyCode(e));
-		this.tcMoved = false;
-		if(!this.isZ){ bd.errclear();}
+			if(!this.keydown_common(e)){
+				if(this.ca){ this.keyinput(this.ca);}	// 各パズルのルーチンへ
+				this.keyPressed = true;
+			}
 
-		if(this.keydown_common(e)){ return false;}
-		if(this.ca){ this.keyinput(this.ca);} //kc.keydown(e.modifier, String.fromCharCode(e.which), e);
-
-		this.keyPressed = true;
+			if(this.tcMoved){
+				ee.preventDefault(e);
+				return false;
+			}
+		}
 	},
-	e_keyup : function(e)    {
-		if(!k.enableKey){ return;}
+	e_keyup : function(e){
+		if(k.enableKey){
+			um.newOperation(false);
+			this.ca = this.getchar(e, this.getKeyCode(e));
+			this.keyPressed = false;
 
-		um.newOperation(false);
-		this.ca = this.getchar(e, this.getKeyCode(e));
-
-		this.keyPressed = false;
-
-		if(this.keyup_common(e)){ return false;}
-		if(this.ca){ this.keyup(this.ca);} //kc.keyup(e.modifier, String.fromCharCode(e.which), e);
+			if(!this.keyup_common(e)){
+				if(this.ca){ this.keyup(this.ca);}	// 各パズルのルーチンへ
+			}
+		}
 	},
 	//(keypressのみ)45は-(マイナス)
-	e_keypress : function(e)    {
-		if(!k.enableKey){ return;}
+	e_keypress : function(e){
+		if(k.enableKey){
+			um.newOperation(false);
+			this.ca = this.getcharp(e, this.getKeyCode(e));
 
-		um.newOperation(false);
-		this.ca = this.getcharp(e, this.getKeyCode(e));
-
-		if(this.ca){ this.keyinput(this.ca);}
+			if(this.ca){ this.keyinput(this.ca);}	// 各パズルのルーチンへ
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -3779,11 +3798,12 @@ KeyEvent.prototype = {
 	//---------------------------------------------------------------------------
 	e_SLkeydown : function(sender,keyEventArgs){
 		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
-						altKey:false, returnValue:false, preventEvent:f_true };
+						altKey:false, returnValue:false, preventDefault:f_true };
 		return this.e_keydown(emulate);
 	},
 	e_SLkeyup : function(sender,keyEventArgs){
-		var emulate = {keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl, altKey:false};
+		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
+						altKey:false, returnValue:false, preventDefault:f_true };
 		return this.e_keyup(emulate);
 	},
 
@@ -4197,8 +4217,8 @@ KeyPopup.prototype = {
 	display : function(){
 		var mode = pp.getVal('mode');
 		if(this.ctl[mode].el && this.ctl[mode].enable && pp.getVal('keypopup') && mv.btn.Left){
-			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputX - 3 + k.IEMargin.x;
-			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputY - 3 + k.IEMargin.y;
+			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputPos.x - 3 + k.IEMargin.x;
+			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputPos.y - 3 + k.IEMargin.y;
 			this.ctl[mode].el.style.zIndex = 100;
 
 			if(this.ctl[mode].target==k.CELL){
@@ -4309,7 +4329,7 @@ TCell.prototype = {
 		if(pos.x<this.minx || this.maxx<pos.x || pos.y<this.miny || this.maxy<pos.y){ return;}
 		this.cursolx = pos.x; this.cursoly = pos.y;
 	},
-	getTCC : function(){ return bd.cnum((this.cursolx-1)>>1, (this.cursoly-1)>>1);},
+	getTCC : function(){ return bd.cnum(this.cursolx>>1, this.cursoly>>1);},
 	setTCC : function(id){
 		if(id<0 || bd.cellmax<=id){ return;}
 		this.cursolx = bd.cell[id].cx*2+1; this.cursoly = bd.cell[id].cy*2+1;
@@ -6612,12 +6632,12 @@ UndoManager.prototype = {
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
 		if(bd.border[id].cx%2==1){
-			this.paintStack(((bd.border[id].cx-1)>>1)-1, (bd.border[id].cy>>1)-1,
-							((bd.border[id].cx-1)>>1)+1, (bd.border[id].cy>>1)   );
+			this.paintStack((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
+							(bd.border[id].cx>>1)+1, (bd.border[id].cy>>1)   );
 		}
 		else{
-			this.paintStack((bd.border[id].cx>>1)-1, ((bd.border[id].cy-1)>>1)-1,
-							(bd.border[id].cx>>1)  , ((bd.border[id].cy-1)>>1)+1 );
+			this.paintStack((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
+							(bd.border[id].cx>>1)  , (bd.border[id].cy>>1)+1 );
 		}
 	},
 	paintStack : function(x1,y1,x2,y2){
@@ -6647,7 +6667,7 @@ Menu = function(){
 	this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
 	this.pop        = "";			// 現在表示しているポップアップウィンドウ(オブジェクト)
 
-	this.isptitle   = 0;			// タイトルバーが押されているか
+	this.movingpop  = "";			// 移動中のポップアップメニュー
 	this.offset = new Pos(0, 0);	// ポップアップウィンドウの左上からの位置
 
 	this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
@@ -6971,6 +6991,8 @@ Menu.prototype = {
 	// menu.menuclear()  メニュー/サブメニュー/フロートメニューを全て選択されていない状態に戻す
 	//---------------------------------------------------------------------------
 	menuhover : function(e){
+		if(!!this.movingpop){ return true;}
+
 		var idname = ee.getSrcElement(e).id.substr(3);
 		this.floatmenuopen(e,idname,0);
 		ee('menupanel').replaceChildrenClass('menusel','menu');
@@ -7192,6 +7214,9 @@ Menu.prototype = {
 		}
 		this.titlebarfunc(ee('credit3_1').el);
 
+		document.onmousemove = ee.ebinder(this,this.titlebarmove);
+		document.onmouseup   = ee.ebinder(this,this.titlebarup);
+
 		//=====================================================================
 		//// formボタンの動作設定・その他のCaption設定
 		var btn = ee.binder(this, this.addButtons);
@@ -7322,43 +7347,37 @@ Menu.prototype = {
 			this.pop.el.style.display = "none";
 			this.pop = '';
 			this.menuclear();
-			this.isptitle = 0;
+			this.movingpop = "";
 			k.enableKey = true;
 		}
 	},
 
 	//---------------------------------------------------------------------------
 	// menu.titlebarfunc()  下の4つのイベントをイベントハンドラにくっつける
-	// menu.titlebardown()  タイトルバーをクリックしたときの動作を行う
-	// menu.titlebarup()    タイトルバーでボタンを離したときの動作を行う
-	// menu.titlebarout()   タイトルバーからマウスが離れたときの動作を行う
-	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす
+	// menu.titlebardown()  タイトルバーをクリックしたときの動作を行う(タイトルバーにbind)
+	// menu.titlebarup()    タイトルバーでボタンを離したときの動作を行う(documentにbind)
+	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
 	//---------------------------------------------------------------------------
 	titlebarfunc : function(bar){
 		bar.onmousedown = ee.ebinder(this, this.titlebardown);
-		bar.onmouseup   = ee.ebinder(this, this.titlebarup);
-		bar.onmouseout  = ee.ebinder(this, this.titlebarout);
-		bar.onmousemove = ee.ebinder(this, this.titlebarmove);
-
 		ee(bar).unselectable().el;
 	},
 
 	titlebardown : function(e){
 		var pop = ee.getSrcElement(e).parentNode;
-		this.isptitle = 1;
+		this.movingpop = pop;
 		this.offset.x = ee.pageX(e) - parseInt(pop.style.left);
 		this.offset.y = ee.pageY(e) - parseInt(pop.style.top);
 	},
-	titlebarup   : function(e){
-		this.isptitle = 0;
-	},
-	titlebarout  : function(e){
-		var pop = ee.getSrcElement(e).parentNode;
-		if(!this.insideOf(pop, e)){ this.isptitle = 0;}
+	titlebarup : function(e){
+		var pop = this.movingpop;
+		if(!!pop){
+			this.movingpop = "";
+		}
 	},
 	titlebarmove : function(e){
-		var pop = ee.getSrcElement(e).parentNode;
-		if(pop && this.isptitle){
+		var pop = this.movingpop;
+		if(!!pop){
 			pop.style.left = ee.pageX(e) - this.offset.x;
 			pop.style.top  = ee.pageY(e) - this.offset.y;
 		}
@@ -9250,14 +9269,14 @@ PBase.prototype = {
 		this.numparent.oncontextmenu = function(){ return false;};
 
 		if(first){
-			document.onkeydown  = ee.kcbinder(kc.e_keydown);
-			document.onkeyup    = ee.kcbinder(kc.e_keyup);
-			document.onkeypress = ee.kcbinder(kc.e_keypress);
+			document.onkeydown  = ee.ebinder(kc, kc.e_keydown);
+			document.onkeyup    = ee.ebinder(kc, kc.e_keyup);
+			document.onkeypress = ee.ebinder(kc, kc.e_keypress);
 		}
 	},
 	initSilverlight : function(sender){
-		sender.AddEventListener("KeyDown", ee.kcbinder(kc.e_SLkeydown));
-		sender.AddEventListener("KeyUp",   ee.kcbinder(kc.e_SLkeyup));
+		sender.AddEventListener("KeyDown", ee.ebinder(kc, kc.e_SLkeydown));
+		sender.AddEventListener("KeyUp",   ee.ebinder(kc, kc.e_SLkeyup));
 	},
 
 	//---------------------------------------------------------------------------

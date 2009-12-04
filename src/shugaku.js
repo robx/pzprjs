@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.2.3
+// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.2.3p1
 //
 Puzzles.shugaku = function(){ };
 Puzzles.shugaku.prototype = {
@@ -79,14 +79,14 @@ Puzzles.shugaku.prototype = {
 				if(cc==-1 || bd.QnC(cc)!=-1){ return;}
 				this.mouseCell = cc;
 				this.inputData = 1;
-				this.firstPos = new Pos(this.inputX, this.inputY);
+				this.firstPos = this.inputPos.clone();
 				pc.paint(bd.cell[cc].cx, bd.cell[cc].cy, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
 			}
 			else{
 				var old = this.inputData;
 				if(this.mouseCell==cc){ this.inputData = 1;}
 				else{
-					var mx=this.inputX-this.firstPos.x, my=this.inputY-this.firstPos.y;
+					var mx=this.inputPos.x-this.firstPos.x, my=this.inputPos.y-this.firstPos.y;
 					if     (cc==-1){ /* nop */ }
 					else if(mx-my>0 && mx+my>0){ this.inputData = (bd.QnC(bd.rt(this.mouseCell))==-1?5:6);}
 					else if(mx-my>0 && mx+my<0){ this.inputData = (bd.QnC(bd.up(this.mouseCell))==-1?2:6);}

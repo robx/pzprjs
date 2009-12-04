@@ -163,8 +163,8 @@ Puzzles.triplace.prototype = {
 		menu.ex.adjustSpecial  = menu.ex.adjustQues51_1;
 		menu.ex.adjustSpecial2 = menu.ex.adjustQues51_2;
 
-		tc.getTCX = function(){ return (tc.cursolx-1)>>1;};
-		tc.getTCY = function(){ return (tc.cursoly-1)>>1;};
+		tc.getTCX = function(){ return tc.cursolx>>1;};
+		tc.getTCY = function(){ return tc.cursoly>>1;};
 		tc.targetdir = 2;
 	},
 
