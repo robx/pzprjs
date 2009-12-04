@@ -53,9 +53,12 @@ KeyEvent.prototype = {
 				if(this.ca){ this.keyinput(this.ca);}	// 各パズルのルーチンへ
 				this.keyPressed = true;
 			}
+
+			if(this.tcMoved){
+				ee.preventDefault(e);
+				return false;
+			}
 		}
-		ee.preventDefault(e);
-		return false;
 	},
 	e_keyup : function(e){
 		if(k.enableKey){
@@ -67,8 +70,6 @@ KeyEvent.prototype = {
 				if(this.ca){ this.keyup(this.ca);}	// 各パズルのルーチンへ
 			}
 		}
-		ee.preventDefault(e);
-		return false;
 	},
 	//(keypressのみ)45は-(マイナス)
 	e_keypress : function(e){
@@ -78,8 +79,6 @@ KeyEvent.prototype = {
 
 			if(this.ca){ this.keyinput(this.ca);}	// 各パズルのルーチンへ
 		}
-		ee.preventDefault(e);
-		return false;
 	},
 
 	//---------------------------------------------------------------------------

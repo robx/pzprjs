@@ -1085,8 +1085,8 @@ Graphic.prototype = {
 	},
 
 	drawTCell : function(x1,y1,x2,y2){
-		if(tc.cursolx < x1*2 || x2*2+2 < tc.cursolx){ return;}
-		if(tc.cursoly < y1*2 || y2*2+2 < tc.cursoly){ return;}
+		if(tc.cursolx < x1*2-2 || x2*2+4 < tc.cursolx){ return;}
+		if(tc.cursoly < y1*2-2 || y2*2+4 < tc.cursoly){ return;}
 
 		var px = k.p0.x + mf((tc.cursolx-1)*k.cwidth/2);
 		var py = k.p0.y + mf((tc.cursoly-1)*k.cheight/2);
