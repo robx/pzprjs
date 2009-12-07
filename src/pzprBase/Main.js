@@ -1,4 +1,4 @@
-// Main.js v3.2.3p1
+// Main.js v3.2.3p2
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -78,7 +78,7 @@ PBase.prototype = {
 		this.proto = 0;
 
 		puz = new Puzzles[k.puzzleid]();	// パズル固有オブジェクト
-		puz.setting();					// パズル固有の変数設定(デフォルト等)
+		puz.setting();						// パズル固有の変数設定(デフォルト等)
 		if(this.proto){ puz.protoChange();}
 
 		// クラス初期化
@@ -103,6 +103,8 @@ PBase.prototype = {
 		if(!enc.uri.bstr){ this.resize_canvas_onload();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
 
 		if(k.scriptcheck && debug){ debug.testonly_func();}	// テスト用
+
+		if(!!puz.settinglast){ puz.settinglast();}			// パズル固有の後付け変数設定
 	},
 	setEvents : function(first){
 		this.canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
