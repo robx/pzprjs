@@ -1,4 +1,4 @@
-// for_test.js v3.2.3
+// for_test.js v3.2.3p2
 
 k.scriptcheck = true;
 k.EDITOR = true;
@@ -13,7 +13,7 @@ var debug = {
 		document.testform.t2.onclick        = ee.binder(this, this.painteval);
 		document.testform.t3.onclick        = ee.binder(this, this.resizeeval);
 
-		document.testform.filesave.onclick  = function(){ ee('testarea').el.value=''; debug.addTextarea(fio.fileencode(1).replace(/\//g,"\n"));};
+		document.testform.filesave.onclick  = function(){ ee('testarea').el.value=''; debug.setTA(fio.fileencode(1).replace(/\//g,"\n"));};
 		document.testform.fileopen.onclick  = function(){ fio.fileopen(ee('testarea').el.value.split("\n"),1);};
 		document.testform.erasetext.onclick = function(e){ ee('testarea').el.value=''; ee('testdiv').el.innerHTML = '';};
 		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
@@ -49,7 +49,7 @@ var debug = {
 		this.timeeval("resize描画測定",ee.binder(base, base.resize_canvas));
 	},
 	timeeval : function(text,func){
-		this.addTextarea(text);
+		this.addTA(text);
 		var count=0, old = (new Date()).getTime();
 		while((new Date()).getTime() - old < 3000){
 			count++;
@@ -58,7 +58,7 @@ var debug = {
 		}
 		var time = (new Date()).getTime() - old;
 
-		this.addTextarea("測定データ "+time+"ms / "+count+"回<BR>"+"平均時間   "+(time/count)+"ms")
+		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
 	},
 
 	loadperf : function(){
@@ -405,6 +405,8 @@ var debug = {
 		},mint);
 	},
 	taenable : true,
+	addTA : function(str){ document.testform.testarea.value += (str+"\n");},
+	setTA : function(str){ document.testform.testarea.value  = str;},
 	addTextarea : function(str){ ee('testdiv').appendHTML(str).appendBR();},
 
 	qsubf : true,
