@@ -1,4 +1,4 @@
-// Encode.js v3.2.3
+// Encode.js v3.2.3p2
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -146,7 +146,7 @@ Encode.prototype = {
 	// enc.checkpflag()   pflagに指定した文字列が含まれているか調べる
 	//---------------------------------------------------------------------------
 	pzlinput : function(){
-		if(k.puzzleid=="icebarn" && bd.arrowin==-1 && bd.arrowout==-1){
+		if((k.puzzleid=="icebarn" || k.puzzleid=="icelom") && bd.arrowin==-1 && bd.arrowout==-1){
 			bd.inputarrowin (0 + bd.bdinside, 1);
 			bd.inputarrowout(2 + bd.bdinside, 1);
 		}
