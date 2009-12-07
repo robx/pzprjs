@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 因子の部屋版 factors.js v3.2.3
+// パズル固有スクリプト部 因子の部屋版 factors.js v3.2.3p2
 //
 Puzzles.factors = function(){ };
 Puzzles.factors.prototype = {
@@ -54,7 +54,7 @@ Puzzles.factors.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.editmode) this.borderinput = this.inputborder();
+			if(k.editmode) this.inputborder();
 			if(k.playmode){
 				if(!kp.enabled()){ this.inputqnum();}
 				else{ kp.display();}

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 波及効果版 ripple.js v3.2.3
+// パズル固有スクリプト部 波及効果版 ripple.js v3.2.3p2
 //
 Puzzles.ripple = function(){ };
 Puzzles.ripple.prototype = {
@@ -54,7 +54,7 @@ Puzzles.ripple.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.editmode) this.borderinput = this.inputborder();
+			if(k.editmode) this.inputborder();
 			if(k.playmode){
 				if(!kp.enabled()){ this.inputqnum();}
 				else{ kp.display();}
