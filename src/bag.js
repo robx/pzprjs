@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バッグ版 bag.js v3.2.3
+// パズル固有スクリプト部 バッグ版 bag.js v3.2.3p2
 //
 Puzzles.bag = function(){ };
 Puzzles.bag.prototype = {
@@ -45,7 +45,31 @@ Puzzles.bag.prototype = {
 						   " Left Button Drag to input lines, Right Click to input background color (lime or yellow) of the cell.");
 		base.setFloatbgcolor("rgb(160, 0, 0)");
 	},
-	menufix : function(){ },
+	menufix : function(){
+		pp.addCheck('bgcolor','setting',false, '背景色入力', 'Background-color');
+		pp.setLabel('bgcolor', 'セルの中央をクリックした時に背景色の入力を有効にする', 'Enable to Input BGColor When the Center of the Cell is Clicked');
+
+		menu.ex.modechange = function(num){
+			k.editmode = (num==1);
+			k.playmode = (num==3);
+			kc.prev = -1;
+			ans.errDisp=true;
+			bd.errclear();
+			if(kp.ctl[1].enable || kp.ctl[3].enable){ pp.funcs.keypopup();}
+			tc.setAlign();
+			pc.paintAll();
+			// ここまで元と同じ
+
+			ee('ck_bgcolor').el.disabled    = (num===3?"":"true");
+			ee('cl_bgcolor').el.style.color = (num===3?"black":"silver");
+		};
+	},
+	settinglast : function(){
+		if(k.editmode){
+			ee('ck_bgcolor').el.disabled    = "true";
+			ee('cl_bgcolor').el.style.color = "silver";
+		}
+	},
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
@@ -57,30 +81,48 @@ Puzzles.bag.prototype = {
 				else{ kp.display();}
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputborderans();
-				else if(this.btn.Right) this.inputBGcolor();
+				if(!pp.getVal('bgcolor') || !this.inputBGcolor0()){
+					if(this.btn.Left) this.inputborderans();
+					else if(this.btn.Right) this.inputBGcolor(true);
+				}
+				else{ this.inputBGcolor(false);}
 			}
 		};
 		mv.mouseup = function(){ };
 		mv.mousemove = function(){
 			if(k.playmode){
-				if(this.btn.Left) this.inputborderans();
-				else if(this.btn.Right) this.inputBGcolor();
+				if(!pp.getVal('bgcolor') || this.inputData<10){
+					if(this.btn.Left) this.inputborderans();
+					else if(this.btn.Right) this.inputBGcolor(true);
+				}
+				else{ this.inputBGcolor(false);}
 			}
 		};
-		mv.inputBGcolor = function(){
+
+		mv.inputBGcolor0 = function(){
+			var pos = this.crosspos(0.25);
+			return ((pos.x&1) && (pos.y&1));
+		};
+		mv.inputBGcolor = function(isnormal){
 			var cc = this.cellid();
 			if(cc==-1 || cc==this.mouseCell){ return;}
 			if(this.inputData==-1){
-				if     (bd.QsC(cc)==0){ this.inputData=1;}
-				else if(bd.QsC(cc)==1){ this.inputData=2;}
-				else                  { this.inputData=0;}
+				if(isnormal || this.btn.Left){
+					if     (bd.cell[cc].qsub===0){ this.inputData=11;}
+					else if(bd.cell[cc].qsub===1){ this.inputData=12;}
+					else                         { this.inputData=10;}
+				}
+				else{
+					if     (bd.cell[cc].qsub===0){ this.inputData=12;}
+					else if(bd.cell[cc].qsub===1){ this.inputData=10;}
+					else                         { this.inputData=11;}
+				}
 			}
-			bd.sQsC(cc, this.inputData);
+			bd.sQsC(cc, this.inputData-10);
+			var cx=bd.cell[cc].cx, cy=bd.cell[cc].cy;
+			pc.paint(cx,cy,cx+1,cy+1);
 
 			this.mouseCell = cc; 
-
-			pc.paintCell(cc);
 		};
 
 		// キーボード入力系
