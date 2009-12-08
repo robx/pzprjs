@@ -179,34 +179,37 @@ PBase.prototype = {
 	// base.resetInfo()            AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
 	//---------------------------------------------------------------------------
 	resize_canvas_only : function(){
-		var wwidth = ee.windowWidth();
-		k.p0 = new Pos(k.def_psize, k.def_psize);
-
-		// セルのサイズの決定
+		var wwidth = ee.windowWidth()-6;	//  margin/borderがあるので、適当に引いておく
+		var cols = k.qcols+(2*k.def_psize/k.def_csize) + k.isextendcell;
 		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[k.widthmode];
-		var ci0 = Math.round((wwidth-k.p0.x*2)/(k.def_csize*cratio)*0.75);
-		var ci1 = Math.round((wwidth-k.p0.x*2)/(k.def_csize*cratio));
-		var ci2 = Math.round((wwidth-k.p0.x*2)/(k.def_csize)*2.25);
 
-		if(k.qcols < ci0){				// 特に縮小しないとき
-			k.cwidth = k.cheight = mf(k.def_csize*cratio);
-			ee('main').el.style.width = '80%';
+		var ci = [99, 99, 99], ws = [0.80, 0.80, 0.96], cr = [cratio, cratio*0.75, 0.40];
+		for(var i=0;i<3;i++){ ci[i]=(wwidth*ws[i])/(k.def_csize*cr[i]);}
+
+		var mwidth = wwidth*(ws[0]*16/15)-4; // margin/borderがあるので、適当に引いておく
+
+		if(cols < ci[0]){				// 特に縮小が必要ない場合
+			mwidth = wwidth*(ws[0]*16/15)-4;
+			k.cwidth = k.cheight = k.def_csize;
+			k.p0.x = k.p0.y = k.def_psize;
 		}
-		else if(k.qcols < ci1){			// ウィンドウの幅75%に入る場合 フォントのサイズは3/4まで縮めてよい
-			k.cwidth = k.cheight = mf(k.def_csize*cratio*(1-0.25*((k.qcols-ci0)/(ci1-ci0))));
+		else if(cols < ci[1]){			// mainのデフォルト幅には入る場合
+			mwidth = wwidth*(ws[1]*16/15)-4;
+			k.cwidth = k.cheight = mf(mwidth/cols);
 			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-			ee('main').el.style.width = '80%';
 		}
-		else if(k.qcols < ci2){			// mainのtableを広げるとき
-			k.cwidth = k.cheight = mf(k.def_csize*cratio*(0.75-0.35*((k.qcols-ci1)/(ci2-ci1))));
+		else if(cols < ci[2]){			// mainの幅を広げる必要がある場合
+			var ws_i_ = ws[1]-(ws[1]-ws[2])*((k.qcols-ci[1])/(ci[2]-ci[1]));
+			mwidth = wwidth*(ws_i_*16/15)-4;
+			k.cwidth = k.cheight = mf(mwidth/cols);
 			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-			ee('main').el.style.width = ""+(k.p0.x*2+k.qcols*k.cwidth+12)+"px";
 		}
-		else{							// 標準サイズの40%にするとき(自動調整の下限)
-			k.cwidth = k.cheight = mf(k.def_csize*0.4);
-			k.p0 = new Pos(k.def_psize*0.4, k.def_psize*0.4);
-			ee('main').el.style.width = '96%';
+		else{							// 標準サイズの40%にする場合(自動調整の下限)
+			mwidth = wwidth*(ws[2]*16/15)-4;
+			k.cwidth = k.cheight = mf(k.def_csize*cr[2]);
+			k.p0.x = k.p0.y = k.def_psize*0.4;
 		}
+		ee('main').el.style.width = ''+mf(mwidth)+'px';
 
 		// Canvasのサイズ変更
 		this.canvas.width  = k.p0.x*2 + k.qcols*k.cwidth;
