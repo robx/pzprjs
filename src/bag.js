@@ -40,7 +40,7 @@ Puzzles.bag.prototype = {
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
-		base.setTitle("バッグ", "BAG");
+		base.setTitle("バッグ", "BAG (Corral)");
 		base.setExpression("　左ドラッグで線が、右クリックでセルの背景色(緑/黄色)が入力できます。",
 						   " Left Button Drag to input lines, Right Click to input background color (lime or yellow) of the cell.");
 		base.setFloatbgcolor("rgb(160, 0, 0)");
@@ -64,7 +64,7 @@ Puzzles.bag.prototype = {
 			ee('cl_bgcolor').el.style.color = (num===3?"black":"silver");
 		};
 	},
-	settinglast : function(){
+	finalfix : function(){
 		if(k.editmode){
 			ee('ck_bgcolor').el.disabled    = "true";
 			ee('cl_bgcolor').el.style.color = "silver";

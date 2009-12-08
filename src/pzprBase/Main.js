@@ -104,7 +104,7 @@ PBase.prototype = {
 
 		if(k.scriptcheck && debug){ debug.testonly_func();}	// テスト用
 
-		if(!!puz.settinglast){ puz.settinglast();}			// パズル固有の後付け変数設定
+		if(!!puz.finalfix){ puz.finalfix();}					// パズル固有の後付け設定
 	},
 	setEvents : function(first){
 		this.canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);

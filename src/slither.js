@@ -66,7 +66,7 @@ Puzzles.slither.prototype = {
 			ee('cl_bgcolor').el.style.color = (num==3?"black":"silver");
 		};
 	},
-	settinglast : function(){
+	finalfix : function(){
 		if(k.editmode){
 			ee('ck_bgcolor').el.disabled    = "true";
 			ee('cl_bgcolor').el.style.color = "silver";
