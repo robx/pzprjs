@@ -1,30 +1,30 @@
-pzprBase.js v3.2.3p1 contents
+pzprBase.js v3.2.3p2 contents
 
 global.js      v3.2.3p1
 Board.js       v3.2.3p1
-Graphic.js     v3.2.3p1
+Graphic.js     v3.2.3p2
 MouseInput.js  v3.2.3p1
 KeyInput.js    v3.2.3p1
-Encode.js      v3.2.3
+Encode.js      v3.2.3p2
 Filesys.js     v3.2.3
 Answer.js      v3.2.3
 Undo.js        v3.2.3
 Menu.js        v3.2.3p1
 MenuExec.js    v3.2.3
 pzprUtil.js    v3.2.3
-Main.js        v3.2.3p1
+Main.js        v3.2.3p2
 
 ayeheya.js     v3.2.3
-bag.js         v3.2.3
+bag.js         v3.2.3p2
 barns.js       v3.2.3
 bdblock.js     v3.2.3
 bonsan.js      v3.2.3
 bosanowa.js    v3.2.3
 chocona.js     v3.2.3
-cojun.js       v3.2.3
+cojun.js       v3.2.3p2
 country.js     v3.2.3
 creek.js       v3.2.3
-factors.js     v3.2.3
+factors.js     v3.2.3p2
 fillmat.js     v3.2.3
 fillomino.js   v3.2.3
 firefly.js     v3.2.3
@@ -34,7 +34,8 @@ hashikake.js   v3.2.3
 heyawake.js    v3.2.3
 hitori.js      v3.2.3
 icebarn.js     v3.2.3
-ichimaga.js    v3.2.3
+icelom.js      v3.2.3p2
+ichimaga.js    v3.2.3p2
 kaero.js       v3.2.3
 kakuro.js      v3.2.3p1
 kakuru.js      v3.2.3
@@ -62,14 +63,14 @@ paintarea.js   v3.2.3
 pipelink.js    v3.2.3
 reflect.js     v3.2.3
 renban.js      v3.2.3
-ripple.js      v3.2.3
+ripple.js      v3.2.3p2
 shakashaka.js  v3.2.3p1
 shikaku.js     v3.2.3
 shimaguni.js   v3.2.3
 shugaku.js     v3.2.3p1
 shwolf.js      v3.2.3
 slalom.js      v3.2.3p1
-slither.js     v3.2.3
+slither.js     v3.2.3p2
 snakes.js      v3.2.3
 sudoku.js      v3.2.3
 sukoro.js      v3.2.3
