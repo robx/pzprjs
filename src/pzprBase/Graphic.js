@@ -1,4 +1,4 @@
-// Graphic.js v3.2.3p2
+// Graphic.js v3.2.4
 
 //---------------------------------------------------------------------------
 // šGraphicƒNƒ‰ƒX Canvas‚É•`‰æ‚·‚é
@@ -1504,7 +1504,7 @@ Graphic.prototype = {
 	},
 	dispnumCross : function(id){
 		var obj = bd.cross[id];
-		if(obj.qnum>0||(obj.qnum===0&&k.dispzero===1)){ this.hideEL(obj.numobj); return;}
+		if(obj.qnum<0||(obj.qnum===0&&k.dispzero!==1)){ this.hideEL(obj.numobj); return;}
 		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 
 		var text  = ""+obj.qnum;
@@ -1514,7 +1514,7 @@ Graphic.prototype = {
 	},
 	dispnumBorder : function(id){
 		var obj = bd.border[id];
-		if(obj.qnum>0||(obj.qnum===0&&k.dispzero===1)){ this.hideEL(obj.numobj); return;}
+		if(obj.qnum<0||(obj.qnum===0&&k.dispzero!==1)){ this.hideEL(obj.numobj); return;}
 		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 
 		var text  = ""+obj.qnum;
