@@ -1,4 +1,4 @@
-// Main.js v3.2.3p2
+// Main.js v3.2.4
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -12,7 +12,7 @@ PBase = function(){
 	this.puzzlename   = { ja:'' ,en:''};
 	this.canvas       = null;	// HTMLソースのCanvasを示すエレメント
 	this.numparent    = null;	// 'numobj_parent'を示すエレメント
-	this.onresizenow  = false;	// resize中かどうか
+	this.resizetimer  = null;	// resizeタイマー
 	this.initProcess  = true;	// 初期化中かどうか
 };
 PBase.prototype = {
@@ -180,40 +180,39 @@ PBase.prototype = {
 	//---------------------------------------------------------------------------
 	resize_canvas_only : function(){
 		var wwidth = ee.windowWidth()-6;	//  margin/borderがあるので、適当に引いておく
-		var cols = k.qcols+(2*k.def_psize/k.def_csize) + k.isextendcell;
+		var cols   = k.qcols+(2*k.def_psize/k.def_csize) + k.isextendcell; // canvasの横幅がセル何個分に相当するか
+		var rows   = k.qrows+(2*k.def_psize/k.def_csize) + k.isextendcell; // canvasの縦幅がセル何個分に相当するか
+
 		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[k.widthmode];
+		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
+		ci[0] = (wwidth*ws.base )/(k.def_csize*cr.base );
+		ci[1] = (wwidth*ws.limit)/(k.def_csize*cr.limit);
 
-		var ci = [99, 99, 99], ws = [0.80, 0.80, 0.96], cr = [cratio, cratio*0.75, 0.40];
-		for(var i=0;i<3;i++){ ci[i]=(wwidth*ws[i])/(k.def_csize*cr[i]);}
+		var mwidth = wwidth*ws.base-4; // margin/borderがあるので、適当に引いておく
 
-		var mwidth = wwidth*(ws[0]*16/15)-4; // margin/borderがあるので、適当に引いておく
+		// 特に縮小が必要ない場合
+		if(cols < ci[0]){
+			mwidth = wwidth*ws.base-4;
+			k.cwidth = k.cheight = mf(k.def_csize*cr.base);
+		}
+		// base～limit間でサイズを自動調節する場合
+		else if(cols < ci[1]){
+			var ws_tmp = ws.base+(ws.limit-ws.base)*((k.qcols-ci[0])/(ci[1]-ci[0]));
+			mwidth = wwidth*ws_tmp-4;
+			k.cwidth = k.cheight = mf(mwidth/cols); // 外枠ぎりぎりにする
+		}
+		// 自動調整の下限値を超える場合
+		else{
+			mwidth = wwidth*ws.limit-4;
+			k.cwidth = k.cheight = mf(k.def_csize*cr.limit);
+		}
 
-		if(cols < ci[0]){				// 特に縮小が必要ない場合
-			mwidth = wwidth*(ws[0]*16/15)-4;
-			k.cwidth = k.cheight = k.def_csize;
-			k.p0.x = k.p0.y = k.def_psize;
-		}
-		else if(cols < ci[1]){			// mainのデフォルト幅には入る場合
-			mwidth = wwidth*(ws[1]*16/15)-4;
-			k.cwidth = k.cheight = mf(mwidth/cols);
-			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-		}
-		else if(cols < ci[2]){			// mainの幅を広げる必要がある場合
-			var ws_i_ = ws[1]-(ws[1]-ws[2])*((k.qcols-ci[1])/(ci[2]-ci[1]));
-			mwidth = wwidth*(ws_i_*16/15)-4;
-			k.cwidth = k.cheight = mf(mwidth/cols);
-			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-		}
-		else{							// 標準サイズの40%にする場合(自動調整の下限)
-			mwidth = wwidth*(ws[2]*16/15)-4;
-			k.cwidth = k.cheight = mf(k.def_csize*cr[2]);
-			k.p0.x = k.p0.y = k.def_psize*0.4;
-		}
+		// mainのサイズ変更
 		ee('main').el.style.width = ''+mf(mwidth)+'px';
 
 		// Canvasのサイズ変更
-		this.canvas.width  = k.p0.x*2 + k.qcols*k.cwidth;
-		this.canvas.height = k.p0.y*2 + k.qrows*k.cheight;
+		this.canvas.width  = mf((cols-k.isextendcell)*k.cwidth );
+		this.canvas.height = mf((rows-k.isextendcell)*k.cheight);
 
 		// VML使う時に、Canvas外の枠線が消えてしまうので残しておきます.
 		if(g.vml){
@@ -222,7 +221,9 @@ PBase.prototype = {
 			fc.style.height = ''+this.canvas.clientHeight + 'px';
 		}
 
-		// extendxell==1の時は上下の間隔を広げる (extendxell==2はdef_psizeで調整)
+		// 盤面のセルID:0が描画される位置の設定
+		k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
+		// extendxell==1の時は位置をずらす (extendxell==2はdef_psizeで調整)
 		if(k.isextendcell==1){
 			k.p0.x += mf(k.cwidth*0.45);
 			k.p0.y += mf(k.cheight*0.45);
@@ -247,12 +248,8 @@ PBase.prototype = {
 		else{ uuCanvas.ready(ee.binder(this, this.resize_canvas));}
 	},
 	onresize_func : function(){
-		if(this.onresizenow){ return;}
-		this.onresizenow = true;
-
-		this.resize_canvas();
-
-		this.onresizenow = false;
+		if(this.resizetimer){ clearTimeout(this.resizetimer);}
+		this.resizetimer = setTimeout(ee.binder(this, this.resize_canvas),250);
 	},
 
 	resetInfo : function(iserase){
