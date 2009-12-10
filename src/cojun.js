@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 コージュン版 cojun.js v3.2.3
+// パズル固有スクリプト部 コージュン版 cojun.js v3.2.3p2
 //
 Puzzles.cojun = function(){ };
 Puzzles.cojun.prototype = {
@@ -55,7 +55,7 @@ Puzzles.cojun.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.playmode) this.borderinput = this.inputborder();
+			if(k.playmode) this.inputborder();
 			if(k.editmode){
 				if(!kp.enabled()){ this.inputqnum();}
 				else{ kp.display();}

@@ -5,8 +5,8 @@
  * written in JavaScript.
  * 
  * @author  happa.
- * @version v3.2.3p1
- * @date    2009-12-05
+ * @version v3.2.3p2
+ * @date    2009-12-08
  * 
  * This script uses following library.
  *  uuCanvas.js (version 1.0)
@@ -20,7 +20,7 @@
  * 
  */
 
-var pzprversion="v3.2.3p1";
+var pzprversion="v3.2.3p2";
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -1545,6 +1545,8 @@ Graphic = function(){
 	var numobj_attr = {className:'divnum', unselectable:'on'};
 	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', numobj_attr, null, null);
 
+	var isdrawBC = false, isdrawBD = false;
+
 	this.setFunctions();
 };
 Graphic.prototype = {
@@ -1718,7 +1720,7 @@ Graphic.prototype = {
 	drawBlackCells : function(x1,y1,x2,y2){
 		var header = "c_fullb_";
 
-		if(!k.br.IE && (!k.isborder || k.puzzleid=='yajirin' || k.puzzleid=='slalom')){ x1--; y1--; x2++; y2++;}
+		if(!k.br.IE && this.isdrawBC && !this.isdrawBD){ x1--; y1--; x2++; y2++;}
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
@@ -1730,6 +1732,7 @@ Graphic.prototype = {
 			else{ this.vhide(header+c); continue;}
 		}
 		this.vinc();
+		this.isdrawBC = true;
 	},
 	// 'qans'用
 	setCellColor : function(c){
@@ -1909,33 +1912,36 @@ Graphic.prototype = {
 		var lw = (mf(k.cwidth/24)>=1?mf(k.cwidth/24):1);	//LineWidth
 		var lm = mf((lw-1)/2);								//LineMargin
 
+		if(!k.br.IE && this.isdrawBC && !this.isdrawBD){ x1--; y1--; x2++; y2++;}
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 
-			if     (bd.cell[c].qans ===1){ g.fillStyle = this.BCell_fontcolor;}
-			else if(bd.cell[c].error===1){ g.fillStyle = this.fontErrcolor;}
-			else                         { g.fillStyle = this.fontcolor;}
+			if(bd.cell[c].qnum!==-1 && (bd.cell[c].qnum!==-2||k.isDispHatena)){
+				var ax=px=bd.cell[c].px, ay=py=bd.cell[c].py, dir = bd.cell[c].direc;
 
-			var dir = bd.cell[c].direc;
-			if(bd.cell[c].qnum!==-1 && (bd.cell[c].qnum!==-2||k.isDispHatena) && dir!=0){
-				var px=bd.cell[c].px, py=bd.cell[c].py;
+				if     (bd.cell[c].qans ===1){ g.fillStyle = this.BCell_fontcolor;}
+				else if(bd.cell[c].error===1){ g.fillStyle = this.fontErrcolor;}
+				else                         { g.fillStyle = this.fontcolor;}
 
+				// 矢印の描画(上下向き)
 				if(dir===k.UP||dir===k.DN){
-					px+=(k.cwidth-mf(ls*1.5)-lm); py+=(ls+1);
-					if(this.vnop(headers[0]+c,1)){ g.fillRect(px, py, lw, ll);}
-					px+=mf(lw/2);
+					// 矢印の線の描画
+					ax+=(k.cwidth-mf(ls*1.5)-lm); ay+=(ls+1);
+					if(this.vnop(headers[0]+c,1)){ g.fillRect(ax, ay, lw, ll);}
+					ax+=mf(lw/2);
 
+					// 矢じりの描画
 					if(dir===k.UP){
 						if(this.vnop(headers[1]+c,1)){
-							this.inputPath([px,py     ,0,0 ,-ll/6, ll/3 ,ll/6, ll/3], true);
+							this.inputPath([ax,ay     ,0,0 ,-ll/6, ll/3 ,ll/6, ll/3], true);
 							g.fill();
 						}
 					}
 					else{ this.vhide(headers[1]+c);}
 					if(dir===k.DN){
 						if(this.vnop(headers[2]+c,1)){
-							this.inputPath([px,py+ll  ,0,0 ,-ll/6,-ll/3 ,ll/6,-ll/3], true);
+							this.inputPath([ax,ay+ll  ,0,0 ,-ll/6,-ll/3 ,ll/6,-ll/3], true);
 							g.fill();
 						}
 					}
@@ -1943,41 +1949,57 @@ Graphic.prototype = {
 				}
 				else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c]);}
 
+				// 矢印の描画(左右向き)
 				if(dir===k.LT||dir===k.RT){
-					px+=(ls+1); py+=(mf(ls*1.5)-lm);
-					if(this.vnop(headers[3]+c,1)){ g.fillRect(px, py, ll, lw);}
-					py+=mf(lw/2);
+					// 矢印の線の描画
+					ax+=(ls+1); ay+=(mf(ls*1.5)-lm);
+					if(this.vnop(headers[3]+c,1)){ g.fillRect(ax, ay, ll, lw);}
+					ay+=mf(lw/2);
 
+					// 矢じりの描画
 					if(dir===k.LT){
 						if(this.vnop(headers[4]+c,1)){
-							this.inputPath([px   ,py  ,0,0 , ll/3,-ll/6 , ll/3,ll/6], true);
+							this.inputPath([ax   ,ay  ,0,0 , ll/3,-ll/6 , ll/3,ll/6], true);
 							g.fill();
 						}
 					}
 					else{ this.vhide(headers[4]+c);}
 					if(dir===k.RT){
 						if(this.vnop(headers[5]+c,1)){
-							this.inputPath([px+ll,py  ,0,0 ,-ll/3,-ll/6 ,-ll/3,ll/6], true);
+							this.inputPath([ax+ll,ay  ,0,0 ,-ll/3,-ll/6 ,-ll/3,ll/6], true);
 							g.fill();
 						}
 					}
 					else{ this.vhide(headers[5]+c);}
 				}
 				else{ this.vhide([headers[3]+c, headers[4]+c, headers[5]+c]);}
-			}
-			else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c, headers[4]+c, headers[5]+c]);}
 
-			this.dispnumCell(c);
+				// 数字の描画
+				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
+				var num = bd.getNum(c), text = (num>=0 ? ""+num : "?");
+				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
+				var color = g.fillStyle;
+
+				var type=1;
+				if     (dir===k.UP||dir===k.DN){ type=6; fontratio *= 0.85;}
+				else if(dir===k.LT||dir===k.RT){ type=7; fontratio *= 0.85;}
+
+				this.dispnum(bd.cell[c].numobj, type, text, fontratio, color, px, py);
+			}
+			else{
+				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c, headers[4]+c, headers[5]+c]);
+				this.hideEL(bd.cell[c].numobj);
+			}
 		}
 		this.vinc();
 	},
 	drawQuesHatenas : function(x1,y1,x2,y2){
 		var clist = this.cellinside(x1,y1,x2,y2);
-		for(var id=0;id<clist.length;id++){
-			var obj = bd.cell[id];
-			if(bd.cell[id].ques!==-2){ this.hideEL(obj.numobj); continue;}
+		for(var i=0;i<clist.length;i++){
+			var obj = bd.cell[clist[i]];
+			if(obj.ques!==-2){ this.hideEL(obj.numobj); continue;}
 			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-			var color = (bd.cell[id].error===1 ? this.fontErrcolor : this.fontcolor);
+			var color = (obj.error===1 ? this.fontErrcolor : this.fontcolor);
 			this.dispnum(obj.numobj, 1, "?", 0.8, color, obj.px, obj.py);
 		}
 		this.vinc();
@@ -2056,6 +2078,8 @@ Graphic.prototype = {
 
 			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, bd.isBorder(id));
 		}
+		this.vinc();
+		this.isdrawBD = true;
 	},
 	drawBordersAsLine : function(x1,y1,x2,y2){
 		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
@@ -2915,37 +2939,37 @@ Graphic.prototype = {
 		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 
 		var type = (!k.isDispNumUL ? 1 : 5);
-		if(bd.cell[id].ques>=2 && bd.cell[id].ques<=5){ type=bd.cell[id].ques;}
+		if(obj.ques>=2 && obj.ques<=5){ type=obj.ques;}
 
 		var num = bd.getNum(id);
 		var text = (num>=0 ? ""+num : "?");
 
 		var fontratio = 0.45;
 		if(type===1){ fontratio = (num<10?0.8:(num<100?0.7:0.55));}
-		if(k.isArrowNumber===1){
-			var dir = bd.cell[id].direc;
-			if(dir!==0){ fontratio *= 0.85;}
-			if     (dir===k.UP||dir===k.DN){ type=6;}
-			else if(dir===k.LT||dir===k.RT){ type=7;}
-		}
 
-		this.dispnum(obj.numobj, type, text, fontratio, this.getNumberColor(id), obj.px, obj.py);
+		var color = this.getNumberColor(id);
+
+		this.dispnum(obj.numobj, type, text, fontratio, color, obj.px, obj.py);
 	},
 	dispnumCross : function(id){
 		var obj = bd.cross[id];
-		if(bd.cross[id].qnum>0||(bd.cross[id].qnum===0&&k.dispzero===1)){
-			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-			this.dispnum(obj.numobj, 101, ""+bd.cross[id].qnum, 0.6 ,this.fontcolor, obj.px, obj.py);
-		}
-		else{ this.hideEL(obj.numobj);}
+		if(obj.qnum>0||(obj.qnum===0&&k.dispzero===1)){ this.hideEL(obj.numobj); return;}
+		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+
+		var text  = ""+obj.qnum;
+		var color = this.fontcolor;
+
+		this.dispnum(obj.numobj, 101, text, 0.6, color, obj.px, obj.py);
 	},
 	dispnumBorder : function(id){
 		var obj = bd.border[id];
-		if(bd.border[id].qnum>0||(bd.border[id].qnum===0&&k.dispzero===1)){
-			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-			this.dispnum(obj.numobj, 101, ""+bd.border[id].qnum, 0.45 ,this.borderfontcolor, obj.px, obj.py);
-		}
-		else{ this.hideEL(obj.numobj);}
+		if(obj.qnum>0||(obj.qnum===0&&k.dispzero===1)){ this.hideEL(obj.numobj); return;}
+		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+
+		var text  = ""+obj.qnum;
+		var color = this.borderfontcolor;
+
+		this.dispnum(obj.numobj, 101, text, 0.45, color, obj.px, obj.py);
 	},
 
 	//---------------------------------------------------------------------------
@@ -4492,7 +4516,7 @@ Encode.prototype = {
 	// enc.checkpflag()   pflagに指定した文字列が含まれているか調べる
 	//---------------------------------------------------------------------------
 	pzlinput : function(){
-		if(k.puzzleid=="icebarn" && bd.arrowin==-1 && bd.arrowout==-1){
+		if((k.puzzleid=="icebarn" || k.puzzleid=="icelom") && bd.arrowin==-1 && bd.arrowout==-1){
 			bd.inputarrowin (0 + bd.bdinside, 1);
 			bd.inputarrowout(2 + bd.bdinside, 1);
 		}
@@ -9231,7 +9255,7 @@ PBase.prototype = {
 		this.proto = 0;
 
 		puz = new Puzzles[k.puzzleid]();	// パズル固有オブジェクト
-		puz.setting();					// パズル固有の変数設定(デフォルト等)
+		puz.setting();						// パズル固有の変数設定(デフォルト等)
 		if(this.proto){ puz.protoChange();}
 
 		// クラス初期化
@@ -9256,6 +9280,8 @@ PBase.prototype = {
 		if(!enc.uri.bstr){ this.resize_canvas_onload();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
 
 		if(k.scriptcheck && debug){ debug.testonly_func();}	// テスト用
+
+		if(!!puz.finalfix){ puz.finalfix();}					// パズル固有の後付け設定
 	},
 	setEvents : function(first){
 		this.canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
@@ -9330,34 +9356,37 @@ PBase.prototype = {
 	// base.resetInfo()            AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
 	//---------------------------------------------------------------------------
 	resize_canvas_only : function(){
-		var wwidth = ee.windowWidth();
-		k.p0 = new Pos(k.def_psize, k.def_psize);
-
-		// セルのサイズの決定
+		var wwidth = ee.windowWidth()-6;	//  margin/borderがあるので、適当に引いておく
+		var cols = k.qcols+(2*k.def_psize/k.def_csize) + k.isextendcell;
 		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[k.widthmode];
-		var ci0 = Math.round((wwidth-k.p0.x*2)/(k.def_csize*cratio)*0.75);
-		var ci1 = Math.round((wwidth-k.p0.x*2)/(k.def_csize*cratio));
-		var ci2 = Math.round((wwidth-k.p0.x*2)/(k.def_csize)*2.25);
 
-		if(k.qcols < ci0){				// 特に縮小しないとき
-			k.cwidth = k.cheight = mf(k.def_csize*cratio);
-			ee('main').el.style.width = '80%';
+		var ci = [99, 99, 99], ws = [0.80, 0.80, 0.96], cr = [cratio, cratio*0.75, 0.40];
+		for(var i=0;i<3;i++){ ci[i]=(wwidth*ws[i])/(k.def_csize*cr[i]);}
+
+		var mwidth = wwidth*(ws[0]*16/15)-4; // margin/borderがあるので、適当に引いておく
+
+		if(cols < ci[0]){				// 特に縮小が必要ない場合
+			mwidth = wwidth*(ws[0]*16/15)-4;
+			k.cwidth = k.cheight = k.def_csize;
+			k.p0.x = k.p0.y = k.def_psize;
 		}
-		else if(k.qcols < ci1){			// ウィンドウの幅75%に入る場合 フォントのサイズは3/4まで縮めてよい
-			k.cwidth = k.cheight = mf(k.def_csize*cratio*(1-0.25*((k.qcols-ci0)/(ci1-ci0))));
+		else if(cols < ci[1]){			// mainのデフォルト幅には入る場合
+			mwidth = wwidth*(ws[1]*16/15)-4;
+			k.cwidth = k.cheight = mf(mwidth/cols);
 			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-			ee('main').el.style.width = '80%';
 		}
-		else if(k.qcols < ci2){			// mainのtableを広げるとき
-			k.cwidth = k.cheight = mf(k.def_csize*cratio*(0.75-0.35*((k.qcols-ci1)/(ci2-ci1))));
+		else if(cols < ci[2]){			// mainの幅を広げる必要がある場合
+			var ws_i_ = ws[1]-(ws[1]-ws[2])*((k.qcols-ci[1])/(ci[2]-ci[1]));
+			mwidth = wwidth*(ws_i_*16/15)-4;
+			k.cwidth = k.cheight = mf(mwidth/cols);
 			k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-			ee('main').el.style.width = ""+(k.p0.x*2+k.qcols*k.cwidth+12)+"px";
 		}
-		else{							// 標準サイズの40%にするとき(自動調整の下限)
-			k.cwidth = k.cheight = mf(k.def_csize*0.4);
-			k.p0 = new Pos(k.def_psize*0.4, k.def_psize*0.4);
-			ee('main').el.style.width = '96%';
+		else{							// 標準サイズの40%にする場合(自動調整の下限)
+			mwidth = wwidth*(ws[2]*16/15)-4;
+			k.cwidth = k.cheight = mf(k.def_csize*cr[2]);
+			k.p0.x = k.p0.y = k.def_psize*0.4;
 		}
+		ee('main').el.style.width = ''+mf(mwidth)+'px';
 
 		// Canvasのサイズ変更
 		this.canvas.width  = k.p0.x*2 + k.qcols*k.cwidth;

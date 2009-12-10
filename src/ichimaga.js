@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 イチマガ/磁石イチマガ版 ichimaga.js v3.2.3
+// パズル固有スクリプト部 イチマガ/磁石イチマガ版 ichimaga.js v3.2.3p2
 //
 Puzzles.ichimaga = function(){ };
 Puzzles.ichimaga.prototype = {
@@ -148,12 +148,12 @@ Puzzles.ichimaga.prototype = {
 
 			if(k.EDITOR){
 				if     (array[0]=="mag")  { pp.setVal('puztype',2);}
-				else if(array[0]==k.CROSS){ pp.setVal('puztype',3);}
+				else if(array[0]=="cross"){ pp.setVal('puztype',3);}
 				else                      { pp.setVal('puztype',1);}
 			}
 			else{
 				if     (array[0]=="mag")  { base.setTitle("磁石イチマガ","Magnetic Ichimaga");}
-				else if(array[0]==k.CROSS){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
+				else if(array[0]=="cross"){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
 				else                      { base.setTitle("イチマガ","Ichimaga");}
 				document.title = base.gettitle();
 				ee('title2').el.innerHTML = base.gettitle();

@@ -54,7 +54,10 @@ Puzzles.renban.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.editmode) this.borderinput = this.inputborder();
+			if(k.editmode){
+				if     (this.btn.Left)  this.inputborder();
+				else if(this.btn.Right) this.inputQsubLine();
+			}
 			if(k.playmode){
 				if(!kp.enabled()){ this.inputqnum();}
 				else{ kp.display();}
@@ -69,7 +72,10 @@ Puzzles.renban.prototype = {
 			}
 		};
 		mv.mousemove = function(){
-			if(k.editmode && this.btn.Left) this.inputborder();
+			if(k.editmode){
+				if     (this.btn.Left)  this.inputborder();
+				else if(this.btn.Right) this.inputQsubLine();
+			}
 		};
 
 		// キーボード入力系
@@ -86,6 +92,7 @@ Puzzles.renban.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
+		pc.BorderQsubcolor = pc.BorderQuescolor;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -97,6 +104,7 @@ Puzzles.renban.prototype = {
 			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawBorders_renban(x1,y1,x2,y2);
+			this.drawBorderQsubs(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
