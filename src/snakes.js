@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へびいちご版 snakes.js v3.2.3
+// パズル固有スクリプト部 へびいちご版 snakes.js v3.2.4
 //
 Puzzles.snakes = function(){ };
 Puzzles.snakes.prototype = {
@@ -164,6 +164,7 @@ Puzzles.snakes.prototype = {
 
 			this.drawBlackCells(x1,y1,x2,y2);
 			this.drawArrowNumbers(x1-2,y1-2,x2+2,y2+2);
+			this.drawAnswerNumbers(x1-2,y1-2,x2+2,y2+2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
@@ -190,6 +191,17 @@ Puzzles.snakes.prototype = {
 				this.drawBorder1x(2*cx+1,2*cy+2,func(c,dn));
 			}
 			this.vinc();
+		};
+
+		pc.drawAnswerNumbers = function(x1,y1,x2,y2){
+			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i], obj = bd.cell[c];
+				if(obj.qnum===-1 && obj.qans>0){
+					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+					this.dispnum(obj.numobj, 1, ""+obj.qans, 0.8, this.fontanscolor, obj.px, obj.py);
+				}
+			}
 		};
 	},
 
