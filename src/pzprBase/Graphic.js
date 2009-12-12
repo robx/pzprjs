@@ -643,6 +643,7 @@ Graphic.prototype = {
 			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, bd.isBorder(id));
 		}
 		this.vinc();
+		this.addlw = 0;
 	},
 	drawIceBorders : function(x1,y1,x2,y2){
 		g.fillStyle = this.Cellcolor;
@@ -758,6 +759,7 @@ Graphic.prototype = {
 		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 		for(var i=0;i<idlist.length;i++){ this.drawLine1(idlist[i], bd.isLine(idlist[i]));}
 		this.vinc();
+		this.addlw = 0;
 	},
 	drawLine1 : function(id, flag){
 		var vid = "b_line_"+id;
@@ -1504,7 +1506,7 @@ Graphic.prototype = {
 	},
 	dispnumCross : function(id){
 		var obj = bd.cross[id];
-		if(obj.qnum<0||(obj.qnum===0&&k.dispzero!==1)){ this.hideEL(obj.numobj); return;}
+		if(obj.qnum>0||(obj.qnum===0&&k.dispzero===1)){ this.hideEL(obj.numobj); return;}
 		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 
 		var text  = ""+obj.qnum;
@@ -1514,7 +1516,7 @@ Graphic.prototype = {
 	},
 	dispnumBorder : function(id){
 		var obj = bd.border[id];
-		if(obj.qnum<0||(obj.qnum===0&&k.dispzero!==1)){ this.hideEL(obj.numobj); return;}
+		if(obj.qnum>0||(obj.qnum===0&&k.dispzero===1)){ this.hideEL(obj.numobj); return;}
 		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 
 		var text  = ""+obj.qnum;
