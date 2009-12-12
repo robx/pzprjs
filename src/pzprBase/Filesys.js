@@ -8,6 +8,7 @@ FileIO = function(){
 	this.lineseek = 0;
 	this.dataarray = [];
 	this.datastr = "";
+	this.urlstr = "";
 
 	this.db = null;
 	this.dbmgr = null;
@@ -65,6 +66,7 @@ FileIO.prototype = {
 		this.filever = 0;
 		this.sizestr = "";
 		this.datastr = "";
+		this.urlstr = "";
 
 		// ƒƒCƒ“ˆ—
 		if     (type===1){ this.encodeData();}
@@ -82,7 +84,7 @@ FileIO.prototype = {
 
 		// ––”ö‚ÌURL’Ç‰Áˆ—
 		if(type===1){
-			this.datastr += "//" +enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? 0 : 2);
+			this.urlstr = enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? 0 : 2);
 		}
 
 		return this.datastr;

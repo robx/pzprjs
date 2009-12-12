@@ -1,4 +1,4 @@
-// MenuExec.js v3.2.3
+// MenuExec.js v3.2.4
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -109,7 +109,8 @@ MenuExec.prototype = {
 		else if(navigator.platform.indexOf("Mac")!==-1){ document.fileform2.platform.value = "Mac";}
 		else                                           { document.fileform2.platform.value = "Others";}
 
-		document.fileform2.ques.value = fio.fileencode(type);
+		document.fileform2.ques.value   = fio.fileencode(type);
+		document.fileform2.urlstr.value = fio.urlstr;
 
 		document.fileform2.submit();
 	},
