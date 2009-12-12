@@ -68,11 +68,11 @@ MenuExec.prototype = {
 	urloutput : function(e){
 		if(menu.pop){
 			switch(ee.getSrcElement(e).name){
-				case "pzprv3":     enc.pzlexport(0); break;
-				case "pzprapplet": enc.pzlexport(1); break;
-				case "kanpen":     enc.pzlexport(2); break;
-				case "pzprv3edit": enc.pzlexport(3); break;
-				case "heyaapp":    enc.pzlexport(4); break;
+				case "pzprv3":     document.urloutput.ta.value = enc.pzloutput(0); break;
+				case "pzprapplet": document.urloutput.ta.value = enc.pzloutput(1); break;
+				case "kanpen":     document.urloutput.ta.value = enc.pzloutput(2); break;
+				case "pzprv3edit": document.urloutput.ta.value = enc.pzloutput(3); break;
+				case "heyaapp":    document.urloutput.ta.value = enc.pzloutput(4); break;
 			}
 		}
 	},
@@ -87,7 +87,6 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	// menu.ex.fileopen()  ファイルを開く
 	// menu.ex.filesave()  ファイルを保存する
-	// menu.ex.filesave2() pencilboxo形式のファイルを保存する
 	//------------------------------------------------------------------------------
 	fileopen : function(e){
 		if(menu.pop){ menu.popclose();}
@@ -97,8 +96,23 @@ MenuExec.prototype = {
 			tm.reset();
 		}
 	},
-	filesave  : function(e){ fio.filesave(1);},
-	filesave2 : function(e){ fio.filesave(2);},
+
+	filesave : function(type){
+		var fname = prompt("保存するファイル名を入力して下さい。", k.puzzleid+".txt");
+		if(!fname){ return;}
+		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
+		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;} }
+
+		document.fileform2.filename.value = fname;
+
+		if     (navigator.platform.indexOf("Win")!==-1){ document.fileform2.platform.value = "Win";}
+		else if(navigator.platform.indexOf("Mac")!==-1){ document.fileform2.platform.value = "Mac";}
+		else                                           { document.fileform2.platform.value = "Others";}
+
+		document.fileform2.ques.value = fio.fileencode(type);
+
+		document.fileform2.submit();
+	},
 
 	//------------------------------------------------------------------------------
 	// menu.ex.dispsize()  Canvasでのマス目の表示サイズを変更する

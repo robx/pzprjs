@@ -891,9 +891,9 @@ Properties.prototype = {
 	funcs : {
 		urlinput  : function(){ menu.pop = ee("pop1_2");},
 		urloutput : function(){ menu.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
-		filesave  : function(){ menu.ex.filesave();},
+		filesave  : function(){ menu.ex.filesave(1);},
 		database  : function(){ menu.pop = ee("pop1_8"); fio.getDataTableList();},
-		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave2();}},
+		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave(2);}},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
 		credit    : function(){ menu.pop = ee("pop3_1");},
