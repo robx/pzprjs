@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスローム版 icelom.js v3.2.3p2
+// パズル固有スクリプト部 アイスローム版 icelom.js v3.2.4
 //
 Puzzles.icelom = function(){ };
 Puzzles.icelom.prototype = {
@@ -33,8 +33,6 @@ Puzzles.icelom.prototype = {
 
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["others"];
 
 		//k.def_csize = 36;
 		k.def_psize = 36;
@@ -194,14 +192,20 @@ Puzzles.icelom.prototype = {
 		bd.isArrow  = function(id){ return (this.QuB(id)>0);};
 
 		bd.initSpecial = function(col,row){
+			this.bdinside = 2*col*row-(col+row);
+			if(this.arrowin==-1 && this.arrowout==-1){
+				this.inputarrowin (0 + this.bdinside, 1);
+				this.inputarrowout(2 + this.bdinside, 1);
+			}
+
 			if(!base.initProcess){
-				if(bd.arrowin<k.qcols+bd.bdinside){ if(bd.arrowin>col+bd.bdinside){ bd.arrowin=col+bd.bdinside-1;} }
-				else{ if(bd.arrowin>col+row+bd.bdinside){ bd.arrowin=col+row+bd.bdinside-1;} }
+				if(this.arrowin<k.qcols+this.bdinside){ if(this.arrowin>col+this.bdinside){ this.arrowin=col+this.bdinside-1;} }
+				else{ if(this.arrowin>col+row+this.bdinside){ this.arrowin=col+row+this.bdinside-1;} }
 
-				if(bd.arrowout<k.qcols+bd.bdinside){ if(bd.arrowout>col+bd.bdinside){ bd.arrowout=col+bd.bdinside-1;} }
-				else{ if(bd.arrowout>col+row+bd.bdinside){ bd.arrowout=col+row+bd.bdinside-1;} }
+				if(this.arrowout<k.qcols+this.bdinside){ if(this.arrowout>col+this.bdinside){ this.arrowout=col+this.bdinside-1;} }
+				else{ if(this.arrowout>col+row+this.bdinside){ this.arrowout=col+row+this.bdinside-1;} }
 
-				if(bd.arrowin==bd.arrowout){ bd.arrowin--;}
+				if(this.arrowin==this.arrowout){ this.arrowin--;}
 			}
 		}
 
@@ -347,8 +351,10 @@ Puzzles.icelom.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0){ bstr = this.decodeIcelom(bstr);}
+		enc.pzlimport = function(type){
+			this.decodeIcelom();
+			this.decodeNumber16();
+			this.decodeInOut();
 
 			if(k.EDITOR){
 				if(this.checkpflag("a")){ pp.setVal('allwhite',true);}
@@ -362,33 +368,23 @@ Puzzles.icelom.prototype = {
 			}
 		};
 		enc.pzlexport = function(type){
-			if     (type==0){ document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			var pzlflag = (pp.getVal('allwhite') ? "/a" : "");
+			this.encodeIcelom();
+			this.encodeNumber16();
+			this.encodeInOut();
 
-			return ""+pzlflag+"/"+k.qcols+"/"+k.qrows+"/"+this.encodeIcelom();
+			this.outpflag = (pp.getVal('allwhite') ? "a" : "");
 		};
 
-		enc.decodeIcelom = function(bstr){
-			var barray = bstr.split("/");
+		enc.decodeIcelom = function(){
+			var bstr = this.outbstr;
 
 			var a=0;
-			for(var i=0;i<barray[0].length;i++){
-				var num = parseInt(barray[0].charAt(i),32);
+			for(var i=0;i<bstr.length;i++){
+				var num = parseInt(bstr.charAt(i),32);
 				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?6:0));} }
 				if((i*5+5)>=k.qcols*k.qrows){ a=i+1; break;}
 			}
-
-			this.decodeNumber16(barray[0].substr(a));
-
-			bd.setArrow(bd.arrowin,0); bd.setArrow(bd.arrowout,0);
-			bd.arrowin = bd.arrowout = -1;
-			bd.inputarrowin (parseInt(barray[1])+bd.bdinside);
-			bd.inputarrowout(parseInt(barray[2])+bd.bdinside);
-
-			return "";
+			this.outbstr = bstr.substr(a);
 		};
 		enc.encodeIcelom = function(){
 			var cm = "";
@@ -399,63 +395,66 @@ Puzzles.icelom.prototype = {
 			}
 			if(num>0){ cm += pass.toString(32);}
 
-			cm += (this.encodeNumber16());
-			cm += ("/"+(bd.arrowin-bd.bdinside)+"/"+(bd.arrowout-bd.bdinside));
+			this.outbstr += cm;
+		};
 
-			return cm;
+		enc.decodeInOut = function(){
+			var barray = this.outbstr.substr(1).split("/");
+
+			bd.setArrow(bd.arrowin,0); bd.setArrow(bd.arrowout,0);
+			bd.arrowin = bd.arrowout = -1;
+			bd.inputarrowin (parseInt(barray[0])+bd.bdinside);
+			bd.inputarrowout(parseInt(barray[1])+bd.bdinside);
+
+			this.outbstr = "";
+		};
+		enc.encodeInOut = function(){
+			this.outbstr += ("/"+(bd.arrowin-bd.bdinside)+"/"+(bd.arrowout-bd.bdinside));
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			if(array.length<3*k.qrows+4){ return false;}
+		fio.decodeData = function(){
+			bd.inputarrowin (parseInt(this.readLine()));
+			bd.inputarrowout(parseInt(this.readLine()));
 
-			bd.inputarrowin (parseInt(array[0]));
-			bd.inputarrowout(parseInt(array[1]));
-
+			var pzltype = this.readLine();
 			if(k.EDITOR){
-				pp.setVal('allwhite',(array[2]==="allwhite"));
+				pp.setVal('allwhite',(pzltype==="allwhite"));
 			}
 			else{
-				if(array[2]==="allwhite"){ base.setTitle("アイスローム","Icelom");}
-				else                     { base.setTitle("アイスローム２","Icelom 2");}
+				if(pzltype==="allwhite"){ base.setTitle("アイスローム","Icelom");}
+				else                    { base.setTitle("アイスローム２","Icelom 2");}
 				document.title = base.gettitle();
 				ee('title2').el.innerHTML = base.gettitle();
 			}
 
 			this.decodeCell( function(c,ca){
 				if(ca.charAt(0)=='i'){ bd.sQuC(c,6); ca=ca.substr(1);}
-
 				if     (ca==''||ca=='.'){ return;}
 				else if(ca=='?'){ bd.sQnC(c,-2);}
 				else            { bd.sQnC(c,parseInt(ca));}
-			},array.slice(3,k.qrows+3));
+			});
+
 			this.decodeBorder2( function(c,ca){
 				if     (ca == "1" ){ bd.sLiB(c, 1);}
 				else if(ca == "-1"){ bd.sQsB(c, 2);}
-			},array.slice(k.qrows+3,3*k.qrows+4));
-			return true;
+			});
 		};
-		fio.encodeOthers = function(){
+		fio.encodeData = function(){
 			var pzltype = (pp.getVal('allwhite') ? "allwhite" : "skipwhite");
 
-			return ""+bd.arrowin+"/"+bd.arrowout+"/"+pzltype+"/"+
-				this.encodeCell( function(c){
-					if(bd.QuC(c)==6){
-						if     (bd.QnC(c)===-1){ return "i "}
-						else if(bd.QnC(c)===-2){ return "i? "}
-						else{ return "i"+bd.QnC(c)+" ";}
-					}
-					else{
-						if     (bd.QnC(c)===-1){ return ". "}
-						else if(bd.QnC(c)===-2){ return "? "}
-						else{ return ""+bd.QnC(c)+" ";}
-					}
-				})+
-				this.encodeBorder2( function(c){
-					if     (bd.LiB(c)==1){ return "1 ";}
-					else if(bd.QsB(c)==2){ return "-1 ";}
-					else                 { return "0 ";}
-				});
+			this.datastr += (bd.arrowin+"/"+bd.arrowout+"/"+pzltype+"/");
+			this.encodeCell( function(c){
+				var istr = (bd.QuC(c)===6 ? "i" : "");
+				if     (bd.QnC(c)===-1){ return (istr==="" ? ". " : "i ");}
+				else if(bd.QnC(c)===-2){ return istr+"? ";}
+				else{ return istr+bd.QnC(c)+" ";}
+			});
+			this.encodeBorder2( function(c){
+				if     (bd.LiB(c)===1){ return "1 "; }
+				else if(bd.QsB(c)===2){ return "-1 ";}
+				else                  { return "0 "; }
+			});
 		};
 	},
 

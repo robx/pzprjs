@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へやわけ版 heyawake.js v3.2.3
+// パズル固有スクリプト部 へやわけ版 heyawake.js v3.2.4
 //
 Puzzles.heyawake = function(){ };
 Puzzles.heyawake.prototype = {
@@ -34,8 +34,6 @@ Puzzles.heyawake.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		k.fstruct = ["arearoom","cellqnum","cellans"];
-
 		//k.def_csize = 36;
 		//k.def_psize = 24;
 		k.area = { bcell:0, wcell:1, number:0, disroom:0};	// areaオブジェクトで領域を生成する
@@ -44,6 +42,8 @@ Puzzles.heyawake.prototype = {
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
 						   " Left Click to input black cells, Right Click to input determined white cells.");
 		base.setFloatbgcolor("rgb(0, 191, 0)");
+
+		enc.pidKanpen = 'heyawake';
 	},
 	menufix : function(){
 		menu.addUseToFlags();
@@ -141,44 +141,22 @@ Puzzles.heyawake.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){
-				bstr = this.decodeBorder(bstr);
-				bstr = this.decodeRoomNumber16(bstr);
-			}
-			else if(type==2){ bstr = this.decodeKanpen(bstr); }
-			else if(type==4){ bstr = this.decodeHeyaApp(bstr);}
+		enc.pzlimport = function(type){
+			this.decodeBorder();
+			this.decodeRoomNumber16();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+k.puzzleid+".html?problem="+this.pzldataKanpen();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-			else if(type==4){ document.urloutput.ta.value = "http://www.geocities.co.jp/heyawake/?problem="+this.pzldataHeyaApp();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeBorder()+this.encodeRoomNumber16();
+			this.encodeBorder();
+			this.encodeRoomNumber16();
 		};
 
-		enc.decodeKanpen = function(bstr){
-			var rdata = [];
-
-			var inp = bstr.split("/");
-			inp.shift();
-
-			for(var i=0;i<inp.length;i++){
-				if(inp[i]==""){ break;}
-				var pce = inp[i].split("_");
-				var sp = { y1:parseInt(pce[0]), x1:parseInt(pce[1]), y2:parseInt(pce[2]), x2:parseInt(pce[3]), num:pce[4]};
-				if(sp.num!=""){ bd.sQnC(bd.cnum(sp.x1,sp.y1), parseInt(sp.num,10));}
-				for(var cx=sp.x1;cx<=sp.x2;cx++){
-					for(var cy=sp.y1;cy<=sp.y2;cy++){
-						rdata[bd.cnum(cx,cy)] = i;
-					}
-				}
-			}
-			this.rdata2Border(rdata);
+		enc.decodeKanpen = function(){
+			fio.decodeSquareRoom();
 		};
+		enc.encodeKanpen = function(){
+			fio.encodeSquareRoom();
+		};
+
 		enc.decodeHeyaApp = function(bstr){
 			var rdata = [];
 			var c=0;
@@ -186,8 +164,8 @@ Puzzles.heyawake.prototype = {
 
 			var inp = bstr.split("/");
 
-			var i=0; c=0;
-			while(c<bd.cellmax){
+			c=0;
+			for(i=0;i<inp.length;i++){
 				if(rdata[c]==-1){
 					var width, height;
 					if(inp[i].match(/(\d+in)?(\d+)x(\d+)$/)){
@@ -206,32 +184,11 @@ Puzzles.heyawake.prototype = {
 					i++;
 				}
 				c++;
+				if(c>=bd.cellmax){ break;}
 			}
-			this.rdata2Border(rdata);
+			fio.rdata2Border(true, rdata);
 		};
-		enc.rdata2Border = function(rdata){
-			for(var id=0;id<bd.bdmax;id++){
-				var cc1=bd.cc1(id), cc2=bd.cc2(id);
-				if(cc1!=-1 && cc2!=-1 && rdata[cc1]!=rdata[cc2]){ bd.sQuB(id,1);}
-			}
-			return true;
-		};
-
-		enc.pzldataKanpen = function(){
-			var bstr = "";
-
-			var rinfo = area.getRoomInfo();
-			for(var id=1;id<=rinfo.max;id++){
-				var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
-				if(bd.QnC(bd.cnum(d.x1,d.y1))>=0){
-					bstr += (""+d.y1+"_"+d.x1+"_"+d.y2+"_"+d.x2+"_"+bd.QnC(bd.cnum(d.x1,d.y1))+"/");
-				}
-				else{ bstr += (""+d.y1+"_"+d.x1+"_"+d.y2+"_"+d.x2+"_/");}
-			}
-
-			return ""+k.qrows+"/"+k.qcols+"/"+rinfo.max+"/"+bstr;
-		};
-		enc.pzldataHeyaApp = function(){
+		enc.encodeHeyaApp = function(){
 			var barray = [];
 
 			var rinfo = area.getRoomInfo();
@@ -242,24 +199,28 @@ Puzzles.heyawake.prototype = {
 				}
 				else{ barray.push(""+(d.x2-d.x1+1)+"x"+(d.y2-d.y1+1));}
 			}
-			return ""+k.qcols+"x"+k.qrows+"/"+barray.join("/");
+			return barray.join("/");
 		};
 
 		//---------------------------------------------------------
-		fio.kanpenOpen = function(array){
-			var rmax = array.shift();
-			var barray = array.slice(0,rmax);
-			for(var i=0;i<barray.length;i++){ barray[i] = (barray[i].split(" ")).join("_");}
-			enc.decodeKanpen(""+rmax+"/"+barray.join("/"));
-			this.decodeCellAns(array.slice(rmax,rmax+k.qrows));
+		fio.decodeData = function(){
+			this.decodeAreaRoom();
+			this.decodeCellQnum();
+			this.decodeCellAns();
+		};
+		fio.encodeData = function(){
+			this.encodeAreaRoom();
+			this.encodeCellQnum();
+			this.encodeCellAns();
+		};
+
+		fio.kanpenOpen = function(){
+			this.decodeSquareRoom();
+			this.decodeCellAns();
 		};
 		fio.kanpenSave = function(){
-			var barray = enc.pzldataKanpen().split("/");
-			barray.shift(); barray.shift();
-			var rmax = barray.shift();
-			for(var i=0;i<barray.length;i++){ barray[i] = (barray[i].split("_")).join(" ");}
-
-			return rmax + "/" + barray.join("/") + this.encodeCellAns()+"/";
+			this.encodeSquareRoom();
+			this.encodeCellAns();
 		};
 	},
 
@@ -290,7 +251,7 @@ Puzzles.heyawake.prototype = {
 			}
 
 			return true;
-		},
+		};
 
 		ans.checkRowsCols = function(){
 			var fx, fy;

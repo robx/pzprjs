@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.3p1
+// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.4
 //
 Puzzles.kakuro = function(){ };
 Puzzles.kakuro.prototype = {
@@ -34,8 +34,6 @@ Puzzles.kakuro.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		k.fstruct = ["cellqnum51", "cellqanssub"];
-
 		//k.def_csize = 36;
 		k.def_psize = 40;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
@@ -50,6 +48,8 @@ Puzzles.kakuro.prototype = {
 		}
 		base.setTitle("カックロ","Kakuro");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
+
+		enc.pidKanpen = 'kakuro';
 	},
 	menufix : function(){ },
 
@@ -215,23 +215,25 @@ Puzzles.kakuro.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeKakuro(bstr);}
-			else if(type==2)      { bstr = this.decodeKanpen(bstr); }
+		enc.pzlimport = function(type){
+			this.decodeKakuro();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?"+this.pzldata();}
-			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"kakuro.html?problem="+this.encodeKanpen();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeKakuro();
+			this.encodeKakuro();
 		};
 
-		enc.decodeKakuro = function(bstr){
+		enc.decodeKanpen = function(){
+			fio.decodeRoom_kanpen();
+		};
+		enc.encodeKanpen = function(){
+			this.outsize = [k.qrows+1, k.qcols+1].join("/");
+
+			fio.encodeRoom_kanpen();
+		};
+
+		enc.decodeKakuro = function(){
 			// 盤面内数字のデコード
-			var cell=0, a=0;
+			var cell=0, a=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 				if(ca>='k' && ca<='z'){ cell+=(parseInt(ca,36)-19);}
@@ -268,7 +270,7 @@ Puzzles.kakuro.prototype = {
 				i--;
 			}
 
-			return bstr.substr(a);
+			this.outbstr = bstr.substr(a);
 		};
 		enc.encodeKakuro = function(type){
 			var cm="";
@@ -294,7 +296,7 @@ Puzzles.kakuro.prototype = {
 			for(var c=0;c<k.qcols;c++){ if(bd.QuC(bd.cnum(c,0))!=51){ cm+=this.encval(bd.DiE(c));} }
 			for(var c=k.qcols;c<k.qcols+k.qrows;c++){ if(bd.QuC(bd.cnum(0,c-k.qcols))!=51){ cm+=this.encval(bd.QnE(c));} }
 
-			return cm;
+			this.outbstr += cm;
 		};
 
 		enc.decval = function(ca){
@@ -309,95 +311,89 @@ Puzzles.kakuro.prototype = {
 			return "0";
 		};
 
-		enc.decodeKanpen = function(bstr){
-			var barray = bstr.split("/");
-			for(var i=0;i<barray.length;i++){ if(barray[i]!=""){ this.decode51Kanpen(barray[i]);} }
-			return "";
-		};
-		enc.decode51Kanpen = function(data){
-			var item = data.split("_");
-			if(item.length<=1){ return;}
-			else if(item[0]==0 && item[1]==0){ }
-			else if(item[0]==0){ bd.sDiE(parseInt(item[1])-1, parseInt(item[3]));}
-			else if(item[1]==0){ bd.sQnE(parseInt(item[0])-1+k.qcols, parseInt(item[2]));}
-			else{
-				var c=bd.cnum(parseInt(item[1])-1,parseInt(item[0])-1);
-				bd.sQuC(c, 51);
-				bd.sQnC(c, parseInt(item[2]));
-				bd.sDiC(c, parseInt(item[3]));
-			}
-		};
-		enc.encodeKanpen = function(){
-			var cm="";
-			for(var cy=-1;cy<k.qrows;cy++){
-				for(var cx=-1;cx<k.qcols;cx++){
-					if(cx==-1||cy==-1||bd.QuC(bd.cnum(cx,cy))==51){ cm+=this.encode51Kanpen(cx,cy);}
-				}
-			}
-			return ""+(k.qrows+1)+"/"+(k.qcols+1)+cm;
-		};
-		enc.encode51Kanpen = function(cx,cy){
-			var item=[0,0,0,0];
-			item[0]=(cy+1).toString();
-			item[1]=(cx+1).toString();
-			if(cx==-1&&cy==-1){ }
-			else if(cy==-1){
-				item[3]=bd.DiE(bd.exnum(cx,cy)).toString();
-			}
-			else if(cx==-1){
-				item[2]=bd.QnE(bd.exnum(cx,cy)).toString();
-			}
-			else{
-				item[2]=bd.QnC(bd.cnum(cx,cy)).toString();
-				item[3]=bd.DiC(bd.cnum(cx,cy)).toString();
-			}
-			return "/"+item.join("_");
-		};
-
 		//---------------------------------------------------------
-		fio.kanpenOpen = function(array){
-			for(var i=0;i<array.length;i++){ if(array[i]==''){ array.splice(i,1); i--;} }
+		fio.decodeData = function(){
+			this.decodeCellQnum51();
+			this.decodeCellQanssub();
+		};
+		fio.encodeData = function(){
+			this.encodeCellQnum51();
+			this.encodeCellQanssub();
+		};
 
-			for(var i=0;i<=array.length-k.qrows-2;i++){ enc.decode51Kanpen(array[i].replace(/ /g,"_")); }
-
-			var cy=-1;
-			for(var i=array.length-k.qrows-1;i<array.length;i++){
-				var arr = array[i].split(" ");
-				var cx=-1;
-				for(var t=0;t<arr.length;t++){
-					if(arr[t]==''){ continue;}
-					var c = bd.cnum(cx,cy);
-					if(c!=-1&&arr[t]!="."&&arr[t]!="0"){ bd.sQaC(c, parseInt(arr[t]));}
-					cx++;
-				}
-				cy++;
-			}
+		fio.kanpenOpen = function(){
+			this.decodeRoom_kanpen();
+			this.decodeQans_kanpen();
 		};
 		fio.kanpenSave = function(){
-			return ""+this.encodeKanpenForFile()+"//"+this.encodeQansForKanpen();
+			this.sizestr = [k.qrows+1, k.qcols+1].join("/");
+
+			this.encodeRoom_kanpen();
+			this.datastr += "/";
+			this.encodeQans_kanpen();
 		};
-		fio.encodeQansForKanpen = function(){
-			var cm="";
+
+		fio.decodeRoom_kanpen = function(){
+			for(;;){
+				var data = this.readLine();
+				if(!data){ break;}
+
+				var item = data.split(" ");
+				if(item.length<=1){ return;}
+				else if(item[0]==0 && item[1]==0){ }
+				else if(item[0]==0){ bd.sDiE(parseInt(item[1])-1, parseInt(item[3]));}
+				else if(item[1]==0){ bd.sQnE(parseInt(item[0])-1+k.qcols, parseInt(item[2]));}
+				else{
+					var c=bd.cnum(parseInt(item[1])-1,parseInt(item[0])-1);
+					bd.sQuC(c, 51);
+					bd.sQnC(c, parseInt(item[2]));
+					bd.sDiC(c, parseInt(item[3]));
+				}
+			}
+		};
+		fio.encodeRoom_kanpen = function(){
+			for(var cy=-1;cy<k.qrows;cy++){ for(var cx=-1;cx<k.qcols;cx++){
+				if(cx!==-1 && cy!==-1 && bd.QuC(bd.cnum(cx,cy))!==51){ continue;}
+
+				var item=[(cy+1).toString(),(cx+1).toString(),0,0];
+				if(cx==-1&&cy==-1){ }
+				else if(cy==-1){
+					item[3]=bd.DiE(bd.exnum(cx,cy)).toString();
+				}
+				else if(cx==-1){
+					item[2]=bd.QnE(bd.exnum(cx,cy)).toString();
+				}
+				else{
+					item[2]=bd.QnC(bd.cnum(cx,cy)).toString();
+					item[3]=bd.DiC(bd.cnum(cx,cy)).toString();
+				}
+				this.datastr += (item.join(" ")+"/");
+			}}
+		};
+
+		fio.decodeQans_kanpen = function(){
+			var barray = this.readLines(k.qrows+1);
+			for(var cy=-1;cy<k.qrows;cy++){
+				if(cy+1>=barray.length){ break;}
+				var arr = barray[cy+1].split(" ");
+				for(var cx=-1;cx<k.qcols;cx++){
+					if(arr[cx+1]==''){ continue;}
+					var c = bd.cnum(cx,cy);
+					if(c!=-1&&arr[cx+1]!="."&&arr[cx+1]!="0"){ bd.sQaC(c, parseInt(arr[cx+1]));}
+				}
+			}
+		};
+		fio.encodeQans_kanpen = function(){
 			for(cy=-1;cy<k.qrows;cy++){
 				for(cx=-1;cx<k.qrows;cx++){
 					var c = bd.cnum(cx,cy);
-					if(c==-1){ cm+=". ";}
-					else if(bd.QuC(c)==51){ cm += ". ";}
-					else if(bd.QaC(c) > 0){ cm += (bd.QaC(c).toString() + " ");}
-					else                  { cm += "0 ";}
+					if(c==-1){ this.datastr += ". ";}
+					else if(bd.QuC(c)==51){ this.datastr += ". ";}
+					else if(bd.QaC(c) > 0){ this.datastr += (bd.QaC(c).toString() + " ");}
+					else                  { this.datastr += "0 ";}
 				}
-				if(cy<k.qrows-1){ cm+="/";}
+				if(cy<k.qrows-1){ this.datastr += "/";}
 			}
-			return cm;
-		};
-		fio.encodeKanpenForFile = function(){
-			var cm="";
-			for(var cy=-1;cy<k.qrows;cy++){
-				for(var cx=-1;cx<k.qcols;cx++){
-					if(cx==-1||cy==-1||bd.QuC(bd.cnum(cx,cy))==51){ cm+=enc.encode51Kanpen(cx,cy);}
-				}
-			}
-			return ""+cm.substr(1).replace(/_/g," ");
 		};
 	},
 

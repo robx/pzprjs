@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.2.3
+// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.2.4
 //
 Puzzles.tentaisho = function(){ };
 Puzzles.tentaisho.prototype = {
@@ -34,8 +34,6 @@ Puzzles.tentaisho.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		k.fstruct = ["others","borderans","cellqsub"];
-
 		//k.def_csize = 36;
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
@@ -50,6 +48,8 @@ Puzzles.tentaisho.prototype = {
 		}
 		base.setTitle("天体ショー","Tentaisho");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
+
+		enc.pidKanpen = 'tentaisho';
 	},
 	menufix : function(){
 		if(k.EDITOR){
@@ -334,22 +334,22 @@ Puzzles.tentaisho.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeStar(bstr);}
-			else if(type==2){ bstr = this.decodeKanpen(bstr);}
+		enc.pzlimport = function(type){
+			this.decodeStar();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"tentaisho.html?problem="+this.pzldataKanpen();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
+			this.encodeStar();
 		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeStar();
+
+		enc.decodeKanpen = function(){
+			fio.decodeStarFile();
+		};
+		enc.encodeKanpen = function(){
+			fio.encodeStarFile();
 		};
 
 		enc.decodeStar = function(bstr){
-			var s=0;
+			var s=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 				if(this.include(ca,"0","f")){
@@ -361,7 +361,7 @@ Puzzles.tentaisho.prototype = {
 
 				if(s>=(2*k.qcols-1)*(2*k.qrows-1)){ break;}
 			}
-			return bstr.substr(i+1);
+			this.outbstr = bstr.substr(i+1);
 		};
 		enc.encodeStar = function(){
 			var count = 0;
@@ -383,78 +383,51 @@ Puzzles.tentaisho.prototype = {
 			}
 			if(count>0){ cm += ((count+15).toString(36));}
 
-			return cm;
-		};
-
-		enc.decodeKanpen = function(bstr){
-			var array = bstr.split("/");
-			var c=0;
-			for(var i=0;i<array.length;i++){
-				for(var s=0;s<array[i].length;s++){
-					if     (array[i].charAt(s) == "1"){ bd.setStar(c, 1);}
-					else if(array[i].charAt(s) == "2"){ bd.setStar(c, 2);}
-					c++;
-				}
-			}
-			return "";
-		};
-		enc.pzldataKanpen = function(){
-			var bstr = "";
-			for(var i=0;i<(2*k.qcols-1)*(2*k.qrows-1);i++){
-				if(i%(2*k.qcols-1)==0){ bstr += "/";}
-				if     (bd.getStar(i)==1){ bstr += "1";}
-				else if(bd.getStar(i)==2){ bstr += "2";}
-				else                     { bstr += ".";}
-			}
-			return ""+k.qrows+"/"+k.qcols+bstr;
+			this.outbstr += cm;
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			if(array.length<2*k.qrows-1){ return false;}
-			var c=0;
-			for(var i=0;i<array.length;i++){
-				for(var s=0;s<array[i].length;s++){
-					if     (array[i].charAt(s) == "1"){ bd.setStar(c, 1);}
-					else if(array[i].charAt(s) == "2"){ bd.setStar(c, 2);}
-					c++;
-				}
-			}
-			return true;
+		fio.decodeData = function(){
+			this.decodeStarFile();
+			this.decodeBorderAns();
+			this.decodeCellQsub();
 		};
-		fio.encodeOthers = function(){
-			var bstr = enc.pzldataKanpen();
-			var barray = bstr.split("/");
-			barray.shift(); barray.shift();
-			return (""+barray.join("/")+"/");
+		fio.encodeData = function(){
+			this.encodeStarFile();
+			this.encodeBorderAns();
+			this.encodeCellQsub();
 		};
 
-		fio.kanpenOpen = function(array){
-			var barray = array.slice(0,2*k.qrows-1);
-			enc.decodeKanpen(""+barray.join("/"));
-
-			barray = array.slice(2*k.qrows,3*k.qrows);
-			var carray = [];
-			for(var a=0;a<barray.length;a++){
-				var arr = barray[a].split(" ");
-				for(var i=0;i<arr.length;i++){ if(arr[i]!=''){ carray.push(arr[i]);} }
-			}
-			for(var id=0;id<bd.bdmax;id++){
-				var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
-				bd.sQaB(id,(cc1!=-1 && cc2!=-1 && carray[cc1]!=carray[cc2])?1:0);
-			}
+		fio.kanpenOpen = function(){
+			this.decodeStarFile();
+			this.decodeAnsAreaRoom();
 		};
 		fio.kanpenSave = function(){
-			var barray = enc.pzldataKanpen().split("/");
-			barray.shift(); barray.shift();
+			this.encodeStarFile();
+			this.encodeAnsAreaRoom();
+		};
 
-			var rinfo = area.getRoomInfo();
-			var bstr =  barray.join("/")+"/"+rinfo.max+"/";
-			for(var c=0;c<bd.cellmax;c++){
-				bstr += (""+(rinfo.id[c]-1)+" ");
-				if((c+1)%k.qcols==0){ bstr += "/";}
+		fio.decodeStarFile = function(){
+			var array = this.readLines(2*k.qrows-1), s=0;
+			for(var i=0;i<array.length;i++){
+				for(var c=0;c<array[i].length;c++){
+					if     (array[i].charAt(c) == "1"){ bd.setStar(s, 1);}
+					else if(array[i].charAt(c) == "2"){ bd.setStar(s, 2);}
+					s++;
+				}
 			}
-			return bstr;
+		};
+		fio.encodeStarFile = function(){
+			var s=0;
+			for(var i=0;i<2*k.qrows-1;i++){
+				for(var c=0;c<2*k.qcols-1;c++){
+					if     (bd.getStar(s)==1){ this.datastr += "1";}
+					else if(bd.getStar(s)==2){ this.datastr += "2";}
+					else                     { this.datastr += ".";}
+					s++;
+				}
+				this.datastr += "/";
+			}
 		};
 	},
 

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.2.3p1
+// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.2.4
 //
 Puzzles.shugaku = function(){ };
 Puzzles.shugaku.prototype = {
@@ -33,8 +33,6 @@ Puzzles.shugaku.prototype = {
 
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["others"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -396,20 +394,15 @@ Puzzles.shugaku.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0||type==1){ bstr = this.decodeShugaku(bstr);}
+		enc.pzlimport = function(type){
+			this.decodeShugaku();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.pzldataShugaku();
+			this.encodeShugaku();
 		};
 
-		enc.decodeShugaku = function(bstr){
-			var c=0;
+		enc.decodeShugaku = function(){
+			var c=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 				if     (ca>='0' && ca<='4'){ bd.sQnC(c, parseInt(ca,36)); c++;}
@@ -417,9 +410,9 @@ Puzzles.shugaku.prototype = {
 				else{ c += (parseInt(ca,36)-5);}
 				if(c>=bd.cellmax){ break;}
 			}
-			return bstr.substr(i);
+			this.outbstr = bstr.substr(i);
 		};
-		enc.pzldataShugaku = function(){
+		enc.encodeShugaku = function(){
 			var cm="", count=0;
 			for(var i=0;i<bd.cellmax;i++){
 				var pstr = "";
@@ -433,21 +426,21 @@ Puzzles.shugaku.prototype = {
 				else if(pstr || count==30){ cm+=((5+count).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm+=(5+count).toString(36);}
-			return cm;
+			this.outbstr += cm;
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			fio.decodeCell( function(c,ca){
+		fio.decodeData = function(){
+			this.decodeCell( function(c,ca){
 				if(ca == "5")     { bd.sQnC(c, -2);}
 				else if(ca == "#"){ bd.sQaC(c, 1);}
 				else if(ca == "-"){ bd.sQsC(c, 1);}
 				else if(ca>="a" && ca<="j"){ bd.sQaC(c, parseInt(ca,20)+1);}
 				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			},array.slice(0,k.qrows));
+			});
 		};
-		fio.encodeOthers = function(){
-			return ""+fio.encodeCell( function(c){
+		fio.encodeData = function(){
+			this.encodeCell( function(c){
 				if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
 				else if(bd.QnC(c)==-2){ return "5 ";}
 				else if(bd.QaC(c)==1) { return "# ";}

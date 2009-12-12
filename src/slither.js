@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スリザーリンク版 slither.js v3.2.3p2
+// パズル固有スクリプト部 スリザーリンク版 slither.js v3.2.4
 //
 Puzzles.slither = function(){ };
 Puzzles.slither.prototype = {
@@ -34,8 +34,6 @@ Puzzles.slither.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		k.fstruct = ["cellqnum","borderans2"];
-
 		//k.def_csize = 36;
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
@@ -44,6 +42,8 @@ Puzzles.slither.prototype = {
 		base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
 						   " Left Button Drag to input black cells, Right Click to input a cross.");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
+
+		enc.pidKanpen = 'slitherlink';
 	},
 	menufix : function(){
 		pp.addCheck('bgcolor','setting',false, '背景色入力', 'Background-color');
@@ -214,47 +214,63 @@ Puzzles.slither.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0||type==1){ bstr = this.decode4Cell(bstr);}
-			else if(type==2)    { bstr = this.decodeKanpen(bstr); }
+		enc.pzlimport = function(type){
+			this.decode4Cell();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"slitherlink.html?problem="+this.pzldataKanpen();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encode4Cell();
+			this.encode4Cell();
 		};
 
-		enc.decodeKanpen = function(bstr){
-			bstr = (bstr.split("_")).join(" ");
-			fio.decodeCell( function(c,ca){
-				if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			},bstr.split("/"));
-			return "";
+		enc.decodeKanpen = function(){
+			fio.decodeCellQnum_kanpen();
 		};
-		enc.pzldataKanpen = function(){
-			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
-				if(bd.QnC(c)>=0){ return (bd.QnC(c).toString() + "_");}
-				else            { return "._";}
-			});
+		enc.encodeKanpen = function(){
+			fio.encodeCellQnum_kanpen();
 		};
 
 		//---------------------------------------------------------
-		fio.kanpenOpen = function(array){
-			this.decodeCellQnum(array.slice(0,k.qrows));
-			var func = function(c,ca){ if(ca == "1"){ bd.sQaB(c, 1);} else if(ca == "-1"){ bd.sQsB(c, 2);} }
-			this.decodeObj(func, array.slice(k.qrows    ,2*k.qrows+1), k.qcols  , function(cx,cy){return bd.bnum(2*cx+1,2*cy  );});
-			this.decodeObj(func, array.slice(2*k.qrows+1,3*k.qrows+1), k.qcols+1, function(cx,cy){return bd.bnum(2*cx  ,2*cy+1);});
+		fio.decodeData = function(){
+			if(this.filever==1){
+				this.decodeCellQnum();
+				this.decodeCellQsub();
+				this.decodeBorderAns2();
+			}
+			else if(this.filever==0){
+				this.decodeCellQnum();
+				this.decodeBorderAns2();
+			}
+		};
+		fio.encodeData = function(){
+			this.filever = 1;
+			this.encodeCellQnum();
+			this.encodeCellQsub();
+			this.encodeBorderAns2();
+		};
+
+		fio.kanpenOpen = function(){
+			this.decodeCellQnum_kanpen();
+			this.decodeBorder2_kanpen( function(c,ca){
+				if     (ca == "1") { bd.sQaB(c, 1);}
+				else if(ca == "-1"){ bd.sQsB(c, 2);}
+			});
 		};
 		fio.kanpenSave = function(){
-			var func = function(c,ca){ if(bd.QaB(c)==1){ return "1 ";} else if(bd.QsB(c)==2){ return "-1 ";} else{ return "0 ";} }
+			this.encodeCellQnum_kanpen();
+			this.encodeBorder2_kanpen( function(c){
+				if     (bd.QaB(c)==1){ return "1 ";}
+				else if(bd.QsB(c)==2){ return "-1 ";}
+				else{ return "0 ";}
+			});
+		};
 
-			return ""+this.encodeCell( function(c){ if(bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");} else{ return ". ";} })
-			+this.encodeObj(func, k.qcols  , k.qrows+1, function(cx,cy){return bd.bnum(2*cx+1,2*cy  );})
-			+this.encodeObj(func, k.qcols+1, k.qrows  , function(cx,cy){return bd.bnum(2*cx  ,2*cy+1);});
+		// カンペンでは、outsideborderの時はぱずぷれとは順番が逆になってます
+		fio.decodeBorder2_kanpen = function(func){
+			this.decodeObj(func, k.qcols  , k.qrows+1, function(cx,cy){return bd.bnum(2*cx+1,2*cy  );});
+			this.decodeObj(func, k.qcols+1, k.qrows  , function(cx,cy){return bd.bnum(2*cx  ,2*cy+1);});
+		};
+		fio.encodeBorder2_kanpen = function(func){
+			this.encodeObj(func, k.qcols  , k.qrows+1, function(cx,cy){return bd.bnum(2*cx+1,2*cy  );});
+			this.encodeObj(func, k.qcols+1, k.qrows  , function(cx,cy){return bd.bnum(2*cx  ,2*cy+1);});
 		};
 	},
 

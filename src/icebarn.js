@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.3
+// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.4
 //
 Puzzles.icebarn = function(){ };
 Puzzles.icebarn.prototype = {
@@ -33,8 +33,6 @@ Puzzles.icebarn.prototype = {
 
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["others"];
 
 		//k.def_csize = 36;
 		k.def_psize = 36;
@@ -158,14 +156,20 @@ Puzzles.icebarn.prototype = {
 		bd.isArrow  = function(id){ return (this.QuB(id)>0);};
 
 		bd.initSpecial = function(col,row){
+			this.bdinside = 2*col*row-(col+row);
+			if(this.arrowin==-1 && this.arrowout==-1){
+				this.inputarrowin (0 + this.bdinside, 1);
+				this.inputarrowout(2 + this.bdinside, 1);
+			}
+
 			if(!base.initProcess){
-				if(bd.arrowin<k.qcols+bd.bdinside){ if(bd.arrowin>col+bd.bdinside){ bd.arrowin=col+bd.bdinside-1;} }
-				else{ if(bd.arrowin>col+row+bd.bdinside){ bd.arrowin=col+row+bd.bdinside-1;} }
+				if(this.arrowin<k.qcols+this.bdinside){ if(this.arrowin>col+this.bdinside){ this.arrowin=col+this.bdinside-1;} }
+				else{ if(this.arrowin>col+row+this.bdinside){ this.arrowin=col+row+this.bdinside-1;} }
 
-				if(bd.arrowout<k.qcols+bd.bdinside){ if(bd.arrowout>col+bd.bdinside){ bd.arrowout=col+bd.bdinside-1;} }
-				else{ if(bd.arrowout>col+row+bd.bdinside){ bd.arrowout=col+row+bd.bdinside-1;} }
+				if(this.arrowout<k.qcols+this.bdinside){ if(this.arrowout>col+this.bdinside){ this.arrowout=col+this.bdinside-1;} }
+				else{ if(this.arrowout>col+row+this.bdinside){ this.arrowout=col+row+this.bdinside-1;} }
 
-				if(bd.arrowin==bd.arrowout){ bd.arrowin--;}
+				if(this.arrowin==this.arrowout){ this.arrowin--;}
 			}
 		}
 
@@ -317,22 +321,20 @@ Puzzles.icebarn.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==1){
-				if(this.checkpflag("c")){ bstr = this.decodeIcebarn_old2(bstr);}
-				else{ bstr = this.decodeIcebarn_old1(bstr);}
+		enc.pzlimport = function(type){
+			if(type==0){ bstr = this.decodeIcebarn();}
+			else if(type==1){
+				if(this.checkpflag("c")){ bstr = this.decodeIcebarn_old2();}
+				else{ bstr = this.decodeIcebarn_old1();}
 			}
-			else if(type==0){ bstr = this.decodeIcebarn(bstr);}
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/q.html?"+k.qcols+"/"+k.qrows+"/"+this.encodeIcebarn_old1();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
+			if     (type==0){ return this.encodeIcebarn();}
+			else if(type==1){ return this.encodeIcebarn_old1();}
 		};
-		enc.pzldata = function(){ return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeIcebarn();};
 
-		enc.decodeIcebarn = function(bstr){
-			var barray = bstr.split("/");
+		enc.decodeIcebarn = function(){
+			var barray = this.outbstr.split("/");
 
 			var a=0;
 			for(var i=0;i<barray[0].length;i++){
@@ -360,7 +362,7 @@ Puzzles.icebarn.prototype = {
 			bd.inputarrowin (parseInt(barray[1])+bd.bdinside);
 			bd.inputarrowout(parseInt(barray[2])+bd.bdinside);
 
-			return "";
+			this.outbstr = "";
 		};
 		enc.encodeIcebarn = function(){
 			var cm = "";
@@ -385,11 +387,11 @@ Puzzles.icebarn.prototype = {
 
 			cm += ("/"+(bd.arrowin-bd.bdinside)+"/"+(bd.arrowout-bd.bdinside));
 
-			return cm;
+			this.outbstr += cm;
 		};
 
-		enc.decodeIcebarn_old2 = function(bstr){
-			var barray = bstr.split("/");
+		enc.decodeIcebarn_old2 = function(){
+			var barray = this.outbstr.split("/");
 
 			var a;
 			for(var i=0;i<barray[2].length;i++){
@@ -419,10 +421,10 @@ Puzzles.icebarn.prototype = {
 			bd.inputarrowin (parseInt(barray[0])+bd.bdinside);
 			bd.inputarrowout(parseInt(barray[1])+bd.bdinside);
 
-			return "";
+			this.outbstr = "";
 		};
-		enc.decodeIcebarn_old1 = function(bstr){
-			var barray = bstr.split("/");
+		enc.decodeIcebarn_old1 = function(){
+			var barray = this.outbstr.split("/");
 
 			var c=0;
 			for(var i=0;i<barray[0].length;i++){
@@ -453,7 +455,7 @@ Puzzles.icebarn.prototype = {
 			bd.inputarrowin (parseInt(barray[5])+bd.bdinside);
 			bd.inputarrowout(parseInt(barray[6])+bd.bdinside);
 
-			return "";
+			this.outbstr = "";
 		};
 		enc.encodeIcebarn_old1 = function(){
 			var cm = "";
@@ -480,40 +482,41 @@ Puzzles.icebarn.prototype = {
 
 			cm += ((bd.arrowin-bd.bdinside)+"/"+(bd.arrowout-bd.bdinside));
 
-			return cm;
+			this.outbstr += cm;
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			if(array.length<5*k.qrows+4){ return false;}
+		fio.decodeData = function(){
+			bd.inputarrowin (parseInt(this.readLine()));
+			bd.inputarrowout(parseInt(this.readLine()));
 
-			bd.inputarrowin (parseInt(array[0]));
-			bd.inputarrowout(parseInt(array[1]));
-
-			this.decodeCell( function(c,ca){ if(ca=="1"){ bd.sQuC(c, 6);} },array.slice(2,k.qrows+2));
+			this.decodeCell( function(c,ca){
+				if(ca=="1"){ bd.sQuC(c, 6);}
+			});
 			this.decodeBorder2( function(c,ca){
 				if     (ca == "1"){ bd.setArrow(c, 1);}
 				else if(ca == "2"){ bd.setArrow(c, 2);}
-			},array.slice(k.qrows+2,3*k.qrows+3));
+			});
 			this.decodeBorder2( function(c,ca){
 				if     (ca == "1" ){ bd.sLiB(c, 1);}
 				else if(ca == "-1"){ bd.sQsB(c, 2);}
-			},array.slice(3*k.qrows+3,5*k.qrows+4));
-			return true;
+			});
 		};
-		fio.encodeOthers = function(){
-			return ""+bd.arrowin+"/"+bd.arrowout+"/"+
-				this.encodeCell( function(c){ return ""+(bd.QuC(c)==6?"1":"0")+" "; })+
-				this.encodeBorder2( function(c){
-					if     (bd.getArrow(c)==1){ return "1 ";}
-					else if(bd.getArrow(c)==2){ return "2 ";}
-					else                      { return "0 ";}
-				})+
-				this.encodeBorder2( function(c){
-					if     (bd.LiB(c)==1){ return "1 ";}
-					else if(bd.QsB(c)==2){ return "-1 ";}
-					else                 { return "0 ";}
-				});
+		fio.encodeData = function(){
+			this.datastr += (bd.arrowin+"/"+bd.arrowout+"/");
+			this.encodeCell( function(c){
+				return ""+(bd.QuC(c)==6?"1":"0")+" "; 
+			});
+			this.encodeBorder2( function(c){
+				if     (bd.getArrow(c)==1){ return "1 ";}
+				else if(bd.getArrow(c)==2){ return "2 ";}
+				else                      { return "0 ";}
+			});
+			this.encodeBorder2( function(c){
+				if     (bd.LiB(c)==1){ return "1 ";}
+				else if(bd.QsB(c)==2){ return "-1 ";}
+				else                 { return "0 ";}
+			});
 		};
 	},
 

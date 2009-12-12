@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.2.3
+// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.2.4
 //
 Puzzles.loopsp = function(){ };
 Puzzles.loopsp.prototype = {
@@ -33,8 +33,6 @@ Puzzles.loopsp.prototype = {
 
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["others", "borderline"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -239,18 +237,15 @@ Puzzles.loopsp.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeLoopsp(bstr);}
+		enc.pzlimport = function(type){
+			this.decodeLoopsp();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/q.html?"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
+			this.encodeLoopsp();
 		};
-		enc.pzldata = function(){ return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeLoopsp();};
 
-		enc.decodeLoopsp = function(bstr){
-			var c=0;
+		enc.decodeLoopsp = function(){
+			var c=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
@@ -264,7 +259,7 @@ Puzzles.loopsp.prototype = {
 				if(c > bd.cellmax){ break;}
 			}
 
-			return bstr.substr(i);
+			this.outbstr = bstr.substr(i);
 		};
 		enc.encodeLoopsp = function(){
 			var cm="", pstr="", count=0;
@@ -280,28 +275,28 @@ Puzzles.loopsp.prototype = {
 			}
 			if(count>0){ cm+=(22+count).toString(36);}
 
-			return cm;
+			this.outbstr += cm;
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			if(array.length<k.qrows){ return false;}
+		fio.decodeData = function(){
 			this.decodeCell( function(c,ca){
 				if(ca == "o")     { bd.sQuC(c, 6);}
 				else if(ca == "-"){ bd.sQuC(c, -2);}
 				else if(ca >= "a" && ca <= "g"){ bd.sQuC(c, parseInt(ca,36)+91);}
 				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			},array.slice(0,k.qrows));
-			return true;
+			});
+			this.decodeBorderLine();
 		};
-		fio.encodeOthers = function(){
-			return (""+this.encodeCell( function(c){
+		fio.encodeData = function(){
+			this.encodeCell( function(c){
 				if     (bd.QuC(c)==6) { return "o ";}
 				else if(bd.QuC(c)>=101 && bd.QuC(c)<=107) { return ""+(bd.QuC(c)-91).toString(36)+" ";}
 				else if(bd.QuC(c)==-2){ return "- ";}
 				else if(bd.QnC(c)!=-1){ return bd.QnC(c).toString()+" ";}
 				else                  { return ". ";}
-			}) );
+			});
+			this.encodeBorderLine();
 		};
 	},
 

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.2.3
+// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.2.4
 //
 Puzzles.hashikake = function(){ };
 Puzzles.hashikake.prototype = {
@@ -34,8 +34,6 @@ Puzzles.hashikake.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		k.fstruct = ["cellqnum","borderline"];
-
 		//k.def_csize = 36;
 		k.def_psize = 16;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
@@ -44,6 +42,8 @@ Puzzles.hashikake.prototype = {
 		base.setExpression("　左ボタンで線が、右ボタンで×が入力できます。",
 						   " Left Button Drag to inpur lines, Right to input a cross.");
 		base.setFloatbgcolor("rgb(127, 191, 0)");
+
+		enc.pidKanpen = 'hashi';
 	},
 	menufix : function(){ },
 
@@ -241,39 +241,35 @@ Puzzles.hashikake.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeNumber16(bstr);}
-			else if(type==2)      { bstr = this.decodeKanpen(bstr); }
+		enc.pzlimport = function(type){
+			this.decodeNumber16();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"hashi.html?problem="+this.pzldataKanpen();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeNumber16();
+			this.encodeNumber16();
 		};
 
-		enc.decodeKanpen = function(bstr){
-			bstr = (bstr.split("_")).join(" ");
-			fio.decodeCell( function(c,ca){
-				if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			},bstr.split("/"));
-			return "";
+		enc.decodeKanpen = function(){
+			fio.decodeCellQnum_kanpen();
 		};
-		enc.pzldataKanpen = function(){
-			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
-				return (bd.QnC(c)>=0)?(bd.QnC(c).toString() + "_"):"._";
-			});
+		enc.encodeKanpen = function(){
+			fio.encodeCellQnum_kanpen();
 		};
 
 		//---------------------------------------------------------
-		fio.kanpenOpen = function(array){
+		fio.decodeData = function(){
+			this.decodeCellQnum();
+			this.decodeBorderLine();
+		};
+		fio.encodeData = function(){
+			this.encodeCellQnum();
+			this.encodeBorderLine();
+		};
+
+		fio.kanpenOpen = function(){
 			this.decodeCell( function(c,ca){
 				if(ca>="1" && ca<="8"){ bd.sQnC(c, parseInt(ca));}
 				else if(ca=="9")      { bd.sQsC(c, -2);}
-			},array.slice(0,k.qrows));
+			});
 			this.decodeCell( function(c,ca){
 				if(ca!="0"){
 					var datah = (parseInt(ca)&3);
@@ -287,14 +283,15 @@ Puzzles.hashikake.prototype = {
 						bd.sLiB(bd.rb(c),dataw);
 					}
 				}
-			},array.slice(k.qrows,2*k.qrows));
+			});
 		};
 		fio.kanpenSave = function(){
-			return ""+this.encodeCell( function(c){
+			this.encodeCell( function(c){
 				if     (bd.QnC(c) > 0){ return (bd.QnC(c).toString() + " ");}
 				else if(bd.QnC(c)==-2){ return "9 ";}
 				else                  { return ". ";}
-			})+this.encodeCell( function(c){
+			});
+			this.encodeCell( function(c){
 				if(bd.QnC(c)!=-1){ return "0 ";}
 				var datah = bd.LiB(bd.ub(c));
 				var dataw = bd.LiB(bd.lb(c));

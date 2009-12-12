@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バッグ版 bag.js v3.2.3p2
+// パズル固有スクリプト部 バッグ版 bag.js v3.2.4
 //
 Puzzles.bag = function(){ };
 Puzzles.bag.prototype = {
@@ -33,8 +33,6 @@ Puzzles.bag.prototype = {
 
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["cellqnum","cellqsub","borderans2"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -165,16 +163,23 @@ Puzzles.bag.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeNumber16(bstr);}
+		enc.pzlimport = function(type){
+			this.decodeNumber16();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
+			this.encodeNumber16();
 		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeNumber16();
+
+		//---------------------------------------------------------
+		fio.decodeData = function(){
+			this.decodeCellQnum();
+			this.decodeCellQsub();
+			this.decodeBorderAns2();
+		};
+		fio.encodeData = function(){
+			this.encodeCellQnum();
+			this.encodeCellQsub();
+			this.encodeBorderAns2();
 		};
 	},
 

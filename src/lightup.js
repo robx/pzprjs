@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 美術館版 lightup.js v3.2.3
+// パズル固有スクリプト部 美術館版 lightup.js v3.2.4
 //
 Puzzles.lightup = function(){ };
 Puzzles.lightup.prototype = {
@@ -33,8 +33,6 @@ Puzzles.lightup.prototype = {
 
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["cellqnumans"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -228,47 +226,45 @@ Puzzles.lightup.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0||type==1){ bstr = this.decode4Cell(bstr);}
-			else if(type==2)    { bstr = this.decodeKanpen(bstr); }
+		enc.pzlimport = function(type){
+			this.decode4Cell();
 		};
 		enc.pzlexport= function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"bijutsukan.html?problem="+this.pzldataKanpen();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encode4Cell();
+			this.encode4Cell();
 		};
 
-		enc.decodeKanpen = function(bstr){
-			bstr = (bstr.split("_")).join(" ");
+		enc.decodeKanpen = function(){
 			fio.decodeCell( function(c,ca){
-				if(ca == "5")     { bd.sQnC(c, -2);}
+				if     (ca == "5"){ bd.sQnC(c, -2);}
 				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			},bstr.split("/"));
-			return "";
+			});
 		};
-		enc.pzldataKanpen = function(){
-			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
-				if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + "_");}
-				else if(bd.QnC(c)==-2){ return "5_";}
-				else                  { return "._";}
+		enc.encodeKanpen = function(){
+			fio.encodeCell( function(c){
+				if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
+				else if(bd.QnC(c)==-2){ return "5 ";}
+				else                  { return ". ";}
 			});
 		};
 
 		//---------------------------------------------------------
-		fio.kanpenOpen = function(array){
+		fio.decodeData = function(){
+			this.decodeCellQnumAns();
+		};
+		fio.encodeData = function(){
+			return this.encodeCellQnumAns();
+		};
+
+		fio.kanpenOpen = function(){
 			this.decodeCell( function(c,ca){
-				if(ca == "5")     { bd.sQnC(c, -2);}
+				if     (ca == "5"){ bd.sQnC(c, -2);}
 				else if(ca == "+"){ bd.sQaC(c, 1);}
 				else if(ca == "*"){ bd.sQsC(c, 1);}
 				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			},array.slice(0,k.qrows));
+			});
 		};
 		fio.kanpenSave = function(){
-			return ""+this.encodeCell( function(c){
+			this.encodeCell( function(c){
 				if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
 				else if(bd.QaC(c)==1) { return "+ ";}
 				else if(bd.QsC(c)==1) { return "* ";}

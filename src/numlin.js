@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.2.3
+// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.2.4
 //
 Puzzles.numlin = function(){ };
 Puzzles.numlin.prototype = {
@@ -34,8 +34,6 @@ Puzzles.numlin.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		k.fstruct = ["cellqnum", "borderline"];
-
 		//k.def_csize = 36;
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
@@ -44,6 +42,8 @@ Puzzles.numlin.prototype = {
 		base.setExpression("　左ドラッグで線が、右ドラッグで×印が入力できます。",
 						   " Left Button Drag to input black cells, Right Click to input a cross.");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
+
+		enc.pidKanpen= 'numberlink';
 	},
 	menufix : function(){
 		menu.addRedLineToFlags();
@@ -138,43 +138,37 @@ Puzzles.numlin.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeNumber16(bstr);}
-			else if(type==2)      { bstr = this.decodeKanpen(bstr); }
+		enc.pzlimport = function(type){
+			this.decodeNumber16();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"numberlink.html?problem="+this.pzldataKanpen();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeNumber16();
+			this.encodeNumber16();
 		};
 
-		enc.decodeKanpen = function(bstr){
-			bstr = (bstr.split("_")).join(" ");
-			fio.decodeCell( function(c,ca){
-				if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			},bstr.split("/"));
-			return "";
+		enc.decodeKanpen = function(){
+			fio.decodeCellQnum_kanpen();
 		};
-		enc.pzldataKanpen = function(){
-			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
-				return (bd.QnC(c)>=0)?(bd.QnC(c).toString() + "_"):"._";
-			});
+		enc.encodeKanpen = function(){
+			fio.encodeCellQnum_kanpen();
 		};
 
 		//---------------------------------------------------------
-		fio.kanpenOpen = function(array){
-			this.decodeCell( function(c,ca){ if(ca != "."){ bd.sQnC(c, parseInt(ca));} },array.slice(0,k.qrows));
-			this.decodeBorderLine(array.slice(k.qrows,3*k.qrows-1));
+		fio.decodeData = function(){
+			this.decodeCellQnum();
+			this.decodeBorderLine();
+		};
+		fio.encodeData = function(){
+			this.encodeCellQnum();
+			this.encodeBorderLine();
+		};
+
+		fio.kanpenOpen = function(){
+			this.decodeCellQnum_kanpen();
+			this.decodeBorderLine();
 		};
 		fio.kanpenSave = function(){
-			return ""+this.encodeCell( function(c){
-				return (bd.QnC(c)>=0)?(bd.QnC(c).toString() + " "):". ";
-			})
-			+this.encodeBorderLine();
+			this.encodeCellQnum_kanpen();
+			this.encodeBorderLine();
 		};
 	},
 

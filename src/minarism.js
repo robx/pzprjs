@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 マイナリズム版 minarism.js v3.2.3
+// パズル固有スクリプト部 マイナリズム版 minarism.js v3.2.4
 //
 Puzzles.minarism = function(){ };
 Puzzles.minarism.prototype = {
@@ -33,8 +33,6 @@ Puzzles.minarism.prototype = {
 
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["others", "cellqanssub"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -274,21 +272,16 @@ Puzzles.minarism.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeMinarism(bstr, type);}
+		enc.pzlimport = function(type){
+			this.decodeMinarism(type);
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata(0);}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?"+this.pzldata(1);}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata(0);}
-		};
-		enc.pzldata = function(type){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeMinarism((type==null)?0:type);
+			this.encodeMinarism(type);
 		};
 
-		enc.decodeMinarism = function(bstr,type){
+		enc.decodeMinarism = function(type){
 			// 盤面外数字のデコード
-			var id=0, a=0, mgn=0;
+			var id=0, a=0, mgn=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
@@ -308,7 +301,7 @@ Puzzles.minarism.prototype = {
 
 				if(id >= 2*k.qcols*k.qrows){ a=i+1; break;}
 			}
-			return bstr.substr(a);
+			this.outbstr = bstr.substr(a);
 		};
 		enc.encodeMinarism = function(type){
 			var cm="", count=0, mgn=0;
@@ -336,28 +329,29 @@ Puzzles.minarism.prototype = {
 				else if(pstr||count==18){ cm+=((17+count).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm+=(17+count).toString(36);}
-			return cm;
+
+			this.outbstr += cm;
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			if(array.length<2*k.qrows-1){ return false;}
+		fio.decodeData = function(){
 			this.decodeBorder( function(c,ca){
 				if     (ca=="a"){ bd.sQuB(c, 1);}
 				else if(ca=="b"){ bd.sQuB(c, 2);}
 				else if(ca=="."){ bd.sQnB(c, -2);}
 				else if(ca!="0"){ bd.sQnB(c, parseInt(ca));}
-			},array.slice(0,2*k.qrows-1));
-			return true;
+			});
+			this.decodeCellQanssub();
 		};
-		fio.encodeOthers = function(){
-			return this.encodeBorder( function(c){
+		fio.encodeData = function(){
+			this.encodeBorder( function(c){
 				if     (bd.QuB(c)== 1){ return "a ";}
 				else if(bd.QuB(c)== 2){ return "b ";}
 				else if(bd.QnB(c)==-2){ return ". ";}
 				else if(bd.QnB(c)!=-1){ return ""+bd.QnB(c).toString()+" ";}
 				else                  { return "0 ";}
 			});
+			this.encodeCellQanssub();
 		};
 	},
 

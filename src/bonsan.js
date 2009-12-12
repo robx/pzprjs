@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.2.3
+// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.2.4
 //
 Puzzles.bonsan = function(){ };
 Puzzles.bonsan.prototype = {
@@ -33,8 +33,6 @@ Puzzles.bonsan.prototype = {
 
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["cellqnum","cellqsub","borderques","borderline"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -184,19 +182,27 @@ Puzzles.bonsan.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){
-				bstr = this.decodeBorder(bstr);
-				bstr = this.decodeNumber16(bstr);
-			}
+		enc.pzlimport = function(type){
+			this.decodeBorder();
+			this.decodeNumber16();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
+			this.encodeBorder();
+			this.encodeNumber16();
 		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeBorder()+this.encodeNumber16();
+
+		//---------------------------------------------------------
+		fio.decodeData = function(){
+			this.decodeCellQnum();
+			this.decodeCellQsub();
+			this.decodeBorderQues();
+			this.decodeBorderLine();
+		};
+		fio.encodeData = function(){
+			this.encodeCellQnum();
+			this.encodeCellQsub();
+			this.encodeBorderQues();
+			this.encodeBorderLine();
 		};
 	},
 

@@ -55,12 +55,11 @@ else{
 	#$str = join(',', map("\"$_\"", split(/[\r\n]+/, $str)));
 
 	my @lines0 = split(/[\r\n]+/, $str);
-	my @lines = ();
+	my $datastr = "";
 	foreach(@lines0){
 		#if($_ eq ''){ last;}
-		push @lines, $_;
+		$datastr .= "$_\/";
 	}
-	$str = join(',', map("\"$_\"", @lines));
 
 	print <<"EOL";
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -70,8 +69,8 @@ else{
 <script type="text/javascript">
 <!--
 EOL
-	if   ($q->param('pencilbox')==0){ printf("if(parent.fio){ parent.fio.fileopen([$str], 1);}\n");}
-	elsif($q->param('pencilbox')==1){ printf("if(parent.fio){ parent.fio.fileopen([$str], 2);}\n");}
+	if   ($q->param('pencilbox')==0){ printf("if(parent.fio){ parent.fio.filedecode(\"$datastr\", 1);}\n");}
+	elsif($q->param('pencilbox')==1){ printf("if(parent.fio){ parent.fio.filedecode(\"$datastr\", 2);}\n");}
 	print <<"EOL";
 //-->
 </script>

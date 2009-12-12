@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンロー版 nanro.js v3.2.3
+// パズル固有スクリプト部 ナンロー版 nanro.js v3.2.4
 //
 Puzzles.nanro = function(){ };
 Puzzles.nanro.prototype = {
@@ -34,8 +34,6 @@ Puzzles.nanro.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		k.fstruct = ["arearoom", "cellqnum", "cellqanssub"];
-
 		//k.def_csize = 36;
 		//k.def_psize = 24;
 		k.area = { bcell:0, wcell:0, number:1};	// areaオブジェクトで領域を生成する
@@ -44,6 +42,8 @@ Puzzles.nanro.prototype = {
 		base.setExpression("　数字などをクリックして動かすことで、数字を入力することができます。右クリックしてマウスを動かして×を入力することもできます。",
 						   " Press Mouse Button on the number and Move to copy the number. It is able to Press Right Mouse Button and Move to input a cross.");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
+
+		enc.pidKanpen = 'nanro';
 	},
 	menufix : function(){
 		kp.defaultdisp = true;
@@ -183,85 +183,34 @@ Puzzles.nanro.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){
-				bstr = this.decodeBorder(bstr);
-				bstr = this.decodeNumber16(bstr);
-			}
-			else if(type==2){ bstr = this.decodeKanpen(bstr);}
+		enc.pzlimport = function(type){
+			this.decodeBorder();
+			this.decodeNumber16();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"nanro.html?problem="+this.encodeKanpen();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeBorder()+this.encodeNumber16();
+			this.encodeBorder();
+			this.encodeNumber16();
 		};
 
-		enc.decodeKanpen = function(bstr){
-			var barray = bstr.split("/").slice(1,k.qrows+1);
-			var carray = [];
-			for(var i=0;i<k.qrows;i++){
-				var array2 = barray[i].split("_");
-				for(var j=0;j<array2.length;j++){ if(array2[j]!=""){ carray.push(array2[j]);} }
-			}
-			this.decodeRoom_kanpen(carray);
-
-			barray = bstr.split("/").slice(k.qrows+1,2*k.qrows+1);
-			for(var i=0;i<barray.length;i++){ barray[i] = (barray[i].split("_")).join(" ");}
-			fio.decodeCell( function(c,ca){
-				if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			},barray);
-
-			return "";
+		enc.decodeKanpen = function(){
+			fio.decodeAreaRoom();
+			fio.decodeCellQnum_kanpen();
 		};
-		enc.decodeRoom_kanpen = function(array){
-			for(var id=0;id<bd.bdmax;id++){
-				var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
-				if(cc1!=-1 && cc2!=-1 && array[cc1]!=array[cc2]){ bd.sQuB(id,1);}
-				else{ bd.sQuB(id,0);}
-			}
-		};
-
 		enc.encodeKanpen = function(){
-			return ""+k.qrows+"/"+k.qcols+"/"+this.encodeRoom_kanpen()+
-			fio.encodeCell( function(c){
-				return (bd.QnC(c)>=0)?(bd.QnC(c).toString() + "_"):"._";
-			});
-		};
-		enc.encodeRoom_kanpen = function(){
-			var rinfo = area.getRoomInfo();
-			var bstr = "";
-			for(var c=0;c<bd.cellmax;c++){
-				bstr += (""+(rinfo.id[c]-1)+"_");
-				if((c+1)%k.qcols==0){ bstr += "/";}
-			}
-			return ""+rinfo.max+"/"+bstr;
+			fio.encodeAreaRoom();
+			fio.encodeCellQnum_kanpen();
 		};
 
 		//---------------------------------------------------------
-		fio.kanpenOpen = function(array){
-			var rmax = array.shift();
-			var barray = array.slice(0,2*k.qrows);
-			for(var i=0;i<barray.length;i++){ barray[i] = barray[i].replace(/ /g, "_");}
-			enc.decodeKanpen(""+rmax+"/"+barray.join("/"));
-			this.decodeCell( function(c,ca){
-				if(ca!="."&&ca!="0"){ bd.sQaC(c, parseInt(ca));}
-			},array.slice(2*k.qrows,3*k.qrows));
+		fio.decodeData = function(){
+			this.decodeAreaRoom();
+			this.decodeCellQnum();
+			this.decodeCellQanssub();
 		};
-		fio.kanpenSave = function(){
-			var barray = enc.encodeKanpen().split("/");
-			barray.shift(); barray.shift();
-			var rmax = barray.shift();
-			for(var i=0;i<barray.length;i++){ barray[i] = barray[i].replace(/_/g, " ");}
-			var ansstr = this.encodeCell( function(c){
-				if     (bd.QnC(c)!=-1){ return ". ";}
-				else if(bd.QaC(c)==-1){ return "0 ";}
-				else                  { return ""+bd.QaC(c).toString()+" ";}
-			})
-			return rmax + "/" + barray.join("/") + ansstr+"/";
+		fio.encodeData = function(){
+			this.encodeAreaRoom();
+			this.encodeCellQnum();
+			this.encodeCellQanssub();
 		};
 	},
 

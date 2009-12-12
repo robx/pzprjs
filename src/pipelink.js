@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.2.3
+// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.2.4
 //
 Puzzles.pipelink = function(){ };
 Puzzles.pipelink.prototype = {
@@ -33,8 +33,6 @@ Puzzles.pipelink.prototype = {
 
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["others", "borderline"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -222,24 +220,21 @@ Puzzles.pipelink.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodePipelink(bstr);}
+		enc.pzlimport = function(type){
+			this.decodePipelink();
 			if(this.checkpflag("i") && this.disp==0){ pc.changedisp();}
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/q.html?"+this.pzldata2();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
+			this.outpflag = (pc.disp==0 ? "" : "i");
+			this.encodePipelink(type);
 		};
-		enc.pzldata  = function(){ return ""+(pc.disp==0?"/":"/i/")+k.qcols+"/"+k.qrows+"/"+this.encodePipelink(1);};
-		enc.pzldata2 = function(){ return ""+(pc.disp==0?"/": "i/")+k.qcols+"/"+k.qrows+"/"+this.encodePipelink(2);};
 
-		enc.decodePipelink = function(bstr){
-			var c=0;
+		enc.decodePipelink = function(){
+			var c=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
-				if     (ca=='.')             { bd.sQuC(c, -2); c++;}
+				if     (ca=='.'){ bd.sQuC(c, -2); c++;}
 				else if(ca>='0' && ca<='9'){
 					var imax = parseInt(ca,10)+1; var icur;
 					for(icur=0;icur<imax;icur++){ bd.sQuC(c, 6); c++;}
@@ -251,7 +246,7 @@ Puzzles.pipelink.prototype = {
 				if(c > bd.cellmax){ break;}
 			}
 
-			return bstr.substr(i);
+			this.outbstr = bstr.substr(i);
 		};
 		enc.encodePipelink = function(type){
 			var count, pass;
@@ -261,12 +256,16 @@ Puzzles.pipelink.prototype = {
 			count=0;
 			for(var i=0;i<bd.cellmax;i++){
 				if     (bd.QuC(i) == -2){ pstr = ".";}
-				else if(bd.QuC(i) ==  6 && type==1){
-					var icur;
-					for(icur=1;icur<10;icur++){ if(bd.QuC(i+icur)!=6){ break;}}
-					pstr = (icur-1).toString(10); i+=(icur-1);
+				else if(bd.QuC(i) ==  6){
+					if(type==0){
+						var icur;
+						for(icur=1;icur<10;icur++){ if(bd.QuC(i+icur)!=6){ break;}}
+						pstr = (icur-1).toString(10); i+=(icur-1);
+					}
+					else if(type==1){
+						pstr = "0";
+					}
 				}
-				else if(bd.QuC(i)==6 && type==2){ pstr = "0";}
 				else if(bd.QuC(i)>=101 && bd.QuC(i)<=107){ pstr = (bd.QuC(i)-91).toString(36);}
 				else{ pstr = ""; count++;}
 
@@ -275,27 +274,28 @@ Puzzles.pipelink.prototype = {
 			}
 			if(count>0){ cm+=(16+count).toString(36);}
 
-			return cm;
+			this.outbstr += cm;
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			if(array.length<k.qrows+1){ return false;}
-			if(array[0]=="circle"){pc.disp=0;}else if(array[0]=="ice"){pc.disp=1;}
+		fio.decodeData = function(){
+			pc.disp = (this.readLine()=="circle" ? 0 : 1);
 			this.decodeCell( function(c,ca){
 				if(ca == "o")     { bd.sQuC(c, 6); }
 				else if(ca == "-"){ bd.sQuC(c, -2);}
 				else if(ca != "."){ bd.sQuC(c, parseInt(ca,36)+91);}
-			},array.slice(1,k.qrows+1));
-			return true;
+			});
+			this.decodeBorderLine();
 		};
-		fio.encodeOthers = function(){
-			return (""+(pc.disp==0?"circle":"ice")+"/"+this.encodeCell( function(c){
+		fio.encodeData = function(){
+			this.datastr += (pc.disp==0?"circle/":"ice/");
+			this.encodeCell( function(c){
 				if     (bd.QuC(c)==6) { return "o ";}
 				else if(bd.QuC(c)>=101 && bd.QuC(c)<=107) { return ""+(bd.QuC(c)-91).toString(36)+" ";}
 				else if(bd.QuC(c)==-2){ return "- ";}
 				else                  { return ". ";}
-			}) );
+			});
+			this.encodeBorderLine();
 		};
 	},
 

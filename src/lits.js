@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ＬＩＴＳ版 lits.js v3.2.3
+// パズル固有スクリプト部 ＬＩＴＳ版 lits.js v3.2.4
 //
 Puzzles.lits = function(){ };
 Puzzles.lits.prototype = {
@@ -34,8 +34,6 @@ Puzzles.lits.prototype = {
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		k.fstruct = ["arearoom","cellans"];
-
 		//k.def_csize = 36;
 		//k.def_psize = 24;
 		k.area = { bcell:1, wcell:0, number:0};	// areaオブジェクトで領域を生成する
@@ -44,6 +42,8 @@ Puzzles.lits.prototype = {
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
 						   " Left Click to input black cells, Right Click to input determined white cells.");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
+
+		enc.pidKanpen = 'lits';
 	},
 	menufix : function(){
 		menu.addUseToFlags();
@@ -96,75 +96,50 @@ Puzzles.lits.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if((type==1 && this.checkpflag("c")) || (type==0 && !this.checkpflag("d"))){
-				bstr = this.decodeBorder(bstr);
-			}
-			else if(type==0 || type==1){ bstr = this.decodeLITS_old(bstr);}
-			else if(type==2 && this.checkpflag("c")){ bstr = this.decodeBorder(bstr);}
-			else if(type==2 && bstr.indexOf("/")>=0){ bstr = this.decodeKanpen(bstr);}
-			else if(type==2){ bstr = this.decodeLITS_old(bstr);}
+		enc.pzlimport = function(type){
+			var oldflag = ((type===0 && this.checkpflag("d"))||(type===1 && !this.checkpflag("c")));
+
+			if(!oldflag){ this.decodeBorder();  }
+			else        { this.decodeLITS_old();}
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"lits.html?pzpr=c"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeBorder();
-		};
-		enc.pzldataKanpen = function(){
-			var rinfo = area.getRoomInfo();
-			var bstr = "";
-			for(var c=0;c<bd.cellmax;c++){
-				bstr += (""+(rinfo.id[c]-1)+"_");
-				if((c+1)%k.qcols==0){ bstr += "/";}
-			}
-			return ""+k.qrows+"/"+k.qcols+"/"+rinfo.max+"/"+bstr;
+			if(type==1){ this.outpflag='c';}
+			this.encodeBorder();
 		};
 
-		enc.decodeKanpen = function(bstr){
-			var array1 = bstr.split("/");
-			array1.shift();
-			var array = [];
-			for(var i=0;i<array1.length;i++){
-				var array2 = array1[i].split("_");
-				var j;
-				for(j=0;j<array2.length;j++){
-					if(array2[j]!=""){ array.push(array2[j]);}
-				}
-			}
-			this.decodeLITS(array);
-			return "";
+		enc.decodeKanpen = function(){
+			fio.decodeAreaRoom();
 		};
-		enc.decodeLITS_old = function(bstr){
-			var array = [];
-			for(var i=0;i<bstr.length;i++){ array.push(bstr.charAt(i));}
-			this.decodeLITS(array);
-			return "";
+		enc.encodeKanpen = function(){
+			fio.encodeAreaRoom();
 		};
-		enc.decodeLITS = function(array){
+
+		enc.decodeLITS_old = function(){
+			var bstr = this.outbstr;
 			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
-				if(cc1!=-1 && cc2!=-1 && array[cc1]!=array[cc2]){ bd.sQuB(id,1);}
+				if(cc1!=-1 && cc2!=-1 && bstr.charAt(cc1)!=bstr.charAt(cc2)){ bd.sQuB(id,1);}
 			}
+			this.outbstr = bstr.substr(bd.cellmax);
 		};
 
 		//---------------------------------------------------------
-		fio.kanpenOpen = function(array){
-			var rmax = array.shift();
-			var barray = array.slice(0,k.qrows);
-			for(var i=0;i<barray.length;i++){ barray[i] = barray[i].replace(/ /g, "_");}
-			enc.decodeKanpen(""+rmax+"/"+barray.join("/"));
-			this.decodeCellAns(array.slice(k.qrows,2*k.qrows));
+		fio.decodeData = function(){
+			this.decodeAreaRoom();
+			this.decodeCellAns();
+		};
+		fio.encodeData = function(){
+			this.encodeAreaRoom();
+			this.encodeCellAns();
+		};
+
+		fio.kanpenOpen = function(){
+			this.decodeAreaRoom();
+			this.decodeCellAns();
 		};
 		fio.kanpenSave = function(){
-			var barray = enc.pzldataKanpen().split("/");
-			barray.shift(); barray.shift();
-			var rmax = barray.shift();
-			for(var i=0;i<barray.length;i++){ barray[i] = barray[i].replace(/_/g, " ");}
-			return rmax + "/" + barray.join("/") + this.encodeCellAns()+"/";
+			this.encodeAreaRoom();
+			this.encodeCellAns();
 		};
 	},
 

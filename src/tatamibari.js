@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.2.3
+// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.2.4
 //
 Puzzles.tatamibari = function(){ };
 Puzzles.tatamibari.prototype = {
@@ -33,8 +33,6 @@ Puzzles.tatamibari.prototype = {
 
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["others","borderans"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -163,20 +161,15 @@ Puzzles.tatamibari.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeTatamibari(bstr);}
+		enc.pzlimport = function(type){
+			this.decodeTatamibari();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeTatamibari();
+			this.encodeTatamibari();
 		};
 
-		enc.decodeTatamibari = function(bstr){
-			var c = 0;
+		enc.decodeTatamibari = function(){
+			var c=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
@@ -190,7 +183,7 @@ Puzzles.tatamibari.prototype = {
 				if(c > bd.cellmax){ break;}
 			}
 
-			return bstr.substr(i);
+			this.outbstr = bstr.substr(i);
 		};
 		enc.encodeTatamibari = function(){
 			var count, pass, i;
@@ -210,28 +203,28 @@ Puzzles.tatamibari.prototype = {
 			}
 			if(count>0){ cm+=(15+count).toString(36);}
 
-			return cm;
+			this.outbstr += cm;
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			if(array.length<k.qrows){ return false;}
+		fio.decodeData = function(){
 			this.decodeCell( function(c,ca){
 				if     (ca=="a"){ bd.sQuC(c, 102);}
 				else if(ca=="b"){ bd.sQuC(c, 103);}
 				else if(ca=="c"){ bd.sQuC(c, 101);}
 				else if(ca=="-"){ bd.sQuC(c, -2);}
-			},array);
-			return true;
+			});
+			this.decodeBorderAns();
 		};
-		fio.encodeOthers = function(){
-			return this.encodeCell( function(c){
-				if     (bd.QuC(c)==-2) { return "o ";}
+		fio.encodeData = function(){
+			this.encodeCell( function(c){
+				if     (bd.QuC(c)==-2) { return "- ";}
 				else if(bd.QuC(c)==101){ return "c ";}
 				else if(bd.QuC(c)==102){ return "a ";}
 				else if(bd.QuC(c)==103){ return "b ";}
 				else                   { return ". ";}
 			});
+			this.encodeBorderAns();
 		};
 	},
 

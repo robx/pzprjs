@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 トリプレイス版 triplace.js v3.2.3
+// パズル固有スクリプト部 トリプレイス版 triplace.js v3.2.4
 //
 Puzzles.triplace = function(){ };
 Puzzles.triplace.prototype = {
@@ -33,8 +33,6 @@ Puzzles.triplace.prototype = {
 
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["cellqnum51", "borderans", "others"];
 
 		//k.def_csize = 36;
 		k.def_psize = 40;
@@ -200,21 +198,16 @@ Puzzles.triplace.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeTriplace(bstr);}
+		enc.pzlimport = function(type){
+			this.decodeTriplace();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeTriplace();
+			this.encodeTriplace();
 		};
 
-		enc.decodeTriplace = function(bstr){
+		enc.decodeTriplace = function(){
 			// 盤面内数字のデコード
-			var cell=0, a=0;
+			var cell=0, a=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
@@ -265,7 +258,7 @@ Puzzles.triplace.prototype = {
 				if(cell>=k.qcols+k.qrows){ a=i+1; break;}
 			}
 
-			return bstr.substr(a);
+			this.outbstr = bstr.substr(a);
 		};
 		enc.encodeTriplace = function(type){
 			var cm="";
@@ -308,21 +301,22 @@ Puzzles.triplace.prototype = {
 				else if(bd.QnE(c)<256){ cm += ("-"+bd.QnE(c).toString(16));}
 			}
 
-			return cm;
+			this.outbstr += cm;
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			if(array.length<k.qrows){ return false;}
+		fio.decodeData = function(){
+			this.decodeCellQnum51();
+			this.decodeBorderAns();
 			this.decodeCell( function(c,ca){
 				if     (ca == "+"){ bd.sQsC(c, 1);}
 				else if(ca == "-"){ bd.sQsC(c, 2);}
-			},array.slice(0,k.qrows));
-			return true;
+			});
 		};
-
-		fio.encodeOthers = function(){
-			return ""+this.encodeCell( function(c){
+		fio.encodeData = function(){
+			this.encodeCellQnum51();
+			this.encodeBorderAns();
+			this.encodeCell( function(c){
 				if     (bd.QsC(c)==1){ return "+ ";}
 				else if(bd.QsC(c)==2){ return "- ";}
 				else                 { return ". ";}
