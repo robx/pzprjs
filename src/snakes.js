@@ -197,7 +197,7 @@ Puzzles.snakes.prototype = {
 				var c = clist[i], obj = bd.cell[c];
 				if(obj.qnum===-1 && obj.qans>0){
 					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-					this.dispnum(obj.numobj, 1, ""+obj.qans, 0.8, this.fontanscolor, obj.px, obj.py);
+					this.dispnum(obj.numobj, 1, ""+obj.qans, 0.8, this.fontAnscolor, obj.px, obj.py);
 				}
 			}
 		};

@@ -464,7 +464,10 @@ Encode.prototype = {
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if     (ca=='0'){ bd.sQnC(c, parseInt(bstr.substr(i+1,1),16)); c++; i++; }
+			if(ca=='0'){
+				if(bstr.charAt(i+1)=="."){ bd.sQnC(c,-2); c++; i++;}
+				else{ bd.sQnC(c, parseInt(bstr.substr(i+1,1),16)); c++; i++;}
+			}
 			else if(ca=='5'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),16)); c++; i+=2;}
 			else if(this.include(ca,"1","4")){
 				bd.sDiC(c, parseInt(ca,16));
