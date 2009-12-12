@@ -17,6 +17,11 @@ Encode = function(){
 	this.uri.cols;		// 入力されたURLの横幅部分
 	this.uri.rows;		// 入力されたURLの縦幅部分
 	this.uri.bstr;		// 入力されたURLの盤面部分
+
+	this.pidKanpen = '';
+	this.outpflag  = '';
+	this.outsize   = '';
+	this.outbstr   = '';
 };
 Encode.prototype = {
 	//---------------------------------------------------------------------------
@@ -33,6 +38,11 @@ Encode.prototype = {
 		this.uri.cols = 0;
 		this.uri.rows = 0;
 		this.uri.bstr = "";
+
+		this.pidKanpen = '';
+		this.outpflag  = '';
+		this.outsize   = '';
+		this.outbstr   = '';
 	},
 
 	first_parseURI : function(search){
@@ -140,23 +150,39 @@ Encode.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// enc.pzlinput()     data_decode()を行った後に呼び出し、各パズルのpzlinput関数を呼び出す
-	// enc.pzlimport()    各パズルのURL入力用(オーバーライド用)
-	// enc.pzlexport()    各パズルのURL出力用(オーバーライド用)
 	// enc.checkpflag()   pflagに指定した文字列が含まれているか調べる
 	//---------------------------------------------------------------------------
-	pzlinput : function(){
-		if((k.puzzleid=="icebarn" || k.puzzleid=="icelom") && bd.arrowin==-1 && bd.arrowout==-1){
-			bd.inputarrowin (0 + bd.bdinside, 1);
-			bd.inputarrowout(2 + bd.bdinside, 1);
-		}
+	checkpflag : function(ca){ return (this.uri.pflag.indexOf(ca)>=0);},
 
+	//---------------------------------------------------------------------------
+	// enc.pzlinput()   parseURI()を行った後に呼び出し、各パズルのpzlimport関数を呼び出す
+	// enc.getURLbase() このスクリプトが置いてあるURLを表示する
+	// enc.getDocbase() このスクリプトが置いてあるドメイン名を表示する
+	// enc.kanpenbase() カンペンのドメイン名を表示する
+	// 
+	// enc.pzlimport()    各パズルのURL入力用(オーバーライド用)
+	// enc.pzlexport()    各パズルのURL出力用(オーバーライド用)
+	//---------------------------------------------------------------------------
+	pzlinput : function(){
 		if(this.uri.cols && this.uri.rows){
 			bd.initBoardSize(this.uri.cols, this.uri.rows);
 		}
 		if(this.uri.bstr){
 			um.disableRecord(); um.disableInfo();
-			this.pzlimport(this.uri.type, this.uri.bstr);
+			switch(this.uri.type){
+			case 0: case 1: case 3:
+				this.outbstr = this.uri.bstr;
+				this.pzlimport(this.uri.type);
+				break;
+			case 2:
+				fio.lineseek = 0;
+				fio.dataarray = this.uri.bstr.replace(/_/g, " ").split("/");
+				this.decodeKanpen();
+				break;
+			case 4:
+				this.decodeHeyaApp();
+				break;
+			}
 			um.enableRecord(); um.enableInfo();
 
 			bd.ansclear();
@@ -165,17 +191,66 @@ Encode.prototype = {
 			base.resize_canvas_onload();
 		}
 	},
-	pzlimport : function(type,bstr){ },	// オーバーライド用
-	pzlexport : function(type){ },		// オーバーライド用
+	pzloutput : function(type){
+		this.outpflag = '';
+		this.outsize = '';
+		this.outbstr = '';
 
-	checkpflag : function(ca){ return (this.uri.pflag.indexOf(ca)>=0);},
+		if(type===0 || type===3 || type===1 || (type===2 && k.puzzleid=='lits')){
+			this.pzlexport(((type===0 || type===3)?0:1));
+
+			var size = [k.qcols,k.qrows].join('/');
+			if(!!this.outsize){ size = this.outsize;}
+
+			var pflag = this.outpflag, bstr = this.outbstr;
+
+			if(type===0 || type===3){
+				return [this.getURLbase(),(type===3?"m+":""),k.puzzleid,"/",(!!pflag?(pflag+"/"):""),size,"/",bstr].join('');
+			}
+			else if(type===1){
+				return [this.getDocbase(),k.puzzleid,"/sa/m.html?",pflag,"/",size,"/",bstr].join('');
+			}
+			else if(type===2){
+				return [this.kanpenbase(),this.pidKanpen,".html?pzpr=",pflag,"/",size,"/",bstr].join('');
+			}
+		}
+		else if(type===2){
+			fio.datastr = "";
+			this.encodeKanpen()
+			var bstr = fio.datastr.replace(/ /g, "_");
+
+			var size = [k.qrows,k.qcols].join('/');
+			if(!!this.outsize){ size = this.outsize;}
+
+			return [this.kanpenbase(),this.pidKanpen,".html?problem=",size,"/",bstr].join('');
+		}
+		else if(type===4){
+			var bstr = this.encodeHeyaApp(bstr);
+			var size = [k.qcols,k.qrows].join('x');
+
+			return ["http://www.geocities.co.jp/heyawake/?problem=",size,"/",bstr].join('');
+		}
+
+		return '';
+	},
+	getURLbase : function(){ return "http://indi.s58.xrea.com/pzpr/v3/p.html?";},
+	getDocbase : function(){ return "http://indi.s58.xrea.com/";},
+	kanpenbase : function(){ return "http://www.kanpen.net/";},
+
+	// オーバーライド用
+	pzlimport : function(type,bstr){ },
+	pzlexport : function(type){ },
+	decodeKanpen : function(){ },
+	encodeKanpen : function(){ },
+	decodeHeyaApp : function(bstr){ },
+	encodeHeyaApp : function(){ },
 
 	//---------------------------------------------------------------------------
 	// enc.decode4Cell()  quesが0～4までの場合、デコードする
 	// enc.encode4Cell()  quesが0～4までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
-	decode4Cell : function(bstr){
-		var c=0, i=0;
+	decode4Cell : function(){
+		var c=0, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 			if     (this.include(ca,"0","4")){ bd.sQnC(c, parseInt(ca,16));    c++; }
@@ -186,10 +261,10 @@ Encode.prototype = {
 
 			if(c>=bd.cellmax){ break;}
 		}
-		return bstr.substr(i+1);
+		this.outbstr = bstr.substr(i+1);
 	},
 	encode4Cell : function(){
-		var count = 0, cm = "";
+		var count=0, cm = "";
 		for(var i=0;i<bd.cellmax;i++){
 			var pstr = "";
 
@@ -207,15 +282,15 @@ Encode.prototype = {
 		}
 		if(count>0){ cm += ((count+15).toString(36));}
 
-		return cm;
+		this.outbstr += cm;
 	},
 
 	//---------------------------------------------------------------------------
 	// enc.decode4Cross()  quesが0～4までの場合、デコードする
 	// enc.encode4Cross()  quesが0～4までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
-	decode4Cross : function(bstr){
-		var c=0, i=0;
+	decode4Cross : function(){
+		var c=0, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 			if     (this.include(ca,"0","4")){ bd.sQnX(c, parseInt(ca,16));    c++; }
@@ -226,7 +301,7 @@ Encode.prototype = {
 
 			if(c>=bd.crossmax){ break;}
 		}
-		return bstr.substr(i+1);
+		this.outbstr = bstr.substr(i+1);
 	},
 	encode4Cross : function(){
 		var count = 0, cm = "";
@@ -247,15 +322,15 @@ Encode.prototype = {
 		}
 		if(count>0){ cm += ((count+15).toString(36));}
 
-		return cm;
+		this.outbstr += cm;
 	},
 
 	//---------------------------------------------------------------------------
 	// enc.decodeNumber10()  quesが0～9までの場合、デコードする
 	// enc.encodeNumber10()  quesが0～9までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
-	decodeNumber10 : function(bstr){
-		var c=0, i=0;
+	decodeNumber10 : function(){
+		var c=0, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
@@ -266,7 +341,7 @@ Encode.prototype = {
 
 			if(c > bd.cellmax){ break;}
 		}
-		return bstr.substr(i);
+		this.outbstr = bstr.substr(i);
 	},
 	encodeNumber10 : function(){
 		var cm="", count=0;
@@ -283,15 +358,15 @@ Encode.prototype = {
 		}
 		if(count>0){ cm+=(9+count).toString(36);}
 
-		return cm;
+		this.outbstr += cm;
 	},
 
 	//---------------------------------------------------------------------------
 	// enc.decodeNumber16()  quesが0～8192?までの場合、デコードする
 	// enc.encodeNumber16()  quesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
-	decodeNumber16 : function(bstr){
-		var c = 0, i=0;
+	decodeNumber16 : function(){
+		var c=0, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
@@ -307,7 +382,7 @@ Encode.prototype = {
 
 			if(c > bd.cellmax){ break;}
 		}
-		return bstr.substr(i);
+		this.outbstr = bstr.substr(i);
 	},
 	encodeNumber16 : function(){
 		var count=0, cm="";
@@ -328,16 +403,16 @@ Encode.prototype = {
 		}
 		if(count>0){ cm+=(15+count).toString(36);}
 
-		return cm;
+		this.outbstr += cm;
 	},
 
 	//---------------------------------------------------------------------------
 	// enc.decodeRoomNumber16()  部屋＋部屋の一つのquesが0～8192?までの場合、デコードする
 	// enc.encodeRoomNumber16()  部屋＋部屋の一つのquesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
-	decodeRoomNumber16 : function(bstr){
+	decodeRoomNumber16 : function(){
 		area.resetRarea();
-		var r = 1, i=0;
+		var r=1, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
@@ -354,7 +429,7 @@ Encode.prototype = {
 
 			if(r > area.room.max){ break;}
 		}
-		return bstr.substr(i);
+		this.outbstr = bstr.substr(i);
 	},
 	encodeRoomNumber16 : function(){
 		area.resetRarea();
@@ -377,15 +452,15 @@ Encode.prototype = {
 		}
 		if(count>0){ cm+=(15+count).toString(36);}
 
-		return cm;
+		this.outbstr += cm;
 	},
 
 	//---------------------------------------------------------------------------
 	// enc.decodeArrowNumber16()  矢印付きquesが0～8192?までの場合、デコードする
 	// enc.encodeArrowNumber16()  矢印付きquesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
-	decodeArrowNumber16 : function(bstr){
-		var c=0, i=0;
+	decodeArrowNumber16 : function(){
+		var c=0, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
@@ -407,7 +482,7 @@ Encode.prototype = {
 
 			if(c > bd.cellmax){ break;}
 		}
-		return bstr.substr(i);
+		this.outbstr = bstr.substr(i);
 	},
 	encodeArrowNumber16 : function(){
 		var cm = "", count = 0;
@@ -426,15 +501,15 @@ Encode.prototype = {
 		}
 		if(count>0){ cm += (count+9).toString(36);}
 
-		return cm;
+		this.outbstr += cm;
 	},
 
 	//---------------------------------------------------------------------------
 	// enc.decodeBorder() 問題の境界線をデコードする
 	// enc.encodeBorder() 問題の境界線をエンコードする
 	//---------------------------------------------------------------------------
-	decodeBorder : function(bstr){
-		var pos1, pos2;
+	decodeBorder : function(){
+		var pos1, pos2, bstr = this.outbstr;
 
 		if(bstr){
 			pos1 = Math.min(mf(((k.qcols-1)*k.qrows+4)/5)     , bstr.length);
@@ -458,7 +533,7 @@ Encode.prototype = {
 		}
 
 		area.resetRarea();
-		return bstr.substr(pos2);
+		this.outbstr = bstr.substr(pos2);
 	},
 	encodeBorder : function(){
 		var num, pass;
@@ -478,15 +553,15 @@ Encode.prototype = {
 		}
 		if(num>0){ cm += pass.toString(32);}
 
-		return cm;
+		this.outbstr += cm;
 	},
 
 	//---------------------------------------------------------------------------
 	// enc.decodeCrossMark() 黒点をデコードする
 	// enc.encodeCrossMark() 黒点をエンコードする
 	//---------------------------------------------------------------------------
-	decodeCrossMark : function(bstr){
-		var cc = -1, i=0;
+	decodeCrossMark : function(){
+		var cc=-1, i=0, bstr = this.outbstr
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
@@ -503,7 +578,7 @@ Encode.prototype = {
 
 			if(cc >= (k.isoutsidecross==1?(k.qcols+1)*(k.qrows+1):(k.qcols-1)*(k.qrows-1))-1){ i++; break;}
 		}
-		return bstr.substr(i);
+		this.outbstr = bstr.substr(i);
 	},
 	encodeCrossMark : function(){
 		var cm = "", count = 0;
@@ -520,13 +595,44 @@ Encode.prototype = {
 		}
 		if(count>0){ cm += count.toString(36);}
 
-		return cm;
+		this.outbstr += cm;
+	},
+
+	//---------------------------------------------------------------------------
+	// enc.decodeCircle41_42() 白丸・黒丸をデコードする
+	// enc.encodeCircle41_42() 白丸・黒丸をエンコードする
+	//---------------------------------------------------------------------------
+	decodeCircle41_42 : function(){
+		var bstr = this.outbstr;
+		var pos = bstr?Math.min(mf((k.qcols*k.qrows+2)/3), bstr.length):0;
+		for(var i=0;i<pos;i++){
+			var ca = parseInt(bstr.charAt(i),27);
+			for(var w=0;w<3;w++){
+				if(i*3+w<k.qcols*k.qrows){
+					if     (mf(ca/Math.pow(3,2-w))%3==1){ bd.sQuC(i*3+w,41);}
+					else if(mf(ca/Math.pow(3,2-w))%3==2){ bd.sQuC(i*3+w,42);}
+				}
+			}
+		}
+		this.outbstr = bstr.substr(pos);
+	},
+	encodeCircle41_42 : function(){
+		var cm="", num=0, pass=0;
+		for(var i=0;i<bd.cellmax;i++){
+			if     (bd.QuC(i)==41){ pass+=(  Math.pow(3,2-num));}
+			else if(bd.QuC(i)==42){ pass+=(2*Math.pow(3,2-num));}
+			num++; if(num==3){ cm += pass.toString(27); num=0; pass=0;}
+		}
+		if(num>0){ cm += pass.toString(27);}
+
+		this.outbstr += cm;
 	},
 
 	//---------------------------------------------------------------------------
 	// enc.decodecross_old() Crossの問題部をデコードする(旧形式)
 	//---------------------------------------------------------------------------
-	decodecross_old : function(bstr){
+	decodecross_old : function(){
+		var bstr = this.outbstr;
 		for(var i=0;i<Math.min(bstr.length, bd.crossmax);i++){
 			if     (bstr.charAt(i)=="0"){ bd.sQnX(i,0);}
 			else if(bstr.charAt(i)=="1"){ bd.sQnX(i,1);}
@@ -537,20 +643,14 @@ Encode.prototype = {
 		}
 		for(var j=bstr.length;j<bd.crossmax;j++){ bd.sQnX(j,-1);}
 
-		return bstr.substr(i);
+		this.outbstr = bstr.substr(i);
 	},
 
 	//---------------------------------------------------------------------------
 	// enc.include()    文字列caはbottomとupの間にあるか
-	// enc.getURLbase() このスクリプトが置いてあるURLを表示する
-	// enc.getDocbase() このスクリプトが置いてあるドメイン名を表示する
-	// enc.kanpenbase() カンペンのドメイン名を表示する
 	//---------------------------------------------------------------------------
 	include : function(ca, bottom, up){
 		if(bottom <= ca && ca <= up) return true;
 		return false;
-	},
-	getURLbase : function(){ return "http://indi.s58.xrea.com/pzpr/v3/p.html";},
-	getDocbase : function(){ return "http://indi.s58.xrea.com/";},
-	kanpenbase : function(){ return "http://www.kanpen.net/";}
+	}
 };
