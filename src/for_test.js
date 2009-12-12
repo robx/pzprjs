@@ -1,4 +1,4 @@
-// for_test.js v3.2.3p2
+// for_test.js v3.2.4
 
 k.scriptcheck = true;
 k.EDITOR = true;
@@ -14,7 +14,7 @@ var debug = {
 		document.testform.t3.onclick        = ee.binder(this, this.resizeeval);
 
 		document.testform.filesave.onclick  = function(){ ee('testarea').el.value=''; debug.setTA(fio.fileencode(1).replace(/\//g,"\n"));};
-		document.testform.fileopen.onclick  = function(){ fio.fileopen(ee('testarea').el.value.split("\n"),1);};
+		document.testform.fileopen.onclick  = function(){ fio.filedecode(ee('testarea').el.value.split("\n").join("/"),1);};
 		document.testform.erasetext.onclick = function(e){ ee('testarea').el.value=''; ee('testdiv').el.innerHTML = '';};
 		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
 		document.testform.perfload.onclick  = ee.binder(this, this.loadperf);
@@ -32,11 +32,13 @@ var debug = {
 	},
 
 	keydown : function(ca){
-		if(ca=='F7'){ this.accheck1();  return true;}
-		if(kc.isCTRL && ca=='F8'){ this.disppoptest(); return true;}
-		if(kc.isCTRL && ca=='F9'){ this.starttest(); return true;}
-		if(kc.isCTRL && kc.isSHIFT && ca=='F10'){ this.all_test(); return true;}
-		return false;
+		if(ca=='F7'){ this.accheck1();}
+		else if(kc.isCTRL && ca=='F8'){ this.disppoptest();}
+		else if(kc.isCTRL && ca=='F9'){ this.starttest();}
+		else if(kc.isCTRL && kc.isSHIFT && ca=='F10'){ this.all_test();}
+		else{ return false;}
+
+		return true;
 	},
 
 	perfeval : function(){
@@ -62,7 +64,7 @@ var debug = {
 	},
 
 	loadperf : function(){
-		fio.fileopen(debug.acs['perftest'][0][1].split("/"),1);
+		fio.filedecode(debug.acs['perftest'][0][1],1);
 		pp.setVal('mode',3);
 		pp.setVal('irowake',true);
 	},
@@ -167,13 +169,8 @@ var debug = {
 				var pfg = enc.uri.pflag;
 				var str = enc.uri.bstr;
 
-				var inp = enc.getURLbase()+"?"+k.puzzleid+(pfg?("/"+pfg):"")+("/"+col)+("/"+row)+("/"+str);
-
-				enc.pzlexport(0);
-				var ta = document.urloutput.ta.value;
-
-				// Ç»Ç∫Ç©OperaÇÕtextareaè„ÇÃâ¸çsÇ™é¿ç€ÇÃâ¸çsàµÇ¢Ç…Ç»Ç¡ÇƒÇµÇ‹Ç§Ç¡Ç€Ç¢
-				if(k.br.Opera){ ta = ta.replace(/(\r|\n)/g,"");}
+				var inp = enc.getURLbase()+k.puzzleid+(pfg?("/"+pfg):"")+("/"+col)+("/"+row)+("/"+str);
+				var ta  = enc.pzloutput(0);
 
 				debug.addTextarea("Encode test   = "+(inp==ta?"pass":"failure...<BR> "+inp+"<BR> "+ta));
 
@@ -187,8 +184,7 @@ var debug = {
 			(function(){
 				var bd2 = debug.bd_freezecopy();
 
-				enc.pzlexport(2);
-				document.urlinput.ta.value = document.urloutput.ta.value;
+				document.urlinput.ta.value = enc.pzloutput(2);
 				menu.pop = ee("pop1_5");
 				menu.ex.urlinput({});
 
@@ -204,7 +200,7 @@ var debug = {
 			(function(){
 				alstr = debug.acs[k.puzzleid][n][0];
 				qstr  = debug.acs[k.puzzleid][n][1];
-				fio.fileopen(debug.acs[k.puzzleid][n][1].split("/"),1);
+				fio.filedecode(debug.acs[k.puzzleid][n][1],1);
 				setTimeout(function(){
 					ans.inCheck = true;
 					ans.alstr = { jp:'' ,en:''};
@@ -236,7 +232,7 @@ var debug = {
 		//FileIO test--------------------------------------------------------------
 		case 30:
 			(function(){
-				var outputstr = fio.fileencode(1).replace(/\//g,"\n");
+				var outputstr = fio.fileencode(1);
 
 				var bd2 = debug.bd_freezecopy();
 
@@ -245,17 +241,17 @@ var debug = {
 				base.resize_canvas();
 
 				setTimeout(function(){
-					fio.fileopen(outputstr.split("\n"),1);
+					fio.filedecode(outputstr,1);
 					debug.addTextarea("FileIO test   = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 
-					fio.fileopen(debug.acs[k.puzzleid][debug.acs[k.puzzleid].length-1][1].split("/"),1);
+					fio.filedecode(debug.acs[k.puzzleid][debug.acs[k.puzzleid].length-1][1],1);
 					debug.phase = (k.puzzleid != 'tawa')?40:50;
 				},fint);
 			})();
 			break;
 		case 31:
 			(function(){
-				var outputstr = fio.fileencode(2).replace(/\//g,"\n");
+				var outputstr = fio.fileencode(2);
 
 				var bd2 = debug.bd_freezecopy();
 
@@ -264,7 +260,7 @@ var debug = {
 				base.resize_canvas();
 
 				setTimeout(function(){
-					fio.fileopen(outputstr.split("\n"),2);
+					fio.filedecode(outputstr,2);
 
 					debug.qsubf = !(k.puzzleid=='fillomino'||k.puzzleid=='hashikake'||k.puzzleid=='kurodoko'||k.puzzleid=='shikaku'||k.puzzleid=='tentaisho');
 					debug.addTextarea("FileIO kanpen = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
