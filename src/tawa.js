@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たわむれんが版 tawa.js v3.2.3p1
+// パズル固有スクリプト部 たわむれんが版 tawa.js v3.2.4
 //
 Puzzles.tawa = function(){ };
 Puzzles.tawa.prototype = {
@@ -33,8 +33,6 @@ Puzzles.tawa.prototype = {
 
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["others"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -544,48 +542,48 @@ Puzzles.tawa.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeTawamurenga(bstr);}
+		enc.pzlimport = function(type){
+			this.decodeTawamurenga();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+bd.lap+"/"+this.encodeNumber10();
+			this.encodeTawamurenga();
 		};
 
-		enc.decodeTawamurenga = function(bstr){
-			var barray = bstr.split("/");
+		enc.decodeTawamurenga = function(){
+			var barray = this.outbstr.split("/");
 
 			bd.setLap(parseInt(barray[0]));
 			tc.setAlign();	// tc.maxx等を設定し直す
 
 			bd.initBoardSize(this.uri.cols, this.uri.rows);
-			return this.decodeNumber10(barray[1]);
+
+			this.outbstr = barray[1];
+			this.decodeNumber10();
+		};
+		enc.encodeTawamurenga = function(){
+			this.outbstr = (bd.lap+"/");
+			this.encodeNumber10();
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			if(array.length<k.qrows+1){ return false;}
-			bd.setLap(parseInt(array[0]));
+		fio.decodeData = function(){
+			bd.setLap(parseInt(this.readLine()));
+			var n=0, item = this.getItemList(k.qrows);
 			for(var cy=0;cy<k.qrows;cy++){
-				var cols = array[cy+1].split(" ");
-				var n=0;
 				for(var bx=0;bx<=tc.maxx;bx++){
 					var cc=bd.cnum(bx,cy);
 					if(cc==-1){ continue;}
-					if     (cols[n]=="#"){ bd.setBlack(cc);}
-					else if(cols[n]=="+"){ bd.sQsC(cc, 1);}
-					else if(cols[n]=="-"){ bd.sQnC(cc, -2);}
-					else if(cols[n]!="."){ bd.sQnC(cc, parseInt(cols[n]));}
+					if     (item[n]=="#"){ bd.setBlack(cc);}
+					else if(item[n]=="+"){ bd.sQsC(cc, 1);}
+					else if(item[n]=="-"){ bd.sQnC(cc, -2);}
+					else if(item[n]!="."){ bd.sQnC(cc, parseInt(item[n]));}
 					n++;
 				}
 			}
-			return true;
 		};
-		fio.encodeOthers = function(){
+		fio.encodeData = function(){
+			this.datastr = bd.lap+"/";
+
 			var bstr = "";
 			for(var cy=0;cy<k.qrows;cy++){
 				for(var bx=0;bx<=tc.maxx;bx++){
@@ -599,7 +597,7 @@ Puzzles.tawa.prototype = {
 				}
 				bstr += "/";
 			}
-			return bd.lap + "/" + bstr;
+			this.datastr += bstr;
 		};
 	},
 

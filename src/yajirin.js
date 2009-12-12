@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.2.3
+// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.2.4
 // 
 Puzzles.yajirin = function(){ };
 Puzzles.yajirin.prototype = {
@@ -34,8 +34,6 @@ Puzzles.yajirin.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		k.fstruct = ["celldirecnum","cellans","borderline"];
-
 		//k.def_csize = 36;
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
@@ -50,6 +48,8 @@ Puzzles.yajirin.prototype = {
 		}
 		base.setTitle("ヤジリン","Yajilin");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
+
+		enc.pidKanpen = 'yajilin';
 	},
 	menufix : function(){
 		menu.addUseToFlags();
@@ -131,50 +131,45 @@ Puzzles.yajirin.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeArrowNumber16(bstr);}
-			else if(type==2)      { bstr = this.decodeKanpen(bstr); }
+		enc.pzlimport = function(type){
+			this.decodeArrowNumber16();
 		};
-
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"yajilin.html?problem="+this.pzldataKanpen();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeArrowNumber16();
+			this.encodeArrowNumber16();
 		};
 
-		enc.decodeKanpen = function(bstr){
-			bstr = (bstr.split("_")).join(" ");
-			fio.decodeCell( function(c,ca){
-				if(ca != "."){
-					var num = parseInt(ca);
-					if     (num<16){ bd.sDiC(c,1); bd.sQnC(c,num   );}
-					else if(num<32){ bd.sDiC(c,3); bd.sQnC(c,num-16);}
-					else if(num<48){ bd.sDiC(c,2); bd.sQnC(c,num-32);}
-					else if(num<64){ bd.sDiC(c,4); bd.sQnC(c,num-48);}
-				}
-			},bstr.split("/"));
+		enc.decodeKanpen = function(){
+			fio.decodeCellDirecQnum_kanpen(true);
 		};
-		enc.pzldataKanpen = function(){
-			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
-				var num = (bd.QnC(c)>=0&&bd.QnC(c)<10?bd.QnC(c):-1)
-				if     (num==-1)        { return "._";}
-				else if(bd.DiC(c)==k.UP){ return ""+( 0+num)+"_";}
-				else if(bd.DiC(c)==k.LT){ return ""+(16+num)+"_";}
-				else if(bd.DiC(c)==k.DN){ return ""+(32+num)+"_";}
-				else if(bd.DiC(c)==k.RT){ return ""+(48+num)+"_";}
-				else                    { return "._";}
-			});
+		enc.encodeKanpen = function(){
+			fio.encodeCellDirecQnum_kanpen(true);
 		};
 
 		//---------------------------------------------------------
+		fio.decodeData = function(){
+			this.decodeCellDirecQnum();
+			this.decodeCellAns();
+			this.decodeBorderLine();
+		};
+		fio.encodeData = function(){
+			this.encodeCellDirecQnum();
+			this.encodeCellAns();
+			this.encodeBorderLine();
+		};
+
 		fio.kanpenOpen = function(array){
+			this.decodeCellDirecQnum_kanpen(false);
+			this.decodeBorderLine();
+		};
+		fio.kanpenSave = function(){
+			this.encodeCellDirecQnum_kanpen(false);
+			this.encodeBorderLine();
+		};
+
+		fio.decodeCellDirecQnum_kanpen = function(isurl){
 			this.decodeCell( function(c,ca){
-				if     (ca=="#"){ bd.setBlack(c);}
-				else if(ca=="+"){ bd.sQsC(c,1);}
+				if     (ca=="#" && !isurl){ bd.setBlack(c);}
+				else if(ca=="+" && !isurl){ bd.sQsC(c,1);}
 				else if(ca != "."){
 					var num = parseInt(ca);
 					if     (num<16){ bd.sDiC(c,k.UP); bd.sQnC(c,num   );}
@@ -182,13 +177,12 @@ Puzzles.yajirin.prototype = {
 					else if(num<48){ bd.sDiC(c,k.DN); bd.sQnC(c,num-32);}
 					else if(num<64){ bd.sDiC(c,k.RT); bd.sQnC(c,num-48);}
 				}
-			},array.slice(0,k.qrows));
-			this.decodeBorderLine(array.slice(k.qrows,3*k.qrows-1));
+			});
 		};
-		fio.kanpenSave = function(){
-			return ""+this.encodeCell( function(c){
+		fio.encodeCellDirecQnum_kanpen = function(isurl){
+			this.encodeCell( function(c){
 				var num = (bd.QnC(c)>=0&&bd.QnC(c)<10?bd.QnC(c):-1)
-				if(num==-1){
+				if(num==-1 && !isurl){
 					if     (bd.isBlack(c)){ return "# ";}
 					else if(bd.QsC(c)==1) { return "+ ";}
 					else                  { return ". ";}
@@ -198,8 +192,7 @@ Puzzles.yajirin.prototype = {
 				else if(bd.DiC(c)==k.DN){ return ""+(32+num)+" ";}
 				else if(bd.DiC(c)==k.RT){ return ""+(48+num)+" ";}
 				else                    { return ". ";}
-			})
-			+this.encodeBorderLine();
+			});
 		};
 	},
 

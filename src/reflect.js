@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.2.3
+// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.2.4
 //
 Puzzles.reflect = function(){ };
 Puzzles.reflect.prototype = {
@@ -33,8 +33,6 @@ Puzzles.reflect.prototype = {
 
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["others", "borderline"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -222,20 +220,15 @@ Puzzles.reflect.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeReflectlink(bstr);}
+		enc.pzlimport = function(type){
+			this.decodeReflectlink();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeReflectlink();
+			this.encodeReflectlink();
 		};
 
-		enc.decodeReflectlink = function(bstr){
-			var c = 0;
+		enc.decodeReflectlink = function(){
+			var c=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
@@ -256,7 +249,7 @@ Puzzles.reflect.prototype = {
 				if(c > bd.cellmax){ break;}
 			}
 
-			return bstr.substr(i);
+			this.outbstr = bstr.substr(i);
 		};
 		enc.encodeReflectlink = function(type){
 			var cm="", pstr="";
@@ -276,30 +269,30 @@ Puzzles.reflect.prototype = {
 			}
 			if(count>0){ cm+=(9+count).toString(36);}
 
-			return cm;
+			this.outbstr += cm;
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			if(array.length<k.qrows){ return false;}
+		fio.decodeData = function(){
 			this.decodeCell( function(c,ca){
 				if(ca == "+"){ bd.sQuC(c, 101);}
 				else if(ca != "."){
 					bd.sQuC(c, parseInt(ca.charAt(0))+1);
 					if(ca.length>1){ bd.sQnC(c, parseInt(ca.substr(1)));}
 				}
-			},array.slice(0,k.qrows));
-			return true;
+			});
+			this.decodeBorderLine();
 		};
-		fio.encodeOthers = function(){
-			return (""+this.encodeCell( function(c){
+		fio.encodeData = function(){
+			this.encodeCell( function(c){
 				if     (bd.QuC(c)==101) { return "+ ";}
 				else if(bd.QuC(c)>=2 && bd.QuC(c)<=5) {
 					if(bd.QnC(c)==-1){ return ""+(bd.QuC(c)-1).toString()+" ";}
 					else{ return ""+(bd.QuC(c)-1).toString()+(bd.QnC(c)).toString()+" ";}
 				}
 				else{ return ". ";}
-			}) );
+			});
+			this.encodeBorderLine();
 		};
 	},
 

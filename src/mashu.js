@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ましゅ版 mashu.js v3.2.3
+// パズル固有スクリプト部 ましゅ版 mashu.js v3.2.4
 //
 Puzzles.mashu = function(){ };
 Puzzles.mashu.prototype = {
@@ -34,8 +34,6 @@ Puzzles.mashu.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		k.fstruct = ["cellques41_42","borderline"];
-
 		//k.def_csize = 36;
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
@@ -44,6 +42,8 @@ Puzzles.mashu.prototype = {
 		base.setExpression("　左ドラッグで線が、右クリックで×印が入力できます。",
 						   " Left Button Drag to input black cells, Right Click to input a cross.");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
+
+		enc.pidKanpen = 'masyu';
 	},
 	menufix : function(){
 		pp.addCheck('uramashu','setting',false, '裏ましゅ', 'Ura-Mashu');
@@ -111,82 +111,71 @@ Puzzles.mashu.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeCircle(bstr);}
-			else if(type==2){ bstr = this.decodeKanpen(bstr);}
+		enc.pzlimport = function(type){
+			this.decodeCircle41_42();
+			this.revCircle();
 		};
-		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"masyu.html?problem="+this.pzldataKanpen();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeCircle();
+		enc.pzlexport = function(){
+			this.revCircle();
+			this.encodeCircle41_42();
+			this.revCircle();
 		};
 
-		enc.decodeCircle = function(bstr,flag){
-			var pos = bstr?Math.min(mf((k.qcols*k.qrows+2)/3), bstr.length):0;
-			for(var i=0;i<pos;i++){
-				var ca = parseInt(bstr.charAt(i),27);
-				for(var w=0;w<3;w++){
-					if(i*3+w<k.qcols*k.qrows){
-						if     (mf(ca/Math.pow(3,2-w))%3==1){ bd.sQuC(i*3+w,41);}
-						else if(mf(ca/Math.pow(3,2-w))%3==2){ bd.sQuC(i*3+w,42);}
-					}
-				}
+		enc.decodeKanpen = function(){
+			fio.decodeCellQues41_42_kanpen();
+			this.revCircle();
+		};
+		enc.encodeKanpen = function(){
+			this.revCircle();
+			fio.encodeCellQues41_42_kanpen();
+			this.revCircle();
+		};
+
+		enc.revCircle = function(){
+			if(!pp.getVal('uramashu')){ return;}
+			for(var c=0;c<bd.cellmax;c++){
+				if     (bd.cell[c].ques===41){ bd.cell[c].ques = 42;}
+				else if(bd.cell[c].ques===42){ bd.cell[c].ques = 41;}
 			}
-			if(pp.getVal('uramashu')){ (pp.funcs['uramashu'])();}
-
-			return bstr.substr(pos);
-		};
-		enc.encodeCircle = function(flag){
-			var cm="", num=0, pass=0, isura=pp.getVal('uramashu');
-			for(var i=0;i<bd.cellmax;i++){
-				if     (bd.QuC(i)==(!isura?41:42)){ pass+=(  Math.pow(3,2-num));}
-				else if(bd.QuC(i)==(!isura?42:41)){ pass+=(2*Math.pow(3,2-num));}
-				num++; if(num==3){ cm += pass.toString(27); num=0; pass=0;}
-			}
-			if(num>0){ cm += pass.toString(27);}
-
-			return cm;
-		};
-
-		enc.decodeKanpen = function(bstr){
-			bstr = (bstr.split("_")).join(" ");
-			fio.decodeCell( function(c,ca){
-				if     (ca == "1"){ bd.sQuC(c, 41);}
-				else if(ca == "2"){ bd.sQuC(c, 42);}
-			},bstr.split("/"));
-			if(pp.getVal('uramashu')){ (pp.funcs['uramashu'])();}
-			return "";
-		};
-		enc.pzldataKanpen = function(){
-			var isura=pp.getVal('uramashu');
-			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
-				if     (bd.QuC(c)==(!isura?41:42)){ return "1_";}
-				else if(bd.QuC(c)==(!isura?42:41)){ return "2_";}
-				else                              { return "._";}
-			});
-		};
+		}
 
 		//---------------------------------------------------------
-		fio.kanpenOpen = function(array){
-			this.decodeCell( function(c,ca){
-				if     (ca == "1"){ bd.sQuC(c, 41);}
-				else if(ca == "2"){ bd.sQuC(c, 42);}
-			},array.slice(0,k.qrows));
-			this.decodeBorderLine(array.slice(k.qrows,3*k.qrows-1));
-			if(pp.getVal('uramashu')){ (pp.funcs['uramashu'])();}
+		fio.decodeData = function(){
+			this.decodeCellQues41_42();
+			this.decodeBorderLine();
+			enc.revCircle();
+		};
+		fio.encodeData = function(){
+			enc.revCircle();
+			this.encodeCellQues41_42();
+			this.encodeBorderLine();
+			enc.revCircle();
+		};
+
+		fio.kanpenOpen = function(){
+			this.decodeCellQues41_42_kanpen();
+			this.decodeBorderLine();
+			enc.revCircle();
 		};
 		fio.kanpenSave = function(){
-			var isura=pp.getVal('uramashu');
-			return ""+this.encodeCell( function(c){
-				if     (bd.QuC(c)==(!isura?41:42)){ return "1 ";}
-				else if(bd.QuC(c)==(!isura?42:41)){ return "2 ";}
-				else                              { return ". ";}
-			})
-			+this.encodeBorderLine();
+			enc.revCircle();
+			this.encodeCellQues41_42_kanpen();
+			this.encodeBorderLine();
+			enc.revCircle();
+		};
+
+		fio.decodeCellQues41_42_kanpen = function(){
+			this.decodeCell( function(c,ca){
+				if     (ca === "1"){ bd.sQuC(c, 41);}
+				else if(ca === "2"){ bd.sQuC(c, 42);}
+			});
+		};
+		fio.encodeCellQues41_42_kanpen = function(){
+			this.encodeCell( function(c){
+				if     (bd.QuC(c)===41){ return "1 ";}
+				else if(bd.QuC(c)===42){ return "2 ";}
+				else                   { return ". ";}
+			});
 		};
 	},
 

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 島国版 shimaguni.js v3.2.3
+// パズル固有スクリプト部 島国版 shimaguni.js v3.2.4
 //
 Puzzles.shimaguni = function(){ };
 Puzzles.shimaguni.prototype = {
@@ -33,8 +33,6 @@ Puzzles.shimaguni.prototype = {
 
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["arearoom","cellqnum","cellans"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -118,19 +116,25 @@ Puzzles.shimaguni.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){
-				bstr = this.decodeBorder(bstr);
-				bstr = this.decodeRoomNumber16(bstr);
-			}
+		enc.pzlimport = function(type){
+			this.decodeBorder();
+			this.decodeRoomNumber16();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
+			this.encodeBorder();
+			this.encodeRoomNumber16();
 		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeBorder()+this.encodeRoomNumber16();
+
+		//---------------------------------------------------------
+		fio.decodeData = function(){
+			this.decodeAreaRoom();
+			this.decodeCellQnum();
+			this.decodeCellAns();
+		};
+		fio.encodeData = function(){
+			this.encodeAreaRoom();
+			this.encodeCellQnum();
+			this.encodeCellAns();
 		};
 	},
 

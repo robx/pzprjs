@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックル版 kakuru.js v3.2.3
+// パズル固有スクリプト部 カックル版 kakuru.js v3.2.4
 //
 Puzzles.kakuru = function(){ };
 Puzzles.kakuru.prototype = {
@@ -33,8 +33,6 @@ Puzzles.kakuru.prototype = {
 
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["others"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -179,20 +177,15 @@ Puzzles.kakuru.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeKakuru(bstr);}
+		enc.pzlimport = function(type){
+			this.decodeKakuru();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeKakuru();
+			this.encodeKakuru();
 		};
 
-		enc.decodeKakuru = function(bstr){
-			var cell=0, i=0;
+		enc.decodeKakuru = function(){
+			var cell=0, i=0, bstr = this.outbstr;
 			for(i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
@@ -205,7 +198,7 @@ Puzzles.kakuru.prototype = {
 
 				if(cell>=bd.cellmax){ break;}
 			}
-			return bstr.substr(i);
+			this.outbstr = bstr.substr(i);
 		};
 		enc.encodeKakuru = function(type){
 			var cm="", count=0;
@@ -228,7 +221,7 @@ Puzzles.kakuru.prototype = {
 			if(count==1){ cm+=".";}
 			else if(count>1){ cm+=((count+18).toString(36));}
 
-			return cm;
+			this.outbstr += cm;
 		};
 		enc.decval = function(ca){
 			if     (ca>='0'&&ca<='9'){ return parseInt(ca,36);}
@@ -243,29 +236,28 @@ Puzzles.kakuru.prototype = {
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			if(array.length<2*k.qrows){ return false;}
+		fio.decodeData = function(){
 			this.decodeCell( function(c,ca){
 				if     (ca=="?"){ bd.sQnC(c,-2);}
 				else if(ca=="b"){ bd.sQuC(c, 1);}
 				else if(ca!="."){ bd.sQnC(c, parseInt(ca));}
-			},array.slice(0,k.qrows));
+			});
 			this.decodeCell( function(c,ca){
 				if(ca!="."&&ca!="0"){ bd.sQaC(c,parseInt(ca));}
-			},array.slice(k.qrows,2*k.qrows));
-			return true;
+			});
 		};
-		fio.encodeOthers = function(){
-			return (""+this.encodeCell( function(c){
+		fio.encodeData = function(){
+			this.encodeCell( function(c){
 				if(bd.QuC(c)==1){ return "b ";}
 				else if(bd.QnC(c)>= 0){ return ""+bd.QnC(c).toString()+" ";}
 				else if(bd.QnC(c)==-2){ return "? ";}
 				else{ return ". ";}
-			}) + this.encodeCell( function(c){
+			});
+			this.encodeCell( function(c){
 				if     (bd.QuC(c)==1||bd.QnC(c)!=-1){ return ". ";}
 				else if(bd.QaC(c)==-1){ return "0 ";}
 				else{ return ""+bd.QaC(c).toString()+" ";}
-			} ));
+			});
 		};
 	},
 

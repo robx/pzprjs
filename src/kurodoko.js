@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 黒マスはどこだ版 kurodoko.js v3.2.3
+// パズル固有スクリプト部 黒マスはどこだ版 kurodoko.js v3.2.4
 //
 Puzzles.kurodoko = function(){ };
 Puzzles.kurodoko.prototype = {
@@ -34,8 +34,6 @@ Puzzles.kurodoko.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		k.fstruct = ["cellqnum","cellans"];
-
 		//k.def_csize = 36;
 		//k.def_psize = 24;
 		k.area = { bcell:0, wcell:1, number:0};	// areaオブジェクトで領域を生成する
@@ -44,6 +42,8 @@ Puzzles.kurodoko.prototype = {
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
 						   " Left Click to input black cells, Right Click to input determined white cells.");
 		base.setFloatbgcolor("rgb(127, 191, 0)");
+
+		enc.pidKanpen = 'kurodoko';
 	},
 	menufix : function(){
 		menu.addUseToFlags();
@@ -116,48 +116,35 @@ Puzzles.kurodoko.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeNumber16(bstr);}
-			else if(type==2)      { bstr = this.decodeKanpen(bstr); }
+		enc.pzlimport = function(type){
+			this.decodeNumber16();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"kurodoko.html?problem="+this.pzldataKanpen();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeNumber16();
+			this.encodeNumber16();
 		};
 
-		enc.decodeKanpen = function(bstr){
-			bstr = (bstr.split("_")).join(" ");
-			fio.decodeCell( function(c,ca){
-				if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			},bstr.split("/"));
-			return "";
+		enc.decodeKanpen = function(){
+			fio.decodeCellQnum_kanpen();
 		}
-		enc.pzldataKanpen = function(){
-			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
-				return (bd.QnC(c)>=0)?(bd.QnC(c).toString() + "_"):"._";
-			});
+		enc.encodeKanpen = function(){
+			fio.encodeCellQnum_kanpen();
 		};
 
 		//---------------------------------------------------------
-		fio.kanpenOpen = function(array){
-			this.decodeCell( function(c,ca){
-				if     (ca == "#"){ bd.setBlack(c);}
-				else if(ca == "+"){ bd.sQsC(c, 1);}
-				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			},array.slice(0,k.qrows));
+		fio.decodeData = function(){
+			this.decodeCellQnum();
+			this.decodeCellAns();
+		};
+		fio.encodeData = function(){
+			this.encodeCellQnum();
+			this.encodeCellAns();
+		};
+
+		fio.kanpenOpen = function(){
+			this.decodeCellQnumAns_kanpen();
 		};
 		fio.kanpenSave = function(){
-			return ""+this.encodeCell( function(c){
-				if     (bd.QnC(c)>=0 ){ return (bd.QnC(c).toString() + " ");}
-				else if(bd.isBlack(c)){ return "# ";}
-				else if(bd.QsC(c)==1 ){ return "+ ";}
-				else                  { return ". ";}
-			});
+			this.encodeCellQnumAns_kanpen();
 		};
 	},
 

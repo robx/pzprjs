@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.2.3
+// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.2.4
 //
 Puzzles.gokigen = function(){ };
 Puzzles.gokigen.prototype = {
@@ -33,8 +33,6 @@ Puzzles.gokigen.prototype = {
 
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["crossnum","cellqanssub"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -211,19 +209,24 @@ Puzzles.gokigen.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if((type==1 && this.checkpflag("c")) || (type==0 && !this.checkpflag("d"))){
-				bstr = this.decode4Cross(bstr);
-			}
-			else{ bstr = this.decodecross_old(bstr);}
+		enc.pzlimport = function(type){
+			var oldflag = ((type==1 && !this.checkpflag("c")) || (type==0 && this.checkpflag("d")));
+			if(!oldflag){ this.decode4Cross();}
+			else        { this.decodecross_old();}
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
+			if(type==1){ this.outpflag = 'c';}
+			this.encode4Cross();
 		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encode4Cross();
+
+		//---------------------------------------------------------
+		fio.decodeData = function(){
+			this.decodeCrossNum();
+			this.decodeCellQanssub();
+		};
+		fio.encodeData = function(){
+			this.encodeCrossNum();
+			this.encodeCellQanssub();
 		};
 	},
 

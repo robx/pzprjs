@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バーンズ版 barns.js v3.2.3
+// パズル固有スクリプト部 バーンズ版 barns.js v3.2.4
 //
 Puzzles.barns = function(){ };
 Puzzles.barns.prototype = {
@@ -34,8 +34,6 @@ Puzzles.barns.prototype = {
 
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["others", "borderques", "borderline"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -129,29 +127,23 @@ Puzzles.barns.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){
-				bstr = this.decodeBarns(bstr);
-				bstr = this.decodeBorder(bstr);
-			}
+		enc.pzlimport = function(type){
+			this.decodeBarns();
+			this.decodeBorder();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/q.html?"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeBarns()+this.encodeBorder();
+			this.encodeBarns();
+			this.encodeBorder();
 		};
 
-		enc.decodeBarns = function(bstr){
-			var c = 0;
+		enc.decodeBarns = function(){
+			var c=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var ca = parseInt(bstr.charAt(i),32);
 				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(ca&Math.pow(2,4-w)?6:0));} }
 				if((i*5+5)>=bd.cellmax){ break;}
 			}
-			return bstr.substr(i+1);
+			this.outbstr = bstr.substr(i+1);
 		};
 		enc.encodeBarns = function(){
 			var cm = "";
@@ -162,17 +154,23 @@ Puzzles.barns.prototype = {
 			}
 			if(num>0){ cm += pass.toString(32);}
 
-			return cm;
+			this.outbstr += cm;
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			if(array.length<k.qrows){ return false;}
-			this.decodeCell( function(c,ca){ if(ca=="1"){ bd.sQuC(c, 6);} },array);
-			return true;
+		fio.decodeData = function(){
+			this.decodeCell( function(c,ca){
+				if(ca=="1"){ bd.sQuC(c, 6);}
+			});
+			this.decodeBorderQues();
+			this.decodeBorderLine();
 		};
-		fio.encodeOthers = function(){
-			return this.encodeCell( function(c){ return ""+(bd.QuC(c)==6?"1":".")+" "; });
+		fio.encodeData = function(){
+			this.encodeCell( function(c){
+				return ""+(bd.QuC(c)==6?"1":".")+" ";
+			});
+			this.encodeBorderQues();
+			this.encodeBorderLine();
 		};
 	},
 

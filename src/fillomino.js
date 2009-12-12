@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.2.3
+// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.2.4
 //
 Puzzles.fillomino = function(){ };
 Puzzles.fillomino.prototype = {
@@ -34,8 +34,6 @@ Puzzles.fillomino.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		k.fstruct = ["cellqnum", "cellqanssub", "borderans"];
-
 		//k.def_csize = 36;
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
@@ -44,6 +42,8 @@ Puzzles.fillomino.prototype = {
 		base.setExpression("<small><span style=\"line-height:125%;\">　マウスの左ボタンを押しながら点線上を動かすと境界線が引けます。マスの中央から同じことをすると数字を隣のマスにコピーできます。右ボタンは補助記号です。<br>　キーボードでは同じ入力を、それぞれZキー、Xキー、Ctrlキーを押しながら矢印キーで行うことができます。</span></small>",
 						   "<small><span style=\"line-height:125%;\"> Left Button Drag on dotted line to input border line. Do it from center of the cell to copy the number. Right Button Drag to input auxiliary marks.<br> By keyboard, it is available to input each ones by using arrow keys with 'Z', 'X' or 'Ctrl' key.</span></small>");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
+
+		enc.pidKanpen = 'fillomino';
 	},
 	menufix : function(){
 		pp.addCheck('enbnonum','setting',false,'未入力で正答判定','Allow Empty cell');
@@ -187,59 +187,46 @@ Puzzles.fillomino.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeNumber16(bstr);}
-			else if(type==2)      { bstr = this.decodeKanpen(bstr); }
+		enc.pzlimport = function(type){
+			this.decodeNumber16();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"fillomino.html?problem="+this.pzldataKanpen();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeNumber16();
+			this.encodeNumber16();
 		};
 
-		enc.decodeKanpen = function(bstr){
-			bstr = (bstr.split("_")).join(" ");
-			fio.decodeCell( function(c,ca){
-				if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			},bstr.split("/"));
-			return "";
+		enc.decodeKanpen = function(){
+			fio.decodeCellQnum_kanpen();
 		};
-		enc.pzldataKanpen = function(){
-			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
-				return (bd.QnC(c)>=0)?(bd.QnC(c).toString() + "_"):"._";
-			});
+		enc.encodeKanpen = function(){
+			fio.encodeCellQnum_kanpen();
 		};
 
 		//---------------------------------------------------------
-		fio.kanpenOpen = function(array){
-			this.decodeCell( function(c,ca){
-				if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			},array.slice(0,k.qrows));
-			this.decodeCell( function(c,ca){
-				if(ca != "0" && ca != "."){ bd.sQaC(c, parseInt(ca));}
-			},array.slice(k.qrows,2*k.qrows));
-			this.generateBorder();
+		fio.decodeData = function(){
+			this.decodeCellQnum();
+			this.decodeCellQanssub();
+			this.decodeBorderAns();
 		};
-		fio.kanpenSave = function(){
-			return ""+this.encodeCell( function(c){
-				return (bd.QnC(c)>=0)?(bd.QnC(c).toString() + " "):". ";
-			})+this.encodeCell( function(c){
-				if     (bd.QnC(c)>=0){ return ". ";}
-				else if(bd.QaC(c)>=0){ return (bd.QaC(c).toString() + " ");}
-				else                 { return "0 ";}
-			});
+		fio.encodeData = function(){
+			this.encodeCellQnum();
+			this.encodeCellQanssub();
+			this.encodeBorderAns();
 		};
-		fio.generateBorder = function(){
+
+		fio.kanpenOpen = function(){
+			this.decodeCellQnum_kanpen();
+			this.decodeCellQans_kanpen();
+
+			// 境界線を自動入力
 			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
-				if(cc1!=-1 && cc2!=-1 && bd.getNum(cc1)!=-1 && bd.getNum(cc2)!=-1
-					&& bd.getNum(cc1)!=bd.getNum(cc2)){ bd.sQaB(id,1);}
-				else{ bd.sQaB(id,0);}
+				var bdflag = (cc1!=-1 && cc2!=-1 && bd.getNum(cc1)!=-1 && bd.getNum(cc2)!=-1 && bd.getNum(cc1)!=bd.getNum(cc2));
+				bd.sQaB(id,(bdflag?1:0));
 			}
+		};
+		fio.kanpenSave = function(){
+			this.encodeCellQnum_kanpen();
+			this.encodeCellQans_kanpen();
 		};
 	},
 

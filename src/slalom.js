@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.2.3p1
+// パズル固有スクリプト部 スラローム版 slalom.js v3.2.4
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -34,8 +34,6 @@ Puzzles.slalom.prototype = {
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		k.fstruct = ["others", "borderline"];
-
 		//k.def_csize = 36;
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
@@ -50,6 +48,8 @@ Puzzles.slalom.prototype = {
 		}
 		base.setTitle("スラローム","Slalom");
 		base.setFloatbgcolor("rgb(96, 96, 255)");
+
+		enc.pidKanpen = 'slalom';
 	},
 	menufix : function(){
 		menu.addRedLineToFlags();
@@ -434,24 +434,26 @@ Puzzles.slalom.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){
-				if(this.checkpflag("p")){ bstr = this.decodeSlalom(bstr,1);}
-				else{ bstr = this.decodeSlalom(bstr,0);}
-			}
-			else if(type==2){ bstr = this.decodeKanpen(bstr); }
+		enc.pzlimport = function(type){
+			this.decodeSlalom((this.checkpflag("p")?1:0));
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+"/p"+this.pzldata(1);}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?"+this.pzldata(0);}
-			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"slalom.html?problem="+this.encodeKanpen();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+"/p"+this.pzldata(1);}
-		};
-		enc.pzldata = function(ver){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeSlalom(ver);
+			bd.hinfo.generateAll();
+
+			if(type==0){ this.outpflag='p';}
+
+			return this.encodeSlalom((type===0?1:0));
 		};
 
-		enc.decodeSlalom = function(bstr,ver){
+		enc.decodeKanpen = function(){
+			fio.decodeBoard_kanpen();
+		};
+		enc.encodeKanpen = function(){
+			fio.encodeBoard_kanpen();
+		};
+
+		enc.decodeSlalom = function(ver){
+			var bstr = this.outbstr;
 			var array = bstr.split("/");
 
 			var c=0, i=0;
@@ -513,7 +515,7 @@ Puzzles.slalom.prototype = {
 
 			bd.startid = parseInt(array[1]);
 
-			return array[0].substr(i);
+			this.outbstr = array[0].substr(i);
 		};
 		enc.encodeSlalom = function(ver){
 			var cm="", count=0;
@@ -531,7 +533,6 @@ Puzzles.slalom.prototype = {
 
 			count=0;
 			if(ver==0){
-				bd.hinfo.generateAll();
 				for(var r=1;r<=bd.hinfo.max;r++){
 					var pstr = "";
 					var val = bd.hinfo.data[r].number;
@@ -564,77 +565,53 @@ Puzzles.slalom.prototype = {
 
 			cm += ("/"+bd.startid.toString());
 
-			return cm;
-		};
-
-		enc.decodeKanpen = function(bstr){
-			bstr = (bstr.split("_")).join(" ");
-			fio.decodeCell( function(c,ca){
-				if     (ca == "+"){ bd.startid=c;}
-				else if(ca == "|"){ bd.sQuC(c,21);}
-				else if(ca == "-"){ bd.sQuC(c,22);}
-				else if(ca != "."){ bd.sQuC(c, 1); if(ca!="0"){ bd.sQnC(c, parseInt(ca));} }
-			},bstr.split("/"));
-			bd.hinfo.generateGates();
-			return "";
-		};
-		enc.encodeKanpen = function(){
-			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
-				if     (bd.startid==c){ return "+_";}
-				else if(bd.QuC(c)== 1){
-					if(bd.QnC(c)>0){ return bd.QnC(c).toString()+"_";}
-					else{ return "0_";}
-				}
-				else if(bd.QuC(c)==21){ return "|_";}
-				else if(bd.QuC(c)==22){ return "-_";}
-				else{ return "._";}
-			});
+			this.outbstr += cm;
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			if(array.length<k.qrows){ return false;}
-			if(fio.filever==0){
-				var sv_num = [];
-				this.decodeCell( function(c,ca){
-					sv_num[c]=-1;
-					if     (ca == "#"){ bd.sQuC(c,1);}
-					else if(ca == "o"){ bd.startid=c;}
-					else if(ca != "."){
-						if     (ca.charAt(0)=="i"){ bd.sQuC(c,21);}
-						else if(ca.charAt(0)=="w"){ bd.sQuC(c,22);}
-						if(ca.length>1){ sv_num[c] = parseInt(ca.substr(1));}
-					}
-				},array.slice(0,k.qrows));
-				bd.hinfo.generateGates();
-
-				for(var c=0;c<bd.cellmax;c++){
-					if(sv_num[c]!=-1){ bd.hinfo.data[bd.hinfo.getGateid(c)].number = sv_num[c];}
-				}
-				for(var c=0;c<bd.cellmax;c++){
-					var idlist=bd.hinfo.getConnectingGate(c), min=1000;
-					for(var i=0;i<idlist.length;i++){
-						var val=bd.hinfo.data[idlist[i]].number;
-						if(val>0){ min=Math.min(min,val);}
-					}
-					bd.sQnC(c, (min<1000?min:-1));
-				}
-			}
-			else if(fio.filever==1){
-				this.decodeCell( function(c,ca){
-					if     (ca == "o"){ bd.startid=c;}
-					else if(ca == "#"){ bd.sQuC(c,1);}
-					else if(ca == "i"){ bd.sQuC(c,21);}
-					else if(ca == "-"){ bd.sQuC(c,22);}
-					else if(ca != "."){ bd.sQuC(c,1); bd.sQnC(c, parseInt(ca));}
-				},array.slice(0,k.qrows));
+		fio.decodeData = function(){
+			if(fio.filever==1){
+				this.decodeBoard_pzpr();
+				this.decodeBorderLine();
 				bd.hinfo.generateGates();
 			}
-			return true;
+			else if(fio.filever==0){
+				this.decodeBoard_old();
+				this.decodeBorderLine();
+			}
 		};
-		fio.encodeOthers = function(){
-			fio.filever = 1;
-			return (""+this.encodeCell( function(c){
+		fio.encodeData = function(){
+			bd.hinfo.generateAll();
+
+			this.filever = 1;
+			this.encodeBoard_pzpr();
+			this.encodeBorderLine();
+		};
+
+		fio.kanpenOpen = function(){
+			this.decodeBoard_kanpen();
+			this.decodeBorderLine();
+
+			bd.hinfo.generateGates();
+		};
+		fio.kanpenSave = function(){
+			bd.hinfo.generateAll();
+
+			this.encodeBoard_kanpen();
+			this.encodeBorderLine();
+		};
+
+		fio.decodeBoard_pzpr = function(){
+			this.decodeCell( function(c,ca){
+				if     (ca == "o"){ bd.startid=c;}
+				else if(ca == "#"){ bd.sQuC(c,1);}
+				else if(ca == "i"){ bd.sQuC(c,21);}
+				else if(ca == "-"){ bd.sQuC(c,22);}
+				else if(ca != "."){ bd.sQuC(c,1); bd.sQnC(c, parseInt(ca));}
+			});
+		};
+		fio.encodeBoard_pzpr = function(){
+			this.encodeCell( function(c){
 				if     (bd.startid==c){ return "o ";}
 				else if(bd.QuC(c)== 1){
 					if(bd.QnC(c)>0){ return bd.QnC(c).toString()+" ";}
@@ -643,21 +620,55 @@ Puzzles.slalom.prototype = {
 				else if(bd.QuC(c)==21){ return "i ";}
 				else if(bd.QuC(c)==22){ return "- ";}
 				else{ return ". ";}
-			}) );
+			});
 		};
 
-		fio.kanpenOpen = function(array){
-			var barray = array.slice(0,k.qrows);
-			for(var i=0;i<barray.length;i++){ barray[i] = (barray[i].split(" ")).join("_");}
-			enc.decodeKanpen(barray.join("/"));
-			this.decodeBorderLine(array.slice(k.qrows,3*k.qrows-1));
+		fio.decodeBoard_kanpen = function(){
+			this.decodeCell( function(c,ca){
+				if     (ca == "+"){ bd.startid=c;}
+				else if(ca == "|"){ bd.sQuC(c,21);}
+				else if(ca == "-"){ bd.sQuC(c,22);}
+				else if(ca != "."){ bd.sQuC(c, 1); if(ca!="0"){ bd.sQnC(c, parseInt(ca));} }
+			});
 		};
-		fio.kanpenSave = function(){
-			var barray = enc.encodeKanpen().split("/");
-			barray.shift(); barray.shift();
-			for(var i=0;i<barray.length;i++){ barray[i] = (barray[i].split("_")).join(" ");}
+		fio.encodeBoard_kanpen = function(){
+			this.encodeCell( function(c){
+				if     (bd.startid==c){ return "+ ";}
+				else if(bd.QuC(c)== 1){
+					if(bd.QnC(c)>0){ return bd.QnC(c).toString()+" ";}
+					else{ return "0 ";}
+				}
+				else if(bd.QuC(c)==21){ return "| ";}
+				else if(bd.QuC(c)==22){ return "- ";}
+				else{ return ". ";}
+			});
+		};
 
-			return barray.join("/") + this.encodeBorderLine()+"/";
+		fio.decodeBoard_old = function(){
+			var sv_num = [];
+			this.decodeCell( function(c,ca){
+				sv_num[c]=-1;
+				if     (ca == "#"){ bd.sQuC(c,1);}
+				else if(ca == "o"){ bd.startid=c;}
+				else if(ca != "."){
+					if     (ca.charAt(0)=="i"){ bd.sQuC(c,21);}
+					else if(ca.charAt(0)=="w"){ bd.sQuC(c,22);}
+					if(ca.length>1){ sv_num[c] = parseInt(ca.substr(1));}
+				}
+			});
+			bd.hinfo.generateGates();
+
+			for(var c=0;c<bd.cellmax;c++){
+				if(sv_num[c]!=-1){ bd.hinfo.data[bd.hinfo.getGateid(c)].number = sv_num[c];}
+			}
+			for(var c=0;c<bd.cellmax;c++){
+				var idlist=bd.hinfo.getConnectingGate(c), min=1000;
+				for(var i=0;i<idlist.length;i++){
+					var val=bd.hinfo.data[idlist[i]].number;
+					if(val>0){ min=Math.min(min,val);}
+				}
+				bd.sQnC(c, (min<1000?min:-1));
+			}
 		};
 	},
 

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ひとりにしてくれ版 hitori.js v3.2.3
+// パズル固有スクリプト部 ひとりにしてくれ版 hitori.js v3.2.4
 //
 Puzzles.hitori = function(){ };
 Puzzles.hitori.prototype = {
@@ -34,8 +34,6 @@ Puzzles.hitori.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		k.fstruct = ["cellqnum", "cellans"];
-
 		//k.def_csize = 36;
 		k.def_psize = 16;
 		k.area = { bcell:0, wcell:1, number:0};	// areaオブジェクトで領域を生成する
@@ -44,6 +42,8 @@ Puzzles.hitori.prototype = {
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
 						   " Left Click to input black cells, Right Click to input determined white cells.");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
+
+		enc.pidKanpen = 'hitori';
 	},
 	menufix : function(){
 		menu.addUseToFlags();
@@ -106,36 +106,28 @@ Puzzles.hitori.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeHitori(bstr);}
-			else if(type==2)      { bstr = this.decodeKanpen(bstr); }
+		enc.pzlimport = function(type){
+			this.decodeHitori();
 		};
-
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"hitori.html?problem="+this.pzldataKanpen();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeHitori();
+			this.encodeHitori();
 		};
 
-		enc.decodeHitori = function(bstr){
-			var c=0, i=0;
+		enc.decodeHitori = function(){
+			var c=0, i=0, bstr = this.outbstr;
 			for(i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
 				if(this.include(ca,"0","9")||this.include(ca,"a","z")){ bd.sQnC(c, parseInt(bstr.substr(i,1),36)); c++;}
 				else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),36)); c++; i+=2;}
-				else if(ca == '%'){ bd.sQnC(c, -2);                                   c++;      }
+				else if(ca == '%'){ bd.sQnC(c, -2);                              c++;      }
 				else{ c++;}
 
 				if(c > bd.cellmax){ break;}
 			}
-			return bstr.substr(i);
+			this.outbstr = bstr.substr(i);
 		};
-		enc.encodeHitori = function(bstr){
+		enc.encodeHitori = function(){
 			var count=0, cm="";
 			for(var i=0;i<bd.cellmax;i++){
 				var pstr = "";
@@ -151,34 +143,33 @@ Puzzles.hitori.prototype = {
 			}
 			if(count>0){ cm+=".";}
 
-			return cm;
+			this.outbstr += cm;
 		};
 
-		enc.decodeKanpen = function(bstr){
-			bstr = (bstr.split("_")).join(" ");
-			fio.decodeCell( function(c,ca){
-				if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			},bstr.split("/"));
-			return "";
+		enc.decodeKanpen = function(){
+			fio.decodeCellQnum_kanpen();
 		};
-		enc.pzldataKanpen = function(){
-			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
-				return (bd.QnC(c)>=0)?(bd.QnC(c).toString() + "_"):"._";
-			});
+		enc.encodeKanpen = function(){
+			fio.encodeCellQnum_kanpen();
 		};
 
 		//---------------------------------------------------------
-		fio.kanpenOpen = function(array){
-			fio.decodeCell( function(c,ca){
-				if(ca != "0"){ bd.sQnC(c, parseInt(ca));}
-			},array.slice(0,k.qrows));
-			fio.decodeCellAns(array.slice(k.qrows,2*k.qrows));
+		fio.decodeData = function(){
+			this.decodeCellQnum();
+			this.decodeCellAns();
+		};
+		fio.encodeData = function(){
+			this.encodeCellQnum();
+			this.encodeCellAns();
+		};
+
+		fio.kanpenOpen = function(){
+			this.decodeCellQnum_kanpen();
+			this.decodeCellAns();
 		};
 		fio.kanpenSave = function(){
-			return ""+fio.encodeCell( function(c){
-				return (bd.QnC(c)>0)?(bd.QnC(c).toString() + " "):"0 ";
-			})+
-			fio.encodeCellAns();
+			this.encodeCellQnum_kanpen();
+			this.encodeCellAns();
 		};
 	},
 

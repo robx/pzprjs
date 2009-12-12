@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.2.3
+// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.2.4
 //
 Puzzles.bosanowa = function(){ };
 Puzzles.bosanowa.prototype = {
@@ -33,8 +33,6 @@ Puzzles.bosanowa.prototype = {
 
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["others"];
 
 		//k.def_csize = 36;
 		k.def_psize = 36;
@@ -379,34 +377,33 @@ Puzzles.bosanowa.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){
-				bstr = this.decodeBoard(bstr);
-				bstr = this.decodeNumber16(bstr);
+		enc.pzlimport = function(type){
+			this.decodeBoard();
+			this.decodeNumber16();
 
-				if     (this.checkpflag("h")){ pp.setVal('disptype',2);}
-				else if(this.checkpflag("t")){ pp.setVal('disptype',3);}
-			}
+			if     (this.checkpflag("h")){ pp.setVal('disptype',2);}
+			else if(this.checkpflag("t")){ pp.setVal('disptype',3);}
 		};
-
+		// オーバーライド
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata(0);}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?"+this.pzldata(1);}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata(0);}
-		};
-		enc.pzldata = function(type){
-			return this.encodeBosanowa();
+			this.encodeBosanowa();
+
+			if     (pp.getVal('disptype')==2){ this.outpflag="h";}
+			else if(pp.getVal('disptype')==3){ this.outpflag="t";}
 		};
 
 		//---------------------------------------------------------
-		enc.decodeBoard = function(bstr,type){
+		enc.decodeBoard = function(){
+			var bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var num = parseInt(bstr.charAt(i),32);
 				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?0:7));} }
 				if((i*5+5)>=k.qcols*k.qrows){ break;}
 			}
-			return bstr.substr(i+1);
+			this.outbstr = bstr.substr(i+1);
 		};
+
+		// エンコード時は、盤面サイズの縮小という特殊処理を行ってます
 		enc.encodeBosanowa = function(type){
 			var x1=9999, x2=-1, y1=9999, y2=-1;
 			for(var c=0;c<bd.cellmax;c++){
@@ -426,8 +423,9 @@ Puzzles.bosanowa.prototype = {
 				}
 			}
 			if(count>0){ cm += pass.toString(32);}
+			this.outbstr += cm;
 
-			count=0;
+			cm="", count=0;
 			for(var cy=y1;cy<=y2;cy++){
 				for(var cx=x1;cx<=x2;cx++){
 					var pstr = "";
@@ -443,39 +441,36 @@ Puzzles.bosanowa.prototype = {
 				}
 			}
 			if(count>0){ cm+=(15+count).toString(36);}
+			this.outbstr += cm;
 
-			var pzlflag="";
-			if     (pp.getVal('disptype')==2){ pzlflag="/h";}
-			else if(pp.getVal('disptype')==3){ pzlflag="/t";}
-
-			return ""+pzlflag+"/"+(x2-x1+1)+"/"+(y2-y1+1)+"/"+cm;
+			this.outsize = [x2-x1+1, y2-y1+1].join("/");
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			if(array.length<4*k.qrows-1){ return false;}
+		fio.decodeData = function(){
 			this.decodeCell( function(c,ca){
 				if(ca!="."){ bd.sQuC(c, 7);}
 				if(ca!="0"&&ca!="."){ bd.sQnC(c, parseInt(ca));}
-			},array.slice(0,k.qrows));
+			});
 			this.decodeCell( function(c,ca){
 				if(ca!="0"&&ca!="."){ bd.sQaC(c, parseInt(ca));}
-			},array.slice(k.qrows,2*k.qrows));
+			});
 			this.decodeBorder( function(id,ca){
 				if(ca!="."){ bd.sQsB(id, parseInt(ca));}
-			},array.slice(2*k.qrows,4*k.qrows-1));
-			return true;
+			});
 		};
-		fio.encodeOthers = function(){
-			return this.encodeCell(function(c){
+		fio.encodeData = function(){
+			this.encodeCell(function(c){
 				if(bd.QuC(c)!=7){ return ". ";}
 				if(bd.QnC(c)< 0){ return "0 ";}
 				else{ return ""+bd.QnC(c).toString()+" ";}
-			})+this.encodeCell( function(c){
+			});
+			this.encodeCell( function(c){
 				if(bd.QuC(c)!=7 || bd.QnC(c)!=-1){ return ". ";}
 				if(bd.QaC(c)< 0){ return "0 ";}
 				else{ return ""+bd.QaC(c).toString()+" ";}
-			})+this.encodeBorder( function(id){
+			});
+			this.encodeBorder( function(id){
 				var cc1=bd.cc1(id), cc2=bd.cc2(id);
 				if((cc1==-1||bd.QuC(cc1)!=7)||(cc2==-1||bd.QuC(cc2)!=7)){ return ". ";}
 				if(bd.QsB(id)==-1){ return ". ";}

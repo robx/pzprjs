@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤギとオオカミ版 shwolf.js v3.2.3
+// パズル固有スクリプト部 ヤギとオオカミ版 shwolf.js v3.2.4
 //
 Puzzles.shwolf = function(){ };
 Puzzles.shwolf.prototype = {
@@ -33,8 +33,6 @@ Puzzles.shwolf.prototype = {
 
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["cellques41_42","crossnum","borderans"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -194,45 +192,25 @@ Puzzles.shwolf.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){
-				bstr = this.decodeCrossMark(bstr);
-				bstr = this.decodeCircle(bstr);
-			}
+		enc.pzlimport = function(type){
+			this.decodeCrossMark();
+			this.decodeCircle41_42();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeCrossMark()+this.encodeCircle();
+			this.encodeCrossMark();
+			this.encodeCircle41_42();
 		};
 
-		enc.decodeCircle = function(bstr){
-			var pos = bstr?Math.min(mf((k.qcols*k.qrows+2)/3), bstr.length):0;
-			for(var i=0;i<pos;i++){
-				var ca = parseInt(bstr.charAt(i),27);
-				for(var w=0;w<3;w++){
-					if(i*3+w<k.qcols*k.qrows){
-						if     (mf(ca/Math.pow(3,2-w))%3==1){ bd.sQuC(i*3+w,41);}
-						else if(mf(ca/Math.pow(3,2-w))%3==2){ bd.sQuC(i*3+w,42);}
-					}
-				}
-			}
-
-			return bstr.substr(pos);
+		//---------------------------------------------------------
+		fio.decodeData = function(){
+			this.decodeCellQues41_42();
+			this.decodeCrossNum();
+			this.decodeBorderAns();
 		};
-		enc.encodeCircle = function(){
-			var cm = "", num = 0, pass = 0;
-			for(var i=0;i<bd.cellmax;i++){
-				if     (bd.QuC(i)==41){ pass+=(  Math.pow(3,2-num));}
-				else if(bd.QuC(i)==42){ pass+=(2*Math.pow(3,2-num));}
-				num++; if(num==3){ cm += pass.toString(27); num=0; pass=0;}
-			}
-			if(num>0){ cm += pass.toString(27);}
-
-			return cm;
+		fio.encodeData = function(){
+			this.encodeCellQues41_42();
+			this.encodeCrossNum();
+			this.encodeBorderAns();
 		};
 	},
 

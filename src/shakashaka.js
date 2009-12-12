@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.2.3p1
+// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.2.4
 //
 Puzzles.shakashaka = function(){ };
 Puzzles.shakashaka.prototype = {
@@ -33,8 +33,6 @@ Puzzles.shakashaka.prototype = {
 
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["cellqnumb","cellqanssub"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -236,16 +234,21 @@ Puzzles.shakashaka.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			bstr = this.decode4Cell(bstr);
+		enc.pzlimport = function(type){
+			this.decode4Cell();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
+			this.encode4Cell();
 		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encode4Cell();
+
+		//---------------------------------------------------------
+		fio.decodeData = function(){
+			this.decodeCellQnumb();
+			this.decodeCellQanssub();
+		};
+		fio.encodeData = function(){
+			this.encodeCellQnumb();
+			this.encodeCellQanssub();
 		};
 	},
 

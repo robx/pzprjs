@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 イチマガ/磁石イチマガ版 ichimaga.js v3.2.3p2
+// パズル固有スクリプト部 イチマガ/磁石イチマガ版 ichimaga.js v3.2.4
 //
 Puzzles.ichimaga = function(){ };
 Puzzles.ichimaga.prototype = {
@@ -33,8 +33,6 @@ Puzzles.ichimaga.prototype = {
 
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["others","cellqnum","borderline"];
 
 		//k.def_csize = 36;
 		k.def_psize = 16;
@@ -113,8 +111,8 @@ Puzzles.ichimaga.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ this.decode4Cell(bstr);}
+		enc.pzlimport = function(type){
+			this.decode4Cell();
 
 			if(k.EDITOR){
 				if     (this.checkpflag("m")){ pp.setVal('puztype',2);}
@@ -130,40 +128,36 @@ Puzzles.ichimaga.prototype = {
 			}
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			var pzlflag="";
-			if     (pp.getVal('puztype')==2){ pzlflag="/m";}
-			else if(pp.getVal('puztype')==3){ pzlflag="/x";}
+			this.encode4Cell();
 
-			return ""+pzlflag+"/"+k.qcols+"/"+k.qrows+"/"+this.encode4Cell();
+			this.outpflag = "";
+			if     (pp.getVal('puztype')==2){ this.outpflag="m";}
+			else if(pp.getVal('puztype')==3){ this.outpflag="x";}
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			if(array.length<1){ return false;}
-
+		fio.decodeData = function(){
+			var pzlflag = this.readLine();
 			if(k.EDITOR){
-				if     (array[0]=="mag")  { pp.setVal('puztype',2);}
-				else if(array[0]=="cross"){ pp.setVal('puztype',3);}
-				else                      { pp.setVal('puztype',1);}
+				if     (pzlflag=="mag")  { pp.setVal('puztype',2);}
+				else if(pzlflag=="cross"){ pp.setVal('puztype',3);}
+				else                     { pp.setVal('puztype',1);}
 			}
 			else{
-				if     (array[0]=="mag")  { base.setTitle("磁石イチマガ","Magnetic Ichimaga");}
-				else if(array[0]=="cross"){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
-				else                      { base.setTitle("イチマガ","Ichimaga");}
+				if     (pzlflag=="mag")  { base.setTitle("磁石イチマガ","Magnetic Ichimaga");}
+				else if(pzlflag=="cross"){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
+				else                     { base.setTitle("イチマガ","Ichimaga");}
 				document.title = base.gettitle();
 				ee('title2').el.innerHTML = base.gettitle();
 			}
-			return true;
+
+			this.decodeCellQnum();
+			this.decodeBorderLine();
 		};
-		fio.encodeOthers = function(){
-			if     (pp.getVal('puztype')==2){ return "mag/";}
-			else if(pp.getVal('puztype')==3){ return "cross/";}
-			return "def/";
+		fio.encodeData = function(){
+			this.datastr += ["/","def/","mag/","cross/"][pp.getVal('puztype')];
+			this.encodeCellQnum();
+			this.encodeBorderLine();
 		};
 	},
 

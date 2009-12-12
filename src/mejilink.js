@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 メジリンク版 mejilink.js v3.2.3
+// パズル固有スクリプト部 メジリンク版 mejilink.js v3.2.4
 //
 Puzzles.mejilink = function(){ };
 Puzzles.mejilink.prototype = {
@@ -33,8 +33,6 @@ Puzzles.mejilink.prototype = {
 
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		k.fstruct = ["others"];
 
 		//k.def_csize = 36;
 		//k.def_psize = 24;
@@ -155,6 +153,7 @@ Puzzles.mejilink.prototype = {
 				else{ this.vhide(headers[1]+id);}
 			}
 			this.vinc();
+			this.addlw = 0;
 		};
 
 		line.repaintParts = function(id){
@@ -166,18 +165,15 @@ Puzzles.mejilink.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			bstr = this.decodeMejilink(bstr);
+		enc.pzlimport = function(type){
+			this.decodeMejilink();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeMejilink();
+			this.encodeMejilink();
 		};
 
-		enc.decodeMejilink = function(bstr){
+		enc.decodeMejilink = function(){
+			var bstr = this.outbstr;
 			var pos = bstr?Math.min(mf((bd.bdmax+4)/5),bstr.length):0;
 			for(var i=0;i<pos;i++){
 				var ca = parseInt(bstr.charAt(i),32);
@@ -185,7 +181,7 @@ Puzzles.mejilink.prototype = {
 					if(i*5+w<bd.bdmax){ bd.sQuB(i*5+w,(ca&Math.pow(2,4-w)?1:0));}
 				}
 			}
-			return bstr.substr(pos);
+			this.outbstr = bstr.substr(pos);
 		};
 		enc.encodeMejilink = function(){
 			var count = 0;
@@ -196,27 +192,25 @@ Puzzles.mejilink.prototype = {
 				num++; if(num==5){ cm += pass.toString(32); num=0; pass=0;}
 			}
 			if(num>0){ cm += pass.toString(32);}
-			return cm;
+			this.outbstr += cm;
 		};
 
 		//---------------------------------------------------------
-		fio.decodeOthers = function(array){
-			if(array.length<2*k.qrows+1){ return false;}
+		fio.decodeData = function(){
 			this.decodeBorder2( function(c,ca){
 				if     (ca == "2" ){ bd.sQuB(c, 0); bd.sQaB(c, 1);}
 				else if(ca == "-1"){ bd.sQuB(c, 0); bd.sQsB(c, 2);}
 				else if(ca == "1" ){ bd.sQuB(c, 0);}
 				else               { bd.sQuB(c, 1);}
-			},array.slice(0,2*k.qcols+1));
-			return true;
+			});
 		};
-		fio.encodeOthers = function(){
-			return (""+this.encodeBorder2( function(c){
+		fio.encodeData = function(){
+			this.encodeBorder2( function(c){
 				if     (bd.QaB(c)==1){ return "2 ";}
 				else if(bd.QsB(c)==2){ return "-1 ";}
 				else if(bd.QuB(c)==0){ return "1 ";}
 				else                 { return "0 ";}
-			}));
+			});
 		};
 	},
 

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.2.3
+// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.2.4
 //
 Puzzles.shikaku = function(){ };
 Puzzles.shikaku.prototype = {
@@ -34,8 +34,6 @@ Puzzles.shikaku.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		k.fstruct = ["cellqnum","borderans"];
-
 		//k.def_csize = 36;
 		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
@@ -44,6 +42,8 @@ Puzzles.shikaku.prototype = {
 		base.setExpression("　左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
 						   " Left Button Drag to input border lines, Right to input auxiliary marks.");
 		base.setFloatbgcolor("rgb(127, 191, 0)");
+
+		enc.pidKanpen = 'shikaku';
 	},
 	menufix : function(){ },
 
@@ -115,77 +115,37 @@ Puzzles.shikaku.prototype = {
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	encode_init : function(){
-		enc.pzlimport = function(type, bstr){
-			if(type==0 || type==1){ bstr = this.decodeNumber16(bstr);}
-			else if(type==2)      { bstr = this.decodeKanpen(bstr); }
+		enc.pzlimport = function(type){
+			this.decodeNumber16();
 		};
 		enc.pzlexport = function(type){
-			if(type==0)     { document.urloutput.ta.value = this.getURLbase()+"?"+k.puzzleid+this.pzldata();}
-			else if(type==1){ document.urloutput.ta.value = this.getDocbase()+k.puzzleid+"/sa/m.html?c"+this.pzldata();}
-			else if(type==2){ document.urloutput.ta.value = this.kanpenbase()+"shikaku.html?problem="+this.pzldataKanpen();}
-			else if(type==3){ document.urloutput.ta.value = this.getURLbase()+"?m+"+k.puzzleid+this.pzldata();}
-		};
-		enc.pzldata = function(){
-			return "/"+k.qcols+"/"+k.qrows+"/"+this.encodeNumber16();
+			this.encodeNumber16();
 		};
 
-		enc.decodeKanpen = function(bstr){
-			bstr = (bstr.split("_")).join(" ");
-			fio.decodeCell( function(c,ca){
-				if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			},bstr.split("/"));
-			return "";
+		enc.decodeKanpen = function(){
+			fio.decodeCellQnum_kanpen();
 		};
-		enc.pzldataKanpen = function(){
-			return ""+k.qrows+"/"+k.qcols+"/"+fio.encodeCell( function(c){
-				return (bd.QnC(c)>=0)?(bd.QnC(c).toString() + "_"):"._";
-			});
+		enc.encodeKanpen = function(){
+			fio.encodeCellQnum_kanpen();
 		};
 
 		//---------------------------------------------------------
-		fio.kanpenOpen = function(array){
-			this.decodeCell( function(c,ca){
-				if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			},array.slice(0,k.qrows));
-
-			var rmax = parseInt(array[k.qrows]);
-			var barray = array.slice(k.qrows+1,k.qrows+1+rmax);
-			this.decodeRectArea(barray);
+		fio.decodeData = function(){
+			this.decodeCellQnum();
+			this.decodeBorderAns();
 		};
-		fio.decodeRectArea = function(barray){
-			var rdata = [];
-			for(var i=0;i<barray.length;i++){
-				if(barray[i]==""){ break;}
-				var pce = barray[i].split(" ");
-				var sp = { y1:parseInt(pce[0]), x1:parseInt(pce[1]), y2:parseInt(pce[2]), x2:parseInt(pce[3])};
-				for(var cx=sp.x1;cx<=sp.x2;cx++){
-					for(var cy=sp.y1;cy<=sp.y2;cy++){
-						rdata[bd.cnum(cx,cy)] = i+1;
-					}
-				}
-			}
-			for(var id=0;id<bd.bdmax;id++){
-				var cc1=bd.cc1(id), cc2=bd.cc2(id);
-				if(cc1!=-1 && cc2!=-1 && rdata[cc1]!=rdata[cc2]){ bd.sQaB(id,1);}
-			}
+		fio.encodeData = function(){
+			this.encodeCellQnum();
+			this.encodeBorderAns();
 		};
 
+		fio.kanpenOpen = function(){
+			this.decodeCellQnum_kanpen();
+			this.decodeAnsSquareRoom();
+		};
 		fio.kanpenSave = function(){
-			return ""+this.encodeCell( function(c){
-				return (bd.QnC(c)>0)?(bd.QnC(c).toString() + " "):". ";
-			})+this.encodeRectArea();
-		};
-		fio.encodeRectArea = function(){
-			var bstr = "", rectcount = 0;
-			var rinfo = area.getRoomInfo();
-			for(var id=1;id<=rinfo.max;id++){
-				var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
-				if((d.x2-d.x1+1)*(d.y2-d.y1+1)==d.cnt){
-					bstr += (""+d.y1+" "+d.x1+" "+d.y2+" "+d.x2+"/");
-					rectcount++;
-				}
-			}
-			return ""+rectcount+"/"+bstr;
+			this.encodeCellQnum_kanpen();
+			this.encodeAnsSquareRoom();
 		};
 	},
 
