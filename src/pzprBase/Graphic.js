@@ -1506,7 +1506,7 @@ Graphic.prototype = {
 	},
 	dispnumCross : function(id){
 		var obj = bd.cross[id];
-		if(obj.qnum>0||(obj.qnum===0&&k.dispzero===1)){ this.hideEL(obj.numobj); return;}
+		if(obj.qnum<0||(obj.qnum===0&&k.dispzero===0)){ this.hideEL(obj.numobj); return;}
 		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 
 		var text  = ""+obj.qnum;
@@ -1516,7 +1516,7 @@ Graphic.prototype = {
 	},
 	dispnumBorder : function(id){
 		var obj = bd.border[id];
-		if(obj.qnum>0||(obj.qnum===0&&k.dispzero===1)){ this.hideEL(obj.numobj); return;}
+		if(obj.qnum<0||(obj.qnum===0&&k.dispzero===0)){ this.hideEL(obj.numobj); return;}
 		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 
 		var text  = ""+obj.qnum;
