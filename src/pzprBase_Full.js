@@ -5,7 +5,7 @@
  * written in JavaScript.
  * 
  * @author  happa.
- * @version v3.2.4
+ * @version v3.2.4p1
  * @date    2009-12-13
  * 
  * This script uses following library.
@@ -20,7 +20,7 @@
  * 
  */
 
-var pzprversion="v3.2.4";
+var pzprversion="v3.2.4p1";
 
 //----------------------------------------------------------------------------
 // ÅöÉOÉçÅ[ÉoÉãïœêî
@@ -5109,13 +5109,14 @@ FileIO.prototype = {
 			var header = (this.filever===0 ? "pzprv3" : ("pzprv3."+this.filever));
 			this.datastr = [header, k.puzzleid, this.datastr].join("/");
 		}
+		var bstr = this.datastr;
 
 		// ññîˆÇÃURLí«â¡èàóù
 		if(type===1){
 			this.urlstr = enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? 0 : 2);
 		}
 
-		return this.datastr;
+		return bstr;
 	},
 
 	//---------------------------------------------------------------------------
@@ -5592,7 +5593,7 @@ FileIO.prototype = {
 			if(barray[i]==""){ break;}
 			var pce = barray[i].split(" ");
 			var sp = { y1:parseInt(pce[0]), x1:parseInt(pce[1]), y2:parseInt(pce[2]), x2:parseInt(pce[3]), num:pce[4]};
-			if(sp.num!=""){ bd.sQnC(bd.cnum(sp.x1,sp.y1), parseInt(sp.num,10));}
+			if(isques && sp.num!=""){ bd.sQnC(bd.cnum(sp.x1,sp.y1), parseInt(sp.num,10));}
 			for(var cx=sp.x1;cx<=sp.x2;cx++){
 				for(var cy=sp.y1;cy<=sp.y2;cy++){
 					rdata[bd.cnum(cx,cy)] = i;
@@ -5609,7 +5610,7 @@ FileIO.prototype = {
 		this.datastr += (rinfo.max+"/");
 		for(var id=1;id<=rinfo.max;id++){
 			var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
-			var num = bd.QnC(area.getTopOfRoom(id));
+			var num = (isques ? bd.QnC(area.getTopOfRoom(id)) : -1);
 			this.datastr += (""+d.y1+" "+d.x1+" "+d.y2+" "+d.x2+" "+(num>=0 ? ""+num : "")+"/");
 		}
 	},
@@ -7729,14 +7730,12 @@ Properties.prototype = {
 		},
 		fileopen : function(){
 			document.fileform.pencilbox.value = "0";
-			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = ee("pop1_4");}}
-			else{ if(!menu.pop){ document.fileform.filebox.click();}}
+			if(!menu.pop){ menu.pop = ee("pop1_4");}
 		},
 		fileopen2 : function(){
 			if(!fio.kanpenOpen){ return;}
 			document.fileform.pencilbox.value = "1";
-			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = ee("pop1_4");}}
-			else{ if(!menu.pop){ document.fileform.filebox.click();}}
+			if(!menu.pop){ menu.pop = ee("pop1_4");}
 		},
 		dispsize : function(){
 			menu.pop = ee("pop4_1");

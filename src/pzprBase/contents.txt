@@ -1,4 +1,4 @@
-pzprBase.js v3.2.4 contents
+pzprBase.js v3.2.4p1 contents
 
 global.js      v3.2.4
 Board.js       v3.2.3p1
@@ -6,10 +6,10 @@ Graphic.js     v3.2.4
 MouseInput.js  v3.2.3p1
 KeyInput.js    v3.2.3p1
 Encode.js      v3.2.3p2
-Filesys.js     v3.2.4
+Filesys.js     v3.2.4p1
 Answer.js      v3.2.3
 Undo.js        v3.2.3
-Menu.js        v3.2.3p1
+Menu.js        v3.2.4p1
 MenuExec.js    v3.2.4
 pzprUtil.js    v3.2.3
 Main.js        v3.2.4
