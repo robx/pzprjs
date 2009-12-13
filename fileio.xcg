@@ -57,7 +57,7 @@ else{
 	my @lines0 = split(/[\r\n]+/, $str);
 	my $datastr = "";
 	foreach(@lines0){
-		#if($_ eq ''){ last;}
+		if($_ =~ /^http\:\/\//){ last;}
 		$datastr .= "$_\/";
 	}
 
