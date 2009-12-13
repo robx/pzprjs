@@ -1,4 +1,4 @@
-// Menu.js v3.2.3p1
+// Menu.js v3.2.4p1
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -919,14 +919,12 @@ Properties.prototype = {
 		},
 		fileopen : function(){
 			document.fileform.pencilbox.value = "0";
-			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = ee("pop1_4");}}
-			else{ if(!menu.pop){ document.fileform.filebox.click();}}
+			if(!menu.pop){ menu.pop = ee("pop1_4");}
 		},
 		fileopen2 : function(){
 			if(!fio.kanpenOpen){ return;}
 			document.fileform.pencilbox.value = "1";
-			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = ee("pop1_4");}}
-			else{ if(!menu.pop){ document.fileform.filebox.click();}}
+			if(!menu.pop){ menu.pop = ee("pop1_4");}
 		},
 		dispsize : function(){
 			menu.pop = ee("pop4_1");
