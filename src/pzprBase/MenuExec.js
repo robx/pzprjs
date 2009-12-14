@@ -1,4 +1,4 @@
-// MenuExec.js v3.2.4
+// MenuExec.js v3.2.4p2
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -197,9 +197,8 @@ MenuExec.prototype = {
 				if(name==="reduceup"||name==="reducedn"){
 					if(k.qrows<=1){ return;}
 				}
-				else if(name==="reducelt"||name==="reducedn"){
-					if(k.qcols<=1 && k.puzzleid!=="tawa"){ return;}
-					else if(k.qcols<=1 && k.puzzleid==="tawa" && bd.lap!==3){ return;}
+				else if(name==="reducelt"||name==="reducert"){
+					if(k.qcols<=1 && (k.puzzleid!=="tawa" || bd.lap!==3)){ return;}
 				}
 			}
 
