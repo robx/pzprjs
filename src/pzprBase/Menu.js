@@ -1,4 +1,4 @@
-// Menu.js v3.2.4p1
+// Menu.js v3.2.4p2
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -27,6 +27,8 @@ Menu = function(){
 
 	this.ex = new MenuExec();
 	this.language = 'ja';
+
+	this.ispboxfile = (k.isKanpenExist && (k.puzzleid!=="nanro" && k.puzzleid!=="ayeheya" && k.puzzleid!=="kurochute" && k.puzzleid!=="goishi"));
 
 	// ElementTemplate : メニュー領域
 	var menu_funcs = {mouseover : ee.ebinder(this, this.menuhover), mouseout  : ee.ebinder(this, this.menuout)};
@@ -187,7 +189,7 @@ Menu.prototype = {
 		if(!!fio.DBtype){
 			as('database', 'file', 'データベースの管理', 'Database Management');
 		}
-		if(k.isKanpenExist && (k.puzzleid!=="nanro" && k.puzzleid!=="ayeheya" && k.puzzleid!=="kurochute")){
+		if(this.ispboxfile){
 			ap('sep_3', 'file');
 			as('fileopen2', 'file', 'pencilboxのファイルを開く', 'Open the pencilbox file');
 			as('filesave2', 'file', 'pencilboxのファイルを保存', 'Save the pencilbox file as ...');
@@ -673,6 +675,9 @@ Menu.prototype = {
 		lab(ee('pop4_1_cap1').el, "表示サイズ",               "Display size");
 		btn(document.dispsize.dispsize, func,  "変更する",   "Change");
 		btn(document.dispsize.cancel,   close, "キャンセル", "Cancel");
+
+		// poptest ------------------------------------------------------------
+		debug.poptest_func();
 	},
 
 	//---------------------------------------------------------------------------
@@ -937,4 +942,112 @@ Properties.prototype = {
 			ee('cl_keypopup').el.style.color = (f?"black":"silver");
 		}
 	}
+};
+
+//---------------------------------------------------------------------------
+// ★debugオブジェクト  poptest関連の関数など
+//---------------------------------------------------------------------------
+var debug = {
+	extend : function(object){
+		for(var i in object){ this[i] = object[i];}
+	},
+
+	poptest_func : function(){
+		menu.titlebarfunc(ee('bartest').el);
+
+		document.testform.t1.onclick        = ee.binder(this, this.perfeval);
+		document.testform.t2.onclick        = ee.binder(this, this.painteval);
+		document.testform.t3.onclick        = ee.binder(this, this.resizeeval);
+		document.testform.perfload.onclick  = ee.binder(this, this.loadperf);
+
+		document.testform.filesave.onclick  = ee.binder(this, this.filesave);
+		document.testform.fileopen.onclick  = ee.binder(this, this.fileopen);
+		document.testform.pbfilesave.onclick  = ee.binder(this, this.filesave_pencilbox);
+		document.testform.pbfileopen.onclick  = ee.binder(this, this.fileopen_pencilbox);
+
+		document.testform.erasetext.onclick = ee.binder(this, this.erasetext);
+		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
+
+		document.testform.perfload.style.display = (k.puzzleid!=='country' ? 'none' : 'inline');
+		document.testform.pbfilesave.style.display = (!menu.ispboxfile ? 'none' : 'inline');
+		document.testform.pbfileopen.style.display = (!menu.ispboxfile ? 'none' : 'inline');
+
+		if(k.scriptcheck){ debug.testonly_func();}	// テスト用
+	},
+
+	disppoptest : function(){
+		var _pop_style = ee('poptest').el.style;
+		_pop_style.display = 'inline';
+		_pop_style.left = '40px';
+		_pop_style.top  = '80px';
+	},
+
+	// k.scriptcheck===true時はオーバーライドされます
+	keydown : function(ca){
+		if(kc.isCTRL && ca=='F8'){
+			this.disppoptest();
+			kc.tcMoved = true;
+			return true;
+		}
+		return false;
+	},
+
+	filesave : function(){
+		this.setTA('');
+		this.setTA(fio.fileencode(1).replace(/\//g,"\n"));
+		this.addTA('');
+		this.addTA(fio.urlstr);
+	},
+	fileopen : function(){
+		var dataarray = this.getTA().split("\n");
+		if(!dataarray[0].match(/pzprv3/)){ return;}
+		fio.filedecode(dataarray.join("/"),1);
+	},
+
+	filesave_pencilbox : function(){
+		this.setTA('');
+		this.setTA(fio.fileencode(2).replace(/\//g,"\n"));
+	},
+	fileopen_pencilbox : function(){
+		var dataarray = this.getTA().split("\n");
+		if(dataarray[0].match(/pzprv3/)){ return;}
+		fio.filedecode(dataarray.join("/"),2);
+	},
+
+	erasetext : function(){
+		this.setTA('');
+		if(k.scriptcheck){ ee('testdiv').el.innerHTML = '';}
+	},
+
+	perfeval : function(){
+		this.timeeval("正答判定測定",ee.binder(ans, ans.checkAns));
+	},
+	painteval : function(){
+		this.timeeval("描画時間測定",ee.binder(pc, pc.paintAll));
+	},
+	resizeeval : function(){
+		this.timeeval("resize描画測定",ee.binder(base, base.resize_canvas));
+	},
+	timeeval : function(text,func){
+		this.addTA(text);
+		var count=0, old = (new Date()).getTime();
+		while((new Date()).getTime() - old < 3000){
+			count++;
+
+			func();
+		}
+		var time = (new Date()).getTime() - old;
+
+		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
+	},
+
+	loadperf : function(){
+		fio.filedecode("pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /",1);
+		pp.setVal('mode',3);
+		pp.setVal('irowake',true);
+	},
+
+	getTA : function(){ return document.testform.testarea.value;},
+	setTA : function(str){ document.testform.testarea.value  = str;},
+	addTA : function(str){ document.testform.testarea.value += (str+"\n");}
 };

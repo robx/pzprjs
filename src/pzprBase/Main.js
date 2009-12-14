@@ -102,8 +102,6 @@ PBase.prototype = {
 		enc.pzlinput();										// URLからパズルのデータを読み出す
 		if(!enc.uri.bstr){ this.resize_canvas_onload();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
 
-		if(k.scriptcheck && debug){ debug.testonly_func();}	// テスト用
-
 		if(!!puz.finalfix){ puz.finalfix();}					// パズル固有の後付け設定
 	},
 	setEvents : function(first){
