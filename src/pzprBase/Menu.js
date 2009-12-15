@@ -26,6 +26,8 @@ Menu = function(){
 	this.labelstack = [];			// span“™‚Ì•¶š—ñ‚Ìî•ñ(idname‚Æ•¶š—ñ‚ÌƒŠƒXƒg)
 
 	this.ex = new MenuExec();
+	this.ex.init();
+
 	this.language = 'ja';
 
 	this.ispboxfile = (k.isKanpenExist && (k.puzzleid!=="nanro" && k.puzzleid!=="ayeheya" && k.puzzleid!=="kurochute" && k.puzzleid!=="goishi"));
