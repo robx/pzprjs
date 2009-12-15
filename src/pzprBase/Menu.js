@@ -30,7 +30,7 @@ Menu = function(){
 
 	this.language = 'ja';
 
-	this.ispboxfile = (k.isKanpenExist && (k.puzzleid!=="nanro" && k.puzzleid!=="ayeheya" && k.puzzleid!=="kurochute" && k.puzzleid!=="goishi"));
+	this.ispencilbox = (k.isKanpenExist && (k.puzzleid!=="nanro" && k.puzzleid!=="ayeheya" && k.puzzleid!=="kurochute" && k.puzzleid!=="goishi"));
 
 	// ElementTemplate : メニュー領域
 	var menu_funcs = {mouseover : ee.ebinder(this, this.menuhover), mouseout  : ee.ebinder(this, this.menuout)};
@@ -191,7 +191,7 @@ Menu.prototype = {
 		if(!!fio.DBtype){
 			as('database', 'file', 'データベースの管理', 'Database Management');
 		}
-		if(this.ispboxfile){
+		if(this.ispencilbox){
 			ap('sep_3', 'file');
 			as('fileopen2', 'file', 'pencilboxのファイルを開く', 'Open the pencilbox file');
 			as('filesave2', 'file', 'pencilboxのファイルを保存', 'Save the pencilbox file as ...');
@@ -971,8 +971,8 @@ var debug = {
 		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
 
 		document.testform.perfload.style.display = (k.puzzleid!=='country' ? 'none' : 'inline');
-		document.testform.pbfilesave.style.display = (!menu.ispboxfile ? 'none' : 'inline');
-		document.testform.pbfileopen.style.display = (!menu.ispboxfile ? 'none' : 'inline');
+		document.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
+		document.testform.pbfileopen.style.display = (!menu.ispencilbox ? 'none' : 'inline');
 
 		if(k.scriptcheck){ debug.testonly_func();}	// テスト用
 	},

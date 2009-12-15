@@ -174,12 +174,7 @@ debug.extend({
 
 					n++;
 					if(n<debug.acs[k.puzzleid].length){ debug.phase = 20;}
-					else{
-						if(k.isKanpenExist && k.puzzleid!="nanro" && k.puzzleid!="ayeheya" && k.puzzleid!="kurochute" && k.puzzleid!="goishi"){
-							debug.phase = 31;
-						}
-						else{ debug.phase = 30;}
-					}
+					else{ debug.phase = (menu.ispencilbox ? 31 : 30);}
 				},fint);
 			})();
 			break;
