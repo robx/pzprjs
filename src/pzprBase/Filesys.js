@@ -1,4 +1,4 @@
-// Filesys.js v3.2.4
+// Filesys.js v3.2.4p2
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -32,6 +32,10 @@ FileIO.prototype = {
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
 
 			if(this.readLine()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。'); return;}
+		}
+		else if(type===2){
+			if(this.readLine().match(/pzprv3/)){ alert('pencilboxのファイルではありません。'); return;}
+			this.lineseek = 0;
 		}
 
 		// サイズを表す文字列
@@ -81,13 +85,14 @@ FileIO.prototype = {
 			var header = (this.filever===0 ? "pzprv3" : ("pzprv3."+this.filever));
 			this.datastr = [header, k.puzzleid, this.datastr].join("/");
 		}
+		var bstr = this.datastr;
 
 		// 末尾のURL追加処理
 		if(type===1){
 			this.urlstr = enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? 0 : 2);
 		}
 
-		return this.datastr;
+		return bstr;
 	},
 
 	//---------------------------------------------------------------------------
@@ -564,7 +569,7 @@ FileIO.prototype = {
 			if(barray[i]==""){ break;}
 			var pce = barray[i].split(" ");
 			var sp = { y1:parseInt(pce[0]), x1:parseInt(pce[1]), y2:parseInt(pce[2]), x2:parseInt(pce[3]), num:pce[4]};
-			if(sp.num!=""){ bd.sQnC(bd.cnum(sp.x1,sp.y1), parseInt(sp.num,10));}
+			if(isques && sp.num!=""){ bd.sQnC(bd.cnum(sp.x1,sp.y1), parseInt(sp.num,10));}
 			for(var cx=sp.x1;cx<=sp.x2;cx++){
 				for(var cy=sp.y1;cy<=sp.y2;cy++){
 					rdata[bd.cnum(cx,cy)] = i;
@@ -581,7 +586,7 @@ FileIO.prototype = {
 		this.datastr += (rinfo.max+"/");
 		for(var id=1;id<=rinfo.max;id++){
 			var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
-			var num = bd.QnC(area.getTopOfRoom(id));
+			var num = (isques ? bd.QnC(area.getTopOfRoom(id)) : -1);
 			this.datastr += (""+d.y1+" "+d.x1+" "+d.y2+" "+d.x2+" "+(num>=0 ? ""+num : "")+"/");
 		}
 	},

@@ -1,4 +1,4 @@
-#! c:/perl/bin/perl
+#!/usr/local/bin/perl
 
 use CGI;
 
@@ -52,14 +52,7 @@ else{
 	}
 	close ($FH) if ($CGI::OS ne 'UNIX'); # Windowsプラットフォーム用
 
-	#$str = join(',', map("\"$_\"", split(/[\r\n]+/, $str)));
-
-	my @lines0 = split(/[\r\n]+/, $str);
-	my $datastr = "";
-	foreach(@lines0){
-		#if($_ eq ''){ last;}
-		$datastr .= "$_\/";
-	}
+	$str =~ s/[\r\n]+/\t/g;
 
 	print <<"EOL";
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -69,8 +62,7 @@ else{
 <script type="text/javascript">
 <!--
 EOL
-	if   ($q->param('pencilbox')==0){ printf("if(parent.fio){ parent.fio.filedecode(\"$datastr\", 1);}\n");}
-	elsif($q->param('pencilbox')==1){ printf("if(parent.fio){ parent.fio.filedecode(\"$datastr\", 2);}\n");}
+	printf("if(parent.base){ parent.menu.ex.fileonload(\"$str\");}\n");
 	print <<"EOL";
 //-->
 </script>

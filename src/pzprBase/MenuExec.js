@@ -1,4 +1,4 @@
-// MenuExec.js v3.2.4
+// MenuExec.js v3.2.4p2
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -10,8 +10,25 @@ MenuExec = function(){
 	this.qnumw;	// Ques==51の回転･反転用
 	this.qnumh;	// Ques==51の回転･反転用
 	this.qnums;	// reduceでisOneNumber時の後処理用
+
+	this.reader;	// FileReaderオブジェクト
 };
 MenuExec.prototype = {
+	//------------------------------------------------------------------------------
+	// menu.ex.init() オブジェクトの初期化処理
+	//------------------------------------------------------------------------------
+	init : function(){
+		if(typeof FileReader == 'undefined'){
+			this.reader = null;
+		}
+		else{
+			this.reader = new FileReader();
+			this.reader.onload = ee.ebinder(menu.ex, function(e){
+				this.fileonload(ee.getSrcElement(e).result);
+			});
+		}
+	},
+
 	//------------------------------------------------------------------------------
 	// menu.ex.modechange() モード変更時の処理を行う
 	//------------------------------------------------------------------------------
@@ -85,19 +102,45 @@ MenuExec.prototype = {
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.fileopen()  ファイルを開く
-	// menu.ex.filesave()  ファイルを保存する
+	// menu.ex.fileopen()   ファイルを開く
+	// menu.ex.fileonload() File API用ファイルを開いたイベントの処理
+	// menu.ex.filesave()   ファイルを保存する
 	//------------------------------------------------------------------------------
 	fileopen : function(e){
 		if(menu.pop){ menu.popclose();}
-		if(document.fileform.filebox.value){
-			document.fileform.submit();
-			document.fileform.filebox.value = "";
-			tm.reset();
+		var fileEL = document.fileform.filebox;
+
+		if(!!fileEL.files){
+			var fitem = fileEL.files[0];
+			if(!fitem){ return;}
+
+			if(!!this.reader){ this.reader.readAsText(fitem);}
+			else             { this.fileonload(fitem.getAsText(''));}
 		}
+		else{
+			if(!fileEL.value){ return;}
+			document.fileform.submit();
+		}
+
+		document.fileform.reset();
+		tm.reset();
+	},
+	fileonload : function(data){
+		var farray = data.split(/[\t\r\n]+/);
+		var fstr = "";
+		for(var i=0;i<farray.length;i++){
+			if(farray[i].match(/^http\:\/\//)){ break;}
+			fstr += (farray[i]+"/");
+		}
+		var ftype = (document.fileform.pencilbox.value=="0" ? 1 : 2);
+
+		fio.filedecode(fstr,ftype);
+
+		document.fileform.reset();
+		tm.reset();
 	},
 
-	filesave : function(type){
+	filesave : function(ftype){
 		var fname = prompt("保存するファイル名を入力して下さい。", k.puzzleid+".txt");
 		if(!fname){ return;}
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
@@ -109,7 +152,7 @@ MenuExec.prototype = {
 		else if(navigator.platform.indexOf("Mac")!==-1){ document.fileform2.platform.value = "Mac";}
 		else                                           { document.fileform2.platform.value = "Others";}
 
-		document.fileform2.ques.value   = fio.fileencode(type);
+		document.fileform2.ques.value   = fio.fileencode(ftype);
 		document.fileform2.urlstr.value = fio.urlstr;
 
 		document.fileform2.submit();
@@ -197,9 +240,8 @@ MenuExec.prototype = {
 				if(name==="reduceup"||name==="reducedn"){
 					if(k.qrows<=1){ return;}
 				}
-				else if(name==="reducelt"||name==="reducedn"){
-					if(k.qcols<=1 && k.puzzleid!=="tawa"){ return;}
-					else if(k.qcols<=1 && k.puzzleid==="tawa" && bd.lap!==3){ return;}
+				else if(name==="reducelt"||name==="reducert"){
+					if(k.qcols<=1 && (k.puzzleid!=="tawa" || bd.lap!==3)){ return;}
 				}
 			}
 
