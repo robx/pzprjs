@@ -97,6 +97,8 @@ Menu.prototype = {
 		ee('usepanel')  .el.innerHTML = '';
 		ee('checkpanel').el.innerHTML = '';
 
+		ee('urlbuttonarea').el.innerHTML = '';
+
 		pp.reset();
 	},
 
