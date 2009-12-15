@@ -1,25 +1,12 @@
-// for_test.js v3.2.4
+// for_test.js v3.2.4p2
 
 k.scriptcheck = true;
 k.EDITOR = true;
 k.PLAYER = false;
 
-var debug = {
+debug.extend({
 	testonly_func : function(){
-		menu.titlebarfunc(ee('bartest').el);
-
 		document.testform.starttest.onclick = ee.binder(this, this.starttest);
-		document.testform.t1.onclick        = ee.binder(this, this.perfeval);
-		document.testform.t2.onclick        = ee.binder(this, this.painteval);
-		document.testform.t3.onclick        = ee.binder(this, this.resizeeval);
-
-		document.testform.filesave.onclick  = function(){ ee('testarea').el.value=''; debug.setTA(fio.fileencode(1).replace(/\//g,"\n"));};
-		document.testform.fileopen.onclick  = function(){ fio.filedecode(ee('testarea').el.value.split("\n").join("/"),1);};
-		document.testform.erasetext.onclick = function(e){ ee('testarea').el.value=''; ee('testdiv').el.innerHTML = '';};
-		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
-		document.testform.perfload.onclick  = ee.binder(this, this.loadperf);
-
-		document.testform.perfload.display = (k.puzzleid!=='country' ? 'none' : 'inline');
 		
 		if(!ee('testdiv')){
 			var el = _doc.createElement('div');
@@ -38,35 +25,8 @@ var debug = {
 		else if(kc.isCTRL && kc.isSHIFT && ca=='F10'){ this.all_test();}
 		else{ return false;}
 
+		kc.tcMoved = true;
 		return true;
-	},
-
-	perfeval : function(){
-		this.timeeval("³“š”»’è‘ª’è",ee.binder(ans, ans.checkAns));
-	},
-	painteval : function(){
-		this.timeeval("•`‰æŠÔ‘ª’è",ee.binder(pc, pc.paintAll));
-	},
-	resizeeval : function(){
-		this.timeeval("resize•`‰æ‘ª’è",ee.binder(base, base.resize_canvas));
-	},
-	timeeval : function(text,func){
-		this.addTA(text);
-		var count=0, old = (new Date()).getTime();
-		while((new Date()).getTime() - old < 3000){
-			count++;
-
-			func();
-		}
-		var time = (new Date()).getTime() - old;
-
-		this.addTA("‘ª’èƒf[ƒ^ "+time+"ms / "+count+"‰ñ\n"+"•½‹ÏŠÔ   "+(time/count)+"ms")
-	},
-
-	loadperf : function(){
-		fio.filedecode(debug.acs['perftest'][0][1],1);
-		pp.setVal('mode',3);
-		pp.setVal('irowake',true);
 	},
 
 	all_test : function(){
@@ -141,16 +101,8 @@ var debug = {
 		this.addTextarea("\t\t\t[\""+ans.alstr.jp+"\",\""+outputstr+"\"],");
 	},
 
-	disppoptest : function(){
-		var _pop_style = ee('poptest').el.style;
-		_pop_style.display = 'inline';
-		_pop_style.left = '40px';
-		_pop_style.top  = '80px';
-	},
-
 	starttest : function(){
-		ee('testarea').el.value = "";
-		ee('testdiv').el.innerHTML = "";
+		this.erasetext();
 		this.sccheck();
 	},
 
@@ -222,12 +174,7 @@ var debug = {
 
 					n++;
 					if(n<debug.acs[k.puzzleid].length){ debug.phase = 20;}
-					else{
-						if(k.isKanpenExist && k.puzzleid!="nanro" && k.puzzleid!="ayeheya" && k.puzzleid!="kurochute" && k.puzzleid!="goishi"){
-							debug.phase = 31;
-						}
-						else{ debug.phase = 30;}
-					}
+					else{ debug.phase = (menu.ispencilbox ? 31 : 30);}
 				},fint);
 			})();
 			break;
@@ -403,8 +350,6 @@ var debug = {
 		},mint);
 	},
 	taenable : true,
-	addTA : function(str){ document.testform.testarea.value += (str+"\n");},
-	setTA : function(str){ document.testform.testarea.value  = str;},
 	addTextarea : function(str){ ee('testdiv').appendHTML(str).appendBR();},
 
 	qsubf : true,
@@ -1187,4 +1132,4 @@ var debug = {
 		['yajikazu'   , '6/6/40d23663i32h12b32a12a11c'],
 		['yajirin'    , '5/5/m32j10']
 	]
-};
+});

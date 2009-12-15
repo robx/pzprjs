@@ -1,4 +1,4 @@
-// Main.js v3.2.4
+// Main.js v3.2.4p2
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -102,8 +102,6 @@ PBase.prototype = {
 		enc.pzlinput();										// URLからパズルのデータを読み出す
 		if(!enc.uri.bstr){ this.resize_canvas_onload();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
 
-		if(k.scriptcheck && debug){ debug.testonly_func();}	// テスト用
-
 		if(!!puz.finalfix){ puz.finalfix();}					// パズル固有の後付け設定
 	},
 	setEvents : function(first){
@@ -154,6 +152,10 @@ PBase.prototype = {
 		this.postfix();			// 各パズルごとの設定(後付け分)
 		menu.menuinit();
 		um.enb_btn();
+
+		// なぜかF5で更新するとtrueになってるので応急処置...
+		ee('btnclear') .el.disabled = false;
+		ee('btnclear2').el.disabled = false;
 	},
 	postfix : function(){
 		puz.input_init();

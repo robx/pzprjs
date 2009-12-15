@@ -1,4 +1,4 @@
-// KeyInput.js v3.2.3p1
+// KeyInput.js v3.2.4p2
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -151,7 +151,7 @@ KeyEvent.prototype = {
 			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); flag = true;}
 			else if(k.playmode &&  this.isSHIFT){ pp.setVal('mode',1); flag = true;}
 		}
-		if(k.scriptcheck && debug){ flag = (flag || debug.keydown(this.ca));}
+		flag = (flag || debug.keydown(this.ca));
 
 		return flag;
 	},

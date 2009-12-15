@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 波及効果版 ripple.js v3.2.4
+// パズル固有スクリプト部 波及効果版 ripple.js v3.2.4p2
 //
 Puzzles.ripple = function(){ };
 Puzzles.ripple.prototype = {
@@ -42,6 +42,8 @@ Puzzles.ripple.prototype = {
 			base.setExpression("　キーボードやマウスで数字が入力できます。",
 							   " It is available to input number by keybord or mouse");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
+
+		enc.pidKanpen = 'hakyukoka';
 	},
 	menufix : function(){
 		if(k.EDITOR){ kp.defaultdisp = true;}
