@@ -5,8 +5,8 @@
  * written in JavaScript.
  * 
  * @author  happa.
- * @version v3.2.4
- * @date    2009-12-13
+ * @version v3.2.4p2
+ * @date    2009-12-16
  * 
  * This script uses following library.
  *  uuCanvas.js (version 1.0)
@@ -20,7 +20,7 @@
  * 
  */
 
-var pzprversion="v3.2.4";
+var pzprversion="v3.2.4p2";
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -3886,7 +3886,7 @@ KeyEvent.prototype = {
 			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); flag = true;}
 			else if(k.playmode &&  this.isSHIFT){ pp.setVal('mode',1); flag = true;}
 		}
-		if(k.scriptcheck && debug){ flag = (flag || debug.keydown(this.ca));}
+		flag = (flag || debug.keydown(this.ca));
 
 		return flag;
 	},
@@ -4834,7 +4834,10 @@ Encode.prototype = {
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if     (ca=='0'){ bd.sQnC(c, parseInt(bstr.substr(i+1,1),16)); c++; i++; }
+			if(ca=='0'){
+				if(bstr.charAt(i+1)=="."){ bd.sQnC(c,-2); c++; i++;}
+				else{ bd.sQnC(c, parseInt(bstr.substr(i+1,1),16)); c++; i++;}
+			}
 			else if(ca=='5'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),16)); c++; i+=2;}
 			else if(this.include(ca,"1","4")){
 				bd.sDiC(c, parseInt(ca,16));
@@ -5058,6 +5061,10 @@ FileIO.prototype = {
 
 			if(this.readLine()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。'); return;}
 		}
+		else if(type===2){
+			if(this.readLine().match(/pzprv3/)){ alert('pencilboxのファイルではありません。'); return;}
+			this.lineseek = 0;
+		}
 
 		// サイズを表す文字列
 		var row, col;
@@ -5106,13 +5113,14 @@ FileIO.prototype = {
 			var header = (this.filever===0 ? "pzprv3" : ("pzprv3."+this.filever));
 			this.datastr = [header, k.puzzleid, this.datastr].join("/");
 		}
+		var bstr = this.datastr;
 
 		// 末尾のURL追加処理
 		if(type===1){
 			this.urlstr = enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? 0 : 2);
 		}
 
-		return this.datastr;
+		return bstr;
 	},
 
 	//---------------------------------------------------------------------------
@@ -5589,7 +5597,7 @@ FileIO.prototype = {
 			if(barray[i]==""){ break;}
 			var pce = barray[i].split(" ");
 			var sp = { y1:parseInt(pce[0]), x1:parseInt(pce[1]), y2:parseInt(pce[2]), x2:parseInt(pce[3]), num:pce[4]};
-			if(sp.num!=""){ bd.sQnC(bd.cnum(sp.x1,sp.y1), parseInt(sp.num,10));}
+			if(isques && sp.num!=""){ bd.sQnC(bd.cnum(sp.x1,sp.y1), parseInt(sp.num,10));}
 			for(var cx=sp.x1;cx<=sp.x2;cx++){
 				for(var cy=sp.y1;cy<=sp.y2;cy++){
 					rdata[bd.cnum(cx,cy)] = i;
@@ -5606,7 +5614,7 @@ FileIO.prototype = {
 		this.datastr += (rinfo.max+"/");
 		for(var id=1;id<=rinfo.max;id++){
 			var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
-			var num = bd.QnC(area.getTopOfRoom(id));
+			var num = (isques ? bd.QnC(area.getTopOfRoom(id)) : -1);
 			this.datastr += (""+d.y1+" "+d.x1+" "+d.y2+" "+d.x2+" "+(num>=0 ? ""+num : "")+"/");
 		}
 	},
@@ -6833,7 +6841,11 @@ Menu = function(){
 	this.labelstack = [];			// span等の文字列の情報(idnameと文字列のリスト)
 
 	this.ex = new MenuExec();
+	this.ex.init();
+
 	this.language = 'ja';
+
+	this.ispencilbox = (k.isKanpenExist && (k.puzzleid!=="nanro" && k.puzzleid!=="ayeheya" && k.puzzleid!=="kurochute" && k.puzzleid!=="goishi"));
 
 	// ElementTemplate : メニュー領域
 	var menu_funcs = {mouseover : ee.ebinder(this, this.menuhover), mouseout  : ee.ebinder(this, this.menuout)};
@@ -6899,6 +6911,8 @@ Menu.prototype = {
 		ee('menupanel') .el.innerHTML = '';
 		ee('usepanel')  .el.innerHTML = '';
 		ee('checkpanel').el.innerHTML = '';
+
+		ee('urlbuttonarea').el.innerHTML = '';
 
 		pp.reset();
 	},
@@ -6994,7 +7008,7 @@ Menu.prototype = {
 		if(!!fio.DBtype){
 			as('database', 'file', 'データベースの管理', 'Database Management');
 		}
-		if(k.isKanpenExist && (k.puzzleid!=="nanro" && k.puzzleid!=="ayeheya" && k.puzzleid!=="kurochute")){
+		if(this.ispencilbox){
 			ap('sep_3', 'file');
 			as('fileopen2', 'file', 'pencilboxのファイルを開く', 'Open the pencilbox file');
 			as('filesave2', 'file', 'pencilboxのファイルを保存', 'Save the pencilbox file as ...');
@@ -7480,6 +7494,9 @@ Menu.prototype = {
 		lab(ee('pop4_1_cap1').el, "表示サイズ",               "Display size");
 		btn(document.dispsize.dispsize, func,  "変更する",   "Change");
 		btn(document.dispsize.cancel,   close, "キャンセル", "Cancel");
+
+		// poptest ------------------------------------------------------------
+		debug.poptest_func();
 	},
 
 	//---------------------------------------------------------------------------
@@ -7726,14 +7743,12 @@ Properties.prototype = {
 		},
 		fileopen : function(){
 			document.fileform.pencilbox.value = "0";
-			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = ee("pop1_4");}}
-			else{ if(!menu.pop){ document.fileform.filebox.click();}}
+			if(!menu.pop){ menu.pop = ee("pop1_4");}
 		},
 		fileopen2 : function(){
 			if(!fio.kanpenOpen){ return;}
 			document.fileform.pencilbox.value = "1";
-			if(k.br.IE || k.br.Gecko || k.br.Opera){ if(!menu.pop){ menu.pop = ee("pop1_4");}}
-			else{ if(!menu.pop){ document.fileform.filebox.click();}}
+			if(!menu.pop){ menu.pop = ee("pop1_4");}
 		},
 		dispsize : function(){
 			menu.pop = ee("pop4_1");
@@ -7749,6 +7764,114 @@ Properties.prototype = {
 };
 
 //---------------------------------------------------------------------------
+// ★debugオブジェクト  poptest関連の関数など
+//---------------------------------------------------------------------------
+var debug = {
+	extend : function(object){
+		for(var i in object){ this[i] = object[i];}
+	},
+
+	poptest_func : function(){
+		menu.titlebarfunc(ee('bartest').el);
+
+		document.testform.t1.onclick        = ee.binder(this, this.perfeval);
+		document.testform.t2.onclick        = ee.binder(this, this.painteval);
+		document.testform.t3.onclick        = ee.binder(this, this.resizeeval);
+		document.testform.perfload.onclick  = ee.binder(this, this.loadperf);
+
+		document.testform.filesave.onclick  = ee.binder(this, this.filesave);
+		document.testform.fileopen.onclick  = ee.binder(this, this.fileopen);
+		document.testform.pbfilesave.onclick  = ee.binder(this, this.filesave_pencilbox);
+		document.testform.pbfileopen.onclick  = ee.binder(this, this.fileopen_pencilbox);
+
+		document.testform.erasetext.onclick = ee.binder(this, this.erasetext);
+		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
+
+		document.testform.perfload.style.display = (k.puzzleid!=='country' ? 'none' : 'inline');
+		document.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
+		document.testform.pbfileopen.style.display = (!menu.ispencilbox ? 'none' : 'inline');
+
+		if(k.scriptcheck){ debug.testonly_func();}	// テスト用
+	},
+
+	disppoptest : function(){
+		var _pop_style = ee('poptest').el.style;
+		_pop_style.display = 'inline';
+		_pop_style.left = '40px';
+		_pop_style.top  = '80px';
+	},
+
+	// k.scriptcheck===true時はオーバーライドされます
+	keydown : function(ca){
+		if(kc.isCTRL && ca=='F8'){
+			this.disppoptest();
+			kc.tcMoved = true;
+			return true;
+		}
+		return false;
+	},
+
+	filesave : function(){
+		this.setTA('');
+		this.setTA(fio.fileencode(1).replace(/\//g,"\n"));
+		this.addTA('');
+		this.addTA(fio.urlstr);
+	},
+	fileopen : function(){
+		var dataarray = this.getTA().split("\n");
+		if(!dataarray[0].match(/pzprv3/)){ return;}
+		fio.filedecode(dataarray.join("/"),1);
+	},
+
+	filesave_pencilbox : function(){
+		this.setTA('');
+		this.setTA(fio.fileencode(2).replace(/\//g,"\n"));
+	},
+	fileopen_pencilbox : function(){
+		var dataarray = this.getTA().split("\n");
+		if(dataarray[0].match(/pzprv3/)){ return;}
+		fio.filedecode(dataarray.join("/"),2);
+	},
+
+	erasetext : function(){
+		this.setTA('');
+		if(k.scriptcheck){ ee('testdiv').el.innerHTML = '';}
+	},
+
+	perfeval : function(){
+		this.timeeval("正答判定測定",ee.binder(ans, ans.checkAns));
+	},
+	painteval : function(){
+		this.timeeval("描画時間測定",ee.binder(pc, pc.paintAll));
+	},
+	resizeeval : function(){
+		this.timeeval("resize描画測定",ee.binder(base, base.resize_canvas));
+	},
+	timeeval : function(text,func){
+		this.addTA(text);
+		var count=0, old = (new Date()).getTime();
+		while((new Date()).getTime() - old < 3000){
+			count++;
+
+			func();
+		}
+		var time = (new Date()).getTime() - old;
+
+		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
+	},
+
+	loadperf : function(){
+		fio.filedecode("pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /",1);
+		pp.setVal('mode',3);
+		pp.setVal('irowake',true);
+	},
+
+	getTA : function(){ return document.testform.testarea.value;},
+	setTA : function(str){ document.testform.testarea.value  = str;},
+	addTA : function(str){ document.testform.testarea.value += (str+"\n");}
+};
+
+//---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
 //---------------------------------------------------------------------------
 
@@ -7758,8 +7881,25 @@ MenuExec = function(){
 	this.qnumw;	// Ques==51の回転･反転用
 	this.qnumh;	// Ques==51の回転･反転用
 	this.qnums;	// reduceでisOneNumber時の後処理用
+
+	this.reader;	// FileReaderオブジェクト
 };
 MenuExec.prototype = {
+	//------------------------------------------------------------------------------
+	// menu.ex.init() オブジェクトの初期化処理
+	//------------------------------------------------------------------------------
+	init : function(){
+		if(typeof FileReader == 'undefined'){
+			this.reader = null;
+		}
+		else{
+			this.reader = new FileReader();
+			this.reader.onload = ee.ebinder(menu.ex, function(e){
+				this.fileonload(ee.getSrcElement(e).result);
+			});
+		}
+	},
+
 	//------------------------------------------------------------------------------
 	// menu.ex.modechange() モード変更時の処理を行う
 	//------------------------------------------------------------------------------
@@ -7833,19 +7973,45 @@ MenuExec.prototype = {
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.fileopen()  ファイルを開く
-	// menu.ex.filesave()  ファイルを保存する
+	// menu.ex.fileopen()   ファイルを開く
+	// menu.ex.fileonload() File API用ファイルを開いたイベントの処理
+	// menu.ex.filesave()   ファイルを保存する
 	//------------------------------------------------------------------------------
 	fileopen : function(e){
 		if(menu.pop){ menu.popclose();}
-		if(document.fileform.filebox.value){
-			document.fileform.submit();
-			document.fileform.filebox.value = "";
-			tm.reset();
+		var fileEL = document.fileform.filebox;
+
+		if(!!fileEL.files){
+			var fitem = fileEL.files[0];
+			if(!fitem){ return;}
+
+			if(!!this.reader){ this.reader.readAsText(fitem);}
+			else             { this.fileonload(fitem.getAsText(''));}
 		}
+		else{
+			if(!fileEL.value){ return;}
+			document.fileform.submit();
+		}
+
+		document.fileform.reset();
+		tm.reset();
+	},
+	fileonload : function(data){
+		var farray = data.split(/[\t\r\n]+/);
+		var fstr = "";
+		for(var i=0;i<farray.length;i++){
+			if(farray[i].match(/^http\:\/\//)){ break;}
+			fstr += (farray[i]+"/");
+		}
+		var ftype = (document.fileform.pencilbox.value=="0" ? 1 : 2);
+
+		fio.filedecode(fstr,ftype);
+
+		document.fileform.reset();
+		tm.reset();
 	},
 
-	filesave : function(type){
+	filesave : function(ftype){
 		var fname = prompt("保存するファイル名を入力して下さい。", k.puzzleid+".txt");
 		if(!fname){ return;}
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
@@ -7857,7 +8023,7 @@ MenuExec.prototype = {
 		else if(navigator.platform.indexOf("Mac")!==-1){ document.fileform2.platform.value = "Mac";}
 		else                                           { document.fileform2.platform.value = "Others";}
 
-		document.fileform2.ques.value   = fio.fileencode(type);
+		document.fileform2.ques.value   = fio.fileencode(ftype);
 		document.fileform2.urlstr.value = fio.urlstr;
 
 		document.fileform2.submit();
@@ -7945,9 +8111,8 @@ MenuExec.prototype = {
 				if(name==="reduceup"||name==="reducedn"){
 					if(k.qrows<=1){ return;}
 				}
-				else if(name==="reducelt"||name==="reducedn"){
-					if(k.qcols<=1 && k.puzzleid!=="tawa"){ return;}
-					else if(k.qcols<=1 && k.puzzleid==="tawa" && bd.lap!==3){ return;}
+				else if(name==="reducelt"||name==="reducert"){
+					if(k.qcols<=1 && (k.puzzleid!=="tawa" || bd.lap!==3)){ return;}
 				}
 			}
 
@@ -9429,8 +9594,6 @@ PBase.prototype = {
 		enc.pzlinput();										// URLからパズルのデータを読み出す
 		if(!enc.uri.bstr){ this.resize_canvas_onload();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
 
-		if(k.scriptcheck && debug){ debug.testonly_func();}	// テスト用
-
 		if(!!puz.finalfix){ puz.finalfix();}					// パズル固有の後付け設定
 	},
 	setEvents : function(first){
@@ -9481,6 +9644,10 @@ PBase.prototype = {
 		this.postfix();			// 各パズルごとの設定(後付け分)
 		menu.menuinit();
 		um.enb_btn();
+
+		// なぜかF5で更新するとtrueになってるので応急処置...
+		ee('btnclear') .el.disabled = false;
+		ee('btnclear2').el.disabled = false;
 	},
 	postfix : function(){
 		puz.input_init();
