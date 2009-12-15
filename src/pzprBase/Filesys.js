@@ -1,4 +1,4 @@
-// Filesys.js v3.2.4p1
+// Filesys.js v3.2.4p2
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -32,6 +32,10 @@ FileIO.prototype = {
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
 
 			if(this.readLine()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。'); return;}
+		}
+		else if(type===2){
+			if(this.readLine().match(/pzprv3/)){ alert('pencilboxのファイルではありません。'); return;}
+			this.lineseek = 0;
 		}
 
 		// サイズを表す文字列
