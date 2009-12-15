@@ -223,7 +223,9 @@ var debug = {
 					n++;
 					if(n<debug.acs[k.puzzleid].length){ debug.phase = 20;}
 					else{
-						if(k.isKanpenExist && k.puzzleid!="nanro" && k.puzzleid!="ayeheya" && k.puzzleid!="kurochute"){ debug.phase = 31;}
+						if(k.isKanpenExist && k.puzzleid!="nanro" && k.puzzleid!="ayeheya" && k.puzzleid!="kurochute" && k.puzzleid!="goishi"){
+							debug.phase = 31;
+						}
 						else{ debug.phase = 30;}
 					}
 				},fint);
@@ -604,6 +606,10 @@ var debug = {
 			["ホタルから線が出ていません。","pzprv3/firefly/5/5/4,0 . . . 2,1 /. 3,- . 3,0 . /. . . . . /. 1,0 . 2,2 . /1,1 . . . 1,1 /1 1 1 1 /1 1 1 1 /0 0 0 0 /0 0 0 1 /0 1 1 0 /1 0 0 0 1 /0 1 0 0 0 /0 1 0 0 0 /0 1 0 1 1 /"],
 			["白丸の、黒点でない部分どうしがくっついています。","pzprv3/firefly/5/5/4,0 . . . 2,1 /. 3,- . 3,0 . /. . . . . /. 1,0 . 2,2 . /1,1 . . . 1,1 /1 1 1 1 /1 1 1 1 /0 0 0 0 /1 0 0 1 /0 1 1 0 /1 0 0 0 1 /0 1 0 1 0 /0 1 0 1 0 /1 1 0 1 1 /"],
 			["","pzprv3/firefly/5/5/4,0 . . . 2,1 /. 3,- . 3,0 . /. . . . . /. 1,0 . 2,2 . /1,1 . . . 1,1 /1 1 1 1 /1 1 1 1 /-1 -1 -1 -1 /1 0 0 1 /0 1 1 0 /1 -1 -1 -1 1 /0 1 0 0 -1 /0 1 0 0 -1 /1 1 0 1 1 /"]
+		],
+		goishi : [
+			["拾われていない碁石があります。","pzprv3/goishi/7/6/. . . . . . /. . 0 0 . . /. 5 . 4 . . /. 0 . 3 . . /. 0 0 2 1 . /. . . 0 . . /. . . . . . /"],
+			["","pzprv3/goishi/7/6/. . . . . . /. . 9 10 . . /. 5 . 4 . . /. 6 . 3 . . /. 7 8 2 1 . /. . . 11 . . /. . . . . . /"]
 		],
 		gokigen : [
 			["斜線で輪っかができています。","pzprv3/gokigen/4/4/. . . 0 . /. 4 . . . /2 . . . 2 /. . . . . /. 1 . 0 . /. 2 1 . /2 . . 1 /1 . . 2 /. 1 2 . /"],
@@ -1121,6 +1127,7 @@ var debug = {
 		['fillmat'    , '5/5/3b3h1h1b4'],
 		['fillomino'  , '6/6/h4j53g2k5233k2g14j3h'],
 		['firefly'    , '5/5/40c21a3.a30g10a22a11c11'],
+		['goishi'     , '6/7/vsten1tvo'],
 		['gokigen'    , '4/4/iaegcgcj6a'],
 		['hakoiri'    , '5/5/4qb44qb41c3c1f23a2b1b1'],
 		['hashikake'  , '5/5/4g2i3h23k3g1g3g4g3'],
