@@ -1,4 +1,4 @@
-// Filesys.js v3.2.4p2
+// Filesys.js v3.2.4p3
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -568,17 +568,22 @@ FileIO.prototype = {
 		for(var i=0;i<barray.length;i++){
 			if(barray[i]==""){ break;}
 			var pce = barray[i].split(" ");
-			var sp = { y1:parseInt(pce[0]), x1:parseInt(pce[1]), y2:parseInt(pce[2]), x2:parseInt(pce[3]), num:pce[4]};
-			if(isques && sp.num!=""){ bd.sQnC(bd.cnum(sp.x1,sp.y1), parseInt(sp.num,10));}
-			for(var cx=sp.x1;cx<=sp.x2;cx++){
-				for(var cy=sp.y1;cy<=sp.y2;cy++){
-					rdata[bd.cnum(cx,cy)] = i;
-				}
-			}
+			for(var n=0;n<4;n++){ if(!isNaN(pce[n])){ pce[n]=parseInt(pce[n]);} }
+
+			var sp = {y1:pce[0], x1:pce[1], y2:pce[2], x2:pce[3]};
+			if(isques && pce[4]!=""){ bd.sQnC(bd.cnum(sp.x1,sp.y1), parseInt(pce[4],10));}
+			this.setRdataRect(rdata, i, sp);
 		}
 		this.rdata2Border(isques, rdata);
 
 		area.resetRarea();
+	},
+	setRdataRect : function(rdata, i, sp){
+		for(var cx=sp.x1;cx<=sp.x2;cx++){
+			for(var cy=sp.y1;cy<=sp.y2;cy++){
+				rdata[bd.cnum(cx,cy)] = i;
+			}
+		}
 	},
 	encodeSquareRoom_com : function(isques){
 		var rinfo = area.getRoomInfo();
