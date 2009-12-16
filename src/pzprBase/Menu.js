@@ -1,4 +1,4 @@
-// Menu.js v3.2.4p2
+// Menu.js v3.2.4p3
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -93,11 +93,11 @@ Menu.prototype = {
 		if(!!ee('btncolor2')){ ee('btncolor2').remove();}
 		ee('btnarea').removeNextAll(ee('btnclear2').el);
 
+		ee('urlbuttonarea').el.innerHTML = '';
+
 		ee('menupanel') .el.innerHTML = '';
 		ee('usepanel')  .el.innerHTML = '';
 		ee('checkpanel').el.innerHTML = '';
-
-		ee('urlbuttonarea').el.innerHTML = '';
 
 		pp.reset();
 	},
@@ -971,6 +971,8 @@ var debug = {
 
 		document.testform.erasetext.onclick = ee.binder(this, this.erasetext);
 		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
+
+		document.testform.starttest.style.display = 'none';
 
 		document.testform.perfload.style.display = (k.puzzleid!=='country' ? 'none' : 'inline');
 		document.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
