@@ -1,4 +1,4 @@
-// Main.js v3.2.4p2
+// Main.js v3.2.4p3
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -23,24 +23,22 @@ PBase.prototype = {
 	preload_func : function(){
 		// URLの取得 -> URLの?以下ををpuzzleid部とpzlURI部に分割
 		enc = new Encode();
-		k.puzzleid = enc.first_parseURI(location.search);
-		if(!k.puzzleid && location.href.indexOf('for_test.html')>=0){ k.puzzleid = 'country';}
+		enc.first_parseURI(location.search);
 		if(!k.puzzleid){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
-		if(enc.uri.cols){ k.qcols = enc.uri.cols;}
-		if(enc.uri.rows){ k.qrows = enc.uri.rows;}
+
+		// パズル専用ファイルの読み込み
+		if(!k.scriptcheck){
+			document.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
+		}
+		else{
+			document.writeln("<script type=\"text/javascript\" src=\"src/for_test.js\"></script>");
+			document.writeln("<script type=\"text/javascript\" src=\"src/puzzles.js\"></script>");
+		}
 
 		// Gears_init.jsの読み込み
 		fio = new FileIO();
 		if(fio.choiceDataBase()>0){
 			document.writeln("<script type=\"text/javascript\" src=\"src/gears_init.js\"></script>");
-		}
-
-		// パズル専用ファイルの読み込み
-		if(location.href.indexOf('for_test.html')==-1){
-			document.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
-		}
-		else{
-			document.writeln("<script type=\"text/javascript\" src=\"src/puzzles.js\"></script>");
 		}
 
 		// onLoadとonResizeに動作を割り当てる

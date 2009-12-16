@@ -1,11 +1,8 @@
-// for_test.js v3.2.4p2
-
-k.scriptcheck = true;
-k.EDITOR = true;
-k.PLAYER = false;
+// for_test.js v3.2.4p3
 
 debug.extend({
 	testonly_func : function(){
+		document.testform.starttest.style.display = 'inline';
 		document.testform.starttest.onclick = ee.binder(this, this.starttest);
 		
 		if(!ee('testdiv')){
@@ -46,10 +43,7 @@ debug.extend({
 			enc.parseURI_pzpr.apply(enc, [debug.urls[pnum][1]]);
 			enc.pzlinput.apply(enc);
 
-			var _pop_style = ee('poptest').el.style;
-			_pop_style.display = 'inline';
-			_pop_style.left = '40px';
-			_pop_style.top  = '80px';
+			//debug.disppoptest();
 			debug.addTextarea("Test ("+pnum+", "+newid+") start.");
 			debug.sccheck();
 

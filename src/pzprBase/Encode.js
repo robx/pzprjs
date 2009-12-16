@@ -1,4 +1,4 @@
-// Encode.js v3.2.3p2
+// Encode.js v3.2.4p3
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -50,30 +50,34 @@ Encode.prototype = {
 
 		this.init();
 
-		if(search.substr(0,3)=="?m+" || search.substr(0,3)=="?m/"){
-			k.editmode = true;
-			k.playmode = false;
-			k.EDITOR = true;
-			k.PLAYER = false;
-			k.autocheck = false;
+		if(search=="?test" || search.substr(0,6)=="?test+"){
+			k.EDITOR = true; k.editmode = false;
+			k.scriptcheck = true;
+			if(search=="?test"){ search = 'country';}
+			else{ search = search.substr(6);}
+		}
+		else if(search.substr(0,3)=="?m+"){
+			k.EDITOR = k.editmode = true;
 			search = search.substr(3);
 		}
 		else{
-			k.editmode = false;
-			k.playmode = true;
-			k.EDITOR = !!k.scriptcheck;
-			k.PLAYER =  !k.scriptcheck;
-			k.autocheck = true;
+			k.EDITOR = k.editmode = false;
 			search = search.substr(1);
 		}
+		k.PLAYER    = !k.EDITOR;
+		k.playmode  = !k.editmode;
+		k.autocheck =  k.playmode;
 
 		var qs = search.indexOf("/");
 		if(qs>=0){
 			this.parseURI_pzpr(search.substr(qs+1));
-			return search.substr(0,qs);
+			if(!!this.uri.cols){ k.qcols = this.uri.cols;}
+			if(!!this.uri.rows){ k.qrows = this.uri.rows;}
+
+			search = search.substr(0,qs);
 		}
 
-		return search;
+		k.puzzleid = search;
 	},
 	parseURI : function(url){
 		this.init();
@@ -464,7 +468,10 @@ Encode.prototype = {
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if     (ca=='0'){ bd.sQnC(c, parseInt(bstr.substr(i+1,1),16)); c++; i++; }
+			if(ca=='0'){
+				if(bstr.charAt(i+1)=="."){ bd.sQnC(c,-2); c++; i++;}
+				else{ bd.sQnC(c, parseInt(bstr.substr(i+1,1),16)); c++; i++;}
+			}
 			else if(ca=='5'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),16)); c++; i+=2;}
 			else if(this.include(ca,"1","4")){
 				bd.sDiC(c, parseInt(ca,16));
