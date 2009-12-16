@@ -1,20 +1,20 @@
-pzprBase.js v3.2.4p2 contents
+pzprBase.js v3.2.4p3 contents
 
 global.js      v3.2.4
 Board.js       v3.2.3p1
 Graphic.js     v3.2.4
 MouseInput.js  v3.2.3p1
 KeyInput.js    v3.2.4p2
-Encode.js      v3.2.3p2
-Filesys.js     v3.2.4p2
+Encode.js      v3.2.4p3
+Filesys.js     v3.2.4p3
 Answer.js      v3.2.3
 Undo.js        v3.2.3
-Menu.js        v3.2.4p2
-MenuExec.js    v3.2.4p2
+Menu.js        v3.2.4p3
+MenuExec.js    v3.2.4p3
 pzprUtil.js    v3.2.3
-Main.js        v3.2.4p2
+Main.js        v3.2.4p3
 
-ayeheya.js     v3.2.4
+ayeheya.js     v3.2.4p3
 bag.js         v3.2.4
 barns.js       v3.2.4
 bdblock.js     v3.2.4
@@ -32,7 +32,7 @@ goishi.js      v3.2.4p1
 gokigen.js     v3.2.4
 hakoiri.js     v3.2.4
 hashikake.js   v3.2.4
-heyawake.js    v3.2.4
+heyawake.js    v3.2.4p3
 hitori.js      v3.2.4
 icebarn.js     v3.2.4
 icelom.js      v3.2.4
