@@ -5,7 +5,7 @@
  * written in JavaScript.
  * 
  * @author  happa.
- * @version v3.2.4p2
+ * @version v3.2.4p3
  * @date    2009-12-16
  * 
  * This script uses following library.
@@ -20,7 +20,7 @@
  * 
  */
 
-var pzprversion="v3.2.4p2";
+var pzprversion="v3.2.4p3";
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -4420,30 +4420,34 @@ Encode.prototype = {
 
 		this.init();
 
-		if(search.substr(0,3)=="?m+" || search.substr(0,3)=="?m/"){
-			k.editmode = true;
-			k.playmode = false;
-			k.EDITOR = true;
-			k.PLAYER = false;
-			k.autocheck = false;
+		if(search=="?test" || search.substr(0,6)=="?test+"){
+			k.EDITOR = true; k.editmode = false;
+			k.scriptcheck = true;
+			if(search=="?test"){ search = 'country';}
+			else{ search = search.substr(6);}
+		}
+		else if(search.substr(0,3)=="?m+"){
+			k.EDITOR = k.editmode = true;
 			search = search.substr(3);
 		}
 		else{
-			k.editmode = false;
-			k.playmode = true;
-			k.EDITOR = !!k.scriptcheck;
-			k.PLAYER =  !k.scriptcheck;
-			k.autocheck = true;
+			k.EDITOR = k.editmode = false;
 			search = search.substr(1);
 		}
+		k.PLAYER    = !k.EDITOR;
+		k.playmode  = !k.editmode;
+		k.autocheck =  k.playmode;
 
 		var qs = search.indexOf("/");
 		if(qs>=0){
 			this.parseURI_pzpr(search.substr(qs+1));
-			return search.substr(0,qs);
+			if(!!this.uri.cols){ k.qcols = this.uri.cols;}
+			if(!!this.uri.rows){ k.qrows = this.uri.rows;}
+
+			search = search.substr(0,qs);
 		}
 
-		return search;
+		k.puzzleid = search;
 	},
 	parseURI : function(url){
 		this.init();
@@ -5596,17 +5600,22 @@ FileIO.prototype = {
 		for(var i=0;i<barray.length;i++){
 			if(barray[i]==""){ break;}
 			var pce = barray[i].split(" ");
-			var sp = { y1:parseInt(pce[0]), x1:parseInt(pce[1]), y2:parseInt(pce[2]), x2:parseInt(pce[3]), num:pce[4]};
-			if(isques && sp.num!=""){ bd.sQnC(bd.cnum(sp.x1,sp.y1), parseInt(sp.num,10));}
-			for(var cx=sp.x1;cx<=sp.x2;cx++){
-				for(var cy=sp.y1;cy<=sp.y2;cy++){
-					rdata[bd.cnum(cx,cy)] = i;
-				}
-			}
+			for(var n=0;n<4;n++){ if(!isNaN(pce[n])){ pce[n]=parseInt(pce[n]);} }
+
+			var sp = {y1:pce[0], x1:pce[1], y2:pce[2], x2:pce[3]};
+			if(isques && pce[4]!=""){ bd.sQnC(bd.cnum(sp.x1,sp.y1), parseInt(pce[4],10));}
+			this.setRdataRect(rdata, i, sp);
 		}
 		this.rdata2Border(isques, rdata);
 
 		area.resetRarea();
+	},
+	setRdataRect : function(rdata, i, sp){
+		for(var cx=sp.x1;cx<=sp.x2;cx++){
+			for(var cy=sp.y1;cy<=sp.y2;cy++){
+				rdata[bd.cnum(cx,cy)] = i;
+			}
+		}
 	},
 	encodeSquareRoom_com : function(isques){
 		var rinfo = area.getRoomInfo();
@@ -6908,11 +6917,11 @@ Menu.prototype = {
 		if(!!ee('btncolor2')){ ee('btncolor2').remove();}
 		ee('btnarea').removeNextAll(ee('btnclear2').el);
 
+		ee('urlbuttonarea').el.innerHTML = '';
+
 		ee('menupanel') .el.innerHTML = '';
 		ee('usepanel')  .el.innerHTML = '';
 		ee('checkpanel').el.innerHTML = '';
-
-		ee('urlbuttonarea').el.innerHTML = '';
 
 		pp.reset();
 	},
@@ -7787,6 +7796,8 @@ var debug = {
 		document.testform.erasetext.onclick = ee.binder(this, this.erasetext);
 		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
 
+		document.testform.starttest.style.display = 'none';
+
 		document.testform.perfload.style.display = (k.puzzleid!=='country' ? 'none' : 'inline');
 		document.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
 		document.testform.pbfileopen.style.display = (!menu.ispencilbox ? 'none' : 'inline');
@@ -7883,6 +7894,7 @@ MenuExec = function(){
 	this.qnums;	// reduceでisOneNumber時の後処理用
 
 	this.reader;	// FileReaderオブジェクト
+	this.enableReadText = false;
 };
 MenuExec.prototype = {
 	//------------------------------------------------------------------------------
@@ -7891,6 +7903,12 @@ MenuExec.prototype = {
 	init : function(){
 		if(typeof FileReader == 'undefined'){
 			this.reader = null;
+
+			if(typeof FileList != 'undefined' &&
+			   typeof File.prototype.getAsText != 'undefined')
+			{
+				this.enableGetText = true;
+			}
 		}
 		else{
 			this.reader = new FileReader();
@@ -7981,7 +7999,7 @@ MenuExec.prototype = {
 		if(menu.pop){ menu.popclose();}
 		var fileEL = document.fileform.filebox;
 
-		if(!!fileEL.files){
+		if(!!this.reader || this.enableGetText){
 			var fitem = fileEL.files[0];
 			if(!fitem){ return;}
 
@@ -9515,24 +9533,22 @@ PBase.prototype = {
 	preload_func : function(){
 		// URLの取得 -> URLの?以下ををpuzzleid部とpzlURI部に分割
 		enc = new Encode();
-		k.puzzleid = enc.first_parseURI(location.search);
-		if(!k.puzzleid && location.href.indexOf('for_test.html')>=0){ k.puzzleid = 'country';}
+		enc.first_parseURI(location.search);
 		if(!k.puzzleid){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
-		if(enc.uri.cols){ k.qcols = enc.uri.cols;}
-		if(enc.uri.rows){ k.qrows = enc.uri.rows;}
+
+		// パズル専用ファイルの読み込み
+		if(!k.scriptcheck){
+			document.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
+		}
+		else{
+			document.writeln("<script type=\"text/javascript\" src=\"src/for_test.js\"></script>");
+			document.writeln("<script type=\"text/javascript\" src=\"src/puzzles.js\"></script>");
+		}
 
 		// Gears_init.jsの読み込み
 		fio = new FileIO();
 		if(fio.choiceDataBase()>0){
 			document.writeln("<script type=\"text/javascript\" src=\"src/gears_init.js\"></script>");
-		}
-
-		// パズル専用ファイルの読み込み
-		if(location.href.indexOf('for_test.html')==-1){
-			document.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
-		}
-		else{
-			document.writeln("<script type=\"text/javascript\" src=\"src/puzzles.js\"></script>");
 		}
 
 		// onLoadとonResizeに動作を割り当てる

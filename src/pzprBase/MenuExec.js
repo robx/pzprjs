@@ -1,4 +1,4 @@
-// MenuExec.js v3.2.4p2
+// MenuExec.js v3.2.4p3
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -12,6 +12,7 @@ MenuExec = function(){
 	this.qnums;	// reduceでisOneNumber時の後処理用
 
 	this.reader;	// FileReaderオブジェクト
+	this.enableReadText = false;
 };
 MenuExec.prototype = {
 	//------------------------------------------------------------------------------
@@ -20,6 +21,12 @@ MenuExec.prototype = {
 	init : function(){
 		if(typeof FileReader == 'undefined'){
 			this.reader = null;
+
+			if(typeof FileList != 'undefined' &&
+			   typeof File.prototype.getAsText != 'undefined')
+			{
+				this.enableGetText = true;
+			}
 		}
 		else{
 			this.reader = new FileReader();
@@ -110,7 +117,7 @@ MenuExec.prototype = {
 		if(menu.pop){ menu.popclose();}
 		var fileEL = document.fileform.filebox;
 
-		if(!!fileEL.files){
+		if(!!this.reader || this.enableGetText){
 			var fitem = fileEL.files[0];
 			if(!fitem){ return;}
 

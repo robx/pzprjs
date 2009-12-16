@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へやわけ版 heyawake.js v3.2.4
+// パズル固有スクリプト部 へやわけ版 heyawake.js v3.2.4p3
 //
 Puzzles.heyawake = function(){ };
 Puzzles.heyawake.prototype = {
@@ -157,41 +157,26 @@ Puzzles.heyawake.prototype = {
 			fio.encodeSquareRoom();
 		};
 
-		enc.decodeHeyaApp = function(bstr){
-			var rdata = [];
-			var c=0;
+		enc.decodeHeyaApp = function(){
+			var c=0, rdata=[];
 			while(c<bd.cellmax){ rdata[c]=-1; c++;}
 
-			var inp = bstr.split("/");
+			var i=0, inp=this.uri.bstr.split("/");
+			for(var c=0;c<bd.cellmax;c++){
+				if(rdata[c]>-1){ continue;}
 
-			c=0;
-			for(i=0;i<inp.length;i++){
-				if(rdata[c]==-1){
-					var width, height;
-					if(inp[i].match(/(\d+in)?(\d+)x(\d+)$/)){
-						width = parseInt(RegExp.$2);
-						height = parseInt(RegExp.$3);
-						if(RegExp.$1.length>0){
-							bd.sQnC(c, parseInt(RegExp.$1));
-						}
-					}
-
-					for(var cx=bd.cell[c].cx;cx<=bd.cell[c].cx+width-1;cx++){
-						for(var cy=bd.cell[c].cy;cy<=bd.cell[c].cy+height-1;cy++){
-							rdata[bd.cnum(cx,cy)] = i;
-						}
-					}
-					i++;
+				if(inp[i].match(/(\d+in)?(\d+)x(\d+)$/)){
+					if(RegExp.$1.length>0){ bd.sQnC(c, parseInt(RegExp.$1));}
+					var x1 = bd.cell[c].cx, x2 = x1 + parseInt(RegExp.$2) - 1;
+					var y1 = bd.cell[c].cy, y2 = y1 + parseInt(RegExp.$3) - 1;
+					fio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
 				}
-				c++;
-				if(c>=bd.cellmax){ break;}
+				i++;
 			}
 			fio.rdata2Border(true, rdata);
 		};
 		enc.encodeHeyaApp = function(){
-			var barray = [];
-
-			var rinfo = area.getRoomInfo();
+			var barray=[], rinfo=area.getRoomInfo();
 			for(var id=1;id<=rinfo.max;id++){
 				var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
 				if(bd.QnC(bd.cnum(d.x1,d.y1))>=0){
