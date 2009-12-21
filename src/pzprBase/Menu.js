@@ -1000,6 +1000,7 @@ var debug = {
 		document.testform.pbfilesave.onclick  = ee.binder(this, this.filesave_pencilbox);
 
 		document.testform.fileopen.onclick  = ee.binder(this, this.fileopen);
+		document.testform.database.onclick  = ee.binder(this, this.dispdatabase);
 
 		document.testform.erasetext.onclick = ee.binder(this, this.erasetext);
 		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
@@ -1010,6 +1011,7 @@ var debug = {
 
 		document.testform.perfload.style.display = (k.puzzleid!=='country' ? 'none' : 'inline');
 		document.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
+		document.testform.database.style.display = (!fio.DBaccept<0x08 ? 'none' : 'inline');
 
 		if(k.scriptcheck){ debug.testonly_func();}	// テスト用
 	},
@@ -1070,6 +1072,15 @@ var debug = {
 		var time = (new Date()).getTime() - old;
 
 		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
+	},
+
+	dispdatabase : function(){
+		var text = "";
+		for(var i=0;i<localStorage.length;i++){
+			var key = localStorage.key(i);
+			text += (""+key+" "+localStorage[key]+"\n");
+		}
+		this.setTA(text);
 	},
 
 	loadperf : function(){
