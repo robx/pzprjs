@@ -608,6 +608,7 @@ DataBaseManager = function(){
 
 	this.DBsid  = -1;	// 現在選択されているリスト中のID
 	this.DBlist = [];	// 現在一覧にある問題のリスト
+	this.keys = ['id', 'col', 'row', 'hard', 'pdata', 'time', 'comment']; // キーの並び
 
 	this.selectDBtype();
 };
@@ -619,12 +620,14 @@ DataBaseManager.prototype = {
 	selectDBtype : function(){
 		// HTML5 - Web localStorage判定用
 		if(!!window.localStorage){
+			// FirefoxはローカルだとlocalStorageが使えない
 			if(!k.br.Gecko || !!location.hostname){ this.DBaccept |= 0x08;}
 		}
 
 		// HTML5 - Web DataBase判定用
 		if(!!window.openDatabase){
-			this.DBaccept |= 0x02;
+			var dbtmp = openDatabase('pzprv3_manage', '1.0');	// Chrome3対策
+			if(!!dbtmp){ this.DBaccept |= 0x02;}
 		}
 
 		// 以下はGears用(gears_init.jsの判定ルーチン)
@@ -645,7 +648,7 @@ DataBaseManager.prototype = {
 	//---------------------------------------------------------------------------
 	openDialog : function(){
 		this.openHandler();
-		this.update(true);
+		this.update();
 	},
 	openHandler : function(){
 		// データベースを開く
@@ -681,7 +684,7 @@ DataBaseManager.prototype = {
 			case 'datalist': this.selectDataTable();   break;
 			case 'tableup' : this.upDataTable_M();     break;
 			case 'tabledn' : this.downDataTable_M();   break;
-			case 'open'    : this.openDataTable();   break;
+			case 'open'    : this.openDataTable_M();   break;
 			case 'save'    : this.saveDataTable_M();   break;
 			case 'comedit' : this.editComment_M();     break;
 			case 'difedit' : this.editDifficult_M();   break;
@@ -701,12 +704,10 @@ DataBaseManager.prototype = {
 		}
 		return -1;
 	},
-	update : function(refresh){
+	update : function(){
 		this.dbh.updateManageData(this);
-		if(refresh){
 			this.displayDataTableList();
 			this.selectDataTable();
-		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -801,14 +802,14 @@ DataBaseManager.prototype = {
 		this.convertDataTable_M(selected, selected+1);
 	},
 	convertDataTable_M : function(sid, tid){
-		this.dbh.convertDataTableID(this, this.DBlist[sid].id, this.DBlist[tid].id);
-
 		this.DBsid = this.DBlist[tid].id;
 		var row = {};
 		for(var c=1;c<7;c++){ row[this.keys[c]]              = this.DBlist[sid][this.keys[c]];}
 		for(var c=1;c<7;c++){ this.DBlist[sid][this.keys[c]] = this.DBlist[tid][this.keys[c]];}
 		for(var c=1;c<7;c++){ this.DBlist[tid][this.keys[c]] = row[this.keys[c]];}
-		this.update(true);
+
+		this.dbh.convertDataTableID(this, sid, tid);
+		this.update();
 	},
 
 	//---------------------------------------------------------------------------
@@ -819,14 +820,12 @@ DataBaseManager.prototype = {
 		var id = this.getDataID(); if(id===-1){ return;}
 		if(!confirm("このデータを読み込みますか？ (現在の盤面は破棄されます)")){ return;}
 
-		//this.dbh.openDataTable(this, id);
-		fio.filedecode(this.DBlist[id].pdata);
+		this.dbh.openDataTable(this, id);
 	},
 	saveDataTable_M : function(){
 		var id = this.getDataID(), refresh = false;
 			if(id===-1){
 			id = this.DBlist.length;
-			this.DBsid = id;
 			refresh = true;
 
 			this.DBlist[id] = {};
@@ -834,6 +833,7 @@ DataBaseManager.prototype = {
 			this.DBlist[id].comment = (!!str ? str : '');
 			this.DBlist[id].hard = 0;
 			this.DBlist[id].id = id+1;
+			this.DBsid = this.DBlist[id].id;
 			}
 			else{
 			if(!confirm("このデータに上書きしますか？")){ return;}
@@ -843,7 +843,7 @@ DataBaseManager.prototype = {
 		this.DBlist[id].time  = mf((new Date()).getTime()/1000);
 
 		this.dbh.saveDataTable(this, id);
-		this.update(refresh);
+		this.update();
 	},
 
 	//---------------------------------------------------------------------------
@@ -858,7 +858,7 @@ DataBaseManager.prototype = {
 
 		this.DBlist[id].comment = str;
 		this.dbh.updateComment(this, id);
-		this.update(false);
+		this.update();
 	},
 	editDifficult_M : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
@@ -868,7 +868,7 @@ DataBaseManager.prototype = {
 
 		this.DBlist[id].hard = ((hard=='1'||hard=='2'||hard=='3'||hard=='4')?hard:0);
 		this.dbh.updateDifficult(this, id);
-		this.update(false);
+		this.update();
 	},
 
 	//---------------------------------------------------------------------------
@@ -878,10 +878,14 @@ DataBaseManager.prototype = {
 		var id = this.getDataID(); if(id===-1){ return;}
 		if(!confirm("このデータを完全に削除しますか？")){ return;}
 
-		this.dbh.deleteDataTable(this, id);
+		var sID = this.DBlist[id].id, max = this.DBlist.length;
+		for(var i=sID-1;i<max-1;i++){
+			for(var c=1;c<7;c++){ this.DBlist[i][this.keys[c]] = this.DBlist[i+1][this.keys[c]];}
+		}
+		this.DBlist.pop();
 
-		this.DBlist[id]=null; delete this.DBlist[id];
-		this.update(true);
+		this.dbh.deleteDataTable(this, sID, max);
+		this.update();
 		}
 
 	//---------------------------------------------------------------------------
@@ -904,7 +908,7 @@ DataBaseManager.prototype = {
 //---------------------------------------------------------------------------
 DataBaseHandler_LS = function(){
 	this.pheader = 'pzprv3_' + k.puzzleid + ':puzdata';
-	this.keys = ['id', 'col', 'row', 'hard', 'pdata', 'time', 'comment'];
+	this.keys = fio.dbm.keys;
 
 	this.initialize();
 };
@@ -954,11 +958,11 @@ DataBaseHandler_LS.prototype = {
 	//---------------------------------------------------------------------------
 	// fio.dbm.dbh.convertDataTableID() データのIDを付け直す
 	//---------------------------------------------------------------------------
-	convertDataTableID : function(parent, sID, tID){
+	convertDataTableID : function(parent, sid, tid){
+		var sID = parent.DBlist[sid].id, tID = parent.DBlist[tid].id;
 		var sheader=this.pheader+'!'+sID, theader=this.pheader+'!'+tID, row = {};
-		for(var c=1;c<7;c++){ row[this.keys[c]]                      = localStorage[sheader+'!'+this.keys[c]];}
-		for(var c=1;c<7;c++){ localStorage[sheader+'!'+this.keys[c]] = localStorage[theader+'!'+this.keys[c]];}
-		for(var c=1;c<7;c++){ localStorage[theader+'!'+this.keys[c]] = row[this.keys[c]];}
+		for(var c=1;c<7;c++){ localStorage[sheader+'!'+this.keys[c]] = parent.DBlist[sid][this.keys[c]];}
+		for(var c=1;c<7;c++){ localStorage[theader+'!'+this.keys[c]] = parent.DBlist[tid][this.keys[c]];}
 	},
 
 	//---------------------------------------------------------------------------
@@ -989,13 +993,12 @@ DataBaseHandler_LS.prototype = {
 	//---------------------------------------------------------------------------
 	// fio.dbm.dbh.deleteDataTable() 選択している盤面データを削除する
 	//---------------------------------------------------------------------------
-	deleteDataTable : function(parent, id){
-		var max = parent.DBlist.length;
-		for(var i=id+1;i<max;i++){
-			var headers = [this.pheader+'!'+parent.DBlist[i].id, this.pheader+'!'+(+parent.DBlist[i].id-1)];
+	deleteDataTable : function(parent, sID, max){
+		for(var i=parseInt(sID);i<max;i++){
+			var headers = [this.pheader+'!'+(i+1), this.pheader+'!'+i];
 			for(var c=1;c<7;c++){ localStorage[headers[1]+'!'+this.keys[c]] = localStorage[headers[0]+'!'+this.keys[c]];}
 		}
-		var dheader = this.pheader+'!'+parent.DBlist[max-1].id;
+		var dheader = this.pheader+'!'+max;
 		for(var c=0;c<7;c++){ delete localStorage[dheader+'!'+this.keys[c]];}
 	}
 };
@@ -1031,14 +1034,17 @@ DataBaseHandler_SQL.prototype = {
 		this.db.transaction(
 			function(tx){
 				tx.executeSql('SELECT * FROM pzldata',[],function(tx,rs){
+					var i=0, keys=parent.keys;
 					for(var r=0;r<rs.rows.length;r++){
-						parent.DBlist.push(rs.rows.item(r));
-						parent.DBlist[r].pdata = "";
+						parent.DBlist[i] = {};
+						for(var c=0;c<7;c++){ parent.DBlist[i][keys[c]] = rs.rows.item(r)[keys[c]];}
+						parent.DBlist[i].pdata = "";
+						i++;
 					}
 				});
 			},
 			function(){ },
-			function(){ fio.dbm.update(true);}
+			function(){ fio.dbm.update();}
 		);
 	},
 /*	setupDBlist : function(parent){
@@ -1088,12 +1094,13 @@ DataBaseHandler_SQL.prototype = {
 	forceDeleteDataBase : function(parent){
 		this.deleteManageData();
 		this.dropDataBase();
-	},
-*/
+	},*/
+
 	//---------------------------------------------------------------------------
 	// fio.dbm.dbh.convertDataTableID() データのIDを付け直す
 	//---------------------------------------------------------------------------
-	convertDataTableID : function(parent, sID, tID){
+	convertDataTableID : function(parent, sid, tid){
+		var sID = parent.DBlist[sid].id, tID = parent.DBlist[tid].id;
 		this.db.transaction( function(tx){
 			tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[0  ,sID]);
 			tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[sID,tID]);
@@ -1139,11 +1146,11 @@ DataBaseHandler_SQL.prototype = {
 	//---------------------------------------------------------------------------
 	// fio.dbm.dbh.deleteDataTable() 選択している盤面データを削除する
 	//---------------------------------------------------------------------------
-	deleteDataTable : function(parent, id){
+	deleteDataTable : function(parent, sID, max){
 		this.db.transaction( function(tx){
-			tx.executeSql('DELETE FROM pzldata WHERE ID==?',[parent.DBlist[id].id]);
-			for(var i=id+1;i<parent.DBlist.length;i++){
-				tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[parent.DBlist[i].id-1, parent.DBlist[i].id]);
+			tx.executeSql('DELETE FROM pzldata WHERE ID==?',[sID]);
+			for(var i=parseInt(sID);i<max;i++){
+				tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[i,i+1]);
 			}
 		});
 	}
@@ -1164,7 +1171,7 @@ DataBaseObject_SQL.prototype = {
 		this.name    = name;
 		this.version = ver;
 		if(this.isSQLDB){
-			this.object = window.openDatabase(this.name, this.version);
+			this.object = openDatabase(this.name, this.version);
 		}
 		else{
 			this.object = google.gears.factory.create('beta.database', this.version);
