@@ -1,4 +1,4 @@
-// Main.js v3.2.4p3
+// Main.js v3.2.4p4
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -35,9 +35,9 @@ PBase.prototype = {
 			document.writeln("<script type=\"text/javascript\" src=\"src/puzzles.js\"></script>");
 		}
 
-		// Gears_init.jsの読み込み
 		fio = new FileIO();
-		if(fio.choiceDataBase()>0){
+		if(fio.dbm.requireGears()){
+			// 必要な場合、gears_init.jsの読み込み
 			document.writeln("<script type=\"text/javascript\" src=\"src/gears_init.js\"></script>");
 		}
 
@@ -91,7 +91,6 @@ PBase.prototype = {
 		area = new AreaManager();	// 部屋情報等管理オブジェクト
 		line = new LineManager();	// 線の情報管理オブジェクト
 
-		fio.initDataBase();		// データベースの設定
 		menu = new Menu();		// メニューを扱うオブジェクト
 		pp = new Properties();	// メニュー関係の設定値を保持するオブジェクト
 
