@@ -10,15 +10,11 @@ FileIO = function(){
 	this.datastr = "";
 	this.urlstr = "";
 
-	this.db = null;
-	this.dbmgr = null;
-	this.DBtype = 0;
-	this.DBsid  = -1;
-	this.DBlist = [];
-
 	// 定数(ファイル形式)
 	this.PZPR = 1;
 	this.PBOX = 2;
+
+	this.dbm = new DataBaseManager();
 };
 FileIO.prototype = {
 	//---------------------------------------------------------------------------
@@ -599,175 +595,126 @@ FileIO.prototype = {
 			this.datastr += (""+d.y1+" "+d.x1+" "+d.y2+" "+d.x2+" "+(num>=0 ? ""+num : "")+"/");
 		}
 	},
+};
 
 //---------------------------------------------------------------------------
-// ★Local Storage用データベースの設定・管理を行う
+// ★DataBaseManagerクラス Web SQL DataBase用 データベースの設定・管理を行う
 //---------------------------------------------------------------------------
-	//---------------------------------------------------------------------------
-	// fio.choiceDataBase() LocalStorageが使えるかどうか判定する
-	//---------------------------------------------------------------------------
-	choiceDataBase : function(){
-		if(window.google && google.gears){ this.DBtype=1; return 1;}
-		var factory = 0;
+DataBaseManager = function(){
+	this.dbh    = null;	// データベースハンドラ
 
-		// FireFox
-		if (typeof GearsFactory != 'undefined') { factory=11;}
-		else{
-			try {
-				// IE
-				var axobj = new ActiveXObject('Gears.Factory');
-				factory=21;
-			} catch (e) {
-				// Safari
-				if((typeof navigator.mimeTypes != 'undefined') && navigator.mimeTypes["application/x-googlegears"]){
-					factory=31;
-				}
-			}
+	//this.DBtype = 0;
+	this.DBaccept = 0;	// データベースのタイプ 1:Gears 2:WebDB 4:IdxDB 8:localStorage
+
+	this.DBsid  = -1;	// 現在選択されているリスト中のID
+	this.DBlist = [];	// 現在一覧にある問題のリスト
+
+	this.selectDBtype();
+};
+DataBaseManager.prototype = {
+	//---------------------------------------------------------------------------
+	// fio.dbm.selectDBtype() Web DataBaseが使えるかどうか判定する(起動時)
+	// fio.dbm.requestGears() gears_init.jsを読み出すか判定する
+	//---------------------------------------------------------------------------
+	selectDBtype : function(){
+		// HTML5 - Web localStorage判定用
+		if(!!window.localStorage){
+			if(!k.br.Gecko || !!location.hostname){ this.DBaccept |= 0x08;}
 		}
-		this.DBtype=(factory>0?1:0);
-		return factory;
+
+		// HTML5 - Web DataBase判定用
+		if(!!window.openDatabase){
+			this.DBaccept |= 0x02;
+		}
+
+		// 以下はGears用(gears_init.jsの判定ルーチン)
+		// Google Chorme用(既にGearsが存在するか判定)
+		if((window.google && google.gears) || 
+		   (k.br.Gecko && (typeof GearsFactory != 'undefined')) || 
+		   (k.br.IE && !!window.ActiveXObject && (!!(new ActiveXObject('Gears.Factory')))) || 
+		   (k.br.WebKit && navigator.mimeTypes["application/x-googlegears"]))
+		{ this.DBaccept |= 0x01;}
+	},
+	requireGears : function(){
+		return !!(this.DBaccept & 0x01);
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.initDataBase() データベースを新規作成する
-	// fio.dropDataBase() データベースを削除する
-	// fio.remakeDataBase() データベースを再構築する
-	// fio.updateManager() 更新時間を更新する
+	// fio.dbm.openDialog()    データベースダイアログが開いた時の処理
+	// fio.dbm.openHandler()   データベースハンドラを開く
 	//---------------------------------------------------------------------------
-	initDataBase : function(){
-		if(this.DBtype===0){ return false;}
-		else if(this.DBtype===1){
-			this.dbmgr = google.gears.factory.create('beta.database', '1.0');
-			this.dbmgr.open('pzprv3_manage');
-			this.dbmgr.execute('CREATE TABLE IF NOT EXISTS manage (puzzleid primary key,version,count,lastupdate)');
-			this.dbmgr.close();
+	openDialog : function(){
+		this.openHandler();
+		this.update(true);
+	},
+	openHandler : function(){
+		// データベースを開く
+		var type = 0;
+		if     (this.DBaccept & 0x08){ type = 4;}
+		else if(this.DBaccept & 0x04){ type = 3;}
+		else if(this.DBaccept & 0x02){ type = 2;}
+		else if(this.DBaccept & 0x01){ type = 1;}
 
-//			this.remakeDataBase2();
-
-			this.db    = google.gears.factory.create('beta.database', '1.0');
-			this.db.open('pzprv3_'+k.puzzleid);
-			this.db.execute('CREATE TABLE IF NOT EXISTS pzldata (id int primary key,col,row,hard,pdata,time,comment)');
-			this.db.close();
+		switch(type){
+			case 1: case 2: this.dbh = new DataBaseHandler_SQL((type===2)); break;
+			case 4:         this.dbh = new DataBaseHandler_LS(); break;
+			default: return;
 		}
-		else if(this.DBtype===2){
-			this.dbmgr = openDataBase('pzprv3_manage', '1.0');
-			this.dbmgr.transaction(function(tx){
-				tx.executeSql('CREATE TABLE IF NOT EXISTS manage (puzzleid primary key,version,count,lastupdate)');
-			});
-
-			this.db = openDataBase('pzprv3_'+k.puzzleid, '1.0');
-			this.db.transaction(function(tx){
-				tx.executeSql('CREATE TABLE IF NOT EXISTS pzldata (id int primary key,col,row,hard,pdata,time,comment)');
-			});
-		}
-
-		this.updateManager(false);
+		this.dbh.importDBlist(this);
 
 		var sortlist = { idlist:"ID順", newsave:"保存が新しい順", oldsave:"保存が古い順", size:"サイズ/難易度順"};
 		var str="";
 		for(s in sortlist){ str += ("<option value=\""+s+"\">"+sortlist[s]+"</option>");}
 		document.database.sorts.innerHTML = str;
-
-		return true;
-	},
-	dropDataBase : function(){
-		if(this.DBtype===1){
-			this.dbmgr.open('pzprv3_manage');
-			this.dbmgr.execute('DELETE FROM manage WHERE puzzleid=?',[k.puzzleid]);
-			this.dbmgr.close();
-
-			this.db.open('pzprv3_'+k.puzzleid);
-			this.db.execute('DROP TABLE IF EXISTS pzldata');
-			this.db.close();
-		}
-		else if(this.DBtype===2){
-			this.dbmgr.transaction(function(tx){
-				tx.executeSql('DELETE FROM manage WHERE puzzleid=?',[k.puzzleid]);
-			});
-
-			this.db.transaction(function(tx){
-				tx.executeSql('DROP TABLE IF EXISTS pzldata');
-			});
-		}
 	},
 
-	remakeDataBase : function(){
+	//---------------------------------------------------------------------------
+	// fio.dbm.closeDialog()   データベースダイアログが閉じた時の処理
+	// fio.dbm.clickHandler()  フォーム上のボタンが押された時、各関数にジャンプする
+	//---------------------------------------------------------------------------
+	closeDialog : function(){
 		this.DBlist = [];
-
-		this.db.open('pzprv3_'+k.puzzleid);
-		var rs = this.db.execute('SELECT * FROM pzldata');
-		while(rs.isValidRow()){
-			var src = {};
-			for(var i=0;i<rs.fieldCount();i++){ src[rs.fieldName(i)] = rs.field(i);}
-			this.DBlist.push(src);
-			rs.next();
-		}
-		rs.close();
-
-		this.db.execute('DROP TABLE IF EXISTS pzldata');
-		this.db.execute('CREATE TABLE IF NOT EXISTS pzldata (id int primary key,col,row,hard,pdata,time,comment)');
-
-		for(var r=0;r<this.DBlist.length;r++){
-			var row=this.DBlist[r];
-			this.db.execute('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',[row.id,row.col,row.row,row.hard,row.pdata,row.time,row.comment]);
-		}
-
-		this.db.close();
 	},
-
-	updateManager : function(flag){
-		var count = -1;
-		if(this.DBtype===1){
-			if(!flag){
-				this.db.open('pzprv3_'+k.puzzleid);
-				var rs = this.db.execute('SELECT COUNT(*) FROM pzldata');
-				count = (rs.isValidRow()?rs.field(0):0);
-				this.db.close();
-			}
-			else{ count=this.DBlist.length;}
-
-			this.dbmgr.open('pzprv3_manage');
-			this.dbmgr.execute('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)',[k.puzzleid,'1.0',count,mf((new Date()).getTime()/1000)]);
-			this.dbmgr.close();
-		}
-		else if(this.DBtype===2){
-			if(!flag){
-				this.db.transaction(function(tx){
-					tx.executeSql('SELECT COUNT(*) FROM pzldata',function(){},function(tx,rs){ count = rs.rows[0];});
-				});
-			}
-			else{ count=this.DBlist.length;}
-
-			this.dbmgr.transaction(function(tx){
-				tx.executeSql('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)',[k.puzzleid,'1.0',count,mf((new Date()).getTime()/1000)]);
-			});
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// fio.clickHandler()  フォーム上のボタンが押された時、各関数にジャンプする
-	//---------------------------------------------------------------------------
 	clickHandler : function(e){
 		switch(ee.getSrcElement(e).name){
-			case 'sorts'   : this.displayDataTableList(); break;
-			case 'datalist': this.selectDataTable(); break;
-			case 'tableup' : this.upDataTable();     break;
-			case 'tabledn' : this.downDataTable();   break;
+			case 'sorts'   : this.displayDataTableList();	// breakがないのはわざとです
+			case 'datalist': this.selectDataTable();   break;
+			case 'tableup' : this.upDataTable_M();     break;
+			case 'tabledn' : this.downDataTable_M();   break;
 			case 'open'    : this.openDataTable();   break;
-			case 'save'    : this.saveDataTable();   break;
-			case 'comedit' : this.editComment();     break;
-			case 'difedit' : this.editDifficult();   break;
-			case 'del'     : this.deleteDataTable(); break;
+			case 'save'    : this.saveDataTable_M();   break;
+			case 'comedit' : this.editComment_M();     break;
+			case 'difedit' : this.editDifficult_M();   break;
+			case 'del'     : this.deleteDataTable_M(); break;
 		}
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.displayDataTableList() 保存しているデータの一覧を表示する
-	// fio.ni()                   文字列で1桁なら0をつける
-	// fio.getDataTableList()     保存しているデータの一覧を取得する
+	// fio.dbm.getDataID()  選択中データの(this.DBlistのkeyとなる)IDを取得する
+	// fio.dbm.update()     管理テーブル情報やダイアログの表示を更新する
+	//---------------------------------------------------------------------------
+	getDataID : function(){
+		if(document.database.datalist.value!="new" && document.database.datalist.value!=""){
+			for(var i=0;i<this.DBlist.length;i++){
+				if(this.DBlist[i].id==document.database.datalist.value){ return i;}
+			}
+		}
+		return -1;
+	},
+	update : function(refresh){
+		this.dbh.updateManageData(this);
+		if(refresh){
+			this.displayDataTableList();
+			this.selectDataTable();
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.displayDataTableList() 保存しているデータの一覧を表示する
+	// fio.dbm.getRowString()         1データから文字列を生成する
+	// fio.dbm.dateString()           時刻の文字列を生成する
 	//---------------------------------------------------------------------------
 	displayDataTableList : function(){
-		if(this.DBtype>0){
 			switch(document.database.sorts.value){
 				case 'idlist':  this.DBlist = this.DBlist.sort(function(a,b){ return (a.id-b.id);}); break;
 				case 'newsave': this.DBlist = this.DBlist.sort(function(a,b){ return (b.time-a.time || a.id-b.id);}); break;
@@ -778,111 +725,52 @@ FileIO.prototype = {
 			var html = "";
 			for(var i=0;i<this.DBlist.length;i++){
 				var row = this.DBlist[i];
-				if(!row){ alert(i);}
-				var src = ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-				var dt = new Date(); dt.setTime(row.time*1000);
-				src += (" "+this.ni(dt.getFullYear()%100)+"/"+this.ni(dt.getMonth()+1)+"/"+this.ni(dt.getDate())+" "+this.ni(dt.getHours())+":"+this.ni(dt.getMinutes()) + "&nbsp;&nbsp;");
-				src += (""+row.col+"×"+row.row+"&nbsp;&nbsp;");
-				if     (menu.isLangJP()){ src += ({0:'－',1:'らくらく',2:'おてごろ',3:'たいへん',4:'アゼン'}[row.hard]);}
-				else if(menu.isLangEN()){ src += ({0:'-',1:'Easy',2:'Normal',3:'Hard',4:'Expert'}[row.hard]);}
-				html += ("<option value=\""+row.id+"\""+(this.DBsid==row.id?" selected":"")+">"+src+"</option>\n");
+			if(!row){ continue;}//alert(i);}
+
+			var valstr = " value=\""+row.id+"\"";
+			var selstr = (this.DBsid==row.id?" selected":"");
+			html += ("<option" + valstr + selstr + ">" + this.getRowString(row)+"</option>\n");
 			}
 			html += ("<option value=\"new\""+(this.DBsid==-1?" selected":"")+">&nbsp;&lt;新しく保存する&gt;</option>\n");
 			document.database.datalist.innerHTML = html;
-
-			this.selectDataTable();
-		}
 	},
-	ni : function(num){ return (num<10?"0"+num:""+num);},
-	getDataTableList : function(){
-		this.DBlist = [];
-		if(this.DBtype===1){
-			this.db.open('pzprv3_'+k.puzzleid);
-			var rs = this.db.execute('SELECT * FROM pzldata');
-			while(rs.isValidRow()){
-				var src = {};
-				for(var i=0;i<rs.fieldCount();i++){ src[rs.fieldName(i)] = rs.field(i);}
-				this.DBlist.push(src);
-				rs.next();
-			}
-			rs.close();
-			this.db.close();
-			this.displayDataTableList();
+	getRowString : function(row){
+		var hardstr = [
+			{ja:'－'      , en:'-'     },
+			{ja:'らくらく', en:'Easy'  },
+			{ja:'おてごろ', en:'Normal'},
+			{ja:'たいへん', en:'Hard'  },
+			{ja:'アゼン'  , en:'Expert'}
+		];
+
+		var str = "";
+		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
+		str += (this.dateString(row.time*1000)+" &nbsp;");
+		str += (""+row.col+"×"+row.row+" &nbsp;");
+		if(!!row.hard || row.hard=='0'){
+			str += (hardstr[row.hard][menu.language]);
 		}
-		else if(this.DBtype===2){
-			var self = this;
-			this.db.transaction(function(tx){
-				tx.executeSql('SELECT * FROM pzldata',[],function(tx,rs){
-				for(var r=0;r<rs.rows.length;r++){ self.DBlist.push(rs.rows[r]);}
-				self.DBlist = rs;
-				self.displayDataTableList();
-			}); });
-		}
+		return str;
 	},
+	dateString : function(time){
+		var ni   = function(num){ return (num<10?"0":"")+num;};
+		var str  = " ";
+		var date = new Date();
+		date.setTime(time);
 
-	//---------------------------------------------------------------------------
-	// fio.upDataTable()        データの一覧での位置をひとつ上にする
-	// fio.downDataTable()      データの一覧での位置をひとつ下にする
-	// fio.convertDataTableID() データのIDを付け直す
-	//---------------------------------------------------------------------------
-	upDataTable : function(){
-		var selected = this.getDataID();
-		if(this.DBtype===0 || selected===-1 || selected===0){ return;}
-
-		this.convertDataTableID(selected, selected-1);
-	},
-	downDataTable : function(){
-		var selected = this.getDataID();
-		if(this.DBtype===0 || selected===-1 || selected===this.DBlist.length-1){ return;}
-
-		this.convertDataTableID(selected, selected+1);
-	},
-	convertDataTableID : function(selected,target){
-		var sid = this.DBsid;
-		var tid = this.DBlist[target].id;
-		this.DBsid = tid;
-
-		this.DBlist[selected].id = tid;
-		this.DBlist[target].id   = sid;
-
-		if(this.DBtype===1){
-			this.db.open('pzprv3_'+k.puzzleid);
-			this.db.execute('UPDATE pzldata SET id=? WHERE ID==?',[0  ,sid]);
-			this.db.execute('UPDATE pzldata SET id=? WHERE ID==?',[sid,tid]);
-			this.db.execute('UPDATE pzldata SET id=? WHERE ID==?',[tid,  0]);
-			this.db.close();
-
-			this.displayDataTableList();
-		}
-		else if(this.DBtype===2){
-			var self = this;
-			this.db.transaction(function(tx){
-				tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[0  ,sid]);
-				tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[sid,tid]);
-				tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[tid,  0]);
-			},f_true,self.displayDataTableList);
-		}
-
-		this.updateManager(true);
+		str += (ni(date.getFullYear()%100) + "/" + ni(date.getMonth()+1) + "/" + ni(date.getDate())+" ");
+		str += (ni(date.getHours()) + ":" + ni(date.getMinutes()));
+		return str;
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.getDataID()       データのIDを取得する
-	// fio.selectDataTable() データを選択して、コメントなどを表示する
+	// fio.dbm.selectDataTable() データを選択して、コメントなどを表示する
 	//---------------------------------------------------------------------------
-	getDataID : function(){
-		if(document.database.datalist.value!="new" && document.database.datalist.value!=""){
-			for(var i=0;i<this.DBlist.length;i++){
-				if(this.DBlist[i].id===document.database.datalist.value){ return i;}
-			}
-		}
-		return -1;
-	},
 	selectDataTable : function(){
 		var selected = this.getDataID();
 		if(selected>=0){
 			document.database.comtext.value = ""+this.DBlist[selected].comment;
-			this.DBsid = this.DBlist[selected].id;
+			this.DBsid = parseInt(this.DBlist[selected].id);
 		}
 		else{
 			document.database.comtext.value = "";
@@ -898,168 +786,433 @@ FileIO.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.openDataTable()   データの盤面に読み込む
-	// fio.saveDataTable()   データの盤面を保存する
+	// fio.dbm.upDataTable_M()      データの一覧での位置をひとつ上にする
+	// fio.dbm.downDataTable_M()    データの一覧での位置をひとつ下にする
+	// fio.dbm.convertDataTable_M() データの一覧での位置を入れ替える
 	//---------------------------------------------------------------------------
-	openDataTable : function(){
-		var id = this.getDataID();
-		if(id===-1 || !confirm("このデータを読み込みますか？ (現在の盤面は破棄されます)")){ return;}
-
-		if(this.DBtype===1){
-			this.db.open('pzprv3_'+k.puzzleid);
-
-			var id = this.getDataID();
-			var rs = this.db.execute('SELECT * FROM pzldata WHERE ID==?',[this.DBlist[id].id]);
-			this.filedecode(rs.field(4),1);
-
-			rs.close();
-			this.db.close();
-		}
-		else if(this.DBtype===2){
-			var self = this;
-			this.db.transaction(function(tx){
-				tx.executeSql('SELECT * FROM pzldata WHERE ID==?',[self.DBlist[id].id],
-					function(tx,rs){ self.filedecode(rs.rows[0].pdata,1); }
-				);
-			});
-		}
+	upDataTable_M : function(){
+		var selected = this.getDataID();
+		if(selected===-1 || selected===0){ return;}
+		this.convertDataTable_M(selected, selected-1);
 	},
-	saveDataTable : function(){
-		var id = this.getDataID();
-		if(this.DBtype===0 || (id!==-1 && !confirm("このデータに上書きしますか？"))){ return;}
+	downDataTable_M : function(){
+		var selected = this.getDataID();
+		if(selected===-1 || selected===this.DBlist.length-1){ return;}
+		this.convertDataTable_M(selected, selected+1);
+	},
+	convertDataTable_M : function(sid, tid){
+		this.dbh.convertDataTableID(this, this.DBlist[sid].id, this.DBlist[tid].id);
 
-		var time = mf((new Date()).getTime()/1000);
-		var pdata = this.fileencode(1);
-		var str = "";
-		if(id===-1){ str = prompt("コメントがある場合は入力してください。",""); if(str==null){ str="";} }
-		else       { str = this.DBlist[this.getDataID()].comment;}
-
-		if(this.DBtype===1){
-			this.db.open('pzprv3_'+k.puzzleid);
-			if(id===-1){
-				id = this.DBlist.length+1;
-				this.db.execute('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',[id,k.qcols,k.qrows,0,pdata,time,str]);
-			}
-			else{
-				id = document.database.datalist.value;
-				this.db.execute('INSERT OR REPLACE INTO pzldata VALUES(?,?,?,?,?,?,?)',[id,k.qcols,k.qrows,0,pdata,time,str]);
-			}
-			this.db.close();
-			this.getDataTableList();
-		}
-		else if(this.DBtype===2){
-			var self = this;
-			if(id===-1){
-				id = this.DBlist.length+1;
-				this.db.transaction(function(tx){
-					tx.executeSql('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',[id,k.qcols,k.qrows,0,pdata,time,str]);
-				},f_true,self.getDataTableList);
-			}
-			else{
-				id = document.database.datalist.value;
-				this.db.transaction(function(tx){
-					tx.executeSql('INSERT OR REPLACE INTO pzldata VALUES(?,?,?,?,?,?,?)',[id,k.qcols,k.qrows,0,pdata,time,str]);
-				},f_true,self.getDataTableList);
-			}
-		}
-
-		this.updateManager(true);
+		this.DBsid = this.DBlist[tid].id;
+		var row = {};
+		for(var c=1;c<7;c++){ row[this.keys[c]]              = this.DBlist[sid][this.keys[c]];}
+		for(var c=1;c<7;c++){ this.DBlist[sid][this.keys[c]] = this.DBlist[tid][this.keys[c]];}
+		for(var c=1;c<7;c++){ this.DBlist[tid][this.keys[c]] = row[this.keys[c]];}
+		this.update(true);
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.editComment()   データのコメントを更新する
-	// fio.editDifficult() データの難易度を更新する
+	// fio.dbm.openDataTable_M()  データの盤面に読み込む
+	// fio.dbm.saveDataTable_M()  データの盤面を保存する
 	//---------------------------------------------------------------------------
-	editComment : function(){
-		var id = this.getDataID();
-		if(this.DBtype===0 || id===-1){ return;}
+	openDataTable_M : function(){
+		var id = this.getDataID(); if(id===-1){ return;}
+		if(!confirm("このデータを読み込みますか？ (現在の盤面は破棄されます)")){ return;}
+
+		//this.dbh.openDataTable(this, id);
+		fio.filedecode(this.DBlist[id].pdata);
+	},
+	saveDataTable_M : function(){
+		var id = this.getDataID(), refresh = false;
+			if(id===-1){
+			id = this.DBlist.length;
+			this.DBsid = id;
+			refresh = true;
+
+			this.DBlist[id] = {};
+			var str = prompt("コメントがある場合は入力してください。","");
+			this.DBlist[id].comment = (!!str ? str : '');
+			this.DBlist[id].hard = 0;
+			this.DBlist[id].id = id+1;
+			}
+			else{
+			if(!confirm("このデータに上書きしますか？")){ return;}
+		}
+		this.DBlist[id].col   = k.qcols;
+		this.DBlist[id].row   = k.qrows;
+		this.DBlist[id].time  = mf((new Date()).getTime()/1000);
+
+		this.dbh.saveDataTable(this, id);
+		this.update(refresh);
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.editComment_M()   データのコメントを更新する
+	// fio.dbm.editDifficult_M() データの難易度を更新する
+	//---------------------------------------------------------------------------
+	editComment_M : function(){
+		var id = this.getDataID(); if(id===-1){ return;}
 
 		var str = prompt("この問題に対するコメントを入力してください。",this.DBlist[id].comment);
 		if(str==null){ return;}
 
 		this.DBlist[id].comment = str;
-
-		if(this.DBtype===1){
-			this.db.open('pzprv3_'+k.puzzleid);
-
-			this.db.execute('UPDATE pzldata SET comment=? WHERE ID==?',[str,this.DBlist[id].id]);
-			this.db.close();
-
-			this.displayDataTableList();
-		}
-		else if(this.DBtype===2){
-			var self = this;
-			this.db.transaction(function(tx){
-				tx.executeSql('UPDATE pzldata SET comment=? WHERE ID==?',[str,self.DBlist[id].id]);
-			},f_true,self.displayDataTableList);
-		}
-
-		this.updateManager(true);
+		this.dbh.updateComment(this, id);
+		this.update(false);
 	},
-	editDifficult : function(){
-		var id = this.getDataID();
-		if(this.DBtype===0 || id===-1){ return;}
+	editDifficult_M : function(){
+		var id = this.getDataID(); if(id===-1){ return;}
 
 		var hard = prompt("この問題の難易度を設定してください。\n[0:なし 1:らくらく 2:おてごろ 3:たいへん 4:アゼン]",this.DBlist[id].hard);
 		if(hard==null){ return;}
 
-		this.DBlist[id].hard = ((hard==='1'||hard==='2'||hard==='3'||hard==='4')?hard:0);
-
-		if(this.DBtype===1){
-			this.db.open('pzprv3_'+k.puzzleid);
-
-			this.db.execute('UPDATE pzldata SET hard=? WHERE ID==?',[hard,this.DBlist[id].id]);
-			this.db.close();
-
-			this.displayDataTableList();
-		}
-		else if(this.DBtype===2){
-			var self = this;
-			this.db.transaction(function(tx){
-				tx.executeSql('UPDATE pzldata SET hard=? WHERE ID==?',[hard,self.DBlist[id].id]);
-			},f_true,self.displayDataTableList);
-		}
-
-		this.updateManager(true);
+		this.DBlist[id].hard = ((hard=='1'||hard=='2'||hard=='3'||hard=='4')?hard:0);
+		this.dbh.updateDifficult(this, id);
+		this.update(false);
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.deleteDataTable() 選択している盤面データを削除する
+	// fio.dbm.deleteDataTable_M() 選択している盤面データを削除する
 	//---------------------------------------------------------------------------
-	deleteDataTable : function(){
-		var id = this.getDataID();
-		if(this.DBtype===0 || id===-1 || !confirm("このデータを完全に削除しますか？")){ return;}
+	deleteDataTable_M : function(){
+		var id = this.getDataID(); if(id===-1){ return;}
+		if(!confirm("このデータを完全に削除しますか？")){ return;}
 
-		if(this.DBtype===1){
-			this.db.open('pzprv3_'+k.puzzleid);
+		this.dbh.deleteDataTable(this, id);
 
-			this.db.execute('DELETE FROM pzldata WHERE ID==?',[this.DBlist[id].id]);
+		this.DBlist[id]=null; delete this.DBlist[id];
+		this.update(true);
+		}
 
-			this.DBlist = this.DBlist.sort(function(a,b){ return (a.id-b.id);});
-			for(var i=id+1;i<this.DBlist.length;i++){
-				this.db.execute('UPDATE pzldata SET id=? WHERE ID==?',[this.DBlist[i].id-1,this.DBlist[i].id]);
-				this.DBlist[i].id--;
-				this.DBlist[i-1] = this.DBlist[i];
+	//---------------------------------------------------------------------------
+	// fio.dbm.convertDataBase() もし将来必要になったら...
+	//---------------------------------------------------------------------------
+/*	convertDataBase : function(){
+		// ここまで旧データベース
+		this.dbh.importDBlist(this);
+		this.dbh.dropDataBase();
+
+		// ここから新データベース
+		this.dbh.createDataBase();
+		this.dbh.setupDBlist(this);
+		}
+*/
+};
+
+//---------------------------------------------------------------------------
+// ★DataBaseHandler_LSクラス Web localStorage用 データベースハンドラ
+//---------------------------------------------------------------------------
+DataBaseHandler_LS = function(){
+	this.pheader = 'pzprv3_' + k.puzzleid + ':puzdata';
+	this.keys = ['id', 'col', 'row', 'hard', 'pdata', 'time', 'comment'];
+
+	this.initialize();
+};
+DataBaseHandler_LS.prototype = {
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.initialize()    初期化時にデータベースを開く
+	// fio.dbm.dbh.importDBlist()  DataBaseからDBlistを作成する
+	//---------------------------------------------------------------------------
+	initialize : function(){
+		this.createManageDataTable();
+		this.createDataBase();
+	},
+	importDBlist : function(parent){
+		parent.DBlist = [];
+		var r=0;
+		while(1){
+			r++; var row = {};
+			for(var c=0;c<7;c++){ row[this.keys[c]] = localStorage[this.pheader+'!'+r+'!'+this.keys[c]];}
+			if(row.id==null){ break;}
+			row.pdata = "";
+			parent.DBlist.push(row);
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.createManageDataTable() 管理情報テーブルを作成する(消去はなし)
+	// fio.dbm.dbh.updateManageData()      管理情報レコードを更新する
+	//---------------------------------------------------------------------------
+	createManageDataTable : function(){
+		localStorage['pzprv3_manage']        = 'DataBase';
+		localStorage['pzprv3_manage:manage'] = 'Table';
+	},
+	updateManageData : function(parent){
+		var mheader = 'pzprv3_manage:manage!'+k.puzzleid;
+		localStorage[mheader+'!count'] = parent.DBlist.length;
+		localStorage[mheader+'!time']  = mf((new Date()).getTime()/1000);
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.createDataBase()     テーブルを作成する
+	//---------------------------------------------------------------------------
+	createDataBase : function(){
+		localStorage['pzprv3_'+k.puzzleid]            = 'DataBase';
+		localStorage['pzprv3_'+k.puzzleid+':puzdata'] = 'Table';
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.convertDataTableID() データのIDを付け直す
+	//---------------------------------------------------------------------------
+	convertDataTableID : function(parent, sID, tID){
+		var sheader=this.pheader+'!'+sID, theader=this.pheader+'!'+tID, row = {};
+		for(var c=1;c<7;c++){ row[this.keys[c]]                      = localStorage[sheader+'!'+this.keys[c]];}
+		for(var c=1;c<7;c++){ localStorage[sheader+'!'+this.keys[c]] = localStorage[theader+'!'+this.keys[c]];}
+		for(var c=1;c<7;c++){ localStorage[theader+'!'+this.keys[c]] = row[this.keys[c]];}
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.openDataTable()   データの盤面に読み込む
+	// fio.dbm.dbh.saveDataTable()   データの盤面を保存する
+	//---------------------------------------------------------------------------
+	openDataTable : function(parent, id){
+		var pdata = localStorage[this.pheader+'!'+parent.DBlist[id].id+'!pdata'];
+		fio.filedecode(pdata);
+	},
+	saveDataTable : function(parent, id){
+		var row = parent.DBlist[id];
+		for(var c=0;c<7;c++){ localStorage[this.pheader+'!'+row.id+'!'+this.keys[c]] = (c!==4 ? row[this.keys[c]] : fio.fileencode(1));}
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.updateComment()   データのコメントを更新する
+	// fio.dbm.dbh.updateDifficult() データの難易度を更新する
+	//---------------------------------------------------------------------------
+	updateComment : function(parent, id){
+		var row = parent.DBlist[id];
+		localStorage[this.pheader+'!'+row.id+'!comment'] = row.comment;
+	},
+	updateDifficult : function(parent, id){
+		var row = parent.DBlist[id];
+		localStorage[this.pheader+'!'+row.id+'!hard'] = row.hard;
+	},
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.deleteDataTable() 選択している盤面データを削除する
+	//---------------------------------------------------------------------------
+	deleteDataTable : function(parent, id){
+		var max = parent.DBlist.length;
+		for(var i=id+1;i<max;i++){
+			var headers = [this.pheader+'!'+parent.DBlist[i].id, this.pheader+'!'+(+parent.DBlist[i].id-1)];
+			for(var c=1;c<7;c++){ localStorage[headers[1]+'!'+this.keys[c]] = localStorage[headers[0]+'!'+this.keys[c]];}
+		}
+		var dheader = this.pheader+'!'+parent.DBlist[max-1].id;
+		for(var c=0;c<7;c++){ delete localStorage[dheader+'!'+this.keys[c]];}
+	}
+};
+
+//---------------------------------------------------------------------------
+// ★DataBaseHandler_SQLクラス Web SQL DataBase用 データベースハンドラ
+//---------------------------------------------------------------------------
+DataBaseHandler_SQL = function(isSQLDB){
+	this.db    = null;	// パズル個別のデータベース
+	this.dbmgr = null;	// pzprv3_managerデータベース
+	this.isSQLDB = isSQLDB;
+
+	this.initialize();
+};
+DataBaseHandler_SQL.prototype = {
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.initialize()    初期化時にデータベースを開く
+	// fio.dbm.dbh.importDBlist()  DataBaseからDBlistを作成する
+	// fio.dbm.dbh.setupDBlist()   DBlistのデータをDataBaseに代入する
+	//---------------------------------------------------------------------------
+	initialize : function(){
+		var wrapper1 = new DataBaseObject_SQL(this.isSQLDB);
+		var wrapper2 = new DataBaseObject_SQL(this.isSQLDB);
+
+		this.dbmgr = wrapper1.openDatabase('pzprv3_manage', '1.0');
+		this.db    = wrapper2.openDatabase('pzprv3_'+k.puzzleid, '1.0');
+
+		this.createManageDataTable();
+		this.createDataBase();
+	},
+	importDBlist : function(parent){
+		parent.DBlist = [];
+		this.db.transaction(
+			function(tx){
+				tx.executeSql('SELECT * FROM pzldata',[],function(tx,rs){
+					for(var r=0;r<rs.rows.length;r++){
+						parent.DBlist.push(rs.rows.item(r));
+						parent.DBlist[r].pdata = "";
+					}
+				});
+			},
+			function(){ },
+			function(){ fio.dbm.update(true);}
+		);
+	},
+/*	setupDBlist : function(parent){
+		for(var r=0;r<parent.DBlist.length;r++){
+			this.saveDataTable(parent, r);
+		}
+	},
+*/
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.createManageDataTable() 管理情報テーブルを作成する(消去はなし)
+	// fio.dbm.dbh.updateManageData()      管理情報レコードを作成・更新する
+	// fio.dbm.dbh.deleteManageData()      管理情報レコードを削除する
+	//---------------------------------------------------------------------------
+	createManageDataTable : function(){
+		this.dbmgr.transaction( function(tx){
+			tx.executeSql('CREATE TABLE IF NOT EXISTS manage (puzzleid primary key,version,count,lastupdate)',[]);
+		});
+	},
+	updateManageData : function(parent){
+		var count = parent.DBlist.length;
+		var time = mf((new Date()).getTime()/1000);
+		this.dbmgr.transaction( function(tx){
+			tx.executeSql('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)', [k.puzzleid, '1.0', count, time]);
+		});
+	},
+/*	deleteManageData : function(){
+		this.dbmgr.transaction( function(tx){
+			tx.executeSql('DELETE FROM manage WHERE puzzleid=?',[k.puzzleid]);
+		});
+	},
+*/
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.createDataBase()      テーブルを作成する
+	// fio.dbm.dbh.dropDataBase()        テーブルを削除する
+	// fio.dbm.dbh.forcedeleteDataBase() テーブルを削除する
+	//---------------------------------------------------------------------------
+	createDataBase : function(){
+		this.db.transaction( function(tx){
+			tx.executeSql('CREATE TABLE IF NOT EXISTS pzldata (id int primary key,col,row,hard,pdata,time,comment)',[]);
+		});
+	},
+/*	dropDataBase : function(){
+		this.db.transaction( function(tx){
+			tx.executeSql('DROP TABLE IF EXISTS pzldata',[]);
+		});
+	},
+	forceDeleteDataBase : function(parent){
+		this.deleteManageData();
+		this.dropDataBase();
+	},
+*/
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.convertDataTableID() データのIDを付け直す
+	//---------------------------------------------------------------------------
+	convertDataTableID : function(parent, sID, tID){
+		this.db.transaction( function(tx){
+			tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[0  ,sID]);
+			tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[sID,tID]);
+			tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[tID,  0]);
+		});
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.openDataTable()   データの盤面に読み込む
+	// fio.dbm.dbh.saveDataTable()   データの盤面を保存する
+	//---------------------------------------------------------------------------
+	openDataTable : function(parent, id){
+		this.db.transaction( function(tx){
+			tx.executeSql('SELECT * FROM pzldata WHERE ID==?',[parent.DBlist[id].id],
+				function(tx,rs){ fio.filedecode(rs.rows.item(0)['pdata']);}
+			);
+		});
+	},
+	saveDataTable : function(parent, id){
+		var row = parent.DBlist[id];
+		this.db.transaction( function(tx){
+			tx.executeSql('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',[row.id,row.col,row.row,row.hard,fio.fileencode(1),row.time,row.comment]);
+		});
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.updateComment()   データのコメントを更新する
+	// fio.dbm.dbh.updateDifficult() データの難易度を更新する
+	//---------------------------------------------------------------------------
+	updateComment : function(parent, id){
+		var row = parent.DBlist[id];
+		this.db.transaction( function(tx){
+			tx.executeSql('UPDATE pzldata SET comment=? WHERE ID==?',[row.comment, row.id]);
+		});
+	},
+	updateDifficult : function(parent, id){
+		var row = parent.DBlist[id];
+		this.db.transaction( function(tx){
+			tx.executeSql('UPDATE pzldata SET hard=? WHERE ID==?',[row.hard, row.id]);
+		});
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.deleteDataTable() 選択している盤面データを削除する
+	//---------------------------------------------------------------------------
+	deleteDataTable : function(parent, id){
+		this.db.transaction( function(tx){
+			tx.executeSql('DELETE FROM pzldata WHERE ID==?',[parent.DBlist[id].id]);
+			for(var i=id+1;i<parent.DBlist.length;i++){
+				tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[parent.DBlist[i].id-1, parent.DBlist[i].id]);
 			}
-			this.DBlist.splice(this.DBlist.length-1,1);
+		});
+	}
+};
 
-			this.db.close();
-			this.displayDataTableList();
+//---------------------------------------------------------------------------
+// ★DataBaseObject_SQLクラス  Web SQL DataBase用 データベースのラッパークラス
+//---------------------------------------------------------------------------
+DataBaseObject_SQL = function(isSQLDB){
+	this.name    = '';
+	this.version = 0;
+	this.isSQLDB = isSQLDB;
+
+	this.object = null;
+};
+DataBaseObject_SQL.prototype = {
+	openDatabase : function(name, ver){
+		this.name    = name;
+		this.version = ver;
+		if(this.isSQLDB){
+			this.object = window.openDatabase(this.name, this.version);
 		}
-		else if(this.DBtype===2){
-			var self = this;
-			this.db.transaction(function(tx){
-				tx.executeSql('DELETE FROM pzldata WHERE ID==?',[self.DBlist[id].id]);
-				self.DBlist = self.DBlist.sort(function(a,b){ return (a.id-b.id);});
-				for(var i=id+1;i<self.DBlist.length;i++){
-					tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[self.DBlist[i].id-1,self.DBlist[i].id]);
-					self.DBlist[i].id--;
-					self.DBlist[i-1] = self.DBlist[i];
+		else{
+			this.object = google.gears.factory.create('beta.database', this.version);
+			}
+		return this;
+	},
+
+	// Gears用ラッパーみたいなもの
+	transaction : function(execfunc, errorfunc, compfunc){
+		if(typeof errorfunc == 'undefined'){ errorfunc = f_true;}
+		if(typeof compfunc  == 'undefined'){ compfunc  = f_true;}
+
+		if(this.isSQLDB){
+			// execfuncの第一引数txはSQLTransactionオブジェクト(tx.executeSqlは下の関数を指さない)
+			this.object.transaction(execfunc, errorfunc, compfunc);
+		}
+		else{
+			this.object.open(this.name);
+			// execfuncの第一引数txはthisにしておく(tx.executeSqlは下の関数を指す)
+			execfunc(this);
+			this.object.close();
+
+			compfunc();
+		}
+	},
+	// Gears用ラッパー
+	executeSql : function(statement, args, callback){
+		var resultSet = this.object.execute(statement, args);
+		// 以下はcallback用
+		if(typeof callback != 'undefined'){
+			var r=0, rows = {};
+			rows.rowarray = [];
+			while(resultSet.isValidRow()){
+				var row = {};
+				for(var i=0,len=resultSet.fieldCount();i<len;i++){
+					row[i] = row[resultSet.fieldName(i)] = resultSet.field(i);
 				}
-				self.DBlist.splice(this.DBlist.length-1,1);
-			},f_true,self.displayDataTableList);
+				rows.rowarray[r] = row;
+				resultSet.next();
+				r++;
 		}
+			resultSet.close();
 
-		this.updateManager(true);
+			rows.length = r;
+			rows.item = function(r){ return this.rowarray[r];};
+
+			var rs = {rows:rows};
+			callback(this, rs);
+		}
 	}
 };
