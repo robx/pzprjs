@@ -1,4 +1,4 @@
-// MenuExec.js v3.2.4p3
+// MenuExec.js v3.2.4p4
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -139,9 +139,8 @@ MenuExec.prototype = {
 			if(farray[i].match(/^http\:\/\//)){ break;}
 			fstr += (farray[i]+"/");
 		}
-		var ftype = (document.fileform.pencilbox.value=="0" ? 1 : 2);
 
-		fio.filedecode(fstr,ftype);
+		fio.filedecode(fstr);
 
 		document.fileform.reset();
 		tm.reset();

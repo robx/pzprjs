@@ -1,4 +1,4 @@
-// Filesys.js v3.2.4p3
+// Filesys.js v3.2.4p4
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -21,21 +21,21 @@ FileIO.prototype = {
 	// fio.filedecode() ファイルを開く時、ファイルデータからのデコード実行関数
 	//                  [menu.ex.fileopen] -> [fileio.xcg@iframe] -> [ここ]
 	//---------------------------------------------------------------------------
-	filedecode : function(datastr, type){
+	filedecode : function(datastr){
 		this.filever = 0;
 		this.lineseek = 0;
 		this.dataarray = datastr.split("/");
+		var type = 1;
 
 		// ヘッダの処理
-		if(type===1){
-			if(!this.readLine().match(/pzprv3\.?(\d+)?/)){ alert('ぱずぷれv3形式のファイルではありません。'); return;}
+		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
-
 			if(this.readLine()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。'); return;}
+			type = 1;
 		}
-		else if(type===2){
-			if(this.readLine().match(/pzprv3/)){ alert('pencilboxのファイルではありません。'); return;}
+		else{
 			this.lineseek = 0;
+			type = 2;
 		}
 
 		// サイズを表す文字列
