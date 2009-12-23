@@ -358,8 +358,8 @@ Puzzles.goishi.prototype = {
 				this.datastr += "/";
 			}
 
-			enc.outsize  = [d.x2-d.x1+1, d.y2-d.y1+1].join("/");
-			this.sizestr = [d.x2-d.x1+1, d.y2-d.y1+1].join("/");
+			enc.outsize  = [d.y2-d.y1+1, d.x2-d.x1+1].join("/");
+			this.sizestr = [d.y2-d.y1+1, d.x2-d.x1+1].join("/");
 		};
 
 		enc.getSizeOfBoard_goishi = function(){
