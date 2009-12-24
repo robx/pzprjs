@@ -353,7 +353,7 @@ Puzzles.goishi.prototype = {
 			for(var cy=d.y1;cy<=d.y2;cy++){
 				for(var cx=d.x1;cx<=d.x2;cx++){
 					var c = bd.cnum(cx,cy);
-					this.datastr += (bd.QuC(c)===7 ? "1 " : "._");
+					this.datastr += (bd.QuC(c)===7 ? "1 " : ". ");
 				}
 				this.datastr += "/";
 			}
