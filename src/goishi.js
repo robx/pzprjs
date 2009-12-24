@@ -337,7 +337,7 @@ Puzzles.goishi.prototype = {
 			for(var cy=d.y1;cy<=d.y2;cy++){
 				for(var cx=d.x1;cx<=d.x2;cx++){
 					var c=bd.cnum(cx,cy);
-					if(bd.QuC(c)==0){ pass+=Math.pow(2,4-count);}
+					if(c===-1 || bd.QuC(c)==0){ pass+=Math.pow(2,4-count);}
 					count++; if(count==5){ cm += pass.toString(32); count=0; pass=0;}
 				}
 			}
