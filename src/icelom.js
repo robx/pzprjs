@@ -503,6 +503,10 @@ Puzzles.icelom.prototype = {
 				this.setAlert('通過していない白マスがあります。', 'The line doesn\'t pass all of the white cell.'); return false;
 			}
 
+			if( !this.isallwhite() && !this.checkIcebarns() ){
+				this.setAlert('すべてのアイスバーンを通っていません。', 'A icebarn is not gone through.'); return false;
+			}
+
 			if( !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)==0 && bd.QnC(c)!==-1);})) ){
 				this.setAlert('通過していない数字があります。', 'The line doesn\'t pass all of the number.'); return false;
 			}
@@ -510,6 +514,21 @@ Puzzles.icelom.prototype = {
 			return true;
 		};
 		ans.isallwhite = function(){ return ((k.EDITOR&&pp.getVal('allwhite'))||(k.PLAYER&&enc.checkpflag("t")));};
+
+		ans.checkIcebarns = function(){
+			var iarea = new AreaInfo();
+			for(var cc=0;cc<bd.cellmax;cc++){ iarea.id[cc]=(bd.QuC(cc)==6?0:-1); }
+			for(var cc=0;cc<bd.cellmax;cc++){
+				if(iarea.id[cc]!=0){ continue;}
+				iarea.max++;
+				iarea[iarea.max] = {clist:[]};
+				area.sc0(cc,iarea);
+
+				iarea.room[iarea.max] = {idlist:iarea[iarea.max].clist};
+			}
+
+			return this.checkOneNumber(iarea, function(top,lcnt){ return (lcnt==0);}, function(cc){ return line.lcntCell(cc)>0;});
+		};
 
 		ans.searchLine = function(){
 			var bx=bd.border[bd.arrowin].cx, by=bd.border[bd.arrowin].cy;
