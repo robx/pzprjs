@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.2.4
+// パズル固有スクリプト部 スラローム版 slalom.js v3.2.4p4
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -447,6 +447,7 @@ Puzzles.slalom.prototype = {
 
 		enc.decodeKanpen = function(){
 			fio.decodeBoard_kanpen();
+			bd.hinfo.generateGates();
 		};
 		enc.encodeKanpen = function(){
 			fio.encodeBoard_kanpen();
