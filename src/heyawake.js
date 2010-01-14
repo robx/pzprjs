@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へやわけ版 heyawake.js v3.2.4p3
+// パズル固有スクリプト部 へやわけ版 heyawake.js v3.2.4p4
 //
 Puzzles.heyawake = function(){ };
 Puzzles.heyawake.prototype = {
@@ -184,7 +184,7 @@ Puzzles.heyawake.prototype = {
 				}
 				else{ barray.push(""+(d.x2-d.x1+1)+"x"+(d.y2-d.y1+1));}
 			}
-			return barray.join("/");
+			this.outbstr = barray.join("/");
 		};
 
 		//---------------------------------------------------------
@@ -227,7 +227,7 @@ Puzzles.heyawake.prototype = {
 				this.setAlert('部屋の数字と黒マスの数が一致していません。','The number of Black cells in the room and The number written in the room is different.'); return false;
 			}
 
-			if( !this.checkRowsCols() ){
+			if( !this.checkRowsColsPartly(this.isBorderCount, {}, function(cc){ return (bd.QaC(cc)==1);}, false) ){
 				this.setAlert('白マスが3部屋連続で続いています。','White cells are continued for three consecutive room.'); return false;
 			}
 
@@ -238,50 +238,22 @@ Puzzles.heyawake.prototype = {
 			return true;
 		};
 
-		ans.checkRowsCols = function(){
-			var fx, fy;
-
-			for(var by=1;by<2*k.qrows;by+=2){
-				var cnt=-1;
-				for(var bx=1;bx<2*k.qcols;bx++){
-					if(bx%2==1){
-						if( bd.isWhite(bd.cnum(bx>>1,by>>1)) && cnt==-1 ){ cnt=0; fx=bx;}
-						else if( bd.isBlack(bd.cnum(bx>>1,by>>1)) ){ cnt=-1;}
-
-						if( cnt==2 ){
-							for(bx=fx;bx<2*k.qcols;bx+=2){
-								var cc = bd.cnum(bx>>1,by>>1);
-								if( bd.isWhite(cc) ){ bd.sErC([cc],1);}else{ break;}
+		ans.isBorderCount = function(nullnum, clist, nullobj){
+			var d = ans.getSizeOfClist(clist,f_true), count = 0, bx, by;
+			if(d.x1===d.x2){
+				bx = (d.x1<<1)+1;
+				for(by=(d.y1<<1)+2;by<=(d.y2<<1);by+=2){
+					if(bd.QuB(bd.bnum(bx,by))===1){ count++;}
 							}
-							return false;
 						}
-					}
-					else{
-						if( bd.isBorder(bd.bnum(bx,by)) && cnt>=0 ){ cnt++;}
-					}
-				}
-			}
-			for(var bx=1;bx<2*k.qcols;bx+=2){
-				var cnt=-1;
-				for(var by=1;by<2*k.qrows;by++){
-					if(by%2==1){
-						if( bd.isWhite(bd.cnum(bx>>1,by>>1)) && cnt==-1 ){ cnt=0; fy=by;}
-						else if( bd.isBlack(bd.cnum(bx>>1,by>>1)) ){ cnt=-1;}
-
-						if( cnt>=2 ){
-							for(by=fy;by<2*k.qrows;by+=2){
-								var cc = bd.cnum(bx>>1,by>>1);
-								if( bd.isWhite(cc) ){ bd.sErC([cc],1);}else{ break;}
-							}
-							return false;
-						}
-					}
-					else{
-						if( bd.isBorder(bd.bnum(bx,by)) && cnt>=0 ){ cnt++;}
-					}
+			else if(d.y1===d.y2){
+				by = (d.y1<<1)+1;
+				for(bx=(d.x1<<1)+2;bx<=(d.x2<<1);bx+=2){
+					if(bd.QuB(bd.bnum(bx,by))===1){ count++;}
 				}
 			}
 
+			if(count>=2){ bd.sErC(clist,1); return false;}
 			return true;
 		};
 	}

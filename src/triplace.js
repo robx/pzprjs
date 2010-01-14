@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 トリプレイス版 triplace.js v3.2.4
+// パズル固有スクリプト部 トリプレイス版 triplace.js v3.2.4p4
 //
 Puzzles.triplace = function(){ };
 Puzzles.triplace.prototype = {
@@ -334,7 +334,7 @@ Puzzles.triplace.prototype = {
 				this.setAlert('サイズが3マスより小さいブロックがあります。','The size of block is smaller than two.'); return false;
 			}
 
-			if( !this.checkRowsCols(tiles) ){
+			if( !this.checkRowsColsPartly(this.isTileCount, tiles, function(cc){ return (bd.QuC(cc)==51);}, false) ){
 				this.setAlert('数字の下か右にあるまっすぐのブロックの数が間違っています。','The number of straight blocks underward or rightward is not correct.'); return false;
 			}
 
@@ -354,58 +354,21 @@ Puzzles.triplace.prototype = {
 				tinfo[tinfo.max] = {clist:[]};
 				area.sr0(c, tinfo, bd.isBorder);
 
-				tinfo.room[tinfo.max] = {idlist:tinfo[tinfo.max].clist};
+				var clist = tinfo[tinfo.max].clist;
+				var d = ans.getSizeOfClist(clist, f_true);
+
+				tinfo.room[tinfo.max] = {idlist:clist, is1x3:((((d.x1==d.x2)||(d.y1==d.y2))&&d.cnt==3)?1:0)};
 			}
 			return tinfo;
 		};
-		ans.checkRowsCols = function(tiles){
-			var num, cnt, clist, counted;
 
-			var is1x3 = [];
-			for(var r=1;r<=tiles.max;r++){
-				var d = ans.getSizeOfClist(tiles.room[r].idlist,f_true);
-				is1x3[r] = ((((d.x1==d.x2)||(d.y1==d.y2))&&d.cnt==3)?1:0);
+		ans.isTileCount = function(number, clist, tiles){
+			var count = 0, counted = [];
+			for(var i=0;i<clist.length;i++){
+				var tid = tiles.id[clist[i]];
+				if(tiles.room[tid].is1x3==1 && !counted[tid]){ count++; counted[tid] = true;}
 			}
-
-			for(var cy=0;cy<k.qrows;cy++){
-				cnt = 0; clist = []; counted = [];
-				num = bd.QnE(bd.exnum(-1,cy));
-				bd.sErE([bd.exnum(-1,cy)],1);
-				for(var cx=0;cx<=k.qcols;cx++){
-					var cc = bd.cnum(cx,cy);
-					if(cx==k.qcols || bd.QuC(cc)==51){
-						if(num>=0 && clist.length>0 && num!=cnt){ bd.sErC(clist,1); return false;}
-
-						bd.sErE([bd.exnum(-1,cy)],0);
-						if(cx==k.qcols){ break;}
-						num = bd.QnC(cc);
-						cnt = 0; clist = []; counted = [];
-					}
-					else if(is1x3[tiles.id[cc]]==1 && !counted[tiles.id[cc]]){ cnt++; counted[tiles.id[cc]]=true;}
-					clist.push(cc);
-				}
-				bd.sErE([bd.exnum(-1,cy)],0);
-			}
-			for(var cx=0;cx<k.qcols;cx++){
-				cnt = 0; clist = []; counted = [];
-				num = bd.DiE([bd.exnum(cx,-1)]);
-				bd.sErE([bd.exnum(cx,-1)],1);
-				for(var cy=0;cy<k.qrows;cy++){
-					var cc = bd.cnum(cx,cy);
-					if(cy==k.qrows || bd.QuC(cc)==51){
-						if(num>=0 && clist.length>0 && num!=cnt){ bd.sErC(clist,1); return false;}
-
-						bd.sErE([bd.exnum(cx,-1)],0);
-						if(cy==k.qrows){ break;}
-						num = bd.DiC(cc);
-						cnt = 0; clist = []; counted = [];
-					}
-					else if(is1x3[tiles.id[cc]]==1 && !counted[tiles.id[cc]]){ cnt++; counted[tiles.id[cc]]=true;}
-					clist.push(cc);
-				}
-				bd.sErE([bd.exnum(cx,-1)],0);
-			}
-
+			if(number>=0 && count!=number){ bd.sErC(clist,1); return false;}
 			return true;
 		};
 	}

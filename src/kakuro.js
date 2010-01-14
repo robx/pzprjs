@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.4
+// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.4p4
 //
 Puzzles.kakuro = function(){ };
 Puzzles.kakuro.prototype = {
@@ -402,11 +402,11 @@ Puzzles.kakuro.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkRowsCols(2) ){
+			if( !this.checkRowsColsPartly(this.isSameNumber, {}, function(cc){ return (bd.QuC(cc)==51);}, true) ){
 				this.setAlert('同じ数字が同じ列に入っています。','Same number is in the same row.'); return false;
 			}
 
-			if( !this.checkRowsCols(1) ){
+			if( !this.checkRowsColsPartly(this.isTotalNumber, {}, function(cc){ return (bd.QuC(cc)==51);}, false) ){
 				this.setAlert('数字の下か右にある数字の合計が間違っています。','The sum of the cells is not correct.'); return false;
 			}
 
@@ -415,84 +415,20 @@ Puzzles.kakuro.prototype = {
 			}
 
 			return true;
-		},
+		};
 		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)!=51 && bd.QaC(c)<=0);});};
 
-		ans.checkRowsCols = function(flag){
-			var num, cnt, empty, cells, clist, d, result = true;
-
-			for(var cx=0;cx<k.qcols;cx++){
-				cnt = 0; empty=0; cells=0; clist = [];
-				d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
-				num = bd.DiE([bd.exnum(cx,-1)]);
-				if(flag==1){ bd.sErE([bd.exnum(cx,-1)],1);}
-				for(var cy=0;cy<=k.qrows;cy++){
-					var cc = bd.cnum(cx,cy);
-					if(cy==k.qrows || bd.QuC(cc)==51){
-						if(flag==1 && empty==0 && cells>0 && num!=cnt){
-							if(this.inAutoCheck){ return false;}
-							bd.sErC(clist,1);
-							result = false;
+		ans.isSameNumber = function(nullnum, clist, nullobj){
+			return this.isDifferentNumberInClist(clist, bd.QaC);
+		};
+		ans.isTotalNumber = function(number, clist, nullobj){
+			var sum = 0;
+			for(var i=0;i<clist.length;i++){
+				if(bd.QaC(clist[i])>0){ sum += bd.QaC(clist[i]);}
+				else{ return true;}
 						}
-						if(flag==2){ for(var n=1;n<=9;n++){ if(d[n]>=2){
-							if(this.inAutoCheck){ return false;}
-							for(var i=0;i<clist.length;i++){ if(bd.QaC(clist[i])==n){ bd.sErC([clist[i]],1);} }
-							result = false;
-						}}}
-
-						if(flag==1){ bd.sErE([bd.exnum(cx,-1)],0);}
-						if(cy==k.qrows){ break;}
-						num = bd.DiC(cc);
-						cnt = 0; empty=0; cells=0; clist = [];
-						d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
-					}
-					else if(bd.QaC(cc)>=1){
-						cnt+=bd.QaC(cc);
-						d[bd.QaC(cc)]++;
-						cells++;
-					}
-					else{ empty++; cells++;}
-					clist.push(cc);
-				}
-				if(flag==1){ bd.sErE([bd.exnum(cx,-1)],0);}
-			}
-			for(var cy=0;cy<k.qrows;cy++){
-				cnt = 0; empty=0; cells=0; clist = [];
-				d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
-				num = bd.QnE(bd.exnum(-1,cy));
-				if(flag==1){ bd.sErE([bd.exnum(-1,cy)],1);}
-				for(var cx=0;cx<=k.qcols;cx++){
-					var cc = bd.cnum(cx,cy);
-					if(cx==k.qcols || bd.QuC(cc)==51){
-						if(flag==1 && empty==0 && cells>0 && num!=cnt){
-							if(this.inAutoCheck){ return false;}
-							bd.sErC(clist,1);
-							result = false;
-						}
-						if(flag==2){ for(var n=1;n<=9;n++){ if(d[n]>=2){
-							if(this.inAutoCheck){ return false;}
-							for(var i=0;i<clist.length;i++){ if(bd.QaC(clist[i])==n){ bd.sErC([clist[i]],1);} }
-							result = false;
-						}}}
-
-						if(flag==1){ bd.sErE([bd.exnum(-1,cy)],0);}
-						if(cx==k.qcols){ break;}
-						num = bd.QnC(cc);
-						cnt = 0; empty=0; cells=0; clist = [];
-						d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
-					}
-					else if(bd.QaC(cc)>=1){
-						cnt+=bd.QaC(cc);
-						d[bd.QaC(cc)]++;
-						cells++;
-					}
-					else{ empty++; cells++;}
-					clist.push(cc);
-				}
-				if(flag==1){ bd.sErE([bd.exnum(-1,cy)],0);}
-			}
-
-			return result;
+			if(number>0 && sum!=number){ bd.sErC(clist,1); return false;}
+			return true;
 		};
 	}
 };

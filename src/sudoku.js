@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 数独版 sudoku.js v3.2.4
+// パズル固有スクリプト部 数独版 sudoku.js v3.2.4p4
 //
 Puzzles.sudoku = function(){ };
 Puzzles.sudoku.prototype = {
@@ -207,7 +207,7 @@ Puzzles.sudoku.prototype = {
 				this.setAlert('同じブロックに同じ数字が入っています。','There are same numbers in a block.'); return false;
 			}
 
-			if( !this.checkRowsCols() ){
+			if( !this.checkRowsCols(this.isDifferentNumberInClist, bd.getNum) ){
 				this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
 			}
 
@@ -219,54 +219,18 @@ Puzzles.sudoku.prototype = {
 		};
 		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
 
-		ans.checkRowsCols = function(){
-			var result = true;
-			for(var cy=0;cy<k.qrows;cy++){
-				var clist = [];
-				for(var cx=0;cx<k.qcols;cx++){ clist.push(bd.cnum(cx,cy));}
-				if(!this.checkDifferentNumberInClist(clist)){
-					if(this.inAutoCheck){ return false;}
-					result = false;
-				}
-			}
-			for(var cx=1;cx<k.qcols;cx++){
-				var clist = [];
-				for(var cy=0;cy<k.qrows;cy++){ clist.push(bd.cnum(cx,cy));}
-				if(!this.checkDifferentNumberInClist(clist)){
-					if(this.inAutoCheck){ return false;}
-					result = false;
-				}
-			}
-			return result;
-		};
 		ans.checkRoomNumber = function(){
 			var result = true;
 			var max=k.qcols;
-			var block=mf(Math.sqrt(max)+0.1);
+			var blk=mf(Math.sqrt(max)+0.1);
 			for(var i=0;i<max;i++){
-				var clist = [];
-				for(var cx=(i%block)*block;cx<(i%block+1)*block;cx++){
-					for(var cy=mf(i/block)*block;cy<mf(i/block+1)*block;cy++){ clist.push(bd.cnum(cx,cy));}
-				}
-				if(!this.checkDifferentNumberInClist(clist)){
+				var clist = bd.getClistByPosition((i%blk)*blk, mf(i/blk)*blk, (i%blk+1)*blk-1, mf(i/blk+1)*blk-1);
+				if(!this.isDifferentNumberInClist(clist, bd.getNum)){
 					if(this.inAutoCheck){ return false;}
 					result = false;
 				}
 			}
 			return result;
-		};
-		ans.checkDifferentNumberInClist = function(clist){
-			var d = [];
-			for(var i=1;i<=Math.max(k.qcols,k.qrows);i++){ d[i]=-1;}
-			for(var i=0;i<clist.length;i++){
-				var val=bd.getNum(clist[i]);
-				if     (val==-1){ continue;}
-				else if(d[val]==-1){ d[val] = bd.getNum(clist[i]); continue;}
-
-				for(var j=0;j<clist.length;j++){ if(bd.getNum(clist[j])==val){ bd.sErC([clist[j]],1);} }
-				return false;
-			}
-			return true;
 		};
 	}
 };
