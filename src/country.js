@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カントリーロード版 country.js v3.2.4
+// パズル固有スクリプト部 カントリーロード版 country.js v3.2.5
 //
 Puzzles.country = function(){ };
 Puzzles.country.prototype = {
@@ -163,10 +163,10 @@ Puzzles.country.prototype = {
 				this.setAlert('線が１つの国を２回以上通っています。','A line passes a country twice or more.'); return false;
 			}
 
-			if( !this.checkOneNumber(rinfo, function(top,lcnt){ return (top>0 && top!=lcnt);}, function(cc){ return line.lcntCell(cc)>0;}) ){
+			if( !this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0||n==a);}) ){
 				this.setAlert('数字のある国と線が通過するマスの数が違います。','The number of the cells that is passed any line in the country and the number written in the country is diffrerent.'); return false;
 			}
-			if( !this.checkOneNumber(rinfo, function(top,lcnt){ return lcnt==0;}, function(cc){ return line.lcntCell(cc)>0;}) ){
+			if( !this.checkLinesInArea(rinfo, function(w,h,a,n){ return (a!=0);}) ){
 				this.setAlert('線の通っていない国があります。','There is a country that is not passed any line.'); return false;
 			}
 

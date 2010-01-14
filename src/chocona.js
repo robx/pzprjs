@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 チョコナ版 chocona.js v3.2.4
+// パズル固有スクリプト部 チョコナ版 chocona.js v3.2.5
 //
 Puzzles.chocona = function(){ };
 Puzzles.chocona.prototype = {
@@ -142,7 +142,7 @@ Puzzles.chocona.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkAreaRect(area.getBCellInfo(), f_true) ){
+			if( !this.checkAreaRect(area.getBCellInfo()) ){
 				this.setAlert('黒マスのカタマリが正方形か長方形ではありません。','A mass of black cells is not rectangle.'); return false;
 			}
 

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.2.4
+// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.2.5
 //
 Puzzles.kusabi = function(){ };
 Puzzles.kusabi.prototype = {
@@ -161,7 +161,7 @@ Puzzles.kusabi.prototype = {
 			}
 
 			var linfo = line.getLareaInfo();
-			if( !this.checkQnumsInArea(linfo, function(a){ return (a>=3);}) ){
+			if( !this.checkTripleNumber(linfo) ){
 				this.setAlert('3つ以上の丸がつながっています。','Three or more objects are connected.'); return false;
 			}
 			if( !this.check2Line() ){

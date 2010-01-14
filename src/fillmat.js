@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 フィルマット版 fillmat.js v3.2.4
+// パズル固有スクリプト部 フィルマット版 fillmat.js v3.2.5
 //
 Puzzles.fillmat = function(){ };
 Puzzles.fillmat.prototype = {
@@ -151,11 +151,11 @@ Puzzles.fillmat.prototype = {
 				this.setAlert('隣り合うタタミの大きさが同じです。','The same size Tatami are adjacent.'); return false;
 			}
 
-			if( !this.checkAllArea(rinfo, f_true, function(w,h,a){ return (w==1 || h==1)&&a<=4;} ) ){
+			if( !this.checkAllArea(rinfo, f_true, function(w,h,a,n){ return (w==1||h==1)&&a<=4;}) ){
 				this.setAlert('「幅１マス、長さ１～４マス」ではないタタミがあります。','The width of Tatami is over 1 or the length is over 4.'); return false;
 			}
 
-			if( !this.checkQnumsInArea(rinfo, function(a){ return (a>=2);}) ){
+			if( !this.checkDoubleNumber(rinfo) ){
 				this.setAlert('1つのタタミに2つ以上の数字が入っています。','A Tatami has two or more numbers.'); return false;
 			}
 

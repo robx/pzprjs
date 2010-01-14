@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 美術館版 lightup.js v3.2.4p4
+// パズル固有スクリプト部 美術館版 lightup.js v3.2.5
 //
 Puzzles.lightup = function(){ };
 Puzzles.lightup.prototype = {
@@ -43,6 +43,8 @@ Puzzles.lightup.prototype = {
 						   " Click to input Akari (Light source) or determined white cells.");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 		base.proto = 1;
+
+		enc.pidKanpen = 'bijutsukan';
 	},
 	menufix : function(){
 		menu.addUseToFlags();

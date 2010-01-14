@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へやわけ版 heyawake.js v3.2.4p4
+// パズル固有スクリプト部 へやわけ版 heyawake.js v3.2.5
 //
 Puzzles.heyawake = function(){ };
 Puzzles.heyawake.prototype = {
@@ -231,7 +231,7 @@ Puzzles.heyawake.prototype = {
 				this.setAlert('白マスが3部屋連続で続いています。','White cells are continued for three consecutive room.'); return false;
 			}
 
-			if( !this.checkAreaRect(rinfo, f_true) ){
+			if( !this.checkAreaRect(rinfo) ){
 				this.setAlert('四角形ではない部屋があります。','There is a room whose shape is not square.'); return false;
 			}
 

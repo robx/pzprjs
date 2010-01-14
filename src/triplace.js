@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 トリプレイス版 triplace.js v3.2.4p4
+// パズル固有スクリプト部 トリプレイス版 triplace.js v3.2.5
 //
 Puzzles.triplace = function(){ };
 Puzzles.triplace.prototype = {
@@ -330,7 +330,7 @@ Puzzles.triplace.prototype = {
 		ans.checkAns = function(){
 
 			var tiles = this.getTileInfo();
-			if( !this.checkAllArea(tiles, f_true, function(w,h,a){ return (a>=3);} ) ){
+			if( !this.checkAllArea(tiles, f_true, function(w,h,a,n){ return (a>=3);} ) ){
 				this.setAlert('サイズが3マスより小さいブロックがあります。','The size of block is smaller than two.'); return false;
 			}
 
@@ -338,7 +338,7 @@ Puzzles.triplace.prototype = {
 				this.setAlert('数字の下か右にあるまっすぐのブロックの数が間違っています。','The number of straight blocks underward or rightward is not correct.'); return false;
 			}
 
-			if( !this.checkAllArea(tiles, f_true, function(w,h,a){ return (a<=3);} ) ){
+			if( !this.checkAllArea(tiles, f_true, function(w,h,a,n){ return (a<=3);} ) ){
 				this.setAlert('サイズが3マスより大きいブロックがあります。','The size of block is bigger than four.'); return false;
 			}
 

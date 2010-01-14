@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.2.4
+// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.2.5
 //
 Puzzles.hakoiri = function(){ };
 Puzzles.hakoiri.prototype = {
@@ -261,7 +261,7 @@ Puzzles.hakoiri.prototype = {
 			}
 
 			var rinfo = area.getRoomInfo();
-			if( !this.checkAllArea(rinfo, bd.isNum, function(w,h,a){ return (a<4);} ) ){
+			if( !this.checkAllArea(rinfo, bd.isNum, function(w,h,a,n){ return (a<=3);}) ){
 				this.setAlert('1つのハコに4つ以上の記号が入っています。','A box has four or more marks.'); return false;
 			}
 
@@ -273,7 +273,7 @@ Puzzles.hakoiri.prototype = {
 				this.setAlert('タテヨコにつながっていない記号があります。','Marks are devided.'); return false;
 			}
 
-			if( !this.checkAllArea(rinfo, bd.isNum, function(w,h,a){ return (a>2);} ) ){
+			if( !this.checkAllArea(rinfo, bd.isNum, function(w,h,a,n){ return (a>=3);}) ){
 				this.setAlert('1つのハコに2つ以下の記号しか入っていません。','A box has tow or less marks.'); return false;
 			}
 

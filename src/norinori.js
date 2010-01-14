@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 のりのり版 norinori.js v3.2.4
+// パズル固有スクリプト部 のりのり版 norinori.js v3.2.5
 //
 Puzzles.norinori = function(){ };
 Puzzles.norinori.prototype = {
@@ -116,24 +116,24 @@ Puzzles.norinori.prototype = {
 		ans.checkAns = function(){
 
 			var binfo = area.getBCellInfo();
-			if( !this.checkAllArea(binfo, f_true, function(w,h,a){ return (a<=2);} ) ){
+			if( !this.checkAllArea(binfo, f_true, function(w,h,a,n){ return (a<=2);} ) ){
 				this.setAlert('２マスより大きい黒マスのカタマリがあります。','The size of a mass of black cells is over two.'); return false;
 			}
 
 			var rinfo = area.getRoomInfo();
-			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a>2);}) ){
+			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a<=2);}) ){
 				this.setAlert('２マス以上の黒マスがある部屋が存在します。','A room has three or mode black cells.'); return false;
 			}
 
-			if( !this.checkAllArea(binfo, f_true, function(w,h,a){ return (a>=2);} ) ){
+			if( !this.checkAllArea(binfo, f_true, function(w,h,a,n){ return (a>=2);} ) ){
 				this.setAlert('１マスだけの黒マスのカタマリがあります。','There is a single black cell.'); return false;
 			}
 
-			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a==1);}) ){
+			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a!=1);}) ){
 				this.setAlert('１マスしか黒マスがない部屋があります。','A room has only one black cell.'); return false;
 			}
 
-			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a<=0);}) ){
+			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a>0);}) ){
 				this.setAlert('黒マスがない部屋があります。','A room has no black cell.'); return false;
 			}
 

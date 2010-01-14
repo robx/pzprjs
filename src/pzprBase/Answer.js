@@ -1,4 +1,4 @@
-// Answer.js v3.2.4p4
+// Answer.js v3.2.5
 
 //---------------------------------------------------------------------------
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
@@ -123,7 +123,8 @@ AnsCheck.prototype = {
 		for(var c=0;c<bd.cellmax;c++){
 			if(func(c)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1); result = false;
+				bd.sErC([c],1);
+				result = false;
 			}
 		}
 		return result;
@@ -154,44 +155,16 @@ AnsCheck.prototype = {
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].cx<k.qcols-1 && func(c,c+1)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c,c+1],1); result = false;
+				bd.sErC([c,c+1],1);
+				result = false;
 			}
 			if(bd.cell[c].cy<k.qrows-1 && func(c,c+k.qcols)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c,c+k.qcols],1); result = false;
-			}
-		}
-		return result;
-	},
-
-	//---------------------------------------------------------------------------
-	// ans.checkAreaRect()  すべてのfuncを満たすマスで構成されるエリアが四角形であるかどうか判定する
-	// ans.checkAllArea()   すべてのfuncを満たすマスで構成されるエリアがサイズ条件func2を満たすかどうか判定する
-	// ans.getSizeOfClist() 指定されたCellのリストの上下左右の端と、その中で条件funcを満たすセルの大きさを返す
-	//---------------------------------------------------------------------------
-	checkAreaRect : function(cinfo, func){ return this.checkAllArea(cinfo, func, function(w,h,a){ return (w*h==a)}); },
-	checkAllArea : function(cinfo, func, func2){
-		var result = true;
-		for(var id=1;id<=cinfo.max;id++){
-			var d = this.getSizeOfClist(cinfo.room[id].idlist,func);
-			if(!func2(d.x2-d.x1+1, d.y2-d.y1+1, d.cnt)){
-				if(this.inAutoCheck){ return false;}
-				bd.sErC(cinfo.room[id].idlist,1);
+				bd.sErC([c,c+k.qcols],1);
 				result = false;
 			}
 		}
 		return result;
-	},
-	getSizeOfClist : function(clist, func){
-		var d = { x1:k.qcols, x2:-1, y1:k.qrows, y2:-1, cnt:0 };
-		for(var i=0;i<clist.length;i++){
-			if(d.x1>bd.cell[clist[i]].cx){ d.x1=bd.cell[clist[i]].cx;}
-			if(d.x2<bd.cell[clist[i]].cx){ d.x2=bd.cell[clist[i]].cx;}
-			if(d.y1>bd.cell[clist[i]].cy){ d.y1=bd.cell[clist[i]].cy;}
-			if(d.y2<bd.cell[clist[i]].cy){ d.y2=bd.cell[clist[i]].cy;}
-			if(func(clist[i])){ d.cnt++;}
-		}
-		return d;
 	},
 
 	//---------------------------------------------------------------------------
@@ -287,32 +260,37 @@ AnsCheck.prototype = {
 		for(var i=0;i<bd.cellmax;i++){
 			if(func(i)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([i],1); result = false;
+				bd.sErC([i],1);
+				result = false;
 			}
 		}
 		return result;
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkOneNumber()      部屋の中のfunc==trueを満たすCellの数がeval()==trueかどうかを調べる
-	//                           部屋のfunc==trueになるセルの数の判定、部屋にある数字と黒マスの数の比較、
-	//                           白マスの面積と入っている数字の比較などに用いられる
-	// ans.checkBlackCellCount() 領域内の数字と黒マスの数が等しいか判定する
+	// ans.checkAllArea()    すべてのfuncを満たすマスで構成されるエリアがevalfuncを満たすかどうか判定する
+	//
 	// ans.checkDisconnectLine() 数字などに繋がっていない線の判定を行う
 	// ans.checkNumberAndSize()  エリアにある数字と面積が等しいか判定する
-	// ans.checkQnumsInArea()    部屋に数字がいくつ含まれているかの判定を行う
+	// ans.checkNoNumber()       部屋に数字が含まれていないかの判定を行う
+	// ans.checkDoubleNumber()   部屋に数字が2つ以上含まれていないように判定を行う
+	// ans.checkTripleNumber()   部屋に数字が3つ以上含まれていないように判定を行う
+	// ans.checkBlackCellCount() 領域内の数字と黒マスの数が等しいか判定する
 	// ans.checkBlackCellInArea()部屋にある黒マスの数の判定を行う
-	// ans,checkNoObjectInRoom() エリアに指定されたオブジェクトがないと判定する
+	// ans.checkAreaRect()       領域が全て四角形であるかどうか判定する
+	// ans.checkLinesInArea()    領域の中で線が通っているセルの数を判定する
+	// ans.checkNoObjectInRoom() エリアに指定されたオブジェクトがないと判定する
 	//
-	// ans.getQnumCellInArea()   部屋の中で一番左上にある数字を返す
-	// ans.getCntOfRoom()        部屋の面積を返す
-	// ans.getCellsOfRoom()      部屋の中でfunc==trueとなるセルの数を返す
+	// ans.getQnumCellInArea() 部屋の中で一番左上にある数字を返す
+	// ans.getSizeOfClist()    指定されたCellのリストの上下左右の端と、その中で条件funcを満たすセルの数を返す
 	//---------------------------------------------------------------------------
-	checkOneNumber : function(cinfo, evalfunc, func){
+	checkAllArea : function(cinfo, func, evalfunc){
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
-			var top = bd.QnC(k.isOneNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0]) : this.getQnumCellInArea(cinfo,id));
-			if( evalfunc(top, this.getCellsOfRoom(cinfo, id, func)) ){
+			var d = this.getSizeOfClist(cinfo.room[id].idlist,func);
+			var n = bd.QnC(k.isOneNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0])
+										 : this.getQnumCellOfClist(cinfo.room[id].idlist));
+			if( !evalfunc(d.x2-d.x1+1, d.y2-d.y1+1, d.cnt, n) ){
 				if(this.inAutoCheck){ return false;}
 				if(this.performAsLine){ if(result){ bd.sErBAll(2);} this.setErrLareaById(cinfo,id,1);}
 				else{ bd.sErC(cinfo.room[id].idlist,(k.puzzleid!="tateyoko"?1:4));}
@@ -321,27 +299,37 @@ AnsCheck.prototype = {
 		}
 		return result;
 	},
-	checkBlackCellCount  : function(cinfo)          { return this.checkOneNumber(cinfo, function(top,cnt){ return (top>=0 && top!=cnt);}, bd.isBlack);},
-	checkDisconnectLine  : function(cinfo)          { return this.checkOneNumber(cinfo, function(top,cnt){ return (top==-1 && cnt==0); }, bd.isNum  );},
-	checkNumberAndSize   : function(cinfo)          { return this.checkOneNumber(cinfo, function(top,cnt){ return (top> 0 && top!=cnt);}, f_true    );},
-	checkQnumsInArea     : function(cinfo, func)    { return this.checkOneNumber(cinfo, function(top,cnt){ return func(cnt);},            bd.isNum  );},
-	checkBlackCellInArea : function(cinfo, func)    { return this.checkOneNumber(cinfo, function(top,cnt){ return func(cnt);},            bd.isBlack);},
-	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkOneNumber(cinfo, function(top,cnt){ return (cnt==0); },            function(c){ return getvalue(c)!=-1;} );},
 
-	getQnumCellInArea : function(cinfo, areaid){
-		var idlist = cinfo.room[areaid].idlist;
-		for(var i=0,len=idlist.length;i<len;i++){
-			if(bd.QnC(idlist[i])!=-1){ return idlist[i];}
+	checkDisconnectLine  : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (n!=-1 || a>0); } );},
+	checkNumberAndSize   : function(cinfo){ return this.checkAllArea(cinfo, f_true,     function(w,h,a,n){ return (n<= 0 || n==a);} );},
+
+	checkNoNumber        : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (a!=0);}          );},
+	checkDoubleNumber    : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (a< 2);}          );},
+	checkTripleNumber    : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (a< 3);}          );},
+
+	checkBlackCellCount  : function(cinfo)          { return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return (n<0 || n==a);} );},
+	checkBlackCellInArea : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return evalfunc(a);}     );},
+	checkAreaRect        : function(cinfo)          { return this.checkAllArea(cinfo, f_true,     function(w,h,a,n){ return (w*h==a)});},
+
+	checkLinesInArea     : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, function(c){ return line.lcnt[c]>0;}, evalfunc);},
+	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkAllArea(cinfo, function(c){ return getvalue(c)!=-1;}, function(w,h,a,n){ return (a!=0);});},
+
+	getQnumCellOfClist : function(clist){
+		for(var i=0,len=clist.length;i<len;i++){
+			if(bd.QnC(clist[i])!=-1){ return clist[i];}
 		}
 		return -1;
 	},
-	getCntOfRoom : function(cinfo, areaid){
-		return cinfo.room[areaid].idlist.length;
-	},
-	getCellsOfRoom : function(cinfo, areaid, func){
-		var cnt=0, idlist = cinfo.room[areaid].idlist;
-		for(var i=0,len=idlist.length;i<len;i++){ if(func(idlist[i])){ cnt++;}}
-		return cnt;
+	getSizeOfClist : function(clist, func){
+		var d = { x1:k.qcols, x2:-1, y1:k.qrows, y2:-1, cnt:0 };
+		for(var i=0;i<clist.length;i++){
+			if(d.x1>bd.cell[clist[i]].cx){ d.x1=bd.cell[clist[i]].cx;}
+			if(d.x2<bd.cell[clist[i]].cx){ d.x2=bd.cell[clist[i]].cx;}
+			if(d.y1>bd.cell[clist[i]].cy){ d.y1=bd.cell[clist[i]].cy;}
+			if(d.y2<bd.cell[clist[i]].cy){ d.y2=bd.cell[clist[i]].cy;}
+			if(func(clist[i])){ d.cnt++;}
+		}
+		return d;
 	},
 
 	//---------------------------------------------------------------------------
@@ -523,8 +511,8 @@ AnsCheck.prototype = {
 		var result = true;
 		for(var id=1;id<=rinfo.max;id++){
 			if(!this.isDifferentNumberInClist(rinfo.room[id].idlist, numfunc)){
-				bd.sErC(rinfo.room[id].idlist,1);
 				if(this.inAutoCheck){ return false;}
+				bd.sErC(rinfo.room[id].idlist,1);
 				result = false;
 			}
 		}

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.2.4
+// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.2.5
 //
 Puzzles.kinkonkan = function(){ };
 Puzzles.kinkonkan.prototype = {
@@ -480,7 +480,7 @@ Puzzles.kinkonkan.prototype = {
 		ans.checkAns = function(){
 
 			var rinfo = area.getRoomInfo();
-			if( !this.checkOneNumber(rinfo, function(top,lcnt){ return (lcnt>1);}, function(cc){ return bd.QaC(cc)>0;}) ){
+			if( !this.checkAllArea(rinfo, function(cc){ return bd.QaC(cc)>0;}, function(w,h,a,n){ return (a<=1);}) ){
 				this.setAlert('斜線が複数引かれた部屋があります。', 'A room has plural mirrors.'); return false;
 			}
 
@@ -492,7 +492,7 @@ Puzzles.kinkonkan.prototype = {
 				this.setAlert('光の反射回数が正しくありません。', 'The count of refrection is wrong.'); return false;
 			}
 
-			if( !this.checkOneNumber(rinfo, function(top,lcnt){ return (lcnt==0);}, function(cc){ return bd.QaC(cc)>0;}) ){
+			if( !this.checkAllArea(rinfo, function(cc){ return bd.QaC(cc)>0;}, function(w,h,a,n){ return (a!=0);}) ){
 				this.setAlert('斜線の引かれていない部屋があります。', 'A room has no mirrors.'); return false;
 			}
 

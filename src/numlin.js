@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.2.4
+// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.2.5
 //
 Puzzles.numlin = function(){ };
 Puzzles.numlin.prototype = {
@@ -186,7 +186,7 @@ Puzzles.numlin.prototype = {
 			}
 
 			var linfo = line.getLareaInfo();
-			if( !this.checkQnumsInArea(linfo, function(a){ return (a>=3);}) ){
+			if( !this.checkTripleNumber(linfo) ){
 				this.setAlert('3つ以上の数字がつながっています。','Three or more numbers are connected.'); return false;
 			}
 

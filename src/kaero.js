@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.2.4
+// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.2.5
 //
 Puzzles.kaero = function(){ };
 Puzzles.kaero.prototype = {
@@ -288,7 +288,7 @@ Puzzles.kaero.prototype = {
 			}
 
 			var linfo = line.getLareaInfo();
-			if( !this.checkQnumsInArea(linfo, function(a){ return (a>=2);}) ){
+			if( !this.checkDoubleNumber(linfo) ){
 				this.setAlert('アルファベットが繋がっています。','There are connected letters.'); return false;
 			}
 			if( !this.checkLineOverLetter() ){

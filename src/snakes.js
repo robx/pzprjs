@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へびいちご版 snakes.js v3.2.4p4
+// パズル固有スクリプト部 へびいちご版 snakes.js v3.2.5
 //
 Puzzles.snakes = function(){ };
 Puzzles.snakes.prototype = {
@@ -230,7 +230,7 @@ Puzzles.snakes.prototype = {
 		ans.checkAns = function(){
 
 			var sinfo = this.getSnakeInfo();
-			if( !this.checkAllArea(sinfo, f_true, function(w,h,a){ return (a==5);} ) ){
+			if( !this.checkAllArea(sinfo, f_true, function(w,h,a,n){ return (a==5);} ) ){
 				this.setAlert('大きさが５ではない蛇がいます。','The size of a snake is not five.'); return false;
 			}
 

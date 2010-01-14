@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ＬＩＴＳ版 lits.js v3.2.4
+// パズル固有スクリプト部 ＬＩＴＳ版 lits.js v3.2.5
 //
 Puzzles.lits = function(){ };
 Puzzles.lits.prototype = {
@@ -153,7 +153,7 @@ Puzzles.lits.prototype = {
 			}
 
 			var rinfo = area.getRoomInfo();
-			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a>4);}) ){
+			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a<=4);}) ){
 				this.setAlert('５マス以上の黒マスがある部屋が存在します。', 'A room has five or more black cells.'); return false;
 			}
 
@@ -169,11 +169,11 @@ Puzzles.lits.prototype = {
 				this.setAlert('黒マスが分断されています。', 'Black cells are not continued.'); return false;
 			}
 
-			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a==0);}) ){
+			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a>0);}) ){
 				this.setAlert('黒マスがない部屋があります。', 'A room has no black cells.'); return false;
 			}
 
-			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a<4);}) ){
+			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a>=4);}) ){
 				this.setAlert('黒マスのカタマリが４マス未満の部屋があります。', 'A room has three or less black cells.'); return false;
 			}
 

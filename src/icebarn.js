@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.4
+// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.5
 //
 Puzzles.icebarn = function(){ };
 Puzzles.icebarn.prototype = {
@@ -558,7 +558,7 @@ Puzzles.icebarn.prototype = {
 			}
 
 			var iarea = this.getIceArea(function(cc){ return (cc!=-1 && bd.QuC(cc)==6); });
-			if( !this.checkOneNumber(iarea, function(top,lcnt){ return (lcnt==0);}, function(cc){ return line.lcntCell(cc)>0;}) ){
+			if( !this.checkLinesInArea(iarea, function(w,h,a,n){ return (a!=0);}) ){
 				this.setAlert('すべてのアイスバーンを通っていません。', 'A icebarn is not gone through.'); return false;
 			}
 
