@@ -1,4 +1,4 @@
-// Encode.js v3.2.4p3
+// Encode.js v3.2.4p4
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -22,6 +22,14 @@ Encode = function(){
 	this.outpflag  = '';
 	this.outsize   = '';
 	this.outbstr   = '';
+
+	// 定数(URL形式)
+	this.PZPRV3  = 0;
+	this.PZPRV3E = 3;
+	this.PAPRAPP = 1;
+	this.KANPEN  = 2;
+	this.KANPENP = 5;
+	this.HEYAAPP = 4;
 };
 Encode.prototype = {
 	//---------------------------------------------------------------------------
@@ -31,7 +39,7 @@ Encode.prototype = {
 	// enc.parseURI_xxx()   pzlURI部をpflag,bstr等の部分に分割する
 	//---------------------------------------------------------------------------
 	init : function(){
-		this.uri.type = 0;
+		this.uri.type = this.PZPRV3;
 		this.uri.qdata = "";
 
 		this.uri.pflag = "";
@@ -117,7 +125,7 @@ Encode.prototype = {
 		}
 	},
 	parseURI_pzpr : function(qstr){
-		this.uri.type = 0; // 0はぱずぷれv3
+		this.uri.type = this.PZPRV3; // ぱずぷれv3
 		this.uri.qdata = qstr;
 		var inp = qstr.split("/");
 		if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
@@ -128,7 +136,7 @@ Encode.prototype = {
 		this.uri.bstr = inp.join("/");
 	},
 	parseURI_kanpen : function(qstr){
-		this.uri.type = 2; // 2はカンペン
+		this.uri.type = this.KANPEN; // カンペン
 		this.uri.qdata = qstr;
 		var inp = qstr.split("/");
 
@@ -143,7 +151,7 @@ Encode.prototype = {
 		this.uri.bstr = inp.join("/");
 	},
 	parseURI_heyaapp : function(qstr){
-		this.uri.type = 4; // 4はへやわけアプレット
+		this.uri.type = this.HEYAAPP; // へやわけアプレット
 		this.uri.qdata = qstr;
 		var inp = qstr.split("/");
 
@@ -174,16 +182,16 @@ Encode.prototype = {
 		if(this.uri.bstr){
 			um.disableRecord(); um.disableInfo();
 			switch(this.uri.type){
-			case 0: case 1: case 3:
+			case this.PZPRV3: case this.PZPRAPP: case this.PZPRV3E:
 				this.outbstr = this.uri.bstr;
 				this.pzlimport(this.uri.type);
 				break;
-			case 2:
+			case this.KANPEN:
 				fio.lineseek = 0;
 				fio.dataarray = this.uri.bstr.replace(/_/g, " ").split("/");
 				this.decodeKanpen();
 				break;
-			case 4:
+			case this.HEYAAPP:
 				this.decodeHeyaApp();
 				break;
 			}

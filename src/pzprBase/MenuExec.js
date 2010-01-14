@@ -92,11 +92,11 @@ MenuExec.prototype = {
 	urloutput : function(e){
 		if(menu.pop){
 			switch(ee.getSrcElement(e).name){
-				case "pzprv3":     document.urloutput.ta.value = enc.pzloutput(0); break;
-				case "pzprapplet": document.urloutput.ta.value = enc.pzloutput(1); break;
-				case "kanpen":     document.urloutput.ta.value = enc.pzloutput(2); break;
-				case "pzprv3edit": document.urloutput.ta.value = enc.pzloutput(3); break;
-				case "heyaapp":    document.urloutput.ta.value = enc.pzloutput(4); break;
+				case "pzprv3":     document.urloutput.ta.value = enc.pzloutput(enc.PZPRV3);  break;
+				case "pzprapplet": document.urloutput.ta.value = enc.pzloutput(enc.PAPRAPP); break;
+				case "kanpen":     document.urloutput.ta.value = enc.pzloutput(enc.KANPEN);  break;
+				case "pzprv3edit": document.urloutput.ta.value = enc.pzloutput(enc.PZPRV3E); break;
+				case "heyaapp":    document.urloutput.ta.value = enc.pzloutput(enc.HEYAAPP); break;
 			}
 		}
 	},

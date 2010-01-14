@@ -15,6 +15,10 @@ FileIO = function(){
 	this.DBtype = 0;
 	this.DBsid  = -1;
 	this.DBlist = [];
+
+	// 定数(ファイル形式)
+	this.PZPR = 1;
+	this.PBOX = 2;
 };
 FileIO.prototype = {
 	//---------------------------------------------------------------------------
@@ -25,17 +29,17 @@ FileIO.prototype = {
 		this.filever = 0;
 		this.lineseek = 0;
 		this.dataarray = datastr.split("/");
-		var type = 1;
+		var type = this.PZPR;
 
 		// ヘッダの処理
 		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
 			if(this.readLine()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。'); return;}
-			type = 1;
+			type = this.PZPR;
 		}
 		else{
 			this.lineseek = 0;
-			type = 2;
+			type = this.PBOX;
 		}
 
 		// サイズを表す文字列
@@ -73,8 +77,8 @@ FileIO.prototype = {
 		this.urlstr = "";
 
 		// メイン処理
-		if     (type===1){ this.encodeData();}
-		else if(type===2){ this.kanpenSave();}
+		if     (type===this.PZPR){ this.encodeData();}
+		else if(type===this.PBOX){ this.kanpenSave();}
 
 		// サイズを表す文字列
 		if(!this.sizestr){ this.sizestr = [k.qrows, k.qcols].join("/");}
@@ -89,7 +93,7 @@ FileIO.prototype = {
 
 		// 末尾のURL追加処理
 		if(type===1){
-			this.urlstr = enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? 0 : 2);
+			this.urlstr = enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? enc.PZPRV3 : enc.KANPEN);
 		}
 
 		return bstr;

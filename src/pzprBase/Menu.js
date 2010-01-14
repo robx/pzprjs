@@ -928,9 +928,9 @@ Properties.prototype = {
 		urlinput  : function(){ menu.pop = ee("pop1_2");},
 		urloutput : function(){ menu.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
 		fileopen  : function(){ menu.pop = ee("pop1_4");},
-		filesave  : function(){ menu.ex.filesave(1);},
+		filesave  : function(){ menu.ex.filesave(fio.PZPR);},
 		database  : function(){ menu.pop = ee("pop1_8"); fio.getDataTableList();},
-		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave(2);}},
+		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave(fio.PBOX);}},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
 		credit    : function(){ menu.pop = ee("pop3_1");},
@@ -1019,12 +1019,12 @@ var debug = {
 	},
 
 	filesave : function(){
-		this.setTA(fio.fileencode(1).replace(/\//g,"\n"));
+		this.setTA(fio.fileencode(fio.PZPR).replace(/\//g,"\n"));
 		this.addTA('');
 		this.addTA(fio.urlstr);
 	},
 	filesave_pencilbox : function(){
-		this.setTA(fio.fileencode(2).replace(/\//g,"\n"));
+		this.setTA(fio.fileencode(fio.PBOX).replace(/\//g,"\n"));
 	},
 
 	fileopen : function(){
