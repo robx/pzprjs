@@ -182,6 +182,7 @@ Menu.prototype = {
 			aa = ee.binder(pp, pp.addCaption),
 			ai = ee.binder(pp, pp.addChild),
 			ap = ee.binder(pp, pp.addSeparator),
+			af = ee.binder(pp, pp.addFlagOnly),
 			sl = ee.binder(pp, pp.setLabel);
 
 		// *ファイル ==========================================================
@@ -238,6 +239,9 @@ Menu.prototype = {
 		if(k.EDITOR){
 			au('mode','setting',(k.editmode?1:3),[1,3],'モード', 'mode');
 			sl('mode','モード', 'mode');
+		}
+		else{
+			af('mode', 3);
 		}
 
 		puz.menufix();	// 各パズルごとのメニュー追加
@@ -846,6 +850,7 @@ Properties.prototype = {
 	// pp.addCheck()     選択型サブメニュー項目に表示する文字列を設定する
 	// pp.addSelect()    チェック型サブメニュー項目に表示する文字列を設定する
 	// pp.addChild()     チェック型サブメニュー項目の子要素を設定する
+	// pp.addFlagOnly()  情報のみを登録する
 	//---------------------------------------------------------------------------
 	addMenu : function(idname, strJP, strEN){
 		this.addFlags(idname, '', this.MENU, 0, strJP, strEN);
@@ -875,6 +880,10 @@ Properties.prototype = {
 	addChild : function(idname, parent, strJP, strEN){
 		var list = idname.split("_");
 		this.addFlags(idname, list[0], this.CHILD, list[1], strJP, strEN);
+	},
+
+	addFlagOnly : function(idname, first){
+		this.addFlags(idname, '', '', first, '', '');
 	},
 
 	//---------------------------------------------------------------------------
