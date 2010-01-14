@@ -1,4 +1,4 @@
-// Answer.js v3.2.3
+// Answer.js v3.2.4p4
 
 //---------------------------------------------------------------------------
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
@@ -460,6 +460,74 @@ AnsCheck.prototype = {
 			}
 		}
 		return true;
+	},
+
+	//---------------------------------------------------------------------------
+	// ans.checkRowsCols()            タテ列・ヨコ列の数字の判定を行う
+	// ans.checkRowsColsPartly()      黒マスや[＼]等で分かれるタテ列・ヨコ列の数字の判定を行う
+	// ans.isDifferentNumberInClist() clistの中に同じ数字が存在するか判定する
+	//---------------------------------------------------------------------------
+	checkRowsCols : function(evalfunc, numfunc){
+		var result = true;
+		for(var cy=0;cy<k.qrows;cy++){
+			var clist = bd.getClistByPosition(0,cy,k.qcols-1,cy);
+			if(!evalfunc.apply(this,[clist, numfunc])){
+				if(this.inAutoCheck){ return false;}
+				result = false;
+			}
+		}
+		for(var cx=1;cx<k.qcols;cx++){
+			var clist = bd.getClistByPosition(cx,0,cx,k.qrows-1);
+			if(!evalfunc.apply(this,[clist, numfunc])){
+				if(this.inAutoCheck){ return false;}
+				result = false;
+			}
+		}
+		return result;
+	},
+	checkRowsColsPartly : function(evalfunc, areainfo, termfunc, multierr){
+		var result = true;
+		for(var cy=0;cy<k.qrows;cy++){
+			var cx=0;
+			while(cx<k.qcols){
+				for(var tx=cx;tx<k.qcols;tx++){ if(termfunc.apply(this,[bd.cnum(tx,cy)])){ break;}}
+				var clist = bd.getClistByPosition(cx,cy,tx-1,cy);
+				var total = (k.isextendcell!=1 ? 0 : (cx==0 ? bd.QnE(bd.exnum(-1,cy)) : bd.QnC(bd.cnum(cx-1,cy))));
+
+				if(!evalfunc.apply(this,[total, clist, areainfo])){
+					if(!multierr || this.inAutoCheck){ return false;}
+					result = false;
+				}
+				cx = tx+1;
+			}
+		}
+		for(var cx=0;cx<k.qcols;cx++){
+			var cy=0;
+			while(cy<k.qrows){
+				for(var ty=cy;ty<k.qrows;ty++){ if(termfunc.apply(this,[bd.cnum(cx,ty)])){ break;}}
+				var clist = bd.getClistByPosition(cx,cy,cx,ty-1);
+				var total = (k.isextendcell!=1 ? 0 : (cy==0 ? bd.DiE(bd.exnum(cx,-1)) : bd.DiC(bd.cnum(cx,cy-1))));
+
+				if(!evalfunc.apply(this,[total, clist, areainfo])){
+					if(!multierr || this.inAutoCheck){ return false;}
+					result = false;
+				}
+				cy = ty+1;
+			}
+		}
+		return result;
+	},
+
+	isDifferentNumberInClist : function(clist, numfunc){
+		var result = true, d = [], num = [], bottom = (!!k.dispzero?1:0);
+		for(var n=bottom,max=bd.nummaxfunc(clist[0]);n<=max;n++){ d[n]=0;}
+		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc.apply(bd,[clist[i]]);}
+
+		for(var i=0;i<clist.length;i++){ if(num[clist[i]]>=bottom){ d[num[clist[i]]]++;} }
+		for(var i=0;i<clist.length;i++){
+			if(num[clist[i]]>=bottom && d[num[clist[i]]]>=2){ bd.sErC([clist[i]],1); result = false;}
+		}
+		return result;
 	},
 
 	//---------------------------------------------------------------------------
