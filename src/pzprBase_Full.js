@@ -5,8 +5,8 @@
  * written in JavaScript.
  * 
  * @author  happa.
- * @version v3.2.4p3
- * @date    2009-12-16
+ * @version v3.2.5pre
+ * @date    2010-01-14
  * 
  * This script uses following library.
  *  uuCanvas.js (version 1.0)
@@ -20,7 +20,7 @@
  * 
  */
 
-var pzprversion="v3.2.4p3";
+var pzprversion="v3.2.5pre";
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -1059,6 +1059,20 @@ Board.prototype = {
 			else if(cx===qc&&cy===qr){ return 2*qc+2*qr+3;}
 		}
 		return -1;
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.getClistByPosition()  指定した範囲に含まれるセルのIDを返す
+	//---------------------------------------------------------------------------
+	getClistByPosition : function(x1,y1,x2,y2){
+		var clist = [];
+		for(var cx=x1;cx<=Math.min(x2,k.qcols-1);cx++){
+			for(var cy=y1;cy<=Math.min(y2,k.qrows-1);cy++){
+				var cc = this.cnum(cx,cy);
+				if(cc!==-1){ clist.push(cc);}
+			}
+		}
+		return clist;
 	},
 
 	//---------------------------------------------------------------------------
@@ -4389,9 +4403,19 @@ Encode = function(){
 	this.uri.bstr;		// 入力されたURLの盤面部分
 
 	this.pidKanpen = '';
+	this.pidforURL = '';
+
 	this.outpflag  = '';
 	this.outsize   = '';
 	this.outbstr   = '';
+
+	// 定数(URL形式)
+	this.PZPRV3  = 0;
+	this.PZPRV3E = 3;
+	this.PAPRAPP = 1;
+	this.KANPEN  = 2;
+	this.KANPENP = 5;
+	this.HEYAAPP = 4;
 };
 Encode.prototype = {
 	//---------------------------------------------------------------------------
@@ -4401,7 +4425,7 @@ Encode.prototype = {
 	// enc.parseURI_xxx()   pzlURI部をpflag,bstr等の部分に分割する
 	//---------------------------------------------------------------------------
 	init : function(){
-		this.uri.type = 0;
+		this.uri.type = this.PZPRV3;
 		this.uri.qdata = "";
 
 		this.uri.pflag = "";
@@ -4420,19 +4444,18 @@ Encode.prototype = {
 
 		this.init();
 
-		if(search=="?test" || search.substr(0,6)=="?test+"){
-			k.EDITOR = true; k.editmode = false;
-			k.scriptcheck = true;
-			if(search=="?test"){ search = 'country';}
-			else{ search = search.substr(6);}
-		}
-		else if(search.substr(0,3)=="?m+"){
-			k.EDITOR = k.editmode = true;
-			search = search.substr(3);
-		}
-		else{
-			k.EDITOR = k.editmode = false;
-			search = search.substr(1);
+		var startmode = 'PLAYER';
+
+		if     (search=="?test")       { startmode = 'TEST';   search = 'country';}
+		else if(search.match(/^\?m\+/)){ startmode = 'EDITOR'; search = search.substr(3);}
+		else if(search.match(/_test/)) { startmode = 'TEST';   search = search.substr(1).replace(/_test/, '');}
+		else if(search.match(/_edit/)) { startmode = 'EDITOR'; search = search.substr(1).replace(/_edit/, '');}
+		else if(!search.match(/\//))   { startmode = 'EDITER'; search = search.substr(1);}
+		else                           { startmode = 'PLAYER'; search = search.substr(1);}
+		switch(startmode){
+			case 'PLAYER': k.EDITOR = false; k.editmode = false; break;
+			case 'EDITOR': k.EDITOR = true;  k.editmode = true;  break;
+			case 'TEST'  : k.EDITOR = true;  k.editmode = false; k.scriptcheck = true; break;
 		}
 		k.PLAYER    = !k.EDITOR;
 		k.playmode  = !k.editmode;
@@ -4447,7 +4470,19 @@ Encode.prototype = {
 			search = search.substr(0,qs);
 		}
 
-		k.puzzleid = search;
+		// alias機能
+		var pid = search;
+		switch(pid){
+			case 'yajilin'    : this.pidforURL = 'yajilin'; pid = 'yajirin'; break;
+			case 'akari'      : this.pidforURL = 'akari';   pid = 'lightup'; break;
+			case 'bijutsukan' : this.pidforURL = 'akari';   pid = 'lightup'; break;
+			case 'slitherlink': this.pidforURL = pid = 'slither'; break;
+			case 'numberlink' : this.pidforURL = pid = 'numlin';  break;
+			case 'hakyukoka'  : this.pidforURL = pid = 'ripple';  break;
+			case 'masyu'      : this.pidforURL = pid = 'mashu';   break;
+			default           : this.pidforURL = pid;
+		}
+		k.puzzleid = pid;
 	},
 	parseURI : function(url){
 		this.init();
@@ -4455,20 +4490,8 @@ Encode.prototype = {
 		// なぜかOperaはtextarea上の改行が実際の改行扱いになってしまうっぽい
 		if(k.br.Opera){ url = url.replace(/(\r|\n)/g,"");}
 
-		// ぱずぷれの場合
-		if(url.match(/indi\.s58\.xrea\.com/)){
-			// ぱずぷれv3のURL
-			if(!url.match(/\/(sa|sc)\//)){
-				this.parseURI_pzpr(url.substr(url.indexOf("/", url.indexOf("?"))+1));
-			}
-			// ぱずぷれアプレットのURL
-			else{
-				this.parseURI_pzpr(url.substr(url.indexOf("?")));
-				this.uri.type = 1; // 1はぱずぷれアプレット/URLジェネレータ
-			}
-		}
 		// カンペンの場合
-		else if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
+		if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
 			// カンペンだけどデータ形式はへやわけアプレット
 			if(url.indexOf("?heyawake=")>=0){
 				this.parseURI_heyaapp(url.substr(url.indexOf("?heyawake=")+10));
@@ -4485,9 +4508,21 @@ Encode.prototype = {
 		else if(url.match(/www\.geocities(\.co)?\.jp\/heyawake/)){
 			this.parseURI_heyaapp(url.substr(url.indexOf("?problem=")+9));
 		}
+		// ぱずぷれの場合
+		else{ // if(url.match(/indi\.s58\.xrea\.com/)){
+			// ぱずぷれアプレットのURL
+			if(url.match(/\/(sa|sc)\/pzpr\/v3/)){
+				this.parseURI_pzpr(url.substr(url.indexOf("?")));
+				this.uri.type = this.PZPRAPP; // ぱずぷれアプレット/URLジェネレータ
+			}
+			// ぱずぷれv3のURL
+			else{
+				this.parseURI_pzpr(url.substr(url.indexOf("/", url.indexOf("?"))+1));
+			}
+		}
 	},
 	parseURI_pzpr : function(qstr){
-		this.uri.type = 0; // 0はぱずぷれv3
+		this.uri.type = this.PZPRV3; // ぱずぷれv3
 		this.uri.qdata = qstr;
 		var inp = qstr.split("/");
 		if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
@@ -4498,7 +4533,7 @@ Encode.prototype = {
 		this.uri.bstr = inp.join("/");
 	},
 	parseURI_kanpen : function(qstr){
-		this.uri.type = 2; // 2はカンペン
+		this.uri.type = this.KANPEN; // カンペン
 		this.uri.qdata = qstr;
 		var inp = qstr.split("/");
 
@@ -4513,7 +4548,7 @@ Encode.prototype = {
 		this.uri.bstr = inp.join("/");
 	},
 	parseURI_heyaapp : function(qstr){
-		this.uri.type = 4; // 4はへやわけアプレット
+		this.uri.type = this.HEYAAPP; // へやわけアプレット
 		this.uri.qdata = qstr;
 		var inp = qstr.split("/");
 
@@ -4530,9 +4565,7 @@ Encode.prototype = {
 
 	//---------------------------------------------------------------------------
 	// enc.pzlinput()   parseURI()を行った後に呼び出し、各パズルのpzlimport関数を呼び出す
-	// enc.getURLbase() このスクリプトが置いてあるURLを表示する
-	// enc.getDocbase() このスクリプトが置いてあるドメイン名を表示する
-	// enc.kanpenbase() カンペンのドメイン名を表示する
+	// enc.getURLBase() URLの元となる部分を取得する
 	// 
 	// enc.pzlimport()    各パズルのURL入力用(オーバーライド用)
 	// enc.pzlexport()    各パズルのURL出力用(オーバーライド用)
@@ -4544,16 +4577,16 @@ Encode.prototype = {
 		if(this.uri.bstr){
 			um.disableRecord(); um.disableInfo();
 			switch(this.uri.type){
-			case 0: case 1: case 3:
+			case this.PZPRV3: case this.PZPRAPP: case this.PZPRV3E:
 				this.outbstr = this.uri.bstr;
 				this.pzlimport(this.uri.type);
 				break;
-			case 2:
+			case this.KANPEN:
 				fio.lineseek = 0;
 				fio.dataarray = this.uri.bstr.replace(/_/g, " ").split("/");
 				this.decodeKanpen();
 				break;
-			case 4:
+			case this.HEYAAPP:
 				this.decodeHeyaApp();
 				break;
 			}
@@ -4566,50 +4599,62 @@ Encode.prototype = {
 		}
 	},
 	pzloutput : function(type){
+		if(type===this.KANPEN && k.puzzleid=='lits'){ type = this.KANPENP;}
+		var pdata = '', size = '', ispflag = false;
+
 		this.outpflag = '';
 		this.outsize = '';
 		this.outbstr = '';
 
-		if(type===0 || type===3 || type===1 || (type===2 && k.puzzleid=='lits')){
-			this.pzlexport(((type===0 || type===3)?0:1));
+		switch(type){
+		case this.PZPRV3: case this.PZPRV3E:
+			this.pzlexport(this.PZPRV3);
 
-			var size = [k.qcols,k.qrows].join('/');
-			if(!!this.outsize){ size = this.outsize;}
+			size = (!this.outsize ? [k.qcols,k.qrows].join('/') : this.outsize);
+			ispflag = (!!this.outpflag);
+			break;
 
-			var pflag = this.outpflag, bstr = this.outbstr;
+		case this.PZPRAPP: case this.KANPENP:
+			this.pzlexport(this.PZPRAPP);
 
-			if(type===0 || type===3){
-				return [this.getURLbase(),(type===3?"m+":""),k.puzzleid,"/",(!!pflag?(pflag+"/"):""),size,"/",bstr].join('');
-			}
-			else if(type===1){
-				return [this.getDocbase(),k.puzzleid,"/sa/m.html?",pflag,"/",size,"/",bstr].join('');
-			}
-			else if(type===2){
-				return [this.kanpenbase(),this.pidKanpen,".html?pzpr=",pflag,"/",size,"/",bstr].join('');
-			}
-		}
-		else if(type===2){
+			size = (!this.outsize ? [k.qcols,k.qrows].join('/') : this.outsize);
+			ispflag = true;
+			break;
+
+		case this.KANPEN:
 			fio.datastr = "";
 			this.encodeKanpen()
-			var bstr = fio.datastr.replace(/ /g, "_");
+			this.outbstr = fio.datastr.replace(/ /g, "_");
 
-			var size = [k.qrows,k.qcols].join('/');
-			if(!!this.outsize){ size = this.outsize;}
+			size = (!this.outsize ? [k.qrows,k.qcols].join('/') : this.outsize);
+			break;
 
-			return [this.kanpenbase(),this.pidKanpen,".html?problem=",size,"/",bstr].join('');
+		case this.HEYAAPP:
+			this.encodeHeyaApp();
+
+			size = [k.qcols,k.qrows].join('x');
+			break;
+
+		default:
+			return '';
 		}
-		else if(type===4){
-			var bstr = this.encodeHeyaApp(bstr);
-			var size = [k.qcols,k.qrows].join('x');
 
-			return ["http://www.geocities.co.jp/heyawake/?problem=",size,"/",bstr].join('');
-		}
+		if(ispflag){ pdata = [this.outpflag, size, this.outbstr].join("/");}
+		else{ pdata = [size, this.outbstr].join("/");}
 
-		return '';
+		return this.getURLBase(type) + pdata;
 	},
-	getURLbase : function(){ return "http://indi.s58.xrea.com/pzpr/v3/p.html?";},
-	getDocbase : function(){ return "http://indi.s58.xrea.com/";},
-	kanpenbase : function(){ return "http://www.kanpen.net/";},
+	getURLBase : function(type){
+		var urls = {};
+		urls[this.PZPRV3]  = "http://indi.s58.xrea.com/pzpr/v3/p.html?%PID%/";
+		urls[this.PZPRV3E] = "http://indi.s58.xrea.com/pzpr/v3/p.html?%PID%_edit/";
+		urls[this.PZPRAPP] = "http://indi.s58.xrea.com/%PID%/sa/q.html?";
+		urls[this.KANPEN]  = "http://www.kanpen.net/%KID%.html?problem=";
+		urls[this.KANPENP] = "http://www.kanpen.net/%KID%.html?pzpr=";
+		urls[this.HEYAAPP] = "http://www.geocities.co.jp/heyawake/?problem=";
+
+		return urls[type].replace("%PID%",this.pidforURL).replace("%KID%",this.pidKanpen);
+	},
 
 	// オーバーライド用
 	pzlimport : function(type,bstr){ },
@@ -5047,27 +5092,31 @@ FileIO = function(){
 	this.DBtype = 0;
 	this.DBsid  = -1;
 	this.DBlist = [];
+
+	// 定数(ファイル形式)
+	this.PZPR = 1;
+	this.PBOX = 2;
 };
 FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	// fio.filedecode() ファイルを開く時、ファイルデータからのデコード実行関数
 	//                  [menu.ex.fileopen] -> [fileio.xcg@iframe] -> [ここ]
 	//---------------------------------------------------------------------------
-	filedecode : function(datastr, type){
+	filedecode : function(datastr){
 		this.filever = 0;
 		this.lineseek = 0;
 		this.dataarray = datastr.split("/");
+		var type = this.PZPR;
 
 		// ヘッダの処理
-		if(type===1){
-			if(!this.readLine().match(/pzprv3\.?(\d+)?/)){ alert('ぱずぷれv3形式のファイルではありません。'); return;}
+		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
-
 			if(this.readLine()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。'); return;}
+			type = this.PZPR;
 		}
-		else if(type===2){
-			if(this.readLine().match(/pzprv3/)){ alert('pencilboxのファイルではありません。'); return;}
+		else{
 			this.lineseek = 0;
+			type = this.PBOX;
 		}
 
 		// サイズを表す文字列
@@ -5105,8 +5154,8 @@ FileIO.prototype = {
 		this.urlstr = "";
 
 		// メイン処理
-		if     (type===1){ this.encodeData();}
-		else if(type===2){ this.kanpenSave();}
+		if     (type===this.PZPR){ this.encodeData();}
+		else if(type===this.PBOX){ this.kanpenSave();}
 
 		// サイズを表す文字列
 		if(!this.sizestr){ this.sizestr = [k.qrows, k.qcols].join("/");}
@@ -5121,7 +5170,7 @@ FileIO.prototype = {
 
 		// 末尾のURL追加処理
 		if(type===1){
-			this.urlstr = enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? 0 : 2);
+			this.urlstr = enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? enc.PZPRV3 : enc.KANPEN);
 		}
 
 		return bstr;
@@ -6215,7 +6264,8 @@ AnsCheck.prototype = {
 		for(var c=0;c<bd.cellmax;c++){
 			if(func(c)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1); result = false;
+				bd.sErC([c],1);
+				result = false;
 			}
 		}
 		return result;
@@ -6246,44 +6296,16 @@ AnsCheck.prototype = {
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].cx<k.qcols-1 && func(c,c+1)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c,c+1],1); result = false;
+				bd.sErC([c,c+1],1);
+				result = false;
 			}
 			if(bd.cell[c].cy<k.qrows-1 && func(c,c+k.qcols)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c,c+k.qcols],1); result = false;
-			}
-		}
-		return result;
-	},
-
-	//---------------------------------------------------------------------------
-	// ans.checkAreaRect()  すべてのfuncを満たすマスで構成されるエリアが四角形であるかどうか判定する
-	// ans.checkAllArea()   すべてのfuncを満たすマスで構成されるエリアがサイズ条件func2を満たすかどうか判定する
-	// ans.getSizeOfClist() 指定されたCellのリストの上下左右の端と、その中で条件funcを満たすセルの大きさを返す
-	//---------------------------------------------------------------------------
-	checkAreaRect : function(cinfo, func){ return this.checkAllArea(cinfo, func, function(w,h,a){ return (w*h==a)}); },
-	checkAllArea : function(cinfo, func, func2){
-		var result = true;
-		for(var id=1;id<=cinfo.max;id++){
-			var d = this.getSizeOfClist(cinfo.room[id].idlist,func);
-			if(!func2(d.x2-d.x1+1, d.y2-d.y1+1, d.cnt)){
-				if(this.inAutoCheck){ return false;}
-				bd.sErC(cinfo.room[id].idlist,1);
+				bd.sErC([c,c+k.qcols],1);
 				result = false;
 			}
 		}
 		return result;
-	},
-	getSizeOfClist : function(clist, func){
-		var d = { x1:k.qcols, x2:-1, y1:k.qrows, y2:-1, cnt:0 };
-		for(var i=0;i<clist.length;i++){
-			if(d.x1>bd.cell[clist[i]].cx){ d.x1=bd.cell[clist[i]].cx;}
-			if(d.x2<bd.cell[clist[i]].cx){ d.x2=bd.cell[clist[i]].cx;}
-			if(d.y1>bd.cell[clist[i]].cy){ d.y1=bd.cell[clist[i]].cy;}
-			if(d.y2<bd.cell[clist[i]].cy){ d.y2=bd.cell[clist[i]].cy;}
-			if(func(clist[i])){ d.cnt++;}
-		}
-		return d;
 	},
 
 	//---------------------------------------------------------------------------
@@ -6379,32 +6401,37 @@ AnsCheck.prototype = {
 		for(var i=0;i<bd.cellmax;i++){
 			if(func(i)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([i],1); result = false;
+				bd.sErC([i],1);
+				result = false;
 			}
 		}
 		return result;
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkOneNumber()      部屋の中のfunc==trueを満たすCellの数がeval()==trueかどうかを調べる
-	//                           部屋のfunc==trueになるセルの数の判定、部屋にある数字と黒マスの数の比較、
-	//                           白マスの面積と入っている数字の比較などに用いられる
-	// ans.checkBlackCellCount() 領域内の数字と黒マスの数が等しいか判定する
+	// ans.checkAllArea()    すべてのfuncを満たすマスで構成されるエリアがevalfuncを満たすかどうか判定する
+	//
 	// ans.checkDisconnectLine() 数字などに繋がっていない線の判定を行う
 	// ans.checkNumberAndSize()  エリアにある数字と面積が等しいか判定する
-	// ans.checkQnumsInArea()    部屋に数字がいくつ含まれているかの判定を行う
+	// ans.checkNoNumber()       部屋に数字が含まれていないかの判定を行う
+	// ans.checkDoubleNumber()   部屋に数字が2つ以上含まれていないように判定を行う
+	// ans.checkTripleNumber()   部屋に数字が3つ以上含まれていないように判定を行う
+	// ans.checkBlackCellCount() 領域内の数字と黒マスの数が等しいか判定する
 	// ans.checkBlackCellInArea()部屋にある黒マスの数の判定を行う
-	// ans,checkNoObjectInRoom() エリアに指定されたオブジェクトがないと判定する
+	// ans.checkAreaRect()       領域が全て四角形であるかどうか判定する
+	// ans.checkLinesInArea()    領域の中で線が通っているセルの数を判定する
+	// ans.checkNoObjectInRoom() エリアに指定されたオブジェクトがないと判定する
 	//
-	// ans.getQnumCellInArea()   部屋の中で一番左上にある数字を返す
-	// ans.getCntOfRoom()        部屋の面積を返す
-	// ans.getCellsOfRoom()      部屋の中でfunc==trueとなるセルの数を返す
+	// ans.getQnumCellInArea() 部屋の中で一番左上にある数字を返す
+	// ans.getSizeOfClist()    指定されたCellのリストの上下左右の端と、その中で条件funcを満たすセルの数を返す
 	//---------------------------------------------------------------------------
-	checkOneNumber : function(cinfo, evalfunc, func){
+	checkAllArea : function(cinfo, func, evalfunc){
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
-			var top = bd.QnC(k.isOneNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0]) : this.getQnumCellInArea(cinfo,id));
-			if( evalfunc(top, this.getCellsOfRoom(cinfo, id, func)) ){
+			var d = this.getSizeOfClist(cinfo.room[id].idlist,func);
+			var n = bd.QnC(k.isOneNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0])
+										 : this.getQnumCellOfClist(cinfo.room[id].idlist));
+			if( !evalfunc(d.x2-d.x1+1, d.y2-d.y1+1, d.cnt, n) ){
 				if(this.inAutoCheck){ return false;}
 				if(this.performAsLine){ if(result){ bd.sErBAll(2);} this.setErrLareaById(cinfo,id,1);}
 				else{ bd.sErC(cinfo.room[id].idlist,(k.puzzleid!="tateyoko"?1:4));}
@@ -6413,27 +6440,37 @@ AnsCheck.prototype = {
 		}
 		return result;
 	},
-	checkBlackCellCount  : function(cinfo)          { return this.checkOneNumber(cinfo, function(top,cnt){ return (top>=0 && top!=cnt);}, bd.isBlack);},
-	checkDisconnectLine  : function(cinfo)          { return this.checkOneNumber(cinfo, function(top,cnt){ return (top==-1 && cnt==0); }, bd.isNum  );},
-	checkNumberAndSize   : function(cinfo)          { return this.checkOneNumber(cinfo, function(top,cnt){ return (top> 0 && top!=cnt);}, f_true    );},
-	checkQnumsInArea     : function(cinfo, func)    { return this.checkOneNumber(cinfo, function(top,cnt){ return func(cnt);},            bd.isNum  );},
-	checkBlackCellInArea : function(cinfo, func)    { return this.checkOneNumber(cinfo, function(top,cnt){ return func(cnt);},            bd.isBlack);},
-	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkOneNumber(cinfo, function(top,cnt){ return (cnt==0); },            function(c){ return getvalue(c)!=-1;} );},
 
-	getQnumCellInArea : function(cinfo, areaid){
-		var idlist = cinfo.room[areaid].idlist;
-		for(var i=0,len=idlist.length;i<len;i++){
-			if(bd.QnC(idlist[i])!=-1){ return idlist[i];}
+	checkDisconnectLine  : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (n!=-1 || a>0); } );},
+	checkNumberAndSize   : function(cinfo){ return this.checkAllArea(cinfo, f_true,     function(w,h,a,n){ return (n<= 0 || n==a);} );},
+
+	checkNoNumber        : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (a!=0);}          );},
+	checkDoubleNumber    : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (a< 2);}          );},
+	checkTripleNumber    : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (a< 3);}          );},
+
+	checkBlackCellCount  : function(cinfo)          { return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return (n<0 || n==a);} );},
+	checkBlackCellInArea : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return evalfunc(a);}     );},
+	checkAreaRect        : function(cinfo)          { return this.checkAllArea(cinfo, f_true,     function(w,h,a,n){ return (w*h==a)});},
+
+	checkLinesInArea     : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, function(c){ return line.lcnt[c]>0;}, evalfunc);},
+	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkAllArea(cinfo, function(c){ return getvalue(c)!=-1;}, function(w,h,a,n){ return (a!=0);});},
+
+	getQnumCellOfClist : function(clist){
+		for(var i=0,len=clist.length;i<len;i++){
+			if(bd.QnC(clist[i])!=-1){ return clist[i];}
 		}
 		return -1;
 	},
-	getCntOfRoom : function(cinfo, areaid){
-		return cinfo.room[areaid].idlist.length;
-	},
-	getCellsOfRoom : function(cinfo, areaid, func){
-		var cnt=0, idlist = cinfo.room[areaid].idlist;
-		for(var i=0,len=idlist.length;i<len;i++){ if(func(idlist[i])){ cnt++;}}
-		return cnt;
+	getSizeOfClist : function(clist, func){
+		var d = { x1:k.qcols, x2:-1, y1:k.qrows, y2:-1, cnt:0 };
+		for(var i=0;i<clist.length;i++){
+			if(d.x1>bd.cell[clist[i]].cx){ d.x1=bd.cell[clist[i]].cx;}
+			if(d.x2<bd.cell[clist[i]].cx){ d.x2=bd.cell[clist[i]].cx;}
+			if(d.y1>bd.cell[clist[i]].cy){ d.y1=bd.cell[clist[i]].cy;}
+			if(d.y2<bd.cell[clist[i]].cy){ d.y2=bd.cell[clist[i]].cy;}
+			if(func(clist[i])){ d.cnt++;}
+		}
+		return d;
 	},
 
 	//---------------------------------------------------------------------------
@@ -6552,6 +6589,86 @@ AnsCheck.prototype = {
 			}
 		}
 		return true;
+	},
+
+	//---------------------------------------------------------------------------
+	// ans.checkRowsCols()            タテ列・ヨコ列の数字の判定を行う
+	// ans.checkRowsColsPartly()      黒マスや[＼]等で分かれるタテ列・ヨコ列の数字の判定を行う
+	// ans.checkDifferentNumberInRoom() 部屋の中に同じ数字が存在するか判定する
+	// ans.isDifferentNumberInClist() clistの中に同じ数字が存在するか判定する
+	//---------------------------------------------------------------------------
+	checkRowsCols : function(evalfunc, numfunc){
+		var result = true;
+		for(var cy=0;cy<k.qrows;cy++){
+			var clist = bd.getClistByPosition(0,cy,k.qcols-1,cy);
+			if(!evalfunc.apply(this,[clist, numfunc])){
+				if(this.inAutoCheck){ return false;}
+				result = false;
+			}
+		}
+		for(var cx=1;cx<k.qcols;cx++){
+			var clist = bd.getClistByPosition(cx,0,cx,k.qrows-1);
+			if(!evalfunc.apply(this,[clist, numfunc])){
+				if(this.inAutoCheck){ return false;}
+				result = false;
+			}
+		}
+		return result;
+	},
+	checkRowsColsPartly : function(evalfunc, areainfo, termfunc, multierr){
+		var result = true;
+		for(var cy=0;cy<k.qrows;cy++){
+			var cx=0;
+			while(cx<k.qcols){
+				for(var tx=cx;tx<k.qcols;tx++){ if(termfunc.apply(this,[bd.cnum(tx,cy)])){ break;}}
+				var clist = bd.getClistByPosition(cx,cy,tx-1,cy);
+				var total = (k.isextendcell!=1 ? 0 : (cx==0 ? bd.QnE(bd.exnum(-1,cy)) : bd.QnC(bd.cnum(cx-1,cy))));
+
+				if(!evalfunc.apply(this,[total, clist, areainfo])){
+					if(!multierr || this.inAutoCheck){ return false;}
+					result = false;
+				}
+				cx = tx+1;
+			}
+		}
+		for(var cx=0;cx<k.qcols;cx++){
+			var cy=0;
+			while(cy<k.qrows){
+				for(var ty=cy;ty<k.qrows;ty++){ if(termfunc.apply(this,[bd.cnum(cx,ty)])){ break;}}
+				var clist = bd.getClistByPosition(cx,cy,cx,ty-1);
+				var total = (k.isextendcell!=1 ? 0 : (cy==0 ? bd.DiE(bd.exnum(cx,-1)) : bd.DiC(bd.cnum(cx,cy-1))));
+
+				if(!evalfunc.apply(this,[total, clist, areainfo])){
+					if(!multierr || this.inAutoCheck){ return false;}
+					result = false;
+				}
+				cy = ty+1;
+			}
+		}
+		return result;
+	},
+
+	checkDifferentNumberInRoom : function(rinfo, numfunc){
+		var result = true;
+		for(var id=1;id<=rinfo.max;id++){
+			if(!this.isDifferentNumberInClist(rinfo.room[id].idlist, numfunc)){
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(rinfo.room[id].idlist,1);
+				result = false;
+			}
+		}
+		return result;
+	},
+	isDifferentNumberInClist : function(clist, numfunc){
+		var result = true, d = [], num = [], bottom = (!!k.dispzero?1:0);
+		for(var n=bottom,max=bd.nummaxfunc(clist[0]);n<=max;n++){ d[n]=0;}
+		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc.apply(bd,[clist[i]]);}
+
+		for(var i=0;i<clist.length;i++){ if(num[clist[i]]>=bottom){ d[num[clist[i]]]++;} }
+		for(var i=0;i<clist.length;i++){
+			if(num[clist[i]]>=bottom && d[num[clist[i]]]>=2){ bd.sErC([clist[i]],1); result = false;}
+		}
+		return result;
 	},
 
 	//---------------------------------------------------------------------------
@@ -6868,6 +6985,7 @@ Menu = function(){
 	var smenu_funcs  = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout), click:ee.ebinder(this, this.submenuclick)};
 	var select_funcs = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout)};
 	this.EL_SMENU    = ee.addTemplate('','div' , {className:'smenu'}, null, smenu_funcs);
+	this.EL_SPARENT  = ee.addTemplate('','div' , {className:'smenu'}, null, select_funcs);
 	this.EL_SELECT   = ee.addTemplate('','div' , {className:'smenu'}, {fontWeight :'900', fontSize:'10pt'}, select_funcs);
 	this.EL_SEPARATE = ee.addTemplate('','div' , {className:'smenusep', innerHTML:'&nbsp;'}, null, null);
 	this.EL_CHECK    = ee.addTemplate('','div' , {className:'smenu'}, {paddingLeft:'6pt', fontSize:'10pt'}, smenu_funcs);
@@ -6882,6 +7000,7 @@ Menu = function(){
 
 	// ElementTemplate : ボタン
 	this.EL_BUTTON = ee.addTemplate('','input', {type:'button'}, null, null);
+	this.EL_UBUTTON = ee.addTemplate('btnarea','input', {type:'button'}, null, null);
 };
 Menu.prototype = {
 	//---------------------------------------------------------------------------
@@ -6957,7 +7076,7 @@ Menu.prototype = {
 			if(!!menu){ menu.el.innerHTML = "["+pp.getMenuStr(idname)+"]";}
 			break;
 
-		case pp.SMENU: case pp.LABEL:
+		case pp.SMENU: case pp.LABEL: case pp.SPARENT:
 			var smenu = ee('ms_'+idname);
 			if(!!smenu){ smenu.el.innerHTML = pp.getMenuStr(idname);}
 			break;
@@ -6976,7 +7095,7 @@ Menu.prototype = {
 			if(!!smenu){ smenu.el.innerHTML = (issel?"+":"&nbsp;")+cap;}	// メニューの項目
 			if(!!manage){													// 管理領域の項目
 				manage.el.innerHTML = cap;
-				manage.el.className = (issel?"flagsel":"flag");
+				manage.el.className = (issel?"childsel":"child");
 			}
 			break;
 
@@ -6997,12 +7116,14 @@ Menu.prototype = {
 	//---------------------------------------------------------------------------
 	menuarea : function(){
 		var am = ee.binder(pp, pp.addMenu),
+			at = ee.binder(pp, pp.addSParent),
 			as = ee.binder(pp, pp.addSmenu),
 			au = ee.binder(pp, pp.addSelect),
 			ac = ee.binder(pp, pp.addCheck),
 			aa = ee.binder(pp, pp.addCaption),
 			ai = ee.binder(pp, pp.addChild),
 			ap = ee.binder(pp, pp.addSeparator),
+			af = ee.binder(pp, pp.addFlagOnly),
 			sl = ee.binder(pp, pp.setLabel);
 
 		// *ファイル ==========================================================
@@ -7011,16 +7132,17 @@ Menu.prototype = {
 		as('newboard', 'file', '新規作成','New Board');
 		as('urlinput', 'file', 'URL入力', 'Import from URL');
 		as('urloutput','file', 'URL出力', 'Export URL');
-		ap('sep_2', 'file');
+		ap('sep_file', 'file');
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
-		as('filesave', 'file', 'ファイル保存',  'Save the file as ...');
+		at('filesavep', 'file', 'ファイル保存 ->',  'Save the file as ... ->');
 		if(!!fio.DBtype){
 			as('database', 'file', 'データベースの管理', 'Database Management');
 		}
+
+		// *ファイル - ファイル保存 -------------------------------------------
+		as('filesave',  'filesavep', 'ぱずぷれv3形式',  'Puz-Pre v3 format');
 		if(this.ispencilbox){
-			ap('sep_3', 'file');
-			as('fileopen2', 'file', 'pencilboxのファイルを開く', 'Open the pencilbox file');
-			as('filesave2', 'file', 'pencilboxのファイルを保存', 'Save the pencilbox file as ...');
+			as('filesave2', 'filesavep', 'pencilbox形式', 'Pencilbox format');
 		}
 
 		// *編集 ==============================================================
@@ -7033,12 +7155,12 @@ Menu.prototype = {
 		am('disp', "表示", "Display");
 
 		au('size','disp',k.widthmode,[0,1,2,3,4], '表示サイズ','Cell Size');
-		ap('sep_4',  'disp');
+		ap('sep_disp1',  'disp');
 
 		if(!!k.irowake){
 			ac('irowake','disp',(k.irowake==2?true:false),'線の色分け','Color coding');
 			sl('irowake', '線の色分けをする', 'Color each lines');
-			ap('sep_5', 'disp');
+			ap('sep_disp2', 'disp');
 		}
 		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
@@ -7058,6 +7180,9 @@ Menu.prototype = {
 		if(k.EDITOR){
 			au('mode','setting',(k.editmode?1:3),[1,3],'モード', 'mode');
 			sl('mode','モード', 'mode');
+		}
+		else{
+			af('mode', 3);
 		}
 
 		puz.menufix();	// 各パズルごとのメニュー追加
@@ -7083,11 +7208,12 @@ Menu.prototype = {
 		am('other', "その他", "Others");
 
 		as('credit',  'other', 'ぱずぷれv3について',   'About PUZ-PRE v3');
-		aa('cap_others1', 'other', 'リンク', 'Link');
-		as('jumpv3',  'other', 'ぱずぷれv3のページへ', 'Jump to PUZ-PRE v3 page');
-		as('jumptop', 'other', '連続発破保管庫TOPへ',  'Jump to indi.s58.xrea.com');
-		as('jumpblog','other', 'はっぱ日記(blog)へ',   'Jump to my blog');
-		//sm('eval', 'テスト用', 'for Evaluation');
+		ap('sep_other','other');
+		at('link',     'other', 'リンク', 'Link');
+		// *その他 - リンク -----------------------------------------------------
+		as('jumpv3',  'link', 'ぱずぷれv3のページへ', 'Jump to PUZ-PRE v3 page');
+		as('jumptop', 'link', '連続発破保管庫TOPへ',  'Jump to indi.s58.xrea.com');
+		as('jumpblog','link', 'はっぱ日記(blog)へ',   'Jump to my blog');
 
 		this.createAllFloat();
 	},
@@ -7135,6 +7261,10 @@ Menu.prototype = {
 				case pp.SMENU:    smenu = ee.createEL(this.EL_SMENU,   smenuid); break;
 				case pp.CHECK:    smenu = ee.createEL(this.EL_CHECK,   smenuid); break;
 				case pp.CHILD:    smenu = ee.createEL(this.EL_CHILD,   smenuid); break;
+				case pp.SPARENT:
+					var dispnormal = (pp.getMenuStr(id).indexOf("->")>=0);
+					smenu = ee.createEL((dispnormal ? this.EL_SPARENT : this.EL_SELECT), smenuid);
+					break;
 				default: continue; break;
 			}
 
@@ -7198,12 +7328,16 @@ Menu.prototype = {
 	submenuhover : function(e){
 		var idname = ee.getSrcElement(e).id.substr(3);
 		if(ee.getSrcElement(e).className==="smenu"){ ee.getSrcElement(e).className="smenusel";}
-		if(pp.flags[idname] && pp.type(idname)===pp.SELECT){ this.floatmenuopen(e,idname,this.dispfloat.length);}
+		if(pp.flags[idname] && (pp.type(idname)===pp.SELECT || pp.type(idname)===pp.SPARENT)){
+			this.floatmenuopen(e,idname,this.dispfloat.length);
+		}
 	},
 	submenuout   : function(e){
 		var idname = ee.getSrcElement(e).id.substr(3);
 		if(ee.getSrcElement(e).className==="smenusel"){ ee.getSrcElement(e).className="smenu";}
-		if(pp.flags[idname] && pp.type(idname)===pp.SELECT){ this.floatmenuout(e);}
+		if(pp.flags[idname] && (pp.type(idname)===pp.SELECT || pp.type(idname)===pp.SPARENT)){
+			this.floatmenuout(e);
+		}
 	},
 	submenuclick : function(e){
 		var idname = ee.getSrcElement(e).id.substr(3);
@@ -7351,11 +7485,20 @@ Menu.prototype = {
 		if(!!ee('ck_keypopup')){ pp.funcs.keypopup();}
 
 		// (Canvas下) ボタンの初期設定
+		ee.createEL(this.EL_UBUTTON, 'btncheck');
+		ee('btnarea').appendHTML('&nbsp;');
+		ee.createEL(this.EL_UBUTTON, 'btnundo');
+		ee.createEL(this.EL_UBUTTON, 'btnredo');
+		ee('btnarea').appendHTML('&nbsp;');
+		ee.createEL(this.EL_UBUTTON, 'btnclear');
+		ee.createEL(this.EL_UBUTTON, 'btnclear2');
+
 		this.addButtons(ee("btncheck").el,  ee.binder(ans, ans.check),             "チェック", "Check");
 		this.addButtons(ee("btnundo").el,   ee.binder(um, um.undo),                "戻",       "<-");
 		this.addButtons(ee("btnredo").el,   ee.binder(um, um.redo),                "進",       "->");
 		this.addButtons(ee("btnclear").el,  ee.binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
 		this.addButtons(ee("btnclear2").el, ee.binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
+
 		if(k.irowake!=0){
 			var el = ee.createEL(this.EL_BUTTON, 'btncolor2');
 			this.addButtons(el, ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
@@ -7625,6 +7768,7 @@ Properties = function(){
 
 	// const
 	this.MENU     = 6;
+	this.SPARENT  = 7;
 	this.SMENU    = 0;
 	this.SELECT   = 1;
 	this.CHECK    = 2;
@@ -7640,15 +7784,20 @@ Properties.prototype = {
 
 	//---------------------------------------------------------------------------
 	// pp.addMenu()      メニュー最上位の情報を登録する
+	// pp.addSParent()   フロートメニューを開くサブメニュー項目を登録する
 	// pp.addSmenu()     Popupメニューを開くサブメニュー項目を登録する
 	// pp.addCaption()   Captionとして使用するサブメニュー項目を登録する
 	// pp.addSeparator() セパレータとして使用するサブメニュー項目を登録する
 	// pp.addCheck()     選択型サブメニュー項目に表示する文字列を設定する
 	// pp.addSelect()    チェック型サブメニュー項目に表示する文字列を設定する
 	// pp.addChild()     チェック型サブメニュー項目の子要素を設定する
+	// pp.addFlagOnly()  情報のみを登録する
 	//---------------------------------------------------------------------------
 	addMenu : function(idname, strJP, strEN){
 		this.addFlags(idname, '', this.MENU, 0, strJP, strEN);
+	},
+	addSParent : function(idname, parent, strJP, strEN){
+		this.addFlags(idname, parent, this.SPARENT, 0, strJP, strEN);
 	},
 
 	addSmenu : function(idname, parent, strJP, strEN){
@@ -7672,6 +7821,10 @@ Properties.prototype = {
 	addChild : function(idname, parent, strJP, strEN){
 		var list = idname.split("_");
 		this.addFlags(idname, list[0], this.CHILD, list[1], strJP, strEN);
+	},
+
+	addFlagOnly : function(idname, first){
+		this.addFlags(idname, '', '', first, '', '');
 	},
 
 	//---------------------------------------------------------------------------
@@ -7724,9 +7877,10 @@ Properties.prototype = {
 	funcs : {
 		urlinput  : function(){ menu.pop = ee("pop1_2");},
 		urloutput : function(){ menu.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
-		filesave  : function(){ menu.ex.filesave(1);},
+		fileopen  : function(){ menu.pop = ee("pop1_4");},
+		filesave  : function(){ menu.ex.filesave(fio.PZPR);},
 		database  : function(){ menu.pop = ee("pop1_8"); fio.getDataTableList();},
-		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave(2);}},
+		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave(fio.PBOX);}},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
 		credit    : function(){ menu.pop = ee("pop3_1");},
@@ -7749,15 +7903,6 @@ Properties.prototype = {
 				document.newboard.row.value = k.qrows;
 			}
 			k.enableKey = false;
-		},
-		fileopen : function(){
-			document.fileform.pencilbox.value = "0";
-			if(!menu.pop){ menu.pop = ee("pop1_4");}
-		},
-		fileopen2 : function(){
-			if(!fio.kanpenOpen){ return;}
-			document.fileform.pencilbox.value = "1";
-			if(!menu.pop){ menu.pop = ee("pop1_4");}
 		},
 		dispsize : function(){
 			menu.pop = ee("pop4_1");
@@ -7789,18 +7934,19 @@ var debug = {
 		document.testform.perfload.onclick  = ee.binder(this, this.loadperf);
 
 		document.testform.filesave.onclick  = ee.binder(this, this.filesave);
-		document.testform.fileopen.onclick  = ee.binder(this, this.fileopen);
 		document.testform.pbfilesave.onclick  = ee.binder(this, this.filesave_pencilbox);
-		document.testform.pbfileopen.onclick  = ee.binder(this, this.fileopen_pencilbox);
+
+		document.testform.fileopen.onclick  = ee.binder(this, this.fileopen);
 
 		document.testform.erasetext.onclick = ee.binder(this, this.erasetext);
 		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
+
+		document.testform.testarea.style.fontSize = '10pt';
 
 		document.testform.starttest.style.display = 'none';
 
 		document.testform.perfload.style.display = (k.puzzleid!=='country' ? 'none' : 'inline');
 		document.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
-		document.testform.pbfileopen.style.display = (!menu.ispencilbox ? 'none' : 'inline');
 
 		if(k.scriptcheck){ debug.testonly_func();}	// テスト用
 	},
@@ -7823,25 +7969,17 @@ var debug = {
 	},
 
 	filesave : function(){
-		this.setTA('');
-		this.setTA(fio.fileencode(1).replace(/\//g,"\n"));
+		this.setTA(fio.fileencode(fio.PZPR).replace(/\//g,"\n"));
 		this.addTA('');
 		this.addTA(fio.urlstr);
 	},
-	fileopen : function(){
-		var dataarray = this.getTA().split("\n");
-		if(!dataarray[0].match(/pzprv3/)){ return;}
-		fio.filedecode(dataarray.join("/"),1);
+	filesave_pencilbox : function(){
+		this.setTA(fio.fileencode(fio.PBOX).replace(/\//g,"\n"));
 	},
 
-	filesave_pencilbox : function(){
-		this.setTA('');
-		this.setTA(fio.fileencode(2).replace(/\//g,"\n"));
-	},
-	fileopen_pencilbox : function(){
+	fileopen : function(){
 		var dataarray = this.getTA().split("\n");
-		if(dataarray[0].match(/pzprv3/)){ return;}
-		fio.filedecode(dataarray.join("/"),2);
+		fio.filedecode(dataarray.join("/"));
 	},
 
 	erasetext : function(){
@@ -7872,7 +8010,7 @@ var debug = {
 	},
 
 	loadperf : function(){
-		fio.filedecode("pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /",1);
+		fio.filedecode("pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /");
 		pp.setVal('mode',3);
 		pp.setVal('irowake',true);
 	},
@@ -7974,11 +8112,11 @@ MenuExec.prototype = {
 	urloutput : function(e){
 		if(menu.pop){
 			switch(ee.getSrcElement(e).name){
-				case "pzprv3":     document.urloutput.ta.value = enc.pzloutput(0); break;
-				case "pzprapplet": document.urloutput.ta.value = enc.pzloutput(1); break;
-				case "kanpen":     document.urloutput.ta.value = enc.pzloutput(2); break;
-				case "pzprv3edit": document.urloutput.ta.value = enc.pzloutput(3); break;
-				case "heyaapp":    document.urloutput.ta.value = enc.pzloutput(4); break;
+				case "pzprv3":     document.urloutput.ta.value = enc.pzloutput(enc.PZPRV3);  break;
+				case "pzprapplet": document.urloutput.ta.value = enc.pzloutput(enc.PAPRAPP); break;
+				case "kanpen":     document.urloutput.ta.value = enc.pzloutput(enc.KANPEN);  break;
+				case "pzprv3edit": document.urloutput.ta.value = enc.pzloutput(enc.PZPRV3E); break;
+				case "heyaapp":    document.urloutput.ta.value = enc.pzloutput(enc.HEYAAPP); break;
 			}
 		}
 	},
@@ -8021,9 +8159,8 @@ MenuExec.prototype = {
 			if(farray[i].match(/^http\:\/\//)){ break;}
 			fstr += (farray[i]+"/");
 		}
-		var ftype = (document.fileform.pencilbox.value=="0" ? 1 : 2);
 
-		fio.filedecode(fstr,ftype);
+		fio.filedecode(fstr);
 
 		document.fileform.reset();
 		tm.reset();
