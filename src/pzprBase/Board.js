@@ -1,4 +1,4 @@
-// Board.js v3.2.3p1
+// Board.js v3.2.4p4
 
 //---------------------------------------------------------------------------
 // ★Cellクラス BoardクラスがCellの数だけ保持する
@@ -461,6 +461,20 @@ Board.prototype = {
 			else if(cx===qc&&cy===qr){ return 2*qc+2*qr+3;}
 		}
 		return -1;
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.getClistByPosition()  指定した範囲に含まれるセルのIDを返す
+	//---------------------------------------------------------------------------
+	getClistByPosition : function(x1,y1,x2,y2){
+		var clist = [];
+		for(var cx=x1;cx<=Math.min(x2,k.qcols-1);cx++){
+			for(var cy=y1;cy<=Math.min(y2,k.qrows-1);cy++){
+				var cc = this.cnum(cx,cy);
+				if(cc!==-1){ clist.push(cc);}
+			}
+		}
+		return clist;
 	},
 
 	//---------------------------------------------------------------------------

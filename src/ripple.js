@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 波及効果版 ripple.js v3.2.4p2
+// パズル固有スクリプト部 波及効果版 ripple.js v3.2.4p4
 //
 Puzzles.ripple = function(){ };
 Puzzles.ripple.prototype = {
@@ -157,7 +157,7 @@ Puzzles.ripple.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkDifferentNumber(area.getRoomInfo()) ){
+			if( !this.checkDifferentNumberInRoom(area.getRoomInfo(), bd.getNum) ){
 				this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 			}
 
@@ -173,23 +173,6 @@ Puzzles.ripple.prototype = {
 		};
 		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
 
-		ans.checkDifferentNumber = function(rinfo){
-			var result = true;
-			for(var r=1;r<=rinfo.max;r++){
-				var d = [];
-				for(var i=1;i<=bd.maxnum;i++){ d[i]=-1;}
-				for(var i=0;i<rinfo.room[r].idlist.length;i++){
-					var val=bd.getNum(rinfo.room[r].idlist[i]);
-					if     (val==-1 || val==-2){ continue;}
-					else if(d[val]==-1){ d[val] = rinfo.room[r].idlist[i]; continue;}
-
-					if(this.inAutoCheck){ return false;}
-					bd.sErC(rinfo.room[r].idlist,1);
-					result = false;
-				}
-			}
-			return result;
-		};
 		ans.checkRippleNumber = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){

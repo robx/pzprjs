@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 なわばり版 nawabari.js v3.2.4
+// パズル固有スクリプト部 なわばり版 nawabari.js v3.2.5
 //
 Puzzles.nawabari = function(){ };
 Puzzles.nawabari.prototype = {
@@ -133,15 +133,15 @@ Puzzles.nawabari.prototype = {
 		ans.checkAns = function(){
 
 			var rinfo = area.getRoomInfo();
-			if( !this.checkAreaRect(rinfo, f_true) ){
+			if( !this.checkAreaRect(rinfo) ){
 				this.setAlert('部屋の形が長方形ではありません。','There is not rectangle territory.'); return false;
 			}
 
-			if( !this.checkQnumsInArea(rinfo, function(a){ return (a==0);}) ){
+			if( !this.checkNoNumber(rinfo) ){
 				this.setAlert('数字の入っていない部屋があります。','A territory has no numbers.'); return false;
 			}
 
-			if( !this.checkQnumsInArea(rinfo, function(a){ return (a>=2);}) ){
+			if( !this.checkDoubleNumber(rinfo) ){
 				this.setAlert('1つの部屋に2つ以上の数字が入っています。','A territory has plural numbers.'); return false;
 			}
 

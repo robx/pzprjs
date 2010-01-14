@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 美術館版 lightup.js v3.2.4
+// パズル固有スクリプト部 美術館版 lightup.js v3.2.5
 //
 Puzzles.lightup = function(){ };
 Puzzles.lightup.prototype = {
@@ -43,6 +43,8 @@ Puzzles.lightup.prototype = {
 						   " Click to input Akari (Light source) or determined white cells.");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 		base.proto = 1;
+
+		enc.pidKanpen = 'bijutsukan';
 	},
 	menufix : function(){
 		menu.addUseToFlags();
@@ -279,7 +281,7 @@ Puzzles.lightup.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkRowsCols() ){
+			if( !this.checkRowsColsPartly(this.isAkariCount, {}, function(cc){ return (bd.QnC(cc)!=-1);}, true) ){
 				this.setAlert('照明に別の照明の光が当たっています。','Akari is shined from another Akari.'); return false;
 			}
 
@@ -294,43 +296,14 @@ Puzzles.lightup.prototype = {
 			return true;
 		};
 
-		ans.checkRowsCols = function(){
-			var fx, fy, result = true;
-			for(var cy=0;cy<k.qrows;cy++){
-				var cnt=0;
-				for(var cx=0;cx<k.qcols;cx++){
-					if     ( bd.QnC(bd.cnum(cx,cy))!=-1){ cnt=0;}
-					else if( bd.QaC(bd.cnum(cx,cy))==1 ){ cnt++; if(cnt==1){ fx=cx;} }
-
-					if( cnt>=2 ){
-						if(this.inAutoCheck){ return false;}
-						for(var cx=fx;cx<k.qcols;cx++){
-							var cc = bd.cnum(cx,cy);
-							if( bd.QnC(cc)!=-1 ){ break;}
-							else if( bd.QaC(cc)==1 ){ bd.sErC([cc],4);}
-						}
-						result = false;
-					}
-				}
+		ans.isAkariCount = function(nullnum, clist, nullobj){
+			var akaris=[];
+			for(var i=0;i<clist.length;i++){
+				if( bd.QaC(clist[i])===1 ){ akaris.push(clist[i]);}
 			}
-			for(var cx=0;cx<k.qcols;cx++){
-				var cnt=0;
-				for(var cy=0;cy<k.qrows;cy++){
-					if     ( bd.QnC(bd.cnum(cx,cy))!=-1){ cnt=0;}
-					else if( bd.QaC(bd.cnum(cx,cy))==1 ){ cnt++; if(cnt==1){ fy=cy;} }
+			var result = (akaris.length<=1);
 
-					if( cnt>=2 ){
-						if(this.inAutoCheck){ return false;}
-						for(var cy=fy;cy<k.qrows;cy++){
-							var cc = bd.cnum(cx,cy);
-							if( bd.QnC(cc)!=-1 ){ break;}
-							else if( bd.QaC(cc)==1 ){ bd.sErC([cc],4);}
-						}
-						result = false;
-					}
-				}
-			}
-
+			if(!result){ bd.sErC(akaris,4);}
 			return result;
 		};
 	}

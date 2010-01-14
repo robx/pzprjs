@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.2.4
+// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.2.5
 //
 Puzzles.bonsan = function(){ };
 Puzzles.bonsan.prototype = {
@@ -221,17 +221,17 @@ Puzzles.bonsan.prototype = {
 
 			this.performAsLine = false;
 			var linfo = line.getLareaInfo();
-			if( !this.checkQnumsInArea(linfo, function(a){ return (a>=2);}) ){
+			if( !this.checkDoubleNumber(linfo) ){
 				this.setAlert('○が繋がっています。','There are connected circles.'); return false;
 			}
 			if( !this.checkLineOverLetter() ){
 				this.setAlert('○の上を線が通過しています。','A line goes through a circle.'); return false;
 			}
 
-			if( !this.checkAllArea(linfo, f_true, function(w,h,a){ return (w==1||h==1);} ) ){
+			if( !this.checkAllArea(linfo, f_true, function(w,h,a,n){ return (w==1||h==1);}) ){
 				this.setAlert('曲がっている線があります。','A line has curve.'); return false;
 			}
-			if( !this.checkOneNumber(linfo, function(num, a){ return (num>=0 && num!=a-1);}, f_true) ){
+			if( !this.checkAllArea(linfo, f_true, function(w,h,a,n){ return (n<0||n==a-1);}) ){
 				this.setAlert('数字と線の長さが違います。','The length of a line is wrong.'); return false;
 			}
 

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 島国版 shimaguni.js v3.2.4
+// パズル固有スクリプト部 島国版 shimaguni.js v3.2.5
 //
 Puzzles.shimaguni = function(){ };
 Puzzles.shimaguni.prototype = {
@@ -156,15 +156,21 @@ Puzzles.shimaguni.prototype = {
 				this.setAlert('海域内の数字と国のマス数が一致していません。','The number of black cells is not equals to the number.'); return false;
 			}
 
-			if( !this.checkSideAreaSize(rinfo, ee.binder(this, function(rinfo,r){ return this.getCellsOfRoom(rinfo, r, bd.isBlack);})) ){
+			if( !this.checkSideAreaSize(rinfo, ee.binder(this, function(rinfo,r){ return this.getCellsOfClist(rinfo.room[r].idlist, bd.isBlack);})) ){
 				this.setAlert('隣り合う海域にある国の大きさが同じです。','The size of countries that there are in adjacent marine areas are the same.'); return false;
 			}
 
-			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a==0);}) ){
+			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a>0);}) ){
 				this.setAlert('黒マスのカタマリがない海域があります。','A marine area has no black cells.'); return false;
 			}
 
 			return true;
+		};
+
+		ans.getCellsOfClist = function(clist, func){
+			var cnt = 0;
+			for(var i=0,len=clist.length;i<len;i++){ if(func(clist[i])){ cnt++;}}
+			return cnt;
 		};
 	}
 };

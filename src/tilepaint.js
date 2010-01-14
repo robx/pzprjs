@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.2.4
+// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.2.4p4
 //
 Puzzles.tilepaint = function(){ };
 Puzzles.tilepaint.prototype = {
@@ -328,49 +328,19 @@ Puzzles.tilepaint.prototype = {
 				this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both balck and white cells.'); return false;
 			}
 
-			if( !this.checkRowsCols() ){
+			if( !this.checkRowsColsPartly(this.isBCellCount, {}, function(cc){ return (bd.QuC(cc)==51);}, false) ){
 				this.setAlert('数字の下か右にある黒マスの数が間違っています。','The number of black cells underward or rightward is not correct.'); return false;
 			}
 
 			return true;
 		};
 
-		ans.checkRowsCols = function(){
-			for(var cy=0;cy<k.qrows;cy++){
-				var cnt = 0, clist = [], num = bd.QnE(bd.exnum(-1,cy));
-				bd.sErE([bd.exnum(-1,cy)],1);
-				for(var cx=0;cx<=k.qcols;cx++){
-					var cc = bd.cnum(cx,cy);
-					if(cx==k.qcols || bd.QuC(cc)==51){
-						if(clist.length>0 && num!=cnt){ bd.sErC(clist,1); return false;}
-
-						bd.sErE([bd.exnum(-1,cy)],0);
-						if(cx==k.qcols){ break;}
-						cnt = 0; clist = [], num = bd.QnC(cc);
+		ans.isBCellCount = function(number, clist, nullobj){
+			var count = 0;
+			for(var i=0;i<clist.length;i++){
+				if(bd.isBlack(clist[i])){ count++;}
 					}
-					else if(bd.isBlack(cc)){ cnt++;}
-					clist.push(cc);
-				}
-				bd.sErE([bd.exnum(-1,cy)],0);
-			}
-			for(var cx=0;cx<k.qcols;cx++){
-				var cnt = 0, clist = [], num = bd.DiE([bd.exnum(cx,-1)]);
-				bd.sErE([bd.exnum(cx,-1)],1);
-				for(var cy=0;cy<k.qrows;cy++){
-					var cc = bd.cnum(cx,cy);
-					if(cy==k.qrows || bd.QuC(cc)==51){
-						if(clist.length>0 && num!=cnt){ bd.sErC(clist,1); return false;}
-
-						bd.sErE([bd.exnum(cx,-1)],0);
-						if(cy==k.qrows){ break;}
-						cnt = 0; clist = [], num = bd.DiC(cc);
-					}
-					else if(bd.isBlack(cc)){ cnt++;}
-					clist.push(cc);
-				}
-				bd.sErE([bd.exnum(cx,-1)],0);
-			}
-
+			if(number>=0 && count!=number){ bd.sErC(clist,1); return false;}
 			return true;
 		};
 	}

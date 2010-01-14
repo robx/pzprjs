@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.2.4
+// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.2.4p4
 //
 Puzzles.tentaisho = function(){ };
 Puzzles.tentaisho.prototype = {
@@ -500,7 +500,7 @@ Puzzles.tentaisho.prototype = {
 				if(bd.rb(c)!=-1 && bd.QaB(bd.rb(c))==0 && bd.getStar(bd.snum(cx*2+2,cy*2+1))>0){
 					cnt++; ret=bd.snum(cx*2+2,cy*2+1);
 				}
-				if(bd.xnum(cx+1,cy+1)!=-1 && line.lcntCell(bd.xnum(cx+1,cy+1))==0 && bd.getStar(bd.snum(cx*2+2,cy*2+2))>0){
+				if(bd.xnum(cx+1,cy+1)!=-1 && area.lcntCross(bd.xnum(cx+1,cy+1))==0 && bd.getStar(bd.snum(cx*2+2,cy*2+2))>0){
 					cnt++; ret=bd.snum(cx*2+2,cy*2+2);
 				}
 

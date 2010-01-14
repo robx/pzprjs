@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぬりかべ版 nurikabe.js v3.2.4
+// パズル固有スクリプト部 ぬりかべ版 nurikabe.js v3.2.5
 //
 Puzzles.nurikabe = function(){ };
 Puzzles.nurikabe.prototype = {
@@ -148,7 +148,7 @@ Puzzles.nurikabe.prototype = {
 			}
 
 			var winfo = area.getWCellInfo();
-			if( !this.checkQnumsInArea(winfo, function(a){ return (a==0);}) ){
+			if( !this.checkNoNumber(winfo) ){
 				this.setAlert('数字の入っていないシマがあります。','An area of white cells has no numbers.'); return false;
 			}
 
@@ -156,7 +156,7 @@ Puzzles.nurikabe.prototype = {
 				this.setAlert('黒マスが分断されています。','Black cells are devided,'); return false;
 			}
 
-			if( !this.checkQnumsInArea(winfo, function(a){ return (a>=2);}) ){
+			if( !this.checkDoubleNumber(winfo) ){
 				this.setAlert('1つのシマに2つ以上の数字が入っています。','An area of white cells has plural numbers.'); return false;
 			}
 

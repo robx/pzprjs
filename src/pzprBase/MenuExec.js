@@ -1,4 +1,4 @@
-// MenuExec.js v3.2.4p3
+// MenuExec.js v3.2.4p4
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -92,11 +92,11 @@ MenuExec.prototype = {
 	urloutput : function(e){
 		if(menu.pop){
 			switch(ee.getSrcElement(e).name){
-				case "pzprv3":     document.urloutput.ta.value = enc.pzloutput(0); break;
-				case "pzprapplet": document.urloutput.ta.value = enc.pzloutput(1); break;
-				case "kanpen":     document.urloutput.ta.value = enc.pzloutput(2); break;
-				case "pzprv3edit": document.urloutput.ta.value = enc.pzloutput(3); break;
-				case "heyaapp":    document.urloutput.ta.value = enc.pzloutput(4); break;
+				case "pzprv3":     document.urloutput.ta.value = enc.pzloutput(enc.PZPRV3);  break;
+				case "pzprapplet": document.urloutput.ta.value = enc.pzloutput(enc.PAPRAPP); break;
+				case "kanpen":     document.urloutput.ta.value = enc.pzloutput(enc.KANPEN);  break;
+				case "pzprv3edit": document.urloutput.ta.value = enc.pzloutput(enc.PZPRV3E); break;
+				case "heyaapp":    document.urloutput.ta.value = enc.pzloutput(enc.HEYAAPP); break;
 			}
 		}
 	},
@@ -139,9 +139,8 @@ MenuExec.prototype = {
 			if(farray[i].match(/^http\:\/\//)){ break;}
 			fstr += (farray[i]+"/");
 		}
-		var ftype = (document.fileform.pencilbox.value=="0" ? 1 : 2);
 
-		fio.filedecode(fstr,ftype);
+		fio.filedecode(fstr);
 
 		document.fileform.reset();
 		tm.reset();

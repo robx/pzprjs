@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へびいちご版 snakes.js v3.2.4
+// パズル固有スクリプト部 へびいちご版 snakes.js v3.2.5
 //
 Puzzles.snakes = function(){ };
 Puzzles.snakes.prototype = {
@@ -230,11 +230,11 @@ Puzzles.snakes.prototype = {
 		ans.checkAns = function(){
 
 			var sinfo = this.getSnakeInfo();
-			if( !this.checkAllArea(sinfo, f_true, function(w,h,a){ return (a==5);} ) ){
+			if( !this.checkAllArea(sinfo, f_true, function(w,h,a,n){ return (a==5);} ) ){
 				this.setAlert('大きさが５ではない蛇がいます。','The size of a snake is not five.'); return false;
 			}
 
-			if( !this.checkDifferentNumberInRoom(sinfo) ){
+			if( !this.checkDifferentNumberInRoom(sinfo, bd.QaC) ){
 				this.setAlert('同じ数字が入っています。','A Snake has same plural marks.'); return false;
 			}
 
@@ -277,24 +277,6 @@ Puzzles.snakes.prototype = {
 			return;
 		};
 
-		ans.checkDifferentNumberInRoom = function(sinfo){
-			var result = true;
-			for(var r=1;r<=sinfo.max;r++){
-				var d = {1:0,2:0,3:0,4:0,5:0};
-				for(var i=0;i<sinfo.room[r].idlist.length;i++){
-					var val = bd.QaC(sinfo.room[r].idlist[i]);
-					if(val==-1){ continue;}
-
-					if(d[val]==0){ d[val]++;}
-					else if(d[val]>0){
-						if(this.inAutoCheck){ return false;}
-						bd.sErC(sinfo.room[r].idlist,1);
-						result = false;
-					}
-				}
-			}
-			return result;
-		};
 		ans.checkSideCell2 = function(sinfo){
 			var result = true;
 			var func = function(sinfo,c1,c2){ return (sinfo.id[c1]>0 && sinfo.id[c2]>0 && sinfo.id[c1]!=sinfo.id[c2]);};

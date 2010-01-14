@@ -1,4 +1,4 @@
-// Filesys.js v3.2.4p3
+// Filesys.js v3.2.4p4
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -15,27 +15,31 @@ FileIO = function(){
 	this.DBtype = 0;
 	this.DBsid  = -1;
 	this.DBlist = [];
+
+	// 定数(ファイル形式)
+	this.PZPR = 1;
+	this.PBOX = 2;
 };
 FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	// fio.filedecode() ファイルを開く時、ファイルデータからのデコード実行関数
 	//                  [menu.ex.fileopen] -> [fileio.xcg@iframe] -> [ここ]
 	//---------------------------------------------------------------------------
-	filedecode : function(datastr, type){
+	filedecode : function(datastr){
 		this.filever = 0;
 		this.lineseek = 0;
 		this.dataarray = datastr.split("/");
+		var type = this.PZPR;
 
 		// ヘッダの処理
-		if(type===1){
-			if(!this.readLine().match(/pzprv3\.?(\d+)?/)){ alert('ぱずぷれv3形式のファイルではありません。'); return;}
+		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
-
 			if(this.readLine()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。'); return;}
+			type = this.PZPR;
 		}
-		else if(type===2){
-			if(this.readLine().match(/pzprv3/)){ alert('pencilboxのファイルではありません。'); return;}
+		else{
 			this.lineseek = 0;
+			type = this.PBOX;
 		}
 
 		// サイズを表す文字列
@@ -73,8 +77,8 @@ FileIO.prototype = {
 		this.urlstr = "";
 
 		// メイン処理
-		if     (type===1){ this.encodeData();}
-		else if(type===2){ this.kanpenSave();}
+		if     (type===this.PZPR){ this.encodeData();}
+		else if(type===this.PBOX){ this.kanpenSave();}
 
 		// サイズを表す文字列
 		if(!this.sizestr){ this.sizestr = [k.qrows, k.qcols].join("/");}
@@ -89,7 +93,7 @@ FileIO.prototype = {
 
 		// 末尾のURL追加処理
 		if(type===1){
-			this.urlstr = enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? 0 : 2);
+			this.urlstr = enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? enc.PZPRV3 : enc.KANPEN);
 		}
 
 		return bstr;

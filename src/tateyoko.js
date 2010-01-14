@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.2.4
+// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.2.5
 //
 Puzzles.tateyoko = function(){ };
 Puzzles.tateyoko.prototype = {
@@ -379,7 +379,7 @@ Puzzles.tateyoko.prototype = {
 
 			for(var i=0;i<bd.cellmax;i++){ bd.sErC([i],2);}
 			var binfo = this.getBarInfo();
-			if( !this.checkQnumsInArea(binfo, function(a){ return (a>=2);}) ){
+			if( !this.checkDoubleNumber(binfo) ){
 				this.setAlert('1つの棒に2つ以上の数字が入っています。','A line passes plural numbers.'); return false;
 			}
 

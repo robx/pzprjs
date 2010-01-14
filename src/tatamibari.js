@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.2.4
+// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.2.5
 //
 Puzzles.tatamibari = function(){ };
 Puzzles.tatamibari.prototype = {
@@ -51,7 +51,7 @@ Puzzles.tatamibari.prototype = {
 		// マウス入力系
 		mv.mousedown = function(){
 			if(k.editmode){
-				if(!kp.enabled()){ this.inputQues([0,101,102,103,-2]);}
+				if(!kp.enabled()){ this.inputqnum();}
 				else{ kp.display();}
 			}
 			else if(k.playmode){
@@ -77,12 +77,12 @@ Puzzles.tatamibari.prototype = {
 			if(k.playmode){ return false;}
 			var cc = tc.getTCC();
 
-			if     (ca=='q'||ca=='1'){ bd.sQuC(cc,101); }
-			else if(ca=='w'||ca=='2'){ bd.sQuC(cc,102); }
-			else if(ca=='e'||ca=='3'){ bd.sQuC(cc,103); }
-			else if(ca=='r'||ca=='4'){ bd.sQuC(cc,  0); }
-			else if(ca==' '         ){ bd.sQuC(cc,  0); }
-			else if(ca=='-'         ){ bd.sQuC(cc, (bd.QuC(cc)!=-2?-2:0)); }
+			if     (ca=='q'||ca=='1'){ bd.sQnC(cc, 1); }
+			else if(ca=='w'||ca=='2'){ bd.sQnC(cc, 2); }
+			else if(ca=='e'||ca=='3'){ bd.sQnC(cc, 3); }
+			else if(ca=='r'||ca=='4'){ bd.sQnC(cc,-1); }
+			else if(ca==' '         ){ bd.sQnC(cc,-1); }
+			else if(ca=='-'         ){ bd.sQnC(cc,(bd.QnC(cc)!=-2?-2:-1)); }
 			else{ return false;}
 
 			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
@@ -105,6 +105,8 @@ Puzzles.tatamibari.prototype = {
 				kc.key_inputMarks(ca);
 			};
 		}
+
+		bd.maxnum = 3;
 	},
 
 
@@ -139,15 +141,15 @@ Puzzles.tatamibari.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				var qs = bd.cell[c].ques;
-				if(qs===101||qs===102){
+				var qn = bd.cell[c].qnum;
+				if(qn===1||qn===2){
 					if(this.vnop(headers[0]+c,1)){
 						g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-1, bd.cell[c].py+mf((k.cheight+lw)*0.15), lw, mf((k.cheight+lw)*0.7));
 					}
 				}
 				else{ this.vhide(headers[0]+c);}
 
-				if(qs===101||qs===103){
+				if(qn===1||qn===3){
 					if(this.vnop(headers[1]+c,1)){
 						g.fillRect(bd.cell[c].px+mf((k.cwidth+lw)*0.15), bd.cell[c].py+mf(k.cheight/2)-1, mf((k.cwidth+lw)*0.7), lw);
 					}
@@ -173,10 +175,10 @@ Puzzles.tatamibari.prototype = {
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
-				if     (ca == '.')             { bd.sQuC(c, -2); c++;}
-				else if(ca == '1')             { bd.sQuC(c, 102); c++;}
-				else if(ca == '2')             { bd.sQuC(c, 103); c++;}
-				else if(ca == '3')             { bd.sQuC(c, 101); c++;}
+				if     (ca == '.')             { bd.sQnC(c,-2); c++;}
+				else if(ca == '1')             { bd.sQnC(c, 2); c++;}
+				else if(ca == '2')             { bd.sQnC(c, 3); c++;}
+				else if(ca == '3')             { bd.sQnC(c, 1); c++;}
 				else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-15);}
 				else{ c++;}
 
@@ -192,10 +194,10 @@ Puzzles.tatamibari.prototype = {
 
 			count=0;
 			for(i=0;i<bd.cellmax;i++){
-				if     (bd.QuC(i) ==  -2){ pstr = ".";}
-				else if(bd.QuC(i) == 101){ pstr = "3";}
-				else if(bd.QuC(i) == 102){ pstr = "1";}
-				else if(bd.QuC(i) == 103){ pstr = "2";}
+				if     (bd.QnC(i) == -2){ pstr = ".";}
+				else if(bd.QnC(i) ==  1){ pstr = "3";}
+				else if(bd.QnC(i) ==  2){ pstr = "1";}
+				else if(bd.QnC(i) ==  3){ pstr = "2";}
 				else{ pstr = ""; count++;}
 
 				if(count==0){ cm += pstr;}
@@ -209,20 +211,20 @@ Puzzles.tatamibari.prototype = {
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			this.decodeCell( function(c,ca){
-				if     (ca=="a"){ bd.sQuC(c, 102);}
-				else if(ca=="b"){ bd.sQuC(c, 103);}
-				else if(ca=="c"){ bd.sQuC(c, 101);}
-				else if(ca=="-"){ bd.sQuC(c, -2);}
+				if     (ca=="a"){ bd.sQnC(c, 2);}
+				else if(ca=="b"){ bd.sQnC(c, 3);}
+				else if(ca=="c"){ bd.sQnC(c, 1);}
+				else if(ca=="-"){ bd.sQnC(c,-2);}
 			});
 			this.decodeBorderAns();
 		};
 		fio.encodeData = function(){
 			this.encodeCell( function(c){
-				if     (bd.QuC(c)==-2) { return "- ";}
-				else if(bd.QuC(c)==101){ return "c ";}
-				else if(bd.QuC(c)==102){ return "a ";}
-				else if(bd.QuC(c)==103){ return "b ";}
-				else                   { return ". ";}
+				if     (bd.QnC(c)==-2){ return "- ";}
+				else if(bd.QnC(c)== 1){ return "c ";}
+				else if(bd.QnC(c)== 2){ return "a ";}
+				else if(bd.QnC(c)== 3){ return "b ";}
+				else                  { return ". ";}
 			});
 			this.encodeBorderAns();
 		};
@@ -238,25 +240,25 @@ Puzzles.tatamibari.prototype = {
 			}
 
 			var rinfo = area.getRoomInfo();
-			if( !this.checkAllArea(rinfo, function(id){ return (bd.QuC(id)!=0);}, function(w,h,a){ return (a!=0);} ) ){
+			if( !this.checkNoNumber(rinfo) ){
 				this.setAlert('記号の入っていないタタミがあります。','A tatami has no marks.'); return false;
 			}
 
-			if( !this.checkAllArea(this.generateTatami(rinfo,101), f_true, function(w,h,a){ return (a<=0||(w*h!=a)||w==h);} ) ){
+			if( !this.checkAllArea(rinfo, f_true, function(w,h,a,n){ return (n!=1||a<=0||(w*h!=a)||w==h);} ) ){
 				this.setAlert('正方形でないタタミがあります。','A tatami is not regular rectangle.'); return false;
 			}
-			if( !this.checkAllArea(this.generateTatami(rinfo,103), f_true, function(w,h,a){ return (a<=0||(w*h!=a)||w>h);} ) ){
+			if( !this.checkAllArea(rinfo, f_true, function(w,h,a,n){ return (n!=3||a<=0||(w*h!=a)||w>h);} ) ){
 				this.setAlert('横長ではないタタミがあります。','A tatami is not horizontally long rectangle.'); return false;
 			}
-			if( !this.checkAllArea(this.generateTatami(rinfo,102), f_true, function(w,h,a){ return (a<=0||(w*h!=a)||w<h);} ) ){
+			if( !this.checkAllArea(rinfo, f_true, function(w,h,a,n){ return (n!=2||a<=0||(w*h!=a)||w<h);} ) ){
 				this.setAlert('縦長ではないタタミがあります。','A tatami is not vertically long rectangle.'); return false;
 			}
 
-			if( !this.checkAllArea(rinfo, function(id){ return (bd.QuC(id)!=0);}, function(w,h,a){ return (a<2);} ) ){
+			if( !this.checkDoubleNumber(rinfo) ){
 				this.setAlert('1つのタタミに2つ以上の記号が入っています。','A tatami has plural marks.'); return false;
 			}
 
-			if( !this.checkAreaRect(rinfo, f_true) ){
+			if( !this.checkAreaRect(rinfo) ){
 				this.setAlert('タタミの形が長方形ではありません。','A tatami is not rectangle.'); return false;
 			}
 
@@ -265,24 +267,6 @@ Puzzles.tatamibari.prototype = {
 			}
 
 			return true;
-		};
-
-		ans.generateTatami = function(rbase, num){
-			var rinfo = new AreaInfo();
-			for(var c=0;c<bd.cellmax;c++){ rinfo[c]=-1;}
-			for(var r=1;r<=rbase.max;r++){
-				var cnt=0; var cntall=0;
-				for(var i=0;i<rbase.room[r].idlist.length;i++){
-					if(bd.QuC(rbase.room[r].idlist[i])==num){ cnt++;   }
-					if(bd.QuC(rbase.room[r].idlist[i])!=0  ){ cntall++;}
-				}
-				if(cnt==1 && cntall==1){
-					rinfo.max++;
-					for(var i=0;i<rbase.room[r].idlist.length;i++){ rinfo.id[rbase.room[r].idlist[i]]=rinfo.max;}
-					rinfo.room[rinfo.max] = {idlist:rbase.room[r].idlist};
-				}
-			}
-			return rinfo;
 		};
 	}
 };

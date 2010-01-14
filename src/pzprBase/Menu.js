@@ -1,4 +1,4 @@
-// Menu.js v3.2.4p3
+// Menu.js v3.2.4p4
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -44,6 +44,7 @@ Menu = function(){
 	var smenu_funcs  = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout), click:ee.ebinder(this, this.submenuclick)};
 	var select_funcs = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout)};
 	this.EL_SMENU    = ee.addTemplate('','div' , {className:'smenu'}, null, smenu_funcs);
+	this.EL_SPARENT  = ee.addTemplate('','div' , {className:'smenu'}, null, select_funcs);
 	this.EL_SELECT   = ee.addTemplate('','div' , {className:'smenu'}, {fontWeight :'900', fontSize:'10pt'}, select_funcs);
 	this.EL_SEPARATE = ee.addTemplate('','div' , {className:'smenusep', innerHTML:'&nbsp;'}, null, null);
 	this.EL_CHECK    = ee.addTemplate('','div' , {className:'smenu'}, {paddingLeft:'6pt', fontSize:'10pt'}, smenu_funcs);
@@ -58,6 +59,7 @@ Menu = function(){
 
 	// ElementTemplate : ボタン
 	this.EL_BUTTON = ee.addTemplate('','input', {type:'button'}, null, null);
+	this.EL_UBUTTON = ee.addTemplate('btnarea','input', {type:'button'}, null, null);
 };
 Menu.prototype = {
 	//---------------------------------------------------------------------------
@@ -133,7 +135,7 @@ Menu.prototype = {
 			if(!!menu){ menu.el.innerHTML = "["+pp.getMenuStr(idname)+"]";}
 			break;
 
-		case pp.SMENU: case pp.LABEL:
+		case pp.SMENU: case pp.LABEL: case pp.SPARENT:
 			var smenu = ee('ms_'+idname);
 			if(!!smenu){ smenu.el.innerHTML = pp.getMenuStr(idname);}
 			break;
@@ -152,7 +154,7 @@ Menu.prototype = {
 			if(!!smenu){ smenu.el.innerHTML = (issel?"+":"&nbsp;")+cap;}	// メニューの項目
 			if(!!manage){													// 管理領域の項目
 				manage.el.innerHTML = cap;
-				manage.el.className = (issel?"flagsel":"flag");
+				manage.el.className = (issel?"childsel":"child");
 			}
 			break;
 
@@ -173,12 +175,14 @@ Menu.prototype = {
 	//---------------------------------------------------------------------------
 	menuarea : function(){
 		var am = ee.binder(pp, pp.addMenu),
+			at = ee.binder(pp, pp.addSParent),
 			as = ee.binder(pp, pp.addSmenu),
 			au = ee.binder(pp, pp.addSelect),
 			ac = ee.binder(pp, pp.addCheck),
 			aa = ee.binder(pp, pp.addCaption),
 			ai = ee.binder(pp, pp.addChild),
 			ap = ee.binder(pp, pp.addSeparator),
+			af = ee.binder(pp, pp.addFlagOnly),
 			sl = ee.binder(pp, pp.setLabel);
 
 		// *ファイル ==========================================================
@@ -187,16 +191,17 @@ Menu.prototype = {
 		as('newboard', 'file', '新規作成','New Board');
 		as('urlinput', 'file', 'URL入力', 'Import from URL');
 		as('urloutput','file', 'URL出力', 'Export URL');
-		ap('sep_2', 'file');
+		ap('sep_file', 'file');
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
-		as('filesave', 'file', 'ファイル保存',  'Save the file as ...');
+		at('filesavep', 'file', 'ファイル保存 ->',  'Save the file as ... ->');
 		if(!!fio.DBtype){
 			as('database', 'file', 'データベースの管理', 'Database Management');
 		}
+
+		// *ファイル - ファイル保存 -------------------------------------------
+		as('filesave',  'filesavep', 'ぱずぷれv3形式',  'Puz-Pre v3 format');
 		if(this.ispencilbox){
-			ap('sep_3', 'file');
-			as('fileopen2', 'file', 'pencilboxのファイルを開く', 'Open the pencilbox file');
-			as('filesave2', 'file', 'pencilboxのファイルを保存', 'Save the pencilbox file as ...');
+			as('filesave2', 'filesavep', 'pencilbox形式', 'Pencilbox format');
 		}
 
 		// *編集 ==============================================================
@@ -209,12 +214,12 @@ Menu.prototype = {
 		am('disp', "表示", "Display");
 
 		au('size','disp',k.widthmode,[0,1,2,3,4], '表示サイズ','Cell Size');
-		ap('sep_4',  'disp');
+		ap('sep_disp1',  'disp');
 
 		if(!!k.irowake){
 			ac('irowake','disp',(k.irowake==2?true:false),'線の色分け','Color coding');
 			sl('irowake', '線の色分けをする', 'Color each lines');
-			ap('sep_5', 'disp');
+			ap('sep_disp2', 'disp');
 		}
 		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
@@ -234,6 +239,9 @@ Menu.prototype = {
 		if(k.EDITOR){
 			au('mode','setting',(k.editmode?1:3),[1,3],'モード', 'mode');
 			sl('mode','モード', 'mode');
+		}
+		else{
+			af('mode', 3);
 		}
 
 		puz.menufix();	// 各パズルごとのメニュー追加
@@ -259,11 +267,12 @@ Menu.prototype = {
 		am('other', "その他", "Others");
 
 		as('credit',  'other', 'ぱずぷれv3について',   'About PUZ-PRE v3');
-		aa('cap_others1', 'other', 'リンク', 'Link');
-		as('jumpv3',  'other', 'ぱずぷれv3のページへ', 'Jump to PUZ-PRE v3 page');
-		as('jumptop', 'other', '連続発破保管庫TOPへ',  'Jump to indi.s58.xrea.com');
-		as('jumpblog','other', 'はっぱ日記(blog)へ',   'Jump to my blog');
-		//sm('eval', 'テスト用', 'for Evaluation');
+		ap('sep_other','other');
+		at('link',     'other', 'リンク', 'Link');
+		// *その他 - リンク -----------------------------------------------------
+		as('jumpv3',  'link', 'ぱずぷれv3のページへ', 'Jump to PUZ-PRE v3 page');
+		as('jumptop', 'link', '連続発破保管庫TOPへ',  'Jump to indi.s58.xrea.com');
+		as('jumpblog','link', 'はっぱ日記(blog)へ',   'Jump to my blog');
 
 		this.createAllFloat();
 	},
@@ -311,6 +320,10 @@ Menu.prototype = {
 				case pp.SMENU:    smenu = ee.createEL(this.EL_SMENU,   smenuid); break;
 				case pp.CHECK:    smenu = ee.createEL(this.EL_CHECK,   smenuid); break;
 				case pp.CHILD:    smenu = ee.createEL(this.EL_CHILD,   smenuid); break;
+				case pp.SPARENT:
+					var dispnormal = (pp.getMenuStr(id).indexOf("->")>=0);
+					smenu = ee.createEL((dispnormal ? this.EL_SPARENT : this.EL_SELECT), smenuid);
+					break;
 				default: continue; break;
 			}
 
@@ -374,12 +387,16 @@ Menu.prototype = {
 	submenuhover : function(e){
 		var idname = ee.getSrcElement(e).id.substr(3);
 		if(ee.getSrcElement(e).className==="smenu"){ ee.getSrcElement(e).className="smenusel";}
-		if(pp.flags[idname] && pp.type(idname)===pp.SELECT){ this.floatmenuopen(e,idname,this.dispfloat.length);}
+		if(pp.flags[idname] && (pp.type(idname)===pp.SELECT || pp.type(idname)===pp.SPARENT)){
+			this.floatmenuopen(e,idname,this.dispfloat.length);
+		}
 	},
 	submenuout   : function(e){
 		var idname = ee.getSrcElement(e).id.substr(3);
 		if(ee.getSrcElement(e).className==="smenusel"){ ee.getSrcElement(e).className="smenu";}
-		if(pp.flags[idname] && pp.type(idname)===pp.SELECT){ this.floatmenuout(e);}
+		if(pp.flags[idname] && (pp.type(idname)===pp.SELECT || pp.type(idname)===pp.SPARENT)){
+			this.floatmenuout(e);
+		}
 	},
 	submenuclick : function(e){
 		var idname = ee.getSrcElement(e).id.substr(3);
@@ -527,11 +544,20 @@ Menu.prototype = {
 		if(!!ee('ck_keypopup')){ pp.funcs.keypopup();}
 
 		// (Canvas下) ボタンの初期設定
+		ee.createEL(this.EL_UBUTTON, 'btncheck');
+		ee('btnarea').appendHTML('&nbsp;');
+		ee.createEL(this.EL_UBUTTON, 'btnundo');
+		ee.createEL(this.EL_UBUTTON, 'btnredo');
+		ee('btnarea').appendHTML('&nbsp;');
+		ee.createEL(this.EL_UBUTTON, 'btnclear');
+		ee.createEL(this.EL_UBUTTON, 'btnclear2');
+
 		this.addButtons(ee("btncheck").el,  ee.binder(ans, ans.check),             "チェック", "Check");
 		this.addButtons(ee("btnundo").el,   ee.binder(um, um.undo),                "戻",       "<-");
 		this.addButtons(ee("btnredo").el,   ee.binder(um, um.redo),                "進",       "->");
 		this.addButtons(ee("btnclear").el,  ee.binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
 		this.addButtons(ee("btnclear2").el, ee.binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
+
 		if(k.irowake!=0){
 			var el = ee.createEL(this.EL_BUTTON, 'btncolor2');
 			this.addButtons(el, ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
@@ -801,6 +827,7 @@ Properties = function(){
 
 	// const
 	this.MENU     = 6;
+	this.SPARENT  = 7;
 	this.SMENU    = 0;
 	this.SELECT   = 1;
 	this.CHECK    = 2;
@@ -816,15 +843,20 @@ Properties.prototype = {
 
 	//---------------------------------------------------------------------------
 	// pp.addMenu()      メニュー最上位の情報を登録する
+	// pp.addSParent()   フロートメニューを開くサブメニュー項目を登録する
 	// pp.addSmenu()     Popupメニューを開くサブメニュー項目を登録する
 	// pp.addCaption()   Captionとして使用するサブメニュー項目を登録する
 	// pp.addSeparator() セパレータとして使用するサブメニュー項目を登録する
 	// pp.addCheck()     選択型サブメニュー項目に表示する文字列を設定する
 	// pp.addSelect()    チェック型サブメニュー項目に表示する文字列を設定する
 	// pp.addChild()     チェック型サブメニュー項目の子要素を設定する
+	// pp.addFlagOnly()  情報のみを登録する
 	//---------------------------------------------------------------------------
 	addMenu : function(idname, strJP, strEN){
 		this.addFlags(idname, '', this.MENU, 0, strJP, strEN);
+	},
+	addSParent : function(idname, parent, strJP, strEN){
+		this.addFlags(idname, parent, this.SPARENT, 0, strJP, strEN);
 	},
 
 	addSmenu : function(idname, parent, strJP, strEN){
@@ -848,6 +880,10 @@ Properties.prototype = {
 	addChild : function(idname, parent, strJP, strEN){
 		var list = idname.split("_");
 		this.addFlags(idname, list[0], this.CHILD, list[1], strJP, strEN);
+	},
+
+	addFlagOnly : function(idname, first){
+		this.addFlags(idname, '', '', first, '', '');
 	},
 
 	//---------------------------------------------------------------------------
@@ -900,9 +936,10 @@ Properties.prototype = {
 	funcs : {
 		urlinput  : function(){ menu.pop = ee("pop1_2");},
 		urloutput : function(){ menu.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
-		filesave  : function(){ menu.ex.filesave(1);},
+		fileopen  : function(){ menu.pop = ee("pop1_4");},
+		filesave  : function(){ menu.ex.filesave(fio.PZPR);},
 		database  : function(){ menu.pop = ee("pop1_8"); fio.getDataTableList();},
-		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave(2);}},
+		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave(fio.PBOX);}},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
 		credit    : function(){ menu.pop = ee("pop3_1");},
@@ -925,15 +962,6 @@ Properties.prototype = {
 				document.newboard.row.value = k.qrows;
 			}
 			k.enableKey = false;
-		},
-		fileopen : function(){
-			document.fileform.pencilbox.value = "0";
-			if(!menu.pop){ menu.pop = ee("pop1_4");}
-		},
-		fileopen2 : function(){
-			if(!fio.kanpenOpen){ return;}
-			document.fileform.pencilbox.value = "1";
-			if(!menu.pop){ menu.pop = ee("pop1_4");}
 		},
 		dispsize : function(){
 			menu.pop = ee("pop4_1");
@@ -965,18 +993,19 @@ var debug = {
 		document.testform.perfload.onclick  = ee.binder(this, this.loadperf);
 
 		document.testform.filesave.onclick  = ee.binder(this, this.filesave);
-		document.testform.fileopen.onclick  = ee.binder(this, this.fileopen);
 		document.testform.pbfilesave.onclick  = ee.binder(this, this.filesave_pencilbox);
-		document.testform.pbfileopen.onclick  = ee.binder(this, this.fileopen_pencilbox);
+
+		document.testform.fileopen.onclick  = ee.binder(this, this.fileopen);
 
 		document.testform.erasetext.onclick = ee.binder(this, this.erasetext);
 		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
+
+		document.testform.testarea.style.fontSize = '10pt';
 
 		document.testform.starttest.style.display = 'none';
 
 		document.testform.perfload.style.display = (k.puzzleid!=='country' ? 'none' : 'inline');
 		document.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
-		document.testform.pbfileopen.style.display = (!menu.ispencilbox ? 'none' : 'inline');
 
 		if(k.scriptcheck){ debug.testonly_func();}	// テスト用
 	},
@@ -999,25 +1028,17 @@ var debug = {
 	},
 
 	filesave : function(){
-		this.setTA('');
-		this.setTA(fio.fileencode(1).replace(/\//g,"\n"));
+		this.setTA(fio.fileencode(fio.PZPR).replace(/\//g,"\n"));
 		this.addTA('');
 		this.addTA(fio.urlstr);
 	},
-	fileopen : function(){
-		var dataarray = this.getTA().split("\n");
-		if(!dataarray[0].match(/pzprv3/)){ return;}
-		fio.filedecode(dataarray.join("/"),1);
+	filesave_pencilbox : function(){
+		this.setTA(fio.fileencode(fio.PBOX).replace(/\//g,"\n"));
 	},
 
-	filesave_pencilbox : function(){
-		this.setTA('');
-		this.setTA(fio.fileencode(2).replace(/\//g,"\n"));
-	},
-	fileopen_pencilbox : function(){
+	fileopen : function(){
 		var dataarray = this.getTA().split("\n");
-		if(dataarray[0].match(/pzprv3/)){ return;}
-		fio.filedecode(dataarray.join("/"),2);
+		fio.filedecode(dataarray.join("/"));
 	},
 
 	erasetext : function(){
@@ -1048,7 +1069,7 @@ var debug = {
 	},
 
 	loadperf : function(){
-		fio.filedecode("pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /",1);
+		fio.filedecode("pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /");
 		pp.setVal('mode',3);
 		pp.setVal('irowake',true);
 	},

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボーダーブロック版 bdblock.js v3.2.4
+// パズル固有スクリプト部 ボーダーブロック版 bdblock.js v3.2.5
 //
 Puzzles.bdblock = function(){ };
 Puzzles.bdblock.prototype = {
@@ -152,7 +152,7 @@ Puzzles.bdblock.prototype = {
 			}
 
 			rinfo = area.getRoomInfo();
-			if( !this.checkNoObjectInRoom(rinfo, ee.binder(bd, bd.QnC)) ){
+			if( !this.checkNoNumber(rinfo) ){
 				this.setAlert('数字のないブロックがあります。','A block has no number.'); return false;
 			}
 			if( !this.checkSameObjectInRoom(rinfo, ee.binder(bd, bd.QnC)) ){

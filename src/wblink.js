@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.2.4
+// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.2.5
 //
 Puzzles.wblink = function(){ };
 Puzzles.wblink.prototype = {
@@ -225,7 +225,7 @@ Puzzles.wblink.prototype = {
 
 			this.performAsLine = true;
 			var linfo = line.getLareaInfo();
-			if( !this.checkOneNumber(linfo, function(a,cnt){ return (cnt>=3);}, function(c){ return (bd.QuC(c)!=0);} ) ){
+			if( !this.checkAllArea(linfo, function(c){ return (bd.QuC(c)!=0);}, function(w,h,a,n){ return (a<3);}) ){
 				this.setAlert('3つ以上の○が繋がっています。','Three or more objects are connected.'); return false;
 			}
 

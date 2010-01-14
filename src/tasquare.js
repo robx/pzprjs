@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たすくえあ版 tasquare.js v3.2.4
+// パズル固有スクリプト部 たすくえあ版 tasquare.js v3.2.5
 //
 Puzzles.tasquare = function(){ };
 Puzzles.tasquare.prototype = {
@@ -152,7 +152,7 @@ Puzzles.tasquare.prototype = {
 		ans.checkAns = function(){
 
 			var binfo = area.getBCellInfo();
-			if( !this.checkAllArea(binfo, f_true, function(w,h,a){ return (w*h==a && w==h);} ) ){
+			if( !this.checkAllArea(binfo, f_true, function(w,h,a,n){ return (w*h==a && w==h);} ) ){
 				this.setAlert('正方形でない黒マスのカタマリがあります。','A mass of black cells is not regular rectangle.'); return false;
 			}
 

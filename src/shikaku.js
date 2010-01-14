@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.2.4
+// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.2.5
 //
 Puzzles.shikaku = function(){ };
 Puzzles.shikaku.prototype = {
@@ -155,15 +155,15 @@ Puzzles.shikaku.prototype = {
 		ans.checkAns = function(){
 
 			var rinfo = area.getRoomInfo();
-			if( !this.checkQnumsInArea(rinfo, function(a){ return (a==0);}) ){
+			if( !this.checkNoNumber(rinfo) ){
 				this.setAlert('数字の入っていない領域があります。','An area has no numbers.'); return false;
 			}
 
-			if( !this.checkQnumsInArea(rinfo, function(a){ return (a>=2);}) ){
+			if( !this.checkDoubleNumber(rinfo) ){
 				this.setAlert('1つの領域に2つ以上の数字が入っています。','An area has plural numbers.'); return false;
 			}
 
-			if( !this.checkAllArea(rinfo, f_true, function(w,h,a){ return (w*h==a);} ) ){
+			if( !this.checkAreaRect(rinfo) ){
 				this.setAlert('四角形ではない領域があります。','An area is not rectangle.'); return false;
 			}
 

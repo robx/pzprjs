@@ -1,4 +1,4 @@
-// for_test.js v3.2.4p3
+// for_test.js v3.2.4p4
 
 debug.extend({
 	testonly_func : function(){
@@ -83,7 +83,7 @@ debug.extend({
 	},
 
 	accheck1 : function(){
-		var outputstr = fio.fileencode(1);
+		var outputstr = fio.fileencode(fio.PZPR);
 
 		ans.inCheck = true;
 		ans.disableSetError();
@@ -115,8 +115,8 @@ debug.extend({
 				var pfg = enc.uri.pflag;
 				var str = enc.uri.bstr;
 
-				var inp = enc.getURLbase()+k.puzzleid+(pfg?("/"+pfg):"")+("/"+col)+("/"+row)+("/"+str);
-				var ta  = enc.pzloutput(0);
+				var inp = enc.getURLBase(enc.PZPRV3)+(pfg?(pfg+"/"):"")+(col+"/"+row)+("/"+str);
+				var ta  = enc.pzloutput(enc.PZPRV3);
 
 				debug.addTextarea("Encode test   = "+(inp==ta?"pass":"failure...<BR> "+inp+"<BR> "+ta));
 
@@ -130,7 +130,7 @@ debug.extend({
 			(function(){
 				var bd2 = debug.bd_freezecopy();
 
-				document.urlinput.ta.value = enc.pzloutput(2);
+				document.urlinput.ta.value = enc.pzloutput(enc.KANPEN);
 				menu.pop = ee("pop1_5");
 				menu.ex.urlinput({});
 
@@ -146,7 +146,7 @@ debug.extend({
 			(function(){
 				alstr = debug.acs[k.puzzleid][n][0];
 				qstr  = debug.acs[k.puzzleid][n][1];
-				fio.filedecode(debug.acs[k.puzzleid][n][1],1);
+				fio.filedecode(debug.acs[k.puzzleid][n][1]);
 				setTimeout(function(){
 					ans.inCheck = true;
 					ans.alstr = { jp:'' ,en:''};
@@ -175,7 +175,7 @@ debug.extend({
 		//FileIO test--------------------------------------------------------------
 		case 30:
 			(function(){
-				var outputstr = fio.fileencode(1);
+				var outputstr = fio.fileencode(fio.PZPR);
 
 				var bd2 = debug.bd_freezecopy();
 
@@ -184,17 +184,17 @@ debug.extend({
 				base.resize_canvas();
 
 				setTimeout(function(){
-					fio.filedecode(outputstr,1);
+					fio.filedecode(outputstr);
 					debug.addTextarea("FileIO test   = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 
-					fio.filedecode(debug.acs[k.puzzleid][debug.acs[k.puzzleid].length-1][1],1);
+					fio.filedecode(debug.acs[k.puzzleid][debug.acs[k.puzzleid].length-1][1]);
 					debug.phase = (k.puzzleid != 'tawa')?40:50;
 				},fint);
 			})();
 			break;
 		case 31:
 			(function(){
-				var outputstr = fio.fileencode(2);
+				var outputstr = fio.fileencode(fio.PBOX);
 
 				var bd2 = debug.bd_freezecopy();
 
@@ -203,7 +203,7 @@ debug.extend({
 				base.resize_canvas();
 
 				setTimeout(function(){
-					fio.filedecode(outputstr,2);
+					fio.filedecode(outputstr);
 
 					debug.qsubf = !(k.puzzleid=='fillomino'||k.puzzleid=='hashikake'||k.puzzleid=='kurodoko'||k.puzzleid=='shikaku'||k.puzzleid=='tentaisho');
 					debug.addTextarea("FileIO kanpen = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));

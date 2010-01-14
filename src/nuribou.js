@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぬりぼう版 nuribou.js v3.2.4
+// パズル固有スクリプト部 ぬりぼう版 nuribou.js v3.2.5
 //
 Puzzles.nuribou = function(){ };
 Puzzles.nuribou.prototype = {
@@ -126,7 +126,7 @@ Puzzles.nuribou.prototype = {
 		ans.checkAns = function(){
 
 			var binfo = area.getBCellInfo();
-			if( !this.checkAllArea(binfo, f_true, function(w,h,a){ return (w==1 || h==1);} ) ){
+			if( !this.checkAllArea(binfo, f_true, function(w,h,a,n){ return (w==1||h==1);} ) ){
 				this.setAlert('「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。','There is a mass of black cells, whose width is more than two.'); return false;
 			}
 
@@ -135,11 +135,11 @@ Puzzles.nuribou.prototype = {
 			}
 
 			var winfo = area.getWCellInfo();
-			if( !this.checkQnumsInArea(winfo, function(a){ return (a==0);}) ){
+			if( !this.checkNoNumber(winfo) ){
 				this.setAlert('数字の入っていないシマがあります。','An area of white cells has no numbers.'); return false;
 			}
 
-			if( !this.checkQnumsInArea(winfo, function(a){ return (a>=2);}) ){
+			if( !this.checkDoubleNumber(winfo) ){
 				this.setAlert('1つのシマに2つ以上の数字が入っています。','An area of white cells has plural numbers.'); return false;
 			}
 

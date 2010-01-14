@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ひとりにしてくれ版 hitori.js v3.2.4
+// パズル固有スクリプト部 ひとりにしてくれ版 hitori.js v3.2.4p4
 //
 Puzzles.hitori = function(){ };
 Puzzles.hitori.prototype = {
@@ -186,7 +186,7 @@ Puzzles.hitori.prototype = {
 				this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 			}
 
-			if( !this.checkRowsCols() ){
+			if( !this.checkRowsCols(this.isDifferentNumberInClist_hitori, bd.QnC) ){
 				this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
 			}
 
@@ -194,39 +194,12 @@ Puzzles.hitori.prototype = {
 		};
 		ans.check1st = function(){ return true;};
 
-		ans.checkRowsCols = function(){
-			var cx, cy, result = true;
-
-			for(var cy=0;cy<k.qrows;cy++){
+		ans.isDifferentNumberInClist_hitori = function(clist_all, numfunc){
 				var clist = [];
-				for(var cx=0;cx<k.qcols;cx++){ if(bd.isWhite(bd.cnum(cx,cy))){ clist.push(bd.cnum(cx,cy));}}
-				if(!this.checkDifferentNumberInClist(clist)){
-					if(this.inAutoCheck){ return false;}
-					result = false;
+			for(var i=0;i<clist_all.length;i++){
+				if(bd.isWhite(clist_all[i])){ clist.push(clist_all[i]);}
 				}
-			}
-			for(var cx=1;cx<k.qcols;cx++){
-				var clist = [];
-				for(var cy=0;cy<k.qrows;cy++){ if(bd.isWhite(bd.cnum(cx,cy))){ clist.push(bd.cnum(cx,cy));}}
-				if(!this.checkDifferentNumberInClist(clist)){
-					if(this.inAutoCheck){ return false;}
-					result = false;
-				}
-			}
-			return result;
-		};
-		ans.checkDifferentNumberInClist = function(clist){
-			var d = [];
-			for(var i=1;i<=Math.max(k.qcols,k.qrows);i++){ d[i]=-1;}
-			for(var i=0;i<clist.length;i++){
-				var val=bd.QnC(clist[i]);
-				if     (val==-1){ continue;}
-				else if(d[val]==-1){ d[val] = bd.QnC(clist[i]); continue;}
-
-				for(var j=0;j<clist.length;j++){ if(bd.QnC(clist[j])==val){ bd.sErC([clist[j]],1);} }
-				return false;
-			}
-			return true;
+			return this.isDifferentNumberInClist(clist, numfunc);
 		};
 	}
 };

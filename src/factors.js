@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 因子の部屋版 factors.js v3.2.4
+// パズル固有スクリプト部 因子の部屋版 factors.js v3.2.4p4
 //
 Puzzles.factors = function(){ };
 Puzzles.factors.prototype = {
@@ -162,7 +162,7 @@ Puzzles.factors.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkRowsCols() ){
+			if( !this.checkRowsCols(this.isDifferentNumberInClist, bd.QaC) ){
 				this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
 			}
 
@@ -177,41 +177,6 @@ Puzzles.factors.prototype = {
 			return true;
 		};
 		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QaC(c)==-1);});};
-
-		ans.checkRowsCols = function(){
-			var cx, cy, result = true;
-
-			for(var cy=0;cy<k.qrows;cy++){
-				var clist = [];
-				for(var cx=0;cx<k.qcols;cx++){ clist.push(bd.cnum(cx,cy));}
-				if(!this.checkDifferentNumberInClist(clist)){
-					if(this.inAutoCheck){ return false;}
-					result = false;
-				}
-			}
-			for(var cx=1;cx<k.qcols;cx++){
-				var clist = [];
-				for(var cy=0;cy<k.qrows;cy++){ clist.push(bd.cnum(cx,cy));}
-				if(!this.checkDifferentNumberInClist(clist)){
-					if(this.inAutoCheck){ return false;}
-					result = false;
-				}
-			}
-			return result;
-		};
-		ans.checkDifferentNumberInClist = function(clist){
-			var d = [];
-			for(var i=1;i<=Math.max(k.qcols,k.qrows);i++){ d[i]=-1;}
-			for(var i=0;i<clist.length;i++){
-				var val=bd.QaC(clist[i]);
-				if     (val==-1){ continue;}
-				else if(d[val]==-1){ d[val] = bd.QaC(clist[i]); continue;}
-
-				for(var j=0;j<clist.length;j++){ if(bd.QaC(clist[j])==val){ bd.sErC([clist[j]],1);} }
-				return false;
-			}
-			return true;
-		};
 
 		ans.checkRoomNumber = function(rinfo){
 			var result = true;
