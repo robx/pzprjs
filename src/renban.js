@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 連番窓口版 renban.js v3.2.4
+// パズル固有スクリプト部 連番窓口版 renban.js v3.2.4p4
 //
 Puzzles.renban = function(){ };
 Puzzles.renban.prototype = {
@@ -152,7 +152,7 @@ Puzzles.renban.prototype = {
 		ans.checkAns = function(){
 
 			var rinfo = area.getRoomInfo();
-			if( !this.checkDifferentNumber(rinfo) ){
+			if( !this.checkDifferentNumberInRoom(rinfo, bd.getNum) ){
 				this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 			}
 
@@ -172,23 +172,6 @@ Puzzles.renban.prototype = {
 		};
 		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
 
-		ans.checkDifferentNumber = function(rinfo){
-			var result = true;
-			for(var r=1;r<=rinfo.max;r++){
-				var d = [], idlist = rinfo.room[r].idlist;
-				for(var i=1;i<=bd.maxnum;i++){ d[i]=-1;}
-				for(var i=0,len=idlist.length;i<len;i++){
-					var val=bd.getNum(idlist[i]);
-					if     (val===-1 || val===-2){ continue;}
-					else if(d[val]===-1){ d[val] = idlist[i]; continue;}
-
-					if(this.inAutoCheck){ return false;}
-					bd.sErC(idlist,1);
-					result = false;
-				}
-			}
-			return result;
-		};
 		ans.checkNumbersInRoom = function(rinfo){
 			var result = true;
 			for(var r=1;r<=rinfo.max;r++){

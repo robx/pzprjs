@@ -465,6 +465,7 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	// ans.checkRowsCols()            タテ列・ヨコ列の数字の判定を行う
 	// ans.checkRowsColsPartly()      黒マスや[＼]等で分かれるタテ列・ヨコ列の数字の判定を行う
+	// ans.checkDifferentNumberInRoom() 部屋の中に同じ数字が存在するか判定する
 	// ans.isDifferentNumberInClist() clistの中に同じ数字が存在するか判定する
 	//---------------------------------------------------------------------------
 	checkRowsCols : function(evalfunc, numfunc){
@@ -518,6 +519,17 @@ AnsCheck.prototype = {
 		return result;
 	},
 
+	checkDifferentNumberInRoom : function(rinfo, numfunc){
+		var result = true;
+		for(var id=1;id<=rinfo.max;id++){
+			if(!this.isDifferentNumberInClist(rinfo.room[id].idlist, numfunc)){
+				bd.sErC(rinfo.room[id].idlist,1);
+				if(this.inAutoCheck){ return false;}
+				result = false;
+			}
+		}
+		return result;
+	},
 	isDifferentNumberInClist : function(clist, numfunc){
 		var result = true, d = [], num = [], bottom = (!!k.dispzero?1:0);
 		for(var n=bottom,max=bd.nummaxfunc(clist[0]);n<=max;n++){ d[n]=0;}
