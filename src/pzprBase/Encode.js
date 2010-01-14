@@ -1,4 +1,4 @@
-// Encode.js v3.2.4p4
+// Encode.js v3.2.5
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -19,6 +19,8 @@ Encode = function(){
 	this.uri.bstr;		// 入力されたURLの盤面部分
 
 	this.pidKanpen = '';
+	this.pidforURL = '';
+
 	this.outpflag  = '';
 	this.outsize   = '';
 	this.outbstr   = '';
@@ -58,19 +60,18 @@ Encode.prototype = {
 
 		this.init();
 
-		if(search=="?test" || search.substr(0,6)=="?test+"){
-			k.EDITOR = true; k.editmode = false;
-			k.scriptcheck = true;
-			if(search=="?test"){ search = 'country';}
-			else{ search = search.substr(6);}
-		}
-		else if(search.substr(0,3)=="?m+"){
-			k.EDITOR = k.editmode = true;
-			search = search.substr(3);
-		}
-		else{
-			k.EDITOR = k.editmode = false;
-			search = search.substr(1);
+		var startmode = 'PLAYER';
+
+		if     (search=="?test")       { startmode = 'TEST';   search = 'country';}
+		else if(search.match(/^\?m\+/)){ startmode = 'EDITOR'; search = search.substr(3);}
+		else if(search.match(/_test/)) { startmode = 'TEST';   search = search.substr(1).replace(/_test/, '');}
+		else if(search.match(/_edit/)) { startmode = 'EDITOR'; search = search.substr(1).replace(/_edit/, '');}
+		else if(!search.match(/\//))   { startmode = 'EDITER'; search = search.substr(1);}
+		else                           { startmode = 'PLAYER'; search = search.substr(1);}
+		switch(startmode){
+			case 'PLAYER': k.EDITOR = false; k.editmode = false; break;
+			case 'EDITOR': k.EDITOR = true;  k.editmode = true;  break;
+			case 'TEST'  : k.EDITOR = true;  k.editmode = false; k.scriptcheck = true; break;
 		}
 		k.PLAYER    = !k.EDITOR;
 		k.playmode  = !k.editmode;
@@ -85,7 +86,19 @@ Encode.prototype = {
 			search = search.substr(0,qs);
 		}
 
-		k.puzzleid = search;
+		// alias機能
+		var pid = search;
+		switch(pid){
+			case 'yajilin'    : this.pidforURL = 'yajilin'; pid = 'yajirin'; break;
+			case 'akari'      : this.pidforURL = 'akari';   pid = 'lightup'; break;
+			case 'bijutsukan' : this.pidforURL = 'akari';   pid = 'lightup'; break;
+			case 'slitherlink': this.pidforURL = pid = 'slither'; break;
+			case 'numberlink' : this.pidforURL = pid = 'numlin';  break;
+			case 'hakyukoka'  : this.pidforURL = pid = 'ripple';  break;
+			case 'masyu'      : this.pidforURL = pid = 'mashu';   break;
+			default           : this.pidforURL = pid;
+		}
+		k.puzzleid = pid;
 	},
 	parseURI : function(url){
 		this.init();
@@ -250,13 +263,13 @@ Encode.prototype = {
 	getURLBase : function(type){
 		var urls = {};
 		urls[this.PZPRV3]  = "http://indi.s58.xrea.com/pzpr/v3/p.html?%PID%/";
-		urls[this.PZPRV3E] = "http://indi.s58.xrea.com/pzpr/v3/p.html?m+%PID%/";
+		urls[this.PZPRV3E] = "http://indi.s58.xrea.com/pzpr/v3/p.html?%PID%_edit/";
 		urls[this.PZPRAPP] = "http://indi.s58.xrea.com/%PID%/sa/q.html?";
 		urls[this.KANPEN]  = "http://www.kanpen.net/%KID%.html?problem=";
 		urls[this.KANPENP] = "http://www.kanpen.net/%KID%.html?pzpr=";
-		urls[this.HEYAAPP] = "http://www.geocities.co.jp/%KID%/?problem=";
+		urls[this.HEYAAPP] = "http://www.geocities.co.jp/heyawake/?problem=";
 
-		return urls[type].replace("%PID%",k.puzzleid).replace("%KID%",this.pidKanpen);
+		return urls[type].replace("%PID%",this.pidforURL).replace("%KID%",this.pidKanpen);
 	},
 
 	// オーバーライド用
