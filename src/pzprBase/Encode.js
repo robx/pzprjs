@@ -93,20 +93,8 @@ Encode.prototype = {
 		// なぜかOperaはtextarea上の改行が実際の改行扱いになってしまうっぽい
 		if(k.br.Opera){ url = url.replace(/(\r|\n)/g,"");}
 
-		// ぱずぷれの場合
-		if(url.match(/indi\.s58\.xrea\.com/)){
-			// ぱずぷれv3のURL
-			if(!url.match(/\/(sa|sc)\//)){
-				this.parseURI_pzpr(url.substr(url.indexOf("/", url.indexOf("?"))+1));
-			}
-			// ぱずぷれアプレットのURL
-			else{
-				this.parseURI_pzpr(url.substr(url.indexOf("?")));
-				this.uri.type = 1; // 1はぱずぷれアプレット/URLジェネレータ
-			}
-		}
 		// カンペンの場合
-		else if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
+		if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
 			// カンペンだけどデータ形式はへやわけアプレット
 			if(url.indexOf("?heyawake=")>=0){
 				this.parseURI_heyaapp(url.substr(url.indexOf("?heyawake=")+10));
@@ -122,6 +110,18 @@ Encode.prototype = {
 		// へやわけアプレットの場合
 		else if(url.match(/www\.geocities(\.co)?\.jp\/heyawake/)){
 			this.parseURI_heyaapp(url.substr(url.indexOf("?problem=")+9));
+		}
+		// ぱずぷれの場合
+		else{ // if(url.match(/indi\.s58\.xrea\.com/)){
+			// ぱずぷれアプレットのURL
+			if(url.match(/\/(sa|sc)\/pzpr\/v3/)){
+				this.parseURI_pzpr(url.substr(url.indexOf("?")));
+				this.uri.type = this.PZPRAPP; // ぱずぷれアプレット/URLジェネレータ
+			}
+			// ぱずぷれv3のURL
+			else{
+				this.parseURI_pzpr(url.substr(url.indexOf("/", url.indexOf("?"))+1));
+			}
 		}
 	},
 	parseURI_pzpr : function(qstr){
@@ -168,9 +168,7 @@ Encode.prototype = {
 
 	//---------------------------------------------------------------------------
 	// enc.pzlinput()   parseURI()を行った後に呼び出し、各パズルのpzlimport関数を呼び出す
-	// enc.getURLbase() このスクリプトが置いてあるURLを表示する
-	// enc.getDocbase() このスクリプトが置いてあるドメイン名を表示する
-	// enc.kanpenbase() カンペンのドメイン名を表示する
+	// enc.getURLBase() URLの元となる部分を取得する
 	// 
 	// enc.pzlimport()    各パズルのURL入力用(オーバーライド用)
 	// enc.pzlexport()    各パズルのURL出力用(オーバーライド用)
@@ -204,50 +202,62 @@ Encode.prototype = {
 		}
 	},
 	pzloutput : function(type){
+		if(type===this.KANPEN && k.puzzleid=='lits'){ type = this.KANPENP;}
+		var pdata = '', size = '', ispflag = false;
+
 		this.outpflag = '';
 		this.outsize = '';
 		this.outbstr = '';
 
-		if(type===0 || type===3 || type===1 || (type===2 && k.puzzleid=='lits')){
-			this.pzlexport(((type===0 || type===3)?0:1));
+		switch(type){
+		case this.PZPRV3: case this.PZPRV3E:
+			this.pzlexport(this.PZPRV3);
 
-			var size = [k.qcols,k.qrows].join('/');
-			if(!!this.outsize){ size = this.outsize;}
+			size = (!this.outsize ? [k.qcols,k.qrows].join('/') : this.outsize);
+			ispflag = (!!this.outpflag);
+			break;
 
-			var pflag = this.outpflag, bstr = this.outbstr;
+		case this.PZPRAPP: case this.KANPENP:
+			this.pzlexport(this.PZPRAPP);
 
-			if(type===0 || type===3){
-				return [this.getURLbase(),(type===3?"m+":""),k.puzzleid,"/",(!!pflag?(pflag+"/"):""),size,"/",bstr].join('');
-			}
-			else if(type===1){
-				return [this.getDocbase(),k.puzzleid,"/sa/m.html?",pflag,"/",size,"/",bstr].join('');
-			}
-			else if(type===2){
-				return [this.kanpenbase(),this.pidKanpen,".html?pzpr=",pflag,"/",size,"/",bstr].join('');
-			}
-		}
-		else if(type===2){
+			size = (!this.outsize ? [k.qcols,k.qrows].join('/') : this.outsize);
+			ispflag = true;
+			break;
+
+		case this.KANPEN:
 			fio.datastr = "";
 			this.encodeKanpen()
-			var bstr = fio.datastr.replace(/ /g, "_");
+			this.outbstr = fio.datastr.replace(/ /g, "_");
 
-			var size = [k.qrows,k.qcols].join('/');
-			if(!!this.outsize){ size = this.outsize;}
+			size = (!this.outsize ? [k.qrows,k.qcols].join('/') : this.outsize);
+			break;
 
-			return [this.kanpenbase(),this.pidKanpen,".html?problem=",size,"/",bstr].join('');
+		case this.HEYAAPP:
+			this.encodeHeyaApp();
+
+			size = [k.qcols,k.qrows].join('x');
+			break;
+
+		default:
+			return '';
 		}
-		else if(type===4){
-			var bstr = this.encodeHeyaApp(bstr);
-			var size = [k.qcols,k.qrows].join('x');
 
-			return ["http://www.geocities.co.jp/heyawake/?problem=",size,"/",bstr].join('');
-		}
+		if(ispflag){ pdata = [this.outpflag, size, this.outbstr].join("/");}
+		else{ pdata = [size, this.outbstr].join("/");}
 
-		return '';
+		return this.getURLBase(type) + pdata;
 	},
-	getURLbase : function(){ return "http://indi.s58.xrea.com/pzpr/v3/p.html?";},
-	getDocbase : function(){ return "http://indi.s58.xrea.com/";},
-	kanpenbase : function(){ return "http://www.kanpen.net/";},
+	getURLBase : function(type){
+		var urls = {};
+		urls[this.PZPRV3]  = "http://indi.s58.xrea.com/pzpr/v3/p.html?%PID%/";
+		urls[this.PZPRV3E] = "http://indi.s58.xrea.com/pzpr/v3/p.html?m+%PID%/";
+		urls[this.PZPRAPP] = "http://indi.s58.xrea.com/%PID%/sa/q.html?";
+		urls[this.KANPEN]  = "http://www.kanpen.net/%KID%.html?problem=";
+		urls[this.KANPENP] = "http://www.kanpen.net/%KID%.html?pzpr=";
+		urls[this.HEYAAPP] = "http://www.geocities.co.jp/%KID%/?problem=";
+
+		return urls[type].replace("%PID%",k.puzzleid).replace("%KID%",this.pidKanpen);
+	},
 
 	// オーバーライド用
 	pzlimport : function(type,bstr){ },
