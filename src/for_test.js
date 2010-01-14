@@ -83,7 +83,7 @@ debug.extend({
 	},
 
 	accheck1 : function(){
-		var outputstr = fio.fileencode(1);
+		var outputstr = fio.fileencode(fio.PZPR);
 
 		ans.inCheck = true;
 		ans.disableSetError();
@@ -115,8 +115,8 @@ debug.extend({
 				var pfg = enc.uri.pflag;
 				var str = enc.uri.bstr;
 
-				var inp = enc.getURLbase()+k.puzzleid+(pfg?("/"+pfg):"")+("/"+col)+("/"+row)+("/"+str);
-				var ta  = enc.pzloutput(0);
+				var inp = enc.getURLBase(enc.PZPRV3)+(pfg?(pfg+"/"):"")+(col+"/"+row)+("/"+str);
+				var ta  = enc.pzloutput(enc.PZPRV3);
 
 				debug.addTextarea("Encode test   = "+(inp==ta?"pass":"failure...<BR> "+inp+"<BR> "+ta));
 
@@ -130,7 +130,7 @@ debug.extend({
 			(function(){
 				var bd2 = debug.bd_freezecopy();
 
-				document.urlinput.ta.value = enc.pzloutput(2);
+				document.urlinput.ta.value = enc.pzloutput(enc.KANPEN);
 				menu.pop = ee("pop1_5");
 				menu.ex.urlinput({});
 
@@ -175,7 +175,7 @@ debug.extend({
 		//FileIO test--------------------------------------------------------------
 		case 30:
 			(function(){
-				var outputstr = fio.fileencode(1);
+				var outputstr = fio.fileencode(fio.PZPR);
 
 				var bd2 = debug.bd_freezecopy();
 
@@ -194,7 +194,7 @@ debug.extend({
 			break;
 		case 31:
 			(function(){
-				var outputstr = fio.fileencode(2);
+				var outputstr = fio.fileencode(fio.PBOX);
 
 				var bd2 = debug.bd_freezecopy();
 
