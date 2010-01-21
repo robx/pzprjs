@@ -8051,7 +8051,7 @@ MenuExec.prototype = {
 		}
 		else{
 			this.reader = new FileReader();
-			this.reader.onload = ee.ebinder(menu.ex, function(e){
+			this.reader.onload = ee.ebinder(this, function(e){
 				this.fileonload(ee.getSrcElement(e).result);
 			});
 		}
