@@ -6,7 +6,7 @@
  * 
  * @author  happa.
  * @version v3.2.5pre
- * @date    2010-01-14
+ * @date    2010-01-22
  * 
  * This script uses following library.
  *  uuCanvas.js (version 1.0)
@@ -256,12 +256,13 @@ _extend( _ElementManager, {
 
 		var temp = _elp[tid];
 		var el = _doc.createElement(temp.tagName);
-		if(!!temp.parent){ temp.parent.appendChild(el);}
 
 		if(!!id){ el.id = id;}
 		for(var name in temp.attr) { el[name]       = temp.attr[name]; }
 		for(var name in temp.style){ el.style[name] = temp.style[name];}
 		for(var name in temp.func) { el["on"+name]  = temp.func[name]; }
+
+		if(!!temp.parent){ temp.parent.appendChild(el);} // 後ろじゃないとIEでエラーになる。。
 		return el;
 	},
 
