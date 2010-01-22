@@ -34,8 +34,8 @@
 	/* パズル表示部 */
 	div#quesboard{ margin:auto; margin-top:16pt; margin-bottom:16pt; text-align:center;}
 
-	div#divques{ position:relative;}
-	canvas#puzzle_canvas{ border:1px silver solid; cursor:default;}
+	div#divques{ position:relative; border:solid 1px gray; cursor:default;}
+	/* canvas#puzzle_canvas{ border:1px silver solid; cursor:default;} */
 
 	div#btnarea{ position:relative;}
 	div#btnarea input[type="button"]{ height:18pt;}
@@ -54,8 +54,8 @@
 	div.smenunull{ display:block; text-align:left; background-color: #dfdfdf; color:gray; cursor:default;
 				   margin:0pt; padding:1pt 8pt 0pt 4pt;}
 	
-	* html div.smenusep { display:inline; line-height:2pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;}
-	*:first_child+html div.smenusep { display:inline; line-height:2pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;}
+	* html div.smenusep { display:inline; line-height:2pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;} /* IE6 only */
+	*:first_child+html div.smenusep { display:inline; line-height:2pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;} /* IE7 only */
 	div.smenusep { display:block; height:3pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;}
 
 	/* ポップアップウィンドウ */

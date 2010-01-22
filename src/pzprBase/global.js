@@ -73,7 +73,7 @@ var k = {
 		Gecko : navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1,
 		WinWebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1
 	},
-	vml : !!(window.attachEvent && !window.opera) && !uuMeta.slver,
+	vml : ContextManager.vml,
 
 	// const’l
 	BOARD  : 'board',

@@ -211,7 +211,7 @@ Encode.prototype = {
 			bd.ansclear();
 
 			base.resetInfo(true);
-			base.resize_canvas_onload();
+			base.resize_canvas();
 		}
 	},
 	pzloutput : function(type){

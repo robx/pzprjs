@@ -93,6 +93,8 @@ Graphic = function(){
 	this.minYdeg = 0.18;
 	this.maxYdeg = 0.70;
 
+	this.zidx = 1;
+
 	var numobj_attr = {className:'divnum', unselectable:'on'};
 	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', numobj_attr, null, null);
 
@@ -103,7 +105,6 @@ Graphic = function(){
 Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	// pc.onresize_func() resize時にサイズを変更する
-	// pc.already()       Canvasが利用できるか(Safari3対策用)
 	//---------------------------------------------------------------------------
 	onresize_func : function(){
 		this.lw = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3);
@@ -111,9 +112,6 @@ Graphic.prototype = {
 
 		//this.textenable = !!g.fillText;
 	},
-	already : (!k.br.IE ? f_true : function(){
-		return uuCanvas.already();
-	}),
 	//---------------------------------------------------------------------------
 	// pc.paint()       座標(x1,y1)-(x2,y2)を再描画する。各パズルのファイルでオーバーライドされる。
 	// pc.paintAll()    全体を再描画する
@@ -123,10 +121,7 @@ Graphic.prototype = {
 	// pc.paintEXcell() 指定されたEXCellを再描画する
 	//---------------------------------------------------------------------------
 	paint : function(x1,y1,x2,y2){ }, //オーバーライド用
-	paintAll : (
-		(!k.br.IE) ? function(){ this.paint(-1,-1,k.qcols,k.qrows); }
-				   : function(){ if(this.already()){ this.paint(-1,-1,k.qcols,k.qrows);} }
-	),
+	paintAll : function(){ this.paint(-1,-1,k.qcols,k.qrows); },
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
 		if(bd.border[id].cx&1){
@@ -1346,10 +1341,23 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	// pc.flushCanvas()    指定された領域を白で塗りつぶす
 	// pc.flushCanvasAll() Canvas全面を白で塗りつぶす
+	//
+	// pc.vnop()  VMLで既に描画されているオブジェクトを再描画せず、色は設定する
+	// pc.vhide() VMLで既に描画されているオブジェクトを隠す
+	// pc.vdel()  VMLで既に描画されているオブジェクトを削除する
+	// pc.vinc()  z-indexに設定される値を+1する
 	//---------------------------------------------------------------------------
-	flushCanvas : (
-		((!k.vml) ?
-			function(x1,y1,x2,y2){
+	// excanvasの場合、これを描画しないとVML要素が選択されてしまう
+	flushCanvasAll : function(){ g.clearCanvas(); this.zidx=1; this.vinc();},
+	flushCanvas : function(x1,y1,x2,y2){ g.setLayer("layer1"); this.zidx=1;},
+	vnop  : f_true,
+	vhide : f_true,
+	vdel  : f_true,
+	vinc  : f_true,
+
+	setVectorFunctions : function(){
+		if(!ContextManager.vml && !ContextManager.svg){
+			this.flushCanvas = function(x1,y1,x2,y2){
 				if     (k.isextendcell===0 && x1<= 0 && y1<= 0 && x2>=k.qcols-1 && y2>=k.qrows-1){ this.flushCanvasAll();}
 				else if(k.isextendcell===1 && x1<=-1 && y1<=-1 && x2>=k.qcols-1 && y2>=k.qrows-1){ this.flushCanvasAll();}
 				else if(k.isextendcell===2 && x1<=-1 && y1<=-1 && x2>=k.qcols   && y2>=k.qrows  ){ this.flushCanvasAll();}
@@ -1357,80 +1365,47 @@ Graphic.prototype = {
 					g.fillStyle = "rgb(255, 255, 255)";
 					g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth, (y2-y1+1)*k.cheight);
 				}
+			};
+			this.vnop  = f_true;
+			this.vhide = f_true;
+			this.vdel  = f_true;
+			this.vinc  = f_true;
+			return;
 			}
-		:
-			function(x1,y1,x2,y2){ g.zidx=1;}
-		)
-	),
-	// excanvasの場合、これを描画しないとVML要素が選択されてしまう
-	flushCanvasAll : (
-		((!k.vml) ?
-			((!k.br.IE) ?
-				function(){
-					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
-					this.vinc();
-				}
-			:
-				function(){
-					g._clear();	// uuCanvas用特殊処理
-					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
-					this.vinc();
-				}
-			)
-		:
-			function(){
-				g.zidx=0; g.vid="bg_"; g.pelements = []; g.elements = [];	// VML用
-				g._clear();													// uuCanvas用特殊処理
-				g.fillStyle = "rgb(255, 255, 255)";
-				g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
-				this.vinc();
-			}
-		)
-	),
 
-	//---------------------------------------------------------------------------
-	// pc.vnop()  VMLで既に描画されているオブジェクトを再描画せず、色は設定する
-	// pc.vhide() VMLで既に描画されているオブジェクトを隠す
-	// pc.vdel()  VMLで既に描画されているオブジェクトを削除する
-	// pc.vinc()  z-indexに設定される値を+1する
-	//  ※IE以外ではf_trueになっています。
-	//---------------------------------------------------------------------------
-	// excanvas関係関数
-	vnop : (!k.vml ? f_true : function(vid, isfill){
+		this.flushCanvas = function(x1,y1,x2,y2){ g.setLayer("layer1"); this.zidx=1;};
+		this.vnop = function(vid, isfill){
 		if(g.elements[vid]){
 			var el = g.elements[vid];
-			el.color = uuColor.parse(isfill===1?g.fillStyle:g.strokeStyle)[0];
-
-			var pel = g.pelements[vid];
-			if(!this.zstable){ pel.style.zIndex = g.zidx;}
-			pel.style.display = 'inline';
+				g.setColor(isfill===1?g.fillStyle:g.strokeStyle);
+				g.elements[vid].style.display = 'inline';
 			return false;
 		}
 		g.vid = vid;
 		return true;
-	}),
-	vhide : (!k.vml ? f_true : function(vid){
+		};
+		this.vhide = function(vid){
 		if(typeof vid === 'string'){ vid = [vid];}
 		for(var i=0;i<vid.length;i++){
 			if(g.elements[vid[i]]){
-				g.pelements[vid[i]].style.display = 'none';
+					g.elements[vid[i]].style.display = 'none';
 			}
 		}
-	}),
-	vdel : (!k.vml ? f_true : function(vid){
+		};
+		this.vdel = function(vid){
 		for(var i=0;i<vid.length;i++){
 			if(g.elements[vid[i]]){
-				g._elm.removeChild(g.pelements[vid[i]]);	// uuCanvasはg._elmにparentNodeを保持してる
-				g.pelements[vid[i]]=null;
+					g.target.removeChild(g.elements[vid[i]]);
 				g.elements[vid[i]] =null;
 			}
 		}
-	}),
-	vinc : (!k.vml ? f_true : function(){
-		g.vid = ""; g.zidx++;
-	}),
+		};
+		this.vinc = function(){
+			g.vid = "";
+			this.zidx++;
+			g.setLayer("layer"+this.zidx);
+		};
+	},
 
 	//---------------------------------------------------------------------------
 	// pc.CreateDOMAndSetNop()  数字表示用のエレメントを返す
