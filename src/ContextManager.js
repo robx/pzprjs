@@ -35,7 +35,10 @@ function getRectSize(el){
 function parsecolor(rgbstr){
 	if(rgbstr.match(/rgb\(/)){
 		var m = rgbstr.match(/\d+/g);
-		for(var i=0;i<m.length;i++){ m[i]=parseInt(m[i]).toString(16);}
+		for(var i=0;i<m.length;i++){
+			m[i]=parseInt(m[i]).toString(16);
+			if(m[i].length==1){ m[i] = "0"+m[i];}
+		}
 		return ["#",m[0],m[1],m[2]].join('');
 	}
 	return rgbstr;
@@ -135,17 +138,24 @@ var VectorContext = function(type, idname){
 	this.canvasid = EL_ID_HEADER+idname;
 	this.currentpath = [];
 	this.lastpath    = '';
+	this.isAA = false;
+
+	this.canvas = false;
+	this.vml    = false;
+	this.svg    = false;
 
 	// define const
 	if(this.type===SVG){
 		this.PATH_MOVE  = S_PATH_MOVE;
 		this.PATH_LINE  = S_PATH_LINE;
 		this.PATH_CLOSE = S_PATH_CLOSE;
+		this.svg = true;
 	}
 	else if(this.type===VML){
 		this.PATH_MOVE  = V_PATH_MOVE;
 		this.PATH_LINE  = V_PATH_LINE;
 		this.PATH_CLOSE = V_PATH_CLOSE;
+		this.vml = true;
 	}
 
 	this.initElement(idname);
@@ -268,18 +278,15 @@ VectorContext.prototype = {
 		this.initElement(this.idname);
 	},
 
-	setColor : function(rgbstr){
-		if(this.vid){
-			var el = this.elements[this.vid];
-			var color = parsecolor(rgbstr);
-			if(this.type===SVG){
-				if     (el.fill  !=='none'){ el.setAttribute('fill',  color);}
-				else if(el.stroke!=='none'){ el.setAttribute('stroke',color);}
-			}
-			else if(this.type===VML){
-				if     (!!el.fillcolor)  { el.fillcolor   = color;}
-				else if(!!el.strokecolor){ el.strokecolor = color;}
-			}
+	setColor : function(){
+		var el = this.elements[this.vid];
+		if(this.type===SVG){
+			if(el.getAttribute('fill')  !=='none'){ el.setAttribute('fill',  parsecolor(this.fillStyle));}
+			if(el.getAttribute('stroke')!=='none'){ el.setAttribute('stroke',parsecolor(this.strokeStyle));}
+		}
+		else if(this.type===VML){
+			if(!!el.fillcolor)  { el.fillcolor   = parsecolor(this.fillStyle);}
+			if(!!el.strokecolor){ el.strokecolor = parsecolor(this.strokeStyle);}
 		}
 	},
 
@@ -317,6 +324,7 @@ VectorContext.prototype = {
 			var islong = ((antiClockWise^unknownflag)?1:0), sweep = ((islong==0^unknownflag)?1:0);
 			this.currentpath.push(this.PATH_MOVE,sx,sy,S_PATH_ARCTO,r,r,0,islong,sweep,ex,ey);
 			this.lastpath = S_PATH_ARCTO;
+			this.isAA = true;
 		}
 	},
 
@@ -379,9 +387,9 @@ VectorContext.prototype = {
 			m[i] = _args[i] + m[0];
 			m[i+1] = _args[i+1] + m[1];
 		}
-		for(var i=0,len=_len-((_len|1)?1:2);i<len;i+=2){
-			if     (i==0){ this.currentpath.push(this.PATH_MOVE);}
-			else if(i==2){ this.currentpath.push(this.PATH_LINE);}
+		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
+			if     (i==2){ this.currentpath.push(this.PATH_MOVE);}
+			else if(i==4){ this.currentpath.push(this.PATH_LINE);}
 			this.currentpath.push((svg?m[i]:m[i]*Z-Z2), (svg?m[i+1]:m[i+1]*Z-Z2));
 		}
 		if(_args[_len-1]){ this.currentpath.push(this.PATH_CLOSE);}
@@ -429,7 +437,7 @@ VectorContext.prototype = {
 		if(isstroke){
 			el.setAttribute(S_ATT_STROKEWIDTH, (!!this.lineWidth ? this.lineWidth : S_DEF_LINEWIDTH)+'px');
 		}
-		if(this.lastpath==S_PATH_ARCTO){ el.setAttribute(S_ATT_RENDERING, 'auto');}
+		if(this.isAA){ el.setAttribute(S_ATT_RENDERING, 'auto'); this.isAA = false;}
 		el.setAttribute('d', (isrect ? this.pathRect(size) : this.currentpath.join(' ')));
 
 		this.target.appendChild(el);
@@ -470,6 +478,10 @@ CanvasRenderingContext2D_wrapper = function(idname){
 	this.context = null;
 	this.OFFSETX = 0;
 	this.OFFSETY = 0;
+
+	this.canvas = true;
+	this.vml    = false;
+	this.svg    = false;
 
 	this.initElement(idname);
 };
@@ -558,7 +570,7 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	moveTo : function(x,y){ this.context.moveTo(x+this.OFFSETX,y+this.OFFSETY);},
 	lineTo : function(x,y){ this.context.lineTo(x+this.OFFSETX,y+this.OFFSETY);},
 	arc : function(cx,cy,r,startRad,endRad,antiClockWise){
-		this.context.arc(cx+this.OFFSETX,cy+this.OFFSETY,r,startRad,endRad,antiCloskWise);
+		this.context.arc(cx+this.OFFSETX,cy+this.OFFSETY,r,startRad,endRad,antiClockWise);
 	},
 
 	/* Canvas API functions (for drawing) */
@@ -626,11 +638,12 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	},
 
 	clearCanvas : function(){
-		this.setProperties();
-		this.context.fillStyle = parsecolorrev(this.parent.style.backgroundColor);
-		alert(this.context.fillStyle);
-		var rect = getRectSize(this.parent);
-		this.context.fillRect(this.OFFSETX,this.OFFSETY,rect.width,rect.height);
+		if(!!this.parent.style.backgroundColor){
+			this.setProperties();
+			this.context.fillStyle = parsecolorrev(this.parent.style.backgroundColor);
+			var rect = getRectSize(this.parent);
+			this.context.fillRect(this.OFFSETX,this.OFFSETY,rect.width,rect.height);
+		}
 	}
 
 };
