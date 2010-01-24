@@ -34,7 +34,7 @@
 	/* ƒpƒYƒ‹•\Ž¦•” */
 	div#quesboard{ margin:auto; margin-top:16pt; margin-bottom:16pt; text-align:center;}
 
-	div#divques{ position:relative; border:solid 1px gray; cursor:default;}
+	div#divques{ position:relative; border:solid 1px gray; cursor:default; margin-left:auto; margin-right:auto;}
 	/* canvas#puzzle_canvas{ border:1px silver solid; cursor:default;} */
 
 	div#btnarea{ position:relative;}
