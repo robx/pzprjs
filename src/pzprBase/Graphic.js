@@ -1348,7 +1348,7 @@ Graphic.prototype = {
 	// pc.vinc()  z-indexに設定される値を+1する
 	//---------------------------------------------------------------------------
 	// excanvasの場合、これを描画しないとVML要素が選択されてしまう
-	flushCanvasAll : function(){ g.clearCanvas(); this.zidx=1; this.vinc();},
+	flushCanvasAll : function(){ g.clearCanvas(); this.zidx=0; this.vinc();},
 	flushCanvas : function(x1,y1,x2,y2){ g.setLayer("layer1"); this.zidx=1;},
 	vnop  : f_true,
 	vhide : f_true,
@@ -1371,34 +1371,33 @@ Graphic.prototype = {
 			this.vdel  = f_true;
 			this.vinc  = f_true;
 			return;
-			}
+		}
 
 		this.flushCanvas = function(x1,y1,x2,y2){ g.setLayer("layer1"); this.zidx=1;};
 		this.vnop = function(vid, isfill){
-		if(g.elements[vid]){
-			var el = g.elements[vid];
-				g.setColor(isfill===1?g.fillStyle:g.strokeStyle);
+			g.vid = vid;
+			if(!!g.elements[vid]){
 				g.elements[vid].style.display = 'inline';
-			return false;
-		}
-		g.vid = vid;
-		return true;
+				g.setColor();
+				return false;
+			}
+			return true;
 		};
 		this.vhide = function(vid){
-		if(typeof vid === 'string'){ vid = [vid];}
-		for(var i=0;i<vid.length;i++){
-			if(g.elements[vid[i]]){
+			if(typeof vid === 'string'){ vid = [vid];}
+			for(var i=0;i<vid.length;i++){
+				if(g.elements[vid[i]]){
 					g.elements[vid[i]].style.display = 'none';
+				}
 			}
-		}
 		};
 		this.vdel = function(vid){
-		for(var i=0;i<vid.length;i++){
-			if(g.elements[vid[i]]){
+			for(var i=0;i<vid.length;i++){
+				if(g.elements[vid[i]]){
 					g.target.removeChild(g.elements[vid[i]]);
-				g.elements[vid[i]] =null;
+					g.elements[vid[i]] =null;
+				}
 			}
-		}
 		};
 		this.vinc = function(){
 			g.vid = "";
