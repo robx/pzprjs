@@ -394,9 +394,21 @@ VectorContext.prototype = {
 		}
 		if(_args[_len-1]){ this.currentpath.push(this.PATH_CLOSE);}
 	},
+	setDashSize : function(size){
+		if(this.type===SVG){
+			this.elements[this.vid].setAttribute('stroke-dasharray', size);
+		}
+		else if(this.type===VML){
+			var el = _doc.createElement('v:stroke');
+			if     (size<=2){ el.dashstyle = 'ShortDash';}
+			else if(size<=5){ el.dashstyle = 'Dash';}
+			else            { el.dashstyle = 'LongDash';}
+			this.elements[this.vid].appendChild(el);
+		}
+	},
 
 	strokeLine : function(x1,y1,x2,y2){
-		if(this.type===VML){ x1=x1*Z-Z2, y1=y1*Z-Z2, x2=x2*Z-Z2, y2=y2*Z-Z2;}
+		if(this.type===VML){ x1=x1*Z, y1=y1*Z, x2=x2*Z, y2=y2*Z;}
 		var stack = this.currentpath;
 		this.currentpath = [this.PATH_MOVE,x1,y1,this.PATH_LINE,x2,y2];
 		this.addVectorElement(false,false,true,[]);
@@ -607,6 +619,7 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		}
 		if(_args[_len-1]){ this.context.closePath();}
 	},
+	setDashSize : function(size){ },
 
 	strokeLine : function(x1,y1,x2,y2){
 		this.setProperties();
@@ -738,7 +751,7 @@ var ContextManager = (function(){
 			var text = [];
 			text.push("v\\:group { behavior: url(#default#VML); display:inline; position:absolute; width:100%; height:100%; overflow:hidden; }");
 			text.push("v\\:shape { behavior: url(#default#VML); position:relative; width:100%; height:100%; }");
-			text.push("v\\:textbox { behavior: url(#default#VML); }");
+			text.push("v\\:textbox, v\\:stroke { behavior: url(#default#VML); }");
 			_doc.createStyleSheet().cssText = text.join('');
 		}
 		if(o.sl){
