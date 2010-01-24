@@ -1203,12 +1203,12 @@ Graphic.prototype = {
 			for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("cliney_"+i,0)){
 				var px = k.p0.x+(i+0.5)*k.cwidth, py1 = k.p0.y+(y1-0.5)*k.cheight, py2 = k.p0.y+(y2+1.5)*k.cheight;
 				g.strokeLine(px, py1, px, py2);
-				g.elements[g.vid].style.strokeDasharray = 3;
+				g.setDashSize(3);
 			}}
 			for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("clinex_"+i,0)){
 				var py = k.p0.y+(i+0.5)*k.cheight, px1 = k.p0.x+(x1-0.5)*k.cwidth, px2 = k.p0.x+(x2+1.5)*k.cwidth;
 				g.strokeLine(px1, py, px2, py);
-				g.elements[g.vid].style.strokeDasharray = 3;
+				g.setDashSize(3);
 			}}
 		}
 		this.vinc();
@@ -1237,7 +1237,8 @@ Graphic.prototype = {
 		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
 		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
-		var bs=((k.isoutsideborder===0&&this.chassisflag)?1:0);
+		//var bs=((k.isoutsideborder===0&&this.chassisflag)?1:0);
+		var bs=(this.chassisflag?1:0);
 
 		var dotmax   = mf(k.cwidth/10)+3;
 		var dotCount = (mf(k.cwidth/dotmax)>=1?mf(k.cwidth/dotmax):1);
@@ -1264,12 +1265,12 @@ Graphic.prototype = {
 			for(var i=xa;i<=xb;i++){ if(this.vnop("bdy_"+i,0)){
 				var px = k.p0.x+i*k.cwidth, py1 = k.p0.y+y1*k.cheight, py2 = k.p0.y+(y2+1)*k.cheight;
 				g.strokeLine(px, py1, px, py2);
-				g.elements[g.vid].style.strokeDasharray = dotSize;
+				g.setDashSize(dotSize);
 			}}
 			for(var i=ya;i<=yb;i++){ if(this.vnop("bdx_"+i,0)){
-				var py = k.p0.y+i*k.cheight+1, px1 = k.p0.x+x1*k.cwidth, px2 = k.p0.x+(x2+1)*k.cwidth;
+				var py = k.p0.y+i*k.cheight+(g.svg?1:0), px1 = k.p0.x+x1*k.cwidth, px2 = k.p0.x+(x2+1)*k.cwidth;
 				g.strokeLine(px1, py, px2, py);
-				g.elements[g.vid].style.strokeDasharray = dotSize;
+				g.setDashSize(dotSize);
 			}}
 		}
 		this.vinc();
