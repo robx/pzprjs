@@ -247,10 +247,7 @@ Graphic.prototype = {
 	// pc.inputPath()  ƒŠƒXƒg‚©‚çg.lineTo()“™‚ÌŠÖ”‚ğŒÄ‚Ño‚·
 	//---------------------------------------------------------------------------
 	inputPath : function(parray, isClose){
-		g.beginPath();
-		g.moveTo(mf(parray[0]+parray[2]), mf(parray[1]+parray[3]));
-		for(var i=4;i<parray.length;i+=2){ g.lineTo(mf(parray[0]+parray[i+0]), mf(parray[1]+parray[i+1]));}
-		if(isClose){ g.closePath();}
+		g.setOffsetLinePath.apply(g,parray.concat([isClose]));
 	},
 
 	//---------------------------------------------------------------------------
@@ -775,8 +772,11 @@ Graphic.prototype = {
 		return bd.border[id].color;
 	},
 	drawPekes : function(x1,y1,x2,y2,flag){
+		if(!g.canvas && flag===2){ return;}
+
 		var size = mf(k.cwidth*0.15); if(size<3){ size=3;}
 		var headers = ["b_peke0_", "b_peke1_"];
+		g.fillStyle = "white";
 		g.strokeStyle = this.pekecolor;
 		g.lineWidth = 1;
 
@@ -785,18 +785,18 @@ Graphic.prototype = {
 			var id = idlist[i];
 			if(bd.border[id].qsub!==2){ this.vhide([headers[0]+id, headers[1]+id]); continue;}
 
-			g.fillStyle = "white";
-			if(flag===0 || flag===2){
-				if(this.vnop(headers[0]+id,1)){
-					g.fillRect(bd.border[id].px-size, bd.border[id].py-size, 2*size+1, 2*size+1);
+			if(g.canvas){
+				if(flag===0 || flag===2){
+					if(this.vnop(headers[0]+id,1)){
+						g.fillRect(bd.border[id].px-size, bd.border[id].py-size, 2*size+1, 2*size+1);
+					}
 				}
+				else{ this.vhide(headers[0]+id);}
 			}
-			else{ this.vhide(headers[0]+id);}
 
 			if(flag===0 || flag===1){
 				if(this.vnop(headers[1]+id,0)){
-					this.inputPath([bd.border[id].px,bd.border[id].py ,-size+1,-size+1 ,0,0 ,-size+1,size ,size,-size+1 ,0,0 ,size,size ,-size+1,-size+1],false);
-					g.stroke();
+					g.strokeCross(bd.border[id].px, bd.border[id].py, size-1);
 				}
 			}
 			else{ this.vhide(headers[1]+id);}
@@ -854,7 +854,7 @@ Graphic.prototype = {
 		g.strokeStyle = this.MBcolor;
 		g.lineWidth = 1;
 
-		var rsize = k.cwidth*0.35;
+		var rsize = k.cwidth*0.35, offsetx = mf(k.cwidth/2), offsety = mf(k.cheight/2);
 		var headers = ["c_MB1_", "c_MB2a_"];
 
 		var clist = this.cellinside(x1,y1,x2,y2);
@@ -865,16 +865,13 @@ Graphic.prototype = {
 			switch(bd.cell[c].qsub){
 			case 1:
 				if(this.vnop(headers[0]+c,0)){
-					g.beginPath();
-					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize, 0, Math.PI*2, false);
-					g.stroke();
+					g.strokeCircle(bd.cell[c].px+offsetx, bd.cell[c].py+offsety, rsize);
 				}
 				this.vhide(headers[1]+c);
 				break;
 			case 2:
 				if(this.vnop(headers[1]+c,0)){
-					this.inputPath([bd.cell[c].px+mf(k.cwidth/2),bd.cell[c].py+mf(k.cheight/2) ,-rsize,-rsize ,0,0 ,-rsize,rsize ,rsize,-rsize ,0,0 ,rsize,rsize ,-rsize,-rsize],true);
-					g.stroke();
+					g.strokeCross(bd.cell[c].px+offsetx, bd.cell[c].py+offsety, rsize);
 				}
 				this.vhide(headers[0]+c);
 				break;
