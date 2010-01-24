@@ -99,6 +99,7 @@ sub output_puzzles{
 		if($file =~ /Prototype\.js/){ next;}
 		if($file =~ /gears_init\.js/){ next;}
 		if($file =~ /for_test\.js/){ next;}
+		if($file =~ /ContextManager\.js/){ next;}
 
 		push @files, "../$file";
 	}
