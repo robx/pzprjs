@@ -1326,11 +1326,19 @@ Graphic.prototype = {
 		}
 
 		this.flushCanvas = function(x1,y1,x2,y2){ g.setLayer("layer1"); this.zidx=1;};
-		this.vnop = function(vid, isfill){
+		this.vnop = function(vid, isfill){ // stroke‚Ì‚Ý:0, fill‚Ì‚Ý:1, —¼•û:2
 			g.vid = vid;
 			if(!!g.elements[vid]){
-				g.elements[vid].style.display = 'inline';
-				g.setColor();
+				var el = g.elements[vid];
+				el.style.display = 'inline';
+				if(g.vml){
+					if(isfill!==0){ el.fillcolor   = ContextManager.parse(g.fillStyle);}
+					if(isfill!==1){ el.strokecolor = ContextManager.parse(g.strokeStyle);}
+				}
+				else if(g.svg){
+					if(isfill!==0){ el.setAttribute('fill',  ContextManager.parse(g.fillStyle));}
+					if(isfill!==1){ el.setAttribute('stroke',ContextManager.parse(g.strokeStyle));}
+				}
 				return false;
 			}
 			return true;
@@ -1355,6 +1363,7 @@ Graphic.prototype = {
 			g.vid = "";
 			this.zidx++;
 			g.setLayer("layer"+this.zidx);
+			g.getLayerElement().style.zIndex = this.zidx;
 		};
 	},
 
