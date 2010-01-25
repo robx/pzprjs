@@ -1,3 +1,5 @@
+// ContextManager.js rev22
+ 
 (function(){
 
 /* ------------- */
@@ -23,7 +25,22 @@ var _win = this,
 		pathFC    : 'flashcanvas.js'
 	},
 
+	VML = 0,
+	SVG = 1,
+	CANVAS = 2,
+	SL     = 3,
+	FLASH  = 4,
+
 	BEFOREEND = 'BeforeEnd';
+
+/* ---------- */
+/*   arrays   */
+/* ---------- */
+var _hex = (function(){
+	var tbl = [];
+	for(var r=256;r<512;r++){ tbl[r-256]=r.toString(16).substr(1);}
+	return tbl;
+})();
 
 /* ------------ */
 /*   共通関数   */
@@ -33,13 +50,9 @@ function getRectSize(el){
 			 height:(el.offsetHeight || el.clientHeight)};
 }
 function parsecolor(rgbstr){
-	if(rgbstr.match(/rgb\(/)){
+	if(rgbstr.substr(0,4)==='rgb('){
 		var m = rgbstr.match(/\d+/g);
-		for(var i=0;i<m.length;i++){
-			m[i]=parseInt(m[i]).toString(16);
-			if(m[i].length==1){ m[i] = "0"+m[i];}
-		}
-		return ["#",m[0],m[1],m[2]].join('');
+		return ["#",_hex[m[0]],_hex[m[1]],_hex[m[2]]].join('');
 	}
 	return rgbstr;
 }
@@ -48,7 +61,7 @@ function parsecolorrev(colorstr){
 		var m0 = parseInt(RegExp.$1,16).toString();
 		var m1 = parseInt(RegExp.$2,16).toString();
 		var m2 = parseInt(RegExp.$3,16).toString();
-		return ["rgb(",m[0],',',m[1],',',m[2],")"].join('');
+		return ["rgb(",m0,',',m1,',',m2,")"].join('');
 	}
 	return colorstr;
 }
@@ -70,6 +83,7 @@ var V_TAG_GROUP   = '<v:group unselectable="on"',
 	V_ATT_ID    = ' id="',
 	V_ATT_PATH  = ' path="',
 	V_ATT_STYLE = ' style="',
+	V_ATT_COORDSIZE    = ' coordsize="100,100"',
 	V_ATT_FILLCOLOR    = ' fillcolor="',
 	V_ATT_STROKECOLOR  = ' strokecolor="',
 	V_ATT_STROKEWEIGHT = ' strokeweight="',
@@ -84,9 +98,7 @@ var V_TAG_GROUP   = '<v:group unselectable="on"',
 	V_PATH_LINE   = ' l',
 	V_PATH_CLOSE  = ' x',
 	V_PATH_NOSTROKE = ' ns',
-	V_PATH_NOFILL   = ' nf',
-
-	V_DEF_LINEWIDTH = 1;
+	V_PATH_NOFILL   = ' nf';
 
 /* ------------------------------------------- */
 /*   VectorContext(SVG)クラス用const文字列集   */
@@ -108,12 +120,8 @@ var SVGNS = "http://www.w3.org/2000/svg",
 /* --------------------------------- */
 /*   VectorContextクラス用変数など   */
 /* --------------------------------- */
-var VML = 0,
-	SVG = 3,
-
-	EL_ID_HEADER = "canvas_o_",
-
-	DEF_LINEWIDTH = 1;
+var EL_ID_HEADER = "canvas_o_",
+	EMPTY = '';
 
 /* ----------------------- */
 /*   VectorContextクラス   */
@@ -122,7 +130,7 @@ var VectorContext = function(type, idname){
 	// canvasに存在するプロパティ＆デフォルト値
 	this.fillStyle    = 'black';
 	this.strokeStyle  = 'black';
-	this.lineWidth    = DEF_LINEWIDTH;
+	this.lineWidth    = 1;
 	this.textAlign    = 'center';
 	this.textBaseline = 'middle';
 
@@ -205,16 +213,14 @@ VectorContext.prototype = {
 		return svgtop;
 	},
 	appendVML : function(parent, width, height){
-		var vmltop = _doc.createElement('v:group');
+		var vmltop = _doc.createElement('div');
 		vmltop.id = this.canvasid;
-//		vmltop.unselectable = 'on';
 
-		vmltop.style.position = 'relative';
+		vmltop.style.position = 'absolute';
 		vmltop.style.left   = '-2px';
 		vmltop.style.top    = '-2px';
 		vmltop.style.width  = width + 'px';
 		vmltop.style.height = height + 'px';
-		vmltop.coordsize = [width*Z, height*Z].join(',');
 
 		return vmltop;
 	},
@@ -229,9 +235,12 @@ VectorContext.prototype = {
 					layer.setAttribute('unselectable', 'on');
 				}
 				else{
-					layer = _doc.createElement('v:group');
+					layer = _doc.createElement('div');
 					layer.id = lid;
 					layer.unselectable = 'on';
+					layer.style.position = 'absolute';
+					layer.style.left   = '0px';
+					layer.style.top    = '0px';
 				}
 
 				this.initElement(this.idname);
@@ -241,7 +250,7 @@ VectorContext.prototype = {
 		}
 		else{ this.initElement(this.idname);}
 	},
-	getContextElement : function(){ return document.getElementById(this.canvasid);},
+	getContextElement : function(){ return _doc.getElementById(this.canvasid);},
 	getLayerElement   : function(){ return this.target;},
 
 	changeSize : function(width,height){
@@ -257,7 +266,6 @@ VectorContext.prototype = {
 		else if(this.type==VML){
 			child.style.width  = width + 'px';
 			child.style.height = height + 'px';
-			child.coordsize = [width*Z, height*Z].join(',');
 		}
 		this.clearCanvas();
 	},
@@ -269,25 +277,14 @@ VectorContext.prototype = {
 			child.setAttribute('viewBox', m.join(' '));
 		}
 		else if(this.type==VML){
-			child.coordorigin = [left*Z, top*Z].join(',');
+			child.style.left = (-left-2)+'px';
+			child.style.top  = (-top -2)+'px';
 		}
 	},
 	clearCanvas : function(){
-		document.getElementById(this.idname).innerHTML = '';
+		_doc.getElementById(this.idname).innerHTML = '';
 		this.elements = [];
 		this.initElement(this.idname);
-	},
-
-	setColor : function(){
-		var el = this.elements[this.vid];
-		if(this.type===SVG){
-			if(el.getAttribute('fill')  !=='none'){ el.setAttribute('fill',  parsecolor(this.fillStyle));}
-			if(el.getAttribute('stroke')!=='none'){ el.setAttribute('stroke',parsecolor(this.strokeStyle));}
-		}
-		else if(this.type===VML){
-			if(!!el.fillcolor)  { el.fillcolor   = parsecolor(this.fillStyle);}
-			if(!!el.strokecolor){ el.strokecolor = parsecolor(this.strokeStyle);}
-		}
 	},
 
 	/* Canvas API functions (for path) */
@@ -345,16 +342,15 @@ VectorContext.prototype = {
 		break;
 
 	case VML:
-		var ar = [V_TAG_SHAPE];
-		ar.push(V_ATT_STYLE, V_STYLE_LEFT,(x*Z-Z2),V_STYLE_END, V_STYLE_TOP,(y*Z-Z2),V_STYLE_END, V_ATT_END);
-		ar.push(V_ATT_PATH, this.pathRect([x,y,200,30]), V_PATH_CLOSE, V_PATH_NOFILL, V_PATH_NOSTROKE, V_ATT_END);
-		ar.push(V_TAGEND);
+		var ar = [V_TAG_SHAPE, V_ATT_COORDSIZE];
+		ar.push(V_ATT_STYLE, V_STYLE_LEFT,x,V_STYLE_END, V_STYLE_TOP,y,V_STYLE_END, V_ATT_END,
+				V_ATT_PATH, this.pathRect([x,y,200,30]), V_PATH_NOFILL, V_PATH_NOSTROKE, V_ATT_END,
+				V_TAGEND,
 
-		ar.push(V_TAG_TEXTBOX);
+				V_TAG_TEXTBOX);
 		if(!!this.vid){ ar.push(V_ATT_ID, this.vid, V_ATT_END); }
-		ar.push(V_ATT_STYLE_TEXTBOX, V_TAGEND, text, V_CLOSETAG_TEXTBOX);
-
-		ar.push(V_CLOSETAG_SHAPE);
+		ar.push(V_ATT_STYLE_TEXTBOX, V_TAGEND, text, V_CLOSETAG_TEXTBOX,
+				V_CLOSETAG_SHAPE);
 
 		this.target.insertAdjacentHTML(BEFOREEND, ar.join(''));
 		if(!!this.vid){ this.elements[this.vid] = _doc.getElementById(this.vid);}
@@ -446,9 +442,7 @@ VectorContext.prototype = {
 		if(!!this.vid){ this.elements[this.vid] = el;}
 		el.setAttribute(S_ATT_FILL,   (isfill ? parsecolor(this.fillStyle) : S_NONE));
 		el.setAttribute(S_ATT_STROKE, (isstroke ? parsecolor(this.strokeStyle) : S_NONE));
-		if(isstroke){
-			el.setAttribute(S_ATT_STROKEWIDTH, (!!this.lineWidth ? this.lineWidth : S_DEF_LINEWIDTH)+'px');
-		}
+		if(isstroke) { el.setAttribute(S_ATT_STROKEWIDTH, this.lineWidth, 'px');}
 		if(this.isAA){ el.setAttribute(S_ATT_RENDERING, 'auto'); this.isAA = false;}
 		el.setAttribute('d', (isrect ? this.pathRect(size) : this.currentpath.join(' ')));
 
@@ -457,19 +451,20 @@ VectorContext.prototype = {
 
 	case VML:
 		var ar = [V_TAG_SHAPE];
-		if(!!this.vid){ ar.push(V_ATT_ID, this.vid, V_ATT_END); }
+		if(!!this.vid){ ar = [V_TAG_SHAPE, V_ATT_ID, this.vid, V_ATT_END]; }
+		ar.push(V_ATT_COORDSIZE);
 		if(isfill){
 			ar.push(V_ATT_FILLCOLOR, parsecolor(this.fillStyle), V_ATT_END);
 		}
 		if(isstroke){
-			ar.push(V_ATT_STROKECOLOR, parsecolor(this.strokeStyle), V_ATT_END);
-			ar.push(V_ATT_STROKEWEIGHT, (!!this.lineWidth ? this.lineWidth+'px' : V_DEF_LINEWIDTH+'px'), V_ATT_END);
+			ar.push(V_ATT_STROKECOLOR, parsecolor(this.strokeStyle), V_ATT_END,
+					V_ATT_STROKEWEIGHT, this.lineWidth, 'px', V_ATT_END);
 		}
-		ar.push(V_ATT_PATH, (isrect ? this.pathRect(size) : this.currentpath.join(' ')));
-		if(!isfill)  { ar.push(V_PATH_NOFILL);}
-		if(!isstroke){ ar.push(V_PATH_NOSTROKE);}
-		ar.push(V_ATT_END);
-		ar.push(V_TAGEND_NULL);
+		ar.push(V_ATT_PATH, (isrect ? this.pathRect(size) : this.currentpath.join(' ')),
+				(!isfill ? V_PATH_NOFILL : EMPTY),
+				(!isstroke ? V_PATH_NOSTROKE : EMPTY),
+				V_ATT_END,
+				V_TAGEND_NULL);
 		this.target.insertAdjacentHTML(BEFOREEND, ar.join(''));
 		if(!!this.vid){ this.elements[this.vid] = _doc.getElementById(this.vid);}
 		break;
@@ -479,24 +474,26 @@ VectorContext.prototype = {
 /* -------------------- */
 /*   Canvas追加関数群   */
 /* -------------------- */
-CanvasRenderingContext2D_wrapper = function(idname){
+CanvasRenderingContext2D_wrapper = function(idname, type){
 	// canvasに存在するプロパティ＆デフォルト値
 	this.fillStyle    = 'black';
 	this.strokeStyle  = 'black';
-	this.lineWidth    = DEF_LINEWIDTH;
+	this.lineWidth    = 1;
 	this.textAlign    = 'center';
 	this.textBaseline = 'middle';
 
-	this.context = null;
 	this.OFFSETX = 0;
 	this.OFFSETY = 0;
 
-	this.canvas = true;
-	this.vml    = false;
+	this.vml    = (type===VML);
 	this.svg    = false;
+	this.canvas = (type===CANVAS);
+	this.sl     = (type===SL);
+	this.flash  = (type===FLASH);
 
 	this.initElement(idname);
 };
+
 //function addCanvasFunctions(){ _extend(CanvasRenderingContext2D.prototype, {
 CanvasRenderingContext2D_wrapper.prototype = {
 	/* extend functions (initialize) */
@@ -505,8 +502,12 @@ CanvasRenderingContext2D_wrapper.prototype = {
 
 		var parent = _doc.getElementById(idname);
 		var canvas = _doc.getElementById(this.canvasid);
-		var rect = getRectSize(parent);
 
+		if     (this.vml)  { _win.uuCanvas.init(canvas, true);}
+		else if(this.sl)   { _win.uuCanvas.init(canvas, false);}
+		else if(this.flash){ _win.FlashCanvas.initElement(canvas);}
+
+		var rect = getRectSize(parent);
 		canvas.width  = rect.width;
 		canvas.height = rect.height;
 		canvas.style.position = 'relative';
@@ -531,9 +532,8 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		this.parent = parent;
 	},
 	setLayer    : function(layerid){ },
-	setColor    : function(rgbstr) { },
-	getContextElement : function(){ return document.getElementById(this.canvasid);},
-	getLayerElement   : function(){ return document.getElementById(this.canvasid);},
+	getContextElement : function(){ return _doc.getElementById(this.canvasid);},
+	getLayerElement   : function(){ return _doc.getElementById(this.canvasid);},
 
 	changeSize : function(width,height){
 		this.parent.style.width  = width + 'px';
@@ -705,17 +705,9 @@ var ContextManager = (function(){
 			canvas.id = canvasid;
 			parent.appendChild(canvas);
 
-			if(this.canvas){
-				new CanvasRenderingContext2D_wrapper(idname);
-			}
-			else if(this.sl){
-				uuCanvas.init(canvas, false);
-				parent.getContext = function(type){ return canvas.getContext(type);}
-			}
-			else if(this.flash){
-				FlashCanvas.initElement(canvas);
-				parent.getContext = function(type){ return canvas.getContext(type);}
-			}
+			if(this.canvas)    { new CanvasRenderingContext2D_wrapper(idname, CANVAS);}
+			else if(this.sl)   { new CanvasRenderingContext2D_wrapper(idname, SL);    }
+			else if(this.flash){ new CanvasRenderingContext2D_wrapper(idname, FLASH); }
 		}
 	};
 	o.select = function(type){
@@ -750,7 +742,7 @@ var ContextManager = (function(){
 			/* addStyleSheet for VML */
 			var text = [];
 			text.push("v\\:group { behavior: url(#default#VML); display:inline; position:absolute; width:100%; height:100%; overflow:hidden; }");
-			text.push("v\\:shape { behavior: url(#default#VML); position:relative; width:100%; height:100%; }");
+			text.push("v\\:shape { behavior: url(#default#VML); position:absolute; width:10px; height:10px; }");
 			text.push("v\\:textbox, v\\:stroke { behavior: url(#default#VML); }");
 			_doc.createStyleSheet().cssText = text.join('');
 		}
