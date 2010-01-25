@@ -1,4 +1,4 @@
-// ContextManager.js rev22
+// ContextManager.js rev23
  
 (function(){
 
@@ -17,6 +17,7 @@ var _win = this,
 	Z  = 10,
 	Z2 = Z/2,
 
+	_color = [],
 	flags = {
 		debugmode : false,
 		useUC     : false, // uuCanvas(SlverLightモード)
@@ -50,11 +51,14 @@ function getRectSize(el){
 			 height:(el.offsetHeight || el.clientHeight)};
 }
 function parsecolor(rgbstr){
-	if(rgbstr.substr(0,4)==='rgb('){
-		var m = rgbstr.match(/\d+/g);
-		return ["#",_hex[m[0]],_hex[m[1]],_hex[m[2]]].join('');
+	if(!_color[rgbstr]){
+		if(rgbstr.substr(0,4)==='rgb('){
+			var m = rgbstr.match(/\d+/g);
+			_color[rgbstr] = ["#",_hex[m[0]],_hex[m[1]],_hex[m[2]]].join('');
+		}
+		else{ _color[rgbstr] = rgbstr;}
 	}
-	return rgbstr;
+	return _color[rgbstr];
 }
 function parsecolorrev(colorstr){
 	if(colorstr.match(/\#([0-9a-f][0-9a-f])([0-9a-f][0-9a-f])([0-9a-f][0-9a-f])/)){
@@ -665,8 +669,7 @@ CanvasRenderingContext2D_wrapper.prototype = {
 /*   ContextManagerオブジェクト   */
 /* ------------------------------ */
 var ContextManager = (function(){
-	var _doc = document,
-		o = {};
+	var _doc = document, o = {};
 
 	o.vml    = false;
 	o.sl     = false;
@@ -674,7 +677,9 @@ var ContextManager = (function(){
 	o.svg    = false;
 	o.canvas = false;
 
-	o.parse  = parsecolor;
+	/* externs */
+	o.color = _color;
+	o.parse = parsecolor;
 
 	o.initAllElement = function(){
 		this.initElementsByClassName('canvas');
