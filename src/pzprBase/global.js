@@ -1,4 +1,4 @@
-// global.js v3.2.4
+// global.js v3.3.0
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -73,7 +73,7 @@ var k = {
 		Gecko : navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1,
 		WinWebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1
 	},
-	vml : ContextManager.vml,
+	vml : ContextManager.current.vml,
 
 	// const値
 	BOARD  : 'board',

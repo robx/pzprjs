@@ -85,7 +85,6 @@ Graphic = function(){
 	this.addlw = 0;	// エラー時に線の太さを広げる
 
 	this.chassisflag = true;	// false: Gridを外枠の位置にも描画する
-	this.zstable     = false;	// 色分けの一部再描画時にtrueにする(VML用)
 	this.textenable  = false;	// 数字をg.fillText()で描画(現在はコメントアウト)
 
 	this.lastHdeg = 0;

@@ -1,4 +1,4 @@
-// ContextManager.js rev26
+// ContextManager.js rev27
  
 (function(){
 
@@ -18,9 +18,8 @@ var _win = this,
 	Z2 = Z/2,
 
 	_color = [],
-	flags = {
-		debugmode : false
-	},
+	flags = { debugmode:false },
+	_types = ['svg','canvas','sl','flash','vml'],
 
 	VML = 0,
 	SVG = 1,
@@ -639,7 +638,7 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	stroke     : function(){ this.setProperties(); this.context.stroke();},
 	fillRect   : function(x,y,w,h){ this.setProperties(); this.context.fillRect(x+this.OFFSETX,y+this.OFFSETY,w,h);},
 	strokeRect : function(x,y,w,h){ this.setProperties(); this.context.strokeRect(x+this.OFFSETX,y+this.OFFSETY,w,h);},
-/*	fillText   : function(text,x,y){ this.setProperties(); this.context.fillText(text,x+this.OFFSETX,y+this.OFFSETY);},
+	fillText   : function(text,x,y){ this.setProperties(); this.context.fillText(text,x+this.OFFSETX,y+this.OFFSETY);},
 
 	/* extended functions */
 	fillstroke : function(){
@@ -716,11 +715,9 @@ CanvasRenderingContext2D_wrapper.prototype = {
 var ContextManager = (function(){
 	var _doc = document, o = {};
 
-	o.vml    = false;
-	o.sl     = false;
-	o.flash  = false;
-	o.svg    = false;
-	o.canvas = false;
+	/* Selected & Enable types */
+	o.current = {};
+	o.enable  = {};
 
 	/* externs */
 	o.color = _color;
@@ -742,53 +739,34 @@ var ContextManager = (function(){
 		var canvasid = EL_ID_HEADER + idname;
 		if(!!_doc.getElementById(canvasid)){ return;}
 
-		if(this.vml){
-			new VectorContext(VML, idname);
-		}
-		else if(this.svg){
-			new VectorContext(SVG, idname);
-		}
-		else if(this.sl){
-			new VectorContext(SL,  idname);
-		}
-		else if(this.canvas){
+		if     (this.current.vml){ new VectorContext(VML, idname);}
+		else if(this.current.svg){ new VectorContext(SVG, idname);}
+		else if(this.current.sl) { new VectorContext(SL,  idname);}
+		else if(this.current.canvas){
 			var parent = _doc.getElementById(idname);
 			canvas = _doc.createElement('canvas');
 			canvas.id = canvasid;
 			parent.appendChild(canvas);
 
-			if(this.canvas)    { new CanvasRenderingContext2D_wrapper(idname, CANVAS);}
+			new CanvasRenderingContext2D_wrapper(idname, CANVAS);
 		}
 	};
 	o.select = function(type){
-		if(this.flash){ return;}
-		else if(this.sl && type=='vml'){ this.sl=false; this.vml=true; }
-		else if(this.vml && type=='sl'){ this.sl=true;  this.vml=false;}
-		else if(this.svg && type=='canvas'){ this.svg=false; this.canvas=true; }
-		else if(this.canvas && type=='svg'){ this.svg=true;  this.canvas=false;}
+		if(this.enable[type]!==true){ return false;}
+		for(var i=0;i<_types.length;i++){ o.current[_types[i]]=false;}
+		this.current[type] = true;
+		return true;
 	};
 
 	// ‚±‚ÌŠÖ”‚ÍAContextManager.js‚ª“Ç‚Ýž‚Ü‚ê‚½Žž‚Éˆê‰ñ‚¾‚¯ŽÀs‚³‚ê‚Ü‚·B
 	(function(){
-		var enableCanvas = (!!_doc.createElement('canvas').getContext);
-		var enableSVG    = (!!_doc.createElementNS && !!_doc.createElementNS(SVGNS, 'svg').suspendRedraw);
-		var enableVML    = _IE;
-		var enableFlash  = false;
-		var enableSL     = (_IE && (function(){
-			try {
-				var a=["1.0","2.0","3.0","4.0"], i=a.length, o=new ActiveXObject("AgControl.AgControl");
-				while(i--){ if(o.IsVersionSupported(a[i])){ return true;} }
-			} catch(e){}
-			return false;
-		})());
+		o.enable.canvas = (!!_doc.createElement('canvas').getContext);
+		o.enable.svg    = (!!_doc.createElementNS && !!_doc.createElementNS(SVGNS, 'svg').suspendRedraw);
+		o.enable.sl     = (function(){ try{ return (new ActiveXObject("AgControl.AgControl")).IsVersionSupported("1.0");}catch(e){} return false;})();
+		o.enable.flash  = false;
+		o.enable.vml    = _IE;
 
-		if     (enableSVG)   { o.svg    = true;}
-		else if(enableCanvas){ o.canvas = true;}
-		else if(enableSL)    { o.sl     = true;}
-		else if(enableFlash) { o.flash  = true;}
-		else                 { o.vml    = true;}
-
-		if(enableVML){
+		if(o.enable.vml){
 			/* addNameSpace for VML */
 			_doc.namespaces.add("v", "urn:schemas-microsoft-com:vml");
 
@@ -799,6 +777,13 @@ var ContextManager = (function(){
 			text.push("v\\:textbox, v\\:stroke { behavior: url(#default#VML); }");
 			_doc.createStyleSheet().cssText = text.join('');
 		}
+
+		for(var i=0;i<_types.length;i++){ o.current[_types[i]]=false;}
+		if     (o.enable.svg)   { o.current.svg    = true;}
+		else if(o.enable.canvas){ o.current.canvas = true;}
+		else if(o.enable.sl)    { o.current.sl     = true;}
+		else if(o.enable.flash) { o.current.flash  = true;}
+		else if(o.enable.vml)   { o.current.vml    = true;}
 	})();
 
 	return o;

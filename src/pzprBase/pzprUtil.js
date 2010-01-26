@@ -303,46 +303,40 @@ LineManager.prototype = {
 		}
 	},
 
-	repaintLine : (
-		((ContextManager.canvas) ?
-			function(idlist){
-				if(!pp.getVal('irowake')){ return;}
+	repaintLine : function(idlist){
+		if(!pp.getVal('irowake')){ return;}
 
-				if(k.isCenterLine){
-					for(var i=0,len=idlist.length;i<len;i++){
-						pc.drawLine1(idlist[i],true);
-						this.repaintParts(idlist[i]);
-					}
-				}
-				else{
-					for(var i=0,len=idlist.length;i<len;i++){
-						var id = idlist[i];
-						if(bd.border[id].qans!==1){ g.fillStyle = pc.BorderQuescolor; }
-						else                      { g.fillStyle = pc.getLineColor(id);}
-						pc.drawBorder1x(bd.border[id].cx, bd.border[id].cy, true);
-						this.repaintParts(id);
-					}
+		if(g.canvas){
+			if(k.isCenterLine){
+				for(var i=0,len=idlist.length;i<len;i++){
+					pc.drawLine1(idlist[i], true);
+					this.repaintParts(idlist[i]);
 				}
 			}
-		:
-			function(idlist){
-				if(!pp.getVal('irowake')){ return;}
-
-				pc.zstable = true;
-				if(k.isCenterLine){
-					for(var i=0,len=idlist.length;i<len;i++){
-						pc.drawLine1(idlist[i],true);
-					}
+			else{
+				for(var i=0,len=idlist.length;i<len;i++){
+					var id = idlist[i];
+					if(bd.border[id].qans!==1){ g.fillStyle = pc.BorderQuescolor; }
+					else                      { g.fillStyle = pc.getLineColor(id);}
+					pc.drawBorder1x(bd.border[id].cx, bd.border[id].cy, true);
+					this.repaintParts(id);
 				}
-				else{
-					for(var i=0,len=idlist.length;i<len;i++){
-						pc.drawBorder1x(bd.border[idlist[i]].cx,bd.border[idlist[i]].cy,true);
-					}
-				}
-				pc.zstable = false;
 			}
-		)
-	),
+		}
+		else{
+			if(k.isCenterLine){
+				for(var i=0,len=idlist.length;i<len;i++){
+					pc.drawLine1(idlist[i], true);
+				}
+			}
+			else{
+				for(var i=0,len=idlist.length;i<len;i++){
+					var id = idlist[i];
+					pc.drawBorder1x(bd.border[id].cx, bd.border[id].cy, true);
+				}
+			}
+		}
+	},
 	repaintParts : function(id){ }, // オーバーライド用
 
 	//---------------------------------------------------------------------------
