@@ -1,4 +1,4 @@
-// Graphic.js v3.2.4
+// Graphic.js v3.3.0
 
 //---------------------------------------------------------------------------
 // ÅöGraphicÉNÉâÉX CanvasÇ…ï`âÊÇ∑ÇÈ
@@ -1185,7 +1185,7 @@ Graphic.prototype = {
 		if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
 		if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
 
-		if(!g.vml && !g.svg){
+		if(g.canvas){
 			g.fillStyle = this.gridcolor;
 			for(var i=x1-1;i<=x2+1;i++){
 				for(var j=(k.p0.y+(y1-0.5)*k.cheight);j<(k.p0.y+(y2+1.5)*k.cheight);j+=6){
@@ -1247,7 +1247,7 @@ Graphic.prototype = {
 		var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
 		var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
 
-		if(!g.vml && !g.svg){
+		if(g.canvas){
 			g.fillStyle = this.gridcolor;
 			for(var i=xa;i<=xb;i++){
 				for(var j=(k.p0.y+y1*k.cheight),len=(k.p0.y+(y2+1)*k.cheight);j<len;j+=(2*dotSize)){
@@ -1308,7 +1308,7 @@ Graphic.prototype = {
 	vinc  : f_true,
 
 	setVectorFunctions : function(){
-		if(!ContextManager.vml && !ContextManager.svg){
+		if(g.canvas){
 			this.flushCanvas = function(x1,y1,x2,y2){
 				if     (k.isextendcell===0 && x1<= 0 && y1<= 0 && x2>=k.qcols-1 && y2>=k.qrows-1){ this.flushCanvasAll();}
 				else if(k.isextendcell===1 && x1<=-1 && y1<=-1 && x2>=k.qcols-1 && y2>=k.qrows-1){ this.flushCanvasAll();}
@@ -1330,12 +1330,18 @@ Graphic.prototype = {
 			g.vid = vid;
 			if(!!g.elements[vid]){
 				var el = g.elements[vid];
-				el.style.display = 'inline';
 				if(g.vml){
+					el.style.display = 'inline';
 					if(isfill!==0){ el.fillcolor   = ContextManager.parse(g.fillStyle);}
 					if(isfill!==1){ el.strokecolor = ContextManager.parse(g.strokeStyle);}
 				}
+				else if(g.sl){
+					el.Visibility = "Visible";
+					if(isfill!==0){ el.fill   = ContextManager.parse(g.fillStyle);  }
+					if(isfill!==1){ el.stroke = ContextManager.parse(g.strokeStyle);}
+				}
 				else if(g.svg){
+					el.style.display = 'inline';
 					if(isfill!==0){ el.setAttribute('fill',  ContextManager.parse(g.fillStyle));}
 					if(isfill!==1){ el.setAttribute('stroke',ContextManager.parse(g.strokeStyle));}
 				}
@@ -1347,15 +1353,17 @@ Graphic.prototype = {
 			if(typeof vid === 'string'){ vid = [vid];}
 			for(var i=0;i<vid.length;i++){
 				if(g.elements[vid[i]]){
-					g.elements[vid[i]].style.display = 'none';
+					if(!g.sl){ g.elements[vid[i]].style.display = 'none';}
+					else{ g.elements[vid[i]].Visibility = "Collapsed";}
 				}
 			}
 		};
 		this.vdel = function(vid){
 			for(var i=0;i<vid.length;i++){
 				if(g.elements[vid[i]]){
-					g.target.removeChild(g.elements[vid[i]]);
-					g.elements[vid[i]] =null;
+					if(!g.sl){ g.target.removeChild(g.elements[vid[i]]);}
+					else{ g.elements[vid[i]].Visibility = "Collapsed";}
+					g.elements[vid[i]] = null;
 				}
 			}
 		};
@@ -1363,7 +1371,8 @@ Graphic.prototype = {
 			g.vid = "";
 			this.zidx++;
 			g.setLayer("layer"+this.zidx);
-			g.getLayerElement().style.zIndex = this.zidx;
+			if(!g.sl){ g.getLayerElement().style.zIndex = this.zidx;}
+			else{ g.getLayerElement()["Canvas.ZIndex"] = this.zidx;}
 		};
 	},
 

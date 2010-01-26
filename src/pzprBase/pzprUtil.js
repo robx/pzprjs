@@ -1,4 +1,4 @@
-// pzprUtil.js v3.2.3
+// pzprUtil.js v3.3.0
 
 //---------------------------------------------------------------------------
 // šAreaInfoƒNƒ‰ƒX å‚ÉF•ª‚¯‚Ìî•ñ‚ğŠÇ—‚·‚é
@@ -304,7 +304,7 @@ LineManager.prototype = {
 	},
 
 	repaintLine : (
-		((!k.vml) ?
+		((ContextManager.canvas) ?
 			function(idlist){
 				if(!pp.getVal('irowake')){ return;}
 

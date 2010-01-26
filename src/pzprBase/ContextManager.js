@@ -1,4 +1,4 @@
-// ContextManager.js rev23
+// ContextManager.js rev26
  
 (function(){
 
@@ -19,11 +19,7 @@ var _win = this,
 
 	_color = [],
 	flags = {
-		debugmode : false,
-		useUC     : false, // uuCanvas(SlverLightモード)
-		pathUC    : 'src/uuCanvas.js',
-		useFC     : false, // FlashCanvas.js
-		pathFC    : 'flashcanvas.js'
+		debugmode : false
 	},
 
 	VML = 0,
@@ -152,16 +148,22 @@ var VectorContext = function(type, idname){
 	this.lastpath    = '';
 	this.isAA = false;
 
+	// Silverlight用
+	this.content = null;
+
 	this.canvas = false;
 	this.vml    = false;
 	this.svg    = false;
+	this.sl     = false;
+	this.flash  = false;
 
 	// define const
-	if(this.type===SVG){
+	if(this.type===SVG || this.type===SL){
 		this.PATH_MOVE  = S_PATH_MOVE;
 		this.PATH_LINE  = S_PATH_LINE;
 		this.PATH_CLOSE = S_PATH_CLOSE;
-		this.svg = true;
+		if(this.type===SVG){ this.svg = true;}
+		if(this.type===SL) { this.sl  = true;}
 	}
 	else if(this.type===VML){
 		this.PATH_MOVE  = V_PATH_MOVE;
@@ -175,14 +177,16 @@ var VectorContext = function(type, idname){
 VectorContext.prototype = {
 	/* additional functions (for initialize) */
 	initElement : function(idname){
-		var child = _doc.getElementById(this.canvasid);
+		var child = null;
+		if(this.type!==SL){ child = _doc.getElementById(this.canvasid)}
+		else if(!!this.content){ child = this.content.findName(this.canvasid);}
 
 		if(!child){
 			var parent = _doc.getElementById(idname);
 			var rect = getRectSize(parent);
 			if     (this.type===SVG){ child = this.appendSVG(parent,rect.width,rect.height);}
+			else if(this.type===SL) { child = this.appendSL (parent,rect.width,rect.height);}
 			else if(this.type===VML){ child = this.appendVML(parent,rect.width,rect.height);}
-			parent.appendChild(child);
 
 			var self = this;
 			//parent.className = "canvas";
@@ -214,6 +218,7 @@ VectorContext.prototype = {
 		svgtop.setAttribute('height', height);
 		svgtop.setAttribute('viewBox', [0,0,width,height].join(' '));
 
+		parent.appendChild(svgtop);
 		return svgtop;
 	},
 	appendVML : function(parent, width, height){
@@ -226,17 +231,40 @@ VectorContext.prototype = {
 		vmltop.style.width  = width + 'px';
 		vmltop.style.height = height + 'px';
 
+		parent.appendChild(vmltop);
 		return vmltop;
 	},
+	appendSL : function(parent, width, height){
+		parent.innerHTML = [
+			'<object type="application/x-silverlight" width="100%" height="100%" id="',this.canvasid,'_object" />',
+			'<param name="windowless" value="true" />',
+			'<param name="background" value="#00000000" />',	// アルファ値0 = 透明
+			'<param name="source" value="#',this.canvasid,'_script" />',
+		//	'<param name="onLoad" value="onSLload" />',	// 前は100%,100%設定が必要だったみたい
+			'</object>',
+			'<script type="text/xaml" id="',this.canvasid,'_script">',
+			'<Canvas xmlns="http://schemas.microsoft.com/client/2007" Name="',this.canvasid,'" />',
+			'</script>'
+		].join('');
+
+		this.content = document.getElementById([this.canvasid,'object'].join('_')).content;
+		return this.content.findName(this.canvasid);
+	},
 	setLayer : function(layerid){
+		this.initElement(this.idname);
 		if(!!layerid){
 			var lid = [this.canvasid,"layer",layerid].join('_');
-			var layer = _doc.getElementById(lid);
+			var layer = (this.type!==SL ? _doc.getElementById(lid) : this.content.findName(lid));
 			if(!layer){
 				if(this.type===SVG){
 					layer = _doc.createElementNS(SVGNS,'g');
 					layer.setAttribute('id', lid);
 					layer.setAttribute('unselectable', 'on');
+					this.target.appendChild(layer);
+				}
+				else if(this.type===SL){
+					layer = this.content.createFromXaml(['<Canvas Name="',lid,'"/>'].join(''));
+					this.target.children.add(layer);
 				}
 				else{
 					layer = _doc.createElement('div');
@@ -245,14 +273,11 @@ VectorContext.prototype = {
 					layer.style.position = 'absolute';
 					layer.style.left   = '0px';
 					layer.style.top    = '0px';
+					this.target.appendChild(layer);
 				}
-
-				this.initElement(this.idname);
-				this.target.appendChild(layer);
 			}
 			this.target = layer;
 		}
-		else{ this.initElement(this.idname);}
 	},
 	getContextElement : function(){ return _doc.getElementById(this.canvasid);},
 	getLayerElement   : function(){ return this.target;},
@@ -267,11 +292,15 @@ VectorContext.prototype = {
 			child.setAttribute('height', height);
 			child.setAttribute('viewBox', [0,0,width,height].join(' '));
 		}
+		else if(this.type==SL){
+			child.width  = width + 'px';
+			child.height = height + 'px';
+		}
 		else if(this.type==VML){
 			child.style.width  = width + 'px';
 			child.style.height = height + 'px';
 		}
-		this.clearCanvas();
+		//this.clearCanvas();
 	},
 	changeOrigin : function(left,top){
 		var child = this.parent.firstChild;
@@ -280,15 +309,19 @@ VectorContext.prototype = {
 			m[0]=left, m[1]=top;
 			child.setAttribute('viewBox', m.join(' '));
 		}
-		else if(this.type==VML){
+		else if(this.type===VML || this.type===SL){
+			child.style.position = 'absolute';
 			child.style.left = (-left-2)+'px';
 			child.style.top  = (-top -2)+'px';
 		}
 	},
 	clearCanvas : function(){
-		_doc.getElementById(this.idname).innerHTML = '';
+		if(this.type!==SL){ _doc.getElementById(this.idname).innerHTML = '';}
+
 		this.elements = [];
 		this.initElement(this.idname);
+
+		if(this.type===SL){ this.target.children.clear();}
 	},
 
 	/* Canvas API functions (for path) */
@@ -301,16 +334,16 @@ VectorContext.prototype = {
 		this.lastpath = this.PATH_CLOSE;
 	},
 	moveTo : function(x,y){
-		if(this.type===SVG){ this.currentpath.push(this.PATH_MOVE,x,y);}else{ this.currentpath.push(this.PATH_MOVE,x*Z-Z2,y*Z-Z2);}
+		if(this.type!==VML){ this.currentpath.push(this.PATH_MOVE,x,y);}else{ this.currentpath.push(this.PATH_MOVE,x*Z-Z2,y*Z-Z2);}
 		this.lastpath = this.PATH_MOVE;
 	},
 	lineTo : function(x,y){
 		if(this.lastpath!==this.PATH_LINE){ this.currentpath.push(this.PATH_LINE);}
-		if(this.type===SVG){ this.currentpath.push(x,y);}else{ this.currentpath.push(x*Z-Z2,y*Z-Z2);}
+		if(this.type!==VML){ this.currentpath.push(x,y);}else{ this.currentpath.push(x*Z-Z2,y*Z-Z2);}
 		this.lastpath = this.PATH_LINE;
 	},
 	arc : function(cx,cy,r,startRad,endRad,antiClockWise){
-		if(this.type===VML){ cx=cx*Z-Z2, cy=cy*Z-Z2, r=r*Z;}
+		if(this.type===VML){ cx=cx*Z-Z2, cy=cy*Z-Z2, r=_mf(r*Z);}
 		var sx = _mf(cx + r*_mc(startRad)), sy = _mf(cy + r*_ms(startRad)),
 			ex = _mf(cx + r*_mc(endRad)),   ey = _mf(cy + r*_ms(endRad));
 		if(this.type===VML){
@@ -345,6 +378,13 @@ VectorContext.prototype = {
 		this.target.appendChild(el);
 		break;
 
+	case SL:
+		var ar = ['<TextBlock Canvas.Left="',x,'" Canvas.Top="',y,'">',text,'</TextBlock>'];
+		var xaml = this.content.createFromXaml(ar.join(''));
+		if(!!this.vid){ this.elements[this.vid] = xaml;}
+		this.target.children.add(xaml);
+		break;
+
 	case VML:
 		var ar = [V_TAG_SHAPE, V_ATT_COORDSIZE];
 		ar.push(V_ATT_STYLE, V_STYLE_LEFT,x,V_STYLE_END, V_STYLE_TOP,y,V_STYLE_END, V_ATT_END,
@@ -371,7 +411,7 @@ VectorContext.prototype = {
 	},
 
 	setLinePath : function(){
-		var _args = arguments, _len = _args.length, svg=(this.type===SVG);
+		var _args = arguments, _len = _args.length, svg=(this.type!==VML);
 		this.currentpath = [];
 		for(var i=0,len=_len-((_len|1)?1:2);i<len;i+=2){
 			if     (i==0){ this.currentpath.push(this.PATH_MOVE);}
@@ -381,7 +421,7 @@ VectorContext.prototype = {
 		if(_args[_len-1]){ this.currentpath.push(this.PATH_CLOSE);}
 	},
 	setOffsetLinePath : function(){
-		var _args = arguments, _len = _args.length, svg=(this.type===SVG), m=[_args[0],_args[1]];
+		var _args = arguments, _len = _args.length, svg=(this.type!==VML), m=[_args[0],_args[1]];
 		this.currentpath = [];
 		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
 			m[i] = _args[i] + m[0];
@@ -397,6 +437,9 @@ VectorContext.prototype = {
 	setDashSize : function(size){
 		if(this.type===SVG){
 			this.elements[this.vid].setAttribute('stroke-dasharray', size);
+		}
+		else if(this.type===SL){
+			this.elements[this.vid].StrokeDashArray = size;
 		}
 		else if(this.type===VML){
 			var el = _doc.createElement('v:stroke');
@@ -415,7 +458,7 @@ VectorContext.prototype = {
 		this.currentpath = stack;
 	},
 	strokeCross : function(cx,cy,l){
-		if(this.type===VML){ cx=cx*Z-Z2, cy=cy*Z-Z2, l=l*Z;}
+		if(this.type===VML){ cx=cx*Z-Z2, cy=cy*Z-Z2, l=_mf(l*Z);}
 		var stack = this.currentpath;
 		this.currentpath = [];
 		this.currentpath.push(this.PATH_MOVE,(cx-l),(cy-l),this.PATH_LINE,(cx+l),(cy+l));
@@ -440,35 +483,41 @@ VectorContext.prototype = {
 		this.currentpath = stack;
 	},
 
-	addVectorElement : function(isrect,isfill,isstroke,size){ switch(this.type){
+	addVectorElement : function(isrect,isfill,isstroke,size){
+	var path = (isrect ? this.pathRect(size) : this.currentpath.join(' '));
+	switch(this.type){
 	case SVG:
 		var el = _doc.createElementNS(SVGNS,'path');
 		if(!!this.vid){ this.elements[this.vid] = el;}
+		el.setAttribute('d', path);
 		el.setAttribute(S_ATT_FILL,   (isfill ? parsecolor(this.fillStyle) : S_NONE));
 		el.setAttribute(S_ATT_STROKE, (isstroke ? parsecolor(this.strokeStyle) : S_NONE));
 		if(isstroke) { el.setAttribute(S_ATT_STROKEWIDTH, this.lineWidth, 'px');}
 		if(this.isAA){ el.setAttribute(S_ATT_RENDERING, 'auto'); this.isAA = false;}
-		el.setAttribute('d', (isrect ? this.pathRect(size) : this.currentpath.join(' ')));
 
 		this.target.appendChild(el);
 		break;
 
+	case SL:
+		var ar = ['<Path Data="', path ,'"'];
+		if(isfill)  { ar.push(' Fill="', parsecolor(this.fillStyle), '"');}
+		if(isstroke){ ar.push(' Stroke="', parsecolor(this.strokeStyle), '" StrokeThickness="', this.lineWidth, '"');}
+		ar.push(' />');
+
+		var xaml = this.content.createFromXaml(ar.join(''));
+		if(!!this.vid){ this.elements[this.vid] = xaml;}
+		this.target.children.add(xaml);
+		break;
+
 	case VML:
+		path = [path, (!isfill ? V_PATH_NOFILL : EMPTY), (!isstroke ? V_PATH_NOSTROKE : EMPTY)].join('');
 		var ar = [V_TAG_SHAPE];
 		if(!!this.vid){ ar = [V_TAG_SHAPE, V_ATT_ID, this.vid, V_ATT_END]; }
-		ar.push(V_ATT_COORDSIZE);
-		if(isfill){
-			ar.push(V_ATT_FILLCOLOR, parsecolor(this.fillStyle), V_ATT_END);
-		}
-		if(isstroke){
-			ar.push(V_ATT_STROKECOLOR, parsecolor(this.strokeStyle), V_ATT_END,
-					V_ATT_STROKEWEIGHT, this.lineWidth, 'px', V_ATT_END);
-		}
-		ar.push(V_ATT_PATH, (isrect ? this.pathRect(size) : this.currentpath.join(' ')),
-				(!isfill ? V_PATH_NOFILL : EMPTY),
-				(!isstroke ? V_PATH_NOSTROKE : EMPTY),
-				V_ATT_END,
-				V_TAGEND_NULL);
+		ar.push(V_ATT_COORDSIZE, V_ATT_PATH, path, V_ATT_END);
+		if(isfill)  { ar.push(V_ATT_FILLCOLOR, parsecolor(this.fillStyle), V_ATT_END);}
+		if(isstroke){ ar.push(V_ATT_STROKECOLOR, parsecolor(this.strokeStyle), V_ATT_END, V_ATT_STROKEWEIGHT, this.lineWidth, 'px', V_ATT_END);}
+		ar.push(V_TAGEND_NULL);
+
 		this.target.insertAdjacentHTML(BEFOREEND, ar.join(''));
 		if(!!this.vid){ this.elements[this.vid] = _doc.getElementById(this.vid);}
 		break;
@@ -506,10 +555,6 @@ CanvasRenderingContext2D_wrapper.prototype = {
 
 		var parent = _doc.getElementById(idname);
 		var canvas = _doc.getElementById(this.canvasid);
-
-		if     (this.vml)  { _win.uuCanvas.init(canvas, true);}
-		else if(this.sl)   { _win.uuCanvas.init(canvas, false);}
-		else if(this.flash){ _win.FlashCanvas.initElement(canvas);}
 
 		var rect = getRectSize(parent);
 		canvas.width  = rect.width;
@@ -703,20 +748,22 @@ var ContextManager = (function(){
 		else if(this.svg){
 			new VectorContext(SVG, idname);
 		}
-		else if(this.canvas || this.sl || this.flash){
-			/* 追加した後じゃないと、getContext～initElementできない */
+		else if(this.sl){
+			new VectorContext(SL,  idname);
+		}
+		else if(this.canvas){
 			var parent = _doc.getElementById(idname);
 			canvas = _doc.createElement('canvas');
 			canvas.id = canvasid;
 			parent.appendChild(canvas);
 
 			if(this.canvas)    { new CanvasRenderingContext2D_wrapper(idname, CANVAS);}
-			else if(this.sl)   { new CanvasRenderingContext2D_wrapper(idname, SL);    }
-			else if(this.flash){ new CanvasRenderingContext2D_wrapper(idname, FLASH); }
 		}
 	};
 	o.select = function(type){
-		if(this.vml || this.sl || this.flash){ return;}
+		if(this.flash){ return;}
+		else if(this.sl && type=='vml'){ this.sl=false; this.vml=true; }
+		else if(this.vml && type=='sl'){ this.sl=true;  this.vml=false;}
 		else if(this.svg && type=='canvas'){ this.svg=false; this.canvas=true; }
 		else if(this.canvas && type=='svg'){ this.svg=true;  this.canvas=false;}
 	};
@@ -725,8 +772,9 @@ var ContextManager = (function(){
 	(function(){
 		var enableCanvas = (!!_doc.createElement('canvas').getContext);
 		var enableSVG    = (!!_doc.createElementNS && !!_doc.createElementNS(SVGNS, 'svg').suspendRedraw);
-		var enableFlash  = (flags.useFC);
-		var enableSL     = (flags.useUC && _IE && (function(){
+		var enableVML    = _IE;
+		var enableFlash  = false;
+		var enableSL     = (_IE && (function(){
 			try {
 				var a=["1.0","2.0","3.0","4.0"], i=a.length, o=new ActiveXObject("AgControl.AgControl");
 				while(i--){ if(o.IsVersionSupported(a[i])){ return true;} }
@@ -740,7 +788,7 @@ var ContextManager = (function(){
 		else if(enableFlash) { o.flash  = true;}
 		else                 { o.vml    = true;}
 
-		if(o.vml){
+		if(enableVML){
 			/* addNameSpace for VML */
 			_doc.namespaces.add("v", "urn:schemas-microsoft-com:vml");
 
@@ -750,16 +798,6 @@ var ContextManager = (function(){
 			text.push("v\\:shape { behavior: url(#default#VML); position:absolute; width:10px; height:10px; }");
 			text.push("v\\:textbox, v\\:stroke { behavior: url(#default#VML); }");
 			_doc.createStyleSheet().cssText = text.join('');
-		}
-		if(o.sl){
-			// uuCanvas.jsを有効にする
-			_doc.write('<script type="text/xaml" id="xaml"><?xml version="1.0"?>\n');
-			_doc.write('  <Canvas xmlns="http://schemas.microsoft.com/client/2007"></Canvas></script>\n');
-			_doc.write(['<script type="text/javascript" src="',flags.pathUC,'"></script>\n'].join(''));
-		}
-		if(o.flash){
-			// FlashCanvasを読み込む
-			_doc.write(['<script type="text/javascript" src="',flags.pathFC,'"></script>\n'].join(''));
 		}
 	})();
 
