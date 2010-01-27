@@ -1,4 +1,4 @@
-// ContextManager.js rev27
+// ContextManager.js rev28
  
 (function(){
 
@@ -292,6 +292,9 @@ VectorContext.prototype = {
 			child.setAttribute('viewBox', [0,0,width,height].join(' '));
 		}
 		else if(this.type==SL){
+			// 描画されないことがあるため、サイズを2度設定するおまじない
+			child.height = (height+1)+'px';
+
 			child.width  = width + 'px';
 			child.height = height + 'px';
 		}
