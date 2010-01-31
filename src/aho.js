@@ -101,12 +101,39 @@ Puzzles.aho.prototype = {
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
-			this.drawCircledNumbers(x1,y1,x2,y2);
+			this.drawCircledNumbers_aho(x1,y1,x2,y2);
 			this.drawBorderQsubs(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
+		};
+
+		// –{“–‚É‘Î‰ž‚·‚é‚Ü‚Å‚Ì‰ž‹}‘[’u
+		pc.drawCircledNumbers_aho = function(x1,y1,x2,y2){
+			var rsize2 = k.cwidth*this.circleratio[1];
+			var mgnx = mf(k.cwidth/2), mgny = mf(k.cheight/2);
+			var header = "c_cira_";
+
+			g.lineWidth = k.cwidth*0.05;
+			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				if(bd.cell[c].qnum!=-1){
+					var px=bd.cell[c].px+mgnx, py=bd.cell[c].py+mgny;
+
+					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+					if(this.vnop(header+c,1)){
+						g.beginPath();
+						g.arc(px, py, rsize2, 0, Math.PI*2, false);
+						g.fill();
+					}
+				}
+				else{ this.vhide([header+c]);}
+
+				this.dispnumCell(c);
+			}
+			this.vinc();
 		};
 	},
 
