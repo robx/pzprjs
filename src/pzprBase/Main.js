@@ -1,4 +1,4 @@
-// Main.js v3.2.4p4
+// Main.js v3.2.5
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -116,6 +116,16 @@ PBase.prototype = {
 			document.onkeydown  = ee.ebinder(kc, kc.e_keydown);
 			document.onkeyup    = ee.ebinder(kc, kc.e_keyup);
 			document.onkeypress = ee.ebinder(kc, kc.e_keypress);
+
+			if(!!menu.ex.reader){
+				var DDhandler = function(e){
+					menu.ex.reader.readAsText(e.dataTransfer.files[0]);
+					e.preventDefault();
+					e.stopPropagation();
+				}
+				window.addEventListener('dragover', function(e){ e.preventDefault();}, true);
+				window.addEventListener('drop', DDhandler, true);
+			}
 		}
 	},
 	initSilverlight : function(sender){
