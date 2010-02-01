@@ -16,6 +16,7 @@
 	var st = 'number';
 
 	var pname = {
+		aho        : 'アホになり切れ',
 		ayeheya    : '∀人∃ＨＥＹＡ',
 		bag        : 'バッグ',
 		barns      : 'バーンズ',
