@@ -1,4 +1,4 @@
-// Filesys.js v3.2.4p4
+// Filesys.js v3.2.5
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -626,8 +626,11 @@ DataBaseManager.prototype = {
 
 		// HTML5 - Web DataBase判定用
 		if(!!window.openDatabase){
-			var dbtmp = openDatabase('pzprv3_manage', '1.0');	// Chrome3対策
-			if(!!dbtmp){ this.DBaccept |= 0x02;}
+			try{	// Opera10.50対策
+				var dbtmp = openDatabase('pzprv3_manage', '1.0');	// Chrome3対策
+				if(!!dbtmp){ this.DBaccept |= 0x02;}
+			}
+			catch(e){}
 		}
 
 		// 以下はGears用(gears_init.jsの判定ルーチン)
@@ -886,7 +889,7 @@ DataBaseManager.prototype = {
 
 		this.dbh.deleteDataTable(this, sID, max);
 		this.update();
-		}
+	}
 
 	//---------------------------------------------------------------------------
 	// fio.dbm.convertDataBase() もし将来必要になったら...
@@ -899,7 +902,7 @@ DataBaseManager.prototype = {
 		// ここから新データベース
 		this.dbh.createDataBase();
 		this.dbh.setupDBlist(this);
-		}
+	}
 */
 };
 
@@ -999,7 +1002,7 @@ DataBaseHandler_LS.prototype = {
 			for(var c=1;c<7;c++){ localStorage[headers[1]+'!'+this.keys[c]] = localStorage[headers[0]+'!'+this.keys[c]];}
 		}
 		var dheader = this.pheader+'!'+max;
-		for(var c=0;c<7;c++){ delete localStorage[dheader+'!'+this.keys[c]];}
+		for(var c=0;c<7;c++){ localStorage.removeItem(dheader+'!'+this.keys[c]);}
 	}
 };
 
@@ -1175,7 +1178,7 @@ DataBaseObject_SQL.prototype = {
 		}
 		else{
 			this.object = google.gears.factory.create('beta.database', this.version);
-			}
+		}
 		return this;
 	},
 
@@ -1212,7 +1215,7 @@ DataBaseObject_SQL.prototype = {
 				rows.rowarray[r] = row;
 				resultSet.next();
 				r++;
-		}
+			}
 			resultSet.close();
 
 			rows.length = r;
