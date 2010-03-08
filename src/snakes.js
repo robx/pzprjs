@@ -43,8 +43,8 @@ Puzzles.snakes.prototype = {
 							   " To input Arrows, Left Button Drag or Press arrow key with SHIFT key.");
 		}
 		else{
-			base.setExpression("　左クリックで黒マスが、右クリックでへびのいないマスが入力できます。",
-							   " Left Click or Press Keys to input numbers, Right Click to input determined snake not existing cells.");
+			base.setExpression("　左クリックで黒マスが、右クリックでへびのいないマスが入力できます。キーボードでは、Qキーで補助記号が打てます。",
+							   " Left Click or Press Keys to input numbers, Right Click to input determined snake not existing cells. Q Key to input auxiliary mark.");
 		}
 		base.setTitle("へびいちご","Hebi-Ichigo");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
@@ -132,10 +132,22 @@ Puzzles.snakes.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.playmode){ return;}
-			if(this.key_inputdirec(ca)){ return;}
+			if(k.editmode && this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
+			if(k.playmode && this.key_inputdot(ca)){ return;}
 			this.key_inputqnum(ca);
+		};
+		kc.key_inputdot = function(ca){
+			if(ca=='q'){
+				var cc = tc.getTCC();
+				if(bd.QnC(cc)===-1){
+					bd.sQsC(cc,(bd.QsC(cc)!==1?1:0));
+					bd.sQaC(cc,-1);
+					pc.paintCell(cc);
+					return true;
+				}
+			}
+			return false;
 		};
 
 		bd.maxnum = 5;
@@ -166,7 +178,7 @@ Puzzles.snakes.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTCell(x1,y1,x2,y2);
 		};
 
 		// 境界線の描画
