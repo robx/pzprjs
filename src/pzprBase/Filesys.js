@@ -594,7 +594,7 @@ FileIO.prototype = {
 			var num = (isques ? bd.QnC(area.getTopOfRoom(id)) : -1);
 			this.datastr += (""+d.y1+" "+d.x1+" "+d.y2+" "+d.x2+" "+(num>=0 ? ""+num : "")+"/");
 		}
-	},
+	}
 };
 
 //---------------------------------------------------------------------------
@@ -635,11 +635,14 @@ DataBaseManager.prototype = {
 
 		// 以下はGears用(gears_init.jsの判定ルーチン)
 		// Google Chorme用(既にGearsが存在するか判定)
-		if((window.google && google.gears) || 
-		   (k.br.Gecko && (typeof GearsFactory != 'undefined')) || 
-		   (k.br.IE && !!window.ActiveXObject && (!!(new ActiveXObject('Gears.Factory')))) || 
-		   (k.br.WebKit && navigator.mimeTypes["application/x-googlegears"]))
-		{ this.DBaccept |= 0x01;}
+		try{
+			if((window.google && google.gears) || 
+			   (k.br.Gecko && (typeof GearsFactory != 'undefined')) || 
+			   (k.br.IE && !!window.ActiveXObject && (!!(new ActiveXObject('Gears.Factory')))) || 
+			   (k.br.WebKit && navigator.mimeTypes["application/x-googlegears"]))
+			{ this.DBaccept |= 0x01;}
+		}
+		catch(e){}
 	},
 	requireGears : function(){
 		return !!(this.DBaccept & 0x01);

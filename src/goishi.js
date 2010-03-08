@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 碁石ひろい版 goishi.js v3.2.4p1
+// パズル固有スクリプト部 碁石ひろい版 goishi.js v3.2.5
 //
 Puzzles.goishi = function(){ };
 Puzzles.goishi.prototype = {
@@ -61,8 +61,13 @@ Puzzles.goishi.prototype = {
 	},
 	finalfix : function(){
 		ee('btnclear2').el.style.display = 'none';
-		document.urloutput.pzprv3.style.display = 'none';
-		document.urloutput.pzprv3.nextSibling.style.display = 'none';
+		var el = document.urloutput.firstChild;
+		if(!el.innerHTML){
+			document.urloutput.removeChild(el);
+			el = document.urloutput.firstChild;
+		}
+		el.removeChild(el.firstChild);
+		el.removeChild(el.firstChild);
 	},
 
 	protoChange : function(){
@@ -102,8 +107,6 @@ Puzzles.goishi.prototype = {
 		Timer.prototype.execMouseUndo       = null;
 
 		ee('btnclear2').el.style.display = 'inline';
-		document.urloutput.pzprv3.style.display = 'inline';
-		document.urloutput.pzprv3.nextSibling.style.display = 'inline';
 	},
 
 	//---------------------------------------------------------
@@ -337,7 +340,7 @@ Puzzles.goishi.prototype = {
 			for(var cy=d.y1;cy<=d.y2;cy++){
 				for(var cx=d.x1;cx<=d.x2;cx++){
 					var c=bd.cnum(cx,cy);
-					if(bd.QuC(c)==0){ pass+=Math.pow(2,4-count);}
+					if(c===-1 || bd.QuC(c)==0){ pass+=Math.pow(2,4-count);}
 					count++; if(count==5){ cm += pass.toString(32); count=0; pass=0;}
 				}
 			}
@@ -353,13 +356,13 @@ Puzzles.goishi.prototype = {
 			for(var cy=d.y1;cy<=d.y2;cy++){
 				for(var cx=d.x1;cx<=d.x2;cx++){
 					var c = bd.cnum(cx,cy);
-					this.datastr += (bd.QuC(c)===7 ? "1 " : "._");
+					this.datastr += (bd.QuC(c)===7 ? "1 " : ". ");
 				}
 				this.datastr += "/";
 			}
 
-			enc.outsize  = [d.x2-d.x1+1, d.y2-d.y1+1].join("/");
-			this.sizestr = [d.x2-d.x1+1, d.y2-d.y1+1].join("/");
+			enc.outsize  = [d.y2-d.y1+1, d.x2-d.x1+1].join("/");
+			this.sizestr = [d.y2-d.y1+1, d.x2-d.x1+1].join("/");
 		};
 
 		enc.getSizeOfBoard_goishi = function(){
