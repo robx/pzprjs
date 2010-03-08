@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 イチマガ/磁石イチマガ版 ichimaga.js v3.2.4
+// パズル固有スクリプト部 イチマガ/磁石イチマガ版 ichimaga.js v3.2.5
 //
 Puzzles.ichimaga = function(){ };
 Puzzles.ichimaga.prototype = {
@@ -105,6 +105,11 @@ Puzzles.ichimaga.prototype = {
 			this.drawCircledNumbers(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
+		};
+
+		line.repaintParts = function(id){
+			pc.drawCircledNumber1( bd.cc1(id) );
+			pc.drawCircledNumber1( bd.cc2(id) );
 		};
 	},
 

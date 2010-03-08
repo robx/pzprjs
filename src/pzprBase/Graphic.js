@@ -1,4 +1,4 @@
-// Graphic.js v3.2.4
+// Graphic.js v3.2.5
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
@@ -891,6 +891,7 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	// pc.drawQueses41_42()    Cell上の黒丸と白丸をCanvasに書き込む
 	// pc.drawCircledNumbers() Cell上の丸数字を書き込む
+	// pc.drawCircledNumber1() Cell上の丸数字を書き込む(1マスのみ)
 	//---------------------------------------------------------------------------
 	drawQueses41_42 : function(x1,y1,x2,y2){
 		var rsize  = mf(k.cwidth*this.circleratio[0]);
@@ -925,37 +926,39 @@ Graphic.prototype = {
 		this.vinc();
 	},
 	drawCircledNumbers : function(x1,y1,x2,y2){
+		var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
+		for(var i=0;i<clist.length;i++){ this.drawCircledNumber1(clist[i]);}
+		this.vinc();
+	},
+	drawCircledNumber1 : function(c){
+		if(c===-1){ return;}
+
 		var rsize  = k.cwidth*this.circleratio[0];
 		var rsize2 = k.cwidth*this.circleratio[1];
 		var mgnx = mf(k.cwidth/2), mgny = mf(k.cheight/2);
 		var headers = ["c_cira_", "c_cirb_"];
 
-		g.lineWidth = k.cwidth*0.05;
-		var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.cell[c].qnum!=-1){
-				var px=bd.cell[c].px+mgnx, py=bd.cell[c].py+mgny;
+		if(bd.cell[c].qnum!=-1){
+			var px=bd.cell[c].px+mgnx, py=bd.cell[c].py+mgny;
 
-				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : this.circledcolor);
-				if(this.vnop(headers[1]+c,1)){
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					g.fill();
-				}
-
-				g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
-				if(this.vnop(headers[0]+c,0)){
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					g.stroke();
-				}
+			g.lineWidth = k.cwidth*0.05;
+			g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : this.circledcolor);
+			if(this.vnop(headers[1]+c,1)){
+				g.beginPath();
+				g.arc(px, py, rsize2, 0, Math.PI*2, false);
+				g.fill();
 			}
-			else{ this.vhide([headers[0]+c, headers[1]+c]);}
 
-			this.dispnumCell(c);
+			g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+			if(this.vnop(headers[0]+c,0)){
+				g.beginPath();
+				g.arc(px, py, rsize , 0, Math.PI*2, false);
+				g.stroke();
+			}
 		}
-		this.vinc();
+		else{ this.vhide([headers[0]+c, headers[1]+c]);}
+
+		this.dispnumCell(c);
 	},
 
 	//---------------------------------------------------------------------------

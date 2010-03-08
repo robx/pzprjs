@@ -109,12 +109,12 @@ Puzzles.firefly.prototype = {
 
 		pc.drawNumCells_firefly = function(x1,y1,x2,y2){
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
-			for(var i=0;i<clist.length;i++){
-				this.drawNumCells_firefly1(clist[i]);
-			}
+			for(var i=0;i<clist.length;i++){ this.drawNumCells_firefly1(clist[i]);}
 			this.vinc();
 		};
 		pc.drawNumCells_firefly1 = function(c){
+			if(c===-1){ return;}
+
 			var rsize  = k.cwidth*0.40;
 			var rsize2 = k.cwidth*0.36;
 			var rsize3 = k.cwidth*0.10;
