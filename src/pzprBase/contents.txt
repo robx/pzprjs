@@ -1,19 +1,20 @@
-pzprBase.js v3.2.5pre contents
+pzprBase.js v3.2.5 contents
 
-global.js      v3.2.4
+global.js      v3.2.4p4
 Board.js       v3.2.4p4
-Graphic.js     v3.2.4
+Graphic.js     v3.2.5
 MouseInput.js  v3.2.3p1
-KeyInput.js    v3.2.4p2
+KeyInput.js    v3.2.5
 Encode.js      v3.2.5
-Filesys.js     v3.2.4p4
+Filesys.js     v3.2.5
 Answer.js      v3.2.5
 Undo.js        v3.2.3
 Menu.js        v3.2.4p4
 MenuExec.js    v3.2.4p4
 pzprUtil.js    v3.2.3
-Main.js        v3.2.4p3
+Main.js        v3.2.5
 
+aho.js         v3.2.5
 ayeheya.js     v3.2.5
 bag.js         v3.2.4
 barns.js       v3.2.4
@@ -27,16 +28,16 @@ creek.js       v3.2.4
 factors.js     v3.2.4p4
 fillmat.js     v3.2.5
 fillomino.js   v3.2.4
-firefly.js     v3.2.4
-goishi.js      v3.2.4p1
-gokigen.js     v3.2.4
+firefly.js     v3.2.5
+goishi.js      v3.2.5
+gokigen.js     v3.2.5
 hakoiri.js     v3.2.5
-hashikake.js   v3.2.4
+hashikake.js   v3.2.5
 heyawake.js    v3.2.5
 hitori.js      v3.2.4p4
 icebarn.js     v3.2.5
 icelom.js      v3.2.4
-ichimaga.js    v3.2.4
+ichimaga.js    v3.2.5
 kaero.js       v3.2.5
 kakuro.js      v3.2.4p4
 kakuru.js      v3.2.4
@@ -47,7 +48,7 @@ kurodoko.js    v3.2.4
 kusabi.js      v3.2.5
 lightup.js     v3.2.5
 lits.js        v3.2.5
-loopsp.js      v3.2.4
+loopsp.js      v3.2.5
 mashu.js       v3.2.4
 mejilink.js    v3.2.4
 minarism.js    v3.2.4p4
@@ -79,11 +80,13 @@ tasquare.js    v3.2.5
 tatamibari.js  v3.2.5
 tateyoko.js    v3.2.5
 tawa.js        v3.2.4
-tentaisho.js   v3.2.4p4
+tentaisho.js   v3.2.5
 tilepaint.js   v3.2.4p4
+toichika.js    v3.2.5É¿
 triplace.js    v3.2.5
 usotatami.js   v3.2.5
 view.js        v3.2.4
+wagiri.js      v3.2.5É¿
 wblink.js      v3.2.5
 yajikazu.js    v3.2.4
 yajirin.js     v3.2.4
