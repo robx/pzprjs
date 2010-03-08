@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ホタルビーム版 firefly.js v3.2.4
+// パズル固有スクリプト部 ホタルビーム版 firefly.js v3.2.5
 //
 Puzzles.firefly = function(){ };
 Puzzles.firefly.prototype = {
@@ -108,52 +108,59 @@ Puzzles.firefly.prototype = {
 		};
 
 		pc.drawNumCells_firefly = function(x1,y1,x2,y2){
+			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
+			for(var i=0;i<clist.length;i++){ this.drawNumCells_firefly1(clist[i]);}
+			this.vinc();
+		};
+		pc.drawNumCells_firefly1 = function(c){
+			if(c===-1){ return;}
+
 			var rsize  = k.cwidth*0.40;
 			var rsize2 = k.cwidth*0.36;
 			var rsize3 = k.cwidth*0.10;
 			var headers = ["c_cira_", "c_cirb_", "c_circ_"];
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.cell[c].qnum!=-1){
-					var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
+			if(bd.cell[c].qnum!=-1){
+				var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
 
+				g.fillStyle = this.Cellcolor;
+				if(this.vnop(headers[0]+c,1)){
+					g.beginPath();
+					g.arc(px, py, rsize , 0, Math.PI*2, false);
+					g.fill();
+				}
+
+				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
+				if(this.vnop(headers[1]+c,1)){
+					g.beginPath();
+					g.arc(px, py, rsize2, 0, Math.PI*2, false);
+					g.fill();
+				}
+
+				this.vdel([headers[2]+c]);
+				if(bd.cell[c].direc!=0){
 					g.fillStyle = this.Cellcolor;
-					if(this.vnop(headers[0]+c,1)){
-						g.beginPath();
-						g.arc(px, py, rsize , 0, Math.PI*2, false);
-						g.fill();
+					switch(bd.cell[c].direc){
+						case k.UP: py-=(rsize-1); break;
+						case k.DN: py+=(rsize-1); break;
+						case k.LT: px-=(rsize-1); break;
+						case k.RT: px+=(rsize-1); break;
 					}
-
-					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-					if(this.vnop(headers[1]+c,1)){
+					if(this.vnop(headers[2]+c,1)){
 						g.beginPath();
-						g.arc(px, py, rsize2, 0, Math.PI*2, false);
+						g.arc(px, py, rsize3 , 0, Math.PI*2, false);
 						g.fill();
-					}
-
-					this.vdel([headers[2]+c]);
-					if(bd.cell[c].direc!=0){
-						g.fillStyle = this.Cellcolor;
-						switch(bd.cell[c].direc){
-							case k.UP: py-=(rsize-1); break;
-							case k.DN: py+=(rsize-1); break;
-							case k.LT: px-=(rsize-1); break;
-							case k.RT: px+=(rsize-1); break;
-						}
-						if(this.vnop(headers[2]+c,1)){
-							g.beginPath();
-							g.arc(px, py, rsize3 , 0, Math.PI*2, false);
-							g.fill();
-						}
 					}
 				}
-				else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c]);}
-
-				this.dispnumCell(c);
 			}
-			this.vinc();
+			else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c]);}
+
+			this.dispnumCell(c);
+		};
+
+		line.repaintParts = function(id){
+			pc.drawNumCells_firefly1( bd.cc1(id) );
+			pc.drawNumCells_firefly1( bd.cc2(id) );
 		};
 	},
 

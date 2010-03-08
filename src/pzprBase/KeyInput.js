@@ -1,4 +1,4 @@
-// KeyInput.js v3.2.4p2
+// KeyInput.js v3.2.5
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -229,7 +229,7 @@ KeyEvent.prototype = {
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
-			if(k.playmode){ bd.sDiC(cc,0);}
+			if(k.playmode && k.puzzleid!=='snakes'){ bd.sDiC(cc,0);}
 
 			if(bd.getNum(cc)<=0 || this.prev!=cc){
 				if(num<=max){ bd.setNum(cc,num);}

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 碁石ひろい版 goishi.js v3.2.4p1
+// パズル固有スクリプト部 碁石ひろい版 goishi.js v3.2.5
 //
 Puzzles.goishi = function(){ };
 Puzzles.goishi.prototype = {
@@ -61,8 +61,13 @@ Puzzles.goishi.prototype = {
 	},
 	finalfix : function(){
 		ee('btnclear2').el.style.display = 'none';
-		document.urloutput.pzprv3.style.display = 'none';
-		document.urloutput.pzprv3.nextSibling.style.display = 'none';
+		var el = document.urloutput.firstChild;
+		if(!el.innerHTML){
+			document.urloutput.removeChild(el);
+			el = document.urloutput.firstChild;
+		}
+		el.removeChild(el.firstChild);
+		el.removeChild(el.firstChild);
 	},
 
 	protoChange : function(){
@@ -102,8 +107,6 @@ Puzzles.goishi.prototype = {
 		Timer.prototype.execMouseUndo       = null;
 
 		ee('btnclear2').el.style.display = 'inline';
-		document.urloutput.pzprv3.style.display = 'inline';
-		document.urloutput.pzprv3.nextSibling.style.display = 'inline';
 	},
 
 	//---------------------------------------------------------

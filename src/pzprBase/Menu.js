@@ -194,8 +194,8 @@ Menu.prototype = {
 		ap('sep_file', 'file');
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
 		at('filesavep', 'file', 'ファイル保存 ->',  'Save the file as ... ->');
-		if(!!fio.DBtype){
-			as('database', 'file', 'データベースの管理', 'Database Management');
+		if(fio.dbm.DBaccept>0){
+			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
 		}
 
 		// *ファイル - ファイル保存 -------------------------------------------
@@ -653,8 +653,8 @@ Menu.prototype = {
 		btn(document.fileform.close,    close, "閉じる",     "Close");
 
 		// データベースを開く -------------------------------------------------
-		func = ee.ebinder(fio, fio.clickHandler);
-		lab(ee('bar1_8').el, "データベースの管理", "Database Management");
+		func = ee.ebinder(fio.dbm, fio.dbm.clickHandler);
+		lab(ee('bar1_8').el, "一時保存/戻す", "Temporary Stack");
 		document.database.sorts   .onchange = func;
 		document.database.datalist.onchange = func;
 		document.database.tableup .onclick  = func;
@@ -731,6 +731,10 @@ Menu.prototype = {
 	},
 	popclose : function(){
 		if(this.pop){
+			if(this.pop.el.id=='pop1_8'){
+				fio.dbm.closeDialog();
+			}
+
 			this.pop.el.style.display = "none";
 			this.pop = '';
 			this.menuclear();
@@ -937,9 +941,9 @@ Properties.prototype = {
 		urlinput  : function(){ menu.pop = ee("pop1_2");},
 		urloutput : function(){ menu.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
 		fileopen  : function(){ menu.pop = ee("pop1_4");},
-		filesave  : function(){ menu.ex.filesave(fio.PZPR);},
-		database  : function(){ menu.pop = ee("pop1_8"); fio.getDataTableList();},
+		filesave  : function(){ menu.ex.filesave(1);},
 		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave(fio.PBOX);}},
+		database  : function(){ menu.pop = ee("pop1_8"); fio.dbm.openDialog();},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
 		credit    : function(){ menu.pop = ee("pop3_1");},
@@ -996,6 +1000,7 @@ var debug = {
 		document.testform.pbfilesave.onclick  = ee.binder(this, this.filesave_pencilbox);
 
 		document.testform.fileopen.onclick  = ee.binder(this, this.fileopen);
+		document.testform.database.onclick  = ee.binder(this, this.dispdatabase);
 
 		document.testform.erasetext.onclick = ee.binder(this, this.erasetext);
 		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
@@ -1006,6 +1011,7 @@ var debug = {
 
 		document.testform.perfload.style.display = (k.puzzleid!=='country' ? 'none' : 'inline');
 		document.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
+		document.testform.database.style.display = (!fio.DBaccept<0x08 ? 'none' : 'inline');
 
 		if(k.scriptcheck){ debug.testonly_func();}	// テスト用
 	},
@@ -1066,6 +1072,15 @@ var debug = {
 		var time = (new Date()).getTime() - old;
 
 		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
+	},
+
+	dispdatabase : function(){
+		var text = "";
+		for(var i=0;i<localStorage.length;i++){
+			var key = localStorage.key(i);
+			text += (""+key+" "+localStorage[key]+"\n");
+		}
+		this.setTA(text);
 	},
 
 	loadperf : function(){

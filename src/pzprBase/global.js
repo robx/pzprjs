@@ -1,4 +1,4 @@
-// global.js v3.2.4
+// global.js v3.2.4p4
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -110,6 +110,11 @@ k.IEMargin = (k.br.IE ? k.IEMargin : new Pos(0,0));
 var g;				// グラフィックコンテキスト
 var Puzzles = [];	// パズル個別クラス
 var _doc = document;
+
+// localStorageがなくてglobalStorage対応(Firefox3.0)ブラウザのハック
+if(typeof localStorage != "object" && typeof globalStorage == "object"){
+	localStorage = globalStorage[location.host];
+}
 
 //---------------------------------------------------------------------------
 // ★共通グローバル関数
