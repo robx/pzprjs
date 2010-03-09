@@ -31,7 +31,7 @@ Puzzles.wagiri.prototype = {
 		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
 		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
 
-		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
+		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
 		//k.def_csize = 36;

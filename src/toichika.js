@@ -31,7 +31,7 @@ Puzzles.toichika.prototype = {
 		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
 		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
 
-		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
+		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
 		//k.def_csize = 36;
@@ -322,7 +322,7 @@ Puzzles.toichika.prototype = {
 			for(i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
-				if     (this.include(ca,"0","4")){ bd.sDiC(c, parseInt(bstr.substr(i,1),10)); c++;}
+				if     (this.include(ca,"1","4")){ bd.sDiC(c, parseInt(bstr.substr(i,1),10)); c++;}
 				else if(this.include(ca,"5","9")){ c += (parseInt(ca,36)-4);}
 				else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-4);}
 				else if(ca == '.'){ bd.sDiC(c, -2); c++;}
@@ -339,7 +339,7 @@ Puzzles.toichika.prototype = {
 				var val = bd.DiC(i);
 
 				if     (val==-2          ){ pstr = ".";}
-				else if(val>= 0 && val<=4){ pstr = val.toString(10);}
+				else if(val>= 1 && val<=4){ pstr = val.toString(10);}
 				else{ count++;}
 
 				if(count==0){ cm += pstr;}
