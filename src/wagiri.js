@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ごきげんななめ・輪切版 wagiri.js v3.2.5β
+// パズル固有スクリプト部 ごきげんななめ・輪切版 wagiri.js v3.2.5
 //
 Puzzles.wagiri = function(){ };
 Puzzles.wagiri.prototype = {
@@ -39,14 +39,17 @@ Puzzles.wagiri.prototype = {
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("ごきげんななめ・輪切","Gokigen-naname:wagiri");
-		base.setExpression("　<span style=\"color:red;\">！！開発途中版です！！</span><br>　マウスで斜線を入力できます。",
-						   " <span style=\"color:red;\">!!This is developng version.!!</span><br> Click to input slashes.");
+		base.setExpression("　マウスで斜線を入力できます。",
+						   " Click to input slashes.");
 		base.setFloatbgcolor("rgb(0, 127, 0)");
 		base.proto = 1;
 	},
 	menufix : function(){
 		menu.addUseToFlags();
-//		menu.addRedLineToFlags();
+
+		pp.addCheck('colorslash','setting',false, '斜線の色分け', 'Slash with color');
+		pp.setLabel('colorslash', '斜線を輪切りかのどちらかで色分けする(超重い)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
+		pp.funcs['colorslash'] = function(){ if(g.vml){ pc.flushCanvasAll();} pc.paintAll();};
 	},
 	finalfix : function(){
 		ee('btnclear2').el.style.display = 'none';
@@ -70,40 +73,35 @@ Puzzles.wagiri.prototype = {
 		};
 		mv.mouseup = function(){ };
 		mv.mousemove = function(){ };
-		mv.dispBlue = function(){
-			var cc = this.cellid();
-			if(cc==-1 || bd.QaC(cc)==-1){ return;}
-
-			var check = [];
-			for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
-
-			var fc = bd.xnum(bd.cell[cc].cx+(bd.QaC(cc)==1?0:1),bd.cell[cc].cy);
-			ans.searchline(check, 0, fc);
-			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].cx  ,bd.cell[c].cy)]==1){ bd.sErC([c],2);}
-				if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].cx+1,bd.cell[c].cy)]==1){ bd.sErC([c],2);}
-			}
-
-			ans.errDisp = true;
-			pc.paintAll();
-		};
 
 		mv.inputquestion = function(){
 			var pos = this.crosspos(0.33);
 			if(pos.x<tc.minx || tc.maxx<pos.x || pos.y<tc.miny || tc.maxy<pos.y){ return;}
-			if(!(pos.x&1) && !(pos.y&1)){ this.inputcross(); return;}
-
-			var cc = this.cellid();
-			if(cc!==tc.getTCC()){
-				var tcx = tc.cursolx, tcy = tc.cursoly, flag = false;
-				tc.setTCC(cc);
-				pc.paint((tcx>>1)-1, (tcy>>1)-1, (tcx>>1)+1, (tcy>>1)+1);
-				pc.paint((pos.x>>1)-1, (pos.y>>1)-1, pos.x>>1, pos.y>>1);
+			if(!(pos.x&1) && !(pos.y&1)){
+				this.inputcross();
 			}
-			else if(cc!=-1){
-				var trans = (this.btn.Left ? [-1,1,0,2,-2] : [2,-2,0,-1,1]);
-				bd.sQnC(cc,trans[bd.QnC(cc)+2]);
-				pc.paintCell(cc);
+			else if((pos.x&1) && (pos.y&1)){
+				var cc = this.cellid();
+				if(cc!==tc.getTCC()){
+					var tcx = tc.cursolx, tcy = tc.cursoly;
+					tc.setTCC(cc);
+					pc.paint((tcx>>1)-1, (tcy>>1)-1, (tcx>>1)+1, (tcy>>1)+1);
+					pc.paint((pos.x>>1)-1, (pos.y>>1)-1, pos.x>>1, pos.y>>1);
+				}
+				else if(cc!=-1){
+					var trans = (this.btn.Left ? [-1,1,0,2,-2] : [2,-2,0,-1,1]);
+					bd.sQnC(cc,trans[bd.QnC(cc)+2]);
+					pc.paintCell(cc);
+				}
+			}
+			else{
+				var id = bd.bnum(pos.x, pos.y);
+				if(id!==tc.getTBC()){
+					var tcx = tc.cursolx, tcy = tc.cursoly;
+					tc.setTCP(pos);
+					pc.paint((tcx>>1)-1, (tcy>>1)-1, (tcx>>1)+1, (tcy>>1)+1);
+					pc.paint((pos.x>>1)-1, (pos.y>>1)-1, pos.x>>1, pos.y>>1);
+				}
 			}
 		};
 
@@ -122,22 +120,28 @@ Puzzles.wagiri.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
 			if(this.moveTBorder(ca)){ return;}
-			this.key_inputcross(ca,4);
+			this.key_wagiri(ca);
 		};
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;} };
+		kc.key_wagiri = function(ca){
+			var pos = tc.getTCP();
+			if(!(pos.x&1)&&!(pos.y&1)){
+				this.key_inputcross(ca);
+			}
+			else if((pos.x&1)&&(pos.y&1)){
+				var cc = tc.getTCC(), val = 0;
+				if     (ca=='1'){ val= 1;}
+				else if(ca=='2'){ val= 2;}
+				else if(ca=='-'){ val=-2;}
+				else if(ca==' '){ val=-1;}
 
-		kc.isZ = false;
-
-		if(k.EDITOR){
-			kp.generate(4, true, false, '');
-			kp.ctl[1].target = k.CROSS;
-			kp.kpinput = function(ca){
-				kc.key_inputcross(ca,4);
-			};
-		}
+				if(cc!==-1 && val!==0){
+					bd.sQnC(cc,(bd.QnC(cc)!==val?val:-1));
+					pc.paintCell(cc);
+				}
+			}
+		};
 
 		menu.ex.adjustSpecial = function(type,key){
 			um.disableRecord();
@@ -161,12 +165,14 @@ Puzzles.wagiri.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.errcolor1 = "red";
-		pc.errcolor2 = "blue";
+		pc.errcolor2 = "rgb(0, 0, 127)";
 
 		pc.crosssize = 0.33;
 		pc.chassisflag = false;
 
 		pc.paint = function(x1,y1,x2,y2){
+			if(!ans.errDisp && pp.getVal('colorslash')){ x1=0; y1=0; x2=k.qcols-1; y2=k.qrows-1;}
+
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
@@ -196,7 +202,7 @@ Puzzles.wagiri.prototype = {
 				var num = bd.cell[id].qnum, obj = bd.cell[id];
 				if(num>=1 && num<=2){ text = ({1:"輪",2:"切"})[num];}
 				else if(num===-2){ text = "?";}
-				else{ this.hideEL(obj.numobj); return;}
+				else{ this.hideEL(obj.numobj); continue;}
 
 				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 				this.dispnum(obj.numobj, 1, text, 0.70, this.getNumberColor(id), obj.px, obj.py);
@@ -204,8 +210,13 @@ Puzzles.wagiri.prototype = {
 		};
 
 		pc.drawSlashes = function(x1,y1,x2,y2){
-			var headers = ["c_sl1_", "c_sl2_"];
+			var headers = ["c_sl1_", "c_sl2_"], check=[];
 			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
+
+			if(!ans.errDisp && pp.getVal('colorslash')){
+				var sdata=ans.getSlashData();
+				for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.sErC([c],sdata[c]);} }
+			}
 
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
@@ -235,6 +246,10 @@ Puzzles.wagiri.prototype = {
 				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
 			this.vinc();
+
+			if(!ans.errDisp && pp.getVal('colorslash')){
+				for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.sErC([c],0);} }
+			}
 		};
 
 		pc.drawTarget_wagiri = function(x1,y1,x2,y2){
@@ -265,22 +280,23 @@ Puzzles.wagiri.prototype = {
 	// URLエンコード/デコード処理
 	encode_init : function(){
 		enc.pzlimport = function(type){
-			var oldflag = ((type==1 && !this.checkpflag("c")) || (type==0 && this.checkpflag("d")));
-			if(!oldflag){ this.decode4Cross();}
-			else        { this.decodecross_old();}
+			this.decode4Cross();
+			this.decodeNumber10();
 		};
 		enc.pzlexport = function(type){
-			if(type==1){ this.outpflag = 'c';}
 			this.encode4Cross();
+			this.encodeNumber10();
 		};
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			this.decodeCrossNum();
+			this.decodeCellQnum();
 			this.decodeCellQanssub();
 		};
 		fio.encodeData = function(){
 			this.encodeCrossNum();
+			this.encodeCellQnum();
 			this.encodeCellQanssub();
 		};
 	},
@@ -310,77 +326,52 @@ Puzzles.wagiri.prototype = {
 			return true;
 		};
 
-		ans.scntCross = function(id){
-			if(id==-1){ return -1;}
-			var xx=bd.cross[id].cx, xy=bd.cross[id].cy;
-			var cc, cnt=0;
-			cc=bd.cnum(xx-1,xy-1); if(cc!=-1 && bd.QaC(cc)==1){ cnt++;}
-			cc=bd.cnum(xx  ,xy-1); if(cc!=-1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(xx-1,xy  ); if(cc!=-1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(xx  ,xy  ); if(cc!=-1 && bd.QaC(cc)==1){ cnt++;}
-			return cnt;
-		};
-		ans.scntCross2 = function(id){
-			if(id==-1){ return -1;}
-			var xx=bd.cross[id].cx, xy=bd.cross[id].cy;
-			var cc, cnt=0;
-			cc=bd.cnum(xx-1,xy-1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==1){ cnt++;}
-			cc=bd.cnum(xx  ,xy-1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(xx-1,xy  ); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(xx  ,xy  ); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==1){ cnt++;}
-			return cnt;
-		};
-
 		ans.getSlashData = function(){
 			var check=[], scnt=this.getScnt();
 			for(var c=0;c<bd.cellmax;c++) { check[c] =(bd.QaC(c)!==-1?0:-1);}
 			for(var c=0;c<bd.cellmax;c++){
 				if(check[c]!==0){ continue;}
+				// history -> スタックみたいなオブジェクト
 				var history={cell:[],cross:[]};
 				for(var cc=0;cc<bd.cellmax;cc++) { history.cell[cc] =(check[cc]!==-1?0:-1);}
 				for(var xc=0;xc<bd.crossmax;xc++){ history.cross[xc]=(scnt[xc]>0    ?0:-1);}
-				var cx=bd.cell[c].cx, cy=bd.cell[c].cy;
-				this.sp0(((bd.QaC(c)===1)?bd.xnum(cx,cy):bd.xnum(cx+1,cy)), 1, scnt, check, history);
+
+				var fc = bd.xnum(bd.cell[c].cx+(bd.QaC(c)===1?0:1), bd.cell[c].cy);
+				this.sp0(fc, 1, scnt, check, history);
 			}
+			for(var c=0;c<bd.cellmax;c++) { if(check[c]===0){ check[c]=2;} }
 			return check;
 		};
 		ans.sp0 = function(xc, depth, scnt, check, history){
 			// 過ぎ去った地点に到達した→その地点からココまではループしてる
 			if(history.cross[xc]>0){
-				var min = history.cross[xc], max = depth-1;
-				for(var cc=0;cc<bd.cellmax;cc++){ if(history.cell[cc]>=min && history.cell[cc]<=max){ check[cc]=1;} }
+				var min = history.cross[xc];
+				for(var cc=0;cc<bd.cellmax;cc++){ if(history.cell[cc]>=min){ check[cc]=1;} }
+				return;
 			}
-			// まだ行ったことのない場所
-			else{
-				history.cross[xc] = depth;
-				var tx=bd.cross[xc].cx, ty=bd.cross[xc].cy;
-				var nb = { cell  : [bd.cnum(tx-1,ty-1),bd.cnum(tx  ,ty-1),bd.cnum(tx-1,ty  ),bd.cnum(tx  ,ty  )],
-						   cross : [bd.xnum(tx-1,ty-1),bd.xnum(tx+1,ty-1),bd.xnum(tx-1,ty+1),bd.xnum(tx+1,ty+1)],
-						   qans  : [1,2,2,1]};
-				for(var i=0;i<4;i++){
-					if(nb.cell[i]===-1){ continue;}
-					if(nb.qans[i]===bd.QaC(nb.cell[i]) && history.cell[nb.cell[i]]===0)
-					{
-						if(scnt[nb.cross[i]]===1){ check[nb.cell[i]]=2; continue;} // 行き止まり
-						history.cell[nb.cell[i]] = depth;
 
-						this.sp0(nb.cross[i], depth+1, scnt, check, history);
+			// 別に到達していない -> 隣に進んでみる
+			history.cross[xc] = depth; // この交点にマーキング
+			var xx=bd.cross[xc].cx, xy=bd.cross[xc].cy, isloop=false;
+			var nb = [
+					{ cell:bd.cnum(xx-1,xy-1), cross:bd.xnum(xx-1,xy-1), qans:1},
+					{ cell:bd.cnum(xx  ,xy-1), cross:bd.xnum(xx+1,xy-1), qans:2},
+					{ cell:bd.cnum(xx-1,xy  ), cross:bd.xnum(xx-1,xy+1), qans:2},
+					{ cell:bd.cnum(xx  ,xy  ), cross:bd.xnum(xx+1,xy+1), qans:1}
+				];
+			for(var i=0;i<4;i++){
+				if( nb[i].cell===-1 ||					// そっちは盤面の外だよ！
+					history.cell[nb[i].cell]!==0 ||		// そっちは通って来た道だよ！
+					nb[i].qans!==bd.QaC(nb[i].cell) ||	// そっちは繋がってない。
+					scnt[nb[i].cross]===1 || 			// そっちは行き止まり。
+					check[nb[i].cell]===1 )		// checkが1になってるってことは前にそっちから既に来ている
+				{ continue;}					// 先に分岐があるとしても、その時に探索済みです.
 
-						// this.sp0のjump先でhistoryが追加されているので、飛ぶ前の状態に戻す
-						for(var cc=0;cc<bd.cellmax;cc++) {
-							if(history.cell[cc]>=depth){
-								history.cell[cc]=0;
-								if(check[cc]!==1){ check[cc]=2;}
-							}
-						}
-						for(var cc=0;cc<bd.crossmax;cc++){
-							if(history.cross[cc]>=depth){
-								history.cross[cc]=0;
-							}
-						}
-					}
-				}
+				history.cell[nb[i].cell] = depth;	 // 隣のセルにマーキング
+				this.sp0(nb[i].cross, depth+1, scnt, check, history);
+				history.cell[nb[i].cell] = 0;		 // セルのマーキングを外す
 			}
+			history.cross[xc] = 0; // 交点のマーキングを外す
 		};
 
 		ans.checkLoopLine = function(sdata, checkLoop){
