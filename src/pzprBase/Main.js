@@ -53,7 +53,6 @@ PBase.prototype = {
 	// base.initCanvas()  Canvas関連の初期化
 	// base.initObjects() 各オブジェクトの生成などの処理
 	// base.setEvents()   マウス入力、キー入力のイベントの設定を行う
-	// base.initSilverlight() Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
 	//---------------------------------------------------------------------------
 	onload_func : function(){
 		this.initCanvas();
@@ -118,6 +117,7 @@ PBase.prototype = {
 			document.onkeydown  = ee.ebinder(kc, kc.e_keydown);
 			document.onkeyup    = ee.ebinder(kc, kc.e_keyup);
 			document.onkeypress = ee.ebinder(kc, kc.e_keypress);
+			if(g.use.sl){ this.initSilverlight();}
 
 			if(!!menu.ex.reader){
 				var DDhandler = function(e){
@@ -130,9 +130,26 @@ PBase.prototype = {
 			}
 		}
 	},
-	initSilverlight : function(sender){
-		sender.AddEventListener("KeyDown", ee.ebinder(kc, kc.e_SLkeydown));
-		sender.AddEventListener("KeyUp",   ee.ebinder(kc, kc.e_SLkeyup));
+
+	//---------------------------------------------------------------------------
+	// base.initSilverlight() Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
+	// base.e_SLkeydown()     Silverlightオブジェクトにフォーカスがある時、キーを押した際のイベント共通処理
+	// base.e_SLkeyup()       Silverlightオブジェクトにフォーカスがある時、キーを離した際のイベント共通処理
+	//---------------------------------------------------------------------------
+	initSilverlight : function(){
+		var sender = g.content.findName(g.canvasid);
+		sender.AddEventListener("KeyDown", this.e_SLkeydown);
+		sender.AddEventListener("KeyUp",   this.e_SLkeyup);
+	},
+	e_SLkeydown : function(sender, keyEventArgs){
+		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
+						altKey:false, returnValue:false, preventDefault:f_true };
+		return kc.e_keydown(emulate);
+	},
+	e_SLkeyup : function(sender, keyEventArgs){
+		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
+						altKey:false, returnValue:false, preventDefault:f_true };
+		return kc.e_keyup(emulate);
 	},
 
 	//---------------------------------------------------------------------------

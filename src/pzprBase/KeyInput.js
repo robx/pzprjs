@@ -1,4 +1,4 @@
-// KeyInput.js v3.2.5
+// KeyInput.js v3.3.0
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -79,21 +79,6 @@ KeyEvent.prototype = {
 
 			if(this.ca){ this.keyinput(this.ca);}	// 各パズルのルーチンへ
 		}
-	},
-
-	//---------------------------------------------------------------------------
-	// kc.e_SLkeydown()  Silverlightオブジェクトにフォーカスがある時、キーを押した際のイベント共通処理
-	// kc.e_SLkeyup()    Silverlightオブジェクトにフォーカスがある時、キーを離した際のイベント共通処理
-	//---------------------------------------------------------------------------
-	e_SLkeydown : function(sender,keyEventArgs){
-		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
-						altKey:false, returnValue:false, preventDefault:f_true };
-		return this.e_keydown(emulate);
-	},
-	e_SLkeyup : function(sender,keyEventArgs){
-		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
-						altKey:false, returnValue:false, preventDefault:f_true };
-		return this.e_keyup(emulate);
 	},
 
 	//---------------------------------------------------------------------------
