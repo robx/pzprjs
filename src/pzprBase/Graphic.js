@@ -97,7 +97,8 @@ Graphic = function(){
 	var numobj_attr = {className:'divnum', unselectable:'on'};
 	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', numobj_attr, null, null);
 
-	var isdrawBC = false, isdrawBD = false;
+	this.isdrawBC = false;
+	this.isdrawBD = false;
 
 	this.setFunctions();
 };
@@ -561,9 +562,7 @@ Graphic.prototype = {
 				g.fillStyle = (bd.cross[c].error===1 ? this.errcolor1 : "white");
 				g.strokeStyle = "black";
 				if(this.vnop(header+c,2)){
-					g.beginPath();
-					g.arc(bd.cross[c].px, bd.cross[c].py, csize, 0, Math.PI*2, false);
-					g.fillstroke();
+					g.shapeCircle(bd.cross[c].px, bd.cross[c].py, csize);
 				}
 			}
 			else{ this.vhide([header+c]);}
@@ -759,7 +758,7 @@ Graphic.prototype = {
 		return bd.border[id].color;
 	},
 	drawPekes : function(x1,y1,x2,y2,flag){
-		if(!g.canvas && flag===2){ return;}
+		if(!g.use.canvas && flag===2){ return;}
 
 		var size = mf(k.cwidth*0.15); if(size<3){ size=3;}
 		var headers = ["b_peke0_", "b_peke1_"];
@@ -772,7 +771,7 @@ Graphic.prototype = {
 			var id = idlist[i];
 			if(bd.border[id].qsub!==2){ this.vhide([headers[0]+id, headers[1]+id]); continue;}
 
-			if(g.canvas){
+			if(g.use.canvas){
 				if(flag===0 || flag===2){
 					if(this.vnop(headers[0]+id,-1)){
 						g.fillRect(bd.border[id].px-size, bd.border[id].py-size, 2*size+1, 2*size+1);
@@ -919,12 +918,12 @@ Graphic.prototype = {
 			g.lineWidth = k.cwidth*0.05;
 			g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : this.circledcolor);
 			if(this.vnop(headers[1]+c,1)){
-					g.fillCircle(px,py,rsize2);
+				g.fillCircle(px,py,rsize2);
 			}
 
 			g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
 			if(this.vnop(headers[0]+c,0)){
-					g.strokeCircle(px,py,rsize);
+				g.strokeCircle(px,py,rsize);
 			}
 		}
 		else{ this.vhide([headers[0]+c, headers[1]+c]);}
@@ -1165,7 +1164,7 @@ Graphic.prototype = {
 		if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
 		if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
 
-		if(g.canvas){
+		if(g.use.canvas){
 			g.fillStyle = this.gridcolor;
 			for(var i=x1-1;i<=x2+1;i++){
 				for(var j=(k.p0.y+(y1-0.5)*k.cheight);j<(k.p0.y+(y2+1.5)*k.cheight);j+=6){
@@ -1227,7 +1226,7 @@ Graphic.prototype = {
 		var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
 		var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
 
-		if(g.canvas){
+		if(g.use.canvas){
 			g.fillStyle = this.gridcolor;
 			for(var i=xa;i<=xb;i++){
 				for(var j=(k.p0.y+y1*k.cheight),len=(k.p0.y+(y2+1)*k.cheight);j<len;j+=(2*dotSize)){
@@ -1248,7 +1247,7 @@ Graphic.prototype = {
 				g.setDashSize(dotSize);
 			}}
 			for(var i=ya;i<=yb;i++){ if(this.vnop("bdx_"+i,-1)){
-				var py = k.p0.y+i*k.cheight+(g.svg?1:0), px1 = k.p0.x+x1*k.cwidth, px2 = k.p0.x+(x2+1)*k.cwidth;
+				var py = k.p0.y+i*k.cheight+(g.use.svg?1:0), px1 = k.p0.x+x1*k.cwidth, px2 = k.p0.x+(x2+1)*k.cwidth;
 				g.strokeLine(px1, py, px2, py);
 				g.setDashSize(dotSize);
 			}}
@@ -1280,7 +1279,7 @@ Graphic.prototype = {
 	// pc.vinc()  z-index‚ÉÝ’è‚³‚ê‚é’l‚ð+1‚·‚é
 	//---------------------------------------------------------------------------
 	// excanvas‚Ìê‡A‚±‚ê‚ð•`‰æ‚µ‚È‚¢‚ÆVML—v‘f‚ª‘I‘ð‚³‚ê‚Ä‚µ‚Ü‚¤
-	flushCanvasAll : function(){ g.clearCanvas(); this.zidx=0; this.vinc();},
+	flushCanvasAll : function(){ g.clear(); this.zidx=0; this.vinc();},
 	flushCanvas : function(x1,y1,x2,y2){ g.setLayer("layer1"); this.zidx=1;},
 	vnop  : f_true,
 	vhide : f_true,
@@ -1288,7 +1287,7 @@ Graphic.prototype = {
 	vinc  : f_true,
 
 	setVectorFunctions : function(){
-		if(g.canvas){
+		if(g.use.canvas){
 			this.flushCanvas = function(x1,y1,x2,y2){
 				if     (k.isextendcell===0 && x1<= 0 && y1<= 0 && x2>=k.qcols-1 && y2>=k.qrows-1){ this.flushCanvasAll();}
 				else if(k.isextendcell===1 && x1<=-1 && y1<=-1 && x2>=k.qcols-1 && y2>=k.qrows-1){ this.flushCanvasAll();}
@@ -1310,25 +1309,25 @@ Graphic.prototype = {
 			g.vid = vid;
 			if(!!g.elements[vid]){
 				var el = g.elements[vid];
-				if(g.vml){
+				if(g.use.vml){
 					el.style.display = 'inline';
 					if(isfill!==-1){
-						if(isfill!==0){ el.fillcolor   = ContextManager.parse(g.fillStyle);}
-						if(isfill!==1){ el.strokecolor = ContextManager.parse(g.strokeStyle);}
+						if(isfill!==0){ el.fillcolor   = Camp.parse(g.fillStyle);}
+						if(isfill!==1){ el.strokecolor = Camp.parse(g.strokeStyle);}
 					}
 				}
-				else if(g.sl){
+				else if(g.use.sl){
 					el.Visibility = "Visible";
 					if(isfill!==-1){
-						if(isfill!==0){ el.fill   = ContextManager.parse(g.fillStyle);  }
-						if(isfill!==1){ el.stroke = ContextManager.parse(g.strokeStyle);}
+						if(isfill!==0){ el.fill   = Camp.parse(g.fillStyle);  }
+						if(isfill!==1){ el.stroke = Camp.parse(g.strokeStyle);}
 					}
 				}
-				else if(g.svg){
+				else if(g.use.svg){
 					el.style.display = 'inline';
 					if(isfill!==-1){
-						if(isfill!==0){ el.setAttribute('fill',  ContextManager.parse(g.fillStyle));}
-						if(isfill!==1){ el.setAttribute('stroke',ContextManager.parse(g.strokeStyle));}
+						if(isfill!==0){ el.setAttribute('fill',  Camp.parse(g.fillStyle));}
+						if(isfill!==1){ el.setAttribute('stroke',Camp.parse(g.strokeStyle));}
 					}
 				}
 				return false;
@@ -1339,7 +1338,7 @@ Graphic.prototype = {
 			if(typeof vid === 'string'){ vid = [vid];}
 			for(var i=0;i<vid.length;i++){
 				if(g.elements[vid[i]]){
-					if(!g.sl){ g.elements[vid[i]].style.display = 'none';}
+					if(!g.use.sl){ g.elements[vid[i]].style.display = 'none';}
 					else{ g.elements[vid[i]].Visibility = "Collapsed";}
 				}
 			}
@@ -1347,7 +1346,7 @@ Graphic.prototype = {
 		this.vdel = function(vid){
 			for(var i=0;i<vid.length;i++){
 				if(g.elements[vid[i]]){
-					if(!g.sl){ g.target.removeChild(g.elements[vid[i]]);}
+					if(!g.use.sl){ g.target.removeChild(g.elements[vid[i]]);}
 					else{ g.elements[vid[i]].Visibility = "Collapsed";}
 					g.elements[vid[i]] = null;
 				}
@@ -1357,7 +1356,8 @@ Graphic.prototype = {
 			g.vid = "";
 			this.zidx++;
 			g.setLayer("layer"+this.zidx);
-			if(!g.sl){ g.getLayerElement().style.zIndex = this.zidx;}
+			g.setRendering("crispEdges");
+			if(!g.use.sl){ g.getLayerElement().style.zIndex = this.zidx;}
 			else{ g.getLayerElement()["Canvas.ZIndex"] = this.zidx;}
 		};
 	},

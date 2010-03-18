@@ -1,4 +1,4 @@
-// Main.js v3.2.5
+// Main.js v3.3.0
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -67,8 +67,8 @@ PBase.prototype = {
 	},
 
 	initCanvas : function(){
-		//ContextManager.select('canvas');
-		ContextManager.initElementById('divques');
+		//Camp.select('canvas');
+		Camp('divques');
 		this.canvas = ee('divques').unselectable().el; // Canvas
 		this.numparent = ee('numobj_parent').el;			// 数字表示用
 		g = this.canvas.getContext("2d");

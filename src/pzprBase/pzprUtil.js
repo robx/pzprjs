@@ -306,7 +306,7 @@ LineManager.prototype = {
 	repaintLine : function(idlist){
 		if(!pp.getVal('irowake')){ return;}
 
-		if(g.canvas){
+		if(g.use.canvas){
 			if(k.isCenterLine){
 				for(var i=0,len=idlist.length;i<len;i++){
 					pc.drawLine1(idlist[i], true);

@@ -1,4 +1,4 @@
-// MenuExec.js v3.2.4p4
+// MenuExec.js v3.3.0
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -30,7 +30,7 @@ MenuExec.prototype = {
 		}
 		else{
 			this.reader = new FileReader();
-			this.reader.onload = ee.ebinder(menu.ex, function(e){
+			this.reader.onload = ee.ebinder(this, function(e){
 				this.fileonload(ee.getSrcElement(e).result);
 			});
 		}
@@ -225,7 +225,7 @@ MenuExec.prototype = {
 		base.resize_canvas_only();	// canvasの左上座標等を更新
 		bd.setposAll();	// 各セルのpx,py座標を更新
 
-		if(g.vml){ pc.flushCanvasAll();}	// VMLの位置がずれるので消さないと。。
+		if(g.use.vml){ pc.flushCanvasAll();}	// VMLの位置がずれるので消さないと。。
 		pc.paintAll();	// 再描画
 	},
 	dispmanstr : function(){
@@ -744,7 +744,7 @@ MenuExec.prototype = {
 					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,k.QSUB,i,bd.border[i].qsub,bd.defborder.qsub);}
 				}
 			}
-			if(!g.vml){ pc.flushCanvasAll();}
+			if(g.use.canvas){ pc.flushCanvasAll();}
 
 			bd.ansclear();
 			base.resetInfo(false);
@@ -764,7 +764,7 @@ MenuExec.prototype = {
 					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,k.QSUB,i,bd.border[i].qsub,bd.defborder.qsub);}
 				}
 			}
-			if(!g.vml){ pc.flushCanvasAll();}
+			if(g.use.canvas){ pc.flushCanvasAll();}
 			bd.subclear();
 			pc.paintAll();
 		}
