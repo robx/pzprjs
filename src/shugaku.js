@@ -381,7 +381,7 @@ Puzzles.shugaku.prototype = {
 				g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth, (y2-y1+1)*k.cheight);
 			}
 			else{
-				g.zidx=1;
+				this.zidx=1;
 				g.fillStyle = this.bgcolor;
 				if(this.vnop("boardfull",1)){
 					g.fillRect(k.p0.x, k.p0.y, k.qcols*k.cwidth, k.qrows*k.cheight);

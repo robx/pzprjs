@@ -472,7 +472,7 @@ Puzzles.tawa.prototype = {
 
 			this.drawTarget_tawa(x1,y1,x2,y2);
 		};
-		pc.paintAll = function(){ if(this.already()){ this.paint(0,0,tc.maxx+1,k.qrows);} },
+		pc.paintAll = function(){ this.paint(0,0,tc.maxx+1,k.qrows); },
 
 		pc.drawGrid_tawa = function(x1,y1,x2,y2){
 			if(x1<0){ x1=0;} if(x2>tc.maxx+1){ x2=tc.maxx+1;}
@@ -537,7 +537,7 @@ Puzzles.tawa.prototype = {
 					g.fillRect(k.p0.x+x1*k.cwidth/2, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth/2, (y2-y1+1)*k.cheight);
 				}
 			}
-			else{ g.zidx=1;}
+			else{ this.zidx=1; g.setLayer('layer1');}
 		};
 	},
 

@@ -67,7 +67,9 @@ PBase.prototype = {
 	},
 
 	initCanvas : function(){
-		this.canvas = ee('puzzle_canvas').unselectable().el; // Canvas
+		//ContextManager.select('canvas');
+		ContextManager.initElementById('divques');
+		this.canvas = ee('divques').unselectable().el; // Canvas
 		this.numparent = ee('numobj_parent').el;			// 数字表示用
 		g = this.canvas.getContext("2d");
 	},
@@ -97,7 +99,7 @@ PBase.prototype = {
 		this.doc_design();		// デザイン変更関連関数の呼び出し
 
 		enc.pzlinput();										// URLからパズルのデータを読み出す
-		if(!enc.uri.bstr){ this.resize_canvas_onload();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
+		if(!enc.uri.bstr){ this.resize_canvas();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
 
 		if(!!puz.finalfix){ puz.finalfix();}					// パズル固有の後付け設定
 	},
@@ -183,7 +185,6 @@ PBase.prototype = {
 	//---------------------------------------------------------------------------
 	// base.resize_canvas_only()   ウィンドウのLoad/Resize時の処理。Canvas/表示するマス目の大きさを設定する。
 	// base.resize_canvas()        resize_canvas_only()+Canvasの再描画
-	// base.resize_canvas_onload() 初期化中にpaint再描画が起こらないように、resize_canvasを呼び出す
 	// base.onresize_func()        ウィンドウリサイズ時に呼ばれる関数
 	// base.resetInfo()            AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
 	//---------------------------------------------------------------------------
@@ -220,15 +221,10 @@ PBase.prototype = {
 		ee('main').el.style.width = ''+mf(mwidth)+'px';
 
 		// Canvasのサイズ変更
-		this.canvas.width  = mf((cols-k.isextendcell)*k.cwidth );
-		this.canvas.height = mf((rows-k.isextendcell)*k.cheight);
-
-		// VML使う時に、Canvas外の枠線が消えてしまうので残しておきます.
-		if(g.vml){
-			var fc = this.canvas.firstChild;
-			fc.style.width  = ''+this.canvas.clientWidth  + 'px';
-			fc.style.height = ''+this.canvas.clientHeight + 'px';
-		}
+		pc.setVectorFunctions();
+		var width  = mf((cols-k.isextendcell)*k.cwidth );
+		var height = mf((rows-k.isextendcell)*k.cheight);
+		g.changeSize(width, height);
 
 		// 盤面のセルID:0が描画される位置の設定
 		k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
@@ -238,7 +234,8 @@ PBase.prototype = {
 			k.p0.y += mf(k.cheight*0.45);
 		}
 
-		var rect = ee('puzzle_canvas').getRect();
+		// canvasの上に文字・画像を表示する時のOffset指定
+		var rect = ee('divques').getRect();
 		k.cv_oft.x = rect.left;
 		k.cv_oft.y = rect.top;
 
@@ -251,10 +248,6 @@ PBase.prototype = {
 		this.resize_canvas_only();
 		pc.flushCanvasAll();
 		pc.paintAll();
-	},
-	resize_canvas_onload : function(){
-		if(pc.already()){ this.resize_canvas();}
-		else{ uuCanvas.ready(ee.binder(this, this.resize_canvas));}
 	},
 	onresize_func : function(){
 		if(this.resizetimer){ clearTimeout(this.resizetimer);}

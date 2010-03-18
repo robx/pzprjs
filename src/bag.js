@@ -146,6 +146,8 @@ Puzzles.bag.prototype = {
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.setBGCellColorFunc('qsub2');
 
+		pc.chassisflag = false;
+
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();

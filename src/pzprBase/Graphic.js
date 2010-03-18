@@ -1,4 +1,4 @@
-// Graphic.js v3.2.5
+// Graphic.js v3.3.0
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
@@ -85,13 +85,14 @@ Graphic = function(){
 	this.addlw = 0;	// エラー時に線の太さを広げる
 
 	this.chassisflag = true;	// false: Gridを外枠の位置にも描画する
-	this.zstable     = false;	// 色分けの一部再描画時にtrueにする(VML用)
 	this.textenable  = false;	// 数字をg.fillText()で描画(現在はコメントアウト)
 
 	this.lastHdeg = 0;
 	this.lastYdeg = 0;
 	this.minYdeg = 0.18;
 	this.maxYdeg = 0.70;
+
+	this.zidx = 1;
 
 	var numobj_attr = {className:'divnum', unselectable:'on'};
 	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', numobj_attr, null, null);
@@ -103,7 +104,6 @@ Graphic = function(){
 Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	// pc.onresize_func() resize時にサイズを変更する
-	// pc.already()       Canvasが利用できるか(Safari3対策用)
 	//---------------------------------------------------------------------------
 	onresize_func : function(){
 		this.lw = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3);
@@ -111,9 +111,6 @@ Graphic.prototype = {
 
 		//this.textenable = !!g.fillText;
 	},
-	already : (!k.br.IE ? f_true : function(){
-		return uuCanvas.already();
-	}),
 	//---------------------------------------------------------------------------
 	// pc.paint()       座標(x1,y1)-(x2,y2)を再描画する。各パズルのファイルでオーバーライドされる。
 	// pc.paintAll()    全体を再描画する
@@ -123,10 +120,7 @@ Graphic.prototype = {
 	// pc.paintEXcell() 指定されたEXCellを再描画する
 	//---------------------------------------------------------------------------
 	paint : function(x1,y1,x2,y2){ }, //オーバーライド用
-	paintAll : (
-		(!k.br.IE) ? function(){ this.paint(-1,-1,k.qcols,k.qrows); }
-				   : function(){ if(this.already()){ this.paint(-1,-1,k.qcols,k.qrows);} }
-	),
+	paintAll : function(){ this.paint(-1,-1,k.qcols,k.qrows); },
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
 		if(bd.border[id].cx&1){
@@ -249,13 +243,10 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.inputPath()  リストからg.lineTo()等の関数を呼び出す
+	// pc.inputPath()  リストからg.lineTo()等の関数を呼び出す ※削除対象
 	//---------------------------------------------------------------------------
 	inputPath : function(parray, isClose){
-		g.beginPath();
-		g.moveTo(mf(parray[0]+parray[2]), mf(parray[1]+parray[3]));
-		for(var i=4;i<parray.length;i+=2){ g.lineTo(mf(parray[0]+parray[i+0]), mf(parray[1]+parray[i+1]));}
-		if(isClose){ g.closePath();}
+		g.setOffsetLinePath.apply(g,parray.concat([isClose]));
 	},
 
 	//---------------------------------------------------------------------------
@@ -412,16 +403,14 @@ Graphic.prototype = {
 	drawRDotCells : function(x1,y1,x2,y2){
 		var dsize = k.cwidth*0.06; dsize=(dsize>2?dsize:2);
 		var header = "c_rdot_";
+		g.fillStyle = this.dotcolor;
 
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(bd.cell[c].qsub===1){
-				g.fillStyle = this.dotcolor;
-				if(this.vnop(header+c,1)){
-					g.beginPath();
-					g.arc(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, dsize, 0, Math.PI*2, false);
-					g.fill();
+				if(this.vnop(header+c,-1)){
+					g.fillCircle(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, dsize);
 				}
 			}
 			else{ this.vhide(header+c);}
@@ -431,13 +420,13 @@ Graphic.prototype = {
 	drawDotCells : function(x1,y1,x2,y2){
 		var ksize = k.cwidth*0.15;
 		var header = "c_dot_";
+		g.fillStyle = this.dotcolor;
 
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(bd.cell[c].qsub===1){
-				g.fillStyle = this.dotcolor;
-				if(this.vnop(header+c,1)){
+				if(this.vnop(header+c,-1)){
 					g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-mf(ksize/2), bd.cell[c].py+mf(k.cheight/2)-mf(ksize/2), ksize, ksize);
 				}
 			}
@@ -485,14 +474,14 @@ Graphic.prototype = {
 					// 矢じりの描画
 					if(dir===k.UP){
 						if(this.vnop(headers[1]+c,1)){
-							this.inputPath([ax,ay     ,0,0 ,-ll/6, ll/3 ,ll/6, ll/3], true);
+							g.setOffsetLinePath(ax,ay, 0,0, -ll/6,ll/3, ll/6,ll/3, true);
 							g.fill();
 						}
 					}
 					else{ this.vhide(headers[1]+c);}
 					if(dir===k.DN){
 						if(this.vnop(headers[2]+c,1)){
-							this.inputPath([ax,ay+ll  ,0,0 ,-ll/6,-ll/3 ,ll/6,-ll/3], true);
+							g.setOffsetLinePath(ax,ay+ll, 0,0, -ll/6,-ll/3, ll/6,-ll/3, true);
 							g.fill();
 						}
 					}
@@ -510,14 +499,14 @@ Graphic.prototype = {
 					// 矢じりの描画
 					if(dir===k.LT){
 						if(this.vnop(headers[4]+c,1)){
-							this.inputPath([ax   ,ay  ,0,0 , ll/3,-ll/6 , ll/3,ll/6], true);
+							g.setOffsetLinePath(ax,ay, 0,0, ll/3,-ll/6, ll/3,ll/6, true);
 							g.fill();
 						}
 					}
 					else{ this.vhide(headers[4]+c);}
 					if(dir===k.RT){
 						if(this.vnop(headers[5]+c,1)){
-							this.inputPath([ax+ll,ay  ,0,0 ,-ll/3,-ll/6 ,-ll/3,ll/6], true);
+							g.setOffsetLinePath(ax+ll,ay, 0,0, -ll/3,-ll/6, -ll/3,ll/6, true);
 							g.fill();
 						}
 					}
@@ -562,7 +551,7 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	drawCrosses : function(x1,y1,x2,y2){
 		var csize = mf(k.cwidth*this.crosssize+1);
-		var headers = ["x_cp1_", "x_cp2_"];
+		var header = "x_cp_";
 		g.lineWidth = 1;
 
 		var clist = this.crossinside(x1,y1,x2,y2);
@@ -570,22 +559,14 @@ Graphic.prototype = {
 			var c = clist[i];
 			if(bd.cross[c].qnum!==-1){
 				g.fillStyle = (bd.cross[c].error===1 ? this.errcolor1 : "white");
-				if(this.vnop(headers[0]+c,1)){
+				g.strokeStyle = "black";
+				if(this.vnop(header+c,2)){
 					g.beginPath();
 					g.arc(bd.cross[c].px, bd.cross[c].py, csize, 0, Math.PI*2, false);
-					g.fill();
-				}
-
-				g.strokeStyle = "black";
-				if(this.vnop(headers[1]+c,0)){
-					if(k.br.IE){
-						g.beginPath();
-						g.arc(bd.cross[c].px, bd.cross[c].py, csize, 0, Math.PI*2, false);
-					}
-					g.stroke();
+					g.fillstroke();
 				}
 			}
-			else{ this.vhide([headers[0]+c, headers[1]+c]);}
+			else{ this.vhide([header+c]);}
 			this.dispnumCross(c);
 		}
 		this.vinc();
@@ -600,9 +581,7 @@ Graphic.prototype = {
 			if(bd.cross[c].qnum===1){
 				g.fillStyle = (bd.cross[c].error===1 ? this.errcolor1 : this.Cellcolor);
 				if(this.vnop(header+c,1)){
-					g.beginPath();
-					g.arc(bd.cross[c].px, bd.cross[c].py, csize, 0, Math.PI*2, false);
-					g.fill();
+					g.fillCircle(bd.cross[c].px, bd.cross[c].py, csize);
 				}
 			}
 			else{ this.vhide(header+c);}
@@ -678,7 +657,7 @@ Graphic.prototype = {
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
 			if(bd.border[id].qsub===1){
-				if(this.vnop(header+id,1)){
+				if(this.vnop(header+id,-1)){
 					if     (bd.border[id].cx&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2)+m, 1,k.cheight-2*m);}
 					else if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)+m,  bd.border[id].py, k.cwidth-2*m, 1);}
 				}
@@ -724,26 +703,26 @@ Graphic.prototype = {
 			var isDL = (!DNin || !LTin || bd.border[bd.bnum(bx-2,by+1)].ques===1 || bd.border[bd.bnum(bx-1,by+2)].ques===1);
 			var isDR = (!DNin || !RTin || bd.border[bd.bnum(bx+2,by+1)].ques===1 || bd.border[bd.bnum(bx+1,by+2)].ques===1);
 
-			if(isUP){ if(this.vnop(vids[0],1)){ g.fillRect(px   +lm, py   +lm, cw-lw,1    );} }else{ this.vhide(vids[0]);}
-			if(isDN){ if(this.vnop(vids[1],1)){ g.fillRect(px   +lm, py+ch-lm, cw-lw,1    );} }else{ this.vhide(vids[1]);}
-			if(isLT){ if(this.vnop(vids[2],1)){ g.fillRect(px   +lm, py   +lm, 1    ,ch-lw);} }else{ this.vhide(vids[2]);}
-			if(isRT){ if(this.vnop(vids[3],1)){ g.fillRect(px+cw-lm, py   +lm, 1    ,ch-lw);} }else{ this.vhide(vids[3]);}
+			if(isUP){ if(this.vnop(vids[0],-1)){ g.fillRect(px   +lm, py   +lm, cw-lw,1    );} }else{ this.vhide(vids[0]);}
+			if(isDN){ if(this.vnop(vids[1],-1)){ g.fillRect(px   +lm, py+ch-lm, cw-lw,1    );} }else{ this.vhide(vids[1]);}
+			if(isLT){ if(this.vnop(vids[2],-1)){ g.fillRect(px   +lm, py   +lm, 1    ,ch-lw);} }else{ this.vhide(vids[2]);}
+			if(isRT){ if(this.vnop(vids[3],-1)){ g.fillRect(px+cw-lm, py   +lm, 1    ,ch-lw);} }else{ this.vhide(vids[3]);}
 
 			if(tileflag){
-				if(!isUP&&(isUL||isLT)){ if(this.vnop(vids[4],1)){ g.fillRect(px   +lm, py   -lm, 1   ,lw+1);} }else{ this.vhide(vids[4]);}
-				if(!isUP&&(isUR||isRT)){ if(this.vnop(vids[5],1)){ g.fillRect(px+cw-lm, py   -lm, 1   ,lw+1);} }else{ this.vhide(vids[5]);}
-				if(!isLT&&(isUL||isUP)){ if(this.vnop(vids[6],1)){ g.fillRect(px   -lm, py   +lm, lw+1,1   );} }else{ this.vhide(vids[6]);}
-				if(!isLT&&(isDL||isDN)){ if(this.vnop(vids[7],1)){ g.fillRect(px   -lm, py+ch-lm, lw+1,1   );} }else{ this.vhide(vids[7]);}
+				if(!isUP&&(isUL||isLT)){ if(this.vnop(vids[4],-1)){ g.fillRect(px   +lm, py   -lm, 1   ,lw+1);} }else{ this.vhide(vids[4]);}
+				if(!isUP&&(isUR||isRT)){ if(this.vnop(vids[5],-1)){ g.fillRect(px+cw-lm, py   -lm, 1   ,lw+1);} }else{ this.vhide(vids[5]);}
+				if(!isLT&&(isUL||isUP)){ if(this.vnop(vids[6],-1)){ g.fillRect(px   -lm, py   +lm, lw+1,1   );} }else{ this.vhide(vids[6]);}
+				if(!isLT&&(isDL||isDN)){ if(this.vnop(vids[7],-1)){ g.fillRect(px   -lm, py+ch-lm, lw+1,1   );} }else{ this.vhide(vids[7]);}
 			}
 			else{
-				if(!isUP&&(isUL||isLT)){ if(this.vnop(vids[4] ,1)){ g.fillRect(px   +lm, py      , 1   ,lm+1);} }else{ this.vhide(vids[4] );}
-				if(!isUP&&(isUR||isRT)){ if(this.vnop(vids[5] ,1)){ g.fillRect(px+cw-lm, py      , 1   ,lm+1);} }else{ this.vhide(vids[5] );}
-				if(!isDN&&(isDL||isLT)){ if(this.vnop(vids[6] ,1)){ g.fillRect(px   +lm, py+ch-lm, 1   ,lm+1);} }else{ this.vhide(vids[6] );}
-				if(!isDN&&(isDR||isRT)){ if(this.vnop(vids[7] ,1)){ g.fillRect(px+cw-lm, py+ch-lm, 1   ,lm+1);} }else{ this.vhide(vids[7] );}
-				if(!isLT&&(isUL||isUP)){ if(this.vnop(vids[8] ,1)){ g.fillRect(px      , py   +lm, lm+1,1   );} }else{ this.vhide(vids[8] );}
-				if(!isLT&&(isDL||isDN)){ if(this.vnop(vids[9] ,1)){ g.fillRect(px      , py+ch-lm, lm+1,1   );} }else{ this.vhide(vids[9] );}
-				if(!isRT&&(isUR||isUP)){ if(this.vnop(vids[10],1)){ g.fillRect(px+cw-lm, py   +lm, lm+1,1   );} }else{ this.vhide(vids[10]);}
-				if(!isRT&&(isDR||isDN)){ if(this.vnop(vids[11],1)){ g.fillRect(px+cw-lm, py+ch-lm, lm+1,1   );} }else{ this.vhide(vids[11]);}
+				if(!isUP&&(isUL||isLT)){ if(this.vnop(vids[4] ,-1)){ g.fillRect(px   +lm, py      , 1   ,lm+1);} }else{ this.vhide(vids[4] );}
+				if(!isUP&&(isUR||isRT)){ if(this.vnop(vids[5] ,-1)){ g.fillRect(px+cw-lm, py      , 1   ,lm+1);} }else{ this.vhide(vids[5] );}
+				if(!isDN&&(isDL||isLT)){ if(this.vnop(vids[6] ,-1)){ g.fillRect(px   +lm, py+ch-lm, 1   ,lm+1);} }else{ this.vhide(vids[6] );}
+				if(!isDN&&(isDR||isRT)){ if(this.vnop(vids[7] ,-1)){ g.fillRect(px+cw-lm, py+ch-lm, 1   ,lm+1);} }else{ this.vhide(vids[7] );}
+				if(!isLT&&(isUL||isUP)){ if(this.vnop(vids[8] ,-1)){ g.fillRect(px      , py   +lm, lm+1,1   );} }else{ this.vhide(vids[8] );}
+				if(!isLT&&(isDL||isDN)){ if(this.vnop(vids[9] ,-1)){ g.fillRect(px      , py+ch-lm, lm+1,1   );} }else{ this.vhide(vids[9] );}
+				if(!isRT&&(isUR||isUP)){ if(this.vnop(vids[10],-1)){ g.fillRect(px+cw-lm, py   +lm, lm+1,1   );} }else{ this.vhide(vids[10]);}
+				if(!isRT&&(isDR||isDN)){ if(this.vnop(vids[11],-1)){ g.fillRect(px+cw-lm, py+ch-lm, lm+1,1   );} }else{ this.vhide(vids[11]);}
 			}
 		}
 		this.vinc();
@@ -780,8 +759,11 @@ Graphic.prototype = {
 		return bd.border[id].color;
 	},
 	drawPekes : function(x1,y1,x2,y2,flag){
+		if(!g.canvas && flag===2){ return;}
+
 		var size = mf(k.cwidth*0.15); if(size<3){ size=3;}
 		var headers = ["b_peke0_", "b_peke1_"];
+		g.fillStyle = "white";
 		g.strokeStyle = this.pekecolor;
 		g.lineWidth = 1;
 
@@ -790,18 +772,18 @@ Graphic.prototype = {
 			var id = idlist[i];
 			if(bd.border[id].qsub!==2){ this.vhide([headers[0]+id, headers[1]+id]); continue;}
 
-			g.fillStyle = "white";
-			if(flag===0 || flag===2){
-				if(this.vnop(headers[0]+id,1)){
-					g.fillRect(bd.border[id].px-size, bd.border[id].py-size, 2*size+1, 2*size+1);
+			if(g.canvas){
+				if(flag===0 || flag===2){
+					if(this.vnop(headers[0]+id,-1)){
+						g.fillRect(bd.border[id].px-size, bd.border[id].py-size, 2*size+1, 2*size+1);
+					}
 				}
+				else{ this.vhide(headers[0]+id);}
 			}
-			else{ this.vhide(headers[0]+id);}
 
 			if(flag===0 || flag===1){
-				if(this.vnop(headers[1]+id,0)){
-					this.inputPath([bd.border[id].px,bd.border[id].py ,-size+1,-size+1 ,0,0 ,-size+1,size ,size,-size+1 ,0,0 ,size,size ,-size+1,-size+1],false);
-					g.stroke();
+				if(this.vnop(headers[1]+id,-1)){
+					g.strokeCross(bd.border[id].px, bd.border[id].py, size-1);
 				}
 			}
 			else{ this.vhide(headers[1]+id);}
@@ -843,10 +825,10 @@ Graphic.prototype = {
 		if(this.vnop(vid,1)){
 			var mgn = (k.puzzleid==="reflect"?1:0);
 			switch(num){
-				case 2: this.inputPath([px,py ,mgn,mgn        ,mgn,k.cheight+1 ,k.cwidth+1,k.cheight+1],true); break;
-				case 3: this.inputPath([px,py ,k.cwidth+1,mgn ,mgn,k.cheight+1 ,k.cwidth+1,k.cheight+1],true); break;
-				case 4: this.inputPath([px,py ,mgn,mgn        ,k.cwidth+1,mgn  ,k.cwidth+1,k.cheight+1],true); break;
-				case 5: this.inputPath([px,py ,mgn,mgn        ,k.cwidth+1,mgn  ,mgn       ,k.cheight+1],true); break;
+				case 2: g.setOffsetLinePath(px,py, mgn,mgn,        mgn,k.cheight+1, k.cwidth+1,k.cheight+1, true); break;
+				case 3: g.setOffsetLinePath(px,py, k.cwidth+1,mgn, mgn,k.cheight+1, k.cwidth+1,k.cheight+1, true); break;
+				case 4: g.setOffsetLinePath(px,py, mgn,mgn,        k.cwidth+1,mgn,  k.cwidth+1,k.cheight+1, true); break;
+				case 5: g.setOffsetLinePath(px,py, mgn,mgn,        k.cwidth+1,mgn,  mgn       ,k.cheight+1, true); break;
 			}
 			g.fill();
 		}
@@ -859,7 +841,7 @@ Graphic.prototype = {
 		g.strokeStyle = this.MBcolor;
 		g.lineWidth = 1;
 
-		var rsize = k.cwidth*0.35;
+		var rsize = k.cwidth*0.35, offsetx = mf(k.cwidth/2), offsety = mf(k.cheight/2);
 		var headers = ["c_MB1_", "c_MB2a_"];
 
 		var clist = this.cellinside(x1,y1,x2,y2);
@@ -869,17 +851,14 @@ Graphic.prototype = {
 
 			switch(bd.cell[c].qsub){
 			case 1:
-				if(this.vnop(headers[0]+c,0)){
-					g.beginPath();
-					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize, 0, Math.PI*2, false);
-					g.stroke();
+				if(this.vnop(headers[0]+c,-1)){
+					g.strokeCircle(bd.cell[c].px+offsetx, bd.cell[c].py+offsety, rsize);
 				}
 				this.vhide(headers[1]+c);
 				break;
 			case 2:
-				if(this.vnop(headers[1]+c,0)){
-					this.inputPath([bd.cell[c].px+mf(k.cwidth/2),bd.cell[c].py+mf(k.cheight/2) ,-rsize,-rsize ,0,0 ,-rsize,rsize ,rsize,-rsize ,0,0 ,rsize,rsize ,-rsize,-rsize],true);
-					g.stroke();
+				if(this.vnop(headers[1]+c,-1)){
+					g.strokeCross(bd.cell[c].px+offsetx, bd.cell[c].py+offsety, rsize);
 				}
 				this.vhide(headers[0]+c);
 				break;
@@ -906,9 +885,7 @@ Graphic.prototype = {
 			if(bd.cell[c].ques===41 || bd.cell[c].ques===42){
 				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
 				if(this.vnop(headers[0]+c,1)){
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					g.fill();
+					g.fillCircle(px,py,rsize);
 				}
 			}
 			else{ this.vhide(headers[0]+c);}
@@ -916,9 +893,7 @@ Graphic.prototype = {
 			if(bd.cell[c].ques===41){
 				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 				if(this.vnop(headers[1]+c,1)){
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					g.fill();
+					g.fillCircle(px,py,rsize2);
 				}
 			}
 			else{ this.vhide(headers[1]+c);}
@@ -944,16 +919,12 @@ Graphic.prototype = {
 			g.lineWidth = k.cwidth*0.05;
 			g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : this.circledcolor);
 			if(this.vnop(headers[1]+c,1)){
-				g.beginPath();
-				g.arc(px, py, rsize2, 0, Math.PI*2, false);
-				g.fill();
+					g.fillCircle(px,py,rsize2);
 			}
 
 			g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
 			if(this.vnop(headers[0]+c,0)){
-				g.beginPath();
-				g.arc(px, py, rsize , 0, Math.PI*2, false);
-				g.stroke();
+					g.strokeCircle(px,py,rsize);
 			}
 		}
 		else{ this.vhide([headers[0]+c, headers[1]+c]);}
@@ -980,10 +951,10 @@ Graphic.prototype = {
 		g.fillStyle = this.BorderQuescolor;
 
 		var qs = bd.cell[id].ques, flag  = {101:15, 102:3, 103:12, 104:9, 105:5, 106:6, 107:10}[qs];
-		if(flag&1){ if(this.vnop(vids[0],1)){ g.fillRect(px+hw-1, py     , this.lw, hhp);} }else{ this.vhide(vids[0]);}
-		if(flag&2){ if(this.vnop(vids[1],1)){ g.fillRect(px+hw-1, py+hh-1, this.lw, hhp);} }else{ this.vhide(vids[1]);}
-		if(flag&4){ if(this.vnop(vids[2],1)){ g.fillRect(px     , py+hh-1, hwp, this.lw);} }else{ this.vhide(vids[2]);}
-		if(flag&8){ if(this.vnop(vids[3],1)){ g.fillRect(px+hw-1, py+hh-1, hwp, this.lw);} }else{ this.vhide(vids[3]);}
+		if(flag&1){ if(this.vnop(vids[0],-1)){ g.fillRect(px+hw-1, py     , this.lw, hhp);} }else{ this.vhide(vids[0]);}
+		if(flag&2){ if(this.vnop(vids[1],-1)){ g.fillRect(px+hw-1, py+hh-1, this.lw, hhp);} }else{ this.vhide(vids[1]);}
+		if(flag&4){ if(this.vnop(vids[2],-1)){ g.fillRect(px     , py+hh-1, hwp, this.lw);} }else{ this.vhide(vids[2]);}
+		if(flag&8){ if(this.vnop(vids[3],-1)){ g.fillRect(px+hw-1, py+hh-1, hwp, this.lw);} }else{ this.vhide(vids[3]);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -993,25 +964,25 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	draw51 : function(x1,y1,x2,y2,errdisp){
 		var headers = ["c_full_", "c_q51_"];
+		g.fillStyle   = this.errbcolor1;
+		g.strokeStyle = this.Cellcolor;
+		g.lineWidth = 1;
 
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
+			var c = clist[i], px = bd.cell[c].px, py = bd.cell[c].py;
+
 			if(bd.cell[c].ques===51){
 				if(errdisp){
 					if(bd.cell[c].error===1){
-						g.fillStyle = this.errbcolor1;
-						if(this.vnop(headers[0]+c,1)){
-							g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);
+						if(this.vnop(headers[0]+c,-1)){
+							g.fillRect(px+1, py+1, k.cwidth-1, k.cheight-1);
 						}
 					}
 					else{ this.vhide(headers[0]+c);}
 				}
-				g.strokeStyle = this.Cellcolor;
-				if(this.vnop(headers[1]+c,0)){
-					g.lineWidth = 1;
-					this.inputPath([bd.cell[c].px,bd.cell[c].py, 1,1, k.cwidth,k.cheight], true);
-					g.stroke();
+				if(this.vnop(headers[1]+c,-1)){
+					g.strokeLine(px+1,py+1, px+k.cwidth,py+k.cheight);
 				}
 			}
 			else{
@@ -1024,38 +995,36 @@ Graphic.prototype = {
 	draw51EXcells : function(x1,y1,x2,y2,errdisp){
 		var lw = this.lw;
 		var headers = ["ex_full_", "ex_q51_", "ex_bdx_", "ex_bdy_"];
+		g.strokeStyle = this.Cellcolor;
+		g.lineWidth = 1;
 
 		var exlist = this.excellinside(x1-1,y1-1,x2,y2);
 		for(var i=0;i<exlist.length;i++){
-			var c = exlist[i];
+			var c = exlist[i], px = bd.excell[c].px, py = bd.excell[c].py;
 
-			var px = bd.excell[c].px, py = bd.excell[c].py;
 			if(errdisp){
 				if(bd.excell[c].error===1){
 					g.fillStyle = this.errbcolor1;
-					if(this.vnop(headers[0]+c,1)){
+					if(this.vnop(headers[0]+c,-1)){
 						g.fillRect(px+1, py+1, k.cwidth-1, k.cheight-1);
 					}
 				}
 				else{ this.vhide(headers[0]+c);}
 			}
 
-			g.strokeStyle = this.Cellcolor;
-			if(this.vnop(headers[1]+c,0)){
-				g.lineWidth = 1;
-				this.inputPath([px,py, 1,1, k.cwidth,k.cheight], true);
-				g.stroke();
+			if(this.vnop(headers[1]+c,-1)){
+				g.strokeLine(px+1,py+1, px+k.cwidth,py+k.cheight);
 			}
 
 			g.fillStyle = this.Cellcolor;
 			if(bd.excell[c].cy===-1 && bd.excell[c].cx<k.qcols-1){
-				if(this.vnop(headers[2]+c,1)){
+				if(this.vnop(headers[2]+c,-1)){
 					g.fillRect(px+k.cwidth, py, 1, k.cheight);
 				}
 			}
 			else{ this.vhide(headers[2]+c);}
 			if(bd.excell[c].cx===-1 && bd.excell[c].cy<k.qrows-1){
-				if(this.vnop(headers[3]+c,1)){
+				if(this.vnop(headers[3]+c,-1)){
 					g.fillRect(px, py+k.cheight, k.cwidth, 1);
 				}
 			}
@@ -1072,17 +1041,17 @@ Graphic.prototype = {
 
 		g.fillStyle = "black";
 		if(boldflag){
-			if(x1<1){ if(this.vnop("chs1_",1)){ g.fillRect(k.p0.x+x1*k.cwidth-lw+2, k.p0.y+y1*k.cheight-lw+2, lw, (y2-y1+1)*k.cheight+lw-2);} }
-			if(y1<1){ if(this.vnop("chs2_",1)){ g.fillRect(k.p0.x+x1*k.cwidth-lw+2, k.p0.y+y1*k.cheight-lw+2, (x2-x1+1)*k.cwidth+lw-2, lw); } }
+			if(x1<1){ if(this.vnop("chs1_",-1)){ g.fillRect(k.p0.x+x1*k.cwidth-lw+2, k.p0.y+y1*k.cheight-lw+2, lw, (y2-y1+1)*k.cheight+lw-2);} }
+			if(y1<1){ if(this.vnop("chs2_",-1)){ g.fillRect(k.p0.x+x1*k.cwidth-lw+2, k.p0.y+y1*k.cheight-lw+2, (x2-x1+1)*k.cwidth+lw-2, lw); } }
 		}
 		else{
-			if(x1<1){ if(this.vnop("chs1_",1)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, 1, (y2-y1+1)*k.cheight);} }
-			if(y1<1){ if(this.vnop("chs2_",1)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth, 1); } }
+			if(x1<1){ if(this.vnop("chs1_",-1)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, 1, (y2-y1+1)*k.cheight);} }
+			if(y1<1){ if(this.vnop("chs2_",-1)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth, 1); } }
 		}
-		if(y2>=k.qrows-1){ if(this.vnop("chs3_",1)){ g.fillRect(k.p0.x+(x1-1)*k.cwidth-lw+1, k.p0.y+(y2+1)*k.cheight , (x2-x1+2)*k.cwidth+2*lw-1, lw); } }
-		if(x2>=k.qcols-1){ if(this.vnop("chs4_",1)){ g.fillRect(k.p0.x+(x2+1)*k.cwidth , k.p0.y+(y1-1)*k.cheight-lw+1, lw, (y2-y1+2)*k.cheight+2*lw-1);} }
-		if(x1<1)         { if(this.vnop("chs21_",1)){ g.fillRect(k.p0.x+(x1-1)*k.cwidth-lw+1, k.p0.y+(y1-1)*k.cheight-lw+1, lw, (y2-y1+2)*k.cheight+2*lw-1);} }
-		if(y1<1)         { if(this.vnop("chs22_",1)){ g.fillRect(k.p0.x+(x1-1)*k.cwidth-lw+1, k.p0.y+(y1-1)*k.cheight-lw+1, (x2-x1+2)*k.cwidth+2*lw-1, lw); } }
+		if(y2>=k.qrows-1){ if(this.vnop("chs3_",-1)){ g.fillRect(k.p0.x+(x1-1)*k.cwidth-lw+1, k.p0.y+(y2+1)*k.cheight , (x2-x1+2)*k.cwidth+2*lw-1, lw); } }
+		if(x2>=k.qcols-1){ if(this.vnop("chs4_",-1)){ g.fillRect(k.p0.x+(x2+1)*k.cwidth , k.p0.y+(y1-1)*k.cheight-lw+1, lw, (y2-y1+2)*k.cheight+2*lw-1);} }
+		if(x1<1)         { if(this.vnop("chs21_",-1)){ g.fillRect(k.p0.x+(x1-1)*k.cwidth-lw+1, k.p0.y+(y1-1)*k.cheight-lw+1, lw, (y2-y1+2)*k.cheight+2*lw-1);} }
+		if(y1<1)         { if(this.vnop("chs22_",-1)){ g.fillRect(k.p0.x+(x1-1)*k.cwidth-lw+1, k.p0.y+(y1-1)*k.cheight-lw+1, (x2-x1+2)*k.cwidth+2*lw-1, lw); } }
 		this.vinc();
 
 		if(!boldflag){
@@ -1192,60 +1161,38 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	// pc.drawDashLines()    セルの中心から中心にひかれる点線をCanvasに描画する
 	//---------------------------------------------------------------------------
-	drawDashLines : (
-		((!k.br.IE) ?
-			function(x1,y1,x2,y2){
-				if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
-				if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
+	drawDashLines : function(x1,y1,x2,y2){
+		if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
+		if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
 
-				g.fillStyle = this.gridcolor;
-				for(var i=x1-1;i<=x2+1;i++){
-					for(var j=(k.p0.y+(y1-0.5)*k.cheight);j<(k.p0.y+(y2+1.5)*k.cheight);j+=6){
-						g.fillRect(k.p0.x+(i+0.5)*k.cwidth, j, 1, 3);
-					}
+		if(g.canvas){
+			g.fillStyle = this.gridcolor;
+			for(var i=x1-1;i<=x2+1;i++){
+				for(var j=(k.p0.y+(y1-0.5)*k.cheight);j<(k.p0.y+(y2+1.5)*k.cheight);j+=6){
+					g.fillRect(k.p0.x+(i+0.5)*k.cwidth, j, 1, 3);
 				}
-				for(var i=y1-1;i<=y2+1;i++){
-					for(var j=(k.p0.x+(x1-0.5)*k.cwidth);j<(k.p0.x+(x2+1.5)*k.cwidth);j+=6){
-						g.fillRect(j, k.p0.y+(i+0.5)*k.cheight, 3, 1);
-					}
+			}
+			for(var i=y1-1;i<=y2+1;i++){
+				for(var j=(k.p0.x+(x1-0.5)*k.cwidth);j<(k.p0.x+(x2+1.5)*k.cwidth);j+=6){
+					g.fillRect(j, k.p0.y+(i+0.5)*k.cheight, 3, 1);
 				}
-
-				this.vinc();
 			}
-		:
-			function(x1,y1,x2,y2){
-				if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
-				if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
-
-/*				g.fillStyle = this.gridcolor;
-				g.lineWidth = 1;
-				g.enabledash = true;
-				for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("bdy"+i+"_",1)){
-					g.beginPath()
-					g.moveTo(k.p0.x+(i+0.5)*k.cwidth, k.p0.y+(y1-0.5)*k.cheight);
-					g.lineTo(k.p0.x+(i+0.5)*k.cwidth, k.p0.y+(y2+1.5)*k.cheight);
-					g.closePath()
-					g.stroke()
-				} }
-				for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("bdx"+i+"_",1)){
-					g.beginPath()
-					g.moveTo(k.p0.x+(x1-0.5)*k.cwidth, k.p0.y+( i+0.5)*k.cheight);
-					g.lineTo(k.p0.x+(x2+1.5)*k.cwidth, k.p0.y+( i+0.5)*k.cheight);
-					g.closePath()
-					g.stroke()
-				} }
-				g.enabledash = false;
-
-				g.fillStyle = "white";
-*/
-				g.fillStyle = this.gridcolor_SLIGHT;
-				for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("cliney_"+i,1)){ g.fillRect(k.p0.x+(i+0.5)*k.cwidth, k.p0.y+(y1-0.5)*k.cheight, 1, (y2-y1+2)*k.cheight+1);} }
-				for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("clinex_"+i,1)){ g.fillRect(k.p0.x+(x1-0.5)*k.cwidth, k.p0.y+(i+0.5)*k.cheight, (x2-x1+2)*k.cwidth+1, 1);} }
-
-				this.vinc();
-			}
-		)
-	),
+		}
+		else{
+			g.strokeStyle = this.gridcolor;
+			for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("cliney_"+i,-1)){
+				var px = k.p0.x+(i+0.5)*k.cwidth, py1 = k.p0.y+(y1-0.5)*k.cheight, py2 = k.p0.y+(y2+1.5)*k.cheight;
+				g.strokeLine(px, py1, px, py2);
+				g.setDashSize(3);
+			}}
+			for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("clinex_"+i,-1)){
+				var py = k.p0.y+(i+0.5)*k.cheight, px1 = k.p0.x+(x1-0.5)*k.cwidth, px2 = k.p0.x+(x2+1.5)*k.cwidth;
+				g.strokeLine(px1, py, px2, py);
+				g.setDashSize(3);
+			}}
+		}
+		this.vinc();
+	},
 
 	//---------------------------------------------------------------------------
 	// pc.drawGrid()        セルの枠線(実線)をCanvasに書き込む
@@ -1261,76 +1208,53 @@ Graphic.prototype = {
 		g.fillStyle = this.gridcolor;
 		var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
 		var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
-		for(var i=xa;i<=xb;i++){ if(this.vnop("bdy_"+i,1)){ g.fillRect(k.p0.x+i*k.cwidth, k.p0.y+y1*k.cheight, 1, (y2-y1+1)*k.cheight+1);} }
-		for(var i=ya;i<=yb;i++){ if(this.vnop("bdx_"+i,1)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+i*k.cheight, (x2-x1+1)*k.cwidth+1, 1);} }
+		for(var i=xa;i<=xb;i++){ if(this.vnop("bdy_"+i,-1)){ g.fillRect(k.p0.x+i*k.cwidth, k.p0.y+y1*k.cheight, 1, (y2-y1+1)*k.cheight+1);} }
+		for(var i=ya;i<=yb;i++){ if(this.vnop("bdx_"+i,-1)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+i*k.cheight, (x2-x1+1)*k.cwidth+1, 1);} }
 
 		this.vinc();
 	},
-	drawDashedGrid : (
-		((!k.br.IE) ?
-			function(x1,y1,x2,y2){
-				if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-				if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
+	drawDashedGrid : function(x1,y1,x2,y2){
+		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
+		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
-				var bs=((k.isoutsideborder===0&&this.chassisflag)?1:0);
+		//var bs=((k.isoutsideborder===0&&this.chassisflag)?1:0);
+		var bs=(this.chassisflag?1:0);
 
-				var dotmax = mf(k.cwidth/10)+3;
-				var dotCount = (mf(k.cwidth/dotmax)>=1?mf(k.cwidth/dotmax):1);
-				var dotSize  = k.cwidth/(dotCount*2);
+		var dotmax   = mf(k.cwidth/10)+3;
+		var dotCount = (mf(k.cwidth/dotmax)>=1?mf(k.cwidth/dotmax):1);
+		var dotSize  = k.cwidth/(dotCount*2);
 
-				g.fillStyle = this.gridcolor;
-				var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
-				var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
-				for(var i=xa;i<=xb;i++){
-					for(var j=(k.p0.y+y1*k.cheight);j<(k.p0.y+(y2+1)*k.cheight);j+=(2*dotSize)){
-						g.fillRect(k.p0.x+i*k.cwidth, mf(j), 1, mf(dotSize));
-					}
-				}
-				for(var i=ya;i<=yb;i++){
-					for(var j=(k.p0.x+x1*k.cwidth);j<(k.p0.x+(x2+1)*k.cwidth);j+=(2*dotSize)){
-						g.fillRect(mf(j), k.p0.y+i*k.cheight, mf(dotSize), 1);
-					}
+		var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
+		var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
+
+		if(g.canvas){
+			g.fillStyle = this.gridcolor;
+			for(var i=xa;i<=xb;i++){
+				for(var j=(k.p0.y+y1*k.cheight),len=(k.p0.y+(y2+1)*k.cheight);j<len;j+=(2*dotSize)){
+					g.fillRect(k.p0.x+i*k.cwidth, mf(j), 1, mf(dotSize));
 				}
 			}
-		:
-			function(x1,y1,x2,y2){
-				this.gridcolor = this.gridcolor_SLIGHT;
-				this.drawGrid(x1,y1,x2,y2);
-
-/*				if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-				if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
-
-				var bs=((k.isoutsideborder==0&&this.chassisflag)?1:0);
-
-				g.fillStyle = this.gridcolor;
-				var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
-				var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
-				g.lineWidth = 1;
-				g.enabledash = true;
-				for(var i=xa;i<=xb;i++){ if(this.vnop("bdy"+i+"_",0)){
-					g.beginPath()
-					g.moveTo(mf(k.p0.x+i*k.cwidth+0.0), mf(k.p0.y+ y1   *k.cheight));
-					g.lineTo(mf(k.p0.x+i*k.cwidth+0.0), mf(k.p0.y+(y2+1)*k.cheight));
-					g.closePath()
-					g.stroke()
-				} }
-				for(var i=ya;i<=yb;i++){ if(this.vnop("bdx"+i+"_",0)){
-					g.beginPath()
-					g.moveTo(mf(k.p0.x+ x1   *k.cwidth), mf(k.p0.y+i*k.cheight));
-					g.lineTo(mf(k.p0.x+(x2+1)*k.cwidth), mf(k.p0.y+i*k.cheight));
-					g.closePath()
-					g.stroke()
-				} }
-				g.enabledash = false;
-
-				g.fillStyle = "white";
-				for(var i=xa;i<=xb;i++){ if(this.vnop("bdy"+i+"_1_",1)){ g.fillRect(k.p0.x+i*k.cwidth, k.p0.y+y1*k.cheight, 1, (y2-y1+1)*k.cheight+1);} }
-				for(var i=ya;i<=yb;i++){ if(this.vnop("bdx"+i+"_1_",1)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+i*k.cheight, (x2-x1+1)*k.cwidth+1, 1);} }
-
-				this.vinc();
-*/			}
-		)
-	),
+			for(var i=ya;i<=yb;i++){
+				for(var j=(k.p0.x+x1*k.cwidth),len=(k.p0.x+(x2+1)*k.cwidth);j<len;j+=(2*dotSize)){
+					g.fillRect(mf(j), k.p0.y+i*k.cheight, mf(dotSize), 1);
+				}
+			}
+		}
+		else{
+			g.strokeStyle = this.gridcolor;
+			for(var i=xa;i<=xb;i++){ if(this.vnop("bdy_"+i,-1)){
+				var px = k.p0.x+i*k.cwidth, py1 = k.p0.y+y1*k.cheight, py2 = k.p0.y+(y2+1)*k.cheight;
+				g.strokeLine(px, py1, px, py2);
+				g.setDashSize(dotSize);
+			}}
+			for(var i=ya;i<=yb;i++){ if(this.vnop("bdx_"+i,-1)){
+				var py = k.p0.y+i*k.cheight+(g.svg?1:0), px1 = k.p0.x+x1*k.cwidth, px2 = k.p0.x+(x2+1)*k.cwidth;
+				g.strokeLine(px1, py, px2, py);
+				g.setDashSize(dotSize);
+			}}
+		}
+		this.vinc();
+	},
 
 	drawChassis : function(x1,y1,x2,y2){
 		var lw = this.lw;
@@ -1339,20 +1263,33 @@ Graphic.prototype = {
 		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
 		g.fillStyle = "black";
-		if(x1<1)         { if(this.vnop("chs1_",1)){ g.fillRect(k.p0.x+x1*k.cwidth-lw+1, k.p0.y+y1*k.cheight-lw+1, lw, (y2-y1+1)*k.cheight+2*lw-1);} }
-		if(y1<1)         { if(this.vnop("chs2_",1)){ g.fillRect(k.p0.x+x1*k.cwidth-lw+1, k.p0.y+y1*k.cheight-lw+1, (x2-x1+1)*k.cwidth+2*lw-1, lw); } }
-		if(y2>=k.qrows-1){ if(this.vnop("chs3_",1)){ g.fillRect(k.p0.x+x1*k.cwidth-lw+1, k.p0.y+(y2+1)*k.cheight , (x2-x1+1)*k.cwidth+2*lw-1, lw); } }
-		if(x2>=k.qcols-1){ if(this.vnop("chs4_",1)){ g.fillRect(k.p0.x+(x2+1)*k.cwidth , k.p0.y+y1*k.cheight-lw+1, lw, (y2-y1+1)*k.cheight+2*lw-1);} }
+		if(x1<1)         { if(this.vnop("chs1_",-1)){ g.fillRect(k.p0.x+x1*k.cwidth-lw+1, k.p0.y+y1*k.cheight-lw+1, lw, (y2-y1+1)*k.cheight+2*lw-1);} }
+		if(y1<1)         { if(this.vnop("chs2_",-1)){ g.fillRect(k.p0.x+x1*k.cwidth-lw+1, k.p0.y+y1*k.cheight-lw+1, (x2-x1+1)*k.cwidth+2*lw-1, lw); } }
+		if(y2>=k.qrows-1){ if(this.vnop("chs3_",-1)){ g.fillRect(k.p0.x+x1*k.cwidth-lw+1, k.p0.y+(y2+1)*k.cheight , (x2-x1+1)*k.cwidth+2*lw-1, lw); } }
+		if(x2>=k.qcols-1){ if(this.vnop("chs4_",-1)){ g.fillRect(k.p0.x+(x2+1)*k.cwidth , k.p0.y+y1*k.cheight-lw+1, lw, (y2-y1+1)*k.cheight+2*lw-1);} }
 		this.vinc();
 	},
 
 	//---------------------------------------------------------------------------
 	// pc.flushCanvas()    指定された領域を白で塗りつぶす
 	// pc.flushCanvasAll() Canvas全面を白で塗りつぶす
+	//
+	// pc.vnop()  VMLで既に描画されているオブジェクトを再描画せず、色は設定する
+	// pc.vhide() VMLで既に描画されているオブジェクトを隠す
+	// pc.vdel()  VMLで既に描画されているオブジェクトを削除する
+	// pc.vinc()  z-indexに設定される値を+1する
 	//---------------------------------------------------------------------------
-	flushCanvas : (
-		((!k.vml) ?
-			function(x1,y1,x2,y2){
+	// excanvasの場合、これを描画しないとVML要素が選択されてしまう
+	flushCanvasAll : function(){ g.clearCanvas(); this.zidx=0; this.vinc();},
+	flushCanvas : function(x1,y1,x2,y2){ g.setLayer("layer1"); this.zidx=1;},
+	vnop  : f_true,
+	vhide : f_true,
+	vdel  : f_true,
+	vinc  : f_true,
+
+	setVectorFunctions : function(){
+		if(g.canvas){
+			this.flushCanvas = function(x1,y1,x2,y2){
 				if     (k.isextendcell===0 && x1<= 0 && y1<= 0 && x2>=k.qcols-1 && y2>=k.qrows-1){ this.flushCanvasAll();}
 				else if(k.isextendcell===1 && x1<=-1 && y1<=-1 && x2>=k.qcols-1 && y2>=k.qrows-1){ this.flushCanvasAll();}
 				else if(k.isextendcell===2 && x1<=-1 && y1<=-1 && x2>=k.qcols   && y2>=k.qrows  ){ this.flushCanvasAll();}
@@ -1360,80 +1297,70 @@ Graphic.prototype = {
 					g.fillStyle = "rgb(255, 255, 255)";
 					g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth, (y2-y1+1)*k.cheight);
 				}
-			}
-		:
-			function(x1,y1,x2,y2){ g.zidx=1;}
-		)
-	),
-	// excanvasの場合、これを描画しないとVML要素が選択されてしまう
-	flushCanvasAll : (
-		((!k.vml) ?
-			((!k.br.IE) ?
-				function(){
-					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
-					this.vinc();
-				}
-			:
-				function(){
-					g._clear();	// uuCanvas用特殊処理
-					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
-					this.vinc();
-				}
-			)
-		:
-			function(){
-				g.zidx=0; g.vid="bg_"; g.pelements = []; g.elements = [];	// VML用
-				g._clear();													// uuCanvas用特殊処理
-				g.fillStyle = "rgb(255, 255, 255)";
-				g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
-				this.vinc();
-			}
-		)
-	),
+			};
+			this.vnop  = f_true;
+			this.vhide = f_true;
+			this.vdel  = f_true;
+			this.vinc  = f_true;
+			return;
+		}
 
-	//---------------------------------------------------------------------------
-	// pc.vnop()  VMLで既に描画されているオブジェクトを再描画せず、色は設定する
-	// pc.vhide() VMLで既に描画されているオブジェクトを隠す
-	// pc.vdel()  VMLで既に描画されているオブジェクトを削除する
-	// pc.vinc()  z-indexに設定される値を+1する
-	//  ※IE以外ではf_trueになっています。
-	//---------------------------------------------------------------------------
-	// excanvas関係関数
-	vnop : (!k.vml ? f_true : function(vid, isfill){
-		if(g.elements[vid]){
-			var el = g.elements[vid];
-			el.color = uuColor.parse(isfill===1?g.fillStyle:g.strokeStyle)[0];
-
-			var pel = g.pelements[vid];
-			if(!this.zstable){ pel.style.zIndex = g.zidx;}
-			pel.style.display = 'inline';
-			return false;
-		}
-		g.vid = vid;
-		return true;
-	}),
-	vhide : (!k.vml ? f_true : function(vid){
-		if(typeof vid === 'string'){ vid = [vid];}
-		for(var i=0;i<vid.length;i++){
-			if(g.elements[vid[i]]){
-				g.pelements[vid[i]].style.display = 'none';
+		this.flushCanvas = function(x1,y1,x2,y2){ g.setLayer("layer1"); this.zidx=1;};
+		this.vnop = function(vid, isfill){ // 色の変更なし:-1, strokeのみ:0, fillのみ:1, 両方:2
+			g.vid = vid;
+			if(!!g.elements[vid]){
+				var el = g.elements[vid];
+				if(g.vml){
+					el.style.display = 'inline';
+					if(isfill!==-1){
+						if(isfill!==0){ el.fillcolor   = ContextManager.parse(g.fillStyle);}
+						if(isfill!==1){ el.strokecolor = ContextManager.parse(g.strokeStyle);}
+					}
+				}
+				else if(g.sl){
+					el.Visibility = "Visible";
+					if(isfill!==-1){
+						if(isfill!==0){ el.fill   = ContextManager.parse(g.fillStyle);  }
+						if(isfill!==1){ el.stroke = ContextManager.parse(g.strokeStyle);}
+					}
+				}
+				else if(g.svg){
+					el.style.display = 'inline';
+					if(isfill!==-1){
+						if(isfill!==0){ el.setAttribute('fill',  ContextManager.parse(g.fillStyle));}
+						if(isfill!==1){ el.setAttribute('stroke',ContextManager.parse(g.strokeStyle));}
+					}
+				}
+				return false;
 			}
-		}
-	}),
-	vdel : (!k.vml ? f_true : function(vid){
-		for(var i=0;i<vid.length;i++){
-			if(g.elements[vid[i]]){
-				g._elm.removeChild(g.pelements[vid[i]]);	// uuCanvasはg._elmにparentNodeを保持してる
-				g.pelements[vid[i]]=null;
-				g.elements[vid[i]] =null;
+			return true;
+		};
+		this.vhide = function(vid){
+			if(typeof vid === 'string'){ vid = [vid];}
+			for(var i=0;i<vid.length;i++){
+				if(g.elements[vid[i]]){
+					if(!g.sl){ g.elements[vid[i]].style.display = 'none';}
+					else{ g.elements[vid[i]].Visibility = "Collapsed";}
+				}
 			}
-		}
-	}),
-	vinc : (!k.vml ? f_true : function(){
-		g.vid = ""; g.zidx++;
-	}),
+		};
+		this.vdel = function(vid){
+			for(var i=0;i<vid.length;i++){
+				if(g.elements[vid[i]]){
+					if(!g.sl){ g.target.removeChild(g.elements[vid[i]]);}
+					else{ g.elements[vid[i]].Visibility = "Collapsed";}
+					g.elements[vid[i]] = null;
+				}
+			}
+		};
+		this.vinc = function(){
+			g.vid = "";
+			this.zidx++;
+			g.setLayer("layer"+this.zidx);
+			if(!g.sl){ g.getLayerElement().style.zIndex = this.zidx;}
+			else{ g.getLayerElement()["Canvas.ZIndex"] = this.zidx;}
+		};
+	},
 
 	//---------------------------------------------------------------------------
 	// pc.CreateDOMAndSetNop()  数字表示用のエレメントを返す

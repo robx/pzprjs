@@ -45,6 +45,7 @@ sub input_flags{
 
 sub output_pzprBase{
 	my @files = (
+		'ContextManager.js',
 		'global.js',
 		'Board.js',
 		'Graphic.js',
