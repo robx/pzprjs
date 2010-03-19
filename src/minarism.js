@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 マイナリズム版 minarism.js v3.2.4p4
+// パズル固有スクリプト部 マイナリズム版 minarism.js v3.3.0
 //
 Puzzles.minarism = function(){ };
 Puzzles.minarism.prototype = {
@@ -190,7 +190,7 @@ Puzzles.minarism.prototype = {
 		};
 
 		pc.drawBDMbase = function(x1,y1,x2,y2){
-			if(g.vml){ return;}
+			if(!g.use.canvas){ return;}
 			var csize = k.cwidth*0.29;
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.2.4p4
+// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.3.0
 //
 Puzzles.tilepaint = function(){ };
 Puzzles.tilepaint.prototype = {
@@ -150,7 +150,7 @@ Puzzles.tilepaint.prototype = {
 					}
 				}
 
-				if(!g.vml){ pc.flushCanvasAll();}
+				if(g.use.canvas){ pc.flushCanvasAll();}
 				pc.paintAll();
 			}
 		};

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.2.4
+// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.3.0
 //
 Puzzles.shugaku = function(){ };
 Puzzles.shugaku.prototype = {
@@ -374,7 +374,7 @@ Puzzles.shugaku.prototype = {
 		};
 
 		pc.flushCanvas = function(x1,y1,x2,y2){	// 背景色をつけたいので上書きする
-			if(!g.vml){
+			if(g.use.canvas){
 				x1=(x1>=0?x1:0); x2=(x2<=k.qcols-1?x2:k.qcols-1);
 				y1=(y1>=0?y1:0); y2=(y2<=k.qrows-1?y2:k.qrows-1);
 				g.fillStyle = this.bgcolor;

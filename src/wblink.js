@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.2.5
+// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.3.0
 //
 Puzzles.wblink = function(){ };
 Puzzles.wblink.prototype = {
@@ -159,7 +159,7 @@ Puzzles.wblink.prototype = {
 		//	this.flushCanvasAll();
 
 			if(k.editmode){ this.drawGrid(x1,y1,x2,y2);}
-			else if(g.vml){ this.hideGrid();}
+			else if(!g.use.canvas){ this.hideGrid();}
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);

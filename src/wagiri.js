@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ごきげんななめ・輪切版 wagiri.js v3.2.5
+// パズル固有スクリプト部 ごきげんななめ・輪切版 wagiri.js v3.3.0
 //
 Puzzles.wagiri = function(){ };
 Puzzles.wagiri.prototype = {
@@ -49,7 +49,7 @@ Puzzles.wagiri.prototype = {
 
 		pp.addCheck('colorslash','setting',false, '斜線の色分け', 'Slash with color');
 		pp.setLabel('colorslash', '斜線を輪切りかのどちらかで色分けする(超重い)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
-		pp.funcs['colorslash'] = function(){ if(g.vml){ pc.flushCanvasAll();} pc.paintAll();};
+		pp.funcs['colorslash'] = function(){ pc.paintAll();};
 	},
 	finalfix : function(){
 		ee('btnclear2').el.style.display = 'none';

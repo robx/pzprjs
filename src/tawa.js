@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たわむれんが版 tawa.js v3.2.4
+// パズル固有スクリプト部 たわむれんが版 tawa.js v3.3.0
 //
 Puzzles.tawa = function(){ };
 Puzzles.tawa.prototype = {
@@ -86,7 +86,7 @@ Puzzles.tawa.prototype = {
 			this.canvas.height = k.p0.y*2 + k.qrows*k.cheight;
 
 			// VML使う時に、Canvas外の枠線が消えてしまうので残しておきます.
-			if(g.vml){
+			if(!g.use.canvas){
 				var fc = this.canvas.firstChild;
 				fc.style.width  = ''+this.canvas.clientWidth  + 'px';
 				fc.style.height = ''+this.canvas.clientHeight + 'px';
@@ -528,7 +528,7 @@ Puzzles.tawa.prototype = {
 		};
 
 		pc.flushCanvas_tawa = function(x1,y1,x2,y2){
-			if(!g.vml){
+			if(g.use.canvas){
 				if(x1<=0 && y1<=0 && x2>=tc.maxx+1 && y2>=k.qrows-1){
 					this.flushCanvasAll();
 				}

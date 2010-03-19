@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.2.5
+// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.3.0
 //
 Puzzles.tentaisho = function(){ };
 Puzzles.tentaisho.prototype = {
@@ -201,7 +201,7 @@ Puzzles.tentaisho.prototype = {
 					}
 				}
 
-				if(!g.vml){ pc.flushCanvasAll();}
+				if(g.use.canvas){ pc.flushCanvasAll();}
 				pc.paintAll();
 			}
 		};

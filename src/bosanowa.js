@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.2.4
+// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.3.0
 //
 Puzzles.bosanowa = function(){ };
 Puzzles.bosanowa.prototype = {
@@ -56,7 +56,7 @@ Puzzles.bosanowa.prototype = {
 		pp.addChild('disptype_1', 'disptype', 'ニコリ紙面形式', 'Original Type');
 		pp.addChild('disptype_2', 'disptype', '倉庫番形式',     'Sokoban Type');
 		pp.addChild('disptype_3', 'disptype', 'ワリタイ形式',   'Waritai type');
-		pp.funcs['disptype'] = function(){ if(g.vml){ pc.flushCanvasAll();} pc.paintAll();};
+		pp.funcs['disptype'] = function(){ if(!g.use.canvas){ pc.flushCanvasAll();} pc.paintAll();};
 	},
 
 	//---------------------------------------------------------
@@ -163,7 +163,11 @@ Puzzles.bosanowa.prototype = {
 
 		tc.cursolx = k.qcols-1-k.qcols%2;
 		tc.cursoly = k.qrows-1-k.qrows%2;
-		if(k.EDITOR){ bd.sQuC(tc.getTCC(),7);}
+		if(k.EDITOR){
+			um.disableRecord();
+			bd.sQuC(tc.getTCC(),7);
+			um.enableRecord();
+		}
 
 		bd.maxnum=255;
 	},
@@ -222,10 +226,18 @@ Puzzles.bosanowa.prototype = {
 				else if(pp.getVal('disptype')===2){
 					if((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7)){
 						g.fillStyle="rgb(127,127,127)";
-						if(g.vml){
+						if(!g.use.canvas){
 							if(this.vnop(header+id,1)){
-								if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
-								else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2),  bd.border[id].py, k.cwidth+1,  1);}
+								if(bd.border[id].cy&1){
+									var px = bd.border[id].px, py1 = bd.border[id].py-mf(k.cheight/2), py2 = py1+k.cheight+1;
+									g.strokeLine(px, py1, px, py2);
+									g.setDashSize(3);
+								}
+								else if(bd.border[id].cx&1){
+									var py = bd.border[id].py, px1 = bd.border[id].px-mf(k.cwidth/2), px2 = px1+k.cwidth+1;
+									g.fillRect(px1, py, px2, py);
+									g.setDashSize(3);
+								}
 							}
 						}
 						else{
