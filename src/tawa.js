@@ -82,17 +82,11 @@ Puzzles.tawa.prototype = {
 			ee.binder(base, puz.protofunc.resize_original)();
 
 			// Canvasのサイズ変更
-			this.canvas.width  = k.p0.x*2 + k.qcols*k.cwidth + mf(bd.lap==0?0:(bd.lap==3?k.cwidth:k.cwidth/2));
-			this.canvas.height = k.p0.y*2 + k.qrows*k.cheight;
+			var width  = k.p0.x*2 + k.qcols*k.cwidth + mf(bd.lap==0?0:(bd.lap==3?k.cwidth:k.cwidth/2));
+			var height = k.p0.y*2 + k.qrows*k.cheight;
+			g.changeSize(width, height);
 
-			// VML使う時に、Canvas外の枠線が消えてしまうので残しておきます.
-			if(!g.use.canvas){
-				var fc = this.canvas.firstChild;
-				fc.style.width  = ''+this.canvas.clientWidth  + 'px';
-				fc.style.height = ''+this.canvas.clientHeight + 'px';
-			}
-
-			var rect = ee('puzzle_canvas').getRect();
+			var rect = ee('divques').getRect();
 			k.cv_oft.x = rect.left;
 			k.cv_oft.y = rect.top;
 		};
