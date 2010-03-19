@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤギとオオカミ版 shwolf.js v3.2.4
+// パズル固有スクリプト部 ヤギとオオカミ版 shwolf.js v3.3.0
 //
 Puzzles.shwolf = function(){ };
 Puzzles.shwolf.prototype = {
@@ -180,8 +180,8 @@ Puzzles.shwolf.prototype = {
 
 					this.showEL(div);
 					var wid = div.clientWidth, hgt = div.clientHeight;
-					div.style.left = k.cv_oft.x+bd.cell[c].px+mf((k.cwidth-wid) /2)+2;
-					div.style.top  = k.cv_oft.y+bd.cell[c].py+mf((k.cheight-hgt)/2)+1;
+					div.style.left = k.cv_oft.x+bd.cell[c].px+mf((k.cwidth-wid) /2)+2+'px';
+					div.style.top  = k.cv_oft.y+bd.cell[c].py+mf((k.cheight-hgt)/2)+1+'px';
 				}
 			}
 			this.vinc();

@@ -730,8 +730,8 @@ Menu.prototype = {
 		// ポップアップメニューを表示する
 		if(this.pop){
 			var _pop = this.pop.el;
-			_pop.style.left = ee.pageX(e) - 8 + k.IEMargin.x;
-			_pop.style.top  = ee.pageY(e) - 8 + k.IEMargin.y;
+			_pop.style.left = ee.pageX(e) - 8 + k.IEMargin.x + 'px';
+			_pop.style.top  = ee.pageY(e) - 8 + k.IEMargin.y + 'px';
 			_pop.style.display = 'inline';
 		}
 	},
@@ -775,8 +775,8 @@ Menu.prototype = {
 	titlebarmove : function(e){
 		var pop = this.movingpop;
 		if(!!pop){
-			pop.style.left = ee.pageX(e) - this.offset.x;
-			pop.style.top  = ee.pageY(e) - this.offset.y;
+			pop.style.left = ee.pageX(e) - this.offset.x + 'px';
+			pop.style.top  = ee.pageY(e) - this.offset.y + 'px';
 		}
 	},
 

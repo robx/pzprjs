@@ -1468,23 +1468,23 @@ Graphic.prototype = {
 
 			this.showEL(el);	// êÊÇ…ï\é¶ÇµÇ»Ç¢Ç∆wid,hgt=0Ç…Ç»Ç¡Çƒà íuÇ™Ç∏ÇÍÇÈ
 
-			var wid = el.clientWidth;
-			var hgt = el.clientHeight;
+			var wid = el.offsetWidth;
+			var hgt = el.offsetHeight;
 
 			if(type===1||type===6||type===7){
-				el.style.left = k.cv_oft.x+px+mf((k.cwidth-wid) /2)+(IE?4:2)-(type===6?mf(k.cwidth *0.1):0);
-				el.style.top  = k.cv_oft.y+py+mf((k.cheight-hgt)/2)+(IE?5:1)+(type===7?mf(k.cheight*0.1):0);
+				el.style.left = k.cv_oft.x+px+mf((k.cwidth-wid) /2)+(IE?2:2)-(type===6?mf(k.cwidth *0.1):0) + 'px';
+				el.style.top  = k.cv_oft.y+py+mf((k.cheight-hgt)/2)+(IE?3:1)+(type===7?mf(k.cheight*0.1):0) + 'px';
 			}
 			else if(type===101){
-				el.style.left = k.cv_oft.x+px-wid/2+(IE?5:2);
-				el.style.top  = k.cv_oft.y+py-hgt/2+(IE?4:1);
+				el.style.left = k.cv_oft.x+px-wid/2+(IE?3:2) + 'px';
+				el.style.top  = k.cv_oft.y+py-hgt/2+(IE?2:1) + 'px';
 			}
 			else{
 				if(type==52||type==54){ px--; type-=50;}	// excellÇÃ[Å_]ëŒâû..
-				if     (type===3||type===4){ el.style.left = k.cv_oft.x+px+k.cwidth -wid+(IE?2: 0);}
-				else if(type===2||type===5){ el.style.left = k.cv_oft.x+px              +(IE?6: 4);}
-				if     (type===2||type===3){ el.style.top  = k.cv_oft.y+py+k.cheight-hgt+(IE?3:-1);}
-				else if(type===4||type===5){ el.style.top  = k.cv_oft.y+py              +(IE?5: 2);}
+				if     (type===3||type===4){ el.style.left = k.cv_oft.x+px+k.cwidth -wid+(IE?1: 0) + 'px';}
+				else if(type===2||type===5){ el.style.left = k.cv_oft.x+px              +(IE?5: 4) + 'px';}
+				if     (type===2||type===3){ el.style.top  = k.cv_oft.y+py+k.cheight-hgt+(IE?2:-1) + 'px';}
+				else if(type===4||type===5){ el.style.top  = k.cv_oft.y+py              +(IE?4: 2) + 'px';}
 			}
 
 			el.style.color = color;
