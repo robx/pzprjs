@@ -1,10 +1,9 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<HTML>
+<!DOCTYPE html>
+<HTML lang="ja">
 <HEAD>
 <META NAME="robots" CONTENTS="noindex,nofollow">
 <meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
 <link rel="stylesheet" href="sc7.css" type="text/css" />
-<script type="text/javascript" src="src/ContextManager.js"></script>
 <script type="text/javascript" src="src/pzprBase.js"></script>  <!-- ぱずぷれv3共通ファイルの読み込み/専用ファイルも中で行う -->
 <TITLE>読み込み中です... - ぱずぷれv3</TITLE>
 </HEAD>
@@ -17,18 +16,19 @@
 <h2 id="title2">読み込み中です...</h2>
 
 <div id="menuboard">
-	<div id="menupanel"></div>
+	<menu id="menupanel"></menu>
 	<div id="expression">ファイルの読み込み中です...</div>
-	<hr id="separator1" style="margin-top:6pt; margin-bottom:6pt;">
+	<hr id="separator1">
 	<div id="usepanel"></div>
 	<div id="checkpanel"></div>
-	<hr id="separator2" style="margin-top:6pt; margin-bottom:6pt;">
+	<hr id="separator2">
 	<div id="timerpanel">経過時間：00:00</div>
 </div>
 
 <div id="quesboard">
-	<div id="divques"></div>
-	<div id="btnarea"></div>
+	<div id="divques"></div>		<!-- Canvas用 -->
+	<div id="numobj_parent"></div>	<!-- Canvasに表示する文字用 -->
+	<div id="btnarea"></div>		<!-- Canvas下部のボタン -->
 </div>
 
 </div> <!-- div#main close. -->
@@ -181,9 +181,6 @@
 
 <!-- フロートパネル用 -->
 <div id="float_parent"></div>
-
-<!-- Canvasに表示する文字用 -->
-<div id="numobj_parent"></div>
 
 <!-- ここからファイル出力用フォーム/入出力用インラインフレーム -->
 <iframe id="fileiopanel" src="about:blank" style="width:200px;height:200px;position:absolute;top:0px;left:-10000px" name="fileiopanel"></iframe>

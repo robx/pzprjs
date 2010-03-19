@@ -1,4 +1,4 @@
-// Menu.js v3.2.4p4
+// Menu.js v3.3.0
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -34,21 +34,21 @@ Menu = function(){
 
 	// ElementTemplate : メニュー領域
 	var menu_funcs = {mouseover : ee.ebinder(this, this.menuhover), mouseout  : ee.ebinder(this, this.menuout)};
-	this.EL_MENU  = ee.addTemplate('menupanel','div', {className:'menu'}, {marginRight:'4pt'}, menu_funcs);
+	this.EL_MENU  = ee.addTemplate('menupanel','li', {className:'menu'}, null, menu_funcs);
 
 	// ElementTemplate : フロートメニュー
 	var float_funcs = {mouseout:ee.ebinder(this, this.floatmenuout)};
-	this.EL_FLOAT = ee.addTemplate('float_parent','div', {className:'floatmenu'}, {zIndex:101, backgroundColor:base.floatbgcolor}, float_funcs);
+	this.EL_FLOAT = ee.addTemplate('float_parent','menu', {className:'floatmenu'}, {backgroundColor:base.floatbgcolor}, float_funcs);
 
 	// ElementTemplate : フロートメニュー(中身)
 	var smenu_funcs  = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout), click:ee.ebinder(this, this.submenuclick)};
 	var select_funcs = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout)};
-	this.EL_SMENU    = ee.addTemplate('','div' , {className:'smenu'}, null, smenu_funcs);
-	this.EL_SPARENT  = ee.addTemplate('','div' , {className:'smenu'}, null, select_funcs);
-	this.EL_SELECT   = ee.addTemplate('','div' , {className:'smenu'}, {fontWeight :'900', fontSize:'10pt'}, select_funcs);
-	this.EL_SEPARATE = ee.addTemplate('','div' , {className:'smenusep', innerHTML:'&nbsp;'}, null, null);
-	this.EL_CHECK    = ee.addTemplate('','div' , {className:'smenu'}, {paddingLeft:'6pt', fontSize:'10pt'}, smenu_funcs);
-	this.EL_LABEL    = ee.addTemplate('','span', null, {color:'white'}, null);
+	this.EL_SMENU    = ee.addTemplate('','li', {className:'smenu'}, null, smenu_funcs);
+	this.EL_SPARENT  = ee.addTemplate('','li', {className:'smenu'}, null, select_funcs);
+	this.EL_SELECT   = ee.addTemplate('','li', {className:'smenu'}, {fontWeight :'900', fontSize:'10pt'}, select_funcs);
+	this.EL_SEPARATE = ee.addTemplate('','li', {className:'smenusep', innerHTML:'&nbsp;'}, null, null);
+	this.EL_CHECK    = ee.addTemplate('','li', {className:'smenu'}, {paddingLeft:'6pt', fontSize:'10pt'}, smenu_funcs);
+	this.EL_LABEL    = ee.addTemplate('','li', {className:'smenulabel'}, null, null);
 	this.EL_CHILD = this.EL_CHECK;
 
 	// ElementTemplate : 管理領域
@@ -427,15 +427,21 @@ Menu.prototype = {
 		var rect = ee(ee.getSrcElement(e).id).getRect();
 		var _float = this.floatpanel[idname];
 		if(depth==0){
-			_float.style.left = rect.left - 3 + k.IEMargin.x;
-			_float.style.top  = rect.bottom + (k.br.IE?-2:1);
+			_float.style.left = rect.left   + 1 + k.IEMargin.x + 'px';
+			_float.style.top  = rect.bottom + 1 + k.IEMargin.y + 'px';
 		}
 		else{
-			_float.style.left = rect.right - 2;
-			_float.style.top  = rect.top + (k.br.IE?-5:-2);
+			if(!k.br.IE){
+				_float.style.left = rect.right - 3 + 'px';
+				_float.style.top  = rect.top   - 3 + 'px';
+			}
+			else{
+				_float.style.left = ee.pageX(e)  + 'px';
+				_float.style.top  = rect.top - 3 + 'px';
+			}
 		}
 		_float.style.zIndex   = 101+depth;
-		_float.style.display  = 'inline';
+		_float.style.display  = 'block';
 
 		this.dispfloat.push(_float);
 	},

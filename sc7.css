@@ -1,6 +1,6 @@
 @charset "Shift_JIS" ;
 
-	BODY{ background:; color:black; line-height:120%; text-align:center; margin:0pt; padding:0pt;}
+	BODY{ background:url(../../bg.gif); color:black; line-height:120%; text-align:center; margin:0pt; padding:0pt;}
 
 	/* 左上のピンクのやつ */
 	p#translation_p  { position:absolute; width:40%; margin:0pt; margin-left:8pt; text-align:left;}
@@ -15,21 +15,38 @@
 	/* 管理領域 */
 	div#menuboard{ width:380pt; margin:auto; margin-bottom:8pt; padding: 0pt 0pt 8pt 0pt; text-align:left; border: 1px red solid;}
 
-	div#menupanel{ display:block; font-size:11pt; background-color: #efefef; margin:0pt; padding:2pt 4pt 2pt 4pt;}
-	div.menu{ display:inline; color:blue; text-decoration:underline; cursor:pointer;}
-	div.menusel{ display:inline; color:maroon; text-decoration:underline; font-weight:bold;
+	/* メニュー領域 */
+	menu#menupanel{ display:block; font-size:11pt; background-color: #efefef; margin:0pt; padding:2pt 4pt 2pt 4pt; margin:0pt;}
+	/* メニュー項目 */
+	li.menu    { display:inline; margin-right:4pt; color:blue; text-decoration:underline; cursor:pointer;}
+	li.menusel { display:inline; margin-right:4pt; color:maroon; text-decoration:underline; font-weight:bold;
 				 background-color:#efefef; cursor:pointer;}
-	div.menunull{ display:inline; color:silver; cursor:pointer;}
+	li.menunull{ display:inline; margin-right:4pt; color:silver; cursor:pointer;}
 
+	/* フロートメニュー */
+	menu.floatmenu{ visibility:visible; display:none; margin:0pt; padding:2pt; position:absolute;
+					list-style-type:none; text-align:left; font-size:11pt; background-color:blue; z-index:101;}
+	/* フロートメニュー - サブメニュー項目 */
+	li.smenu     { display:block; text-align:left; background-color:white;   color:black;
+				   margin:0pt; padding:1pt 8pt 0pt 4pt; cursor:pointer;}
+	li.smenusel  { display:block; text-align:left; background-color:#ffe8e8; color:black; text-decoration:underline;
+				   margin:0pt; padding:1pt 8pt 0pt 4pt; cursor:pointer;}
+	li.smenunull { display:block; text-align:left; background-color:#dfdfdf; color:gray;
+				   margin:0pt; padding:1pt 8pt 0pt 4pt; cursor:default;}
+	li.smenusep  { display:inline; height:4px; font-size:4pt; line-height:4pt; margin:0pt; padding:1pt 8pt 0pt 4pt;}
+	li.smenulabel{ display:inline; text-align:left; color:white; margin:0pt; padding:1pt 8pt 0pt 4pt; cursor:default;}
+
+	/* メニューより下の管理領域 */
 	div#expression{ margin:6pt 12pt 0pt 12pt;}
 	div#usepanel  { margin:2pt 0pt 0pt 6pt;}
-	div#modepanel { margin:2pt 0pt 0pt 6pt;}
 	div#checkpanel{ margin:4pt 0pt 0pt 16pt;}
 	div#timerpanel{ margin:2pt 0pt 0pt 6pt;}
 
+	hr#separator1{ margin-top:6pt; margin-bottom:6pt;}
+	hr#separator2{ margin-top:6pt; margin-bottom:6pt;}
+
 	div.child{ display:inline; cursor:pointer; }
-	div.childsel{ display:inline; cursor:pointer; color:maroon; font-weight:bold;
-				 background-color:#efefef;}
+	div.childsel{ display:inline; cursor:pointer; color:maroon; font-weight:bold; background-color:#efefef;}
 
 	/* パズル表示部 */
 	div#quesboard{ margin:auto; margin-top:16pt; margin-bottom:16pt; text-align:center;}
@@ -41,18 +58,6 @@
 	div#btnarea input[type="button"]{ height:18pt;}
 
 	div.divnum{ display:inline; position:absolute; cursor:default; line-height:100%; }
-
-	/* フロートメニュー */
-	div.floatmenu{ visibility:visible; display:none; text-align:left; font-size:11pt;
-				   background-color: blue; margin:0pt; padding:2pt; position:absolute; z-index:101;}
-
-	/* フロートメニュー - サブメニュー */
-	div.smenu{ display:block; text-align:left; background-color: white; color:black; cursor:pointer;
-			   margin:0pt; padding:1pt 8pt 0pt 4pt;}
-	div.smenusel{ display:block; text-align:left; background-color: #ffe8e8; color:black; text-decoration:underline; cursor:pointer;
-				  margin:0pt; padding:1pt 8pt 0pt 4pt;}
-	div.smenunull{ display:block; text-align:left; background-color: #dfdfdf; color:gray; cursor:default;
-				   margin:0pt; padding:1pt 8pt 0pt 4pt;}
 	
 	* html div.smenusep { display:inline; line-height:2pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;} /* IE6 only */
 	*:first_child+html div.smenusep { display:inline; line-height:2pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;} /* IE7 only */
