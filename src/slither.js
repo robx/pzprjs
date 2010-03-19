@@ -175,7 +175,7 @@ Puzzles.slither.prototype = {
 
 			this.drawNumbers(x1,y1,x2,y2);
 
-			this.drawPekes(x1,y1,x2,y2,(k.br.IE?1:0));
+			this.drawPekes(x1,y1,x2,y2,(!g.use.canvas?1:0));
 
 			this.drawTarget(x1,y1,x2,y2);
 		};

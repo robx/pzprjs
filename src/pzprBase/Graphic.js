@@ -264,7 +264,7 @@ Graphic.prototype = {
 	drawBlackCells : function(x1,y1,x2,y2){
 		var header = "c_fullb_";
 
-		if(!k.br.IE && this.isdrawBC && !this.isdrawBD){ x1--; y1--; x2++; y2++;}
+		if(g.use.canvas && this.isdrawBC && !this.isdrawBD){ x1--; y1--; x2++; y2++;}
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
@@ -454,7 +454,7 @@ Graphic.prototype = {
 		var lw = (mf(k.cwidth/24)>=1?mf(k.cwidth/24):1);	//LineWidth
 		var lm = mf((lw-1)/2);								//LineMargin
 
-		if(!k.br.IE && this.isdrawBC && !this.isdrawBD){ x1--; y1--; x2++; y2++;}
+		if(g.use.canvas && this.isdrawBC && !this.isdrawBD){ x1--; y1--; x2++; y2++;}
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
@@ -798,7 +798,7 @@ Graphic.prototype = {
 	drawTriangle : function(x1,y1,x2,y2){
 		var headers = ["c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_"];
 
-		if(!k.br.IE && k.puzzleid!=='reflect'){ x1--; y1--; x2++; y2++;}
+		if(g.use.canvas && k.puzzleid!=='reflect'){ x1--; y1--; x2++; y2++;}
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];

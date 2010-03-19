@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.2.5
+// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.3.0
 //
 Puzzles.loopsp = function(){ };
 Puzzles.loopsp.prototype = {
@@ -205,13 +205,8 @@ Puzzles.loopsp.prototype = {
 		//	this.flushCanvasAll();
 
 			this.drawBGCells(x1,y1,x2,y2);
-			if(k.br.IE){
-				this.drawDashedGrid(x1,y1,x2,y2);
-			}
-			else{
-				this.drawPekes(x1,y1,x2,y2,2);
-				this.drawDashedGrid(x1,y1,x2,y2);
-			}
+			if(g.use.canvas){ this.drawPekes(x1,y1,x2,y2,2);}
+			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawLines(x1,y1,x2,y2);
 

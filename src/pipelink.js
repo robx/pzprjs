@@ -167,7 +167,7 @@ Puzzles.pipelink.prototype = {
 
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawPekes(x1,y1,x2,y2,(k.br.IE?1:0));
+			this.drawPekes(x1,y1,x2,y2,(!g.use.canvas?1:0));
 
 			this.drawLineParts(x1-2,y1-2,x2+2,y2+2);
 
