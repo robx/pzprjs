@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.2.5
+// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.3.0
 //
 Puzzles.tatamibari = function(){ };
 Puzzles.tatamibari.prototype = {
@@ -143,14 +143,14 @@ Puzzles.tatamibari.prototype = {
 				var c = clist[i];
 				var qn = bd.cell[c].qnum;
 				if(qn===1||qn===2){
-					if(this.vnop(headers[0]+c,1)){
+					if(this.vnop(headers[0]+c,this.NONE)){
 						g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-1, bd.cell[c].py+mf((k.cheight+lw)*0.15), lw, mf((k.cheight+lw)*0.7));
 					}
 				}
 				else{ this.vhide(headers[0]+c);}
 
 				if(qn===1||qn===3){
-					if(this.vnop(headers[1]+c,1)){
+					if(this.vnop(headers[1]+c,this.NONE)){
 						g.fillRect(bd.cell[c].px+mf((k.cwidth+lw)*0.15), bd.cell[c].py+mf(k.cheight/2)-1, mf((k.cwidth+lw)*0.7), lw);
 					}
 				}

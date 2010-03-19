@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アホになり切れ版 aho.js v3.2.5
+// パズル固有スクリプト部 アホになり切れ版 aho.js v3.3.0
 //
 Puzzles.aho = function(){ };
 Puzzles.aho.prototype = {
@@ -123,10 +123,8 @@ Puzzles.aho.prototype = {
 					var px=bd.cell[c].px+mgnx, py=bd.cell[c].py+mgny;
 
 					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
-					if(this.vnop(header+c,1)){
-						g.beginPath();
-						g.arc(px, py, rsize2, 0, Math.PI*2, false);
-						g.fill();
+					if(this.vnop(header+c,this.FILL)){
+						g.fillCircle(px, py, rsize2);
 					}
 				}
 				else{ this.vhide([header+c]);}

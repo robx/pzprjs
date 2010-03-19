@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 碁石ひろい版 goishi.js v3.2.5
+// パズル固有スクリプト部 碁石ひろい版 goishi.js v3.3.0
 //
 Puzzles.goishi = function(){ };
 Puzzles.goishi.prototype = {
@@ -231,8 +231,8 @@ Puzzles.goishi.prototype = {
 			if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
 
 			g.fillStyle = this.gridcolor_LIGHT;
-			for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("cliney_"+i,1)){ g.fillRect(mf(k.p0.x+(i+0.5)*k.cwidth), mf(k.p0.y+(y1-0.5)*k.cheight), 1, (y2-y1+2)*k.cheight+1);} }
-			for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("clinex_"+i,1)){ g.fillRect(mf(k.p0.x+(x1-0.5)*k.cwidth), mf(k.p0.y+(i+0.5)*k.cheight), (x2-x1+2)*k.cwidth+1, 1);} }
+			for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("cliney_"+i,this.NONE)){ g.fillRect(mf(k.p0.x+(i+0.5)*k.cwidth), mf(k.p0.y+(y1-0.5)*k.cheight), 1, (y2-y1+2)*k.cheight+1);} }
+			for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("clinex_"+i,this.NONE)){ g.fillRect(mf(k.p0.x+(x1-0.5)*k.cwidth), mf(k.p0.y+(i+0.5)*k.cheight), (x2-x1+2)*k.cwidth+1, 1);} }
 
 			this.vinc();
 		};
@@ -246,17 +246,13 @@ Puzzles.goishi.prototype = {
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && bd.cell[c].qans===-1){
 					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
-					if(this.vnop(headers[0]+c,1)){
-						g.beginPath();
-						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
-						g.fill();
+					if(this.vnop(headers[0]+c,this.FILL)){
+						g.fillCircle(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize);
 					}
 
 					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-					if(this.vnop(headers[1]+c,1)){
-						g.beginPath();
-						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2, 0, Math.PI*2, false);
-						g.fill();
+					if(this.vnop(headers[1]+c,this.FILL)){
+						g.fillCircle(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2);
 					}
 				}
 				else{ this.vhide([headers[0]+c, headers[1]+c]);}
@@ -273,7 +269,7 @@ Puzzles.goishi.prototype = {
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && bd.cell[c].qans!==-1){
 					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-					if(this.vnop(header+c,1)){
+					if(this.vnop(header+c,this.FILL)){
 						g.fillRect(bd.cell[c].px+mgnw+2, bd.cell[c].py+mgnh+2, k.cwidth-mgnw*2-3, k.cheight-mgnh*2-3);
 					}
 				}

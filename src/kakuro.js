@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.4p4
+// パズル固有スクリプト部 カックロ版 kakuro.js v3.3.0
 //
 Puzzles.kakuro = function(){ };
 Puzzles.kakuro.prototype = {
@@ -173,7 +173,7 @@ Puzzles.kakuro.prototype = {
 				var c = exlist[i];
 
 				g.fillStyle = (bd.excell[c].error!==1 ? "rgb(192,192,192)" : this.errbcolor1);
-				if(this.vnop(header+c,1)){
+				if(this.vnop(header+c,this.FILL)){
 					g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);
 				}
 			}

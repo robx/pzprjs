@@ -217,7 +217,7 @@ Puzzles.bosanowa.prototype = {
 					}
 					else if((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7)){
 						g.fillStyle=this.gridcolor;
-						if(this.vnop(header+id,1)){
+						if(this.vnop(header+id,this.NONE)){
 							if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
 							else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2),  bd.border[id].py, k.cwidth+1,  1);}
 						}
@@ -227,7 +227,7 @@ Puzzles.bosanowa.prototype = {
 					if((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7)){
 						g.fillStyle="rgb(127,127,127)";
 						if(!g.use.canvas){
-							if(this.vnop(header+id,1)){
+							if(this.vnop(header+id,this.NONE)){
 								if(bd.border[id].cy&1){
 									var px = bd.border[id].px, py1 = bd.border[id].py-mf(k.cheight/2), py2 = py1+k.cheight+1;
 									g.strokeLine(px, py1, px, py2);
@@ -270,17 +270,13 @@ Puzzles.bosanowa.prototype = {
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && !bd.isNum(c)){
 					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
-					if(this.vnop(headers[0]+c,1)){
-						g.beginPath();
-						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
-						g.fill();
+					if(this.vnop(headers[0]+c,this.FILL)){
+						g.fillCircle(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize);
 					}
 
 					g.fillStyle = "white";
-					if(this.vnop(headers[1]+c,1)){
-						g.beginPath();
-						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2, 0, Math.PI*2, false);
-						g.fill();
+					if(this.vnop(headers[1]+c,this.NONE)){
+						g.fillCircle(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2);
 					}
 				}
 				else{ this.vhide([headers[0]+c, headers[1]+c]);}
@@ -299,7 +295,7 @@ Puzzles.bosanowa.prototype = {
 				if((pp.getVal('disptype')==3 || bd.border[id].qsub>=0)&&
 				  ((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7))){
 					g.fillStyle = "white";
-					if(this.vnop(header+id,1)){
+					if(this.vnop(header+id,this.NONE)){
 						g.fillRect(bd.border[id].px-csize, bd.border[id].py-csize, 2*csize+1, 2*csize+1);
 					}
 				}
@@ -352,7 +348,7 @@ Puzzles.bosanowa.prototype = {
 						bd.QuC(bd.cnum(cx-1,cy+1))===7 || bd.QuC(bd.cnum(cx+1,cy+1))===7 ) )
 					{
 						g.fillStyle = "rgb(127,127,127)";
-						if(this.vnop(header+c,1)){
+						if(this.vnop(header+c,this.NONE)){
 							g.fillRect(k.p0.x+k.cwidth*cx, k.p0.y+k.cheight*cy, k.cwidth, k.cheight);
 						}
 					}
@@ -367,10 +363,10 @@ Puzzles.bosanowa.prototype = {
 			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
 			g.fillStyle = "black";
-			if(x1<1)         { if(this.vnop("chs1_",1)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+y1*k.cheight    , 1, (y2-y1+1)*k.cheight+1);} }
-			if(y1<1)         { if(this.vnop("chs2_",1)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+y1*k.cheight    , (x2-x1+1)*k.cwidth+1, 1); } }
-			if(y2>=k.qrows-1){ if(this.vnop("chs3_",1)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+(y2+1)*k.cheight, (x2-x1+1)*k.cwidth+1, 1); } }
-			if(x2>=k.qcols-1){ if(this.vnop("chs4_",1)){ g.fillRect(k.p0.x+(x2+1)*k.cwidth, k.p0.y+y1*k.cheight    , 1, (y2-y1+1)*k.cheight+1);} }
+			if(x1<1)         { if(this.vnop("chs1_",this.NONE)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+y1*k.cheight    , 1, (y2-y1+1)*k.cheight+1);} }
+			if(y1<1)         { if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+y1*k.cheight    , (x2-x1+1)*k.cwidth+1, 1); } }
+			if(y2>=k.qrows-1){ if(this.vnop("chs3_",this.NONE)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+(y2+1)*k.cheight, (x2-x1+1)*k.cwidth+1, 1); } }
+			if(x2>=k.qcols-1){ if(this.vnop("chs4_",this.NONE)){ g.fillRect(k.p0.x+(x2+1)*k.cwidth, k.p0.y+y1*k.cheight    , 1, (y2-y1+1)*k.cheight+1);} }
 			this.vinc();
 		};
 

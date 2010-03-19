@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.2.5
+// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.3.0
 //
 Puzzles.numlin = function(){ };
 Puzzles.numlin.prototype = {
@@ -125,7 +125,7 @@ Puzzles.numlin.prototype = {
 					else if(bd.cell[c].error===2){ g.fillStyle = this.errbcolor2;}
 					else                         { g.fillStyle = "white";}
 
-					if(this.vnop(header+c,1)){
+					if(this.vnop(header+c,this.FILL)){
 						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
 					}
 				}

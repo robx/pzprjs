@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.2.5
+// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.3.0
 //
 Puzzles.tateyoko = function(){ };
 Puzzles.tateyoko.prototype = {
@@ -230,14 +230,14 @@ Puzzles.tateyoko.prototype = {
 
 				if(bd.cell[c].qans!==-1){
 					if(bd.cell[c].qans===1){
-						if(this.vnop(headers[0]+c,1)){
+						if(this.vnop(headers[0]+c,this.FILL)){
 							g.fillRect(bd.cell[c].px+lp, bd.cell[c].py, lw, k.cheight+1);
 						}
 					}
 					else{ this.vhide(headers[0]+c);}
 
 					if(bd.cell[c].qans===2){
-						if(this.vnop(headers[1]+c,1)){
+						if(this.vnop(headers[1]+c,this.FILL)){
 							g.fillRect(bd.cell[c].px, bd.cell[c].py+lp, k.cwidth+1,  lw);
 						}
 					}
@@ -256,7 +256,7 @@ Puzzles.tateyoko.prototype = {
 				var c = clist[i], obj = bd.cell[c];
 				if(bd.cell[c].ques===1){
 					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
-					if(this.vnop(header+c,1)){
+					if(this.vnop(header+c,this.FILL)){
 						g.fillRect(obj.px, obj.py, k.cwidth+1, k.cheight+1);
 					}
 				}

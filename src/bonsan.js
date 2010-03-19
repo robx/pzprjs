@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.2.5
+// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.3.0
 //
 Puzzles.bonsan = function(){ };
 Puzzles.bonsan.prototype = {
@@ -165,12 +165,12 @@ Puzzles.bonsan.prototype = {
 					else if(bd.border[id].error==2){ g.strokeStyle = this.errlinecolor2;}
 					else                           { g.strokeStyle = this.linecolor;}
 
-					if(this.vnop(header+c,0)){
+					if(this.vnop(header+c,this.STROKE)){
 						var px=bd.cell[c].px+k.cwidth/2+1, py=bd.cell[c].py+k.cheight/2+1;
-						if     (dir==1){ this.inputPath([px,py ,-tsize, tsize ,0,-tplus , tsize, tsize], false);}
-						else if(dir==2){ this.inputPath([px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize], false);}
-						else if(dir==3){ this.inputPath([px,py , tsize,-tsize ,-tplus,0 , tsize, tsize], false);}
-						else if(dir==4){ this.inputPath([px,py ,-tsize,-tsize , tplus,0 ,-tsize, tsize], false);}
+						if     (dir==1){ g.setOffsetLinePath(px,py ,-tsize, tsize ,0,-tplus , tsize, tsize, false);}
+						else if(dir==2){ g.setOffsetLinePath(px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize, false);}
+						else if(dir==3){ g.setOffsetLinePath(px,py , tsize,-tsize ,-tplus,0 , tsize, tsize, false);}
+						else if(dir==4){ g.setOffsetLinePath(px,py ,-tsize,-tsize , tplus,0 ,-tsize, tsize, false);}
 						g.stroke();
 					}
 				}

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.2.5
+// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.3.0
 //
 Puzzles.kaero = function(){ };
 Puzzles.kaero.prototype = {
@@ -153,12 +153,12 @@ Puzzles.kaero.prototype = {
 					else if(bd.border[id].error===2){ g.strokeStyle = this.errlinecolor2;}
 					else                            { g.strokeStyle = this.linecolor;}
 
-					if(this.vnop(header+c,0)){
+					if(this.vnop(header+c,this.STROKE)){
 						var px=bd.cell[c].px+k.cwidth/2+1, py=bd.cell[c].py+k.cheight/2+1;
-						if     (dir===1){ this.inputPath([px,py ,-tsize, tsize ,0,-tplus , tsize, tsize], false);}
-						else if(dir===2){ this.inputPath([px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize], false);}
-						else if(dir===3){ this.inputPath([px,py , tsize,-tsize ,-tplus,0 , tsize, tsize], false);}
-						else if(dir===4){ this.inputPath([px,py ,-tsize,-tsize , tplus,0 ,-tsize, tsize], false);}
+						if     (dir===1){ g.setOffsetLinePath(px,py ,-tsize, tsize ,0,-tplus , tsize, tsize, false);}
+						else if(dir===2){ g.setOffsetLinePath(px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize, false);}
+						else if(dir===3){ g.setOffsetLinePath(px,py , tsize,-tsize ,-tplus,0 , tsize, tsize, false);}
+						else if(dir===4){ g.setOffsetLinePath(px,py ,-tsize,-tsize , tplus,0 ,-tsize, tsize, false);}
 						g.stroke();
 					}
 				}
@@ -180,7 +180,7 @@ Puzzles.kaero.prototype = {
 					else if(bd.cell[c].qsub ===2){ g.fillStyle = this.qsubcolor2;}
 					else                         { g.fillStyle = "white";}
 
-					if(this.vnop(header+c,1)){
+					if(this.vnop(header+c,this.FILL)){
 						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
 					}
 				}

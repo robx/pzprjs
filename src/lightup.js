@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 美術館版 lightup.js v3.2.5
+// パズル固有スクリプト部 美術館版 lightup.js v3.3.0
 //
 Puzzles.lightup = function(){ };
 Puzzles.lightup.prototype = {
@@ -213,10 +213,8 @@ Puzzles.lightup.prototype = {
 				var c = clist[i];
 				if(bd.cell[c].qans===1){
 					g.fillStyle = (bd.cell[c].error!==4 ? lampcolor : this.errcolor1);
-					if(this.vnop(header+c,1)){
-						g.beginPath();
-						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize, 0, Math.PI*2, false);
-						g.fill();
+					if(this.vnop(header+c,this.FILL)){
+						g.fillCircle(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize);
 					}
 				}
 				else{ this.vhide(header+c);}

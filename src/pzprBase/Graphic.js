@@ -252,13 +252,6 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.inputPath()  リストからg.lineTo()等の関数を呼び出す ※削除対象
-	//---------------------------------------------------------------------------
-	inputPath : function(parray, isClose){
-		g.setOffsetLinePath.apply(g,parray.concat([isClose]));
-	},
-
-	//---------------------------------------------------------------------------
 	// pc.drawBlackCells() Cellの、境界線の上から描画される■黒マスをCanvasに書き込む
 	// pc.setCellColor()   前景色の設定・描画判定する
 	// pc.setCellColorFunc()   pc.setCellColor関数を設定する

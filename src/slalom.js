@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.2.4p4
+// パズル固有スクリプト部 スラローム版 slalom.js v3.3.0
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -350,7 +350,7 @@ Puzzles.slalom.prototype = {
 
 				for(var j=bd.cell[c].py,max=bd.cell[c].py+k.cheight;j<max;j+=ll*2){ //たて
 					if(bd.cell[c].ques===21){
-						if(this.vnop([headers[0],c,mf(j)].join("_"),1)){
+						if(this.vnop([headers[0],c,mf(j)].join("_"),this.FILL)){
 							g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-lm+1, j, lw, ll);
 						}
 					}
@@ -359,7 +359,7 @@ Puzzles.slalom.prototype = {
 
 				for(var j=bd.cell[c].px,max=bd.cell[c].px+k.cwidth;j<max;j+=ll*2){ //よこ
 					if(bd.cell[c].ques===22){
-						if(this.vnop([headers[1],c,mf(j)].join("_"),1)){
+						if(this.vnop([headers[1],c,mf(j)].join("_"),this.FILL)){
 							g.fillRect(j, bd.cell[c].py+mf(k.cheight/2)-lm+1, ll, lw);
 						}
 					}
@@ -372,25 +372,18 @@ Puzzles.slalom.prototype = {
 			var c = bd.startid;
 			if(bd.cell[c].cx<x1-2 || x2+2<bd.cell[c].cx || bd.cell[c].cy<y1-2 || y2+2<bd.cell[c].cy){ return;}
 
-			var rsize  = k.cwidth*0.45;
-			var rsize2 = k.cwidth*0.40;
+			var rsize = k.cwidth*0.45, rsize2 = k.cwidth*0.40;
+			var csize = (rsize+rsize2)/2, csize2 = rsize2-rsize;
 			var vids = ["sposa_","sposb_"];
 			this.vdel(vids);
 
 			var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
 
-			g.fillStyle = this.Cellcolor;
-			if(this.vnop(vids[0],1)){
-				g.beginPath();
-				g.arc(px, py, rsize, 0, Math.PI*2, false);
-				g.fill();
-			}
-
+			g.lineWidth = (csize2>=1 ? csize2 : 1);
+			g.strokeStyle = this.Cellcolor;
 			g.fillStyle = (mv.inputData==10 ? this.errbcolor1 : "white");
-			if(this.vnop(vids[1],1)){
-				g.beginPath();
-				g.arc(px, py, rsize2, 0, Math.PI*2, false);
-				g.fill();
+			if(this.vnop(vids[0],this.FILL)){
+				g.shapeCircle(px, py, csize);
 			}
 
 			this.dispnumStartpos(c);

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.2.4
+// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.3.0
 //
 Puzzles.pipelink = function(){ };
 Puzzles.pipelink.prototype = {
@@ -191,10 +191,8 @@ Puzzles.pipelink.prototype = {
 				var c = clist[i];
 				if(bd.cell[c].ques===6){
 					g.strokeStyle = this.Cellcolor;
-					if(this.vnop(header+c,0)){
-						g.beginPath();
-						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
-						g.stroke();
+					if(this.vnop(header+c,this.NONE)){
+						g.strokeCircle(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize);
 					}
 				}
 				else{ this.vhide(header+c);}

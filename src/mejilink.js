@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 メジリンク版 mejilink.js v3.2.4
+// パズル固有スクリプト部 メジリンク版 mejilink.js v3.3.0
 //
 Puzzles.mejilink = function(){ };
 Puzzles.mejilink.prototype = {
@@ -107,14 +107,12 @@ Puzzles.mejilink.prototype = {
 			var vid = "x_cm_"+i;
 
 			g.fillStyle = this.Cellcolor;
-			if(this.vnop(vid,1)){
+			if(this.vnop(vid,this.NONE)){
 				var lw = ((k.cwidth/12)>=3?(k.cwidth/12):3); //LineWidth
 				var csize = mf((lw+1)/2);
 				var cx = i%(k.qcols+1); var cy = mf(i/(k.qcols+1));
 
-				g.beginPath();
-				g.arc(k.p0.x+cx*k.cwidth, k.p0.x+cy*k.cheight, csize, 0, Math.PI*2, false);
-				g.fill();
+				g.fillCircle(k.p0.x+cx*k.cwidth, k.p0.x+cy*k.cheight, csize);
 			}
 		};
 
@@ -133,7 +131,7 @@ Puzzles.mejilink.prototype = {
 				var isline = bd.isLine(id);
 				if(isline){
 					g.fillStyle = this.getLineColor(id);
-					if(this.vnop(headers[0]+id,1)){
+					if(this.vnop(headers[0]+id,this.FILL)){
 						var lw = this.lw + this.addlw, lm = this.lm;
 						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
 						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
@@ -144,7 +142,7 @@ Puzzles.mejilink.prototype = {
 				if(!isline){
 					var cc2=bd.cc2(id);
 					g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.BorderQuescolor : this.errbcolor1);
-					if(this.vnop(headers[1]+id,1)){
+					if(this.vnop(headers[1]+id,this.FILL)){
 						var lw = this.lw + this.addlw, lm = this.lm;
 						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
 						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2),  bd.border[id].py, k.cwidth+1,  1);}

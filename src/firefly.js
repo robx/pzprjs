@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ホタルビーム版 firefly.js v3.2.5
+// パズル固有スクリプト部 ホタルビーム版 firefly.js v3.3.0
 //
 Puzzles.firefly = function(){ };
 Puzzles.firefly.prototype = {
@@ -124,17 +124,13 @@ Puzzles.firefly.prototype = {
 				var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
 
 				g.fillStyle = this.Cellcolor;
-				if(this.vnop(headers[0]+c,1)){
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					g.fill();
+				if(this.vnop(headers[0]+c,this.NONE)){
+					g.fillCircle(px, py, rsize);
 				}
 
 				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(headers[1]+c,1)){
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					g.fill();
+				if(this.vnop(headers[1]+c,this.FILL)){
+					g.fill(px, py, rsize2);
 				}
 
 				this.vdel([headers[2]+c]);
@@ -146,10 +142,8 @@ Puzzles.firefly.prototype = {
 						case k.LT: px-=(rsize-1); break;
 						case k.RT: px+=(rsize-1); break;
 					}
-					if(this.vnop(headers[2]+c,1)){
-						g.beginPath();
-						g.arc(px, py, rsize3 , 0, Math.PI*2, false);
-						g.fill();
+					if(this.vnop(headers[2]+c,this.NONE)){
+						g.fillCircle(px, py, rsize3);
 					}
 				}
 			}

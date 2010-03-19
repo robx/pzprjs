@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スリザーリンク版 slither.js v3.2.4
+// パズル固有スクリプト部 スリザーリンク版 slither.js v3.3.0
 //
 Puzzles.slither = function(){ };
 Puzzles.slither.prototype = {
@@ -194,7 +194,7 @@ Puzzles.slither.prototype = {
 			var vid = "x_cm_"+i;
 
 			g.fillStyle = this.Cellcolor;
-			if(this.vnop(vid,1)){
+			if(this.vnop(vid,this.NONE)){
 				var lw = ((k.cwidth/12)>=3?(k.cwidth/12):3); //LineWidth
 				var csize = mf((lw+1)/2);
 				var cx = i%(k.qcols+1); var cy = mf(i/(k.qcols+1));

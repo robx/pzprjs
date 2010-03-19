@@ -178,7 +178,7 @@ Puzzles.wblink.prototype = {
 			else if(bd.border[id].error===2){ g.fillStyle = this.errlinecolor2;}
 			else{ g.fillStyle = this.linecolor;}
 
-			if(this.vnop(vid,1)){
+			if(this.vnop(vid,this.FILL)){
 				var lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3); //LineWidth
 				var lm = mf((lw-1)/2); //LineMargin
 

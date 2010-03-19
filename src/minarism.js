@@ -205,54 +205,45 @@ Puzzles.minarism.prototype = {
 		pc.drawBDMarks = function(x1,y1,x2,y2){
 			var csize = k.cwidth*0.27;
 			var ssize = k.cwidth*0.22;
-			var headers = ["b_cp1_", "b_cp2_", "b_dt1_", "b_dt2_"];
+			var headers = ["b_cp_", "b_dt1_", "b_dt2_"];
 
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 				if(bd.border[id].qnum!=-1){
-					g.fillStyle = (bd.border[id].error==1 ? this.errcolor1 : "white");
-					if(this.vnop(headers[0]+id,1)){
-						g.beginPath();
-						g.arc(bd.border[id].px, bd.border[id].py, csize, 0, Math.PI*2, false);
-						g.fill();
-					}
-
 					g.lineWidth = 1;
 					g.strokeStyle = "black";
-					if(this.vnop(headers[1]+id,0)){
-						if(k.br.IE){
-							g.beginPath();
-							g.arc(bd.border[id].px, bd.border[id].py, csize, 0, Math.PI*2, false);
-						}
-						g.stroke();
+					g.fillStyle = (bd.border[id].error==1 ? this.errcolor1 : "white");
+					if(this.vnop(headers[0]+id,this.FILL)){
+						g.shapeCircle(bd.border[id].px, bd.border[id].py, csize);
 					}
 				}
-				else{ this.vhide([headers[0]+id, headers[1]+id]);}
+				else{ this.vhide([headers[0]+id]);}
 
 				this.dispnumBorder(id);
 
 				if(bd.border[id].ques!==0){
 					var px=bd.border[id].px, py=bd.border[id].py;
-					g.fillStyle = this.Cellcolor;
+					g.strokeStyle = this.Cellcolor;
 					if(bd.border[id].ques===1){
-						if(this.vnop(headers[2]+id,1)){
-							if(bd.border[id].cx&1){ this.inputPath([px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize], false);}
-							else                  { this.inputPath([px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize], false);}
+						if(this.vnop(headers[1]+id,this.NONE)){
+							if(bd.border[id].cx&1){ g.setOffsetLinePath(px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false);}
+							else                  { g.setOffsetLinePath(px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false);}
 							g.stroke();
 						}
 					}
-					else{ this.vhide(headers[3]+id);}
+					else{ this.vhide(headers[1]+id);}
+
 					if(bd.border[id].ques===2){
-						if(this.vnop(headers[3]+id,1)){
-							if(bd.border[id].cx&1){ this.inputPath([px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize], false);}
-							else                  { this.inputPath([px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize], false);}
+						if(this.vnop(headers[2]+id,this.NONE)){
+							if(bd.border[id].cx&1){ g.setOffsetLinePath(px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false);}
+							else                  { g.setOffsetLinePath(px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false);}
 							g.stroke();
 						}
 					}
 					else{ this.vhide(headers[2]+id);}
 				}
-				else{ this.vhide([headers[2]+id, headers[3]+id]);}
+				else{ this.vhide([headers[1]+id, headers[2]+id]);}
 			}
 			this.vinc();
 		};

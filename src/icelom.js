@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスローム版 icelom.js v3.2.4
+// パズル固有スクリプト部 アイスローム版 icelom.js v3.3.0
 //
 Puzzles.icelom = function(){ };
 Puzzles.icelom.prototype = {
@@ -295,23 +295,23 @@ Puzzles.icelom.prototype = {
 			var px=bd.border[id].px; var py=bd.border[id].py;
 
 			g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.Cellcolor);
-			if(this.vnop(vids[0],1)){
+			if(this.vnop(vids[0],this.FILL)){
 				if(bd.border[id].cx&1){ g.fillRect(px-lm, py-ll, lw, ll*2);}
 				if(bd.border[id].cy&1){ g.fillRect(px-ll, py-lm, ll*2, lw);}
 			}
 
 			if(bd.getArrow(id)===1){
-				if(this.vnop(vids[1],1)){
-					if(bd.border[id].cx&1){ this.inputPath([px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4], true);}
-					if(bd.border[id].cy&1){ this.inputPath([px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2], true);}
+				if(this.vnop(vids[1],this.FILL)){
+					if(bd.border[id].cx&1){ g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true);}
+					if(bd.border[id].cy&1){ g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true);}
 					g.fill();
 				}
 			}
 			else{ this.vhide(vids[1]);}
 			if(bd.getArrow(id)===2){
-				if(this.vnop(vids[2],1)){
-					if(bd.border[id].cx&1){ this.inputPath([px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4], true);}
-					if(bd.border[id].cy&1){ this.inputPath([px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2], true);}
+				if(this.vnop(vids[2],this.FILL)){
+					if(bd.border[id].cx&1){ g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true);}
+					if(bd.border[id].cy&1){ g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true);}
 					g.fill();
 				}
 			}
@@ -503,6 +503,10 @@ Puzzles.icelom.prototype = {
 				this.setAlert('通過していない白マスがあります。', 'The line doesn\'t pass all of the white cell.'); return false;
 			}
 
+			if( !this.isallwhite() && !this.checkIcebarns() ){
+				this.setAlert('すべてのアイスバーンを通っていません。', 'A icebarn is not gone through.'); return false;
+			}
+
 			if( !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)==0 && bd.QnC(c)!==-1);})) ){
 				this.setAlert('通過していない数字があります。', 'The line doesn\'t pass all of the number.'); return false;
 			}
@@ -510,6 +514,21 @@ Puzzles.icelom.prototype = {
 			return true;
 		};
 		ans.isallwhite = function(){ return ((k.EDITOR&&pp.getVal('allwhite'))||(k.PLAYER&&enc.checkpflag("t")));};
+
+		ans.checkIcebarns = function(){
+			var iarea = new AreaInfo();
+			for(var cc=0;cc<bd.cellmax;cc++){ iarea.id[cc]=(bd.QuC(cc)==6?0:-1); }
+			for(var cc=0;cc<bd.cellmax;cc++){
+				if(iarea.id[cc]!=0){ continue;}
+				iarea.max++;
+				iarea[iarea.max] = {clist:[]};
+				area.sc0(cc,iarea);
+
+				iarea.room[iarea.max] = {idlist:iarea[iarea.max].clist};
+			}
+
+			return this.checkOneNumber(iarea, function(top,lcnt){ return (lcnt==0);}, function(cc){ return line.lcntCell(cc)>0;});
+		};
 
 		ans.searchLine = function(){
 			var bx=bd.border[bd.arrowin].cx, by=bd.border[bd.arrowin].cy;

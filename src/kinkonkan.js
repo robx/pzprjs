@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.2.5
+// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.3.0
 //
 Puzzles.kinkonkan = function(){ };
 Puzzles.kinkonkan.prototype = {
@@ -270,7 +270,7 @@ Puzzles.kinkonkan.prototype = {
 					if     (err==1){ g.fillStyle = this.errbcolor1;}
 					else if(err>=2){ g.fillStyle = this.errbcolor2;}
 					if(err===1 || err===6){
-						if(this.vnop(headers[err-1]+c,1)){
+						if(this.vnop(headers[err-1]+c,this.FILL)){
 							g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
 						}
 					}
@@ -291,15 +291,15 @@ Puzzles.kinkonkan.prototype = {
 				if(bd.cell[c].qans!=-1){
 					g.strokeStyle = this.Cellcolor;
 					if(bd.cell[c].qans==1){
-						if(this.vnop(headers[0]+c,0)){
-							this.inputPath([bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight], true);
+						if(this.vnop(headers[0]+c,this.NONE)){
+							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight, true);
 							g.stroke();
 						}
 					}
 					else{ this.vhide(headers[0]+c);}
 					if(bd.cell[c].qans==2){
-						if(this.vnop(headers[1]+c,0)){
-							this.inputPath([bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight], true);
+						if(this.vnop(headers[1]+c,this.NONE)){
+							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight, true);
 							g.stroke();
 						}
 					}
@@ -320,7 +320,7 @@ Puzzles.kinkonkan.prototype = {
 
 				if(bd.excell[c].error===6){
 					g.fillStyle = this.errbcolor2;
-					if(this.vnop(header+c,1)){
+					if(this.vnop(header+c,this.NONE)){
 						g.fillRect(obj.px+1, obj.py+1, k.cwidth-1, k.cheight-1);
 					}
 				}

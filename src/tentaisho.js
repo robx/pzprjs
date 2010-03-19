@@ -284,7 +284,7 @@ Puzzles.tentaisho.prototype = {
 					else if(bd.border[id].error===2){ g.fillStyle = this.errBorderQanscolor2;}
 					else                            { g.fillStyle = this.BorderQanscolor;}
 
-					if(this.vnop(header+id,1)){
+					if(this.vnop(header+id,this.FILL)){
 						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm,  lw, k.cheight+lw);}
 						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm,  k.cwidth+lw,  lw);}
 					}
@@ -308,20 +308,16 @@ Puzzles.tentaisho.prototype = {
 					if(bd.getStar(id)===1 || bd.getStar(id)===2){
 						var iserr = bd.getStarError(id);
 						g.fillStyle = (iserr ? this.errcolor1 : this.Cellcolor);
-						if(this.vnop(headers[0]+id,1)){
-							g.beginPath();
-							g.arc(k.p0.x+x*k.cwidth/2, k.p0.y+y*k.cheight/2, rsize , 0, Math.PI*2, false);
-							g.fill();
+						if(this.vnop(headers[0]+id,this.FILL)){
+							g.fillCircle(k.p0.x+x*k.cwidth/2, k.p0.y+y*k.cheight/2, rsize);
 						}
 					}
 					else{ this.vhide(headers[0]+id);}
 
 					if(bd.getStar(id)===1){
 						g.fillStyle = (iserr ? this.errbcolor1 : "white");
-						if(this.vnop(headers[1]+id,1)){
-							g.beginPath();
-							g.arc(k.p0.x+x*k.cwidth/2, k.p0.y+y*k.cheight/2, rsize2, 0, Math.PI*2, false);
-							g.fill();
+						if(this.vnop(headers[1]+id,this.FILL)){
+							g.fillCircle(k.p0.x+x*k.cwidth/2, k.p0.y+y*k.cheight/2, rsize2);
 						}
 					}
 					else{ this.vhide(headers[1]+id);}

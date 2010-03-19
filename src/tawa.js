@@ -486,7 +486,7 @@ Puzzles.tawa.prototype = {
 			var xa = Math.max(x1,0), xb = Math.min(x2+1,tc.maxx+2);
 			var ya = Math.max(y1,0), yb = Math.min(y2+1,k.qrows  );
 			for(var i=ya;i<=yb;i++){
-				if(this.vnop(headers[0]+i,1)){
+				if(this.vnop(headers[0]+i,this.NONE)){
 					var redx = 0, redw = 0;
 					if     ((bd.lap===3 && (i===0||(i===k.qrows&&(i&1)))) || (bd.lap===0 && (i===k.qrows&&!(i&1)))){ redx=1; redw=2;}
 					else if((bd.lap===2 && (i===0||(i===k.qrows&&(i&1)))) || (bd.lap===1 && (i===k.qrows&&!(i&1)))){ redx=1; redw=1;}
@@ -498,7 +498,7 @@ Puzzles.tawa.prototype = {
 				var xs = xa;
 				if((bd.lap===2 || bd.lap===3) ^ ((i&1)!==(xs&1))){ xs++;}
 				for(var j=xs;j<=xb;j+=2){
-					if(this.vnop([headers[1],i,j].join(""),1)){
+					if(this.vnop([headers[1],i,j].join(""),this.NONE)){
 						g.fillRect(mf(k.p0.x+j*k.cwidth/2-lm), mf(k.p0.y+i*k.cheight-lm), lw, k.cheight+1);
 					}
 				}
@@ -519,10 +519,10 @@ Puzzles.tawa.prototype = {
 
 			this.vdel(["tc1_","tc2_","tc3_","tc4_"]);
 			g.fillStyle = this.targetColor1;
-			if(this.vnop("tc1_",0)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
-			if(this.vnop("tc2_",0)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
-			if(this.vnop("tc3_",0)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
-			if(this.vnop("tc4_",0)){ g.fillRect(px+k.cwidth-w,  py+1, w, k.cheight-2);}
+			if(this.vnop("tc1_",this.NONE)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
+			if(this.vnop("tc2_",this.NONE)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
+			if(this.vnop("tc3_",this.NONE)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
+			if(this.vnop("tc4_",this.NONE)){ g.fillRect(px+k.cwidth-w,  py+1, w, k.cheight-2);}
 
 			this.vinc();
 		};

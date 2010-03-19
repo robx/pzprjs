@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.2.5
+// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.3.0
 //
 Puzzles.icebarn = function(){ };
 Puzzles.icebarn.prototype = {
@@ -265,23 +265,23 @@ Puzzles.icebarn.prototype = {
 			var px=bd.border[id].px; var py=bd.border[id].py;
 
 			g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.Cellcolor);
-			if(this.vnop(vids[0],1)){
+			if(this.vnop(vids[0],this.FILL)){
 				if(bd.border[id].cx&1){ g.fillRect(px-lm, py-ll, lw, ll*2);}
 				if(bd.border[id].cy&1){ g.fillRect(px-ll, py-lm, ll*2, lw);}
 			}
 
 			if(bd.getArrow(id)===1){
-				if(this.vnop(vids[1],1)){
-					if(bd.border[id].cx&1){ this.inputPath([px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4], true);}
-					if(bd.border[id].cy&1){ this.inputPath([px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2], true);}
+				if(this.vnop(vids[1],this.FILL)){
+					if(bd.border[id].cx&1){ g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true);}
+					if(bd.border[id].cy&1){ g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true);}
 					g.fill();
 				}
 			}
 			else{ this.vhide(vids[1]);}
 			if(bd.getArrow(id)===2){
-				if(this.vnop(vids[2],1)){
-					if(bd.border[id].cx&1){ this.inputPath([px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4], true);}
-					if(bd.border[id].cy&1){ this.inputPath([px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2], true);}
+				if(this.vnop(vids[2],this.FILL)){
+					if(bd.border[id].cx&1){ g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true);}
+					if(bd.border[id].cy&1){ g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true);}
 					g.fill();
 				}
 			}

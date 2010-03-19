@@ -260,7 +260,7 @@ Puzzles.shugaku.prototype = {
 				var c = clist[i];
 				if(bd.cell[c].qans>=11){
 					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-					if(this.vnop(header+c,1)){
+					if(this.vnop(header+c,this.FILL)){
 						g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);
 					}
 				}
@@ -273,22 +273,20 @@ Puzzles.shugaku.prototype = {
 		pc.drawPillow1 = function(cc, flag, inputting){
 			var mgnw = mf(k.cwidth*0.15);
 			var mgnh = mf(k.cheight*0.15);
-			var headers = ["c_sq1_", "c_sq2_"];
+			var header = "c_pillow_"+cc;
 
 			if(flag){
-				g.fillStyle = "black";
-				if(this.vnop(headers[0]+cc,1)){
-					g.fillRect(bd.cell[cc].px+mgnw+1, bd.cell[cc].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
-				}
-
+				g.lineWidth = 1;
+				g.strokeStyle = "black";
 				if     (inputting)            { g.fillStyle = this.targetbgcolor;}
 				else if(bd.cell[cc].error===1){ g.fillStyle = this.errbcolor1;   }
 				else                          { g.fillStyle = "white";}
-				if(this.vnop(headers[1]+cc,1)){
-					g.fillRect(bd.cell[cc].px+mgnw+2, bd.cell[cc].py+mgnh+2, k.cwidth-mgnw*2-3, k.cheight-mgnh*2-3);
+
+				if(this.vnop(header,this.FILL)){
+					g.shapeRect(bd.cell[cc].px+mgnw+1, bd.cell[cc].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
 				}
 			}
-			else{ this.vhide([headers[0]+cc, headers[1]+cc]);}
+			else{ this.vhide([header]);}
 		};
 
 		pc.drawFutonBorders = function(x1,y1,x2,y2){
@@ -308,12 +306,12 @@ Puzzles.shugaku.prototype = {
 					var vid = [header,bx,by].join("_");
 
 					if     ((bx&1) && !(isNaN(doma1[a])&&isNaN(domb1[b]))){
-						if(this.vnop(vid,1)){
+						if(this.vnop(vid,this.NONE)){
 							g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-lm, k.p0.x+mf(by*k.cheight/2)-lm, k.cwidth+lw, lw);
 						}
 					}
 					else if((by&1) && !(isNaN(doma2[a])&&isNaN(domb2[b]))){
-						if(this.vnop(vid,1)){
+						if(this.vnop(vid,this.NONE)){
 							g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-lm, k.p0.x+mf((by-1)*k.cheight/2)-lm, lw, k.cheight+lw);
 						}
 					}
@@ -333,7 +331,7 @@ Puzzles.shugaku.prototype = {
 				g.fillStyle = this.targetbgcolor;
 
 				if(cc!=-1){
-					if(this.vnop(header+cc,1)){
+					if(this.vnop(header+cc,this.FILL)){
 						g.fillRect(bd.cell[cc].px+1, bd.cell[cc].py+1, k.cwidth-1, k.cheight-1);
 					}
 				}
@@ -341,7 +339,7 @@ Puzzles.shugaku.prototype = {
 
 				var adj=mv.getTargetADJ();
 				if(adj!=-1){
-					if(this.vnop(header+adj,1)){
+					if(this.vnop(header+adj,this.FILL)){
 						g.fillRect(bd.cell[adj].px+1, bd.cell[adj].py+1, k.cwidth-1, k.cheight-1);
 					}
 				}
@@ -365,10 +363,10 @@ Puzzles.shugaku.prototype = {
 				var hgt = (mv.inputData===2||mv.inputData===3?2:1)*k.cheight;
 
 				g.fillStyle = "black";
-				if(this.vnop("tbd1_",1)){ g.fillRect(px-lm    , py-lm    , wid+lw, lw);}
-				if(this.vnop("tbd2_",1)){ g.fillRect(px-lm    , py-lm    , lw, hgt+lw);}
-				if(this.vnop("tbd3_",1)){ g.fillRect(px+wid-lm, py-lm    , lw, hgt+lw);}
-				if(this.vnop("tbd4_",1)){ g.fillRect(px-lm    , py+hgt-lm, wid+lw, lw);}
+				if(this.vnop("tbd1_",this.NONE)){ g.fillRect(px-lm    , py-lm    , wid+lw, lw);}
+				if(this.vnop("tbd2_",this.NONE)){ g.fillRect(px-lm    , py-lm    , lw, hgt+lw);}
+				if(this.vnop("tbd3_",this.NONE)){ g.fillRect(px+wid-lm, py-lm    , lw, hgt+lw);}
+				if(this.vnop("tbd4_",this.NONE)){ g.fillRect(px-lm    , py+hgt-lm, wid+lw, lw);}
 			}
 			this.vinc();
 		};
@@ -383,7 +381,7 @@ Puzzles.shugaku.prototype = {
 			else{
 				this.zidx=1;
 				g.fillStyle = this.bgcolor;
-				if(this.vnop("boardfull",1)){
+				if(this.vnop("boardfull",this.NONE)){
 					g.fillRect(k.p0.x, k.p0.y, k.qcols*k.cwidth, k.qrows*k.cheight);
 				}
 				this.vinc();

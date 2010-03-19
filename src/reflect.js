@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.2.4
+// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.3.0
 //
 Puzzles.reflect = function(){ };
 Puzzles.reflect.prototype = {
@@ -173,12 +173,12 @@ Puzzles.reflect.prototype = {
 
 				g.fillStyle = this.gridcolor;
 				if(lflag && (qs1===3||qs1===4)&&(qs2===2||qs2===5)){
-					if(this.vnop(header+id,1)){
+					if(this.vnop(header+id,this.NONE)){
 						g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight);
 					}
 				}
 				else if(!lflag && (qs1===2||qs1===3)&&(qs2===4||qs2===5)){
-					if(this.vnop(header+id,1)){
+					if(this.vnop(header+id,this.NONE)){
 						g.fillRect(bd.border[id].px-mf(k.cwidth/2), bd.border[id].py, k.cwidth, 1);
 					}
 				}
@@ -198,10 +198,10 @@ Puzzles.reflect.prototype = {
 				var lw = this.lw, lm=this.lm, mgn = mf(k.cwidth*0.12);
 				g.fillStyle = this.Cellcolor;
 
-				if(this.vnop(vids[0],1)){
+				if(this.vnop(vids[0],this.NONE)){
 					g.fillRect(bd.cell[id].px+mf(k.cwidth/2)-lm,  bd.cell[id].py+mgn,  lw+2, k.cheight-2*mgn);
 				}
-				if(this.vnop(vids[1],1)){
+				if(this.vnop(vids[1],this.NONE)){
 					g.fillRect(bd.cell[id].px+mgn, bd.cell[id].py+mf(k.cheight/2)-lm,  k.cwidth-2*mgn, lw+2);
 				}
 			}
