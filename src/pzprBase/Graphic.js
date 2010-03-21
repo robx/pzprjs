@@ -1179,6 +1179,7 @@ Graphic.prototype = {
 			}
 		}
 		else{
+			g.lineWidth = 1;
 			g.strokeStyle = this.gridcolor;
 			for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("cliney_"+i,this.NONE)){
 				var px = k.p0.x+(i+0.5)*k.cwidth, py1 = k.p0.y+(y1-0.5)*k.cheight, py2 = k.p0.y+(y2+1.5)*k.cheight;
@@ -1241,6 +1242,7 @@ Graphic.prototype = {
 			}
 		}
 		else{
+			g.lineWidth = 1;
 			g.strokeStyle = this.gridcolor;
 			for(var i=xa;i<=xb;i++){ if(this.vnop("bdy_"+i,this.NONE)){
 				var px = k.p0.x+i*k.cwidth, py1 = k.p0.y+y1*k.cheight, py2 = k.p0.y+(y2+1)*k.cheight;
@@ -1280,8 +1282,15 @@ Graphic.prototype = {
 	// pc.vinc()  z-indexに設定される値を+1する
 	//---------------------------------------------------------------------------
 	// excanvasの場合、これを描画しないとVML要素が選択されてしまう
-	flushCanvasAll : function(){ g.clear(); this.zidx=0; this.vinc();},
-	flushCanvas : function(x1,y1,x2,y2){ g.setLayer("layer1"); this.zidx=1;},
+	flushCanvasAll : function(){
+		g.clear();
+		this.zidx=0;
+		this.vinc();
+	},
+	flushCanvas : function(x1,y1,x2,y2){
+		this.zidx=0;
+		this.vinc();
+	},
 	vnop  : f_true,
 	vhide : f_true,
 	vdel  : f_true,
@@ -1305,7 +1314,10 @@ Graphic.prototype = {
 			return;
 		}
 
-		this.flushCanvas = function(x1,y1,x2,y2){ g.setLayer("layer1"); this.zidx=1;};
+		this.flushCanvas = function(x1,y1,x2,y2){
+			this.zidx=0;
+			this.vinc();
+		};
 		this.vnop = function(vid, ccflag){ // strokeのみ:0, fillのみ:1, 両方:2, 色の変更なし:3
 			g.vid = vid;
 			if(!!g.elements[vid]){
