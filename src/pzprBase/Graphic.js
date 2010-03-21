@@ -270,7 +270,7 @@ Graphic.prototype = {
 			var c = clist[i];
 			if(this.setCellColor(c)){
 				if(this.vnop(header+c,this.FILL)){
-					g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
+					g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
 				}
 			}
 			else{ this.vhide(header+c); continue;}
@@ -310,7 +310,7 @@ Graphic.prototype = {
 			var c = clist[i];
 			if(this.setBGCellColor(c)){
 				if(this.vnop(header+c,this.FILL)){
-					g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
+					g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
 				}
 			}
 			else{ this.vhide(header+c); continue;}
@@ -1248,7 +1248,7 @@ Graphic.prototype = {
 				g.setDashSize(dotSize);
 			}}
 			for(var i=ya;i<=yb;i++){ if(this.vnop("bdx_"+i,this.NONE)){
-				var py = k.p0.y+i*k.cheight+(g.use.svg?1:0), px1 = k.p0.x+x1*k.cwidth, px2 = k.p0.x+(x2+1)*k.cwidth;
+				var py = k.p0.y+i*k.cheight, px1 = k.p0.x+x1*k.cwidth, px2 = k.p0.x+(x2+1)*k.cwidth;
 				g.strokeLine(px1, py, px2, py);
 				g.setDashSize(dotSize);
 			}}
