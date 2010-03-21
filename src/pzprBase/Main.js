@@ -56,6 +56,20 @@ PBase.prototype = {
 	// base.initSilverlight() Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
 	//---------------------------------------------------------------------------
 	onload_func : function(){
+		if(!!window.uuMeta && !!window.uuMeta.slver){
+			var self = this, tim = null;
+			tim = setInterval(function(){
+				if(uuCanvas.already()){
+					clearInterval(tim);
+					self.onload_func2.apply(self);
+				}
+			},100);
+		}
+		else{
+			this.onload_func2();
+		}
+	},
+	onload_func2 : function(){
 		this.initCanvas();
 		this.initObjects();
 		this.setEvents(true);	// イベントをくっつける
@@ -129,9 +143,16 @@ PBase.prototype = {
 		}
 	},
 	initSilverlight : function(sender){
-		sender.AddEventListener("KeyDown", ee.ebinder(kc, kc.e_SLkeydown));
-		sender.AddEventListener("KeyUp",   ee.ebinder(kc, kc.e_SLkeyup));
+		sender.AddEventListener("KeyDown", ee.binder(this, this.e_SLkeydown));
+		sender.AddEventListener("KeyUp",   ee.binder(this, this.e_SLkeyup));
 	},
+
+	//---------------------------------------------------------------------------
+	// base.e_SLkeydown()     Silverlightオブジェクトにフォーカスがある時、キーを押した際のイベント共通処理
+	// base.e_SLkeyup()       Silverlightオブジェクトにフォーカスがある時、キーを離した際のイベント共通処理
+	//---------------------------------------------------------------------------
+	e_SLkeydown : function(sender, keyEventArgs){ return kc.e_SLkeydown(sender, keyEventArgs);},
+	e_SLkeyup   : function(sender, keyEventArgs){ return kc.e_SLkeyup(sender, keyEventArgs);},
 
 	//---------------------------------------------------------------------------
 	// base.doc_design()       onload_func()で呼ばれる。htmlなどの設定を行う
