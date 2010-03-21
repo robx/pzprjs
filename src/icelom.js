@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスローム版 icelom.js v3.2.4
+// パズル固有スクリプト部 アイスローム版 icelom.js v3.2.5
 //
 Puzzles.icelom = function(){ };
 Puzzles.icelom.prototype = {
@@ -527,7 +527,7 @@ Puzzles.icelom.prototype = {
 				iarea.room[iarea.max] = {idlist:iarea[iarea.max].clist};
 			}
 
-			return this.checkOneNumber(iarea, function(top,lcnt){ return (lcnt==0);}, function(cc){ return line.lcntCell(cc)>0;});
+			return this.checkLinesInArea(iarea, function(w,h,a,n){ return (a!=0);});
 		};
 
 		ans.searchLine = function(){
