@@ -270,7 +270,7 @@ Graphic.prototype = {
 			var c = clist[i];
 			if(this.setCellColor(c)){
 				if(this.vnop(header+c,this.FILL)){
-					g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
+					g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
 				}
 			}
 			else{ this.vhide(header+c); continue;}
