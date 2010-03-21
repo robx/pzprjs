@@ -527,7 +527,7 @@ Puzzles.icelom.prototype = {
 				iarea.room[iarea.max] = {idlist:iarea[iarea.max].clist};
 			}
 
-			return this.checkOneNumber(iarea, function(top,lcnt){ return (lcnt==0);}, function(cc){ return line.lcntCell(cc)>0;});
+			return this.checkLinesInArea(iarea, function(w,h,a,n){ return (a!=0);});
 		};
 
 		ans.searchLine = function(){

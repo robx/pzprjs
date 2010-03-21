@@ -557,8 +557,7 @@ Puzzles.icebarn.prototype = {
 				this.setAlert('線がひとつながりではありません。', 'Lines are not countinuous.'); return false;
 			}
 
-			var iarea = this.getIceArea(function(cc){ return (cc!=-1 && bd.QuC(cc)==6); });
-			if( !this.checkLinesInArea(iarea, function(w,h,a,n){ return (a!=0);}) ){
+			if( !this.checkIcebarns() ){
 				this.setAlert('すべてのアイスバーンを通っていません。', 'A icebarn is not gone through.'); return false;
 			}
 
@@ -573,8 +572,8 @@ Puzzles.icebarn.prototype = {
 			return true;
 		};
 
-		ans.getIceArea = function(){
-			iarea = new AreaInfo();
+		ans.checkIcebarns = function(){
+			var iarea = new AreaInfo();
 			for(var cc=0;cc<bd.cellmax;cc++){ iarea.id[cc]=(bd.QuC(cc)==6?0:-1); }
 			for(var cc=0;cc<bd.cellmax;cc++){
 				if(iarea.id[cc]!=0){ continue;}
@@ -584,7 +583,8 @@ Puzzles.icebarn.prototype = {
 
 				iarea.room[iarea.max] = {idlist:iarea[iarea.max].clist};
 			}
-			return iarea;
+
+			return this.checkLinesInArea(iarea, function(w,h,a,n){ return (a!=0);});
 		};
 
 		ans.checkAllArrow = function(){

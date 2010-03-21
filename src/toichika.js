@@ -99,11 +99,14 @@ Puzzles.toichika.prototype = {
 				else if(pos.x-this.mouseCell.x== 1){ inp=k.RT;}
 				else{ return;}
 
-				this.inputData=1;
 				bd.setCell(cc,inp);
 				pc.paintCell(cc);
+
+				this.mousereset();
 			}
-			this.mouseCell = pos;
+			else{
+				this.mouseCell = pos;
+			}
 		};
 		mv.inputdirec_mouseup = function(){
 			var cc = this.cellid();
