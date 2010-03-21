@@ -116,24 +116,20 @@ Puzzles.firefly.prototype = {
 			if(c===-1){ return;}
 
 			var rsize  = k.cwidth*0.40;
-			var rsize2 = k.cwidth*0.36;
 			var rsize3 = k.cwidth*0.10;
-			var headers = ["c_cira_", "c_cirb_", "c_circ_"];
+			var headers = ["c_cira_", "c_cirb_"];
 
 			if(bd.cell[c].qnum!=-1){
 				var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
 
-				g.fillStyle = this.Cellcolor;
-				if(this.vnop(headers[0]+c,this.NONE)){
-					g.fillCircle(px, py, rsize);
-				}
-
+				g.lineWidth = 1.5;
+				g.strokeStyle = this.Cellcolor;
 				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(headers[1]+c,this.FILL)){
-					g.fill(px, py, rsize2);
+				if(this.vnop(headers[0]+c,this.FILL)){
+					g.shapeCircle(px, py, rsize);
 				}
 
-				this.vdel([headers[2]+c]);
+				this.vdel([headers[1]+c]);
 				if(bd.cell[c].direc!=0){
 					g.fillStyle = this.Cellcolor;
 					switch(bd.cell[c].direc){
@@ -142,12 +138,12 @@ Puzzles.firefly.prototype = {
 						case k.LT: px-=(rsize-1); break;
 						case k.RT: px+=(rsize-1); break;
 					}
-					if(this.vnop(headers[2]+c,this.NONE)){
+					if(this.vnop(headers[1]+c,this.NONE)){
 						g.fillCircle(px, py, rsize3);
 					}
 				}
 			}
-			else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c]);}
+			else{ this.vhide([headers[0]+c, headers[1]+c]);}
 
 			this.dispnumCell(c);
 		};
