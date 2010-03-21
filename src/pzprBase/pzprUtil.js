@@ -245,7 +245,7 @@ LineManager.prototype = {
 			for(var i=0,len=longidlist.length;i<len;i++){
 				bd.border[longidlist[i]].color = newColor;
 			}
-			this.repaintLine(longidlist);
+			this.repaintLine(longidlist, id);
 		}
 		else{
 			this.data[did[0]].idlist.push(id);
@@ -295,7 +295,7 @@ LineManager.prototype = {
 				for(var n=0,len=idlist.length;n<len;n++){
 					bd.border[idlist[n]].color = newColor;
 				}
-				this.repaintLine(idlist);
+				this.repaintLine(idlist, id);
 			}
 		}
 		else{
@@ -303,7 +303,7 @@ LineManager.prototype = {
 		}
 	},
 
-	repaintLine : function(idlist){
+	repaintLine : function(idlist, id){
 		if(!pp.getVal('irowake')){ return;}
 
 		if(g.use.canvas){
@@ -326,13 +326,15 @@ LineManager.prototype = {
 		else{
 			if(k.isCenterLine){
 				for(var i=0,len=idlist.length;i<len;i++){
+					if(id===idlist[i]){ continue;}
 					pc.drawLine1(idlist[i], true);
 				}
 			}
 			else{
 				for(var i=0,len=idlist.length;i<len;i++){
-					var id = idlist[i];
-					pc.drawBorder1x(bd.border[id].cx, bd.border[id].cy, true);
+					if(id===idlist[i]){ continue;}
+					var cid = idlist[i];
+					pc.drawBorder1x(bd.border[cid].cx, bd.border[cid].cy, true);
 				}
 			}
 		}
