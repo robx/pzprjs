@@ -99,11 +99,14 @@ Puzzles.toichika.prototype = {
 				else if(pos.x-this.mouseCell.x== 1){ inp=k.RT;}
 				else{ return;}
 
-				this.inputData=1;
 				bd.setCell(cc,inp);
 				pc.paintCell(cc);
+
+				this.mousereset();
 			}
-			this.mouseCell = pos;
+			else{
+				this.mouseCell = pos;
+			}
 		};
 		mv.inputdirec_mouseup = function(){
 			var cc = this.cellid();
@@ -133,7 +136,8 @@ Puzzles.toichika.prototype = {
 			if(this.inputData===-1){ this.inputData=(bd.QsC(cc)===1?0:1);}
 			
 			var cc0 = tc.getTCC(); //tc.setTCC(cc);
-			bd.setCell(cc,-2);
+			bd.sQaC(cc,-1);
+			bd.sQsC(cc,(this.inputData===1?1:0));
 			this.mouseCell = cc;
 
 			pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
