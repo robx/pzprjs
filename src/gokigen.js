@@ -108,7 +108,7 @@ Puzzles.gokigen.prototype = {
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
 			if(this.moveTCross(ca)){ return;}
-			this.key_inputcross(ca,4);
+			this.key_inputcross(ca);
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;} };
 
@@ -118,7 +118,7 @@ Puzzles.gokigen.prototype = {
 			kp.generate(4, true, false, '');
 			kp.ctl[1].target = k.CROSS;
 			kp.kpinput = function(ca){
-				kc.key_inputcross(ca,4);
+				kc.key_inputcross(ca);
 			};
 		}
 
@@ -135,6 +135,8 @@ Puzzles.gokigen.prototype = {
 		tc.maxx = 2*k.qcols;
 		tc.maxy = 2*k.qrows;
 		tc.setTXC(0);
+
+		bd.maxnum = 4;
 	},
 
 	//---------------------------------------------------------
