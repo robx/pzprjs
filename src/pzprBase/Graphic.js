@@ -116,7 +116,7 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	onresize_func : function(){
 		this.lw = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3);
-		this.lm = mf((this.lw-1)/2);
+		this.lm = (this.lw-1)/2
 
 		//this.textenable = !!g.fillText;
 	},
@@ -747,8 +747,8 @@ Graphic.prototype = {
 		g.fillStyle = this.getLineColor(id);
 		if(this.vnop(vid,this.FILL)){
 			var lw = this.lw + this.addlw, lm = this.lm;
-			if     (bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-			else if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
+			if     (bd.border[id].cx&1){ g.fillRect(mf(bd.border[id].px-lm), mf(bd.border[id].py-(k.cheight/2)-lm), lw, k.cheight+lw);}
+			else if(bd.border[id].cy&1){ g.fillRect(mf(bd.border[id].px-(k.cwidth/2)-lm),  mf(bd.border[id].py-lm), k.cwidth+lw,  lw);}
 		}
 	},
 	getLineColor : function(id){
@@ -761,7 +761,7 @@ Graphic.prototype = {
 	drawPekes : function(x1,y1,x2,y2,flag){
 		if(!g.use.canvas && flag===2){ return;}
 
-		var size = mf(k.cwidth*0.15); if(size<3){ size=3;}
+		var size = mf(k.cwidth*0.15)+1; if(size<4){ size=4;}
 		var headers = ["b_peke0_", "b_peke1_"];
 		g.fillStyle = "white";
 		g.strokeStyle = this.pekecolor;
