@@ -80,6 +80,8 @@ Puzzles.mejilink.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.BorderQuescolor = "white";
 
+		pc.chassisflag = false;
+
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
@@ -128,8 +130,7 @@ Puzzles.mejilink.prototype = {
 					continue;
 				}
 
-				var isline = bd.isLine(id);
-				if(isline){
+				if(bd.border[id].qans===1){
 					g.fillStyle = this.getLineColor(id);
 					if(this.vnop(headers[0]+id,this.FILL)){
 						var lw = this.lw + this.addlw, lm = this.lm;
@@ -139,7 +140,7 @@ Puzzles.mejilink.prototype = {
 				}
 				else{ this.vhide(headers[0]+id);}
 
-				if(!isline){
+				if(bd.border[id].ques===1){
 					var cc2=bd.cc2(id);
 					g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.BorderQuescolor : this.errbcolor1);
 					if(this.vnop(headers[1]+id,this.FILL)){
