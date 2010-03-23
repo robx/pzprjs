@@ -161,7 +161,10 @@ Puzzles.pipelink.prototype = {
 			this.drawDashedGrid(x1,y1,x2,y2);
 
 			if(this.disp==1){ this.drawIceBorders(x1,y1,x2,y2);}
+			else if(!g.use.canvas){ this.hideIceBorders(x1,y1,x2,y2);}
+
 			if(this.disp==0){ this.drawCircle2(x1,y1,x2,y2);}
+			else if(!g.use.canvas){ this.hideCircle2(x1,y1,x2,y2);}
 
 			this.drawQuesHatenas(x1,y1,x2,y2);
 
@@ -182,6 +185,15 @@ Puzzles.pipelink.prototype = {
 			return false;
 		};
 
+		pc.hideIceBorders = function(x1,y1,x2,y2){
+			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+			for(var i=0;i<idlist.length;i++){
+				var id = idlist[i];
+				this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, false);
+			}
+			this.vinc();
+		};
+
 		pc.drawCircle2 = function(x1,y1,x2,y2){
 			var rsize  = k.cwidth*0.40;
 			var header = "c_cir_";
@@ -197,6 +209,12 @@ Puzzles.pipelink.prototype = {
 				}
 				else{ this.vhide(header+c);}
 			}
+			this.vinc();
+		};
+		pc.hideCircle2 = function(x1,y1,x2,y2){
+			var header = "c_cir_";
+			var clist = this.cellinside(x1,y1,x2,y2);
+			for(var i=0;i<clist.length;i++){ this.vhide(header+clist[i]);}
 			this.vinc();
 		};
 

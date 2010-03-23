@@ -180,18 +180,24 @@ Puzzles.bosanowa.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			if(pp.getVal('disptype')==2){ this.drawChassis_souko(x1,y1,x2,y2);}
-			if(pp.getVal('disptype')==3){ this.drawChassis_waritai(x1,y1,x2,y2);}
-			if(pp.getVal('disptype')!=1){ this.drawGrid_bosanowa(x1,y1,x2,y2);}
-
 			if(pp.getVal('disptype')==1){
 				this.drawBGCells(x1,y1,x2,y2);
 				this.drawCircles_bosanowa(x1,y1,x2,y2);
 				this.drawBDnumbase(x1,y1,x2,y2);
 			}
-			else{
+			else if(pp.getVal('disptype')==2){
+				this.drawChassis_souko(x1,y1,x2,y2);
+				this.drawGrid_souko(x1,y1,x2,y2);
+
 				this.drawBDnumbase(x1,y1,x2,y2);
-				this.drawBGCells(x1,y1,x2,y2);
+				this.drawErrorCells_bosanowa(x1,y1,x2,y2);
+			}
+			else if(pp.getVal('disptype')==3){
+				this.drawChassis_waritai(x1,y1,x2,y2);
+				this.drawGrid_waritai(x1,y1,x2,y2);
+
+				this.drawBDnumbase(x1,y1,x2,y2);
+				this.drawErrorCells_bosanowa(x1,y1,x2,y2);
 			}
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -202,84 +208,109 @@ Puzzles.bosanowa.prototype = {
 			this.drawTarget_bosanowa(x1,y1,x2,y2);
 		};
 
-		pc.drawGrid_bosanowa = function(x1,y1,x2,y2){
-			var header = "b_bds_";
-
-			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4);
-			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
-
-				this.vhide(header+id);
-				if(pp.getVal('disptype')===3){
-					if     ((cc1!==-1&&bd.cell[cc1].ques===7) ^(cc2!==-1&&bd.cell[cc2].ques===7)){
-						g.fillStyle=this.BorderQuescolor;
-						this.drawBorder1x(bd.border[id].cx,bd.border[id].cy,true);
-					}
-					else if((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7)){
-						g.fillStyle=this.gridcolor;
-						if(this.vnop(header+id,this.NONE)){
-							if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
-							else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2),  bd.border[id].py, k.cwidth+1,  1);}
-						}
+		pc.drawErrorCells_bosanowa = function(x1,y1,x2,y2){
+			var header = "c_fullerr_";
+			g.fillStyle = this.errbcolor1;
+			var clist = this.cellinside(x1,y1,x2,y2);
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				if(bd.cell[c].error===1){
+					if(this.vnop(header+c,this.FILL)){
+						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
 					}
 				}
-				else if(pp.getVal('disptype')===2){
-					if((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7)){
-						g.fillStyle="rgb(127,127,127)";
-						if(!g.use.canvas){
-							if(this.vnop(header+id,this.NONE)){
-								if(bd.border[id].cy&1){
-									var px = bd.border[id].px, py1 = bd.border[id].py-mf(k.cheight/2), py2 = py1+k.cheight+1;
-									g.strokeLine(px, py1, px, py2);
-									g.setDashSize(3);
-								}
-								else if(bd.border[id].cx&1){
-									var py = bd.border[id].py, px1 = bd.border[id].px-mf(k.cwidth/2), px2 = px1+k.cwidth+1;
-									g.fillRect(px1, py, px2, py);
-									g.setDashSize(3);
-								}
-							}
-						}
-						else{
-							var dotmax = mf(k.cwidth/10)+3;
-							var dotCount = (mf(k.cwidth/dotmax)>=1?mf(k.cwidth/dotmax):1);
-							var dotSize  = k.cwidth/(dotCount*2);
-							if     (bd.border[id].cy&1){ 
-								for(var j=0;j<k.cheight+1;j+=(2*dotSize)){
-									g.fillRect(bd.border[id].px, mf(bd.border[id].py-k.cheight/2+j), 1, mf(dotSize));
-								}
-							}
-							else if(bd.border[id].cx&1){ 
-								for(var j=0;j<k.cwidth+1 ;j+=(2*dotSize)){
-									g.fillRect(mf(bd.border[id].px-k.cwidth/2+j), bd.border[id].py, mf(dotSize), 1);
-								}
-							}
-						}
-					}
-				}
+				else{ this.vhide([header+c]);}
 			}
 			this.vinc();
 		};
+
 		pc.drawCircles_bosanowa = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.45;
-			var rsize2 = k.cwidth*0.42;
-			var headers = ["c_cira_", "c_cirb_"];
+			g.lineWidth = 2;
+			g.fillStyle = "white";
+			var rsize  = k.cwidth*0.44;
+			var header = "c_cir_";
 
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && !bd.isNum(c)){
-					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
-					if(this.vnop(headers[0]+c,this.FILL)){
-						g.fillCircle(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize);
-					}
-
-					g.fillStyle = "white";
-					if(this.vnop(headers[1]+c,this.NONE)){
-						g.fillCircle(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2);
+					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+					if(this.vnop(header+c,this.STROKE)){
+						g.shapeCircle(mf(bd.cell[c].px+k.cwidth/2), mf(bd.cell[c].py+k.cheight/2), rsize);
 					}
 				}
-				else{ this.vhide([headers[0]+c, headers[1]+c]);}
+				else{ this.vhide([header+c]);}
+			}
+			this.vinc();
+		};
+
+		pc.drawGrid_souko = function(x1,y1,x2,y2){
+			var header = "b_grids_";
+			g.lineWidth = 1;
+			g.fillStyle="rgb(127,127,127)";
+			g.strokeStyle="rgb(127,127,127)";
+
+			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4);
+			for(var i=0;i<idlist.length;i++){
+				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
+				var onboard1 = (cc1!==-1&&bd.cell[cc1].ques===7);
+				var onboard2 = (cc2!==-1&&bd.cell[cc2].ques===7);
+
+				if(onboard1 && onboard2){
+					if(!g.use.canvas){
+						if(this.vnop(header+id,this.NONE)){
+							if(bd.border[id].cy&1){
+								var px = bd.border[id].px, py1 = bd.border[id].py-mf(k.cheight/2), py2 = py1+k.cheight+1;
+								g.strokeLine(px, py1, px, py2);
+								g.setDashSize(3);
+							}
+							else if(bd.border[id].cx&1){
+								var py = bd.border[id].py, px1 = bd.border[id].px-mf(k.cwidth/2), px2 = px1+k.cwidth+1;
+								g.strokeLine(px1, py, px2, py);
+								g.setDashSize(3);
+							}
+						}
+					}
+					else{
+						var dotmax = mf(k.cwidth/10)+3;
+						var dotCount = (mf(k.cwidth/dotmax)>=1?mf(k.cwidth/dotmax):1);
+						var dotSize  = k.cwidth/(dotCount*2);
+						if     (bd.border[id].cy&1){ 
+							for(var j=0;j<k.cheight+1;j+=(2*dotSize)){
+								g.fillRect(bd.border[id].px, mf(bd.border[id].py-k.cheight/2+j), 1, mf(dotSize));
+							}
+						}
+						else if(bd.border[id].cx&1){ 
+							for(var j=0;j<k.cwidth+1 ;j+=(2*dotSize)){
+								g.fillRect(mf(bd.border[id].px-k.cwidth/2+j), bd.border[id].py, mf(dotSize), 1);
+							}
+						}
+					}
+				}
+				else{ this.vhide([header+id]);} 
+			}
+			this.vinc();
+		};
+		pc.drawGrid_waritai = function(x1,y1,x2,y2){
+			var header = "b_grid_";
+
+			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4);
+			for(var i=0;i<idlist.length;i++){
+				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
+				var onboard1 = (cc1!==-1&&bd.cell[cc1].ques===7);
+				var onboard2 = (cc2!==-1&&bd.cell[cc2].ques===7);
+
+				if(onboard1 && onboard2){
+					g.fillStyle=this.gridcolor;
+					if(this.vnop(header+id,this.NONE)){
+						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
+						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2),  bd.border[id].py, k.cwidth+1,  1);}
+					}
+				}
+				else{ this.vhide([header+id]);}
+
+				g.fillStyle=this.BorderQuescolor;
+				this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, (onboard1^onboard2));
 			}
 			this.vinc();
 		};
@@ -301,6 +332,7 @@ Puzzles.bosanowa.prototype = {
 				}
 				else{ this.vhide(header+id);}
 			}
+			this.vinc();
 		};
 
 		pc.getNumberColor = function(cc){	//オーバーライド
@@ -349,7 +381,7 @@ Puzzles.bosanowa.prototype = {
 					{
 						g.fillStyle = "rgb(127,127,127)";
 						if(this.vnop(header+c,this.NONE)){
-							g.fillRect(k.p0.x+k.cwidth*cx, k.p0.y+k.cheight*cy, k.cwidth, k.cheight);
+							g.fillRect(k.p0.x+k.cwidth*cx, k.p0.y+k.cheight*cy, k.cwidth+1, k.cheight+1);
 						}
 					}
 					else{ this.vhide(header+c);}
