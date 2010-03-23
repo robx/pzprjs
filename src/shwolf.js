@@ -139,7 +139,7 @@ Puzzles.shwolf.prototype = {
 		};
 
 		pc.EL_IMAGE  = ee.addTemplate('','img',{src:'./src/img/shwolf_obj.gif',unselectable:'on'},{position:'absolute'},null);
-		pc.EL_DIVIMG = ee.addTemplate('','div',{unselectable:'on'},{position:'relative', display:'inline'},null);
+		pc.EL_DIVIMG = ee.addTemplate('','div',{unselectable:'on'},{position:'absolute', display:'inline'},null);
 
 		// numobj:？表示用 numobj2:画像表示用
 		pc.drawSheepWolf = function(x1,y1,x2,y2){
