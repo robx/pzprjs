@@ -160,11 +160,14 @@ Puzzles.pipelink.prototype = {
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
-			if(this.disp==1){ this.drawIceBorders(x1,y1,x2,y2);}
-			else if(!g.use.canvas){ this.hideIceBorders(x1,y1,x2,y2);}
-
-			if(this.disp==0){ this.drawCircle2(x1,y1,x2,y2);}
-			else if(!g.use.canvas){ this.hideCircle2(x1,y1,x2,y2);}
+			if(this.disp===0){
+				this.drawCircles_pipelink(x1,y1,x2,y2);
+				if(!g.use.canvas){ this.hideIceBorders(x1,y1,x2,y2);}
+			}
+			else if(this.disp===1){
+				if(!g.use.canvas){ this.hideCircles_pipelink(x1,y1,x2,y2);}
+				this.drawIceBorders(x1,y1,x2,y2);
+			}
 
 			this.drawQuesHatenas(x1,y1,x2,y2);
 
@@ -186,15 +189,18 @@ Puzzles.pipelink.prototype = {
 		};
 
 		pc.hideIceBorders = function(x1,y1,x2,y2){
+			this.vinc('border', 'crispEdges');
+
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 				this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, false);
 			}
-			this.vinc();
 		};
 
-		pc.drawCircle2 = function(x1,y1,x2,y2){
+		pc.drawCircles_pipelink = function(x1,y1,x2,y2){
+			this.vinc('cell_circle', 'auto');
+
 			var rsize  = k.cwidth*0.40;
 			var header = "c_cir_";
 
@@ -209,13 +215,13 @@ Puzzles.pipelink.prototype = {
 				}
 				else{ this.vhide(header+c);}
 			}
-			this.vinc();
 		};
-		pc.hideCircle2 = function(x1,y1,x2,y2){
+		pc.hideCircles_pipelink = function(x1,y1,x2,y2){
+			this.vinc('cell_circle', 'auto');
+
 			var header = "c_cir_";
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){ this.vhide(header+clist[i]);}
-			this.vinc();
 		};
 
 		pc.disp = 0;
@@ -225,10 +231,17 @@ Puzzles.pipelink.prototype = {
 			this.paintAll();
 		};
 
-		line.repaintParts = function(id){
-			if(bd.isLPMarked(id)){
-				pc.drawLineParts1( bd.cc1(id) );
-				pc.drawLineParts1( bd.cc2(id) );
+		line.repaintParts = function(idlist){
+			var cdata=[];
+			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
+			for(var i=0;i<idlist.length;i++){
+				cdata[bd.cc1(idlist[i])] = true;
+				cdata[bd.cc2(idlist[i])] = true;
+			}
+			for(var c=0;c<cdata.length;c++){
+				if(cdata[c]){
+					pc.drawLineParts1(c);
+				}
 			}
 		};
 	},

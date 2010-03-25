@@ -281,9 +281,10 @@ Puzzles.icelom.prototype = {
 
 		// IN/OUTの矢印用に必要ですね。。
 		pc.drawArrows = function(x1,y1,x2,y2){
+			this.vinc('border_arrow', 'auto');
+
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+4,y2*2+4,function(id){ return (id>=bd.bdinside);});
 			for(var i=0;i<idlist.length;i++){ this.drawArrow1(idlist[i], bd.isArrow(idlist[i]));}
-			this.vinc();
 		};
 		pc.drawArrow1 = function(id, flag){
 			var vids = ["b_ar_"+id,"b_dt1_"+id,"b_dt2_"+id];
@@ -343,8 +344,12 @@ Puzzles.icelom.prototype = {
 			this.showEL(el);
 		};
 
-		line.repaintParts = function(id){
-			if(id===bd.arrowin || id===bd.arrowout){ pc.drawArrow1(id,true);}
+		line.repaintParts = function(idlist){
+			for(var i=0;i<idlist.length;i++){
+				if(idlist[i]===bd.arrowin || idlist[i]===bd.arrowout){
+					pc.drawArrow1(idlist[i],true);
+				}
+			}
 		};
 	},
 

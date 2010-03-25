@@ -209,6 +209,8 @@ Puzzles.bosanowa.prototype = {
 		};
 
 		pc.drawErrorCells_bosanowa = function(x1,y1,x2,y2){
+			this.vinc('cell_back', 'crispEdges');
+
 			var header = "c_fullerr_";
 			g.fillStyle = this.errbcolor1;
 			var clist = this.cellinside(x1,y1,x2,y2);
@@ -221,10 +223,11 @@ Puzzles.bosanowa.prototype = {
 				}
 				else{ this.vhide([header+c]);}
 			}
-			this.vinc();
 		};
 
 		pc.drawCircles_bosanowa = function(x1,y1,x2,y2){
+			this.vinc('cell_circle', 'auto');
+
 			g.lineWidth = 2;
 			g.fillStyle = "white";
 			var rsize  = k.cwidth*0.44;
@@ -241,10 +244,11 @@ Puzzles.bosanowa.prototype = {
 				}
 				else{ this.vhide([header+c]);}
 			}
-			this.vinc();
 		};
 
 		pc.drawGrid_souko = function(x1,y1,x2,y2){
+			this.vinc('grid_souko', 'crispEdges');
+
 			var header = "b_grids_";
 			g.lineWidth = 1;
 			g.fillStyle="rgb(127,127,127)";
@@ -289,11 +293,11 @@ Puzzles.bosanowa.prototype = {
 				}
 				else{ this.vhide([header+id]);} 
 			}
-			this.vinc();
 		};
 		pc.drawGrid_waritai = function(x1,y1,x2,y2){
-			var header = "b_grid_";
+			this.vinc('grid_waritai', 'crispEdges');
 
+			var header = "b_grid_";
 			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
@@ -312,10 +316,11 @@ Puzzles.bosanowa.prototype = {
 				g.fillStyle=this.BorderQuescolor;
 				this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, (onboard1^onboard2));
 			}
-			this.vinc();
 		};
 
 		pc.drawBDnumbase = function(x1,y1,x2,y2){
+			this.vinc('border_number_base', 'crispEdges');
+
 			var csize = k.cwidth*0.20;
 			var header = "b_bbse_";
 
@@ -332,7 +337,6 @@ Puzzles.bosanowa.prototype = {
 				}
 				else{ this.vhide(header+id);}
 			}
-			this.vinc();
 		};
 
 		pc.getNumberColor = function(cc){	//オーバーライド
@@ -342,6 +346,8 @@ Puzzles.bosanowa.prototype = {
 			return this.fontcolor;
 		};
 		pc.drawNumbersBD = function(x1,y1,x2,y2){
+			this.vinc('border_number', 'auto');
+
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id=idlist[i], obj=bd.border[id];
@@ -351,10 +357,11 @@ Puzzles.bosanowa.prototype = {
 				}
 				else{ this.hideEL(obj.numobj);}
 			}
-			this.vinc();
 		};
 
 		pc.drawChassis_waritai = function(x1,y1,x2,y2){
+			this.vinc('chassis_waritai', 'crispEdges');
+
 			g.fillStyle = pc.Cellcolor;
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
@@ -365,11 +372,11 @@ Puzzles.bosanowa.prototype = {
 				this.drawBorder1x(2*bd.cell[c].cx+1, 0                ,(bd.cell[c].cy===0)        );
 				this.drawBorder1x(2*bd.cell[c].cx+1, 2*k.qrows        ,(bd.cell[c].cy===k.qrows-1));
 			}
-			this.vinc();
 		};
 		pc.drawChassis_souko = function(x1,y1,x2,y2){
-			var header = "c_full_";
+			this.vinc('chassis_souko', 'crispEdges');
 
+			var header = "c_full_";
 			for(var cx=x1-1;cx<=x2+1;cx++){
 				for(var cy=y1-1;cy<=y2+1;cy++){
 					var c=bd.cnum(cx,cy);
@@ -387,9 +394,9 @@ Puzzles.bosanowa.prototype = {
 					else{ this.vhide(header+c);}
 				}
 			}
-			this.vinc();
 		};
 		pc.drawChassis_bosanowa = function(x1,y1,x2,y2){
+			this.vinc('chassis_editor', 'crispEdges');
 			x1--; y1--; x2++; y2++;
 			if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
 			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
@@ -399,7 +406,6 @@ Puzzles.bosanowa.prototype = {
 			if(y1<1)         { if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+y1*k.cheight    , (x2-x1+1)*k.cwidth+1, 1); } }
 			if(y2>=k.qrows-1){ if(this.vnop("chs3_",this.NONE)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+(y2+1)*k.cheight, (x2-x1+1)*k.cwidth+1, 1); } }
 			if(x2>=k.qcols-1){ if(this.vnop("chs4_",this.NONE)){ g.fillRect(k.p0.x+(x2+1)*k.cwidth, k.p0.y+y1*k.cheight    , 1, (y2-y1+1)*k.cheight+1);} }
-			this.vinc();
 		};
 
 		pc.drawTarget_bosanowa = function(x1,y1,x2,y2){

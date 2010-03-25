@@ -744,7 +744,6 @@ MenuExec.prototype = {
 					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,k.QSUB,i,bd.border[i].qsub,bd.defborder.qsub);}
 				}
 			}
-			if(g.use.canvas){ pc.flushCanvasAll();}
 
 			bd.ansclear();
 			base.resetInfo(false);
@@ -764,7 +763,7 @@ MenuExec.prototype = {
 					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,k.QSUB,i,bd.border[i].qsub,bd.defborder.qsub);}
 				}
 			}
-			if(g.use.canvas){ pc.flushCanvasAll();}
+
 			bd.subclear();
 			pc.paintAll();
 		}

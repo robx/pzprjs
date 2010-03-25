@@ -469,6 +469,7 @@ Puzzles.tawa.prototype = {
 		pc.paintAll = function(){ this.paint(0,0,tc.maxx+1,k.qrows); },
 
 		pc.drawGrid_tawa = function(x1,y1,x2,y2){
+			this.vinc('grid', 'crispEdges');
 			if(x1<0){ x1=0;} if(x2>tc.maxx+1){ x2=tc.maxx+1;}
 			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
@@ -497,13 +498,12 @@ Puzzles.tawa.prototype = {
 					}
 				}
 			}
-
-			this.vinc();
 		};
 
 		pc.drawTarget_tawa = function(x1,y1,x2,y2){
 			if(k.playmode){ this.hideTCell(); return;}
 
+			this.vinc('target', 'crispEdges');
 			if(tc.cursolx < x1   || x2  +1 < tc.cursolx){ return;}
 			if(tc.cursoly < y1*2 || y2*2+2 < tc.cursoly){ return;}
 
@@ -517,8 +517,6 @@ Puzzles.tawa.prototype = {
 			if(this.vnop("tc2_",this.NONE)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
 			if(this.vnop("tc3_",this.NONE)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
 			if(this.vnop("tc4_",this.NONE)){ g.fillRect(px+k.cwidth-w,  py+1, w, k.cheight-2);}
-
-			this.vinc();
 		};
 
 		pc.flushCanvas_tawa = function(x1,y1,x2,y2){
@@ -531,7 +529,9 @@ Puzzles.tawa.prototype = {
 					g.fillRect(k.p0.x+x1*k.cwidth/2, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth/2, (y2-y1+1)*k.cheight);
 				}
 			}
-			else{ this.zidx=1; g.setLayer('layer1');}
+			else{
+				this.zidx=0;
+			}
 		};
 	},
 

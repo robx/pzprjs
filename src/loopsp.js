@@ -210,7 +210,8 @@ Puzzles.loopsp.prototype = {
 
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawCircledNumbers(x1,y1,x2,y2);
+			this.drawCircles(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,1);
 
@@ -221,13 +222,20 @@ Puzzles.loopsp.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		line.repaintParts = function(id){
-			if(bd.isLPMarked(id)){
-				pc.drawLineParts1( bd.cc1(id) );
-				pc.drawLineParts1( bd.cc2(id) );
+		line.repaintParts = function(idlist){
+			var cdata=[];
+			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
+			for(var i=0;i<idlist.length;i++){
+				cdata[bd.cc1(idlist[i])] = true;
+				cdata[bd.cc2(idlist[i])] = true;
 			}
-			pc.drawCircledNumber1( bd.cc1(id) );
-			pc.drawCircledNumber1( bd.cc2(id) );
+			for(var c=0;c<cdata.length;c++){
+				if(cdata[c]){
+					pc.drawLineParts1(c);
+					pc.drawCircle1(c);
+					pc.dispnumCell(c);
+				}
+			}
 		};
 	},
 

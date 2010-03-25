@@ -143,6 +143,8 @@ Puzzles.shwolf.prototype = {
 
 		// numobj:？表示用 numobj2:画像表示用
 		pc.drawSheepWolf = function(x1,y1,x2,y2){
+			this.vinc('cell_number_image', 'auto');
+
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
@@ -184,7 +186,6 @@ Puzzles.shwolf.prototype = {
 					div.style.top  = k.cv_oft.y+bd.cell[c].py+mf((k.cheight-hgt)/2)+1+'px';
 				}
 			}
-			this.vinc();
 		};
 		pc.isdispnumCell = f_true;
 	},

@@ -133,6 +133,8 @@ Puzzles.kaero.prototype = {
 		};
 
 		pc.drawTip = function(x1,y1,x2,y2){
+			this.vinc('cell_linetip', 'auto');
+
 			var tsize = k.cwidth*0.30;
 			var tplus = k.cwidth*0.05;
 			var header = "c_tip_";
@@ -163,9 +165,10 @@ Puzzles.kaero.prototype = {
 					}
 				}
 			}
-			this.vinc();
 		};
 		pc.drawCellSquare = function(x1,y1,x2,y2){
+			this.vinc('cell_number_base', 'crispEdges');
+
 			var mgnw = mf(k.cwidth*0.15);
 			var mgnh = mf(k.cheight*0.15);
 			var header = "c_sq_";
@@ -186,9 +189,10 @@ Puzzles.kaero.prototype = {
 				}
 				else{ this.vhide(header+c);}
 			}
-			this.vinc();
 		};
 		pc.drawNumbers_kaero = function(x1,y1,x2,y2){
+			this.vinc('cell_number', 'auto');
+
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
@@ -207,7 +211,6 @@ Puzzles.kaero.prototype = {
 
 				this.dispnum(obj.numobj, 1, text, 0.85, color, obj.px, obj.py);
 			}
-			this.vinc();
 		};
 	},
 

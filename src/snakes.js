@@ -183,6 +183,8 @@ Puzzles.snakes.prototype = {
 
 		// ã´äEê¸ÇÃï`âÊ
 		pc.drawBorders_snake = function(x1,y1,x2,y2){
+			this.vinc('border', 'crispEdges');
+
 			var func  = function(c1,c2){
 				if(c2===-1){ return false;}
 				if(bd.cell[c1].qnum!==-1 || bd.cell[c2].qnum!==-1) { return false;}
@@ -200,10 +202,11 @@ Puzzles.snakes.prototype = {
 				this.drawBorder1x(2*cx+2,2*cy+1,func(c,rt));
 				this.drawBorder1x(2*cx+1,2*cy+2,func(c,dn));
 			}
-			this.vinc();
 		};
 
 		pc.drawAnswerNumbers = function(x1,y1,x2,y2){
+			this.vinc('cell_number', 'auto');
+
 			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];

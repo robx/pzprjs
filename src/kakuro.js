@@ -166,8 +166,9 @@ Puzzles.kakuro.prototype = {
 			return false;
 		};
 		pc.drawBGEXcells = function(x1,y1,x2,y2){
-			var header = "ex_full_";
+			this.vinc('excell_back', 'crispEdges');
 
+			var header = "ex_full_";
 			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i];
@@ -177,11 +178,12 @@ Puzzles.kakuro.prototype = {
 					g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);
 				}
 			}
-			this.vinc();
 		};
 
 		// ‹«ŠEü‚Ì•`‰æ
 		pc.drawBorders51 = function(x1,y1,x2,y2){
+			this.vinc('border', 'crispEdges');
+
 			g.fillStyle = pc.Cellcolor;
 			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<clist.length;i++){
@@ -191,10 +193,11 @@ Puzzles.kakuro.prototype = {
 				this.drawBorder1x(2*cx+2,2*cy+1,(rt!=-1&&((bd.cell[c].ques===51)^(bd.cell[rt].ques===51))));
 				this.drawBorder1x(2*cx+1,2*cy+2,(dn!=-1&&((bd.cell[c].ques===51)^(bd.cell[dn].ques===51))));
 			}
-			this.vinc();
 		};
 
 		pc.drawNumbers_kakuro = function(x1,y1,x2,y2){
+			this.vinc('cell_number', 'auto');
+
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
@@ -208,7 +211,6 @@ Puzzles.kakuro.prototype = {
 					this.dispnum(obj.numobj, 1, text, 0.80, color, obj.px, obj.py);
 				}
 			}
-			this.vinc();
 		};
 	},
 

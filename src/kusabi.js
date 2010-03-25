@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.2.5
+// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.3.0
 //
 Puzzles.kusabi = function(){ };
 Puzzles.kusabi.prototype = {
@@ -110,7 +110,8 @@ Puzzles.kusabi.prototype = {
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawCircledNumbers(x1,y1,x2,y2);
+			this.drawCircles(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 

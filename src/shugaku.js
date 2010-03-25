@@ -245,7 +245,8 @@ Puzzles.shugaku.prototype = {
 
 			this.drawTargetFuton(x1,y1,x2,y2);
 
-			this.drawCircledNumbers(x1,y1,x2,y2);
+			this.drawCircles(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
@@ -253,8 +254,9 @@ Puzzles.shugaku.prototype = {
 		};
 
 		pc.drawFutons = function(x1,y1,x2,y2){
-			var header = "c_full_";
+			this.vinc('cell_back', 'crispEdges');
 
+			var header = "c_full_";
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
@@ -268,7 +270,6 @@ Puzzles.shugaku.prototype = {
 
 				this.drawPillow1(c, (bd.cell[c].qans>=11 && bd.cell[c].qans<=15), false);
 			}
-			this.vinc();
 		};
 		pc.drawPillow1 = function(cc, flag, inputting){
 			var mgnw = mf(k.cwidth*0.15);
@@ -290,6 +291,8 @@ Puzzles.shugaku.prototype = {
 		};
 
 		pc.drawFutonBorders = function(x1,y1,x2,y2){
+			this.vinc('border_futon', 'crispEdges');
+
 			var lw = this.lw, lm = this.lm;
 			var doma1 = {11:1,12:1,14:1,15:1,16:1,17:1,19:1,20:1};
 			var domb1 = {11:1,13:1,14:1,15:1,16:1,18:1,19:1,20:1};
@@ -318,10 +321,11 @@ Puzzles.shugaku.prototype = {
 					else{ this.vhide(vid);}
 				}
 			}
-			this.vinc();
 		};
 
 		pc.drawTargetFuton = function(x1,y1,x2,y2){
+			this.vinc('cell_back', 'crispEdges');
+
 			var cc=mv.mouseCell;
 			var inputting = ((mv.firstPos.x!==-1 || mv.firstPos.y!==-1) && cc!==-1);
 
@@ -345,15 +349,15 @@ Puzzles.shugaku.prototype = {
 				}
 				else{ this.vhide(header+adj);}
 			}
-			this.vinc();
 
 			// “ü—Í’†‚Ó‚Æ‚ñ‚Ì‚Ü‚­‚ç•`‰æ
 			if(inputting){
 				this.drawPillow1(cc,true,true);
 			}
-			this.vinc();
 
 			// “ü—Í’†‚Ó‚Æ‚ñ‚ÌŽü‚è‚Ì‹«ŠEü•`‰æ
+			this.vinc('border_futon', 'crispEdges');
+
 			this.vdel(["tbd1_","tbd2_","tbd3_","tbd4_"]);
 			if(inputting){
 				var lw = this.lw, lm = this.lm;
@@ -368,7 +372,6 @@ Puzzles.shugaku.prototype = {
 				if(this.vnop("tbd3_",this.NONE)){ g.fillRect(px+wid-lm, py-lm    , lw, hgt+lw);}
 				if(this.vnop("tbd4_",this.NONE)){ g.fillRect(px-lm    , py+hgt-lm, wid+lw, lw);}
 			}
-			this.vinc();
 		};
 
 		pc.flushCanvas = function(x1,y1,x2,y2){	// ”wŒiF‚ð‚Â‚¯‚½‚¢‚Ì‚Åã‘‚«‚·‚é
@@ -379,12 +382,13 @@ Puzzles.shugaku.prototype = {
 				g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth, (y2-y1+1)*k.cheight);
 			}
 			else{
-				this.zidx=1;
+				this.zidx=0;
+				this.vinc('board_base', 'crispEdges');
+
 				g.fillStyle = this.bgcolor;
 				if(this.vnop("boardfull",this.NONE)){
 					g.fillRect(k.p0.x, k.p0.y, k.qcols*k.cwidth, k.qrows*k.cheight);
 				}
-				this.vinc();
 			}
 		};
 	},

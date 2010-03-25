@@ -170,6 +170,8 @@ Puzzles.gokigen.prototype = {
 		};
 
 		pc.drawSlashes = function(x1,y1,x2,y2){
+			this.vinc('cell_slash', 'auto');
+
 			var headers = ["c_sl1_", "c_sl2_"];
 			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
 
@@ -200,7 +202,6 @@ Puzzles.gokigen.prototype = {
 				}
 				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
-			this.vinc();
 		};
 
 		pc.drawTarget_gokigen = function(x1,y1,x2,y2){

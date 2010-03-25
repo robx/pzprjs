@@ -111,13 +111,14 @@ Puzzles.renban.prototype = {
 
 		// ƒGƒ‰[‚ÉÔ‚­•\¦‚µ‚½‚¢‚Ì‚Åã‘‚«
 		pc.drawBorders_renban = function(x1,y1,x2,y2){
+			this.vinc('border', 'crispEdges');
+
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 				g.fillStyle = (bd.border[id].error===1 ? this.errcolor1 : this.BorderQuescolor);
 				this.drawBorder1x(bd.border[id].cx,bd.border[id].cy,bd.isBorder(idlist[i]));
 			}
-			this.vinc();
 		};
 	},
 

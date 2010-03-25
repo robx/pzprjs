@@ -96,6 +96,8 @@ Puzzles.mejilink.prototype = {
 		};
 
 		pc.drawBaseMarks = function(x1,y1,x2,y2){
+			this.vinc('cross_mark', 'auto');
+
 			for(var i=0;i<(k.qcols+1)*(k.qrows+1);i++){
 				var cx = i%(k.qcols+1); var cy = mf(i/(k.qcols+1));
 				if(cx < x1-1 || x2+1 < cx){ continue;}
@@ -103,7 +105,6 @@ Puzzles.mejilink.prototype = {
 
 				this.drawBaseMark1(i);
 			}
-			this.vinc();
 		};
 		pc.drawBaseMark1 = function(i){
 			var vid = "x_cm_"+i;
@@ -120,8 +121,9 @@ Puzzles.mejilink.prototype = {
 
 		// オーバーライド
 		pc.drawBorders_mejilink = function(x1,y1,x2,y2){
-			var headers = ["b_bd_", "b_wbd_"];
+			this.vinc('border_mejilink', 'crispEdges');
 
+			var headers = ["b_bd_", "b_wbd_"];
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
@@ -151,13 +153,21 @@ Puzzles.mejilink.prototype = {
 				}
 				else{ this.vhide(headers[1]+id);}
 			}
-			this.vinc();
 			this.addlw = 0;
 		};
 
-		line.repaintParts = function(id){
-			pc.drawBaseMark1( bd.crosscc1(id) );
-			pc.drawBaseMark1( bd.crosscc2(id) );
+		line.repaintParts = function(idlist){
+			var cdata=[];
+			for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){ cdata[c]=false;}
+			for(var i=0;i<idlist.length;i++){
+				cdata[bd.crosscc1(idlist[i])] = true;
+				cdata[bd.crosscc2(idlist[i])] = true;
+			}
+			for(var c=0;c<cdata.length;c++){
+				if(cdata[c]){
+					pc.drawBaseMark1(c);
+				}
+			}
 		};
 	},
 

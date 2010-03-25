@@ -261,8 +261,9 @@ Puzzles.kinkonkan.prototype = {
 		};
 
 		pc.drawErrorCells_kinkonkan = function(x1,y1,x2,y2){
-			var headers = ["c_full_", "c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_", "c_full_"];
+			this.vinc('cell_back', 'crispEdges');
 
+			var headers = ["c_full_", "c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_", "c_full_"];
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], err = bd.cell[c].error;
@@ -278,9 +279,10 @@ Puzzles.kinkonkan.prototype = {
 				}
 				else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c, headers[4]+c, headers[5]+c]);}
 			}
-			this.vinc();
 		};
 		pc.drawSlashes = function(x1,y1,x2,y2){
+			this.vinc('cell_slash', 'auto');
+
 			var headers = ["c_sl1_", "c_sl2_"];
 			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
 
@@ -307,12 +309,12 @@ Puzzles.kinkonkan.prototype = {
 				}
 				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
-			this.vinc();
 		};
 
 		pc.drawEXcells_kinkonkan = function(x1,y1,x2,y2){
-			var header = "ex_full_";
+			this.vinc('excell_number', 'auto');
 
+			var header = "ex_full_";
 			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i];
@@ -347,7 +349,6 @@ Puzzles.kinkonkan.prototype = {
 					this.dispnum(obj.numobj, 1, text, fontratio, color, obj.px, obj.py);
 				}
 			}
-			this.vinc();
 		};
 	},
 

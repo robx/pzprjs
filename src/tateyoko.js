@@ -215,8 +215,9 @@ Puzzles.tateyoko.prototype = {
 		};
 
 		pc.drawTateyokos = function(x1,y1,x2,y2){
-			var headers = ["c_bar1_", "c_bar2_"];
+			this.vinc('cell_tateyoko', 'crispEdges');
 
+			var headers = ["c_bar1_", "c_bar2_"];
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
@@ -245,12 +246,12 @@ Puzzles.tateyoko.prototype = {
 				}
 				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
-			this.vinc();
 		};
 
 		pc.drawNumbers_tateyoko = function(x1,y1,x2,y2){
-			var header = "c_full_";
+			this.vinc('cell_number', 'auto');
 
+			var header = "c_full_";
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
@@ -270,7 +271,6 @@ Puzzles.tateyoko.prototype = {
 				if(bd.cell[c].ques==1){ color = "white";}
 				this.dispnum(obj.numobj, 1, (num!=-2?""+num:"?"), (num<10?0.8:0.75), color, obj.px, obj.py);
 			}
-			this.vinc();
 		};
 	},
 

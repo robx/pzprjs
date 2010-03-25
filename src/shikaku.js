@@ -103,12 +103,34 @@ Puzzles.shikaku.prototype = {
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
-			this.drawCircledNumbers(x1,y1,x2,y2);
+			this.drawCircles_shikaku(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 			this.drawBorderQsubs(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
+		};
+
+		pc.drawCircles_shikaku = function(x1,y1,x2,y2){
+			this.vinc('cell_circle', 'auto');
+
+			var rsize2 = k.cwidth*this.circleratio[1];
+			var mgnx = mf(k.cwidth/2), mgny = mf(k.cheight/2);
+			var header = "c_cir_";
+			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				if(bd.cell[c].qnum!=-1){
+					var px=bd.cell[c].px+mgnx, py=bd.cell[c].py+mgny;
+
+					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+					if(this.vnop(header+c,this.FILL)){
+						g.fillCircle(px, py, rsize2);
+					}
+				}
+				else{ this.vhide([header+c]);}
+			}
 		};
 	},
 

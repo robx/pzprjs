@@ -201,7 +201,6 @@ Puzzles.tentaisho.prototype = {
 					}
 				}
 
-				if(g.use.canvas){ pc.flushCanvasAll();}
 				pc.paintAll();
 			}
 		};
@@ -273,6 +272,8 @@ Puzzles.tentaisho.prototype = {
 		};
 
 		pc.drawBorderAnswers = function(x1,y1,x2,y2){
+			this.vinc('border', 'crispEdges');
+
 			var lw = this.lw, lm = this.lm;
 			var header = "b_bd_";
 
@@ -291,9 +292,10 @@ Puzzles.tentaisho.prototype = {
 				}
 				else{ this.vhide(header+id);}
 			}
-			this.vinc();
 		};
 		pc.drawStars = function(x1,y1,x2,y2){
+			this.vinc('star', 'auto');
+
 			var rsize  = k.cwidth*0.18;
 			var rsize2 = k.cwidth*0.14;
 			var headers = ["s_star41a_", "s_star41b_"];
@@ -323,7 +325,6 @@ Puzzles.tentaisho.prototype = {
 					else{ this.vhide(headers[1]+id);}
 				}
 			}
-			this.vinc();
 		};
 	},
 

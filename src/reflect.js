@@ -164,8 +164,9 @@ Puzzles.reflect.prototype = {
 		};
 
 		pc.drawTriangleBorder = function(x1,y1,x2,y2){
-			var header = "b_tb_";
+			this.vinc('cell_triangle_border', 'crispEdges');
 
+			var header = "b_tb_";
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+4,y2*2+4);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], lflag = !(bd.border[id].cx&1);
@@ -184,12 +185,12 @@ Puzzles.reflect.prototype = {
 				}
 				else{ this.vhide(header+id);}
 			}
-			this.vinc();
 		};
 		pc.draw101 = function(x1,y1,x2,y2){
+			this.vinc('cell_ques', 'crispEdges');
+
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){ this.draw101_1(clist[i]);}
-			this.vinc();
 		};
 		pc.draw101_1 = function(id){
 			var vids = ["c_lp1_"+id, "c_lp2_"+id];
@@ -209,10 +210,17 @@ Puzzles.reflect.prototype = {
 		};
 		pc.isdispnumCell = function(id){ return ((bd.QuC(id)>=2 && bd.QuC(id)<=5) && bd.QnC(id)>0);};
 
-		line.repaintParts = function(id){
-			if(bd.isLPMarked(id)){
-				pc.draw101_1(bd.cc1(id));
-				pc.draw101_1(bd.cc2(id));
+		line.repaintParts = function(idlist){
+			var cdata=[];
+			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
+			for(var i=0;i<idlist.length;i++){
+				cdata[bd.cc1(idlist[i])] = true;
+				cdata[bd.cc2(idlist[i])] = true;
+			}
+			for(var c=0;c<cdata.length;c++){
+				if(cdata[c]){
+					pc.draw101_1(c);
+				}
 			}
 		};
 	},

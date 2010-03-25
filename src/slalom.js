@@ -369,6 +369,8 @@ Puzzles.slalom.prototype = {
 		};
 
 		pc.drawStartpos = function(x1,y1,x2,y2){
+			this.vinc('cell_circle', 'auto');
+
 			var c = bd.startid;
 			if(bd.cell[c].cx<x1-2 || x2+2<bd.cell[c].cx || bd.cell[c].cy<y1-2 || y2+2<bd.cell[c].cy){ return;}
 
@@ -387,10 +389,10 @@ Puzzles.slalom.prototype = {
 			}
 
 			this.dispnumStartpos(c);
-
-			this.vinc();
 		};
 		pc.dispnumStartpos = function(c){
+			this.vinc('cell_number', 'auto');
+
 			var num = bd.hinfo.max, obj = bd.cell[c];
 			if(num<0){ this.hideEL(obj.numobj); return;}
 
@@ -399,10 +401,25 @@ Puzzles.slalom.prototype = {
 			this.dispnum(obj.numobj, 1, ""+num, fontratio, "black", obj.px, obj.py);
 		};
 
-		line.repaintParts = function(id){
-			var bx = bd.border[id].cx; var by = bd.border[id].cy;
-			pc.drawStartpos((bx-by%2)>>1,(by-bx%2)>>1,(bx-by%2)>>1,(by-bx%2)>>1);
-			pc.drawStartpos((bx+by%2)>>1,(by+bx%2)>>1,(bx+by%2)>>1,(by+bx%2)>>1);
+		line.repaintParts = function(idlist){
+			var cdata=[];
+			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
+			for(var i=0;i<idlist.length;i++){
+				cdata[bd.cc1(idlist[i])] = true;
+				cdata[bd.cc2(idlist[i])] = true;
+			}
+			for(var c=0;c<cdata.length;c++){
+				if(cdata[c]){
+					var id=idlist[i];
+					if(id!==bd.startid){ continue;}
+
+					var bx = bd.border[id].cx, by = bd.border[id].cy;
+					pc.drawStartpos((bx-by%2)>>1,(by-bx%2)>>1,(bx-by%2)>>1,(by-bx%2)>>1);
+
+					// startは一箇所だけなので、描画したら終了してよい
+					break;
+				}
+			}
 		};
 
 		// Xキー押した時に数字を表示するメソッド

@@ -203,6 +203,8 @@ Puzzles.lightup.prototype = {
 		};
 
 		pc.drawAkari = function(x1,y1,x2,y2){
+			this.vinc('cell_akari', 'auto');
+
 			var rsize = k.cwidth*0.40;
 			var ksize = k.cwidth*0.15;
 			var lampcolor = "rgb(0, 127, 96)";
@@ -219,7 +221,6 @@ Puzzles.lightup.prototype = {
 				}
 				else{ this.vhide(header+c);}
 			}
-			this.vinc();
 		};
 	},
 

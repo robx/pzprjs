@@ -107,6 +107,8 @@ Puzzles.factors.prototype = {
 			this.drawTCell(x1,y1,x2+1,y2+1);
 		};
 		pc.drawNumbers_factors = function(x1,y1,x2,y2){
+			this.vinc('cell_number', 'auto');
+
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
@@ -128,7 +130,6 @@ Puzzles.factors.prototype = {
 					this.dispnum(obj.numobj2, 5, (""+bd.cell[c].qnum), size, this.fontcolor, obj.px, obj.py);
 				}
 			}
-			this.vinc();
 		};
 	},
 

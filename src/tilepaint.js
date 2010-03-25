@@ -150,7 +150,6 @@ Puzzles.tilepaint.prototype = {
 					}
 				}
 
-				if(g.use.canvas){ pc.flushCanvasAll();}
 				pc.paintAll();
 			}
 		};

@@ -104,6 +104,8 @@ Puzzles.tasquare.prototype = {
 		};
 
 		pc.drawCellSquare = function(x1,y1,x2,y2){
+			this.vinc('cell_square', 'crispEdges');
+
 			var mgnw = mf(k.cwidth*0.1);
 			var mgnh = mf(k.cheight*0.1);
 			var header = "c_sq_";
@@ -121,7 +123,6 @@ Puzzles.tasquare.prototype = {
 				}
 				else{ this.vhide([header+c]);}
 			}
-			this.vinc();
 		};
 	},
 

@@ -185,7 +185,8 @@ Puzzles.hashikake.prototype = {
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawCircledNumbers(x1,y1,x2,y2);
+			this.drawCircles(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
 		};
@@ -225,9 +226,19 @@ Puzzles.hashikake.prototype = {
 			for(var i=0;i<=k.qrows;i++){ this.vhide("bdx_"+i);}
 		};
 
-		line.repaintParts = function(id){
-			pc.drawCircledNumber1( bd.cc1(id) );
-			pc.drawCircledNumber1( bd.cc2(id) );
+		line.repaintParts = function(idlist){
+			var cdata=[];
+			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
+			for(var i=0;i<idlist.length;i++){
+				cdata[bd.cc1(idlist[i])] = true;
+				cdata[bd.cc2(idlist[i])] = true;
+			}
+			for(var c=0;c<cdata.length;c++){
+				if(cdata[c]){
+					pc.drawCircle1(c);
+					pc.dispnumCell(c);
+				}
+			}
 		};
 		line.branch = function(bx,by,lcnt){
 			return (lcnt==3||lcnt==4) && (bd.QnC(bd.cnum(bx>>1,by>>1))!=-1);

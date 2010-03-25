@@ -251,9 +251,10 @@ Puzzles.icebarn.prototype = {
 		};
 
 		pc.drawArrows = function(x1,y1,x2,y2){
+			this.vinc('border_arrow', 'auto');
+
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+4,y2*2+4,f_true);
 			for(var i=0;i<idlist.length;i++){ this.drawArrow1(idlist[i], bd.isArrow(idlist[i]));}
-			this.vinc();
 		};
 		pc.drawArrow1 = function(id, flag){
 			var vids = ["b_ar_"+id,"b_dt1_"+id,"b_dt2_"+id];
@@ -313,8 +314,12 @@ Puzzles.icebarn.prototype = {
 			this.showEL(el);
 		};
 
-		line.repaintParts = function(id){
-			if(bd.isArrow(id)){ pc.drawArrow1(id,true);}
+		line.repaintParts = function(idlist){
+			for(var i=0;i<idlist.length;i++){
+				if(bd.isArrow(idlist[i])){
+					pc.drawArrow1(idlist[i],true);
+				}
+			}
 		};
 	},
 

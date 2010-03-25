@@ -134,6 +134,8 @@ Puzzles.tatamibari.prototype = {
 		};
 
 		pc.drawMarks = function(x1,y1,x2,y2){
+			this.vinc('cell_ques', 'crispEdges');
+
 			var lw = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3); //LineWidth
 			var headers = ["c_lp1_", "c_lp2_"];
 			g.fillStyle = this.BorderQuescolor;
@@ -156,7 +158,6 @@ Puzzles.tatamibari.prototype = {
 				}
 				else{ this.vhide(headers[1]+c);}
 			}
-			this.vinc();
 		};
 	},
 

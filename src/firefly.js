@@ -102,17 +102,19 @@ Puzzles.firefly.prototype = {
 
 			this.drawPekes(x1,y1,x2,y2,0);
 
-			this.drawNumCells_firefly(x1,y1,x2,y2);
+			this.drawFireflies(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		pc.drawNumCells_firefly = function(x1,y1,x2,y2){
+		pc.drawFireflies = function(x1,y1,x2,y2){
+			this.vinc('cell_firefly', 'auto');
+
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
-			for(var i=0;i<clist.length;i++){ this.drawNumCells_firefly1(clist[i]);}
-			this.vinc();
+			for(var i=0;i<clist.length;i++){ this.drawFirefly1(clist[i]);}
 		};
-		pc.drawNumCells_firefly1 = function(c){
+		pc.drawFirefly1 = function(c){
 			if(c===-1){ return;}
 
 			var rsize  = k.cwidth*0.40;
@@ -144,13 +146,21 @@ Puzzles.firefly.prototype = {
 				}
 			}
 			else{ this.vhide([headers[0]+c, headers[1]+c]);}
-
-			this.dispnumCell(c);
 		};
 
-		line.repaintParts = function(id){
-			pc.drawNumCells_firefly1( bd.cc1(id) );
-			pc.drawNumCells_firefly1( bd.cc2(id) );
+		line.repaintParts = function(idlist){
+			var cdata=[];
+			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
+			for(var i=0;i<idlist.length;i++){
+				cdata[bd.cc1(idlist[i])] = true;
+				cdata[bd.cc2(idlist[i])] = true;
+			}
+			for(var c=0;c<cdata.length;c++){
+				if(cdata[c]){
+					pc.drawFirefly1(c);
+					pc.dispnumCell(c)
+				}
+			}
 		};
 	},
 

@@ -234,6 +234,8 @@ Puzzles.toichika.prototype = {
 		};
 
 		pc.drawArrows = function(x1,y1,x2,y2){
+			this.vinc('cell_arrow', 'auto');
+
 			var headers = ["c_arup_", "c_ardn_", "c_arlt_", "c_arrt_"];
 			var ll = mf(k.cwidth*0.8);					//LineLength
 			var lw = Math.max(mf(k.cwidth/18/2)*2, 2);	//LineWidth
@@ -266,7 +268,6 @@ Puzzles.toichika.prototype = {
 					}
 				}
 			}
-			this.vinc();
 		};
 	},
 

@@ -101,7 +101,8 @@ Puzzles.aho.prototype = {
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
-			this.drawCircledNumbers_aho(x1,y1,x2,y2);
+			this.drawCircles_shikaku(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 			this.drawBorderQsubs(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
@@ -109,13 +110,12 @@ Puzzles.aho.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		// –{“–‚É‘Î‰ž‚·‚é‚Ü‚Å‚Ì‰ž‹}‘[’u
-		pc.drawCircledNumbers_aho = function(x1,y1,x2,y2){
+		pc.drawCircles_shikaku = function(x1,y1,x2,y2){
+			this.vinc('cell_circle', 'auto');
+
 			var rsize2 = k.cwidth*this.circleratio[1];
 			var mgnx = mf(k.cwidth/2), mgny = mf(k.cheight/2);
-			var header = "c_cira_";
-
-			g.lineWidth = k.cwidth*0.05;
+			var header = "c_cir_";
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
@@ -128,10 +128,7 @@ Puzzles.aho.prototype = {
 					}
 				}
 				else{ this.vhide([header+c]);}
-
-				this.dispnumCell(c);
 			}
-			this.vinc();
 		};
 	},
 

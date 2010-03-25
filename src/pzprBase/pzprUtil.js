@@ -306,42 +306,23 @@ LineManager.prototype = {
 	repaintLine : function(idlist, id){
 		if(!pp.getVal('irowake')){ return;}
 
-		if(g.use.canvas){
-			if(k.isCenterLine){
-				for(var i=0,len=idlist.length;i<len;i++){
-					pc.drawLine1(idlist[i], true);
-					this.repaintParts(idlist[i]);
-				}
-			}
-			else{
-				for(var i=0,len=idlist.length;i<len;i++){
-					var id = idlist[i];
-					if(bd.border[id].qans!==1){ g.fillStyle = pc.BorderQuescolor; }
-					else                      { g.fillStyle = pc.getLineColor(id);}
-					pc.drawBorder1x(bd.border[id].cx, bd.border[id].cy, true);
-					this.repaintParts(id);
-				}
+		if(k.isCenterLine){
+			for(var i=0,len=idlist.length;i<len;i++){
+				if(id===idlist[i]){ continue;}
+				pc.drawLine1(idlist[i], true);
 			}
 		}
 		else{
-			if(k.isCenterLine){
-				for(var i=0,len=idlist.length;i<len;i++){
-					if(id===idlist[i]){ continue;}
-					pc.drawLine1(idlist[i], true);
-				}
-			}
-			else{
-				for(var i=0,len=idlist.length;i<len;i++){
-					if(id===idlist[i]){ continue;}
-					var cid = idlist[i];
-					if(bd.border[id].qans!==1){ g.fillStyle = pc.BorderQuescolor;  }
-					else                      { g.fillStyle = pc.getLineColor(cid);}
-					pc.drawBorder1x(bd.border[cid].cx, bd.border[cid].cy, true);
-				}
+			for(var i=0,len=idlist.length;i<len;i++){
+				if(id===idlist[i]){ continue;}
+				var cid = idlist[i];
+				g.fillStyle = pc.getLineColor(cid);
+				pc.drawBorder1x(bd.border[cid].cx, bd.border[cid].cy, true);
 			}
 		}
+		if(g.use.canvas){ this.repaintParts(idlist);}
 	},
-	repaintParts : function(id){ }, // オーバーライド用
+	repaintParts : function(idlist){ }, // オーバーライド用
 
 	//---------------------------------------------------------------------------
 	// line.getbid()  指定したpieceに繋がる、最大6箇所に引かれている線を全て取得する

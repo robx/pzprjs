@@ -131,6 +131,8 @@ Puzzles.sudoku.prototype = {
 			this.drawTCell(x1,y1,x2+1,y2+1);
 		};
 		pc.drawBlockBorders = function(x1,y1,x2,y2){
+			this.vinc('border_block', 'crispEdges');
+
 			var lw = this.lw, lm = this.lm;
 
 			var max=k.qcols;
@@ -151,7 +153,6 @@ Puzzles.sudoku.prototype = {
 					g.fillRect(k.p0.x+x1*k.cwidth-lw+1, k.p0.y+i*block*k.cheight-lw+1, (x2-x1+1)*k.cwidth+2*lw-1, lw);
 				}}
 			}
-			this.vinc();
 		};
 	},
 

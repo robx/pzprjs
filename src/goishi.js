@@ -227,16 +227,17 @@ Puzzles.goishi.prototype = {
 		};
 
 		pc.drawSolidLines = function(x1,y1,x2,y2){
+			this.vinc('centerline', 'crispEdges');
 			if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
 			if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
 
 			g.fillStyle = this.gridcolor_LIGHT;
 			for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("cliney_"+i,this.NONE)){ g.fillRect(mf(k.p0.x+(i+0.5)*k.cwidth), mf(k.p0.y+(y1-0.5)*k.cheight), 1, (y2-y1+2)*k.cheight+1);} }
 			for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("clinex_"+i,this.NONE)){ g.fillRect(mf(k.p0.x+(x1-0.5)*k.cwidth), mf(k.p0.y+(i+0.5)*k.cheight), (x2-x1+2)*k.cwidth+1, 1);} }
-
-			this.vinc();
 		};
 		pc.drawCircles_goishi = function(x1,y1,x2,y2){
+			this.vinc('cell_goishi', 'auto');
+
 			var rsize  = k.cwidth*0.40;
 			var rsize2 = k.cwidth*0.35;
 			var headers = ["c_cira_", "c_cirb_"];
@@ -257,9 +258,10 @@ Puzzles.goishi.prototype = {
 				}
 				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
-			this.vinc();
 		};
 		pc.drawCellSquare = function(x1,y1,x2,y2){
+			this.vinc('cell_number_base', 'crispEdges');
+
 			var mgnw = mf(k.cwidth*0.1);
 			var mgnh = mf(k.cheight*0.1);
 			var header = "c_sq2_";
@@ -275,7 +277,6 @@ Puzzles.goishi.prototype = {
 				}
 				else{ this.vhide([header+c]);}
 			}
-			this.vinc();
 		};
 	},
 

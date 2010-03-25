@@ -203,6 +203,8 @@ Puzzles.minarism.prototype = {
 			}
 		};
 		pc.drawBDMarks = function(x1,y1,x2,y2){
+			this.vinc('border_mark', 'auto');
+
 			var csize = k.cwidth*0.27;
 			var ssize = k.cwidth*0.22;
 			var headers = ["b_cp_", "b_dt1_", "b_dt2_"];
@@ -245,7 +247,6 @@ Puzzles.minarism.prototype = {
 				}
 				else{ this.vhide([headers[1]+id, headers[2]+id]);}
 			}
-			this.vinc();
 		};
 
 		pc.drawTarget_minarism = function(x1,y1,x2,y2){

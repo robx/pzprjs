@@ -113,6 +113,8 @@ Puzzles.numlin.prototype = {
 		};
 
 		pc.drawCellSquare = function(x1,y1,x2,y2){
+			this.vinc('cell_number_base', 'crispEdges');
+
 			var mgnw = mf(k.cwidth*0.15);
 			var mgnh = mf(k.cheight*0.15);
 			var header = "c_sq_";
@@ -131,7 +133,6 @@ Puzzles.numlin.prototype = {
 				}
 				else{ this.vhide(header+c);}
 			}
-			this.vinc();
 		};
 	},
 

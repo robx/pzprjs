@@ -137,7 +137,8 @@ Puzzles.bonsan.prototype = {
 			this.drawLines(x1,y1,x2,y2);
 			//this.drawPekes(x1,y1,x2,y2,0);
 
-			this.drawCircledNumbers(x1,y1,x2,y2);
+			this.drawCircles(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
@@ -145,6 +146,8 @@ Puzzles.bonsan.prototype = {
 		};
 
 		pc.drawTip = function(x1,y1,x2,y2){
+			this.vinc('cell_linetip', 'auto');
+
 			var tsize = k.cwidth*0.30;
 			var tplus = k.cwidth*0.05;
 			var header = "c_tip_";
@@ -175,7 +178,6 @@ Puzzles.bonsan.prototype = {
 					}
 				}
 			}
-			this.vinc();
 		};
 	},
 
