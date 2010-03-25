@@ -105,7 +105,7 @@ Puzzles.kurodoko.prototype = {
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
-			this.drawCircles(x1,y1,x2,y2);
+			this.drawCirclesAtNumber(x1,y1,x2,y2);
 			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);

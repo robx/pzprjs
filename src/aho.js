@@ -101,7 +101,7 @@ Puzzles.aho.prototype = {
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
-			this.drawCircles_shikaku(x1,y1,x2,y2);
+			this.drawCirclesAtNumber_shikaku(x1,y1,x2,y2);
 			this.drawNumbers(x1,y1,x2,y2);
 			this.drawBorderQsubs(x1,y1,x2,y2);
 
@@ -110,7 +110,7 @@ Puzzles.aho.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		pc.drawCircles_shikaku = function(x1,y1,x2,y2){
+		pc.drawCirclesAtNumber_shikaku = function(x1,y1,x2,y2){
 			this.vinc('cell_circle', 'auto');
 
 			var rsize2 = k.cwidth*this.circleratio[1];

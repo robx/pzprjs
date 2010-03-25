@@ -216,7 +216,7 @@ Puzzles.goishi.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawSolidLines(x1,y1,x2,y2);
+			this.drawCenterLines(x1,y1,x2,y2);
 
 			x1--; y1--; x2++; y2++;
 			this.drawCircles_goishi(x1,y1,x2,y2);
@@ -226,7 +226,7 @@ Puzzles.goishi.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		pc.drawSolidLines = function(x1,y1,x2,y2){
+		pc.drawCenterLines = function(x1,y1,x2,y2){
 			this.vinc('centerline', 'crispEdges');
 			if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
 			if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}

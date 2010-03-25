@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 快刀乱麻版 kramma.js v3.2.4
+// パズル固有スクリプト部 快刀乱麻版 kramma.js v3.3.0
 //
 Puzzles.kramma = function(){ };
 Puzzles.kramma.prototype = {
@@ -130,7 +130,7 @@ Puzzles.kramma.prototype = {
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
-			this.drawQueses41_42(x1,y1,x2,y2);
+			this.drawCircles41_42(x1,y1,x2,y2);
 			this.drawCrossMarks(x1,y1,x2+1,y2+1);
 
 			this.drawQuesHatenas(x1,y1,x2,y2);

@@ -186,14 +186,14 @@ Puzzles.bosanowa.prototype = {
 				this.drawBDnumbase(x1,y1,x2,y2);
 			}
 			else if(pp.getVal('disptype')==2){
-				this.drawChassis_souko(x1,y1,x2,y2);
+				this.drawOutside_souko(x1,y1,x2,y2);
 				this.drawGrid_souko(x1,y1,x2,y2);
 
 				this.drawBDnumbase(x1,y1,x2,y2);
 				this.drawErrorCells_bosanowa(x1,y1,x2,y2);
 			}
 			else if(pp.getVal('disptype')==3){
-				this.drawChassis_waritai(x1,y1,x2,y2);
+				this.drawBorders_waritai(x1,y1,x2,y2);
 				this.drawGrid_waritai(x1,y1,x2,y2);
 
 				this.drawBDnumbase(x1,y1,x2,y2);
@@ -203,7 +203,7 @@ Puzzles.bosanowa.prototype = {
 			this.drawNumbers(x1,y1,x2,y2);
 			this.drawNumbersBD(x1,y1,x2,y2);
 
-			if(k.EDITOR){ this.drawChassis_bosanowa(x1,y1,x2,y2);}
+			if(k.EDITOR){ this.drawChassis(x1,y1,x2,y2);}
 
 			this.drawTarget_bosanowa(x1,y1,x2,y2);
 		};
@@ -228,7 +228,7 @@ Puzzles.bosanowa.prototype = {
 		pc.drawCircles_bosanowa = function(x1,y1,x2,y2){
 			this.vinc('cell_circle', 'auto');
 
-			g.lineWidth = 2;
+			g.lineWidth = 1;
 			g.fillStyle = "white";
 			var rsize  = k.cwidth*0.44;
 			var header = "c_cir_";
@@ -359,8 +359,8 @@ Puzzles.bosanowa.prototype = {
 			}
 		};
 
-		pc.drawChassis_waritai = function(x1,y1,x2,y2){
-			this.vinc('chassis_waritai', 'crispEdges');
+		pc.drawBorders_waritai = function(x1,y1,x2,y2){
+			this.vinc('border', 'crispEdges');
 
 			g.fillStyle = pc.Cellcolor;
 			var clist = this.cellinside(x1,y1,x2,y2);
@@ -373,8 +373,8 @@ Puzzles.bosanowa.prototype = {
 				this.drawBorder1x(2*bd.cell[c].cx+1, 2*k.qrows        ,(bd.cell[c].cy===k.qrows-1));
 			}
 		};
-		pc.drawChassis_souko = function(x1,y1,x2,y2){
-			this.vinc('chassis_souko', 'crispEdges');
+		pc.drawOutside_souko = function(x1,y1,x2,y2){
+			this.vinc('cell_outside_souko', 'crispEdges');
 
 			var header = "c_full_";
 			for(var cx=x1-1;cx<=x2+1;cx++){
@@ -394,18 +394,6 @@ Puzzles.bosanowa.prototype = {
 					else{ this.vhide(header+c);}
 				}
 			}
-		};
-		pc.drawChassis_bosanowa = function(x1,y1,x2,y2){
-			this.vinc('chassis_editor', 'crispEdges');
-			x1--; y1--; x2++; y2++;
-			if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
-
-			g.fillStyle = "black";
-			if(x1<1)         { if(this.vnop("chs1_",this.NONE)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+y1*k.cheight    , 1, (y2-y1+1)*k.cheight+1);} }
-			if(y1<1)         { if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+y1*k.cheight    , (x2-x1+1)*k.cwidth+1, 1); } }
-			if(y2>=k.qrows-1){ if(this.vnop("chs3_",this.NONE)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+(y2+1)*k.cheight, (x2-x1+1)*k.cwidth+1, 1); } }
-			if(x2>=k.qcols-1){ if(this.vnop("chs4_",this.NONE)){ g.fillRect(k.p0.x+(x2+1)*k.cwidth, k.p0.y+y1*k.cheight    , 1, (y2-y1+1)*k.cheight+1);} }
 		};
 
 		pc.drawTarget_bosanowa = function(x1,y1,x2,y2){

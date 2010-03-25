@@ -185,7 +185,7 @@ Puzzles.hashikake.prototype = {
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawCircles(x1,y1,x2,y2);
+			this.drawCirclesAtNumber(x1,y1,x2,y2);
 			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
@@ -235,7 +235,7 @@ Puzzles.hashikake.prototype = {
 			}
 			for(var c=0;c<cdata.length;c++){
 				if(cdata[c]){
-					pc.drawCircle1(c);
+					pc.drawCircle1AtNumber(c);
 					pc.dispnumCell(c);
 				}
 			}

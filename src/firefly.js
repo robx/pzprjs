@@ -97,7 +97,7 @@ Puzzles.firefly.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawDashLines(x1,y1,x2,y2);
+			this.drawDashedCenterLines(x1,y1,x2,y2);
 			this.drawLines(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,0);
