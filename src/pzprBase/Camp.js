@@ -409,6 +409,7 @@ VectorContext.prototype = {
 	clear : function(){
 		if(this.type!==SL){ _doc.getElementById(this.idname).innerHTML = '';}
 
+		this.vid = '';
 		this.elements = [];
 		this.lastElement = null;
 		this.initElement(this.idname);
