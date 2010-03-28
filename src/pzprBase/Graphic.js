@@ -400,6 +400,30 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// pc.drawBGEXcells()    EXCellに描画される背景色をCanvasに書き込む
+	// pc.setBGEXcellColor() 背景色の設定・描画判定する
+	//---------------------------------------------------------------------------
+	drawBGEXcells : function(x1,y1,x2,y2){
+		this.vinc('excell_back', 'crispEdges');
+
+		var header = "ex_full_";
+		var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+		for(var i=0;i<exlist.length;i++){
+			var c = exlist[i];
+			if(this.setBGEXcellColor(c)){
+				if(this.vnop(header+c,this.FILL)){
+					g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);
+				}
+			}
+			else{ this.vhide(header+c); continue;}
+		}
+	},
+	setBGEXcellColor : function(c){
+		if(bd.excell[c].error===1){ g.fillStyle = this.errbcolor1; return true;}
+		return false;
+	},
+
+	//---------------------------------------------------------------------------
 	// pc.drawRDotCells()  ・だけをCanvasに書き込む(・用)
 	// pc.drawDotCells()   ・だけをCanvasに書き込む(小さい四角形用)
 	//---------------------------------------------------------------------------
@@ -974,79 +998,69 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.draw51()         [＼]をCanvasに書き込む
-	// pc.draw51EXcells()  EXCell上の[＼]をCanvasに書き込む
+	// pc.drawQues51()         Ques===51があるようなパズルで、描画関数を呼び出す
+	// pc.drawSlash51Cells()   [＼]のナナメ線をCanvasに書き込む
+	// pc.drawSlash51EXcells() EXCell上の[＼]のナナメ線をCanvasに書き込む
+	// pc.drawEXCellGrid()     EXCell間の境界線をCanvasに書き込む
 	//---------------------------------------------------------------------------
-	draw51 : function(x1,y1,x2,y2,errdisp){
+	drawQues51 : function(x1,y1,x2,y2){
+		this.drawEXCellGrid(x1,y1,x2,y2);
+		this.drawSlash51Cells(x1,y1,x2,y2);
+		this.drawSlash51EXcells(x1,y1,x2,y2);
+		this.drawTargetTriangle(x1,y1,x2,y2);
+	},
+	drawSlash51Cells : function(x1,y1,x2,y2){
 		this.vinc('cell_ques51', 'crispEdges');
 
-		var headers = ["c_full_", "c_q51_"];
-		g.fillStyle   = this.errbcolor1;
+		var header = "c_slash51_";
 		g.strokeStyle = this.Cellcolor;
 		g.lineWidth = 1;
-
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i], px = bd.cell[c].px, py = bd.cell[c].py;
 
 			if(bd.cell[c].ques===51){
-				if(errdisp){
-					if(bd.cell[c].error===1){
-						if(this.vnop(headers[0]+c,this.NONE)){
-							g.fillRect(px+1, py+1, k.cwidth-1, k.cheight-1);
-						}
-					}
-					else{ this.vhide(headers[0]+c);}
-				}
-				if(this.vnop(headers[1]+c,this.NONE)){
+				if(this.vnop(header+c,this.NONE)){
 					g.strokeLine(px+1,py+1, px+k.cwidth,py+k.cheight);
 				}
 			}
-			else{
-				if(bd.cell[c].qsub===0 && bd.cell[c].error===0){ this.vhide(headers[0]+c);}
-				this.vhide(headers[1]+c);
+			else{ this.vhide(header+c);}
+		}
+	},
+	drawSlash51EXcells : function(x1,y1,x2,y2){
+		this.vinc('excell_ques51', 'crispEdges');
+
+		var header = "ex_slash51_";
+		g.strokeStyle = this.Cellcolor;
+		g.lineWidth = 1;
+		var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+		for(var i=0;i<exlist.length;i++){
+			var c = exlist[i], px = bd.excell[c].px, py = bd.excell[c].py;
+			if(this.vnop(header+c,this.NONE)){
+				g.strokeLine(px+1,py+1, px+k.cwidth,py+k.cheight);
 			}
 		}
 	},
-	draw51EXcells : function(x1,y1,x2,y2,errdisp){
-		this.vinc('excell_ques51', 'crispEdges');
+	drawEXCellGrid : function(x1,y1,x2,y2){
+		this.vinc('grid_excell', 'crispEdges');
 
-		var lw = this.lw;
-		var headers = ["ex_full_", "ex_q51_", "ex_bdx_", "ex_bdy_"];
-		g.strokeStyle = this.Cellcolor;
-		g.lineWidth = 1;
-
+		g.fillStyle = this.Cellcolor;
+		var headers = ["ex_bdx_", "ex_bdy_"];
 		var exlist = this.excellinside(x1-1,y1-1,x2,y2);
 		for(var i=0;i<exlist.length;i++){
 			var c = exlist[i], px = bd.excell[c].px, py = bd.excell[c].py;
 
-			if(errdisp){
-				if(bd.excell[c].error===1){
-					g.fillStyle = this.errbcolor1;
-					if(this.vnop(headers[0]+c,this.NONE)){
-						g.fillRect(px+1, py+1, k.cwidth-1, k.cheight-1);
-					}
-				}
-				else{ this.vhide(headers[0]+c);}
-			}
-
-			if(this.vnop(headers[1]+c,this.NONE)){
-				g.strokeLine(px+1,py+1, px+k.cwidth,py+k.cheight);
-			}
-
-			g.fillStyle = this.Cellcolor;
 			if(bd.excell[c].cy===-1 && bd.excell[c].cx<k.qcols-1){
-				if(this.vnop(headers[2]+c,this.NONE)){
+				if(this.vnop(headers[0]+c,this.NONE)){
 					g.fillRect(px+k.cwidth, py, 1, k.cheight);
 				}
 			}
-			else{ this.vhide(headers[2]+c);}
+
 			if(bd.excell[c].cx===-1 && bd.excell[c].cy<k.qrows-1){
-				if(this.vnop(headers[3]+c,this.NONE)){
+				if(this.vnop(headers[1]+c,this.NONE)){
 					g.fillRect(px, py+k.cheight, k.cwidth, 1);
 				}
 			}
-			else{ this.vhide(headers[3]+c);}
 		}
 	},
 

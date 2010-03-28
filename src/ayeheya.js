@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ∀人∃ＨＥＹＡ版 ayeheya.js v3.2.5
+// パズル固有スクリプト部 ∀人∃ＨＥＹＡ版 ayeheya.js v3.3.0
 //
 Puzzles.ayeheya = function(){ };
 Puzzles.ayeheya.prototype = {
@@ -248,14 +248,14 @@ Puzzles.ayeheya.prototype = {
 			return result;
 		};
 
-		ans.isBorderCount = function(nullnum, clist, nullobj){
+		ans.isBorderCount = function(nullnum, keycellpos, clist, nullobj){
 			var d = ans.getSizeOfClist(clist,f_true), count = 0, bx, by;
 			if(d.x1===d.x2){
 				bx = (d.x1<<1)+1;
 				for(by=(d.y1<<1)+2;by<=(d.y2<<1);by+=2){
 					if(bd.QuB(bd.bnum(bx,by))===1){ count++;}
-							}
-						}
+				}
+			}
 			else if(d.y1===d.y2){
 				by = (d.y1<<1)+1;
 				for(bx=(d.x1<<1)+2;bx<=(d.x2<<1);bx+=2){

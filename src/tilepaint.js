@@ -173,21 +173,19 @@ Puzzles.tilepaint.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.draw51(x1,y1,x2,y2,true);
-			this.draw51EXcells(x1,y1,x2,y2,true);
-			this.drawTargetTriangle(x1,y1,x2,y2);
-
 			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+			this.drawBGEXcells(x1,y1,x2,y2);
+			this.drawQues51(x1,y1,x2,y2);
 
+			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
+
+			this.drawBlackCells(x1,y1,x2,y2);
+			this.drawBoxBorders(x1,y1,x2,y2,true);
 
 			this.drawChassis_ex1(x1-1,y1-1,x2,y2,true);
 
 			this.drawNumbersOn51(x1,y1,x2,y2);
-
-			this.drawBoxBorders(x1,y1,x2,y2,true);
 
 			this.drawTarget(x1,y1,x2,y2);
 		};
@@ -334,12 +332,18 @@ Puzzles.tilepaint.prototype = {
 			return true;
 		};
 
-		ans.isBCellCount = function(number, clist, nullobj){
+		ans.isBCellCount = function(number, keycellpos, clist, nullobj){
 			var count = 0;
 			for(var i=0;i<clist.length;i++){
 				if(bd.isBlack(clist[i])){ count++;}
-					}
-			if(number>=0 && count!=number){ bd.sErC(clist,1); return false;}
+			}
+			if(number>=0 && count!=number){
+				var isex = (keycellpos[0]===-1 || keycellpos[1]===-1);
+				if(isex){ bd.sErE(bd.exnum(keycellpos[0],keycellpos[1]),1);}
+				else    { bd.sErC(bd.cnum (keycellpos[0],keycellpos[1]),1);}
+				bd.sErC(clist,1);
+				return false;
+			}
 			return true;
 		};
 	}

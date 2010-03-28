@@ -295,7 +295,7 @@ Puzzles.lightup.prototype = {
 			return true;
 		};
 
-		ans.isAkariCount = function(nullnum, clist, nullobj){
+		ans.isAkariCount = function(nullnum, keycellpos, clist, nullobj){
 			var akaris=[];
 			for(var i=0;i<clist.length;i++){
 				if( bd.QaC(clist[i])===1 ){ akaris.push(clist[i]);}
