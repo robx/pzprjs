@@ -122,7 +122,7 @@ Puzzles.firefly.prototype = {
 			var headers = ["c_cira_", "c_cirb_"];
 
 			if(bd.cell[c].qnum!=-1){
-				var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
+				var px=bd.cell[c].px+k.cwidth/2, py=bd.cell[c].py+k.cheight/2;
 
 				g.lineWidth = 1.5;
 				g.strokeStyle = this.Cellcolor;

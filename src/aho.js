@@ -114,7 +114,7 @@ Puzzles.aho.prototype = {
 			this.vinc('cell_circle', 'auto');
 
 			var rsize2 = k.cwidth*this.circleratio[1];
-			var mgnx = mf(k.cwidth/2), mgny = mf(k.cheight/2);
+			var mgnx = k.cwidth/2, mgny = k.cheight/2;
 			var header = "c_cir_";
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){

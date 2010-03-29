@@ -296,30 +296,29 @@ Puzzles.tentaisho.prototype = {
 		pc.drawStars = function(x1,y1,x2,y2){
 			this.vinc('star', 'auto');
 
-			var rsize  = k.cwidth*0.18;
-			var rsize2 = k.cwidth*0.14;
-			var headers = ["s_star41a_", "s_star41b_"];
-
+			g.lineWidth = Math.max(k.cwidth*0.04, 1);
+			var headers = ["s_star1_", "s_star2_"];
 			for(var y=2*y1-2;y<=2*y2+2;y++){
 				if(y<=0){ y=0; continue;} if(2*k.qrows<=y){ break;}
 				for(var x=2*x1-2;x<=2*x2+2;x++){
 					if(x<=0){ x=0; continue;} if(2*k.qcols<=x){ break;}
-
 					var id = bd.snum(x,y);
 
-					if(bd.getStar(id)===1 || bd.getStar(id)===2){
+					if(bd.getStar(id)===1){
 						var iserr = bd.getStarError(id);
-						g.fillStyle = (iserr ? this.errcolor1 : this.Cellcolor);
-						if(this.vnop(headers[0]+id,this.FILL)){
-							g.fillCircle(k.p0.x+x*k.cwidth/2, k.p0.y+y*k.cheight/2, rsize);
+						g.strokeStyle = (iserr ? this.errcolor1  : this.Cellcolor);
+						g.fillStyle   = "white";
+						if(this.vnop(headers[0]+id,this.FILL_STROKE)){
+							g.shapeCircle(k.p0.x+x*k.cwidth/2, k.p0.y+y*k.cheight/2, k.cwidth*0.16);
 						}
 					}
 					else{ this.vhide(headers[0]+id);}
 
-					if(bd.getStar(id)===1){
-						g.fillStyle = (iserr ? this.errbcolor1 : "white");
+					if(bd.getStar(id)===2){
+						var iserr = bd.getStarError(id);
+						g.fillStyle = (iserr ? this.errcolor1 : this.Cellcolor);
 						if(this.vnop(headers[1]+id,this.FILL)){
-							g.fillCircle(k.p0.x+x*k.cwidth/2, k.p0.y+y*k.cheight/2, rsize2);
+							g.fillCircle(k.p0.x+x*k.cwidth/2, k.p0.y+y*k.cheight/2, k.cwidth*0.18);
 						}
 					}
 					else{ this.vhide(headers[1]+id);}

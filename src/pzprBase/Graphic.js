@@ -457,7 +457,7 @@ Graphic.prototype = {
 			var c = clist[i];
 			if(bd.cell[c].qsub===1){
 				if(this.vnop(header+c,this.NONE)){
-					g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-mf(ksize/2), bd.cell[c].py+mf(k.cheight/2)-mf(ksize/2), ksize, ksize);
+					g.fillRect(bd.cell[c].px+k.cwidth/2-ksize/2, bd.cell[c].py+k.cheight/2-ksize/2, ksize, ksize);
 				}
 			}
 			else{ this.vhide(header+c);}
@@ -914,27 +914,28 @@ Graphic.prototype = {
 	drawCircles41_42 : function(x1,y1,x2,y2){
 		this.vinc('cell_circle', 'auto');
 
-		var rsize  = mf(k.cwidth*this.circleratio[0]);
-		var rsize2 = mf(k.cwidth*this.circleratio[1]);
-		var mgnx = mf(k.cwidth/2), mgny = mf(k.cheight/2);
-		var headers = ["c_cir41a_", "c_cir41b_"];
-
+		g.lineWidth = Math.max(k.cwidth*(this.circleratio[0]-this.circleratio[1]), 1);
+		var rsize41 = k.cwidth*(this.circleratio[0]+this.circleratio[1])/2;
+		var rsize42 = k.cwidth*this.circleratio[0];
+		var mgnx = k.cwidth/2, mgny = k.cheight/2;
+		var headers = ["c_cir41_", "c_cir42_"];
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], px = bd.cell[c].px+mgnx, py = bd.cell[c].py+mgny;
+			var c = clist[i];
 
-			if(bd.cell[c].ques===41 || bd.cell[c].ques===42){
-				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
-				if(this.vnop(headers[0]+c,this.FILL)){
-					g.fillCircle(px,py,rsize);
+			if(bd.cell[c].ques===41){
+				g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.Cellcolor);
+				g.fillStyle   = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
+				if(this.vnop(headers[0]+c,this.FILL_STROKE)){
+					g.shapeCircle(bd.cell[c].px+mgnx, bd.cell[c].py+mgny, rsize41);
 				}
 			}
 			else{ this.vhide(headers[0]+c);}
 
-			if(bd.cell[c].ques===41){
-				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
+			if(bd.cell[c].ques===42){
+				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
 				if(this.vnop(headers[1]+c,this.FILL)){
-					g.fillCircle(px,py,rsize2);
+					g.fillCircle(bd.cell[c].px+mgnx, bd.cell[c].py+mgny, rsize42);
 				}
 			}
 			else{ this.vhide(headers[1]+c);}
@@ -951,7 +952,7 @@ Graphic.prototype = {
 
 		var rsize  = k.cwidth*this.circleratio[0];
 		var rsize2 = k.cwidth*this.circleratio[1];
-		var mgnx = mf(k.cwidth/2), mgny = mf(k.cheight/2);
+		var mgnx = k.cwidth/2, mgny = k.cheight/2;
 		var headers = ["c_cira_", "c_cirb_"];
 
 		if(bd.cell[c].qnum!=-1){

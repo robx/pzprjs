@@ -238,25 +238,20 @@ Puzzles.goishi.prototype = {
 		pc.drawCircles_goishi = function(x1,y1,x2,y2){
 			this.vinc('cell_goishi', 'auto');
 
-			var rsize  = k.cwidth*0.40;
-			var rsize2 = k.cwidth*0.35;
-			var headers = ["c_cira_", "c_cirb_"];
-
+			g.lineWidth = Math.max(k.cwidth*0.05, 1);
+			var rsize  = k.cwidth*0.38;
+			var headers = "c_cir_";
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && bd.cell[c].qans===-1){
-					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
-					if(this.vnop(headers[0]+c,this.FILL)){
-						g.fillCircle(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize);
-					}
-
-					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-					if(this.vnop(headers[1]+c,this.FILL)){
-						g.fillCircle(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2);
+					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.Cellcolor);
+					g.fillStyle   = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
+					if(this.vnop(header+c,this.FILL_STROKE)){
+						g.shapeCircle(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, rsize);
 					}
 				}
-				else{ this.vhide([headers[0]+c, headers[1]+c]);}
+				else{ this.vhide([header+c]);}
 			}
 		};
 		pc.drawCellSquare = function(x1,y1,x2,y2){

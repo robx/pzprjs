@@ -113,8 +113,7 @@ Puzzles.mejilink.prototype = {
 			if(this.vnop(vid,this.NONE)){
 				var lw = ((k.cwidth/12)>=3?(k.cwidth/12):3); //LineWidth
 				var csize = mf((lw+1)/2);
-				var cx = i%(k.qcols+1); var cy = mf(i/(k.qcols+1));
-
+				var cx = i%(k.qcols+1), cy = mf(i/(k.qcols+1));
 				g.fillCircle(k.p0.x+cx*k.cwidth, k.p0.x+cy*k.cheight, csize);
 			}
 		};
