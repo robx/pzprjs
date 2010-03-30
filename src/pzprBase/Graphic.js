@@ -1272,15 +1272,15 @@ Graphic.prototype = {
 		g.fillStyle = "black";
 		if(g.use.canvas){
 			if(x1===0)        { g.fillRect(k.p0.x            -lw+1, k.p0.y+y1*k.cheight-lw+1, lw, (y2-y1+1)*k.cheight+2*lw-1);}
+			if(x2===k.qcols-1){ g.fillRect(k.p0.x+k.qcols*k.cwidth, k.p0.y+y1*k.cheight-lw+1, lw, (y2-y1+1)*k.cheight+2*lw-1);}
 			if(y1===0)        { g.fillRect(k.p0.x+x1*k.cwidth-lw+1, k.p0.y             -lw+1, (x2-x1+1)*k.cwidth+2*lw-1, lw); }
 			if(y2===k.qrows-1){ g.fillRect(k.p0.x+x1*k.cwidth-lw+1, k.p0.y+k.qrows*k.cheight, (x2-x1+1)*k.cwidth+2*lw-1, lw); }
-			if(x2===k.qcols-1){ g.fillRect(k.p0.x+k.qcols*k.cwidth, k.p0.y+y1*k.cheight-lw+1, lw, (y2-y1+1)*k.cheight+2*lw-1);}
 		}
 		else{
-			if(this.vnop("chs1_",this.NONE)){ g.fillRect(k.p0.x-lw+1, k.p0.y-lw+1,              lw, k.qrows*k.cheight+2*lw-1);}
-			if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x-lw+1, k.p0.y-lw+1,              k.qcols*k.cwidth+2*lw-1, lw); }
-			if(this.vnop("chs3_",this.NONE)){ g.fillRect(k.p0.x-lw+1, k.p0.y+k.qrows*k.cheight, k.qcols*k.cwidth+2*lw-1, lw); }
-			if(this.vnop("chs4_",this.NONE)){ g.fillRect(k.p0.x+k.qcols*k.cwidth, k.p0.y-lw+1,  lw, k.qrows*k.cheight+2*lw-1);}
+			if(this.vnop("chs1_",this.NONE)){ g.fillRect(k.p0.x-lw+1,              k.p0.y-lw+1, lw, k.qrows*k.cheight+2*lw-1);}
+			if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x+k.qcols*k.cwidth,  k.p0.y-lw+1, lw, k.qrows*k.cheight+2*lw-1);}
+			if(this.vnop("chs3_",this.NONE)){ g.fillRect(k.p0.x-lw+1,              k.p0.y-lw+1, k.qcols*k.cwidth+2*lw-1, lw); }
+			if(this.vnop("chs4_",this.NONE)){ g.fillRect(k.p0.x-lw+1, k.p0.y+k.qrows*k.cheight, k.qcols*k.cwidth+2*lw-1, lw); }
 		}
 	},
 	drawChassis_ex1 : function(x1,y1,x2,y2,boldflag){
@@ -1288,29 +1288,46 @@ Graphic.prototype = {
 		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
 		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
-		var lw = this.lw, lw1 = (boldflag?lw:1), lm = this.lm;
+		var lw = this.lw, lm = this.lm;
 		g.fillStyle = "black";
-		if(g.use.canvas){
-			if(x1===0){ g.fillRect(k.p0.x-lw1+1, k.p0.y+y1*k.cheight-lw1+1, lw1, (y2-y1+1)*k.cheight+lw1-1);}
-			if(y1===0){ g.fillRect(k.p0.x+x1*k.cwidth-lw1+1,  k.p0.y-lw1+1, (x2-x1+1)*k.cwidth+lw1-1, lw1); }
-			if(y2===k.qrows-1){ g.fillRect(k.p0.x+(x1-1)*k.cwidth-lw+1, k.p0.y+k.qrows*k.cheight, (x2-x1+2)*k.cwidth+2*lw-1, lw); }
-			if(x2===k.qcols-1){ g.fillRect(k.p0.x+k.qcols*k.cwidth, k.p0.y+(y1-1)*k.cheight-lw+1, lw, (y2-y1+2)*k.cheight+2*lw-1);}
 
-			if(x1===0){ g.fillRect(k.p0.x-k.cwidth-lw+1, k.p0.y+(y1-1)*k.cheight-lw+1, lw, (y2-y1+2)*k.cheight+2*lw-1);}
-			if(y1===0){ g.fillRect(k.p0.x+(x1-1)*k.cwidth-lw+1, k.p0.y-k.cheight-lw+1, (x2-x1+2)*k.cwidth+2*lw-1, lw); }
+		// extendcell==1Ç‡ä‹ÇÒÇæäOògÇÃï`âÊ
+		if(g.use.canvas){
+			if(x1===0)        { g.fillRect(k.p0.x-k.cwidth-lw+1,    k.p0.y+(y1-1)*k.cheight-lw+1, lw, (y2-y1+2)*k.cheight+2*lw-1);}
+			if(x2===k.qcols-1){ g.fillRect(k.p0.x+k.qcols*k.cwidth, k.p0.y+(y1-1)*k.cheight-lw+1, lw, (y2-y1+2)*k.cheight+2*lw-1);}
+			if(y1===0)        { g.fillRect(k.p0.x+(x1-1)*k.cwidth-lw+1, k.p0.y-k.cheight-lw+1,    (x2-x1+2)*k.cwidth+2*lw-1, lw); }
+			if(y2===k.qrows-1){ g.fillRect(k.p0.x+(x1-1)*k.cwidth-lw+1, k.p0.y+k.qrows*k.cheight, (x2-x1+2)*k.cwidth+2*lw-1, lw); }
 		}
 		else{
-			if(this.vnop("chs1_",this.NONE)){ g.fillRect(k.p0.x-lw1+1, k.p0.y-lw1+1, lw1, k.qrows*k.cheight+lw1-1);}
-			if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x-lw1+1, k.p0.y-lw1+1, k.qcols*k.cwidth+lw1-1, lw1); }
-			if(this.vnop("chs3_",this.NONE)){ g.fillRect(k.p0.x-k.cwidth-lw+1, k.p0.y+k.qrows*k.cheight, (k.qcols+1)*k.cwidth+2*lw-1, lw); }
-			if(this.vnop("chs4_",this.NONE)){ g.fillRect(k.p0.x+k.qcols*k.cwidth, k.p0.y-k.cheight-lw+1, lw, (k.qrows+1)*k.cheight+2*lw-1);}
-
-			if(this.vnop("chsex1_",this.NONE)){ g.fillRect(k.p0.x-k.cwidth-lw+1, k.p0.y-k.cheight-lw+1, lw, (k.qrows+1)*k.cheight+2*lw-1);}
-			if(this.vnop("chsex2_",this.NONE)){ g.fillRect(k.p0.x-k.cwidth-lw+1, k.p0.y-k.cheight-lw+1, (k.qcols+1)*k.cwidth+2*lw-1, lw); }
+			if(this.vnop("chsex1_1_",this.NONE)){ g.fillRect(k.p0.x-k.cwidth-lw+1,    k.p0.y-k.cheight-lw+1, lw, (k.qrows+1)*k.cheight+2*lw-1);}
+			if(this.vnop("chsex1_2_",this.NONE)){ g.fillRect(k.p0.x+k.qcols*k.cwidth, k.p0.y-k.cheight-lw+1, lw, (k.qrows+1)*k.cheight+2*lw-1);}
+			if(this.vnop("chsex1_3_",this.NONE)){ g.fillRect(k.p0.x-k.cwidth-lw+1,    k.p0.y-k.cheight-lw+1, (k.qcols+1)*k.cwidth+2*lw-1, lw); }
+			if(this.vnop("chsex1_4_",this.NONE)){ g.fillRect(k.p0.x-k.cwidth-lw+1, k.p0.y+k.qrows*k.cheight, (k.qcols+1)*k.cwidth+2*lw-1, lw); }
 		}
 
-		if(!boldflag){
-			//g.fillStyle = "black";
+		// í èÌÇÃÉZÉãÇ∆extendcell==1ÇÃä‘ÇÃï`âÊ
+		if(boldflag){
+			// Ç∑Ç◊Çƒëæê¸Ç≈ï`âÊÇ∑ÇÈèÍçá
+			if(g.use.canvas){
+				if(x1===0){ g.fillRect(k.p0.x-lw+1, k.p0.y+y1*k.cheight-lw+1, lw, (y2-y1+1)*k.cheight+lw-1);}
+				if(y1===0){ g.fillRect(k.p0.x+x1*k.cwidth-lw+1,  k.p0.y-lw+1, (x2-x1+1)*k.cwidth+lw-1, lw); }
+			}
+			else{
+				if(this.vnop("chs1_",this.NONE)){ g.fillRect(k.p0.x-lw+1, k.p0.y-lw+1, lw, k.qrows*k.cheight+lw-1);}
+				if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x-lw+1, k.p0.y-lw+1, k.qcols*k.cwidth+lw-1, lw); }
+			}
+		}
+		else{
+			// ques==51ÇÃÉZÉãÇ™ó◊ê⁄ÇµÇƒÇ¢ÇÈéûÇ…ç◊ê¸Çï`âÊÇ∑ÇÈèÍçá
+			if(g.use.canvas){
+				if(x1===0){ g.fillRect(k.p0.x, k.p0.y+y1*k.cheight, 1, (y2-y1+1)*k.cheight);}
+				if(y1===0){ g.fillRect(k.p0.x+x1*k.cwidth,  k.p0.y, (x2-x1+1)*k.cwidth, 1); }
+			}
+			else{
+				if(this.vnop("chs1_",this.NONE)){ g.fillRect(k.p0.x, k.p0.y, 1, k.qrows*k.cheight);}
+				if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x, k.p0.y, k.qcols*k.cwidth, 1); }
+			}
+
 			var headers = ["chs1_sub_", "chs2_sub_"];
 			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<clist.length;i++){
