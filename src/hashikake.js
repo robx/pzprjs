@@ -191,35 +191,39 @@ Puzzles.hashikake.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
+		// 線の太さを通常より少し太くする
+		pc.onresize_func = function(){
+			this.lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3); // 12->8
+			this.lm = mf((this.lw-1)/2);
+		};
 		// オーバーライド
-		pc.drawLine1 = function(id, flag){
+		pc.drawLine1 = function(id, forceFlag){
 			var vids = ["b_line_"+id,"b_dline1_"+id,"b_dline2_"+id];
-			if(!flag){ this.vhide(vids); return;}
 
-			var lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3);	//LineWidth
-			var lm = mf((lw-1)/2) + this.addlw;				//LineMargin
-			var ls = mf(lw*1.5);							//LineSpace
-			this.setLineColor(id);
-
-			if(bd.border[id].line==1){
-				if(this.vnop(vids[0],this.FILL)){
-					if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-					if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
+			// LineWidth, LineMargin, LineSpace
+			var lw = this.lw + this.addlw, lm = this.lm, ls = mf(lw*1.5);
+			if(forceFlag!==false && this.setLineColor(id)){
+				if(bd.border[id].line==1){
+					if(this.vnop(vids[0],this.FILL)){
+						if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
+						if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
+					}
 				}
+				else{ this.vhide(vids[0]);}
+
+				if(bd.border[id].line==2){
+					if(this.vnop(vids[1],this.FILL)){
+						if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm-ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
+						if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm-ls, k.cwidth+lw,  lw);}
+					}
+					if(this.vnop(vids[2],this.FILL)){
+						if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm+ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
+						if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm+ls, k.cwidth+lw,  lw);}
+					}
+				}
+				else{ this.vhide([vids[1], vids[2]]);}
 			}
-			else{ this.vhide(vids[0]);}
-
-			if(bd.border[id].line==2){
-				if(this.vnop(vids[1],this.FILL)){
-					if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm-ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-					if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm-ls, k.cwidth+lw,  lw);}
-				}
-				if(this.vnop(vids[2],this.FILL)){
-					if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm+ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-					if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm+ls, k.cwidth+lw,  lw);}
-				}
-			}
-			else{ this.vhide([vids[1], vids[2]]);}
+			else{ this.vhide(vids);}
 		};
 		pc.hideGrid = function(){
 			for(var i=0;i<=k.qcols;i++){ this.vhide("bdy_"+i);}

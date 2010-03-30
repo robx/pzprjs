@@ -240,7 +240,7 @@ Puzzles.goishi.prototype = {
 
 			g.lineWidth = Math.max(k.cwidth*0.05, 1);
 			var rsize  = k.cwidth*0.38;
-			var headers = "c_cir_";
+			var header = "c_cir_";
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];

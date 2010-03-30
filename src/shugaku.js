@@ -266,7 +266,7 @@ Puzzles.shugaku.prototype = {
 						g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);
 					}
 				}
-				else if(bd.cell[c].qans!==1){ this.vhide(header+c);}
+				else{ this.vhide(header+c);}
 
 				this.drawPillow1(c, (bd.cell[c].qans>=11 && bd.cell[c].qans<=15), false);
 			}
