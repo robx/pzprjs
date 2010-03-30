@@ -87,6 +87,8 @@ Graphic = function(){
 	this.lm = 1;	// LineMargin
 	this.addlw = 0;	// エラー時に線の太さを広げる
 
+	this.bdheader = "b_bd";	// drawBorder1で使うheader
+
 	this.chassisflag = true;	// false: Gridを外枠の位置にも描画する
 	this.textenable  = false;	// 数字をg.fillText()で描画(現在はコメントアウト)
 
@@ -638,7 +640,7 @@ Graphic.prototype = {
 		this.isdrawBD = true;
 	},
 	drawBorder1 : function(id,forceFlag){
-		var vid = ["b_bd", id].join("_");
+		var vid = [this.bdheader, id].join("_");
 		if(forceFlag!==false && this.setBorderColor(id)){
 			if(this.vnop(vid,this.FILL)){
 				var lw = this.lw + this.addlw, lm = this.lm;

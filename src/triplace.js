@@ -194,29 +194,24 @@ Puzzles.triplace.prototype = {
 		};
 
 		// –â‘è‚Æ‰ñ“š‚Ì‹«ŠEü‚ğ•ÊX‚É•`‰æ‚·‚é‚æ‚¤‚É‚µ‚Ü‚·
-		pc.setBorderColor = function(id){
-			if     (bd.border[id].ques===1){ g.fillStyle = this.BorderQuescolor; return true;}
-			else if(bd.border[id].qans===1){ g.fillStyle = this.BorderQanscolor; return true;}
-			return false;
-		};
 		pc.drawQansBorders = function(x1,y1,x2,y2){
 			this.vinc('border_answer', 'crispEdges');
+			this.bdheader = "b_bdans";
+			this.setBorderColor = function(id){ return (bd.border[id].qans===1);};
 
+			g.fillStyle = this.BorderQanscolor;
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
-			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i];
-				this.drawBorder1(id, (bd.border[id].qans!==0));
-			}
+			for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 			this.isdrawBD = true;
 		};
 		pc.drawQuesBorders = function(x1,y1,x2,y2){
 			this.vinc('border_question', 'crispEdges');
+			this.bdheader = "b_bdques";
+			this.setBorderColor = function(id){ return (bd.border[id].ques===1);};
 
+			g.fillStyle = this.BorderQuescolor;
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
-			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i];
-				if(bd.border[id].ques!==0){ this.drawBorder1(id, true);}
-			}
+			for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 			this.isdrawBD = true;
 		};
 	},
