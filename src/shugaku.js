@@ -373,24 +373,6 @@ Puzzles.shugaku.prototype = {
 				if(this.vnop("tbd4_",this.NONE)){ g.fillRect(px-lm    , py+hgt-lm, wid+lw, lw);}
 			}
 		};
-
-		pc.flushCanvas = function(x1,y1,x2,y2){	// ”wŒiF‚ð‚Â‚¯‚½‚¢‚Ì‚Åã‘‚«‚·‚é
-			if(g.use.canvas){
-				x1=(x1>=0?x1:0); x2=(x2<=k.qcols-1?x2:k.qcols-1);
-				y1=(y1>=0?y1:0); y2=(y2<=k.qrows-1?y2:k.qrows-1);
-				g.fillStyle = this.bgcolor;
-				g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth, (y2-y1+1)*k.cheight);
-			}
-			else{
-				this.zidx=0;
-				this.vinc('board_base', 'crispEdges');
-
-				g.fillStyle = this.bgcolor;
-				if(this.vnop("boardfull",this.NONE)){
-					g.fillRect(k.p0.x, k.p0.y, k.qcols*k.cwidth, k.qrows*k.cheight);
-				}
-			}
-		};
 	},
 
 	//---------------------------------------------------------

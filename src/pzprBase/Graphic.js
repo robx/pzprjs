@@ -64,6 +64,9 @@ Graphic = function(){
 	this.targetColor1 = "rgb(255, 64,  64)";
 	this.targetColor3 = "rgb(64,  64, 255)";
 
+	// 盤面(枠の中)の背景色
+	this.bgcolor = '';
+
 	// 色々なパズルで定義してた固定色
 	this.gridcolor_BLACK  = "black";
 	this.gridcolor_LIGHT  = "rgb(127, 127, 127)";	/* ほとんどはこの色を指定している */
@@ -1350,7 +1353,7 @@ Graphic.prototype = {
 		if(g.use.canvas){
 			this.flushCanvasAll = f_true;
 			this.flushCanvas = function(x1,y1,x2,y2){
-				g.fillStyle = "rgb(255, 255, 255)";
+				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
 				g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth, (y2-y1+1)*k.cheight);
 			};
 			this.vnop  = f_true;
@@ -1364,14 +1367,10 @@ Graphic.prototype = {
 				this.zidx=0;
 				this.zidx_array=[];
 
-				// excanvasの場合、baseを描画しないとVML要素が選択されてしまう
-				if(g.use.vml){
-					this.vinc('board_base', 'crispEdges');
-					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(0, 0, g.canvas.width, g.canvas.height);
-				}
-				else{
-					this.zidx=1;
+				this.vinc('board_base', 'crispEdges');
+				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
+				if(this.vnop("boardfull",this.NONE)){
+					g.fillRect(k.p0.x, k.p0.y, k.qcols*k.cwidth, k.qrows*k.cheight);
 				}
 			};
 			this.flushCanvas = function(x1,y1,x2,y2){
