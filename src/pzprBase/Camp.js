@@ -1,4 +1,4 @@
-// Camp.js rev79
+// Camp.js rev82
  
 (function(){
 
@@ -205,7 +205,6 @@ var VectorContext = function(type, idname){
 	this.canvasid = EL_ID_HEADER+idname;
 	this.currentpath = [];
 	this.lastpath    = '';
-	this.isAA = false;
 
 	// Silverlight—p
 	this.content = null;
@@ -461,7 +460,6 @@ VectorContext.prototype = {
 			var islong = ((antiClockWise^unknownflag)?1:0), sweep = ((islong==0^unknownflag)?1:0);
 			this.currentpath.push(this.PATH_MOVE,sx,sy,S_PATH_ARCTO,r,r,0,islong,sweep,ex,ey);
 			this.lastpath = S_PATH_ARCTO;
-			this.isAA = true;
 		}
 	},
 
@@ -656,7 +654,6 @@ VectorContext.prototype = {
 		el.setAttribute(S_ATT_FILL,   (isfill ? parsecolor(this.fillStyle) : S_NONE));
 		el.setAttribute(S_ATT_STROKE, (isstroke ? parsecolor(this.strokeStyle) : S_NONE));
 		if(isstroke) { el.setAttribute(S_ATT_STROKEWIDTH, this.lineWidth, 'px');}
-		if(this.isAA){ el.setAttribute(S_ATT_RENDERING, 'auto'); this.isAA = false;}
 
 		this.target.appendChild(el);
 		this.lastElement = el;
