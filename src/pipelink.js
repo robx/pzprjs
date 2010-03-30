@@ -162,12 +162,12 @@ Puzzles.pipelink.prototype = {
 
 			if(this.disp===0){
 				this.drawCircles_pipelink(x1,y1,x2,y2);
-				if(!g.use.canvas){ this.hideIceBorders(x1,y1,x2,y2);}
 			}
 			else if(this.disp===1){
 				if(!g.use.canvas){ this.hideCircles_pipelink(x1,y1,x2,y2);}
-				this.drawIceBorders(x1,y1,x2,y2);
 			}
+
+			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawQuesHatenas(x1,y1,x2,y2);
 
@@ -187,15 +187,15 @@ Puzzles.pipelink.prototype = {
 			else if(bd.cell[c].ques===6 && this.disp==1){ g.fillStyle = this.icecolor;   return true;}
 			return false;
 		};
-
-		pc.hideIceBorders = function(x1,y1,x2,y2){
-			this.vinc('border', 'crispEdges');
-
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
-			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i];
-				this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, false);
+		pc.setBorderColor = function(id){
+			if(this.disp===1){
+				var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+				if(cc1!==-1 && cc2!==-1 && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
+					g.fillStyle = this.Cellcolor;
+					return true;
+				}
 			}
+			return false;
 		};
 
 		pc.drawCircles_pipelink = function(x1,y1,x2,y2){

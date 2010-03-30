@@ -305,20 +305,10 @@ LineManager.prototype = {
 
 	repaintLine : function(idlist, id){
 		if(!pp.getVal('irowake')){ return;}
-
-		if(k.isCenterLine){
-			for(var i=0,len=idlist.length;i<len;i++){
-				if(id===idlist[i]){ continue;}
-				pc.drawLine1(idlist[i], true);
-			}
-		}
-		else{
-			for(var i=0,len=idlist.length;i<len;i++){
-				if(id===idlist[i]){ continue;}
-				var cid = idlist[i];
-				pc.setLineColor(cid);
-				pc.drawBorder1x(bd.border[cid].cx, bd.border[cid].cy, true);
-			}
+		var draw1 = (k.isCenterLine ? pc.drawLine1 : pc.drawBorder1);
+		for(var i=0,len=idlist.length;i<len;i++){
+			if(id===idlist[i]){ continue;}
+			draw1.call(pc, idlist[i]);
 		}
 		if(g.use.canvas){ this.repaintParts(idlist);}
 	},

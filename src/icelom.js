@@ -253,6 +253,7 @@ Puzzles.icelom.prototype = {
 		pc.errcolor1 = "red";
 		pc.BCell_fontcolor = pc.fontcolor;
 		pc.setBGCellColorFunc('icebarn');
+		pc.setBorderColorFunc('ice');
 
 		pc.maxYdeg = 0.70;
 
@@ -263,7 +264,7 @@ Puzzles.icelom.prototype = {
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
-			this.drawIceBorders(x1,y1,x2,y2);
+			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawLines(x1,y1,x2,y2);
 			this.drawPekes(x1,y1,x2,y2,1);

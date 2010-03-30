@@ -228,6 +228,7 @@ Puzzles.icebarn.prototype = {
 		pc.linecolor = pc.linecolor_LIGHT;
 		pc.errcolor1 = "red";
 		pc.setBGCellColorFunc('icebarn');
+		pc.setBorderColorFunc('ice');
 
 		pc.maxYdeg = 0.70;
 
@@ -238,7 +239,7 @@ Puzzles.icebarn.prototype = {
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
-			this.drawIceBorders(x1,y1,x2,y2);
+			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawLines(x1,y1,x2,y2);
 			this.drawPekes(x1,y1,x2,y2,1);

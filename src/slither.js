@@ -162,6 +162,7 @@ Puzzles.slither.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.setBGCellColorFunc('qsub2');
+		pc.setBorderColorFunc('line');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -169,7 +170,7 @@ Puzzles.slither.prototype = {
 
 			this.drawBGCells(x1,y1,x2,y2);
 
-			this.drawBordersAsLine(x1,y1,x2,y2);
+			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawBaseMarks(x1,y1,x2,y2);
 

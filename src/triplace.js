@@ -201,7 +201,7 @@ Puzzles.triplace.prototype = {
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
-				this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, (bd.border[id].qans!==0));
+				this.drawBorder1(id, (bd.border[id].qans!==0));
 			}
 			this.isdrawBD = true;
 		};
@@ -212,9 +212,7 @@ Puzzles.triplace.prototype = {
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
-				if(bd.border[id].ques!==0){
-					this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, true);
-				}
+				if(bd.border[id].ques!==0){ this.drawBorder1(id, true);}
 			}
 			this.isdrawBD = true;
 		};

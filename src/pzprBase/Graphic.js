@@ -622,57 +622,36 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawBorders()       境界線をCanvasに書き込む
-	// pc.drawBordersAsLine() k.isborderAsLine===1の時、線をCanvasに書き込む
-	// pc.drawIceBorders()    アイスバーンの境界線をCanvasに書き込む
-	// pc.drawBorder1x()      (x,y)を指定して1カ所の境界線をCanvasに書き込む
+	// pc.drawBorders()        境界線をCanvasに書き込む
+	// pc.drawBorder1()        1カ所の境界線をCanvasに書き込む
+	// pc.drawBorder1x()       (x,y)を指定して1カ所の境界線をCanvasに書き込む
+	// pc.setBorderColor()     境界線の設定・描画判定する
+	// pc.setBorderColorFunc() pc.setBorderColor関数を設定する
+	//
 	// pc.drawBorderQsubs()   境界線用の補助記号をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawBorders : function(x1,y1,x2,y2){
 		this.vinc('border', 'crispEdges');
 
 		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
-		for(var i=0;i<idlist.length;i++){
-			var id = idlist[i];
-
-			if     (bd.border[id].qans !==1){ g.fillStyle = this.BorderQuescolor;    }
-			else if(bd.border[id].error===1){ g.fillStyle = this.errcolor1;          }
-			else if(bd.border[id].error===2){ g.fillStyle = this.errBorderQanscolor2;}
-			else                            { g.fillStyle = this.BorderQanscolor;    }
-
-			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, bd.isBorder(id));
-		}
+		for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 		this.isdrawBD = true;
 	},
-	drawBordersAsLine : function(x1,y1,x2,y2){
-		this.vinc('border', 'crispEdges');
-
-		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
-		for(var i=0;i<idlist.length;i++){
-			var id = idlist[i], isdraw = bd.isBorder(id);
-
-			if(isdraw){ this.setLineColor(id);}
-
-			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, isdraw);
+	drawBorder1 : function(id,forceFlag){
+		var vid = ["b_bd", id].join("_");
+		if(forceFlag!==false && this.setBorderColor(id)){
+			if(this.vnop(vid,this.FILL)){
+				var lw = this.lw + this.addlw, lm = this.lm;
+				var bx = bd.border[id].cx, by = bd.border[id].cy;
+				if     (by&1){ g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-lm, k.p0.x+mf((by-1)*k.cheight/2)-lm, lw, k.cheight+lw);}
+				else if(bx&1){ g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-lm, k.p0.x+mf(by*k.cheight/2)-lm, k.cwidth+lw,  lw);}
+			}
 		}
-		this.addlw = 0;
+		else{ this.vhide(vid);}
 	},
-	drawIceBorders : function(x1,y1,x2,y2){
-		this.vinc('border', 'crispEdges');
-
-		g.fillStyle = this.Cellcolor;
-		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
-		for(var i=0;i<idlist.length;i++){
-			var id = idlist[i], cc1 = bd.cc1(id), cc2 = bd.cc2(id);
-
-			var flag = (cc1!==-1 && cc2!==-1 && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6));
-			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, flag);
-		}
-	},
-	// この関数は、呼ぶ前にcolorを設定してください
-	drawBorder1x : function(bx,by,flag){
+	drawBorder1x : function(bx,by,forceFlag){
 		var vid = ["b_bd", bx, by].join("_");
-		if(flag){
+		if(forceFlag!==false && this.setBorderColor(-1)){
 			if(this.vnop(vid,this.FILL)){
 				var lw = this.lw + this.addlw, lm = this.lm;
 				if     (by&1){ g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-lm, k.p0.x+mf((by-1)*k.cheight/2)-lm, lw, k.cheight+lw);}
@@ -680,6 +659,40 @@ Graphic.prototype = {
 			}
 		}
 		else{ this.vhide(vid);}
+	},
+
+	setBorderColor : function(id){
+		if(bd.border[id].ques===1){ g.fillStyle = this.BorderQuescolor; return true;}
+		return false;
+	},
+	setBorderColorFunc : function(type){
+		switch(type){
+		case 'qans':
+			this.setBorderColor = function(id){
+				var err=bd.border[id].error;
+				if(bd.isBorder(id)){
+					if     (err===1){ g.fillStyle = this.errcolor1;          }
+					else if(err===2){ g.fillStyle = this.errBorderQanscolor2;}
+					else            { g.fillStyle = this.BorderQanscolor;    }
+					return true;
+				}
+				return false;
+			}
+			break;
+		case 'line':
+			this.setBorderColor = this.setLineColor;
+			break;
+		case 'ice':
+			this.setBorderColor = function(id){
+				var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+				if(cc1!==-1 && cc2!==-1 && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
+					g.fillStyle = this.Cellcolor;
+					return true;
+				}
+				return false;
+			}
+			break;
+		}
 	},
 
 	drawBorderQsubs : function(x1,y1,x2,y2){
@@ -774,12 +787,12 @@ Graphic.prototype = {
 		this.vinc('line', 'crispEdges');
 
 		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
-		for(var i=0;i<idlist.length;i++){ this.drawLine1(idlist[i], bd.isLine(idlist[i]));}
+		for(var i=0;i<idlist.length;i++){ this.drawLine1(idlist[i]);}
 		this.addlw = 0;
 	},
-	drawLine1 : function(id, flag){
+	drawLine1 : function(id, forceFlag){
 		var vid = "b_line_"+id;
-		if(flag && this.setLineColor(id)){
+		if(forceFlag!==false && this.setLineColor(id)){
 			if(this.vnop(vid,this.FILL)){
 				var lw = this.lw + this.addlw, lm = this.lm;
 				if     (bd.border[id].cx&1){ g.fillRect(mf(bd.border[id].px-lm), mf(bd.border[id].py-(k.cheight/2)-lm), lw, k.cheight+lw);}
@@ -790,11 +803,14 @@ Graphic.prototype = {
 	},
 	setLineColor : function(id){
 		this.addlw = 0;
-		if     (bd.border[id].error===1){ g.fillStyle = this.errlinecolor1; if(g.use.canvas){ this.addlw=1;}}
-		else if(bd.border[id].error===2){ g.fillStyle = this.errlinecolor2;}
-		else if(k.irowake===0 || !pp.getVal('irowake') || !bd.border[id].color){ g.fillStyle = this.linecolor;}
-		else{ g.fillStyle = bd.border[id].color;}
-		return true;
+		if(bd.isLine(id)){
+			if     (bd.border[id].error===1){ g.fillStyle = this.errlinecolor1; if(g.use.canvas){ this.addlw=1;}}
+			else if(bd.border[id].error===2){ g.fillStyle = this.errlinecolor2;}
+			else if(k.irowake===0 || !pp.getVal('irowake') || !bd.border[id].color){ g.fillStyle = this.linecolor;}
+			else{ g.fillStyle = bd.border[id].color;}
+			return true;
+		}
+		return false;
 	},
 	drawPekes : function(x1,y1,x2,y2,flag){
 		if(!g.use.canvas && flag===2){ return;}
@@ -1276,11 +1292,11 @@ Graphic.prototype = {
 		}
 	},
 	drawChassis_ex1 : function(x1,y1,x2,y2,boldflag){
-		this.vinc('chassis_ex', 'crispEdges');
+		this.vinc('chassis_ex1', 'crispEdges');
 		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
 		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
-		var lw = this.lw, lw1 = (boldflag?lw:1);
+		var lw = this.lw, lw1 = (boldflag?lw:1), lm = this.lm;
 		g.fillStyle = "black";
 		if(g.use.canvas){
 			if(x1===0){ g.fillRect(k.p0.x-lw1+1, k.p0.y+y1*k.cheight-lw1+1, lw1, (y2-y1+1)*k.cheight+lw1-1);}
@@ -1302,14 +1318,27 @@ Graphic.prototype = {
 		}
 
 		if(!boldflag){
-			this.vinc('border', 'crispEdges');
-
-			g.fillStyle = this.Cellcolor;
+			//g.fillStyle = "black";
+			var headers = ["chs1_sub_", "chs2_sub_"];
 			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.cell[c].cx===0){ this.drawBorder1x(0, 2*bd.cell[c].cy+1, (bd.cell[c].ques!==51));}
-				if(bd.cell[c].cy===0){ this.drawBorder1x(2*bd.cell[c].cx+1, 0, (bd.cell[c].ques!==51));}
+				var c = clist[i], cx = bd.cell[c].cx, cy = bd.cell[c].cy;
+				if(cx===0){
+					if(bd.cell[c].ques!==51){
+						if(this.vnop(headers[0]+cy,this.NONE)){
+							g.fillRect(k.p0.x-lm, k.p0.x+cy*k.cheight-lm, lw, k.cheight+lw);
+						}
+					}
+					else{ this.vhide([headers[0]+cy]);}
+				}
+				if(cy===0){
+					if(bd.cell[c].ques!==51){
+						if(this.vnop(headers[1]+cx,this.NONE)){
+							g.fillRect(k.p0.x+cx*k.cheight-lm, k.p0.x-lm, k.cwidth+lw, lw);
+						}
+					}
+					else{ this.vhide([headers[1]+cx]);}
+				}
 			}
 		}
 	},

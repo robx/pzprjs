@@ -88,7 +88,7 @@ Puzzles.mejilink.prototype = {
 
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders_mejilink(x1,y1,x2,y2);
+			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawBaseMarks(x1,y1,x2,y2);
 
@@ -119,22 +119,16 @@ Puzzles.mejilink.prototype = {
 		};
 
 		// オーバーライド
-		pc.drawBorders_mejilink = function(x1,y1,x2,y2){
-			this.vinc('border', 'crispEdges');
-
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
-			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i], isdraw = (bd.border[id].qans===1 || bd.border[id].ques===1);
-				if(isdraw){
-					if(bd.border[id].qans===1){ this.setLineColor(id);}
-					else{
-						var cc2=bd.cc2(id);
-						g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.BorderQuescolor : this.errbcolor1);
-					}
+		pc.setBorderColor = function(id){
+			if(bd.border[id].qans===1 || bd.border[id].ques===1){
+				if(bd.border[id].qans===1){ this.setLineColor(id);}
+				else{
+					var cc2=bd.cc2(id);
+					g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.BorderQuescolor : this.errbcolor1);
 				}
-				this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, isdraw);
+				return true;
 			}
-			this.addlw = 0;
+			return false;
 		};
 
 		line.repaintParts = function(idlist){

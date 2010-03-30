@@ -88,6 +88,7 @@ Puzzles.aho.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.fontcolor = pc.fontErrcolor = "white";
+		pc.setBorderColorFunc('qans');
 
 		pc.circledcolor = "black";
 		pc.fontsizeratio = 0.85;

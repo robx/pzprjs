@@ -119,6 +119,7 @@ Puzzles.kramma.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.BorderQanscolor = "rgb(64, 64, 255)";
+		pc.setBorderColorFunc('qans');
 
 		pc.crosssize = 0.15;
 
