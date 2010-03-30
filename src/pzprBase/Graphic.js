@@ -117,7 +117,7 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	onresize_func : function(){
 		this.lw = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3);
-		this.lm = (this.lw-1)/2
+		this.lm = (this.lw-1)/2;
 
 		//this.textenable = !!g.fillText;
 	},
@@ -649,12 +649,11 @@ Graphic.prototype = {
 
 		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 		for(var i=0;i<idlist.length;i++){
-			var id = idlist[i];
+			var id = idlist[i], isdraw = bd.isBorder(id);
 
-			if(bd.border[id].qans!==1){ g.fillStyle = this.BorderQuescolor; }
-			else                      { g.fillStyle = this.getLineColor(id);}
+			if(isdraw){ this.setLineColor(id);}
 
-			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, bd.isBorder(id));
+			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, isdraw);
 		}
 		this.addlw = 0;
 	},
@@ -670,17 +669,17 @@ Graphic.prototype = {
 			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, flag);
 		}
 	},
-
+	// ‚±‚ÌŠÖ”‚ÍAŒÄ‚Ô‘O‚Écolor‚ðÝ’è‚µ‚Ä‚­‚¾‚³‚¢
 	drawBorder1x : function(bx,by,flag){
 		var vid = ["b_bd", bx, by].join("_");
-		if(!flag){ this.vhide(vid); return;}
-
-		if(this.vnop(vid,this.FILL)){
-			var lw = this.lw + this.addlw, lm = this.lm;
-
-			if     (by&1){ g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-lm, k.p0.x+mf((by-1)*k.cheight/2)-lm, lw, k.cheight+lw);}
-			else if(bx&1){ g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-lm, k.p0.x+mf(by*k.cheight/2)-lm, k.cwidth+lw,  lw);}
+		if(flag){
+			if(this.vnop(vid,this.FILL)){
+				var lw = this.lw + this.addlw, lm = this.lm;
+				if     (by&1){ g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-lm, k.p0.x+mf((by-1)*k.cheight/2)-lm, lw, k.cheight+lw);}
+				else if(bx&1){ g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-lm, k.p0.x+mf(by*k.cheight/2)-lm, k.cwidth+lw,  lw);}
+			}
 		}
+		else{ this.vhide(vid);}
 	},
 
 	drawBorderQsubs : function(x1,y1,x2,y2){
@@ -768,7 +767,7 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	// pc.drawLines()    ‰ñ“š‚Ìü‚ðCanvas‚É‘‚«ž‚Þ
 	// pc.drawLine1()    ‰ñ“š‚Ìü‚ðCanvas‚É‘‚«ž‚Þ(1ƒJŠ‚Ì‚Ý)
-	// pc.getLineColor() •`‰æ‚·‚éü‚ÌF‚ðÝ’è‚·‚é
+	// pc.setLineColor() •`‰æ‚·‚éü‚ÌF‚ðÝ’è‚·‚é
 	// pc.drawPekes()    ‹«ŠEüã‚Ì~‚ðCanvas‚É‘‚«ž‚Þ
 	//---------------------------------------------------------------------------
 	drawLines : function(x1,y1,x2,y2){
@@ -780,21 +779,22 @@ Graphic.prototype = {
 	},
 	drawLine1 : function(id, flag){
 		var vid = "b_line_"+id;
-		if(!flag){ this.vhide(vid); return;}
-
-		g.fillStyle = this.getLineColor(id);
-		if(this.vnop(vid,this.FILL)){
-			var lw = this.lw + this.addlw, lm = this.lm;
-			if     (bd.border[id].cx&1){ g.fillRect(mf(bd.border[id].px-lm), mf(bd.border[id].py-(k.cheight/2)-lm), lw, k.cheight+lw);}
-			else if(bd.border[id].cy&1){ g.fillRect(mf(bd.border[id].px-(k.cwidth/2)-lm),  mf(bd.border[id].py-lm), k.cwidth+lw,  lw);}
+		if(flag && this.setLineColor(id)){
+			if(this.vnop(vid,this.FILL)){
+				var lw = this.lw + this.addlw, lm = this.lm;
+				if     (bd.border[id].cx&1){ g.fillRect(mf(bd.border[id].px-lm), mf(bd.border[id].py-(k.cheight/2)-lm), lw, k.cheight+lw);}
+				else if(bd.border[id].cy&1){ g.fillRect(mf(bd.border[id].px-(k.cwidth/2)-lm),  mf(bd.border[id].py-lm), k.cwidth+lw,  lw);}
+			}
 		}
+		else{ this.vhide(vid);}
 	},
-	getLineColor : function(id){
+	setLineColor : function(id){
 		this.addlw = 0;
-		if     (bd.border[id].error===1){ this.addlw=1; return this.errlinecolor1;}
-		else if(bd.border[id].error===2){ return this.errlinecolor2;}
-		else if(k.irowake===0 || !pp.getVal('irowake') || !bd.border[id].color){ return this.linecolor;}
-		return bd.border[id].color;
+		if     (bd.border[id].error===1){ g.fillStyle = this.errlinecolor1; if(g.use.canvas){ this.addlw=1;}}
+		else if(bd.border[id].error===2){ g.fillStyle = this.errlinecolor2;}
+		else if(k.irowake===0 || !pp.getVal('irowake') || !bd.border[id].color){ g.fillStyle = this.linecolor;}
+		else{ g.fillStyle = bd.border[id].color;}
+		return true;
 	},
 	drawPekes : function(x1,y1,x2,y2,flag){
 		if(!g.use.canvas && flag===2){ return;}

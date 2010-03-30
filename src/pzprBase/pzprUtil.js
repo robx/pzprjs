@@ -316,7 +316,7 @@ LineManager.prototype = {
 			for(var i=0,len=idlist.length;i<len;i++){
 				if(id===idlist[i]){ continue;}
 				var cid = idlist[i];
-				g.fillStyle = pc.getLineColor(cid);
+				pc.setLineColor(cid);
 				pc.drawBorder1x(bd.border[cid].cx, bd.border[cid].cy, true);
 			}
 		}

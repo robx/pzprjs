@@ -120,37 +120,19 @@ Puzzles.mejilink.prototype = {
 
 		// オーバーライド
 		pc.drawBorders_mejilink = function(x1,y1,x2,y2){
-			this.vinc('border_mejilink', 'crispEdges');
+			this.vinc('border', 'crispEdges');
 
-			var headers = ["b_bd_", "b_wbd_"];
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i];
-				if(bd.border[id].ques===0 && bd.border[id].qans===0){
-					this.vhide([headers[0]+id, headers[1]+id]);
-					continue;
-				}
-
-				if(bd.border[id].qans===1){
-					g.fillStyle = this.getLineColor(id);
-					if(this.vnop(headers[0]+id,this.FILL)){
-						var lw = this.lw + this.addlw, lm = this.lm;
-						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
+				var id = idlist[i], isdraw = (bd.border[id].qans===1 || bd.border[id].ques===1);
+				if(isdraw){
+					if(bd.border[id].qans===1){ this.setLineColor(id);}
+					else{
+						var cc2=bd.cc2(id);
+						g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.BorderQuescolor : this.errbcolor1);
 					}
 				}
-				else{ this.vhide(headers[0]+id);}
-
-				if(bd.border[id].ques===1){
-					var cc2=bd.cc2(id);
-					g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.BorderQuescolor : this.errbcolor1);
-					if(this.vnop(headers[1]+id,this.FILL)){
-						var lw = this.lw + this.addlw, lm = this.lm;
-						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
-						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2),  bd.border[id].py, k.cwidth+1,  1);}
-					}
-				}
-				else{ this.vhide(headers[1]+id);}
+				this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, isdraw);
 			}
 			this.addlw = 0;
 		};

@@ -170,21 +170,10 @@ Puzzles.wblink.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		pc.drawLine1 = function(id, flag){
-			var vid = "b_line_"+id;
-			if(!flag){ this.vhide(vid); return;}
-
-			if     (bd.border[id].error===1){ g.fillStyle = this.errlinecolor1; lw++;}
-			else if(bd.border[id].error===2){ g.fillStyle = this.errlinecolor2;}
-			else{ g.fillStyle = this.linecolor;}
-
-			if(this.vnop(vid,this.FILL)){
-				var lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3); //LineWidth
-				var lm = mf((lw-1)/2); //LineMargin
-
-				if     (bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-				else if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
-			}
+		// ü‚Ì‘¾‚³‚ð’Êí‚æ‚è­‚µ‘¾‚­‚·‚é
+		pc.onresize_func = function(){
+			this.lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3); // 12->8
+			this.lm = mf((this.lw-1)/2);
 		};
 		pc.hideGrid = function(){
 			for(var i=0;i<=k.qcols;i++){ this.vhide("bdy_"+i);}
@@ -218,12 +207,10 @@ Puzzles.wblink.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			this.performAsLine = false;
 			if( !this.checkLcntCell(4) ){
 				this.setAlert('ü‚ªŒð·‚µ‚Ä‚¢‚Ü‚·B','There is a crossing line.'); return false;
 			}
 
-			this.performAsLine = true;
 			var linfo = line.getLareaInfo();
 			if( !this.checkAllArea(linfo, function(c){ return (bd.QuC(c)!=0);}, function(w,h,a,n){ return (a<3);}) ){
 				this.setAlert('3‚ÂˆÈã‚Ì›‚ªŒq‚ª‚Á‚Ä‚¢‚Ü‚·B','Three or more objects are connected.'); return false;

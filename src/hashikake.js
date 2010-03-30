@@ -199,7 +199,7 @@ Puzzles.hashikake.prototype = {
 			var lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3);	//LineWidth
 			var lm = mf((lw-1)/2) + this.addlw;				//LineMargin
 			var ls = mf(lw*1.5);							//LineSpace
-			g.fillStyle = this.getLineColor(id);
+			this.setLineColor(id);
 
 			if(bd.border[id].line==1){
 				if(this.vnop(vids[0],this.FILL)){
