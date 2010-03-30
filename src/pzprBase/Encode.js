@@ -1,4 +1,4 @@
-// Encode.js v3.2.5
+// Encode.js v3.3.0
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -102,8 +102,8 @@ Encode.prototype = {
 	parseURI : function(url){
 		this.init();
 
-		// なぜかOperaはtextarea上の改行が実際の改行扱いになってしまうっぽい
-		if(k.br.Opera){ url = url.replace(/(\r|\n)/g,"");}
+		// textarea上の改行が実際の改行扱いになるUAに対応(Operaとか)
+		url = url.replace(/(\r|\n)/g,"");
 
 		// カンペンの場合
 		if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){

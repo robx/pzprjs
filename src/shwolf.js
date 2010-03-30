@@ -177,7 +177,7 @@ Puzzles.shwolf.prototype = {
 					img.style.width  = ""+(2*k.cwidth)+"px";
 					img.style.height = ""+(k.cheight)+"px";
 					img.style.left   = "-"+mf((ipos+0.5)*k.cwidth)+"px";
-					img.style.top    = ""+mf((!k.br.Opera?0:15)-k.cwidth/2)+"px";
+					img.style.top    = "-"+mf(k.cwidth/2)+"px";
 					img.style.clip   = "rect(1px,"+(k.cwidth*(ipos+1))+"px,"+k.cwidth+"px,"+(k.cwidth*ipos+1)+"px)";
 
 					this.showEL(div);
