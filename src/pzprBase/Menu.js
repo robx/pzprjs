@@ -305,16 +305,22 @@ Menu.prototype = {
 
 	//---------------------------------------------------------------------------
 	// menu.createAllFloat() 登録されたサブメニューから全てのフロートメニューを作成する
+	// menu.csshack_forIE6() セパレータのstyleを変更する
 	//---------------------------------------------------------------------------
 	createAllFloat : function(){
+		var _IE6 = false;
+		if(k.br.IE && navigator.userAgent.match(/MSIE (\d+)/)){
+			if(parseInt(RegExp.$1)<=7){ _IE6=true;}
+		}
+
 		for(var i=0;i<pp.flaglist.length;i++){
 			var id = pp.flaglist[i];
 			if(!pp.flags[id]){ continue;}
 
-			var smenuid = 'ms_'+id;
+			var smenu, smenuid = 'ms_'+id;
 			switch(pp.type(id)){
 				case pp.MENU:     smenu = ee.createEL(this.EL_MENU,    smenuid); continue; break;
-				case pp.SEPARATE: smenu = ee.createEL(this.EL_SEPARATE,smenuid); break;
+				case pp.SEPARATE: smenu = ee.createEL(this.EL_SEPARATE,smenuid); if(_IE6){ this.csshack_forIE6(smenu);} break;
 				case pp.LABEL:    smenu = ee.createEL(this.EL_LABEL,   smenuid); break;
 				case pp.SELECT:   smenu = ee.createEL(this.EL_SELECT,  smenuid); break;
 				case pp.SMENU:    smenu = ee.createEL(this.EL_SMENU,   smenuid); break;
@@ -339,7 +345,8 @@ Menu.prototype = {
 		for(var i=1,len=el.childNodes.length;i<len;i++){
 			var node = el.childNodes[i];
 			if(fw!=node.style.fontWeight){
-				ee(ee.createEL(this.EL_SEPARATE,'')).insertBefore(node);
+				var smenu = ee.createEL(this.EL_SEPARATE,''); if(_IE6){ this.csshack_forIE6(smenu);}
+				ee(smenu).insertBefore(node);
 				i++; len++; // 追加したので1たしておく
 			}
 			fw=node.style.fontWeight;
@@ -354,6 +361,13 @@ Menu.prototype = {
 		ee('ms_jumpv3')  .el.style.fontSize = '10pt'; ee('ms_jumpv3')  .el.style.paddingLeft = '8pt';
 		ee('ms_jumptop') .el.style.fontSize = '10pt'; ee('ms_jumptop') .el.style.paddingLeft = '8pt';
 		ee('ms_jumpblog').el.style.fontSize = '10pt'; ee('ms_jumpblog').el.style.paddingLeft = '8pt';
+	},
+	// IE7以下向けのCSSハックをやめて、ここで設定するようにした
+	csshack_forIE6 : function(smenu){
+		if(smenu.className == 'smenusep'){
+			smenu.style.lineHeight = '2pt';
+			smenu.style.display = 'inline';
+		}
 	},
 
 	//---------------------------------------------------------------------------

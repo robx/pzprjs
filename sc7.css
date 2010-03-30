@@ -33,11 +33,9 @@
 				   margin:0pt; padding:1pt 8pt 0pt 4pt; cursor:pointer;}
 	li.smenunull { display:block; text-align:left; background-color:#dfdfdf; color:gray;
 				   margin:0pt; padding:1pt 8pt 0pt 4pt; cursor:default;}
+
 	li.smenulabel{ display:inline; text-align:left; color:white; margin:0pt; padding:1pt 8pt 0pt 4pt; cursor:default;}
-	
-	* html li.smenusep { display:inline; line-height:2pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;} /* IE6 only */
-	*:first_child+html li.smenusep { display:inline; line-height:2pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;} /* IE7 only */
-	li.smenusep { display:block; height:3pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;}
+	li.smenusep  { display:block; height:3pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;}
 
 	/* ƒƒjƒ…[‚æ‚è‰º‚ÌŠÇ——Ìˆæ */
 	div#expression{ margin:6pt 12pt 0pt 12pt;}
