@@ -14,7 +14,7 @@ Puzzles.bosanowa.prototype = {
 		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
+		k.isoutsideborder = 1;	// 1:盤面の外枠上にborderのIDを用意する
 		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
@@ -180,24 +180,20 @@ Puzzles.bosanowa.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
+			this.drawBGCells(x1,y1,x2,y2);
+
 			if(pp.getVal('disptype')==1){
-				this.drawBGCells(x1,y1,x2,y2);
 				this.drawCircles_bosanowa(x1,y1,x2,y2);
 				this.drawBDnumbase(x1,y1,x2,y2);
 			}
 			else if(pp.getVal('disptype')==2){
 				this.drawOutside_souko(x1,y1,x2,y2);
 				this.drawGrid_souko(x1,y1,x2,y2);
-
 				this.drawBDnumbase(x1,y1,x2,y2);
-				this.drawErrorCells_bosanowa(x1,y1,x2,y2);
 			}
 			else if(pp.getVal('disptype')==3){
-				this.drawBorders_waritai(x1,y1,x2,y2);
+				this.drawBorders(x1,y1,x2,y2);
 				this.drawGrid_waritai(x1,y1,x2,y2);
-
-				this.drawBDnumbase(x1,y1,x2,y2);
-				this.drawErrorCells_bosanowa(x1,y1,x2,y2);
 			}
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -239,7 +235,7 @@ Puzzles.bosanowa.prototype = {
 				if(bd.cell[c].ques===7 && !bd.isNum(c)){
 					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
 					if(this.vnop(header+c,this.STROKE)){
-						g.shapeCircle(mf(bd.cell[c].px+k.cwidth/2), mf(bd.cell[c].py+k.cheight/2), rsize);
+						g.strokeCircle(mf(bd.cell[c].px+k.cwidth/2), mf(bd.cell[c].py+k.cheight/2), rsize);
 					}
 				}
 				else{ this.vhide([header+c]);}
@@ -297,7 +293,8 @@ Puzzles.bosanowa.prototype = {
 		pc.drawGrid_waritai = function(x1,y1,x2,y2){
 			this.vinc('grid_waritai', 'crispEdges');
 
-			var header = "b_grid_";
+			var csize = k.cwidth*0.20;
+			var headers = ["b_grid_", "b_grid2_"];
 			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
@@ -306,15 +303,18 @@ Puzzles.bosanowa.prototype = {
 
 				if(onboard1 && onboard2){
 					g.fillStyle=this.gridcolor;
-					if(this.vnop(header+id,this.NONE)){
+					if(this.vnop(headers[0]+id,this.NONE)){
 						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
 						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2),  bd.border[id].py, k.cwidth+1,  1);}
 					}
-				}
-				else{ this.vhide([header+id]);}
 
-				g.fillStyle=this.BorderQuescolor;
-				this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, (onboard1^onboard2));
+					g.fillStyle = ((bd.cell[cc2].error===0) ? "white" : this.errbcolor1);
+					if(this.vnop(headers[1]+id,this.FILL)){
+						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-csize, 1, 2*csize+1);}
+						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-csize, bd.border[id].py, 2*csize+1, 1);}
+					}
+				}
+				else{ this.vhide([headers[0]+id, headers[1]+id]);}
 			}
 		};
 
@@ -323,13 +323,11 @@ Puzzles.bosanowa.prototype = {
 
 			var csize = k.cwidth*0.20;
 			var header = "b_bbse_";
-
 			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+6,y2*2+6);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
 
-				if((pp.getVal('disptype')==3 || bd.border[id].qsub>=0)&&
-				  ((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7))){
+				if(bd.border[id].qsub>=0 && ((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7))){
 					g.fillStyle = "white";
 					if(this.vnop(header+id,this.NONE)){
 						g.fillRect(bd.border[id].px-csize, bd.border[id].py-csize, 2*csize+1, 2*csize+1);
@@ -359,20 +357,7 @@ Puzzles.bosanowa.prototype = {
 			}
 		};
 
-		pc.drawBorders_waritai = function(x1,y1,x2,y2){
-			this.vinc('border', 'crispEdges');
-
-			g.fillStyle = pc.Cellcolor;
-			var clist = this.cellinside(x1,y1,x2,y2);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.cell[c].ques!==7){ continue;}
-				this.drawBorder1x(0                , 2*bd.cell[c].cy+1,(bd.cell[c].cx===0)        );
-				this.drawBorder1x(2*k.qcols        , 2*bd.cell[c].cy+1,(bd.cell[c].cx===k.qcols-1));
-				this.drawBorder1x(2*bd.cell[c].cx+1, 0                ,(bd.cell[c].cy===0)        );
-				this.drawBorder1x(2*bd.cell[c].cx+1, 2*k.qrows        ,(bd.cell[c].cy===k.qrows-1));
-			}
-		};
+		// 倉庫番の外側(グレー)描画用
 		pc.drawOutside_souko = function(x1,y1,x2,y2){
 			this.vinc('cell_outside_souko', 'crispEdges');
 
@@ -387,13 +372,22 @@ Puzzles.bosanowa.prototype = {
 						bd.QuC(bd.cnum(cx-1,cy+1))===7 || bd.QuC(bd.cnum(cx+1,cy+1))===7 ) )
 					{
 						g.fillStyle = "rgb(127,127,127)";
-						if(this.vnop(header+c,this.NONE)){
+						if(this.vnop([header,cx,cy].join('_'),this.NONE)){
 							g.fillRect(k.p0.x+k.cwidth*cx, k.p0.y+k.cheight*cy, k.cwidth+1, k.cheight+1);
 						}
 					}
-					else{ this.vhide(header+c);}
+					else{ this.vhide([header,cx,cy].join('_'));}
 				}
 			}
+		};
+		// ワリタイの太線描画用
+		pc.setBorderColor = function(id){
+			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			if((cc1===-1 || bd.cell[cc1].ques!==7)^(cc2===-1 || bd.cell[cc2].ques!==7)){
+				g.fillStyle = this.Cellcolor;
+				return true;
+			}
+			return false;
 		};
 
 		pc.drawTarget_bosanowa = function(x1,y1,x2,y2){

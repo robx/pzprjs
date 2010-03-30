@@ -624,11 +624,8 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	// pc.drawBorders()        ‹«ŠEü‚ğCanvas‚É‘‚«‚Ş
 	// pc.drawBorder1()        1ƒJŠ‚Ì‹«ŠEü‚ğCanvas‚É‘‚«‚Ş
-	// pc.drawBorder1x()       (x,y)‚ğw’è‚µ‚Ä1ƒJŠ‚Ì‹«ŠEü‚ğCanvas‚É‘‚«‚Ş
 	// pc.setBorderColor()     ‹«ŠEü‚Ìİ’èE•`‰æ”»’è‚·‚é
 	// pc.setBorderColorFunc() pc.setBorderColorŠÖ”‚ğİ’è‚·‚é
-	//
-	// pc.drawBorderQsubs()   ‹«ŠEü—p‚Ì•â•‹L†‚ğCanvas‚É‘‚«‚Ş
 	//---------------------------------------------------------------------------
 	drawBorders : function(x1,y1,x2,y2){
 		this.vinc('border', 'crispEdges');
@@ -643,17 +640,6 @@ Graphic.prototype = {
 			if(this.vnop(vid,this.FILL)){
 				var lw = this.lw + this.addlw, lm = this.lm;
 				var bx = bd.border[id].cx, by = bd.border[id].cy;
-				if     (by&1){ g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-lm, k.p0.x+mf((by-1)*k.cheight/2)-lm, lw, k.cheight+lw);}
-				else if(bx&1){ g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-lm, k.p0.x+mf(by*k.cheight/2)-lm, k.cwidth+lw,  lw);}
-			}
-		}
-		else{ this.vhide(vid);}
-	},
-	drawBorder1x : function(bx,by,forceFlag){
-		var vid = ["b_bd", bx, by].join("_");
-		if(forceFlag!==false && this.setBorderColor(-1)){
-			if(this.vnop(vid,this.FILL)){
-				var lw = this.lw + this.addlw, lm = this.lm;
 				if     (by&1){ g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-lm, k.p0.x+mf((by-1)*k.cheight/2)-lm, lw, k.cheight+lw);}
 				else if(bx&1){ g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-lm, k.p0.x+mf(by*k.cheight/2)-lm, k.cwidth+lw,  lw);}
 			}
@@ -695,6 +681,10 @@ Graphic.prototype = {
 		}
 	},
 
+	//---------------------------------------------------------------------------
+	// pc.drawBorderQsubs() ‹«ŠEü—p‚Ì•â•‹L†‚ğCanvas‚É‘‚«‚Ş
+	// pc.drawBoxBorders()  ‹«ŠEü‚Æ•ƒ}ƒX‚ÌŠÔ‚Ìü‚ğ•`‰æ‚·‚é
+	//---------------------------------------------------------------------------
 	drawBorderQsubs : function(x1,y1,x2,y2){
 		this.vinc('border_qsub', 'crispEdges');
 
@@ -715,9 +705,6 @@ Graphic.prototype = {
 		}
 	},
 
-	//---------------------------------------------------------------------------
-	// pc.drawBoxBorders() ‹«ŠEü‚Æ•ƒ}ƒX‚ÌŠÔ‚Ìü‚ğ•`‰æ‚·‚é
-	//---------------------------------------------------------------------------
 	// ŠO˜g‚ª‚È‚¢ê‡‚Íl—¶‚µ‚Ä‚¢‚Ü‚¹‚ñ
 	drawBoxBorders  : function(x1,y1,x2,y2,tileflag){
 		this.vinc('boxborder', 'crispEdges');
