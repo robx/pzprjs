@@ -232,6 +232,8 @@ Menu.prototype = {
 		ai('size_2', 'size', 'サイズ 標準', 'Normal');
 		ai('size_3', 'size', 'サイズ 大',   'Large');
 		ai('size_4', 'size', 'サイズ 特大', 'Ex Large');
+		ap('sep_size', 'size');
+		ac('adjsize', 'size', true, 'サイズの自動調節', 'Auto Adjustment');
 
 		// *設定 ==============================================================
 		am('setting', "設定", "Setting");
@@ -588,7 +590,7 @@ Menu.prototype = {
 	checkclick : function(e){
 		var el = ee.getSrcElement(e);
 		var idname = el.id.substr(3);
-		pp.setVal(idname, el.checked);
+		pp.setVal(idname, !!el.checked);
 	},
 	selectclick : function(e){
 		var list = ee.getSrcElement(e).id.split('_');

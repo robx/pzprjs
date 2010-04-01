@@ -218,7 +218,7 @@ PBase.prototype = {
 		var mwidth = wwidth*ws.base-4; // margin/borderがあるので、適当に引いておく
 
 		// 特に縮小が必要ない場合
-		if(cols < ci[0]){
+		if(!pp.getVal('adjsize') || cols < ci[0]){
 			mwidth = wwidth*ws.base-4;
 			k.cwidth = k.cheight = mf(k.def_csize*cr.base);
 		}
