@@ -56,6 +56,18 @@ PBase.prototype = {
 	// base.translationEN() 日本語環境でない場合、デフォルトで英語表示にする
 	//---------------------------------------------------------------------------
 	onload_func : function(){
+		//Camp.select('canvas');
+		Camp('divques');
+
+		var self = this;
+		var tim = setInterval(function(){
+			if(Camp.isready()){
+				clearInterval(tim);
+				self.onload_func2.apply(self);
+			}
+		},10);
+	},
+	onload_func2 : function(){
 		this.initCanvas();
 		this.initObjects();
 		this.setEvents(true);	// イベントをくっつける
@@ -68,10 +80,8 @@ PBase.prototype = {
 	},
 
 	initCanvas : function(){
-		//Camp.select('canvas');
-		Camp('divques');
-		this.canvas = ee('divques').unselectable().el; // Canvas
-		this.numparent = ee('numobj_parent').el;			// 数字表示用
+		this.canvas = ee('divques').unselectable().el;	// Canvas
+		this.numparent = ee('numobj_parent').el;		// 数字表示用
 		g = this.canvas.getContext("2d");
 	},
 

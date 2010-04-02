@@ -1,4 +1,4 @@
-// Camp.js rev82
+// Camp.js rev83
  
 (function(){
 
@@ -22,6 +22,7 @@ var _win = this,
 	_color = [],
 	flags = { debugmode:false },
 	_types = ['svg','canvas','sl','flash','vml'],
+	_initializing = 0,
 
 	VML    = 0,
 	SVG    = 1,
@@ -241,32 +242,38 @@ VectorContext.prototype = {
 			if     (this.type===SVG){ this.appendSVG(parent,rect.width,rect.height);}
 			else if(this.type===SL) { this.appendSL (parent,rect.width,rect.height);}
 			else if(this.type===VML){ this.appendVML(parent,rect.width,rect.height);}
-			child = this.child;
 
-			var self = this;
-			//parent.className = "canvas";
-			parent.style.display  = 'block';
-			parent.style.position = 'relative';
-			parent.style.overflow = 'hidden';
-			if(flags.debugmode){
-				parent.style.backgroundColor = "#efefef";
-				parent.style.border = "solid 1px silver";
-			}
-			parent.getContext = function(type){
-				if(!self.child){ self.initElement(self.idname);}
-				return self;
-			};
-			parent.toDataURL = function(type){ return null; /* 未サポート */ };
-			this.canvas = parent;
-
-			this.target = this.child;
-			if(!!this.target){
-				this.rect(0,0,rect.width,rect.height);
-				this.addVectorElement(false,false);
-			}
+			if(this.type!==SL){ this.afterInit();}
 		}
-		this.target = child;
+		else{
+			this.target = child;
+		}
 	},
+	afterInit : function(){
+		var parent = _doc.getElementById(this.idname);
+		var rect   = getRectSize(parent);
+		var child  = this.child;
+
+		var self = this;
+		//parent.className = "canvas";
+		parent.style.display  = 'block';
+		parent.style.position = 'relative';
+		parent.style.overflow = 'hidden';
+		if(flags.debugmode){
+			parent.style.backgroundColor = "#efefef";
+			parent.style.border = "solid 1px silver";
+		}
+		parent.getContext = function(type){ return self;};
+		parent.toDataURL = function(type){ return null; /* 未サポート */ };
+		this.canvas = parent;
+
+		this.target = this.child;
+		this.rect(0,0,rect.width,rect.height);
+		this.addVectorElement(false,false);
+
+		_initializing--;
+	},
+
 	appendSVG : function(parent, width, height){
 		var svgtop = _doc.createElementNS(SVGNS,'svg');
 		svgtop.setAttribute('id', this.canvasid);
@@ -293,23 +300,24 @@ VectorContext.prototype = {
 		this.child = vmltop;
 	},
 	appendSL : function(parent, width, height){
+		var self = this, funcname = "_function_" + this.canvasid + "_onload";
+		_win[funcname] = function(sender, context, source){
+			self.content = document.getElementById([self.canvasid,'object'].join('_')).content;
+			self.child = self.content.findName(self.canvasid);
+			self.afterInit.call(self);
+		};
+
 		parent.innerHTML = [
 			'<object type="application/x-silverlight" width="100%" height="100%" id="',this.canvasid,'_object" />',
 			'<param name="windowless" value="true" />',
 			'<param name="background" value="#00000000" />',	// アルファ値0 = 透明
 			'<param name="source" value="#',this.canvasid,'_script" />',
-		//	'<param name="onLoad" value="onSLload" />',	// 前は100%,100%設定が必要だったみたい
+			'<param name="onLoad" value="',funcname,'" />',	// 前は100%,100%設定が必要だったみたい
 			'</object>',
 			'<script type="text/xaml" id="',this.canvasid,'_script">',
 			'<Canvas xmlns="http://schemas.microsoft.com/client/2007" Name="',this.canvasid,'" />',
 			'</script>'
 		].join('');
-
-		// ここでLoadされてない状態になることがあるみたい..
-		if(document.getElementById([this.canvasid,'object'].join('_')).IsLoaded){
-			this.content = document.getElementById([this.canvasid,'object'].join('_')).content;
-			this.child = this.content.findName(this.canvasid);
-		}
 	},
 	setLayer : function(layerid){
 		this.initElement(this.idname);
@@ -360,10 +368,7 @@ VectorContext.prototype = {
 			this.canvas.style.userSelect       = (unsel ? 'none' : 'text');
 		}
 	},
-	getContextElement : function(){
-		if(this.type===SL && !this.child){ this.initElement(this.idname);}
-		return this.child;
-	},
+	getContextElement : function(){ return this.child;},
 	getLayerElement   : function(){ return this.target;},
 
 	changeSize : function(width,height){
@@ -760,6 +765,7 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		};
 
 		this.canvas = parent;
+		_initializing--;
 	},
 	setLayer          : function(layerid){ },
 	setRendering      : function(render) { },
@@ -933,6 +939,7 @@ _extend( Camp, {
 		if((type===void 0)||(this.enable[type]!==true)){ choice = this.current;}
 		else{ choice[type] = true;}
 
+		_initializing++;
 		if     (choice.svg){ new VectorContext(SVG, idname);}
 		else if(choice.sl) { new VectorContext(SL,  idname);}
 		else if(choice.vml){ new VectorContext(VML, idname);}
@@ -949,7 +956,9 @@ _extend( Camp, {
 	},
 	setflags : function(type, value){
 		flags[type] = value;
-	}
+	},
+
+	isready : function(){ return (_initializing===0);}
 });
 
 /* ----------------------------------------------- */
