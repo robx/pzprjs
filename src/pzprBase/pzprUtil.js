@@ -551,9 +551,6 @@ AreaManager.prototype = {
 	// area.setTopOfRoom() セルのリストから部屋のTOPを設定する
 	// area.sr0()          setBorder()から呼ばれて、初期idを含む一つの部屋の領域を、指定されたareaidにする
 	//---------------------------------------------------------------------------
-	call_setBorder : function(id,val,type){
-		this.setBorder(id,val);
-	},
 	setBorder : function(id,val){
 		if(this.disroom){ return;}
 		val = (val>0?1:0);

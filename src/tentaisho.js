@@ -241,8 +241,12 @@ Puzzles.tentaisho.prototype = {
 			}
 		};
 
-		area.call_setBorder = function(id,val,type){
-			if(type==k.QANS){ this.setBorder(id,val);}
+		bd.sQuB = function(){
+			var old = this.border[id].ques;
+			um.addOpe(k.BORDER, k.QUES, id, old, num);
+			this.border[id].ques = num;
+
+			/* setBorder‚ğŒÄ‚Ño‚³‚È‚¢‚æ‚¤‚É‚·‚é */
 		};
 	},
 

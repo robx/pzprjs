@@ -669,7 +669,7 @@ Board.prototype = {
 		um.addOpe(k.BORDER, k.QUES, id, old, num);
 		this.border[id].ques = num;
 
-		if(um.isenableInfo() && (num>0 ^ old>0)){ area.call_setBorder(id,num,k.QUES);}
+		if(um.isenableInfo() && (num>0 ^ old>0)){ area.setBorder(id,num);}
 	},
 	sQnB : function(id, num) {
 		um.addOpe(k.BORDER, k.QNUM, id, this.border[id].qnum, num);
@@ -684,7 +684,7 @@ Board.prototype = {
 
 		if(um.isenableInfo() && (num>0 ^ old>0)){
 			if(k.isborderAsLine){ line.setLine(id,num);}
-			else                { area.call_setBorder(id,num,k.QANS);}
+			else                { area.setBorder(id,num);}
 		}
 	},
 	sQsB : function(id, num) {
