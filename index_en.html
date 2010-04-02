@@ -2,229 +2,527 @@
 <HTML>
 <HEAD>
 <META NAME="robots" CONTENTS="nofollow">
-<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<meta http-equiv="Content-Type" content="text/html">
 <TITLE>PUZ-PRE v3</TITLE>
 <link rel="stylesheet" href="../../top.css" type="text/css" />
 <style type="text/css">
 <!--
+	div#main    { width:90%;}
+
+	div#design1 { width:90%; margin:auto auto 12pt auto; padding:6pt;}
+
+	menu#puztypes { float:left; list-style-type:none; margin:0px; padding:2pt; padding-bottom:0pt;}
+	li.puzmenu { display:inline; padding:2pt; white-space:nowrap;
+				 background-color:#dfdfdf; border:solid 1px gray; border-bottom:none;
+				 border-top-right-radius:3pt; border-top-left-radius:3pt;
+				 -webkit-border-top-right-radius:3pt; -webkit-border-top-left-radius:3pt;
+				}
+	table.puztable{ display:none; width:100%; border:solid 1px gray;}
+
+	h4.notice_item { margin-top:4pt; margin-bottom:4pt;}
+
 	li.lunch { color:black;}
-	li.lunch2{ color:#333333;}
+	li.lunch2{ color:#666666;}
 	li.testa { color:blue; }
 	li.omopa { color:green;}
 	li.nigun { color:lime; }
 	li.subpa { color:gray; }
 	li.orig  { color:#afafaf; }
-	td.lists { padding:4pt 0pt 12pt 4pt; vertical-align:top;}
+	td.lists { padding:4pt 0pt 12pt 4pt; vertical-align:top; width:34%;}
 //-->
 </style>
 <script type="text/javascript">
 <!--
-	var kanpen = ['nurikabe', 'mashu', 'numlin', 'yajilin', 'ripple', 'shikaku', 'kurodoko', 'hitori', 'hashikake', 'sudoku', 'kakuro'];
-	var a = true;
+	var typelist = ['all','lunch','nigun','omopa','other','notice'];
+	var current  = 'notice';
+
+	function addEvent(element,type,func){
+		if(!!element.addEventListener){
+			element.addEventListener(type,func,false);
+		}
+		else if(!!element.attachEvent){
+			element.attachEvent("on"+type,func);
+		}
+	}
+	function onload_func(){
+		for(var i=0;i<typelist.length;i++){
+			addEvent(document.getElementById("puzmenu_"+typelist[i]),"click",click_tab);
+		}
+		disp();
+	}
+	function click_tab(e){
+		var el = (e.target || e.srcElement);
+		if(!!el){ current = el.id.substr(8); disp();}
+	}
 
 	function disp(){
-		for(var i=0;i<kanpen.length;i++){
-			document.getElementById(kanpen[i]).style.display = a?'none':'list-item';
+		for(var i=0;i<typelist.length;i++){
+			var el = document.getElementById("puzmenu_"+typelist[i]);
+			var table = document.getElementById("table_"+typelist[i]);
+			if(typelist[i]===current){
+				el.style.backgroundColor = "white";
+				el.style.color           = "black";
+				el.style.cursor          = "default";
+
+				try{ table.style.display = 'table';}
+				catch(e){ table.style.display = 'block';} //IE raises error
+				table.style.width   = '100%';
+			}
+			else{
+				el.style.backgroundColor = "#dfdfdf";
+				el.style.color           = "gray";
+				el.style.cursor          = "pointer";
+
+				table.style.display = 'none';
+			}
 		}
-		a = !a;
 	}
 //-->
 </script>
 </HEAD>
 <BODY background="../bg.gif">
 
-<div class=main>
+<div class=main id=main>
 
 <h2 id=title>PUZ-PRE v3 Editor's Link</h2>
 
-<table border=0 class=exp><tr><td class=exp>
-<p class=expression>
- PUZ-PRE <small>(Tentative)</small> is a Web Application that is for editing and playing the puzzles published by nikoli.
-I developed the script based on Java Applet at first, and I develop the JavaScript version of the script now.
-</p>
-<p class=expression style="margin-top:4pt;">
- I develop the script mainly with Firefox 3.5.5 and Safari 4.0.4,
-test on Google Chrome 3.0, Internet Explorer 6/8 and Sometimes firefox 3.0 and Opera 9.64/10.
- But due to InternetExplorer or another IE component browser's processing speed,
-I recommand another browser to enjoy PUZ-PRE v3.</p>
+<div id="design1">
 
-</td></tr></table>
+ <menu id="puztypes">
+  <li class="puzmenu" id="puzmenu_all">All puzzles</li>
+  <li class="puzmenu" id="puzmenu_lunch">Regular puzzles</li>
+  <li class="puzmenu" id="puzmenu_nigun">Nigun puzzles</li>
+  <li class="puzmenu" id="puzmenu_omopa">Omopa puzzles</li>
+  <li class="puzmenu" id="puzmenu_other">Other puzzles</li>
+  <li class="puzmenu" id="puzmenu_notice">Explanation</li>
+ </menu>
+<br clear="all">
 
-<table border=0 class=exp><tr><td class=exp>
-<table border=0 width=100%><tr>
+<!-- ////////////////////////////////////////////////////////////////////// -->
 
-<td class="lists" style="background-color:#ffdfdf;">
-<b>Black Cells</b>
-<ul>
-<li class="lunch" id="nurikabe"><a href="p.html?nurikabe">Nurikabe</a></li>
-<li class="testa"><a href="p.html?tasquare">Tasquare</a></li>
-<li class="nigun"><a href="p.html?creek">Creek</a></li>
-<li class="nigun"><a href="p.html?mochikoro">Mochikoro</a></li>
-<li class="subpa"><a href="p.html?nuribou">Nuribou</a></li>
-<li class="subpa"><a href="p.html?tawa">Tawamurenga</a></li>
-<li class="orig"><a href="p.html?mochinyoro">Mochinyoro</a></li>
-</ul>
-</td>
-
-<td class="lists" style="background-color:#ffdfdf;">
-<b>Areas and Black Cells</b>
-<ul>
-<li class="lunch"><a href="p.html?lits">LITS</a></li>
-<li class="lunch"><a href="p.html?tilepaint">TilePaint</a></li>
-<li class="nigun"><a href="p.html?shimaguni">Islands</a></li>
-<li class="subpa"><a href="p.html?paintarea">PaintArea</a></li>
-<li class="subpa"><a href="p.html?chocona">Chocona</a></li>
-<li class="subpa"><a href="p.html?norinori">Norinori</a></li>
-</ul>
-</td>
-
-<td class="lists" style="background-color:#ffdfdf;">
-<b>No Adjacent, No Devide</b>
-<ul>
-<li class="lunch"><a href="p.html?heyawake">Heyawake</a></li>
-<li class="lunch" id="hitori"><a href="p.html?hitori">Hitori</a></li>
-<li class="lunch2" id="kurodoko"><a href="p.html?kurodoko">Kurodoko (Kuromasu)</a></li>
-<li class="nigun"><a href="p.html?yajikazu">Yajisan-Kazusan</a></li>
-<li class="subpa"><a href="p.html?kurochute">Kurochute</a></li>
-<li class="orig"><a href="p.html?ayeheya">Ekawayeh</a></li>
-</ul>
-</td>
-
-</tr>
-
-<tr>
-
-<td class="lists" style="background-color:#dfdfff;">
-<b>Make the Loop</b>
-<ul>
-<li class="lunch"><a href="p.html?slither">Slitherlink</a></li>
-<li class="lunch" id="mashu"><a href="p.html?mashu">Masyu (Pearl Puzzle)</a></li>
-<li class="lunch" id="yajilin"><a href="p.html?yajilin">Yajilin</a></li>
-<li class="lunch"><a href="p.html?slalom">Slalom</a></li>
-<li class="nigun"><a href="p.html?bag">BAG (Corral)</a></li>
-<li class="nigun"><a href="p.html?country">Country Road</a></li>
-<li class="subpa"><a href="p.html?mejilink">Mejilink</a></li>
-</ul>
-</td>
-
-<td class="lists" style="background-color:#dfdfff;">
-<b>Make the Crossing Loops</b>
-<ul>
-<li class="omopa"><a href="p.html?icelom">Icelom</a></li>
-<li class="nigun"><a href="p.html?reflect">Reflect Link</a></li>
-<li class="nigun"><a href="p.html?icebarn">Icebarn</a></li>
-<li class="subpa"><a href="p.html?pipelink">Pipelink</a></li>
-<li class="subpa"><a href="p.html?loopsp">Loop Line Special</a></li>
-<li class="subpa"><a href="p.html?barns">Barns</a></li>
-<li class="subpa"><a href="p.html?nagenawa">Nagenawa</a></li>
-</ul>
-</td>
-
-<td class="lists" style="background-color:#ccffcc;">
-<b>Devide to Areas</b>
-<ul>
-<li class="lunch"><a href="p.html?tentaisho">Tentaisho</a></li>
-<li class="lunch2" id="shikaku"><a href="p.html?shikaku">Shikaku (Devide by Box)</a></li>
-<li class="omopa"><a href="p.html?shwolf">Sheeps and Wolves</a></li>
-<li class="nigun"><a href="p.html?bdblock">Border Block</a></li>
-<li class="subpa"><a href="p.html?nawabari">Territory</a></li>
-<li class="subpa"><a href="p.html?triplace">Tri-Place</a></li>
-<li class="subpa"><a href="p.html?kramma">KaitoRamma</a></li>
-</ul>
-</td>
-
-</tr>
-
-<tr>
-
-<td class="lists" style="background-color:#dfdfdf;">
-<b>Numbers</b>
-<ul>
-<li class="lunch" id="kakuro"><a href="p.html?kakuro">Kakuro (Sum Cross)</a></li>
-<li class="lunch2"><a href="p.html?minarism">Minarism</a></li>
-<li class="nigun"><a href="p.html?sukoro">Sukoro</a></li>
-<li class="subpa"><a href="p.html?kakuru">Kakuru</a></li>
-<li class="subpa"><a href="p.html?view">View</a></li>
-<li class="subpa"><a href="p.html?bosanowa">Bosanova</a></li>
-</ul>
-</td>
-
-<td class="lists" style="background-color:#dfdfdf;">
-<b>Areas and Numbers</b>
-<ul>
-<li class="lunch" id="sudoku"><a href="p.html?sudoku">Sudoku</a></li>
-<li class="lunch"><a href="p.html?fillomino">Fillomino</a></li>
-<li class="lunch" id="ripple"><a href="p.html?ripple">Ripple Effect</a></li>
-<li class="lunch2"><a href="p.html?factors">Rooms of Factors</a></li>
-<li class="subpa"><a href="p.html?nanro">Nanro</a></li>
-<li class="subpa"><a href="p.html?renban">Renban-Madoguchi</a></li>
-<li class="subpa"><a href="p.html?cojun">Cojun</a></li>
-</ul>
-</td>
-
-<td class="lists" style="background-color:#ccffcc;">
-<b>Tatami</b>
-<ul>
-<li class="nigun"><a href="p.html?tatamibari">Tatamibari</a></li>
-<li class="subpa"><a href="p.html?fillmat">Fillmat</a></li>
-<li class="subpa"><a href="p.html?usotatami">Uso-Tatami</a></li>
-</ul>
-</td>
-
-</tr>
-
-<tr>
-
-<td class="lists" style="background-color:#ffffcc;">
-<b>Drawing Lines</b>
-<ul>
-<li class="nigun"><a href="p.html?gokigen">Gokigen-Naname</a></li>
-<li class="nigun"><a href="p.html?tateyoko">Tatebo-Yokobo</a></li>
-<li class="nigun"><a href="p.html?kaero">Return to Home</a></li>
-<li class="subpa"><a href="p.html?bonsan">Bonsan/Heya-Bon</a></li>
-</ul>
-</td>
-
-<td class="lists" style="background-color:#ffffcc;">
-<b>Connect by Lines</b>
-<ul>
-<li class="lunch" id="numlin"><a href="p.html?numlin">Numberlink</a></li>
-<li class="lunch2" id="hashikake"><a href="p.html?hashikake">Bridges</a></li>
-<li class="nigun"><a href="p.html?firefly">Hotaru Beam</a></li>
-<li class="subpa"><a href="p.html?wblink">Shirokuro-link</a></li>
-<li class="subpa"><a href="p.html?ichimaga">(Magnetic) Ichimaga</a></li>
-<li class="subpa"><a href="p.html?kusabi">Kusabi</a></li>
-</ul>
-</td>
-
-<td class="lists" style="background-color:#ffffcc;">
-<font color=seagreen><b></b></font>
-<b>Others</b>
-<ul>
-<li class="lunch"><a href="p.html?akari">Akari (Light Up)</a></li>
-<li class="lunch2"><a href="p.html?goishi">Goishi</a></li>
-<li class="testa"><a href="p.html?shakashaka">Shakashaka</a></li>
-<li class="omopa"><a href="p.html?snakes">Hebi-Ichigo</a></li>
-<li class="nigun"><a href="p.html?kinkonkan">Kin-Kon-Kan</a></li>
-<li class="subpa"><a href="p.html?hakoiri">Hakoiri</a></li>
-<li class="subpa"><a href="p.html?shugaku">School Trip</a></li>
-</ul>
-</td>
-
-</tr>
+<table class="puztable" id="table_notice" border=0>
+ <tr>
+  <td style="background-color:#f8f8f8; padding:12pt; border:solid 1px gray;">
+   <p class=expression>
+    <h4 class="notice_item">About PUZ-PRE v3</h4>
+    <div style="margin-left:6pt;">
+      PUZ-PRE<small>(Tentative)</small> is a Web application that is for editing and playing the puzzles
+     that is mainly published by <a href="http://www.nikoli.co.jp/">nikoli</a>.
+     I develop the script by JavaScript, and also work for implementing HTML5 feature.
+    </div>
+    <div style="margin-left:6pt; margin-top:6pt;">
+      I develop the script mainly with Firefox 3.6 and Opera 10.51,
+     test on Google Chrome 4.0, Safari 4.0 and Sometimes Internet Explorer 6/8, Firefox 3.0+ and Opera 9.64+.
+    </div>
+    <div style="margin-left:6pt; margin-top:6pt;">
+     <a href="./index.html">to Japanese Menu</a>
+    </div>
+   </p>
+   <hr>
+   <p class=expression style="margin-top:6pt;">
+    <h4 class="notice_item">Browsers recommanded</h4>
+    <div style="margin-left:6pt;">
+     Firefox 3.0+, Google Chrome, Safari 4.0+, <del>Opera 10.50+</del><br>
+     - Because Opera 10.51 is unstable for condtional branch, I remove from them currently.
+    </div>
+   </p>
+   <hr>
+   <p class=expression style="margin-top:6pt;">
+    <h4 class="notice_item">Browser requirements</h4>
+    <div style="margin-left:6pt;">
+     Firefox 2.0+, Google Chrome, Safari 3.2+, Opera 9.64+, Internet Explorer 6.0 or 8.0,<br>
+     or another browsers that uses IE component (Trident).
+      But due to Internet Explorer or another IE component browser's processing speed,
+     I recommand another browser to enjoy PUZ-PRE v3.</p>
+    </div>
+   </p>
+   <hr>
+   <p class=expression style="margin-top:6pt;">
+    <h4 class="notice_item">Link</h4>
+    <div style="margin-left:6pt;">
+     Script of PUZ-PRE v3 (JavaScript and related file) <a href="src.zip">Download</a><br>
+     Access log of PUZ-PRE v3 and PUZ-PRE Applet is <a href="logview.php">Here</a><br>
+     Legacy URL generator and PUZ-PRE Applet are <a href="../">Here</a> <small>(Japanese only)</small><br>
+     <!-- <a href="./version.txt">ReleaseNotes</a> <a href="src.zip">ReleaseNotes(pzprBase.js)</a> -->
+    </div>
+   </p>
+  </td>
+ </tr>
 </table>
-</td></tr></table>
 
-<table border=0 class=exp><tr><td class=exp>
-URL generator, PUZ-PRE Applet are<a href="../">Here</a> <small>(Japanese only)</small><br>
-Script of PUZ-PRE v3 (JavaScript file) <a href="src.zip">Download</a><br>
-Access log of PUZ-PRE v3 and PUZ-PRE Applet is <a href="logview.php">Here</a><br>
-<a href="./version.txt">ReleaseNotes</a> <a href="src.zip">ReleaseNotes(pzprBase.js)</a>
-</td></tr></table>
+<!-- ////////////////////////////////////////////////////////////////////// -->
+
+<table class="puztable" id="table_all" border=0>
+ <tr>
+  <td class="lists" style="background-color:#ffdfdf;">
+   <b>Black Cells</b>
+   <ul>
+    <li class="lunch"><a href="p.html?nurikabe">Nurikabe</a></li>
+    <li class="nigun"><a href="p.html?creek">Creek</a></li>
+    <li class="nigun"><a href="p.html?mochikoro">Mochikoro</a></li>
+    <li class="nigun"><a href="p.html?tasquare">Tasquare</a></li>
+    <li class="subpa"><a href="p.html?nuribou">Nuribou</a></li>
+    <li class="subpa"><a href="p.html?tawa">tawamurenga</a></li>
+    <li class="orig"><a href="p.html?mochinyoro">Mochinyoro</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#ffdfdf;">
+   <b>Areas and Black Cells</b>
+   <ul>
+    <li class="lunch"><a href="p.html?lits">LITS</a></li>
+    <li class="lunch"><a href="p.html?tilepaint">TilePaint</a></li>
+    <li class="testa"><a href="p.html?norinori">Norinori</a></li>
+    <li class="nigun"><a href="p.html?shimaguni">Islands</a></li>
+    <li class="subpa"><a href="p.html?paintarea">PaintArea</a></li>
+    <li class="subpa"><a href="p.html?chocona">Chocona</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#ffdfdf;">
+   <b>No Adjacent, No Devide</b>
+   <ul>
+    <li class="lunch"><a href="p.html?heyawake">Heyawake</a></li>
+    <li class="lunch"><a href="p.html?hitori">Hitori</a></li>
+    <li class="lunch2"><a href="p.html?kurodoko">Kurodoko(Kuromasu)</a></li>
+    <li class="nigun"><a href="p.html?yajikazu">Yajisan-Kazusan</a></li>
+    <li class="subpa"><a href="p.html?kurochute">Kurochute</a></li>
+    <li class="orig"><a href="p.html?ayeheya">Ekawayeh</a></li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td class="lists" style="background-color:#dfdfff;">
+   <b>Make the Loop</b>
+   <ul>
+    <li class="lunch"><a href="p.html?slither">SlitherLink</a></li>
+    <li class="lunch"><a href="p.html?mashu">Masyu (Pearl Puzzle)</a></li>
+    <li class="lunch"><a href="p.html?yajilin">Yajilin</a></li>
+    <li class="lunch"><a href="p.html?slalom">Slalom</a></li>
+    <li class="nigun"><a href="p.html?bag">BAG (Corral)</a></li>
+    <li class="nigun"><a href="p.html?country">Country Load</a></li>
+    <li class="subpa"><a href="p.html?mejilink">Mejilink</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#dfdfff;">
+   <b>Make the Crossing Loop</b>
+   <ul>
+    <li class="omopa"><a href="p.html?icelom">Icelom</a></li>
+    <li class="nigun"><a href="p.html?reflect">Reflect Link</a></li>
+    <li class="nigun"><a href="p.html?icebarn">Icebarn</a></li>
+    <li class="subpa"><a href="p.html?pipelink">Pipelink</a></li>
+    <li class="subpa"><a href="p.html?loopsp">Loop Line Special</a></li>
+    <li class="subpa"><a href="p.html?barns">Barns</a></li>
+    <li class="subpa"><a href="p.html?nagenawa">Nagenawa</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#ccffcc;">
+   <b>Devide to Areas</b>
+   <ul>
+    <li class="lunch"><a href="p.html?tentaisho">Tentaisho</a></li>
+    <li class="lunch"><a href="p.html?shikaku">Shikaku (Devide by Box)</a></li>
+    <li class="nigun"><a href="p.html?bdblock">Border Block</a></li>
+    <li class="subpa"><a href="p.html?nawabari">Territory</a></li>
+    <li class="subpa"><a href="p.html?triplace">Tri-Place</a></li>
+    <li class="subpa"><a href="p.html?kramma">KaitoRamma</a></li>
+    <li class="subpa"><a href="p.html?shwolf">Sheeps and Wolves</a></li>
+    <li class="orig"><a href="p.html?aho">Aho-ni-Narikire</a></li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td class="lists" style="background-color:#dfdfdf;">
+   <b>Number Puzzles</b>
+   <ul>
+    <li class="lunch"><a href="p.html?kakuro">Kakuro (Sum Cross)</a></li>
+    <li class="lunch2"><a href="p.html?minarism">Minarism</a></li>
+    <li class="nigun"><a href="p.html?sukoro">Sukoro</a></li>
+    <li class="subpa"><a href="p.html?kakuru">Kakuru</a></li>
+    <li class="subpa"><a href="p.html?view">View</a></li>
+    <li class="subpa"><a href="p.html?bosanowa">Bosanova</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#dfdfdf;">
+   <b>Areas and Numbers</b>
+   <ul>
+    <li class="lunch"><a href="p.html?sudoku">Sudoku</a></li>
+    <li class="lunch"><a href="p.html?fillomino">Fillomino</a></li>
+    <li class="lunch"><a href="p.html?ripple">Ripple Effect</a></li>
+    <li class="lunch2"><a href="p.html?factors">Rooms of Factors</a></li>
+    <li class="subpa"><a href="p.html?nanro">Nanro</a></li>
+    <li class="subpa"><a href="p.html?cojun">Cojun</a></li>
+    <li class="subpa"><a href="p.html?renban">Renban-Madoguchi</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#ccffcc;">
+   <b>Tatami Puzzles</b>
+   <ul>
+    <li class="nigun"><a href="p.html?tatamibari">Tatamibari</a></li>
+    <li class="subpa"><a href="p.html?fillmat">Fillmat</a></li>
+    <li class="subpa"><a href="p.html?usotatami">Uso-Tatami</a></li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td class="lists" style="background-color:#ffffcc;">
+   <b>Drawing Puzzles</b>
+   <ul>
+    <li class="omopa"><a href="p.html?wagiri">Wagiri</a></li>
+    <li class="nigun"><a href="p.html?gokigen">Gokigen-Naname</a></li>
+    <li class="nigun"><a href="p.html?tateyoko">Tatebo-Yokobo</a></li>
+    <li class="nigun"><a href="p.html?kaero">Return to Home</a></li>
+    <li class="subpa"><a href="p.html?bonsan">Bonsan/Heya-Bon</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#ffffcc;">
+   <b>Connect by Lines</b>
+   <ul>
+    <li class="lunch"><a href="p.html?numlin">Numberlink</a></li>
+    <li class="lunch2"><a href="p.html?hashikake">Bridges</a></li>
+    <li class="nigun"><a href="p.html?firefly">Hotaru Beam</a></li>
+    <li class="subpa"><a href="p.html?wblink">Shirokuro-link</a></li>
+    <li class="subpa"><a href="p.html?ichimaga">(Magnetic) Ichimaga</a></li>
+    <li class="subpa"><a href="p.html?kusabi">Kusabi</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#ffffcc;">
+   <b>Variety Puzzles</b>
+   <ul>
+    <li class="lunch"><a href="p.html?akari">Akari (Light Up)</a></li>
+    <li class="lunch2"><a href="p.html?goishi">Goishi</a></li>
+    <li class="testa"><a href="p.html?shakashaka">Shakashaka</a></li>
+    <li class="testa"><a href="p.html?snakes">Hebi-Ichigo</a></li>
+    <li class="omopa"><a href="p.html?toichika">Toichika</a></li>
+    <li class="nigun"><a href="p.html?kinkonkan">Kinkonkan</a></li>
+    <li class="subpa"><a href="p.html?hakoiri">Hakoiri</a></li>
+    <li class="subpa"><a href="p.html?shugaku">School Trip</a></li>
+   </ul>
+  </td>
+ </tr>
+</table>
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+
+<table class="puztable" id="table_lunch" border=0>
+ <tr>
+  <td class="lists" style="background-color:#ffdfdf;">
+   <b>black Cells</b>
+   <ul>
+    <li class="lunch"><a href="p.html?nurikabe">Nurikabe</a></li>
+    <li class="lunch"><a href="p.html?heyawake">Heyawake</a></li>
+    <li class="lunch"><a href="p.html?hitori">Hitori</a></li>
+    <li class="lunch"><a href="p.html?lits">LITS</a></li>
+    <li class="lunch2"><a href="p.html?kurodoko">Kurodoko<small>(Kuromasu)</small></a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#dfdfff;">
+   <b>Line Puzzles</b>
+   <ul>
+    <li class="lunch"><a href="p.html?numlin">NumberLink</a></li>
+    <li class="lunch"><a href="p.html?slither">SlitherLink</a></li>
+    <li class="lunch"><a href="p.html?mashu">Masyu (Pearl Puzzle)</a></li>
+    <li class="lunch"><a href="p.html?yajilin">Yajilin</a></li>
+    <li class="lunch"><a href="p.html?slalom">Slalom</a></li>
+    <li class="lunch2"><a href="p.html?hashikake">Bridges</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#ccffcc;">
+   <b>Deviding Puzzles</b>
+   <ul>
+    <li class="lunch"><a href="p.html?shikaku">Shikaku (Devide by Box)</a></li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td class="lists" style="background-color:#efefef;">
+   <b>Picture Puzzles</b>
+   <ul>
+    <li class="lunch"><a href="p.html?tentaisho">Tentaisho</a></li>
+    <li class="lunch"><a href="p.html?tilepaint">TilePaint</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#dfdfdf;">
+   <b>Number Puzzles</b>
+   <ul>
+    <li class="lunch"><a href="p.html?sudoku">Sudoku</a></li>
+    <li class="lunch"><a href="p.html?kakuro">Kakuro (Sum Cross)</a></li>
+    <li class="lunch"><a href="p.html?fillomino">Fillomino</a></li>
+    <li class="lunch"><a href="p.html?ripple">Ripple Effect</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#ffffcc;">
+   <b>Variety Puzzles</b>
+   <ul>
+    <li class="lunch"><a href="p.html?akari">Akari (Light Up)</a></li>
+    <li class="lunch2"><a href="p.html?goishi">Goishi</a></li>
+   </ul>
+  </td>
+ </tr>
+</table>
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+
+<table class="puztable" id="table_nigun" border=0>
+ <tr>
+  <td rowspan=2 class="lists" style="background-color:#ffdfdf;">
+   <b>Black Cells</b>
+   <ul>
+    <li class="testa"><a href="p.html?norinori">Norinori</a></li>
+    <li class="nigun"><a href="p.html?yajikazu">Yajisan-Kazusan</a></li>
+    <li class="nigun"><a href="p.html?mochikoro">Mochikoro</a></li>
+    <li class="nigun"><a href="p.html?creek">Creek</a></li>
+    <li class="nigun"><a href="p.html?shimaguni">Islands</a></li>
+    <li class="nigun"><a href="p.html?tasquare">Tasquare</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#dfdfff;">
+   <b>Loop Puzzles</b>
+   <ul>
+    <li class="nigun"><a href="p.html?bag">BAG (Corral)</a></li>
+    <li class="nigun"><a href="p.html?country">Country Load</a></li>
+    <li class="nigun"><a href="p.html?reflect">Reflect Link</a></li>
+    <li class="nigun"><a href="p.html?icebarn">Icebarn</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#dfdfff;">
+   <b>Link Puzzles</b>
+   <ul>
+    <li class="nigun"><a href="p.html?firefly">Hotaru Beam</a></li>
+    <li class="nigun"><a href="p.html?tateyoko">Tatebo-Yokobo</a></li>
+    <li class="nigun"><a href="p.html?kaero">Return to Home</a></li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td rowspan=2 class="lists" style="background-color:#dfdfdf;">
+   <b>Number Puzzles</b>
+   <ul>
+    <li class="lunch2"><a href="p.html?minarism">Minarism</a></li>
+    <li class="lunch2"><a href="p.html?factors">Rooms of Factors</a></li>
+    <li class="nigun"><a href="p.html?sukoro">Sukoro</a></li>
+   </ul>
+  </td>
+  <td rowspan=2 class="lists" style="background-color:#ffffcc;">
+   <b>Variety Puzzles</b>
+   <ul>
+    <li class="testa"><a href="p.html?shakashaka">Shakashaka</a></li>
+    <li class="testa"><a href="p.html?snakes">Hebi-Ichigo</a></li>
+    <li class="nigun"><a href="p.html?kinkonkan">Kinkonkan</a></li>
+    <li class="nigun"><a href="p.html?gokigen">Gokigen-Naname</a></li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td class="lists" style="background-color:#ccffcc;">
+   <b>Deviding Puzzles</b>
+   <ul>
+    <li class="nigun"><a href="p.html?bdblock">Border Block</a></li>
+    <li class="nigun"><a href="p.html?tatamibari">Tatamibari</a></li>
+   </ul>
+  </td>
+ </tr>
+</table>
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+
+<table class="puztable" id="table_omopa" border=0>
+ <tr>
+  <td class="lists" style="background-color:#ffdfdf;">
+   <b>Black Cells</b>
+   <ul>
+    <li class="subpa"><a href="p.html?nuribou">Nuribou</a></li>
+    <li class="subpa"><a href="p.html?paintarea">PaintArea</a></li>
+    <li class="subpa"><a href="p.html?chocona">Chocona</a></li>
+    <li class="subpa"><a href="p.html?tawa">Tawamurenga</a></li>
+    <li class="subpa"><a href="p.html?kurochute">Kurochute</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#dfdfff;">
+   <b>Loop Puzzles</b>
+   <ul>
+    <li class="omopa"><a href="p.html?icelom">Icelom</a></li>
+    <li class="subpa"><a href="p.html?pipelink">Pipelink</a></li>
+    <li class="subpa"><a href="p.html?loopsp">Loop Line Special</a></li>
+    <li class="subpa"><a href="p.html?barns">Barns</a></li>
+    <li class="subpa"><a href="p.html?nagenawa">Nagenawa</a></li>
+    <li class="subpa"><a href="p.html?mejilink">Mejilink</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#dfdfff;">
+   <b>Line Puzzles</b>
+   <ul>
+    <li class="subpa"><a href="p.html?wblink">Shirokuro-link</a></li>
+    <li class="subpa"><a href="p.html?ichimaga">(Magnetic) Ichimaga</a></li>
+    <li class="subpa"><a href="p.html?kusabi">Kusabi</a></li>
+    <li class="subpa"><a href="p.html?bonsan">Bonsan/Heya-Bon</a></li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td class="lists" style="background-color:#ccffcc;">
+   <b>Devideing Puzzles</b>
+   <ul>
+    <li class="subpa"><a href="p.html?fillmat">Fillmat</a></li>
+    <li class="subpa"><a href="p.html?nawabari">Territory</a></li>
+    <li class="subpa"><a href="p.html?triplace">Tri-Place</a></li>
+    <li class="subpa"><a href="p.html?kramma">KaitoRamma</a></li>
+    <li class="subpa"><a href="p.html?shwolf">sheeps and Wolves</a></li>
+    <li class="subpa"><a href="p.html?usotatami">Uso-Tatami</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#dfdfdf;">
+   <b>Number Puzzles</b>
+   <ul>
+    <li class="subpa"><a href="p.html?kakuru">Kakuru</a></li>
+    <li class="subpa"><a href="p.html?nanro">Nanro</a></li>
+    <li class="subpa"><a href="p.html?bosanowa">Bosanova</a></li>
+    <li class="subpa"><a href="p.html?cojun">Cojun</a></li>
+    <li class="subpa"><a href="p.html?renban">renban-Madoguchi</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#ffffcc;">
+   <b>Variety Puzzles</b>
+   <ul>
+    <li class="omopa"><a href="p.html?toichika">Toichika</a></li>
+    <li class="omopa"><a href="p.html?wagiri">Wagiri</a></li>
+    <li class="subpa"><a href="p.html?hakoiri">Hakoiri</a></li>
+    <li class="subpa"><a href="p.html?shugaku">School Trip</a></li>
+   </ul>
+  </td>
+ </tr>
+</table>
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+
+<table class="puztable" id="table_other" border=0>
+ <tr>
+  <td class="lists" style="background-color:#ffdfdf;">
+   <b>Black Cells</b>
+   <ul>
+    <li class="orig"><a href="p.html?ayeheya">Ekawayeh</a></li>
+    <li class="orig"><a href="p.html?mochinyoro">Mochinyoro</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#ccffcc;">
+   <b>Deviding Puzzles</b>
+   <ul>
+    <li class="orig"><a href="p.html?aho">Aho-ni-Narikire</a></li>
+   </ul>
+  </td>
+  <td class="lists" style="background-color:#dfdfdf;">
+   <b>Number Puzzles</b>
+   <ul>
+    <li class="subpa"><a href="p.html?view">View</a></li>
+   </ul>
+  </td>
+ </tr>
+</table>
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+
+</div><!-- <div id="design1"> -->
 
 <hr>
 
-<p class=back><a href="../">back to Home</a> <span style="color:white;" onClick="javascript:disp(0);">display</span></p>
+<p class=back><a href="../../">back to Home</a></p>
 
 </div>
 </BODY>
@@ -232,6 +530,6 @@ Access log of PUZ-PRE v3 and PUZ-PRE Applet is <a href="logview.php">Here</a><br
 
 <script type="text/javascript">
 <!--
-	disp();
+	onload_func();
 //-->
 </script>

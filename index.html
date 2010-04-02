@@ -22,7 +22,7 @@
 	h4.notice_item { margin-top:4pt; margin-bottom:4pt;}
 
 	li.lunch { color:black;}
-	li.lunch2{ color:#333333;}
+	li.lunch2{ color:#666666;}
 	li.testa { color:blue; }
 	li.omopa { color:green;}
 	li.nigun { color:lime; }
@@ -91,7 +91,7 @@
  <menu id="puztypes">
   <li class="puzmenu" id="puzmenu_all">全て表示</li>
   <li class="puzmenu" id="puzmenu_lunch">定食パズル</li>
-  <li class="puzmenu" id="puzmenu_nigun">昔の定食＆二軍パズル</li>
+  <li class="puzmenu" id="puzmenu_nigun">二軍のパズル</li>
   <li class="puzmenu" id="puzmenu_omopa">オモパパズル</li>
   <li class="puzmenu" id="puzmenu_other">その他のパズル</li>
   <li class="puzmenu" id="puzmenu_notice">説明</li>
@@ -113,12 +113,16 @@
      　スクリプトの作成は主にFirefox3.6、Opera10.51上で行っており、
      動作確認はGoogle Chrome4.0、Safari4.0、たまにInternetExplorer6.0/8.0、Firefox3.0+、Opera9.64+でも行っております。
     </div>
+    <div style="margin-left:6pt; margin-top:6pt;">
+     <a href="./index_en.html">to English Menu</a>
+    </div>
    </p>
    <hr>
    <p class=expression style="margin-top:6pt;">
     <h4 class="notice_item">推奨ブラウザ</h4>
     <div style="margin-left:6pt;">
-     Firefox3.0+, Google Chrome4.0+, Safari4.0+, Opera10.50+
+     Firefox3.0+, Google Chrome4.0+, Safari4.0+, <del>Opera10.50+</del><br>
+     ※Opera10.51の条件分岐動作が不安定なので、推奨ブラウザから除外しています
     </div>
    </p>
    <hr>
@@ -177,7 +181,7 @@
    <ul>
     <li class="lunch"><a href="p.html?heyawake">へやわけ</a></li>
     <li class="lunch"><a href="p.html?hitori">ひとりにしてくれ</a></li>
-    <li class="lunch2"><a href="p.html?kurodoko">黒マスはどこだ</a></li>
+    <li class="lunch2"><a href="p.html?kurodoko">黒どこ<small>(黒マスはどこだ)</small></a></li>
     <li class="nigun"><a href="p.html?yajikazu">やじさんかずさん</a></li>
     <li class="subpa"><a href="p.html?kurochute">クロシュート</a></li>
     <li class="orig"><a href="p.html?ayeheya">∀人∃ＨＥＹＡ</a></li>
@@ -305,6 +309,7 @@
     <li class="lunch"><a href="p.html?heyawake">へやわけ</a></li>
     <li class="lunch"><a href="p.html?hitori">ひとりにしてくれ</a></li>
     <li class="lunch"><a href="p.html?lits">ＬＩＴＳ</a></li>
+    <li class="lunch2"><a href="p.html?kurodoko">黒どこ<small>(黒マスはどこだ)</small></a></li>
    </ul>
   </td>
   <td class="lists" style="background-color:#dfdfff;">
@@ -315,6 +320,7 @@
     <li class="lunch"><a href="p.html?mashu">ましゅ</a></li>
     <li class="lunch"><a href="p.html?yajilin">ヤジリン</a></li>
     <li class="lunch"><a href="p.html?slalom">スラローム</a></li>
+    <li class="lunch2"><a href="p.html?hashikake">橋をかけろ</a></li>
    </ul>
   </td>
   <td class="lists" style="background-color:#ccffcc;">
@@ -345,6 +351,7 @@
    <b>その他のパズル</b>
    <ul>
     <li class="lunch"><a href="p.html?akari">美術館</a></li>
+    <li class="lunch2"><a href="p.html?goishi">碁石ひろい</a></li>
    </ul>
   </td>
  </tr>
@@ -357,7 +364,6 @@
   <td rowspan=2 class="lists" style="background-color:#ffdfdf;">
    <b>黒マスのパズル</b>
    <ul>
-    <li class="lunch2"><a href="p.html?kurodoko">黒マスはどこだ</a></li>
     <li class="testa"><a href="p.html?norinori">のりのり</a></li>
     <li class="nigun"><a href="p.html?yajikazu">やじさんかずさん</a></li>
     <li class="nigun"><a href="p.html?mochikoro">モチコロ</a></li>
@@ -378,7 +384,6 @@
   <td class="lists" style="background-color:#dfdfff;">
    <b>線のパズル</b>
    <ul>
-    <li class="lunch2"><a href="p.html?hashikake">橋をかけろ</a></li>
     <li class="nigun"><a href="p.html?firefly">ホタルビーム</a></li>
     <li class="nigun"><a href="p.html?tateyoko">タテボーヨコボー</a></li>
     <li class="nigun"><a href="p.html?kaero">お家へ帰ろう</a></li>
@@ -397,7 +402,6 @@
   <td rowspan=2 class="lists" style="background-color:#ffffcc;">
    <b>その他のパズル</b>
    <ul>
-    <li class="lunch2"><a href="p.html?goishi">碁石ひろい</a></li>
     <li class="testa"><a href="p.html?shakashaka">シャカシャカ</a></li>
     <li class="testa"><a href="p.html?snakes">へびいちご</a></li>
     <li class="nigun"><a href="p.html?kinkonkan">キンコンカン</a></li>
@@ -421,7 +425,7 @@
 <table class="puztable" id="table_omopa" border=0>
  <tr>
   <td class="lists" style="background-color:#ffdfdf;">
-   <b>黒マス配置系</b>
+   <b>黒マスのパズル</b>
    <ul>
     <li class="subpa"><a href="p.html?nuribou">ぬりぼう</a></li>
     <li class="subpa"><a href="p.html?paintarea">ペイントエリア</a></li>
