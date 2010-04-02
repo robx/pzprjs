@@ -53,11 +53,13 @@ PBase.prototype = {
 	// base.initCanvas()  Canvas関連の初期化
 	// base.initObjects() 各オブジェクトの生成などの処理
 	// base.setEvents()   マウス入力、キー入力のイベントの設定を行う
+	// base.translationEN() 日本語環境でない場合、デフォルトで英語表示にする
 	//---------------------------------------------------------------------------
 	onload_func : function(){
 		this.initCanvas();
 		this.initObjects();
 		this.setEvents(true);	// イベントをくっつける
+		this.translationEN();
 
 		if(document.domain=='indi.s58.xrea.com' && k.PLAYER){ this.accesslog();}	// アクセスログをとってみる
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
@@ -129,6 +131,12 @@ PBase.prototype = {
 				window.addEventListener('drop', DDhandler, true);
 			}
 		}
+	},
+	translationEN : function(){
+		var lang = (navigator.browserLanguage ||
+					navigator.language        ||
+					navigator.userLanguage      ).substr(0,2);
+		if(lang!=='ja'){ pp.setVal('language', 1);}
 	},
 
 	//---------------------------------------------------------------------------
