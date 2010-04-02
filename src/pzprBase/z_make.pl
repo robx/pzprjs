@@ -142,19 +142,12 @@ sub output_doc{
  * pzprBase.js is a base script for playing nikoli puzzles on Web
  * written in JavaScript.
  * 
- * \@author  happa.
+ * \@author  dk22
  * \@version $version
  * \@date    $datestr
  * 
- * This script uses following library.
- *  uuCanvas.js (version 1.0)
- *  http://code.google.com/p/uupaa-js-spinoff/	uupaa.js SpinOff Project Home(Google Code)
- * 
- * For improvement of canvas drawing time, I make some change on uuCanvas.js.
- * Please see "//happa add.[20090608]" in uuCanvas.js.
- * 
- * This script is dual licensed under the MIT and Apache 2.0 licenses.
- * http://indi.s58.xrea.com/pzpr/v3/LICENCE.HTML
+ * This script is licensed under the MIT license. See below,
+ * http://www.opensource.org/licenses/mit-license.php
  * 
  */
 EOR
