@@ -27,8 +27,6 @@ LineManager = function(){
 	this.typeB = 'B';
 	this.typeC = 'C';
 
-	this.saved = 0;
-
 	this.init();
 };
 LineManager.prototype = {
@@ -36,6 +34,7 @@ LineManager.prototype = {
 	//---------------------------------------------------------------------------
 	// line.init()        変数の起動時の初期化を行う
 	// line.resetLcnts()  lcnts等の変数の初期化を行う
+	// line.newIrowake()  線の情報が再構築された際、線に色をつける
 	// line.lcntCell()    セルに存在する線の本数を返す
 	//---------------------------------------------------------------------------
 	init : function(){
@@ -60,9 +59,11 @@ LineManager.prototype = {
 		if(this.disableLine){ return;}
 
 		this.init();
-		for(var id=0;id<bd.bdmax;id++){ this.data.id[id] = (bd.isLine(id)?0:-1);
+		var bid = [];
+		for(var id=0;id<bd.bdmax;id++){
 			if(bd.isLine(id)){
 				this.data.id[id] = 0;
+				bid.push(id);
 
 				var cc1, cc2;
 				if(k.isCenterLine){ cc1 = bd.cc1(id),      cc2 = bd.cc2(id);}
@@ -71,31 +72,42 @@ LineManager.prototype = {
 				if(cc1!=-1){ this.ltotal[this.lcnt[cc1]]--; this.lcnt[cc1]++; this.ltotal[this.lcnt[cc1]]++;}
 				if(cc2!=-1){ this.ltotal[this.lcnt[cc2]]--; this.lcnt[cc2]++; this.ltotal[this.lcnt[cc2]]++;}
 			}
+			else{
+				this.data.id[id] = -1;
+			}
 		}
-		for(var id=0;id<bd.bdmax;id++){
-			if(this.data.id[id]!=0){ continue;}	// 既にidがついていたらスルー
-			var bx=bd.border[id].cx, by=bd.border[id].cy;
-			this.data.max++;
-			this.data[this.data.max] = {idlist:[]};
-			if(k.isCenterLine^(bx%2==0)){ this.lc0(bx,by+1,1,this.data.max); this.lc0(bx,by,2,this.data.max);}
-			else                        { this.lc0(bx+1,by,3,this.data.max); this.lc0(bx,by,4,this.data.max);}
+		this.lc0main(bid);
+		if(k.irowake!==0){ this.newIrowake();}
+	},
+	newIrowake : function(){
+		for(var i=1;i<=this.data.max;i++){
+			var idlist = this.data[i].idlist;
+			if(idlist.length>0){
+				var newColor = pc.getNewLineColor();
+				for(n=0;n<idlist.length;n++){
+					bd.border[idlist[n]].color = newColor;
+				}
+			}
 		}
 	},
 	lcntCell  : function(cc){ return (cc!=-1?this.lcnt[cc]:0);},
 
 	//---------------------------------------------------------------------------
-	// line.gettype()   線が引かれた/消された時に、typeA/typeB/typeCのいずれか判定する
-	// line.isTpos()    pieceが、指定されたcc内でidの反対側にあるか判定する
-	// line.branch()    lc0関数でidを割り当て中、このセルで分岐するかどうか判定する
-	// line.terminate() lc0関数でidを割り当て中、このセルで終了するかどうか判定する
+	// line.gettype()    線が引かれた/消された時に、typeA/typeB/typeCのいずれか判定する
+	// line.isTpos()     pieceが、指定されたcc内でidの反対側にあるか判定する
+	// line.iscrossing() 指定されたセル/交点で線が交差する場合にtrueを返す
 	//---------------------------------------------------------------------------
 	gettype : function(cc,id,val){
-		if(!k.isLineCross){
-			return ((this.lcnt[cc]===(0+val))?this.typeA:this.typeB);
+		var erase = (val>0?0:1);
+		if(cc===-1){
+			return this.typeA;
+		}
+		else if(!this.iscrossing(cc)){
+			return ((this.lcnt[cc]===(1-erase))?this.typeA:this.typeB);
 		}
 		else{
-			if(cc===-1 || this.lcnt[cc]===(0+val) || (this.lcnt[cc]===(2+val) && this.isTpos(cc,id))){ return this.typeA;}
-			else if(this.lcnt[cc]===(1+val) || this.lcnt[cc]===(3+val)){ return this.typeB;}
+			if     (this.lcnt[cc]===(1-erase) || (this.lcnt[cc]===(3-erase) && this.isTpos(cc,id))){ return this.typeA;}
+			else if(this.lcnt[cc]===(2-erase) ||  this.lcnt[cc]===(4-erase)){ return this.typeB;}
 			return this.typeC;
 		}
 	},
@@ -110,27 +122,18 @@ LineManager.prototype = {
 			return !bd.isLine(bd.bnum( 4*(cc%(k.qcols+1))-bd.border[id].cx, 4*mf(cc/(k.qcols+1))-bd.border[id].cy ));
 		}
 	},
-
-	branch    : function(bx,by){
-		if(!k.isLineCross){
-			return (this.lcntCell((k.isCenterLine?bd.cnum:bd.xnum)(bx>>1,by>>1))>=3);
-		}
-		return false;
-	},
-	terminate : function(bx,by){
-		return false;
-	},
+	iscrossing : function(cc){ return !!k.isLineCross;},
 
 	//---------------------------------------------------------------------------
-	// line.setLine()        線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
-	// line.setLineInfo()    線が引かれた時に、線の情報を生成しなおす
-	// line.removeLineInfo() 線が消された時に、線の情報を生成しなおす
-	// line.addLineInfo()    線が引かれた時に、周りの線が全てくっついて1つの線が
-	//                       できる場合の線idの再設定を行う
-	// line.remakeLineInfo() 線が引かれたり消された時、新たに2つ以上の線ができる
-	//                       可能性がある場合の線idの再設定を行う
-	// line.repaintLine()    ひとつながりの線を再描画する
-	// line.repaintParts()   repaintLine()関数で、さらに上から描画しなおしたい処理を書く
+	// line.setLine()         線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
+	// line.setLineInfo()     線が引かれた時に、線の情報を生成しなおす
+	// line.removeLineInfo()  線が消された時に、線の情報を生成しなおす
+	// line.combineLineInfo() 線が引かれた時に、周りの線が全てくっついて1つの線が
+	//                        できる場合の線idの再設定を行う
+	// line.remakeLineInfo()  線が引かれたり消された時、新たに2つ以上の線ができる
+	//                        可能性がある場合の線idの再設定を行う
+	// line.repaintLine()     ひとつながりの線を再描画する
+	// line.repaintParts()    repaintLine()関数で、さらに上から描画しなおしたい処理を書く
 	//---------------------------------------------------------------------------
 	setLine : function(id, val){
 		if(this.disableLine){ return;}
@@ -177,8 +180,8 @@ LineManager.prototype = {
 				bd.border[id].color = bd.border[bid].color;
 			}
 			// (B)+(B)の場合 -> くっついた線で、大きい方の線idに統一する
-			else if(!k.isLineCross || (type1===this.typeB && type2===this.typeB)){
-				this.addLineInfo(id);
+			else if(type1===this.typeB && type2===this.typeB){
+				this.combineLineInfo(id);
 			}
 			// その他の場合
 			else{
@@ -207,11 +210,11 @@ LineManager.prototype = {
 		}
 	},
 
-	addLineInfo : function(id){
+	combineLineInfo : function(id){
 		var dataid = this.data.id;
 
 		// この関数の突入条件より、bid.lengthは必ず2になる
-		// →ならなかった... くっつく線のIDは必ず2になる
+		// →ならなかった... くっつく線のID数は必ず2以下になる
 		var bid = this.getbid(id,1);
 		var did = [dataid[bid[0]], -1];
 		for(var i=0;i<bid.length;i++){
@@ -222,11 +225,13 @@ LineManager.prototype = {
 		}
 
 		var newColor = bd.border[bid[0]].color;
+		// くっつく線のID数が2種類の場合
 		if(did[1] != -1){
+			// どっちが長いの？
 			var longid = did[0], shortid = did[1];
 			if(this.data[did[0]].idlist.length < this.data[did[1]].idlist.length){
 				longid=did[1]; shortid=did[0];
-				newColor=bd.border[bid[1]].color;
+				newColor = bd.border[bid[1]].color;
 			}
 
 			// つながった線は全て同じIDにする
@@ -247,6 +252,7 @@ LineManager.prototype = {
 			}
 			this.repaintLine(longidlist, id);
 		}
+		// くっつく線のID数が1種類の場合 => 既存の線にくっつける
 		else{
 			this.data[did[0]].idlist.push(id);
 			dataid[id] = did[0];
@@ -255,51 +261,48 @@ LineManager.prototype = {
 	},
 	remakeLineInfo : function(id,val){
 		var dataid = this.data.id;
+		var oldmax = this.data.max;	// いままでのthis.data.max値
 
+		// つなげた線のIDを一旦0にして、max+1, max+2, ...を割り振りしなおす関数
+
+		// つながった線の線情報を一旦0にする
 		var bid = this.getbid(id,val);
-		var longid = dataid[bid[0]];
-		var longColor = bd.border[bid[0]].color; // 周りで一番長い線の色を保持する
-
-		// つながった線の線情報を0にする
+		var oldlongid = dataid[bid[0]], longColor = bd.border[bid[0]].color;
 		for(var i=0,len=bid.length;i<len;i++){
-			var lid = dataid[bid[i]];
-			if(lid<=0){ continue;}
-			var idlist = this.data[lid].idlist;
-			if(this.data[longid].idlist.length < idlist.length){
-				longid=lid; longColor=bd.border[bid[i]].color;
+			var current = dataid[bid[i]];
+			if(current<=0){ continue;}
+			var idlist = this.data[current].idlist;
+			if(this.data[oldlongid].idlist.length < idlist.length){
+				oldlongid = current;
+				longColor = bd.border[bid[i]].color;
 			}
 			for(var n=0,len2=idlist.length;n<len2;n++){ dataid[idlist[n]] = 0;}
-			this.data[lid] = {idlist:[]};
+			this.data[current] = {idlist:[]};
 		}
 
-		dataid[id] = (val>0?0:-1);
-		if(val===1){ bid.unshift(id);}
+		// 自分のIDの情報を変更する
+		if(val>0){ dataid[id] =  0; bid.unshift(id);}
+		else     { dataid[id] = -1;}
 
 		// 新しいidを設定する
-		var oldmax = this.data.max;
-		for(var i=0,len=bid.length;i<len;i++){
-			if(dataid[bid[i]]!=0){ continue;}	// 既にidがついていたらスルー
-			var bx=bd.border[bid[i]].cx, by=bd.border[bid[i]].cy;
-			this.data.max++; this.data[this.data.max] = {idlist:[]};
-			if(k.isCenterLine^(bx%2===0)){ this.lc0(bx,by+1,1,this.data.max); this.lc0(bx,by,2,this.data.max);}
-			else                         { this.lc0(bx+1,by,3,this.data.max); this.lc0(bx,by,4,this.data.max);}
+		this.lc0main(bid);
+
+		// できた中でもっとも長い線に、従来最も長かった線の色を継承する
+		// それ以外の線には新しい色を付加する
+
+		// できた線の中でもっとも長いものを取得する
+		var newlongid = oldmax+1;
+		for(var current=oldmax+1;current<=this.data.max;current++){
+			var idlist = this.data[current].idlist;
+			if(this.data[newlongid].idlist.length<idlist.length){ newlongid = current;}
 		}
 
-		// 新しい色を設定して、再描画する
-		longid = oldmax+1;
-		if(this.data.max>longid || k.isLineCross){
-			for(var i=oldmax+2;i<=this.data.max;i++){ if(this.data[longid].idlist.length < this.data[i].idlist.length){ longid=i;} }
-			for(var i=oldmax+1;i<=this.data.max;i++){
-				var newColor = (i===longid?longColor:pc.getNewLineColor());
-				var idlist = this.data[i].idlist;
-				for(var n=0,len=idlist.length;n<len;n++){
-					bd.border[idlist[n]].color = newColor;
-				}
-				this.repaintLine(idlist, id);
-			}
-		}
-		else{
-			bd.border[id].color = (val==0?longColor:"");
+		// 新しい色の設定
+		for(var current=oldmax+1;current<=this.data.max;current++){
+			var newColor = (current===newlongid ? longColor : pc.getNewLineColor());
+			var idlist = this.data[current].idlist;
+			for(var n=0,len=idlist.length;n<len;n++){ bd.border[idlist[n]].color = newColor;}
+			this.repaintLine(idlist, id);
 		}
 	},
 
@@ -316,71 +319,79 @@ LineManager.prototype = {
 
 	//---------------------------------------------------------------------------
 	// line.getbid()  指定したpieceに繋がる、最大6箇所に引かれている線を全て取得する
+	// line.lc0main() 指定されたpieceのリストに対して、lc0関数を呼び出す
 	// line.lc0()     ひとつながりの線にlineidを設定する(再帰呼び出し用関数)
 	//---------------------------------------------------------------------------
 	getbid : function(id,val){
+		var erase=(val>0?0:1), bx=bd.border[id].cx, by=bd.border[id].cy;
+		var dx=((k.isCenterLine^(bx%2===0))?2:0), dy=(2-dx);	// (dx,dy) = (2,0) or (0,2)
+
+		var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+		if(!k.isCenterLine){ cc1 = bd.crosscc1(id); cc2 = bd.crosscc2(id);}
+		// 交差ありでk.isborderAsLine==1(->k.isCenterLine==0)のパズルは作ってないはず
+		// 今までのオモパで該当するのもスリザーボックスくらいだったような、、
+
+		var lines=[];
+		if(cc1!==-1){
+			var iscrossing=this.iscrossing(cc1), lcnt=this.lcnt[cc1];
+			if(iscrossing && lcnt>=(4-erase)){
+				lines.push(bd.bnum(bx-dy,   by-dx  )); // cc1からのstraight
+			}
+			else if(lcnt>=(2-erase) && !(iscrossing && lcnt===(3-erase) && this.isTpos(cc1,id))){
+				lines.push(bd.bnum(bx-dy,   by-dx  )); // cc1からのstraight
+				lines.push(bd.bnum(bx-1,    by-1   )); // cc1からのcurve1
+				lines.push(bd.bnum(bx+dx-1, by+dy-1)); // cc1からのcurve2
+			}
+		}
+		if(cc2!==-1){
+			var iscrossing=this.iscrossing(cc2), lcnt=this.lcnt[cc2];
+			if(iscrossing && lcnt>=(4-erase)){
+				lines.push(bd.bnum(bx+dy,   by+dx  )); // cc2からのstraight
+			}
+			else if(lcnt>=(2-erase) && !(iscrossing && lcnt===(3-erase) && this.isTpos(cc2,id))){
+				lines.push(bd.bnum(bx+dy,   by+dx  )); // cc2からのstraight
+				lines.push(bd.bnum(bx+1,    by+1   )); // cc2からのcurve1
+				lines.push(bd.bnum(bx-dx+1, by-dy+1)); // cc2からのcurve2
+			}
+		}
+
 		var bid = [];
-		var bx=bd.border[id].cx, by=bd.border[id].cy;
-		var dx =((k.isCenterLine^(bx%2===0))?2:0), dy=(2-dx);	// (dx,dy) = (2,0) or (0,2)
-
-		var i;
-		if(!k.isLineCross){
-			i = bd.bnum(bx-dy,   by-dx  ); if(bd.isLine(i)){ bid.push(i);} // cc1からのstraight
-			i = bd.bnum(bx-1,    by-1   ); if(bd.isLine(i)){ bid.push(i);} // cc1からのcurve1
-			i = bd.bnum(bx+dx-1, by+dy-1); if(bd.isLine(i)){ bid.push(i);} // cc1からのcurve2
-			i = bd.bnum(bx+dy,   by+dx  ); if(bd.isLine(i)){ bid.push(i);} // cc2からのstraight
-			i = bd.bnum(bx+1,    by+1   ); if(bd.isLine(i)){ bid.push(i);} // cc2からのcurve1
-			i = bd.bnum(bx-dx+1, by-dy+1); if(bd.isLine(i)){ bid.push(i);} // cc2からのcurve2
-		}
-		else{
-			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
-			if(!k.isCenterLine){ cc1 = bd.crosscc1(id); cc2 = bd.crosscc2(id);}
-			// k.isLineCross==1でk.isborderAsLine==1(->k.isCenterLine==0)のパズルは作ってないはず
-			// 該当するのもスリザーボックスくらいだったような、、
-
-			if(cc1!==-1){
-				if(this.lcnt[cc1]===(1+val) || (this.lcnt[cc1]===(2+val) && !this.isTpos(cc1,id))){
-					i = bd.bnum(bx-dy,   by-dx  ); if(bd.isLine(i)){ bid.push(i);} // cc1からのstraight
-					i = bd.bnum(bx-1,    by-1   ); if(bd.isLine(i)){ bid.push(i);} // cc1からのcurve1
-					i = bd.bnum(bx+dx-1, by+dy-1); if(bd.isLine(i)){ bid.push(i);} // cc1からのcurve2
-				}
-				else if(this.lcnt[cc1]>=(3+val)){
-					i = bd.bnum(bx-dy,   by-dx  ); if(bd.isLine(i)){ bid.push(i);} // cc1からのstraight
-				}
-			}
-			if(cc2!==-1){
-				if(this.lcnt[cc2]===(1+val) || (this.lcnt[cc2]===(2+val) && !this.isTpos(cc2,id))){
-					i = bd.bnum(bx+dy,   by+dx  ); if(bd.isLine(i)){ bid.push(i);} // cc2からのstraight
-					i = bd.bnum(bx+1,    by+1   ); if(bd.isLine(i)){ bid.push(i);} // cc2からのcurve1
-					i = bd.bnum(bx-dx+1, by-dy+1); if(bd.isLine(i)){ bid.push(i);} // cc2からのcurve2
-				}
-				else if(this.lcnt[cc2]>=(3+val)){
-					i = bd.bnum(bx+dy,   by+dx  ); if(bd.isLine(i)){ bid.push(i);} // cc2からのstraight
-				}
-			}
-		}
-
+		for(var i=0;i<lines.length;i++){ if(bd.isLine(lines[i])){ bid.push(lines[i]);}}
 		return bid;
 	},
 
+	lc0main : function(bid){
+		for(var i=0,len=bid.length;i<len;i++){
+			if(this.data.id[bid[i]]!=0){ continue;}	// 既にidがついていたらスルー
+			var bx=bd.border[bid[i]].cx, by=bd.border[bid[i]].cy;
+			this.data.max++;
+			this.data[this.data.max] = {idlist:[]};
+			if(!k.isCenterLine^(bx&1)){ this.lc0(bx,by+1,1,this.data.max); this.lc0(bx,by,2,this.data.max);}
+			else                      { this.lc0(bx+1,by,3,this.data.max); this.lc0(bx,by,4,this.data.max);}
+		}
+	},
 	lc0 : function(bx,by,dir,newid){
 		while(1){
 			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 			if((bx+by)%2===0){
-				if(this.branch(bx,by)){
-					if(bd.isLine(bd.bnum(bx,by-1))){ this.lc0(bx,by,1,newid);}
-					if(bd.isLine(bd.bnum(bx,by+1))){ this.lc0(bx,by,2,newid);}
-					if(bd.isLine(bd.bnum(bx-1,by))){ this.lc0(bx,by,3,newid);}
-					if(bd.isLine(bd.bnum(bx+1,by))){ this.lc0(bx,by,4,newid);}
-					break;
+				var cc = (k.isCenterLine?bd.cnum:bd.xnum)(bx>>1,by>>1);
+				if(cc===-1){ break;}
+				else if(this.lcnt[cc]>=3){
+					if(!this.iscrossing(cc)){
+						if(bd.isLine(bd.bnum(bx,by-1))){ this.lc0(bx,by,1,newid);}
+						if(bd.isLine(bd.bnum(bx,by+1))){ this.lc0(bx,by,2,newid);}
+						if(bd.isLine(bd.bnum(bx-1,by))){ this.lc0(bx,by,3,newid);}
+						if(bd.isLine(bd.bnum(bx+1,by))){ this.lc0(bx,by,4,newid);}
+						break;
+					}
+					/* lcnt>=3でiscrossing==trueの時は直進＝何もしない */
 				}
-				else if(this.lcntCell((k.isCenterLine?bd.cnum:bd.xnum)(bx>>1,by>>1))<=2){
+				else{
 					if     (dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
 					else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ dir=1;}
 					else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ dir=4;}
 					else if(dir!=4 && bd.isLine(bd.bnum(bx-1,by))){ dir=3;}
 				}
-				else if(this.terminate(bx,by)){ break;}
 			}
 			else{
 				var id = bd.bnum(bx,by);

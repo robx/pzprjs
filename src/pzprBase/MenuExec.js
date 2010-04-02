@@ -185,18 +185,8 @@ MenuExec.prototype = {
 	// menu.ex.irowakeRemake() 「色分けしなおす」ボタンを押した時に色分けしなおす
 	//---------------------------------------------------------------------------
 	irowakeRemake : function(){
-		if(!pp.getVal('irowake')){ return;}
-
-		for(var i=1;i<=line.data.max;i++){
-			var idlist = line.data[i].idlist;
-			if(idlist.length>0){
-				var newColor = pc.getNewLineColor();
-				for(n=0;n<idlist.length;n++){
-					bd.border[idlist[n]].color = newColor;
-				}
-			}
-		}
-		pc.paint(0,0,k.qcols-1,k.qrows-1);
+		line.newIrowake();
+		if(pp.getVal('irowake')){ pc.paintAll();}
 	},
 
 	//------------------------------------------------------------------------------

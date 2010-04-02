@@ -244,12 +244,7 @@ Puzzles.hashikake.prototype = {
 				}
 			}
 		};
-		line.branch = function(bx,by,lcnt){
-			return (lcnt==3||lcnt==4) && (bd.QnC(bd.cnum(bx>>1,by>>1))!=-1);
-		};
-		line.point = ee.binder(line, function(id,cc){
-			return this.lcntCell(cc)==1 || (this.lcntCell(cc)==3 && this.tshapeid(cc)==id);
-		});
+		line.iscrossing = function(cc){ return (bd.QnC(cc)===-1);};
 	},
 
 	//---------------------------------------------------------

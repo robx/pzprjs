@@ -122,6 +122,7 @@ Puzzles.ichimaga.prototype = {
 				}
 			}
 		};
+		line.iscrossing = function(cc){ return (bd.QnC(cc)===-1);};
 	},
 
 	//---------------------------------------------------------
