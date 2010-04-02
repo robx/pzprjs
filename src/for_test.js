@@ -1,4 +1,4 @@
-// for_test.js v3.2.4p4
+// for_test.js v3.3.0
 
 debug.extend({
 	testonly_func : function(){
@@ -344,7 +344,10 @@ debug.extend({
 		},mint);
 	},
 	taenable : true,
-	addTextarea : function(str){ ee('testdiv').appendHTML(str).appendBR();},
+	addTextarea : function(str){
+		if(!k.br.Gecko){ ee('testarea').el.value += (str+"\n");}
+		else{ ee('testdiv').appendHTML(str).appendBR();}
+	},
 
 	qsubf : true,
 	bd_freezecopy : function(){
