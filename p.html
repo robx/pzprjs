@@ -150,12 +150,6 @@
 </form>
 </div>
 
-<div class="popup" id="keypopup1" style="padding:3pt;background-color:silver;">
-</div>
-
-<div class="popup" id="keypopup3" style="padding:3pt;background-color:silver;">
-</div>
-
 <div class="popup" id="poptest">
 <div class="titlebar" id="bartest">pop_test</div>
 <form name="testform">
@@ -176,16 +170,21 @@
 </form>
 </div>
 
+<div class="keypopup" id="keypopup1"></div>
+<div class="keypopup" id="keypopup3"></div>
+
 </div> <!-- div#popup_parent close. -->
 <!-- ここまでポップアップメニュー -->
 
 <!-- フロートパネル用 -->
 <div id="float_parent"></div>
 
-<!-- ここからファイル出力用フォーム/入出力用インラインフレーム -->
-<iframe id="fileiopanel" src="about:blank" style="width:200px;height:200px;position:absolute;top:0px;left:-10000px" name="fileiopanel"></iframe>
-<form name="fileform2" id="fileform2" action="fileio.xcg" method="post" onsubmit="return false;"
-style="width:100px;height:100px;position:absolute;top:0px;left:-9000px" target="fileiopanel">
+<!-- ファイル入出力用インラインフレーム -->
+<iframe name="fileiopanel" id="fileiopanel" src="about:blank"></iframe>
+
+<!-- ここからファイル出力用フォーム -->
+<form name="fileform2" id="fileform2" target="fileiopanel"
+	  action="fileio.xcg" method="post" onsubmit="return false;">
 <input type="hidden" name="operation" value="save">
 <input type="hidden" name="filename" value="">
 <input type="hidden" name="ques" value="">
