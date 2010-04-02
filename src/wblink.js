@@ -158,8 +158,7 @@ Puzzles.wblink.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			if(k.editmode){ this.drawGrid(x1,y1,x2,y2);}
-			else if(!g.use.canvas){ this.hideGrid();}
+			this.drawGrid(x1,y1,x2,y2,k.editmode);
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);

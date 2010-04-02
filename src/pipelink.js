@@ -160,12 +160,7 @@ Puzzles.pipelink.prototype = {
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
-			if(this.disp===0){
-				this.drawCircles_pipelink(x1,y1,x2,y2);
-			}
-			else if(this.disp===1){
-				if(!g.use.canvas){ this.hideCircles_pipelink(x1,y1,x2,y2);}
-			}
+			this.drawCircles_pipelink(x1,y1,x2,y2,(this.disp===0));
 
 			this.drawBorders(x1,y1,x2,y2);
 
@@ -198,30 +193,28 @@ Puzzles.pipelink.prototype = {
 			return false;
 		};
 
-		pc.drawCircles_pipelink = function(x1,y1,x2,y2){
+		pc.drawCircles_pipelink = function(x1,y1,x2,y2,isdraw){
 			this.vinc('cell_circle', 'auto');
 
-			var rsize  = k.cwidth*0.40;
 			var header = "c_cir_";
-
 			var clist = this.cellinside(x1,y1,x2,y2);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.cell[c].ques===6){
-					g.strokeStyle = this.Cellcolor;
-					if(this.vnop(header+c,this.NONE)){
-						g.strokeCircle(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize);
+			if(isdraw){
+				var rsize  = k.cwidth*0.40;
+				for(var i=0;i<clist.length;i++){
+					var c = clist[i];
+					if(bd.cell[c].ques===6){
+						g.strokeStyle = this.Cellcolor;
+						if(this.vnop(header+c,this.NONE)){
+							g.strokeCircle(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize);
+						}
 					}
+					else{ this.vhide(header+c);}
 				}
-				else{ this.vhide(header+c);}
 			}
-		};
-		pc.hideCircles_pipelink = function(x1,y1,x2,y2){
-			this.vinc('cell_circle', 'auto');
-
-			var header = "c_cir_";
-			var clist = this.cellinside(x1,y1,x2,y2);
-			for(var i=0;i<clist.length;i++){ this.vhide(header+clist[i]);}
+			else{
+				var header = "c_cir_";
+				for(var i=0;i<clist.length;i++){ this.vhide(header+clist[i]);}
+			}
 		};
 
 		pc.disp = 0;

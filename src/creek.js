@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クリーク版 creek.js v3.2.4
+// パズル固有スクリプト部 クリーク版 creek.js v3.3.0
 //
 Puzzles.creek = function(){ };
 Puzzles.creek.prototype = {
@@ -109,8 +109,7 @@ Puzzles.creek.prototype = {
 			this.drawTarget_creek(x1,y1,x2,y2);
 		};
 		pc.drawTarget_creek = function(x1,y1,x2,y2){
-			if(k.editmode){ this.drawTCross(x1,y1,x2+1,y2+1);}
-			else{ this.hideTCross();}
+			this.drawTCross(x1,y1,x2+1,y2+1,k.editmode);
 		};
 	},
 

@@ -205,8 +205,7 @@ Puzzles.gokigen.prototype = {
 		};
 
 		pc.drawTarget_gokigen = function(x1,y1,x2,y2){
-			if(k.editmode){ this.drawTCross(x1,y1,x2+1,y2+1);}
-			else{ this.hideTCross();}
+			this.drawTCross(x1,y1,x2+1,y2+1,k.editmode);
 		};
 	},
 

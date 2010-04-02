@@ -254,26 +254,9 @@ Puzzles.wagiri.prototype = {
 		};
 
 		pc.drawTarget_wagiri = function(x1,y1,x2,y2){
-			if(k.playmode){
-				this.hideTCell();
-				this.hideTCross();
-				this.hideTBorder();
-			}
-			else if((tc.cursolx&1)&&(tc.cursoly&1)){
-				this.drawTCell(x1-1,y1-1,x2+1,y2+1);
-				this.hideTCross();
-				this.hideTBorder();
-			}
-			else if(!(tc.cursolx&1)&&!(tc.cursoly&1)){
-				this.hideTCell();
-				this.drawTCross(x1-1,y1-1,x2+1,y2+1);
-				this.hideTBorder();
-			}
-			else{
-				this.hideTCell();
-				this.hideTCross();
-				this.drawTBorder(x1-1,y1-1,x2+1,y2+1);
-			}
+			this.drawTCell  (x1-1,y1-1,x2+1,y2+1,(k.editmode && ( (tc.cursolx&1)&& (tc.cursoly&1))));
+			this.drawTCross (x1-1,y1-1,x2+1,y2+1,(k.editmode && (!(tc.cursolx&1)&&!(tc.cursoly&1))));
+			this.drawTBorder(x1-1,y1-1,x2+1,y2+1,(k.editmode && ( (tc.cursolx&1)!==(tc.cursoly&1))));
 		};
 	},
 

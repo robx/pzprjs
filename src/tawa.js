@@ -501,22 +501,24 @@ Puzzles.tawa.prototype = {
 		};
 
 		pc.drawTarget_tawa = function(x1,y1,x2,y2){
-			if(k.playmode){ this.hideTCell(); return;}
+			this.vinc('target_cell', 'crispEdges');
 
-			this.vinc('target', 'crispEdges');
-			if(tc.cursolx < x1   || x2  +1 < tc.cursolx){ return;}
-			if(tc.cursoly < y1*2 || y2*2+2 < tc.cursoly){ return;}
+			if(k.editmode){
+				if(tc.cursolx < x1   || x2  +1 < tc.cursolx){ return;}
+				if(tc.cursoly < y1*2 || y2*2+2 < tc.cursoly){ return;}
 
-			var px = k.p0.x + mf(tc.cursolx*k.cwidth/2);
-			var py = k.p0.y + mf((tc.cursoly-1)*k.cheight/2);
-			var w = (k.cwidth<32?2:mf(k.cwidth/16));
+				var px = k.p0.x + mf(tc.cursolx*k.cwidth/2);
+				var py = k.p0.y + mf((tc.cursoly-1)*k.cheight/2);
+				var w = (k.cwidth<32?2:mf(k.cwidth/16));
 
-			this.vdel(["tc1_","tc2_","tc3_","tc4_"]);
-			g.fillStyle = this.targetColor1;
-			if(this.vnop("tc1_",this.NONE)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
-			if(this.vnop("tc2_",this.NONE)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
-			if(this.vnop("tc3_",this.NONE)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
-			if(this.vnop("tc4_",this.NONE)){ g.fillRect(px+k.cwidth-w,  py+1, w, k.cheight-2);}
+				this.vdel(["tc1_","tc2_","tc3_","tc4_"]);
+				g.fillStyle = this.targetColor1;
+				if(this.vnop("tc1_",this.NONE)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
+				if(this.vnop("tc2_",this.NONE)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
+				if(this.vnop("tc3_",this.NONE)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
+				if(this.vnop("tc4_",this.NONE)){ g.fillRect(px+k.cwidth-w,  py+1, w, k.cheight-2);}
+			}
+			else{ this.vhide(["tc1_","tc2_","tc3_","tc4_"]);}
 		};
 
 		pc.flushCanvas_tawa = function(x1,y1,x2,y2){

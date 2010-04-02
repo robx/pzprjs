@@ -250,14 +250,8 @@ Puzzles.minarism.prototype = {
 		};
 
 		pc.drawTarget_minarism = function(x1,y1,x2,y2){
-			if(k.editmode){
-				this.drawTBorder(x1-1,y1-1,x2+1,y2+1);
-				this.hideTCell();
-			}
-			else{
-				this.hideTBorder();
-				this.drawTCell(x1-1,y1-1,x2+1,y2+1);
-			}
+			this.drawTBorder(x1-1,y1-1,x2+1,y2+1,k.editmode);
+			this.drawTCell  (x1-1,y1-1,x2+1,y2+1,k.playmode);
 		};
 	},
 

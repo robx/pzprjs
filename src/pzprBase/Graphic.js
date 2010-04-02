@@ -1078,68 +1078,73 @@ Graphic.prototype = {
 	// pc.drawTCell()   Cellのキーボードからの入力対象をCanvasに書き込む
 	// pc.drawTCross()  Crossのキーボードからの入力対象をCanvasに書き込む
 	// pc.drawTBorder() Borderのキーボードからの入力対象をCanvasに書き込む
-	// pc.hideTCell()   キーボードからの入力対象を隠す
-	// pc.hideTCross()  キーボードからの入力対象を隠す
-	// pc.hideTBorder() キーボードからの入力対象を隠す
 	// pc.drawTargetTriangle() [＼]のうち入力対象のほうに背景色をつける
 	//---------------------------------------------------------------------------
 	drawTarget : function(x1,y1,x2,y2){
-		if(k.editmode){ this.drawTCell(x1,y1,x2+1,y2+1);}
-		else{ this.hideTCell();}
+		this.drawTCell(x1, y1, x2+1, y2+1, k.editmode);
 	},
 
-	drawTCell : function(x1,y1,x2,y2){
-		this.vinc('target', 'crispEdges');
-		if(tc.cursolx < x1*2-2 || x2*2+4 < tc.cursolx){ return;}
-		if(tc.cursoly < y1*2-2 || y2*2+4 < tc.cursoly){ return;}
+	drawTCell : function(x1,y1,x2,y2,isdraw){
+		this.vinc('target_cell', 'crispEdges');
 
-		var px = k.p0.x + mf((tc.cursolx-1)*k.cwidth/2);
-		var py = k.p0.y + mf((tc.cursoly-1)*k.cheight/2);
-		var w = (k.cwidth<32?2:mf(k.cwidth/16));
+		if(isdraw){
+			if(tc.cursolx < x1*2-2 || x2*2+4 < tc.cursolx){ return;}
+			if(tc.cursoly < y1*2-2 || y2*2+4 < tc.cursoly){ return;}
 
-		this.vdel(["tc1_","tc2_","tc3_","tc4_"]);
-		g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
-		if(this.vnop("tc1_",this.FILL)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
-		if(this.vnop("tc2_",this.FILL)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
-		if(this.vnop("tc3_",this.FILL)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
-		if(this.vnop("tc4_",this.FILL)){ g.fillRect(px+k.cwidth-w,  py+1, w, k.cheight-2);}
+			var px = k.p0.x + mf((tc.cursolx-1)*k.cwidth/2);
+			var py = k.p0.y + mf((tc.cursoly-1)*k.cheight/2);
+			var w = (k.cwidth<32?2:mf(k.cwidth/16));
+
+			this.vdel(["tc1_","tc2_","tc3_","tc4_"]);
+			g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
+			if(this.vnop("tc1_",this.FILL)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
+			if(this.vnop("tc2_",this.FILL)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
+			if(this.vnop("tc3_",this.FILL)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
+			if(this.vnop("tc4_",this.FILL)){ g.fillRect(px+k.cwidth-w,  py+1, w, k.cheight-2);}
+		}
+		else{ this.vhide(["tc1_","tc2_","tc3_","tc4_"]);}
 	},
-	drawTCross : function(x1,y1,x2,y2){
-		this.vinc('target', 'crispEdges');
-		if(tc.cursolx < x1*2-1 || x2*2+3 < tc.cursolx){ return;}
-		if(tc.cursoly < y1*2-1 || y2*2+3 < tc.cursoly){ return;}
+	drawTCross : function(x1,y1,x2,y2,isdraw){
+		this.vinc('target_cross', 'crispEdges');
 
-		var px = k.p0.x + mf((tc.cursolx-1)*k.cwidth/2);
-		var py = k.p0.y + mf((tc.cursoly-1)*k.cheight/2);
-		var w = (k.cwidth<32?2:mf(k.cwidth/16));
+		if(isdraw){
+			if(tc.cursolx < x1*2-1 || x2*2+3 < tc.cursolx){ return;}
+			if(tc.cursoly < y1*2-1 || y2*2+3 < tc.cursoly){ return;}
 
-		this.vdel(["tx1_","tx2_","tx3_","tx4_"]);
-		g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
-		if(this.vnop("tx1_",this.FILL)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
-		if(this.vnop("tx2_",this.FILL)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
-		if(this.vnop("tx3_",this.FILL)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
-		if(this.vnop("tx4_",this.FILL)){ g.fillRect(px+k.cwidth-w,  py+1, w, k.cheight-2);}
+			var px = k.p0.x + mf((tc.cursolx-1)*k.cwidth/2);
+			var py = k.p0.y + mf((tc.cursoly-1)*k.cheight/2);
+			var w = (k.cwidth<32?2:mf(k.cwidth/16));
+
+			this.vdel(["tx1_","tx2_","tx3_","tx4_"]);
+			g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
+			if(this.vnop("tx1_",this.FILL)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
+			if(this.vnop("tx2_",this.FILL)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
+			if(this.vnop("tx3_",this.FILL)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
+			if(this.vnop("tx4_",this.FILL)){ g.fillRect(px+k.cwidth-w,  py+1, w, k.cheight-2);}
+		}
+		else{ this.vhide(["tx1_","tx2_","tx3_","tx4_"]);}
 	},
-	drawTBorder : function(x1,y1,x2,y2){
-		this.vinc('target', 'crispEdges');
-		if(tc.cursolx < x1*2-1 || x2*2+3 < tc.cursolx){ return;}
-		if(tc.cursoly < y1*2-1 || y2*2+3 < tc.cursoly){ return;}
+	drawTBorder : function(x1,y1,x2,y2,isdraw){
+		this.vinc('target_border', 'crispEdges');
 
-		var px = k.p0.x + mf(tc.cursolx*k.cwidth/2);
-		var py = k.p0.y + mf(tc.cursoly*k.cheight/2);
-		var w = (k.cwidth<24?1:mf(k.cwidth/24));
-		var size = mf(k.cwidth*0.28);
+		if(isdraw){
+			if(tc.cursolx < x1*2-1 || x2*2+3 < tc.cursolx){ return;}
+			if(tc.cursoly < y1*2-1 || y2*2+3 < tc.cursoly){ return;}
 
-		this.vdel(["tb1_","tb2_","tb3_","tb4_"]);
-		g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
-		if(this.vnop("tb1_",this.FILL)){ g.fillRect(px-size  , py-size  , size*2, 1);}
-		if(this.vnop("tb2_",this.FILL)){ g.fillRect(px-size  , py-size  , 1, size*2);}
-		if(this.vnop("tb3_",this.FILL)){ g.fillRect(px-size  , py+size-w, size*2, 1);}
-		if(this.vnop("tb4_",this.FILL)){ g.fillRect(px+size-w, py-size  , 1, size*2);}
+			var px = k.p0.x + mf(tc.cursolx*k.cwidth/2);
+			var py = k.p0.y + mf(tc.cursoly*k.cheight/2);
+			var w = (k.cwidth<24?1:mf(k.cwidth/24));
+			var size = mf(k.cwidth*0.28);
+
+			this.vdel(["tb1_","tb2_","tb3_","tb4_"]);
+			g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
+			if(this.vnop("tb1_",this.FILL)){ g.fillRect(px-size  , py-size  , size*2, 1);}
+			if(this.vnop("tb2_",this.FILL)){ g.fillRect(px-size  , py-size  , 1, size*2);}
+			if(this.vnop("tb3_",this.FILL)){ g.fillRect(px-size  , py+size-w, size*2, 1);}
+			if(this.vnop("tb4_",this.FILL)){ g.fillRect(px+size-w, py-size  , 1, size*2);}
+		}
+		else{ this.vhide(["tb1_","tb2_","tb3_","tb4_"]);}
 	},
-	hideTCell   : function(){ this.vhide(["tc1_","tc2_","tc3_","tc4_"]);},
-	hideTCross  : function(){ this.vhide(["tx1_","tx2_","tx3_","tx4_"]);},
-	hideTBorder : function(){ this.vhide(["tb1_","tb2_","tb3_","tb4_"]);},
 
 	drawTargetTriangle : function(x1,y1,x2,y2){
 		this.vinc('target_triangle', 'auto');
@@ -1202,18 +1207,28 @@ Graphic.prototype = {
 	// pc.drawGrid()        セルの枠線(実線)をCanvasに書き込む
 	// pc.drawDashedGrid()  セルの枠線(点線)をCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawGrid : function(x1,y1,x2,y2){
+	drawGrid : function(x1,y1,x2,y2,isdraw){
 		this.vinc('grid', 'crispEdges');
-		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
-		var bs=((k.isoutsideborder===0&&this.chassisflag)?1:0);
+		isdraw = (isdraw!==false?true:false);
+		if(isdraw){
+			if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
+			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
-		g.fillStyle = this.gridcolor;
-		var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
-		var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
-		for(var i=xa;i<=xb;i++){ if(this.vnop("bdy_"+i,this.NONE)){ g.fillRect(k.p0.x+i*k.cwidth, k.p0.y+y1*k.cheight, 1, (y2-y1+1)*k.cheight+1);} }
-		for(var i=ya;i<=yb;i++){ if(this.vnop("bdx_"+i,this.NONE)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+i*k.cheight, (x2-x1+1)*k.cwidth+1, 1);} }
+			var bs=((k.isoutsideborder===0&&this.chassisflag)?1:0);
+
+			g.fillStyle = this.gridcolor;
+			var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
+			var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
+			for(var i=xa;i<=xb;i++){ if(this.vnop("bdy_"+i,this.NONE)){ g.fillRect(k.p0.x+i*k.cwidth, k.p0.y+y1*k.cheight, 1, (y2-y1+1)*k.cheight+1);} }
+			for(var i=ya;i<=yb;i++){ if(this.vnop("bdx_"+i,this.NONE)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+i*k.cheight, (x2-x1+1)*k.cwidth+1, 1);} }
+		}
+		else{
+			if(!g.use.canvas){
+				for(var i=0;i<=k.qcols;i++){ this.vhide("bdy_"+i);}
+				for(var i=0;i<=k.qrows;i++){ this.vhide("bdx_"+i);}
+			}
+		}
 	},
 	drawDashedGrid : function(x1,y1,x2,y2){
 		this.vinc('grid', 'crispEdges');
