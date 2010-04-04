@@ -391,7 +391,7 @@ Puzzles.bosanowa.prototype = {
 		};
 
 		pc.drawTarget_bosanowa = function(x1,y1,x2,y2){
-			this.drawTCell  (x1-1,y1-1,x2+1,y2+1,  ((tc.cursolx&1)&&(tc.cursoly&1)));
+			this.drawTCell  (x1-1,y1-1,x2+1,y2+1,!!((tc.cursolx&1)&&(tc.cursoly&1)));
 			this.drawTBorder(x1-1,y1-1,x2+1,y2+1, !((tc.cursolx&1)&&(tc.cursoly&1)));
 		};
 	},

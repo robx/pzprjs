@@ -1087,7 +1087,7 @@ Graphic.prototype = {
 	drawTCell : function(x1,y1,x2,y2,isdraw){
 		this.vinc('target_cell', 'crispEdges');
 
-		if(isdraw){
+		if(isdraw!==false){
 			if(tc.cursolx < x1*2-2 || x2*2+4 < tc.cursolx){ return;}
 			if(tc.cursoly < y1*2-2 || y2*2+4 < tc.cursoly){ return;}
 
@@ -1107,7 +1107,7 @@ Graphic.prototype = {
 	drawTCross : function(x1,y1,x2,y2,isdraw){
 		this.vinc('target_cross', 'crispEdges');
 
-		if(isdraw){
+		if(isdraw!==false){
 			if(tc.cursolx < x1*2-1 || x2*2+3 < tc.cursolx){ return;}
 			if(tc.cursoly < y1*2-1 || y2*2+3 < tc.cursoly){ return;}
 
@@ -1127,7 +1127,7 @@ Graphic.prototype = {
 	drawTBorder : function(x1,y1,x2,y2,isdraw){
 		this.vinc('target_border', 'crispEdges');
 
-		if(isdraw){
+		if(isdraw!==false){
 			if(tc.cursolx < x1*2-1 || x2*2+3 < tc.cursolx){ return;}
 			if(tc.cursoly < y1*2-1 || y2*2+3 < tc.cursoly){ return;}
 
