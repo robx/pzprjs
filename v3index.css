@@ -1,0 +1,32 @@
+﻿
+	/* commmon */
+	body{ background:url(../bg.gif);}
+
+	/* for index.html, index_en.html */
+	div#main    { width:90%;}
+
+	div#design1 { width:90%; margin:auto auto 12pt auto; padding:6pt;}
+
+	menu#puztypes { float:left; list-style-type:none; margin:0px; padding:2pt; padding-bottom:0pt;}
+	li.puzmenu { display:inline; padding:2pt; white-space:nowrap;
+				 background-color:#dfdfdf; border:solid 1px gray; border-bottom:none;
+				 border-top-right-radius:3pt; border-top-left-radius:3pt;
+				 -webkit-border-top-right-radius:3pt; -webkit-border-top-left-radius:3pt;
+				}
+	table.puztable{ display:none; width:100%; border:solid 1px gray;}
+
+	h4.notice_item { margin-top:4pt; margin-bottom:4pt;}
+
+	/* for index.html, index_en.html, index_test.html */
+	li.lunch { color:black;}
+	li.lunch2{ color:#666666;}
+	li.testa { color:blue; }
+	li.omopa { color:green;}
+	li.nigun { color:lime; }
+	li.subpa { color:gray; }
+	li.orig  { color:#afafaf; }
+	td.lists { padding:4pt 0pt 12pt 4pt; vertical-align:top; width:34%;}
+
+	/* for rules.html */
+	span.pname { font-weight:900;}
+	ol.prule   { margin:0pt;}

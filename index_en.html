@@ -5,82 +5,10 @@
 <meta http-equiv="Content-Type" content="text/html">
 <TITLE>PUZ-PRE v3</TITLE>
 <link rel="stylesheet" href="../../top.css" type="text/css" />
-<style type="text/css">
-<!--
-	div#main    { width:90%;}
-
-	div#design1 { width:90%; margin:auto auto 12pt auto; padding:6pt;}
-
-	menu#puztypes { float:left; list-style-type:none; margin:0px; padding:2pt; padding-bottom:0pt;}
-	li.puzmenu { display:inline; padding:2pt; white-space:nowrap;
-				 background-color:#dfdfdf; border:solid 1px gray; border-bottom:none;
-				 border-top-right-radius:3pt; border-top-left-radius:3pt;
-				 -webkit-border-top-right-radius:3pt; -webkit-border-top-left-radius:3pt;
-				}
-	table.puztable{ display:none; width:100%; border:solid 1px gray;}
-
-	h4.notice_item { margin-top:4pt; margin-bottom:4pt;}
-
-	li.lunch { color:black;}
-	li.lunch2{ color:#666666;}
-	li.testa { color:blue; }
-	li.omopa { color:green;}
-	li.nigun { color:lime; }
-	li.subpa { color:gray; }
-	li.orig  { color:#afafaf; }
-	td.lists { padding:4pt 0pt 12pt 4pt; vertical-align:top; width:34%;}
-//-->
-</style>
-<script type="text/javascript">
-<!--
-	var typelist = ['all','lunch','nigun','omopa','other','notice'];
-	var current  = 'notice';
-
-	function addEvent(element,type,func){
-		if(!!element.addEventListener){
-			element.addEventListener(type,func,false);
-		}
-		else if(!!element.attachEvent){
-			element.attachEvent("on"+type,func);
-		}
-	}
-	function onload_func(){
-		for(var i=0;i<typelist.length;i++){
-			addEvent(document.getElementById("puzmenu_"+typelist[i]),"click",click_tab);
-		}
-		disp();
-	}
-	function click_tab(e){
-		var el = (e.target || e.srcElement);
-		if(!!el){ current = el.id.substr(8); disp();}
-	}
-
-	function disp(){
-		for(var i=0;i<typelist.length;i++){
-			var el = document.getElementById("puzmenu_"+typelist[i]);
-			var table = document.getElementById("table_"+typelist[i]);
-			if(typelist[i]===current){
-				el.style.backgroundColor = "white";
-				el.style.color           = "black";
-				el.style.cursor          = "default";
-
-				try{ table.style.display = 'table';}
-				catch(e){ table.style.display = 'block';} //IE raises error
-				table.style.width   = '100%';
-			}
-			else{
-				el.style.backgroundColor = "#dfdfdf";
-				el.style.color           = "gray";
-				el.style.cursor          = "pointer";
-
-				table.style.display = 'none';
-			}
-		}
-	}
-//-->
-</script>
+<link rel="stylesheet" href="v3index.css" type="text/css" />
+<script type="text/javascript" src="v3index.js"></script>
 </HEAD>
-<BODY background="../bg.gif">
+<BODY>
 
 <div class=main id=main>
 
@@ -535,9 +463,3 @@
 </div>
 </BODY>
 </HTML>
-
-<script type="text/javascript">
-<!--
-	onload_func();
-//-->
-</script>
