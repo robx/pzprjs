@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ウソタタミ版 usotatami.js v3.2.5
+// パズル固有スクリプト部 ウソタタミ版 usotatami.js v3.3.0
 //
 Puzzles.usotatami = function(){ };
 Puzzles.usotatami.prototype = {

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 なわばり版 nawabari.js v3.2.5
+// パズル固有スクリプト部 なわばり版 nawabari.js v3.3.0
 //
 Puzzles.nawabari = function(){ };
 Puzzles.nawabari.prototype = {

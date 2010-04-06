@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バッグ版 bag.js v3.2.4
+// パズル固有スクリプト部 バッグ版 bag.js v3.3.0
 //
 Puzzles.bag = function(){ };
 Puzzles.bag.prototype = {

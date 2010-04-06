@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 因子の部屋版 factors.js v3.2.4p4
+// パズル固有スクリプト部 因子の部屋版 factors.js v3.3.0
 //
 Puzzles.factors = function(){ };
 Puzzles.factors.prototype = {

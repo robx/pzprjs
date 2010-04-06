@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ましゅ版 mashu.js v3.2.4
+// パズル固有スクリプト部 ましゅ版 mashu.js v3.3.0
 //
 Puzzles.mashu = function(){ };
 Puzzles.mashu.prototype = {

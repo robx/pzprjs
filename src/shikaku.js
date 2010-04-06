@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.2.5
+// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.3.0
 //
 Puzzles.shikaku = function(){ };
 Puzzles.shikaku.prototype = {

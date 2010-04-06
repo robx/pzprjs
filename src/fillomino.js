@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.2.4
+// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.3.0
 //
 Puzzles.fillomino = function(){ };
 Puzzles.fillomino.prototype = {

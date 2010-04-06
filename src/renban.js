@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 連番窓口版 renban.js v3.2.4p4
+// パズル固有スクリプト部 連番窓口版 renban.js v3.3.0
 //
 Puzzles.renban = function(){ };
 Puzzles.renban.prototype = {
