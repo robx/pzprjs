@@ -145,6 +145,9 @@ Puzzles.bag.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.setBGCellColorFunc('qsub2');
+		pc.setBorderColorFunc('line');
+
+		pc.chassisflag = false;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -152,7 +155,7 @@ Puzzles.bag.prototype = {
 
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBordersAsLine(x1,y1,x2,y2);
+			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 

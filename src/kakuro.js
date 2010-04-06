@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックロ版 kakuro.js v3.2.4p4
+// パズル固有スクリプト部 カックロ版 kakuro.js v3.3.0
 //
 Puzzles.kakuro = function(){ };
 Puzzles.kakuro.prototype = {
@@ -10,7 +10,7 @@ Puzzles.kakuro.prototype = {
 		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
 		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 0;		// 1:Border/Lineが操作可能なパズル
+		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
 		k.isextendcell = 1;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
@@ -141,13 +141,10 @@ Puzzles.kakuro.prototype = {
 
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawBGEXcells(x1,y1,x2,y2);
-
-			this.draw51(x1,y1,x2,y2,false);
-			this.draw51EXcells(x1,y1,x2,y2,false);
-			this.drawTargetTriangle(x1,y1,x2,y2);
+			this.drawQues51(x1,y1,x2,y2);
 
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBorders51(x1,y1,x2,y2);
+			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawChassis_ex1(x1-1,y1-1,x2,y2,false);
 
@@ -159,42 +156,30 @@ Puzzles.kakuro.prototype = {
 
 		// オーバーライド drawBGCells用
 		pc.setBGCellColor = function(cc){
-			var err = bd.cell[cc].error, _f = (bd.cell[cc].ques===51);
-			if     ( _f && err===0){ g.fillStyle = "rgb(192,192,192)"; return true;}
-			else if( _f && err===1){ g.fillStyle = this.errbcolor1;    return true;}
-			else if(!_f && err===1){ g.fillStyle = this.errbcolor1;    return true;}
+			var err = (bd.cell[cc].error===1), q51 = (bd.cell[cc].ques===51);
+			if     (err){ g.fillStyle = this.errbcolor1;    return true;}
+			else if(q51){ g.fillStyle = "rgb(192,192,192)"; return true;}
 			return false;
 		};
-		pc.drawBGEXcells = function(x1,y1,x2,y2){
-			var header = "ex_full_";
-
-			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
-			for(var i=0;i<exlist.length;i++){
-				var c = exlist[i];
-
-				g.fillStyle = (bd.excell[c].error!==1 ? "rgb(192,192,192)" : this.errbcolor1);
-				if(this.vnop(header+c,1)){
-					g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, k.cwidth-1, k.cheight-1);
-				}
-			}
-			this.vinc();
+		pc.setBGEXcellColor = function(cc){
+			var err = (bd.excell[cc].error===1);
+			if(err){ g.fillStyle = this.errbcolor1;   }
+			else   { g.fillStyle = "rgb(192,192,192)";}
+			return true;
 		};
-
-		// 境界線の描画
-		pc.drawBorders51 = function(x1,y1,x2,y2){
-			g.fillStyle = pc.Cellcolor;
-			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i], rt=bd.rt(c), dn=bd.dn(c);
-				var cx=bd.cell[c].cx, cy=bd.cell[c].cy;
-
-				this.drawBorder1x(2*cx+2,2*cy+1,(rt!=-1&&((bd.cell[c].ques===51)^(bd.cell[rt].ques===51))));
-				this.drawBorder1x(2*cx+1,2*cy+2,(dn!=-1&&((bd.cell[c].ques===51)^(bd.cell[dn].ques===51))));
+		// オーバーライド 境界線用
+		pc.setBorderColor = function(id){
+			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			if(cc1!==-1 && cc2!==-1 && ((bd.cell[cc1].ques===51)^(bd.cell[cc2].ques===51))){
+				g.fillStyle = this.Cellcolor;
+				return true;
 			}
-			this.vinc();
+			return false;
 		};
 
 		pc.drawNumbers_kakuro = function(x1,y1,x2,y2){
+			this.vinc('cell_number', 'auto');
+
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
@@ -208,7 +193,6 @@ Puzzles.kakuro.prototype = {
 					this.dispnum(obj.numobj, 1, text, 0.80, color, obj.px, obj.py);
 				}
 			}
-			this.vinc();
 		};
 	},
 
@@ -418,16 +402,28 @@ Puzzles.kakuro.prototype = {
 		};
 		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)!=51 && bd.QaC(c)<=0);});};
 
-		ans.isSameNumber = function(nullnum, clist, nullobj){
-			return this.isDifferentNumberInClist(clist, bd.QaC);
+		ans.isSameNumber = function(nullnum, keycellpos, clist, nullobj){
+			if(!this.isDifferentNumberInClist(clist, bd.QaC)){
+				var isex = (keycellpos[0]===-1 || keycellpos[1]===-1);
+				if(isex){ bd.sErE(bd.exnum(keycellpos[0],keycellpos[1]),1);}
+				else    { bd.sErC(bd.cnum (keycellpos[0],keycellpos[1]),1);}
+				return false;
+			}
+			return true;
 		};
-		ans.isTotalNumber = function(number, clist, nullobj){
+		ans.isTotalNumber = function(number, keycellpos, clist, nullobj){
 			var sum = 0;
 			for(var i=0;i<clist.length;i++){
 				if(bd.QaC(clist[i])>0){ sum += bd.QaC(clist[i]);}
 				else{ return true;}
-						}
-			if(number>0 && sum!=number){ bd.sErC(clist,1); return false;}
+			}
+			if(number>0 && sum!=number){
+				var isex = (keycellpos[0]===-1 || keycellpos[1]===-1);
+				if(isex){ bd.sErE(bd.exnum(keycellpos[0],keycellpos[1]),1);}
+				else    { bd.sErC(bd.cnum (keycellpos[0],keycellpos[1]),1);}
+				bd.sErC(clist,1);
+				return false;
+			}
 			return true;
 		};
 	}

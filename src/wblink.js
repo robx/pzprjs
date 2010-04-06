@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.2.5
+// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.3.0
 //
 Puzzles.wblink = function(){ };
 Puzzles.wblink.prototype = {
@@ -151,44 +151,24 @@ Puzzles.wblink.prototype = {
 		pc.gridcolor = pc.gridcolor_THIN;
 		pc.errbcolor1 = "white";
 		pc.circleratio = [0.35, 0.30];
-
 		pc.chassisflag = false;
+
+		// 線の太さを通常より少し太くする
+		pc.lwratio = 8;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			if(k.editmode){ this.drawGrid(x1,y1,x2,y2);}
-			else if(g.vml){ this.hideGrid();}
+			this.drawGrid(x1,y1,x2,y2,k.editmode);
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawQueses41_42(x1-2,y1-2,x2+1,y2+1);
+			this.drawCircles41_42(x1-2,y1-2,x2+1,y2+1);
 			this.drawQuesHatenas(x1-2,y1-2,x2+1,y2+1);
 
 			this.drawTarget(x1,y1,x2,y2);
-		};
-
-		pc.drawLine1 = function(id, flag){
-			var vid = "b_line_"+id;
-			if(!flag){ this.vhide(vid); return;}
-
-			if     (bd.border[id].error===1){ g.fillStyle = this.errlinecolor1; lw++;}
-			else if(bd.border[id].error===2){ g.fillStyle = this.errlinecolor2;}
-			else{ g.fillStyle = this.linecolor;}
-
-			if(this.vnop(vid,1)){
-				var lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3); //LineWidth
-				var lm = mf((lw-1)/2); //LineMargin
-
-				if     (bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-				else if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
-			}
-		};
-		pc.hideGrid = function(){
-			for(var i=0;i<=k.qcols;i++){ this.vhide("bdy_"+i);}
-			for(var i=0;i<=k.qrows;i++){ this.vhide("bdx_"+i);}
 		};
 	},
 
@@ -218,12 +198,10 @@ Puzzles.wblink.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			this.performAsLine = false;
 			if( !this.checkLcntCell(4) ){
 				this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 			}
 
-			this.performAsLine = true;
 			var linfo = line.getLareaInfo();
 			if( !this.checkAllArea(linfo, function(c){ return (bd.QuC(c)!=0);}, function(w,h,a,n){ return (a<3);}) ){
 				this.setAlert('3つ以上の○が繋がっています。','Three or more objects are connected.'); return false;

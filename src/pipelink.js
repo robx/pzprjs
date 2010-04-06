@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.2.4
+// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.3.0
 //
 Puzzles.pipelink = function(){ };
 Puzzles.pipelink.prototype = {
@@ -160,14 +160,15 @@ Puzzles.pipelink.prototype = {
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
-			if(this.disp==1){ this.drawIceBorders(x1,y1,x2,y2);}
-			if(this.disp==0){ this.drawCircle2(x1,y1,x2,y2);}
+			this.drawCircles_pipelink(x1,y1,x2,y2,(this.disp===0));
+
+			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawQuesHatenas(x1,y1,x2,y2);
 
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawPekes(x1,y1,x2,y2,(k.br.IE?1:0));
+			this.drawPekes(x1,y1,x2,y2,0);
 
 			this.drawLineParts(x1-2,y1-2,x2+2,y2+2);
 
@@ -181,25 +182,39 @@ Puzzles.pipelink.prototype = {
 			else if(bd.cell[c].ques===6 && this.disp==1){ g.fillStyle = this.icecolor;   return true;}
 			return false;
 		};
-
-		pc.drawCircle2 = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.40;
-			var header = "c_cir_";
-
-			var clist = this.cellinside(x1,y1,x2,y2);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.cell[c].ques===6){
-					g.strokeStyle = this.Cellcolor;
-					if(this.vnop(header+c,0)){
-						g.beginPath();
-						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
-						g.stroke();
-					}
+		pc.setBorderColor = function(id){
+			if(this.disp===1){
+				var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+				if(cc1!==-1 && cc2!==-1 && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
+					g.fillStyle = this.Cellcolor;
+					return true;
 				}
-				else{ this.vhide(header+c);}
 			}
-			this.vinc();
+			return false;
+		};
+
+		pc.drawCircles_pipelink = function(x1,y1,x2,y2,isdraw){
+			this.vinc('cell_circle', 'auto');
+
+			var header = "c_cir_";
+			var clist = this.cellinside(x1,y1,x2,y2);
+			if(isdraw){
+				var rsize  = k.cwidth*0.40;
+				for(var i=0;i<clist.length;i++){
+					var c = clist[i];
+					if(bd.cell[c].ques===6){
+						g.strokeStyle = this.Cellcolor;
+						if(this.vnop(header+c,this.NONE)){
+							g.strokeCircle(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize);
+						}
+					}
+					else{ this.vhide(header+c);}
+				}
+			}
+			else{
+				var header = "c_cir_";
+				for(var i=0;i<clist.length;i++){ this.vhide(header+clist[i]);}
+			}
 		};
 
 		pc.disp = 0;
@@ -209,10 +224,17 @@ Puzzles.pipelink.prototype = {
 			this.paintAll();
 		};
 
-		line.repaintParts = function(id){
-			if(bd.isLPMarked(id)){
-				pc.drawLineParts1( bd.cc1(id) );
-				pc.drawLineParts1( bd.cc2(id) );
+		line.repaintParts = function(idlist){
+			var cdata=[];
+			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
+			for(var i=0;i<idlist.length;i++){
+				cdata[bd.cc1(idlist[i])] = true;
+				cdata[bd.cc2(idlist[i])] = true;
+			}
+			for(var c=0;c<cdata.length;c++){
+				if(cdata[c]){
+					pc.drawLineParts1(c);
+				}
 			}
 		};
 	},

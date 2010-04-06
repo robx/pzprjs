@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 碁石ひろい版 goishi.js v3.2.5
+// パズル固有スクリプト部 碁石ひろい版 goishi.js v3.3.0
 //
 Puzzles.goishi = function(){ };
 Puzzles.goishi.prototype = {
@@ -216,7 +216,7 @@ Puzzles.goishi.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			this.drawSolidLines(x1,y1,x2,y2);
+			this.drawCenterLines(x1,y1,x2,y2);
 
 			x1--; y1--; x2++; y2++;
 			this.drawCircles_goishi(x1,y1,x2,y2);
@@ -226,44 +226,37 @@ Puzzles.goishi.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		pc.drawSolidLines = function(x1,y1,x2,y2){
+		pc.drawCenterLines = function(x1,y1,x2,y2){
+			this.vinc('centerline', 'crispEdges');
 			if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
 			if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
 
 			g.fillStyle = this.gridcolor_LIGHT;
-			for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("cliney_"+i,1)){ g.fillRect(mf(k.p0.x+(i+0.5)*k.cwidth), mf(k.p0.y+(y1-0.5)*k.cheight), 1, (y2-y1+2)*k.cheight+1);} }
-			for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("clinex_"+i,1)){ g.fillRect(mf(k.p0.x+(x1-0.5)*k.cwidth), mf(k.p0.y+(i+0.5)*k.cheight), (x2-x1+2)*k.cwidth+1, 1);} }
-
-			this.vinc();
+			for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("cliney_"+i,this.NONE)){ g.fillRect(mf(k.p0.x+(i+0.5)*k.cwidth), mf(k.p0.y+(y1-0.5)*k.cheight), 1, (y2-y1+2)*k.cheight+1);} }
+			for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("clinex_"+i,this.NONE)){ g.fillRect(mf(k.p0.x+(x1-0.5)*k.cwidth), mf(k.p0.y+(i+0.5)*k.cheight), (x2-x1+2)*k.cwidth+1, 1);} }
 		};
 		pc.drawCircles_goishi = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.40;
-			var rsize2 = k.cwidth*0.35;
-			var headers = ["c_cira_", "c_cirb_"];
+			this.vinc('cell_goishi', 'auto');
 
+			g.lineWidth = Math.max(k.cwidth*0.05, 1);
+			var rsize  = k.cwidth*0.38;
+			var header = "c_cir_";
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && bd.cell[c].qans===-1){
-					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
-					if(this.vnop(headers[0]+c,1)){
-						g.beginPath();
-						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
-						g.fill();
-					}
-
-					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-					if(this.vnop(headers[1]+c,1)){
-						g.beginPath();
-						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2, 0, Math.PI*2, false);
-						g.fill();
+					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.Cellcolor);
+					g.fillStyle   = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
+					if(this.vnop(header+c,this.FILL_STROKE)){
+						g.shapeCircle(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, rsize);
 					}
 				}
-				else{ this.vhide([headers[0]+c, headers[1]+c]);}
+				else{ this.vhide([header+c]);}
 			}
-			this.vinc();
 		};
 		pc.drawCellSquare = function(x1,y1,x2,y2){
+			this.vinc('cell_number_base', 'crispEdges');
+
 			var mgnw = mf(k.cwidth*0.1);
 			var mgnh = mf(k.cheight*0.1);
 			var header = "c_sq2_";
@@ -273,13 +266,12 @@ Puzzles.goishi.prototype = {
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && bd.cell[c].qans!==-1){
 					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-					if(this.vnop(header+c,1)){
+					if(this.vnop(header+c,this.FILL)){
 						g.fillRect(bd.cell[c].px+mgnw+2, bd.cell[c].py+mgnh+2, k.cwidth-mgnw*2-3, k.cheight-mgnh*2-3);
 					}
 				}
 				else{ this.vhide([header+c]);}
 			}
-			this.vinc();
 		};
 	},
 

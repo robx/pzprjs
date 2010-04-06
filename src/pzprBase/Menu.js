@@ -1,4 +1,4 @@
-// Menu.js v3.2.4p4
+// Menu.js v3.3.0
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -34,21 +34,21 @@ Menu = function(){
 
 	// ElementTemplate : メニュー領域
 	var menu_funcs = {mouseover : ee.ebinder(this, this.menuhover), mouseout  : ee.ebinder(this, this.menuout)};
-	this.EL_MENU  = ee.addTemplate('menupanel','div', {className:'menu'}, {marginRight:'4pt'}, menu_funcs);
+	this.EL_MENU  = ee.addTemplate('menupanel','li', {className:'menu'}, null, menu_funcs);
 
 	// ElementTemplate : フロートメニュー
 	var float_funcs = {mouseout:ee.ebinder(this, this.floatmenuout)};
-	this.EL_FLOAT = ee.addTemplate('float_parent','div', {className:'floatmenu'}, {zIndex:101, backgroundColor:base.floatbgcolor}, float_funcs);
+	this.EL_FLOAT = ee.addTemplate('float_parent','menu', {className:'floatmenu'}, {backgroundColor:base.floatbgcolor}, float_funcs);
 
 	// ElementTemplate : フロートメニュー(中身)
 	var smenu_funcs  = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout), click:ee.ebinder(this, this.submenuclick)};
 	var select_funcs = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout)};
-	this.EL_SMENU    = ee.addTemplate('','div' , {className:'smenu'}, null, smenu_funcs);
-	this.EL_SPARENT  = ee.addTemplate('','div' , {className:'smenu'}, null, select_funcs);
-	this.EL_SELECT   = ee.addTemplate('','div' , {className:'smenu'}, {fontWeight :'900', fontSize:'10pt'}, select_funcs);
-	this.EL_SEPARATE = ee.addTemplate('','div' , {className:'smenusep', innerHTML:'&nbsp;'}, null, null);
-	this.EL_CHECK    = ee.addTemplate('','div' , {className:'smenu'}, {paddingLeft:'6pt', fontSize:'10pt'}, smenu_funcs);
-	this.EL_LABEL    = ee.addTemplate('','span', null, {color:'white'}, null);
+	this.EL_SMENU    = ee.addTemplate('','li', {className:'smenu'}, null, smenu_funcs);
+	this.EL_SPARENT  = ee.addTemplate('','li', {className:'smenu'}, null, select_funcs);
+	this.EL_SELECT   = ee.addTemplate('','li', {className:'smenu'}, {fontWeight :'900', fontSize:'10pt'}, select_funcs);
+	this.EL_SEPARATE = ee.addTemplate('','li', {className:'smenusep', innerHTML:'&nbsp;'}, null, null);
+	this.EL_CHECK    = ee.addTemplate('','li', {className:'smenu'}, {paddingLeft:'6pt', fontSize:'10pt'}, smenu_funcs);
+	this.EL_LABEL    = ee.addTemplate('','li', {className:'smenulabel'}, null, null);
 	this.EL_CHILD = this.EL_CHECK;
 
 	// ElementTemplate : 管理領域
@@ -232,6 +232,8 @@ Menu.prototype = {
 		ai('size_2', 'size', 'サイズ 標準', 'Normal');
 		ai('size_3', 'size', 'サイズ 大',   'Large');
 		ai('size_4', 'size', 'サイズ 特大', 'Ex Large');
+		ap('sep_size', 'size');
+		ac('adjsize', 'size', true, 'サイズの自動調節', 'Auto Adjustment');
 
 		// *設定 ==============================================================
 		am('setting', "設定", "Setting");
@@ -305,16 +307,22 @@ Menu.prototype = {
 
 	//---------------------------------------------------------------------------
 	// menu.createAllFloat() 登録されたサブメニューから全てのフロートメニューを作成する
+	// menu.csshack_forIE6() セパレータのstyleを変更する
 	//---------------------------------------------------------------------------
 	createAllFloat : function(){
+		var _IE6 = false;
+		if(k.br.IE && navigator.userAgent.match(/MSIE (\d+)/)){
+			if(parseInt(RegExp.$1)<=7){ _IE6=true;}
+		}
+
 		for(var i=0;i<pp.flaglist.length;i++){
 			var id = pp.flaglist[i];
 			if(!pp.flags[id]){ continue;}
 
-			var smenuid = 'ms_'+id;
+			var smenu, smenuid = 'ms_'+id;
 			switch(pp.type(id)){
 				case pp.MENU:     smenu = ee.createEL(this.EL_MENU,    smenuid); continue; break;
-				case pp.SEPARATE: smenu = ee.createEL(this.EL_SEPARATE,smenuid); break;
+				case pp.SEPARATE: smenu = ee.createEL(this.EL_SEPARATE,smenuid); if(_IE6){ this.csshack_forIE6(smenu);} break;
 				case pp.LABEL:    smenu = ee.createEL(this.EL_LABEL,   smenuid); break;
 				case pp.SELECT:   smenu = ee.createEL(this.EL_SELECT,  smenuid); break;
 				case pp.SMENU:    smenu = ee.createEL(this.EL_SMENU,   smenuid); break;
@@ -339,7 +347,8 @@ Menu.prototype = {
 		for(var i=1,len=el.childNodes.length;i<len;i++){
 			var node = el.childNodes[i];
 			if(fw!=node.style.fontWeight){
-				ee(ee.createEL(this.EL_SEPARATE,'')).insertBefore(node);
+				var smenu = ee.createEL(this.EL_SEPARATE,''); if(_IE6){ this.csshack_forIE6(smenu);}
+				ee(smenu).insertBefore(node);
 				i++; len++; // 追加したので1たしておく
 			}
 			fw=node.style.fontWeight;
@@ -354,6 +363,13 @@ Menu.prototype = {
 		ee('ms_jumpv3')  .el.style.fontSize = '10pt'; ee('ms_jumpv3')  .el.style.paddingLeft = '8pt';
 		ee('ms_jumptop') .el.style.fontSize = '10pt'; ee('ms_jumptop') .el.style.paddingLeft = '8pt';
 		ee('ms_jumpblog').el.style.fontSize = '10pt'; ee('ms_jumpblog').el.style.paddingLeft = '8pt';
+	},
+	// IE7以下向けのCSSハックをやめて、ここで設定するようにした
+	csshack_forIE6 : function(smenu){
+		if(smenu.className == 'smenusep'){
+			smenu.style.lineHeight = '2pt';
+			smenu.style.display = 'inline';
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -427,15 +443,21 @@ Menu.prototype = {
 		var rect = ee(ee.getSrcElement(e).id).getRect();
 		var _float = this.floatpanel[idname];
 		if(depth==0){
-			_float.style.left = rect.left - 3 + k.IEMargin.x;
-			_float.style.top  = rect.bottom + (k.br.IE?-2:1);
+			_float.style.left = rect.left   + 1 + k.IEMargin.x + 'px';
+			_float.style.top  = rect.bottom + 1 + k.IEMargin.y + 'px';
 		}
 		else{
-			_float.style.left = rect.right - 2;
-			_float.style.top  = rect.top + (k.br.IE?-5:-2);
+			if(!k.br.IE){
+				_float.style.left = rect.right - 3 + 'px';
+				_float.style.top  = rect.top   - 3 + 'px';
+			}
+			else{
+				_float.style.left = ee.pageX(e)  + 'px';
+				_float.style.top  = rect.top - 3 + 'px';
+			}
 		}
 		_float.style.zIndex   = 101+depth;
-		_float.style.display  = 'inline';
+		_float.style.display  = 'block';
 
 		this.dispfloat.push(_float);
 	},
@@ -568,7 +590,7 @@ Menu.prototype = {
 	checkclick : function(e){
 		var el = ee.getSrcElement(e);
 		var idname = el.id.substr(3);
-		pp.setVal(idname, el.checked);
+		pp.setVal(idname, !!el.checked);
 	},
 	selectclick : function(e){
 		var list = ee.getSrcElement(e).id.split('_');
@@ -724,8 +746,8 @@ Menu.prototype = {
 		// ポップアップメニューを表示する
 		if(this.pop){
 			var _pop = this.pop.el;
-			_pop.style.left = ee.pageX(e) - 8 + k.IEMargin.x;
-			_pop.style.top  = ee.pageY(e) - 8 + k.IEMargin.y;
+			_pop.style.left = ee.pageX(e) - 8 + k.IEMargin.x + 'px';
+			_pop.style.top  = ee.pageY(e) - 8 + k.IEMargin.y + 'px';
 			_pop.style.display = 'inline';
 		}
 	},
@@ -769,8 +791,8 @@ Menu.prototype = {
 	titlebarmove : function(e){
 		var pop = this.movingpop;
 		if(!!pop){
-			pop.style.left = ee.pageX(e) - this.offset.x;
-			pop.style.top  = ee.pageY(e) - this.offset.y;
+			pop.style.left = ee.pageX(e) - this.offset.x + 'px';
+			pop.style.top  = ee.pageY(e) - this.offset.y + 'px';
 		}
 	},
 

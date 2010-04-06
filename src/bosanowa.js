@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.2.4
+// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.3.0
 //
 Puzzles.bosanowa = function(){ };
 Puzzles.bosanowa.prototype = {
@@ -14,7 +14,7 @@ Puzzles.bosanowa.prototype = {
 		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
+		k.isoutsideborder = 1;	// 1:盤面の外枠上にborderのIDを用意する
 		k.isLineCross     = 0;	// 1:線が交差するパズル
 		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
@@ -56,7 +56,7 @@ Puzzles.bosanowa.prototype = {
 		pp.addChild('disptype_1', 'disptype', 'ニコリ紙面形式', 'Original Type');
 		pp.addChild('disptype_2', 'disptype', '倉庫番形式',     'Sokoban Type');
 		pp.addChild('disptype_3', 'disptype', 'ワリタイ形式',   'Waritai type');
-		pp.funcs['disptype'] = function(){ if(g.vml){ pc.flushCanvasAll();} pc.paintAll();};
+		pp.funcs['disptype'] = function(){ if(!g.use.canvas){ pc.flushCanvasAll();} pc.paintAll();};
 	},
 
 	//---------------------------------------------------------
@@ -163,7 +163,11 @@ Puzzles.bosanowa.prototype = {
 
 		tc.cursolx = k.qcols-1-k.qcols%2;
 		tc.cursoly = k.qrows-1-k.qrows%2;
-		if(k.EDITOR){ bd.sQuC(tc.getTCC(),7);}
+		if(k.EDITOR){
+			um.disableRecord();
+			bd.sQuC(tc.getTCC(),7);
+			um.enableRecord();
+		}
 
 		bd.maxnum=255;
 	},
@@ -176,118 +180,156 @@ Puzzles.bosanowa.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
 
-			if(pp.getVal('disptype')==2){ this.drawChassis_souko(x1,y1,x2,y2);}
-			if(pp.getVal('disptype')==3){ this.drawChassis_waritai(x1,y1,x2,y2);}
-			if(pp.getVal('disptype')!=1){ this.drawGrid_bosanowa(x1,y1,x2,y2);}
+			this.drawBGCells(x1,y1,x2,y2);
 
 			if(pp.getVal('disptype')==1){
-				this.drawBGCells(x1,y1,x2,y2);
 				this.drawCircles_bosanowa(x1,y1,x2,y2);
 				this.drawBDnumbase(x1,y1,x2,y2);
 			}
-			else{
+			else if(pp.getVal('disptype')==2){
+				this.drawOutside_souko(x1,y1,x2,y2);
+				this.drawGrid_souko(x1,y1,x2,y2);
 				this.drawBDnumbase(x1,y1,x2,y2);
-				this.drawBGCells(x1,y1,x2,y2);
+			}
+			else if(pp.getVal('disptype')==3){
+				this.drawBorders(x1,y1,x2,y2);
+				this.drawGrid_waritai(x1,y1,x2,y2);
 			}
 
 			this.drawNumbers(x1,y1,x2,y2);
 			this.drawNumbersBD(x1,y1,x2,y2);
 
-			if(k.EDITOR){ this.drawChassis_bosanowa(x1,y1,x2,y2);}
+			if(k.EDITOR){ this.drawChassis(x1,y1,x2,y2);}
 
 			this.drawTarget_bosanowa(x1,y1,x2,y2);
 		};
 
-		pc.drawGrid_bosanowa = function(x1,y1,x2,y2){
-			var header = "b_bds_";
+		pc.drawErrorCells_bosanowa = function(x1,y1,x2,y2){
+			this.vinc('cell_back', 'crispEdges');
 
-			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4);
-			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
-
-				this.vhide(header+id);
-				if(pp.getVal('disptype')===3){
-					if     ((cc1!==-1&&bd.cell[cc1].ques===7) ^(cc2!==-1&&bd.cell[cc2].ques===7)){
-						g.fillStyle=this.BorderQuescolor;
-						this.drawBorder1x(bd.border[id].cx,bd.border[id].cy,true);
-					}
-					else if((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7)){
-						g.fillStyle=this.gridcolor;
-						if(this.vnop(header+id,1)){
-							if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
-							else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2),  bd.border[id].py, k.cwidth+1,  1);}
-						}
+			var header = "c_fullerr_";
+			g.fillStyle = this.errbcolor1;
+			var clist = this.cellinside(x1,y1,x2,y2);
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				if(bd.cell[c].error===1){
+					if(this.vnop(header+c,this.FILL)){
+						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
 					}
 				}
-				else if(pp.getVal('disptype')===2){
-					if((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7)){
-						g.fillStyle="rgb(127,127,127)";
-						if(g.vml){
-							if(this.vnop(header+id,1)){
-								if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
-								else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2),  bd.border[id].py, k.cwidth+1,  1);}
-							}
-						}
-						else{
-							var dotmax = mf(k.cwidth/10)+3;
-							var dotCount = (mf(k.cwidth/dotmax)>=1?mf(k.cwidth/dotmax):1);
-							var dotSize  = k.cwidth/(dotCount*2);
-							if     (bd.border[id].cy&1){ 
-								for(var j=0;j<k.cheight+1;j+=(2*dotSize)){
-									g.fillRect(bd.border[id].px, mf(bd.border[id].py-k.cheight/2+j), 1, mf(dotSize));
-								}
-							}
-							else if(bd.border[id].cx&1){ 
-								for(var j=0;j<k.cwidth+1 ;j+=(2*dotSize)){
-									g.fillRect(mf(bd.border[id].px-k.cwidth/2+j), bd.border[id].py, mf(dotSize), 1);
-								}
-							}
-						}
-					}
-				}
+				else{ this.vhide([header+c]);}
 			}
-			this.vinc();
 		};
+
 		pc.drawCircles_bosanowa = function(x1,y1,x2,y2){
-			var rsize  = k.cwidth*0.45;
-			var rsize2 = k.cwidth*0.42;
-			var headers = ["c_cira_", "c_cirb_"];
+			this.vinc('cell_circle', 'auto');
+
+			g.lineWidth = 1;
+			g.fillStyle = "white";
+			var rsize  = k.cwidth*0.44;
+			var header = "c_cir_";
 
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && !bd.isNum(c)){
-					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
-					if(this.vnop(headers[0]+c,1)){
-						g.beginPath();
-						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize , 0, Math.PI*2, false);
-						g.fill();
-					}
-
-					g.fillStyle = "white";
-					if(this.vnop(headers[1]+c,1)){
-						g.beginPath();
-						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize2, 0, Math.PI*2, false);
-						g.fill();
+					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+					if(this.vnop(header+c,this.STROKE)){
+						g.strokeCircle(mf(bd.cell[c].px+k.cwidth/2), mf(bd.cell[c].py+k.cheight/2), rsize);
 					}
 				}
-				else{ this.vhide([headers[0]+c, headers[1]+c]);}
+				else{ this.vhide([header+c]);}
 			}
-			this.vinc();
+		};
+
+		pc.drawGrid_souko = function(x1,y1,x2,y2){
+			this.vinc('grid_souko', 'crispEdges');
+
+			var header = "b_grids_";
+			g.lineWidth = 1;
+			g.fillStyle="rgb(127,127,127)";
+			g.strokeStyle="rgb(127,127,127)";
+
+			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4);
+			for(var i=0;i<idlist.length;i++){
+				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
+				var onboard1 = (cc1!==-1&&bd.cell[cc1].ques===7);
+				var onboard2 = (cc2!==-1&&bd.cell[cc2].ques===7);
+
+				if(onboard1 && onboard2){
+					if(!g.use.canvas){
+						if(this.vnop(header+id,this.NONE)){
+							if(bd.border[id].cy&1){
+								var px = bd.border[id].px, py1 = bd.border[id].py-mf(k.cheight/2), py2 = py1+k.cheight+1;
+								g.strokeLine(px, py1, px, py2);
+								g.setDashSize(3);
+							}
+							else if(bd.border[id].cx&1){
+								var py = bd.border[id].py, px1 = bd.border[id].px-mf(k.cwidth/2), px2 = px1+k.cwidth+1;
+								g.strokeLine(px1, py, px2, py);
+								g.setDashSize(3);
+							}
+						}
+					}
+					else{
+						var dotmax = mf(k.cwidth/10)+3;
+						var dotCount = (mf(k.cwidth/dotmax)>=1?mf(k.cwidth/dotmax):1);
+						var dotSize  = k.cwidth/(dotCount*2);
+						if     (bd.border[id].cy&1){ 
+							for(var j=0;j<k.cheight+1;j+=(2*dotSize)){
+								g.fillRect(bd.border[id].px, mf(bd.border[id].py-k.cheight/2+j), 1, mf(dotSize));
+							}
+						}
+						else if(bd.border[id].cx&1){ 
+							for(var j=0;j<k.cwidth+1 ;j+=(2*dotSize)){
+								g.fillRect(mf(bd.border[id].px-k.cwidth/2+j), bd.border[id].py, mf(dotSize), 1);
+							}
+						}
+					}
+				}
+				else{ this.vhide([header+id]);} 
+			}
+		};
+		pc.drawGrid_waritai = function(x1,y1,x2,y2){
+			this.vinc('grid_waritai', 'crispEdges');
+
+			var csize = k.cwidth*0.20;
+			var headers = ["b_grid_", "b_grid2_"];
+			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4);
+			for(var i=0;i<idlist.length;i++){
+				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
+				var onboard1 = (cc1!==-1&&bd.cell[cc1].ques===7);
+				var onboard2 = (cc2!==-1&&bd.cell[cc2].ques===7);
+
+				if(onboard1 && onboard2){
+					g.fillStyle=this.gridcolor;
+					if(this.vnop(headers[0]+id,this.NONE)){
+						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
+						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2),  bd.border[id].py, k.cwidth+1,  1);}
+					}
+
+					g.fillStyle = ((bd.cell[cc2].error===0) ? "white" : this.errbcolor1);
+					if(this.vnop(headers[1]+id,this.FILL)){
+						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-csize, 1, 2*csize+1);}
+						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-csize, bd.border[id].py, 2*csize+1, 1);}
+					}
+				}
+				else{ this.vhide([headers[0]+id, headers[1]+id]);}
+			}
 		};
 
 		pc.drawBDnumbase = function(x1,y1,x2,y2){
+			this.vinc('border_number_base', 'crispEdges');
+
 			var csize = k.cwidth*0.20;
 			var header = "b_bbse_";
-
 			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+6,y2*2+6);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
 
-				if((pp.getVal('disptype')==3 || bd.border[id].qsub>=0)&&
-				  ((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7))){
+				if(bd.border[id].qsub>=0 && ((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7))){
 					g.fillStyle = "white";
-					if(this.vnop(header+id,1)){
+					if(this.vnop(header+id,this.NONE)){
 						g.fillRect(bd.border[id].px-csize, bd.border[id].py-csize, 2*csize+1, 2*csize+1);
 					}
 				}
@@ -302,6 +344,8 @@ Puzzles.bosanowa.prototype = {
 			return this.fontcolor;
 		};
 		pc.drawNumbersBD = function(x1,y1,x2,y2){
+			this.vinc('border_number', 'auto');
+
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id=idlist[i], obj=bd.border[id];
@@ -311,25 +355,13 @@ Puzzles.bosanowa.prototype = {
 				}
 				else{ this.hideEL(obj.numobj);}
 			}
-			this.vinc();
 		};
 
-		pc.drawChassis_waritai = function(x1,y1,x2,y2){
-			g.fillStyle = pc.Cellcolor;
-			var clist = this.cellinside(x1,y1,x2,y2);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.cell[c].ques!==7){ continue;}
-				this.drawBorder1x(0                , 2*bd.cell[c].cy+1,(bd.cell[c].cx===0)        );
-				this.drawBorder1x(2*k.qcols        , 2*bd.cell[c].cy+1,(bd.cell[c].cx===k.qcols-1));
-				this.drawBorder1x(2*bd.cell[c].cx+1, 0                ,(bd.cell[c].cy===0)        );
-				this.drawBorder1x(2*bd.cell[c].cx+1, 2*k.qrows        ,(bd.cell[c].cy===k.qrows-1));
-			}
-			this.vinc();
-		};
-		pc.drawChassis_souko = function(x1,y1,x2,y2){
+		// 倉庫番の外側(グレー)描画用
+		pc.drawOutside_souko = function(x1,y1,x2,y2){
+			this.vinc('cell_outside_souko', 'crispEdges');
+
 			var header = "c_full_";
-
 			for(var cx=x1-1;cx<=x2+1;cx++){
 				for(var cy=y1-1;cy<=y2+1;cy++){
 					var c=bd.cnum(cx,cy);
@@ -340,37 +372,27 @@ Puzzles.bosanowa.prototype = {
 						bd.QuC(bd.cnum(cx-1,cy+1))===7 || bd.QuC(bd.cnum(cx+1,cy+1))===7 ) )
 					{
 						g.fillStyle = "rgb(127,127,127)";
-						if(this.vnop(header+c,1)){
-							g.fillRect(k.p0.x+k.cwidth*cx, k.p0.y+k.cheight*cy, k.cwidth, k.cheight);
+						if(this.vnop([header,cx,cy].join('_'),this.NONE)){
+							g.fillRect(k.p0.x+k.cwidth*cx, k.p0.y+k.cheight*cy, k.cwidth+1, k.cheight+1);
 						}
 					}
-					else{ this.vhide(header+c);}
+					else{ this.vhide([header,cx,cy].join('_'));}
 				}
 			}
-			this.vinc();
 		};
-		pc.drawChassis_bosanowa = function(x1,y1,x2,y2){
-			x1--; y1--; x2++; y2++;
-			if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
-
-			g.fillStyle = "black";
-			if(x1<1)         { if(this.vnop("chs1_",1)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+y1*k.cheight    , 1, (y2-y1+1)*k.cheight+1);} }
-			if(y1<1)         { if(this.vnop("chs2_",1)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+y1*k.cheight    , (x2-x1+1)*k.cwidth+1, 1); } }
-			if(y2>=k.qrows-1){ if(this.vnop("chs3_",1)){ g.fillRect(k.p0.x+x1*k.cwidth    , k.p0.y+(y2+1)*k.cheight, (x2-x1+1)*k.cwidth+1, 1); } }
-			if(x2>=k.qcols-1){ if(this.vnop("chs4_",1)){ g.fillRect(k.p0.x+(x2+1)*k.cwidth, k.p0.y+y1*k.cheight    , 1, (y2-y1+1)*k.cheight+1);} }
-			this.vinc();
+		// ワリタイの太線描画用
+		pc.setBorderColor = function(id){
+			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			if((cc1===-1 || bd.cell[cc1].ques!==7)^(cc2===-1 || bd.cell[cc2].ques!==7)){
+				g.fillStyle = this.Cellcolor;
+				return true;
+			}
+			return false;
 		};
 
 		pc.drawTarget_bosanowa = function(x1,y1,x2,y2){
-			if((tc.cursolx&1)&&(tc.cursoly&1)){
-				this.drawTCell(x1-1,y1-1,x2+1,y2+1);
-				this.hideTBorder();
-			}
-			else{
-				this.hideTCell();
-				this.drawTBorder(x1-1,y1-1,x2+1,y2+1);
-			}
+			this.drawTCell  (x1-1,y1-1,x2+1,y2+1,!!((tc.cursolx&1)&&(tc.cursoly&1)));
+			this.drawTBorder(x1-1,y1-1,x2+1,y2+1, !((tc.cursolx&1)&&(tc.cursoly&1)));
 		};
 	},
 

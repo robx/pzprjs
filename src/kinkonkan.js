@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.2.5
+// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.3.0
 //
 Puzzles.kinkonkan = function(){ };
 Puzzles.kinkonkan.prototype = {
@@ -261,8 +261,9 @@ Puzzles.kinkonkan.prototype = {
 		};
 
 		pc.drawErrorCells_kinkonkan = function(x1,y1,x2,y2){
-			var headers = ["c_full_", "c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_", "c_full_"];
+			this.vinc('cell_back', 'crispEdges');
 
+			var headers = ["c_full_", "c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_", "c_full_"];
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], err = bd.cell[c].error;
@@ -270,7 +271,7 @@ Puzzles.kinkonkan.prototype = {
 					if     (err==1){ g.fillStyle = this.errbcolor1;}
 					else if(err>=2){ g.fillStyle = this.errbcolor2;}
 					if(err===1 || err===6){
-						if(this.vnop(headers[err-1]+c,1)){
+						if(this.vnop(headers[err-1]+c,this.FILL)){
 							g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
 						}
 					}
@@ -278,9 +279,10 @@ Puzzles.kinkonkan.prototype = {
 				}
 				else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c, headers[4]+c, headers[5]+c]);}
 			}
-			this.vinc();
 		};
 		pc.drawSlashes = function(x1,y1,x2,y2){
+			this.vinc('cell_slash', 'auto');
+
 			var headers = ["c_sl1_", "c_sl2_"];
 			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
 
@@ -291,15 +293,15 @@ Puzzles.kinkonkan.prototype = {
 				if(bd.cell[c].qans!=-1){
 					g.strokeStyle = this.Cellcolor;
 					if(bd.cell[c].qans==1){
-						if(this.vnop(headers[0]+c,0)){
-							this.inputPath([bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight], true);
+						if(this.vnop(headers[0]+c,this.NONE)){
+							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight, true);
 							g.stroke();
 						}
 					}
 					else{ this.vhide(headers[0]+c);}
 					if(bd.cell[c].qans==2){
-						if(this.vnop(headers[1]+c,0)){
-							this.inputPath([bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight], true);
+						if(this.vnop(headers[1]+c,this.NONE)){
+							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight, true);
 							g.stroke();
 						}
 					}
@@ -307,12 +309,12 @@ Puzzles.kinkonkan.prototype = {
 				}
 				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
-			this.vinc();
 		};
 
 		pc.drawEXcells_kinkonkan = function(x1,y1,x2,y2){
-			var header = "ex_full_";
+			this.vinc('excell_number', 'auto');
 
+			var header = "ex_full_";
 			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i];
@@ -320,7 +322,7 @@ Puzzles.kinkonkan.prototype = {
 
 				if(bd.excell[c].error===6){
 					g.fillStyle = this.errbcolor2;
-					if(this.vnop(header+c,1)){
+					if(this.vnop(header+c,this.NONE)){
 						g.fillRect(obj.px+1, obj.py+1, k.cwidth-1, k.cheight-1);
 					}
 				}
@@ -347,7 +349,6 @@ Puzzles.kinkonkan.prototype = {
 					this.dispnum(obj.numobj, 1, text, fontratio, color, obj.px, obj.py);
 				}
 			}
-			this.vinc();
 		};
 	},
 

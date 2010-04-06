@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クロシュート版 kurochute.js v3.2.4
+// パズル固有スクリプト部 クロシュート版 kurochute.js v3.3.0
 //
 Puzzles.kurochute = function(){ };
 Puzzles.kurochute.prototype = {
@@ -174,7 +174,7 @@ Puzzles.kurochute.prototype = {
 				if(bd.isBlack(bd.cnum(cx+num,cy))){ clist.push(bd.cnum(cx+num,cy));}
 				if(bd.isBlack(bd.cnum(cx,cy-num))){ clist.push(bd.cnum(cx,cy-num));}
 				if(bd.isBlack(bd.cnum(cx,cy+num))){ clist.push(bd.cnum(cx,cy+num));}
-				if(clist.length>1){
+				if(clist.length!==1){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],4);
 					bd.sErC(clist,1);

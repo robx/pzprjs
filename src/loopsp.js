@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.2.5
+// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.3.0
 //
 Puzzles.loopsp = function(){ };
 Puzzles.loopsp.prototype = {
@@ -205,17 +205,13 @@ Puzzles.loopsp.prototype = {
 		//	this.flushCanvasAll();
 
 			this.drawBGCells(x1,y1,x2,y2);
-			if(k.br.IE){
-				this.drawDashedGrid(x1,y1,x2,y2);
-			}
-			else{
-				this.drawPekes(x1,y1,x2,y2,2);
-				this.drawDashedGrid(x1,y1,x2,y2);
-			}
+			if(g.use.canvas){ this.drawPekes(x1,y1,x2,y2,2);}
+			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawCircledNumbers(x1,y1,x2,y2);
+			this.drawCirclesAtNumber(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,1);
 
@@ -226,13 +222,20 @@ Puzzles.loopsp.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		line.repaintParts = function(id){
-			if(bd.isLPMarked(id)){
-				pc.drawLineParts1( bd.cc1(id) );
-				pc.drawLineParts1( bd.cc2(id) );
+		line.repaintParts = function(idlist){
+			var cdata=[];
+			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
+			for(var i=0;i<idlist.length;i++){
+				cdata[bd.cc1(idlist[i])] = true;
+				cdata[bd.cc2(idlist[i])] = true;
 			}
-			pc.drawCircledNumber1( bd.cc1(id) );
-			pc.drawCircledNumber1( bd.cc2(id) );
+			for(var c=0;c<cdata.length;c++){
+				if(cdata[c]){
+					pc.drawLineParts1(c);
+					pc.drawCircle1AtNumber(c);
+					pc.dispnumCell(c);
+				}
+			}
 		};
 	},
 

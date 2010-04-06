@@ -1,4 +1,4 @@
-// KeyInput.js v3.2.5
+// KeyInput.js v3.3.0
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -82,21 +82,6 @@ KeyEvent.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// kc.e_SLkeydown()  Silverlightオブジェクトにフォーカスがある時、キーを押した際のイベント共通処理
-	// kc.e_SLkeyup()    Silverlightオブジェクトにフォーカスがある時、キーを離した際のイベント共通処理
-	//---------------------------------------------------------------------------
-	e_SLkeydown : function(sender,keyEventArgs){
-		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
-						altKey:false, returnValue:false, preventDefault:f_true };
-		return this.e_keydown(emulate);
-	},
-	e_SLkeyup : function(sender,keyEventArgs){
-		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
-						altKey:false, returnValue:false, preventDefault:f_true };
-		return this.e_keyup(emulate);
-	},
-
-	//---------------------------------------------------------------------------
 	// kc.keyinput() キーを押した際のイベント処理。各パズルのファイルでオーバーライドされる。
 	// kc.keyup()    キーを離した際のイベント処理。各パズルのファイルでオーバーライドされる。
 	//---------------------------------------------------------------------------
@@ -127,11 +112,8 @@ KeyEvent.prototype = {
 		if(keycode==45){ return '-';}
 		else{ return '';}
 	},
-	//Programming Magic様のコード
 	getKeyCode : function(e){
-		if(document.all) return  e.keyCode;
-		else if(document.getElementById) return (e.keyCode)? e.keyCode: e.charCode;
-		else if(document.layers) return  e.which;
+		return (k.br.IE || e.keyCode) ? e.keyCode: e.charCode;
 	},
 
 	//---------------------------------------------------------------------------
@@ -506,8 +488,8 @@ KeyPopup.prototype = {
 	display : function(){
 		var mode = pp.getVal('mode');
 		if(this.ctl[mode].el && this.ctl[mode].enable && pp.getVal('keypopup') && mv.btn.Left){
-			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputPos.x - 3 + k.IEMargin.x;
-			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputPos.y - 3 + k.IEMargin.y;
+			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputPos.x - 3 + k.IEMargin.x + 'px';
+			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputPos.y - 3 + k.IEMargin.y + 'px';
 			this.ctl[mode].el.style.zIndex = 100;
 
 			if(this.ctl[mode].target==k.CELL){
@@ -527,7 +509,7 @@ KeyPopup.prototype = {
 				pc.paint(bd.cross[cc0].cx-1, bd.cross[cc0].cy-1, bd.cross[cc0].cx, bd.cross[cc0].cy);
 			}
 
-			this.ctl[mode].el.style.display = 'inline';
+			this.ctl[mode].el.style.display = 'block';
 		}
 	},
 	inputnumber : function(e, ca){

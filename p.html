@@ -1,13 +1,10 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<HTML>
+<!DOCTYPE html>
+<HTML lang="ja">
 <HEAD>
 <META NAME="robots" CONTENTS="noindex,nofollow">
 <meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
 <link rel="stylesheet" href="sc7.css" type="text/css" />
-<script type="text/xaml" id="xaml"><?xml version="1.0"?>
-  <Canvas xmlns="http://schemas.microsoft.com/client/2007"></Canvas></script>
-<!--[if IE]><script type="text/javascript" src="src/uuCanvas.js"></script><![endif]-->
-<script type="text/javascript" src="src/pzprBase.js"></script>  <!-- ぱずぷれv3共通ファイルの読み込み/専用ファイルも中で行う -->
+<script type="text/javascript" src="src/pzprBase_develop.js"></script>  <!-- ぱずぷれv3共通ファイルの読み込み/専用ファイルも中で行う -->
 <TITLE>読み込み中です... - ぱずぷれv3</TITLE>
 </HEAD>
 
@@ -19,21 +16,19 @@
 <h2 id="title2">読み込み中です...</h2>
 
 <div id="menuboard">
-	<div id="menupanel"></div>
+	<menu id="menupanel"></menu>
 	<div id="expression">ファイルの読み込み中です...</div>
-	<hr id="separator1" style="margin-top:6pt; margin-bottom:6pt;">
+	<hr id="separator1">
 	<div id="usepanel"></div>
 	<div id="checkpanel"></div>
-	<hr id="separator2" style="margin-top:6pt; margin-bottom:6pt;">
+	<hr id="separator2">
 	<div id="timerpanel">経過時間：00:00</div>
 </div>
 
 <div id="quesboard">
-	<div id="divques">
-		<canvas id="puzzle_canvas" width="1" height="1"></canvas>
-	</div>
-
-	<div id="btnarea"></div>
+	<div id="divques"></div>		<!-- Canvas用 -->
+	<div id="numobj_parent"></div>	<!-- Canvasに表示する文字用 -->
+	<div id="btnarea"></div>		<!-- Canvas下部のボタン -->
 </div>
 
 </div> <!-- div#main close. -->
@@ -155,12 +150,6 @@
 </form>
 </div>
 
-<div class="popup" id="keypopup1" style="padding:3pt;background-color:silver;">
-</div>
-
-<div class="popup" id="keypopup3" style="padding:3pt;background-color:silver;">
-</div>
-
 <div class="popup" id="poptest">
 <div class="titlebar" id="bartest">pop_test</div>
 <form name="testform">
@@ -181,19 +170,21 @@
 </form>
 </div>
 
+<div class="keypopup" id="keypopup1"></div>
+<div class="keypopup" id="keypopup3"></div>
+
 </div> <!-- div#popup_parent close. -->
 <!-- ここまでポップアップメニュー -->
 
 <!-- フロートパネル用 -->
 <div id="float_parent"></div>
 
-<!-- Canvasに表示する文字用 -->
-<div id="numobj_parent"></div>
+<!-- ファイル入出力用インラインフレーム -->
+<iframe name="fileiopanel" id="fileiopanel" src="about:blank"></iframe>
 
-<!-- ここからファイル出力用フォーム/入出力用インラインフレーム -->
-<iframe id="fileiopanel" src="about:blank" style="width:200px;height:200px;position:absolute;top:0px;left:-10000px" name="fileiopanel"></iframe>
-<form name="fileform2" id="fileform2" action="fileio.xcg" method="post" onsubmit="return false;"
-style="width:100px;height:100px;position:absolute;top:0px;left:-9000px" target="fileiopanel">
+<!-- ここからファイル出力用フォーム -->
+<form name="fileform2" id="fileform2" target="fileiopanel"
+	  action="fileio.xcg" method="post" onsubmit="return false;">
 <input type="hidden" name="operation" value="save">
 <input type="hidden" name="filename" value="">
 <input type="hidden" name="ques" value="">

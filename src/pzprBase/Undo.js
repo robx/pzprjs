@@ -1,7 +1,7 @@
-// Undo.js v3.2.3
+// Undo.js v3.3.0
 
 //---------------------------------------------------------------------------
-// ★UndoManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
+// ★OperationManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
 //---------------------------------------------------------------------------
 // 入力情報管理クラス
 // Operationクラス
@@ -14,8 +14,8 @@ Operation = function(obj, property, id, old, num){
 	this.chain = um.chainflag;
 };
 
-// UndoManagerクラス
-UndoManager = function(){
+// OperationManagerクラス
+OperationManager = function(){
 	this.ope = [];			// Operationクラスを保持する配列
 	this.current = 0;		// 現在の表示操作番号を保持する
 	this.disrec = 0;		// このクラスからの呼び出し時は1にする
@@ -31,7 +31,7 @@ UndoManager = function(){
 	this.reqReset = false;		// Undo/Redo時に盤面回転等が入っていた時、resize,resetInfo関数のcallを要求する
 	this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
 };
-UndoManager.prototype = {
+OperationManager.prototype = {
 	//---------------------------------------------------------------------------
 	// um.disableRecord()  操作の登録を禁止する
 	// um.enableRecord()   操作の登録を許可する

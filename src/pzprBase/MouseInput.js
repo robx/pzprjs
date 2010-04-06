@@ -1,4 +1,4 @@
-// MouseInput.js v3.2.3p1
+// MouseInput.js v3.3.0
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -641,7 +641,7 @@ MouseEvent.prototype = {
 
 		if(!bd.isLine(id)){
 			var cc = (k.isborderAsLine==0?this.cellid():this.crossid());
-			if(cc==-1 || (k.isLineCross && (line.lcntCell(cc)==3 || line.lcntCell(cc)==4))){ return;}
+			if(cc==-1 || (line.iscrossing(cc) && (line.lcntCell(cc)==3 || line.lcntCell(cc)==4))){ return;}
 
 			var bx, by;
 			if(k.isbordeAsLine==0){ bx = (cc%k.qcols)*2, by = mf(cc/k.qcols)*2;}

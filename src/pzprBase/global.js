@@ -1,4 +1,4 @@
-// global.js v3.2.4p4
+// global.js v3.3.0
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -73,7 +73,7 @@ var k = {
 		Gecko : navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1,
 		WinWebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1
 	},
-	vml : !!(window.attachEvent && !window.opera) && !uuMeta.slver,
+	vml : Camp.current.vml,
 
 	// const値
 	BOARD  : 'board',
@@ -480,7 +480,7 @@ Timer = function(){
 	this.timerEL = ee('timerpanel').el;
 
 	// 自動正答判定用変数
-	this.lastAnsCnt  = 0;	// 前回正答判定した時の、UndoManagerに記録されてた問題/回答入力のカウント
+	this.lastAnsCnt  = 0;	// 前回正答判定した時の、OperationManagerに記録されてた問題/回答入力のカウント
 	this.worstACCost = 0;	// 正答判定にかかった時間の最悪値(ミリ秒)
 	this.nextACtime  = 0;	// 次に自動正答判定ルーチンに入ることが可能になる時間
 

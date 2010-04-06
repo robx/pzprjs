@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.2.5
+// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.3.0
 //
 Puzzles.numlin = function(){ };
 Puzzles.numlin.prototype = {
@@ -113,6 +113,8 @@ Puzzles.numlin.prototype = {
 		};
 
 		pc.drawCellSquare = function(x1,y1,x2,y2){
+			this.vinc('cell_number_base', 'crispEdges');
+
 			var mgnw = mf(k.cwidth*0.15);
 			var mgnh = mf(k.cheight*0.15);
 			var header = "c_sq_";
@@ -125,13 +127,12 @@ Puzzles.numlin.prototype = {
 					else if(bd.cell[c].error===2){ g.fillStyle = this.errbcolor2;}
 					else                         { g.fillStyle = "white";}
 
-					if(this.vnop(header+c,1)){
+					if(this.vnop(header+c,this.FILL)){
 						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
 					}
 				}
 				else{ this.vhide(header+c);}
 			}
-			this.vinc();
 		};
 	},
 

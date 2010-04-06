@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たすくえあ版 tasquare.js v3.2.5
+// パズル固有スクリプト部 たすくえあ版 tasquare.js v3.3.0
 //
 Puzzles.tasquare = function(){ };
 Puzzles.tasquare.prototype = {
@@ -104,26 +104,25 @@ Puzzles.tasquare.prototype = {
 		};
 
 		pc.drawCellSquare = function(x1,y1,x2,y2){
+			this.vinc('cell_square', 'crispEdges');
+
 			var mgnw = mf(k.cwidth*0.1);
 			var mgnh = mf(k.cheight*0.1);
-			var headers = ["c_sq1_", "c_sq2_"]
+			var header = "c_sq_";
 
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].qnum!==-1){
-					g.fillStyle = "black";
-					if(this.vnop(headers[0]+c,1)){
-						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
-					}
+					g.lineWidth = 1;
+					g.strokeStyle = "black";
 					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-					if(this.vnop(headers[1]+c,1)){
-						g.fillRect(bd.cell[c].px+mgnw+2, bd.cell[c].py+mgnh+2, k.cwidth-mgnw*2-3, k.cheight-mgnh*2-3);
+					if(this.vnop(header+c,this.FILL)){
+						g.shapeRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
 					}
 				}
-				else{ this.vhide([headers[0]+c, headers[1]+c]);}
+				else{ this.vhide([header+c]);}
 			}
-			this.vinc();
 		};
 	},
 

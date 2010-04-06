@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アホになり切れ版 aho.js v3.2.5
+// パズル固有スクリプト部 アホになり切れ版 aho.js v3.3.0
 //
 Puzzles.aho = function(){ };
 Puzzles.aho.prototype = {
@@ -88,6 +88,7 @@ Puzzles.aho.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.fontcolor = pc.fontErrcolor = "white";
+		pc.setBorderColorFunc('qans');
 
 		pc.circledcolor = "black";
 		pc.fontsizeratio = 0.85;
@@ -101,7 +102,8 @@ Puzzles.aho.prototype = {
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
-			this.drawCircledNumbers_aho(x1,y1,x2,y2);
+			this.drawCirclesAtNumber_shikaku(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 			this.drawBorderQsubs(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
@@ -109,13 +111,12 @@ Puzzles.aho.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		// 本当に対応するまでの応急措置
-		pc.drawCircledNumbers_aho = function(x1,y1,x2,y2){
-			var rsize2 = k.cwidth*this.circleratio[1];
-			var mgnx = mf(k.cwidth/2), mgny = mf(k.cheight/2);
-			var header = "c_cira_";
+		pc.drawCirclesAtNumber_shikaku = function(x1,y1,x2,y2){
+			this.vinc('cell_circle', 'auto');
 
-			g.lineWidth = k.cwidth*0.05;
+			var rsize2 = k.cwidth*this.circleratio[1];
+			var mgnx = k.cwidth/2, mgny = k.cheight/2;
+			var header = "c_cir_";
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
@@ -123,17 +124,12 @@ Puzzles.aho.prototype = {
 					var px=bd.cell[c].px+mgnx, py=bd.cell[c].py+mgny;
 
 					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
-					if(this.vnop(header+c,1)){
-						g.beginPath();
-						g.arc(px, py, rsize2, 0, Math.PI*2, false);
-						g.fill();
+					if(this.vnop(header+c,this.FILL)){
+						g.fillCircle(px, py, rsize2);
 					}
 				}
 				else{ this.vhide([header+c]);}
-
-				this.dispnumCell(c);
 			}
-			this.vinc();
 		};
 	},
 

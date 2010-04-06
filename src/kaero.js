@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.2.5
+// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.3.0
 //
 Puzzles.kaero = function(){ };
 Puzzles.kaero.prototype = {
@@ -133,6 +133,8 @@ Puzzles.kaero.prototype = {
 		};
 
 		pc.drawTip = function(x1,y1,x2,y2){
+			this.vinc('cell_linetip', 'auto');
+
 			var tsize = k.cwidth*0.30;
 			var tplus = k.cwidth*0.05;
 			var header = "c_tip_";
@@ -153,19 +155,20 @@ Puzzles.kaero.prototype = {
 					else if(bd.border[id].error===2){ g.strokeStyle = this.errlinecolor2;}
 					else                            { g.strokeStyle = this.linecolor;}
 
-					if(this.vnop(header+c,0)){
+					if(this.vnop(header+c,this.STROKE)){
 						var px=bd.cell[c].px+k.cwidth/2+1, py=bd.cell[c].py+k.cheight/2+1;
-						if     (dir===1){ this.inputPath([px,py ,-tsize, tsize ,0,-tplus , tsize, tsize], false);}
-						else if(dir===2){ this.inputPath([px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize], false);}
-						else if(dir===3){ this.inputPath([px,py , tsize,-tsize ,-tplus,0 , tsize, tsize], false);}
-						else if(dir===4){ this.inputPath([px,py ,-tsize,-tsize , tplus,0 ,-tsize, tsize], false);}
+						if     (dir===1){ g.setOffsetLinePath(px,py ,-tsize, tsize ,0,-tplus , tsize, tsize, false);}
+						else if(dir===2){ g.setOffsetLinePath(px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize, false);}
+						else if(dir===3){ g.setOffsetLinePath(px,py , tsize,-tsize ,-tplus,0 , tsize, tsize, false);}
+						else if(dir===4){ g.setOffsetLinePath(px,py ,-tsize,-tsize , tplus,0 ,-tsize, tsize, false);}
 						g.stroke();
 					}
 				}
 			}
-			this.vinc();
 		};
 		pc.drawCellSquare = function(x1,y1,x2,y2){
+			this.vinc('cell_number_base', 'crispEdges');
+
 			var mgnw = mf(k.cwidth*0.15);
 			var mgnh = mf(k.cheight*0.15);
 			var header = "c_sq_";
@@ -180,15 +183,16 @@ Puzzles.kaero.prototype = {
 					else if(bd.cell[c].qsub ===2){ g.fillStyle = this.qsubcolor2;}
 					else                         { g.fillStyle = "white";}
 
-					if(this.vnop(header+c,1)){
+					if(this.vnop(header+c,this.FILL)){
 						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
 					}
 				}
 				else{ this.vhide(header+c);}
 			}
-			this.vinc();
 		};
 		pc.drawNumbers_kaero = function(x1,y1,x2,y2){
+			this.vinc('cell_number', 'auto');
+
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
@@ -207,7 +211,6 @@ Puzzles.kaero.prototype = {
 
 				this.dispnum(obj.numobj, 1, text, 0.85, color, obj.px, obj.py);
 			}
-			this.vinc();
 		};
 	},
 

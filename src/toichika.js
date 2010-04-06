@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 遠い誓い版 toichika.js v3.2.5
+// パズル固有スクリプト部 遠い誓い版 toichika.js v3.3.0
 //
 Puzzles.toichika = function(){ };
 Puzzles.toichika.prototype = {
@@ -234,15 +234,19 @@ Puzzles.toichika.prototype = {
 		};
 
 		pc.drawArrows = function(x1,y1,x2,y2){
+			this.vinc('cell_arrow', 'auto');
+
 			var headers = ["c_arup_", "c_ardn_", "c_arlt_", "c_arrt_"];
-			var ll = mf(k.cwidth*0.8);							//LineLength
-			var lw = (mf(k.cwidth/18)>=2?mf(k.cwidth/18/2)*2:2);	//LineWidth
-			var lm = (lw-1)/2;								//LineMargin
-			var head1 = mf(ll/5), head2 = mf(ll/5);
+			var ll = mf(k.cwidth*0.8);					//LineLength
+			var lw = Math.max(mf(k.cwidth/18/2)*2, 2);	//LineWidth
+			var al = ll*0.5, aw = lw*0.5; // ArrowLength, ArrowWidth
+			var tl = ll*0.5-ll*0.3;			// 矢じりの長さの座標(中心-長さ)
+			var tw = Math.max(ll*0.2, 5);	// 矢じりの幅
 
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
+				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
 				if(bd.QaC(c)>0 || bd.DiC(c)>0){
 					var ax=px=bd.cell[c].px+mf(k.cwidth/2);
 					var ay=py=bd.cell[c].py+mf(k.cheight/2);
@@ -252,47 +256,18 @@ Puzzles.toichika.prototype = {
 					else if(bd.cell[c].direc>0)  { g.fillStyle = this.fontcolor;}
 					else if(bd.cell[c].qans >0)  { g.fillStyle = this.fontAnscolor;}
 
-					// 上向き矢印の描画
-					if(dir===k.UP){
-						if(this.vnop(headers[0]+c,1)){
-							this.inputPath([ax,ay ,0,-(ll/2) ,-head2,-head1 ,-lw/2,-head1 ,-lw/2,ll/2 ,lw/2,ll/2 ,lw/2,-head1 ,head2,-head1], true);
-							g.fill();
+					// 矢印の描画 ここに来る場合、dirは1～4
+					if(this.vnop(headers[(dir-1)]+c,this.FILL)){
+						switch(dir){
+							case k.UP: g.setOffsetLinePath(ax,ay, 0,-al, -tw,-tl, -aw,-tl, -aw, al,  aw, al, aw,-tl,  tw,-tl, true); break;
+							case k.DN: g.setOffsetLinePath(ax,ay, 0, al, -tw, tl, -aw, tl, -aw,-al,  aw,-al, aw, tl,  tw, tl, true); break;
+							case k.LT: g.setOffsetLinePath(ax,ay, -al,0, -tl,-tw, -tl,-aw,  al,-aw,  al, aw, -tl,aw, -tl, tw, true); break;
+							case k.RT: g.setOffsetLinePath(ax,ay,  al,0,  tl,-tw,  tl,-aw, -al,-aw, -al, aw,  tl,aw,  tl, tw, true); break;
 						}
+						g.fill();
 					}
-					else{ this.vhide([headers[0]+c]);}
-
-					// 下向き矢印の描画
-					if(dir===k.DN){
-						if(this.vnop(headers[1]+c,1)){
-							this.inputPath([ax,ay ,0,(ll/2) ,-head2,head1 ,-lw/2,head1 ,-lw/2,-ll/2 ,lw/2,-ll/2 ,lw/2,head1 ,head2,head1], true);
-							g.fill();
-						}
-					}
-					else{ this.vhide([headers[1]+c]);}
-
-					// 左向き矢印の描画
-					if(dir===k.LT){
-						if(this.vnop(headers[2]+c,1)){
-							this.inputPath([ax,ay ,-(ll/2),0 ,-head1,-head2 ,-head1,-lw/2 ,ll/2,-lw/2 ,ll/2,lw/2 ,-head1,lw/2 ,-head1,head2], true);
-							g.fill();
-						}
-					}
-					else{ this.vhide([headers[2]+c]);}
-
-					// 右向き矢印の描画
-					if(dir===k.RT){
-						if(this.vnop(headers[3]+c,1)){
-							this.inputPath([ax,ay ,(ll/2),0 ,head1,-head2 ,head1,-lw/2 ,-ll/2,-lw/2 ,-ll/2,lw/2 ,head1,lw/2 ,head1,head2], true);
-							g.fill();
-						}
-					}
-					else{ this.vhide([headers[3]+c]);}
-				}
-				else{
-					this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
 				}
 			}
-			this.vinc();
 		};
 	},
 

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クリーク版 creek.js v3.2.4
+// パズル固有スクリプト部 クリーク版 creek.js v3.3.0
 //
 Puzzles.creek = function(){ };
 Puzzles.creek.prototype = {
@@ -67,14 +67,14 @@ Puzzles.creek.prototype = {
 		kc.keyinput = function(ca){
 			if(k.playmode){ return;}
 			if(this.moveTCross(ca)){ return;}
-			this.key_inputcross(ca,4);
+			this.key_inputcross(ca);
 		};
 
 		if(k.EDITOR){
 			kp.generate(4, true, false, '');
 			kp.ctl[1].target = k.CROSS;
 			kp.kpinput = function(ca){
-				kc.key_inputcross(ca,4);
+				kc.key_inputcross(ca);
 			};
 		}
 
@@ -83,6 +83,8 @@ Puzzles.creek.prototype = {
 		tc.maxx = 2*k.qcols;
 		tc.maxy = 2*k.qrows;
 		tc.setTXC(0);
+
+		bd.maxnum = 4;
 	},
 
 	//---------------------------------------------------------
@@ -107,8 +109,7 @@ Puzzles.creek.prototype = {
 			this.drawTarget_creek(x1,y1,x2,y2);
 		};
 		pc.drawTarget_creek = function(x1,y1,x2,y2){
-			if(k.editmode){ this.drawTCross(x1,y1,x2+1,y2+1);}
-			else{ this.hideTCross();}
+			this.drawTCross(x1,y1,x2+1,y2+1,k.editmode);
 		};
 	},
 

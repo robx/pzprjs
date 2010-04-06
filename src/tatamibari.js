@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.2.5
+// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.3.0
 //
 Puzzles.tatamibari = function(){ };
 Puzzles.tatamibari.prototype = {
@@ -114,6 +114,7 @@ Puzzles.tatamibari.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
+		pc.setBorderColorFunc('qans');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -134,6 +135,8 @@ Puzzles.tatamibari.prototype = {
 		};
 
 		pc.drawMarks = function(x1,y1,x2,y2){
+			this.vinc('cell_ques', 'crispEdges');
+
 			var lw = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3); //LineWidth
 			var headers = ["c_lp1_", "c_lp2_"];
 			g.fillStyle = this.BorderQuescolor;
@@ -143,20 +146,19 @@ Puzzles.tatamibari.prototype = {
 				var c = clist[i];
 				var qn = bd.cell[c].qnum;
 				if(qn===1||qn===2){
-					if(this.vnop(headers[0]+c,1)){
+					if(this.vnop(headers[0]+c,this.NONE)){
 						g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-1, bd.cell[c].py+mf((k.cheight+lw)*0.15), lw, mf((k.cheight+lw)*0.7));
 					}
 				}
 				else{ this.vhide(headers[0]+c);}
 
 				if(qn===1||qn===3){
-					if(this.vnop(headers[1]+c,1)){
+					if(this.vnop(headers[1]+c,this.NONE)){
 						g.fillRect(bd.cell[c].px+mf((k.cwidth+lw)*0.15), bd.cell[c].py+mf(k.cheight/2)-1, mf((k.cwidth+lw)*0.7), lw);
 					}
 				}
 				else{ this.vhide(headers[1]+c);}
 			}
-			this.vinc();
 		};
 	},
 

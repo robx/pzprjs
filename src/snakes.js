@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へびいちご版 snakes.js v3.2.5
+// パズル固有スクリプト部 へびいちご版 snakes.js v3.3.0
 //
 Puzzles.snakes = function(){ };
 Puzzles.snakes.prototype = {
@@ -10,7 +10,7 @@ Puzzles.snakes.prototype = {
 		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
 		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 0;		// 1:Border/Lineが操作可能なパズル
+		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
 		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
 		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
@@ -170,7 +170,7 @@ Puzzles.snakes.prototype = {
 			this.drawDotCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
-			this.drawBorders_snake(x1,y1,x2,y2);
+			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawBlackCells(x1,y1,x2,y2);
 			this.drawArrowNumbers(x1-2,y1-2,x2+2,y2+2);
@@ -181,29 +181,23 @@ Puzzles.snakes.prototype = {
 			this.drawTCell(x1,y1,x2,y2);
 		};
 
-		// 境界線の描画
-		pc.drawBorders_snake = function(x1,y1,x2,y2){
-			var func  = function(c1,c2){
-				if(c2===-1){ return false;}
-				if(bd.cell[c1].qnum!==-1 || bd.cell[c2].qnum!==-1) { return false;}
-				if(bd.cell[c1].qans===-1 && bd.cell[c2].qans===-1) { return false;}
-				if((bd.cell[c1].qans===-1)^(bd.cell[c2].qans===-1)){ return true;}
-				return (Math.abs(bd.cell[c1].qans-bd.cell[c2].qans)!==1);
-			};
-
-			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
-			g.fillStyle = this.BorderQanscolor;
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i], rt=bd.rt(c), dn=bd.dn(c);
-				var cx=bd.cell[c].cx, cy=bd.cell[c].cy;
-
-				this.drawBorder1x(2*cx+2,2*cy+1,func(c,rt));
-				this.drawBorder1x(2*cx+1,2*cy+2,func(c,dn));
+		pc.setBorderColor = function(id){
+			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			if(cc1!==-1 && cc2!==-1 &&
+			   (bd.cell[cc1].qnum===-1 && bd.cell[cc2].qnum===-1) &&
+			   (bd.cell[cc1].qans!==-1 || bd.cell[cc2].qans!==-1) &&
+			   ( ((bd.cell[cc1].qans===-1)^(bd.cell[cc2].qans===-1)) ||
+				 (Math.abs(bd.cell[cc1].qans-bd.cell[cc2].qans)!==1)) )
+			{
+				g.fillStyle = this.BorderQanscolor;
+				return true;
 			}
-			this.vinc();
+			return false;
 		};
 
 		pc.drawAnswerNumbers = function(x1,y1,x2,y2){
+			this.vinc('cell_number', 'auto');
+
 			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];

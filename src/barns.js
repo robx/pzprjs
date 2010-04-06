@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バーンズ版 barns.js v3.2.4
+// パズル固有スクリプト部 バーンズ版 barns.js v3.3.0
 //
 Puzzles.barns = function(){ };
 Puzzles.barns.prototype = {
@@ -118,7 +118,7 @@ Puzzles.barns.prototype = {
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawLines(x1,y1,x2,y2);
-			this.drawPekes(x1,y1,x2,y2,(k.br.IE?1:0));
+			this.drawPekes(x1,y1,x2,y2,0);
 
 			this.drawChassis(x1,y1,x2,y2);
 		};

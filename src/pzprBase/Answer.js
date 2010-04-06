@@ -1,4 +1,4 @@
-// Answer.js v3.2.5
+// Answer.js v3.3.0
 
 //---------------------------------------------------------------------------
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
@@ -483,7 +483,7 @@ AnsCheck.prototype = {
 				var clist = bd.getClistByPosition(cx,cy,tx-1,cy);
 				var total = (k.isextendcell!=1 ? 0 : (cx==0 ? bd.QnE(bd.exnum(-1,cy)) : bd.QnC(bd.cnum(cx-1,cy))));
 
-				if(!evalfunc.apply(this,[total, clist, areainfo])){
+				if(!evalfunc.apply(this,[total, [cx-1,cy], clist, areainfo])){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}
@@ -497,7 +497,7 @@ AnsCheck.prototype = {
 				var clist = bd.getClistByPosition(cx,cy,cx,ty-1);
 				var total = (k.isextendcell!=1 ? 0 : (cy==0 ? bd.DiE(bd.exnum(cx,-1)) : bd.DiC(bd.cnum(cx,cy-1))));
 
-				if(!evalfunc.apply(this,[total, clist, areainfo])){
+				if(!evalfunc.apply(this,[total, [cx,cy-1], clist, areainfo])){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}

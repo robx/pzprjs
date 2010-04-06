@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ホタルビーム版 firefly.js v3.2.5
+// パズル固有スクリプト部 ホタルビーム版 firefly.js v3.3.0
 //
 Puzzles.firefly = function(){ };
 Puzzles.firefly.prototype = {
@@ -97,47 +97,41 @@ Puzzles.firefly.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();
 
-			this.drawDashLines(x1,y1,x2,y2);
+			this.drawDashedCenterLines(x1,y1,x2,y2);
 			this.drawLines(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,0);
 
-			this.drawNumCells_firefly(x1,y1,x2,y2);
+			this.drawFireflies(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		pc.drawNumCells_firefly = function(x1,y1,x2,y2){
+		pc.drawFireflies = function(x1,y1,x2,y2){
+			this.vinc('cell_firefly', 'auto');
+
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
-			for(var i=0;i<clist.length;i++){ this.drawNumCells_firefly1(clist[i]);}
-			this.vinc();
+			for(var i=0;i<clist.length;i++){ this.drawFirefly1(clist[i]);}
 		};
-		pc.drawNumCells_firefly1 = function(c){
+		pc.drawFirefly1 = function(c){
 			if(c===-1){ return;}
 
 			var rsize  = k.cwidth*0.40;
-			var rsize2 = k.cwidth*0.36;
 			var rsize3 = k.cwidth*0.10;
-			var headers = ["c_cira_", "c_cirb_", "c_circ_"];
+			var headers = ["c_cira_", "c_cirb_"];
 
 			if(bd.cell[c].qnum!=-1){
-				var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
+				var px=bd.cell[c].px+k.cwidth/2, py=bd.cell[c].py+k.cheight/2;
 
-				g.fillStyle = this.Cellcolor;
-				if(this.vnop(headers[0]+c,1)){
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					g.fill();
-				}
-
+				g.lineWidth = 1.5;
+				g.strokeStyle = this.Cellcolor;
 				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(headers[1]+c,1)){
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					g.fill();
+				if(this.vnop(headers[0]+c,this.FILL)){
+					g.shapeCircle(px, py, rsize);
 				}
 
-				this.vdel([headers[2]+c]);
+				this.vdel([headers[1]+c]);
 				if(bd.cell[c].direc!=0){
 					g.fillStyle = this.Cellcolor;
 					switch(bd.cell[c].direc){
@@ -146,21 +140,27 @@ Puzzles.firefly.prototype = {
 						case k.LT: px-=(rsize-1); break;
 						case k.RT: px+=(rsize-1); break;
 					}
-					if(this.vnop(headers[2]+c,1)){
-						g.beginPath();
-						g.arc(px, py, rsize3 , 0, Math.PI*2, false);
-						g.fill();
+					if(this.vnop(headers[1]+c,this.NONE)){
+						g.fillCircle(px, py, rsize3);
 					}
 				}
 			}
-			else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c]);}
-
-			this.dispnumCell(c);
+			else{ this.vhide([headers[0]+c, headers[1]+c]);}
 		};
 
-		line.repaintParts = function(id){
-			pc.drawNumCells_firefly1( bd.cc1(id) );
-			pc.drawNumCells_firefly1( bd.cc2(id) );
+		line.repaintParts = function(idlist){
+			var cdata=[];
+			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
+			for(var i=0;i<idlist.length;i++){
+				cdata[bd.cc1(idlist[i])] = true;
+				cdata[bd.cc2(idlist[i])] = true;
+			}
+			for(var c=0;c<cdata.length;c++){
+				if(cdata[c]){
+					pc.drawFirefly1(c);
+					pc.dispnumCell(c)
+				}
+			}
 		};
 	},
 

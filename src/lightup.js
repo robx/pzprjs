@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 美術館版 lightup.js v3.2.5
+// パズル固有スクリプト部 美術館版 lightup.js v3.3.0
 //
 Puzzles.lightup = function(){ };
 Puzzles.lightup.prototype = {
@@ -148,7 +148,7 @@ Puzzles.lightup.prototype = {
 				}
 			}
 
-			if(pc.already()){
+			if(!!g){
 				pc.paint(d.x1,cy,d.x2,cy);
 				pc.paint(cx,d.y1,cx,d.y2);
 			}
@@ -203,8 +203,9 @@ Puzzles.lightup.prototype = {
 		};
 
 		pc.drawAkari = function(x1,y1,x2,y2){
+			this.vinc('cell_akari', 'auto');
+
 			var rsize = k.cwidth*0.40;
-			var ksize = k.cwidth*0.15;
 			var lampcolor = "rgb(0, 127, 96)";
 			var header = "c_AK_";
 
@@ -213,15 +214,12 @@ Puzzles.lightup.prototype = {
 				var c = clist[i];
 				if(bd.cell[c].qans===1){
 					g.fillStyle = (bd.cell[c].error!==4 ? lampcolor : this.errcolor1);
-					if(this.vnop(header+c,1)){
-						g.beginPath();
-						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize, 0, Math.PI*2, false);
-						g.fill();
+					if(this.vnop(header+c,this.FILL)){
+						g.fillCircle(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, rsize);
 					}
 				}
 				else{ this.vhide(header+c);}
 			}
-			this.vinc();
 		};
 	},
 
@@ -296,7 +294,7 @@ Puzzles.lightup.prototype = {
 			return true;
 		};
 
-		ans.isAkariCount = function(nullnum, clist, nullobj){
+		ans.isAkariCount = function(nullnum, keycellpos, clist, nullobj){
 			var akaris=[];
 			for(var i=0;i<clist.length;i++){
 				if( bd.QaC(clist[i])===1 ){ akaris.push(clist[i]);}

@@ -89,6 +89,7 @@ Puzzles.bdblock.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
+		pc.setBorderColorFunc('qans');
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.BorderQanscolor = "black";
 		pc.crosssize = 0.15;

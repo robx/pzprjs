@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.2.5
+// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.3.0
 //
 Puzzles.tateyoko = function(){ };
 Puzzles.tateyoko.prototype = {
@@ -215,8 +215,9 @@ Puzzles.tateyoko.prototype = {
 		};
 
 		pc.drawTateyokos = function(x1,y1,x2,y2){
-			var headers = ["c_bar1_", "c_bar2_"];
+			this.vinc('cell_tateyoko', 'crispEdges');
 
+			var headers = ["c_bar1_", "c_bar2_"];
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
@@ -230,14 +231,14 @@ Puzzles.tateyoko.prototype = {
 
 				if(bd.cell[c].qans!==-1){
 					if(bd.cell[c].qans===1){
-						if(this.vnop(headers[0]+c,1)){
+						if(this.vnop(headers[0]+c,this.FILL)){
 							g.fillRect(bd.cell[c].px+lp, bd.cell[c].py, lw, k.cheight+1);
 						}
 					}
 					else{ this.vhide(headers[0]+c);}
 
 					if(bd.cell[c].qans===2){
-						if(this.vnop(headers[1]+c,1)){
+						if(this.vnop(headers[1]+c,this.FILL)){
 							g.fillRect(bd.cell[c].px, bd.cell[c].py+lp, k.cwidth+1,  lw);
 						}
 					}
@@ -245,18 +246,18 @@ Puzzles.tateyoko.prototype = {
 				}
 				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
-			this.vinc();
 		};
 
 		pc.drawNumbers_tateyoko = function(x1,y1,x2,y2){
-			var header = "c_full_";
+			this.vinc('cell_number', 'auto');
 
+			var header = "c_full_";
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
 				if(bd.cell[c].ques===1){
 					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
-					if(this.vnop(header+c,1)){
+					if(this.vnop(header+c,this.FILL)){
 						g.fillRect(obj.px, obj.py, k.cwidth+1, k.cheight+1);
 					}
 				}
@@ -270,7 +271,6 @@ Puzzles.tateyoko.prototype = {
 				if(bd.cell[c].ques==1){ color = "white";}
 				this.dispnum(obj.numobj, 1, (num!=-2?""+num:"?"), (num<10?0.8:0.75), color, obj.px, obj.py);
 			}
-			this.vinc();
 		};
 	},
 

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスローム版 icelom.js v3.2.5
+// パズル固有スクリプト部 アイスローム版 icelom.js v3.3.0
 //
 Puzzles.icelom = function(){ };
 Puzzles.icelom.prototype = {
@@ -253,6 +253,7 @@ Puzzles.icelom.prototype = {
 		pc.errcolor1 = "red";
 		pc.BCell_fontcolor = pc.fontcolor;
 		pc.setBGCellColorFunc('icebarn');
+		pc.setBorderColorFunc('ice');
 
 		pc.maxYdeg = 0.70;
 
@@ -263,7 +264,7 @@ Puzzles.icelom.prototype = {
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
-			this.drawIceBorders(x1,y1,x2,y2);
+			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawLines(x1,y1,x2,y2);
 			this.drawPekes(x1,y1,x2,y2,1);
@@ -281,9 +282,10 @@ Puzzles.icelom.prototype = {
 
 		// IN/OUTの矢印用に必要ですね。。
 		pc.drawArrows = function(x1,y1,x2,y2){
+			this.vinc('border_arrow', 'auto');
+
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+4,y2*2+4,function(id){ return (id>=bd.bdinside);});
 			for(var i=0;i<idlist.length;i++){ this.drawArrow1(idlist[i], bd.isArrow(idlist[i]));}
-			this.vinc();
 		};
 		pc.drawArrow1 = function(id, flag){
 			var vids = ["b_ar_"+id,"b_dt1_"+id,"b_dt2_"+id];
@@ -295,23 +297,23 @@ Puzzles.icelom.prototype = {
 			var px=bd.border[id].px; var py=bd.border[id].py;
 
 			g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.Cellcolor);
-			if(this.vnop(vids[0],1)){
+			if(this.vnop(vids[0],this.FILL)){
 				if(bd.border[id].cx&1){ g.fillRect(px-lm, py-ll, lw, ll*2);}
 				if(bd.border[id].cy&1){ g.fillRect(px-ll, py-lm, ll*2, lw);}
 			}
 
 			if(bd.getArrow(id)===1){
-				if(this.vnop(vids[1],1)){
-					if(bd.border[id].cx&1){ this.inputPath([px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4], true);}
-					if(bd.border[id].cy&1){ this.inputPath([px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2], true);}
+				if(this.vnop(vids[1],this.FILL)){
+					if(bd.border[id].cx&1){ g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true);}
+					if(bd.border[id].cy&1){ g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true);}
 					g.fill();
 				}
 			}
 			else{ this.vhide(vids[1]);}
 			if(bd.getArrow(id)===2){
-				if(this.vnop(vids[2],1)){
-					if(bd.border[id].cx&1){ this.inputPath([px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4], true);}
-					if(bd.border[id].cy&1){ this.inputPath([px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2], true);}
+				if(this.vnop(vids[2],this.FILL)){
+					if(bd.border[id].cx&1){ g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true);}
+					if(bd.border[id].cy&1){ g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true);}
 					g.fill();
 				}
 			}
@@ -336,15 +338,19 @@ Puzzles.icelom.prototype = {
 		};
 		pc.dispString = function(el, text, px, py){
 			el.style.fontSize = (k.cwidth*0.55)+'px';
-			el.style.left     = k.cv_oft.x + px+(!k.br.IE?2:4);
-			el.style.top      = k.cv_oft.y + py+(!k.br.IE?1:5);
+			el.style.left     = k.cv_oft.x + px+(!k.br.IE?2:4)+'px';
+			el.style.top      = k.cv_oft.y + py+(!k.br.IE?1:5)+'px';
 			el.style.color    = g.fillStyle;
 			el.innerHTML      = text;
 			this.showEL(el);
 		};
 
-		line.repaintParts = function(id){
-			if(id===bd.arrowin || id===bd.arrowout){ pc.drawArrow1(id,true);}
+		line.repaintParts = function(idlist){
+			for(var i=0;i<idlist.length;i++){
+				if(idlist[i]===bd.arrowin || idlist[i]===bd.arrowout){
+					pc.drawArrow1(idlist[i],true);
+				}
+			}
 		};
 	},
 

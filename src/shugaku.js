@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.2.4
+// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.3.0
 //
 Puzzles.shugaku = function(){ };
 Puzzles.shugaku.prototype = {
@@ -245,7 +245,8 @@ Puzzles.shugaku.prototype = {
 
 			this.drawTargetFuton(x1,y1,x2,y2);
 
-			this.drawCircledNumbers(x1,y1,x2,y2);
+			this.drawCirclesAtNumber(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
@@ -253,45 +254,45 @@ Puzzles.shugaku.prototype = {
 		};
 
 		pc.drawFutons = function(x1,y1,x2,y2){
-			var header = "c_full_";
+			this.vinc('cell_back', 'crispEdges');
 
+			var header = "c_full_";
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].qans>=11){
 					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-					if(this.vnop(header+c,1)){
+					if(this.vnop(header+c,this.FILL)){
 						g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);
 					}
 				}
-				else if(bd.cell[c].qans!==1){ this.vhide(header+c);}
+				else{ this.vhide(header+c);}
 
 				this.drawPillow1(c, (bd.cell[c].qans>=11 && bd.cell[c].qans<=15), false);
 			}
-			this.vinc();
 		};
 		pc.drawPillow1 = function(cc, flag, inputting){
 			var mgnw = mf(k.cwidth*0.15);
 			var mgnh = mf(k.cheight*0.15);
-			var headers = ["c_sq1_", "c_sq2_"];
+			var header = "c_pillow_"+cc;
 
 			if(flag){
-				g.fillStyle = "black";
-				if(this.vnop(headers[0]+cc,1)){
-					g.fillRect(bd.cell[cc].px+mgnw+1, bd.cell[cc].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
-				}
-
+				g.lineWidth = 1;
+				g.strokeStyle = "black";
 				if     (inputting)            { g.fillStyle = this.targetbgcolor;}
 				else if(bd.cell[cc].error===1){ g.fillStyle = this.errbcolor1;   }
 				else                          { g.fillStyle = "white";}
-				if(this.vnop(headers[1]+cc,1)){
-					g.fillRect(bd.cell[cc].px+mgnw+2, bd.cell[cc].py+mgnh+2, k.cwidth-mgnw*2-3, k.cheight-mgnh*2-3);
+
+				if(this.vnop(header,this.FILL)){
+					g.shapeRect(bd.cell[cc].px+mgnw+1, bd.cell[cc].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
 				}
 			}
-			else{ this.vhide([headers[0]+cc, headers[1]+cc]);}
+			else{ this.vhide([header]);}
 		};
 
 		pc.drawFutonBorders = function(x1,y1,x2,y2){
+			this.vinc('border_futon', 'crispEdges');
+
 			var lw = this.lw, lm = this.lm;
 			var doma1 = {11:1,12:1,14:1,15:1,16:1,17:1,19:1,20:1};
 			var domb1 = {11:1,13:1,14:1,15:1,16:1,18:1,19:1,20:1};
@@ -308,22 +309,23 @@ Puzzles.shugaku.prototype = {
 					var vid = [header,bx,by].join("_");
 
 					if     ((bx&1) && !(isNaN(doma1[a])&&isNaN(domb1[b]))){
-						if(this.vnop(vid,1)){
+						if(this.vnop(vid,this.NONE)){
 							g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-lm, k.p0.x+mf(by*k.cheight/2)-lm, k.cwidth+lw, lw);
 						}
 					}
 					else if((by&1) && !(isNaN(doma2[a])&&isNaN(domb2[b]))){
-						if(this.vnop(vid,1)){
+						if(this.vnop(vid,this.NONE)){
 							g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-lm, k.p0.x+mf((by-1)*k.cheight/2)-lm, lw, k.cheight+lw);
 						}
 					}
 					else{ this.vhide(vid);}
 				}
 			}
-			this.vinc();
 		};
 
 		pc.drawTargetFuton = function(x1,y1,x2,y2){
+			this.vinc('cell_back', 'crispEdges');
+
 			var cc=mv.mouseCell;
 			var inputting = ((mv.firstPos.x!==-1 || mv.firstPos.y!==-1) && cc!==-1);
 
@@ -333,7 +335,7 @@ Puzzles.shugaku.prototype = {
 				g.fillStyle = this.targetbgcolor;
 
 				if(cc!=-1){
-					if(this.vnop(header+cc,1)){
+					if(this.vnop(header+cc,this.FILL)){
 						g.fillRect(bd.cell[cc].px+1, bd.cell[cc].py+1, k.cwidth-1, k.cheight-1);
 					}
 				}
@@ -341,21 +343,21 @@ Puzzles.shugaku.prototype = {
 
 				var adj=mv.getTargetADJ();
 				if(adj!=-1){
-					if(this.vnop(header+adj,1)){
+					if(this.vnop(header+adj,this.FILL)){
 						g.fillRect(bd.cell[adj].px+1, bd.cell[adj].py+1, k.cwidth-1, k.cheight-1);
 					}
 				}
 				else{ this.vhide(header+adj);}
 			}
-			this.vinc();
 
 			// 入力中ふとんのまくら描画
 			if(inputting){
 				this.drawPillow1(cc,true,true);
 			}
-			this.vinc();
 
 			// 入力中ふとんの周りの境界線描画
+			this.vinc('border_futon', 'crispEdges');
+
 			this.vdel(["tbd1_","tbd2_","tbd3_","tbd4_"]);
 			if(inputting){
 				var lw = this.lw, lm = this.lm;
@@ -365,28 +367,10 @@ Puzzles.shugaku.prototype = {
 				var hgt = (mv.inputData===2||mv.inputData===3?2:1)*k.cheight;
 
 				g.fillStyle = "black";
-				if(this.vnop("tbd1_",1)){ g.fillRect(px-lm    , py-lm    , wid+lw, lw);}
-				if(this.vnop("tbd2_",1)){ g.fillRect(px-lm    , py-lm    , lw, hgt+lw);}
-				if(this.vnop("tbd3_",1)){ g.fillRect(px+wid-lm, py-lm    , lw, hgt+lw);}
-				if(this.vnop("tbd4_",1)){ g.fillRect(px-lm    , py+hgt-lm, wid+lw, lw);}
-			}
-			this.vinc();
-		};
-
-		pc.flushCanvas = function(x1,y1,x2,y2){	// 背景色をつけたいので上書きする
-			if(!g.vml){
-				x1=(x1>=0?x1:0); x2=(x2<=k.qcols-1?x2:k.qcols-1);
-				y1=(y1>=0?y1:0); y2=(y2<=k.qrows-1?y2:k.qrows-1);
-				g.fillStyle = this.bgcolor;
-				g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth, (y2-y1+1)*k.cheight);
-			}
-			else{
-				g.zidx=1;
-				g.fillStyle = this.bgcolor;
-				if(this.vnop("boardfull",1)){
-					g.fillRect(k.p0.x, k.p0.y, k.qcols*k.cwidth, k.qrows*k.cheight);
-				}
-				this.vinc();
+				if(this.vnop("tbd1_",this.NONE)){ g.fillRect(px-lm    , py-lm    , wid+lw, lw);}
+				if(this.vnop("tbd2_",this.NONE)){ g.fillRect(px-lm    , py-lm    , lw, hgt+lw);}
+				if(this.vnop("tbd3_",this.NONE)){ g.fillRect(px+wid-lm, py-lm    , lw, hgt+lw);}
+				if(this.vnop("tbd4_",this.NONE)){ g.fillRect(px-lm    , py+hgt-lm, wid+lw, lw);}
 			}
 		};
 	},

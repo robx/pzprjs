@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スリザーリンク版 slither.js v3.2.4
+// パズル固有スクリプト部 スリザーリンク版 slither.js v3.3.0
 //
 Puzzles.slither = function(){ };
 Puzzles.slither.prototype = {
@@ -162,6 +162,7 @@ Puzzles.slither.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.setBGCellColorFunc('qsub2');
+		pc.setBorderColorFunc('line');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -169,18 +170,20 @@ Puzzles.slither.prototype = {
 
 			this.drawBGCells(x1,y1,x2,y2);
 
-			this.drawBordersAsLine(x1,y1,x2,y2);
+			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawBaseMarks(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
-			this.drawPekes(x1,y1,x2,y2,(k.br.IE?1:0));
+			this.drawPekes(x1,y1,x2,y2,0);
 
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawBaseMarks = function(x1,y1,x2,y2){
+			this.vinc('cross_mark', 'auto');
+
 			for(var i=0;i<(k.qcols+1)*(k.qrows+1);i++){
 				var cx = i%(k.qcols+1); var cy = mf(i/(k.qcols+1));
 				if(cx < x1-1 || x2+1 < cx){ continue;}
@@ -188,26 +191,31 @@ Puzzles.slither.prototype = {
 
 				this.drawBaseMark1(i);
 			}
-			this.vinc();
 		};
 		pc.drawBaseMark1 = function(i){
 			var vid = "x_cm_"+i;
 
 			g.fillStyle = this.Cellcolor;
-			if(this.vnop(vid,1)){
+			if(this.vnop(vid,this.NONE)){
 				var lw = ((k.cwidth/12)>=3?(k.cwidth/12):3); //LineWidth
 				var csize = mf((lw+1)/2);
-				var cx = i%(k.qcols+1); var cy = mf(i/(k.qcols+1));
-
-				g.beginPath();
-				g.arc(k.p0.x+cx*k.cwidth, k.p0.x+cy*k.cheight, csize, 0, Math.PI*2, false);
-				g.fill();
+				var cx = i%(k.qcols+1), cy = mf(i/(k.qcols+1));
+				g.fillCircle(k.p0.x+cx*k.cwidth, k.p0.x+cy*k.cheight, csize);
 			}
 		};
 
-		line.repaintParts = function(id){
-			pc.drawBaseMark1( bd.crosscc1(id) );
-			pc.drawBaseMark1( bd.crosscc2(id) );
+		line.repaintParts = function(idlist){
+			var cdata=[];
+			for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){ cdata[c]=false;}
+			for(var i=0;i<idlist.length;i++){
+				cdata[bd.crosscc1(idlist[i])] = true;
+				cdata[bd.crosscc2(idlist[i])] = true;
+			}
+			for(var c=0;c<cdata.length;c++){
+				if(cdata[c]){
+					pc.drawBaseMark1(c);
+				}
+			}
 		};
 	},
 

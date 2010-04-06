@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 トリプレイス版 triplace.js v3.2.5
+// パズル固有スクリプト部 トリプレイス版 triplace.js v3.3.0
 //
 Puzzles.triplace = function(){ };
 Puzzles.triplace.prototype = {
@@ -177,21 +177,42 @@ Puzzles.triplace.prototype = {
 			this.flushCanvas(x1,y1,x2,y2);
 
 			this.drawBGCells(x1,y1,x2,y2);
-
-			this.draw51(x1,y1,x2,y2,true);
-			this.draw51EXcells(x1,y1,x2,y2,true);
-			this.drawTargetTriangle(x1,y1,x2,y2);
+			this.drawBGEXcells(x1,y1,x2,y2);
+			this.drawQues51(x1,y1,x2,y2);
 
 			this.drawGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
-
-			this.drawChassis_ex1(x1-1,y1-1,x2,y2,false);
+			this.drawQansBorders(x1,y1,x2,y2);
+			this.drawQuesBorders(x1,y1,x2,y2);
 
 			this.drawBorderQsubs(x1,y1,x2,y2);
+
+			this.drawChassis_ex1(x1-1,y1-1,x2,y2,false);
 
 			this.drawNumbersOn51(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
+		};
+
+		// 問題と回答の境界線を別々に描画するようにします
+		pc.drawQansBorders = function(x1,y1,x2,y2){
+			this.vinc('border_answer', 'crispEdges');
+			this.bdheader = "b_bdans";
+			this.setBorderColor = function(id){ return (bd.border[id].qans===1);};
+
+			g.fillStyle = this.BorderQanscolor;
+			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+			for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
+			this.isdrawBD = true;
+		};
+		pc.drawQuesBorders = function(x1,y1,x2,y2){
+			this.vinc('border_question', 'crispEdges');
+			this.bdheader = "b_bdques";
+			this.setBorderColor = function(id){ return (bd.border[id].ques===1);};
+
+			g.fillStyle = this.BorderQuescolor;
+			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+			for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
+			this.isdrawBD = true;
 		};
 	},
 
@@ -362,13 +383,19 @@ Puzzles.triplace.prototype = {
 			return tinfo;
 		};
 
-		ans.isTileCount = function(number, clist, tiles){
+		ans.isTileCount = function(number, keycellpos, clist, tiles){
 			var count = 0, counted = [];
 			for(var i=0;i<clist.length;i++){
 				var tid = tiles.id[clist[i]];
 				if(tiles.room[tid].is1x3==1 && !counted[tid]){ count++; counted[tid] = true;}
 			}
-			if(number>=0 && count!=number){ bd.sErC(clist,1); return false;}
+			if(number>=0 && count!=number){
+				var isex = (keycellpos[0]===-1 || keycellpos[1]===-1);
+				if(isex){ bd.sErE(bd.exnum(keycellpos[0],keycellpos[1]),1);}
+				else    { bd.sErC(bd.cnum (keycellpos[0],keycellpos[1]),1);}
+				bd.sErC(clist,1);
+				return false;
+			}
 			return true;
 		};
 	}

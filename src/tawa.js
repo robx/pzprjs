@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たわむれんが版 tawa.js v3.2.4
+// パズル固有スクリプト部 たわむれんが版 tawa.js v3.3.0
 //
 Puzzles.tawa = function(){ };
 Puzzles.tawa.prototype = {
@@ -82,17 +82,11 @@ Puzzles.tawa.prototype = {
 			ee.binder(base, puz.protofunc.resize_original)();
 
 			// Canvasのサイズ変更
-			this.canvas.width  = k.p0.x*2 + k.qcols*k.cwidth + mf(bd.lap==0?0:(bd.lap==3?k.cwidth:k.cwidth/2));
-			this.canvas.height = k.p0.y*2 + k.qrows*k.cheight;
+			var width  = k.p0.x*2 + k.qcols*k.cwidth + mf(bd.lap==0?0:(bd.lap==3?k.cwidth:k.cwidth/2));
+			var height = k.p0.y*2 + k.qrows*k.cheight;
+			g.changeSize(width, height);
 
-			// VML使う時に、Canvas外の枠線が消えてしまうので残しておきます.
-			if(g.vml){
-				var fc = this.canvas.firstChild;
-				fc.style.width  = ''+this.canvas.clientWidth  + 'px';
-				fc.style.height = ''+this.canvas.clientHeight + 'px';
-			}
-
-			var rect = ee('puzzle_canvas').getRect();
+			var rect = ee('divques').getRect();
 			k.cv_oft.x = rect.left;
 			k.cv_oft.y = rect.top;
 		};
@@ -472,9 +466,10 @@ Puzzles.tawa.prototype = {
 
 			this.drawTarget_tawa(x1,y1,x2,y2);
 		};
-		pc.paintAll = function(){ if(this.already()){ this.paint(0,0,tc.maxx+1,k.qrows);} },
+		pc.paintAll = function(){ this.paint(0,0,tc.maxx+1,k.qrows); },
 
 		pc.drawGrid_tawa = function(x1,y1,x2,y2){
+			this.vinc('grid', 'crispEdges');
 			if(x1<0){ x1=0;} if(x2>tc.maxx+1){ x2=tc.maxx+1;}
 			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
@@ -486,7 +481,7 @@ Puzzles.tawa.prototype = {
 			var xa = Math.max(x1,0), xb = Math.min(x2+1,tc.maxx+2);
 			var ya = Math.max(y1,0), yb = Math.min(y2+1,k.qrows  );
 			for(var i=ya;i<=yb;i++){
-				if(this.vnop(headers[0]+i,1)){
+				if(this.vnop(headers[0]+i,this.NONE)){
 					var redx = 0, redw = 0;
 					if     ((bd.lap===3 && (i===0||(i===k.qrows&&(i&1)))) || (bd.lap===0 && (i===k.qrows&&!(i&1)))){ redx=1; redw=2;}
 					else if((bd.lap===2 && (i===0||(i===k.qrows&&(i&1)))) || (bd.lap===1 && (i===k.qrows&&!(i&1)))){ redx=1; redw=1;}
@@ -498,37 +493,36 @@ Puzzles.tawa.prototype = {
 				var xs = xa;
 				if((bd.lap===2 || bd.lap===3) ^ ((i&1)!==(xs&1))){ xs++;}
 				for(var j=xs;j<=xb;j+=2){
-					if(this.vnop([headers[1],i,j].join(""),1)){
+					if(this.vnop([headers[1],i,j].join(""),this.NONE)){
 						g.fillRect(mf(k.p0.x+j*k.cwidth/2-lm), mf(k.p0.y+i*k.cheight-lm), lw, k.cheight+1);
 					}
 				}
 			}
-
-			this.vinc();
 		};
 
 		pc.drawTarget_tawa = function(x1,y1,x2,y2){
-			if(k.playmode){ this.hideTCell(); return;}
+			this.vinc('target_cell', 'crispEdges');
 
-			if(tc.cursolx < x1   || x2  +1 < tc.cursolx){ return;}
-			if(tc.cursoly < y1*2 || y2*2+2 < tc.cursoly){ return;}
+			if(k.editmode){
+				if(tc.cursolx < x1   || x2  +1 < tc.cursolx){ return;}
+				if(tc.cursoly < y1*2 || y2*2+2 < tc.cursoly){ return;}
 
-			var px = k.p0.x + mf(tc.cursolx*k.cwidth/2);
-			var py = k.p0.y + mf((tc.cursoly-1)*k.cheight/2);
-			var w = (k.cwidth<32?2:mf(k.cwidth/16));
+				var px = k.p0.x + mf(tc.cursolx*k.cwidth/2);
+				var py = k.p0.y + mf((tc.cursoly-1)*k.cheight/2);
+				var w = (k.cwidth<32?2:mf(k.cwidth/16));
 
-			this.vdel(["tc1_","tc2_","tc3_","tc4_"]);
-			g.fillStyle = this.targetColor1;
-			if(this.vnop("tc1_",0)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
-			if(this.vnop("tc2_",0)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
-			if(this.vnop("tc3_",0)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
-			if(this.vnop("tc4_",0)){ g.fillRect(px+k.cwidth-w,  py+1, w, k.cheight-2);}
-
-			this.vinc();
+				this.vdel(["tc1_","tc2_","tc3_","tc4_"]);
+				g.fillStyle = this.targetColor1;
+				if(this.vnop("tc1_",this.NONE)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
+				if(this.vnop("tc2_",this.NONE)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
+				if(this.vnop("tc3_",this.NONE)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
+				if(this.vnop("tc4_",this.NONE)){ g.fillRect(px+k.cwidth-w,  py+1, w, k.cheight-2);}
+			}
+			else{ this.vhide(["tc1_","tc2_","tc3_","tc4_"]);}
 		};
 
 		pc.flushCanvas_tawa = function(x1,y1,x2,y2){
-			if(!g.vml){
+			if(g.use.canvas){
 				if(x1<=0 && y1<=0 && x2>=tc.maxx+1 && y2>=k.qrows-1){
 					this.flushCanvasAll();
 				}
@@ -537,7 +531,9 @@ Puzzles.tawa.prototype = {
 					g.fillRect(k.p0.x+x1*k.cwidth/2, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth/2, (y2-y1+1)*k.cheight);
 				}
 			}
-			else{ g.zidx=1;}
+			else{
+				this.zidx=0;
+			}
 		};
 	},
 

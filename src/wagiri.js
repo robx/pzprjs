@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ごきげんななめ・輪切版 wagiri.js v3.2.5
+// パズル固有スクリプト部 ごきげんななめ・輪切版 wagiri.js v3.3.0
 //
 Puzzles.wagiri = function(){ };
 Puzzles.wagiri.prototype = {
@@ -49,7 +49,7 @@ Puzzles.wagiri.prototype = {
 
 		pp.addCheck('colorslash','setting',false, '斜線の色分け', 'Slash with color');
 		pp.setLabel('colorslash', '斜線を輪切りかのどちらかで色分けする(超重い)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
-		pp.funcs['colorslash'] = function(){ if(g.vml){ pc.flushCanvasAll();} pc.paintAll();};
+		pp.funcs['colorslash'] = function(){ pc.paintAll();};
 	},
 	finalfix : function(){
 		ee('btnclear2').el.style.display = 'none';
@@ -210,6 +210,8 @@ Puzzles.wagiri.prototype = {
 		};
 
 		pc.drawSlashes = function(x1,y1,x2,y2){
+			this.vinc('cell_slash', 'auto');
+
 			var headers = ["c_sl1_", "c_sl2_"], check=[];
 			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
 
@@ -228,16 +230,16 @@ Puzzles.wagiri.prototype = {
 					else                        { g.strokeStyle = this.Cellcolor;}
 
 					if(bd.cell[c].qans==1){
-						if(this.vnop(headers[0]+c,0)){
-							this.inputPath([bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight], true);
+						if(this.vnop(headers[0]+c,this.STROKE)){
+							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight, true);
 							g.stroke();
 						}
 					}
 					else{ this.vhide(headers[0]+c);}
 
 					if(bd.cell[c].qans==2){
-						if(this.vnop(headers[1]+c,0)){
-							this.inputPath([bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight], true);
+						if(this.vnop(headers[1]+c,this.STROKE)){
+							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight, true);
 							g.stroke();
 						}
 					}
@@ -245,7 +247,6 @@ Puzzles.wagiri.prototype = {
 				}
 				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
-			this.vinc();
 
 			if(!ans.errDisp && pp.getVal('colorslash')){
 				for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.sErC([c],0);} }
@@ -253,26 +254,9 @@ Puzzles.wagiri.prototype = {
 		};
 
 		pc.drawTarget_wagiri = function(x1,y1,x2,y2){
-			if(k.playmode){
-				this.hideTCell();
-				this.hideTCross();
-				this.hideTBorder();
-			}
-			else if((tc.cursolx&1)&&(tc.cursoly&1)){
-				this.drawTCell(x1-1,y1-1,x2+1,y2+1);
-				this.hideTCross();
-				this.hideTBorder();
-			}
-			else if(!(tc.cursolx&1)&&!(tc.cursoly&1)){
-				this.hideTCell();
-				this.drawTCross(x1-1,y1-1,x2+1,y2+1);
-				this.hideTBorder();
-			}
-			else{
-				this.hideTCell();
-				this.hideTCross();
-				this.drawTBorder(x1-1,y1-1,x2+1,y2+1);
-			}
+			this.drawTCell  (x1-1,y1-1,x2+1,y2+1,(k.editmode && !!( (tc.cursolx&1)&& (tc.cursoly&1))));
+			this.drawTCross (x1-1,y1-1,x2+1,y2+1,(k.editmode &&   (!(tc.cursolx&1)&&!(tc.cursoly&1))));
+			this.drawTBorder(x1-1,y1-1,x2+1,y2+1,(k.editmode &&   ( (tc.cursolx&1)!==(tc.cursoly&1))));
 		};
 	},
 

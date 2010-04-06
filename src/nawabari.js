@@ -88,6 +88,7 @@ Puzzles.nawabari.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
+		pc.setBorderColorFunc('qans');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);

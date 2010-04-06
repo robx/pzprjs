@@ -98,7 +98,7 @@ Puzzles.mashu.prototype = {
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
-			this.drawQueses41_42(x1,y1,x2,y2);
+			this.drawCircles41_42(x1,y1,x2,y2);
 			this.drawQuesHatenas(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,0);
