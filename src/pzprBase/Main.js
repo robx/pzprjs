@@ -140,6 +140,9 @@ PBase.prototype = {
 				window.addEventListener('dragover', function(e){ e.preventDefault();}, true);
 				window.addEventListener('drop', DDhandler, true);
 			}
+
+			// onBlurにイベントを割り当てる
+			document.onblur = ee.ebinder(this, this.onblur_func);
 		}
 	},
 	translationEN : function(){
@@ -294,6 +297,14 @@ PBase.prototype = {
 		tc.Adjust();
 		area.resetArea();
 		line.resetLcnts();
+	},
+
+	//---------------------------------------------------------------------------
+	// base.onblur_func() ウィンドウからフォーカスが離れた時に呼ばれる関数
+	//---------------------------------------------------------------------------
+	onblur_func : function(){
+		kc.keyreset();
+		mv.mousereset();
 	},
 
 	//---------------------------------------------------------------------------

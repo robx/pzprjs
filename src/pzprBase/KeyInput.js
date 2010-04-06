@@ -112,11 +112,8 @@ KeyEvent.prototype = {
 		if(keycode==45){ return '-';}
 		else{ return '';}
 	},
-	//Programming Magic様のコード
 	getKeyCode : function(e){
-		if(document.all) return  e.keyCode;
-		else if(document.getElementById) return (e.keyCode)? e.keyCode: e.charCode;
-		else if(document.layers) return  e.which;
+		return (k.br.IE || e.keyCode) ? e.keyCode: e.charCode;
 	},
 
 	//---------------------------------------------------------------------------
