@@ -83,9 +83,10 @@ Graphic = function(){
 	this.crosssize = 0.4;
 	this.circleratio = [0.40, 0.34];
 
-	this.lw = 1;	// LineWidth ‹«ŠEüELine‚Ì‘¾‚³
-	this.lm = 1;	// LineMargin
-	this.addlw = 0;	// ƒGƒ‰[Žž‚Éü‚Ì‘¾‚³‚ðL‚°‚é
+	this.lw = 1;		// LineWidth ‹«ŠEüELine‚Ì‘¾‚³
+	this.lm = 1;		// LineMargin
+	this.lwratio = 12;	// onresize_func‚Ålw‚Ì’l‚ÌŽZo‚É—p‚¢‚é
+	this.addlw = 0;		// ƒGƒ‰[Žž‚Éü‚Ì‘¾‚³‚ðL‚°‚é
 
 	this.bdheader = "b_bd";	// drawBorder1‚ÅŽg‚¤header
 
@@ -121,7 +122,7 @@ Graphic.prototype = {
 	// pc.onresize_func() resizeŽž‚ÉƒTƒCƒY‚ð•ÏX‚·‚é
 	//---------------------------------------------------------------------------
 	onresize_func : function(){
-		this.lw = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3);
+		this.lw = ((k.cwidth/this.lwratio)>=3?(k.cwidth/this.lwratio):3);
 		this.lm = (this.lw-1)/2;
 
 		//this.textenable = !!g.fillText;
@@ -645,8 +646,8 @@ Graphic.prototype = {
 			if(this.vnop(vid,this.FILL)){
 				var lw = this.lw + this.addlw, lm = this.lm;
 				var bx = bd.border[id].cx, by = bd.border[id].cy;
-				if     (by&1){ g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-lm, k.p0.x+mf((by-1)*k.cheight/2)-lm, lw, k.cheight+lw);}
-				else if(bx&1){ g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-lm, k.p0.x+mf(by*k.cheight/2)-lm, k.cwidth+lw,  lw);}
+				if     (by&1){ g.fillRect(mf(k.p0.x+bx*k.cwidth/2-lm), mf(k.p0.x+(by-1)*k.cheight/2-lm), mf(lw), mf(k.cheight+lw));}
+				else if(bx&1){ g.fillRect(mf(k.p0.x+(bx-1)*k.cwidth/2-lm), mf(k.p0.x+by*k.cheight/2-lm), mf(k.cwidth+lw),  mf(lw));}
 			}
 		}
 		else{ this.vhide(vid);}
@@ -714,7 +715,7 @@ Graphic.prototype = {
 	drawBoxBorders  : function(x1,y1,x2,y2,tileflag){
 		this.vinc('boxborder', 'crispEdges');
 
-		var lw = this.lw, lm = this.lm+1;
+		var lw = mf(this.lw), lm = mf(this.lm+1);
 		var cw = k.cwidth;
 		var ch = k.cheight;
 		var chars = ['u','d','l','r'];
@@ -787,8 +788,8 @@ Graphic.prototype = {
 		if(forceFlag!==false && this.setLineColor(id)){
 			if(this.vnop(vid,this.FILL)){
 				var lw = this.lw + this.addlw, lm = this.lm;
-				if     (bd.border[id].cx&1){ g.fillRect(mf(bd.border[id].px-lm), mf(bd.border[id].py-(k.cheight/2)-lm), lw, k.cheight+lw);}
-				else if(bd.border[id].cy&1){ g.fillRect(mf(bd.border[id].px-(k.cwidth/2)-lm),  mf(bd.border[id].py-lm), k.cwidth+lw,  lw);}
+				if     (bd.border[id].cx&1){ g.fillRect(mf(bd.border[id].px-lm), mf(bd.border[id].py-(k.cheight/2)-lm), mf(lw), mf(k.cheight+lw));}
+				else if(bd.border[id].cy&1){ g.fillRect(mf(bd.border[id].px-(k.cwidth/2)-lm),  mf(bd.border[id].py-lm), mf(k.cwidth+lw),  mf(lw));}
 			}
 		}
 		else{ this.vhide(vid);}
@@ -994,16 +995,16 @@ Graphic.prototype = {
 		var vids = ["c_lp1_"+id, "c_lp2_"+id, "c_lp3_"+id, "c_lp4_"+id];
 		if(qs<101 || qs>107){ this.vhide(vids); return;}
 
-		var hh = mf(k.cheight/2), hw = mf(k.cwidth/2);
+		var lw = mf(this.lw), hh = mf(k.cheight/2), hw = mf(k.cwidth/2);
 		var hhp = mf((this.lw+k.cheight)/2), hwp = mf((this.lw+k.cwidth)/2);
 		var px = bd.cell[id].px, py = bd.cell[id].py;
 		g.fillStyle = this.BorderQuescolor;
 
 		var qs = bd.cell[id].ques, flag  = {101:15, 102:3, 103:12, 104:9, 105:5, 106:6, 107:10}[qs];
-		if(flag&1){ if(this.vnop(vids[0],this.NONE)){ g.fillRect(px+hw-1, py     , this.lw, hhp);} }else{ this.vhide(vids[0]);}
-		if(flag&2){ if(this.vnop(vids[1],this.NONE)){ g.fillRect(px+hw-1, py+hh-1, this.lw, hhp);} }else{ this.vhide(vids[1]);}
-		if(flag&4){ if(this.vnop(vids[2],this.NONE)){ g.fillRect(px     , py+hh-1, hwp, this.lw);} }else{ this.vhide(vids[2]);}
-		if(flag&8){ if(this.vnop(vids[3],this.NONE)){ g.fillRect(px+hw-1, py+hh-1, hwp, this.lw);} }else{ this.vhide(vids[3]);}
+		if(flag&1){ if(this.vnop(vids[0],this.NONE)){ g.fillRect(px+hw-1, py     , lw, hhp);} }else{ this.vhide(vids[0]);}
+		if(flag&2){ if(this.vnop(vids[1],this.NONE)){ g.fillRect(px+hw-1, py+hh-1, lw, hhp);} }else{ this.vhide(vids[1]);}
+		if(flag&4){ if(this.vnop(vids[2],this.NONE)){ g.fillRect(px     , py+hh-1, hwp, lw);} }else{ this.vhide(vids[2]);}
+		if(flag&8){ if(this.vnop(vids[3],this.NONE)){ g.fillRect(px+hw-1, py+hh-1, hwp, lw);} }else{ this.vhide(vids[3]);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -1283,7 +1284,7 @@ Graphic.prototype = {
 		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
 		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
-		var lw = (k.puzzleid!=='bosanowa'?this.lw:1);
+		var lw = (k.puzzleid!=='bosanowa'?mf(this.lw):1);
 		g.fillStyle = "black";
 		if(g.use.canvas){
 			if(x1===0)        { g.fillRect(k.p0.x            -lw+1, k.p0.y+y1*k.cheight-lw+1, lw, (y2-y1+1)*k.cheight+2*lw-1);}
@@ -1303,7 +1304,7 @@ Graphic.prototype = {
 		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
 		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
-		var lw = this.lw, lm = this.lm;
+		var lw = mf(this.lw), lm = mf(this.lm);
 		g.fillStyle = "black";
 
 		// extendcell==1‚àŠÜ‚ñ‚¾ŠO˜g‚Ì•`‰æ

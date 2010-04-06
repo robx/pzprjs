@@ -151,8 +151,10 @@ Puzzles.wblink.prototype = {
 		pc.gridcolor = pc.gridcolor_THIN;
 		pc.errbcolor1 = "white";
 		pc.circleratio = [0.35, 0.30];
-
 		pc.chassisflag = false;
+
+		// ü‚Ì‘¾‚³‚ð’Êí‚æ‚è­‚µ‘¾‚­‚·‚é
+		pc.lwratio = 8;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -167,16 +169,6 @@ Puzzles.wblink.prototype = {
 			this.drawQuesHatenas(x1-2,y1-2,x2+1,y2+1);
 
 			this.drawTarget(x1,y1,x2,y2);
-		};
-
-		// ü‚Ì‘¾‚³‚ð’Êí‚æ‚è­‚µ‘¾‚­‚·‚é
-		pc.onresize_func = function(){
-			this.lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3); // 12->8
-			this.lm = mf((this.lw-1)/2);
-		};
-		pc.hideGrid = function(){
-			for(var i=0;i<=k.qcols;i++){ this.vhide("bdy_"+i);}
-			for(var i=0;i<=k.qrows;i++){ this.vhide("bdx_"+i);}
 		};
 	},
 

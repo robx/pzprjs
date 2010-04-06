@@ -45,7 +45,12 @@ Puzzles.hashikake.prototype = {
 
 		enc.pidKanpen = 'hashi';
 	},
-	menufix : function(){ },
+	menufix : function(){
+		pp.addCheck('circolor','setting',false,'数字をグレーにする','Set Grey Color');
+		pp.setLabel('circolor', '数字と同じ本数がかかったらグレーにする', 'Grey if the number is equal to linked bridges.');
+
+		pp.funcs['circolor'] = function(){ pc.paintAll();};
+	},
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
@@ -169,11 +174,12 @@ Puzzles.hashikake.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_THIN;
-		pc.bcolor = pc.bcolor_GREEN;
-
+		pc.bcolor    = "silver";
 		pc.fontsizeratio = 0.85;
-		pc.circleratio = [0.44, 0.44];
 		pc.chassisflag = false;
+
+		// 線の太さを通常より少し太くする
+		pc.lwratio = 8;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.flushCanvas(x1,y1,x2,y2);
@@ -190,43 +196,59 @@ Puzzles.hashikake.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		// 線の太さを通常より少し太くする
-		pc.onresize_func = function(){
-			this.lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3); // 12->8
-			this.lm = mf((this.lw-1)/2);
-		};
 		// オーバーライド
 		pc.drawLine1 = function(id, forceFlag){
 			var vids = ["b_line_"+id,"b_dline1_"+id,"b_dline2_"+id];
 
 			// LineWidth, LineMargin, LineSpace
-			var lw = this.lw + this.addlw, lm = this.lm, ls = mf(lw*1.5);
+			var lw = this.lw + this.addlw, lm = this.lm, ls = lw*1.5;
 			if(forceFlag!==false && this.setLineColor(id)){
 				if(bd.border[id].line==1){
 					if(this.vnop(vids[0],this.FILL)){
-						if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-						if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
+						if(bd.border[id].cx&1){ g.fillRect(mf(bd.border[id].px-lm), mf(bd.border[id].py-k.cheight/2-lm), mf(lw), mf(k.cheight+lw));}
+						if(bd.border[id].cy&1){ g.fillRect(mf(bd.border[id].px-k.cwidth/2-lm),  mf(bd.border[id].py-lm), mf(k.cwidth+lw),  mf(lw));}
 					}
 				}
 				else{ this.vhide(vids[0]);}
 
 				if(bd.border[id].line==2){
 					if(this.vnop(vids[1],this.FILL)){
-						if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm-ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-						if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm-ls, k.cwidth+lw,  lw);}
+						if(bd.border[id].cx&1){ g.fillRect(mf(bd.border[id].px-lm-ls), mf(bd.border[id].py-k.cheight/2-lm), mf(lw), mf(k.cheight+lw));}
+						if(bd.border[id].cy&1){ g.fillRect(mf(bd.border[id].px-k.cwidth/2-lm),  mf(bd.border[id].py-lm-ls), mf(k.cwidth+lw),  mf(lw));}
 					}
 					if(this.vnop(vids[2],this.FILL)){
-						if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm+ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-						if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm+ls, k.cwidth+lw,  lw);}
+						if(bd.border[id].cx&1){ g.fillRect(mf(bd.border[id].px-lm+ls), mf(bd.border[id].py-k.cheight/2-lm), mf(lw), mf(k.cheight+lw));}
+						if(bd.border[id].cy&1){ g.fillRect(mf(bd.border[id].px-k.cwidth/2-lm),  mf(bd.border[id].py-lm+ls), mf(k.cwidth+lw),  mf(lw));}
 					}
 				}
 				else{ this.vhide([vids[1], vids[2]]);}
 			}
 			else{ this.vhide(vids);}
 		};
-		pc.hideGrid = function(){
-			for(var i=0;i<=k.qcols;i++){ this.vhide("bdy_"+i);}
-			for(var i=0;i<=k.qrows;i++){ this.vhide("bdx_"+i);}
+		// 背景色をつける為オーバーライド
+		pc.drawCircle1AtNumber = function(c){
+			if(c===-1){ return;}
+
+			var rsize = k.cwidth*0.44;
+			var mgnx  = k.cwidth/2, mgny = k.cheight/2;
+			var header = "c_cir_";
+
+			if(bd.cell[c].qnum!=-1){
+				var px=bd.cell[c].px+mgnx, py=bd.cell[c].py+mgny;
+
+				g.lineWidth   = k.cwidth*0.05;
+				g.strokeStyle = this.Cellcolor;
+
+				if (pp.getVal('circolor') && bd.cell[c].qnum===ans.getCountOfBridges(c))
+											 { g.fillStyle = this.bcolor;      }
+				else if(bd.cell[c].error===1){ g.fillStyle = this.errbcolor1;  }
+				else                         { g.fillStyle = this.circledcolor;}
+
+				if(this.vnop(header+c,this.FILL)){
+					g.shapeCircle(px,py,rsize);
+				}
+			}
+			else{ this.vhide([header+c]);}
 		};
 
 		line.repaintParts = function(idlist){
@@ -332,21 +354,25 @@ Puzzles.hashikake.prototype = {
 		ans.checkCellNumber = function(flag){
 			var result = true;
 			for(var cc=0;cc<bd.cellmax;cc++){
-				if(bd.QnC(cc)<0){ continue;}
+				var qn = bd.QnC(cc);
+				if(qn<0){ continue;}
 
-				var cnt = 0;
-				if(bd.ub(cc)!=-1 && bd.isLine(bd.ub(cc))){ cnt+=bd.LiB(bd.ub(cc));}
-				if(bd.db(cc)!=-1 && bd.isLine(bd.db(cc))){ cnt+=bd.LiB(bd.db(cc));}
-				if(bd.lb(cc)!=-1 && bd.isLine(bd.lb(cc))){ cnt+=bd.LiB(bd.lb(cc));}
-				if(bd.rb(cc)!=-1 && bd.isLine(bd.rb(cc))){ cnt+=bd.LiB(bd.rb(cc));}
-
-				if((flag==1 && bd.QnC(cc)<cnt)||(flag==2 && bd.QnC(cc)>cnt)){
+				var cnt = this.getCountOfBridges(cc);
+				if((flag===1 && qn<cnt)||(flag===2 && qn>cnt)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([cc],1);
 					result = false;
 				}
 			}
 			return result;
+		};
+		ans.getCountOfBridges = function(cc){
+			var cnt=0, idlist=[bd.ub(cc), bd.db(cc), bd.lb(cc), bd.rb(cc)];
+			for(var i=0;i<idlist.length;i++){
+				var id = idlist[i];
+				if(id!==-1 && bd.border[id].line>0){ cnt+=bd.border[id].line;}
+			}
+			return cnt;
 		};
 	}
 };
