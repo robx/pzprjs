@@ -205,7 +205,7 @@ Puzzles.lightup.prototype = {
 		pc.drawAkari = function(x1,y1,x2,y2){
 			this.vinc('cell_akari', 'auto');
 
-			var rsize = k.cwidth*0.40;
+			var rsize = this.cw*0.40;
 			var lampcolor = "rgb(0, 127, 96)";
 			var header = "c_AK_";
 
@@ -215,7 +215,7 @@ Puzzles.lightup.prototype = {
 				if(bd.cell[c].qans===1){
 					g.fillStyle = (bd.cell[c].error!==4 ? lampcolor : this.errcolor1);
 					if(this.vnop(header+c,this.FILL)){
-						g.fillCircle(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, rsize);
+						g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
 					}
 				}
 				else{ this.vhide(header+c);}

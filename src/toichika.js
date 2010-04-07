@@ -237,9 +237,9 @@ Puzzles.toichika.prototype = {
 			this.vinc('cell_arrow', 'auto');
 
 			var headers = ["c_arup_", "c_ardn_", "c_arlt_", "c_arrt_"];
-			var ll = mf(k.cwidth*0.8);					//LineLength
-			var lw = Math.max(mf(k.cwidth/18/2)*2, 2);	//LineWidth
-			var al = ll*0.5, aw = lw*0.5; // ArrowLength, ArrowWidth
+			var ll = this.cw*0.8;				//LineLength
+			var lw = Math.max(this.cw/18, 2);	//LineWidth
+			var al = ll*0.5, aw = lw*0.5;	// ArrowLength, ArrowWidth
 			var tl = ll*0.5-ll*0.3;			// –î‚¶‚è‚Ì’·‚³‚ÌÀ•W(’†S-’·‚³)
 			var tw = Math.max(ll*0.2, 5);	// –î‚¶‚è‚Ì•
 
@@ -248,8 +248,8 @@ Puzzles.toichika.prototype = {
 				var c = clist[i];
 				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
 				if(bd.QaC(c)>0 || bd.DiC(c)>0){
-					var ax=px=bd.cell[c].px+mf(k.cwidth/2);
-					var ay=py=bd.cell[c].py+mf(k.cheight/2);
+					var ax=px=bd.cell[c].cpx;
+					var ay=py=bd.cell[c].cpy;
 					var dir=(bd.cell[c].direc>0 ? bd.cell[c].direc : bd.cell[c].qans);
 
 					if     (bd.cell[c].error===1){ g.fillStyle = this.fontErrcolor;}

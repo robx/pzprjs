@@ -12,6 +12,7 @@ var _win = this,
 	_doc = document,
 	_ms = Math.sin,
 	_mc = Math.cos,
+	_mr = Math.round,
 	_2PI = 2*Math.PI,
 
 	_IE = !!(window.attachEvent && !window.opera),
@@ -207,6 +208,10 @@ var VectorContext = function(type, idname){
 	this.currentpath = [];
 	this.lastpath    = '';
 
+	this.currentLayerId = '_empty';
+	this.isedgearray    = {_empty:false};
+	this.isedge         = false;
+
 	// Silverlight用
 	this.content = null;
 
@@ -346,10 +351,22 @@ VectorContext.prototype = {
 			}
 			this.target = layer;
 		}
+
+		this.currentLayerId = (!!layerid ? layerid : '_empty');
+		if(this.type!==SVG){
+			if(this.isedgearray[this.currentLayerId] === void 0){
+				this.isedgearray[this.currentLayerId] = false;
+			}
+			this.isedge = this.isedgearray[this.currentLayerId];
+		}
 	},
 	setRendering : function(render){
 		if(this.type===SVG){
 			this.target.setAttribute(S_ATT_RENDERING, render);
+		}
+		else{
+			this.isedgearray[this.currentLayerId] = (render==='crispEdges');
+			this.isedge = this.isedgearray[this.currentLayerId];
 		}
 	},
 	setUnselectable : function(unsel){
@@ -431,31 +448,45 @@ VectorContext.prototype = {
 		this.lastpath = this.PATH_CLOSE;
 	},
 	moveTo : function(x,y){
-		if     (this.type===SVG){ this.currentpath.push(this.PATH_MOVE,x,y);}
-		else if(this.type===VML){ this.currentpath.push(this.PATH_MOVE,(x*Z-Z2)|0,(y*Z-Z2)|0);}
-		else if(this.type===SL) { this.currentpath.push(this.PATH_MOVE,x+this.OFFSETX,y+this.OFFSETY);}
+		if(this.type===VML){ x=(x*Z-Z2)|0; y=(y*Z-Z2)|0;}
+		else if(this.type===SL) {
+			x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
+			y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		}
+		this.currentpath.push(this.PATH_MOVE,x,y);
 		this.lastpath = this.PATH_MOVE;
 	},
 	lineTo : function(x,y){
 		if(this.lastpath!==this.PATH_LINE){ this.currentpath.push(this.PATH_LINE);}
-		if     (this.type===SVG){ this.currentpath.push(x,y);}
-		else if(this.type===VML){ this.currentpath.push((x*Z-Z2)|0,(y*Z-Z2)|0);}
-		else if(this.type===SL) { this.currentpath.push(x+this.OFFSETX,y+this.OFFSETY);}
+		if(this.type===VML){ x=(x*Z-Z2)|0; y=(y*Z-Z2)|0;}
+		else if(this.type===SL) {
+			x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
+			y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		}
+		this.currentpath.push(x,y);
 		this.lastpath = this.PATH_LINE;
 	},
 	rect : function(x,y,w,h){
-		if     (this.type===VML){ x=(x*Z-Z2)|0,y=(y*Z-Z2)|0, w=(w*Z)|0, h=(h*Z)|0;}
-		else if(this.type===SL) { x+=this.OFFSETX,y+=this.OFFSETY;}
+		if(this.type===VML){ x=(x*Z-Z2)|0; y=(y*Z-Z2)|0, w=(w*Z)|0, h=(h*Z)|0;}
+		else if(this.type===SL) {
+			x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
+			y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+			w = (this.isedge ? _mr(w) : w);
+			h = (this.isedge ? _mr(h) : h);
+		}
 		this.currentpath.push(this.PATH_MOVE,x,y,this.PATH_LINE,(x+w),y,(x+w),(y+h),x,(y+h),this.PATH_CLOSE);
 	},
 	arc : function(cx,cy,r,startRad,endRad,antiClockWise){
 		if     (this.type===VML){ cx=(cx*Z-Z2)|0, cy=(cy*Z-Z2)|0, r=(r*Z)|0;}
-		else if(this.type===SL) { cx+=this.OFFSETX, cy+=this.OFFSETY;}
+		else if(this.type===SL) {
+			cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
+			cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+		}
 		var sx = (cx + r*_mc(startRad))|0, sy = (cy + r*_ms(startRad))|0,
 			ex = (cx + r*_mc(endRad))|0,   ey = (cy + r*_ms(endRad))|0;
 		if(this.type===VML){
 			var com = (antiClockWise ? 'at' : 'wa');
-			if(endRad-startRad>=2*Math.PI){ sx+=1;}
+			if(endRad-startRad>=_2PI){ sx+=1;}
 			this.currentpath.push(com,(cx-r),(cy-r),(cx+r),(cy+r),sx,sy,ex,ey);
 			this.lastpath = com;
 		}
@@ -568,9 +599,13 @@ VectorContext.prototype = {
 			if     (i==0){ this.currentpath.push(this.PATH_MOVE);}
 			else if(i==2){ this.currentpath.push(this.PATH_LINE);}
 
-			if     (this.type===SVG){ this.currentpath.push(_args[i],_args[i+1]);}
-			else if(this.type===VML){ this.currentpath.push((_args[i]*Z-Z2)|0,(_args[i+1]*Z-Z2)|0);}
-			else if(this.type===SL) { this.currentpath.push(_args[i]+this.OFFSETX,_args[i+1]+this.OFFSETY);}
+			var a1=_args[i], a2=_args[i+1];
+			if(this.type===VML){ a1=(a1*Z-Z2)|0, a2=(a2*Z-Z2)|0;}
+			else if(this.type===SL) {
+				a1 = (this.isedge ? _mr(a1+this.OFFSETX) : a1+this.OFFSETX);
+				a2 = (this.isedge ? _mr(a2+this.OFFSETY) : a2+this.OFFSETY);
+			}
+			this.currentpath.push(a1,a2);
 		}
 		if(_args[_len-1]){ this.currentpath.push(this.PATH_CLOSE);}
 	},
@@ -581,8 +616,11 @@ VectorContext.prototype = {
 			m[i] = _args[i] + m[0];
 			m[i+1] = _args[i+1] + m[1];
 
-			if     (this.type===VML){ m[i]=(m[i]*Z-Z2)|0, m[i+1]=(m[i+1]*Z-Z2)|0;}
-			else if(this.type===SL) { m[i]+=this.OFFSETX, m[i+1]+=this.OFFSETY;}
+			if(this.type===VML){ m[i]=(m[i]*Z-Z2)|0, m[i+1]=(m[i+1]*Z-Z2)|0;}
+			else if(this.type===SL) {
+				m[i]   = (this.isedge ? _mr(m[i]  +this.OFFSETX) : m[i]  +this.OFFSETX);
+				m[i+1] = (this.isedge ? _mr(m[i+1]+this.OFFSETY) : m[i+1]+this.OFFSETY);
+			}
 		}
 		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
 			if     (i==2){ this.currentpath.push(this.PATH_MOVE);}
@@ -610,7 +648,12 @@ VectorContext.prototype = {
 
 	strokeLine : function(x1,y1,x2,y2){
 		if     (this.type===VML){ x1=(x1*Z)|0, y1=(y1*Z)|0, x2=(x2*Z)|0, y2=(y2*Z)|0;}
-		else if(this.type===SL) { x1+=this.OFFSETX, y1+=this.OFFSETY, x2+=this.OFFSETX, y2+=this.OFFSETY;}
+		else if(this.type===SL) {
+			x1 = (this.isedge ? _mr(x1+this.OFFSETX) : x1+this.OFFSETX);
+			y1 = (this.isedge ? _mr(y1+this.OFFSETY) : y1+this.OFFSETY);
+			x2 = (this.isedge ? _mr(x2+this.OFFSETX) : x2+this.OFFSETX);
+			y2 = (this.isedge ? _mr(y2+this.OFFSETY) : y2+this.OFFSETY);
+		}
 		var stack = this.currentpath;
 		this.currentpath = [this.PATH_MOVE,x1,y1,this.PATH_LINE,x2,y2];
 		this.addVectorElement(false,true);
@@ -618,7 +661,11 @@ VectorContext.prototype = {
 	},
 	strokeCross : function(cx,cy,l){
 		if     (this.type===VML){ cx=(cx*Z-Z2)|0, cy=(cy*Z-Z2)|0, l=(l*Z)|0;}
-		else if(this.type===SL) { cx+=this.OFFSETX, cy+=this.OFFSETY;}
+		else if(this.type===SL) {
+			cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
+			cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+			l  = (this.isedge ? _mr(l) : l);
+		}
 		var stack = this.currentpath;
 		this.currentpath = [this.PATH_MOVE,(cx-l),(cy-l),this.PATH_LINE,(cx+l),(cy+l),
 							this.PATH_MOVE,(cx-l),(cy+l),this.PATH_LINE,(cx+l),(cy-l)];
@@ -712,6 +759,10 @@ CanvasRenderingContext2D_wrapper = function(type, idname){
 	this.child  = null;		// this.canvasの直下にあるエレメント
 	this.context  = null;	// 本来のCanvasRenderingContext2Dオブジェクト
 
+	this.currentLayerId = '_empty';
+	this.isedgearray    = {_empty:false};
+	this.isedge         = false;
+
 	this.use = new TypeList();
 	this.use.vml    = (type===VML);
 	this.use.svg    = false;
@@ -767,8 +818,17 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		this.canvas = parent;
 		_initializing--;
 	},
-	setLayer          : function(layerid){ },
-	setRendering      : function(render) { },
+	setLayer : function(layerid){
+		this.currentLayerId = (!!layerid ? layerid : '_empty');
+		if(this.isedgearray[this.currentLayerId] === void 0){
+			this.isedgearray[this.currentLayerId] = false;
+		}
+		this.isedge = this.isedgearray[this.currentLayerId];
+	},
+	setRendering : function(render){
+		this.isedgearray[this.currentLayerId] = (render==='crispEdges');
+		this.isedge = this.isedgearray[this.currentLayerId];
+	},
 	setUnselectable : function(unsel){
 		if(unsel===(void 0)){ unsel = true;}else{ unsel = !!unsel;}
 		this.canvas.style.MozUserSelect    = (unsel ? 'none' : 'text');
@@ -821,19 +881,54 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	/* Canvas API functions (for path) */
 	beginPath : function(){ this.context.beginPath();},
 	closePath : function(){ this.context.closePath();},
-	moveTo : function(x,y){ this.context.moveTo(x+this.OFFSETX,y+this.OFFSETY);},
-	lineTo : function(x,y){ this.context.lineTo(x+this.OFFSETX,y+this.OFFSETY);},
-	rect : function(x,y,w,h){ this.context.rect(x,y,w,h);},
+	moveTo : function(x,y){
+		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
+		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		this.context.moveTo(x,y);
+	},
+	lineTo : function(x,y){
+		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
+		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		this.context.lineTo(x,y);
+	},
+	rect : function(x,y,w,h){
+		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
+		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		w = (this.isedge ? _mr(w) : w);
+		h = (this.isedge ? _mr(h) : h);
+		this.context.rect(x,y,w,h);
+	},
 	arc  : function(cx,cy,r,startRad,endRad,antiClockWise){
-		this.context.arc(cx+this.OFFSETX,cy+this.OFFSETY,r,startRad,endRad,antiClockWise);
+		cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
+		cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+		this.context.arc(px,py,r,startRad,endRad,antiClockWise);
 	},
 
 	/* Canvas API functions (for drawing) */
 	fill       : function(){ this.setProperties(); this.context.fill();},
 	stroke     : function(){ this.setProperties(); this.context.stroke();},
-	fillRect   : function(x,y,w,h){ this.setProperties(); this.context.fillRect(x+this.OFFSETX,y+this.OFFSETY,w,h);},
-	strokeRect : function(x,y,w,h){ this.setProperties(); this.context.strokeRect(x+this.OFFSETX,y+this.OFFSETY,w,h);},
-	fillText   : function(text,x,y){ this.setProperties(); this.context.fillText(text,x+this.OFFSETX,y+this.OFFSETY);},
+	fillRect   : function(x,y,w,h){
+		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
+		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		w = (this.isedge ? _mr(w) : w);
+		h = (this.isedge ? _mr(h) : h);
+
+		this.setProperties();
+		this.context.fillRect(x,y,w,h);
+	},
+	strokeRect : function(x,y,w,h){
+		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
+		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		w = (this.isedge ? _mr(w) : w);
+		h = (this.isedge ? _mr(h) : h);
+
+		this.setProperties();
+		this.context.strokeRect(x,y,w,h);
+	},
+	fillText : function(text,x,y){
+		this.setProperties();
+		this.context.fillText(text,x+this.OFFSETX,y+this.OFFSETY);
+	},
 
 	/* extended functions */
 	shape : function(){
@@ -842,16 +937,23 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		this.context.stroke();
 	},
 	shapeRect : function(x,y,w,h){
+		x = (this.isedge ? _mr(x) : x);
+		y = (this.isedge ? _mr(y) : y);
+		w = (this.isedge ? _mr(w) : w);
+		h = (this.isedge ? _mr(h) : h);
+
 		this.setProperties();
-		this.context.fillRect(x+this.OFFSETX,y+this.OFFSETY,w,h);
-		this.context.strokeRect(x+this.OFFSETX,y+this.OFFSETY,w,h);
+		this.context.fillRect(x,y,w,h);
+		this.context.strokeRect(x,y,w,h);
 	},
 
 	setLinePath : function(){
 		var _args = arguments, _len = _args.length;
 		for(var i=0,len=_len-((_len|1)?1:2);i<len;i+=2){
-			if(i==0){ this.context.moveTo(_args[i],_args[i+1]);}
-			else    { this.context.lineTo(_args[i],_args[i+1]);}
+			var a1 = (this.isedge ? _mr(_args[i])   : _args[i]);
+				a2 = (this.isedge ? _mr(_args[i+1]) : _args[i+1]);
+			if(i==0){ this.context.moveTo(a1,a2);}
+			else    { this.context.lineTo(a1,a2);}
 		}
 		if(_args[_len-1]){ this.context.closePath();}
 	},
@@ -862,45 +964,63 @@ CanvasRenderingContext2D_wrapper.prototype = {
 			m[i+1] = _args[i+1] + m[1];
 		}
 		for(var i=0,len=_len-((_len|1)?1:2);i<len;i+=2){
-			if(i==0){ this.context.moveTo(_args[i],_args[i+1]);}
-			else    { this.context.lineTo(_args[i],_args[i+1]);}
+			var a1 = (this.isedge ? _mr(_args[i])   : _args[i]);
+				a2 = (this.isedge ? _mr(_args[i+1]) : _args[i+1]);
+			if(i==0){ this.context.moveTo(a1,a2);}
+			else    { this.context.lineTo(a1,a2);}
 		}
 		if(_args[_len-1]){ this.context.closePath();}
 	},
 	setDashSize : function(size){ },
 
 	strokeLine : function(x1,y1,x2,y2){
+		x1 = (this.isedge ? _mr(x1+this.OFFSETX) : x1+this.OFFSETX);
+		y1 = (this.isedge ? _mr(y1+this.OFFSETY) : y1+this.OFFSETY);
+		x2 = (this.isedge ? _mr(x2+this.OFFSETX) : x2+this.OFFSETX);
+		y2 = (this.isedge ? _mr(y2+this.OFFSETY) : y2+this.OFFSETY);
+
 		this.setProperties();
 		this.context.beginPath();
-		this.context.moveTo(x1+this.OFFSETX,y1+this.OFFSETY);
-		this.context.lineTo(x2+this.OFFSETX,y2+this.OFFSETY);
+		this.context.moveTo(x1,y1);
+		this.context.lineTo(x2,y2);
 		this.context.stroke();
 	},
 	strokeCross : function(cx,cy,l){
+		var x1 = (this.isedge ? _mr(cx-l+this.OFFSETX) : cx-l+this.OFFSETX),
+			y1 = (this.isedge ? _mr(cy-l+this.OFFSETY) : cy-l+this.OFFSETY),
+			x2 = (this.isedge ? _mr(cx+l+this.OFFSETX) : cx+l+this.OFFSETX),
+			y2 = (this.isedge ? _mr(cy+l+this.OFFSETY) : cy+l+this.OFFSETY);
+
 		this.setProperties();
 		this.context.beginPath();
-		this.context.moveTo(cx-l+this.OFFSETX,cy-l+this.OFFSETY);
-		this.context.lineTo(cx+l+this.OFFSETX,cy+l+this.OFFSETY);
-		this.context.moveTo(cx-l+this.OFFSETX,cy+l+this.OFFSETY);
-		this.context.lineTo(cx+l+this.OFFSETX,cy-l+this.OFFSETY);
+		this.context.moveTo(x1,y1);
+		this.context.lineTo(x2,y2);
+		this.context.moveTo(x1,y2);
+		this.context.lineTo(x2,y1);
 		this.context.stroke();
 	},
 	fillCircle : function(cx,cy,r){
+		cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
+		cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
 		this.setProperties();
 		this.context.beginPath();
-		this.context.arc(cx+this.OFFSETX,cy+this.OFFSETY,r,0,_2PI,false);
+		this.context.arc(cx,cy,r,0,_2PI,false);
 		this.context.fill();
 	},
 	strokeCircle : function(cx,cy,r){
+		cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
+		cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
 		this.setProperties();
 		this.context.beginPath();
-		this.context.arc(cx+this.OFFSETX,cy+this.OFFSETY,r,0,_2PI,false);
+		this.context.arc(cx,cy,r,0,_2PI,false);
 		this.context.stroke();
 	},
 	shapeCircle : function(cx,cy,r){
+		cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
+		cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
 		this.setProperties();
 		this.context.beginPath();
-		this.context.arc(cx+this.OFFSETX,cy+this.OFFSETY,r,0,_2PI,false);
+		this.context.arc(cx,cy,r,0,_2PI,false);
 		this.context.fill();
 		this.context.stroke();
 	}

@@ -175,12 +175,12 @@ Puzzles.reflect.prototype = {
 				g.fillStyle = this.gridcolor;
 				if(lflag && (qs1===3||qs1===4)&&(qs2===2||qs2===5)){
 					if(this.vnop(header+id,this.NONE)){
-						g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight);
+						g.fillRect(bd.border[id].px, bd.border[id].py-this.bh, 1, this.ch);
 					}
 				}
 				else if(!lflag && (qs1===2||qs1===3)&&(qs2===4||qs2===5)){
 					if(this.vnop(header+id,this.NONE)){
-						g.fillRect(bd.border[id].px-mf(k.cwidth/2), bd.border[id].py, k.cwidth, 1);
+						g.fillRect(bd.border[id].px-this.bw, bd.border[id].py, this.cw, 1);
 					}
 				}
 				else{ this.vhide(header+id);}
@@ -196,14 +196,14 @@ Puzzles.reflect.prototype = {
 			var vids = ["c_lp1_"+id, "c_lp2_"+id];
 
 			if(bd.cell[id].ques===101){
-				var lw = this.lw, lm=this.lm, mgn = mf(k.cwidth*0.12);
+				var lw = this.lw, lm=this.lm, mgn = this.cw*0.38;
 				g.fillStyle = this.Cellcolor;
 
 				if(this.vnop(vids[0],this.NONE)){
-					g.fillRect(bd.cell[id].px+mf(k.cwidth/2)-lm,  bd.cell[id].py+mgn,  lw+2, k.cheight-2*mgn);
+					g.fillRect(bd.cell[id].cpx-lm, bd.cell[id].cpy-mgn,  lw+2, this.ch-2*mgn);
 				}
 				if(this.vnop(vids[1],this.NONE)){
-					g.fillRect(bd.cell[id].px+mgn, bd.cell[id].py+mf(k.cheight/2)-lm,  k.cwidth-2*mgn, lw+2);
+					g.fillRect(bd.cell[id].cpx-mgn, bd.cell[id].cpy-lm,  this.cw-2*mgn, lw+2);
 				}
 			}
 			else{ this.vhide(vids);}

@@ -148,8 +148,8 @@ Puzzles.bonsan.prototype = {
 		pc.drawTip = function(x1,y1,x2,y2){
 			this.vinc('cell_linetip', 'auto');
 
-			var tsize = k.cwidth*0.30;
-			var tplus = k.cwidth*0.05;
+			var tsize = this.cw*0.30;
+			var tplus = this.cw*0.05;
 			var header = "c_tip_";
 
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
@@ -163,13 +163,13 @@ Puzzles.bonsan.prototype = {
 					else if(bd.isLine(bd.lb(c))){ dir=4; id=bd.lb(c);}
 					else if(bd.isLine(bd.rb(c))){ dir=3; id=bd.rb(c);}
 
-					g.lineWidth = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3); //LineWidth
+					g.lineWidth = this.lw; //LineWidth
 					if     (bd.border[id].error==1){ g.strokeStyle = this.errlinecolor1; g.lineWidth=g.lineWidth+1;}
 					else if(bd.border[id].error==2){ g.strokeStyle = this.errlinecolor2;}
 					else                           { g.strokeStyle = this.linecolor;}
 
 					if(this.vnop(header+c,this.STROKE)){
-						var px=bd.cell[c].px+k.cwidth/2+1, py=bd.cell[c].py+k.cheight/2+1;
+						var px=bd.cell[c].cpx+1, py=bd.cell[c].cpy+1;
 						if     (dir==1){ g.setOffsetLinePath(px,py ,-tsize, tsize ,0,-tplus , tsize, tsize, false);}
 						else if(dir==2){ g.setOffsetLinePath(px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize, false);}
 						else if(dir==3){ g.setOffsetLinePath(px,py , tsize,-tsize ,-tplus,0 , tsize, tsize, false);}

@@ -145,12 +145,12 @@ Puzzles.sudoku.prototype = {
 			g.fillStyle = "black";
 			for(var i=1;i<block;i++){
 				if(x1-1<=i*block&&i*block<=x2+1){ if(this.vnop(headers[0]+i,this.NONE)){
-					g.fillRect(k.p0.x+i*block*k.cwidth-lw+1, k.p0.y+y1*k.cheight-lw+1, lw, (y2-y1+1)*k.cheight+2*lw-1);
+					g.fillRect(k.p0.x+i*block*this.cw-lw+1, k.p0.y+y1*this.ch-lw+1, lw, (y2-y1+1)*this.ch+2*lw-1);
 				}}
 			}
 			for(var i=1;i<block;i++){
 				if(y1-1<=i*block&&i*block<=y2+1){ if(this.vnop(headers[1]+i,this.NONE)){
-					g.fillRect(k.p0.x+x1*k.cwidth-lw+1, k.p0.y+i*block*k.cheight-lw+1, (x2-x1+1)*k.cwidth+2*lw-1, lw);
+					g.fillRect(k.p0.x+x1*this.cw-lw+1, k.p0.y+i*block*this.ch-lw+1, (x2-x1+1)*this.cw+2*lw-1, lw);
 				}}
 			}
 		};

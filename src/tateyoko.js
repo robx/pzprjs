@@ -221,8 +221,8 @@ Puzzles.tateyoko.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				var lw = (mf(k.cwidth/6)>=3?mf(k.cwidth/6):3); //LineWidth
-				var lp = mf((k.cwidth-lw)/2); //LinePadding
+				var lw = Math.max(this.cw/6, 3);	//LineWidth
+				var lp = (this.cw-lw);				//LinePadding
 
 				var err = bd.cell[c].error;
 				if     (err===1||err===4){ g.fillStyle = this.errlinecolor1; lw++;}
@@ -232,14 +232,14 @@ Puzzles.tateyoko.prototype = {
 				if(bd.cell[c].qans!==-1){
 					if(bd.cell[c].qans===1){
 						if(this.vnop(headers[0]+c,this.FILL)){
-							g.fillRect(bd.cell[c].px+lp, bd.cell[c].py, lw, k.cheight+1);
+							g.fillRect(bd.cell[c].px+lp, bd.cell[c].py, lw, this.ch+1);
 						}
 					}
 					else{ this.vhide(headers[0]+c);}
 
 					if(bd.cell[c].qans===2){
 						if(this.vnop(headers[1]+c,this.FILL)){
-							g.fillRect(bd.cell[c].px, bd.cell[c].py+lp, k.cwidth+1,  lw);
+							g.fillRect(bd.cell[c].px, bd.cell[c].py+lp, this.cw+1, lw);
 						}
 					}
 					else{ this.vhide(headers[1]+c);}
@@ -258,7 +258,7 @@ Puzzles.tateyoko.prototype = {
 				if(bd.cell[c].ques===1){
 					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
 					if(this.vnop(header+c,this.FILL)){
-						g.fillRect(obj.px, obj.py, k.cwidth+1, k.cheight+1);
+						g.fillRect(obj.px, obj.py, this.cw+1, this.ch+1);
 					}
 				}
 				else{ this.vhide(header+c);}

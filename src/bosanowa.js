@@ -214,7 +214,7 @@ Puzzles.bosanowa.prototype = {
 				var c = clist[i];
 				if(bd.cell[c].error===1){
 					if(this.vnop(header+c,this.FILL)){
-						g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
+						g.fillRect(bd.cell[c].px, bd.cell[c].py, this.cw, this.ch);
 					}
 				}
 				else{ this.vhide([header+c]);}
@@ -226,7 +226,7 @@ Puzzles.bosanowa.prototype = {
 
 			g.lineWidth = 1;
 			g.fillStyle = "white";
-			var rsize  = k.cwidth*0.44;
+			var rsize  = this.cw*0.44;
 			var header = "c_cir_";
 
 			var clist = this.cellinside(x1,y1,x2,y2);
@@ -235,7 +235,7 @@ Puzzles.bosanowa.prototype = {
 				if(bd.cell[c].ques===7 && !bd.isNum(c)){
 					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
 					if(this.vnop(header+c,this.STROKE)){
-						g.strokeCircle(mf(bd.cell[c].px+k.cwidth/2), mf(bd.cell[c].py+k.cheight/2), rsize);
+						g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
 					}
 				}
 				else{ this.vhide([header+c]);}
@@ -260,29 +260,29 @@ Puzzles.bosanowa.prototype = {
 					if(!g.use.canvas){
 						if(this.vnop(header+id,this.NONE)){
 							if(bd.border[id].cy&1){
-								var px = bd.border[id].px, py1 = bd.border[id].py-mf(k.cheight/2), py2 = py1+k.cheight+1;
+								var px = bd.border[id].px, py1 = bd.border[id].py-this.bh, py2 = py1+this.ch+1;
 								g.strokeLine(px, py1, px, py2);
 								g.setDashSize(3);
 							}
 							else if(bd.border[id].cx&1){
-								var py = bd.border[id].py, px1 = bd.border[id].px-mf(k.cwidth/2), px2 = px1+k.cwidth+1;
+								var py = bd.border[id].py, px1 = bd.border[id].px-this.bw, px2 = px1+this.cw+1;
 								g.strokeLine(px1, py, px2, py);
 								g.setDashSize(3);
 							}
 						}
 					}
 					else{
-						var dotmax = mf(k.cwidth/10)+3;
-						var dotCount = (mf(k.cwidth/dotmax)>=1?mf(k.cwidth/dotmax):1);
-						var dotSize  = k.cwidth/(dotCount*2);
+						var dotmax = this.cw/10+3;
+						var dotCount = Math.max(this.cw/dotmax, 1);
+						var dotSize  = this.cw/(dotCount*2);
 						if     (bd.border[id].cy&1){ 
-							for(var j=0;j<k.cheight+1;j+=(2*dotSize)){
-								g.fillRect(bd.border[id].px, mf(bd.border[id].py-k.cheight/2+j), 1, mf(dotSize));
+							for(var j=0;j<this.ch+1;j+=(2*dotSize)){
+								g.fillRect(bd.border[id].px, bd.border[id].py-this.bh+j, 1, dotSize);
 							}
 						}
 						else if(bd.border[id].cx&1){ 
-							for(var j=0;j<k.cwidth+1 ;j+=(2*dotSize)){
-								g.fillRect(mf(bd.border[id].px-k.cwidth/2+j), bd.border[id].py, mf(dotSize), 1);
+							for(var j=0;j<this.cw+1 ;j+=(2*dotSize)){
+								g.fillRect(bd.border[id].px-this.bw+j, bd.border[id].py, dotSize, 1);
 							}
 						}
 					}
@@ -293,7 +293,7 @@ Puzzles.bosanowa.prototype = {
 		pc.drawGrid_waritai = function(x1,y1,x2,y2){
 			this.vinc('grid_waritai', 'crispEdges');
 
-			var csize = k.cwidth*0.20;
+			var csize = this.cw*0.20;
 			var headers = ["b_grid_", "b_grid2_"];
 			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4);
 			for(var i=0;i<idlist.length;i++){
@@ -304,8 +304,8 @@ Puzzles.bosanowa.prototype = {
 				if(onboard1 && onboard2){
 					g.fillStyle=this.gridcolor;
 					if(this.vnop(headers[0]+id,this.NONE)){
-						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
-						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2),  bd.border[id].py, k.cwidth+1,  1);}
+						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-this.bh, 1, this.ch+1);}
+						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-this.bw, bd.border[id].py, this.cw+1, 1);}
 					}
 
 					g.fillStyle = ((bd.cell[cc2].error===0) ? "white" : this.errbcolor1);
@@ -321,7 +321,7 @@ Puzzles.bosanowa.prototype = {
 		pc.drawBDnumbase = function(x1,y1,x2,y2){
 			this.vinc('border_number_base', 'crispEdges');
 
-			var csize = k.cwidth*0.20;
+			var csize = this.cw*0.20;
 			var header = "b_bbse_";
 			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+6,y2*2+6);
 			for(var i=0;i<idlist.length;i++){
@@ -373,7 +373,7 @@ Puzzles.bosanowa.prototype = {
 					{
 						g.fillStyle = "rgb(127,127,127)";
 						if(this.vnop([header,cx,cy].join('_'),this.NONE)){
-							g.fillRect(k.p0.x+k.cwidth*cx, k.p0.y+k.cheight*cy, k.cwidth+1, k.cheight+1);
+							g.fillRect(k.p0.x+this.cw*cx, k.p0.y+this.ch*cy, this.cw+1, this.ch+1);
 						}
 					}
 					else{ this.vhide([header,cx,cy].join('_'));}

@@ -137,7 +137,8 @@ Puzzles.tatamibari.prototype = {
 		pc.drawMarks = function(x1,y1,x2,y2){
 			this.vinc('cell_ques', 'crispEdges');
 
-			var lw = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3); //LineWidth
+			var lw = Math.max(this.cw/12, 3);	//LineWidth
+			var ll = this.cw*0.70;				//LineLength
 			var headers = ["c_lp1_", "c_lp2_"];
 			g.fillStyle = this.BorderQuescolor;
 
@@ -147,14 +148,14 @@ Puzzles.tatamibari.prototype = {
 				var qn = bd.cell[c].qnum;
 				if(qn===1||qn===2){
 					if(this.vnop(headers[0]+c,this.NONE)){
-						g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-1, bd.cell[c].py+mf((k.cheight+lw)*0.15), lw, mf((k.cheight+lw)*0.7));
+						g.fillRect(bd.cell[c].cpx-lw/2, bd.cell[c].cpy-ll/2, lw, ll);
 					}
 				}
 				else{ this.vhide(headers[0]+c);}
 
 				if(qn===1||qn===3){
 					if(this.vnop(headers[1]+c,this.NONE)){
-						g.fillRect(bd.cell[c].px+mf((k.cwidth+lw)*0.15), bd.cell[c].py+mf(k.cheight/2)-1, mf((k.cwidth+lw)*0.7), lw);
+						g.fillRect(bd.cell[c].cpx-ll/2, bd.cell[c].cpy-lw/2, ll, lw);
 					}
 				}
 				else{ this.vhide(headers[1]+c);}

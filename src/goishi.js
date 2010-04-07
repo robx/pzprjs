@@ -232,14 +232,14 @@ Puzzles.goishi.prototype = {
 			if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
 
 			g.fillStyle = this.gridcolor_LIGHT;
-			for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("cliney_"+i,this.NONE)){ g.fillRect(mf(k.p0.x+(i+0.5)*k.cwidth), mf(k.p0.y+(y1-0.5)*k.cheight), 1, (y2-y1+2)*k.cheight+1);} }
-			for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("clinex_"+i,this.NONE)){ g.fillRect(mf(k.p0.x+(x1-0.5)*k.cwidth), mf(k.p0.y+(i+0.5)*k.cheight), (x2-x1+2)*k.cwidth+1, 1);} }
+			for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("cliney_"+i,this.NONE)){ g.fillRect(k.p0.x+(i +0.5)*this.cw, k.p0.y+(y1-0.5)*this.ch, 1, (y2-y1+2)*this.ch+1);} }
+			for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("clinex_"+i,this.NONE)){ g.fillRect(k.p0.x+(x1-0.5)*this.cw, k.p0.y+(i +0.5)*this.ch, (x2-x1+2)*this.cw+1, 1);} }
 		};
 		pc.drawCircles_goishi = function(x1,y1,x2,y2){
 			this.vinc('cell_goishi', 'auto');
 
-			g.lineWidth = Math.max(k.cwidth*0.05, 1);
-			var rsize  = k.cwidth*0.38;
+			g.lineWidth = Math.max(this.cw*0.05, 1);
+			var rsize  = this.cw*0.38;
 			var header = "c_cir_";
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
@@ -248,7 +248,7 @@ Puzzles.goishi.prototype = {
 					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.Cellcolor);
 					g.fillStyle   = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 					if(this.vnop(header+c,this.FILL_STROKE)){
-						g.shapeCircle(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, rsize);
+						g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
 					}
 				}
 				else{ this.vhide([header+c]);}
@@ -257,8 +257,8 @@ Puzzles.goishi.prototype = {
 		pc.drawCellSquare = function(x1,y1,x2,y2){
 			this.vinc('cell_number_base', 'crispEdges');
 
-			var mgnw = mf(k.cwidth*0.1);
-			var mgnh = mf(k.cheight*0.1);
+			var mgnw = this.cw*0.1;
+			var mgnh = this.ch*0.1;
 			var header = "c_sq2_";
 
 			var clist = this.cellinside(x1,y1,x2,y2);
@@ -267,7 +267,7 @@ Puzzles.goishi.prototype = {
 				if(bd.cell[c].ques===7 && bd.cell[c].qans!==-1){
 					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 					if(this.vnop(header+c,this.FILL)){
-						g.fillRect(bd.cell[c].px+mgnw+2, bd.cell[c].py+mgnh+2, k.cwidth-mgnw*2-3, k.cheight-mgnh*2-3);
+						g.fillRect(bd.cell[c].px+mgnw+2, bd.cell[c].py+mgnh+2, this.cw-mgnw*2-3, this.ch-mgnh*2-3);
 					}
 				}
 				else{ this.vhide([header+c]);}

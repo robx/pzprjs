@@ -197,10 +197,10 @@ Puzzles.slither.prototype = {
 
 			g.fillStyle = this.Cellcolor;
 			if(this.vnop(vid,this.NONE)){
-				var lw = ((k.cwidth/12)>=3?(k.cwidth/12):3); //LineWidth
-				var csize = mf((lw+1)/2);
+				var lw = Math.max(this.cw/12, 3); //LineWidth
+				var csize = (lw+1)/2;
 				var cx = i%(k.qcols+1), cy = mf(i/(k.qcols+1));
-				g.fillCircle(k.p0.x+cx*k.cwidth, k.p0.x+cy*k.cheight, csize);
+				g.fillCircle(k.p0.x+cx*this.cw, k.p0.x+cy*this.cw, csize);
 			}
 		};
 

@@ -213,7 +213,7 @@ Puzzles.wagiri.prototype = {
 			this.vinc('cell_slash', 'auto');
 
 			var headers = ["c_sl1_", "c_sl2_"], check=[];
-			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
+			g.lineWidth = Math.max(this.cw/8, 2);
 
 			if(!ans.errDisp && pp.getVal('colorslash')){
 				var sdata=ans.getSlashData();
@@ -231,7 +231,7 @@ Puzzles.wagiri.prototype = {
 
 					if(bd.cell[c].qans==1){
 						if(this.vnop(headers[0]+c,this.STROKE)){
-							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight, true);
+							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, this.cw,this.ch, true);
 							g.stroke();
 						}
 					}
@@ -239,7 +239,7 @@ Puzzles.wagiri.prototype = {
 
 					if(bd.cell[c].qans==2){
 						if(this.vnop(headers[1]+c,this.STROKE)){
-							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight, true);
+							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, this.cw,0, 0,this.ch, true);
 							g.stroke();
 						}
 					}

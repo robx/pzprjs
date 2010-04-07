@@ -252,7 +252,7 @@ Puzzles.icebarn.prototype = {
 		};
 
 		pc.drawArrows = function(x1,y1,x2,y2){
-			this.vinc('border_arrow', 'auto');
+			this.vinc('border_arrow', 'crispEdges');
 
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+4,y2*2+4,f_true);
 			for(var i=0;i<idlist.length;i++){ this.drawArrow1(idlist[i], bd.isArrow(idlist[i]));}
@@ -261,13 +261,14 @@ Puzzles.icebarn.prototype = {
 			var vids = ["b_ar_"+id,"b_dt1_"+id,"b_dt2_"+id];
 			if(!flag){ this.vhide(vids); return;}
 
-			var ll = mf(k.cwidth*0.35);							//LineLength
-			var lw = (mf(k.cwidth/24)>=1?mf(k.cwidth/24):1);	//LineWidth
-			var lm = mf((lw-1)/2);								//LineMargin
+			var ll = this.cw*0.35;				//LineLength
+			var lw = Math.max(this.cw/36, 1);	//LineWidth
+			var lm = lw/2;					//LineMargin
 			var px=bd.border[id].px; var py=bd.border[id].py;
 
 			g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.Cellcolor);
 			if(this.vnop(vids[0],this.FILL)){
+				var mr = Math.round;
 				if(bd.border[id].cx&1){ g.fillRect(px-lm, py-ll, lw, ll*2);}
 				if(bd.border[id].cy&1){ g.fillRect(px-ll, py-lm, ll*2, lw);}
 			}
@@ -294,20 +295,20 @@ Puzzles.icebarn.prototype = {
 
 			g.fillStyle = (bd.border[bd.arrowin].error===3 ? this.errcolor1 : this.Cellcolor);
 			var bx = bd.border[bd.arrowin].cx, by = bd.border[bd.arrowin].cy;
-			if     (by===0)        { this.dispString(bd.ainobj, "IN", ((bx+1.3)/2)*k.cwidth+3 , ((by+0.5)/2)*k.cheight-5);}
-			else if(by===2*k.qrows){ this.dispString(bd.ainobj, "IN", ((bx+1.3)/2)*k.cwidth+3 , ((by+2.0)/2)*k.cheight+12);}
-			else if(bx===0)        { this.dispString(bd.ainobj, "IN", ((bx+1.0)/2)*k.cwidth-12, ((by+1.0)/2)*k.cheight-7);}
-			else if(bx===2*k.qcols){ this.dispString(bd.ainobj, "IN", ((bx+2.0)/2)*k.cwidth+6 , ((by+1.0)/2)*k.cheight-7);}
+			if     (by===0)        { this.dispString(bd.ainobj, "IN", ((bx+1.3)/2)*this.cw+3 , ((by+0.5)/2)*this.ch-5);}
+			else if(by===2*k.qrows){ this.dispString(bd.ainobj, "IN", ((bx+1.3)/2)*this.cw+3 , ((by+2.0)/2)*this.ch+12);}
+			else if(bx===0)        { this.dispString(bd.ainobj, "IN", ((bx+1.0)/2)*this.cw-12, ((by+1.0)/2)*this.ch-7);}
+			else if(bx===2*k.qcols){ this.dispString(bd.ainobj, "IN", ((bx+2.0)/2)*this.cw+6 , ((by+1.0)/2)*this.ch-7);}
 
 			g.fillStyle = (bd.border[bd.arrowout].error===3 ? this.errcolor1 : this.Cellcolor);
 			var bx = bd.border[bd.arrowout].cx, by = bd.border[bd.arrowout].cy;
-			if     (by===0)        { this.dispString(bd.aoutobj, "OUT", ((bx+1.0)/2)*k.cwidth-2 , ((by+0.5)/2)*k.cheight-5);}
-			else if(by===2*k.qrows){ this.dispString(bd.aoutobj, "OUT", ((bx+1.0)/2)*k.cwidth-2 , ((by+2.0)/2)*k.cheight+12);}
-			else if(bx===0)        { this.dispString(bd.aoutobj, "OUT", ((bx+0.5)/2)*k.cwidth-19, ((by+1.0)/2)*k.cheight-7);}
-			else if(bx===2*k.qcols){ this.dispString(bd.aoutobj, "OUT", ((bx+2.0)/2)*k.cwidth+5 , ((by+1.0)/2)*k.cheight-7);}
+			if     (by===0)        { this.dispString(bd.aoutobj, "OUT", ((bx+1.0)/2)*this.cw-2 , ((by+0.5)/2)*this.ch-5);}
+			else if(by===2*k.qrows){ this.dispString(bd.aoutobj, "OUT", ((bx+1.0)/2)*this.cw-2 , ((by+2.0)/2)*this.ch+12);}
+			else if(bx===0)        { this.dispString(bd.aoutobj, "OUT", ((bx+0.5)/2)*this.cw-19, ((by+1.0)/2)*this.ch-7);}
+			else if(bx===2*k.qcols){ this.dispString(bd.aoutobj, "OUT", ((bx+2.0)/2)*this.cw+5 , ((by+1.0)/2)*this.ch-7);}
 		};
 		pc.dispString = function(el, text, px, py){
-			el.style.fontSize = (k.cwidth*0.55)+'px';
+			el.style.fontSize = (this.cw*0.55)+'px';
 			el.style.left     = k.cv_oft.x + px+(!k.br.IE?2:4)+'px';
 			el.style.top      = k.cv_oft.y + py+(!k.br.IE?1:5)+'px';
 			el.style.color    = g.fillStyle;

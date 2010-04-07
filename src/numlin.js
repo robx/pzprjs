@@ -115,8 +115,8 @@ Puzzles.numlin.prototype = {
 		pc.drawCellSquare = function(x1,y1,x2,y2){
 			this.vinc('cell_number_base', 'crispEdges');
 
-			var mgnw = mf(k.cwidth*0.15);
-			var mgnh = mf(k.cheight*0.15);
+			var mgnw = this.cw*0.15;
+			var mgnh = this.ch*0.15;
 			var header = "c_sq_";
 
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
@@ -128,7 +128,7 @@ Puzzles.numlin.prototype = {
 					else                         { g.fillStyle = "white";}
 
 					if(this.vnop(header+c,this.FILL)){
-						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
+						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, this.cw-mgnw*2-1, this.ch-mgnh*2-1);
 					}
 				}
 				else{ this.vhide(header+c);}

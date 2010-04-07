@@ -205,20 +205,20 @@ Puzzles.hashikake.prototype = {
 			if(forceFlag!==false && this.setLineColor(id)){
 				if(bd.border[id].line==1){
 					if(this.vnop(vids[0],this.FILL)){
-						if(bd.border[id].cx&1){ g.fillRect(mf(bd.border[id].px-lm), mf(bd.border[id].py-k.cheight/2-lm), mf(lw), mf(k.cheight+lw));}
-						if(bd.border[id].cy&1){ g.fillRect(mf(bd.border[id].px-k.cwidth/2-lm),  mf(bd.border[id].py-lm), mf(k.cwidth+lw),  mf(lw));}
+						if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
+						if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm, this.cw+lw, lw);}
 					}
 				}
 				else{ this.vhide(vids[0]);}
 
 				if(bd.border[id].line==2){
 					if(this.vnop(vids[1],this.FILL)){
-						if(bd.border[id].cx&1){ g.fillRect(mf(bd.border[id].px-lm-ls), mf(bd.border[id].py-k.cheight/2-lm), mf(lw), mf(k.cheight+lw));}
-						if(bd.border[id].cy&1){ g.fillRect(mf(bd.border[id].px-k.cwidth/2-lm),  mf(bd.border[id].py-lm-ls), mf(k.cwidth+lw),  mf(lw));}
+						if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm-ls, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
+						if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm-ls, this.cw+lw, lw);}
 					}
 					if(this.vnop(vids[2],this.FILL)){
-						if(bd.border[id].cx&1){ g.fillRect(mf(bd.border[id].px-lm+ls), mf(bd.border[id].py-k.cheight/2-lm), mf(lw), mf(k.cheight+lw));}
-						if(bd.border[id].cy&1){ g.fillRect(mf(bd.border[id].px-k.cwidth/2-lm),  mf(bd.border[id].py-lm+ls), mf(k.cwidth+lw),  mf(lw));}
+						if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm+ls, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
+						if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm+ls, this.cw+lw, lw);}
 					}
 				}
 				else{ this.vhide([vids[1], vids[2]]);}
@@ -229,14 +229,11 @@ Puzzles.hashikake.prototype = {
 		pc.drawCircle1AtNumber = function(c){
 			if(c===-1){ return;}
 
-			var rsize = k.cwidth*0.44;
-			var mgnx  = k.cwidth/2, mgny = k.cheight/2;
+			var rsize = this.cw*0.44;
 			var header = "c_cir_";
 
 			if(bd.cell[c].qnum!=-1){
-				var px=bd.cell[c].px+mgnx, py=bd.cell[c].py+mgny;
-
-				g.lineWidth   = k.cwidth*0.05;
+				g.lineWidth   = this.cw*0.05;
 				g.strokeStyle = this.Cellcolor;
 
 				if (pp.getVal('circolor') && bd.cell[c].qnum===ans.getCountOfBridges(c))
@@ -245,7 +242,7 @@ Puzzles.hashikake.prototype = {
 				else                         { g.fillStyle = this.circledcolor;}
 
 				if(this.vnop(header+c,this.FILL)){
-					g.shapeCircle(px,py,rsize);
+					g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
 				}
 			}
 			else{ this.vhide([header+c]);}

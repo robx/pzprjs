@@ -338,9 +338,9 @@ Puzzles.slalom.prototype = {
 		};
 
 		pc.drawGates = function(x1,y1,x2,y2){
-			var lw = (mf(k.cwidth/10)>=3?mf(k.cwidth/10):3); //LineWidth
-			var lm = mf((lw-1)/2)+1; //LineMargin
-			var ll = lw*1.1;	//LineLength
+			var lw = Math.max(this.cw/10, 3);	//LineWidth
+			var lm = lw/2;						//LineMargin
+			var ll = lw*1.1;					//LineLength
 			var headers = ["c_dl21", "c_dl22"];
 
 			var clist = this.cellinside(x1,y1,x2,y2);
@@ -348,19 +348,19 @@ Puzzles.slalom.prototype = {
 				var c = clist[i];
 				g.fillStyle = (bd.cell[c].error===4 ? this.errcolor1 : this.Cellcolor);
 
-				for(var j=bd.cell[c].py,max=bd.cell[c].py+k.cheight;j<max;j+=ll*2){ //‚½‚Ä
+				for(var j=bd.cell[c].py,max=bd.cell[c].py+this.ch;j<max;j+=ll*2){ //‚½‚Ä
 					if(bd.cell[c].ques===21){
 						if(this.vnop([headers[0],c,mf(j)].join("_"),this.FILL)){
-							g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-lm+1, j, lw, ll);
+							g.fillRect(bd.cell[c].cpx-lm+1, j, lw, ll);
 						}
 					}
 					else{ this.vhide([headers[0],c,mf(j)].join("_"));}
 				}
 
-				for(var j=bd.cell[c].px,max=bd.cell[c].px+k.cwidth;j<max;j+=ll*2){ //‚æ‚±
+				for(var j=bd.cell[c].px,max=bd.cell[c].px+this.cw;j<max;j+=ll*2){ //‚æ‚±
 					if(bd.cell[c].ques===22){
 						if(this.vnop([headers[1],c,mf(j)].join("_"),this.FILL)){
-							g.fillRect(j, bd.cell[c].py+mf(k.cheight/2)-lm+1, ll, lw);
+							g.fillRect(j, bd.cell[c].cpy-lm+1, ll, lw);
 						}
 					}
 					else{ this.vhide([headers[1],c,mf(j)].join("_"));}
@@ -374,18 +374,16 @@ Puzzles.slalom.prototype = {
 			var c = bd.startid;
 			if(bd.cell[c].cx<x1-2 || x2+2<bd.cell[c].cx || bd.cell[c].cy<y1-2 || y2+2<bd.cell[c].cy){ return;}
 
-			var rsize = k.cwidth*0.45, rsize2 = k.cwidth*0.40;
+			var rsize = this.cw*0.45, rsize2 = this.cw*0.40;
 			var csize = (rsize+rsize2)/2, csize2 = rsize2-rsize;
 			var vids = ["sposa_","sposb_"];
 			this.vdel(vids);
-
-			var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
 
 			g.lineWidth = (csize2>=1 ? csize2 : 1);
 			g.strokeStyle = this.Cellcolor;
 			g.fillStyle = (mv.inputData==10 ? this.errbcolor1 : "white");
 			if(this.vnop(vids[0],this.FILL)){
-				g.shapeCircle(px, py, csize);
+				g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, csize);
 			}
 
 			this.dispnumStartpos(c);
@@ -766,7 +764,7 @@ Puzzles.slalom.prototype = {
 				while(1){
 					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 					if((bx+by)%2==0){
-						var cc = bd.cnum(mf(bx/2),mf(by/2));
+						var cc = bd.cnum(bx>>1,by>>1);
 						if(cc==bd.startid){ return true;} // ‚¿‚á‚ñ‚Æ–ß‚Á‚Ä‚«‚½
 
 						if(bd.QuC(cc)==21 || bd.QuC(cc)==22){

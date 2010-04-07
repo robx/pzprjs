@@ -8,8 +8,12 @@
 Cell = function(id){
 	this.cx;	// セルのX座標を保持する
 	this.cy;	// セルのY座標を保持する
+	this.bx;	// セルのX座標(border座標系)を保持する
+	this.by;	// セルのY座標(border座標系)を保持する
 	this.px;	// セルの描画用X座標を保持する
 	this.py;	// セルの描画用Y座標を保持する
+	this.cpx;	// セルの描画用中心X座標を保持する
+	this.cpy;	// セルの描画用中心Y座標を保持する
 	this.ques;	// セルの問題データ(形状)を保持する
 	this.qnum;	// セルの問題データ(数字)を保持する(数字 or カックロの右側)
 	this.direc;	// セルの問題データ(方向)を保持する(矢印 or カックロの下側)
@@ -57,6 +61,8 @@ Cell.prototype = {
 Cross = function(id){
 	this.cx;	// 交差点のX座標を保持する
 	this.cy;	// 交差点のY座標を保持する
+	this.bx;	// 交差点のX座標(border座標系)を保持する
+	this.by;	// 交差点のY座標(border座標系)を保持する
 	this.px;	// 交差点の描画用X座標を保持する
 	this.py;	// 交差点の描画用Y座標を保持する
 	this.ques;	// 交差点の問題データ(黒点)を保持する
@@ -93,6 +99,8 @@ Cross.prototype = {
 Border = function(id){
 	this.cx;	// 境界線のX座標を保持する
 	this.cy;	// 境界線のY座標を保持する
+	this.bx;	// 境界線のX座標(border座標系)を保持する
+	this.by;	// 境界線のY座標(border座標系)を保持する
 	this.px;	// 境界線の描画X座標を保持する
 	this.py;	// 境界線の描画Y座標を保持する
 	this.ques;	// 境界線の問題データを保持する(境界線 or マイナリズムの不等号)
@@ -239,8 +247,12 @@ Board.prototype = {
 			var obj = this.cell[id];
 			obj.cx = id%k.qcols;
 			obj.cy = mf(id/k.qcols);
-			obj.px = x0 + mf(obj.cx*k.cwidth);
-			obj.py = y0 + mf(obj.cy*k.cheight);
+			obj.bx = obj.cx*2+1;
+			obj.by = obj.cy*2+1;
+			obj.px = x0 + obj.cx*k.cwidth;
+			obj.py = y0 + obj.cy*k.cheight;
+			obj.cpx = x0 + obj.bx*k.cwidth/2;
+			obj.cpy = y0 + obj.by*k.cheight/2;
 		}
 	},
 	setposCrosses : function(){
@@ -250,8 +262,10 @@ Board.prototype = {
 			var obj = this.cross[id];
 			obj.cx = id%(k.qcols+1);
 			obj.cy = mf(id/(k.qcols+1));
-			obj.px = x0 + mf(obj.cx*k.cwidth);
-			obj.py = y0 + mf(obj.cy*k.cheight);
+			obj.bx = obj.cx*2;
+			obj.by = obj.cy*2;
+			obj.px = x0 + obj.cx*k.cwidth;
+			obj.py = y0 + obj.cy*k.cheight;
 		}
 	},
 	setposBorders : function(){
@@ -284,8 +298,10 @@ Board.prototype = {
 				obj.cx = k.qcols*2;
 				obj.cy = (id-this.bdinside-2*k.qcols-k.qrows)*2+1;
 			}
-			obj.px = x0 + mf(obj.cx*k.cwidth/2);
-			obj.py = y0 + mf(obj.cy*k.cheight/2);
+			obj.bx = obj.cx;
+			obj.by = obj.cy;
+			obj.px = x0 + obj.cx*k.cwidth/2;
+			obj.py = y0 + obj.cy*k.cheight/2;
 		}
 	},
 	setposEXcells : function(){
@@ -309,6 +325,8 @@ Board.prototype = {
 				else if(id<2*k.qcols+2*k.qrows+4){ obj.cx=k.qcols;    obj.cy=k.qrows;}
 				else                             { obj.cx=-1;         obj.cy=-1;     }
 			}
+			obj.bx = obj.cx*2+1;
+			obj.by = obj.cy*2+1;
 			obj.px = x0 + obj.cx*k.cwidth;
 			obj.py = y0 + obj.cy*k.cheight;
 		}

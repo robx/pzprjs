@@ -272,7 +272,7 @@ Puzzles.kinkonkan.prototype = {
 					else if(err>=2){ g.fillStyle = this.errbcolor2;}
 					if(err===1 || err===6){
 						if(this.vnop(headers[err-1]+c,this.FILL)){
-							g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
+							g.fillRect(bd.cell[c].px, bd.cell[c].py, this.cw, this.ch);
 						}
 					}
 					else{ this.drawTriangle1(bd.cell[c].px, bd.cell[c].py, err, headers[err-1]+c);}
@@ -284,7 +284,7 @@ Puzzles.kinkonkan.prototype = {
 			this.vinc('cell_slash', 'auto');
 
 			var headers = ["c_sl1_", "c_sl2_"];
-			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
+			g.lineWidth = Math.max(this.cw/8, 2);
 
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
@@ -294,14 +294,14 @@ Puzzles.kinkonkan.prototype = {
 					g.strokeStyle = this.Cellcolor;
 					if(bd.cell[c].qans==1){
 						if(this.vnop(headers[0]+c,this.NONE)){
-							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight, true);
+							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, this.cw,this.ch, true);
 							g.stroke();
 						}
 					}
 					else{ this.vhide(headers[0]+c);}
 					if(bd.cell[c].qans==2){
 						if(this.vnop(headers[1]+c,this.NONE)){
-							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight, true);
+							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, this.cw,0, 0,this.ch, true);
 							g.stroke();
 						}
 					}
@@ -323,7 +323,7 @@ Puzzles.kinkonkan.prototype = {
 				if(bd.excell[c].error===6){
 					g.fillStyle = this.errbcolor2;
 					if(this.vnop(header+c,this.NONE)){
-						g.fillRect(obj.px+1, obj.py+1, k.cwidth-1, k.cheight-1);
+						g.fillRect(obj.px+1, obj.py+1, this.cw-1, this.ch-1);
 					}
 				}
 				else{ this.vhide(header+c);}

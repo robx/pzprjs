@@ -106,8 +106,8 @@ Puzzles.tasquare.prototype = {
 		pc.drawCellSquare = function(x1,y1,x2,y2){
 			this.vinc('cell_square', 'crispEdges');
 
-			var mgnw = mf(k.cwidth*0.1);
-			var mgnh = mf(k.cheight*0.1);
+			var mgnw = this.cw*0.1;
+			var mgnh = this.ch*0.1;
 			var header = "c_sq_";
 
 			var clist = this.cellinside(x1,y1,x2,y2);
@@ -118,7 +118,7 @@ Puzzles.tasquare.prototype = {
 					g.strokeStyle = "black";
 					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 					if(this.vnop(header+c,this.FILL)){
-						g.shapeRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
+						g.shapeRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, this.cw-mgnw*2-1, this.ch-mgnh*2-1);
 					}
 				}
 				else{ this.vhide([header+c]);}

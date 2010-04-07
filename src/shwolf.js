@@ -175,16 +175,16 @@ Puzzles.shwolf.prototype = {
 					img = obj.imgobj;
 
 					var ipos = {41:0,42:1}[bd.QuC(c)];
-					img.style.width  = ""+(2*k.cwidth)+"px";
-					img.style.height = ""+(k.cheight)+"px";
-					img.style.left   = "-"+mf((ipos+0.5)*k.cwidth)+"px";
-					img.style.top    = "-"+mf(k.cwidth/2)+"px";
-					img.style.clip   = "rect(1px,"+(k.cwidth*(ipos+1))+"px,"+k.cwidth+"px,"+(k.cwidth*ipos+1)+"px)";
+					img.style.width  = ""+(2*this.cw)+"px";
+					img.style.height = ""+(this.ch)+"px";
+					img.style.left   = "-"+mf((ipos+0.5)*this.cw)+"px";
+					img.style.top    = "-"+mf(this.cw/2)+"px";
+					img.style.clip   = "rect(1px,"+(this.cw*(ipos+1))+"px,"+this.cw+"px,"+(this.cw*ipos+1)+"px)";
 
 					this.showEL(div);
 					var wid = div.clientWidth, hgt = div.clientHeight;
-					div.style.left = k.cv_oft.x+bd.cell[c].px+mf((k.cwidth-wid) /2)+2+'px';
-					div.style.top  = k.cv_oft.y+bd.cell[c].py+mf((k.cheight-hgt)/2)+1+'px';
+					div.style.left = k.cv_oft.x+bd.cell[c].px+mf((this.cw-wid)/2)+2+'px';
+					div.style.top  = k.cv_oft.y+bd.cell[c].py+mf((this.ch-hgt)/2)+1+'px';
 				}
 			}
 		};

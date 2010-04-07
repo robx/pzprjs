@@ -290,8 +290,8 @@ Puzzles.tentaisho.prototype = {
 					else                            { g.fillStyle = this.BorderQanscolor;}
 
 					if(this.vnop(header+id,this.FILL)){
-						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm,  lw, k.cheight+lw);}
-						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm,  k.cwidth+lw,  lw);}
+						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-this.bh-lm,  lw, this.ch+lw);}
+						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm,  this.cw+lw, lw);}
 					}
 				}
 				else{ this.vhide(header+id);}
@@ -300,7 +300,7 @@ Puzzles.tentaisho.prototype = {
 		pc.drawStars = function(x1,y1,x2,y2){
 			this.vinc('star', 'auto');
 
-			g.lineWidth = Math.max(k.cwidth*0.04, 1);
+			g.lineWidth = Math.max(this.cw*0.04, 1);
 			var headers = ["s_star1_", "s_star2_"];
 			for(var y=2*y1-2;y<=2*y2+2;y++){
 				if(y<=0){ y=0; continue;} if(2*k.qrows<=y){ break;}
@@ -313,7 +313,7 @@ Puzzles.tentaisho.prototype = {
 						g.strokeStyle = (iserr ? this.errcolor1  : this.Cellcolor);
 						g.fillStyle   = "white";
 						if(this.vnop(headers[0]+id,this.FILL_STROKE)){
-							g.shapeCircle(k.p0.x+x*k.cwidth/2, k.p0.y+y*k.cheight/2, k.cwidth*0.16);
+							g.shapeCircle(k.p0.x+x*this.bw, k.p0.y+y*this.bh, this.cw*0.16);
 						}
 					}
 					else{ this.vhide(headers[0]+id);}
@@ -322,7 +322,7 @@ Puzzles.tentaisho.prototype = {
 						var iserr = bd.getStarError(id);
 						g.fillStyle = (iserr ? this.errcolor1 : this.Cellcolor);
 						if(this.vnop(headers[1]+id,this.FILL)){
-							g.fillCircle(k.p0.x+x*k.cwidth/2, k.p0.y+y*k.cheight/2, k.cwidth*0.18);
+							g.fillCircle(k.p0.x+x*this.bw, k.p0.y+y*this.bh, this.cw*0.18);
 						}
 					}
 					else{ this.vhide(headers[1]+id);}

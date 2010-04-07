@@ -199,13 +199,13 @@ Puzzles.pipelink.prototype = {
 			var header = "c_cir_";
 			var clist = this.cellinside(x1,y1,x2,y2);
 			if(isdraw){
-				var rsize  = k.cwidth*0.40;
+				var rsize  = this.cw*0.40;
 				for(var i=0;i<clist.length;i++){
 					var c = clist[i];
 					if(bd.cell[c].ques===6){
 						g.strokeStyle = this.Cellcolor;
 						if(this.vnop(header+c,this.NONE)){
-							g.strokeCircle(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize);
+							g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
 						}
 					}
 					else{ this.vhide(header+c);}

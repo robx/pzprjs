@@ -274,8 +274,12 @@ Puzzles.tawa.prototype = {
 					obj.cy = mf((2*id+1)/(2*k.qcols+1));
 					obj.cx = mf((2*id+1)%(2*k.qcols+1));
 				}
-				obj.px = k.p0.x + mf(obj.cx*k.cwidth/2);
+				obj.bx = obj.cx;
+				obj.by = obj.cy*2+1;
+				obj.px = k.p0.x + obj.cx*k.cwidth/2;
 				obj.py = k.p0.y + obj.cy*k.cheight;
+				obj.cpx = obj.px;
+				obj.cpy = k.p0.y + obj.by*k.cheight/2;
 			}
 		};
 
@@ -473,8 +477,8 @@ Puzzles.tawa.prototype = {
 			if(x1<0){ x1=0;} if(x2>tc.maxx+1){ x2=tc.maxx+1;}
 			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
 
-			var lw = mf((k.cwidth/24)>=1?(k.cwidth/24):1);
-			var lm = mf((lw-1)/2);
+			var lw = Math.max(this.cw/24, 1);
+			var lm = lw/2;
 			var headers = ["bdx_", "bdy"];
 
 			g.fillStyle = this.gridcolor;
@@ -486,7 +490,7 @@ Puzzles.tawa.prototype = {
 					if     ((bd.lap===3 && (i===0||(i===k.qrows&&(i&1)))) || (bd.lap===0 && (i===k.qrows&&!(i&1)))){ redx=1; redw=2;}
 					else if((bd.lap===2 && (i===0||(i===k.qrows&&(i&1)))) || (bd.lap===1 && (i===k.qrows&&!(i&1)))){ redx=1; redw=1;}
 					else if((bd.lap===1 && (i===0||(i===k.qrows&&(i&1)))) || (bd.lap===2 && (i===k.qrows&&!(i&1)))){ redx=0; redw=1;}
-					g.fillRect(mf(k.p0.x+(x1+redx)*k.cwidth/2-lm), mf(k.p0.y+i*k.cheight-lm), (x2-x1+1-redw)*k.cwidth/2+1, lw);
+					g.fillRect(k.p0.x+(x1+redx)*this.bw-lm, k.p0.y+i*this.ch-lm, (x2-x1+1-redw)*this.bw+1, lw);
 				}
 				if(i>k.qrows-1){ break;}
 
@@ -494,7 +498,7 @@ Puzzles.tawa.prototype = {
 				if((bd.lap===2 || bd.lap===3) ^ ((i&1)!==(xs&1))){ xs++;}
 				for(var j=xs;j<=xb;j+=2){
 					if(this.vnop([headers[1],i,j].join(""),this.NONE)){
-						g.fillRect(mf(k.p0.x+j*k.cwidth/2-lm), mf(k.p0.y+i*k.cheight-lm), lw, k.cheight+1);
+						g.fillRect(k.p0.x+j*this.bw-lm, k.p0.y+i*this.ch-lm, lw, this.ch+1);
 					}
 				}
 			}
@@ -507,16 +511,16 @@ Puzzles.tawa.prototype = {
 				if(tc.cursolx < x1   || x2  +1 < tc.cursolx){ return;}
 				if(tc.cursoly < y1*2 || y2*2+2 < tc.cursoly){ return;}
 
-				var px = k.p0.x + mf(tc.cursolx*k.cwidth/2);
-				var py = k.p0.y + mf((tc.cursoly-1)*k.cheight/2);
-				var w = (k.cwidth<32?2:mf(k.cwidth/16));
+				var px = k.p0.x + tc.cursolx*this.bw;
+				var py = k.p0.y + (tc.cursoly-1)*this.bh;
+				var w = Math.max(this.cw/16, 2);
 
 				this.vdel(["tc1_","tc2_","tc3_","tc4_"]);
 				g.fillStyle = this.targetColor1;
-				if(this.vnop("tc1_",this.NONE)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
-				if(this.vnop("tc2_",this.NONE)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
-				if(this.vnop("tc3_",this.NONE)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
-				if(this.vnop("tc4_",this.NONE)){ g.fillRect(px+k.cwidth-w,  py+1, w, k.cheight-2);}
+				if(this.vnop("tc1_",this.NONE)){ g.fillRect(px+1,         py+1, this.cw-2, w);}
+				if(this.vnop("tc2_",this.NONE)){ g.fillRect(px+1,         py+1, w, this.ch-2);}
+				if(this.vnop("tc3_",this.NONE)){ g.fillRect(px+1, py+this.ch-w, this.cw-2, w);}
+				if(this.vnop("tc4_",this.NONE)){ g.fillRect(px+this.cw-w, py+1, w, this.ch-2);}
 			}
 			else{ this.vhide(["tc1_","tc2_","tc3_","tc4_"]);}
 		};
@@ -528,7 +532,7 @@ Puzzles.tawa.prototype = {
 				}
 				else{
 					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(k.p0.x+x1*k.cwidth/2, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth/2, (y2-y1+1)*k.cheight);
+					g.fillRect(k.p0.x+x1*this.bw, k.p0.y+y1*this.ch, (x2-x1+1)*this.bw, (y2-y1+1)*this.ch);
 				}
 			}
 			else{

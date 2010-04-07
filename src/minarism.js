@@ -191,7 +191,7 @@ Puzzles.minarism.prototype = {
 
 		pc.drawBDMbase = function(x1,y1,x2,y2){
 			if(!g.use.canvas){ return;}
-			var csize = k.cwidth*0.29;
+			var csize = this.cw*0.29;
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
@@ -205,8 +205,8 @@ Puzzles.minarism.prototype = {
 		pc.drawBDMarks = function(x1,y1,x2,y2){
 			this.vinc('border_mark', 'auto');
 
-			var csize = k.cwidth*0.27;
-			var ssize = k.cwidth*0.22;
+			var csize = this.cw*0.27;
+			var ssize = this.cw*0.22;
 			var headers = ["b_cp_", "b_dt1_", "b_dt2_"];
 
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);

@@ -117,12 +117,12 @@ Puzzles.firefly.prototype = {
 		pc.drawFirefly1 = function(c){
 			if(c===-1){ return;}
 
-			var rsize  = k.cwidth*0.40;
-			var rsize3 = k.cwidth*0.10;
+			var rsize  = this.cw*0.40;
+			var rsize3 = this.cw*0.10;
 			var headers = ["c_cira_", "c_cirb_"];
 
 			if(bd.cell[c].qnum!=-1){
-				var px=bd.cell[c].px+k.cwidth/2, py=bd.cell[c].py+k.cheight/2;
+				var px=bd.cell[c].cpx, py=bd.cell[c].cpy;
 
 				g.lineWidth = 1.5;
 				g.strokeStyle = this.Cellcolor;
