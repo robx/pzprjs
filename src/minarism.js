@@ -381,8 +381,7 @@ Puzzles.minarism.prototype = {
 		ans.checkBDSideCell = function(func){
 			var result = true;
 			for(var id=0;id<bd.bdmax;id++){
-				var cc1 = bd.cc1(id);
-				var cc2 = bd.cc2(id);
+				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(bd.QaC(cc1)>0 && bd.QaC(cc2)>0 && func(id,cc1,cc2)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([cc1,cc2],1);

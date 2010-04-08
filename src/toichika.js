@@ -414,7 +414,7 @@ Puzzles.toichika.prototype = {
 			}
 			for(var id=0;id<bd.bdmax;id++){
 				if(!bd.isBorder(id)){ continue;}
-				var cc1=bd.cc1(id), cc2=bd.cc2(id);
+				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(cc1==-1 || cc2==-1){ continue;}
 				var r1=rinfo.id[cc1], r2=rinfo.id[cc2];
 				try{

@@ -403,8 +403,8 @@ Puzzles.slalom.prototype = {
 			var cdata=[];
 			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
 			for(var i=0;i<idlist.length;i++){
-				cdata[bd.cc1(idlist[i])] = true;
-				cdata[bd.cc2(idlist[i])] = true;
+				cdata[bd.border[idlist[i]].cellcc[0]] = true;
+				cdata[bd.border[idlist[i]].cellcc[1]] = true;
 			}
 			for(var c=0;c<cdata.length;c++){
 				if(cdata[c]){

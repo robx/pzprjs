@@ -213,7 +213,7 @@ MenuExec.prototype = {
 		this.dispmanstr();
 
 		base.resize_canvas_only();	// canvasの左上座標等を更新
-		bd.setposAll();	// 各セルのpx,py座標を更新
+		bd.setcoordAll();	// 各セルのpx,py座標を更新
 
 		if(g.use.vml){ pc.flushCanvasAll();}	// VMLの位置がずれるので消さないと。。
 		pc.paintAll();	// 再描画

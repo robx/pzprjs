@@ -184,7 +184,7 @@ Puzzles.pipelink.prototype = {
 		};
 		pc.setBorderColor = function(id){
 			if(this.disp===1){
-				var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(cc1!==-1 && cc2!==-1 && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
 					g.fillStyle = this.Cellcolor;
 					return true;
@@ -228,8 +228,8 @@ Puzzles.pipelink.prototype = {
 			var cdata=[];
 			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
 			for(var i=0;i<idlist.length;i++){
-				cdata[bd.cc1(idlist[i])] = true;
-				cdata[bd.cc2(idlist[i])] = true;
+				cdata[bd.border[idlist[i]].cellcc[0]] = true;
+				cdata[bd.border[idlist[i]].cellcc[1]] = true;
 			}
 			for(var c=0;c<cdata.length;c++){
 				if(cdata[c]){

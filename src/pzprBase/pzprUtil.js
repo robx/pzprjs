@@ -66,8 +66,8 @@ LineManager.prototype = {
 				bid.push(id);
 
 				var cc1, cc2;
-				if(k.isCenterLine){ cc1 = bd.cc1(id),      cc2 = bd.cc2(id);}
-				else              { cc1 = bd.crosscc1(id), cc2 = bd.crosscc2(id);}
+				if(k.isCenterLine){ cc1 = bd.border[id].cellcc[0];  cc2 = bd.border[id].cellcc[1]; }
+				else              { cc1 = bd.border[id].crosscc[0]; cc2 = bd.border[id].crosscc[1];}
 
 				if(cc1!=-1){ this.ltotal[this.lcnt[cc1]]--; this.lcnt[cc1]++; this.ltotal[this.lcnt[cc1]]++;}
 				if(cc2!=-1){ this.ltotal[this.lcnt[cc2]]--; this.lcnt[cc2]++; this.ltotal[this.lcnt[cc2]]++;}
@@ -140,8 +140,8 @@ LineManager.prototype = {
 		val = (val>0?1:0);
 
 		var cc1, cc2;
-		if(k.isCenterLine){ cc1 = bd.cc1(id),      cc2 = bd.cc2(id);}
-		else              { cc1 = bd.crosscc1(id), cc2 = bd.crosscc2(id);}
+		if(k.isCenterLine){ cc1 = bd.border[id].cellcc[0];  cc2 = bd.border[id].cellcc[1]; }
+		else              { cc1 = bd.border[id].crosscc[0]; cc2 = bd.border[id].crosscc[1];}
 
 		if(val>0){
 			if(cc1!=-1){ this.ltotal[this.lcnt[cc1]]--; this.lcnt[cc1]++; this.ltotal[this.lcnt[cc1]]++;}
@@ -326,8 +326,8 @@ LineManager.prototype = {
 		var erase=(val>0?0:1), bx=bd.border[id].cx, by=bd.border[id].cy;
 		var dx=((k.isCenterLine^(bx%2===0))?2:0), dy=(2-dx);	// (dx,dy) = (2,0) or (0,2)
 
-		var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
-		if(!k.isCenterLine){ cc1 = bd.crosscc1(id); cc2 = bd.crosscc2(id);}
+		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+		if(!k.isCenterLine){ cc1 = bd.border[id].crosscc[0]; cc2 = bd.border[id].crosscc[1];}
 		// 交差ありでk.isborderAsLine==1(->k.isCenterLine==0)のパズルは作ってないはず
 		// 今までのオモパで該当するのもスリザーボックスくらいだったような、、
 
@@ -509,7 +509,7 @@ AreaManager.prototype = {
 		if(this.disroom){ return;}
 		for(var id=0;id<bd.bdmax;id++){
 			if(bd.isBorder(id)){
-				var cc1 = bd.crosscc1(id), cc2 = bd.crosscc2(id);
+				var cc1 = bd.border[id].crosscc[0], cc2 = bd.border[id].crosscc[1];
 				if(cc1!==-1){ this.lcnt[cc1]++;}
 				if(cc2!==-1){ this.lcnt[cc2]++;}
 			}
@@ -566,13 +566,13 @@ AreaManager.prototype = {
 		if(this.disroom){ return;}
 		val = (val>0?1:0);
 
-		var cc1, cc2, xc1 = bd.crosscc1(id), xc2 = bd.crosscc2(id);
+		var cc1, cc2, xc1 = bd.border[id].crosscc[0], xc2 = bd.border[id].crosscc[1];
 		var room = this.room, roomid = room.id;
 		if(val>0){
 			this.lcnt[xc1]++; this.lcnt[xc2]++;
 
 			if(this.lcnt[xc1]===1 || this.lcnt[xc2]===1){ return;}
-			cc1 = bd.cc1(id); cc2 = bd.cc2(id);
+			cc1 = bd.border[id].cellcc[0]; cc2 = bd.border[id].cellcc[1];
 			if(cc1===-1 || cc2===-1 || roomid[cc1]!==roomid[cc2]){ return;}
 
 			var baseid = roomid[cc1];
@@ -614,7 +614,7 @@ AreaManager.prototype = {
 			this.lcnt[xc1]--; this.lcnt[xc2]--;
 
 			if(this.lcnt[xc1]===0 || this.lcnt[xc2]===0){ return;}
-			cc1 = bd.cc1(id); cc2 = bd.cc2(id);
+			cc1 = bd.border[id].cellcc[0]; cc2 = bd.border[id].cellcc[1];
 			if(cc1===-1 || cc2===-1 || roomid[cc1]===roomid[cc2]){ return;}
 
 			// k.isOneNumberの時 どっちの数字を残すかは、TOP同士の位置で比較する

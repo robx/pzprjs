@@ -169,7 +169,7 @@ Puzzles.kakuro.prototype = {
 		};
 		// オーバーライド 境界線用
 		pc.setBorderColor = function(id){
-			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1!==-1 && cc2!==-1 && ((bd.cell[cc1].ques===51)^(bd.cell[cc2].ques===51))){
 				g.fillStyle = this.Cellcolor;
 				return true;

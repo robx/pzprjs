@@ -104,7 +104,7 @@ Puzzles.hashikake.prototype = {
 		};
 		mv.getidlist = function(id){
 			var idlist=[], bx1, bx2, by1, by2;
-			var cc1=bd.cc1(id), cx=bd.cell[cc1].cx, cy=bd.cell[cc1].cy;
+			var cc1=bd.border[id].cellcc[0], cx=bd.cell[cc1].cx, cy=bd.cell[cc1].cy;
 			if(bd.border[id].cx&1){
 				while(cy>=0         && bd.QnC(bd.cnum(cx,cy  ))==-1){ cy--;} by1=2*cy+2;
 				while(cy<=k.qrows-1 && bd.QnC(bd.cnum(cx,cy+1))==-1){ cy++;} by2=2*cy+2;
@@ -252,8 +252,8 @@ Puzzles.hashikake.prototype = {
 			var cdata=[];
 			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
 			for(var i=0;i<idlist.length;i++){
-				cdata[bd.cc1(idlist[i])] = true;
-				cdata[bd.cc2(idlist[i])] = true;
+				cdata[bd.border[idlist[i]].cellcc[0]] = true;
+				cdata[bd.border[idlist[i]].cellcc[1]] = true;
 			}
 			for(var c=0;c<cdata.length;c++){
 				if(cdata[c]){

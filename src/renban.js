@@ -216,7 +216,7 @@ Puzzles.renban.prototype = {
 			// é¿ç€Ç…ç∑Çí≤ç∏Ç∑ÇÈ
 			for(var i=0;i<bd.bdmax;i++){
 				if(rdata.id[i]===-1){ continue;}
-				var cc1=bd.cc1(i), cc2=bd.cc2(i);	// cc1Ç‡cc2Ç‡-1Ç…ÇÕÇ»ÇÁÇ»Ç¢
+				var cc1 = bd.border[i].cellcc[0], cc2 = bd.border[i].cellcc[1];
 				var val1=bd.getNum(cc1), val2=bd.getNum(cc2);
 				if(val1<=0 || val2<=0){ continue;}
 

@@ -90,7 +90,7 @@ Puzzles.wblink.prototype = {
 		};
 		mv.getidlist = function(id){
 			var idlist=[], bx1, bx2, by1, by2;
-			var cc1=bd.cc1(id), cx=bd.cell[cc1].cx, cy=bd.cell[cc1].cy;
+			var cc1 = bd.border[id].cellcc[0], cx=bd.cell[cc1].cx, cy=bd.cell[cc1].cy;
 			if(bd.border[id].cx&1){
 				while(cy>=0         && bd.QuC(bd.cnum(cx,cy  ))==0){ cy--;} by1=2*cy+2;
 				while(cy<=k.qrows-1 && bd.QuC(bd.cnum(cx,cy+1))==0){ cy++;} by2=2*cy+2;

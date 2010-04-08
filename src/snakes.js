@@ -182,7 +182,7 @@ Puzzles.snakes.prototype = {
 		};
 
 		pc.setBorderColor = function(id){
-			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1!==-1 && cc2!==-1 &&
 			   (bd.cell[cc1].qnum===-1 && bd.cell[cc2].qnum===-1) &&
 			   (bd.cell[cc1].qans!==-1 || bd.cell[cc2].qans!==-1) &&

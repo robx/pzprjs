@@ -170,7 +170,8 @@ Puzzles.reflect.prototype = {
 			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+4,y2*2+4);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], lflag = !(bd.border[id].cx&1);
-				var qs1 = bd.QuC(bd.cc1(id)), qs2 = bd.QuC(bd.cc2(id));
+				var qs1 = bd.QuC(bd.border[id].cellcc[0]),
+					qs2 = bd.QuC(bd.border[id].cellcc[1]);
 
 				g.fillStyle = this.gridcolor;
 				if(lflag && (qs1===3||qs1===4)&&(qs2===2||qs2===5)){
@@ -214,8 +215,8 @@ Puzzles.reflect.prototype = {
 			var cdata=[];
 			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
 			for(var i=0;i<idlist.length;i++){
-				cdata[bd.cc1(idlist[i])] = true;
-				cdata[bd.cc2(idlist[i])] = true;
+				cdata[bd.border[idlist[i]].cellcc[0]] = true;
+				cdata[bd.border[idlist[i]].cellcc[1]] = true;
 			}
 			for(var c=0;c<cdata.length;c++){
 				if(cdata[c]){

@@ -122,7 +122,7 @@ Puzzles.mejilink.prototype = {
 			if(bd.border[id].qans===1 || bd.border[id].ques===1){
 				if(bd.border[id].qans===1){ this.setLineColor(id);}
 				else{
-					var cc2=bd.cc2(id);
+					var cc2=bd.border[id].cellcc[1];
 					g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.BorderQuescolor : this.errbcolor1);
 				}
 				return true;
@@ -134,8 +134,8 @@ Puzzles.mejilink.prototype = {
 			var cdata=[];
 			for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){ cdata[c]=false;}
 			for(var i=0;i<idlist.length;i++){
-				cdata[bd.crosscc1(idlist[i])] = true;
-				cdata[bd.crosscc2(idlist[i])] = true;
+				cdata[bd.border[idlist[i]].crosscc[0]] = true;
+				cdata[bd.border[idlist[i]].crosscc[1]] = true;
 			}
 			for(var c=0;c<cdata.length;c++){
 				if(cdata[c]){
@@ -261,13 +261,13 @@ Puzzles.mejilink.prototype = {
 			for(var r=1;r<=tarea.max;r++){ tcount[r]=0;}
 			for(var id=0;id<bd.bdmax;id++){
 				if(bd.QuB(id)==1 && id>=bd.bdinside){
-					var cc1=bd.cc1(id), cc2=bd.cc2(id);
+					var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 					if(cc1!=-1){ tcount[tarea.id[cc1]]-=(2*k.qcols*k.qrows);}
 					if(cc2!=-1){ tcount[tarea.id[cc2]]-=(2*k.qcols*k.qrows);}
 					continue;
 				}
 				else if(bd.QuB(id)==1 || bd.QaB(id)==1){ continue;}
-				var cc1=bd.cc1(id), cc2=bd.cc2(id);
+				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(cc1!=-1){ tcount[tarea.id[cc1]]++;}
 				if(cc2!=-1){ tcount[tarea.id[cc2]]++;}
 			}

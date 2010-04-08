@@ -112,6 +112,9 @@ Border = function(id){
 	this.error;	// エラーデータを保持する
 	this.numobj = '';	// 数字を表示するためのエレメント
 
+	this.cellcc  = [-1,-1];	// 隣接セルのID
+	this.crosscc = [-1,-1];	// 隣接交点のID
+
 	this.allclear(id);
 };
 Border.prototype = {
@@ -239,6 +242,8 @@ Board.prototype = {
 		if(k.iscross)        { this.setposCrosses();}
 		if(k.isborder)       { this.setposBorders();}
 		if(k.isextendcell!=0){ this.setposEXcells();}
+
+		this.setcoordAll();
 	},
 	setposCells : function(){
 		var x0=k.p0.x, y0=k.p0.y;
@@ -249,10 +254,6 @@ Board.prototype = {
 			obj.cy = mf(id/k.qcols);
 			obj.bx = obj.cx*2+1;
 			obj.by = obj.cy*2+1;
-			obj.px = x0 + obj.cx*k.cwidth;
-			obj.py = y0 + obj.cy*k.cheight;
-			obj.cpx = x0 + obj.bx*k.cwidth/2;
-			obj.cpy = y0 + obj.by*k.cheight/2;
 		}
 	},
 	setposCrosses : function(){
@@ -264,8 +265,6 @@ Board.prototype = {
 			obj.cy = mf(id/(k.qcols+1));
 			obj.bx = obj.cx*2;
 			obj.by = obj.cy*2;
-			obj.px = x0 + obj.cx*k.cwidth;
-			obj.py = y0 + obj.cy*k.cheight;
 		}
 	},
 	setposBorders : function(){
@@ -300,8 +299,12 @@ Board.prototype = {
 			}
 			obj.bx = obj.cx;
 			obj.by = obj.cy;
-			obj.px = x0 + obj.cx*k.cwidth/2;
-			obj.py = y0 + obj.cy*k.cheight/2;
+
+			obj.cellcc[0] = this.cnum((obj.cx-obj.cy%2)>>1, (obj.cy-obj.cx%2)>>1);
+			obj.cellcc[1] = this.cnum((obj.cx+obj.cy%2)>>1, (obj.cy+obj.cx%2)>>1);
+
+			obj.crosscc[0] = this.xnum((obj.cx-obj.cx%2)>>1, (obj.cy-obj.cy%2)>>1);
+			obj.crosscc[1] = this.xnum((obj.cx+obj.cx%2)>>1, (obj.cy+obj.cy%2)>>1);
 		}
 	},
 	setposEXcells : function(){
@@ -327,8 +330,43 @@ Board.prototype = {
 			}
 			obj.bx = obj.cx*2+1;
 			obj.by = obj.cy*2+1;
-			obj.px = x0 + obj.cx*k.cwidth;
-			obj.py = y0 + obj.cy*k.cheight;
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.setcoordAll()  全てのCell, Cross, BorderオブジェクトのsetcoordCell()等を呼び出す
+	//---------------------------------------------------------------------------
+	setcoordAll : function(){
+		var x0=k.p0.x, y0=k.p0.y;
+		{
+			for(var id=0;id<this.cellmax;id++){
+				var obj = this.cell[id];
+				obj.px = x0 + obj.cx*k.cwidth;
+				obj.py = y0 + obj.cy*k.cheight;
+				obj.cpx = x0 + obj.bx*k.cwidth/2;
+				obj.cpy = y0 + obj.by*k.cheight/2;
+			}
+		}
+		if(k.iscross){
+			for(var id=0;id<this.crossmax;id++){
+				var obj = this.cross[id];
+				obj.px = x0 + obj.cx*k.cwidth;
+				obj.py = y0 + obj.cy*k.cheight;
+			}
+		}
+		if(k.isborder){
+			for(var id=0;id<this.bdmax;id++){
+				var obj = this.border[id];
+				obj.px = x0 + obj.cx*k.cwidth/2;
+				obj.py = y0 + obj.cy*k.cheight/2;
+			}
+		}
+		if(k.isextendcell!=0){
+			for(var id=0;id<this.excellmax;id++){
+				var obj = this.excell[id];
+				obj.px = x0 + obj.cx*k.cwidth;
+				obj.py = y0 + obj.cy*k.cheight;
+			}
 		}
 	},
 
@@ -511,25 +549,6 @@ Board.prototype = {
 	rb : function(cc){ return this.cell[cc]?this.bnum(2*this.cell[cc].cx+2,2*this.cell[cc].cy+1):-1;},	//セルの右の境界線のIDを求める
 
 	//---------------------------------------------------------------------------
-	// bd.cc1()      境界線のすぐ上かすぐ左にあるセルのIDを返す
-	// bd.cc2()      境界線のすぐ下かすぐ右にあるセルのIDを返す
-	// bd.crosscc1() 境界線のすぐ上かすぐ左にある交差点のIDを返す
-	// bd.crosscc2() 境界線のすぐ下かすぐ右にある交差点のIDを返す
-	//---------------------------------------------------------------------------
-	cc1 : function(id){
-		return this.cnum((bd.border[id].cx-bd.border[id].cy%2)>>1, (bd.border[id].cy-bd.border[id].cx%2)>>1);
-	},
-	cc2 : function(id){
-		return this.cnum((bd.border[id].cx+bd.border[id].cy%2)>>1, (bd.border[id].cy+bd.border[id].cx%2)>>1);
-	},
-	crosscc1 : function(id){
-		return this.xnum((bd.border[id].cx-bd.border[id].cx%2)>>1, (bd.border[id].cy-bd.border[id].cy%2)>>1);
-	},
-	crosscc2 : function(id){
-		return this.xnum((bd.border[id].cx+bd.border[id].cx%2)>>1, (bd.border[id].cy+bd.border[id].cy%2)>>1);
-	},
-
-	//---------------------------------------------------------------------------
 	// bd.bcntCross() 指定された位置のCrossの周り4マスのうちqans==1のマスの数を求める
 	//---------------------------------------------------------------------------
 	bcntCross : function(cx,cy) {
@@ -563,16 +582,19 @@ Board.prototype = {
 	// bd.checkLPCombined() 線がつながっているかどうか見て、Line==1を設定する
 	//---------------------------------------------------------------------------
 	isLPMarked : function(id){
-		return bd.border[id].cx&1 ? (bd.isLPdown(bd.cc1(id)) || bd.isLPup(bd.cc2(id))) :
-									(bd.isLPright(bd.cc1(id)) || bd.isLPleft(bd.cc2(id)));
+		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+		return bd.border[id].cx&1 ? (bd.isLPdown(cc1) || bd.isLPup(cc2)) :
+									(bd.isLPright(cc1) || bd.isLPleft(cc2));
 	},
 	isLPCombined : function(id){
-		return bd.border[id].cx&1 ? (bd.isLPdown(bd.cc1(id)) && bd.isLPup(bd.cc2(id))) :
-									(bd.isLPright(bd.cc1(id)) && bd.isLPleft(bd.cc2(id)));
+		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+		return bd.border[id].cx&1 ? (bd.isLPdown(cc1) && bd.isLPup(cc2)) :
+									(bd.isLPright(cc1) && bd.isLPleft(cc2));
 	},
 	isLineNG : function(id){
-		return bd.border[id].cx&1 ? (bd.isnoLPdown(bd.cc1(id)) || bd.isnoLPup(bd.cc2(id))) :
-									(bd.isnoLPright(bd.cc1(id)) || bd.isnoLPleft(bd.cc2(id)));
+		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+		return bd.border[id].cx&1 ? (bd.isnoLPdown(cc1) || bd.isnoLPup(cc2)) :
+									(bd.isnoLPright(cc1) || bd.isnoLPleft(cc2));
 	},
 	checkLPCombined : function(cc){
 		var id;

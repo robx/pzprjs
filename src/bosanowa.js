@@ -139,7 +139,7 @@ Puzzles.bosanowa.prototype = {
 			}
 			else if((tcp.x+tcp.y)&1){
 				var id = tc.getTBC();
-				var cc1=bd.cc1(id), cc2=bd.cc2(id);
+				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if((cc1==-1||bd.QuC(cc1)!=7)||(cc2==-1||bd.QuC(cc2)!=7)){ return false;}
 				if('0'<=ca && ca<='9'){
 					var num = parseInt(ca);
@@ -252,7 +252,7 @@ Puzzles.bosanowa.prototype = {
 
 			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4);
 			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
+				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				var onboard1 = (cc1!==-1&&bd.cell[cc1].ques===7);
 				var onboard2 = (cc2!==-1&&bd.cell[cc2].ques===7);
 
@@ -297,7 +297,7 @@ Puzzles.bosanowa.prototype = {
 			var headers = ["b_grid_", "b_grid2_"];
 			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4);
 			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
+				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				var onboard1 = (cc1!==-1&&bd.cell[cc1].ques===7);
 				var onboard2 = (cc2!==-1&&bd.cell[cc2].ques===7);
 
@@ -325,7 +325,7 @@ Puzzles.bosanowa.prototype = {
 			var header = "b_bbse_";
 			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+6,y2*2+6);
 			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i], cc1=bd.cc1(id), cc2=bd.cc2(id);
+				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 
 				if(bd.border[id].qsub>=0 && ((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7))){
 					g.fillStyle = "white";
@@ -382,7 +382,7 @@ Puzzles.bosanowa.prototype = {
 		};
 		// ÉèÉäÉ^ÉCÇÃëæê¸ï`âÊóp
 		pc.setBorderColor = function(id){
-			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if((cc1===-1 || bd.cell[cc1].ques!==7)^(cc2===-1 || bd.cell[cc2].ques!==7)){
 				g.fillStyle = this.Cellcolor;
 				return true;
@@ -493,7 +493,7 @@ Puzzles.bosanowa.prototype = {
 				else{ return ""+bd.QaC(c).toString()+" ";}
 			});
 			this.encodeBorder( function(id){
-				var cc1=bd.cc1(id), cc2=bd.cc2(id);
+				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if((cc1==-1||bd.QuC(cc1)!=7)||(cc2==-1||bd.QuC(cc2)!=7)){ return ". ";}
 				if(bd.QsB(id)==-1){ return ". ";}
 				else{ return ""+bd.QsB(id).toString()+" ";}

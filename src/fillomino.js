@@ -220,7 +220,7 @@ Puzzles.fillomino.prototype = {
 
 			// ‹«ŠEü‚ğ©“®“ü—Í
 			for(var id=0;id<bd.bdmax;id++){
-				var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				var bdflag = (cc1!=-1 && cc2!=-1 && bd.getNum(cc1)!=-1 && bd.getNum(cc2)!=-1 && bd.getNum(cc1)!=bd.getNum(cc2));
 				bd.sQaB(id,(bdflag?1:0));
 			}

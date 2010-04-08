@@ -226,8 +226,8 @@ Puzzles.loopsp.prototype = {
 			var cdata=[];
 			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
 			for(var i=0;i<idlist.length;i++){
-				cdata[bd.cc1(idlist[i])] = true;
-				cdata[bd.cc2(idlist[i])] = true;
+				cdata[bd.border[idlist[i]].cellcc[0]] = true;
+				cdata[bd.border[idlist[i]].cellcc[1]] = true;
 			}
 			for(var c=0;c<cdata.length;c++){
 				if(cdata[c]){
@@ -400,7 +400,7 @@ Puzzles.loopsp.prototype = {
 			var clist = [];
 			clist.include = function(val){ for(var i=0,len=this.length;i<len;i++){ if(this[i]==val) return true;} return false;};
 			for(var i=0,len=idlist.length;i<len;i++){
-				var cc1 = bd.cc1(idlist[i]), cc2 = bd.cc2(idlist[i]);
+				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(cc1!=-1 && !clist.include(cc1)){ clist.push(cc1);}
 				if(cc2!=-1 && !clist.include(cc2)){ clist.push(cc2);}
 			}

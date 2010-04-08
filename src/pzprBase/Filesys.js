@@ -1,4 +1,4 @@
-// Filesys.js v3.2.5
+// Filesys.js v3.3.0
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -459,7 +459,7 @@ FileIO.prototype = {
 	rdata2Border : function(isques, rdata){
 		var func = (isques ? bd.sQuB : bd.sQaB);
 		for(var id=0;id<bd.bdmax;id++){
-			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			func.apply(bd, [id, (cc1!=-1 && cc2!=-1 && rdata[cc1]!=rdata[cc2]?1:0)]);
 		}
 	},

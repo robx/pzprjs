@@ -278,7 +278,7 @@ PBase.prototype = {
 		k.cv_oft.y = rect.top;
 
 		kp.resize();
-		bd.setposAll();
+		bd.setcoordAll();
 
 		pc.onresize_func();
 	},

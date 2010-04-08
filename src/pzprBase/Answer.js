@@ -102,7 +102,7 @@ AnsCheck.prototype = {
 		var blist = [];
 		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isLine(id)){ continue;}
-			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1!=-1 && cc2!=-1 && cinfo.id[cc1]==areaid && cinfo.id[cc1]==cinfo.id[cc2]){ blist.push(id);}
 		}
 		bd.sErB(blist,val);
@@ -242,7 +242,7 @@ AnsCheck.prototype = {
 	checkdir4Border1 : function(cc){
 		if(cc<0 || cc>=bd.cellmax){ return 0;}
 		var cnt = 0;
-		var cx = bd.cell[cc].cx; var cy = bd.cell[cc].cy;
+		var cx = bd.cell[cc].cx, cy = bd.cell[cc].cy;
 		if( (k.isoutsideborder==0 && cy==0        ) || bd.isBorder(bd.bnum(cx*2+1,cy*2  )) ){ cnt++;}
 		if( (k.isoutsideborder==0 && cy==k.qrows-1) || bd.isBorder(bd.bnum(cx*2+1,cy*2+2)) ){ cnt++;}
 		if( (k.isoutsideborder==0 && cx==0        ) || bd.isBorder(bd.bnum(cx*2  ,cy*2+1)) ){ cnt++;}
@@ -348,7 +348,7 @@ AnsCheck.prototype = {
 
 		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isBorder(id)){ continue;}
-			var cc1=bd.cc1(id), cc2=bd.cc2(id);
+			var cc1 = bd.border[id].cellcc[0], cc1 = bd.border[id].cellcc[1];
 			if(cc1==-1 || cc2==-1){ continue;}
 			var r1=rinfo.id[cc1], r2=rinfo.id[cc2];
 			try{
@@ -375,7 +375,7 @@ AnsCheck.prototype = {
 	checkSideAreaCell : function(rinfo, func, flag){
 		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isBorder(id)){ continue;}
-			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1!=-1 && cc2!=-1 && func(cc1, cc2)){
 				if(!flag){ bd.sErC([cc1,cc2],1);}
 				else{ bd.sErC(area.room[area.room.id[cc1]].clist,1); bd.sErC(area.room[area.room.id[cc2]].clist,1); }

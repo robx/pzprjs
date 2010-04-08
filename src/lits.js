@@ -117,7 +117,7 @@ Puzzles.lits.prototype = {
 		enc.decodeLITS_old = function(){
 			var bstr = this.outbstr;
 			for(var id=0;id<bd.bdmax;id++){
-				var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(cc1!=-1 && cc2!=-1 && bstr.charAt(cc1)!=bstr.charAt(cc2)){ bd.sQuB(id,1);}
 			}
 			this.outbstr = bstr.substr(bd.cellmax);
