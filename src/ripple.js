@@ -176,18 +176,18 @@ Puzzles.ripple.prototype = {
 		ans.checkRippleNumber = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				var num=bd.getNum(c), cx=bd.cell[c].cx, cy=bd.cell[c].cy;
+				var num=bd.getNum(c), bx=bd.cell[c].bx, by=bd.cell[c].by;
 				if(num<=0){ continue;}
-				for(var i=1;i<=num;i++){
-					var tc = bd.cnum(cx+i,cy);
+				for(var i=2;i<=num*2;i+=2){
+					var tc = bd.cnum(bx+i,by);
 					if(tc!=-1 && bd.getNum(tc)==num){
 						if(this.inAutoCheck){ return false;}
 						bd.sErC([c,tc],1);
 						result = false;
 					}
 				}
-				for(var i=1;i<=num;i++){
-					var tc = bd.cnum(cx,cy+i);
+				for(var i=2;i<=num*2;i+=2){
+					var tc = bd.cnum(bx,by+i);
 					if(tc!=-1 && bd.getNum(tc)==num){
 						if(this.inAutoCheck){ return false;}
 						bd.sErC([c,tc],1);

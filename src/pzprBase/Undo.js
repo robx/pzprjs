@@ -165,7 +165,7 @@ OperationManager.prototype = {
 			base.resize_canvas();
 		}
 		else{
-			pc.paint(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
+			pc.paintRange(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
 		}
 		this.enableRecord();
 		this.enableInfo();
@@ -180,7 +180,7 @@ OperationManager.prototype = {
 			else if(pp == k.QANS){ bd.sQaC(ope.id, num);}
 			else if(pp == k.QSUB){ bd.sQsC(ope.id, num);}
 			else if(pp == k.CELL && !!num){ bd.cell[ope.id] = num;}
-			this.paintStack(bd.cell[ope.id].cx, bd.cell[ope.id].cy, bd.cell[ope.id].cx, bd.cell[ope.id].cy);
+			this.paintStack(bd.cell[ope.id].bx-1, bd.cell[ope.id].by-1, bd.cell[ope.id].bx+1, bd.cell[ope.id].by+1);
 		}
 		else if(ope.obj == k.EXCELL){
 			if     (pp == k.QNUM){ bd.sQnE(ope.id, num);}
@@ -191,7 +191,7 @@ OperationManager.prototype = {
 			if     (pp == k.QUES){ bd.sQuX(ope.id, num);}
 			else if(pp == k.QNUM){ bd.sQnX(ope.id, num);}
 			else if(pp == k.CROSS && !!num){ bd.cross[ope.id] = num;}
-			this.paintStack(bd.cross[ope.id].cx-1, bd.cross[ope.id].cy-1, bd.cross[ope.id].cx, bd.cross[ope.id].cy);
+			this.paintStack(bd.cross[ope.id].bx-1, bd.cross[ope.id].by-1, bd.cross[ope.id].bx+1, bd.cross[ope.id].by+1);
 		}
 		else if(ope.obj == k.BORDER){
 			if     (pp == k.QUES){ bd.sQuB(ope.id, num);}
@@ -228,13 +228,11 @@ OperationManager.prototype = {
 	//---------------------------------------------------------------------------
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
-		if(bd.border[id].cx%2==1){
-			this.paintStack((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
-							(bd.border[id].cx>>1)+1, (bd.border[id].cy>>1)   );
+		if(bd.border[id].bx&1){
+			this.paintStack(bd.border[id].bx-2, bd.border[id].by-1, bd.border[id].bx+2, bd.border[id].by+1);
 		}
 		else{
-			this.paintStack((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
-							(bd.border[id].cx>>1)  , (bd.border[id].cy>>1)+1 );
+			this.paintStack(bd.border[id].bx-1, bd.border[id].by-2, bd.border[id].bx+1, bd.border[id].by+2);
 		}
 	},
 	paintStack : function(x1,y1,x2,y2){

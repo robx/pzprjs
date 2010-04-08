@@ -131,23 +131,30 @@ FileIO.prototype = {
 	// fio.decodeBorder()  配列で、個別文字列から個別Border(外枠上なし)の設定を行う
 	// fio.decodeBorder2() 配列で、個別文字列から個別Border(外枠上あり)の設定を行う
 	//---------------------------------------------------------------------------
-	decodeObj : function(func, width, height, getid){
-		var item = this.getItemList(height);
-		for(var i=0;i<item.length;i++){ func(getid(i%width,mf(i/width)), item[i]);}
+	decodeObj : function(func, getid, startbx, startby, endbx, endby){
+		var bx=startbx, by=startby, step=2;
+		var item=this.getItemList((endby-startby)/step+1);
+		for(var i=0;i<item.length;i++){
+			func(getid(bx,by), item[i]);
+
+			bx+=step;
+			if(bx>endbx){ bx=startbx; by+=step;}
+			if(by>endby){ break;}
+		}
 	},
 	decodeCell   : function(func){
-		this.decodeObj(func, k.qcols  , k.qrows  , function(cx,cy){return bd.cnum(cx,cy);});
+		this.decodeObj(func, bd.cnum, 1, 1, 2*k.qcols-1, 2*k.qrows-1);
 	},
 	decodeCross  : function(func){
-		this.decodeObj(func, k.qcols+1, k.qrows+1, function(cx,cy){return bd.xnum(cx,cy);});
+		this.decodeObj(func, bd.xnum, 0, 0, 2*k.qcols,   2*k.qrows  );
 	},
 	decodeBorder : function(func){
-		this.decodeObj(func, k.qcols-1, k.qrows  , function(cx,cy){return bd.bnum(2*cx+2,2*cy+1);});
-		this.decodeObj(func, k.qcols  , k.qrows-1, function(cx,cy){return bd.bnum(2*cx+1,2*cy+2);});
+		this.decodeObj(func, bd.bnum, 2, 1, 2*k.qcols-2, 2*k.qrows-1);
+		this.decodeObj(func, bd.bnum, 1, 2, 2*k.qcols-1, 2*k.qrows-2);
 	},
 	decodeBorder2: function(func){
-		this.decodeObj(func, k.qcols+1, k.qrows  , function(cx,cy){return bd.bnum(2*cx  ,2*cy+1);});
-		this.decodeObj(func, k.qcols  , k.qrows+1, function(cx,cy){return bd.bnum(2*cx+1,2*cy  );});
+		this.decodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
+		this.decodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
 	},
 
 	//---------------------------------------------------------------------------
@@ -157,27 +164,28 @@ FileIO.prototype = {
 	// fio.encodeBorder()  個別Borderデータ(外枠上なし)から個別文字列の設定を行う
 	// fio.encodeBorder2() 個別Borderデータ(外枠上あり)から個別文字列の設定を行う
 	//---------------------------------------------------------------------------
-	encodeObj : function(func, width, height, getid){
-		for(var cy=0;cy<height;cy++){
-			for(var cx=0;cx<width;cx++){
-				this.datastr += func(getid(cx,cy));
+	encodeObj : function(func, getid, startbx, startby, endbx, endby){
+		var step=2;
+		for(var by=startby;by<=endby;by+=step){
+			for(var bx=startbx;bx<=endbx;bx+=step){
+				this.datastr += func(getid(bx,by));
 			}
 			this.datastr += "/";
 		}
 	},
 	encodeCell   : function(func){
-		this.encodeObj(func, k.qcols  , k.qrows  , function(cx,cy){return bd.cnum(cx,cy);});
+		this.encodeObj(func, bd.cnum, 1, 1, 2*k.qcols-1, 2*k.qrows-1);
 	},
 	encodeCross  : function(func){
-		this.encodeObj(func, k.qcols+1, k.qrows+1, function(cx,cy){return bd.xnum(cx,cy);});
+		this.encodeObj(func, bd.xnum, 0, 0, 2*k.qcols,   2*k.qrows  );
 	},
 	encodeBorder : function(func){
-		this.encodeObj(func, k.qcols-1, k.qrows  , function(cx,cy){return bd.bnum(2*cx+2,2*cy+1);})
-		this.encodeObj(func, k.qcols  , k.qrows-1, function(cx,cy){return bd.bnum(2*cx+1,2*cy+2);});
+		this.encodeObj(func, bd.bnum, 2, 1, 2*k.qcols-2, 2*k.qrows-1);
+		this.encodeObj(func, bd.bnum, 1, 2, 2*k.qcols-1, 2*k.qrows-2);
 	},
 	encodeBorder2: function(func){
-		this.encodeObj(func, k.qcols+1, k.qrows  , function(cx,cy){return bd.bnum(2*cx  ,2*cy+1);})
-		this.encodeObj(func, k.qcols  , k.qrows+1, function(cx,cy){return bd.bnum(2*cx+1,2*cy  );});
+		this.encodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
+		this.encodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
 	},
 
 	//---------------------------------------------------------------------------
@@ -470,13 +478,13 @@ FileIO.prototype = {
 	decodeCellQnum51 : function(){
 		var item = this.getItemList(k.qrows+1);
 		for(var i=0;i<item.length;i++) {
-			var cx=i%(k.qcols+1)-1, cy=mf(i/(k.qcols+1))-1;
+			var bx=(i%(k.qcols+1)-1)*2+1, by=(mf(i/(k.qcols+1))-1)*2+1;
 			if(item[i]!="."){
-				if     (cy===-1){ bd.sDiE(bd.exnum(cx,cy), parseInt(item[i]));}
-				else if(cx===-1){ bd.sQnE(bd.exnum(cx,cy), parseInt(item[i]));}
+				if     (by===-1){ bd.sDiE(bd.exnum(bx,by), parseInt(item[i]));}
+				else if(bx===-1){ bd.sQnE(bd.exnum(bx,by), parseInt(item[i]));}
 				else{
 					var inp = item[i].split(",");
-					var c = bd.cnum(cx,cy);
+					var c = bd.cnum(bx,by);
 					mv.set51cell(c, true);
 					bd.sQnC(c, inp[0]);
 					bd.sDiC(c, inp[1]);
@@ -486,13 +494,13 @@ FileIO.prototype = {
 	},
 	encodeCellQnum51 : function(){
 		var str = "";
-		for(var cy=-1;cy<k.qrows;cy++){
-			for(var cx=-1;cx<k.qcols;cx++){
-				if     (cx===-1 && cy==-1){ str += "0 ";}
-				else if(cy===-1){ str += (""+bd.DiE(bd.exnum(cx,cy)).toString()+" ");}
-				else if(cx===-1){ str += (""+bd.QnE(bd.exnum(cx,cy)).toString()+" ");}
+		for(var by=-1;by<2*k.qrows;by+=2){
+			for(var bx=-1;bx<2*k.qcols;bx+=2){
+				if     (bx===-1 && by==-1){ str += "0 ";}
+				else if(by===-1){ str += (""+bd.DiE(bd.exnum(bx,by)).toString()+" ");}
+				else if(bx===-1){ str += (""+bd.QnE(bd.exnum(bx,by)).toString()+" ");}
 				else{
-					var c = bd.cnum(cx,cy);
+					var c = bd.cnum(bx,by);
 					if(bd.QuC(c)===51){ str += (""+bd.QnC(c).toString()+","+bd.DiC(c).toString()+" ");}
 					else{ str += ". ";}
 				}
@@ -570,7 +578,7 @@ FileIO.prototype = {
 			var pce = barray[i].split(" ");
 			for(var n=0;n<4;n++){ if(!isNaN(pce[n])){ pce[n]=parseInt(pce[n]);} }
 
-			var sp = {y1:pce[0], x1:pce[1], y2:pce[2], x2:pce[3]};
+			var sp = {y1:2*pce[0]+1, x1:2*pce[1]+1, y2:2*pce[2]+1, x2:2*pce[3]+1};
 			if(isques && pce[4]!=""){ bd.sQnC(bd.cnum(sp.x1,sp.y1), parseInt(pce[4],10));}
 			this.setRdataRect(rdata, i, sp);
 		}
@@ -579,9 +587,9 @@ FileIO.prototype = {
 		area.resetRarea();
 	},
 	setRdataRect : function(rdata, i, sp){
-		for(var cx=sp.x1;cx<=sp.x2;cx++){
-			for(var cy=sp.y1;cy<=sp.y2;cy++){
-				rdata[bd.cnum(cx,cy)] = i;
+		for(var bx=sp.x1;bx<=sp.x2;bx+=2){
+			for(var by=sp.y1;by<=sp.y2;by+=2){
+				rdata[bd.cnum(bx,by)] = i;
 			}
 		}
 	},
@@ -592,7 +600,7 @@ FileIO.prototype = {
 		for(var id=1;id<=rinfo.max;id++){
 			var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
 			var num = (isques ? bd.QnC(area.getTopOfRoom(id)) : -1);
-			this.datastr += (""+d.y1+" "+d.x1+" "+d.y2+" "+d.x2+" "+(num>=0 ? ""+num : "")+"/");
+			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" "+(num>=0 ? ""+num : "")+"/");
 		}
 	}
 };

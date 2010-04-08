@@ -254,6 +254,7 @@ PBase.prototype = {
 			mwidth = wwidth*ws.limit-4;
 			k.cwidth = k.cheight = mf(k.def_csize*cr.limit);
 		}
+		k.bwidth  = k.cwidth/2; k.bheight = k.cheight/2;
 
 		// mainのサイズ変更
 		ee('main').el.style.width = ''+mf(mwidth)+'px';

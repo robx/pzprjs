@@ -275,12 +275,16 @@ Puzzles.bonsan.prototype = {
 		ans.checkFractal = function(rinfo){
 			for(var id=1;id<=rinfo.max;id++){
 				var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
-				var sx=d.x1+d.x2+1, sy=d.y1+d.y2+1;
+				var sx=d.x1+d.x2, sy=d.y1+d.y2;
 				var movex=0, movey=0;
 				for(var i=0;i<rinfo.room[id].idlist.length;i++){
 					var c=rinfo.room[id].idlist[i];
-					if(this.getMoved(c)!=-1 ^ this.getMoved(bd.cnum(sx-bd.cell[c].cx-1, sy-bd.cell[c].cy-1))!=-1){
-						for(var a=0;a<rinfo.room[id].idlist.length;a++){ if(this.getMoved(rinfo.room[id].idlist[a])!=-1){ bd.sErC([rinfo.room[id].idlist[a]],1);} }
+					if(this.getMoved(c)!=-1 ^ this.getMoved(bd.cnum(sx-bd.cell[c].bx, sy-bd.cell[c].by))!=-1){
+						for(var a=0;a<rinfo.room[id].idlist.length;a++){
+							if(this.getMoved(rinfo.room[id].idlist[a])!=-1){
+								bd.sErC([rinfo.room[id].idlist[a]],1);
+							}
+						}
 						return false;
 					}
 				}

@@ -195,13 +195,13 @@ Puzzles.nagenawa.prototype = {
 		ans.isLoopRect = function(list){
 			var x1=2*k.qcols; var x2=0; var y1=2*k.qrows; var y2=0;
 			for(var i=0;i<list.length;i++){
-				if(x1>bd.border[list[i]].cx){ x1=bd.border[list[i]].cx;}
-				if(x2<bd.border[list[i]].cx){ x2=bd.border[list[i]].cx;}
-				if(y1>bd.border[list[i]].cy){ y1=bd.border[list[i]].cy;}
-				if(y2<bd.border[list[i]].cy){ y2=bd.border[list[i]].cy;}
+				if(x1>bd.border[list[i]].bx){ x1=bd.border[list[i]].bx;}
+				if(x2<bd.border[list[i]].bx){ x2=bd.border[list[i]].bx;}
+				if(y1>bd.border[list[i]].by){ y1=bd.border[list[i]].by;}
+				if(y2<bd.border[list[i]].by){ y2=bd.border[list[i]].by;}
 			}
 			for(var i=0;i<list.length;i++){
-				if(bd.border[list[i]].cx!=x1 && bd.border[list[i]].cx!=x2 && bd.border[list[i]].cy!=y1 && bd.border[list[i]].cy!=y2){ return false;}
+				if(bd.border[list[i]].bx!=x1 && bd.border[list[i]].bx!=x2 && bd.border[list[i]].by!=y1 && bd.border[list[i]].by!=y2){ return false;}
 			}
 			return true;
 		};

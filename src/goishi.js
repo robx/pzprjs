@@ -158,22 +158,22 @@ Puzzles.goishi.prototype = {
 			// Ç∑Ç≈Ç…1Ç¬à»è„ÇÃåÈêŒÇ™éÊÇÁÇÍÇƒÇ¢ÇÈèÍçá
 			if(bcc!==-1){
 				var tmp, d = {x1:-1, y1:-1, x2:-1, y2:-1};
-				d.x1 = bd.cell[cc].cx, d.x2 = bd.cell[bcc].cx;
-				d.y1 = bd.cell[cc].cy, d.y2 = bd.cell[bcc].cy;
+				d.x1 = bd.cell[cc].bx, d.x2 = bd.cell[bcc].bx;
+				d.y1 = bd.cell[cc].by, d.y2 = bd.cell[bcc].by;
 
 				// é©ï™ÇÃè„â∫ç∂âEÇ…maxÇ»åÈêŒÇ™Ç»Ç¢èÍçáÇÕâΩÇ‡ÇµÇ»Ç¢
 				if(d.x1!==d.x2 && d.y1!==d.y2){ return;}
 				else if(d.x1===d.x2){
 					if(d.y1>d.y2){ tmp=d.y2; d.y2=d.y1; d.y1=tmp;}
-					d.y1++; d.y2--;
+					d.y1+=2; d.y2-=2;
 				}
 				else{ // if(d.y1===d.y2)
 					if(d.x1>d.x2){ tmp=d.x2; d.x2=d.x1; d.x1=tmp;}
-					d.x1++; d.x2--;
+					d.x1+=2; d.x2-=2;
 				}
 				// ä‘Ç…åÈêŒÇ™Ç†ÇÈèÍçáÇÕâΩÇ‡ÇµÇ»Ç¢
-				for(var cx=d.x1;cx<=d.x2;cx++){ for(var cy=d.y1;cy<=d.y2;cy++){
-					var c = bd.cnum(cx,cy);
+				for(var bx=d.x1;bx<=d.x2;bx+=2){ for(var by=d.y1;by<=d.y2;by+=2){
+					var c = bd.cnum(bx,by);
 					if(c!==-1 && bd.cell[c].ques===7){
 						var qa = bd.cell[c].qans;
 						if(qa===-1 || (max>=2 && qa===max-1)){ return;}
@@ -329,9 +329,9 @@ Puzzles.goishi.prototype = {
 			var d = this.getSizeOfBoard_goishi();
 
 			var cm="", count=0, pass=0;
-			for(var cy=d.y1;cy<=d.y2;cy++){
-				for(var cx=d.x1;cx<=d.x2;cx++){
-					var c=bd.cnum(cx,cy);
+			for(var by=d.y1;by<=d.y2;by+=2){
+				for(var bx=d.x1;bx<=d.x2;bx+=2){
+					var c=bd.cnum(bx,by);
 					if(c===-1 || bd.QuC(c)==0){ pass+=Math.pow(2,4-count);}
 					count++; if(count==5){ cm += pass.toString(32); count=0; pass=0;}
 				}
@@ -339,37 +339,37 @@ Puzzles.goishi.prototype = {
 			if(count>0){ cm += pass.toString(32);}
 			this.outbstr += cm;
 
-			this.outsize = [d.x2-d.x1+1, d.y2-d.y1+1].join("/");
+			this.outsize = [d.cols, d.rows].join("/");
 		};
 
 		fio.encodeGoishi_kanpen = function(){
 			var d = enc.getSizeOfBoard_goishi();
 
-			for(var cy=d.y1;cy<=d.y2;cy++){
-				for(var cx=d.x1;cx<=d.x2;cx++){
-					var c = bd.cnum(cx,cy);
+			for(var by=d.y1;by<=d.y2;by+=2){
+				for(var bx=d.x1;bx<=d.x2;bx+=2){
+					var c = bd.cnum(bx,by);
 					this.datastr += (bd.QuC(c)===7 ? "1 " : ". ");
 				}
 				this.datastr += "/";
 			}
 
-			enc.outsize  = [d.y2-d.y1+1, d.x2-d.x1+1].join("/");
-			this.sizestr = [d.y2-d.y1+1, d.x2-d.x1+1].join("/");
+			enc.outsize  = [d.cols, d.rows].join("/");
+			this.sizestr = [d.cols, d.rows].join("/");
 		};
 
 		enc.getSizeOfBoard_goishi = function(){
 			var x1=9999, x2=-1, y1=9999, y2=-1, count=0;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)!=7){ continue;}
-				if(x1>bd.cell[c].cx){ x1=bd.cell[c].cx;}
-				if(x2<bd.cell[c].cx){ x2=bd.cell[c].cx;}
-				if(y1>bd.cell[c].cy){ y1=bd.cell[c].cy;}
-				if(y2<bd.cell[c].cy){ y2=bd.cell[c].cy;}
+				if(x1>bd.cell[c].bx){ x1=bd.cell[c].bx;}
+				if(x2<bd.cell[c].bx){ x2=bd.cell[c].bx;}
+				if(y1>bd.cell[c].by){ y1=bd.cell[c].by;}
+				if(y2<bd.cell[c].by){ y2=bd.cell[c].by;}
 				count++;
 			}
-			if(count==0){ return {x1:0, y1:0, x2:1, y2:1};}
-			if(pp.getVal('bdpadding')){ return {x1:x1-1, y1:y1-1, x2:x2+1, y2:y2+1};}
-			return {x1:x1, y1:y1, x2:x2, y2:y2};
+			if(count==0){ return {x1:0, y1:0, x2:1, y2:1, cols:2, rows:2};}
+			if(pp.getVal('bdpadding')){ return {x1:x1-1, y1:y1-1, x2:x2+1, y2:y2+1, cols:(x2-x1+6)/2, rows:(y2-y1+6)/2};}
+			return {x1:x1, y1:y1, x2:x2, y2:y2, cols:(x2-x1+2)/2, rows:(y2-y1+2)/2};
 		};
 	},
 

@@ -116,7 +116,7 @@ Puzzles.pipelink.prototype = {
 			else if(ca=='1'){ bd.sQuC(cc,  6); }
 			else{ return false;}
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+			pc.paintCellAround(cc);
 			return true;
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};

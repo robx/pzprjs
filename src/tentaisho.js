@@ -100,32 +100,32 @@ Puzzles.tentaisho.prototype = {
 		mv.inputBGcolor3 = function(){
 			if(k.EDITOR){ if(pp.getVal('discolor')){ return;} }
 
-			var pos = this.crosspos(0.34);
+			var pos = this.borderpos(0.34);
 			var id = bd.snum(pos.x, pos.y);
 			if(id==-1 || bd.getStar(id)==0){ return;}
 
 			var cc;
-			var sx=id%(2*k.qcols-1)+1;
-			var sy=mf(id/(2*k.qcols-1))+1;
-			if     ( (sx&1) &&  (sy&1)){ cc = bd.cnum(sx>>1,sy>>1);}
-			else if(!(sx&1) && !(sy&1)){
-				var xc = bd.xnum(sx>>1,sy>>1);
-				if(area.lcntCross(xc)==0){ cc = bd.cnum((sx>>1)-1,(sy>>1)-1);}
+			var bx=id%(2*k.qcols-1)+1;
+			var by=mf(id/(2*k.qcols-1))+1;
+			if     ( (bx&1) &&  (by&1)){ cc = bd.cnum(bx,by);}
+			else if(!(bx&1) && !(by&1)){
+				var xc = bd.xnum(bx,by);
+				if(area.lcntCross(xc)===0){ cc = bd.cnum(bx-1,by-1);}
 				else{ return;}
 			}
 			else{
-				if(bd.QaB(bd.bnum(sx,sy))==0){ cc = bd.cnum((sx-sy%2)>>1, (sy-sx%2)>>1);}
+				if(bd.QaB(bd.bnum(bx,by))==0){ cc = bd.cnum(bx-(by&1), by-(bx&1));}
 				else{ return;}
 			}
 
 			var clist = area.room[area.room.id[cc]].clist;
 			if(mv.encolor(clist)){
 				var d = ans.getSizeOfClist(clist,f_true);
-				pc.paint(d.x1, d.y1, d.x2, d.y2);
+				pc.paintRange(d.x1, d.y1, d.x2, d.y2);
 			}
 		};
 		mv.inputborder_tentaisho = function(){
-			var pos = this.crosspos(0.34);
+			var pos = this.borderpos(0.34);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = bd.bnum(pos.x, pos.y);
@@ -147,7 +147,7 @@ Puzzles.tentaisho.prototype = {
 			this.mouseCell = pos;
 		};
 		mv.inputstar = function(){
-			var pos = this.crosspos(0.25);
+			var pos = this.borderpos(0.25);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = bd.snum(pos.x, pos.y);
@@ -158,7 +158,7 @@ Puzzles.tentaisho.prototype = {
 				else if(this.btn.Right){ bd.setStar(id, {0:2,1:0,2:1}[bd.getStar(id)]);}
 			}
 			this.mouseCell = pos;
-			pc.paint((pos.x-1)>>1,(pos.y-1)>>1,(pos.x+1)>>1,(pos.y+1)>>1);
+			pc.paintPos(pos);
 		};
 
 		mv.encolorall = function(){
@@ -211,32 +211,32 @@ Puzzles.tentaisho.prototype = {
 		};
 		bd.getStar = function(id){
 			if(id<0||(2*k.qcols-1)*(2*k.qrows-1)<=id){ return -1;}
-			var sx=id%(2*k.qcols-1)+1;
-			var sy=mf(id/(2*k.qcols-1))+1;
+			var bx=id%(2*k.qcols-1)+1;
+			var by=mf(id/(2*k.qcols-1))+1;
 
-			if     ( (sx&1) &&  (sy&1)){ return bd.QuC(bd.cnum(sx>>1,sy>>1));}
-			else if(!(sx&1) && !(sy&1)){ return bd.QuX(bd.xnum(sx>>1,sy>>1));}
-			else                       { return bd.QnB(bd.bnum(sx,sy));}
+			if     ( (bx&1) &&  (by&1)){ return bd.QuC(bd.cnum(bx,by));}
+			else if(!(bx&1) && !(by&1)){ return bd.QuX(bd.xnum(bx,by));}
+			else                       { return bd.QnB(bd.bnum(bx,by));}
 		};
 		bd.getStarError = function(id){
 			if(id<0||(2*k.qcols-1)*(2*k.qrows-1)<id){ return -1;}
-			var sx=id%(2*k.qcols-1)+1;
-			var sy=mf(id/(2*k.qcols-1))+1;
+			var bx=id%(2*k.qcols-1)+1;
+			var by=mf(id/(2*k.qcols-1))+1;
 
-			if     ( (sx&1) &&  (sy&1)){ return bd.ErC(bd.cnum(sx>>1,sy>>1));}
-			else if(!(sx&1) && !(sy&1)){ return bd.ErX(bd.xnum(sx>>1,sy>>1));}
-			else                       { return bd.ErB(bd.bnum(sx,sy));}
+			if     ( (bx&1) &&  (by&1)){ return bd.ErC(bd.cnum(bx,by));}
+			else if(!(bx&1) && !(by&1)){ return bd.ErX(bd.xnum(bx,by));}
+			else                       { return bd.ErB(bd.bnum(bx,by));}
 		};
 		bd.setStar = function(id,val){
 			if(id<0||(2*k.qcols-1)*(2*k.qrows-1)<id){ return;}
-			var sx=id%(2*k.qcols-1)+1;
-			var sy=mf(id/(2*k.qcols-1))+1;
+			var bx=id%(2*k.qcols-1)+1;
+			var by=mf(id/(2*k.qcols-1))+1;
 
-			if     ( (sx&1) &&  (sy&1)){ bd.sQuC(bd.cnum(sx>>1,sy>>1),val);}
-			else if(!(sx&1) && !(sy&1)){ bd.sQuX(bd.xnum(sx>>1,sy>>1),val);}
+			if     ( (bx&1) &&  (by&1)){ bd.sQuC(bd.cnum(bx,by),val);}
+			else if(!(bx&1) && !(by&1)){ bd.sQuX(bd.xnum(bx,by),val);}
 			else{
 				um.disCombine = 1;
-				bd.sQnB(bd.bnum(sx,sy),val);
+				bd.sQnB(bd.bnum(bx,by),val);
 				um.disCombine = 0;
 			}
 		};
@@ -281,7 +281,7 @@ Puzzles.tentaisho.prototype = {
 			var lw = this.lw, lm = this.lm;
 			var header = "b_bd_";
 
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+			var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 				if(bd.border[id].qans===1){
@@ -290,8 +290,8 @@ Puzzles.tentaisho.prototype = {
 					else                            { g.fillStyle = this.BorderQanscolor;}
 
 					if(this.vnop(header+id,this.FILL)){
-						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-this.bh-lm,  lw, this.ch+lw);}
-						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm,  this.cw+lw, lw);}
+						if     (bd.border[id].by&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-this.bh-lm,  lw, this.ch+lw);}
+						else if(bd.border[id].bx&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm,  this.cw+lw, lw);}
 					}
 				}
 				else{ this.vhide(header+id);}
@@ -461,18 +461,18 @@ Puzzles.tentaisho.prototype = {
 			var result = true;
 			for(var s=0;s<(2*k.qcols-1)*(2*k.qrows-1);s++){
 				if(bd.getStar(s)<=0){ continue;}
-				var sx=s%(2*k.qcols-1)+1, sy=mf(s/(2*k.qcols-1))+1;
-				if(!(sx&1) && !(sy&1)){
-					if(area.lcntCross(bd.xnum(sx>>1,sy>>1))!=0){
+				var bx=s%(2*k.qcols-1)+1, by=mf(s/(2*k.qcols-1))+1;
+				if(!(bx&1) && !(by&1)){
+					if(area.lcntCross(bd.xnum(bx,by))!=0){
 						if(this.inAutoCheck){ return false;}
-						this.setCrossBorderError(sx>>1,sy>>1);
+						this.setCrossBorderError(sx,sy);
 						result = false;
 					}
 				}
-				else if((sx+sy)&1){
-					if(bd.QaB(bd.bnum(sx,sy))!=0){
+				else if((bx+by)&1){
+					if(bd.QaB(bd.bnum(bx,by))!=0){
 						if(this.inAutoCheck){ return false;}
-						bd.sErB(bd.bnum(sx,sy),1);
+						bd.sErB(bd.bnum(bx,by),1);
 						result = false;
 					}
 				}
@@ -490,18 +490,18 @@ Puzzles.tentaisho.prototype = {
 			var cnt=0, ret=-1;
 			for(var i=0;i<clist.length;i++){
 				var c=clist[i];
-				var cx = bd.cell[c].cx, cy = bd.cell[c].cy;
-				if(bd.getStar(bd.snum(cx*2+1,cy*2+1))>0){
-					cnt++; ret=bd.snum(cx*2+1,cy*2+1);
+				var bx = bd.cell[c].bx, by = bd.cell[c].by;
+				if(bd.getStar(bd.snum(bx,by))>0){
+					cnt++; ret=bd.snum(bx,by);
 				}
-				if(bd.db(c)!=-1 && bd.QaB(bd.db(c))==0 && bd.getStar(bd.snum(cx*2+1,cy*2+2))>0){
-					cnt++; ret=bd.snum(cx*2+1,cy*2+2);
+				if(bd.db(c)!=-1 && bd.QaB(bd.db(c))==0 && bd.getStar(bd.snum(bx,by+1))>0){
+					cnt++; ret=bd.snum(bx,by+1);
 				}
-				if(bd.rb(c)!=-1 && bd.QaB(bd.rb(c))==0 && bd.getStar(bd.snum(cx*2+2,cy*2+1))>0){
-					cnt++; ret=bd.snum(cx*2+2,cy*2+1);
+				if(bd.rb(c)!=-1 && bd.QaB(bd.rb(c))==0 && bd.getStar(bd.snum(bx+1,by))>0){
+					cnt++; ret=bd.snum(bx+1,by);
 				}
-				if(bd.xnum(cx+1,cy+1)!=-1 && area.lcntCross(bd.xnum(cx+1,cy+1))==0 && bd.getStar(bd.snum(cx*2+2,cy*2+2))>0){
-					cnt++; ret=bd.snum(cx*2+2,cy*2+2);
+				if(bd.xnum(bx+1,by+1)!=-1 && area.lcntCross(bd.xnum(bx+1,by+1))==0 && bd.getStar(bd.snum(bx+1,by+1))>0){
+					cnt++; ret=bd.snum(bx+1,by+1);
 				}
 
 				if(cnt>1){ return -2;}
@@ -517,7 +517,7 @@ Puzzles.tentaisho.prototype = {
 				var sx=sc%(2*k.qcols-1)+1, sy=mf(sc/(2*k.qcols-1))+1;
 				for(var i=0;i<rinfo.room[r].idlist.length;i++){
 					var c=rinfo.room[r].idlist[i];
-					var ccopy = bd.cnum(sx-bd.cell[c].cx-1, sy-bd.cell[c].cy-1);
+					var ccopy = bd.cnum(sx*2-bd.cell[c].bx, sy*2-bd.cell[c].by);
 					if(ccopy==-1||rinfo.id[c]!=rinfo.id[ccopy]){
 						if(this.inAutoCheck){ return false;}
 						bd.sErC(rinfo.room[r].idlist,1); result = false;

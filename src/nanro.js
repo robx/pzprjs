@@ -99,7 +99,7 @@ Puzzles.nanro.prototype = {
 			if     (this.inputData==2){ bd.sQaC(cc,-1); bd.sQsC(cc,2);}
 			else if(this.inputData==0){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
 			this.mouseCell = cc;
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
+			pc.paintCell(cc);
 		};
 
 		// キーボード入力系

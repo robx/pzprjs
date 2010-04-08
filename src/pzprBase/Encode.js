@@ -604,11 +604,11 @@ Encode.prototype = {
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","z")){
 				cc += (parseInt(ca,36)+1);
-				var cx = (k.isoutsidecross==1?   cc%(k.qcols+1) :   cc%(k.qcols-1) +1);
-				var cy = (k.isoutsidecross==1?mf(cc/(k.qcols+1)):mf(cc/(k.qcols-1))+1);
+				var bx = (k.isoutsidecross==1?   cc%(k.qcols+1) :   cc%(k.qcols-1) +1)*2;
+				var by = (k.isoutsidecross==1?mf(cc/(k.qcols+1)):mf(cc/(k.qcols-1))+1)*2;
 
-				if(cy>=k.qrows+(k.isoutsidecross==1?1:0)){ i++; break;}
-				bd.sQnX(bd.xnum(cx,cy), 1);
+				if(by>=2*k.qrows+(k.isoutsidecross==1?2:0)){ i++; break;}
+				bd.sQnX(bd.xnum(bx,by), 1);
 			}
 			else if(ca == '.'){ cc += 36;}
 			else{ cc++;}
@@ -621,10 +621,10 @@ Encode.prototype = {
 		var cm = "", count = 0;
 		for(var i=0;i<(k.isoutsidecross==1?(k.qcols+1)*(k.qrows+1):(k.qcols-1)*(k.qrows-1));i++){
 			var pstr = "";
-			var cx = (k.isoutsidecross==1?   i%(k.qcols+1) :   i%(k.qcols-1) +1);
-			var cy = (k.isoutsidecross==1?mf(i/(k.qcols+1)):mf(i/(k.qcols-1))+1);
+			var bx = (k.isoutsidecross==1?   i%(k.qcols+1) :   i%(k.qcols-1) +1)*2;
+			var by = (k.isoutsidecross==1?mf(i/(k.qcols+1)):mf(i/(k.qcols-1))+1)*2;
 
-			if(bd.QnX(bd.xnum(cx,cy))==1){ pstr = ".";}
+			if(bd.QnX(bd.xnum(bx,by))==1){ pstr = ".";}
 			else{ pstr=" "; count++;}
 
 			if(pstr!=" "){ cm += count.toString(36); count=0;}

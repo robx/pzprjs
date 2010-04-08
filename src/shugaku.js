@@ -78,7 +78,7 @@ Puzzles.shugaku.prototype = {
 				this.mouseCell = cc;
 				this.inputData = 1;
 				this.firstPos = this.inputPos.clone();
-				pc.paint(bd.cell[cc].cx, bd.cell[cc].cy, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+				pc.paintCell(cc);
 			}
 			else{
 				var old = this.inputData;
@@ -91,7 +91,7 @@ Puzzles.shugaku.prototype = {
 					else if(mx-my<0 && mx+my>0){ this.inputData = (bd.QnC(bd.dn(this.mouseCell))==-1?3:6);}
 					else if(mx-my<0 && mx+my<0){ this.inputData = (bd.QnC(bd.lt(this.mouseCell))==-1?4:6);}
 				}
-				if(old!=this.inputData){ pc.paint(bd.cell[this.mouseCell].cx-2, bd.cell[this.mouseCell].cy-2, bd.cell[this.mouseCell].cx+2, bd.cell[this.mouseCell].cy+2);}
+				if(old!=this.inputData){ pc.paintCellAround(this.mouseCell);}
 			}
 		};
 		mv.inputFuton2 = function(){
@@ -116,7 +116,7 @@ Puzzles.shugaku.prototype = {
 
 			cc = this.mouseCell;
 			this.mouseCell = -1;
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+			pc.paintCellAround(cc);
 		};
 
 		mv.inputcell_shugaku = function(){
@@ -133,7 +133,7 @@ Puzzles.shugaku.prototype = {
 			bd.sQaC(cc, (this.inputData==1?1:-1));
 			bd.sQsC(cc, (this.inputData==2?1:0));
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+			pc.paintCellAround(cc);
 		};
 
 		mv.changeHalf = function(cc){
@@ -301,11 +301,11 @@ Puzzles.shugaku.prototype = {
 			var header = "b_bd";
 			g.fillStyle = "black";
 
-			for(var by=Math.min(1,y1*2-2);by<=Math.max(2*k.qrows-1,y2*2+2);by++){
-				for(var bx=Math.min(1,x1*2-2);bx<=Math.max(2*k.qcols-1,x2*2+2);bx++){
+			for(var by=Math.min(1,y1-2),maxy=Math.max(2*k.qrows-1,y2+2);by<=maxy;by++){
+				for(var bx=Math.min(1,x1-2),maxx=Math.max(2*k.qcols-1,x2+2);bx<=maxx;bx++){
 					if(!((bx+by)&1)){ continue;}
-					var a = bd.QaC( bd.cnum((bx-by%2)>>1, (by-bx%2)>>1) );
-					var b = bd.QaC( bd.cnum((bx+by%2)>>1, (by+bx%2)>>1) );
+					var a = bd.QaC( bd.cnum(bx-(by&1), by-(bx&1)) );
+					var b = bd.QaC( bd.cnum(bx+(by&1), by+(bx&1)) );
 					var vid = [header,bx,by].join("_");
 
 					if     ((bx&1) && !(isNaN(doma1[a])&&isNaN(domb1[b]))){
@@ -361,8 +361,8 @@ Puzzles.shugaku.prototype = {
 			this.vdel(["tbd1_","tbd2_","tbd3_","tbd4_"]);
 			if(inputting){
 				var lw = this.lw, lm = this.lm;
-				var px = k.p0.x+(adj===-1?bd.cell[cc].cx:Math.min(bd.cell[cc].cx,bd.cell[adj].cx))*this.cw;
-				var py = k.p0.y+(adj===-1?bd.cell[cc].cy:Math.min(bd.cell[cc].cy,bd.cell[adj].cy))*this.ch;
+				var px = k.p0.x+(adj===-1?bd.cell[cc].bx:Math.min(bd.cell[cc].bx,bd.cell[adj].bx))*this.bw;
+				var py = k.p0.y+(adj===-1?bd.cell[cc].by:Math.min(bd.cell[cc].by,bd.cell[adj].by))*this.bh;
 				var wid = (mv.inputData===4||mv.inputData===5?2:1)*this.cw;
 				var hgt = (mv.inputData===2||mv.inputData===3?2:1)*this.ch;
 

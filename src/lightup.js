@@ -95,75 +95,75 @@ Puzzles.lightup.prototype = {
 		}
 
 		bd.maxnum = 4;
+
 		bd.qlight = [];
 		bd.initQlight = function(){
 			bd.qlight = [];
-			for(var c=0;c<bd.cellmax;c++){ bd.qlight[c] = false;}
-			for(var c=0;c<bd.cellmax;c++){
-				if(bd.cell[c].qans!==1){ continue;}
+			for(var c=0;c<this.cellmax;c++){ this.qlight[c] = false;}
+			for(var c=0;c<this.cellmax;c++){
+				if(this.cell[c].qans!==1){ continue;}
 
-				var cx = bd.cell[c].cx, cy = bd.cell[c].cy;
+				var bx = this.cell[c].bx, by = this.cell[c].by;
 				var d = this.cellRange(c);
-				for(var tx=d.x1;tx<=d.x2;tx++){ bd.qlight[tx+cy*k.qcols]=true;}
-				for(var ty=d.y1;ty<=d.y2;ty++){ bd.qlight[cx+ty*k.qcols]=true;}
+				for(var tx=d.x1;tx<=d.x2;tx+=2){ bd.qlight[this.cnum(tx,by)]=true;}
+				for(var ty=d.y1;ty<=d.y2;ty+=2){ bd.qlight[this.cnum(bx,ty)]=true;}
 			}
 		};
+		bd.setQlight = function(id, val){
+			var d = this.cellRange(id), bx = this.cell[id].bx, by = this.cell[id].by;
+			if(val===1){
+				for(var tx=d.x1;tx<=d.x2;tx+=2){ this.qlight[this.cnum(tx,by)]=true;}
+				for(var ty=d.y1;ty<=d.y2;ty+=2){ this.qlight[this.cnum(bx,ty)]=true;}
+			}
+			else{
+				var clist = [];
+				for(var tx=d.x1;tx<=d.x2;tx+=2){ clist.push(this.cnum(tx,by));}
+				for(var ty=d.y1;ty<=d.y2;ty+=2){ clist.push(this.cnum(bx,ty));}
 
-		// オーバーライト
+				for(var i=0;i<clist.length;i++){
+					var cc = clist[i];
+					if(this.qlight[cc]?val===2:val===0){ continue;}
+
+					var cbx = this.cell[cc].bx, cby = this.cell[cc].by;
+					var dd  = this.cellRange(cc), isakari = false;
+								  for(var tx=dd.x1;tx<=dd.x2;tx+=2){ if(this.cell[this.cnum(tx,cby)].qans===1){ isakari=true; break;} }
+					if(!isakari){ for(var ty=dd.y1;ty<=dd.y2;ty+=2){ if(this.cell[this.cnum(cbx,ty)].qans===1){ isakari=true; break;} } }
+					this.qlight[cc] = isakari;
+				}
+			}
+
+			if(!!g){
+				pc.paintRange(d.x1, by, d.x2, by);
+				pc.paintRange(bx, d.y1, bx, d.y2);
+			}
+		};
+		bd.cellRange = function(cc){
+			var bx = tx = this.cell[cc].bx, by = ty = this.cell[cc].by;
+			var d = {x1:0, y1:0, x2:k.qcols-1, y2:k.qrows-1};
+
+			tx=bx-2; ty=by; while(tx>0)        { if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.x1=tx+2; break;} tx-=2; }
+			tx=bx+2; ty=by; while(tx<2*k.qcols){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.x2=tx-2; break;} tx+=2; }
+			tx=bx; ty=by-2; while(ty>0)        { if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.y1=ty+2; break;} ty-=2; }
+			tx=bx; ty=by+2; while(ty<2*k.qrows){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.y2=ty-2; break;} ty+=2; }
+
+			return d;
+		};
+
+		// オーバーライド
 		bd.sQnC = function(id, num) {
 			var old = this.cell[id].qnum;
 			um.addOpe(k.CELL, k.QNUM, id, old, num);
 			this.cell[id].qnum = num;
 
-			if((old===-1)^(num===-1)){ this.setAkari(id, (num!==-1?0:2));}
+			if((old===-1)^(num===-1)){ this.setQlight(id, (num!==-1?0:2));}
 		};
-		// オーバーライト
+		// オーバーライド
 		bd.sQaC = function(id, num) {
 			var old = this.cell[id].qans;
 			um.addOpe(k.CELL, k.QANS, id, old, num);
 			this.cell[id].qans = num;
 
-			if((old===-1)^(num===-1)){ this.setAkari(id, (num!==-1?1:0));}
-		};
-		bd.setAkari = function(id, val){
-			var d = this.cellRange(id), cx = bd.cell[id].cx, cy = bd.cell[id].cy;
-			if(val===1){
-				for(var tx=d.x1;tx<=d.x2;tx++){ bd.qlight[tx+cy*k.qcols]=true;}
-				for(var ty=d.y1;ty<=d.y2;ty++){ bd.qlight[cx+ty*k.qcols]=true;}
-			}
-			else{
-				var clist = [];
-				for(var tx=d.x1;tx<=d.x2;tx++){ clist.push(tx+cy*k.qcols);}
-				for(var ty=d.y1;ty<=d.y2;ty++){ clist.push(cx+ty*k.qcols);}
-
-				for(var i=0;i<clist.length;i++){
-					var cc = clist[i];
-					if(bd.qlight[cc]?val===2:val===0){ continue;}
-
-					var ccx = bd.cell[cc].cx, ccy = bd.cell[cc].cy;
-					var dd = this.cellRange(cc), isakari = false;
-								  for(var tx=dd.x1;tx<=dd.x2;tx++){ if(bd.cell[tx+ccy*k.qcols].qans===1){ isakari=true; break;} }
-					if(!isakari){ for(var ty=dd.y1;ty<=dd.y2;ty++){ if(bd.cell[ccx+ty*k.qcols].qans===1){ isakari=true; break;} } }
-					bd.qlight[cc] = isakari;
-				}
-			}
-
-			if(!!g){
-				pc.paint(d.x1,cy,d.x2,cy);
-				pc.paint(cx,d.y1,cx,d.y2);
-			}
-		};
-
-		bd.cellRange = function(cc){
-			var cx = tx = bd.cell[cc].cx, cy = ty = bd.cell[cc].cy;
-			var d = {x1:0, y1:0, x2:k.qcols-1, y2:k.qrows-1};
-
-			tx=cx-1; ty=cy; while(tx>=0)     { if(bd.cell[tx+ty*k.qcols].qnum!==-1){ d.x1=tx+1; break;} tx--; }
-			tx=cx+1; ty=cy; while(tx<k.qcols){ if(bd.cell[tx+ty*k.qcols].qnum!==-1){ d.x2=tx-1; break;} tx++; }
-			tx=cx; ty=cy-1; while(ty>=0)     { if(bd.cell[tx+ty*k.qcols].qnum!==-1){ d.y1=ty+1; break;} ty--; }
-			tx=cx; ty=cy+1; while(ty<k.qrows){ if(bd.cell[tx+ty*k.qcols].qnum!==-1){ d.y2=ty-1; break;} ty++; }
-
-			return d;
+			if((old===-1)^(num===-1)){ this.setQlight(id, (num!==-1?1:0));}
 		};
 	},
 

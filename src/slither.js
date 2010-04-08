@@ -103,7 +103,7 @@ Puzzles.slither.prototype = {
 		};
 
 		mv.inputBGcolor0 = function(){
-			var pos = this.crosspos(0.25);
+			var pos = this.borderpos(0.25);
 			return ((pos.x&1) && (pos.y&1));
 		};
 		mv.inputBGcolor = function(){
@@ -122,8 +122,7 @@ Puzzles.slither.prototype = {
 				}
 			}
 			bd.sQsC(cc, this.inputData-10);
-			var cx=bd.cell[cc].cx, cy=bd.cell[cc].cy;
-			pc.paint(cx,cy,cx+1,cy+1);
+			pc.paintCell(cc);
 
 			this.mouseCell = cc; 
 		};
@@ -184,23 +183,23 @@ Puzzles.slither.prototype = {
 		pc.drawBaseMarks = function(x1,y1,x2,y2){
 			this.vinc('cross_mark', 'auto');
 
-			for(var i=0;i<(k.qcols+1)*(k.qrows+1);i++){
-				var cx = i%(k.qcols+1); var cy = mf(i/(k.qcols+1));
-				if(cx < x1-1 || x2+1 < cx){ continue;}
-				if(cy < y1-1 || y2+1 < cy){ continue;}
+			for(var by=0;by<2*k.qrows;by+=2){
+				for(var bx=0;bx<2*k.qcols;bx+=2){
+					if(bx < x1-1 || x2+1 < bx){ continue;}
+					if(by < y1-1 || y2+1 < by){ continue;}
 
-				this.drawBaseMark1(i);
+					this.drawBaseMark1(bx+by*(2*k.qcols));
+				}
 			}
 		};
-		pc.drawBaseMark1 = function(i){
-			var vid = "x_cm_"+i;
+		pc.drawBaseMark1 = function(id){
+			var vid = "x_cm_"+id;
 
 			g.fillStyle = this.Cellcolor;
 			if(this.vnop(vid,this.NONE)){
-				var lw = Math.max(this.cw/12, 3); //LineWidth
-				var csize = (lw+1)/2;
-				var cx = i%(k.qcols+1), cy = mf(i/(k.qcols+1));
-				g.fillCircle(k.p0.x+cx*this.cw, k.p0.x+cy*this.cw, csize);
+				var csize = (this.lw+1)/2;
+				var bx = id%(2*k.qcols), by = mf(id/(2*k.qcols));
+				g.fillCircle(k.p0.x+bx*this.bw, k.p0.x+by*this.bh, csize);
 			}
 		};
 
@@ -273,12 +272,12 @@ Puzzles.slither.prototype = {
 
 		// ƒJƒ“ƒyƒ“‚Å‚ÍAoutsideborder‚ÌŽž‚Í‚Ï‚¸‚Õ‚ê‚Æ‚Í‡”Ô‚ª‹t‚É‚È‚Á‚Ä‚Ü‚·
 		fio.decodeBorder2_kanpen = function(func){
-			this.decodeObj(func, k.qcols  , k.qrows+1, function(cx,cy){return bd.bnum(2*cx+1,2*cy  );});
-			this.decodeObj(func, k.qcols+1, k.qrows  , function(cx,cy){return bd.bnum(2*cx  ,2*cy+1);});
+			this.decodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
+			this.decodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
 		};
 		fio.encodeBorder2_kanpen = function(func){
-			this.encodeObj(func, k.qcols  , k.qrows+1, function(cx,cy){return bd.bnum(2*cx+1,2*cy  );});
-			this.encodeObj(func, k.qcols+1, k.qrows  , function(cx,cy){return bd.bnum(2*cx  ,2*cy+1);});
+			this.encodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
+			this.encodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
 		};
 	},
 

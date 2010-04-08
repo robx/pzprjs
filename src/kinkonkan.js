@@ -90,10 +90,10 @@ Puzzles.kinkonkan.prototype = {
 				else                   { bd.sQaC(cc,-1); bd.sQsC(cc,1); this.inputData=3;}
 			}
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+			pc.paintCellAround(cc);
 		};
 		mv.inputflash = function(){
-			var pos = this.cellpos();
+			var pos = this.borderpos(0);
 			var ec = bd.exnum(pos.x,pos.y)
 			if(ec==-1 || this.mouseCell==ec || (this.inputData!=11 && this.inputData!=-1)){ return;}
 
@@ -108,9 +108,9 @@ Puzzles.kinkonkan.prototype = {
 			return;
 		};
 		mv.clickexcell = function(){
-			var pos = this.cellpos();
+			var pos = this.borderpos(0);
 			var ec = bd.exnum(pos.x, pos.y);
-			if(ec<0 || 2*k.qcols+2*k.qrows+4<=ec){ return false;}
+			if(ec<0 || bd.excellmax<=ec){ return false;}
 			var ec0 = tc.getTCC();
 
 			if(ec!=-1 && ec!=ec0){
@@ -220,7 +220,7 @@ Puzzles.kinkonkan.prototype = {
 			um.enableRecord();
 		};
 
-		tc.getTCC = function(){ return ee.binder(tc, bd.exnum(this.cursolx>>1, this.cursoly>>1));};
+		tc.getTCC = function(){ return ee.binder(tc, bd.exnum(this.cursolx, this.cursoly));};
 		tc.setTCC = ee.binder(tc, function(id){
 			if(id<0 || 2*k.qcols+2*k.qrows+4<=id){ return;}
 			if     (id<  k.qcols)            { this.cursolx=2*id+1;           this.cursoly=this.miny;                 }
@@ -426,7 +426,7 @@ Puzzles.kinkonkan.prototype = {
 				var ca = item[i];
 				if(ca=="."){ continue;}
 
-				var ec = bd.exnum(i%(k.qcols+2)-1,mf(i/(k.qcols+2))-1);
+				var ec = bd.exnum(i%(k.qcols+2)*2-1,mf(i/(k.qcols+2))*2-1);
 				if(ec!==-1){
 					var inp = ca.split(",");
 					if(inp[0]!=""){ bd.sDiE(ec, parseInt(inp[0]));}
@@ -434,7 +434,7 @@ Puzzles.kinkonkan.prototype = {
 				}
 
 				if(this.filever==1){
-					var c = bd.cnum(i%(k.qcols+2)-1,mf(i/(k.qcols+2))-1);
+					var c = bd.cnum(i%(k.qcols+2)*2-1,mf(i/(k.qcols+2))*2-1);
 					if(c!==-1){
 						if     (ca==="+"){ bd.sQsC(c, 1);}
 						else if(ca!=="."){ bd.sQaC(c, parseInt(ca));}
@@ -450,9 +450,9 @@ Puzzles.kinkonkan.prototype = {
 			this.filever = 1;
 			this.encodeAreaRoom();
 
-			for(var cy=-1;cy<=k.qrows;cy++){
-				for(var cx=-1;cx<=k.qcols;cx++){
-					var ec = bd.exnum(cx,cy);
+			for(var by=-1;by<=2*k.qrows+1;by+=2){
+				for(var bx=-1;bx<=2*k.qcols+1;bx+=2){
+					var ec = bd.exnum(bx,by);
 					if(ec!==-1){
 						var str1 = (bd.DiE(ec)== 0?"":bd.DiE(ec).toString());
 						var str2 = (bd.QnE(ec)==-1?"":bd.QnE(ec).toString());
@@ -460,7 +460,7 @@ Puzzles.kinkonkan.prototype = {
 						continue;
 					}
 
-					var c = bd.cnum(cx,cy);
+					var c = bd.cnum(bx,by);
 					if(c!==-1){
 						if     (bd.QaC(c)!==-1){ this.datastr += (bd.QaC(c).toString() + " ");}
 						else if(bd.QsC(c)=== 1){ this.datastr += "+ ";}
@@ -523,7 +523,7 @@ Puzzles.kinkonkan.prototype = {
 		ans.checkMirror1 = function(startec, ldata){
 			var ccnt=0;
 
-			var cx=bd.excell[startec].cx, cy=bd.excell[startec].cy;
+			var bx=bd.excell[startec].bx, by=bd.excell[startec].by;
 			var dir=0;
 			if     (startec<  k.qcols)          { dir=2;}
 			else if(startec<2*k.qcols)          { dir=1;}
@@ -531,9 +531,9 @@ Puzzles.kinkonkan.prototype = {
 			else if(startec<2*k.qcols+2*k.qrows){ dir=3;}
 
 			while(dir!=0){
-				switch(dir){ case 1: cy--; break; case 2: cy++; break; case 3: cx--; break; case 4: cx++; break;}
-				var cc = bd.cnum(cx,cy);
-				if     (bd.exnum(cx,cy)!=-1){ break;}
+				switch(dir){ case 1: by-=2; break; case 2: by+=2; break; case 3: bx-=2; break; case 4: bx+=2; break;}
+				var cc = bd.cnum(bx,by);
+				if     (bd.exnum(bx,by)!=-1){ break;}
 				else if(bd.QaC(cc)==1){
 					ccnt++;
 					if     (dir==1){ ldata[cc]=(!isNaN({4:1,6:1}[ldata[cc]])?6:2); dir=3;}
@@ -553,7 +553,7 @@ Puzzles.kinkonkan.prototype = {
 				if(ccnt>bd.cellmax){ break;} // îOÇÃÇΩÇﬂÉKÅ[Éhèåè(ëΩï™à¯Ç¡Ç©Ç©ÇÁÇ»Ç¢)
 			}
 
-			return {cnt:ccnt, dest:bd.exnum(cx,cy)};
+			return {cnt:ccnt, dest:bd.exnum(bx,by)};
 		};
 	}
 };

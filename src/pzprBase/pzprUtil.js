@@ -116,10 +116,10 @@ LineManager.prototype = {
 		// ━┷━                       
 		//   ・ ←この場所に線があるか？
 		if(k.isCenterLine){
-			return !bd.isLine(bd.bnum( 4*bd.cell[cc].cx+2-bd.border[id].cx, 4*bd.cell[cc].cy+2  -bd.border[id].cy ));
+			return !bd.isLine(bd.bnum( 2*bd.cell[cc].bx-bd.border[id].bx, 2*bd.cell[cc].by-bd.border[id].by ));
 		}
 		else{
-			return !bd.isLine(bd.bnum( 4*(cc%(k.qcols+1))-bd.border[id].cx, 4*mf(cc/(k.qcols+1))-bd.border[id].cy ));
+			return !bd.isLine(bd.bnum( 4*(cc%(k.qcols+1))-bd.border[id].bx, 4*mf(cc/(k.qcols+1))-bd.border[id].by ));
 		}
 	},
 	iscrossing : function(cc){ return !!k.isLineCross;},
@@ -323,7 +323,7 @@ LineManager.prototype = {
 	// line.lc0()     ひとつながりの線にlineidを設定する(再帰呼び出し用関数)
 	//---------------------------------------------------------------------------
 	getbid : function(id,val){
-		var erase=(val>0?0:1), bx=bd.border[id].cx, by=bd.border[id].cy;
+		var erase=(val>0?0:1), bx=bd.border[id].bx, by=bd.border[id].by;
 		var dx=((k.isCenterLine^(bx%2===0))?2:0), dy=(2-dx);	// (dx,dy) = (2,0) or (0,2)
 
 		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
@@ -363,7 +363,7 @@ LineManager.prototype = {
 	lc0main : function(bid){
 		for(var i=0,len=bid.length;i<len;i++){
 			if(this.data.id[bid[i]]!=0){ continue;}	// 既にidがついていたらスルー
-			var bx=bd.border[bid[i]].cx, by=bd.border[bid[i]].cy;
+			var bx=bd.border[bid[i]].bx, by=bd.border[bid[i]].by;
 			this.data.max++;
 			this.data[this.data.max] = {idlist:[]};
 			if(!k.isCenterLine^(bx&1)){ this.lc0(bx,by+1,1,this.data.max); this.lc0(bx,by,2,this.data.max);}
@@ -374,7 +374,7 @@ LineManager.prototype = {
 		while(1){
 			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 			if((bx+by)%2===0){
-				var cc = (k.isCenterLine?bd.cnum:bd.xnum)(bx>>1,by>>1);
+				var cc = (k.isCenterLine?bd.cnum:bd.xnum)(bx,by);
 				if(cc===-1){ break;}
 				else if(this.lcnt[cc]>=3){
 					if(!this.iscrossing(cc)){
@@ -622,8 +622,8 @@ AreaManager.prototype = {
 				var merged, keep;
 
 				var tc1 = room[roomid[cc1]].top, tc2 = room[roomid[cc2]].top;
-				var tcx1 = bd.cell[tc1].cx, tcx2 = bd.cell[tc2].cx;
-				if(tcx1>tcx2 || (tcx1===tcx2 && tc1>tc2)){ merged = tc1; keep = tc2;}
+				var tbx1 = bd.cell[tc1].bx, tbx2 = bd.cell[tc2].bx;
+				if(tbx1>tbx2 || (tbx1===tbx2 && tc1>tc2)){ merged = tc1; keep = tc2;}
 				else                                     { merged = tc2; keep = tc1;}
 
 				// 消える部屋のほうの数字を消す
@@ -644,14 +644,14 @@ AreaManager.prototype = {
 		}
 	},
 	setTopOfRoom : function(roomid){
-		var cc=-1, cx=k.qcols, cy=k.qrows;
+		var cc=-1, bx=2*k.qcols, by=2*k.qrows;
 		var clist = this.room[roomid].clist;
 		for(var i=0;i<clist.length;i++){
 			var tc = bd.cell[clist[i]];
-			if(tc.cx>cx || (tc.cx==cx && tc.cy>=cy)){ continue;}
+			if(tc.bx>bx || (tc.bx===bx && tc.by>=by)){ continue;}
 			cc=clist[i];
-			cx=tc.cx;
-			cy=tc.cy;
+			bx=tc.bx;
+			by=tc.by;
 		}
 		this.room[roomid].top = cc;
 	},

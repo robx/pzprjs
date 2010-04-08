@@ -165,15 +165,15 @@ Puzzles.kurochute.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkCellNumber = function(){
-			var cx, cy, result = true;
+			var result = true;
 
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)<0){ continue;}
-				var cx=bd.cell[c].cx, cy=bd.cell[c].cy, num=bd.QnC(c), clist=[];
-				if(bd.isBlack(bd.cnum(cx-num,cy))){ clist.push(bd.cnum(cx-num,cy));}
-				if(bd.isBlack(bd.cnum(cx+num,cy))){ clist.push(bd.cnum(cx+num,cy));}
-				if(bd.isBlack(bd.cnum(cx,cy-num))){ clist.push(bd.cnum(cx,cy-num));}
-				if(bd.isBlack(bd.cnum(cx,cy+num))){ clist.push(bd.cnum(cx,cy+num));}
+				var bx=bd.cell[c].bx, by=bd.cell[c].by, num=bd.QnC(c), clist=[];
+				if(bd.isBlack(bd.cnum(bx-num*2,by))){ clist.push(bd.cnum(bx-num*2,by));}
+				if(bd.isBlack(bd.cnum(bx+num*2,by))){ clist.push(bd.cnum(bx+num*2,by));}
+				if(bd.isBlack(bd.cnum(bx,by-num*2))){ clist.push(bd.cnum(bx,by-num*2));}
+				if(bd.isBlack(bd.cnum(bx,by+num*2))){ clist.push(bd.cnum(bx,by+num*2));}
 				if(clist.length!==1){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],4);

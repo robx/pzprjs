@@ -99,7 +99,7 @@ Puzzles.reflect.prototype = {
 			else if(ca=='y'){ bd.sQuC(cc,0); bd.sQnC(cc,-1);}
 			else{ return false;}
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+			pc.paintCellAround(cc);
 			return true;
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
@@ -167,9 +167,9 @@ Puzzles.reflect.prototype = {
 			this.vinc('cell_triangle_border', 'crispEdges');
 
 			var header = "b_tb_";
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+4,y2*2+4);
+			var idlist = this.borderinside(x1-1,y1-1,x2+2,y2+2);
 			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i], lflag = !(bd.border[id].cx&1);
+				var id = idlist[i], lflag = !(bd.border[id].bx&1);
 				var qs1 = bd.QuC(bd.border[id].cellcc[0]),
 					qs2 = bd.QuC(bd.border[id].cellcc[1]);
 
@@ -365,14 +365,14 @@ Puzzles.reflect.prototype = {
 				var cnt=1;
 				var tx, ty;
 
-				bx = bd.cell[c].cx*2;   by = bd.cell[c].cy*2+1;
+				bx = bd.cell[c].bx-1; by = bd.cell[c].by;
 				while(bx>0)        { var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); bx-=2;} else{ break;} }
-				bx = bd.cell[c].cx*2+2; by = bd.cell[c].cy*2+1;
-				while(bx<k.qcols*2){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); bx+=2;} else{ break;} }
-				bx = bd.cell[c].cx*2+1; by = bd.cell[c].cy*2;
+				bx = bd.cell[c].bx+1; by = bd.cell[c].by;
+				while(bx<2*k.qcols){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); bx+=2;} else{ break;} }
+				bx = bd.cell[c].bx; by = bd.cell[c].by-1;
 				while(by>0)        { var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); by-=2;} else{ break;} }
-				bx = bd.cell[c].cx*2+1; by = bd.cell[c].cy*2+2;
-				while(by<k.qrows*2){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); by+=2;} else{ break;} }
+				bx = bd.cell[c].bx; by = bd.cell[c].by+1;
+				while(by<2*k.qrows){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); by+=2;} else{ break;} }
 
 				if(type==1?bd.QnC(c)<cnt:bd.QnC(c)>cnt){
 					if(this.inAutoCheck){ return false;}

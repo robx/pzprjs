@@ -192,14 +192,14 @@ Puzzles.aho.prototype = {
 
 				var d = this.getSizeOfClist(rinfo.room[id].idlist,f_true);
 				var clist = [];
-				for(var cx=d.x1;cx<=d.x2;cx++){
-					for(var cy=d.y1;cy<=d.y2;cy++){
-						var cc = bd.cnum(cx,cy);
+				for(var bx=d.x1;bx<=d.x2;bx+=2){
+					for(var by=d.y1;by<=d.y2;by+=2){
+						var cc = bd.cnum(bx,by);
 						if(rinfo.id[cc]!=id){ clist.push(cc);}
 					}
 				}
 				var dl = this.getSizeOfClist(clist,f_true);
-				if( clist.length==0 || ((dl.x2-dl.x1+1)*(dl.y2-dl.y1+1)!=dl.cnt) || (d.x1!=dl.x1 && d.x2!=dl.x2) || (d.y1!=dl.y1 && d.y2!=dl.y2) ){
+				if( clist.length==0 || (dl.cols*dl.rows!=dl.cnt) || (d.x1!==dl.x1 && d.x2!==dl.x2) || (d.y1!==dl.y1 && d.y2!==dl.y2) ){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(rinfo.room[id].idlist,1);
 					result = false;

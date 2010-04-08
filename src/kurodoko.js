@@ -175,14 +175,14 @@ Puzzles.kurodoko.prototype = {
 				if(bd.QnC(cc)<0){ continue;}
 
 				var tx, ty, list = [cc];
-				tx = bd.cell[cc].cx-1; ty = bd.cell[cc].cy;
-				while(tx>=0)     { var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); tx--;} else{ break;} }
-				tx = bd.cell[cc].cx+1; ty = bd.cell[cc].cy;
-				while(tx<k.qcols){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); tx++;} else{ break;} }
-				tx = bd.cell[cc].cx; ty = bd.cell[cc].cy-1;
-				while(ty>=0)     { var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); ty--;} else{ break;} }
-				tx = bd.cell[cc].cx; ty = bd.cell[cc].cy+1;
-				while(ty<k.qrows){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); ty++;} else{ break;} }
+				tx = bd.cell[cc].bx-2; ty = bd.cell[cc].by;
+				while(tx>0)        { var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); tx-=2;} else{ break;} }
+				tx = bd.cell[cc].bx+2; ty = bd.cell[cc].by;
+				while(tx<2*k.qcols){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); tx+=2;} else{ break;} }
+				tx = bd.cell[cc].bx; ty = bd.cell[cc].by-2;
+				while(ty>0)        { var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); ty-=2;} else{ break;} }
+				tx = bd.cell[cc].bx; ty = bd.cell[cc].by+2;
+				while(ty<2*k.qrows){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); ty+=2;} else{ break;} }
 
 				if(bd.QnC(cc)!=list.length){
 					if(this.inAutoCheck){ return false;}

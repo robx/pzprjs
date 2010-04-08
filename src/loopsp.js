@@ -107,11 +107,11 @@ Puzzles.loopsp.prototype = {
 			else{
 				var cc0 = tc.getTCC();
 				tc.setTCC(cc);
-				pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
+				pc.paintCell(cc0);
 			}
 			this.mouseCell = cc;
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
+			pc.paintCell(cc);
 		};
 
 		bd.enableLineNG = true;
@@ -151,7 +151,7 @@ Puzzles.loopsp.prototype = {
 			}
 			else{ return false;}
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+			pc.paintCell(cc);
 			return true;
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};

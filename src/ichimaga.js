@@ -248,7 +248,7 @@ Puzzles.ichimaga.prototype = {
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1){ continue;}
 
-				var bx=bd.cell[c].cx*2+1, by=bd.cell[c].cy*2+1;
+				var bx=bd.cell[c].bx, by=bd.cell[c].by;
 				var dir4id = [bd.bnum(bx,by-1),bd.bnum(bx,by+1),bd.bnum(bx-1,by),bd.bnum(bx+1,by)];
 
 				for(var a=0;a<4;a++){
@@ -257,11 +257,11 @@ Puzzles.ichimaga.prototype = {
 					var ccnt=0;	// curve count.
 					var idlist = [];
 					var dir=a+1;
-					bx=bd.cell[c].cx*2+1, by=bd.cell[c].cy*2+1;
+					bx=bd.cell[c].bx, by=bd.cell[c].by;
 					while(1){
 						switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 						if((bx+by)%2==0){
-							var cc = bd.cnum(bx>>1,by>>1);
+							var cc = bd.cnum(bx,by);
 							if     (bd.QnC(cc)!=-1){ break;}
 							else if(line.lcntCell(cc)==4){ }
 							else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!=2){ ccnt++;} dir=2;}
@@ -279,7 +279,7 @@ Puzzles.ichimaga.prototype = {
 
 					for(var i=0;i<idlist.length;i++){ errinfo.check[idlist[i]]=2;}
 
-					var cc = bd.cnum(bx>>1,by>>1);
+					var cc = bd.cnum(bx,by);
 					if(this.ismag() && bd.QnC(c)!=-2 && bd.QnC(c)==bd.QnC(cc)){
 						errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist}); continue;
 					}
@@ -315,7 +315,7 @@ Puzzles.ichimaga.prototype = {
 			for(var c=0;c<bd.cellmax;c++){ if(bd.QnC(c)!=-1 && line.lcntCell(c)>0){ fc=c; break;} }
 			if(fc==-1){ return true;}
 
-			this.cl0(visited.id, bd.cell[fc].cx*2+1, bd.cell[fc].cy*2+1,0);
+			this.cl0(visited.id, bd.cell[fc].bx, bd.cell[fc].by,0);
 			var lcnt2=0, idlist=[];
 			for(var id=0;id<bd.bdmax;id++){ if(visited.id[id]==1){ lcnt2++; idlist.push(id);} }
 
@@ -330,14 +330,14 @@ Puzzles.ichimaga.prototype = {
 			while(1){
 				switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 				if(!((bx+by)&1)){
-					if(bd.QnC(bd.cnum(bx>>1,by>>1))!=-1){
+					if(bd.QnC(bd.cnum(bx,by))!=-1){
 						if(bd.isLine(bd.bnum(bx,by-1))){ this.cl0(check,bx,by,1);}
 						if(bd.isLine(bd.bnum(bx,by+1))){ this.cl0(check,bx,by,2);}
 						if(bd.isLine(bd.bnum(bx-1,by))){ this.cl0(check,bx,by,3);}
 						if(bd.isLine(bd.bnum(bx+1,by))){ this.cl0(check,bx,by,4);}
 						break;
 					}
-					else if(line.lcntCell(bd.cnum(bx>>1,by>>1))==4){ }
+					else if(line.lcntCell(bd.cnum(bx,by))==4){ }
 					else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
 					else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ dir=1;}
 					else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ dir=4;}

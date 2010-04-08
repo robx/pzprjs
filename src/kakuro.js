@@ -111,13 +111,10 @@ Puzzles.kakuro.prototype = {
 		menu.ex.adjustSpecial  = menu.ex.adjustQues51_1;
 		menu.ex.adjustSpecial2 = menu.ex.adjustQues51_2;
 
-		tc.getTCX = function(){ return tc.cursolx>>1;};
-		tc.getTCY = function(){ return tc.cursoly>>1;};
 		tc.setAlign = function(){
 			if(k.playmode){
 				if(this.cursolx<1) this.cursolx = 1;
 				if(this.cursoly<1) this.cursoly = 1;
-				pc.paint((this.cursolx>>1)-1, (this.cursoly>>1)-1, this.cursolx>>1, this.cursoly>>1);
 			}
 		};
 		tc.targetdir = 2;
@@ -238,19 +235,20 @@ Puzzles.kakuro.prototype = {
 			for(var i=a;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 				while(cell<k.qcols){
-					if(bd.QuC(bd.cnum(cell,0))!=51){ bd.sDiE(cell,this.decval(ca)); cell++; i++; break;}
+					if(bd.QuC(bd.cnum(cell*2+1,1))!==51){ bd.sDiE(cell,this.decval(ca)); cell++; i++; break;}
 					cell++;
 				}
 				if(cell>=k.qcols){ a=i; break;}
 				i--;
 			}
+			cell=0;
 			for(var i=a;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
-				while(cell<k.qcols+k.qrows){
-					if(bd.QuC(bd.cnum(0,cell-k.qcols))!=51){ bd.sQnE(cell,this.decval(ca)); cell++; i++; break;}
+				while(cell<k.qrows){
+					if(bd.QuC(bd.cnum(1,cell*2+1))!==51){ bd.sQnE(cell+k.qcols,this.decval(ca)); cell++; i++; break;}
 					cell++;
 				}
-				if(cell>=k.qcols+k.qrows){ a=i; break;}
+				if(cell>=k.qrows){ a=i; break;}
 				i--;
 			}
 
@@ -277,8 +275,8 @@ Puzzles.kakuro.prototype = {
 			if(count>0){ cm += (count+19).toString(36);}
 
 			// 盤面外側の数字部分のエンコード
-			for(var c=0;c<k.qcols;c++){ if(bd.QuC(bd.cnum(c,0))!=51){ cm+=this.encval(bd.DiE(c));} }
-			for(var c=k.qcols;c<k.qcols+k.qrows;c++){ if(bd.QuC(bd.cnum(0,c-k.qcols))!=51){ cm+=this.encval(bd.QnE(c));} }
+			for(var c=0;c<k.qcols;c++){ if(bd.QuC(bd.cnum(c*2+1,1))!=51){ cm+=this.encval(bd.DiE(c));} }
+			for(var c=0;c<k.qrows;c++){ if(bd.QuC(bd.cnum(1,c*2+1))!=51){ cm+=this.encval(bd.QnE(c+k.qcols));} }
 
 			this.outbstr += cm;
 		};
@@ -325,31 +323,34 @@ Puzzles.kakuro.prototype = {
 				var item = data.split(" ");
 				if(item.length<=1){ return;}
 				else if(item[0]==0 && item[1]==0){ }
-				else if(item[0]==0){ bd.sDiE(parseInt(item[1])-1, parseInt(item[3]));}
-				else if(item[1]==0){ bd.sQnE(parseInt(item[0])-1+k.qcols, parseInt(item[2]));}
+				else if(item[0]==0 || item[1]==0){
+					var ec=bd.exnum(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
+					if     (item[0]==0){ bd.sDiE(ec, parseInt(item[3]));}
+					else if(item[1]==0){ bd.sQnE(ec, parseInt(item[2]));}
+				}
 				else{
-					var c=bd.cnum(parseInt(item[1])-1,parseInt(item[0])-1);
+					var c=bd.cnum(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
 					bd.sQuC(c, 51);
-					bd.sQnC(c, parseInt(item[2]));
 					bd.sDiC(c, parseInt(item[3]));
+					bd.sQnC(c, parseInt(item[2]));
 				}
 			}
 		};
 		fio.encodeRoom_kanpen = function(){
-			for(var cy=-1;cy<k.qrows;cy++){ for(var cx=-1;cx<k.qcols;cx++){
-				if(cx!==-1 && cy!==-1 && bd.QuC(bd.cnum(cx,cy))!==51){ continue;}
+			for(var by=-1;by<2*k.qrows;by+=2){ for(var bx=-1;bx<2*k.qcols;bx+=2){
+				if(bx!==-1 && by!==-1 && bd.QuC(bd.cnum(bx,by))!==51){ continue;}
 
-				var item=[(cy+1).toString(),(cx+1).toString(),0,0];
-				if(cx==-1&&cy==-1){ }
-				else if(cy==-1){
-					item[3]=bd.DiE(bd.exnum(cx,cy)).toString();
+				var item=[((by+1)>>1).toString(),((bx+1)>>1).toString(),0,0];
+				if(bx===-1&&by===-1){ }
+				else if(by===-1){
+					item[3]=bd.DiE(bd.exnum(bx,by)).toString();
 				}
-				else if(cx==-1){
-					item[2]=bd.QnE(bd.exnum(cx,cy)).toString();
+				else if(bx===-1){
+					item[2]=bd.QnE(bd.exnum(bx,by)).toString();
 				}
 				else{
-					item[2]=bd.QnC(bd.cnum(cx,cy)).toString();
-					item[3]=bd.DiC(bd.cnum(cx,cy)).toString();
+					item[2]=bd.QnC(bd.cnum(bx,by)).toString();
+					item[3]=bd.DiC(bd.cnum(bx,by)).toString();
 				}
 				this.datastr += (item.join(" ")+"/");
 			}}
@@ -357,26 +358,26 @@ Puzzles.kakuro.prototype = {
 
 		fio.decodeQans_kanpen = function(){
 			var barray = this.readLines(k.qrows+1);
-			for(var cy=-1;cy<k.qrows;cy++){
-				if(cy+1>=barray.length){ break;}
-				var arr = barray[cy+1].split(" ");
-				for(var cx=-1;cx<k.qcols;cx++){
-					if(arr[cx+1]==''){ continue;}
-					var c = bd.cnum(cx,cy);
-					if(c!=-1&&arr[cx+1]!="."&&arr[cx+1]!="0"){ bd.sQaC(c, parseInt(arr[cx+1]));}
+			for(var by=-1;by<2*k.qrows;by+=2){
+				if(((by+1)>>1)>=barray.length){ break;}
+				var arr = barray[(by+1)>>1].split(" ");
+				for(var bx=-1;bx<2*k.qcols;bx+=2){
+					if(arr[(bx+1)>>1]==''){ continue;}
+					var c = bd.cnum(bx,by);
+					if(c!=-1&&arr[(bx+1)>>1]!="."&&arr[(bx+1)>>1]!="0"){ bd.sQaC(c, parseInt(arr[(bx+1)>>1]));}
 				}
 			}
 		};
 		fio.encodeQans_kanpen = function(){
-			for(cy=-1;cy<k.qrows;cy++){
-				for(cx=-1;cx<k.qrows;cx++){
-					var c = bd.cnum(cx,cy);
+			for(var by=-1;by<2*k.qrows;by+=2){
+				for(var bx=-1;bx<2*k.qcols;bx+=2){
+					var c = bd.cnum(bx,by);
 					if(c==-1){ this.datastr += ". ";}
 					else if(bd.QuC(c)==51){ this.datastr += ". ";}
 					else if(bd.QaC(c) > 0){ this.datastr += (bd.QaC(c).toString() + " ");}
 					else                  { this.datastr += "0 ";}
 				}
-				if(cy<k.qrows-1){ this.datastr += "/";}
+				if(by<2*k.qrows-1){ this.datastr += "/";}
 			}
 		};
 	},

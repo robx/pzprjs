@@ -127,7 +127,7 @@ Puzzles.triplace.prototype = {
 				return;
 			}
 			if(this.moveTCell(ca)){ return;}
-			this.inputnumber51(ca,{2:(k.qcols-tc.getTCX()-1), 4:(k.qrows-tc.getTCY()-1)});
+			this.inputnumber51(ca,{2:(k.qcols-(tc.cursolx<<1)-1), 4:(k.qrows-(tc.cursoly<<1)-1)});
 		};
 		kc.keyup    = function(ca){ if(ca=='z'){ this.isZ=false;}};
 
@@ -154,15 +154,13 @@ Puzzles.triplace.prototype = {
 			kp.generate(kp.ORIGINAL, false, true, kp.kpgenerate);
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
-				kc.inputnumber51(ca,{2:(k.qcols-tc.getTCX()-1), 4:(k.qrows-tc.getTCY()-1)});
+				kc.inputnumber51(ca,{2:(k.qcols-(tc.cursolx<<1)-1), 4:(k.qrows-(tc.cursoly<<1)-1)});
 			};
 		}
 
 		menu.ex.adjustSpecial  = menu.ex.adjustQues51_1;
 		menu.ex.adjustSpecial2 = menu.ex.adjustQues51_2;
 
-		tc.getTCX = function(){ return tc.cursolx>>1;};
-		tc.getTCY = function(){ return tc.cursoly>>1;};
 		tc.targetdir = 2;
 	},
 
@@ -200,7 +198,7 @@ Puzzles.triplace.prototype = {
 			this.setBorderColor = function(id){ return (bd.border[id].qans===1);};
 
 			g.fillStyle = this.BorderQanscolor;
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+			var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 			this.isdrawBD = true;
 		};
@@ -210,7 +208,7 @@ Puzzles.triplace.prototype = {
 			this.setBorderColor = function(id){ return (bd.border[id].ques===1);};
 
 			g.fillStyle = this.BorderQuescolor;
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+			var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 			this.isdrawBD = true;
 		};
@@ -376,9 +374,9 @@ Puzzles.triplace.prototype = {
 				area.sr0(c, tinfo, bd.isBorder);
 
 				var clist = tinfo[tinfo.max].clist;
-				var d = ans.getSizeOfClist(clist, f_true);
+				var d = ans.getSizeOfClist(clist,f_true);
 
-				tinfo.room[tinfo.max] = {idlist:clist, is1x3:((((d.x1==d.x2)||(d.y1==d.y2))&&d.cnt==3)?1:0)};
+				tinfo.room[tinfo.max] = {idlist:clist, is1x3:((((d.x1===d.x2)||(d.y1===d.y2))&&d.cnt===3)?1:0)};
 			}
 			return tinfo;
 		};

@@ -93,7 +93,7 @@ Puzzles.ayeheya.prototype = {
 		bd.nummaxfunc = function(cc){
 			var id = area.room.id[cc];
 			var d = ans.getSizeOfClist(area.room[id].clist,f_true);
-			var m=d.x2-d.x1+1, n=d.y2-d.y1+1; if(m>n){ var t=m;m=n;n=t;}
+			var m=d.cols, n=d.rows; if(m>n){ var t=m;m=n;n=t;}
 			if     (m===1){ return mf((n+1)/2);}
 			else if(m===2){ return n;}
 			else if(m===3){
@@ -167,8 +167,8 @@ Puzzles.ayeheya.prototype = {
 
 				if(inp[i].match(/(\d+in)?(\d+)x(\d+)$/)){
 					if(RegExp.$1.length>0){ bd.sQnC(c, parseInt(RegExp.$1));}
-					var x1 = bd.cell[c].cx, x2 = x1 + parseInt(RegExp.$2) - 1;
-					var y1 = bd.cell[c].cy, y2 = y1 + parseInt(RegExp.$3) - 1;
+					var x1 = bd.cell[c].bx, x2 = x1 + 2*parseInt(RegExp.$2) - 2;
+					var y1 = bd.cell[c].by, y2 = y1 + 2*parseInt(RegExp.$3) - 2;
 					fio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
 				}
 				i++;
@@ -235,10 +235,10 @@ Puzzles.ayeheya.prototype = {
 			var result = true;
 			for(var r=1;r<=rinfo.max;r++){
 				var d = ans.getSizeOfClist(rinfo.room[r].idlist,f_true);
-				var sx=d.x1+d.x2+1, sy=d.y1+d.y2+1;
+				var sx=d.x1+d.x2, sy=d.y1+d.y2;
 				for(var i=0;i<rinfo.room[r].idlist.length;i++){
 					var c=rinfo.room[r].idlist[i];
-					if(bd.isBlack(c) ^ bd.isBlack(bd.cnum(sx-bd.cell[c].cx-1, sy-bd.cell[c].cy-1))){
+					if(bd.isBlack(c) ^ bd.isBlack(bd.cnum(sx-bd.cell[c].bx, sy-bd.cell[c].by))){
 						if(this.inAutoCheck){ return false;}
 						bd.sErC(rinfo.room[r].idlist,1);
 						result = false;
@@ -251,14 +251,14 @@ Puzzles.ayeheya.prototype = {
 		ans.isBorderCount = function(nullnum, keycellpos, clist, nullobj){
 			var d = ans.getSizeOfClist(clist,f_true), count = 0, bx, by;
 			if(d.x1===d.x2){
-				bx = (d.x1<<1)+1;
-				for(by=(d.y1<<1)+2;by<=(d.y2<<1);by+=2){
+				bx = d.x1;
+				for(by=d.y1+1;by<=d.y2-1;by+=2){
 					if(bd.QuB(bd.bnum(bx,by))===1){ count++;}
 				}
 			}
 			else if(d.y1===d.y2){
-				by = (d.y1<<1)+1;
-				for(bx=(d.x1<<1)+2;bx<=(d.x2<<1);bx+=2){
+				by = d.y1;
+				for(bx=d.x1+1;bx<=d.x2-1;bx+=2){
 					if(bd.QuB(bd.bnum(bx,by))===1){ count++;}
 				}
 			}

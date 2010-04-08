@@ -93,7 +93,7 @@ Puzzles.heyawake.prototype = {
 		bd.nummaxfunc = function(cc){
 			var id = area.room.id[cc];
 			var d = ans.getSizeOfClist(area.room[id].clist,f_true);
-			var m=d.x2-d.x1+1, n=d.y2-d.y1+1; if(m>n){ var t=m;m=n;n=t;}
+			var m=d.cols, n=d.rows; if(m>n){ var t=m;m=n;n=t;}
 			if     (m===1){ return mf((n+1)/2);}
 			else if(m===2){ return n;}
 			else if(m===3){
@@ -167,8 +167,8 @@ Puzzles.heyawake.prototype = {
 
 				if(inp[i].match(/(\d+in)?(\d+)x(\d+)$/)){
 					if(RegExp.$1.length>0){ bd.sQnC(c, parseInt(RegExp.$1));}
-					var x1 = bd.cell[c].cx, x2 = x1 + parseInt(RegExp.$2) - 1;
-					var y1 = bd.cell[c].cy, y2 = y1 + parseInt(RegExp.$3) - 1;
+					var x1 = bd.cell[c].bx, x2 = x1 + 2*parseInt(RegExp.$2) - 2;
+					var y1 = bd.cell[c].by, y2 = y1 + 2*parseInt(RegExp.$3) - 2;
 					fio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
 				}
 				i++;
@@ -180,9 +180,9 @@ Puzzles.heyawake.prototype = {
 			for(var id=1;id<=rinfo.max;id++){
 				var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
 				if(bd.QnC(bd.cnum(d.x1,d.y1))>=0){
-					barray.push(""+bd.QnC(bd.cnum(d.x1,d.y1))+"in"+(d.x2-d.x1+1)+"x"+(d.y2-d.y1+1));
+					barray.push(""+bd.QnC(bd.cnum(d.x1,d.y1))+"in"+d.cols+"x"+d.rows);
 				}
-				else{ barray.push(""+(d.x2-d.x1+1)+"x"+(d.y2-d.y1+1));}
+				else{ barray.push(""+d.cols+"x"+d.rows);}
 			}
 			this.outbstr = barray.join("/");
 		};
@@ -241,14 +241,14 @@ Puzzles.heyawake.prototype = {
 		ans.isBorderCount = function(nullnum, keycellpos, clist, nullobj){
 			var d = ans.getSizeOfClist(clist,f_true), count = 0, bx, by;
 			if(d.x1===d.x2){
-				bx = (d.x1<<1)+1;
-				for(by=(d.y1<<1)+2;by<=(d.y2<<1);by+=2){
+				bx = d.x1;
+				for(by=d.y1+1;by<=d.y2-1;by+=2){
 					if(bd.QuB(bd.bnum(bx,by))===1){ count++;}
 				}
 			}
 			else if(d.y1===d.y2){
-				by = (d.y1<<1)+1;
-				for(bx=(d.x1<<1)+2;bx<=(d.x2<<1);bx+=2){
+				by = d.y1;
+				for(bx=d.x1+1;bx<=d.x2-1;bx+=2){
 					if(bd.QuB(bd.bnum(bx,by))===1){ count++;}
 				}
 			}

@@ -111,7 +111,7 @@ Puzzles.tilepaint.prototype = {
 		kc.keyinput = function(ca){
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.inputnumber51(ca,{2:(k.qcols-tc.getTCX()-1), 4:(k.qrows-tc.getTCY()-1)});
+			this.inputnumber51(ca,{2:(k.qcols-(tc.cursolx<<1)-1), 4:(k.qrows-(tc.cursoly<<1)-1)});
 		};
 
 		if(k.EDITOR){
@@ -135,7 +135,7 @@ Puzzles.tilepaint.prototype = {
 			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
-				kc.inputnumber51(ca,{2:(k.qcols-tc.getTCX()-1), 4:(k.qrows-tc.getTCY()-1)});
+				kc.inputnumber51(ca,{2:(k.qcols-(tc.cursolx<<1)-1), 4:(k.qrows-(tc.cursoly<<1)-1)});
 			};
 		}
 
@@ -157,8 +157,6 @@ Puzzles.tilepaint.prototype = {
 		menu.ex.adjustSpecial  = menu.ex.adjustQues51_1;
 		menu.ex.adjustSpecial2 = menu.ex.adjustQues51_2;
 
-		tc.getTCX = function(){ return tc.cursolx>>1;};
-		tc.getTCY = function(){ return tc.cursoly>>1;};
 		tc.targetdir = 2;
 	},
 

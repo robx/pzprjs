@@ -75,14 +75,14 @@ Puzzles.hashikake.prototype = {
 		};
 
 		mv.inputLine = function(){
-			var pos = this.cellpos();
+			var pos = this.borderpos(0);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = -1;
-			if     (pos.y-this.mouseCell.y==-1){ id=bd.bnum(this.mouseCell.x*2+1,this.mouseCell.y*2  );}
-			else if(pos.y-this.mouseCell.y== 1){ id=bd.bnum(this.mouseCell.x*2+1,this.mouseCell.y*2+2);}
-			else if(pos.x-this.mouseCell.x==-1){ id=bd.bnum(this.mouseCell.x*2  ,this.mouseCell.y*2+1);}
-			else if(pos.x-this.mouseCell.x== 1){ id=bd.bnum(this.mouseCell.x*2+2,this.mouseCell.y*2+1);}
+			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1);}
+			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1);}
+			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  );}
+			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  );}
 
 			var include = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
 			if(this.mouseCell!=-1 && id!=-1){
@@ -93,7 +93,7 @@ Puzzles.hashikake.prototype = {
 					else if(bd.LiB(id)==1){ this.inputData=2;}
 					else                  { this.inputData=0;}
 				}
-				if(this.inputData> 0 && ((pos.x-this.mouseCell.x==-1)||(pos.y-this.mouseCell.y==-1))){ idlist=idlist.reverse();} // êFï™ÇØÇÃìsçáè„ÇÃèàóù
+				if(this.inputData> 0 && ((pos.x-this.mouseCell.x==-2)||(pos.y-this.mouseCell.y==-2))){ idlist=idlist.reverse();} // êFï™ÇØÇÃìsçáè„ÇÃèàóù
 				for(var i=0;i<idlist.length;i++){
 					if(this.inputData!=-1){ bd.sLiB(idlist[i], this.inputData); bd.sQsB(idlist[i], 0);}
 					pc.paintLine(idlist[i]);
@@ -104,24 +104,24 @@ Puzzles.hashikake.prototype = {
 		};
 		mv.getidlist = function(id){
 			var idlist=[], bx1, bx2, by1, by2;
-			var cc1=bd.border[id].cellcc[0], cx=bd.cell[cc1].cx, cy=bd.cell[cc1].cy;
-			if(bd.border[id].cx&1){
-				while(cy>=0         && bd.QnC(bd.cnum(cx,cy  ))==-1){ cy--;} by1=2*cy+2;
-				while(cy<=k.qrows-1 && bd.QnC(bd.cnum(cx,cy+1))==-1){ cy++;} by2=2*cy+2;
-				bx1 = bx2 = bd.border[id].cx;
+			var bx=bd.border[id].bx, by=bd.border[id].by;
+			if(bd.border[id].bx&1){
+				while(by>0         && bd.QnC(bd.cnum(bx,by-1))===-1){ by-=2;} by1=by;
+				while(by<2*k.qrows && bd.QnC(bd.cnum(bx,by+1))===-1){ by+=2;} by2=by;
+				bx1 = bx2 = bd.border[id].bx;
 			}
-			else if(bd.border[id].cy&1){
-				while(cx>=0         && bd.QnC(bd.cnum(cx  ,cy))==-1){ cx--;} bx1=2*cx+2;
-				while(cx<=k.qcols-1 && bd.QnC(bd.cnum(cx+1,cy))==-1){ cx++;} bx2=2*cx+2;
-				by1 = by2 = bd.border[id].cy;
+			else if(bd.border[id].by&1){
+				while(bx>0         && bd.QnC(bd.cnum(bx-1,by))===-1){ bx-=2;} bx1=bx;
+				while(bx<2*k.qcols && bd.QnC(bd.cnum(bx+1,by))===-1){ bx+=2;} bx2=bx;
+				by1 = by2 = bd.border[id].by;
 			}
-			if(bx1<1||bx2>2*k.qcols-1||by1<1||by2>2*k.qrows-1){ return [];}
+			if(bx1<=0||bx2>=2*k.qcols||by1<=0||by2>=2*k.qrows){ return [];}
 			for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
 			return idlist;
 		};
 
 		mv.inputpeke = function(){
-			var pos = this.crosspos(0.22);
+			var pos = this.borderpos(0.22);
 			var id = bd.bnum(pos.x, pos.y);
 			if(id==-1 || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
 
@@ -205,20 +205,20 @@ Puzzles.hashikake.prototype = {
 			if(forceFlag!==false && this.setLineColor(id)){
 				if(bd.border[id].line==1){
 					if(this.vnop(vids[0],this.FILL)){
-						if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
-						if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm, this.cw+lw, lw);}
+						if(bd.border[id].bx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
+						if(bd.border[id].by&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm, this.cw+lw, lw);}
 					}
 				}
 				else{ this.vhide(vids[0]);}
 
 				if(bd.border[id].line==2){
 					if(this.vnop(vids[1],this.FILL)){
-						if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm-ls, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
-						if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm-ls, this.cw+lw, lw);}
+						if(bd.border[id].bx&1){ g.fillRect(bd.border[id].px-lm-ls, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
+						if(bd.border[id].by&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm-ls, this.cw+lw, lw);}
 					}
 					if(this.vnop(vids[2],this.FILL)){
-						if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm+ls, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
-						if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm+ls, this.cw+lw, lw);}
+						if(bd.border[id].bx&1){ g.fillRect(bd.border[id].px-lm+ls, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
+						if(bd.border[id].by&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm+ls, this.cw+lw, lw);}
 					}
 				}
 				else{ this.vhide([vids[1], vids[2]]);}

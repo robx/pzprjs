@@ -75,18 +75,17 @@ Puzzles.wagiri.prototype = {
 		mv.mousemove = function(){ };
 
 		mv.inputquestion = function(){
-			var pos = this.crosspos(0.33);
+			var pos = this.borderpos(0.33);
 			if(pos.x<tc.minx || tc.maxx<pos.x || pos.y<tc.miny || tc.maxy<pos.y){ return;}
 			if(!(pos.x&1) && !(pos.y&1)){
 				this.inputcross();
 			}
 			else if((pos.x&1) && (pos.y&1)){
-				var cc = this.cellid();
-				if(cc!==tc.getTCC()){
-					var tcx = tc.cursolx, tcy = tc.cursoly;
+				var cc0 = tc.getTCC(), cc = this.cellid();
+				if(cc!==cc0){
 					tc.setTCC(cc);
-					pc.paint((tcx>>1)-1, (tcy>>1)-1, (tcx>>1)+1, (tcy>>1)+1);
-					pc.paint((pos.x>>1)-1, (pos.y>>1)-1, pos.x>>1, pos.y>>1);
+					pc.paintCell(cc0);
+					pc.paintCell(cc);
 				}
 				else if(cc!=-1){
 					var trans = (this.btn.Left ? [-1,1,0,2,-2] : [2,-2,0,-1,1]);
@@ -97,10 +96,10 @@ Puzzles.wagiri.prototype = {
 			else{
 				var id = bd.bnum(pos.x, pos.y);
 				if(id!==tc.getTBC()){
-					var tcx = tc.cursolx, tcy = tc.cursoly;
+					var tcp = tc.getTCP();
 					tc.setTCP(pos);
-					pc.paint((tcx>>1)-1, (tcy>>1)-1, (tcx>>1)+1, (tcy>>1)+1);
-					pc.paint((pos.x>>1)-1, (pos.y>>1)-1, pos.x>>1, pos.y>>1);
+					pc.paintPos(tcp);
+					pc.paintPos(pos);
 				}
 			}
 		};
@@ -115,7 +114,7 @@ Puzzles.wagiri.prototype = {
 				else{ bd.sQaC(cc, (this.btn.Left?{1:2,2:-1}:{1:-1,2:1})[bd.QaC(cc)]);}
 			}
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+			pc.paintCellAround(cc);
 		};
 
 		// キーボード入力系
@@ -320,7 +319,7 @@ Puzzles.wagiri.prototype = {
 				for(var cc=0;cc<bd.cellmax;cc++) { history.cell[cc] =(check[cc]!==-1?0:-1);}
 				for(var xc=0;xc<bd.crossmax;xc++){ history.cross[xc]=(scnt[xc]>0    ?0:-1);}
 
-				var fc = bd.xnum(bd.cell[c].cx+(bd.QaC(c)===1?0:1), bd.cell[c].cy);
+				var fc = bd.xnum(bd.cell[c].bx+(bd.QaC(c)===1?-1:1), bd.cell[c].by);
 				this.sp0(fc, 1, scnt, check, history);
 			}
 			for(var c=0;c<bd.cellmax;c++) { if(check[c]===0){ check[c]=2;} }
@@ -336,12 +335,12 @@ Puzzles.wagiri.prototype = {
 
 			// 別に到達していない -> 隣に進んでみる
 			history.cross[xc] = depth; // この交点にマーキング
-			var xx=bd.cross[xc].cx, xy=bd.cross[xc].cy, isloop=false;
+			var bx=bd.cross[xc].bx, by=bd.cross[xc].by, isloop=false;
 			var nb = [
-					{ cell:bd.cnum(xx-1,xy-1), cross:bd.xnum(xx-1,xy-1), qans:1},
-					{ cell:bd.cnum(xx  ,xy-1), cross:bd.xnum(xx+1,xy-1), qans:2},
-					{ cell:bd.cnum(xx-1,xy  ), cross:bd.xnum(xx-1,xy+1), qans:2},
-					{ cell:bd.cnum(xx  ,xy  ), cross:bd.xnum(xx+1,xy+1), qans:1}
+					{ cell:bd.cnum(bx-1,by-1), cross:bd.xnum(bx-2,by-2), qans:1},
+					{ cell:bd.cnum(bx+1,by-1), cross:bd.xnum(bx+2,by-2), qans:2},
+					{ cell:bd.cnum(bx-1,by+1), cross:bd.xnum(bx-2,by+2), qans:2},
+					{ cell:bd.cnum(bx+1,by+1), cross:bd.xnum(bx+2,by+2), qans:1}
 				];
 			for(var i=0;i<4;i++){
 				if( nb[i].cell===-1 ||					// そっちは盤面の外だよ！
@@ -385,14 +384,14 @@ Puzzles.wagiri.prototype = {
 			var scnt = [];
 			for(var c=0;c<bd.crossmax;c++){ scnt[c]=0;}
 			for(var c=0;c<bd.cellmax;c++){
-				var cx=c%k.qcols, cy=(c/k.qcols)|0;
+				var bx=bd.cell[c].bx, by=bd.cell[c].by;
 				if(bd.QaC(c)===1){
-					scnt[cx+cy*(k.qcols+1)]++;
-					scnt[(cx+1)+(cy+1)*(k.qcols+1)]++;
+					scnt[bd.xnum(bx-1,by-1)]++;
+					scnt[bd.xnum(bx+1,by+1)]++;
 				}
 				else if(bd.QaC(c)===2){
-					scnt[cx+(cy+1)*(k.qcols+1)]++;
-					scnt[(cx+1)+cy*(k.qcols+1)]++;
+					scnt[bd.xnum(bx-1,by+1)]++;
+					scnt[bd.xnum(bx+1,by-1)]++;
 				}
 			}
 			return scnt;

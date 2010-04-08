@@ -240,12 +240,12 @@ Puzzles.yajirin.prototype = {
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)<0 || bd.DiC(c)==0 || bd.isBlack(c)){ continue;}
-				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, dir = bd.DiC(c);
+				var bx = bd.cell[c].bx, by = bd.cell[c].by, dir = bd.DiC(c);
 				var cnt=0, clist = [];
-				if     (dir==k.UP){ cy--; while(cy>=0     ){ clist.push(bd.cnum(cx,cy)); cy--;} }
-				else if(dir==k.DN){ cy++; while(cy<k.qrows){ clist.push(bd.cnum(cx,cy)); cy++;} }
-				else if(dir==k.LT){ cx--; while(cx>=0     ){ clist.push(bd.cnum(cx,cy)); cx--;} }
-				else if(dir==k.RT){ cx++; while(cx<k.qcols){ clist.push(bd.cnum(cx,cy)); cx++;} }
+				if     (dir==k.UP){ by-=2; while(by>0        ){ clist.push(bd.cnum(bx,by)); by-=2;} }
+				else if(dir==k.DN){ by+=2; while(by<2*k.qrows){ clist.push(bd.cnum(bx,by)); by+=2;} }
+				else if(dir==k.LT){ bx-=2; while(bx>0        ){ clist.push(bd.cnum(bx,by)); bx-=2;} }
+				else if(dir==k.RT){ bx+=2; while(bx<2*k.qcols){ clist.push(bd.cnum(bx,by)); bx+=2;} }
 
 				for(var i=0;i<clist.length;i++){ if(bd.isBlack(clist[i])){ cnt++;} }
 

@@ -69,32 +69,32 @@ Puzzles.kramma.prototype = {
 		};
 		// オーバーライド
 		mv.inputBD = function(flag){
-			var pos = this.crosspos(0.35);
+			var pos = this.borderpos(0.35);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = bd.bnum(pos.x, pos.y);
 			if(id==-1 && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
 
-			if(this.mouseCell!=-1 && id!=-1){
-				if((pos.x%2==0 && this.mouseCell.x==pos.x && Math.abs(this.mouseCell.y-pos.y)==1) ||
-				   (pos.y%2==0 && this.mouseCell.y==pos.y && Math.abs(this.mouseCell.x-pos.x)==1) )
+			if(this.mouseCell!==-1 && id!==-1){
+				if((!(pos.x&1) && this.mouseCell.x===pos.x && Math.abs(this.mouseCell.y-pos.y)===1) ||
+				   (!(pos.y&1) && this.mouseCell.y===pos.y && Math.abs(this.mouseCell.x-pos.x)===1) )
 				{
 					this.mouseCell=-1
 					if(this.inputData==-1){ this.inputData=(bd.isBorder(id)?0:1);}
 
 					var idlist = [id];
 					var bx1, bx2, by1, by2;
-					if(bd.border[id].cx%2==1){
-						var bx;
-						bx = bd.border[id].cx; while(bx>=0        ){ if(bd.QnX(bd.xnum((bx>>1)  ,bd.border[id].cy>>1))==1){ bx-=2; break;} bx-=2;} bx1 = bx+2;
-						bx = bd.border[id].cx; while(bx<=2*k.qcols){ if(bd.QnX(bd.xnum((bx>>1)+1,bd.border[id].cy>>1))==1){ bx+=2; break;} bx+=2;} bx2 = bx-2;
-						by1 = by2 = bd.border[id].cy;
+					if(bd.border[id].bx&1){
+						var bx = bd.border[id].bx;
+						while(bx>0        ){ if(bd.QnX(bd.xnum(bx-1,bd.border[id].by))===1){ break;} bx-=2;} bx1 = bx;
+						while(bx<2*k.qcols){ if(bd.QnX(bd.xnum(bx+1,bd.border[id].by))===1){ break;} bx+=2;} bx2 = bx;
+						by1 = by2 = bd.border[id].by;
 					}
-					else if(bd.border[id].cy%2==1){
-						var by;
-						by = bd.border[id].cy; while(by>=0        ){ if(bd.QnX(bd.xnum(bd.border[id].cx>>1,(by>>1)  ))==1){ by-=2; break;} by-=2;} by1 = by+2;
-						by = bd.border[id].cy; while(by<=2*k.qrows){ if(bd.QnX(bd.xnum(bd.border[id].cx>>1,(by>>1)+1))==1){ by+=2; break;} by+=2;} by2 = by-2;
-						bx1 = bx2 = bd.border[id].cx;
+					else if(bd.border[id].by&1){
+						var by = bd.border[id].by;
+						while(by>0        ){ if(bd.QnX(bd.xnum(bd.border[id].bx,by-1))===1){ break;} by-=2;} by1 = by;
+						while(by<2*k.qrows){ if(bd.QnX(bd.xnum(bd.border[id].bx,by+1))===1){ break;} by+=2;} by2 = by;
+						bx1 = bx2 = bd.border[id].bx;
 					}
 					idlist = [];
 					for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
@@ -203,15 +203,17 @@ Puzzles.kramma.prototype = {
 
 		ans.checkLcntCurve = function(){
 			var result = true;
-			for(var i=0;i<(k.qcols-1)*(k.qrows-1);i++){
-				var cx = i%(k.qcols-1)+1, cy = mf(i/(k.qcols-1))+1, xc = bd.xnum(cx,cy);
-				if(area.lcntCross(xc)==2 && bd.QnX(xc)!=1){
-					if(    !(bd.QaB(bd.bnum(cx*2  ,cy*2-1))==1 && bd.QaB(bd.bnum(cx*2  ,cy*2+1))==1)
-						&& !(bd.QaB(bd.bnum(cx*2-1,cy*2  ))==1 && bd.QaB(bd.bnum(cx*2+1,cy*2  ))==1) )
-					{
-						if(this.inAutoCheck){ return false;}
-						this.setCrossBorderError(cx,cy);
-						result = false;
+			for(var bx=2,maxx=2*k.qcols-2;bx<=maxx;bx+=2){
+				for(var by=2,maxy=2*k.qrows-2;by<=maxy;by+=2){
+					var xc = bd.xnum(bx,by);
+					if(area.lcntCross(xc)===2 && bd.QnX(xc)!==1){
+						if(    !(bd.QaB(bd.bnum(bx  ,by-1))===1 && bd.QaB(bd.bnum(bx  ,by+1))===1)
+							&& !(bd.QaB(bd.bnum(bx-1,by  ))===1 && bd.QaB(bd.bnum(bx+1,by  ))===1) )
+						{
+							if(this.inAutoCheck){ return false;}
+							this.setCrossBorderError(bx,by);
+							result = false;
+						}
 					}
 				}
 			}

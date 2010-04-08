@@ -280,11 +280,11 @@ Puzzles.firefly.prototype = {
 				var ccnt=0;
 				var idlist = [];
 				var dir=bd.DiC(c);
-				var bx=bd.cell[c].cx*2+1, by=bd.cell[c].cy*2+1;
+				var bx=bd.cell[c].bx, by=bd.cell[c].by;
 				while(1){
 					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 					if(!((bx+by)&1)){
-						var cc = bd.cnum(bx>>1,by>>1);
+						var cc = bd.cnum(bx,by);
 						if     (bd.QnC(cc)!=-1){ break;}
 						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!=2){ ccnt++;} dir=2;}
 						else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!=1){ ccnt++;} dir=1;}
@@ -300,7 +300,7 @@ Puzzles.firefly.prototype = {
 
 				for(var i=0;i<idlist.length;i++){ errinfo.check[idlist[i]]=2;}
 
-				var cc = bd.cnum(bx>>1,by>>1);
+				var cc = bd.cnum(bx,by);
 				if(((bd.DiC(cc)==k.UP && dir==k.DN) || (bd.DiC(cc)==k.DN && dir==k.UP) ||
 					(bd.DiC(cc)==k.LT && dir==k.RT) || (bd.DiC(cc)==k.RT && dir==k.LT) ) && (!((bx+by)&1)))
 				{

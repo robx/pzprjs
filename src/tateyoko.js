@@ -69,7 +69,7 @@ Puzzles.tateyoko.prototype = {
 		mv.inputTateyoko = function(){
 			var cc   = this.cellid();
 			if(cc==-1){ return;}
-			var cpos = this.cellpos();
+			var cpos = this.borderpos(0);
 
 			var input=false;
 
@@ -85,8 +85,8 @@ Puzzles.tateyoko.prototype = {
 					else if(Math.abs(pos.x-this.firstPos.x)>=8){ this.inputData=2; input=true;}
 				}
 				else{
-					if     (Math.abs(cpos.y-this.prevCPos.y)==1){ this.inputData=1; input=true;}
-					else if(Math.abs(cpos.x-this.prevCPos.x)==1){ this.inputData=2; input=true;}
+					if     (Math.abs(cpos.y-this.prevCPos.y)==2){ this.inputData=1; input=true;}
+					else if(Math.abs(cpos.x-this.prevCPos.x)==2){ this.inputData=2; input=true;}
 				}
 
 				if(input){
@@ -97,8 +97,8 @@ Puzzles.tateyoko.prototype = {
 			// 入力し続けていて、別のマスに移動した場合
 			else if(cc!==this.mouseCell){
 				if(this.inputData==0){ this.inputData=0; input=true;}
-				else if(Math.abs(cpos.y-this.prevCPos.y)==1){ this.inputData=1; input=true;}
-				else if(Math.abs(cpos.x-this.prevCPos.x)==1){ this.inputData=2; input=true;}
+				else if(Math.abs(cpos.y-this.prevCPos.y)==2){ this.inputData=1; input=true;}
+				else if(Math.abs(cpos.x-this.prevCPos.x)==2){ this.inputData=2; input=true;}
 			}
 
 			// 描画・後処理
@@ -425,14 +425,14 @@ Puzzles.tateyoko.prototype = {
 			for(var c=0;c<bd.cellmax;c++){ binfo.id[c]=(bd.QuC(c)==1 || bd.QaC(c)==-1?-1:0);}
 			for(var c=0;c<bd.cellmax;c++){
 				if(binfo.id[c]!=0){ continue;}
-				var cx=bd.cell[c].cx, cy=bd.cell[c].cy, val=bd.QaC(c);
+				var bx=bd.cell[c].bx, by=bd.cell[c].by, val=bd.QaC(c);
 
 				binfo.max++;
 				binfo.room[binfo.max] = {idlist:[]};
-				while(bd.QaC(bd.cnum(cx,cy))==val){
-					binfo.room[binfo.max].idlist.push(bd.cnum(cx,cy));
-					binfo.id[bd.cnum(cx,cy)]=binfo.max;
-					if(val==1){ cy++;}else{ cx++;}
+				while(bd.QaC(bd.cnum(bx,by))==val){
+					binfo.room[binfo.max].idlist.push(bd.cnum(bx,by));
+					binfo.id[bd.cnum(bx,by)]=binfo.max;
+					if(val==1){ by+=2;}else{ bx+=2;}
 				}
 			}
 			return binfo;

@@ -76,7 +76,7 @@ Puzzles.fillomino.prototype = {
 			}
 		};
 		mv.inputborder_fillomino = function(){
-			var pos = this.crosspos(0.25);
+			var pos = this.borderpos(0.25);
 			if(this.mouseCell==-1 && pos.x%2==1 && pos.y%2==1){
 				pos = this.cellid();
 				if(pos==-1){ return true;}
@@ -150,7 +150,7 @@ Puzzles.fillomino.prototype = {
 			}
 
 			kc.tcMoved = flag;
-			if(flag){ pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1); return true;}
+			if(flag){ pc.paintCell(cc); return true;}
 			return false;
 		};
 

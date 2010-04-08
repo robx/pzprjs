@@ -66,19 +66,19 @@ Puzzles.wblink.prototype = {
 
 		mv.inputLine = function(){
 			if(this.inputData==2){ return;}
-			var pos = this.cellpos();
+			var pos = this.borderpos(0);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = -1;
-			if     (pos.y-this.mouseCell.y==-1){ id=bd.bnum(this.mouseCell.x*2+1,this.mouseCell.y*2  );}
-			else if(pos.y-this.mouseCell.y== 1){ id=bd.bnum(this.mouseCell.x*2+1,this.mouseCell.y*2+2);}
-			else if(pos.x-this.mouseCell.x==-1){ id=bd.bnum(this.mouseCell.x*2  ,this.mouseCell.y*2+1);}
-			else if(pos.x-this.mouseCell.x== 1){ id=bd.bnum(this.mouseCell.x*2+2,this.mouseCell.y*2+1);}
+			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1);}
+			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1);}
+			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  );}
+			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  );}
 
 			if(this.mouseCell!=-1 && id!=-1){
 				var idlist = this.getidlist(id);
 				if(this.inputData==-1){ this.inputData=(bd.isLine(id)?0:1);}
-				if(this.inputData> 0 && ((pos.x-this.mouseCell.x==-1)||(pos.y-this.mouseCell.y==-1))){ idlist=idlist.reverse();} // F•ª‚¯‚Ì“s‡ã‚Ìˆ—
+				if(this.inputData> 0 && ((pos.x-this.mouseCell.x==-2)||(pos.y-this.mouseCell.y==-2))){ idlist=idlist.reverse();} // F•ª‚¯‚Ì“s‡ã‚Ìˆ—
 				for(var i=0;i<idlist.length;i++){
 					if(this.inputData==1){ bd.setLine(idlist[i]);}
 					else                 { bd.removeLine(idlist[i]);}
@@ -90,24 +90,24 @@ Puzzles.wblink.prototype = {
 		};
 		mv.getidlist = function(id){
 			var idlist=[], bx1, bx2, by1, by2;
-			var cc1 = bd.border[id].cellcc[0], cx=bd.cell[cc1].cx, cy=bd.cell[cc1].cy;
-			if(bd.border[id].cx&1){
-				while(cy>=0         && bd.QuC(bd.cnum(cx,cy  ))==0){ cy--;} by1=2*cy+2;
-				while(cy<=k.qrows-1 && bd.QuC(bd.cnum(cx,cy+1))==0){ cy++;} by2=2*cy+2;
-				bx1 = bx2 = bd.border[id].cx;
+			var bx=bd.cell[cc1].bx, by=bd.cell[cc1].by;
+			if(bd.border[id].bx&1){
+				while(by>0         && bd.QnC(bd.cnum(bx,by-1))===-1){ by-=2;} by1=by;
+				while(by<2*k.qrows && bd.QnC(bd.cnum(bx,by+1))===-1){ by+=2;} by2=by;
+				bx1 = bx2 = bd.border[id].bx;
 			}
-			else if(bd.border[id].cy&1){
-				while(cx>=0         && bd.QuC(bd.cnum(cx  ,cy))==0){ cx--;} bx1=2*cx+2;
-				while(cx<=k.qcols-1 && bd.QuC(bd.cnum(cx+1,cy))==0){ cx++;} bx2=2*cx+2;
-				by1 = by2 = bd.border[id].cy;
+			else if(bd.border[id].by&1){
+				while(bx>0         && bd.QnC(bd.cnum(bx-1,by))===-1){ bx-=2;} bx1=bx;
+				while(bx<2*k.qcols && bd.QnC(bd.cnum(bx+1,by))===-1){ bx+=2;} bx2=bx;
+				by1 = by2 = bd.border[id].by;
 			}
-			if(bx1<1||bx2>2*k.qcols-1||by1<1||by2>2*k.qrows-1){ return [];}
+			if(bx1<=0||bx2>=2*k.qcols||by1<=0||by2>=2*k.qrows){ return [];}
 			for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
 			return idlist;
 		};
 
 		mv.inputpeke = function(){
-			var pos = this.crosspos(0.22);
+			var pos = this.borderpos(0.22);
 			var id = bd.bnum(pos.x, pos.y);
 			if(id==-1 || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
 

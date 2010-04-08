@@ -70,14 +70,14 @@ Puzzles.bosanowa.prototype = {
 		mv.mousemove = function(){ };
 
 		mv.inputqnum_bosanowa = function(){
-			var pos = this.crosspos(0.31);
+			var pos = this.borderpos(0.31);
 			if(pos.x<tc.minx||pos.x>tc.maxx||pos.y<tc.miny||pos.y>tc.maxy){ return;}
 			var tcp = tc.getTCP();
 
 			if(pos.x==tcp.x&&pos.y==tcp.y){
 				var max = 255;
 				if((pos.x&1)&&(pos.y&1)){
-					var cc = bd.cnum((pos.x-1)>>1,(pos.y-1)>>1);
+					var cc = bd.cnum(pos.x,pos.y);
 					if(k.editmode){
 						if(this.btn.Left){
 							if     (bd.QuC(cc)==0)       { this.setval(cc,-1); bd.sQuC(cc,7);}
@@ -108,9 +108,9 @@ Puzzles.bosanowa.prototype = {
 			}
 			else{
 				tc.setTCP(pos);
-				pc.paint((tcp.x>>1)-1,(tcp.y>>1)-1,(tcp.x>>1)+1,(tcp.y>>1)+1);
+				pc.paintPos(tcp);
 			}
-			pc.paint((pos.x>>1)-1,(pos.y>>1)-1,(pos.x>>1)+1,(pos.y>>1)+1);
+			pc.paintPos(pos);
 		};
 		mv.setval = function(cc,val){
 			if     (k.editmode){ bd.sQnC(cc,val);}
@@ -157,7 +157,7 @@ Puzzles.bosanowa.prototype = {
 			}
 			else{ return false;}
 
-			pc.paint((tcp.x>>1)-1,(tcp.y>>1)-1,(tcp.x>>1)+1,(tcp.y>>1)+1);
+			pc.paintPos(tcp);
 			return true;
 		};
 
@@ -250,7 +250,7 @@ Puzzles.bosanowa.prototype = {
 			g.fillStyle="rgb(127,127,127)";
 			g.strokeStyle="rgb(127,127,127)";
 
-			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4);
+			var idlist = this.borderinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				var onboard1 = (cc1!==-1&&bd.cell[cc1].ques===7);
@@ -259,12 +259,12 @@ Puzzles.bosanowa.prototype = {
 				if(onboard1 && onboard2){
 					if(!g.use.canvas){
 						if(this.vnop(header+id,this.NONE)){
-							if(bd.border[id].cy&1){
+							if(bd.border[id].by&1){
 								var px = bd.border[id].px, py1 = bd.border[id].py-this.bh, py2 = py1+this.ch+1;
 								g.strokeLine(px, py1, px, py2);
 								g.setDashSize(3);
 							}
-							else if(bd.border[id].cx&1){
+							else if(bd.border[id].bx&1){
 								var py = bd.border[id].py, px1 = bd.border[id].px-this.bw, px2 = px1+this.cw+1;
 								g.strokeLine(px1, py, px2, py);
 								g.setDashSize(3);
@@ -275,12 +275,12 @@ Puzzles.bosanowa.prototype = {
 						var dotmax = this.cw/10+3;
 						var dotCount = Math.max(this.cw/dotmax, 1);
 						var dotSize  = this.cw/(dotCount*2);
-						if     (bd.border[id].cy&1){ 
+						if     (bd.border[id].by&1){ 
 							for(var j=0;j<this.ch+1;j+=(2*dotSize)){
 								g.fillRect(bd.border[id].px, bd.border[id].py-this.bh+j, 1, dotSize);
 							}
 						}
-						else if(bd.border[id].cx&1){ 
+						else if(bd.border[id].bx&1){ 
 							for(var j=0;j<this.cw+1 ;j+=(2*dotSize)){
 								g.fillRect(bd.border[id].px-this.bw+j, bd.border[id].py, dotSize, 1);
 							}
@@ -295,7 +295,7 @@ Puzzles.bosanowa.prototype = {
 
 			var csize = this.cw*0.20;
 			var headers = ["b_grid_", "b_grid2_"];
-			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+4,y2*2+4);
+			var idlist = this.borderinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				var onboard1 = (cc1!==-1&&bd.cell[cc1].ques===7);
@@ -304,14 +304,14 @@ Puzzles.bosanowa.prototype = {
 				if(onboard1 && onboard2){
 					g.fillStyle=this.gridcolor;
 					if(this.vnop(headers[0]+id,this.NONE)){
-						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-this.bh, 1, this.ch+1);}
-						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-this.bw, bd.border[id].py, this.cw+1, 1);}
+						if     (bd.border[id].by&1){ g.fillRect(bd.border[id].px, bd.border[id].py-this.bh, 1, this.ch+1);}
+						else if(bd.border[id].bx&1){ g.fillRect(bd.border[id].px-this.bw, bd.border[id].py, this.cw+1, 1);}
 					}
 
 					g.fillStyle = ((bd.cell[cc2].error===0) ? "white" : this.errbcolor1);
 					if(this.vnop(headers[1]+id,this.FILL)){
-						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-csize, 1, 2*csize+1);}
-						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-csize, bd.border[id].py, 2*csize+1, 1);}
+						if     (bd.border[id].by&1){ g.fillRect(bd.border[id].px, bd.border[id].py-csize, 1, 2*csize+1);}
+						else if(bd.border[id].bx&1){ g.fillRect(bd.border[id].px-csize, bd.border[id].py, 2*csize+1, 1);}
 					}
 				}
 				else{ this.vhide([headers[0]+id, headers[1]+id]);}
@@ -323,7 +323,7 @@ Puzzles.bosanowa.prototype = {
 
 			var csize = this.cw*0.20;
 			var header = "b_bbse_";
-			var idlist = this.borderinside(x1*2-4,y1*2-4,x2*2+6,y2*2+6);
+			var idlist = this.borderinside(x1-2,y1-2,x2+3,y2+3);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 
@@ -346,7 +346,7 @@ Puzzles.bosanowa.prototype = {
 		pc.drawNumbersBD = function(x1,y1,x2,y2){
 			this.vinc('border_number', 'auto');
 
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+			var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){
 				var id=idlist[i], obj=bd.border[id];
 				if(bd.border[id].qsub>=0){
@@ -362,21 +362,21 @@ Puzzles.bosanowa.prototype = {
 			this.vinc('cell_outside_souko', 'crispEdges');
 
 			var header = "c_full_";
-			for(var cx=x1-1;cx<=x2+1;cx++){
-				for(var cy=y1-1;cy<=y2+1;cy++){
-					var c=bd.cnum(cx,cy);
+			for(var bx=x1-2+((x1^1)&1);bx<=x2+2;bx+=2){
+				for(var by=y1-2+((y1^1)&1);by<=y2+2;by+=2){
+					var c=bd.cnum(bx,by);
 					if( (c==-1 || bd.cell[c].ques!=7) && (
-						bd.QuC(bd.cnum(cx-1,cy  ))===7 || bd.QuC(bd.cnum(cx+1,  cy))===7 || 
-						bd.QuC(bd.cnum(cx  ,cy-1))===7 || bd.QuC(bd.cnum(cx  ,cy+1))===7 || 
-						bd.QuC(bd.cnum(cx-1,cy-1))===7 || bd.QuC(bd.cnum(cx+1,cy-1))===7 || 
-						bd.QuC(bd.cnum(cx-1,cy+1))===7 || bd.QuC(bd.cnum(cx+1,cy+1))===7 ) )
+						bd.QuC(bd.cnum(bx-2,by  ))===7 || bd.QuC(bd.cnum(bx+2,by  ))===7 || 
+						bd.QuC(bd.cnum(bx  ,by-2))===7 || bd.QuC(bd.cnum(bx  ,by+2))===7 || 
+						bd.QuC(bd.cnum(bx-2,by-2))===7 || bd.QuC(bd.cnum(bx+2,by-2))===7 || 
+						bd.QuC(bd.cnum(bx-2,by+2))===7 || bd.QuC(bd.cnum(bx+2,by+2))===7 ) )
 					{
 						g.fillStyle = "rgb(127,127,127)";
-						if(this.vnop([header,cx,cy].join('_'),this.NONE)){
-							g.fillRect(k.p0.x+this.cw*cx, k.p0.y+this.ch*cy, this.cw+1, this.ch+1);
+						if(this.vnop([header,bx,by].join('_'),this.NONE)){
+							g.fillRect(k.p0.x+this.bw*bx, k.p0.y+this.bh*by, this.cw+1, this.ch+1);
 						}
 					}
-					else{ this.vhide([header,cx,cy].join('_'));}
+					else{ this.vhide([header,bx,by].join('_'));}
 				}
 			}
 		};
@@ -430,16 +430,16 @@ Puzzles.bosanowa.prototype = {
 			var x1=9999, x2=-1, y1=9999, y2=-1;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)!=7){ continue;}
-				if(x1>bd.cell[c].cx){ x1=bd.cell[c].cx;}
-				if(x2<bd.cell[c].cx){ x2=bd.cell[c].cx;}
-				if(y1>bd.cell[c].cy){ y1=bd.cell[c].cy;}
-				if(y2<bd.cell[c].cy){ y2=bd.cell[c].cy;}
+				if(x1>bd.cell[c].bx){ x1=bd.cell[c].bx;}
+				if(x2<bd.cell[c].bx){ x2=bd.cell[c].bx;}
+				if(y1>bd.cell[c].by){ y1=bd.cell[c].by;}
+				if(y2<bd.cell[c].by){ y2=bd.cell[c].by;}
 			}
 
 			var cm="", count=0, pass=0;
-			for(var cy=y1;cy<=y2;cy++){
-				for(var cx=x1;cx<=x2;cx++){
-					var c=bd.cnum(cx,cy);
+			for(var by=y1;by<=y2;by+=2){
+				for(var bx=x1;bx<=x2;bx+=2){
+					var c=bd.cnum(bx,by);
 					if(bd.QuC(c)==0){ pass+=Math.pow(2,4-count);}
 					count++; if(count==5){ cm += pass.toString(32); count=0; pass=0;}
 				}
@@ -448,10 +448,10 @@ Puzzles.bosanowa.prototype = {
 			this.outbstr += cm;
 
 			cm="", count=0;
-			for(var cy=y1;cy<=y2;cy++){
-				for(var cx=x1;cx<=x2;cx++){
+			for(var by=y1;by<=y2;by+=2){
+				for(var bx=x1;bx<=x2;bx+=2){
 					var pstr = "";
-					var val = bd.QnC(bd.cnum(cx,cy));
+					var val = bd.QnC(bd.cnum(bx,by));
 
 					if     (val==-2         ){ pstr = ".";}
 					else if(val>= 0&&val< 16){ pstr =       val.toString(16);}
@@ -465,7 +465,7 @@ Puzzles.bosanowa.prototype = {
 			if(count>0){ cm+=(15+count).toString(36);}
 			this.outbstr += cm;
 
-			this.outsize = [x2-x1+1, y2-y1+1].join("/");
+			this.outsize = [(x2-x1+2)/2, (y2-y1+2)/2].join("/");
 		};
 
 		//---------------------------------------------------------

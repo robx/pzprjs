@@ -67,14 +67,14 @@ Puzzles.minarism.prototype = {
 		};
 
 		mv.inputmark1 = function(){
-			var pos = this.cellpos();
+			var pos = this.borderpos(0);
 			if(bd.cnum(pos.x,pos.y)==-1){ return;}
 
 			var id=-1;
-			if     (pos.y-this.mouseCell.y==-1){ id=bd.bnum(this.mouseCell.x*2+1,this.mouseCell.y*2  ); this.inputData=1; }
-			else if(pos.y-this.mouseCell.y== 1){ id=bd.bnum(this.mouseCell.x*2+1,this.mouseCell.y*2+2); this.inputData=2; }
-			else if(pos.x-this.mouseCell.x==-1){ id=bd.bnum(this.mouseCell.x*2  ,this.mouseCell.y*2+1); this.inputData=1; }
-			else if(pos.x-this.mouseCell.x== 1){ id=bd.bnum(this.mouseCell.x*2+2,this.mouseCell.y*2+1); this.inputData=2; }
+			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1); this.inputData=1; }
+			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1); this.inputData=2; }
+			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  ); this.inputData=1; }
+			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  ); this.inputData=2; }
 
 			this.mouseCell = pos;
 			if(id==-1){ return;}
@@ -83,15 +83,15 @@ Puzzles.minarism.prototype = {
 			pc.paintBorder(id);
 		};
 		mv.inputmark = function(){
-			var pos = this.crosspos(0.33);
+			var pos = this.borderpos(0.33);
 			if(pos.x<tc.minx || tc.maxx<pos.x || pos.y<tc.miny || tc.maxy<pos.y){ return;}
 			var id = bd.bnum(pos.x, pos.y);
 
 			if(tc.cursolx!=pos.x || tc.cursoly!=pos.y){
-				var tcx = tc.cursolx, tcy = tc.cursoly, flag = false;
+				var tcp = tc.getTCP(), flag = false;
 				tc.setTCP(pos);
-				pc.paint((tcx>>1)-1, (tcy>>1)-1, (tcx>>1)+1, (tcy>>1)+1);
-				pc.paint((pos.x>>1)-1, (pos.y>>1)-1, pos.x>>1, pos.y>>1);
+				pc.paintPos(tcp);
+				pc.paintPos(pos);
 			}
 			else if(id!=-1){
 				this.inputbqnum(id);
@@ -192,7 +192,7 @@ Puzzles.minarism.prototype = {
 		pc.drawBDMbase = function(x1,y1,x2,y2){
 			if(!g.use.canvas){ return;}
 			var csize = this.cw*0.29;
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+			var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 
@@ -209,7 +209,7 @@ Puzzles.minarism.prototype = {
 			var ssize = this.cw*0.22;
 			var headers = ["b_cp_", "b_dt1_", "b_dt2_"];
 
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+			var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 				if(bd.border[id].qnum!=-1){
@@ -229,7 +229,7 @@ Puzzles.minarism.prototype = {
 					g.strokeStyle = this.Cellcolor;
 					if(bd.border[id].ques===1){
 						if(this.vnop(headers[1]+id,this.NONE)){
-							if(bd.border[id].cx&1){ g.setOffsetLinePath(px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false);}
+							if(bd.border[id].bx&1){ g.setOffsetLinePath(px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false);}
 							else                  { g.setOffsetLinePath(px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false);}
 							g.stroke();
 						}
@@ -238,7 +238,7 @@ Puzzles.minarism.prototype = {
 
 					if(bd.border[id].ques===2){
 						if(this.vnop(headers[2]+id,this.NONE)){
-							if(bd.border[id].cx&1){ g.setOffsetLinePath(px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false);}
+							if(bd.border[id].bx&1){ g.setOffsetLinePath(px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false);}
 							else                  { g.setOffsetLinePath(px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false);}
 							g.stroke();
 						}

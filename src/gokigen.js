@@ -80,11 +80,11 @@ Puzzles.gokigen.prototype = {
 			var check = [];
 			for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
 
-			var fc = bd.xnum(bd.cell[cc].cx+(bd.QaC(cc)==1?0:1),bd.cell[cc].cy);
+			var fc = bd.xnum(bd.cell[cc].bx+(bd.QaC(cc)==1?-1:1),bd.cell[cc].by-1);
 			ans.searchline(check, 0, fc);
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].cx  ,bd.cell[c].cy)]==1){ bd.sErC([c],2);}
-				if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].cx+1,bd.cell[c].cy)]==1){ bd.sErC([c],2);}
+				if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]==1){ bd.sErC([c],2);}
+				if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]==1){ bd.sErC([c],2);}
 			}
 
 			ans.errDisp = true;
@@ -100,7 +100,7 @@ Puzzles.gokigen.prototype = {
 				else{ bd.sQaC(cc, (this.btn.Left?{1:2,2:-1}:{1:-1,2:1})[bd.QaC(cc)]);}
 			}
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+			pc.paintCellAround(cc);
 		};
 
 		// キーボード入力系
@@ -255,22 +255,22 @@ Puzzles.gokigen.prototype = {
 
 		ans.scntCross = function(id){
 			if(id==-1){ return -1;}
-			var xx=bd.cross[id].cx, xy=bd.cross[id].cy;
+			var bx=bd.cross[id].bx, by=bd.cross[id].by;
 			var cc, cnt=0;
-			cc=bd.cnum(xx-1,xy-1); if(cc!=-1 && bd.QaC(cc)==1){ cnt++;}
-			cc=bd.cnum(xx  ,xy-1); if(cc!=-1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(xx-1,xy  ); if(cc!=-1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(xx  ,xy  ); if(cc!=-1 && bd.QaC(cc)==1){ cnt++;}
+			cc=bd.cnum(bx-1,by-1); if(cc!=-1 && bd.QaC(cc)==1){ cnt++;}
+			cc=bd.cnum(bx+1,by-1); if(cc!=-1 && bd.QaC(cc)==2){ cnt++;}
+			cc=bd.cnum(bx-1,by+1); if(cc!=-1 && bd.QaC(cc)==2){ cnt++;}
+			cc=bd.cnum(bx+1,by+1); if(cc!=-1 && bd.QaC(cc)==1){ cnt++;}
 			return cnt;
 		};
 		ans.scntCross2 = function(id){
 			if(id==-1){ return -1;}
-			var xx=bd.cross[id].cx, xy=bd.cross[id].cy;
+			var bx=bd.cross[id].bx, by=bd.cross[id].by;
 			var cc, cnt=0;
-			cc=bd.cnum(xx-1,xy-1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==1){ cnt++;}
-			cc=bd.cnum(xx  ,xy-1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(xx-1,xy  ); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(xx  ,xy  ); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==1){ cnt++;}
+			cc=bd.cnum(bx-1,by-1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==1){ cnt++;}
+			cc=bd.cnum(bx+1,by-1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==2){ cnt++;}
+			cc=bd.cnum(bx-1,by+1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==2){ cnt++;}
+			cc=bd.cnum(bx+1,by+1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==1){ cnt++;}
 			return cnt;
 		};
 
@@ -285,17 +285,17 @@ Puzzles.gokigen.prototype = {
 
 				if(!this.searchline(check, 0, fc)){
 					for(var c=0;c<bd.cellmax;c++){
-						if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].cx  ,bd.cell[c].cy)]==1){ bd.sErC([c],1);}
-						if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].cx+1,bd.cell[c].cy)]==1){ bd.sErC([c],1);}
+						if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]==1){ bd.sErC([c],1);}
+						if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]==1){ bd.sErC([c],1);}
 					}
 					while(1){
 						var endflag = true;
-						var clist = pc.cellinside_cond(0,0,k.qcols-1,k.qrows-1,function(c){ return (bd.ErC(c)==1);});
+						var clist = pc.cellinside_cond(0,0,2*k.qcols,2*k.qrows,function(c){ return (bd.ErC(c)==1);});
 						for(var i=0;i<clist.length;i++){
 							var c = clist[i];
-							var cc1, cc2, cx=bd.cell[c].cx, cy=bd.cell[c].cy;
-							if     (bd.QaC(c)==1){ cc1=bd.xnum(cx,cy  ); cc2=bd.xnum(cx+1,cy+1);}
-							else if(bd.QaC(c)==2){ cc1=bd.xnum(cx,cy+1); cc2=bd.xnum(cx+1,cy  );}
+							var cc1, cc2, bx=bd.cell[c].bx, by=bd.cell[c].by;
+							if     (bd.QaC(c)==1){ cc1=bd.xnum(bx-1,by-1); cc2=bd.xnum(bx+1,by+1);}
+							else if(bd.QaC(c)==2){ cc1=bd.xnum(bx-1,by+1); cc2=bd.xnum(bx+1,by-1);}
 							if(this.scntCross2(cc1)==1 || this.scntCross2(cc2)==1){ bd.sErC([c],0); endflag = false; break;}
 						}
 						if(endflag){ break;}
@@ -309,17 +309,17 @@ Puzzles.gokigen.prototype = {
 		};
 		ans.searchline = function(check, dir, c){
 			var flag=true;
-			var nc, tx=bd.cross[c].cx, ty=bd.cross[c].cy;
+			var nc, tx=bd.cross[c].bx, ty=bd.cross[c].by;
 			check[c]=1;
 
-			nc = bd.xnum(tx-1,ty-1);
+			nc = bd.xnum(tx-2,ty-2);
 			if(nc!=-1 && dir!=4 && bd.QaC(bd.cnum(tx-1,ty-1))==1 && (check[nc]!=0 || !this.searchline(check,1,nc))){ flag = false;}
-			nc = bd.xnum(tx-1,ty+1);
-			if(nc!=-1 && dir!=3 && bd.QaC(bd.cnum(tx-1,ty  ))==2 && (check[nc]!=0 || !this.searchline(check,2,nc))){ flag = false;}
-			nc = bd.xnum(tx+1,ty-1);
-			if(nc!=-1 && dir!=2 && bd.QaC(bd.cnum(tx  ,ty-1))==2 && (check[nc]!=0 || !this.searchline(check,3,nc))){ flag = false;}
-			nc = bd.xnum(tx+1,ty+1);
-			if(nc!=-1 && dir!=1 && bd.QaC(bd.cnum(tx  ,ty  ))==1 && (check[nc]!=0 || !this.searchline(check,4,nc))){ flag = false;}
+			nc = bd.xnum(tx-2,ty+2);
+			if(nc!=-1 && dir!=3 && bd.QaC(bd.cnum(tx-1,ty+1))==2 && (check[nc]!=0 || !this.searchline(check,2,nc))){ flag = false;}
+			nc = bd.xnum(tx+2,ty-2);
+			if(nc!=-1 && dir!=2 && bd.QaC(bd.cnum(tx+1,ty-1))==2 && (check[nc]!=0 || !this.searchline(check,3,nc))){ flag = false;}
+			nc = bd.xnum(tx+2,ty+2);
+			if(nc!=-1 && dir!=1 && bd.QaC(bd.cnum(tx+1,ty+1))==1 && (check[nc]!=0 || !this.searchline(check,4,nc))){ flag = false;}
 
 			return flag;
 		};

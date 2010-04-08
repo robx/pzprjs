@@ -158,15 +158,15 @@ KeyEvent.prototype = {
 	moveTCross  : function(ca){ return this.moveTC(ca,2);},
 	moveTBorder : function(ca){ return this.moveTC(ca,1);},
 	moveTC : function(ca,mv){
-		var tcx = tc.cursolx, tcy = tc.cursoly, flag = false;
-		if     (ca == k.KEYUP && tcy-mv >= tc.miny){ tc.decTCY(mv); flag = true;}
-		else if(ca == k.KEYDN && tcy+mv <= tc.maxy){ tc.incTCY(mv); flag = true;}
-		else if(ca == k.KEYLT && tcx-mv >= tc.minx){ tc.decTCX(mv); flag = true;}
-		else if(ca == k.KEYRT && tcx+mv <= tc.maxx){ tc.incTCX(mv); flag = true;}
+		var tcp = tc.getTCP(), flag = false;
+		if     (ca == k.KEYUP && tcp.y-mv >= tc.miny){ tc.decTCY(mv); flag = true;}
+		else if(ca == k.KEYDN && tcp.y+mv <= tc.maxy){ tc.incTCY(mv); flag = true;}
+		else if(ca == k.KEYLT && tcp.x-mv >= tc.minx){ tc.decTCX(mv); flag = true;}
+		else if(ca == k.KEYRT && tcp.x+mv <= tc.maxx){ tc.incTCX(mv); flag = true;}
 
 		if(flag){
-			pc.paint((tcx>>1)-1, (tcy>>1)-1, tcx>>1, tcy>>1);
-			pc.paint((tc.cursolx>>1)-1, (tc.cursoly>>1)-1, tc.cursolx>>1, tc.cursoly>>1);
+			pc.paintPos(tcp);
+			pc.paintPos(tc.getTCP());
 			this.tcMoved = true;
 		}
 		return flag;
@@ -199,7 +199,7 @@ KeyEvent.prototype = {
 		}
 		else{ return;}
 
-		pc.paint(bd.cross[cc].cx-1, bd.cross[cc].cy-1, bd.cross[cc].cx, bd.cross[cc].cy);
+		pc.paintCross(cc);
 	},
 	//---------------------------------------------------------------------------
 	// kc.key_inputqnum() ãŒÀmax‚Ü‚Å‚Ì”Žš‚ðCell‚Ì–â‘èƒf[ƒ^‚ð‚µ‚Ä“ü—Í‚·‚é(keydownŽž)
@@ -257,7 +257,7 @@ KeyEvent.prototype = {
 		else if(ca == k.KEYRT){ bd.sDiC(cc, (bd.DiC(cc)!=k.RT?k.RT:0)); flag = true;}
 
 		if(flag){
-			pc.paint(tc.cursolx>>1, tc.cursoly>>1, tc.cursolx>>1, tc.cursoly>>1);
+			pc.paintPos(tc.getTCP());
 			this.tcMoved = true;
 		}
 		return flag;
@@ -272,12 +272,12 @@ KeyEvent.prototype = {
 		if(this.chtarget(ca)){ return;}
 
 		var cc = tc.getTCC(), ex = -1;
-		if(cc==-1){ ex = bd.exnum(tc.getTCX(),tc.getTCY());}
+		if(cc==-1){ ex = bd.exnum(tc.cursolx,tc.cursoly);}
 		var target = this.detectTarget(cc,ex);
 		if(target==-1 || (cc!=-1 && bd.QuC(cc)==51)){
 			if(ca=='q' && cc!=-1){
 				mv.set51cell(cc,(bd.QuC(cc)!=51));
-				pc.paint(tc.getTCX()-1,tc.getTCY()-1,tc.getTCX()+1,tc.getTCY()+1);
+				pc.paintPos(tc.getTCP());
 				return;
 			}
 		}
@@ -300,7 +300,8 @@ KeyEvent.prototype = {
 		else{ return;}
 
 		this.prev = cc;
-		if(cc!=-1){ pc.paintCell(tc.getTCC());}else{ pc.paint(tc.getTCX(),tc.getTCY(),tc.getTCX(),tc.getTCY());}
+		if(cc!=-1){ pc.paintCell(tc.getTCC());}
+		else      { pc.paintPos (tc.getTCP());}
 	},
 	setnum51 : function(cc,ex,target,val){
 		if(cc!=-1){ (target==2 ? bd.sQnC(cc,val) : bd.sDiC(cc,val));}
@@ -332,10 +333,10 @@ KeyEvent.prototype = {
 			else if(bd.dn(cc)==-1 || bd.QuC(bd.dn(cc))==51){ return 2;}
 		}
 		else if(ex!=-1){
-			if	  ((bd.excell[ex].cy==-1 && bd.QuC(bd.excell[ex].cx)==51) ||
-				   (bd.excell[ex].cx==-1 && bd.QuC(bd.excell[ex].cy*k.qcols)==51)){ return -1;}
-			else if(bd.excell[ex].cy==-1){ return 4;}
-			else if(bd.excell[ex].cx==-1){ return 2;}
+			if	  ((bd.excell[ex].by===-1 && bd.QuC(bd.excell[ex].bx)===51) ||
+				   (bd.excell[ex].bx===-1 && bd.QuC((bd.excell[ex].by>>1)*k.qcols)===51)){ return -1;}
+			else if(bd.excell[ex].by===-1){ return 4;}
+			else if(bd.excell[ex].bx===-1){ return 2;}
 		}
 
 		return tc.targetdir;
@@ -465,7 +466,7 @@ KeyPopup.prototype = {
 			_td.onclick   = ee.ebinder(this, this.inputnumber, [ca]);
 			_td.appendChild(_div);
 
-			this.imgs.push({'el':_img, 'cx':disp[0], 'cy':disp[1]});
+			this.imgs.push({'el':_img, 'x':disp[0], 'y':disp[1]});
 		}
 
 		if(_td){
@@ -497,16 +498,16 @@ KeyPopup.prototype = {
 				var cc = mv.cellid();
 				if(cc==-1){ return;}
 				tc.setTCC(cc);
-				pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
-				pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
+				pc.paintCell(cc);
+				pc.paintCell(cc0);
 			}
 			else if(this.ctl[mode].target==k.CROSS){
 				var cc0 = tc.getTXC();
 				var cc = mv.crossid();
 				if(cc==-1){ return;}
 				tc.setTXC(cc);
-				pc.paint(bd.cross[cc].cx-1, bd.cross[cc].cy-1, bd.cross[cc].cx, bd.cross[cc].cy);
-				pc.paint(bd.cross[cc0].cx-1, bd.cross[cc0].cy-1, bd.cross[cc0].cx, bd.cross[cc0].cy);
+				pc.paintCross(cc);
+				pc.paintCross(cc0);
 			}
 
 			this.ctl[mode].el.style.display = 'block';
@@ -535,9 +536,9 @@ KeyPopup.prototype = {
 		var ifunc = function(obj,bsize){
 			obj.el.style.width  = ""+(bsize*kp.imgCR[0])+"px";
 			obj.el.style.height = ""+(bsize*kp.imgCR[1])+"px";
-			obj.el.style.clip   = "rect("+(bsize*obj.cy+1)+"px,"+(bsize*(obj.cx+1))+"px,"+(bsize*(obj.cy+1))+"px,"+(bsize*obj.cx+1)+"px)";
-			obj.el.style.top    = "-"+(obj.cy*bsize+1)+"px";
-			obj.el.style.left   = "-"+(obj.cx*bsize+1)+"px";
+			obj.el.style.clip   = "rect("+(bsize*obj.y+1)+"px,"+(bsize*(obj.x+1))+"px,"+(bsize*(obj.y+1))+"px,"+(bsize*obj.x+1)+"px)";
+			obj.el.style.top    = "-"+(obj.y*bsize+1)+"px";
+			obj.el.style.left   = "-"+(obj.x*bsize+1)+"px";
 		};
 
 		if(k.def_csize>=24){
@@ -600,19 +601,19 @@ TCell.prototype = {
 		if(pos.x<this.minx || this.maxx<pos.x || pos.y<this.miny || this.maxy<pos.y){ return;}
 		this.cursolx = pos.x; this.cursoly = pos.y;
 	},
-	getTCC : function(){ return bd.cnum(this.cursolx>>1, this.cursoly>>1);},
+	getTCC : function(){ return bd.cnum(this.cursolx, this.cursoly);},
 	setTCC : function(id){
 		if(id<0 || bd.cellmax<=id){ return;}
-		this.cursolx = bd.cell[id].cx*2+1; this.cursoly = bd.cell[id].cy*2+1;
+		this.cursolx = bd.cell[id].bx; this.cursoly = bd.cell[id].by;
 	},
-	getTXC : function(){ return bd.xnum(this.cursolx>>1, this.cursoly>>1);},
+	getTXC : function(){ return bd.xnum(this.cursolx, this.cursoly);},
 	setTXC : function(id){
 		if(!k.iscross || id<0 || bd.crossmax<=id){ return;}
-		this.cursolx = bd.cross[id].cx*2; this.cursoly = bd.cross[id].cy*2;
+		this.cursolx = bd.cross[id].bx; this.cursoly = bd.cross[id].by;
 	},
 	getTBC : function(){ return bd.bnum(this.cursolx, this.cursoly);},
 	setTBC : function(id){
 		if(!k.isborder || id<0 || bd.bdmax<=id){ return;}
-		this.cursolx = bd.border[id].cx*2; this.cursoly = bd.border[id].cy;
+		this.cursolx = bd.border[id].bx; this.cursoly = bd.border[id].by;
 	}
 };

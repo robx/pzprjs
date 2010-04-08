@@ -189,14 +189,14 @@ Puzzles.view.prototype = {
 				var cnt=0;
 				var tx, ty;
 
-				tx = bd.cell[c].cx-1; ty = bd.cell[c].cy;
-				while(tx>=0)     { var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!=1){ cnt++; list.push(cc); tx--;} else{ break;} }
-				tx = bd.cell[c].cx+1; ty = bd.cell[c].cy;
-				while(tx<k.qcols){ var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!=1){ cnt++; list.push(cc); tx++;} else{ break;} }
-				tx = bd.cell[c].cx; ty = bd.cell[c].cy-1;
-				while(ty>=0)     { var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!=1){ cnt++; list.push(cc); ty--;} else{ break;} }
-				tx = bd.cell[c].cx; ty = bd.cell[c].cy+1;
-				while(ty<k.qrows){ var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!=1){ cnt++; list.push(cc); ty++;} else{ break;} }
+				tx = bd.cell[c].bx-2; ty = bd.cell[c].by;
+				while(tx>=0)     { var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!==1){ cnt++; list.push(cc); tx-=2;} else{ break;} }
+				tx = bd.cell[c].bx+2; ty = bd.cell[c].by;
+				while(tx<k.qcols){ var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!==1){ cnt++; list.push(cc); tx+=2;} else{ break;} }
+				tx = bd.cell[c].bx; ty = bd.cell[c].by-2;
+				while(ty>=0)     { var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!==1){ cnt++; list.push(cc); ty-=2;} else{ break;} }
+				tx = bd.cell[c].bx; ty = bd.cell[c].by+2;
+				while(ty<k.qrows){ var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!==1){ cnt++; list.push(cc); ty+=2;} else{ break;} }
 
 				if(bd.getNum(c)!=cnt){
 					if(this.inAutoCheck){ return false;}

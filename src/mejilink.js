@@ -98,22 +98,23 @@ Puzzles.mejilink.prototype = {
 		pc.drawBaseMarks = function(x1,y1,x2,y2){
 			this.vinc('cross_mark', 'auto');
 
-			for(var i=0;i<(k.qcols+1)*(k.qrows+1);i++){
-				var cx = i%(k.qcols+1); var cy = mf(i/(k.qcols+1));
-				if(cx < x1-1 || x2+1 < cx){ continue;}
-				if(cy < y1-1 || y2+1 < cy){ continue;}
+			for(var by=0;by<2*k.qrows;by+=2){
+				for(var bx=0;bx<2*k.qcols;bx+=2){
+					if(bx < x1-1 || x2+1 < bx){ continue;}
+					if(by < y1-1 || y2+1 < by){ continue;}
 
-				this.drawBaseMark1(i);
+					this.drawBaseMark1(bx+by*(2*k.qcols));
+				}
 			}
 		};
-		pc.drawBaseMark1 = function(i){
-			var vid = "x_cm_"+i;
+		pc.drawBaseMark1 = function(id){
+			var vid = "x_cm_"+id;
 
 			g.fillStyle = this.Cellcolor;
 			if(this.vnop(vid,this.NONE)){
 				var csize = (this.lw+1)/2;
-				var cx = i%(k.qcols+1), cy = mf(i/(k.qcols+1));
-				g.fillCircle(k.p0.x+cx*this.cw, k.p0.x+cy*this.ch, csize);
+				var bx = id%(2*k.qcols), by = mf(id/(2*k.qcols));
+				g.fillCircle(k.p0.x+bx*this.bw, k.p0.x+by*this.bh, csize);
 			}
 		};
 
@@ -227,17 +228,17 @@ Puzzles.mejilink.prototype = {
 
 		ans.checkdir4Line_meji = function(val){
 			var result = true;
-			for(var cy=0;cy<=k.qrows;cy++){
-				for(var cx=0;cx<=k.qcols;cx++){
+			for(var by=0;by<=2*k.qrows;by+=2){
+				for(var bx=0;bx<=2*k.qcols;bx+=2){
 					var cnt = 0;
-					if(bd.isLine(bd.bnum(cx*2-1,cy*2  ))){ cnt++;}
-					if(bd.isLine(bd.bnum(cx*2+1,cy*2  ))){ cnt++;}
-					if(bd.isLine(bd.bnum(cx*2  ,cy*2-1))){ cnt++;}
-					if(bd.isLine(bd.bnum(cx*2  ,cy*2+1))){ cnt++;}
+					if(bd.isLine(bd.bnum(bx-1,by  ))){ cnt++;}
+					if(bd.isLine(bd.bnum(bx+1,by  ))){ cnt++;}
+					if(bd.isLine(bd.bnum(bx  ,by-1))){ cnt++;}
+					if(bd.isLine(bd.bnum(bx  ,by+1))){ cnt++;}
 					if(cnt==val){
 						if(this.inAutoCheck){ return false;}
 						if(result){ bd.sErBAll(2);}
-						ans.setCrossBorderError(cx,cy);
+						ans.setCrossBorderError(bx,by);
 						result = false;
 					}
 				}

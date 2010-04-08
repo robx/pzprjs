@@ -6,8 +6,6 @@
 // ボードメンバデータの定義(1)
 // Cellクラスの定義
 Cell = function(id){
-	this.cx;	// セルのX座標を保持する
-	this.cy;	// セルのY座標を保持する
 	this.bx;	// セルのX座標(border座標系)を保持する
 	this.by;	// セルのY座標(border座標系)を保持する
 	this.px;	// セルの描画用X座標を保持する
@@ -27,7 +25,7 @@ Cell = function(id){
 };
 Cell.prototype = {
 	//---------------------------------------------------------------------------
-	// cell.allclear() セルのcx,cy,numobj情報以外をクリアする
+	// cell.allclear() セルの位置,描画情報以外をクリアする
 	// cell.ansclear() セルのqans,qsub,error情報をクリアする
 	// cell.subclear() セルのqsub,error情報をクリアする
 	//---------------------------------------------------------------------------
@@ -59,8 +57,6 @@ Cell.prototype = {
 // ボードメンバデータの定義(2)
 // Crossクラスの定義
 Cross = function(id){
-	this.cx;	// 交差点のX座標を保持する
-	this.cy;	// 交差点のY座標を保持する
 	this.bx;	// 交差点のX座標(border座標系)を保持する
 	this.by;	// 交差点のY座標(border座標系)を保持する
 	this.px;	// 交差点の描画用X座標を保持する
@@ -74,7 +70,7 @@ Cross = function(id){
 };
 Cross.prototype = {
 	//---------------------------------------------------------------------------
-	// cross.allclear() 交差点のcx,cy,numobj情報以外をクリアする
+	// cross.allclear() 交差点の位置,描画情報以外をクリアする
 	// cross.ansclear() 交差点のerror情報をクリアする
 	// cross.subclear() 交差点のerror情報をクリアする
 	//---------------------------------------------------------------------------
@@ -97,8 +93,6 @@ Cross.prototype = {
 // ボードメンバデータの定義(3)
 // Borderクラスの定義
 Border = function(id){
-	this.cx;	// 境界線のX座標を保持する
-	this.cy;	// 境界線のY座標を保持する
 	this.bx;	// 境界線のX座標(border座標系)を保持する
 	this.by;	// 境界線のY座標(border座標系)を保持する
 	this.px;	// 境界線の描画X座標を保持する
@@ -119,7 +113,7 @@ Border = function(id){
 };
 Border.prototype = {
 	//---------------------------------------------------------------------------
-	// border.allclear() 境界線のcx,cy,numobj情報以外をクリアする
+	// border.allclear() 境界線の位置,描画情報以外をクリアする
 	// border.ansclear() 境界線のqans,qsub,line,color,error情報をクリアする
 	// border.subclear() 境界線のqsub,error情報をクリアする
 	//---------------------------------------------------------------------------
@@ -231,10 +225,10 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// bd.setposAll()    全てのCell, Cross, BorderオブジェクトのsetposCell()等を呼び出す
 	//                   盤面の新規作成や、拡大/縮小/回転/反転時などに呼び出される
-	// bd.setposCell()   該当するidのセルのcx,cyプロパティを設定する
-	// bd.setposCross()  該当するidの交差点のcx,cyプロパティを設定する
-	// bd.setposBorder() 該当するidの境界線/Lineのcx,cyプロパティを設定する
-	// bd.setposEXCell() 該当するidのExtendセルのcx,cyプロパティを設定する
+	// bd.setposCell()   該当するidのセルのbx,byプロパティを設定する
+	// bd.setposCross()  該当するidの交差点のbx,byプロパティを設定する
+	// bd.setposBorder() 該当するidの境界線/Lineのbx,byプロパティを設定する
+	// bd.setposEXCell() 該当するidのExtendセルのbx,byプロパティを設定する
 	//---------------------------------------------------------------------------
 	// setpos関連関数 <- 各Cell等が持っているとメモリを激しく消費するのでここに置くこと.
 	setposAll : function(){
@@ -246,90 +240,62 @@ Board.prototype = {
 		this.setcoordAll();
 	},
 	setposCells : function(){
-		var x0=k.p0.x, y0=k.p0.y;
 		this.cellmax = this.cell.length;
 		for(var id=0;id<this.cellmax;id++){
 			var obj = this.cell[id];
-			obj.cx = id%k.qcols;
-			obj.cy = mf(id/k.qcols);
-			obj.bx = obj.cx*2+1;
-			obj.by = obj.cy*2+1;
+			obj.bx = (id%k.qcols)*2+1;
+			obj.by = mf(id/k.qcols)*2+1;
 		}
 	},
 	setposCrosses : function(){
-		var x0=k.p0.x, y0=k.p0.y;
 		this.crossmax = this.cross.length;
 		for(var id=0;id<this.crossmax;id++){
 			var obj = this.cross[id];
-			obj.cx = id%(k.qcols+1);
-			obj.cy = mf(id/(k.qcols+1));
-			obj.bx = obj.cx*2;
-			obj.by = obj.cy*2;
+			obj.bx = (id%(k.qcols+1))*2;
+			obj.by = mf(id/(k.qcols+1))*2;
 		}
 	},
 	setposBorders : function(){
-		var x0=k.p0.x, y0=k.p0.y;
 		this.bdinside = 2*k.qcols*k.qrows-(k.qcols+k.qrows);
 		this.bdmax = this.border.length;
 		for(var id=0;id<this.bdmax;id++){
-			var obj = this.border[id];
-			if(id>=0 && id<(k.qcols-1)*k.qrows){
-				obj.cx = (id%(k.qcols-1))*2+2;
-				obj.cy = mf(id/(k.qcols-1))*2+1;
+			var obj=this.border[id], i=id;
+			if(i>=0 && i<(k.qcols-1)*k.qrows){ obj.bx=(i%(k.qcols-1))*2+2; obj.by=mf(i/(k.qcols-1))*2+1;} i-=((k.qcols-1)*k.qrows);
+			if(i>=0 && i<k.qcols*(k.qrows-1)){ obj.bx=(i%k.qcols)*2+1;     obj.by=mf(i/k.qcols)*2+2;    } i-=(k.qcols*(k.qrows-1));
+			if(k.isoutsideborder){
+				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;     obj.by=0;        } i-=k.qcols;
+				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;     obj.by=2*k.qrows;} i-=k.qcols;
+				if(i>=0 && i<k.qrows){ obj.bx=0;         obj.by=i*2+1;    } i-=k.qrows;
+				if(i>=0 && i<k.qrows){ obj.bx=2*k.qcols; obj.by=i*2+1;    } i-=k.qrows;
 			}
-			else if(id>=(k.qcols-1)*k.qrows && id<this.bdinside){
-				obj.cx = (id-(k.qcols-1)*k.qrows)%k.qcols*2+1;
-				obj.cy = mf((id-(k.qcols-1)*k.qrows)/k.qcols)*2+2;
-			}
-			else if(id>=this.bdinside && id<this.bdinside+k.qcols){
-				obj.cx = (id-this.bdinside)*2+1;
-				obj.cy = 0;
-			}
-			else if(id>=this.bdinside+k.qcols && id<this.bdinside+2*k.qcols){
-				obj.cx = (id-this.bdinside-k.qcols)*2+1;
-				obj.cy = k.qrows*2;
-			}
-			else if(id>=this.bdinside+2*k.qcols && id<this.bdinside+2*k.qcols+k.qrows){
-				obj.cx = 0;
-				obj.cy = (id-this.bdinside-2*k.qcols)*2+1;
-			}
-			else if(id>=this.bdinside+2*k.qcols+k.qrows && id<this.bdinside+2*(k.qcols+k.qrows)){
-				obj.cx = k.qcols*2;
-				obj.cy = (id-this.bdinside-2*k.qcols-k.qrows)*2+1;
-			}
-			obj.bx = obj.cx;
-			obj.by = obj.cy;
 
-			obj.cellcc[0] = this.cnum((obj.cx-obj.cy%2)>>1, (obj.cy-obj.cx%2)>>1);
-			obj.cellcc[1] = this.cnum((obj.cx+obj.cy%2)>>1, (obj.cy+obj.cx%2)>>1);
+			obj.cellcc[0] = this.cnum(obj.bx-(obj.by&1), obj.by-(obj.bx&1));
+			obj.cellcc[1] = this.cnum(obj.bx+(obj.by&1), obj.by+(obj.bx&1));
 
-			obj.crosscc[0] = this.xnum((obj.cx-obj.cx%2)>>1, (obj.cy-obj.cy%2)>>1);
-			obj.crosscc[1] = this.xnum((obj.cx+obj.cx%2)>>1, (obj.cy+obj.cy%2)>>1);
+			obj.crosscc[0] = this.xnum(obj.bx-(obj.bx&1), obj.by-(obj.by&1));
+			obj.crosscc[1] = this.xnum(obj.bx+(obj.bx&1), obj.by+(obj.by&1));
 		}
 	},
 	setposEXcells : function(){
-		var x0=k.p0.x, y0=k.p0.y;
 		this.excellmax = this.excell.length;
 		for(var id=0;id<this.excellmax;id++){
-			var obj = this.excell[id];
+			var obj = this.excell[id], i=id;
+			obj.bx=-1;
+			obj.by=-1;
 			if(k.isextendcell===1){
-				if     (id<k.qcols)        { obj.cx=id; obj.cy=-1;        }
-				else if(id<k.qcols+k.qrows){ obj.cx=-1; obj.cy=id-k.qcols;}
-				else                       { obj.cx=-1; obj.cy=-1;        }
+				if(i>=0 && i<k.qcols){ obj.bx=id*2+1; obj.by=-1;     continue;} i-=k.qcols;
+				if(i>=0 && i<k.qrows){ obj.bx=-1;     obj.by=id*2+1; continue;} i-=k.qrows;
 			}
 			else if(k.isextendcell===2){
-				if     (id<  k.qcols)            { obj.cx=id;         obj.cy=-1;                  }
-				else if(id<2*k.qcols)            { obj.cx=id-k.qcols; obj.cy=k.qrows;             }
-				else if(id<2*k.qcols+  k.qrows)  { obj.cx=-1;         obj.cy=id-2*k.qcols;        }
-				else if(id<2*k.qcols+2*k.qrows)  { obj.cx=k.qcols;    obj.cy=id-2*k.qcols-k.qrows;}
-				else if(id<2*k.qcols+2*k.qrows+1){ obj.cx=-1;         obj.cy=-1;     }
-				else if(id<2*k.qcols+2*k.qrows+2){ obj.cx=k.qcols;    obj.cy=-1;     }
-				else if(id<2*k.qcols+2*k.qrows+3){ obj.cx=-1;         obj.cy=k.qrows;}
-				else if(id<2*k.qcols+2*k.qrows+4){ obj.cx=k.qcols;    obj.cy=k.qrows;}
-				else                             { obj.cx=-1;         obj.cy=-1;     }
+				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;       obj.by=-1;          continue;} i-=k.qcols;
+				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;       obj.by=2*k.qrows+1; continue;} i-=k.qcols;
+				if(i>=0 && i<k.qrows){ obj.bx=-1;          obj.by=i*2+1;       continue;} i-=k.qrows;
+				if(i>=0 && i<k.qrows){ obj.bx=2*k.qcols+1; obj.by=i*2+1;       continue;} i-=k.qrows;
+				if(i===0)            { obj.bx=-1;          obj.by=-1;          continue;} i--;
+				if(i===0)            { obj.bx=2*k.qcols+1; obj.by=-1;          continue;} i--;
+				if(i===0)            { obj.bx=-1;          obj.by=2*k.qrows+1; continue;} i--;
+				if(i===0)            { obj.bx=2*k.qcols+1; obj.by=2*k.qrows+1; continue;} i--;
 			}
-			obj.bx = obj.cx*2+1;
-			obj.by = obj.cy*2+1;
 		}
 	},
 
@@ -341,31 +307,31 @@ Board.prototype = {
 		{
 			for(var id=0;id<this.cellmax;id++){
 				var obj = this.cell[id];
-				obj.px = x0 + obj.cx*k.cwidth;
-				obj.py = y0 + obj.cy*k.cheight;
-				obj.cpx = x0 + obj.bx*k.cwidth/2;
-				obj.cpy = y0 + obj.by*k.cheight/2;
+				obj.px = x0 + (obj.bx-1)*k.bwidth;
+				obj.py = y0 + (obj.by-1)*k.bheight;
+				obj.cpx = x0 + obj.bx*k.bwidth;
+				obj.cpy = y0 + obj.by*k.bheight;
 			}
 		}
 		if(k.iscross){
 			for(var id=0;id<this.crossmax;id++){
 				var obj = this.cross[id];
-				obj.px = x0 + obj.cx*k.cwidth;
-				obj.py = y0 + obj.cy*k.cheight;
+				obj.px = x0 + obj.bx*k.bwidth;
+				obj.py = y0 + obj.by*k.bheight;
 			}
 		}
 		if(k.isborder){
 			for(var id=0;id<this.bdmax;id++){
 				var obj = this.border[id];
-				obj.px = x0 + obj.cx*k.cwidth/2;
-				obj.py = y0 + obj.cy*k.cheight/2;
+				obj.px = x0 + obj.bx*k.bwidth;
+				obj.py = y0 + obj.by*k.bheight;
 			}
 		}
 		if(k.isextendcell!=0){
 			for(var id=0;id<this.excellmax;id++){
 				var obj = this.excell[id];
-				obj.px = x0 + obj.cx*k.cwidth;
-				obj.py = y0 + obj.cy*k.cheight;
+				obj.px = x0 + (obj.bx-1)*k.bwidth;
+				obj.py = y0 + (obj.by-1)*k.bheight;
 			}
 		}
 	},
@@ -464,57 +430,61 @@ Board.prototype = {
 	// bd.cnum2()  (X,Y)の位置にあるCellのIDを、盤面の大きさを(qc×qr)で計算して返す
 	// bd.xnum()   (X,Y)の位置にあるCrossのIDを返す
 	// bd.xnum2()  (X,Y)の位置にあるCrossのIDを、盤面の大きさを(qc×qr)で計算して返す
-	// bd.bnum()   (X*2,Y*2)の位置にあるBorderのIDを返す
-	// bd.bnum2()  (X*2,Y*2)の位置にあるBorderのIDを、盤面の大きさを(qc×qr)で計算して返す
+	// bd.bnum()   (X,Y)の位置にあるBorderのIDを返す
+	// bd.bnum2()  (X,Y)の位置にあるBorderのIDを、盤面の大きさを(qc×qr)で計算して返す
 	// bd.exnum()  (X,Y)の位置にあるextendCellのIDを返す
 	// bd.exnum2() (X,Y)の位置にあるextendCellのIDを、盤面の大きさを(qc×qr)で計算して返す
 	//---------------------------------------------------------------------------
-	cnum : function(cx,cy){
-		return (cx>=0&&cx<=k.qcols-1&&cy>=0&&cy<=k.qrows-1)?cx+cy*k.qcols:-1;
+	cnum : function(bx,by){
+		if((bx<0||bx>2*k.qcols||by<0||by>2*k.qrows)||(!(bx&1))||(!(by&1))){ return -1;}
+		return (bx>>1)+(by>>1)*k.qcols;
 	},
-	cnum2 : function(cx,cy,qc,qr){
-		return (cx>=0&&cx<=qc-1&&cy>=0&&cy<=qr-1)?cx+cy*qc:-1;
+	cnum2 : function(bx,by,qc,qr){
+		if((bx<0||bx>2*qc||by<0||by>2*qr)||(!(bx&1))||(!(by&1))){ return -1;}
+		return (bx>>1)+(by>>1)*qc;
 	},
-	xnum : function(cx,cy){
-		return (cx>=0&&cx<=k.qcols&&cy>=0&&cy<=k.qrows)?cx+cy*(k.qcols+1):-1;
+	xnum : function(bx,by){
+		if((bx<0||bx>2*k.qcols||by<0||by>2*k.qrows)||(!!(bx&1))||(!!(by&1))){ return -1;}
+		return (bx>>1)+(by>>1)*(k.qcols+1);
 	},
-	xnum2 : function(cx,cy,qc,qr){
-		return (cx>=0&&cx<=qc&&cy>=0&&cy<=qr)?cx+cy*(qc+1):-1;
+	xnum2 : function(bx,by,qc,qr){
+		if((bx<0||bx>2*qc||by<0||by>2*qr)||(!!(bx&1))||(!!(by&1))){ return -1;}
+		return (bx>>1)+(by>>1)*(qc+1);
 	},
-	bnum : function(cx,cy){
-		return this.bnum2(cx,cy,k.qcols,k.qrows);
+	bnum : function(bx,by){
+		return bd.bnum2(bx,by,k.qcols,k.qrows);
 	},
-	bnum2 : function(cx,cy,qc,qr){
-		if(cx>=1&&cx<=qc*2-1&&cy>=1&&cy<=qr*2-1){
-			if     (!(cx&1) &&  (cy&1)){ return ((cx>>1)-1)+(cy>>1)*(qc-1);}
-			else if( (cx&1) && !(cy&1)){ return (cx>>1)+((cy>>1)-1)*qc+(qc-1)*qr;}
+	bnum2 : function(bx,by,qc,qr){
+		if(bx>=1&&bx<=2*qc-1&&by>=1&&by<=2*qr-1){
+			if     (!(bx&1) &&  (by&1)){ return ((bx>>1)-1)+(by>>1)*(qc-1);}
+			else if( (bx&1) && !(by&1)){ return (bx>>1)+((by>>1)-1)*qc+(qc-1)*qr;}
 		}
 		else if(k.isoutsideborder==1){
-			if     (cy===0   &&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+(cx>>1);}
-			else if(cy===2*qr&&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+(cx>>1);}
-			else if(cx===0   &&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+(cy>>1);}
-			else if(cx===2*qc&&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+(cy>>1);}
+			if     (by===0   &&(bx&1)&&(bx>=1&&bx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+(bx>>1);}
+			else if(by===2*qr&&(bx&1)&&(bx>=1&&bx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+(bx>>1);}
+			else if(bx===0   &&(by&1)&&(by>=1&&by<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+(by>>1);}
+			else if(bx===2*qc&&(by&1)&&(by>=1&&by<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+(by>>1);}
 		}
 		return -1;
 	},
-	exnum : function(cx,cy){
-		return this.exnum2(cx,cy,k.qcols,k.qrows);
+	exnum : function(bx,by){
+		return bd.exnum2(bx,by,k.qcols,k.qrows);
 	},
-	exnum2 : function(cx,cy,qc,qr){
+	exnum2 : function(bx,by,qc,qr){
 		if(k.isextendcell===1){
-			if(cx===-1&&cy===-1){ return qc+qr;}
-			else if(cy===-1&&cx>=0&&cx<qc){ return cx;}
-			else if(cx===-1&&cy>=0&&cy<qr){ return qc+cy;}
+			if(bx===-1&&by===-1){ return qc+qr;}
+			else if(by===-1&&bx>0&&bx<2*qc){ return (bx>>1);}
+			else if(bx===-1&&by>0&&by<2*qr){ return qc+(by>>1);}
 		}
 		else if(k.isextendcell===2){
-			if     (cy===-1&&cx>=0&&cx<qc){ return cx;}
-			else if(cy===qr&&cx>=0&&cx<qc){ return qc+cx;}
-			else if(cx===-1&&cy>=0&&cy<qr){ return 2*qc+cy;}
-			else if(cx===qc&&cy>=0&&cy<qr){ return 2*qc+qr+cy;}
-			else if(cx===-1&&cy===-1){ return 2*qc+2*qr;}
-			else if(cx===qc&&cy===-1){ return 2*qc+2*qr+1;}
-			else if(cx===-1&&cy===qr){ return 2*qc+2*qr+2;}
-			else if(cx===qc&&cy===qr){ return 2*qc+2*qr+3;}
+			if     (by===-1&&bx>0&&bx<2*qc){ return (bx>>1);}
+			else if(by===qr&&bx>0&&bx<2*qc){ return qc+(bx>>1);}
+			else if(bx===-1&&by>0&&by<2*qr){ return 2*qc+(by>>1);}
+			else if(bx===qc&&by>0&&by<2*qr){ return 2*qc+qr+(by>>1);}
+			else if(bx===-1&&by===-1){ return 2*qc+2*qr;}
+			else if(bx===qc&&by===-1){ return 2*qc+2*qr+1;}
+			else if(bx===-1&&by===qr){ return 2*qc+2*qr+2;}
+			else if(bx===qc&&by===qr){ return 2*qc+2*qr+3;}
 		}
 		return -1;
 	},
@@ -524,9 +494,10 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	getClistByPosition : function(x1,y1,x2,y2){
 		var clist = [];
-		for(var cx=x1;cx<=Math.min(x2,k.qcols-1);cx++){
-			for(var cy=y1;cy<=Math.min(y2,k.qrows-1);cy++){
-				var cc = this.cnum(cx,cy);
+		x1 += ((x1^1)&1); y1 += ((y1^1)&1);
+		for(var bx=x1,maxx=Math.min(x2,2*k.qcols-1);bx<=maxx;bx+=2){
+			for(var by=y1,maxy=Math.min(y2,2*k.qrows-1);by<=maxy;by+=2){
+				var cc = this.cnum(bx,by);
 				if(cc!==-1){ clist.push(cc);}
 			}
 		}
@@ -536,27 +507,27 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// bd.up() bd.dn() bd.lt() bd.rt()  セルの上下左右に接するセルのIDを返す
 	//---------------------------------------------------------------------------
-	up : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].cx  ,this.cell[cc].cy-1):-1;},	//上のセルのIDを求める
-	dn : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].cx  ,this.cell[cc].cy+1):-1;},	//下のセルのIDを求める
-	lt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].cx-1,this.cell[cc].cy  ):-1;},	//左のセルのIDを求める
-	rt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].cx+1,this.cell[cc].cy  ):-1;},	//右のセルのIDを求める
+	up : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx  ,this.cell[cc].by-2):-1;},	//上のセルのIDを求める
+	dn : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx  ,this.cell[cc].by+2):-1;},	//下のセルのIDを求める
+	lt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx-2,this.cell[cc].by  ):-1;},	//左のセルのIDを求める
+	rt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx+2,this.cell[cc].by  ):-1;},	//右のセルのIDを求める
 	//---------------------------------------------------------------------------
 	// bd.ub() bd.db() bd.lb() bd.rb()  セルの上下左右にある境界線のIDを返す
 	//---------------------------------------------------------------------------
-	ub : function(cc){ return this.cell[cc]?this.bnum(2*this.cell[cc].cx+1,2*this.cell[cc].cy  ):-1;},	//セルの上の境界線のIDを求める
-	db : function(cc){ return this.cell[cc]?this.bnum(2*this.cell[cc].cx+1,2*this.cell[cc].cy+2):-1;},	//セルの下の境界線のIDを求める
-	lb : function(cc){ return this.cell[cc]?this.bnum(2*this.cell[cc].cx  ,2*this.cell[cc].cy+1):-1;},	//セルの左の境界線のIDを求める
-	rb : function(cc){ return this.cell[cc]?this.bnum(2*this.cell[cc].cx+2,2*this.cell[cc].cy+1):-1;},	//セルの右の境界線のIDを求める
+	ub : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx  ,this.cell[cc].by-1):-1;},	//セルの上の境界線のIDを求める
+	db : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx  ,this.cell[cc].by+1):-1;},	//セルの下の境界線のIDを求める
+	lb : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx-1,this.cell[cc].by  ):-1;},	//セルの左の境界線のIDを求める
+	rb : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx+1,this.cell[cc].by  ):-1;},	//セルの右の境界線のIDを求める
 
 	//---------------------------------------------------------------------------
 	// bd.bcntCross() 指定された位置のCrossの周り4マスのうちqans==1のマスの数を求める
 	//---------------------------------------------------------------------------
-	bcntCross : function(cx,cy) {
-		var cnt = 0;
-		if(this.isBlack(this.cnum(cx-1, cy-1))){ cnt++;}
-		if(this.isBlack(this.cnum(cx  , cy-1))){ cnt++;}
-		if(this.isBlack(this.cnum(cx-1, cy  ))){ cnt++;}
-		if(this.isBlack(this.cnum(cx  , cy  ))){ cnt++;}
+	bcntCross : function(c) {
+		var cnt=0, bx=bd.cross[c].bx, by=bd.cross[c].by;
+		if(this.isBlack(this.cnum(bx-1, by-1))){ cnt++;}
+		if(this.isBlack(this.cnum(bx+1, by-1))){ cnt++;}
+		if(this.isBlack(this.cnum(bx-1, by+1))){ cnt++;}
+		if(this.isBlack(this.cnum(bx+1, by+1))){ cnt++;}
 		return cnt;
 	},
 
@@ -583,17 +554,17 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	isLPMarked : function(id){
 		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-		return bd.border[id].cx&1 ? (bd.isLPdown(cc1) || bd.isLPup(cc2)) :
+		return bd.border[id].bx&1 ? (bd.isLPdown(cc1) || bd.isLPup(cc2)) :
 									(bd.isLPright(cc1) || bd.isLPleft(cc2));
 	},
 	isLPCombined : function(id){
 		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-		return bd.border[id].cx&1 ? (bd.isLPdown(cc1) && bd.isLPup(cc2)) :
+		return bd.border[id].bx&1 ? (bd.isLPdown(cc1) && bd.isLPup(cc2)) :
 									(bd.isLPright(cc1) && bd.isLPleft(cc2));
 	},
 	isLineNG : function(id){
 		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-		return bd.border[id].cx&1 ? (bd.isnoLPdown(cc1) || bd.isnoLPup(cc2)) :
+		return bd.border[id].bx&1 ? (bd.isnoLPdown(cc1) || bd.isnoLPup(cc2)) :
 									(bd.isnoLPright(cc1) || bd.isnoLPleft(cc2));
 	},
 	checkLPCombined : function(cc){

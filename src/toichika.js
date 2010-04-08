@@ -81,22 +81,22 @@ Puzzles.toichika.prototype = {
 			var pos;
 			if(k.editmode){
 				if(ismousedown){
-					pos = this.crosspos(0.15);
+					pos = this.borderpos(0.15);
 					this.bordermode = (!((pos.x&1)&&(pos.y&1)));
 				}
 				if(this.bordermode){ this.inputborder(); return;}
 			}
 
-			pos = this.cellpos();
+			pos = this.borderpos(0);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y && this.inputData===1){ return;}
 
 			var inp = 0;
 			var cc = bd.cnum(this.mouseCell.x, this.mouseCell.y);
 			if(cc!=-1){
-				if     (pos.y-this.mouseCell.y==-1){ inp=k.UP;}
-				else if(pos.y-this.mouseCell.y== 1){ inp=k.DN;}
-				else if(pos.x-this.mouseCell.x==-1){ inp=k.LT;}
-				else if(pos.x-this.mouseCell.x== 1){ inp=k.RT;}
+				if     (pos.y-this.mouseCell.y==-2){ inp=k.UP;}
+				else if(pos.y-this.mouseCell.y== 2){ inp=k.DN;}
+				else if(pos.x-this.mouseCell.x==-2){ inp=k.LT;}
+				else if(pos.x-this.mouseCell.x== 2){ inp=k.RT;}
 				else{ return;}
 
 				bd.setCell(cc,inp);
@@ -122,11 +122,11 @@ Puzzles.toichika.prototype = {
 			else{
 				var cc0 = tc.getTCC();
 				tc.setTCC(cc);
-				pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
+				pc.paintCell(cc0);
 				if(bd.QsC(cc)==1 || bd.QaC(cc)==-1){ this.inputData=1;}
 			}
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
+			pc.paintCell(cc);
 		};
 
 		mv.inputDot = function(){
@@ -140,8 +140,8 @@ Puzzles.toichika.prototype = {
 			bd.sQsC(cc,(this.inputData===1?1:0));
 			this.mouseCell = cc;
 
-			pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
+			pc.paintCell(cc0);
+			pc.paintCell(cc);
 		};
 
 		// キーボード入力系
@@ -377,12 +377,12 @@ Puzzles.toichika.prototype = {
 			for(var c=0;c<bd.cellmax;c++){ check[c]=(ans.isObject(c)?0:-1);}
 			for(var c=0;c<bd.cellmax;c++){
 				if(check[c]!==0){ continue;}
-				var cx=bd.cell[c].cx, cy=bd.cell[c].cy, tc=c,
+				var bx=bd.cell[c].bx, by=bd.cell[c].by, tc=c,
 					dir=(bd.cell[c].direc!==0 ? bd.cell[c].direc : bd.cell[c].qans);
 
 				while(1){
-					switch(dir){ case k.UP: cy--; break; case k.DN: cy++; break; case k.LT: cx--; break; case k.RT: cx++; break;}
-					tc = bd.cnum(cx,cy);
+					switch(dir){ case k.UP: by-=2; break; case k.DN: by+=2; break; case k.LT: bx-=2; break; case k.RT: bx+=2; break;}
+					tc = bd.cnum(bx,by);
 					if(tc===-1){ ainfo.push([c]); break;}
 					if(tc!==-1 && check[tc]!==-1){
 						var tdir = (bd.cell[tc].direc!==0 ? bd.cell[tc].direc : bd.cell[tc].qans);

@@ -88,7 +88,7 @@ Puzzles.slalom.prototype = {
 
 			if(cc!=tc.getTCC()){
 				var cc0 = tc.getTCC(); tc.setTCC(cc);
-				pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
+				pc.paintCell(cc0);
 			}
 			else{
 				if     (this.btn.Left ){ bd.sQuC(cc, {0:1,1:21,21:22,22:0}[bd.QuC(cc)]);}
@@ -97,7 +97,7 @@ Puzzles.slalom.prototype = {
 			}
 			bd.hinfo.generateGates();
 
-			pc.paint(bd.cell[cc].cx, bd.cell[cc].cy, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+			pc.paintCell(cc);
 			pc.dispnumStartpos(bd.startid);
 		};
 		mv.inputStartid_up = function(){
@@ -108,7 +108,7 @@ Puzzles.slalom.prototype = {
 		mv.inputGate = function(){
 			var cc   = this.cellid();
 			if(cc==-1){ return;}
-			var cpos = this.cellpos();
+			var cpos = this.borderpos(0);
 
 			var input=false;
 
@@ -136,8 +136,8 @@ Puzzles.slalom.prototype = {
 					else if(Math.abs(pos.x-this.firstPos.x)>=8){ this.inputData=22; input=true;}
 				}
 				else{
-					if     (Math.abs(cpos.y-this.prevCPos.y)==1){ this.inputData=21; input=true;}
-					else if(Math.abs(cpos.x-this.prevCPos.x)==1){ this.inputData=22; input=true;}
+					if     (Math.abs(cpos.y-this.prevCPos.y)==2){ this.inputData=21; input=true;}
+					else if(Math.abs(cpos.x-this.prevCPos.x)==2){ this.inputData=22; input=true;}
 				}
 
 				if(input){
@@ -148,8 +148,8 @@ Puzzles.slalom.prototype = {
 			// “ü—Í‚µ‘±‚¯‚Ä‚¢‚ÄA•Ê‚Ìƒ}ƒX‚ÉˆÚ“®‚µ‚½ê‡
 			else if(cc!==this.mouseCell){
 				if(this.inputData==0){ this.inputData=0; input=true;}
-				else if(Math.abs(cpos.y-this.prevCPos.y)==1){ this.inputData=21; input=true;}
-				else if(Math.abs(cpos.x-this.prevCPos.x)==1){ this.inputData=22; input=true;}
+				else if(Math.abs(cpos.y-this.prevCPos.y)==2){ this.inputData=21; input=true;}
+				else if(Math.abs(cpos.x-this.prevCPos.x)==2){ this.inputData=22; input=true;}
 			}
 
 			// •`‰æEŒãˆ—
@@ -157,7 +157,7 @@ Puzzles.slalom.prototype = {
 				if(this.inputData!==10){ bd.sQuC(cc,this.inputData);}
 				bd.hinfo.generateGates();
 
-				pc.paint(bd.cell[cc].cx, bd.cell[cc].cy, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+				pc.paintCell(cc);
 				pc.dispnumStartpos(bd.startid);
 			}
 			this.prevCPos  = cpos;
@@ -190,8 +190,7 @@ Puzzles.slalom.prototype = {
 				if(newques==0){ bd.sQnC(cc,-1);}
 				if(old==21||old==22||newques==21||newques==22){ bd.hinfo.generateGates();}
 
-				var cx=bd.cell[cc].cx, cy=bd.cell[cc].cy;
-				pc.paint(cx,cy,cx+1,cy+1);
+				pc.paintCell(cc);
 				pc.dispnumStartpos(bd.startid);
 			}
 			else if(bd.QuC(cc)==1){
@@ -262,32 +261,34 @@ Puzzles.slalom.prototype = {
 		bd.nummaxfunc = function(cc){ return Math.min(bd.hinfo.max,bd.maxnum);}
 
 		menu.ex.adjustSpecial = function(type,key){
+			var d = {xx:2*k.qcols, yy:2*k.qrows};
+
 			um.disableRecord();
-			var cx=bd.cell[bd.startid].cx, cy=bd.cell[bd.startid].cy;
+			var bx=bd.cell[bd.startid].bx, by=bd.cell[bd.startid].by;
 			switch(type){
 			case 1: // ã‰º”½“]
-				bd.startid = bd.cnum(cx,k.qrows-1-cy);
+				bd.startid = bd.cnum(bx,d.yy-by);
 				break;
 			case 2: // ¶‰E”½“]
-				bd.startid = bd.cnum(k.qcols-1-cx,cy);
+				bd.startid = bd.cnum(d.xx-bx,by);
 				break;
 			case 3: // ‰E90‹”½“]
-				bd.startid = bd.cnum2(k.qrows-1-cy,cx,k.qrows,k.qcols);
+				bd.startid = bd.cnum2(d.yy-by,bx,k.qrows,k.qcols);
 				break;
 			case 4: // ¶90‹”½“]
-				bd.startid = bd.cnum2(cy,k.qcols-1-cx,k.qrows,k.qcols);
+				bd.startid = bd.cnum2(by,d.xx-bx,k.qrows,k.qcols);
 				break;
 			case 5: // ”Õ–ÊŠg‘å
-				if     (key==k.UP){ bd.startid = bd.cnum2(cx  ,cy+1,k.qcols,k.qrows+1);}
-				else if(key==k.DN){ bd.startid = bd.cnum2(cx  ,cy  ,k.qcols,k.qrows+1);}
-				else if(key==k.LT){ bd.startid = bd.cnum2(cx+1,cy  ,k.qcols+1,k.qrows);}
-				else if(key==k.RT){ bd.startid = bd.cnum2(cx  ,cy  ,k.qcols+1,k.qrows);}
+				if     (key==k.UP){ bd.startid = bd.cnum2(bx  ,by+2,k.qcols,k.qrows+1);}
+				else if(key==k.DN){ bd.startid = bd.cnum2(bx  ,by  ,k.qcols,k.qrows+1);}
+				else if(key==k.LT){ bd.startid = bd.cnum2(bx+2,by  ,k.qcols+1,k.qrows);}
+				else if(key==k.RT){ bd.startid = bd.cnum2(bx  ,by  ,k.qcols+1,k.qrows);}
 				break;
 			case 6: // ”Õ–Êk¬
-				if     (key==k.DN && cy<k.qrows-1){ bd.startid = bd.cnum2(cx  ,cy  ,k.qcols,k.qrows-1);}
-				else if(key==k.UP || key==k.DN)   { bd.startid = bd.cnum2(cx  ,cy-1,k.qcols,k.qrows-1);}
-				else if(key==k.RT && cx<k.qcols-1){ bd.startid = bd.cnum2(cx  ,cy  ,k.qcols-1,k.qrows);}
-				else if(key==k.LT || key==k.RT)   { bd.startid = bd.cnum2(cx-1,cy  ,k.qcols-1,k.qrows);}
+				if     (key==k.DN && by<2*k.qrows-2){ bd.startid = bd.cnum2(bx  ,by  ,k.qcols,k.qrows-1);}
+				else if(key==k.UP || key==k.DN)     { bd.startid = bd.cnum2(bx  ,by-2,k.qcols,k.qrows-1);}
+				else if(key==k.RT && bx<2*k.qcols-2){ bd.startid = bd.cnum2(bx  ,by  ,k.qcols-1,k.qrows);}
+				else if(key==k.LT || key==k.RT)     { bd.startid = bd.cnum2(bx-2,by  ,k.qcols-1,k.qrows);}
 				break;
 			}
 			um.enableRecord();
@@ -372,7 +373,7 @@ Puzzles.slalom.prototype = {
 			this.vinc('cell_circle', 'auto');
 
 			var c = bd.startid;
-			if(bd.cell[c].cx<x1-2 || x2+2<bd.cell[c].cx || bd.cell[c].cy<y1-2 || y2+2<bd.cell[c].cy){ return;}
+			if(bd.cell[c].bx<x1-2 || x2+2<bd.cell[c].bx || bd.cell[c].by<y1-2 || y2+2<bd.cell[c].by){ return;}
 
 			var rsize = this.cw*0.45, rsize2 = this.cw*0.40;
 			var csize = (rsize+rsize2)/2, csize2 = rsize2-rsize;
@@ -411,8 +412,8 @@ Puzzles.slalom.prototype = {
 					var id=idlist[i];
 					if(id!==bd.startid){ continue;}
 
-					var bx = bd.border[id].cx, by = bd.border[id].cy;
-					pc.drawStartpos((bx-by%2)>>1,(by-bx%2)>>1,(bx-by%2)>>1,(by-bx%2)>>1);
+					var bx = bd.border[id].bx, by = bd.border[id].by;
+					pc.drawStartpos(bx-(by&1),by-(bx&1),bx-(by&1),by-(bx&1));
 
 					// start‚Íˆê‰ÓŠ‚¾‚¯‚È‚Ì‚ÅA•`‰æ‚µ‚½‚çI—¹‚µ‚Ä‚æ‚¢
 					break;
@@ -758,13 +759,13 @@ Puzzles.slalom.prototype = {
 			if(bd.isLine(bd.ub(bd.startid))){ sid.push({id:bd.ub(bd.startid),dir:1});}
 
 			for(var i=0;i<sid.length;i++){
-				var bx=bd.border[sid[i].id].cx, by=bd.border[sid[i].id].cy;
+				var bx=bd.border[sid[i].id].bx, by=bd.border[sid[i].id].by;
 				var dir=sid[i].dir, ordertype=-1, passing=0;
 
 				while(1){
 					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 					if((bx+by)%2==0){
-						var cc = bd.cnum(bx>>1,by>>1);
+						var cc = bd.cnum(bx,by);
 						if(cc==bd.startid){ return true;} // ‚¿‚á‚ñ‚Æ–ß‚Á‚Ä‚«‚½
 
 						if(bd.QuC(cc)==21 || bd.QuC(cc)==22){
@@ -833,12 +834,12 @@ Hurdle.prototype = {
 		var clist = [];
 		var cc1,cc2;
 		if(this.data[gateid].val==21){
-			cc1 = bd.cnum(this.data[gateid].x1, this.data[gateid].y1-1);
-			cc2 = bd.cnum(this.data[gateid].x1, this.data[gateid].y2+1);
+			cc1 = bd.cnum(this.data[gateid].x1, this.data[gateid].y1-2);
+			cc2 = bd.cnum(this.data[gateid].x1, this.data[gateid].y2+2);
 		}
 		else if(this.data[gateid].val==22){
-			cc1 = bd.cnum(this.data[gateid].x1-1, this.data[gateid].y1);
-			cc2 = bd.cnum(this.data[gateid].x2+1, this.data[gateid].y1);
+			cc1 = bd.cnum(this.data[gateid].x1-2, this.data[gateid].y1);
+			cc2 = bd.cnum(this.data[gateid].x2+2, this.data[gateid].y1);
 		}
 		else{ return [];}
 		if(cc1!=-1 && bd.QuC(cc1)==1){ clist.push(cc1);}
@@ -872,20 +873,20 @@ Hurdle.prototype = {
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.QuC(c)==0 || bd.QuC(c)==1 || this.getGateid(c)!=-1){ continue;}
 
-			var cx=bd.cell[c].cx, cy=bd.cell[c].cy;
+			var bx=bd.cell[c].bx, by=bd.cell[c].by;
 			var val=bd.QuC(c);
 
 			this.max++;
 			this.data[this.max] = new HurdleData();
-			while(bd.QuC(bd.cnum(cx,cy))==val){
-				this.data[this.max].clist.push(bd.cnum(cx,cy));
-				this.gateid[bd.cnum(cx,cy)]=this.max;
-				if(val==21){ cy++;}else{ cx++;}
+			while(bd.QuC(bd.cnum(bx,by))==val){
+				this.data[this.max].clist.push(bd.cnum(bx,by));
+				this.gateid[bd.cnum(bx,by)]=this.max;
+				if(val==21){ by+=2;}else{ bx+=2;}
 			}
-			this.data[this.max].x1 = bd.cell[c].cx;
-			this.data[this.max].y1 = bd.cell[c].cy;
-			this.data[this.max].x2 = (val==22?cx-1:cx);
-			this.data[this.max].y2 = (val==21?cy-1:cy);
+			this.data[this.max].x1 = bd.cell[c].bx;
+			this.data[this.max].y1 = bd.cell[c].by;
+			this.data[this.max].x2 = (val==22?bx-2:bx);
+			this.data[this.max].y2 = (val==21?by-2:by);
 			this.data[this.max].val = val;
 		}
 	},

@@ -200,7 +200,7 @@ Puzzles.renban.prototype = {
 			for(var i=0;i<bd.bdmax;i++){ rdata.id[i] = (bd.isBorder(i)?0:-1);}
 			for(var i=0;i<bd.bdmax;i++){
 				if(rdata.id[i]!==0){ continue;}
-				var bx=bd.border[i].cx, by=bd.border[i].cy, idlist=[];
+				var bx=bd.border[i].bx, by=bd.border[i].by, idlist=[];
 				while(1){
 					var id = bd.bnum(bx,by);
 					if(id===-1 || rdata.id[id]!==0){ break;}

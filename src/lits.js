@@ -189,8 +189,8 @@ Puzzles.lits.prototype = {
 				for(var i=0;i<rinfo.room[r].idlist.length;i++){ if(bd.isBlack(rinfo.room[r].idlist[i])){ bcells.push(rinfo.room[r].idlist[i]);} }
 				if(bcells.length==4){
 					bcells.sort(function(a,b){ return a-b;});
-					var cx0=bd.cell[bcells[0]].cx; var cy0=bd.cell[bcells[0]].cy; var value=0;
-					for(var i=1;i<bcells.length;i++){ value += ((bd.cell[bcells[i]].cy-cy0)*10+(bd.cell[bcells[i]].cx-cx0));}
+					var bx0=bd.cell[bcells[0]].bx, by0=bd.cell[bcells[0]].by, value=0;
+					for(var i=1;i<bcells.length;i++){ value += (((bd.cell[bcells[i]].by-by0)>>1)*10+((bd.cell[bcells[i]].bx-bx0)>>1));}
 					switch(value){
 						case 13: case 15: case 27: case 31: case 33: case 49: case 51:
 							for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i]]="L";} break;

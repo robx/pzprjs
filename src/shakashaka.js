@@ -82,15 +82,15 @@ Puzzles.shakashaka.prototype = {
 
 			if(k.use==1){
 				if(this.btn.Left){
-					var xpos = this.inputPos.x - bd.cell[cc].cx*k.cwidth;
-					var ypos = this.inputPos.y - bd.cell[cc].cy*k.cheight;
-					if(xpos>0&&xpos<=k.cwidth/2){
-						if(ypos>0&&ypos<=k.cheight/2){ this.inputData = 5;}
-						else if(ypos>k.cheight/2){ this.inputData = 2;}
+					var dx = this.inputPos.x - bd.cell[cc].px;
+					var dy = this.inputPos.y - bd.cell[cc].py;
+					if(dx>0&&dx<=k.cwidth/2){
+						if(dy>0&&dy<=k.cheight/2){ this.inputData = 5;}
+						else if  (dy>k.cheight/2){ this.inputData = 2;}
 					}
-					else if(xpos>k.cwidth/2){
-						if(ypos>0&&ypos<=k.cheight/2){ this.inputData = 4;}
-						else if(ypos>k.cheight/2){ this.inputData = 3;}
+					else if(dx>k.cwidth/2){
+						if(dy>0&&dy<=k.cheight/2){ this.inputData = 4;}
+						else i  f(dy>k.cheight/2){ this.inputData = 3;}
 					}
 
 					bd.sQaC(cc, (bd.QaC(cc)!=this.inputData?this.inputData:-1));
@@ -278,7 +278,7 @@ Puzzles.shakashaka.prototype = {
 			var winfo = this.searchWarea_slope();
 			for(var id=1;id<=winfo.max;id++){
 				var d = this.getSizeOfClist(winfo.room[id].idlist,function(cc){ return (bd.QaC(cc)==-1);});
-				if((d.x2-d.x1+1)*(d.y2-d.y1+1)!=d.cnt && !this.isAreaRect_slope(winfo,id)){
+				if(d.cols*d.rows!=d.cnt && !this.isAreaRect_slope(winfo,id)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(winfo.room[id].idlist,1);
 					result = false;

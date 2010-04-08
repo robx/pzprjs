@@ -59,8 +59,10 @@ var k = {
 	enableMouse : true,		// マウス入力は有効か
 	autocheck   : true,		// 回答入力時、自動的に答え合わせするか
 
-	cwidth   : this.def_csize,	// セルの横幅
-	cheight  : this.def_csize,	// セルの縦幅
+	cwidth   : this.def_csize,		// セルの横幅
+	cheight  : this.def_csize,		// セルの縦幅
+	bwidth   : this.def_csize/2,	// セルの横幅/2
+	bheight  : this.def_csize/2,	// セルの縦幅/2
 
 	p0       : new Pos(this.def_psize, this.def_psize),	// Canvas中での盤面の左上座標
 	cv_oft   : new Pos(0, 0),	// Canvasのwindow内での左上座標

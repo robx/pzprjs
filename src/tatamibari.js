@@ -85,7 +85,7 @@ Puzzles.tatamibari.prototype = {
 			else if(ca=='-'         ){ bd.sQnC(cc,(bd.QnC(cc)!=-2?-2:-1)); }
 			else{ return false;}
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+			pc.paintCell(cc);
 			return true;
 		};
 

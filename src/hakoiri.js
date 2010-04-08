@@ -86,11 +86,11 @@ Puzzles.hakoiri.prototype = {
 			else{
 				var cc0 = tc.getTCC();
 				tc.setTCC(cc);
-				pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
+				pc.paintCell(cc0);
 				if(bd.QsC(cc)==1 || bd.QaC(cc)==-1){ this.inputData=1;}
 			}
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
+			pc.paintCell(cc);
 		};
 		mv.inputmark3 = function(cc){
 			if(bd.QnC(cc)!=-1){ return;}
@@ -119,8 +119,8 @@ Puzzles.hakoiri.prototype = {
 			bd.sQsC(cc,1);
 			this.mouseCell = cc;
 
-			pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
+			pc.paintCell(cc0);
+			pc.paintCell(cc);
 		};
 
 		// キーボード入力系
@@ -158,7 +158,7 @@ Puzzles.hakoiri.prototype = {
 				flag = true;
 			}
 
-			if(flag){ pc.paint(bd.cell[cc].cx, bd.cell[cc].cy, bd.cell[cc].cx, bd.cell[cc].cy); return true;}
+			if(flag){ pc.paintCell(cc); return true;}
 			return false;
 		};
 
@@ -302,12 +302,13 @@ Puzzles.hakoiri.prototype = {
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.getNum(c)<0){ continue;}
-				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, target=0, clist=[c];
+				var bx = bd.cell[c].bx, by = bd.cell[c].by, target=0, clist=[c];
 				var func = function(cc){ return (cc!=-1 && bd.getNum(c)==bd.getNum(cc));};
-				target = bd.cnum(cx+1,cy  ); if(func(target)){ clist.push(target);}
-				target = bd.cnum(cx  ,cy+1); if(func(target)){ clist.push(target);}
-				target = bd.cnum(cx-1,cy+1); if(func(target)){ clist.push(target);}
-				target = bd.cnum(cx+1,cy+1); if(func(target)){ clist.push(target);}
+				// 右・左下・下・右下だけチェック
+				target = bd.cnum(bx+2,by  ); if(func(target)){ clist.push(target);}
+				target = bd.cnum(bx  ,by+2); if(func(target)){ clist.push(target);}
+				target = bd.cnum(bx-2,by+2); if(func(target)){ clist.push(target);}
+				target = bd.cnum(bx+2,by+2); if(func(target)){ clist.push(target);}
 
 				if(clist.length>1){
 					if(this.inAutoCheck){ return false;}
