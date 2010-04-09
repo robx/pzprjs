@@ -78,11 +78,7 @@ Puzzles.creek.prototype = {
 			};
 		}
 
-		tc.minx = 0;
-		tc.miny = 0;
-		tc.maxx = 2*k.qcols;
-		tc.maxy = 2*k.qrows;
-		tc.setTXC(0);
+		tc.setCrossType();
 
 		bd.maxnum = 4;
 	},

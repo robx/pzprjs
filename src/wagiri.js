@@ -142,6 +142,10 @@ Puzzles.wagiri.prototype = {
 			}
 		};
 
+		tc.setCrossType();
+
+		bd.maxnum = 4;
+
 		menu.ex.adjustSpecial = function(type,key){
 			um.disableRecord();
 			if(type>=1 && type<=4){ // ”½“]E‰ñ“]‘S‚Ä
@@ -149,14 +153,6 @@ Puzzles.wagiri.prototype = {
 			}
 			um.enableRecord();
 		};
-
-		tc.minx = 0;
-		tc.miny = 0;
-		tc.maxx = 2*k.qcols;
-		tc.maxy = 2*k.qrows;
-		tc.setTXC(0);
-
-		bd.maxnum = 4;
 	},
 
 	//---------------------------------------------------------

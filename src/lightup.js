@@ -55,7 +55,6 @@ Puzzles.lightup.prototype = {
 
 		base.resetInfo = function(iserase){
 			if(iserase){ um.allerase();}
-			tc.Adjust();
 			bd.initQlight();
 		};
 	},

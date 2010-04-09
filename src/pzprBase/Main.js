@@ -93,12 +93,12 @@ PBase.prototype = {
 		if(this.proto){ puz.protoChange();}
 
 		// クラス初期化
+		tc = new TCell();		// キー入力のターゲット管理オブジェクト
 		bd = new Board();		// 盤面オブジェクト
 		mv = new MouseEvent();	// マウス入力オブジェクト
 		kc = new KeyEvent();	// キーボード入力オブジェクト
 		kp = new KeyPopup();	// 入力パネルオブジェクト
 		pc = new Graphic();		// 描画系オブジェクト
-		tc = new TCell();		// キー入力のターゲット管理オブジェクト
 		ans = new AnsCheck();	// 正解判定オブジェクト
 		um   = new OperationManager();	// 操作情報管理オブジェクト
 		area = new AreaManager();		// 部屋情報等管理オブジェクト
@@ -295,7 +295,6 @@ PBase.prototype = {
 
 	resetInfo : function(iserase){
 		if(iserase){ um.allerase();}
-		tc.Adjust();
 		area.resetArea();
 		line.resetLcnts();
 	},

@@ -67,6 +67,7 @@ Puzzles.tawa.prototype = {
 			// サイズの変更
 			k.qcols = col;
 			k.qrows = row;
+			tc.adjust();
 
 			// たわむれんが固有処理
 			if(!base.initProcess){

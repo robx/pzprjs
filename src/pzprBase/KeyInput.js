@@ -553,30 +553,56 @@ KeyPopup.prototype = {
 };
 
 //---------------------------------------------------------------------------
-// ★TCellクラス キー入力のターゲットを保持する (関数の説明は略)
+// ★TCellクラス キー入力のターゲットを保持する
 //---------------------------------------------------------------------------
 
 TCell = function(){
+	// 現在入力ターゲットになっている場所(border座標系)
 	this.cursolx = 1;
 	this.cursoly = 1;
 
-	this.minx = (k.isextendcell!=0?-1:1);
-	this.miny = (k.isextendcell!=0?-1:1);
-	this.maxx = (k.isextendcell==2?2*k.qcols+1:2*k.qcols-1);
-	this.maxy = (k.isextendcell==2?2*k.qrows+1:2*k.qrows-1);
+	// 有効な範囲(minx,miny)-(maxx,maxy)
+	this.minx = 1;
+	this.miny = 1;
+	this.maxx = 2*k.qcols-1;
+	this.maxy = 2*k.qrows-1;
+
+	this.crosstype = false;
 };
 TCell.prototype = {
 	//---------------------------------------------------------------------------
-	// tc.Adjust()   範囲とターゲットの位置を調節する
+	// tc.adjust()   範囲とターゲットの位置を調節する
 	// tc.setAlign() モード変更時に位置がおかしい場合に調節する(オーバーライド用)
+	// tc.setCrossType() 交点入力用にプロパティをセットする
 	//---------------------------------------------------------------------------
-	Adjust : function(){
-		if(this.cursolx<this.minx){ this.tborderx=this.minx; }
-		if(this.cursoly<this.miny){ this.tbordery=this.miny; }
-		if(this.cursolx>this.maxx){ this.tborderx=this.maxx; }
-		if(this.cursoly>this.maxy){ this.tbordery=this.maxy; }
+	adjust : function(){
+		if(this.crosstype){
+			this.minx = 0;
+			this.miny = 0;
+			this.maxx = 2*k.qcols;
+			this.maxy = 2*k.qrows;
+		}
+		else{
+			var extUL = (k.isextendcell===1 || k.isextendcell===2);
+			var extDR = (k.isextendcell===2);
+			this.minx = (!extUL ? 1 : -1);
+			this.miny = (!extUL ? 1 : -1);
+			this.maxx = (!extDR ? 2*k.qcols-1 : 2*k.qcols+1);
+			this.maxy = (!extDR ? 2*k.qrows-1 : 2*k.qrows+1);
+		}
+
+		if(this.cursolx<this.minx){ this.cursolx=this.minx;}
+		if(this.cursoly<this.miny){ this.cursoly=this.miny;}
+		if(this.cursolx>this.maxx){ this.cursolx=this.maxx;}
+		if(this.cursoly>this.maxy){ this.cursoly=this.maxy;}
 	},
 	setAlign : function(){ },
+
+	setCrossType : function(){
+		this.crosstype = true;
+		this.adjust();
+		this.setTCP(new Pos(0,0));
+	},
 
 	//---------------------------------------------------------------------------
 	// tc.incTCX(), tc.incTCY(), tc.decTCX(), tc.decTCY() ターゲットの位置を動かす
@@ -587,8 +613,8 @@ TCell.prototype = {
 	decTCY : function(mv){ this.cursoly-=mv;},
 
 	//---------------------------------------------------------------------------
-	// tc.getTCP() ターゲットの位置を(X,Y)で取得する(セルの1/2=1とする)
-	// tc.setTCP() ターゲットの位置を(X,Y)で設定する(セルの1/2=1とする)
+	// tc.getTCP() ターゲットの位置をPosクラスのオブジェクトで取得する
+	// tc.setTCP() ターゲットの位置をPosクラスのオブジェクトで設定する
 	// tc.getTCC() ターゲットの位置をCellのIDで取得する
 	// tc.setTCC() ターゲットの位置をCellのIDで設定する
 	// tc.getTXC() ターゲットの位置をCrossのIDで取得する

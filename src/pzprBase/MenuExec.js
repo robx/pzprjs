@@ -262,6 +262,7 @@ MenuExec.prototype = {
 			// reduceÇÕÇ±Ç±ïKê{
 			um.addOpe(k.BOARD, name, 0, 0, 1);
 
+			tc.adjust();
 			if(!um.undoExec){ base.resetInfo(false);}
 			base.resize_canvas();				// CanvasÇçXêVÇ∑ÇÈ
 		}
@@ -278,8 +279,8 @@ MenuExec.prototype = {
 		this.adjustGeneral(5,'',{x1:0,y1:0,x2:2*k.qcols,y2:2*k.qrows});
 
 		var number;
-		if     (key===k.UP||key===k.DN){ number=k.qcols; k.qrows++; tc.maxy+=2;}
-		else if(key===k.LT||key===k.RT){ number=k.qrows; k.qcols++; tc.maxx+=2;}
+		if     (key===k.UP||key===k.DN){ number=k.qcols; k.qrows++;}
+		else if(key===k.LT||key===k.RT){ number=k.qrows; k.qcols++;}
 
 		var func;
 		{
@@ -351,8 +352,8 @@ MenuExec.prototype = {
 			margin = this.reduceGroup(k.EXCELL, bd.excell, func);
 		}
 
-		if     (key===k.UP||key===k.DN){ k.qrows--; tc.maxy-=2;}
-		else if(key===k.LT||key===k.RT){ k.qcols--; tc.maxx-=2;}
+		if     (key===k.UP||key===k.DN){ k.qrows--;}
+		else if(key===k.LT||key===k.RT){ k.qcols--;}
 
 		bd.setposAll();
 		if(k.isOneNumber){
@@ -396,7 +397,6 @@ MenuExec.prototype = {
 
 		if(type===3||type===4){
 			var tmp = k.qcols; k.qcols = k.qrows; k.qrows = tmp;
-			tmp = tc.maxx; tc.maxx = tc.maxy; tc.maxy = tmp;
 			bd.setposAll();
 		}
 
