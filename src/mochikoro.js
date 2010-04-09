@@ -170,11 +170,11 @@ Puzzles.mochikoro.prototype = {
 			if( bd.isWhite(bd.lt(i)) ){ this.sk0(winfo, bd.lt(i), areaid);}
 			if( bd.isWhite(bd.rt(i)) ){ this.sk0(winfo, bd.rt(i), areaid);}
 
-			if(bd.cell[i].bx>2){
+			if(bd.cell[i].bx>bd.minbx+2){
 				if( bd.isWhite(bd.up(bd.lt(i))) ){ this.sk0(winfo, bd.up(bd.lt(i)), areaid);}
 				if( bd.isWhite(bd.dn(bd.lt(i))) ){ this.sk0(winfo, bd.dn(bd.lt(i)), areaid);}
 			}
-			if(bd.cell[i].bx<2*k.qcols-2){
+			if(bd.cell[i].bx<bd.maxbx-2){
 				if( bd.isWhite(bd.up(bd.rt(i))) ){ this.sk0(winfo, bd.up(bd.rt(i)), areaid);}
 				if( bd.isWhite(bd.dn(bd.rt(i))) ){ this.sk0(winfo, bd.dn(bd.rt(i)), areaid);}
 			}

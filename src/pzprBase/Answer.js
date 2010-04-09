@@ -140,7 +140,7 @@ AnsCheck.prototype = {
 	check2x2Block : function(func){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].bx<2*k.qcols && bd.cell[c].by<2*k.qrows){
+			if(bd.cell[c].bx<bd.maxbx-1 && bd.cell[c].by<bd.maxby-1){
 				if( func(c) && func(c+1) && func(c+k.qcols) && func(c+k.qcols+1) ){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c,c+1,c+k.qcols,c+k.qcols+1],1);
@@ -153,12 +153,12 @@ AnsCheck.prototype = {
 	checkSideCell : function(func){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].bx<2*k.qcols && func(c,c+1)){
+			if(bd.cell[c].bx<bd.maxbx-1 && func(c,c+1)){
 				if(this.inAutoCheck){ return false;}
 				bd.sErC([c,c+1],1);
 				result = false;
 			}
-			if(bd.cell[c].by<2*k.qrows && func(c,c+k.qcols)){
+			if(bd.cell[c].by<bd.maxby-1 && func(c,c+k.qcols)){
 				if(this.inAutoCheck){ return false;}
 				bd.sErC([c,c+k.qcols],1);
 				result = false;
@@ -243,10 +243,10 @@ AnsCheck.prototype = {
 		if(cc<0 || cc>=bd.cellmax){ return 0;}
 		var cnt = 0;
 		var bx = bd.cell[cc].bx, by = bd.cell[cc].by;
-		if( (k.isoutsideborder==0 && by==1          ) || bd.isBorder(bd.bnum(bx  ,by-1)) ){ cnt++;}
-		if( (k.isoutsideborder==0 && by==2*k.qrows-1) || bd.isBorder(bd.bnum(bx  ,by+1)) ){ cnt++;}
-		if( (k.isoutsideborder==0 && bx==1          ) || bd.isBorder(bd.bnum(bx-1,by  )) ){ cnt++;}
-		if( (k.isoutsideborder==0 && bx==2*k.qcols-1) || bd.isBorder(bd.bnum(bx+1,by  )) ){ cnt++;}
+		if( (k.isoutsideborder===0 && by===bd.minby+1) || bd.isBorder(bd.bnum(bx  ,by-1)) ){ cnt++;}
+		if( (k.isoutsideborder===0 && by===bd.maxby-1) || bd.isBorder(bd.bnum(bx  ,by+1)) ){ cnt++;}
+		if( (k.isoutsideborder===0 && bx===bd.minbx+1) || bd.isBorder(bd.bnum(bx-1,by  )) ){ cnt++;}
+		if( (k.isoutsideborder===0 && bx===bd.maxby-1) || bd.isBorder(bd.bnum(bx+1,by  )) ){ cnt++;}
 		return cnt;
 	},
 
@@ -321,7 +321,7 @@ AnsCheck.prototype = {
 		return -1;
 	},
 	getSizeOfClist : function(clist, func){
-		var d = { x1:2*k.qcols+1, x2:-1, y1:2*k.qrows+1, y2:-1, cols:0, rows:0, cnt:0 };
+		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1, cols:0, rows:0, cnt:0 };
 		for(var i=0;i<clist.length;i++){
 			if(d.x1>bd.cell[clist[i]].bx){ d.x1=bd.cell[clist[i]].bx;}
 			if(d.x2<bd.cell[clist[i]].bx){ d.x2=bd.cell[clist[i]].bx;}
@@ -392,7 +392,7 @@ AnsCheck.prototype = {
 		for(var id=1;id<=area.room.max;id++){
 			var data = {max:0,id:[]};
 			for(var c=0;c<bd.cellmax;c++){ data.id[c] = ((area.room.id[c]==id && bd.isBlack(c))?0:-1);}
-			for(var c=0;c<k.qcols*k.qrows;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(data.id[c]!=0){ continue;}
 				data.max++;
 				data[data.max] = {clist:[]};
@@ -460,15 +460,15 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	checkRowsCols : function(evalfunc, numfunc){
 		var result = true;
-		for(var by=1;by<2*k.qrows;by+=2){
-			var clist = bd.getClistByPosition(1,by,2*k.qcols-1,by);
+		for(var by=1;by<=bd.maxby;by+=2){
+			var clist = bd.getClistByPosition(bd.minbx+1,by,bd.maxbx-1,by);
 			if(!evalfunc.apply(this,[clist, numfunc])){
 				if(this.inAutoCheck){ return false;}
 				result = false;
 			}
 		}
-		for(var bx=1;bx<2*k.qcols;bx+=2){
-			var clist = bd.getClistByPosition(bx,1,bx,2*k.qrows-1);
+		for(var bx=1;bx<=bd.maxbx;bx+=2){
+			var clist = bd.getClistByPosition(bx,bd.minby+1,bx,bd.maxby-1);
 			if(!evalfunc.apply(this,[clist, numfunc])){
 				if(this.inAutoCheck){ return false;}
 				result = false;
@@ -478,10 +478,10 @@ AnsCheck.prototype = {
 	},
 	checkRowsColsPartly : function(evalfunc, areainfo, termfunc, multierr){
 		var result = true;
-		for(var by=1;by<2*k.qrows;by+=2){
+		for(var by=1;by<=bd.maxby;by+=2){
 			var bx=1;
-			while(bx<2*k.qcols){
-				for(var tx=bx;tx<2*k.qcols;tx+=2){ if(termfunc.apply(this,[bd.cnum(tx,by)])){ break;}}
+			while(bx<=bd.maxbx){
+				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc.apply(this,[bd.cnum(tx,by)])){ break;}}
 				var clist = bd.getClistByPosition(bx,by,tx-2,by);
 				var total = (k.isextendcell!=1 ? 0 : (bx===1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx-2,by))));
 
@@ -492,10 +492,10 @@ AnsCheck.prototype = {
 				bx = tx+2;
 			}
 		}
-		for(var bx=1;bx<2*k.qcols;bx+=2){
+		for(var bx=1;bx<=bd.maxbx;bx+=2){
 			var by=1;
-			while(by<2*k.qrows){
-				for(var ty=by;ty<2*k.qrows;ty+=2){ if(termfunc.apply(this,[bd.cnum(bx,ty)])){ break;}}
+			while(by<=bd.maxby){
+				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc.apply(this,[bd.cnum(bx,ty)])){ break;}}
 				var clist = bd.getClistByPosition(bx,by,bx,ty-2);
 				var total = (k.isextendcell!=1 ? 0 : (by===1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by-2))));
 
@@ -538,9 +538,10 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	checkLcntCross : function(val, bp){
 		var result = true;
-		for(var by=0;by<=2*k.qrows;by+=2){
-			for(var bx=0;bx<=2*k.qcols;bx+=2){
-				if(k.isoutsidecross==0 && k.isborderAsLine==0 && (bx==0||by==0||bx==2*k.qcols||by==2*k.qrows)){ continue;}
+		for(var by=0;by<=bd.maxby;by+=2){
+			for(var bx=0;bx<=bd.maxbx;bx+=2){
+				if(k.isoutsidecross==0 && k.isborderAsLine==0 &&
+				   (bx===bd.minbx||by===bd.minby||bx===bd.maxbx||by===bd.maxby)){ continue;}
 				var lcnts = (!k.isborderAsLine?area.lcnt[i]:line.lcnt[i]);
 				if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(bx,by))==1) || (bp==2&&bd.QnX(bd.xnum(bx,by))!=1) )){
 					if(this.inAutoCheck){ return false;}

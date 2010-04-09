@@ -287,13 +287,13 @@ Puzzles.snakes.prototype = {
 			var result = true;
 			var func = function(sinfo,c1,c2){ return (sinfo.id[c1]>0 && sinfo.id[c2]>0 && sinfo.id[c1]!=sinfo.id[c2]);};
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.cell[c].bx<2*k.qcols-2 && func(sinfo,c,c+1)){
+				if(bd.cell[c].bx<bd.maxbx-2 && func(sinfo,c,c+1)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(sinfo.room[sinfo.id[c]].idlist,1);
 					bd.sErC(sinfo.room[sinfo.id[c+1]].idlist,1);
 					result = false;
 				}
-				if(bd.cell[c].by<2*k.qrows-2 && func(sinfo,c,c+k.qcols)){
+				if(bd.cell[c].by<bd.maxby-2 && func(sinfo,c,c+k.qcols)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(sinfo.room[sinfo.id[c]].idlist,1);
 					bd.sErC(sinfo.room[sinfo.id[c+k.qcols]].idlist,1);
@@ -315,12 +315,12 @@ Puzzles.snakes.prototype = {
 				if(bd.QnC(c)<0 || bd.DiC(c)==0){ continue;}
 				var bx = bd.cell[c].bx, by = bd.cell[c].by, dir = bd.DiC(c);
 				var num=bd.QnC(c), clist=[c];
-				if     (dir==k.UP){ by-=2; while(by>0        ){ if(!func(clist)){ break;} by-=2;} }
-				else if(dir==k.DN){ by+=2; while(by<2*k.qrows){ if(!func(clist)){ break;} by+=2;} }
-				else if(dir==k.LT){ bx-=2; while(bx>0        ){ if(!func(clist)){ break;} bx-=2;} }
-				else if(dir==k.RT){ bx+=2; while(bx<2*k.qcols){ if(!func(clist)){ break;} bx+=2;} }
+				if     (dir==k.UP){ by-=2; while(by>bd.minby){ if(!func(clist)){ break;} by-=2;} }
+				else if(dir==k.DN){ by+=2; while(by<bd.maxby){ if(!func(clist)){ break;} by+=2;} }
+				else if(dir==k.LT){ bx-=2; while(bx>bd.minbx){ if(!func(clist)){ break;} bx-=2;} }
+				else if(dir==k.RT){ bx+=2; while(bx<bd.maxbx){ if(!func(clist)){ break;} bx+=2;} }
 
-				if(num==0^(bx<=0||bx>=2*k.qcols||by<=0||by>=2*k.qcols||bd.QnC(bd.cnum(bx,by))!=-1)){
+				if(num==0^(!bd.isinside(bx,by)||bd.QnC(bd.cnum(bx,by))!=-1)){
 					if(this.inAutoCheck){ return false;}
 					if(num>0){ bd.sErC(clist,1);}
 					else{ bd.sErC([c,bd.cnum(bx,by)],1);}
@@ -351,10 +351,10 @@ Puzzles.snakes.prototype = {
 				else if(bd.QaC(bd.lt(c1))==2){ dir=4;}
 				var bx = bd.cell[c1].bx, by = bd.cell[c1].by, clist=[c1];
 
-				if     (dir==1){ by-=2; while(by>0        ){ if(!func(clist)){ break;} by-=2;} }
-				else if(dir==2){ by+=2; while(by<2*k.qrows){ if(!func(clist)){ break;} by+=2;} }
-				else if(dir==3){ bx-=2; while(bx>0        ){ if(!func(clist)){ break;} bx-=2;} }
-				else if(dir==4){ bx+=2; while(bx<2*k.qcols){ if(!func(clist)){ break;} bx+=2;} }
+				if     (dir==1){ by-=2; while(by>bd.minby){ if(!func(clist)){ break;} by-=2;} }
+				else if(dir==2){ by+=2; while(by<bd.maxby){ if(!func(clist)){ break;} by+=2;} }
+				else if(dir==3){ bx-=2; while(bx>bd.minbx){ if(!func(clist)){ break;} bx-=2;} }
+				else if(dir==4){ bx+=2; while(bx<bd.maxbx){ if(!func(clist)){ break;} bx+=2;} }
 
 				var c2 = bd.cnum(bx,by), r2 = sinfo.id[c2];
 				if(bd.QaC(c2)>0 && bd.QnC(c2)==-1 && r2>0 && r!=r2){

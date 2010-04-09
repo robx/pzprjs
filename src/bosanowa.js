@@ -71,7 +71,7 @@ Puzzles.bosanowa.prototype = {
 
 		mv.inputqnum_bosanowa = function(){
 			var pos = this.borderpos(0.31);
-			if(pos.x<tc.minx||pos.x>tc.maxx||pos.y<tc.miny||pos.y>tc.maxy){ return;}
+			if(!bd.isinside(pos.x,pos.y)){ return;}
 			var tcp = tc.getTCP();
 
 			if(pos.x==tcp.x&&pos.y==tcp.y){
@@ -161,6 +161,7 @@ Puzzles.bosanowa.prototype = {
 			return true;
 		};
 
+		// カーソルを最初真ん中においておく
 		tc.cursolx = k.qcols-1-k.qcols%2;
 		tc.cursoly = k.qrows-1-k.qrows%2;
 		if(k.EDITOR){
@@ -362,8 +363,8 @@ Puzzles.bosanowa.prototype = {
 			this.vinc('cell_outside_souko', 'crispEdges');
 
 			var header = "c_full_";
-			for(var bx=x1-2+((x1^1)&1);bx<=x2+2;bx+=2){
-				for(var by=y1-2+((y1^1)&1);by<=y2+2;by+=2){
+			for(var bx=(x1-2)|1;bx<=x2+2;bx+=2){
+				for(var by=(y1-2)|1;by<=y2+2;by+=2){
 					var c=bd.cnum(bx,by);
 					if( (c==-1 || bd.cell[c].ques!=7) && (
 						bd.QuC(bd.cnum(bx-2,by  ))===7 || bd.QuC(bd.cnum(bx+2,by  ))===7 || 
@@ -420,7 +421,7 @@ Puzzles.bosanowa.prototype = {
 			for(var i=0;i<bstr.length;i++){
 				var num = parseInt(bstr.charAt(i),32);
 				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?0:7));} }
-				if((i*5+5)>=k.qcols*k.qrows){ break;}
+				if((i*5+5)>=bd.cellmax){ break;}
 			}
 			this.outbstr = bstr.substr(i+1);
 		};

@@ -301,8 +301,8 @@ Puzzles.shugaku.prototype = {
 			var header = "b_bd";
 			g.fillStyle = "black";
 
-			for(var by=Math.min(1,y1-2),maxy=Math.max(2*k.qrows-1,y2+2);by<=maxy;by++){
-				for(var bx=Math.min(1,x1-2),maxx=Math.max(2*k.qcols-1,x2+2);bx<=maxx;bx++){
+			for(var by=Math.min(bd.minby+1,y1-2),maxy=Math.max(bd.maxby-1,y2+2);by<=maxy;by++){
+				for(var bx=Math.min(bd.minbx+1,x1-2),maxx=Math.max(bd.maxbx-1,x2+2);bx<=maxx;bx++){
 					if(!((bx+by)&1)){ continue;}
 					var a = bd.QaC( bd.cnum(bx-(by&1), by-(bx&1)) );
 					var b = bd.QaC( bd.cnum(bx+(by&1), by+(bx&1)) );

@@ -98,12 +98,12 @@ Puzzles.mejilink.prototype = {
 		pc.drawBaseMarks = function(x1,y1,x2,y2){
 			this.vinc('cross_mark', 'auto');
 
-			for(var by=0;by<2*k.qrows;by+=2){
-				for(var bx=0;bx<2*k.qcols;bx+=2){
+			for(var by=bd.minby;by<=bd.maxby;by+=2){
+				for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
 					if(bx < x1-1 || x2+1 < bx){ continue;}
 					if(by < y1-1 || y2+1 < by){ continue;}
 
-					this.drawBaseMark1(bx+by*(2*k.qcols));
+					this.drawBaseMark1((bx>>1)+(by>>1)*(k.qcols+1));
 				}
 			}
 		};
@@ -113,7 +113,7 @@ Puzzles.mejilink.prototype = {
 			g.fillStyle = this.Cellcolor;
 			if(this.vnop(vid,this.NONE)){
 				var csize = (this.lw+1)/2;
-				var bx = id%(2*k.qcols), by = mf(id/(2*k.qcols));
+				var bx = (id%(k.qcols+1))*2, by = mf(id/(k.qcols+1))*2;
 				g.fillCircle(k.p0.x+bx*this.bw, k.p0.x+by*this.bh, csize);
 			}
 		};
@@ -139,9 +139,7 @@ Puzzles.mejilink.prototype = {
 				cdata[bd.border[idlist[i]].crosscc[1]] = true;
 			}
 			for(var c=0;c<cdata.length;c++){
-				if(cdata[c]){
-					pc.drawBaseMark1(c);
-				}
+				if(cdata[c]){ pc.drawBaseMark1(c);}
 			}
 		};
 	},
@@ -228,8 +226,8 @@ Puzzles.mejilink.prototype = {
 
 		ans.checkdir4Line_meji = function(val){
 			var result = true;
-			for(var by=0;by<=2*k.qrows;by+=2){
-				for(var bx=0;bx<=2*k.qcols;bx+=2){
+			for(var by=bd.minby;by<=bd.maxby;by+=2){
+				for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
 					var cnt = 0;
 					if(bd.isLine(bd.bnum(bx-1,by  ))){ cnt++;}
 					if(bd.isLine(bd.bnum(bx+1,by  ))){ cnt++;}
@@ -258,13 +256,13 @@ Puzzles.mejilink.prototype = {
 				tarea.room[tarea.max] = {idlist:tarea[tarea.max].clist};
 			}
 
-			var tcount = [];
+			var tcount = [], numerous_value = 999999;
 			for(var r=1;r<=tarea.max;r++){ tcount[r]=0;}
 			for(var id=0;id<bd.bdmax;id++){
 				if(bd.QuB(id)==1 && id>=bd.bdinside){
 					var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-					if(cc1!=-1){ tcount[tarea.id[cc1]]-=(2*k.qcols*k.qrows);}
-					if(cc2!=-1){ tcount[tarea.id[cc2]]-=(2*k.qcols*k.qrows);}
+					if(cc1!=-1){ tcount[tarea.id[cc1]] -= numerous_value;}
+					if(cc2!=-1){ tcount[tarea.id[cc2]] -= numerous_value;}
 					continue;
 				}
 				else if(bd.QuB(id)==1 || bd.QaB(id)==1){ continue;}

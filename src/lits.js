@@ -185,7 +185,6 @@ Puzzles.lits.prototype = {
 			for(var c=0;c<bd.cellmax;c++){ tinfo.id[c]=-1;}
 			for(var r=1;r<=rinfo.max;r++){
 				var bcells = [];
-				var minid = k.qcols*k.qrows;
 				for(var i=0;i<rinfo.room[r].idlist.length;i++){ if(bd.isBlack(rinfo.room[r].idlist[i])){ bcells.push(rinfo.room[r].idlist[i]);} }
 				if(bcells.length==4){
 					bcells.sort(function(a,b){ return a-b;});

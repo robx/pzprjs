@@ -219,9 +219,9 @@ Puzzles.bag.prototype = {
 		ans.generateIarea = function(){
 			var icheck = [];
 			icheck[0]=(line.lcntCell(0)==0?-1:1);
-			for(var by=1;by<2*k.qrows;by+=2){
+			for(var by=1;by<bd.maxby;by+=2){
 				if(by>1){ icheck[bd.cnum(1,by)]=icheck[bd.cnum(1,by-2)]*(bd.isLine(bd.bnum(1,by-1))?-1:1);}
-				for(var bx=3;bx<2*k.qcols;bx+=2){
+				for(var bx=3;bx<bd.maxbx;bx+=2){
 					icheck[bd.cnum(bx,by)]=icheck[bd.cnum(bx-2,by)]*(bd.isLine(bd.bnum(bx-1,by))?-1:1);
 				}
 			}
@@ -248,13 +248,13 @@ Puzzles.bag.prototype = {
 				var cnt = 1;
 				var tx, ty;
 				tx = bd.cell[cc].bx-2; ty = bd.cell[cc].by;
-				while(tx>=0)       { var c=bd.cnum(tx,ty); if(icheck[c]!==-1){ cnt++; list.push(c); tx-=2;} else{ break;} }
+				while(tx>bd.minbx){ var c=bd.cnum(tx,ty); if(icheck[c]!==-1){ cnt++; list.push(c); tx-=2;} else{ break;} }
 				tx = bd.cell[cc].bx+2; ty = bd.cell[cc].by;
-				while(tx<2*k.qcols){ var c=bd.cnum(tx,ty); if(icheck[c]!==-1){ cnt++; list.push(c); tx+=2;} else{ break;} }
+				while(tx<bd.maxbx){ var c=bd.cnum(tx,ty); if(icheck[c]!==-1){ cnt++; list.push(c); tx+=2;} else{ break;} }
 				tx = bd.cell[cc].bx; ty = bd.cell[cc].by-2;
-				while(ty>=0)       { var c=bd.cnum(tx,ty); if(icheck[c]!==-1){ cnt++; list.push(c); ty-=2;} else{ break;} }
+				while(ty>bd.minby){ var c=bd.cnum(tx,ty); if(icheck[c]!==-1){ cnt++; list.push(c); ty-=2;} else{ break;} }
 				tx = bd.cell[cc].bx; ty = bd.cell[cc].by+2;
-				while(ty<2*k.qrows){ var c=bd.cnum(tx,ty); if(icheck[c]!==-1){ cnt++; list.push(c); ty+=2;} else{ break;} }
+				while(ty<bd.maxby){ var c=bd.cnum(tx,ty); if(icheck[c]!==-1){ cnt++; list.push(c); ty+=2;} else{ break;} }
 
 				if(bd.QnC(cc)!=cnt){
 					if(this.inAutoCheck){ return false;}

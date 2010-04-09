@@ -183,12 +183,12 @@ Puzzles.slither.prototype = {
 		pc.drawBaseMarks = function(x1,y1,x2,y2){
 			this.vinc('cross_mark', 'auto');
 
-			for(var by=0;by<2*k.qrows;by+=2){
-				for(var bx=0;bx<2*k.qcols;bx+=2){
+			for(var by=bd.minby;by<=bd.maxby;by+=2){
+				for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
 					if(bx < x1-1 || x2+1 < bx){ continue;}
 					if(by < y1-1 || y2+1 < by){ continue;}
 
-					this.drawBaseMark1(bx+by*(2*k.qcols));
+					this.drawBaseMark1(bx+by*(k.qcols+1));
 				}
 			}
 		};
@@ -198,7 +198,7 @@ Puzzles.slither.prototype = {
 			g.fillStyle = this.Cellcolor;
 			if(this.vnop(vid,this.NONE)){
 				var csize = (this.lw+1)/2;
-				var bx = id%(2*k.qcols), by = mf(id/(2*k.qcols));
+				var bx = (id%(k.qcols+1))*2, by = mf(id/(k.qcols+1))*2;
 				g.fillCircle(k.p0.x+bx*this.bw, k.p0.x+by*this.bh, csize);
 			}
 		};
@@ -211,9 +211,7 @@ Puzzles.slither.prototype = {
 				cdata[bd.border[idlist[i]].crosscc[1]] = true;
 			}
 			for(var c=0;c<cdata.length;c++){
-				if(cdata[c]){
-					pc.drawBaseMark1(c);
-				}
+				if(cdata[c]){ pc.drawBaseMark1(c);}
 			}
 		};
 	},

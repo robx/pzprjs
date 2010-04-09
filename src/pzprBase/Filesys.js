@@ -135,7 +135,7 @@ FileIO.prototype = {
 		var bx=startbx, by=startby, step=2;
 		var item=this.getItemList((endby-startby)/step+1);
 		for(var i=0;i<item.length;i++){
-			func(getid(bx,by), item[i]);
+			func(getid.call(bd,bx,by), item[i]);
 
 			bx+=step;
 			if(bx>endbx){ bx=startbx; by+=step;}
@@ -168,7 +168,7 @@ FileIO.prototype = {
 		var step=2;
 		for(var by=startby;by<=endby;by+=step){
 			for(var bx=startbx;bx<=endbx;bx+=step){
-				this.datastr += func(getid(bx,by));
+				this.datastr += func(getid.call(bd,bx,by));
 			}
 			this.datastr += "/";
 		}
@@ -494,8 +494,8 @@ FileIO.prototype = {
 	},
 	encodeCellQnum51 : function(){
 		var str = "";
-		for(var by=-1;by<2*k.qrows;by+=2){
-			for(var bx=-1;bx<2*k.qcols;bx+=2){
+		for(var by=bd.minby+1;by<bd.maxby;by+=2){
+			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 				if     (bx===-1 && by==-1){ str += "0 ";}
 				else if(by===-1){ str += (""+bd.DiE(bd.exnum(bx,by)).toString()+" ");}
 				else if(bx===-1){ str += (""+bd.QnE(bd.exnum(bx,by)).toString()+" ");}

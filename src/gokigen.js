@@ -286,7 +286,7 @@ Puzzles.gokigen.prototype = {
 					}
 					while(1){
 						var endflag = true;
-						var clist = pc.cellinside_cond(0,0,2*k.qcols,2*k.qrows,function(c){ return (bd.ErC(c)==1);});
+						var clist = pc.cellinside_cond(bd.minbx,bd.minby,bd.maxbx,bd.maxby,function(c){ return (bd.ErC(c)==1);});
 						for(var i=0;i<clist.length;i++){
 							var c = clist[i];
 							var cc1, cc2, bx=bd.cell[c].bx, by=bd.cell[c].by;

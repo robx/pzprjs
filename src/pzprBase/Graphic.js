@@ -209,8 +209,7 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	cellinside : function(x1,y1,x2,y2){
 		var clist = [];
-		x1 += ((x1^1)&1); y1 += ((y1^1)&1);
-		for(var by=y1;by<=y2;by+=2){ for(var bx=x1;bx<=x2;bx+=2){
+		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
 			var c = bd.cnum(bx,by);
 			if(c!==-1){ clist.push(c);}
 		}}
@@ -218,8 +217,7 @@ Graphic.prototype = {
 	},
 	crossinside : function(x1,y1,x2,y2){
 		var clist = [];
-		x1 += (x1&1); y1 += (y1&1);
-		for(var by=y1;by<=y2;by+=2){ for(var bx=x1;bx<=x2;bx+=2){
+		for(var by=y1+(y1&1);by<=y2;by+=2){ for(var bx=x1+(x1&1);bx<=x2;bx+=2){
 			var c = bd.xnum(bx,by);
 			if(c!==-1){ clist.push(c);}
 		}}
@@ -236,8 +234,7 @@ Graphic.prototype = {
 	},
 	excellinside : function(x1,y1,x2,y2){
 		var exlist = [];
-		x1 += ((x1^1)&1); y1 += ((y1^1)&1);
-		for(var by=y1;by<=y2;by+=2){ for(var bx=x1;bx<=x2;bx+=2){
+		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
 			var c = bd.exnum(bx,by);
 			if(c!==-1){ exlist.push(c);}
 		}}
@@ -246,8 +243,7 @@ Graphic.prototype = {
 
 	cellinside_cond : function(x1,y1,x2,y2,func){
 		var clist = [];
-		x1 += ((x1^1)&1); y1 += ((y1^1)&1);
-		for(var by=y1;by<=y2;by+=2){ for(var bx=x1;bx<=x2;bx+=2){
+		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
 			var c = bd.cnum(bx,by);
 			if(c!==-1 && func(c)){ clist.push(c);}
 		}}
@@ -770,8 +766,8 @@ Graphic.prototype = {
 
 			// この関数を呼ぶ場合は全てk.isoutsideborder===0なので
 			// 外枠用の考慮部分を削除しています。
-			var UPin = (by>2), DNin = (by<2*k.qrows-2);
-			var LTin = (bx>2), RTin = (bx<2*k.qcols-2);
+			var UPin = (by>bd.minby+2), DNin = (by<bd.maxby-2);
+			var LTin = (bx>bd.minbx+2), RTin = (bx<bd.maxbx-2);
 
 			var isUP = (!UPin || bd.border[bd.bnum(bx  ,by-1)].ques===1);
 			var isDN = (!DNin || bd.border[bd.bnum(bx  ,by+1)].ques===1);
@@ -1093,13 +1089,13 @@ Graphic.prototype = {
 		for(var i=0;i<exlist.length;i++){
 			var c = exlist[i], px = bd.excell[c].px, py = bd.excell[c].py;
 
-			if(bd.excell[c].by===-1 && bd.excell[c].bx<2*k.qcols){
+			if(bd.excell[c].by===-1 && bd.excell[c].bx<bd.maxbx){
 				if(this.vnop(headers[0]+c,this.NONE)){
 					g.fillRect(px+this.cw, py, 1, this.ch);
 				}
 			}
 
-			if(bd.excell[c].bx===-1 && bd.excell[c].by<2*k.qrows){
+			if(bd.excell[c].bx===-1 && bd.excell[c].by<bd.maxby){
 				if(this.vnop(headers[1]+c,this.NONE)){
 					g.fillRect(px, py+this.ch, this.cw, 1);
 				}
@@ -1204,32 +1200,33 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	drawDashedCenterLines : function(x1,y1,x2,y2){
 		this.vinc('centerline', 'crispEdges');
-		if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
-		if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
+		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
+		if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
+		x1|=1, y1|=1;
 
 		if(g.use.canvas){
 			g.fillStyle = this.gridcolor;
-			for(var i=x1-1;i<=x2+1;i++){
-				for(var j=(k.p0.y+(y1-0.5)*this.ch),len=(k.p0.y+(y2+1.5)*this.ch);j<len;j+=6){
-					g.fillRect(k.p0.x+(i+0.5)*this.cw, j, 1, 3);
+			for(var i=x1;i<=x2;i+=2){
+				for(var j=(k.p0.y+(y1-1)*this.bh),len=(k.p0.y+(y2+3)*this.bh);j<len;j+=6){
+					g.fillRect(k.p0.x+i*this.bw, j, 1, 3);
 				}
 			}
-			for(var i=y1-1;i<=y2+1;i++){
-				for(var j=(k.p0.x+(x1-0.5)*this.cw),len=(k.p0.x+(x2+1.5)*this.cw);j<len;j+=6){
-					g.fillRect(j, k.p0.y+(i+0.5)*this.ch, 3, 1);
+			for(var i=y1;i<=y2;i+=2){
+				for(var j=(k.p0.x+(x1-1)*this.bw),len=(k.p0.x+(x2+3)*this.bw);j<len;j+=6){
+					g.fillRect(j, k.p0.y+i*this.bh, 3, 1);
 				}
 			}
 		}
 		else{
 			g.lineWidth = 1;
 			g.strokeStyle = this.gridcolor;
-			for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("cliney_"+i,this.NONE)){
-				var px = k.p0.x+(i+0.5)*this.cw, py1 = k.p0.y+(y1-0.5)*this.ch, py2 = k.p0.y+(y2+1.5)*this.ch;
+			for(var i=x1;i<=x2;i+=2){ if(this.vnop("cliney_"+i,this.NONE)){
+				var px = k.p0.x+i*this.bw, py1 = k.p0.y+(y1-1)*this.bh, py2 = k.p0.y+(y2+3)*this.bh;
 				g.strokeLine(px, py1, px, py2);
 				g.setDashSize(3);
 			}}
-			for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("clinex_"+i,this.NONE)){
-				var py = k.p0.y+(i+0.5)*this.ch, px1 = k.p0.x+(x1-0.5)*this.cw, px2 = k.p0.x+(x2+1.5)*this.cw;
+			for(var i=y1;i<=y2;i+=2){ if(this.vnop("clinex_"+i,this.NONE)){
+				var py = k.p0.y+i*this.bh, px1 = k.p0.x+(x1-1)*this.bw, px2 = k.p0.x+(x2+3)*this.bw;
 				g.strokeLine(px1, py, px2, py);
 				g.setDashSize(3);
 			}}
@@ -1245,49 +1242,50 @@ Graphic.prototype = {
 
 		isdraw = (isdraw!==false?true:false);
 		if(isdraw){
-			if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
+			if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
+			if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
+			x1-=(x1&1), y1-=(y1&1);
 
-			var bs=((k.isoutsideborder===0&&this.chassisflag)?1:0);
+			var bs=((k.isoutsideborder===0&&this.chassisflag)?2:0);
+			var xa = Math.max(x1,bd.minbx+bs), xb = Math.min(x2,bd.maxbx-bs);
+			var ya = Math.max(y1,bd.minby+bs), yb = Math.min(y2,bd.maxby-bs);
 
 			g.fillStyle = this.gridcolor;
-			var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
-			var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
-			for(var i=xa;i<=xb;i++){ if(this.vnop("bdy_"+i,this.NONE)){ g.fillRect(k.p0.x+i*this.cw, k.p0.y+y1*this.ch, 1, (y2-y1+1)*this.ch+1);} }
-			for(var i=ya;i<=yb;i++){ if(this.vnop("bdx_"+i,this.NONE)){ g.fillRect(k.p0.x+x1*this.cw, k.p0.y+i*this.ch, (x2-x1+1)*this.cw+1, 1);} }
+			for(var i=xa;i<=xb;i+=2){ if(this.vnop("bdy_"+i,this.NONE)){ g.fillRect(k.p0.x+i*this.bw, k.p0.y+y1*this.bh, 1, (y2-y1)*this.bh+1);} }
+			for(var i=ya;i<=yb;i+=2){ if(this.vnop("bdx_"+i,this.NONE)){ g.fillRect(k.p0.x+x1*this.bw, k.p0.y+i*this.bh, (x2-x1)*this.bw+1, 1);} }
 		}
 		else{
 			if(!g.use.canvas){
-				for(var i=0;i<=k.qcols;i++){ this.vhide("bdy_"+i);}
-				for(var i=0;i<=k.qrows;i++){ this.vhide("bdx_"+i);}
+				for(var i=bd.minby;i<=bd.maxby;i+=2){ this.vhide("bdy_"+i);}
+				for(var i=bd.minbx;i<=bd.minbx;i+=2){ this.vhide("bdx_"+i);}
 			}
 		}
 	},
 	drawDashedGrid : function(x1,y1,x2,y2){
 		this.vinc('grid', 'crispEdges');
-		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
-
-		//var bs=((k.isoutsideborder===0&&this.chassisflag)?1:0);
-		var bs=(this.chassisflag?1:0);
+		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
+		if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
+		x1-=(x1&1), y1-=(y1&1);
 
 		var dotmax   = this.cw/10+3;
 		var dotCount = Math.max(this.cw/dotmax, 1);
 		var dotSize  = this.cw/(dotCount*2);
 
-		var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
-		var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
+		//var bs=((k.isoutsideborder===0&&this.chassisflag)?1:0);
+		var bs=(this.chassisflag?2:0);
+		var xa = Math.max(x1,bd.minbx+bs), xb = Math.min(x2,bd.maxbx-bs);
+		var ya = Math.max(y1,bd.minby+bs), yb = Math.min(y2,bd.maxby-bs);
 
 		if(g.use.canvas){
 			g.fillStyle = this.gridcolor;
-			for(var i=xa;i<=xb;i++){
-				for(var j=(k.p0.y+y1*this.ch),len=(k.p0.y+(y2+1)*this.ch);j<len;j+=(2*dotSize)){
-					g.fillRect(k.p0.x+i*this.cw, j, 1, dotSize);
+			for(var i=xa;i<=xb;i+=2){
+				for(var j=(k.p0.y+y1*this.bh),len=(k.p0.y+(y2+1)*this.bh);j<len;j+=(2*dotSize)){
+					g.fillRect(k.p0.x+i*this.bw, j, 1, dotSize);
 				}
 			}
-			for(var i=ya;i<=yb;i++){
-				for(var j=(k.p0.x+x1*this.cw),len=(k.p0.x+(x2+1)*this.cw);j<len;j+=(2*dotSize)){
-					g.fillRect(j, k.p0.y+i*this.ch, dotSize, 1);
+			for(var i=ya;i<=yb;i+=2){
+				for(var j=(k.p0.x+x1*this.bw),len=(k.p0.x+(x2+1)*this.cw);j<len;j+=(2*dotSize)){
+					g.fillRect(j, k.p0.y+i*this.bh, dotSize, 1);
 				}
 			}
 		}
@@ -1313,6 +1311,8 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	drawChassis : function(x1,y1,x2,y2){
 		this.vinc('chassis', 'crispEdges');
+
+		// ex===0とex===2で同じ場所に描画するので、そのままにしておきます
 		if(x1<0){ x1=0;} if(x2>2*k.qcols){ x2=2*k.qcols;}
 		if(y1<0){ y1=0;} if(y2>2*k.qrows){ y2=2*k.qrows;}
 

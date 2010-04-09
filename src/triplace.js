@@ -127,7 +127,7 @@ Puzzles.triplace.prototype = {
 				return;
 			}
 			if(this.moveTCell(ca)){ return;}
-			this.inputnumber51(ca,{2:(k.qcols-(tc.cursolx<<1)-1), 4:(k.qrows-(tc.cursoly<<1)-1)});
+			this.inputnumber51(ca,{2:(k.qcols-(tc.cursolx>>1)-1), 4:(k.qrows-(tc.cursoly>>1)-1)});
 		};
 		kc.keyup    = function(ca){ if(ca=='z'){ this.isZ=false;}};
 
@@ -154,7 +154,7 @@ Puzzles.triplace.prototype = {
 			kp.generate(kp.ORIGINAL, false, true, kp.kpgenerate);
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
-				kc.inputnumber51(ca,{2:(k.qcols-(tc.cursolx<<1)-1), 4:(k.qrows-(tc.cursoly<<1)-1)});
+				kc.inputnumber51(ca,{2:(k.qcols-(tc.cursolx>>1)-1), 4:(k.qrows-(tc.cursoly>>1)-1)});
 			};
 		}
 

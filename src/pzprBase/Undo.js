@@ -29,7 +29,7 @@ OperationManager = function(){
 	this.undoExec = false;		// Undo’†
 	this.redoExec = false;		// Redo’†
 	this.reqReset = false;		// Undo/RedoŽž‚É”Õ–Ê‰ñ“]“™‚ª“ü‚Á‚Ä‚¢‚½ŽžAresize,resetInfoŠÖ”‚Ìcall‚ð—v‹‚·‚é
-	this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
+	this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
 };
 OperationManager.prototype = {
 	//---------------------------------------------------------------------------
@@ -119,7 +119,7 @@ OperationManager.prototype = {
 	undo : function(){
 		if(this.current==0){ return;}
 		this.undoExec = true;
-		this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
+		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
 		this.disableRecord();
 
 		while(this.current>0){
@@ -139,7 +139,7 @@ OperationManager.prototype = {
 	redo : function(){
 		if(this.current==this.ope.length){ return;}
 		this.redoExec = true;
-		this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
+		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
 		this.disableRecord();
 
 		while(this.current<this.ope.length){
@@ -213,12 +213,12 @@ OperationManager.prototype = {
 			else if(pp == 'reducelt'){ if(num==1){ menu.ex.reduce(k.LT);}else{ menu.ex.expand(k.LT);} }
 			else if(pp == 'reducert'){ if(num==1){ menu.ex.reduce(k.RT);}else{ menu.ex.expand(k.RT);} }
 
-			else if(pp == 'flipy'){ menu.ex.turnflip(1,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});}
-			else if(pp == 'flipx'){ menu.ex.turnflip(2,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});}
-			else if(pp == 'turnr'){ menu.ex.turnflip((num==1?3:4),{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); }
-			else if(pp == 'turnl'){ menu.ex.turnflip((num==1?4:3),{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); }
+			else if(pp == 'flipy'){ menu.ex.turnflip(1,{x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby});}
+			else if(pp == 'flipx'){ menu.ex.turnflip(2,{x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby});}
+			else if(pp == 'turnr'){ menu.ex.turnflip((num==1?3:4),{x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby}); }
+			else if(pp == 'turnl'){ menu.ex.turnflip((num==1?4:3),{x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby}); }
 
-			this.range = { x1:0, y1:0, x2:k.qcols-1, y2:k.qrows-1};
+			this.range = {x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby};
 			this.reqReset = true;
 		}
 	},

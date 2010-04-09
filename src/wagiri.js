@@ -76,7 +76,7 @@ Puzzles.wagiri.prototype = {
 
 		mv.inputquestion = function(){
 			var pos = this.borderpos(0.33);
-			if(pos.x<tc.minx || tc.maxx<pos.x || pos.y<tc.miny || tc.maxy<pos.y){ return;}
+			if(!bd.isinside(pos.x,pos.y)){ return;}
 			if(!(pos.x&1) && !(pos.y&1)){
 				this.inputcross();
 			}
@@ -166,7 +166,7 @@ Puzzles.wagiri.prototype = {
 		pc.chassisflag = false;
 
 		pc.paint = function(x1,y1,x2,y2){
-			if(!ans.errDisp && pp.getVal('colorslash')){ x1=0; y1=0; x2=k.qcols-1; y2=k.qrows-1;}
+			if(!ans.errDisp && pp.getVal('colorslash')){ x1=bd.minbx; y1=bd.minby; x2=bd.maxbx; y2=bd.maxby;}
 
 			this.flushCanvas(x1,y1,x2,y2);
 		//	this.flushCanvasAll();

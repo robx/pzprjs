@@ -176,13 +176,13 @@ Puzzles.kurodoko.prototype = {
 
 				var tx, ty, list = [cc];
 				tx = bd.cell[cc].bx-2; ty = bd.cell[cc].by;
-				while(tx>0)        { var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); tx-=2;} else{ break;} }
+				while(tx>bd.minbx){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); tx-=2;} else{ break;} }
 				tx = bd.cell[cc].bx+2; ty = bd.cell[cc].by;
-				while(tx<2*k.qcols){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); tx+=2;} else{ break;} }
+				while(tx<bd.maxbx){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); tx+=2;} else{ break;} }
 				tx = bd.cell[cc].bx; ty = bd.cell[cc].by-2;
-				while(ty>0)        { var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); ty-=2;} else{ break;} }
+				while(ty>bd.minby){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); ty-=2;} else{ break;} }
 				tx = bd.cell[cc].bx; ty = bd.cell[cc].by+2;
-				while(ty<2*k.qrows){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); ty+=2;} else{ break;} }
+				while(ty<bd.maxby){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); ty+=2;} else{ break;} }
 
 				if(bd.QnC(cc)!=list.length){
 					if(this.inAutoCheck){ return false;}

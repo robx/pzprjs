@@ -366,13 +366,13 @@ Puzzles.reflect.prototype = {
 				var tx, ty;
 
 				bx = bd.cell[c].bx-1; by = bd.cell[c].by;
-				while(bx>0)        { var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); bx-=2;} else{ break;} }
+				while(bx>bd.minbx){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); bx-=2;} else{ break;} }
 				bx = bd.cell[c].bx+1; by = bd.cell[c].by;
-				while(bx<2*k.qcols){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); bx+=2;} else{ break;} }
+				while(bx<bd.maxbx){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); bx+=2;} else{ break;} }
 				bx = bd.cell[c].bx; by = bd.cell[c].by-1;
-				while(by>0)        { var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); by-=2;} else{ break;} }
+				while(by>bd.minby){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); by-=2;} else{ break;} }
 				bx = bd.cell[c].bx; by = bd.cell[c].by+1;
-				while(by<2*k.qrows){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); by+=2;} else{ break;} }
+				while(by<bd.maxby){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); by+=2;} else{ break;} }
 
 				if(type==1?bd.QnC(c)<cnt:bd.QnC(c)>cnt){
 					if(this.inAutoCheck){ return false;}

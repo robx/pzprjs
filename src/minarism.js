@@ -84,10 +84,10 @@ Puzzles.minarism.prototype = {
 		};
 		mv.inputmark = function(){
 			var pos = this.borderpos(0.33);
-			if(pos.x<tc.minx || tc.maxx<pos.x || pos.y<tc.miny || tc.maxy<pos.y){ return;}
+			if(!bd.isinside(pos.x,pos.y)){ return;}
 			var id = bd.bnum(pos.x, pos.y);
 
-			if(tc.cursolx!=pos.x || tc.cursoly!=pos.y){
+			if(tc.cursolx!==pos.x || tc.cursoly!==pos.y){
 				var tcp = tc.getTCP(), flag = false;
 				tc.setTCP(pos);
 				pc.paintPos(tcp);
@@ -282,7 +282,7 @@ Puzzles.minarism.prototype = {
 				else if(ca=="h"){ bd.sQuB(id-mgn, ((type==0 || id<k.qcols*k.qrows)?2:1)); id++;}
 				else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-17);}
 				else if(ca=="."){ bd.sQnB(id-mgn,-2); id++;}
-				else if(type==1 && ca=="/"){ id=k.qcols*k.qrows;}
+				else if(type==1 && ca=="/"){ id=bd.cellmax;}
 				else{ id++;}
 
 				if(id >= 2*k.qcols*k.qrows){ a=i+1; break;}
@@ -302,8 +302,8 @@ Puzzles.minarism.prototype = {
 					var val  = bd.QuB(id);
 					var qnum = bd.QnB(id);
 
-					if     (val == 1){ pstr = ((type==0 || id<k.qcols*k.qrows)?"g":"h");}
-					else if(val == 2){ pstr = ((type==0 || id<k.qcols*k.qrows)?"h":"g");}
+					if     (val == 1){ pstr = ((type==0 || id<bd.cellmax)?"g":"h");}
+					else if(val == 2){ pstr = ((type==0 || id<bd.cellmax)?"h":"g");}
 					else if(qnum==-2){ pstr = ".";}
 					else if(qnum>= 0 && qnum< 16){ pstr = ""+ qnum.toString(16);}
 					else if(qnum>=16 && qnum<256){ pstr = "-"+qnum.toString(16);}

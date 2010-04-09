@@ -92,16 +92,16 @@ Puzzles.wblink.prototype = {
 			var idlist=[], bx1, bx2, by1, by2;
 			var bx=bd.cell[cc1].bx, by=bd.cell[cc1].by;
 			if(bd.border[id].bx&1){
-				while(by>0         && bd.QnC(bd.cnum(bx,by-1))===-1){ by-=2;} by1=by;
-				while(by<2*k.qrows && bd.QnC(bd.cnum(bx,by+1))===-1){ by+=2;} by2=by;
+				while(by>bd.minby && bd.QnC(bd.cnum(bx,by-1))===-1){ by-=2;} by1=by;
+				while(by<bd.maxby && bd.QnC(bd.cnum(bx,by+1))===-1){ by+=2;} by2=by;
 				bx1 = bx2 = bd.border[id].bx;
 			}
 			else if(bd.border[id].by&1){
-				while(bx>0         && bd.QnC(bd.cnum(bx-1,by))===-1){ bx-=2;} bx1=bx;
-				while(bx<2*k.qcols && bd.QnC(bd.cnum(bx+1,by))===-1){ bx+=2;} bx2=bx;
+				while(bx>bd.minbx && bd.QnC(bd.cnum(bx-1,by))===-1){ bx-=2;} bx1=bx;
+				while(bx<bd.maxbx && bd.QnC(bd.cnum(bx+1,by))===-1){ bx+=2;} bx2=bx;
 				by1 = by2 = bd.border[id].by;
 			}
-			if(bx1<=0||bx2>=2*k.qcols||by1<=0||by2>=2*k.qrows){ return [];}
+			if(bx1<=bd.minbx||bx2>=bd.maxbx||by1<=bd.minby||by2>=bd.maxby){ return [];}
 			for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
 			return idlist;
 		};

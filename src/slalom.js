@@ -261,7 +261,7 @@ Puzzles.slalom.prototype = {
 		bd.nummaxfunc = function(cc){ return Math.min(bd.hinfo.max,bd.maxnum);}
 
 		menu.ex.adjustSpecial = function(type,key){
-			var d = {xx:2*k.qcols, yy:2*k.qrows};
+			var d = {xx:(bd.minbx+bd.maxbx), yy:(bd.minby+bd.maxby)};
 
 			um.disableRecord();
 			var bx=bd.cell[bd.startid].bx, by=bd.cell[bd.startid].by;
@@ -285,10 +285,10 @@ Puzzles.slalom.prototype = {
 				else if(key==k.RT){ bd.startid = bd.cnum2(bx  ,by  ,k.qcols+1,k.qrows);}
 				break;
 			case 6: // î’ñ èkè¨
-				if     (key==k.DN && by<2*k.qrows-2){ bd.startid = bd.cnum2(bx  ,by  ,k.qcols,k.qrows-1);}
-				else if(key==k.UP || key==k.DN)     { bd.startid = bd.cnum2(bx  ,by-2,k.qcols,k.qrows-1);}
-				else if(key==k.RT && bx<2*k.qcols-2){ bd.startid = bd.cnum2(bx  ,by  ,k.qcols-1,k.qrows);}
-				else if(key==k.LT || key==k.RT)     { bd.startid = bd.cnum2(bx-2,by  ,k.qcols-1,k.qrows);}
+				if     (key==k.DN && by<bd.maxby-2){ bd.startid = bd.cnum2(bx  ,by  ,k.qcols,k.qrows-1);}
+				else if(key==k.UP || key==k.DN)    { bd.startid = bd.cnum2(bx  ,by-2,k.qcols,k.qrows-1);}
+				else if(key==k.RT && bx<bd.maxbx-2){ bd.startid = bd.cnum2(bx  ,by  ,k.qcols-1,k.qrows);}
+				else if(key==k.LT || key==k.RT)    { bd.startid = bd.cnum2(bx-2,by  ,k.qcols-1,k.qrows);}
 				break;
 			}
 			um.enableRecord();

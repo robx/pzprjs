@@ -304,18 +304,18 @@ Puzzles.kakuro.prototype = {
 		};
 
 		fio.kanpenOpen = function(){
-			this.decodeRoom_kanpen();
+			this.decodeCellQnum51_kanpen();
 			this.decodeQans_kanpen();
 		};
 		fio.kanpenSave = function(){
 			this.sizestr = [k.qrows+1, k.qcols+1].join("/");
 
-			this.encodeRoom_kanpen();
+			this.encodeCellQnum51_kanpen();
 			this.datastr += "/";
 			this.encodeQans_kanpen();
 		};
 
-		fio.decodeRoom_kanpen = function(){
+		fio.decodeCellQnum51_kanpen = function(){
 			for(;;){
 				var data = this.readLine();
 				if(!data){ break;}
@@ -336,8 +336,8 @@ Puzzles.kakuro.prototype = {
 				}
 			}
 		};
-		fio.encodeRoom_kanpen = function(){
-			for(var by=-1;by<2*k.qrows;by+=2){ for(var bx=-1;bx<2*k.qcols;bx+=2){
+		fio.encodeCellQnum51_kanpen = function(){
+			for(var by=bd.minby+1;by<bd.maxby;by+=2){ for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 				if(bx!==-1 && by!==-1 && bd.QuC(bd.cnum(bx,by))!==51){ continue;}
 
 				var item=[((by+1)>>1).toString(),((bx+1)>>1).toString(),0,0];
@@ -358,10 +358,10 @@ Puzzles.kakuro.prototype = {
 
 		fio.decodeQans_kanpen = function(){
 			var barray = this.readLines(k.qrows+1);
-			for(var by=-1;by<2*k.qrows;by+=2){
+			for(var by=bd.minby+1;by<bd.maxby;by+=2){
 				if(((by+1)>>1)>=barray.length){ break;}
 				var arr = barray[(by+1)>>1].split(" ");
-				for(var bx=-1;bx<2*k.qcols;bx+=2){
+				for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 					if(arr[(bx+1)>>1]==''){ continue;}
 					var c = bd.cnum(bx,by);
 					if(c!=-1&&arr[(bx+1)>>1]!="."&&arr[(bx+1)>>1]!="0"){ bd.sQaC(c, parseInt(arr[(bx+1)>>1]));}
@@ -369,15 +369,15 @@ Puzzles.kakuro.prototype = {
 			}
 		};
 		fio.encodeQans_kanpen = function(){
-			for(var by=-1;by<2*k.qrows;by+=2){
-				for(var bx=-1;bx<2*k.qcols;bx+=2){
+			for(var by=bd.minby+1;by<bd.maxby;by+=2){
+				for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 					var c = bd.cnum(bx,by);
 					if(c==-1){ this.datastr += ". ";}
 					else if(bd.QuC(c)==51){ this.datastr += ". ";}
 					else if(bd.QaC(c) > 0){ this.datastr += (bd.QaC(c).toString() + " ");}
 					else                  { this.datastr += "0 ";}
 				}
-				if(by<2*k.qrows-1){ this.datastr += "/";}
+				if(by<bd.maxby-1){ this.datastr += "/";}
 			}
 		};
 	},

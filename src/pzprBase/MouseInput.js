@@ -432,7 +432,7 @@ MouseEvent.prototype = {
 		var pos = this.borderpos(0);
 		var cc = bd.cnum(pos.x, pos.y);
 
-		if((pos.x==-1 && pos.y>=-1 && pos.y<=2*k.qrows-1) || (pos.y==-1 && pos.x>=-1 && pos.x<=2*k.qcols-1)){
+		if((pos.x==-1 && pos.y>bd.minby && pos.y<bd.maxby) || (pos.y==-1 && pos.x>bd.minbx && pos.x<bd.maxbx)){
 			var tcp=tc.getTCP();
 			tc.setTCP(new Pos(pos.x,pos.y));
 			pc.paintPos(tcp);
@@ -500,9 +500,9 @@ MouseEvent.prototype = {
 	},
 	inputcrossMark : function(){
 		var pos = this.borderpos(0.24);
-		if(pos.x%2!=0 || pos.y%2!=0){ return;}
-		if(pos.x<(k.isoutsidecross==1?0:2) || pos.x>(k.isoutsidecross==1?2*k.qcols:2*k.qcols-2)){ return;}
-		if(pos.y<(k.isoutsidecross==1?0:2) || pos.y>(k.isoutsidecross==1?2*k.qrows:2*k.qrows-2)){ return;}
+		if(!(pos.x&1) || !(pos.y&1)){ return;}
+		var bm = (k.isoutsidecross===1?0:2);
+		if(pos.x<bd.minbx+bm || pos.x>bd.maxbx-bm || pos.y<bd.minby+bm || pos.y>bd.maxby-bm){ return;}
 
 		var cc = bd.xnum(pos.x,pos.y);
 

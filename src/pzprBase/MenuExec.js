@@ -252,17 +252,17 @@ MenuExec.prototype = {
 				case "reducelt": this.reduce(k.LT); break;
 				case "reducert": this.reduce(k.RT); break;
 
-				case "turnl": this.turnflip(4,{x1:0,y1:0,x2:2*k.qcols,y2:2*k.qrows}); break;
-				case "turnr": this.turnflip(3,{x1:0,y1:0,x2:2*k.qcols,y2:2*k.qrows}); break;
-				case "flipy": this.turnflip(1,{x1:0,y1:0,x2:2*k.qcols,y2:2*k.qrows}); break;
-				case "flipx": this.turnflip(2,{x1:0,y1:0,x2:2*k.qcols,y2:2*k.qrows}); break;
+				case "turnl": this.turnflip(4,{x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby}); break;
+				case "turnr": this.turnflip(3,{x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby}); break;
+				case "flipy": this.turnflip(1,{x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby}); break;
+				case "flipx": this.turnflip(2,{x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby}); break;
 			}
 			um.enableInfo();
 
 			// reduceÇÕÇ±Ç±ïKê{
 			um.addOpe(k.BOARD, name, 0, 0, 1);
 
-			tc.adjust();
+			bd.setminmax();
 			if(!um.undoExec){ base.resetInfo(false);}
 			base.resize_canvas();				// CanvasÇçXêVÇ∑ÇÈ
 		}
@@ -276,7 +276,7 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	expand : function(key){
 		this.adjustSpecial(5,key);
-		this.adjustGeneral(5,'',{x1:0,y1:0,x2:2*k.qcols,y2:2*k.qrows});
+		this.adjustGeneral(5,'',{x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby});
 
 		var number;
 		if     (key===k.UP||key===k.DN){ number=k.qcols; k.qrows++;}
@@ -325,7 +325,7 @@ MenuExec.prototype = {
 
 	reduce : function(key){
 		this.adjustSpecial(6,key);
-		this.adjustGeneral(6,'',{x1:0,y1:0,x2:2*k.qcols,y2:2*k.qrows});
+		this.adjustGeneral(6,'',{x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby});
 
 		var func, margin;
 		{
@@ -419,14 +419,14 @@ MenuExec.prototype = {
 		}
 		else if(k.isextendcell===1 && (type===1 || type===2)){
 			if(type===1){
-				for(var by=d.y1+((d.y1^1)&1);by<d.yy/2;by+=2){
+				for(var by=(d.y1|1);by<d.yy/2;by+=2){
 					var c = bd.excell[bd.exnum(-1,by)];
 					bd.excell[bd.exnum(-1,by)] = bd.excell[bd.exnum(-1,d.yy-by)];
 					bd.excell[bd.exnum(-1,d.yy-by)] = c;
 				}
 			}
 			else if(type===2){
-				for(var bx=d.x1+((d.x1^1)&1);bx<d.xx/2;bx+=2){
+				for(var bx=(d.x1|1);bx<d.xx/2;bx+=2){
 					var c = bd.excell[bd.exnum(bx,-1)];
 					bd.excell[bd.exnum(bx,-1)] = bd.excell[bd.exnum(d.xx-bx,-1)];
 					bd.excell[bd.exnum(d.xx-bx,-1)] = c;
@@ -444,10 +444,10 @@ MenuExec.prototype = {
 			var tmp = group[source], target = source;
 			while(ch[target]!==0){
 				ch[target]=0;
-				if     (type===1){ next = getnext(group[target].bx, d.yy-group[target].by);}
-				else if(type===2){ next = getnext(d.xx-group[target].bx, group[target].by);}
-				else if(type===3){ next = getnext(group[target].by, d.yy-group[target].bx, k.qrows, k.qcols);}
-				else if(type===4){ next = getnext(d.xx-group[target].by, group[target].bx, k.qrows, k.qcols);}
+				if     (type===1){ next = getnext.call(bd, group[target].bx, d.yy-group[target].by);}
+				else if(type===2){ next = getnext.call(bd, d.xx-group[target].bx, group[target].by);}
+				else if(type===3){ next = getnext.call(bd, group[target].by, d.yy-group[target].bx, k.qrows, k.qcols);}
+				else if(type===4){ next = getnext.call(bd, d.xx-group[target].by, group[target].bx, k.qrows, k.qcols);}
 
 				if(ch[next]!==0){
 					group[target] = group[next];
@@ -545,10 +545,10 @@ MenuExec.prototype = {
 		else if(type===k.EXCELL){ obj = bd.excell[id];}
 		else{ return -1;}
 
-		if     (key===k.UP){ return obj.by;}
-		else if(key===k.DN){ return (2*k.qrows)-obj.by;}
-		else if(key===k.LT){ return obj.bx;}
-		else if(key===k.RT){ return (2*k.qcols)-obj.bx;}
+		if     (key===k.UP){ return obj.by-bd.minby;}
+		else if(key===k.DN){ return bd.maxby-obj.by;}
+		else if(key===k.LT){ return obj.bx-bd.minbx;}
+		else if(key===k.RT){ return bd.maxbx-obj.bx;}
 		return -1;
 	},
 
@@ -561,8 +561,8 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	adjustGeneral : function(type,key,d){
 		um.disableRecord();
-		for(var by=d.y1+((d.y1^1)&1);by<=d.y2;by+=2){
-			for(var bx=d.x1+((d.x1^1)&1);bx<=d.x2;bx+=2){
+		for(var by=(d.y1|1);by<=d.y2;by+=2){
+			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 				var c = bd.cnum(bx,by);
 
 				switch(type){
@@ -616,77 +616,77 @@ MenuExec.prototype = {
 		um.enableRecord();
 	},
 	adjustQues51_1 : function(type,key){
-		var d = {x1:0,y1:0,x2:2*k.qcols,y2:2*k.qrows};
+		var d = {x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby};
 
 		this.qnumw = [];
 		this.qnumh = [];
 
-		for(var by=d.y1+((d.y1^1)&1);by<=d.y2;by+=2){
+		for(var by=(d.y1|1);by<=d.y2;by+=2){
 			this.qnumw[by] = [bd.QnE(bd.exnum(-1,by))];
-			for(var bx=d.x1+((d.x1^1)&1);bx<=d.x2;bx+=2){
+			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 				if(bd.QuC(bd.cnum(bx,by))===51){ this.qnumw[by].push(bd.QnC(bd.cnum(bx,by)));}
 			}
 		}
-		for(var bx=d.x1+((d.x1^1)&1);bx<=d.x2;bx+=2){
+		for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 			this.qnumh[bx] = [bd.DiE(bd.exnum(bx,-1))];
-			for(var by=d.y1+((d.y1^1)&1);by<=d.y2;by+=2){
+			for(var by=(d.y1|1);by<=d.y2;by+=2){
 				if(bd.QuC(bd.cnum(bx,by))===51){ this.qnumh[bx].push(bd.DiC(bd.cnum(bx,by)));}
 			}
 		}
 	},
 	adjustQues51_2 : function(type,key){
-		var d = {x1:0,y1:0,x2:2*k.qcols,y2:2*k.qrows};
+		var d = {x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby};
 		d.xx = (d.x1+d.x2); d.yy = (d.y1+d.y2);
 
 		um.disableRecord();
 		var idx;
 		switch(type){
 		case 1: // è„â∫îΩì]
-			for(var bx=d.x1+((d.x1^1)&1);bx<=d.x2;bx+=2){
+			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 				idx = 1; this.qnumh[bx] = this.qnumh[bx].reverse();
 				bd.sDiE(bd.exnum(bx,-1), this.qnumh[bx][0]);
-				for(var by=d.y1+((d.y1^1)&1);by<=d.y2;by+=2){
+				for(var by=(d.y1|1);by<=d.y2;by+=2){
 					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sDiC(bd.cnum(bx,by), this.qnumh[bx][idx]); idx++;}
 				}
 			}
 			break;
 		case 2: // ç∂âEîΩì]
-			for(var by=d.y1+((d.y1^1)&1);by<=d.y2;by+=2){
+			for(var by=(d.y1|1);by<=d.y2;by+=2){
 				idx = 1; this.qnumw[by] = this.qnumw[by].reverse();
 				bd.sQnE(bd.exnum(-1,by), this.qnumw[by][0]);
-				for(var bx=d.x1+((d.x1^1)&1);bx<=d.x2;bx+=2){
+				for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sQnC(bd.cnum(bx,by), this.qnumw[by][idx]); idx++;}
 				}
 			}
 			break;
 		case 3: // âE90ÅãîΩì]
-			for(var by=d.y1+((d.y1^1)&1);by<=d.y2;by+=2){
+			for(var by=(d.y1|1);by<=d.y2;by+=2){
 				idx = 1; this.qnumh[by] = this.qnumh[by].reverse();
 				bd.sQnE(bd.exnum(-1,by), this.qnumh[by][0]);
-				for(var bx=d.x1+((d.x1^1)&1);bx<=d.x2;bx+=2){
+				for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sQnC(bd.cnum(bx,by), this.qnumh[by][idx]); idx++;}
 				}
 			}
-			for(var bx=d.x1+((d.x1^1)&1);bx<=d.x2;bx+=2){
+			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 				idx = 1;
 				bd.sDiE(bd.exnum(bx,-1), this.qnumw[d.xx-bx][0]);
-				for(var by=d.y1+((d.y1^1)&1);by<=d.y2;by+=2){
+				for(var by=(d.y1|1);by<=d.y2;by+=2){
 					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sDiC(bd.cnum(bx,by), this.qnumw[d.xx-bx][idx]); idx++;}
 				}
 			}
 			break;
 		case 4: // ç∂90ÅãîΩì]
-			for(var by=d.y1+((d.y1^1)&1);by<=d.y2;by+=2){
+			for(var by=(d.y1|1);by<=d.y2;by+=2){
 				idx = 1;
 				bd.sQnE(bd.exnum(-1,by), this.qnumh[d.yy-by][0]);
-				for(var bx=d.x1+((d.x1^1)&1);bx<=d.x2;bx+=2){
+				for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sQnC(bd.cnum(bx,by), this.qnumh[d.yy-by][idx]); idx++;}
 				}
 			}
-			for(var bx=d.x1+((d.x1^1)&1);bx<=d.x2;bx+=2){
+			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 				idx = 1; this.qnumw[bx] = this.qnumw[bx].reverse();
 				bd.sDiE(bd.exnum(bx,-1), this.qnumw[bx][0]);
-				for(var by=d.y1+((d.y1^1)&1);by<=d.y2;by+=2){
+				for(var by=(d.y1|1);by<=d.y2;by+=2){
 					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sDiC(bd.cnum(bx,by), this.qnumw[bx][idx]); idx++;}
 				}
 			}

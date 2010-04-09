@@ -222,15 +222,15 @@ Puzzles.kinkonkan.prototype = {
 
 		tc.getTCC = function(){ return ee.binder(tc, bd.exnum(this.cursolx, this.cursoly));};
 		tc.setTCC = ee.binder(tc, function(id){
-			if(id<0 || 2*k.qcols+2*k.qrows+4<=id){ return;}
-			if     (id<  k.qcols)            { this.cursolx=2*id+1;           this.cursoly=this.miny;                 }
-			else if(id<2*k.qcols)            { this.cursolx=2*(id-k.qcols)+1; this.cursoly=this.maxy;                 }
-			else if(id<2*k.qcols+  k.qrows)  { this.cursolx=this.minx;        this.cursoly=2*(id-2*k.qcols)+1;        }
-			else if(id<2*k.qcols+2*k.qrows)  { this.cursolx=this.maxx;        this.cursoly=2*(id-2*k.qcols-k.qrows)+1;}
-			else if(id<2*k.qcols+2*k.qrows+1){ this.cursolx=this.minx; this.cursoly=this.miny;}
-			else if(id<2*k.qcols+2*k.qrows+2){ this.cursolx=this.maxx; this.cursoly=this.miny;}
-			else if(id<2*k.qcols+2*k.qrows+3){ this.cursolx=this.minx; this.cursoly=this.maxy;}
-			else if(id<2*k.qcols+2*k.qrows+4){ this.cursolx=this.maxx; this.cursoly=this.maxy;}
+			if(id<0 || bd.excellmax<=id){ return;}
+			if     (id<k.qcols){ this.cursolx=2*id+1;    this.cursoly=this.miny;} id-=k.qcols;
+			else if(id<k.qcols){ this.cursolx=2*id+1;    this.cursoly=this.maxy;} id-=k.qcols;
+			else if(id<k.qrows){ this.cursolx=this.minx; this.cursoly=2*id+1;   } id-=k.qrows;
+			else if(id<k.qrows){ this.cursolx=this.maxx; this.cursoly=2*id+1;   } id-=k.qrows;
+			else if(id===1)    { this.cursolx=this.minx; this.cursoly=this.miny;} id--;
+			else if(id===1)    { this.cursolx=this.maxx; this.cursoly=this.miny;} id--;
+			else if(id===1)    { this.cursolx=this.minx; this.cursoly=this.maxy;} id--;
+			else if(id===1)    { this.cursolx=this.maxx; this.cursoly=this.maxy;} id--;
 		});
 		tc.setTCC(0);
 	},
@@ -394,7 +394,7 @@ Puzzles.kinkonkan.prototype = {
 
 			// 盤面外部分のエンコード
 			var count=0;
-			for(var ec=0;ec<2*k.qcols+2*k.qrows;ec++){
+			for(var ec=0;ec<bd.excellmax-4;ec++){
 				pstr = "";
 				var val  = bd.DiE(ec);
 				var qnum = bd.QnE(ec);
@@ -450,8 +450,8 @@ Puzzles.kinkonkan.prototype = {
 			this.filever = 1;
 			this.encodeAreaRoom();
 
-			for(var by=-1;by<=2*k.qrows+1;by+=2){
-				for(var bx=-1;bx<=2*k.qcols+1;bx+=2){
+			for(var by=-1;by<bd.maxby;by+=2){
+				for(var bx=-1;bx<bd.maxbx;bx+=2){
 					var ec = bd.exnum(bx,by);
 					if(ec!==-1){
 						var str1 = (bd.DiE(ec)== 0?"":bd.DiE(ec).toString());
@@ -502,7 +502,7 @@ Puzzles.kinkonkan.prototype = {
 
 		ans.checkMirrors = function(type){
 			var d = [];
-			for(var ec=0;ec<2*k.qcols+2*k.qrows;ec++){
+			for(var ec=0;ec<bd.excellmax-4;ec++){
 				if(!isNaN(d[ec]) || bd.QnE(ec)==-1 || bd.DiE(ec)==0){ continue;}
 				var ldata = [];
 				for(var c=0;c<bd.cellmax;c++){ ldata[c]=0;}
@@ -525,10 +525,10 @@ Puzzles.kinkonkan.prototype = {
 
 			var bx=bd.excell[startec].bx, by=bd.excell[startec].by;
 			var dir=0;
-			if     (startec<  k.qcols)          { dir=2;}
-			else if(startec<2*k.qcols)          { dir=1;}
-			else if(startec<2*k.qcols+  k.qrows){ dir=4;}
-			else if(startec<2*k.qcols+2*k.qrows){ dir=3;}
+			if     (by===bd.minby+1){ dir=2;}
+			else if(by===bd.maxby-1){ dir=1;}
+			else if(bx===bd.minbx+1){ dir=4;}
+			else if(bx===bd.maxbx-1){ dir=3;}
 
 			while(dir!=0){
 				switch(dir){ case 1: by-=2; break; case 2: by+=2; break; case 3: bx-=2; break; case 4: bx+=2; break;}

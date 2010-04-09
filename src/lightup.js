@@ -138,12 +138,12 @@ Puzzles.lightup.prototype = {
 		};
 		bd.cellRange = function(cc){
 			var bx = tx = this.cell[cc].bx, by = ty = this.cell[cc].by;
-			var d = {x1:0, y1:0, x2:k.qcols-1, y2:k.qrows-1};
+			var d = {x1:bd.minbx+1, y1:bd.minby+1, x2:bd.maxbx-1, y2:bd.maxby-1};
 
-			tx=bx-2; ty=by; while(tx>0)        { if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.x1=tx+2; break;} tx-=2; }
-			tx=bx+2; ty=by; while(tx<2*k.qcols){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.x2=tx-2; break;} tx+=2; }
-			tx=bx; ty=by-2; while(ty>0)        { if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.y1=ty+2; break;} ty-=2; }
-			tx=bx; ty=by+2; while(ty<2*k.qrows){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.y2=ty-2; break;} ty+=2; }
+			tx=bx-2; ty=by; while(tx>bd.minbx){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.x1=tx+2; break;} tx-=2; }
+			tx=bx+2; ty=by; while(tx<bd.maxbx){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.x2=tx-2; break;} tx+=2; }
+			tx=bx; ty=by-2; while(ty>bd.minby){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.y1=ty+2; break;} ty-=2; }
+			tx=bx; ty=by+2; while(ty<bd.maxby){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.y2=ty-2; break;} ty+=2; }
 
 			return d;
 		};

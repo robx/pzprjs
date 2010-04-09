@@ -163,6 +163,12 @@ Board = function(){
 
 	this.maxnum   = 99;		// 入力できる最大の数字
 
+	// 盤面の範囲
+	this.minbx = 0;
+	this.minby = 0;
+	this.maxbx = 2*k.qcols;
+	this.maxby = 2*k.qrows;
+
 	// デフォルトのセルなど
 	this.defcell   = new Cell(0);
 	this.defcross  = new Cross(0);
@@ -201,7 +207,7 @@ Board.prototype = {
 		// 各種サイズの変更
 		k.qcols = col;
 		k.qrows = row;
-		tc.adjust();
+		this.setminmax();
 
 		this.setposAll();
 		if(!base.initProcess){ this.allclear();}
@@ -297,7 +303,9 @@ Board.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.setcoordAll()  全てのCell, Cross, BorderオブジェクトのsetcoordCell()等を呼び出す
+	// bd.setcoordAll()   全てのCell, Cross, BorderオブジェクトのsetcoordCell()等を呼び出す
+	// bd.setBoardRange() 盤面のbx,byの最小値/最大値をセットする
+	// bd.isinside()      指定された(bx,by)が盤面内かどうか判断する
 	//---------------------------------------------------------------------------
 	setcoordAll : function(){
 		var x0=k.p0.x, y0=k.p0.y;
@@ -331,6 +339,20 @@ Board.prototype = {
 				obj.py = y0 + (obj.by-1)*k.bheight;
 			}
 		}
+	},
+
+	setminmax : function(){
+		var extUL = (k.isextendcell===1 || k.isextendcell===2);
+		var extDR = (k.isextendcell===2);
+		this.minbx = (!extUL ? 0 : -2);
+		this.minby = (!extUL ? 0 : -2);
+		this.maxbx = (!extDR ? 2*k.qcols : 2*k.qcols+2);
+		this.maxby = (!extDR ? 2*k.qrows : 2*k.qrows+2);
+
+		tc.adjust();
+	},
+	isinside : function(bx,by){
+		return (bx>=this.minbx && bx<=this.maxbx && by>=this.minby && by<=this.maxby);
 	},
 
 	//---------------------------------------------------------------------------
@@ -433,7 +455,7 @@ Board.prototype = {
 	// bd.exnum2() (X,Y)の位置にあるextendCellのIDを、盤面の大きさを(qc×qr)で計算して返す
 	//---------------------------------------------------------------------------
 	cnum : function(bx,by){
-		if((bx<0||bx>2*k.qcols||by<0||by>2*k.qrows)||(!(bx&1))||(!(by&1))){ return -1;}
+		if(!this.isinside(bx,by)||(!(bx&1))||(!(by&1))){ return -1;}
 		return (bx>>1)+(by>>1)*k.qcols;
 	},
 	cnum2 : function(bx,by,qc,qr){
@@ -441,7 +463,7 @@ Board.prototype = {
 		return (bx>>1)+(by>>1)*qc;
 	},
 	xnum : function(bx,by){
-		if((bx<0||bx>2*k.qcols||by<0||by>2*k.qrows)||(!!(bx&1))||(!!(by&1))){ return -1;}
+		if(!this.isinside(bx,by)||(!!(bx&1))||(!!(by&1))){ return -1;}
 		return (bx>>1)+(by>>1)*(k.qcols+1);
 	},
 	xnum2 : function(bx,by,qc,qr){
@@ -449,7 +471,7 @@ Board.prototype = {
 		return (bx>>1)+(by>>1)*(qc+1);
 	},
 	bnum : function(bx,by){
-		return bd.bnum2(bx,by,k.qcols,k.qrows);
+		return this.bnum2(bx,by,k.qcols,k.qrows);
 	},
 	bnum2 : function(bx,by,qc,qr){
 		if(bx>=1&&bx<=2*qc-1&&by>=1&&by<=2*qr-1){
@@ -465,7 +487,7 @@ Board.prototype = {
 		return -1;
 	},
 	exnum : function(bx,by){
-		return bd.exnum2(bx,by,k.qcols,k.qrows);
+		return this.exnum2(bx,by,k.qcols,k.qrows);
 	},
 	exnum2 : function(bx,by,qc,qr){
 		if(k.isextendcell===1){
@@ -491,9 +513,8 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	getClistByPosition : function(x1,y1,x2,y2){
 		var clist = [];
-		x1 += ((x1^1)&1); y1 += ((y1^1)&1);
-		for(var bx=x1,maxx=Math.min(x2,2*k.qcols-1);bx<=maxx;bx+=2){
-			for(var by=y1,maxy=Math.min(y2,2*k.qrows-1);by<=maxy;by+=2){
+		for(var bx=(x1|1),maxx=Math.min(x2,bd.maxbx-1);bx<=maxx;bx+=2){
+			for(var by=(y1|1),maxy=Math.min(y2,bd.maxby-1);by<=maxy;by+=2){
 				var cc = this.cnum(bx,by);
 				if(cc!==-1){ clist.push(cc);}
 			}

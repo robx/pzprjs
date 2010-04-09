@@ -607,7 +607,7 @@ Encode.prototype = {
 				var bx = (k.isoutsidecross==1?   cc%(k.qcols+1) :   cc%(k.qcols-1) +1)*2;
 				var by = (k.isoutsidecross==1?mf(cc/(k.qcols+1)):mf(cc/(k.qcols-1))+1)*2;
 
-				if(by>=2*k.qrows+(k.isoutsidecross==1?2:0)){ i++; break;}
+				if(by>=bd.maxby+(k.isoutsidecross==1?2:0)){ i++; break;}
 				bd.sQnX(bd.xnum(bx,by), 1);
 			}
 			else if(ca == '.'){ cc += 36;}

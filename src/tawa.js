@@ -67,7 +67,7 @@ Puzzles.tawa.prototype = {
 			// サイズの変更
 			k.qcols = col;
 			k.qrows = row;
-			tc.adjust();
+			this.setminmax();
 
 			// たわむれんが固有処理
 			if(!base.initProcess){
@@ -124,21 +124,6 @@ Puzzles.tawa.prototype = {
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputqnum(ca);
-		};
-		// xを2倍で渡したい為オーバーライド
-		kc.moveTC = function(ca,mv){
-			var tcp = tc.getTCP(), flag = false;
-			if     (ca == k.KEYUP && tcp.y-mv >= tc.miny){ tc.decTCY(mv); flag = true;}
-			else if(ca == k.KEYDN && tcp.y+mv <= tc.maxy){ tc.incTCY(mv); flag = true;}
-			else if(ca == k.KEYLT && tcp.x-mv >= tc.minx){ tc.decTCX(mv); flag = true;}
-			else if(ca == k.KEYRT && tcp.x+mv <= tc.maxx){ tc.incTCX(mv); flag = true;}
-
-			if(flag){
-				pc.paintPos(tcp);
-				pc.paintPos(tc.getTCP());
-				this.tcMoved = true;
-			}
-			return flag;
 		};
 
 		kp.kpgenerate = function(mode){
@@ -229,7 +214,6 @@ Puzzles.tawa.prototype = {
 	input_init_board : function(){	// 処理が大きくなったので分割(input_init()から呼ばれる)
 
 		// キー移動範囲のminx,maxx,miny,maxy設定関数オーバーライド
-		// このパズルに限って、やたらとtc.maxxが参照されます。。
 		tc.getTCC = ee.binder(tc, function(){ return bd.cnum(this.cursolx, this.cursoly);});
 		tc.setTCC = function(id){
 			if(id<0 || bd.cellmax<=id){ return;}
@@ -246,13 +230,25 @@ Puzzles.tawa.prototype = {
 			if(this.cursolx==this.maxx || (this.cursolx>this.minx && (this.cursoly>>1)%2==0)){ this.cursolx--;}
 			else{ this.cursolx++;}
 		};
-		tc.setAlign = function(){
+
+		// 盤面の範囲を設定する
+		bd.setminmax = function(){
+			this.minbx = 0;
+			this.minby = 0;
+			this.maxbx = 2*k.qcols + [0,1,1,2][bd.lap];
+			this.maxby = 2*k.qrows;
+
+			tc.adjust();
+		};
+		tc.adjust = function(){
 			this.minx = 1;
-			this.miny = 0;
-			this.maxx = (bd.lap==0?2*k.qcols-1:(bd.lap==3?2*k.qcols+1:2*k.qcols));
+			this.miny = 1;
+			this.maxx = 2*k.qcols-1 + [0,1,1,2][bd.lap];
 			this.maxy = 2*k.qrows-1;
 
-			if(bd.cnum(this.cursolx, this.cursoly)==-1){ this.cursolx += (this.cursolx>0?-1:1);}
+			if(bd.cnum(this.cursolx,this.cursoly)===-1){
+				this.cursolx += (this.cursolx>0?-1:1);
+			}
 		};
 
 		// 各セルの位置変数設定関数
@@ -288,20 +284,20 @@ Puzzles.tawa.prototype = {
 			return this.cnum2(bx,by,k.qcols,k.qrows);
 		};
 		bd.cnum2 = function(bx,by,qc,qr){
-			if(by<=0||by>=2*qr||bx<0||bx>tc.maxx){ return -1;}
+			if(!this.isinside(bx,by)){ return -1;}
 
 			var row = (by>>1);	// 上から数えて何段目か(0～k.qrows-1)
 			if     (this.lap===0){
-				if( !((bx+row)&1) && (bx<=tc.maxx ||  !(row&1))){ return (bx+row*(2*qc-1))>>1;}
+				if( !((bx+row)&1) && (bx<=this.maxbx ||  !(row&1))){ return (bx+row*(2*qc-1))>>1;}
 			}
 			else if(this.lap===1){
-				if( !((bx+row)&1) && (bx<=tc.maxx ||  !(row&1))){ return (bx>>1)+row*qc;}
+				if( !((bx+row)&1) && (bx<=this.maxbx ||  !(row&1))){ return (bx>>1)+row*qc;}
 			}
 			else if(this.lap===2){
-				if(!!((bx+row)&1) && (bx<=tc.maxx || !!(row&1))){ return (bx>>1)+row*qc;}
+				if(!!((bx+row)&1) && (bx<=this.maxbx || !!(row&1))){ return (bx>>1)+row*qc;}
 			}
 			else if(this.lap===3){
-				if(!!((bx+row)&1) && (bx<=tc.maxx || !!(row&1))){ return (bx+row*(2*qc+1))>>1;}
+				if(!!((bx+row)&1) && (bx<=this.maxbx || !!(row&1))){ return (bx+row*(2*qc+1))>>1;}
 			}
 			return -1;
 		};
@@ -317,7 +313,7 @@ Puzzles.tawa.prototype = {
 		mv.cellid = function(){
 			var pos = this.borderpos(0);
 			if(this.inputY%k.cheight==0){ return -1;} // 縦方向だけ、ぴったりは無効
-			if(pos.x<1 || pos.x>tc.maxx || pos.y<0 || pos.y>tc.maxy){ return -1;}
+			if(!bd.isinside(pos.x,pos.y)){ return -1;}
 
 			var cand = bd.cnum(pos.x, pos.y);
 			cand = (cand!=-1?cand:bd.cnum(pos.x-1, pos.y));
@@ -359,17 +355,14 @@ Puzzles.tawa.prototype = {
 					k.qcols += {0:0,1:0,2:1,3:1}[bd.lap];
 					margin   = mf((k.qrows + {0:0,1:0,2:1,3:1}[bd.lap])/2);
 					bd.lap   = {0:2,1:3,2:0,3:1}[bd.lap];
-					tc.maxx++;
 				}
 				else if(key==k.RT){
 					k.qcols += {0:0,1:1,2:0,3:1}[bd.lap];
 					margin   = mf((k.qrows + {0:0,1:1,2:0,3:1}[bd.lap])/2);
 					bd.lap   = {0:1,1:0,2:3,3:2}[bd.lap];
-					tc.maxx++;
 				}
 				else if(key==k.UP){
 					k.qrows++;
-					tc.maxy+=2;
 					if(bd.lap==1||bd.lap==2){ margin = k.qcols;}
 					else if(bd.lap==0){ margin = k.qcols-1;}
 					else if(bd.lap==3){ margin = k.qcols+1;}
@@ -379,7 +372,6 @@ Puzzles.tawa.prototype = {
 				}
 				else if(key==k.DN){
 					k.qrows++;
-					tc.maxy+=2;
 					if(bd.lap==1||bd.lap==2){ margin = k.qcols;}
 					else if(bd.lap==0){ margin = k.qcols-1;}
 					else if(bd.lap==3){ margin = k.qcols+1;}
@@ -388,10 +380,10 @@ Puzzles.tawa.prototype = {
 
 			// 本体。
 			var func;
-			if     (key==k.UP){ func = function(id){ return (bd.cell[id].by==1);};}
-			else if(key==k.DN){ func = function(id){ return (bd.cell[id].by==2*k.qrows-1);};}
-			else if(key==k.LT){ func = function(id){ return (bd.cell[id].bx<=1);};}
-			else if(key==k.RT){ func = function(id){ return (bd.cell[id].bx>=tc.maxx);};}
+			if     (key==k.UP){ func = function(id){ return (bd.cell[id].by===bd.minby+1);};}
+			else if(key==k.DN){ func = function(id){ return (bd.cell[id].by===bd.maxby-1);};}
+			else if(key==k.LT){ func = function(id){ return (bd.cell[id].bx<= bd.minbx+1);};}
+			else if(key==k.RT){ func = function(id){ return (bd.cell[id].bx>= bd.maxbx-1);};}
 			this.expandGroup(k.CELL, bd.cell, margin, func);
 
 			bd.setposAll();
@@ -401,10 +393,10 @@ Puzzles.tawa.prototype = {
 		menu.ex.reduce = function(key){
 			// 本体。
 			var func;
-			if     (key==k.UP){ func = function(id){ return (bd.cell[id].by==1);};}
-			else if(key==k.DN){ func = function(id){ return (bd.cell[id].by==2*k.qrows-1);};}
-			else if(key==k.LT){ func = function(id){ return (bd.cell[id].bx<=1);};}
-			else if(key==k.RT){ func = function(id){ return (bd.cell[id].bx>=tc.maxx);};}
+			if     (key==k.UP){ func = function(id){ return (bd.cell[id].by===bd.minby+1);};}
+			else if(key==k.DN){ func = function(id){ return (bd.cell[id].by===bd.maxby-1);};}
+			else if(key==k.LT){ func = function(id){ return (bd.cell[id].bx<= bd.minbx+1);};}
+			else if(key==k.RT){ func = function(id){ return (bd.cell[id].bx>= bd.maxbx-1);};}
 			var margin = this.reduceGroup(k.CELL, bd.cell, func);
 
 			// 調節用
@@ -412,22 +404,18 @@ Puzzles.tawa.prototype = {
 				if(key==k.LT){
 					k.qcols -= {0:1,1:1,2:0,3:0}[bd.lap];
 					bd.lap   = {0:2,1:3,2:0,3:1}[bd.lap];
-					tc.maxx--;
 				}
 				else if(key==k.RT){
 					k.qcols -= {0:1,1:0,2:1,3:0}[bd.lap];
 					bd.lap   = {0:1,1:0,2:3,3:2}[bd.lap];
-					tc.maxx--;
 				}
 				else if(key==k.UP){
 					k.qrows--;
-					tc.maxy-=2;
 					k.qcols += {0:-1,1:0,2:0,3:1}[bd.lap];
 					bd.lap   = {0:3,1:2,2:1,3:0}[bd.lap];
 				}
 				else if(key==k.DN){
 					k.qrows--;
-					tc.maxy-=2;
 				}
 			}
 
@@ -436,9 +424,8 @@ Puzzles.tawa.prototype = {
 		};
 		// 回転・反転
 		menu.ex.turnflip = function(type,d){
-			d.x2 = tc.maxx;
 			d.xx = (d.x1+d.x2); d.yy = (d.y1+d.y2);
-			if(type==1){ if(k.qrows%2==0){ bd.lap = {0:3,1:2,2:1,3:0}[bd.lap];} }
+			if(type==1){ if(!(k.qrows&1)){ bd.lap = {0:3,1:2,2:1,3:0}[bd.lap];} }
 			else if(type==2){ bd.lap = {0:0,1:2,2:1,3:3}[bd.lap];}
 
 			var func;
@@ -472,35 +459,35 @@ Puzzles.tawa.prototype = {
 
 			this.drawTarget_tawa(x1,y1,x2,y2);
 		};
-		pc.paintAll = function(){ this.paint(0,0,tc.maxx+1,tc.maxy+1); },
+		pc.paintAll = function(){ this.paint(0,0,bd.maxbx+1,bd.maxby+1); },
 
 		pc.drawGrid_tawa = function(x1,y1,x2,y2){
 			this.vinc('grid', 'crispEdges');
-			if(x1<0){ x1=0;} if(x2>tc.maxx+1){ x2=tc.maxx+1;}
-			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
+			if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
+			if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
 
 			var lw = Math.max(this.cw/24, 1);
 			var lm = lw/2;
 			var headers = ["bdx_", "bdy"];
 
 			g.fillStyle = this.gridcolor;
-			var xa = Math.max(x1,0), xb = Math.min(x2+1,tc.maxx+2);
-			var ya = Math.max(y1,0), yb = Math.min(y2+1,k.qrows  );
-			for(var i=ya;i<=yb;i++){
+			var xa = Math.max(x1,bd.minbx), xb = Math.min(x2+1,bd.maxbx);
+			var ya = Math.max(y1,bd.minby), yb = Math.min(y2+1,bd.maxby);
+			for(var i=ya;i<=yb;i+=2){
 				if(this.vnop(headers[0]+i,this.NONE)){
 					var redx = 0, redw = 0;
-					if     ((bd.lap===3 && (i===0||(i===k.qrows&&(i&1)))) || (bd.lap===0 && (i===k.qrows&&!(i&1)))){ redx=1; redw=2;}
-					else if((bd.lap===2 && (i===0||(i===k.qrows&&(i&1)))) || (bd.lap===1 && (i===k.qrows&&!(i&1)))){ redx=1; redw=1;}
-					else if((bd.lap===1 && (i===0||(i===k.qrows&&(i&1)))) || (bd.lap===2 && (i===k.qrows&&!(i&1)))){ redx=0; redw=1;}
-					g.fillRect(k.p0.x+(x1+redx)*this.bw-lm, k.p0.y+i*this.ch-lm, (x2-x1+1-redw)*this.bw+1, lw);
+					if     ((bd.lap===3 && (i===0||(i===k.qrows&&((i>>1)&1)))) || (bd.lap===0 && (i===k.qrows&&!((i>>1)&1)))){ redx=1; redw=2;}
+					else if((bd.lap===2 && (i===0||(i===k.qrows&&((i>>1)&1)))) || (bd.lap===1 && (i===k.qrows&&!((i>>1)&1)))){ redx=1; redw=1;}
+					else if((bd.lap===1 && (i===0||(i===k.qrows&&((i>>1)&1)))) || (bd.lap===2 && (i===k.qrows&&!((i>>1)&1)))){ redx=0; redw=1;}
+					g.fillRect(k.p0.x+(x1+redx)*this.bw-lm, k.p0.y+i*this.bh-lm, (x2-x1+1-redw)*this.bw+1, lw);
 				}
-				if(i>k.qrows-1){ break;}
+				if(i>bd.maxby){ break;}
 
 				var xs = xa;
 				if((bd.lap===2 || bd.lap===3) ^ ((i&1)!==(xs&1))){ xs++;}
 				for(var j=xs;j<=xb;j+=2){
 					if(this.vnop([headers[1],i,j].join(""),this.NONE)){
-						g.fillRect(k.p0.x+j*this.bw-lm, k.p0.y+i*this.ch-lm, lw, this.ch+1);
+						g.fillRect(k.p0.x+j*this.bw-lm, k.p0.y+i*this.bh-lm, lw, this.ch+1);
 					}
 				}
 			}
@@ -529,7 +516,7 @@ Puzzles.tawa.prototype = {
 
 		pc.flushCanvas_tawa = function(x1,y1,x2,y2){
 			if(g.use.canvas){
-				if(x1<=0 && y1<=0 && x2>=tc.maxx+1 && y2>=k.qrows-1){
+				if(x1<=bd.minbx && y1<=bd.minby && x2>=bd.maxbx && y2>=bd.maxby){
 					this.flushCanvasAll();
 				}
 				else{
@@ -557,8 +544,6 @@ Puzzles.tawa.prototype = {
 			var barray = this.outbstr.split("/");
 
 			bd.setLap(parseInt(barray[0]));
-			tc.setAlign();	// tc.maxx等を設定し直す
-
 			bd.initBoardSize(this.uri.cols, this.uri.rows);
 
 			this.outbstr = barray[1];
@@ -573,8 +558,8 @@ Puzzles.tawa.prototype = {
 		fio.decodeData = function(){
 			bd.setLap(parseInt(this.readLine()));
 			var n=0, item = this.getItemList(k.qrows);
-			for(var by=1;by<2*k.qrows;by+=2){
-				for(var bx=0;bx<=tc.maxx;bx++){
+			for(var by=bd.minby+1;by<bd.maxby;by+=2){
+				for(var bx=0;bx<=bd.maxbx;bx++){
 					var cc=bd.cnum(bx,by);
 					if(cc==-1){ continue;}
 					if     (item[n]=="#"){ bd.setBlack(cc);}
@@ -589,8 +574,8 @@ Puzzles.tawa.prototype = {
 			this.datastr = bd.lap+"/";
 
 			var bstr = "";
-			for(var by=1;by<2*k.qrows;by+=2){
-				for(var bx=0;bx<=tc.maxx;bx++){
+			for(var by=bd.minby+1;by<bd.maxby;by+=2){
+				for(var bx=0;bx<=bd.maxbx;bx++){
 					var cc=bd.cnum(bx,by);
 					if(cc==-1){ continue;}
 					if     (bd.QnC(cc)==-2){ bstr += "- ";}
@@ -627,9 +612,9 @@ Puzzles.tawa.prototype = {
 
 		ans.checkThreeBlackCells = function(){
 			var result = true;
-			for(var by=1;by<2*k.qrows;by+=2){
+			for(var by=bd.minby+1;by<bd.maxby;by+=2){
 				var clist = [];
-				for(var bx=0;bx<=tc.maxx;bx++){
+				for(var bx=0;bx<=bd.maxbx;bx++){
 					var cc = bd.cnum(bx,by);
 					if(cc==-1){ continue;}
 					else if(bd.isWhite(cc) || bd.QnC(cc)!=-1){
@@ -673,7 +658,7 @@ Puzzles.tawa.prototype = {
 		ans.checkUnderCells = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.isWhite(c) || bd.cell[c].by===2*k.qrows-1){ continue;}
+				if(bd.isWhite(c) || bd.cell[c].by===bd.maxby-1){ continue;}
 
 				if(bd.isWhite(bd.cnum(bd.cell[c].bx-1,bd.cell[c].by+2)) &&
 				   bd.isWhite(bd.cnum(bd.cell[c].bx+1,bd.cell[c].by+2)))

@@ -86,14 +86,14 @@ Puzzles.kramma.prototype = {
 					var bx1, bx2, by1, by2;
 					if(bd.border[id].bx&1){
 						var bx = bd.border[id].bx;
-						while(bx>0        ){ if(bd.QnX(bd.xnum(bx-1,bd.border[id].by))===1){ break;} bx-=2;} bx1 = bx;
-						while(bx<2*k.qcols){ if(bd.QnX(bd.xnum(bx+1,bd.border[id].by))===1){ break;} bx+=2;} bx2 = bx;
+						while(bx>bd.minbx){ if(bd.QnX(bd.xnum(bx-1,bd.border[id].by))===1){ break;} bx-=2;} bx1 = bx;
+						while(bx<bd.maxbx){ if(bd.QnX(bd.xnum(bx+1,bd.border[id].by))===1){ break;} bx+=2;} bx2 = bx;
 						by1 = by2 = bd.border[id].by;
 					}
 					else if(bd.border[id].by&1){
 						var by = bd.border[id].by;
-						while(by>0        ){ if(bd.QnX(bd.xnum(bd.border[id].bx,by-1))===1){ break;} by-=2;} by1 = by;
-						while(by<2*k.qrows){ if(bd.QnX(bd.xnum(bd.border[id].bx,by+1))===1){ break;} by+=2;} by2 = by;
+						while(by>bd.minby){ if(bd.QnX(bd.xnum(bd.border[id].bx,by-1))===1){ break;} by-=2;} by1 = by;
+						while(by<bd.maxby){ if(bd.QnX(bd.xnum(bd.border[id].bx,by+1))===1){ break;} by+=2;} by2 = by;
 						bx1 = bx2 = bd.border[id].bx;
 					}
 					idlist = [];
@@ -203,8 +203,8 @@ Puzzles.kramma.prototype = {
 
 		ans.checkLcntCurve = function(){
 			var result = true;
-			for(var bx=2,maxx=2*k.qcols-2;bx<=maxx;bx+=2){
-				for(var by=2,maxy=2*k.qrows-2;by<=maxy;by+=2){
+			for(var bx=bd.minbx+2;bx<=bd.maxbx-2;bx+=2){
+				for(var by=bd.minby+2;by<=bd.maxby-2;by+=2){
 					var xc = bd.xnum(bx,by);
 					if(area.lcntCross(xc)===2 && bd.QnX(xc)!==1){
 						if(    !(bd.QaB(bd.bnum(bx  ,by-1))===1 && bd.QaB(bd.bnum(bx  ,by+1))===1)

@@ -374,7 +374,7 @@ LineManager.prototype = {
 		while(1){
 			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 			if((bx+by)%2===0){
-				var cc = (k.isCenterLine?bd.cnum:bd.xnum)(bx,by);
+				var cc = (k.isCenterLine?bd.cnum:bd.xnum).call(bd,bx,by);
 				if(cc===-1){ break;}
 				else if(this.lcnt[cc]>=3){
 					if(!this.iscrossing(cc)){
@@ -498,11 +498,13 @@ AreaManager.prototype = {
 
 		// lcnt•Ï”‰Šú‰»
 		this.lcnt = [];
-		for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){
-			this.lcnt[c]=0;
-			if(k.isoutsideborder===0){
-				var xx=c%(k.qcols+1), xy=mf(c/(k.qcols+1));
-				if(xx===0 || xx===k.qcols || xy===0 || xy===k.qrows){ this.lcnt[c]=2;}
+		for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){ this.lcnt[c]=0;}
+
+		if(k.isoutsideborder===0){
+			for(var by=bd.minby;by<=bd.maxby;by+=2){
+				for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
+					if(bx===bd.minbx || bx===bd.maxbx || by===bd.minby || by===bd.maxby){ this.lcnt[c]=2;}
+				}
 			}
 		}
 
@@ -644,7 +646,7 @@ AreaManager.prototype = {
 		}
 	},
 	setTopOfRoom : function(roomid){
-		var cc=-1, bx=2*k.qcols, by=2*k.qrows;
+		var cc=-1, bx=bd.maxbx, by=bd.maxby;
 		var clist = this.room[roomid].clist;
 		for(var i=0;i<clist.length;i++){
 			var tc = bd.cell[clist[i]];

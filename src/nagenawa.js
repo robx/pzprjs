@@ -193,7 +193,7 @@ Puzzles.nagenawa.prototype = {
 			return result;
 		};
 		ans.isLoopRect = function(list){
-			var x1=2*k.qcols; var x2=0; var y1=2*k.qrows; var y2=0;
+			var x1=bd.maxbx, x2=bd.minbx, y1=bd.maxby, y2=bd.minby;
 			for(var i=0;i<list.length;i++){
 				if(x1>bd.border[list[i]].bx){ x1=bd.border[list[i]].bx;}
 				if(x2<bd.border[list[i]].bx){ x2=bd.border[list[i]].bx;}

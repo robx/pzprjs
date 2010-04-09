@@ -139,18 +139,18 @@ Puzzles.sudoku.prototype = {
 			var block=mf(Math.sqrt(max)+0.1);
 			var headers = ["bbx_", "bby_"];
 
-			if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
+			if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
+			if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
 
 			g.fillStyle = "black";
 			for(var i=1;i<block;i++){
 				if(x1-1<=i*block&&i*block<=x2+1){ if(this.vnop(headers[0]+i,this.NONE)){
-					g.fillRect(k.p0.x+i*block*this.cw-lw+1, k.p0.y+y1*this.ch-lw+1, lw, (y2-y1+1)*this.ch+2*lw-1);
+					g.fillRect(k.p0.x+i*block*this.cw-lw+1, k.p0.y+y1*this.bh-lw+1, lw, (y2-y1+2)*this.bh+2*lw-1);
 				}}
 			}
 			for(var i=1;i<block;i++){
 				if(y1-1<=i*block&&i*block<=y2+1){ if(this.vnop(headers[1]+i,this.NONE)){
-					g.fillRect(k.p0.x+x1*this.cw-lw+1, k.p0.y+i*block*this.ch-lw+1, (x2-x1+1)*this.cw+2*lw-1, lw);
+					g.fillRect(k.p0.x+x1*this.bw-lw+1, k.p0.y+i*block*this.ch-lw+1, (x2-x1+2)*this.bw+2*lw-1, lw);
 				}}
 			}
 		};

@@ -174,34 +174,36 @@ Puzzles.icebarn.prototype = {
 		}
 
 		menu.ex.adjustSpecial = function(type,key){
+			var d = {xx:(bd.minbx+bd.minbx), yy:(bd.minby+bd.minby)};
+
 			um.disableRecord();
 			var ibx=bd.border[bd.arrowin ].bx, iby=bd.border[bd.arrowin ].by;
 			var obx=bd.border[bd.arrowout].bx, oby=bd.border[bd.arrowout].by;
 			switch(type){
 			case 1: // è„â∫îΩì]
-				bd.arrowin  = bd.bnum(ibx,2*k.qrows-iby);
-				bd.arrowout = bd.bnum(obx,2*k.qrows-oby);
+				bd.arrowin  = bd.bnum(ibx,d.yy-iby);
+				bd.arrowout = bd.bnum(obx,d.yy-oby);
 				for(var id=0;id<bd.bdmax;id++){
 					if((bd.border[id].bx&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
 			case 2: // ç∂âEîΩì]
-				bd.arrowin  = bd.bnum(2*k.qcols-ibx,iby);
-				bd.arrowout = bd.bnum(2*k.qcols-obx,oby);
+				bd.arrowin  = bd.bnum(d.xx-ibx,iby);
+				bd.arrowout = bd.bnum(d.xx-obx,oby);
 				for(var id=0;id<bd.bdmax;id++){
 					if((bd.border[id].by&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
 			case 3: // âE90ÅãîΩì]
-				bd.arrowin  = bd.bnum2(2*k.qrows-iby,ibx,k.qrows,k.qcols);
-				bd.arrowout = bd.bnum2(2*k.qrows-oby,obx,k.qrows,k.qcols);
+				bd.arrowin  = bd.bnum2(d.yy-iby,ibx,k.qrows,k.qcols);
+				bd.arrowout = bd.bnum2(d.yy-oby,obx,k.qrows,k.qcols);
 				for(var id=0;id<bd.bdmax;id++){
 					if((bd.border[id].bx&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
 			case 4: // ç∂90ÅãîΩì]
-				bd.arrowin  = bd.bnum2(iby,2*k.qcols-ibx,k.qrows,k.qcols);
-				bd.arrowout = bd.bnum2(oby,2*k.qcols-obx,k.qrows,k.qcols);
+				bd.arrowin  = bd.bnum2(iby,d.xx-ibx,k.qrows,k.qcols);
+				bd.arrowout = bd.bnum2(oby,d.xx-obx,k.qrows,k.qcols);
 				for(var id=0;id<bd.bdmax;id++){
 					if((bd.border[id].by&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
@@ -295,17 +297,17 @@ Puzzles.icebarn.prototype = {
 
 			g.fillStyle = (bd.border[bd.arrowin].error===3 ? this.errcolor1 : this.Cellcolor);
 			var bx = bd.border[bd.arrowin].bx, by = bd.border[bd.arrowin].by;
-			if     (by===0)        { this.dispString(bd.ainobj, "IN", ((bx+1.3)/2)*this.cw+3 , ((by+0.5)/2)*this.ch-5);}
-			else if(by===2*k.qrows){ this.dispString(bd.ainobj, "IN", ((bx+1.3)/2)*this.cw+3 , ((by+2.0)/2)*this.ch+12);}
-			else if(bx===0)        { this.dispString(bd.ainobj, "IN", ((bx+1.0)/2)*this.cw-12, ((by+1.0)/2)*this.ch-7);}
-			else if(bx===2*k.qcols){ this.dispString(bd.ainobj, "IN", ((bx+2.0)/2)*this.cw+6 , ((by+1.0)/2)*this.ch-7);}
+			if     (by===bd.minby){ this.dispString(bd.ainobj, "IN", ((bx+1.3)/2)*this.cw+3 , ((by+0.5)/2)*this.ch-5);}
+			else if(by===bd.maxby){ this.dispString(bd.ainobj, "IN", ((bx+1.3)/2)*this.cw+3 , ((by+2.0)/2)*this.ch+12);}
+			else if(bx===bd.minbx){ this.dispString(bd.ainobj, "IN", ((bx+1.0)/2)*this.cw-12, ((by+1.0)/2)*this.ch-7);}
+			else if(bx===bd.maxbx){ this.dispString(bd.ainobj, "IN", ((bx+2.0)/2)*this.cw+6 , ((by+1.0)/2)*this.ch-7);}
 
 			g.fillStyle = (bd.border[bd.arrowout].error===3 ? this.errcolor1 : this.Cellcolor);
 			var bx = bd.border[bd.arrowout].bx, by = bd.border[bd.arrowout].by;
-			if     (by===0)        { this.dispString(bd.aoutobj, "OUT", ((bx+1.0)/2)*this.cw-2 , ((by+0.5)/2)*this.ch-5);}
-			else if(by===2*k.qrows){ this.dispString(bd.aoutobj, "OUT", ((bx+1.0)/2)*this.cw-2 , ((by+2.0)/2)*this.ch+12);}
-			else if(bx===0)        { this.dispString(bd.aoutobj, "OUT", ((bx+0.5)/2)*this.cw-19, ((by+1.0)/2)*this.ch-7);}
-			else if(bx===2*k.qcols){ this.dispString(bd.aoutobj, "OUT", ((bx+2.0)/2)*this.cw+5 , ((by+1.0)/2)*this.ch-7);}
+			if     (by===bd.minby){ this.dispString(bd.aoutobj, "OUT", ((bx+1.0)/2)*this.cw-2 , ((by+0.5)/2)*this.ch-5);}
+			else if(by===bd.maxby){ this.dispString(bd.aoutobj, "OUT", ((bx+1.0)/2)*this.cw-2 , ((by+2.0)/2)*this.ch+12);}
+			else if(bx===bd.minbx){ this.dispString(bd.aoutobj, "OUT", ((bx+0.5)/2)*this.cw-19, ((by+1.0)/2)*this.ch-7);}
+			else if(bx===bd.maxbx){ this.dispString(bd.aoutobj, "OUT", ((bx+2.0)/2)*this.cw+5 , ((by+1.0)/2)*this.ch-7);}
 		};
 		pc.dispString = function(el, text, px, py){
 			el.style.fontSize = (this.cw*0.55)+'px';
@@ -374,7 +376,7 @@ Puzzles.icebarn.prototype = {
 		enc.encodeIcebarn = function(){
 			var cm = "";
 			var num=0, pass=0;
-			for(i=0;i<k.qcols*k.qrows;i++){
+			for(i=0;i<bd.cellmax;i++){
 				if(bd.QuC(i)==6){ pass+=Math.pow(2,4-num);}
 				num++; if(num==5){ cm += pass.toString(32); num=0; pass=0;}
 			}
@@ -467,7 +469,7 @@ Puzzles.icebarn.prototype = {
 		enc.encodeIcebarn_old1 = function(){
 			var cm = "";
 			var num=0, pass=0;
-			for(i=0;i<k.qcols*k.qrows;i++){
+			for(i=0;i<bd.cellmax;i++){
 				if(bd.QuC(i)==6){ pass+=Math.pow(2,3-num);}
 				num++; if(num==4){ cm += pass.toString(16); num=0; pass=0;}
 			}
@@ -475,16 +477,16 @@ Puzzles.icebarn.prototype = {
 			cm += "/";
 
 			var array = [];
-			for(var c=0;c<k.qcols*k.qrows;c++){ if(bd.cell[c].by<2*k.qrows && bd.getArrow(bd.db(c))==1){ array.push(c);} }
+			for(var c=0;c<bd.cellmax;c++){ if(bd.cell[c].by<bd.maxby && bd.getArrow(bd.db(c))==1){ array.push(c);} }
 			cm += (array.join("+") + "/");
 			array = [];
-			for(var c=0;c<k.qcols*k.qrows;c++){ if(bd.cell[c].by<2*k.qrows && bd.getArrow(bd.db(c))==2){ array.push(c);} }
+			for(var c=0;c<bd.cellmax;c++){ if(bd.cell[c].by<bd.maxby && bd.getArrow(bd.db(c))==2){ array.push(c);} }
 			cm += (array.join("+") + "/");
 			array = [];
-			for(var c=0;c<k.qcols*k.qrows;c++){ if(bd.cell[c].bx<2*k.qcols && bd.getArrow(bd.rb(c))==1){ array.push(c);} }
+			for(var c=0;c<bd.cellmax;c++){ if(bd.cell[c].bx<bd.maxbx && bd.getArrow(bd.rb(c))==1){ array.push(c);} }
 			cm += (array.join("+") + "/");
 			array = [];
-			for(var c=0;c<k.qcols*k.qrows;c++){ if(bd.cell[c].bx<2*k.qcols && bd.getArrow(bd.rb(c))==2){ array.push(c);} }
+			for(var c=0;c<bd.cellmax;c++){ if(bd.cell[c].bx<bd.maxbx && bd.getArrow(bd.rb(c))==2){ array.push(c);} }
 			cm += (array.join("+") + "/");
 
 			cm += ((bd.arrowin-bd.bdinside)+"/"+(bd.arrowout-bd.bdinside));
@@ -609,8 +611,8 @@ Puzzles.icebarn.prototype = {
 		ans.searchLine = function(){
 			var bx=bd.border[bd.arrowin].bx, by=bd.border[bd.arrowin].by;
 			var dir=0;
-			if     (by==0){ dir=2;}else if(by==2*k.qrows){ dir=1;}
-			else if(bx==0){ dir=4;}else if(bx==2*k.qcols){ dir=3;}
+			if     (by===bd.minby){ dir=2;}else if(by===bd.maxby){ dir=1;}
+			else if(bx===bd.minbx){ dir=4;}else if(bx===bd.maxbx){ dir=3;}
 			if(dir==0){ return -1;}
 			if(!bd.isLine(bd.arrowin)){ bd.sErB([bd.arrowin],3); return 1;}
 

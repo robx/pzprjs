@@ -333,8 +333,8 @@ KeyEvent.prototype = {
 			else if(bd.dn(cc)==-1 || bd.QuC(bd.dn(cc))==51){ return 2;}
 		}
 		else if(ex!=-1){
-			if	  ((bd.excell[ex].by===-1 && bd.QuC(bd.excell[ex].bx)===51) ||
-				   (bd.excell[ex].bx===-1 && bd.QuC((bd.excell[ex].by>>1)*k.qcols)===51)){ return -1;}
+			if	  ((bd.excell[ex].by===-1 && bd.QuC(bd.cnum(bd.excell[ex].bx,1))===51) ||
+				   (bd.excell[ex].bx===-1 && bd.QuC(bd.cnum(1,bd.excell[ex].by))===51)){ return -1;}
 			else if(bd.excell[ex].by===-1){ return 4;}
 			else if(bd.excell[ex].bx===-1){ return 2;}
 		}

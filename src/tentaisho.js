@@ -206,7 +206,7 @@ Puzzles.tentaisho.prototype = {
 		};
 
 		bd.snum = function(sx,sy){
-			if(sx<=0 || 2*k.qcols<=sx || sy<=0 || 2*k.qrows<=sy){ return -1;}
+			if(sx<=bd.minbx || bd.maxbx<=sx || sy<=bd.minby || bd.maxby<=sy){ return -1;}
 			return ((sx-1)+(sy-1)*(2*k.qcols-1));
 		};
 		bd.getStar = function(id){
@@ -302,10 +302,10 @@ Puzzles.tentaisho.prototype = {
 
 			g.lineWidth = Math.max(this.cw*0.04, 1);
 			var headers = ["s_star1_", "s_star2_"];
-			for(var y=2*y1-2;y<=2*y2+2;y++){
-				if(y<=0){ y=0; continue;} if(2*k.qrows<=y){ break;}
-				for(var x=2*x1-2;x<=2*x2+2;x++){
-					if(x<=0){ x=0; continue;} if(2*k.qcols<=x){ break;}
+			for(var y=y1-1;y<=y2+1;y+=2){
+				if(y<=bd.minby){ y=bd.minby; continue;} if(bd.maxby<=y){ break;}
+				for(var x=x1-1;x<=x2+1;x+=2){
+					if(x<=bd.minbx){ x=bd.minbx; continue;} if(bd.maxbx<=x){ break;}
 					var id = bd.snum(x,y);
 
 					if(bd.getStar(id)===1){
