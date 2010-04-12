@@ -65,7 +65,7 @@ Puzzles.yajirin.prototype = {
 			if(k.editmode) this.inputdirec();
 			else if(k.playmode){
 				if(this.btn.Left) this.inputLine();
-				else if(this.btn.Right) this.inputpeke();
+				else if(this.btn.Right) this.inputcell();
 			}
 		};
 		mv.mouseup = function(){
@@ -78,7 +78,7 @@ Puzzles.yajirin.prototype = {
 			if(k.editmode) this.inputdirec();
 			else if(k.playmode){
 				if(this.btn.Left) this.inputLine();
-				else if(this.btn.Right) this.inputpeke();
+				else if(this.btn.Right) this.inputcell();
 			}
 		};
 
