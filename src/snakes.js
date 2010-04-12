@@ -51,6 +51,10 @@ Puzzles.snakes.prototype = {
 	},
 	menufix : function(){
 		menu.addUseToFlags();
+
+		pp.addCheck('snakebd','setting',false,'‚Ö‚Ñ‹«ŠEü—LŒø','Enable snake border');
+		pp.setLabel('snakebd', '‚Ö‚Ñ‚Ìü‚è‚É‹«ŠEü‚ğ•\¦‚·‚é', 'Draw border around a snake.');
+		pp.funcs['snakebd'] = function(){ pc.paintAll();};
 	},
 
 	//---------------------------------------------------------
@@ -182,6 +186,8 @@ Puzzles.snakes.prototype = {
 		};
 
 		pc.setBorderColor = function(id){
+			if(!pp.getVal('snakebd')){ return false;}
+
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1!==-1 && cc2!==-1 &&
 			   (bd.cell[cc1].qnum===-1 && bd.cell[cc2].qnum===-1) &&
