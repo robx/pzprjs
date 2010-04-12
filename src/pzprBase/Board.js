@@ -380,7 +380,7 @@ Board.prototype = {
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].subclear(i);}
 	},
 
-	errclear : function(){
+	errclear : function(isrepaint){
 		if(!ans.errDisp){ return;}
 
 		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].error=0;}
@@ -389,7 +389,7 @@ Board.prototype = {
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].error=0;}
 
 		ans.errDisp = false;
-		pc.paintAll();
+		if(isrepaint!==false){ pc.paintAll();}
 	},
 
 	//---------------------------------------------------------------------------

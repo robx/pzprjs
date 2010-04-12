@@ -212,7 +212,7 @@ MouseEvent.prototype = {
 		if(k.NumberIsWhite==1 && bd.QnC(cc)!=-1 && (this.inputData==1||(this.inputData==2 && pc.bcolor=="white"))){ return;}
 		if(k.RBBlackCell==1 && this.inputData==1){
 			if(this.firstPos.x == -1 && this.firstPos.y == -1){ this.firstPos = new Pos(bd.cell[cc].bx, bd.cell[cc].by);}
-			if((this.firstPos.x+this.firstPos.y)&1 != (bd.cell[cc].bx+bd.cell[cc].by)&1){ return;}
+			if( (((this.firstPos.x>>1)+(this.firstPos.y>>1))&1) != (((bd.cell[cc].bx>>1)+(bd.cell[cc].by>>1))&1) ){ return;}
 		}
 
 		(this.inputData==1?bd.setBlack:bd.setWhite).apply(bd,[cc]);

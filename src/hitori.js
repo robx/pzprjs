@@ -48,6 +48,10 @@ Puzzles.hitori.prototype = {
 	menufix : function(){
 		menu.addUseToFlags();
 		menu.addRedBlockRBToFlags();
+
+		pp.addCheck('plred','setting',false, 'èdï°êîéöÇï\é¶', 'Show overlapped number');
+		pp.setLabel('plred', 'èdï°ÇµÇƒÇ¢ÇÈêîéöÇê‘Ç≠Ç∑ÇÈ', 'Show overlapped number as red.');
+		pp.funcs['plred'] = function(){ pc.paintAll();};
 	},
 
 	//---------------------------------------------------------
@@ -91,11 +95,42 @@ Puzzles.hitori.prototype = {
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawNumbers_hitori(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
+		};
+
+		pc.drawNumbers_hitori = function(x1,y1,x2,y2){
+			this.vinc('cell_number', 'auto');
+
+			if(!pp.getVal('plred') || ans.errDisp){
+				var clist = this.cellinside(x1,y1,x2,y2);
+				for(var i=0;i<clist.length;i++){ this.dispnumCell(clist[i]);}
+			}
+			else{
+				ans.inCheck = true;
+				ans.checkRowsCols(ans.isDifferentNumberInClist_hitori, bd.QnC);
+				ans.inCheck = false;
+
+				var clist = this.cellinside(bd.minbx, bd.minby, bd.maxbx, bd.maxby);
+				for(var i=0;i<clist.length;i++){
+					var c = clist[i], num = bd.getNum(c), obj = bd.cell[c];
+					if(num===-1){ this.hideEL(obj.numobj); continue;}
+					var text = (num>=0 ? num.toString() : "?");
+
+					var color = this.fontcolor;
+					if(bd.cell[c].qans===1){ color = this.BCell_fontcolor;}
+					else if(bd.cell[c].error===1){ color = "red";}
+
+					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+					this.dispnum(obj.numobj, 1, text, 0.8, color, obj.px, obj.py);
+				}
+				
+				ans.errDisp = true;
+				bd.errclear(false);
+			}
 		};
 	},
 
@@ -191,10 +226,10 @@ Puzzles.hitori.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.isDifferentNumberInClist_hitori = function(clist_all, numfunc){
-				var clist = [];
+			var clist = [];
 			for(var i=0;i<clist_all.length;i++){
 				if(bd.isWhite(clist_all[i])){ clist.push(clist_all[i]);}
-				}
+			}
 			return this.isDifferentNumberInClist(clist, numfunc);
 		};
 	}
