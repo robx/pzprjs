@@ -225,16 +225,9 @@ Puzzles.pipelink.prototype = {
 		};
 
 		line.repaintParts = function(idlist){
-			var cdata=[];
-			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
-			for(var i=0;i<idlist.length;i++){
-				cdata[bd.border[idlist[i]].cellcc[0]] = true;
-				cdata[bd.border[idlist[i]].cellcc[1]] = true;
-			}
-			for(var c=0;c<cdata.length;c++){
-				if(cdata[c]){
-					pc.drawLineParts1(c);
-				}
+			var clist = this.getClistFromIdlist(idlist);
+			for(var i=0;i<clist.length;i++){
+				pc.drawLineParts1(clist[i]);
 			}
 		};
 	},

@@ -201,10 +201,10 @@ Puzzles.reflect.prototype = {
 				g.fillStyle = this.Cellcolor;
 
 				if(this.vnop(vids[0],this.NONE)){
-					g.fillRect(bd.cell[id].cpx-lm, bd.cell[id].cpy-mgn,  lw+2, this.ch-2*mgn);
+					g.fillRect(bd.cell[id].cpx-lm, bd.cell[id].cpy-mgn,  lw+2, 2*mgn);
 				}
 				if(this.vnop(vids[1],this.NONE)){
-					g.fillRect(bd.cell[id].cpx-mgn, bd.cell[id].cpy-lm,  this.cw-2*mgn, lw+2);
+					g.fillRect(bd.cell[id].cpx-mgn, bd.cell[id].cpy-lm,  2*mgn, lw+2);
 				}
 			}
 			else{ this.vhide(vids);}
@@ -212,16 +212,9 @@ Puzzles.reflect.prototype = {
 		pc.isdispnumCell = function(id){ return ((bd.QuC(id)>=2 && bd.QuC(id)<=5) && bd.QnC(id)>0);};
 
 		line.repaintParts = function(idlist){
-			var cdata=[];
-			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
-			for(var i=0;i<idlist.length;i++){
-				cdata[bd.border[idlist[i]].cellcc[0]] = true;
-				cdata[bd.border[idlist[i]].cellcc[1]] = true;
-			}
-			for(var c=0;c<cdata.length;c++){
-				if(cdata[c]){
-					pc.draw101_1(c);
-				}
+			var clist = this.getClistFromIdlist(idlist);
+			for(var i=0;i<clist.length;i++){
+				pc.draw101_1(clist[i]);
 			}
 		};
 	},

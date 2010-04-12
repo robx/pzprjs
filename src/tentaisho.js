@@ -302,9 +302,9 @@ Puzzles.tentaisho.prototype = {
 
 			g.lineWidth = Math.max(this.cw*0.04, 1);
 			var headers = ["s_star1_", "s_star2_"];
-			for(var y=y1-1;y<=y2+1;y+=2){
+			for(var y=y1-1;y<=y2+1;y++){
 				if(y<=bd.minby){ y=bd.minby; continue;} if(bd.maxby<=y){ break;}
-				for(var x=x1-1;x<=x2+1;x+=2){
+				for(var x=x1-1;x<=x2+1;x++){
 					if(x<=bd.minbx){ x=bd.minbx; continue;} if(bd.maxbx<=x){ break;}
 					var id = bd.snum(x,y);
 

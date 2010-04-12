@@ -178,7 +178,7 @@ Puzzles.snakes.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			this.drawTCell(x1,y1,x2,y2);
+			this.drawCursor(x1,y1,x2,y2);
 		};
 
 		pc.setBorderColor = function(id){

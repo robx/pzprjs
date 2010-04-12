@@ -77,7 +77,7 @@ Puzzles.factors.prototype = {
 		};
 
 		kp.generate(0, true, true, '');
-		kp.kpinput = function(ca){ kc.key_factors(ca,Math.max(k.qcols,k.qrows));};
+		kp.kpinput = function(ca){ kc.key_inputqnum(ca,Math.max(k.qcols,k.qrows));};
 
 		bd.nummaxfunc = function(cc){ return k.editmode?999999:Math.max(k.qcols,k.qrows);};
 		bd.setNum = function(c,val){
@@ -104,7 +104,7 @@ Puzzles.factors.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			this.drawTCell(x1,y1,x2+1,y2+1);
+			this.drawCursor(x1,y1,x2,y2);
 		};
 		pc.drawNumbers_factors = function(x1,y1,x2,y2){
 			this.vinc('cell_number', 'auto');

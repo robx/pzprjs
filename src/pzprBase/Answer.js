@@ -350,7 +350,7 @@ AnsCheck.prototype = {
 
 		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isBorder(id)){ continue;}
-			var cc1 = bd.border[id].cellcc[0], cc1 = bd.border[id].cellcc[1];
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1==-1 || cc2==-1){ continue;}
 			var r1=rinfo.id[cc1], r2=rinfo.id[cc2];
 			try{
@@ -542,7 +542,8 @@ AnsCheck.prototype = {
 			for(var bx=0;bx<=bd.maxbx;bx+=2){
 				if(k.isoutsidecross==0 && k.isborderAsLine==0 &&
 				   (bx===bd.minbx||by===bd.minby||bx===bd.maxbx||by===bd.maxby)){ continue;}
-				var lcnts = (!k.isborderAsLine?area.lcnt[i]:line.lcnt[i]);
+				var id = (bx>>1)+(by>>1)*(k.qcols+1);
+				var lcnts = (!k.isborderAsLine?area.lcnt[id]:line.lcnt[id]);
 				if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(bx,by))==1) || (bp==2&&bd.QnX(bd.xnum(bx,by))!=1) )){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}

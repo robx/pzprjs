@@ -188,7 +188,7 @@ Puzzles.slither.prototype = {
 					if(bx < x1-1 || x2+1 < bx){ continue;}
 					if(by < y1-1 || y2+1 < by){ continue;}
 
-					this.drawBaseMark1(bx+by*(k.qcols+1));
+					this.drawBaseMark1((bx>>1)+(by>>1)*(k.qcols+1));
 				}
 			}
 		};
@@ -204,14 +204,9 @@ Puzzles.slither.prototype = {
 		};
 
 		line.repaintParts = function(idlist){
-			var cdata=[];
-			for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){ cdata[c]=false;}
-			for(var i=0;i<idlist.length;i++){
-				cdata[bd.border[idlist[i]].crosscc[0]] = true;
-				cdata[bd.border[idlist[i]].crosscc[1]] = true;
-			}
-			for(var c=0;c<cdata.length;c++){
-				if(cdata[c]){ pc.drawBaseMark1(c);}
+			var xlist = this.getXlistFromIdlist(idlist);
+			for(var i=0;i<xlist.length;i++){
+				pc.drawBaseMark1(xlist[i]);
 			}
 		};
 	},

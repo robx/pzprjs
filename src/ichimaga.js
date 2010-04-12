@@ -109,17 +109,10 @@ Puzzles.ichimaga.prototype = {
 		};
 
 		line.repaintParts = function(idlist){
-			var cdata=[];
-			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
-			for(var i=0;i<idlist.length;i++){
-				cdata[bd.border[idlist[i]].cellcc[0]] = true;
-				cdata[bd.border[idlist[i]].cellcc[1]] = true;
-			}
-			for(var c=0;c<cdata.length;c++){
-				if(cdata[c]){
-					pc.drawCircle1AtNumber(c);
-					pc.dispnumCell(c);
-				}
+			var clist = this.getClistFromIdlist(idlist);
+			for(var i=0;i<clist.length;i++){
+				pc.drawCircle1AtNumber(clist[i]);
+				pc.dispnumCell(clist[i]);
 			}
 		};
 		line.iscrossing = function(cc){ return (bd.QnC(cc)===-1);};

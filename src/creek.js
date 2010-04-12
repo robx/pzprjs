@@ -105,7 +105,7 @@ Puzzles.creek.prototype = {
 			this.drawTarget_creek(x1,y1,x2,y2);
 		};
 		pc.drawTarget_creek = function(x1,y1,x2,y2){
-			this.drawTCross(x1,y1,x2+1,y2+1,k.editmode);
+			this.drawCursor(x1,y1,x2,y2,true,k.editmode);
 		};
 	},
 

@@ -100,6 +100,7 @@ Puzzles.shwolf.prototype = {
 					for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
 
 					for(var i=0;i<idlist.length;i++){
+						if(idlist[i]===-1){ continue;}
 						if     (this.inputData==1){ bd.setBorder(idlist[i]);}
 						else if(this.inputData==0){ bd.removeBorder(idlist[i]);}
 						pc.paintBorder(idlist[i]);

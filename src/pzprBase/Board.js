@@ -286,8 +286,8 @@ Board.prototype = {
 			obj.bx=-1;
 			obj.by=-1;
 			if(k.isextendcell===1){
-				if(i>=0 && i<k.qcols){ obj.bx=id*2+1; obj.by=-1;     continue;} i-=k.qcols;
-				if(i>=0 && i<k.qrows){ obj.bx=-1;     obj.by=id*2+1; continue;} i-=k.qrows;
+				if(i>=0 && i<k.qcols){ obj.bx=i*2+1; obj.by=-1;     continue;} i-=k.qcols;
+				if(i>=0 && i<k.qrows){ obj.bx=-1;     obj.by=i*2+1; continue;} i-=k.qrows;
 			}
 			else if(k.isextendcell===2){
 				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;       obj.by=-1;          continue;} i-=k.qcols;
@@ -455,7 +455,7 @@ Board.prototype = {
 	// bd.exnum2() (X,Y)‚ÌˆÊ’u‚É‚ ‚éextendCell‚ÌID‚ðA”Õ–Ê‚Ì‘å‚«‚³‚ð(qc~qr)‚ÅŒvŽZ‚µ‚Ä•Ô‚·
 	//---------------------------------------------------------------------------
 	cnum : function(bx,by){
-		if(!this.isinside(bx,by)||(!(bx&1))||(!(by&1))){ return -1;}
+		if(bx<=0||bx>=2*k.qcols||by<=0||by>=2*k.qrows||(!(bx&1))||(!(by&1))){ return -1;}
 		return (bx>>1)+(by>>1)*k.qcols;
 	},
 	cnum2 : function(bx,by,qc,qr){
@@ -463,7 +463,7 @@ Board.prototype = {
 		return (bx>>1)+(by>>1)*qc;
 	},
 	xnum : function(bx,by){
-		if(!this.isinside(bx,by)||(!!(bx&1))||(!!(by&1))){ return -1;}
+		if(bx<0||bx>2*k.qcols||by<0||by>2*k.qrows||(!!(bx&1))||(!!(by&1))){ return -1;}
 		return (bx>>1)+(by>>1)*(k.qcols+1);
 	},
 	xnum2 : function(bx,by,qc,qr){
@@ -496,14 +496,14 @@ Board.prototype = {
 			else if(bx===-1&&by>0&&by<2*qr){ return qc+(by>>1);}
 		}
 		else if(k.isextendcell===2){
-			if     (by===-1&&bx>0&&bx<2*qc){ return (bx>>1);}
-			else if(by===qr&&bx>0&&bx<2*qc){ return qc+(bx>>1);}
-			else if(bx===-1&&by>0&&by<2*qr){ return 2*qc+(by>>1);}
-			else if(bx===qc&&by>0&&by<2*qr){ return 2*qc+qr+(by>>1);}
-			else if(bx===-1&&by===-1){ return 2*qc+2*qr;}
-			else if(bx===qc&&by===-1){ return 2*qc+2*qr+1;}
-			else if(bx===-1&&by===qr){ return 2*qc+2*qr+2;}
-			else if(bx===qc&&by===qr){ return 2*qc+2*qr+3;}
+			if     (by===-1    &&bx>0&&bx<2*qc){ return (bx>>1);}
+			else if(by===2*qr+1&&bx>0&&bx<2*qc){ return qc+(bx>>1);}
+			else if(bx===-1    &&by>0&&by<2*qr){ return 2*qc+(by>>1);}
+			else if(bx===2*qc+1&&by>0&&by<2*qr){ return 2*qc+qr+(by>>1);}
+			else if(bx===-1    &&by===-1){ return 2*qc+2*qr;}
+			else if(bx===2*qc+1&&by===-1){ return 2*qc+2*qr+1;}
+			else if(bx===-1    &&by===qr){ return 2*qc+2*qr+2;}
+			else if(bx===2*qc+1&&by===qr){ return 2*qc+2*qr+3;}
 		}
 		return -1;
 	},

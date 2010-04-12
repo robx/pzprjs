@@ -132,14 +132,9 @@ Puzzles.mejilink.prototype = {
 		};
 
 		line.repaintParts = function(idlist){
-			var cdata=[];
-			for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){ cdata[c]=false;}
-			for(var i=0;i<idlist.length;i++){
-				cdata[bd.border[idlist[i]].crosscc[0]] = true;
-				cdata[bd.border[idlist[i]].crosscc[1]] = true;
-			}
-			for(var c=0;c<cdata.length;c++){
-				if(cdata[c]){ pc.drawBaseMark1(c);}
+			var xlist = this.getXlistFromIdlist(idlist);
+			for(var i=0;i<xlist.length;i++){
+				pc.drawBaseMark1(xlist[i]);
 			}
 		};
 	},

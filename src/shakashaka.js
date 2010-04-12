@@ -82,15 +82,15 @@ Puzzles.shakashaka.prototype = {
 
 			if(k.use==1){
 				if(this.btn.Left){
-					var dx = this.inputPos.x - bd.cell[cc].px;
-					var dy = this.inputPos.y - bd.cell[cc].py;
+					var dx = this.inputPos.x - bd.cell[cc].px + k.p0.x;
+					var dy = this.inputPos.y - bd.cell[cc].py + k.p0.y;
 					if(dx>0&&dx<=k.cwidth/2){
 						if(dy>0&&dy<=k.cheight/2){ this.inputData = 5;}
 						else if  (dy>k.cheight/2){ this.inputData = 2;}
 					}
 					else if(dx>k.cwidth/2){
 						if(dy>0&&dy<=k.cheight/2){ this.inputData = 4;}
-						else i  f(dy>k.cheight/2){ this.inputData = 3;}
+						else if  (dy>k.cheight/2){ this.inputData = 3;}
 					}
 
 					bd.sQaC(cc, (bd.QaC(cc)!=this.inputData?this.inputData:-1));

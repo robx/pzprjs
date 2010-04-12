@@ -361,8 +361,9 @@ Puzzles.shugaku.prototype = {
 			this.vdel(["tbd1_","tbd2_","tbd3_","tbd4_"]);
 			if(inputting){
 				var lw = this.lw, lm = this.lm;
-				var px = k.p0.x+(adj===-1?bd.cell[cc].bx:Math.min(bd.cell[cc].bx,bd.cell[adj].bx))*this.bw;
-				var py = k.p0.y+(adj===-1?bd.cell[cc].by:Math.min(bd.cell[cc].by,bd.cell[adj].by))*this.bh;
+				var bx1 = (adj===-1?bd.cell[cc].bx:Math.min(bd.cell[cc].bx,bd.cell[adj].bx));
+				var by1 = (adj===-1?bd.cell[cc].by:Math.min(bd.cell[cc].by,bd.cell[adj].by));
+				var px = k.p0.x+(bx1-1)*this.bw, py = k.p0.y+(by1-1)*this.bh;
 				var wid = (mv.inputData===4||mv.inputData===5?2:1)*this.cw;
 				var hgt = (mv.inputData===2||mv.inputData===3?2:1)*this.ch;
 

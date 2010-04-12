@@ -163,9 +163,10 @@ MouseEvent.prototype = {
 		return bd.xnum(pos.x,pos.y);
 	},
 	borderpos : function(rc){
-		var pm = rc*k.cwidth, px=(this.inputPos.x+pm), py=(this.inputPos.y+pm);
-		var bx = ((px/k.cwidth)|0)*2  + ((px%k.cwidth <2*pm)?0:1);
-		var by = ((py/k.cheight)|0)*2 + ((py%k.cheight<2*pm)?0:1);
+		// マイナスでもシームレスな値にしたいので、+4して-4する
+		var pm = rc*k.cwidth, px=(this.inputPos.x+pm+2*k.cwidth), py=(this.inputPos.y+pm+2*k.cheight);
+		var bx = ((px/k.cwidth)|0)*2  + ((px%k.cwidth <2*pm)?0:1) - 4;
+		var by = ((py/k.cheight)|0)*2 + ((py%k.cheight<2*pm)?0:1) - 4;
 
 		return new Pos(bx,by);
 	},

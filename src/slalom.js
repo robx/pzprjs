@@ -401,23 +401,16 @@ Puzzles.slalom.prototype = {
 		};
 
 		line.repaintParts = function(idlist){
-			var cdata=[];
-			for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
-			for(var i=0;i<idlist.length;i++){
-				cdata[bd.border[idlist[i]].cellcc[0]] = true;
-				cdata[bd.border[idlist[i]].cellcc[1]] = true;
-			}
-			for(var c=0;c<cdata.length;c++){
-				if(cdata[c]){
-					var id=idlist[i];
-					if(id!==bd.startid){ continue;}
+			var clist = this.getClistFromIdlist(idlist);
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				if(c!==bd.startid){ continue;}
 
-					var bx = bd.border[id].bx, by = bd.border[id].by;
-					pc.drawStartpos(bx-(by&1),by-(bx&1),bx-(by&1),by-(bx&1));
+				var bx = bd.cell[c].bx, by = bd.cell[c].by;
+				pc.drawStartpos(bx,by,bx,by);
 
-					// start‚Íˆê‰ÓŠ‚¾‚¯‚È‚Ì‚ÅA•`‰æ‚µ‚½‚çI—¹‚µ‚Ä‚æ‚¢
-					break;
-				}
+				// start‚Íˆê‰ÓŠ‚¾‚¯‚È‚Ì‚ÅA•`‰æ‚µ‚½‚çI—¹‚µ‚Ä‚æ‚¢
+				break;
 			}
 		};
 

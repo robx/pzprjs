@@ -272,7 +272,7 @@ KeyEvent.prototype = {
 		if(this.chtarget(ca)){ return;}
 
 		var cc = tc.getTCC(), ex = -1;
-		if(cc==-1){ ex = bd.exnum(tc.cursolx,tc.cursoly);}
+		if(cc==-1){ ex = tc.getTEC();}
 		var target = this.detectTarget(cc,ex);
 		if(target==-1 || (cc!=-1 && bd.QuC(cc)==51)){
 			if(ca=='q' && cc!=-1){
@@ -621,6 +621,8 @@ TCell.prototype = {
 	// tc.setTXC() ターゲットの位置をCrossのIDで設定する
 	// tc.getTBC() ターゲットの位置をBorderのIDで取得する
 	// tc.setTBC() ターゲットの位置をBorderのIDで設定する
+	// tc.getTEC() ターゲットの位置をEXCellのIDで取得する
+	// tc.setTEC() ターゲットの位置をEXCellのIDで設定する
 	//---------------------------------------------------------------------------
 	getTCP : function(){ return new Pos(this.cursolx,this.cursoly);},
 	setTCP : function(pos){
@@ -641,5 +643,10 @@ TCell.prototype = {
 	setTBC : function(id){
 		if(!k.isborder || id<0 || bd.bdmax<=id){ return;}
 		this.cursolx = bd.border[id].bx; this.cursoly = bd.border[id].by;
+	},
+	getTEC : function(){ return bd.exnum(this.cursolx, this.cursoly);},
+	setTEC : function(id){
+		if(k.isextendcell===0 || id<0 || bd.excellmax<=id){ return;}
+		this.cursolx = bd.excell[id].bx; this.cursoly = bd.excell[id].by;
 	}
 };

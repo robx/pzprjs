@@ -80,6 +80,7 @@ Puzzles.wblink.prototype = {
 				if(this.inputData==-1){ this.inputData=(bd.isLine(id)?0:1);}
 				if(this.inputData> 0 && ((pos.x-this.mouseCell.x==-2)||(pos.y-this.mouseCell.y==-2))){ idlist=idlist.reverse();} // F•ª‚¯‚Ì“s‡ã‚Ìˆ—
 				for(var i=0;i<idlist.length;i++){
+					if(idlist[i]===-1){ continue;}
 					if(this.inputData==1){ bd.setLine(idlist[i]);}
 					else                 { bd.removeLine(idlist[i]);}
 					pc.paintLine(idlist[i]);
@@ -90,18 +91,18 @@ Puzzles.wblink.prototype = {
 		};
 		mv.getidlist = function(id){
 			var idlist=[], bx1, bx2, by1, by2;
-			var bx=bd.cell[cc1].bx, by=bd.cell[cc1].by;
+			var bx=bd.border[id].bx, by=bd.border[id].by;
 			if(bd.border[id].bx&1){
-				while(by>bd.minby && bd.QnC(bd.cnum(bx,by-1))===-1){ by-=2;} by1=by;
-				while(by<bd.maxby && bd.QnC(bd.cnum(bx,by+1))===-1){ by+=2;} by2=by;
+				while(by>bd.minby && bd.QuC(bd.cnum(bx,by-1))===0){ by-=2;} by1=by;
+				while(by<bd.maxby && bd.QuC(bd.cnum(bx,by+1))===0){ by+=2;} by2=by;
 				bx1 = bx2 = bd.border[id].bx;
 			}
 			else if(bd.border[id].by&1){
-				while(bx>bd.minbx && bd.QnC(bd.cnum(bx-1,by))===-1){ bx-=2;} bx1=bx;
-				while(bx<bd.maxbx && bd.QnC(bd.cnum(bx+1,by))===-1){ bx+=2;} bx2=bx;
+				while(bx>bd.minbx && bd.QuC(bd.cnum(bx-1,by))===0){ bx-=2;} bx1=bx;
+				while(bx<bd.maxbx && bd.QuC(bd.cnum(bx+1,by))===0){ bx+=2;} bx2=bx;
 				by1 = by2 = bd.border[id].by;
 			}
-			if(bx1<=bd.minbx||bx2>=bd.maxbx||by1<=bd.minby||by2>=bd.maxby){ return [];}
+			if(!bd.isinside(bx,by)){ return [];}
 			for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
 			return idlist;
 		};

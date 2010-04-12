@@ -132,8 +132,6 @@ LineManager.prototype = {
 	//                        できる場合の線idの再設定を行う
 	// line.remakeLineInfo()  線が引かれたり消された時、新たに2つ以上の線ができる
 	//                        可能性がある場合の線idの再設定を行う
-	// line.repaintLine()     ひとつながりの線を再描画する
-	// line.repaintParts()    repaintLine()関数で、さらに上から描画しなおしたい処理を書く
 	//---------------------------------------------------------------------------
 	setLine : function(id, val){
 		if(this.disableLine){ return;}
@@ -306,6 +304,13 @@ LineManager.prototype = {
 		}
 	},
 
+	//---------------------------------------------------------------------------
+	// line.repaintLine()  ひとつながりの線を再描画する
+	// line.repaintParts() repaintLine()関数で、さらに上から描画しなおしたい処理を書く
+	//                     canvas描画時のみ呼ばれます(他は描画しなおす必要なし)
+	// line.getClistFromIdlist() idlistの線が重なるセルのリストを取得する
+	// line.getXlistFromIdlist() idlistの線が重なる交点のリストを取得する
+	//---------------------------------------------------------------------------
 	repaintLine : function(idlist, id){
 		if(!pp.getVal('irowake')){ return;}
 		var draw1 = (k.isCenterLine ? pc.drawLine1 : pc.drawBorder1);
@@ -316,6 +321,27 @@ LineManager.prototype = {
 		if(g.use.canvas){ this.repaintParts(idlist);}
 	},
 	repaintParts : function(idlist){ }, // オーバーライド用
+
+	getClistFromIdlist : function(idlist){
+		var cdata=[], clist=[];
+		for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
+		for(var i=0;i<idlist.length;i++){
+			cdata[bd.border[idlist[i]].cellcc[0]] = true;
+			cdata[bd.border[idlist[i]].cellcc[1]] = true;
+		}
+		for(var c=0;c<bd.cellmax;c++){ if(cdata[c]){ clist.push(c);} }
+		return clist;
+	},
+	getXlistFromIdlist : function(idlist){
+		var cdata=[], xlist=[], crossmax=(k.qcols+1)*(k.qrows+1);
+		for(var c=0;c<crossmax;c++){ cdata[c]=false;}
+		for(var i=0;i<idlist.length;i++){
+			cdata[bd.border[idlist[i]].crosscc[0]] = true;
+			cdata[bd.border[idlist[i]].crosscc[1]] = true;
+		}
+		for(var c=0;c<crossmax;c++){ if(cdata[c]){ xlist.push(c);} }
+		return xlist;
+	},
 
 	//---------------------------------------------------------------------------
 	// line.getbid()  指定したpieceに繋がる、最大6箇所に引かれている線を全て取得する

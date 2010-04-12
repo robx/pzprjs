@@ -212,7 +212,7 @@ Puzzles.hakoiri.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			this.drawTCell(x1,y1,x2+1,y2+1);
+			this.drawCursor(x1,y1,x2,y2);
 		};
 
 		pc.dispnumCell = function(c){
