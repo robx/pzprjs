@@ -94,9 +94,6 @@ Puzzles.ichimaga.prototype = {
 		pc.circleratio = [0.38, 0.38];
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawDashedCenterLines(x1,y1,x2,y2);
 			this.drawLines(x1,y1,x2,y2);
 

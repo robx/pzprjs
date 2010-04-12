@@ -214,8 +214,6 @@ Puzzles.goishi.prototype = {
 		pc.errbcolor1 = "rgb(255, 192, 192)";
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-
 			this.drawCenterLines(x1,y1,x2,y2);
 
 			x1--; y1--; x2++; y2++;

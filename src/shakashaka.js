@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.2.4
+// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.3.0
 //
 Puzzles.shakashaka = function(){ };
 Puzzles.shakashaka.prototype = {
@@ -213,10 +213,6 @@ Puzzles.shakashaka.prototype = {
 		pc.setCellColorFunc('qnum');
 
 		pc.paint = function(x1,y1,x2,y2){
-			x2++; y2++;
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);

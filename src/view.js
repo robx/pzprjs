@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヴィウ版 view.js v3.2.4
+// パズル固有スクリプト部 ヴィウ版 view.js v3.3.0
 //
 Puzzles.view = function(){ };
 Puzzles.view.prototype = {
@@ -120,9 +120,6 @@ Puzzles.view.prototype = {
 		pc.setBGCellColorFunc('error2');
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 

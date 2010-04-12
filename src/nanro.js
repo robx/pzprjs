@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンロー版 nanro.js v3.2.4
+// パズル固有スクリプト部 ナンロー版 nanro.js v3.3.0
 //
 Puzzles.nanro = function(){ };
 Puzzles.nanro.prototype = {
@@ -163,9 +163,6 @@ Puzzles.nanro.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 なげなわ版 nagenawa.js v3.2.5
+// パズル固有スクリプト部 なげなわ版 nagenawa.js v3.3.0
 //
 Puzzles.nagenawa = function(){ };
 Puzzles.nagenawa.prototype = {
@@ -100,9 +100,6 @@ Puzzles.nagenawa.prototype = {
 		pc.gridcolor = pc.gridcolor_SLIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
@@ -110,7 +107,6 @@ Puzzles.nagenawa.prototype = {
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
-		//	this.drawPekes(x1,y1,x2,y2,0);
 			this.drawMBs(x1,y1,x2,y2);
 			this.drawLines(x1,y1,x2,y2);
 

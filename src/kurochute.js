@@ -90,10 +90,6 @@ Puzzles.kurochute.prototype = {
 		pc.qsubcolor2 = pc.bcolor_GREEN;
 
 		pc.paint = function(x1,y1,x2,y2){
-			x2++; y2++;
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);

@@ -167,8 +167,6 @@ Puzzles.snakes.prototype = {
 
 		pc.paint = function(x1,y1,x2,y2){
 			x1--; y1--; x2++; y2++;	// Õ‚ªc‚Á‚Ä‚µ‚Ü‚¤ˆ×
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
 
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDotCells(x1,y1,x2,y2);

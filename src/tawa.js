@@ -447,10 +447,6 @@ Puzzles.tawa.prototype = {
 		pc.setBGCellColorFunc('qans1');
 
 		pc.paint = function(x1,y1,x2,y2){
-			x1--; x2++;
-			this.flushCanvas_tawa(x1+1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawGrid_tawa(x1,y1,x2,y2);
@@ -459,7 +455,24 @@ Puzzles.tawa.prototype = {
 
 			this.drawTarget_tawa(x1,y1,x2,y2);
 		};
-		pc.paintAll = function(){ this.paint(0,0,bd.maxbx+1,bd.maxby+1); },
+		// オーバーライド
+		pc.prepaint = function(x1,y1,x2,y2){
+			// pc.flushCanvasの代替
+			if(g.use.canvas){
+				if(x1<=bd.minbx && y1<=bd.minby && x2>=bd.maxbx && y2>=bd.maxby){
+					this.flushCanvasAll();
+				}
+				else{
+					g.fillStyle = "rgb(255, 255, 255)";
+					g.fillRect(k.p0.x+x1*this.bw, k.p0.y+y1*this.ch, (x2-x1+1)*this.bw, (y2-y1+1)*this.ch);
+				}
+			}
+			else{
+				this.zidx=0;
+			}
+
+			pc.paint(x1,y1,x2,y2);
+		};
 
 		pc.drawGrid_tawa = function(x1,y1,x2,y2){
 			this.vinc('grid', 'crispEdges');
@@ -512,21 +525,6 @@ Puzzles.tawa.prototype = {
 				if(this.vnop("tc4_",this.NONE)){ g.fillRect(px+this.cw-w, py+1, w, this.ch-2);}
 			}
 			else{ this.vhide(["tc1_","tc2_","tc3_","tc4_"]);}
-		};
-
-		pc.flushCanvas_tawa = function(x1,y1,x2,y2){
-			if(g.use.canvas){
-				if(x1<=bd.minbx && y1<=bd.minby && x2>=bd.maxbx && y2>=bd.maxby){
-					this.flushCanvasAll();
-				}
-				else{
-					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(k.p0.x+x1*this.bw, k.p0.y+y1*this.ch, (x2-x1+1)*this.bw, (y2-y1+1)*this.ch);
-				}
-			}
-			else{
-				this.zidx=0;
-			}
 		};
 	},
 

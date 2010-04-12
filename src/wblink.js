@@ -158,9 +158,6 @@ Puzzles.wblink.prototype = {
 		pc.lwratio = 8;
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawGrid(x1,y1,x2,y2,k.editmode);
 
 			this.drawPekes(x1,y1,x2,y2,0);

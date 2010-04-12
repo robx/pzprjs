@@ -164,9 +164,6 @@ Puzzles.slither.prototype = {
 		pc.setBorderColorFunc('line');
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 
 			this.drawBorders(x1,y1,x2,y2);

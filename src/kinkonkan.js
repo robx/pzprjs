@@ -232,8 +232,6 @@ Puzzles.kinkonkan.prototype = {
 		pc.dotcolor = "rgb(255, 96, 191)";
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-
 			this.drawErrorCells_kinkonkan(x1,y1,x2,y2);
 			this.drawDotCells(x1,y1,x2,y2);
 

@@ -166,11 +166,6 @@ Puzzles.wagiri.prototype = {
 		pc.chassisflag = false;
 
 		pc.paint = function(x1,y1,x2,y2){
-			if(!ans.errDisp && pp.getVal('colorslash')){ x1=bd.minbx; y1=bd.minby; x2=bd.maxbx; y2=bd.maxby;}
-
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
@@ -179,6 +174,13 @@ Puzzles.wagiri.prototype = {
 
 			this.drawCrosses(x1,y1,x2+1,y2+1);
 			this.drawTarget_wagiri(x1,y1,x2,y2);
+		};
+		// オーバーライド
+		pc.prepaint = function(x1,y1,x2,y2){
+			if(!ans.errDisp && pp.getVal('colorslash')){ x1=bd.minbx; y1=bd.minby; x2=bd.maxbx; y2=bd.maxby;}
+			pc.flushCanvas(x1,y1,x2,y2);
+
+			pc.paint(x1,y1,x2,y2);
 		};
 
 		// オーバーライド

@@ -94,9 +94,6 @@ Puzzles.firefly.prototype = {
 		pc.fontsizeratio = 0.85;
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawDashedCenterLines(x1,y1,x2,y2);
 			this.drawLines(x1,y1,x2,y2);
 

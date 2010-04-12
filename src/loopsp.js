@@ -201,9 +201,6 @@ Puzzles.loopsp.prototype = {
 		pc.maxYdeg = 0.74;
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			if(g.use.canvas){ this.drawPekes(x1,y1,x2,y2,2);}
 			this.drawDashedGrid(x1,y1,x2,y2);

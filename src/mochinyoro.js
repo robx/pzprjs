@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 モチにょろ版 mochinyoro.js v3.2.5
+// パズル固有スクリプト部 モチにょろ版 mochinyoro.js v3.3.0
 //
 Puzzles.mochinyoro = function(){ };
 Puzzles.mochinyoro.prototype = {
@@ -85,8 +85,6 @@ Puzzles.mochinyoro.prototype = {
 		pc.setBGCellColorFunc('qsub1');
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);

@@ -233,9 +233,6 @@ Puzzles.shugaku.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			x1--; y1--; x2++; y2++;	// Undo‚ÉÕ‚ªc‚Á‚Ä‚µ‚Ü‚¤ˆ×
 
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);

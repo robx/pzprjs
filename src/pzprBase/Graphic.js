@@ -140,6 +140,7 @@ Graphic.prototype = {
 		//this.textenable = !!g.fillText;
 	},
 	//---------------------------------------------------------------------------
+	// pc.prepaint()    paint関数を呼び出す
 	// pc.paint()       座標(x1,y1)-(x2,y2)を再描画する。各パズルのファイルでオーバーライドされる。
 	//
 	// pc.paintAll()    全体を再描画する
@@ -155,49 +156,56 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	paint : function(x1,y1,x2,y2){ }, //オーバーライド用
 
-	paintAll : function(){
-		this.paint(-1,-1,2*k.qcols+1,2*k.qrows+1);
-	},
-	paintRange : function(x1,y1,x2,y2){
+	prepaint : function(x1,y1,x2,y2){
+		this.flushCanvas(x1,y1,x2,y2);
+	//	this.flushCanvasAll();
+
 		this.paint(x1,y1,x2,y2);
 	},
+
+	paintAll : function(){
+		this.prepaint(-1,-1,2*k.qcols+1,2*k.qrows+1);
+	},
+	paintRange : function(x1,y1,x2,y2){
+		this.prepaint(x1,y1,x2,y2);
+	},
 	paintPos : function(pos){
-		this.paint(pos.x-1, pos.y-1, pos.x+1, pos.y+1);
+		this.prepaint(pos.x-1, pos.y-1, pos.x+1, pos.y+1);
 	},
 
 	paintCell : function(cc){
 		if(isNaN(cc) || !bd.cell[cc]){ return;}
-		this.paint(bd.cell[cc].bx-1, bd.cell[cc].by-1, bd.cell[cc].bx+1, bd.cell[cc].by+1);
+		this.prepaint(bd.cell[cc].bx-1, bd.cell[cc].by-1, bd.cell[cc].bx+1, bd.cell[cc].by+1);
 	},
 	paintCellAround : function(cc){
 		if(isNaN(cc) || !bd.cell[cc]){ return;}
-		this.paint(bd.cell[cc].bx-3, bd.cell[cc].by-3, bd.cell[cc].bx+3, bd.cell[cc].by+3);
+		this.prepaint(bd.cell[cc].bx-3, bd.cell[cc].by-3, bd.cell[cc].bx+3, bd.cell[cc].by+3);
 	},
 	paintCross : function(cc){
 		if(isNaN(cc) || !bd.cross[cc]){ return;}
-		this.paint(bd.cross[cc].bx-1, bd.cross[cc].by-1, bd.cross[cc].bx+1, bd.cross[cc].by+1);
+		this.prepaint(bd.cross[cc].bx-1, bd.cross[cc].by-1, bd.cross[cc].bx+1, bd.cross[cc].by+1);
 	},
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
 		if(bd.border[id].bx&1){
-			this.paint(bd.border[id].bx-2, bd.border[id].by-1, bd.border[id].bx+2, bd.border[id].by+1);
+			this.prepaint(bd.border[id].bx-2, bd.border[id].by-1, bd.border[id].bx+2, bd.border[id].by+1);
 		}
 		else{
-			this.paint(bd.border[id].bx-1, bd.border[id].by-2, bd.border[id].bx+1, bd.border[id].by+2);
+			this.prepaint(bd.border[id].bx-1, bd.border[id].by-2, bd.border[id].bx+1, bd.border[id].by+2);
 		}
 	},
 	paintLine : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
 		if(bd.border[id].bx&1){
-			this.paint(bd.border[id].bx-1, bd.border[id].by-2, bd.border[id].bx+1, bd.border[id].by+2);
+			this.prepaint(bd.border[id].bx-1, bd.border[id].by-2, bd.border[id].bx+1, bd.border[id].by+2);
 		}
 		else{
-			this.paint(bd.border[id].bx-2, bd.border[id].by-1, bd.border[id].bx+2, bd.border[id].by+1);
+			this.prepaint(bd.border[id].bx-2, bd.border[id].by-1, bd.border[id].bx+2, bd.border[id].by+1);
 		}
 	},
 	paintEXcell : function(ec){
 		if(isNaN(ec) || !bd.excell[ec]){ return;}
-		this.paint(bd.excell[ec].bx-1, bd.excell[ec].by-1, bd.excell[ec].bx+1, bd.excell[ec].by+1);
+		this.prepaint(bd.excell[ec].bx-1, bd.excell[ec].by-1, bd.excell[ec].bx+1, bd.excell[ec].by+1);
 	},
 
 	//---------------------------------------------------------------------------

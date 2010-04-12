@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 島国版 shimaguni.js v3.2.5
+// パズル固有スクリプト部 島国版 shimaguni.js v3.3.0
 //
 Puzzles.shimaguni = function(){ };
 Puzzles.shimaguni.prototype = {
@@ -94,9 +94,6 @@ Puzzles.shimaguni.prototype = {
 		pc.setBGCellColorFunc('qsub1');
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);

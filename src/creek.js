@@ -92,9 +92,6 @@ Puzzles.creek.prototype = {
 		pc.crosssize = 0.35;
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
@@ -102,10 +99,7 @@ Puzzles.creek.prototype = {
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawCrosses(x1,y1,x2+1,y2+1);
-			this.drawTarget_creek(x1,y1,x2,y2);
-		};
-		pc.drawTarget_creek = function(x1,y1,x2,y2){
-			this.drawCursor(x1,y1,x2,y2,true,k.editmode);
+			this.drawTarget(x1,y1,x2,y2);
 		};
 	},
 

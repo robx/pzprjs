@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 のりのり版 norinori.js v3.2.5
+// パズル固有スクリプト部 のりのり版 norinori.js v3.3.0
 //
 Puzzles.norinori = function(){ };
 Puzzles.norinori.prototype = {
@@ -74,9 +74,6 @@ Puzzles.norinori.prototype = {
 		pc.setBGCellColorFunc('qsub1');
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);

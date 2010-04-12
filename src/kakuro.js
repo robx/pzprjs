@@ -134,8 +134,6 @@ Puzzles.kakuro.prototype = {
 		pc.TTcolor = "rgb(255,255,127)";
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawBGEXcells(x1,y1,x2,y2);
 			this.drawQues51(x1,y1,x2,y2);
