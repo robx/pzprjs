@@ -1126,7 +1126,7 @@ Graphic.prototype = {
 	drawCursor : function(x1,y1,x2,y2,islarge,isdraw){
 		this.vinc('target_cursor', 'crispEdges');
 
-		if(isdraw!==false){
+		if(isdraw!==false && pp.getVal('cursor')){
 			if(tc.cursolx < x1-1 || x2+1 < tc.cursolx){ return;}
 			if(tc.cursoly < y1-1 || y2+1 < tc.cursoly){ return;}
 
