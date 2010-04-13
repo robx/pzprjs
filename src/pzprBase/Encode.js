@@ -208,9 +208,11 @@ Encode.prototype = {
 			um.enableRecord(); um.enableInfo();
 
 			bd.ansclear();
-
 			base.resetInfo(true);
-			base.resize_canvas();
+
+			if(!base.initProcess){
+				base.resize_canvas();
+			}
 		}
 	},
 	pzloutput : function(type){

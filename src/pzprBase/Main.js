@@ -109,10 +109,10 @@ PBase.prototype = {
 
 		this.doc_design();		// デザイン変更関連関数の呼び出し
 
-		enc.pzlinput();										// URLからパズルのデータを読み出す
-		if(!enc.uri.bstr){ this.resize_canvas();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
+		enc.pzlinput();			// URLからパズルのデータを読み出す
+		this.resize_canvas();
 
-		if(!!puz.finalfix){ puz.finalfix();}					// パズル固有の後付け設定
+		if(!!puz.finalfix){ puz.finalfix();}		// パズル固有の後付け設定
 	},
 	setEvents : function(first){
 		this.canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
