@@ -529,7 +529,10 @@ AreaManager.prototype = {
 		if(k.isoutsideborder===0){
 			for(var by=bd.minby;by<=bd.maxby;by+=2){
 				for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
-					if(bx===bd.minbx || bx===bd.maxbx || by===bd.minby || by===bd.maxby){ this.lcnt[c]=2;}
+					if(bx===bd.minbx || bx===bd.maxbx || by===bd.minby || by===bd.maxby){
+						var c = (bx>>1)+(by>>1)*(k.qcols+1);
+						this.lcnt[c]=2;
+					}
 				}
 			}
 		}
