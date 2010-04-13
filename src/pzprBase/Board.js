@@ -183,6 +183,7 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// bd.initBoardSize() 指定されたサイズで盤面の初期化を行う
 	// bd.initGroup()     数を比較して、オブジェクトの追加か削除を行う
+	// bd.afterinit()     サイズ初期化後の処理を行う
 	// bd.initSpecial()   パズル個別で初期化を行いたい処理を入力する
 	//---------------------------------------------------------------------------
 	initBoardSize : function(col,row){
@@ -204,13 +205,10 @@ Board.prototype = {
 
 		this.initSpecial(col,row);
 
-		// 各種サイズの変更
 		k.qcols = col;
 		k.qrows = row;
-		this.setminmax();
 
-		this.setposAll();
-		if(!base.initProcess){ this.allclear();}
+		this.afterinit(col,row);
 	},
 	initGroup : function(type, group, len){
 		var clen = group.length;
@@ -222,6 +220,12 @@ Board.prototype = {
 		else if(clen<len){
 			for(var id=clen;id<len;id++){ group.push(this.getnewObj(type,id));}
 		}
+	},
+
+	afterinit : function(){
+		this.setminmax();
+		this.setposAll();
+		if(!base.initProcess){ this.allclear();}
 	},
 	initSpecial : function(){ },
 
