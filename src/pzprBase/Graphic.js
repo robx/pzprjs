@@ -91,13 +91,12 @@ Graphic = function(){
 
 	this.lw = 1;		// LineWidth 境界線・Lineの太さ
 	this.lm = 1;		// LineMargin
-	this.lwratio = 12;	// onresize_funcでlwの値の算出に用いる
+	this.lwratio = 12;	// onresize_processでlwの値の算出に用いる
 	this.addlw = 0;		// エラー時に線の太さを広げる
 
 	this.bdheader = "b_bd";	// drawBorder1で使うheader
 
 	this.chassisflag = true;	// false: Gridを外枠の位置にも描画する
-	this.textenable  = false;	// 数字をg.fillText()で描画(現在はコメントアウト)
 
 	this.lastHdeg = 0;
 	this.lastYdeg = 0;
@@ -109,6 +108,9 @@ Graphic = function(){
 
 	var numobj_attr = {className:'divnum', unselectable:'on'};
 	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', numobj_attr, null, null);
+
+	this.numobj = {};					// エレメントへの参照を保持する
+	this.fillTextPrecisely  = false;	// 数字をg.fillText()で描画
 
 	this.isdrawBC = false;
 	this.isdrawBD = false;
@@ -125,9 +127,9 @@ Graphic = function(){
 };
 Graphic.prototype = {
 	//---------------------------------------------------------------------------
-	// pc.onresize_func() resize時にサイズを変更する
+	// pc.onresize_process() resize時にサイズを変更する
 	//---------------------------------------------------------------------------
-	onresize_func : function(){
+	onresize_process : function(){
 		this.cw = k.cwidth;
 		this.ch = k.cheight;
 
@@ -136,8 +138,6 @@ Graphic.prototype = {
 
 		this.lw = Math.max(k.cwidth/this.lwratio, 3);
 		this.lm = this.lw/2;
-
-		//this.textenable = !!g.fillText;
 	},
 	//---------------------------------------------------------------------------
 	// pc.prepaint()    paint関数を呼び出す
@@ -593,7 +593,6 @@ Graphic.prototype = {
 				else{ this.vhide([headers[3]+c, headers[4]+c, headers[5]+c]);}
 
 				// 数字の描画
-				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
 				var num = bd.getNum(c), text = (num>=0 ? ""+num : "?");
 				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
 				var color = g.fillStyle;
@@ -602,11 +601,11 @@ Graphic.prototype = {
 				if     (dir===k.UP||dir===k.DN){ type=6; fontratio *= 0.85;}
 				else if(dir===k.LT||dir===k.RT){ type=7; fontratio *= 0.85;}
 
-				this.dispnum(bd.cell[c].numobj, type, text, fontratio, color, px, py);
+				this.dispnum('cell_'+c, type, text, fontratio, color, px, py);
 			}
 			else{
 				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c, headers[4]+c, headers[5]+c]);
-				this.hideEL(bd.cell[c].numobj);
+				this.hideEL('cell_'+c);
 			}
 		}
 	},
@@ -615,11 +614,12 @@ Graphic.prototype = {
 
 		var clist = this.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
-			var obj = bd.cell[clist[i]];
-			if(obj.ques!==-2){ this.hideEL(obj.numobj); continue;}
-			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-			var color = (obj.error===1 ? this.fontErrcolor : this.fontcolor);
-			this.dispnum(obj.numobj, 1, "?", 0.8, color, obj.px, obj.py);
+			var obj = bd.cell[clist[i]], key = 'cell_'+clist[i];
+			if(obj.ques===-2){
+				var color = (obj.error===1 ? this.fontErrcolor : this.fontcolor);
+				this.dispnum(key, 1, "?", 0.8, color, obj.px, obj.py);
+			}
+			else{ this.hideEL(key);}
 		}
 	},
 
@@ -1394,7 +1394,10 @@ Graphic.prototype = {
 
 	setVectorFunctions : function(){
 		if(g.use.canvas){
-			this.flushCanvasAll = f_true;
+			this.flushCanvasAll = function(x1,y1,x2,y2){
+				this.numobj = {};
+				base.numparent.innerHTML = '';
+			};
 			this.flushCanvas = function(x1,y1,x2,y2){
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
 				g.fillRect(k.p0.x+x1*this.cw, k.p0.y+y1*this.ch, (x2-x1+1)*this.cw, (y2-y1+1)*this.ch);
@@ -1409,6 +1412,9 @@ Graphic.prototype = {
 				g.clear();
 				this.zidx=0;
 				this.zidx_array=[];
+
+				this.numobj = {};
+				base.numparent.innerHTML = '';
 
 				this.vinc('board_base', 'crispEdges');
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
@@ -1487,11 +1493,11 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	// 数字表示関数
 	CreateDOMAndSetNop : function(){
-		return (!pc.textenable ? ee.createEL(pc.EL_NUMOBJ,'') : null);
+		return (!pc.fillTextPrecisely ? ee.createEL(pc.EL_NUMOBJ,'') : null);
 	},
 
-	showEL : function(el){ el.style.display = 'inline'; },	// 条件見なくてもよさそう。
-	hideEL : function(el){ if(!!el){ el.style.display = 'none';} },
+	showEL : function(key){ this.numobj[key].style.display = 'inline'; },	// 条件見なくてもよさそう。
+	hideEL : function(key){ if(!!this.numobj[key]){ this.numobj[key].style.display = 'none';} },
 
 	setFunctions : function(){
 		this.isdispnumCell = (
@@ -1533,58 +1539,66 @@ Graphic.prototype = {
 	// pc.dispnumBorder() Borderに数字を記入するための値を決定する
 	//---------------------------------------------------------------------------
 	dispnumCell : function(id){
-		var obj = bd.cell[id];
-		if(!this.isdispnumCell(id)){ this.hideEL(obj.numobj); return;}
-		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+		var obj = bd.cell[id], key = ['cell',id].join('_');
+		if(this.isdispnumCell(id)){
+			var type = (!k.isDispNumUL ? 1 : 5);
+			if(obj.ques>=2 && obj.ques<=5){ type=obj.ques;}
 
-		var type = (!k.isDispNumUL ? 1 : 5);
-		if(obj.ques>=2 && obj.ques<=5){ type=obj.ques;}
+			var num = bd.getNum(id);
+			var text = (num>=0 ? ""+num : "?");
 
-		var num = bd.getNum(id);
-		var text = (num>=0 ? ""+num : "?");
+			var fontratio = 0.45;
+			if(type===1){ fontratio = (num<10?0.8:(num<100?0.7:0.55));}
 
-		var fontratio = 0.45;
-		if(type===1){ fontratio = (num<10?0.8:(num<100?0.7:0.55));}
+			var color = this.getNumberColor(id);
 
-		var color = this.getNumberColor(id);
-
-		this.dispnum(obj.numobj, type, text, fontratio, color, obj.px, obj.py);
+			this.dispnum(key, type, text, fontratio, color, obj.px, obj.py);
+		}
+		else{ this.hideEL(key);}
 	},
 	dispnumCross : function(id){
-		var obj = bd.cross[id];
-		if(obj.qnum<0||(obj.qnum===0&&k.dispzero===0)){ this.hideEL(obj.numobj); return;}
-		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+		var obj = bd.cross[id], key = ['cross',id].join('_');
+		if(obj.qnum>0 || (obj.qnum===0 && !!k.dispzero)){
+			var text  = ""+obj.qnum;
+			var color = this.fontcolor;
 
-		var text  = ""+obj.qnum;
-		var color = this.fontcolor;
-
-		this.dispnum(obj.numobj, 101, text, 0.6, color, obj.px, obj.py);
+			this.dispnum(key, 101, text, 0.6, color, obj.px, obj.py);
+		}
+		else{ this.hideEL(key);}
 	},
 	dispnumBorder : function(id){
-		var obj = bd.border[id];
-		if(obj.qnum<0||(obj.qnum===0&&k.dispzero===0)){ this.hideEL(obj.numobj); return;}
-		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+		var obj = bd.border[id], key = ['border',id].join('_');
+		if(obj.qnum>0 || (obj.qnum===0 && !!k.dispzero)){
+			var text  = ""+obj.qnum;
+			var color = this.borderfontcolor;
 
-		var text  = ""+obj.qnum;
-		var color = this.borderfontcolor;
-
-		this.dispnum(obj.numobj, 101, text, 0.45, color, obj.px, obj.py);
+			this.dispnum(key, 101, text, 0.45, color, obj.px, obj.py);
+		}
+		else{ this.hideEL(key);}
 	},
 
 	//---------------------------------------------------------------------------
 	// pc.dispnum()  数字を記入するための共通関数
 	//---------------------------------------------------------------------------
-	dispnum : function(el, type, text, fontratio, color, px, py){
-//		if(!this.textenable){
-			if(!el){ return;}
+	dispnum : function(key, type, text, fontratio, color, px, py){
+		if(!this.fillTextPrecisely){
 			var IE = k.br.IE;
+
+			// エレメントを取得
+			var el = this.numobj[key];
+			if(!el){
+				el = this.CreateDOMAndSetNop();
+				if(!el){ return;}
+
+				this.numobj[key] = el;
+			}
 
 			el.innerHTML = text;
 
 			var fontsize = mf(this.cw*fontratio*this.fontsizeratio);
 			el.style.fontSize = (""+ fontsize + 'px');
 
-			this.showEL(el);	// 先に表示しないとwid,hgt=0になって位置がずれる
+			this.showEL(key);	// 先に表示しないとwid,hgt=0になって位置がずれる
 
 			var wid = el.offsetWidth;
 			var hgt = el.offsetHeight;
@@ -1606,25 +1620,25 @@ Graphic.prototype = {
 			}
 
 			el.style.color = color;
-//		}
-//		// Nativeな方法はこっちなんだけど、計5～6%くらい遅くなる。。
-//		else{
-//			g.font = ""+mf(this.cw*fontratio*this.fontsizeratio)+"px 'Serif'";
-//			g.fillStyle = color;
-//			if(type==1||type==6||type==7){
-//				g.textAlign = 'center'; g.textBaseline = 'middle';
-//				g.fillText(text, px+mf(this.cw/2)-(type==6?mf(this.cw*0.1):0), py+mf(this.ch/2)+(type==7?mf(this.ch*0.1):0));
-//			}
-//			else if(type==101){
-//				g.textAlign = 'center'; g.textBaseline = 'middle';
-//				g.fillText(text, px, py);
-//			}
-//			else{
-//				g.textAlign    = ((type==3||type==4)?'right':'left');
-//				g.textBaseline = ((type==2||type==3)?'alphabetic':'top');
-//				g.fillText(text, px+((type==3||type==4)?this.cw:3), py+((type==2||type==3)?this.ch-1:0));
-//			}
-//		}
+		}
+		// Nativeな方法はこっちなんだけど、、(前は計5～6%くらい遅くなってた)
+		else{
+			g.font = ""+mf(this.cw*fontratio*this.fontsizeratio)+"px 'Serif'";
+			g.fillStyle = color;
+			if(type==1||type==6||type==7){
+				g.textAlign = 'center'; g.textBaseline = 'middle';
+				g.fillText(text, px+mf(this.cw/2)-(type==6?mf(this.cw*0.1):0), py+mf(this.ch/2)+(type==7?mf(this.ch*0.1):0));
+			}
+			else if(type==101){
+				g.textAlign = 'center'; g.textBaseline = 'middle';
+				g.fillText(text, px, py);
+			}
+			else{
+				g.textAlign    = ((type==3||type==4)?'right':'left');
+				g.textBaseline = ((type==2||type==3)?'alphabetic':'top');
+				g.fillText(text, px+((type==3||type==4)?this.cw:3), py+((type==2||type==3)?this.ch-1:0));
+			}
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -1634,41 +1648,42 @@ Graphic.prototype = {
 	drawNumbersOn51 : function(x1,y1,x2,y2){
 		this.vinc('cell_number51', 'auto');
 
-		x1 += ((x1^1)&1); y1 += ((y1^1)&1);
-		for(var bx=x1-2;bx<=x2+2;bx+=2){ for(var by=y1-2;by<=y2+2;by+=2){
-			var c = bd.cnum(bx,by);
-			// cell上だった場合
-			if(c!==-1){
-				if(bd.cell[c].ques===51){
-					this.drawNumbersOn51_1(bd.cell[c], bd.rt(c), bd.dn(c), 0)
+		for(var bx=(x1|1)-2;bx<=x2+2;bx+=2){
+			for(var by=(y1|1)-2;by<=y2+2;by+=2){
+				// cell上だった場合
+				if(bx!==-1 && by!==-1){
+					var c = bd.cnum(bx,by);
+					if(c!==-1){ this.drawNumbersOn51_1('cell', c);}
 				}
-				else{
-					this.hideEL(bd.cell[c].numobj);
-					this.hideEL(bd.cell[c].numobj2);
-				}
-			}
-			else{
-				c = bd.exnum(bx,by);
 				// excell上だった場合
-				if(c!==-1){
-					this.drawNumbersOn51_1(bd.excell[c], bd.cnum(1,by), bd.cnum(bx,1), 50)
+				else{
+					var c = bd.exnum(bx,by);
+					if(c!==-1){ this.drawNumbersOn51_1('excell', c);}
 				}
 			}
-		}}
+		}
 	},
-	drawNumbersOn51_1 : function(obj, rt, dn, add){
-		var val,err,grd,nb,el,type,str;
-		for(var i=0;i<2;i++){
-			if(i===0){ val=obj.qnum,  err=obj.error, guard=obj.by, nb=rt, type=add+4, str='numobj'; }	// 1回目は右向き
-			if(i===1){ val=obj.direc, err=obj.error, guard=obj.bx, nb=dn, type=add+2, str='numobj2';}	// 2回目は下向き
+	drawNumbersOn51_1 : function(family, c, key){
+		var val, err, guard, nb, type, str;
+		var obj=bd[family][c], add=(family==='cell' ? 0 : 50);
+		var keys = [[family,c,'ques51','rt'].join('_'), [family,c,'ques51','dn'].join('_')];
 
-			if(val===-1 || guard===-1 || nb===-1 || bd.cell[nb].ques===51){ this.hideEL(obj[str]);}
-			else{
-				if(!obj[str]){ obj[str] = this.CreateDOMAndSetNop();}
-				var color = (err===1?this.fontErrcolor:this.fontcolor);
-				var text = (val>=0?""+val:"");
-				this.dispnum(obj[str], type, text, 0.45, color, obj.px, obj.py);
+		if(family==='excell' || bd.cell[c].ques===51){
+			for(var i=0;i<2;i++){
+				if     (i===0){ val=obj.qnum,  guard=obj.by, nb=bd.cnum(obj.bx+2, obj.by), type=add+4;} // 1回目は右向き
+				else if(i===1){ val=obj.direc, guard=obj.bx, nb=bd.cnum(obj.bx, obj.by+2), type=add+2;} // 2回目は下向き
+
+				if(val!==-1 && guard!==-1 && nb!==-1 && bd.cell[nb].ques!==51){
+					var color = (obj.error===1?this.fontErrcolor:this.fontcolor);
+					var text = (val>=0?""+val:"");
+					this.dispnum(keys[i], type, text, 0.45, color, obj.px, obj.py);
+				}
+				else{ this.hideEL(keys[i]);}
 			}
+		}
+		else{
+			this.hideEL(keys[0]);
+			this.hideEL(keys[1]);
 		}
 	}
 };

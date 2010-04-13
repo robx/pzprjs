@@ -390,12 +390,12 @@ Puzzles.slalom.prototype = {
 		pc.dispnumStartpos = function(c){
 			this.vinc('cell_number', 'auto');
 
-			var num = bd.hinfo.max, obj = bd.cell[c];
-			if(num<0){ this.hideEL(obj.numobj); return;}
-
-			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-			var fontratio = (num<10?0.75:0.66);
-			this.dispnum(obj.numobj, 1, ""+num, fontratio, "black", obj.px, obj.py);
+			var num = bd.hinfo.max, obj = bd.cell[c], key='cell_'+c;
+			if(num>=0){
+				var fontratio = (num<10?0.75:0.66);
+				this.dispnum(key, 1, ""+num, fontratio, "black", obj.px, obj.py);
+			}
+			else{ this.hideEL(key);}
 		};
 
 		line.repaintParts = function(idlist){
@@ -418,15 +418,15 @@ Puzzles.slalom.prototype = {
 
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.cell[c].ques!==21 && bd.cell[c].ques!==22){ continue;}
-				var obj = bd.cell[c];
+				var obj = bd.cell[c], key='cell_'+c;
 
 				var r = bd.hinfo.getGateid(c);
 				var num = (r>0?bd.hinfo.data[r].number:-1);
-				if(!keydown || num<=0){ this.hideEL(obj.numobj); continue;}
-
-				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
-				this.dispnum(obj.numobj, 1, ""+num, fontratio ,"tomato", obj.px, obj.py);
+				if(keydown && num>0){
+					var fontratio = (num<10?0.8:(num<100?0.7:0.55));
+					this.dispnum(key, 1, ""+num, fontratio ,"tomato", obj.px, obj.py);
+				}
+				else{ this.hideEL(key);}
 			}
 		};
 	},

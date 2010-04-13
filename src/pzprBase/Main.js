@@ -174,18 +174,12 @@ PBase.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// base.doc_design()       onload_func()で呼ばれる。htmlなどの設定を行う
-	// base.postfix()          各パズルの初期化後処理を呼び出す
-	// base.gettitle()         現在開いているタイトルを返す
-	// base.getPuzzleName()    現在開いているパズルの名前を返す
-	// base.setTitle()         パズルの名前を設定する
-	// base.setExpression()    説明文を設定する
-	// base.setFloatbgcolor()  フロートメニューの背景色を設定する
+	// base.doc_design() onload_func()で呼ばれる。htmlなどの設定を行う
+	// base.postfix()    各パズルの初期化後処理を呼び出す
+	// base.resetInfo()  AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
 	//---------------------------------------------------------------------------
 	// 背景画像とかtitle等/html表示の設定 //
 	doc_design : function(){
-		this.resize_canvas_only();	// Canvasのサイズ設定
-
 		_doc.title = this.gettitle();
 		ee('title2').el.innerHTML = this.gettitle();
 
@@ -210,7 +204,19 @@ PBase.prototype = {
 		puz.encode_init();
 		puz.answer_init();
 	},
+	resetInfo : function(iserase){
+		if(iserase){ um.allerase();}
+		area.resetArea();
+		line.resetLcnts();
+	},
 
+	//---------------------------------------------------------------------------
+	// base.gettitle()         現在開いているタイトルを返す
+	// base.getPuzzleName()    現在開いているパズルの名前を返す
+	// base.setTitle()         パズルの名前を設定する
+	// base.setExpression()    説明文を設定する
+	// base.setFloatbgcolor()  フロートメニューの背景色を設定する
+	//---------------------------------------------------------------------------
 	gettitle : function(){
 		if(k.EDITOR){ return ""+this.getPuzzleName()+(menu.isLangJP()?" エディタ - ぱずぷれv3":" editor - PUZ-PRE v3");}
 		else		{ return ""+this.getPuzzleName()+(menu.isLangJP()?" player - ぱずぷれv3"  :" player - PUZ-PRE v3");}
@@ -221,15 +227,17 @@ PBase.prototype = {
 	setFloatbgcolor : function(color){ this.floatbgcolor = color;},
 
 	//---------------------------------------------------------------------------
-	// base.resize_canvas_only()   ウィンドウのLoad/Resize時の処理。Canvas/表示するマス目の大きさを設定する。
-	// base.resize_canvas()        resize_canvas_only()+Canvasの再描画
-	// base.onresize_func()        ウィンドウリサイズ時に呼ばれる関数
-	// base.resetInfo()            AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
+	// base.onresize_func()  ウィンドウリサイズ時に呼ばれる関数
+	// base.resize_canvas()  ウィンドウのLoad/Resize時の処理。Canvas/表示するマス目の大きさを設定する。
 	//---------------------------------------------------------------------------
-	resize_canvas_only : function(){
+	onresize_func : function(){
+		if(this.resizetimer){ clearTimeout(this.resizetimer);}
+		this.resizetimer = setTimeout(ee.binder(this, this.resize_canvas),250);
+	},
+	resize_canvas : function(){
 		var wwidth = ee.windowWidth()-6;	//  margin/borderがあるので、適当に引いておく
-		var cols   = k.qcols+(2*k.def_psize/k.def_csize) + k.isextendcell; // canvasの横幅がセル何個分に相当するか
-		var rows   = k.qrows+(2*k.def_psize/k.def_csize) + k.isextendcell; // canvasの縦幅がセル何個分に相当するか
+		var cols   = (bd.maxbx-bd.minbx)/2+(2*k.def_psize/k.def_csize); // canvasの横幅がセル何個分に相当するか
+		var rows   = (bd.maxby-bd.minby)/2+(2*k.def_psize/k.def_csize); // canvasの縦幅がセル何個分に相当するか
 
 		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[k.widthmode];
 		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
@@ -259,19 +267,14 @@ PBase.prototype = {
 		// mainのサイズ変更
 		ee('main').el.style.width = ''+mf(mwidth)+'px';
 
-		// Canvasのサイズ変更
-		pc.setVectorFunctions();
-		var width  = mf((cols-k.isextendcell)*k.cwidth );
-		var height = mf((rows-k.isextendcell)*k.cheight);
-		g.changeSize(width, height);
-
 		// 盤面のセルID:0が描画される位置の設定
 		k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-		// extendxell==1の時は位置をずらす (extendxell==2はdef_psizeで調整)
-		if(k.isextendcell==1){
-			k.p0.x += mf(k.cwidth*0.45);
-			k.p0.y += mf(k.cheight*0.45);
-		}
+		// extendxell==0でない時は位置をずらす
+		if(k.isextendcell!==0){ k.p0.x += k.cwidth; k.p0.y += k.cheight;}
+
+		// Canvasのサイズ変更
+		pc.setVectorFunctions();
+		g.changeSize(mf(cols*k.cwidth), mf(rows*k.cheight));
 
 		// canvasの上に文字・画像を表示する時のOffset指定
 		var rect = ee('divques').getRect();
@@ -280,23 +283,11 @@ PBase.prototype = {
 
 		kp.resize();
 		bd.setcoordAll();
+		pc.onresize_process();
 
-		pc.onresize_func();
-	},
-	resize_canvas : function(){
-		this.resize_canvas_only();
+		// 再描画
 		pc.flushCanvasAll();
 		pc.paintAll();
-	},
-	onresize_func : function(){
-		if(this.resizetimer){ clearTimeout(this.resizetimer);}
-		this.resizetimer = setTimeout(ee.binder(this, this.resize_canvas),250);
-	},
-
-	resetInfo : function(iserase){
-		if(iserase){ um.allerase();}
-		area.resetArea();
-		line.resetLcnts();
 	},
 
 	//---------------------------------------------------------------------------

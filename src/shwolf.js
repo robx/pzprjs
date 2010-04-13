@@ -146,47 +146,54 @@ Puzzles.shwolf.prototype = {
 
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i], obj = bd.cell[c];
-				if(bd.cell[c].ques===0){
-					this.hideEL(obj.numobj);
-					this.hideEL(obj.numobj2);
+				var c = clist[i], obj = bd.cell[c], key = ['cell',c].join('_');
+				if(bd.cell[c].ques===-2){
+					this.dispnum(key, 1, "?", 0.8, this.fontcolor, obj.px, obj.py);
 				}
-				else if(bd.cell[c].ques===-2){
-					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-					this.dispnum(obj.numobj, 1, "?", 0.8, this.fontcolor, obj.px, obj.py);
+				else{ this.hideEL(key);}
 
-					this.hideEL(obj.numobj2);
+				if(bd.cell[c].ques>0){
+					this.dispImage1(c);
 				}
 				else{
-					this.hideEL(obj.numobj);
-
-					if(!obj.numobj2){
-						var _img  = ee.createEL(pc.EL_IMAGE ,'');
-						var _sdiv = ee.createEL(pc.EL_DIVIMG,'');
-						_sdiv.appendChild(_img);
-
-						obj.numobj2 = this.CreateDOMAndSetNop();
-						obj.numobj2.appendChild(_sdiv);
-						obj.imgobj  = _img; // èüéËÇ…í«â¡ÇµÇøÇ·Ç¢Ç‹Ç∑à´âeãøÇÕÇ»Ç¢Ç∆évÇ¢Ç‹Ç∑Ç≤ÇﬂÇÒÇ»Ç≥Ç¢ÅÑÅÉ
-					}
-					div = obj.numobj2;
-					img = obj.imgobj;
-
-					var ipos = {41:0,42:1}[bd.QuC(c)];
-					img.style.width  = ""+(2*this.cw)+"px";
-					img.style.height = ""+(this.ch)+"px";
-					img.style.left   = "-"+mf((ipos+0.5)*this.cw)+"px";
-					img.style.top    = "-"+mf(this.cw/2)+"px";
-					img.style.clip   = "rect(1px,"+(this.cw*(ipos+1))+"px,"+this.cw+"px,"+(this.cw*ipos+1)+"px)";
-
-					this.showEL(div);
-					var wid = div.clientWidth, hgt = div.clientHeight;
-					div.style.left = k.cv_oft.x+bd.cell[c].px+mf((this.cw-wid)/2)+2+'px';
-					div.style.top  = k.cv_oft.y+bd.cell[c].py+mf((this.ch-hgt)/2)+1+'px';
+					var keydiv=['cell',c,'ques'].join('_'), keyimg=['cell',c,'quesimg'].join('_');
+					this.hideEL(keydiv);
+					this.hideEL(keyimg);
 				}
 			}
 		};
-		pc.isdispnumCell = f_true;
+		pc.dispImage1 = function(c){
+			var div, sdiv, img, keydiv=['cell',c,'ques'].join('_'), keyimg=['cell',c,'quesimg'].join('_');
+			if(!!this.numobj[keydiv]){
+				img = this.numobj[keyimg];
+				div = this.numobj[keydiv];
+			}
+			else{
+				div  = this.CreateDOMAndSetNop();
+				sdiv = ee.createEL(pc.EL_DIVIMG,'');
+				img  = ee.createEL(pc.EL_IMAGE ,'');
+
+				var rects = [2,1];
+				img.style.width  = ""+(rects[0]*this.cw)+"px";
+				img.style.height = ""+(rects[1]*this.ch)+"px";
+
+				div.appendChild(sdiv);
+				sdiv.appendChild(img);
+
+				this.numobj[keydiv] = div;
+				this.numobj[keyimg] = img;
+			}
+
+			var xpos = {41:0,42:1}[bd.cell[c].ques], ypos=0;
+			img.style.left   = "-"+mf(xpos*this.cw)+"px";
+			img.style.top    = "-"+mf(ypos*this.cw)+"px";
+			img.style.clip   = "rect("+(this.cw*ypos+1)+"px,"+(this.cw*(xpos+1))+"px,"+(this.cw*(ypos+1))+"px,"+(this.cw*xpos+1)+"px)";
+
+			// divÇÉZÉãÇ÷à⁄ìÆ
+			div.style.left = k.cv_oft.x+bd.cell[c].px+2+'px';
+			div.style.top  = k.cv_oft.y+bd.cell[c].py+1+'px';
+			this.showEL(keydiv);
+		};
 	},
 
 	//---------------------------------------------------------

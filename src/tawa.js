@@ -57,7 +57,6 @@ Puzzles.tawa.prototype = {
 		this.protofunc = {
 			bdinit  : Board.prototype.initBoardSize,
 			spcells : Board.prototype.setposCells,
-			resize_original : base.resize_canvas_only
 		};
 
 		Board.prototype.initBoardSize = function(col,row){
@@ -102,26 +101,12 @@ Puzzles.tawa.prototype = {
 			}
 		};
 
-		base.resize_canvas_only = function(){
-			ee.binder(base, puz.protofunc.resize_original)();
-
-			// Canvasのサイズ変更
-			var width  = k.p0.x*2 + k.qcols*k.cwidth + mf(bd.lap==0?0:(bd.lap==3?k.cwidth:k.cwidth/2));
-			var height = k.p0.y*2 + k.qrows*k.cheight;
-			g.changeSize(width, height);
-
-			var rect = ee('divques').getRect();
-			k.cv_oft.x = rect.left;
-			k.cv_oft.y = rect.top;
-		};
-
 		this.newboard_html_original = document.newboard.innerHTML;
 	},
 	protoOriginal : function(){
 		Board.prototype.initBoardSize = this.protofunc.bdinit;
-		Board.prototype.setposCells = this.protofunc.spcells;
-		base.resize_canvas_only       = this.protofunc.resize_original;
-		document.newboard.innerHTML = this.newboard_html_original;
+		Board.prototype.setposCells   = this.protofunc.spcells;
+		document.newboard.innerHTML   = this.newboard_html_original;
 
 		document.flip.turnl.disabled = false;
 		document.flip.turnr.disabled = false;

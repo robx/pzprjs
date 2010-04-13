@@ -267,14 +267,13 @@ Puzzles.tateyoko.prototype = {
 
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i], obj = bd.cell[c];
+				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
 				var num = bd.cell[c].qnum;
-				if(num===-1){ this.hideEL(obj.numobj); continue;}
-				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-
-				var color = this.fontcolor;
-				if(bd.cell[c].ques==1){ color = "white";}
-				this.dispnum(obj.numobj, 1, (num!=-2?""+num:"?"), (num<10?0.8:0.75), color, obj.px, obj.py);
+				if(num!==-1){
+					var color = (bd.cell[c].ques!==1 ? this.fontcolor : "white");
+					this.dispnum(key, 1, (num!=-2?""+num:"?"), (num<10?0.8:0.75), color, obj.px, obj.py);
+				}
+				else{ this.hideEL(key);}
 			}
 		};
 	},

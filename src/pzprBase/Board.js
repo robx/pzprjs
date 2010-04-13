@@ -12,14 +12,13 @@ Cell = function(id){
 	this.py;	// セルの描画用Y座標を保持する
 	this.cpx;	// セルの描画用中心X座標を保持する
 	this.cpy;	// セルの描画用中心Y座標を保持する
+
 	this.ques;	// セルの問題データ(形状)を保持する
 	this.qnum;	// セルの問題データ(数字)を保持する(数字 or カックロの右側)
 	this.direc;	// セルの問題データ(方向)を保持する(矢印 or カックロの下側)
 	this.qans;	// セルの回答データを保持する(黒マス or 回答数字)
 	this.qsub;	// セルの補助データを保持する(白マス or 背景色)
 	this.error;	// エラーデータを保持する
-	this.numobj = '';	// 数字を表示するためのエレメント
-	this.numobj2 = '';	// 数字を表示するためのエレメント
 
 	this.allclear(id);
 };
@@ -61,10 +60,10 @@ Cross = function(id){
 	this.by;	// 交差点のY座標(border座標系)を保持する
 	this.px;	// 交差点の描画用X座標を保持する
 	this.py;	// 交差点の描画用Y座標を保持する
+
 	this.ques;	// 交差点の問題データ(黒点)を保持する
 	this.qnum;	// 交差点の問題データ(数字)を保持する
 	this.error;	// エラーデータを保持する
-	this.numobj = '';	// 数字を表示するためのエレメント
 
 	this.allclear(id);
 };
@@ -97,6 +96,7 @@ Border = function(id){
 	this.by;	// 境界線のY座標(border座標系)を保持する
 	this.px;	// 境界線の描画X座標を保持する
 	this.py;	// 境界線の描画Y座標を保持する
+
 	this.ques;	// 境界線の問題データを保持する(境界線 or マイナリズムの不等号)
 	this.qnum;	// 境界線の問題データを保持する(マイナリズムの数字)
 	this.qans;	// 境界線の回答データを保持する(回答境界線 or スリリンなどの線)
@@ -104,7 +104,6 @@ Border = function(id){
 	this.line;	// 線の回答データを保持する
 	this.color;	// 線の色分けデータを保持する
 	this.error;	// エラーデータを保持する
-	this.numobj = '';	// 数字を表示するためのエレメント
 
 	this.cellcc  = [-1,-1];	// 隣接セルのID
 	this.crosscc = [-1,-1];	// 隣接交点のID
@@ -214,7 +213,7 @@ Board.prototype = {
 		var clen = group.length;
 		// 既存のサイズより小さくなるならdeleteする
 		if(clen>len){
-			for(var id=clen-1;id>=len;id--){ this.hideNumobj(type,id); delete group[id]; group.pop();}
+			for(var id=clen-1;id>=len;id--){ delete group[id]; group.pop();}
 		}
 		// 既存のサイズより大きくなるなら追加する
 		else if(clen<len){
@@ -399,7 +398,6 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// bd.getnewObj()   指定されたタイプの新しいオブジェクトを返す
 	// bd.isNullObj()   指定したオブジェクトが初期値と同じか判断する
-	// bd.hideNumobj()  指定したオブジェクトのnumobjを隠す
 	//---------------------------------------------------------------------------
 	getnewObj : function(type,id){
 		if(type===k.CELL || type===k.EXCELL){ return (new Cell(id));}
@@ -429,23 +427,6 @@ Board.prototype = {
 					(this.excell[id].direc=== this.defcell.direc));
 		}
 		return true;
-	},
-
-	hideNumobj : function(type,id){
-		if(type===k.CELL){
-			pc.hideEL(this.cell[id].numobj);
-			pc.hideEL(this.cell[id].numobj2);
-		}
-		else if(type===k.CROSS) {
-			pc.hideEL(this.cross[id].numobj);
-		}
-		else if(type===k.BORDER){
-			pc.hideEL(this.border[id].numobj);
-		}
-		else if(type===k.EXCELL){
-			pc.hideEL(this.excell[id].numobj);
-			pc.hideEL(this.excell[id].numobj2);
-		}
 	},
 
 	//---------------------------------------------------------------------------

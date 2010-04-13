@@ -347,12 +347,11 @@ Puzzles.bosanowa.prototype = {
 
 			var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){
-				var id=idlist[i], obj=bd.border[id];
+				var id=idlist[i], obj=bd.border[id], key='border_'+id;
 				if(bd.border[id].qsub>=0){
-					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-					this.dispnum(obj.numobj, 101, ""+bd.QsB(id), 0.35 ,this.borderfontcolor, obj.px, obj.py);
+					this.dispnum(key, 101, ""+bd.QsB(id), 0.35 ,this.borderfontcolor, obj.px, obj.py);
 				}
-				else{ this.hideEL(obj.numobj);}
+				else{ this.hideEL(key);}
 			}
 		};
 

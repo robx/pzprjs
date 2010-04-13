@@ -116,12 +116,12 @@ Puzzles.kusabi.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 		pc.dispnumCell = function(id){
-			var num = bd.cell[id].qnum, obj = bd.cell[id];
-			if(num>=1 && num<=3){ text = ({1:"“¯",2:"’Z",3:"’·"})[num];}
-			else{ this.hideEL(obj.numobj); return;}
-
-			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-			this.dispnum(obj.numobj, 1, text, 0.65, this.getNumberColor(id), obj.px, obj.py);
+			var num = bd.cell[id].qnum, obj = bd.cell[id], key='cell_'+id;
+			if(num>=1 && num<=3){
+				var text = ({1:"“¯",2:"’Z",3:"’·"})[num];
+				this.dispnum(key, 1, text, 0.65, this.getNumberColor(id), obj.px, obj.py);
+			}
+			else{ this.hideEL(key);}
 		};
 	},
 

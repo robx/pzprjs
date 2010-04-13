@@ -109,23 +109,23 @@ Puzzles.factors.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
+				var key_qans = ['cell',c,'qans'].join('_');
+				var key_ques = ['cell',c,'ques'].join('_');
 
-				if(bd.cell[c].qans==-1){ this.hideEL(obj.numobj);}
-				else{
+				if(bd.cell[c].qans!==-1){
 					var color = (bd.cell[c].error==1?this.fontErrcolor:this.fontAnscolor);
-					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 					var size = (bd.cell[c].qans<10?0.8:0.7);
-					this.dispnum(obj.numobj, 1, (""+bd.cell[c].qans), size, color, obj.px, obj.py);
+					this.dispnum(key_qans, 1, (""+bd.cell[c].qans), size, color, obj.px, obj.py);
 				}
+				else{ this.hideEL(key_qans);}
 
-				if(bd.cell[c].qnum==-1){ this.hideEL(obj.numobj2);}
-				else{
-					if(!obj.numobj2){ obj.numobj2 = this.CreateDOMAndSetNop();}
+				if(bd.cell[c].qnum!==-1){
 					var size = 0.45;
 					if     (bd.QnC(c)>=100000){ size = 0.30;}
 					else if(bd.QnC(c)>= 10000){ size = 0.36;}
-					this.dispnum(obj.numobj2, 5, (""+bd.cell[c].qnum), size, this.fontcolor, obj.px, obj.py);
+					this.dispnum(key_ques, 5, (""+bd.cell[c].qnum), size, this.fontcolor, obj.px, obj.py);
 				}
+				else{ this.hideEL(key_ques);}
 			}
 		};
 	},

@@ -196,13 +196,12 @@ Puzzles.wagiri.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var id = clist[i];
-				var num = bd.cell[id].qnum, obj = bd.cell[id];
-				if(num>=1 && num<=2){ text = ({1:"—Ö",2:"Ø"})[num];}
-				else if(num===-2){ text = "?";}
-				else{ this.hideEL(obj.numobj); continue;}
-
-				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-				this.dispnum(obj.numobj, 1, text, 0.70, this.getNumberColor(id), obj.px, obj.py);
+				var num = bd.cell[id].qnum, obj = bd.cell[id], key='cell_'+id;
+				if(num!==-1){
+					text = (num!==-2 ? ({1:"—Ö",2:"Ø"})[num] : "?");
+					this.dispnum(key, 1, text, 0.70, this.getNumberColor(id), obj.px, obj.py);
+				}
+				else{ this.hideEL(key);}
 			}
 		};
 

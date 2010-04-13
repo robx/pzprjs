@@ -212,11 +212,7 @@ MenuExec.prototype = {
 		this.displaymanage = !this.displaymanage;
 		this.dispmanstr();
 
-		base.resize_canvas_only();	// canvasの左上座標等を更新
-		bd.setcoordAll();	// 各セルのpx,py座標を更新
-
-		if(g.use.vml){ pc.flushCanvasAll();}	// VMLの位置がずれるので消さないと。。
-		pc.paintAll();	// 再描画
+		base.resize_canvas();	// canvasの左上座標等を更新して再描画
 	},
 	dispmanstr : function(){
 		if(!this.displaymanage){ ee('ms_manarea').el.innerHTML = menu.isLangJP()?"管理領域を表示":"Show management area";}

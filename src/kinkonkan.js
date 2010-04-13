@@ -35,7 +35,7 @@ Puzzles.kinkonkan.prototype = {
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
 		//k.def_csize = 36;
-		k.def_psize = 48;
+		k.def_psize = 4;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.EDITOR){
@@ -304,7 +304,7 @@ Puzzles.kinkonkan.prototype = {
 			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i];
-				var obj = bd.excell[c];
+				var obj = bd.excell[c], key = 'excell_'+c;
 
 				if(bd.excell[c].error===6){
 					g.fillStyle = this.errbcolor2;
@@ -314,9 +314,7 @@ Puzzles.kinkonkan.prototype = {
 				}
 				else{ this.vhide(header+c);}
 
-				if(bd.excell[c].direc===0 && bd.excell[c].qnum===-1){ this.hideEL(obj.numobj);}
-				else{
-					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
+				if(bd.excell[c].direc!==0 || bd.excell[c].qnum!==-1){
 					var num=bd.excell[c].qnum, canum=bd.excell[c].direc;
 
 					var color = this.fontErrcolor;
@@ -332,8 +330,9 @@ Puzzles.kinkonkan.prototype = {
 					else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
 					if(num>=0){ text+=num.toString(10);}
 
-					this.dispnum(obj.numobj, 1, text, fontratio, color, obj.px, obj.py);
+					this.dispnum(key, 1, text, fontratio, color, obj.px, obj.py);
 				}
+				else{ this.hideEL(key);}
 			}
 		};
 	},

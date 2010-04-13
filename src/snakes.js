@@ -204,11 +204,11 @@ Puzzles.snakes.prototype = {
 
 			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i], obj = bd.cell[c];
+				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
 				if(obj.qnum===-1 && obj.qans>0){
-					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-					this.dispnum(obj.numobj, 1, ""+obj.qans, 0.8, this.fontAnscolor, obj.px, obj.py);
+					this.dispnum(key, 1, ""+obj.qans, 0.8, this.fontAnscolor, obj.px, obj.py);
 				}
+				/* ïsóvÇ»ï∂éöÇÕdrawArrowNumbersÇ≈è¡ÇµÇƒÇ¢ÇÈÇÃÇ≈ÅAÇ±Ç±Ç≈ÇÕè¡Ç≥Ç»Ç¢ */
 			}
 		};
 	},

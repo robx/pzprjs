@@ -193,21 +193,21 @@ Puzzles.kaero.prototype = {
 
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i], obj = bd.cell[c];
-				if(bd.cell[c].qnum===-1){ this.hideEL(obj.numobj); continue;}
+				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
+				if(bd.cell[c].qnum!==-1){
+					var num=bd.cell[c].qnum;
 
-				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-				var num=bd.cell[c].qnum;
+					var color = (bd.cell[c].error===0 ? this.fontcolor : this.fontErrcolor);
 
-				var color = (bd.cell[c].error===0 ? this.fontcolor : this.fontErrcolor);
+					var text="";
+					if     (num==-2)         { text ="?";}
+					else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
+					else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
+					else{ text+=num;}
 
-				var text="";
-				if     (num==-2)         { text ="?";}
-				else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
-				else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
-				else{ text+=num;}
-
-				this.dispnum(obj.numobj, 1, text, 0.85, color, obj.px, obj.py);
+					this.dispnum(key, 1, text, 0.85, color, obj.px, obj.py);
+				}
+				else{ this.hideEL(key);}
 			}
 		};
 	},

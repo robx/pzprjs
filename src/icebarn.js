@@ -311,8 +311,8 @@ Puzzles.icebarn.prototype = {
 			el.style.left     = k.cv_oft.x + px+(!k.br.IE?2:4)+'px';
 			el.style.top      = k.cv_oft.y + py+(!k.br.IE?1:5)+'px';
 			el.style.color    = g.fillStyle;
+			el.style.display  = 'inline';
 			el.innerHTML      = text;
-			this.showEL(el);
 		};
 
 		line.repaintParts = function(idlist){

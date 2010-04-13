@@ -116,16 +116,17 @@ Puzzles.hitori.prototype = {
 
 				var clist = this.cellinside(bd.minbx, bd.minby, bd.maxbx, bd.maxby);
 				for(var i=0;i<clist.length;i++){
-					var c = clist[i], num = bd.getNum(c), obj = bd.cell[c];
-					if(num===-1){ this.hideEL(obj.numobj); continue;}
-					var text = (num>=0 ? num.toString() : "?");
+					var c = clist[i], num = bd.getNum(c), obj = bd.cell[c], key='cell_'+c;;
+					if(num!==-1){
+						var text = (num>=0 ? num.toString() : "?");
 
-					var color = this.fontcolor;
-					if(bd.cell[c].qans===1){ color = this.BCell_fontcolor;}
-					else if(bd.cell[c].error===1){ color = "red";}
+						var color = this.fontcolor;
+						if(bd.cell[c].qans===1){ color = this.BCell_fontcolor;}
+						else if(bd.cell[c].error===1){ color = "red";}
 
-					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-					this.dispnum(obj.numobj, 1, text, 0.8, color, obj.px, obj.py);
+						this.dispnum(key, 1, text, 0.8, color, obj.px, obj.py);
+					}
+					else{ this.hideEL(key);}
 				}
 				
 				ans.errDisp = true;

@@ -214,13 +214,12 @@ Puzzles.hakoiri.prototype = {
 		};
 
 		pc.dispnumCell = function(c){
-			var num = bd.getNum(c), obj = bd.cell[c];
-			if(num>=1 && num<=3){ text = ({1:"Åõ",2:"Å¢",3:"Å†"})[num];}
-			else if(num==-2)    { text = "?";}
-			else{ this.hideEL(obj.numobj); return;}
-
-			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-			this.dispnum(obj.numobj, 1, text, 0.8, this.getNumberColor(c), obj.px, obj.py);
+			var num = bd.getNum(c), obj = bd.cell[c], key='cell_'+c;
+			if(num!==-1){
+				var text = (num>0 ? ({1:"Åõ",2:"Å¢",3:"Å†"})[num] : "?");
+				this.dispnum(key, 1, text, 0.8, this.getNumberColor(c), obj.px, obj.py);
+			}
+			else{ this.hideEL(key);}
 		};
 	},
 

@@ -35,7 +35,7 @@ Puzzles.kakuro.prototype = {
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
 		//k.def_csize = 36;
-		k.def_psize = 40;
+		//k.def_psize = 24;
 		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
 
 		if(k.EDITOR){
@@ -177,16 +177,16 @@ Puzzles.kakuro.prototype = {
 
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
+				var c = clist[i], key = ['cell',c,'qans'].join('_');
 				var target = ((k.editmode&&c===tc.getTCC())?kc.detectTarget(c,-1):-1);
 
-				if(bd.cell[c].ques!=51 && bd.cell[c].qans>0){
+				if(bd.cell[c].ques!==51 && bd.cell[c].qans>0){
 					var obj = bd.cell[c];
-					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 					var color = (bd.cell[c].error===1 ? this.fontErrcolor : this.fontAnscolor);
 					var text  = ""+bd.cell[c].qans;
-					this.dispnum(obj.numobj, 1, text, 0.80, color, obj.px, obj.py);
+					this.dispnum(key, 1, text, 0.80, color, obj.px, obj.py);
 				}
+				else{ this.hideEL(key);}
 			}
 		};
 	},
