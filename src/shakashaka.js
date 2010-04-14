@@ -34,10 +34,6 @@ Puzzles.shakashaka.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
-
 		base.setTitle("シャカシャカ","ShakaShaka");
 		base.setExpression("　\"クリックした位置\"ではマス目の角のほうをクリックすることで三角形が入力できます。<br>　\"ドラッグ入力\"では斜め4方向にドラッグして三角形を入力できます。",
 						   " Click corner-side to input triangles if 'Position of Cell'.<br> Left Button Drag to skew-ward to input triangle if 'Drag Type'.");

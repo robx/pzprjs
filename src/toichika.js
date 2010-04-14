@@ -34,10 +34,6 @@ Puzzles.toichika.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		k.area = { bcell:0, wcell:0, number:1};	// areaオブジェクトで領域を生成する
-
 		if(k.EDITOR){
 			base.setExpression("　キーボードの左側や-キー等で、記号の入力ができます。",
 							   " Press left side of the keyboard or '-' key to input marks.");

@@ -194,11 +194,12 @@ Menu.prototype = {
 		ap('sep_file', 'file');
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
 		at('filesavep', 'file', 'ファイル保存 ->',  'Save the file as ... ->');
-		if(base.enableSaveImage){
-			at('imagesavep', 'file', '画像を保存 ->', 'Save as image file');
-		}
 		if(fio.dbm.DBaccept>0){
 			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
+		}
+		if(base.enableSaveImage){
+			ap('sep_image', 'file');
+			at('imagesavep', 'file', '画像を保存 ->', 'Save as image file');
 		}
 
 		// *ファイル - ファイル保存 -------------------------------------------
@@ -1004,7 +1005,7 @@ Properties.prototype = {
 		},
 		dispsize : function(){
 			menu.pop = ee("pop4_1");
-			document.dispsize.cs.value = k.def_csize;
+			document.dispsize.cs.value = k.cellsize;
 			k.enableKey = false;
 		},
 		keypopup : function(){

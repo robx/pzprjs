@@ -541,9 +541,9 @@ KeyPopup.prototype = {
 			obj.el.style.left   = "-"+(obj.x*bsize+1)+"px";
 		};
 
-		if(k.def_csize>=24){
-			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  k.def_csize);}
-			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], mf(k.def_csize*0.90));}
+		if(k.cellsize>=24){
+			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  k.cellsize);}
+			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], mf(k.cellsize*0.90));}
 		}
 		else{
 			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  22);}

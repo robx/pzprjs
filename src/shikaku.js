@@ -34,10 +34,6 @@ Puzzles.shikaku.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
-
 		base.setTitle("四角に切れ","Shikaku");
 		base.setExpression("　左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
 						   " Left Button Drag to input border lines, Right to input auxiliary marks.");

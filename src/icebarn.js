@@ -34,8 +34,9 @@ Puzzles.icebarn.prototype = {
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		k.def_psize = 36;
+		k.bdmargin = 1.0;				// 枠外の一辺のmargin(セル数換算)
+		k.reduceImageMargin = false;	// 画像出力時にmarginを小さくする
+
 		k.area = { bcell:0, wcell:0, number:0, disroom:1};	// areaオブジェクトで領域を生成する
 
 		if(k.EDITOR){

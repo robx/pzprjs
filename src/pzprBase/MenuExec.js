@@ -170,13 +170,13 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	imagesave : function(isDL){
 		// 現在の設定を保存する
-		var temp_flag = pc.fillTextPrecisely;
-		var temp_size = k.def_psize;
+		var temp_flag   = pc.fillTextPrecisely;
+		var temp_margin = k.bdmargin;
 		var temp_cursor = pp.getVal('cursor');
 
 		// 設定値・変数をcanvas用のものに変更
 		pc.fillTextPrecisely = true;
-		k.def_psize *= 0.1;
+		if(k.reduceImageMargin){ k.bdmargin = 0.1;}
 		pp.setVal('cursor', false);
 		g = ee('divques_sub').el.getContext("2d");
 
@@ -198,7 +198,7 @@ MenuExec.prototype = {
 
 		// 設定値・変数を元に戻す
 		pc.fillTextPrecisely = temp_flag;
-		k.def_psize = temp_size;
+		k.bdmargin = temp_margin;
 		pp.setVal('cursor', temp_cursor);
 		base.initCanvas();
 
@@ -212,12 +212,8 @@ MenuExec.prototype = {
 	dispsize : function(e){
 		if(menu.pop){
 			var csize = parseInt(document.dispsize.cs.value);
+			if(csize>0){ k.cellsize = mf(csize);}
 
-			if(csize>0){
-				k.def_psize = mf(csize*(k.def_psize/k.def_csize));
-				if(k.def_psize===0){ k.def_psize=1;}
-				k.def_csize = mf(csize);
-			}
 			menu.popclose();
 			base.resize_canvas();	// Canvasを更新する
 		}

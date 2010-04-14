@@ -240,20 +240,20 @@ PBase.prototype = {
 	},
 	resize_canvas : function(){
 		var wwidth = ee.windowWidth()-6;	//  margin/borderがあるので、適当に引いておく
-		var cols   = (bd.maxbx-bd.minbx)/2+(2*k.def_psize/k.def_csize); // canvasの横幅がセル何個分に相当するか
-		var rows   = (bd.maxby-bd.minby)/2+(2*k.def_psize/k.def_csize); // canvasの縦幅がセル何個分に相当するか
+		var cols   = (bd.maxbx-bd.minbx)/2+2*k.bdmargin; // canvasの横幅がセル何個分に相当するか
+		var rows   = (bd.maxby-bd.minby)/2+2*k.bdmargin; // canvasの縦幅がセル何個分に相当するか
 
 		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[k.widthmode];
 		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
-		ci[0] = (wwidth*ws.base )/(k.def_csize*cr.base );
-		ci[1] = (wwidth*ws.limit)/(k.def_csize*cr.limit);
+		ci[0] = (wwidth*ws.base )/(k.cellsize*cr.base );
+		ci[1] = (wwidth*ws.limit)/(k.cellsize*cr.limit);
 
 		var mwidth = wwidth*ws.base-4; // margin/borderがあるので、適当に引いておく
 
 		// 特に縮小が必要ない場合
 		if(!pp.getVal('adjsize') || cols < ci[0]){
 			mwidth = wwidth*ws.base-4;
-			k.cwidth = k.cheight = mf(k.def_csize*cr.base);
+			k.cwidth = k.cheight = mf(k.cellsize*cr.base);
 		}
 		// base～limit間でサイズを自動調節する場合
 		else if(cols < ci[1]){
@@ -264,7 +264,7 @@ PBase.prototype = {
 		// 自動調整の下限値を超える場合
 		else{
 			mwidth = wwidth*ws.limit-4;
-			k.cwidth = k.cheight = mf(k.def_csize*cr.limit);
+			k.cwidth = k.cheight = mf(k.cellsize*cr.limit);
 		}
 		k.bwidth  = k.cwidth/2; k.bheight = k.cheight/2;
 
@@ -272,7 +272,7 @@ PBase.prototype = {
 		ee('main').el.style.width = ''+mf(mwidth)+'px';
 
 		// 盤面のセルID:0が描画される位置の設定
-		k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
+		k.p0.x = k.p0.y = mf(k.cwidth*k.bdmargin);
 		// extendxell==0でない時は位置をずらす
 		if(k.isextendcell!==0){ k.p0.x += k.cwidth; k.p0.y += k.cheight;}
 

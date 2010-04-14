@@ -34,10 +34,6 @@ Puzzles.sudoku.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
-
 		base.setTitle("数独","Sudoku");
 		base.setExpression("　キーボードやマウスで数字が入力できます。",
 						   " It is available to input number by keybord or mouse");

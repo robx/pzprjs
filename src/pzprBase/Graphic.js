@@ -1400,7 +1400,7 @@ Graphic.prototype = {
 			};
 			this.flushCanvas = function(x1,y1,x2,y2){
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
-				g.fillRect(k.p0.x+x1*this.cw, k.p0.y+y1*this.ch, (x2-x1+1)*this.cw, (y2-y1+1)*this.ch);
+				g.fillRect(k.p0.x+x1*this.bw, k.p0.y+y1*this.bh, (x2-x1)*this.bw, (y2-y1)*this.bh);
 			};
 			this.vnop  = f_true;
 			this.vhide = f_true;

@@ -34,10 +34,6 @@ Puzzles.loopsp.prototype = {
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
-
 		if(k.EDITOR){
 			base.setExpression("　問題の記号はQWEASDFの各キーで入力できます。<br>Rキーや-キーで消去できます。数字キーで数字を入力できます。",
 							   " Press each QWEASDF key to input question. <br> Press 'R' or '-' key to erase. Number keys to input numbers.");

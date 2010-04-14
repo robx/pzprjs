@@ -34,10 +34,6 @@ Puzzles.tilepaint.prototype = {
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
-
 		if(k.EDITOR){
 			base.setExpression("　左クリックで境界線や数字のブロックが、右クリックで下絵が入力できます。数字を入力する場所はSHIFTキーを押すと切り替えられます。",
 							   " Left Click to input border lines or number block, Right Click to paint a design. Press SHIFT key to change the side of inputting numbers.");

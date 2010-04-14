@@ -41,8 +41,10 @@ var k = {
 	ispzprv3ONLY  : 0,		// ぱずぷれv3にしかないパズル
 	isKanpenExist : 0,		// pencilbox/カンペンにあるパズル
 
-	def_csize : 36,			// デフォルトのセルサイズ
-	def_psize : 24,			// デフォルトの枠外marginサイズ
+	cellsize          : 36,		// デフォルトのセルサイズ
+	bdmargin          : 0.70,	// 枠外の一辺のmargin(セル数換算)
+	reduceImageMargin : true,	// 画像出力時にmarginを小さくする
+
 	area : { bcell:0, wcell:0, number:0, disroom:0},	// areaオブジェクトで領域を生成する
 
 	// 内部で自動的に設定されるグローバル変数

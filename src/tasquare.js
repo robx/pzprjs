@@ -34,8 +34,6 @@ Puzzles.tasquare.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3だけ
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		//k.def_psize = 24;
 		k.area = { bcell:1, wcell:1, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("たすくえあ","Tasquare");

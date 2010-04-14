@@ -34,10 +34,6 @@ Puzzles.slither.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
-
 		base.setTitle("スリザーリンク","Slitherlink");
 		base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
 						   " Left Button Drag to input black cells, Right Click to input a cross.");

@@ -34,10 +34,6 @@ Puzzles.goishi.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
-
 		base.setTitle("碁石ひろい","Goishi");
 		if(k.EDITOR){
 			base.setExpression("　左クリックで○に順番を表す数字が、右クリックor押しっぱなしで元に戻せます。URL生成時、碁石のない部分は自動的にカットされます。",

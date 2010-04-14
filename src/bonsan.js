@@ -34,10 +34,6 @@ Puzzles.bonsan.prototype = {
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
-
 		base.setTitle("ぼんさん/へやぼん","Bonsan/Heya-Bon");
 		base.setExpression("　左ドラッグで線が、マスのクリックでセルの背景色が入力できます。",
 						   " Left Button Drag to input lines, Click the cell to input background color of the cell.");

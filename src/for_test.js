@@ -34,10 +34,6 @@ debug.extend({
 			if(debug.phase != 99){ return;}
 
 			var newid = debug.urls[pnum][0];
-			k.qcols = 0;
-			k.qrows = 0;
-			k.area = { bcell:0, wcell:0, number:0};
-
 			debug.reload_func(newid);
 
 			enc.parseURI_pzpr.apply(enc, [debug.urls[pnum][1]]);
@@ -55,8 +51,10 @@ debug.extend({
 	reload_func : function(newid){
 		base.initProcess = true;
 
+		// 各パズルでオーバーライドしているものを、元に戻す
 		if(base.proto){ puz.protoOriginal();}
 
+		// 各HTML要素等を初期化する
 		menu.menureset();
 		base.numparent.innerHTML = '';
 		if(kp.ctl[1].enable){ kp.ctl[1].el.innerHTML = '';}
@@ -64,6 +62,7 @@ debug.extend({
 
 		ee.clean();
 
+		// idを取得して、ファイルを読み込み
 		k.puzzleid = newid;
 		if(!Puzzles[k.puzzleid]){
 			var _script = _doc.createElement('script');
@@ -73,9 +72,19 @@ debug.extend({
 			_doc.body.appendChild(_script);	// headじゃないけど、、しょうがないかぁ。。
 		}
 
+		// 各種パラメータのうち各パズルで初期化されないやつをここで初期化
+		k.qcols = 0;
+		k.qrows = 0;
+		k.cellsize = 36;
+		k.bdmargin = 0.70;
+		k.reduceImageMargin = true;
+		k.area = { bcell:0, wcell:0, number:0};
+
+		// 通常preload_funcで初期化されるenc,fioをここで生成する
 		enc = new Encode();
 		fio = new FileIO();
 
+		// onload後の初期化ルーチンへジャンプする
 		base.initObjects();
 		base.setEvents(false);
 

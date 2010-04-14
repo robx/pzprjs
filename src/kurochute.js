@@ -34,8 +34,6 @@ Puzzles.kurochute.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		//k.def_psize = 16;
 		k.area = { bcell:0, wcell:1, number:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("クロシュート","Kurochute");

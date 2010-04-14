@@ -35,10 +35,6 @@ Puzzles.barns.prototype = {
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
-
 		if(k.EDITOR){
 			base.setExpression("　左ドラッグで境界線が、右クリックで氷が入力できます。",
 							   " Left Button Drag to input border lines, Right Click to input ice.");
