@@ -1405,7 +1405,10 @@ Graphic.prototype = {
 			this.vnop  = f_true;
 			this.vhide = f_true;
 			this.vdel  = f_true;
-			this.vinc  = f_true;
+			this.vinc = function(layerid, rendering){
+				g.setLayer(layerid);
+				if(rendering){ g.setRendering(rendering);}
+			};
 		}
 		else{
 			this.flushCanvasAll = function(x1,y1,x2,y2){
@@ -1634,6 +1637,7 @@ Graphic.prototype = {
 				g.fillText(text, px, py);
 			}
 			else{
+				if(type==52||type==54){ px--; type-=50;}	// excellÇÃ[Å_]ëŒâû..
 				g.textAlign    = ((type==3||type==4)?'right':'left');
 				g.textBaseline = ((type==2||type==3)?'alphabetic':'top');
 				g.fillText(text, px+((type==3||type==4)?this.cw:3), py+((type==2||type==3)?this.ch-1:0));

@@ -1,4 +1,4 @@
-// Camp.js rev83
+// Camp.js rev84
  
 (function(){
 
@@ -950,24 +950,24 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	setLinePath : function(){
 		var _args = arguments, _len = _args.length;
 		for(var i=0,len=_len-((_len|1)?1:2);i<len;i+=2){
-			var a1 = (this.isedge ? _mr(_args[i])   : _args[i]);
-				a2 = (this.isedge ? _mr(_args[i+1]) : _args[i+1]);
+			var a1 = (this.isedge ? _mr(_args[i]  +this.OFFSETX) : _args[i]  +this.OFFSETX);
+				a2 = (this.isedge ? _mr(_args[i+1]+this.OFFSETY) : _args[i+1]+this.OFFSETY);
 			if(i==0){ this.context.moveTo(a1,a2);}
 			else    { this.context.lineTo(a1,a2);}
 		}
 		if(_args[_len-1]){ this.context.closePath();}
 	},
 	setOffsetLinePath : function(){
-		var _args = arguments, _len = _args.length, m=[];
+		var _args = arguments, _len = _args.length, m=[_args[0]+this.OFFSETX,_args[1]+this.OFFSETY];
 		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
-			m[i] = _args[i] + m[0];
+			m[i]   = _args[i]   + m[0];
 			m[i+1] = _args[i+1] + m[1];
 		}
-		for(var i=0,len=_len-((_len|1)?1:2);i<len;i+=2){
-			var a1 = (this.isedge ? _mr(_args[i])   : _args[i]);
-				a2 = (this.isedge ? _mr(_args[i+1]) : _args[i+1]);
-			if(i==0){ this.context.moveTo(a1,a2);}
-			else    { this.context.lineTo(a1,a2);}
+		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
+			var a1 = (this.isedge ? _mr(m[i])   : m[i]);
+				a2 = (this.isedge ? _mr(m[i+1]) : m[i+1]);
+			if(i===2){ this.context.moveTo(a1,a2);}
+			else     { this.context.lineTo(a1,a2);}
 		}
 		if(_args[_len-1]){ this.context.closePath();}
 	},
