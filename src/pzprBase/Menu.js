@@ -195,7 +195,7 @@ Menu.prototype = {
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
 		at('filesavep', 'file', 'ファイル保存 ->',  'Save the file as ... ->');
 		if(base.enableSaveImage){
-			as('imagesave', 'file', '盤面を画像で保存', 'Save as image file');
+			at('imagesavep', 'file', '画像を保存 ->', 'Save as image file');
 		}
 		if(fio.dbm.DBaccept>0){
 			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
@@ -205,6 +205,12 @@ Menu.prototype = {
 		as('filesave',  'filesavep', 'ぱずぷれv3形式',  'Puz-Pre v3 format');
 		if(this.ispencilbox){
 			as('filesave2', 'filesavep', 'pencilbox形式', 'Pencilbox format');
+		}
+
+		// *ファイル - 画像を保存 -------------------------------------------
+		if(base.enableSaveImage){
+			as('imagedl',   'imagesavep', '画像をダウンロード', 'Download the image');
+			as('imagesave', 'imagesavep', '別ウィンドウで開く', 'Open another window');
 		}
 
 		// *編集 ==============================================================
@@ -969,7 +975,8 @@ Properties.prototype = {
 		fileopen  : function(){ menu.pop = ee("pop1_4");},
 		filesave  : function(){ menu.ex.filesave(fio.PZPR);},
 		filesave2 : function(){ if(!!fio.kanpenSave){ menu.ex.filesave(fio.PBOX);}},
-		imagesave : function(){ menu.ex.imagesave();},
+		imagedl   : function(){ menu.ex.imagesave(true);},
+		imagesave : function(){ menu.ex.imagesave(false);},
 		database  : function(){ menu.pop = ee("pop1_8"); fio.dbm.openDialog();},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},

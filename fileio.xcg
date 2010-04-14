@@ -1,35 +1,20 @@
 #!/usr/local/bin/perl
 
 use CGI;
-
-#&decode();
+use MIME::Base64;
 
 my $q = new CGI;
 
-if($q->param('operation') eq 'save'){
-	printf("Content-type: application/octet-stream\n");
-	printf("Content-Disposition: attachment; filename=\"%s\"\n", $q->param('filename'));
-	printf("\n");
+if   ($q->param('operation') eq 'save')     { &fileopen();}
+elsif($q->param('operation') eq 'open')     { &filesave();}
+elsif($q->param('operation') eq 'imagesave'){ &imagesave();}
 
-	#$rn = '';
-	#if($q->param('platform') eq 'Win'){ $rn = "\015\012";}
-	#elsif($q->param('platform') eq 'Mac'){ $rn = "\015";}
-	#else{ $rn = "\012";}
+exit(0);
 
-	$rn = "\012";
-
-	my @lines = split(/\//, $q->param('ques'));
-
-	if($#lines>=3){
-		for(@lines){ printf "$_$rn";}
-	}
-
-	if($q->param('urlstr')){
-		printf "$rn";
-		printf "%s$rn",$q->param('urlstr');
-	}
-}
-else{
+######################
+# ファイルを開く処理 #
+######################
+sub fileopen{
 	my($buffer);
 
 	my($str);
@@ -60,11 +45,7 @@ else{
 <HEAD>
 <META NAME="robots" CONTENTS="noindex,nofollow">
 <script type="text/javascript">
-<!--
-EOL
-	printf("if(parent.base){ parent.menu.ex.fileonload(\"$str\");}\n");
-	print <<"EOL";
-//-->
+if(parent.base){ parent.menu.ex.fileonload(\"$str\");}
 </script>
 </HEAD>
 <BODY>
@@ -74,36 +55,42 @@ EOL
 EOL
 }
 
-exit(0);
+####################
+# ファイル保存処理 #
+####################
+sub filesave{
+	printf("Content-type: application/octet-stream\n");
+	printf("Content-Disposition: attachment; filename=\"%s\"\n", $q->param('filename'));
+	printf("\n");
 
-#---------------
-# デコード処理 |
-#---------------
+	#$rn = '';
+	#if($q->param('platform') eq 'Win'){ $rn = "\015\012";}
+	#elsif($q->param('platform') eq 'Mac'){ $rn = "\015";}
+	#else{ $rn = "\012";}
 
-sub decode{
-    my($encoding) = @_;
-    $method = $ENV{'REQUEST_METHOD'};
-    local($query, $key, $val, @in);
+	$rn = "\012";
 
-    if($method eq 'GET') { $query = $ENV{'QUERY_STRING'}; }
-    elsif($method eq 'POST') { read(STDIN, $query, $ENV{'CONTENT_LENGTH'}); }
+	my @lines = split(/\//, $q->param('ques'));
 
-    local(@query) = split(/&/, $query);
-    foreach(@query){
-        tr/+/ /;
-        ($key, $val) = split(/=/);
+	if($#lines>=3){
+		for(@lines){ printf "$_$rn";}
+	}
 
-        # %HH 形式の部分のデコード
+	if($q->param('urlstr')){
+		printf "$rn";
+		printf "%s$rn",$q->param('urlstr');
+	}
+}
 
-        $key =~ s/%([A-Fa-f0-9][A-Fa-f0-9])/pack("c", hex($1))/ge;
-        $val =~ s/%([A-Fa-f0-9][A-Fa-f0-9])/pack("c", hex($1))/ge;
-        $val =~ s/\r\n/\n/g;
+################
+# 画像保存処理 #
+################
+sub imagesave{
+	printf("Content-type: application/octet-stream\n");
+	printf("Content-Disposition: attachment; filename=\"%s\"\n", $q->param('filename'));
+	printf("\n");
 
-        # jcode.pl を使うときは＃をはずす．．．
-        #jcode'convert(*key, $encoding) if ($encoding);
-        #jcode'convert(*val, $encoding) if ($encoding);
-
-        $in{$key} = $val;
-    }
-    return *in;
+	if($q->param('urlstr')){
+		print decode_base64($q->param('urlstr'));
+	}
 }

@@ -160,6 +160,7 @@ MenuExec.prototype = {
 
 		document.fileform2.ques.value   = fio.fileencode(ftype);
 		document.fileform2.urlstr.value = fio.urlstr;
+		document.fileform2.operation.value = 'save';
 
 		document.fileform2.submit();
 	},
@@ -167,7 +168,7 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	// menu.ex.imagesave() ‰æ‘œ‚ğ•Û‘¶‚·‚é
 	//------------------------------------------------------------------------------
-	imagesave : function(){
+	imagesave : function(isDL){
 		// Œ»İ‚Ìİ’è‚ğ•Û‘¶‚·‚é
 		var temp_flag = pc.fillTextPrecisely;
 		var temp_size = k.def_psize;
@@ -185,7 +186,15 @@ MenuExec.prototype = {
 		// canvas‚Ì•`‰æ“à—e‚ğDataURL‚Æ‚µ‚Äæ“¾‚·‚é
 		var url = g.canvas.toDataURL();
 
-		window.open(url, '', '');
+		if(isDL){
+			document.fileform2.filename.value  = k.puzzleid+'.gif';
+			document.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
+			document.fileform2.operation.value = 'imagesave';
+			document.fileform2.submit();
+		}
+		else{
+			window.open(url, '', '');
+		}
 
 		// İ’è’lE•Ï”‚ğŒ³‚É–ß‚·
 		pc.fillTextPrecisely = temp_flag;
