@@ -165,6 +165,39 @@ MenuExec.prototype = {
 	},
 
 	//------------------------------------------------------------------------------
+	// menu.ex.imagesave() 画像を保存する
+	//------------------------------------------------------------------------------
+	imagesave : function(){
+		// 現在の設定を保存する
+		var temp_flag = pc.fillTextPrecisely;
+		var temp_size = k.def_psize;
+		var temp_cursor = pp.getVal('cursor');
+
+		// 設定値・変数をcanvas用のものに変更
+		pc.fillTextPrecisely = true;
+		k.def_psize *= 0.1;
+		pp.setVal('cursor', false);
+		g = ee('divques_sub').el.getContext("2d");
+
+		// canvas要素の設定を適用して、再描画
+		base.resize_canvas();
+
+		// canvasの描画内容をDataURLとして取得する
+		var url = g.canvas.toDataURL();
+
+		window.open(url, '', '');
+
+		// 設定値・変数を元に戻す
+		pc.fillTextPrecisely = temp_flag;
+		k.def_psize = temp_size;
+		pp.setVal('cursor', temp_cursor);
+		base.initCanvas();
+
+		// その他の設定を元に戻して、再描画
+		base.resize_canvas();
+	},
+
+	//------------------------------------------------------------------------------
 	// menu.ex.dispsize()  Canvasでのマス目の表示サイズを変更する
 	//------------------------------------------------------------------------------
 	dispsize : function(e){

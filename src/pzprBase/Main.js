@@ -10,10 +10,10 @@ PBase = function(){
 	this.proto        = 0;	// 各クラスのprototypeがパズル用スクリプトによって変更されているか
 	this.expression   = { ja:'' ,en:''};
 	this.puzzlename   = { ja:'' ,en:''};
-	this.canvas       = null;	// HTMLソースのCanvasを示すエレメント
 	this.numparent    = null;	// 'numobj_parent'を示すエレメント
 	this.resizetimer  = null;	// resizeタイマー
 	this.initProcess  = true;	// 初期化中かどうか
+	this.enableSaveImage = false;	// 画像保存が有効か
 };
 PBase.prototype = {
 	//---------------------------------------------------------------------------
@@ -56,8 +56,11 @@ PBase.prototype = {
 	// base.translationEN() 日本語環境でない場合、デフォルトで英語表示にする
 	//---------------------------------------------------------------------------
 	onload_func : function(){
-		//Camp.select('canvas');
 		Camp('divques');
+		if(Camp.enable.canvas && !!document.createElement('canvas').toDataURL){
+			this.enableSaveImage = true;
+			Camp('divques_sub', 'canvas');
+		}
 
 		var self = this;
 		var tim = setInterval(function(){
@@ -80,9 +83,9 @@ PBase.prototype = {
 	},
 
 	initCanvas : function(){
-		this.canvas = ee('divques').unselectable().el;	// Canvas
 		this.numparent = ee('numobj_parent').el;		// 数字表示用
-		g = this.canvas.getContext("2d");
+		var canvas = ee('divques').unselectable().el;	// Canvas
+		g = canvas.getContext("2d");
 	},
 
 	initObjects : function(){
@@ -115,10 +118,11 @@ PBase.prototype = {
 		if(!!puz.finalfix){ puz.finalfix();}		// パズル固有の後付け設定
 	},
 	setEvents : function(first){
-		this.canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
-		this.canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
-		this.canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
-		this.canvas.oncontextmenu = function(){ return false;};
+		var canvas = ee('divques').el;
+		canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+		canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+		canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
+		canvas.oncontextmenu = function(){ return false;};
 
 		this.numparent.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
 		this.numparent.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
