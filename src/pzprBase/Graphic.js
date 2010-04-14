@@ -1133,7 +1133,7 @@ Graphic.prototype = {
 			var cpx = k.p0.x + tc.cursolx*this.bw;
 			var cpy = k.p0.y + tc.cursoly*this.bh;
 			var w, size;
-			if(islarge!==false){ w = mf(Math.max(this.cw/16, 2)); size = this.bw-1;}
+			if(islarge!==false){ w = mf(Math.max(this.cw/16, 2)); size = this.bw-0.5;}
 			else	           { w = mf(Math.max(this.cw/24, 1)); size = this.bw*0.56;}
 
 			this.vdel(["ti1_","ti2_","ti3_","ti4_"]);
@@ -1251,12 +1251,12 @@ Graphic.prototype = {
 		if(g.use.canvas){
 			g.fillStyle = this.gridcolor;
 			for(var i=xa;i<=xb;i+=2){
-				for(var j=(k.p0.y+y1*this.bh),len=(k.p0.y+(y2+1)*this.bh);j<len;j+=(2*dotSize)){
+				for(var j=(k.p0.y+y1*this.bh),len=(k.p0.y+y2*this.bh);j<len;j+=(2*dotSize)){
 					g.fillRect(k.p0.x+i*this.bw, j, 1, dotSize);
 				}
 			}
 			for(var i=ya;i<=yb;i+=2){
-				for(var j=(k.p0.x+x1*this.bw),len=(k.p0.x+(x2+1)*this.cw);j<len;j+=(2*dotSize)){
+				for(var j=(k.p0.x+x1*this.bw),len=(k.p0.x+x2*this.bw);j<len;j+=(2*dotSize)){
 					g.fillRect(j, k.p0.y+i*this.bh, dotSize, 1);
 				}
 			}
@@ -1630,7 +1630,7 @@ Graphic.prototype = {
 			g.fillStyle = color;
 			if(type==1||type==6||type==7){
 				g.textAlign = 'center'; g.textBaseline = 'middle';
-				g.fillText(text, px+mf(this.cw/2)-(type==6?mf(this.cw*0.1):0), py+mf(this.ch/2)+(type==7?mf(this.ch*0.1):0));
+				g.fillText(text, px+this.bw-(type==6?mf(this.cw*0.1):0), py+this.bh+(type==7?mf(this.ch*0.1):0));
 			}
 			else if(type==101){
 				g.textAlign = 'center'; g.textBaseline = 'middle';
