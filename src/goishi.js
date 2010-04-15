@@ -68,7 +68,7 @@ Puzzles.goishi.prototype = {
 
 	protoChange : function(){
 		Timer.prototype.startMouseUndoTimer = function(){
-			this.undoWaitCount = this.undoStartCount;
+			this.undoWaitCount = this.undoWaitTime/this.undoInterval;
 			if(!this.TIDundo){ this.TIDundo = setInterval(ee.binder(this, this.procMouseUndo), this.undoInterval);}
 			this.execMouseUndo();
 		};

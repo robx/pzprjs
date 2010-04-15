@@ -322,7 +322,7 @@ Menu.prototype = {
 	//---------------------------------------------------------------------------
 	createAllFloat : function(){
 		var _IE6 = false;
-		if(k.br.IE && navigator.userAgent.match(/MSIE (\d+)/)){
+		if(navigator.userAgent.match(/MSIE (\d+)/)){
 			if(parseInt(RegExp.$1)<=7){ _IE6=true;}
 		}
 
@@ -456,11 +456,11 @@ Menu.prototype = {
 		var rect = ee(ee.getSrcElement(e).id).getRect();
 		var _float = this.floatpanel[idname];
 		if(depth==0){
-			_float.style.left = rect.left   + 1 + k.IEMargin.x + 'px';
-			_float.style.top  = rect.bottom + 1 + k.IEMargin.y + 'px';
+			_float.style.left = rect.left   + 1 + 'px';
+			_float.style.top  = rect.bottom + 1 + 'px';
 		}
 		else{
-			if(!k.br.IE){
+			if(!k.br.IEmoz4){
 				_float.style.left = rect.right - 3 + 'px';
 				_float.style.top  = rect.top   - 3 + 'px';
 			}
@@ -759,8 +759,8 @@ Menu.prototype = {
 		// ポップアップメニューを表示する
 		if(this.pop){
 			var _pop = this.pop.el;
-			_pop.style.left = ee.pageX(e) - 8 + k.IEMargin.x + 'px';
-			_pop.style.top  = ee.pageY(e) - 8 + k.IEMargin.y + 'px';
+			_pop.style.left = ee.pageX(e) - 8 + 'px';
+			_pop.style.top  = ee.pageY(e) - 8 + 'px';
 			_pop.style.display = 'inline';
 		}
 	},
@@ -1101,13 +1101,13 @@ var debug = {
 	},
 	timeeval : function(text,func){
 		this.addTA(text);
-		var count=0, old = (new Date()).getTime();
-		while((new Date()).getTime() - old < 3000){
+		var count=0, old = tm.now();
+		while(tm.now() - old < 3000){
 			count++;
 
 			func();
 		}
-		var time = (new Date()).getTime() - old;
+		var time = tm.now() - old;
 
 		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
 	},

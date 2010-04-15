@@ -37,7 +37,7 @@ Puzzles.creek.prototype = {
 		k.bdmargin = 0.70;				// 枠外の一辺のmargin(セル数換算)
 		k.reduceImageMargin = false;	// 画像出力時にmarginを小さくする
 
-		k.area = { bcell:0, wcell:1, number:0};	// areaオブジェクトで領域を生成する
+		k.area = { bcell:0, wcell:1, number:0, disroom:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("クリーク","Creek");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マスを入力できます。",

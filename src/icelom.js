@@ -322,7 +322,6 @@ Puzzles.icelom.prototype = {
 			g.fillStyle = (bd.border[bd.arrowin].error===3 ? this.errcolor1 : this.Cellcolor);
 			var bx = bd.border[bd.arrowin].bx, by = bd.border[bd.arrowin].by;
 			var px = bd.border[bd.arrowin].px, py = bd.border[bd.arrowin].py;
-			if(!g.use.canvas){ var IE = k.br.IE; px-=(IE?3:2), py-=(IE?2:1);} // dispnumì‡Ç≈í≤êﬂÇ≥ÇÍÇÈï™Çà¯Ç≠
 			if     (by===bd.minby){ this.dispnum("string_in", 1, "IN", 0.55, "black", px,             py-0.6*this.ch);}
 			else if(by===bd.maxby){ this.dispnum("string_in", 1, "IN", 0.55, "black", px,             py+0.6*this.ch);}
 			else if(bx===bd.minbx){ this.dispnum("string_in", 1, "IN", 0.55, "black", px-0.5*this.cw, py-0.3*this.ch);}
@@ -331,7 +330,6 @@ Puzzles.icelom.prototype = {
 			g.fillStyle = (bd.border[bd.arrowout].error===3 ? this.errcolor1 : this.Cellcolor);
 			var bx = bd.border[bd.arrowout].bx, by = bd.border[bd.arrowout].by;
 			var px = bd.border[bd.arrowout].px, py = bd.border[bd.arrowout].py;
-			if(!g.use.canvas){ var IE = k.br.IE; px-=(IE?3:2), py-=(IE?2:1);} // dispnumì‡Ç≈í≤êﬂÇ≥ÇÍÇÈï™Çà¯Ç≠
 			if     (by===bd.minby){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px,             py-0.6*this.ch);}
 			else if(by===bd.maxby){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px,             py+0.6*this.ch);}
 			else if(bx===bd.minbx){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px-0.7*this.cw, py-0.3*this.ch);}

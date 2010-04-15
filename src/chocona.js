@@ -34,7 +34,7 @@ Puzzles.chocona.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
-		k.area = { bcell:1, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.area = { bcell:1, wcell:0, number:0, disroom:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("チョコナ", "Chocona");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",

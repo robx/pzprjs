@@ -34,7 +34,7 @@ Puzzles.nanro.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
 
-		k.area = { bcell:0, wcell:0, number:1};	// areaオブジェクトで領域を生成する
+		k.area = { bcell:0, wcell:0, number:1, disroom:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("ナンロー","Nanro");
 		base.setExpression("　数字などをクリックして動かすことで、数字を入力することができます。右クリックしてマウスを動かして×を入力することもできます。",

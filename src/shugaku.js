@@ -34,7 +34,7 @@ Puzzles.shugaku.prototype = {
 		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
-		k.area = { bcell:1, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.area = { bcell:1, wcell:0, number:0, disroom:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("修学旅行の夜","School Trip");
 		base.setExpression("　マウスの左ボタンドラッグで布団を、右ボタンで通路を入力できます。",

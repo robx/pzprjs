@@ -34,7 +34,7 @@ Puzzles.hakoiri.prototype = {
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
-		k.area = { bcell:0, wcell:0, number:1};	// areaオブジェクトで領域を生成する
+		k.area = { bcell:0, wcell:0, number:1, disroom:0};	// areaオブジェクトで領域を生成する
 
 		if(k.EDITOR){
 			base.setExpression("　キーボードの左側や-キー等で、記号の入力ができます。",

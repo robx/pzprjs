@@ -113,7 +113,7 @@ KeyEvent.prototype = {
 		else{ return '';}
 	},
 	getKeyCode : function(e){
-		return (k.br.IE || e.keyCode) ? e.keyCode: e.charCode;
+		return !!e.keyCode ? e.keyCode: e.charCode;
 	},
 
 	//---------------------------------------------------------------------------
@@ -489,8 +489,8 @@ KeyPopup.prototype = {
 	display : function(){
 		var mode = pp.getVal('mode');
 		if(this.ctl[mode].el && this.ctl[mode].enable && pp.getVal('keypopup') && mv.btn.Left){
-			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputPos.x - 3 + k.IEMargin.x + 'px';
-			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputPos.y - 3 + k.IEMargin.y + 'px';
+			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputPos.x - 3 + 'px';
+			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputPos.y - 3 + 'px';
 			this.ctl[mode].el.style.zIndex = 100;
 
 			if(this.ctl[mode].target==k.CELL){

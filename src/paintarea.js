@@ -34,7 +34,7 @@ Puzzles.paintarea.prototype = {
 		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
-		k.area = { bcell:1, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.area = { bcell:1, wcell:0, number:0, disroom:0};	// areaオブジェクトで領域を生成する
 
 		base.setTitle("ペイントエリア","Paintarea");
 		base.setExpression("　左クリックで黒タイルが、右クリックで白タイル確定タイルが入力できます。",

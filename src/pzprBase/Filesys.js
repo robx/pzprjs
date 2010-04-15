@@ -641,13 +641,13 @@ DataBaseManager.prototype = {
 			catch(e){}
 		}
 
-		// 以下はGears用(gears_init.jsの判定ルーチン)
+		// 以下はGears用(gears_init.jsの判定ルーチン的なもの)
 		// Google Chorme用(既にGearsが存在するか判定)
 		try{
-			if((window.google && google.gears) || 
-			   (k.br.Gecko && (typeof GearsFactory != 'undefined')) || 
-			   (k.br.IE && !!window.ActiveXObject && (!!(new ActiveXObject('Gears.Factory')))) || 
-			   (k.br.WebKit && navigator.mimeTypes["application/x-googlegears"]))
+			if((window.google && google.gears) || // 既にGearsが初期化済
+			   (typeof GearsFactory != 'undefined') || 										// Firefoxの時
+			   (!!window.ActiveXObject && (!!(new ActiveXObject('Gears.Factory')))) ||		// IEの時
+			   (!!navigator.mimeTypes && navigator.mimeTypes["application/x-googlegears"]))	// Webkitの時
 			{ this.DBaccept |= 0x01;}
 		}
 		catch(e){}
@@ -854,7 +854,7 @@ DataBaseManager.prototype = {
 		}
 		this.DBlist[id].col   = k.qcols;
 		this.DBlist[id].row   = k.qrows;
-		this.DBlist[id].time  = mf((new Date()).getTime()/1000);
+		this.DBlist[id].time  = mf(tm.now()/1000);
 
 		this.dbh.saveDataTable(this, id);
 		this.update();
@@ -958,7 +958,7 @@ DataBaseHandler_LS.prototype = {
 	updateManageData : function(parent){
 		var mheader = 'pzprv3_manage:manage!'+k.puzzleid;
 		localStorage[mheader+'!count'] = parent.DBlist.length;
-		localStorage[mheader+'!time']  = mf((new Date()).getTime()/1000);
+		localStorage[mheader+'!time']  = mf(tm.now()/1000);
 	},
 
 	//---------------------------------------------------------------------------
@@ -1079,7 +1079,7 @@ DataBaseHandler_SQL.prototype = {
 	},
 	updateManageData : function(parent){
 		var count = parent.DBlist.length;
-		var time = mf((new Date()).getTime()/1000);
+		var time = mf(tm.now()/1000);
 		this.dbmgr.transaction( function(tx){
 			tx.executeSql('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)', [k.puzzleid, '1.0', count, time]);
 		});

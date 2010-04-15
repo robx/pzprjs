@@ -16,8 +16,10 @@ var MouseEvent = function(){
 	this.enableInputHatena = !!k.isDispHatena;
 	this.inputQuesDirectly = false;
 
-	this.docEL  = document.documentElement;
-	this.bodyEL = document.body;
+	this.mouseoffset;
+	if     (k.br.IEmoz4)   { this.mouseoffset = new Pos(2,2);}
+	else if(k.br.WinWebKit){ this.mouseoffset = new Pos(1,1);}
+	else                   { this.mouseoffset = new Pos(0,0);}
 };
 MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
@@ -83,8 +85,6 @@ MouseEvent.prototype = {
 		return false;
 	},
 	e_mouseout : function(e) {
-//		if (k.br.IE){ var e=window.event;}
-//		this.mousereset();
 		um.newOperation(false);
 	},
 
@@ -123,24 +123,10 @@ MouseEvent.prototype = {
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
-	setposition : (
-		((k.br.WinWebKit) ?
-			function(e){
-				this.inputPos.x = e.pageX-1 -k.cv_oft.x-k.p0.x-k.IEMargin.x;
-				this.inputPos.y = e.pageY-1 -k.cv_oft.y-k.p0.y-k.IEMargin.y;
-			}
-		:(!k.br.IE) ?
-			function(e){
-				this.inputPos.x = e.pageX   -k.cv_oft.x-k.p0.x-k.IEMargin.x;
-				this.inputPos.y = e.pageY   -k.cv_oft.y-k.p0.y-k.IEMargin.y;
-			}
-		:
-			function(e){
-				this.inputPos.x = e.clientX + (this.docEL.scrollLeft || this.bodyEL.scrollLeft) -k.cv_oft.x-k.p0.x-k.IEMargin.x;
-				this.inputPos.y = e.clientY + (this.docEL.scrollTop  || this.bodyEL.scrollTop ) -k.cv_oft.y-k.p0.y-k.IEMargin.y;
-			}
-		)
-	),
+	setposition : function(e){
+		this.inputPos.x = ee.pageX(e) -k.cv_oft.x-k.p0.x - this.mouseoffset.x;
+		this.inputPos.y = ee.pageY(e) -k.cv_oft.y-k.p0.y - this.mouseoffset.y;
+	},
 
 	notInputted : function(){ return !um.changeflag;},
 	modeflip    : function(){ if(k.EDITOR){ pp.setVal('mode', (k.playmode?1:3));} },
