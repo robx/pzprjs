@@ -40,6 +40,13 @@ Puzzles.shwolf.prototype = {
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){ },
+	finalfix : function(){
+		if(base.enableSaveImage){
+			if(k.br.Gecko && !location.hostname){
+				ee('ms_imagesavep').el.className = 'smenunull';
+			}
+		}
+	},
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
@@ -159,36 +166,46 @@ Puzzles.shwolf.prototype = {
 			}
 		};
 		pc.dispImage1 = function(c){
-			var div, sdiv, img, keydiv=['cell',c,'ques'].join('_'), keyimg=['cell',c,'quesimg'].join('_');
-			if(!!this.numobj[keydiv]){
-				img = this.numobj[keyimg];
-				div = this.numobj[keydiv];
+			var imgrect = [2,1], xpos = {41:0,42:1}[bd.cell[c].ques], ypos=0;
+
+			if(!g.use.canvas){
+				var div, sdiv, img, keydiv=['cell',c,'ques'].join('_'), keyimg=['cell',c,'quesimg'].join('_');
+				if(!!this.numobj[keydiv]){
+					img = this.numobj[keyimg];
+					div = this.numobj[keydiv];
+				}
+				else{
+					div  = this.CreateDOMAndSetNop();
+					sdiv = ee.createEL(pc.EL_DIVIMG,'');
+					img  = ee.createEL(pc.EL_IMAGE ,'');
+
+					img.style.width  = ""+(imgrect[0]*this.cw)+"px";
+					img.style.height = ""+(imgrect[1]*this.ch)+"px";
+
+					div.appendChild(sdiv);
+					sdiv.appendChild(img);
+
+					this.numobj[keydiv] = div;
+					this.numobj[keyimg] = img;
+				}
+
+				img.style.left   = "-"+mf(xpos*this.cw)+"px";
+				img.style.top    = "-"+mf(ypos*this.cw)+"px";
+				img.style.clip   = "rect("+(this.cw*ypos+1)+"px,"+(this.cw*(xpos+1))+"px,"+(this.cw*(ypos+1))+"px,"+(this.cw*xpos+1)+"px)";
+
+				// divをセルへ移動
+				div.style.left = k.cv_oft.x+bd.cell[c].px+2+'px';
+				div.style.top  = k.cv_oft.y+bd.cell[c].py+1+'px';
+				this.showEL(keydiv);
 			}
 			else{
-				div  = this.CreateDOMAndSetNop();
-				sdiv = ee.createEL(pc.EL_DIVIMG,'');
-				img  = ee.createEL(pc.EL_IMAGE ,'');
+				var img = new Image();
+				img.src = './src/img/shwolf_obj.gif';
 
-				var rects = [2,1];
-				img.style.width  = ""+(rects[0]*this.cw)+"px";
-				img.style.height = ""+(rects[1]*this.ch)+"px";
-
-				div.appendChild(sdiv);
-				sdiv.appendChild(img);
-
-				this.numobj[keydiv] = div;
-				this.numobj[keyimg] = img;
+				var cw_src = img.width/imgrect[0], ch_src = img.height/imgrect[1];
+				g.context.drawImage(img, xpos*cw_src, ypos*ch_src, cw_src, ch_src, bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
+				// Camp.js使ってる関係で、g.drawImageがないのです。。
 			}
-
-			var xpos = {41:0,42:1}[bd.cell[c].ques], ypos=0;
-			img.style.left   = "-"+mf(xpos*this.cw)+"px";
-			img.style.top    = "-"+mf(ypos*this.cw)+"px";
-			img.style.clip   = "rect("+(this.cw*ypos+1)+"px,"+(this.cw*(xpos+1))+"px,"+(this.cw*(ypos+1))+"px,"+(this.cw*xpos+1)+"px)";
-
-			// divをセルへ移動
-			div.style.left = k.cv_oft.x+bd.cell[c].px+2+'px';
-			div.style.top  = k.cv_oft.y+bd.cell[c].py+1+'px';
-			this.showEL(keydiv);
 		};
 	},
 

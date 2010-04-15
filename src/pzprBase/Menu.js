@@ -415,7 +415,9 @@ Menu.prototype = {
 		var idname = ee.getSrcElement(e).id.substr(3);
 		if(ee.getSrcElement(e).className==="smenu"){ ee.getSrcElement(e).className="smenusel";}
 		if(pp.flags[idname] && (pp.type(idname)===pp.SELECT || pp.type(idname)===pp.SPARENT)){
-			this.floatmenuopen(e,idname,this.dispfloat.length);
+			if(ee.getSrcElement(e).className!=='smenunull'){
+				this.floatmenuopen(e,idname,this.dispfloat.length);
+			}
 		}
 	},
 	submenuout   : function(e){
