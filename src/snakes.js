@@ -202,7 +202,7 @@ Puzzles.snakes.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
 				if(obj.qnum===-1 && obj.qans>0){
-					this.dispnum(key, 1, ""+obj.qans, 0.8, this.fontAnscolor, obj.px, obj.py);
+					this.dispnum(key, 1, ""+obj.qans, 0.8, this.fontAnscolor, obj.cpx, obj.cpy);
 				}
 				/* ïsóvÇ»ï∂éöÇÕdrawArrowNumbersÇ≈è¡ÇµÇƒÇ¢ÇÈÇÃÇ≈ÅAÇ±Ç±Ç≈ÇÕè¡Ç≥Ç»Ç¢ */
 			}

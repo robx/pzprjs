@@ -111,7 +111,7 @@ Puzzles.factors.prototype = {
 				if(bd.cell[c].qans!==-1){
 					var color = (bd.cell[c].error==1?this.fontErrcolor:this.fontAnscolor);
 					var size = (bd.cell[c].qans<10?0.8:0.7);
-					this.dispnum(key_qans, 1, (""+bd.cell[c].qans), size, color, obj.px, obj.py);
+					this.dispnum(key_qans, 1, (""+bd.cell[c].qans), size, color, obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(key_qans);}
 

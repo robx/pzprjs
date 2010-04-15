@@ -597,11 +597,11 @@ Graphic.prototype = {
 				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
 				var color = g.fillStyle;
 
-				var type=1;
-				if     (dir===k.UP||dir===k.DN){ type=6; fontratio *= 0.85;}
-				else if(dir===k.LT||dir===k.RT){ type=7; fontratio *= 0.85;}
+				var cpx = bd.cell[c].cpx, cpy = bd.cell[c].cpy;
+				if     (dir===k.UP||dir===k.DN){ fontratio *= 0.85; cpx-=this.cw*0.1;}
+				else if(dir===k.LT||dir===k.RT){ fontratio *= 0.85; cpy+=this.ch*0.1;}
 
-				this.dispnum('cell_'+c, type, text, fontratio, color, px, py);
+				this.dispnum('cell_'+c, 1, text, fontratio, color, cpx, cpy);
 			}
 			else{
 				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c, headers[4]+c, headers[5]+c]);
@@ -617,7 +617,7 @@ Graphic.prototype = {
 			var obj = bd.cell[clist[i]], key = 'cell_'+clist[i];
 			if(obj.ques===-2){
 				var color = (obj.error===1 ? this.fontErrcolor : this.fontcolor);
-				this.dispnum(key, 1, "?", 0.8, color, obj.px, obj.py);
+				this.dispnum(key, 1, "?", 0.8, color, obj.cpx, obj.cpy);
 			}
 			else{ this.hideEL(key);}
 		}
@@ -1555,7 +1555,7 @@ Graphic.prototype = {
 
 			var color = this.getNumberColor(id);
 
-			this.dispnum(key, type, text, fontratio, color, obj.px, obj.py);
+			this.dispnum(key, type, text, fontratio, color, obj.cpx, obj.cpy);
 		}
 		else{ this.hideEL(key);}
 	},
@@ -1565,7 +1565,7 @@ Graphic.prototype = {
 			var text  = ""+obj.qnum;
 			var color = this.fontcolor;
 
-			this.dispnum(key, 101, text, 0.6, color, obj.px, obj.py);
+			this.dispnum(key, 1, text, 0.6, color, obj.px, obj.py);
 		}
 		else{ this.hideEL(key);}
 	},
@@ -1575,7 +1575,7 @@ Graphic.prototype = {
 			var text  = ""+obj.qnum;
 			var color = this.borderfontcolor;
 
-			this.dispnum(key, 101, text, 0.45, color, obj.px, obj.py);
+			this.dispnum(key, 1, text, 0.45, color, obj.px, obj.py);
 		}
 		else{ this.hideEL(key);}
 	},
@@ -1606,16 +1606,12 @@ Graphic.prototype = {
 			var wid = el.offsetWidth;
 			var hgt = el.offsetHeight;
 
-			if(type===1||type===6||type===7){
-				el.style.left = k.cv_oft.x+px+mf((this.cw-wid)/2)+(IE?2:2)-(type===6?mf(this.cw*0.1):0) + 'px';
-				el.style.top  = k.cv_oft.y+py+mf((this.ch-hgt)/2)+(IE?3:1)+(type===7?mf(this.ch*0.1):0) + 'px';
-			}
-			else if(type===101){
+			if(type===1){
 				el.style.left = k.cv_oft.x+px-wid/2+(IE?3:2) + 'px';
 				el.style.top  = k.cv_oft.y+py-hgt/2+(IE?2:1) + 'px';
 			}
 			else{
-				if(type==52||type==54){ px--; type-=50;}	// excell‚Ì[_]‘Î‰ž..
+				if(type===52||type===54){ px--; type-=50;}	// excell‚Ì[_]‘Î‰ž..
 				if     (type===3||type===4){ el.style.left = k.cv_oft.x+px+this.cw-wid+(IE?1: 0) + 'px';}
 				else if(type===2||type===5){ el.style.left = k.cv_oft.x+px            +(IE?5: 4) + 'px';}
 				if     (type===2||type===3){ el.style.top  = k.cv_oft.y+py+this.ch-hgt+(IE?2:-1) + 'px';}
@@ -1628,20 +1624,16 @@ Graphic.prototype = {
 		else{
 			g.font = ""+mf(this.cw*fontratio*this.fontsizeratio)+"px 'Serif'";
 			g.fillStyle = color;
-			if(type==1||type==6||type==7){
+			if(type===1){
 				g.textAlign = 'center'; g.textBaseline = 'middle';
-				g.fillText(text, px+this.bw-(type==6?mf(this.cw*0.1):0), py+this.bh+(type==7?mf(this.ch*0.1):0));
-			}
-			else if(type==101){
-				g.textAlign = 'center'; g.textBaseline = 'middle';
-				g.fillText(text, px, py);
 			}
 			else{
-				if(type==52||type==54){ px--; type-=50;}	// excell‚Ì[_]‘Î‰ž..
-				g.textAlign    = ((type==3||type==4)?'right':'left');
-				g.textBaseline = ((type==2||type==3)?'alphabetic':'top');
-				g.fillText(text, px+((type==3||type==4)?this.cw:3), py+((type==2||type==3)?this.ch-1:0));
+				if(type===52||type===54){ px--; type-=50;}	// excell‚Ì[_]‘Î‰ž..
+				g.textAlign    = ((type===3||type===4)?'right':'left');
+				g.textBaseline = ((type===2||type===3)?'alphabetic':'top');
+				px += ((type===3||type===4)?this.cw:3), py += ((type===2||type===3)?this.ch-1:0);
 			}
+			g.fillText(text, px, py);
 		}
 	},
 

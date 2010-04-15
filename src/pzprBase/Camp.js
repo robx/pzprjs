@@ -1,4 +1,4 @@
-// Camp.js rev84
+// Camp.js rev85
  
 (function(){
 
@@ -477,14 +477,18 @@ VectorContext.prototype = {
 		this.currentpath.push(this.PATH_MOVE,x,y,this.PATH_LINE,(x+w),y,(x+w),(y+h),x,(y+h),this.PATH_CLOSE);
 	},
 	arc : function(cx,cy,r,startRad,endRad,antiClockWise){
-		if     (this.type===VML){ cx=(cx*Z-Z2)|0, cy=(cy*Z-Z2)|0, r=(r*Z)|0;}
-		else if(this.type===SL) {
+		if(this.type===SL) {
 			cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
 			cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
 		}
-		var sx = (cx + r*_mc(startRad))|0, sy = (cy + r*_ms(startRad))|0,
-			ex = (cx + r*_mc(endRad))|0,   ey = (cy + r*_ms(endRad))|0;
+		else if(this.type===SVG){
+			cx+=0.5; // ‚È‚º‚©‚¿‚å‚Á‚Æ¶‚É‚¸‚ê‚é‚Ì‚ÅC³
+		}
+		var sx = cx + r*_mc(startRad), sy = cy + r*_ms(startRad),
+			ex = cx + r*_mc(endRad),   ey = cy + r*_ms(endRad);
 		if(this.type===VML){
+			cx=(cx*Z-Z2)|0, cy=(cy*Z-Z2)|0, r=(r*Z)|0;
+			sx=(sx*Z-Z2)|0, sy=(sy*Z-Z2)|0, ex=(ex*Z-Z2)|0, ey=(ey*Z-Z2)|0;
 			var com = (antiClockWise ? 'at' : 'wa');
 			if(endRad-startRad>=_2PI){ sx+=1;}
 			this.currentpath.push(com,(cx-r),(cy-r),(cx+r),(cy+r),sx,sy,ex,ey);

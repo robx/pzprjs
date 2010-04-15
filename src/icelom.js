@@ -161,8 +161,6 @@ Puzzles.icelom.prototype = {
 
 		if(!bd.arrowin) { bd.arrowin  = -1;}
 		if(!bd.arrowout){ bd.arrowout = -1;}
-		bd.ainobj  = ee.createEL(pc.EL_NUMOBJ,'');
-		bd.aoutobj = ee.createEL(pc.EL_NUMOBJ,'');
 		bd.inputarrowin = function(id){
 			var dir=((this.border[id].bx===0||this.border[id].by===0)?1:2);
 			this.setArrow(this.arrowin,0);
@@ -323,25 +321,21 @@ Puzzles.icelom.prototype = {
 
 			g.fillStyle = (bd.border[bd.arrowin].error===3 ? this.errcolor1 : this.Cellcolor);
 			var bx = bd.border[bd.arrowin].bx, by = bd.border[bd.arrowin].by;
-			if     (by===bd.minby){ this.dispString(bd.ainobj, "IN", ((bx+1.3)/2)*this.cw+3 , ((by+0.5)/2)*this.ch-5);}
-			else if(by===bd.maxby){ this.dispString(bd.ainobj, "IN", ((bx+1.3)/2)*this.cw+3 , ((by+2.0)/2)*this.ch+12);}
-			else if(bx===bd.minbx){ this.dispString(bd.ainobj, "IN", ((bx+1.0)/2)*this.cw-12, ((by+1.0)/2)*this.ch-7);}
-			else if(bx===bd.maxbx){ this.dispString(bd.ainobj, "IN", ((bx+2.0)/2)*this.cw+6 , ((by+1.0)/2)*this.ch-7);}
+			var px = bd.border[bd.arrowin].px, py = bd.border[bd.arrowin].py;
+			if(!g.use.canvas){ var IE = k.br.IE; px-=(IE?3:2), py-=(IE?2:1);} // dispnumì‡Ç≈í≤êﬂÇ≥ÇÍÇÈï™Çà¯Ç≠
+			if     (by===bd.minby){ this.dispnum("string_in", 1, "IN", 0.55, "black", px,             py-0.6*this.ch);}
+			else if(by===bd.maxby){ this.dispnum("string_in", 1, "IN", 0.55, "black", px,             py+0.6*this.ch);}
+			else if(bx===bd.minbx){ this.dispnum("string_in", 1, "IN", 0.55, "black", px-0.5*this.cw, py-0.3*this.ch);}
+			else if(bx===bd.maxbx){ this.dispnum("string_in", 1, "IN", 0.55, "black", px+0.5*this.cw, py-0.3*this.ch);}
 
 			g.fillStyle = (bd.border[bd.arrowout].error===3 ? this.errcolor1 : this.Cellcolor);
 			var bx = bd.border[bd.arrowout].bx, by = bd.border[bd.arrowout].by;
-			if     (by===bd.minby){ this.dispString(bd.aoutobj, "OUT", ((bx+1.0)/2)*this.cw-2 , ((by+0.5)/2)*this.ch-5);}
-			else if(by===bd.maxby){ this.dispString(bd.aoutobj, "OUT", ((bx+1.0)/2)*this.cw-2 , ((by+2.0)/2)*this.ch+12);}
-			else if(bx===bd.minbx){ this.dispString(bd.aoutobj, "OUT", ((bx+0.5)/2)*this.cw-19, ((by+1.0)/2)*this.ch-7);}
-			else if(bx===bd.maxbx){ this.dispString(bd.aoutobj, "OUT", ((bx+2.0)/2)*this.cw+5 , ((by+1.0)/2)*this.ch-7);}
-		};
-		pc.dispString = function(el, text, px, py){
-			el.style.fontSize = (this.cw*0.55)+'px';
-			el.style.left     = k.cv_oft.x + px+(!k.br.IE?2:4)+'px';
-			el.style.top      = k.cv_oft.y + py+(!k.br.IE?1:5)+'px';
-			el.style.color    = g.fillStyle;
-			el.style.display  = 'inline';
-			el.innerHTML      = text;
+			var px = bd.border[bd.arrowout].px, py = bd.border[bd.arrowout].py;
+			if(!g.use.canvas){ var IE = k.br.IE; px-=(IE?3:2), py-=(IE?2:1);} // dispnumì‡Ç≈í≤êﬂÇ≥ÇÍÇÈï™Çà¯Ç≠
+			if     (by===bd.minby){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px,             py-0.6*this.ch);}
+			else if(by===bd.maxby){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px,             py+0.6*this.ch);}
+			else if(bx===bd.minbx){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px-0.7*this.cw, py-0.3*this.ch);}
+			else if(bx===bd.maxbx){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px+0.7*this.cw, py-0.3*this.ch);}
 		};
 
 		line.repaintParts = function(idlist){

@@ -201,7 +201,7 @@ Puzzles.kaero.prototype = {
 					else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
 					else{ text+=num;}
 
-					this.dispnum(key, 1, text, 0.85, color, obj.px, obj.py);
+					this.dispnum(key, 1, text, 0.85, color, obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(key);}
 			}

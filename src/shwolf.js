@@ -144,7 +144,7 @@ Puzzles.shwolf.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], key = ['cell',c].join('_');
 				if(bd.cell[c].ques===-2){
-					this.dispnum(key, 1, "?", 0.8, this.fontcolor, obj.px, obj.py);
+					this.dispnum(key, 1, "?", 0.8, this.fontcolor, obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(key);}
 

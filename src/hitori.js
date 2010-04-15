@@ -122,7 +122,7 @@ Puzzles.hitori.prototype = {
 						if(bd.cell[c].qans===1){ color = this.BCell_fontcolor;}
 						else if(bd.cell[c].error===1){ color = "red";}
 
-						this.dispnum(key, 1, text, 0.8, color, obj.px, obj.py);
+						this.dispnum(key, 1, text, 0.8, color, obj.cpx, obj.cpy);
 					}
 					else{ this.hideEL(key);}
 				}

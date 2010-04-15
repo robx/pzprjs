@@ -329,7 +329,7 @@ Puzzles.kinkonkan.prototype = {
 					else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
 					if(num>=0){ text+=num.toString(10);}
 
-					this.dispnum(key, 1, text, fontratio, color, obj.px, obj.py);
+					this.dispnum(key, 1, text, fontratio, color, obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(key);}
 			}

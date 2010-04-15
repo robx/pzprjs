@@ -180,7 +180,7 @@ Puzzles.kakuro.prototype = {
 					var obj = bd.cell[c];
 					var color = (bd.cell[c].error===1 ? this.fontErrcolor : this.fontAnscolor);
 					var text  = ""+bd.cell[c].qans;
-					this.dispnum(key, 1, text, 0.80, color, obj.px, obj.py);
+					this.dispnum(key, 1, text, 0.80, color, obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(key);}
 			}

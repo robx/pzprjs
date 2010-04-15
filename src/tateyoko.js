@@ -267,7 +267,7 @@ Puzzles.tateyoko.prototype = {
 				var num = bd.cell[c].qnum;
 				if(num!==-1){
 					var color = (bd.cell[c].ques!==1 ? this.fontcolor : "white");
-					this.dispnum(key, 1, (num!=-2?""+num:"?"), (num<10?0.8:0.75), color, obj.px, obj.py);
+					this.dispnum(key, 1, (num!=-2?""+num:"?"), (num<10?0.8:0.75), color, obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(key);}
 			}

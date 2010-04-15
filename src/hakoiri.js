@@ -215,7 +215,7 @@ Puzzles.hakoiri.prototype = {
 			var num = bd.getNum(c), obj = bd.cell[c], key='cell_'+c;
 			if(num!==-1){
 				var text = (num>0 ? ({1:"Åõ",2:"Å¢",3:"Å†"})[num] : "?");
-				this.dispnum(key, 1, text, 0.8, this.getNumberColor(c), obj.px, obj.py);
+				this.dispnum(key, 1, text, 0.8, this.getNumberColor(c), obj.cpx, obj.cpy);
 			}
 			else{ this.hideEL(key);}
 		};

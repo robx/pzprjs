@@ -198,7 +198,7 @@ Puzzles.wagiri.prototype = {
 				var num = bd.cell[id].qnum, obj = bd.cell[id], key='cell_'+id;
 				if(num!==-1){
 					text = (num!==-2 ? ({1:"ó÷",2:"êÿ"})[num] : "?");
-					this.dispnum(key, 1, text, 0.70, this.getNumberColor(id), obj.px, obj.py);
+					this.dispnum(key, 1, text, 0.70, this.getNumberColor(id), obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(key);}
 			}
