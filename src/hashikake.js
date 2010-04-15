@@ -102,20 +102,23 @@ Puzzles.hashikake.prototype = {
 			this.mouseCell = pos;
 		};
 		mv.getidlist = function(id){
-			var idlist=[], bx1, bx2, by1, by2;
-			var bx=bd.border[id].bx, by=bd.border[id].by;
+			var idlist=[], bx=bd.border[id].bx, by=bd.border[id].by;
 			if(bd.border[id].bx&1){
-				while(by>bd.minby && bd.QnC(bd.cnum(bx,by-1))===-1){ by-=2;} by1=by;
-				while(by<bd.maxby && bd.QnC(bd.cnum(bx,by+1))===-1){ by+=2;} by2=by;
-				bx1 = bx2 = bd.border[id].bx;
+				var by1=by, by2=by;
+				while(by1>bd.minby && bd.QnC(bd.cnum(bx,by1-1))===-1){ by1-=2;}
+				while(by2<bd.maxby && bd.QnC(bd.cnum(bx,by2+1))===-1){ by2+=2;}
+				if(bd.minby<by1 && by2<bd.maxby){
+					for(by=by1;by<=by2;by+=2){ idlist.push(bd.bnum(bx,by)); }
+				}
 			}
 			else if(bd.border[id].by&1){
-				while(bx>bd.minbx && bd.QnC(bd.cnum(bx-1,by))===-1){ bx-=2;} bx1=bx;
-				while(bx<bd.maxbx && bd.QnC(bd.cnum(bx+1,by))===-1){ bx+=2;} bx2=bx;
-				by1 = by2 = bd.border[id].by;
+				var bx1=bx, bx2=bx;
+				while(bx1>bd.minbx && bd.QnC(bd.cnum(bx1-1,by))===-1){ bx1-=2;}
+				while(bx2<bd.maxbx && bd.QnC(bd.cnum(bx2+1,by))===-1){ bx2+=2;}
+				if(bd.minbx<bx1 && bx2<bd.maxbx){
+					for(bx=bx1;bx<=bx2;bx+=2){ idlist.push(bd.bnum(bx,by)); }
+				}
 			}
-			if(!bd.isinside(bx,by)){ return [];}
-			for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
 			return idlist;
 		};
 
