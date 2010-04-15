@@ -1216,7 +1216,7 @@ Graphic.prototype = {
 		if(y1<0){ y1=0;} if(y2>2*k.qrows){ y2=2*k.qrows;}
 		x1-=(x1&1), y1-=(y1&1);
 
-		var bs=((k.isoutsideborder===0&&this.chassisflag)?2:0);
+		var bs=((k.isborder!==2&&this.chassisflag)?2:0);
 		var xa = Math.max(x1,0+bs), xb = Math.min(x2,2*k.qcols-bs);
 		var ya = Math.max(y1,0+bs), yb = Math.min(y2,2*k.qrows-bs);
 
@@ -1243,7 +1243,7 @@ Graphic.prototype = {
 		var dotCount = Math.max(this.cw/dotmax, 1);
 		var dotSize  = this.cw/(dotCount*2);
 
-		//var bs=((k.isoutsideborder===0&&this.chassisflag)?1:0);
+		//var bs=((k.isborder!==2&&this.chassisflag)?1:0);
 		var bs=(this.chassisflag?2:0);
 		var xa = Math.max(x1,bd.minbx+bs), xb = Math.min(x2,bd.maxbx-bs);
 		var ya = Math.max(y1,bd.minby+bs), yb = Math.min(y2,bd.maxby-bs);
@@ -1504,21 +1504,21 @@ Graphic.prototype = {
 
 	setFunctions : function(){
 		this.isdispnumCell = (
-			((!!k.isDispHatena) ?
-				(!!k.dispzero) ? function(id){ var num=bd.getNum(id); return (num>=0 || num===-2);}
-							   : function(id){ var num=bd.getNum(id); return (num> 0 || num===-2);}
+			(k.isDispHatena ?
+				k.dispzero ? function(id){ var num=bd.getNum(id); return (num>=0 || num===-2);}
+						   : function(id){ var num=bd.getNum(id); return (num> 0 || num===-2);}
 			:
-				(!!k.dispzero) ? function(id){ var num=bd.getNum(id); return (num>=0);}
-							   : function(id){ var num=bd.getNum(id); return (num> 0);}
+				k.dispzero ? function(id){ var num=bd.getNum(id); return (num>=0);}
+						   : function(id){ var num=bd.getNum(id); return (num> 0);}
 			)
 		);
 		this.getNumberColor = (
-			((!!k.isAnsNumber) ?
+			(k.isAnsNumber ?
 				function(id){
 					if(bd.cell[id].error===1 || bd.cell[id].error===4){ return this.fontErrcolor;}
 					return (bd.cell[id].qnum!==-1 ? this.fontcolor : this.fontAnscolor);
 				}
-			:(!!k.BlackCell) ?
+			: k.BlackCell ?
 				function(id){
 					if(bd.cell[id].qans===1){ return this.BCell_fontcolor;}
 					else if(bd.cell[id].error===1 || bd.cell[id].error===4){ return this.fontErrcolor;}
@@ -1544,10 +1544,8 @@ Graphic.prototype = {
 	dispnumCell : function(id){
 		var obj = bd.cell[id], key = ['cell',id].join('_');
 		if(this.isdispnumCell(id)){
-			var type = (!k.isDispNumUL ? 1 : 5);
-			if(obj.ques>=2 && obj.ques<=5){ type=obj.ques;}
-
-			var num = bd.getNum(id);
+			var type = ((obj.ques>=2 && obj.ques<=5) ? obj.ques : 1);
+			var num  = bd.getNum(id);
 			var text = (num>=0 ? ""+num : "?");
 
 			var fontratio = 0.45;
@@ -1561,7 +1559,7 @@ Graphic.prototype = {
 	},
 	dispnumCross : function(id){
 		var obj = bd.cross[id], key = ['cross',id].join('_');
-		if(obj.qnum>0 || (obj.qnum===0 && !!k.dispzero)){
+		if(obj.qnum>0 || (obj.qnum===0 && k.dispzero)){
 			var text  = ""+obj.qnum;
 			var color = this.fontcolor;
 
@@ -1571,7 +1569,7 @@ Graphic.prototype = {
 	},
 	dispnumBorder : function(id){
 		var obj = bd.border[id], key = ['border',id].join('_');
-		if(obj.qnum>0 || (obj.qnum===0 && !!k.dispzero)){
+		if(obj.qnum>0 || (obj.qnum===0 && k.dispzero)){
 			var text  = ""+obj.qnum;
 			var color = this.borderfontcolor;
 

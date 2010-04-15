@@ -53,7 +53,7 @@ AnsCheck.prototype = {
 	// ans.isenableSetError() 盤面のオブジェクトにエラーフラグを設定できるかどうかを返す
 	//---------------------------------------------------------------------------
 	autocheck : function(){
-		if(!k.autocheck || k.editmode || this.inCheck){ return;}
+		if(!pp.getVal('autocheck') || k.editmode || this.inCheck){ return;}
 
 		var ret = false;
 
@@ -243,10 +243,10 @@ AnsCheck.prototype = {
 		if(cc<0 || cc>=bd.cellmax){ return 0;}
 		var cnt = 0;
 		var bx = bd.cell[cc].bx, by = bd.cell[cc].by;
-		if( (k.isoutsideborder===0 && by===bd.minby+1) || bd.isBorder(bd.bnum(bx  ,by-1)) ){ cnt++;}
-		if( (k.isoutsideborder===0 && by===bd.maxby-1) || bd.isBorder(bd.bnum(bx  ,by+1)) ){ cnt++;}
-		if( (k.isoutsideborder===0 && bx===bd.minbx+1) || bd.isBorder(bd.bnum(bx-1,by  )) ){ cnt++;}
-		if( (k.isoutsideborder===0 && bx===bd.maxby-1) || bd.isBorder(bd.bnum(bx+1,by  )) ){ cnt++;}
+		if( (k.isborder!==2 && by===bd.minby+1) || bd.isBorder(bd.bnum(bx  ,by-1)) ){ cnt++;}
+		if( (k.isborder!==2 && by===bd.maxby-1) || bd.isBorder(bd.bnum(bx  ,by+1)) ){ cnt++;}
+		if( (k.isborder!==2 && bx===bd.minbx+1) || bd.isBorder(bd.bnum(bx-1,by  )) ){ cnt++;}
+		if( (k.isborder!==2 && bx===bd.maxby-1) || bd.isBorder(bd.bnum(bx+1,by  )) ){ cnt++;}
 		return cnt;
 	},
 
@@ -288,8 +288,8 @@ AnsCheck.prototype = {
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
 			var d = this.getSizeOfClist(cinfo.room[id].idlist,func);
-			var n = bd.QnC(k.isOneNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0])
-										 : this.getQnumCellOfClist(cinfo.room[id].idlist));
+			var n = bd.QnC(k.roomNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0])
+										: this.getQnumCellOfClist(cinfo.room[id].idlist));
 			if( !evalfunc(d.cols, d.rows, d.cnt, n) ){
 				if(this.inAutoCheck){ return false;}
 				if(this.performAsLine){ if(result){ bd.sErBAll(2);} this.setErrLareaById(cinfo,id,1);}
@@ -483,7 +483,7 @@ AnsCheck.prototype = {
 			while(bx<=bd.maxbx){
 				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc.apply(this,[bd.cnum(tx,by)])){ break;}}
 				var clist = bd.getClistByPosition(bx,by,tx-2,by);
-				var total = (k.isextendcell!=1 ? 0 : (bx===1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx-2,by))));
+				var total = (k.isexcell!==1 ? 0 : (bx===1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx-2,by))));
 
 				if(!evalfunc.apply(this,[total, [bx-2,by], clist, areainfo])){
 					if(!multierr || this.inAutoCheck){ return false;}
@@ -497,7 +497,7 @@ AnsCheck.prototype = {
 			while(by<=bd.maxby){
 				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc.apply(this,[bd.cnum(bx,ty)])){ break;}}
 				var clist = bd.getClistByPosition(bx,by,bx,ty-2);
-				var total = (k.isextendcell!=1 ? 0 : (by===1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by-2))));
+				var total = (k.isexcell!==1 ? 0 : (by===1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by-2))));
 
 				if(!evalfunc.apply(this,[total, [bx,by-2], clist, areainfo])){
 					if(!multierr || this.inAutoCheck){ return false;}
@@ -521,7 +521,7 @@ AnsCheck.prototype = {
 		return result;
 	},
 	isDifferentNumberInClist : function(clist, numfunc){
-		var result = true, d = [], num = [], bottom = (!!k.dispzero?1:0);
+		var result = true, d = [], num = [], bottom = (k.dispzero?1:0);
 		for(var n=bottom,max=bd.nummaxfunc(clist[0]);n<=max;n++){ d[n]=0;}
 		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc.apply(bd,[clist[i]]);}
 
@@ -540,7 +540,7 @@ AnsCheck.prototype = {
 		var result = true;
 		for(var by=0;by<=bd.maxby;by+=2){
 			for(var bx=0;bx<=bd.maxbx;bx+=2){
-				if(k.isoutsidecross==0 && k.isborderAsLine==0 &&
+				if(k.iscross===1 && !k.isborderAsLine &&
 				   (bx===bd.minbx||by===bd.minby||bx===bd.maxbx||by===bd.maxby)){ continue;}
 				var id = (bx>>1)+(by>>1)*(k.qcols+1);
 				var lcnts = (!k.isborderAsLine?area.lcnt[id]:line.lcnt[id]);
@@ -555,7 +555,7 @@ AnsCheck.prototype = {
 		return result;
 	},
 	setCrossBorderError : function(bx,by){
-		if(k.iscross){ bd.sErX([bd.xnum(bx,by)], 1);}
+		if(k.iscross!==0){ bd.sErX([bd.xnum(bx,by)], 1);}
 		bd.sErB([bd.bnum(bx,by-1),bd.bnum(bx,by+1),bd.bnum(bx-1,by),bd.bnum(bx+1,by)], 1);
 	}
 };

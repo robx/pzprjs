@@ -13,58 +13,52 @@ Pos.prototype = {
 // 各種パラメータの定義
 var k = {
 	// 各パズルのsetting()関数で設定されるもの
-	qcols : 0, qrows : 0,	// 盤面の横幅・縦幅
-	irowake   :  0,			// 0:色分け設定無し 1:色分けしない 2:色分けする
+	qcols    : 0,			// 盤面の横幅
+	qrows    : 0,			// 盤面の縦幅
+	irowake  : 0,			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-	iscross      : 0,		// 1:Crossが操作可能なパズル
-	isborder     : 0,		// 1:Border/Lineが操作可能なパズル
-	isextendcell : 0,		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+	iscross  : 0,			// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+	isborder : 0,			// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+	isexcell : 0,			// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-	isoutsidecross  : 1,	// 1:外枠上にCrossの配置があるパズル
-	isoutsideborder : 0,	// 1:盤面の外枠上にborderのIDを用意する
-	isLineCross     : 1,	// 1:線が交差するパズル
-	isCenterLine    : 0,	// 1:マスの真ん中を通る線を回答として入力するパズル
-	isborderAsLine  : 0,	// 1:境界線をlineとして扱う
+	isLineCross    : false,	// 線が交差するパズル
+	isCenterLine   : false,	// マスの真ん中を通る線を回答として入力するパズル
+	isborderAsLine : false,	// 境界線をlineとして扱う
+	hasroom        : false,	// いくつかの領域に分かれている/分けるパズル
+	roomNumber     : false,	// 問題の数字が部屋の左上に1つだけ入るパズル
 
-	dispzero      : 0,		// 1:0を表示するかどうか
-	isDispHatena  : 1,		// 1:qnumが-2のときに？を表示する
-	isAnsNumber   : 0,		// 1:回答に数字を入力するパズル
-	isArrowNumber : 0,		// 1:矢印つき数字を入力するパズル
-	isOneNumber   : 0,		// 1:問題の数字が部屋の左上に1つだけ入るパズル
-	isDispNumUL   : 0,		// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-	NumberWithMB  : 0,		// 1:回答の数字と○×が入るパズル
+	dispzero       : false,	// 0を表示するかどうか
+	isDispHatena   : true,	// qnumが-2のときに？を表示する
+	isAnsNumber    : false,	// 回答に数字を入力するパズル
+	NumberWithMB   : false,	// 回答の数字と○×が入るパズル
+	linkNumber     : false,	// 数字がひとつながりになるパズル
 
-	BlackCell     : 0,		// 1:黒マスを入力するパズル
-	NumberIsWhite : 0,		// 1:数字のあるマスが黒マスにならないパズル
-	RBBlackCell   : 0,		// 1:連黒分断禁のパズル
+	BlackCell      : false,	// 黒マスを入力するパズル
+	NumberIsWhite  : false,	// 数字のあるマスが黒マスにならないパズル
+	RBBlackCell    : false,	// 連黒分断禁のパズル
+	checkBlackCell : false,	// 正答判定で黒マスの情報をチェックするパズル
+	checkWhiteCell : false,	// 正答判定で白マスの情報をチェックするパズル
 
-	ispzprv3ONLY  : 0,		// ぱずぷれv3にしかないパズル
-	isKanpenExist : 0,		// pencilbox/カンペンにあるパズル
+	ispzprv3ONLY   : false,	// ぱずぷれアプレットには存在しないパズル
+	isKanpenExist  : false,	// pencilbox/カンペンにあるパズル
 
-	cellsize          : 36,		// デフォルトのセルサイズ
+	// 各パズルのsetting()関数で設定されることがあるもの
 	bdmargin          : 0.70,	// 枠外の一辺のmargin(セル数換算)
 	reduceImageMargin : true,	// 画像出力時にmarginを小さくする
 
-	area : { bcell:0, wcell:0, number:0, disroom:0},	// areaオブジェクトで領域を生成する
-
 	// 内部で自動的に設定されるグローバル変数
 	puzzleid  : '',			// パズルのID("creek"など)
-	use       : 1,			// 操作方法
-	widthmode : 2,			// Canvasの横幅をどうするか
 
 	EDITOR    : true,		// エディタモード
 	PLAYER    : false,		// playerモード
 	editmode  : true,		// 問題配置モード
 	playmode  : false,		// 回答モード
 
-	enableKey   : true,		// キー入力は有効か
-	enableMouse : true,		// マウス入力は有効か
-	autocheck   : true,		// 回答入力時、自動的に答え合わせするか
-
-	cwidth   : this.cellsize,	// セルの横幅
-	cheight  : this.cellsize,	// セルの縦幅
-	bwidth   : this.cellsize/2,	// セルの横幅/2
-	bheight  : this.cellsize/2,	// セルの縦幅/2
+	cellsize : 36,			// デフォルトのセルサイズ
+	cwidth   : 36,			// セルの横幅
+	cheight  : 36,			// セルの縦幅
+	bwidth   : 18,			// セルの横幅/2
+	bheight  : 18,			// セルの縦幅/2
 
 	p0       : new Pos(0, 0),	// Canvas中での盤面の左上座標
 	cv_oft   : new Pos(0, 0),	// Canvasのwindow内での左上座標
@@ -511,7 +505,7 @@ Timer.prototype = {
 		this.current = this.now();
 
 		if(k.PLAYER){ this.updatetime();}
-		if(k.autocheck){ this.ACcheck();}
+		if(pp.getVal('autocheck')){ this.ACcheck();}
 	},
 
 	//---------------------------------------------------------------------------

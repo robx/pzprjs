@@ -243,7 +243,7 @@ PBase.prototype = {
 		var cols   = (bd.maxbx-bd.minbx)/2+2*k.bdmargin; // canvasの横幅がセル何個分に相当するか
 		var rows   = (bd.maxby-bd.minby)/2+2*k.bdmargin; // canvasの縦幅がセル何個分に相当するか
 
-		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[k.widthmode];
+		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[pp.getVal('size')];
 		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
 		ci[0] = (wwidth*ws.base )/(k.cellsize*cr.base );
 		ci[1] = (wwidth*ws.limit)/(k.cellsize*cr.limit);
@@ -274,7 +274,7 @@ PBase.prototype = {
 		// 盤面のセルID:0が描画される位置の設定
 		k.p0.x = k.p0.y = mf(k.cwidth*k.bdmargin);
 		// extendxell==0でない時は位置をずらす
-		if(k.isextendcell!==0){ k.p0.x += k.cwidth; k.p0.y += k.cheight;}
+		if(!!k.isexcell){ k.p0.x += k.cwidth; k.p0.y += k.cheight;}
 
 		// Canvasのサイズ変更
 		pc.setVectorFunctions();

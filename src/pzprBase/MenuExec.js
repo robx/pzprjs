@@ -321,24 +321,24 @@ MenuExec.prototype = {
 			func = function(id){ return (menu.ex.distObj(key,k.CELL,id)===0);};
 			this.expandGroup(k.CELL, bd.cell, number, func);
 		}
-		if(k.iscross){
-			var oc = k.isoutsidecross?0:1;
+		if(!!k.iscross){
+			var oc = k.iscross===2?0:1;
 			func = function(id){ return (menu.ex.distObj(key,k.CROSS,id)===oc);};
 			this.expandGroup(k.CROSS, bd.cross, number+1, func);
 		}
-		if(k.isborder){
+		if(!!k.isborder){
 			bd.bdinside = 2*k.qcols*k.qrows-(k.qcols+k.qrows);
 
 			func = function(id){ var m=menu.ex.distObj(key,k.BORDER,id); return (m===1||m===2);};
-			this.expandGroup(k.BORDER, bd.border, 2*number+(k.isoutsideborder===0?-1:1), func);
+			this.expandGroup(k.BORDER, bd.border, 2*number+(k.isborder===1?-1:1), func);
 
 			// ägëÂéûÇ…ÅAã´äEê¸ÇÕêLÇŒÇµÇøÇ·Ç¢Ç‹Ç∑ÅB
-			if(k.isborderAsLine===0){ this.expandborder(key);}
+			if(!k.isborderAsLine){ this.expandborder(key);}
 			else{ this.expandborderAsLine(key);}
 		}
-		if(k.isextendcell!==0){
+		if(!!k.isexcell){
 			func = function(id){ return (menu.ex.distObj(key,k.EXCELL,id)===0);};
-			this.expandGroup(k.EXCELL, bd.excell, k.isextendcell, func);
+			this.expandGroup(k.EXCELL, bd.excell, k.isexcell, func);
 		}
 
 		bd.setposAll();
@@ -367,13 +367,13 @@ MenuExec.prototype = {
 			func = function(id){ return (menu.ex.distObj(key,k.CELL,id)===0);};
 			margin = this.reduceGroup(k.CELL, bd.cell, func);
 		}
-		if(k.iscross){
-			var oc = k.isoutsidecross?0:1;
+		if(!!k.iscross){
+			var oc = k.iscross===2?0:1;
 			func = function(id){ return (menu.ex.distObj(key,k.CROSS,id)===oc);};
 			margin = this.reduceGroup(k.CROSS, bd.cross, func);
 		}
-		if(k.isborder){
-			if(k.isborderAsLine===1){ this.reduceborderAsLine(key);}
+		if(!!k.isborder){
+			if(k.isborderAsLine){ this.reduceborderAsLine(key);}
 
 			if     (key===k.UP||key===k.DN){ bd.bdinside = 2*k.qcols*(k.qrows-1)-(k.qcols+k.qrows-1);}
 			else if(key===k.LT||key===k.RT){ bd.bdinside = 2*(k.qcols-1)*k.qrows-(k.qcols+k.qrows-1);}
@@ -381,7 +381,7 @@ MenuExec.prototype = {
 			func = function(id){ var m=menu.ex.distObj(key,k.BORDER,id); return (m===1||m===2);};
 			margin = this.reduceGroup(k.BORDER, bd.border, func);
 		}
-		if(k.isextendcell!==0){
+		if(!!k.isexcell){
 			func = function(id){ return (menu.ex.distObj(key,k.EXCELL,id)===0);};
 			margin = this.reduceGroup(k.EXCELL, bd.excell, func);
 		}
@@ -390,7 +390,7 @@ MenuExec.prototype = {
 		else if(key===k.LT||key===k.RT){ k.qcols--;}
 
 		bd.setposAll();
-		if(k.isOneNumber){
+		if(k.roomNumber){
 			area.resetArea();
 			for(var i=0;i<this.qnums.length;i++){
 				bd.sQnC(area.getTopOfRoom(this.qnums[i].areaid), this.qnums[i].val);
@@ -407,7 +407,7 @@ MenuExec.prototype = {
 				if(!bd.isNullObj(type,i)){ um.addObj(type,i);}
 				margin++;
 
-				if(type===k.CELL && k.isOneNumber){
+				if(type===k.CELL && k.roomNumber){
 					if(bd.QnC(i)!==-1){ this.qnums.push({ areaid:area.getRoomID(i), val:bd.QnC(i)});}
 					//area.setRoomID(i, -1);
 				}
@@ -439,19 +439,19 @@ MenuExec.prototype = {
 			func = ((type===1||type==2) ? bd.cnum : bd.cnum2);
 			this.turnflipGroup(type, d, bd.cell, k.qcols*k.qrows, func);
 		}
-		if(k.iscross){
+		if(!!k.iscross){
 			func = ((type===1||type==2) ? bd.xnum : bd.xnum2);
 			this.turnflipGroup(type, d, bd.cross, (k.qcols+1)*(k.qrows+1), func);
 		}
-		if(k.isborder){
+		if(!!k.isborder){
 			func = ((type===1||type==2) ? bd.bnum : bd.bnum2);
-			this.turnflipGroup(type, d, bd.border, bd.bdinside+(k.isoutsideborder===0?0:2*(k.qcols+k.qrows)), func);
+			this.turnflipGroup(type, d, bd.border, bd.bdinside+(k.isborder===1?0:2*(k.qcols+k.qrows)), func);
 		}
-		if(k.isextendcell===2){
+		if(k.isexcell===2){
 			func = ((type===1||type==2) ? bd.exnum : bd.exnum2);
 			this.turnflipGroup(type, d, bd.excell, 2*(k.qcols+k.qrows)+4, func);
 		}
-		else if(k.isextendcell===1 && (type===1 || type===2)){
+		else if(k.isexcell===1 && (type===1 || type===2)){
 			if(type===1){
 				for(var by=(d.y1|1);by<d.yy/2;by+=2){
 					var c = bd.excell[bd.exnum(-1,by)];
@@ -605,7 +605,7 @@ MenuExec.prototype = {
 						var val = ({2:5,3:4,4:3,5:2,104:107,105:106,106:105,107:104})[bd.QuC(c)];
 						if(!isNaN(val)){ bd.sQuC(c,val);}
 					}
-					if(k.isextendcell!==1){
+					if(k.isexcell!==1){
 						var val = ({1:2,2:1})[bd.DiC(c)];
 						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
@@ -615,7 +615,7 @@ MenuExec.prototype = {
 						var val = ({2:3,3:2,4:5,5:4,104:105,105:104,106:107,107:106})[bd.QuC(c)];
 						if(!isNaN(val)){ bd.sQuC(c,val);}
 					}
-					if(k.isextendcell!==1){
+					if(k.isexcell!==1){
 						var val = ({3:4,4:3})[bd.DiC(c)];
 						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
@@ -625,7 +625,7 @@ MenuExec.prototype = {
 						var val = {2:5,3:2,4:3,5:4,21:22,22:21,102:103,103:102,104:107,105:104,106:105,107:106}[bd.QuC(c)];
 						if(!isNaN(val)){ bd.sQuC(c,val);}
 					}
-					if(k.isextendcell!==1){
+					if(k.isexcell!==1){
 						var val = {1:4,2:3,3:1,4:2}[bd.DiC(c)];
 						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
@@ -635,7 +635,7 @@ MenuExec.prototype = {
 						var val = {2:3,3:4,4:5,5:2,21:22,22:21,102:103,103:102,104:105,105:106,106:107,107:104}[bd.QuC(c)];
 						if(!isNaN(val)){ bd.sQuC(c,val);}
 					}
-					if(k.isextendcell!==1){
+					if(k.isexcell!==1){
 						var val = {1:3,2:4,3:2,4:1}[bd.DiC(c)];
 						if(!isNaN(val)){ bd.sDiC(c,val);}
 					}
@@ -744,7 +744,7 @@ MenuExec.prototype = {
 					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe(k.CELL,k.QSUB,i,bd.cell[i].qsub,bd.defcell.qsub);}
 				}
 			}
-			if(k.isborder){
+			if(!!k.isborder){
 				for(var i=0;i<bd.bdmax;i++){
 					if(bd.border[i].qans!==bd.defborder.qans){ um.addOpe(k.BORDER,k.QANS,i,bd.border[i].qans,bd.defborder.qans);}
 					if(bd.border[i].line!==bd.defborder.line){ um.addOpe(k.BORDER,k.LINE,i,bd.border[i].line,bd.defborder.line);}
@@ -765,7 +765,7 @@ MenuExec.prototype = {
 					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe(k.CELL,k.QSUB,i,bd.cell[i].qsub,bd.defcell.qsub);}
 				}
 			}
-			if(k.isborder){
+			if(!!k.isborder){
 				for(var i=0;i<bd.bdmax;i++){
 					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,k.QSUB,i,bd.border[i].qsub,bd.defborder.qsub);}
 				}

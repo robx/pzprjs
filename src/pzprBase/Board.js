@@ -189,16 +189,16 @@ Board.prototype = {
 		{
 			this.initGroup(k.CELL,   this.cell,   col*row);
 		}
-		if(k.iscross){
+		if(!!k.iscross){
 			this.initGroup(k.CROSS,  this.cross,  (col+1)*(row+1));
 		}
-		if(k.isborder){
-			this.initGroup(k.BORDER, this.border, 2*col*row+(k.isoutsideborder===0?-1:1)*(col+row));
+		if(!!k.isborder){
+			this.initGroup(k.BORDER, this.border, 2*col*row+(k.isborder===2?-1:1)*(col+row));
 		}
-		if(k.isextendcell===1){
+		if(k.isexcell===1){
 			this.initGroup(k.EXCELL, this.excell, col+row+1);
 		}
-		else if(k.isextendcell===2){
+		else if(k.isexcell===2){
 			this.initGroup(k.EXCELL, this.excell, 2*col+2*row+4);
 		}
 
@@ -239,9 +239,9 @@ Board.prototype = {
 	// setpos関連関数 <- 各Cell等が持っているとメモリを激しく消費するのでここに置くこと.
 	setposAll : function(){
 		this.setposCells();
-		if(k.iscross)        { this.setposCrosses();}
-		if(k.isborder)       { this.setposBorders();}
-		if(k.isextendcell!=0){ this.setposEXcells();}
+		if(!!k.iscross) { this.setposCrosses();}
+		if(!!k.isborder){ this.setposBorders();}
+		if(!!k.isexcell){ this.setposEXcells();}
 
 		this.setcoordAll();
 	},
@@ -268,7 +268,7 @@ Board.prototype = {
 			var obj=this.border[id], i=id;
 			if(i>=0 && i<(k.qcols-1)*k.qrows){ obj.bx=(i%(k.qcols-1))*2+2; obj.by=mf(i/(k.qcols-1))*2+1;} i-=((k.qcols-1)*k.qrows);
 			if(i>=0 && i<k.qcols*(k.qrows-1)){ obj.bx=(i%k.qcols)*2+1;     obj.by=mf(i/k.qcols)*2+2;    } i-=(k.qcols*(k.qrows-1));
-			if(k.isoutsideborder){
+			if(k.isborder===2){
 				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;     obj.by=0;        } i-=k.qcols;
 				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;     obj.by=2*k.qrows;} i-=k.qcols;
 				if(i>=0 && i<k.qrows){ obj.bx=0;         obj.by=i*2+1;    } i-=k.qrows;
@@ -288,11 +288,11 @@ Board.prototype = {
 			var obj = this.excell[id], i=id;
 			obj.bx=-1;
 			obj.by=-1;
-			if(k.isextendcell===1){
+			if(k.isexcell===1){
 				if(i>=0 && i<k.qcols){ obj.bx=i*2+1; obj.by=-1;     continue;} i-=k.qcols;
 				if(i>=0 && i<k.qrows){ obj.bx=-1;     obj.by=i*2+1; continue;} i-=k.qrows;
 			}
-			else if(k.isextendcell===2){
+			else if(k.isexcell===2){
 				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;       obj.by=-1;          continue;} i-=k.qcols;
 				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;       obj.by=2*k.qrows+1; continue;} i-=k.qcols;
 				if(i>=0 && i<k.qrows){ obj.bx=-1;          obj.by=i*2+1;       continue;} i-=k.qrows;
@@ -321,21 +321,21 @@ Board.prototype = {
 				obj.cpy = y0 + obj.by*k.bheight;
 			}
 		}
-		if(k.iscross){
+		if(!!k.iscross){
 			for(var id=0;id<this.crossmax;id++){
 				var obj = this.cross[id];
 				obj.px = x0 + obj.bx*k.bwidth;
 				obj.py = y0 + obj.by*k.bheight;
 			}
 		}
-		if(k.isborder){
+		if(!!k.isborder){
 			for(var id=0;id<this.bdmax;id++){
 				var obj = this.border[id];
 				obj.px = x0 + obj.bx*k.bwidth;
 				obj.py = y0 + obj.by*k.bheight;
 			}
 		}
-		if(k.isextendcell!=0){
+		if(!!k.isexcell){
 			for(var id=0;id<this.excellmax;id++){
 				var obj = this.excell[id];
 				obj.px = x0 + (obj.bx-1)*k.bwidth;
@@ -345,8 +345,8 @@ Board.prototype = {
 	},
 
 	setminmax : function(){
-		var extUL = (k.isextendcell===1 || k.isextendcell===2);
-		var extDR = (k.isextendcell===2);
+		var extUL = (k.isexcell===1 || k.isexcell===2);
+		var extDR = (k.isexcell===2);
 		this.minbx = (!extUL ? 0 : -2);
 		this.minby = (!extUL ? 0 : -2);
 		this.maxbx = (!extDR ? 2*k.qcols : 2*k.qcols+2);
@@ -463,7 +463,7 @@ Board.prototype = {
 			if     (!(bx&1) &&  (by&1)){ return ((bx>>1)-1)+(by>>1)*(qc-1);}
 			else if( (bx&1) && !(by&1)){ return (bx>>1)+((by>>1)-1)*qc+(qc-1)*qr;}
 		}
-		else if(k.isoutsideborder==1){
+		else if(k.isborder==2){
 			if     (by===0   &&(bx&1)&&(bx>=1&&bx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+(bx>>1);}
 			else if(by===2*qr&&(bx&1)&&(bx>=1&&bx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+(bx>>1);}
 			else if(bx===0   &&(by&1)&&(by>=1&&by<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+(by>>1);}
@@ -475,12 +475,12 @@ Board.prototype = {
 		return this.exnum2(bx,by,k.qcols,k.qrows);
 	},
 	exnum2 : function(bx,by,qc,qr){
-		if(k.isextendcell===1){
+		if(k.isexcell===1){
 			if(bx===-1&&by===-1){ return qc+qr;}
 			else if(by===-1&&bx>0&&bx<2*qc){ return (bx>>1);}
 			else if(bx===-1&&by>0&&by<2*qr){ return qc+(by>>1);}
 		}
-		else if(k.isextendcell===2){
+		else if(k.isexcell===2){
 			if     (by===-1    &&bx>0&&bx<2*qc){ return (bx>>1);}
 			else if(by===2*qr+1&&bx>0&&bx<2*qc){ return qc+(bx>>1);}
 			else if(bx===-1    &&by>0&&by<2*qr){ return 2*qc+(by>>1);}
@@ -600,7 +600,7 @@ Board.prototype = {
 	},
 	// overwrite by lightup.js and kakuro.js
 	sQnC : function(id, num) {
-		if(k.dispzero===0 && num===0){ return;}
+		if(!k.dispzero && num===0){ return;}
 
 		var old = this.cell[id].qnum;
 		um.addOpe(k.CELL, k.QNUM, id, old, num);
@@ -793,16 +793,16 @@ Board.prototype = {
 		// bd.sameNumber() ２つのCellに同じ有効な数字があるか返す
 		//-----------------------------------------------------------------------
 		this.isNum = (
-			(k.isAnsNumber) ? function(c){ return (c!==-1 && (bd.cell[c].qnum!==-1 || bd.cell[c].qans!==-1));}
-							: function(c){ return (c!==-1 &&  bd.cell[c].qnum!==-1);}
+			k.isAnsNumber ? function(c){ return (c!==-1 && (bd.cell[c].qnum!==-1 || bd.cell[c].qans!==-1));}
+						  : function(c){ return (c!==-1 &&  bd.cell[c].qnum!==-1);}
 		);
 		this.noNum = (
-			(k.isAnsNumber) ? function(c){ return (c===-1 || (bd.cell[c].qnum===-1 && bd.cell[c].qans===-1));}
-							: function(c){ return (c===-1 ||  bd.cell[c].qnum===-1);}
+			k.isAnsNumber ? function(c){ return (c===-1 || (bd.cell[c].qnum===-1 && bd.cell[c].qans===-1));}
+						  : function(c){ return (c===-1 ||  bd.cell[c].qnum===-1);}
 		);
 		this.isValidNum = (
-			(k.isAnsNumber) ? function(c){ return (c!==-1 && (bd.cell[c].qnum>=  0 ||(bd.cell[c].qans>=0 && bd.cell[c].qnum===-1)));}
-							: function(c){ return (c!==-1 &&  bd.cell[c].qnum>=  0);}
+			k.isAnsNumber ? function(c){ return (c!==-1 && (bd.cell[c].qnum>=  0 ||(bd.cell[c].qans>=0 && bd.cell[c].qnum===-1)));}
+						  : function(c){ return (c!==-1 &&  bd.cell[c].qnum>=  0);}
 		);
 		this.sameNumber     = function(c1,c2){ return (bd.isValidNum(c1) && (bd.getNum(c1)===bd.getNum(c2)));};
 
@@ -811,17 +811,17 @@ Board.prototype = {
 		// bd.setNum()     該当するCellに数字を設定する
 		//-----------------------------------------------------------------------
 		this.getNum = (
-			(k.isAnsNumber) ? function(c){ return (c!==-1 ? this.cell[c].qnum!==-1 ? this.cell[c].qnum : this.cell[c].qans : -1);}
-							: function(c){ return (c!==-1 ? this.cell[c].qnum : -1);}
+			k.isAnsNumber ? function(c){ return (c!==-1 ? this.cell[c].qnum!==-1 ? this.cell[c].qnum : this.cell[c].qans : -1);}
+						  : function(c){ return (c!==-1 ? this.cell[c].qnum : -1);}
 		);
 		this.setNum = (
-			((k.NumberIsWhite) ?
+			(k.NumberIsWhite ?
 				function(c,val){
 					if(!k.dispzero && val===0){ return;}
 					this.sQnC(c,val);
 					this.sQaC(c,bd.defcell.qnum);
 				}
-			:(k.isAnsNumber) ?
+			: k.isAnsNumber ?
 				function(c,val){
 					if(!k.dispzero && val===0){ return;}
 					if(k.editmode){

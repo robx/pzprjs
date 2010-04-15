@@ -74,7 +74,6 @@ Encode.prototype = {
 		}
 		k.PLAYER    = !k.EDITOR;
 		k.playmode  = !k.editmode;
-		k.autocheck =  k.playmode;
 
 		var qs = search.indexOf("/");
 		if(qs>=0){
@@ -606,25 +605,25 @@ Encode.prototype = {
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","z")){
 				cc += (parseInt(ca,36)+1);
-				var bx = (k.isoutsidecross==1?   cc%(k.qcols+1) :   cc%(k.qcols-1) +1)*2;
-				var by = (k.isoutsidecross==1?mf(cc/(k.qcols+1)):mf(cc/(k.qcols-1))+1)*2;
+				var bx = (k.iscross===2?   cc%(k.qcols+1) :   cc%(k.qcols-1) +1)*2;
+				var by = (k.iscross===2?mf(cc/(k.qcols+1)):mf(cc/(k.qcols-1))+1)*2;
 
-				if(by>=bd.maxby+(k.isoutsidecross==1?2:0)){ i++; break;}
+				if(by>=bd.maxby+(k.iscross===2?2:0)){ i++; break;}
 				bd.sQnX(bd.xnum(bx,by), 1);
 			}
 			else if(ca == '.'){ cc += 36;}
 			else{ cc++;}
 
-			if(cc >= (k.isoutsidecross==1?(k.qcols+1)*(k.qrows+1):(k.qcols-1)*(k.qrows-1))-1){ i++; break;}
+			if(cc >= (k.iscross==2?(k.qcols+1)*(k.qrows+1):(k.qcols-1)*(k.qrows-1))-1){ i++; break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeCrossMark : function(){
 		var cm = "", count = 0;
-		for(var i=0;i<(k.isoutsidecross==1?(k.qcols+1)*(k.qrows+1):(k.qcols-1)*(k.qrows-1));i++){
+		for(var i=0;i<(k.iscross===2?(k.qcols+1)*(k.qrows+1):(k.qcols-1)*(k.qrows-1));i++){
 			var pstr = "";
-			var bx = (k.isoutsidecross==1?   i%(k.qcols+1) :   i%(k.qcols-1) +1)*2;
-			var by = (k.isoutsidecross==1?mf(i/(k.qcols+1)):mf(i/(k.qcols-1))+1)*2;
+			var bx = (k.iscross===2?   i%(k.qcols+1) :   i%(k.qcols-1) +1)*2;
+			var by = (k.iscross===2?mf(i/(k.qcols+1)):mf(i/(k.qcols-1))+1)*2;
 
 			if(bd.QnX(bd.xnum(bx,by))==1){ pstr = ".";}
 			else{ pstr=" "; count++;}

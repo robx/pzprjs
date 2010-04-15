@@ -122,7 +122,7 @@ LineManager.prototype = {
 			return !bd.isLine(bd.bnum( 4*(cc%(k.qcols+1))-bd.border[id].bx, 4*mf(cc/(k.qcols+1))-bd.border[id].by ));
 		}
 	},
-	iscrossing : function(cc){ return !!k.isLineCross;},
+	iscrossing : function(cc){ return k.isLineCross;},
 
 	//---------------------------------------------------------------------------
 	// line.setLine()         線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
@@ -354,7 +354,7 @@ LineManager.prototype = {
 
 		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 		if(!k.isCenterLine){ cc1 = bd.border[id].crosscc[0]; cc2 = bd.border[id].crosscc[1];}
-		// 交差ありでk.isborderAsLine==1(->k.isCenterLine==0)のパズルは作ってないはず
+		// 交差ありでk.isborderAsLine==true(->k.isCenterLine==false)のパズルは作ってないはず
 		// 今までのオモパで該当するのもスリザーボックスくらいだったような、、
 
 		var lines=[];
@@ -482,10 +482,9 @@ AreaManager = function(){
 	this.bcell = {};	// 黒マス情報を保持する
 	this.wcell = {};	// 白マス情報を保持する
 
-	this.disroom = (!k.isborder || !!k.area.disroom);	// 部屋情報を生成しない
-	this.bblock = (!!k.area.bcell || !!k.area.number);	// 黒マス(or 繋がる数字・記号)の情報を生成する
-	this.wblock = !!k.area.wcell;						// 白マスの情報を生成する
-	this.numberColony = !!k.area.number;				// 数字・記号を黒マス情報とみなして情報を生成する
+	this.bblock = (k.checkBlackCell || k.linkNumber);	// 黒マス(or 繋がる数字・記号)の情報を生成する
+	this.wblock = k.checkWhiteCell;						// 白マスの情報を生成する
+	this.numberColony = k.linkNumber;					// 数字・記号を黒マス情報とみなして情報を生成する
 
 	this.init();
 };
@@ -500,7 +499,7 @@ AreaManager.prototype = {
 		this.initWarea();
 	},
 	resetArea : function(){
-		if(k.isborder && !k.isborderAsLine){ this.resetRarea();}
+		if(!!k.isborder && !k.isborderAsLine){ this.resetRarea();}
 		if(this.bblock){ this.resetBarea();}
 		if(this.wblock){ this.resetWarea();}
 	},
@@ -526,7 +525,7 @@ AreaManager.prototype = {
 		this.lcnt = [];
 		for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){ this.lcnt[c]=0;}
 
-		if(k.isoutsideborder===0){
+		if(k.isborder===1){
 			for(var by=bd.minby;by<=bd.maxby;by+=2){
 				for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
 					if(bx===bd.minbx || bx===bd.maxbx || by===bd.minby || by===bd.maxby){
@@ -537,7 +536,7 @@ AreaManager.prototype = {
 			}
 		}
 
-		if(this.disroom){ return;}
+		if(!k.hasroom){ return;}
 		for(var id=0;id<bd.bdmax;id++){
 			if(bd.isBorder(id)){
 				var cc1 = bd.border[id].crosscc[0], cc2 = bd.border[id].crosscc[1];
@@ -547,7 +546,7 @@ AreaManager.prototype = {
 		}
 	},
 	resetRarea : function(){
-		if(this.disroom){ return;}
+		if(!k.hasroom){ return;}
 
 		this.initRarea();
 		this.room.max = 0;
@@ -560,7 +559,7 @@ AreaManager.prototype = {
 		}
 
 		// 部屋ごとに、TOPの場所に数字があるかどうか判断して移動する
-		if(k.isOneNumber){
+		if(k.roomNumber){
 			for(var r=1;r<=this.room.max;r++){
 				this.setTopOfRoom(r);
 
@@ -594,7 +593,7 @@ AreaManager.prototype = {
 	// area.sr0()          setBorder()から呼ばれて、初期idを含む一つの部屋の領域を、指定されたareaidにする
 	//---------------------------------------------------------------------------
 	setBorder : function(id,val){
-		if(this.disroom){ return;}
+		if(!k.hasroom){ return;}
 		val = (val>0?1:0);
 
 		var cc1, cc2, xc1 = bd.border[id].crosscc[0], xc2 = bd.border[id].crosscc[1];
@@ -631,7 +630,7 @@ AreaManager.prototype = {
 			}
 
 			// TOPの情報を設定する
-			if(k.isOneNumber){
+			if(k.roomNumber){
 				if(roomid[room[baseid].top]===baseid){
 					this.setTopOfRoom(room.max);
 				}
@@ -648,8 +647,8 @@ AreaManager.prototype = {
 			cc1 = bd.border[id].cellcc[0]; cc2 = bd.border[id].cellcc[1];
 			if(cc1===-1 || cc2===-1 || roomid[cc1]===roomid[cc2]){ return;}
 
-			// k.isOneNumberの時 どっちの数字を残すかは、TOP同士の位置で比較する
-			if(k.isOneNumber){
+			// k.roomNumberの時 どっちの数字を残すかは、TOP同士の位置で比較する
+			if(k.roomNumber){
 				var merged, keep;
 
 				var tc1 = room[roomid[cc1]].top, tc2 = room[roomid[cc2]].top;

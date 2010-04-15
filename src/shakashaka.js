@@ -7,32 +7,32 @@ Puzzles.shakashaka.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 0;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = true;	// 線が交差するパズル
+		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 1;	// 1:0を表示するかどうか
-		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = true;	// 0を表示するかどうか
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 1;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = true;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
+		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
 		base.setTitle("シャカシャカ","ShakaShaka");
 		base.setExpression("　\"クリックした位置\"ではマス目の角のほうをクリックすることで三角形が入力できます。<br>　\"ドラッグ入力\"では斜め4方向にドラッグして三角形を入力できます。",
@@ -60,23 +60,24 @@ Puzzles.shakashaka.prototype = {
 			}
 		};
 		mv.mouseup = function(){
-			if(k.playmode && k.use==2 && this.notInputted()){
+			if(k.playmode && pp.getVal('use')===2 && this.notInputted()){
 				this.inputTriangle(2);
 			}
 		};
 		mv.mousemove = function(){
-			if(k.playmode && k.use==2 && this.mouseCell!=-1){
+			if(k.playmode && pp.getVal('use')===2 && this.mouseCell!=-1){
 				this.inputTriangle(1);
 			}
 		};
 		mv.inputTriangle = function(use2step){
 			var cc;
-			if(k.use!=2 || use2step==0){
+			if(pp.getVal('use')!==2 || use2step==0){
 				cc = this.cellid();
 				if(cc==-1 || bd.QnC(cc)!=-1){ this.mousereset(); return;}
 			}
 
-			if(k.use==1){
+			var use = pp.getVal('use');
+			if(use===1){
 				if(this.btn.Left){
 					var dx = this.inputPos.x - bd.cell[cc].px + k.p0.x;
 					var dy = this.inputPos.y - bd.cell[cc].py + k.p0.y;
@@ -97,7 +98,7 @@ Puzzles.shakashaka.prototype = {
 					bd.sQsC(cc, (bd.QsC(cc)==0?1:0));
 				}
 			}
-			else if(k.use==2){
+			else if(use===2){
 				if(use2step==0){
 					// 最初はどこのセルをクリックしたか取得するだけ
 					this.firstPos = this.inputPos.clone();
@@ -130,7 +131,7 @@ Puzzles.shakashaka.prototype = {
 					}
 				}
 			}
-			else if(k.use==3){
+			else if(use===3){
 				if(this.btn.Left){
 					if(bd.QsC(cc)==1)      { bd.sQaC(cc,-1); bd.sQsC(cc,0);}
 					else if(bd.QaC(cc)==-1){ bd.sQaC(cc, 2); bd.sQsC(cc,0);}

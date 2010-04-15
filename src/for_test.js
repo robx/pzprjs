@@ -78,7 +78,6 @@ debug.extend({
 		k.cellsize = 36;
 		k.bdmargin = 0.70;
 		k.reduceImageMargin = true;
-		k.area = { bcell:0, wcell:0, number:0, disroom:0};
 
 		// ’Êípreload_func‚Å‰Šú‰»‚³‚ê‚éenc,fio‚ğ‚±‚±‚Å¶¬‚·‚é
 		enc = new Encode();
@@ -164,10 +163,10 @@ debug.extend({
 					ans.inCheck = false;
 
 					var iserror = false, misstr = false;
-					                    for(var c=0;c<bd.cellmax  ;c++){if(bd.cell[c].error!=0  ){ iserror = true;}}
-					if(k.isextendcell){ for(var c=0;c<bd.excellmax;c++){if(bd.excell[c].error!=0){ iserror = true;}}}
-					if(k.iscross)     { for(var c=0;c<bd.crossmax ;c++){if(bd.cross[c].error!=0 ){ iserror = true;}}}
-					if(k.isborder)    { for(var i=0;i<bd.bdmax    ;i++){if(bd.border[i].error!=0){ iserror = true;}}}
+					                  for(var c=0;c<bd.cellmax  ;c++){if(bd.cell[c].error!=0  ){ iserror = true;}}
+					if(!!k.isexcell){ for(var c=0;c<bd.excellmax;c++){if(bd.excell[c].error!=0){ iserror = true;}}}
+					if(!!k.iscross) { for(var c=0;c<bd.crossmax ;c++){if(bd.cross[c].error!=0 ){ iserror = true;}}}
+					if(!!k.isborder){ for(var i=0;i<bd.bdmax    ;i++){if(bd.border[i].error!=0){ iserror = true;}}}
 					if(k.puzzleid=='nagenawa' && n==0){ iserror = true;}
 					if(debug.acs[k.puzzleid][n][0] != ""){ iserror = !iserror;}
 
@@ -369,21 +368,21 @@ debug.extend({
 			bd2.cell[c].qans =bd.cell[c].qans;
 			bd2.cell[c].qsub =bd.cell[c].qsub;
 		}
-		if(k.isextendcell){
+		if(!!k.isexcell){
 			for(var c=0;c<bd.excellmax;c++){
 				bd2.excell[c] = {};
 				bd2.excell[c].qnum =bd.excell[c].qnum;
 				bd2.excell[c].direc=bd.excell[c].direc;
 			}
 		}
-		if(k.iscross){
+		if(!!k.iscross){
 			for(var c=0;c<bd.crossmax;c++){
 				bd2.cross[c] = {};
 				bd2.cross[c].ques=bd.cross[c].ques;
 				bd2.cross[c].qnum=bd.cross[c].qnum;
 			}
 		}
-		if(k.isborder){
+		if(!!k.isborder){
 			for(var i=0;i<bd.bdmax;i++){
 				bd2.border[i] = {};
 				bd2.border[i].ques=bd.border[i].ques;
@@ -408,19 +407,19 @@ debug.extend({
 				else{ bd1.cell[c].qsub = bd2.cell[c].qsub;}
 			}
 		}
-		if(k.isextendcell){
+		if(!!k.isexcell){
 			for(var c=0;c<bd1.excell.length;c++){
 				if(bd1.excell[c].qnum !=bd2.excell[c].qnum ){ result = false;}
 				if(bd1.excell[c].direc!=bd2.excell[c].direc){ result = false;}
 			}
 		}
-		if(k.iscross){
+		if(!!k.iscross){
 			for(var c=0;c<bd1.cross.length;c++){
 				if(bd1.cross[c].ques!=bd2.cross[c].ques){ result = false;}
 				if(bd1.cross[c].qnum!=bd2.cross[c].qnum){ result = false;}
 			}
 		}
-		if(k.isborder){
+		if(!!k.isborder){
 			for(var i=0;i<bd1.border.length;i++){
 				if(bd1.border[i].ques!=bd2.border[i].ques){ result = false; debug.addTextarea("border ques "+i+" "+bd1.border[i].ques+" "+bd2.border[i].ques);}
 				if(bd1.border[i].qnum!=bd2.border[i].qnum){ result = false; debug.addTextarea("border qnum "+i+" "+bd1.border[i].qnum+" "+bd2.border[i].qnum);}

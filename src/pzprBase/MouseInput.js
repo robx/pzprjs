@@ -6,6 +6,8 @@
 // パズル共通 マウス入力部
 // MouseEventクラスを定義
 var MouseEvent = function(){
+	this.enableMouse = true;	// マウス入力は有効か
+
 	this.inputPos;
 	this.mouseCell;
 	this.inputData;
@@ -13,7 +15,7 @@ var MouseEvent = function(){
 	this.btn = {};
 	this.mousereset();
 
-	this.enableInputHatena = !!k.isDispHatena;
+	this.enableInputHatena = k.isDispHatena;
 	this.inputQuesDirectly = false;
 
 	this.mouseoffset;
@@ -42,7 +44,7 @@ MouseEvent.prototype = {
 	//イベントハンドラから呼び出される
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
 	e_mousedown : function(e){
-		if(k.enableMouse){
+		if(this.enableMouse){
 			this.setButtonFlag(e);
 			// SHIFTキーを押している時は左右ボタン反転
 			if(((kc.isSHIFT)^pp.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
@@ -61,7 +63,7 @@ MouseEvent.prototype = {
 		return false;
 	},
 	e_mouseup   : function(e){
-		if(k.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
+		if(this.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
 			this.setposition(e);
 			this.mouseup();		// 各パズルのルーチンへ
@@ -75,7 +77,7 @@ MouseEvent.prototype = {
 		// ポップアップメニュー移動中は当該処理が最優先
 		if(!!menu.movingpop){ return true;}
 
-		if(k.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
+		if(this.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
 			this.setposition(e);
 			this.mousemove();	// 各パズルのルーチンへ
@@ -195,8 +197,8 @@ MouseEvent.prototype = {
 
 		this.mouseCell = cc; 
 
-		if(k.NumberIsWhite==1 && bd.QnC(cc)!=-1 && (this.inputData==1||(this.inputData==2 && pc.bcolor=="white"))){ return;}
-		if(k.RBBlackCell==1 && this.inputData==1){
+		if(k.NumberIsWhite && bd.QnC(cc)!=-1 && (this.inputData==1||(this.inputData==2 && pc.bcolor=="white"))){ return;}
+		if(k.RBBlackCell && this.inputData==1){
 			if(this.firstPos.x == -1 && this.firstPos.y == -1){ this.firstPos = new Pos(bd.cell[cc].bx, bd.cell[cc].by);}
 			if( (((this.firstPos.x>>1)+(this.firstPos.y>>1))&1) != (((bd.cell[cc].bx>>1)+(bd.cell[cc].by>>1))&1) ){ return;}
 		}
@@ -255,7 +257,7 @@ MouseEvent.prototype = {
 		pc.paintCell(cc);
 	},
 	inputqnum1 : function(cc){
-		if(k.isOneNumber){ cc = area.getTopOfRoomByCell(cc);}
+		if(k.roomNumber){ cc = area.getTopOfRoomByCell(cc);}
 		var max = bd.nummaxfunc(cc);
 
 		if(this.btn.Left){
@@ -488,7 +490,7 @@ MouseEvent.prototype = {
 	inputcrossMark : function(){
 		var pos = this.borderpos(0.24);
 		if(!(pos.x&1) || !(pos.y&1)){ return;}
-		var bm = (k.isoutsidecross===1?0:2);
+		var bm = (k.iscross===2?0:2);
 		if(pos.x<bd.minbx+bm || pos.x>bd.maxbx-bm || pos.y<bd.minby+bm || pos.y>bd.maxby-bm){ return;}
 
 		var cc = bd.xnum(pos.x,pos.y);
@@ -624,7 +626,7 @@ MouseEvent.prototype = {
 		if(id!=-1 && id==this.mouseCell){ return;}
 
 		if(!bd.isLine(id)){
-			var cc = (k.isborderAsLine==0?this.cellid():this.crossid());
+			var cc = (!k.isborderAsLine?this.cellid():this.crossid());
 			if(cc==-1 || (line.iscrossing(cc) && (line.lcntCell(cc)==3 || line.lcntCell(cc)==4))){ return;}
 
 			var bx, by;

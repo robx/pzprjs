@@ -223,7 +223,7 @@ Menu.prototype = {
 		// *表示 ==============================================================
 		am('disp', "表示", "Display");
 
-		au('size','disp',k.widthmode,[0,1,2,3,4], '表示サイズ','Cell Size');
+		au('size','disp',2,[0,1,2,3,4], '表示サイズ','Cell Size');
 		ap('sep_disp1',  'disp');
 
 		if(!!k.irowake){
@@ -259,7 +259,7 @@ Menu.prototype = {
 
 		puz.menufix();	// 各パズルごとのメニュー追加
 
-		ac('autocheck','setting', k.autocheck, '正答自動判定', 'Auto Answer Check');
+		ac('autocheck','setting', k.playmode, '正答自動判定', 'Auto Answer Check');
 		ac('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
 		sl('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
 		if(kp.ctl[1].enable || kp.ctl[3].enable){
@@ -672,7 +672,7 @@ Menu.prototype = {
 		};
 		btt('pzprv3',     "ぱずぷれv3のURLを出力する",           "Output PUZ-PRE v3 URL",          true);
 		btt('pzprapplet', "ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", !k.ispzprv3ONLY);
-		btt('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              !!k.isKanpenExist);
+		btt('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              k.isKanpenExist);
 		btt('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (k.puzzleid==="heyawake"));
 		btt('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
 		ee("urlbuttonarea").appendBR();
@@ -774,7 +774,7 @@ Menu.prototype = {
 			this.pop = '';
 			this.menuclear();
 			this.movingpop = "";
-			k.enableKey = true;
+			kc.enableKey = true;
 		}
 	},
 
@@ -990,11 +990,9 @@ Properties.prototype = {
 		irowake   : function(){ pc.paintAll();},
 		cursor    : function(){ pc.paintAll();},
 		manarea   : function(){ menu.ex.dispman();},
-		autocheck : function(val){ k.autocheck = !k.autocheck;},
 		mode      : function(num){ menu.ex.modechange(num);},
-		size      : function(num){ k.widthmode=num; base.resize_canvas();},
+		size      : function(num){ base.resize_canvas();},
 		repaint   : function(num){ base.resize_canvas();},
-		use       : function(num){ k.use =num;},
 		language  : function(num){ menu.setLang({0:'ja',1:'en'}[num]);},
 
 		newboard : function(){
@@ -1003,12 +1001,12 @@ Properties.prototype = {
 				document.newboard.col.value = k.qcols;
 				document.newboard.row.value = k.qrows;
 			}
-			k.enableKey = false;
+			kc.enableKey = false;
 		},
 		dispsize : function(){
 			menu.pop = ee("pop4_1");
 			document.dispsize.cs.value = k.cellsize;
-			k.enableKey = false;
+			kc.enableKey = false;
 		},
 		keypopup : function(){
 			var f = kp.ctl[pp.flags['mode'].val].enable;

@@ -6,6 +6,8 @@
 // パズル共通 キーボード入力部
 // KeyEventクラスを定義
 KeyEvent = function(){
+	this.enableKey = true;	// キー入力は有効か
+
 	this.isCTRL;
 	this.isALT;	// ALTはメニュー用なので極力使わない
 	this.isSHIFT;
@@ -15,6 +17,7 @@ KeyEvent = function(){
 	this.keyPressed;
 	this.ca;
 	this.prev;
+
 	this.keyreset();
 };
 KeyEvent.prototype = {
@@ -43,7 +46,7 @@ KeyEvent.prototype = {
 	// この3つのキーイベントはwindowから呼び出される(kcをbindしている)
 	// 48～57は0～9キー、65～90はa～z、96～105はテンキー、112～123はF1～F12キー
 	e_keydown : function(e){
-		if(k.enableKey){
+		if(this.enableKey){
 			um.newOperation(true);
 			this.ca = this.getchar(e, this.getKeyCode(e));
 			this.tcMoved = false;
@@ -61,7 +64,7 @@ KeyEvent.prototype = {
 		}
 	},
 	e_keyup : function(e){
-		if(k.enableKey){
+		if(this.enableKey){
 			um.newOperation(false);
 			this.ca = this.getchar(e, this.getKeyCode(e));
 			this.keyPressed = false;
@@ -73,7 +76,7 @@ KeyEvent.prototype = {
 	},
 	//(keypressのみ)45は-(マイナス)
 	e_keypress : function(e){
-		if(k.enableKey){
+		if(this.enableKey){
 			um.newOperation(false);
 			this.ca = this.getcharp(e, this.getKeyCode(e));
 
@@ -206,7 +209,7 @@ KeyEvent.prototype = {
 	//---------------------------------------------------------------------------
 	key_inputqnum : function(ca){
 		var cc = tc.getTCC();
-		if(k.editmode && k.isOneNumber){ cc = area.getTopOfRoomByCell(cc);}
+		if(k.editmode && k.roomNumber){ cc = area.getTopOfRoomByCell(cc);}
 		var max = bd.nummaxfunc(cc);
 
 		if('0'<=ca && ca<='9'){
@@ -583,8 +586,8 @@ TCell.prototype = {
 			this.maxy = 2*k.qrows;
 		}
 		else{
-			var extUL = (k.isextendcell===1 || k.isextendcell===2);
-			var extDR = (k.isextendcell===2);
+			var extUL = (k.isexcell===1 || k.isexcell===2);
+			var extDR = (k.isexcell===2);
 			this.minx = (!extUL ? 1 : -1);
 			this.miny = (!extUL ? 1 : -1);
 			this.maxx = (!extDR ? 2*k.qcols-1 : 2*k.qcols+1);
@@ -646,7 +649,7 @@ TCell.prototype = {
 	},
 	getTEC : function(){ return bd.exnum(this.cursolx, this.cursoly);},
 	setTEC : function(id){
-		if(k.isextendcell===0 || id<0 || bd.excellmax<=id){ return;}
+		if(!k.isexcell || id<0 || bd.excellmax<=id){ return;}
 		this.cursolx = bd.excell[id].bx; this.cursoly = bd.excell[id].by;
 	}
 };
