@@ -160,7 +160,7 @@ Puzzles.wblink.prototype = {
 		pc.lwratio = 8;
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.drawGrid(x1,y1,x2,y2,k.editmode);
+			this.drawGrid(x1,y1,x2,y2,(k.editmode && !this.fillTextPrecisely));
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);

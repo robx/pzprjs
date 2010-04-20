@@ -302,10 +302,9 @@ Puzzles.kinkonkan.prototype = {
 			var header = "ex_full_";
 			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
 			for(var i=0;i<exlist.length;i++){
-				var c = exlist[i];
-				var obj = bd.excell[c], key = 'excell_'+c;
+				var c = exlist[i], obj = bd.excell[c], key = 'excell_'+c;
 
-				if(bd.excell[c].error===6){
+				if(obj.error===6){
 					g.fillStyle = this.errbcolor2;
 					if(this.vnop(header+c,this.NONE)){
 						g.fillRect(obj.px+1, obj.py+1, this.cw-1, this.ch-1);
@@ -313,11 +312,11 @@ Puzzles.kinkonkan.prototype = {
 				}
 				else{ this.vhide(header+c);}
 
-				if(bd.excell[c].direc!==0 || bd.excell[c].qnum!==-1){
-					var num=bd.excell[c].qnum, canum=bd.excell[c].direc;
+				if(obj.direc!==0 || obj.qnum!==-1){
+					var num=obj.qnum, canum=obj.direc;
 
 					var color = this.fontErrcolor;
-					if(bd.excell[c].error!==1){ color=(canum<=52?this.fontcolor:this.fontAnscolor);}
+					if(obj.error!==1){ color=(canum<=52?this.fontcolor:this.fontAnscolor);}
 
 					var fontratio = 0.66;
 					if(canum>0&&num>=10){ fontratio = 0.55;}
@@ -329,7 +328,7 @@ Puzzles.kinkonkan.prototype = {
 					else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
 					if(num>=0){ text+=num.toString(10);}
 
-					this.dispnum(key, 1, text, fontratio, color, obj.cpx, obj.cpy);
+					this.dispnum(key, 1, text, fontratio, color, obj.px+this.bw, obj.py+this.bh);
 				}
 				else{ this.hideEL(key);}
 			}
@@ -516,22 +515,21 @@ Puzzles.kinkonkan.prototype = {
 
 			while(dir!=0){
 				switch(dir){ case 1: by-=2; break; case 2: by+=2; break; case 3: bx-=2; break; case 4: bx+=2; break;}
-				if(bd.exnum(bx,by)!=-1){ break;}
 
-				var cc = bd.cnum(bx,by);
-				if(bd.QaC(cc)==1){
-					if     (dir==1){ ldata[cc]=(!isNaN({4:1,6:1}[ldata[cc]])?6:2); dir=3;}
-					else if(dir==2){ ldata[cc]=(!isNaN({2:1,6:1}[ldata[cc]])?6:4); dir=4;}
-					else if(dir==3){ ldata[cc]=(!isNaN({2:1,6:1}[ldata[cc]])?6:4); dir=1;}
-					else if(dir==4){ ldata[cc]=(!isNaN({4:1,6:1}[ldata[cc]])?6:2); dir=2;}
+				var cc = bd.cnum(bx,by), qa = bd.QaC(cc);
+				if(qa===1){
+					if     (dir===1){ ldata[cc]=(!isNaN({4:1,6:1}[ldata[cc]])?6:2); dir=3;}
+					else if(dir===2){ ldata[cc]=(!isNaN({2:1,6:1}[ldata[cc]])?6:4); dir=4;}
+					else if(dir===3){ ldata[cc]=(!isNaN({2:1,6:1}[ldata[cc]])?6:4); dir=1;}
+					else if(dir===4){ ldata[cc]=(!isNaN({4:1,6:1}[ldata[cc]])?6:2); dir=2;}
 				}
-				else if(bd.QaC(cc)==2){
-					if     (dir==1){ ldata[cc]=(!isNaN({5:1,6:1}[ldata[cc]])?6:3); dir=4;}
-					else if(dir==2){ ldata[cc]=(!isNaN({3:1,6:1}[ldata[cc]])?6:5); dir=3;}
-					else if(dir==3){ ldata[cc]=(!isNaN({5:1,6:1}[ldata[cc]])?6:3); dir=2;}
-					else if(dir==4){ ldata[cc]=(!isNaN({3:1,6:1}[ldata[cc]])?6:5); dir=1;}
+				else if(qa===2){
+					if     (dir===1){ ldata[cc]=(!isNaN({5:1,6:1}[ldata[cc]])?6:3); dir=4;}
+					else if(dir===2){ ldata[cc]=(!isNaN({3:1,6:1}[ldata[cc]])?6:5); dir=3;}
+					else if(dir===3){ ldata[cc]=(!isNaN({5:1,6:1}[ldata[cc]])?6:3); dir=2;}
+					else if(dir===4){ ldata[cc]=(!isNaN({3:1,6:1}[ldata[cc]])?6:5); dir=1;}
 				}
-				else if(cc!==-1){ ldata[cc]=6;}
+				else if(cc!==-1){ ldata[cc]=6; continue;}
 				else{ break;}
 
 				ccnt++;

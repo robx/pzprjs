@@ -112,7 +112,7 @@ Puzzles.view.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.errbcolor2 = "rgb(127, 255, 127)";
+		pc.errbcolor2 = "rgb(255, 255, 127)";
 		pc.setBGCellColorFunc('error2');
 
 		pc.paint = function(x1,y1,x2,y2){

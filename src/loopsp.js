@@ -386,7 +386,7 @@ Puzzles.loopsp.prototype = {
 			var clist = [];
 			clist.include = function(val){ for(var i=0,len=this.length;i<len;i++){ if(this[i]==val) return true;} return false;};
 			for(var i=0,len=idlist.length;i<len;i++){
-				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+				var id=idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(cc1!=-1 && !clist.include(cc1)){ clist.push(cc1);}
 				if(cc2!=-1 && !clist.include(cc2)){ clist.push(cc2);}
 			}

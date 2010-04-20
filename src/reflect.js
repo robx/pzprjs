@@ -191,14 +191,15 @@ Puzzles.reflect.prototype = {
 			var vids = ["c_lp1_"+id, "c_lp2_"+id];
 
 			if(bd.cell[id].ques===101){
-				var lw = this.lw, lm=this.lm, mgn = this.cw*0.38;
+				var lw = this.lw+2, lm=(lw-1)/2, ll=this.cw*0.76;
 				g.fillStyle = this.Cellcolor;
 
+				// GridÇÃê^ÇÒíÜÅÅcpx,cpy+0.5
 				if(this.vnop(vids[0],this.NONE)){
-					g.fillRect(bd.cell[id].cpx-lm, bd.cell[id].cpy-mgn,  lw+2, 2*mgn);
+					g.fillRect(bd.cell[id].cpx+0.5-lm, bd.cell[id].cpy+0.5-ll/2,  lw, ll);
 				}
 				if(this.vnop(vids[1],this.NONE)){
-					g.fillRect(bd.cell[id].cpx-mgn, bd.cell[id].cpy-lm,  2*mgn, lw+2);
+					g.fillRect(bd.cell[id].cpx+0.5-ll/2, bd.cell[id].cpy+0.5-lm,  ll, lw);
 				}
 			}
 			else{ this.vhide(vids);}

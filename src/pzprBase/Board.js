@@ -193,7 +193,7 @@ Board.prototype = {
 			this.initGroup(k.CROSS,  this.cross,  (col+1)*(row+1));
 		}
 		if(!!k.isborder){
-			this.initGroup(k.BORDER, this.border, 2*col*row+(k.isborder===2?-1:1)*(col+row));
+			this.initGroup(k.BORDER, this.border, 2*col*row+(k.isborder===1?-1:1)*(col+row));
 		}
 		if(k.isexcell===1){
 			this.initGroup(k.EXCELL, this.excell, col+row+1);

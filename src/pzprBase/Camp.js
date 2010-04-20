@@ -1,4 +1,4 @@
-// Camp.js rev85
+// Camp.js rev86
  
 (function(){
 
@@ -481,9 +481,6 @@ VectorContext.prototype = {
 			cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
 			cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
 		}
-		else if(this.type===SVG){
-			cx+=0.5; // ‚È‚º‚©‚¿‚å‚Á‚Æ¶‚É‚¸‚ê‚é‚Ì‚ÅC³
-		}
 		var sx = cx + r*_mc(startRad), sy = cy + r*_ms(startRad),
 			ex = cx + r*_mc(endRad),   ey = cy + r*_ms(endRad);
 		if(this.type===VML){
@@ -495,7 +492,7 @@ VectorContext.prototype = {
 			this.lastpath = com;
 		}
 		else{
-			if(sy==ey){ sy+=0.125;}
+			if(endRad-startRad>=_2PI){ sy+=0.125;}
 			var unknownflag = (startRad>endRad)^(Math.abs(endRad-startRad)>Math.PI);
 			var islong = ((antiClockWise^unknownflag)?1:0), sweep = ((islong==0^unknownflag)?1:0);
 			this.currentpath.push(this.PATH_MOVE,sx,sy,S_PATH_ARCTO,r,r,0,islong,sweep,ex,ey);

@@ -10,7 +10,7 @@ Puzzles.bosanowa.prototype = {
 		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
 		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isborder = 2;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
 		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
 		k.isLineCross     = false;	// 線が交差するパズル
@@ -21,7 +21,7 @@ Puzzles.bosanowa.prototype = {
 
 		k.dispzero        = false;	// 0を表示するかどうか
 		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
+		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
 		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
 		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
@@ -34,8 +34,8 @@ Puzzles.bosanowa.prototype = {
 		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
 		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		k.bdmargin = 1.0;				// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = false;	// 画像出力時にmarginを小さくする
+		k.bdmargin = 0.7;				// 枠外の一辺のmargin(セル数換算)
+		k.reduceImageMargin = true;	// 画像出力時にmarginを小さくする
 
 		if(k.EDITOR){
 			base.setExpression("　キーボードで数字および、Wキーで数字を入力するマス/しないマスの切り替えが来出ます。",
@@ -55,7 +55,12 @@ Puzzles.bosanowa.prototype = {
 		pp.addChild('disptype_1', 'disptype', 'ニコリ紙面形式', 'Original Type');
 		pp.addChild('disptype_2', 'disptype', '倉庫番形式',     'Sokoban Type');
 		pp.addChild('disptype_3', 'disptype', 'ワリタイ形式',   'Waritai type');
-		pp.funcs['disptype'] = function(){ if(!g.use.canvas){ pc.flushCanvasAll();} pc.paintAll();};
+		pp.funcs['disptype'] = function(num){
+			if     (num==1){ k.bdmargin = 0.7; k.reduceImageMargin = true;}
+			else if(num==2){ k.bdmargin = 1.2; k.reduceImageMargin = false;}
+			else if(num==3){ k.bdmargin = 0.7; k.reduceImageMargin = true;}
+			base.resize_canvas();
+		};
 	},
 
 	//---------------------------------------------------------
@@ -197,7 +202,9 @@ Puzzles.bosanowa.prototype = {
 			this.drawNumbers(x1,y1,x2,y2);
 			this.drawNumbersBD(x1,y1,x2,y2);
 
-			if(k.EDITOR){ this.drawChassis(x1,y1,x2,y2);}
+			if(k.EDITOR && !this.fillTextPrecisely){
+				this.drawChassis(x1,y1,x2,y2);
+			}
 
 			this.drawTarget_bosanowa(x1,y1,x2,y2);
 		};
@@ -333,13 +340,6 @@ Puzzles.bosanowa.prototype = {
 				}
 				else{ this.vhide(header+id);}
 			}
-		};
-
-		pc.getNumberColor = function(cc){	//オーバーライド
-			if(bd.cell[cc].error===1 || bd.cell[cc].error===4){ return this.fontErrcolor;   }
-			else if(bd.cell[cc].qnum!==-1){ return this.fontcolor;      }
-			else if(bd.cell[cc].qans!==-1){ return this.fontAnscolor;   }
-			return this.fontcolor;
 		};
 		pc.drawNumbersBD = function(x1,y1,x2,y2){
 			this.vinc('border_number', 'auto');

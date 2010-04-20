@@ -119,7 +119,7 @@ Puzzles.factors.prototype = {
 					var size = 0.45;
 					if     (bd.QnC(c)>=100000){ size = 0.30;}
 					else if(bd.QnC(c)>= 10000){ size = 0.36;}
-					this.dispnum(key_ques, 5, (""+bd.cell[c].qnum), size, this.fontcolor, obj.px, obj.py);
+					this.dispnum(key_ques, 5, (""+bd.cell[c].qnum), size, this.fontcolor, obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(key_ques);}
 			}
