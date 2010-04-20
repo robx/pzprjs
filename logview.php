@@ -23,6 +23,7 @@
 		bdblock    : 'ボーダーブロック',
 		bonsan     : 'ぼんさん',
 		bosanowa   : 'ボサノワ',
+		box        : 'ボックス',
 		chocona    : 'チョコナ',
 		cojun      : 'コージュン',
 		country    : 'カントリーロード',

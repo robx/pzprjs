@@ -7,36 +7,32 @@ Puzzles.kusabi.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 0;	// 1:0を表示するかどうか
-		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = false;	// 0を表示するかどうか
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
 		base.setTitle("クサビリンク","Kusabi");
 		base.setExpression("　左ドラッグで線が、右ドラッグで×印が入力できます。",
@@ -102,8 +98,6 @@ Puzzles.kusabi.prototype = {
 		pc.circleratio = [0.40, 0.40];
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 
@@ -118,12 +112,12 @@ Puzzles.kusabi.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 		pc.dispnumCell = function(id){
-			var num = bd.cell[id].qnum, obj = bd.cell[id];
-			if(num>=1 && num<=3){ text = ({1:"同",2:"短",3:"長"})[num];}
-			else{ this.hideEL(obj.numobj); return;}
-
-			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-			this.dispnum(obj.numobj, 1, text, 0.65, this.getNumberColor(id), obj.px, obj.py);
+			var num = bd.cell[id].qnum, obj = bd.cell[id], key='cell_'+id;
+			if(num>=1 && num<=3){
+				var text = ({1:"同",2:"短",3:"長"})[num];
+				this.dispnum(key, 1, text, 0.65, this.getNumberColor(id), obj.cpx, obj.cpy);
+			}
+			else{ this.hideEL(key);}
 		};
 	},
 
@@ -234,11 +228,11 @@ Puzzles.kusabi.prototype = {
 				var length1 =  0;	// 一回曲がる前の線の長さ
 				var length2 =  0;	// 二回曲がった後の線の長さ
 				var idlist  = [];	// 通過したlineのリスト(エラー表示用)
-				var bx=bd.cell[c].cx*2+1, by=bd.cell[c].cy*2+1;	// 現在地
+				var bx=bd.cell[c].bx, by=bd.cell[c].by;	// 現在地
 				while(1){
 					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 					if((bx+by)%2==0){
-						cc = bd.cnum(bx>>1,by>>1);
+						cc = bd.cnum(bx,by);
 						if(dir!=0 && bd.QnC(cc)!=-1){ break;}
 						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!=0&&dir!=2){ ccnt++;} dir=2;}
 						else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!=0&&dir!=1){ ccnt++;} dir=1;}

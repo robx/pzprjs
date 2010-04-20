@@ -7,36 +7,32 @@ Puzzles.heyawake.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = true;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 1;	// 1:0を表示するかどうか
-		k.isDispHatena  = 1;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 1;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = true;	// 0を表示するかどうか
+		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 1;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 1;	// 1:連黒分断禁のパズル
+		k.BlackCell       = true;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = true;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = true;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
-
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		k.area = { bcell:0, wcell:1, number:0, disroom:0};	// areaオブジェクトで領域を生成する
+		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
 
 		base.setTitle("へやわけ","Heyawake");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
@@ -93,7 +89,7 @@ Puzzles.heyawake.prototype = {
 		bd.nummaxfunc = function(cc){
 			var id = area.room.id[cc];
 			var d = ans.getSizeOfClist(area.room[id].clist,f_true);
-			var m=d.x2-d.x1+1, n=d.y2-d.y1+1; if(m>n){ var t=m;m=n;n=t;}
+			var m=d.cols, n=d.rows; if(m>n){ var t=m;m=n;n=t;}
 			if     (m===1){ return mf((n+1)/2);}
 			else if(m===2){ return n;}
 			else if(m===3){
@@ -119,9 +115,6 @@ Puzzles.heyawake.prototype = {
 		pc.setBGCellColorFunc('qsub1');
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
@@ -167,8 +160,8 @@ Puzzles.heyawake.prototype = {
 
 				if(inp[i].match(/(\d+in)?(\d+)x(\d+)$/)){
 					if(RegExp.$1.length>0){ bd.sQnC(c, parseInt(RegExp.$1));}
-					var x1 = bd.cell[c].cx, x2 = x1 + parseInt(RegExp.$2) - 1;
-					var y1 = bd.cell[c].cy, y2 = y1 + parseInt(RegExp.$3) - 1;
+					var x1 = bd.cell[c].bx, x2 = x1 + 2*parseInt(RegExp.$2) - 2;
+					var y1 = bd.cell[c].by, y2 = y1 + 2*parseInt(RegExp.$3) - 2;
 					fio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
 				}
 				i++;
@@ -180,9 +173,9 @@ Puzzles.heyawake.prototype = {
 			for(var id=1;id<=rinfo.max;id++){
 				var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
 				if(bd.QnC(bd.cnum(d.x1,d.y1))>=0){
-					barray.push(""+bd.QnC(bd.cnum(d.x1,d.y1))+"in"+(d.x2-d.x1+1)+"x"+(d.y2-d.y1+1));
+					barray.push(""+bd.QnC(bd.cnum(d.x1,d.y1))+"in"+d.cols+"x"+d.rows);
 				}
-				else{ barray.push(""+(d.x2-d.x1+1)+"x"+(d.y2-d.y1+1));}
+				else{ barray.push(""+d.cols+"x"+d.rows);}
 			}
 			this.outbstr = barray.join("/");
 		};
@@ -241,14 +234,14 @@ Puzzles.heyawake.prototype = {
 		ans.isBorderCount = function(nullnum, keycellpos, clist, nullobj){
 			var d = ans.getSizeOfClist(clist,f_true), count = 0, bx, by;
 			if(d.x1===d.x2){
-				bx = (d.x1<<1)+1;
-				for(by=(d.y1<<1)+2;by<=(d.y2<<1);by+=2){
+				bx = d.x1;
+				for(by=d.y1+1;by<=d.y2-1;by+=2){
 					if(bd.QuB(bd.bnum(bx,by))===1){ count++;}
 				}
 			}
 			else if(d.y1===d.y2){
-				by = (d.y1<<1)+1;
-				for(bx=(d.x1<<1)+2;bx<=(d.x2<<1);bx+=2){
+				by = d.y1;
+				for(bx=d.x1+1;bx<=d.x2-1;bx+=2){
 					if(bd.QuB(bd.bnum(bx,by))===1){ count++;}
 				}
 			}

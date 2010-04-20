@@ -7,36 +7,32 @@ Puzzles.kakuro.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 11;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 11;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 1;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 1;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 0;	// 1:0を表示するかどうか
-		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 1;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = false;	// 0を表示するかどうか
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
-
-		//k.def_csize = 36;
-		k.def_psize = 40;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
 
 		if(k.EDITOR){
 			base.setExpression("　Qキーでブロックが入力できます。数字を入力する場所はSHIFTキーを押すと切り替えられます。",
@@ -111,13 +107,10 @@ Puzzles.kakuro.prototype = {
 		menu.ex.adjustSpecial  = menu.ex.adjustQues51_1;
 		menu.ex.adjustSpecial2 = menu.ex.adjustQues51_2;
 
-		tc.getTCX = function(){ return tc.cursolx>>1;};
-		tc.getTCY = function(){ return tc.cursoly>>1;};
 		tc.setAlign = function(){
 			if(k.playmode){
 				if(this.cursolx<1) this.cursolx = 1;
 				if(this.cursoly<1) this.cursoly = 1;
-				pc.paint((this.cursolx>>1)-1, (this.cursoly>>1)-1, this.cursolx>>1, this.cursoly>>1);
 			}
 		};
 		tc.targetdir = 2;
@@ -137,8 +130,6 @@ Puzzles.kakuro.prototype = {
 		pc.TTcolor = "rgb(255,255,127)";
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawBGEXcells(x1,y1,x2,y2);
 			this.drawQues51(x1,y1,x2,y2);
@@ -151,7 +142,7 @@ Puzzles.kakuro.prototype = {
 			this.drawNumbersOn51(x1,y1,x2,y2);
 			this.drawNumbers_kakuro(x1,y1,x2,y2);
 
-			this.drawTCell(x1,y1,x2+1,y2+1);
+			this.drawCursor(x1,y1,x2,y2);
 		};
 
 		// オーバーライド drawBGCells用
@@ -169,7 +160,7 @@ Puzzles.kakuro.prototype = {
 		};
 		// オーバーライド 境界線用
 		pc.setBorderColor = function(id){
-			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1!==-1 && cc2!==-1 && ((bd.cell[cc1].ques===51)^(bd.cell[cc2].ques===51))){
 				g.fillStyle = this.Cellcolor;
 				return true;
@@ -182,16 +173,16 @@ Puzzles.kakuro.prototype = {
 
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
+				var c = clist[i], key = ['cell',c,'qans'].join('_');
 				var target = ((k.editmode&&c===tc.getTCC())?kc.detectTarget(c,-1):-1);
 
-				if(bd.cell[c].ques!=51 && bd.cell[c].qans>0){
+				if(bd.cell[c].ques!==51 && bd.cell[c].qans>0){
 					var obj = bd.cell[c];
-					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 					var color = (bd.cell[c].error===1 ? this.fontErrcolor : this.fontAnscolor);
 					var text  = ""+bd.cell[c].qans;
-					this.dispnum(obj.numobj, 1, text, 0.80, color, obj.px, obj.py);
+					this.dispnum(key, 1, text, 0.80, color, obj.cpx, obj.cpy);
 				}
+				else{ this.hideEL(key);}
 			}
 		};
 	},
@@ -238,19 +229,20 @@ Puzzles.kakuro.prototype = {
 			for(var i=a;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 				while(cell<k.qcols){
-					if(bd.QuC(bd.cnum(cell,0))!=51){ bd.sDiE(cell,this.decval(ca)); cell++; i++; break;}
+					if(bd.QuC(bd.cnum(cell*2+1,1))!==51){ bd.sDiE(cell,this.decval(ca)); cell++; i++; break;}
 					cell++;
 				}
 				if(cell>=k.qcols){ a=i; break;}
 				i--;
 			}
+			cell=0;
 			for(var i=a;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
-				while(cell<k.qcols+k.qrows){
-					if(bd.QuC(bd.cnum(0,cell-k.qcols))!=51){ bd.sQnE(cell,this.decval(ca)); cell++; i++; break;}
+				while(cell<k.qrows){
+					if(bd.QuC(bd.cnum(1,cell*2+1))!==51){ bd.sQnE(cell+k.qcols,this.decval(ca)); cell++; i++; break;}
 					cell++;
 				}
-				if(cell>=k.qcols+k.qrows){ a=i; break;}
+				if(cell>=k.qrows){ a=i; break;}
 				i--;
 			}
 
@@ -277,8 +269,8 @@ Puzzles.kakuro.prototype = {
 			if(count>0){ cm += (count+19).toString(36);}
 
 			// 盤面外側の数字部分のエンコード
-			for(var c=0;c<k.qcols;c++){ if(bd.QuC(bd.cnum(c,0))!=51){ cm+=this.encval(bd.DiE(c));} }
-			for(var c=k.qcols;c<k.qcols+k.qrows;c++){ if(bd.QuC(bd.cnum(0,c-k.qcols))!=51){ cm+=this.encval(bd.QnE(c));} }
+			for(var c=0;c<k.qcols;c++){ if(bd.QuC(bd.cnum(c*2+1,1))!=51){ cm+=this.encval(bd.DiE(c));} }
+			for(var c=0;c<k.qrows;c++){ if(bd.QuC(bd.cnum(1,c*2+1))!=51){ cm+=this.encval(bd.QnE(c+k.qcols));} }
 
 			this.outbstr += cm;
 		};
@@ -306,18 +298,18 @@ Puzzles.kakuro.prototype = {
 		};
 
 		fio.kanpenOpen = function(){
-			this.decodeRoom_kanpen();
+			this.decodeCellQnum51_kanpen();
 			this.decodeQans_kanpen();
 		};
 		fio.kanpenSave = function(){
 			this.sizestr = [k.qrows+1, k.qcols+1].join("/");
 
-			this.encodeRoom_kanpen();
+			this.encodeCellQnum51_kanpen();
 			this.datastr += "/";
 			this.encodeQans_kanpen();
 		};
 
-		fio.decodeRoom_kanpen = function(){
+		fio.decodeCellQnum51_kanpen = function(){
 			for(;;){
 				var data = this.readLine();
 				if(!data){ break;}
@@ -325,31 +317,34 @@ Puzzles.kakuro.prototype = {
 				var item = data.split(" ");
 				if(item.length<=1){ return;}
 				else if(item[0]==0 && item[1]==0){ }
-				else if(item[0]==0){ bd.sDiE(parseInt(item[1])-1, parseInt(item[3]));}
-				else if(item[1]==0){ bd.sQnE(parseInt(item[0])-1+k.qcols, parseInt(item[2]));}
+				else if(item[0]==0 || item[1]==0){
+					var ec=bd.exnum(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
+					if     (item[0]==0){ bd.sDiE(ec, parseInt(item[3]));}
+					else if(item[1]==0){ bd.sQnE(ec, parseInt(item[2]));}
+				}
 				else{
-					var c=bd.cnum(parseInt(item[1])-1,parseInt(item[0])-1);
+					var c=bd.cnum(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
 					bd.sQuC(c, 51);
-					bd.sQnC(c, parseInt(item[2]));
 					bd.sDiC(c, parseInt(item[3]));
+					bd.sQnC(c, parseInt(item[2]));
 				}
 			}
 		};
-		fio.encodeRoom_kanpen = function(){
-			for(var cy=-1;cy<k.qrows;cy++){ for(var cx=-1;cx<k.qcols;cx++){
-				if(cx!==-1 && cy!==-1 && bd.QuC(bd.cnum(cx,cy))!==51){ continue;}
+		fio.encodeCellQnum51_kanpen = function(){
+			for(var by=bd.minby+1;by<bd.maxby;by+=2){ for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
+				if(bx!==-1 && by!==-1 && bd.QuC(bd.cnum(bx,by))!==51){ continue;}
 
-				var item=[(cy+1).toString(),(cx+1).toString(),0,0];
-				if(cx==-1&&cy==-1){ }
-				else if(cy==-1){
-					item[3]=bd.DiE(bd.exnum(cx,cy)).toString();
+				var item=[((by+1)>>1).toString(),((bx+1)>>1).toString(),0,0];
+				if(bx===-1&&by===-1){ }
+				else if(by===-1){
+					item[3]=bd.DiE(bd.exnum(bx,by)).toString();
 				}
-				else if(cx==-1){
-					item[2]=bd.QnE(bd.exnum(cx,cy)).toString();
+				else if(bx===-1){
+					item[2]=bd.QnE(bd.exnum(bx,by)).toString();
 				}
 				else{
-					item[2]=bd.QnC(bd.cnum(cx,cy)).toString();
-					item[3]=bd.DiC(bd.cnum(cx,cy)).toString();
+					item[2]=bd.QnC(bd.cnum(bx,by)).toString();
+					item[3]=bd.DiC(bd.cnum(bx,by)).toString();
 				}
 				this.datastr += (item.join(" ")+"/");
 			}}
@@ -357,26 +352,26 @@ Puzzles.kakuro.prototype = {
 
 		fio.decodeQans_kanpen = function(){
 			var barray = this.readLines(k.qrows+1);
-			for(var cy=-1;cy<k.qrows;cy++){
-				if(cy+1>=barray.length){ break;}
-				var arr = barray[cy+1].split(" ");
-				for(var cx=-1;cx<k.qcols;cx++){
-					if(arr[cx+1]==''){ continue;}
-					var c = bd.cnum(cx,cy);
-					if(c!=-1&&arr[cx+1]!="."&&arr[cx+1]!="0"){ bd.sQaC(c, parseInt(arr[cx+1]));}
+			for(var by=bd.minby+1;by<bd.maxby;by+=2){
+				if(((by+1)>>1)>=barray.length){ break;}
+				var arr = barray[(by+1)>>1].split(" ");
+				for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
+					if(arr[(bx+1)>>1]==''){ continue;}
+					var c = bd.cnum(bx,by);
+					if(c!=-1&&arr[(bx+1)>>1]!="."&&arr[(bx+1)>>1]!="0"){ bd.sQaC(c, parseInt(arr[(bx+1)>>1]));}
 				}
 			}
 		};
 		fio.encodeQans_kanpen = function(){
-			for(cy=-1;cy<k.qrows;cy++){
-				for(cx=-1;cx<k.qrows;cx++){
-					var c = bd.cnum(cx,cy);
+			for(var by=bd.minby+1;by<bd.maxby;by+=2){
+				for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
+					var c = bd.cnum(bx,by);
 					if(c==-1){ this.datastr += ". ";}
 					else if(bd.QuC(c)==51){ this.datastr += ". ";}
 					else if(bd.QaC(c) > 0){ this.datastr += (bd.QaC(c).toString() + " ");}
 					else                  { this.datastr += "0 ";}
 				}
-				if(cy<k.qrows-1){ this.datastr += "/";}
+				if(by<bd.maxby-1){ this.datastr += "/";}
 			}
 		};
 	},

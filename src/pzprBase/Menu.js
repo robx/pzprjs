@@ -197,11 +197,21 @@ Menu.prototype = {
 		if(fio.dbm.DBaccept>0){
 			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
 		}
+		if(base.enableSaveImage){
+			ap('sep_image', 'file');
+			at('imagesavep', 'file', '画像を保存 ->', 'Save as image file');
+		}
 
 		// *ファイル - ファイル保存 -------------------------------------------
 		as('filesave',  'filesavep', 'ぱずぷれv3形式',  'Puz-Pre v3 format');
 		if(this.ispencilbox){
 			as('filesave2', 'filesavep', 'pencilbox形式', 'Pencilbox format');
+		}
+
+		// *ファイル - 画像を保存 -------------------------------------------
+		if(base.enableSaveImage){
+			as('imagedl',   'imagesavep', '画像をダウンロード', 'Download the image');
+			as('imagesave', 'imagesavep', '別ウィンドウで開く', 'Open another window');
 		}
 
 		// *編集 ==============================================================
@@ -213,14 +223,15 @@ Menu.prototype = {
 		// *表示 ==============================================================
 		am('disp', "表示", "Display");
 
-		au('size','disp',k.widthmode,[0,1,2,3,4], '表示サイズ','Cell Size');
+		au('size','disp',2,[0,1,2,3,4], '表示サイズ','Cell Size');
 		ap('sep_disp1',  'disp');
 
 		if(!!k.irowake){
 			ac('irowake','disp',(k.irowake==2?true:false),'線の色分け','Color coding');
 			sl('irowake', '線の色分けをする', 'Color each lines');
-			ap('sep_disp2', 'disp');
 		}
+		ac('cursor','disp',true,'カーソルの表示','Display cursor');
+		ap('sep_disp2', 'disp');
 		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
 
@@ -248,7 +259,7 @@ Menu.prototype = {
 
 		puz.menufix();	// 各パズルごとのメニュー追加
 
-		ac('autocheck','setting', k.autocheck, '正答自動判定', 'Auto Answer Check');
+		ac('autocheck','setting', k.playmode, '正答自動判定', 'Auto Answer Check');
 		ac('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
 		sl('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
 		if(kp.ctl[1].enable || kp.ctl[3].enable){
@@ -311,7 +322,7 @@ Menu.prototype = {
 	//---------------------------------------------------------------------------
 	createAllFloat : function(){
 		var _IE6 = false;
-		if(k.br.IE && navigator.userAgent.match(/MSIE (\d+)/)){
+		if(navigator.userAgent.match(/MSIE (\d+)/)){
 			if(parseInt(RegExp.$1)<=7){ _IE6=true;}
 		}
 
@@ -404,7 +415,9 @@ Menu.prototype = {
 		var idname = ee.getSrcElement(e).id.substr(3);
 		if(ee.getSrcElement(e).className==="smenu"){ ee.getSrcElement(e).className="smenusel";}
 		if(pp.flags[idname] && (pp.type(idname)===pp.SELECT || pp.type(idname)===pp.SPARENT)){
-			this.floatmenuopen(e,idname,this.dispfloat.length);
+			if(ee.getSrcElement(e).className!=='smenunull'){
+				this.floatmenuopen(e,idname,this.dispfloat.length);
+			}
 		}
 	},
 	submenuout   : function(e){
@@ -443,11 +456,11 @@ Menu.prototype = {
 		var rect = ee(ee.getSrcElement(e).id).getRect();
 		var _float = this.floatpanel[idname];
 		if(depth==0){
-			_float.style.left = rect.left   + 1 + k.IEMargin.x + 'px';
-			_float.style.top  = rect.bottom + 1 + k.IEMargin.y + 'px';
+			_float.style.left = rect.left   + 1 + 'px';
+			_float.style.top  = rect.bottom + 1 + 'px';
 		}
 		else{
-			if(!k.br.IE){
+			if(!k.br.IEmoz4){
 				_float.style.left = rect.right - 3 + 'px';
 				_float.style.top  = rect.top   - 3 + 'px';
 			}
@@ -659,7 +672,7 @@ Menu.prototype = {
 		};
 		btt('pzprv3',     "ぱずぷれv3のURLを出力する",           "Output PUZ-PRE v3 URL",          true);
 		btt('pzprapplet', "ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", !k.ispzprv3ONLY);
-		btt('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              !!k.isKanpenExist);
+		btt('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              k.isKanpenExist);
 		btt('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (k.puzzleid==="heyawake"));
 		btt('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
 		ee("urlbuttonarea").appendBR();
@@ -746,8 +759,8 @@ Menu.prototype = {
 		// ポップアップメニューを表示する
 		if(this.pop){
 			var _pop = this.pop.el;
-			_pop.style.left = ee.pageX(e) - 8 + k.IEMargin.x + 'px';
-			_pop.style.top  = ee.pageY(e) - 8 + k.IEMargin.y + 'px';
+			_pop.style.left = ee.pageX(e) - 8 + 'px';
+			_pop.style.top  = ee.pageY(e) - 8 + 'px';
 			_pop.style.display = 'inline';
 		}
 	},
@@ -761,7 +774,7 @@ Menu.prototype = {
 			this.pop = '';
 			this.menuclear();
 			this.movingpop = "";
-			k.enableKey = true;
+			kc.enableKey = true;
 		}
 	},
 
@@ -963,8 +976,10 @@ Properties.prototype = {
 		urlinput  : function(){ menu.pop = ee("pop1_2");},
 		urloutput : function(){ menu.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
 		fileopen  : function(){ menu.pop = ee("pop1_4");},
-		filesave  : function(){ menu.ex.filesave(1);},
-		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave(fio.PBOX);}},
+		filesave  : function(){ menu.ex.filesave(fio.PZPR);},
+		filesave2 : function(){ if(!!fio.kanpenSave){ menu.ex.filesave(fio.PBOX);}},
+		imagedl   : function(){ menu.ex.imagesave(true);},
+		imagesave : function(){ menu.ex.imagesave(false);},
 		database  : function(){ menu.pop = ee("pop1_8"); fio.dbm.openDialog();},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
@@ -973,12 +988,11 @@ Properties.prototype = {
 		jumptop   : function(){ window.open('../../', '', '');},
 		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},
 		irowake   : function(){ pc.paintAll();},
+		cursor    : function(){ pc.paintAll();},
 		manarea   : function(){ menu.ex.dispman();},
-		autocheck : function(val){ k.autocheck = !k.autocheck;},
 		mode      : function(num){ menu.ex.modechange(num);},
-		size      : function(num){ k.widthmode=num; base.resize_canvas();},
+		size      : function(num){ base.resize_canvas();},
 		repaint   : function(num){ base.resize_canvas();},
-		use       : function(num){ k.use =num;},
 		language  : function(num){ menu.setLang({0:'ja',1:'en'}[num]);},
 
 		newboard : function(){
@@ -987,12 +1001,12 @@ Properties.prototype = {
 				document.newboard.col.value = k.qcols;
 				document.newboard.row.value = k.qrows;
 			}
-			k.enableKey = false;
+			kc.enableKey = false;
 		},
 		dispsize : function(){
 			menu.pop = ee("pop4_1");
-			document.dispsize.cs.value = k.def_csize;
-			k.enableKey = false;
+			document.dispsize.cs.value = k.cellsize;
+			kc.enableKey = false;
 		},
 		keypopup : function(){
 			var f = kp.ctl[pp.flags['mode'].val].enable;
@@ -1085,13 +1099,13 @@ var debug = {
 	},
 	timeeval : function(text,func){
 		this.addTA(text);
-		var count=0, old = (new Date()).getTime();
-		while((new Date()).getTime() - old < 3000){
+		var count=0, old = tm.now();
+		while(tm.now() - old < 3000){
 			count++;
 
 			func();
 		}
-		var time = (new Date()).getTime() - old;
+		var time = tm.now() - old;
 
 		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
 	},

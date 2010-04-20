@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.2.5
+// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.3.0
 //
 Puzzles.hakoiri = function(){ };
 Puzzles.hakoiri.prototype = {
@@ -7,36 +7,32 @@ Puzzles.hakoiri.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 0;	// 1:0を表示するかどうか
-		k.isDispHatena  = 1;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 1;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = false;	// 0を表示するかどうか
+		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = true;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		k.area = { bcell:0, wcell:0, number:1};	// areaオブジェクトで領域を生成する
+		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
 		if(k.EDITOR){
 			base.setExpression("　キーボードの左側や-キー等で、記号の入力ができます。",
@@ -86,11 +82,11 @@ Puzzles.hakoiri.prototype = {
 			else{
 				var cc0 = tc.getTCC();
 				tc.setTCC(cc);
-				pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
+				pc.paintCell(cc0);
 				if(bd.QsC(cc)==1 || bd.QaC(cc)==-1){ this.inputData=1;}
 			}
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
+			pc.paintCell(cc);
 		};
 		mv.inputmark3 = function(cc){
 			if(bd.QnC(cc)!=-1){ return;}
@@ -119,8 +115,8 @@ Puzzles.hakoiri.prototype = {
 			bd.sQsC(cc,1);
 			this.mouseCell = cc;
 
-			pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
+			pc.paintCell(cc0);
+			pc.paintCell(cc);
 		};
 
 		// キーボード入力系
@@ -158,7 +154,7 @@ Puzzles.hakoiri.prototype = {
 				flag = true;
 			}
 
-			if(flag){ pc.paint(bd.cell[cc].cx, bd.cell[cc].cy, bd.cell[cc].cx, bd.cell[cc].cy); return true;}
+			if(flag){ pc.paintCell(cc); return true;}
 			return false;
 		};
 
@@ -201,8 +197,6 @@ Puzzles.hakoiri.prototype = {
 		pc.dotcolor = "rgb(255, 96, 191)";
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
@@ -212,17 +206,16 @@ Puzzles.hakoiri.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			this.drawTCell(x1,y1,x2+1,y2+1);
+			this.drawCursor(x1,y1,x2,y2);
 		};
 
 		pc.dispnumCell = function(c){
-			var num = bd.getNum(c), obj = bd.cell[c];
-			if(num>=1 && num<=3){ text = ({1:"○",2:"△",3:"□"})[num];}
-			else if(num==-2)    { text = "?";}
-			else{ this.hideEL(obj.numobj); return;}
-
-			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-			this.dispnum(obj.numobj, 1, text, 0.8, this.getNumberColor(c), obj.px, obj.py);
+			var num = bd.getNum(c), obj = bd.cell[c], key='cell_'+c;
+			if(num!==-1){
+				var text = (num>0 ? ({1:"○",2:"△",3:"□"})[num] : "?");
+				this.dispnum(key, 1, text, 0.8, this.getNumberColor(c), obj.cpx, obj.cpy);
+			}
+			else{ this.hideEL(key);}
 		};
 	},
 
@@ -302,12 +295,13 @@ Puzzles.hakoiri.prototype = {
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.getNum(c)<0){ continue;}
-				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, target=0, clist=[c];
+				var bx = bd.cell[c].bx, by = bd.cell[c].by, target=0, clist=[c];
 				var func = function(cc){ return (cc!=-1 && bd.getNum(c)==bd.getNum(cc));};
-				target = bd.cnum(cx+1,cy  ); if(func(target)){ clist.push(target);}
-				target = bd.cnum(cx  ,cy+1); if(func(target)){ clist.push(target);}
-				target = bd.cnum(cx-1,cy+1); if(func(target)){ clist.push(target);}
-				target = bd.cnum(cx+1,cy+1); if(func(target)){ clist.push(target);}
+				// 右・左下・下・右下だけチェック
+				target = bd.cnum(bx+2,by  ); if(func(target)){ clist.push(target);}
+				target = bd.cnum(bx  ,by+2); if(func(target)){ clist.push(target);}
+				target = bd.cnum(bx-2,by+2); if(func(target)){ clist.push(target);}
+				target = bd.cnum(bx+2,by+2); if(func(target)){ clist.push(target);}
 
 				if(clist.length>1){
 					if(this.inAutoCheck){ return false;}

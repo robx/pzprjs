@@ -7,36 +7,32 @@ Puzzles.triplace.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 1;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 1;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 1;	// 1:0を表示するかどうか
-		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = true;	// 0を表示するかどうか
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		//k.def_csize = 36;
-		k.def_psize = 40;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
 		if(k.EDITOR){
 			base.setExpression("　左ボタンで境界線が、右ボタンで補助記号が入力できます。数字を入力する場所はSHIFTキーを押すと切り替えられます。",
@@ -127,7 +123,7 @@ Puzzles.triplace.prototype = {
 				return;
 			}
 			if(this.moveTCell(ca)){ return;}
-			this.inputnumber51(ca,{2:(k.qcols-tc.getTCX()-1), 4:(k.qrows-tc.getTCY()-1)});
+			this.inputnumber51(ca,{2:(k.qcols-(tc.cursolx>>1)-1), 4:(k.qrows-(tc.cursoly>>1)-1)});
 		};
 		kc.keyup    = function(ca){ if(ca=='z'){ this.isZ=false;}};
 
@@ -154,15 +150,13 @@ Puzzles.triplace.prototype = {
 			kp.generate(kp.ORIGINAL, false, true, kp.kpgenerate);
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
-				kc.inputnumber51(ca,{2:(k.qcols-tc.getTCX()-1), 4:(k.qrows-tc.getTCY()-1)});
+				kc.inputnumber51(ca,{2:(k.qcols-(tc.cursolx>>1)-1), 4:(k.qrows-(tc.cursoly>>1)-1)});
 			};
 		}
 
 		menu.ex.adjustSpecial  = menu.ex.adjustQues51_1;
 		menu.ex.adjustSpecial2 = menu.ex.adjustQues51_2;
 
-		tc.getTCX = function(){ return tc.cursolx>>1;};
-		tc.getTCY = function(){ return tc.cursoly>>1;};
 		tc.targetdir = 2;
 	},
 
@@ -174,8 +168,6 @@ Puzzles.triplace.prototype = {
 		pc.setBGCellColorFunc('qsub2');
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawBGEXcells(x1,y1,x2,y2);
 			this.drawQues51(x1,y1,x2,y2);
@@ -200,7 +192,7 @@ Puzzles.triplace.prototype = {
 			this.setBorderColor = function(id){ return (bd.border[id].qans===1);};
 
 			g.fillStyle = this.BorderQanscolor;
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+			var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 			this.isdrawBD = true;
 		};
@@ -210,7 +202,7 @@ Puzzles.triplace.prototype = {
 			this.setBorderColor = function(id){ return (bd.border[id].ques===1);};
 
 			g.fillStyle = this.BorderQuescolor;
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+			var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 			this.isdrawBD = true;
 		};
@@ -376,9 +368,9 @@ Puzzles.triplace.prototype = {
 				area.sr0(c, tinfo, bd.isBorder);
 
 				var clist = tinfo[tinfo.max].clist;
-				var d = ans.getSizeOfClist(clist, f_true);
+				var d = ans.getSizeOfClist(clist,f_true);
 
-				tinfo.room[tinfo.max] = {idlist:clist, is1x3:((((d.x1==d.x2)||(d.y1==d.y2))&&d.cnt==3)?1:0)};
+				tinfo.room[tinfo.max] = {idlist:clist, is1x3:((((d.x1===d.x2)||(d.y1===d.y2))&&d.cnt===3)?1:0)};
 			}
 			return tinfo;
 		};

@@ -7,36 +7,32 @@ Puzzles.snakes.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 1;	// 1:0を表示するかどうか
-		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 1;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 1;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = true;	// 0を表示するかどうか
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		//k.def_csize = 36;
-		//k.def_psize = 16;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
 		if(k.EDITOR){
 			base.setExpression("　矢印は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
@@ -51,6 +47,10 @@ Puzzles.snakes.prototype = {
 	},
 	menufix : function(){
 		menu.addUseToFlags();
+
+		pp.addCheck('snakebd','setting',false,'へび境界線有効','Enable snake border');
+		pp.setLabel('snakebd', 'へびの周りに境界線を表示する', 'Draw border around a snake.');
+		pp.funcs['snakebd'] = function(){ pc.paintAll();};
 	},
 
 	//---------------------------------------------------------
@@ -87,7 +87,7 @@ Puzzles.snakes.prototype = {
 			cc = this.inputqnum3(cc);
 			bd.sQsC(cc,0);
 			k.dispzero=1;
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
+			pc.paintCellAround(cc);
 		},
 		mv.dragnumber = function(){
 			var cc = this.cellid();
@@ -163,8 +163,6 @@ Puzzles.snakes.prototype = {
 
 		pc.paint = function(x1,y1,x2,y2){
 			x1--; y1--; x2++; y2++;	// 跡が残ってしまう為
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
 
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDotCells(x1,y1,x2,y2);
@@ -178,11 +176,13 @@ Puzzles.snakes.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			this.drawTCell(x1,y1,x2,y2);
+			this.drawCursor(x1,y1,x2,y2);
 		};
 
 		pc.setBorderColor = function(id){
-			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			if(!pp.getVal('snakebd')){ return false;}
+
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1!==-1 && cc2!==-1 &&
 			   (bd.cell[cc1].qnum===-1 && bd.cell[cc2].qnum===-1) &&
 			   (bd.cell[cc1].qans!==-1 || bd.cell[cc2].qans!==-1) &&
@@ -200,11 +200,11 @@ Puzzles.snakes.prototype = {
 
 			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i], obj = bd.cell[c];
+				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
 				if(obj.qnum===-1 && obj.qans>0){
-					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-					this.dispnum(obj.numobj, 1, ""+obj.qans, 0.8, this.fontAnscolor, obj.px, obj.py);
+					this.dispnum(key, 1, ""+obj.qans, 0.8, this.fontAnscolor, obj.cpx, obj.cpy);
 				}
+				/* 不要な文字はdrawArrowNumbersで消しているので、ここでは消さない */
 			}
 		};
 	},
@@ -287,13 +287,13 @@ Puzzles.snakes.prototype = {
 			var result = true;
 			var func = function(sinfo,c1,c2){ return (sinfo.id[c1]>0 && sinfo.id[c2]>0 && sinfo.id[c1]!=sinfo.id[c2]);};
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.cell[c].cx<k.qcols-1 && func(sinfo,c,c+1)){
+				if(bd.cell[c].bx<bd.maxbx-2 && func(sinfo,c,c+1)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(sinfo.room[sinfo.id[c]].idlist,1);
 					bd.sErC(sinfo.room[sinfo.id[c+1]].idlist,1);
 					result = false;
 				}
-				if(bd.cell[c].cy<k.qrows-1 && func(sinfo,c,c+k.qcols)){
+				if(bd.cell[c].by<bd.maxby-2 && func(sinfo,c,c+k.qcols)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(sinfo.room[sinfo.id[c]].idlist,1);
 					bd.sErC(sinfo.room[sinfo.id[c+k.qcols]].idlist,1);
@@ -306,29 +306,29 @@ Puzzles.snakes.prototype = {
 		ans.checkArrowNumber = function(){
 			var result = true;
 			var func = function(clist){
-				var cc=bd.cnum(cx,cy); clist.push(cc);
+				var cc=bd.cnum(bx,by); clist.push(cc);
 				if(bd.QnC(cc)!=-1 || bd.QaC(cc)>0){ return false;}
 				return true;
 			};
 
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)<0 || bd.DiC(c)==0){ continue;}
-				var cx = bd.cell[c].cx, cy = bd.cell[c].cy, dir = bd.DiC(c);
+				var bx = bd.cell[c].bx, by = bd.cell[c].by, dir = bd.DiC(c);
 				var num=bd.QnC(c), clist=[c];
-				if     (dir==k.UP){ cy--; while(cy>=0     ){ if(!func(clist)){ break;} cy--;} }
-				else if(dir==k.DN){ cy++; while(cy<k.qrows){ if(!func(clist)){ break;} cy++;} }
-				else if(dir==k.LT){ cx--; while(cx>=0     ){ if(!func(clist)){ break;} cx--;} }
-				else if(dir==k.RT){ cx++; while(cx<k.qcols){ if(!func(clist)){ break;} cx++;} }
+				if     (dir==k.UP){ by-=2; while(by>bd.minby){ if(!func(clist)){ break;} by-=2;} }
+				else if(dir==k.DN){ by+=2; while(by<bd.maxby){ if(!func(clist)){ break;} by+=2;} }
+				else if(dir==k.LT){ bx-=2; while(bx>bd.minbx){ if(!func(clist)){ break;} bx-=2;} }
+				else if(dir==k.RT){ bx+=2; while(bx<bd.maxbx){ if(!func(clist)){ break;} bx+=2;} }
 
-				if(num==0^(cx<0||cx>=k.qcols||cy<0||cy>=k.qcols||bd.QnC(bd.cnum(cx,cy))!=-1)){
+				if(num==0^(!bd.isinside(bx,by)||bd.QnC(bd.cnum(bx,by))!=-1)){
 					if(this.inAutoCheck){ return false;}
 					if(num>0){ bd.sErC(clist,1);}
-					else{ bd.sErC([c,bd.cnum(cx,cy)],1);}
+					else{ bd.sErC([c,bd.cnum(bx,by)],1);}
 					result = false;
 				}
-				else if(num>0 && bd.QaC(bd.cnum(cx,cy))!=num){
+				else if(num>0 && bd.QaC(bd.cnum(bx,by))!=num){
 					if(this.inAutoCheck){ return false;}
-					bd.sErC([c,bd.cnum(cx,cy)],1);
+					bd.sErC([c,bd.cnum(bx,by)],1);
 					result = false;
 				}
 			}
@@ -337,7 +337,7 @@ Puzzles.snakes.prototype = {
 		ans.checkSnakesView = function(sinfo){
 			var result = true;
 			var func = function(clist){
-				var cc=bd.cnum(cx,cy); clist.push(cc);
+				var cc=bd.cnum(bx,by); clist.push(cc);
 				if(bd.QnC(cc)!=-1 || bd.QaC(cc)>0){ return false;}
 				return true;
 			};
@@ -349,14 +349,14 @@ Puzzles.snakes.prototype = {
 				else if(bd.QaC(bd.up(c1))==2){ dir=2;}
 				else if(bd.QaC(bd.rt(c1))==2){ dir=3;}
 				else if(bd.QaC(bd.lt(c1))==2){ dir=4;}
-				var cx = bd.cell[c1].cx, cy = bd.cell[c1].cy, clist=[c1];
+				var bx = bd.cell[c1].bx, by = bd.cell[c1].by, clist=[c1];
 
-				if     (dir==1){ cy--; while(cy>=0     ){ if(!func(clist)){ break;} cy--;} }
-				else if(dir==2){ cy++; while(cy<k.qrows){ if(!func(clist)){ break;} cy++;} }
-				else if(dir==3){ cx--; while(cx>=0     ){ if(!func(clist)){ break;} cx--;} }
-				else if(dir==4){ cx++; while(cx<k.qcols){ if(!func(clist)){ break;} cx++;} }
+				if     (dir==1){ by-=2; while(by>bd.minby){ if(!func(clist)){ break;} by-=2;} }
+				else if(dir==2){ by+=2; while(by<bd.maxby){ if(!func(clist)){ break;} by+=2;} }
+				else if(dir==3){ bx-=2; while(bx>bd.minbx){ if(!func(clist)){ break;} bx-=2;} }
+				else if(dir==4){ bx+=2; while(bx<bd.maxbx){ if(!func(clist)){ break;} bx+=2;} }
 
-				var c2 = bd.cnum(cx,cy), r2 = sinfo.id[c2];
+				var c2 = bd.cnum(bx,by), r2 = sinfo.id[c2];
 				if(bd.QaC(c2)>0 && bd.QnC(c2)==-1 && r2>0 && r!=r2){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(clist,1);

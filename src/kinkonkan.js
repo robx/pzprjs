@@ -7,36 +7,35 @@ Puzzles.kinkonkan.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 8;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 8;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 2;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 2;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 1;	// 1:0を表示するかどうか
-		k.isDispHatena  = 1;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = true;	// 0を表示するかどうか
+		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
+		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		k.def_psize = 48;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.bdmargin = 0.15;			// 枠外の一辺のmargin(セル数換算)
+		k.reduceImageMargin = true;	// 画像出力時にmarginを小さくする
 
 		if(k.EDITOR){
 			base.setExpression("　マウスの左ボタンで境界線が入力できます。外側のアルファベットは、同じキーを何回か押して大文字小文字／色違いの計4種類を入力できます。",
@@ -90,10 +89,10 @@ Puzzles.kinkonkan.prototype = {
 				else                   { bd.sQaC(cc,-1); bd.sQsC(cc,1); this.inputData=3;}
 			}
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+			pc.paintCellAround(cc);
 		};
 		mv.inputflash = function(){
-			var pos = this.cellpos();
+			var pos = this.borderpos(0);
 			var ec = bd.exnum(pos.x,pos.y)
 			if(ec==-1 || this.mouseCell==ec || (this.inputData!=11 && this.inputData!=-1)){ return;}
 
@@ -108,13 +107,13 @@ Puzzles.kinkonkan.prototype = {
 			return;
 		};
 		mv.clickexcell = function(){
-			var pos = this.cellpos();
+			var pos = this.borderpos(0);
 			var ec = bd.exnum(pos.x, pos.y);
-			if(ec<0 || 2*k.qcols+2*k.qrows+4<=ec){ return false;}
-			var ec0 = tc.getTCC();
+			if(ec<0 || bd.excellmax<=ec){ return false;}
+			var ec0 = tc.getTEC();
 
 			if(ec!=-1 && ec!=ec0){
-				tc.setTCC(ec);
+				tc.setTEC(ec);
 				pc.paintEXcell(ec);
 				pc.paintEXcell(ec0);
 			}
@@ -144,7 +143,7 @@ Puzzles.kinkonkan.prototype = {
 			this.key_inputexcell(ca);
 		};
 		kc.key_inputexcell = function(ca){
-			var ec = tc.getTCC();
+			var ec = tc.getTEC();
 			var max = 104;
 
 			if('0'<=ca && ca<='9'){
@@ -179,10 +178,10 @@ Puzzles.kinkonkan.prototype = {
 			else{ return;}
 
 			this.prev = ec;
-			pc.paintEXcell(tc.getTCC());
+			pc.paintEXcell(tc.getTEC());
 		};
 		kc.moveTCell = function(ca){
-			var cc0 = tc.getTCC(), tcp = tc.getTCP();
+			var cc0 = tc.getTEC(), tcp = tc.getTCP();
 			var flag = true;
 
 			if     (ca == k.KEYUP){
@@ -205,7 +204,7 @@ Puzzles.kinkonkan.prototype = {
 
 			if(flag){
 				pc.paintEXcell(cc0);
-				pc.paintEXcell(tc.getTCC());
+				pc.paintEXcell(tc.getTEC());
 				this.tcMoved = true;
 			}
 
@@ -220,19 +219,7 @@ Puzzles.kinkonkan.prototype = {
 			um.enableRecord();
 		};
 
-		tc.getTCC = function(){ return ee.binder(tc, bd.exnum(this.cursolx>>1, this.cursoly>>1));};
-		tc.setTCC = ee.binder(tc, function(id){
-			if(id<0 || 2*k.qcols+2*k.qrows+4<=id){ return;}
-			if     (id<  k.qcols)            { this.cursolx=2*id+1;           this.cursoly=this.miny;                 }
-			else if(id<2*k.qcols)            { this.cursolx=2*(id-k.qcols)+1; this.cursoly=this.maxy;                 }
-			else if(id<2*k.qcols+  k.qrows)  { this.cursolx=this.minx;        this.cursoly=2*(id-2*k.qcols)+1;        }
-			else if(id<2*k.qcols+2*k.qrows)  { this.cursolx=this.maxx;        this.cursoly=2*(id-2*k.qcols-k.qrows)+1;}
-			else if(id<2*k.qcols+2*k.qrows+1){ this.cursolx=this.minx; this.cursoly=this.miny;}
-			else if(id<2*k.qcols+2*k.qrows+2){ this.cursolx=this.maxx; this.cursoly=this.miny;}
-			else if(id<2*k.qcols+2*k.qrows+3){ this.cursolx=this.minx; this.cursoly=this.maxy;}
-			else if(id<2*k.qcols+2*k.qrows+4){ this.cursolx=this.maxx; this.cursoly=this.maxy;}
-		});
-		tc.setTCC(0);
+		tc.setTEC(0);
 	},
 
 	//---------------------------------------------------------
@@ -244,8 +231,6 @@ Puzzles.kinkonkan.prototype = {
 		pc.dotcolor = "rgb(255, 96, 191)";
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-
 			this.drawErrorCells_kinkonkan(x1,y1,x2,y2);
 			this.drawDotCells(x1,y1,x2,y2);
 
@@ -272,7 +257,7 @@ Puzzles.kinkonkan.prototype = {
 					else if(err>=2){ g.fillStyle = this.errbcolor2;}
 					if(err===1 || err===6){
 						if(this.vnop(headers[err-1]+c,this.FILL)){
-							g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
+							g.fillRect(bd.cell[c].px, bd.cell[c].py, this.cw, this.ch);
 						}
 					}
 					else{ this.drawTriangle1(bd.cell[c].px, bd.cell[c].py, err, headers[err-1]+c);}
@@ -284,7 +269,7 @@ Puzzles.kinkonkan.prototype = {
 			this.vinc('cell_slash', 'auto');
 
 			var headers = ["c_sl1_", "c_sl2_"];
-			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
+			g.lineWidth = Math.max(this.cw/8, 2);
 
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
@@ -294,14 +279,14 @@ Puzzles.kinkonkan.prototype = {
 					g.strokeStyle = this.Cellcolor;
 					if(bd.cell[c].qans==1){
 						if(this.vnop(headers[0]+c,this.NONE)){
-							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight, true);
+							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, this.cw,this.ch, true);
 							g.stroke();
 						}
 					}
 					else{ this.vhide(headers[0]+c);}
 					if(bd.cell[c].qans==2){
 						if(this.vnop(headers[1]+c,this.NONE)){
-							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight, true);
+							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, this.cw,0, 0,this.ch, true);
 							g.stroke();
 						}
 					}
@@ -317,24 +302,21 @@ Puzzles.kinkonkan.prototype = {
 			var header = "ex_full_";
 			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
 			for(var i=0;i<exlist.length;i++){
-				var c = exlist[i];
-				var obj = bd.excell[c];
+				var c = exlist[i], obj = bd.excell[c], key = 'excell_'+c;
 
-				if(bd.excell[c].error===6){
+				if(obj.error===6){
 					g.fillStyle = this.errbcolor2;
 					if(this.vnop(header+c,this.NONE)){
-						g.fillRect(obj.px+1, obj.py+1, k.cwidth-1, k.cheight-1);
+						g.fillRect(obj.px+1, obj.py+1, this.cw-1, this.ch-1);
 					}
 				}
 				else{ this.vhide(header+c);}
 
-				if(bd.excell[c].direc===0 && bd.excell[c].qnum===-1){ this.hideEL(obj.numobj);}
-				else{
-					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-					var num=bd.excell[c].qnum, canum=bd.excell[c].direc;
+				if(obj.direc!==0 || obj.qnum!==-1){
+					var num=obj.qnum, canum=obj.direc;
 
 					var color = this.fontErrcolor;
-					if(bd.excell[c].error!==1){ color=(canum<=52?this.fontcolor:this.fontAnscolor);}
+					if(obj.error!==1){ color=(canum<=52?this.fontcolor:this.fontAnscolor);}
 
 					var fontratio = 0.66;
 					if(canum>0&&num>=10){ fontratio = 0.55;}
@@ -346,8 +328,9 @@ Puzzles.kinkonkan.prototype = {
 					else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
 					if(num>=0){ text+=num.toString(10);}
 
-					this.dispnum(obj.numobj, 1, text, fontratio, color, obj.px, obj.py);
+					this.dispnum(key, 1, text, fontratio, color, obj.px+this.bw, obj.py+this.bh);
 				}
+				else{ this.hideEL(key);}
 			}
 		};
 	},
@@ -394,7 +377,7 @@ Puzzles.kinkonkan.prototype = {
 
 			// 盤面外部分のエンコード
 			var count=0;
-			for(var ec=0;ec<2*k.qcols+2*k.qrows;ec++){
+			for(var ec=0;ec<bd.excellmax-4;ec++){
 				pstr = "";
 				var val  = bd.DiE(ec);
 				var qnum = bd.QnE(ec);
@@ -426,7 +409,7 @@ Puzzles.kinkonkan.prototype = {
 				var ca = item[i];
 				if(ca=="."){ continue;}
 
-				var ec = bd.exnum(i%(k.qcols+2)-1,mf(i/(k.qcols+2))-1);
+				var ec = bd.exnum(i%(k.qcols+2)*2-1,mf(i/(k.qcols+2))*2-1);
 				if(ec!==-1){
 					var inp = ca.split(",");
 					if(inp[0]!=""){ bd.sDiE(ec, parseInt(inp[0]));}
@@ -434,7 +417,7 @@ Puzzles.kinkonkan.prototype = {
 				}
 
 				if(this.filever==1){
-					var c = bd.cnum(i%(k.qcols+2)-1,mf(i/(k.qcols+2))-1);
+					var c = bd.cnum(i%(k.qcols+2)*2-1,mf(i/(k.qcols+2))*2-1);
 					if(c!==-1){
 						if     (ca==="+"){ bd.sQsC(c, 1);}
 						else if(ca!=="."){ bd.sQaC(c, parseInt(ca));}
@@ -450,9 +433,9 @@ Puzzles.kinkonkan.prototype = {
 			this.filever = 1;
 			this.encodeAreaRoom();
 
-			for(var cy=-1;cy<=k.qrows;cy++){
-				for(var cx=-1;cx<=k.qcols;cx++){
-					var ec = bd.exnum(cx,cy);
+			for(var by=-1;by<bd.maxby;by+=2){
+				for(var bx=-1;bx<bd.maxbx;bx+=2){
+					var ec = bd.exnum(bx,by);
 					if(ec!==-1){
 						var str1 = (bd.DiE(ec)== 0?"":bd.DiE(ec).toString());
 						var str2 = (bd.QnE(ec)==-1?"":bd.QnE(ec).toString());
@@ -460,7 +443,7 @@ Puzzles.kinkonkan.prototype = {
 						continue;
 					}
 
-					var c = bd.cnum(cx,cy);
+					var c = bd.cnum(bx,by);
 					if(c!==-1){
 						if     (bd.QaC(c)!==-1){ this.datastr += (bd.QaC(c).toString() + " ");}
 						else if(bd.QsC(c)=== 1){ this.datastr += "+ ";}
@@ -502,7 +485,7 @@ Puzzles.kinkonkan.prototype = {
 
 		ans.checkMirrors = function(type){
 			var d = [];
-			for(var ec=0;ec<2*k.qcols+2*k.qrows;ec++){
+			for(var ec=0;ec<bd.excellmax-4;ec++){
 				if(!isNaN(d[ec]) || bd.QnE(ec)==-1 || bd.DiE(ec)==0){ continue;}
 				var ldata = [];
 				for(var c=0;c<bd.cellmax;c++){ ldata[c]=0;}
@@ -523,37 +506,37 @@ Puzzles.kinkonkan.prototype = {
 		ans.checkMirror1 = function(startec, ldata){
 			var ccnt=0;
 
-			var cx=bd.excell[startec].cx, cy=bd.excell[startec].cy;
+			var bx=bd.excell[startec].bx, by=bd.excell[startec].by;
 			var dir=0;
-			if     (startec<  k.qcols)          { dir=2;}
-			else if(startec<2*k.qcols)          { dir=1;}
-			else if(startec<2*k.qcols+  k.qrows){ dir=4;}
-			else if(startec<2*k.qcols+2*k.qrows){ dir=3;}
+			if     (by===bd.minby+1){ dir=2;}
+			else if(by===bd.maxby-1){ dir=1;}
+			else if(bx===bd.minbx+1){ dir=4;}
+			else if(bx===bd.maxbx-1){ dir=3;}
 
 			while(dir!=0){
-				switch(dir){ case 1: cy--; break; case 2: cy++; break; case 3: cx--; break; case 4: cx++; break;}
-				var cc = bd.cnum(cx,cy);
-				if     (bd.exnum(cx,cy)!=-1){ break;}
-				else if(bd.QaC(cc)==1){
-					ccnt++;
-					if     (dir==1){ ldata[cc]=(!isNaN({4:1,6:1}[ldata[cc]])?6:2); dir=3;}
-					else if(dir==2){ ldata[cc]=(!isNaN({2:1,6:1}[ldata[cc]])?6:4); dir=4;}
-					else if(dir==3){ ldata[cc]=(!isNaN({2:1,6:1}[ldata[cc]])?6:4); dir=1;}
-					else if(dir==4){ ldata[cc]=(!isNaN({4:1,6:1}[ldata[cc]])?6:2); dir=2;}
-				}
-				else if(bd.QaC(cc)==2){
-					ccnt++;
-					if     (dir==1){ ldata[cc]=(!isNaN({5:1,6:1}[ldata[cc]])?6:3); dir=4;}
-					else if(dir==2){ ldata[cc]=(!isNaN({3:1,6:1}[ldata[cc]])?6:5); dir=3;}
-					else if(dir==3){ ldata[cc]=(!isNaN({5:1,6:1}[ldata[cc]])?6:3); dir=2;}
-					else if(dir==4){ ldata[cc]=(!isNaN({3:1,6:1}[ldata[cc]])?6:5); dir=1;}
-				}
-				else{ ldata[cc]=6;}
+				switch(dir){ case 1: by-=2; break; case 2: by+=2; break; case 3: bx-=2; break; case 4: bx+=2; break;}
 
+				var cc = bd.cnum(bx,by), qa = bd.QaC(cc);
+				if(qa===1){
+					if     (dir===1){ ldata[cc]=(!isNaN({4:1,6:1}[ldata[cc]])?6:2); dir=3;}
+					else if(dir===2){ ldata[cc]=(!isNaN({2:1,6:1}[ldata[cc]])?6:4); dir=4;}
+					else if(dir===3){ ldata[cc]=(!isNaN({2:1,6:1}[ldata[cc]])?6:4); dir=1;}
+					else if(dir===4){ ldata[cc]=(!isNaN({4:1,6:1}[ldata[cc]])?6:2); dir=2;}
+				}
+				else if(qa===2){
+					if     (dir===1){ ldata[cc]=(!isNaN({5:1,6:1}[ldata[cc]])?6:3); dir=4;}
+					else if(dir===2){ ldata[cc]=(!isNaN({3:1,6:1}[ldata[cc]])?6:5); dir=3;}
+					else if(dir===3){ ldata[cc]=(!isNaN({5:1,6:1}[ldata[cc]])?6:3); dir=2;}
+					else if(dir===4){ ldata[cc]=(!isNaN({3:1,6:1}[ldata[cc]])?6:5); dir=1;}
+				}
+				else if(cc!==-1){ ldata[cc]=6; continue;}
+				else{ break;}
+
+				ccnt++;
 				if(ccnt>bd.cellmax){ break;} // 念のためガード条件(多分引っかからない)
 			}
 
-			return {cnt:ccnt, dest:bd.exnum(cx,cy)};
+			return {cnt:ccnt, dest:bd.exnum(bx,by)};
 		};
 	}
 };

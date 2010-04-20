@@ -7,36 +7,32 @@ Puzzles.minarism.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 7;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 7;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 0;	// 1:0を表示するかどうか
-		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 1;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = false;	// 0を表示するかどうか
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		k.area = { bcell:0, wcell:0, number:0, disroom:1};	// areaオブジェクトで領域を生成する
+		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
 		if(k.EDITOR){
 			base.setExpression("　キーボードで数字および、QWキーで不等号が入力できます。不等号はマウスのドラッグで、数字はクリックでも入力できます。",
@@ -67,14 +63,14 @@ Puzzles.minarism.prototype = {
 		};
 
 		mv.inputmark1 = function(){
-			var pos = this.cellpos();
+			var pos = this.borderpos(0);
 			if(bd.cnum(pos.x,pos.y)==-1){ return;}
 
 			var id=-1;
-			if     (pos.y-this.mouseCell.y==-1){ id=bd.bnum(this.mouseCell.x*2+1,this.mouseCell.y*2  ); this.inputData=1; }
-			else if(pos.y-this.mouseCell.y== 1){ id=bd.bnum(this.mouseCell.x*2+1,this.mouseCell.y*2+2); this.inputData=2; }
-			else if(pos.x-this.mouseCell.x==-1){ id=bd.bnum(this.mouseCell.x*2  ,this.mouseCell.y*2+1); this.inputData=1; }
-			else if(pos.x-this.mouseCell.x== 1){ id=bd.bnum(this.mouseCell.x*2+2,this.mouseCell.y*2+1); this.inputData=2; }
+			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1); this.inputData=1; }
+			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1); this.inputData=2; }
+			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  ); this.inputData=1; }
+			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  ); this.inputData=2; }
 
 			this.mouseCell = pos;
 			if(id==-1){ return;}
@@ -83,15 +79,15 @@ Puzzles.minarism.prototype = {
 			pc.paintBorder(id);
 		};
 		mv.inputmark = function(){
-			var pos = this.crosspos(0.33);
-			if(pos.x<tc.minx || tc.maxx<pos.x || pos.y<tc.miny || tc.maxy<pos.y){ return;}
+			var pos = this.borderpos(0.33);
+			if(!bd.isinside(pos.x,pos.y)){ return;}
 			var id = bd.bnum(pos.x, pos.y);
 
-			if(tc.cursolx!=pos.x || tc.cursoly!=pos.y){
-				var tcx = tc.cursolx, tcy = tc.cursoly, flag = false;
+			if(tc.cursolx!==pos.x || tc.cursoly!==pos.y){
+				var tcp = tc.getTCP(), flag = false;
 				tc.setTCP(pos);
-				pc.paint((tcx>>1)-1, (tcy>>1)-1, (tcx>>1)+1, (tcy>>1)+1);
-				pc.paint((pos.x>>1)-1, (pos.y>>1)-1, pos.x>>1, pos.y>>1);
+				pc.paintPos(tcp);
+				pc.paintPos(pos);
 			}
 			else if(id!=-1){
 				this.inputbqnum(id);
@@ -174,8 +170,6 @@ Puzzles.minarism.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-
 			this.drawBDMbase(x1,y1,x2,y2);
 
 			this.drawBGCells(x1,y1,x2,y2);
@@ -191,8 +185,8 @@ Puzzles.minarism.prototype = {
 
 		pc.drawBDMbase = function(x1,y1,x2,y2){
 			if(!g.use.canvas){ return;}
-			var csize = k.cwidth*0.29;
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+			var csize = this.cw*0.29;
+			var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 
@@ -205,11 +199,11 @@ Puzzles.minarism.prototype = {
 		pc.drawBDMarks = function(x1,y1,x2,y2){
 			this.vinc('border_mark', 'auto');
 
-			var csize = k.cwidth*0.27;
-			var ssize = k.cwidth*0.22;
+			var csize = this.cw*0.27;
+			var ssize = this.cw*0.22;
 			var headers = ["b_cp_", "b_dt1_", "b_dt2_"];
 
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+			var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 				if(bd.border[id].qnum!=-1){
@@ -229,7 +223,7 @@ Puzzles.minarism.prototype = {
 					g.strokeStyle = this.Cellcolor;
 					if(bd.border[id].ques===1){
 						if(this.vnop(headers[1]+id,this.NONE)){
-							if(bd.border[id].cx&1){ g.setOffsetLinePath(px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false);}
+							if(bd.border[id].bx&1){ g.setOffsetLinePath(px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false);}
 							else                  { g.setOffsetLinePath(px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false);}
 							g.stroke();
 						}
@@ -238,7 +232,7 @@ Puzzles.minarism.prototype = {
 
 					if(bd.border[id].ques===2){
 						if(this.vnop(headers[2]+id,this.NONE)){
-							if(bd.border[id].cx&1){ g.setOffsetLinePath(px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false);}
+							if(bd.border[id].bx&1){ g.setOffsetLinePath(px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false);}
 							else                  { g.setOffsetLinePath(px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false);}
 							g.stroke();
 						}
@@ -250,8 +244,8 @@ Puzzles.minarism.prototype = {
 		};
 
 		pc.drawTarget_minarism = function(x1,y1,x2,y2){
-			this.drawTBorder(x1-1,y1-1,x2+1,y2+1,k.editmode);
-			this.drawTCell  (x1-1,y1-1,x2+1,y2+1,k.playmode);
+			var islarge = k.playmode;
+			this.drawCursor(x1,y1,x2,y2,islarge);
 		};
 	},
 
@@ -282,7 +276,7 @@ Puzzles.minarism.prototype = {
 				else if(ca=="h"){ bd.sQuB(id-mgn, ((type==0 || id<k.qcols*k.qrows)?2:1)); id++;}
 				else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-17);}
 				else if(ca=="."){ bd.sQnB(id-mgn,-2); id++;}
-				else if(type==1 && ca=="/"){ id=k.qcols*k.qrows;}
+				else if(type==1 && ca=="/"){ id=bd.cellmax;}
 				else{ id++;}
 
 				if(id >= 2*k.qcols*k.qrows){ a=i+1; break;}
@@ -302,8 +296,8 @@ Puzzles.minarism.prototype = {
 					var val  = bd.QuB(id);
 					var qnum = bd.QnB(id);
 
-					if     (val == 1){ pstr = ((type==0 || id<k.qcols*k.qrows)?"g":"h");}
-					else if(val == 2){ pstr = ((type==0 || id<k.qcols*k.qrows)?"h":"g");}
+					if     (val == 1){ pstr = ((type==0 || id<bd.cellmax)?"g":"h");}
+					else if(val == 2){ pstr = ((type==0 || id<bd.cellmax)?"h":"g");}
 					else if(qnum==-2){ pstr = ".";}
 					else if(qnum>= 0 && qnum< 16){ pstr = ""+ qnum.toString(16);}
 					else if(qnum>=16 && qnum<256){ pstr = "-"+qnum.toString(16);}
@@ -381,8 +375,7 @@ Puzzles.minarism.prototype = {
 		ans.checkBDSideCell = function(func){
 			var result = true;
 			for(var id=0;id<bd.bdmax;id++){
-				var cc1 = bd.cc1(id);
-				var cc2 = bd.cc2(id);
+				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(bd.QaC(cc1)>0 && bd.QaC(cc2)>0 && func(id,cc1,cc2)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([cc1,cc2],1);

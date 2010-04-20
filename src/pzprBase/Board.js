@@ -1,4 +1,4 @@
-// Board.js v3.2.4p4
+// Board.js v3.3.0
 
 //---------------------------------------------------------------------------
 // ★Cellクラス BoardクラスがCellの数だけ保持する
@@ -6,24 +6,25 @@
 // ボードメンバデータの定義(1)
 // Cellクラスの定義
 Cell = function(id){
-	this.cx;	// セルのX座標を保持する
-	this.cy;	// セルのY座標を保持する
+	this.bx;	// セルのX座標(border座標系)を保持する
+	this.by;	// セルのY座標(border座標系)を保持する
 	this.px;	// セルの描画用X座標を保持する
 	this.py;	// セルの描画用Y座標を保持する
+	this.cpx;	// セルの描画用中心X座標を保持する
+	this.cpy;	// セルの描画用中心Y座標を保持する
+
 	this.ques;	// セルの問題データ(形状)を保持する
 	this.qnum;	// セルの問題データ(数字)を保持する(数字 or カックロの右側)
 	this.direc;	// セルの問題データ(方向)を保持する(矢印 or カックロの下側)
 	this.qans;	// セルの回答データを保持する(黒マス or 回答数字)
 	this.qsub;	// セルの補助データを保持する(白マス or 背景色)
 	this.error;	// エラーデータを保持する
-	this.numobj = '';	// 数字を表示するためのエレメント
-	this.numobj2 = '';	// 数字を表示するためのエレメント
 
 	this.allclear(id);
 };
 Cell.prototype = {
 	//---------------------------------------------------------------------------
-	// cell.allclear() セルのcx,cy,numobj情報以外をクリアする
+	// cell.allclear() セルの位置,描画情報以外をクリアする
 	// cell.ansclear() セルのqans,qsub,error情報をクリアする
 	// cell.subclear() セルのqsub,error情報をクリアする
 	//---------------------------------------------------------------------------
@@ -33,7 +34,7 @@ Cell.prototype = {
 		this.qsub = 0;
 		this.ques = 0;
 		this.qnum = -1;
-		if(k.puzzleid==="tilepaint"||k.puzzleid==="kakuro"){ this.qnum = 0;}
+		if(k.puzzleid==="tilepaint"||k.puzzleid==="kakuro"||k.puzzleid==="box"){ this.qnum = 0;}
 		this.direc = 0;
 		if(k.puzzleid==="triplace"){ this.direc = -1;}
 		this.error = 0;
@@ -55,20 +56,20 @@ Cell.prototype = {
 // ボードメンバデータの定義(2)
 // Crossクラスの定義
 Cross = function(id){
-	this.cx;	// 交差点のX座標を保持する
-	this.cy;	// 交差点のY座標を保持する
+	this.bx;	// 交差点のX座標(border座標系)を保持する
+	this.by;	// 交差点のY座標(border座標系)を保持する
 	this.px;	// 交差点の描画用X座標を保持する
 	this.py;	// 交差点の描画用Y座標を保持する
+
 	this.ques;	// 交差点の問題データ(黒点)を保持する
 	this.qnum;	// 交差点の問題データ(数字)を保持する
 	this.error;	// エラーデータを保持する
-	this.numobj = '';	// 数字を表示するためのエレメント
 
 	this.allclear(id);
 };
 Cross.prototype = {
 	//---------------------------------------------------------------------------
-	// cross.allclear() 交差点のcx,cy,numobj情報以外をクリアする
+	// cross.allclear() 交差点の位置,描画情報以外をクリアする
 	// cross.ansclear() 交差点のerror情報をクリアする
 	// cross.subclear() 交差点のerror情報をクリアする
 	//---------------------------------------------------------------------------
@@ -91,10 +92,11 @@ Cross.prototype = {
 // ボードメンバデータの定義(3)
 // Borderクラスの定義
 Border = function(id){
-	this.cx;	// 境界線のX座標を保持する
-	this.cy;	// 境界線のY座標を保持する
+	this.bx;	// 境界線のX座標(border座標系)を保持する
+	this.by;	// 境界線のY座標(border座標系)を保持する
 	this.px;	// 境界線の描画X座標を保持する
 	this.py;	// 境界線の描画Y座標を保持する
+
 	this.ques;	// 境界線の問題データを保持する(境界線 or マイナリズムの不等号)
 	this.qnum;	// 境界線の問題データを保持する(マイナリズムの数字)
 	this.qans;	// 境界線の回答データを保持する(回答境界線 or スリリンなどの線)
@@ -102,13 +104,15 @@ Border = function(id){
 	this.line;	// 線の回答データを保持する
 	this.color;	// 線の色分けデータを保持する
 	this.error;	// エラーデータを保持する
-	this.numobj = '';	// 数字を表示するためのエレメント
+
+	this.cellcc  = [-1,-1];	// 隣接セルのID
+	this.crosscc = [-1,-1];	// 隣接交点のID
 
 	this.allclear(id);
 };
 Border.prototype = {
 	//---------------------------------------------------------------------------
-	// border.allclear() 境界線のcx,cy,numobj情報以外をクリアする
+	// border.allclear() 境界線の位置,描画情報以外をクリアする
 	// border.ansclear() 境界線のqans,qsub,line,color,error情報をクリアする
 	// border.subclear() 境界線のqsub,error情報をクリアする
 	//---------------------------------------------------------------------------
@@ -158,6 +162,12 @@ Board = function(){
 
 	this.maxnum   = 99;		// 入力できる最大の数字
 
+	// 盤面の範囲
+	this.minbx = 0;
+	this.minby = 0;
+	this.maxbx = 2*k.qcols;
+	this.maxby = 2*k.qrows;
+
 	// デフォルトのセルなど
 	this.defcell   = new Cell(0);
 	this.defcross  = new Cross(0);
@@ -170,148 +180,182 @@ Board = function(){
 };
 Board.prototype = {
 	//---------------------------------------------------------------------------
-	// bd.initBoardSize() 盤面のサイズの変更を行う
+	// bd.initBoardSize() 指定されたサイズで盤面の初期化を行う
 	// bd.initGroup()     数を比較して、オブジェクトの追加か削除を行う
+	// bd.afterinit()     サイズ初期化後の処理を行う
 	// bd.initSpecial()   パズル個別で初期化を行いたい処理を入力する
 	//---------------------------------------------------------------------------
 	initBoardSize : function(col,row){
 		{
 			this.initGroup(k.CELL,   this.cell,   col*row);
 		}
-		if(k.iscross){
+		if(!!k.iscross){
 			this.initGroup(k.CROSS,  this.cross,  (col+1)*(row+1));
 		}
-		if(k.isborder){
-			this.initGroup(k.BORDER, this.border, 2*col*row+(k.isoutsideborder===0?-1:1)*(col+row));
+		if(!!k.isborder){
+			this.initGroup(k.BORDER, this.border, 2*col*row+(k.isborder===1?-1:1)*(col+row));
 		}
-		if(k.isextendcell===1){
+		if(k.isexcell===1){
 			this.initGroup(k.EXCELL, this.excell, col+row+1);
 		}
-		else if(k.isextendcell===2){
+		else if(k.isexcell===2){
 			this.initGroup(k.EXCELL, this.excell, 2*col+2*row+4);
 		}
 
 		this.initSpecial(col,row);
 
-		// 各種サイズの変更
-		if(!base.initProcess){
-			tc.maxx += (col-k.qcols)*2;
-			tc.maxy += (row-k.qrows)*2;
-		}
 		k.qcols = col;
 		k.qrows = row;
 
-		this.setposAll();
-		if(!base.initProcess){ this.allclear();}
+		this.afterinit(col,row);
 	},
 	initGroup : function(type, group, len){
 		var clen = group.length;
 		// 既存のサイズより小さくなるならdeleteする
 		if(clen>len){
-			for(var id=clen-1;id>=len;id--){ this.hideNumobj(type,id); delete group[id]; group.pop();}
+			for(var id=clen-1;id>=len;id--){ delete group[id]; group.pop();}
 		}
 		// 既存のサイズより大きくなるなら追加する
 		else if(clen<len){
 			for(var id=clen;id<len;id++){ group.push(this.getnewObj(type,id));}
 		}
 	},
+
+	afterinit : function(){
+		this.setminmax();
+		this.setposAll();
+		if(!base.initProcess){ this.allclear();}
+	},
 	initSpecial : function(){ },
 
 	//---------------------------------------------------------------------------
 	// bd.setposAll()    全てのCell, Cross, BorderオブジェクトのsetposCell()等を呼び出す
 	//                   盤面の新規作成や、拡大/縮小/回転/反転時などに呼び出される
-	// bd.setposCell()   該当するidのセルのcx,cyプロパティを設定する
-	// bd.setposCross()  該当するidの交差点のcx,cyプロパティを設定する
-	// bd.setposBorder() 該当するidの境界線/Lineのcx,cyプロパティを設定する
-	// bd.setposEXCell() 該当するidのExtendセルのcx,cyプロパティを設定する
+	// bd.setposCell()   該当するidのセルのbx,byプロパティを設定する
+	// bd.setposCross()  該当するidの交差点のbx,byプロパティを設定する
+	// bd.setposBorder() 該当するidの境界線/Lineのbx,byプロパティを設定する
+	// bd.setposEXCell() 該当するidのExtendセルのbx,byプロパティを設定する
 	//---------------------------------------------------------------------------
 	// setpos関連関数 <- 各Cell等が持っているとメモリを激しく消費するのでここに置くこと.
 	setposAll : function(){
 		this.setposCells();
-		if(k.iscross)        { this.setposCrosses();}
-		if(k.isborder)       { this.setposBorders();}
-		if(k.isextendcell!=0){ this.setposEXcells();}
+		if(!!k.iscross) { this.setposCrosses();}
+		if(!!k.isborder){ this.setposBorders();}
+		if(!!k.isexcell){ this.setposEXcells();}
+
+		this.setcoordAll();
 	},
 	setposCells : function(){
-		var x0=k.p0.x, y0=k.p0.y;
 		this.cellmax = this.cell.length;
 		for(var id=0;id<this.cellmax;id++){
 			var obj = this.cell[id];
-			obj.cx = id%k.qcols;
-			obj.cy = mf(id/k.qcols);
-			obj.px = x0 + mf(obj.cx*k.cwidth);
-			obj.py = y0 + mf(obj.cy*k.cheight);
+			obj.bx = (id%k.qcols)*2+1;
+			obj.by = mf(id/k.qcols)*2+1;
 		}
 	},
 	setposCrosses : function(){
-		var x0=k.p0.x, y0=k.p0.y;
 		this.crossmax = this.cross.length;
 		for(var id=0;id<this.crossmax;id++){
 			var obj = this.cross[id];
-			obj.cx = id%(k.qcols+1);
-			obj.cy = mf(id/(k.qcols+1));
-			obj.px = x0 + mf(obj.cx*k.cwidth);
-			obj.py = y0 + mf(obj.cy*k.cheight);
+			obj.bx = (id%(k.qcols+1))*2;
+			obj.by = mf(id/(k.qcols+1))*2;
 		}
 	},
 	setposBorders : function(){
-		var x0=k.p0.x, y0=k.p0.y;
 		this.bdinside = 2*k.qcols*k.qrows-(k.qcols+k.qrows);
 		this.bdmax = this.border.length;
 		for(var id=0;id<this.bdmax;id++){
-			var obj = this.border[id];
-			if(id>=0 && id<(k.qcols-1)*k.qrows){
-				obj.cx = (id%(k.qcols-1))*2+2;
-				obj.cy = mf(id/(k.qcols-1))*2+1;
+			var obj=this.border[id], i=id;
+			if(i>=0 && i<(k.qcols-1)*k.qrows){ obj.bx=(i%(k.qcols-1))*2+2; obj.by=mf(i/(k.qcols-1))*2+1;} i-=((k.qcols-1)*k.qrows);
+			if(i>=0 && i<k.qcols*(k.qrows-1)){ obj.bx=(i%k.qcols)*2+1;     obj.by=mf(i/k.qcols)*2+2;    } i-=(k.qcols*(k.qrows-1));
+			if(k.isborder===2){
+				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;     obj.by=0;        } i-=k.qcols;
+				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;     obj.by=2*k.qrows;} i-=k.qcols;
+				if(i>=0 && i<k.qrows){ obj.bx=0;         obj.by=i*2+1;    } i-=k.qrows;
+				if(i>=0 && i<k.qrows){ obj.bx=2*k.qcols; obj.by=i*2+1;    } i-=k.qrows;
 			}
-			else if(id>=(k.qcols-1)*k.qrows && id<this.bdinside){
-				obj.cx = (id-(k.qcols-1)*k.qrows)%k.qcols*2+1;
-				obj.cy = mf((id-(k.qcols-1)*k.qrows)/k.qcols)*2+2;
-			}
-			else if(id>=this.bdinside && id<this.bdinside+k.qcols){
-				obj.cx = (id-this.bdinside)*2+1;
-				obj.cy = 0;
-			}
-			else if(id>=this.bdinside+k.qcols && id<this.bdinside+2*k.qcols){
-				obj.cx = (id-this.bdinside-k.qcols)*2+1;
-				obj.cy = k.qrows*2;
-			}
-			else if(id>=this.bdinside+2*k.qcols && id<this.bdinside+2*k.qcols+k.qrows){
-				obj.cx = 0;
-				obj.cy = (id-this.bdinside-2*k.qcols)*2+1;
-			}
-			else if(id>=this.bdinside+2*k.qcols+k.qrows && id<this.bdinside+2*(k.qcols+k.qrows)){
-				obj.cx = k.qcols*2;
-				obj.cy = (id-this.bdinside-2*k.qcols-k.qrows)*2+1;
-			}
-			obj.px = x0 + mf(obj.cx*k.cwidth/2);
-			obj.py = y0 + mf(obj.cy*k.cheight/2);
+
+			obj.cellcc[0] = this.cnum(obj.bx-(obj.by&1), obj.by-(obj.bx&1));
+			obj.cellcc[1] = this.cnum(obj.bx+(obj.by&1), obj.by+(obj.bx&1));
+
+			obj.crosscc[0] = this.xnum(obj.bx-(obj.bx&1), obj.by-(obj.by&1));
+			obj.crosscc[1] = this.xnum(obj.bx+(obj.bx&1), obj.by+(obj.by&1));
 		}
 	},
 	setposEXcells : function(){
-		var x0=k.p0.x, y0=k.p0.y;
 		this.excellmax = this.excell.length;
 		for(var id=0;id<this.excellmax;id++){
-			var obj = this.excell[id];
-			if(k.isextendcell===1){
-				if     (id<k.qcols)        { obj.cx=id; obj.cy=-1;        }
-				else if(id<k.qcols+k.qrows){ obj.cx=-1; obj.cy=id-k.qcols;}
-				else                       { obj.cx=-1; obj.cy=-1;        }
+			var obj = this.excell[id], i=id;
+			obj.bx=-1;
+			obj.by=-1;
+			if(k.isexcell===1){
+				if(i>=0 && i<k.qcols){ obj.bx=i*2+1; obj.by=-1;     continue;} i-=k.qcols;
+				if(i>=0 && i<k.qrows){ obj.bx=-1;     obj.by=i*2+1; continue;} i-=k.qrows;
 			}
-			else if(k.isextendcell===2){
-				if     (id<  k.qcols)            { obj.cx=id;         obj.cy=-1;                  }
-				else if(id<2*k.qcols)            { obj.cx=id-k.qcols; obj.cy=k.qrows;             }
-				else if(id<2*k.qcols+  k.qrows)  { obj.cx=-1;         obj.cy=id-2*k.qcols;        }
-				else if(id<2*k.qcols+2*k.qrows)  { obj.cx=k.qcols;    obj.cy=id-2*k.qcols-k.qrows;}
-				else if(id<2*k.qcols+2*k.qrows+1){ obj.cx=-1;         obj.cy=-1;     }
-				else if(id<2*k.qcols+2*k.qrows+2){ obj.cx=k.qcols;    obj.cy=-1;     }
-				else if(id<2*k.qcols+2*k.qrows+3){ obj.cx=-1;         obj.cy=k.qrows;}
-				else if(id<2*k.qcols+2*k.qrows+4){ obj.cx=k.qcols;    obj.cy=k.qrows;}
-				else                             { obj.cx=-1;         obj.cy=-1;     }
+			else if(k.isexcell===2){
+				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;       obj.by=-1;          continue;} i-=k.qcols;
+				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;       obj.by=2*k.qrows+1; continue;} i-=k.qcols;
+				if(i>=0 && i<k.qrows){ obj.bx=-1;          obj.by=i*2+1;       continue;} i-=k.qrows;
+				if(i>=0 && i<k.qrows){ obj.bx=2*k.qcols+1; obj.by=i*2+1;       continue;} i-=k.qrows;
+				if(i===0)            { obj.bx=-1;          obj.by=-1;          continue;} i--;
+				if(i===0)            { obj.bx=2*k.qcols+1; obj.by=-1;          continue;} i--;
+				if(i===0)            { obj.bx=-1;          obj.by=2*k.qrows+1; continue;} i--;
+				if(i===0)            { obj.bx=2*k.qcols+1; obj.by=2*k.qrows+1; continue;} i--;
 			}
-			obj.px = x0 + obj.cx*k.cwidth;
-			obj.py = y0 + obj.cy*k.cheight;
 		}
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.setcoordAll()   全てのCell, Cross, BorderオブジェクトのsetcoordCell()等を呼び出す
+	// bd.setBoardRange() 盤面のbx,byの最小値/最大値をセットする
+	// bd.isinside()      指定された(bx,by)が盤面内かどうか判断する
+	//---------------------------------------------------------------------------
+	setcoordAll : function(){
+		var x0=k.p0.x, y0=k.p0.y;
+		{
+			for(var id=0;id<this.cellmax;id++){
+				var obj = this.cell[id];
+				obj.px = x0 + (obj.bx-1)*k.bwidth;
+				obj.py = y0 + (obj.by-1)*k.bheight;
+				obj.cpx = x0 + obj.bx*k.bwidth;
+				obj.cpy = y0 + obj.by*k.bheight;
+			}
+		}
+		if(!!k.iscross){
+			for(var id=0;id<this.crossmax;id++){
+				var obj = this.cross[id];
+				obj.px = x0 + obj.bx*k.bwidth;
+				obj.py = y0 + obj.by*k.bheight;
+			}
+		}
+		if(!!k.isborder){
+			for(var id=0;id<this.bdmax;id++){
+				var obj = this.border[id];
+				obj.px = x0 + obj.bx*k.bwidth;
+				obj.py = y0 + obj.by*k.bheight;
+			}
+		}
+		if(!!k.isexcell){
+			for(var id=0;id<this.excellmax;id++){
+				var obj = this.excell[id];
+				obj.px = x0 + (obj.bx-1)*k.bwidth;
+				obj.py = y0 + (obj.by-1)*k.bheight;
+			}
+		}
+	},
+
+	setminmax : function(){
+		var extUL = (k.isexcell===1 || k.isexcell===2);
+		var extDR = (k.isexcell===2);
+		this.minbx = (!extUL ? 0 : -2);
+		this.minby = (!extUL ? 0 : -2);
+		this.maxbx = (!extDR ? 2*k.qcols : 2*k.qcols+2);
+		this.maxby = (!extDR ? 2*k.qrows : 2*k.qrows+2);
+
+		tc.adjust();
+	},
+	isinside : function(bx,by){
+		return (bx>=this.minbx && bx<=this.maxbx && by>=this.minby && by<=this.maxby);
 	},
 
 	//---------------------------------------------------------------------------
@@ -339,7 +383,7 @@ Board.prototype = {
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].subclear(i);}
 	},
 
-	errclear : function(){
+	errclear : function(isrepaint){
 		if(!ans.errDisp){ return;}
 
 		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].error=0;}
@@ -348,13 +392,12 @@ Board.prototype = {
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].error=0;}
 
 		ans.errDisp = false;
-		pc.paintAll();
+		if(isrepaint!==false){ pc.paintAll();}
 	},
 
 	//---------------------------------------------------------------------------
 	// bd.getnewObj()   指定されたタイプの新しいオブジェクトを返す
 	// bd.isNullObj()   指定したオブジェクトが初期値と同じか判断する
-	// bd.hideNumobj()  指定したオブジェクトのnumobjを隠す
 	//---------------------------------------------------------------------------
 	getnewObj : function(type,id){
 		if(type===k.CELL || type===k.EXCELL){ return (new Cell(id));}
@@ -386,79 +429,66 @@ Board.prototype = {
 		return true;
 	},
 
-	hideNumobj : function(type,id){
-		if(type===k.CELL){
-			pc.hideEL(this.cell[id].numobj);
-			pc.hideEL(this.cell[id].numobj2);
-		}
-		else if(type===k.CROSS) {
-			pc.hideEL(this.cross[id].numobj);
-		}
-		else if(type===k.BORDER){
-			pc.hideEL(this.border[id].numobj);
-		}
-		else if(type===k.EXCELL){
-			pc.hideEL(this.excell[id].numobj);
-			pc.hideEL(this.excell[id].numobj2);
-		}
-	},
-
 	//---------------------------------------------------------------------------
 	// bd.cnum()   (X,Y)の位置にあるCellのIDを返す
 	// bd.cnum2()  (X,Y)の位置にあるCellのIDを、盤面の大きさを(qc×qr)で計算して返す
 	// bd.xnum()   (X,Y)の位置にあるCrossのIDを返す
 	// bd.xnum2()  (X,Y)の位置にあるCrossのIDを、盤面の大きさを(qc×qr)で計算して返す
-	// bd.bnum()   (X*2,Y*2)の位置にあるBorderのIDを返す
-	// bd.bnum2()  (X*2,Y*2)の位置にあるBorderのIDを、盤面の大きさを(qc×qr)で計算して返す
+	// bd.bnum()   (X,Y)の位置にあるBorderのIDを返す
+	// bd.bnum2()  (X,Y)の位置にあるBorderのIDを、盤面の大きさを(qc×qr)で計算して返す
 	// bd.exnum()  (X,Y)の位置にあるextendCellのIDを返す
 	// bd.exnum2() (X,Y)の位置にあるextendCellのIDを、盤面の大きさを(qc×qr)で計算して返す
 	//---------------------------------------------------------------------------
-	cnum : function(cx,cy){
-		return (cx>=0&&cx<=k.qcols-1&&cy>=0&&cy<=k.qrows-1)?cx+cy*k.qcols:-1;
+	cnum : function(bx,by){
+		if(bx<=0||bx>=2*k.qcols||by<=0||by>=2*k.qrows||(!(bx&1))||(!(by&1))){ return -1;}
+		return (bx>>1)+(by>>1)*k.qcols;
 	},
-	cnum2 : function(cx,cy,qc,qr){
-		return (cx>=0&&cx<=qc-1&&cy>=0&&cy<=qr-1)?cx+cy*qc:-1;
+	cnum2 : function(bx,by,qc,qr){
+		if((bx<0||bx>2*qc||by<0||by>2*qr)||(!(bx&1))||(!(by&1))){ return -1;}
+		return (bx>>1)+(by>>1)*qc;
 	},
-	xnum : function(cx,cy){
-		return (cx>=0&&cx<=k.qcols&&cy>=0&&cy<=k.qrows)?cx+cy*(k.qcols+1):-1;
+	xnum : function(bx,by){
+		if(bx<0||bx>2*k.qcols||by<0||by>2*k.qrows||(!!(bx&1))||(!!(by&1))){ return -1;}
+		return (bx>>1)+(by>>1)*(k.qcols+1);
 	},
-	xnum2 : function(cx,cy,qc,qr){
-		return (cx>=0&&cx<=qc&&cy>=0&&cy<=qr)?cx+cy*(qc+1):-1;
+	xnum2 : function(bx,by,qc,qr){
+		if((bx<0||bx>2*qc||by<0||by>2*qr)||(!!(bx&1))||(!!(by&1))){ return -1;}
+		return (bx>>1)+(by>>1)*(qc+1);
 	},
-	bnum : function(cx,cy){
-		return this.bnum2(cx,cy,k.qcols,k.qrows);
+	bnum : function(bx,by){
+		return this.bnum2(bx,by,k.qcols,k.qrows);
 	},
-	bnum2 : function(cx,cy,qc,qr){
-		if(cx>=1&&cx<=qc*2-1&&cy>=1&&cy<=qr*2-1){
-			if     (!(cx&1) &&  (cy&1)){ return ((cx>>1)-1)+(cy>>1)*(qc-1);}
-			else if( (cx&1) && !(cy&1)){ return (cx>>1)+((cy>>1)-1)*qc+(qc-1)*qr;}
+	bnum2 : function(bx,by,qc,qr){
+		if(bx>=1&&bx<=2*qc-1&&by>=1&&by<=2*qr-1){
+			if     (!(bx&1) &&  (by&1)){ return ((bx>>1)-1)+(by>>1)*(qc-1);}
+			else if( (bx&1) && !(by&1)){ return (bx>>1)+((by>>1)-1)*qc+(qc-1)*qr;}
 		}
-		else if(k.isoutsideborder==1){
-			if     (cy===0   &&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+(cx>>1);}
-			else if(cy===2*qr&&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+(cx>>1);}
-			else if(cx===0   &&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+(cy>>1);}
-			else if(cx===2*qc&&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+(cy>>1);}
+		else if(k.isborder==2){
+			if     (by===0   &&(bx&1)&&(bx>=1&&bx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+(bx>>1);}
+			else if(by===2*qr&&(bx&1)&&(bx>=1&&bx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+(bx>>1);}
+			else if(bx===0   &&(by&1)&&(by>=1&&by<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+(by>>1);}
+			else if(bx===2*qc&&(by&1)&&(by>=1&&by<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+(by>>1);}
 		}
 		return -1;
 	},
-	exnum : function(cx,cy){
-		return this.exnum2(cx,cy,k.qcols,k.qrows);
+	exnum : function(bx,by){
+		return this.exnum2(bx,by,k.qcols,k.qrows);
 	},
-	exnum2 : function(cx,cy,qc,qr){
-		if(k.isextendcell===1){
-			if(cx===-1&&cy===-1){ return qc+qr;}
-			else if(cy===-1&&cx>=0&&cx<qc){ return cx;}
-			else if(cx===-1&&cy>=0&&cy<qr){ return qc+cy;}
+	exnum2 : function(bx,by,qc,qr){
+		if(k.isexcell===1){
+			if(bx===-1&&by===-1){ return qc+qr;}
+			else if(by===-1&&bx>0&&bx<2*qc){ return (bx>>1);}
+			else if(bx===-1&&by>0&&by<2*qr){ return qc+(by>>1);}
 		}
-		else if(k.isextendcell===2){
-			if     (cy===-1&&cx>=0&&cx<qc){ return cx;}
-			else if(cy===qr&&cx>=0&&cx<qc){ return qc+cx;}
-			else if(cx===-1&&cy>=0&&cy<qr){ return 2*qc+cy;}
-			else if(cx===qc&&cy>=0&&cy<qr){ return 2*qc+qr+cy;}
-			else if(cx===-1&&cy===-1){ return 2*qc+2*qr;}
-			else if(cx===qc&&cy===-1){ return 2*qc+2*qr+1;}
-			else if(cx===-1&&cy===qr){ return 2*qc+2*qr+2;}
-			else if(cx===qc&&cy===qr){ return 2*qc+2*qr+3;}
+		else if(k.isexcell===2){
+			if     (by===-1    &&bx>0&&bx<2*qc){ return (bx>>1);}
+			else if(by===2*qr+1&&bx>0&&bx<2*qc){ return qc+(bx>>1);}
+			else if(bx===-1    &&by>0&&by<2*qr){ return 2*qc+(by>>1);}
+			else if(bx===2*qc+1&&by>0&&by<2*qr){ return 2*qc+qr+(by>>1);}
+			else if(bx===-1    &&by===-1){ return 2*qc+2*qr;}
+			else if(bx===2*qc+1&&by===-1){ return 2*qc+2*qr+1;}
+			else if(bx===-1    &&by===qr){ return 2*qc+2*qr+2;}
+			else if(bx===2*qc+1&&by===qr){ return 2*qc+2*qr+3;}
 		}
 		return -1;
 	},
@@ -468,9 +498,9 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	getClistByPosition : function(x1,y1,x2,y2){
 		var clist = [];
-		for(var cx=x1;cx<=Math.min(x2,k.qcols-1);cx++){
-			for(var cy=y1;cy<=Math.min(y2,k.qrows-1);cy++){
-				var cc = this.cnum(cx,cy);
+		for(var bx=(x1|1),maxx=Math.min(x2,bd.maxbx-1);bx<=maxx;bx+=2){
+			for(var by=(y1|1),maxy=Math.min(y2,bd.maxby-1);by<=maxy;by+=2){
+				var cc = this.cnum(bx,by);
 				if(cc!==-1){ clist.push(cc);}
 			}
 		}
@@ -480,46 +510,27 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// bd.up() bd.dn() bd.lt() bd.rt()  セルの上下左右に接するセルのIDを返す
 	//---------------------------------------------------------------------------
-	up : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].cx  ,this.cell[cc].cy-1):-1;},	//上のセルのIDを求める
-	dn : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].cx  ,this.cell[cc].cy+1):-1;},	//下のセルのIDを求める
-	lt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].cx-1,this.cell[cc].cy  ):-1;},	//左のセルのIDを求める
-	rt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].cx+1,this.cell[cc].cy  ):-1;},	//右のセルのIDを求める
+	up : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx  ,this.cell[cc].by-2):-1;},	//上のセルのIDを求める
+	dn : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx  ,this.cell[cc].by+2):-1;},	//下のセルのIDを求める
+	lt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx-2,this.cell[cc].by  ):-1;},	//左のセルのIDを求める
+	rt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx+2,this.cell[cc].by  ):-1;},	//右のセルのIDを求める
 	//---------------------------------------------------------------------------
 	// bd.ub() bd.db() bd.lb() bd.rb()  セルの上下左右にある境界線のIDを返す
 	//---------------------------------------------------------------------------
-	ub : function(cc){ return this.cell[cc]?this.bnum(2*this.cell[cc].cx+1,2*this.cell[cc].cy  ):-1;},	//セルの上の境界線のIDを求める
-	db : function(cc){ return this.cell[cc]?this.bnum(2*this.cell[cc].cx+1,2*this.cell[cc].cy+2):-1;},	//セルの下の境界線のIDを求める
-	lb : function(cc){ return this.cell[cc]?this.bnum(2*this.cell[cc].cx  ,2*this.cell[cc].cy+1):-1;},	//セルの左の境界線のIDを求める
-	rb : function(cc){ return this.cell[cc]?this.bnum(2*this.cell[cc].cx+2,2*this.cell[cc].cy+1):-1;},	//セルの右の境界線のIDを求める
-
-	//---------------------------------------------------------------------------
-	// bd.cc1()      境界線のすぐ上かすぐ左にあるセルのIDを返す
-	// bd.cc2()      境界線のすぐ下かすぐ右にあるセルのIDを返す
-	// bd.crosscc1() 境界線のすぐ上かすぐ左にある交差点のIDを返す
-	// bd.crosscc2() 境界線のすぐ下かすぐ右にある交差点のIDを返す
-	//---------------------------------------------------------------------------
-	cc1 : function(id){
-		return this.cnum((bd.border[id].cx-bd.border[id].cy%2)>>1, (bd.border[id].cy-bd.border[id].cx%2)>>1);
-	},
-	cc2 : function(id){
-		return this.cnum((bd.border[id].cx+bd.border[id].cy%2)>>1, (bd.border[id].cy+bd.border[id].cx%2)>>1);
-	},
-	crosscc1 : function(id){
-		return this.xnum((bd.border[id].cx-bd.border[id].cx%2)>>1, (bd.border[id].cy-bd.border[id].cy%2)>>1);
-	},
-	crosscc2 : function(id){
-		return this.xnum((bd.border[id].cx+bd.border[id].cx%2)>>1, (bd.border[id].cy+bd.border[id].cy%2)>>1);
-	},
+	ub : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx  ,this.cell[cc].by-1):-1;},	//セルの上の境界線のIDを求める
+	db : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx  ,this.cell[cc].by+1):-1;},	//セルの下の境界線のIDを求める
+	lb : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx-1,this.cell[cc].by  ):-1;},	//セルの左の境界線のIDを求める
+	rb : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx+1,this.cell[cc].by  ):-1;},	//セルの右の境界線のIDを求める
 
 	//---------------------------------------------------------------------------
 	// bd.bcntCross() 指定された位置のCrossの周り4マスのうちqans==1のマスの数を求める
 	//---------------------------------------------------------------------------
-	bcntCross : function(cx,cy) {
-		var cnt = 0;
-		if(this.isBlack(this.cnum(cx-1, cy-1))){ cnt++;}
-		if(this.isBlack(this.cnum(cx  , cy-1))){ cnt++;}
-		if(this.isBlack(this.cnum(cx-1, cy  ))){ cnt++;}
-		if(this.isBlack(this.cnum(cx  , cy  ))){ cnt++;}
+	bcntCross : function(c) {
+		var cnt=0, bx=bd.cross[c].bx, by=bd.cross[c].by;
+		if(this.isBlack(this.cnum(bx-1, by-1))){ cnt++;}
+		if(this.isBlack(this.cnum(bx+1, by-1))){ cnt++;}
+		if(this.isBlack(this.cnum(bx-1, by+1))){ cnt++;}
+		if(this.isBlack(this.cnum(bx+1, by+1))){ cnt++;}
 		return cnt;
 	},
 
@@ -545,16 +556,19 @@ Board.prototype = {
 	// bd.checkLPCombined() 線がつながっているかどうか見て、Line==1を設定する
 	//---------------------------------------------------------------------------
 	isLPMarked : function(id){
-		return bd.border[id].cx&1 ? (bd.isLPdown(bd.cc1(id)) || bd.isLPup(bd.cc2(id))) :
-									(bd.isLPright(bd.cc1(id)) || bd.isLPleft(bd.cc2(id)));
+		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+		return bd.border[id].bx&1 ? (bd.isLPdown(cc1) || bd.isLPup(cc2)) :
+									(bd.isLPright(cc1) || bd.isLPleft(cc2));
 	},
 	isLPCombined : function(id){
-		return bd.border[id].cx&1 ? (bd.isLPdown(bd.cc1(id)) && bd.isLPup(bd.cc2(id))) :
-									(bd.isLPright(bd.cc1(id)) && bd.isLPleft(bd.cc2(id)));
+		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+		return bd.border[id].bx&1 ? (bd.isLPdown(cc1) && bd.isLPup(cc2)) :
+									(bd.isLPright(cc1) && bd.isLPleft(cc2));
 	},
 	isLineNG : function(id){
-		return bd.border[id].cx&1 ? (bd.isnoLPdown(bd.cc1(id)) || bd.isnoLPup(bd.cc2(id))) :
-									(bd.isnoLPright(bd.cc1(id)) || bd.isnoLPleft(bd.cc2(id)));
+		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+		return bd.border[id].bx&1 ? (bd.isnoLPdown(cc1) || bd.isnoLPup(cc2)) :
+									(bd.isnoLPright(cc1) || bd.isnoLPleft(cc2));
 	},
 	checkLPCombined : function(cc){
 		var id;
@@ -586,7 +600,7 @@ Board.prototype = {
 	},
 	// overwrite by lightup.js and kakuro.js
 	sQnC : function(id, num) {
-		if(k.dispzero===0 && num===0){ return;}
+		if(!k.dispzero && num===0){ return;}
 
 		var old = this.cell[id].qnum;
 		um.addOpe(k.CELL, k.QNUM, id, old, num);
@@ -779,16 +793,16 @@ Board.prototype = {
 		// bd.sameNumber() ２つのCellに同じ有効な数字があるか返す
 		//-----------------------------------------------------------------------
 		this.isNum = (
-			(k.isAnsNumber) ? function(c){ return (c!==-1 && (bd.cell[c].qnum!==-1 || bd.cell[c].qans!==-1));}
-							: function(c){ return (c!==-1 &&  bd.cell[c].qnum!==-1);}
+			k.isAnsNumber ? function(c){ return (c!==-1 && (bd.cell[c].qnum!==-1 || bd.cell[c].qans!==-1));}
+						  : function(c){ return (c!==-1 &&  bd.cell[c].qnum!==-1);}
 		);
 		this.noNum = (
-			(k.isAnsNumber) ? function(c){ return (c===-1 || (bd.cell[c].qnum===-1 && bd.cell[c].qans===-1));}
-							: function(c){ return (c===-1 ||  bd.cell[c].qnum===-1);}
+			k.isAnsNumber ? function(c){ return (c===-1 || (bd.cell[c].qnum===-1 && bd.cell[c].qans===-1));}
+						  : function(c){ return (c===-1 ||  bd.cell[c].qnum===-1);}
 		);
 		this.isValidNum = (
-			(k.isAnsNumber) ? function(c){ return (c!==-1 && (bd.cell[c].qnum>=  0 ||(bd.cell[c].qans>=0 && bd.cell[c].qnum===-1)));}
-							: function(c){ return (c!==-1 &&  bd.cell[c].qnum>=  0);}
+			k.isAnsNumber ? function(c){ return (c!==-1 && (bd.cell[c].qnum>=  0 ||(bd.cell[c].qans>=0 && bd.cell[c].qnum===-1)));}
+						  : function(c){ return (c!==-1 &&  bd.cell[c].qnum>=  0);}
 		);
 		this.sameNumber     = function(c1,c2){ return (bd.isValidNum(c1) && (bd.getNum(c1)===bd.getNum(c2)));};
 
@@ -797,17 +811,17 @@ Board.prototype = {
 		// bd.setNum()     該当するCellに数字を設定する
 		//-----------------------------------------------------------------------
 		this.getNum = (
-			(k.isAnsNumber) ? function(c){ return (c!==-1 ? this.cell[c].qnum!==-1 ? this.cell[c].qnum : this.cell[c].qans : -1);}
-							: function(c){ return (c!==-1 ? this.cell[c].qnum : -1);}
+			k.isAnsNumber ? function(c){ return (c!==-1 ? this.cell[c].qnum!==-1 ? this.cell[c].qnum : this.cell[c].qans : -1);}
+						  : function(c){ return (c!==-1 ? this.cell[c].qnum : -1);}
 		);
 		this.setNum = (
-			((k.NumberIsWhite) ?
+			(k.NumberIsWhite ?
 				function(c,val){
 					if(!k.dispzero && val===0){ return;}
 					this.sQnC(c,val);
 					this.sQaC(c,bd.defcell.qnum);
 				}
-			:(k.isAnsNumber) ?
+			: k.isAnsNumber ?
 				function(c,val){
 					if(!k.dispzero && val===0){ return;}
 					if(k.editmode){

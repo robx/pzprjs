@@ -29,7 +29,7 @@ OperationManager = function(){
 	this.undoExec = false;		// Undo’†
 	this.redoExec = false;		// Redo’†
 	this.reqReset = false;		// Undo/RedoŽž‚É”Õ–Ê‰ñ“]“™‚ª“ü‚Á‚Ä‚¢‚½ŽžAresize,resetInfoŠÖ”‚Ìcall‚ð—v‹‚·‚é
-	this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
+	this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
 };
 OperationManager.prototype = {
 	//---------------------------------------------------------------------------
@@ -119,7 +119,7 @@ OperationManager.prototype = {
 	undo : function(){
 		if(this.current==0){ return;}
 		this.undoExec = true;
-		this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
+		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
 		this.disableRecord();
 
 		while(this.current>0){
@@ -139,7 +139,7 @@ OperationManager.prototype = {
 	redo : function(){
 		if(this.current==this.ope.length){ return;}
 		this.redoExec = true;
-		this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
+		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
 		this.disableRecord();
 
 		while(this.current<this.ope.length){
@@ -165,7 +165,7 @@ OperationManager.prototype = {
 			base.resize_canvas();
 		}
 		else{
-			pc.paint(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
+			pc.paintRange(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
 		}
 		this.enableRecord();
 		this.enableInfo();
@@ -180,7 +180,7 @@ OperationManager.prototype = {
 			else if(pp == k.QANS){ bd.sQaC(ope.id, num);}
 			else if(pp == k.QSUB){ bd.sQsC(ope.id, num);}
 			else if(pp == k.CELL && !!num){ bd.cell[ope.id] = num;}
-			this.paintStack(bd.cell[ope.id].cx, bd.cell[ope.id].cy, bd.cell[ope.id].cx, bd.cell[ope.id].cy);
+			this.paintStack(bd.cell[ope.id].bx-1, bd.cell[ope.id].by-1, bd.cell[ope.id].bx+1, bd.cell[ope.id].by+1);
 		}
 		else if(ope.obj == k.EXCELL){
 			if     (pp == k.QNUM){ bd.sQnE(ope.id, num);}
@@ -191,7 +191,7 @@ OperationManager.prototype = {
 			if     (pp == k.QUES){ bd.sQuX(ope.id, num);}
 			else if(pp == k.QNUM){ bd.sQnX(ope.id, num);}
 			else if(pp == k.CROSS && !!num){ bd.cross[ope.id] = num;}
-			this.paintStack(bd.cross[ope.id].cx-1, bd.cross[ope.id].cy-1, bd.cross[ope.id].cx, bd.cross[ope.id].cy);
+			this.paintStack(bd.cross[ope.id].bx-1, bd.cross[ope.id].by-1, bd.cross[ope.id].bx+1, bd.cross[ope.id].by+1);
 		}
 		else if(ope.obj == k.BORDER){
 			if     (pp == k.QUES){ bd.sQuB(ope.id, num);}
@@ -213,12 +213,12 @@ OperationManager.prototype = {
 			else if(pp == 'reducelt'){ if(num==1){ menu.ex.reduce(k.LT);}else{ menu.ex.expand(k.LT);} }
 			else if(pp == 'reducert'){ if(num==1){ menu.ex.reduce(k.RT);}else{ menu.ex.expand(k.RT);} }
 
-			else if(pp == 'flipy'){ menu.ex.turnflip(1,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});}
-			else if(pp == 'flipx'){ menu.ex.turnflip(2,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});}
-			else if(pp == 'turnr'){ menu.ex.turnflip((num==1?3:4),{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); }
-			else if(pp == 'turnl'){ menu.ex.turnflip((num==1?4:3),{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); }
+			else if(pp == 'flipy'){ menu.ex.turnflip(1,{x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby});}
+			else if(pp == 'flipx'){ menu.ex.turnflip(2,{x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby});}
+			else if(pp == 'turnr'){ menu.ex.turnflip((num==1?3:4),{x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby}); }
+			else if(pp == 'turnl'){ menu.ex.turnflip((num==1?4:3),{x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby}); }
 
-			this.range = { x1:0, y1:0, x2:k.qcols-1, y2:k.qrows-1};
+			this.range = {x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby};
 			this.reqReset = true;
 		}
 	},
@@ -228,13 +228,11 @@ OperationManager.prototype = {
 	//---------------------------------------------------------------------------
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
-		if(bd.border[id].cx%2==1){
-			this.paintStack((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
-							(bd.border[id].cx>>1)+1, (bd.border[id].cy>>1)   );
+		if(bd.border[id].bx&1){
+			this.paintStack(bd.border[id].bx-2, bd.border[id].by-1, bd.border[id].bx+2, bd.border[id].by+1);
 		}
 		else{
-			this.paintStack((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
-							(bd.border[id].cx>>1)  , (bd.border[id].cy>>1)+1 );
+			this.paintStack(bd.border[id].bx-1, bd.border[id].by-2, bd.border[id].bx+1, bd.border[id].by+2);
 		}
 	},
 	paintStack : function(x1,y1,x2,y2){

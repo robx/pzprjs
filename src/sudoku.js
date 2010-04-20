@@ -7,36 +7,32 @@ Puzzles.sudoku.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 9;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 9;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 0;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 0;	// 1:0を表示するかどうか
-		k.isDispHatena  = 1;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 1;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = false;	// 0を表示するかどうか
+		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
-
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
 
 		base.setTitle("数独","Sudoku");
 		base.setExpression("　キーボードやマウスで数字が入力できます。",
@@ -117,9 +113,6 @@ Puzzles.sudoku.prototype = {
 	graphic_init : function(){
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlockBorders(x1,y1,x2,y2);
@@ -128,7 +121,7 @@ Puzzles.sudoku.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			this.drawTCell(x1,y1,x2+1,y2+1);
+			this.drawCursor(x1,y1,x2,y2);
 		};
 		pc.drawBlockBorders = function(x1,y1,x2,y2){
 			this.vinc('border_block', 'crispEdges');
@@ -139,18 +132,18 @@ Puzzles.sudoku.prototype = {
 			var block=mf(Math.sqrt(max)+0.1);
 			var headers = ["bbx_", "bby_"];
 
-			if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-			if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
+			if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
+			if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
 
 			g.fillStyle = "black";
 			for(var i=1;i<block;i++){
 				if(x1-1<=i*block&&i*block<=x2+1){ if(this.vnop(headers[0]+i,this.NONE)){
-					g.fillRect(k.p0.x+i*block*k.cwidth-lw+1, k.p0.y+y1*k.cheight-lw+1, lw, (y2-y1+1)*k.cheight+2*lw-1);
+					g.fillRect(k.p0.x+i*block*this.cw-lw+1, k.p0.y+y1*this.bh-lw+1, lw, (y2-y1)*this.bh+2*lw-1);
 				}}
 			}
 			for(var i=1;i<block;i++){
 				if(y1-1<=i*block&&i*block<=y2+1){ if(this.vnop(headers[1]+i,this.NONE)){
-					g.fillRect(k.p0.x+x1*k.cwidth-lw+1, k.p0.y+i*block*k.cheight-lw+1, (x2-x1+1)*k.cwidth+2*lw-1, lw);
+					g.fillRect(k.p0.x+x1*this.bw-lw+1, k.p0.y+i*block*this.ch-lw+1, (x2-x1)*this.bw+2*lw-1, lw);
 				}}
 			}
 		};
@@ -225,7 +218,7 @@ Puzzles.sudoku.prototype = {
 			var max=k.qcols;
 			var blk=mf(Math.sqrt(max)+0.1);
 			for(var i=0;i<max;i++){
-				var clist = bd.getClistByPosition((i%blk)*blk, mf(i/blk)*blk, (i%blk+1)*blk-1, mf(i/blk+1)*blk-1);
+				var clist = bd.getClistByPosition(((i%blk)*blk)*2+1, (mf(i/blk)*blk)*2+1, ((i%blk+1)*blk-1)*2+1, (mf(i/blk+1)*blk-1)*2+1);
 				if(!this.isDifferentNumberInClist(clist, bd.getNum)){
 					if(this.inAutoCheck){ return false;}
 					result = false;

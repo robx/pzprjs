@@ -7,36 +7,32 @@ Puzzles.aho.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 0;	// 1:0を表示するかどうか
-		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = false;	// 0を表示するかどうか
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
 		base.setTitle("アホになり切れ","Aho-ni-Narikire");
 		base.setExpression("　左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
@@ -95,9 +91,6 @@ Puzzles.aho.prototype = {
 		pc.circleratio = [0, 0.40];
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
@@ -114,18 +107,15 @@ Puzzles.aho.prototype = {
 		pc.drawCirclesAtNumber_shikaku = function(x1,y1,x2,y2){
 			this.vinc('cell_circle', 'auto');
 
-			var rsize2 = k.cwidth*this.circleratio[1];
-			var mgnx = k.cwidth/2, mgny = k.cheight/2;
+			var rsize2 = this.cw*this.circleratio[1];
 			var header = "c_cir_";
 			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].qnum!=-1){
-					var px=bd.cell[c].px+mgnx, py=bd.cell[c].py+mgny;
-
 					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
 					if(this.vnop(header+c,this.FILL)){
-						g.fillCircle(px, py, rsize2);
+						g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize2);
 					}
 				}
 				else{ this.vhide([header+c]);}
@@ -195,14 +185,14 @@ Puzzles.aho.prototype = {
 
 				var d = this.getSizeOfClist(rinfo.room[id].idlist,f_true);
 				var clist = [];
-				for(var cx=d.x1;cx<=d.x2;cx++){
-					for(var cy=d.y1;cy<=d.y2;cy++){
-						var cc = bd.cnum(cx,cy);
+				for(var bx=d.x1;bx<=d.x2;bx+=2){
+					for(var by=d.y1;by<=d.y2;by+=2){
+						var cc = bd.cnum(bx,by);
 						if(rinfo.id[cc]!=id){ clist.push(cc);}
 					}
 				}
 				var dl = this.getSizeOfClist(clist,f_true);
-				if( clist.length==0 || ((dl.x2-dl.x1+1)*(dl.y2-dl.y1+1)!=dl.cnt) || (d.x1!=dl.x1 && d.x2!=dl.x2) || (d.y1!=dl.y1 && d.y2!=dl.y2) ){
+				if( clist.length==0 || (dl.cols*dl.rows!=dl.cnt) || (d.x1!==dl.x1 && d.x2!==dl.x2) || (d.y1!==dl.y1 && d.y2!==dl.y2) ){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(rinfo.room[id].idlist,1);
 					result = false;

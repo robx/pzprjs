@@ -7,36 +7,32 @@ Puzzles.toichika.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 0;	// 1:0を表示するかどうか
-		k.isDispHatena  = 1;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 1;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = false;	// 0を表示するかどうか
+		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		k.area = { bcell:0, wcell:0, number:1};	// areaオブジェクトで領域を生成する
+		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
 		if(k.EDITOR){
 			base.setExpression("　キーボードの左側や-キー等で、記号の入力ができます。",
@@ -81,22 +77,22 @@ Puzzles.toichika.prototype = {
 			var pos;
 			if(k.editmode){
 				if(ismousedown){
-					pos = this.crosspos(0.15);
+					pos = this.borderpos(0.15);
 					this.bordermode = (!((pos.x&1)&&(pos.y&1)));
 				}
 				if(this.bordermode){ this.inputborder(); return;}
 			}
 
-			pos = this.cellpos();
+			pos = this.borderpos(0);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y && this.inputData===1){ return;}
 
 			var inp = 0;
 			var cc = bd.cnum(this.mouseCell.x, this.mouseCell.y);
 			if(cc!=-1){
-				if     (pos.y-this.mouseCell.y==-1){ inp=k.UP;}
-				else if(pos.y-this.mouseCell.y== 1){ inp=k.DN;}
-				else if(pos.x-this.mouseCell.x==-1){ inp=k.LT;}
-				else if(pos.x-this.mouseCell.x== 1){ inp=k.RT;}
+				if     (pos.y-this.mouseCell.y==-2){ inp=k.UP;}
+				else if(pos.y-this.mouseCell.y== 2){ inp=k.DN;}
+				else if(pos.x-this.mouseCell.x==-2){ inp=k.LT;}
+				else if(pos.x-this.mouseCell.x== 2){ inp=k.RT;}
 				else{ return;}
 
 				bd.setCell(cc,inp);
@@ -122,11 +118,11 @@ Puzzles.toichika.prototype = {
 			else{
 				var cc0 = tc.getTCC();
 				tc.setTCC(cc);
-				pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
+				pc.paintCell(cc0);
 				if(bd.QsC(cc)==1 || bd.QaC(cc)==-1){ this.inputData=1;}
 			}
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
+			pc.paintCell(cc);
 		};
 
 		mv.inputDot = function(){
@@ -140,8 +136,8 @@ Puzzles.toichika.prototype = {
 			bd.sQsC(cc,(this.inputData===1?1:0));
 			this.mouseCell = cc;
 
-			pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
+			pc.paintCell(cc0);
+			pc.paintCell(cc);
 		};
 
 		// キーボード入力系
@@ -218,28 +214,25 @@ Puzzles.toichika.prototype = {
 		pc.dotcolor = "rgb(255, 96, 191)";
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawDotCells(x1,y1,x2,y2);
-//			this.drawNumbers(x1,y1,x2,y2);
 			this.drawArrows(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			this.drawTCell(x1,y1,x2+1,y2+1);
+			this.drawCursor(x1,y1,x2,y2);
 		};
 
 		pc.drawArrows = function(x1,y1,x2,y2){
 			this.vinc('cell_arrow', 'auto');
 
 			var headers = ["c_arup_", "c_ardn_", "c_arlt_", "c_arrt_"];
-			var ll = mf(k.cwidth*0.8);					//LineLength
-			var lw = Math.max(mf(k.cwidth/18/2)*2, 2);	//LineWidth
-			var al = ll*0.5, aw = lw*0.5; // ArrowLength, ArrowWidth
+			var ll = this.cw*0.8;				//LineLength
+			var lw = Math.max(this.cw/18, 2);	//LineWidth
+			var al = ll*0.5, aw = lw*0.5;	// ArrowLength, ArrowWidth
 			var tl = ll*0.5-ll*0.3;			// 矢じりの長さの座標(中心-長さ)
 			var tw = Math.max(ll*0.2, 5);	// 矢じりの幅
 
@@ -248,8 +241,8 @@ Puzzles.toichika.prototype = {
 				var c = clist[i];
 				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
 				if(bd.QaC(c)>0 || bd.DiC(c)>0){
-					var ax=px=bd.cell[c].px+mf(k.cwidth/2);
-					var ay=py=bd.cell[c].py+mf(k.cheight/2);
+					var ax=px=bd.cell[c].cpx;
+					var ay=py=bd.cell[c].cpy;
 					var dir=(bd.cell[c].direc>0 ? bd.cell[c].direc : bd.cell[c].qans);
 
 					if     (bd.cell[c].error===1){ g.fillStyle = this.fontErrcolor;}
@@ -377,12 +370,12 @@ Puzzles.toichika.prototype = {
 			for(var c=0;c<bd.cellmax;c++){ check[c]=(ans.isObject(c)?0:-1);}
 			for(var c=0;c<bd.cellmax;c++){
 				if(check[c]!==0){ continue;}
-				var cx=bd.cell[c].cx, cy=bd.cell[c].cy, tc=c,
+				var bx=bd.cell[c].bx, by=bd.cell[c].by, tc=c,
 					dir=(bd.cell[c].direc!==0 ? bd.cell[c].direc : bd.cell[c].qans);
 
 				while(1){
-					switch(dir){ case k.UP: cy--; break; case k.DN: cy++; break; case k.LT: cx--; break; case k.RT: cx++; break;}
-					tc = bd.cnum(cx,cy);
+					switch(dir){ case k.UP: by-=2; break; case k.DN: by+=2; break; case k.LT: bx-=2; break; case k.RT: bx+=2; break;}
+					tc = bd.cnum(bx,by);
 					if(tc===-1){ ainfo.push([c]); break;}
 					if(tc!==-1 && check[tc]!==-1){
 						var tdir = (bd.cell[tc].direc!==0 ? bd.cell[tc].direc : bd.cell[tc].qans);
@@ -414,7 +407,7 @@ Puzzles.toichika.prototype = {
 			}
 			for(var id=0;id<bd.bdmax;id++){
 				if(!bd.isBorder(id)){ continue;}
-				var cc1=bd.cc1(id), cc2=bd.cc2(id);
+				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(cc1==-1 || cc2==-1){ continue;}
 				var r1=rinfo.id[cc1], r2=rinfo.id[cc2];
 				try{

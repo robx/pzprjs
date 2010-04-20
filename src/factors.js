@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 因子の部屋版 factors.js v3.2.4p4
+// パズル固有スクリプト部 因子の部屋版 factors.js v3.3.0
 //
 Puzzles.factors = function(){ };
 Puzzles.factors.prototype = {
@@ -7,36 +7,32 @@ Puzzles.factors.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 9;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 9;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = true;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 0;	// 1:0を表示するかどうか
-		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 1;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 1;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = false;	// 0を表示するかどうか
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
 		base.setTitle("因子の部屋",'Rooms of Factors');
 		base.setExpression("　キーボードやマウスで数字が入力できます。",
@@ -77,7 +73,7 @@ Puzzles.factors.prototype = {
 		};
 
 		kp.generate(0, true, true, '');
-		kp.kpinput = function(ca){ kc.key_factors(ca,Math.max(k.qcols,k.qrows));};
+		kp.kpinput = function(ca){ kc.key_inputqnum(ca,Math.max(k.qcols,k.qrows));};
 
 		bd.nummaxfunc = function(cc){ return k.editmode?999999:Math.max(k.qcols,k.qrows);};
 		bd.setNum = function(c,val){
@@ -92,9 +88,6 @@ Puzzles.factors.prototype = {
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 
@@ -104,7 +97,7 @@ Puzzles.factors.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			this.drawTCell(x1,y1,x2+1,y2+1);
+			this.drawCursor(x1,y1,x2,y2);
 		};
 		pc.drawNumbers_factors = function(x1,y1,x2,y2){
 			this.vinc('cell_number', 'auto');
@@ -112,23 +105,23 @@ Puzzles.factors.prototype = {
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
+				var key_qans = ['cell',c,'qans'].join('_');
+				var key_ques = ['cell',c,'ques'].join('_');
 
-				if(bd.cell[c].qans==-1){ this.hideEL(obj.numobj);}
-				else{
+				if(bd.cell[c].qans!==-1){
 					var color = (bd.cell[c].error==1?this.fontErrcolor:this.fontAnscolor);
-					if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
 					var size = (bd.cell[c].qans<10?0.8:0.7);
-					this.dispnum(obj.numobj, 1, (""+bd.cell[c].qans), size, color, obj.px, obj.py);
+					this.dispnum(key_qans, 1, (""+bd.cell[c].qans), size, color, obj.cpx, obj.cpy);
 				}
+				else{ this.hideEL(key_qans);}
 
-				if(bd.cell[c].qnum==-1){ this.hideEL(obj.numobj2);}
-				else{
-					if(!obj.numobj2){ obj.numobj2 = this.CreateDOMAndSetNop();}
+				if(bd.cell[c].qnum!==-1){
 					var size = 0.45;
 					if     (bd.QnC(c)>=100000){ size = 0.30;}
 					else if(bd.QnC(c)>= 10000){ size = 0.36;}
-					this.dispnum(obj.numobj2, 5, (""+bd.cell[c].qnum), size, this.fontcolor, obj.px, obj.py);
+					this.dispnum(key_ques, 5, (""+bd.cell[c].qnum), size, this.fontcolor, obj.cpx, obj.cpy);
 				}
+				else{ this.hideEL(key_ques);}
 			}
 		};
 	},

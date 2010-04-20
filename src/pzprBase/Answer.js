@@ -53,7 +53,7 @@ AnsCheck.prototype = {
 	// ans.isenableSetError() 盤面のオブジェクトにエラーフラグを設定できるかどうかを返す
 	//---------------------------------------------------------------------------
 	autocheck : function(){
-		if(!k.autocheck || k.editmode || this.inCheck){ return;}
+		if(!pp.getVal('autocheck') || k.editmode || this.inCheck){ return;}
 
 		var ret = false;
 
@@ -102,7 +102,7 @@ AnsCheck.prototype = {
 		var blist = [];
 		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isLine(id)){ continue;}
-			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1!=-1 && cc2!=-1 && cinfo.id[cc1]==areaid && cinfo.id[cc1]==cinfo.id[cc2]){ blist.push(id);}
 		}
 		bd.sErB(blist,val);
@@ -140,7 +140,7 @@ AnsCheck.prototype = {
 	check2x2Block : function(func){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].cx<k.qcols-1 && bd.cell[c].cy<k.qrows-1){
+			if(bd.cell[c].bx<bd.maxbx-1 && bd.cell[c].by<bd.maxby-1){
 				if( func(c) && func(c+1) && func(c+k.qcols) && func(c+k.qcols+1) ){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c,c+1,c+k.qcols,c+k.qcols+1],1);
@@ -153,12 +153,12 @@ AnsCheck.prototype = {
 	checkSideCell : function(func){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].cx<k.qcols-1 && func(c,c+1)){
+			if(bd.cell[c].bx<bd.maxbx-1 && func(c,c+1)){
 				if(this.inAutoCheck){ return false;}
 				bd.sErC([c,c+1],1);
 				result = false;
 			}
-			if(bd.cell[c].cy<k.qrows-1 && func(c,c+k.qcols)){
+			if(bd.cell[c].by<bd.maxby-1 && func(c,c+k.qcols)){
 				if(this.inAutoCheck){ return false;}
 				bd.sErC([c,c+k.qcols],1);
 				result = false;
@@ -173,7 +173,7 @@ AnsCheck.prototype = {
 	checkQnumCross : function(func){	//func(cr,bcnt){} -> エラーならfalseを返す関数にする
 		for(var c=0;c<bd.crossmax;c++){
 			if(bd.QnX(c)<0){ continue;}
-			if(!func(bd.QnX(c), bd.bcntCross(bd.cross[c].cx, bd.cross[c].cy))){
+			if(!func(bd.QnX(c), bd.bcntCross(c))){
 				bd.sErX([c],1);
 				return false;
 			}
@@ -242,11 +242,11 @@ AnsCheck.prototype = {
 	checkdir4Border1 : function(cc){
 		if(cc<0 || cc>=bd.cellmax){ return 0;}
 		var cnt = 0;
-		var cx = bd.cell[cc].cx; var cy = bd.cell[cc].cy;
-		if( (k.isoutsideborder==0 && cy==0        ) || bd.isBorder(bd.bnum(cx*2+1,cy*2  )) ){ cnt++;}
-		if( (k.isoutsideborder==0 && cy==k.qrows-1) || bd.isBorder(bd.bnum(cx*2+1,cy*2+2)) ){ cnt++;}
-		if( (k.isoutsideborder==0 && cx==0        ) || bd.isBorder(bd.bnum(cx*2  ,cy*2+1)) ){ cnt++;}
-		if( (k.isoutsideborder==0 && cx==k.qcols-1) || bd.isBorder(bd.bnum(cx*2+2,cy*2+1)) ){ cnt++;}
+		var bx = bd.cell[cc].bx, by = bd.cell[cc].by;
+		if( (k.isborder!==2 && by===bd.minby+1) || bd.isBorder(bd.bnum(bx  ,by-1)) ){ cnt++;}
+		if( (k.isborder!==2 && by===bd.maxby-1) || bd.isBorder(bd.bnum(bx  ,by+1)) ){ cnt++;}
+		if( (k.isborder!==2 && bx===bd.minbx+1) || bd.isBorder(bd.bnum(bx-1,by  )) ){ cnt++;}
+		if( (k.isborder!==2 && bx===bd.maxby-1) || bd.isBorder(bd.bnum(bx+1,by  )) ){ cnt++;}
 		return cnt;
 	},
 
@@ -288,9 +288,9 @@ AnsCheck.prototype = {
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
 			var d = this.getSizeOfClist(cinfo.room[id].idlist,func);
-			var n = bd.QnC(k.isOneNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0])
-										 : this.getQnumCellOfClist(cinfo.room[id].idlist));
-			if( !evalfunc(d.x2-d.x1+1, d.y2-d.y1+1, d.cnt, n) ){
+			var n = bd.QnC(k.roomNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0])
+										: this.getQnumCellOfClist(cinfo.room[id].idlist));
+			if( !evalfunc(d.cols, d.rows, d.cnt, n) ){
 				if(this.inAutoCheck){ return false;}
 				if(this.performAsLine){ if(result){ bd.sErBAll(2);} this.setErrLareaById(cinfo,id,1);}
 				else{ bd.sErC(cinfo.room[id].idlist,(k.puzzleid!="tateyoko"?1:4));}
@@ -321,14 +321,16 @@ AnsCheck.prototype = {
 		return -1;
 	},
 	getSizeOfClist : function(clist, func){
-		var d = { x1:k.qcols, x2:-1, y1:k.qrows, y2:-1, cnt:0 };
+		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1, cols:0, rows:0, cnt:0 };
 		for(var i=0;i<clist.length;i++){
-			if(d.x1>bd.cell[clist[i]].cx){ d.x1=bd.cell[clist[i]].cx;}
-			if(d.x2<bd.cell[clist[i]].cx){ d.x2=bd.cell[clist[i]].cx;}
-			if(d.y1>bd.cell[clist[i]].cy){ d.y1=bd.cell[clist[i]].cy;}
-			if(d.y2<bd.cell[clist[i]].cy){ d.y2=bd.cell[clist[i]].cy;}
+			if(d.x1>bd.cell[clist[i]].bx){ d.x1=bd.cell[clist[i]].bx;}
+			if(d.x2<bd.cell[clist[i]].bx){ d.x2=bd.cell[clist[i]].bx;}
+			if(d.y1>bd.cell[clist[i]].by){ d.y1=bd.cell[clist[i]].by;}
+			if(d.y2<bd.cell[clist[i]].by){ d.y2=bd.cell[clist[i]].by;}
 			if(func(clist[i])){ d.cnt++;}
 		}
+		d.cols = (d.x2-d.x1+2)/2;
+		d.rows = (d.y2-d.y1+2)/2;
 		return d;
 	},
 
@@ -348,7 +350,7 @@ AnsCheck.prototype = {
 
 		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isBorder(id)){ continue;}
-			var cc1=bd.cc1(id), cc2=bd.cc2(id);
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1==-1 || cc2==-1){ continue;}
 			var r1=rinfo.id[cc1], r2=rinfo.id[cc2];
 			try{
@@ -375,7 +377,7 @@ AnsCheck.prototype = {
 	checkSideAreaCell : function(rinfo, func, flag){
 		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isBorder(id)){ continue;}
-			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1!=-1 && cc2!=-1 && func(cc1, cc2)){
 				if(!flag){ bd.sErC([cc1,cc2],1);}
 				else{ bd.sErC(area.room[area.room.id[cc1]].clist,1); bd.sErC(area.room[area.room.id[cc2]].clist,1); }
@@ -390,7 +392,7 @@ AnsCheck.prototype = {
 		for(var id=1;id<=area.room.max;id++){
 			var data = {max:0,id:[]};
 			for(var c=0;c<bd.cellmax;c++){ data.id[c] = ((area.room.id[c]==id && bd.isBlack(c))?0:-1);}
-			for(var c=0;c<k.qcols*k.qrows;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(data.id[c]!=0){ continue;}
 				data.max++;
 				data[data.max] = {clist:[]};
@@ -458,15 +460,15 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	checkRowsCols : function(evalfunc, numfunc){
 		var result = true;
-		for(var cy=0;cy<k.qrows;cy++){
-			var clist = bd.getClistByPosition(0,cy,k.qcols-1,cy);
+		for(var by=1;by<=bd.maxby;by+=2){
+			var clist = bd.getClistByPosition(bd.minbx+1,by,bd.maxbx-1,by);
 			if(!evalfunc.apply(this,[clist, numfunc])){
 				if(this.inAutoCheck){ return false;}
 				result = false;
 			}
 		}
-		for(var cx=1;cx<k.qcols;cx++){
-			var clist = bd.getClistByPosition(cx,0,cx,k.qrows-1);
+		for(var bx=1;bx<=bd.maxbx;bx+=2){
+			var clist = bd.getClistByPosition(bx,bd.minby+1,bx,bd.maxby-1);
 			if(!evalfunc.apply(this,[clist, numfunc])){
 				if(this.inAutoCheck){ return false;}
 				result = false;
@@ -476,32 +478,32 @@ AnsCheck.prototype = {
 	},
 	checkRowsColsPartly : function(evalfunc, areainfo, termfunc, multierr){
 		var result = true;
-		for(var cy=0;cy<k.qrows;cy++){
-			var cx=0;
-			while(cx<k.qcols){
-				for(var tx=cx;tx<k.qcols;tx++){ if(termfunc.apply(this,[bd.cnum(tx,cy)])){ break;}}
-				var clist = bd.getClistByPosition(cx,cy,tx-1,cy);
-				var total = (k.isextendcell!=1 ? 0 : (cx==0 ? bd.QnE(bd.exnum(-1,cy)) : bd.QnC(bd.cnum(cx-1,cy))));
+		for(var by=1;by<=bd.maxby;by+=2){
+			var bx=1;
+			while(bx<=bd.maxbx){
+				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc.apply(this,[bd.cnum(tx,by)])){ break;}}
+				var clist = bd.getClistByPosition(bx,by,tx-2,by);
+				var total = (k.isexcell!==1 ? 0 : (bx===1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx-2,by))));
 
-				if(!evalfunc.apply(this,[total, [cx-1,cy], clist, areainfo])){
+				if(!evalfunc.apply(this,[total, [bx-2,by], clist, areainfo])){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}
-				cx = tx+1;
+				bx = tx+2;
 			}
 		}
-		for(var cx=0;cx<k.qcols;cx++){
-			var cy=0;
-			while(cy<k.qrows){
-				for(var ty=cy;ty<k.qrows;ty++){ if(termfunc.apply(this,[bd.cnum(cx,ty)])){ break;}}
-				var clist = bd.getClistByPosition(cx,cy,cx,ty-1);
-				var total = (k.isextendcell!=1 ? 0 : (cy==0 ? bd.DiE(bd.exnum(cx,-1)) : bd.DiC(bd.cnum(cx,cy-1))));
+		for(var bx=1;bx<=bd.maxbx;bx+=2){
+			var by=1;
+			while(by<=bd.maxby){
+				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc.apply(this,[bd.cnum(bx,ty)])){ break;}}
+				var clist = bd.getClistByPosition(bx,by,bx,ty-2);
+				var total = (k.isexcell!==1 ? 0 : (by===1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by-2))));
 
-				if(!evalfunc.apply(this,[total, [cx,cy-1], clist, areainfo])){
+				if(!evalfunc.apply(this,[total, [bx,by-2], clist, areainfo])){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}
-				cy = ty+1;
+				by = ty+2;
 			}
 		}
 		return result;
@@ -519,7 +521,7 @@ AnsCheck.prototype = {
 		return result;
 	},
 	isDifferentNumberInClist : function(clist, numfunc){
-		var result = true, d = [], num = [], bottom = (!!k.dispzero?1:0);
+		var result = true, d = [], num = [], bottom = (k.dispzero?1:0);
 		for(var n=bottom,max=bd.nummaxfunc(clist[0]);n<=max;n++){ d[n]=0;}
 		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc.apply(bd,[clist[i]]);}
 
@@ -536,21 +538,24 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	checkLcntCross : function(val, bp){
 		var result = true;
-		for(var i=0;i<(k.qcols+1)*(k.qrows+1);i++){
-			var cx = i%(k.qcols+1), cy = mf(i/(k.qcols+1));
-			if(k.isoutsidecross==0 && k.isborderAsLine==0 && (cx==0||cy==0||cx==k.qcols||cy==k.qrows)){ continue;}
-			var lcnts = (!k.isborderAsLine?area.lcnt[i]:line.lcnt[i]);
-			if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(cx, cy))==1) || (bp==2&&bd.QnX(bd.xnum(cx, cy))!=1) )){
-				if(this.inAutoCheck){ return false;}
-				if(result){ bd.sErBAll(2);}
-				this.setCrossBorderError(cx,cy);
-				result = false;
+		for(var by=0;by<=bd.maxby;by+=2){
+			for(var bx=0;bx<=bd.maxbx;bx+=2){
+				if(k.iscross===1 && !k.isborderAsLine &&
+				   (bx===bd.minbx||by===bd.minby||bx===bd.maxbx||by===bd.maxby)){ continue;}
+				var id = (bx>>1)+(by>>1)*(k.qcols+1);
+				var lcnts = (!k.isborderAsLine?area.lcnt[id]:line.lcnt[id]);
+				if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(bx,by))==1) || (bp==2&&bd.QnX(bd.xnum(bx,by))!=1) )){
+					if(this.inAutoCheck){ return false;}
+					if(result){ bd.sErBAll(2);}
+					this.setCrossBorderError(bx,by);
+					result = false;
+				}
 			}
 		}
 		return result;
 	},
-	setCrossBorderError : function(cx,cy){
-		if(k.iscross){ bd.sErX([bd.xnum(cx, cy)], 1);}
-		bd.sErB([bd.bnum(cx*2,cy*2-1),bd.bnum(cx*2,cy*2+1),bd.bnum(cx*2-1,cy*2),bd.bnum(cx*2+1,cy*2)], 1);
+	setCrossBorderError : function(bx,by){
+		if(k.iscross!==0){ bd.sErX([bd.xnum(bx,by)], 1);}
+		bd.sErB([bd.bnum(bx,by-1),bd.bnum(bx,by+1),bd.bnum(bx-1,by),bd.bnum(bx+1,by)], 1);
 	}
 };
