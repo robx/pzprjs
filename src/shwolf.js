@@ -140,71 +140,51 @@ Puzzles.shwolf.prototype = {
 			this.drawChassis(x1,y1,x2,y2);
 		};
 
-		pc.EL_IMAGE  = ee.addTemplate('','img',{src:'./src/img/shwolf_obj.gif',unselectable:'on'},{position:'absolute'},null);
-		pc.EL_DIVIMG = ee.addTemplate('','div',{unselectable:'on'},{position:'absolute', display:'inline'},null);
+		pc.EL_IMAGE  = ee.addTemplate('numobj_parent','img',{src:'./src/img/shwolf_obj.gif',unselectable:'on'},{display:'block',position:'absolute'},null);
 
 		// numobj:？表示用 numobj2:画像表示用
 		pc.drawSheepWolf = function(x1,y1,x2,y2){
 			this.vinc('cell_number_image', 'auto');
 
+			var bimg = null;
+			if(this.fillTextPrecisely){ bimg = new Image(); bimg.src = './src/img/shwolf_obj.gif';}
+
 			var clist = this.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], key = ['cell',c].join('_');
-				if(bd.cell[c].ques===-2){
+				if(obj.ques===-2){
 					this.dispnum(key, 1, "?", 0.8, this.fontcolor, obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(key);}
 
-				if(bd.cell[c].ques>0){
-					this.dispImage1(c);
-				}
-				else{
-					var keydiv=['cell',c,'ques'].join('_'), keyimg=['cell',c,'quesimg'].join('_');
-					this.hideEL(keydiv);
-					this.hideEL(keyimg);
-				}
+				this.drawImage1(c, bimg, (obj.ques>0));
 			}
 		};
-		pc.dispImage1 = function(c){
+		pc.drawImage1 = function(c, bimg, isdraw){
 			var imgrect = [2,1], xpos = {41:0,42:1}[bd.cell[c].ques], ypos=0;
 
-			if(!g.use.canvas){
-				var div, sdiv, img, keydiv=['cell',c,'ques'].join('_'), keyimg=['cell',c,'quesimg'].join('_');
-				if(!!this.numobj[keydiv]){
-					img = this.numobj[keyimg];
-					div = this.numobj[keydiv];
+			if(!this.fillTextPrecisely){
+				var key=['cell',c,'quesimg'].join('_');
+				if(isdraw){
+					var img = this.numobj[key];
+					if(!img){
+						img = this.numobj[key] = ee.createEL(this.EL_IMAGE ,'');
+						img.style.width  = ""+(imgrect[0]*this.cw)+"px";
+						img.style.height = ""+(imgrect[1]*this.ch)+"px";
+					}
+					img.style.left   = mf(k.cv_oft.x+bd.cell[c].px+1 - xpos*this.cw)+"px";
+					img.style.top    = mf(k.cv_oft.y+bd.cell[c].py+1 - ypos*this.cw)+"px";
+					img.style.clip   = "rect("+mf(this.cw*ypos+1)+"px,"+mf(this.cw*(xpos+1))+"px,"+mf(this.cw*(ypos+1))+"px,"+mf(this.cw*xpos+1)+"px)";
+					this.showEL(key);
 				}
-				else{
-					div  = this.CreateDOMAndSetNop();
-					sdiv = ee.createEL(pc.EL_DIVIMG,'');
-					img  = ee.createEL(pc.EL_IMAGE ,'');
-
-					img.style.width  = ""+(imgrect[0]*this.cw)+"px";
-					img.style.height = ""+(imgrect[1]*this.ch)+"px";
-
-					div.appendChild(sdiv);
-					sdiv.appendChild(img);
-
-					this.numobj[keydiv] = div;
-					this.numobj[keyimg] = img;
-				}
-
-				img.style.left   = "-"+mf(xpos*this.cw)+"px";
-				img.style.top    = "-"+mf(ypos*this.cw)+"px";
-				img.style.clip   = "rect("+(this.cw*ypos+1)+"px,"+(this.cw*(xpos+1))+"px,"+(this.cw*(ypos+1))+"px,"+(this.cw*xpos+1)+"px)";
-
-				// divをセルへ移動
-				div.style.left = k.cv_oft.x+bd.cell[c].px+2+'px';
-				div.style.top  = k.cv_oft.y+bd.cell[c].py+1+'px';
-				this.showEL(keydiv);
+				else{ this.hideEL(key);}
 			}
 			else{
-				var img = new Image();
-				img.src = './src/img/shwolf_obj.gif';
-
-				var cw_src = img.width/imgrect[0], ch_src = img.height/imgrect[1];
-				g.context.drawImage(img, xpos*cw_src, ypos*ch_src, cw_src, ch_src, bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
-				// Camp.js使ってる関係で、g.drawImageがないのです。。
+				if(isdraw){
+					var cw_src = bimg.width/imgrect[0], ch_src = bimg.height/imgrect[1];
+					// Camp.jsにg.drawImageが未実装です。。
+					g.context.drawImage(bimg, xpos*cw_src, ypos*ch_src, cw_src, ch_src, bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
+				}
 			}
 		};
 	},

@@ -1488,17 +1488,12 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.CreateDOMAndSetNop()  数字表示用のエレメントを返す
-	// pc.showEL()              エレメントを表示する
-	// pc.hideEL()              エレメントを隠す
-	// pc.isdispnumCell()       数字を記入できるか判定する
-	// pc.getNumberColor()      数字の色を判定する
+	// pc.showEL()          エレメントを表示する
+	// pc.hideEL()          エレメントを隠す
+	// pc.isdispnumCell()   数字を記入できるか判定する
+	// pc.getNumberColor()  数字の色を判定する
 	//---------------------------------------------------------------------------
 	// 数字表示関数
-	CreateDOMAndSetNop : function(){
-		return (!pc.fillTextPrecisely ? ee.createEL(pc.EL_NUMOBJ,'') : null);
-	},
-
 	showEL : function(key){ this.numobj[key].style.display = 'inline'; },	// 条件見なくてもよさそう。
 	hideEL : function(key){ if(!!this.numobj[key]){ this.numobj[key].style.display = 'none';} },
 
@@ -1587,12 +1582,7 @@ Graphic.prototype = {
 
 			// エレメントを取得
 			var el = this.numobj[key];
-			if(!el){
-				el = this.CreateDOMAndSetNop();
-				if(!el){ return;}
-
-				this.numobj[key] = el;
-			}
+			if(!el){ el = this.numobj[key] = ee.createEL(this.EL_NUMOBJ,'');}
 
 			el.innerHTML = text;
 
