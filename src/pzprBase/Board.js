@@ -34,7 +34,7 @@ Cell.prototype = {
 		this.qsub = 0;
 		this.ques = 0;
 		this.qnum = -1;
-		if(k.puzzleid==="tilepaint"||k.puzzleid==="kakuro"){ this.qnum = 0;}
+		if(k.puzzleid==="tilepaint"||k.puzzleid==="kakuro"||k.puzzleid==="box"){ this.qnum = 0;}
 		this.direc = 0;
 		if(k.puzzleid==="triplace"){ this.direc = -1;}
 		this.error = 0;
