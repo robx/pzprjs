@@ -489,7 +489,7 @@ MouseEvent.prototype = {
 	},
 	inputcrossMark : function(){
 		var pos = this.borderpos(0.24);
-		if(!(pos.x&1) || !(pos.y&1)){ return;}
+		if((pos.x&1) || (pos.y&1)){ return;}
 		var bm = (k.iscross===2?0:2);
 		if(pos.x<bd.minbx+bm || pos.x>bd.maxbx-bm || pos.y<bd.minby+bm || pos.y>bd.maxby-bm){ return;}
 
