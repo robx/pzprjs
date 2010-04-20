@@ -20,7 +20,7 @@ Puzzles.tasquare.prototype = {
 		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
 		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
 		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
 		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
 		k.linkNumber      = false;	// 数字がひとつながりになるパズル
