@@ -34,8 +34,8 @@ Puzzles.box.prototype = {
 		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
 		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		k.bdmargin = 0.15;			// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = true;	// 画像出力時にmarginを小さくする
+		k.bdmargin       = 0.15;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
 
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
 						   " Left Click to input black cells, Right Click to input determined white cells.");

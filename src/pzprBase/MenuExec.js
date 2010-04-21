@@ -176,7 +176,7 @@ MenuExec.prototype = {
 
 		// 設定値・変数をcanvas用のものに変更
 		pc.fillTextPrecisely = true;
-		if(k.reduceImageMargin){ k.bdmargin = 0.1;}
+		k.bdmargin = k.bdmargin_image;
 		pp.setVal('cursor', false);
 		g = ee('divques_sub').el.getContext("2d");
 

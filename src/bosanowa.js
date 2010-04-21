@@ -34,8 +34,8 @@ Puzzles.bosanowa.prototype = {
 		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
 		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		k.bdmargin = 0.7;				// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = true;	// 画像出力時にmarginを小さくする
+		k.bdmargin       = 0.70;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
 
 		if(k.EDITOR){
 			base.setExpression("　キーボードで数字および、Wキーで数字を入力するマス/しないマスの切り替えが来出ます。",
@@ -56,9 +56,9 @@ Puzzles.bosanowa.prototype = {
 		pp.addChild('disptype_2', 'disptype', '倉庫番形式',     'Sokoban Type');
 		pp.addChild('disptype_3', 'disptype', 'ワリタイ形式',   'Waritai type');
 		pp.funcs['disptype'] = function(num){
-			if     (num==1){ k.bdmargin = 0.7; k.reduceImageMargin = true;}
-			else if(num==2){ k.bdmargin = 1.2; k.reduceImageMargin = false;}
-			else if(num==3){ k.bdmargin = 0.7; k.reduceImageMargin = true;}
+			if     (num==1){ k.bdmargin = 0.70; k.bdmargin_image = 0.10;}
+			else if(num==2){ k.bdmargin = 1.20; k.bdmargin_image = 1.10;}
+			else if(num==3){ k.bdmargin = 0.70; k.bdmargin_image = 0.10;}
 			base.resize_canvas();
 		};
 	},

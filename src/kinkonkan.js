@@ -34,8 +34,8 @@ Puzzles.kinkonkan.prototype = {
 		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
 		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		k.bdmargin = 0.15;			// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = true;	// 画像出力時にmarginを小さくする
+		k.bdmargin       = 0.15;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
 
 		if(k.EDITOR){
 			base.setExpression("　マウスの左ボタンで境界線が入力できます。外側のアルファベットは、同じキーを何回か押して大文字小文字／色違いの計4種類を入力できます。",

@@ -34,8 +34,8 @@ Puzzles.gokigen.prototype = {
 		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
 		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		k.bdmargin = 0.70;				// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = false;	// 画像出力時にmarginを小さくする
+		k.bdmargin       = 0.70;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.50;	// 画像出力時のbdmargin値
 
 		base.setTitle("ごきげんななめ","Gokigen-naname");
 		base.setExpression("　マウスで斜線を入力できます。",

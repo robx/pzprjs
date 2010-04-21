@@ -34,8 +34,8 @@ Puzzles.hashikake.prototype = {
 		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
 		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
 
-		k.bdmargin = 0.50;			// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = true;	// 画像出力時にmarginを小さくする
+		k.bdmargin       = 0.50;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
 
 		base.setTitle("橋をかけろ","Bridges");
 		base.setExpression("　左ボタンで線が、右ボタンで×が入力できます。",

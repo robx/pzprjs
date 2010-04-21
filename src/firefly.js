@@ -31,8 +31,8 @@ Puzzles.firefly.prototype = {
 		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
 		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.bdmargin = 0.50;			// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = true;	// 画像出力時にmarginを小さくする
+		k.bdmargin       = 0.50;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
 
 		if(k.EDITOR){
 			base.setExpression("　黒点は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",

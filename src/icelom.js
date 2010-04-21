@@ -34,8 +34,8 @@ Puzzles.icelom.prototype = {
 		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
 		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		k.bdmargin = 1.0;				// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = false;	// 画像出力時にmarginを小さくする
+		k.bdmargin       = 1.0;		// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 1.0;		// 画像出力時のbdmargin値
 
 		if(k.EDITOR){
 			base.setExpression("　左クリックで数字、左ドラッグでIN/OUTが、右クリックで氷が入力できます。"+
