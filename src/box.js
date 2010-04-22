@@ -251,16 +251,16 @@ Puzzles.box.prototype = {
 			for(var bx=1;bx<2*k.qcols;bx+=2){ exlist.push(bd.exnum(bx,-1));}
 			for(var by=1;by<2*k.qrows;by+=2){ exlist.push(bd.exnum(-1,by));}
 
-			var cm="", ec=0;
-			for(var i=0;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
-				if(ca==='-'){ bd.sQnE(ec, parseInt(bstr.substr(i+1,2),32)); i+=2;}
+			var cm="", i=0, bstr = this.outbstr;
+			for(var a=0;a<bstr.length;a++){
+				var ec = exlist[i], ca=bstr.charAt(a);
+				if(ca==='-'){ bd.sQnE(ec, parseInt(bstr.substr(a+1,2),32)); a+=2;}
 				else        { bd.sQnE(ec, parseInt(ca,32));}
-				ex++;
-				if(ec >= exlist.length){ i++; break;}
+				i++;
+				if(i >= exlist.length){ a++; break;}
 			}
 
-			this.outbstr = bstr.substr(i);
+			this.outbstr = bstr.substr(a);
 		};
 		enc.encodeBox = function(){
 			var exlist=[];
