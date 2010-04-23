@@ -213,7 +213,6 @@ Graphic.prototype = {
 	// pc.crossinside()  座標(x1,y1)-(x2,y2)に含まれるCrossのIDリストを取得する
 	// pc.borderinside() 座標(x1,y1)-(x2,y2)に含まれるBorderのIDリストを取得する
 	// pc.excellinside() 座標(x1,y1)-(x2,y2)に含まれるExcellのIDリストを取得する
-	// pc.cellinside_cond() 座標(x1,y1)-(x2,y2)に含まれる条件付きCellのIDリストを取得する
 	//---------------------------------------------------------------------------
 	cellinside : function(x1,y1,x2,y2){
 		var clist = [];
@@ -247,15 +246,6 @@ Graphic.prototype = {
 			if(c!==-1){ exlist.push(c);}
 		}}
 		return exlist;
-	},
-
-	cellinside_cond : function(x1,y1,x2,y2,func){
-		var clist = [];
-		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
-			var c = bd.cnum(bx,by);
-			if(c!==-1 && func(c)){ clist.push(c);}
-		}}
-		return clist;
 	},
 
 	//---------------------------------------------------------------------------
