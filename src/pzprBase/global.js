@@ -329,7 +329,7 @@ _ElementManager.ElementExt.prototype = {
 	// ee.getHeight() ƒGƒŒƒƒ“ƒg‚Ì‚‚³‚ğ•Ô‚·
 	//----------------------------------------------------------------------
 	getRect : (
-		((!!document.getBoundingClientRect) ?
+		((!!document.createElement('div').getBoundingClientRect) ?
 			((!_IE) ?
 				function(){
 					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
