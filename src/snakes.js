@@ -198,7 +198,7 @@ Puzzles.snakes.prototype = {
 		pc.drawAnswerNumbers = function(x1,y1,x2,y2){
 			this.vinc('cell_number', 'auto');
 
-			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
+			var clist = bd.cellinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
 				if(obj.qnum===-1 && obj.qans>0){

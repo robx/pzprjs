@@ -104,7 +104,7 @@ Puzzles.firefly.prototype = {
 		pc.drawFireflies = function(x1,y1,x2,y2){
 			this.vinc('cell_firefly', 'auto');
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){ this.drawFirefly1(clist[i]);}
 		};
 		pc.drawFirefly1 = function(c){

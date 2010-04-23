@@ -250,7 +250,7 @@ Puzzles.shugaku.prototype = {
 			this.vinc('cell_back', 'crispEdges');
 
 			var header = "c_full_";
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].qans>=11){

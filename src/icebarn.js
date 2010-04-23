@@ -250,7 +250,7 @@ Puzzles.icebarn.prototype = {
 		pc.drawArrows = function(x1,y1,x2,y2){
 			this.vinc('border_arrow', 'crispEdges');
 
-			var idlist = this.borderinside(x1-1,y1-1,x2+2,y2+2);
+			var idlist = bd.borderinside(x1-1,y1-1,x2+2,y2+2);
 			for(var i=0;i<idlist.length;i++){ this.drawArrow1(idlist[i], bd.isArrow(idlist[i]));}
 		};
 		pc.drawArrow1 = function(id, flag){

@@ -168,7 +168,7 @@ Puzzles.gokigen.prototype = {
 			var headers = ["c_sl1_", "c_sl2_"];
 			g.lineWidth = Math.max(this.cw/8, 2);
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 

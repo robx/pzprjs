@@ -149,7 +149,7 @@ Puzzles.shwolf.prototype = {
 			var bimg = null;
 			if(this.fillTextPrecisely){ bimg = new Image(); bimg.src = './src/img/shwolf_obj.gif';}
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], key = ['cell',c].join('_');
 				if(obj.ques===-2){

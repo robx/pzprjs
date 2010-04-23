@@ -161,7 +161,7 @@ Puzzles.reflect.prototype = {
 			this.vinc('cell_triangle_border', 'crispEdges');
 
 			var header = "b_tb_";
-			var idlist = this.borderinside(x1-1,y1-1,x2+2,y2+2);
+			var idlist = bd.borderinside(x1-1,y1-1,x2+2,y2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], lflag = !(bd.border[id].bx&1);
 				var qs1 = bd.QuC(bd.border[id].cellcc[0]),
@@ -184,7 +184,7 @@ Puzzles.reflect.prototype = {
 		pc.draw101 = function(x1,y1,x2,y2){
 			this.vinc('cell_ques', 'crispEdges');
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){ this.draw101_1(clist[i]);}
 		};
 		pc.draw101_1 = function(id){

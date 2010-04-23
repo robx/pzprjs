@@ -190,7 +190,7 @@ Puzzles.pipelink.prototype = {
 			this.vinc('cell_circle', 'auto');
 
 			var header = "c_cir_";
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			if(isdraw){
 				var rsize  = this.cw*0.40;
 				for(var i=0;i<clist.length;i++){

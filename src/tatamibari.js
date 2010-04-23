@@ -135,7 +135,7 @@ Puzzles.tatamibari.prototype = {
 			var headers = ["c_lp1_", "c_lp2_"];
 			g.fillStyle = this.BorderQuescolor;
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				var qn = bd.cell[c].qnum;

@@ -209,46 +209,6 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.cellinside()   座標(x1,y1)-(x2,y2)に含まれるCellのIDリストを取得する
-	// pc.crossinside()  座標(x1,y1)-(x2,y2)に含まれるCrossのIDリストを取得する
-	// pc.borderinside() 座標(x1,y1)-(x2,y2)に含まれるBorderのIDリストを取得する
-	// pc.excellinside() 座標(x1,y1)-(x2,y2)に含まれるExcellのIDリストを取得する
-	//---------------------------------------------------------------------------
-	cellinside : function(x1,y1,x2,y2){
-		var clist = [];
-		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
-			var c = bd.cnum(bx,by);
-			if(c!==-1){ clist.push(c);}
-		}}
-		return clist;
-	},
-	crossinside : function(x1,y1,x2,y2){
-		var clist = [];
-		for(var by=y1+(y1&1);by<=y2;by+=2){ for(var bx=x1+(x1&1);bx<=x2;bx+=2){
-			var c = bd.xnum(bx,by);
-			if(c!==-1){ clist.push(c);}
-		}}
-		return clist;
-	},
-	borderinside : function(x1,y1,x2,y2){
-		var idlist = [];
-		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
-			if(bx&1===by&1){ continue;}
-			var id = bd.bnum(bx,by);
-			if(id!==-1){ idlist.push(id);}
-		}}
-		return idlist;
-	},
-	excellinside : function(x1,y1,x2,y2){
-		var exlist = [];
-		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
-			var c = bd.exnum(bx,by);
-			if(c!==-1){ exlist.push(c);}
-		}}
-		return exlist;
-	},
-
-	//---------------------------------------------------------------------------
 	// pc.getNewLineColor() 新しい色を返す
 	//---------------------------------------------------------------------------
 	getNewLineColor : function(){
@@ -303,7 +263,7 @@ Graphic.prototype = {
 		var header = "c_fullb_";
 
 		if(g.use.canvas && this.isdrawBC && !this.isdrawBD){ x1--; y1--; x2++; y2++;}
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(this.setCellColor(c)){
@@ -343,7 +303,7 @@ Graphic.prototype = {
 		this.vinc('cell_back', 'crispEdges');
 		var header = "c_full_";
 
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(this.setBGCellColor(c)){
@@ -443,7 +403,7 @@ Graphic.prototype = {
 		this.vinc('excell_back', 'crispEdges');
 
 		var header = "ex_full_";
-		var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+		var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
 		for(var i=0;i<exlist.length;i++){
 			var c = exlist[i];
 			if(this.setBGEXcellColor(c)){
@@ -470,7 +430,7 @@ Graphic.prototype = {
 		var header = "c_rdot_";
 		g.fillStyle = this.dotcolor;
 
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(bd.cell[c].qsub===1){
@@ -488,7 +448,7 @@ Graphic.prototype = {
 		var header = "c_dot_";
 		g.fillStyle = this.dotcolor;
 
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(bd.cell[c].qsub===1){
@@ -508,7 +468,7 @@ Graphic.prototype = {
 	drawNumbers : function(x1,y1,x2,y2){
 		this.vinc('cell_number', 'auto');
 
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){ this.dispnumCell(clist[i]);}
 	},
 	drawArrowNumbers : function(x1,y1,x2,y2){
@@ -521,7 +481,7 @@ Graphic.prototype = {
 		var lm = lw/2;						//LineMargin
 
 		if(g.use.canvas && this.isdrawBC && !this.isdrawBD){ x1--; y1--; x2++; y2++;}
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 
@@ -602,7 +562,7 @@ Graphic.prototype = {
 	drawQuesHatenas : function(x1,y1,x2,y2){
 		this.vinc('cell_number', 'auto');
 
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var obj = bd.cell[clist[i]], key = 'cell_'+clist[i];
 			if(obj.ques===-2){
@@ -624,7 +584,7 @@ Graphic.prototype = {
 		var header = "x_cp_";
 		g.lineWidth = 1;
 
-		var clist = this.crossinside(x1,y1,x2,y2);
+		var clist = bd.crossinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(bd.cross[c].qnum!==-1){
@@ -644,7 +604,7 @@ Graphic.prototype = {
 		var csize = this.cw*this.crosssize;
 		var header = "x_cm_";
 
-		var clist = this.crossinside(x1,y1,x2,y2);
+		var clist = bd.crossinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(bd.cross[c].qnum===1){
@@ -666,7 +626,7 @@ Graphic.prototype = {
 	drawBorders : function(x1,y1,x2,y2){
 		this.vinc('border', 'crispEdges');
 
-		var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
+		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
 		for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 		this.isdrawBD = true;
 	},
@@ -729,7 +689,7 @@ Graphic.prototype = {
 		var header = "b_qsub1_";
 		g.fillStyle = this.BorderQsubcolor;
 
-		var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
+		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
 			if(bd.border[id].qsub===1){
@@ -753,7 +713,7 @@ Graphic.prototype = {
 
 		g.fillStyle = this.BBcolor;
 
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i], vids=[];
 			for(var n=0;n<12;n++){ vids[n]=['c_bb',n,c].join('_');}
@@ -812,7 +772,7 @@ Graphic.prototype = {
 	drawLines : function(x1,y1,x2,y2){
 		this.vinc('line', 'crispEdges');
 
-		var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
+		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
 		for(var i=0;i<idlist.length;i++){ this.drawLine1(idlist[i]);}
 		this.addlw = 0;
 	},
@@ -849,7 +809,7 @@ Graphic.prototype = {
 		g.strokeStyle = this.pekecolor;
 		g.lineWidth = 1;
 
-		var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
+		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
 			if(bd.border[id].qsub!==2){ this.vhide([headers[0]+id, headers[1]+id]); continue;}
@@ -881,7 +841,7 @@ Graphic.prototype = {
 		var headers = ["c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_"];
 
 		if(g.use.canvas && k.puzzleid!=='reflect'){ x1--; y1--; x2++; y2++;}
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			var num = (bd.cell[c].ques!==0?bd.cell[c].ques:bd.cell[c].qans);
@@ -925,7 +885,7 @@ Graphic.prototype = {
 		var rsize = this.cw*0.35;
 		var headers = ["c_MB1_", "c_MB2a_"];
 
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(bd.cell[c].qsub===0){ this.vhide([headers[0]+c, headers[1]+c]); continue;}
@@ -959,7 +919,7 @@ Graphic.prototype = {
 		var rsize41 = this.cw*(this.circleratio[0]+this.circleratio[1])/2;
 		var rsize42 = this.cw*this.circleratio[0];
 		var headers = ["c_cir41_", "c_cir42_"];
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 
@@ -984,7 +944,7 @@ Graphic.prototype = {
 	drawCirclesAtNumber : function(x1,y1,x2,y2){
 		this.vinc('cell_circle', 'auto');
 
-		var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
+		var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
 		for(var i=0;i<clist.length;i++){ this.drawCircle1AtNumber(clist[i]);}
 	},
 	drawCircle1AtNumber : function(c){
@@ -1016,7 +976,7 @@ Graphic.prototype = {
 	drawLineParts : function(x1,y1,x2,y2){
 		this.vinc('cell_lineparts', 'crispEdges');
 
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){ this.drawLineParts1(clist[i]);}
 	},
 	drawLineParts1 : function(id){
@@ -1057,7 +1017,7 @@ Graphic.prototype = {
 		var header = "c_slash51_";
 		g.strokeStyle = this.Cellcolor;
 		g.lineWidth = 1;
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i], px = bd.cell[c].px, py = bd.cell[c].py;
 
@@ -1075,7 +1035,7 @@ Graphic.prototype = {
 		var header = "ex_slash51_";
 		g.strokeStyle = this.Cellcolor;
 		g.lineWidth = 1;
-		var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+		var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
 		for(var i=0;i<exlist.length;i++){
 			var c = exlist[i], px = bd.excell[c].px, py = bd.excell[c].py;
 			if(this.vnop(header+c,this.NONE)){
@@ -1088,7 +1048,7 @@ Graphic.prototype = {
 
 		g.fillStyle = this.Cellcolor;
 		var headers = ["ex_bdx_", "ex_bdy_"];
-		var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+		var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
 		for(var i=0;i<exlist.length;i++){
 			var c = exlist[i], px = bd.excell[c].px, py = bd.excell[c].py;
 
@@ -1347,7 +1307,7 @@ Graphic.prototype = {
 			}
 
 			var headers = ["chs1_sub_", "chs2_sub_"];
-			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
+			var clist = bd.cellinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], bx = bd.cell[c].bx, by = bd.cell[c].by;
 				var px = bd.cell[c].px, py = bd.cell[c].py;

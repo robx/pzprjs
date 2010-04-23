@@ -192,7 +192,7 @@ Puzzles.triplace.prototype = {
 			this.setBorderColor = function(id){ return (bd.border[id].qans===1);};
 
 			g.fillStyle = this.BorderQanscolor;
-			var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
+			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 			this.isdrawBD = true;
 		};
@@ -202,7 +202,7 @@ Puzzles.triplace.prototype = {
 			this.setBorderColor = function(id){ return (bd.border[id].ques===1);};
 
 			g.fillStyle = this.BorderQuescolor;
-			var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
+			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 			this.isdrawBD = true;
 		};

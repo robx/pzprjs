@@ -171,7 +171,7 @@ Puzzles.kakuro.prototype = {
 		pc.drawNumbers_kakuro = function(x1,y1,x2,y2){
 			this.vinc('cell_number', 'auto');
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], key = ['cell',c,'qans'].join('_');
 				var target = ((k.editmode&&c===tc.getTCC())?kc.detectTarget(c,-1):-1);

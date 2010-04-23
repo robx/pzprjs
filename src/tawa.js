@@ -61,6 +61,8 @@ Puzzles.tawa.prototype = {
 			else if(this.lap==3 || this.lap==undefined){ total = mf(row*0.5)*(2*col+1)+((row%2==1)?col:0);}
 			else{ total = col*row;}
 
+			this._cnum  = [];
+
 			this.initGroup(k.CELL, this.cell, total);
 
 			k.qcols = col;
@@ -94,6 +96,8 @@ Puzzles.tawa.prototype = {
 					obj.bx = mf((2*id+1)%(2*k.qcols+1))+1;
 					obj.by = row*2+1;
 				}
+
+				this._cnum[[obj.bx, obj.by].join("_")] = id;
 			}
 		};
 
@@ -258,9 +262,6 @@ Puzzles.tawa.prototype = {
 		};
 
 		// PositionからのセルID取得
-		bd.cnum = function(bx,by){
-			return this.cnum2(bx,by,k.qcols,k.qrows);
-		};
 		bd.cnum2 = function(bx,by,qc,qr){
 			if(bx<this.minbx+1 || bx>this.maxbx-1 || by<this.minby+1 || by>this.maxby-1){ return -1;}
 
@@ -271,6 +272,14 @@ Puzzles.tawa.prototype = {
 			else if(this.lap===3){ if( !((bx+cy)&1)){ return ((bx-1)+cy*(2*qc+1))>>1;}}
 
 			return -1;
+		};
+		bd.cellinside = function(x1,y1,x2,y2){
+			var clist = [];
+			for(var by=(y1|1);by<=y2;by+=2){ for(var bx=x1;bx<=x2;bx++){
+				var c = this._cnum[[bx,by].join("_")];
+				if(c!==(void 0)){ clist.push(c);}
+			}}
+			return clist;
 		};
 
 		bd.lap = menu.ex.clap;	// 2段目は => 0:左右引っ込み 1:右のみ出っ張り 2:左のみ出っ張り 3:左右出っ張り
@@ -438,15 +447,6 @@ Puzzles.tawa.prototype = {
 			}
 
 			pc.paint(x1,y1,x2,y2);
-		};
-		// オーバーライド
-		pc.cellinside = function(x1,y1,x2,y2){
-			var clist = [];
-			for(var by=(y1|1);by<=y2;by+=2){ for(var bx=x1;bx<=x2;bx++){
-				var c = bd.cnum(bx,by);
-				if(c!==-1){ clist.push(c);}
-			}}
-			return clist;
 		};
 
 		pc.drawGrid_tawa = function(x1,y1,x2,y2){

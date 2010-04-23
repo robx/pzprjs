@@ -249,7 +249,7 @@ Puzzles.kinkonkan.prototype = {
 			this.vinc('cell_back', 'crispEdges');
 
 			var headers = ["c_full_", "c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_", "c_full_"];
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], err = bd.cell[c].error;
 				if(err!==0){
@@ -271,7 +271,7 @@ Puzzles.kinkonkan.prototype = {
 			var headers = ["c_sl1_", "c_sl2_"];
 			g.lineWidth = Math.max(this.cw/8, 2);
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
@@ -300,7 +300,7 @@ Puzzles.kinkonkan.prototype = {
 			this.vinc('excell_number', 'auto');
 
 			var header = "ex_full_";
-			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+			var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i], obj = bd.excell[c], key = 'excell_'+c;
 

@@ -274,7 +274,7 @@ Puzzles.tentaisho.prototype = {
 			var lw = this.lw, lm = this.lm;
 			var header = "b_bd_";
 
-			var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
+			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 				if(bd.border[id].qans===1){

@@ -338,7 +338,7 @@ Puzzles.slalom.prototype = {
 			var ll = lw*1.1;					//LineLength
 			var headers = ["c_dl21", "c_dl22"];
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				g.fillStyle = (bd.cell[c].error===4 ? this.errcolor1 : this.Cellcolor);

@@ -236,7 +236,7 @@ Puzzles.goishi.prototype = {
 			g.lineWidth = Math.max(this.cw*0.05, 1);
 			var rsize  = this.cw*0.38;
 			var header = "c_cir_";
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && bd.cell[c].qans===-1){
@@ -256,7 +256,7 @@ Puzzles.goishi.prototype = {
 			var mgnh = this.ch*0.1;
 			var header = "c_sq2_";
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && bd.cell[c].qans!==-1){

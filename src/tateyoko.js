@@ -212,7 +212,7 @@ Puzzles.tateyoko.prototype = {
 			this.vinc('cell_tateyoko', 'crispEdges');
 
 			var headers = ["c_bar1_", "c_bar2_"];
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				var lw = Math.max(this.cw/6, 3);	//LineWidth
@@ -246,7 +246,7 @@ Puzzles.tateyoko.prototype = {
 			this.vinc('cell_number', 'crispEdges');
 
 			var header = "c_full_";
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
 				if(bd.cell[c].ques===1){
@@ -261,7 +261,7 @@ Puzzles.tateyoko.prototype = {
 		pc.drawNumbers_tateyoko = function(x1,y1,x2,y2){
 			this.vinc('cell_number', 'auto');
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
 				var num = bd.cell[c].qnum;

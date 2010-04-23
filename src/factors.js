@@ -102,7 +102,7 @@ Puzzles.factors.prototype = {
 		pc.drawNumbers_factors = function(x1,y1,x2,y2){
 			this.vinc('cell_number', 'auto');
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
 				var key_qans = ['cell',c,'qans'].join('_');

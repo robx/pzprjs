@@ -236,7 +236,7 @@ Puzzles.toichika.prototype = {
 			var tl = ll*0.5-ll*0.3;			// –î‚¶‚è‚Ì’·‚³‚ÌÀ•W(’†S-’·‚³)
 			var tw = Math.max(ll*0.2, 5);	// –î‚¶‚è‚Ì•
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);

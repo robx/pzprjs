@@ -193,7 +193,7 @@ Puzzles.wagiri.prototype = {
 		};
 
 		pc.dispLetters_wagiri = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var id = clist[i];
 				var num = bd.cell[id].qnum, obj = bd.cell[id], key='cell_'+id;
@@ -216,7 +216,7 @@ Puzzles.wagiri.prototype = {
 				for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.sErC([c],sdata[c]);} }
 			}
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 

@@ -461,14 +461,14 @@ AnsCheck.prototype = {
 	checkRowsCols : function(evalfunc, numfunc){
 		var result = true;
 		for(var by=1;by<=bd.maxby;by+=2){
-			var clist = bd.getClistByPosition(bd.minbx+1,by,bd.maxbx-1,by);
+			var clist = bd.cellinside(bd.minbx+1,by,bd.maxbx-1,by);
 			if(!evalfunc.apply(this,[clist, numfunc])){
 				if(this.inAutoCheck){ return false;}
 				result = false;
 			}
 		}
 		for(var bx=1;bx<=bd.maxbx;bx+=2){
-			var clist = bd.getClistByPosition(bx,bd.minby+1,bx,bd.maxby-1);
+			var clist = bd.cellinside(bx,bd.minby+1,bx,bd.maxby-1);
 			if(!evalfunc.apply(this,[clist, numfunc])){
 				if(this.inAutoCheck){ return false;}
 				result = false;
@@ -482,7 +482,7 @@ AnsCheck.prototype = {
 			var bx=1;
 			while(bx<=bd.maxbx){
 				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc.apply(this,[bd.cnum(tx,by)])){ break;}}
-				var clist = bd.getClistByPosition(bx,by,tx-2,by);
+				var clist = bd.cellinside(bx,by,tx-2,by);
 				var total = (k.isexcell!==1 ? 0 : (bx===1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx-2,by))));
 
 				if(!evalfunc.apply(this,[total, [bx-2,by], clist, areainfo])){
@@ -496,7 +496,7 @@ AnsCheck.prototype = {
 			var by=1;
 			while(by<=bd.maxby){
 				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc.apply(this,[bd.cnum(bx,ty)])){ break;}}
-				var clist = bd.getClistByPosition(bx,by,bx,ty-2);
+				var clist = bd.cellinside(bx,by,bx,ty-2);
 				var total = (k.isexcell!==1 ? 0 : (by===1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by-2))));
 
 				if(!evalfunc.apply(this,[total, [bx,by-2], clist, areainfo])){

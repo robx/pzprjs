@@ -113,7 +113,7 @@ Puzzles.numlin.prototype = {
 			var mgnh = this.ch*0.15;
 			var header = "c_sq_";
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].qnum!==-1){

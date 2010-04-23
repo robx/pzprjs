@@ -183,7 +183,7 @@ Puzzles.box.prototype = {
 			this.vinc('excell_full', 'crispEdges');
 
 			var header = "ex_full_";
-			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+			var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i], obj = bd.excell[c];
 
@@ -201,7 +201,7 @@ Puzzles.box.prototype = {
 
 			var header = "ex_cir_";
 			var rsize  = this.cw*0.36;
-			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+			var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i], obj = bd.excell[c];
 				if(c>=2*(k.qcols+k.qrows) || obj.bx===-1 || obj.by===-1){ continue;}
@@ -217,7 +217,7 @@ Puzzles.box.prototype = {
 			this.vinc('excell_number', 'auto');
 
 			var header = "ex_full_";
-			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+			var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i], obj = bd.excell[c], key = 'excell_'+c;
 				if(c>=2*(k.qcols+k.qrows)){ continue;}
