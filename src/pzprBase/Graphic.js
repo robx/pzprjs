@@ -721,8 +721,8 @@ Graphic.prototype = {
 
 			var bx = bd.cell[c].bx, by = bd.cell[c].by;
 			var px = bd.cell[c].px, py = bd.cell[c].py;
-			var px1 = px+lm, px2 = px+cw-lm-1;
-			var py1 = py+lm, py2 = py+ch-lm-1;
+			var px1 = px+lm+1, px2 = px+cw-lm-1;
+			var py1 = py+lm+1, py2 = py+ch-lm-1;
 
 			// この関数を呼ぶ場合は全てk.isoutsideborder===0なので
 			// 外枠用の考慮部分を削除しています。
