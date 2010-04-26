@@ -253,7 +253,6 @@ Puzzles.slalom.prototype = {
 			}
 		};
 
-		bd.maxnum = 255;
 		bd.nummaxfunc = function(cc){ return Math.min(bd.hinfo.max,bd.maxnum);}
 
 		menu.ex.adjustSpecial = function(type,key){

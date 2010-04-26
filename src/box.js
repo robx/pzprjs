@@ -150,7 +150,6 @@ Puzzles.box.prototype = {
 		};
 
 		tc.setTEC(0);
-		bd.maxnum = 255;
 		bd.nummaxfunc = function(ec){
 			var bx=bd.excell[ec].bx, by=bd.excell[ec].by, cnt;
 			if(bx===-1 && by===-1){ return;}

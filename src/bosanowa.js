@@ -79,7 +79,7 @@ Puzzles.bosanowa.prototype = {
 			var tcp = tc.getTCP();
 
 			if(pos.x==tcp.x&&pos.y==tcp.y){
-				var max = 255;
+				var max = bd.nummaxfunc();
 				if((pos.x&1)&&(pos.y&1)){
 					var cc = bd.cnum(pos.x,pos.y);
 					if(k.editmode){
@@ -173,8 +173,6 @@ Puzzles.bosanowa.prototype = {
 			bd.sQuC(tc.getTCC(),7);
 			um.enableRecord();
 		}
-
-		bd.maxnum=255;
 	},
 
 	//---------------------------------------------------------

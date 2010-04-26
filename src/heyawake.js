@@ -85,7 +85,6 @@ Puzzles.heyawake.prototype = {
 			};
 		}
 
-		bd.maxnum = 255;
 		bd.nummaxfunc = function(cc){
 			var id = area.room.id[cc];
 			var d = ans.getSizeOfClist(area.room[id].clist,f_true);
