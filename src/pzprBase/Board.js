@@ -246,6 +246,7 @@ Board.prototype = {
 	// bd.setposCross()  該当するidの交差点のbx,byプロパティを設定する
 	// bd.setposBorder() 該当するidの境界線/Lineのbx,byプロパティを設定する
 	// bd.setposEXCell() 該当するidのExtendセルのbx,byプロパティを設定する
+	// bd.set_xnum()     crossは存在しないが、bd._xnumだけ設定したい場合に呼び出す
 	//---------------------------------------------------------------------------
 	// setpos関連関数 <- 各Cell等が持っているとメモリを激しく消費するのでここに置くこと.
 	setposAll : function(){
@@ -277,6 +278,8 @@ Board.prototype = {
 		}
 	},
 	setposBorders : function(){
+		if(k.iscross===0 && k.isborderAsLine){ this.set_xnum();}
+
 		this.bdinside = 2*k.qcols*k.qrows-(k.qcols+k.qrows);
 		this.bdmax = this.border.length;
 		for(var id=0;id<this.bdmax;id++){
@@ -323,6 +326,16 @@ Board.prototype = {
 		for(var id=0;id<this.excellmax;id++){
 			var obj = this.excell[id];
 			this._exnum[[obj.bx, obj.by].join("_")] = id;
+		}
+	},
+
+	set_xnum : function(){
+		var id=0;
+		for(var by=0;by<=this.maxby;by+=2){
+			for(var bx=0;bx<=this.maxbx;bx+=2){
+				this._xnum[[bx, by].join("_")] = id;
+				id++;
+			}
 		}
 	},
 
