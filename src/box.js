@@ -206,7 +206,7 @@ Puzzles.box.prototype = {
 				if(c>=2*(k.qcols+k.qrows) || obj.bx===-1 || obj.by===-1){ continue;}
 
 				g.fillStyle   = this.circledcolor;
-				g.strokeStyle = this.Cellcolor;
+				g.strokeStyle = this.cellcolor;
 				if(this.vnop(header+c,this.NONE)){
 					g.shapeCircle(obj.px+this.bw, obj.py+this.bh, rsize);
 				}

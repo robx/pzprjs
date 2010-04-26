@@ -10,7 +10,7 @@ Graphic = function(){
 	this.gridcolor = "black";
 
 	// セルの色(黒マス)
-	this.Cellcolor = "black";
+	this.cellcolor = "black";
 	this.errcolor1 = "rgb(224, 0, 0)";
 	this.errcolor2 = "rgb(64, 64, 255)";
 	this.errcolor3 = "rgb(0, 191, 0)";
@@ -19,7 +19,7 @@ Graphic = function(){
 	this.circledcolor = "white";
 
 	// セルの○×の色(補助記号)
-	this.MBcolor = "rgb(255, 160, 127)";
+	this.mbcolor = "rgb(255, 160, 127)";
 
 	this.qsubcolor1 = "rgb(160,255,160)";
 	this.qsubcolor2 = "rgb(255,255,127)";
@@ -29,7 +29,7 @@ Graphic = function(){
 	this.fontcolor = "black";
 	this.fontAnscolor = "rgb(0, 160, 0)";
 	this.fontErrcolor = "rgb(191, 0, 0)";
-	this.BCell_fontcolor = "rgb(224, 224, 224)";
+	this.fontBCellcolor = "rgb(224, 224, 224)";
 
 	this.borderfontcolor = "black";
 
@@ -41,17 +41,17 @@ Graphic = function(){
 
 	this.icecolor = "rgb(192, 224, 255)";
 
-	// ques=51のとき、入力できる場所の背景色
-	this.TTcolor = "rgb(127,255,127)";
+	// ques=51のとき、入力できる場所の背景色(TargetTriangle)
+	this.ttcolor = "rgb(127,255,127)";
 
 	// 境界線の色
-	this.BorderQuescolor = "black";
-	this.BorderQanscolor = "rgb(0, 191, 0)";
-	this.BorderQsubcolor = "rgb(255, 0, 255)";
+	this.borderQuescolor = "black";
+	this.borderQanscolor = "rgb(0, 191, 0)";
+	this.borderQsubcolor = "rgb(255, 0, 255)";
 
-	this.errBorderQanscolor2 = "rgb(160, 160, 160)";
+	this.errborderQanscolor2 = "rgb(160, 160, 160)";
 
-	this.BBcolor = "rgb(96, 96, 96)"; // 境界線と黒マスを分ける色
+	this.bbcolor = "rgb(96, 96, 96)"; // 境界線と黒マスを分ける色(BoxBorder)
 
 	// 線・×の色
 	this.linecolor = "rgb(0, 160, 0)";	// 色分けなしの場合
@@ -277,7 +277,7 @@ Graphic.prototype = {
 	setCellColor : function(c){
 		var err = bd.cell[c].error;
 		if(bd.cell[c].qans!==1){ return false;}
-		else if(err===0){ g.fillStyle = this.Cellcolor; return true;}
+		else if(err===0){ g.fillStyle = this.cellcolor; return true;}
 		else if(err===1){ g.fillStyle = this.errcolor1; return true;}
 		return false;
 	},
@@ -287,7 +287,7 @@ Graphic.prototype = {
 			this.setCellColor = function(c){
 				var err = bd.cell[c].error;
 				if(bd.cell[c].qnum===-1){ return false;}
-				else if(err===0){ g.fillStyle = this.Cellcolor; return true;}
+				else if(err===0){ g.fillStyle = this.cellcolor; return true;}
 				else if(err===1){ g.fillStyle = this.errcolor1; return true;}
 				return false;
 			};
@@ -331,7 +331,7 @@ Graphic.prototype = {
 			this.setBGCellColor = function(c){
 				var cell = bd.cell[c];
 				if(cell.qans===1){
-					g.fillStyle = (cell.error===1 ? this.errcolor1 : this.Cellcolor);
+					g.fillStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
 					return true;
 				}
 				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
@@ -343,7 +343,7 @@ Graphic.prototype = {
 			this.setBGCellColor = function(c){
 				var cell = bd.cell[c];
 				if(cell.qans===1){
-					if     (cell.error===0){ g.fillStyle = this.Cellcolor;}
+					if     (cell.error===0){ g.fillStyle = this.cellcolor;}
 					else if(cell.error===1){ g.fillStyle = this.errcolor1;}
 					else if(cell.error===2){ g.fillStyle = this.errcolor2;}
 					return true;
@@ -485,7 +485,7 @@ Graphic.prototype = {
 	getCellNumberColor : function(c){
 		var obj = bd.cell[c], color = this.fontcolor;
 		if(!k.isAnsNumber && ((k.BlackCell && obj.qans===1) || (!k.BlackCell && obj.ques!==0))){
-			color = this.BCell_fontcolor;
+			color = this.fontBCellcolor;
 		}
 		else if(obj.error===1 || obj.error===4){
 			color = this.fontErrcolor;
@@ -513,7 +513,7 @@ Graphic.prototype = {
 			if(bd.cell[c].qnum!==-1 && (bd.cell[c].qnum!==-2||k.isDispHatena)){
 				var ax=px=bd.cell[c].px, ay=py=bd.cell[c].py, dir = bd.cell[c].direc;
 
-				if     (bd.cell[c].qans ===1){ g.fillStyle = this.BCell_fontcolor;}
+				if     (bd.cell[c].qans ===1){ g.fillStyle = this.fontBCellcolor;}
 				else if(bd.cell[c].error===1){ g.fillStyle = this.fontErrcolor;}
 				else                         { g.fillStyle = this.fontcolor;}
 
@@ -639,7 +639,7 @@ Graphic.prototype = {
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(bd.cross[c].qnum===1){
-				g.fillStyle = (bd.cross[c].error===1 ? this.errcolor1 : this.Cellcolor);
+				g.fillStyle = (bd.cross[c].error===1 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(header+c,this.FILL)){
 					g.fillCircle(bd.cross[c].px, bd.cross[c].py, csize);
 				}
@@ -676,7 +676,7 @@ Graphic.prototype = {
 	},
 
 	setBorderColor : function(id){
-		if(bd.border[id].ques===1){ g.fillStyle = this.BorderQuescolor; return true;}
+		if(bd.border[id].ques===1){ g.fillStyle = this.borderQuescolor; return true;}
 		return false;
 	},
 	setBorderColorFunc : function(type){
@@ -686,8 +686,8 @@ Graphic.prototype = {
 				var err=bd.border[id].error;
 				if(bd.isBorder(id)){
 					if     (err===1){ g.fillStyle = this.errcolor1;          }
-					else if(err===2){ g.fillStyle = this.errBorderQanscolor2;}
-					else            { g.fillStyle = this.BorderQanscolor;    }
+					else if(err===2){ g.fillStyle = this.errborderQanscolor2;}
+					else            { g.fillStyle = this.borderQanscolor;    }
 					return true;
 				}
 				return false;
@@ -700,7 +700,7 @@ Graphic.prototype = {
 			this.setBorderColor = function(id){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(cc1!==-1 && cc2!==-1 && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
-					g.fillStyle = this.Cellcolor;
+					g.fillStyle = this.cellcolor;
 					return true;
 				}
 				return false;
@@ -718,7 +718,7 @@ Graphic.prototype = {
 
 		var m = this.cw*0.15; //Margin
 		var header = "b_qsub1_";
-		g.fillStyle = this.BorderQsubcolor;
+		g.fillStyle = this.borderQsubcolor;
 
 		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
 		for(var i=0;i<idlist.length;i++){
@@ -742,7 +742,7 @@ Graphic.prototype = {
 		var ch = this.ch;
 		var chars = ['u','d','l','r'];
 
-		g.fillStyle = this.BBcolor;
+		g.fillStyle = this.bbcolor;
 
 		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
@@ -881,10 +881,10 @@ Graphic.prototype = {
 			if(num>=2 && num<=5){
 				switch(k.puzzleid){
 				case 'reflect':
-					g.fillStyle = ((bd.cell[c].error===1||bd.cell[c].error===4) ? this.errcolor1 : this.Cellcolor);
+					g.fillStyle = ((bd.cell[c].error===1||bd.cell[c].error===4) ? this.errcolor1 : this.cellcolor);
 					break;
 				default:
-					g.fillStyle = this.Cellcolor;
+					g.fillStyle = this.cellcolor;
 					break;
 				}
 
@@ -910,7 +910,7 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	drawMBs : function(x1,y1,x2,y2){
 		this.vinc('cell_mb', 'auto');
-		g.strokeStyle = this.MBcolor;
+		g.strokeStyle = this.mbcolor;
 		g.lineWidth = 1;
 
 		var rsize = this.cw*0.35;
@@ -955,7 +955,7 @@ Graphic.prototype = {
 			var c = clist[i];
 
 			if(bd.cell[c].ques===41){
-				g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.Cellcolor);
+				g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.cellcolor);
 				g.fillStyle   = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 				if(this.vnop(headers[0]+c,this.FILL_STROKE)){
 					g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize41);
@@ -964,7 +964,7 @@ Graphic.prototype = {
 			else{ this.vhide(headers[0]+c);}
 
 			if(bd.cell[c].ques===42){
-				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(headers[1]+c,this.FILL)){
 					g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize42);
 				}
@@ -992,7 +992,7 @@ Graphic.prototype = {
 				g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize2);
 			}
 
-			g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+			g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
 			if(this.vnop(headers[0]+c,this.STROKE)){
 				g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
 			}
@@ -1019,7 +1019,7 @@ Graphic.prototype = {
 			var hhp = this.bh+this.lm, hwp = this.bw+this.lm;
 			var px  = bd.cell[id].px, py = bd.cell[id].py;
 			var cpx = bd.cell[id].cpx, cpy = bd.cell[id].cpy;
-			g.fillStyle = this.BorderQuescolor;
+			g.fillStyle = this.borderQuescolor;
 
 			var flag  = {101:15, 102:3, 103:12, 104:9, 105:5, 106:6, 107:10}[qs];
 			if(flag&1){ if(this.vnop(vids[0],this.NONE)){ g.fillRect(cpx-lm, py    , lw, hhp);} }else{ this.vhide(vids[0]);}
@@ -1046,7 +1046,7 @@ Graphic.prototype = {
 		this.vinc('cell_ques51', 'crispEdges');
 
 		var header = "c_slash51_";
-		g.strokeStyle = this.Cellcolor;
+		g.strokeStyle = this.cellcolor;
 		g.lineWidth = 1;
 		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
@@ -1064,7 +1064,7 @@ Graphic.prototype = {
 		this.vinc('excell_ques51', 'crispEdges');
 
 		var header = "ex_slash51_";
-		g.strokeStyle = this.Cellcolor;
+		g.strokeStyle = this.cellcolor;
 		g.lineWidth = 1;
 		var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
 		for(var i=0;i<exlist.length;i++){
@@ -1077,7 +1077,7 @@ Graphic.prototype = {
 	drawEXCellGrid : function(x1,y1,x2,y2){
 		this.vinc('grid_excell', 'crispEdges');
 
-		g.fillStyle = this.Cellcolor;
+		g.fillStyle = this.cellcolor;
 		var headers = ["ex_bdx_", "ex_bdy_"];
 		var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
 		for(var i=0;i<exlist.length;i++){
@@ -1156,11 +1156,11 @@ Graphic.prototype = {
 		this.vinc('target_cursor', 'crispEdges');
 
 		if(isdraw!==false && pp.getVal('cursor')){
-			if(tc.cursolx < x1-1 || x2+1 < tc.cursolx){ return;}
-			if(tc.cursoly < y1-1 || y2+1 < tc.cursoly){ return;}
+			if(tc.cursorx < x1-1 || x2+1 < tc.cursorx){ return;}
+			if(tc.cursory < y1-1 || y2+1 < tc.cursory){ return;}
 
-			var cpx = k.p0.x + tc.cursolx*this.bw + 0.5;
-			var cpy = k.p0.y + tc.cursoly*this.bh + 0.5;
+			var cpx = k.p0.x + tc.cursorx*this.bw + 0.5;
+			var cpy = k.p0.y + tc.cursory*this.bh + 0.5;
 			var w, size;
 			if(islarge!==false){ w = mf(Math.max(this.cw/16, 2)); size = this.bw-0.5;}
 			else	           { w = mf(Math.max(this.cw/24, 1)); size = this.bw*0.56;}
@@ -1183,16 +1183,16 @@ Graphic.prototype = {
 
 		if(k.playmode){ return;}
 
-		if(tc.cursolx < x1 || x2+2 < tc.cursolx){ return;}
-		if(tc.cursoly < y1 || y2+2 < tc.cursoly){ return;}
+		if(tc.cursorx < x1 || x2+2 < tc.cursorx){ return;}
+		if(tc.cursory < y1 || y2+2 < tc.cursory){ return;}
 
 		var cc = tc.getTCC(), ex = -1;
 		if(cc===-1){ ex = tc.getTEC();}
 		var target = kc.detectTarget(cc,ex);
 		if(target===-1){ return;}
 
-		g.fillStyle = this.TTcolor;
-		this.drawTriangle1(k.p0.x+(tc.cursolx>>1)*this.cw, k.p0.y+(tc.cursoly>>1)*this.ch, (target===2?4:2), vid);
+		g.fillStyle = this.ttcolor;
+		this.drawTriangle1(k.p0.x+(tc.cursorx>>1)*this.cw, k.p0.y+(tc.cursory>>1)*this.ch, (target===2?4:2), vid);
 	},
 
 	//---------------------------------------------------------------------------

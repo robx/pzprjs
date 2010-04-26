@@ -250,7 +250,7 @@ Puzzles.tateyoko.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
 				if(bd.cell[c].ques===1){
-					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
 					if(this.vnop(header+c,this.FILL)){
 						g.fillRect(obj.px, obj.py, this.cw+1, this.ch+1);
 					}

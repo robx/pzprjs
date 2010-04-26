@@ -193,7 +193,7 @@ Puzzles.hakoiri.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.bcolor = pc.bcolor_GREEN;
-		pc.BBcolor = "rgb(127, 127, 127)";
+		pc.bbcolor = "rgb(127, 127, 127)";
 		pc.dotcolor = "rgb(255, 96, 191)";
 
 		pc.paint = function(x1,y1,x2,y2){

@@ -87,7 +87,7 @@ Puzzles.bdblock.prototype = {
 	graphic_init : function(){
 		pc.setBorderColorFunc('qans');
 		pc.gridcolor = pc.gridcolor_DLIGHT;
-		pc.BorderQanscolor = "black";
+		pc.borderQanscolor = "black";
 		pc.crosssize = 0.15;
 
 		pc.paint = function(x1,y1,x2,y2){

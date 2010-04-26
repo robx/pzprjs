@@ -191,7 +191,7 @@ Puzzles.reflect.prototype = {
 
 			if(bd.cell[id].ques===101){
 				var lw = this.lw+2, lm=(lw-1)/2, ll=this.cw*0.76;
-				g.fillStyle = this.Cellcolor;
+				g.fillStyle = this.cellcolor;
 
 				// GridÇÃê^ÇÒíÜÅÅcpx,cpy+0.5
 				if(this.vnop(vids[0],this.NONE)){

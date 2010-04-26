@@ -86,7 +86,7 @@ Puzzles.shimaguni.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.bcolor = "rgb(191, 191, 255)";
-		pc.BBcolor = "rgb(191, 191, 255)";
+		pc.bbcolor = "rgb(191, 191, 255)";
 		pc.setBGCellColorFunc('qsub1');
 
 		pc.paint = function(x1,y1,x2,y2){

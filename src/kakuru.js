@@ -163,7 +163,7 @@ Puzzles.kakuru.prototype = {
 		};
 		// オーバーライド drawBlackCells用
 		pc.setCellColor = function(cc){
-			if(bd.cell[cc].ques===1){ g.fillStyle = this.Cellcolor; return true;}
+			if(bd.cell[cc].ques===1){ g.fillStyle = this.cellcolor; return true;}
 			return false;
 		};
 	},

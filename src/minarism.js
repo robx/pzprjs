@@ -83,7 +83,7 @@ Puzzles.minarism.prototype = {
 			if(!bd.isinside(pos.x,pos.y)){ return;}
 			var id = bd.bnum(pos.x, pos.y);
 
-			if(tc.cursolx!==pos.x || tc.cursoly!==pos.y){
+			if(tc.cursorx!==pos.x || tc.cursory!==pos.y){
 				var tcp = tc.getTCP(), flag = false;
 				tc.setTCP(pos);
 				pc.paintPos(tcp);
@@ -157,8 +157,8 @@ Puzzles.minarism.prototype = {
 		menu.ex.expandborder = function(key){ };
 
 		tc.setAlign = function(){
-			this.cursolx -= ((this.cursolx+1)%2);
-			this.cursoly -= ((this.cursoly+1)%2);
+			this.cursorx -= ((this.cursorx+1)%2);
+			this.cursory -= ((this.cursory+1)%2);
 		};
 
 		bd.nummaxfunc = function(cc){ return Math.max(k.qcols,k.qrows);};
@@ -204,7 +204,7 @@ Puzzles.minarism.prototype = {
 			var headers = ["b_cp_", "b_dt1_", "b_dt2_"];
 
 			g.lineWidth = 1;
-			g.strokeStyle = this.Cellcolor;
+			g.strokeStyle = this.cellcolor;
 
 			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){

@@ -222,7 +222,7 @@ Puzzles.wagiri.prototype = {
 				if(bd.cell[c].qans!=-1){
 					if     (bd.cell[c].error==1){ g.strokeStyle = this.errcolor1;}
 					else if(bd.cell[c].error==2){ g.strokeStyle = this.errcolor2;}
-					else                        { g.strokeStyle = this.Cellcolor;}
+					else                        { g.strokeStyle = this.cellcolor;}
 
 					if(bd.cell[c].qans==1){
 						if(this.vnop(headers[0]+c,this.STROKE)){
@@ -249,7 +249,7 @@ Puzzles.wagiri.prototype = {
 		};
 
 		pc.drawTarget_wagiri = function(x1,y1,x2,y2){
-			var islarge = ((tc.cursolx&1)===(tc.cursoly&1));
+			var islarge = ((tc.cursorx&1)===(tc.cursory&1));
 			this.drawCursor(x1,y1,x2,y2,islarge,k.editmode);
 		};
 	},

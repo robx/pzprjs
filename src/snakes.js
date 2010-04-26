@@ -189,7 +189,7 @@ Puzzles.snakes.prototype = {
 			   ( ((bd.cell[cc1].qans===-1)^(bd.cell[cc2].qans===-1)) ||
 				 (Math.abs(bd.cell[cc1].qans-bd.cell[cc2].qans)!==1)) )
 			{
-				g.fillStyle = this.BorderQanscolor;
+				g.fillStyle = this.borderQanscolor;
 				return true;
 			}
 			return false;

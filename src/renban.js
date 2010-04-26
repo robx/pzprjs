@@ -86,7 +86,7 @@ Puzzles.renban.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
-		pc.BorderQsubcolor = pc.BorderQuescolor;
+		pc.borderQsubcolor = pc.borderQuescolor;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
@@ -105,7 +105,7 @@ Puzzles.renban.prototype = {
 		// エラー時に赤く表示したいので上書き
 		pc.setBorderColor = function(id){
 			if(bd.border[id].ques===1){
-				g.fillStyle = (bd.border[id].error===1 ? this.errcolor1 : this.BorderQuescolor);
+				g.fillStyle = (bd.border[id].error===1 ? this.errcolor1 : this.borderQuescolor);
 				return true;
 			}
 			return false;

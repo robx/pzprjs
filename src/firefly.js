@@ -118,7 +118,7 @@ Puzzles.firefly.prototype = {
 				var px=bd.cell[c].cpx, py=bd.cell[c].cpy;
 
 				g.lineWidth = 1.5;
-				g.strokeStyle = this.Cellcolor;
+				g.strokeStyle = this.cellcolor;
 				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 				if(this.vnop(headers[0]+c,this.FILL)){
 					g.shapeCircle(px, py, rsize);
@@ -126,7 +126,7 @@ Puzzles.firefly.prototype = {
 
 				this.vdel([headers[1]+c]);
 				if(bd.cell[c].direc!=0){
-					g.fillStyle = this.Cellcolor;
+					g.fillStyle = this.cellcolor;
 					switch(bd.cell[c].direc){
 						case k.UP: py-=(rsize-1); break;
 						case k.DN: py+=(rsize-1); break;

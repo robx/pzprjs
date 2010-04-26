@@ -262,7 +262,7 @@ Puzzles.icebarn.prototype = {
 			var lm = lw/2;					//LineMargin
 			var px=bd.border[id].px; var py=bd.border[id].py;
 
-			g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.Cellcolor);
+			g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.cellcolor);
 			if(this.vnop(vids[0],this.FILL)){
 				var mr = Math.round;
 				if(bd.border[id].bx&1){ g.fillRect(px-lm, py-ll, lw, ll*2);}
@@ -289,7 +289,7 @@ Puzzles.icebarn.prototype = {
 		pc.drawInOut = function(){
 			if(bd.arrowin<bd.bdinside || bd.arrowin>=bd.bdmax || bd.arrowout<bd.bdinside || bd.arrowout>=bd.bdmax){ return;}
 
-			g.fillStyle = (bd.border[bd.arrowin].error===3 ? this.errcolor1 : this.Cellcolor);
+			g.fillStyle = (bd.border[bd.arrowin].error===3 ? this.errcolor1 : this.cellcolor);
 			var bx = bd.border[bd.arrowin].bx, by = bd.border[bd.arrowin].by;
 			var px = bd.border[bd.arrowin].px, py = bd.border[bd.arrowin].py;
 			if     (by===bd.minby){ this.dispnum("string_in", 1, "IN", 0.55, "black", px,             py-0.6*this.ch);}
@@ -297,7 +297,7 @@ Puzzles.icebarn.prototype = {
 			else if(bx===bd.minbx){ this.dispnum("string_in", 1, "IN", 0.55, "black", px-0.5*this.cw, py-0.3*this.ch);}
 			else if(bx===bd.maxbx){ this.dispnum("string_in", 1, "IN", 0.55, "black", px+0.5*this.cw, py-0.3*this.ch);}
 
-			g.fillStyle = (bd.border[bd.arrowout].error===3 ? this.errcolor1 : this.Cellcolor);
+			g.fillStyle = (bd.border[bd.arrowout].error===3 ? this.errcolor1 : this.cellcolor);
 			var bx = bd.border[bd.arrowout].bx, by = bd.border[bd.arrowout].by;
 			var px = bd.border[bd.arrowout].px, py = bd.border[bd.arrowout].py;
 			if     (by===bd.minby){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px,             py-0.6*this.ch);}

@@ -115,7 +115,7 @@ Puzzles.shikaku.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].qnum!=-1){
-					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
 					if(this.vnop(header+c,this.FILL)){
 						g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize2);
 					}

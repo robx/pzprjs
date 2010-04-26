@@ -133,7 +133,7 @@ Puzzles.tatamibari.prototype = {
 			var lw = Math.max(this.cw/12, 3);	//LineWidth
 			var ll = this.cw*0.70;				//LineLength
 			var headers = ["c_lp1_", "c_lp2_"];
-			g.fillStyle = this.BorderQuescolor;
+			g.fillStyle = this.borderQuescolor;
 
 			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){

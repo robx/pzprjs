@@ -88,7 +88,7 @@ Puzzles.creek.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.Cellcolor = "rgb(96, 96, 96)";
+		pc.cellcolor = "rgb(96, 96, 96)";
 		pc.setBGCellColorFunc('qans1');
 
 		pc.crosssize = 0.35;

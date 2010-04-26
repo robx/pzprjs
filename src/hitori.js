@@ -84,7 +84,7 @@ Puzzles.hitori.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.bcolor = pc.bcolor_GREEN;
 		pc.fontErrcolor = "red";
-		pc.BCell_fontcolor = "rgb(96,96,96)";
+		pc.fontBCellcolor = "rgb(96,96,96)";
 		pc.setBGCellColorFunc('qsub1');
 
 		pc.paint = function(x1,y1,x2,y2){

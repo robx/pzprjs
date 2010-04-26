@@ -233,7 +233,7 @@ Puzzles.hashikake.prototype = {
 
 			if(bd.cell[c].qnum!=-1){
 				g.lineWidth   = this.cw*0.05;
-				g.strokeStyle = this.Cellcolor;
+				g.strokeStyle = this.cellcolor;
 
 				if (pp.getVal('circolor') && bd.cell[c].qnum===ans.getCountOfBridges(c))
 											 { g.fillStyle = this.bcolor;      }

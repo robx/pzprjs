@@ -188,7 +188,7 @@ Puzzles.slither.prototype = {
 		pc.drawBaseMark1 = function(id){
 			var vid = "x_cm_"+id;
 
-			g.fillStyle = this.Cellcolor;
+			g.fillStyle = this.cellcolor;
 			if(this.vnop(vid,this.NONE)){
 				var csize = (this.lw+1)/2;
 				var bx = (id%(k.qcols+1))*2, by = mf(id/(k.qcols+1))*2;

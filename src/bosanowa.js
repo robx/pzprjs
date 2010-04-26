@@ -166,8 +166,8 @@ Puzzles.bosanowa.prototype = {
 		};
 
 		// カーソルを最初真ん中においておく
-		tc.cursolx = k.qcols-1-k.qcols%2;
-		tc.cursoly = k.qrows-1-k.qrows%2;
+		tc.cursorx = k.qcols-1-k.qcols%2;
+		tc.cursory = k.qrows-1-k.qrows%2;
 		if(k.EDITOR){
 			um.disableRecord();
 			bd.sQuC(tc.getTCC(),7);
@@ -236,7 +236,7 @@ Puzzles.bosanowa.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && !bd.isNum(c)){
-					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
 					if(this.vnop(header+c,this.STROKE)){
 						g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
 					}
@@ -379,14 +379,14 @@ Puzzles.bosanowa.prototype = {
 		pc.setBorderColor = function(id){
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if((cc1===-1 || bd.cell[cc1].ques!==7)^(cc2===-1 || bd.cell[cc2].ques!==7)){
-				g.fillStyle = this.Cellcolor;
+				g.fillStyle = this.cellcolor;
 				return true;
 			}
 			return false;
 		};
 
 		pc.drawTarget_bosanowa = function(x1,y1,x2,y2){
-			var islarge = !!((tc.cursolx&1)&&(tc.cursoly&1));
+			var islarge = !!((tc.cursorx&1)&&(tc.cursory&1));
 			this.drawCursor(x1,y1,x2,y2,islarge);
 		};
 	},

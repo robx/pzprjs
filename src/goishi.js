@@ -240,7 +240,7 @@ Puzzles.goishi.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && bd.cell[c].qans===-1){
-					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.Cellcolor);
+					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.cellcolor);
 					g.fillStyle   = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 					if(this.vnop(header+c,this.FILL_STROKE)){
 						g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);

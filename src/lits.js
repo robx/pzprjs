@@ -71,7 +71,7 @@ Puzzles.lits.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = "rgb(48, 48, 48)";
-		pc.Cellcolor = "rgb(96, 96, 96)";
+		pc.cellcolor = "rgb(96, 96, 96)";
 		pc.setBGCellColorFunc('qans2');
 
 		pc.paint = function(x1,y1,x2,y2){

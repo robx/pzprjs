@@ -326,7 +326,7 @@ Puzzles.slalom.prototype = {
 		pc.setCellColor = function(cc){
 			var err = bd.cell[cc].error;
 			if(bd.cell[cc].ques!==1){ return false;}
-			else if(err===0)        { g.fillStyle = this.Cellcolor; return true;}
+			else if(err===0)        { g.fillStyle = this.cellcolor; return true;}
 			else if(err===1)        { g.fillStyle = this.errcolor1; return true;}
 			return false;
 		};
@@ -340,7 +340,7 @@ Puzzles.slalom.prototype = {
 			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				g.fillStyle = (bd.cell[c].error===4 ? this.errcolor1 : this.Cellcolor);
+				g.fillStyle = (bd.cell[c].error===4 ? this.errcolor1 : this.cellcolor);
 
 				for(var j=bd.cell[c].py,max=bd.cell[c].py+this.ch;j<max;j+=ll*2){ //‚½‚Ä
 					if(bd.cell[c].ques===21){
@@ -374,7 +374,7 @@ Puzzles.slalom.prototype = {
 			this.vdel(vids);
 
 			g.lineWidth = (csize2>=1 ? csize2 : 1);
-			g.strokeStyle = this.Cellcolor;
+			g.strokeStyle = this.cellcolor;
 			g.fillStyle = (mv.inputData==10 ? this.errbcolor1 : "white");
 			if(this.vnop(vids[0],this.FILL)){
 				g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, csize);

@@ -107,7 +107,7 @@ Puzzles.tilepaint.prototype = {
 		kc.keyinput = function(ca){
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.inputnumber51(ca,{2:(k.qcols-(tc.cursolx>>1)-1), 4:(k.qrows-(tc.cursoly>>1)-1)});
+			this.inputnumber51(ca,{2:(k.qcols-(tc.cursorx>>1)-1), 4:(k.qrows-(tc.cursory>>1)-1)});
 		};
 
 		if(k.EDITOR){
@@ -131,7 +131,7 @@ Puzzles.tilepaint.prototype = {
 			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
-				kc.inputnumber51(ca,{2:(k.qcols-(tc.cursolx>>1)-1), 4:(k.qrows-(tc.cursoly>>1)-1)});
+				kc.inputnumber51(ca,{2:(k.qcols-(tc.cursorx>>1)-1), 4:(k.qrows-(tc.cursory>>1)-1)});
 			};
 		}
 
@@ -161,7 +161,7 @@ Puzzles.tilepaint.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.bcolor = pc.bcolor_GREEN;
-		pc.BBcolor = "rgb(127, 127, 127)";
+		pc.bbcolor = "rgb(127, 127, 127)";
 		pc.setBGCellColorFunc('qsub3');
 
 		pc.paint = function(x1,y1,x2,y2){
