@@ -191,12 +191,6 @@ Board.prototype = {
 	// bd.initSpecial()   パズル個別で初期化を行いたい処理を入力する
 	//---------------------------------------------------------------------------
 	initBoardSize : function(col,row){
-		// キャッシュを消去する
-		this._cnum  = [];
-		this._xnum  = [];
-		this._bnum  = [];
-		this._exnum = [];
-
 		{
 			this.initGroup(k.CELL,   this.cell,   col*row);
 		}
@@ -258,6 +252,7 @@ Board.prototype = {
 		this.setcoordAll();
 	},
 	setposCells : function(){
+		this._cnum = [];
 		this.cellmax = this.cell.length;
 		for(var id=0;id<this.cellmax;id++){
 			var obj = this.cell[id];
@@ -268,6 +263,7 @@ Board.prototype = {
 		}
 	},
 	setposCrosses : function(){
+		this._xnum = [];
 		this.crossmax = this.cross.length;
 		for(var id=0;id<this.crossmax;id++){
 			var obj = this.cross[id];
@@ -280,6 +276,7 @@ Board.prototype = {
 	setposBorders : function(){
 		if(k.iscross===0 && k.isborderAsLine){ this.set_xnum();}
 
+		this._bnum = [];
 		this.bdinside = 2*k.qcols*k.qrows-(k.qcols+k.qrows);
 		this.bdmax = this.border.length;
 		for(var id=0;id<this.bdmax;id++){
@@ -303,14 +300,15 @@ Board.prototype = {
 		}
 	},
 	setposEXcells : function(){
+		this._exnum = [];
 		this.excellmax = this.excell.length;
 		for(var id=0;id<this.excellmax;id++){
 			var obj = this.excell[id], i=id;
 			obj.bx=-1;
 			obj.by=-1;
 			if(k.isexcell===1){
-				if(i>=0 && i<k.qcols){ obj.bx=i*2+1; obj.by=-1;     continue;} i-=k.qcols;
-				if(i>=0 && i<k.qrows){ obj.bx=-1;     obj.by=i*2+1; continue;} i-=k.qrows;
+				if(i>=0 && i<k.qcols){ obj.bx=i*2+1; obj.by=-1;    continue;} i-=k.qcols;
+				if(i>=0 && i<k.qrows){ obj.bx=-1;    obj.by=i*2+1; continue;} i-=k.qrows;
 			}
 			else if(k.isexcell===2){
 				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;       obj.by=-1;          continue;} i-=k.qcols;

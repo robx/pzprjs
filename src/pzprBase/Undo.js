@@ -161,6 +161,7 @@ OperationManager.prototype = {
 			this.reqReset=false;
 
 			bd.setposAll();
+			bd.setminmax();
 			base.resetInfo(false);
 			base.resize_canvas();
 		}

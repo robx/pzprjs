@@ -300,7 +300,6 @@ Graphic.prototype = {
 	drawBGCells : function(x1,y1,x2,y2){
 		this.vinc('cell_back', 'crispEdges');
 		var header = "c_full_";
-
 		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
