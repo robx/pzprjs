@@ -145,7 +145,7 @@ Puzzles.firefly.prototype = {
 			var clist = this.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
 				pc.drawFirefly1(clist[i]);
-				pc.dispnumCell(clist[i])
+				pc.drawNumber1(clist[i]);
 			}
 		};
 	},

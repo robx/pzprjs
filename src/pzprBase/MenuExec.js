@@ -177,7 +177,7 @@ MenuExec.prototype = {
 		// 設定値・変数をcanvas用のものに変更
 		pc.fillTextPrecisely = true;
 		k.bdmargin = k.bdmargin_image;
-		pp.setVal('cursor', false);
+		pp.setVal('cursor', false, false);
 		g = ee('divques_sub').el.getContext("2d");
 
 		// canvas要素の設定を適用して、再描画
@@ -199,7 +199,7 @@ MenuExec.prototype = {
 		// 設定値・変数を元に戻す
 		pc.fillTextPrecisely = temp_flag;
 		k.bdmargin = temp_margin;
-		pp.setVal('cursor', temp_cursor);
+		pp.setVal('cursor', temp_cursor, false);
 		base.initCanvas();
 
 		// その他の設定を元に戻して、再描画

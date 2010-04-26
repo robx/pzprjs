@@ -137,7 +137,6 @@ Puzzles.reflect.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
-		pc.fontcolor = pc.fontErrcolor = "white";
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
@@ -204,7 +203,13 @@ Puzzles.reflect.prototype = {
 			}
 			else{ this.vhide(vids);}
 		};
-		pc.isdispnumCell = function(id){ return ((bd.QuC(id)>=2 && bd.QuC(id)<=5) && bd.QnC(id)>0);};
+		pc.drawNumber1 = function(c){
+			var obj = bd.cell[c], key = ['cell',c].join('_');
+			if((obj.ques>=2 && obj.ques<=5) && obj.qnum>0){
+				this.dispnum(key, obj.ques, ""+obj.qnum, 0.45, "white", obj.cpx, obj.cpy);
+			}
+			else{ this.hideEL(key);}
+		},
 
 		line.repaintParts = function(idlist){
 			var clist = this.getClistFromIdlist(idlist);

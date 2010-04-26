@@ -203,43 +203,45 @@ Puzzles.minarism.prototype = {
 			var ssize = this.cw*0.22;
 			var headers = ["b_cp_", "b_dt1_", "b_dt2_"];
 
+			g.lineWidth = 1;
+			g.strokeStyle = this.Cellcolor;
+
 			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i];
-				if(bd.border[id].qnum!=-1){
-					g.lineWidth = 1;
-					g.strokeStyle = "black";
-					g.fillStyle = (bd.border[id].error==1 ? this.errcolor1 : "white");
+				var id = idlist[i], obj = bd.border[id], key = ['border',id].join('_');
+				// ÅõÇÃï`âÊ
+				if(obj.qnum!=-1){
+					g.fillStyle = (obj.error==1 ? this.errcolor1 : "white");
 					if(this.vnop(headers[0]+id,this.FILL)){
-						g.shapeCircle(bd.border[id].px, bd.border[id].py, csize);
+						g.shapeCircle(obj.px, obj.py, csize);
 					}
 				}
 				else{ this.vhide([headers[0]+id]);}
 
-				this.dispnumBorder(id);
-
-				if(bd.border[id].ques!==0){
-					var px=bd.border[id].px, py=bd.border[id].py;
-					g.strokeStyle = this.Cellcolor;
-					if(bd.border[id].ques===1){
-						if(this.vnop(headers[1]+id,this.NONE)){
-							if(bd.border[id].bx&1){ g.setOffsetLinePath(px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false);}
-							else                  { g.setOffsetLinePath(px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false);}
-							g.stroke();
-						}
-					}
-					else{ this.vhide(headers[1]+id);}
-
-					if(bd.border[id].ques===2){
-						if(this.vnop(headers[2]+id,this.NONE)){
-							if(bd.border[id].bx&1){ g.setOffsetLinePath(px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false);}
-							else                  { g.setOffsetLinePath(px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false);}
-							g.stroke();
-						}
-					}
-					else{ this.vhide(headers[2]+id);}
+				// êîéöÇÃï`âÊ
+				if(obj.qnum>0){
+					this.dispnum(key, 1, ""+obj.qnum, 0.45, this.borderfontcolor, obj.px, obj.py);
 				}
-				else{ this.vhide([headers[1]+id, headers[2]+id]);}
+				else{ this.hideEL(key);}
+
+				// ïsìôçÜÇÃï`âÊ
+				if(obj.ques===1){
+					if(this.vnop(headers[1]+id,this.NONE)){
+						if(obj.bx&1){ g.setOffsetLinePath(obj.px,obj.py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false);}
+						else        { g.setOffsetLinePath(obj.px,obj.py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false);}
+						g.stroke();
+					}
+				}
+				else{ this.vhide(headers[1]+id);}
+
+				if(obj.ques===2){
+					if(this.vnop(headers[2]+id,this.NONE)){
+						if(obj.bx&1){ g.setOffsetLinePath(obj.px,obj.py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false);}
+						else        { g.setOffsetLinePath(obj.px,obj.py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false);}
+						g.stroke();
+					}
+				}
+				else{ this.vhide(headers[2]+id);}
 			}
 		};
 

@@ -220,7 +220,7 @@ Puzzles.loopsp.prototype = {
 			for(var i=0;i<clist.length;i++){
 				pc.drawLineParts1(clist[i]);
 				pc.drawCircle1AtNumber(clist[i]);
-				pc.dispnumCell(clist[i]);
+				pc.drawNumber1(clist[i]);
 			}
 		};
 	},

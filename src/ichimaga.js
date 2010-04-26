@@ -108,7 +108,7 @@ Puzzles.ichimaga.prototype = {
 			var clist = this.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
 				pc.drawCircle1AtNumber(clist[i]);
-				pc.dispnumCell(clist[i]);
+				pc.drawNumber1(clist[i]);
 			}
 		};
 		line.iscrossing = function(cc){ return (bd.QnC(cc)===-1);};

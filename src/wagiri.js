@@ -195,11 +195,10 @@ Puzzles.wagiri.prototype = {
 		pc.dispLetters_wagiri = function(x1,y1,x2,y2){
 			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
-				var id = clist[i];
-				var num = bd.cell[id].qnum, obj = bd.cell[id], key='cell_'+id;
+				var c = clist[i], obj = bd.cell[c], num = obj.qnum, key='cell_'+c;
 				if(num!==-1){
-					text = (num!==-2 ? ({1:"—Ö",2:"Ø"})[num] : "?");
-					this.dispnum(key, 1, text, 0.70, this.getNumberColor(id), obj.cpx, obj.cpy);
+					var text = (num!==-2 ? ({1:"—Ö",2:"Ø"})[num] : "?");
+					this.dispnum(key, 1, text, 0.70, this.fontcolor, obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(key);}
 			}

@@ -106,8 +106,8 @@ Graphic = function(){
 	this.zidx = 1;
 	this.zidx_array=[];
 
-	var numobj_attr = {className:'divnum', unselectable:'on'};
-	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', numobj_attr, null, null);
+	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', {className:'divnum', unselectable:'on'}, null, null);
+	this.EL_IMGOBJ = ee.addTemplate('numobj_parent', 'img', {className:'imgnum', unselectable:'on'}, null, null);
 
 	this.numobj = {};					// エレメントへの参照を保持する
 	this.fillTextPrecisely  = false;	// 数字をg.fillText()で描画
@@ -122,8 +122,6 @@ Graphic = function(){
 	this.NONE        = 3;
 	this.vnop_FILL   = [false,true,true,false];
 	this.vnop_STROKE = [true,false,true,false];
-
-	this.setFunctions();
 };
 Graphic.prototype = {
 	//---------------------------------------------------------------------------
@@ -461,7 +459,10 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawNumbers()      Cellの数字をCanvasに書き込む
+	// pc.drawNumbers()  Cellの数字をCanvasに書き込む
+	// pc.drawNumber1()  Cellに数字を記入するためdispnum関数を呼び出す
+	// pc.getCellNumberColor()  Cellの数字の色を設定する
+	// 
 	// pc.drawArrowNumbers() Cellの数字と矢印をCanvasに書き込む
 	// pc.drawQuesHatenas()  ques===-2の時に？をCanvasに書き込む
 	//---------------------------------------------------------------------------
@@ -469,8 +470,32 @@ Graphic.prototype = {
 		this.vinc('cell_number', 'auto');
 
 		var clist = bd.cellinside(x1,y1,x2,y2);
-		for(var i=0;i<clist.length;i++){ this.dispnumCell(clist[i]);}
+		for(var i=0;i<clist.length;i++){ this.drawNumber1(clist[i]);}
 	},
+	drawNumber1 : function(c){
+		var obj = bd.cell[c], key = ['cell',c].join('_'), num = bd.getNum(c);
+		if(num>0 || (k.dispzero && num===0) || (k.isDispHatena && num===-2)){
+			var text      = (num>=0 ? ""+num : "?");
+			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
+			var color     = this.getCellNumberColor(c);
+			this.dispnum(key, 1, text, fontratio, color, obj.cpx, obj.cpy);
+		}
+		else{ this.hideEL(key);}
+	},
+	getCellNumberColor : function(c){
+		var obj = bd.cell[c], color = this.fontcolor;
+		if(!k.isAnsNumber && ((k.BlackCell && obj.qans===1) || (!k.BlackCell && obj.ques!==0))){
+			color = this.BCell_fontcolor;
+		}
+		else if(obj.error===1 || obj.error===4){
+			color = this.fontErrcolor;
+		}
+		else if(k.isAnsNumber && obj.qnum===-1){
+			color = this.fontAnscolor;
+		}
+		return color;
+	},
+
 	drawArrowNumbers : function(x1,y1,x2,y2){
 		this.vinc('cell_arrownumber', 'auto');
 
@@ -586,16 +611,22 @@ Graphic.prototype = {
 
 		var clist = bd.crossinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.cross[c].qnum!==-1){
-				g.fillStyle = (bd.cross[c].error===1 ? this.errcolor1 : "white");
+			var c = clist[i], obj = bd.cross[c], key = ['cross',c].join('_');
+			// ○の描画
+			if(obj.qnum!==-1){
+				g.fillStyle = (obj.error===1 ? this.errcolor1 : "white");
 				g.strokeStyle = "black";
 				if(this.vnop(header+c,this.FILL_STROKE)){
-					g.shapeCircle(bd.cross[c].px, bd.cross[c].py, csize);
+					g.shapeCircle(obj.px, obj.py, csize);
 				}
 			}
 			else{ this.vhide([header+c]);}
-			this.dispnumCross(c);
+
+			// 数字の描画
+			if(obj.qnum>=0){
+				this.dispnum(key, 1, ""+obj.qnum, 0.6, this.fontcolor, obj.px, obj.py);
+			}
+			else{ this.hideEL(key);}
 		}
 	},
 	drawCrossMarks : function(x1,y1,x2,y2){
@@ -1067,6 +1098,52 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// pc.drawNumbersOn51()   [＼]に数字を記入する
+	// pc.drawNumbersOn51_1() 1つの[＼]に数字を記入する
+	//---------------------------------------------------------------------------
+	drawNumbersOn51 : function(x1,y1,x2,y2){
+		this.vinc('cell_number51', 'auto');
+
+		for(var bx=(x1|1)-2;bx<=x2+2;bx+=2){
+			for(var by=(y1|1)-2;by<=y2+2;by+=2){
+				// cell上だった場合
+				if(bx!==-1 && by!==-1){
+					var c = bd.cnum(bx,by);
+					if(c!==-1){ this.drawNumbersOn51_1('cell', c);}
+				}
+				// excell上だった場合
+				else{
+					var c = bd.exnum(bx,by);
+					if(c!==-1){ this.drawNumbersOn51_1('excell', c);}
+				}
+			}
+		}
+	},
+	drawNumbersOn51_1 : function(family, c){
+		var val, err, guard, nb, type, str, obj=bd[family][c];
+		var keys = [[family,c,'ques51','rt'].join('_'), [family,c,'ques51','dn'].join('_')];
+
+		if(family==='excell' || bd.cell[c].ques===51){
+			for(var i=0;i<2;i++){
+				if     (i===0){ val=obj.qnum,  guard=obj.by, nb=bd.cnum(obj.bx+2, obj.by), type=4;} // 1回目は右向き
+				else if(i===1){ val=obj.direc, guard=obj.bx, nb=bd.cnum(obj.bx, obj.by+2), type=2;} // 2回目は下向き
+
+				if(val!==-1 && guard!==-1 && nb!==-1 && bd.cell[nb].ques!==51){
+					var color = (obj.error===1?this.fontErrcolor:this.fontcolor);
+					var text = (val>=0?""+val:"");
+
+					this.dispnum(keys[i], type, text, 0.45, color, obj.px+this.bw, obj.py+this.bh);
+				}
+				else{ this.hideEL(keys[i]);}
+			}
+		}
+		else{
+			this.hideEL(keys[0]);
+			this.hideEL(keys[1]);
+		}
+	},
+
+	//---------------------------------------------------------------------------
 	// pc.drawTarget()  入力対象となる場所を描画する
 	// pc.drawCursor()  キーボードからの入力対象をCanvasに書き込む
 	// pc.drawTargetTriangle() [＼]のうち入力対象のほうに背景色をつける
@@ -1443,94 +1520,20 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.showEL()          エレメントを表示する
-	// pc.hideEL()          エレメントを隠す
-	// pc.isdispnumCell()   数字を記入できるか判定する
-	// pc.getNumberColor()  数字の色を判定する
-	//---------------------------------------------------------------------------
-	// 数字表示関数
-	showEL : function(key){ this.numobj[key].style.display = 'inline'; },	// 条件見なくてもよさそう。
-	hideEL : function(key){ if(!!this.numobj[key]){ this.numobj[key].style.display = 'none';} },
-
-	setFunctions : function(){
-		this.isdispnumCell = (
-			(k.isDispHatena ?
-				k.dispzero ? function(id){ var num=bd.getNum(id); return (num>=0 || num===-2);}
-						   : function(id){ var num=bd.getNum(id); return (num> 0 || num===-2);}
-			:
-				k.dispzero ? function(id){ var num=bd.getNum(id); return (num>=0);}
-						   : function(id){ var num=bd.getNum(id); return (num> 0);}
-			)
-		);
-		this.getNumberColor = (
-			(k.isAnsNumber ?
-				function(id){
-					if(bd.cell[id].error===1 || bd.cell[id].error===4){ return this.fontErrcolor;}
-					return (bd.cell[id].qnum!==-1 ? this.fontcolor : this.fontAnscolor);
-				}
-			: k.BlackCell ?
-				function(id){
-					if(bd.cell[id].qans===1){ return this.BCell_fontcolor;}
-					else if(bd.cell[id].error===1 || bd.cell[id].error===4){ return this.fontErrcolor;}
-					return this.fontcolor;
-				}
-			:
-				function(id){
-					if(bd.cell[id].ques!==0){ return this.BCell_fontcolor;}
-					else if(bd.cell[id].error===1 || bd.cell[id].error===4){ return this.fontErrcolor;}
-					return this.fontcolor;
-				}
-			)
-		);
-	},
-	isdispnumCell  : f_true,
-	getNumberColor : function(){ return this.fontcolor;},
-
-	//---------------------------------------------------------------------------
-	// pc.dispnumCell()   Cellに数字を記入するための値を決定する
-	// pc.dispnumCross()  Crossに数字を記入するための値を決定する
-	// pc.dispnumBorder() Borderに数字を記入するための値を決定する
-	//---------------------------------------------------------------------------
-	dispnumCell : function(id){
-		var obj = bd.cell[id], key = ['cell',id].join('_');
-		if(this.isdispnumCell(id)){
-			var type = ((obj.ques>=2 && obj.ques<=5) ? obj.ques : 1);
-			var num  = bd.getNum(id);
-			var text = (num>=0 ? ""+num : "?");
-
-			var fontratio = 0.45;
-			if(type===1){ fontratio = (num<10?0.8:(num<100?0.7:0.55));}
-
-			var color = this.getNumberColor(id);
-
-			this.dispnum(key, type, text, fontratio, color, obj.cpx, obj.cpy);
-		}
-		else{ this.hideEL(key);}
-	},
-	dispnumCross : function(id){
-		var obj = bd.cross[id], key = ['cross',id].join('_');
-		if(obj.qnum>0 || (obj.qnum===0 && k.dispzero)){
-			var text  = ""+obj.qnum;
-			var color = this.fontcolor;
-
-			this.dispnum(key, 1, text, 0.6, color, obj.px, obj.py);
-		}
-		else{ this.hideEL(key);}
-	},
-	dispnumBorder : function(id){
-		var obj = bd.border[id], key = ['border',id].join('_');
-		if(obj.qnum>0 || (obj.qnum===0 && k.dispzero)){
-			var text  = ""+obj.qnum;
-			var color = this.borderfontcolor;
-
-			this.dispnum(key, 1, text, 0.45, color, obj.px, obj.py);
-		}
-		else{ this.hideEL(key);}
-	},
-
-	//---------------------------------------------------------------------------
+	// pc.showEL()   エレメントを表示する
+	// pc.hideEL()   エレメントを隠す
 	// pc.dispnum()  数字を記入するための共通関数
 	//---------------------------------------------------------------------------
+	showEL : function(key){
+		// 呼び出し元は if(!this.fillTextPrecisely) の中だけなので
+		// hideELにある条件は見なくてもよさそう。
+		this.numobj[key].style.display = 'inline';
+	},
+	hideEL : function(key){
+		if(!!this.numobj[key]){
+			this.numobj[key].style.display = 'none';
+		}
+	},
 	dispnum : function(key, type, text, fontratio, color, px, py){
 		if(!this.fillTextPrecisely){
 			if(k.br.IEmoz4){ py+=2;}
@@ -1576,52 +1579,6 @@ Graphic.prototype = {
 				px += ((type===3||type===4)?this.bw-1:-this.bw+2), py += ((type===2||type===3)?this.bh-2:-this.bh+1);
 			}
 			g.fillText(text, px, py);
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// pc.drawNumbersOn51()   [＼]に数字を記入する
-	// pc.drawNumbersOn51_1() 1つの[＼]に数字を記入する
-	//---------------------------------------------------------------------------
-	drawNumbersOn51 : function(x1,y1,x2,y2){
-		this.vinc('cell_number51', 'auto');
-
-		for(var bx=(x1|1)-2;bx<=x2+2;bx+=2){
-			for(var by=(y1|1)-2;by<=y2+2;by+=2){
-				// cell上だった場合
-				if(bx!==-1 && by!==-1){
-					var c = bd.cnum(bx,by);
-					if(c!==-1){ this.drawNumbersOn51_1('cell', c);}
-				}
-				// excell上だった場合
-				else{
-					var c = bd.exnum(bx,by);
-					if(c!==-1){ this.drawNumbersOn51_1('excell', c);}
-				}
-			}
-		}
-	},
-	drawNumbersOn51_1 : function(family, c){
-		var val, err, guard, nb, type, str, obj=bd[family][c];
-		var keys = [[family,c,'ques51','rt'].join('_'), [family,c,'ques51','dn'].join('_')];
-
-		if(family==='excell' || bd.cell[c].ques===51){
-			for(var i=0;i<2;i++){
-				if     (i===0){ val=obj.qnum,  guard=obj.by, nb=bd.cnum(obj.bx+2, obj.by), type=4;} // 1回目は右向き
-				else if(i===1){ val=obj.direc, guard=obj.bx, nb=bd.cnum(obj.bx, obj.by+2), type=2;} // 2回目は下向き
-
-				if(val!==-1 && guard!==-1 && nb!==-1 && bd.cell[nb].ques!==51){
-					var color = (obj.error===1?this.fontErrcolor:this.fontcolor);
-					var text = (val>=0?""+val:"");
-
-					this.dispnum(keys[i], type, text, 0.45, color, obj.px+this.bw, obj.py+this.bh);
-				}
-				else{ this.hideEL(keys[i]);}
-			}
-		}
-		else{
-			this.hideEL(keys[0]);
-			this.hideEL(keys[1]);
 		}
 	}
 };

@@ -126,6 +126,7 @@ Puzzles.shwolf.prototype = {
 		pc.setBorderColorFunc('qans');
 
 		pc.crosssize = 0.15;
+		pc.imgobj = new ImageManager_shwolf();
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
@@ -140,51 +141,46 @@ Puzzles.shwolf.prototype = {
 			this.drawChassis(x1,y1,x2,y2);
 		};
 
-		pc.EL_IMAGE  = ee.addTemplate('numobj_parent','img',{src:'./src/img/shwolf_obj.gif',unselectable:'on'},{display:'block',position:'absolute'},null);
-
 		// numobj:？表示用 numobj2:画像表示用
 		pc.drawSheepWolf = function(x1,y1,x2,y2){
 			this.vinc('cell_number_image', 'auto');
 
-			var bimg = null;
-			if(this.fillTextPrecisely){ bimg = new Image(); bimg.src = './src/img/shwolf_obj.gif';}
-
 			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i], obj = bd.cell[c], key = ['cell',c].join('_');
+				var c = clist[i], obj = bd.cell[c];
+				var keyques = ['cell',c].join('_'), keyimg = ['cell',c,'quesimg'].join('_');
 				if(obj.ques===-2){
-					this.dispnum(key, 1, "?", 0.8, this.fontcolor, obj.cpx, obj.cpy);
+					this.dispnum(keyques, 1, "?", 0.8, this.fontcolor, obj.cpx, obj.cpy);
 				}
-				else{ this.hideEL(key);}
+				else{ this.hideEL(keyques);}
 
-				this.drawImage1(c, bimg, (obj.ques>0));
+				if(obj.ques>0){
+					this.dispimage1(keyimg, c);
+				}
+				else{ this.hideEL(keyimg);}
 			}
 		};
-		pc.drawImage1 = function(c, bimg, isdraw){
-			var imgrect = [2,1], xpos = {41:0,42:1}[bd.cell[c].ques], ypos=0;
+		pc.dispimage1 = function(key, c){
+			var xpos = {41:0,42:1}[bd.cell[c].ques], ypos=0;
 
 			if(!this.fillTextPrecisely){
-				var key=['cell',c,'quesimg'].join('_');
-				if(isdraw){
-					var img = this.numobj[key];
-					if(!img){
-						img = this.numobj[key] = ee.createEL(this.EL_IMAGE ,'');
-						img.style.width  = ""+(imgrect[0]*this.cw)+"px";
-						img.style.height = ""+(imgrect[1]*this.ch)+"px";
-					}
-					img.style.left   = mf(k.cv_oft.x+bd.cell[c].px+1 - xpos*this.cw)+"px";
-					img.style.top    = mf(k.cv_oft.y+bd.cell[c].py+1 - ypos*this.cw)+"px";
-					img.style.clip   = "rect("+mf(this.cw*ypos+1)+"px,"+mf(this.cw*(xpos+1))+"px,"+mf(this.cw*(ypos+1))+"px,"+mf(this.cw*xpos+1)+"px)";
-					this.showEL(key);
+				var img = this.numobj[key];
+				if(!img){
+					img = this.numobj[key] = ee.createEL(this.EL_IMGOBJ, '');
+					img.src = this.imgobj.src;
+					img.style.width  = ""+(this.imgobj.cols*this.cw)+"px";
+					img.style.height = ""+(this.imgobj.rows*this.ch)+"px";
 				}
-				else{ this.hideEL(key);}
+				img.style.left   = mf(k.cv_oft.x+bd.cell[c].px+1 - xpos*this.cw)+"px";
+				img.style.top    = mf(k.cv_oft.y+bd.cell[c].py+1 - ypos*this.cw)+"px";
+				img.style.clip   = "rect("+mf(this.cw*ypos+1)+"px,"+mf(this.cw*(xpos+1))+"px,"+mf(this.cw*(ypos+1))+"px,"+mf(this.cw*xpos+1)+"px)";
+				this.showEL(key);
 			}
 			else{
-				if(isdraw){
-					var cw_src = bimg.width/imgrect[0], ch_src = bimg.height/imgrect[1];
-					// Camp.jsにg.drawImageが未実装です。。
-					g.context.drawImage(bimg, xpos*cw_src, ypos*ch_src, cw_src, ch_src, bd.cell[c].px, bd.cell[c].py, k.cwidth, k.cheight);
-				}
+				// Camp.jsにg.drawImageが未実装です。。
+				var iobj = this.imgobj;
+				g.context.drawImage(iobj.image, xpos*iobj.cw, ypos*iobj.ch, iobj.cw, iobj.ch,
+												bd.cell[c].px, bd.cell[c].py, this.cw, this.ch);
 			}
 		};
 	},
@@ -316,4 +312,17 @@ Puzzles.shwolf.prototype = {
 			}
 		};
 	}
+};
+
+ImageManager_shwolf = function(){
+	this.src = './src/img/shwolf_obj.gif';
+
+	this.image = new Image();
+	this.image.src = this.src;
+
+	this.cols = 2;
+	this.rows = 1;
+
+	this.cw = this.image.width/this.cols;
+	this.ch = this.image.height/this.rows;
 };
