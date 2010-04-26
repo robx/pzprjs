@@ -274,16 +274,14 @@ Puzzles.goishi.prototype = {
 	// URLエンコード/デコード処理
 	encode_init : function(){
 		enc.pzlimport = function(type){
-			this.decodeBoard();
+			this.decodeGoishi();
 		};
 		enc.pzlexport = function(type){
 			this.encodeGoishi();
 		};
 
 		enc.decodeKanpen = function(){
-			fio.decodeCell( function(c,ca){
-				if(ca==='1'){ bd.sQuC(c, 7);}
-			});
+			fio.decodeGoishi_kanpen();
 		};
 		enc.encodeKanpen = function(){
 			fio.encodeGoishi_kanpen();
@@ -291,25 +289,23 @@ Puzzles.goishi.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCell( function(c,ca){
-				if(ca!=='.'){
-					bd.sQuC(c, 7);
-					if(ca!=='0'){ bd.sQaC(c, parseInt(ca));}
-				}
-			});
+			this.decodeGoishiFile();
 		};
 		fio.encodeData = function(){
-			this.encodeCell( function(c){
-				if(bd.QuC(c)===7){
-					if(bd.QaC(c)===-1){ return "0 ";}
-					else{ return ""+parseInt(bd.QaC(c))+" ";}
-				}
-				return ". ";
-			});
+			this.encodeGoishiFile();
+		};
+
+		fio.kanpenOpen = function(){
+			this.decodeGoishi_kanpen();
+			this.decodeQansPos_kanpen();
+		};
+		fio.kanpenSave = function(){
+			this.encodeGoishi_kanpen();
+			this.encodeQansPos_kanpen();
 		};
 
 		//---------------------------------------------------------
-		enc.decodeBoard = function(){
+		enc.decodeGoishi = function(){
 			var bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var num = parseInt(bstr.charAt(i),32);
@@ -318,7 +314,6 @@ Puzzles.goishi.prototype = {
 			}
 			this.outbstr = bstr.substr(i+1);
 		};
-
 		// エンコード時は、盤面サイズの縮小という特殊処理を行ってます
 		enc.encodeGoishi = function(){
 			var d = this.getSizeOfBoard_goishi();
@@ -334,22 +329,7 @@ Puzzles.goishi.prototype = {
 			if(count>0){ cm += pass.toString(32);}
 			this.outbstr += cm;
 
-			this.outsize = [d.cols, d.rows].join("/");
-		};
-
-		fio.encodeGoishi_kanpen = function(){
-			var d = enc.getSizeOfBoard_goishi();
-
-			for(var by=d.y1;by<=d.y2;by+=2){
-				for(var bx=d.x1;bx<=d.x2;bx+=2){
-					var c = bd.cnum(bx,by);
-					this.datastr += (bd.QuC(c)===7 ? "1 " : ". ");
-				}
-				this.datastr += "/";
-			}
-
-			enc.outsize  = [d.cols, d.rows].join("/");
-			this.sizestr = [d.cols, d.rows].join("/");
+			this.outsize = [d.cols>>1, d.rows>>1].join("/");
 		};
 
 		enc.getSizeOfBoard_goishi = function(){
@@ -365,6 +345,69 @@ Puzzles.goishi.prototype = {
 			if(count==0){ return {x1:0, y1:0, x2:1, y2:1, cols:2, rows:2};}
 			if(pp.getVal('bdpadding')){ return {x1:x1-1, y1:y1-1, x2:x2+1, y2:y2+1, cols:(x2-x1+6)/2, rows:(y2-y1+6)/2};}
 			return {x1:x1, y1:y1, x2:x2, y2:y2, cols:(x2-x1+2)/2, rows:(y2-y1+2)/2};
+		};
+
+		//---------------------------------------------------------
+		fio.decodeGoishiFile = function(){
+			this.decodeCell( function(c,ca){
+				if(ca!=='.'){
+					bd.sQuC(c, 7);
+					if(ca!=='0'){ bd.sQaC(c, parseInt(ca));}
+				}
+			});
+		};
+		fio.encodeGoishiFile = function(){
+			this.encodeCell( function(c){
+				if(bd.QuC(c)===7){
+					if(bd.QaC(c)===-1){ return "0 ";}
+					else{ return ""+parseInt(bd.QaC(c))+" ";}
+				}
+				return ". ";
+			});
+		};
+
+		fio.decodeGoishi_kanpen = function(){
+			this.decodeCell( function(c,ca){
+				if(ca==='1'){ bd.sQuC(c, 7);}
+			});
+		};
+		fio.encodeGoishi_kanpen = function(){
+			for(var by=bd.minby+1;by<bd.maxby;by+=2){
+				for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
+					var c = bd.cnum(bx,by);
+					this.datastr += (bd.QuC(c)===7 ? "1 " : ". ");
+				}
+				this.datastr += "/";
+			}
+		};
+
+		fio.decodeQansPos_kanpen = function(){
+			for(;;){
+				var data = this.readLine();
+				if(!data){ break;}
+
+				var item = data.split(" ");
+				if(item.length<=1){ return;}
+				else{
+					var c=bd.cnum(parseInt(item[2])*2+1,parseInt(item[1])*2+1);
+					bd.sQuC(c, 7);
+					bd.sQaC(c, parseInt(item[0]));
+				}
+			}
+		};
+		fio.encodeQansPos_kanpen = function(){
+			var stones = []
+			for(var by=bd.minby+1;by<bd.maxby;by+=2){ for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
+				var c = bd.cnum(bx,by);
+				if(bd.QuC(c)!==7 || bd.QaC(c)===-1){ continue;}
+
+				var pos = [(bx>>1).toString(), (by>>1).toString()];
+				stones[bd.QaC(c)-1] = pos;
+			}}
+			for(var i=0,len=stones.length;i<len;i++){
+				var item = [(i+1), stones[i][1], stones[i][0]];
+				this.datastr += (item.join(" ")+"/");
+			}
 		};
 	},
 

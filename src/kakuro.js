@@ -198,12 +198,12 @@ Puzzles.kakuro.prototype = {
 		};
 
 		enc.decodeKanpen = function(){
-			fio.decodeRoom_kanpen();
+			fio.decodeCellQnum51_kanpen();
 		};
 		enc.encodeKanpen = function(){
 			this.outsize = [k.qrows+1, k.qcols+1].join("/");
 
-			fio.encodeRoom_kanpen();
+			fio.encodeCellQnum51_kanpen();
 		};
 
 		enc.decodeKakuro = function(){
