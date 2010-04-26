@@ -52,7 +52,7 @@ Puzzles.tawa.prototype = {
 	protoChange : function(){
 		this.protofunc = {
 			bdinit  : Board.prototype.initBoardSize,
-			spcells : Board.prototype.setposCells,
+			spcells : Board.prototype.setposCells
 		};
 
 		Board.prototype.initBoardSize = function(col,row){
@@ -185,8 +185,8 @@ Puzzles.tawa.prototype = {
 
 		document.newboard.innerHTML =
 			["<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n",
-			 "<input type=\"text\" name=\"col\" value=\"\" size=\"3\" maxlength=\"3\" /> <span id=\"pop1_1_cap1x\">横幅 (黄色の数)</span><br>\n",
-			 "<input type=\"text\" name=\"row\" value=\"\" size=\"3\" maxlength=\"3\" /> <span id=\"pop1_1_cap2x\">高さ</span><br>\n",
+			 "<input type=\"number\" name=\"col\" value=\"\" size=\"4\" maxlength=\"3\" min=\"1\" max=\"999\" /> <span id=\"pop1_1_cap1x\">横幅 (黄色の数)</span><br>\n",
+			 "<input type=\"number\" name=\"row\" value=\"\" size=\"4\" maxlength=\"3\" min=\"1\" max=\"999\" /> <span id=\"pop1_1_cap2x\">高さ</span><br>\n",
 			 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"2\" style=\"margin-top:4pt;margin-bottom:4pt;\">",
 			 "<tr id=\"laps\" style=\"padding-bottom:2px;\">\n",
 			 "</tr></table>\n",
@@ -285,6 +285,7 @@ Puzzles.tawa.prototype = {
 		bd.setLap = function(val){ bd.lap=val; tc.adjust();};
 		bd.setLap(bd.lap);
 		bd.afterinit();
+		tc.cursorx = 2; tc.cursory = 1;
 
 		// マウス入力時のセルID取得系
 		mv.cellid = function(){
@@ -453,7 +454,7 @@ Puzzles.tawa.prototype = {
 			if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
 			if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
 
-			var lw = Math.max(this.cw/32, 1);
+			var lw = Math.max(this.cw/36, 1);
 			var lm = (lw-1)/2;
 			var headers = ["bdx_", "bdy"];
 
