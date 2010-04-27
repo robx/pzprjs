@@ -31,6 +31,9 @@ Puzzles.firefly.prototype = {
 		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
 		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
+		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
+
 		k.bdmargin       = 0.50;	// 枠外の一辺のmargin(セル数換算)
 		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
 

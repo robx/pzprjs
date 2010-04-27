@@ -220,7 +220,8 @@ AnsCheck.prototype = {
 
 	setCellLineError : function(cc, flag){
 		if(flag){ bd.sErC([cc],1);}
-		bd.sErB([bd.ub(cc),bd.db(cc),bd.lb(cc),bd.rb(cc)], 1);
+		var bx=bd.cell[cc].bx, by=bd.cell[cc].by;
+		bd.sErB(bd.borderinside(bx-1,by-1,bx+1,by+1), 1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -540,8 +541,7 @@ AnsCheck.prototype = {
 		var result = true;
 		for(var by=0;by<=bd.maxby;by+=2){
 			for(var bx=0;bx<=bd.maxbx;bx+=2){
-				if(k.iscross===1 && !k.isborderAsLine &&
-				   (bx===bd.minbx||by===bd.minby||bx===bd.maxbx||by===bd.maxby)){ continue;}
+				if(k.iscross===1 && (bx===bd.minbx||by===bd.minby||bx===bd.maxbx||by===bd.maxby)){ continue;}
 				var id = (bx>>1)+(by>>1)*(k.qcols+1);
 				var lcnts = (!k.isborderAsLine?area.lcnt[id]:line.lcnt[id]);
 				if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(bx,by))==1) || (bp==2&&bd.QnX(bd.xnum(bx,by))!=1) )){
@@ -556,6 +556,6 @@ AnsCheck.prototype = {
 	},
 	setCrossBorderError : function(bx,by){
 		if(k.iscross!==0){ bd.sErX([bd.xnum(bx,by)], 1);}
-		bd.sErB([bd.bnum(bx,by-1),bd.bnum(bx,by+1),bd.bnum(bx-1,by),bd.bnum(bx+1,by)], 1);
+		bd.sErB(bd.borderinside(bx-1,by-1,bx+1,by+1), 1);
 	}
 };

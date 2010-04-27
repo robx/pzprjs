@@ -57,13 +57,6 @@ Puzzles.goishi.prototype = {
 	},
 	finalfix : function(){
 		ee('btnclear2').el.style.display = 'none';
-		var el = document.urloutput.firstChild;
-		if(!el.innerHTML){
-			document.urloutput.removeChild(el);
-			el = document.urloutput.firstChild;
-		}
-		el.removeChild(el.firstChild);
-		el.removeChild(el.firstChild);
 	},
 
 	protoChange : function(){
@@ -329,7 +322,7 @@ Puzzles.goishi.prototype = {
 			if(count>0){ cm += pass.toString(32);}
 			this.outbstr += cm;
 
-			this.outsize = [d.cols>>1, d.rows>>1].join("/");
+			this.outsize = [d.cols, d.rows].join("/");
 		};
 
 		enc.getSizeOfBoard_goishi = function(){
@@ -343,7 +336,7 @@ Puzzles.goishi.prototype = {
 				count++;
 			}
 			if(count==0){ return {x1:0, y1:0, x2:1, y2:1, cols:2, rows:2};}
-			if(pp.getVal('bdpadding')){ return {x1:x1-1, y1:y1-1, x2:x2+1, y2:y2+1, cols:(x2-x1+6)/2, rows:(y2-y1+6)/2};}
+			if(pp.getVal('bdpadding')){ return {x1:x1-2, y1:y1-2, x2:x2+2, y2:y2+2, cols:(x2-x1+6)/2, rows:(y2-y1+6)/2};}
 			return {x1:x1, y1:y1, x2:x2, y2:y2, cols:(x2-x1+2)/2, rows:(y2-y1+2)/2};
 		};
 

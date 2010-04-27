@@ -274,7 +274,7 @@ Board.prototype = {
 		}
 	},
 	setposBorders : function(){
-		if(k.iscross===0 && k.isborderAsLine){ this.set_xnum();}
+		if(k.iscross===0 && (k.hasroom || k.isborderAsLine)){ this.set_xnum();}
 
 		this._bnum = [];
 		this.bdinside = 2*k.qcols*k.qrows-(k.qcols+k.qrows);

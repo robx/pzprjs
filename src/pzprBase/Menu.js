@@ -93,7 +93,7 @@ Menu.prototype = {
 		ee('float_parent').el.innerHTML = '';
 
 		if(!!ee('btncolor2')){ ee('btncolor2').remove();}
-		ee('btnarea').removeNextAll(ee('btnclear2').el);
+		ee('btnarea').el.innerHTML = '';
 
 		ee('urlbuttonarea').el.innerHTML = '';
 

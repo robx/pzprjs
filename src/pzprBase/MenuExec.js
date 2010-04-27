@@ -417,14 +417,14 @@ MenuExec.prototype = {
 		if(k.isexcell===2){ this.turnflipGroup(k.EXCELL, arg, d, bd.excell, bd.excellmax);}
 		else if(k.isexcell===1 && (arg===1 || arg===2)){
 			if(arg===1){
-				for(var by=(d.y1|1);by<d.yy/2;by+=2){
+				for(var by=Math.max(1,d.y1|1);by<d.yy/2;by+=2){
 					var c = bd.excell[bd.exnum(-1,by)];
 					bd.excell[bd.exnum(-1,by)] = bd.excell[bd.exnum(-1,d.yy-by)];
 					bd.excell[bd.exnum(-1,d.yy-by)] = c;
 				}
 			}
 			else if(arg===2){
-				for(var bx=(d.x1|1);bx<d.xx/2;bx+=2){
+				for(var bx=Math.max(1,d.x1|1);bx<d.xx/2;bx+=2){
 					var c = bd.excell[bd.exnum(bx,-1)];
 					bd.excell[bd.exnum(bx,-1)] = bd.excell[bd.exnum(d.xx-bx,-1)];
 					bd.excell[bd.exnum(d.xx-bx,-1)] = c;

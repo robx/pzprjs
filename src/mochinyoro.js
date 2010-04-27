@@ -31,6 +31,9 @@ Puzzles.mochinyoro.prototype = {
 		k.checkBlackCell  = true;	// 正答判定で黒マスの情報をチェックするパズル
 		k.checkWhiteCell  = true;	// 正答判定で白マスの情報をチェックするパズル
 
+		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
+
 		base.setTitle("モチにょろ","Mochinyoro");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
 						   " Left Click to input black cells, Right Click to input determined white cells.");
