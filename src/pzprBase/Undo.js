@@ -74,7 +74,7 @@ OperationManager.prototype = {
 	//---------------------------------------------------------------------------
 	addOpe : function(obj, property, id, old, num){
 		if(!this.isenableRecord()){ return;}
-		else if(old==num){ return;}
+		else if(old==num && obj!==k.BOARD){ return;}
 
 		var lastid = this.ope.length-1;
 
@@ -205,22 +205,10 @@ OperationManager.prototype = {
 		}
 		else if(ope.obj == k.BOARD){
 			var d = {x1:0, y1:0, x2:2*k.qcols, y2:2*k.qrows};
-			d.xx=(d.x1+d.x2); d.yy=(d.y1+d.y2);
 
 			this.disableInfo();
-			if     (pp == 'expandup'){ if(num==1){ menu.ex.expand(k.UP,d);}else{ menu.ex.reduce(k.UP,d);} }
-			else if(pp == 'expanddn'){ if(num==1){ menu.ex.expand(k.DN,d);}else{ menu.ex.reduce(k.DN,d);} }
-			else if(pp == 'expandlt'){ if(num==1){ menu.ex.expand(k.LT,d);}else{ menu.ex.reduce(k.LT,d);} }
-			else if(pp == 'expandrt'){ if(num==1){ menu.ex.expand(k.RT,d);}else{ menu.ex.reduce(k.RT,d);} }
-			else if(pp == 'reduceup'){ if(num==1){ menu.ex.reduce(k.UP,d);}else{ menu.ex.expand(k.UP,d);} }
-			else if(pp == 'reducedn'){ if(num==1){ menu.ex.reduce(k.DN,d);}else{ menu.ex.expand(k.DN,d);} }
-			else if(pp == 'reducelt'){ if(num==1){ menu.ex.reduce(k.LT,d);}else{ menu.ex.expand(k.LT,d);} }
-			else if(pp == 'reducert'){ if(num==1){ menu.ex.reduce(k.RT,d);}else{ menu.ex.expand(k.RT,d);} }
-
-			else if(pp == 'flipy'){ menu.ex.turnflip(1,d);}
-			else if(pp == 'flipx'){ menu.ex.turnflip(2,d);}
-			else if(pp == 'turnr'){ menu.ex.turnflip((num==1?3:4),d); }
-			else if(pp == 'turnl'){ menu.ex.turnflip((num==1?4:3),d); }
+			if(num & menu.ex.TURNFLIP){ menu.ex.turnflip    (num,d);}
+			else                      { menu.ex.expandreduce(num,d);}
 
 			this.range = {x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby};
 			this.reqReset = true;

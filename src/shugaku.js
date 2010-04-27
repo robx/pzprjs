@@ -171,36 +171,32 @@ Puzzles.shugaku.prototype = {
 
 		bd.maxnum = 4;
 
-		menu.ex.adjustSpecial = function(arg,key,d){
+		menu.ex.adjustSpecial = function(key,d){
 			um.disableRecord();
-			switch(arg){
-			case 1: // è„â∫îΩì]
+			switch(key){
+			case this.FLIPY: // è„â∫îΩì]
 				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {12:13,13:12,17:18,18:17}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
-			case 2: // ç∂âEîΩì]
+			case this.FLIPX: // ç∂âEîΩì]
 				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {14:15,15:14,19:20,20:19}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
-			case 3: // âE90ÅãîΩì]
+			case this.TURNR: // âE90ÅãîΩì]
 				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {12:15,15:13,13:14,14:12,17:20,20:18,18:19,19:17}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
-			case 4: // ç∂90ÅãîΩì]
+			case this.TURNL: // ç∂90ÅãîΩì]
 				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {12:14,14:13,13:15,15:12,17:19,19:18,18:20,20:17}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
-				break;
-			case 5: // î’ñ ägëÂ
-				break;
-			case 6: // î’ñ èkè¨
 				break;
 			}
 			um.enableRecord();

@@ -247,7 +247,8 @@ Puzzles.mejilink.prototype = {
 			var tcount = [], numerous_value = 999999;
 			for(var r=1;r<=tarea.max;r++){ tcount[r]=0;}
 			for(var id=0;id<bd.bdmax;id++){
-				if(bd.QuB(id)==1 && id>=bd.bdinside){
+				if(bd.QuB(id)==1 && id>=
+				bd.bdinside){
 					var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 					if(cc1!=-1){ tcount[tarea.id[cc1]] -= numerous_value;}
 					if(cc2!=-1){ tcount[tarea.id[cc2]] -= numerous_value;}

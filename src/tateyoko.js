@@ -176,9 +176,9 @@ Puzzles.tateyoko.prototype = {
 			};
 		}
 
-		menu.ex.adjustSpecial = function(arg,key,d){
+		menu.ex.adjustSpecial = function(key,d){
 			um.disableRecord();
-			if(arg>=3 && arg<=4){ // ‰ñ“]‚¾‚¯
+			if(key & this.TURN){ // ‰ñ“]‚¾‚¯
 				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
 			}
 			um.enableRecord();

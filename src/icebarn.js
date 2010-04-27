@@ -170,46 +170,55 @@ Puzzles.icebarn.prototype = {
 			}
 		}
 
-		menu.ex.adjustSpecial = function(arg,key,d){
+		menu.ex.adjustSpecial = function(key,d){
 			um.disableRecord();
+			var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
 			var ibx=bd.border[bd.arrowin ].bx, iby=bd.border[bd.arrowin ].by;
 			var obx=bd.border[bd.arrowout].bx, oby=bd.border[bd.arrowout].by;
-			switch(arg){
-			case 1: // è„â∫îΩì]
-				bd.arrowin  = bd.bnum(ibx,d.yy-iby);
-				bd.arrowout = bd.bnum(obx,d.yy-oby);
+			switch(key){
+			case this.FLIPY: // è„â∫îΩì]
+				bd.arrowin  = bd.bnum(ibx,yy-iby);
+				bd.arrowout = bd.bnum(obx,yy-oby);
 				for(var id=0;id<bd.bdmax;id++){
 					if((bd.border[id].bx&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
-			case 2: // ç∂âEîΩì]
-				bd.arrowin  = bd.bnum(d.xx-ibx,iby);
-				bd.arrowout = bd.bnum(d.xx-obx,oby);
+			case this.FLIPX: // ç∂âEîΩì]
+				bd.arrowin  = bd.bnum(xx-ibx,iby);
+				bd.arrowout = bd.bnum(xx-obx,oby);
 				for(var id=0;id<bd.bdmax;id++){
 					if((bd.border[id].by&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
-			case 3: // âE90ÅãîΩì]
-				bd.arrowin  = bd.bnum2(d.yy-iby,ibx,k.qrows,k.qcols);
-				bd.arrowout = bd.bnum2(d.yy-oby,obx,k.qrows,k.qcols);
+			case this.TURNR: // âE90ÅãîΩì]
+				bd.arrowin  = bd.bnum2(yy-iby,ibx,k.qrows,k.qcols);
+				bd.arrowout = bd.bnum2(yy-oby,obx,k.qrows,k.qcols);
 				for(var id=0;id<bd.bdmax;id++){
 					if((bd.border[id].bx&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
-			case 4: // ç∂90ÅãîΩì]
-				bd.arrowin  = bd.bnum2(iby,d.xx-ibx,k.qrows,k.qcols);
-				bd.arrowout = bd.bnum2(oby,d.xx-obx,k.qrows,k.qcols);
+			case this.TURNL: // ç∂90ÅãîΩì]
+				bd.arrowin  = bd.bnum2(iby,xx-ibx,k.qrows,k.qcols);
+				bd.arrowout = bd.bnum2(oby,xx-obx,k.qrows,k.qcols);
 				for(var id=0;id<bd.bdmax;id++){
 					if((bd.border[id].by&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
-			case 5: // î’ñ ägëÂ
-				bd.arrowin  += (key==k.UP||key==k.DN?2*k.qcols-1:2*k.qrows-1);
-				bd.arrowout += (key==k.UP||key==k.DN?2*k.qcols-1:2*k.qrows-1);
+			case this.EXPANDUP: case this.EXPANDDN: // è„â∫î’ñ ägëÂ
+				bd.arrowin  += 2*k.qcols-1;
+				bd.arrowout += 2*k.qcols-1;
 				break;
-			case 6: // î’ñ èkè¨
-				bd.arrowin  -= (key==k.UP||key==k.DN?2*k.qcols-1:2*k.qrows-1);
-				bd.arrowout -= (key==k.UP||key==k.DN?2*k.qcols-1:2*k.qrows-1);
+			case this.EXPANDLT: case this.EXPANDRT: // ç∂âEî’ñ ägëÂ
+				bd.arrowin  += 2*k.qrows-1;
+				bd.arrowout += 2*k.qrows-1;
+				break;
+			case this.REDUCEUP: case this.REDUCEDN: // è„â∫î’ñ èkè¨
+				bd.arrowin  -= 2*k.qcols-1;
+				bd.arrowout -= 2*k.qcols-1;
+				break;
+			case this.REDUCELT: case this.REDUCERT: // ç∂âEî’ñ èkè¨
+				bd.arrowin  -= 2*k.qrows-1;
+				bd.arrowout -= 2*k.qrows-1;
 				break;
 			}
 

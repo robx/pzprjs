@@ -255,33 +255,46 @@ Puzzles.slalom.prototype = {
 
 		bd.nummaxfunc = function(cc){ return Math.min(bd.hinfo.max,bd.maxnum);}
 
-		menu.ex.adjustSpecial = function(arg,key,d){
+		menu.ex.adjustSpecial = function(key,d){
 			um.disableRecord();
+			var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
 			var bx=bd.cell[bd.startid].bx, by=bd.cell[bd.startid].by;
-			switch(arg){
-			case 1: // è„â∫îΩì]
-				bd.startid = bd.cnum(bx,d.yy-by);
+			switch(key){
+			case this.FLIPY: // è„â∫îΩì]
+				bd.startid = bd.cnum(bx,yy-by);
 				break;
-			case 2: // ç∂âEîΩì]
-				bd.startid = bd.cnum(d.xx-bx,by);
+			case this.FLIPX: // ç∂âEîΩì]
+				bd.startid = bd.cnum(xx-bx,by);
 				break;
-			case 3: // âE90ÅãîΩì]
-				bd.startid = bd.cnum2(d.yy-by,bx,k.qrows,k.qcols);
+			case this.TURNR: // âE90ÅãîΩì]
+				bd.startid = bd.cnum2(yy-by,bx,k.qrows,k.qcols);
 				break;
-			case 4: // ç∂90ÅãîΩì]
-				bd.startid = bd.cnum2(by,d.xx-bx,k.qrows,k.qcols);
+			case this.TURNL: // ç∂90ÅãîΩì]
+				bd.startid = bd.cnum2(by,xx-bx,k.qrows,k.qcols);
 				break;
-			case 5: // î’ñ ägëÂ
-				if     (key==k.UP){ bd.startid = bd.cnum2(bx  ,by+2,k.qcols,k.qrows+1);}
-				else if(key==k.DN){ bd.startid = bd.cnum2(bx  ,by  ,k.qcols,k.qrows+1);}
-				else if(key==k.LT){ bd.startid = bd.cnum2(bx+2,by  ,k.qcols+1,k.qrows);}
-				else if(key==k.RT){ bd.startid = bd.cnum2(bx  ,by  ,k.qcols+1,k.qrows);}
+			case this.EXPANDUP:
+				bd.startid = bd.cnum2(bx  ,by+2,k.qcols,k.qrows+1);
 				break;
-			case 6: // î’ñ èkè¨
-				if     (key==k.DN && by<bd.maxby-2){ bd.startid = bd.cnum2(bx  ,by  ,k.qcols,k.qrows-1);}
-				else if(key==k.UP || key==k.DN)    { bd.startid = bd.cnum2(bx  ,by-2,k.qcols,k.qrows-1);}
-				else if(key==k.RT && bx<bd.maxbx-2){ bd.startid = bd.cnum2(bx  ,by  ,k.qcols-1,k.qrows);}
-				else if(key==k.LT || key==k.RT)    { bd.startid = bd.cnum2(bx-2,by  ,k.qcols-1,k.qrows);}
+			case this.EXPANDDN:
+				bd.startid = bd.cnum2(bx  ,by  ,k.qcols,k.qrows+1);
+				break;
+			case this.EXPANDLT:
+				bd.startid = bd.cnum2(bx+2,by  ,k.qcols+1,k.qrows);
+				break;
+			case this.EXPANDRT:
+				bd.startid = bd.cnum2(bx  ,by  ,k.qcols+1,k.qrows);
+				break;
+			case this.REDUCEUP:
+				bd.startid = bd.cnum2(bx  ,by-2,k.qcols,k.qrows-1);
+				break;
+			case this.REDUCEDN:
+				bd.startid = bd.cnum2(bx  ,by+(by<bd.maxby-2?0:-2),k.qcols,k.qrows-1);
+				break;
+			case this.REDUCELT:
+				bd.startid = bd.cnum2(bx-2,by  ,k.qcols-1,k.qrows);
+				break;
+			case this.REDUCERT:
+				bd.startid = bd.cnum2(bx+(bx<bd.maxbx-2?0:-2),by  ,k.qcols-1,k.qrows);
 				break;
 			}
 			um.enableRecord();

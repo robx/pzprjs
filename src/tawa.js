@@ -51,24 +51,17 @@ Puzzles.tawa.prototype = {
 
 	protoChange : function(){
 		this.protofunc = {
-			bdinit  : Board.prototype.initBoardSize,
+			estsize : Board.prototype.estimateSize,
 			spcells : Board.prototype.setposCells
 		};
 
-		Board.prototype.initBoardSize = function(col,row){
+		Board.prototype.estimateSize = function(type, col, row){
 			var total = 0;
 			if     (this.lap==0){ total = mf(row*0.5)*(2*col-1)+((row%2==1)?col:0);}
 			else if(this.lap==3 || this.lap==undefined){ total = mf(row*0.5)*(2*col+1)+((row%2==1)?col:0);}
 			else{ total = col*row;}
 
-			this._cnum  = [];
-
-			this.initGroup(k.CELL, this.cell, total);
-
-			k.qcols = col;
-			k.qrows = row;
-
-			this.afterinit();
+			return total;
 		};
 
 		// 各セルの位置変数設定関数
@@ -105,9 +98,9 @@ Puzzles.tawa.prototype = {
 		this.newboard_html_original = document.newboard.innerHTML;
 	},
 	protoOriginal : function(){
-		Board.prototype.initBoardSize = this.protofunc.bdinit;
-		Board.prototype.setposCells   = this.protofunc.spcells;
-		document.newboard.innerHTML   = this.newboard_html_original;
+		Board.prototype.estimateSize = this.protofunc.estsize;
+		Board.prototype.setposCells  = this.protofunc.spcells;
+		document.newboard.innerHTML  = this.newboard_html_original;
 
 		document.flip.turnl.disabled = false;
 		document.flip.turnr.disabled = false;
@@ -325,76 +318,81 @@ Puzzles.tawa.prototype = {
 			}
 		};
 
-		// 盤面の拡大
-		menu.ex.expand = function(key,d){
-			// 調節用
-			var margin = 0;
-			if(key==k.LT){
-				k.qcols += {0:0,1:0,2:1,3:1}[bd.lap];
-				margin   = mf((k.qrows + {0:0,1:0,2:1,3:1}[bd.lap])/2);
-				bd.lap   = {0:2,1:3,2:0,3:1}[bd.lap];
-			}
-			else if(key==k.RT){
-				k.qcols += {0:0,1:1,2:0,3:1}[bd.lap];
-				margin   = mf((k.qrows + {0:0,1:1,2:0,3:1}[bd.lap])/2);
-				bd.lap   = {0:1,1:0,2:3,3:2}[bd.lap];
-			}
-			else if(key==k.UP){
-				k.qrows++;
-				k.qcols += {0:-1,1:0,2:0,3:1}[bd.lap];
-				margin   = k.qcols;
-				bd.lap   = {0:3,1:2,2:1,3:0}[bd.lap];
-			}
-			else if(key==k.DN){
-				k.qrows++;
-				margin   = k.qcols + {0:-1,1:0,2:0,3:1}[bd.lap];
-			}
-			bd.setminmax();
+		// 盤面の拡大・縮小
+		menu.ex.expandreduce = function(key,d){
+			if(key & this.EXPAND){
+				// 調節用
+				var margin = 0;
+				switch(key & 0x0F){
+				case k.LT:
+					k.qcols += {0:0,1:0,2:1,3:1}[bd.lap];
+					bd.lap   = {0:2,1:3,2:0,3:1}[bd.lap];
+					break;
 
-			// 本体。
-			this.expandGroup(k.CELL, bd.cell, margin, key);
+				case k.RT:
+					k.qcols += {0:0,1:1,2:0,3:1}[bd.lap];
+					bd.lap   = {0:1,1:0,2:3,3:2}[bd.lap];
+					break;
 
-			bd.setposAll();
-		};
-		// 盤面の縮小
-		menu.ex.reduce = function(key,d){
-			// 本体。
-			this.reduceGroup(k.CELL, bd.cell, key);
+				case k.UP:
+					k.qrows++;
+					k.qcols += {0:-1,1:0,2:0,3:1}[bd.lap];
+					bd.lap   = {0:3,1:2,2:1,3:0}[bd.lap];
+					break;
 
-			// 調節用
-			if(key==k.LT){
-				k.qcols -= {0:1,1:1,2:0,3:0}[bd.lap];
-				bd.lap   = {0:2,1:3,2:0,3:1}[bd.lap];
+				case k.DN:
+					k.qrows++;
+					break;
+				}
+				bd.setminmax();
+
+				// 本体。
+				this.expandGroup(k.CELL, bd.cell, key);
 			}
-			else if(key==k.RT){
-				k.qcols -= {0:1,1:0,2:1,3:0}[bd.lap];
-				bd.lap   = {0:1,1:0,2:3,3:2}[bd.lap];
-			}
-			else if(key==k.UP){
-				k.qrows--;
-				k.qcols += {0:-1,1:0,2:0,3:1}[bd.lap];
-				bd.lap   = {0:3,1:2,2:1,3:0}[bd.lap];
-			}
-			else if(key==k.DN){
-				k.qrows--;
+			else if(key & this.REDUCE){
+				// 本体。
+				this.reduceGroup(k.CELL, bd.cell, key);
+
+				// 調節用
+				switch(key & 0x0F){
+				case k.LT:
+					k.qcols -= {0:1,1:1,2:0,3:0}[bd.lap];
+					bd.lap   = {0:2,1:3,2:0,3:1}[bd.lap];
+					break;
+
+				case k.RT:
+					k.qcols -= {0:1,1:0,2:1,3:0}[bd.lap];
+					bd.lap   = {0:1,1:0,2:3,3:2}[bd.lap];
+					break;
+
+				case k.UP:
+					k.qrows--;
+					k.qcols += {0:-1,1:0,2:0,3:1}[bd.lap];
+					bd.lap   = {0:3,1:2,2:1,3:0}[bd.lap];
+					break;
+
+				case k.DN:
+					k.qrows--;
+					break;
+				}
 			}
 
 			bd.setposAll();
 		};
 		// 回転・反転
-		menu.ex.turnflip = function(arg,d){
+		menu.ex.turnflip = function(key,d){
 			var d = {x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby};
-			d.xx=(d.x1+d.x2); d.yy=(d.y1+d.y2);
 
-			if     (arg===1){ if(!(k.qrows&1)){ bd.lap = {0:3,1:2,2:1,3:0}[bd.lap];} }
-			else if(arg===2){ bd.lap = {0:0,1:2,2:1,3:3}[bd.lap];}
+			if     (key===this.FLIPY){ if(!(k.qrows&1)){ bd.lap = {0:3,1:2,2:1,3:0}[bd.lap];} }
+			else if(key===this.FLIPX){ bd.lap = {0:0,1:2,2:1,3:3}[bd.lap];}
 
-			this.turnflipGroup(k.CELL, arg, d, bd.cell, bd.cellmax);
+			this.turnflipGroup(k.CELL, bd.cell, key, d);
 
 			bd.setposAll();
 		};
 		menu.ex.distObj = function(key,type,id){
 			var obj = bd.cell[id];
+			key &= 0x0F;
 			if     (key===k.UP){ return obj.by;}
 			else if(key===k.DN){ return bd.maxby-obj.by;}
 			else if(key===k.LT){ return obj.bx;}

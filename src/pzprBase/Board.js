@@ -187,25 +187,15 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// bd.initBoardSize() 指定されたサイズで盤面の初期化を行う
 	// bd.initGroup()     数を比較して、オブジェクトの追加か削除を行う
+	// bd.estimateSize()  指定したオブジェクトがいくつになるか計算を行う
 	// bd.afterinit()     サイズ初期化後の処理を行う
 	// bd.initSpecial()   パズル個別で初期化を行いたい処理を入力する
 	//---------------------------------------------------------------------------
 	initBoardSize : function(col,row){
-		{
-			this.initGroup(k.CELL,   this.cell,   col*row);
-		}
-		if(!!k.iscross){
-			this.initGroup(k.CROSS,  this.cross,  (col+1)*(row+1));
-		}
-		if(!!k.isborder){
-			this.initGroup(k.BORDER, this.border, 2*col*row+(k.isborder===1?-1:1)*(col+row));
-		}
-		if(k.isexcell===1){
-			this.initGroup(k.EXCELL, this.excell, col+row+1);
-		}
-		else if(k.isexcell===2){
-			this.initGroup(k.EXCELL, this.excell, 2*col+2*row+4);
-		}
+						{ this.initGroup(k.CELL,   this.cell,   col, row);}
+		if(!!k.iscross) { this.initGroup(k.CROSS,  this.cross,  col, row);}
+		if(!!k.isborder){ this.initGroup(k.BORDER, this.border, col, row);}
+		if(!!k.isexcell){ this.initGroup(k.EXCELL, this.excell, col, row);}
 
 		this.initSpecial(col,row);
 
@@ -214,8 +204,8 @@ Board.prototype = {
 
 		this.afterinit(col,row);
 	},
-	initGroup : function(type, group, len){
-		var clen = group.length;
+	initGroup : function(type, group, col, row){
+		var len = this.estimateSize(type, col, row), clen = group.length;
 		// 既存のサイズより小さくなるならdeleteする
 		if(clen>len){
 			for(var id=clen-1;id>=len;id--){ delete group[id]; group.pop();}
@@ -224,6 +214,15 @@ Board.prototype = {
 		else if(clen<len){
 			for(var id=clen;id<len;id++){ group.push(this.getnewObj(type,id));}
 		}
+	},
+	estimateSize : function(type, col, row){
+		switch(type){
+			case k.CELL:   return col*row; break;
+			case k.CROSS:  return (col+1)*(row+1); break;
+			case k.BORDER: return 2*col*row+(k.isborder===1?-1:1)*(col+row); break;
+			case k.EXCELL: return (k.isexcell===1 ? (col+row+1) : (2*col+2*row+4)); break;
+		}
+		return 0;
 	},
 
 	afterinit : function(){

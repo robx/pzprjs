@@ -126,9 +126,9 @@ Puzzles.gokigen.prototype = {
 
 		bd.maxnum = 4;
 
-		menu.ex.adjustSpecial = function(arg,key,d){
+		menu.ex.adjustSpecial = function(key,d){
 			um.disableRecord();
-			if(arg>=1 && arg<=4){ // ”½“]E‰ñ“]‘S‚Ä
+			if(key & this.TURNFLIP){ // ”½“]E‰ñ“]‘S‚Ä
 				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
 			}
 			um.enableRecord();
