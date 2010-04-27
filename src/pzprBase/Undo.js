@@ -204,20 +204,23 @@ OperationManager.prototype = {
 			this.paintBorder(ope.id);
 		}
 		else if(ope.obj == k.BOARD){
-			this.disableInfo();
-			if     (pp == 'expandup'){ if(num==1){ menu.ex.expand(k.UP);}else{ menu.ex.reduce(k.UP);} }
-			else if(pp == 'expanddn'){ if(num==1){ menu.ex.expand(k.DN);}else{ menu.ex.reduce(k.DN);} }
-			else if(pp == 'expandlt'){ if(num==1){ menu.ex.expand(k.LT);}else{ menu.ex.reduce(k.LT);} }
-			else if(pp == 'expandrt'){ if(num==1){ menu.ex.expand(k.RT);}else{ menu.ex.reduce(k.RT);} }
-			else if(pp == 'reduceup'){ if(num==1){ menu.ex.reduce(k.UP);}else{ menu.ex.expand(k.UP);} }
-			else if(pp == 'reducedn'){ if(num==1){ menu.ex.reduce(k.DN);}else{ menu.ex.expand(k.DN);} }
-			else if(pp == 'reducelt'){ if(num==1){ menu.ex.reduce(k.LT);}else{ menu.ex.expand(k.LT);} }
-			else if(pp == 'reducert'){ if(num==1){ menu.ex.reduce(k.RT);}else{ menu.ex.expand(k.RT);} }
+			var d = {x1:0, y1:0, x2:2*k.qcols, y2:2*k.qrows};
+			d.xx=(d.x1+d.x2); d.yy=(d.y1+d.y2);
 
-			else if(pp == 'flipy'){ menu.ex.turnflip(1,{x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby});}
-			else if(pp == 'flipx'){ menu.ex.turnflip(2,{x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby});}
-			else if(pp == 'turnr'){ menu.ex.turnflip((num==1?3:4),{x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby}); }
-			else if(pp == 'turnl'){ menu.ex.turnflip((num==1?4:3),{x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby}); }
+			this.disableInfo();
+			if     (pp == 'expandup'){ if(num==1){ menu.ex.expand(k.UP,d);}else{ menu.ex.reduce(k.UP,d);} }
+			else if(pp == 'expanddn'){ if(num==1){ menu.ex.expand(k.DN,d);}else{ menu.ex.reduce(k.DN,d);} }
+			else if(pp == 'expandlt'){ if(num==1){ menu.ex.expand(k.LT,d);}else{ menu.ex.reduce(k.LT,d);} }
+			else if(pp == 'expandrt'){ if(num==1){ menu.ex.expand(k.RT,d);}else{ menu.ex.reduce(k.RT,d);} }
+			else if(pp == 'reduceup'){ if(num==1){ menu.ex.reduce(k.UP,d);}else{ menu.ex.expand(k.UP,d);} }
+			else if(pp == 'reducedn'){ if(num==1){ menu.ex.reduce(k.DN,d);}else{ menu.ex.expand(k.DN,d);} }
+			else if(pp == 'reducelt'){ if(num==1){ menu.ex.reduce(k.LT,d);}else{ menu.ex.expand(k.LT,d);} }
+			else if(pp == 'reducert'){ if(num==1){ menu.ex.reduce(k.RT,d);}else{ menu.ex.expand(k.RT,d);} }
+
+			else if(pp == 'flipy'){ menu.ex.turnflip(1,d);}
+			else if(pp == 'flipx'){ menu.ex.turnflip(2,d);}
+			else if(pp == 'turnr'){ menu.ex.turnflip((num==1?3:4),d); }
+			else if(pp == 'turnl'){ menu.ex.turnflip((num==1?4:3),d); }
 
 			this.range = {x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby};
 			this.reqReset = true;

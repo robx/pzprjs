@@ -522,10 +522,10 @@ Board.prototype = {
 			else if(by===2*qr+1&&bx>0&&bx<2*qc){ return qc+(bx>>1);}
 			else if(bx===-1    &&by>0&&by<2*qr){ return 2*qc+(by>>1);}
 			else if(bx===2*qc+1&&by>0&&by<2*qr){ return 2*qc+qr+(by>>1);}
-			else if(bx===-1    &&by===-1){ return 2*qc+2*qr;}
-			else if(bx===2*qc+1&&by===-1){ return 2*qc+2*qr+1;}
-			else if(bx===-1    &&by===qr){ return 2*qc+2*qr+2;}
-			else if(bx===2*qc+1&&by===qr){ return 2*qc+2*qr+3;}
+			else if(bx===-1    &&by===-1    ){ return 2*qc+2*qr;}
+			else if(bx===2*qc+1&&by===-1    ){ return 2*qc+2*qr+1;}
+			else if(bx===-1    &&by===2*qr+1){ return 2*qc+2*qr+2;}
+			else if(bx===2*qc+1&&by===2*qr+1){ return 2*qc+2*qr+3;}
 		}
 		return -1;
 	},

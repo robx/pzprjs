@@ -255,12 +255,10 @@ Puzzles.slalom.prototype = {
 
 		bd.nummaxfunc = function(cc){ return Math.min(bd.hinfo.max,bd.maxnum);}
 
-		menu.ex.adjustSpecial = function(type,key){
-			var d = {xx:(bd.minbx+bd.maxbx), yy:(bd.minby+bd.maxby)};
-
+		menu.ex.adjustSpecial = function(arg,key,d){
 			um.disableRecord();
 			var bx=bd.cell[bd.startid].bx, by=bd.cell[bd.startid].by;
-			switch(type){
+			switch(arg){
 			case 1: // è„â∫îΩì]
 				bd.startid = bd.cnum(bx,d.yy-by);
 				break;
@@ -288,7 +286,7 @@ Puzzles.slalom.prototype = {
 			}
 			um.enableRecord();
 		};
-		menu.ex.adjustSpecial2 = function(type,key){
+		menu.ex.adjustSpecial2 = function(arg,key,d){
 			bd.hinfo.generateGates();	// îOÇÃÇΩÇﬂ
 		};
 	},

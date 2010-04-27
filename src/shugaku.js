@@ -171,9 +171,9 @@ Puzzles.shugaku.prototype = {
 
 		bd.maxnum = 4;
 
-		menu.ex.adjustSpecial = function(type,key){
+		menu.ex.adjustSpecial = function(arg,key,d){
 			um.disableRecord();
-			switch(type){
+			switch(arg){
 			case 1: // è„â∫îΩì]
 				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {12:13,13:12,17:18,18:17}[bd.QaC(cc)];

@@ -147,9 +147,9 @@ Puzzles.minarism.prototype = {
 			return true;
 		};
 
-		menu.ex.adjustSpecial = function(type,key){
+		menu.ex.adjustSpecial = function(arg,key,d){
 			um.disableRecord();
-			if(type>=1 && type<=4){ // ”½“]E‰ñ“]‘S‚Ä
+			if(arg>=1 && arg<=4){ // ”½“]E‰ñ“]‘S‚Ä
 				for(var c=0;c<bd.bdmax;c++){ if(bd.QuB(c)!=0){ bd.sQuB(c,{1:2,2:1}[bd.QuB(c)]); } }
 			}
 			um.enableRecord();

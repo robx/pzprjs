@@ -205,13 +205,11 @@ Puzzles.icelom.prototype = {
 			}
 		}
 
-		menu.ex.adjustSpecial = function(type,key){
-			var d = {xx:(bd.minbx+bd.minbx), yy:(bd.minby+bd.minby)};
-
+		menu.ex.adjustSpecial = function(arg,key,d){
 			um.disableRecord();
 			var ibx=bd.border[bd.arrowin ].bx, iby=bd.border[bd.arrowin ].by;
 			var obx=bd.border[bd.arrowout].bx, oby=bd.border[bd.arrowout].by;
-			switch(type){
+			switch(arg){
 			case 1: // è„â∫îΩì]
 				bd.arrowin  = bd.bnum(ibx,d.yy-iby);
 				bd.arrowout = bd.bnum(obx,d.yy-oby);
