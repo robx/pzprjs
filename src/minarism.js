@@ -148,11 +148,9 @@ Puzzles.minarism.prototype = {
 		};
 
 		menu.ex.adjustSpecial = function(key,d){
-			um.disableRecord();
 			if(key & this.TURNFLIP){ // ”½“]E‰ñ“]‘S‚Ä
 				for(var c=0;c<bd.bdmax;c++){ if(bd.QuB(c)!=0){ bd.sQuB(c,{1:2,2:1}[bd.QuB(c)]); } }
 			}
-			um.enableRecord();
 		};
 		menu.ex.expandborder = function(key){ };
 

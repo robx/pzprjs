@@ -66,7 +66,6 @@ Puzzles.tawa.prototype = {
 
 		// 各セルの位置変数設定関数
 		Board.prototype.setposCells = function(){
-			this._cnum = [];
 			this.cellmax = this.cell.length;
 			for(var id=0;id<this.cellmax;id++){
 				var obj = this.cell[id];
@@ -90,8 +89,6 @@ Puzzles.tawa.prototype = {
 					obj.bx = mf((2*id+1)%(2*k.qcols+1))+1;
 					obj.by = row*2+1;
 				}
-
-				this._cnum[[obj.bx, obj.by].join("_")] = id;
 			}
 		};
 
@@ -276,9 +273,9 @@ Puzzles.tawa.prototype = {
 		};
 
 		bd.lap = menu.ex.clap;	// 2段目は => 0:左右引っ込み 1:右のみ出っ張り 2:左のみ出っ張り 3:左右出っ張り
-		bd.setLap = function(val){ bd.lap=val; tc.adjust();};
+		bd.setLap = function(val){ this.lap=val; this.setminmax();};
 		bd.setLap(bd.lap);
-		bd.afterinit();
+		bd.setposAll();
 		tc.cursorx = 2; tc.cursory = 1;
 
 		// マウス入力時のセルID取得系
@@ -347,11 +344,11 @@ Puzzles.tawa.prototype = {
 				bd.setminmax();
 
 				// 本体。
-				this.expandGroup(k.CELL, bd.cell, key);
+				this.expandGroup(k.CELL, key);
 			}
 			else if(key & this.REDUCE){
 				// 本体。
-				this.reduceGroup(k.CELL, bd.cell, key);
+				this.reduceGroup(k.CELL, key);
 
 				// 調節用
 				switch(key & 0x0F){
@@ -386,11 +383,11 @@ Puzzles.tawa.prototype = {
 			if     (key===this.FLIPY){ if(!(k.qrows&1)){ bd.lap = {0:3,1:2,2:1,3:0}[bd.lap];} }
 			else if(key===this.FLIPX){ bd.lap = {0:0,1:2,2:1,3:3}[bd.lap];}
 
-			this.turnflipGroup(k.CELL, bd.cell, key, d);
+			this.turnflipGroup(k.CELL, key, d);
 
 			bd.setposAll();
 		};
-		menu.ex.distObj = function(key,type,id){
+		menu.ex.distObj = function(type,id,key){
 			var obj = bd.cell[id];
 			key &= 0x0F;
 			if     (key===k.UP){ return obj.by;}

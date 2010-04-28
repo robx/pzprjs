@@ -256,7 +256,6 @@ Puzzles.slalom.prototype = {
 		bd.nummaxfunc = function(cc){ return Math.min(bd.hinfo.max,bd.maxnum);}
 
 		menu.ex.adjustSpecial = function(key,d){
-			um.disableRecord();
 			var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
 			var bx=bd.cell[bd.startid].bx, by=bd.cell[bd.startid].by;
 			switch(key){
@@ -297,9 +296,8 @@ Puzzles.slalom.prototype = {
 				bd.startid = bd.cnum2(bx+(bx<bd.maxbx-2?0:-2),by  ,k.qcols-1,k.qrows);
 				break;
 			}
-			um.enableRecord();
 		};
-		menu.ex.adjustSpecial2 = function(arg,key,d){
+		menu.ex.adjustSpecial2 = function(key,d){
 			bd.hinfo.generateGates();	// ”O‚Ì‚½‚ß
 		};
 	},

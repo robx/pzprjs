@@ -177,11 +177,9 @@ Puzzles.tateyoko.prototype = {
 		}
 
 		menu.ex.adjustSpecial = function(key,d){
-			um.disableRecord();
 			if(key & this.TURN){ // ‰ñ“]‚¾‚¯
 				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
 			}
-			um.enableRecord();
 		};
 		bd.nummaxfunc = function(cc){ return (bd.QuC(cc)==1?4:Math.max(k.qcols,k.qrows));};
 	},

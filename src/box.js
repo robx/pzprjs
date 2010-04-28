@@ -142,11 +142,9 @@ Puzzles.box.prototype = {
 		tc.adjust();
 
 		menu.ex.adjustSpecial = function(key,d){
-			um.disableRecord();
 			if(key & this.TURNFLIP){ // ”½“]E‰ñ“]‘S‚Ä
 				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
 			}
-			um.enableRecord();
 		};
 
 		tc.setTEC(0);

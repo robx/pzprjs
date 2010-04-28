@@ -206,7 +206,6 @@ Puzzles.icelom.prototype = {
 		}
 
 		menu.ex.adjustSpecial = function(key,d){
-			um.disableRecord();
 			var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
 			var ibx=bd.border[bd.arrowin ].bx, iby=bd.border[bd.arrowin ].by;
 			var obx=bd.border[bd.arrowout].bx, oby=bd.border[bd.arrowout].by;
@@ -244,8 +243,6 @@ Puzzles.icelom.prototype = {
 				bd.arrowout -= 2*k.qrows-1;
 				break;
 			}
-
-			um.enableRecord();
 		};
 		menu.ex.expandborder = function(key){ };
 	},

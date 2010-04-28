@@ -172,7 +172,6 @@ Puzzles.shugaku.prototype = {
 		bd.maxnum = 4;
 
 		menu.ex.adjustSpecial = function(key,d){
-			um.disableRecord();
 			switch(key){
 			case this.FLIPY: // è„â∫îΩì]
 				for(var cc=0;cc<bd.cellmax;cc++){
@@ -199,7 +198,6 @@ Puzzles.shugaku.prototype = {
 				}
 				break;
 			}
-			um.enableRecord();
 		}
 
 		bd.sQaC = function(id, num){
