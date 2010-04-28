@@ -109,8 +109,8 @@ Puzzles.kakuro.prototype = {
 
 		tc.setAlign = function(){
 			if(k.playmode){
-				if(this.cursolx<1) this.cursolx = 1;
-				if(this.cursoly<1) this.cursoly = 1;
+				if(this.cursorx<1) this.cursorx = 1;
+				if(this.cursory<1) this.cursory = 1;
 			}
 		};
 		tc.targetdir = 2;
@@ -127,7 +127,7 @@ Puzzles.kakuro.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.TTcolor = "rgb(255,255,127)";
+		pc.ttcolor = "rgb(255,255,127)";
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
@@ -162,7 +162,7 @@ Puzzles.kakuro.prototype = {
 		pc.setBorderColor = function(id){
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1!==-1 && cc2!==-1 && ((bd.cell[cc1].ques===51)^(bd.cell[cc2].ques===51))){
-				g.fillStyle = this.Cellcolor;
+				g.fillStyle = this.cellcolor;
 				return true;
 			}
 			return false;
@@ -171,7 +171,7 @@ Puzzles.kakuro.prototype = {
 		pc.drawNumbers_kakuro = function(x1,y1,x2,y2){
 			this.vinc('cell_number', 'auto');
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], key = ['cell',c,'qans'].join('_');
 				var target = ((k.editmode&&c===tc.getTCC())?kc.detectTarget(c,-1):-1);
@@ -198,12 +198,12 @@ Puzzles.kakuro.prototype = {
 		};
 
 		enc.decodeKanpen = function(){
-			fio.decodeRoom_kanpen();
+			fio.decodeCellQnum51_kanpen();
 		};
 		enc.encodeKanpen = function(){
 			this.outsize = [k.qrows+1, k.qcols+1].join("/");
 
-			fio.encodeRoom_kanpen();
+			fio.encodeCellQnum51_kanpen();
 		};
 
 		enc.decodeKakuro = function(){

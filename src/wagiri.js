@@ -34,8 +34,8 @@ Puzzles.wagiri.prototype = {
 		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
 		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		k.bdmargin = 0.70;				// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = false;	// 画像出力時にmarginを小さくする
+		k.bdmargin       = 0.70;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.50;	// 画像出力時のbdmargin値
 
 		base.setTitle("ごきげんななめ・輪切","Gokigen-naname:wagiri");
 		base.setExpression("　マウスで斜線を入力できます。",
@@ -146,12 +146,10 @@ Puzzles.wagiri.prototype = {
 
 		bd.maxnum = 4;
 
-		menu.ex.adjustSpecial = function(type,key){
-			um.disableRecord();
-			if(type>=1 && type<=4){ // 反転・回転全て
+		menu.ex.adjustSpecial = function(key,d){
+			if(key & this.TURNFLIP){ // 反転・回転全て
 				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
 			}
-			um.enableRecord();
 		};
 	},
 
@@ -193,13 +191,12 @@ Puzzles.wagiri.prototype = {
 		};
 
 		pc.dispLetters_wagiri = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
-				var id = clist[i];
-				var num = bd.cell[id].qnum, obj = bd.cell[id], key='cell_'+id;
+				var c = clist[i], obj = bd.cell[c], num = obj.qnum, key='cell_'+c;
 				if(num!==-1){
-					text = (num!==-2 ? ({1:"輪",2:"切"})[num] : "?");
-					this.dispnum(key, 1, text, 0.70, this.getNumberColor(id), obj.cpx, obj.cpy);
+					var text = (num!==-2 ? ({1:"輪",2:"切"})[num] : "?");
+					this.dispnum(key, 1, text, 0.70, this.fontcolor, obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(key);}
 			}
@@ -216,14 +213,14 @@ Puzzles.wagiri.prototype = {
 				for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.sErC([c],sdata[c]);} }
 			}
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
 				if(bd.cell[c].qans!=-1){
 					if     (bd.cell[c].error==1){ g.strokeStyle = this.errcolor1;}
 					else if(bd.cell[c].error==2){ g.strokeStyle = this.errcolor2;}
-					else                        { g.strokeStyle = this.Cellcolor;}
+					else                        { g.strokeStyle = this.cellcolor;}
 
 					if(bd.cell[c].qans==1){
 						if(this.vnop(headers[0]+c,this.STROKE)){
@@ -250,7 +247,7 @@ Puzzles.wagiri.prototype = {
 		};
 
 		pc.drawTarget_wagiri = function(x1,y1,x2,y2){
-			var islarge = ((tc.cursolx&1)===(tc.cursoly&1));
+			var islarge = ((tc.cursorx&1)===(tc.cursory&1));
 			this.drawCursor(x1,y1,x2,y2,islarge,k.editmode);
 		};
 	},

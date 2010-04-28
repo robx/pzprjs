@@ -74,7 +74,7 @@ Puzzles.mejilink.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
-		pc.BorderQuescolor = "white";
+		pc.borderQuescolor = "white";
 
 		pc.chassisflag = false;
 
@@ -103,7 +103,7 @@ Puzzles.mejilink.prototype = {
 		pc.drawBaseMark1 = function(id){
 			var vid = "x_cm_"+id;
 
-			g.fillStyle = this.Cellcolor;
+			g.fillStyle = this.cellcolor;
 			if(this.vnop(vid,this.NONE)){
 				var csize = (this.lw+1)/2;
 				var bx = (id%(k.qcols+1))*2, by = mf(id/(k.qcols+1))*2;
@@ -117,7 +117,7 @@ Puzzles.mejilink.prototype = {
 				if(bd.border[id].qans===1){ this.setLineColor(id);}
 				else{
 					var cc2=bd.border[id].cellcc[1];
-					g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.BorderQuescolor : this.errbcolor1);
+					g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.borderQuescolor : this.errbcolor1);
 				}
 				return true;
 			}
@@ -247,7 +247,8 @@ Puzzles.mejilink.prototype = {
 			var tcount = [], numerous_value = 999999;
 			for(var r=1;r<=tarea.max;r++){ tcount[r]=0;}
 			for(var id=0;id<bd.bdmax;id++){
-				if(bd.QuB(id)==1 && id>=bd.bdinside){
+				if(bd.QuB(id)==1 && id>=
+				bd.bdinside){
 					var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 					if(cc1!=-1){ tcount[tarea.id[cc1]] -= numerous_value;}
 					if(cc2!=-1){ tcount[tarea.id[cc2]] -= numerous_value;}

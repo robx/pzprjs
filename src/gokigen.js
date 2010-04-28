@@ -34,8 +34,8 @@ Puzzles.gokigen.prototype = {
 		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
 		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		k.bdmargin = 0.70;				// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = false;	// 画像出力時にmarginを小さくする
+		k.bdmargin       = 0.70;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.50;	// 画像出力時のbdmargin値
 
 		base.setTitle("ごきげんななめ","Gokigen-naname");
 		base.setExpression("　マウスで斜線を入力できます。",
@@ -126,12 +126,10 @@ Puzzles.gokigen.prototype = {
 
 		bd.maxnum = 4;
 
-		menu.ex.adjustSpecial = function(type,key){
-			um.disableRecord();
-			if(type>=1 && type<=4){ // 反転・回転全て
+		menu.ex.adjustSpecial = function(key,d){
+			if(key & this.TURNFLIP){ // 反転・回転全て
 				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
 			}
-			um.enableRecord();
 		};
 	},
 
@@ -168,14 +166,14 @@ Puzzles.gokigen.prototype = {
 			var headers = ["c_sl1_", "c_sl2_"];
 			g.lineWidth = Math.max(this.cw/8, 2);
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
 				if(bd.cell[c].qans!=-1){
 					if     (bd.cell[c].error==1){ g.strokeStyle = this.errcolor1;}
 					else if(bd.cell[c].error==2){ g.strokeStyle = this.errcolor2;}
-					else                        { g.strokeStyle = this.Cellcolor;}
+					else                        { g.strokeStyle = this.cellcolor;}
 
 					if(bd.cell[c].qans==1){
 						if(this.vnop(headers[0]+c,this.STROKE)){
@@ -279,9 +277,8 @@ Puzzles.gokigen.prototype = {
 					}
 					while(1){
 						var endflag = true;
-						var clist = pc.cellinside_cond(bd.minbx,bd.minby,bd.maxbx,bd.maxby,function(c){ return (bd.ErC(c)==1);});
-						for(var i=0;i<clist.length;i++){
-							var c = clist[i];
+						for(var c=0;c<bd.cellmax;c++){
+							if(bd.ErC(c)!==1){ continue;}
 							var cc1, cc2, bx=bd.cell[c].bx, by=bd.cell[c].by;
 							if     (bd.QaC(c)==1){ cc1=bd.xnum(bx-1,by-1); cc2=bd.xnum(bx+1,by+1);}
 							else if(bd.QaC(c)==2){ cc1=bd.xnum(bx-1,by+1); cc2=bd.xnum(bx+1,by-1);}

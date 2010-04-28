@@ -179,7 +179,7 @@ Puzzles.pipelink.prototype = {
 			if(this.disp===1){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(cc1!==-1 && cc2!==-1 && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
-					g.fillStyle = this.Cellcolor;
+					g.fillStyle = this.cellcolor;
 					return true;
 				}
 			}
@@ -190,13 +190,13 @@ Puzzles.pipelink.prototype = {
 			this.vinc('cell_circle', 'auto');
 
 			var header = "c_cir_";
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			if(isdraw){
 				var rsize  = this.cw*0.40;
 				for(var i=0;i<clist.length;i++){
 					var c = clist[i];
 					if(bd.cell[c].ques===6){
-						g.strokeStyle = this.Cellcolor;
+						g.strokeStyle = this.cellcolor;
 						if(this.vnop(header+c,this.NONE)){
 							g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
 						}

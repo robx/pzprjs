@@ -66,7 +66,7 @@ Puzzles.norinori.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.bcolor = "rgb(96, 224, 160)";
-		pc.BBcolor = "rgb(96, 127, 127)";
+		pc.bbcolor = "rgb(96, 127, 127)";
 		pc.setBGCellColorFunc('qsub1');
 
 		pc.paint = function(x1,y1,x2,y2){

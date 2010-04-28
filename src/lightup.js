@@ -201,7 +201,7 @@ Puzzles.lightup.prototype = {
 			var lampcolor = "rgb(0, 127, 96)";
 			var header = "c_AK_";
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].qans===1){

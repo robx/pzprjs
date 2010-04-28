@@ -109,11 +109,11 @@ Puzzles.aho.prototype = {
 
 			var rsize2 = this.cw*this.circleratio[1];
 			var header = "c_cir_";
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].qnum!=-1){
-					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
 					if(this.vnop(header+c,this.FILL)){
 						g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize2);
 					}

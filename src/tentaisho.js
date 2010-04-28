@@ -250,7 +250,7 @@ Puzzles.tentaisho.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
-		pc.BorderQanscolor = "rgb(72, 72, 72)";
+		pc.borderQanscolor = "rgb(72, 72, 72)";
 		pc.qsubcolor1 = "rgb(176,255,176)";
 		pc.qsubcolor2 = "rgb(108,108,108)";
 		pc.errbcolor1 = pc.errbcolor1_DARK;
@@ -274,13 +274,13 @@ Puzzles.tentaisho.prototype = {
 			var lw = this.lw, lm = this.lm;
 			var header = "b_bd_";
 
-			var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
+			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 				if(bd.border[id].qans===1){
 					if     (bd.border[id].error===1){ g.fillStyle = this.errcolor1;}
-					else if(bd.border[id].error===2){ g.fillStyle = this.errBorderQanscolor2;}
-					else                            { g.fillStyle = this.BorderQanscolor;}
+					else if(bd.border[id].error===2){ g.fillStyle = this.errborderQanscolor2;}
+					else                            { g.fillStyle = this.borderQanscolor;}
 
 					if(this.vnop(header+id,this.FILL)){
 						if     (bd.border[id].by&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-this.bh-lm,  lw, this.ch+lw);}
@@ -303,7 +303,7 @@ Puzzles.tentaisho.prototype = {
 
 					if(bd.getStar(id)===1){
 						var iserr = bd.getStarError(id);
-						g.strokeStyle = (iserr ? this.errcolor1  : this.Cellcolor);
+						g.strokeStyle = (iserr ? this.errcolor1  : this.cellcolor);
 						g.fillStyle   = "white";
 						if(this.vnop(headers[0]+id,this.FILL_STROKE)){
 							g.shapeCircle(k.p0.x+x*this.bw, k.p0.y+y*this.bh, this.cw*0.16);
@@ -313,7 +313,7 @@ Puzzles.tentaisho.prototype = {
 
 					if(bd.getStar(id)===2){
 						var iserr = bd.getStarError(id);
-						g.fillStyle = (iserr ? this.errcolor1 : this.Cellcolor);
+						g.fillStyle = (iserr ? this.errcolor1 : this.cellcolor);
 						if(this.vnop(headers[1]+id,this.FILL)){
 							g.fillCircle(k.p0.x+x*this.bw, k.p0.y+y*this.bh, this.cw*0.18);
 						}

@@ -74,7 +74,7 @@ OperationManager.prototype = {
 	//---------------------------------------------------------------------------
 	addOpe : function(obj, property, id, old, num){
 		if(!this.isenableRecord()){ return;}
-		else if(old==num){ return;}
+		else if(old==num && obj!==k.BOARD){ return;}
 
 		var lastid = this.ope.length-1;
 
@@ -161,6 +161,7 @@ OperationManager.prototype = {
 			this.reqReset=false;
 
 			bd.setposAll();
+			bd.setminmax();
 			base.resetInfo(false);
 			base.resize_canvas();
 		}
@@ -203,20 +204,11 @@ OperationManager.prototype = {
 			this.paintBorder(ope.id);
 		}
 		else if(ope.obj == k.BOARD){
-			this.disableInfo();
-			if     (pp == 'expandup'){ if(num==1){ menu.ex.expand(k.UP);}else{ menu.ex.reduce(k.UP);} }
-			else if(pp == 'expanddn'){ if(num==1){ menu.ex.expand(k.DN);}else{ menu.ex.reduce(k.DN);} }
-			else if(pp == 'expandlt'){ if(num==1){ menu.ex.expand(k.LT);}else{ menu.ex.reduce(k.LT);} }
-			else if(pp == 'expandrt'){ if(num==1){ menu.ex.expand(k.RT);}else{ menu.ex.reduce(k.RT);} }
-			else if(pp == 'reduceup'){ if(num==1){ menu.ex.reduce(k.UP);}else{ menu.ex.expand(k.UP);} }
-			else if(pp == 'reducedn'){ if(num==1){ menu.ex.reduce(k.DN);}else{ menu.ex.expand(k.DN);} }
-			else if(pp == 'reducelt'){ if(num==1){ menu.ex.reduce(k.LT);}else{ menu.ex.expand(k.LT);} }
-			else if(pp == 'reducert'){ if(num==1){ menu.ex.reduce(k.RT);}else{ menu.ex.expand(k.RT);} }
+			var d = {x1:0, y1:0, x2:2*k.qcols, y2:2*k.qrows};
 
-			else if(pp == 'flipy'){ menu.ex.turnflip(1,{x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby});}
-			else if(pp == 'flipx'){ menu.ex.turnflip(2,{x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby});}
-			else if(pp == 'turnr'){ menu.ex.turnflip((num==1?3:4),{x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby}); }
-			else if(pp == 'turnl'){ menu.ex.turnflip((num==1?4:3),{x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby}); }
+			this.disableInfo();
+			if(num & menu.ex.TURNFLIP){ menu.ex.turnflip    (num,d);}
+			else                      { menu.ex.expandreduce(num,d);}
 
 			this.range = {x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby};
 			this.reqReset = true;

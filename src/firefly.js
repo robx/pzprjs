@@ -31,8 +31,11 @@ Puzzles.firefly.prototype = {
 		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
 		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.bdmargin = 0.50;			// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = true;	// 画像出力時にmarginを小さくする
+		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
+
+		k.bdmargin       = 0.50;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
 
 		if(k.EDITOR){
 			base.setExpression("　黒点は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
@@ -104,7 +107,7 @@ Puzzles.firefly.prototype = {
 		pc.drawFireflies = function(x1,y1,x2,y2){
 			this.vinc('cell_firefly', 'auto');
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){ this.drawFirefly1(clist[i]);}
 		};
 		pc.drawFirefly1 = function(c){
@@ -118,7 +121,7 @@ Puzzles.firefly.prototype = {
 				var px=bd.cell[c].cpx, py=bd.cell[c].cpy;
 
 				g.lineWidth = 1.5;
-				g.strokeStyle = this.Cellcolor;
+				g.strokeStyle = this.cellcolor;
 				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 				if(this.vnop(headers[0]+c,this.FILL)){
 					g.shapeCircle(px, py, rsize);
@@ -126,7 +129,7 @@ Puzzles.firefly.prototype = {
 
 				this.vdel([headers[1]+c]);
 				if(bd.cell[c].direc!=0){
-					g.fillStyle = this.Cellcolor;
+					g.fillStyle = this.cellcolor;
 					switch(bd.cell[c].direc){
 						case k.UP: py-=(rsize-1); break;
 						case k.DN: py+=(rsize-1); break;
@@ -145,7 +148,7 @@ Puzzles.firefly.prototype = {
 			var clist = this.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
 				pc.drawFirefly1(clist[i]);
-				pc.dispnumCell(clist[i])
+				pc.drawNumber1(clist[i]);
 			}
 		};
 	},

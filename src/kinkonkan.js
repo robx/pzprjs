@@ -34,8 +34,8 @@ Puzzles.kinkonkan.prototype = {
 		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
 		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		k.bdmargin = 0.15;			// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = true;	// 画像出力時にmarginを小さくする
+		k.bdmargin       = 0.15;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
 
 		if(k.EDITOR){
 			base.setExpression("　マウスの左ボタンで境界線が入力できます。外側のアルファベットは、同じキーを何回か押して大文字小文字／色違いの計4種類を入力できます。",
@@ -185,19 +185,19 @@ Puzzles.kinkonkan.prototype = {
 			var flag = true;
 
 			if     (ca == k.KEYUP){
-				if(tcp.y==tc.maxy && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.cursoly=tc.miny;}
+				if(tcp.y==tc.maxy && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.cursory=tc.miny;}
 				else if(tcp.y>tc.miny){ tc.decTCY(2);}else{ flag=false;}
 			}
 			else if(ca == k.KEYDN){
-				if(tcp.y==tc.miny && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.cursoly=tc.maxy;}
+				if(tcp.y==tc.miny && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.cursory=tc.maxy;}
 				else if(tcp.y<tc.maxy){ tc.incTCY(2);}else{ flag=false;}
 			}
 			else if(ca == k.KEYLT){
-				if(tcp.x==tc.maxx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.cursolx=tc.minx;}
+				if(tcp.x==tc.maxx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.cursorx=tc.minx;}
 				else if(tcp.x>tc.minx){ tc.decTCX(2);}else{ flag=false;}
 			}
 			else if(ca == k.KEYRT){
-				if(tcp.x==tc.minx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.cursolx=tc.maxx;}
+				if(tcp.x==tc.minx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.cursorx=tc.maxx;}
 				else if(tcp.x<tc.maxx){ tc.incTCX(2);}else{ flag=false;}
 			}
 			else{ flag=false;}
@@ -211,12 +211,10 @@ Puzzles.kinkonkan.prototype = {
 			return flag;
 		};
 
-		menu.ex.adjustSpecial = function(type,key){
-			um.disableRecord();
-			if(type>=1 && type<=4){ // 反転・回転全て
+		menu.ex.adjustSpecial = function(key,d){
+			if(key & this.TURNFLIP){ // 反転・回転全て
 				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
 			}
-			um.enableRecord();
 		};
 
 		tc.setTEC(0);
@@ -249,7 +247,7 @@ Puzzles.kinkonkan.prototype = {
 			this.vinc('cell_back', 'crispEdges');
 
 			var headers = ["c_full_", "c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_", "c_full_"];
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], err = bd.cell[c].error;
 				if(err!==0){
@@ -271,12 +269,12 @@ Puzzles.kinkonkan.prototype = {
 			var headers = ["c_sl1_", "c_sl2_"];
 			g.lineWidth = Math.max(this.cw/8, 2);
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
 				if(bd.cell[c].qans!=-1){
-					g.strokeStyle = this.Cellcolor;
+					g.strokeStyle = this.cellcolor;
 					if(bd.cell[c].qans==1){
 						if(this.vnop(headers[0]+c,this.NONE)){
 							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, this.cw,this.ch, true);
@@ -300,7 +298,7 @@ Puzzles.kinkonkan.prototype = {
 			this.vinc('excell_number', 'auto');
 
 			var header = "ex_full_";
-			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+			var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i], obj = bd.excell[c], key = 'excell_'+c;
 

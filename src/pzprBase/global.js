@@ -43,8 +43,8 @@ var k = {
 	isKanpenExist  : false,	// pencilbox/カンペンにあるパズル
 
 	// 各パズルのsetting()関数で設定されることがあるもの
-	bdmargin          : 0.70,	// 枠外の一辺のmargin(セル数換算)
-	reduceImageMargin : true,	// 画像出力時にmarginを小さくする
+	bdmargin       : 0.70,	// 枠外の一辺のmargin(セル数換算)
+	bdmargin_image : 0.10,	// 画像出力時のbdmargin値
 
 	// 内部で自動的に設定されるグローバル変数
 	puzzleid  : '',			// パズルのID("creek"など)
@@ -329,7 +329,7 @@ _ElementManager.ElementExt.prototype = {
 	// ee.getHeight() エレメントの高さを返す
 	//----------------------------------------------------------------------
 	getRect : (
-		((!!document.getBoundingClientRect) ?
+		((!!document.createElement('div').getBoundingClientRect) ?
 			((!_IE) ?
 				function(){
 					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();

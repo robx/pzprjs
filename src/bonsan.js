@@ -146,7 +146,7 @@ Puzzles.bonsan.prototype = {
 			var tplus = this.cw*0.05;
 			var header = "c_tip_";
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				this.vdel([header+c]);

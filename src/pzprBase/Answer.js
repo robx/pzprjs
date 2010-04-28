@@ -220,7 +220,8 @@ AnsCheck.prototype = {
 
 	setCellLineError : function(cc, flag){
 		if(flag){ bd.sErC([cc],1);}
-		bd.sErB([bd.ub(cc),bd.db(cc),bd.lb(cc),bd.rb(cc)], 1);
+		var bx=bd.cell[cc].bx, by=bd.cell[cc].by;
+		bd.sErB(bd.borderinside(bx-1,by-1,bx+1,by+1), 1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -461,14 +462,14 @@ AnsCheck.prototype = {
 	checkRowsCols : function(evalfunc, numfunc){
 		var result = true;
 		for(var by=1;by<=bd.maxby;by+=2){
-			var clist = bd.getClistByPosition(bd.minbx+1,by,bd.maxbx-1,by);
+			var clist = bd.cellinside(bd.minbx+1,by,bd.maxbx-1,by);
 			if(!evalfunc.apply(this,[clist, numfunc])){
 				if(this.inAutoCheck){ return false;}
 				result = false;
 			}
 		}
 		for(var bx=1;bx<=bd.maxbx;bx+=2){
-			var clist = bd.getClistByPosition(bx,bd.minby+1,bx,bd.maxby-1);
+			var clist = bd.cellinside(bx,bd.minby+1,bx,bd.maxby-1);
 			if(!evalfunc.apply(this,[clist, numfunc])){
 				if(this.inAutoCheck){ return false;}
 				result = false;
@@ -482,7 +483,7 @@ AnsCheck.prototype = {
 			var bx=1;
 			while(bx<=bd.maxbx){
 				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc.apply(this,[bd.cnum(tx,by)])){ break;}}
-				var clist = bd.getClistByPosition(bx,by,tx-2,by);
+				var clist = bd.cellinside(bx,by,tx-2,by);
 				var total = (k.isexcell!==1 ? 0 : (bx===1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx-2,by))));
 
 				if(!evalfunc.apply(this,[total, [bx-2,by], clist, areainfo])){
@@ -496,7 +497,7 @@ AnsCheck.prototype = {
 			var by=1;
 			while(by<=bd.maxby){
 				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc.apply(this,[bd.cnum(bx,ty)])){ break;}}
-				var clist = bd.getClistByPosition(bx,by,bx,ty-2);
+				var clist = bd.cellinside(bx,by,bx,ty-2);
 				var total = (k.isexcell!==1 ? 0 : (by===1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by-2))));
 
 				if(!evalfunc.apply(this,[total, [bx,by-2], clist, areainfo])){
@@ -540,8 +541,7 @@ AnsCheck.prototype = {
 		var result = true;
 		for(var by=0;by<=bd.maxby;by+=2){
 			for(var bx=0;bx<=bd.maxbx;bx+=2){
-				if(k.iscross===1 && !k.isborderAsLine &&
-				   (bx===bd.minbx||by===bd.minby||bx===bd.maxbx||by===bd.maxby)){ continue;}
+				if(k.iscross===1 && (bx===bd.minbx||by===bd.minby||bx===bd.maxbx||by===bd.maxby)){ continue;}
 				var id = (bx>>1)+(by>>1)*(k.qcols+1);
 				var lcnts = (!k.isborderAsLine?area.lcnt[id]:line.lcnt[id]);
 				if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(bx,by))==1) || (bp==2&&bd.QnX(bd.xnum(bx,by))!=1) )){
@@ -556,6 +556,6 @@ AnsCheck.prototype = {
 	},
 	setCrossBorderError : function(bx,by){
 		if(k.iscross!==0){ bd.sErX([bd.xnum(bx,by)], 1);}
-		bd.sErB([bd.bnum(bx,by-1),bd.bnum(bx,by+1),bd.bnum(bx-1,by),bd.bnum(bx+1,by)], 1);
+		bd.sErB(bd.borderinside(bx-1,by-1,bx+1,by+1), 1);
 	}
 };

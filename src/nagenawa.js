@@ -112,12 +112,11 @@ Puzzles.nagenawa.prototype = {
 		};
 
 		//オーバーライド
-		pc.dispnumCell = function(id){
+		pc.drawNumber1 = function(id){
 			var obj = bd.cell[id], key = ['cell',id].join('_');
 			if(obj.qnum!==-1){
 				var text = (obj.qnum>=0 ? ""+obj.qnum : "?");
-				var color = this.getNumberColor(id);
-				this.dispnum(key, 5, text, 0.45, color, obj.cpx, obj.cpy);
+				this.dispnum(key, 5, text, 0.45, this.fontcolor, obj.cpx, obj.cpy);
 			}
 			else{ this.hideEL(key);}
 		};

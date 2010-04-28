@@ -85,7 +85,6 @@ Puzzles.heyawake.prototype = {
 			};
 		}
 
-		bd.maxnum = 255;
 		bd.nummaxfunc = function(cc){
 			var id = area.room.id[cc];
 			var d = ans.getSizeOfClist(area.room[id].clist,f_true);
@@ -111,7 +110,7 @@ Puzzles.heyawake.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.bcolor = pc.bcolor_GREEN;
-		pc.BBcolor = "rgb(160, 255, 191)";
+		pc.bbcolor = "rgb(160, 255, 191)";
 		pc.setBGCellColorFunc('qsub1');
 
 		pc.paint = function(x1,y1,x2,y2){

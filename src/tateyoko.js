@@ -176,12 +176,10 @@ Puzzles.tateyoko.prototype = {
 			};
 		}
 
-		menu.ex.adjustSpecial = function(type,key){
-			um.disableRecord();
-			if(type>=3 && type<=4){ // ‰ñ“]‚¾‚¯
+		menu.ex.adjustSpecial = function(key,d){
+			if(key & this.TURN){ // ‰ñ“]‚¾‚¯
 				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
 			}
-			um.enableRecord();
 		};
 		bd.nummaxfunc = function(cc){ return (bd.QuC(cc)==1?4:Math.max(k.qcols,k.qrows));};
 	},
@@ -212,7 +210,7 @@ Puzzles.tateyoko.prototype = {
 			this.vinc('cell_tateyoko', 'crispEdges');
 
 			var headers = ["c_bar1_", "c_bar2_"];
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				var lw = Math.max(this.cw/6, 3);	//LineWidth
@@ -246,11 +244,11 @@ Puzzles.tateyoko.prototype = {
 			this.vinc('cell_number', 'crispEdges');
 
 			var header = "c_full_";
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
 				if(bd.cell[c].ques===1){
-					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+					g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
 					if(this.vnop(header+c,this.FILL)){
 						g.fillRect(obj.px, obj.py, this.cw+1, this.ch+1);
 					}
@@ -261,7 +259,7 @@ Puzzles.tateyoko.prototype = {
 		pc.drawNumbers_tateyoko = function(x1,y1,x2,y2){
 			this.vinc('cell_number', 'auto');
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
 				var num = bd.cell[c].qnum;

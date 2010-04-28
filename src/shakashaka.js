@@ -166,39 +166,33 @@ Puzzles.shakashaka.prototype = {
 
 		bd.maxnum = 4;
 
-		menu.ex.adjustSpecial = function(type,key){
-			um.disableRecord();
-			switch(type){
-			case 1: // è„â∫îΩì]
+		menu.ex.adjustSpecial = function(key,d){
+			switch(key){
+			case this.FLIPY: // è„â∫îΩì]
 				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {2:5,3:4,4:3,5:2}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
-			case 2: // ç∂âEîΩì]
+			case this.FLIPX: // ç∂âEîΩì]
 				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {2:3,3:2,4:5,5:4}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
-			case 3: // âE90ÅãîΩì]
+			case this.TURNR: // âE90ÅãîΩì]
 				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {2:5,3:2,4:3,5:4}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
-			case 4: // ç∂90ÅãîΩì]
+			case this.TURNL: // ç∂90ÅãîΩì]
 				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {2:3,3:4,4:5,5:2}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
-			case 5: // î’ñ ägëÂ
-				break;
-			case 6: // î’ñ èkè¨
-				break;
 			}
-			um.enableRecord();
 		};
 	},
 

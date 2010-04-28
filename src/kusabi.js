@@ -111,11 +111,11 @@ Puzzles.kusabi.prototype = {
 
 			this.drawTarget(x1,y1,x2,y2);
 		};
-		pc.dispnumCell = function(id){
+		pc.drawNumber1 = function(id){
 			var num = bd.cell[id].qnum, obj = bd.cell[id], key='cell_'+id;
 			if(num>=1 && num<=3){
 				var text = ({1:"“¯",2:"’Z",3:"’·"})[num];
-				this.dispnum(key, 1, text, 0.65, this.getNumberColor(id), obj.cpx, obj.cpy);
+				this.dispnum(key, 1, text, 0.65, this.fontcolor, obj.cpx, obj.cpy);
 			}
 			else{ this.hideEL(key);}
 		};

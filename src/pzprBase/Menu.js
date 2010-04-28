@@ -30,7 +30,7 @@ Menu = function(){
 
 	this.language = 'ja';
 
-	this.ispencilbox = (k.isKanpenExist && (k.puzzleid!=="nanro" && k.puzzleid!=="ayeheya" && k.puzzleid!=="kurochute" && k.puzzleid!=="goishi"));
+	this.ispencilbox = (k.isKanpenExist && (k.puzzleid!=="nanro" && k.puzzleid!=="ayeheya" && k.puzzleid!=="kurochute"));
 
 	// ElementTemplate : ÉÅÉjÉÖÅ[óÃàÊ
 	var menu_funcs = {mouseover : ee.ebinder(this, this.menuhover), mouseout  : ee.ebinder(this, this.menuout)};
@@ -93,7 +93,7 @@ Menu.prototype = {
 		ee('float_parent').el.innerHTML = '';
 
 		if(!!ee('btncolor2')){ ee('btncolor2').remove();}
-		ee('btnarea').removeNextAll(ee('btnclear2').el);
+		ee('btnarea').el.innerHTML = '';
 
 		ee('urlbuttonarea').el.innerHTML = '';
 
@@ -961,12 +961,12 @@ Properties.prototype = {
 	istype : function(idname,type){ return (this.flags[idname].type===type);},
 
 	getVal : function(idname)  { return this.flags[idname]?this.flags[idname].val:0;},
-	setVal : function(idname, newval){
+	setVal : function(idname, newval, callfunc){
 		if(!this.flags[idname]){ return;}
 		else if(this.flags[idname].type===this.CHECK || this.flags[idname].type===this.SELECT){
 			this.flags[idname].val = newval;
 			menu.setdisplay(idname);
-			if(this.funcs[idname]){ this.funcs[idname](newval);}
+			if(this.funcs[idname] && callfunc!==false){ this.funcs[idname](newval);}
 		}
 	},
 

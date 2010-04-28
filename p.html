@@ -40,8 +40,8 @@
 <div class="titlebar" id="bar1_1">盤面の新規作成</div>
 <form name="newboard">
 <span id="pop1_1_cap0">盤面を新規作成します。</span><br>
-<span id="pop1_1_cap1">よこ</span><input type="text" name="col" value="" size="3" maxlength="3" />
-<span id="pop1_1_cap2">たて</span><input type="text" name="row" value="" size="3" maxlength="3" /><br>
+<span id="pop1_1_cap1">よこ</span><input type="number" name="col" value="" size="4" maxlength="3" min="1" max="999" />
+<span id="pop1_1_cap2">たて</span><input type="number" name="row" value="" size="4" maxlength="3" min="1" max="999" /><br>
 <input type="button" name="newboard" value="新規作成" /><input type="button" name="cancel" value="キャンセル" />
 </form>
 </div>
@@ -137,7 +137,7 @@
 <div class="titlebar" id="bar4_1">表示サイズの変更</div>
 <form name="dispsize" onsubmit="return false;">
 <span id="pop4_1_cap0">表示サイズを変更します。</span><br>
-<span id="pop4_1_cap1">表示サイズ</span><input type="text" name="cs" value="" size="3" maxlength="3" /><br>
+<span id="pop4_1_cap1">表示サイズ</span><input type="number" name="cs" value="" size="4" maxlength="3" min="8" max="999" /><br>
 <input type="button" name="dispsize" value="変更する" /><input type="button" name="cancel" value="キャンセル" />
 </form>
 </div>

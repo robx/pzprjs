@@ -34,8 +34,8 @@ Puzzles.icelom.prototype = {
 		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
 		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		k.bdmargin = 1.0;				// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = false;	// 画像出力時にmarginを小さくする
+		k.bdmargin       = 1.0;		// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 1.0;		// 画像出力時のbdmargin値
 
 		if(k.EDITOR){
 			base.setExpression("　左クリックで数字、左ドラッグでIN/OUTが、右クリックで氷が入力できます。"+
@@ -205,40 +205,44 @@ Puzzles.icelom.prototype = {
 			}
 		}
 
-		menu.ex.adjustSpecial = function(type,key){
-			var d = {xx:(bd.minbx+bd.minbx), yy:(bd.minby+bd.minby)};
-
-			um.disableRecord();
+		menu.ex.adjustSpecial = function(key,d){
+			var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
 			var ibx=bd.border[bd.arrowin ].bx, iby=bd.border[bd.arrowin ].by;
 			var obx=bd.border[bd.arrowout].bx, oby=bd.border[bd.arrowout].by;
-			switch(type){
-			case 1: // 上下反転
-				bd.arrowin  = bd.bnum(ibx,d.yy-iby);
-				bd.arrowout = bd.bnum(obx,d.yy-oby);
+			switch(key){
+			case this.FLIPY: // 上下反転
+				bd.arrowin  = bd.bnum(ibx,yy-iby);
+				bd.arrowout = bd.bnum(obx,yy-oby);
 				break;
-			case 2: // 左右反転
-				bd.arrowin  = bd.bnum(d.xx-ibx,iby);
-				bd.arrowout = bd.bnum(d.xx-obx,oby);
+			case this.FLIPX: // 左右反転
+				bd.arrowin  = bd.bnum(xx-ibx,iby);
+				bd.arrowout = bd.bnum(xx-obx,oby);
 				break;
-			case 3: // 右90°反転
-				bd.arrowin  = bd.bnum2(d.yy-iby,ibx,k.qrows,k.qcols);
-				bd.arrowout = bd.bnum2(d.yy-oby,obx,k.qrows,k.qcols);
+			case this.TURNR: // 右90°反転
+				bd.arrowin  = bd.bnum2(yy-iby,ibx,k.qrows,k.qcols);
+				bd.arrowout = bd.bnum2(yy-oby,obx,k.qrows,k.qcols);
 				break;
-			case 4: // 左90°反転
-				bd.arrowin  = bd.bnum2(iby,d.xx-ibx,k.qrows,k.qcols);
-				bd.arrowout = bd.bnum2(oby,d.xx-obx,k.qrows,k.qcols);
+			case this.TURNL: // 左90°反転
+				bd.arrowin  = bd.bnum2(iby,xx-ibx,k.qrows,k.qcols);
+				bd.arrowout = bd.bnum2(oby,xx-obx,k.qrows,k.qcols);
 				break;
-			case 5: // 盤面拡大
-				bd.arrowin  += (key==k.UP||key==k.DN?2*k.qcols-1:2*k.qrows-1);
-				bd.arrowout += (key==k.UP||key==k.DN?2*k.qcols-1:2*k.qrows-1);
+			case this.EXPANDUP: case this.EXPANDDN: // 上下盤面拡大
+				bd.arrowin  += 2*k.qcols-1;
+				bd.arrowout += 2*k.qcols-1;
 				break;
-			case 6: // 盤面縮小
-				bd.arrowin  -= (key==k.UP||key==k.DN?2*k.qcols-1:2*k.qrows-1);
-				bd.arrowout -= (key==k.UP||key==k.DN?2*k.qcols-1:2*k.qrows-1);
+			case this.EXPANDLT: case this.EXPANDRT: // 左右盤面拡大
+				bd.arrowin  += 2*k.qrows-1;
+				bd.arrowout += 2*k.qrows-1;
+				break;
+			case this.REDUCEUP: case this.REDUCEDN: // 上下盤面縮小
+				bd.arrowin  -= 2*k.qcols-1;
+				bd.arrowout -= 2*k.qcols-1;
+				break;
+			case this.REDUCELT: case this.REDUCERT: // 左右盤面縮小
+				bd.arrowin  -= 2*k.qrows-1;
+				bd.arrowout -= 2*k.qrows-1;
 				break;
 			}
-
-			um.enableRecord();
 		};
 		menu.ex.expandborder = function(key){ };
 	},
@@ -249,7 +253,7 @@ Puzzles.icelom.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.linecolor = pc.linecolor_LIGHT;
 		pc.errcolor1 = "red";
-		pc.BCell_fontcolor = pc.fontcolor;
+		pc.fontBCellcolor = pc.fontcolor;
 		pc.setBGCellColorFunc('icebarn');
 		pc.setBorderColorFunc('ice');
 
@@ -279,7 +283,7 @@ Puzzles.icelom.prototype = {
 		pc.drawArrows = function(x1,y1,x2,y2){
 			this.vinc('border_arrow', 'crispEdges');
 
-			var idlist = this.borderinside(x1-1,y1-1,x2+2,y2+2);
+			var idlist = bd.borderinside(x1-1,y1-1,x2+2,y2+2);
 			for(var i=0;i<idlist.length;i++){ this.drawArrow1(idlist[i], bd.isArrow(idlist[i]));}
 		};
 		pc.drawArrow1 = function(id, flag){
@@ -291,7 +295,7 @@ Puzzles.icelom.prototype = {
 			var lm = lw/2;						//LineMargin
 			var px=bd.border[id].px; var py=bd.border[id].py;
 
-			g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.Cellcolor);
+			g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.cellcolor);
 			if(this.vnop(vids[0],this.FILL)){
 				if(bd.border[id].bx&1){ g.fillRect(px-lm, py-ll, lw, ll*2);}
 				if(bd.border[id].by&1){ g.fillRect(px-ll, py-lm, ll*2, lw);}
@@ -317,7 +321,7 @@ Puzzles.icelom.prototype = {
 		pc.drawInOut = function(){
 			if(bd.arrowin<bd.bdinside || bd.arrowin>=bd.bdmax || bd.arrowout<bd.bdinside || bd.arrowout>=bd.bdmax){ return;}
 
-			g.fillStyle = (bd.border[bd.arrowin].error===3 ? this.errcolor1 : this.Cellcolor);
+			g.fillStyle = (bd.border[bd.arrowin].error===3 ? this.errcolor1 : this.cellcolor);
 			var bx = bd.border[bd.arrowin].bx, by = bd.border[bd.arrowin].by;
 			var px = bd.border[bd.arrowin].px, py = bd.border[bd.arrowin].py;
 			if     (by===bd.minby){ this.dispnum("string_in", 1, "IN", 0.55, "black", px,             py-0.6*this.ch);}
@@ -325,7 +329,7 @@ Puzzles.icelom.prototype = {
 			else if(bx===bd.minbx){ this.dispnum("string_in", 1, "IN", 0.55, "black", px-0.5*this.cw, py-0.3*this.ch);}
 			else if(bx===bd.maxbx){ this.dispnum("string_in", 1, "IN", 0.55, "black", px+0.5*this.cw, py-0.3*this.ch);}
 
-			g.fillStyle = (bd.border[bd.arrowout].error===3 ? this.errcolor1 : this.Cellcolor);
+			g.fillStyle = (bd.border[bd.arrowout].error===3 ? this.errcolor1 : this.cellcolor);
 			var bx = bd.border[bd.arrowout].bx, by = bd.border[bd.arrowout].by;
 			var px = bd.border[bd.arrowout].px, py = bd.border[bd.arrowout].py;
 			if     (by===bd.minby){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px,             py-0.6*this.ch);}

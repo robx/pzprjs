@@ -84,7 +84,7 @@ LineManager.prototype = {
 			var idlist = this.data[i].idlist;
 			if(idlist.length>0){
 				var newColor = pc.getNewLineColor();
-				for(n=0;n<idlist.length;n++){
+				for(var n=0;n<idlist.length;n++){
 					bd.border[idlist[n]].color = newColor;
 				}
 			}

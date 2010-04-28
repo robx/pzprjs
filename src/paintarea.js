@@ -31,6 +31,9 @@ Puzzles.paintarea.prototype = {
 		k.checkBlackCell  = true;	// 正答判定で黒マスの情報をチェックするパズル
 		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
+		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
+
 		base.setTitle("ペイントエリア","Paintarea");
 		base.setExpression("　左クリックで黒タイルが、右クリックで白タイル確定タイルが入力できます。",
 						   " Left Click to input black tile, Right Click to determined white tile.");
@@ -87,7 +90,7 @@ Puzzles.paintarea.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.bcolor = pc.bcolor_GREEN;
-		pc.BBcolor = "rgb(127, 127, 127)";
+		pc.bbcolor = "rgb(127, 127, 127)";
 		pc.setBGCellColorFunc('qans1');
 
 		pc.paint = function(x1,y1,x2,y2){

@@ -242,6 +242,7 @@ PBase.prototype = {
 		var wwidth = ee.windowWidth()-6;	//  margin/borderがあるので、適当に引いておく
 		var cols   = (bd.maxbx-bd.minbx)/2+2*k.bdmargin; // canvasの横幅がセル何個分に相当するか
 		var rows   = (bd.maxby-bd.minby)/2+2*k.bdmargin; // canvasの縦幅がセル何個分に相当するか
+		if(k.puzzleid==='box'){ cols++; rows++;}
 
 		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[pp.getVal('size')];
 		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];

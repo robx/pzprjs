@@ -13,6 +13,52 @@ MenuExec = function(){
 
 	this.reader;	// FileReaderオブジェクト
 	this.enableReadText = false;
+
+	// expand/reduce処理用
+	this.insex = {};
+	this.insex[k.CELL]   = {1:true};
+	this.insex[k.CROSS]  = (k.iscross===1 ? {2:true} : {0:true});
+	this.insex[k.BORDER] = {1:true, 2:true};
+	this.insex[k.EXCELL] = {1:true};
+
+	// 定数
+	this.EXPAND = 0x10;
+	this.REDUCE = 0x20;
+	this.TURN   = 0x40;
+	this.FLIP   = 0x80;
+	this.TURNFLIP = this.TURN|this.FLIP;
+
+	this.EXPANDUP = this.EXPAND|k.UP;
+	this.EXPANDDN = this.EXPAND|k.DN;
+	this.EXPANDLT = this.EXPAND|k.LT;
+	this.EXPANDRT = this.EXPAND|k.RT;
+
+	this.REDUCEUP = this.REDUCE|k.UP;
+	this.REDUCEDN = this.REDUCE|k.DN;
+	this.REDUCELT = this.REDUCE|k.LT;
+	this.REDUCERT = this.REDUCE|k.RT;
+
+	this.TURNL = this.TURN|1;
+	this.TURNR = this.TURN|2;
+
+	this.FLIPX = this.FLIP|1;
+	this.FLIPY = this.FLIP|2;
+
+	this.boardtype = {
+		expandup: [this.REDUCEUP, this.EXPANDUP],
+		expanddn: [this.REDUCEDN, this.EXPANDDN],
+		expandlt: [this.REDUCELT, this.EXPANDLT],
+		expandrt: [this.REDUCERT, this.EXPANDRT],
+		reduceup: [this.EXPANDUP, this.REDUCEUP],
+		reducedn: [this.EXPANDDN, this.REDUCEDN],
+		reducelt: [this.EXPANDLT, this.REDUCELT],
+		reducert: [this.EXPANDRT, this.REDUCERT],
+
+		turnl: [this.TURNR, this.TURNL],
+		turnr: [this.TURNL, this.TURNR],
+		flipy: [this.FLIPY, this.FLIPY],
+		flipx: [this.FLIPX, this.FLIPX]
+	};
 };
 MenuExec.prototype = {
 	//------------------------------------------------------------------------------
@@ -176,8 +222,8 @@ MenuExec.prototype = {
 
 		// 設定値・変数をcanvas用のものに変更
 		pc.fillTextPrecisely = true;
-		if(k.reduceImageMargin){ k.bdmargin = 0.1;}
-		pp.setVal('cursor', false);
+		k.bdmargin = k.bdmargin_image;
+		pp.setVal('cursor', false, false);
 		g = ee('divques_sub').el.getContext("2d");
 
 		// canvas要素の設定を適用して、再描画
@@ -199,7 +245,7 @@ MenuExec.prototype = {
 		// 設定値・変数を元に戻す
 		pc.fillTextPrecisely = temp_flag;
 		k.bdmargin = temp_margin;
-		pp.setVal('cursor', temp_cursor);
+		pp.setVal('cursor', temp_cursor, false);
 		base.initCanvas();
 
 		// その他の設定を元に戻して、再描画
@@ -275,26 +321,14 @@ MenuExec.prototype = {
 				}
 			}
 
+			var d = {x1:0, y1:0, x2:2*k.qcols, y2:2*k.qrows};
 			um.disableInfo();
-			switch(name){
-				case "expandup": this.expand(k.UP); break;
-				case "expanddn": this.expand(k.DN); break;
-				case "expandlt": this.expand(k.LT); break;
-				case "expandrt": this.expand(k.RT); break;
-				case "reduceup": this.reduce(k.UP); break;
-				case "reducedn": this.reduce(k.DN); break;
-				case "reducelt": this.reduce(k.LT); break;
-				case "reducert": this.reduce(k.RT); break;
-
-				case "turnl": this.turnflip(4,{x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby}); break;
-				case "turnr": this.turnflip(3,{x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby}); break;
-				case "flipy": this.turnflip(1,{x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby}); break;
-				case "flipx": this.turnflip(2,{x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby}); break;
-			}
+			if (name.match(/(expand|reduce)/)){ this.expandreduce(this.boardtype[name][1],d);}
+			else if(name.match(/(turn|flip)/)){ this.turnflip    (this.boardtype[name][1],d);}
 			um.enableInfo();
 
 			// reduceはここ必須
-			um.addOpe(k.BOARD, name, 0, 0, 1);
+			um.addOpe(k.BOARD, name, 0, this.boardtype[name][0], this.boardtype[name][1]);
 
 			bd.setminmax();
 			if(!um.undoExec){ base.resetInfo(false);}
@@ -303,275 +337,128 @@ MenuExec.prototype = {
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.expand()       盤面の拡大を実行する
+	// menu.ex.expandreduce() 盤面の拡大・縮小を実行する
 	// menu.ex.expandGroup()  オブジェクトの追加を行う
-	// menu.ex.reduce()       盤面の縮小を実行する
 	// menu.ex.reduceGroup()  オブジェクトの消去を行う
 	//------------------------------------------------------------------------------
-	expand : function(key){
-		this.adjustSpecial(5,key);
-		this.adjustGeneral(5,'',{x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby});
+	expandreduce : function(key,d){
+		this.adjustBoardData(key,d);
 
-		var number;
-		if     (key===k.UP||key===k.DN){ number=k.qcols; k.qrows++;}
-		else if(key===k.LT||key===k.RT){ number=k.qrows; k.qcols++;}
+		if(key & this.EXPAND){
+			if     (key===this.EXPANDUP||key===this.EXPANDDN){ k.qrows++;}
+			else if(key===this.EXPANDLT||key===this.EXPANDRT){ k.qcols++;}
 
-		var func;
-		{
-			func = function(id){ return (menu.ex.distObj(key,k.CELL,id)===0);};
-			this.expandGroup(k.CELL, bd.cell, number, func);
+							{ this.expandGroup(k.CELL,   key);}
+			if(!!k.iscross) { this.expandGroup(k.CROSS,  key);}
+			if(!!k.isborder){ this.expandGroup(k.BORDER, key);}
+			if(!!k.isexcell){ this.expandGroup(k.EXCELL, key);}
 		}
-		if(!!k.iscross){
-			var oc = k.iscross===2?0:1;
-			func = function(id){ return (menu.ex.distObj(key,k.CROSS,id)===oc);};
-			this.expandGroup(k.CROSS, bd.cross, number+1, func);
-		}
-		if(!!k.isborder){
-			bd.bdinside = 2*k.qcols*k.qrows-(k.qcols+k.qrows);
+		else if(key & this.REDUCE){
+							{ this.reduceGroup(k.CELL,   key);}
+			if(!!k.iscross) { this.reduceGroup(k.CROSS,  key);}
+			if(!!k.isborder){ this.reduceGroup(k.BORDER, key);}
+			if(!!k.isexcell){ this.reduceGroup(k.EXCELL, key);}
 
-			func = function(id){ var m=menu.ex.distObj(key,k.BORDER,id); return (m===1||m===2);};
-			this.expandGroup(k.BORDER, bd.border, 2*number+(k.isborder===1?-1:1), func);
-
-			// 拡大時に、境界線は伸ばしちゃいます。
-			if(!k.isborderAsLine){ this.expandborder(key);}
-			else{ this.expandborderAsLine(key);}
-		}
-		if(!!k.isexcell){
-			func = function(id){ return (menu.ex.distObj(key,k.EXCELL,id)===0);};
-			this.expandGroup(k.EXCELL, bd.excell, k.isexcell, func);
+			if     (key===this.REDUCEUP||key===this.REDUCEDN){ k.qrows--;}
+			else if(key===this.REDUCELT||key===this.REDUCERT){ k.qcols--;}
 		}
 
 		bd.setposAll();
 
-		this.adjustSpecial2(5,key);
+		this.adjustBoardData2(key,d);
 	},
-	expandGroup : function(type,group,margin,insfunc){
-		for(var len=group.length,i=len;i<len+margin;i++){ group.push(bd.getnewObj(type,i));}
-		this.setposObj(type);
+	expandGroup : function(type,key){
+		var margin = bd.initGroup(type, k.qcols, k.qrows);
+		var group = bd.getGroup(type);
 		for(var i=group.length-1;i>=0;i--){
-			if(insfunc(i)){
-				group[i] = bd.getnewObj(type,i);
+			if(!!this.insex[type][this.distObj(type,i,key)]){
+				group[i] = bd.newObject(type,i);
 				margin--;
 			}
 			else if(margin>0){ group[i] = group[i-margin];}
 		}
+
+		if(type===k.BORDER){ this.expandborder(key);}
 	},
+	reduceGroup : function(type,key){
+		if(type===k.BORDER){ this.reduceborder(key);}
 
-	reduce : function(key){
-		this.adjustSpecial(6,key);
-		this.adjustGeneral(6,'',{x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby});
-
-		var func, margin;
-		{
-			this.qnums = [];
-			func = function(id){ return (menu.ex.distObj(key,k.CELL,id)===0);};
-			margin = this.reduceGroup(k.CELL, bd.cell, func);
-		}
-		if(!!k.iscross){
-			var oc = k.iscross===2?0:1;
-			func = function(id){ return (menu.ex.distObj(key,k.CROSS,id)===oc);};
-			margin = this.reduceGroup(k.CROSS, bd.cross, func);
-		}
-		if(!!k.isborder){
-			if(k.isborderAsLine){ this.reduceborderAsLine(key);}
-
-			if     (key===k.UP||key===k.DN){ bd.bdinside = 2*k.qcols*(k.qrows-1)-(k.qcols+k.qrows-1);}
-			else if(key===k.LT||key===k.RT){ bd.bdinside = 2*(k.qcols-1)*k.qrows-(k.qcols+k.qrows-1);}
-
-			func = function(id){ var m=menu.ex.distObj(key,k.BORDER,id); return (m===1||m===2);};
-			margin = this.reduceGroup(k.BORDER, bd.border, func);
-		}
-		if(!!k.isexcell){
-			func = function(id){ return (menu.ex.distObj(key,k.EXCELL,id)===0);};
-			margin = this.reduceGroup(k.EXCELL, bd.excell, func);
-		}
-
-		if     (key===k.UP||key===k.DN){ k.qrows--;}
-		else if(key===k.LT||key===k.RT){ k.qcols--;}
-
-		bd.setposAll();
-		if(k.roomNumber){
-			area.resetArea();
-			for(var i=0;i<this.qnums.length;i++){
-				bd.sQnC(area.getTopOfRoom(this.qnums[i].areaid), this.qnums[i].val);
-			}
-		}
-
-		this.adjustSpecial2(6,key);
-	},
-	reduceGroup : function(type,group,exfunc){
-		var margin=0;
+		var margin=0, group = bd.getGroup(type);
 		for(var i=0;i<group.length;i++){
-			if(exfunc(i)){
-				bd.hideNumobj(type,i);
-				if(!bd.isNullObj(type,i)){ um.addObj(type,i);}
+			if(!!this.insex[type][this.distObj(type,i,key)]){
+				if(!group[i].isempty()){ um.addObj(type,i);}
 				margin++;
-
-				if(type===k.CELL && k.roomNumber){
-					if(bd.QnC(i)!==-1){ this.qnums.push({ areaid:area.getRoomID(i), val:bd.QnC(i)});}
-					//area.setRoomID(i, -1);
-				}
 			}
 			else if(margin>0){ group[i-margin] = group[i];}
 		}
 		for(var i=0;i<margin;i++){ group.pop();}
-
-		return margin;
 	},
 
 	//------------------------------------------------------------------------------
 	// menu.ex.turnflip()      回転・反転処理を実行する
 	// menu.ex.turnflipGroup() turnflip()から内部的に呼ばれる回転実行部
 	//------------------------------------------------------------------------------
-	turnflip : function(type,d){
-		d.xx = (d.x1+d.x2); d.yy = (d.y1+d.y2);
+	turnflip : function(key,d){
+		this.adjustBoardData(key,d);
 
-		this.adjustSpecial(type,'');
-		this.adjustGeneral(type,'',d);
-
-		if(type===3||type===4){
+		if(key & this.TURN){
 			var tmp = k.qcols; k.qcols = k.qrows; k.qrows = tmp;
 			bd.setposAll();
+			d = {x1:0, y1:0, x2:2*k.qcols, y2:2*k.qrows};
 		}
 
-		var func;
-		{
-			func = ((type===1||type==2) ? bd.cnum : bd.cnum2);
-			this.turnflipGroup(type, d, bd.cell, k.qcols*k.qrows, func);
-		}
-		if(!!k.iscross){
-			func = ((type===1||type==2) ? bd.xnum : bd.xnum2);
-			this.turnflipGroup(type, d, bd.cross, (k.qcols+1)*(k.qrows+1), func);
-		}
-		if(!!k.isborder){
-			func = ((type===1||type==2) ? bd.bnum : bd.bnum2);
-			this.turnflipGroup(type, d, bd.border, bd.bdinside+(k.isborder===1?0:2*(k.qcols+k.qrows)), func);
-		}
-		if(k.isexcell===2){
-			func = ((type===1||type==2) ? bd.exnum : bd.exnum2);
-			this.turnflipGroup(type, d, bd.excell, 2*(k.qcols+k.qrows)+4, func);
-		}
-		else if(k.isexcell===1 && (type===1 || type===2)){
-			if(type===1){
-				for(var by=(d.y1|1);by<d.yy/2;by+=2){
-					var c = bd.excell[bd.exnum(-1,by)];
-					bd.excell[bd.exnum(-1,by)] = bd.excell[bd.exnum(-1,d.yy-by)];
-					bd.excell[bd.exnum(-1,d.yy-by)] = c;
-				}
-			}
-			else if(type===2){
-				for(var bx=(d.x1|1);bx<d.xx/2;bx+=2){
-					var c = bd.excell[bd.exnum(bx,-1)];
-					bd.excell[bd.exnum(bx,-1)] = bd.excell[bd.exnum(d.xx-bx,-1)];
-					bd.excell[bd.exnum(d.xx-bx,-1)] = c;
-				}
-			}
+						  { this.turnflipGroup(k.CELL,   key, d);}
+		if(!!k.iscross)   { this.turnflipGroup(k.CROSS,  key, d);}
+		if(!!k.isborder)  { this.turnflipGroup(k.BORDER, key, d);}
+		if(k.isexcell===2){ this.turnflipGroup(k.EXCELL, key, d);}
+		else if(k.isexcell===1 && (key & this.FLIP)){
+			var d2 = {x1:d.x1, y1:d.y1, x2:d.x2, y2:d.y2};
+			if     (key===this.FLIPY){ d2.x1 = d2.x2 = -1;}
+			else if(key===this.FLIPX){ d2.y1 = d2.y2 = -1;}
+			this.turnflipGroup(k.EXCELL, key, d2);
 		}
 
 		bd.setposAll();
-		this.adjustSpecial2(type,'');
-	},
-	turnflipGroup : function(type,d,group,maxcnt,getnext){
-		var ch = []; for(var i=0;i<maxcnt;i++){ ch[i]=1;}
-		for(var source=0;source<maxcnt;source++){
-			if(ch[source]===0){ continue;}
-			var tmp = group[source], target = source;
-			while(ch[target]!==0){
-				ch[target]=0;
-				if     (type===1){ next = getnext.call(bd, group[target].bx, d.yy-group[target].by);}
-				else if(type===2){ next = getnext.call(bd, d.xx-group[target].bx, group[target].by);}
-				else if(type===3){ next = getnext.call(bd, group[target].by, d.yy-group[target].bx, k.qrows, k.qcols);}
-				else if(type===4){ next = getnext.call(bd, d.xx-group[target].by, group[target].bx, k.qrows, k.qcols);}
 
-				if(ch[next]!==0){
+		this.adjustBoardData2(key,d);
+	},
+	turnflipGroup : function(type,key,d){
+		var ch=[], idlist=bd.objectinside(type,d.x1,d.y1,d.x2,d.y2);
+		for(var i=0;i<idlist.length;i++){ ch[idlist[i]]=false;}
+
+		var group = bd.getGroup(type);
+		var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
+		for(var source=0;source<group.length;source++){
+			if(ch[source]!==false){ continue;}
+
+			var tmp = group[source], target = source;
+			while(ch[target]===false){
+				ch[target]=true;
+				// nextになるものがtargetに移動してくる、、という考えかた。
+				// ここでは移動前のIDを取得しています
+				switch(key){
+					case this.FLIPY: next = bd.idnum(type, group[target].bx, yy-group[target].by); break;
+					case this.FLIPX: next = bd.idnum(type, xx-group[target].bx, group[target].by); break;
+					case this.TURNR: next = bd.idnum(type, group[target].by, xx-group[target].bx, k.qrows, k.qcols); break;
+					case this.TURNL: next = bd.idnum(type, yy-group[target].by, group[target].bx, k.qrows, k.qcols); break;
+				}
+
+				if(ch[next]===false){
 					group[target] = group[next];
 					target = next;
 				}
 				else{
 					group[target] = tmp;
+					break;
 				}
 			}
 		}
 	},
 
 	//---------------------------------------------------------------------------
-	// menu.ex.expandborder()       盤面の拡大時、境界線を伸ばす
-	// menu.ex.expandborderAsLine() borderAsLine==1なパズルの盤面拡大時に線を移動する
-	// menu.ex.reduceborderAsLine() borderAsLine==1なパズルの盤面縮小時に線を移動する
-	// menu.ex.copyData()           指定したデータをコピーする
+	// menu.ex.distObj()      上下左右いずれかの外枠との距離を求める
 	//---------------------------------------------------------------------------
-	expandborder : function(key){
-		if(um.undoExec){ return;} // Undo時は、後でオブジェクトを代入するので下の処理はパス
-
-		bd.setposBorders();
-		for(var i=0;i<bd.bdmax;i++){
-			if(this.distObj(key,k.BORDER,i)!==1){ continue;}
-
-			var source = this.innerBorder(key,i);
-			bd.border[i].ques  = bd.border[source].ques;
-			bd.border[i].qans  = bd.border[source].qans;
-		}
-	},
-	// m==0||m==1で直接移動できそうだけど、expandGroup()と別に
-	// 関数作る必要があるので無理やり移動させる
-	expandborderAsLine : function(key){
-		bd.setposBorders();
-		for(var i=0;i<bd.bdmax;i++){
-			if(this.distObj(key,k.BORDER,i)!==2){ continue;}
-
-			var source = this.outerBorder(key,i);
-			this.copyData(i,source);
-			bd.border[source].allclear(source);
-		}
-	},
-	// borderAsLine時の無理やりがなんとかかんとか
-	reduceborderAsLine : function(key){
-		for(var i=0;i<bd.bdmax;i++){
-			if(this.distObj(key,k.BORDER,i)!==0){ continue;}
-
-			var source = this.innerBorder(key,i);
-			this.copyData(i,source);
-		}
-	},
-	copyData : function(id1,id2){
-		bd.border[id1].qans  = bd.border[id2].qans;
-		bd.border[id1].qsub  = bd.border[id2].qsub;
-		bd.border[id1].ques  = bd.border[id2].ques;
-		bd.border[id1].color = bd.border[id2].color;
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.ex.innerBorder()  (expand/reduceBorder用) ひとつ内側に入ったborderのidを返す
-	// menu.ex.outerBorder()  (expand/reduceBorder用) ひとつ外側に行ったborderのidを返す
-	//---------------------------------------------------------------------------
-	innerBorder : function(key,id){
-		var bx=bd.border[id].bx, by=bd.border[id].by;
-		if     (key===k.UP){ return bd.bnum(bx, by+2);}
-		else if(key===k.DN){ return bd.bnum(bx, by-2);}
-		else if(key===k.LT){ return bd.bnum(bx+2, by);}
-		else if(key===k.RT){ return bd.bnum(bx-2, by);}
-		return -1;
-	},
-	outerBorder : function(key,id){
-		var bx=bd.border[id].bx, by=bd.border[id].by;
-		if     (key===k.UP){ return bd.bnum(bx, by-2);}
-		else if(key===k.DN){ return bd.bnum(bx, by+2);}
-		else if(key===k.LT){ return bd.bnum(bx-2, by);}
-		else if(key===k.RT){ return bd.bnum(bx+2, by);}
-		return -1;
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.ex.setposObj()  指定されたタイプのsetpos関数を呼び出す
-	// menu.ex.distObj()    上下左右いずれかの外枠との距離を求める
-	//---------------------------------------------------------------------------
-	setposObj : function(type){
-		if     (type===k.CELL)  { bd.setposCells();}
-		else if(type===k.CROSS) { bd.setposCrosses();}
-		else if(type===k.BORDER){ bd.setposBorders();}
-		else if(type===k.EXCELL){ bd.setposEXcells();}
-	},
-	distObj : function(key,type,id){
+	distObj : function(type,id,key){
 		var obj;
 		if     (type===k.CELL)  { obj = bd.cell[id];}
 		else if(type===k.CROSS) { obj = bd.cross[id];}
@@ -579,79 +466,174 @@ MenuExec.prototype = {
 		else if(type===k.EXCELL){ obj = bd.excell[id];}
 		else{ return -1;}
 
-		if     (key===k.UP){ return obj.by-bd.minby;}
-		else if(key===k.DN){ return bd.maxby-obj.by;}
-		else if(key===k.LT){ return obj.bx-bd.minbx;}
-		else if(key===k.RT){ return bd.maxbx-obj.bx;}
+		key &= 0x0F;
+		if     (key===k.UP){ return obj.by;}
+		else if(key===k.DN){ return 2*k.qrows-obj.by;}
+		else if(key===k.LT){ return obj.bx;}
+		else if(key===k.RT){ return 2*k.qcols-obj.bx;}
+		return -1;
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.ex.expandborder() 盤面の拡大時、境界線を伸ばす
+	// menu.ex.reduceborder() 盤面の縮小時、線を移動する
+	// menu.ex.copyBorder()   (expand/reduceBorder用) 指定したデータをコピーする
+	// menu.ex.innerBorder()  (expand/reduceBorder用) ひとつ内側に入ったborderのidを返す
+	// menu.ex.outerBorder()  (expand/reduceBorder用) ひとつ外側に行ったborderのidを返す
+	//---------------------------------------------------------------------------
+	expandborder : function(key){
+		// borderAsLineじゃないUndo時は、後でオブジェクトを代入するので下の処理はパス
+		if(k.isborderAsLine || !um.undoExec){
+			// 直前のexpandGroupで、bx,byプロパティが不定なままなので設定する
+			bd.setposBorders();
+
+			for(var id=0;id<bd.bdmax;id++){
+				if(this.distObj(k.BORDER,id,key)!==(k.isborderAsLine?2:1)){ continue;}
+
+				var source = (k.isborderAsLine ? this.outerBorder(id,key) : this.innerBorder(id,key));
+				this.copyBorder(id,source);
+				if(k.isborderAsLine){ bd.border[source].allclear(source);}
+			}
+		}
+	},
+	reduceborder : function(key){
+		if(k.isborderAsLine){
+			for(var id=0;id<bd.bdmax;id++){
+				if(this.distObj(k.BORDER,id,key)!==0){ continue;}
+
+				var source = this.innerBorder(id,key);
+				this.copyBorder(id,source);
+			}
+		}
+	},
+
+	copyBorder : function(id1,id2){
+		bd.border[id1].ques  = bd.border[id2].ques;
+		bd.border[id1].qans  = bd.border[id2].qans;
+		if(k.isborderAsLine){
+			bd.border[id1].qsub  = bd.border[id2].qsub;
+			bd.border[id1].color = bd.border[id2].color;
+		}
+	},
+	innerBorder : function(id,key){
+		var bx=bd.border[id].bx, by=bd.border[id].by;
+		key &= 0x0F;
+		if     (key===k.UP){ return bd.bnum2(bx, by+2, k.qcols, k.qrows);}
+		else if(key===k.DN){ return bd.bnum2(bx, by-2, k.qcols, k.qrows);}
+		else if(key===k.LT){ return bd.bnum2(bx+2, by, k.qcols, k.qrows);}
+		else if(key===k.RT){ return bd.bnum2(bx-2, by, k.qcols, k.qrows);}
+		return -1;
+	},
+	outerBorder : function(id,key){
+		var bx=bd.border[id].bx, by=bd.border[id].by;
+		key &= 0x0F;
+		if     (key===k.UP){ return bd.bnum2(bx, by-2, k.qcols, k.qrows);}
+		else if(key===k.DN){ return bd.bnum2(bx, by+2, k.qcols, k.qrows);}
+		else if(key===k.LT){ return bd.bnum2(bx-2, by, k.qcols, k.qrows);}
+		else if(key===k.RT){ return bd.bnum2(bx+2, by, k.qcols, k.qrows);}
 		return -1;
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.adjustGeneral()  回転・反転時に各セルの調節を行う(共通処理)
-	// menu.ex.adjustSpecial()  回転・反転・盤面調節開始前に各セルの調節を行う(各パズルのオーバーライド用)
-	// menu.ex.adjustSpecial2() 回転・反転・盤面調節終了後に各セルの調節を行う(各パズルのオーバーライド用)
-	// menu.ex.adjustQues51_1() [＼]セルの調整(adjustSpecial関数に代入する用)
-	// menu.ex.adjustQues51_2() [＼]セルの調整(adjustSpecial2関数に代入する用)
+	// menu.ex.adjustBoardData()  回転・反転開始前に各セルの調節を行う(共通処理)
+	// menu.ex.adjustBoardData2() 回転・反転終了後に各セルの調節を行う(共通処理)
+	// 
+	// menu.ex.adjustSpecial()    回転・反転・盤面調節開始前に各セルの調節を行う(各パズルのオーバーライド用)
+	// menu.ex.adjustSpecial2()   回転・反転・盤面調節終了後に各セルの調節を行う(各パズルのオーバーライド用)
+	// 
+	// menu.ex.adjustQues51_1()   [＼]セルの調整(adjustSpecial関数に代入する用)
+	// menu.ex.adjustQues51_2()   [＼]セルの調整(adjustSpecial2関数に代入する用)
 	//------------------------------------------------------------------------------
-	adjustGeneral : function(type,key,d){
+	adjustBoardData : function(key,d){
 		um.disableRecord();
-		for(var by=(d.y1|1);by<=d.y2;by+=2){
-			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
-				var c = bd.cnum(bx,by);
 
-				switch(type){
-				case 1: // 上下反転
-					if(true){
-						var val = ({2:5,3:4,4:3,5:2,104:107,105:106,106:105,107:104})[bd.QuC(c)];
-						if(!isNaN(val)){ bd.sQuC(c,val);}
-					}
-					if(k.isexcell!==1){
-						var val = ({1:2,2:1})[bd.DiC(c)];
-						if(!isNaN(val)){ bd.sDiC(c,val);}
-					}
-					break;
-				case 2: // 左右反転
-					if(true){
-						var val = ({2:3,3:2,4:5,5:4,104:105,105:104,106:107,107:106})[bd.QuC(c)];
-						if(!isNaN(val)){ bd.sQuC(c,val);}
-					}
-					if(k.isexcell!==1){
-						var val = ({3:4,4:3})[bd.DiC(c)];
-						if(!isNaN(val)){ bd.sDiC(c,val);}
-					}
-					break;
-				case 3: // 右90°反転
-					if(true){
-						var val = {2:5,3:2,4:3,5:4,21:22,22:21,102:103,103:102,104:107,105:104,106:105,107:106}[bd.QuC(c)];
-						if(!isNaN(val)){ bd.sQuC(c,val);}
-					}
-					if(k.isexcell!==1){
-						var val = {1:4,2:3,3:1,4:2}[bd.DiC(c)];
-						if(!isNaN(val)){ bd.sDiC(c,val);}
-					}
-					break;
-				case 4: // 左90°反転
-					if(true){
-						var val = {2:3,3:4,4:5,5:2,21:22,22:21,102:103,103:102,104:105,105:106,106:107,107:104}[bd.QuC(c)];
-						if(!isNaN(val)){ bd.sQuC(c,val);}
-					}
-					if(k.isexcell!==1){
-						var val = {1:3,2:4,3:2,4:1}[bd.DiC(c)];
-						if(!isNaN(val)){ bd.sDiC(c,val);}
-					}
-					break;
-				case 5: // 盤面拡大
-					break;
-				case 6: // 盤面縮小
-					break;
+		this.adjustSpecial.call(this,key,d);
+
+		var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
+		switch(key){
+		case this.FLIPY: // 上下反転
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				if(true){
+					var val = ({2:5,3:4,4:3,5:2,104:107,105:106,106:105,107:104})[bd.QuC(c)];
+					if(!isNaN(val)){ bd.sQuC(c,val);}
+				}
+				if(k.isexcell!==1){
+					var val = ({1:2,2:1})[bd.DiC(c)];
+					if(!isNaN(val)){ bd.sDiC(c,val);}
+				}
+			}
+			break;
+
+		case this.FLIPX: // 左右反転
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				if(true){
+					var val = ({2:3,3:2,4:5,5:4,104:105,105:104,106:107,107:106})[bd.QuC(c)];
+					if(!isNaN(val)){ bd.sQuC(c,val);}
+				}
+				if(k.isexcell!==1){
+					var val = ({3:4,4:3})[bd.DiC(c)];
+					if(!isNaN(val)){ bd.sDiC(c,val);}
+				}
+			}
+			break;
+
+		case this.TURNR: // 右90°反転
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				if(true){
+					var val = {2:5,3:2,4:3,5:4,21:22,22:21,102:103,103:102,104:107,105:104,106:105,107:106}[bd.QuC(c)];
+					if(!isNaN(val)){ bd.sQuC(c,val);}
+				}
+				if(k.isexcell!==1){
+					var val = {1:4,2:3,3:1,4:2}[bd.DiC(c)];
+					if(!isNaN(val)){ bd.sDiC(c,val);}
+				}
+			}
+			break;
+
+		case this.TURNL: // 左90°反転
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				if(true){
+					var val = {2:3,3:4,4:5,5:2,21:22,22:21,102:103,103:102,104:105,105:106,106:107,107:104}[bd.QuC(c)];
+					if(!isNaN(val)){ bd.sQuC(c,val);}
+				}
+				if(k.isexcell!==1){
+					var val = {1:3,2:4,3:2,4:1}[bd.DiC(c)];
+					if(!isNaN(val)){ bd.sDiC(c,val);}
+				}
+			}
+			break;
+		}
+		um.enableRecord();
+
+		if((key & this.REDUCE) && k.roomNumber){
+			this.qnums = [];
+			for(var i=0;i<bd.cell.length;i++){
+				if(!!this.insex[k.CELL][this.distObj(k.CELL,i,key)] && bd.cell[i].qnum!==-1){
+					this.qnums.push({ areaid:area.getRoomID(i), val:bd.cell[i].qnum});
 				}
 			}
 		}
+	},
+	adjustBoardData2 : function(key,d){
+		if((key & this.REDUCE) && k.roomNumber){
+			area.resetArea();
+			for(var i=0;i<this.qnums.length;i++){
+				bd.sQnC(area.getTopOfRoom(this.qnums[i].areaid), this.qnums[i].val);
+			}
+		}
+
+		um.disableRecord();
+		this.adjustSpecial2.call(this,key,d);
 		um.enableRecord();
 	},
-	adjustQues51_1 : function(type,key){
-		var d = {x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby};
+	adjustSpecial  : function(key,d){ },
+	adjustSpecial2 : function(key,d){ },
 
+	adjustQues51_1 : function(key,d){
 		this.qnumw = [];
 		this.qnumh = [];
 
@@ -668,14 +650,11 @@ MenuExec.prototype = {
 			}
 		}
 	},
-	adjustQues51_2 : function(type,key){
-		var d = {x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby};
-		d.xx = (d.x1+d.x2); d.yy = (d.y1+d.y2);
+	adjustQues51_2 : function(key,d){
+		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), idx;
 
-		um.disableRecord();
-		var idx;
-		switch(type){
-		case 1: // 上下反転
+		switch(key){
+		case this.FLIPY: // 上下反転
 			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 				idx = 1; this.qnumh[bx] = this.qnumh[bx].reverse();
 				bd.sDiE(bd.exnum(bx,-1), this.qnumh[bx][0]);
@@ -684,7 +663,8 @@ MenuExec.prototype = {
 				}
 			}
 			break;
-		case 2: // 左右反転
+
+		case this.FLIPX: // 左右反転
 			for(var by=(d.y1|1);by<=d.y2;by+=2){
 				idx = 1; this.qnumw[by] = this.qnumw[by].reverse();
 				bd.sQnE(bd.exnum(-1,by), this.qnumw[by][0]);
@@ -693,7 +673,8 @@ MenuExec.prototype = {
 				}
 			}
 			break;
-		case 3: // 右90°反転
+
+		case this.TURNR: // 右90°反転
 			for(var by=(d.y1|1);by<=d.y2;by+=2){
 				idx = 1; this.qnumh[by] = this.qnumh[by].reverse();
 				bd.sQnE(bd.exnum(-1,by), this.qnumh[by][0]);
@@ -703,18 +684,19 @@ MenuExec.prototype = {
 			}
 			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 				idx = 1;
-				bd.sDiE(bd.exnum(bx,-1), this.qnumw[d.xx-bx][0]);
+				bd.sDiE(bd.exnum(bx,-1), this.qnumw[xx-bx][0]);
 				for(var by=(d.y1|1);by<=d.y2;by+=2){
-					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sDiC(bd.cnum(bx,by), this.qnumw[d.xx-bx][idx]); idx++;}
+					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sDiC(bd.cnum(bx,by), this.qnumw[xx-bx][idx]); idx++;}
 				}
 			}
 			break;
-		case 4: // 左90°反転
+
+		case this.TURNL: // 左90°反転
 			for(var by=(d.y1|1);by<=d.y2;by+=2){
 				idx = 1;
-				bd.sQnE(bd.exnum(-1,by), this.qnumh[d.yy-by][0]);
+				bd.sQnE(bd.exnum(-1,by), this.qnumh[yy-by][0]);
 				for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
-					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sQnC(bd.cnum(bx,by), this.qnumh[d.yy-by][idx]); idx++;}
+					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sQnC(bd.cnum(bx,by), this.qnumh[yy-by][idx]); idx++;}
 				}
 			}
 			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
@@ -726,10 +708,7 @@ MenuExec.prototype = {
 			}
 			break;
 		}
-		um.enableRecord();
 	},
-	adjustSpecial  : function(type,key){ },
-	adjustSpecial2 : function(type,key){ },
 
 	//------------------------------------------------------------------------------
 	// menu.ex.ACconfirm()  「回答消去」ボタンを押したときの処理

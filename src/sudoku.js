@@ -218,7 +218,7 @@ Puzzles.sudoku.prototype = {
 			var max=k.qcols;
 			var blk=mf(Math.sqrt(max)+0.1);
 			for(var i=0;i<max;i++){
-				var clist = bd.getClistByPosition(((i%blk)*blk)*2+1, (mf(i/blk)*blk)*2+1, ((i%blk+1)*blk-1)*2+1, (mf(i/blk+1)*blk-1)*2+1);
+				var clist = bd.cellinside(((i%blk)*blk)*2+1, (mf(i/blk)*blk)*2+1, ((i%blk+1)*blk-1)*2+1, (mf(i/blk+1)*blk-1)*2+1);
 				if(!this.isDifferentNumberInClist(clist, bd.getNum)){
 					if(this.inAutoCheck){ return false;}
 					result = false;

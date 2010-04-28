@@ -11,7 +11,7 @@ Puzzles.box.prototype = {
 
 		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
 		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 2;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isexcell = 1;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
 		k.isLineCross     = false;	// 線が交差するパズル
 		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
@@ -34,8 +34,8 @@ Puzzles.box.prototype = {
 		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
 		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		k.bdmargin = 0.15;			// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = true;	// 画像出力時にmarginを小さくする
+		k.bdmargin       = 0.15;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
 
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
 						   " Left Click to input black cells, Right Click to input determined white cells.");
@@ -62,7 +62,7 @@ Puzzles.box.prototype = {
 		mv.clickexcell = function(){
 			var pos = this.borderpos(0);
 			var ec = bd.exnum(pos.x, pos.y);
-			if(ec<0 || bd.excellmax<=ec || pos.x===bd.maxbx-1 || pos.y===bd.maxby-1){ return false;}
+			if(ec<0 || bd.excellmax<=ec){ return false;}
 			var ec0 = tc.getTEC();
 
 			if(ec!==-1 && ec!==ec0){
@@ -141,16 +141,13 @@ Puzzles.box.prototype = {
 		};
 		tc.adjust();
 
-		menu.ex.adjustSpecial = function(type,key){
-			um.disableRecord();
-			if(type>=1 && type<=4){ // 反転・回転全て
+		menu.ex.adjustSpecial = function(key,d){
+			if(key & this.TURNFLIP){ // 反転・回転全て
 				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
 			}
-			um.enableRecord();
 		};
 
 		tc.setTEC(0);
-		bd.maxnum = 255;
 		bd.nummaxfunc = function(ec){
 			var bx=bd.excell[ec].bx, by=bd.excell[ec].by, cnt;
 			if(bx===-1 && by===-1){ return;}
@@ -171,8 +168,9 @@ Puzzles.box.prototype = {
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawErrorEXCells(x1,y1,x2,y2);
-			this.drawCirclesAtNumber_box(x1,y1,x2,y2);
 			this.drawNumbers_box(x1,y1,x2,y2);
+
+			this.drawCircledNumbers_box(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
@@ -183,7 +181,7 @@ Puzzles.box.prototype = {
 			this.vinc('excell_full', 'crispEdges');
 
 			var header = "ex_full_";
-			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+			var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i], obj = bd.excell[c];
 
@@ -196,42 +194,51 @@ Puzzles.box.prototype = {
 				else{ this.vhide(header+c)}
 			}
 		};
-		pc.drawCirclesAtNumber_box = function(x1,y1,x2,y2){
-			this.vinc('excell_circle', 'auto');
-
-			var header = "ex_cir_";
-			var rsize  = this.cw*0.36;
-			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
-			for(var i=0;i<exlist.length;i++){
-				var c = exlist[i], obj = bd.excell[c];
-				if(c>=2*(k.qcols+k.qrows) || obj.bx===-1 || obj.by===-1){ continue;}
-
-				g.fillStyle   = this.circledcolor;
-				g.strokeStyle = this.Cellcolor;
-				if(this.vnop(header+c,this.NONE)){
-					g.shapeCircle(obj.px+this.bw, obj.py+this.bh, rsize);
-				}
-			}
-		};
 		pc.drawNumbers_box = function(x1,y1,x2,y2){
 			this.vinc('excell_number', 'auto');
 
 			var header = "ex_full_";
-			var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+			var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
 			for(var i=0;i<exlist.length;i++){
-				var c = exlist[i], obj = bd.excell[c], key = 'excell_'+c;
-				if(c>=2*(k.qcols+k.qrows)){ continue;}
+				var c = exlist[i], obj = bd.excell[c], key="excell_"+c;
+				if(c>=k.qcols+k.qrows){ continue;}
 
-				if(obj.bx===-1 || obj.by===-1){
-					var color = (obj.error!==1 ? this.fontcolor : this.fontErrcolor);
-					var fontratio = (obj.qnum<10?0.8:0.7);
-					this.dispnum(key, 1, ""+obj.qnum, fontratio, color, obj.px+this.bw, obj.py+this.bh);
+				if(obj.bx===-1 && obj.by===-1){ continue;}
+				var color = (obj.error!==1 ? this.fontcolor : this.fontErrcolor);
+				var fontratio = (obj.qnum<10?0.8:0.7);
+				this.dispnum(key, 1, ""+obj.qnum, fontratio, color, obj.px+this.bw, obj.py+this.bh);
+			}
+		};
+
+		pc.drawCircledNumbers_box = function(x1,y1,x2,y2){
+			var exlist = [];
+			if(x2>=bd.maxbx){ for(var by=(y1|1),max=Math.min(bd.maxby,y2);by<=max;by+=2){ exlist.push([bd.maxbx+1,by]);}}
+			if(y2>=bd.maxby){ for(var bx=(x1|1),max=Math.min(bd.maxbx,x2);bx<=max;bx+=2){ exlist.push([bx,bd.maxby+1]);}}
+
+			this.vinc('excell_circle', 'auto');
+			var header = "ex2_cir_", rsize  = this.cw*0.36;
+			g.fillStyle   = this.circledcolor;
+			g.strokeStyle = this.cellcolor;
+			for(var i=0;i<exlist.length;i++){
+				var num = ((exlist[i][0]!==bd.maxbx+1 ? exlist[i][0] : exlist[i][1])+1)>>1;
+				if(num<=0){ continue;}
+
+				if(this.vnop([header,exlist[i][0],exlist[i][1]].join("_"),this.NONE)){
+					var px=k.p0.x+exlist[i][0]*this.bw, py=k.p0.y+exlist[i][1]*this.bh;
+					g.shapeCircle(px, py, rsize);
 				}
-				else{
-					var num = ((obj.bx!==bd.maxbx-1 ? obj.bx : obj.by)+1)>>1;
-					var fontratio = (num<10?0.7:0.6);
-					this.dispnum(key, 1, ""+num, fontratio, this.fontcolor, obj.px+this.bw, obj.py+this.bh);
-				}
+			}
+
+			this.vinc('excell_number2', 'auto');
+			var key = "ex2_cir_";
+			for(var i=0;i<exlist.length;i++){
+				var num = ((exlist[i][0]!==bd.maxbx+1 ? exlist[i][0] : exlist[i][1])+1)>>1;
+				if(num<=0){ continue;}
+
+				var key = [header,exlist[i][0],exlist[i][1]].join("_");
+				var px=k.p0.x+exlist[i][0]*this.bw, py=k.p0.y+exlist[i][1]*this.bh;
+				var fontratio = (num<10?0.7:0.6);
+				this.dispnum(key, 1, ""+num, fontratio, this.fontcolor, px, py);
 			}
 		};
 	},
@@ -247,29 +254,21 @@ Puzzles.box.prototype = {
 		};
 
 		enc.decodeBox = function(){
-			var exlist=[];
-			for(var bx=1;bx<2*k.qcols;bx+=2){ exlist.push(bd.exnum(bx,-1));}
-			for(var by=1;by<2*k.qrows;by+=2){ exlist.push(bd.exnum(-1,by));}
-
-			var cm="", ec=0;
-			for(var i=0;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
-				if(ca==='-'){ bd.sQnE(ec, parseInt(bstr.substr(i+1,2),32)); i+=2;}
+			var cm="", ec=0, bstr = this.outbstr;
+			for(var a=0;a<bstr.length;a++){
+				var ca=bstr.charAt(a);
+				if(ca==='-'){ bd.sQnE(ec, parseInt(bstr.substr(a+1,2),32)); a+=2;}
 				else        { bd.sQnE(ec, parseInt(ca,32));}
-				ex++;
-				if(ec >= exlist.length){ i++; break;}
+				ec++;
+				if(ec >= k.qcols+k.qrows){ a++; break;}
 			}
 
-			this.outbstr = bstr.substr(i);
+			this.outbstr = bstr.substr(a);
 		};
 		enc.encodeBox = function(){
-			var exlist=[];
-			for(var bx=1;bx<2*k.qcols;bx+=2){ exlist.push(bd.exnum(bx,-1));}
-			for(var by=1;by<2*k.qrows;by+=2){ exlist.push(bd.exnum(-1,by));}
-
 			var cm="";
-			for(var i=0;i<exlist.length;i++){
-				var ec = exlist[i], qnum=bd.QnE(ec);
+			for(var ec=0,len=k.qcols+k.qrows;ec<len;ec++){
+				var qnum=bd.QnE(ec);
 				if(qnum<32){ cm+=("" +qnum.toString(32));}
 				else       { cm+=("-"+qnum.toString(32));}
 			}
@@ -297,8 +296,8 @@ Puzzles.box.prototype = {
 			}
 		};
 		fio.encodeData = function(){
-			for(var by=-1;by<bd.maxby-2;by+=2){
-				for(var bx=-1;bx<bd.maxbx-2;bx+=2){
+			for(var by=-1;by<bd.maxby;by+=2){
+				for(var bx=-1;bx<bd.maxbx;bx+=2){
 					var ec = bd.exnum(bx,by);
 					if(ec!==-1){
 						this.datastr += (bd.QnE(ec).toString()+" ");

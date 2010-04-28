@@ -122,7 +122,7 @@ Puzzles.nanro.prototype = {
 
 		kp.kpgenerate = function(mode){
 			if(mode==3){
-				this.tdcolor = pc.MBcolor;
+				this.tdcolor = pc.mbcolor;
 				this.inputcol('num','knumq','q','Åõ');
 				this.inputcol('num','knumw','w','Å~');
 				this.tdcolor = "black";

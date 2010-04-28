@@ -51,22 +51,17 @@ Puzzles.tawa.prototype = {
 
 	protoChange : function(){
 		this.protofunc = {
-			bdinit  : Board.prototype.initBoardSize,
-			spcells : Board.prototype.setposCells,
+			estsize : Board.prototype.estimateSize,
+			spcells : Board.prototype.setposCells
 		};
 
-		Board.prototype.initBoardSize = function(col,row){
+		Board.prototype.estimateSize = function(type, col, row){
 			var total = 0;
 			if     (this.lap==0){ total = mf(row*0.5)*(2*col-1)+((row%2==1)?col:0);}
 			else if(this.lap==3 || this.lap==undefined){ total = mf(row*0.5)*(2*col+1)+((row%2==1)?col:0);}
 			else{ total = col*row;}
 
-			this.initGroup(k.CELL, this.cell, total);
-
-			k.qcols = col;
-			k.qrows = row;
-
-			this.afterinit();
+			return total;
 		};
 
 		// 各セルの位置変数設定関数
@@ -100,9 +95,9 @@ Puzzles.tawa.prototype = {
 		this.newboard_html_original = document.newboard.innerHTML;
 	},
 	protoOriginal : function(){
-		Board.prototype.initBoardSize = this.protofunc.bdinit;
-		Board.prototype.setposCells   = this.protofunc.spcells;
-		document.newboard.innerHTML   = this.newboard_html_original;
+		Board.prototype.estimateSize = this.protofunc.estsize;
+		Board.prototype.setposCells  = this.protofunc.spcells;
+		document.newboard.innerHTML  = this.newboard_html_original;
 
 		document.flip.turnl.disabled = false;
 		document.flip.turnr.disabled = false;
@@ -181,8 +176,8 @@ Puzzles.tawa.prototype = {
 
 		document.newboard.innerHTML =
 			["<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n",
-			 "<input type=\"text\" name=\"col\" value=\"\" size=\"3\" maxlength=\"3\" /> <span id=\"pop1_1_cap1x\">横幅 (黄色の数)</span><br>\n",
-			 "<input type=\"text\" name=\"row\" value=\"\" size=\"3\" maxlength=\"3\" /> <span id=\"pop1_1_cap2x\">高さ</span><br>\n",
+			 "<input type=\"number\" name=\"col\" value=\"\" size=\"4\" maxlength=\"3\" min=\"1\" max=\"999\" /> <span id=\"pop1_1_cap1x\">横幅 (黄色の数)</span><br>\n",
+			 "<input type=\"number\" name=\"row\" value=\"\" size=\"4\" maxlength=\"3\" min=\"1\" max=\"999\" /> <span id=\"pop1_1_cap2x\">高さ</span><br>\n",
 			 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"2\" style=\"margin-top:4pt;margin-bottom:4pt;\">",
 			 "<tr id=\"laps\" style=\"padding-bottom:2px;\">\n",
 			 "</tr></table>\n",
@@ -219,21 +214,21 @@ Puzzles.tawa.prototype = {
 	input_init_board : function(){	// 処理が大きくなったので分割(input_init()から呼ばれる)
 
 		// キー移動範囲のminx,maxx,miny,maxy設定関数オーバーライド
-		tc.getTCC = function(){ return bd.cnum(this.cursolx, this.cursoly);};
+		tc.getTCC = function(){ return bd.cnum(this.cursorx, this.cursory);};
 		tc.setTCC = function(id){
 			if(id<0 || bd.cellmax<=id){ return;}
-			this.cursolx = bd.cell[id].bx;
-			this.cursoly = bd.cell[id].by;
+			this.cursorx = bd.cell[id].bx;
+			this.cursory = bd.cell[id].by;
 		};
 		tc.incTCY = function(mv){
-			this.cursoly+=mv;
-			if(this.cursolx==this.minx || (this.cursolx<this.maxx && (this.cursoly>>1)%2==1)){ this.cursolx++;}
-			else{ this.cursolx--;}
+			this.cursory+=mv;
+			if(this.cursorx==this.minx || (this.cursorx<this.maxx && (this.cursory>>1)%2==1)){ this.cursorx++;}
+			else{ this.cursorx--;}
 		};
 		tc.decTCY = function(mv){
-			this.cursoly-=mv;
-			if(this.cursolx==this.maxx || (this.cursolx>this.minx && (this.cursoly>>1)%2==0)){ this.cursolx--;}
-			else{ this.cursolx++;}
+			this.cursory-=mv;
+			if(this.cursorx==this.maxx || (this.cursorx>this.minx && (this.cursory>>1)%2==0)){ this.cursorx--;}
+			else{ this.cursorx++;}
 		};
 
 		// 盤面の範囲を設定する
@@ -251,16 +246,12 @@ Puzzles.tawa.prototype = {
 			this.maxx = 2*k.qcols-1 + [0,1,1,2][bd.lap];
 			this.maxy = 2*k.qrows-1;
 
-			if(bd.cnum(this.cursolx,this.cursoly)===-1){
-				//this.cursolx += (this.cursolx>0?-1:1);
-				this.cursolx++;
+			if(bd.cnum(this.cursorx,this.cursory)===-1){
+				this.cursorx++;
 			}
 		};
 
 		// PositionからのセルID取得
-		bd.cnum = function(bx,by){
-			return this.cnum2(bx,by,k.qcols,k.qrows);
-		};
 		bd.cnum2 = function(bx,by,qc,qr){
 			if(bx<this.minbx+1 || bx>this.maxbx-1 || by<this.minby+1 || by>this.maxby-1){ return -1;}
 
@@ -272,11 +263,20 @@ Puzzles.tawa.prototype = {
 
 			return -1;
 		};
+		bd.cellinside = function(x1,y1,x2,y2){
+			var clist = [];
+			for(var by=(y1|1);by<=y2;by+=2){ for(var bx=x1;bx<=x2;bx++){
+				var c = this._cnum[[bx,by].join("_")];
+				if(c!==(void 0)){ clist.push(c);}
+			}}
+			return clist;
+		};
 
 		bd.lap = menu.ex.clap;	// 2段目は => 0:左右引っ込み 1:右のみ出っ張り 2:左のみ出っ張り 3:左右出っ張り
-		bd.setLap = function(val){ bd.lap=val; tc.adjust();};
+		bd.setLap = function(val){ this.lap=val; this.setminmax();};
 		bd.setLap(bd.lap);
-		bd.afterinit();
+		bd.setposAll();
+		tc.cursorx = 2; tc.cursory = 1;
 
 		// マウス入力時のセルID取得系
 		mv.cellid = function(){
@@ -315,92 +315,86 @@ Puzzles.tawa.prototype = {
 			}
 		};
 
-		// 盤面の拡大
-		menu.ex.expand = function(key){
-			// 調節用
-			var margin = 0;
-			{
-				if(key==k.LT){
+		// 盤面の拡大・縮小
+		menu.ex.expandreduce = function(key,d){
+			if(key & this.EXPAND){
+				// 調節用
+				var margin = 0;
+				switch(key & 0x0F){
+				case k.LT:
 					k.qcols += {0:0,1:0,2:1,3:1}[bd.lap];
-					margin   = mf((k.qrows + {0:0,1:0,2:1,3:1}[bd.lap])/2);
 					bd.lap   = {0:2,1:3,2:0,3:1}[bd.lap];
-				}
-				else if(key==k.RT){
-					k.qcols += {0:0,1:1,2:0,3:1}[bd.lap];
-					margin   = mf((k.qrows + {0:0,1:1,2:0,3:1}[bd.lap])/2);
-					bd.lap   = {0:1,1:0,2:3,3:2}[bd.lap];
-				}
-				else if(key==k.UP){
-					k.qrows++;
-					if(bd.lap==1||bd.lap==2){ margin = k.qcols;}
-					else if(bd.lap==0){ margin = k.qcols-1;}
-					else if(bd.lap==3){ margin = k.qcols+1;}
+					break;
 
+				case k.RT:
+					k.qcols += {0:0,1:1,2:0,3:1}[bd.lap];
+					bd.lap   = {0:1,1:0,2:3,3:2}[bd.lap];
+					break;
+
+				case k.UP:
+					k.qrows++;
 					k.qcols += {0:-1,1:0,2:0,3:1}[bd.lap];
 					bd.lap   = {0:3,1:2,2:1,3:0}[bd.lap];
-				}
-				else if(key==k.DN){
+					break;
+
+				case k.DN:
 					k.qrows++;
-					if(bd.lap==1||bd.lap==2){ margin = k.qcols;}
-					else if(bd.lap==0){ margin = k.qcols-1;}
-					else if(bd.lap==3){ margin = k.qcols+1;}
+					break;
 				}
+				bd.setminmax();
+
+				// 本体。
+				this.expandGroup(k.CELL, key);
 			}
+			else if(key & this.REDUCE){
+				// 本体。
+				this.reduceGroup(k.CELL, key);
 
-			// 本体。
-			var func;
-			if     (key==k.UP){ func = function(id){ return (bd.cell[id].by===bd.minby+1);};}
-			else if(key==k.DN){ func = function(id){ return (bd.cell[id].by===bd.maxby-1);};}
-			else if(key==k.LT){ func = function(id){ return (bd.cell[id].bx<= bd.minbx+1);};}
-			else if(key==k.RT){ func = function(id){ return (bd.cell[id].bx>= bd.maxbx-1);};}
-			this.expandGroup(k.CELL, bd.cell, margin, func);
-
-			bd.setposAll();
-		};
-		// 盤面の縮小
-		menu.ex.reduce = function(key){
-			// 本体。
-			var func;
-			if     (key==k.UP){ func = function(id){ return (bd.cell[id].by===bd.minby+1);};}
-			else if(key==k.DN){ func = function(id){ return (bd.cell[id].by===bd.maxby-1);};}
-			else if(key==k.LT){ func = function(id){ return (bd.cell[id].bx<= bd.minbx+1);};}
-			else if(key==k.RT){ func = function(id){ return (bd.cell[id].bx>= bd.maxbx-1);};}
-			var margin = this.reduceGroup(k.CELL, bd.cell, func);
-
-			// 調節用
-			{
-				if(key==k.LT){
+				// 調節用
+				switch(key & 0x0F){
+				case k.LT:
 					k.qcols -= {0:1,1:1,2:0,3:0}[bd.lap];
 					bd.lap   = {0:2,1:3,2:0,3:1}[bd.lap];
-				}
-				else if(key==k.RT){
+					break;
+
+				case k.RT:
 					k.qcols -= {0:1,1:0,2:1,3:0}[bd.lap];
 					bd.lap   = {0:1,1:0,2:3,3:2}[bd.lap];
-				}
-				else if(key==k.UP){
+					break;
+
+				case k.UP:
 					k.qrows--;
 					k.qcols += {0:-1,1:0,2:0,3:1}[bd.lap];
 					bd.lap   = {0:3,1:2,2:1,3:0}[bd.lap];
-				}
-				else if(key==k.DN){
+					break;
+
+				case k.DN:
 					k.qrows--;
+					break;
 				}
 			}
 
 			bd.setposAll();
 		};
 		// 回転・反転
-		menu.ex.turnflip = function(type,d){
-			d.xx = (d.x1+d.x2); d.yy = (d.y1+d.y2);
-			if(type==1){ if(!(k.qrows&1)){ bd.lap = {0:3,1:2,2:1,3:0}[bd.lap];} }
-			else if(type==2){ bd.lap = {0:0,1:2,2:1,3:3}[bd.lap];}
+		menu.ex.turnflip = function(key,d){
+			var d = {x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby};
 
-			var func;
-			if     (type==1){ func = function(d,id){ return bd.cnum(bd.cell[id].bx, d.yy-bd.cell[id].by);}; }
-			else if(type==2){ func = function(d,id){ return bd.cnum(d.xx-bd.cell[id].bx, bd.cell[id].by);}; }
-			this.turnflipGroup(d, bd.cell, bd.cellmax, func);
+			if     (key===this.FLIPY){ if(!(k.qrows&1)){ bd.lap = {0:3,1:2,2:1,3:0}[bd.lap];} }
+			else if(key===this.FLIPX){ bd.lap = {0:0,1:2,2:1,3:3}[bd.lap];}
+
+			this.turnflipGroup(k.CELL, key, d);
 
 			bd.setposAll();
+		};
+		menu.ex.distObj = function(type,id,key){
+			var obj = bd.cell[id];
+			key &= 0x0F;
+			if     (key===k.UP){ return obj.by;}
+			else if(key===k.DN){ return bd.maxby-obj.by;}
+			else if(key===k.LT){ return obj.bx;}
+			else if(key===k.RT){ return bd.maxbx-obj.bx;}
+			return -1;
 		};
 
 		document.flip.turnl.disabled = true;
@@ -439,22 +433,13 @@ Puzzles.tawa.prototype = {
 
 			pc.paint(x1,y1,x2,y2);
 		};
-		// オーバーライド
-		pc.cellinside = function(x1,y1,x2,y2){
-			var clist = [];
-			for(var by=(y1|1);by<=y2;by+=2){ for(var bx=x1;bx<=x2;bx++){
-				var c = bd.cnum(bx,by);
-				if(c!==-1){ clist.push(c);}
-			}}
-			return clist;
-		};
 
 		pc.drawGrid_tawa = function(x1,y1,x2,y2){
 			this.vinc('grid', 'crispEdges');
 			if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
 			if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
 
-			var lw = Math.max(this.cw/32, 1);
+			var lw = Math.max(this.cw/36, 1);
 			var lm = (lw-1)/2;
 			var headers = ["bdx_", "bdy"];
 

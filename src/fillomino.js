@@ -16,7 +16,7 @@ Puzzles.fillomino.prototype = {
 		k.isLineCross     = false;	// 線が交差するパズル
 		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
 		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
+		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
 		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
 		k.dispzero        = false;	// 0を表示するかどうか
@@ -73,26 +73,26 @@ Puzzles.fillomino.prototype = {
 		};
 		mv.inputborder_fillomino = function(){
 			var pos = this.borderpos(0.25);
-			if(this.mouseCell==-1 && pos.x%2==1 && pos.y%2==1){
+			if(this.mouseCell===-1 && (pos.x&1) && (pos.y&1)){
 				pos = this.cellid();
-				if(pos==-1){ return true;}
+				if(pos===-1){ return true;}
 				this.inputData = bd.getNum(pos);
 				this.mouseCell = pos;
 				return false;
 			}
-			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return true;}
+			if(pos.x===this.mouseCell.x && pos.y===this.mouseCell.y){ return true;}
 
 			var id = bd.bnum(pos.x, pos.y);
-			if(id==-1 && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
+			if(id===-1 && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
 
 			if(this.mouseCell!=-1 && id!=-1){
-				if((pos.x%2==0 && this.mouseCell.x==pos.x && Math.abs(this.mouseCell.y-pos.y)==1) ||
-				   (pos.y%2==0 && this.mouseCell.y==pos.y && Math.abs(this.mouseCell.x-pos.x)==1) )
+				if((!(pos.x&1) && this.mouseCell.x===pos.x && Math.abs(this.mouseCell.y-pos.y)===1) ||
+				   (!(pos.y&1) && this.mouseCell.y===pos.y && Math.abs(this.mouseCell.x-pos.x)===1) )
 				{
 					this.mouseCell=-1
 
-					if(this.inputData==-1){ this.inputData=(bd.QaB(id)==0?1:0);}
-					if(this.inputData!=-1){ bd.sQaB(id, this.inputData);}
+					if(this.inputData===-1){ this.inputData=(bd.QaB(id)===0?1:0);}
+					if(this.inputData!==-1){ bd.sQaB(id, this.inputData);}
 					else{ return true;}
 					pc.paintBorder(id);
 				}
@@ -102,7 +102,7 @@ Puzzles.fillomino.prototype = {
 		};
 		mv.dragnumber = function(){
 			var cc = this.cellid();
-			if(cc==-1||cc==this.mouseCell){ return;}
+			if(cc===-1||cc===this.mouseCell){ return;}
 			bd.sQaC(cc, this.inputData);
 			this.mouseCell = cc;
 			pc.paintCell(cc);
@@ -116,7 +116,10 @@ Puzzles.fillomino.prototype = {
 			if(ca=='x' && !this.keyPressed){ this.isX=true; return;}
 			this.key_inputqnum(ca);
 		};
-		kc.keyup    = function(ca){ if(ca=='z'){ this.isZ=false;} if(ca=='x'){ this.isX=false;}};
+		kc.keyup = function(ca){
+			if(ca=='z'){ this.isZ=false;}
+			if(ca=='x'){ this.isX=false;}
+		};
 		kc.key_fillomino = function(ca){
 			if(k.editmode){ return false;}
 
@@ -124,24 +127,24 @@ Puzzles.fillomino.prototype = {
 			if(cc==-1){ return;}
 			var flag = false;
 
-			if     (ca == k.KEYUP && bd.up(cc) != -1){
-				if(kc.isCTRL)  { bd.sQsB(bd.ub(cc),(bd.QsB(bd.ub(cc))==0?1:0)); tc.decTCY(2); flag = true;}
-				else if(kc.isZ){ bd.sQaB(bd.ub(cc),(bd.QaB(bd.ub(cc))==0?1:0)); flag = true;}
+			if     (ca===k.KEYUP && bd.up(cc)!==-1){
+				if(kc.isCTRL)  { bd.sQsB(bd.ub(cc),(bd.QsB(bd.ub(cc))===0?1:0)); tc.decTCY(2); flag = true;}
+				else if(kc.isZ){ bd.sQaB(bd.ub(cc),(bd.QaB(bd.ub(cc))===0?1:0)); flag = true;}
 				else if(kc.isX){ bd.sQaC(bd.up(cc),bd.getNum(cc)); tc.decTCY(2); flag = true;}
 			}
-			else if(ca == k.KEYDN && bd.dn(cc) != -1){
-				if(kc.isCTRL)  { bd.sQsB(bd.db(cc),(bd.QsB(bd.db(cc))==0?1:0)); tc.incTCY(2); flag = true;}
-				else if(kc.isZ){ bd.sQaB(bd.db(cc),(bd.QaB(bd.db(cc))==0?1:0)); flag = true;}
+			else if(ca===k.KEYDN && bd.dn(cc)!==-1){
+				if(kc.isCTRL)  { bd.sQsB(bd.db(cc),(bd.QsB(bd.db(cc))===0?1:0)); tc.incTCY(2); flag = true;}
+				else if(kc.isZ){ bd.sQaB(bd.db(cc),(bd.QaB(bd.db(cc))===0?1:0)); flag = true;}
 				else if(kc.isX){ bd.sQaC(bd.dn(cc),bd.getNum(cc)); tc.incTCY(2); flag = true;}
 			}
-			else if(ca == k.KEYLT && bd.lt(cc) != -1){
-				if(kc.isCTRL)  { bd.sQsB(bd.lb(cc),(bd.QsB(bd.lb(cc))==0?1:0)); tc.decTCX(2); flag = true;}
-				else if(kc.isZ){ bd.sQaB(bd.lb(cc),(bd.QaB(bd.lb(cc))==0?1:0)); kc.tcMoved = true; flag = true;}
+			else if(ca===k.KEYLT && bd.lt(cc)!==-1){
+				if(kc.isCTRL)  { bd.sQsB(bd.lb(cc),(bd.QsB(bd.lb(cc))===0?1:0)); tc.decTCX(2); flag = true;}
+				else if(kc.isZ){ bd.sQaB(bd.lb(cc),(bd.QaB(bd.lb(cc))===0?1:0)); kc.tcMoved = true; flag = true;}
 				else if(kc.isX){ bd.sQaC(bd.lt(cc),bd.getNum(cc)); tc.decTCX(2); kc.tcMoved = true; flag = true;}
 			}
-			else if(ca == k.KEYRT && bd.rt(cc) != -1){
-				if(kc.isCTRL)  { bd.sQsB(bd.rb(cc),(bd.QsB(bd.rb(cc))==0?1:0)); tc.incTCX(2); flag = true;}
-				else if(kc.isZ){ bd.sQaB(bd.rb(cc),(bd.QaB(bd.rb(cc))==0?1:0)); flag = true;}
+			else if(ca===k.KEYRT && bd.rt(cc)!==-1){
+				if(kc.isCTRL)  { bd.sQsB(bd.rb(cc),(bd.QsB(bd.rb(cc))===0?1:0)); tc.incTCX(2); flag = true;}
+				else if(kc.isZ){ bd.sQaB(bd.rb(cc),(bd.QaB(bd.rb(cc))===0?1:0)); flag = true;}
 				else if(kc.isX){ bd.sQaC(bd.rt(cc),bd.getNum(cc)); tc.incTCX(2); flag = true;}
 			}
 
@@ -214,7 +217,7 @@ Puzzles.fillomino.prototype = {
 			// 境界線を自動入力
 			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				var bdflag = (cc1!=-1 && cc2!=-1 && bd.getNum(cc1)!=-1 && bd.getNum(cc2)!=-1 && bd.getNum(cc1)!=bd.getNum(cc2));
+				var bdflag = (cc1!==-1 && cc2!==-1 && bd.getNum(cc1)!==-1 && bd.getNum(cc2)!==-1 && bd.getNum(cc1)!==bd.getNum(cc2));
 				bd.sQaB(id,(bdflag?1:0));
 			}
 		};
@@ -262,13 +265,13 @@ Puzzles.fillomino.prototype = {
 			var result = true;
 			for(var id=1;id<=rinfo.max;id++){
 				var room = rinfo.room[id];
-				if(room.error==-1||room.number<=0){ continue;}
-				if     (flag==1 && room.number<room.idlist.length){
+				if(room.error===-1||room.number<=0){ continue;}
+				if     (flag===1 && room.number<room.idlist.length){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(room.idlist,1);
 					result = false;
 				}
-				else if(flag==2 && room.number>room.idlist.length){
+				else if(flag===2 && room.number>room.idlist.length){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(room.idlist,1);
 					result = false;
@@ -279,7 +282,7 @@ Puzzles.fillomino.prototype = {
 		ans.checkErrorFlag = function(rinfo, val){
 			var result = true;
 			for(var id=1;id<=rinfo.max;id++){
-				if(rinfo.room[id].error==val){
+				if(rinfo.room[id].error===val){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(rinfo.room[id].idlist,1);
 					result = false;
@@ -295,7 +298,7 @@ Puzzles.fillomino.prototype = {
 				room.error  =  0;
 				room.number = -1;
 				var nums = [];
-				var emptycell = 0, numcnt = 0, filled = 0;
+				var emptycell=0, numcnt=0, filled=0;
 				for(var i=0;i<room.idlist.length;i++){
 					var c = room.idlist[i];
 					var num = bd.getNum(c);
@@ -304,10 +307,10 @@ Puzzles.fillomino.prototype = {
 					else{ nums[num]++;}
 				}
 				if(numcnt>1 && emptycell>0){ room.error=4; continue;}
-				else if(numcnt==0)         { room.error=3; continue;}
-				else if(numcnt==1 && filled < nums[filled]+emptycell){ room.error=2;  room.number=filled; continue;}
-				else if(numcnt==1 && filled > nums[filled]+emptycell){ room.error=1;  room.number=filled; continue;}
-				else if(numcnt==1)                                   { room.error=-1; room.number=filled; continue;}
+				else if(numcnt===0)        { room.error=3; continue;}
+				else if(numcnt===1 && filled < nums[filled]+emptycell){ room.error=2;  room.number=filled; continue;}
+				else if(numcnt===1 && filled > nums[filled]+emptycell){ room.error=1;  room.number=filled; continue;}
+				else if(numcnt===1)                                   { room.error=-1; room.number=filled; continue;}
 
 				// ここまで来るのはemptycellが0で2種類以上の数字が入っている領域のみ
 				// -> それぞれに別の領域idを割り当てて判定できるようにする

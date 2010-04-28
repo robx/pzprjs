@@ -77,7 +77,7 @@ debug.extend({
 		k.qrows = 0;
 		k.cellsize = 36;
 		k.bdmargin = 0.70;
-		k.reduceImageMargin = true;
+		k.bdmargin_image = 0.10;
 
 		// ’Êípreload_func‚Å‰Šú‰»‚³‚ê‚éenc,fio‚ğ‚±‚±‚Å¶¬‚·‚é
 		enc = new Encode();

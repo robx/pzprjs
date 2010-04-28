@@ -137,7 +137,6 @@ Puzzles.reflect.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
-		pc.fontcolor = pc.fontErrcolor = "white";
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
@@ -161,7 +160,7 @@ Puzzles.reflect.prototype = {
 			this.vinc('cell_triangle_border', 'crispEdges');
 
 			var header = "b_tb_";
-			var idlist = this.borderinside(x1-1,y1-1,x2+2,y2+2);
+			var idlist = bd.borderinside(x1-1,y1-1,x2+2,y2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], lflag = !(bd.border[id].bx&1);
 				var qs1 = bd.QuC(bd.border[id].cellcc[0]),
@@ -184,7 +183,7 @@ Puzzles.reflect.prototype = {
 		pc.draw101 = function(x1,y1,x2,y2){
 			this.vinc('cell_ques', 'crispEdges');
 
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){ this.draw101_1(clist[i]);}
 		};
 		pc.draw101_1 = function(id){
@@ -192,7 +191,7 @@ Puzzles.reflect.prototype = {
 
 			if(bd.cell[id].ques===101){
 				var lw = this.lw+2, lm=(lw-1)/2, ll=this.cw*0.76;
-				g.fillStyle = this.Cellcolor;
+				g.fillStyle = this.cellcolor;
 
 				// Gridの真ん中＝cpx,cpy+0.5
 				if(this.vnop(vids[0],this.NONE)){
@@ -204,7 +203,13 @@ Puzzles.reflect.prototype = {
 			}
 			else{ this.vhide(vids);}
 		};
-		pc.isdispnumCell = function(id){ return ((bd.QuC(id)>=2 && bd.QuC(id)<=5) && bd.QnC(id)>0);};
+		pc.drawNumber1 = function(c){
+			var obj = bd.cell[c], key = ['cell',c].join('_');
+			if((obj.ques>=2 && obj.ques<=5) && obj.qnum>0){
+				this.dispnum(key, obj.ques, ""+obj.qnum, 0.45, "white", obj.cpx, obj.cpy);
+			}
+			else{ this.hideEL(key);}
+		},
 
 		line.repaintParts = function(idlist){
 			var clist = this.getClistFromIdlist(idlist);

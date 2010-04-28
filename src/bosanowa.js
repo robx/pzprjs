@@ -34,8 +34,8 @@ Puzzles.bosanowa.prototype = {
 		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
 		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		k.bdmargin = 0.7;				// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = true;	// 画像出力時にmarginを小さくする
+		k.bdmargin       = 0.70;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
 
 		if(k.EDITOR){
 			base.setExpression("　キーボードで数字および、Wキーで数字を入力するマス/しないマスの切り替えが来出ます。",
@@ -56,9 +56,9 @@ Puzzles.bosanowa.prototype = {
 		pp.addChild('disptype_2', 'disptype', '倉庫番形式',     'Sokoban Type');
 		pp.addChild('disptype_3', 'disptype', 'ワリタイ形式',   'Waritai type');
 		pp.funcs['disptype'] = function(num){
-			if     (num==1){ k.bdmargin = 0.7; k.reduceImageMargin = true;}
-			else if(num==2){ k.bdmargin = 1.2; k.reduceImageMargin = false;}
-			else if(num==3){ k.bdmargin = 0.7; k.reduceImageMargin = true;}
+			if     (num==1){ k.bdmargin = 0.70; k.bdmargin_image = 0.10;}
+			else if(num==2){ k.bdmargin = 1.20; k.bdmargin_image = 1.10;}
+			else if(num==3){ k.bdmargin = 0.70; k.bdmargin_image = 0.10;}
 			base.resize_canvas();
 		};
 	},
@@ -79,7 +79,7 @@ Puzzles.bosanowa.prototype = {
 			var tcp = tc.getTCP();
 
 			if(pos.x==tcp.x&&pos.y==tcp.y){
-				var max = 255;
+				var max = bd.nummaxfunc();
 				if((pos.x&1)&&(pos.y&1)){
 					var cc = bd.cnum(pos.x,pos.y);
 					if(k.editmode){
@@ -166,15 +166,13 @@ Puzzles.bosanowa.prototype = {
 		};
 
 		// カーソルを最初真ん中においておく
-		tc.cursolx = k.qcols-1-k.qcols%2;
-		tc.cursoly = k.qrows-1-k.qrows%2;
+		tc.cursorx = k.qcols-1-k.qcols%2;
+		tc.cursory = k.qrows-1-k.qrows%2;
 		if(k.EDITOR){
 			um.disableRecord();
 			bd.sQuC(tc.getTCC(),7);
 			um.enableRecord();
 		}
-
-		bd.maxnum=255;
 	},
 
 	//---------------------------------------------------------
@@ -214,7 +212,7 @@ Puzzles.bosanowa.prototype = {
 
 			var header = "c_fullerr_";
 			g.fillStyle = this.errbcolor1;
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].error===1){
@@ -234,11 +232,11 @@ Puzzles.bosanowa.prototype = {
 			var rsize  = this.cw*0.44;
 			var header = "c_cir_";
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && !bd.isNum(c)){
-					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
 					if(this.vnop(header+c,this.STROKE)){
 						g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
 					}
@@ -255,7 +253,7 @@ Puzzles.bosanowa.prototype = {
 			g.fillStyle="rgb(127,127,127)";
 			g.strokeStyle="rgb(127,127,127)";
 
-			var idlist = this.borderinside(x1-2,y1-2,x2+2,y2+2);
+			var idlist = bd.borderinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				var onboard1 = (cc1!==-1&&bd.cell[cc1].ques===7);
@@ -300,7 +298,7 @@ Puzzles.bosanowa.prototype = {
 
 			var csize = this.cw*0.20;
 			var headers = ["b_grid_", "b_grid2_"];
-			var idlist = this.borderinside(x1-2,y1-2,x2+2,y2+2);
+			var idlist = bd.borderinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				var onboard1 = (cc1!==-1&&bd.cell[cc1].ques===7);
@@ -328,7 +326,7 @@ Puzzles.bosanowa.prototype = {
 
 			var csize = this.cw*0.20;
 			var header = "b_bbse_";
-			var idlist = this.borderinside(x1-2,y1-2,x2+3,y2+3);
+			var idlist = bd.borderinside(x1-2,y1-2,x2+3,y2+3);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 
@@ -344,7 +342,7 @@ Puzzles.bosanowa.prototype = {
 		pc.drawNumbersBD = function(x1,y1,x2,y2){
 			this.vinc('border_number', 'auto');
 
-			var idlist = this.borderinside(x1-1,y1-1,x2+1,y2+1);
+			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){
 				var id=idlist[i], obj=bd.border[id], key='border_'+id;
 				if(bd.border[id].qsub>=0){
@@ -381,14 +379,14 @@ Puzzles.bosanowa.prototype = {
 		pc.setBorderColor = function(id){
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if((cc1===-1 || bd.cell[cc1].ques!==7)^(cc2===-1 || bd.cell[cc2].ques!==7)){
-				g.fillStyle = this.Cellcolor;
+				g.fillStyle = this.cellcolor;
 				return true;
 			}
 			return false;
 		};
 
 		pc.drawTarget_bosanowa = function(x1,y1,x2,y2){
-			var islarge = !!((tc.cursolx&1)&&(tc.cursoly&1));
+			var islarge = !!((tc.cursorx&1)&&(tc.cursory&1));
 			this.drawCursor(x1,y1,x2,y2,islarge);
 		};
 	},

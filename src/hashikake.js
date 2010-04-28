@@ -34,8 +34,8 @@ Puzzles.hashikake.prototype = {
 		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
 		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
 
-		k.bdmargin = 0.50;			// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = true;	// 画像出力時にmarginを小さくする
+		k.bdmargin       = 0.50;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
 
 		base.setTitle("橋をかけろ","Bridges");
 		base.setExpression("　左ボタンで線が、右ボタンで×が入力できます。",
@@ -233,7 +233,7 @@ Puzzles.hashikake.prototype = {
 
 			if(bd.cell[c].qnum!=-1){
 				g.lineWidth   = this.cw*0.05;
-				g.strokeStyle = this.Cellcolor;
+				g.strokeStyle = this.cellcolor;
 
 				if (pp.getVal('circolor') && bd.cell[c].qnum===ans.getCountOfBridges(c))
 											 { g.fillStyle = this.bcolor;      }
@@ -251,7 +251,7 @@ Puzzles.hashikake.prototype = {
 			var clist = this.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
 				pc.drawCircle1AtNumber(clist[i]);
-				pc.dispnumCell(clist[i]);
+				pc.drawNumber1(clist[i]);
 			}
 		};
 		line.iscrossing = function(cc){ return (bd.QnC(cc)===-1);};
