@@ -1,7 +1,7 @@
-// Undo.js v3.2.3
+// Undo.js v3.3.0
 
 //---------------------------------------------------------------------------
-// ★UndoManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
+// ★OperationManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
 //---------------------------------------------------------------------------
 // 入力情報管理クラス
 // Operationクラス
@@ -14,8 +14,8 @@ Operation = function(obj, property, id, old, num){
 	this.chain = um.chainflag;
 };
 
-// UndoManagerクラス
-UndoManager = function(){
+// OperationManagerクラス
+OperationManager = function(){
 	this.ope = [];			// Operationクラスを保持する配列
 	this.current = 0;		// 現在の表示操作番号を保持する
 	this.disrec = 0;		// このクラスからの呼び出し時は1にする
@@ -29,9 +29,9 @@ UndoManager = function(){
 	this.undoExec = false;		// Undo中
 	this.redoExec = false;		// Redo中
 	this.reqReset = false;		// Undo/Redo時に盤面回転等が入っていた時、resize,resetInfo関数のcallを要求する
-	this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
+	this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
 };
-UndoManager.prototype = {
+OperationManager.prototype = {
 	//---------------------------------------------------------------------------
 	// um.disableRecord()  操作の登録を禁止する
 	// um.enableRecord()   操作の登録を許可する
@@ -74,7 +74,7 @@ UndoManager.prototype = {
 	//---------------------------------------------------------------------------
 	addOpe : function(obj, property, id, old, num){
 		if(!this.isenableRecord()){ return;}
-		else if(old==num){ return;}
+		else if(old==num && obj!==k.BOARD){ return;}
 
 		var lastid = this.ope.length-1;
 
@@ -119,7 +119,7 @@ UndoManager.prototype = {
 	undo : function(){
 		if(this.current==0){ return;}
 		this.undoExec = true;
-		this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
+		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
 		this.disableRecord();
 
 		while(this.current>0){
@@ -139,7 +139,7 @@ UndoManager.prototype = {
 	redo : function(){
 		if(this.current==this.ope.length){ return;}
 		this.redoExec = true;
-		this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
+		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
 		this.disableRecord();
 
 		while(this.current<this.ope.length){
@@ -161,11 +161,12 @@ UndoManager.prototype = {
 			this.reqReset=false;
 
 			bd.setposAll();
+			bd.setminmax();
 			base.resetInfo(false);
 			base.resize_canvas();
 		}
 		else{
-			pc.paint(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
+			pc.paintRange(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
 		}
 		this.enableRecord();
 		this.enableInfo();
@@ -180,7 +181,7 @@ UndoManager.prototype = {
 			else if(pp == k.QANS){ bd.sQaC(ope.id, num);}
 			else if(pp == k.QSUB){ bd.sQsC(ope.id, num);}
 			else if(pp == k.CELL && !!num){ bd.cell[ope.id] = num;}
-			this.paintStack(bd.cell[ope.id].cx, bd.cell[ope.id].cy, bd.cell[ope.id].cx, bd.cell[ope.id].cy);
+			this.paintStack(bd.cell[ope.id].bx-1, bd.cell[ope.id].by-1, bd.cell[ope.id].bx+1, bd.cell[ope.id].by+1);
 		}
 		else if(ope.obj == k.EXCELL){
 			if     (pp == k.QNUM){ bd.sQnE(ope.id, num);}
@@ -191,7 +192,7 @@ UndoManager.prototype = {
 			if     (pp == k.QUES){ bd.sQuX(ope.id, num);}
 			else if(pp == k.QNUM){ bd.sQnX(ope.id, num);}
 			else if(pp == k.CROSS && !!num){ bd.cross[ope.id] = num;}
-			this.paintStack(bd.cross[ope.id].cx-1, bd.cross[ope.id].cy-1, bd.cross[ope.id].cx, bd.cross[ope.id].cy);
+			this.paintStack(bd.cross[ope.id].bx-1, bd.cross[ope.id].by-1, bd.cross[ope.id].bx+1, bd.cross[ope.id].by+1);
 		}
 		else if(ope.obj == k.BORDER){
 			if     (pp == k.QUES){ bd.sQuB(ope.id, num);}
@@ -203,22 +204,13 @@ UndoManager.prototype = {
 			this.paintBorder(ope.id);
 		}
 		else if(ope.obj == k.BOARD){
+			var d = {x1:0, y1:0, x2:2*k.qcols, y2:2*k.qrows};
+
 			this.disableInfo();
-			if     (pp == 'expandup'){ if(num==1){ menu.ex.expand(k.UP);}else{ menu.ex.reduce(k.UP);} }
-			else if(pp == 'expanddn'){ if(num==1){ menu.ex.expand(k.DN);}else{ menu.ex.reduce(k.DN);} }
-			else if(pp == 'expandlt'){ if(num==1){ menu.ex.expand(k.LT);}else{ menu.ex.reduce(k.LT);} }
-			else if(pp == 'expandrt'){ if(num==1){ menu.ex.expand(k.RT);}else{ menu.ex.reduce(k.RT);} }
-			else if(pp == 'reduceup'){ if(num==1){ menu.ex.reduce(k.UP);}else{ menu.ex.expand(k.UP);} }
-			else if(pp == 'reducedn'){ if(num==1){ menu.ex.reduce(k.DN);}else{ menu.ex.expand(k.DN);} }
-			else if(pp == 'reducelt'){ if(num==1){ menu.ex.reduce(k.LT);}else{ menu.ex.expand(k.LT);} }
-			else if(pp == 'reducert'){ if(num==1){ menu.ex.reduce(k.RT);}else{ menu.ex.expand(k.RT);} }
+			if(num & menu.ex.TURNFLIP){ menu.ex.turnflip    (num,d);}
+			else                      { menu.ex.expandreduce(num,d);}
 
-			else if(pp == 'flipy'){ menu.ex.turnflip(1,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});}
-			else if(pp == 'flipx'){ menu.ex.turnflip(2,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});}
-			else if(pp == 'turnr'){ menu.ex.turnflip((num==1?3:4),{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); }
-			else if(pp == 'turnl'){ menu.ex.turnflip((num==1?4:3),{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); }
-
-			this.range = { x1:0, y1:0, x2:k.qcols-1, y2:k.qrows-1};
+			this.range = {x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby};
 			this.reqReset = true;
 		}
 	},
@@ -228,13 +220,11 @@ UndoManager.prototype = {
 	//---------------------------------------------------------------------------
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
-		if(bd.border[id].cx%2==1){
-			this.paintStack((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
-							(bd.border[id].cx>>1)+1, (bd.border[id].cy>>1)   );
+		if(bd.border[id].bx&1){
+			this.paintStack(bd.border[id].bx-2, bd.border[id].by-1, bd.border[id].bx+2, bd.border[id].by+1);
 		}
 		else{
-			this.paintStack((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
-							(bd.border[id].cx>>1)  , (bd.border[id].cy>>1)+1 );
+			this.paintStack(bd.border[id].bx-1, bd.border[id].by-2, bd.border[id].bx+1, bd.border[id].by+2);
 		}
 	},
 	paintStack : function(x1,y1,x2,y2){

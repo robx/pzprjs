@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.2.5
+// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.3.0
 //
 Puzzles.gokigen = function(){ };
 Puzzles.gokigen.prototype = {
@@ -7,36 +7,35 @@ Puzzles.gokigen.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 7;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 7;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 1;		// 1:Crossが操作可能なパズル
-		k.isborder     = 0;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 2;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 1;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 1;	// 1:0を表示するかどうか
-		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = true;	// 0を表示するかどうか
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
+		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.bdmargin       = 0.70;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.50;	// 画像出力時のbdmargin値
 
 		base.setTitle("ごきげんななめ","Gokigen-naname");
 		base.setExpression("　マウスで斜線を入力できます。",
@@ -80,11 +79,11 @@ Puzzles.gokigen.prototype = {
 			var check = [];
 			for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
 
-			var fc = bd.xnum(bd.cell[cc].cx+(bd.QaC(cc)==1?0:1),bd.cell[cc].cy);
+			var fc = bd.xnum(bd.cell[cc].bx+(bd.QaC(cc)==1?-1:1),bd.cell[cc].by-1);
 			ans.searchline(check, 0, fc);
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].cx  ,bd.cell[c].cy)]==1){ bd.sErC([c],2);}
-				if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].cx+1,bd.cell[c].cy)]==1){ bd.sErC([c],2);}
+				if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]==1){ bd.sErC([c],2);}
+				if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]==1){ bd.sErC([c],2);}
 			}
 
 			ans.errDisp = true;
@@ -94,13 +93,14 @@ Puzzles.gokigen.prototype = {
 			var cc = this.cellid();
 			if(cc==-1){ return;}
 
-			if     (k.use==1){ bd.sQaC(cc, (bd.QaC(cc)!=(this.btn.Left?1:2)?(this.btn.Left?1:2):-1));}
-			else if(k.use==2){
+			var use = pp.getVal('use');
+			if     (use===1){ bd.sQaC(cc, (bd.QaC(cc)!=(this.btn.Left?1:2)?(this.btn.Left?1:2):-1));}
+			else if(use===2){
 				if(bd.QaC(cc)==-1){ bd.sQaC(cc, (this.btn.Left?1:2));}
 				else{ bd.sQaC(cc, (this.btn.Left?{1:2,2:-1}:{1:-1,2:1})[bd.QaC(cc)]);}
 			}
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+			pc.paintCellAround(cc);
 		};
 
 		// キーボード入力系
@@ -108,7 +108,7 @@ Puzzles.gokigen.prototype = {
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
 			if(this.moveTCross(ca)){ return;}
-			this.key_inputcross(ca,4);
+			this.key_inputcross(ca);
 		};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;} };
 
@@ -118,23 +118,19 @@ Puzzles.gokigen.prototype = {
 			kp.generate(4, true, false, '');
 			kp.ctl[1].target = k.CROSS;
 			kp.kpinput = function(ca){
-				kc.key_inputcross(ca,4);
+				kc.key_inputcross(ca);
 			};
 		}
 
-		menu.ex.adjustSpecial = function(type,key){
-			um.disableRecord();
-			if(type>=1 && type<=4){ // 反転・回転全て
+		tc.setCrossType();
+
+		bd.maxnum = 4;
+
+		menu.ex.adjustSpecial = function(key,d){
+			if(key & this.TURNFLIP){ // 反転・回転全て
 				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
 			}
-			um.enableRecord();
 		};
-
-		tc.minx = 0;
-		tc.miny = 0;
-		tc.maxx = 2*k.qcols;
-		tc.maxy = 2*k.qrows;
-		tc.setTXC(0);
 	},
 
 	//---------------------------------------------------------
@@ -146,16 +142,13 @@ Puzzles.gokigen.prototype = {
 		pc.chassisflag = false;
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
-			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBGCells(x1,y1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawSlashes(x1,y1,x2,y2);
 
 			this.drawCrosses(x1,y1,x2+1,y2+1);
-			this.drawTarget_gokigen(x1,y1,x2,y2);
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		// オーバーライド
@@ -168,29 +161,31 @@ Puzzles.gokigen.prototype = {
 		};
 
 		pc.drawSlashes = function(x1,y1,x2,y2){
-			var headers = ["c_sl1_", "c_sl2_"];
-			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
+			this.vinc('cell_slash', 'auto');
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var headers = ["c_sl1_", "c_sl2_"];
+			g.lineWidth = Math.max(this.cw/8, 2);
+
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
 				if(bd.cell[c].qans!=-1){
 					if     (bd.cell[c].error==1){ g.strokeStyle = this.errcolor1;}
 					else if(bd.cell[c].error==2){ g.strokeStyle = this.errcolor2;}
-					else                        { g.strokeStyle = this.Cellcolor;}
+					else                        { g.strokeStyle = this.cellcolor;}
 
 					if(bd.cell[c].qans==1){
-						if(this.vnop(headers[0]+c,0)){
-							this.inputPath([bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight], true);
+						if(this.vnop(headers[0]+c,this.STROKE)){
+							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, this.cw,this.ch, true);
 							g.stroke();
 						}
 					}
 					else{ this.vhide(headers[0]+c);}
 
 					if(bd.cell[c].qans==2){
-						if(this.vnop(headers[1]+c,0)){
-							this.inputPath([bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight], true);
+						if(this.vnop(headers[1]+c,this.STROKE)){
+							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, this.cw,0, 0,this.ch, true);
 							g.stroke();
 						}
 					}
@@ -198,12 +193,6 @@ Puzzles.gokigen.prototype = {
 				}
 				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
-			this.vinc();
-		};
-
-		pc.drawTarget_gokigen = function(x1,y1,x2,y2){
-			if(k.editmode){ this.drawTCross(x1,y1,x2+1,y2+1);}
-			else{ this.hideTCross();}
 		};
 	},
 
@@ -253,22 +242,22 @@ Puzzles.gokigen.prototype = {
 
 		ans.scntCross = function(id){
 			if(id==-1){ return -1;}
-			var xx=bd.cross[id].cx, xy=bd.cross[id].cy;
+			var bx=bd.cross[id].bx, by=bd.cross[id].by;
 			var cc, cnt=0;
-			cc=bd.cnum(xx-1,xy-1); if(cc!=-1 && bd.QaC(cc)==1){ cnt++;}
-			cc=bd.cnum(xx  ,xy-1); if(cc!=-1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(xx-1,xy  ); if(cc!=-1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(xx  ,xy  ); if(cc!=-1 && bd.QaC(cc)==1){ cnt++;}
+			cc=bd.cnum(bx-1,by-1); if(cc!=-1 && bd.QaC(cc)==1){ cnt++;}
+			cc=bd.cnum(bx+1,by-1); if(cc!=-1 && bd.QaC(cc)==2){ cnt++;}
+			cc=bd.cnum(bx-1,by+1); if(cc!=-1 && bd.QaC(cc)==2){ cnt++;}
+			cc=bd.cnum(bx+1,by+1); if(cc!=-1 && bd.QaC(cc)==1){ cnt++;}
 			return cnt;
 		};
 		ans.scntCross2 = function(id){
 			if(id==-1){ return -1;}
-			var xx=bd.cross[id].cx, xy=bd.cross[id].cy;
+			var bx=bd.cross[id].bx, by=bd.cross[id].by;
 			var cc, cnt=0;
-			cc=bd.cnum(xx-1,xy-1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==1){ cnt++;}
-			cc=bd.cnum(xx  ,xy-1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(xx-1,xy  ); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(xx  ,xy  ); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==1){ cnt++;}
+			cc=bd.cnum(bx-1,by-1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==1){ cnt++;}
+			cc=bd.cnum(bx+1,by-1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==2){ cnt++;}
+			cc=bd.cnum(bx-1,by+1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==2){ cnt++;}
+			cc=bd.cnum(bx+1,by+1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==1){ cnt++;}
 			return cnt;
 		};
 
@@ -283,17 +272,16 @@ Puzzles.gokigen.prototype = {
 
 				if(!this.searchline(check, 0, fc)){
 					for(var c=0;c<bd.cellmax;c++){
-						if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].cx  ,bd.cell[c].cy)]==1){ bd.sErC([c],1);}
-						if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].cx+1,bd.cell[c].cy)]==1){ bd.sErC([c],1);}
+						if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]==1){ bd.sErC([c],1);}
+						if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]==1){ bd.sErC([c],1);}
 					}
 					while(1){
 						var endflag = true;
-						var clist = pc.cellinside_cond(0,0,k.qcols-1,k.qrows-1,function(c){ return (bd.ErC(c)==1);});
-						for(var i=0;i<clist.length;i++){
-							var c = clist[i];
-							var cc1, cc2, cx=bd.cell[c].cx, cy=bd.cell[c].cy;
-							if     (bd.QaC(c)==1){ cc1=bd.xnum(cx,cy  ); cc2=bd.xnum(cx+1,cy+1);}
-							else if(bd.QaC(c)==2){ cc1=bd.xnum(cx,cy+1); cc2=bd.xnum(cx+1,cy  );}
+						for(var c=0;c<bd.cellmax;c++){
+							if(bd.ErC(c)!==1){ continue;}
+							var cc1, cc2, bx=bd.cell[c].bx, by=bd.cell[c].by;
+							if     (bd.QaC(c)==1){ cc1=bd.xnum(bx-1,by-1); cc2=bd.xnum(bx+1,by+1);}
+							else if(bd.QaC(c)==2){ cc1=bd.xnum(bx-1,by+1); cc2=bd.xnum(bx+1,by-1);}
 							if(this.scntCross2(cc1)==1 || this.scntCross2(cc2)==1){ bd.sErC([c],0); endflag = false; break;}
 						}
 						if(endflag){ break;}
@@ -307,17 +295,17 @@ Puzzles.gokigen.prototype = {
 		};
 		ans.searchline = function(check, dir, c){
 			var flag=true;
-			var nc, tx=bd.cross[c].cx, ty=bd.cross[c].cy;
+			var nc, tx=bd.cross[c].bx, ty=bd.cross[c].by;
 			check[c]=1;
 
-			nc = bd.xnum(tx-1,ty-1);
+			nc = bd.xnum(tx-2,ty-2);
 			if(nc!=-1 && dir!=4 && bd.QaC(bd.cnum(tx-1,ty-1))==1 && (check[nc]!=0 || !this.searchline(check,1,nc))){ flag = false;}
-			nc = bd.xnum(tx-1,ty+1);
-			if(nc!=-1 && dir!=3 && bd.QaC(bd.cnum(tx-1,ty  ))==2 && (check[nc]!=0 || !this.searchline(check,2,nc))){ flag = false;}
-			nc = bd.xnum(tx+1,ty-1);
-			if(nc!=-1 && dir!=2 && bd.QaC(bd.cnum(tx  ,ty-1))==2 && (check[nc]!=0 || !this.searchline(check,3,nc))){ flag = false;}
-			nc = bd.xnum(tx+1,ty+1);
-			if(nc!=-1 && dir!=1 && bd.QaC(bd.cnum(tx  ,ty  ))==1 && (check[nc]!=0 || !this.searchline(check,4,nc))){ flag = false;}
+			nc = bd.xnum(tx-2,ty+2);
+			if(nc!=-1 && dir!=3 && bd.QaC(bd.cnum(tx-1,ty+1))==2 && (check[nc]!=0 || !this.searchline(check,2,nc))){ flag = false;}
+			nc = bd.xnum(tx+2,ty-2);
+			if(nc!=-1 && dir!=2 && bd.QaC(bd.cnum(tx+1,ty-1))==2 && (check[nc]!=0 || !this.searchline(check,3,nc))){ flag = false;}
+			nc = bd.xnum(tx+2,ty+2);
+			if(nc!=-1 && dir!=1 && bd.QaC(bd.cnum(tx+1,ty+1))==1 && (check[nc]!=0 || !this.searchline(check,4,nc))){ flag = false;}
 
 			return flag;
 		};

@@ -1,13 +1,10 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<HTML>
+<!DOCTYPE html>
+<HTML lang="ja">
 <HEAD>
 <META NAME="robots" CONTENTS="noindex,nofollow">
 <meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
 <link rel="stylesheet" href="sc7.css" type="text/css" />
-<script type="text/xaml" id="xaml"><?xml version="1.0"?>
-  <Canvas xmlns="http://schemas.microsoft.com/client/2007"></Canvas></script>
-<!--[if IE]><script type="text/javascript" src="src/uuCanvas.js"></script><![endif]-->
-<script type="text/javascript" src="src/pzprBase.js"></script>  <!-- ぱずぷれv3共通ファイルの読み込み/専用ファイルも中で行う -->
+<script type="text/javascript" src="src/pzprBase_develop.js"></script>  <!-- ぱずぷれv3共通ファイルの読み込み/専用ファイルも中で行う -->
 <TITLE>読み込み中です... - ぱずぷれv3</TITLE>
 </HEAD>
 
@@ -19,21 +16,19 @@
 <h2 id="title2">読み込み中です...</h2>
 
 <div id="menuboard">
-	<div id="menupanel"></div>
+	<menu id="menupanel"></menu>
 	<div id="expression">ファイルの読み込み中です...</div>
-	<hr id="separator1" style="margin-top:6pt; margin-bottom:6pt;">
+	<hr id="separator1">
 	<div id="usepanel"></div>
 	<div id="checkpanel"></div>
-	<hr id="separator2" style="margin-top:6pt; margin-bottom:6pt;">
+	<hr id="separator2">
 	<div id="timerpanel">経過時間：00:00</div>
 </div>
 
 <div id="quesboard">
-	<div id="divques">
-		<canvas id="puzzle_canvas" width="1" height="1"></canvas>
-	</div>
-
-	<div id="btnarea"></div>
+	<div id="divques"></div>		<!-- Canvas用 -->
+	<div id="numobj_parent"></div>	<!-- Canvasに表示する文字用 -->
+	<div id="btnarea"></div>		<!-- Canvas下部のボタン -->
 </div>
 
 </div> <!-- div#main close. -->
@@ -45,8 +40,8 @@
 <div class="titlebar" id="bar1_1">盤面の新規作成</div>
 <form name="newboard">
 <span id="pop1_1_cap0">盤面を新規作成します。</span><br>
-<span id="pop1_1_cap1">よこ</span><input type="text" name="col" value="" size="3" maxlength="3" />
-<span id="pop1_1_cap2">たて</span><input type="text" name="row" value="" size="3" maxlength="3" /><br>
+<span id="pop1_1_cap1">よこ</span><input type="number" name="col" value="" size="4" maxlength="3" min="1" max="999" />
+<span id="pop1_1_cap2">たて</span><input type="number" name="row" value="" size="4" maxlength="3" min="1" max="999" /><br>
 <input type="button" name="newboard" value="新規作成" /><input type="button" name="cancel" value="キャンセル" />
 </form>
 </div>
@@ -142,7 +137,7 @@
 <div class="titlebar" id="bar4_1">表示サイズの変更</div>
 <form name="dispsize" onsubmit="return false;">
 <span id="pop4_1_cap0">表示サイズを変更します。</span><br>
-<span id="pop4_1_cap1">表示サイズ</span><input type="text" name="cs" value="" size="3" maxlength="3" /><br>
+<span id="pop4_1_cap1">表示サイズ</span><input type="number" name="cs" value="" size="4" maxlength="3" min="8" max="999" /><br>
 <input type="button" name="dispsize" value="変更する" /><input type="button" name="cancel" value="キャンセル" />
 </form>
 </div>
@@ -153,12 +148,6 @@
 <form name="credit">
 <input type="button" name="close" value="閉じる" />
 </form>
-</div>
-
-<div class="popup" id="keypopup1" style="padding:3pt;background-color:silver;">
-</div>
-
-<div class="popup" id="keypopup3" style="padding:3pt;background-color:silver;">
 </div>
 
 <div class="popup" id="poptest">
@@ -181,25 +170,33 @@
 </form>
 </div>
 
+<div class="keypopup" id="keypopup1"></div>
+<div class="keypopup" id="keypopup3"></div>
+
 </div> <!-- div#popup_parent close. -->
 <!-- ここまでポップアップメニュー -->
 
 <!-- フロートパネル用 -->
 <div id="float_parent"></div>
 
-<!-- Canvasに表示する文字用 -->
-<div id="numobj_parent"></div>
+<!-- 隠し要素 -->
+<div id="hidden_element">
+  <!-- ファイル入出力用インラインフレーム -->
+  <iframe name="fileiopanel" id="fileiopanel" src="about:blank"></iframe>
 
-<!-- ここからファイル出力用フォーム/入出力用インラインフレーム -->
-<iframe id="fileiopanel" src="about:blank" style="width:200px;height:200px;position:absolute;top:0px;left:-10000px" name="fileiopanel"></iframe>
-<form name="fileform2" id="fileform2" action="fileio.xcg" method="post" onsubmit="return false;"
-style="width:100px;height:100px;position:absolute;top:0px;left:-9000px" target="fileiopanel">
-<input type="hidden" name="operation" value="save">
-<input type="hidden" name="filename" value="">
-<input type="hidden" name="ques" value="">
-<input type="hidden" name="urlstr" value="">
-<input type="hidden" name="platform" value="">
-</form>
+  <!-- ここからファイル出力用フォーム -->
+  <form name="fileform2" id="fileform2" target="fileiopanel"
+        action="fileio.xcg" method="post" onsubmit="return false;">
+    <input type="hidden" name="operation" value="save">
+    <input type="hidden" name="filename" value="">
+    <input type="hidden" name="ques" value="">
+    <input type="hidden" name="urlstr" value="">
+    <input type="hidden" name="platform" value="">
+  </form>
+
+  <!-- 画像出力用 -->
+  <div id="divques_sub"></div>
+</div>
 <!-- ここまで -->
 
 </BODY>

@@ -1,4 +1,4 @@
-// Main.js v3.2.5
+// Main.js v3.3.0
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -10,10 +10,10 @@ PBase = function(){
 	this.proto        = 0;	// 各クラスのprototypeがパズル用スクリプトによって変更されているか
 	this.expression   = { ja:'' ,en:''};
 	this.puzzlename   = { ja:'' ,en:''};
-	this.canvas       = null;	// HTMLソースのCanvasを示すエレメント
 	this.numparent    = null;	// 'numobj_parent'を示すエレメント
 	this.resizetimer  = null;	// resizeタイマー
 	this.initProcess  = true;	// 初期化中かどうか
+	this.enableSaveImage = false;	// 画像保存が有効か
 };
 PBase.prototype = {
 	//---------------------------------------------------------------------------
@@ -53,26 +53,28 @@ PBase.prototype = {
 	// base.initCanvas()  Canvas関連の初期化
 	// base.initObjects() 各オブジェクトの生成などの処理
 	// base.setEvents()   マウス入力、キー入力のイベントの設定を行う
-	// base.initSilverlight() Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
+	// base.translationEN() 日本語環境でない場合、デフォルトで英語表示にする
 	//---------------------------------------------------------------------------
 	onload_func : function(){
-		if(!!window.uuMeta && !!window.uuMeta.slver){
-			var self = this, tim = null;
-			tim = setInterval(function(){
-				if(uuCanvas.already()){
-					clearInterval(tim);
-					self.onload_func2.apply(self);
-				}
-			},100);
+		Camp('divques');
+		if(Camp.enable.canvas && !!document.createElement('canvas').toDataURL){
+			this.enableSaveImage = true;
+			Camp('divques_sub', 'canvas');
 		}
-		else{
-			this.onload_func2();
-		}
+
+		var self = this;
+		var tim = setInterval(function(){
+			if(Camp.isready()){
+				clearInterval(tim);
+				self.onload_func2.apply(self);
+			}
+		},10);
 	},
 	onload_func2 : function(){
 		this.initCanvas();
 		this.initObjects();
 		this.setEvents(true);	// イベントをくっつける
+		this.translationEN();
 
 		if(document.domain=='indi.s58.xrea.com' && k.PLAYER){ this.accesslog();}	// アクセスログをとってみる
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
@@ -81,9 +83,9 @@ PBase.prototype = {
 	},
 
 	initCanvas : function(){
-		this.canvas = ee('puzzle_canvas').unselectable().el; // Canvas
-		this.numparent = ee('numobj_parent').el;			// 数字表示用
-		g = this.canvas.getContext("2d");
+		this.numparent = ee('numobj_parent').el;		// 数字表示用
+		var canvas = ee('divques').unselectable().el;	// Canvas
+		g = canvas.getContext("2d");
 	},
 
 	initObjects : function(){
@@ -94,32 +96,33 @@ PBase.prototype = {
 		if(this.proto){ puz.protoChange();}
 
 		// クラス初期化
+		tc = new TCell();		// キー入力のターゲット管理オブジェクト
 		bd = new Board();		// 盤面オブジェクト
 		mv = new MouseEvent();	// マウス入力オブジェクト
 		kc = new KeyEvent();	// キーボード入力オブジェクト
 		kp = new KeyPopup();	// 入力パネルオブジェクト
 		pc = new Graphic();		// 描画系オブジェクト
-		tc = new TCell();		// キー入力のターゲット管理オブジェクト
 		ans = new AnsCheck();	// 正解判定オブジェクト
-		um   = new UndoManager();	// 操作情報管理オブジェクト
-		area = new AreaManager();	// 部屋情報等管理オブジェクト
-		line = new LineManager();	// 線の情報管理オブジェクト
+		um   = new OperationManager();	// 操作情報管理オブジェクト
+		area = new AreaManager();		// 部屋情報等管理オブジェクト
+		line = new LineManager();		// 線の情報管理オブジェクト
 
 		menu = new Menu();		// メニューを扱うオブジェクト
 		pp = new Properties();	// メニュー関係の設定値を保持するオブジェクト
 
 		this.doc_design();		// デザイン変更関連関数の呼び出し
 
-		enc.pzlinput();										// URLからパズルのデータを読み出す
-		if(!enc.uri.bstr){ this.resize_canvas_onload();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
+		enc.pzlinput();			// URLからパズルのデータを読み出す
+		this.resize_canvas();
 
-		if(!!puz.finalfix){ puz.finalfix();}					// パズル固有の後付け設定
+		if(!!puz.finalfix){ puz.finalfix();}		// パズル固有の後付け設定
 	},
 	setEvents : function(first){
-		this.canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
-		this.canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
-		this.canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
-		this.canvas.oncontextmenu = function(){ return false;};
+		var canvas = ee('divques').el;
+		canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+		canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+		canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
+		canvas.oncontextmenu = function(){ return false;};
 
 		this.numparent.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
 		this.numparent.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
@@ -130,6 +133,7 @@ PBase.prototype = {
 			document.onkeydown  = ee.ebinder(kc, kc.e_keydown);
 			document.onkeyup    = ee.ebinder(kc, kc.e_keyup);
 			document.onkeypress = ee.ebinder(kc, kc.e_keypress);
+			if(g.use.sl){ this.initSilverlight();}
 
 			if(!!menu.ex.reader){
 				var DDhandler = function(e){
@@ -140,38 +144,51 @@ PBase.prototype = {
 				window.addEventListener('dragover', function(e){ e.preventDefault();}, true);
 				window.addEventListener('drop', DDhandler, true);
 			}
+
+			// onBlurにイベントを割り当てる
+			document.onblur = ee.ebinder(this, this.onblur_func);
 		}
 	},
-	initSilverlight : function(sender){
-		sender.AddEventListener("KeyDown", ee.binder(this, this.e_SLkeydown));
-		sender.AddEventListener("KeyUp",   ee.binder(this, this.e_SLkeyup));
+	translationEN : function(){
+		var lang = (navigator.browserLanguage ||
+					navigator.language        ||
+					navigator.userLanguage      ).substr(0,2);
+		if(lang!=='ja'){ pp.setVal('language', 1);}
 	},
 
 	//---------------------------------------------------------------------------
+	// base.initSilverlight() Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
 	// base.e_SLkeydown()     Silverlightオブジェクトにフォーカスがある時、キーを押した際のイベント共通処理
 	// base.e_SLkeyup()       Silverlightオブジェクトにフォーカスがある時、キーを離した際のイベント共通処理
 	//---------------------------------------------------------------------------
-	e_SLkeydown : function(sender, keyEventArgs){ return kc.e_SLkeydown(sender, keyEventArgs);},
-	e_SLkeyup   : function(sender, keyEventArgs){ return kc.e_SLkeyup(sender, keyEventArgs);},
+	initSilverlight : function(){
+		var sender = g.content.findName(g.canvasid);
+		sender.AddEventListener("KeyDown", this.e_SLkeydown);
+		sender.AddEventListener("KeyUp",   this.e_SLkeyup);
+	},
+	e_SLkeydown : function(sender, keyEventArgs){
+		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
+						altKey:false, returnValue:false, preventDefault:f_true };
+		return kc.e_keydown(emulate);
+	},
+	e_SLkeyup : function(sender, keyEventArgs){
+		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
+						altKey:false, returnValue:false, preventDefault:f_true };
+		return kc.e_keyup(emulate);
+	},
 
 	//---------------------------------------------------------------------------
-	// base.doc_design()       onload_func()で呼ばれる。htmlなどの設定を行う
-	// base.postfix()          各パズルの初期化後処理を呼び出す
-	// base.gettitle()         現在開いているタイトルを返す
-	// base.getPuzzleName()    現在開いているパズルの名前を返す
-	// base.setTitle()         パズルの名前を設定する
-	// base.setExpression()    説明文を設定する
-	// base.setFloatbgcolor()  フロートメニューの背景色を設定する
+	// base.doc_design() onload_func()で呼ばれる。htmlなどの設定を行う
+	// base.postfix()    各パズルの初期化後処理を呼び出す
+	// base.resetInfo()  AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
 	//---------------------------------------------------------------------------
 	// 背景画像とかtitle等/html表示の設定 //
 	doc_design : function(){
-		this.resize_canvas_only();	// Canvasのサイズ設定
-
 		_doc.title = this.gettitle();
 		ee('title2').el.innerHTML = this.gettitle();
 
-		_doc.body.style.backgroundImage = "url(../../"+k.puzzleid+"/bg.gif)";
-		if(k.br.IE){
+		_doc.body.style.backgroundImage = "url(./bg/"+k.puzzleid+".gif)";
+		if(k.br.IEmoz4){
 			ee('title2').el.style.marginTop = "24px";
 			ee('separator1').el.style.margin = '0pt';
 			ee('separator2').el.style.margin = '0pt';
@@ -191,7 +208,19 @@ PBase.prototype = {
 		puz.encode_init();
 		puz.answer_init();
 	},
+	resetInfo : function(iserase){
+		if(iserase){ um.allerase();}
+		area.resetArea();
+		line.resetLcnts();
+	},
 
+	//---------------------------------------------------------------------------
+	// base.gettitle()         現在開いているタイトルを返す
+	// base.getPuzzleName()    現在開いているパズルの名前を返す
+	// base.setTitle()         パズルの名前を設定する
+	// base.setExpression()    説明文を設定する
+	// base.setFloatbgcolor()  フロートメニューの背景色を設定する
+	//---------------------------------------------------------------------------
 	gettitle : function(){
 		if(k.EDITOR){ return ""+this.getPuzzleName()+(menu.isLangJP()?" エディタ - ぱずぷれv3":" editor - PUZ-PRE v3");}
 		else		{ return ""+this.getPuzzleName()+(menu.isLangJP()?" player - ぱずぷれv3"  :" player - PUZ-PRE v3");}
@@ -202,28 +231,30 @@ PBase.prototype = {
 	setFloatbgcolor : function(color){ this.floatbgcolor = color;},
 
 	//---------------------------------------------------------------------------
-	// base.resize_canvas_only()   ウィンドウのLoad/Resize時の処理。Canvas/表示するマス目の大きさを設定する。
-	// base.resize_canvas()        resize_canvas_only()+Canvasの再描画
-	// base.resize_canvas_onload() 初期化中にpaint再描画が起こらないように、resize_canvasを呼び出す
-	// base.onresize_func()        ウィンドウリサイズ時に呼ばれる関数
-	// base.resetInfo()            AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
+	// base.onresize_func()  ウィンドウリサイズ時に呼ばれる関数
+	// base.resize_canvas()  ウィンドウのLoad/Resize時の処理。Canvas/表示するマス目の大きさを設定する。
 	//---------------------------------------------------------------------------
-	resize_canvas_only : function(){
+	onresize_func : function(){
+		if(this.resizetimer){ clearTimeout(this.resizetimer);}
+		this.resizetimer = setTimeout(ee.binder(this, this.resize_canvas),250);
+	},
+	resize_canvas : function(){
 		var wwidth = ee.windowWidth()-6;	//  margin/borderがあるので、適当に引いておく
-		var cols   = k.qcols+(2*k.def_psize/k.def_csize) + k.isextendcell; // canvasの横幅がセル何個分に相当するか
-		var rows   = k.qrows+(2*k.def_psize/k.def_csize) + k.isextendcell; // canvasの縦幅がセル何個分に相当するか
+		var cols   = (bd.maxbx-bd.minbx)/2+2*k.bdmargin; // canvasの横幅がセル何個分に相当するか
+		var rows   = (bd.maxby-bd.minby)/2+2*k.bdmargin; // canvasの縦幅がセル何個分に相当するか
+		if(k.puzzleid==='box'){ cols++; rows++;}
 
-		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[k.widthmode];
+		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[pp.getVal('size')];
 		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
-		ci[0] = (wwidth*ws.base )/(k.def_csize*cr.base );
-		ci[1] = (wwidth*ws.limit)/(k.def_csize*cr.limit);
+		ci[0] = (wwidth*ws.base )/(k.cellsize*cr.base );
+		ci[1] = (wwidth*ws.limit)/(k.cellsize*cr.limit);
 
 		var mwidth = wwidth*ws.base-4; // margin/borderがあるので、適当に引いておく
 
 		// 特に縮小が必要ない場合
-		if(cols < ci[0]){
+		if(!pp.getVal('adjsize') || cols < ci[0]){
 			mwidth = wwidth*ws.base-4;
-			k.cwidth = k.cheight = mf(k.def_csize*cr.base);
+			k.cwidth = k.cheight = mf(k.cellsize*cr.base);
 		}
 		// base～limit間でサイズを自動調節する場合
 		else if(cols < ci[1]){
@@ -234,59 +265,42 @@ PBase.prototype = {
 		// 自動調整の下限値を超える場合
 		else{
 			mwidth = wwidth*ws.limit-4;
-			k.cwidth = k.cheight = mf(k.def_csize*cr.limit);
+			k.cwidth = k.cheight = mf(k.cellsize*cr.limit);
 		}
+		k.bwidth  = k.cwidth/2; k.bheight = k.cheight/2;
 
 		// mainのサイズ変更
 		ee('main').el.style.width = ''+mf(mwidth)+'px';
 
-		// Canvasのサイズ変更
-		this.canvas.width  = mf((cols-k.isextendcell)*k.cwidth );
-		this.canvas.height = mf((rows-k.isextendcell)*k.cheight);
-
-		// VML使う時に、Canvas外の枠線が消えてしまうので残しておきます.
-		if(g.vml){
-			var fc = this.canvas.firstChild;
-			fc.style.width  = ''+this.canvas.clientWidth  + 'px';
-			fc.style.height = ''+this.canvas.clientHeight + 'px';
-		}
-
 		// 盤面のセルID:0が描画される位置の設定
-		k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-		// extendxell==1の時は位置をずらす (extendxell==2はdef_psizeで調整)
-		if(k.isextendcell==1){
-			k.p0.x += mf(k.cwidth*0.45);
-			k.p0.y += mf(k.cheight*0.45);
-		}
+		k.p0.x = k.p0.y = mf(k.cwidth*k.bdmargin);
+		// extendxell==0でない時は位置をずらす
+		if(!!k.isexcell){ k.p0.x += k.cwidth; k.p0.y += k.cheight;}
 
-		var rect = ee('puzzle_canvas').getRect();
+		// Canvasのサイズ変更
+		pc.setVectorFunctions();
+		g.changeSize(mf(cols*k.cwidth), mf(rows*k.cheight));
+
+		// canvasの上に文字・画像を表示する時のOffset指定
+		var rect = ee('divques').getRect();
 		k.cv_oft.x = rect.left;
 		k.cv_oft.y = rect.top;
 
 		kp.resize();
-		bd.setposAll();
+		bd.setcoordAll();
+		pc.onresize_process();
 
-		pc.onresize_func();
-	},
-	resize_canvas : function(){
-		this.resize_canvas_only();
+		// 再描画
 		pc.flushCanvasAll();
 		pc.paintAll();
 	},
-	resize_canvas_onload : function(){
-		if(pc.already()){ this.resize_canvas();}
-		else{ uuCanvas.ready(ee.binder(this, this.resize_canvas));}
-	},
-	onresize_func : function(){
-		if(this.resizetimer){ clearTimeout(this.resizetimer);}
-		this.resizetimer = setTimeout(ee.binder(this, this.resize_canvas),250);
-	},
 
-	resetInfo : function(iserase){
-		if(iserase){ um.allerase();}
-		tc.Adjust();
-		area.resetArea();
-		line.resetLcnts();
+	//---------------------------------------------------------------------------
+	// base.onblur_func() ウィンドウからフォーカスが離れた時に呼ばれる関数
+	//---------------------------------------------------------------------------
+	onblur_func : function(){
+		kc.keyreset();
+		mv.mousereset();
 	},
 
 	//---------------------------------------------------------------------------

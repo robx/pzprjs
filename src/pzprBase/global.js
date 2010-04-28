@@ -1,4 +1,4 @@
-// global.js v3.2.4p4
+// global.js v3.3.0
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -13,67 +13,66 @@ Pos.prototype = {
 // 各種パラメータの定義
 var k = {
 	// 各パズルのsetting()関数で設定されるもの
-	qcols : 0, qrows : 0,	// 盤面の横幅・縦幅
-	irowake   :  0,			// 0:色分け設定無し 1:色分けしない 2:色分けする
+	qcols    : 0,			// 盤面の横幅
+	qrows    : 0,			// 盤面の縦幅
+	irowake  : 0,			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-	iscross      : 0,		// 1:Crossが操作可能なパズル
-	isborder     : 0,		// 1:Border/Lineが操作可能なパズル
-	isextendcell : 0,		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+	iscross  : 0,			// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+	isborder : 0,			// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+	isexcell : 0,			// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-	isoutsidecross  : 1,	// 1:外枠上にCrossの配置があるパズル
-	isoutsideborder : 0,	// 1:盤面の外枠上にborderのIDを用意する
-	isLineCross     : 1,	// 1:線が交差するパズル
-	isCenterLine    : 0,	// 1:マスの真ん中を通る線を回答として入力するパズル
-	isborderAsLine  : 0,	// 1:境界線をlineとして扱う
+	isLineCross    : false,	// 線が交差するパズル
+	isCenterLine   : false,	// マスの真ん中を通る線を回答として入力するパズル
+	isborderAsLine : false,	// 境界線をlineとして扱う
+	hasroom        : false,	// いくつかの領域に分かれている/分けるパズル
+	roomNumber     : false,	// 問題の数字が部屋の左上に1つだけ入るパズル
 
-	dispzero      : 0,		// 1:0を表示するかどうか
-	isDispHatena  : 1,		// 1:qnumが-2のときに？を表示する
-	isAnsNumber   : 0,		// 1:回答に数字を入力するパズル
-	isArrowNumber : 0,		// 1:矢印つき数字を入力するパズル
-	isOneNumber   : 0,		// 1:問題の数字が部屋の左上に1つだけ入るパズル
-	isDispNumUL   : 0,		// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-	NumberWithMB  : 0,		// 1:回答の数字と○×が入るパズル
+	dispzero       : false,	// 0を表示するかどうか
+	isDispHatena   : true,	// qnumが-2のときに？を表示する
+	isAnsNumber    : false,	// 回答に数字を入力するパズル
+	NumberWithMB   : false,	// 回答の数字と○×が入るパズル
+	linkNumber     : false,	// 数字がひとつながりになるパズル
 
-	BlackCell     : 0,		// 1:黒マスを入力するパズル
-	NumberIsWhite : 0,		// 1:数字のあるマスが黒マスにならないパズル
-	RBBlackCell   : 0,		// 1:連黒分断禁のパズル
+	BlackCell      : false,	// 黒マスを入力するパズル
+	NumberIsWhite  : false,	// 数字のあるマスが黒マスにならないパズル
+	RBBlackCell    : false,	// 連黒分断禁のパズル
+	checkBlackCell : false,	// 正答判定で黒マスの情報をチェックするパズル
+	checkWhiteCell : false,	// 正答判定で白マスの情報をチェックするパズル
 
-	ispzprv3ONLY  : 0,		// ぱずぷれv3にしかないパズル
-	isKanpenExist : 0,		// pencilbox/カンペンにあるパズル
+	ispzprv3ONLY   : false,	// ぱずぷれアプレットには存在しないパズル
+	isKanpenExist  : false,	// pencilbox/カンペンにあるパズル
 
-	def_csize : 36,			// デフォルトのセルサイズ
-	def_psize : 24,			// デフォルトの枠外marginサイズ
-	area : { bcell:0, wcell:0, number:0, disroom:0},	// areaオブジェクトで領域を生成する
+	// 各パズルのsetting()関数で設定されることがあるもの
+	bdmargin       : 0.70,	// 枠外の一辺のmargin(セル数換算)
+	bdmargin_image : 0.10,	// 画像出力時のbdmargin値
 
 	// 内部で自動的に設定されるグローバル変数
 	puzzleid  : '',			// パズルのID("creek"など)
-	use       : 1,			// 操作方法
-	widthmode : 2,			// Canvasの横幅をどうするか
 
 	EDITOR    : true,		// エディタモード
 	PLAYER    : false,		// playerモード
 	editmode  : true,		// 問題配置モード
 	playmode  : false,		// 回答モード
 
-	enableKey   : true,		// キー入力は有効か
-	enableMouse : true,		// マウス入力は有効か
-	autocheck   : true,		// 回答入力時、自動的に答え合わせするか
+	cellsize : 36,			// デフォルトのセルサイズ
+	cwidth   : 36,			// セルの横幅
+	cheight  : 36,			// セルの縦幅
+	bwidth   : 18,			// セルの横幅/2
+	bheight  : 18,			// セルの縦幅/2
 
-	cwidth   : this.def_csize,	// セルの横幅
-	cheight  : this.def_csize,	// セルの縦幅
-
-	p0       : new Pos(this.def_psize, this.def_psize),	// Canvas中での盤面の左上座標
+	p0       : new Pos(0, 0),	// Canvas中での盤面の左上座標
 	cv_oft   : new Pos(0, 0),	// Canvasのwindow内での左上座標
-	IEMargin : new Pos(2, 2),	// マウス入力等でずれる件のmargin
 
 	br:{
-		IE    : !!(window.attachEvent && !window.opera),
-		Opera : !!window.opera,
-		WebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1,
-		Gecko : navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1,
-		WinWebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1
+		IE    : (!!(window.attachEvent && !window.opera)),
+		Opera : (!!window.opera),
+		WebKit: (navigator.userAgent.indexOf('AppleWebKit/') > -1),
+		Gecko : (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1),
+
+		WinWebKit: (navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1),
+		IEmoz4   : (!!(window.attachEvent && !window.opera) && navigator.userAgent.indexOf('Mozilla/4.0') > -1)
 	},
-	vml : !!(window.attachEvent && !window.opera) && !uuMeta.slver,
+	vml : Camp.current.vml,
 
 	// const値
 	BOARD  : 'board',
@@ -102,7 +101,6 @@ var k = {
 	// for_test.js用
 	scriptcheck : false
 };
-k.IEMargin = (k.br.IE ? k.IEMargin : new Pos(0,0));
 
 //---------------------------------------------------------------------------
 // ★その他のグローバル変数
@@ -138,8 +136,6 @@ var
 
 	// browsers
 	_IE     = k.br.IE,
-	_Gecko  = k.br.Gecko,
-	_WebKit = k.br.WebKit,
 
 	/* ここからクラス定義です  varでドット付きは、最左辺に置けません */
 
@@ -223,9 +219,8 @@ _extend( _ElementManager, {
 		if(!!attr_i){
 			for(var name in attr_i){
 				if(name==='unselectable' && attr_i[name]==='on'){
-					if     (_Gecko) { style['UserSelect'] = style['MozUserSelect'] = 'none';}
-					else if(_WebKit){ style['UserSelect'] = style['KhtmlUserSelect'] = 'none';}
-					else{ attr['unselectable'] = 'on';}
+					style['userSelect'] = style['MozUserSelect'] = style['KhtmlUserSelect'] = 'none';
+					attr['unselectable'] = 'on';
 				}
 				else{ attr[name] = attr_i[name];}
 			}
@@ -260,14 +255,14 @@ _extend( _ElementManager, {
 		return e.target || e.srcElement;
 	},
 	pageX : (
-		((!k.br.IE) ?
+		((!_IE) ?
 			function(e){ return e.pageX;}
 		:
 			function(e){ return e.clientX + (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);}
 		)
 	),
 	pageY : (
-		((!k.br.IE) ?
+		((!_IE) ?
 			function(e){ return e.pageY;}
 		:
 			function(e){ return e.clientY + (_doc.documentElement.scrollTop  || _doc.body.scrollTop);}
@@ -316,14 +311,14 @@ _extend( _ElementManager, {
 	// ee.preventDefault()  イベントの起こったエレメントで、デフォルトの
 	//                      イベントが起こらないようにする
 	//----------------------------------------------------------------------
-	stopPropagation : (
-		(!_IE) ? function(e){ e.stopPropagation();}
-		:        function(e){ e.cancelBubble = true;}
-	),
-	preventDefault : (
-		(_Gecko || _WebKit) ? function(e){ e.preventDefault();}
-		:                     function(e){ e.returnValue = false;}
-	)
+	stopPropagation : function(e){
+		if(!!e.stopPropagation){ e.stopPropagation();}
+		else{ e.cancelBubble = true;}
+	},
+	preventDefault : function(e){
+		if(!!e.preventDefault){ e.preventDefault();}
+		else{ e.returnValue = true;}
+	}
 });
 
 // implementation of _ElementManager.ElementExt class
@@ -334,7 +329,7 @@ _ElementManager.ElementExt.prototype = {
 	// ee.getHeight() エレメントの高さを返す
 	//----------------------------------------------------------------------
 	getRect : (
-		((!!document.getBoundingClientRect) ?
+		((!!document.createElement('div').getBoundingClientRect) ?
 			((!_IE) ?
 				function(){
 					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
@@ -377,26 +372,13 @@ _ElementManager.ElementExt.prototype = {
 	// ee.remove()               エレメントを削除する
 	// ee.removeNextAll()        同じ親要素を持ち、自分より後ろにあるエレメントを削除する
 	//----------------------------------------------------------------------
-	unselectable : (
-		((_Gecko) ?
-			function(){
-				this.el.style.MozUserSelect = 'none';
-				this.el.style.UserSelect    = 'none';
-				return this;
-			}
-		:(_WebKit) ?
-			function(){
-				this.el.style.KhtmlUserSelect = 'none';
-				this.el.style.UserSelect      = 'none';
-				return this;
-			}
-		:
-			function(){
-				this.el.unselectable = "on";
-				return this;
-			}
-		)
-	),
+	unselectable : function(){
+		this.el.style.MozUserSelect   = 'none';
+		this.el.style.KhtmlUserSelect = 'none';
+		this.el.style.userSelect      = 'none';
+		this.el.unselectable = "on";
+		return this;
+	},
 
 	replaceChildrenClass : function(before, after){
 		var el = this.el.firstChild;
@@ -470,7 +452,7 @@ _ElementManager.ElementExt.prototype = {
 Timer = function(){
 	// ** 一般タイマー
 	this.TID;				// タイマーID
-	this.timerInterval = (!k.br.IE?100:200);
+	this.timerInterval = 100;
 
 	this.st       = 0;		// タイマースタート時のgetTime()取得値(ミリ秒)
 	this.current  = 0;		// 現在のgetTime()取得値(ミリ秒)
@@ -480,8 +462,8 @@ Timer = function(){
 	this.timerEL = ee('timerpanel').el;
 
 	// 自動正答判定用変数
-	this.lastAnsCnt  = 0;	// 前回正答判定した時の、UndoManagerに記録されてた問題/回答入力のカウント
-	this.worstACCost = 0;	// 正答判定にかかった時間の最悪値(ミリ秒)
+	this.lastAnsCnt  = 0;	// 前回正答判定した時の、OperationManagerに記録されてた問題/回答入力のカウント
+	this.worstACtime = 0;	// 正答判定にかかった時間の最悪値(ミリ秒)
 	this.nextACtime  = 0;	// 次に自動正答判定ルーチンに入ることが可能になる時間
 
 	// 一般タイマースタート
@@ -489,34 +471,41 @@ Timer = function(){
 
 	// ** Undoタイマー
 	this.TIDundo = null;	// タイマーID
-	this.undoInterval = (!k.br.IE?25:50);
+	this.undoInterval = 25
 
 	// Undo/Redo用変数
-	this.undoStartCount = mf(300/this.undoInterval);	// 1回目にwaitを多く入れるための値
-	this.undoWaitCount = this.undoStartCount;
+	this.undoWaitTime  = 300;	// 1回目にwaitを多く入れるための値
+	this.undoWaitCount = 0;
+
+	if(k.br.IE){
+		this.timerInterval *= 2;
+		this.undoInterval  *= 2;
+	}
 };
 Timer.prototype = {
 	//---------------------------------------------------------------------------
+	// tm.now()        現在の時間を取得する
 	// tm.reset()      タイマーのカウントを0にして、スタートする
 	// tm.start()      update()関数を200ms間隔で呼び出す
 	// tm.update()     200ms単位で呼び出される関数
 	//---------------------------------------------------------------------------
+	now : function(){ return (new Date()).getTime();},
 	reset : function(){
-		this.worstACCost = 0;
+		this.worstACtime = 0;
 		this.timerEL.innerHTML = this.label()+"00:00";
 
 		clearInterval(this.TID);
 		this.start();
 	},
 	start : function(){
-		this.st = (new Date()).getTime();
+		this.st = this.now();
 		this.TID = setInterval(ee.binder(this, this.update), this.timerInterval);
 	},
 	update : function(){
-		this.current = (new Date()).getTime();
+		this.current = this.now();
 
 		if(k.PLAYER){ this.updatetime();}
-		if(k.autocheck){ this.ACcheck();}
+		if(pp.getVal('autocheck')){ this.ACcheck();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -550,8 +539,8 @@ Timer.prototype = {
 			this.lastAnsCnt = um.anscount;
 			if(!ans.autocheck()){ return;}
 
-			this.worstACCost = Math.max(this.worstACCost, ((new Date()).getTime()-this.current));
-			this.nextACtime = this.current + (this.worstACCost<250 ? this.worstACCost*4+120 : this.worstACCost*2+620);
+			this.worstACtime = Math.max(this.worstACtime, (this.now()-this.current));
+			this.nextACtime = this.current + (this.worstACtime<250 ? this.worstACtime*4+120 : this.worstACtime*2+620);
 		}
 	},
 
@@ -559,13 +548,12 @@ Timer.prototype = {
 	// tm.startUndoTimer()  Undo/Redo呼び出しを開始する
 	// tm.stopUndoTimer()   Undo/Redo呼び出しを終了する
 	// tm.procUndo()        Undo/Redo呼び出しを実行する
+	// tm.execUndo()        Undo/Redo関数を呼び出す
 	//---------------------------------------------------------------------------
 	startUndoTimer : function(){
-		this.undoWaitCount = this.undoStartCount;
+		this.undoWaitCount = this.undoWaitTime/this.undoInterval;
 		if(!this.TIDundo){ this.TIDundo = setInterval(ee.binder(this, this.procUndo), this.undoInterval);}
-
-		if     (kc.inUNDO){ um.undo();}
-		else if(kc.inREDO){ um.redo();}
+		this.execUndo();
 	},
 	stopUndoTimer : function(){
 		kc.inUNDO=false;
@@ -573,11 +561,13 @@ Timer.prototype = {
 		clearInterval(this.TIDundo);
 		this.TIDundo = null;
 	},
-
 	procUndo : function(){
 		if(!kc.isCTRL || (!kc.inUNDO && !kc.inREDO)){ this.stopUndoTimer();}
 		else if(this.undoWaitCount>0)               { this.undoWaitCount--;}
-		else if(kc.inUNDO){ um.undo();}
+		else{ execUndo();}
+	},
+	execUndo : function(){
+		if     (kc.inUNDO){ um.undo();}
 		else if(kc.inREDO){ um.redo();}
 	}
 };

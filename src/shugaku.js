@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.2.4
+// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.3.0
 //
 Puzzles.shugaku = function(){ };
 Puzzles.shugaku.prototype = {
@@ -7,36 +7,32 @@ Puzzles.shugaku.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 0;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 1;	// 1:0を表示するかどうか
-		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = true;	// 0を表示するかどうか
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 1;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 1;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = true;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = true;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = true;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		k.area = { bcell:1, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
 		base.setTitle("修学旅行の夜","School Trip");
 		base.setExpression("　マウスの左ボタンドラッグで布団を、右ボタンで通路を入力できます。",
@@ -78,7 +74,7 @@ Puzzles.shugaku.prototype = {
 				this.mouseCell = cc;
 				this.inputData = 1;
 				this.firstPos = this.inputPos.clone();
-				pc.paint(bd.cell[cc].cx, bd.cell[cc].cy, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+				pc.paintCell(cc);
 			}
 			else{
 				var old = this.inputData;
@@ -91,7 +87,7 @@ Puzzles.shugaku.prototype = {
 					else if(mx-my<0 && mx+my>0){ this.inputData = (bd.QnC(bd.dn(this.mouseCell))==-1?3:6);}
 					else if(mx-my<0 && mx+my<0){ this.inputData = (bd.QnC(bd.lt(this.mouseCell))==-1?4:6);}
 				}
-				if(old!=this.inputData){ pc.paint(bd.cell[this.mouseCell].cx-2, bd.cell[this.mouseCell].cy-2, bd.cell[this.mouseCell].cx+2, bd.cell[this.mouseCell].cy+2);}
+				if(old!=this.inputData){ pc.paintCellAround(this.mouseCell);}
 			}
 		};
 		mv.inputFuton2 = function(){
@@ -116,7 +112,7 @@ Puzzles.shugaku.prototype = {
 
 			cc = this.mouseCell;
 			this.mouseCell = -1;
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+			pc.paintCellAround(cc);
 		};
 
 		mv.inputcell_shugaku = function(){
@@ -133,7 +129,7 @@ Puzzles.shugaku.prototype = {
 			bd.sQaC(cc, (this.inputData==1?1:-1));
 			bd.sQsC(cc, (this.inputData==2?1:0));
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+			pc.paintCellAround(cc);
 		};
 
 		mv.changeHalf = function(cc){
@@ -175,39 +171,33 @@ Puzzles.shugaku.prototype = {
 
 		bd.maxnum = 4;
 
-		menu.ex.adjustSpecial = function(type,key){
-			um.disableRecord();
-			switch(type){
-			case 1: // 上下反転
+		menu.ex.adjustSpecial = function(key,d){
+			switch(key){
+			case this.FLIPY: // 上下反転
 				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {12:13,13:12,17:18,18:17}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
-			case 2: // 左右反転
+			case this.FLIPX: // 左右反転
 				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {14:15,15:14,19:20,20:19}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
-			case 3: // 右90°反転
+			case this.TURNR: // 右90°反転
 				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {12:15,15:13,13:14,14:12,17:20,20:18,18:19,19:17}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
-			case 4: // 左90°反転
+			case this.TURNL: // 左90°反転
 				for(var cc=0;cc<bd.cellmax;cc++){
 					var val = {12:14,14:13,13:15,15:12,17:19,19:18,18:20,20:17}[bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
-			case 5: // 盤面拡大
-				break;
-			case 6: // 盤面縮小
-				break;
 			}
-			um.enableRecord();
 		}
 
 		bd.sQaC = function(id, num){
@@ -233,9 +223,6 @@ Puzzles.shugaku.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			x1--; y1--; x2++; y2++;	// Undo時に跡が残ってしまう為
 
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawRDotCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
@@ -245,7 +232,8 @@ Puzzles.shugaku.prototype = {
 
 			this.drawTargetFuton(x1,y1,x2,y2);
 
-			this.drawCircledNumbers(x1,y1,x2,y2);
+			this.drawCirclesAtNumber(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
@@ -253,45 +241,45 @@ Puzzles.shugaku.prototype = {
 		};
 
 		pc.drawFutons = function(x1,y1,x2,y2){
-			var header = "c_full_";
+			this.vinc('cell_back', 'crispEdges');
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var header = "c_full_";
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].qans>=11){
 					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-					if(this.vnop(header+c,1)){
-						g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);
+					if(this.vnop(header+c,this.FILL)){
+						g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, this.cw-1, this.ch-1);
 					}
 				}
-				else if(bd.cell[c].qans!==1){ this.vhide(header+c);}
+				else{ this.vhide(header+c);}
 
 				this.drawPillow1(c, (bd.cell[c].qans>=11 && bd.cell[c].qans<=15), false);
 			}
-			this.vinc();
 		};
 		pc.drawPillow1 = function(cc, flag, inputting){
-			var mgnw = mf(k.cwidth*0.15);
-			var mgnh = mf(k.cheight*0.15);
-			var headers = ["c_sq1_", "c_sq2_"];
+			var mgnw = this.cw*0.15;
+			var mgnh = this.ch*0.15;
+			var header = "c_pillow_"+cc;
 
 			if(flag){
-				g.fillStyle = "black";
-				if(this.vnop(headers[0]+cc,1)){
-					g.fillRect(bd.cell[cc].px+mgnw+1, bd.cell[cc].py+mgnh+1, k.cwidth-mgnw*2-1, k.cheight-mgnh*2-1);
-				}
-
+				g.lineWidth = 1;
+				g.strokeStyle = "black";
 				if     (inputting)            { g.fillStyle = this.targetbgcolor;}
 				else if(bd.cell[cc].error===1){ g.fillStyle = this.errbcolor1;   }
 				else                          { g.fillStyle = "white";}
-				if(this.vnop(headers[1]+cc,1)){
-					g.fillRect(bd.cell[cc].px+mgnw+2, bd.cell[cc].py+mgnh+2, k.cwidth-mgnw*2-3, k.cheight-mgnh*2-3);
+
+				if(this.vnop(header,this.FILL)){
+					g.shapeRect(bd.cell[cc].px+mgnw+1, bd.cell[cc].py+mgnh+1, this.cw-mgnw*2-1, this.ch-mgnh*2-1);
 				}
 			}
-			else{ this.vhide([headers[0]+cc, headers[1]+cc]);}
+			else{ this.vhide([header]);}
 		};
 
 		pc.drawFutonBorders = function(x1,y1,x2,y2){
+			this.vinc('border_futon', 'crispEdges');
+
 			var lw = this.lw, lm = this.lm;
 			var doma1 = {11:1,12:1,14:1,15:1,16:1,17:1,19:1,20:1};
 			var domb1 = {11:1,13:1,14:1,15:1,16:1,18:1,19:1,20:1};
@@ -300,93 +288,89 @@ Puzzles.shugaku.prototype = {
 			var header = "b_bd";
 			g.fillStyle = "black";
 
-			for(var by=Math.min(1,y1*2-2);by<=Math.max(2*k.qrows-1,y2*2+2);by++){
-				for(var bx=Math.min(1,x1*2-2);bx<=Math.max(2*k.qcols-1,x2*2+2);bx++){
+			for(var by=Math.min(bd.minby+1,y1-2),maxy=Math.max(bd.maxby-1,y2+2);by<=maxy;by++){
+				for(var bx=Math.min(bd.minbx+1,x1-2),maxx=Math.max(bd.maxbx-1,x2+2);bx<=maxx;bx++){
 					if(!((bx+by)&1)){ continue;}
-					var a = bd.QaC( bd.cnum((bx-by%2)>>1, (by-bx%2)>>1) );
-					var b = bd.QaC( bd.cnum((bx+by%2)>>1, (by+bx%2)>>1) );
+					var a = bd.QaC( bd.cnum(bx-(by&1), by-(bx&1)) );
+					var b = bd.QaC( bd.cnum(bx+(by&1), by+(bx&1)) );
 					var vid = [header,bx,by].join("_");
 
 					if     ((bx&1) && !(isNaN(doma1[a])&&isNaN(domb1[b]))){
-						if(this.vnop(vid,1)){
-							g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-lm, k.p0.x+mf(by*k.cheight/2)-lm, k.cwidth+lw, lw);
+						if(this.vnop(vid,this.NONE)){
+							g.fillRect(k.p0.x+(bx-1)*this.bw-lm, k.p0.x+by*this.bh-lm, this.cw+lw, lw);
 						}
 					}
 					else if((by&1) && !(isNaN(doma2[a])&&isNaN(domb2[b]))){
-						if(this.vnop(vid,1)){
-							g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-lm, k.p0.x+mf((by-1)*k.cheight/2)-lm, lw, k.cheight+lw);
+						if(this.vnop(vid,this.NONE)){
+							g.fillRect(k.p0.x+bx*this.bw-lm, k.p0.x+(by-1)*this.bh-lm, lw, this.ch+lw);
 						}
 					}
 					else{ this.vhide(vid);}
 				}
 			}
-			this.vinc();
 		};
 
 		pc.drawTargetFuton = function(x1,y1,x2,y2){
+
 			var cc=mv.mouseCell;
 			var inputting = ((mv.firstPos.x!==-1 || mv.firstPos.y!==-1) && cc!==-1);
 
-			// 入力中ふとんの背景カラー描画
 			if(inputting){
+				this.vinc('cell_back', 'crispEdges');
+
+				// 入力中ふとんの背景カラー描画
 				var header = "c_full_";
 				g.fillStyle = this.targetbgcolor;
 
 				if(cc!=-1){
-					if(this.vnop(header+cc,1)){
-						g.fillRect(bd.cell[cc].px+1, bd.cell[cc].py+1, k.cwidth-1, k.cheight-1);
+					if(this.vnop(header+cc,this.FILL)){
+						g.fillRect(bd.cell[cc].px+1, bd.cell[cc].py+1, this.cw-1, this.ch-1);
 					}
 				}
 				else{ this.vhide(header+cc);}
 
 				var adj=mv.getTargetADJ();
 				if(adj!=-1){
-					if(this.vnop(header+adj,1)){
-						g.fillRect(bd.cell[adj].px+1, bd.cell[adj].py+1, k.cwidth-1, k.cheight-1);
+					if(this.vnop(header+adj,this.FILL)){
+						g.fillRect(bd.cell[adj].px+1, bd.cell[adj].py+1, this.cw-1, this.ch-1);
 					}
 				}
 				else{ this.vhide(header+adj);}
-			}
-			this.vinc();
 
-			// 入力中ふとんのまくら描画
-			if(inputting){
+				// 入力中ふとんのまくら描画
 				this.drawPillow1(cc,true,true);
-			}
-			this.vinc();
 
-			// 入力中ふとんの周りの境界線描画
-			this.vdel(["tbd1_","tbd2_","tbd3_","tbd4_"]);
-			if(inputting){
+				// 入力中ふとんの下になるまくらを消す
+				if(!g.use.canvas && adj!==-1){ this.drawPillow1(adj,false,true);}
+
+				// 入力中ふとんの周りの境界線描画
+				this.vinc('border_futon', 'crispEdges');
+
+				this.vdel(["tbd1_","tbd2_","tbd3_","tbd4_"]);
 				var lw = this.lw, lm = this.lm;
-				var px = k.p0.x+(adj===-1?bd.cell[cc].cx:Math.min(bd.cell[cc].cx,bd.cell[adj].cx))*k.cwidth;
-				var py = k.p0.y+(adj===-1?bd.cell[cc].cy:Math.min(bd.cell[cc].cy,bd.cell[adj].cy))*k.cheight;
-				var wid = (mv.inputData===4||mv.inputData===5?2:1)*k.cwidth;
-				var hgt = (mv.inputData===2||mv.inputData===3?2:1)*k.cheight;
+				var bx1 = (adj===-1?bd.cell[cc].bx:Math.min(bd.cell[cc].bx,bd.cell[adj].bx));
+				var by1 = (adj===-1?bd.cell[cc].by:Math.min(bd.cell[cc].by,bd.cell[adj].by));
+				var px = k.p0.x+(bx1-1)*this.bw, py = k.p0.y+(by1-1)*this.bh;
+				var wid = (mv.inputData===4||mv.inputData===5?2:1)*this.cw;
+				var hgt = (mv.inputData===2||mv.inputData===3?2:1)*this.ch;
 
 				g.fillStyle = "black";
-				if(this.vnop("tbd1_",1)){ g.fillRect(px-lm    , py-lm    , wid+lw, lw);}
-				if(this.vnop("tbd2_",1)){ g.fillRect(px-lm    , py-lm    , lw, hgt+lw);}
-				if(this.vnop("tbd3_",1)){ g.fillRect(px+wid-lm, py-lm    , lw, hgt+lw);}
-				if(this.vnop("tbd4_",1)){ g.fillRect(px-lm    , py+hgt-lm, wid+lw, lw);}
-			}
-			this.vinc();
-		};
+				if(this.vnop("tbd1_",this.NONE)){ g.fillRect(px-lm    , py-lm    , wid+lw, lw);}
+				if(this.vnop("tbd2_",this.NONE)){ g.fillRect(px-lm    , py-lm    , lw, hgt+lw);}
+				if(this.vnop("tbd3_",this.NONE)){ g.fillRect(px+wid-lm, py-lm    , lw, hgt+lw);}
+				if(this.vnop("tbd4_",this.NONE)){ g.fillRect(px-lm    , py+hgt-lm, wid+lw, lw);}
 
-		pc.flushCanvas = function(x1,y1,x2,y2){	// 背景色をつけたいので上書きする
-			if(!g.vml){
-				x1=(x1>=0?x1:0); x2=(x2<=k.qcols-1?x2:k.qcols-1);
-				y1=(y1>=0?y1:0); y2=(y2<=k.qrows-1?y2:k.qrows-1);
-				g.fillStyle = this.bgcolor;
-				g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth, (y2-y1+1)*k.cheight);
+				// 入力中ふとんの間の太線を消す
+				if(!g.use.canvas && cc!==-1 && adj!==-1){
+					var bx = (bd.cell[cc].bx+bd.cell[adj].bx)/2;
+					var by = (bd.cell[cc].by+bd.cell[adj].by)/2;
+					this.vhide([["b_bd",bx,by].join("_")]);
+				}
 			}
 			else{
-				g.zidx=1;
-				g.fillStyle = this.bgcolor;
-				if(this.vnop("boardfull",1)){
-					g.fillRect(k.p0.x, k.p0.y, k.qcols*k.cwidth, k.qrows*k.cheight);
-				}
-				this.vinc();
+				// 入力中でない時は周りの境界線を消す
+				this.vinc('border_futon', 'crispEdges');
+				this.vdel(["tbd1_","tbd2_","tbd3_","tbd4_"]);
 			}
 		};
 	},

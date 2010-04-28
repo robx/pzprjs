@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ごきげんななめ・輪切版 wagiri.js v3.2.5
+// パズル固有スクリプト部 ごきげんななめ・輪切版 wagiri.js v3.3.0
 //
 Puzzles.wagiri = function(){ };
 Puzzles.wagiri.prototype = {
@@ -7,36 +7,35 @@ Puzzles.wagiri.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 7;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 7;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 1;		// 1:Crossが操作可能なパズル
-		k.isborder     = 0;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 2;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 1;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = true;	// 線が交差するパズル
+		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 1;	// 1:0を表示するかどうか
-		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = true;	// 0を表示するかどうか
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
+		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.bdmargin       = 0.70;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.50;	// 画像出力時のbdmargin値
 
 		base.setTitle("ごきげんななめ・輪切","Gokigen-naname:wagiri");
 		base.setExpression("　マウスで斜線を入力できます。",
@@ -49,7 +48,7 @@ Puzzles.wagiri.prototype = {
 
 		pp.addCheck('colorslash','setting',false, '斜線の色分け', 'Slash with color');
 		pp.setLabel('colorslash', '斜線を輪切りかのどちらかで色分けする(超重い)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
-		pp.funcs['colorslash'] = function(){ if(g.vml){ pc.flushCanvasAll();} pc.paintAll();};
+		pp.funcs['colorslash'] = function(){ pc.paintAll();};
 	},
 	finalfix : function(){
 		ee('btnclear2').el.style.display = 'none';
@@ -75,18 +74,17 @@ Puzzles.wagiri.prototype = {
 		mv.mousemove = function(){ };
 
 		mv.inputquestion = function(){
-			var pos = this.crosspos(0.33);
-			if(pos.x<tc.minx || tc.maxx<pos.x || pos.y<tc.miny || tc.maxy<pos.y){ return;}
+			var pos = this.borderpos(0.33);
+			if(!bd.isinside(pos.x,pos.y)){ return;}
 			if(!(pos.x&1) && !(pos.y&1)){
 				this.inputcross();
 			}
 			else if((pos.x&1) && (pos.y&1)){
-				var cc = this.cellid();
-				if(cc!==tc.getTCC()){
-					var tcx = tc.cursolx, tcy = tc.cursoly;
+				var cc0 = tc.getTCC(), cc = this.cellid();
+				if(cc!==cc0){
 					tc.setTCC(cc);
-					pc.paint((tcx>>1)-1, (tcy>>1)-1, (tcx>>1)+1, (tcy>>1)+1);
-					pc.paint((pos.x>>1)-1, (pos.y>>1)-1, pos.x>>1, pos.y>>1);
+					pc.paintCell(cc0);
+					pc.paintCell(cc);
 				}
 				else if(cc!=-1){
 					var trans = (this.btn.Left ? [-1,1,0,2,-2] : [2,-2,0,-1,1]);
@@ -97,10 +95,10 @@ Puzzles.wagiri.prototype = {
 			else{
 				var id = bd.bnum(pos.x, pos.y);
 				if(id!==tc.getTBC()){
-					var tcx = tc.cursolx, tcy = tc.cursoly;
+					var tcp = tc.getTCP();
 					tc.setTCP(pos);
-					pc.paint((tcx>>1)-1, (tcy>>1)-1, (tcx>>1)+1, (tcy>>1)+1);
-					pc.paint((pos.x>>1)-1, (pos.y>>1)-1, pos.x>>1, pos.y>>1);
+					pc.paintPos(tcp);
+					pc.paintPos(pos);
 				}
 			}
 		};
@@ -109,13 +107,14 @@ Puzzles.wagiri.prototype = {
 			var cc = this.cellid();
 			if(cc==-1){ return;}
 
-			if     (k.use==1){ bd.sQaC(cc, (bd.QaC(cc)!=(this.btn.Left?1:2)?(this.btn.Left?1:2):-1));}
-			else if(k.use==2){
+			var use = pp.getVal('use');
+			if     (use===1){ bd.sQaC(cc, (bd.QaC(cc)!=(this.btn.Left?1:2)?(this.btn.Left?1:2):-1));}
+			else if(use===2){
 				if(bd.QaC(cc)==-1){ bd.sQaC(cc, (this.btn.Left?1:2));}
 				else{ bd.sQaC(cc, (this.btn.Left?{1:2,2:-1}:{1:-1,2:1})[bd.QaC(cc)]);}
 			}
 
-			pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+			pc.paintCellAround(cc);
 		};
 
 		// キーボード入力系
@@ -143,21 +142,15 @@ Puzzles.wagiri.prototype = {
 			}
 		};
 
-		menu.ex.adjustSpecial = function(type,key){
-			um.disableRecord();
-			if(type>=1 && type<=4){ // 反転・回転全て
-				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
-			}
-			um.enableRecord();
-		};
-
-		tc.minx = 0;
-		tc.miny = 0;
-		tc.maxx = 2*k.qcols;
-		tc.maxy = 2*k.qrows;
-		tc.setTXC(0);
+		tc.setCrossType();
 
 		bd.maxnum = 4;
+
+		menu.ex.adjustSpecial = function(key,d){
+			if(key & this.TURNFLIP){ // 反転・回転全て
+				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
+			}
+		};
 	},
 
 	//---------------------------------------------------------
@@ -171,11 +164,6 @@ Puzzles.wagiri.prototype = {
 		pc.chassisflag = false;
 
 		pc.paint = function(x1,y1,x2,y2){
-			if(!ans.errDisp && pp.getVal('colorslash')){ x1=0; y1=0; x2=k.qcols-1; y2=k.qrows-1;}
-
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
@@ -184,6 +172,13 @@ Puzzles.wagiri.prototype = {
 
 			this.drawCrosses(x1,y1,x2+1,y2+1);
 			this.drawTarget_wagiri(x1,y1,x2,y2);
+		};
+		// オーバーライド
+		pc.prepaint = function(x1,y1,x2,y2){
+			if(!ans.errDisp && pp.getVal('colorslash')){ x1=bd.minbx; y1=bd.minby; x2=bd.maxbx; y2=bd.maxby;}
+			pc.flushCanvas(x1,y1,x2,y2);
+
+			pc.paint(x1,y1,x2,y2);
 		};
 
 		// オーバーライド
@@ -196,48 +191,48 @@ Puzzles.wagiri.prototype = {
 		};
 
 		pc.dispLetters_wagiri = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
-				var id = clist[i];
-				var num = bd.cell[id].qnum, obj = bd.cell[id];
-				if(num>=1 && num<=2){ text = ({1:"輪",2:"切"})[num];}
-				else if(num===-2){ text = "?";}
-				else{ this.hideEL(obj.numobj); continue;}
-
-				if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-				this.dispnum(obj.numobj, 1, text, 0.70, this.getNumberColor(id), obj.px, obj.py);
+				var c = clist[i], obj = bd.cell[c], num = obj.qnum, key='cell_'+c;
+				if(num!==-1){
+					var text = (num!==-2 ? ({1:"輪",2:"切"})[num] : "?");
+					this.dispnum(key, 1, text, 0.70, this.fontcolor, obj.cpx, obj.cpy);
+				}
+				else{ this.hideEL(key);}
 			}
 		};
 
 		pc.drawSlashes = function(x1,y1,x2,y2){
+			this.vinc('cell_slash', 'auto');
+
 			var headers = ["c_sl1_", "c_sl2_"], check=[];
-			g.lineWidth = (mf(k.cwidth/8)>=2?mf(k.cwidth/8):2);
+			g.lineWidth = Math.max(this.cw/8, 2);
 
 			if(!ans.errDisp && pp.getVal('colorslash')){
 				var sdata=ans.getSlashData();
 				for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.sErC([c],sdata[c]);} }
 			}
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
 				if(bd.cell[c].qans!=-1){
 					if     (bd.cell[c].error==1){ g.strokeStyle = this.errcolor1;}
 					else if(bd.cell[c].error==2){ g.strokeStyle = this.errcolor2;}
-					else                        { g.strokeStyle = this.Cellcolor;}
+					else                        { g.strokeStyle = this.cellcolor;}
 
 					if(bd.cell[c].qans==1){
-						if(this.vnop(headers[0]+c,0)){
-							this.inputPath([bd.cell[c].px,bd.cell[c].py, 0,0, k.cwidth,k.cheight], true);
+						if(this.vnop(headers[0]+c,this.STROKE)){
+							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, this.cw,this.ch, true);
 							g.stroke();
 						}
 					}
 					else{ this.vhide(headers[0]+c);}
 
 					if(bd.cell[c].qans==2){
-						if(this.vnop(headers[1]+c,0)){
-							this.inputPath([bd.cell[c].px,bd.cell[c].py, k.cwidth,0, 0,k.cheight], true);
+						if(this.vnop(headers[1]+c,this.STROKE)){
+							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, this.cw,0, 0,this.ch, true);
 							g.stroke();
 						}
 					}
@@ -245,7 +240,6 @@ Puzzles.wagiri.prototype = {
 				}
 				else{ this.vhide([headers[0]+c, headers[1]+c]);}
 			}
-			this.vinc();
 
 			if(!ans.errDisp && pp.getVal('colorslash')){
 				for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.sErC([c],0);} }
@@ -253,26 +247,8 @@ Puzzles.wagiri.prototype = {
 		};
 
 		pc.drawTarget_wagiri = function(x1,y1,x2,y2){
-			if(k.playmode){
-				this.hideTCell();
-				this.hideTCross();
-				this.hideTBorder();
-			}
-			else if((tc.cursolx&1)&&(tc.cursoly&1)){
-				this.drawTCell(x1-1,y1-1,x2+1,y2+1);
-				this.hideTCross();
-				this.hideTBorder();
-			}
-			else if(!(tc.cursolx&1)&&!(tc.cursoly&1)){
-				this.hideTCell();
-				this.drawTCross(x1-1,y1-1,x2+1,y2+1);
-				this.hideTBorder();
-			}
-			else{
-				this.hideTCell();
-				this.hideTCross();
-				this.drawTBorder(x1-1,y1-1,x2+1,y2+1);
-			}
+			var islarge = ((tc.cursorx&1)===(tc.cursory&1));
+			this.drawCursor(x1,y1,x2,y2,islarge,k.editmode);
 		};
 	},
 
@@ -336,7 +312,7 @@ Puzzles.wagiri.prototype = {
 				for(var cc=0;cc<bd.cellmax;cc++) { history.cell[cc] =(check[cc]!==-1?0:-1);}
 				for(var xc=0;xc<bd.crossmax;xc++){ history.cross[xc]=(scnt[xc]>0    ?0:-1);}
 
-				var fc = bd.xnum(bd.cell[c].cx+(bd.QaC(c)===1?0:1), bd.cell[c].cy);
+				var fc = bd.xnum(bd.cell[c].bx+(bd.QaC(c)===1?-1:1), bd.cell[c].by);
 				this.sp0(fc, 1, scnt, check, history);
 			}
 			for(var c=0;c<bd.cellmax;c++) { if(check[c]===0){ check[c]=2;} }
@@ -352,12 +328,12 @@ Puzzles.wagiri.prototype = {
 
 			// 別に到達していない -> 隣に進んでみる
 			history.cross[xc] = depth; // この交点にマーキング
-			var xx=bd.cross[xc].cx, xy=bd.cross[xc].cy, isloop=false;
+			var bx=bd.cross[xc].bx, by=bd.cross[xc].by, isloop=false;
 			var nb = [
-					{ cell:bd.cnum(xx-1,xy-1), cross:bd.xnum(xx-1,xy-1), qans:1},
-					{ cell:bd.cnum(xx  ,xy-1), cross:bd.xnum(xx+1,xy-1), qans:2},
-					{ cell:bd.cnum(xx-1,xy  ), cross:bd.xnum(xx-1,xy+1), qans:2},
-					{ cell:bd.cnum(xx  ,xy  ), cross:bd.xnum(xx+1,xy+1), qans:1}
+					{ cell:bd.cnum(bx-1,by-1), cross:bd.xnum(bx-2,by-2), qans:1},
+					{ cell:bd.cnum(bx+1,by-1), cross:bd.xnum(bx+2,by-2), qans:2},
+					{ cell:bd.cnum(bx-1,by+1), cross:bd.xnum(bx-2,by+2), qans:2},
+					{ cell:bd.cnum(bx+1,by+1), cross:bd.xnum(bx+2,by+2), qans:1}
 				];
 			for(var i=0;i<4;i++){
 				if( nb[i].cell===-1 ||					// そっちは盤面の外だよ！
@@ -401,14 +377,14 @@ Puzzles.wagiri.prototype = {
 			var scnt = [];
 			for(var c=0;c<bd.crossmax;c++){ scnt[c]=0;}
 			for(var c=0;c<bd.cellmax;c++){
-				var cx=c%k.qcols, cy=(c/k.qcols)|0;
+				var bx=bd.cell[c].bx, by=bd.cell[c].by;
 				if(bd.QaC(c)===1){
-					scnt[cx+cy*(k.qcols+1)]++;
-					scnt[(cx+1)+(cy+1)*(k.qcols+1)]++;
+					scnt[bd.xnum(bx-1,by-1)]++;
+					scnt[bd.xnum(bx+1,by+1)]++;
 				}
 				else if(bd.QaC(c)===2){
-					scnt[cx+(cy+1)*(k.qcols+1)]++;
-					scnt[(cx+1)+cy*(k.qcols+1)]++;
+					scnt[bd.xnum(bx-1,by+1)]++;
+					scnt[bd.xnum(bx+1,by-1)]++;
 				}
 			}
 			return scnt;

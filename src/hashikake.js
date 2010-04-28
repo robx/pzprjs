@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.2.5
+// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.3.0
 //
 Puzzles.hashikake = function(){ };
 Puzzles.hashikake.prototype = {
@@ -7,36 +7,35 @@ Puzzles.hashikake.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 9;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 9;}	// 盤面の縦幅
-		k.irowake = 1;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 1;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 1;	// 1:線が交差するパズル
-		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = true;	// 線が交差するパズル
+		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 0;	// 1:0を表示するかどうか
-		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = false;	// 0を表示するかどうか
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
+		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		k.def_psize = 16;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.bdmargin       = 0.50;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
 
 		base.setTitle("橋をかけろ","Bridges");
 		base.setExpression("　左ボタンで線が、右ボタンで×が入力できます。",
@@ -45,7 +44,12 @@ Puzzles.hashikake.prototype = {
 
 		enc.pidKanpen = 'hashi';
 	},
-	menufix : function(){ },
+	menufix : function(){
+		pp.addCheck('circolor','setting',false,'数字をグレーにする','Set Grey Color');
+		pp.setLabel('circolor', '数字と同じ本数がかかったらグレーにする', 'Grey if the number is equal to linked bridges.');
+
+		pp.funcs['circolor'] = function(){ pc.paintAll();};
+	},
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
@@ -70,14 +74,14 @@ Puzzles.hashikake.prototype = {
 		};
 
 		mv.inputLine = function(){
-			var pos = this.cellpos();
+			var pos = this.borderpos(0);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = -1;
-			if     (pos.y-this.mouseCell.y==-1){ id=bd.bnum(this.mouseCell.x*2+1,this.mouseCell.y*2  );}
-			else if(pos.y-this.mouseCell.y== 1){ id=bd.bnum(this.mouseCell.x*2+1,this.mouseCell.y*2+2);}
-			else if(pos.x-this.mouseCell.x==-1){ id=bd.bnum(this.mouseCell.x*2  ,this.mouseCell.y*2+1);}
-			else if(pos.x-this.mouseCell.x== 1){ id=bd.bnum(this.mouseCell.x*2+2,this.mouseCell.y*2+1);}
+			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1);}
+			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1);}
+			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  );}
+			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  );}
 
 			var include = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
 			if(this.mouseCell!=-1 && id!=-1){
@@ -88,7 +92,7 @@ Puzzles.hashikake.prototype = {
 					else if(bd.LiB(id)==1){ this.inputData=2;}
 					else                  { this.inputData=0;}
 				}
-				if(this.inputData> 0 && ((pos.x-this.mouseCell.x==-1)||(pos.y-this.mouseCell.y==-1))){ idlist=idlist.reverse();} // 色分けの都合上の処理
+				if(this.inputData> 0 && ((pos.x-this.mouseCell.x==-2)||(pos.y-this.mouseCell.y==-2))){ idlist=idlist.reverse();} // 色分けの都合上の処理
 				for(var i=0;i<idlist.length;i++){
 					if(this.inputData!=-1){ bd.sLiB(idlist[i], this.inputData); bd.sQsB(idlist[i], 0);}
 					pc.paintLine(idlist[i]);
@@ -98,25 +102,28 @@ Puzzles.hashikake.prototype = {
 			this.mouseCell = pos;
 		};
 		mv.getidlist = function(id){
-			var idlist=[], bx1, bx2, by1, by2;
-			var cc1=bd.cc1(id), cx=bd.cell[cc1].cx, cy=bd.cell[cc1].cy;
-			if(bd.border[id].cx&1){
-				while(cy>=0         && bd.QnC(bd.cnum(cx,cy  ))==-1){ cy--;} by1=2*cy+2;
-				while(cy<=k.qrows-1 && bd.QnC(bd.cnum(cx,cy+1))==-1){ cy++;} by2=2*cy+2;
-				bx1 = bx2 = bd.border[id].cx;
+			var idlist=[], bx=bd.border[id].bx, by=bd.border[id].by;
+			if(bd.border[id].bx&1){
+				var by1=by, by2=by;
+				while(by1>bd.minby && bd.QnC(bd.cnum(bx,by1-1))===-1){ by1-=2;}
+				while(by2<bd.maxby && bd.QnC(bd.cnum(bx,by2+1))===-1){ by2+=2;}
+				if(bd.minby<by1 && by2<bd.maxby){
+					for(by=by1;by<=by2;by+=2){ idlist.push(bd.bnum(bx,by)); }
+				}
 			}
-			else if(bd.border[id].cy&1){
-				while(cx>=0         && bd.QnC(bd.cnum(cx  ,cy))==-1){ cx--;} bx1=2*cx+2;
-				while(cx<=k.qcols-1 && bd.QnC(bd.cnum(cx+1,cy))==-1){ cx++;} bx2=2*cx+2;
-				by1 = by2 = bd.border[id].cy;
+			else if(bd.border[id].by&1){
+				var bx1=bx, bx2=bx;
+				while(bx1>bd.minbx && bd.QnC(bd.cnum(bx1-1,by))===-1){ bx1-=2;}
+				while(bx2<bd.maxbx && bd.QnC(bd.cnum(bx2+1,by))===-1){ bx2+=2;}
+				if(bd.minbx<bx1 && bx2<bd.maxbx){
+					for(bx=bx1;bx<=bx2;bx+=2){ idlist.push(bd.bnum(bx,by)); }
+				}
 			}
-			if(bx1<1||bx2>2*k.qcols-1||by1<1||by2>2*k.qrows-1){ return [];}
-			for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
 			return idlist;
 		};
 
 		mv.inputpeke = function(){
-			var pos = this.crosspos(0.22);
+			var pos = this.borderpos(0.22);
 			var id = bd.bnum(pos.x, pos.y);
 			if(id==-1 || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
 
@@ -169,72 +176,85 @@ Puzzles.hashikake.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_THIN;
-		pc.bcolor = pc.bcolor_GREEN;
-
+		pc.bcolor    = "silver";
 		pc.fontsizeratio = 0.85;
-		pc.circleratio = [0.44, 0.44];
 		pc.chassisflag = false;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
+		// 線の太さを通常より少し太くする
+		pc.lwratio = 8;
 
-			if(k.editmode){ this.drawGrid(x1,y1,x2,y2);}
-			else if(g.vml){ this.hideGrid();}
+		pc.paint = function(x1,y1,x2,y2){
+			this.drawGrid(x1,y1,x2,y2,(k.editmode && !this.fillTextPrecisely));
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawCircledNumbers(x1,y1,x2,y2);
+			this.drawCirclesAtNumber(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		// オーバーライド
-		pc.drawLine1 = function(id, flag){
+		pc.drawLine1 = function(id, forceFlag){
 			var vids = ["b_line_"+id,"b_dline1_"+id,"b_dline2_"+id];
-			if(!flag){ this.vhide(vids); return;}
 
-			var lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3);	//LineWidth
-			var lm = mf((lw-1)/2) + this.addlw;				//LineMargin
-			var ls = mf(lw*1.5);							//LineSpace
-			g.fillStyle = this.getLineColor(id);
+			// LineWidth, LineMargin, LineSpace
+			var lw = this.lw + this.addlw, lm = this.lm, ls = lw*1.5;
+			if(forceFlag!==false && this.setLineColor(id)){
+				if(bd.border[id].line==1){
+					if(this.vnop(vids[0],this.FILL)){
+						if(bd.border[id].bx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
+						if(bd.border[id].by&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm, this.cw+lw, lw);}
+					}
+				}
+				else{ this.vhide(vids[0]);}
 
-			if(bd.border[id].line==1){
-				if(this.vnop(vids[0],1)){
-					if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-					if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
+				if(bd.border[id].line==2){
+					if(this.vnop(vids[1],this.FILL)){
+						if(bd.border[id].bx&1){ g.fillRect(bd.border[id].px-lm-ls, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
+						if(bd.border[id].by&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm-ls, this.cw+lw, lw);}
+					}
+					if(this.vnop(vids[2],this.FILL)){
+						if(bd.border[id].bx&1){ g.fillRect(bd.border[id].px-lm+ls, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
+						if(bd.border[id].by&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm+ls, this.cw+lw, lw);}
+					}
+				}
+				else{ this.vhide([vids[1], vids[2]]);}
+			}
+			else{ this.vhide(vids);}
+		};
+		// 背景色をつける為オーバーライド
+		pc.drawCircle1AtNumber = function(c){
+			if(c===-1){ return;}
+
+			var rsize = this.cw*0.44;
+			var header = "c_cir_";
+
+			if(bd.cell[c].qnum!=-1){
+				g.lineWidth   = this.cw*0.05;
+				g.strokeStyle = this.cellcolor;
+
+				if (pp.getVal('circolor') && bd.cell[c].qnum===ans.getCountOfBridges(c))
+											 { g.fillStyle = this.bcolor;      }
+				else if(bd.cell[c].error===1){ g.fillStyle = this.errbcolor1;  }
+				else                         { g.fillStyle = this.circledcolor;}
+
+				if(this.vnop(header+c,this.FILL)){
+					g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
 				}
 			}
-			else{ this.vhide(vids[0]);}
+			else{ this.vhide([header+c]);}
+		};
 
-			if(bd.border[id].line==2){
-				if(this.vnop(vids[1],1)){
-					if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm-ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-					if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm-ls, k.cwidth+lw,  lw);}
-				}
-				if(this.vnop(vids[2],1)){
-					if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm+ls, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-					if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm+ls, k.cwidth+lw,  lw);}
-				}
+		line.repaintParts = function(idlist){
+			var clist = this.getClistFromIdlist(idlist);
+			for(var i=0;i<clist.length;i++){
+				pc.drawCircle1AtNumber(clist[i]);
+				pc.drawNumber1(clist[i]);
 			}
-			else{ this.vhide([vids[1], vids[2]]);}
 		};
-		pc.hideGrid = function(){
-			for(var i=0;i<=k.qcols;i++){ this.vhide("bdy_"+i);}
-			for(var i=0;i<=k.qrows;i++){ this.vhide("bdx_"+i);}
-		};
-
-		line.repaintParts = function(id){
-			pc.drawCircledNumber1( bd.cc1(id) );
-			pc.drawCircledNumber1( bd.cc2(id) );
-		};
-		line.branch = function(bx,by,lcnt){
-			return (lcnt==3||lcnt==4) && (bd.QnC(bd.cnum(bx>>1,by>>1))!=-1);
-		};
-		line.point = ee.binder(line, function(id,cc){
-			return this.lcntCell(cc)==1 || (this.lcntCell(cc)==3 && this.tshapeid(cc)==id);
-		});
+		line.iscrossing = function(cc){ return (bd.QnC(cc)===-1);};
 	},
 
 	//---------------------------------------------------------
@@ -323,21 +343,25 @@ Puzzles.hashikake.prototype = {
 		ans.checkCellNumber = function(flag){
 			var result = true;
 			for(var cc=0;cc<bd.cellmax;cc++){
-				if(bd.QnC(cc)<0){ continue;}
+				var qn = bd.QnC(cc);
+				if(qn<0){ continue;}
 
-				var cnt = 0;
-				if(bd.ub(cc)!=-1 && bd.isLine(bd.ub(cc))){ cnt+=bd.LiB(bd.ub(cc));}
-				if(bd.db(cc)!=-1 && bd.isLine(bd.db(cc))){ cnt+=bd.LiB(bd.db(cc));}
-				if(bd.lb(cc)!=-1 && bd.isLine(bd.lb(cc))){ cnt+=bd.LiB(bd.lb(cc));}
-				if(bd.rb(cc)!=-1 && bd.isLine(bd.rb(cc))){ cnt+=bd.LiB(bd.rb(cc));}
-
-				if((flag==1 && bd.QnC(cc)<cnt)||(flag==2 && bd.QnC(cc)>cnt)){
+				var cnt = this.getCountOfBridges(cc);
+				if((flag===1 && qn<cnt)||(flag===2 && qn>cnt)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([cc],1);
 					result = false;
 				}
 			}
 			return result;
+		};
+		ans.getCountOfBridges = function(cc){
+			var cnt=0, idlist=[bd.ub(cc), bd.db(cc), bd.lb(cc), bd.rb(cc)];
+			for(var i=0;i<idlist.length;i++){
+				var id = idlist[i];
+				if(id!==-1 && bd.border[id].line>0){ cnt+=bd.border[id].line;}
+			}
+			return cnt;
 		};
 	}
 };

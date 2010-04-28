@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 美術館版 lightup.js v3.2.5
+// パズル固有スクリプト部 美術館版 lightup.js v3.3.0
 //
 Puzzles.lightup = function(){ };
 Puzzles.lightup.prototype = {
@@ -7,36 +7,32 @@ Puzzles.lightup.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 0;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 1;	// 1:0を表示するかどうか
-		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = true;	// 0を表示するかどうか
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 1;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = true;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 1;	// 1:pencilbox/カンペンにあるパズル
-
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
 
 		base.setTitle("美術館","Akari (Light Up)");
 		base.setExpression("　マウスで光源と白マス確定マスが入力できます。",
@@ -55,7 +51,6 @@ Puzzles.lightup.prototype = {
 
 		base.resetInfo = function(iserase){
 			if(iserase){ um.allerase();}
-			tc.Adjust();
 			bd.initQlight();
 		};
 	},
@@ -95,75 +90,75 @@ Puzzles.lightup.prototype = {
 		}
 
 		bd.maxnum = 4;
+
 		bd.qlight = [];
 		bd.initQlight = function(){
 			bd.qlight = [];
-			for(var c=0;c<bd.cellmax;c++){ bd.qlight[c] = false;}
-			for(var c=0;c<bd.cellmax;c++){
-				if(bd.cell[c].qans!==1){ continue;}
+			for(var c=0;c<this.cellmax;c++){ this.qlight[c] = false;}
+			for(var c=0;c<this.cellmax;c++){
+				if(this.cell[c].qans!==1){ continue;}
 
-				var cx = bd.cell[c].cx, cy = bd.cell[c].cy;
+				var bx = this.cell[c].bx, by = this.cell[c].by;
 				var d = this.cellRange(c);
-				for(var tx=d.x1;tx<=d.x2;tx++){ bd.qlight[tx+cy*k.qcols]=true;}
-				for(var ty=d.y1;ty<=d.y2;ty++){ bd.qlight[cx+ty*k.qcols]=true;}
+				for(var tx=d.x1;tx<=d.x2;tx+=2){ bd.qlight[this.cnum(tx,by)]=true;}
+				for(var ty=d.y1;ty<=d.y2;ty+=2){ bd.qlight[this.cnum(bx,ty)]=true;}
 			}
 		};
+		bd.setQlight = function(id, val){
+			var d = this.cellRange(id), bx = this.cell[id].bx, by = this.cell[id].by;
+			if(val===1){
+				for(var tx=d.x1;tx<=d.x2;tx+=2){ this.qlight[this.cnum(tx,by)]=true;}
+				for(var ty=d.y1;ty<=d.y2;ty+=2){ this.qlight[this.cnum(bx,ty)]=true;}
+			}
+			else{
+				var clist = [];
+				for(var tx=d.x1;tx<=d.x2;tx+=2){ clist.push(this.cnum(tx,by));}
+				for(var ty=d.y1;ty<=d.y2;ty+=2){ clist.push(this.cnum(bx,ty));}
 
-		// オーバーライト
+				for(var i=0;i<clist.length;i++){
+					var cc = clist[i];
+					if(this.qlight[cc]?val===2:val===0){ continue;}
+
+					var cbx = this.cell[cc].bx, cby = this.cell[cc].by;
+					var dd  = this.cellRange(cc), isakari = false;
+								  for(var tx=dd.x1;tx<=dd.x2;tx+=2){ if(this.cell[this.cnum(tx,cby)].qans===1){ isakari=true; break;} }
+					if(!isakari){ for(var ty=dd.y1;ty<=dd.y2;ty+=2){ if(this.cell[this.cnum(cbx,ty)].qans===1){ isakari=true; break;} } }
+					this.qlight[cc] = isakari;
+				}
+			}
+
+			if(!!g){
+				pc.paintRange(d.x1, by, d.x2, by);
+				pc.paintRange(bx, d.y1, bx, d.y2);
+			}
+		};
+		bd.cellRange = function(cc){
+			var bx = tx = this.cell[cc].bx, by = ty = this.cell[cc].by;
+			var d = {x1:bd.minbx+1, y1:bd.minby+1, x2:bd.maxbx-1, y2:bd.maxby-1};
+
+			tx=bx-2; ty=by; while(tx>bd.minbx){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.x1=tx+2; break;} tx-=2; }
+			tx=bx+2; ty=by; while(tx<bd.maxbx){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.x2=tx-2; break;} tx+=2; }
+			tx=bx; ty=by-2; while(ty>bd.minby){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.y1=ty+2; break;} ty-=2; }
+			tx=bx; ty=by+2; while(ty<bd.maxby){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.y2=ty-2; break;} ty+=2; }
+
+			return d;
+		};
+
+		// オーバーライド
 		bd.sQnC = function(id, num) {
 			var old = this.cell[id].qnum;
 			um.addOpe(k.CELL, k.QNUM, id, old, num);
 			this.cell[id].qnum = num;
 
-			if((old===-1)^(num===-1)){ this.setAkari(id, (num!==-1?0:2));}
+			if((old===-1)^(num===-1)){ this.setQlight(id, (num!==-1?0:2));}
 		};
-		// オーバーライト
+		// オーバーライド
 		bd.sQaC = function(id, num) {
 			var old = this.cell[id].qans;
 			um.addOpe(k.CELL, k.QANS, id, old, num);
 			this.cell[id].qans = num;
 
-			if((old===-1)^(num===-1)){ this.setAkari(id, (num!==-1?1:0));}
-		};
-		bd.setAkari = function(id, val){
-			var d = this.cellRange(id), cx = bd.cell[id].cx, cy = bd.cell[id].cy;
-			if(val===1){
-				for(var tx=d.x1;tx<=d.x2;tx++){ bd.qlight[tx+cy*k.qcols]=true;}
-				for(var ty=d.y1;ty<=d.y2;ty++){ bd.qlight[cx+ty*k.qcols]=true;}
-			}
-			else{
-				var clist = [];
-				for(var tx=d.x1;tx<=d.x2;tx++){ clist.push(tx+cy*k.qcols);}
-				for(var ty=d.y1;ty<=d.y2;ty++){ clist.push(cx+ty*k.qcols);}
-
-				for(var i=0;i<clist.length;i++){
-					var cc = clist[i];
-					if(bd.qlight[cc]?val===2:val===0){ continue;}
-
-					var ccx = bd.cell[cc].cx, ccy = bd.cell[cc].cy;
-					var dd = this.cellRange(cc), isakari = false;
-								  for(var tx=dd.x1;tx<=dd.x2;tx++){ if(bd.cell[tx+ccy*k.qcols].qans===1){ isakari=true; break;} }
-					if(!isakari){ for(var ty=dd.y1;ty<=dd.y2;ty++){ if(bd.cell[ccx+ty*k.qcols].qans===1){ isakari=true; break;} } }
-					bd.qlight[cc] = isakari;
-				}
-			}
-
-			if(pc.already()){
-				pc.paint(d.x1,cy,d.x2,cy);
-				pc.paint(cx,d.y1,cx,d.y2);
-			}
-		};
-
-		bd.cellRange = function(cc){
-			var cx = tx = bd.cell[cc].cx, cy = ty = bd.cell[cc].cy;
-			var d = {x1:0, y1:0, x2:k.qcols-1, y2:k.qrows-1};
-
-			tx=cx-1; ty=cy; while(tx>=0)     { if(bd.cell[tx+ty*k.qcols].qnum!==-1){ d.x1=tx+1; break;} tx--; }
-			tx=cx+1; ty=cy; while(tx<k.qcols){ if(bd.cell[tx+ty*k.qcols].qnum!==-1){ d.x2=tx-1; break;} tx++; }
-			tx=cx; ty=cy-1; while(ty>=0)     { if(bd.cell[tx+ty*k.qcols].qnum!==-1){ d.y1=ty+1; break;} ty--; }
-			tx=cx; ty=cy+1; while(ty<k.qrows){ if(bd.cell[tx+ty*k.qcols].qnum!==-1){ d.y2=ty-1; break;} ty++; }
-
-			return d;
+			if((old===-1)^(num===-1)){ this.setQlight(id, (num!==-1?1:0));}
 		};
 	},
 
@@ -178,9 +173,6 @@ Puzzles.lightup.prototype = {
 		pc.lightcolor = "rgb(224, 255, 127)";
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
@@ -203,25 +195,23 @@ Puzzles.lightup.prototype = {
 		};
 
 		pc.drawAkari = function(x1,y1,x2,y2){
-			var rsize = k.cwidth*0.40;
-			var ksize = k.cwidth*0.15;
+			this.vinc('cell_akari', 'auto');
+
+			var rsize = this.cw*0.40;
 			var lampcolor = "rgb(0, 127, 96)";
 			var header = "c_AK_";
 
-			var clist = this.cellinside(x1,y1,x2,y2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].qans===1){
 					g.fillStyle = (bd.cell[c].error!==4 ? lampcolor : this.errcolor1);
-					if(this.vnop(header+c,1)){
-						g.beginPath();
-						g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize, 0, Math.PI*2, false);
-						g.fill();
+					if(this.vnop(header+c,this.FILL)){
+						g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
 					}
 				}
 				else{ this.vhide(header+c);}
 			}
-			this.vinc();
 		};
 	},
 
@@ -296,7 +286,7 @@ Puzzles.lightup.prototype = {
 			return true;
 		};
 
-		ans.isAkariCount = function(nullnum, clist, nullobj){
+		ans.isAkariCount = function(nullnum, keycellpos, clist, nullobj){
 			var akaris=[];
 			for(var i=0;i<clist.length;i++){
 				if( bd.QaC(clist[i])===1 ){ akaris.push(clist[i]);}

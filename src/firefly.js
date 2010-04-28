@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ホタルビーム版 firefly.js v3.2.5
+// パズル固有スクリプト部 ホタルビーム版 firefly.js v3.3.0
 //
 Puzzles.firefly = function(){ };
 Puzzles.firefly.prototype = {
@@ -7,36 +7,35 @@ Puzzles.firefly.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake = 1;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 1;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 1;	// 1:0を表示するかどうか
-		k.isDispHatena  = 0;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = true;	// 0を表示するかどうか
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
+		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		k.def_psize = 16;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.bdmargin       = 0.50;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
 
 		if(k.EDITOR){
 			base.setExpression("　黒点は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
@@ -94,73 +93,63 @@ Puzzles.firefly.prototype = {
 		pc.fontsizeratio = 0.85;
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
-			this.drawDashLines(x1,y1,x2,y2);
+			this.drawDashedCenterLines(x1,y1,x2,y2);
 			this.drawLines(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,0);
 
-			this.drawNumCells_firefly(x1,y1,x2,y2);
+			this.drawFireflies(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		pc.drawNumCells_firefly = function(x1,y1,x2,y2){
-			var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
-			for(var i=0;i<clist.length;i++){ this.drawNumCells_firefly1(clist[i]);}
-			this.vinc();
+		pc.drawFireflies = function(x1,y1,x2,y2){
+			this.vinc('cell_firefly', 'auto');
+
+			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
+			for(var i=0;i<clist.length;i++){ this.drawFirefly1(clist[i]);}
 		};
-		pc.drawNumCells_firefly1 = function(c){
+		pc.drawFirefly1 = function(c){
 			if(c===-1){ return;}
 
-			var rsize  = k.cwidth*0.40;
-			var rsize2 = k.cwidth*0.36;
-			var rsize3 = k.cwidth*0.10;
-			var headers = ["c_cira_", "c_cirb_", "c_circ_"];
+			var rsize  = this.cw*0.40;
+			var rsize3 = this.cw*0.10;
+			var headers = ["c_cira_", "c_cirb_"];
 
 			if(bd.cell[c].qnum!=-1){
-				var px=bd.cell[c].px+mf(k.cwidth/2), py=bd.cell[c].py+mf(k.cheight/2);
+				var px=bd.cell[c].cpx, py=bd.cell[c].cpy;
 
-				g.fillStyle = this.Cellcolor;
-				if(this.vnop(headers[0]+c,1)){
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					g.fill();
-				}
-
+				g.lineWidth = 1.5;
+				g.strokeStyle = this.cellcolor;
 				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(headers[1]+c,1)){
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					g.fill();
+				if(this.vnop(headers[0]+c,this.FILL)){
+					g.shapeCircle(px, py, rsize);
 				}
 
-				this.vdel([headers[2]+c]);
+				this.vdel([headers[1]+c]);
 				if(bd.cell[c].direc!=0){
-					g.fillStyle = this.Cellcolor;
+					g.fillStyle = this.cellcolor;
 					switch(bd.cell[c].direc){
 						case k.UP: py-=(rsize-1); break;
 						case k.DN: py+=(rsize-1); break;
 						case k.LT: px-=(rsize-1); break;
 						case k.RT: px+=(rsize-1); break;
 					}
-					if(this.vnop(headers[2]+c,1)){
-						g.beginPath();
-						g.arc(px, py, rsize3 , 0, Math.PI*2, false);
-						g.fill();
+					if(this.vnop(headers[1]+c,this.NONE)){
+						g.fillCircle(px, py, rsize3);
 					}
 				}
 			}
-			else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c]);}
-
-			this.dispnumCell(c);
+			else{ this.vhide([headers[0]+c, headers[1]+c]);}
 		};
 
-		line.repaintParts = function(id){
-			pc.drawNumCells_firefly1( bd.cc1(id) );
-			pc.drawNumCells_firefly1( bd.cc2(id) );
+		line.repaintParts = function(idlist){
+			var clist = this.getClistFromIdlist(idlist);
+			for(var i=0;i<clist.length;i++){
+				pc.drawFirefly1(clist[i]);
+				pc.drawNumber1(clist[i]);
+			}
 		};
 	},
 
@@ -280,11 +269,11 @@ Puzzles.firefly.prototype = {
 				var ccnt=0;
 				var idlist = [];
 				var dir=bd.DiC(c);
-				var bx=bd.cell[c].cx*2+1, by=bd.cell[c].cy*2+1;
+				var bx=bd.cell[c].bx, by=bd.cell[c].by;
 				while(1){
 					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 					if(!((bx+by)&1)){
-						var cc = bd.cnum(bx>>1,by>>1);
+						var cc = bd.cnum(bx,by);
 						if     (bd.QnC(cc)!=-1){ break;}
 						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!=2){ ccnt++;} dir=2;}
 						else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!=1){ ccnt++;} dir=1;}
@@ -300,7 +289,7 @@ Puzzles.firefly.prototype = {
 
 				for(var i=0;i<idlist.length;i++){ errinfo.check[idlist[i]]=2;}
 
-				var cc = bd.cnum(bx>>1,by>>1);
+				var cc = bd.cnum(bx,by);
 				if(((bd.DiC(cc)==k.UP && dir==k.DN) || (bd.DiC(cc)==k.DN && dir==k.UP) ||
 					(bd.DiC(cc)==k.LT && dir==k.RT) || (bd.DiC(cc)==k.RT && dir==k.LT) ) && (!((bx+by)&1)))
 				{

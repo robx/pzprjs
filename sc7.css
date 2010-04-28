@@ -1,69 +1,71 @@
 @charset "Shift_JIS" ;
 
-	BODY{ background:; color:black; line-height:120%; text-align:center; margin:0pt; padding:0pt;}
+	BODY{ background:url(../bg.gif); color:black; line-height:120%; text-align:center; margin:0pt; padding:0pt;}
 
 	/* 左上のピンクのやつ */
 	p#translation_p  { position:absolute; width:40%; margin:0pt; margin-left:8pt; text-align:left;}
 	span#translation { position:absolute; color:green; background-color:#dfdfdf; font-size:10pt; cursor:pointer;}
 
 	/* メインの白背景領域 */
-	div#main{ width:80%; background-color: white; text-align:center;
-			  margin:auto; margin-top:8pt; padding-bottom:6pt; border: 2pt green solid;}
+	div#main{ width:80%; background-color:white; text-align:center;
+			  margin:auto; margin-top:8pt; padding-bottom:6pt; border:2pt green solid;}
 
 	h2#title{ text-align:center;margin:16pt 0pt 24pt 0pt;}
 
 	/* 管理領域 */
-	div#menuboard{ width:380pt; margin:auto; margin-bottom:8pt; padding: 0pt 0pt 8pt 0pt; text-align:left; border: 1px red solid;}
+	div#menuboard{ width:380pt; margin:auto; margin-bottom:8pt; padding:0pt 0pt 8pt 0pt; text-align:left; border:1px red solid;}
 
-	div#menupanel{ display:block; font-size:11pt; background-color: #efefef; margin:0pt; padding:2pt 4pt 2pt 4pt;}
-	div.menu{ display:inline; color:blue; text-decoration:underline; cursor:pointer;}
-	div.menusel{ display:inline; color:maroon; text-decoration:underline; font-weight:bold;
+	/* メニュー領域 */
+	menu#menupanel{ display:block; font-size:11pt; background-color:#efefef; margin:0pt; padding:2pt 4pt 2pt 4pt; margin:0pt;}
+	/* メニュー項目 */
+	li.menu    { display:inline; margin-right:4pt; color:blue; text-decoration:underline; cursor:pointer;}
+	li.menusel { display:inline; margin-right:4pt; color:maroon; text-decoration:underline; font-weight:bold;
 				 background-color:#efefef; cursor:pointer;}
-	div.menunull{ display:inline; color:silver; cursor:pointer;}
+	li.menunull{ display:inline; margin-right:4pt; color:silver; cursor:pointer;}
 
+	/* フロートメニュー */
+	menu.floatmenu{ visibility:visible; display:none; margin:0pt; padding:2pt; position:absolute;
+					list-style-type:none; text-align:left; font-size:11pt; background-color:blue; z-index:101;}
+	/* フロートメニュー - サブメニュー項目 */
+	li.smenu     { display:block; text-align:left; background-color:white;   color:black;
+				   margin:0pt; padding:1pt 8pt 0pt 4pt; cursor:pointer;}
+	li.smenusel  { display:block; text-align:left; background-color:#ffe8e8; color:black; text-decoration:underline;
+				   margin:0pt; padding:1pt 8pt 0pt 4pt; cursor:pointer;}
+	li.smenunull { display:block; text-align:left; background-color:#dfdfdf; color:gray;
+				   margin:0pt; padding:1pt 8pt 0pt 4pt; cursor:default;}
+
+	li.smenulabel{ display:inline; text-align:left; color:white; margin:0pt; padding:1pt 8pt 0pt 4pt; cursor:default;}
+	li.smenusep  { display:block; height:3pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;}
+
+	/* メニューより下の管理領域 */
 	div#expression{ margin:6pt 12pt 0pt 12pt;}
 	div#usepanel  { margin:2pt 0pt 0pt 6pt;}
-	div#modepanel { margin:2pt 0pt 0pt 6pt;}
 	div#checkpanel{ margin:4pt 0pt 0pt 16pt;}
 	div#timerpanel{ margin:2pt 0pt 0pt 6pt;}
 
-	div.child{ display:inline; cursor:pointer; }
-	div.childsel{ display:inline; cursor:pointer; color:maroon; font-weight:bold;
-				 background-color:#efefef;}
+	hr#separator1{ margin-top:6pt; margin-bottom:6pt;}
+	hr#separator2{ margin-top:6pt; margin-bottom:6pt;}
+
+	div.child{ display:inline; cursor:pointer;}
+	div.childsel{ display:inline; cursor:pointer; color:maroon; font-weight:bold; background-color:#efefef;}
 
 	/* パズル表示部 */
 	div#quesboard{ margin:auto; margin-top:16pt; margin-bottom:16pt; text-align:center;}
 
-	div#divques{ position:relative;}
-	canvas#puzzle_canvas{ border:1px silver solid; cursor:default;}
+	div#divques{ position:relative; border:solid 1px gray; cursor:default; margin-left:auto; margin-right:auto;}
+
+	div#numobj_parent{ position:absolute; left:0px; top:0px;}
+	div.divnum{ display:inline; position:absolute; cursor:default; line-height:100%;}
+	img.imgnum{ display:inline; position:absolute; cursor:default;}
 
 	div#btnarea{ position:relative;}
 	div#btnarea input[type="button"]{ height:18pt;}
 
-	div.divnum{ display:inline; position:absolute; cursor:default; line-height:100%; }
-
-	/* フロートメニュー */
-	div.floatmenu{ visibility:visible; display:none; text-align:left; font-size:11pt;
-				   background-color: blue; margin:0pt; padding:2pt; position:absolute; z-index:101;}
-
-	/* フロートメニュー - サブメニュー */
-	div.smenu{ display:block; text-align:left; background-color: white; color:black; cursor:pointer;
-			   margin:0pt; padding:1pt 8pt 0pt 4pt;}
-	div.smenusel{ display:block; text-align:left; background-color: #ffe8e8; color:black; text-decoration:underline; cursor:pointer;
-				  margin:0pt; padding:1pt 8pt 0pt 4pt;}
-	div.smenunull{ display:block; text-align:left; background-color: #dfdfdf; color:gray; cursor:default;
-				   margin:0pt; padding:1pt 8pt 0pt 4pt;}
-	
-	* html div.smenusep { display:inline; line-height:2pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;}
-	*:first_child+html div.smenusep { display:inline; line-height:2pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;}
-	div.smenusep { display:block; height:3pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;}
-
 	/* ポップアップウィンドウ */
-	div.popup{ visibility:visible; display:none; text-align:left; font-size:11pt; line-height:160%;
-			   background-color: #efefff; margin:0pt; border: 1px black solid; position:absolute;
-			   left:0pt; top:0pt; z-index:100;}
+	div.popup{ display:none; margin:0pt; text-align:left; font-size:11pt; line-height:160%;
+			   background-color:#efefff; border:1px black solid; position:absolute; left:0pt; top:0pt; z-index:100;}
 
-	div.titlebar{ display:block; text-align:left; background-color: gray; color:white; cursor:pointer;
+	div.titlebar{ display:block; text-align:left; background-color:gray; color:white; cursor:pointer;
 					margin:0pt; padding-top:1pt; padding-bottom:1pt; padding-left:8pt; font-size:11pt;}
 
 	form{ margin:2pt 8pt 4pt 4pt; padding:0pt;}
@@ -71,13 +73,18 @@
 
 	div#credit3_1{ line-height:110%; margin:4pt 0pt 2pt 4pt;}
 
-	/* ファイル入出力用隠しエレメント */
-	iframe#fileiopanel{ width:200px; height:200px; position:absolute; top:0px; left:-10000px;}
-	form#fileform2    { width:100px; height:100px; position:absolute; top:0px; left:-9000px; }
-
 	/* キーポップアップ用 */
+	div.keypopup{ display:none; margin:0pt; padding:3pt; text-align:left;
+				  background-color:silver; border:1px black solid; position:absolute; left:0pt; top:0pt; z-index:100;}
+
 	td.kpnum { width:32px; height:32px; font-size:24px; text-align:center; vertical-align:middle; background-color:white; cursor:default;}
 	td.kpimgcell { width:32px; height:32px; text-align:left; vertical-align:top; background-color:white; cursor:default;}
-	div.kpimgdiv { position:relative; display:inline;}
+	div.kpimgdiv { position:absolute; display:inline;}
 	img.kpimg    { position:absolute; overflow:hidden;}
+
+	/* (ファイル入出力用)隠しエレメント */
+	div#hidden_element { position:absolute; top: 0px; left:-10000px;}
+
+	iframe#fileiopanel { width:200px; height:200px;}
+	form#fileform2     { width:100px; height:100px;}
 

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.2.5
+// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.3.0
 //
 Puzzles.wblink = function(){ };
 Puzzles.wblink.prototype = {
@@ -7,36 +7,35 @@ Puzzles.wblink.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 8;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 8;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 0;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 1;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 0;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 0;	// 1:0を表示するかどうか
-		k.isDispHatena  = 1;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = false;	// 0を表示するかどうか
+		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
+		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		//k.def_csize = 36;
-		k.def_psize = 16;
-		//k.area = { bcell:0, wcell:0, number:0};	// areaオブジェクトで領域を生成する
+		k.bdmargin       = 0.50;	// 枠外の一辺のmargin(セル数換算)
+		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
 
 		base.setTitle("シロクロリンク","Shirokuro-link");
 		base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
@@ -66,20 +65,21 @@ Puzzles.wblink.prototype = {
 
 		mv.inputLine = function(){
 			if(this.inputData==2){ return;}
-			var pos = this.cellpos();
+			var pos = this.borderpos(0);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = -1;
-			if     (pos.y-this.mouseCell.y==-1){ id=bd.bnum(this.mouseCell.x*2+1,this.mouseCell.y*2  );}
-			else if(pos.y-this.mouseCell.y== 1){ id=bd.bnum(this.mouseCell.x*2+1,this.mouseCell.y*2+2);}
-			else if(pos.x-this.mouseCell.x==-1){ id=bd.bnum(this.mouseCell.x*2  ,this.mouseCell.y*2+1);}
-			else if(pos.x-this.mouseCell.x== 1){ id=bd.bnum(this.mouseCell.x*2+2,this.mouseCell.y*2+1);}
+			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1);}
+			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1);}
+			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  );}
+			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  );}
 
 			if(this.mouseCell!=-1 && id!=-1){
 				var idlist = this.getidlist(id);
 				if(this.inputData==-1){ this.inputData=(bd.isLine(id)?0:1);}
-				if(this.inputData> 0 && ((pos.x-this.mouseCell.x==-1)||(pos.y-this.mouseCell.y==-1))){ idlist=idlist.reverse();} // 色分けの都合上の処理
+				if(this.inputData> 0 && ((pos.x-this.mouseCell.x==-2)||(pos.y-this.mouseCell.y==-2))){ idlist=idlist.reverse();} // 色分けの都合上の処理
 				for(var i=0;i<idlist.length;i++){
+					if(idlist[i]===-1){ continue;}
 					if(this.inputData==1){ bd.setLine(idlist[i]);}
 					else                 { bd.removeLine(idlist[i]);}
 					pc.paintLine(idlist[i]);
@@ -89,25 +89,28 @@ Puzzles.wblink.prototype = {
 			this.mouseCell = pos;
 		};
 		mv.getidlist = function(id){
-			var idlist=[], bx1, bx2, by1, by2;
-			var cc1=bd.cc1(id), cx=bd.cell[cc1].cx, cy=bd.cell[cc1].cy;
-			if(bd.border[id].cx&1){
-				while(cy>=0         && bd.QuC(bd.cnum(cx,cy  ))==0){ cy--;} by1=2*cy+2;
-				while(cy<=k.qrows-1 && bd.QuC(bd.cnum(cx,cy+1))==0){ cy++;} by2=2*cy+2;
-				bx1 = bx2 = bd.border[id].cx;
+			var idlist=[], bx=bd.border[id].bx, by=bd.border[id].by;
+			if(bd.border[id].bx&1){
+				var by1=by, by2=by;
+				while(by1>bd.minby && bd.QuC(bd.cnum(bx,by1-1))===0){ by1-=2;}
+				while(by2<bd.maxby && bd.QuC(bd.cnum(bx,by2+1))===0){ by2+=2;}
+				if(bd.minby<by1 && by2<bd.maxby){
+					for(by=by1;by<=by2;by+=2){ idlist.push(bd.bnum(bx,by)); }
+				}
 			}
-			else if(bd.border[id].cy&1){
-				while(cx>=0         && bd.QuC(bd.cnum(cx  ,cy))==0){ cx--;} bx1=2*cx+2;
-				while(cx<=k.qcols-1 && bd.QuC(bd.cnum(cx+1,cy))==0){ cx++;} bx2=2*cx+2;
-				by1 = by2 = bd.border[id].cy;
+			else if(bd.border[id].by&1){
+				var bx1=bx, bx2=bx;
+				while(bx1>bd.minbx && bd.QuC(bd.cnum(bx1-1,by))===0){ bx1-=2;}
+				while(bx2<bd.maxbx && bd.QuC(bd.cnum(bx2+1,by))===0){ bx2+=2;}
+				if(bd.minbx<bx1 && bx2<bd.maxbx){
+					for(bx=bx1;bx<=bx2;bx+=2){ idlist.push(bd.bnum(bx,by)); }
+				}
 			}
-			if(bx1<1||bx2>2*k.qcols-1||by1<1||by2>2*k.qrows-1){ return [];}
-			for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
 			return idlist;
 		};
 
 		mv.inputpeke = function(){
-			var pos = this.crosspos(0.22);
+			var pos = this.borderpos(0.22);
 			var id = bd.bnum(pos.x, pos.y);
 			if(id==-1 || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
 
@@ -151,44 +154,21 @@ Puzzles.wblink.prototype = {
 		pc.gridcolor = pc.gridcolor_THIN;
 		pc.errbcolor1 = "white";
 		pc.circleratio = [0.35, 0.30];
-
 		pc.chassisflag = false;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
+		// 線の太さを通常より少し太くする
+		pc.lwratio = 8;
 
-			if(k.editmode){ this.drawGrid(x1,y1,x2,y2);}
-			else if(g.vml){ this.hideGrid();}
+		pc.paint = function(x1,y1,x2,y2){
+			this.drawGrid(x1,y1,x2,y2,(k.editmode && !this.fillTextPrecisely));
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawQueses41_42(x1-2,y1-2,x2+1,y2+1);
+			this.drawCircles41_42(x1-2,y1-2,x2+1,y2+1);
 			this.drawQuesHatenas(x1-2,y1-2,x2+1,y2+1);
 
 			this.drawTarget(x1,y1,x2,y2);
-		};
-
-		pc.drawLine1 = function(id, flag){
-			var vid = "b_line_"+id;
-			if(!flag){ this.vhide(vid); return;}
-
-			if     (bd.border[id].error===1){ g.fillStyle = this.errlinecolor1; lw++;}
-			else if(bd.border[id].error===2){ g.fillStyle = this.errlinecolor2;}
-			else{ g.fillStyle = this.linecolor;}
-
-			if(this.vnop(vid,1)){
-				var lw = (mf(k.cwidth/8)>=3?mf(k.cwidth/8):3); //LineWidth
-				var lm = mf((lw-1)/2); //LineMargin
-
-				if     (bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-				else if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
-			}
-		};
-		pc.hideGrid = function(){
-			for(var i=0;i<=k.qcols;i++){ this.vhide("bdy_"+i);}
-			for(var i=0;i<=k.qrows;i++){ this.vhide("bdx_"+i);}
 		};
 	},
 
@@ -218,12 +198,10 @@ Puzzles.wblink.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			this.performAsLine = false;
 			if( !this.checkLcntCell(4) ){
 				this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 			}
 
-			this.performAsLine = true;
 			var linfo = line.getLareaInfo();
 			if( !this.checkAllArea(linfo, function(c){ return (bd.QuC(c)!=0);}, function(w,h,a,n){ return (a<3);}) ){
 				this.setAlert('3つ以上の○が繋がっています。','Three or more objects are connected.'); return false;

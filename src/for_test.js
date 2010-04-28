@@ -1,4 +1,4 @@
-// for_test.js v3.2.4p4
+// for_test.js v3.3.0
 
 debug.extend({
 	testonly_func : function(){
@@ -34,10 +34,6 @@ debug.extend({
 			if(debug.phase != 99){ return;}
 
 			var newid = debug.urls[pnum][0];
-			k.qcols = 0;
-			k.qrows = 0;
-			k.area = { bcell:0, wcell:0, number:0};
-
 			debug.reload_func(newid);
 
 			enc.parseURI_pzpr.apply(enc, [debug.urls[pnum][1]]);
@@ -55,8 +51,10 @@ debug.extend({
 	reload_func : function(newid){
 		base.initProcess = true;
 
+		// 各パズルでオーバーライドしているものを、元に戻す
 		if(base.proto){ puz.protoOriginal();}
 
+		// 各HTML要素等を初期化する
 		menu.menureset();
 		base.numparent.innerHTML = '';
 		if(kp.ctl[1].enable){ kp.ctl[1].el.innerHTML = '';}
@@ -64,6 +62,7 @@ debug.extend({
 
 		ee.clean();
 
+		// idを取得して、ファイルを読み込み
 		k.puzzleid = newid;
 		if(!Puzzles[k.puzzleid]){
 			var _script = _doc.createElement('script');
@@ -73,9 +72,18 @@ debug.extend({
 			_doc.body.appendChild(_script);	// headじゃないけど、、しょうがないかぁ。。
 		}
 
+		// 各種パラメータのうち各パズルで初期化されないやつをここで初期化
+		k.qcols = 0;
+		k.qrows = 0;
+		k.cellsize = 36;
+		k.bdmargin = 0.70;
+		k.bdmargin_image = 0.10;
+
+		// 通常preload_funcで初期化されるenc,fioをここで生成する
 		enc = new Encode();
 		fio = new FileIO();
 
+		// onload後の初期化ルーチンへジャンプする
 		base.initObjects();
 		base.setEvents(false);
 
@@ -155,10 +163,10 @@ debug.extend({
 					ans.inCheck = false;
 
 					var iserror = false, misstr = false;
-					                    for(var c=0;c<bd.cellmax  ;c++){if(bd.cell[c].error!=0  ){ iserror = true;}}
-					if(k.isextendcell){ for(var c=0;c<bd.excellmax;c++){if(bd.excell[c].error!=0){ iserror = true;}}}
-					if(k.iscross)     { for(var c=0;c<bd.crossmax ;c++){if(bd.cross[c].error!=0 ){ iserror = true;}}}
-					if(k.isborder)    { for(var i=0;i<bd.bdmax    ;i++){if(bd.border[i].error!=0){ iserror = true;}}}
+					                  for(var c=0;c<bd.cellmax  ;c++){if(bd.cell[c].error!=0  ){ iserror = true;}}
+					if(!!k.isexcell){ for(var c=0;c<bd.excellmax;c++){if(bd.excell[c].error!=0){ iserror = true;}}}
+					if(!!k.iscross) { for(var c=0;c<bd.crossmax ;c++){if(bd.cross[c].error!=0 ){ iserror = true;}}}
+					if(!!k.isborder){ for(var i=0;i<bd.bdmax    ;i++){if(bd.border[i].error!=0){ iserror = true;}}}
 					if(k.puzzleid=='nagenawa' && n==0){ iserror = true;}
 					if(debug.acs[k.puzzleid][n][0] != ""){ iserror = !iserror;}
 
@@ -344,7 +352,10 @@ debug.extend({
 		},mint);
 	},
 	taenable : true,
-	addTextarea : function(str){ ee('testdiv').appendHTML(str).appendBR();},
+	addTextarea : function(str){
+		if(!k.br.Gecko){ ee('testarea').el.value += (str+"\n");}
+		else{ ee('testdiv').appendHTML(str).appendBR();}
+	},
 
 	qsubf : true,
 	bd_freezecopy : function(){
@@ -357,21 +368,21 @@ debug.extend({
 			bd2.cell[c].qans =bd.cell[c].qans;
 			bd2.cell[c].qsub =bd.cell[c].qsub;
 		}
-		if(k.isextendcell){
+		if(!!k.isexcell){
 			for(var c=0;c<bd.excellmax;c++){
 				bd2.excell[c] = {};
 				bd2.excell[c].qnum =bd.excell[c].qnum;
 				bd2.excell[c].direc=bd.excell[c].direc;
 			}
 		}
-		if(k.iscross){
+		if(!!k.iscross){
 			for(var c=0;c<bd.crossmax;c++){
 				bd2.cross[c] = {};
 				bd2.cross[c].ques=bd.cross[c].ques;
 				bd2.cross[c].qnum=bd.cross[c].qnum;
 			}
 		}
-		if(k.isborder){
+		if(!!k.isborder){
 			for(var i=0;i<bd.bdmax;i++){
 				bd2.border[i] = {};
 				bd2.border[i].ques=bd.border[i].ques;
@@ -396,19 +407,19 @@ debug.extend({
 				else{ bd1.cell[c].qsub = bd2.cell[c].qsub;}
 			}
 		}
-		if(k.isextendcell){
+		if(!!k.isexcell){
 			for(var c=0;c<bd1.excell.length;c++){
 				if(bd1.excell[c].qnum !=bd2.excell[c].qnum ){ result = false;}
 				if(bd1.excell[c].direc!=bd2.excell[c].direc){ result = false;}
 			}
 		}
-		if(k.iscross){
+		if(!!k.iscross){
 			for(var c=0;c<bd1.cross.length;c++){
 				if(bd1.cross[c].ques!=bd2.cross[c].ques){ result = false;}
 				if(bd1.cross[c].qnum!=bd2.cross[c].qnum){ result = false;}
 			}
 		}
-		if(k.isborder){
+		if(!!k.isborder){
 			for(var i=0;i<bd1.border.length;i++){
 				if(bd1.border[i].ques!=bd2.border[i].ques){ result = false; debug.addTextarea("border ques "+i+" "+bd1.border[i].ques+" "+bd2.border[i].ques);}
 				if(bd1.border[i].qnum!=bd2.border[i].qnum){ result = false; debug.addTextarea("border qnum "+i+" "+bd1.border[i].qnum+" "+bd2.border[i].qnum);}

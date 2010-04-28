@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 メジリンク版 mejilink.js v3.2.4
+// パズル固有スクリプト部 メジリンク版 mejilink.js v3.3.0
 //
 Puzzles.mejilink = function(){ };
 Puzzles.mejilink.prototype = {
@@ -7,36 +7,32 @@ Puzzles.mejilink.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 8;}	// 盤面の横幅
 		if(!k.qrows){ k.qrows = 8;}	// 盤面の縦幅
-		k.irowake = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross      = 0;		// 1:Crossが操作可能なパズル
-		k.isborder     = 1;		// 1:Border/Lineが操作可能なパズル
-		k.isextendcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 2;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isoutsidecross  = 0;	// 1:外枠上にCrossの配置があるパズル
-		k.isoutsideborder = 1;	// 1:盤面の外枠上にborderのIDを用意する
-		k.isLineCross     = 0;	// 1:線が交差するパズル
-		k.isCenterLine    = 0;	// 1:マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = 1;	// 1:境界線をlineとして扱う
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = true;	// 境界線をlineとして扱う
+		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero      = 1;	// 1:0を表示するかどうか
-		k.isDispHatena  = 1;	// 1:qnumが-2のときに？を表示する
-		k.isAnsNumber   = 0;	// 1:回答に数字を入力するパズル
-		k.isArrowNumber = 0;	// 1:矢印つき数字を入力するパズル
-		k.isOneNumber   = 0;	// 1:部屋の問題の数字が1つだけ入るパズル
-		k.isDispNumUL   = 0;	// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-		k.NumberWithMB  = 0;	// 1:回答の数字と○×が入るパズル
+		k.dispzero        = false;	// 0を表示するかどうか
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell     = 0;	// 1:黒マスを入力するパズル
-		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
-		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
-
-		//k.def_csize = 36;
-		//k.def_psize = 24;
-		k.area = { bcell:0, wcell:0, number:0, disroom:1};	// areaオブジェクトで領域を生成する
+		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
 		base.setTitle("メジリンク","Mejilink");
 		base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
@@ -78,87 +74,61 @@ Puzzles.mejilink.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
-		pc.BorderQuescolor = "white";
+		pc.borderQuescolor = "white";
+
+		pc.chassisflag = false;
 
 		pc.paint = function(x1,y1,x2,y2){
-			this.flushCanvas(x1,y1,x2,y2);
-		//	this.flushCanvasAll();
-
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders_mejilink(x1,y1,x2,y2);
+			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawBaseMarks(x1,y1,x2,y2);
 
-			this.drawPekes(x1,y1,x2,y2,(k.br.IE?1:0));
+			this.drawPekes(x1,y1,x2,y2,0);
 		};
 
 		pc.drawBaseMarks = function(x1,y1,x2,y2){
-			for(var i=0;i<(k.qcols+1)*(k.qrows+1);i++){
-				var cx = i%(k.qcols+1); var cy = mf(i/(k.qcols+1));
-				if(cx < x1-1 || x2+1 < cx){ continue;}
-				if(cy < y1-1 || y2+1 < cy){ continue;}
+			this.vinc('cross_mark', 'auto');
 
-				this.drawBaseMark1(i);
+			for(var by=bd.minby;by<=bd.maxby;by+=2){
+				for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
+					if(bx < x1-1 || x2+1 < bx){ continue;}
+					if(by < y1-1 || y2+1 < by){ continue;}
+
+					this.drawBaseMark1((bx>>1)+(by>>1)*(k.qcols+1));
+				}
 			}
-			this.vinc();
 		};
-		pc.drawBaseMark1 = function(i){
-			var vid = "x_cm_"+i;
+		pc.drawBaseMark1 = function(id){
+			var vid = "x_cm_"+id;
 
-			g.fillStyle = this.Cellcolor;
-			if(this.vnop(vid,1)){
-				var lw = ((k.cwidth/12)>=3?(k.cwidth/12):3); //LineWidth
-				var csize = mf((lw+1)/2);
-				var cx = i%(k.qcols+1); var cy = mf(i/(k.qcols+1));
-
-				g.beginPath();
-				g.arc(k.p0.x+cx*k.cwidth, k.p0.x+cy*k.cheight, csize, 0, Math.PI*2, false);
-				g.fill();
+			g.fillStyle = this.cellcolor;
+			if(this.vnop(vid,this.NONE)){
+				var csize = (this.lw+1)/2;
+				var bx = (id%(k.qcols+1))*2, by = mf(id/(k.qcols+1))*2;
+				g.fillCircle(k.p0.x+bx*this.bw, k.p0.x+by*this.bh, csize);
 			}
 		};
 
 		// オーバーライド
-		pc.drawBorders_mejilink = function(x1,y1,x2,y2){
-			var headers = ["b_bd_", "b_wbd_"];
-
-			var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
-			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i];
-				if(bd.border[id].ques===0 && bd.border[id].qans===0){
-					this.vhide([headers[0]+id, headers[1]+id]);
-					continue;
+		pc.setBorderColor = function(id){
+			if(bd.border[id].qans===1 || bd.border[id].ques===1){
+				if(bd.border[id].qans===1){ this.setLineColor(id);}
+				else{
+					var cc2=bd.border[id].cellcc[1];
+					g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.borderQuescolor : this.errbcolor1);
 				}
-
-				var isline = bd.isLine(id);
-				if(isline){
-					g.fillStyle = this.getLineColor(id);
-					if(this.vnop(headers[0]+id,1)){
-						var lw = this.lw + this.addlw, lm = this.lm;
-						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
-					}
-				}
-				else{ this.vhide(headers[0]+id);}
-
-				if(!isline){
-					var cc2=bd.cc2(id);
-					g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.BorderQuescolor : this.errbcolor1);
-					if(this.vnop(headers[1]+id,1)){
-						var lw = this.lw + this.addlw, lm = this.lm;
-						if     (bd.border[id].cy&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2), 1, k.cheight+1);}
-						else if(bd.border[id].cx&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2),  bd.border[id].py, k.cwidth+1,  1);}
-					}
-				}
-				else{ this.vhide(headers[1]+id);}
+				return true;
 			}
-			this.vinc();
-			this.addlw = 0;
+			return false;
 		};
 
-		line.repaintParts = function(id){
-			pc.drawBaseMark1( bd.crosscc1(id) );
-			pc.drawBaseMark1( bd.crosscc2(id) );
+		line.repaintParts = function(idlist){
+			var xlist = this.getXlistFromIdlist(idlist);
+			for(var i=0;i<xlist.length;i++){
+				pc.drawBaseMark1(xlist[i]);
+			}
 		};
 	},
 
@@ -244,17 +214,17 @@ Puzzles.mejilink.prototype = {
 
 		ans.checkdir4Line_meji = function(val){
 			var result = true;
-			for(var cy=0;cy<=k.qrows;cy++){
-				for(var cx=0;cx<=k.qcols;cx++){
+			for(var by=bd.minby;by<=bd.maxby;by+=2){
+				for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
 					var cnt = 0;
-					if(bd.isLine(bd.bnum(cx*2-1,cy*2  ))){ cnt++;}
-					if(bd.isLine(bd.bnum(cx*2+1,cy*2  ))){ cnt++;}
-					if(bd.isLine(bd.bnum(cx*2  ,cy*2-1))){ cnt++;}
-					if(bd.isLine(bd.bnum(cx*2  ,cy*2+1))){ cnt++;}
+					if(bd.isLine(bd.bnum(bx-1,by  ))){ cnt++;}
+					if(bd.isLine(bd.bnum(bx+1,by  ))){ cnt++;}
+					if(bd.isLine(bd.bnum(bx  ,by-1))){ cnt++;}
+					if(bd.isLine(bd.bnum(bx  ,by+1))){ cnt++;}
 					if(cnt==val){
 						if(this.inAutoCheck){ return false;}
 						if(result){ bd.sErBAll(2);}
-						ans.setCrossBorderError(cx,cy);
+						ans.setCrossBorderError(bx,by);
 						result = false;
 					}
 				}
@@ -274,17 +244,18 @@ Puzzles.mejilink.prototype = {
 				tarea.room[tarea.max] = {idlist:tarea[tarea.max].clist};
 			}
 
-			var tcount = [];
+			var tcount = [], numerous_value = 999999;
 			for(var r=1;r<=tarea.max;r++){ tcount[r]=0;}
 			for(var id=0;id<bd.bdmax;id++){
-				if(bd.QuB(id)==1 && id>=bd.bdinside){
-					var cc1=bd.cc1(id), cc2=bd.cc2(id);
-					if(cc1!=-1){ tcount[tarea.id[cc1]]-=(2*k.qcols*k.qrows);}
-					if(cc2!=-1){ tcount[tarea.id[cc2]]-=(2*k.qcols*k.qrows);}
+				if(bd.QuB(id)==1 && id>=
+				bd.bdinside){
+					var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+					if(cc1!=-1){ tcount[tarea.id[cc1]] -= numerous_value;}
+					if(cc2!=-1){ tcount[tarea.id[cc2]] -= numerous_value;}
 					continue;
 				}
 				else if(bd.QuB(id)==1 || bd.QaB(id)==1){ continue;}
-				var cc1=bd.cc1(id), cc2=bd.cc2(id);
+				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(cc1!=-1){ tcount[tarea.id[cc1]]++;}
 				if(cc2!=-1){ tcount[tarea.id[cc2]]++;}
 			}
