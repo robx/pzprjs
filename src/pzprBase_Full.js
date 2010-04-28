@@ -4,23 +4,1145 @@
  * pzprBase.js is a base script for playing nikoli puzzles on Web
  * written in JavaScript.
  * 
- * @author  happa.
- * @version v3.2.5
- * @date    2010-03-09
+ * @author  dk22
+ * @version v3.3.0
+ * @date    2010-04-28
  * 
- * This script uses following library.
- *  uuCanvas.js (version 1.0)
- *  http://code.google.com/p/uupaa-js-spinoff/	uupaa.js SpinOff Project Home(Google Code)
- * 
- * For improvement of canvas drawing time, I make some change on uuCanvas.js.
- * Please see "//happa add.[20090608]" in uuCanvas.js.
- * 
- * This script is dual licensed under the MIT and Apache 2.0 licenses.
- * http://indi.s58.xrea.com/pzpr/v3/LICENCE.HTML
+ * This script is licensed under the MIT license. See below,
+ * http://www.opensource.org/licenses/mit-license.php
  * 
  */
 
-var pzprversion="v3.2.5";
+var pzprversion="v3.3.0";
+ 
+(function(){
+
+// 多重定義防止
+if(!!window.Camp){ return;}
+
+/* ------------- */
+/*   variables   */
+/* ------------- */
+var _win = this,
+	_doc = document,
+	_ms = Math.sin,
+	_mc = Math.cos,
+	_mr = Math.round,
+	_2PI = 2*Math.PI,
+
+	_IE = !!(window.attachEvent && !window.opera),
+
+	Z  = 10,
+	Z2 = Z/2,
+
+	_color = [],
+	flags = { debugmode:false },
+	_types = ['svg','canvas','sl','flash','vml'],
+	_initializing = 0,
+
+	VML    = 0,
+	SVG    = 1,
+	CANVAS = 2,
+	SL     = 3,
+	FLASH  = 4,
+
+	BEFOREEND = 'BeforeEnd';
+
+/* ---------- */
+/*   arrays   */
+/* ---------- */
+var _hex = (function(){
+	var tbl = [];
+	for(var r=256;r<512;r++){ tbl[r-256]=r.toString(16).substr(1);}
+	return tbl;
+})();
+
+/* ------------ */
+/*   共通関数   */
+/* ------------ */
+function getRectSize(el){
+	return { width :(el.offsetWidth  || el.clientWidth),
+			 height:(el.offsetHeight || el.clientHeight)};
+}
+function parsecolor(rgbstr){
+	if(!_color[rgbstr]){
+		if(rgbstr.substr(0,4)==='rgb('){
+			var m = rgbstr.match(/\d+/g);
+			_color[rgbstr] = ["#",_hex[m[0]],_hex[m[1]],_hex[m[2]]].join('');
+		}
+		else{ _color[rgbstr] = rgbstr;}
+	}
+	return _color[rgbstr];
+}
+function parsecolorrev(colorstr){
+	if(colorstr.match(/\#([0-9a-f][0-9a-f])([0-9a-f][0-9a-f])([0-9a-f][0-9a-f])/)){
+		var m0 = parseInt(RegExp.$1,16).toString();
+		var m1 = parseInt(RegExp.$2,16).toString();
+		var m2 = parseInt(RegExp.$3,16).toString();
+		return ["rgb(",m0,',',m1,',',m2,")"].join('');
+	}
+	return colorstr;
+}
+function _extend(obj, ads){
+	for(var name in ads){ obj[name] = ads[name];}
+}
+
+/* ------------------ */
+/*   TypeListクラス   */
+/* ------------------ */
+var TypeList = function(){
+	this.canvas = false;
+	this.vml    = false;
+	this.svg    = false;
+	this.sl     = false;
+	this.flash  = false;
+};
+
+/* ------------------------------------------- */
+/*   VectorContext(VML)クラス用const文字列集   */
+/* ------------------------------------------- */
+var V_TAG_SHAPE    = '<v:shape',
+	V_TAG_GROUP    = '<v:group',
+	V_TAG_TEXTPATH = '<v:textpath',
+	V_TAG_POLYLINE = '<v:polyline',
+	V_TAG_PATH_FOR_TEXTPATH = '<v:path textpathok="t" />';
+	V_EL_UNSELECTABLE = '', // デフォルトはunselectableでない
+//	V_EL_UNSELECTABLE = ' unselectable="on"',
+	V_TAGEND      = '>',
+	V_TAGEND_NULL = ' />',
+	V_CLOSETAG_SHAPE    = '</v:shape>',
+	V_CLOSETAG_GROUP    = '</v:group>',
+	V_CLOSETAG_TEXTPATH = '</v:textpath>',
+	V_CLOSETAG_POLYLINE = '</v:polyline>',
+
+	V_ATT_ID     = ' id="',
+	V_ATT_PATH   = ' path="',
+	V_ATT_POINTS = ' points="',
+	V_ATT_STYLE  = ' style="',
+	V_ATT_STRING = ' string="',
+	V_ATT_COORDSIZE    = ' coordsize="100,100"',
+	V_ATT_FILLCOLOR    = ' fillcolor="',
+	V_ATT_STROKECOLOR  = ' strokecolor="',
+	V_ATT_STROKEWEIGHT = ' strokeweight="',
+	V_ATT_END = '"',
+	V_ATT_STYLE_TEXTBOX = ' style="white-space:nowrap;cursor:default;font:10px sans-serif;"',
+	V_DEF_ATT_POLYLINE  = ' stroked="f" filled="t"',
+	V_DEF_ATT_TEXTPATH  = ' on="t" xscale="t"',
+
+	V_STYLE_LEFT  = 'left:',
+	V_STYLE_TOP   = 'top:',
+	V_STYLE_FONT  = 'font:',
+	V_STYLE_ALIGN = 'v-text-align:',
+	V_STYLE_END   = ';',
+
+	V_PATH_MOVE   = ' m',
+	V_PATH_LINE   = ' l',
+	V_PATH_CLOSE  = ' x',
+	V_PATH_NOSTROKE = ' ns',
+	V_PATH_NOFILL   = ' nf',
+
+	V_HEIGHT = { top:-0.3, hanging:-0.3, middle:0, alphabetic:0.4, bottom:0.45 };
+
+/* ------------------------------------------- */
+/*   VectorContext(SVG)クラス用const文字列集   */
+/* ------------------------------------------- */
+var SVGNS = "http://www.w3.org/2000/svg",
+	S_PATH_MOVE   = ' M',
+	S_PATH_LINE   = ' L',
+	S_PATH_ARCTO  = ' A',
+	S_PATH_CLOSE  = ' z',
+
+	S_ATT_ID          = 'id';
+	S_ATT_FILL        = 'fill';
+	S_ATT_STROKE      = 'stroke';
+	S_ATT_STROKEWIDTH = 'stroke-width',
+	S_ATT_RENDERING   = 'shape-rendering',
+
+	SVG_ANCHOR = {
+		left   : 'start',
+		center : 'middle',
+		right  : 'end'
+	},
+
+	S_NONE = 'none',
+
+	S_HEIGHT = { top:-0.7, hanging:-0.66, middle:-0.35, alphabetic:0, bottom:0.1 },
+
+/* ------------------------------------------ */
+/*   VectorContext(SL)クラス用const文字列集   */
+/* ------------------------------------------ */
+	SL_WIDTH = { left:0, center:0.5, right:1 },
+	SL_HEIGHT = { top:0.2, hanging:0.2, middle:0.5, alphabetic:0.7, bottom:0.8 },
+
+/* --------------------------------- */
+/*   VectorContextクラス用変数など   */
+/* --------------------------------- */
+	EL_ID_HEADER = "canvas_o_",
+	ME    = null,
+	EMPTY = '';
+
+function initME(){
+	ME = _doc.createElement('div');
+	ME.style.display  = 'inline';
+	ME.style.position = 'absolute';
+	ME.style.left     = '-9000px';
+	ME.innerHTML = '';
+	_doc.body.appendChild(ME);
+
+	Camp.ME = ME;
+}
+
+/* ----------------------- */
+/*   VectorContextクラス   */
+/* ----------------------- */
+var VectorContext = function(type, idname){
+	// canvasに存在するプロパティ＆デフォルト値
+	this.fillStyle    = 'black';
+	this.strokeStyle  = 'black';
+	this.lineWidth    = 1;
+	this.font         = '14px system';
+	this.textAlign    = 'center';
+	this.textBaseline = 'middle';
+	this.canvas = null;	// 親エレメントとなるdivエレメント
+
+	// changeOrigin用(Sinverlight用)
+	this.OFFSETX = 0;
+	this.OFFSETY = 0;
+
+	// 外部から変更される追加プロパティ
+	this.vid      = '';
+	this.elements = [];
+	this.lastElement = null;
+
+	// variables for internal
+	this.type   = type;
+	this.target = null;	// エレメントの追加対象となるオブジェクト
+	this.child  = null;	// this.canvasの直下にあるエレメント
+	this.idname = idname;
+	this.canvasid = EL_ID_HEADER+idname;
+	this.currentpath = [];
+	this.lastpath    = '';
+
+	this.currentLayerId = '_empty';
+	this.isedgearray    = {_empty:false};
+	this.isedge         = false;
+
+	// Silverlight用
+	this.content = null;
+
+	this.use = new TypeList();
+
+	// define const
+	if(this.type===SVG || this.type===SL){
+		this.PATH_MOVE  = S_PATH_MOVE;
+		this.PATH_LINE  = S_PATH_LINE;
+		this.PATH_CLOSE = S_PATH_CLOSE;
+		if(this.type===SVG){ this.use.svg = true;}
+		if(this.type===SL) { this.use.sl  = true;}
+	}
+	else if(this.type===VML){
+		this.PATH_MOVE  = V_PATH_MOVE;
+		this.PATH_LINE  = V_PATH_LINE;
+		this.PATH_CLOSE = V_PATH_CLOSE;
+		this.use.vml = true;
+	}
+
+	this.initElement(idname);
+};
+VectorContext.prototype = {
+	/* additional functions (for initialize) */
+	initElement : function(idname){
+		var child = null;
+		if(this.type!==SL){ child = _doc.getElementById(this.canvasid)}
+		else if(!!this.content){ child = this.content.findName(this.canvasid);}
+
+		if(!child){
+			var parent = _doc.getElementById(idname);
+			var rect = getRectSize(parent);
+			if     (this.type===SVG){ this.appendSVG(parent,rect.width,rect.height);}
+			else if(this.type===SL) { this.appendSL (parent,rect.width,rect.height);}
+			else if(this.type===VML){ this.appendVML(parent,rect.width,rect.height);}
+
+			if(this.type!==SL){ this.afterInit();}
+		}
+		else{
+			this.target = child;
+		}
+	},
+	afterInit : function(){
+		var parent = _doc.getElementById(this.idname);
+		var rect   = getRectSize(parent);
+		var child  = this.child;
+
+		var self = this;
+		//parent.className = "canvas";
+		parent.style.display  = 'block';
+		parent.style.position = 'relative';
+		parent.style.overflow = 'hidden';
+		if(flags.debugmode){
+			parent.style.backgroundColor = "#efefef";
+			parent.style.border = "solid 1px silver";
+		}
+		parent.getContext = function(type){ return self;};
+		parent.toDataURL = function(type){ return null; /* 未サポート */ };
+		this.canvas = parent;
+
+		this.target = this.child;
+		this.rect(0,0,rect.width,rect.height);
+		this.addVectorElement(false,false);
+
+		_initializing--;
+	},
+
+	appendSVG : function(parent, width, height){
+		var svgtop = _doc.createElementNS(SVGNS,'svg');
+		svgtop.setAttribute('id', this.canvasid);
+		svgtop.setAttribute('font-size', "10px");
+		svgtop.setAttribute('font-family', "sans-serif");
+		svgtop.setAttribute('width', width);
+		svgtop.setAttribute('height', height);
+		svgtop.setAttribute('viewBox', [0,0,width,height].join(' '));
+
+		parent.appendChild(svgtop);
+		this.child = svgtop;
+	},
+	appendVML : function(parent, width, height){
+		var vmltop = _doc.createElement('div');
+		vmltop.id = this.canvasid;
+
+		vmltop.style.position = 'absolute';
+		vmltop.style.left   = '-2px';
+		vmltop.style.top    = '-2px';
+		vmltop.style.width  = width + 'px';
+		vmltop.style.height = height + 'px';
+
+		parent.appendChild(vmltop);
+		this.child = vmltop;
+	},
+	appendSL : function(parent, width, height){
+		var self = this, funcname = "_function_" + this.canvasid + "_onload";
+		_win[funcname] = function(sender, context, source){
+			self.content = document.getElementById([self.canvasid,'object'].join('_')).content;
+			self.child = self.content.findName(self.canvasid);
+			self.afterInit.call(self);
+		};
+
+		parent.innerHTML = [
+			'<object type="application/x-silverlight" width="100%" height="100%" id="',this.canvasid,'_object" />',
+			'<param name="windowless" value="true" />',
+			'<param name="background" value="#00000000" />',	// アルファ値0 = 透明
+			'<param name="source" value="#',this.canvasid,'_script" />',
+			'<param name="onLoad" value="',funcname,'" />',	// 前は100%,100%設定が必要だったみたい
+			'</object>',
+			'<script type="text/xaml" id="',this.canvasid,'_script">',
+			'<Canvas xmlns="http://schemas.microsoft.com/client/2007" Name="',this.canvasid,'" />',
+			'</script>'
+		].join('');
+	},
+	setLayer : function(layerid){
+		this.initElement(this.idname);
+		if(!!layerid){
+			var lid = [this.canvasid,"layer",layerid].join('_');
+			var layer = (this.type!==SL ? _doc.getElementById(lid) : this.content.findName(lid));
+			if(!layer){
+				if(this.type===SVG){
+					layer = _doc.createElementNS(SVGNS,'g');
+					layer.setAttribute('id', lid);
+					this.target.appendChild(layer);
+				}
+				else if(this.type===SL){
+					layer = this.content.createFromXaml(['<Canvas Name="',lid,'"/>'].join(''));
+					this.target.children.add(layer);
+				}
+				else{
+					layer = _doc.createElement('div');
+					layer.id = lid;
+					layer.unselectable = (!!V_EL_UNSELECTABLE ? 'on' : '');
+					layer.style.position = 'absolute';
+					layer.style.left   = '0px';
+					layer.style.top    = '0px';
+					this.target.appendChild(layer);
+				}
+			}
+			this.target = layer;
+		}
+
+		this.currentLayerId = (!!layerid ? layerid : '_empty');
+		if(this.type!==SVG){
+			if(this.isedgearray[this.currentLayerId] === void 0){
+				this.isedgearray[this.currentLayerId] = false;
+			}
+			this.isedge = this.isedgearray[this.currentLayerId];
+		}
+	},
+	setRendering : function(render){
+		if(this.type===SVG){
+			this.target.setAttribute(S_ATT_RENDERING, render);
+		}
+		else{
+			this.isedgearray[this.currentLayerId] = (render==='crispEdges');
+			this.isedge = this.isedgearray[this.currentLayerId];
+		}
+	},
+	setUnselectable : function(unsel){
+		if(unsel===(void 0)){ unsel = true;}else{ unsel = !!unsel;}
+		if(this.type===VML){
+			V_EL_UNSELECTABLE = (unsel ? ' unselectable="on"' : '');
+			this.canvas.unselectable = (unsel ? 'on' : '');
+			this.child.unselectable  = (unsel ? 'on' : '');
+		}
+		else if(this.type===SL){
+			this.canvas.unselectable = (unsel ? 'on' : '');
+		}
+		else if(this.type===SVG){
+			this.canvas.style.MozUserSelect    = (unsel ? 'none' : 'text');
+			this.canvas.style.WebkitUserSelect = (unsel ? 'none' : 'text');
+			this.canvas.style.userSelect       = (unsel ? 'none' : 'text');
+		}
+	},
+	getContextElement : function(){ return this.child;},
+	getLayerElement   : function(){ return this.target;},
+
+	changeSize : function(width,height){
+		this.canvas.style.width  = width + 'px';
+		this.canvas.style.height = height + 'px';
+
+		var child = this.canvas.firstChild;
+		if(this.type===SVG){
+			child.setAttribute('width', width);
+			child.setAttribute('height', height);
+			child.setAttribute('viewBox', [0,0,width,height].join(' '));
+		}
+		else if(this.type==SL){
+			// 描画されないことがあるため、サイズを2度設定するおまじない
+			child.height = (height+1)+'px';
+
+			child.width  = width + 'px';
+			child.height = height + 'px';
+		}
+		else if(this.type==VML){
+			child.style.width  = width + 'px';
+			child.style.height = height + 'px';
+		}
+	},
+	changeOrigin : function(left,top){
+		var child = this.canvas.firstChild;
+		if(this.type===SVG){
+			var m = child.getAttribute('viewBox').split(/ /);
+			m[0]=left, m[1]=top;
+			child.setAttribute('viewBox', m.join(' '));
+		}
+		else if(this.type===VML){
+			child.style.position = 'absolute';
+			child.style.left = (-left-2)+'px';
+			child.style.top  = (-top -2)+'px';
+		}
+		else if(this.type===SL){
+			this.OFFSETX = -left;//(left<0?-left:0);
+			this.OFFSETY = -top;//(top<0?-top:0);
+		}
+	},
+	clear : function(){
+		if(this.type!==SL){ _doc.getElementById(this.idname).innerHTML = '';}
+
+		this.vid = '';
+		this.elements = [];
+		this.lastElement = null;
+		this.initElement(this.idname);
+
+		if(this.type===SL){ this.target.children.clear();}
+	},
+
+	/* Canvas API functions (for path) */
+	beginPath : function(){
+		this.currentpath = [];
+		this.lastpath = '';
+	},
+	closePath : function(){
+		this.currentpath.push(this.PATH_CLOSE);
+		this.lastpath = this.PATH_CLOSE;
+	},
+	moveTo : function(x,y){
+		if(this.type===VML){ x=(x*Z-Z2)|0; y=(y*Z-Z2)|0;}
+		else if(this.type===SL) {
+			x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
+			y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		}
+		this.currentpath.push(this.PATH_MOVE,x,y);
+		this.lastpath = this.PATH_MOVE;
+	},
+	lineTo : function(x,y){
+		if(this.lastpath!==this.PATH_LINE){ this.currentpath.push(this.PATH_LINE);}
+		if(this.type===VML){ x=(x*Z-Z2)|0; y=(y*Z-Z2)|0;}
+		else if(this.type===SL) {
+			x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
+			y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		}
+		this.currentpath.push(x,y);
+		this.lastpath = this.PATH_LINE;
+	},
+	rect : function(x,y,w,h){
+		if(this.type===VML){ x=(x*Z-Z2)|0; y=(y*Z-Z2)|0, w=(w*Z)|0, h=(h*Z)|0;}
+		else if(this.type===SL) {
+			x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
+			y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+			w = (this.isedge ? _mr(w) : w);
+			h = (this.isedge ? _mr(h) : h);
+		}
+		this.currentpath.push(this.PATH_MOVE,x,y,this.PATH_LINE,(x+w),y,(x+w),(y+h),x,(y+h),this.PATH_CLOSE);
+	},
+	arc : function(cx,cy,r,startRad,endRad,antiClockWise){
+		if(this.type===SL) {
+			cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
+			cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+		}
+		var sx = cx + r*_mc(startRad), sy = cy + r*_ms(startRad),
+			ex = cx + r*_mc(endRad),   ey = cy + r*_ms(endRad);
+		if(this.type===VML){
+			cx=(cx*Z-Z2)|0, cy=(cy*Z-Z2)|0, r=(r*Z)|0;
+			sx=(sx*Z-Z2)|0, sy=(sy*Z-Z2)|0, ex=(ex*Z-Z2)|0, ey=(ey*Z-Z2)|0;
+			var com = (antiClockWise ? 'at' : 'wa');
+			if(endRad-startRad>=_2PI){ sx+=1;}
+			this.currentpath.push(com,(cx-r),(cy-r),(cx+r),(cy+r),sx,sy,ex,ey);
+			this.lastpath = com;
+		}
+		else{
+			if(endRad-startRad>=_2PI){ sy+=0.125;}
+			var unknownflag = (startRad>endRad)^(Math.abs(endRad-startRad)>Math.PI);
+			var islong = ((antiClockWise^unknownflag)?1:0), sweep = ((islong==0^unknownflag)?1:0);
+			this.currentpath.push(this.PATH_MOVE,sx,sy,S_PATH_ARCTO,r,r,0,islong,sweep,ex,ey);
+			this.lastpath = S_PATH_ARCTO;
+		}
+	},
+
+	/* Canvas API functions (for drawing) */
+	fill       : function(){ this.addVectorElement(true,false);},
+	stroke     : function(){ this.addVectorElement(false,true);},
+	fillRect   : function(x,y,w,h){
+		var stack = this.currentpath;
+		this.currentpath = [];
+		this.rect(x,y,w,h);
+		this.addVectorElement(true,false);
+		this.currentpath = stack;
+	},
+	strokeRect : function(x,y,w,h){
+		var stack = this.currentpath;
+		this.currentpath = [];
+		this.rect(x,y,w,h);
+		this.addVectorElement(false,true);
+		this.currentpath = stack;
+	},
+	shapeRect  : function(x,y,w,h){
+		var stack = this.currentpath;
+		this.currentpath = [];
+		this.rect(x,y,w,h);
+		this.addVectorElement(true,true);
+		this.currentpath = stack;
+	},
+
+	fillText : function(text,x,y){
+		switch(this.type){
+		case SVG:
+			ME.style.font = this.font; ME.innerHTML = text;
+			var top = y - (ME.offsetHeight * S_HEIGHT[this.textBaseline.toLowerCase()]);
+
+			var el = _doc.createElementNS(SVGNS,'text');
+			el.setAttribute('x', x);
+			el.setAttribute('y', top);
+			el.setAttribute(S_ATT_FILL, parsecolor(this.fillStyle));
+			el.setAttribute('text-anchor', SVG_ANCHOR[this.textAlign.toLowerCase()]);
+			el.style.font = this.font;
+			el.appendChild(_doc.createTextNode(text));
+			this.target.appendChild(el);
+			this.lastElement = el;
+			break;
+
+		case SL:
+			ME.style.font = this.font;
+			var fontFamily = ME.style.fontFamily.replace(/\"/g,'\'');
+			var fontSize   = parseInt(ME.style.fontSize);
+			var wid = parseInt(this.canvas.offsetWidth);
+			var left = x + this.OFFSETX - wid * SL_WIDTH[this.textAlign.toLowerCase()];
+			var ar = [
+				'<TextBlock Canvas.Left="', left, '" Canvas.Top="',(y+this.OFFSETY),
+				'" Width="', wid, '" TextAlignment="', this.textAlign,
+				'" FontFamily="', fontFamily, '" FontSize="', fontSize,
+				'" Foreground="', parsecolor(this.fillStyle), '" Text="',text, '" />'
+			];
+			var xaml = this.content.createFromXaml(ar.join(''));
+			this.lastElement = this.elements[this.vid] = xaml;
+
+			var offset = xaml.ActualHeight * SL_HEIGHT[this.textBaseline.toLowerCase()];
+			xaml["Canvas.Top"] = y+this.OFFSETY - (!isNaN(offset)?offset:0);
+			this.target.children.add(xaml);
+			break;
+
+		case VML:
+			x=(x*Z-Z2)|0, y=(y*Z-Z2)|0;
+			ME.style.font = this.font; ME.innerHTML = text;
+			var top  = y - ((ME.offsetHeight * V_HEIGHT[this.textBaseline.toLowerCase()])*Z-Z2)|0;
+
+			var wid = (ME.offsetWidth*Z-Z2)|0;
+			var left = x - (wid * SL_WIDTH[this.textAlign.toLowerCase()])|0;
+
+			var ar = [
+				V_TAG_GROUP, V_ATT_COORDSIZE, V_TAGEND,
+					V_TAG_POLYLINE, V_ATT_POINTS, [left,top,left+wid,top].join(','), V_ATT_END,
+					V_DEF_ATT_POLYLINE, V_ATT_FILLCOLOR, parsecolor(this.fillStyle), V_ATT_END, V_TAGEND,
+						V_TAG_PATH_FOR_TEXTPATH,
+						
+						V_TAG_TEXTPATH, V_DEF_ATT_TEXTPATH, V_ATT_STRING, text, V_ATT_END,
+						V_ATT_STYLE, V_STYLE_FONT, this.font, V_STYLE_END,
+						V_STYLE_ALIGN, this.textAlign, V_STYLE_END, V_ATT_END, V_TAGEND_NULL,
+					V_CLOSETAG_POLYLINE,
+				V_CLOSETAG_GROUP
+			];
+
+			this.target.insertAdjacentHTML(BEFOREEND, ar.join(''));
+			this.lastElement = this.target.lastChild.lastChild;
+			break;
+		}
+		if(!!this.vid){ this.elements[this.vid] = this.lastElement;}
+	},
+
+	/* extended functions */
+	shape : function(){ this.addVectorElement(true,true);},
+
+	setLinePath : function(){
+		var _args = arguments, _len = _args.length, svg=(this.type!==VML);
+		this.currentpath = [];
+		for(var i=0,len=_len-((_len|1)?1:2);i<len;i+=2){
+			if     (i==0){ this.currentpath.push(this.PATH_MOVE);}
+			else if(i==2){ this.currentpath.push(this.PATH_LINE);}
+
+			var a1=_args[i], a2=_args[i+1];
+			if(this.type===VML){ a1=(a1*Z-Z2)|0, a2=(a2*Z-Z2)|0;}
+			else if(this.type===SL) {
+				a1 = (this.isedge ? _mr(a1+this.OFFSETX) : a1+this.OFFSETX);
+				a2 = (this.isedge ? _mr(a2+this.OFFSETY) : a2+this.OFFSETY);
+			}
+			this.currentpath.push(a1,a2);
+		}
+		if(_args[_len-1]){ this.currentpath.push(this.PATH_CLOSE);}
+	},
+	setOffsetLinePath : function(){
+		var _args = arguments, _len = _args.length, svg=(this.type!==VML), m=[_args[0],_args[1]];
+		this.currentpath = [];
+		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
+			m[i] = _args[i] + m[0];
+			m[i+1] = _args[i+1] + m[1];
+
+			if(this.type===VML){ m[i]=(m[i]*Z-Z2)|0, m[i+1]=(m[i+1]*Z-Z2)|0;}
+			else if(this.type===SL) {
+				m[i]   = (this.isedge ? _mr(m[i]  +this.OFFSETX) : m[i]  +this.OFFSETX);
+				m[i+1] = (this.isedge ? _mr(m[i+1]+this.OFFSETY) : m[i+1]+this.OFFSETY);
+			}
+		}
+		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
+			if     (i==2){ this.currentpath.push(this.PATH_MOVE);}
+			else if(i==4){ this.currentpath.push(this.PATH_LINE);}
+			this.currentpath.push(m[i], m[i+1]);
+		}
+		if(_args[_len-1]){ this.currentpath.push(this.PATH_CLOSE);}
+	},
+	setDashSize : function(size){
+		if(!this.lastElement){ return;}
+		if(this.type===SVG){
+			this.lastElement.setAttribute('stroke-dasharray', size);
+		}
+		else if(this.type===SL){
+			this.lastElement.StrokeDashArray = ''+size;
+		}
+		else if(this.type===VML){
+			var el = _doc.createElement('v:stroke');
+			if     (size<=2){ el.dashstyle = 'ShortDash';}
+			else if(size<=5){ el.dashstyle = 'Dash';}
+			else            { el.dashstyle = 'LongDash';}
+			this.lastElement.appendChild(el);
+		}
+	},
+
+	strokeLine : function(x1,y1,x2,y2){
+		if     (this.type===VML){ x1=(x1*Z)|0, y1=(y1*Z)|0, x2=(x2*Z)|0, y2=(y2*Z)|0;}
+		else if(this.type===SL) {
+			x1 = (this.isedge ? _mr(x1+this.OFFSETX) : x1+this.OFFSETX);
+			y1 = (this.isedge ? _mr(y1+this.OFFSETY) : y1+this.OFFSETY);
+			x2 = (this.isedge ? _mr(x2+this.OFFSETX) : x2+this.OFFSETX);
+			y2 = (this.isedge ? _mr(y2+this.OFFSETY) : y2+this.OFFSETY);
+		}
+		var stack = this.currentpath;
+		this.currentpath = [this.PATH_MOVE,x1,y1,this.PATH_LINE,x2,y2];
+		this.addVectorElement(false,true);
+		this.currentpath = stack;
+	},
+	strokeCross : function(cx,cy,l){
+		if     (this.type===VML){ cx=(cx*Z-Z2)|0, cy=(cy*Z-Z2)|0, l=(l*Z)|0;}
+		else if(this.type===SL) {
+			cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
+			cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+			l  = (this.isedge ? _mr(l) : l);
+		}
+		var stack = this.currentpath;
+		this.currentpath = [this.PATH_MOVE,(cx-l),(cy-l),this.PATH_LINE,(cx+l),(cy+l),
+							this.PATH_MOVE,(cx-l),(cy+l),this.PATH_LINE,(cx+l),(cy-l)];
+		this.addVectorElement(false,true);
+		this.currentpath = stack;
+	},
+	fillCircle : function(cx,cy,r){
+		var stack = this.currentpath;
+		this.currentpath = [];
+		this.arc(cx,cy,r,0,_2PI,false);
+		this.currentpath.push(this.PATH_CLOSE);
+		this.addVectorElement(true,false);
+		this.currentpath = stack;
+	},
+	strokeCircle : function(cx,cy,r){
+		var stack = this.currentpath;
+		this.currentpath = [];
+		this.arc(cx,cy,r,0,_2PI,false);
+		this.currentpath.push(this.PATH_CLOSE);
+		this.addVectorElement(false,true);
+		this.currentpath = stack;
+	},
+	shapeCircle : function(cx,cy,r){
+		var stack = this.currentpath;
+		this.currentpath = [];
+		this.arc(cx,cy,r,0,_2PI,false);
+		this.currentpath.push(this.PATH_CLOSE);
+		this.addVectorElement(true,true);
+		this.currentpath = stack;
+	},
+
+	addVectorElement : function(isfill,isstroke){
+	var path = this.currentpath.join(' ');
+	switch(this.type){
+	case SVG:
+		var el = _doc.createElementNS(SVGNS,'path');
+		el.setAttribute('d', path);
+		el.setAttribute(S_ATT_FILL,   (isfill ? parsecolor(this.fillStyle) : S_NONE));
+		el.setAttribute(S_ATT_STROKE, (isstroke ? parsecolor(this.strokeStyle) : S_NONE));
+		if(isstroke) { el.setAttribute(S_ATT_STROKEWIDTH, this.lineWidth, 'px');}
+
+		this.target.appendChild(el);
+		this.lastElement = el;
+		break;
+
+	case SL:
+		var ar = ['<Path Data="', path ,'"'];
+		if(isfill)  { ar.push(' Fill="', parsecolor(this.fillStyle), '"');}
+		if(isstroke){ ar.push(' Stroke="', parsecolor(this.strokeStyle), '" StrokeThickness="', this.lineWidth, '"');}
+		ar.push(' />');
+
+		var xaml = this.content.createFromXaml(ar.join(''));
+		this.lastElement = xaml;
+		this.target.children.add(xaml);
+		break;
+
+	case VML:
+		path = [path, (!isfill ? V_PATH_NOFILL : EMPTY), (!isstroke ? V_PATH_NOSTROKE : EMPTY)].join('');
+		var ar = [V_TAG_SHAPE, V_EL_UNSELECTABLE, V_ATT_COORDSIZE, V_ATT_PATH, path, V_ATT_END];
+		if(isfill)  { ar.push(V_ATT_FILLCOLOR, parsecolor(this.fillStyle), V_ATT_END);}
+		if(isstroke){ ar.push(V_ATT_STROKECOLOR, parsecolor(this.strokeStyle), V_ATT_END, V_ATT_STROKEWEIGHT, this.lineWidth, 'px', V_ATT_END);}
+		ar.push(V_TAGEND_NULL);
+
+		this.target.insertAdjacentHTML(BEFOREEND, ar.join(''));
+		this.lastElement = this.target.lastChild;
+		break;
+	}
+	if(!!this.vid){ this.elements[this.vid] = this.lastElement;}
+	}
+};
+
+/* -------------------- */
+/*   Canvas追加関数群   */
+/* -------------------- */
+CanvasRenderingContext2D_wrapper = function(type, idname){
+	// canvasに存在するプロパティ＆デフォルト値
+	this.fillStyle    = 'black';
+	this.strokeStyle  = 'black';
+	this.lineWidth    = 1;
+	this.font         = '14px system';
+	this.textAlign    = 'center';
+	this.textBaseline = 'middle';
+	this.canvas = null;		// 親エレメントとなるdivエレメント
+
+	// changeOrigin用
+	this.OFFSETX = 0;
+	this.OFFSETY = 0;
+
+	// variables for internal
+	this.canvasid = '';
+	this.child  = null;		// this.canvasの直下にあるエレメント
+	this.context  = null;	// 本来のCanvasRenderingContext2Dオブジェクト
+
+	this.currentLayerId = '_empty';
+	this.isedgearray    = {_empty:false};
+	this.isedge         = false;
+
+	this.use = new TypeList();
+	this.use.vml    = (type===VML);
+	this.use.svg    = false;
+	this.use.canvas = (type===CANVAS);
+	this.use.sl     = (type===SL);
+	this.use.flash  = (type===FLASH);
+
+	this.initElement(idname);
+};
+
+//function addCanvasFunctions(){ _extend(CanvasRenderingContext2D.prototype, {
+CanvasRenderingContext2D_wrapper.prototype = {
+	/* extend functions (initialize) */
+	initElement : function(idname){
+		this.canvasid = EL_ID_HEADER+idname;
+
+		var parent = _doc.getElementById(idname);
+		var canvas = _doc.getElementById(this.canvasid);
+
+		if(!canvas){
+			canvas = _doc.createElement('canvas');
+			canvas.id = this.canvasid;
+			parent.appendChild(canvas);
+		}
+
+		var rect = getRectSize(parent);
+		canvas.width  = rect.width;
+		canvas.height = rect.height;
+		canvas.style.position = 'relative';
+		canvas.style.width  = rect.width + 'px';
+		canvas.style.height = rect.height + 'px';
+
+		this.child = canvas;
+
+		var self = this;
+		//parent.className = "canvas";
+		parent.style.display  = 'block';
+		parent.style.position = 'relative';
+		parent.style.overflow = 'hidden';
+		if(flags.debugmode){
+			parent.style.backgroundColor = "#efefef";
+			parent.style.border = "solid 1px silver";
+		}
+		//parent.getContext = function(type){ return canvas.getContext(type);}
+		parent.getContext = function(type){
+			self.context = canvas.getContext(type);
+			return self;
+		};
+		parent.toDataURL = function(type){ 
+			return (!!type ? canvas.toDataURL(type) : canvas.toDataURL());
+		};
+
+		this.canvas = parent;
+		_initializing--;
+	},
+	setLayer : function(layerid){
+		this.currentLayerId = (!!layerid ? layerid : '_empty');
+		if(this.isedgearray[this.currentLayerId] === void 0){
+			this.isedgearray[this.currentLayerId] = false;
+		}
+		this.isedge = this.isedgearray[this.currentLayerId];
+	},
+	setRendering : function(render){
+		this.isedgearray[this.currentLayerId] = (render==='crispEdges');
+		this.isedge = this.isedgearray[this.currentLayerId];
+	},
+	setUnselectable : function(unsel){
+		if(unsel===(void 0)){ unsel = true;}else{ unsel = !!unsel;}
+		this.canvas.style.MozUserSelect    = (unsel ? 'none' : 'text');
+		this.canvas.style.WebkitUserSelect = (unsel ? 'none' : 'text');
+		this.canvas.style.userSelect       = (unsel ? 'none' : 'text');
+	},
+	getContextElement : function(){ return this.child;},
+	getLayerElement   : function(){ return this.child;},
+
+	changeSize : function(width,height){
+		this.canvas.style.width  = width + 'px';
+		this.canvas.style.height = height + 'px';
+
+		var canvas = this.canvas.firstChild;
+		var left = parseInt(canvas.style.left), top = parseInt(canvas.style.top);
+		width += (left<0?-left:0); height += (top<0?-top:0);
+		canvas.style.width  = width + 'px';
+		canvas.style.height = height + 'px';
+		canvas.width  = width;
+		canvas.height = height;
+	},
+	changeOrigin : function(left,top){
+//		var canvas = this.canvas.firstChild;
+//		canvas.style.position = 'relative';
+//		canvas.style.left = (parseInt(canvas.style.left) - left) + 'px';
+//		canvas.style.top  = (parseInt(canvas.style.top ) - top)  + 'px';
+
+		this.OFFSETX = -left;//(left<0?-left:0);
+		this.OFFSETY = -top;//(top<0?-top:0);
+	},
+	clear : function(){
+		if(!!this.canvas.style.backgroundColor){
+			this.setProperties();
+			this.context.fillStyle = parsecolorrev(this.canvas.style.backgroundColor);
+			var rect = getRectSize(this.canvas);
+			this.context.fillRect(this.OFFSETX,this.OFFSETY,rect.width,rect.height);
+		}
+	},
+
+	/* 内部用関数 */
+	setProperties : function(){
+		this.context.fillStyle    = this.fillStyle;
+		this.context.strokeStyle  = this.strokeStyle;
+		this.context.lineWidth    = this.lineWidth;
+		this.context.font         = this.font;
+		this.context.textAlign    = this.textAlign;
+		this.context.textBaseline = this.textBaseline;
+	},
+
+	/* Canvas API functions (for path) */
+	beginPath : function(){ this.context.beginPath();},
+	closePath : function(){ this.context.closePath();},
+	moveTo : function(x,y){
+		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
+		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		this.context.moveTo(x,y);
+	},
+	lineTo : function(x,y){
+		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
+		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		this.context.lineTo(x,y);
+	},
+	rect : function(x,y,w,h){
+		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
+		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		w = (this.isedge ? _mr(w) : w);
+		h = (this.isedge ? _mr(h) : h);
+		this.context.rect(x,y,w,h);
+	},
+	arc  : function(cx,cy,r,startRad,endRad,antiClockWise){
+		cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
+		cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+		this.context.arc(px,py,r,startRad,endRad,antiClockWise);
+	},
+
+	/* Canvas API functions (for drawing) */
+	fill       : function(){ this.setProperties(); this.context.fill();},
+	stroke     : function(){ this.setProperties(); this.context.stroke();},
+	fillRect   : function(x,y,w,h){
+		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
+		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		w = (this.isedge ? _mr(w) : w);
+		h = (this.isedge ? _mr(h) : h);
+
+		this.setProperties();
+		this.context.fillRect(x,y,w,h);
+	},
+	strokeRect : function(x,y,w,h){
+		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
+		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		w = (this.isedge ? _mr(w) : w);
+		h = (this.isedge ? _mr(h) : h);
+
+		this.setProperties();
+		this.context.strokeRect(x,y,w,h);
+	},
+	fillText : function(text,x,y){
+		this.setProperties();
+		this.context.fillText(text,x+this.OFFSETX,y+this.OFFSETY);
+	},
+
+	/* extended functions */
+	shape : function(){
+		this.setProperties();
+		this.context.fill();
+		this.context.stroke();
+	},
+	shapeRect : function(x,y,w,h){
+		x = (this.isedge ? _mr(x) : x);
+		y = (this.isedge ? _mr(y) : y);
+		w = (this.isedge ? _mr(w) : w);
+		h = (this.isedge ? _mr(h) : h);
+
+		this.setProperties();
+		this.context.fillRect(x,y,w,h);
+		this.context.strokeRect(x,y,w,h);
+	},
+
+	setLinePath : function(){
+		var _args = arguments, _len = _args.length;
+		for(var i=0,len=_len-((_len|1)?1:2);i<len;i+=2){
+			var a1 = (this.isedge ? _mr(_args[i]  +this.OFFSETX) : _args[i]  +this.OFFSETX);
+				a2 = (this.isedge ? _mr(_args[i+1]+this.OFFSETY) : _args[i+1]+this.OFFSETY);
+			if(i==0){ this.context.moveTo(a1,a2);}
+			else    { this.context.lineTo(a1,a2);}
+		}
+		if(_args[_len-1]){ this.context.closePath();}
+	},
+	setOffsetLinePath : function(){
+		var _args = arguments, _len = _args.length, m=[_args[0]+this.OFFSETX,_args[1]+this.OFFSETY];
+		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
+			m[i]   = _args[i]   + m[0];
+			m[i+1] = _args[i+1] + m[1];
+		}
+		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
+			var a1 = (this.isedge ? _mr(m[i])   : m[i]);
+				a2 = (this.isedge ? _mr(m[i+1]) : m[i+1]);
+			if(i===2){ this.context.moveTo(a1,a2);}
+			else     { this.context.lineTo(a1,a2);}
+		}
+		if(_args[_len-1]){ this.context.closePath();}
+	},
+	setDashSize : function(size){ },
+
+	strokeLine : function(x1,y1,x2,y2){
+		x1 = (this.isedge ? _mr(x1+this.OFFSETX) : x1+this.OFFSETX);
+		y1 = (this.isedge ? _mr(y1+this.OFFSETY) : y1+this.OFFSETY);
+		x2 = (this.isedge ? _mr(x2+this.OFFSETX) : x2+this.OFFSETX);
+		y2 = (this.isedge ? _mr(y2+this.OFFSETY) : y2+this.OFFSETY);
+
+		this.setProperties();
+		this.context.beginPath();
+		this.context.moveTo(x1,y1);
+		this.context.lineTo(x2,y2);
+		this.context.stroke();
+	},
+	strokeCross : function(cx,cy,l){
+		var x1 = (this.isedge ? _mr(cx-l+this.OFFSETX) : cx-l+this.OFFSETX),
+			y1 = (this.isedge ? _mr(cy-l+this.OFFSETY) : cy-l+this.OFFSETY),
+			x2 = (this.isedge ? _mr(cx+l+this.OFFSETX) : cx+l+this.OFFSETX),
+			y2 = (this.isedge ? _mr(cy+l+this.OFFSETY) : cy+l+this.OFFSETY);
+
+		this.setProperties();
+		this.context.beginPath();
+		this.context.moveTo(x1,y1);
+		this.context.lineTo(x2,y2);
+		this.context.moveTo(x1,y2);
+		this.context.lineTo(x2,y1);
+		this.context.stroke();
+	},
+	fillCircle : function(cx,cy,r){
+		cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
+		cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+		this.setProperties();
+		this.context.beginPath();
+		this.context.arc(cx,cy,r,0,_2PI,false);
+		this.context.fill();
+	},
+	strokeCircle : function(cx,cy,r){
+		cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
+		cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+		this.setProperties();
+		this.context.beginPath();
+		this.context.arc(cx,cy,r,0,_2PI,false);
+		this.context.stroke();
+	},
+	shapeCircle : function(cx,cy,r){
+		cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
+		cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+		this.setProperties();
+		this.context.beginPath();
+		this.context.arc(cx,cy,r,0,_2PI,false);
+		this.context.fill();
+		this.context.stroke();
+	}
+
+};
+
+/* -------------------- */
+/*   Campオブジェクト   */
+/* -------------------- */
+var Camp = function(idname, type){
+	Camp.initElementById.apply(Camp, [idname, type]);
+};
+_extend( Camp, {
+	/* externs */
+	color : _color,
+	parse : parsecolor,
+	ME    : null,
+
+	/* Selected & Enable types */
+	enable  : new TypeList(),
+	current : new TypeList(),
+
+	/* functions */
+	initAllElements : function(){
+		var elements = _doc.getElementsByTagName('camp');
+		for(var i=0;i<elements.length;i++){ this.initElementById(elements[i].id, type);}
+	},
+	initElementsById : function(idlist, type){
+		for(var i=0;i<idlist.length;i++){ this.initElementById(idlist[i], type);}
+	},
+	initElementById : function(idname, type){
+		if(!!_doc.getElementById(EL_ID_HEADER + idname)){ return;}
+		if(!ME){ initME();}
+
+		var choice = new TypeList();
+		if((type===void 0)||(this.enable[type]!==true)){ choice = this.current;}
+		else{ choice[type] = true;}
+
+		_initializing++;
+		if     (choice.svg){ new VectorContext(SVG, idname);}
+		else if(choice.sl) { new VectorContext(SL,  idname);}
+		else if(choice.vml){ new VectorContext(VML, idname);}
+		else if(choice.canvas){
+			new CanvasRenderingContext2D_wrapper(CANVAS, idname);
+		}
+	},
+
+	select : function(type){
+		if(this.enable[type]!==true){ return false;}
+		for(var i=0;i<_types.length;i++){ this.current[_types[i]]=false;}
+		this.current[type] = true;
+		return true;
+	},
+	setflags : function(type, value){
+		flags[type] = value;
+	},
+
+	isready : function(){ return (_initializing===0);}
+});
+
+/* ----------------------------------------------- */
+/* Camp.enable, Camp.currentオブジェクトデータ設定 */
+/* ----------------------------------------------- */
+
+//	/* Camp.enable 設定 */
+	Camp.enable.canvas = (!!_doc.createElement('canvas').getContext);
+	Camp.enable.svg    = (!!_doc.createElementNS && !!_doc.createElementNS(SVGNS, 'svg').suspendRedraw);
+	Camp.enable.sl     = (function(){ try{ return (new ActiveXObject("AgControl.AgControl")).IsVersionSupported("1.0");}catch(e){} return false;})();
+	Camp.enable.flash  = false;
+	Camp.enable.vml    = _IE;
+
+//	/* Camp.current設定 */
+	for(var i=0;i<_types.length;i++){ Camp.current[_types[i]]=false;}
+	if     (Camp.enable.svg)   { Camp.current.svg    = true;}
+	else if(Camp.enable.canvas){ Camp.current.canvas = true;}
+	else if(Camp.enable.sl)    { Camp.current.sl     = true;}
+	else if(Camp.enable.flash) { Camp.current.flash  = true;}
+	else if(Camp.enable.vml)   { Camp.current.vml    = true;}
+
+	/* 初期設定 for VML */
+	if(Camp.enable.vml){
+		/* addNameSpace for VML */
+		_doc.namespaces.add("v", "urn:schemas-microsoft-com:vml");
+
+		/* addStyleSheet for VML */
+		var text = [];
+		text.push("v\\:shape, v\\:group, v\\:polyline { behavior: url(#default#VML); position:absolute; width:10px; height:10px; }");
+		text.push("v\\:path, v\\:textpath, v\\:stroke { behavior: url(#default#VML); }");
+		_doc.write('<style type="text/css" rel="stylesheet">');
+		_doc.write(text.join(''));
+		_doc.write('</style>');
+	}
+
+	/* 初期設定 for Campタグ */
+	var text = [];
+	text.push("camp { display: block; }\n");
+	_doc.write('<style type="text/css" rel="stylesheet">');
+	_doc.write(text.join(''));
+	_doc.write('</style>');
+
+		// IE用ハック
+	if(_IE){ _doc.createElement('camp');}
+
+	_win.Camp = Camp;
+
+})();
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -35,67 +1157,66 @@ Pos.prototype = {
 // 各種パラメータの定義
 var k = {
 	// 各パズルのsetting()関数で設定されるもの
-	qcols : 0, qrows : 0,	// 盤面の横幅・縦幅
-	irowake   :  0,			// 0:色分け設定無し 1:色分けしない 2:色分けする
+	qcols    : 0,			// 盤面の横幅
+	qrows    : 0,			// 盤面の縦幅
+	irowake  : 0,			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-	iscross      : 0,		// 1:Crossが操作可能なパズル
-	isborder     : 0,		// 1:Border/Lineが操作可能なパズル
-	isextendcell : 0,		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+	iscross  : 0,			// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+	isborder : 0,			// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+	isexcell : 0,			// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-	isoutsidecross  : 1,	// 1:外枠上にCrossの配置があるパズル
-	isoutsideborder : 0,	// 1:盤面の外枠上にborderのIDを用意する
-	isLineCross     : 1,	// 1:線が交差するパズル
-	isCenterLine    : 0,	// 1:マスの真ん中を通る線を回答として入力するパズル
-	isborderAsLine  : 0,	// 1:境界線をlineとして扱う
+	isLineCross    : false,	// 線が交差するパズル
+	isCenterLine   : false,	// マスの真ん中を通る線を回答として入力するパズル
+	isborderAsLine : false,	// 境界線をlineとして扱う
+	hasroom        : false,	// いくつかの領域に分かれている/分けるパズル
+	roomNumber     : false,	// 問題の数字が部屋の左上に1つだけ入るパズル
 
-	dispzero      : 0,		// 1:0を表示するかどうか
-	isDispHatena  : 1,		// 1:qnumが-2のときに？を表示する
-	isAnsNumber   : 0,		// 1:回答に数字を入力するパズル
-	isArrowNumber : 0,		// 1:矢印つき数字を入力するパズル
-	isOneNumber   : 0,		// 1:問題の数字が部屋の左上に1つだけ入るパズル
-	isDispNumUL   : 0,		// 1:数字をマス目の左上に表示するパズル(0はマスの中央)
-	NumberWithMB  : 0,		// 1:回答の数字と○×が入るパズル
+	dispzero       : false,	// 0を表示するかどうか
+	isDispHatena   : true,	// qnumが-2のときに？を表示する
+	isAnsNumber    : false,	// 回答に数字を入力するパズル
+	NumberWithMB   : false,	// 回答の数字と○×が入るパズル
+	linkNumber     : false,	// 数字がひとつながりになるパズル
 
-	BlackCell     : 0,		// 1:黒マスを入力するパズル
-	NumberIsWhite : 0,		// 1:数字のあるマスが黒マスにならないパズル
-	RBBlackCell   : 0,		// 1:連黒分断禁のパズル
+	BlackCell      : false,	// 黒マスを入力するパズル
+	NumberIsWhite  : false,	// 数字のあるマスが黒マスにならないパズル
+	RBBlackCell    : false,	// 連黒分断禁のパズル
+	checkBlackCell : false,	// 正答判定で黒マスの情報をチェックするパズル
+	checkWhiteCell : false,	// 正答判定で白マスの情報をチェックするパズル
 
-	ispzprv3ONLY  : 0,		// ぱずぷれv3にしかないパズル
-	isKanpenExist : 0,		// pencilbox/カンペンにあるパズル
+	ispzprv3ONLY   : false,	// ぱずぷれアプレットには存在しないパズル
+	isKanpenExist  : false,	// pencilbox/カンペンにあるパズル
 
-	def_csize : 36,			// デフォルトのセルサイズ
-	def_psize : 24,			// デフォルトの枠外marginサイズ
-	area : { bcell:0, wcell:0, number:0, disroom:0},	// areaオブジェクトで領域を生成する
+	// 各パズルのsetting()関数で設定されることがあるもの
+	bdmargin       : 0.70,	// 枠外の一辺のmargin(セル数換算)
+	bdmargin_image : 0.10,	// 画像出力時のbdmargin値
 
 	// 内部で自動的に設定されるグローバル変数
 	puzzleid  : '',			// パズルのID("creek"など)
-	use       : 1,			// 操作方法
-	widthmode : 2,			// Canvasの横幅をどうするか
 
 	EDITOR    : true,		// エディタモード
 	PLAYER    : false,		// playerモード
 	editmode  : true,		// 問題配置モード
 	playmode  : false,		// 回答モード
 
-	enableKey   : true,		// キー入力は有効か
-	enableMouse : true,		// マウス入力は有効か
-	autocheck   : true,		// 回答入力時、自動的に答え合わせするか
+	cellsize : 36,			// デフォルトのセルサイズ
+	cwidth   : 36,			// セルの横幅
+	cheight  : 36,			// セルの縦幅
+	bwidth   : 18,			// セルの横幅/2
+	bheight  : 18,			// セルの縦幅/2
 
-	cwidth   : this.def_csize,	// セルの横幅
-	cheight  : this.def_csize,	// セルの縦幅
-
-	p0       : new Pos(this.def_psize, this.def_psize),	// Canvas中での盤面の左上座標
+	p0       : new Pos(0, 0),	// Canvas中での盤面の左上座標
 	cv_oft   : new Pos(0, 0),	// Canvasのwindow内での左上座標
-	IEMargin : new Pos(2, 2),	// マウス入力等でずれる件のmargin
 
 	br:{
-		IE    : !!(window.attachEvent && !window.opera),
-		Opera : !!window.opera,
-		WebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1,
-		Gecko : navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1,
-		WinWebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1
+		IE    : (!!(window.attachEvent && !window.opera)),
+		Opera : (!!window.opera),
+		WebKit: (navigator.userAgent.indexOf('AppleWebKit/') > -1),
+		Gecko : (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1),
+
+		WinWebKit: (navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1),
+		IEmoz4   : (!!(window.attachEvent && !window.opera) && navigator.userAgent.indexOf('Mozilla/4.0') > -1)
 	},
-	vml : !!(window.attachEvent && !window.opera) && !uuMeta.slver,
+	vml : Camp.current.vml,
 
 	// const値
 	BOARD  : 'board',
@@ -124,7 +1245,6 @@ var k = {
 	// for_test.js用
 	scriptcheck : false
 };
-k.IEMargin = (k.br.IE ? k.IEMargin : new Pos(0,0));
 
 //---------------------------------------------------------------------------
 // ★その他のグローバル変数
@@ -160,8 +1280,6 @@ var
 
 	// browsers
 	_IE     = k.br.IE,
-	_Gecko  = k.br.Gecko,
-	_WebKit = k.br.WebKit,
 
 	/* ここからクラス定義です  varでドット付きは、最左辺に置けません */
 
@@ -245,9 +1363,8 @@ _extend( _ElementManager, {
 		if(!!attr_i){
 			for(var name in attr_i){
 				if(name==='unselectable' && attr_i[name]==='on'){
-					if     (_Gecko) { style['UserSelect'] = style['MozUserSelect'] = 'none';}
-					else if(_WebKit){ style['UserSelect'] = style['KhtmlUserSelect'] = 'none';}
-					else{ attr['unselectable'] = 'on';}
+					style['userSelect'] = style['MozUserSelect'] = style['KhtmlUserSelect'] = 'none';
+					attr['unselectable'] = 'on';
 				}
 				else{ attr[name] = attr_i[name];}
 			}
@@ -282,14 +1399,14 @@ _extend( _ElementManager, {
 		return e.target || e.srcElement;
 	},
 	pageX : (
-		((!k.br.IE) ?
+		((!_IE) ?
 			function(e){ return e.pageX;}
 		:
 			function(e){ return e.clientX + (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);}
 		)
 	),
 	pageY : (
-		((!k.br.IE) ?
+		((!_IE) ?
 			function(e){ return e.pageY;}
 		:
 			function(e){ return e.clientY + (_doc.documentElement.scrollTop  || _doc.body.scrollTop);}
@@ -338,14 +1455,14 @@ _extend( _ElementManager, {
 	// ee.preventDefault()  イベントの起こったエレメントで、デフォルトの
 	//                      イベントが起こらないようにする
 	//----------------------------------------------------------------------
-	stopPropagation : (
-		(!_IE) ? function(e){ e.stopPropagation();}
-		:        function(e){ e.cancelBubble = true;}
-	),
-	preventDefault : (
-		(_Gecko || _WebKit) ? function(e){ e.preventDefault();}
-		:                     function(e){ e.returnValue = false;}
-	)
+	stopPropagation : function(e){
+		if(!!e.stopPropagation){ e.stopPropagation();}
+		else{ e.cancelBubble = true;}
+	},
+	preventDefault : function(e){
+		if(!!e.preventDefault){ e.preventDefault();}
+		else{ e.returnValue = true;}
+	}
 });
 
 // implementation of _ElementManager.ElementExt class
@@ -356,7 +1473,7 @@ _ElementManager.ElementExt.prototype = {
 	// ee.getHeight() エレメントの高さを返す
 	//----------------------------------------------------------------------
 	getRect : (
-		((!!document.getBoundingClientRect) ?
+		((!!document.createElement('div').getBoundingClientRect) ?
 			((!_IE) ?
 				function(){
 					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
@@ -399,26 +1516,13 @@ _ElementManager.ElementExt.prototype = {
 	// ee.remove()               エレメントを削除する
 	// ee.removeNextAll()        同じ親要素を持ち、自分より後ろにあるエレメントを削除する
 	//----------------------------------------------------------------------
-	unselectable : (
-		((_Gecko) ?
-			function(){
-				this.el.style.MozUserSelect = 'none';
-				this.el.style.UserSelect    = 'none';
-				return this;
-			}
-		:(_WebKit) ?
-			function(){
-				this.el.style.KhtmlUserSelect = 'none';
-				this.el.style.UserSelect      = 'none';
-				return this;
-			}
-		:
-			function(){
-				this.el.unselectable = "on";
-				return this;
-			}
-		)
-	),
+	unselectable : function(){
+		this.el.style.MozUserSelect   = 'none';
+		this.el.style.KhtmlUserSelect = 'none';
+		this.el.style.userSelect      = 'none';
+		this.el.unselectable = "on";
+		return this;
+	},
 
 	replaceChildrenClass : function(before, after){
 		var el = this.el.firstChild;
@@ -492,7 +1596,7 @@ _ElementManager.ElementExt.prototype = {
 Timer = function(){
 	// ** 一般タイマー
 	this.TID;				// タイマーID
-	this.timerInterval = (!k.br.IE?100:200);
+	this.timerInterval = 100;
 
 	this.st       = 0;		// タイマースタート時のgetTime()取得値(ミリ秒)
 	this.current  = 0;		// 現在のgetTime()取得値(ミリ秒)
@@ -502,8 +1606,8 @@ Timer = function(){
 	this.timerEL = ee('timerpanel').el;
 
 	// 自動正答判定用変数
-	this.lastAnsCnt  = 0;	// 前回正答判定した時の、UndoManagerに記録されてた問題/回答入力のカウント
-	this.worstACCost = 0;	// 正答判定にかかった時間の最悪値(ミリ秒)
+	this.lastAnsCnt  = 0;	// 前回正答判定した時の、OperationManagerに記録されてた問題/回答入力のカウント
+	this.worstACtime = 0;	// 正答判定にかかった時間の最悪値(ミリ秒)
 	this.nextACtime  = 0;	// 次に自動正答判定ルーチンに入ることが可能になる時間
 
 	// 一般タイマースタート
@@ -511,34 +1615,41 @@ Timer = function(){
 
 	// ** Undoタイマー
 	this.TIDundo = null;	// タイマーID
-	this.undoInterval = (!k.br.IE?25:50);
+	this.undoInterval = 25
 
 	// Undo/Redo用変数
-	this.undoStartCount = mf(300/this.undoInterval);	// 1回目にwaitを多く入れるための値
-	this.undoWaitCount = this.undoStartCount;
+	this.undoWaitTime  = 300;	// 1回目にwaitを多く入れるための値
+	this.undoWaitCount = 0;
+
+	if(k.br.IE){
+		this.timerInterval *= 2;
+		this.undoInterval  *= 2;
+	}
 };
 Timer.prototype = {
 	//---------------------------------------------------------------------------
+	// tm.now()        現在の時間を取得する
 	// tm.reset()      タイマーのカウントを0にして、スタートする
 	// tm.start()      update()関数を200ms間隔で呼び出す
 	// tm.update()     200ms単位で呼び出される関数
 	//---------------------------------------------------------------------------
+	now : function(){ return (new Date()).getTime();},
 	reset : function(){
-		this.worstACCost = 0;
+		this.worstACtime = 0;
 		this.timerEL.innerHTML = this.label()+"00:00";
 
 		clearInterval(this.TID);
 		this.start();
 	},
 	start : function(){
-		this.st = (new Date()).getTime();
+		this.st = this.now();
 		this.TID = setInterval(ee.binder(this, this.update), this.timerInterval);
 	},
 	update : function(){
-		this.current = (new Date()).getTime();
+		this.current = this.now();
 
 		if(k.PLAYER){ this.updatetime();}
-		if(k.autocheck){ this.ACcheck();}
+		if(pp.getVal('autocheck')){ this.ACcheck();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -572,8 +1683,8 @@ Timer.prototype = {
 			this.lastAnsCnt = um.anscount;
 			if(!ans.autocheck()){ return;}
 
-			this.worstACCost = Math.max(this.worstACCost, ((new Date()).getTime()-this.current));
-			this.nextACtime = this.current + (this.worstACCost<250 ? this.worstACCost*4+120 : this.worstACCost*2+620);
+			this.worstACtime = Math.max(this.worstACtime, (this.now()-this.current));
+			this.nextACtime = this.current + (this.worstACtime<250 ? this.worstACtime*4+120 : this.worstACtime*2+620);
 		}
 	},
 
@@ -581,13 +1692,12 @@ Timer.prototype = {
 	// tm.startUndoTimer()  Undo/Redo呼び出しを開始する
 	// tm.stopUndoTimer()   Undo/Redo呼び出しを終了する
 	// tm.procUndo()        Undo/Redo呼び出しを実行する
+	// tm.execUndo()        Undo/Redo関数を呼び出す
 	//---------------------------------------------------------------------------
 	startUndoTimer : function(){
-		this.undoWaitCount = this.undoStartCount;
+		this.undoWaitCount = this.undoWaitTime/this.undoInterval;
 		if(!this.TIDundo){ this.TIDundo = setInterval(ee.binder(this, this.procUndo), this.undoInterval);}
-
-		if     (kc.inUNDO){ um.undo();}
-		else if(kc.inREDO){ um.redo();}
+		this.execUndo();
 	},
 	stopUndoTimer : function(){
 		kc.inUNDO=false;
@@ -595,11 +1705,13 @@ Timer.prototype = {
 		clearInterval(this.TIDundo);
 		this.TIDundo = null;
 	},
-
 	procUndo : function(){
 		if(!kc.isCTRL || (!kc.inUNDO && !kc.inREDO)){ this.stopUndoTimer();}
 		else if(this.undoWaitCount>0)               { this.undoWaitCount--;}
-		else if(kc.inUNDO){ um.undo();}
+		else{ execUndo();}
+	},
+	execUndo : function(){
+		if     (kc.inUNDO){ um.undo();}
 		else if(kc.inREDO){ um.redo();}
 	}
 };
@@ -610,26 +1722,28 @@ Timer.prototype = {
 // ボードメンバデータの定義(1)
 // Cellクラスの定義
 Cell = function(id){
-	this.cx;	// セルのX座標を保持する
-	this.cy;	// セルのY座標を保持する
+	this.bx;	// セルのX座標(border座標系)を保持する
+	this.by;	// セルのY座標(border座標系)を保持する
 	this.px;	// セルの描画用X座標を保持する
 	this.py;	// セルの描画用Y座標を保持する
+	this.cpx;	// セルの描画用中心X座標を保持する
+	this.cpy;	// セルの描画用中心Y座標を保持する
+
 	this.ques;	// セルの問題データ(形状)を保持する
 	this.qnum;	// セルの問題データ(数字)を保持する(数字 or カックロの右側)
 	this.direc;	// セルの問題データ(方向)を保持する(矢印 or カックロの下側)
 	this.qans;	// セルの回答データを保持する(黒マス or 回答数字)
 	this.qsub;	// セルの補助データを保持する(白マス or 背景色)
 	this.error;	// エラーデータを保持する
-	this.numobj = '';	// 数字を表示するためのエレメント
-	this.numobj2 = '';	// 数字を表示するためのエレメント
 
 	this.allclear(id);
 };
 Cell.prototype = {
 	//---------------------------------------------------------------------------
-	// cell.allclear() セルのcx,cy,numobj情報以外をクリアする
+	// cell.allclear() セルの位置,描画情報以外をクリアする
 	// cell.ansclear() セルのqans,qsub,error情報をクリアする
 	// cell.subclear() セルのqsub,error情報をクリアする
+	// cell.isempty()  プロパティが初期値と同じか判別する
 	//---------------------------------------------------------------------------
 	allclear : function(num) {
 		this.ques = 0;
@@ -637,10 +1751,10 @@ Cell.prototype = {
 		this.qsub = 0;
 		this.ques = 0;
 		this.qnum = -1;
-		if(k.puzzleid==="tilepaint"||k.puzzleid==="kakuro"){ this.qnum = 0;}
 		this.direc = 0;
-		if(k.puzzleid==="triplace"){ this.direc = -1;}
 		this.error = 0;
+		if(k.puzzleid==="tilepaint"||k.puzzleid==="kakuro"){ this.qnum = this.direc = 0;}
+		if(k.puzzleid==="triplace"){ this.qnum = this.direc = -1;}
 	},
 	ansclear : function(num) {
 		this.qans = -1;
@@ -650,6 +1764,13 @@ Cell.prototype = {
 	subclear : function(num) {
 		this.qsub = 0;
 		this.error = 0;
+	},
+	isempty : function(){
+		return ((this.qans === bd.defcell.qans) &&
+				(this.qsub === bd.defcell.qsub) &&
+				(this.ques === bd.defcell.ques) &&
+				(this.qnum === bd.defcell.qnum) &&
+				(this.direc=== bd.defcell.direc));
 	}
 };
 
@@ -659,22 +1780,23 @@ Cell.prototype = {
 // ボードメンバデータの定義(2)
 // Crossクラスの定義
 Cross = function(id){
-	this.cx;	// 交差点のX座標を保持する
-	this.cy;	// 交差点のY座標を保持する
+	this.bx;	// 交差点のX座標(border座標系)を保持する
+	this.by;	// 交差点のY座標(border座標系)を保持する
 	this.px;	// 交差点の描画用X座標を保持する
 	this.py;	// 交差点の描画用Y座標を保持する
+
 	this.ques;	// 交差点の問題データ(黒点)を保持する
 	this.qnum;	// 交差点の問題データ(数字)を保持する
 	this.error;	// エラーデータを保持する
-	this.numobj = '';	// 数字を表示するためのエレメント
 
 	this.allclear(id);
 };
 Cross.prototype = {
 	//---------------------------------------------------------------------------
-	// cross.allclear() 交差点のcx,cy,numobj情報以外をクリアする
+	// cross.allclear() 交差点の位置,描画情報以外をクリアする
 	// cross.ansclear() 交差点のerror情報をクリアする
 	// cross.subclear() 交差点のerror情報をクリアする
+	// cross.isempty()  プロパティが初期値と同じか判別する
 	//---------------------------------------------------------------------------
 	allclear : function(num) {
 		this.ques = 0;
@@ -686,6 +1808,9 @@ Cross.prototype = {
 	},
 	subclear : function(num) {
 		this.error = 0;
+	},
+	isempty : function(){
+		return (this.qnum===bd.defcross.qnum);
 	}
 };
 
@@ -695,10 +1820,11 @@ Cross.prototype = {
 // ボードメンバデータの定義(3)
 // Borderクラスの定義
 Border = function(id){
-	this.cx;	// 境界線のX座標を保持する
-	this.cy;	// 境界線のY座標を保持する
+	this.bx;	// 境界線のX座標(border座標系)を保持する
+	this.by;	// 境界線のY座標(border座標系)を保持する
 	this.px;	// 境界線の描画X座標を保持する
 	this.py;	// 境界線の描画Y座標を保持する
+
 	this.ques;	// 境界線の問題データを保持する(境界線 or マイナリズムの不等号)
 	this.qnum;	// 境界線の問題データを保持する(マイナリズムの数字)
 	this.qans;	// 境界線の回答データを保持する(回答境界線 or スリリンなどの線)
@@ -706,15 +1832,18 @@ Border = function(id){
 	this.line;	// 線の回答データを保持する
 	this.color;	// 線の色分けデータを保持する
 	this.error;	// エラーデータを保持する
-	this.numobj = '';	// 数字を表示するためのエレメント
+
+	this.cellcc  = [-1,-1];	// 隣接セルのID
+	this.crosscc = [-1,-1];	// 隣接交点のID
 
 	this.allclear(id);
 };
 Border.prototype = {
 	//---------------------------------------------------------------------------
-	// border.allclear() 境界線のcx,cy,numobj情報以外をクリアする
+	// border.allclear() 境界線の位置,描画情報以外をクリアする
 	// border.ansclear() 境界線のqans,qsub,line,color,error情報をクリアする
 	// border.subclear() 境界線のqsub,error情報をクリアする
+	// border.isempty()  プロパティが初期値と同じか判別する
 	//---------------------------------------------------------------------------
 	allclear : function(num) {
 		this.ques = 0;
@@ -740,6 +1869,56 @@ Border.prototype = {
 		this.qsub = 0;
 		if(k.puzzleid==="bosanowa"){ this.qsub = -1;}
 		this.error = 0;
+	},
+	isempty : function(){
+		return ((this.qans === bd.defborder.qans) &&
+				(this.qsub === bd.defborder.qsub) &&
+				(this.ques === bd.defborder.ques) &&
+				(this.qnum === bd.defborder.qnum) &&
+				(this.line === bd.defborder.line));
+	}
+};
+
+//---------------------------------------------------------------------------
+// ★EXCellクラス BoardクラスがEXCellの数だけ保持する
+//---------------------------------------------------------------------------
+// ボードメンバデータの定義(4)
+// EXCellクラスの定義
+EXCell = function(id){
+	this.bx;	// セルのX座標(border座標系)を保持する
+	this.by;	// セルのY座標(border座標系)を保持する
+	this.px;	// セルの描画用X座標を保持する
+	this.py;	// セルの描画用Y座標を保持する
+
+	this.qnum;	// セルの問題データ(数字)を保持する(数字 or カックロの右側)
+	this.direc;	// セルの問題データ(方向)を保持する(矢印 or カックロの下側)
+
+	this.allclear(id);
+};
+EXCell.prototype = {
+	//---------------------------------------------------------------------------
+	// excell.allclear() セルの位置,描画情報以外をクリアする
+	// excell.ansclear() セルのerror情報をクリアする
+	// excell.subclear() セルのerror情報をクリアする
+	// excell.isempty()  プロパティが初期値と同じか判別する
+	//---------------------------------------------------------------------------
+	allclear : function(num) {
+		this.qnum = -1;
+		if(k.puzzleid==="box"){ this.qnum = 0;}
+		this.direc = 0;
+		this.error = 0;
+		if(k.puzzleid==="tilepaint"||k.puzzleid==="kakuro"){ this.qnum = this.direc = 0;}
+		if(k.puzzleid==="triplace"){ this.qnum = this.direc = -1;}
+	},
+	ansclear : function(num) {
+		this.error = 0;
+	},
+	subclear : function(num) {
+		this.error = 0;
+	},
+	isempty : function(){
+		return ((this.qnum === bd.defexcell.qnum) &&
+				(this.direc=== bd.defexcell.direc));
 	}
 };
 
@@ -758,14 +1937,26 @@ Board = function(){
 	this.bdmax     = 0;		// 境界線の数
 	this.excellmax = 0;		// 拡張セルの数
 
+	this._cnum  = {};		// cnum関数のキャッシュ
+	this._xnum  = {};		// xnum関数のキャッシュ
+	this._bnum  = {};		// bnum関数のキャッシュ
+	this._exnum = {};		// exnum関数のキャッシュ
+
 	this.bdinside = 0;		// 盤面の内側(外枠上でない)に存在する境界線の本数
 
-	this.maxnum   = 99;		// 入力できる最大の数字
+	this.maxnum   = 255;	// 入力できる最大の数字
+
+	// 盤面の範囲
+	this.minbx = 0;
+	this.minby = 0;
+	this.maxbx = 2*k.qcols;
+	this.maxby = 2*k.qrows;
 
 	// デフォルトのセルなど
 	this.defcell   = new Cell(0);
 	this.defcross  = new Cross(0);
 	this.defborder = new Border(0);
+	this.defexcell = new EXCell(0);
 
 	this.enableLineNG = false;
 
@@ -774,148 +1965,243 @@ Board = function(){
 };
 Board.prototype = {
 	//---------------------------------------------------------------------------
-	// bd.initBoardSize() 盤面のサイズの変更を行う
-	// bd.initGroup()     数を比較して、オブジェクトの追加か削除を行う
+	// bd.initBoardSize() 指定されたサイズで盤面の初期化を行う
 	// bd.initSpecial()   パズル個別で初期化を行いたい処理を入力する
 	//---------------------------------------------------------------------------
 	initBoardSize : function(col,row){
-		{
-			this.initGroup(k.CELL,   this.cell,   col*row);
-		}
-		if(k.iscross){
-			this.initGroup(k.CROSS,  this.cross,  (col+1)*(row+1));
-		}
-		if(k.isborder){
-			this.initGroup(k.BORDER, this.border, 2*col*row+(k.isoutsideborder===0?-1:1)*(col+row));
-		}
-		if(k.isextendcell===1){
-			this.initGroup(k.EXCELL, this.excell, col+row+1);
-		}
-		else if(k.isextendcell===2){
-			this.initGroup(k.EXCELL, this.excell, 2*col+2*row+4);
-		}
+						{ this.initGroup(k.CELL,   col, row);}
+		if(!!k.iscross) { this.initGroup(k.CROSS,  col, row);}
+		if(!!k.isborder){ this.initGroup(k.BORDER, col, row);}
+		if(!!k.isexcell){ this.initGroup(k.EXCELL, col, row);}
 
 		this.initSpecial(col,row);
 
-		// 各種サイズの変更
-		if(!base.initProcess){
-			tc.maxx += (col-k.qcols)*2;
-			tc.maxy += (row-k.qrows)*2;
-		}
 		k.qcols = col;
 		k.qrows = row;
 
+		this.setminmax();
 		this.setposAll();
 		if(!base.initProcess){ this.allclear();}
-	},
-	initGroup : function(type, group, len){
-		var clen = group.length;
-		// 既存のサイズより小さくなるならdeleteする
-		if(clen>len){
-			for(var id=clen-1;id>=len;id--){ this.hideNumobj(type,id); delete group[id]; group.pop();}
-		}
-		// 既存のサイズより大きくなるなら追加する
-		else if(clen<len){
-			for(var id=clen;id<len;id++){ group.push(this.getnewObj(type,id));}
-		}
 	},
 	initSpecial : function(){ },
 
 	//---------------------------------------------------------------------------
+	// bd.initGroup()     数を比較して、オブジェクトの追加か削除を行う
+	// bd.getGroup()      指定したタイプのオブジェクト配列を返す
+	// bd.estimateSize()  指定したオブジェクトがいくつになるか計算を行う
+	// bd.newObject()     指定されたタイプの新しいオブジェクトを返す
+	//---------------------------------------------------------------------------
+	initGroup : function(type, col, row){
+		var group = this.getGroup(type);
+		var len = this.estimateSize(type, col, row), clen = group.length;
+		// 既存のサイズより小さくなるならdeleteする
+		if(clen>len){
+			for(var id=clen-1;id>=len;id--){ delete group[id]; group.pop();}
+		}
+		// 既存のサイズより大きくなるなら追加する
+		else if(clen<len){
+			for(var id=clen;id<len;id++){ group.push(this.newObject(type,id));}
+		}
+		this.setposGroup(type);
+		return (len-clen);
+	},
+	getGroup : function(type){
+		if     (type===k.CELL)  { return this.cell;}
+		else if(type===k.CROSS) { return this.cross;}
+		else if(type===k.BORDER){ return this.border;}
+		else if(type===k.EXCELL){ return this.excell;}
+		return [];
+	},
+	estimateSize : function(type, col, row){
+		if     (type===k.CELL)  { return col*row;}
+		else if(type===k.CROSS) { return (col+1)*(row+1);}
+		else if(type===k.BORDER){
+			if     (k.isborder===1){ return 2*col*row-(col+row);}
+			else if(k.isborder===2){ return 2*col*row+(col+row);}
+		}
+		else if(type===k.EXCELL){
+			if     (k.isexcell===1){ return col+row+1;}
+			else if(k.isexcell===2){ return 2*col+2*row+4;}
+		}
+		return 0;
+	},
+	newObject : function(type,id){
+		if     (type===k.CELL)  { return (new Cell(id));}
+		else if(type===k.CROSS) { return (new Cross(id));}
+		else if(type===k.BORDER){ return (new Border(id));}
+		else if(type===k.EXCELL){ return (new EXCell(id));}
+	},
+
+	//---------------------------------------------------------------------------
 	// bd.setposAll()    全てのCell, Cross, BorderオブジェクトのsetposCell()等を呼び出す
 	//                   盤面の新規作成や、拡大/縮小/回転/反転時などに呼び出される
-	// bd.setposCell()   該当するidのセルのcx,cyプロパティを設定する
-	// bd.setposCross()  該当するidの交差点のcx,cyプロパティを設定する
-	// bd.setposBorder() 該当するidの境界線/Lineのcx,cyプロパティを設定する
-	// bd.setposEXCell() 該当するidのExtendセルのcx,cyプロパティを設定する
+	// bd.setposGroup()  指定されたタイプのsetpos関数を呼び出す
+	// bd.setposCell()   該当するidのセルのbx,byプロパティを設定する
+	// bd.setposCross()  該当するidの交差点のbx,byプロパティを設定する
+	// bd.setposBorder() 該当するidの境界線/Lineのbx,byプロパティを設定する
+	// bd.setposEXCell() 該当するidのExtendセルのbx,byプロパティを設定する
+	// bd.set_xnum()     crossは存在しないが、bd._xnumだけ設定したい場合に呼び出す
 	//---------------------------------------------------------------------------
 	// setpos関連関数 <- 各Cell等が持っているとメモリを激しく消費するのでここに置くこと.
 	setposAll : function(){
 		this.setposCells();
-		if(k.iscross)        { this.setposCrosses();}
-		if(k.isborder)       { this.setposBorders();}
-		if(k.isextendcell!=0){ this.setposEXcells();}
+		if(!!k.iscross) { this.setposCrosses();}
+		if(!!k.isborder){ this.setposBorders();}
+		if(!!k.isexcell){ this.setposEXcells();}
+
+		this.setcacheAll();
+		this.setcoordAll();
 	},
+	setposGroup : function(type){
+		if     (type===k.CELL)  { this.setposCells();}
+		else if(type===k.CROSS) { this.setposCrosses();}
+		else if(type===k.BORDER){ this.setposBorders();}
+		else if(type===k.EXCELL){ this.setposEXcells();}
+	},
+
 	setposCells : function(){
-		var x0=k.p0.x, y0=k.p0.y;
 		this.cellmax = this.cell.length;
 		for(var id=0;id<this.cellmax;id++){
 			var obj = this.cell[id];
-			obj.cx = id%k.qcols;
-			obj.cy = mf(id/k.qcols);
-			obj.px = x0 + mf(obj.cx*k.cwidth);
-			obj.py = y0 + mf(obj.cy*k.cheight);
+			obj.bx = (id%k.qcols)*2+1;
+			obj.by = mf(id/k.qcols)*2+1;
 		}
 	},
 	setposCrosses : function(){
-		var x0=k.p0.x, y0=k.p0.y;
 		this.crossmax = this.cross.length;
 		for(var id=0;id<this.crossmax;id++){
 			var obj = this.cross[id];
-			obj.cx = id%(k.qcols+1);
-			obj.cy = mf(id/(k.qcols+1));
-			obj.px = x0 + mf(obj.cx*k.cwidth);
-			obj.py = y0 + mf(obj.cy*k.cheight);
+			obj.bx = (id%(k.qcols+1))*2;
+			obj.by = mf(id/(k.qcols+1))*2;
 		}
 	},
 	setposBorders : function(){
-		var x0=k.p0.x, y0=k.p0.y;
 		this.bdinside = 2*k.qcols*k.qrows-(k.qcols+k.qrows);
 		this.bdmax = this.border.length;
 		for(var id=0;id<this.bdmax;id++){
-			var obj = this.border[id];
-			if(id>=0 && id<(k.qcols-1)*k.qrows){
-				obj.cx = (id%(k.qcols-1))*2+2;
-				obj.cy = mf(id/(k.qcols-1))*2+1;
+			var obj=this.border[id], i=id;
+			if(i>=0 && i<(k.qcols-1)*k.qrows){ obj.bx=(i%(k.qcols-1))*2+2; obj.by=mf(i/(k.qcols-1))*2+1;} i-=((k.qcols-1)*k.qrows);
+			if(i>=0 && i<k.qcols*(k.qrows-1)){ obj.bx=(i%k.qcols)*2+1;     obj.by=mf(i/k.qcols)*2+2;    } i-=(k.qcols*(k.qrows-1));
+			if(k.isborder===2){
+				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;     obj.by=0;        } i-=k.qcols;
+				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;     obj.by=2*k.qrows;} i-=k.qcols;
+				if(i>=0 && i<k.qrows){ obj.bx=0;         obj.by=i*2+1;    } i-=k.qrows;
+				if(i>=0 && i<k.qrows){ obj.bx=2*k.qcols; obj.by=i*2+1;    } i-=k.qrows;
 			}
-			else if(id>=(k.qcols-1)*k.qrows && id<this.bdinside){
-				obj.cx = (id-(k.qcols-1)*k.qrows)%k.qcols*2+1;
-				obj.cy = mf((id-(k.qcols-1)*k.qrows)/k.qcols)*2+2;
-			}
-			else if(id>=this.bdinside && id<this.bdinside+k.qcols){
-				obj.cx = (id-this.bdinside)*2+1;
-				obj.cy = 0;
-			}
-			else if(id>=this.bdinside+k.qcols && id<this.bdinside+2*k.qcols){
-				obj.cx = (id-this.bdinside-k.qcols)*2+1;
-				obj.cy = k.qrows*2;
-			}
-			else if(id>=this.bdinside+2*k.qcols && id<this.bdinside+2*k.qcols+k.qrows){
-				obj.cx = 0;
-				obj.cy = (id-this.bdinside-2*k.qcols)*2+1;
-			}
-			else if(id>=this.bdinside+2*k.qcols+k.qrows && id<this.bdinside+2*(k.qcols+k.qrows)){
-				obj.cx = k.qcols*2;
-				obj.cy = (id-this.bdinside-2*k.qcols-k.qrows)*2+1;
-			}
-			obj.px = x0 + mf(obj.cx*k.cwidth/2);
-			obj.py = y0 + mf(obj.cy*k.cheight/2);
 		}
 	},
 	setposEXcells : function(){
-		var x0=k.p0.x, y0=k.p0.y;
 		this.excellmax = this.excell.length;
 		for(var id=0;id<this.excellmax;id++){
-			var obj = this.excell[id];
-			if(k.isextendcell===1){
-				if     (id<k.qcols)        { obj.cx=id; obj.cy=-1;        }
-				else if(id<k.qcols+k.qrows){ obj.cx=-1; obj.cy=id-k.qcols;}
-				else                       { obj.cx=-1; obj.cy=-1;        }
+			var obj = this.excell[id], i=id;
+			obj.bx=-1;
+			obj.by=-1;
+			if(k.isexcell===1){
+				if(i>=0 && i<k.qcols){ obj.bx=i*2+1; obj.by=-1;    continue;} i-=k.qcols;
+				if(i>=0 && i<k.qrows){ obj.bx=-1;    obj.by=i*2+1; continue;} i-=k.qrows;
 			}
-			else if(k.isextendcell===2){
-				if     (id<  k.qcols)            { obj.cx=id;         obj.cy=-1;                  }
-				else if(id<2*k.qcols)            { obj.cx=id-k.qcols; obj.cy=k.qrows;             }
-				else if(id<2*k.qcols+  k.qrows)  { obj.cx=-1;         obj.cy=id-2*k.qcols;        }
-				else if(id<2*k.qcols+2*k.qrows)  { obj.cx=k.qcols;    obj.cy=id-2*k.qcols-k.qrows;}
-				else if(id<2*k.qcols+2*k.qrows+1){ obj.cx=-1;         obj.cy=-1;     }
-				else if(id<2*k.qcols+2*k.qrows+2){ obj.cx=k.qcols;    obj.cy=-1;     }
-				else if(id<2*k.qcols+2*k.qrows+3){ obj.cx=-1;         obj.cy=k.qrows;}
-				else if(id<2*k.qcols+2*k.qrows+4){ obj.cx=k.qcols;    obj.cy=k.qrows;}
-				else                             { obj.cx=-1;         obj.cy=-1;     }
+			else if(k.isexcell===2){
+				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;       obj.by=-1;          continue;} i-=k.qcols;
+				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;       obj.by=2*k.qrows+1; continue;} i-=k.qcols;
+				if(i>=0 && i<k.qrows){ obj.bx=-1;          obj.by=i*2+1;       continue;} i-=k.qrows;
+				if(i>=0 && i<k.qrows){ obj.bx=2*k.qcols+1; obj.by=i*2+1;       continue;} i-=k.qrows;
+				if(i===0)            { obj.bx=-1;          obj.by=-1;          continue;} i--;
+				if(i===0)            { obj.bx=2*k.qcols+1; obj.by=-1;          continue;} i--;
+				if(i===0)            { obj.bx=-1;          obj.by=2*k.qrows+1; continue;} i--;
+				if(i===0)            { obj.bx=2*k.qcols+1; obj.by=2*k.qrows+1; continue;} i--;
 			}
-			obj.px = x0 + obj.cx*k.cwidth;
-			obj.py = y0 + obj.cy*k.cheight;
 		}
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.setcacheAll() 全てのCell, Cross, Borderオブジェクトの_cnum等をキャッシュする
+	//---------------------------------------------------------------------------
+	setcacheAll : function(){
+		this._cnum = {};
+		this._xnum = {};
+		this._bnum = {};
+		this._exnum = {};
+
+		for(var id=0;id<this.cellmax;id++){
+			var obj = this.cell[id];
+			this._cnum[[obj.bx, obj.by].join("_")] = id;
+		}
+		for(var id=0;id<this.crossmax;id++){
+			var obj = this.cross[id];
+			this._xnum[[obj.bx, obj.by].join("_")] = id;
+		}
+		if(k.iscross===0){
+			for(var by=0;by<=this.maxby;by+=2){ for(var bx=0;bx<=this.maxbx;bx+=2){
+				this._xnum[[bx, by].join("_")] = (bx>>1)+(by>>1)*(k.qcols+1);
+			}}
+		}
+		for(var id=0;id<this.bdmax;id++){
+			var obj = this.border[id];
+			this._bnum[[obj.bx, obj.by].join("_")] = id;
+
+			obj.cellcc[0] = this.cnum(obj.bx-(obj.by&1), obj.by-(obj.bx&1));
+			obj.cellcc[1] = this.cnum(obj.bx+(obj.by&1), obj.by+(obj.bx&1));
+
+			obj.crosscc[0] = this.xnum(obj.bx-(obj.bx&1), obj.by-(obj.by&1));
+			obj.crosscc[1] = this.xnum(obj.bx+(obj.bx&1), obj.by+(obj.by&1));
+		}
+		for(var id=0;id<this.excellmax;id++){
+			var obj = this.excell[id];
+			this._exnum[[obj.bx, obj.by].join("_")] = id;
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.setcoordAll() 全てのCell, Cross, BorderオブジェクトのsetcoordCell()等を呼び出す
+	// bd.setminmax()   盤面のbx,byの最小値/最大値をセットする
+	// bd.isinside()    指定された(bx,by)が盤面内かどうか判断する
+	//---------------------------------------------------------------------------
+	setcoordAll : function(){
+		var x0=k.p0.x, y0=k.p0.y;
+		{
+			for(var id=0;id<this.cellmax;id++){
+				var obj = this.cell[id];
+				obj.px = x0 + (obj.bx-1)*k.bwidth;
+				obj.py = y0 + (obj.by-1)*k.bheight;
+				obj.cpx = x0 + obj.bx*k.bwidth;
+				obj.cpy = y0 + obj.by*k.bheight;
+			}
+		}
+		if(!!k.iscross){
+			for(var id=0;id<this.crossmax;id++){
+				var obj = this.cross[id];
+				obj.px = x0 + obj.bx*k.bwidth;
+				obj.py = y0 + obj.by*k.bheight;
+			}
+		}
+		if(!!k.isborder){
+			for(var id=0;id<this.bdmax;id++){
+				var obj = this.border[id];
+				obj.px = x0 + obj.bx*k.bwidth;
+				obj.py = y0 + obj.by*k.bheight;
+			}
+		}
+		if(!!k.isexcell){
+			for(var id=0;id<this.excellmax;id++){
+				var obj = this.excell[id];
+				obj.px = x0 + (obj.bx-1)*k.bwidth;
+				obj.py = y0 + (obj.by-1)*k.bheight;
+			}
+		}
+	},
+
+	setminmax : function(){
+		var extUL = (k.isexcell===1 || k.isexcell===2);
+		var extDR = (k.isexcell===2);
+		this.minbx = (!extUL ? 0 : -2);
+		this.minby = (!extUL ? 0 : -2);
+		this.maxbx = (!extDR ? 2*k.qcols : 2*k.qcols+2);
+		this.maxby = (!extDR ? 2*k.qrows : 2*k.qrows+2);
+
+		tc.adjust();
+	},
+	isinside : function(bx,by){
+		return (bx>=this.minbx && bx<=this.maxbx && by>=this.minby && by<=this.maxby);
 	},
 
 	//---------------------------------------------------------------------------
@@ -943,7 +2229,7 @@ Board.prototype = {
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].subclear(i);}
 	},
 
-	errclear : function(){
+	errclear : function(isrepaint){
 		if(!ans.errDisp){ return;}
 
 		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].error=0;}
@@ -952,178 +2238,172 @@ Board.prototype = {
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].error=0;}
 
 		ans.errDisp = false;
-		pc.paintAll();
+		if(isrepaint!==false){ pc.paintAll();}
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.getnewObj()   指定されたタイプの新しいオブジェクトを返す
-	// bd.isNullObj()   指定したオブジェクトが初期値と同じか判断する
-	// bd.hideNumobj()  指定したオブジェクトのnumobjを隠す
+	// bd.idnum()  (X,Y)の位置にあるオブジェクトのIDを返す
 	//---------------------------------------------------------------------------
-	getnewObj : function(type,id){
-		if(type===k.CELL || type===k.EXCELL){ return (new Cell(id));}
-		else if(type===k.CROSS) { return (new Cross(id));}
-		else if(type===k.BORDER){ return (new Border(id));}
-	},
-	isNullObj : function(type,id){
-		if(type===k.CELL){
-			return ((this.cell[id].qans === this.defcell.qans)&&
-					(this.cell[id].qsub === this.defcell.qsub)&&
-					(this.cell[id].ques === this.defcell.ques)&&
-					(this.cell[id].qnum === this.defcell.qnum)&&
-					(this.cell[id].direc=== this.defcell.direc));
+	idnum : function(type,bx,by,qc,qr){
+		if(qc===(void 0)){
+			if     (type===k.CELL)  { return this.cnum(bx,by);}
+			else if(type===k.CROSS) { return this.xnum(bx,by);}
+			else if(type===k.BORDER){ return this.bnum(bx,by);}
+			else if(type===k.EXCELL){ return this.exnum(bx,by);}
 		}
-		else if(type===k.CROSS) {
-			return (this.cross[id].qnum===this.defcross.qnum);
+		else{
+			if     (type===k.CELL)  { return this.cnum2(bx,by,qc,qr);}
+			else if(type===k.CROSS) { return this.xnum2(bx,by,qc,qr);}
+			else if(type===k.BORDER){ return this.bnum2(bx,by,qc,qr);}
+			else if(type===k.EXCELL){ return this.exnum2(bx,by,qc,qr);}
 		}
-		else if(type===k.BORDER){
-			return ((this.border[id].qans === this.defborder.qans)&&
-					(this.border[id].qsub === this.defborder.qsub)&&
-					(this.border[id].ques === this.defborder.ques)&&
-					(this.border[id].qnum === this.defborder.qnum)&&
-					(this.border[id].line === this.defborder.line));
-		}
-		else if(type===k.EXCELL){
-			return ((this.excell[id].qnum === this.defcell.qnum)&&
-					(this.excell[id].direc=== this.defcell.direc));
-		}
-		return true;
-	},
-
-	hideNumobj : function(type,id){
-		if(type===k.CELL){
-			pc.hideEL(this.cell[id].numobj);
-			pc.hideEL(this.cell[id].numobj2);
-		}
-		else if(type===k.CROSS) {
-			pc.hideEL(this.cross[id].numobj);
-		}
-		else if(type===k.BORDER){
-			pc.hideEL(this.border[id].numobj);
-		}
-		else if(type===k.EXCELL){
-			pc.hideEL(this.excell[id].numobj);
-			pc.hideEL(this.excell[id].numobj2);
-		}
+		return -1;
 	},
 
 	//---------------------------------------------------------------------------
 	// bd.cnum()   (X,Y)の位置にあるCellのIDを返す
-	// bd.cnum2()  (X,Y)の位置にあるCellのIDを、盤面の大きさを(qc×qr)で計算して返す
 	// bd.xnum()   (X,Y)の位置にあるCrossのIDを返す
-	// bd.xnum2()  (X,Y)の位置にあるCrossのIDを、盤面の大きさを(qc×qr)で計算して返す
-	// bd.bnum()   (X*2,Y*2)の位置にあるBorderのIDを返す
-	// bd.bnum2()  (X*2,Y*2)の位置にあるBorderのIDを、盤面の大きさを(qc×qr)で計算して返す
+	// bd.bnum()   (X,Y)の位置にあるBorderのIDを返す
 	// bd.exnum()  (X,Y)の位置にあるextendCellのIDを返す
+	//---------------------------------------------------------------------------
+	cnum : function(bx,by){
+		var key = [bx,by].join("_");
+		return (this._cnum[key]!==(void 0) ? this._cnum[key] : -1);
+	},
+	xnum : function(bx,by){
+		var key = [bx,by].join("_");
+		return (this._xnum[key]!==(void 0) ? this._xnum[key] : -1);
+	},
+	bnum : function(bx,by){
+		var key = [bx,by].join("_");
+		return (this._bnum[key]!==(void 0) ? this._bnum[key] : -1);
+	},
+	exnum : function(bx,by){
+		var key = [bx,by].join("_");
+		return (this._exnum[key]!==(void 0) ? this._exnum[key] : -1);
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.cnum2()  (X,Y)の位置にあるCellのIDを、盤面の大きさを(qc×qr)で計算して返す
+	// bd.xnum2()  (X,Y)の位置にあるCrossのIDを、盤面の大きさを(qc×qr)で計算して返す
+	// bd.bnum2()  (X,Y)の位置にあるBorderのIDを、盤面の大きさを(qc×qr)で計算して返す
 	// bd.exnum2() (X,Y)の位置にあるextendCellのIDを、盤面の大きさを(qc×qr)で計算して返す
 	//---------------------------------------------------------------------------
-	cnum : function(cx,cy){
-		return (cx>=0&&cx<=k.qcols-1&&cy>=0&&cy<=k.qrows-1)?cx+cy*k.qcols:-1;
+	cnum2 : function(bx,by,qc,qr){
+		if((bx<0||bx>2*qc||by<0||by>2*qr)||(!(bx&1))||(!(by&1))){ return -1;}
+		return (bx>>1)+(by>>1)*qc;
 	},
-	cnum2 : function(cx,cy,qc,qr){
-		return (cx>=0&&cx<=qc-1&&cy>=0&&cy<=qr-1)?cx+cy*qc:-1;
+	xnum2 : function(bx,by,qc,qr){
+		if((bx<0||bx>2*qc||by<0||by>2*qr)||(!!(bx&1))||(!!(by&1))){ return -1;}
+		return (bx>>1)+(by>>1)*(qc+1);
 	},
-	xnum : function(cx,cy){
-		return (cx>=0&&cx<=k.qcols&&cy>=0&&cy<=k.qrows)?cx+cy*(k.qcols+1):-1;
-	},
-	xnum2 : function(cx,cy,qc,qr){
-		return (cx>=0&&cx<=qc&&cy>=0&&cy<=qr)?cx+cy*(qc+1):-1;
-	},
-	bnum : function(cx,cy){
-		return this.bnum2(cx,cy,k.qcols,k.qrows);
-	},
-	bnum2 : function(cx,cy,qc,qr){
-		if(cx>=1&&cx<=qc*2-1&&cy>=1&&cy<=qr*2-1){
-			if     (!(cx&1) &&  (cy&1)){ return ((cx>>1)-1)+(cy>>1)*(qc-1);}
-			else if( (cx&1) && !(cy&1)){ return (cx>>1)+((cy>>1)-1)*qc+(qc-1)*qr;}
+	bnum2 : function(bx,by,qc,qr){
+		if(bx>=1&&bx<=2*qc-1&&by>=1&&by<=2*qr-1){
+			if     (!(bx&1) &&  (by&1)){ return ((bx>>1)-1)+(by>>1)*(qc-1);}
+			else if( (bx&1) && !(by&1)){ return (bx>>1)+((by>>1)-1)*qc+(qc-1)*qr;}
 		}
-		else if(k.isoutsideborder==1){
-			if     (cy===0   &&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+(cx>>1);}
-			else if(cy===2*qr&&(cx&1)&&(cx>=1&&cx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+(cx>>1);}
-			else if(cx===0   &&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+(cy>>1);}
-			else if(cx===2*qc&&(cy&1)&&(cy>=1&&cy<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+(cy>>1);}
+		else if(k.isborder==2){
+			if     (by===0   &&(bx&1)&&(bx>=1&&bx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+(bx>>1);}
+			else if(by===2*qr&&(bx&1)&&(bx>=1&&bx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+(bx>>1);}
+			else if(bx===0   &&(by&1)&&(by>=1&&by<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+(by>>1);}
+			else if(bx===2*qc&&(by&1)&&(by>=1&&by<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+(by>>1);}
 		}
 		return -1;
 	},
-	exnum : function(cx,cy){
-		return this.exnum2(cx,cy,k.qcols,k.qrows);
-	},
-	exnum2 : function(cx,cy,qc,qr){
-		if(k.isextendcell===1){
-			if(cx===-1&&cy===-1){ return qc+qr;}
-			else if(cy===-1&&cx>=0&&cx<qc){ return cx;}
-			else if(cx===-1&&cy>=0&&cy<qr){ return qc+cy;}
+	exnum2 : function(bx,by,qc,qr){
+		if(k.isexcell===1){
+			if(bx===-1&&by===-1){ return qc+qr;}
+			else if(by===-1&&bx>0&&bx<2*qc){ return (bx>>1);}
+			else if(bx===-1&&by>0&&by<2*qr){ return qc+(by>>1);}
 		}
-		else if(k.isextendcell===2){
-			if     (cy===-1&&cx>=0&&cx<qc){ return cx;}
-			else if(cy===qr&&cx>=0&&cx<qc){ return qc+cx;}
-			else if(cx===-1&&cy>=0&&cy<qr){ return 2*qc+cy;}
-			else if(cx===qc&&cy>=0&&cy<qr){ return 2*qc+qr+cy;}
-			else if(cx===-1&&cy===-1){ return 2*qc+2*qr;}
-			else if(cx===qc&&cy===-1){ return 2*qc+2*qr+1;}
-			else if(cx===-1&&cy===qr){ return 2*qc+2*qr+2;}
-			else if(cx===qc&&cy===qr){ return 2*qc+2*qr+3;}
+		else if(k.isexcell===2){
+			if     (by===-1    &&bx>0&&bx<2*qc){ return (bx>>1);}
+			else if(by===2*qr+1&&bx>0&&bx<2*qc){ return qc+(bx>>1);}
+			else if(bx===-1    &&by>0&&by<2*qr){ return 2*qc+(by>>1);}
+			else if(bx===2*qc+1&&by>0&&by<2*qr){ return 2*qc+qr+(by>>1);}
+			else if(bx===-1    &&by===-1    ){ return 2*qc+2*qr;}
+			else if(bx===2*qc+1&&by===-1    ){ return 2*qc+2*qr+1;}
+			else if(bx===-1    &&by===2*qr+1){ return 2*qc+2*qr+2;}
+			else if(bx===2*qc+1&&by===2*qr+1){ return 2*qc+2*qr+3;}
 		}
 		return -1;
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.getClistByPosition()  指定した範囲に含まれるセルのIDを返す
+	// bd.objectinside() 座標(x1,y1)-(x2,y2)に含まれるオブジェクトのIDリストを取得する
 	//---------------------------------------------------------------------------
-	getClistByPosition : function(x1,y1,x2,y2){
+	objectinside : function(type,x1,y1,x2,y2){
+		if     (type===k.CELL)  { return this.cellinside  (x1,y1,x2,y2);}
+		else if(type===k.CROSS) { return this.crossinside (x1,y1,x2,y2);}
+		else if(type===k.BORDER){ return this.borderinside(x1,y1,x2,y2);}
+		else if(type===k.EXCELL){ return this.excellinside(x1,y1,x2,y2);}
+		return [];
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.cellinside()   座標(x1,y1)-(x2,y2)に含まれるCellのIDリストを取得する
+	// bd.crossinside()  座標(x1,y1)-(x2,y2)に含まれるCrossのIDリストを取得する
+	// bd.borderinside() 座標(x1,y1)-(x2,y2)に含まれるBorderのIDリストを取得する
+	// bd.excellinside() 座標(x1,y1)-(x2,y2)に含まれるExcellのIDリストを取得する
+	//---------------------------------------------------------------------------
+	cellinside : function(x1,y1,x2,y2){
 		var clist = [];
-		for(var cx=x1;cx<=Math.min(x2,k.qcols-1);cx++){
-			for(var cy=y1;cy<=Math.min(y2,k.qrows-1);cy++){
-				var cc = this.cnum(cx,cy);
-				if(cc!==-1){ clist.push(cc);}
-			}
-		}
+		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
+			var c = this._cnum[[bx,by].join("_")];
+			if(c!==(void 0)){ clist.push(c);}
+		}}
 		return clist;
+	},
+	crossinside : function(x1,y1,x2,y2){
+		var clist = [];
+		for(var by=y1+(y1&1);by<=y2;by+=2){ for(var bx=x1+(x1&1);bx<=x2;bx+=2){
+			var c = this._xnum[[bx,by].join("_")];
+			if(c!==(void 0)){ clist.push(c);}
+		}}
+		return clist;
+	},
+	borderinside : function(x1,y1,x2,y2){
+		var idlist = [];
+		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
+			if(bx&1===by&1){ continue;}
+			var id = this._bnum[[bx,by].join("_")];
+			if(id!==(void 0)){ idlist.push(id);}
+		}}
+		return idlist;
+	},
+	excellinside : function(x1,y1,x2,y2){
+		var exlist = [];
+		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
+			var c = this._exnum[[bx,by].join("_")];
+			if(c!==(void 0)){ exlist.push(c);}
+		}}
+		return exlist;
 	},
 
 	//---------------------------------------------------------------------------
 	// bd.up() bd.dn() bd.lt() bd.rt()  セルの上下左右に接するセルのIDを返す
 	//---------------------------------------------------------------------------
-	up : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].cx  ,this.cell[cc].cy-1):-1;},	//上のセルのIDを求める
-	dn : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].cx  ,this.cell[cc].cy+1):-1;},	//下のセルのIDを求める
-	lt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].cx-1,this.cell[cc].cy  ):-1;},	//左のセルのIDを求める
-	rt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].cx+1,this.cell[cc].cy  ):-1;},	//右のセルのIDを求める
+	up : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx  ,this.cell[cc].by-2):-1;},	//上のセルのIDを求める
+	dn : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx  ,this.cell[cc].by+2):-1;},	//下のセルのIDを求める
+	lt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx-2,this.cell[cc].by  ):-1;},	//左のセルのIDを求める
+	rt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx+2,this.cell[cc].by  ):-1;},	//右のセルのIDを求める
 	//---------------------------------------------------------------------------
 	// bd.ub() bd.db() bd.lb() bd.rb()  セルの上下左右にある境界線のIDを返す
 	//---------------------------------------------------------------------------
-	ub : function(cc){ return this.cell[cc]?this.bnum(2*this.cell[cc].cx+1,2*this.cell[cc].cy  ):-1;},	//セルの上の境界線のIDを求める
-	db : function(cc){ return this.cell[cc]?this.bnum(2*this.cell[cc].cx+1,2*this.cell[cc].cy+2):-1;},	//セルの下の境界線のIDを求める
-	lb : function(cc){ return this.cell[cc]?this.bnum(2*this.cell[cc].cx  ,2*this.cell[cc].cy+1):-1;},	//セルの左の境界線のIDを求める
-	rb : function(cc){ return this.cell[cc]?this.bnum(2*this.cell[cc].cx+2,2*this.cell[cc].cy+1):-1;},	//セルの右の境界線のIDを求める
-
-	//---------------------------------------------------------------------------
-	// bd.cc1()      境界線のすぐ上かすぐ左にあるセルのIDを返す
-	// bd.cc2()      境界線のすぐ下かすぐ右にあるセルのIDを返す
-	// bd.crosscc1() 境界線のすぐ上かすぐ左にある交差点のIDを返す
-	// bd.crosscc2() 境界線のすぐ下かすぐ右にある交差点のIDを返す
-	//---------------------------------------------------------------------------
-	cc1 : function(id){
-		return this.cnum((bd.border[id].cx-bd.border[id].cy%2)>>1, (bd.border[id].cy-bd.border[id].cx%2)>>1);
-	},
-	cc2 : function(id){
-		return this.cnum((bd.border[id].cx+bd.border[id].cy%2)>>1, (bd.border[id].cy+bd.border[id].cx%2)>>1);
-	},
-	crosscc1 : function(id){
-		return this.xnum((bd.border[id].cx-bd.border[id].cx%2)>>1, (bd.border[id].cy-bd.border[id].cy%2)>>1);
-	},
-	crosscc2 : function(id){
-		return this.xnum((bd.border[id].cx+bd.border[id].cx%2)>>1, (bd.border[id].cy+bd.border[id].cy%2)>>1);
-	},
+	ub : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx  ,this.cell[cc].by-1):-1;},	//セルの上の境界線のIDを求める
+	db : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx  ,this.cell[cc].by+1):-1;},	//セルの下の境界線のIDを求める
+	lb : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx-1,this.cell[cc].by  ):-1;},	//セルの左の境界線のIDを求める
+	rb : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx+1,this.cell[cc].by  ):-1;},	//セルの右の境界線のIDを求める
 
 	//---------------------------------------------------------------------------
 	// bd.bcntCross() 指定された位置のCrossの周り4マスのうちqans==1のマスの数を求める
 	//---------------------------------------------------------------------------
-	bcntCross : function(cx,cy) {
-		var cnt = 0;
-		if(this.isBlack(this.cnum(cx-1, cy-1))){ cnt++;}
-		if(this.isBlack(this.cnum(cx  , cy-1))){ cnt++;}
-		if(this.isBlack(this.cnum(cx-1, cy  ))){ cnt++;}
-		if(this.isBlack(this.cnum(cx  , cy  ))){ cnt++;}
+	bcntCross : function(c) {
+		var cnt=0, bx=bd.cross[c].bx, by=bd.cross[c].by;
+		if(this.isBlack(this.cnum(bx-1, by-1))){ cnt++;}
+		if(this.isBlack(this.cnum(bx+1, by-1))){ cnt++;}
+		if(this.isBlack(this.cnum(bx-1, by+1))){ cnt++;}
+		if(this.isBlack(this.cnum(bx+1, by+1))){ cnt++;}
 		return cnt;
 	},
 
@@ -1149,16 +2429,19 @@ Board.prototype = {
 	// bd.checkLPCombined() 線がつながっているかどうか見て、Line==1を設定する
 	//---------------------------------------------------------------------------
 	isLPMarked : function(id){
-		return bd.border[id].cx&1 ? (bd.isLPdown(bd.cc1(id)) || bd.isLPup(bd.cc2(id))) :
-									(bd.isLPright(bd.cc1(id)) || bd.isLPleft(bd.cc2(id)));
+		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+		return bd.border[id].bx&1 ? (bd.isLPdown(cc1) || bd.isLPup(cc2)) :
+									(bd.isLPright(cc1) || bd.isLPleft(cc2));
 	},
 	isLPCombined : function(id){
-		return bd.border[id].cx&1 ? (bd.isLPdown(bd.cc1(id)) && bd.isLPup(bd.cc2(id))) :
-									(bd.isLPright(bd.cc1(id)) && bd.isLPleft(bd.cc2(id)));
+		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+		return bd.border[id].bx&1 ? (bd.isLPdown(cc1) && bd.isLPup(cc2)) :
+									(bd.isLPright(cc1) && bd.isLPleft(cc2));
 	},
 	isLineNG : function(id){
-		return bd.border[id].cx&1 ? (bd.isnoLPdown(bd.cc1(id)) || bd.isnoLPup(bd.cc2(id))) :
-									(bd.isnoLPright(bd.cc1(id)) || bd.isnoLPleft(bd.cc2(id)));
+		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+		return bd.border[id].bx&1 ? (bd.isnoLPdown(cc1) || bd.isnoLPup(cc2)) :
+									(bd.isnoLPright(cc1) || bd.isnoLPleft(cc2));
 	},
 	checkLPCombined : function(cc){
 		var id;
@@ -1190,7 +2473,7 @@ Board.prototype = {
 	},
 	// overwrite by lightup.js and kakuro.js
 	sQnC : function(id, num) {
-		if(k.dispzero===0 && num===0){ return;}
+		if(!k.dispzero && num===0){ return;}
 
 		var old = this.cell[id].qnum;
 		um.addOpe(k.CELL, k.QNUM, id, old, num);
@@ -1273,7 +2556,7 @@ Board.prototype = {
 		um.addOpe(k.BORDER, k.QUES, id, old, num);
 		this.border[id].ques = num;
 
-		if(um.isenableInfo() && (num>0 ^ old>0)){ area.call_setBorder(id,num,k.QUES);}
+		if(um.isenableInfo() && (num>0 ^ old>0)){ area.setBorder(id,num);}
 	},
 	sQnB : function(id, num) {
 		um.addOpe(k.BORDER, k.QNUM, id, this.border[id].qnum, num);
@@ -1288,7 +2571,7 @@ Board.prototype = {
 
 		if(um.isenableInfo() && (num>0 ^ old>0)){
 			if(k.isborderAsLine){ line.setLine(id,num);}
-			else                { area.call_setBorder(id,num,k.QANS);}
+			else                { area.setBorder(id,num);}
 		}
 	},
 	sQsB : function(id, num) {
@@ -1383,16 +2666,16 @@ Board.prototype = {
 		// bd.sameNumber() ２つのCellに同じ有効な数字があるか返す
 		//-----------------------------------------------------------------------
 		this.isNum = (
-			(k.isAnsNumber) ? function(c){ return (c!==-1 && (bd.cell[c].qnum!==-1 || bd.cell[c].qans!==-1));}
-							: function(c){ return (c!==-1 &&  bd.cell[c].qnum!==-1);}
+			k.isAnsNumber ? function(c){ return (c!==-1 && (bd.cell[c].qnum!==-1 || bd.cell[c].qans!==-1));}
+						  : function(c){ return (c!==-1 &&  bd.cell[c].qnum!==-1);}
 		);
 		this.noNum = (
-			(k.isAnsNumber) ? function(c){ return (c===-1 || (bd.cell[c].qnum===-1 && bd.cell[c].qans===-1));}
-							: function(c){ return (c===-1 ||  bd.cell[c].qnum===-1);}
+			k.isAnsNumber ? function(c){ return (c===-1 || (bd.cell[c].qnum===-1 && bd.cell[c].qans===-1));}
+						  : function(c){ return (c===-1 ||  bd.cell[c].qnum===-1);}
 		);
 		this.isValidNum = (
-			(k.isAnsNumber) ? function(c){ return (c!==-1 && (bd.cell[c].qnum>=  0 ||(bd.cell[c].qans>=0 && bd.cell[c].qnum===-1)));}
-							: function(c){ return (c!==-1 &&  bd.cell[c].qnum>=  0);}
+			k.isAnsNumber ? function(c){ return (c!==-1 && (bd.cell[c].qnum>=  0 ||(bd.cell[c].qans>=0 && bd.cell[c].qnum===-1)));}
+						  : function(c){ return (c!==-1 &&  bd.cell[c].qnum>=  0);}
 		);
 		this.sameNumber     = function(c1,c2){ return (bd.isValidNum(c1) && (bd.getNum(c1)===bd.getNum(c2)));};
 
@@ -1401,17 +2684,17 @@ Board.prototype = {
 		// bd.setNum()     該当するCellに数字を設定する
 		//-----------------------------------------------------------------------
 		this.getNum = (
-			(k.isAnsNumber) ? function(c){ return (c!==-1 ? this.cell[c].qnum!==-1 ? this.cell[c].qnum : this.cell[c].qans : -1);}
-							: function(c){ return (c!==-1 ? this.cell[c].qnum : -1);}
+			k.isAnsNumber ? function(c){ return (c!==-1 ? this.cell[c].qnum!==-1 ? this.cell[c].qnum : this.cell[c].qans : -1);}
+						  : function(c){ return (c!==-1 ? this.cell[c].qnum : -1);}
 		);
 		this.setNum = (
-			((k.NumberIsWhite) ?
+			(k.NumberIsWhite ?
 				function(c,val){
 					if(!k.dispzero && val===0){ return;}
 					this.sQnC(c,val);
 					this.sQaC(c,bd.defcell.qnum);
 				}
-			:(k.isAnsNumber) ?
+			: k.isAnsNumber ?
 				function(c,val){
 					if(!k.dispzero && val===0){ return;}
 					if(k.editmode){
@@ -1477,7 +2760,7 @@ Graphic = function(){
 	this.gridcolor = "black";
 
 	// セルの色(黒マス)
-	this.Cellcolor = "black";
+	this.cellcolor = "black";
 	this.errcolor1 = "rgb(224, 0, 0)";
 	this.errcolor2 = "rgb(64, 64, 255)";
 	this.errcolor3 = "rgb(0, 191, 0)";
@@ -1486,7 +2769,7 @@ Graphic = function(){
 	this.circledcolor = "white";
 
 	// セルの○×の色(補助記号)
-	this.MBcolor = "rgb(255, 160, 127)";
+	this.mbcolor = "rgb(255, 160, 127)";
 
 	this.qsubcolor1 = "rgb(160,255,160)";
 	this.qsubcolor2 = "rgb(255,255,127)";
@@ -1496,7 +2779,7 @@ Graphic = function(){
 	this.fontcolor = "black";
 	this.fontAnscolor = "rgb(0, 160, 0)";
 	this.fontErrcolor = "rgb(191, 0, 0)";
-	this.BCell_fontcolor = "rgb(224, 224, 224)";
+	this.fontBCellcolor = "rgb(224, 224, 224)";
 
 	this.borderfontcolor = "black";
 
@@ -1508,17 +2791,17 @@ Graphic = function(){
 
 	this.icecolor = "rgb(192, 224, 255)";
 
-	// ques=51のとき、入力できる場所の背景色
-	this.TTcolor = "rgb(127,255,127)";
+	// ques=51のとき、入力できる場所の背景色(TargetTriangle)
+	this.ttcolor = "rgb(127,255,127)";
 
 	// 境界線の色
-	this.BorderQuescolor = "black";
-	this.BorderQanscolor = "rgb(0, 191, 0)";
-	this.BorderQsubcolor = "rgb(255, 0, 255)";
+	this.borderQuescolor = "black";
+	this.borderQanscolor = "rgb(0, 191, 0)";
+	this.borderQsubcolor = "rgb(255, 0, 255)";
 
-	this.errBorderQanscolor2 = "rgb(160, 160, 160)";
+	this.errborderQanscolor2 = "rgb(160, 160, 160)";
 
-	this.BBcolor = "rgb(96, 96, 96)"; // 境界線と黒マスを分ける色
+	this.bbcolor = "rgb(96, 96, 96)"; // 境界線と黒マスを分ける色(BoxBorder)
 
 	// 線・×の色
 	this.linecolor = "rgb(0, 160, 0)";	// 色分けなしの場合
@@ -1530,6 +2813,9 @@ Graphic = function(){
 	// 入力ターゲットの色
 	this.targetColor1 = "rgb(255, 64,  64)";
 	this.targetColor3 = "rgb(64,  64, 255)";
+
+	// 盤面(枠の中)の背景色
+	this.bgcolor = '';
 
 	// 色々なパズルで定義してた固定色
 	this.gridcolor_BLACK  = "black";
@@ -1547,132 +2833,127 @@ Graphic = function(){
 	this.crosssize = 0.4;
 	this.circleratio = [0.40, 0.34];
 
-	this.lw = 1;	// LineWidth 境界線・Lineの太さ
-	this.lm = 1;	// LineMargin
-	this.addlw = 0;	// エラー時に線の太さを広げる
+	// 描画単位
+	this.cw = k.cwidth;
+	this.ch = k.cheight;
+	this.bw = k.bwidth;
+	this.bh = k.bheight;
+
+	this.lw = 1;		// LineWidth 境界線・Lineの太さ
+	this.lm = 1;		// LineMargin
+	this.lwratio = 12;	// onresize_processでlwの値の算出に用いる
+	this.addlw = 0;		// エラー時に線の太さを広げる
+
+	this.bdheader = "b_bd";	// drawBorder1で使うheader
 
 	this.chassisflag = true;	// false: Gridを外枠の位置にも描画する
-	this.zstable     = false;	// 色分けの一部再描画時にtrueにする(VML用)
-	this.textenable  = false;	// 数字をg.fillText()で描画(現在はコメントアウト)
 
 	this.lastHdeg = 0;
 	this.lastYdeg = 0;
 	this.minYdeg = 0.18;
 	this.maxYdeg = 0.70;
 
-	var numobj_attr = {className:'divnum', unselectable:'on'};
-	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', numobj_attr, null, null);
+	this.zidx = 1;
+	this.zidx_array=[];
 
-	var isdrawBC = false, isdrawBD = false;
+	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', {className:'divnum', unselectable:'on'}, null, null);
+	this.EL_IMGOBJ = ee.addTemplate('numobj_parent', 'img', {className:'imgnum', unselectable:'on'}, null, null);
 
-	this.setFunctions();
+	this.numobj = {};					// エレメントへの参照を保持する
+	this.fillTextPrecisely  = false;	// 数字をg.fillText()で描画
+
+	this.isdrawBC = false;
+	this.isdrawBD = false;
+
+	/* vnop関数用 */
+	this.STROKE      = 0;
+	this.FILL        = 1;
+	this.FILL_STROKE = 2;
+	this.NONE        = 3;
+	this.vnop_FILL   = [false,true,true,false];
+	this.vnop_STROKE = [true,false,true,false];
 };
 Graphic.prototype = {
 	//---------------------------------------------------------------------------
-	// pc.onresize_func() resize時にサイズを変更する
-	// pc.already()       Canvasが利用できるか(Safari3対策用)
+	// pc.onresize_process() resize時にサイズを変更する
 	//---------------------------------------------------------------------------
-	onresize_func : function(){
-		this.lw = (mf(k.cwidth/12)>=3?mf(k.cwidth/12):3);
-		this.lm = mf((this.lw-1)/2);
+	onresize_process : function(){
+		this.cw = k.cwidth;
+		this.ch = k.cheight;
 
-		//this.textenable = !!g.fillText;
+		this.bw = k.bwidth;
+		this.bh = k.bheight;
+
+		this.lw = Math.max(k.cwidth/this.lwratio, 3);
+		this.lm = (this.lw-1)/2;
 	},
-	already : (!k.br.IE ? f_true : function(){
-		return uuCanvas.already();
-	}),
 	//---------------------------------------------------------------------------
+	// pc.prepaint()    paint関数を呼び出す
 	// pc.paint()       座標(x1,y1)-(x2,y2)を再描画する。各パズルのファイルでオーバーライドされる。
+	//
 	// pc.paintAll()    全体を再描画する
+	// pc.paintRange()  座標(x1,y1)-(x2,y2)を再描画する。
+	// pc.paintPos()    指定された(X,Y)を再描画する
+	//
+	// pc.paintCell()   指定されたCellを再描画する
+	// pc.paintCellAround() 指定されたCellの周りを含めて再描画する
+	// pc.paintCross()  指定されたCrossを再描画する
 	// pc.paintBorder() 指定されたBorderの周りを再描画する
 	// pc.paintLine()   指定されたLineの周りを再描画する
-	// pc.paintCell()   指定されたCellを再描画する
 	// pc.paintEXcell() 指定されたEXCellを再描画する
 	//---------------------------------------------------------------------------
 	paint : function(x1,y1,x2,y2){ }, //オーバーライド用
-	paintAll : (
-		(!k.br.IE) ? function(){ this.paint(-1,-1,k.qcols,k.qrows); }
-				   : function(){ if(this.already()){ this.paint(-1,-1,k.qcols,k.qrows);} }
-	),
+
+	prepaint : function(x1,y1,x2,y2){
+		this.flushCanvas(x1,y1,x2,y2);
+	//	this.flushCanvasAll();
+
+		this.paint(x1,y1,x2,y2);
+	},
+
+	paintAll : function(){
+		this.prepaint(-1,-1,2*k.qcols+1,2*k.qrows+1);
+	},
+	paintRange : function(x1,y1,x2,y2){
+		this.prepaint(x1,y1,x2,y2);
+	},
+	paintPos : function(pos){
+		this.prepaint(pos.x-1, pos.y-1, pos.x+1, pos.y+1);
+	},
+
+	paintCell : function(cc){
+		if(isNaN(cc) || !bd.cell[cc]){ return;}
+		this.prepaint(bd.cell[cc].bx-1, bd.cell[cc].by-1, bd.cell[cc].bx+1, bd.cell[cc].by+1);
+	},
+	paintCellAround : function(cc){
+		if(isNaN(cc) || !bd.cell[cc]){ return;}
+		this.prepaint(bd.cell[cc].bx-3, bd.cell[cc].by-3, bd.cell[cc].bx+3, bd.cell[cc].by+3);
+	},
+	paintCross : function(cc){
+		if(isNaN(cc) || !bd.cross[cc]){ return;}
+		this.prepaint(bd.cross[cc].bx-1, bd.cross[cc].by-1, bd.cross[cc].bx+1, bd.cross[cc].by+1);
+	},
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
-		if(bd.border[id].cx&1){
-			this.paint((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
-					   (bd.border[id].cx>>1)+1, (bd.border[id].cy>>1)   );
+		if(bd.border[id].bx&1){
+			this.prepaint(bd.border[id].bx-2, bd.border[id].by-1, bd.border[id].bx+2, bd.border[id].by+1);
 		}
 		else{
-			this.paint((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
-					   (bd.border[id].cx>>1)  , (bd.border[id].cy>>1)+1 );
+			this.prepaint(bd.border[id].bx-1, bd.border[id].by-2, bd.border[id].bx+1, bd.border[id].by+2);
 		}
 	},
 	paintLine : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
-		if(bd.border[id].cx&1){
-			this.paint((bd.border[id].cx>>1), (bd.border[id].cy>>1)-1,
-					   (bd.border[id].cx>>1), (bd.border[id].cy>>1)   );
+		if(bd.border[id].bx&1){
+			this.prepaint(bd.border[id].bx-1, bd.border[id].by-2, bd.border[id].bx+1, bd.border[id].by+2);
 		}
 		else{
-			this.paint((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1),
-					   (bd.border[id].cx>>1)  , (bd.border[id].cy>>1) );
+			this.prepaint(bd.border[id].bx-2, bd.border[id].by-1, bd.border[id].bx+2, bd.border[id].by+1);
 		}
-	},
-	paintCell : function(cc){
-		if(isNaN(cc) || !bd.cell[cc]){ return;}
-		this.paint(bd.cell[cc].cx, bd.cell[cc].cy, bd.cell[cc].cx, bd.cell[cc].cy);
 	},
 	paintEXcell : function(ec){
 		if(isNaN(ec) || !bd.excell[ec]){ return;}
-		this.paint(bd.excell[ec].cx, bd.excell[ec].cy, bd.excell[ec].cx, bd.excell[ec].cy);
-	},
-
-	//---------------------------------------------------------------------------
-	// pc.cellinside()   座標(x1,y1)-(x2,y2)に含まれるCellのIDリストを取得する
-	// pc.crossinside()  座標(x1,y1)-(x2,y2)に含まれるCrossのIDリストを取得する
-	// pc.borderinside() 座標(x1,y1)-(x2,y2)に含まれるBorderのIDリストを取得する
-	// pc.excellinside() 座標(x1,y1)-(x2,y2)に含まれるExcellのIDリストを取得する
-	// pc.cellinside_cond() 座標(x1,y1)-(x2,y2)に含まれる条件付きCellのIDリストを取得する
-	//---------------------------------------------------------------------------
-	cellinside : function(x1,y1,x2,y2){
-		var clist = [];
-		for(var cy=y1;cy<=y2;cy++){ for(var cx=x1;cx<=x2;cx++){
-			var c = bd.cnum(cx,cy);
-			if(c!==-1){ clist.push(c);}
-		}}
-		return clist;
-	},
-	crossinside : function(x1,y1,x2,y2){
-		var clist = [];
-		for(var cy=y1;cy<=y2;cy++){ for(var cx=x1;cx<=x2;cx++){
-			var c = bd.xnum(cx,cy);
-			if(c!==-1){ clist.push(c);}
-		}}
-		return clist;
-	},
-	borderinside : function(x1,y1,x2,y2){
-		var idlist = [];
-		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
-			if(bx&1===by&1){ continue;}
-			var id = bd.bnum(bx,by);
-			if(id!==-1){ idlist.push(id);}
-		}}
-		return idlist;
-	},
-	excellinside : function(x1,y1,x2,y2){
-		var exlist = [];
-		for(var cy=y1;cy<=y2;cy++){ for(var cx=x1;cx<=x2;cx++){
-			var c = bd.exnum(cx,cy);
-			if(c!==-1){ exlist.push(c);}
-		}}
-		return exlist;
-	},
-
-	cellinside_cond : function(x1,y1,x2,y2,func){
-		var clist = [];
-		for(var cy=y1;cy<=y2;cy++){ for(var cx=x1;cx<=x2;cx++){
-			var c = bd.cnum(cx,cy);
-			if(c!==-1 && func(c)){ clist.push(c);}
-		}}
-		return clist;
+		this.prepaint(bd.excell[ec].bx-1, bd.excell[ec].by-1, bd.excell[ec].bx+1, bd.excell[ec].by+1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -1716,16 +2997,6 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.inputPath()  リストからg.lineTo()等の関数を呼び出す
-	//---------------------------------------------------------------------------
-	inputPath : function(parray, isClose){
-		g.beginPath();
-		g.moveTo(mf(parray[0]+parray[2]), mf(parray[1]+parray[3]));
-		for(var i=4;i<parray.length;i+=2){ g.lineTo(mf(parray[0]+parray[i+0]), mf(parray[1]+parray[i+1]));}
-		if(isClose){ g.closePath();}
-	},
-
-	//---------------------------------------------------------------------------
 	// pc.drawBlackCells() Cellの、境界線の上から描画される■黒マスをCanvasに書き込む
 	// pc.setCellColor()   前景色の設定・描画判定する
 	// pc.setCellColorFunc()   pc.setCellColor関数を設定する
@@ -1736,27 +3007,27 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	// err==2になるlitsは、drawBGCellsで描画してます。。
 	drawBlackCells : function(x1,y1,x2,y2){
+		this.vinc('cell_front', 'crispEdges');
 		var header = "c_fullb_";
 
-		if(!k.br.IE && this.isdrawBC && !this.isdrawBD){ x1--; y1--; x2++; y2++;}
-		var clist = this.cellinside(x1,y1,x2,y2);
+		if(g.use.canvas && this.isdrawBC && !this.isdrawBD){ x1--; y1--; x2++; y2++;}
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(this.setCellColor(c)){
-				if(this.vnop(header+c,1)){
-					g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
+				if(this.vnop(header+c,this.FILL)){
+					g.fillRect(bd.cell[c].px, bd.cell[c].py, this.cw+1, this.ch+1);
 				}
 			}
 			else{ this.vhide(header+c); continue;}
 		}
-		this.vinc();
 		this.isdrawBC = true;
 	},
 	// 'qans'用
 	setCellColor : function(c){
 		var err = bd.cell[c].error;
 		if(bd.cell[c].qans!==1){ return false;}
-		else if(err===0){ g.fillStyle = this.Cellcolor; return true;}
+		else if(err===0){ g.fillStyle = this.cellcolor; return true;}
 		else if(err===1){ g.fillStyle = this.errcolor1; return true;}
 		return false;
 	},
@@ -1766,7 +3037,7 @@ Graphic.prototype = {
 			this.setCellColor = function(c){
 				var err = bd.cell[c].error;
 				if(bd.cell[c].qnum===-1){ return false;}
-				else if(err===0){ g.fillStyle = this.Cellcolor; return true;}
+				else if(err===0){ g.fillStyle = this.cellcolor; return true;}
 				else if(err===1){ g.fillStyle = this.errcolor1; return true;}
 				return false;
 			};
@@ -1777,19 +3048,18 @@ Graphic.prototype = {
 	},
 
 	drawBGCells : function(x1,y1,x2,y2){
+		this.vinc('cell_back', 'crispEdges');
 		var header = "c_full_";
-
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(this.setBGCellColor(c)){
-				if(this.vnop(header+c,1)){
-					g.fillRect(bd.cell[c].px, bd.cell[c].py, k.cwidth+1, k.cheight+1);
+				if(this.vnop(header+c,this.FILL)){
+					g.fillRect(bd.cell[c].px, bd.cell[c].py, this.cw, this.ch);
 				}
 			}
 			else{ this.vhide(header+c); continue;}
 		}
-		this.vinc();
 	},
 	// 'error1'用
 	setBGCellColor : function(c){
@@ -1810,7 +3080,7 @@ Graphic.prototype = {
 			this.setBGCellColor = function(c){
 				var cell = bd.cell[c];
 				if(cell.qans===1){
-					g.fillStyle = (cell.error===1 ? this.errcolor1 : this.Cellcolor);
+					g.fillStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
 					return true;
 				}
 				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
@@ -1822,7 +3092,7 @@ Graphic.prototype = {
 			this.setBGCellColor = function(c){
 				var cell = bd.cell[c];
 				if(cell.qans===1){
-					if     (cell.error===0){ g.fillStyle = this.Cellcolor;}
+					if     (cell.error===0){ g.fillStyle = this.cellcolor;}
 					else if(cell.error===1){ g.fillStyle = this.errcolor1;}
 					else if(cell.error===2){ g.fillStyle = this.errcolor2;}
 					return true;
@@ -1873,93 +3143,147 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// pc.drawBGEXcells()    EXCellに描画される背景色をCanvasに書き込む
+	// pc.setBGEXcellColor() 背景色の設定・描画判定する
+	//---------------------------------------------------------------------------
+	drawBGEXcells : function(x1,y1,x2,y2){
+		this.vinc('excell_back', 'crispEdges');
+
+		var header = "ex_full_";
+		var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
+		for(var i=0;i<exlist.length;i++){
+			var c = exlist[i];
+			if(this.setBGEXcellColor(c)){
+				if(this.vnop(header+c,this.FILL)){
+					g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, this.cw-1, this.ch-1);
+				}
+			}
+			else{ this.vhide(header+c); continue;}
+		}
+	},
+	setBGEXcellColor : function(c){
+		if(bd.excell[c].error===1){ g.fillStyle = this.errbcolor1; return true;}
+		return false;
+	},
+
+	//---------------------------------------------------------------------------
 	// pc.drawRDotCells()  ・だけをCanvasに書き込む(・用)
 	// pc.drawDotCells()   ・だけをCanvasに書き込む(小さい四角形用)
 	//---------------------------------------------------------------------------
 	drawRDotCells : function(x1,y1,x2,y2){
-		var dsize = k.cwidth*0.06; dsize=(dsize>2?dsize:2);
-		var header = "c_rdot_";
+		this.vinc('cell_dot', 'auto');
 
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var dsize = this.cw*0.06; dsize=(dsize>2?dsize:2);
+		var header = "c_rdot_";
+		g.fillStyle = this.dotcolor;
+
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(bd.cell[c].qsub===1){
-				g.fillStyle = this.dotcolor;
-				if(this.vnop(header+c,1)){
-					g.beginPath();
-					g.arc(bd.cell[c].px+k.cwidth/2, bd.cell[c].py+k.cheight/2, dsize, 0, Math.PI*2, false);
-					g.fill();
+				if(this.vnop(header+c,this.NONE)){
+					g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, dsize);
 				}
 			}
 			else{ this.vhide(header+c);}
 		}
-		this.vinc();
 	},
 	drawDotCells : function(x1,y1,x2,y2){
-		var ksize = k.cwidth*0.15;
-		var header = "c_dot_";
+		this.vinc('cell_dot', 'crispEdges');
 
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var dsize = this.cw*0.075;
+		var header = "c_dot_";
+		g.fillStyle = this.dotcolor;
+
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(bd.cell[c].qsub===1){
-				g.fillStyle = this.dotcolor;
-				if(this.vnop(header+c,1)){
-					g.fillRect(bd.cell[c].px+mf(k.cwidth/2)-mf(ksize/2), bd.cell[c].py+mf(k.cheight/2)-mf(ksize/2), ksize, ksize);
+				if(this.vnop(header+c,this.NONE)){
+					g.fillRect(bd.cell[c].cpx-dsize, bd.cell[c].cpy-dsize, dsize*2, dsize*2);
 				}
 			}
 			else{ this.vhide(header+c);}
 		}
-		this.vinc();
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawNumbers()      Cellの数字をCanvasに書き込む
+	// pc.drawNumbers()  Cellの数字をCanvasに書き込む
+	// pc.drawNumber1()  Cellに数字を記入するためdispnum関数を呼び出す
+	// pc.getCellNumberColor()  Cellの数字の色を設定する
+	// 
 	// pc.drawArrowNumbers() Cellの数字と矢印をCanvasに書き込む
 	// pc.drawQuesHatenas()  ques===-2の時に？をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawNumbers : function(x1,y1,x2,y2){
-		var clist = this.cellinside(x1,y1,x2,y2);
-		for(var i=0;i<clist.length;i++){ this.dispnumCell(clist[i]);}
-		this.vinc();
-	},
-	drawArrowNumbers : function(x1,y1,x2,y2){
-		var headers = ["c_ar1_", "c_dt1_", "c_dt2_", "c_ar3_", "c_dt3_", "c_dt4_"];
-		var ll = mf(k.cwidth*0.7);							//LineLength
-		var ls = mf((k.cwidth-ll)/2);						//LineStart
-		var lw = (mf(k.cwidth/24)>=1?mf(k.cwidth/24):1);	//LineWidth
-		var lm = mf((lw-1)/2);								//LineMargin
+		this.vinc('cell_number', 'auto');
 
-		if(!k.br.IE && this.isdrawBC && !this.isdrawBD){ x1--; y1--; x2++; y2++;}
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
+		for(var i=0;i<clist.length;i++){ this.drawNumber1(clist[i]);}
+	},
+	drawNumber1 : function(c){
+		var obj = bd.cell[c], key = ['cell',c].join('_'), num = bd.getNum(c);
+		if(num>0 || (k.dispzero && num===0) || (k.isDispHatena && num===-2)){
+			var text      = (num>=0 ? ""+num : "?");
+			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
+			var color     = this.getCellNumberColor(c);
+			this.dispnum(key, 1, text, fontratio, color, obj.cpx, obj.cpy);
+		}
+		else{ this.hideEL(key);}
+	},
+	getCellNumberColor : function(c){
+		var obj = bd.cell[c], color = this.fontcolor;
+		if(!k.isAnsNumber && ((k.BlackCell && obj.qans===1) || (!k.BlackCell && obj.ques!==0))){
+			color = this.fontBCellcolor;
+		}
+		else if(obj.error===1 || obj.error===4){
+			color = this.fontErrcolor;
+		}
+		else if(k.isAnsNumber && obj.qnum===-1){
+			color = this.fontAnscolor;
+		}
+		return color;
+	},
+
+	drawArrowNumbers : function(x1,y1,x2,y2){
+		this.vinc('cell_arrownumber', 'auto');
+
+		var headers = ["c_ar1_", "c_dt1_", "c_dt2_", "c_ar3_", "c_dt3_", "c_dt4_"];
+		var ll = this.cw*0.7;				//LineLength
+		var ls = (this.cw-ll)/2;			//LineStart
+		var lw = Math.max(this.cw/24, 1);	//LineWidth
+		var lm = lw/2;						//LineMargin
+
+		if(g.use.canvas && this.isdrawBC && !this.isdrawBD){ x1--; y1--; x2++; y2++;}
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 
 			if(bd.cell[c].qnum!==-1 && (bd.cell[c].qnum!==-2||k.isDispHatena)){
 				var ax=px=bd.cell[c].px, ay=py=bd.cell[c].py, dir = bd.cell[c].direc;
 
-				if     (bd.cell[c].qans ===1){ g.fillStyle = this.BCell_fontcolor;}
+				if     (bd.cell[c].qans ===1){ g.fillStyle = this.fontBCellcolor;}
 				else if(bd.cell[c].error===1){ g.fillStyle = this.fontErrcolor;}
 				else                         { g.fillStyle = this.fontcolor;}
 
 				// 矢印の描画(上下向き)
 				if(dir===k.UP||dir===k.DN){
 					// 矢印の線の描画
-					ax+=(k.cwidth-mf(ls*1.5)-lm); ay+=(ls+1);
-					if(this.vnop(headers[0]+c,1)){ g.fillRect(ax, ay, lw, ll);}
-					ax+=mf(lw/2);
+					ax+=(this.cw-ls*1.5-lm); ay+=(ls+1);
+					if(this.vnop(headers[0]+c,this.FILL)){ g.fillRect(ax, ay, lw, ll);}
+					ax+=lw/2;
 
 					// 矢じりの描画
 					if(dir===k.UP){
-						if(this.vnop(headers[1]+c,1)){
-							this.inputPath([ax,ay     ,0,0 ,-ll/6, ll/3 ,ll/6, ll/3], true);
+						if(this.vnop(headers[1]+c,this.FILL)){
+							g.setOffsetLinePath(ax,ay, 0,0, -ll/6,ll/3, ll/6,ll/3, true);
 							g.fill();
 						}
 					}
 					else{ this.vhide(headers[1]+c);}
 					if(dir===k.DN){
-						if(this.vnop(headers[2]+c,1)){
-							this.inputPath([ax,ay+ll  ,0,0 ,-ll/6,-ll/3 ,ll/6,-ll/3], true);
+						if(this.vnop(headers[2]+c,this.FILL)){
+							g.setOffsetLinePath(ax,ay+ll, 0,0, -ll/6,-ll/3, ll/6,-ll/3, true);
 							g.fill();
 						}
 					}
@@ -1970,21 +3294,21 @@ Graphic.prototype = {
 				// 矢印の描画(左右向き)
 				if(dir===k.LT||dir===k.RT){
 					// 矢印の線の描画
-					ax+=(ls+1); ay+=(mf(ls*1.5)-lm);
-					if(this.vnop(headers[3]+c,1)){ g.fillRect(ax, ay, ll, lw);}
-					ay+=mf(lw/2);
+					ax+=(ls+1); ay+=(ls*1.5-lm);
+					if(this.vnop(headers[3]+c,this.FILL)){ g.fillRect(ax, ay, ll, lw);}
+					ay+=lw/2;
 
 					// 矢じりの描画
 					if(dir===k.LT){
-						if(this.vnop(headers[4]+c,1)){
-							this.inputPath([ax   ,ay  ,0,0 , ll/3,-ll/6 , ll/3,ll/6], true);
+						if(this.vnop(headers[4]+c,this.FILL)){
+							g.setOffsetLinePath(ax,ay, 0,0, ll/3,-ll/6, ll/3,ll/6, true);
 							g.fill();
 						}
 					}
 					else{ this.vhide(headers[4]+c);}
 					if(dir===k.RT){
-						if(this.vnop(headers[5]+c,1)){
-							this.inputPath([ax+ll,ay  ,0,0 ,-ll/3,-ll/6 ,-ll/3,ll/6], true);
+						if(this.vnop(headers[5]+c,this.FILL)){
+							g.setOffsetLinePath(ax+ll,ay, 0,0, -ll/3,-ll/6, -ll/3,ll/6, true);
 							g.fill();
 						}
 					}
@@ -1993,34 +3317,34 @@ Graphic.prototype = {
 				else{ this.vhide([headers[3]+c, headers[4]+c, headers[5]+c]);}
 
 				// 数字の描画
-				if(!bd.cell[c].numobj){ bd.cell[c].numobj = this.CreateDOMAndSetNop();}
 				var num = bd.getNum(c), text = (num>=0 ? ""+num : "?");
 				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
 				var color = g.fillStyle;
 
-				var type=1;
-				if     (dir===k.UP||dir===k.DN){ type=6; fontratio *= 0.85;}
-				else if(dir===k.LT||dir===k.RT){ type=7; fontratio *= 0.85;}
+				var cpx = bd.cell[c].cpx, cpy = bd.cell[c].cpy;
+				if     (dir===k.UP||dir===k.DN){ fontratio *= 0.85; cpx-=this.cw*0.1;}
+				else if(dir===k.LT||dir===k.RT){ fontratio *= 0.85; cpy+=this.ch*0.1;}
 
-				this.dispnum(bd.cell[c].numobj, type, text, fontratio, color, px, py);
+				this.dispnum('cell_'+c, 1, text, fontratio, color, cpx, cpy);
 			}
 			else{
 				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c, headers[4]+c, headers[5]+c]);
-				this.hideEL(bd.cell[c].numobj);
+				this.hideEL('cell_'+c);
 			}
 		}
-		this.vinc();
 	},
 	drawQuesHatenas : function(x1,y1,x2,y2){
-		var clist = this.cellinside(x1,y1,x2,y2);
+		this.vinc('cell_number', 'auto');
+
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
-			var obj = bd.cell[clist[i]];
-			if(obj.ques!==-2){ this.hideEL(obj.numobj); continue;}
-			if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-			var color = (obj.error===1 ? this.fontErrcolor : this.fontcolor);
-			this.dispnum(obj.numobj, 1, "?", 0.8, color, obj.px, obj.py);
+			var obj = bd.cell[clist[i]], key = 'cell_'+clist[i];
+			if(obj.ques===-2){
+				var color = (obj.error===1 ? this.fontErrcolor : this.fontcolor);
+				this.dispnum(key, 1, "?", 0.8, color, obj.cpx, obj.cpy);
+			}
+			else{ this.hideEL(key);}
 		}
-		this.vinc();
 	},
 
 	//---------------------------------------------------------------------------
@@ -2028,158 +3352,162 @@ Graphic.prototype = {
 	// pc.drawCrossMarks() Cross上の黒点をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawCrosses : function(x1,y1,x2,y2){
-		var csize = mf(k.cwidth*this.crosssize+1);
-		var headers = ["x_cp1_", "x_cp2_"];
+		this.vinc('cross_base', 'auto');
+
+		var csize = this.cw*this.crosssize+1;
+		var header = "x_cp_";
 		g.lineWidth = 1;
 
-		var clist = this.crossinside(x1,y1,x2,y2);
+		var clist = bd.crossinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.cross[c].qnum!==-1){
-				g.fillStyle = (bd.cross[c].error===1 ? this.errcolor1 : "white");
-				if(this.vnop(headers[0]+c,1)){
-					g.beginPath();
-					g.arc(bd.cross[c].px, bd.cross[c].py, csize, 0, Math.PI*2, false);
-					g.fill();
-				}
-
+			var c = clist[i], obj = bd.cross[c], key = ['cross',c].join('_');
+			// ○の描画
+			if(obj.qnum!==-1){
+				g.fillStyle = (obj.error===1 ? this.errcolor1 : "white");
 				g.strokeStyle = "black";
-				if(this.vnop(headers[1]+c,0)){
-					if(k.br.IE){
-						g.beginPath();
-						g.arc(bd.cross[c].px, bd.cross[c].py, csize, 0, Math.PI*2, false);
-					}
-					g.stroke();
+				if(this.vnop(header+c,this.FILL_STROKE)){
+					g.shapeCircle(obj.px, obj.py, csize);
 				}
 			}
-			else{ this.vhide([headers[0]+c, headers[1]+c]);}
-			this.dispnumCross(c);
+			else{ this.vhide([header+c]);}
+
+			// 数字の描画
+			if(obj.qnum>=0){
+				this.dispnum(key, 1, ""+obj.qnum, 0.6, this.fontcolor, obj.px, obj.py);
+			}
+			else{ this.hideEL(key);}
 		}
-		this.vinc();
 	},
 	drawCrossMarks : function(x1,y1,x2,y2){
-		var csize = k.cwidth*this.crosssize;
+		this.vinc('cross_mark', 'auto');
+
+		var csize = this.cw*this.crosssize;
 		var header = "x_cm_";
 
-		var clist = this.crossinside(x1-1,y1-1,x2+1,y2+1);
+		var clist = bd.crossinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(bd.cross[c].qnum===1){
-				g.fillStyle = (bd.cross[c].error===1 ? this.errcolor1 : this.Cellcolor);
-				if(this.vnop(header+c,1)){
-					g.beginPath();
-					g.arc(bd.cross[c].px, bd.cross[c].py, csize, 0, Math.PI*2, false);
-					g.fill();
+				g.fillStyle = (bd.cross[c].error===1 ? this.errcolor1 : this.cellcolor);
+				if(this.vnop(header+c,this.FILL)){
+					g.fillCircle(bd.cross[c].px, bd.cross[c].py, csize);
 				}
 			}
 			else{ this.vhide(header+c);}
 		}
-		this.vinc();
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawBorders()       境界線をCanvasに書き込む
-	// pc.drawBordersAsLine() k.isborderAsLine===1の時、線をCanvasに書き込む
-	// pc.drawIceBorders()    アイスバーンの境界線をCanvasに書き込む
-	// pc.drawBorder1x()      (x,y)を指定して1カ所の境界線をCanvasに書き込む
-	// pc.drawBorderQsubs()   境界線用の補助記号をCanvasに書き込む
+	// pc.drawBorders()        境界線をCanvasに書き込む
+	// pc.drawBorder1()        1カ所の境界線をCanvasに書き込む
+	// pc.setBorderColor()     境界線の設定・描画判定する
+	// pc.setBorderColorFunc() pc.setBorderColor関数を設定する
 	//---------------------------------------------------------------------------
 	drawBorders : function(x1,y1,x2,y2){
-		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
-		for(var i=0;i<idlist.length;i++){
-			var id = idlist[i];
+		this.vinc('border', 'crispEdges');
 
-			if     (bd.border[id].qans !==1){ g.fillStyle = this.BorderQuescolor;    }
-			else if(bd.border[id].error===1){ g.fillStyle = this.errcolor1;          }
-			else if(bd.border[id].error===2){ g.fillStyle = this.errBorderQanscolor2;}
-			else                            { g.fillStyle = this.BorderQanscolor;    }
-
-			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, bd.isBorder(id));
-		}
-		this.vinc();
+		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+		for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 		this.isdrawBD = true;
 	},
-	drawBordersAsLine : function(x1,y1,x2,y2){
-		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
-		for(var i=0;i<idlist.length;i++){
-			var id = idlist[i];
-
-			if(bd.border[id].qans!==1){ g.fillStyle = this.BorderQuescolor; }
-			else                      { g.fillStyle = this.getLineColor(id);}
-
-			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, bd.isBorder(id));
+	drawBorder1 : function(id,forceFlag){
+		var vid = [this.bdheader, id].join("_");
+		if(forceFlag!==false && this.setBorderColor(id)){
+			if(this.vnop(vid,this.FILL)){
+				var lw = this.lw + this.addlw, lm = this.lm;
+				var bx = bd.border[id].bx, by = bd.border[id].by;
+				var px = bd.border[id].px, py = bd.border[id].py;
+				if     (by&1){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
+				else if(bx&1){ g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
+			}
 		}
-		this.vinc();
-		this.addlw = 0;
-	},
-	drawIceBorders : function(x1,y1,x2,y2){
-		g.fillStyle = this.Cellcolor;
-		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
-		for(var i=0;i<idlist.length;i++){
-			var id = idlist[i], cc1 = bd.cc1(id), cc2 = bd.cc2(id);
-
-			var flag = (cc1!==-1 && cc2!==-1 && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6));
-			this.drawBorder1x(bd.border[id].cx, bd.border[id].cy, flag);
-		}
-		this.vinc();
+		else{ this.vhide(vid);}
 	},
 
-	drawBorder1x : function(bx,by,flag){
-		var vid = ["b_bd", bx, by].join("_");
-		if(!flag){ this.vhide(vid); return;}
-
-		if(this.vnop(vid,1)){
-			var lw = this.lw + this.addlw, lm = this.lm;
-
-			if     (by&1){ g.fillRect(k.p0.x+mf(bx*k.cwidth/2)-lm, k.p0.x+mf((by-1)*k.cheight/2)-lm, lw, k.cheight+lw);}
-			else if(bx&1){ g.fillRect(k.p0.x+mf((bx-1)*k.cwidth/2)-lm, k.p0.x+mf(by*k.cheight/2)-lm, k.cwidth+lw,  lw);}
+	setBorderColor : function(id){
+		if(bd.border[id].ques===1){ g.fillStyle = this.borderQuescolor; return true;}
+		return false;
+	},
+	setBorderColorFunc : function(type){
+		switch(type){
+		case 'qans':
+			this.setBorderColor = function(id){
+				var err=bd.border[id].error;
+				if(bd.isBorder(id)){
+					if     (err===1){ g.fillStyle = this.errcolor1;          }
+					else if(err===2){ g.fillStyle = this.errborderQanscolor2;}
+					else            { g.fillStyle = this.borderQanscolor;    }
+					return true;
+				}
+				return false;
+			}
+			break;
+		case 'line':
+			this.setBorderColor = this.setLineColor;
+			break;
+		case 'ice':
+			this.setBorderColor = function(id){
+				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+				if(cc1!==-1 && cc2!==-1 && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
+					g.fillStyle = this.cellcolor;
+					return true;
+				}
+				return false;
+			}
+			break;
 		}
 	},
 
+	//---------------------------------------------------------------------------
+	// pc.drawBorderQsubs() 境界線用の補助記号をCanvasに書き込む
+	// pc.drawBoxBorders()  境界線と黒マスの間の線を描画する
+	//---------------------------------------------------------------------------
 	drawBorderQsubs : function(x1,y1,x2,y2){
-		var m = mf(k.cwidth*0.15); //Margin
-		var header = "b_qsub1_";
-		g.fillStyle = this.BorderQsubcolor;
+		this.vinc('border_qsub', 'crispEdges');
 
-		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+		var m = this.cw*0.15; //Margin
+		var header = "b_qsub1_";
+		g.fillStyle = this.borderQsubcolor;
+
+		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
 			if(bd.border[id].qsub===1){
-				if(this.vnop(header+id,1)){
-					if     (bd.border[id].cx&1){ g.fillRect(bd.border[id].px, bd.border[id].py-mf(k.cheight/2)+m, 1,k.cheight-2*m);}
-					else if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)+m,  bd.border[id].py, k.cwidth-2*m, 1);}
+				if(this.vnop(header+id,this.NONE)){
+					if     (bd.border[id].bx&1){ g.fillRect(bd.border[id].px, bd.border[id].py-this.bh+m, 1, this.ch-2*m);}
+					else if(bd.border[id].by&1){ g.fillRect(bd.border[id].px-this.bw+m, bd.border[id].py, this.cw-2*m, 1);}
 				}
 			}
 			else{ this.vhide(header+id);}
 		}
-		this.vinc();
 	},
 
-	//---------------------------------------------------------------------------
-	// pc.drawBoxBorders() 境界線と黒マスの間の線を描画する
-	//---------------------------------------------------------------------------
 	// 外枠がない場合は考慮していません
 	drawBoxBorders  : function(x1,y1,x2,y2,tileflag){
-		var lw = this.lw, lm = this.lm+1;
-		var cw = k.cwidth;
-		var ch = k.cheight;
+		this.vinc('boxborder', 'crispEdges');
+
+		var lw = this.lw, lm = this.lm;
+		var cw = this.cw;
+		var ch = this.ch;
 		var chars = ['u','d','l','r'];
 
-		g.fillStyle = this.BBcolor;
+		g.fillStyle = this.bbcolor;
 
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i], vids=[];
 			for(var n=0;n<12;n++){ vids[n]=['c_bb',n,c].join('_');}
 			if(bd.cell[c].qans!==1){ this.vhide(vids); continue;}
 
-			var cx = bd.cell[c].cx, cy = bd.cell[c].cy, bx = 2*cx+1, by = 2*cy+1;
+			var bx = bd.cell[c].bx, by = bd.cell[c].by;
 			var px = bd.cell[c].px, py = bd.cell[c].py;
+			var px1 = px+lm+1, px2 = px+cw-lm-1;
+			var py1 = py+lm+1, py2 = py+ch-lm-1;
 
 			// この関数を呼ぶ場合は全てk.isoutsideborder===0なので
 			// 外枠用の考慮部分を削除しています。
-			var UPin = (cy>0), DNin = (cy<k.qrows-1);
-			var LTin = (cx>0), RTin = (cx<k.qcols-1);
+			var UPin = (by>2), DNin = (by<2*k.qrows-2);
+			var LTin = (bx>2), RTin = (bx<2*k.qcols-2);
 
 			var isUP = (!UPin || bd.border[bd.bnum(bx  ,by-1)].ques===1);
 			var isDN = (!DNin || bd.border[bd.bnum(bx  ,by+1)].ques===1);
@@ -2191,89 +3519,97 @@ Graphic.prototype = {
 			var isDL = (!DNin || !LTin || bd.border[bd.bnum(bx-2,by+1)].ques===1 || bd.border[bd.bnum(bx-1,by+2)].ques===1);
 			var isDR = (!DNin || !RTin || bd.border[bd.bnum(bx+2,by+1)].ques===1 || bd.border[bd.bnum(bx+1,by+2)].ques===1);
 
-			if(isUP){ if(this.vnop(vids[0],1)){ g.fillRect(px   +lm, py   +lm, cw-lw,1    );} }else{ this.vhide(vids[0]);}
-			if(isDN){ if(this.vnop(vids[1],1)){ g.fillRect(px   +lm, py+ch-lm, cw-lw,1    );} }else{ this.vhide(vids[1]);}
-			if(isLT){ if(this.vnop(vids[2],1)){ g.fillRect(px   +lm, py   +lm, 1    ,ch-lw);} }else{ this.vhide(vids[2]);}
-			if(isRT){ if(this.vnop(vids[3],1)){ g.fillRect(px+cw-lm, py   +lm, 1    ,ch-lw);} }else{ this.vhide(vids[3]);}
+			if(isUP){ if(this.vnop(vids[0],this.NONE)){ g.fillRect(px1, py1, cw-lw,1    );} }else{ this.vhide(vids[0]);}
+			if(isDN){ if(this.vnop(vids[1],this.NONE)){ g.fillRect(px1, py2, cw-lw,1    );} }else{ this.vhide(vids[1]);}
+			if(isLT){ if(this.vnop(vids[2],this.NONE)){ g.fillRect(px1, py1, 1    ,ch-lw);} }else{ this.vhide(vids[2]);}
+			if(isRT){ if(this.vnop(vids[3],this.NONE)){ g.fillRect(px2, py1, 1    ,ch-lw);} }else{ this.vhide(vids[3]);}
 
 			if(tileflag){
-				if(!isUP&&(isUL||isLT)){ if(this.vnop(vids[4],1)){ g.fillRect(px   +lm, py   -lm, 1   ,lw+1);} }else{ this.vhide(vids[4]);}
-				if(!isUP&&(isUR||isRT)){ if(this.vnop(vids[5],1)){ g.fillRect(px+cw-lm, py   -lm, 1   ,lw+1);} }else{ this.vhide(vids[5]);}
-				if(!isLT&&(isUL||isUP)){ if(this.vnop(vids[6],1)){ g.fillRect(px   -lm, py   +lm, lw+1,1   );} }else{ this.vhide(vids[6]);}
-				if(!isLT&&(isDL||isDN)){ if(this.vnop(vids[7],1)){ g.fillRect(px   -lm, py+ch-lm, lw+1,1   );} }else{ this.vhide(vids[7]);}
+				if(!isUP&&(isUL||isLT)){ if(this.vnop(vids[4],this.NONE)){ g.fillRect(px1, py-lm, 1   ,lw+1);} }else{ this.vhide(vids[4]);}
+				if(!isUP&&(isUR||isRT)){ if(this.vnop(vids[5],this.NONE)){ g.fillRect(px2, py-lm, 1   ,lw+1);} }else{ this.vhide(vids[5]);}
+				if(!isLT&&(isUL||isUP)){ if(this.vnop(vids[6],this.NONE)){ g.fillRect(px-lm, py1, lw+1,1   );} }else{ this.vhide(vids[6]);}
+				if(!isLT&&(isDL||isDN)){ if(this.vnop(vids[7],this.NONE)){ g.fillRect(px-lm, py2, lw+1,1   );} }else{ this.vhide(vids[7]);}
 			}
 			else{
-				if(!isUP&&(isUL||isLT)){ if(this.vnop(vids[4] ,1)){ g.fillRect(px   +lm, py      , 1   ,lm+1);} }else{ this.vhide(vids[4] );}
-				if(!isUP&&(isUR||isRT)){ if(this.vnop(vids[5] ,1)){ g.fillRect(px+cw-lm, py      , 1   ,lm+1);} }else{ this.vhide(vids[5] );}
-				if(!isDN&&(isDL||isLT)){ if(this.vnop(vids[6] ,1)){ g.fillRect(px   +lm, py+ch-lm, 1   ,lm+1);} }else{ this.vhide(vids[6] );}
-				if(!isDN&&(isDR||isRT)){ if(this.vnop(vids[7] ,1)){ g.fillRect(px+cw-lm, py+ch-lm, 1   ,lm+1);} }else{ this.vhide(vids[7] );}
-				if(!isLT&&(isUL||isUP)){ if(this.vnop(vids[8] ,1)){ g.fillRect(px      , py   +lm, lm+1,1   );} }else{ this.vhide(vids[8] );}
-				if(!isLT&&(isDL||isDN)){ if(this.vnop(vids[9] ,1)){ g.fillRect(px      , py+ch-lm, lm+1,1   );} }else{ this.vhide(vids[9] );}
-				if(!isRT&&(isUR||isUP)){ if(this.vnop(vids[10],1)){ g.fillRect(px+cw-lm, py   +lm, lm+1,1   );} }else{ this.vhide(vids[10]);}
-				if(!isRT&&(isDR||isDN)){ if(this.vnop(vids[11],1)){ g.fillRect(px+cw-lm, py+ch-lm, lm+1,1   );} }else{ this.vhide(vids[11]);}
+				if(!isUP&&(isUL||isLT)){ if(this.vnop(vids[4] ,this.NONE)){ g.fillRect(px1, py , 1   ,lm+1);} }else{ this.vhide(vids[4] );}
+				if(!isUP&&(isUR||isRT)){ if(this.vnop(vids[5] ,this.NONE)){ g.fillRect(px2, py , 1   ,lm+1);} }else{ this.vhide(vids[5] );}
+				if(!isDN&&(isDL||isLT)){ if(this.vnop(vids[6] ,this.NONE)){ g.fillRect(px1, py2, 1   ,lm+1);} }else{ this.vhide(vids[6] );}
+				if(!isDN&&(isDR||isRT)){ if(this.vnop(vids[7] ,this.NONE)){ g.fillRect(px2, py2, 1   ,lm+1);} }else{ this.vhide(vids[7] );}
+				if(!isLT&&(isUL||isUP)){ if(this.vnop(vids[8] ,this.NONE)){ g.fillRect(px , py1, lm+1,1   );} }else{ this.vhide(vids[8] );}
+				if(!isLT&&(isDL||isDN)){ if(this.vnop(vids[9] ,this.NONE)){ g.fillRect(px , py2, lm+1,1   );} }else{ this.vhide(vids[9] );}
+				if(!isRT&&(isUR||isUP)){ if(this.vnop(vids[10],this.NONE)){ g.fillRect(px2, py1, lm+1,1   );} }else{ this.vhide(vids[10]);}
+				if(!isRT&&(isDR||isDN)){ if(this.vnop(vids[11],this.NONE)){ g.fillRect(px2, py2, lm+1,1   );} }else{ this.vhide(vids[11]);}
 			}
 		}
-		this.vinc();
 	},
 
 	//---------------------------------------------------------------------------
 	// pc.drawLines()    回答の線をCanvasに書き込む
 	// pc.drawLine1()    回答の線をCanvasに書き込む(1カ所のみ)
-	// pc.getLineColor() 描画する線の色を設定する
+	// pc.setLineColor() 描画する線の色を設定する
 	// pc.drawPekes()    境界線上の×をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawLines : function(x1,y1,x2,y2){
-		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
-		for(var i=0;i<idlist.length;i++){ this.drawLine1(idlist[i], bd.isLine(idlist[i]));}
-		this.vinc();
-		this.addlw = 0;
-	},
-	drawLine1 : function(id, flag){
-		var vid = "b_line_"+id;
-		if(!flag){ this.vhide(vid); return;}
+		this.vinc('line', 'crispEdges');
 
-		g.fillStyle = this.getLineColor(id);
-		if(this.vnop(vid,1)){
-			var lw = this.lw + this.addlw, lm = this.lm;
-			if     (bd.border[id].cx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-mf(k.cheight/2)-lm, lw, k.cheight+lw);}
-			else if(bd.border[id].cy&1){ g.fillRect(bd.border[id].px-mf(k.cwidth/2)-lm,  bd.border[id].py-lm, k.cwidth+lw,  lw);}
-		}
-	},
-	getLineColor : function(id){
+		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+		for(var i=0;i<idlist.length;i++){ this.drawLine1(idlist[i]);}
 		this.addlw = 0;
-		if     (bd.border[id].error===1){ this.addlw=1; return this.errlinecolor1;}
-		else if(bd.border[id].error===2){ return this.errlinecolor2;}
-		else if(k.irowake===0 || !pp.getVal('irowake') || !bd.border[id].color){ return this.linecolor;}
-		return bd.border[id].color;
+	},
+	drawLine1 : function(id, forceFlag){
+		var vid = "b_line_"+id;
+		if(forceFlag!==false && this.setLineColor(id)){
+			if(this.vnop(vid,this.FILL)){
+				var lw = this.lw + this.addlw, lm = this.lm;
+				if     (bd.border[id].bx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
+				else if(bd.border[id].by&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm, this.cw+lw, lw);}
+			}
+		}
+		else{ this.vhide(vid);}
+	},
+	setLineColor : function(id){
+		this.addlw = 0;
+		if(bd.isLine(id)){
+			if     (bd.border[id].error===1){ g.fillStyle = this.errlinecolor1; if(g.use.canvas){ this.addlw=1;}}
+			else if(bd.border[id].error===2){ g.fillStyle = this.errlinecolor2;}
+			else if(k.irowake===0 || !pp.getVal('irowake') || !bd.border[id].color){ g.fillStyle = this.linecolor;}
+			else{ g.fillStyle = bd.border[id].color;}
+			return true;
+		}
+		return false;
 	},
 	drawPekes : function(x1,y1,x2,y2,flag){
-		var size = mf(k.cwidth*0.15); if(size<3){ size=3;}
+		if(!g.use.canvas && flag===2){ return;}
+
+		this.vinc('border_peke', 'auto');
+
+		var size = this.cw*0.15+1; if(size<4){ size=4;}
 		var headers = ["b_peke0_", "b_peke1_"];
+		g.fillStyle = "white";
 		g.strokeStyle = this.pekecolor;
 		g.lineWidth = 1;
 
-		var idlist = this.borderinside(x1*2-2,y1*2-2,x2*2+2,y2*2+2);
+		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
 			if(bd.border[id].qsub!==2){ this.vhide([headers[0]+id, headers[1]+id]); continue;}
 
-			g.fillStyle = "white";
-			if(flag===0 || flag===2){
-				if(this.vnop(headers[0]+id,1)){
-					g.fillRect(bd.border[id].px-size, bd.border[id].py-size, 2*size+1, 2*size+1);
+			if(g.use.canvas){
+				if(flag===0 || flag===2){
+					if(this.vnop(headers[0]+id,this.NONE)){
+						g.fillRect(bd.border[id].px-size, bd.border[id].py-size, 2*size+1, 2*size+1);
+					}
 				}
+				else{ this.vhide(headers[0]+id);}
 			}
-			else{ this.vhide(headers[0]+id);}
 
 			if(flag===0 || flag===1){
-				if(this.vnop(headers[1]+id,0)){
-					this.inputPath([bd.border[id].px,bd.border[id].py ,-size+1,-size+1 ,0,0 ,-size+1,size ,size,-size+1 ,0,0 ,size,size ,-size+1,-size+1],false);
-					g.stroke();
+				if(this.vnop(headers[1]+id,this.NONE)){
+					g.strokeCross(bd.border[id].px, bd.border[id].py, size-1);
 				}
 			}
 			else{ this.vhide(headers[1]+id);}
 		}
-		this.vinc();
 	},
 
 	//---------------------------------------------------------------------------
@@ -2281,10 +3617,11 @@ Graphic.prototype = {
 	// pc.drawTriangle1()  三角形をCanvasに書き込む(1マスのみ)
 	//---------------------------------------------------------------------------
 	drawTriangle : function(x1,y1,x2,y2){
+		this.vinc('cell_triangle', 'auto');
 		var headers = ["c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_"];
 
-		if(!k.br.IE && k.puzzleid!=='reflect'){ x1--; y1--; x2++; y2++;}
-		var clist = this.cellinside(x1,y1,x2,y2);
+		if(g.use.canvas && k.puzzleid!=='reflect'){ x1--; y1--; x2++; y2++;}
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			var num = (bd.cell[c].ques!==0?bd.cell[c].ques:bd.cell[c].qans);
@@ -2293,27 +3630,25 @@ Graphic.prototype = {
 			if(num>=2 && num<=5){
 				switch(k.puzzleid){
 				case 'reflect':
-					g.fillStyle = ((bd.cell[c].error===1||bd.cell[c].error===4) ? this.errcolor1 : this.Cellcolor);
+					g.fillStyle = ((bd.cell[c].error===1||bd.cell[c].error===4) ? this.errcolor1 : this.cellcolor);
 					break;
 				default:
-					g.fillStyle = this.Cellcolor;
+					g.fillStyle = this.cellcolor;
 					break;
 				}
 
-				var cx=bd.cell[c].cx, cy=bd.cell[c].cy;
 				this.drawTriangle1(bd.cell[c].px,bd.cell[c].py,num,headers[num-2]+c);
 			}
 		}
-		this.vinc();
 	},
 	drawTriangle1 : function(px,py,num,vid){
-		if(this.vnop(vid,1)){
-			var mgn = (k.puzzleid==="reflect"?1:0);
+		if(this.vnop(vid,this.FILL)){
+			var cw = this.cw, ch = this.ch, mgn = (k.puzzleid==="reflect"?1:0);
 			switch(num){
-				case 2: this.inputPath([px,py ,mgn,mgn        ,mgn,k.cheight+1 ,k.cwidth+1,k.cheight+1],true); break;
-				case 3: this.inputPath([px,py ,k.cwidth+1,mgn ,mgn,k.cheight+1 ,k.cwidth+1,k.cheight+1],true); break;
-				case 4: this.inputPath([px,py ,mgn,mgn        ,k.cwidth+1,mgn  ,k.cwidth+1,k.cheight+1],true); break;
-				case 5: this.inputPath([px,py ,mgn,mgn        ,k.cwidth+1,mgn  ,mgn       ,k.cheight+1],true); break;
+				case 2: g.setOffsetLinePath(px,py, mgn,mgn,  mgn,ch+1, cw+1,ch+1, true); break;
+				case 3: g.setOffsetLinePath(px,py, cw+1,mgn, mgn,ch+1, cw+1,ch+1, true); break;
+				case 4: g.setOffsetLinePath(px,py, mgn,mgn,  cw+1,mgn, cw+1,ch+1, true); break;
+				case 5: g.setOffsetLinePath(px,py, mgn,mgn,  cw+1,mgn, mgn ,ch+1, true); break;
 			}
 			g.fill();
 		}
@@ -2323,109 +3658,95 @@ Graphic.prototype = {
 	// pc.drawMBs()    Cell上の○,×をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawMBs : function(x1,y1,x2,y2){
-		g.strokeStyle = this.MBcolor;
+		this.vinc('cell_mb', 'auto');
+		g.strokeStyle = this.mbcolor;
 		g.lineWidth = 1;
 
-		var rsize = k.cwidth*0.35;
+		var rsize = this.cw*0.35;
 		var headers = ["c_MB1_", "c_MB2a_"];
 
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(bd.cell[c].qsub===0){ this.vhide([headers[0]+c, headers[1]+c]); continue;}
 
 			switch(bd.cell[c].qsub){
 			case 1:
-				if(this.vnop(headers[0]+c,0)){
-					g.beginPath();
-					g.arc(bd.cell[c].px+mf(k.cwidth/2), bd.cell[c].py+mf(k.cheight/2), rsize, 0, Math.PI*2, false);
-					g.stroke();
+				if(this.vnop(headers[0]+c,this.NONE)){
+					g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
 				}
 				this.vhide(headers[1]+c);
 				break;
 			case 2:
-				if(this.vnop(headers[1]+c,0)){
-					this.inputPath([bd.cell[c].px+mf(k.cwidth/2),bd.cell[c].py+mf(k.cheight/2) ,-rsize,-rsize ,0,0 ,-rsize,rsize ,rsize,-rsize ,0,0 ,rsize,rsize ,-rsize,-rsize],true);
-					g.stroke();
+				if(this.vnop(headers[1]+c,this.NONE)){
+					g.strokeCross(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
 				}
 				this.vhide(headers[0]+c);
 				break;
 			}
 		}
-		this.vinc();
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawQueses41_42()    Cell上の黒丸と白丸をCanvasに書き込む
-	// pc.drawCircledNumbers() Cell上の丸数字を書き込む
-	// pc.drawCircledNumber1() Cell上の丸数字を書き込む(1マスのみ)
+	// pc.drawCircles41_42()    Cell上の黒丸と白丸をCanvasに書き込む
+	// pc.drawCirclesAtNumber() 数字が描画されるCellの丸を書き込む
+	// pc.drawCircle1AtNumber() 数字が描画されるCellの丸を書き込む(1マスのみ)
 	//---------------------------------------------------------------------------
-	drawQueses41_42 : function(x1,y1,x2,y2){
-		var rsize  = mf(k.cwidth*this.circleratio[0]);
-		var rsize2 = mf(k.cwidth*this.circleratio[1]);
-		var mgnx = mf(k.cwidth/2), mgny = mf(k.cheight/2);
-		var headers = ["c_cir41a_", "c_cir41b_"];
+	drawCircles41_42 : function(x1,y1,x2,y2){
+		this.vinc('cell_circle', 'auto');
 
-		var clist = this.cellinside(x1,y1,x2,y2);
+		g.lineWidth = Math.max(this.cw*(this.circleratio[0]-this.circleratio[1]), 1);
+		var rsize41 = this.cw*(this.circleratio[0]+this.circleratio[1])/2;
+		var rsize42 = this.cw*this.circleratio[0];
+		var headers = ["c_cir41_", "c_cir42_"];
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], px = bd.cell[c].px+mgnx, py = bd.cell[c].py+mgny;
+			var c = clist[i];
 
-			if(bd.cell[c].ques===41 || bd.cell[c].ques===42){
-				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
-				if(this.vnop(headers[0]+c,1)){
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					g.fill();
+			if(bd.cell[c].ques===41){
+				g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.cellcolor);
+				g.fillStyle   = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
+				if(this.vnop(headers[0]+c,this.FILL_STROKE)){
+					g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize41);
 				}
 			}
 			else{ this.vhide(headers[0]+c);}
 
-			if(bd.cell[c].ques===41){
-				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(headers[1]+c,1)){
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					g.fill();
+			if(bd.cell[c].ques===42){
+				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
+				if(this.vnop(headers[1]+c,this.FILL)){
+					g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize42);
 				}
 			}
 			else{ this.vhide(headers[1]+c);}
 		}
-		this.vinc();
 	},
-	drawCircledNumbers : function(x1,y1,x2,y2){
-		var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
-		for(var i=0;i<clist.length;i++){ this.drawCircledNumber1(clist[i]);}
-		this.vinc();
+	drawCirclesAtNumber : function(x1,y1,x2,y2){
+		this.vinc('cell_circle', 'auto');
+
+		var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
+		for(var i=0;i<clist.length;i++){ this.drawCircle1AtNumber(clist[i]);}
 	},
-	drawCircledNumber1 : function(c){
+	drawCircle1AtNumber : function(c){
 		if(c===-1){ return;}
 
-		var rsize  = k.cwidth*this.circleratio[0];
-		var rsize2 = k.cwidth*this.circleratio[1];
-		var mgnx = mf(k.cwidth/2), mgny = mf(k.cheight/2);
+		var rsize  = this.cw*this.circleratio[0];
+		var rsize2 = this.cw*this.circleratio[1];
 		var headers = ["c_cira_", "c_cirb_"];
 
 		if(bd.cell[c].qnum!=-1){
-			var px=bd.cell[c].px+mgnx, py=bd.cell[c].py+mgny;
-
-			g.lineWidth = k.cwidth*0.05;
+			g.lineWidth = this.cw*0.05;
 			g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : this.circledcolor);
-			if(this.vnop(headers[1]+c,1)){
-				g.beginPath();
-				g.arc(px, py, rsize2, 0, Math.PI*2, false);
-				g.fill();
+			if(this.vnop(headers[1]+c,this.FILL)){
+				g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize2);
 			}
 
-			g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
-			if(this.vnop(headers[0]+c,0)){
-				g.beginPath();
-				g.arc(px, py, rsize , 0, Math.PI*2, false);
-				g.stroke();
+			g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
+			if(this.vnop(headers[0]+c,this.STROKE)){
+				g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
 			}
 		}
 		else{ this.vhide([headers[0]+c, headers[1]+c]);}
-
-		this.dispnumCell(c);
 	},
 
 	//---------------------------------------------------------------------------
@@ -2433,622 +3754,96 @@ Graphic.prototype = {
 	// pc.drawLineParts1()  ╋などをCanvasに書き込む(1マスのみ)
 	//---------------------------------------------------------------------------
 	drawLineParts : function(x1,y1,x2,y2){
-		var clist = this.cellinside(x1,y1,x2,y2);
+		this.vinc('cell_lineparts', 'crispEdges');
+
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){ this.drawLineParts1(clist[i]);}
-		this.vinc();
 	},
 	drawLineParts1 : function(id){
 		var vids = ["c_lp1_"+id, "c_lp2_"+id, "c_lp3_"+id, "c_lp4_"+id];
-		if(qs<101 || qs>107){ this.vhide(vids); return;}
 
-		var hh = mf(k.cheight/2), hw = mf(k.cwidth/2);
-		var hhp = mf((this.lw+k.cheight)/2), hwp = mf((this.lw+k.cwidth)/2);
-		var px = bd.cell[id].px, py = bd.cell[id].py;
-		g.fillStyle = this.BorderQuescolor;
+		var qs = bd.cell[id].ques;
+		if(qs>=101 && qs<=107){
+			var lw  = this.lw, lm = this.lm;
+			var hhp = this.bh+this.lm, hwp = this.bw+this.lm;
+			var px  = bd.cell[id].px, py = bd.cell[id].py;
+			var cpx = bd.cell[id].cpx, cpy = bd.cell[id].cpy;
+			g.fillStyle = this.borderQuescolor;
 
-		var qs = bd.cell[id].ques, flag  = {101:15, 102:3, 103:12, 104:9, 105:5, 106:6, 107:10}[qs];
-		if(flag&1){ if(this.vnop(vids[0],1)){ g.fillRect(px+hw-1, py     , this.lw, hhp);} }else{ this.vhide(vids[0]);}
-		if(flag&2){ if(this.vnop(vids[1],1)){ g.fillRect(px+hw-1, py+hh-1, this.lw, hhp);} }else{ this.vhide(vids[1]);}
-		if(flag&4){ if(this.vnop(vids[2],1)){ g.fillRect(px     , py+hh-1, hwp, this.lw);} }else{ this.vhide(vids[2]);}
-		if(flag&8){ if(this.vnop(vids[3],1)){ g.fillRect(px+hw-1, py+hh-1, hwp, this.lw);} }else{ this.vhide(vids[3]);}
+			var flag  = {101:15, 102:3, 103:12, 104:9, 105:5, 106:6, 107:10}[qs];
+			if(flag&1){ if(this.vnop(vids[0],this.NONE)){ g.fillRect(cpx-lm, py    , lw, hhp);} }else{ this.vhide(vids[0]);}
+			if(flag&2){ if(this.vnop(vids[1],this.NONE)){ g.fillRect(cpx-lm, cpy-lm, lw, hhp);} }else{ this.vhide(vids[1]);}
+			if(flag&4){ if(this.vnop(vids[2],this.NONE)){ g.fillRect(px    , cpy-lm, hwp, lw);} }else{ this.vhide(vids[2]);}
+			if(flag&8){ if(this.vnop(vids[3],this.NONE)){ g.fillRect(cpx-lm, cpy-lm, hwp, lw);} }else{ this.vhide(vids[3]);}
+		}
+		else{ this.vhide(vids);}
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.draw51()          [＼]をCanvasに書き込む
-	// pc.draw51EXcell()    EXCell上の[＼]をCanvasに書き込む
-	// pc.drawChassis_ex1() k.isextencdell==1で増える外枠をCanvasに描画する
+	// pc.drawQues51()         Ques===51があるようなパズルで、描画関数を呼び出す
+	// pc.drawSlash51Cells()   [＼]のナナメ線をCanvasに書き込む
+	// pc.drawSlash51EXcells() EXCell上の[＼]のナナメ線をCanvasに書き込む
+	// pc.drawEXCellGrid()     EXCell間の境界線をCanvasに書き込む
 	//---------------------------------------------------------------------------
-	draw51 : function(x1,y1,x2,y2,errdisp){
-		var headers = ["c_full_", "c_q51_"];
+	drawQues51 : function(x1,y1,x2,y2){
+		this.drawEXCellGrid(x1,y1,x2,y2);
+		this.drawSlash51Cells(x1,y1,x2,y2);
+		this.drawSlash51EXcells(x1,y1,x2,y2);
+		this.drawTargetTriangle(x1,y1,x2,y2);
+	},
+	drawSlash51Cells : function(x1,y1,x2,y2){
+		this.vinc('cell_ques51', 'crispEdges');
 
-		var clist = this.cellinside(x1,y1,x2,y2);
+		var header = "c_slash51_";
+		g.strokeStyle = this.cellcolor;
+		g.lineWidth = 1;
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
+			var c = clist[i], px = bd.cell[c].px, py = bd.cell[c].py;
+
 			if(bd.cell[c].ques===51){
-				if(errdisp){
-					if(bd.cell[c].error===1){
-						g.fillStyle = this.errbcolor1;
-						if(this.vnop(headers[0]+c,1)){
-							g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, k.cwidth-1, k.cheight-1);
-						}
-					}
-					else{ this.vhide(headers[0]+c);}
-				}
-				g.strokeStyle = this.Cellcolor;
-				if(this.vnop(headers[1]+c,0)){
-					g.lineWidth = 1;
-					this.inputPath([bd.cell[c].px,bd.cell[c].py, 1,1, k.cwidth,k.cheight], true);
-					g.stroke();
+				if(this.vnop(header+c,this.NONE)){
+					g.strokeLine(px+1,py+1, px+this.cw,py+this.ch);
 				}
 			}
-			else{
-				if(bd.cell[c].qsub===0 && bd.cell[c].error===0){ this.vhide(headers[0]+c);}
-				this.vhide(headers[1]+c);
-			}
+			else{ this.vhide(header+c);}
 		}
-		this.vinc();
 	},
-	draw51EXcells : function(x1,y1,x2,y2,errdisp){
-		var lw = this.lw;
-		var headers = ["ex_full_", "ex_q51_", "ex_bdx_", "ex_bdy_"];
+	drawSlash51EXcells : function(x1,y1,x2,y2){
+		this.vinc('excell_ques51', 'crispEdges');
 
-		var exlist = this.excellinside(x1-1,y1-1,x2,y2);
+		var header = "ex_slash51_";
+		g.strokeStyle = this.cellcolor;
+		g.lineWidth = 1;
+		var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
 		for(var i=0;i<exlist.length;i++){
-			var c = exlist[i];
-
-			var px = bd.excell[c].px, py = bd.excell[c].py;
-			if(errdisp){
-				if(bd.excell[c].error===1){
-					g.fillStyle = this.errbcolor1;
-					if(this.vnop(headers[0]+c,1)){
-						g.fillRect(px+1, py+1, k.cwidth-1, k.cheight-1);
-					}
-				}
-				else{ this.vhide(headers[0]+c);}
-			}
-
-			g.strokeStyle = this.Cellcolor;
-			if(this.vnop(headers[1]+c,0)){
-				g.lineWidth = 1;
-				this.inputPath([px,py, 1,1, k.cwidth,k.cheight], true);
-				g.stroke();
-			}
-
-			g.fillStyle = this.Cellcolor;
-			if(bd.excell[c].cy===-1 && bd.excell[c].cx<k.qcols-1){
-				if(this.vnop(headers[2]+c,1)){
-					g.fillRect(px+k.cwidth, py, 1, k.cheight);
-				}
-			}
-			else{ this.vhide(headers[2]+c);}
-			if(bd.excell[c].cx===-1 && bd.excell[c].cy<k.qrows-1){
-				if(this.vnop(headers[3]+c,1)){
-					g.fillRect(px, py+k.cheight, k.cwidth, 1);
-				}
-			}
-			else{ this.vhide(headers[3]+c);}
-		}
-		this.vinc();
-	},
-
-	drawChassis_ex1 : function(x1,y1,x2,y2,boldflag){
-		var lw = this.lw, lm = this.lm;
-
-		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
-
-		g.fillStyle = "black";
-		if(boldflag){
-			if(x1<1){ if(this.vnop("chs1_",1)){ g.fillRect(k.p0.x+x1*k.cwidth-lw+2, k.p0.y+y1*k.cheight-lw+2, lw, (y2-y1+1)*k.cheight+lw-2);} }
-			if(y1<1){ if(this.vnop("chs2_",1)){ g.fillRect(k.p0.x+x1*k.cwidth-lw+2, k.p0.y+y1*k.cheight-lw+2, (x2-x1+1)*k.cwidth+lw-2, lw); } }
-		}
-		else{
-			if(x1<1){ if(this.vnop("chs1_",1)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, 1, (y2-y1+1)*k.cheight);} }
-			if(y1<1){ if(this.vnop("chs2_",1)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth, 1); } }
-		}
-		if(y2>=k.qrows-1){ if(this.vnop("chs3_",1)){ g.fillRect(k.p0.x+(x1-1)*k.cwidth-lw+1, k.p0.y+(y2+1)*k.cheight , (x2-x1+2)*k.cwidth+2*lw-1, lw); } }
-		if(x2>=k.qcols-1){ if(this.vnop("chs4_",1)){ g.fillRect(k.p0.x+(x2+1)*k.cwidth , k.p0.y+(y1-1)*k.cheight-lw+1, lw, (y2-y1+2)*k.cheight+2*lw-1);} }
-		if(x1<1)         { if(this.vnop("chs21_",1)){ g.fillRect(k.p0.x+(x1-1)*k.cwidth-lw+1, k.p0.y+(y1-1)*k.cheight-lw+1, lw, (y2-y1+2)*k.cheight+2*lw-1);} }
-		if(y1<1)         { if(this.vnop("chs22_",1)){ g.fillRect(k.p0.x+(x1-1)*k.cwidth-lw+1, k.p0.y+(y1-1)*k.cheight-lw+1, (x2-x1+2)*k.cwidth+2*lw-1, lw); } }
-		this.vinc();
-
-		if(!boldflag){
-			g.fillStyle = this.Cellcolor;
-			var clist = this.cellinside(x1-1,y1-1,x2+1,y2+1);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.cell[c].ques===51){ continue;}
-				if(bd.cell[c].cx===0){ this.drawBorder1x(0, 2*bd.cell[c].cy+1, true);}
-				if(bd.cell[c].cy===0){ this.drawBorder1x(2*bd.cell[c].cx+1, 0, true);}
-			}
-			this.vinc();
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// pc.drawTarget()  入力対象となる場所を描画する
-	// pc.drawTCell()   Cellのキーボードからの入力対象をCanvasに書き込む
-	// pc.drawTCross()  Crossのキーボードからの入力対象をCanvasに書き込む
-	// pc.drawTBorder() Borderのキーボードからの入力対象をCanvasに書き込む
-	// pc.hideTCell()   キーボードからの入力対象を隠す
-	// pc.hideTCross()  キーボードからの入力対象を隠す
-	// pc.hideTBorder() キーボードからの入力対象を隠す
-	// pc.drawTargetTriangle() [＼]のうち入力対象のほうに背景色をつける
-	//---------------------------------------------------------------------------
-	drawTarget : function(x1,y1,x2,y2){
-		if(k.editmode){ this.drawTCell(x1,y1,x2+1,y2+1);}
-		else{ this.hideTCell();}
-	},
-
-	drawTCell : function(x1,y1,x2,y2){
-		if(tc.cursolx < x1*2-2 || x2*2+4 < tc.cursolx){ return;}
-		if(tc.cursoly < y1*2-2 || y2*2+4 < tc.cursoly){ return;}
-
-		var px = k.p0.x + mf((tc.cursolx-1)*k.cwidth/2);
-		var py = k.p0.y + mf((tc.cursoly-1)*k.cheight/2);
-		var w = (k.cwidth<32?2:mf(k.cwidth/16));
-
-		this.vdel(["tc1_","tc2_","tc3_","tc4_"]);
-		g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
-		if(this.vnop("tc1_",0)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
-		if(this.vnop("tc2_",0)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
-		if(this.vnop("tc3_",0)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
-		if(this.vnop("tc4_",0)){ g.fillRect(px+k.cwidth-w,  py+1, w, k.cheight-2);}
-
-		this.vinc();
-	},
-	drawTCross : function(x1,y1,x2,y2){
-		if(tc.cursolx < x1*2-1 || x2*2+3 < tc.cursolx){ return;}
-		if(tc.cursoly < y1*2-1 || y2*2+3 < tc.cursoly){ return;}
-
-		var px = k.p0.x + mf((tc.cursolx-1)*k.cwidth/2);
-		var py = k.p0.y + mf((tc.cursoly-1)*k.cheight/2);
-		var w = (k.cwidth<32?2:mf(k.cwidth/16));
-
-		this.vdel(["tx1_","tx2_","tx3_","tx4_"]);
-		g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
-		if(this.vnop("tx1_",0)){ g.fillRect(px+1,           py+1, k.cwidth-2,  w);}
-		if(this.vnop("tx2_",0)){ g.fillRect(px+1,           py+1, w, k.cheight-2);}
-		if(this.vnop("tx3_",0)){ g.fillRect(px+1, py+k.cheight-w, k.cwidth-2,  w);}
-		if(this.vnop("tx4_",0)){ g.fillRect(px+k.cwidth-w,  py+1, w, k.cheight-2);}
-
-		this.vinc();
-	},
-	drawTBorder : function(x1,y1,x2,y2){
-		if(tc.cursolx < x1*2-1 || x2*2+3 < tc.cursolx){ return;}
-		if(tc.cursoly < y1*2-1 || y2*2+3 < tc.cursoly){ return;}
-
-		var px = k.p0.x + mf(tc.cursolx*k.cwidth/2);
-		var py = k.p0.y + mf(tc.cursoly*k.cheight/2);
-		var w = (k.cwidth<24?1:mf(k.cwidth/24));
-		var size = mf(k.cwidth*0.28);
-
-		this.vdel(["tb1_","tb2_","tb3_","tb4_"]);
-		g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
-		if(this.vnop("tb1_",0)){ g.fillRect(px-size  , py-size  , size*2, 1);}
-		if(this.vnop("tb2_",0)){ g.fillRect(px-size  , py-size  , 1, size*2);}
-		if(this.vnop("tb3_",0)){ g.fillRect(px-size  , py+size-w, size*2, 1);}
-		if(this.vnop("tb4_",0)){ g.fillRect(px+size-w, py-size  , 1, size*2);}
-
-		this.vinc();
-	},
-	hideTCell   : function(){ this.vhide(["tc1_","tc2_","tc3_","tc4_"]);},
-	hideTCross  : function(){ this.vhide(["tx1_","tx2_","tx3_","tx4_"]);},
-	hideTBorder : function(){ this.vhide(["tb1_","tb2_","tb3_","tb4_"]);},
-
-	drawTargetTriangle : function(x1,y1,x2,y2){
-		var vid = "target_triangle";
-		this.vdel([vid]);
-
-		if(k.playmode){ return;}
-
-		if(tc.cursolx < x1*2 || x2*2+2 < tc.cursolx){ return;}
-		if(tc.cursoly < y1*2 || y2*2+2 < tc.cursoly){ return;}
-
-		var cc = tc.getTCC(), ex = -1;
-		if(cc===-1){ ex = bd.exnum(tc.getTCX(),tc.getTCY());}
-		var target = kc.detectTarget(cc,ex);
-		if(target===-1){ return;}
-
-		g.fillStyle = this.TTcolor;
-		this.drawTriangle1(k.p0.x+tc.getTCX()*k.cwidth, k.p0.y+tc.getTCY()*k.cheight, (target===2?4:2), vid);
-
-		this.vinc();
-	},
-
-	//---------------------------------------------------------------------------
-	// pc.drawDashLines()    セルの中心から中心にひかれる点線をCanvasに描画する
-	//---------------------------------------------------------------------------
-	drawDashLines : (
-		((!k.br.IE) ?
-			function(x1,y1,x2,y2){
-				if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
-				if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
-
-				g.fillStyle = this.gridcolor;
-				for(var i=x1-1;i<=x2+1;i++){
-					for(var j=(k.p0.y+(y1-0.5)*k.cheight);j<(k.p0.y+(y2+1.5)*k.cheight);j+=6){
-						g.fillRect(k.p0.x+(i+0.5)*k.cwidth, j, 1, 3);
-					}
-				}
-				for(var i=y1-1;i<=y2+1;i++){
-					for(var j=(k.p0.x+(x1-0.5)*k.cwidth);j<(k.p0.x+(x2+1.5)*k.cwidth);j+=6){
-						g.fillRect(j, k.p0.y+(i+0.5)*k.cheight, 3, 1);
-					}
-				}
-
-				this.vinc();
-			}
-		:
-			function(x1,y1,x2,y2){
-				if(x1<1){ x1=1;} if(x2>k.qcols-2){ x2=k.qcols-2;}
-				if(y1<1){ y1=1;} if(y2>k.qrows-2){ y2=k.qrows-2;}
-
-/*				g.fillStyle = this.gridcolor;
-				g.lineWidth = 1;
-				g.enabledash = true;
-				for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("bdy"+i+"_",1)){
-					g.beginPath()
-					g.moveTo(k.p0.x+(i+0.5)*k.cwidth, k.p0.y+(y1-0.5)*k.cheight);
-					g.lineTo(k.p0.x+(i+0.5)*k.cwidth, k.p0.y+(y2+1.5)*k.cheight);
-					g.closePath()
-					g.stroke()
-				} }
-				for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("bdx"+i+"_",1)){
-					g.beginPath()
-					g.moveTo(k.p0.x+(x1-0.5)*k.cwidth, k.p0.y+( i+0.5)*k.cheight);
-					g.lineTo(k.p0.x+(x2+1.5)*k.cwidth, k.p0.y+( i+0.5)*k.cheight);
-					g.closePath()
-					g.stroke()
-				} }
-				g.enabledash = false;
-
-				g.fillStyle = "white";
-*/
-				g.fillStyle = this.gridcolor_SLIGHT;
-				for(var i=x1-1;i<=x2+1;i++){ if(this.vnop("cliney_"+i,1)){ g.fillRect(k.p0.x+(i+0.5)*k.cwidth, k.p0.y+(y1-0.5)*k.cheight, 1, (y2-y1+2)*k.cheight+1);} }
-				for(var i=y1-1;i<=y2+1;i++){ if(this.vnop("clinex_"+i,1)){ g.fillRect(k.p0.x+(x1-0.5)*k.cwidth, k.p0.y+(i+0.5)*k.cheight, (x2-x1+2)*k.cwidth+1, 1);} }
-
-				this.vinc();
-			}
-		)
-	),
-
-	//---------------------------------------------------------------------------
-	// pc.drawGrid()        セルの枠線(実線)をCanvasに書き込む
-	// pc.drawDashedGrid()  セルの枠線(点線)をCanvasに書き込む
-	// pc.drawChassis()     外枠をCanvasに書き込む
-	//---------------------------------------------------------------------------
-	drawGrid : function(x1,y1,x2,y2){
-		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
-
-		var bs=((k.isoutsideborder===0&&this.chassisflag)?1:0);
-
-		g.fillStyle = this.gridcolor;
-		var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
-		var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
-		for(var i=xa;i<=xb;i++){ if(this.vnop("bdy_"+i,1)){ g.fillRect(k.p0.x+i*k.cwidth, k.p0.y+y1*k.cheight, 1, (y2-y1+1)*k.cheight+1);} }
-		for(var i=ya;i<=yb;i++){ if(this.vnop("bdx_"+i,1)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+i*k.cheight, (x2-x1+1)*k.cwidth+1, 1);} }
-
-		this.vinc();
-	},
-	drawDashedGrid : (
-		((!k.br.IE) ?
-			function(x1,y1,x2,y2){
-				if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-				if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
-
-				var bs=((k.isoutsideborder===0&&this.chassisflag)?1:0);
-
-				var dotmax = mf(k.cwidth/10)+3;
-				var dotCount = (mf(k.cwidth/dotmax)>=1?mf(k.cwidth/dotmax):1);
-				var dotSize  = k.cwidth/(dotCount*2);
-
-				g.fillStyle = this.gridcolor;
-				var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
-				var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
-				for(var i=xa;i<=xb;i++){
-					for(var j=(k.p0.y+y1*k.cheight);j<(k.p0.y+(y2+1)*k.cheight);j+=(2*dotSize)){
-						g.fillRect(k.p0.x+i*k.cwidth, mf(j), 1, mf(dotSize));
-					}
-				}
-				for(var i=ya;i<=yb;i++){
-					for(var j=(k.p0.x+x1*k.cwidth);j<(k.p0.x+(x2+1)*k.cwidth);j+=(2*dotSize)){
-						g.fillRect(mf(j), k.p0.y+i*k.cheight, mf(dotSize), 1);
-					}
-				}
-			}
-		:
-			function(x1,y1,x2,y2){
-				this.gridcolor = this.gridcolor_SLIGHT;
-				this.drawGrid(x1,y1,x2,y2);
-
-/*				if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-				if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
-
-				var bs=((k.isoutsideborder==0&&this.chassisflag)?1:0);
-
-				g.fillStyle = this.gridcolor;
-				var xa = (x1>bs?x1:bs), xb = (x2+1<k.qcols-bs?x2+1:k.qcols-bs);
-				var ya = (y1>bs?y1:bs), yb = (y2+1<k.qrows-bs?y2+1:k.qrows-bs);
-				g.lineWidth = 1;
-				g.enabledash = true;
-				for(var i=xa;i<=xb;i++){ if(this.vnop("bdy"+i+"_",0)){
-					g.beginPath()
-					g.moveTo(mf(k.p0.x+i*k.cwidth+0.0), mf(k.p0.y+ y1   *k.cheight));
-					g.lineTo(mf(k.p0.x+i*k.cwidth+0.0), mf(k.p0.y+(y2+1)*k.cheight));
-					g.closePath()
-					g.stroke()
-				} }
-				for(var i=ya;i<=yb;i++){ if(this.vnop("bdx"+i+"_",0)){
-					g.beginPath()
-					g.moveTo(mf(k.p0.x+ x1   *k.cwidth), mf(k.p0.y+i*k.cheight));
-					g.lineTo(mf(k.p0.x+(x2+1)*k.cwidth), mf(k.p0.y+i*k.cheight));
-					g.closePath()
-					g.stroke()
-				} }
-				g.enabledash = false;
-
-				g.fillStyle = "white";
-				for(var i=xa;i<=xb;i++){ if(this.vnop("bdy"+i+"_1_",1)){ g.fillRect(k.p0.x+i*k.cwidth, k.p0.y+y1*k.cheight, 1, (y2-y1+1)*k.cheight+1);} }
-				for(var i=ya;i<=yb;i++){ if(this.vnop("bdx"+i+"_1_",1)){ g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+i*k.cheight, (x2-x1+1)*k.cwidth+1, 1);} }
-
-				this.vinc();
-*/			}
-		)
-	),
-
-	drawChassis : function(x1,y1,x2,y2){
-		var lw = this.lw;
-
-		if(x1<0){ x1=0;} if(x2>k.qcols-1){ x2=k.qcols-1;}
-		if(y1<0){ y1=0;} if(y2>k.qrows-1){ y2=k.qrows-1;}
-
-		g.fillStyle = "black";
-		if(x1<1)         { if(this.vnop("chs1_",1)){ g.fillRect(k.p0.x+x1*k.cwidth-lw+1, k.p0.y+y1*k.cheight-lw+1, lw, (y2-y1+1)*k.cheight+2*lw-1);} }
-		if(y1<1)         { if(this.vnop("chs2_",1)){ g.fillRect(k.p0.x+x1*k.cwidth-lw+1, k.p0.y+y1*k.cheight-lw+1, (x2-x1+1)*k.cwidth+2*lw-1, lw); } }
-		if(y2>=k.qrows-1){ if(this.vnop("chs3_",1)){ g.fillRect(k.p0.x+x1*k.cwidth-lw+1, k.p0.y+(y2+1)*k.cheight , (x2-x1+1)*k.cwidth+2*lw-1, lw); } }
-		if(x2>=k.qcols-1){ if(this.vnop("chs4_",1)){ g.fillRect(k.p0.x+(x2+1)*k.cwidth , k.p0.y+y1*k.cheight-lw+1, lw, (y2-y1+1)*k.cheight+2*lw-1);} }
-		this.vinc();
-	},
-
-	//---------------------------------------------------------------------------
-	// pc.flushCanvas()    指定された領域を白で塗りつぶす
-	// pc.flushCanvasAll() Canvas全面を白で塗りつぶす
-	//---------------------------------------------------------------------------
-	flushCanvas : (
-		((!k.vml) ?
-			function(x1,y1,x2,y2){
-				if     (k.isextendcell===0 && x1<= 0 && y1<= 0 && x2>=k.qcols-1 && y2>=k.qrows-1){ this.flushCanvasAll();}
-				else if(k.isextendcell===1 && x1<=-1 && y1<=-1 && x2>=k.qcols-1 && y2>=k.qrows-1){ this.flushCanvasAll();}
-				else if(k.isextendcell===2 && x1<=-1 && y1<=-1 && x2>=k.qcols   && y2>=k.qrows  ){ this.flushCanvasAll();}
-				else{
-					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(k.p0.x+x1*k.cwidth, k.p0.y+y1*k.cheight, (x2-x1+1)*k.cwidth, (y2-y1+1)*k.cheight);
-				}
-			}
-		:
-			function(x1,y1,x2,y2){ g.zidx=1;}
-		)
-	),
-	// excanvasの場合、これを描画しないとVML要素が選択されてしまう
-	flushCanvasAll : (
-		((!k.vml) ?
-			((!k.br.IE) ?
-				function(){
-					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
-					this.vinc();
-				}
-			:
-				function(){
-					g._clear();	// uuCanvas用特殊処理
-					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
-					this.vinc();
-				}
-			)
-		:
-			function(){
-				g.zidx=0; g.vid="bg_"; g.pelements = []; g.elements = [];	// VML用
-				g._clear();													// uuCanvas用特殊処理
-				g.fillStyle = "rgb(255, 255, 255)";
-				g.fillRect(0, 0, ee(base.canvas).getWidth(), ee(base.canvas).getHeight());
-				this.vinc();
-			}
-		)
-	),
-
-	//---------------------------------------------------------------------------
-	// pc.vnop()  VMLで既に描画されているオブジェクトを再描画せず、色は設定する
-	// pc.vhide() VMLで既に描画されているオブジェクトを隠す
-	// pc.vdel()  VMLで既に描画されているオブジェクトを削除する
-	// pc.vinc()  z-indexに設定される値を+1する
-	//  ※IE以外ではf_trueになっています。
-	//---------------------------------------------------------------------------
-	// excanvas関係関数
-	vnop : (!k.vml ? f_true : function(vid, isfill){
-		if(g.elements[vid]){
-			var el = g.elements[vid];
-			el.color = uuColor.parse(isfill===1?g.fillStyle:g.strokeStyle)[0];
-
-			var pel = g.pelements[vid];
-			if(!this.zstable){ pel.style.zIndex = g.zidx;}
-			pel.style.display = 'inline';
-			return false;
-		}
-		g.vid = vid;
-		return true;
-	}),
-	vhide : (!k.vml ? f_true : function(vid){
-		if(typeof vid === 'string'){ vid = [vid];}
-		for(var i=0;i<vid.length;i++){
-			if(g.elements[vid[i]]){
-				g.pelements[vid[i]].style.display = 'none';
+			var c = exlist[i], px = bd.excell[c].px, py = bd.excell[c].py;
+			if(this.vnop(header+c,this.NONE)){
+				g.strokeLine(px+1,py+1, px+this.cw,py+this.ch);
 			}
 		}
-	}),
-	vdel : (!k.vml ? f_true : function(vid){
-		for(var i=0;i<vid.length;i++){
-			if(g.elements[vid[i]]){
-				g._elm.removeChild(g.pelements[vid[i]]);	// uuCanvasはg._elmにparentNodeを保持してる
-				g.pelements[vid[i]]=null;
-				g.elements[vid[i]] =null;
+	},
+	drawEXCellGrid : function(x1,y1,x2,y2){
+		this.vinc('grid_excell', 'crispEdges');
+
+		g.fillStyle = this.cellcolor;
+		var headers = ["ex_bdx_", "ex_bdy_"];
+		var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
+		for(var i=0;i<exlist.length;i++){
+			var c = exlist[i], px = bd.excell[c].px, py = bd.excell[c].py;
+
+			if(bd.excell[c].by===-1 && bd.excell[c].bx<bd.maxbx){
+				if(this.vnop(headers[0]+c,this.NONE)){
+					g.fillRect(px+this.cw, py, 1, this.ch);
+				}
+			}
+
+			if(bd.excell[c].bx===-1 && bd.excell[c].by<bd.maxby){
+				if(this.vnop(headers[1]+c,this.NONE)){
+					g.fillRect(px, py+this.ch, this.cw, 1);
+				}
 			}
 		}
-	}),
-	vinc : (!k.vml ? f_true : function(){
-		g.vid = ""; g.zidx++;
-	}),
-
-	//---------------------------------------------------------------------------
-	// pc.CreateDOMAndSetNop()  数字表示用のエレメントを返す
-	// pc.showEL()              エレメントを表示する
-	// pc.hideEL()              エレメントを隠す
-	// pc.isdispnumCell()       数字を記入できるか判定する
-	// pc.getNumberColor()      数字の色を判定する
-	//---------------------------------------------------------------------------
-	// 数字表示関数
-	CreateDOMAndSetNop : function(){
-		return (!pc.textenable ? ee.createEL(pc.EL_NUMOBJ,'') : null);
-	},
-
-	showEL : function(el){ el.style.display = 'inline'; },	// 条件見なくてもよさそう。
-	hideEL : function(el){ if(!!el){ el.style.display = 'none';} },
-
-	setFunctions : function(){
-		this.isdispnumCell = (
-			((!!k.isDispHatena) ?
-				(!!k.dispzero) ? function(id){ var num=bd.getNum(id); return (num>=0 || num===-2);}
-							   : function(id){ var num=bd.getNum(id); return (num> 0 || num===-2);}
-			:
-				(!!k.dispzero) ? function(id){ var num=bd.getNum(id); return (num>=0);}
-							   : function(id){ var num=bd.getNum(id); return (num> 0);}
-			)
-		);
-		this.getNumberColor = (
-			((!!k.isAnsNumber) ?
-				function(id){
-					if(bd.cell[id].error===1 || bd.cell[id].error===4){ return this.fontErrcolor;}
-					return (bd.cell[id].qnum!==-1 ? this.fontcolor : this.fontAnscolor);
-				}
-			:(!!k.BlackCell) ?
-				function(id){
-					if(bd.cell[id].qans===1){ return this.BCell_fontcolor;}
-					else if(bd.cell[id].error===1 || bd.cell[id].error===4){ return this.fontErrcolor;}
-					return this.fontcolor;
-				}
-			:
-				function(id){
-					if(bd.cell[id].ques!==0){ return this.BCell_fontcolor;}
-					else if(bd.cell[id].error===1 || bd.cell[id].error===4){ return this.fontErrcolor;}
-					return this.fontcolor;
-				}
-			)
-		);
-	},
-	isdispnumCell  : f_true,
-	getNumberColor : function(){ return this.fontcolor;},
-
-	//---------------------------------------------------------------------------
-	// pc.dispnumCell()   Cellに数字を記入するための値を決定する
-	// pc.dispnumCross()  Crossに数字を記入するための値を決定する
-	// pc.dispnumBorder() Borderに数字を記入するための値を決定する
-	//---------------------------------------------------------------------------
-	dispnumCell : function(id){
-		var obj = bd.cell[id];
-		if(!this.isdispnumCell(id)){ this.hideEL(obj.numobj); return;}
-		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-
-		var type = (!k.isDispNumUL ? 1 : 5);
-		if(obj.ques>=2 && obj.ques<=5){ type=obj.ques;}
-
-		var num = bd.getNum(id);
-		var text = (num>=0 ? ""+num : "?");
-
-		var fontratio = 0.45;
-		if(type===1){ fontratio = (num<10?0.8:(num<100?0.7:0.55));}
-
-		var color = this.getNumberColor(id);
-
-		this.dispnum(obj.numobj, type, text, fontratio, color, obj.px, obj.py);
-	},
-	dispnumCross : function(id){
-		var obj = bd.cross[id];
-		if(obj.qnum<0||(obj.qnum===0&&k.dispzero===0)){ this.hideEL(obj.numobj); return;}
-		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-
-		var text  = ""+obj.qnum;
-		var color = this.fontcolor;
-
-		this.dispnum(obj.numobj, 101, text, 0.6, color, obj.px, obj.py);
-	},
-	dispnumBorder : function(id){
-		var obj = bd.border[id];
-		if(obj.qnum<0||(obj.qnum===0&&k.dispzero===0)){ this.hideEL(obj.numobj); return;}
-		if(!obj.numobj){ obj.numobj = this.CreateDOMAndSetNop();}
-
-		var text  = ""+obj.qnum;
-		var color = this.borderfontcolor;
-
-		this.dispnum(obj.numobj, 101, text, 0.45, color, obj.px, obj.py);
-	},
-
-	//---------------------------------------------------------------------------
-	// pc.dispnum()  数字を記入するための共通関数
-	//---------------------------------------------------------------------------
-	dispnum : function(el, type, text, fontratio, color, px, py){
-//		if(!this.textenable){
-			if(!el){ return;}
-			var IE = k.br.IE;
-
-			el.innerHTML = text;
-
-			var fontsize = mf(k.cwidth*fontratio*this.fontsizeratio);
-			el.style.fontSize = (""+ fontsize + 'px');
-
-			this.showEL(el);	// 先に表示しないとwid,hgt=0になって位置がずれる
-
-			var wid = el.clientWidth;
-			var hgt = el.clientHeight;
-
-			if(type===1||type===6||type===7){
-				el.style.left = k.cv_oft.x+px+mf((k.cwidth-wid) /2)+(IE?4:2)-(type===6?mf(k.cwidth *0.1):0);
-				el.style.top  = k.cv_oft.y+py+mf((k.cheight-hgt)/2)+(IE?5:1)+(type===7?mf(k.cheight*0.1):0);
-			}
-			else if(type===101){
-				el.style.left = k.cv_oft.x+px-wid/2+(IE?5:2);
-				el.style.top  = k.cv_oft.y+py-hgt/2+(IE?4:1);
-			}
-			else{
-				if(type==52||type==54){ px--; type-=50;}	// excellの[＼]対応..
-				if     (type===3||type===4){ el.style.left = k.cv_oft.x+px+k.cwidth -wid+(IE?2: 0);}
-				else if(type===2||type===5){ el.style.left = k.cv_oft.x+px              +(IE?6: 4);}
-				if     (type===2||type===3){ el.style.top  = k.cv_oft.y+py+k.cheight-hgt+(IE?3:-1);}
-				else if(type===4||type===5){ el.style.top  = k.cv_oft.y+py              +(IE?5: 2);}
-			}
-
-			el.style.color = color;
-//		}
-//		// Nativeな方法はこっちなんだけど、計5～6%くらい遅くなる。。
-//		else{
-//			g.font = ""+mf(k.cwidth*fontratio*this.fontsizeratio)+"px 'Serif'";
-//			g.fillStyle = color;
-//			if(type==1||type==6||type==7){
-//				g.textAlign = 'center'; g.textBaseline = 'middle';
-//				g.fillText(text, px+mf(k.cwidth/2)-(type==6?mf(k.cwidth*0.1):0), py+mf(k.cheight/2)+(type==7?mf(k.cheight*0.1):0));
-//			}
-//			else if(type==101){
-//				g.textAlign = 'center'; g.textBaseline = 'middle';
-//				g.fillText(text, px, py);
-//			}
-//			else{
-//				g.textAlign    = ((type==3||type==4)?'right':'left');
-//				g.textBaseline = ((type==2||type==3)?'alphabetic':'top');
-//				g.fillText(text, px+((type==3||type==4)?k.cwidth:3), py+((type==2||type==3)?k.cheight-1:0));
-//			}
-//		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -3056,42 +3851,483 @@ Graphic.prototype = {
 	// pc.drawNumbersOn51_1() 1つの[＼]に数字を記入する
 	//---------------------------------------------------------------------------
 	drawNumbersOn51 : function(x1,y1,x2,y2){
-		for(var cx=x1;cx<=x2;cx++){ for(var cy=y1;cy<=y2;cy++){
-			var c = bd.cnum(cx,cy);
-			// cell上だった場合
-			if(c!==-1){
-				if(bd.cell[c].ques===51){
-					this.drawNumbersOn51_1(bd.cell[c], bd.rt(c), bd.dn(c), 0)
+		this.vinc('cell_number51', 'auto');
+
+		for(var bx=(x1|1)-2;bx<=x2+2;bx+=2){
+			for(var by=(y1|1)-2;by<=y2+2;by+=2){
+				// cell上だった場合
+				if(bx!==-1 && by!==-1){
+					var c = bd.cnum(bx,by);
+					if(c!==-1){ this.drawNumbersOn51_1('cell', c);}
 				}
-				else{
-					this.hideEL(bd.cell[c].numobj);
-					this.hideEL(bd.cell[c].numobj2);
-				}
-			}
-			else{
-				c = bd.exnum(cx,cy);
 				// excell上だった場合
-				if(c!==-1){
-					this.drawNumbersOn51_1(bd.excell[c], bd.excell[c].cy*k.qcols, bd.excell[c].cx, 50)
+				else{
+					var c = bd.exnum(bx,by);
+					if(c!==-1){ this.drawNumbersOn51_1('excell', c);}
 				}
 			}
-		}}
-
-		this.vinc();
+		}
 	},
-	drawNumbersOn51_1 : function(obj, rt, dn, add){
-		var val,err,grd,nb,el,type,str;
-		for(var i=0;i<2;i++){
-			if(i===0){ val=obj.qnum,  err=obj.error, guard=obj.cy, nb=rt, type=add+4, str='numobj'; }	// 1回目は右向き
-			if(i===1){ val=obj.direc, err=obj.error, guard=obj.cx, nb=dn, type=add+2, str='numobj2';}	// 2回目は下向き
+	drawNumbersOn51_1 : function(family, c){
+		var val, err, guard, nb, type, str, obj=bd[family][c];
+		var keys = [[family,c,'ques51','rt'].join('_'), [family,c,'ques51','dn'].join('_')];
 
-			if(val===-1 || guard===-1 || nb===-1 || bd.cell[nb].ques===51){ this.hideEL(obj[str]);}
-			else{
-				if(!obj[str]){ obj[str] = this.CreateDOMAndSetNop();}
-				var color = (err===1?this.fontErrcolor:this.fontcolor);
-				var text = (val>=0?""+val:"");
-				this.dispnum(obj[str], type, text, 0.45, color, obj.px, obj.py);
+		if(family==='excell' || bd.cell[c].ques===51){
+			for(var i=0;i<2;i++){
+				if     (i===0){ val=obj.qnum,  guard=obj.by, nb=bd.cnum(obj.bx+2, obj.by), type=4;} // 1回目は右向き
+				else if(i===1){ val=obj.direc, guard=obj.bx, nb=bd.cnum(obj.bx, obj.by+2), type=2;} // 2回目は下向き
+
+				if(val!==-1 && guard!==-1 && nb!==-1 && bd.cell[nb].ques!==51){
+					var color = (obj.error===1?this.fontErrcolor:this.fontcolor);
+					var text = (val>=0?""+val:"");
+
+					this.dispnum(keys[i], type, text, 0.45, color, obj.px+this.bw, obj.py+this.bh);
+				}
+				else{ this.hideEL(keys[i]);}
 			}
+		}
+		else{
+			this.hideEL(keys[0]);
+			this.hideEL(keys[1]);
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.drawTarget()  入力対象となる場所を描画する
+	// pc.drawCursor()  キーボードからの入力対象をCanvasに書き込む
+	// pc.drawTargetTriangle() [＼]のうち入力対象のほうに背景色をつける
+	//---------------------------------------------------------------------------
+	drawTarget : function(x1,y1,x2,y2){
+		this.drawCursor(x1, y1, x2, y2, true, k.editmode);
+	},
+
+	drawCursor : function(x1,y1,x2,y2,islarge,isdraw){
+		this.vinc('target_cursor', 'crispEdges');
+
+		if(isdraw!==false && pp.getVal('cursor')){
+			if(tc.cursorx < x1-1 || x2+1 < tc.cursorx){ return;}
+			if(tc.cursory < y1-1 || y2+1 < tc.cursory){ return;}
+
+			var cpx = k.p0.x + tc.cursorx*this.bw + 0.5;
+			var cpy = k.p0.y + tc.cursory*this.bh + 0.5;
+			var w, size;
+			if(islarge!==false){ w = mf(Math.max(this.cw/16, 2)); size = this.bw-0.5;}
+			else	           { w = mf(Math.max(this.cw/24, 1)); size = this.bw*0.56;}
+
+			this.vdel(["ti1_","ti2_","ti3_","ti4_"]);
+			g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
+			if(this.vnop("ti1_",this.FILL)){ g.fillRect(cpx-size,   cpy-size,   size*2, w);}
+			if(this.vnop("ti2_",this.FILL)){ g.fillRect(cpx-size,   cpy-size,   w, size*2);}
+			if(this.vnop("ti3_",this.FILL)){ g.fillRect(cpx-size,   cpy+size-w, size*2, w);}
+			if(this.vnop("ti4_",this.FILL)){ g.fillRect(cpx+size-w, cpy-size,   w, size*2);}
+		}
+		else{ this.vhide(["ti1_","ti2_","ti3_","ti4_"]);}
+	},
+
+	drawTargetTriangle : function(x1,y1,x2,y2){
+		this.vinc('target_triangle', 'auto');
+
+		var vid = "target_triangle";
+		this.vdel([vid]);
+
+		if(k.playmode){ return;}
+
+		if(tc.cursorx < x1 || x2+2 < tc.cursorx){ return;}
+		if(tc.cursory < y1 || y2+2 < tc.cursory){ return;}
+
+		var cc = tc.getTCC(), ex = -1;
+		if(cc===-1){ ex = tc.getTEC();}
+		var target = kc.detectTarget(cc,ex);
+		if(target===-1){ return;}
+
+		g.fillStyle = this.ttcolor;
+		this.drawTriangle1(k.p0.x+(tc.cursorx>>1)*this.cw, k.p0.y+(tc.cursory>>1)*this.ch, (target===2?4:2), vid);
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.drawDashedCenterLines() セルの中心から中心にひかれる点線をCanvasに描画する
+	//---------------------------------------------------------------------------
+	drawDashedCenterLines : function(x1,y1,x2,y2){
+		this.vinc('centerline', 'crispEdges');
+		if(x1<bd.minbx+1){ x1=bd.minbx+1;} if(x2>bd.maxbx-1){ x2=bd.maxbx-1;}
+		if(y1<bd.minby+1){ y1=bd.minby+1;} if(y2>bd.maxby-1){ y2=bd.maxby-1;}
+		x1|=1, y1|=1;
+
+		if(g.use.canvas){
+			g.fillStyle = this.gridcolor;
+			for(var i=x1;i<=x2;i+=2){
+				for(var j=(k.p0.y+y1*this.bh),len=(k.p0.y+y2*this.bh);j<len;j+=6){
+					g.fillRect(k.p0.x+i*this.bw, j, 1, 3);
+				}
+			}
+			for(var i=y1;i<=y2;i+=2){
+				for(var j=(k.p0.x+x1*this.bw),len=(k.p0.x+x2*this.bw);j<len;j+=6){
+					g.fillRect(j, k.p0.y+i*this.bh, 3, 1);
+				}
+			}
+		}
+		else{
+			g.lineWidth = 1;
+			g.strokeStyle = this.gridcolor;
+			for(var i=x1;i<=x2;i+=2){ if(this.vnop("cliney_"+i,this.NONE)){
+				var px = k.p0.x+i*this.bw, py1 = k.p0.y+y1*this.bh, py2 = k.p0.y+y2*this.bh;
+				g.strokeLine(px, py1, px, py2);
+				g.setDashSize(3);
+			}}
+			for(var i=y1;i<=y2;i+=2){ if(this.vnop("clinex_"+i,this.NONE)){
+				var py = k.p0.y+i*this.bh, px1 = k.p0.x+x1*this.bw, px2 = k.p0.x+x2*this.bw;
+				g.strokeLine(px1, py, px2, py);
+				g.setDashSize(3);
+			}}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.drawGrid()        セルの枠線(実線)をCanvasに書き込む
+	// pc.drawDashedGrid()  セルの枠線(点線)をCanvasに書き込む
+	//---------------------------------------------------------------------------
+	drawGrid : function(x1,y1,x2,y2,isdraw){
+		this.vinc('grid', 'crispEdges');
+
+		// 外枠まで描画するわけじゃないので、maxbxとか使いません
+		if(x1<0){ x1=0;} if(x2>2*k.qcols){ x2=2*k.qcols;}
+		if(y1<0){ y1=0;} if(y2>2*k.qrows){ y2=2*k.qrows;}
+		x1-=(x1&1), y1-=(y1&1);
+
+		var bs=((k.isborder!==2&&this.chassisflag)?2:0);
+		var xa = Math.max(x1,0+bs), xb = Math.min(x2,2*k.qcols-bs);
+		var ya = Math.max(y1,0+bs), yb = Math.min(y2,2*k.qrows-bs);
+
+		isdraw = (isdraw!==false?true:false);
+		if(isdraw){
+			g.fillStyle = this.gridcolor;
+			for(var i=xa;i<=xb;i+=2){ if(this.vnop("bdy_"+i,this.NONE)){ g.fillRect(k.p0.x+i*this.bw, k.p0.y+y1*this.bh, 1, (y2-y1)*this.bh+1);} }
+			for(var i=ya;i<=yb;i+=2){ if(this.vnop("bdx_"+i,this.NONE)){ g.fillRect(k.p0.x+x1*this.bw, k.p0.y+i*this.bh, (x2-x1)*this.bw+1, 1);} }
+		}
+		else{
+			if(!g.use.canvas){
+				for(var i=xa;i<=xb;i+=2){ this.vhide("bdy_"+i);}
+				for(var i=ya;i<=yb;i+=2){ this.vhide("bdx_"+i);}
+			}
+		}
+	},
+	drawDashedGrid : function(x1,y1,x2,y2){
+		this.vinc('grid', 'crispEdges');
+		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
+		if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
+		x1-=(x1&1), y1-=(y1&1);
+
+		var dotmax   = this.cw/10+3;
+		var dotCount = Math.max(this.cw/dotmax, 1);
+		var dotSize  = this.cw/(dotCount*2);
+
+		//var bs=((k.isborder!==2&&this.chassisflag)?1:0);
+		var bs=(this.chassisflag?2:0);
+		var xa = Math.max(x1,bd.minbx+bs), xb = Math.min(x2,bd.maxbx-bs);
+		var ya = Math.max(y1,bd.minby+bs), yb = Math.min(y2,bd.maxby-bs);
+
+		if(g.use.canvas){
+			g.fillStyle = this.gridcolor;
+			for(var i=xa;i<=xb;i+=2){
+				var px = k.p0.x+i*this.bw;
+				for(var j=(k.p0.y+y1*this.bh),len=(k.p0.y+y2*this.bh);j<len;j+=(2*dotSize)){
+					g.fillRect(px, j, 1, dotSize);
+				}
+			}
+			for(var i=ya;i<=yb;i+=2){
+				var py = k.p0.y+i*this.bh;
+				for(var j=(k.p0.x+x1*this.bw),len=(k.p0.x+x2*this.bw);j<len;j+=(2*dotSize)){
+					g.fillRect(j, py, dotSize, 1);
+				}
+			}
+		}
+		else{
+			// strokeぶん0.5ずらす
+			g.lineWidth = 1;
+			g.strokeStyle = this.gridcolor;
+			for(var i=xa;i<=xb;i+=2){ if(this.vnop("bdy_"+i,this.NONE)){
+				var px = k.p0.x+i*this.bw+0.5, py1 = k.p0.y+y1*this.bh, py2 = k.p0.y+y2*this.bh;
+				g.strokeLine(px, py1, px, py2);
+				g.setDashSize(dotSize);
+			}}
+			for(var i=ya;i<=yb;i+=2){ if(this.vnop("bdx_"+i,this.NONE)){
+				var py = k.p0.y+i*this.bh+0.5, px1 = k.p0.x+x1*this.bw, px2 = k.p0.x+x2*this.bw;
+				g.strokeLine(px1, py, px2, py);
+				g.setDashSize(dotSize);
+			}}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.drawChassis()     外枠をCanvasに書き込む
+	// pc.drawChassis_ex1() k.isextencdell==1の時の外枠をCanvasに書き込む
+	//---------------------------------------------------------------------------
+	drawChassis : function(x1,y1,x2,y2){
+		this.vinc('chassis', 'crispEdges');
+
+		// ex===0とex===2で同じ場所に描画するので、maxbxとか使いません
+		if(x1<0){ x1=0;} if(x2>2*k.qcols){ x2=2*k.qcols;}
+		if(y1<0){ y1=0;} if(y2>2*k.qrows){ y2=2*k.qrows;}
+
+		var lw = (k.puzzleid!=='bosanowa'?this.lw:1), bw = this.bw, bh = this.bh;
+		var boardWidth = k.qcols*this.cw, boardHeight = k.qrows*this.ch;
+		g.fillStyle = "black";
+
+		if(g.use.canvas){
+			if(x1===0)        { g.fillRect(k.p0.x      -lw+1, k.p0.y+y1*bh-lw+1,  lw, (y2-y1)*bh+2*lw-2);}
+			if(x2===2*k.qcols){ g.fillRect(k.p0.x+boardWidth, k.p0.y+y1*bh-lw+1,  lw, (y2-y1)*bh+2*lw-2);}
+			if(y1===0)        { g.fillRect(k.p0.x+x1*bw-lw+1, k.p0.y      -lw+1,  (x2-x1)*bw+2*lw-2, lw); }
+			if(y2===2*k.qrows){ g.fillRect(k.p0.x+x1*bw-lw+1, k.p0.y+boardHeight, (x2-x1)*bw+2*lw-2, lw); }
+		}
+		else{
+			if(this.vnop("chs1_",this.NONE)){ g.fillRect(k.p0.x-lw+1,        k.p0.y-lw+1, lw, boardHeight+2*lw-2);}
+			if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x+boardWidth,  k.p0.y-lw+1, lw, boardHeight+2*lw-2);}
+			if(this.vnop("chs3_",this.NONE)){ g.fillRect(k.p0.x-lw+1,        k.p0.y-lw+1, boardWidth+2*lw-2, lw); }
+			if(this.vnop("chs4_",this.NONE)){ g.fillRect(k.p0.x-lw+1, k.p0.y+boardHeight, boardWidth+2*lw-2, lw); }
+		}
+	},
+	drawChassis_ex1 : function(x1,y1,x2,y2,boldflag){
+		this.vinc('chassis_ex1', 'crispEdges');
+		if(x1<=0){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
+		if(y1<=0){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
+
+		var lw = this.lw, lm = this.lm, bw = this.bw, bh = this.bh;
+		var boardWidth = k.qcols*this.cw, boardHeight = k.qrows*this.ch;
+		g.fillStyle = "black";
+
+		// extendcell==1も含んだ外枠の描画
+		if(g.use.canvas){
+			if(x1===bd.minbx){ g.fillRect(k.p0.x-this.cw-lw+1, k.p0.y+y1*bh-lw+1,   lw, (y2-y1)*bh+2*lw-2);}
+			if(x2===bd.maxbx){ g.fillRect(k.p0.x+boardWidth,   k.p0.y+y1*bh-lw+1,   lw, (y2-y1)*bh+2*lw-2);}
+			if(y1===bd.minby){ g.fillRect(k.p0.x+x1*bw-lw+1,   k.p0.y-this.ch-lw+1, (x2-x1)*bw+2*lw-2, lw);}
+			if(y2===bd.maxby){ g.fillRect(k.p0.x+x1*bw-lw+1,   k.p0.y+boardHeight,  (x2-x1)*bw+2*lw-2, lw);}
+		}
+		else{
+			if(this.vnop("chsex1_1_",this.NONE)){ g.fillRect(k.p0.x-this.cw-lw+1, k.p0.y-this.ch-lw+1, lw, boardHeight+this.ch+2*lw-2);}
+			if(this.vnop("chsex1_2_",this.NONE)){ g.fillRect(k.p0.x+boardWidth,   k.p0.y-this.ch-lw+1, lw, boardHeight+this.ch+2*lw-2);}
+			if(this.vnop("chsex1_3_",this.NONE)){ g.fillRect(k.p0.x-this.cw-lw+1, k.p0.y-this.ch-lw+1, boardWidth+this.cw+2*lw-2, lw); }
+			if(this.vnop("chsex1_4_",this.NONE)){ g.fillRect(k.p0.x-this.cw-lw+1, k.p0.y+boardHeight,  boardWidth+this.cw+2*lw-2, lw); }
+		}
+
+		// 通常のセルとextendcell==1の間の描画
+		if(boldflag){
+			// すべて太線で描画する場合
+			if(g.use.canvas){
+				if(x1<=0){ g.fillRect(k.p0.x-lw+1, k.p0.y+y1*bh-lw+1, lw, (y2-y1)*bh+lw-1);}
+				if(y1<=0){ g.fillRect(k.p0.x+x1*bw-lw+1, k.p0.y-lw+1, (x2-x1)*bw+lw-1, lw); }
+			}
+			else{
+				if(this.vnop("chs1_",this.NONE)){ g.fillRect(k.p0.x-lw+1, k.p0.y-lw+1, lw, boardHeight+lw-1);}
+				if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x-lw+1, k.p0.y-lw+1, boardWidth+lw-1,  lw);}
+			}
+		}
+		else{
+			// ques==51のセルが隣接している時に細線を描画する場合
+			if(g.use.canvas){
+				if(x1<=0){ g.fillRect(k.p0.x, k.p0.y+y1*bh, 1, (y2-y1)*bh);}
+				if(y1<=0){ g.fillRect(k.p0.x+x1*bw, k.p0.y, (x2-x1)*bw, 1); }
+			}
+			else{
+				if(this.vnop("chs1_",this.NONE)){ g.fillRect(k.p0.x, k.p0.y, 1, boardHeight);}
+				if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x, k.p0.y, boardWidth, 1); }
+			}
+
+			var headers = ["chs1_sub_", "chs2_sub_"];
+			var clist = bd.cellinside(x1-1,y1-1,x2+1,y2+1);
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i], bx = bd.cell[c].bx, by = bd.cell[c].by;
+				var px = bd.cell[c].px, py = bd.cell[c].py;
+				if(bx===1){
+					if(bd.cell[c].ques!==51){
+						if(this.vnop(headers[0]+by,this.NONE)){
+							g.fillRect(k.p0.x-lm, py-lm, lw, this.ch+lw);
+						}
+					}
+					else{ this.vhide([headers[0]+by]);}
+				}
+				if(by===1){
+					if(bd.cell[c].ques!==51){
+						if(this.vnop(headers[1]+bx,this.NONE)){
+							g.fillRect(px-lm, k.p0.x-lm, this.cw+lw, lw);
+						}
+					}
+					else{ this.vhide([headers[1]+bx]);}
+				}
+			}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.flushCanvas()    指定された領域を白で塗りつぶす
+	// pc.flushCanvasAll() Canvas全面を白で塗りつぶす
+	//
+	// pc.vnop()  VMLで既に描画されているオブジェクトを再描画せず、色は設定する
+	// pc.vhide() VMLで既に描画されているオブジェクトを隠す
+	// pc.vdel()  VMLで既に描画されているオブジェクトを削除する
+	// pc.vinc()  z-indexに設定される値を+1する
+	//---------------------------------------------------------------------------
+	flushCanvasAll : f_true,
+	flushCanvas    : f_true,
+	vnop  : f_true,
+	vhide : f_true,
+	vdel  : f_true,
+	vinc  : f_true,
+
+	setVectorFunctions : function(){
+		if(g.use.canvas){
+			this.flushCanvasAll = function(x1,y1,x2,y2){
+				this.numobj = {};
+				base.numparent.innerHTML = '';
+			};
+			this.flushCanvas = function(x1,y1,x2,y2){
+				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
+				g.fillRect(k.p0.x+x1*this.bw, k.p0.y+y1*this.bh, (x2-x1)*this.bw, (y2-y1)*this.bh);
+			};
+			this.vnop  = f_true;
+			this.vhide = f_true;
+			this.vdel  = f_true;
+			this.vinc = function(layerid, rendering){
+				g.setLayer(layerid);
+				if(rendering){ g.setRendering(rendering);}
+			};
+		}
+		else{
+			this.flushCanvasAll = function(x1,y1,x2,y2){
+				g.clear();
+				this.zidx=0;
+				this.zidx_array=[];
+
+				this.numobj = {};
+				base.numparent.innerHTML = '';
+
+				this.vinc('board_base', 'crispEdges');
+				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
+				if(this.vnop("boardfull",this.NONE)){
+					g.fillRect(k.p0.x, k.p0.y, k.qcols*this.cw, k.qrows*this.ch);
+				}
+			};
+			this.flushCanvas = function(x1,y1,x2,y2){
+				this.zidx=1;
+			};
+			this.vnop = function(vid, ccflag){ // strokeのみ:0, fillのみ:1, 両方:2, 色の変更なし:3
+				g.vid = vid;
+				if(!!g.elements[vid]){
+					var el = g.elements[vid],
+						isfill   = this.vnop_FILL[ccflag],
+						isstroke = this.vnop_STROKE[ccflag];
+
+					if(g.use.vml){
+						el.style.display = 'inline';
+						if(isfill)  { el.fillcolor   = Camp.parse(g.fillStyle);}
+						if(isstroke){ el.strokecolor = Camp.parse(g.strokeStyle);}
+					}
+					else if(g.use.sl){
+						el.Visibility = "Visible";
+						if(isfill)  { el.fill   = Camp.parse(g.fillStyle);  }
+						if(isstroke){ el.stroke = Camp.parse(g.strokeStyle);}
+					}
+					else if(g.use.svg){
+						el.style.display = 'inline';
+						if(isfill)  { el.setAttribute('fill',  Camp.parse(g.fillStyle));}
+						if(isstroke){ el.setAttribute('stroke',Camp.parse(g.strokeStyle));}
+					}
+					return false;
+				}
+				return true;
+			};
+			this.vhide = function(vid){
+				if(typeof vid === 'string'){ vid = [vid];}
+				for(var i=0;i<vid.length;i++){
+					if(g.elements[vid[i]]){
+						if(!g.use.sl){ g.elements[vid[i]].style.display = 'none';}
+						else{ g.elements[vid[i]].Visibility = "Collapsed";}
+					}
+				}
+			};
+			this.vdel = function(vid){
+				for(var i=0;i<vid.length;i++){
+					if(g.elements[vid[i]]){
+						if(!g.use.sl){ g.target.removeChild(g.elements[vid[i]]);}
+						else{ g.elements[vid[i]].Visibility = "Collapsed";}
+						g.elements[vid[i]] = null;
+					}
+				}
+			};
+			this.vinc = function(layerid, rendering){
+				g.vid = "";
+				g.setLayer(layerid);
+
+				if(!this.zidx_array[layerid]){
+					this.zidx++;
+					this.zidx_array[layerid] = this.zidx;
+					if(rendering){ g.setRendering(rendering);}
+					if(!g.use.sl){ g.getLayerElement().style.zIndex = this.zidx;}
+					else{ g.getLayerElement()["Canvas.ZIndex"] = this.zidx;}
+				}
+			};
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.showEL()   エレメントを表示する
+	// pc.hideEL()   エレメントを隠す
+	// pc.dispnum()  数字を記入するための共通関数
+	//---------------------------------------------------------------------------
+	showEL : function(key){
+		// 呼び出し元は if(!this.fillTextPrecisely) の中だけなので
+		// hideELにある条件は見なくてもよさそう。
+		this.numobj[key].style.display = 'inline';
+	},
+	hideEL : function(key){
+		if(!!this.numobj[key]){
+			this.numobj[key].style.display = 'none';
+		}
+	},
+	dispnum : function(key, type, text, fontratio, color, px, py){
+		if(!this.fillTextPrecisely){
+			if(k.br.IEmoz4){ py+=2;}
+
+			// エレメントを取得
+			var el = this.numobj[key];
+			if(!el){ el = this.numobj[key] = ee.createEL(this.EL_NUMOBJ,'');}
+
+			el.innerHTML = text;
+
+			var fontsize = mf(this.cw*fontratio*this.fontsizeratio);
+			el.style.fontSize = (""+ fontsize + 'px');
+
+			this.showEL(key);	// 先に表示しないとwid,hgt=0になって位置がずれる
+
+			var wid = el.offsetWidth;
+			var hgt = el.offsetHeight;
+
+			if(type===1){
+				px+=2; // なんかちょっとずれる
+				el.style.left = k.cv_oft.x+px-wid/2 + 'px';
+				el.style.top  = k.cv_oft.y+py-hgt/2 + 'px';
+			}
+			else{
+				if     (type===3||type===4){ el.style.left = k.cv_oft.x+px+this.bw-wid -1 + 'px';}
+				else if(type===2||type===5){ el.style.left = k.cv_oft.x+px-this.bw     +3 + 'px';}
+				if     (type===2||type===3){ el.style.top  = k.cv_oft.y+py+this.bh-hgt -1 + 'px';}
+				else if(type===4||type===5){ el.style.top  = k.cv_oft.y+py-this.bh     +2 + 'px';}
+			}
+
+			el.style.color = color;
+		}
+		// Nativeな方法はこっちなんだけど、、(前は計5～6%くらい遅くなってた)
+		else{
+			g.font = ""+mf(this.cw*fontratio*this.fontsizeratio)+"px 'Serif'";
+			g.fillStyle = color;
+			if(type===1){
+				g.textAlign = 'center'; g.textBaseline = 'middle';
+			}
+			else{
+				g.textAlign    = ((type===3||type===4)?'right':'left');
+				g.textBaseline = ((type===2||type===3)?'alphabetic':'top');
+				px += ((type===3||type===4)?this.bw-1:-this.bw+2), py += ((type===2||type===3)?this.bh-2:-this.bh+1);
+			}
+			g.fillText(text, px, py);
 		}
 	}
 };
@@ -3102,6 +4338,8 @@ Graphic.prototype = {
 // パズル共通 マウス入力部
 // MouseEventクラスを定義
 var MouseEvent = function(){
+	this.enableMouse = true;	// マウス入力は有効か
+
 	this.inputPos;
 	this.mouseCell;
 	this.inputData;
@@ -3109,11 +4347,13 @@ var MouseEvent = function(){
 	this.btn = {};
 	this.mousereset();
 
-	this.enableInputHatena = !!k.isDispHatena;
+	this.enableInputHatena = k.isDispHatena;
 	this.inputQuesDirectly = false;
 
-	this.docEL  = document.documentElement;
-	this.bodyEL = document.body;
+	this.mouseoffset;
+	if     (k.br.IEmoz4)   { this.mouseoffset = new Pos(2,2);}
+	else if(k.br.WinWebKit){ this.mouseoffset = new Pos(1,1);}
+	else                   { this.mouseoffset = new Pos(0,0);}
 };
 MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
@@ -3136,7 +4376,7 @@ MouseEvent.prototype = {
 	//イベントハンドラから呼び出される
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
 	e_mousedown : function(e){
-		if(k.enableMouse){
+		if(this.enableMouse){
 			this.setButtonFlag(e);
 			// SHIFTキーを押している時は左右ボタン反転
 			if(((kc.isSHIFT)^pp.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
@@ -3155,7 +4395,7 @@ MouseEvent.prototype = {
 		return false;
 	},
 	e_mouseup   : function(e){
-		if(k.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
+		if(this.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
 			this.setposition(e);
 			this.mouseup();		// 各パズルのルーチンへ
@@ -3169,7 +4409,7 @@ MouseEvent.prototype = {
 		// ポップアップメニュー移動中は当該処理が最優先
 		if(!!menu.movingpop){ return true;}
 
-		if(k.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
+		if(this.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
 			this.setposition(e);
 			this.mousemove();	// 各パズルのルーチンへ
@@ -3179,8 +4419,6 @@ MouseEvent.prototype = {
 		return false;
 	},
 	e_mouseout : function(e) {
-//		if (k.br.IE){ var e=window.event;}
-//		this.mousereset();
 		um.newOperation(false);
 	},
 
@@ -3219,60 +4457,45 @@ MouseEvent.prototype = {
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
-	setposition : (
-		((k.br.WinWebKit) ?
-			function(e){
-				this.inputPos.x = e.pageX-1 -k.cv_oft.x-k.p0.x-k.IEMargin.x;
-				this.inputPos.y = e.pageY-1 -k.cv_oft.y-k.p0.y-k.IEMargin.y;
-			}
-		:(!k.br.IE) ?
-			function(e){
-				this.inputPos.x = e.pageX   -k.cv_oft.x-k.p0.x-k.IEMargin.x;
-				this.inputPos.y = e.pageY   -k.cv_oft.y-k.p0.y-k.IEMargin.y;
-			}
-		:
-			function(e){
-				this.inputPos.x = e.clientX + (this.docEL.scrollLeft || this.bodyEL.scrollLeft) -k.cv_oft.x-k.p0.x-k.IEMargin.x;
-				this.inputPos.y = e.clientY + (this.docEL.scrollTop  || this.bodyEL.scrollTop ) -k.cv_oft.y-k.p0.y-k.IEMargin.y;
-			}
-		)
-	),
+	setposition : function(e){
+		this.inputPos.x = ee.pageX(e) -k.cv_oft.x-k.p0.x - this.mouseoffset.x;
+		this.inputPos.y = ee.pageY(e) -k.cv_oft.y-k.p0.y - this.mouseoffset.y;
+	},
 
 	notInputted : function(){ return !um.changeflag;},
 	modeflip    : function(){ if(k.EDITOR){ pp.setVal('mode', (k.playmode?1:3));} },
 
 	// 共通関数
 	//---------------------------------------------------------------------------
-	// mv.cellid()   入力された位置がどのセルのIDに該当するかを返す
-	// mv.crossid()  入力された位置がどの交差点のIDに該当するかを返す
-	// mv.cellpos()  入力された位置が仮想セル上でどこの(X,Y)に該当するかを返す
-	// mv.crosspos() 入力された位置が仮想セル上でどこの(X*2,Y*2)に該当するかを返す。
-	//               外枠の左上が(0,0)で右下は(k.qcols*2,k.qrows*2)。rcは0～0.5のパラメータ。
-	// mv.borderid() 入力された位置がどの境界線・LineのIDに該当するかを返す(クリック用)
+	// mv.cellid()    入力された位置がどのセルのIDに該当するかを返す
+	// mv.crossid()   入力された位置がどの交差点のIDに該当するかを返す
+	// mv.borderid()  入力された位置がどの境界線・LineのIDに該当するかを返す(クリック用)
+	// mv.borderpos() 入力された位置が仮想セル上でどこの(X*2,Y*2)に該当するかを返す。
+	//                外枠の左上が(0,0)で右下は(k.qcols*2,k.qrows*2)。rcは0～0.5のパラメータ。
 	//---------------------------------------------------------------------------
 	cellid : function(){
-		var pos = this.cellpos();
-		if(this.inputPos.x%k.cwidth==0 || this.inputPos.y%k.cheight==0){ return -1;} // ぴったりは無効
+		var pos = this.borderpos(0);
+		if(this.inputPos.x%k.cwidth===0 || this.inputPos.y%k.cheight===0){ return -1;} // ぴったりは無効
 		return bd.cnum(pos.x,pos.y);
 	},
 	crossid : function(){
-		var pos = this.crosspos(0.5);
-		return bd.xnum(pos.x>>1,pos.y>>1);
+		var pos = this.borderpos(0.5);
+		return bd.xnum(pos.x,pos.y);
 	},
-	cellpos : function(){	// crosspos(p,0)でも代替はできる
-		return new Pos(mf(this.inputPos.x/k.cwidth), mf(this.inputPos.y/k.cheight));
-	},
-	crosspos : function(rc){
-		var pm = rc*k.cwidth;
-		var cx = mf((this.inputPos.x+pm)/k.cwidth), cy = mf((this.inputPos.y+pm)/k.cheight);
-		var dx = (this.inputPos.x+pm)%k.cwidth,     dy = (this.inputPos.y+pm)%k.cheight;
+	borderpos : function(rc){
+		// マイナスでもシームレスな値にしたいので、+4して-4する
+		var pm = rc*k.cwidth, px=(this.inputPos.x+pm+2*k.cwidth), py=(this.inputPos.y+pm+2*k.cheight);
+		var bx = ((px/k.cwidth)|0)*2  + ((px%k.cwidth <2*pm)?0:1) - 4;
+		var by = ((py/k.cheight)|0)*2 + ((py%k.cheight<2*pm)?0:1) - 4;
 
-		return new Pos(cx*2+(dx<2*pm?0:1), cy*2+(dy<2*pm?0:1));
+		return new Pos(bx,by);
 	},
 
 	borderid : function(spc){
-		var cx = mf(this.inputPos.x/k.cwidth), cy = mf(this.inputPos.y/k.cheight);
-		var dx = this.inputPos.x%k.cwidth,     dy = this.inputPos.y%k.cheight;
+		var bx = mf(this.inputPos.x/k.cwidth)*2+1, by = mf(this.inputPos.y/k.cheight)*2+1;
+		var dx = this.inputPos.x%k.cwidth,         dy = this.inputPos.y%k.cheight;
+
+		// 真ん中のあたりはどこにも該当しないようにする
 		if(k.isLineCross){
 			if(!k.isborderAsLine){
 				var m1=spc*k.cwidth, m2=(1-spc)*k.cwidth;
@@ -3285,12 +4508,12 @@ MouseEvent.prototype = {
 		}
 
 		if(dx<k.cwidth-dy){	//左上
-			if(dx>dy){ return bd.bnum(2*cx+1,2*cy  );}	//右上
-			else     { return bd.bnum(2*cx  ,2*cy+1);}	//左下
+			if(dx>dy){ return bd.bnum(bx  ,by-1);}	//左上＆右上 -> 上
+			else     { return bd.bnum(bx-1,by  );}	//左上＆左下 -> 左
 		}
 		else{	//右下
-			if(dx>dy){ return bd.bnum(2*cx+2,2*cy+1);}	//右上
-			else     { return bd.bnum(2*cx+1,2*cy+2);}	//左下
+			if(dx>dy){ return bd.bnum(bx+1,by  );}	//右下＆右上 -> 右
+			else     { return bd.bnum(bx,  by+1);}	//右下＆左下 -> 下
 		}
 		return -1;
 	},
@@ -3306,10 +4529,10 @@ MouseEvent.prototype = {
 
 		this.mouseCell = cc; 
 
-		if(k.NumberIsWhite==1 && bd.QnC(cc)!=-1 && (this.inputData==1||(this.inputData==2 && pc.bcolor=="white"))){ return;}
-		if(k.RBBlackCell==1 && this.inputData==1){
-			if(this.firstPos.x == -1 && this.firstPos.y == -1){ this.firstPos = new Pos(bd.cell[cc].cx, bd.cell[cc].cy);}
-			if((this.firstPos.x+this.firstPos.y) % 2 != (bd.cell[cc].cx+bd.cell[cc].cy) % 2){ return;}
+		if(k.NumberIsWhite && bd.QnC(cc)!=-1 && (this.inputData==1||(this.inputData==2 && pc.bcolor=="white"))){ return;}
+		if(k.RBBlackCell && this.inputData==1){
+			if(this.firstPos.x == -1 && this.firstPos.y == -1){ this.firstPos = new Pos(bd.cell[cc].bx, bd.cell[cc].by);}
+			if( (((this.firstPos.x>>1)+(this.firstPos.y>>1))&1) != (((bd.cell[cc].bx>>1)+(bd.cell[cc].by>>1))&1) ){ return;}
 		}
 
 		(this.inputData==1?bd.setBlack:bd.setWhite).apply(bd,[cc]);
@@ -3359,14 +4582,14 @@ MouseEvent.prototype = {
 			var cc0 = tc.getTCC();
 			tc.setTCC(cc);
 
-			pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
+			pc.paintCell(cc0);
 		}
 		this.mouseCell = cc;
 
-		pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
+		pc.paintCell(cc);
 	},
 	inputqnum1 : function(cc){
-		if(k.isOneNumber){ cc = area.getTopOfRoomByCell(cc);}
+		if(k.roomNumber){ cc = area.getTopOfRoomByCell(cc);}
 		var max = bd.nummaxfunc(cc);
 
 		if(this.btn.Left){
@@ -3435,7 +4658,7 @@ MouseEvent.prototype = {
 		if(cc!=tc.getTCC() && !this.inputQuesDirectly){
 			var cc0 = tc.getTCC();
 			tc.setTCC(cc);
-			pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
+			pc.paintCell(cc0);
 			flag = true;
 		}
 		else{
@@ -3480,16 +4703,16 @@ MouseEvent.prototype = {
 	// mv.inputdirec() Cellのdirec(方向)のデータを入力する
 	//---------------------------------------------------------------------------
 	inputdirec : function(){
-		var pos = this.cellpos();
+		var pos = this.borderpos(0);
 		if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 		var inp = 0;
 		var cc = bd.cnum(this.mouseCell.x, this.mouseCell.y);
 		if(cc!=-1 && bd.QnC(cc)!=-1){
-			if     (pos.y-this.mouseCell.y==-1){ inp=k.UP;}
-			else if(pos.y-this.mouseCell.y== 1){ inp=k.DN;}
-			else if(pos.x-this.mouseCell.x==-1){ inp=k.LT;}
-			else if(pos.x-this.mouseCell.x== 1){ inp=k.RT;}
+			if     (pos.y-this.mouseCell.y==-2){ inp=k.UP;}
+			else if(pos.y-this.mouseCell.y== 2){ inp=k.DN;}
+			else if(pos.x-this.mouseCell.x==-2){ inp=k.LT;}
+			else if(pos.x-this.mouseCell.x== 2){ inp=k.RT;}
 			else{ return;}
 
 			bd.sDiC(cc, (bd.DiC(cc)!=inp?inp:0));
@@ -3519,7 +4742,7 @@ MouseEvent.prototype = {
 		}
 		var d = ans.getSizeOfClist(area.room[areaid].clist,f_true);
 
-		pc.paint(d.x1, d.y1, d.x2, d.y2);
+		pc.paintRange(d.x1, d.y1, d.x2, d.y2);
 	},
 
 	//---------------------------------------------------------------------------
@@ -3527,20 +4750,20 @@ MouseEvent.prototype = {
 	// mv.set51cell() [＼]を作成・消去するときの共通処理関数(カックロ以外はオーバーライドされる)
 	//---------------------------------------------------------------------------
 	input51 : function(){
-		var pos = this.cellpos();
+		var pos = this.borderpos(0);
 		var cc = bd.cnum(pos.x, pos.y);
 
-		if((pos.x==-1 && pos.y>=-1 && pos.y<=k.qrows-1) || (pos.y==-1 && pos.x>=-1 && pos.x<=k.qcols-1)){
-			var tcx=tc.getTCX(), tcy=tc.getTCY();
-			tc.setTCP(new Pos(2*pos.x+1,2*pos.y+1));
-			pc.paint(tcx-1,tcy-1,tcx,tcy);
-			pc.paint(tc.getTCX()-1,tc.getTCY()-1,tc.getTCX(),tc.getTCY());
+		if((pos.x==-1 && pos.y>bd.minby && pos.y<bd.maxby) || (pos.y==-1 && pos.x>bd.minbx && pos.x<bd.maxbx)){
+			var tcp=tc.getTCP();
+			tc.setTCP(new Pos(pos.x,pos.y));
+			pc.paintPos(tcp);
+			pc.paintPos(pos);
 			return;
 		}
 		else if(cc!=-1 && cc!=tc.getTCC()){
-			var tcx=tc.getTCX(), tcy=tc.getTCY();
+			var tcp=tc.getTCP();
 			tc.setTCC(cc);
-			pc.paint(tcx-1,tcy-1,tcx,tcy);
+			pc.paintPos(tcp);
 		}
 		else if(cc!=-1){
 			if(this.btn.Left){
@@ -3551,7 +4774,7 @@ MouseEvent.prototype = {
 		}
 		else{ return;}
 
-		pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx+1, bd.cell[cc].cy+1);
+		pc.paintCell(cc);
 	},
 	// ※とりあえずカックロ用
 	set51cell : function(cc,val){
@@ -3590,26 +4813,25 @@ MouseEvent.prototype = {
 		else{
 			var cc0 = tc.getTXC();
 			tc.setTXC(cc);
-
-			pc.paint(bd.cross[cc0].cx-1, bd.cross[cc0].cy-1, bd.cross[cc0].cx, bd.cross[cc0].cy);
+			pc.paintCross(cc0);
 		}
 		this.mouseCell = cc;
 
-		pc.paint(bd.cross[cc].cx-1, bd.cross[cc].cy-1, bd.cross[cc].cx, bd.cross[cc].cy);
+		pc.paintCross(cc);
 	},
 	inputcrossMark : function(){
-		var pos = this.crosspos(0.24);
-		if(pos.x%2!=0 || pos.y%2!=0){ return;}
-		if(pos.x<(k.isoutsidecross==1?0:2) || pos.x>(k.isoutsidecross==1?2*k.qcols:2*k.qcols-2)){ return;}
-		if(pos.y<(k.isoutsidecross==1?0:2) || pos.y>(k.isoutsidecross==1?2*k.qrows:2*k.qrows-2)){ return;}
+		var pos = this.borderpos(0.24);
+		if((pos.x&1) || (pos.y&1)){ return;}
+		var bm = (k.iscross===2?0:2);
+		if(pos.x<bd.minbx+bm || pos.x>bd.maxbx-bm || pos.y<bd.minby+bm || pos.y>bd.maxby-bm){ return;}
 
-		var cc = bd.xnum(pos.x>>1,pos.y>>1);
+		var cc = bd.xnum(pos.x,pos.y);
 
 		um.disCombine = 1;
 		bd.sQnX(cc,(bd.QnX(cc)==1)?-1:1);
 		um.disCombine = 0;
 
-		pc.paint(bd.cross[cc].cx-1, bd.cross[cc].cy-1, bd.cross[cc].cx, bd.cross[cc].cy);
+		pc.paintCross(cc);
 	},
 	//---------------------------------------------------------------------------
 	// mv.inputborder()    盤面境界線の問題データを入力する
@@ -3619,7 +4841,7 @@ MouseEvent.prototype = {
 	inputborder : function(){ this.inputBD(0);},
 	inputborderans : function(){ this.inputBD(1);},
 	inputBD : function(flag){
-		var pos = this.crosspos(0.35);
+		var pos = this.borderpos(0.35);
 		if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 		var id = bd.bnum(pos.x, pos.y);
@@ -3653,14 +4875,14 @@ MouseEvent.prototype = {
 	inputLine : function(){ this.inputLine1(0);},
 	inputQsubLine : function(){ this.inputLine1(1);},
 	inputLine1 : function(flag){
-		var pos = this.cellpos();
+		var pos = this.borderpos(0);
 		if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 		var id = -1;
-		if     (pos.y-this.mouseCell.y==-1){ id=bd.bnum(this.mouseCell.x*2+1,this.mouseCell.y*2  );}
-		else if(pos.y-this.mouseCell.y== 1){ id=bd.bnum(this.mouseCell.x*2+1,this.mouseCell.y*2+2);}
-		else if(pos.x-this.mouseCell.x==-1){ id=bd.bnum(this.mouseCell.x*2  ,this.mouseCell.y*2+1);}
-		else if(pos.x-this.mouseCell.x== 1){ id=bd.bnum(this.mouseCell.x*2+2,this.mouseCell.y*2+1);}
+		if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1);}
+		else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1);}
+		else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  );}
+		else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  );}
 
 		this.mouseCell = pos;
 		if(this.inputData==2 || this.inputData==3){ this.inputpeke2(id);}
@@ -3687,7 +4909,7 @@ MouseEvent.prototype = {
 	// mv.inputpeke2()  盤面の線が通らないことを示す×を入力する(inputLine1からも呼ばれる)
 	//---------------------------------------------------------------------------
 	inputpeke : function(){
-		var pos = this.crosspos(0.22);
+		var pos = this.borderpos(0.22);
 		var id = bd.bnum(pos.x, pos.y);
 		if(id==-1 || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
 
@@ -3718,15 +4940,15 @@ MouseEvent.prototype = {
 	db0 : function(func, cc, num){
 		if(bd.ErC(cc)!=0){ return;}
 		bd.sErC([cc],num);
-		var cx=bd.cell[cc].cx, cy=bd.cell[cc].cy;
-		if( func(bd.cnum(cx-1,cy-1)) ){ this.db0(func, bd.cnum(cx-1,cy-1), num);}
-		if( func(bd.cnum(cx  ,cy-1)) ){ this.db0(func, bd.cnum(cx  ,cy-1), num);}
-		if( func(bd.cnum(cx+1,cy-1)) ){ this.db0(func, bd.cnum(cx+1,cy-1), num);}
-		if( func(bd.cnum(cx-1,cy  )) ){ this.db0(func, bd.cnum(cx-1,cy  ), num);}
-		if( func(bd.cnum(cx+1,cy  )) ){ this.db0(func, bd.cnum(cx+1,cy  ), num);}
-		if( func(bd.cnum(cx-1,cy+1)) ){ this.db0(func, bd.cnum(cx-1,cy+1), num);}
-		if( func(bd.cnum(cx  ,cy+1)) ){ this.db0(func, bd.cnum(cx  ,cy+1), num);}
-		if( func(bd.cnum(cx+1,cy+1)) ){ this.db0(func, bd.cnum(cx+1,cy+1), num);}
+		var bx=bd.cell[cc].bx, by=bd.cell[cc].by;
+		if( func(bd.cnum(bx-2,by-2)) ){ this.db0(func, bd.cnum(bx-2,by-2), num);}
+		if( func(bd.cnum(bx  ,by-2)) ){ this.db0(func, bd.cnum(bx  ,by-2), num);}
+		if( func(bd.cnum(bx+2,by-2)) ){ this.db0(func, bd.cnum(bx+2,by-2), num);}
+		if( func(bd.cnum(bx-2,by  )) ){ this.db0(func, bd.cnum(bx-2,by  ), num);}
+		if( func(bd.cnum(bx+2,by  )) ){ this.db0(func, bd.cnum(bx+2,by  ), num);}
+		if( func(bd.cnum(bx-2,by+2)) ){ this.db0(func, bd.cnum(bx-2,by+2), num);}
+		if( func(bd.cnum(bx  ,by+2)) ){ this.db0(func, bd.cnum(bx  ,by+2), num);}
+		if( func(bd.cnum(bx+2,by+2)) ){ this.db0(func, bd.cnum(bx+2,by+2), num);}
 		return;
 	},
 
@@ -3736,8 +4958,8 @@ MouseEvent.prototype = {
 		if(id!=-1 && id==this.mouseCell){ return;}
 
 		if(!bd.isLine(id)){
-			var cc = (k.isborderAsLine==0?this.cellid():this.crossid());
-			if(cc==-1 || (k.isLineCross && (line.lcntCell(cc)==3 || line.lcntCell(cc)==4))){ return;}
+			var cc = (!k.isborderAsLine?this.cellid():this.crossid());
+			if(cc==-1 || (line.iscrossing(cc) && (line.lcntCell(cc)==3 || line.lcntCell(cc)==4))){ return;}
 
 			var bx, by;
 			if(k.isbordeAsLine==0){ bx = (cc%k.qcols)*2, by = mf(cc/k.qcols)*2;}
@@ -3764,6 +4986,8 @@ MouseEvent.prototype = {
 // パズル共通 キーボード入力部
 // KeyEventクラスを定義
 KeyEvent = function(){
+	this.enableKey = true;	// キー入力は有効か
+
 	this.isCTRL;
 	this.isALT;	// ALTはメニュー用なので極力使わない
 	this.isSHIFT;
@@ -3773,6 +4997,7 @@ KeyEvent = function(){
 	this.keyPressed;
 	this.ca;
 	this.prev;
+
 	this.keyreset();
 };
 KeyEvent.prototype = {
@@ -3801,7 +5026,7 @@ KeyEvent.prototype = {
 	// この3つのキーイベントはwindowから呼び出される(kcをbindしている)
 	// 48～57は0～9キー、65～90はa～z、96～105はテンキー、112～123はF1～F12キー
 	e_keydown : function(e){
-		if(k.enableKey){
+		if(this.enableKey){
 			um.newOperation(true);
 			this.ca = this.getchar(e, this.getKeyCode(e));
 			this.tcMoved = false;
@@ -3819,7 +5044,7 @@ KeyEvent.prototype = {
 		}
 	},
 	e_keyup : function(e){
-		if(k.enableKey){
+		if(this.enableKey){
 			um.newOperation(false);
 			this.ca = this.getchar(e, this.getKeyCode(e));
 			this.keyPressed = false;
@@ -3831,27 +5056,12 @@ KeyEvent.prototype = {
 	},
 	//(keypressのみ)45は-(マイナス)
 	e_keypress : function(e){
-		if(k.enableKey){
+		if(this.enableKey){
 			um.newOperation(false);
 			this.ca = this.getcharp(e, this.getKeyCode(e));
 
 			if(this.ca){ this.keyinput(this.ca);}	// 各パズルのルーチンへ
 		}
-	},
-
-	//---------------------------------------------------------------------------
-	// kc.e_SLkeydown()  Silverlightオブジェクトにフォーカスがある時、キーを押した際のイベント共通処理
-	// kc.e_SLkeyup()    Silverlightオブジェクトにフォーカスがある時、キーを離した際のイベント共通処理
-	//---------------------------------------------------------------------------
-	e_SLkeydown : function(sender,keyEventArgs){
-		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
-						altKey:false, returnValue:false, preventDefault:f_true };
-		return this.e_keydown(emulate);
-	},
-	e_SLkeyup : function(sender,keyEventArgs){
-		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
-						altKey:false, returnValue:false, preventDefault:f_true };
-		return this.e_keyup(emulate);
 	},
 
 	//---------------------------------------------------------------------------
@@ -3885,11 +5095,8 @@ KeyEvent.prototype = {
 		if(keycode==45){ return '-';}
 		else{ return '';}
 	},
-	//Programming Magic様のコード
 	getKeyCode : function(e){
-		if(document.all) return  e.keyCode;
-		else if(document.getElementById) return (e.keyCode)? e.keyCode: e.charCode;
-		else if(document.layers) return  e.which;
+		return !!e.keyCode ? e.keyCode: e.charCode;
 	},
 
 	//---------------------------------------------------------------------------
@@ -3934,15 +5141,15 @@ KeyEvent.prototype = {
 	moveTCross  : function(ca){ return this.moveTC(ca,2);},
 	moveTBorder : function(ca){ return this.moveTC(ca,1);},
 	moveTC : function(ca,mv){
-		var tcx = tc.cursolx, tcy = tc.cursoly, flag = false;
-		if     (ca == k.KEYUP && tcy-mv >= tc.miny){ tc.decTCY(mv); flag = true;}
-		else if(ca == k.KEYDN && tcy+mv <= tc.maxy){ tc.incTCY(mv); flag = true;}
-		else if(ca == k.KEYLT && tcx-mv >= tc.minx){ tc.decTCX(mv); flag = true;}
-		else if(ca == k.KEYRT && tcx+mv <= tc.maxx){ tc.incTCX(mv); flag = true;}
+		var tcp = tc.getTCP(), flag = false;
+		if     (ca == k.KEYUP && tcp.y-mv >= tc.miny){ tc.decTCY(mv); flag = true;}
+		else if(ca == k.KEYDN && tcp.y+mv <= tc.maxy){ tc.incTCY(mv); flag = true;}
+		else if(ca == k.KEYLT && tcp.x-mv >= tc.minx){ tc.decTCX(mv); flag = true;}
+		else if(ca == k.KEYRT && tcp.x+mv <= tc.maxx){ tc.incTCX(mv); flag = true;}
 
 		if(flag){
-			pc.paint((tcx>>1)-1, (tcy>>1)-1, tcx>>1, tcy>>1);
-			pc.paint((tc.cursolx>>1)-1, (tc.cursoly>>1)-1, tc.cursolx>>1, tc.cursoly>>1);
+			pc.paintPos(tcp);
+			pc.paintPos(tc.getTCP());
 			this.tcMoved = true;
 		}
 		return flag;
@@ -3975,14 +5182,14 @@ KeyEvent.prototype = {
 		}
 		else{ return;}
 
-		pc.paint(bd.cross[cc].cx-1, bd.cross[cc].cy-1, bd.cross[cc].cx, bd.cross[cc].cy);
+		pc.paintCross(cc);
 	},
 	//---------------------------------------------------------------------------
 	// kc.key_inputqnum() 上限maxまでの数字をCellの問題データをして入力する(keydown時)
 	//---------------------------------------------------------------------------
 	key_inputqnum : function(ca){
 		var cc = tc.getTCC();
-		if(k.editmode && k.isOneNumber){ cc = area.getTopOfRoomByCell(cc);}
+		if(k.editmode && k.roomNumber){ cc = area.getTopOfRoomByCell(cc);}
 		var max = bd.nummaxfunc(cc);
 
 		if('0'<=ca && ca<='9'){
@@ -4033,7 +5240,7 @@ KeyEvent.prototype = {
 		else if(ca == k.KEYRT){ bd.sDiC(cc, (bd.DiC(cc)!=k.RT?k.RT:0)); flag = true;}
 
 		if(flag){
-			pc.paint(tc.cursolx>>1, tc.cursoly>>1, tc.cursolx>>1, tc.cursoly>>1);
+			pc.paintPos(tc.getTCP());
 			this.tcMoved = true;
 		}
 		return flag;
@@ -4048,12 +5255,12 @@ KeyEvent.prototype = {
 		if(this.chtarget(ca)){ return;}
 
 		var cc = tc.getTCC(), ex = -1;
-		if(cc==-1){ ex = bd.exnum(tc.getTCX(),tc.getTCY());}
+		if(cc==-1){ ex = tc.getTEC();}
 		var target = this.detectTarget(cc,ex);
 		if(target==-1 || (cc!=-1 && bd.QuC(cc)==51)){
 			if(ca=='q' && cc!=-1){
 				mv.set51cell(cc,(bd.QuC(cc)!=51));
-				pc.paint(tc.getTCX()-1,tc.getTCY()-1,tc.getTCX()+1,tc.getTCY()+1);
+				pc.paintPos(tc.getTCP());
 				return;
 			}
 		}
@@ -4076,7 +5283,8 @@ KeyEvent.prototype = {
 		else{ return;}
 
 		this.prev = cc;
-		if(cc!=-1){ pc.paintCell(tc.getTCC());}else{ pc.paint(tc.getTCX(),tc.getTCY(),tc.getTCX(),tc.getTCY());}
+		if(cc!=-1){ pc.paintCell(tc.getTCC());}
+		else      { pc.paintPos (tc.getTCP());}
 	},
 	setnum51 : function(cc,ex,target,val){
 		if(cc!=-1){ (target==2 ? bd.sQnC(cc,val) : bd.sDiC(cc,val));}
@@ -4108,10 +5316,10 @@ KeyEvent.prototype = {
 			else if(bd.dn(cc)==-1 || bd.QuC(bd.dn(cc))==51){ return 2;}
 		}
 		else if(ex!=-1){
-			if	  ((bd.excell[ex].cy==-1 && bd.QuC(bd.excell[ex].cx)==51) ||
-				   (bd.excell[ex].cx==-1 && bd.QuC(bd.excell[ex].cy*k.qcols)==51)){ return -1;}
-			else if(bd.excell[ex].cy==-1){ return 4;}
-			else if(bd.excell[ex].cx==-1){ return 2;}
+			if	  ((bd.excell[ex].by===-1 && bd.QuC(bd.cnum(bd.excell[ex].bx,1))===51) ||
+				   (bd.excell[ex].bx===-1 && bd.QuC(bd.cnum(1,bd.excell[ex].by))===51)){ return -1;}
+			else if(bd.excell[ex].by===-1){ return 4;}
+			else if(bd.excell[ex].bx===-1){ return 2;}
 		}
 
 		return tc.targetdir;
@@ -4241,7 +5449,7 @@ KeyPopup.prototype = {
 			_td.onclick   = ee.ebinder(this, this.inputnumber, [ca]);
 			_td.appendChild(_div);
 
-			this.imgs.push({'el':_img, 'cx':disp[0], 'cy':disp[1]});
+			this.imgs.push({'el':_img, 'x':disp[0], 'y':disp[1]});
 		}
 
 		if(_td){
@@ -4264,8 +5472,8 @@ KeyPopup.prototype = {
 	display : function(){
 		var mode = pp.getVal('mode');
 		if(this.ctl[mode].el && this.ctl[mode].enable && pp.getVal('keypopup') && mv.btn.Left){
-			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputPos.x - 3 + k.IEMargin.x;
-			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputPos.y - 3 + k.IEMargin.y;
+			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputPos.x - 3 + 'px';
+			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputPos.y - 3 + 'px';
 			this.ctl[mode].el.style.zIndex = 100;
 
 			if(this.ctl[mode].target==k.CELL){
@@ -4273,19 +5481,19 @@ KeyPopup.prototype = {
 				var cc = mv.cellid();
 				if(cc==-1){ return;}
 				tc.setTCC(cc);
-				pc.paint(bd.cell[cc].cx-1, bd.cell[cc].cy-1, bd.cell[cc].cx, bd.cell[cc].cy);
-				pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
+				pc.paintCell(cc);
+				pc.paintCell(cc0);
 			}
 			else if(this.ctl[mode].target==k.CROSS){
 				var cc0 = tc.getTXC();
 				var cc = mv.crossid();
 				if(cc==-1){ return;}
 				tc.setTXC(cc);
-				pc.paint(bd.cross[cc].cx-1, bd.cross[cc].cy-1, bd.cross[cc].cx, bd.cross[cc].cy);
-				pc.paint(bd.cross[cc0].cx-1, bd.cross[cc0].cy-1, bd.cross[cc0].cx, bd.cross[cc0].cy);
+				pc.paintCross(cc);
+				pc.paintCross(cc0);
 			}
 
-			this.ctl[mode].el.style.display = 'inline';
+			this.ctl[mode].el.style.display = 'block';
 		}
 	},
 	inputnumber : function(e, ca){
@@ -4311,14 +5519,14 @@ KeyPopup.prototype = {
 		var ifunc = function(obj,bsize){
 			obj.el.style.width  = ""+(bsize*kp.imgCR[0])+"px";
 			obj.el.style.height = ""+(bsize*kp.imgCR[1])+"px";
-			obj.el.style.clip   = "rect("+(bsize*obj.cy+1)+"px,"+(bsize*(obj.cx+1))+"px,"+(bsize*(obj.cy+1))+"px,"+(bsize*obj.cx+1)+"px)";
-			obj.el.style.top    = "-"+(obj.cy*bsize+1)+"px";
-			obj.el.style.left   = "-"+(obj.cx*bsize+1)+"px";
+			obj.el.style.clip   = "rect("+(bsize*obj.y+1)+"px,"+(bsize*(obj.x+1))+"px,"+(bsize*(obj.y+1))+"px,"+(bsize*obj.x+1)+"px)";
+			obj.el.style.top    = "-"+(obj.y*bsize+1)+"px";
+			obj.el.style.left   = "-"+(obj.x*bsize+1)+"px";
 		};
 
-		if(k.def_csize>=24){
-			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  k.def_csize);}
-			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], mf(k.def_csize*0.90));}
+		if(k.cellsize>=24){
+			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  k.cellsize);}
+			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], mf(k.cellsize*0.90));}
 		}
 		else{
 			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  22);}
@@ -4328,68 +5536,101 @@ KeyPopup.prototype = {
 };
 
 //---------------------------------------------------------------------------
-// ★TCellクラス キー入力のターゲットを保持する (関数の説明は略)
+// ★TCellクラス キー入力のターゲットを保持する
 //---------------------------------------------------------------------------
 
 TCell = function(){
-	this.cursolx = 1;
-	this.cursoly = 1;
+	// 現在入力ターゲットになっている場所(border座標系)
+	this.cursorx = 1;
+	this.cursory = 1;
 
-	this.minx = (k.isextendcell!=0?-1:1);
-	this.miny = (k.isextendcell!=0?-1:1);
-	this.maxx = (k.isextendcell==2?2*k.qcols+1:2*k.qcols-1);
-	this.maxy = (k.isextendcell==2?2*k.qrows+1:2*k.qrows-1);
+	// 有効な範囲(minx,miny)-(maxx,maxy)
+	this.minx = 1;
+	this.miny = 1;
+	this.maxx = 2*k.qcols-1;
+	this.maxy = 2*k.qrows-1;
+
+	this.crosstype = false;
 };
 TCell.prototype = {
 	//---------------------------------------------------------------------------
-	// tc.Adjust()   範囲とターゲットの位置を調節する
+	// tc.adjust()   範囲とターゲットの位置を調節する
 	// tc.setAlign() モード変更時に位置がおかしい場合に調節する(オーバーライド用)
+	// tc.setCrossType() 交点入力用にプロパティをセットする
 	//---------------------------------------------------------------------------
-	Adjust : function(){
-		if(this.cursolx<this.minx){ this.tborderx=this.minx; }
-		if(this.cursoly<this.miny){ this.tbordery=this.miny; }
-		if(this.cursolx>this.maxx){ this.tborderx=this.maxx; }
-		if(this.cursoly>this.maxy){ this.tbordery=this.maxy; }
+	adjust : function(){
+		if(this.crosstype){
+			this.minx = 0;
+			this.miny = 0;
+			this.maxx = 2*k.qcols;
+			this.maxy = 2*k.qrows;
+		}
+		else{
+			var extUL = (k.isexcell===1 || k.isexcell===2);
+			var extDR = (k.isexcell===2);
+			this.minx = (!extUL ? 1 : -1);
+			this.miny = (!extUL ? 1 : -1);
+			this.maxx = (!extDR ? 2*k.qcols-1 : 2*k.qcols+1);
+			this.maxy = (!extDR ? 2*k.qrows-1 : 2*k.qrows+1);
+		}
+
+		if(this.cursorx<this.minx){ this.cursorx=this.minx;}
+		if(this.cursory<this.miny){ this.cursory=this.miny;}
+		if(this.cursorx>this.maxx){ this.cursorx=this.maxx;}
+		if(this.cursory>this.maxy){ this.cursory=this.maxy;}
 	},
 	setAlign : function(){ },
+
+	setCrossType : function(){
+		this.crosstype = true;
+		this.adjust();
+		this.setTCP(new Pos(0,0));
+	},
 
 	//---------------------------------------------------------------------------
 	// tc.incTCX(), tc.incTCY(), tc.decTCX(), tc.decTCY() ターゲットの位置を動かす
 	//---------------------------------------------------------------------------
-	incTCX : function(mv){ this.cursolx+=mv;},
-	incTCY : function(mv){ this.cursoly+=mv;},
-	decTCX : function(mv){ this.cursolx-=mv;},
-	decTCY : function(mv){ this.cursoly-=mv;},
+	incTCX : function(mv){ this.cursorx+=mv;},
+	incTCY : function(mv){ this.cursory+=mv;},
+	decTCX : function(mv){ this.cursorx-=mv;},
+	decTCY : function(mv){ this.cursory-=mv;},
 
 	//---------------------------------------------------------------------------
-	// tc.getTCP() ターゲットの位置を(X,Y)で取得する(セルの1/2=1とする)
-	// tc.setTCP() ターゲットの位置を(X,Y)で設定する(セルの1/2=1とする)
+	// tc.getTCP() ターゲットの位置をPosクラスのオブジェクトで取得する
+	// tc.setTCP() ターゲットの位置をPosクラスのオブジェクトで設定する
 	// tc.getTCC() ターゲットの位置をCellのIDで取得する
 	// tc.setTCC() ターゲットの位置をCellのIDで設定する
 	// tc.getTXC() ターゲットの位置をCrossのIDで取得する
 	// tc.setTXC() ターゲットの位置をCrossのIDで設定する
 	// tc.getTBC() ターゲットの位置をBorderのIDで取得する
 	// tc.setTBC() ターゲットの位置をBorderのIDで設定する
+	// tc.getTEC() ターゲットの位置をEXCellのIDで取得する
+	// tc.setTEC() ターゲットの位置をEXCellのIDで設定する
 	//---------------------------------------------------------------------------
-	getTCP : function(){ return new Pos(this.cursolx,this.cursoly);},
+	getTCP : function(){ return new Pos(this.cursorx,this.cursory);},
 	setTCP : function(pos){
 		if(pos.x<this.minx || this.maxx<pos.x || pos.y<this.miny || this.maxy<pos.y){ return;}
-		this.cursolx = pos.x; this.cursoly = pos.y;
+		this.cursorx = pos.x; this.cursory = pos.y;
 	},
-	getTCC : function(){ return bd.cnum(this.cursolx>>1, this.cursoly>>1);},
+	getTCC : function(){ return bd.cnum(this.cursorx, this.cursory);},
 	setTCC : function(id){
 		if(id<0 || bd.cellmax<=id){ return;}
-		this.cursolx = bd.cell[id].cx*2+1; this.cursoly = bd.cell[id].cy*2+1;
+		this.cursorx = bd.cell[id].bx; this.cursory = bd.cell[id].by;
 	},
-	getTXC : function(){ return bd.xnum(this.cursolx>>1, this.cursoly>>1);},
+	getTXC : function(){ return bd.xnum(this.cursorx, this.cursory);},
 	setTXC : function(id){
 		if(!k.iscross || id<0 || bd.crossmax<=id){ return;}
-		this.cursolx = bd.cross[id].cx*2; this.cursoly = bd.cross[id].cy*2;
+		this.cursorx = bd.cross[id].bx; this.cursory = bd.cross[id].by;
 	},
-	getTBC : function(){ return bd.bnum(this.cursolx, this.cursoly);},
+	getTBC : function(){ return bd.bnum(this.cursorx, this.cursory);},
 	setTBC : function(id){
 		if(!k.isborder || id<0 || bd.bdmax<=id){ return;}
-		this.cursolx = bd.border[id].cx*2; this.cursoly = bd.border[id].cy;
+		this.cursorx = bd.border[id].bx; this.cursory = bd.border[id].by;
+	},
+	getTEC : function(){ return bd.exnum(this.cursorx, this.cursory);},
+	setTEC : function(id){
+		if(!k.isexcell || id<0 || bd.excellmax<=id){ return;}
+		this.cursorx = bd.excell[id].bx; this.cursory = bd.excell[id].by;
 	}
 };
 
@@ -4467,7 +5708,6 @@ Encode.prototype = {
 		}
 		k.PLAYER    = !k.EDITOR;
 		k.playmode  = !k.editmode;
-		k.autocheck =  k.playmode;
 
 		var qs = search.indexOf("/");
 		if(qs>=0){
@@ -4495,8 +5735,8 @@ Encode.prototype = {
 	parseURI : function(url){
 		this.init();
 
-		// なぜかOperaはtextarea上の改行が実際の改行扱いになってしまうっぽい
-		if(k.br.Opera){ url = url.replace(/(\r|\n)/g,"");}
+		// textarea上の改行が実際の改行扱いになるUAに対応(Operaとか)
+		url = url.replace(/(\r|\n)/g,"");
 
 		// カンペンの場合
 		if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
@@ -4601,9 +5841,11 @@ Encode.prototype = {
 			um.enableRecord(); um.enableInfo();
 
 			bd.ansclear();
-
 			base.resetInfo(true);
-			base.resize_canvas_onload();
+
+			if(!base.initProcess){
+				base.resize_canvas();
+			}
 		}
 	},
 	pzloutput : function(type){
@@ -4997,27 +6239,27 @@ Encode.prototype = {
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","z")){
 				cc += (parseInt(ca,36)+1);
-				var cx = (k.isoutsidecross==1?   cc%(k.qcols+1) :   cc%(k.qcols-1) +1);
-				var cy = (k.isoutsidecross==1?mf(cc/(k.qcols+1)):mf(cc/(k.qcols-1))+1);
+				var bx = (k.iscross===2?   cc%(k.qcols+1) :   cc%(k.qcols-1) +1)*2;
+				var by = (k.iscross===2?mf(cc/(k.qcols+1)):mf(cc/(k.qcols-1))+1)*2;
 
-				if(cy>=k.qrows+(k.isoutsidecross==1?1:0)){ i++; break;}
-				bd.sQnX(bd.xnum(cx,cy), 1);
+				if(by>=bd.maxby+(k.iscross===2?2:0)){ i++; break;}
+				bd.sQnX(bd.xnum(bx,by), 1);
 			}
 			else if(ca == '.'){ cc += 36;}
 			else{ cc++;}
 
-			if(cc >= (k.isoutsidecross==1?(k.qcols+1)*(k.qrows+1):(k.qcols-1)*(k.qrows-1))-1){ i++; break;}
+			if(cc >= (k.iscross==2?(k.qcols+1)*(k.qrows+1):(k.qcols-1)*(k.qrows-1))-1){ i++; break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeCrossMark : function(){
 		var cm = "", count = 0;
-		for(var i=0;i<(k.isoutsidecross==1?(k.qcols+1)*(k.qrows+1):(k.qcols-1)*(k.qrows-1));i++){
+		for(var i=0;i<(k.iscross===2?(k.qcols+1)*(k.qrows+1):(k.qcols-1)*(k.qrows-1));i++){
 			var pstr = "";
-			var cx = (k.isoutsidecross==1?   i%(k.qcols+1) :   i%(k.qcols-1) +1);
-			var cy = (k.isoutsidecross==1?mf(i/(k.qcols+1)):mf(i/(k.qcols-1))+1);
+			var bx = (k.iscross===2?   i%(k.qcols+1) :   i%(k.qcols-1) +1)*2;
+			var by = (k.iscross===2?mf(i/(k.qcols+1)):mf(i/(k.qcols-1))+1)*2;
 
-			if(bd.QnX(bd.xnum(cx,cy))==1){ pstr = ".";}
+			if(bd.QnX(bd.xnum(bx,by))==1){ pstr = ".";}
 			else{ pstr=" "; count++;}
 
 			if(pstr!=" "){ cm += count.toString(36); count=0;}
@@ -5216,23 +6458,30 @@ FileIO.prototype = {
 	// fio.decodeBorder()  配列で、個別文字列から個別Border(外枠上なし)の設定を行う
 	// fio.decodeBorder2() 配列で、個別文字列から個別Border(外枠上あり)の設定を行う
 	//---------------------------------------------------------------------------
-	decodeObj : function(func, width, height, getid){
-		var item = this.getItemList(height);
-		for(var i=0;i<item.length;i++){ func(getid(i%width,mf(i/width)), item[i]);}
+	decodeObj : function(func, getid, startbx, startby, endbx, endby){
+		var bx=startbx, by=startby, step=2;
+		var item=this.getItemList((endby-startby)/step+1);
+		for(var i=0;i<item.length;i++){
+			func(getid.call(bd,bx,by), item[i]);
+
+			bx+=step;
+			if(bx>endbx){ bx=startbx; by+=step;}
+			if(by>endby){ break;}
+		}
 	},
 	decodeCell   : function(func){
-		this.decodeObj(func, k.qcols  , k.qrows  , function(cx,cy){return bd.cnum(cx,cy);});
+		this.decodeObj(func, bd.cnum, 1, 1, 2*k.qcols-1, 2*k.qrows-1);
 	},
 	decodeCross  : function(func){
-		this.decodeObj(func, k.qcols+1, k.qrows+1, function(cx,cy){return bd.xnum(cx,cy);});
+		this.decodeObj(func, bd.xnum, 0, 0, 2*k.qcols,   2*k.qrows  );
 	},
 	decodeBorder : function(func){
-		this.decodeObj(func, k.qcols-1, k.qrows  , function(cx,cy){return bd.bnum(2*cx+2,2*cy+1);});
-		this.decodeObj(func, k.qcols  , k.qrows-1, function(cx,cy){return bd.bnum(2*cx+1,2*cy+2);});
+		this.decodeObj(func, bd.bnum, 2, 1, 2*k.qcols-2, 2*k.qrows-1);
+		this.decodeObj(func, bd.bnum, 1, 2, 2*k.qcols-1, 2*k.qrows-2);
 	},
 	decodeBorder2: function(func){
-		this.decodeObj(func, k.qcols+1, k.qrows  , function(cx,cy){return bd.bnum(2*cx  ,2*cy+1);});
-		this.decodeObj(func, k.qcols  , k.qrows+1, function(cx,cy){return bd.bnum(2*cx+1,2*cy  );});
+		this.decodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
+		this.decodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
 	},
 
 	//---------------------------------------------------------------------------
@@ -5242,27 +6491,28 @@ FileIO.prototype = {
 	// fio.encodeBorder()  個別Borderデータ(外枠上なし)から個別文字列の設定を行う
 	// fio.encodeBorder2() 個別Borderデータ(外枠上あり)から個別文字列の設定を行う
 	//---------------------------------------------------------------------------
-	encodeObj : function(func, width, height, getid){
-		for(var cy=0;cy<height;cy++){
-			for(var cx=0;cx<width;cx++){
-				this.datastr += func(getid(cx,cy));
+	encodeObj : function(func, getid, startbx, startby, endbx, endby){
+		var step=2;
+		for(var by=startby;by<=endby;by+=step){
+			for(var bx=startbx;bx<=endbx;bx+=step){
+				this.datastr += func(getid.call(bd,bx,by));
 			}
 			this.datastr += "/";
 		}
 	},
 	encodeCell   : function(func){
-		this.encodeObj(func, k.qcols  , k.qrows  , function(cx,cy){return bd.cnum(cx,cy);});
+		this.encodeObj(func, bd.cnum, 1, 1, 2*k.qcols-1, 2*k.qrows-1);
 	},
 	encodeCross  : function(func){
-		this.encodeObj(func, k.qcols+1, k.qrows+1, function(cx,cy){return bd.xnum(cx,cy);});
+		this.encodeObj(func, bd.xnum, 0, 0, 2*k.qcols,   2*k.qrows  );
 	},
 	encodeBorder : function(func){
-		this.encodeObj(func, k.qcols-1, k.qrows  , function(cx,cy){return bd.bnum(2*cx+2,2*cy+1);})
-		this.encodeObj(func, k.qcols  , k.qrows-1, function(cx,cy){return bd.bnum(2*cx+1,2*cy+2);});
+		this.encodeObj(func, bd.bnum, 2, 1, 2*k.qcols-2, 2*k.qrows-1);
+		this.encodeObj(func, bd.bnum, 1, 2, 2*k.qcols-1, 2*k.qrows-2);
 	},
 	encodeBorder2: function(func){
-		this.encodeObj(func, k.qcols+1, k.qrows  , function(cx,cy){return bd.bnum(2*cx  ,2*cy+1);})
-		this.encodeObj(func, k.qcols  , k.qrows+1, function(cx,cy){return bd.bnum(2*cx+1,2*cy  );});
+		this.encodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
+		this.encodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
 	},
 
 	//---------------------------------------------------------------------------
@@ -5544,7 +6794,7 @@ FileIO.prototype = {
 	rdata2Border : function(isques, rdata){
 		var func = (isques ? bd.sQuB : bd.sQaB);
 		for(var id=0;id<bd.bdmax;id++){
-			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			func.apply(bd, [id, (cc1!=-1 && cc2!=-1 && rdata[cc1]!=rdata[cc2]?1:0)]);
 		}
 	},
@@ -5555,13 +6805,13 @@ FileIO.prototype = {
 	decodeCellQnum51 : function(){
 		var item = this.getItemList(k.qrows+1);
 		for(var i=0;i<item.length;i++) {
-			var cx=i%(k.qcols+1)-1, cy=mf(i/(k.qcols+1))-1;
+			var bx=(i%(k.qcols+1)-1)*2+1, by=(mf(i/(k.qcols+1))-1)*2+1;
 			if(item[i]!="."){
-				if     (cy===-1){ bd.sDiE(bd.exnum(cx,cy), parseInt(item[i]));}
-				else if(cx===-1){ bd.sQnE(bd.exnum(cx,cy), parseInt(item[i]));}
+				if     (by===-1){ bd.sDiE(bd.exnum(bx,by), parseInt(item[i]));}
+				else if(bx===-1){ bd.sQnE(bd.exnum(bx,by), parseInt(item[i]));}
 				else{
 					var inp = item[i].split(",");
-					var c = bd.cnum(cx,cy);
+					var c = bd.cnum(bx,by);
 					mv.set51cell(c, true);
 					bd.sQnC(c, inp[0]);
 					bd.sDiC(c, inp[1]);
@@ -5571,13 +6821,13 @@ FileIO.prototype = {
 	},
 	encodeCellQnum51 : function(){
 		var str = "";
-		for(var cy=-1;cy<k.qrows;cy++){
-			for(var cx=-1;cx<k.qcols;cx++){
-				if     (cx===-1 && cy==-1){ str += "0 ";}
-				else if(cy===-1){ str += (""+bd.DiE(bd.exnum(cx,cy)).toString()+" ");}
-				else if(cx===-1){ str += (""+bd.QnE(bd.exnum(cx,cy)).toString()+" ");}
+		for(var by=bd.minby+1;by<bd.maxby;by+=2){
+			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
+				if     (bx===-1 && by==-1){ str += "0 ";}
+				else if(by===-1){ str += (""+bd.DiE(bd.exnum(bx,by)).toString()+" ");}
+				else if(bx===-1){ str += (""+bd.QnE(bd.exnum(bx,by)).toString()+" ");}
 				else{
-					var c = bd.cnum(cx,cy);
+					var c = bd.cnum(bx,by);
 					if(bd.QuC(c)===51){ str += (""+bd.QnC(c).toString()+","+bd.DiC(c).toString()+" ");}
 					else{ str += ". ";}
 				}
@@ -5655,7 +6905,7 @@ FileIO.prototype = {
 			var pce = barray[i].split(" ");
 			for(var n=0;n<4;n++){ if(!isNaN(pce[n])){ pce[n]=parseInt(pce[n]);} }
 
-			var sp = {y1:pce[0], x1:pce[1], y2:pce[2], x2:pce[3]};
+			var sp = {y1:2*pce[0]+1, x1:2*pce[1]+1, y2:2*pce[2]+1, x2:2*pce[3]+1};
 			if(isques && pce[4]!=""){ bd.sQnC(bd.cnum(sp.x1,sp.y1), parseInt(pce[4],10));}
 			this.setRdataRect(rdata, i, sp);
 		}
@@ -5664,9 +6914,9 @@ FileIO.prototype = {
 		area.resetRarea();
 	},
 	setRdataRect : function(rdata, i, sp){
-		for(var cx=sp.x1;cx<=sp.x2;cx++){
-			for(var cy=sp.y1;cy<=sp.y2;cy++){
-				rdata[bd.cnum(cx,cy)] = i;
+		for(var bx=sp.x1;bx<=sp.x2;bx+=2){
+			for(var by=sp.y1;by<=sp.y2;by+=2){
+				rdata[bd.cnum(bx,by)] = i;
 			}
 		}
 	},
@@ -5677,7 +6927,7 @@ FileIO.prototype = {
 		for(var id=1;id<=rinfo.max;id++){
 			var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
 			var num = (isques ? bd.QnC(area.getTopOfRoom(id)) : -1);
-			this.datastr += (""+d.y1+" "+d.x1+" "+d.y2+" "+d.x2+" "+(num>=0 ? ""+num : "")+"/");
+			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" "+(num>=0 ? ""+num : "")+"/");
 		}
 	}
 };
@@ -5718,13 +6968,13 @@ DataBaseManager.prototype = {
 			catch(e){}
 		}
 
-		// 以下はGears用(gears_init.jsの判定ルーチン)
+		// 以下はGears用(gears_init.jsの判定ルーチン的なもの)
 		// Google Chorme用(既にGearsが存在するか判定)
 		try{
-			if((window.google && google.gears) || 
-			   (k.br.Gecko && (typeof GearsFactory != 'undefined')) || 
-			   (k.br.IE && !!window.ActiveXObject && (!!(new ActiveXObject('Gears.Factory')))) || 
-			   (k.br.WebKit && navigator.mimeTypes["application/x-googlegears"]))
+			if((window.google && google.gears) || // 既にGearsが初期化済
+			   (typeof GearsFactory != 'undefined') || 										// Firefoxの時
+			   (!!window.ActiveXObject && (!!(new ActiveXObject('Gears.Factory')))) ||		// IEの時
+			   (!!navigator.mimeTypes && navigator.mimeTypes["application/x-googlegears"]))	// Webkitの時
 			{ this.DBaccept |= 0x01;}
 		}
 		catch(e){}
@@ -5931,7 +7181,7 @@ DataBaseManager.prototype = {
 		}
 		this.DBlist[id].col   = k.qcols;
 		this.DBlist[id].row   = k.qrows;
-		this.DBlist[id].time  = mf((new Date()).getTime()/1000);
+		this.DBlist[id].time  = mf(tm.now()/1000);
 
 		this.dbh.saveDataTable(this, id);
 		this.update();
@@ -6035,7 +7285,7 @@ DataBaseHandler_LS.prototype = {
 	updateManageData : function(parent){
 		var mheader = 'pzprv3_manage:manage!'+k.puzzleid;
 		localStorage[mheader+'!count'] = parent.DBlist.length;
-		localStorage[mheader+'!time']  = mf((new Date()).getTime()/1000);
+		localStorage[mheader+'!time']  = mf(tm.now()/1000);
 	},
 
 	//---------------------------------------------------------------------------
@@ -6156,7 +7406,7 @@ DataBaseHandler_SQL.prototype = {
 	},
 	updateManageData : function(parent){
 		var count = parent.DBlist.length;
-		var time = mf((new Date()).getTime()/1000);
+		var time = mf(tm.now()/1000);
 		this.dbmgr.transaction( function(tx){
 			tx.executeSql('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)', [k.puzzleid, '1.0', count, time]);
 		});
@@ -6368,7 +7618,7 @@ AnsCheck.prototype = {
 	// ans.isenableSetError() 盤面のオブジェクトにエラーフラグを設定できるかどうかを返す
 	//---------------------------------------------------------------------------
 	autocheck : function(){
-		if(!k.autocheck || k.editmode || this.inCheck){ return;}
+		if(!pp.getVal('autocheck') || k.editmode || this.inCheck){ return;}
 
 		var ret = false;
 
@@ -6417,7 +7667,7 @@ AnsCheck.prototype = {
 		var blist = [];
 		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isLine(id)){ continue;}
-			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1!=-1 && cc2!=-1 && cinfo.id[cc1]==areaid && cinfo.id[cc1]==cinfo.id[cc2]){ blist.push(id);}
 		}
 		bd.sErB(blist,val);
@@ -6455,7 +7705,7 @@ AnsCheck.prototype = {
 	check2x2Block : function(func){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].cx<k.qcols-1 && bd.cell[c].cy<k.qrows-1){
+			if(bd.cell[c].bx<bd.maxbx-1 && bd.cell[c].by<bd.maxby-1){
 				if( func(c) && func(c+1) && func(c+k.qcols) && func(c+k.qcols+1) ){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c,c+1,c+k.qcols,c+k.qcols+1],1);
@@ -6468,12 +7718,12 @@ AnsCheck.prototype = {
 	checkSideCell : function(func){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].cx<k.qcols-1 && func(c,c+1)){
+			if(bd.cell[c].bx<bd.maxbx-1 && func(c,c+1)){
 				if(this.inAutoCheck){ return false;}
 				bd.sErC([c,c+1],1);
 				result = false;
 			}
-			if(bd.cell[c].cy<k.qrows-1 && func(c,c+k.qcols)){
+			if(bd.cell[c].by<bd.maxby-1 && func(c,c+k.qcols)){
 				if(this.inAutoCheck){ return false;}
 				bd.sErC([c,c+k.qcols],1);
 				result = false;
@@ -6488,7 +7738,7 @@ AnsCheck.prototype = {
 	checkQnumCross : function(func){	//func(cr,bcnt){} -> エラーならfalseを返す関数にする
 		for(var c=0;c<bd.crossmax;c++){
 			if(bd.QnX(c)<0){ continue;}
-			if(!func(bd.QnX(c), bd.bcntCross(bd.cross[c].cx, bd.cross[c].cy))){
+			if(!func(bd.QnX(c), bd.bcntCross(c))){
 				bd.sErX([c],1);
 				return false;
 			}
@@ -6535,7 +7785,8 @@ AnsCheck.prototype = {
 
 	setCellLineError : function(cc, flag){
 		if(flag){ bd.sErC([cc],1);}
-		bd.sErB([bd.ub(cc),bd.db(cc),bd.lb(cc),bd.rb(cc)], 1);
+		var bx=bd.cell[cc].bx, by=bd.cell[cc].by;
+		bd.sErB(bd.borderinside(bx-1,by-1,bx+1,by+1), 1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -6557,11 +7808,11 @@ AnsCheck.prototype = {
 	checkdir4Border1 : function(cc){
 		if(cc<0 || cc>=bd.cellmax){ return 0;}
 		var cnt = 0;
-		var cx = bd.cell[cc].cx; var cy = bd.cell[cc].cy;
-		if( (k.isoutsideborder==0 && cy==0        ) || bd.isBorder(bd.bnum(cx*2+1,cy*2  )) ){ cnt++;}
-		if( (k.isoutsideborder==0 && cy==k.qrows-1) || bd.isBorder(bd.bnum(cx*2+1,cy*2+2)) ){ cnt++;}
-		if( (k.isoutsideborder==0 && cx==0        ) || bd.isBorder(bd.bnum(cx*2  ,cy*2+1)) ){ cnt++;}
-		if( (k.isoutsideborder==0 && cx==k.qcols-1) || bd.isBorder(bd.bnum(cx*2+2,cy*2+1)) ){ cnt++;}
+		var bx = bd.cell[cc].bx, by = bd.cell[cc].by;
+		if( (k.isborder!==2 && by===bd.minby+1) || bd.isBorder(bd.bnum(bx  ,by-1)) ){ cnt++;}
+		if( (k.isborder!==2 && by===bd.maxby-1) || bd.isBorder(bd.bnum(bx  ,by+1)) ){ cnt++;}
+		if( (k.isborder!==2 && bx===bd.minbx+1) || bd.isBorder(bd.bnum(bx-1,by  )) ){ cnt++;}
+		if( (k.isborder!==2 && bx===bd.maxby-1) || bd.isBorder(bd.bnum(bx+1,by  )) ){ cnt++;}
 		return cnt;
 	},
 
@@ -6603,9 +7854,9 @@ AnsCheck.prototype = {
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
 			var d = this.getSizeOfClist(cinfo.room[id].idlist,func);
-			var n = bd.QnC(k.isOneNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0])
-										 : this.getQnumCellOfClist(cinfo.room[id].idlist));
-			if( !evalfunc(d.x2-d.x1+1, d.y2-d.y1+1, d.cnt, n) ){
+			var n = bd.QnC(k.roomNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0])
+										: this.getQnumCellOfClist(cinfo.room[id].idlist));
+			if( !evalfunc(d.cols, d.rows, d.cnt, n) ){
 				if(this.inAutoCheck){ return false;}
 				if(this.performAsLine){ if(result){ bd.sErBAll(2);} this.setErrLareaById(cinfo,id,1);}
 				else{ bd.sErC(cinfo.room[id].idlist,(k.puzzleid!="tateyoko"?1:4));}
@@ -6636,14 +7887,16 @@ AnsCheck.prototype = {
 		return -1;
 	},
 	getSizeOfClist : function(clist, func){
-		var d = { x1:k.qcols, x2:-1, y1:k.qrows, y2:-1, cnt:0 };
+		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1, cols:0, rows:0, cnt:0 };
 		for(var i=0;i<clist.length;i++){
-			if(d.x1>bd.cell[clist[i]].cx){ d.x1=bd.cell[clist[i]].cx;}
-			if(d.x2<bd.cell[clist[i]].cx){ d.x2=bd.cell[clist[i]].cx;}
-			if(d.y1>bd.cell[clist[i]].cy){ d.y1=bd.cell[clist[i]].cy;}
-			if(d.y2<bd.cell[clist[i]].cy){ d.y2=bd.cell[clist[i]].cy;}
+			if(d.x1>bd.cell[clist[i]].bx){ d.x1=bd.cell[clist[i]].bx;}
+			if(d.x2<bd.cell[clist[i]].bx){ d.x2=bd.cell[clist[i]].bx;}
+			if(d.y1>bd.cell[clist[i]].by){ d.y1=bd.cell[clist[i]].by;}
+			if(d.y2<bd.cell[clist[i]].by){ d.y2=bd.cell[clist[i]].by;}
 			if(func(clist[i])){ d.cnt++;}
 		}
+		d.cols = (d.x2-d.x1+2)/2;
+		d.rows = (d.y2-d.y1+2)/2;
 		return d;
 	},
 
@@ -6663,7 +7916,7 @@ AnsCheck.prototype = {
 
 		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isBorder(id)){ continue;}
-			var cc1=bd.cc1(id), cc2=bd.cc2(id);
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1==-1 || cc2==-1){ continue;}
 			var r1=rinfo.id[cc1], r2=rinfo.id[cc2];
 			try{
@@ -6690,7 +7943,7 @@ AnsCheck.prototype = {
 	checkSideAreaCell : function(rinfo, func, flag){
 		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isBorder(id)){ continue;}
-			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1!=-1 && cc2!=-1 && func(cc1, cc2)){
 				if(!flag){ bd.sErC([cc1,cc2],1);}
 				else{ bd.sErC(area.room[area.room.id[cc1]].clist,1); bd.sErC(area.room[area.room.id[cc2]].clist,1); }
@@ -6705,7 +7958,7 @@ AnsCheck.prototype = {
 		for(var id=1;id<=area.room.max;id++){
 			var data = {max:0,id:[]};
 			for(var c=0;c<bd.cellmax;c++){ data.id[c] = ((area.room.id[c]==id && bd.isBlack(c))?0:-1);}
-			for(var c=0;c<k.qcols*k.qrows;c++){
+			for(var c=0;c<bd.cellmax;c++){
 				if(data.id[c]!=0){ continue;}
 				data.max++;
 				data[data.max] = {clist:[]};
@@ -6773,15 +8026,15 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	checkRowsCols : function(evalfunc, numfunc){
 		var result = true;
-		for(var cy=0;cy<k.qrows;cy++){
-			var clist = bd.getClistByPosition(0,cy,k.qcols-1,cy);
+		for(var by=1;by<=bd.maxby;by+=2){
+			var clist = bd.cellinside(bd.minbx+1,by,bd.maxbx-1,by);
 			if(!evalfunc.apply(this,[clist, numfunc])){
 				if(this.inAutoCheck){ return false;}
 				result = false;
 			}
 		}
-		for(var cx=1;cx<k.qcols;cx++){
-			var clist = bd.getClistByPosition(cx,0,cx,k.qrows-1);
+		for(var bx=1;bx<=bd.maxbx;bx+=2){
+			var clist = bd.cellinside(bx,bd.minby+1,bx,bd.maxby-1);
 			if(!evalfunc.apply(this,[clist, numfunc])){
 				if(this.inAutoCheck){ return false;}
 				result = false;
@@ -6791,32 +8044,32 @@ AnsCheck.prototype = {
 	},
 	checkRowsColsPartly : function(evalfunc, areainfo, termfunc, multierr){
 		var result = true;
-		for(var cy=0;cy<k.qrows;cy++){
-			var cx=0;
-			while(cx<k.qcols){
-				for(var tx=cx;tx<k.qcols;tx++){ if(termfunc.apply(this,[bd.cnum(tx,cy)])){ break;}}
-				var clist = bd.getClistByPosition(cx,cy,tx-1,cy);
-				var total = (k.isextendcell!=1 ? 0 : (cx==0 ? bd.QnE(bd.exnum(-1,cy)) : bd.QnC(bd.cnum(cx-1,cy))));
+		for(var by=1;by<=bd.maxby;by+=2){
+			var bx=1;
+			while(bx<=bd.maxbx){
+				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc.apply(this,[bd.cnum(tx,by)])){ break;}}
+				var clist = bd.cellinside(bx,by,tx-2,by);
+				var total = (k.isexcell!==1 ? 0 : (bx===1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx-2,by))));
 
-				if(!evalfunc.apply(this,[total, clist, areainfo])){
+				if(!evalfunc.apply(this,[total, [bx-2,by], clist, areainfo])){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}
-				cx = tx+1;
+				bx = tx+2;
 			}
 		}
-		for(var cx=0;cx<k.qcols;cx++){
-			var cy=0;
-			while(cy<k.qrows){
-				for(var ty=cy;ty<k.qrows;ty++){ if(termfunc.apply(this,[bd.cnum(cx,ty)])){ break;}}
-				var clist = bd.getClistByPosition(cx,cy,cx,ty-1);
-				var total = (k.isextendcell!=1 ? 0 : (cy==0 ? bd.DiE(bd.exnum(cx,-1)) : bd.DiC(bd.cnum(cx,cy-1))));
+		for(var bx=1;bx<=bd.maxbx;bx+=2){
+			var by=1;
+			while(by<=bd.maxby){
+				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc.apply(this,[bd.cnum(bx,ty)])){ break;}}
+				var clist = bd.cellinside(bx,by,bx,ty-2);
+				var total = (k.isexcell!==1 ? 0 : (by===1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by-2))));
 
-				if(!evalfunc.apply(this,[total, clist, areainfo])){
+				if(!evalfunc.apply(this,[total, [bx,by-2], clist, areainfo])){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}
-				cy = ty+1;
+				by = ty+2;
 			}
 		}
 		return result;
@@ -6834,7 +8087,7 @@ AnsCheck.prototype = {
 		return result;
 	},
 	isDifferentNumberInClist : function(clist, numfunc){
-		var result = true, d = [], num = [], bottom = (!!k.dispzero?1:0);
+		var result = true, d = [], num = [], bottom = (k.dispzero?1:0);
 		for(var n=bottom,max=bd.nummaxfunc(clist[0]);n<=max;n++){ d[n]=0;}
 		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc.apply(bd,[clist[i]]);}
 
@@ -6851,27 +8104,29 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	checkLcntCross : function(val, bp){
 		var result = true;
-		for(var i=0;i<(k.qcols+1)*(k.qrows+1);i++){
-			var cx = i%(k.qcols+1), cy = mf(i/(k.qcols+1));
-			if(k.isoutsidecross==0 && k.isborderAsLine==0 && (cx==0||cy==0||cx==k.qcols||cy==k.qrows)){ continue;}
-			var lcnts = (!k.isborderAsLine?area.lcnt[i]:line.lcnt[i]);
-			if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(cx, cy))==1) || (bp==2&&bd.QnX(bd.xnum(cx, cy))!=1) )){
-				if(this.inAutoCheck){ return false;}
-				if(result){ bd.sErBAll(2);}
-				this.setCrossBorderError(cx,cy);
-				result = false;
+		for(var by=0;by<=bd.maxby;by+=2){
+			for(var bx=0;bx<=bd.maxbx;bx+=2){
+				if(k.iscross===1 && (bx===bd.minbx||by===bd.minby||bx===bd.maxbx||by===bd.maxby)){ continue;}
+				var id = (bx>>1)+(by>>1)*(k.qcols+1);
+				var lcnts = (!k.isborderAsLine?area.lcnt[id]:line.lcnt[id]);
+				if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(bx,by))==1) || (bp==2&&bd.QnX(bd.xnum(bx,by))!=1) )){
+					if(this.inAutoCheck){ return false;}
+					if(result){ bd.sErBAll(2);}
+					this.setCrossBorderError(bx,by);
+					result = false;
+				}
 			}
 		}
 		return result;
 	},
-	setCrossBorderError : function(cx,cy){
-		if(k.iscross){ bd.sErX([bd.xnum(cx, cy)], 1);}
-		bd.sErB([bd.bnum(cx*2,cy*2-1),bd.bnum(cx*2,cy*2+1),bd.bnum(cx*2-1,cy*2),bd.bnum(cx*2+1,cy*2)], 1);
+	setCrossBorderError : function(bx,by){
+		if(k.iscross!==0){ bd.sErX([bd.xnum(bx,by)], 1);}
+		bd.sErB(bd.borderinside(bx-1,by-1,bx+1,by+1), 1);
 	}
 };
 
 //---------------------------------------------------------------------------
-// ★UndoManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
+// ★OperationManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
 //---------------------------------------------------------------------------
 // 入力情報管理クラス
 // Operationクラス
@@ -6884,8 +8139,8 @@ Operation = function(obj, property, id, old, num){
 	this.chain = um.chainflag;
 };
 
-// UndoManagerクラス
-UndoManager = function(){
+// OperationManagerクラス
+OperationManager = function(){
 	this.ope = [];			// Operationクラスを保持する配列
 	this.current = 0;		// 現在の表示操作番号を保持する
 	this.disrec = 0;		// このクラスからの呼び出し時は1にする
@@ -6899,9 +8154,9 @@ UndoManager = function(){
 	this.undoExec = false;		// Undo中
 	this.redoExec = false;		// Redo中
 	this.reqReset = false;		// Undo/Redo時に盤面回転等が入っていた時、resize,resetInfo関数のcallを要求する
-	this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
+	this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
 };
-UndoManager.prototype = {
+OperationManager.prototype = {
 	//---------------------------------------------------------------------------
 	// um.disableRecord()  操作の登録を禁止する
 	// um.enableRecord()   操作の登録を許可する
@@ -6944,7 +8199,7 @@ UndoManager.prototype = {
 	//---------------------------------------------------------------------------
 	addOpe : function(obj, property, id, old, num){
 		if(!this.isenableRecord()){ return;}
-		else if(old==num){ return;}
+		else if(old==num && obj!==k.BOARD){ return;}
 
 		var lastid = this.ope.length-1;
 
@@ -6989,7 +8244,7 @@ UndoManager.prototype = {
 	undo : function(){
 		if(this.current==0){ return;}
 		this.undoExec = true;
-		this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
+		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
 		this.disableRecord();
 
 		while(this.current>0){
@@ -7009,7 +8264,7 @@ UndoManager.prototype = {
 	redo : function(){
 		if(this.current==this.ope.length){ return;}
 		this.redoExec = true;
-		this.range = { x1:k.qcols+1, y1:k.qrows+1, x2:-2, y2:-2};
+		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
 		this.disableRecord();
 
 		while(this.current<this.ope.length){
@@ -7031,11 +8286,12 @@ UndoManager.prototype = {
 			this.reqReset=false;
 
 			bd.setposAll();
+			bd.setminmax();
 			base.resetInfo(false);
 			base.resize_canvas();
 		}
 		else{
-			pc.paint(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
+			pc.paintRange(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
 		}
 		this.enableRecord();
 		this.enableInfo();
@@ -7050,7 +8306,7 @@ UndoManager.prototype = {
 			else if(pp == k.QANS){ bd.sQaC(ope.id, num);}
 			else if(pp == k.QSUB){ bd.sQsC(ope.id, num);}
 			else if(pp == k.CELL && !!num){ bd.cell[ope.id] = num;}
-			this.paintStack(bd.cell[ope.id].cx, bd.cell[ope.id].cy, bd.cell[ope.id].cx, bd.cell[ope.id].cy);
+			this.paintStack(bd.cell[ope.id].bx-1, bd.cell[ope.id].by-1, bd.cell[ope.id].bx+1, bd.cell[ope.id].by+1);
 		}
 		else if(ope.obj == k.EXCELL){
 			if     (pp == k.QNUM){ bd.sQnE(ope.id, num);}
@@ -7061,7 +8317,7 @@ UndoManager.prototype = {
 			if     (pp == k.QUES){ bd.sQuX(ope.id, num);}
 			else if(pp == k.QNUM){ bd.sQnX(ope.id, num);}
 			else if(pp == k.CROSS && !!num){ bd.cross[ope.id] = num;}
-			this.paintStack(bd.cross[ope.id].cx-1, bd.cross[ope.id].cy-1, bd.cross[ope.id].cx, bd.cross[ope.id].cy);
+			this.paintStack(bd.cross[ope.id].bx-1, bd.cross[ope.id].by-1, bd.cross[ope.id].bx+1, bd.cross[ope.id].by+1);
 		}
 		else if(ope.obj == k.BORDER){
 			if     (pp == k.QUES){ bd.sQuB(ope.id, num);}
@@ -7073,22 +8329,13 @@ UndoManager.prototype = {
 			this.paintBorder(ope.id);
 		}
 		else if(ope.obj == k.BOARD){
+			var d = {x1:0, y1:0, x2:2*k.qcols, y2:2*k.qrows};
+
 			this.disableInfo();
-			if     (pp == 'expandup'){ if(num==1){ menu.ex.expand(k.UP);}else{ menu.ex.reduce(k.UP);} }
-			else if(pp == 'expanddn'){ if(num==1){ menu.ex.expand(k.DN);}else{ menu.ex.reduce(k.DN);} }
-			else if(pp == 'expandlt'){ if(num==1){ menu.ex.expand(k.LT);}else{ menu.ex.reduce(k.LT);} }
-			else if(pp == 'expandrt'){ if(num==1){ menu.ex.expand(k.RT);}else{ menu.ex.reduce(k.RT);} }
-			else if(pp == 'reduceup'){ if(num==1){ menu.ex.reduce(k.UP);}else{ menu.ex.expand(k.UP);} }
-			else if(pp == 'reducedn'){ if(num==1){ menu.ex.reduce(k.DN);}else{ menu.ex.expand(k.DN);} }
-			else if(pp == 'reducelt'){ if(num==1){ menu.ex.reduce(k.LT);}else{ menu.ex.expand(k.LT);} }
-			else if(pp == 'reducert'){ if(num==1){ menu.ex.reduce(k.RT);}else{ menu.ex.expand(k.RT);} }
+			if(num & menu.ex.TURNFLIP){ menu.ex.turnflip    (num,d);}
+			else                      { menu.ex.expandreduce(num,d);}
 
-			else if(pp == 'flipy'){ menu.ex.turnflip(1,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});}
-			else if(pp == 'flipx'){ menu.ex.turnflip(2,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});}
-			else if(pp == 'turnr'){ menu.ex.turnflip((num==1?3:4),{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); }
-			else if(pp == 'turnl'){ menu.ex.turnflip((num==1?4:3),{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); }
-
-			this.range = { x1:0, y1:0, x2:k.qcols-1, y2:k.qrows-1};
+			this.range = {x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby};
 			this.reqReset = true;
 		}
 	},
@@ -7098,13 +8345,11 @@ UndoManager.prototype = {
 	//---------------------------------------------------------------------------
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
-		if(bd.border[id].cx%2==1){
-			this.paintStack((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
-							(bd.border[id].cx>>1)+1, (bd.border[id].cy>>1)   );
+		if(bd.border[id].bx&1){
+			this.paintStack(bd.border[id].bx-2, bd.border[id].by-1, bd.border[id].bx+2, bd.border[id].by+1);
 		}
 		else{
-			this.paintStack((bd.border[id].cx>>1)-1, (bd.border[id].cy>>1)-1,
-							(bd.border[id].cx>>1)  , (bd.border[id].cy>>1)+1 );
+			this.paintStack(bd.border[id].bx-1, bd.border[id].by-2, bd.border[id].bx+1, bd.border[id].by+2);
 		}
 	},
 	paintStack : function(x1,y1,x2,y2){
@@ -7145,25 +8390,25 @@ Menu = function(){
 
 	this.language = 'ja';
 
-	this.ispencilbox = (k.isKanpenExist && (k.puzzleid!=="nanro" && k.puzzleid!=="ayeheya" && k.puzzleid!=="kurochute" && k.puzzleid!=="goishi"));
+	this.ispencilbox = (k.isKanpenExist && (k.puzzleid!=="nanro" && k.puzzleid!=="ayeheya" && k.puzzleid!=="kurochute"));
 
 	// ElementTemplate : メニュー領域
 	var menu_funcs = {mouseover : ee.ebinder(this, this.menuhover), mouseout  : ee.ebinder(this, this.menuout)};
-	this.EL_MENU  = ee.addTemplate('menupanel','div', {className:'menu'}, {marginRight:'4pt'}, menu_funcs);
+	this.EL_MENU  = ee.addTemplate('menupanel','li', {className:'menu'}, null, menu_funcs);
 
 	// ElementTemplate : フロートメニュー
 	var float_funcs = {mouseout:ee.ebinder(this, this.floatmenuout)};
-	this.EL_FLOAT = ee.addTemplate('float_parent','div', {className:'floatmenu'}, {zIndex:101, backgroundColor:base.floatbgcolor}, float_funcs);
+	this.EL_FLOAT = ee.addTemplate('float_parent','menu', {className:'floatmenu'}, {backgroundColor:base.floatbgcolor}, float_funcs);
 
 	// ElementTemplate : フロートメニュー(中身)
 	var smenu_funcs  = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout), click:ee.ebinder(this, this.submenuclick)};
 	var select_funcs = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout)};
-	this.EL_SMENU    = ee.addTemplate('','div' , {className:'smenu'}, null, smenu_funcs);
-	this.EL_SPARENT  = ee.addTemplate('','div' , {className:'smenu'}, null, select_funcs);
-	this.EL_SELECT   = ee.addTemplate('','div' , {className:'smenu'}, {fontWeight :'900', fontSize:'10pt'}, select_funcs);
-	this.EL_SEPARATE = ee.addTemplate('','div' , {className:'smenusep', innerHTML:'&nbsp;'}, null, null);
-	this.EL_CHECK    = ee.addTemplate('','div' , {className:'smenu'}, {paddingLeft:'6pt', fontSize:'10pt'}, smenu_funcs);
-	this.EL_LABEL    = ee.addTemplate('','span', null, {color:'white'}, null);
+	this.EL_SMENU    = ee.addTemplate('','li', {className:'smenu'}, null, smenu_funcs);
+	this.EL_SPARENT  = ee.addTemplate('','li', {className:'smenu'}, null, select_funcs);
+	this.EL_SELECT   = ee.addTemplate('','li', {className:'smenu'}, {fontWeight :'900', fontSize:'10pt'}, select_funcs);
+	this.EL_SEPARATE = ee.addTemplate('','li', {className:'smenusep', innerHTML:'&nbsp;'}, null, null);
+	this.EL_CHECK    = ee.addTemplate('','li', {className:'smenu'}, {paddingLeft:'6pt', fontSize:'10pt'}, smenu_funcs);
+	this.EL_LABEL    = ee.addTemplate('','li', {className:'smenulabel'}, null, null);
 	this.EL_CHILD = this.EL_CHECK;
 
 	// ElementTemplate : 管理領域
@@ -7208,7 +8453,7 @@ Menu.prototype = {
 		ee('float_parent').el.innerHTML = '';
 
 		if(!!ee('btncolor2')){ ee('btncolor2').remove();}
-		ee('btnarea').removeNextAll(ee('btnclear2').el);
+		ee('btnarea').el.innerHTML = '';
 
 		ee('urlbuttonarea').el.innerHTML = '';
 
@@ -7312,11 +8557,21 @@ Menu.prototype = {
 		if(fio.dbm.DBaccept>0){
 			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
 		}
+		if(base.enableSaveImage){
+			ap('sep_image', 'file');
+			at('imagesavep', 'file', '画像を保存 ->', 'Save as image file');
+		}
 
 		// *ファイル - ファイル保存 -------------------------------------------
 		as('filesave',  'filesavep', 'ぱずぷれv3形式',  'Puz-Pre v3 format');
 		if(this.ispencilbox){
 			as('filesave2', 'filesavep', 'pencilbox形式', 'Pencilbox format');
+		}
+
+		// *ファイル - 画像を保存 -------------------------------------------
+		if(base.enableSaveImage){
+			as('imagedl',   'imagesavep', '画像をダウンロード', 'Download the image');
+			as('imagesave', 'imagesavep', '別ウィンドウで開く', 'Open another window');
 		}
 
 		// *編集 ==============================================================
@@ -7328,14 +8583,15 @@ Menu.prototype = {
 		// *表示 ==============================================================
 		am('disp', "表示", "Display");
 
-		au('size','disp',k.widthmode,[0,1,2,3,4], '表示サイズ','Cell Size');
+		au('size','disp',2,[0,1,2,3,4], '表示サイズ','Cell Size');
 		ap('sep_disp1',  'disp');
 
 		if(!!k.irowake){
 			ac('irowake','disp',(k.irowake==2?true:false),'線の色分け','Color coding');
 			sl('irowake', '線の色分けをする', 'Color each lines');
-			ap('sep_disp2', 'disp');
 		}
+		ac('cursor','disp',true,'カーソルの表示','Display cursor');
+		ap('sep_disp2', 'disp');
 		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
 
@@ -7347,6 +8603,8 @@ Menu.prototype = {
 		ai('size_2', 'size', 'サイズ 標準', 'Normal');
 		ai('size_3', 'size', 'サイズ 大',   'Large');
 		ai('size_4', 'size', 'サイズ 特大', 'Ex Large');
+		ap('sep_size', 'size');
+		ac('adjsize', 'size', true, 'サイズの自動調節', 'Auto Adjustment');
 
 		// *設定 ==============================================================
 		am('setting', "設定", "Setting");
@@ -7361,7 +8619,7 @@ Menu.prototype = {
 
 		puz.menufix();	// 各パズルごとのメニュー追加
 
-		ac('autocheck','setting', k.autocheck, '正答自動判定', 'Auto Answer Check');
+		ac('autocheck','setting', k.playmode, '正答自動判定', 'Auto Answer Check');
 		ac('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
 		sl('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
 		if(kp.ctl[1].enable || kp.ctl[3].enable){
@@ -7420,16 +8678,22 @@ Menu.prototype = {
 
 	//---------------------------------------------------------------------------
 	// menu.createAllFloat() 登録されたサブメニューから全てのフロートメニューを作成する
+	// menu.csshack_forIE6() セパレータのstyleを変更する
 	//---------------------------------------------------------------------------
 	createAllFloat : function(){
+		var _IE6 = false;
+		if(navigator.userAgent.match(/MSIE (\d+)/)){
+			if(parseInt(RegExp.$1)<=7){ _IE6=true;}
+		}
+
 		for(var i=0;i<pp.flaglist.length;i++){
 			var id = pp.flaglist[i];
 			if(!pp.flags[id]){ continue;}
 
-			var smenuid = 'ms_'+id;
+			var smenu, smenuid = 'ms_'+id;
 			switch(pp.type(id)){
 				case pp.MENU:     smenu = ee.createEL(this.EL_MENU,    smenuid); continue; break;
-				case pp.SEPARATE: smenu = ee.createEL(this.EL_SEPARATE,smenuid); break;
+				case pp.SEPARATE: smenu = ee.createEL(this.EL_SEPARATE,smenuid); if(_IE6){ this.csshack_forIE6(smenu);} break;
 				case pp.LABEL:    smenu = ee.createEL(this.EL_LABEL,   smenuid); break;
 				case pp.SELECT:   smenu = ee.createEL(this.EL_SELECT,  smenuid); break;
 				case pp.SMENU:    smenu = ee.createEL(this.EL_SMENU,   smenuid); break;
@@ -7454,7 +8718,8 @@ Menu.prototype = {
 		for(var i=1,len=el.childNodes.length;i<len;i++){
 			var node = el.childNodes[i];
 			if(fw!=node.style.fontWeight){
-				ee(ee.createEL(this.EL_SEPARATE,'')).insertBefore(node);
+				var smenu = ee.createEL(this.EL_SEPARATE,''); if(_IE6){ this.csshack_forIE6(smenu);}
+				ee(smenu).insertBefore(node);
 				i++; len++; // 追加したので1たしておく
 			}
 			fw=node.style.fontWeight;
@@ -7469,6 +8734,13 @@ Menu.prototype = {
 		ee('ms_jumpv3')  .el.style.fontSize = '10pt'; ee('ms_jumpv3')  .el.style.paddingLeft = '8pt';
 		ee('ms_jumptop') .el.style.fontSize = '10pt'; ee('ms_jumptop') .el.style.paddingLeft = '8pt';
 		ee('ms_jumpblog').el.style.fontSize = '10pt'; ee('ms_jumpblog').el.style.paddingLeft = '8pt';
+	},
+	// IE7以下向けのCSSハックをやめて、ここで設定するようにした
+	csshack_forIE6 : function(smenu){
+		if(smenu.className == 'smenusep'){
+			smenu.style.lineHeight = '2pt';
+			smenu.style.display = 'inline';
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -7503,7 +8775,9 @@ Menu.prototype = {
 		var idname = ee.getSrcElement(e).id.substr(3);
 		if(ee.getSrcElement(e).className==="smenu"){ ee.getSrcElement(e).className="smenusel";}
 		if(pp.flags[idname] && (pp.type(idname)===pp.SELECT || pp.type(idname)===pp.SPARENT)){
-			this.floatmenuopen(e,idname,this.dispfloat.length);
+			if(ee.getSrcElement(e).className!=='smenunull'){
+				this.floatmenuopen(e,idname,this.dispfloat.length);
+			}
 		}
 	},
 	submenuout   : function(e){
@@ -7542,15 +8816,21 @@ Menu.prototype = {
 		var rect = ee(ee.getSrcElement(e).id).getRect();
 		var _float = this.floatpanel[idname];
 		if(depth==0){
-			_float.style.left = rect.left - 3 + k.IEMargin.x;
-			_float.style.top  = rect.bottom + (k.br.IE?-2:1);
+			_float.style.left = rect.left   + 1 + 'px';
+			_float.style.top  = rect.bottom + 1 + 'px';
 		}
 		else{
-			_float.style.left = rect.right - 2;
-			_float.style.top  = rect.top + (k.br.IE?-5:-2);
+			if(!k.br.IEmoz4){
+				_float.style.left = rect.right - 3 + 'px';
+				_float.style.top  = rect.top   - 3 + 'px';
+			}
+			else{
+				_float.style.left = ee.pageX(e)  + 'px';
+				_float.style.top  = rect.top - 3 + 'px';
+			}
 		}
 		_float.style.zIndex   = 101+depth;
-		_float.style.display  = 'inline';
+		_float.style.display  = 'block';
 
 		this.dispfloat.push(_float);
 	},
@@ -7683,7 +8963,7 @@ Menu.prototype = {
 	checkclick : function(e){
 		var el = ee.getSrcElement(e);
 		var idname = el.id.substr(3);
-		pp.setVal(idname, el.checked);
+		pp.setVal(idname, !!el.checked);
 	},
 	selectclick : function(e){
 		var list = ee.getSrcElement(e).id.split('_');
@@ -7752,7 +9032,7 @@ Menu.prototype = {
 		};
 		btt('pzprv3',     "ぱずぷれv3のURLを出力する",           "Output PUZ-PRE v3 URL",          true);
 		btt('pzprapplet', "ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", !k.ispzprv3ONLY);
-		btt('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              !!k.isKanpenExist);
+		btt('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              k.isKanpenExist);
 		btt('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (k.puzzleid==="heyawake"));
 		btt('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
 		ee("urlbuttonarea").appendBR();
@@ -7839,8 +9119,8 @@ Menu.prototype = {
 		// ポップアップメニューを表示する
 		if(this.pop){
 			var _pop = this.pop.el;
-			_pop.style.left = ee.pageX(e) - 8 + k.IEMargin.x;
-			_pop.style.top  = ee.pageY(e) - 8 + k.IEMargin.y;
+			_pop.style.left = ee.pageX(e) - 8 + 'px';
+			_pop.style.top  = ee.pageY(e) - 8 + 'px';
 			_pop.style.display = 'inline';
 		}
 	},
@@ -7854,7 +9134,7 @@ Menu.prototype = {
 			this.pop = '';
 			this.menuclear();
 			this.movingpop = "";
-			k.enableKey = true;
+			kc.enableKey = true;
 		}
 	},
 
@@ -7884,8 +9164,8 @@ Menu.prototype = {
 	titlebarmove : function(e){
 		var pop = this.movingpop;
 		if(!!pop){
-			pop.style.left = ee.pageX(e) - this.offset.x;
-			pop.style.top  = ee.pageY(e) - this.offset.y;
+			pop.style.left = ee.pageX(e) - this.offset.x + 'px';
+			pop.style.top  = ee.pageY(e) - this.offset.y + 'px';
 		}
 	},
 
@@ -8041,12 +9321,12 @@ Properties.prototype = {
 	istype : function(idname,type){ return (this.flags[idname].type===type);},
 
 	getVal : function(idname)  { return this.flags[idname]?this.flags[idname].val:0;},
-	setVal : function(idname, newval){
+	setVal : function(idname, newval, callfunc){
 		if(!this.flags[idname]){ return;}
 		else if(this.flags[idname].type===this.CHECK || this.flags[idname].type===this.SELECT){
 			this.flags[idname].val = newval;
 			menu.setdisplay(idname);
-			if(this.funcs[idname]){ this.funcs[idname](newval);}
+			if(this.funcs[idname] && callfunc!==false){ this.funcs[idname](newval);}
 		}
 	},
 
@@ -8056,8 +9336,10 @@ Properties.prototype = {
 		urlinput  : function(){ menu.pop = ee("pop1_2");},
 		urloutput : function(){ menu.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
 		fileopen  : function(){ menu.pop = ee("pop1_4");},
-		filesave  : function(){ menu.ex.filesave(1);},
-		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave(fio.PBOX);}},
+		filesave  : function(){ menu.ex.filesave(fio.PZPR);},
+		filesave2 : function(){ if(!!fio.kanpenSave){ menu.ex.filesave(fio.PBOX);}},
+		imagedl   : function(){ menu.ex.imagesave(true);},
+		imagesave : function(){ menu.ex.imagesave(false);},
 		database  : function(){ menu.pop = ee("pop1_8"); fio.dbm.openDialog();},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
@@ -8066,12 +9348,11 @@ Properties.prototype = {
 		jumptop   : function(){ window.open('../../', '', '');},
 		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},
 		irowake   : function(){ pc.paintAll();},
+		cursor    : function(){ pc.paintAll();},
 		manarea   : function(){ menu.ex.dispman();},
-		autocheck : function(val){ k.autocheck = !k.autocheck;},
 		mode      : function(num){ menu.ex.modechange(num);},
-		size      : function(num){ k.widthmode=num; base.resize_canvas();},
+		size      : function(num){ base.resize_canvas();},
 		repaint   : function(num){ base.resize_canvas();},
-		use       : function(num){ k.use =num;},
 		language  : function(num){ menu.setLang({0:'ja',1:'en'}[num]);},
 
 		newboard : function(){
@@ -8080,12 +9361,12 @@ Properties.prototype = {
 				document.newboard.col.value = k.qcols;
 				document.newboard.row.value = k.qrows;
 			}
-			k.enableKey = false;
+			kc.enableKey = false;
 		},
 		dispsize : function(){
 			menu.pop = ee("pop4_1");
-			document.dispsize.cs.value = k.def_csize;
-			k.enableKey = false;
+			document.dispsize.cs.value = k.cellsize;
+			kc.enableKey = false;
 		},
 		keypopup : function(){
 			var f = kp.ctl[pp.flags['mode'].val].enable;
@@ -8178,13 +9459,13 @@ var debug = {
 	},
 	timeeval : function(text,func){
 		this.addTA(text);
-		var count=0, old = (new Date()).getTime();
-		while((new Date()).getTime() - old < 3000){
+		var count=0, old = tm.now();
+		while(tm.now() - old < 3000){
 			count++;
 
 			func();
 		}
-		var time = (new Date()).getTime() - old;
+		var time = tm.now() - old;
 
 		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
 	},
@@ -8222,6 +9503,52 @@ MenuExec = function(){
 
 	this.reader;	// FileReaderオブジェクト
 	this.enableReadText = false;
+
+	// expand/reduce処理用
+	this.insex = {};
+	this.insex[k.CELL]   = {1:true};
+	this.insex[k.CROSS]  = (k.iscross===1 ? {2:true} : {0:true});
+	this.insex[k.BORDER] = {1:true, 2:true};
+	this.insex[k.EXCELL] = {1:true};
+
+	// 定数
+	this.EXPAND = 0x10;
+	this.REDUCE = 0x20;
+	this.TURN   = 0x40;
+	this.FLIP   = 0x80;
+	this.TURNFLIP = this.TURN|this.FLIP;
+
+	this.EXPANDUP = this.EXPAND|k.UP;
+	this.EXPANDDN = this.EXPAND|k.DN;
+	this.EXPANDLT = this.EXPAND|k.LT;
+	this.EXPANDRT = this.EXPAND|k.RT;
+
+	this.REDUCEUP = this.REDUCE|k.UP;
+	this.REDUCEDN = this.REDUCE|k.DN;
+	this.REDUCELT = this.REDUCE|k.LT;
+	this.REDUCERT = this.REDUCE|k.RT;
+
+	this.TURNL = this.TURN|1;
+	this.TURNR = this.TURN|2;
+
+	this.FLIPX = this.FLIP|1;
+	this.FLIPY = this.FLIP|2;
+
+	this.boardtype = {
+		expandup: [this.REDUCEUP, this.EXPANDUP],
+		expanddn: [this.REDUCEDN, this.EXPANDDN],
+		expandlt: [this.REDUCELT, this.EXPANDLT],
+		expandrt: [this.REDUCERT, this.EXPANDRT],
+		reduceup: [this.EXPANDUP, this.REDUCEUP],
+		reducedn: [this.EXPANDDN, this.REDUCEDN],
+		reducelt: [this.EXPANDLT, this.REDUCELT],
+		reducert: [this.EXPANDRT, this.REDUCERT],
+
+		turnl: [this.TURNR, this.TURNL],
+		turnr: [this.TURNL, this.TURNR],
+		flipy: [this.FLIPY, this.FLIPY],
+		flipx: [this.FLIPX, this.FLIPX]
+	};
 };
 MenuExec.prototype = {
 	//------------------------------------------------------------------------------
@@ -8369,8 +9696,50 @@ MenuExec.prototype = {
 
 		document.fileform2.ques.value   = fio.fileencode(ftype);
 		document.fileform2.urlstr.value = fio.urlstr;
+		document.fileform2.operation.value = 'save';
 
 		document.fileform2.submit();
+	},
+
+	//------------------------------------------------------------------------------
+	// menu.ex.imagesave() 画像を保存する
+	//------------------------------------------------------------------------------
+	imagesave : function(isDL){
+		// 現在の設定を保存する
+		var temp_flag   = pc.fillTextPrecisely;
+		var temp_margin = k.bdmargin;
+		var temp_cursor = pp.getVal('cursor');
+
+		// 設定値・変数をcanvas用のものに変更
+		pc.fillTextPrecisely = true;
+		k.bdmargin = k.bdmargin_image;
+		pp.setVal('cursor', false, false);
+		g = ee('divques_sub').el.getContext("2d");
+
+		// canvas要素の設定を適用して、再描画
+		base.resize_canvas();
+
+		// canvasの描画内容をDataURLとして取得する
+		var url = g.canvas.toDataURL();
+
+		if(isDL){
+			document.fileform2.filename.value  = k.puzzleid+'.gif';
+			document.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
+			document.fileform2.operation.value = 'imagesave';
+			document.fileform2.submit();
+		}
+		else{
+			window.open(url, '', '');
+		}
+
+		// 設定値・変数を元に戻す
+		pc.fillTextPrecisely = temp_flag;
+		k.bdmargin = temp_margin;
+		pp.setVal('cursor', temp_cursor, false);
+		base.initCanvas();
+
+		// その他の設定を元に戻して、再描画
+		base.resize_canvas();
 	},
 
 	//------------------------------------------------------------------------------
@@ -8379,12 +9748,8 @@ MenuExec.prototype = {
 	dispsize : function(e){
 		if(menu.pop){
 			var csize = parseInt(document.dispsize.cs.value);
+			if(csize>0){ k.cellsize = mf(csize);}
 
-			if(csize>0){
-				k.def_psize = mf(csize*(k.def_psize/k.def_csize));
-				if(k.def_psize===0){ k.def_psize=1;}
-				k.def_csize = mf(csize);
-			}
 			menu.popclose();
 			base.resize_canvas();	// Canvasを更新する
 		}
@@ -8394,18 +9759,8 @@ MenuExec.prototype = {
 	// menu.ex.irowakeRemake() 「色分けしなおす」ボタンを押した時に色分けしなおす
 	//---------------------------------------------------------------------------
 	irowakeRemake : function(){
-		if(!pp.getVal('irowake')){ return;}
-
-		for(var i=1;i<=line.data.max;i++){
-			var idlist = line.data[i].idlist;
-			if(idlist.length>0){
-				var newColor = pc.getNewLineColor();
-				for(n=0;n<idlist.length;n++){
-					bd.border[idlist[n]].color = newColor;
-				}
-			}
-		}
-		pc.paint(0,0,k.qcols-1,k.qrows-1);
+		line.newIrowake();
+		if(pp.getVal('irowake')){ pc.paintAll();}
 	},
 
 	//------------------------------------------------------------------------------
@@ -8431,11 +9786,7 @@ MenuExec.prototype = {
 		this.displaymanage = !this.displaymanage;
 		this.dispmanstr();
 
-		base.resize_canvas_only();	// canvasの左上座標等を更新
-		bd.setposAll();	// 各セルのpx,py座標を更新
-
-		if(g.vml){ pc.flushCanvasAll();}	// VMLの位置がずれるので消さないと。。
-		pc.paintAll();	// 再描画
+		base.resize_canvas();	// canvasの左上座標等を更新して再描画
 	},
 	dispmanstr : function(){
 		if(!this.displaymanage){ ee('ms_manarea').el.innerHTML = menu.isLangJP()?"管理領域を表示":"Show management area";}
@@ -8460,478 +9811,394 @@ MenuExec.prototype = {
 				}
 			}
 
+			var d = {x1:0, y1:0, x2:2*k.qcols, y2:2*k.qrows};
 			um.disableInfo();
-			switch(name){
-				case "expandup": this.expand(k.UP); break;
-				case "expanddn": this.expand(k.DN); break;
-				case "expandlt": this.expand(k.LT); break;
-				case "expandrt": this.expand(k.RT); break;
-				case "reduceup": this.reduce(k.UP); break;
-				case "reducedn": this.reduce(k.DN); break;
-				case "reducelt": this.reduce(k.LT); break;
-				case "reducert": this.reduce(k.RT); break;
-
-				case "turnl": this.turnflip(4,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); break;
-				case "turnr": this.turnflip(3,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); break;
-				case "flipy": this.turnflip(1,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); break;
-				case "flipx": this.turnflip(2,{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1}); break;
-			}
+			if (name.match(/(expand|reduce)/)){ this.expandreduce(this.boardtype[name][1],d);}
+			else if(name.match(/(turn|flip)/)){ this.turnflip    (this.boardtype[name][1],d);}
 			um.enableInfo();
 
 			// reduceはここ必須
-			um.addOpe(k.BOARD, name, 0, 0, 1);
+			um.addOpe(k.BOARD, name, 0, this.boardtype[name][0], this.boardtype[name][1]);
 
+			bd.setminmax();
 			if(!um.undoExec){ base.resetInfo(false);}
 			base.resize_canvas();				// Canvasを更新する
 		}
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.expand()       盤面の拡大を実行する
+	// menu.ex.expandreduce() 盤面の拡大・縮小を実行する
 	// menu.ex.expandGroup()  オブジェクトの追加を行う
-	// menu.ex.reduce()       盤面の縮小を実行する
 	// menu.ex.reduceGroup()  オブジェクトの消去を行う
 	//------------------------------------------------------------------------------
-	expand : function(key){
-		this.adjustSpecial(5,key);
-		this.adjustGeneral(5,'',{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});
+	expandreduce : function(key,d){
+		this.adjustBoardData(key,d);
 
-		var number;
-		if     (key===k.UP||key===k.DN){ number=k.qcols; k.qrows++; tc.maxy+=2;}
-		else if(key===k.LT||key===k.RT){ number=k.qrows; k.qcols++; tc.maxx+=2;}
+		if(key & this.EXPAND){
+			if     (key===this.EXPANDUP||key===this.EXPANDDN){ k.qrows++;}
+			else if(key===this.EXPANDLT||key===this.EXPANDRT){ k.qcols++;}
 
-		var func;
-		{
-			func = function(id){ return (menu.ex.distObj(key,k.CELL,id)===0);};
-			this.expandGroup(k.CELL, bd.cell, number, func);
+							{ this.expandGroup(k.CELL,   key);}
+			if(!!k.iscross) { this.expandGroup(k.CROSS,  key);}
+			if(!!k.isborder){ this.expandGroup(k.BORDER, key);}
+			if(!!k.isexcell){ this.expandGroup(k.EXCELL, key);}
 		}
-		if(k.iscross){
-			var oc = k.isoutsidecross?0:1;
-			func = function(id){ return (menu.ex.distObj(key,k.CROSS,id)===oc);};
-			this.expandGroup(k.CROSS, bd.cross, number+1, func);
-		}
-		if(k.isborder){
-			bd.bdinside = 2*k.qcols*k.qrows-(k.qcols+k.qrows);
+		else if(key & this.REDUCE){
+							{ this.reduceGroup(k.CELL,   key);}
+			if(!!k.iscross) { this.reduceGroup(k.CROSS,  key);}
+			if(!!k.isborder){ this.reduceGroup(k.BORDER, key);}
+			if(!!k.isexcell){ this.reduceGroup(k.EXCELL, key);}
 
-			func = function(id){ var m=menu.ex.distObj(key,k.BORDER,id); return (m===1||m===2);};
-			this.expandGroup(k.BORDER, bd.border, 2*number+(k.isoutsideborder===0?-1:1), func);
-
-			// 拡大時に、境界線は伸ばしちゃいます。
-			if(k.isborderAsLine===0){ this.expandborder(key);}
-			else{ this.expandborderAsLine(key);}
-		}
-		if(k.isextendcell!==0){
-			func = function(id){ return (menu.ex.distObj(key,k.EXCELL,id)===0);};
-			this.expandGroup(k.EXCELL, bd.excell, k.isextendcell, func);
+			if     (key===this.REDUCEUP||key===this.REDUCEDN){ k.qrows--;}
+			else if(key===this.REDUCELT||key===this.REDUCERT){ k.qcols--;}
 		}
 
 		bd.setposAll();
 
-		this.adjustSpecial2(5,key);
+		this.adjustBoardData2(key,d);
 	},
-	expandGroup : function(type,group,margin,insfunc){
-		for(var len=group.length,i=len;i<len+margin;i++){ group.push(bd.getnewObj(type,i));}
-		this.setposObj(type);
+	expandGroup : function(type,key){
+		var margin = bd.initGroup(type, k.qcols, k.qrows);
+		var group = bd.getGroup(type);
 		for(var i=group.length-1;i>=0;i--){
-			if(insfunc(i)){
-				group[i] = bd.getnewObj(type,i);
+			if(!!this.insex[type][this.distObj(type,i,key)]){
+				group[i] = bd.newObject(type,i);
 				margin--;
 			}
 			else if(margin>0){ group[i] = group[i-margin];}
 		}
+
+		if(type===k.BORDER){ this.expandborder(key);}
 	},
+	reduceGroup : function(type,key){
+		if(type===k.BORDER){ this.reduceborder(key);}
 
-	reduce : function(key){
-		this.adjustSpecial(6,key);
-		this.adjustGeneral(6,'',{x1:0,y1:0,x2:k.qcols-1,y2:k.qrows-1});
-
-		var func, margin;
-		{
-			this.qnums = [];
-			func = function(id){ return (menu.ex.distObj(key,k.CELL,id)===0);};
-			margin = this.reduceGroup(k.CELL, bd.cell, func);
-		}
-		if(k.iscross){
-			var oc = k.isoutsidecross?0:1;
-			func = function(id){ return (menu.ex.distObj(key,k.CROSS,id)===oc);};
-			margin = this.reduceGroup(k.CROSS, bd.cross, func);
-		}
-		if(k.isborder){
-			if(k.isborderAsLine===1){ this.reduceborderAsLine(key);}
-
-			if     (key===k.UP||key===k.DN){ bd.bdinside = 2*k.qcols*(k.qrows-1)-(k.qcols+k.qrows-1);}
-			else if(key===k.LT||key===k.RT){ bd.bdinside = 2*(k.qcols-1)*k.qrows-(k.qcols+k.qrows-1);}
-
-			func = function(id){ var m=menu.ex.distObj(key,k.BORDER,id); return (m===1||m===2);};
-			margin = this.reduceGroup(k.BORDER, bd.border, func);
-		}
-		if(k.isextendcell!==0){
-			func = function(id){ return (menu.ex.distObj(key,k.EXCELL,id)===0);};
-			margin = this.reduceGroup(k.EXCELL, bd.excell, func);
-		}
-
-		if     (key===k.UP||key===k.DN){ k.qrows--; tc.maxy-=2;}
-		else if(key===k.LT||key===k.RT){ k.qcols--; tc.maxx-=2;}
-
-		bd.setposAll();
-		if(k.isOneNumber){
-			area.resetArea();
-			for(var i=0;i<this.qnums.length;i++){
-				bd.sQnC(area.getTopOfRoom(this.qnums[i].areaid), this.qnums[i].val);
-			}
-		}
-
-		this.adjustSpecial2(6,key);
-	},
-	reduceGroup : function(type,group,exfunc){
-		var margin=0;
+		var margin=0, group = bd.getGroup(type);
 		for(var i=0;i<group.length;i++){
-			if(exfunc(i)){
-				bd.hideNumobj(type,i);
-				if(!bd.isNullObj(type,i)){ um.addObj(type,i);}
+			if(!!this.insex[type][this.distObj(type,i,key)]){
+				if(!group[i].isempty()){ um.addObj(type,i);}
 				margin++;
-
-				if(type===k.CELL && k.isOneNumber){
-					if(bd.QnC(i)!==-1){ this.qnums.push({ areaid:area.getRoomID(i), val:bd.QnC(i)});}
-					//area.setRoomID(i, -1);
-				}
 			}
 			else if(margin>0){ group[i-margin] = group[i];}
 		}
 		for(var i=0;i<margin;i++){ group.pop();}
-
-		return margin;
 	},
 
 	//------------------------------------------------------------------------------
 	// menu.ex.turnflip()      回転・反転処理を実行する
 	// menu.ex.turnflipGroup() turnflip()から内部的に呼ばれる回転実行部
 	//------------------------------------------------------------------------------
-	turnflip : function(type,d){
-		d.xx = (d.x1+d.x2); d.yy = (d.y1+d.y2);
+	turnflip : function(key,d){
+		this.adjustBoardData(key,d);
 
-		this.adjustSpecial(type,'');
-		this.adjustGeneral(type,'',d);
-
-		if(type===3||type===4){
+		if(key & this.TURN){
 			var tmp = k.qcols; k.qcols = k.qrows; k.qrows = tmp;
-			tmp = tc.maxx; tc.maxx = tc.maxy; tc.maxy = tmp;
 			bd.setposAll();
+			d = {x1:0, y1:0, x2:2*k.qcols, y2:2*k.qrows};
 		}
 
-		var func;
-		{
-			if     (type===1){ func = function(d,id){ return bd.cnum(bd.cell[id].cx, d.yy-bd.cell[id].cy);}; }
-			else if(type===2){ func = function(d,id){ return bd.cnum(d.xx-bd.cell[id].cx, bd.cell[id].cy);}; }
-			else if(type===3){ func = function(d,id){ return bd.cnum2(bd.cell[id].cy, d.yy-bd.cell[id].cx, k.qrows, k.qcols);}; }
-			else if(type===4){ func = function(d,id){ return bd.cnum2(d.xx-bd.cell[id].cy, bd.cell[id].cx, k.qrows, k.qcols);}; }
-			this.turnflipGroup(d, bd.cell, k.qcols*k.qrows, func);
-		}
-		if(k.iscross){
-			if     (type===1){ func = function(d,id){ return bd.xnum(bd.cross[id].cx, (d.yy+1)-bd.cross[id].cy);}; }
-			else if(type===2){ func = function(d,id){ return bd.xnum((d.xx+1)-bd.cross[id].cx, bd.cross[id].cy);}; }
-			else if(type===3){ func = function(d,id){ return bd.xnum2(bd.cross[id].cy, (d.yy+1)-bd.cross[id].cx, k.qrows, k.qcols);}; }
-			else if(type===4){ func = function(d,id){ return bd.xnum2((d.xx+1)-bd.cross[id].cy, bd.cross[id].cx, k.qrows, k.qcols);}; }
-			this.turnflipGroup(d, bd.cross, (k.qcols+1)*(k.qrows+1), func);
-		}
-		if(k.isborder){
-			if     (type===1){ func = function(d,id){ return bd.bnum(bd.border[id].cx, (d.yy+1)*2-bd.border[id].cy);}; }
-			else if(type===2){ func = function(d,id){ return bd.bnum((d.xx+1)*2-bd.border[id].cx, bd.border[id].cy);}; }
-			else if(type===3){ func = function(d,id){ return bd.bnum2(bd.border[id].cy, (d.yy+1)*2-bd.border[id].cx, k.qrows, k.qcols);}; }
-			else if(type===4){ func = function(d,id){ return bd.bnum2((d.xx+1)*2-bd.border[id].cy, bd.border[id].cx, k.qrows, k.qcols);}; }
-			this.turnflipGroup(d, bd.border, bd.bdinside+(k.isoutsideborder===0?0:2*(k.qcols+k.qrows)), func);
-		}
-		if(k.isextendcell===2){
-			if     (type===1){ func = function(d,id){ return bd.exnum(bd.excell[id].cx, d.yy-bd.excell[id].cy);}; }
-			else if(type===2){ func = function(d,id){ return bd.exnum(d.xx-bd.excell[id].cx, bd.excell[id].cy);}; }
-			else if(type===3){ func = function(d,id){ return bd.exnum2(bd.excell[id].cy, d.yy-bd.excell[id].cx, k.qrows, k.qcols);}; }
-			else if(type===4){ func = function(d,id){ return bd.exnum2(d.xx-bd.excell[id].cy, bd.excell[id].cx, k.qrows, k.qcols);}; }
-			this.turnflipGroup(d, bd.excell, 2*(k.qcols+k.qrows)+4, func);
-		}
-		else if(k.isextendcell===1 && (type===1 || type===2)){
-			if(type===1){
-				for(var cy=d.y1;cy<d.yy/2;cy++){
-					var c = bd.excell[bd.exnum(-1,cy)];
-					bd.excell[bd.exnum(-1,cy)] = bd.excell[bd.exnum(-1,d.yy-cy)];
-					bd.excell[bd.exnum(-1,d.yy-cy)] = c;
-				}
-			}
-			else if(type===2){
-				for(var cx=d.x1;cx<d.xx/2;cx++){
-					var c = bd.excell[bd.exnum(cx,-1)];
-					bd.excell[bd.exnum(cx,-1)] = bd.excell[bd.exnum(d.xx-cx,-1)];
-					bd.excell[bd.exnum(d.xx-cx,-1)] = c;
-				}
-			}
+						  { this.turnflipGroup(k.CELL,   key, d);}
+		if(!!k.iscross)   { this.turnflipGroup(k.CROSS,  key, d);}
+		if(!!k.isborder)  { this.turnflipGroup(k.BORDER, key, d);}
+		if(k.isexcell===2){ this.turnflipGroup(k.EXCELL, key, d);}
+		else if(k.isexcell===1 && (key & this.FLIP)){
+			var d2 = {x1:d.x1, y1:d.y1, x2:d.x2, y2:d.y2};
+			if     (key===this.FLIPY){ d2.x1 = d2.x2 = -1;}
+			else if(key===this.FLIPX){ d2.y1 = d2.y2 = -1;}
+			this.turnflipGroup(k.EXCELL, key, d2);
 		}
 
 		bd.setposAll();
-		this.adjustSpecial2(type,'');
-	},
-	turnflipGroup : function(d,group,maxcnt,getnext){
-		var ch = []; for(var i=0;i<maxcnt;i++){ ch[i]=1;}
-		for(var source=0;source<maxcnt;source++){
-			if(ch[source]===0){ continue;}
-			var tmp = group[source], target = source;
-			while(ch[target]!==0){
-				ch[target]=0;
-				var next = getnext(d,target);
 
-				if(ch[next]!==0){
+		this.adjustBoardData2(key,d);
+	},
+	turnflipGroup : function(type,key,d){
+		var ch=[], idlist=bd.objectinside(type,d.x1,d.y1,d.x2,d.y2);
+		for(var i=0;i<idlist.length;i++){ ch[idlist[i]]=false;}
+
+		var group = bd.getGroup(type);
+		var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
+		for(var source=0;source<group.length;source++){
+			if(ch[source]!==false){ continue;}
+
+			var tmp = group[source], target = source;
+			while(ch[target]===false){
+				ch[target]=true;
+				// nextになるものがtargetに移動してくる、、という考えかた。
+				// ここでは移動前のIDを取得しています
+				switch(key){
+					case this.FLIPY: next = bd.idnum(type, group[target].bx, yy-group[target].by); break;
+					case this.FLIPX: next = bd.idnum(type, xx-group[target].bx, group[target].by); break;
+					case this.TURNR: next = bd.idnum(type, group[target].by, xx-group[target].bx, k.qrows, k.qcols); break;
+					case this.TURNL: next = bd.idnum(type, yy-group[target].by, group[target].bx, k.qrows, k.qcols); break;
+				}
+
+				if(ch[next]===false){
 					group[target] = group[next];
 					target = next;
 				}
 				else{
 					group[target] = tmp;
+					break;
 				}
 			}
 		}
 	},
 
 	//---------------------------------------------------------------------------
-	// menu.ex.expandborder()       盤面の拡大時、境界線を伸ばす
-	// menu.ex.expandborderAsLine() borderAsLine==1なパズルの盤面拡大時に線を移動する
-	// menu.ex.reduceborderAsLine() borderAsLine==1なパズルの盤面縮小時に線を移動する
-	// menu.ex.copyData()           指定したデータをコピーする
+	// menu.ex.distObj()      上下左右いずれかの外枠との距離を求める
 	//---------------------------------------------------------------------------
-	expandborder : function(key){
-		if(um.undoExec){ return;} // Undo時は、後でオブジェクトを代入するので下の処理はパス
+	distObj : function(type,id,key){
+		var obj;
+		if     (type===k.CELL)  { obj = bd.cell[id];}
+		else if(type===k.CROSS) { obj = bd.cross[id];}
+		else if(type===k.BORDER){ obj = bd.border[id];}
+		else if(type===k.EXCELL){ obj = bd.excell[id];}
+		else{ return -1;}
 
-		bd.setposBorders();
-		for(var i=0;i<bd.bdmax;i++){
-			if(this.distObj(key,k.BORDER,i)!==1){ continue;}
-
-			var source = this.innerBorder(key,i);
-			bd.border[i].ques  = bd.border[source].ques;
-			bd.border[i].qans  = bd.border[source].qans;
-		}
-	},
-	// m==0||m==1で直接移動できそうだけど、expandGroup()と別に
-	// 関数作る必要があるので無理やり移動させる
-	expandborderAsLine : function(key){
-		bd.setposBorders();
-		for(var i=0;i<bd.bdmax;i++){
-			if(this.distObj(key,k.BORDER,i)!==2){ continue;}
-
-			var source = this.outerBorder(key,i);
-			this.copyData(i,source);
-			bd.border[source].allclear(source);
-		}
-	},
-	// borderAsLine時の無理やりがなんとかかんとか
-	reduceborderAsLine : function(key){
-		for(var i=0;i<bd.bdmax;i++){
-			if(this.distObj(key,k.BORDER,i)!==0){ continue;}
-
-			var source = this.innerBorder(key,i);
-			this.copyData(i,source);
-		}
-	},
-	copyData : function(id1,id2){
-		bd.border[id1].qans  = bd.border[id2].qans;
-		bd.border[id1].qsub  = bd.border[id2].qsub;
-		bd.border[id1].ques  = bd.border[id2].ques;
-		bd.border[id1].color = bd.border[id2].color;
+		key &= 0x0F;
+		if     (key===k.UP){ return obj.by;}
+		else if(key===k.DN){ return 2*k.qrows-obj.by;}
+		else if(key===k.LT){ return obj.bx;}
+		else if(key===k.RT){ return 2*k.qcols-obj.bx;}
+		return -1;
 	},
 
 	//---------------------------------------------------------------------------
+	// menu.ex.expandborder() 盤面の拡大時、境界線を伸ばす
+	// menu.ex.reduceborder() 盤面の縮小時、線を移動する
+	// menu.ex.copyBorder()   (expand/reduceBorder用) 指定したデータをコピーする
 	// menu.ex.innerBorder()  (expand/reduceBorder用) ひとつ内側に入ったborderのidを返す
 	// menu.ex.outerBorder()  (expand/reduceBorder用) ひとつ外側に行ったborderのidを返す
 	//---------------------------------------------------------------------------
-	innerBorder : function(key,id){
-		var bx=bd.border[id].cx, by=bd.border[id].cy;
-		if     (key===k.UP){ return bd.bnum(bx, by+2);}
-		else if(key===k.DN){ return bd.bnum(bx, by-2);}
-		else if(key===k.LT){ return bd.bnum(bx+2, by);}
-		else if(key===k.RT){ return bd.bnum(bx-2, by);}
-		return -1;
+	expandborder : function(key){
+		// borderAsLineじゃないUndo時は、後でオブジェクトを代入するので下の処理はパス
+		if(k.isborderAsLine || !um.undoExec){
+			// 直前のexpandGroupで、bx,byプロパティが不定なままなので設定する
+			bd.setposBorders();
+
+			for(var id=0;id<bd.bdmax;id++){
+				if(this.distObj(k.BORDER,id,key)!==(k.isborderAsLine?2:1)){ continue;}
+
+				var source = (k.isborderAsLine ? this.outerBorder(id,key) : this.innerBorder(id,key));
+				this.copyBorder(id,source);
+				if(k.isborderAsLine){ bd.border[source].allclear(source);}
+			}
+		}
 	},
-	outerBorder : function(key,id){
-		var bx=bd.border[id].cx, by=bd.border[id].cy;
-		if     (key===k.UP){ return bd.bnum(bx, by-2);}
-		else if(key===k.DN){ return bd.bnum(bx, by+2);}
-		else if(key===k.LT){ return bd.bnum(bx-2, by);}
-		else if(key===k.RT){ return bd.bnum(bx+2, by);}
-		return -1;
+	reduceborder : function(key){
+		if(k.isborderAsLine){
+			for(var id=0;id<bd.bdmax;id++){
+				if(this.distObj(k.BORDER,id,key)!==0){ continue;}
+
+				var source = this.innerBorder(id,key);
+				this.copyBorder(id,source);
+			}
+		}
 	},
 
-	//---------------------------------------------------------------------------
-	// menu.ex.setposObj()  指定されたタイプのsetpos関数を呼び出す
-	// menu.ex.distObj()    上下左右いずれかの外枠との距離を求める
-	//---------------------------------------------------------------------------
-	setposObj : function(type){
-		if     (type===k.CELL)  { bd.setposCells();}
-		else if(type===k.CROSS) { bd.setposCrosses();}
-		else if(type===k.BORDER){ bd.setposBorders();}
-		else if(type===k.EXCELL){ bd.setposEXcells();}
+	copyBorder : function(id1,id2){
+		bd.border[id1].ques  = bd.border[id2].ques;
+		bd.border[id1].qans  = bd.border[id2].qans;
+		if(k.isborderAsLine){
+			bd.border[id1].qsub  = bd.border[id2].qsub;
+			bd.border[id1].color = bd.border[id2].color;
+		}
 	},
-	distObj : function(key,type,id){
-		if(type===k.CELL){
-			if     (key===k.UP){ return bd.cell[id].cy;}
-			else if(key===k.DN){ return (k.qrows-1)-bd.cell[id].cy;}
-			else if(key===k.LT){ return bd.cell[id].cx;}
-			else if(key===k.RT){ return (k.qcols-1)-bd.cell[id].cx;}
-		}
-		else if(type===k.CROSS){
-			if     (key===k.UP){ return bd.cross[id].cy;}
-			else if(key===k.DN){ return k.qrows-bd.cross[id].cy;}
-			else if(key===k.LT){ return bd.cross[id].cx;}
-			else if(key===k.RT){ return k.qcols-bd.cross[id].cx;}
-		}
-		else if(type===k.BORDER){
-			if     (key===k.UP){ return bd.border[id].cy;}
-			else if(key===k.DN){ return 2*k.qrows-bd.border[id].cy;}
-			else if(key===k.LT){ return bd.border[id].cx;}
-			else if(key===k.RT){ return 2*k.qcols-bd.border[id].cx;}
-		}
-		else if(type===k.EXCELL){
-			if     (key===k.UP){ return bd.excell[id].cy;}
-			else if(key===k.DN){ return (k.qrows-1)-bd.excell[id].cy;}
-			else if(key===k.LT){ return bd.excell[id].cx;}
-			else if(key===k.RT){ return (k.qcols-1)-bd.excell[id].cx;}
-		}
+	innerBorder : function(id,key){
+		var bx=bd.border[id].bx, by=bd.border[id].by;
+		key &= 0x0F;
+		if     (key===k.UP){ return bd.bnum2(bx, by+2, k.qcols, k.qrows);}
+		else if(key===k.DN){ return bd.bnum2(bx, by-2, k.qcols, k.qrows);}
+		else if(key===k.LT){ return bd.bnum2(bx+2, by, k.qcols, k.qrows);}
+		else if(key===k.RT){ return bd.bnum2(bx-2, by, k.qcols, k.qrows);}
+		return -1;
+	},
+	outerBorder : function(id,key){
+		var bx=bd.border[id].bx, by=bd.border[id].by;
+		key &= 0x0F;
+		if     (key===k.UP){ return bd.bnum2(bx, by-2, k.qcols, k.qrows);}
+		else if(key===k.DN){ return bd.bnum2(bx, by+2, k.qcols, k.qrows);}
+		else if(key===k.LT){ return bd.bnum2(bx-2, by, k.qcols, k.qrows);}
+		else if(key===k.RT){ return bd.bnum2(bx+2, by, k.qcols, k.qrows);}
 		return -1;
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.adjustGeneral()  回転・反転時に各セルの調節を行う(共通処理)
-	// menu.ex.adjustSpecial()  回転・反転・盤面調節開始前に各セルの調節を行う(各パズルのオーバーライド用)
-	// menu.ex.adjustSpecial2() 回転・反転・盤面調節終了後に各セルの調節を行う(各パズルのオーバーライド用)
-	// menu.ex.adjustQues51_1() [＼]セルの調整(adjustSpecial関数に代入する用)
-	// menu.ex.adjustQues51_2() [＼]セルの調整(adjustSpecial2関数に代入する用)
+	// menu.ex.adjustBoardData()  回転・反転開始前に各セルの調節を行う(共通処理)
+	// menu.ex.adjustBoardData2() 回転・反転終了後に各セルの調節を行う(共通処理)
+	// 
+	// menu.ex.adjustSpecial()    回転・反転・盤面調節開始前に各セルの調節を行う(各パズルのオーバーライド用)
+	// menu.ex.adjustSpecial2()   回転・反転・盤面調節終了後に各セルの調節を行う(各パズルのオーバーライド用)
+	// 
+	// menu.ex.adjustQues51_1()   [＼]セルの調整(adjustSpecial関数に代入する用)
+	// menu.ex.adjustQues51_2()   [＼]セルの調整(adjustSpecial2関数に代入する用)
 	//------------------------------------------------------------------------------
-	adjustGeneral : function(type,key,d){
+	adjustBoardData : function(key,d){
 		um.disableRecord();
-		for(var cy=d.y1;cy<=d.y2;cy++){
-			for(var cx=d.x1;cx<=d.x2;cx++){
-				var c = bd.cnum(cx,cy);
 
-				switch(type){
-				case 1: // 上下反転
-					if(true){
-						var val = ({2:5,3:4,4:3,5:2,104:107,105:106,106:105,107:104})[bd.QuC(c)];
-						if(!isNaN(val)){ bd.sQuC(c,val);}
-					}
-					if(k.isextendcell!==1){
-						var val = ({1:2,2:1})[bd.DiC(c)];
-						if(!isNaN(val)){ bd.sDiC(c,val);}
-					}
-					break;
-				case 2: // 左右反転
-					if(true){
-						var val = ({2:3,3:2,4:5,5:4,104:105,105:104,106:107,107:106})[bd.QuC(c)];
-						if(!isNaN(val)){ bd.sQuC(c,val);}
-					}
-					if(k.isextendcell!==1){
-						var val = ({3:4,4:3})[bd.DiC(c)];
-						if(!isNaN(val)){ bd.sDiC(c,val);}
-					}
-					break;
-				case 3: // 右90°反転
-					if(true){
-						var val = {2:5,3:2,4:3,5:4,21:22,22:21,102:103,103:102,104:107,105:104,106:105,107:106}[bd.QuC(c)];
-						if(!isNaN(val)){ bd.sQuC(c,val);}
-					}
-					if(k.isextendcell!==1){
-						var val = {1:4,2:3,3:1,4:2}[bd.DiC(c)];
-						if(!isNaN(val)){ bd.sDiC(c,val);}
-					}
-					break;
-				case 4: // 左90°反転
-					if(true){
-						var val = {2:3,3:4,4:5,5:2,21:22,22:21,102:103,103:102,104:105,105:106,106:107,107:104}[bd.QuC(c)];
-						if(!isNaN(val)){ bd.sQuC(c,val);}
-					}
-					if(k.isextendcell!==1){
-						var val = {1:3,2:4,3:2,4:1}[bd.DiC(c)];
-						if(!isNaN(val)){ bd.sDiC(c,val);}
-					}
-					break;
-				case 5: // 盤面拡大
-					break;
-				case 6: // 盤面縮小
-					break;
+		this.adjustSpecial.call(this,key,d);
+
+		var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
+		switch(key){
+		case this.FLIPY: // 上下反転
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				if(true){
+					var val = ({2:5,3:4,4:3,5:2,104:107,105:106,106:105,107:104})[bd.QuC(c)];
+					if(!isNaN(val)){ bd.sQuC(c,val);}
+				}
+				if(k.isexcell!==1){
+					var val = ({1:2,2:1})[bd.DiC(c)];
+					if(!isNaN(val)){ bd.sDiC(c,val);}
+				}
+			}
+			break;
+
+		case this.FLIPX: // 左右反転
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				if(true){
+					var val = ({2:3,3:2,4:5,5:4,104:105,105:104,106:107,107:106})[bd.QuC(c)];
+					if(!isNaN(val)){ bd.sQuC(c,val);}
+				}
+				if(k.isexcell!==1){
+					var val = ({3:4,4:3})[bd.DiC(c)];
+					if(!isNaN(val)){ bd.sDiC(c,val);}
+				}
+			}
+			break;
+
+		case this.TURNR: // 右90°反転
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				if(true){
+					var val = {2:5,3:2,4:3,5:4,21:22,22:21,102:103,103:102,104:107,105:104,106:105,107:106}[bd.QuC(c)];
+					if(!isNaN(val)){ bd.sQuC(c,val);}
+				}
+				if(k.isexcell!==1){
+					var val = {1:4,2:3,3:1,4:2}[bd.DiC(c)];
+					if(!isNaN(val)){ bd.sDiC(c,val);}
+				}
+			}
+			break;
+
+		case this.TURNL: // 左90°反転
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				if(true){
+					var val = {2:3,3:4,4:5,5:2,21:22,22:21,102:103,103:102,104:105,105:106,106:107,107:104}[bd.QuC(c)];
+					if(!isNaN(val)){ bd.sQuC(c,val);}
+				}
+				if(k.isexcell!==1){
+					var val = {1:3,2:4,3:2,4:1}[bd.DiC(c)];
+					if(!isNaN(val)){ bd.sDiC(c,val);}
+				}
+			}
+			break;
+		}
+		um.enableRecord();
+
+		if((key & this.REDUCE) && k.roomNumber){
+			this.qnums = [];
+			for(var i=0;i<bd.cell.length;i++){
+				if(!!this.insex[k.CELL][this.distObj(k.CELL,i,key)] && bd.cell[i].qnum!==-1){
+					this.qnums.push({ areaid:area.getRoomID(i), val:bd.cell[i].qnum});
 				}
 			}
 		}
+	},
+	adjustBoardData2 : function(key,d){
+		if((key & this.REDUCE) && k.roomNumber){
+			area.resetArea();
+			for(var i=0;i<this.qnums.length;i++){
+				bd.sQnC(area.getTopOfRoom(this.qnums[i].areaid), this.qnums[i].val);
+			}
+		}
+
+		um.disableRecord();
+		this.adjustSpecial2.call(this,key,d);
 		um.enableRecord();
 	},
-	adjustQues51_1 : function(type,key){
+	adjustSpecial  : function(key,d){ },
+	adjustSpecial2 : function(key,d){ },
+
+	adjustQues51_1 : function(key,d){
 		this.qnumw = [];
 		this.qnumh = [];
 
-		for(var cy=0;cy<=k.qrows-1;cy++){
-			this.qnumw[cy] = [bd.QnE(bd.exnum(-1,cy))];
-			for(var cx=0;cx<=k.qcols-1;cx++){
-				if(bd.QuC(bd.cnum(cx,cy))===51){ this.qnumw[cy].push(bd.QnC(bd.cnum(cx,cy)));}
+		for(var by=(d.y1|1);by<=d.y2;by+=2){
+			this.qnumw[by] = [bd.QnE(bd.exnum(-1,by))];
+			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+				if(bd.QuC(bd.cnum(bx,by))===51){ this.qnumw[by].push(bd.QnC(bd.cnum(bx,by)));}
 			}
 		}
-		for(var cx=0;cx<=k.qcols-1;cx++){
-			this.qnumh[cx] = [bd.DiE(bd.exnum(cx,-1))];
-			for(var cy=0;cy<=k.qrows-1;cy++){
-				if(bd.QuC(bd.cnum(cx,cy))===51){ this.qnumh[cx].push(bd.DiC(bd.cnum(cx,cy)));}
+		for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+			this.qnumh[bx] = [bd.DiE(bd.exnum(bx,-1))];
+			for(var by=(d.y1|1);by<=d.y2;by+=2){
+				if(bd.QuC(bd.cnum(bx,by))===51){ this.qnumh[bx].push(bd.DiC(bd.cnum(bx,by)));}
 			}
 		}
 	},
-	adjustQues51_2 : function(type,key){
-		um.disableRecord();
-		var idx;
-		switch(type){
-		case 1: // 上下反転
-			for(var cx=0;cx<=k.qcols-1;cx++){
-				idx = 1; this.qnumh[cx] = this.qnumh[cx].reverse();
-				bd.sDiE(bd.exnum(cx,-1), this.qnumh[cx][0]);
-				for(var cy=0;cy<=k.qrows-1;cy++){
-					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sDiC(bd.cnum(cx,cy), this.qnumh[cx][idx]); idx++;}
+	adjustQues51_2 : function(key,d){
+		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), idx;
+
+		switch(key){
+		case this.FLIPY: // 上下反転
+			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+				idx = 1; this.qnumh[bx] = this.qnumh[bx].reverse();
+				bd.sDiE(bd.exnum(bx,-1), this.qnumh[bx][0]);
+				for(var by=(d.y1|1);by<=d.y2;by+=2){
+					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sDiC(bd.cnum(bx,by), this.qnumh[bx][idx]); idx++;}
 				}
 			}
 			break;
-		case 2: // 左右反転
-			for(var cy=0;cy<=k.qrows-1;cy++){
-				idx = 1; this.qnumw[cy] = this.qnumw[cy].reverse();
-				bd.sQnE(bd.exnum(-1,cy), this.qnumw[cy][0]);
-				for(var cx=0;cx<=k.qcols-1;cx++){
-					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sQnC(bd.cnum(cx,cy), this.qnumw[cy][idx]); idx++;}
+
+		case this.FLIPX: // 左右反転
+			for(var by=(d.y1|1);by<=d.y2;by+=2){
+				idx = 1; this.qnumw[by] = this.qnumw[by].reverse();
+				bd.sQnE(bd.exnum(-1,by), this.qnumw[by][0]);
+				for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sQnC(bd.cnum(bx,by), this.qnumw[by][idx]); idx++;}
 				}
 			}
 			break;
-		case 3: // 右90°反転
-			for(var cy=0;cy<=k.qrows-1;cy++){
-				idx = 1; this.qnumh[cy] = this.qnumh[cy].reverse();
-				bd.sQnE(bd.exnum(-1,cy), this.qnumh[cy][0]);
-				for(var cx=0;cx<=k.qcols-1;cx++){
-					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sQnC(bd.cnum(cx,cy), this.qnumh[cy][idx]); idx++;}
+
+		case this.TURNR: // 右90°反転
+			for(var by=(d.y1|1);by<=d.y2;by+=2){
+				idx = 1; this.qnumh[by] = this.qnumh[by].reverse();
+				bd.sQnE(bd.exnum(-1,by), this.qnumh[by][0]);
+				for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sQnC(bd.cnum(bx,by), this.qnumh[by][idx]); idx++;}
 				}
 			}
-			for(var cx=0;cx<=k.qcols-1;cx++){
+			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 				idx = 1;
-				bd.sDiE(bd.exnum(cx,-1), this.qnumw[k.qcols-1-cx][0]);
-				for(var cy=0;cy<=k.qrows-1;cy++){
-					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sDiC(bd.cnum(cx,cy), this.qnumw[k.qcols-1-cx][idx]); idx++;}
+				bd.sDiE(bd.exnum(bx,-1), this.qnumw[xx-bx][0]);
+				for(var by=(d.y1|1);by<=d.y2;by+=2){
+					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sDiC(bd.cnum(bx,by), this.qnumw[xx-bx][idx]); idx++;}
 				}
 			}
 			break;
-		case 4: // 左90°反転
-			for(var cy=0;cy<=k.qrows-1;cy++){
+
+		case this.TURNL: // 左90°反転
+			for(var by=(d.y1|1);by<=d.y2;by+=2){
 				idx = 1;
-				bd.sQnE(bd.exnum(-1,cy), this.qnumh[k.qrows-1-cy][0]);
-				for(var cx=0;cx<=k.qcols-1;cx++){
-					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sQnC(bd.cnum(cx,cy), this.qnumh[k.qrows-1-cy][idx]); idx++;}
+				bd.sQnE(bd.exnum(-1,by), this.qnumh[yy-by][0]);
+				for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sQnC(bd.cnum(bx,by), this.qnumh[yy-by][idx]); idx++;}
 				}
 			}
-			for(var cx=0;cx<=k.qcols-1;cx++){
-				idx = 1; this.qnumw[cx] = this.qnumw[cx].reverse();
-				bd.sDiE(bd.exnum(cx,-1), this.qnumw[cx][0]);
-				for(var cy=0;cy<=k.qrows-1;cy++){
-					if(bd.QuC(bd.cnum(cx,cy))===51){ bd.sDiC(bd.cnum(cx,cy), this.qnumw[cx][idx]); idx++;}
+			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+				idx = 1; this.qnumw[bx] = this.qnumw[bx].reverse();
+				bd.sDiE(bd.exnum(bx,-1), this.qnumw[bx][0]);
+				for(var by=(d.y1|1);by<=d.y2;by+=2){
+					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sDiC(bd.cnum(bx,by), this.qnumw[bx][idx]); idx++;}
 				}
 			}
 			break;
 		}
-		um.enableRecord();
 	},
-	adjustSpecial  : function(type,key){ },
-	adjustSpecial2 : function(type,key){ },
 
 	//------------------------------------------------------------------------------
 	// menu.ex.ACconfirm()  「回答消去」ボタンを押したときの処理
@@ -8946,14 +10213,13 @@ MenuExec.prototype = {
 					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe(k.CELL,k.QSUB,i,bd.cell[i].qsub,bd.defcell.qsub);}
 				}
 			}
-			if(k.isborder){
+			if(!!k.isborder){
 				for(var i=0;i<bd.bdmax;i++){
 					if(bd.border[i].qans!==bd.defborder.qans){ um.addOpe(k.BORDER,k.QANS,i,bd.border[i].qans,bd.defborder.qans);}
 					if(bd.border[i].line!==bd.defborder.line){ um.addOpe(k.BORDER,k.LINE,i,bd.border[i].line,bd.defborder.line);}
 					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,k.QSUB,i,bd.border[i].qsub,bd.defborder.qsub);}
 				}
 			}
-			if(!g.vml){ pc.flushCanvasAll();}
 
 			bd.ansclear();
 			base.resetInfo(false);
@@ -8968,12 +10234,12 @@ MenuExec.prototype = {
 					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe(k.CELL,k.QSUB,i,bd.cell[i].qsub,bd.defcell.qsub);}
 				}
 			}
-			if(k.isborder){
+			if(!!k.isborder){
 				for(var i=0;i<bd.bdmax;i++){
 					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,k.QSUB,i,bd.border[i].qsub,bd.defborder.qsub);}
 				}
 			}
-			if(!g.vml){ pc.flushCanvasAll();}
+
 			bd.subclear();
 			pc.paintAll();
 		}
@@ -9007,8 +10273,6 @@ LineManager = function(){
 	this.typeB = 'B';
 	this.typeC = 'C';
 
-	this.saved = 0;
-
 	this.init();
 };
 LineManager.prototype = {
@@ -9016,6 +10280,7 @@ LineManager.prototype = {
 	//---------------------------------------------------------------------------
 	// line.init()        変数の起動時の初期化を行う
 	// line.resetLcnts()  lcnts等の変数の初期化を行う
+	// line.newIrowake()  線の情報が再構築された際、線に色をつける
 	// line.lcntCell()    セルに存在する線の本数を返す
 	//---------------------------------------------------------------------------
 	init : function(){
@@ -9040,42 +10305,55 @@ LineManager.prototype = {
 		if(this.disableLine){ return;}
 
 		this.init();
-		for(var id=0;id<bd.bdmax;id++){ this.data.id[id] = (bd.isLine(id)?0:-1);
+		var bid = [];
+		for(var id=0;id<bd.bdmax;id++){
 			if(bd.isLine(id)){
 				this.data.id[id] = 0;
+				bid.push(id);
 
 				var cc1, cc2;
-				if(k.isCenterLine){ cc1 = bd.cc1(id),      cc2 = bd.cc2(id);}
-				else              { cc1 = bd.crosscc1(id), cc2 = bd.crosscc2(id);}
+				if(k.isCenterLine){ cc1 = bd.border[id].cellcc[0];  cc2 = bd.border[id].cellcc[1]; }
+				else              { cc1 = bd.border[id].crosscc[0]; cc2 = bd.border[id].crosscc[1];}
 
 				if(cc1!=-1){ this.ltotal[this.lcnt[cc1]]--; this.lcnt[cc1]++; this.ltotal[this.lcnt[cc1]]++;}
 				if(cc2!=-1){ this.ltotal[this.lcnt[cc2]]--; this.lcnt[cc2]++; this.ltotal[this.lcnt[cc2]]++;}
 			}
+			else{
+				this.data.id[id] = -1;
+			}
 		}
-		for(var id=0;id<bd.bdmax;id++){
-			if(this.data.id[id]!=0){ continue;}	// 既にidがついていたらスルー
-			var bx=bd.border[id].cx, by=bd.border[id].cy;
-			this.data.max++;
-			this.data[this.data.max] = {idlist:[]};
-			if(k.isCenterLine^(bx%2==0)){ this.lc0(bx,by+1,1,this.data.max); this.lc0(bx,by,2,this.data.max);}
-			else                        { this.lc0(bx+1,by,3,this.data.max); this.lc0(bx,by,4,this.data.max);}
+		this.lc0main(bid);
+		if(k.irowake!==0){ this.newIrowake();}
+	},
+	newIrowake : function(){
+		for(var i=1;i<=this.data.max;i++){
+			var idlist = this.data[i].idlist;
+			if(idlist.length>0){
+				var newColor = pc.getNewLineColor();
+				for(var n=0;n<idlist.length;n++){
+					bd.border[idlist[n]].color = newColor;
+				}
+			}
 		}
 	},
 	lcntCell  : function(cc){ return (cc!=-1?this.lcnt[cc]:0);},
 
 	//---------------------------------------------------------------------------
-	// line.gettype()   線が引かれた/消された時に、typeA/typeB/typeCのいずれか判定する
-	// line.isTpos()    pieceが、指定されたcc内でidの反対側にあるか判定する
-	// line.branch()    lc0関数でidを割り当て中、このセルで分岐するかどうか判定する
-	// line.terminate() lc0関数でidを割り当て中、このセルで終了するかどうか判定する
+	// line.gettype()    線が引かれた/消された時に、typeA/typeB/typeCのいずれか判定する
+	// line.isTpos()     pieceが、指定されたcc内でidの反対側にあるか判定する
+	// line.iscrossing() 指定されたセル/交点で線が交差する場合にtrueを返す
 	//---------------------------------------------------------------------------
 	gettype : function(cc,id,val){
-		if(!k.isLineCross){
-			return ((this.lcnt[cc]===(0+val))?this.typeA:this.typeB);
+		var erase = (val>0?0:1);
+		if(cc===-1){
+			return this.typeA;
+		}
+		else if(!this.iscrossing(cc)){
+			return ((this.lcnt[cc]===(1-erase))?this.typeA:this.typeB);
 		}
 		else{
-			if(cc===-1 || this.lcnt[cc]===(0+val) || (this.lcnt[cc]===(2+val) && this.isTpos(cc,id))){ return this.typeA;}
-			else if(this.lcnt[cc]===(1+val) || this.lcnt[cc]===(3+val)){ return this.typeB;}
+			if     (this.lcnt[cc]===(1-erase) || (this.lcnt[cc]===(3-erase) && this.isTpos(cc,id))){ return this.typeA;}
+			else if(this.lcnt[cc]===(2-erase) ||  this.lcnt[cc]===(4-erase)){ return this.typeB;}
 			return this.typeC;
 		}
 	},
@@ -9084,41 +10362,30 @@ LineManager.prototype = {
 		// ━┷━                       
 		//   ・ ←この場所に線があるか？
 		if(k.isCenterLine){
-			return !bd.isLine(bd.bnum( 4*bd.cell[cc].cx+2-bd.border[id].cx, 4*bd.cell[cc].cy+2  -bd.border[id].cy ));
+			return !bd.isLine(bd.bnum( 2*bd.cell[cc].bx-bd.border[id].bx, 2*bd.cell[cc].by-bd.border[id].by ));
 		}
 		else{
-			return !bd.isLine(bd.bnum( 4*(cc%(k.qcols+1))-bd.border[id].cx, 4*mf(cc/(k.qcols+1))-bd.border[id].cy ));
+			return !bd.isLine(bd.bnum( 4*(cc%(k.qcols+1))-bd.border[id].bx, 4*mf(cc/(k.qcols+1))-bd.border[id].by ));
 		}
 	},
-
-	branch    : function(bx,by){
-		if(!k.isLineCross){
-			return (this.lcntCell((k.isCenterLine?bd.cnum:bd.xnum)(bx>>1,by>>1))>=3);
-		}
-		return false;
-	},
-	terminate : function(bx,by){
-		return false;
-	},
+	iscrossing : function(cc){ return k.isLineCross;},
 
 	//---------------------------------------------------------------------------
-	// line.setLine()        線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
-	// line.setLineInfo()    線が引かれた時に、線の情報を生成しなおす
-	// line.removeLineInfo() 線が消された時に、線の情報を生成しなおす
-	// line.addLineInfo()    線が引かれた時に、周りの線が全てくっついて1つの線が
-	//                       できる場合の線idの再設定を行う
-	// line.remakeLineInfo() 線が引かれたり消された時、新たに2つ以上の線ができる
-	//                       可能性がある場合の線idの再設定を行う
-	// line.repaintLine()    ひとつながりの線を再描画する
-	// line.repaintParts()   repaintLine()関数で、さらに上から描画しなおしたい処理を書く
+	// line.setLine()         線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
+	// line.setLineInfo()     線が引かれた時に、線の情報を生成しなおす
+	// line.removeLineInfo()  線が消された時に、線の情報を生成しなおす
+	// line.combineLineInfo() 線が引かれた時に、周りの線が全てくっついて1つの線が
+	//                        できる場合の線idの再設定を行う
+	// line.remakeLineInfo()  線が引かれたり消された時、新たに2つ以上の線ができる
+	//                        可能性がある場合の線idの再設定を行う
 	//---------------------------------------------------------------------------
 	setLine : function(id, val){
 		if(this.disableLine){ return;}
 		val = (val>0?1:0);
 
 		var cc1, cc2;
-		if(k.isCenterLine){ cc1 = bd.cc1(id),      cc2 = bd.cc2(id);}
-		else              { cc1 = bd.crosscc1(id), cc2 = bd.crosscc2(id);}
+		if(k.isCenterLine){ cc1 = bd.border[id].cellcc[0];  cc2 = bd.border[id].cellcc[1]; }
+		else              { cc1 = bd.border[id].crosscc[0]; cc2 = bd.border[id].crosscc[1];}
 
 		if(val>0){
 			if(cc1!=-1){ this.ltotal[this.lcnt[cc1]]--; this.lcnt[cc1]++; this.ltotal[this.lcnt[cc1]]++;}
@@ -9157,8 +10424,8 @@ LineManager.prototype = {
 				bd.border[id].color = bd.border[bid].color;
 			}
 			// (B)+(B)の場合 -> くっついた線で、大きい方の線idに統一する
-			else if(!k.isLineCross || (type1===this.typeB && type2===this.typeB)){
-				this.addLineInfo(id);
+			else if(type1===this.typeB && type2===this.typeB){
+				this.combineLineInfo(id);
 			}
 			// その他の場合
 			else{
@@ -9187,11 +10454,11 @@ LineManager.prototype = {
 		}
 	},
 
-	addLineInfo : function(id){
+	combineLineInfo : function(id){
 		var dataid = this.data.id;
 
 		// この関数の突入条件より、bid.lengthは必ず2になる
-		// →ならなかった... くっつく線のIDは必ず2になる
+		// →ならなかった... くっつく線のID数は必ず2以下になる
 		var bid = this.getbid(id,1);
 		var did = [dataid[bid[0]], -1];
 		for(var i=0;i<bid.length;i++){
@@ -9202,11 +10469,13 @@ LineManager.prototype = {
 		}
 
 		var newColor = bd.border[bid[0]].color;
+		// くっつく線のID数が2種類の場合
 		if(did[1] != -1){
+			// どっちが長いの？
 			var longid = did[0], shortid = did[1];
 			if(this.data[did[0]].idlist.length < this.data[did[1]].idlist.length){
 				longid=did[1]; shortid=did[0];
-				newColor=bd.border[bid[1]].color;
+				newColor = bd.border[bid[1]].color;
 			}
 
 			// つながった線は全て同じIDにする
@@ -9225,8 +10494,9 @@ LineManager.prototype = {
 			for(var i=0,len=longidlist.length;i<len;i++){
 				bd.border[longidlist[i]].color = newColor;
 			}
-			this.repaintLine(longidlist);
+			this.repaintLine(longidlist, id);
 		}
+		// くっつく線のID数が1種類の場合 => 既存の線にくっつける
 		else{
 			this.data[did[0]].idlist.push(id);
 			dataid[id] = did[0];
@@ -9235,163 +10505,165 @@ LineManager.prototype = {
 	},
 	remakeLineInfo : function(id,val){
 		var dataid = this.data.id;
+		var oldmax = this.data.max;	// いままでのthis.data.max値
 
+		// つなげた線のIDを一旦0にして、max+1, max+2, ...を割り振りしなおす関数
+
+		// つながった線の線情報を一旦0にする
 		var bid = this.getbid(id,val);
-		var longid = dataid[bid[0]];
-		var longColor = bd.border[bid[0]].color; // 周りで一番長い線の色を保持する
-
-		// つながった線の線情報を0にする
+		var oldlongid = dataid[bid[0]], longColor = bd.border[bid[0]].color;
 		for(var i=0,len=bid.length;i<len;i++){
-			var lid = dataid[bid[i]];
-			if(lid<=0){ continue;}
-			var idlist = this.data[lid].idlist;
-			if(this.data[longid].idlist.length < idlist.length){
-				longid=lid; longColor=bd.border[bid[i]].color;
+			var current = dataid[bid[i]];
+			if(current<=0){ continue;}
+			var idlist = this.data[current].idlist;
+			if(this.data[oldlongid].idlist.length < idlist.length){
+				oldlongid = current;
+				longColor = bd.border[bid[i]].color;
 			}
 			for(var n=0,len2=idlist.length;n<len2;n++){ dataid[idlist[n]] = 0;}
-			this.data[lid] = {idlist:[]};
+			this.data[current] = {idlist:[]};
 		}
 
-		dataid[id] = (val>0?0:-1);
-		if(val===1){ bid.unshift(id);}
+		// 自分のIDの情報を変更する
+		if(val>0){ dataid[id] =  0; bid.unshift(id);}
+		else     { dataid[id] = -1;}
 
 		// 新しいidを設定する
-		var oldmax = this.data.max;
-		for(var i=0,len=bid.length;i<len;i++){
-			if(dataid[bid[i]]!=0){ continue;}	// 既にidがついていたらスルー
-			var bx=bd.border[bid[i]].cx, by=bd.border[bid[i]].cy;
-			this.data.max++; this.data[this.data.max] = {idlist:[]};
-			if(k.isCenterLine^(bx%2===0)){ this.lc0(bx,by+1,1,this.data.max); this.lc0(bx,by,2,this.data.max);}
-			else                         { this.lc0(bx+1,by,3,this.data.max); this.lc0(bx,by,4,this.data.max);}
+		this.lc0main(bid);
+
+		// できた中でもっとも長い線に、従来最も長かった線の色を継承する
+		// それ以外の線には新しい色を付加する
+
+		// できた線の中でもっとも長いものを取得する
+		var newlongid = oldmax+1;
+		for(var current=oldmax+1;current<=this.data.max;current++){
+			var idlist = this.data[current].idlist;
+			if(this.data[newlongid].idlist.length<idlist.length){ newlongid = current;}
 		}
 
-		// 新しい色を設定して、再描画する
-		longid = oldmax+1;
-		if(this.data.max>longid || k.isLineCross){
-			for(var i=oldmax+2;i<=this.data.max;i++){ if(this.data[longid].idlist.length < this.data[i].idlist.length){ longid=i;} }
-			for(var i=oldmax+1;i<=this.data.max;i++){
-				var newColor = (i===longid?longColor:pc.getNewLineColor());
-				var idlist = this.data[i].idlist;
-				for(var n=0,len=idlist.length;n<len;n++){
-					bd.border[idlist[n]].color = newColor;
-				}
-				this.repaintLine(idlist);
-			}
-		}
-		else{
-			bd.border[id].color = (val==0?longColor:"");
+		// 新しい色の設定
+		for(var current=oldmax+1;current<=this.data.max;current++){
+			var newColor = (current===newlongid ? longColor : pc.getNewLineColor());
+			var idlist = this.data[current].idlist;
+			for(var n=0,len=idlist.length;n<len;n++){ bd.border[idlist[n]].color = newColor;}
+			this.repaintLine(idlist, id);
 		}
 	},
 
-	repaintLine : (
-		((!k.vml) ?
-			function(idlist){
-				if(!pp.getVal('irowake')){ return;}
+	//---------------------------------------------------------------------------
+	// line.repaintLine()  ひとつながりの線を再描画する
+	// line.repaintParts() repaintLine()関数で、さらに上から描画しなおしたい処理を書く
+	//                     canvas描画時のみ呼ばれます(他は描画しなおす必要なし)
+	// line.getClistFromIdlist() idlistの線が重なるセルのリストを取得する
+	// line.getXlistFromIdlist() idlistの線が重なる交点のリストを取得する
+	//---------------------------------------------------------------------------
+	repaintLine : function(idlist, id){
+		if(!pp.getVal('irowake')){ return;}
+		var draw1 = (k.isCenterLine ? pc.drawLine1 : pc.drawBorder1);
+		for(var i=0,len=idlist.length;i<len;i++){
+			if(id===idlist[i]){ continue;}
+			draw1.call(pc, idlist[i]);
+		}
+		if(g.use.canvas){ this.repaintParts(idlist);}
+	},
+	repaintParts : function(idlist){ }, // オーバーライド用
 
-				if(k.isCenterLine){
-					for(var i=0,len=idlist.length;i<len;i++){
-						pc.drawLine1(idlist[i],true);
-						this.repaintParts(idlist[i]);
-					}
-				}
-				else{
-					for(var i=0,len=idlist.length;i<len;i++){
-						var id = idlist[i];
-						if(bd.border[id].qans!==1){ g.fillStyle = pc.BorderQuescolor; }
-						else                      { g.fillStyle = pc.getLineColor(id);}
-						pc.drawBorder1x(bd.border[id].cx, bd.border[id].cy, true);
-						this.repaintParts(id);
-					}
-				}
-			}
-		:
-			function(idlist){
-				if(!pp.getVal('irowake')){ return;}
-
-				pc.zstable = true;
-				if(k.isCenterLine){
-					for(var i=0,len=idlist.length;i<len;i++){
-						pc.drawLine1(idlist[i],true);
-					}
-				}
-				else{
-					for(var i=0,len=idlist.length;i<len;i++){
-						pc.drawBorder1x(bd.border[idlist[i]].cx,bd.border[idlist[i]].cy,true);
-					}
-				}
-				pc.zstable = false;
-			}
-		)
-	),
-	repaintParts : function(id){ }, // オーバーライド用
+	getClistFromIdlist : function(idlist){
+		var cdata=[], clist=[];
+		for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
+		for(var i=0;i<idlist.length;i++){
+			cdata[bd.border[idlist[i]].cellcc[0]] = true;
+			cdata[bd.border[idlist[i]].cellcc[1]] = true;
+		}
+		for(var c=0;c<bd.cellmax;c++){ if(cdata[c]){ clist.push(c);} }
+		return clist;
+	},
+	getXlistFromIdlist : function(idlist){
+		var cdata=[], xlist=[], crossmax=(k.qcols+1)*(k.qrows+1);
+		for(var c=0;c<crossmax;c++){ cdata[c]=false;}
+		for(var i=0;i<idlist.length;i++){
+			cdata[bd.border[idlist[i]].crosscc[0]] = true;
+			cdata[bd.border[idlist[i]].crosscc[1]] = true;
+		}
+		for(var c=0;c<crossmax;c++){ if(cdata[c]){ xlist.push(c);} }
+		return xlist;
+	},
 
 	//---------------------------------------------------------------------------
 	// line.getbid()  指定したpieceに繋がる、最大6箇所に引かれている線を全て取得する
+	// line.lc0main() 指定されたpieceのリストに対して、lc0関数を呼び出す
 	// line.lc0()     ひとつながりの線にlineidを設定する(再帰呼び出し用関数)
 	//---------------------------------------------------------------------------
 	getbid : function(id,val){
+		var erase=(val>0?0:1), bx=bd.border[id].bx, by=bd.border[id].by;
+		var dx=((k.isCenterLine^(bx%2===0))?2:0), dy=(2-dx);	// (dx,dy) = (2,0) or (0,2)
+
+		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+		if(!k.isCenterLine){ cc1 = bd.border[id].crosscc[0]; cc2 = bd.border[id].crosscc[1];}
+		// 交差ありでk.isborderAsLine==true(->k.isCenterLine==false)のパズルは作ってないはず
+		// 今までのオモパで該当するのもスリザーボックスくらいだったような、、
+
+		var lines=[];
+		if(cc1!==-1){
+			var iscrossing=this.iscrossing(cc1), lcnt=this.lcnt[cc1];
+			if(iscrossing && lcnt>=(4-erase)){
+				lines.push(bd.bnum(bx-dy,   by-dx  )); // cc1からのstraight
+			}
+			else if(lcnt>=(2-erase) && !(iscrossing && lcnt===(3-erase) && this.isTpos(cc1,id))){
+				lines.push(bd.bnum(bx-dy,   by-dx  )); // cc1からのstraight
+				lines.push(bd.bnum(bx-1,    by-1   )); // cc1からのcurve1
+				lines.push(bd.bnum(bx+dx-1, by+dy-1)); // cc1からのcurve2
+			}
+		}
+		if(cc2!==-1){
+			var iscrossing=this.iscrossing(cc2), lcnt=this.lcnt[cc2];
+			if(iscrossing && lcnt>=(4-erase)){
+				lines.push(bd.bnum(bx+dy,   by+dx  )); // cc2からのstraight
+			}
+			else if(lcnt>=(2-erase) && !(iscrossing && lcnt===(3-erase) && this.isTpos(cc2,id))){
+				lines.push(bd.bnum(bx+dy,   by+dx  )); // cc2からのstraight
+				lines.push(bd.bnum(bx+1,    by+1   )); // cc2からのcurve1
+				lines.push(bd.bnum(bx-dx+1, by-dy+1)); // cc2からのcurve2
+			}
+		}
+
 		var bid = [];
-		var bx=bd.border[id].cx, by=bd.border[id].cy;
-		var dx =((k.isCenterLine^(bx%2===0))?2:0), dy=(2-dx);	// (dx,dy) = (2,0) or (0,2)
-
-		var i;
-		if(!k.isLineCross){
-			i = bd.bnum(bx-dy,   by-dx  ); if(bd.isLine(i)){ bid.push(i);} // cc1からのstraight
-			i = bd.bnum(bx-1,    by-1   ); if(bd.isLine(i)){ bid.push(i);} // cc1からのcurve1
-			i = bd.bnum(bx+dx-1, by+dy-1); if(bd.isLine(i)){ bid.push(i);} // cc1からのcurve2
-			i = bd.bnum(bx+dy,   by+dx  ); if(bd.isLine(i)){ bid.push(i);} // cc2からのstraight
-			i = bd.bnum(bx+1,    by+1   ); if(bd.isLine(i)){ bid.push(i);} // cc2からのcurve1
-			i = bd.bnum(bx-dx+1, by-dy+1); if(bd.isLine(i)){ bid.push(i);} // cc2からのcurve2
-		}
-		else{
-			var cc1 = bd.cc1(id), cc2 = bd.cc2(id);
-			if(!k.isCenterLine){ cc1 = bd.crosscc1(id); cc2 = bd.crosscc2(id);}
-			// k.isLineCross==1でk.isborderAsLine==1(->k.isCenterLine==0)のパズルは作ってないはず
-			// 該当するのもスリザーボックスくらいだったような、、
-
-			if(cc1!==-1){
-				if(this.lcnt[cc1]===(1+val) || (this.lcnt[cc1]===(2+val) && !this.isTpos(cc1,id))){
-					i = bd.bnum(bx-dy,   by-dx  ); if(bd.isLine(i)){ bid.push(i);} // cc1からのstraight
-					i = bd.bnum(bx-1,    by-1   ); if(bd.isLine(i)){ bid.push(i);} // cc1からのcurve1
-					i = bd.bnum(bx+dx-1, by+dy-1); if(bd.isLine(i)){ bid.push(i);} // cc1からのcurve2
-				}
-				else if(this.lcnt[cc1]>=(3+val)){
-					i = bd.bnum(bx-dy,   by-dx  ); if(bd.isLine(i)){ bid.push(i);} // cc1からのstraight
-				}
-			}
-			if(cc2!==-1){
-				if(this.lcnt[cc2]===(1+val) || (this.lcnt[cc2]===(2+val) && !this.isTpos(cc2,id))){
-					i = bd.bnum(bx+dy,   by+dx  ); if(bd.isLine(i)){ bid.push(i);} // cc2からのstraight
-					i = bd.bnum(bx+1,    by+1   ); if(bd.isLine(i)){ bid.push(i);} // cc2からのcurve1
-					i = bd.bnum(bx-dx+1, by-dy+1); if(bd.isLine(i)){ bid.push(i);} // cc2からのcurve2
-				}
-				else if(this.lcnt[cc2]>=(3+val)){
-					i = bd.bnum(bx+dy,   by+dx  ); if(bd.isLine(i)){ bid.push(i);} // cc2からのstraight
-				}
-			}
-		}
-
+		for(var i=0;i<lines.length;i++){ if(bd.isLine(lines[i])){ bid.push(lines[i]);}}
 		return bid;
 	},
 
+	lc0main : function(bid){
+		for(var i=0,len=bid.length;i<len;i++){
+			if(this.data.id[bid[i]]!=0){ continue;}	// 既にidがついていたらスルー
+			var bx=bd.border[bid[i]].bx, by=bd.border[bid[i]].by;
+			this.data.max++;
+			this.data[this.data.max] = {idlist:[]};
+			if(!k.isCenterLine^(bx&1)){ this.lc0(bx,by+1,1,this.data.max); this.lc0(bx,by,2,this.data.max);}
+			else                      { this.lc0(bx+1,by,3,this.data.max); this.lc0(bx,by,4,this.data.max);}
+		}
+	},
 	lc0 : function(bx,by,dir,newid){
 		while(1){
 			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 			if((bx+by)%2===0){
-				if(this.branch(bx,by)){
-					if(bd.isLine(bd.bnum(bx,by-1))){ this.lc0(bx,by,1,newid);}
-					if(bd.isLine(bd.bnum(bx,by+1))){ this.lc0(bx,by,2,newid);}
-					if(bd.isLine(bd.bnum(bx-1,by))){ this.lc0(bx,by,3,newid);}
-					if(bd.isLine(bd.bnum(bx+1,by))){ this.lc0(bx,by,4,newid);}
-					break;
+				var cc = (k.isCenterLine?bd.cnum:bd.xnum).call(bd,bx,by);
+				if(cc===-1){ break;}
+				else if(this.lcnt[cc]>=3){
+					if(!this.iscrossing(cc)){
+						if(bd.isLine(bd.bnum(bx,by-1))){ this.lc0(bx,by,1,newid);}
+						if(bd.isLine(bd.bnum(bx,by+1))){ this.lc0(bx,by,2,newid);}
+						if(bd.isLine(bd.bnum(bx-1,by))){ this.lc0(bx,by,3,newid);}
+						if(bd.isLine(bd.bnum(bx+1,by))){ this.lc0(bx,by,4,newid);}
+						break;
+					}
+					/* lcnt>=3でiscrossing==trueの時は直進＝何もしない */
 				}
-				else if(this.lcntCell((k.isCenterLine?bd.cnum:bd.xnum)(bx>>1,by>>1))<=2){
+				else{
 					if     (dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
 					else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ dir=1;}
 					else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ dir=4;}
 					else if(dir!=4 && bd.isLine(bd.bnum(bx-1,by))){ dir=3;}
 				}
-				else if(this.terminate(bx,by)){ break;}
 			}
 			else{
 				var id = bd.bnum(bx,by);
@@ -9456,10 +10728,9 @@ AreaManager = function(){
 	this.bcell = {};	// 黒マス情報を保持する
 	this.wcell = {};	// 白マス情報を保持する
 
-	this.disroom = (!k.isborder || !!k.area.disroom);	// 部屋情報を生成しない
-	this.bblock = (!!k.area.bcell || !!k.area.number);	// 黒マス(or 繋がる数字・記号)の情報を生成する
-	this.wblock = !!k.area.wcell;						// 白マスの情報を生成する
-	this.numberColony = !!k.area.number;				// 数字・記号を黒マス情報とみなして情報を生成する
+	this.bblock = (k.checkBlackCell || k.linkNumber);	// 黒マス(or 繋がる数字・記号)の情報を生成する
+	this.wblock = k.checkWhiteCell;						// 白マスの情報を生成する
+	this.numberColony = k.linkNumber;					// 数字・記号を黒マス情報とみなして情報を生成する
 
 	this.init();
 };
@@ -9474,7 +10745,7 @@ AreaManager.prototype = {
 		this.initWarea();
 	},
 	resetArea : function(){
-		if(k.isborder && !k.isborderAsLine){ this.resetRarea();}
+		if(!!k.isborder && !k.isborderAsLine){ this.resetRarea();}
 		if(this.bblock){ this.resetBarea();}
 		if(this.wblock){ this.resetWarea();}
 	},
@@ -9498,25 +10769,30 @@ AreaManager.prototype = {
 
 		// lcnt変数初期化
 		this.lcnt = [];
-		for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){
-			this.lcnt[c]=0;
-			if(k.isoutsideborder===0){
-				var xx=c%(k.qcols+1), xy=mf(c/(k.qcols+1));
-				if(xx===0 || xx===k.qcols || xy===0 || xy===k.qrows){ this.lcnt[c]=2;}
+		for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){ this.lcnt[c]=0;}
+
+		if(k.isborder===1){
+			for(var by=bd.minby;by<=bd.maxby;by+=2){
+				for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
+					if(bx===bd.minbx || bx===bd.maxbx || by===bd.minby || by===bd.maxby){
+						var c = (bx>>1)+(by>>1)*(k.qcols+1);
+						this.lcnt[c]=2;
+					}
+				}
 			}
 		}
 
-		if(this.disroom){ return;}
+		if(!k.hasroom){ return;}
 		for(var id=0;id<bd.bdmax;id++){
 			if(bd.isBorder(id)){
-				var cc1 = bd.crosscc1(id), cc2 = bd.crosscc2(id);
+				var cc1 = bd.border[id].crosscc[0], cc2 = bd.border[id].crosscc[1];
 				if(cc1!==-1){ this.lcnt[cc1]++;}
 				if(cc2!==-1){ this.lcnt[cc2]++;}
 			}
 		}
 	},
 	resetRarea : function(){
-		if(this.disroom){ return;}
+		if(!k.hasroom){ return;}
 
 		this.initRarea();
 		this.room.max = 0;
@@ -9529,7 +10805,7 @@ AreaManager.prototype = {
 		}
 
 		// 部屋ごとに、TOPの場所に数字があるかどうか判断して移動する
-		if(k.isOneNumber){
+		if(k.roomNumber){
 			for(var r=1;r<=this.room.max;r++){
 				this.setTopOfRoom(r);
 
@@ -9562,20 +10838,17 @@ AreaManager.prototype = {
 	// area.setTopOfRoom() セルのリストから部屋のTOPを設定する
 	// area.sr0()          setBorder()から呼ばれて、初期idを含む一つの部屋の領域を、指定されたareaidにする
 	//---------------------------------------------------------------------------
-	call_setBorder : function(id,val,type){
-		this.setBorder(id,val);
-	},
 	setBorder : function(id,val){
-		if(this.disroom){ return;}
+		if(!k.hasroom){ return;}
 		val = (val>0?1:0);
 
-		var cc1, cc2, xc1 = bd.crosscc1(id), xc2 = bd.crosscc2(id);
+		var cc1, cc2, xc1 = bd.border[id].crosscc[0], xc2 = bd.border[id].crosscc[1];
 		var room = this.room, roomid = room.id;
 		if(val>0){
 			this.lcnt[xc1]++; this.lcnt[xc2]++;
 
 			if(this.lcnt[xc1]===1 || this.lcnt[xc2]===1){ return;}
-			cc1 = bd.cc1(id); cc2 = bd.cc2(id);
+			cc1 = bd.border[id].cellcc[0]; cc2 = bd.border[id].cellcc[1];
 			if(cc1===-1 || cc2===-1 || roomid[cc1]!==roomid[cc2]){ return;}
 
 			var baseid = roomid[cc1];
@@ -9603,7 +10876,7 @@ AreaManager.prototype = {
 			}
 
 			// TOPの情報を設定する
-			if(k.isOneNumber){
+			if(k.roomNumber){
 				if(roomid[room[baseid].top]===baseid){
 					this.setTopOfRoom(room.max);
 				}
@@ -9617,16 +10890,16 @@ AreaManager.prototype = {
 			this.lcnt[xc1]--; this.lcnt[xc2]--;
 
 			if(this.lcnt[xc1]===0 || this.lcnt[xc2]===0){ return;}
-			cc1 = bd.cc1(id); cc2 = bd.cc2(id);
+			cc1 = bd.border[id].cellcc[0]; cc2 = bd.border[id].cellcc[1];
 			if(cc1===-1 || cc2===-1 || roomid[cc1]===roomid[cc2]){ return;}
 
-			// k.isOneNumberの時 どっちの数字を残すかは、TOP同士の位置で比較する
-			if(k.isOneNumber){
+			// k.roomNumberの時 どっちの数字を残すかは、TOP同士の位置で比較する
+			if(k.roomNumber){
 				var merged, keep;
 
 				var tc1 = room[roomid[cc1]].top, tc2 = room[roomid[cc2]].top;
-				var tcx1 = bd.cell[tc1].cx, tcx2 = bd.cell[tc2].cx;
-				if(tcx1>tcx2 || (tcx1===tcx2 && tc1>tc2)){ merged = tc1; keep = tc2;}
+				var tbx1 = bd.cell[tc1].bx, tbx2 = bd.cell[tc2].bx;
+				if(tbx1>tbx2 || (tbx1===tbx2 && tc1>tc2)){ merged = tc1; keep = tc2;}
 				else                                     { merged = tc2; keep = tc1;}
 
 				// 消える部屋のほうの数字を消す
@@ -9647,14 +10920,14 @@ AreaManager.prototype = {
 		}
 	},
 	setTopOfRoom : function(roomid){
-		var cc=-1, cx=k.qcols, cy=k.qrows;
+		var cc=-1, bx=bd.maxbx, by=bd.maxby;
 		var clist = this.room[roomid].clist;
 		for(var i=0;i<clist.length;i++){
 			var tc = bd.cell[clist[i]];
-			if(tc.cx>cx || (tc.cx==cx && tc.cy>=cy)){ continue;}
+			if(tc.bx>bx || (tc.bx===bx && tc.by>=by)){ continue;}
 			cc=clist[i];
-			cx=tc.cx;
-			cy=tc.cy;
+			bx=tc.bx;
+			by=tc.by;
 		}
 		this.room[roomid].top = cc;
 	},
@@ -9846,10 +11119,10 @@ PBase = function(){
 	this.proto        = 0;	// 各クラスのprototypeがパズル用スクリプトによって変更されているか
 	this.expression   = { ja:'' ,en:''};
 	this.puzzlename   = { ja:'' ,en:''};
-	this.canvas       = null;	// HTMLソースのCanvasを示すエレメント
 	this.numparent    = null;	// 'numobj_parent'を示すエレメント
 	this.resizetimer  = null;	// resizeタイマー
 	this.initProcess  = true;	// 初期化中かどうか
+	this.enableSaveImage = false;	// 画像保存が有効か
 };
 PBase.prototype = {
 	//---------------------------------------------------------------------------
@@ -9889,12 +11162,28 @@ PBase.prototype = {
 	// base.initCanvas()  Canvas関連の初期化
 	// base.initObjects() 各オブジェクトの生成などの処理
 	// base.setEvents()   マウス入力、キー入力のイベントの設定を行う
-	// base.initSilverlight() Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
+	// base.translationEN() 日本語環境でない場合、デフォルトで英語表示にする
 	//---------------------------------------------------------------------------
 	onload_func : function(){
+		Camp('divques');
+		if(Camp.enable.canvas && !!document.createElement('canvas').toDataURL){
+			this.enableSaveImage = true;
+			Camp('divques_sub', 'canvas');
+		}
+
+		var self = this;
+		var tim = setInterval(function(){
+			if(Camp.isready()){
+				clearInterval(tim);
+				self.onload_func2.apply(self);
+			}
+		},10);
+	},
+	onload_func2 : function(){
 		this.initCanvas();
 		this.initObjects();
 		this.setEvents(true);	// イベントをくっつける
+		this.translationEN();
 
 		if(document.domain=='indi.s58.xrea.com' && k.PLAYER){ this.accesslog();}	// アクセスログをとってみる
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
@@ -9903,9 +11192,9 @@ PBase.prototype = {
 	},
 
 	initCanvas : function(){
-		this.canvas = ee('puzzle_canvas').unselectable().el; // Canvas
-		this.numparent = ee('numobj_parent').el;			// 数字表示用
-		g = this.canvas.getContext("2d");
+		this.numparent = ee('numobj_parent').el;		// 数字表示用
+		var canvas = ee('divques').unselectable().el;	// Canvas
+		g = canvas.getContext("2d");
 	},
 
 	initObjects : function(){
@@ -9916,32 +11205,33 @@ PBase.prototype = {
 		if(this.proto){ puz.protoChange();}
 
 		// クラス初期化
+		tc = new TCell();		// キー入力のターゲット管理オブジェクト
 		bd = new Board();		// 盤面オブジェクト
 		mv = new MouseEvent();	// マウス入力オブジェクト
 		kc = new KeyEvent();	// キーボード入力オブジェクト
 		kp = new KeyPopup();	// 入力パネルオブジェクト
 		pc = new Graphic();		// 描画系オブジェクト
-		tc = new TCell();		// キー入力のターゲット管理オブジェクト
 		ans = new AnsCheck();	// 正解判定オブジェクト
-		um   = new UndoManager();	// 操作情報管理オブジェクト
-		area = new AreaManager();	// 部屋情報等管理オブジェクト
-		line = new LineManager();	// 線の情報管理オブジェクト
+		um   = new OperationManager();	// 操作情報管理オブジェクト
+		area = new AreaManager();		// 部屋情報等管理オブジェクト
+		line = new LineManager();		// 線の情報管理オブジェクト
 
 		menu = new Menu();		// メニューを扱うオブジェクト
 		pp = new Properties();	// メニュー関係の設定値を保持するオブジェクト
 
 		this.doc_design();		// デザイン変更関連関数の呼び出し
 
-		enc.pzlinput();										// URLからパズルのデータを読み出す
-		if(!enc.uri.bstr){ this.resize_canvas_onload();}	// Canvasの設定(pzlinputで呼ばれるので、ここでは呼ばない)
+		enc.pzlinput();			// URLからパズルのデータを読み出す
+		this.resize_canvas();
 
-		if(!!puz.finalfix){ puz.finalfix();}					// パズル固有の後付け設定
+		if(!!puz.finalfix){ puz.finalfix();}		// パズル固有の後付け設定
 	},
 	setEvents : function(first){
-		this.canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
-		this.canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
-		this.canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
-		this.canvas.oncontextmenu = function(){ return false;};
+		var canvas = ee('divques').el;
+		canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+		canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+		canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
+		canvas.oncontextmenu = function(){ return false;};
 
 		this.numparent.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
 		this.numparent.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
@@ -9952,6 +11242,7 @@ PBase.prototype = {
 			document.onkeydown  = ee.ebinder(kc, kc.e_keydown);
 			document.onkeyup    = ee.ebinder(kc, kc.e_keyup);
 			document.onkeypress = ee.ebinder(kc, kc.e_keypress);
+			if(g.use.sl){ this.initSilverlight();}
 
 			if(!!menu.ex.reader){
 				var DDhandler = function(e){
@@ -9962,31 +11253,51 @@ PBase.prototype = {
 				window.addEventListener('dragover', function(e){ e.preventDefault();}, true);
 				window.addEventListener('drop', DDhandler, true);
 			}
+
+			// onBlurにイベントを割り当てる
+			document.onblur = ee.ebinder(this, this.onblur_func);
 		}
 	},
-	initSilverlight : function(sender){
-		sender.AddEventListener("KeyDown", ee.ebinder(kc, kc.e_SLkeydown));
-		sender.AddEventListener("KeyUp",   ee.ebinder(kc, kc.e_SLkeyup));
+	translationEN : function(){
+		var lang = (navigator.browserLanguage ||
+					navigator.language        ||
+					navigator.userLanguage      ).substr(0,2);
+		if(lang!=='ja'){ pp.setVal('language', 1);}
 	},
 
 	//---------------------------------------------------------------------------
-	// base.doc_design()       onload_func()で呼ばれる。htmlなどの設定を行う
-	// base.postfix()          各パズルの初期化後処理を呼び出す
-	// base.gettitle()         現在開いているタイトルを返す
-	// base.getPuzzleName()    現在開いているパズルの名前を返す
-	// base.setTitle()         パズルの名前を設定する
-	// base.setExpression()    説明文を設定する
-	// base.setFloatbgcolor()  フロートメニューの背景色を設定する
+	// base.initSilverlight() Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
+	// base.e_SLkeydown()     Silverlightオブジェクトにフォーカスがある時、キーを押した際のイベント共通処理
+	// base.e_SLkeyup()       Silverlightオブジェクトにフォーカスがある時、キーを離した際のイベント共通処理
+	//---------------------------------------------------------------------------
+	initSilverlight : function(){
+		var sender = g.content.findName(g.canvasid);
+		sender.AddEventListener("KeyDown", this.e_SLkeydown);
+		sender.AddEventListener("KeyUp",   this.e_SLkeyup);
+	},
+	e_SLkeydown : function(sender, keyEventArgs){
+		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
+						altKey:false, returnValue:false, preventDefault:f_true };
+		return kc.e_keydown(emulate);
+	},
+	e_SLkeyup : function(sender, keyEventArgs){
+		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
+						altKey:false, returnValue:false, preventDefault:f_true };
+		return kc.e_keyup(emulate);
+	},
+
+	//---------------------------------------------------------------------------
+	// base.doc_design() onload_func()で呼ばれる。htmlなどの設定を行う
+	// base.postfix()    各パズルの初期化後処理を呼び出す
+	// base.resetInfo()  AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
 	//---------------------------------------------------------------------------
 	// 背景画像とかtitle等/html表示の設定 //
 	doc_design : function(){
-		this.resize_canvas_only();	// Canvasのサイズ設定
-
 		_doc.title = this.gettitle();
 		ee('title2').el.innerHTML = this.gettitle();
 
-		_doc.body.style.backgroundImage = "url(../../"+k.puzzleid+"/bg.gif)";
-		if(k.br.IE){
+		_doc.body.style.backgroundImage = "url(./bg/"+k.puzzleid+".gif)";
+		if(k.br.IEmoz4){
 			ee('title2').el.style.marginTop = "24px";
 			ee('separator1').el.style.margin = '0pt';
 			ee('separator2').el.style.margin = '0pt';
@@ -10006,7 +11317,19 @@ PBase.prototype = {
 		puz.encode_init();
 		puz.answer_init();
 	},
+	resetInfo : function(iserase){
+		if(iserase){ um.allerase();}
+		area.resetArea();
+		line.resetLcnts();
+	},
 
+	//---------------------------------------------------------------------------
+	// base.gettitle()         現在開いているタイトルを返す
+	// base.getPuzzleName()    現在開いているパズルの名前を返す
+	// base.setTitle()         パズルの名前を設定する
+	// base.setExpression()    説明文を設定する
+	// base.setFloatbgcolor()  フロートメニューの背景色を設定する
+	//---------------------------------------------------------------------------
 	gettitle : function(){
 		if(k.EDITOR){ return ""+this.getPuzzleName()+(menu.isLangJP()?" エディタ - ぱずぷれv3":" editor - PUZ-PRE v3");}
 		else		{ return ""+this.getPuzzleName()+(menu.isLangJP()?" player - ぱずぷれv3"  :" player - PUZ-PRE v3");}
@@ -10017,28 +11340,30 @@ PBase.prototype = {
 	setFloatbgcolor : function(color){ this.floatbgcolor = color;},
 
 	//---------------------------------------------------------------------------
-	// base.resize_canvas_only()   ウィンドウのLoad/Resize時の処理。Canvas/表示するマス目の大きさを設定する。
-	// base.resize_canvas()        resize_canvas_only()+Canvasの再描画
-	// base.resize_canvas_onload() 初期化中にpaint再描画が起こらないように、resize_canvasを呼び出す
-	// base.onresize_func()        ウィンドウリサイズ時に呼ばれる関数
-	// base.resetInfo()            AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
+	// base.onresize_func()  ウィンドウリサイズ時に呼ばれる関数
+	// base.resize_canvas()  ウィンドウのLoad/Resize時の処理。Canvas/表示するマス目の大きさを設定する。
 	//---------------------------------------------------------------------------
-	resize_canvas_only : function(){
+	onresize_func : function(){
+		if(this.resizetimer){ clearTimeout(this.resizetimer);}
+		this.resizetimer = setTimeout(ee.binder(this, this.resize_canvas),250);
+	},
+	resize_canvas : function(){
 		var wwidth = ee.windowWidth()-6;	//  margin/borderがあるので、適当に引いておく
-		var cols   = k.qcols+(2*k.def_psize/k.def_csize) + k.isextendcell; // canvasの横幅がセル何個分に相当するか
-		var rows   = k.qrows+(2*k.def_psize/k.def_csize) + k.isextendcell; // canvasの縦幅がセル何個分に相当するか
+		var cols   = (bd.maxbx-bd.minbx)/2+2*k.bdmargin; // canvasの横幅がセル何個分に相当するか
+		var rows   = (bd.maxby-bd.minby)/2+2*k.bdmargin; // canvasの縦幅がセル何個分に相当するか
+		if(k.puzzleid==='box'){ cols++; rows++;}
 
-		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[k.widthmode];
+		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[pp.getVal('size')];
 		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
-		ci[0] = (wwidth*ws.base )/(k.def_csize*cr.base );
-		ci[1] = (wwidth*ws.limit)/(k.def_csize*cr.limit);
+		ci[0] = (wwidth*ws.base )/(k.cellsize*cr.base );
+		ci[1] = (wwidth*ws.limit)/(k.cellsize*cr.limit);
 
 		var mwidth = wwidth*ws.base-4; // margin/borderがあるので、適当に引いておく
 
 		// 特に縮小が必要ない場合
-		if(cols < ci[0]){
+		if(!pp.getVal('adjsize') || cols < ci[0]){
 			mwidth = wwidth*ws.base-4;
-			k.cwidth = k.cheight = mf(k.def_csize*cr.base);
+			k.cwidth = k.cheight = mf(k.cellsize*cr.base);
 		}
 		// base～limit間でサイズを自動調節する場合
 		else if(cols < ci[1]){
@@ -10049,59 +11374,42 @@ PBase.prototype = {
 		// 自動調整の下限値を超える場合
 		else{
 			mwidth = wwidth*ws.limit-4;
-			k.cwidth = k.cheight = mf(k.def_csize*cr.limit);
+			k.cwidth = k.cheight = mf(k.cellsize*cr.limit);
 		}
+		k.bwidth  = k.cwidth/2; k.bheight = k.cheight/2;
 
 		// mainのサイズ変更
 		ee('main').el.style.width = ''+mf(mwidth)+'px';
 
-		// Canvasのサイズ変更
-		this.canvas.width  = mf((cols-k.isextendcell)*k.cwidth );
-		this.canvas.height = mf((rows-k.isextendcell)*k.cheight);
-
-		// VML使う時に、Canvas外の枠線が消えてしまうので残しておきます.
-		if(g.vml){
-			var fc = this.canvas.firstChild;
-			fc.style.width  = ''+this.canvas.clientWidth  + 'px';
-			fc.style.height = ''+this.canvas.clientHeight + 'px';
-		}
-
 		// 盤面のセルID:0が描画される位置の設定
-		k.p0.x = k.p0.y = mf(k.def_psize*(k.cwidth/k.def_csize));
-		// extendxell==1の時は位置をずらす (extendxell==2はdef_psizeで調整)
-		if(k.isextendcell==1){
-			k.p0.x += mf(k.cwidth*0.45);
-			k.p0.y += mf(k.cheight*0.45);
-		}
+		k.p0.x = k.p0.y = mf(k.cwidth*k.bdmargin);
+		// extendxell==0でない時は位置をずらす
+		if(!!k.isexcell){ k.p0.x += k.cwidth; k.p0.y += k.cheight;}
 
-		var rect = ee('puzzle_canvas').getRect();
+		// Canvasのサイズ変更
+		pc.setVectorFunctions();
+		g.changeSize(mf(cols*k.cwidth), mf(rows*k.cheight));
+
+		// canvasの上に文字・画像を表示する時のOffset指定
+		var rect = ee('divques').getRect();
 		k.cv_oft.x = rect.left;
 		k.cv_oft.y = rect.top;
 
 		kp.resize();
-		bd.setposAll();
+		bd.setcoordAll();
+		pc.onresize_process();
 
-		pc.onresize_func();
-	},
-	resize_canvas : function(){
-		this.resize_canvas_only();
+		// 再描画
 		pc.flushCanvasAll();
 		pc.paintAll();
 	},
-	resize_canvas_onload : function(){
-		if(pc.already()){ this.resize_canvas();}
-		else{ uuCanvas.ready(ee.binder(this, this.resize_canvas));}
-	},
-	onresize_func : function(){
-		if(this.resizetimer){ clearTimeout(this.resizetimer);}
-		this.resizetimer = setTimeout(ee.binder(this, this.resize_canvas),250);
-	},
 
-	resetInfo : function(iserase){
-		if(iserase){ um.allerase();}
-		tc.Adjust();
-		area.resetArea();
-		line.resetLcnts();
+	//---------------------------------------------------------------------------
+	// base.onblur_func() ウィンドウからフォーカスが離れた時に呼ばれる関数
+	//---------------------------------------------------------------------------
+	onblur_func : function(){
+		kc.keyreset();
+		mv.mousereset();
 	},
 
 	//---------------------------------------------------------------------------
