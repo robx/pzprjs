@@ -5,8 +5,8 @@ use MIME::Base64;
 
 my $q = new CGI;
 
-if   ($q->param('operation') eq 'save')     { &fileopen();}
-elsif($q->param('operation') eq 'open')     { &filesave();}
+if   ($q->param('operation') eq 'open')     { &fileopen();}
+elsif($q->param('operation') eq 'save')     { &filesave();}
 elsif($q->param('operation') eq 'imagesave'){ &imagesave();}
 
 exit(0);
