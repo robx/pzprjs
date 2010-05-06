@@ -1,4 +1,4 @@
-// for_test.js v3.3.0
+// for_test.js v3.3.0p2
 
 debug.extend({
 	testonly_func : function(){
@@ -32,62 +32,17 @@ debug.extend({
 
 		var tam = setInterval(function(){
 			if(debug.phase != 99){ return;}
+			debug.phase = 0;
 
 			var newid = debug.urls[pnum][0];
-			debug.reload_func(newid);
+			base.reload_func({id:newid, url:debug.urls[pnum][1],
+							  callback:ee.binder(debug, debug.sccheck)});
 
-			enc.parseURI_pzpr.apply(enc, [debug.urls[pnum][1]]);
-			enc.pzlinput.apply(enc);
-
-			//debug.disppoptest();
-			debug.addTextarea("Test ("+pnum+", "+newid+") start.");
-			debug.sccheck();
-
-			if(pnum >= term){ clearInterval(tam);} 
+			if(pnum >= term){ clearInterval(tam);}
 			pnum++;
+
+			debug.addTextarea("Test ("+pnum+", "+newid+") start.");
 		},500);
-	},
-
-	reload_func : function(newid){
-		base.initProcess = true;
-
-		// 各パズルでオーバーライドしているものを、元に戻す
-		if(base.proto){ puz.protoOriginal();}
-
-		// 各HTML要素等を初期化する
-		menu.menureset();
-		base.numparent.innerHTML = '';
-		if(kp.ctl[1].enable){ kp.ctl[1].el.innerHTML = '';}
-		if(kp.ctl[3].enable){ kp.ctl[3].el.innerHTML = '';}
-
-		ee.clean();
-
-		// idを取得して、ファイルを読み込み
-		k.puzzleid = newid;
-		if(!Puzzles[k.puzzleid]){
-			var _script = _doc.createElement('script');
-			_script.type = 'text/javascript';
-//			_script.charset = 'Shift_JIS';
-			_script.src = "src/"+k.puzzleid+".js";
-			_doc.body.appendChild(_script);	// headじゃないけど、、しょうがないかぁ。。
-		}
-
-		// 各種パラメータのうち各パズルで初期化されないやつをここで初期化
-		k.qcols = 0;
-		k.qrows = 0;
-		k.cellsize = 36;
-		k.bdmargin = 0.70;
-		k.bdmargin_image = 0.10;
-
-		// 通常preload_funcで初期化されるenc,fioをここで生成する
-		enc = new Encode();
-		fio = new FileIO();
-
-		// onload後の初期化ルーチンへジャンプする
-		base.initObjects();
-		base.setEvents(false);
-
-		base.initProcess = false;
 	},
 
 	accheck1 : function(){

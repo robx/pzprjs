@@ -1,7 +1,7 @@
 
 our $debug = 0;
 our $filech = 1;
-our $version = 'v3.2.3';
+our $version = 'v3.3.0p2';
 
 &main();
 exit(0);
@@ -9,27 +9,18 @@ exit(0);
 sub main{
 	&input_flags();
 
-	if($filech==1){
-		if(!$debug){
-			&eraseLOG();
-			&printLOG("pzprBase.js $version contents\n");
-		}
-
-		&output_pzprBase();
-		if(!$debug){
-			&output_puzzles(); # contents.txtにファイル名出力するだけ
-		}
+	if(!$debug){
+		&eraseLOG();
+		&printLOG("pzprBase.js $version contents\n");
 	}
-	elsif($filech==2){
-		&output_puzzles();
+
+	&output_pzprBase();
+	if(!$debug){
+		&output_puzzles(); # contents.txtにファイル名出力するだけ
 	}
 }
 
 sub input_flags{
-	print "Which file do you want to output? 1:pzprBase.js 2:puzzles.js [1] ";
-	$_ = <STDIN>; tr/\r\n//d;
-	if(/2/){ $filech=2;}
-
 	print "Output release file? [y] ";
 	$_ = <STDIN>; tr/\r\n//d;
 	if(/n/i){ $debug=1;}
@@ -104,28 +95,8 @@ sub output_puzzles{
 		push @files, "../$file";
 	}
 	closedir PAR;
-	if($filech==1){
-		&printfiles(\@files,3);
-		return;
-	}
 
-	open OUT, ">puzzles_Full.js";
-	&printfiles(\@files,2);
-	close OUT;
-
-	if(!$debug){
-		system("java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar -o ./puzzles.js ./puzzles_Full.js");
-
-		system("copy /Y .\\puzzles.js ..");
-		system("copy /Y .\\puzzles_Full.js ..");
-
-		unlink("puzzles.js");
-		unlink("puzzles_Full.js");
-	}
-	else{
-		system("copy /Y .\\puzzles_Full.js ..\\puzzles.js");
-		unlink("puzzles_Full.js");
-	}
+	&printfiles(\@files,3);
 }
 
 sub output_doc{

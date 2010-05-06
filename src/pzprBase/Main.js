@@ -29,13 +29,10 @@ PBase.prototype = {
 		if(!k.puzzleid){ location.href = "./";} // 指定されたパズルがない場合はさようなら〜
 
 		// パズル専用ファイルの読み込み
-		if(!k.scriptcheck){
-			document.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
-		}
-		else{
+		if(k.scriptcheck){
 			document.writeln("<script type=\"text/javascript\" src=\"src/for_test.js\"></script>");
-			document.writeln("<script type=\"text/javascript\" src=\"src/puzzles.js\"></script>");
 		}
+		document.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
 
 		fio = new FileIO();
 		if(fio.dbm.requireGears()){
@@ -321,6 +318,69 @@ PBase.prototype = {
 	onblur_func : function(){
 		kc.keyreset();
 		mv.mousereset();
+	},
+
+	//---------------------------------------------------------------------------
+	// base.reload_func()  別パズルのファイルを読み込む関数
+	// base.reload_func2() パズル種類を変更して、初期化する関数
+	//---------------------------------------------------------------------------
+	reload_func : function(contents){
+		this.initProcess = true;
+
+		// idを取得して、ファイルを読み込み
+		if(!Puzzles[contents.id]){
+			var _script = _doc.createElement('script');
+			_script.type = 'text/javascript';
+			_script.src = "src/"+contents.id+".js";
+
+			// headじゃないけど、、しょうがないかぁ。。
+			_doc.body.appendChild(_script);
+		}
+
+		// 中身を読み取れるまでwait
+		var self = this;
+		var tim = setInterval(function(){
+			if(!!Puzzles[contents.id]){
+				clearInterval(tim);
+				self.reload_func2.call(self, contents);
+				self.initProcess = false;
+
+				if(!!contents.callback){
+					contents.callback();
+				}
+			}
+		},10);
+	},
+	reload_func2 : function(contents){
+		// 各パズルでオーバーライドしているものを、元に戻す
+		if(base.proto){ puz.protoOriginal();}
+
+		// 各HTML要素等を初期化する
+		menu.menureset();
+		this.numparent.innerHTML = '';
+		if(kp.ctl[1].enable){ kp.ctl[1].el.innerHTML = '';}
+		if(kp.ctl[3].enable){ kp.ctl[3].el.innerHTML = '';}
+
+		ee.clean();
+
+		k.puzzleid = contents.id;
+
+		// 各種パラメータのうち各パズルで初期化されないやつをここで初期化
+		k.qcols = 0;
+		k.qrows = 0;
+		k.cellsize = 36;
+		k.bdmargin = 0.70;
+		k.bdmargin_image = 0.10;
+
+		// 通常preload_funcで初期化されるenc,fioをここで生成する
+		enc = new Encode();
+		fio = new FileIO();
+
+		if(!!contents.url){ enc.parseURI_pzpr(contents.url);}
+
+		// onload後の初期化ルーチンへジャンプする
+		this.initObjects();
+		this.setEvents(false);
 	},
 
 	//---------------------------------------------------------------------------
