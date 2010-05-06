@@ -190,15 +190,15 @@ Puzzles.icebarn.prototype = {
 				}
 				break;
 			case this.TURNR: // 右90°反転
-				bd.arrowin  = bd.bnum2(yy-iby,ibx,k.qrows,k.qcols);
-				bd.arrowout = bd.bnum2(yy-oby,obx,k.qrows,k.qcols);
+				bd.arrowin  = bd.bnum(yy-iby,ibx,k.qrows,k.qcols);
+				bd.arrowout = bd.bnum(yy-oby,obx,k.qrows,k.qcols);
 				for(var id=0;id<bd.bdmax;id++){
 					if((bd.border[id].bx&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
 			case this.TURNL: // 左90°反転
-				bd.arrowin  = bd.bnum2(iby,xx-ibx,k.qrows,k.qcols);
-				bd.arrowout = bd.bnum2(oby,xx-obx,k.qrows,k.qcols);
+				bd.arrowin  = bd.bnum(iby,xx-ibx,k.qrows,k.qcols);
+				bd.arrowout = bd.bnum(oby,xx-obx,k.qrows,k.qcols);
 				for(var id=0;id<bd.bdmax;id++){
 					if((bd.border[id].by&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}

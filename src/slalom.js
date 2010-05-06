@@ -266,34 +266,34 @@ Puzzles.slalom.prototype = {
 				bd.startid = bd.cnum(xx-bx,by);
 				break;
 			case this.TURNR: // 右90°反転
-				bd.startid = bd.cnum2(yy-by,bx,k.qrows,k.qcols);
+				bd.startid = bd.cnum(yy-by,bx,k.qrows,k.qcols);
 				break;
 			case this.TURNL: // 左90°反転
-				bd.startid = bd.cnum2(by,xx-bx,k.qrows,k.qcols);
+				bd.startid = bd.cnum(by,xx-bx,k.qrows,k.qcols);
 				break;
 			case this.EXPANDUP:
-				bd.startid = bd.cnum2(bx  ,by+2,k.qcols,k.qrows+1);
+				bd.startid = bd.cnum(bx  ,by+2,k.qcols,k.qrows+1);
 				break;
 			case this.EXPANDDN:
-				bd.startid = bd.cnum2(bx  ,by  ,k.qcols,k.qrows+1);
+				bd.startid = bd.cnum(bx  ,by  ,k.qcols,k.qrows+1);
 				break;
 			case this.EXPANDLT:
-				bd.startid = bd.cnum2(bx+2,by  ,k.qcols+1,k.qrows);
+				bd.startid = bd.cnum(bx+2,by  ,k.qcols+1,k.qrows);
 				break;
 			case this.EXPANDRT:
-				bd.startid = bd.cnum2(bx  ,by  ,k.qcols+1,k.qrows);
+				bd.startid = bd.cnum(bx  ,by  ,k.qcols+1,k.qrows);
 				break;
 			case this.REDUCEUP:
-				bd.startid = bd.cnum2(bx  ,by-2,k.qcols,k.qrows-1);
+				bd.startid = bd.cnum(bx  ,by-2,k.qcols,k.qrows-1);
 				break;
 			case this.REDUCEDN:
-				bd.startid = bd.cnum2(bx  ,by+(by<bd.maxby-2?0:-2),k.qcols,k.qrows-1);
+				bd.startid = bd.cnum(bx  ,by+(by<bd.maxby-2?0:-2),k.qcols,k.qrows-1);
 				break;
 			case this.REDUCELT:
-				bd.startid = bd.cnum2(bx-2,by  ,k.qcols-1,k.qrows);
+				bd.startid = bd.cnum(bx-2,by  ,k.qcols-1,k.qrows);
 				break;
 			case this.REDUCERT:
-				bd.startid = bd.cnum2(bx+(bx<bd.maxbx-2?0:-2),by  ,k.qcols-1,k.qrows);
+				bd.startid = bd.cnum(bx+(bx<bd.maxbx-2?0:-2),by  ,k.qcols-1,k.qrows);
 				break;
 			}
 		};

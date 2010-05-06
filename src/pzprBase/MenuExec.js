@@ -538,19 +538,19 @@ MenuExec.prototype = {
 	innerBorder : function(id,key){
 		var bx=bd.border[id].bx, by=bd.border[id].by;
 		key &= 0x0F;
-		if     (key===k.UP){ return bd.bnum2(bx, by+2, k.qcols, k.qrows);}
-		else if(key===k.DN){ return bd.bnum2(bx, by-2, k.qcols, k.qrows);}
-		else if(key===k.LT){ return bd.bnum2(bx+2, by, k.qcols, k.qrows);}
-		else if(key===k.RT){ return bd.bnum2(bx-2, by, k.qcols, k.qrows);}
+		if     (key===k.UP){ return bd.bnum(bx, by+2);}
+		else if(key===k.DN){ return bd.bnum(bx, by-2);}
+		else if(key===k.LT){ return bd.bnum(bx+2, by);}
+		else if(key===k.RT){ return bd.bnum(bx-2, by);}
 		return -1;
 	},
 	outerBorder : function(id,key){
 		var bx=bd.border[id].bx, by=bd.border[id].by;
 		key &= 0x0F;
-		if     (key===k.UP){ return bd.bnum2(bx, by-2, k.qcols, k.qrows);}
-		else if(key===k.DN){ return bd.bnum2(bx, by+2, k.qcols, k.qrows);}
-		else if(key===k.LT){ return bd.bnum2(bx-2, by, k.qcols, k.qrows);}
-		else if(key===k.RT){ return bd.bnum2(bx+2, by, k.qcols, k.qrows);}
+		if     (key===k.UP){ return bd.bnum(bx, by-2);}
+		else if(key===k.DN){ return bd.bnum(bx, by+2);}
+		else if(key===k.LT){ return bd.bnum(bx-2, by);}
+		else if(key===k.RT){ return bd.bnum(bx+2, by);}
 		return -1;
 	},
 

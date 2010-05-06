@@ -501,57 +501,31 @@ Board.prototype = {
 	// bd.idnum()  (X,Y)の位置にあるオブジェクトのIDを返す
 	//---------------------------------------------------------------------------
 	idnum : function(type,bx,by,qc,qr){
-		if(qc===(void 0)){
-			if     (type===k.CELL)  { return this.cnum(bx,by);}
-			else if(type===k.CROSS) { return this.xnum(bx,by);}
-			else if(type===k.BORDER){ return this.bnum2(bx,by,k.qcols,k.qrows);}
-			else if(type===k.EXCELL){ return this.exnum2(bx,by,k.qcols,k.qrows);}
-		}
-		else{
-			if     (type===k.CELL)  { return this.cnum2(bx,by,qc,qr);}
-			else if(type===k.CROSS) { return this.xnum2(bx,by,qc,qr);}
-			else if(type===k.BORDER){ return this.bnum2(bx,by,qc,qr);}
-			else if(type===k.EXCELL){ return this.exnum2(bx,by,qc,qr);}
-		}
+		if     (type===k.CELL)  { return this.cnum(bx,by,qc,qr);}
+		else if(type===k.CROSS) { return this.xnum(bx,by,qc,qr);}
+		else if(type===k.BORDER){ return this.bnum(bx,by,qc,qr);}
+		else if(type===k.EXCELL){ return this.exnum(bx,by,qc,qr);}
 		return -1;
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.cnum()   (X,Y)の位置にあるCellのIDを返す
-	// bd.xnum()   (X,Y)の位置にあるCrossのIDを返す
-	// bd.bnum()   (X,Y)の位置にあるBorderのIDを返す
-	// bd.exnum()  (X,Y)の位置にあるextendCellのIDを返す
+	// bd.cnum()  (X,Y)の位置にあるCellのIDを、盤面の大きさを(qc×qr)で計算して返す
+	// bd.xnum()  (X,Y)の位置にあるCrossのIDを、盤面の大きさを(qc×qr)で計算して返す
+	// bd.bnum()  (X,Y)の位置にあるBorderのIDを、盤面の大きさを(qc×qr)で計算して返す
+	// bd.exnum() (X,Y)の位置にあるextendCellのIDを、盤面の大きさを(qc×qr)で計算して返す
 	//---------------------------------------------------------------------------
-	cnum : function(bx,by){
-		if((bx<0||bx>(k.qcols<<1)||by<0||by>(k.qrows<<1))||(!(bx&1))||(!(by&1))){ return -1;}
-		return (bx>>1)+(by>>1)*k.qcols;
-	},
-	xnum : function(bx,by){
-		if((bx<0||bx>(k.qcols<<1)||by<0||by>(k.qrows<<1))||(!!(bx&1))||(!!(by&1))){ return -1;}
-		return (bx>>1)+(by>>1)*(k.qcols+1);
-	},
-	bnum : function(bx,by){
-		return this.bnum2(bx,by,k.qcols,k.qrows);
-	},
-	exnum : function(bx,by){
-		return this.exnum2(bx,by,k.qcols,k.qrows);
-	},
-
-	//---------------------------------------------------------------------------
-	// bd.cnum2()  (X,Y)の位置にあるCellのIDを、盤面の大きさを(qc×qr)で計算して返す
-	// bd.xnum2()  (X,Y)の位置にあるCrossのIDを、盤面の大きさを(qc×qr)で計算して返す
-	// bd.bnum2()  (X,Y)の位置にあるBorderのIDを、盤面の大きさを(qc×qr)で計算して返す
-	// bd.exnum2() (X,Y)の位置にあるextendCellのIDを、盤面の大きさを(qc×qr)で計算して返す
-	//---------------------------------------------------------------------------
-	cnum2 : function(bx,by,qc,qr){
+	cnum : function(bx,by,qc,qr){
+		if(qc===(void 0)){ qc=k.qcols; qr=k.qrows;}
 		if((bx<0||bx>(qc<<1)||by<0||by>(qr<<1))||(!(bx&1))||(!(by&1))){ return -1;}
 		return (bx>>1)+(by>>1)*qc;
 	},
-	xnum2 : function(bx,by,qc,qr){
+	xnum : function(bx,by,qc,qr){
+		if(qc===(void 0)){ qc=k.qcols; qr=k.qrows;}
 		if((bx<0||bx>(qc<<1)||by<0||by>(qr<<1))||(!!(bx&1))||(!!(by&1))){ return -1;}
 		return (bx>>1)+(by>>1)*(qc+1);
 	},
-	bnum2 : function(bx,by,qc,qr){
+	bnum : function(bx,by,qc,qr){
+		if(qc===(void 0)){ qc=k.qcols; qr=k.qrows;}
 		if(bx>=1&&bx<=2*qc-1&&by>=1&&by<=2*qr-1){
 			if     (!(bx&1) &&  (by&1)){ return ((bx>>1)-1)+(by>>1)*(qc-1);}
 			else if( (bx&1) && !(by&1)){ return (bx>>1)+((by>>1)-1)*qc+(qc-1)*qr;}
@@ -564,7 +538,8 @@ Board.prototype = {
 		}
 		return -1;
 	},
-	exnum2 : function(bx,by,qc,qr){
+	exnum : function(bx,by,qc,qr){
+		if(qc===(void 0)){ qc=k.qcols; qr=k.qrows;}
 		if(k.isexcell===1){
 			if(bx===-1&&by===-1){ return qc+qr;}
 			else if(by===-1&&bx>0&&bx<2*qc){ return (bx>>1);}
@@ -620,7 +595,7 @@ Board.prototype = {
 		var idlist = [];
 		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
 			if(bx&1===by&1){ continue;}
-			var id = this.bnum2(bx,by,k.qcols,k.qrows);
+			var id = this.bnum(bx,by);
 			if(id!==-1){ idlist.push(id);}
 		}}
 		return idlist;
@@ -628,7 +603,7 @@ Board.prototype = {
 	excellinside : function(x1,y1,x2,y2){
 		var exlist = [];
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
-			var c = this.exnum2(bx,by,k.qcols,k.qrows);
+			var c = this.exnum(bx,by);
 			if(c!==-1){ exlist.push(c);}
 		}}
 		return exlist;

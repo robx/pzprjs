@@ -219,12 +219,12 @@ Puzzles.icelom.prototype = {
 				bd.arrowout = bd.bnum(xx-obx,oby);
 				break;
 			case this.TURNR: // 右90°反転
-				bd.arrowin  = bd.bnum2(yy-iby,ibx,k.qrows,k.qcols);
-				bd.arrowout = bd.bnum2(yy-oby,obx,k.qrows,k.qcols);
+				bd.arrowin  = bd.bnum(yy-iby,ibx,k.qrows,k.qcols);
+				bd.arrowout = bd.bnum(yy-oby,obx,k.qrows,k.qcols);
 				break;
 			case this.TURNL: // 左90°反転
-				bd.arrowin  = bd.bnum2(iby,xx-ibx,k.qrows,k.qcols);
-				bd.arrowout = bd.bnum2(oby,xx-obx,k.qrows,k.qcols);
+				bd.arrowin  = bd.bnum(iby,xx-ibx,k.qrows,k.qcols);
+				bd.arrowout = bd.bnum(oby,xx-obx,k.qrows,k.qcols);
 				break;
 			case this.EXPANDUP: case this.EXPANDDN: // 上下盤面拡大
 				bd.arrowin  += 2*k.qcols-1;

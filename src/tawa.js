@@ -252,7 +252,8 @@ Puzzles.tawa.prototype = {
 		};
 
 		// PositionからのセルID取得
-		bd.cnum2 = function(bx,by,qc,qr){
+		bd.cnum = function(bx,by,qc,qr){
+			if(qc===(void 0)){ qc=k.qcols; qr=k.qrows;}
 			if(bx<this.minbx+1 || bx>this.maxbx-1 || by<this.minby+1 || by>this.maxby-1){ return -1;}
 
 			var cy = (by>>1);	// 上から数えて何段目か(0〜k.qrows-1)
@@ -266,8 +267,8 @@ Puzzles.tawa.prototype = {
 		bd.cellinside = function(x1,y1,x2,y2){
 			var clist = [];
 			for(var by=(y1|1);by<=y2;by+=2){ for(var bx=x1;bx<=x2;bx++){
-				var c = this._cnum[[bx,by].join("_")];
-				if(c!==(void 0)){ clist.push(c);}
+				var c = this.cnum(bx,by);
+				if(c!==-1){ clist.push(c);}
 			}}
 			return clist;
 		};
