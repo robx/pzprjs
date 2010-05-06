@@ -2,7 +2,7 @@
  
 (function(){
 
-// ‘½d’è‹`–h~
+// å¤šé‡å®šç¾©é˜²æ­¢
 if(!!window.Camp){ return;}
 
 /* ------------- */
@@ -43,7 +43,7 @@ var _hex = (function(){
 })();
 
 /* ------------ */
-/*   ‹¤’ÊŠÖ”   */
+/*   å…±é€šé–¢æ•°   */
 /* ------------ */
 function getRectSize(el){
 	return { width :(el.offsetWidth  || el.clientWidth),
@@ -73,7 +73,7 @@ function _extend(obj, ads){
 }
 
 /* ------------------ */
-/*   TypeListƒNƒ‰ƒX   */
+/*   TypeListã‚¯ãƒ©ã‚¹   */
 /* ------------------ */
 var TypeList = function(){
 	this.canvas = false;
@@ -84,14 +84,14 @@ var TypeList = function(){
 };
 
 /* ------------------------------------------- */
-/*   VectorContext(VML)ƒNƒ‰ƒX—pconst•¶š—ñW   */
+/*   VectorContext(VML)ã‚¯ãƒ©ã‚¹ç”¨constæ–‡å­—åˆ—é›†   */
 /* ------------------------------------------- */
 var V_TAG_SHAPE    = '<v:shape',
 	V_TAG_GROUP    = '<v:group',
 	V_TAG_TEXTPATH = '<v:textpath',
 	V_TAG_POLYLINE = '<v:polyline',
 	V_TAG_PATH_FOR_TEXTPATH = '<v:path textpathok="t" />';
-	V_EL_UNSELECTABLE = '', // ƒfƒtƒHƒ‹ƒg‚Íunselectable‚Å‚È‚¢
+	V_EL_UNSELECTABLE = '', // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯unselectableã§ãªã„
 //	V_EL_UNSELECTABLE = ' unselectable="on"',
 	V_TAGEND      = '>',
 	V_TAGEND_NULL = ' />',
@@ -129,7 +129,7 @@ var V_TAG_SHAPE    = '<v:shape',
 	V_HEIGHT = { top:-0.3, hanging:-0.3, middle:0, alphabetic:0.4, bottom:0.45 };
 
 /* ------------------------------------------- */
-/*   VectorContext(SVG)ƒNƒ‰ƒX—pconst•¶š—ñW   */
+/*   VectorContext(SVG)ã‚¯ãƒ©ã‚¹ç”¨constæ–‡å­—åˆ—é›†   */
 /* ------------------------------------------- */
 var SVGNS = "http://www.w3.org/2000/svg",
 	S_PATH_MOVE   = ' M',
@@ -154,13 +154,13 @@ var SVGNS = "http://www.w3.org/2000/svg",
 	S_HEIGHT = { top:-0.7, hanging:-0.66, middle:-0.35, alphabetic:0, bottom:0.1 },
 
 /* ------------------------------------------ */
-/*   VectorContext(SL)ƒNƒ‰ƒX—pconst•¶š—ñW   */
+/*   VectorContext(SL)ã‚¯ãƒ©ã‚¹ç”¨constæ–‡å­—åˆ—é›†   */
 /* ------------------------------------------ */
 	SL_WIDTH = { left:0, center:0.5, right:1 },
 	SL_HEIGHT = { top:0.2, hanging:0.2, middle:0.5, alphabetic:0.7, bottom:0.8 },
 
 /* --------------------------------- */
-/*   VectorContextƒNƒ‰ƒX—p•Ï”‚È‚Ç   */
+/*   VectorContextã‚¯ãƒ©ã‚¹ç”¨å¤‰æ•°ãªã©   */
 /* --------------------------------- */
 	EL_ID_HEADER = "canvas_o_",
 	ME    = null,
@@ -178,31 +178,31 @@ function initME(){
 }
 
 /* ----------------------- */
-/*   VectorContextƒNƒ‰ƒX   */
+/*   VectorContextã‚¯ãƒ©ã‚¹   */
 /* ----------------------- */
 var VectorContext = function(type, idname){
-	// canvas‚É‘¶İ‚·‚éƒvƒƒpƒeƒB•ƒfƒtƒHƒ‹ƒg’l
+	// canvasã«å­˜åœ¨ã™ã‚‹ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ï¼†ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
 	this.fillStyle    = 'black';
 	this.strokeStyle  = 'black';
 	this.lineWidth    = 1;
 	this.font         = '14px system';
 	this.textAlign    = 'center';
 	this.textBaseline = 'middle';
-	this.canvas = null;	// eƒGƒŒƒƒ“ƒg‚Æ‚È‚édivƒGƒŒƒƒ“ƒg
+	this.canvas = null;	// è¦ªã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆã¨ãªã‚‹divã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆ
 
-	// changeOrigin—p(Sinverlight—p)
+	// changeOriginç”¨(Sinverlightç”¨)
 	this.OFFSETX = 0;
 	this.OFFSETY = 0;
 
-	// ŠO•”‚©‚ç•ÏX‚³‚ê‚é’Ç‰ÁƒvƒƒpƒeƒB
+	// å¤–éƒ¨ã‹ã‚‰å¤‰æ›´ã•ã‚Œã‚‹è¿½åŠ ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£
 	this.vid      = '';
 	this.elements = [];
 	this.lastElement = null;
 
 	// variables for internal
 	this.type   = type;
-	this.target = null;	// ƒGƒŒƒƒ“ƒg‚Ì’Ç‰Á‘ÎÛ‚Æ‚È‚éƒIƒuƒWƒFƒNƒg
-	this.child  = null;	// this.canvas‚Ì’¼‰º‚É‚ ‚éƒGƒŒƒƒ“ƒg
+	this.target = null;	// ã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆã®è¿½åŠ å¯¾è±¡ã¨ãªã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+	this.child  = null;	// this.canvasã®ç›´ä¸‹ã«ã‚ã‚‹ã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆ
 	this.idname = idname;
 	this.canvasid = EL_ID_HEADER+idname;
 	this.currentpath = [];
@@ -212,7 +212,7 @@ var VectorContext = function(type, idname){
 	this.isedgearray    = {_empty:false};
 	this.isedge         = false;
 
-	// Silverlight—p
+	// Silverlightç”¨
 	this.content = null;
 
 	this.use = new TypeList();
@@ -269,7 +269,7 @@ VectorContext.prototype = {
 			parent.style.border = "solid 1px silver";
 		}
 		parent.getContext = function(type){ return self;};
-		parent.toDataURL = function(type){ return null; /* –¢ƒTƒ|[ƒg */ };
+		parent.toDataURL = function(type){ return null; /* æœªã‚µãƒãƒ¼ãƒˆ */ };
 		this.canvas = parent;
 
 		this.target = this.child;
@@ -315,9 +315,9 @@ VectorContext.prototype = {
 		parent.innerHTML = [
 			'<object type="application/x-silverlight" width="100%" height="100%" id="',this.canvasid,'_object" />',
 			'<param name="windowless" value="true" />',
-			'<param name="background" value="#00000000" />',	// ƒAƒ‹ƒtƒ@’l0 = “§–¾
+			'<param name="background" value="#00000000" />',	// ã‚¢ãƒ«ãƒ•ã‚¡å€¤0 = é€æ˜
 			'<param name="source" value="#',this.canvasid,'_script" />',
-			'<param name="onLoad" value="',funcname,'" />',	// ‘O‚Í100%,100%İ’è‚ª•K—v‚¾‚Á‚½‚İ‚½‚¢
+			'<param name="onLoad" value="',funcname,'" />',	// å‰ã¯100%,100%è¨­å®šãŒå¿…è¦ã ã£ãŸã¿ãŸã„
 			'</object>',
 			'<script type="text/xaml" id="',this.canvasid,'_script">',
 			'<Canvas xmlns="http://schemas.microsoft.com/client/2007" Name="',this.canvasid,'" />',
@@ -399,7 +399,7 @@ VectorContext.prototype = {
 			child.setAttribute('viewBox', [0,0,width,height].join(' '));
 		}
 		else if(this.type==SL){
-			// •`‰æ‚³‚ê‚È‚¢‚±‚Æ‚ª‚ ‚é‚½‚ßAƒTƒCƒY‚ğ2“xİ’è‚·‚é‚¨‚Ü‚¶‚È‚¢
+			// æç”»ã•ã‚Œãªã„ã“ã¨ãŒã‚ã‚‹ãŸã‚ã€ã‚µã‚¤ã‚ºã‚’2åº¦è¨­å®šã™ã‚‹ãŠã¾ã˜ãªã„
 			child.height = (height+1)+'px';
 
 			child.width  = width + 'px';
@@ -739,26 +739,26 @@ VectorContext.prototype = {
 };
 
 /* -------------------- */
-/*   Canvas’Ç‰ÁŠÖ”ŒQ   */
+/*   Canvasè¿½åŠ é–¢æ•°ç¾¤   */
 /* -------------------- */
 CanvasRenderingContext2D_wrapper = function(type, idname){
-	// canvas‚É‘¶İ‚·‚éƒvƒƒpƒeƒB•ƒfƒtƒHƒ‹ƒg’l
+	// canvasã«å­˜åœ¨ã™ã‚‹ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ï¼†ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
 	this.fillStyle    = 'black';
 	this.strokeStyle  = 'black';
 	this.lineWidth    = 1;
 	this.font         = '14px system';
 	this.textAlign    = 'center';
 	this.textBaseline = 'middle';
-	this.canvas = null;		// eƒGƒŒƒƒ“ƒg‚Æ‚È‚édivƒGƒŒƒƒ“ƒg
+	this.canvas = null;		// è¦ªã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆã¨ãªã‚‹divã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆ
 
-	// changeOrigin—p
+	// changeOriginç”¨
 	this.OFFSETX = 0;
 	this.OFFSETY = 0;
 
 	// variables for internal
 	this.canvasid = '';
-	this.child  = null;		// this.canvas‚Ì’¼‰º‚É‚ ‚éƒGƒŒƒƒ“ƒg
-	this.context  = null;	// –{—ˆ‚ÌCanvasRenderingContext2DƒIƒuƒWƒFƒNƒg
+	this.child  = null;		// this.canvasã®ç›´ä¸‹ã«ã‚ã‚‹ã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆ
+	this.context  = null;	// æœ¬æ¥ã®CanvasRenderingContext2Dã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 
 	this.currentLayerId = '_empty';
 	this.isedgearray    = {_empty:false};
@@ -869,7 +869,7 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		}
 	},
 
-	/* “à•”—pŠÖ” */
+	/* å†…éƒ¨ç”¨é–¢æ•° */
 	setProperties : function(){
 		this.context.fillStyle    = this.fillStyle;
 		this.context.strokeStyle  = this.strokeStyle;
@@ -1029,7 +1029,7 @@ CanvasRenderingContext2D_wrapper.prototype = {
 };
 
 /* -------------------- */
-/*   CampƒIƒuƒWƒFƒNƒg   */
+/*   Campã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ   */
 /* -------------------- */
 var Camp = function(idname, type){
 	Camp.initElementById.apply(Camp, [idname, type]);
@@ -1083,17 +1083,17 @@ _extend( Camp, {
 });
 
 /* ----------------------------------------------- */
-/* Camp.enable, Camp.currentƒIƒuƒWƒFƒNƒgƒf[ƒ^İ’è */
+/* Camp.enable, Camp.currentã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ‡ãƒ¼ã‚¿è¨­å®š */
 /* ----------------------------------------------- */
 
-//	/* Camp.enable İ’è */
+//	/* Camp.enable è¨­å®š */
 	Camp.enable.canvas = (!!_doc.createElement('canvas').getContext);
 	Camp.enable.svg    = (!!_doc.createElementNS && !!_doc.createElementNS(SVGNS, 'svg').suspendRedraw);
 	Camp.enable.sl     = (function(){ try{ return (new ActiveXObject("AgControl.AgControl")).IsVersionSupported("1.0");}catch(e){} return false;})();
 	Camp.enable.flash  = false;
 	Camp.enable.vml    = _IE;
 
-//	/* Camp.currentİ’è */
+//	/* Camp.currentè¨­å®š */
 	for(var i=0;i<_types.length;i++){ Camp.current[_types[i]]=false;}
 	if     (Camp.enable.svg)   { Camp.current.svg    = true;}
 	else if(Camp.enable.canvas){ Camp.current.canvas = true;}
@@ -1101,7 +1101,7 @@ _extend( Camp, {
 	else if(Camp.enable.flash) { Camp.current.flash  = true;}
 	else if(Camp.enable.vml)   { Camp.current.vml    = true;}
 
-	/* ‰Šúİ’è for VML */
+	/* åˆæœŸè¨­å®š for VML */
 	if(Camp.enable.vml){
 		/* addNameSpace for VML */
 		_doc.namespaces.add("v", "urn:schemas-microsoft-com:vml");
@@ -1115,14 +1115,14 @@ _extend( Camp, {
 		_doc.write('</style>');
 	}
 
-	/* ‰Šúİ’è for Campƒ^ƒO */
+	/* åˆæœŸè¨­å®š for Campã‚¿ã‚° */
 	var text = [];
 	text.push("camp { display: block; }\n");
 	_doc.write('<style type="text/css" rel="stylesheet">');
 	_doc.write(text.join(''));
 	_doc.write('</style>');
 
-		// IE—pƒnƒbƒN
+		// IEç”¨ãƒãƒƒã‚¯
 	if(_IE){ _doc.createElement('camp');}
 
 	_win.Camp = Camp;

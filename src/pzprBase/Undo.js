@@ -1,10 +1,10 @@
 // Undo.js v3.3.0p2
 
 //---------------------------------------------------------------------------
-// šOperationManagerƒNƒ‰ƒX ‘€ìî•ñ‚ğˆµ‚¢AUndo/Redo‚Ì“®ì‚ğÀ‘•‚·‚é
+// â˜…OperationManagerã‚¯ãƒ©ã‚¹ æ“ä½œæƒ…å ±ã‚’æ‰±ã„ã€Undo/Redoã®å‹•ä½œã‚’å®Ÿè£…ã™ã‚‹
 //---------------------------------------------------------------------------
-// “ü—Íî•ñŠÇ—ƒNƒ‰ƒX
-// OperationƒNƒ‰ƒX
+// å…¥åŠ›æƒ…å ±ç®¡ç†ã‚¯ãƒ©ã‚¹
+// Operationã‚¯ãƒ©ã‚¹
 Operation = function(obj, property, id, old, num){
 	this.obj = obj;
 	this.property = property;
@@ -14,37 +14,37 @@ Operation = function(obj, property, id, old, num){
 	this.chain = um.chainflag;
 };
 
-// OperationManagerƒNƒ‰ƒX
+// OperationManagerã‚¯ãƒ©ã‚¹
 OperationManager = function(){
-	this.ope = [];			// OperationƒNƒ‰ƒX‚ğ•Û‚·‚é”z—ñ
-	this.current = 0;		// Œ»İ‚Ì•\¦‘€ì”Ô†‚ğ•Û‚·‚é
-	this.disrec = 0;		// ‚±‚ÌƒNƒ‰ƒX‚©‚ç‚ÌŒÄ‚Ño‚µ‚Í1‚É‚·‚é
-	this.forceRecord = false;	// ‹­§“I‚É“o˜^‚·‚é(”Õ–Êk¬ŒÀ’è)
-	this.chainflag = 0;		// ‘O‚ÌOperation‚Æ‚­‚Á‚Â‚¯‚ÄAˆê‰ñ‚ÌUndo/Redo‚Å•Ï‰»‚Å‚«‚é‚æ‚¤‚É‚·‚é
-	this.disCombine = 0;	// ”š‚ª‚­‚Á‚Â‚¢‚Ä‚µ‚Ü‚¤‚Ì‚ÅA‚»‚ê‚ğˆê“I‚É–³Œø‚É‚·‚é‚½‚ß‚Ìƒtƒ‰ƒO
+	this.ope = [];			// Operationã‚¯ãƒ©ã‚¹ã‚’ä¿æŒã™ã‚‹é…åˆ—
+	this.current = 0;		// ç¾åœ¨ã®è¡¨ç¤ºæ“ä½œç•ªå·ã‚’ä¿æŒã™ã‚‹
+	this.disrec = 0;		// ã“ã®ã‚¯ãƒ©ã‚¹ã‹ã‚‰ã®å‘¼ã³å‡ºã—æ™‚ã¯1ã«ã™ã‚‹
+	this.forceRecord = false;	// å¼·åˆ¶çš„ã«ç™»éŒ²ã™ã‚‹(ç›¤é¢ç¸®å°æ™‚é™å®š)
+	this.chainflag = 0;		// å‰ã®Operationã¨ãã£ã¤ã‘ã¦ã€ä¸€å›ã®Undo/Redoã§å¤‰åŒ–ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
+	this.disCombine = 0;	// æ•°å­—ãŒãã£ã¤ã„ã¦ã—ã¾ã†ã®ã§ã€ãã‚Œã‚’ä¸€æ™‚çš„ã«ç„¡åŠ¹ã«ã™ã‚‹ãŸã‚ã®ãƒ•ãƒ©ã‚°
 
-	this.anscount = 0;			// •â•ˆÈŠO‚Ì‘€ì‚ªs‚í‚ê‚½”‚ğ•Û‚·‚é(autocheck—p)
-	this.changeflag = false;	// ‘€ì‚ªs‚í‚ê‚½‚çtrue‚É‚·‚é(mv.notInputted()—p)
+	this.anscount = 0;			// è£œåŠ©ä»¥å¤–ã®æ“ä½œãŒè¡Œã‚ã‚ŒãŸæ•°ã‚’ä¿æŒã™ã‚‹(autocheckç”¨)
+	this.changeflag = false;	// æ“ä½œãŒè¡Œã‚ã‚ŒãŸã‚‰trueã«ã™ã‚‹(mv.notInputted()ç”¨)
 
-	this.undoExec = false;		// Undo’†
-	this.redoExec = false;		// Redo’†
-	this.reqReset = false;		// Undo/Redo‚É”Õ–Ê‰ñ“]“™‚ª“ü‚Á‚Ä‚¢‚½Aresize,resetInfoŠÖ”‚Ìcall‚ğ—v‹‚·‚é
+	this.undoExec = false;		// Undoä¸­
+	this.redoExec = false;		// Redoä¸­
+	this.reqReset = false;		// Undo/Redoæ™‚ã«ç›¤é¢å›è»¢ç­‰ãŒå…¥ã£ã¦ã„ãŸæ™‚ã€resize,resetInfoé–¢æ•°ã®callã‚’è¦æ±‚ã™ã‚‹
 	this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
 };
 OperationManager.prototype = {
 	//---------------------------------------------------------------------------
-	// um.disableRecord()  ‘€ì‚Ì“o˜^‚ğ‹Ö~‚·‚é
-	// um.enableRecord()   ‘€ì‚Ì“o˜^‚ğ‹–‰Â‚·‚é
-	// um.isenableRecord() ‘€ì‚Ì“o˜^‚Å‚«‚é‚©‚ğ•Ô‚·
-	// um.enb_btn()        htmlã‚Ì[–ß][i]ƒ{ƒ^ƒ“‚ğ‰Ÿ‚·‚±‚Æ‚ª‰Â”\‚©İ’è‚·‚é
-	// um.allerase()       ‹L‰¯‚µ‚Ä‚¢‚½‘€ì‚ğ‘S‚Ä”jŠü‚·‚é
-	// um.newOperation()   ƒ}ƒEƒXAƒL[“ü—ÍŠJn‚ÉŒÄ‚Ño‚·
+	// um.disableRecord()  æ“ä½œã®ç™»éŒ²ã‚’ç¦æ­¢ã™ã‚‹
+	// um.enableRecord()   æ“ä½œã®ç™»éŒ²ã‚’è¨±å¯ã™ã‚‹
+	// um.isenableRecord() æ“ä½œã®ç™»éŒ²ã§ãã‚‹ã‹ã‚’è¿”ã™
+	// um.enb_btn()        htmlä¸Šã®[æˆ»][é€²]ãƒœã‚¿ãƒ³ã‚’æŠ¼ã™ã“ã¨ãŒå¯èƒ½ã‹è¨­å®šã™ã‚‹
+	// um.allerase()       è¨˜æ†¶ã—ã¦ã„ãŸæ“ä½œã‚’å…¨ã¦ç ´æ£„ã™ã‚‹
+	// um.newOperation()   ãƒã‚¦ã‚¹ã€ã‚­ãƒ¼å…¥åŠ›é–‹å§‹æ™‚ã«å‘¼ã³å‡ºã™
 	//---------------------------------------------------------------------------
 
-	// ¡‚±‚ÌŠÖ”‚ÅƒŒƒR[ƒh‹Ö~‚É‚È‚é‚Ì‚ÍAUndoRedoAURLdecodeAfileopenAadjustGeneral/Special
-	// ˜A“®‚µ‚ÄÀs‚µ‚È‚­‚È‚é‚Ì‚ÍaddOpe().
-	//  -> ‚±‚±‚Åg‚Á‚Ä‚¢‚éUndo/Redo‚ÆaddOpeˆÈŠO‚Íbd.QuCŒnŠÖ”‚ğg—p‚µ‚È‚¢‚æ‚¤‚É•ÏX
-	//     •Ï‚È§ŒÀ–€‚ª‚È‚­‚È‚é‚µA“®ì‘¬“x‚É‚à‚©‚È‚èŒø‚­‚µ‚Ë
+	// ä»Šã“ã®é–¢æ•°ã§ãƒ¬ã‚³ãƒ¼ãƒ‰ç¦æ­¢ã«ãªã‚‹ã®ã¯ã€UndoRedoæ™‚ã€URLdecodeã€fileopenã€adjustGeneral/Specialæ™‚
+	// é€£å‹•ã—ã¦å®Ÿè¡Œã—ãªããªã‚‹ã®ã¯addOpe().
+	//  -> ã“ã“ã§ä½¿ã£ã¦ã„ã‚‹Undo/Redoã¨addOpeä»¥å¤–ã¯bd.QuCç³»é–¢æ•°ã‚’ä½¿ç”¨ã—ãªã„ã‚ˆã†ã«å¤‰æ›´
+	//     å¤‰ãªåˆ¶é™äº‹é …ãŒãªããªã‚‹ã—ã€å‹•ä½œé€Ÿåº¦ã«ã‚‚ã‹ãªã‚ŠåŠ¹ãã—ã­
 	disableRecord : function(){ this.disrec++; },
 	enableRecord  : function(){ if(this.disrec>0){ this.disrec--;} },
 	isenableRecord : function(){ return (this.forceRecord || this.disrec===0);},
@@ -59,13 +59,13 @@ OperationManager.prototype = {
 		this.anscount = 0;
 		this.enb_btn();
 	},
-	newOperation : function(flag){	// ƒL[Aƒ{ƒ^ƒ“‚ğ‰Ÿ‚µn‚ß‚½‚Æ‚«‚Ítrue
+	newOperation : function(flag){	// ã‚­ãƒ¼ã€ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—å§‹ã‚ãŸã¨ãã¯true
 		this.chainflag = 0;
 		if(flag){ this.changeflag = false;}
 	},
 
 	//---------------------------------------------------------------------------
-	// um.addOpe() w’è‚³‚ê‚½‘€ì‚ğ’Ç‰Á‚·‚éBid“™‚ª“¯‚¶ê‡‚ÍÅI‘€ì‚ğ•ÏX‚·‚é
+	// um.addOpe() æŒ‡å®šã•ã‚ŒãŸæ“ä½œã‚’è¿½åŠ ã™ã‚‹ã€‚idç­‰ãŒåŒã˜å ´åˆã¯æœ€çµ‚æ“ä½œã‚’å¤‰æ›´ã™ã‚‹
 	//---------------------------------------------------------------------------
 	addOpe : function(obj, property, id, old, num){
 		if(!this.isenableRecord() || (old===num && obj!==k.BOARD)){ return;}
@@ -77,7 +77,7 @@ OperationManager.prototype = {
 			lastid = -1;
 		}
 
-		// ‘O‰ñ‚Æ“¯‚¶êŠ‚È‚ç‘O‰ñ‚ÌXV‚Ì‚İ
+		// å‰å›ã¨åŒã˜å ´æ‰€ãªã‚‰å‰å›ã®æ›´æ–°ã®ã¿
 		if( lastid>=0 &&
 			this.disCombine==0 &&
 			this.ope[lastid].obj == obj           &&
@@ -101,11 +101,11 @@ OperationManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// um.undo()  Undo‚ğÀs‚·‚é
-	// um.redo()  Redo‚ğÀs‚·‚é
-	// um.preproc()  Undo/RedoÀs‘O‚Ìˆ—‚ğs‚¤
-	// um.postproc() Undo/RedoÀsŒã‚Ìˆ—‚ğs‚¤
-	// um.exec()  ‘€ìope‚ğ”½‰f‚·‚éBundo(),redo()‚©‚ç“à•”“I‚ÉŒÄ‚Î‚ê‚é
+	// um.undo()  Undoã‚’å®Ÿè¡Œã™ã‚‹
+	// um.redo()  Redoã‚’å®Ÿè¡Œã™ã‚‹
+	// um.preproc()  Undo/Redoå®Ÿè¡Œå‰ã®å‡¦ç†ã‚’è¡Œã†
+	// um.postproc() Undo/Redoå®Ÿè¡Œå¾Œã®å‡¦ç†ã‚’è¡Œã†
+	// um.exec()  æ“ä½œopeã‚’åæ˜ ã™ã‚‹ã€‚undo(),redo()ã‹ã‚‰å†…éƒ¨çš„ã«å‘¼ã°ã‚Œã‚‹
 	//---------------------------------------------------------------------------
 	undo : function(){
 		if(this.current==0){ return;}
@@ -208,8 +208,8 @@ OperationManager.prototype = {
 		}
 	},
 	//---------------------------------------------------------------------------
-	// um.paintBorder()  Border‚Ìü‚è‚ğ•`‰æ‚·‚é‚½‚ßA‚Ç‚Ì”ÍˆÍ‚Ü‚Å•ÏX‚ª“ü‚Á‚½‚©‹L‰¯‚µ‚Ä‚¨‚­
-	// um.paintStack()   •ÏX‚ª“ü‚Á‚½”ÍˆÍ‚ğ•Ô‚·
+	// um.paintBorder()  Borderã®å‘¨ã‚Šã‚’æç”»ã™ã‚‹ãŸã‚ã€ã©ã®ç¯„å›²ã¾ã§å¤‰æ›´ãŒå…¥ã£ãŸã‹è¨˜æ†¶ã—ã¦ãŠã
+	// um.paintStack()   å¤‰æ›´ãŒå…¥ã£ãŸç¯„å›²ã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}

@@ -1,4 +1,4 @@
-﻿
+
 	/* commmon */
 	body{ background:url(./bg/index.gif); color:black; line-height:120%; text-align:center;}
 
@@ -23,7 +23,7 @@
 				 border-top-right-radius:3pt; border-top-left-radius:3pt;
 				 -webkit-border-top-right-radius:3pt; -webkit-border-top-left-radius:3pt;
 				}
-	table.puztable{ display:none; width:100%; border:solid 1px gray;}
+	table.puztable{ display:none; width:100%; border:solid 1px gray; text-align:left;}
 
 	h4.notice_item { margin-top:4pt; margin-bottom:4pt;}
 

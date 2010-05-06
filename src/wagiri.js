@@ -1,44 +1,44 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ‚²‚«‚°‚ñ‚È‚È‚ßE—ÖØ”Å wagiri.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ã”ãã’ã‚“ãªãªã‚ãƒ»è¼ªåˆ‡ç‰ˆ wagiri.js v3.3.0
 //
 Puzzles.wagiri = function(){ };
 Puzzles.wagiri.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 7;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 7;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 7;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 7;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 2;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 0;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 2;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 0;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = true;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = true;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = false;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = true;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = true;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = false;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = true;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = false;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = false;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = true;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = false;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = false;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = true;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = false;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = true;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = false;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.bdmargin       = 0.70;	// ˜gŠO‚Ìˆê•Ó‚Ìmargin(ƒZƒ‹”Š·Z)
-		k.bdmargin_image = 0.50;	// ‰æ‘œo—Í‚Ìbdmargin’l
+		k.bdmargin       = 0.70;	// æ å¤–ã®ä¸€è¾ºã®margin(ã‚»ãƒ«æ•°æ›ç®—)
+		k.bdmargin_image = 0.50;	// ç”»åƒå‡ºåŠ›æ™‚ã®bdmarginå€¤
 
-		base.setTitle("‚²‚«‚°‚ñ‚È‚È‚ßE—ÖØ","Gokigen-naname:wagiri");
-		base.setExpression("@ƒ}ƒEƒX‚ÅÎü‚ğ“ü—Í‚Å‚«‚Ü‚·B",
+		base.setTitle("ã”ãã’ã‚“ãªãªã‚ãƒ»è¼ªåˆ‡","Gokigen-naname:wagiri");
+		base.setExpression("ã€€ãƒã‚¦ã‚¹ã§æ–œç·šã‚’å…¥åŠ›ã§ãã¾ã™ã€‚",
 						   " Click to input slashes.");
 		base.setFloatbgcolor("rgb(0, 127, 0)");
 		base.proto = 1;
@@ -46,8 +46,8 @@ Puzzles.wagiri.prototype = {
 	menufix : function(){
 		menu.addUseToFlags();
 
-		pp.addCheck('colorslash','setting',false, 'Îü‚ÌF•ª‚¯', 'Slash with color');
-		pp.setLabel('colorslash', 'Îü‚ğ—ÖØ‚è‚©‚Ì‚Ç‚¿‚ç‚©‚ÅF•ª‚¯‚·‚é(’´d‚¢)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
+		pp.addCheck('colorslash','setting',false, 'æ–œç·šã®è‰²åˆ†ã‘', 'Slash with color');
+		pp.setLabel('colorslash', 'æ–œç·šã‚’è¼ªåˆ‡ã‚Šã‹ã®ã©ã¡ã‚‰ã‹ã§è‰²åˆ†ã‘ã™ã‚‹(è¶…é‡ã„)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
 		pp.funcs['colorslash'] = function(){ pc.paintAll();};
 	},
 	finalfix : function(){
@@ -60,9 +60,9 @@ Puzzles.wagiri.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if(k.playmode){ this.inputslash();}
 			else if(k.editmode){
@@ -117,7 +117,7 @@ Puzzles.wagiri.prototype = {
 			pc.paintCellAround(cc);
 		};
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(k.playmode){ return;}
 			if(this.moveTBorder(ca)){ return;}
@@ -147,14 +147,14 @@ Puzzles.wagiri.prototype = {
 		bd.maxnum = 4;
 
 		menu.ex.adjustSpecial = function(key,d){
-			if(key & this.TURNFLIP){ // ”½“]E‰ñ“]‘S‚Ä
+			if(key & this.TURNFLIP){ // åè»¢ãƒ»å›è»¢å…¨ã¦
 				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
 			}
 		};
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.errcolor1 = "red";
@@ -173,7 +173,7 @@ Puzzles.wagiri.prototype = {
 			this.drawCrosses(x1,y1,x2+1,y2+1);
 			this.drawTarget_wagiri(x1,y1,x2,y2);
 		};
-		// ƒI[ƒo[ƒ‰ƒCƒh
+		// ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 		pc.prepaint = function(x1,y1,x2,y2){
 			if(!ans.errDisp && pp.getVal('colorslash')){ x1=bd.minbx; y1=bd.minby; x2=bd.maxbx; y2=bd.maxby;}
 			pc.flushCanvas(x1,y1,x2,y2);
@@ -181,7 +181,7 @@ Puzzles.wagiri.prototype = {
 			pc.paint(x1,y1,x2,y2);
 		};
 
-		// ƒI[ƒo[ƒ‰ƒCƒh
+		// ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 		pc.setBGCellColor = function(c){
 			if(bd.cell[c].qans===-1 && bd.cell[c].error===1){
 				g.fillStyle = this.errbcolor1;
@@ -195,7 +195,7 @@ Puzzles.wagiri.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], num = obj.qnum, key='cell_'+c;
 				if(num!==-1){
-					var text = (num!==-2 ? ({1:"—Ö",2:"Ø"})[num] : "?");
+					var text = (num!==-2 ? ({1:"è¼ª",2:"åˆ‡"})[num] : "?");
 					this.dispnum(key, 1, text, 0.70, this.fontcolor, obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(key);}
@@ -253,7 +253,7 @@ Puzzles.wagiri.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decode4Cross();
@@ -278,25 +278,25 @@ Puzzles.wagiri.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			var sdata=this.getSlashData();
 			if( !this.checkLoopLine(sdata, false) ){
-				this.setAlert('"Ø"‚ªŠÜ‚Ü‚ê‚½ü‚ª—Ö‚Á‚©‚É‚È‚Á‚Ä‚¢‚Ü‚·B', 'There is a loop that consists "Ø".'); return false;
+				this.setAlert('"åˆ‡"ãŒå«ã¾ã‚ŒãŸç·šãŒè¼ªã£ã‹ã«ãªã£ã¦ã„ã¾ã™ã€‚', 'There is a loop that consists "åˆ‡".'); return false;
 			}
 
 			if( !this.checkQnumCross() ){
-				this.setAlert('”š‚ÉŒq‚ª‚éü‚Ì”‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B', 'A number is not equal to count of lines that is connected to it.'); return false;
+				this.setAlert('æ•°å­—ã«ç¹‹ãŒã‚‹ç·šã®æ•°ãŒé–“é•ã£ã¦ã„ã¾ã™ã€‚', 'A number is not equal to count of lines that is connected to it.'); return false;
 			}
 
 			if( !this.checkLoopLine(sdata, true) ){
-				this.setAlert('"—Ö"‚ªŠÜ‚Ü‚ê‚½ü‚ª—Ö‚Á‚©‚É‚È‚Á‚Ä‚¢‚Ü‚¹‚ñB', 'There is not a loop that consists "—Ö".'); return false;
+				this.setAlert('"è¼ª"ãŒå«ã¾ã‚ŒãŸç·šãŒè¼ªã£ã‹ã«ãªã£ã¦ã„ã¾ã›ã‚“ã€‚', 'There is not a loop that consists "è¼ª".'); return false;
 			}
 
 			if( !this.checkAllCell(function(c){ return (bd.QaC(c)==-1);}) ){
-				this.setAlert('Îü‚ª‚È‚¢ƒ}ƒX‚ª‚ ‚è‚Ü‚·B','There is a empty cell.'); return false;
+				this.setAlert('æ–œç·šãŒãªã„ãƒã‚¹ãŒã‚ã‚Šã¾ã™ã€‚','There is a empty cell.'); return false;
 			}
 
 			return true;
@@ -307,7 +307,7 @@ Puzzles.wagiri.prototype = {
 			for(var c=0;c<bd.cellmax;c++) { check[c] =(bd.QaC(c)!==-1?0:-1);}
 			for(var c=0;c<bd.cellmax;c++){
 				if(check[c]!==0){ continue;}
-				// history -> ƒXƒ^ƒbƒN‚İ‚½‚¢‚ÈƒIƒuƒWƒFƒNƒg
+				// history -> ã‚¹ã‚¿ãƒƒã‚¯ã¿ãŸã„ãªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 				var history={cell:[],cross:[]};
 				for(var cc=0;cc<bd.cellmax;cc++) { history.cell[cc] =(check[cc]!==-1?0:-1);}
 				for(var xc=0;xc<bd.crossmax;xc++){ history.cross[xc]=(scnt[xc]>0    ?0:-1);}
@@ -320,15 +320,15 @@ Puzzles.wagiri.prototype = {
 			return check;
 		};
 		ans.sp0 = function(xc, depth, scnt, check, history){
-			// ‰ß‚¬‹‚Á‚½’n“_‚É“’B‚µ‚½¨‚»‚Ì’n“_‚©‚çƒRƒR‚Ü‚Å‚Íƒ‹[ƒv‚µ‚Ä‚é
+			// éãå»ã£ãŸåœ°ç‚¹ã«åˆ°é”ã—ãŸâ†’ãã®åœ°ç‚¹ã‹ã‚‰ã‚³ã‚³ã¾ã§ã¯ãƒ«ãƒ¼ãƒ—ã—ã¦ã‚‹
 			if(history.cross[xc]>0){
 				var min = history.cross[xc];
 				for(var cc=0;cc<bd.cellmax;cc++){ if(history.cell[cc]>=min){ check[cc]=1;} }
 				return;
 			}
 
-			// •Ê‚É“’B‚µ‚Ä‚¢‚È‚¢ -> —×‚Éi‚ñ‚Å‚İ‚é
-			history.cross[xc] = depth; // ‚±‚ÌŒğ“_‚Éƒ}[ƒLƒ“ƒO
+			// åˆ¥ã«åˆ°é”ã—ã¦ã„ãªã„ -> éš£ã«é€²ã‚“ã§ã¿ã‚‹
+			history.cross[xc] = depth; // ã“ã®äº¤ç‚¹ã«ãƒãƒ¼ã‚­ãƒ³ã‚°
 			var bx=bd.cross[xc].bx, by=bd.cross[xc].by, isloop=false;
 			var nb = [
 					{ cell:bd.cnum(bx-1,by-1), cross:bd.xnum(bx-2,by-2), qans:1},
@@ -337,18 +337,18 @@ Puzzles.wagiri.prototype = {
 					{ cell:bd.cnum(bx+1,by+1), cross:bd.xnum(bx+2,by+2), qans:1}
 				];
 			for(var i=0;i<4;i++){
-				if( nb[i].cell===-1 ||					// ‚»‚Á‚¿‚Í”Õ–Ê‚ÌŠO‚¾‚æI
-					history.cell[nb[i].cell]!==0 ||		// ‚»‚Á‚¿‚Í’Ê‚Á‚Ä—ˆ‚½“¹‚¾‚æI
-					nb[i].qans!==bd.QaC(nb[i].cell) ||	// ‚»‚Á‚¿‚ÍŒq‚ª‚Á‚Ä‚È‚¢B
-					scnt[nb[i].cross]===1 || 			// ‚»‚Á‚¿‚Ís‚«~‚Ü‚èB
-					check[nb[i].cell]===1 )		// check‚ª1‚É‚È‚Á‚Ä‚é‚Á‚Ä‚±‚Æ‚Í‘O‚É‚»‚Á‚¿‚©‚çŠù‚É—ˆ‚Ä‚¢‚é
-				{ continue;}					// æ‚É•ªŠò‚ª‚ ‚é‚Æ‚µ‚Ä‚àA‚»‚Ì‚É’TõÏ‚İ‚Å‚·.
+				if( nb[i].cell===-1 ||					// ãã£ã¡ã¯ç›¤é¢ã®å¤–ã ã‚ˆï¼
+					history.cell[nb[i].cell]!==0 ||		// ãã£ã¡ã¯é€šã£ã¦æ¥ãŸé“ã ã‚ˆï¼
+					nb[i].qans!==bd.QaC(nb[i].cell) ||	// ãã£ã¡ã¯ç¹‹ãŒã£ã¦ãªã„ã€‚
+					scnt[nb[i].cross]===1 || 			// ãã£ã¡ã¯è¡Œãæ­¢ã¾ã‚Šã€‚
+					check[nb[i].cell]===1 )		// checkãŒ1ã«ãªã£ã¦ã‚‹ã£ã¦ã“ã¨ã¯å‰ã«ãã£ã¡ã‹ã‚‰æ—¢ã«æ¥ã¦ã„ã‚‹
+				{ continue;}					// å…ˆã«åˆ†å²ãŒã‚ã‚‹ã¨ã—ã¦ã‚‚ã€ãã®æ™‚ã«æ¢ç´¢æ¸ˆã¿ã§ã™.
 
-				history.cell[nb[i].cell] = depth;	 // —×‚ÌƒZƒ‹‚Éƒ}[ƒLƒ“ƒO
+				history.cell[nb[i].cell] = depth;	 // éš£ã®ã‚»ãƒ«ã«ãƒãƒ¼ã‚­ãƒ³ã‚°
 				this.sp0(nb[i].cross, depth+1, scnt, check, history);
-				history.cell[nb[i].cell] = 0;		 // ƒZƒ‹‚Ìƒ}[ƒLƒ“ƒO‚ğŠO‚·
+				history.cell[nb[i].cell] = 0;		 // ã‚»ãƒ«ã®ãƒãƒ¼ã‚­ãƒ³ã‚°ã‚’å¤–ã™
 			}
-			history.cross[xc] = 0; // Œğ“_‚Ìƒ}[ƒLƒ“ƒO‚ğŠO‚·
+			history.cross[xc] = 0; // äº¤ç‚¹ã®ãƒãƒ¼ã‚­ãƒ³ã‚°ã‚’å¤–ã™
 		};
 
 		ans.checkLoopLine = function(sdata, checkLoop){

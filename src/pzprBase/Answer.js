@@ -1,11 +1,11 @@
 // Answer.js v3.3.0
 
 //---------------------------------------------------------------------------
-// šAnsCheckƒNƒ‰ƒX “š‚¦ƒ`ƒFƒbƒNŠÖ˜A‚ÌŠÖ”‚ğˆµ‚¤
+// â˜…AnsCheckã‚¯ãƒ©ã‚¹ ç­”ãˆãƒã‚§ãƒƒã‚¯é–¢é€£ã®é–¢æ•°ã‚’æ‰±ã†
 //---------------------------------------------------------------------------
 
-// ‰ñ“šƒ`ƒFƒbƒNƒNƒ‰ƒX
-// AnsCheckƒNƒ‰ƒX
+// å›ç­”ãƒã‚§ãƒƒã‚¯ã‚¯ãƒ©ã‚¹
+// AnsCheckã‚¯ãƒ©ã‚¹
 AnsCheck = function(){
 	this.performAsLine = false;
 	this.errDisp = false;
@@ -17,10 +17,10 @@ AnsCheck = function(){
 AnsCheck.prototype = {
 
 	//---------------------------------------------------------------------------
-	// ans.check()     “š‚¦‚Ìƒ`ƒFƒbƒN‚ğs‚¤(checkAns()‚ğŒÄ‚Ño‚·)
-	// ans.checkAns()  “š‚¦‚Ìƒ`ƒFƒbƒN‚ğs‚¤(ƒI[ƒo[ƒ‰ƒCƒh—p)
-	// ans.check1st()  ƒI[ƒgƒ`ƒFƒbƒN‚É‰‚ß‚É”»’è‚ğs‚¤(ƒI[ƒo[ƒ‰ƒCƒh—p)
-	// ans.setAlert()  check()‚©‚ç–ß‚Á‚Ä‚«‚½‚Æ‚«‚É•Ô‚·AƒGƒ‰[“à—e‚ğ•\¦‚·‚éalert•¶‚ğİ’è‚·‚é
+	// ans.check()     ç­”ãˆã®ãƒã‚§ãƒƒã‚¯ã‚’è¡Œã†(checkAns()ã‚’å‘¼ã³å‡ºã™)
+	// ans.checkAns()  ç­”ãˆã®ãƒã‚§ãƒƒã‚¯ã‚’è¡Œã†(ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ç”¨)
+	// ans.check1st()  ã‚ªãƒ¼ãƒˆãƒã‚§ãƒƒã‚¯æ™‚ã«åˆã‚ã«åˆ¤å®šã‚’è¡Œã†(ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ç”¨)
+	// ans.setAlert()  check()ã‹ã‚‰æˆ»ã£ã¦ããŸã¨ãã«è¿”ã™ã€ã‚¨ãƒ©ãƒ¼å†…å®¹ã‚’è¡¨ç¤ºã™ã‚‹alertæ–‡ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	check : function(){
 		this.inCheck = true;
@@ -36,21 +36,21 @@ AnsCheck.prototype = {
 			return false;
 		}
 
-		alert(menu.isLangJP()?"³‰ğ‚Å‚·I":"Complete!");
+		alert(menu.isLangJP()?"æ­£è§£ã§ã™ï¼":"Complete!");
 		this.inCheck = false;
 		return true;
 	},
-	checkAns : function(){},	//ƒI[ƒo[ƒ‰ƒCƒh—p
-	//check1st : function(){},	//ƒI[ƒo[ƒ‰ƒCƒh—p
+	checkAns : function(){},	//ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ç”¨
+	//check1st : function(){},	//ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ç”¨
 	setAlert : function(strJP, strEN){ this.alstr.jp = strJP; this.alstr.en = strEN;},
 
 	//---------------------------------------------------------------------------
-	// ans.autocheck()    “š‚¦‚Ì©“®ƒ`ƒFƒbƒN‚ğs‚¤(alert‚ª‚Å‚È‚©‚Á‚½‚èAƒGƒ‰[•\¦‚ğs‚í‚È‚¢)
-	// ans.autocheck1st() autocheck‘O‚ÉAŒy‚¢³“š”»’è‚ğs‚¤
+	// ans.autocheck()    ç­”ãˆã®è‡ªå‹•ãƒã‚§ãƒƒã‚¯ã‚’è¡Œã†(alertãŒã§ãªã‹ã£ãŸã‚Šã€ã‚¨ãƒ©ãƒ¼è¡¨ç¤ºã‚’è¡Œã‚ãªã„)
+	// ans.autocheck1st() autocheckå‰ã«ã€è»½ã„æ­£ç­”åˆ¤å®šã‚’è¡Œã†
 	//
-	// ans.disableSetError()  ”Õ–Ê‚ÌƒIƒuƒWƒFƒNƒg‚ÉƒGƒ‰[ƒtƒ‰ƒO‚ğİ’è‚Å‚«‚È‚¢‚æ‚¤‚É‚·‚é
-	// ans.enableSetError()   ”Õ–Ê‚ÌƒIƒuƒWƒFƒNƒg‚ÉƒGƒ‰[ƒtƒ‰ƒO‚ğİ’è‚Å‚«‚é‚æ‚¤‚É‚·‚é
-	// ans.isenableSetError() ”Õ–Ê‚ÌƒIƒuƒWƒFƒNƒg‚ÉƒGƒ‰[ƒtƒ‰ƒO‚ğİ’è‚Å‚«‚é‚©‚Ç‚¤‚©‚ğ•Ô‚·
+	// ans.disableSetError()  ç›¤é¢ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ã‚¨ãƒ©ãƒ¼ãƒ•ãƒ©ã‚°ã‚’è¨­å®šã§ããªã„ã‚ˆã†ã«ã™ã‚‹
+	// ans.enableSetError()   ç›¤é¢ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ã‚¨ãƒ©ãƒ¼ãƒ•ãƒ©ã‚°ã‚’è¨­å®šã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
+	// ans.isenableSetError() ç›¤é¢ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ã‚¨ãƒ©ãƒ¼ãƒ•ãƒ©ã‚°ã‚’è¨­å®šã§ãã‚‹ã‹ã©ã†ã‹ã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	autocheck : function(){
 		if(!pp.getVal('autocheck') || k.editmode || this.inCheck){ return;}
@@ -62,7 +62,7 @@ AnsCheck.prototype = {
 
 		if(this.autocheck1st() && this.checkAns() && this.inCheck){
 			mv.mousereset();
-			alert(menu.isLangJP()?"³‰ğ‚Å‚·I":"Complete!");
+			alert(menu.isLangJP()?"æ­£è§£ã§ã™ï¼":"Complete!");
 			ret = true;
 			pp.setVal('autocheck',false);
 		}
@@ -71,7 +71,7 @@ AnsCheck.prototype = {
 
 		return ret;
 	},
-	// ƒŠƒ“ƒNŒn‚Íd‚¢‚Ì‚ÅÅ‰‚É’[“_‚ğ”»’è‚·‚é
+	// ãƒªãƒ³ã‚¯ç³»ã¯é‡ã„ã®ã§æœ€åˆã«ç«¯ç‚¹ã‚’åˆ¤å®šã™ã‚‹
 	autocheck1st : function(){
 		if(this.check1st){ return this.check1st();}
 		else if( (k.isCenterLine && !ans.checkLcntCell(1)) || (k.isborderAsLine && !ans.checkLcntCross(1,0)) ){ return false;}
@@ -83,9 +83,9 @@ AnsCheck.prototype = {
 	isenableSetError : function(){ return this.setError; },
 
 	//---------------------------------------------------------------------------
-	// ans.checkdir4Cell()     ã‰º¶‰E4•ûŒü‚ÅğŒfunc==true‚É‚È‚éƒ}ƒX‚Ì”‚ğƒJƒEƒ“ƒg‚·‚é
-	// ans.setErrLareaByCell() ‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚Á‚½ü‚ª‘¶İ‚·‚éƒ}ƒX‚ÉƒGƒ‰[‚ğİ’è‚·‚é
-	// ans.setErrLareaById()   ‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚Á‚½ü‚ª‘¶İ‚·‚éƒ}ƒX‚ÉƒGƒ‰[‚ğİ’è‚·‚é
+	// ans.checkdir4Cell()     ä¸Šä¸‹å·¦å³4æ–¹å‘ã§æ¡ä»¶func==trueã«ãªã‚‹ãƒã‚¹ã®æ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆã™ã‚‹
+	// ans.setErrLareaByCell() ã²ã¨ã¤ãªãŒã‚Šã«ãªã£ãŸç·šãŒå­˜åœ¨ã™ã‚‹ãƒã‚¹ã«ã‚¨ãƒ©ãƒ¼ã‚’è¨­å®šã™ã‚‹
+	// ans.setErrLareaById()   ã²ã¨ã¤ãªãŒã‚Šã«ãªã£ãŸç·šãŒå­˜åœ¨ã™ã‚‹ãƒã‚¹ã«ã‚¨ãƒ©ãƒ¼ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	checkdir4Cell : function(cc, func){
 		if(cc<0 || cc>=bd.cellmax){ return 0;}
@@ -113,10 +113,10 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkAllCell()   ğŒfunc==true‚É‚È‚éƒ}ƒX‚ª‚ ‚Á‚½‚çƒGƒ‰[‚ğİ’è‚·‚é
-	// ans.checkOneArea()   ”’ƒ}ƒX/•ƒ}ƒX/ü‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚©‚Ç‚¤‚©‚ğ”»’è‚·‚é
-	// ans.check2x2Block()  2x2‚ÌƒZƒ‹‚ª‘S‚ÄğŒfunc==true‚ÌAƒGƒ‰[‚ğİ’è‚·‚é
-	// ans.checkSideCell()  —×‚è‡‚Á‚½2‚Â‚ÌƒZƒ‹‚ªğŒfunc==true‚ÌAƒGƒ‰[‚ğİ’è‚·‚é
+	// ans.checkAllCell()   æ¡ä»¶func==trueã«ãªã‚‹ãƒã‚¹ãŒã‚ã£ãŸã‚‰ã‚¨ãƒ©ãƒ¼ã‚’è¨­å®šã™ã‚‹
+	// ans.checkOneArea()   ç™½ãƒã‚¹/é»’ãƒã‚¹/ç·šãŒã²ã¨ã¤ãªãŒã‚Šã‹ã©ã†ã‹ã‚’åˆ¤å®šã™ã‚‹
+	// ans.check2x2Block()  2x2ã®ã‚»ãƒ«ãŒå…¨ã¦æ¡ä»¶func==trueã®æ™‚ã€ã‚¨ãƒ©ãƒ¼ã‚’è¨­å®šã™ã‚‹
+	// ans.checkSideCell()  éš£ã‚Šåˆã£ãŸ2ã¤ã®ã‚»ãƒ«ãŒæ¡ä»¶func==trueã®æ™‚ã€ã‚¨ãƒ©ãƒ¼ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	checkAllCell : function(func){
 		var result = true;
@@ -168,9 +168,9 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkQnumCross()  cross‚ªğŒfunc==false‚ÌAƒGƒ‰[‚ğİ’è‚·‚é
+	// ans.checkQnumCross()  crossãŒæ¡ä»¶func==falseã®æ™‚ã€ã‚¨ãƒ©ãƒ¼ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
-	checkQnumCross : function(func){	//func(cr,bcnt){} -> ƒGƒ‰[‚È‚çfalse‚ğ•Ô‚·ŠÖ”‚É‚·‚é
+	checkQnumCross : function(func){	//func(cr,bcnt){} -> ã‚¨ãƒ©ãƒ¼ãªã‚‰falseã‚’è¿”ã™é–¢æ•°ã«ã™ã‚‹
 		for(var c=0;c<bd.crossmax;c++){
 			if(bd.QnX(c)<0){ continue;}
 			if(!func(bd.QnX(c), bd.bcntCross(c))){
@@ -182,10 +182,10 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkOneLoop()  Œğ·‚ ‚èü‚ªˆê‚Â‚©‚Ç‚¤‚©”»’è‚·‚é
-	// ans.checkLcntCell() ƒZƒ‹‚©‚ço‚Ä‚¢‚éü‚Ì–{”‚É‚Â‚¢‚Ä”»’è‚·‚é
-	// ans.isLineStraight()   ƒZƒ‹‚Ìã‚Åü‚ª’¼i‚µ‚Ä‚¢‚é‚©”»’è‚·‚é
-	// ans.setCellLineError() ƒZƒ‹‚Æü‚è‚Ìü‚ÉƒGƒ‰[ƒtƒ‰ƒO‚ğİ’è‚·‚é
+	// ans.checkOneLoop()  äº¤å·®ã‚ã‚Šç·šãŒä¸€ã¤ã‹ã©ã†ã‹åˆ¤å®šã™ã‚‹
+	// ans.checkLcntCell() ã‚»ãƒ«ã‹ã‚‰å‡ºã¦ã„ã‚‹ç·šã®æœ¬æ•°ã«ã¤ã„ã¦åˆ¤å®šã™ã‚‹
+	// ans.isLineStraight()   ã‚»ãƒ«ã®ä¸Šã§ç·šãŒç›´é€²ã—ã¦ã„ã‚‹ã‹åˆ¤å®šã™ã‚‹
+	// ans.setCellLineError() ã‚»ãƒ«ã¨å‘¨ã‚Šã®ç·šã«ã‚¨ãƒ©ãƒ¼ãƒ•ãƒ©ã‚°ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	checkOneLoop : function(){
 		var xinfo = line.getLineInfo();
@@ -225,9 +225,9 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkdir4Border()  ƒZƒ‹‚Ìü‚èl•ûŒü‚Éä‚©‚ê‚Ä‚¢‚é‹«ŠEü‚Ì–{”‚ğ”»’è‚·‚é
-	// ans.checkdir4Border1() ƒZƒ‹‚Ìü‚èl•ûŒü‚Éä‚©‚ê‚Ä‚¢‚é‹«ŠEü‚Ì–{”‚ğ•Ô‚·
-	// ans.checkenableLineParts() 'ˆê•”‚ª‚ ‚©‚³‚ê‚Ä‚¢‚é'ü‚Ì•”•ª‚ÉAü‚ªˆø‚©‚ê‚Ä‚¢‚é‚©”»’è‚·‚é
+	// ans.checkdir4Border()  ã‚»ãƒ«ã®å‘¨ã‚Šå››æ–¹å‘ã«æƒ¹ã‹ã‚Œã¦ã„ã‚‹å¢ƒç•Œç·šã®æœ¬æ•°ã‚’åˆ¤å®šã™ã‚‹
+	// ans.checkdir4Border1() ã‚»ãƒ«ã®å‘¨ã‚Šå››æ–¹å‘ã«æƒ¹ã‹ã‚Œã¦ã„ã‚‹å¢ƒç•Œç·šã®æœ¬æ•°ã‚’è¿”ã™
+	// ans.checkenableLineParts() 'ä¸€éƒ¨ãŒã‚ã‹ã•ã‚Œã¦ã„ã‚‹'ç·šã®éƒ¨åˆ†ã«ã€ç·šãŒå¼•ã‹ã‚Œã¦ã„ã‚‹ã‹åˆ¤å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	checkdir4Border : function(){
 		var result = true;
@@ -269,21 +269,21 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkAllArea()    ‚·‚×‚Ä‚Ìfunc‚ğ–‚½‚·ƒ}ƒX‚Å\¬‚³‚ê‚éƒGƒŠƒA‚ªevalfunc‚ğ–‚½‚·‚©‚Ç‚¤‚©”»’è‚·‚é
+	// ans.checkAllArea()    ã™ã¹ã¦ã®funcã‚’æº€ãŸã™ãƒã‚¹ã§æ§‹æˆã•ã‚Œã‚‹ã‚¨ãƒªã‚¢ãŒevalfuncã‚’æº€ãŸã™ã‹ã©ã†ã‹åˆ¤å®šã™ã‚‹
 	//
-	// ans.checkDisconnectLine() ”š‚È‚Ç‚ÉŒq‚ª‚Á‚Ä‚¢‚È‚¢ü‚Ì”»’è‚ğs‚¤
-	// ans.checkNumberAndSize()  ƒGƒŠƒA‚É‚ ‚é”š‚Æ–ÊÏ‚ª“™‚µ‚¢‚©”»’è‚·‚é
-	// ans.checkNoNumber()       •”‰®‚É”š‚ªŠÜ‚Ü‚ê‚Ä‚¢‚È‚¢‚©‚Ì”»’è‚ğs‚¤
-	// ans.checkDoubleNumber()   •”‰®‚É”š‚ª2‚ÂˆÈãŠÜ‚Ü‚ê‚Ä‚¢‚È‚¢‚æ‚¤‚É”»’è‚ğs‚¤
-	// ans.checkTripleNumber()   •”‰®‚É”š‚ª3‚ÂˆÈãŠÜ‚Ü‚ê‚Ä‚¢‚È‚¢‚æ‚¤‚É”»’è‚ğs‚¤
-	// ans.checkBlackCellCount() —Ìˆæ“à‚Ì”š‚Æ•ƒ}ƒX‚Ì”‚ª“™‚µ‚¢‚©”»’è‚·‚é
-	// ans.checkBlackCellInArea()•”‰®‚É‚ ‚é•ƒ}ƒX‚Ì”‚Ì”»’è‚ğs‚¤
-	// ans.checkAreaRect()       —Ìˆæ‚ª‘S‚ÄlŠpŒ`‚Å‚ ‚é‚©‚Ç‚¤‚©”»’è‚·‚é
-	// ans.checkLinesInArea()    —Ìˆæ‚Ì’†‚Åü‚ª’Ê‚Á‚Ä‚¢‚éƒZƒ‹‚Ì”‚ğ”»’è‚·‚é
-	// ans.checkNoObjectInRoom() ƒGƒŠƒA‚Éw’è‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ª‚È‚¢‚Æ”»’è‚·‚é
+	// ans.checkDisconnectLine() æ•°å­—ãªã©ã«ç¹‹ãŒã£ã¦ã„ãªã„ç·šã®åˆ¤å®šã‚’è¡Œã†
+	// ans.checkNumberAndSize()  ã‚¨ãƒªã‚¢ã«ã‚ã‚‹æ•°å­—ã¨é¢ç©ãŒç­‰ã—ã„ã‹åˆ¤å®šã™ã‚‹
+	// ans.checkNoNumber()       éƒ¨å±‹ã«æ•°å­—ãŒå«ã¾ã‚Œã¦ã„ãªã„ã‹ã®åˆ¤å®šã‚’è¡Œã†
+	// ans.checkDoubleNumber()   éƒ¨å±‹ã«æ•°å­—ãŒ2ã¤ä»¥ä¸Šå«ã¾ã‚Œã¦ã„ãªã„ã‚ˆã†ã«åˆ¤å®šã‚’è¡Œã†
+	// ans.checkTripleNumber()   éƒ¨å±‹ã«æ•°å­—ãŒ3ã¤ä»¥ä¸Šå«ã¾ã‚Œã¦ã„ãªã„ã‚ˆã†ã«åˆ¤å®šã‚’è¡Œã†
+	// ans.checkBlackCellCount() é ˜åŸŸå†…ã®æ•°å­—ã¨é»’ãƒã‚¹ã®æ•°ãŒç­‰ã—ã„ã‹åˆ¤å®šã™ã‚‹
+	// ans.checkBlackCellInArea()éƒ¨å±‹ã«ã‚ã‚‹é»’ãƒã‚¹ã®æ•°ã®åˆ¤å®šã‚’è¡Œã†
+	// ans.checkAreaRect()       é ˜åŸŸãŒå…¨ã¦å››è§’å½¢ã§ã‚ã‚‹ã‹ã©ã†ã‹åˆ¤å®šã™ã‚‹
+	// ans.checkLinesInArea()    é ˜åŸŸã®ä¸­ã§ç·šãŒé€šã£ã¦ã„ã‚‹ã‚»ãƒ«ã®æ•°ã‚’åˆ¤å®šã™ã‚‹
+	// ans.checkNoObjectInRoom() ã‚¨ãƒªã‚¢ã«æŒ‡å®šã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒãªã„ã¨åˆ¤å®šã™ã‚‹
 	//
-	// ans.getQnumCellInArea() •”‰®‚Ì’†‚Åˆê”Ô¶ã‚É‚ ‚é”š‚ğ•Ô‚·
-	// ans.getSizeOfClist()    w’è‚³‚ê‚½Cell‚ÌƒŠƒXƒg‚Ìã‰º¶‰E‚Ì’[‚ÆA‚»‚Ì’†‚ÅğŒfunc‚ğ–‚½‚·ƒZƒ‹‚Ì”‚ğ•Ô‚·
+	// ans.getQnumCellInArea() éƒ¨å±‹ã®ä¸­ã§ä¸€ç•ªå·¦ä¸Šã«ã‚ã‚‹æ•°å­—ã‚’è¿”ã™
+	// ans.getSizeOfClist()    æŒ‡å®šã•ã‚ŒãŸCellã®ãƒªã‚¹ãƒˆã®ä¸Šä¸‹å·¦å³ã®ç«¯ã¨ã€ãã®ä¸­ã§æ¡ä»¶funcã‚’æº€ãŸã™ã‚»ãƒ«ã®æ•°ã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	checkAllArea : function(cinfo, func, evalfunc){
 		var result = true;
@@ -336,11 +336,11 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkSideAreaSize()     ‹«ŠEü‚ğ‚Í‚³‚ñ‚ÅÚ‚·‚é•”‰®‚Ìgetval‚Å“¾‚ç‚ê‚éƒTƒCƒY‚ªˆÙ‚È‚é‚±‚Æ‚ğ”»’è‚·‚é
-	// ans.checkSideAreaCell()     ‹«ŠEü‚ğ‚Í‚³‚ñ‚Åƒ^ƒeƒˆƒR‚ÉÚ‚·‚éƒZƒ‹‚Ì”»’è‚ğs‚¤
-	// ans.checkSeqBlocksInRoom()  •”‰®‚Ì’†ŒÀ’è‚ÅA•ƒ}ƒX‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚©‚Ç‚¤‚©”»’è‚·‚é
-	// ans.checkSameObjectInRoom() •”‰®‚Ì’†‚Égetvalue‚Å•¡”í—Ş‚Ì’l‚ª“¾‚ç‚ê‚é‚±‚Æ‚ğ”»’è‚·‚é
-	// ans.checkObjectRoom()       getvalue‚Å“¯‚¶’l‚ª“¾‚ç‚ê‚éƒZƒ‹‚ªA•¡”‚Ì•”‰®‚Ì•ªU‚µ‚Ä‚¢‚é‚©”»’è‚·‚é
+	// ans.checkSideAreaSize()     å¢ƒç•Œç·šã‚’ã¯ã•ã‚“ã§æ¥ã™ã‚‹éƒ¨å±‹ã®getvalã§å¾—ã‚‰ã‚Œã‚‹ã‚µã‚¤ã‚ºãŒç•°ãªã‚‹ã“ã¨ã‚’åˆ¤å®šã™ã‚‹
+	// ans.checkSideAreaCell()     å¢ƒç•Œç·šã‚’ã¯ã•ã‚“ã§ã‚¿ãƒ†ãƒ¨ã‚³ã«æ¥ã™ã‚‹ã‚»ãƒ«ã®åˆ¤å®šã‚’è¡Œã†
+	// ans.checkSeqBlocksInRoom()  éƒ¨å±‹ã®ä¸­é™å®šã§ã€é»’ãƒã‚¹ãŒã²ã¨ã¤ãªãŒã‚Šã‹ã©ã†ã‹åˆ¤å®šã™ã‚‹
+	// ans.checkSameObjectInRoom() éƒ¨å±‹ã®ä¸­ã«getvalueã§è¤‡æ•°ç¨®é¡ã®å€¤ãŒå¾—ã‚‰ã‚Œã‚‹ã“ã¨ã‚’åˆ¤å®šã™ã‚‹
+	// ans.checkObjectRoom()       getvalueã§åŒã˜å€¤ãŒå¾—ã‚‰ã‚Œã‚‹ã‚»ãƒ«ãŒã€è¤‡æ•°ã®éƒ¨å±‹ã®åˆ†æ•£ã—ã¦ã„ã‚‹ã‹åˆ¤å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	checkSideAreaSize : function(rinfo, getval){
 		var adjs = [];
@@ -454,10 +454,10 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkRowsCols()            ƒ^ƒe—ñEƒˆƒR—ñ‚Ì”š‚Ì”»’è‚ğs‚¤
-	// ans.checkRowsColsPartly()      •ƒ}ƒX‚â[_]“™‚Å•ª‚©‚ê‚éƒ^ƒe—ñEƒˆƒR—ñ‚Ì”š‚Ì”»’è‚ğs‚¤
-	// ans.checkDifferentNumberInRoom() •”‰®‚Ì’†‚É“¯‚¶”š‚ª‘¶İ‚·‚é‚©”»’è‚·‚é
-	// ans.isDifferentNumberInClist() clist‚Ì’†‚É“¯‚¶”š‚ª‘¶İ‚·‚é‚©”»’è‚·‚é
+	// ans.checkRowsCols()            ã‚¿ãƒ†åˆ—ãƒ»ãƒ¨ã‚³åˆ—ã®æ•°å­—ã®åˆ¤å®šã‚’è¡Œã†
+	// ans.checkRowsColsPartly()      é»’ãƒã‚¹ã‚„[ï¼¼]ç­‰ã§åˆ†ã‹ã‚Œã‚‹ã‚¿ãƒ†åˆ—ãƒ»ãƒ¨ã‚³åˆ—ã®æ•°å­—ã®åˆ¤å®šã‚’è¡Œã†
+	// ans.checkDifferentNumberInRoom() éƒ¨å±‹ã®ä¸­ã«åŒã˜æ•°å­—ãŒå­˜åœ¨ã™ã‚‹ã‹åˆ¤å®šã™ã‚‹
+	// ans.isDifferentNumberInClist() clistã®ä¸­ã«åŒã˜æ•°å­—ãŒå­˜åœ¨ã™ã‚‹ã‹åˆ¤å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	checkRowsCols : function(evalfunc, numfunc){
 		var result = true;
@@ -534,8 +534,8 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkLcntCross()      ‚ ‚éŒğ“_‚Æ‚Ìü‚èl•ûŒü‚Ì‹«ŠEü‚Ì”‚ğ”»’è‚·‚é(bp==1:•“_‚ª‘Å‚½‚ê‚Ä‚¢‚éê‡)
-	// ans.setCrossBorderError() ‚ ‚éŒğ“_‚Æ‚»‚Ìü‚èl•ûŒü‚ÉƒGƒ‰[ƒtƒ‰ƒO‚ğİ’è‚·‚é
+	// ans.checkLcntCross()      ã‚ã‚‹äº¤ç‚¹ã¨ã®å‘¨ã‚Šå››æ–¹å‘ã®å¢ƒç•Œç·šã®æ•°ã‚’åˆ¤å®šã™ã‚‹(bp==1:é»’ç‚¹ãŒæ‰“ãŸã‚Œã¦ã„ã‚‹å ´åˆ)
+	// ans.setCrossBorderError() ã‚ã‚‹äº¤ç‚¹ã¨ãã®å‘¨ã‚Šå››æ–¹å‘ã«ã‚¨ãƒ©ãƒ¼ãƒ•ãƒ©ã‚°ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	checkLcntCross : function(val, bp){
 		var result = true;

@@ -1,48 +1,48 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ‚Í‚±‚¢‚è›¢ ”Å hakoiri.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ã¯ã“ã„ã‚Šâ—‹â–³â–¡ç‰ˆ hakoiri.js v3.3.0
 //
 Puzzles.hakoiri = function(){ };
 Puzzles.hakoiri.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 10;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 10;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 10;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 10;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 1;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 1;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = false;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = true;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = false;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = true;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = false;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = true;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = true;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = true;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = false;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = true;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = true;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = true;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = false;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = false;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = false;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = false;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
 		if(k.EDITOR){
-			base.setExpression("@ƒL[ƒ{[ƒh‚Ì¶‘¤‚â-ƒL[“™‚ÅA‹L†‚Ì“ü—Í‚ª‚Å‚«‚Ü‚·B",
+			base.setExpression("ã€€ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®å·¦å´ã‚„-ã‚­ãƒ¼ç­‰ã§ã€è¨˜å·ã®å…¥åŠ›ãŒã§ãã¾ã™ã€‚",
 							   " Press left side of the keyboard or '-' key to input marks.");
 		}
 		else{
-			base.setExpression("@¶ƒNƒŠƒbƒN‚Å‹L†‚ªA‰Eƒhƒ‰ƒbƒO‚Å•â•‹L†‚ª“ü—Í‚Å‚«‚Ü‚·B",
+			base.setExpression("ã€€å·¦ã‚¯ãƒªãƒƒã‚¯ã§è¨˜å·ãŒã€å³ãƒ‰ãƒ©ãƒƒã‚°ã§è£œåŠ©è¨˜å·ãŒå…¥åŠ›ã§ãã¾ã™ã€‚",
 							   " Left Click to input answers, Right Button Drag to input auxiliary marks.");
 		}
-		base.setTitle("‚Í‚±‚¢‚è›¢ ","Triplets");
+		base.setTitle("ã¯ã“ã„ã‚Šâ—‹â–³â–¡","Triplets");
 		base.setFloatbgcolor("rgb(127, 160, 96)");
 	},
 	menufix : function(){
@@ -50,9 +50,9 @@ Puzzles.hakoiri.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if(k.editmode) this.inputborder();
 			else if(k.playmode){
@@ -119,7 +119,7 @@ Puzzles.hakoiri.prototype = {
 			pc.paintCell(cc);
 		};
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
 			kc.key_hakoiri(ca);
@@ -160,9 +160,9 @@ Puzzles.hakoiri.prototype = {
 
 		kp.kpgenerate = function(mode){
 			if(mode==1){
-				this.inputcol('num','knum1','1','›');
-				this.inputcol('num','knum2','2','¢');
-				this.inputcol('num','knum3','3',' ');
+				this.inputcol('num','knum1','1','â—‹');
+				this.inputcol('num','knum2','2','â–³');
+				this.inputcol('num','knum3','3','â–¡');
 				this.insertrow();
 				this.inputcol('num','knum4','4','?');
 				this.inputcol('num','knum_',' ',' ');
@@ -171,12 +171,12 @@ Puzzles.hakoiri.prototype = {
 			}
 			else{
 				this.tdcolor = pc.fontAnscolor;
-				this.inputcol('num','qnum1','1','›');
-				this.inputcol('num','qnum2','2','¢');
-				this.inputcol('num','qnum3','3',' ');
+				this.inputcol('num','qnum1','1','â—‹');
+				this.inputcol('num','qnum2','2','â–³');
+				this.inputcol('num','qnum3','3','â–¡');
 				this.insertrow();
 				this.tdcolor = "rgb(255, 96, 191)";
-				this.inputcol('num','qnum4','4','E');
+				this.inputcol('num','qnum4','4','ãƒ»');
 				this.tdcolor = "black";
 				this.inputcol('num','qnum_',' ',' ');
 				this.inputcol('empty','qnumx','','');
@@ -190,7 +190,7 @@ Puzzles.hakoiri.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.bcolor = pc.bcolor_GREEN;
 		pc.bbcolor = "rgb(127, 127, 127)";
@@ -212,7 +212,7 @@ Puzzles.hakoiri.prototype = {
 		pc.drawNumber1 = function(c){
 			var num = bd.getNum(c), obj = bd.cell[c], key='cell_'+c;
 			if(num!==-1){
-				var text = (num>0 ? ({1:"›",2:"¢",3:" "})[num] : "?");
+				var text = (num>0 ? ({1:"â—‹",2:"â–³",3:"â–¡"})[num] : "?");
 				this.dispnum(key, 1, text, 0.8, this.getCellNumberColor(c), obj.cpx, obj.cpy);
 			}
 			else{ this.hideEL(key);}
@@ -220,7 +220,7 @@ Puzzles.hakoiri.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeBorder();
@@ -245,29 +245,29 @@ Puzzles.hakoiri.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			if( !this.checkAroundMarks() ){
-				this.setAlert('“¯‚¶‹L†‚ªƒ^ƒeƒˆƒRƒiƒiƒ‚É—×Ú‚µ‚Ä‚¢‚Ü‚·B','Same marks are adjacent.'); return false;
+				this.setAlert('åŒã˜è¨˜å·ãŒã‚¿ãƒ†ãƒ¨ã‚³ãƒŠãƒŠãƒ¡ã«éš£æ¥ã—ã¦ã„ã¾ã™ã€‚','Same marks are adjacent.'); return false;
 			}
 
 			var rinfo = area.getRoomInfo();
 			if( !this.checkAllArea(rinfo, bd.isNum, function(w,h,a,n){ return (a<=3);}) ){
-				this.setAlert('1‚Â‚ÌƒnƒR‚É4‚ÂˆÈã‚Ì‹L†‚ª“ü‚Á‚Ä‚¢‚Ü‚·B','A box has four or more marks.'); return false;
+				this.setAlert('1ã¤ã®ãƒã‚³ã«4ã¤ä»¥ä¸Šã®è¨˜å·ãŒå…¥ã£ã¦ã„ã¾ã™ã€‚','A box has four or more marks.'); return false;
 			}
 
 			if( !this.checkDifferentObjectInRoom(rinfo) ){
-				this.setAlert('1‚Â‚ÌƒnƒR‚É“¯‚¶‹L†‚ª•¡”“ü‚Á‚Ä‚¢‚Ü‚·B','A box has same plural marks.'); return false;
+				this.setAlert('1ã¤ã®ãƒã‚³ã«åŒã˜è¨˜å·ãŒè¤‡æ•°å…¥ã£ã¦ã„ã¾ã™ã€‚','A box has same plural marks.'); return false;
 			}
 
 			if( !this.checkOneArea( area.getNumberInfo() ) ){
-				this.setAlert('ƒ^ƒeƒˆƒR‚É‚Â‚È‚ª‚Á‚Ä‚¢‚È‚¢‹L†‚ª‚ ‚è‚Ü‚·B','Marks are devided.'); return false;
+				this.setAlert('ã‚¿ãƒ†ãƒ¨ã‚³ã«ã¤ãªãŒã£ã¦ã„ãªã„è¨˜å·ãŒã‚ã‚Šã¾ã™ã€‚','Marks are devided.'); return false;
 			}
 
 			if( !this.checkAllArea(rinfo, bd.isNum, function(w,h,a,n){ return (a>=3);}) ){
-				this.setAlert('1‚Â‚ÌƒnƒR‚É2‚ÂˆÈ‰º‚Ì‹L†‚µ‚©“ü‚Á‚Ä‚¢‚Ü‚¹‚ñB','A box has tow or less marks.'); return false;
+				this.setAlert('1ã¤ã®ãƒã‚³ã«2ã¤ä»¥ä¸‹ã®è¨˜å·ã—ã‹å…¥ã£ã¦ã„ã¾ã›ã‚“ã€‚','A box has tow or less marks.'); return false;
 			}
 
 			return true;
@@ -297,7 +297,7 @@ Puzzles.hakoiri.prototype = {
 				if(bd.getNum(c)<0){ continue;}
 				var bx = bd.cell[c].bx, by = bd.cell[c].by, target=0, clist=[c];
 				var func = function(cc){ return (cc!=-1 && bd.getNum(c)==bd.getNum(cc));};
-				// ‰EE¶‰ºE‰ºE‰E‰º‚¾‚¯ƒ`ƒFƒbƒN
+				// å³ãƒ»å·¦ä¸‹ãƒ»ä¸‹ãƒ»å³ä¸‹ã ã‘ãƒã‚§ãƒƒã‚¯
 				target = bd.cnum(bx+2,by  ); if(func(target)){ clist.push(target);}
 				target = bd.cnum(bx  ,by+2); if(func(target)){ clist.push(target);}
 				target = bd.cnum(bx-2,by+2); if(func(target)){ clist.push(target);}
