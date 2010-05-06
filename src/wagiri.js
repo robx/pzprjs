@@ -312,7 +312,8 @@ Puzzles.wagiri.prototype = {
 				for(var cc=0;cc<bd.cellmax;cc++) { history.cell[cc] =(check[cc]!==-1?0:-1);}
 				for(var xc=0;xc<bd.crossmax;xc++){ history.cross[xc]=(scnt[xc]>0    ?0:-1);}
 
-				var fc = bd.xnum(bd.cell[c].bx+(bd.QaC(c)===1?-1:1), bd.cell[c].by);
+				var fc = (bd.QaC(c)===1 ? bd.xnum(bd.cell[c].bx-1, bd.cell[c].by-1)
+										: bd.xnum(bd.cell[c].bx+1, bd.cell[c].by+1));
 				this.sp0(fc, 1, scnt, check, history);
 			}
 			for(var c=0;c<bd.cellmax;c++) { if(check[c]===0){ check[c]=2;} }
