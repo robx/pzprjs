@@ -221,11 +221,6 @@ Board = function(){
 	this.bdmax     = 0;		// 境界線の数
 	this.excellmax = 0;		// 拡張セルの数
 
-	this._cnum  = {};		// cnum関数のキャッシュ
-	this._xnum  = {};		// xnum関数のキャッシュ
-	this._bnum  = {};		// bnum関数のキャッシュ
-	this._exnum = {};		// exnum関数のキャッシュ
-
 	this.bdinside = 0;		// 盤面の内側(外枠上でない)に存在する境界線の本数
 
 	this.maxnum   = 255;	// 入力できる最大の数字
@@ -401,37 +396,14 @@ Board.prototype = {
 	// bd.setcacheAll() 全てのCell, Cross, Borderオブジェクトの_cnum等をキャッシュする
 	//---------------------------------------------------------------------------
 	setcacheAll : function(){
-		this._cnum = {};
-		this._xnum = {};
-		this._bnum = {};
-		this._exnum = {};
-
-		for(var id=0;id<this.cellmax;id++){
-			var obj = this.cell[id];
-			this._cnum[[obj.bx, obj.by].join("_")] = id;
-		}
-		for(var id=0;id<this.crossmax;id++){
-			var obj = this.cross[id];
-			this._xnum[[obj.bx, obj.by].join("_")] = id;
-		}
-		if(k.iscross===0){
-			for(var by=0;by<=this.maxby;by+=2){ for(var bx=0;bx<=this.maxbx;bx+=2){
-				this._xnum[[bx, by].join("_")] = (bx>>1)+(by>>1)*(k.qcols+1);
-			}}
-		}
 		for(var id=0;id<this.bdmax;id++){
 			var obj = this.border[id];
-			this._bnum[[obj.bx, obj.by].join("_")] = id;
 
 			obj.cellcc[0] = this.cnum(obj.bx-(obj.by&1), obj.by-(obj.bx&1));
 			obj.cellcc[1] = this.cnum(obj.bx+(obj.by&1), obj.by+(obj.bx&1));
 
 			obj.crosscc[0] = this.xnum(obj.bx-(obj.bx&1), obj.by-(obj.by&1));
 			obj.crosscc[1] = this.xnum(obj.bx+(obj.bx&1), obj.by+(obj.by&1));
-		}
-		for(var id=0;id<this.excellmax;id++){
-			var obj = this.excell[id];
-			this._exnum[[obj.bx, obj.by].join("_")] = id;
 		}
 	},
 
@@ -532,8 +504,8 @@ Board.prototype = {
 		if(qc===(void 0)){
 			if     (type===k.CELL)  { return this.cnum(bx,by);}
 			else if(type===k.CROSS) { return this.xnum(bx,by);}
-			else if(type===k.BORDER){ return this.bnum(bx,by);}
-			else if(type===k.EXCELL){ return this.exnum(bx,by);}
+			else if(type===k.BORDER){ return this.bnum2(bx,by,k.qcols,k.qrows);}
+			else if(type===k.EXCELL){ return this.exnum2(bx,by,k.qcols,k.qrows);}
 		}
 		else{
 			if     (type===k.CELL)  { return this.cnum2(bx,by,qc,qr);}
@@ -551,20 +523,18 @@ Board.prototype = {
 	// bd.exnum()  (X,Y)の位置にあるextendCellのIDを返す
 	//---------------------------------------------------------------------------
 	cnum : function(bx,by){
-		var key = [bx,by].join("_");
-		return (this._cnum[key]!==(void 0) ? this._cnum[key] : -1);
+		if((bx<0||bx>(k.qcols<<1)||by<0||by>(k.qrows<<1))||(!(bx&1))||(!(by&1))){ return -1;}
+		return (bx>>1)+(by>>1)*k.qcols;
 	},
 	xnum : function(bx,by){
-		var key = [bx,by].join("_");
-		return (this._xnum[key]!==(void 0) ? this._xnum[key] : -1);
+		if((bx<0||bx>(k.qcols<<1)||by<0||by>(k.qrows<<1))||(!!(bx&1))||(!!(by&1))){ return -1;}
+		return (bx>>1)+(by>>1)*(k.qcols+1);
 	},
 	bnum : function(bx,by){
-		var key = [bx,by].join("_");
-		return (this._bnum[key]!==(void 0) ? this._bnum[key] : -1);
+		return this.bnum2(bx,by,k.qcols,k.qrows);
 	},
 	exnum : function(bx,by){
-		var key = [bx,by].join("_");
-		return (this._exnum[key]!==(void 0) ? this._exnum[key] : -1);
+		return this.exnum2(bx,by,k.qcols,k.qrows);
 	},
 
 	//---------------------------------------------------------------------------
@@ -574,11 +544,11 @@ Board.prototype = {
 	// bd.exnum2() (X,Y)の位置にあるextendCellのIDを、盤面の大きさを(qc×qr)で計算して返す
 	//---------------------------------------------------------------------------
 	cnum2 : function(bx,by,qc,qr){
-		if((bx<0||bx>2*qc||by<0||by>2*qr)||(!(bx&1))||(!(by&1))){ return -1;}
+		if((bx<0||bx>(qc<<1)||by<0||by>(qr<<1))||(!(bx&1))||(!(by&1))){ return -1;}
 		return (bx>>1)+(by>>1)*qc;
 	},
 	xnum2 : function(bx,by,qc,qr){
-		if((bx<0||bx>2*qc||by<0||by>2*qr)||(!!(bx&1))||(!!(by&1))){ return -1;}
+		if((bx<0||bx>(qc<<1)||by<0||by>(qr<<1))||(!!(bx&1))||(!!(by&1))){ return -1;}
 		return (bx>>1)+(by>>1)*(qc+1);
 	},
 	bnum2 : function(bx,by,qc,qr){
@@ -633,16 +603,16 @@ Board.prototype = {
 	cellinside : function(x1,y1,x2,y2){
 		var clist = [];
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
-			var c = this._cnum[[bx,by].join("_")];
-			if(c!==(void 0)){ clist.push(c);}
+			var c = this.cnum(bx,by);
+			if(c!==-1){ clist.push(c);}
 		}}
 		return clist;
 	},
 	crossinside : function(x1,y1,x2,y2){
 		var clist = [];
 		for(var by=y1+(y1&1);by<=y2;by+=2){ for(var bx=x1+(x1&1);bx<=x2;bx+=2){
-			var c = this._xnum[[bx,by].join("_")];
-			if(c!==(void 0)){ clist.push(c);}
+			var c = this.xnum(bx,by);
+			if(c!==-1){ clist.push(c);}
 		}}
 		return clist;
 	},
@@ -650,16 +620,16 @@ Board.prototype = {
 		var idlist = [];
 		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
 			if(bx&1===by&1){ continue;}
-			var id = this._bnum[[bx,by].join("_")];
-			if(id!==(void 0)){ idlist.push(id);}
+			var id = this.bnum2(bx,by,k.qcols,k.qrows);
+			if(id!==-1){ idlist.push(id);}
 		}}
 		return idlist;
 	},
 	excellinside : function(x1,y1,x2,y2){
 		var exlist = [];
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
-			var c = this._exnum[[bx,by].join("_")];
-			if(c!==(void 0)){ exlist.push(c);}
+			var c = this.exnum2(bx,by,k.qcols,k.qrows);
+			if(c!==-1){ exlist.push(c);}
 		}}
 		return exlist;
 	},
