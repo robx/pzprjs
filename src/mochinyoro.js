@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 モチにょろ版 mochinyoro.js v3.3.0
+// パズル固有スクリプト部 モチにょろ版 mochinyoro.js v3.3.1
 //
 Puzzles.mochinyoro = function(){ };
 Puzzles.mochinyoro.prototype = {
@@ -159,22 +159,16 @@ Puzzles.mochinyoro.prototype = {
 			}
 			return ans.checkOneArea(winfo);
 		};
-		ans.sk0 = function(winfo, i, areaid){
-			if(winfo.id[i]!=0){ return;}
-			winfo.id[i] = areaid;
-			winfo.room[areaid].idlist.push(i);
-			if( bd.isWhite(bd.up(i)) ){ this.sk0(winfo, bd.up(i), areaid);}
-			if( bd.isWhite(bd.dn(i)) ){ this.sk0(winfo, bd.dn(i), areaid);}
-			if( bd.isWhite(bd.lt(i)) ){ this.sk0(winfo, bd.lt(i), areaid);}
-			if( bd.isWhite(bd.rt(i)) ){ this.sk0(winfo, bd.rt(i), areaid);}
+		ans.sk0 = function(winfo, id, areaid){
+			if(winfo.id[id]!==0){ return;}
+			winfo.id[id] = areaid;
+			winfo.room[areaid].idlist.push(id);
 
-			if(bd.cell[i].bx>bd.minbx+2){
-				if( bd.isWhite(bd.up(bd.lt(i))) ){ this.sk0(winfo, bd.up(bd.lt(i)), areaid);}
-				if( bd.isWhite(bd.dn(bd.lt(i))) ){ this.sk0(winfo, bd.dn(bd.lt(i)), areaid);}
-			}
-			if(bd.cell[i].bx<bd.maxbx-2){
-				if( bd.isWhite(bd.up(bd.rt(i))) ){ this.sk0(winfo, bd.up(bd.rt(i)), areaid);}
-				if( bd.isWhite(bd.dn(bd.rt(i))) ){ this.sk0(winfo, bd.dn(bd.rt(i)), areaid);}
+			var bx=bd.cell[id].bx, by=bd.cell[id].by;
+			var clist = bd.cellinside(bx-2, by-2, bx+2, by+2);
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				if(c!==id && winfo.id[c]===0){ this.sk0(winfo, c, areaid);}
 			}
 		};
 	}

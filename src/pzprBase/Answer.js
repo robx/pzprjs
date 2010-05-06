@@ -1,4 +1,4 @@
-// Answer.js v3.3.0
+// Answer.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
@@ -89,11 +89,11 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	checkdir4Cell : function(cc, func){
 		if(cc<0 || cc>=bd.cellmax){ return 0;}
-		var cnt = 0;
-		if(bd.up(cc)!=-1 && func(bd.up(cc))){ cnt++;}
-		if(bd.dn(cc)!=-1 && func(bd.dn(cc))){ cnt++;}
-		if(bd.lt(cc)!=-1 && func(bd.lt(cc))){ cnt++;}
-		if(bd.rt(cc)!=-1 && func(bd.rt(cc))){ cnt++;}
+		var cnt=0, c;
+		c=bd.up(cc); if(c!==-1 && func(c)){ cnt++;}
+		c=bd.dn(cc); if(c!==-1 && func(c)){ cnt++;}
+		c=bd.lt(cc); if(c!==-1 && func(c)){ cnt++;}
+		c=bd.rt(cc); if(c!==-1 && func(c)){ cnt++;}
 		return cnt;
 	},
 
@@ -141,9 +141,12 @@ AnsCheck.prototype = {
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].bx<bd.maxbx-1 && bd.cell[c].by<bd.maxby-1){
-				if( func(c) && func(c+1) && func(c+k.qcols) && func(c+k.qcols+1) ){
+				var cnt=0, bx=bd.cell[c].bx, by=bd.cell[c].by;
+				var clist = bd.cellinside(bx, by, bx+2, by+2);
+				for(var i=0;i<clist.length;i++){ if(func(clist[i])){ cnt++;}}
+				if(cnt===4){
 					if(this.inAutoCheck){ return false;}
-					bd.sErC([c,c+1,c+k.qcols,c+k.qcols+1],1);
+					bd.sErC(clist,1);
 					result = false;
 				}
 			}
@@ -153,14 +156,14 @@ AnsCheck.prototype = {
 	checkSideCell : function(func){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].bx<bd.maxbx-1 && func(c,c+1)){
+			if(bd.cell[c].bx<bd.maxbx-1 && func(c,bd.rt(c))){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c,c+1],1);
+				bd.sErC([c,bd.rt(c)],1);
 				result = false;
 			}
-			if(bd.cell[c].by<bd.maxby-1 && func(c,c+k.qcols)){
+			if(bd.cell[c].by<bd.maxby-1 && func(c,bd.dn(c))){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c,c+k.qcols],1);
+				bd.sErC([c,bd.dn(c)],1);
 				result = false;
 			}
 		}
