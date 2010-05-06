@@ -1,4 +1,4 @@
-// Encode.js v3.3.0
+// Encode.js v3.3.0p2
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -189,7 +189,7 @@ Encode.prototype = {
 			bd.initBoardSize(this.uri.cols, this.uri.rows);
 		}
 		if(this.uri.bstr){
-			um.disableRecord(); um.disableInfo();
+			base.disableInfo();
 			switch(this.uri.type){
 			case this.PZPRV3: case this.PZPRAPP: case this.PZPRV3E:
 				this.outbstr = this.uri.bstr;
@@ -204,7 +204,7 @@ Encode.prototype = {
 				this.decodeHeyaApp();
 				break;
 			}
-			um.enableRecord(); um.enableInfo();
+			base.enableInfo();
 
 			bd.ansclear();
 			base.resetInfo(true);

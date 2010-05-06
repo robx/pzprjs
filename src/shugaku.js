@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.3.0
+// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.3.0p2
 //
 Puzzles.shugaku = function(){ };
 Puzzles.shugaku.prototype = {
@@ -205,7 +205,7 @@ Puzzles.shugaku.prototype = {
 			um.addOpe(k.CELL, k.QANS, id, old, num);
 			this.cell[id].qans = num;
 
-			if(um.isenableInfo() && (num===1 ^ area.bcell.id[id]!==-1)){
+			if(num===1 ^ area.bcell.id[id]!==-1){
 				area.setCell(id,(num===1?1:0));
 			}
 		};

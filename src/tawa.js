@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たわむれんが版 tawa.js v3.3.0
+// パズル固有スクリプト部 たわむれんが版 tawa.js v3.3.0p2
 //
 Puzzles.tawa = function(){ };
 Puzzles.tawa.prototype = {
@@ -306,12 +306,12 @@ Puzzles.tawa.prototype = {
 				if(col>0 && row>0){
 					bd.setLap(slap);
 					bd.initBoardSize(col,row);
-
-					menu.popclose();
-
-					um.allerase();
-					base.resize_canvas();				// Canvasを更新する
 				}
+
+				menu.popclose();
+
+				base.resetInfo(true);
+				base.resize_canvas();				// Canvasを更新する
 			}
 		};
 

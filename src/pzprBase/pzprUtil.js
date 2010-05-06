@@ -1,4 +1,4 @@
-// pzprUtil.js v3.3.0
+// pzprUtil.js v3.3.0p2
 
 //---------------------------------------------------------------------------
 // ★AreaInfoクラス 主に色分けの情報を管理する
@@ -134,7 +134,7 @@ LineManager.prototype = {
 	//                        可能性がある場合の線idの再設定を行う
 	//---------------------------------------------------------------------------
 	setLine : function(id, val){
-		if(this.disableLine){ return;}
+		if(this.disableLine || !base.isenableInfo()){ return;}
 		val = (val>0?1:0);
 
 		var cc1, cc2;
@@ -593,7 +593,7 @@ AreaManager.prototype = {
 	// area.sr0()          setBorder()から呼ばれて、初期idを含む一つの部屋の領域を、指定されたareaidにする
 	//---------------------------------------------------------------------------
 	setBorder : function(id,val){
-		if(!k.hasroom){ return;}
+		if(!k.hasroom || !base.isenableInfo()){ return;}
 		val = (val>0?1:0);
 
 		var cc1, cc2, xc1 = bd.border[id].crosscc[0], xc2 = bd.border[id].crosscc[1];
@@ -754,6 +754,8 @@ AreaManager.prototype = {
 		}
 	},
 	setBWCell : function(cc,val,data){
+		if(!base.isenableInfo()){ return;}
+
 		var cid = [], dataid = data.id, tc;
 		tc=bd.up(cc); if(tc!==-1 && dataid[tc]!==-1){ cid.push(tc);}
 		tc=bd.dn(cc); if(tc!==-1 && dataid[tc]!==-1){ cid.push(tc);}

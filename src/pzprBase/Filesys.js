@@ -1,4 +1,4 @@
-// Filesys.js v3.3.0
+// Filesys.js v3.3.0p2
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -52,10 +52,10 @@ FileIO.prototype = {
 		bd.initBoardSize(col, row); // 盤面を指定されたサイズで初期化
 
 		// メイン処理
-		um.disableRecord(); um.disableInfo();
+		base.disableInfo();
 		if     (type===1){ this.decodeData();}
 		else if(type===2){ this.kanpenOpen();}
-		um.enableRecord(); um.enableInfo();
+		base.enableInfo();
 
 		this.dataarray = null; // 重くなりそうなので初期化
 

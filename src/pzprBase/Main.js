@@ -1,4 +1,4 @@
-// Main.js v3.3.0
+// Main.js v3.3.0p2
 
 //---------------------------------------------------------------------------
 // šPBaseƒNƒ‰ƒX ‚Ï‚¸‚Õ‚êv3‚Ìƒx[ƒXˆ—‚â‚»‚Ì‘¼‚Ìˆ—‚ðs‚¤
@@ -14,6 +14,8 @@ PBase = function(){
 	this.resizetimer  = null;	// resizeƒ^ƒCƒ}[
 	this.initProcess  = true;	// ‰Šú‰»’†‚©‚Ç‚¤‚©
 	this.enableSaveImage = false;	// ‰æ‘œ•Û‘¶‚ª—LŒø‚©
+
+	this.disinfo = 0;			// LineManager, AreaManager‚ðŒÄ‚Ño‚³‚È‚¢‚æ‚¤‚É‚·‚é
 };
 PBase.prototype = {
 	//---------------------------------------------------------------------------
@@ -207,6 +209,24 @@ PBase.prototype = {
 		puz.graphic_init();
 		puz.encode_init();
 		puz.answer_init();
+	},
+
+	//---------------------------------------------------------------------------
+	// base.disableInfo()  Area/LineManager‚Ö‚Ì“o˜^‚ð‹ÖŽ~‚·‚é
+	// base.enableInfo()   Area/LineManager‚Ö‚Ì“o˜^‚ð‹–‰Â‚·‚é
+	// base.isenableInfo() Area/LineManager‚Ö‚Ì“o˜^‚ª‚Å‚«‚é‚©‚ð•Ô‚·
+	// base.resetInfo()    AreaInfo“™A”Õ–Ê“Ç‚Ýž‚ÝŽž‚É‰Šú‰»‚³‚ê‚éî•ñ‚ðŒÄ‚Ño‚·
+	//---------------------------------------------------------------------------
+	disableInfo : function(){
+		um.disableRecord();
+		this.disinfo++;
+	},
+	enableInfo : function(){
+		um.enableRecord();
+		if(this.disinfo>0){ this.disinfo--;}
+	},
+	isenableInfo : function(){
+		return (this.disinfo===0);
 	},
 	resetInfo : function(iserase){
 		if(iserase){ um.allerase();}

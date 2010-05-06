@@ -1,4 +1,4 @@
-// Board.js v3.3.0
+// Board.js v3.3.0p2
 
 //---------------------------------------------------------------------------
 // ★Cellクラス BoardクラスがCellの数だけ保持する
@@ -763,9 +763,9 @@ Board.prototype = {
 		um.addOpe(k.CELL, k.QNUM, id, old, num);
 		this.cell[id].qnum = num;
 
-		if(um.isenableInfo() &&
-			(area.numberColony && (num!==-1 ^ area.bcell.id[id]!==-1))
-		){ area.setCell(id,(num!==-1?1:0));}
+		if(area.numberColony && (num!==-1 ^ area.bcell.id[id]!==-1)){
+			area.setCell(id,(num!==-1?1:0));
+		}
 	},
 	// overwrite by lightup.js
 	sQaC : function(id, num) {
@@ -773,10 +773,11 @@ Board.prototype = {
 		um.addOpe(k.CELL, k.QANS, id, old, num);
 		this.cell[id].qans = num;
 
-		if(um.isenableInfo() && (
-			(area.bblock && (num!==-1 ^ area.bcell.id[id]!==-1)) || 
-			(area.wblock && (num===-1 ^ area.wcell.id[id]!==-1))
-		)){ area.setCell(id,(num!==-1?1:0));}
+		if((area.bblock && (num!==-1 ^ area.bcell.id[id]!==-1)) || 
+		   (area.wblock && (num===-1 ^ area.wcell.id[id]!==-1)))
+		{
+			area.setCell(id,(num!==-1?1:0));
+		}
 	},
 	sQsC : function(id, num) {
 		um.addOpe(k.CELL, k.QSUB, id, this.cell[id].qsub, num);
@@ -840,7 +841,7 @@ Board.prototype = {
 		um.addOpe(k.BORDER, k.QUES, id, old, num);
 		this.border[id].ques = num;
 
-		if(um.isenableInfo() && (num>0 ^ old>0)){ area.setBorder(id,num);}
+		if(num>0 ^ old>0){ area.setBorder(id,num);}
 	},
 	sQnB : function(id, num) {
 		um.addOpe(k.BORDER, k.QNUM, id, this.border[id].qnum, num);
@@ -853,7 +854,7 @@ Board.prototype = {
 		um.addOpe(k.BORDER, k.QANS, id, old, num);
 		this.border[id].qans = num;
 
-		if(um.isenableInfo() && (num>0 ^ old>0)){
+		if(num>0 ^ old>0){
 			if(k.isborderAsLine){ line.setLine(id,num);}
 			else                { area.setBorder(id,num);}
 		}
@@ -869,7 +870,7 @@ Board.prototype = {
 		um.addOpe(k.BORDER, k.LINE, id, old, num);
 		this.border[id].line = num;
 
-		if(um.isenableInfo() && (num>0 ^ old>0)){ line.setLine(id,num);}
+		if(num>0 ^ old>0){ line.setLine(id,num);}
 	},
 
 	QuB : function(id){ return (id!==-1?this.border[id].ques:-1);},

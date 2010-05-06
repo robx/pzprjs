@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.3.0
+// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.3.0p2
 //
 Puzzles.bosanowa = function(){ };
 Puzzles.bosanowa.prototype = {
@@ -169,9 +169,8 @@ Puzzles.bosanowa.prototype = {
 		tc.cursorx = k.qcols-1-k.qcols%2;
 		tc.cursory = k.qrows-1-k.qrows%2;
 		if(k.EDITOR){
-			um.disableRecord();
-			bd.sQuC(tc.getTCC(),7);
-			um.enableRecord();
+			var c = tc.getTCC();
+			if(c!==-1){ bd.cell[c].ques = 7;}
 		}
 	},
 

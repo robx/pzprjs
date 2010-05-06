@@ -1,4 +1,4 @@
-// Undo.js v3.3.0
+// Undo.js v3.3.0p2
 
 //---------------------------------------------------------------------------
 // ★OperationManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
@@ -19,7 +19,7 @@ OperationManager = function(){
 	this.ope = [];			// Operationクラスを保持する配列
 	this.current = 0;		// 現在の表示操作番号を保持する
 	this.disrec = 0;		// このクラスからの呼び出し時は1にする
-	this.disinfo = 0;		// LineManager, AreaManagerを呼び出さないようにする
+	this.forceRecord = false;	// 強制的に登録する(盤面縮小時限定)
 	this.chainflag = 0;		// 前のOperationとくっつけて、一回のUndo/Redoで変化できるようにする
 	this.disCombine = 0;	// 数字がくっついてしまうので、それを一時的に無効にするためのフラグ
 
@@ -42,16 +42,12 @@ OperationManager.prototype = {
 	//---------------------------------------------------------------------------
 
 	// 今この関数でレコード禁止になるのは、UndoRedo時、URLdecode、fileopen、adjustGeneral/Special時
-	// 連動して実行しなくなるのはaddOpe()と、LineInfo/AreaInfoの中身.
+	// 連動して実行しなくなるのはaddOpe().
 	//  -> ここで使っているUndo/RedoとaddOpe以外はbd.QuC系関数を使用しないように変更
 	//     変な制限事項がなくなるし、動作速度にもかなり効くしね
 	disableRecord : function(){ this.disrec++; },
 	enableRecord  : function(){ if(this.disrec>0){ this.disrec--;} },
-	isenableRecord : function(){ return (this.disrec==0);},
-
-	disableInfo : function(){ this.disinfo++; },
-	enableInfo  : function(){ if(this.disinfo>0){ this.disinfo--;} },
-	isenableInfo : function(){ return (this.disinfo==0);},
+	isenableRecord : function(){ return (this.forceRecord || this.disrec===0);},
 
 	enb_btn : function(){
 		ee('btnundo').el.disabled = ((!this.ope.length || this.current==0)               ? 'true' : '');
@@ -70,11 +66,9 @@ OperationManager.prototype = {
 
 	//---------------------------------------------------------------------------
 	// um.addOpe() 指定された操作を追加する。id等が同じ場合は最終操作を変更する
-	// um.addObj() 指定されたオブジェクトを操作として追加する
 	//---------------------------------------------------------------------------
 	addOpe : function(obj, property, id, old, num){
-		if(!this.isenableRecord()){ return;}
-		else if(old==num && obj!==k.BOARD){ return;}
+		if(!this.isenableRecord() || (old===num && obj!==k.BOARD)){ return;}
 
 		var lastid = this.ope.length-1;
 
@@ -84,8 +78,13 @@ OperationManager.prototype = {
 		}
 
 		// 前回と同じ場所なら前回の更新のみ
-		if(lastid>=0 && this.ope[lastid].obj == obj && this.ope[lastid].property == property && this.ope[lastid].id == id && this.ope[lastid].num == old
-			&& this.disCombine==0 && ( (obj == k.CELL && ( property==k.QNUM || (property==k.QANS && k.isAnsNumber) )) || obj == k.CROSS)
+		if( lastid>=0 &&
+			this.disCombine==0 &&
+			this.ope[lastid].obj == obj           &&
+			this.ope[lastid].property == property &&
+			this.ope[lastid].id == id             &&
+			this.ope[lastid].num == old           &&
+			( (obj == k.CELL && ( property==k.QNUM || (property==k.QANS && k.isAnsNumber) )) || obj == k.CROSS)
 		)
 		{
 			this.ope[lastid].num = num;
@@ -100,27 +99,18 @@ OperationManager.prototype = {
 		this.changeflag = true;
 		this.enb_btn();
 	},
-	addObj : function(type, id){
-		var old, obj;
-		if     (type==k.CELL)  { old = new Cell();   obj = bd.cell[id];  }
-		else if(type==k.CROSS) { old = new Cross();  obj = bd.cross[id]; }
-		else if(type==k.BORDER){ old = new Border(); obj = bd.border[id];}
-		else if(type==k.EXCELL){ old = new Cell();   obj = bd.excell[id];}
-		for(var i in obj){ old[i] = obj[i];}
-		this.addOpe(type, type, id, old, null);
-	},
 
 	//---------------------------------------------------------------------------
 	// um.undo()  Undoを実行する
 	// um.redo()  Redoを実行する
+	// um.preproc()  Undo/Redo実行前の処理を行う
 	// um.postproc() Undo/Redo実行後の処理を行う
 	// um.exec()  操作opeを反映する。undo(),redo()から内部的に呼ばれる
 	//---------------------------------------------------------------------------
 	undo : function(){
 		if(this.current==0){ return;}
 		this.undoExec = true;
-		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
-		this.disableRecord();
+		this.preproc();
 
 		while(this.current>0){
 			var ope = this.ope[this.current-1];
@@ -139,8 +129,7 @@ OperationManager.prototype = {
 	redo : function(){
 		if(this.current==this.ope.length){ return;}
 		this.redoExec = true;
-		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
-		this.disableRecord();
+		this.preproc();
 
 		while(this.current<this.ope.length){
 			var ope = this.ope[this.current];
@@ -156,6 +145,12 @@ OperationManager.prototype = {
 		this.redoExec = false;
 		if(this.ope.length==0){ kc.inREDO=false;}
 	},
+	preproc : function(){
+		this.reqReset=false;
+
+		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
+		this.disableRecord();
+	},
 	postproc : function(){
 		if(this.reqReset){
 			this.reqReset=false;
@@ -169,7 +164,6 @@ OperationManager.prototype = {
 			pc.paintRange(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
 		}
 		this.enableRecord();
-		this.enableInfo();
 		this.enb_btn();
 	},
 	exec : function(ope, num){
@@ -206,7 +200,6 @@ OperationManager.prototype = {
 		else if(ope.obj == k.BOARD){
 			var d = {x1:0, y1:0, x2:2*k.qcols, y2:2*k.qrows};
 
-			this.disableInfo();
 			if(num & menu.ex.TURNFLIP){ menu.ex.turnflip    (num,d);}
 			else                      { menu.ex.expandreduce(num,d);}
 

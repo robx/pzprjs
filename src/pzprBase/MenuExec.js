@@ -1,4 +1,4 @@
-// MenuExec.js v3.3.0
+// MenuExec.js v3.3.0p2
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -322,10 +322,8 @@ MenuExec.prototype = {
 			}
 
 			var d = {x1:0, y1:0, x2:2*k.qcols, y2:2*k.qrows};
-			um.disableInfo();
 			if (name.match(/(expand|reduce)/)){ this.expandreduce(this.boardtype[name][1],d);}
 			else if(name.match(/(turn|flip)/)){ this.turnflip    (this.boardtype[name][1],d);}
-			um.enableInfo();
 
 			// reduceはここ必須
 			um.addOpe(k.BOARD, name, 0, this.boardtype[name][0], this.boardtype[name][1]);
@@ -340,8 +338,10 @@ MenuExec.prototype = {
 	// menu.ex.expandreduce() 盤面の拡大・縮小を実行する
 	// menu.ex.expandGroup()  オブジェクトの追加を行う
 	// menu.ex.reduceGroup()  オブジェクトの消去を行う
+	// menu.ex.recordObject() 指定されたオブジェクトをOperationManagerに追加する
 	//------------------------------------------------------------------------------
 	expandreduce : function(key,d){
+		base.disableInfo();
 		this.adjustBoardData(key,d);
 
 		if(key & this.EXPAND){
@@ -362,10 +362,10 @@ MenuExec.prototype = {
 			if     (key===this.REDUCEUP||key===this.REDUCEDN){ k.qrows--;}
 			else if(key===this.REDUCELT||key===this.REDUCERT){ k.qcols--;}
 		}
-
 		bd.setposAll();
 
 		this.adjustBoardData2(key,d);
+		base.enableInfo();
 	},
 	expandGroup : function(type,key){
 		var margin = bd.initGroup(type, k.qcols, k.qrows);
@@ -386,12 +386,28 @@ MenuExec.prototype = {
 		var margin=0, group = bd.getGroup(type);
 		for(var i=0;i<group.length;i++){
 			if(!!this.insex[type][this.distObj(type,i,key)]){
-				if(!group[i].isempty()){ um.addObj(type,i);}
+				if(!group[i].isempty()){ this.recordObject(type,i);}
 				margin++;
 			}
 			else if(margin>0){ group[i-margin] = group[i];}
 		}
 		for(var i=0;i<margin;i++){ group.pop();}
+	},
+	recordObject : function(type, id){
+		if(um.undoExec || um.redoExec){ return;}
+		// オブジェクトを消滅させるのでOperationManagerに登録する
+		// 盤面拡大縮小・回転反転のうち登録されるのは盤面縮小時のみです
+
+		var old = bd.newObject(type, id), obj;
+		if     (type===k.CELL)  { obj = bd.cell[id];  }
+		else if(type===k.CROSS) { obj = bd.cross[id]; }
+		else if(type===k.BORDER){ obj = bd.border[id];}
+		else if(type===k.EXCELL){ obj = bd.excell[id];}
+		for(var i in obj){ old[i] = obj[i];}
+
+		um.forceRecord = true;
+		um.addOpe(type, type, id, old, null);
+		um.forceRecord = false;
 	},
 
 	//------------------------------------------------------------------------------
@@ -399,6 +415,7 @@ MenuExec.prototype = {
 	// menu.ex.turnflipGroup() turnflip()から内部的に呼ばれる回転実行部
 	//------------------------------------------------------------------------------
 	turnflip : function(key,d){
+		base.disableInfo();
 		this.adjustBoardData(key,d);
 
 		if(key & this.TURN){
@@ -417,10 +434,10 @@ MenuExec.prototype = {
 			else if(key===this.FLIPX){ d2.y1 = d2.y2 = -1;}
 			this.turnflipGroup(k.EXCELL, key, d2);
 		}
-
 		bd.setposAll();
 
 		this.adjustBoardData2(key,d);
+		base.enableInfo();
 	},
 	turnflipGroup : function(type,key,d){
 		var ch=[], idlist=bd.objectinside(type,d.x1,d.y1,d.x2,d.y2);
@@ -467,10 +484,13 @@ MenuExec.prototype = {
 		else{ return -1;}
 
 		key &= 0x0F;
-		if     (key===k.UP){ return obj.by;}
-		else if(key===k.DN){ return 2*k.qrows-obj.by;}
-		else if(key===k.LT){ return obj.bx;}
-		else if(key===k.RT){ return 2*k.qcols-obj.bx;}
+		try{
+			if     (key===k.UP){ return obj.by;}
+			else if(key===k.DN){ return 2*k.qrows-obj.by;}
+			else if(key===k.LT){ return obj.bx;}
+			else if(key===k.RT){ return 2*k.qcols-obj.bx;}
+		}
+		catch(e){ console.log([type, id].join(''));}
 		return -1;
 	},
 
@@ -545,8 +565,6 @@ MenuExec.prototype = {
 	// menu.ex.adjustQues51_2()   [＼]セルの調整(adjustSpecial2関数に代入する用)
 	//------------------------------------------------------------------------------
 	adjustBoardData : function(key,d){
-		um.disableRecord();
-
 		this.adjustSpecial.call(this,key,d);
 
 		var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
@@ -607,7 +625,6 @@ MenuExec.prototype = {
 			}
 			break;
 		}
-		um.enableRecord();
 
 		if((key & this.REDUCE) && k.roomNumber){
 			this.qnums = [];
@@ -622,13 +639,12 @@ MenuExec.prototype = {
 		if((key & this.REDUCE) && k.roomNumber){
 			area.resetArea();
 			for(var i=0;i<this.qnums.length;i++){
-				bd.sQnC(area.getTopOfRoom(this.qnums[i].areaid), this.qnums[i].val);
+				var c = area.getTopOfRoom(this.qnums[i].areaid);
+				bd.cell[c].qnum = this.qnums[i].val;
 			}
 		}
 
-		um.disableRecord();
 		this.adjustSpecial2.call(this,key,d);
-		um.enableRecord();
 	},
 	adjustSpecial  : function(key,d){ },
 	adjustSpecial2 : function(key,d){ },
