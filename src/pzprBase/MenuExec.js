@@ -1,27 +1,27 @@
-// MenuExec.js v3.3.0
+// MenuExec.js v3.3.0p2
 
 //---------------------------------------------------------------------------
-// šMenuExecƒNƒ‰ƒX ƒ|ƒbƒvƒAƒbƒvƒEƒBƒ“ƒhƒE“à‚Åƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚Ìˆ—“à—e‚ğ‹Lq‚·‚é
+// â˜…MenuExecã‚¯ãƒ©ã‚¹ ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†…ã§ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸæ™‚ã®å‡¦ç†å†…å®¹ã‚’è¨˜è¿°ã™ã‚‹
 //---------------------------------------------------------------------------
 
-// MenuƒNƒ‰ƒXÀs•”
+// Menuã‚¯ãƒ©ã‚¹å®Ÿè¡Œéƒ¨
 MenuExec = function(){
 	this.displaymanage = true;
-	this.qnumw;	// Ques==51‚Ì‰ñ“]¥”½“]—p
-	this.qnumh;	// Ques==51‚Ì‰ñ“]¥”½“]—p
-	this.qnums;	// reduce‚ÅisOneNumber‚ÌŒãˆ——p
+	this.qnumw;	// Ques==51ã®å›è»¢ï½¥åè»¢ç”¨
+	this.qnumh;	// Ques==51ã®å›è»¢ï½¥åè»¢ç”¨
+	this.qnums;	// reduceã§isOneNumberæ™‚ã®å¾Œå‡¦ç†ç”¨
 
-	this.reader;	// FileReaderƒIƒuƒWƒFƒNƒg
+	this.reader;	// FileReaderã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	this.enableReadText = false;
 
-	// expand/reduceˆ——p
+	// expand/reduceå‡¦ç†ç”¨
 	this.insex = {};
 	this.insex[k.CELL]   = {1:true};
 	this.insex[k.CROSS]  = (k.iscross===1 ? {2:true} : {0:true});
 	this.insex[k.BORDER] = {1:true, 2:true};
 	this.insex[k.EXCELL] = {1:true};
 
-	// ’è”
+	// å®šæ•°
 	this.EXPAND = 0x10;
 	this.REDUCE = 0x20;
 	this.TURN   = 0x40;
@@ -62,7 +62,7 @@ MenuExec = function(){
 };
 MenuExec.prototype = {
 	//------------------------------------------------------------------------------
-	// menu.ex.init() ƒIƒuƒWƒFƒNƒg‚Ì‰Šú‰»ˆ—
+	// menu.ex.init() ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åˆæœŸåŒ–å‡¦ç†
 	//------------------------------------------------------------------------------
 	init : function(){
 		if(typeof FileReader == 'undefined'){
@@ -83,7 +83,7 @@ MenuExec.prototype = {
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.modechange() ƒ‚[ƒh•ÏX‚Ìˆ—‚ğs‚¤
+	// menu.ex.modechange() ãƒ¢ãƒ¼ãƒ‰å¤‰æ›´æ™‚ã®å‡¦ç†ã‚’è¡Œã†
 	//------------------------------------------------------------------------------
 	modechange : function(num){
 		k.editmode = (num==1);
@@ -97,7 +97,7 @@ MenuExec.prototype = {
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.newboard()  V‹K”Õ–Ê‚ğì¬‚·‚é
+	// menu.ex.newboard()  æ–°è¦ç›¤é¢ã‚’ä½œæˆã™ã‚‹
 	//------------------------------------------------------------------------------
 	newboard : function(e){
 		if(menu.pop){
@@ -117,14 +117,14 @@ MenuExec.prototype = {
 			menu.popclose();
 
 			base.resetInfo(true);
-			base.resize_canvas();				// Canvas‚ğXV‚·‚é
+			base.resize_canvas();				// Canvasã‚’æ›´æ–°ã™ã‚‹
 		}
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.urlinput()   URL‚ğ“ü—Í‚·‚é
-	// menu.ex.urloutput()  URL‚ğo—Í‚·‚é
-	// menu.ex.openurl()    u‚±‚ÌURL‚ğŠJ‚­v‚ğÀs‚·‚é
+	// menu.ex.urlinput()   URLã‚’å…¥åŠ›ã™ã‚‹
+	// menu.ex.urloutput()  URLã‚’å‡ºåŠ›ã™ã‚‹
+	// menu.ex.openurl()    ã€Œã“ã®URLã‚’é–‹ãã€ã‚’å®Ÿè¡Œã™ã‚‹
 	//------------------------------------------------------------------------------
 	urlinput : function(e){
 		if(menu.pop){
@@ -155,9 +155,9 @@ MenuExec.prototype = {
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.fileopen()   ƒtƒ@ƒCƒ‹‚ğŠJ‚­
-	// menu.ex.fileonload() File API—pƒtƒ@ƒCƒ‹‚ğŠJ‚¢‚½ƒCƒxƒ“ƒg‚Ìˆ—
-	// menu.ex.filesave()   ƒtƒ@ƒCƒ‹‚ğ•Û‘¶‚·‚é
+	// menu.ex.fileopen()   ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+	// menu.ex.fileonload() File APIç”¨ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã„ãŸã‚¤ãƒ™ãƒ³ãƒˆã®å‡¦ç†
+	// menu.ex.filesave()   ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¿å­˜ã™ã‚‹
 	//------------------------------------------------------------------------------
 	fileopen : function(e){
 		if(menu.pop){ menu.popclose();}
@@ -193,10 +193,10 @@ MenuExec.prototype = {
 	},
 
 	filesave : function(ftype){
-		var fname = prompt("•Û‘¶‚·‚éƒtƒ@ƒCƒ‹–¼‚ğ“ü—Í‚µ‚Ä‰º‚³‚¢B", k.puzzleid+".txt");
+		var fname = prompt("ä¿å­˜ã™ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å…¥åŠ›ã—ã¦ä¸‹ã•ã„ã€‚", k.puzzleid+".txt");
 		if(!fname){ return;}
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
-		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ƒtƒ@ƒCƒ‹–¼‚Æ‚µ‚Äg—p‚Å‚«‚È‚¢•¶š‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·B'); return;} }
+		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ãƒ•ã‚¡ã‚¤ãƒ«åã¨ã—ã¦ä½¿ç”¨ã§ããªã„æ–‡å­—ãŒå«ã¾ã‚Œã¦ã„ã¾ã™ã€‚'); return;} }
 
 		document.fileform2.filename.value = fname;
 
@@ -212,24 +212,24 @@ MenuExec.prototype = {
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.imagesave() ‰æ‘œ‚ğ•Û‘¶‚·‚é
+	// menu.ex.imagesave() ç”»åƒã‚’ä¿å­˜ã™ã‚‹
 	//------------------------------------------------------------------------------
 	imagesave : function(isDL){
-		// Œ»İ‚Ìİ’è‚ğ•Û‘¶‚·‚é
+		// ç¾åœ¨ã®è¨­å®šã‚’ä¿å­˜ã™ã‚‹
 		var temp_flag   = pc.fillTextPrecisely;
 		var temp_margin = k.bdmargin;
 		var temp_cursor = pp.getVal('cursor');
 
-		// İ’è’lE•Ï”‚ğcanvas—p‚Ì‚à‚Ì‚É•ÏX
+		// è¨­å®šå€¤ãƒ»å¤‰æ•°ã‚’canvasç”¨ã®ã‚‚ã®ã«å¤‰æ›´
 		pc.fillTextPrecisely = true;
 		k.bdmargin = k.bdmargin_image;
 		pp.setVal('cursor', false, false);
 		g = ee('divques_sub').el.getContext("2d");
 
-		// canvas—v‘f‚Ìİ’è‚ğ“K—p‚µ‚ÄAÄ•`‰æ
+		// canvasè¦ç´ ã®è¨­å®šã‚’é©ç”¨ã—ã¦ã€å†æç”»
 		base.resize_canvas();
 
-		// canvas‚Ì•`‰æ“à—e‚ğDataURL‚Æ‚µ‚Äæ“¾‚·‚é
+		// canvasã®æç”»å†…å®¹ã‚’DataURLã¨ã—ã¦å–å¾—ã™ã‚‹
 		var url = g.canvas.toDataURL();
 
 		if(isDL){
@@ -242,18 +242,18 @@ MenuExec.prototype = {
 			window.open(url, '', '');
 		}
 
-		// İ’è’lE•Ï”‚ğŒ³‚É–ß‚·
+		// è¨­å®šå€¤ãƒ»å¤‰æ•°ã‚’å…ƒã«æˆ»ã™
 		pc.fillTextPrecisely = temp_flag;
 		k.bdmargin = temp_margin;
 		pp.setVal('cursor', temp_cursor, false);
 		base.initCanvas();
 
-		// ‚»‚Ì‘¼‚Ìİ’è‚ğŒ³‚É–ß‚µ‚ÄAÄ•`‰æ
+		// ãã®ä»–ã®è¨­å®šã‚’å…ƒã«æˆ»ã—ã¦ã€å†æç”»
 		base.resize_canvas();
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.dispsize()  Canvas‚Å‚Ìƒ}ƒX–Ú‚Ì•\¦ƒTƒCƒY‚ğ•ÏX‚·‚é
+	// menu.ex.dispsize()  Canvasã§ã®ãƒã‚¹ç›®ã®è¡¨ç¤ºã‚µã‚¤ã‚ºã‚’å¤‰æ›´ã™ã‚‹
 	//------------------------------------------------------------------------------
 	dispsize : function(e){
 		if(menu.pop){
@@ -261,12 +261,12 @@ MenuExec.prototype = {
 			if(csize>0){ k.cellsize = mf(csize);}
 
 			menu.popclose();
-			base.resize_canvas();	// Canvas‚ğXV‚·‚é
+			base.resize_canvas();	// Canvasã‚’æ›´æ–°ã™ã‚‹
 		}
 	},
 
 	//---------------------------------------------------------------------------
-	// menu.ex.irowakeRemake() uF•ª‚¯‚µ‚È‚¨‚·vƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚ÉF•ª‚¯‚µ‚È‚¨‚·
+	// menu.ex.irowakeRemake() ã€Œè‰²åˆ†ã‘ã—ãªãŠã™ã€ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸæ™‚ã«è‰²åˆ†ã‘ã—ãªãŠã™
 	//---------------------------------------------------------------------------
 	irowakeRemake : function(){
 		line.newIrowake();
@@ -274,8 +274,8 @@ MenuExec.prototype = {
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.dispman()    ŠÇ——Ìˆæ‚ğ‰B‚·/•\¦‚·‚é‚ª‰Ÿ‚³‚ê‚½‚É“®ì‚·‚é
-	// menu.ex.dispmanstr() ŠÇ——Ìˆæ‚ğ‰B‚·/•\¦‚·‚é‚É‚Ç‚Ì•¶š—ñ‚ğ•\¦‚·‚é‚©
+	// menu.ex.dispman()    ç®¡ç†é ˜åŸŸã‚’éš ã™/è¡¨ç¤ºã™ã‚‹ãŒæŠ¼ã•ã‚ŒãŸæ™‚ã«å‹•ä½œã™ã‚‹
+	// menu.ex.dispmanstr() ç®¡ç†é ˜åŸŸã‚’éš ã™/è¡¨ç¤ºã™ã‚‹ã«ã©ã®æ–‡å­—åˆ—ã‚’è¡¨ç¤ºã™ã‚‹ã‹
 	//------------------------------------------------------------------------------
 	dispman : function(e){
 		var idlist = ['expression','usepanel','checkpanel'];
@@ -296,16 +296,16 @@ MenuExec.prototype = {
 		this.displaymanage = !this.displaymanage;
 		this.dispmanstr();
 
-		base.resize_canvas();	// canvas‚Ì¶ãÀ•W“™‚ğXV‚µ‚ÄÄ•`‰æ
+		base.resize_canvas();	// canvasã®å·¦ä¸Šåº§æ¨™ç­‰ã‚’æ›´æ–°ã—ã¦å†æç”»
 	},
 	dispmanstr : function(){
-		if(!this.displaymanage){ ee('ms_manarea').el.innerHTML = menu.isLangJP()?"ŠÇ——Ìˆæ‚ğ•\¦":"Show management area";}
-		else                   { ee('ms_manarea').el.innerHTML = menu.isLangJP()?"ŠÇ——Ìˆæ‚ğ‰B‚·":"Hide management area";}
+		if(!this.displaymanage){ ee('ms_manarea').el.innerHTML = menu.isLangJP()?"ç®¡ç†é ˜åŸŸã‚’è¡¨ç¤º":"Show management area";}
+		else                   { ee('ms_manarea').el.innerHTML = menu.isLangJP()?"ç®¡ç†é ˜åŸŸã‚’éš ã™":"Hide management area";}
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.popupadjust()  "”Õ–Ê‚Ì’²®""‰ñ“]E”½“]"‚Åƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚É
-	//                        ‘Î‰‚·‚éŠÖ”‚ÖƒWƒƒƒ“ƒv‚·‚é
+	// menu.ex.popupadjust()  "ç›¤é¢ã®èª¿æ•´""å›è»¢ãƒ»åè»¢"ã§ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸæ™‚ã«
+	//                        å¯¾å¿œã™ã‚‹é–¢æ•°ã¸ã‚¸ãƒ£ãƒ³ãƒ—ã™ã‚‹
 	//------------------------------------------------------------------------------
 	popupadjust : function(e){
 		if(menu.pop){
@@ -322,26 +322,26 @@ MenuExec.prototype = {
 			}
 
 			var d = {x1:0, y1:0, x2:2*k.qcols, y2:2*k.qrows};
-			um.disableInfo();
 			if (name.match(/(expand|reduce)/)){ this.expandreduce(this.boardtype[name][1],d);}
 			else if(name.match(/(turn|flip)/)){ this.turnflip    (this.boardtype[name][1],d);}
-			um.enableInfo();
 
-			// reduce‚Í‚±‚±•K{
+			// reduceã¯ã“ã“å¿…é ˆ
 			um.addOpe(k.BOARD, name, 0, this.boardtype[name][0], this.boardtype[name][1]);
 
 			bd.setminmax();
 			if(!um.undoExec){ base.resetInfo(false);}
-			base.resize_canvas();				// Canvas‚ğXV‚·‚é
+			base.resize_canvas();				// Canvasã‚’æ›´æ–°ã™ã‚‹
 		}
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.expandreduce() ”Õ–Ê‚ÌŠg‘åEk¬‚ğÀs‚·‚é
-	// menu.ex.expandGroup()  ƒIƒuƒWƒFƒNƒg‚Ì’Ç‰Á‚ğs‚¤
-	// menu.ex.reduceGroup()  ƒIƒuƒWƒFƒNƒg‚ÌÁ‹‚ğs‚¤
+	// menu.ex.expandreduce() ç›¤é¢ã®æ‹¡å¤§ãƒ»ç¸®å°ã‚’å®Ÿè¡Œã™ã‚‹
+	// menu.ex.expandGroup()  ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è¿½åŠ ã‚’è¡Œã†
+	// menu.ex.reduceGroup()  ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æ¶ˆå»ã‚’è¡Œã†
+	// menu.ex.recordObject() æŒ‡å®šã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’OperationManagerã«è¿½åŠ ã™ã‚‹
 	//------------------------------------------------------------------------------
 	expandreduce : function(key,d){
+		base.disableInfo();
 		this.adjustBoardData(key,d);
 
 		if(key & this.EXPAND){
@@ -362,10 +362,10 @@ MenuExec.prototype = {
 			if     (key===this.REDUCEUP||key===this.REDUCEDN){ k.qrows--;}
 			else if(key===this.REDUCELT||key===this.REDUCERT){ k.qcols--;}
 		}
-
 		bd.setposAll();
 
 		this.adjustBoardData2(key,d);
+		base.enableInfo();
 	},
 	expandGroup : function(type,key){
 		var margin = bd.initGroup(type, k.qcols, k.qrows);
@@ -386,19 +386,36 @@ MenuExec.prototype = {
 		var margin=0, group = bd.getGroup(type);
 		for(var i=0;i<group.length;i++){
 			if(!!this.insex[type][this.distObj(type,i,key)]){
-				if(!group[i].isempty()){ um.addObj(type,i);}
+				if(!group[i].isempty()){ this.recordObject(type,i);}
 				margin++;
 			}
 			else if(margin>0){ group[i-margin] = group[i];}
 		}
 		for(var i=0;i<margin;i++){ group.pop();}
 	},
+	recordObject : function(type, id){
+		if(um.undoExec || um.redoExec){ return;}
+		// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¶ˆæ»…ã•ã›ã‚‹ã®ã§OperationManagerã«ç™»éŒ²ã™ã‚‹
+		// ç›¤é¢æ‹¡å¤§ç¸®å°ãƒ»å›è»¢åè»¢ã®ã†ã¡ç™»éŒ²ã•ã‚Œã‚‹ã®ã¯ç›¤é¢ç¸®å°æ™‚ã®ã¿ã§ã™
+
+		var old = bd.newObject(type, id), obj;
+		if     (type===k.CELL)  { obj = bd.cell[id];  }
+		else if(type===k.CROSS) { obj = bd.cross[id]; }
+		else if(type===k.BORDER){ obj = bd.border[id];}
+		else if(type===k.EXCELL){ obj = bd.excell[id];}
+		for(var i in obj){ old[i] = obj[i];}
+
+		um.forceRecord = true;
+		um.addOpe(type, type, id, old, null);
+		um.forceRecord = false;
+	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.turnflip()      ‰ñ“]E”½“]ˆ—‚ğÀs‚·‚é
-	// menu.ex.turnflipGroup() turnflip()‚©‚ç“à•”“I‚ÉŒÄ‚Î‚ê‚é‰ñ“]Às•”
+	// menu.ex.turnflip()      å›è»¢ãƒ»åè»¢å‡¦ç†ã‚’å®Ÿè¡Œã™ã‚‹
+	// menu.ex.turnflipGroup() turnflip()ã‹ã‚‰å†…éƒ¨çš„ã«å‘¼ã°ã‚Œã‚‹å›è»¢å®Ÿè¡Œéƒ¨
 	//------------------------------------------------------------------------------
 	turnflip : function(key,d){
+		base.disableInfo();
 		this.adjustBoardData(key,d);
 
 		if(key & this.TURN){
@@ -417,10 +434,10 @@ MenuExec.prototype = {
 			else if(key===this.FLIPX){ d2.y1 = d2.y2 = -1;}
 			this.turnflipGroup(k.EXCELL, key, d2);
 		}
-
 		bd.setposAll();
 
 		this.adjustBoardData2(key,d);
+		base.enableInfo();
 	},
 	turnflipGroup : function(type,key,d){
 		var ch=[], idlist=bd.objectinside(type,d.x1,d.y1,d.x2,d.y2);
@@ -434,8 +451,8 @@ MenuExec.prototype = {
 			var tmp = group[source], target = source;
 			while(ch[target]===false){
 				ch[target]=true;
-				// next‚É‚È‚é‚à‚Ì‚ªtarget‚ÉˆÚ“®‚µ‚Ä‚­‚éAA‚Æ‚¢‚¤l‚¦‚©‚½B
-				// ‚±‚±‚Å‚ÍˆÚ“®‘O‚ÌID‚ğæ“¾‚µ‚Ä‚¢‚Ü‚·
+				// nextã«ãªã‚‹ã‚‚ã®ãŒtargetã«ç§»å‹•ã—ã¦ãã‚‹ã€ã€ã¨ã„ã†è€ƒãˆã‹ãŸã€‚
+				// ã“ã“ã§ã¯ç§»å‹•å‰ã®IDã‚’å–å¾—ã—ã¦ã„ã¾ã™
 				switch(key){
 					case this.FLIPY: next = bd.idnum(type, group[target].bx, yy-group[target].by); break;
 					case this.FLIPX: next = bd.idnum(type, xx-group[target].bx, group[target].by); break;
@@ -456,7 +473,7 @@ MenuExec.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// menu.ex.distObj()      ã‰º¶‰E‚¢‚¸‚ê‚©‚ÌŠO˜g‚Æ‚Ì‹——£‚ğ‹‚ß‚é
+	// menu.ex.distObj()      ä¸Šä¸‹å·¦å³ã„ãšã‚Œã‹ã®å¤–æ ã¨ã®è·é›¢ã‚’æ±‚ã‚ã‚‹
 	//---------------------------------------------------------------------------
 	distObj : function(type,id,key){
 		var obj;
@@ -467,24 +484,27 @@ MenuExec.prototype = {
 		else{ return -1;}
 
 		key &= 0x0F;
-		if     (key===k.UP){ return obj.by;}
-		else if(key===k.DN){ return 2*k.qrows-obj.by;}
-		else if(key===k.LT){ return obj.bx;}
-		else if(key===k.RT){ return 2*k.qcols-obj.bx;}
+		try{
+			if     (key===k.UP){ return obj.by;}
+			else if(key===k.DN){ return 2*k.qrows-obj.by;}
+			else if(key===k.LT){ return obj.bx;}
+			else if(key===k.RT){ return 2*k.qcols-obj.bx;}
+		}
+		catch(e){ console.log([type, id].join(''));}
 		return -1;
 	},
 
 	//---------------------------------------------------------------------------
-	// menu.ex.expandborder() ”Õ–Ê‚ÌŠg‘åA‹«ŠEü‚ğL‚Î‚·
-	// menu.ex.reduceborder() ”Õ–Ê‚Ìk¬Aü‚ğˆÚ“®‚·‚é
-	// menu.ex.copyBorder()   (expand/reduceBorder—p) w’è‚µ‚½ƒf[ƒ^‚ğƒRƒs[‚·‚é
-	// menu.ex.innerBorder()  (expand/reduceBorder—p) ‚Ğ‚Æ‚Â“à‘¤‚É“ü‚Á‚½border‚Ìid‚ğ•Ô‚·
-	// menu.ex.outerBorder()  (expand/reduceBorder—p) ‚Ğ‚Æ‚ÂŠO‘¤‚És‚Á‚½border‚Ìid‚ğ•Ô‚·
+	// menu.ex.expandborder() ç›¤é¢ã®æ‹¡å¤§æ™‚ã€å¢ƒç•Œç·šã‚’ä¼¸ã°ã™
+	// menu.ex.reduceborder() ç›¤é¢ã®ç¸®å°æ™‚ã€ç·šã‚’ç§»å‹•ã™ã‚‹
+	// menu.ex.copyBorder()   (expand/reduceBorderç”¨) æŒ‡å®šã—ãŸãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹
+	// menu.ex.innerBorder()  (expand/reduceBorderç”¨) ã²ã¨ã¤å†…å´ã«å…¥ã£ãŸborderã®idã‚’è¿”ã™
+	// menu.ex.outerBorder()  (expand/reduceBorderç”¨) ã²ã¨ã¤å¤–å´ã«è¡Œã£ãŸborderã®idã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	expandborder : function(key){
-		// borderAsLine‚¶‚á‚È‚¢Undo‚ÍAŒã‚ÅƒIƒuƒWƒFƒNƒg‚ğ‘ã“ü‚·‚é‚Ì‚Å‰º‚Ìˆ—‚ÍƒpƒX
+		// borderAsLineã˜ã‚ƒãªã„Undoæ™‚ã¯ã€å¾Œã§ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä»£å…¥ã™ã‚‹ã®ã§ä¸‹ã®å‡¦ç†ã¯ãƒ‘ã‚¹
 		if(k.isborderAsLine || !um.undoExec){
-			// ’¼‘O‚ÌexpandGroup‚ÅAbx,byƒvƒƒpƒeƒB‚ª•s’è‚È‚Ü‚Ü‚È‚Ì‚Åİ’è‚·‚é
+			// ç›´å‰ã®expandGroupã§ã€bx,byãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãŒä¸å®šãªã¾ã¾ãªã®ã§è¨­å®šã™ã‚‹
 			bd.setposBorders();
 
 			for(var id=0;id<bd.bdmax;id++){
@@ -535,23 +555,21 @@ MenuExec.prototype = {
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.adjustBoardData()  ‰ñ“]E”½“]ŠJn‘O‚ÉŠeƒZƒ‹‚Ì’²ß‚ğs‚¤(‹¤’Êˆ—)
-	// menu.ex.adjustBoardData2() ‰ñ“]E”½“]I—¹Œã‚ÉŠeƒZƒ‹‚Ì’²ß‚ğs‚¤(‹¤’Êˆ—)
+	// menu.ex.adjustBoardData()  å›è»¢ãƒ»åè»¢é–‹å§‹å‰ã«å„ã‚»ãƒ«ã®èª¿ç¯€ã‚’è¡Œã†(å…±é€šå‡¦ç†)
+	// menu.ex.adjustBoardData2() å›è»¢ãƒ»åè»¢çµ‚äº†å¾Œã«å„ã‚»ãƒ«ã®èª¿ç¯€ã‚’è¡Œã†(å…±é€šå‡¦ç†)
 	// 
-	// menu.ex.adjustSpecial()    ‰ñ“]E”½“]E”Õ–Ê’²ßŠJn‘O‚ÉŠeƒZƒ‹‚Ì’²ß‚ğs‚¤(ŠeƒpƒYƒ‹‚ÌƒI[ƒo[ƒ‰ƒCƒh—p)
-	// menu.ex.adjustSpecial2()   ‰ñ“]E”½“]E”Õ–Ê’²ßI—¹Œã‚ÉŠeƒZƒ‹‚Ì’²ß‚ğs‚¤(ŠeƒpƒYƒ‹‚ÌƒI[ƒo[ƒ‰ƒCƒh—p)
+	// menu.ex.adjustSpecial()    å›è»¢ãƒ»åè»¢ãƒ»ç›¤é¢èª¿ç¯€é–‹å§‹å‰ã«å„ã‚»ãƒ«ã®èª¿ç¯€ã‚’è¡Œã†(å„ãƒ‘ã‚ºãƒ«ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ç”¨)
+	// menu.ex.adjustSpecial2()   å›è»¢ãƒ»åè»¢ãƒ»ç›¤é¢èª¿ç¯€çµ‚äº†å¾Œã«å„ã‚»ãƒ«ã®èª¿ç¯€ã‚’è¡Œã†(å„ãƒ‘ã‚ºãƒ«ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ç”¨)
 	// 
-	// menu.ex.adjustQues51_1()   [_]ƒZƒ‹‚Ì’²®(adjustSpecialŠÖ”‚É‘ã“ü‚·‚é—p)
-	// menu.ex.adjustQues51_2()   [_]ƒZƒ‹‚Ì’²®(adjustSpecial2ŠÖ”‚É‘ã“ü‚·‚é—p)
+	// menu.ex.adjustQues51_1()   [ï¼¼]ã‚»ãƒ«ã®èª¿æ•´(adjustSpecialé–¢æ•°ã«ä»£å…¥ã™ã‚‹ç”¨)
+	// menu.ex.adjustQues51_2()   [ï¼¼]ã‚»ãƒ«ã®èª¿æ•´(adjustSpecial2é–¢æ•°ã«ä»£å…¥ã™ã‚‹ç”¨)
 	//------------------------------------------------------------------------------
 	adjustBoardData : function(key,d){
-		um.disableRecord();
-
 		this.adjustSpecial.call(this,key,d);
 
 		var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
 		switch(key){
-		case this.FLIPY: // ã‰º”½“]
+		case this.FLIPY: // ä¸Šä¸‹åè»¢
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(true){
@@ -565,7 +583,7 @@ MenuExec.prototype = {
 			}
 			break;
 
-		case this.FLIPX: // ¶‰E”½“]
+		case this.FLIPX: // å·¦å³åè»¢
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(true){
@@ -579,7 +597,7 @@ MenuExec.prototype = {
 			}
 			break;
 
-		case this.TURNR: // ‰E90‹”½“]
+		case this.TURNR: // å³90Â°åè»¢
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(true){
@@ -593,7 +611,7 @@ MenuExec.prototype = {
 			}
 			break;
 
-		case this.TURNL: // ¶90‹”½“]
+		case this.TURNL: // å·¦90Â°åè»¢
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(true){
@@ -607,7 +625,6 @@ MenuExec.prototype = {
 			}
 			break;
 		}
-		um.enableRecord();
 
 		if((key & this.REDUCE) && k.roomNumber){
 			this.qnums = [];
@@ -622,13 +639,12 @@ MenuExec.prototype = {
 		if((key & this.REDUCE) && k.roomNumber){
 			area.resetArea();
 			for(var i=0;i<this.qnums.length;i++){
-				bd.sQnC(area.getTopOfRoom(this.qnums[i].areaid), this.qnums[i].val);
+				var c = area.getTopOfRoom(this.qnums[i].areaid);
+				bd.cell[c].qnum = this.qnums[i].val;
 			}
 		}
 
-		um.disableRecord();
 		this.adjustSpecial2.call(this,key,d);
-		um.enableRecord();
 	},
 	adjustSpecial  : function(key,d){ },
 	adjustSpecial2 : function(key,d){ },
@@ -654,7 +670,7 @@ MenuExec.prototype = {
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), idx;
 
 		switch(key){
-		case this.FLIPY: // ã‰º”½“]
+		case this.FLIPY: // ä¸Šä¸‹åè»¢
 			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 				idx = 1; this.qnumh[bx] = this.qnumh[bx].reverse();
 				bd.sDiE(bd.exnum(bx,-1), this.qnumh[bx][0]);
@@ -664,7 +680,7 @@ MenuExec.prototype = {
 			}
 			break;
 
-		case this.FLIPX: // ¶‰E”½“]
+		case this.FLIPX: // å·¦å³åè»¢
 			for(var by=(d.y1|1);by<=d.y2;by+=2){
 				idx = 1; this.qnumw[by] = this.qnumw[by].reverse();
 				bd.sQnE(bd.exnum(-1,by), this.qnumw[by][0]);
@@ -674,7 +690,7 @@ MenuExec.prototype = {
 			}
 			break;
 
-		case this.TURNR: // ‰E90‹”½“]
+		case this.TURNR: // å³90Â°åè»¢
 			for(var by=(d.y1|1);by<=d.y2;by+=2){
 				idx = 1; this.qnumh[by] = this.qnumh[by].reverse();
 				bd.sQnE(bd.exnum(-1,by), this.qnumh[by][0]);
@@ -691,7 +707,7 @@ MenuExec.prototype = {
 			}
 			break;
 
-		case this.TURNL: // ¶90‹”½“]
+		case this.TURNL: // å·¦90Â°åè»¢
 			for(var by=(d.y1|1);by<=d.y2;by+=2){
 				idx = 1;
 				bd.sQnE(bd.exnum(-1,by), this.qnumh[yy-by][0]);
@@ -711,11 +727,11 @@ MenuExec.prototype = {
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.ACconfirm()  u‰ñ“šÁ‹vƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚Æ‚«‚Ìˆ—
-	// menu.ex.ASconfirm()  u•â•Á‹vƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚Æ‚«‚Ìˆ—
+	// menu.ex.ACconfirm()  ã€Œå›ç­”æ¶ˆå»ã€ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸã¨ãã®å‡¦ç†
+	// menu.ex.ASconfirm()  ã€Œè£œåŠ©æ¶ˆå»ã€ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸã¨ãã®å‡¦ç†
 	//------------------------------------------------------------------------------
 	ACconfirm : function(){
-		if(confirm(menu.isLangJP()?"‰ñ“š‚ğÁ‹‚µ‚Ü‚·‚©H":"Do you want to erase the Answer?")){
+		if(confirm(menu.isLangJP()?"å›ç­”ã‚’æ¶ˆå»ã—ã¾ã™ã‹ï¼Ÿ":"Do you want to erase the Answer?")){
 			um.newOperation(true);
 			{
 				for(var i=0;i<bd.cellmax;i++){
@@ -737,7 +753,7 @@ MenuExec.prototype = {
 		}
 	},
 	ASconfirm : function(){
-		if(confirm(menu.isLangJP()?"•â•‹L†‚ğÁ‹‚µ‚Ü‚·‚©H":"Do you want to erase the auxiliary marks?")){
+		if(confirm(menu.isLangJP()?"è£œåŠ©è¨˜å·ã‚’æ¶ˆå»ã—ã¾ã™ã‹ï¼Ÿ":"Do you want to erase the auxiliary marks?")){
 			um.newOperation(true);
 			{
 				for(var i=0;i<bd.cellmax;i++){

@@ -1,13 +1,13 @@
-<?php
+ï»¿<?php
 	require_once('../logview/logutil.php');
 	header("Content-type: text/html");
 	startup();
 	$datas = input();
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+?><!DOCTYPE html>
 <HTML>
 <HEAD>
-<META NAME="robots" CONTENTS="noindex,nofollow">
+<META CHARSET="utf-8">
+<META NAME="robots" CONTENTS="nofollow">
 <TITLE><?php echo("$title"); ?></TITLE>
 <script type="text/javascript">
 <!--
@@ -16,81 +16,81 @@
 	var st = 'number';
 
 	var pname = {
-		aho        : 'ƒAƒz‚É‚È‚èØ‚ê',
-		ayeheya    : 'ÍlÎ‚g‚d‚x‚`',
-		bag        : 'ƒoƒbƒO',
-		barns      : 'ƒo[ƒ“ƒY',
-		bdblock    : 'ƒ{[ƒ_[ƒuƒƒbƒN',
-		bonsan     : '‚Ú‚ñ‚³‚ñ',
-		bosanowa   : 'ƒ{ƒTƒmƒ',
-		box        : 'ƒ{ƒbƒNƒX',
-		chocona    : 'ƒ`ƒ‡ƒRƒi',
-		cojun      : 'ƒR[ƒWƒ…ƒ“',
-		country    : 'ƒJƒ“ƒgƒŠ[ƒ[ƒh',
-		creek      : 'ƒNƒŠ[ƒN',
-		factors    : 'ˆöq‚Ì•”‰®',
-		fillmat    : 'ƒtƒBƒ‹ƒ}ƒbƒg',
-		fillomino  : 'ƒtƒBƒ‹ƒIƒ~ƒm',
-		firefly    : 'ƒzƒ^ƒ‹ƒr[ƒ€',
-		goishi     : 'ŒéÎ‚Ğ‚ë‚¢',
-		gokigen    : '‚²‚«‚°‚ñ‚È‚È‚ß',
-		hakoiri    : '‚Í‚±‚¢‚è›¢ ',
-		hashikake  : '‹´‚ğ‚©‚¯‚ë',
-		heyawake   : '‚Ö‚â‚í‚¯',
-		hitori     : '‚Ğ‚Æ‚è‚É‚µ‚Ä‚­‚ê',
-		icebarn    : 'ƒAƒCƒXƒo[ƒ“',
-		icelom     : 'ƒAƒCƒXƒ[ƒ€',
-		ichimaga   : 'ƒCƒ`ƒ}ƒK',
-		kaero      : '‚¨‰Æ‚É‹A‚ë‚¤',
-		kakuro     : 'ƒJƒbƒNƒ',
-		kakuru     : 'ƒJƒbƒNƒ‹',
-		kinkonkan  : 'ƒLƒ“ƒRƒ“ƒJƒ“',
-		kramma     : '‰õ“—–ƒ',
-		kurochute  : 'ƒNƒƒVƒ…[ƒg',
-		kurodoko   : '•‚Ç‚±',
-		kusabi     : 'ƒNƒTƒrƒŠƒ“ƒN',
-		lightup    : '”üpŠÙ',
+		aho        : 'ã‚¢ãƒ›ã«ãªã‚Šåˆ‡ã‚Œ',
+		ayeheya    : 'âˆ€äººâˆƒï¼¨ï¼¥ï¼¹ï¼¡',
+		bag        : 'ãƒãƒƒã‚°',
+		barns      : 'ãƒãƒ¼ãƒ³ã‚º',
+		bdblock    : 'ãƒœãƒ¼ãƒ€ãƒ¼ãƒ–ãƒ­ãƒƒã‚¯',
+		bonsan     : 'ã¼ã‚“ã•ã‚“',
+		bosanowa   : 'ãƒœã‚µãƒãƒ¯',
+		box        : 'ãƒœãƒƒã‚¯ã‚¹',
+		chocona    : 'ãƒãƒ§ã‚³ãƒŠ',
+		cojun      : 'ã‚³ãƒ¼ã‚¸ãƒ¥ãƒ³',
+		country    : 'ã‚«ãƒ³ãƒˆãƒªãƒ¼ãƒ­ãƒ¼ãƒ‰',
+		creek      : 'ã‚¯ãƒªãƒ¼ã‚¯',
+		factors    : 'å› å­ã®éƒ¨å±‹',
+		fillmat    : 'ãƒ•ã‚£ãƒ«ãƒãƒƒãƒˆ',
+		fillomino  : 'ãƒ•ã‚£ãƒ«ã‚ªãƒŸãƒ',
+		firefly    : 'ãƒ›ã‚¿ãƒ«ãƒ“ãƒ¼ãƒ ',
+		goishi     : 'ç¢çŸ³ã²ã‚ã„',
+		gokigen    : 'ã”ãã’ã‚“ãªãªã‚',
+		hakoiri    : 'ã¯ã“ã„ã‚Šâ—‹â–³â–¡',
+		hashikake  : 'æ©‹ã‚’ã‹ã‘ã‚',
+		heyawake   : 'ã¸ã‚„ã‚ã‘',
+		hitori     : 'ã²ã¨ã‚Šã«ã—ã¦ãã‚Œ',
+		icebarn    : 'ã‚¢ã‚¤ã‚¹ãƒãƒ¼ãƒ³',
+		icelom     : 'ã‚¢ã‚¤ã‚¹ãƒ­ãƒ¼ãƒ ',
+		ichimaga   : 'ã‚¤ãƒãƒã‚¬',
+		kaero      : 'ãŠå®¶ã«å¸°ã‚ã†',
+		kakuro     : 'ã‚«ãƒƒã‚¯ãƒ­',
+		kakuru     : 'ã‚«ãƒƒã‚¯ãƒ«',
+		kinkonkan  : 'ã‚­ãƒ³ã‚³ãƒ³ã‚«ãƒ³',
+		kramma     : 'å¿«åˆ€ä¹±éº»',
+		kurochute  : 'ã‚¯ãƒ­ã‚·ãƒ¥ãƒ¼ãƒˆ',
+		kurodoko   : 'é»’ã©ã“',
+		kusabi     : 'ã‚¯ã‚µãƒ“ãƒªãƒ³ã‚¯',
+		lightup    : 'ç¾è¡“é¤¨',
 		lits       : 'LITS',
-		loopsp     : 'ŠÂóüƒXƒyƒVƒƒƒ‹',
-		mashu      : '‚Ü‚µ‚ã',
-		mejilink   : 'ƒƒWƒŠƒ“ƒN',
-		minarism   : 'ƒ}ƒCƒiƒŠƒYƒ€',
-		mochikoro  : 'ƒ‚ƒ`ƒRƒ',
-		mochinyoro : 'ƒ‚ƒ`‚É‚å‚ë',
-		nagenawa   : '‚È‚°‚È‚í',
-		nanro      : 'ƒiƒ“ƒ[',
-		nawabari   : '‚È‚í‚Î‚è',
-		norinori   : '‚Ì‚è‚Ì‚è',
-		numlin     : 'ƒiƒ“ƒo[ƒŠƒ“ƒN',
-		nuribou    : '‚Ê‚è‚Ú‚¤',
-		nurikabe   : '‚Ê‚è‚©‚×',
-		paintarea  : 'ƒyƒCƒ“ƒgƒGƒŠƒA',
-		pipelink   : 'ƒpƒCƒvƒŠƒ“ƒN',
-		reflect    : 'ƒŠƒtƒŒƒNƒgƒŠƒ“ƒN',
-		renban     : '˜A”Ô‘‹Œû',
-		ripple     : '”g‹yŒø‰Ê',
-		shakashaka : 'ƒVƒƒƒJƒVƒƒƒJ',
-		shikaku    : 'lŠp‚ÉØ‚ê',
-		shimaguni  : '“‡‘',
-		shugaku    : 'CŠw—·s‚Ì–é',
-		shwolf     : 'ƒ„ƒM‚ÆƒIƒIƒJƒ~',
-		slalom     : 'ƒXƒ‰ƒ[ƒ€',
-		slither    : 'ƒXƒŠƒU[ƒŠƒ“ƒN',
-		snakes     : '‚Ö‚Ñ‚¢‚¿‚²',
-		sudoku     : '”“Æ',
-		sukoro     : '”ƒRƒ',
-		tasquare   : '‚½‚·‚­‚¦‚ ',
-		tatamibari : 'ƒ^ƒ^ƒ~ƒoƒŠ',
-		tateyoko   : 'ƒ^ƒeƒ{[ƒˆƒRƒ{[',
-		tawa       : '‚½‚í‚Ş‚ê‚ñ‚ª',
-		tentaisho  : '“V‘ÌƒVƒ‡[',
-		tilepaint  : 'ƒ^ƒCƒ‹ƒyƒCƒ“ƒg',
-		triplace   : 'ƒgƒŠƒvƒŒƒCƒX',
-		usotatami  : 'ƒEƒ\ƒ^ƒ^ƒ~',
-		view       : 'ƒ”ƒBƒE',
-		wblink     : 'ƒVƒƒNƒƒŠƒ“ƒN',
-		yajikazu   : '‚â‚¶‚³‚ñ‚©‚¸‚³‚ñ',
-		yajirin    : 'ƒ„ƒWƒŠƒ“'
+		loopsp     : 'ç’°çŠ¶ç·šã‚¹ãƒšã‚·ãƒ£ãƒ«',
+		mashu      : 'ã¾ã—ã‚…',
+		mejilink   : 'ãƒ¡ã‚¸ãƒªãƒ³ã‚¯',
+		minarism   : 'ãƒã‚¤ãƒŠãƒªã‚ºãƒ ',
+		mochikoro  : 'ãƒ¢ãƒã‚³ãƒ­',
+		mochinyoro : 'ãƒ¢ãƒã«ã‚‡ã‚',
+		nagenawa   : 'ãªã’ãªã‚',
+		nanro      : 'ãƒŠãƒ³ãƒ­ãƒ¼',
+		nawabari   : 'ãªã‚ã°ã‚Š',
+		norinori   : 'ã®ã‚Šã®ã‚Š',
+		numlin     : 'ãƒŠãƒ³ãƒãƒ¼ãƒªãƒ³ã‚¯',
+		nuribou    : 'ã¬ã‚Šã¼ã†',
+		nurikabe   : 'ã¬ã‚Šã‹ã¹',
+		paintarea  : 'ãƒšã‚¤ãƒ³ãƒˆã‚¨ãƒªã‚¢',
+		pipelink   : 'ãƒ‘ã‚¤ãƒ—ãƒªãƒ³ã‚¯',
+		reflect    : 'ãƒªãƒ•ãƒ¬ã‚¯ãƒˆãƒªãƒ³ã‚¯',
+		renban     : 'é€£ç•ªçª“å£',
+		ripple     : 'æ³¢åŠåŠ¹æœ',
+		shakashaka : 'ã‚·ãƒ£ã‚«ã‚·ãƒ£ã‚«',
+		shikaku    : 'å››è§’ã«åˆ‡ã‚Œ',
+		shimaguni  : 'å³¶å›½',
+		shugaku    : 'ä¿®å­¦æ—…è¡Œã®å¤œ',
+		shwolf     : 'ãƒ¤ã‚®ã¨ã‚ªã‚ªã‚«ãƒŸ',
+		slalom     : 'ã‚¹ãƒ©ãƒ­ãƒ¼ãƒ ',
+		slither    : 'ã‚¹ãƒªã‚¶ãƒ¼ãƒªãƒ³ã‚¯',
+		snakes     : 'ã¸ã³ã„ã¡ã”',
+		sudoku     : 'æ•°ç‹¬',
+		sukoro     : 'æ•°ã‚³ãƒ­',
+		tasquare   : 'ãŸã™ããˆã‚',
+		tatamibari : 'ã‚¿ã‚¿ãƒŸãƒãƒª',
+		tateyoko   : 'ã‚¿ãƒ†ãƒœãƒ¼ãƒ¨ã‚³ãƒœãƒ¼',
+		tawa       : 'ãŸã‚ã‚€ã‚Œã‚“ãŒ',
+		tentaisho  : 'å¤©ä½“ã‚·ãƒ§ãƒ¼',
+		tilepaint  : 'ã‚¿ã‚¤ãƒ«ãƒšã‚¤ãƒ³ãƒˆ',
+		triplace   : 'ãƒˆãƒªãƒ—ãƒ¬ã‚¤ã‚¹',
+		usotatami  : 'ã‚¦ã‚½ã‚¿ã‚¿ãƒŸ',
+		view       : 'ãƒ´ã‚£ã‚¦',
+		wblink     : 'ã‚·ãƒ­ã‚¯ãƒ­ãƒªãƒ³ã‚¯',
+		yajikazu   : 'ã‚„ã˜ã•ã‚“ã‹ãšã•ã‚“',
+		yajirin    : 'ãƒ¤ã‚¸ãƒªãƒ³'
 	};
 
 	var datas = new Array();
@@ -101,7 +101,7 @@
 <?php output($datas); ?>
 
 	function disp(){
-		if(tkey==0){ displog(); return;}<?php // ŒöŠJ”Å‚Ídisplog()ŠÖ”‚É”ò‚ñ‚ÅI—¹ // ?>
+		if(tkey==0){ displog(); return;}<?php // å…¬é–‹ç‰ˆã¯displog()é–¢æ•°ã«é£›ã‚“ã§çµ‚äº† // ?>
 
 		var inhtml = "";
 
@@ -153,7 +153,7 @@
 		var inhtml = "<table border=1 cellpadding=0 cellspacing=1 style=\"margin:auto;\">\n";
 		var array = datas[fc][rn];
 		if(st=="number"){ array = array.sort(function(a,b){ return (a[1]!=b[1]?b[1]-a[1]:(a[0]>b[0]?1:-1));} );}
-		else if(fc!="pz"){ array = array.sort(function(a,b){ return (a[0]>b[0]?1:-1);} );}	// ‚É‚Í‚È‚ç‚È‚¢
+		else if(fc!="pz"){ array = array.sort(function(a,b){ return (a[0]>b[0]?1:-1);} );}	// ï¼ã«ã¯ãªã‚‰ãªã„
 		else if(fc=="pz"){ array = array.sort(function(a,b){ return (((pname[a[0]]&&pname[b[0]])?pname[a[0]]>pname[b[0]]:a[0]>b[0])?1:-1);} ); }
 
 		var max = 1;
@@ -230,7 +230,7 @@
 </HEAD>
 <BODY onLoad="javascript:disp();" style="text-align:center;background-color:lemonchiffon;">
 
-<h2>‚Ï‚¸‚Õ‚êƒƒO‰{——Š</h2>
+<h2>ã±ãšã·ã‚Œãƒ­ã‚°é–²è¦§æ‰€</h2>
 
 <p id="clickmenu">
 <table border=1 cellspacing=1 style="background-color:#efefef;margin:auto auto 8pt auto;\">
@@ -256,26 +256,26 @@
 	function startup(){
 		global $title, $label, $tkey;
 
-		// t=0‚©A“ü—Í‚³‚ê‚Ä‚¢‚È‚¢‚Æ‚«
-		$title = "ƒƒO‰{——Š";
+		// t=0ã‹ã€å…¥åŠ›ã•ã‚Œã¦ã„ãªã„ã¨ã
+		$title = "ãƒ­ã‚°é–²è¦§æ‰€";
 		$label = "";
 		$tkey = 0;
 
 		if(array_key_exists("t", $_GET)){
 			switch($_GET["t"]){
 				case 1:
-					$title = "TŠÔ30“úƒƒO‰{——Š";
-					$label = "“úŠ§";
+					$title = "é€±é–“30æ—¥ãƒ­ã‚°é–²è¦§æ‰€";
+					$label = "æ—¥åˆŠ";
 					$tkey = 1;
 					break;
 				case 2:
-					$title = "TŠÔƒƒO‰{——Š";
-					$label = "TŠÔ";
+					$title = "é€±é–“ãƒ­ã‚°é–²è¦§æ‰€";
+					$label = "é€±é–“";
 					$tkey = 2;
 					break;
 				case 3;
-					$title = "Œ—áƒƒO‰{——Š";
-					$label = "ŒŠÔ";
+					$title = "æœˆä¾‹ãƒ­ã‚°é–²è¦§æ‰€";
+					$label = "æœˆé–“";
 					$tkey = 3;
 			}
 		}
@@ -284,14 +284,14 @@
 	function dispmenu1(){
 		global $tkey;
 
-		echo "<span id=\"fcs1\" class=\"menusel\" onClick=\"javascript:chfcs('pz');\">ƒpƒYƒ‹</span>\n";
-		echo "<span id=\"fcs2\" class=\"menu\" onClick=\"javascript:chfcs('rf');\">ƒŠƒ“ƒNŒ³</span>\n";
+		echo "<span id=\"fcs1\" class=\"menusel\" onClick=\"javascript:chfcs('pz');\">ãƒ‘ã‚ºãƒ«</span>\n";
+		echo "<span id=\"fcs2\" class=\"menu\" onClick=\"javascript:chfcs('rf');\">ãƒªãƒ³ã‚¯å…ƒ</span>\n";
 		echo "<span id=\"fcs3\" class=\"menu\" onClick=\"javascript:chfcs('os');\">OS</span>\n";
-		echo "<span id=\"fcs5\" class=\"menu\" onClick=\"javascript:chfcs('bz3');\">ƒuƒ‰ƒEƒU</span>\n";
-		echo "<span id=\"fcs4\" class=\"menu\" onClick=\"javascript:chfcs('bz');\">ƒuƒ‰ƒEƒU(Ú×)</span>\n";
+		echo "<span id=\"fcs5\" class=\"menu\" onClick=\"javascript:chfcs('bz3');\">ãƒ–ãƒ©ã‚¦ã‚¶</span>\n";
+		echo "<span id=\"fcs4\" class=\"menu\" onClick=\"javascript:chfcs('bz');\">ãƒ–ãƒ©ã‚¦ã‚¶(è©³ç´°)</span>\n";
 		//if($tkey==0){
-		//	echo "<span id=\"fcs6\" class=\"menu\" onClick=\"javascript:chfcs('matrix');\">OS/ƒuƒ‰ƒEƒU</span>\n";
-		//	echo "<span id=\"fcs7\" class=\"menu\" onClick=\"javascript:chfcs('matrix2');\">ƒuƒ‰ƒEƒU/OS</span>\n";
+		//	echo "<span id=\"fcs6\" class=\"menu\" onClick=\"javascript:chfcs('matrix');\">OS/ãƒ–ãƒ©ã‚¦ã‚¶</span>\n";
+		//	echo "<span id=\"fcs7\" class=\"menu\" onClick=\"javascript:chfcs('matrix2');\">ãƒ–ãƒ©ã‚¦ã‚¶/OS</span>\n";
 		//}
 	}
 	function dispmenu2(){
@@ -299,14 +299,14 @@
 
 		if($tkey!=0){
 			echo "<span id=\"range1\" class=\"menusel\" onClick=\"javascript:chrange('table');\">$label(table)</span>\n";
-			echo "<span id=\"range2\" class=\"menu\" onClick=\"javascript:chrange('tab');\">$label(ƒRƒ“ƒ}‹æØ‚è)</span>\n";
+			echo "<span id=\"range2\" class=\"menu\" onClick=\"javascript:chrange('tab');\">$label(ã‚³ãƒ³ãƒåŒºåˆ‡ã‚Š)</span>\n";
 		}
 		else{
-			echo "<span id=\"range1\" class=\"menu\" onClick=\"javascript:chrange('daily');\">1“ú</span>\n";
-			echo "<span id=\"range2\" class=\"menu\" onClick=\"javascript:chrange('weekly');\">1TŠÔ</span>\n";
-			echo "<span id=\"range3\" class=\"menusel\" onClick=\"javascript:chrange('monthly');\">1ƒ–Œ</span>\n";
-			echo "<span id=\"range4\" class=\"menu\" onClick=\"javascript:chrange('season');\">3ƒ–Œ</span>\n";
-			echo "<span id=\"range5\" class=\"menu\" onClick=\"javascript:chrange('yearly');\">1”N</span>\n";
+			echo "<span id=\"range1\" class=\"menu\" onClick=\"javascript:chrange('daily');\">1æ—¥</span>\n";
+			echo "<span id=\"range2\" class=\"menu\" onClick=\"javascript:chrange('weekly');\">1é€±é–“</span>\n";
+			echo "<span id=\"range3\" class=\"menusel\" onClick=\"javascript:chrange('monthly');\">1ãƒ¶æœˆ</span>\n";
+			echo "<span id=\"range4\" class=\"menu\" onClick=\"javascript:chrange('season');\">3ãƒ¶æœˆ</span>\n";
+			echo "<span id=\"range5\" class=\"menu\" onClick=\"javascript:chrange('yearly');\">1å¹´</span>\n";
 			echo "<span id=\"range6\" class=\"menu\" onClick=\"javascript:chrange('allrange');\">ALL</span>\n";
 		}
 	}
@@ -314,11 +314,11 @@
 		global $tkey;
 
 		if($tkey!=0){
-			echo "<span id=\"sorts2\" class=\"menusel\">ABC‡</span>\n";
+			echo "<span id=\"sorts2\" class=\"menusel\">ABCé †</span>\n";
 		}
 		else{
-			echo "<span id=\"sorts1\" class=\"menusel\" onClick=\"javascript:chsort('number');\">ƒJƒEƒ“ƒg‡</span>\n";
-			echo "<span id=\"sorts2\" class=\"menu\" onClick=\"javascript:chsort('dictionary');\">ABC‡</span>\n";
+			echo "<span id=\"sorts1\" class=\"menusel\" onClick=\"javascript:chsort('number');\">ã‚«ã‚¦ãƒ³ãƒˆé †</span>\n";
+			echo "<span id=\"sorts2\" class=\"menu\" onClick=\"javascript:chsort('dictionary');\">ABCé †</span>\n";
 		}
 	}
 

@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+ï»¿#!/usr/local/bin/perl
 
 print "Content-type: text/plain\n\n";
 
@@ -13,7 +13,7 @@ if($in{'pid'}){
 exit(0);
 
 #---------------
-# ƒfƒR[ƒhˆ— |
+# ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç† |
 #---------------
 
 sub decode{
@@ -29,13 +29,13 @@ sub decode{
         tr/+/ /;
         ($key, $val) = split(/=/);
 
-        # %HH Œ`®‚Ì•”•ª‚ÌƒfƒR[ƒh
+        # %HH å½¢å¼ã®éƒ¨åˆ†ã®ãƒ‡ã‚³ãƒ¼ãƒ‰
 
         $key =~ s/%([A-Fa-f0-9][A-Fa-f0-9])/pack("c", hex($1))/ge;
         $val =~ s/%([A-Fa-f0-9][A-Fa-f0-9])/pack("c", hex($1))/ge;
         $val =~ s/\r\n/\n/g;
 
-        # jcode.pl ‚ğg‚¤‚Æ‚«‚Í”‚ğ‚Í‚¸‚·DDD
+        # jcode.pl ã‚’ä½¿ã†ã¨ãã¯ï¼ƒã‚’ã¯ãšã™ï¼ï¼ï¼
         #jcode'convert(*key, $encoding) if ($encoding);
         #jcode'convert(*val, $encoding) if ($encoding);
 

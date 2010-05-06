@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+ï»¿#!/usr/local/bin/perl
 
 use CGI;
 use MIME::Base64;
@@ -12,30 +12,30 @@ elsif($q->param('operation') eq 'imagesave'){ &imagesave();}
 exit(0);
 
 ######################
-# ƒtƒ@ƒCƒ‹‚ğŠJ‚­ˆ— #
+# ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãå‡¦ç† #
 ######################
 sub fileopen{
 	my($buffer);
 
 	my($str);
 
-	# POSTƒTƒCƒY‚ÌãŒÀ
+	# POSTã‚µã‚¤ã‚ºã®ä¸Šé™
 	$CGI::POST_MAX = 128 * 1024; # 128KB
 
-	# ƒtƒ@ƒCƒ‹æ“¾
+	# ãƒ•ã‚¡ã‚¤ãƒ«å–å¾—
 	my $FH = $q->upload('filebox');
 
-	# MIMEƒ^ƒCƒvæ“¾
+	# MIMEã‚¿ã‚¤ãƒ—å–å¾—
 	my $mimetype = $q->uploadInfo($FH)->{'Content-Type'};
 
-	# HTMLo—Í
+	# HTMLå‡ºåŠ›
 
 	printf("Content-type: text/html\n\n");
 
 	while(read($FH, $buffer, 1024)){
 		$str .= $buffer;
 	}
-	close ($FH) if ($CGI::OS ne 'UNIX'); # Windowsƒvƒ‰ƒbƒgƒtƒH[ƒ€—p
+	close ($FH) if ($CGI::OS ne 'UNIX'); # Windowsãƒ—ãƒ©ãƒƒãƒˆãƒ•ã‚©ãƒ¼ãƒ ç”¨
 
 	$str =~ s/[\r\n]+/\t/g;
 
@@ -49,14 +49,14 @@ if(parent.base){ parent.menu.ex.fileonload(\"$str\");}
 </script>
 </HEAD>
 <BODY>
-ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚İ‚Ü‚µ‚½B
+ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã¿ã¾ã—ãŸã€‚
 </BODY>
 </HTML>
 EOL
 }
 
 ####################
-# ƒtƒ@ƒCƒ‹•Û‘¶ˆ— #
+# ãƒ•ã‚¡ã‚¤ãƒ«ä¿å­˜å‡¦ç† #
 ####################
 sub filesave{
 	printf("Content-type: application/octet-stream\n");
@@ -83,7 +83,7 @@ sub filesave{
 }
 
 ################
-# ‰æ‘œ•Û‘¶ˆ— #
+# ç”»åƒä¿å­˜å‡¦ç† #
 ################
 sub imagesave{
 	printf("Content-type: application/octet-stream\n");

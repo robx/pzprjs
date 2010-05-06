@@ -1,56 +1,56 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ƒgƒŠƒvƒŒƒCƒX”Å triplace.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ãƒˆãƒªãƒ—ãƒ¬ã‚¤ã‚¹ç‰ˆ triplace.js v3.3.0
 //
 Puzzles.triplace = function(){ };
 Puzzles.triplace.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 10;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 10;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 10;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 10;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 1;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 1;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 1;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 1;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = false;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = true;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = false;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = true;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = true;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = false;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = false;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = true;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = false;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = false;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = true;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = false;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = true;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = false;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
 		if(k.EDITOR){
-			base.setExpression("@¶ƒ{ƒ^ƒ“‚Å‹«ŠEü‚ªA‰Eƒ{ƒ^ƒ“‚Å•â•‹L†‚ª“ü—Í‚Å‚«‚Ü‚·B”š‚ğ“ü—Í‚·‚éêŠ‚ÍSHIFTƒL[‚ğ‰Ÿ‚·‚ÆØ‚è‘Ö‚¦‚ç‚ê‚Ü‚·B",
+			base.setExpression("ã€€å·¦ãƒœã‚¿ãƒ³ã§å¢ƒç•Œç·šãŒã€å³ãƒœã‚¿ãƒ³ã§è£œåŠ©è¨˜å·ãŒå…¥åŠ›ã§ãã¾ã™ã€‚æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹å ´æ‰€ã¯SHIFTã‚­ãƒ¼ã‚’æŠ¼ã™ã¨åˆ‡ã‚Šæ›¿ãˆã‚‰ã‚Œã¾ã™ã€‚",
 							   " Left Button Drag to input border lines, Right Click to auxiliary marks. Press SHIFT key to change the side of inputting numbers.");
 		}
 		else{
-			base.setExpression("@¶ƒ{ƒ^ƒ“‚Å‹«ŠEü‚ªA‰Eƒ{ƒ^ƒ“‚Å•â•‹L†‚ª“ü—Í‚Å‚«‚Ü‚·BƒZƒ‹‚ÌƒNƒŠƒbƒN‚©AZƒL[‰Ÿ‚µ‚È‚ª‚ç”wŒiF(2í—Ş)‚ğ“ü—Í‚·‚é‚±‚Æ‚à‚Å‚«‚Ü‚·B",
+			base.setExpression("ã€€å·¦ãƒœã‚¿ãƒ³ã§å¢ƒç•Œç·šãŒã€å³ãƒœã‚¿ãƒ³ã§è£œåŠ©è¨˜å·ãŒå…¥åŠ›ã§ãã¾ã™ã€‚ã‚»ãƒ«ã®ã‚¯ãƒªãƒƒã‚¯ã‹ã€Zã‚­ãƒ¼æŠ¼ã—ãªãŒã‚‰èƒŒæ™¯è‰²(2ç¨®é¡)ã‚’å…¥åŠ›ã™ã‚‹ã“ã¨ã‚‚ã§ãã¾ã™ã€‚",
 							   " Left Button Drag to input border lines, Right Click to auxiliary marks. Click cell or Click with Pressing Z key to input background color.");
 		}
-		base.setTitle("ƒgƒŠƒvƒŒƒCƒX","Tri-place");
+		base.setTitle("ãƒˆãƒªãƒ—ãƒ¬ã‚¤ã‚¹","Tri-place");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){ },
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if(k.editmode){
 				if(!kp.enabled()){ this.input51();}
@@ -116,7 +116,7 @@ Puzzles.triplace.prototype = {
 			pc.paintCell(cc);
 		};
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(k.playmode){
 				if(ca=='z' && !this.keyPressed){ this.isZ=true; }
@@ -161,7 +161,7 @@ Puzzles.triplace.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.borderQanscolor = "rgb(0, 160, 0)";
@@ -185,7 +185,7 @@ Puzzles.triplace.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		// –â‘è‚Æ‰ñ“š‚Ì‹«ŠEü‚ğ•ÊX‚É•`‰æ‚·‚é‚æ‚¤‚É‚µ‚Ü‚·
+		// å•é¡Œã¨å›ç­”ã®å¢ƒç•Œç·šã‚’åˆ¥ã€…ã«æç”»ã™ã‚‹ã‚ˆã†ã«ã—ã¾ã™
 		pc.drawQansBorders = function(x1,y1,x2,y2){
 			this.vinc('border_answer', 'crispEdges');
 			this.bdheader = "b_bdans";
@@ -209,7 +209,7 @@ Puzzles.triplace.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeTriplace();
@@ -219,7 +219,7 @@ Puzzles.triplace.prototype = {
 		};
 
 		enc.decodeTriplace = function(){
-			// ”Õ–Ê“à”š‚ÌƒfƒR[ƒh
+			// ç›¤é¢å†…æ•°å­—ã®ãƒ‡ã‚³ãƒ¼ãƒ‰
 			var cell=0, a=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
@@ -254,7 +254,7 @@ Puzzles.triplace.prototype = {
 				if(cell>=bd.cellmax){ a=i+1; break;}
 			}
 
-			// ”Õ–ÊŠO”š‚ÌƒfƒR[ƒh
+			// ç›¤é¢å¤–æ•°å­—ã®ãƒ‡ã‚³ãƒ¼ãƒ‰
 			cell=0;
 			for(var i=a;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
@@ -276,7 +276,7 @@ Puzzles.triplace.prototype = {
 		enc.encodeTriplace = function(type){
 			var cm="";
 
-			// ”Õ–Ê“à‘¤‚Ì”š•”•ª‚ÌƒGƒ“ƒR[ƒh
+			// ç›¤é¢å†…å´ã®æ•°å­—éƒ¨åˆ†ã®ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰
 			var count=0;
 			for(var c=0;c<bd.cellmax;c++){
 				var pstr = "";
@@ -302,7 +302,7 @@ Puzzles.triplace.prototype = {
 			}
 			if(count>0){ cm += (count+15).toString(36);}
 
-			// ”Õ–ÊŠO‘¤‚Ì”š•”•ª‚ÌƒGƒ“ƒR[ƒh
+			// ç›¤é¢å¤–å´ã®æ•°å­—éƒ¨åˆ†ã®ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰
 			for(var c=0;c<k.qcols;c++){
 				if     (bd.DiE(c)<  0){ cm += ".";}
 				else if(bd.DiE(c)< 16){ cm += bd.DiE(c).toString(16);}
@@ -338,21 +338,21 @@ Puzzles.triplace.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			var tiles = this.getTileInfo();
 			if( !this.checkAllArea(tiles, f_true, function(w,h,a,n){ return (a>=3);} ) ){
-				this.setAlert('ƒTƒCƒY‚ª3ƒ}ƒX‚æ‚è¬‚³‚¢ƒuƒƒbƒN‚ª‚ ‚è‚Ü‚·B','The size of block is smaller than two.'); return false;
+				this.setAlert('ã‚µã‚¤ã‚ºãŒ3ãƒã‚¹ã‚ˆã‚Šå°ã•ã„ãƒ–ãƒ­ãƒƒã‚¯ãŒã‚ã‚Šã¾ã™ã€‚','The size of block is smaller than two.'); return false;
 			}
 
 			if( !this.checkRowsColsPartly(this.isTileCount, tiles, function(cc){ return (bd.QuC(cc)==51);}, false) ){
-				this.setAlert('”š‚Ì‰º‚©‰E‚É‚ ‚é‚Ü‚Á‚·‚®‚ÌƒuƒƒbƒN‚Ì”‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B','The number of straight blocks underward or rightward is not correct.'); return false;
+				this.setAlert('æ•°å­—ã®ä¸‹ã‹å³ã«ã‚ã‚‹ã¾ã£ã™ãã®ãƒ–ãƒ­ãƒƒã‚¯ã®æ•°ãŒé–“é•ã£ã¦ã„ã¾ã™ã€‚','The number of straight blocks underward or rightward is not correct.'); return false;
 			}
 
 			if( !this.checkAllArea(tiles, f_true, function(w,h,a,n){ return (a<=3);} ) ){
-				this.setAlert('ƒTƒCƒY‚ª3ƒ}ƒX‚æ‚è‘å‚«‚¢ƒuƒƒbƒN‚ª‚ ‚è‚Ü‚·B','The size of block is bigger than four.'); return false;
+				this.setAlert('ã‚µã‚¤ã‚ºãŒ3ãƒã‚¹ã‚ˆã‚Šå¤§ãã„ãƒ–ãƒ­ãƒƒã‚¯ãŒã‚ã‚Šã¾ã™ã€‚','The size of block is bigger than four.'); return false;
 			}
 
 			return true;

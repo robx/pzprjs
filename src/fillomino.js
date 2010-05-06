@@ -1,55 +1,55 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ƒtƒBƒ‹ƒIƒ~ƒm”Å fillomino.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ãƒ•ã‚£ãƒ«ã‚ªãƒŸãƒç‰ˆ fillomino.js v3.3.0
 //
 Puzzles.fillomino = function(){ };
 Puzzles.fillomino.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 10;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 10;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 10;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 10;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 1;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 1;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = false;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = true;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = false;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = true;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = false;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = true;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = true;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = false;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = true;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = true;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = true;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = true;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = true;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = true;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
-		base.setTitle("ƒtƒBƒ‹ƒIƒ~ƒm","Fillomino");
-		base.setExpression("<small><span style=\"line-height:125%;\">@ƒ}ƒEƒX‚Ì¶ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚È‚ª‚ç“_üã‚ğ“®‚©‚·‚Æ‹«ŠEü‚ªˆø‚¯‚Ü‚·Bƒ}ƒX‚Ì’†‰›‚©‚ç“¯‚¶‚±‚Æ‚ğ‚·‚é‚Æ”š‚ğ—×‚Ìƒ}ƒX‚ÉƒRƒs[‚Å‚«‚Ü‚·B‰Eƒ{ƒ^ƒ“‚Í•â•‹L†‚Å‚·B<br>@ƒL[ƒ{[ƒh‚Å‚Í“¯‚¶“ü—Í‚ğA‚»‚ê‚¼‚êZƒL[AXƒL[ACtrlƒL[‚ğ‰Ÿ‚µ‚È‚ª‚ç–îˆóƒL[‚Ås‚¤‚±‚Æ‚ª‚Å‚«‚Ü‚·B</span></small>",
+		base.setTitle("ãƒ•ã‚£ãƒ«ã‚ªãƒŸãƒ","Fillomino");
+		base.setExpression("<small><span style=\"line-height:125%;\">ã€€ãƒã‚¦ã‚¹ã®å·¦ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãªãŒã‚‰ç‚¹ç·šä¸Šã‚’å‹•ã‹ã™ã¨å¢ƒç•Œç·šãŒå¼•ã‘ã¾ã™ã€‚ãƒã‚¹ã®ä¸­å¤®ã‹ã‚‰åŒã˜ã“ã¨ã‚’ã™ã‚‹ã¨æ•°å­—ã‚’éš£ã®ãƒã‚¹ã«ã‚³ãƒ”ãƒ¼ã§ãã¾ã™ã€‚å³ãƒœã‚¿ãƒ³ã¯è£œåŠ©è¨˜å·ã§ã™ã€‚<br>ã€€ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã§ã¯åŒã˜å…¥åŠ›ã‚’ã€ãã‚Œãã‚ŒZã‚­ãƒ¼ã€Xã‚­ãƒ¼ã€Ctrlã‚­ãƒ¼ã‚’æŠ¼ã—ãªãŒã‚‰çŸ¢å°ã‚­ãƒ¼ã§è¡Œã†ã“ã¨ãŒã§ãã¾ã™ã€‚</span></small>",
 						   "<small><span style=\"line-height:125%;\"> Left Button Drag on dotted line to input border line. Do it from center of the cell to copy the number. Right Button Drag to input auxiliary marks.<br> By keyboard, it is available to input each ones by using arrow keys with 'Z', 'X' or 'Ctrl' key.</span></small>");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 
 		enc.pidKanpen = 'fillomino';
 	},
 	menufix : function(){
-		pp.addCheck('enbnonum','setting',false,'–¢“ü—Í‚Å³“š”»’è','Allow Empty cell');
-		pp.setLabel('enbnonum', '‘S‚Ä‚Ì”š‚ª“ü‚Á‚Ä‚¢‚È‚¢ó‘Ô‚Å‚Ì³“š”»’è‚ğ‹–‰Â‚·‚é', 'Allow answer check with empty cell in the board.');
+		pp.addCheck('enbnonum','setting',false,'æœªå…¥åŠ›ã§æ­£ç­”åˆ¤å®š','Allow Empty cell');
+		pp.setLabel('enbnonum', 'å…¨ã¦ã®æ•°å­—ãŒå…¥ã£ã¦ã„ãªã„çŠ¶æ…‹ã§ã®æ­£ç­”åˆ¤å®šã‚’è¨±å¯ã™ã‚‹', 'Allow answer check with empty cell in the board.');
 	},
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if(k.playmode){
 				if(this.btn.Left){ this.borderinput = this.inputborder_fillomino();}
@@ -108,7 +108,7 @@ Puzzles.fillomino.prototype = {
 			pc.paintCell(cc);
 		};
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(!this.isCTRL && !this.isZ && !this.isX && this.moveTCell(ca)){ return;}
 			if(kc.key_fillomino(ca)){ return;}
@@ -161,7 +161,7 @@ Puzzles.fillomino.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.setBorderColorFunc('qans');
@@ -182,7 +182,7 @@ Puzzles.fillomino.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeNumber16();
@@ -214,7 +214,7 @@ Puzzles.fillomino.prototype = {
 			this.decodeCellQnum_kanpen();
 			this.decodeCellQans_kanpen();
 
-			// ‹«ŠEü‚ğ©“®“ü—Í
+			// å¢ƒç•Œç·šã‚’è‡ªå‹•å…¥åŠ›
 			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				var bdflag = (cc1!==-1 && cc2!==-1 && bd.getNum(cc1)!==-1 && bd.getNum(cc2)!==-1 && bd.getNum(cc1)!==bd.getNum(cc2));
@@ -228,33 +228,33 @@ Puzzles.fillomino.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			var rinfo = this.searchRarea2();
 			if( !this.checkErrorFlag(rinfo, 3) ){
-				this.setAlert('”š‚ªŠÜ‚Ü‚ê‚Ä‚¢‚È‚¢ƒuƒƒbƒN‚ª‚ ‚è‚Ü‚·B','A block has no number.'); return false;
+				this.setAlert('æ•°å­—ãŒå«ã¾ã‚Œã¦ã„ãªã„ãƒ–ãƒ­ãƒƒã‚¯ãŒã‚ã‚Šã¾ã™ã€‚','A block has no number.'); return false;
 			}
 
 			if( !this.checkErrorFlag(rinfo, 1) || !this.checkAreaSize(rinfo, 2) ){
-				this.setAlert('ƒuƒƒbƒN‚Ì‘å‚«‚³‚æ‚è”š‚Ì‚Ù‚¤‚ª‘å‚«‚¢‚Å‚·B','A number is bigger than the size of block.'); return false;
+				this.setAlert('ãƒ–ãƒ­ãƒƒã‚¯ã®å¤§ãã•ã‚ˆã‚Šæ•°å­—ã®ã»ã†ãŒå¤§ãã„ã§ã™ã€‚','A number is bigger than the size of block.'); return false;
 			}
 
 			if( !this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.room[r].number;}) ){
-				this.setAlert('“¯‚¶”š‚ÌƒuƒƒbƒN‚ª•Ó‚ğ‹¤—L‚µ‚Ä‚¢‚Ü‚·B','Adjacent blocks have the same number.'); return false;
+				this.setAlert('åŒã˜æ•°å­—ã®ãƒ–ãƒ­ãƒƒã‚¯ãŒè¾ºã‚’å…±æœ‰ã—ã¦ã„ã¾ã™ã€‚','Adjacent blocks have the same number.'); return false;
 			}
 
 			if( !this.checkErrorFlag(rinfo, 2) || !this.checkAreaSize(rinfo, 1) ){
-				this.setAlert('ƒuƒƒbƒN‚Ì‘å‚«‚³‚æ‚è‚à”š‚ª¬‚³‚¢‚Å‚·B','A number is smaller than the size of block.'); return false;
+				this.setAlert('ãƒ–ãƒ­ãƒƒã‚¯ã®å¤§ãã•ã‚ˆã‚Šã‚‚æ•°å­—ãŒå°ã•ã„ã§ã™ã€‚','A number is smaller than the size of block.'); return false;
 			}
 
 			if( !this.checkErrorFlag(rinfo, 4) ){
-				this.setAlert('•¡”í—Ş‚Ì”š‚ª“ü‚Á‚Ä‚¢‚éƒuƒƒbƒN‚ª‚ ‚è‚Ü‚·B','A block has two or more kinds of numbers.'); return false;
+				this.setAlert('è¤‡æ•°ç¨®é¡ã®æ•°å­—ãŒå…¥ã£ã¦ã„ã‚‹ãƒ–ãƒ­ãƒƒã‚¯ãŒã‚ã‚Šã¾ã™ã€‚','A block has two or more kinds of numbers.'); return false;
 			}
 
 			if( !pp.getVal('enbnonum') && !this.checkAllCell(bd.noNum) ){
-				this.setAlert('”š‚Ì“ü‚Á‚Ä‚¢‚È‚¢ƒ}ƒX‚ª‚ ‚è‚Ü‚·B','There is a empty cell.'); return false;
+				this.setAlert('æ•°å­—ã®å…¥ã£ã¦ã„ãªã„ãƒã‚¹ãŒã‚ã‚Šã¾ã™ã€‚','There is a empty cell.'); return false;
 			}
 
 			return true;
@@ -312,8 +312,8 @@ Puzzles.fillomino.prototype = {
 				else if(numcnt===1 && filled > nums[filled]+emptycell){ room.error=1;  room.number=filled; continue;}
 				else if(numcnt===1)                                   { room.error=-1; room.number=filled; continue;}
 
-				// ‚±‚±‚Ü‚Å—ˆ‚é‚Ì‚Íemptycell‚ª0‚Å2í—ŞˆÈã‚Ì”š‚ª“ü‚Á‚Ä‚¢‚é—Ìˆæ‚Ì‚İ
-				// -> ‚»‚ê‚¼‚ê‚É•Ê‚Ì—Ìˆæid‚ğŠ„‚è“–‚Ä‚Ä”»’è‚Å‚«‚é‚æ‚¤‚É‚·‚é
+				// ã“ã“ã¾ã§æ¥ã‚‹ã®ã¯emptycellãŒ0ã§2ç¨®é¡ä»¥ä¸Šã®æ•°å­—ãŒå…¥ã£ã¦ã„ã‚‹é ˜åŸŸã®ã¿
+				// -> ãã‚Œãã‚Œã«åˆ¥ã®é ˜åŸŸidã‚’å‰²ã‚Šå½“ã¦ã¦åˆ¤å®šã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
 				var clist = room.idlist;
 				for(var i=0;i<clist.length;i++){ rinfo.id[clist[i]] = 0;}
 				for(var i=0;i<clist.length;i++){
@@ -322,7 +322,7 @@ Puzzles.fillomino.prototype = {
 					rinfo.room[rinfo.max] = {idlist:[]};
 					this.sa0(rinfo, clist[i], rinfo.max);
 				}
-				// ÅŒã‚É©•ª‚Ìî•ñ‚ğ–³Œø‚É‚·‚é
+				// æœ€å¾Œã«è‡ªåˆ†ã®æƒ…å ±ã‚’ç„¡åŠ¹ã«ã™ã‚‹
 				room = {idlist:[], error:0, number:-1};
 			}
 			return rinfo;

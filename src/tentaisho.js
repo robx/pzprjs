@@ -1,67 +1,67 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” “V‘ÌƒVƒ‡[”Å tentaisho.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ å¤©ä½“ã‚·ãƒ§ãƒ¼ç‰ˆ tentaisho.js v3.3.0
 //
 Puzzles.tentaisho = function(){ };
 Puzzles.tentaisho.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 10;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 10;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 10;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 10;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 1;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 1;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 1;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 1;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = false;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = true;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = false;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = true;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = false;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = false;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = false;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = false;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = false;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = false;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = true;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = true;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = true;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = true;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
 		if(k.EDITOR){
-			base.setExpression("@–â‘èì¬ƒ‚[ƒh‚ÉAƒ}ƒEƒX‚Ì‰Eƒ{ƒ^ƒ“‚Å‰ºŠG‚ğ•`‚­‚±‚Æ‚ªo—ˆ‚Ü‚·B‚±‚Ì”wŒiF‚Íu¯‚ğƒNƒŠƒbƒNv‚âuF‚ğ‚Â‚¯‚évƒ{ƒ^ƒ“‚Åã‘‚«‚³‚ê‚Ü‚·B",
+			base.setExpression("ã€€å•é¡Œä½œæˆãƒ¢ãƒ¼ãƒ‰æ™‚ã«ã€ãƒã‚¦ã‚¹ã®å³ãƒœã‚¿ãƒ³ã§ä¸‹çµµã‚’æãã“ã¨ãŒå‡ºæ¥ã¾ã™ã€‚ã“ã®èƒŒæ™¯è‰²ã¯ã€Œæ˜Ÿã‚’ã‚¯ãƒªãƒƒã‚¯ã€ã‚„ã€Œè‰²ã‚’ã¤ã‘ã‚‹ã€ãƒœã‚¿ãƒ³ã§ä¸Šæ›¸ãã•ã‚Œã¾ã™ã€‚",
 							   " In edit mode, it is able to paint a design by Right Click. This background color is superscripted by clicking star or pressing 'Color up' button.");
 		}
 		else{
-			base.setExpression("@¯‚ğƒNƒŠƒbƒN‚·‚é‚ÆF‚ª‚Ê‚ê‚Ü‚·B",
+			base.setExpression("ã€€æ˜Ÿã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹ã¨è‰²ãŒã¬ã‚Œã¾ã™ã€‚",
 							   " Click star to paint.");
 		}
-		base.setTitle("“V‘ÌƒVƒ‡[","Tentaisho");
+		base.setTitle("å¤©ä½“ã‚·ãƒ§ãƒ¼","Tentaisho");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 
 		enc.pidKanpen = 'tentaisho';
 	},
 	menufix : function(){
 		if(k.EDITOR){
-			pp.addCheck('discolor','setting',false,'F•ª‚¯–³Œø‰»','Disable color');
-			pp.setLabel('discolor', '¯ƒNƒŠƒbƒN‚É‚æ‚éF•ª‚¯‚ğ–³Œø‰»‚·‚é', 'Disable Coloring up by clicking star');
+			pp.addCheck('discolor','setting',false,'è‰²åˆ†ã‘ç„¡åŠ¹åŒ–','Disable color');
+			pp.setLabel('discolor', 'æ˜Ÿã‚¯ãƒªãƒƒã‚¯ã«ã‚ˆã‚‹è‰²åˆ†ã‘ã‚’ç„¡åŠ¹åŒ–ã™ã‚‹', 'Disable Coloring up by clicking star');
 		}
 
 		var el = ee.createEL(menu.EL_BUTTON, 'btncolor');
-		menu.addButtons(el, ee.binder(mv, mv.encolorall), "F‚ğ‚Â‚¯‚é","Color up");
+		menu.addButtons(el, ee.binder(mv, mv.encolorall), "è‰²ã‚’ã¤ã‘ã‚‹","Color up");
 		ee('btnarea').appendEL(el);
 	},
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if(k.editmode){
 				if(this.btn.Left) this.inputstar();
@@ -177,12 +177,12 @@ Puzzles.tentaisho.prototype = {
 			return flag;
 		};
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){ };
 
-		// ˆê•”qsub‚ÅÁ‚µ‚½‚­‚È‚¢‚à‚Ì‚ª‚ ‚é‚½‚ßã‘‚«
+		// ä¸€éƒ¨qsubã§æ¶ˆã—ãŸããªã„ã‚‚ã®ãŒã‚ã‚‹ãŸã‚ä¸Šæ›¸ã
 		menu.ex.ASconfirm = function(){
-			if(confirm(menu.isLangJP()?"•â•‹L†‚ğÁ‹‚µ‚Ü‚·‚©H":"Do you want to erase the auxiliary marks?")){
+			if(confirm(menu.isLangJP()?"è£œåŠ©è¨˜å·ã‚’æ¶ˆå»ã—ã¾ã™ã‹ï¼Ÿ":"Do you want to erase the auxiliary marks?")){
 				um.newOperation(true);
 				for(i=0;i<bd.cellmax;i++){
 					if(bd.QsC(i)===1){
@@ -242,12 +242,12 @@ Puzzles.tentaisho.prototype = {
 			um.addOpe(k.BORDER, k.QUES, id, old, num);
 			this.border[id].ques = num;
 
-			/* setBorder‚ğŒÄ‚Ño‚³‚È‚¢‚æ‚¤‚É‚·‚é */
+			/* setBorderã‚’å‘¼ã³å‡ºã•ãªã„ã‚ˆã†ã«ã™ã‚‹ */
 		};
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.borderQanscolor = "rgb(72, 72, 72)";
@@ -325,7 +325,7 @@ Puzzles.tentaisho.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeStar();
@@ -425,26 +425,26 @@ Puzzles.tentaisho.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			if( !this.checkStarOnLine() ){
-				this.setAlert('¯‚ğü‚ª’Ê‰ß‚µ‚Ä‚¢‚Ü‚·B', 'A line goes over the star.'); return false;
+				this.setAlert('æ˜Ÿã‚’ç·šãŒé€šéã—ã¦ã„ã¾ã™ã€‚', 'A line goes over the star.'); return false;
 			}
 
 			var rinfo = area.getRoomInfo();
 			this.setAreaStar(rinfo);
 			if( !this.checkErrorFlag(rinfo, -1) ){
-				this.setAlert('¯‚ªŠÜ‚Ü‚ê‚Ä‚¢‚È‚¢—Ìˆæ‚ª‚ ‚è‚Ü‚·B','A block has no stars.'); return false;
+				this.setAlert('æ˜ŸãŒå«ã¾ã‚Œã¦ã„ãªã„é ˜åŸŸãŒã‚ã‚Šã¾ã™ã€‚','A block has no stars.'); return false;
 			}
 
 			if( !this.checkFractal(rinfo) ){
-				this.setAlert('—Ìˆæ‚ª¯‚ğ’†S‚É“_‘ÎÌ‚É‚È‚Á‚Ä‚¢‚Ü‚¹‚ñB', 'A area is not point symmetric about the star.'); return false;
+				this.setAlert('é ˜åŸŸãŒæ˜Ÿã‚’ä¸­å¿ƒã«ç‚¹å¯¾ç§°ã«ãªã£ã¦ã„ã¾ã›ã‚“ã€‚', 'A area is not point symmetric about the star.'); return false;
 			}
 
 			if( !this.checkErrorFlag(rinfo, -2) ){
-				this.setAlert('¯‚ª•¡”ŠÜ‚Ü‚ê‚é—Ìˆæ‚ª‚ ‚è‚Ü‚·B','A block has two or more stars.'); return false;
+				this.setAlert('æ˜ŸãŒè¤‡æ•°å«ã¾ã‚Œã‚‹é ˜åŸŸãŒã‚ã‚Šã¾ã™ã€‚','A block has two or more stars.'); return false;
 			}
 
 			return true;

@@ -1,46 +1,46 @@
 //
-// �p�Y���ŗL�X�N���v�g�� ��΂Ђ낢�� goishi.js v3.3.0
+// パズル固有スクリプト部 碁石ひろい版 goishi.js v3.3.0
 //
 Puzzles.goishi = function(){ };
 Puzzles.goishi.prototype = {
 	setting : function(){
-		// �O���[�o���ϐ��̏����ݒ�
-		if(!k.qcols){ k.qcols = 10;}	// �Ֆʂ̉���
-		if(!k.qrows){ k.qrows = 10;}	// �Ֆʂ̏c��
-		k.irowake  = 0;		// 0:�F�����ݒ薳�� 1:�F�������Ȃ� 2:�F��������
+		// グローバル変数の初期設定
+		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
+		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
+		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross  = 0;		// 1:�Ֆʓ�����Cross������p�Y�� 2:�O�g����܂߂�Cross������p�Y��
-		k.isborder = 0;		// 1:Border/Line������\�ȃp�Y�� 2:�O�g�������\�ȃp�Y��
-		k.isexcell = 0;		// 1:��E�����ɃZ����p�ӂ���p�Y�� 2:�l���ɃZ����p�ӂ���p�Y��
+		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-		k.isLineCross     = false;	// ������������p�Y��
-		k.isCenterLine    = false;	// �}�X�̐^�񒆂�ʂ�����񓚂Ƃ��ē��͂���p�Y��
-		k.isborderAsLine  = false;	// ���E����line�Ƃ��Ĉ���
-		k.hasroom         = false;	// �������̗̈�ɕ�����Ă���/������p�Y��
-		k.roomNumber      = false;	// �����̖��̐�����1��������p�Y��
+		k.isLineCross     = false;	// 線が交差するパズル
+		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
+		k.isborderAsLine  = false;	// 境界線をlineとして扱う
+		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
+		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero        = false;	// 0��\�����邩�ǂ���
-		k.isDispHatena    = false;	// qnum��-2�̂Ƃ��ɁH��\������
-		k.isAnsNumber     = true;	// �񓚂ɐ�������͂���p�Y��
-		k.NumberWithMB    = false;	// �񓚂̐����Ɓ��~������p�Y��
-		k.linkNumber      = false;	// �������ЂƂȂ���ɂȂ�p�Y��
+		k.dispzero        = false;	// 0を表示するかどうか
+		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
+		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
+		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = false;	// 数字がひとつながりになるパズル
 
-		k.BlackCell       = false;	// ���}�X����͂���p�Y��
-		k.NumberIsWhite   = false;	// �����̂���}�X�����}�X�ɂȂ�Ȃ��p�Y��
-		k.RBBlackCell     = false;	// �A�����f�ւ̃p�Y��
-		k.checkBlackCell  = false;	// ��������ō��}�X�̏����`�F�b�N����p�Y��
-		k.checkWhiteCell  = false;	// ��������Ŕ��}�X�̏����`�F�b�N����p�Y��
+		k.BlackCell       = false;	// 黒マスを入力するパズル
+		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
+		k.RBBlackCell     = false;	// 連黒分断禁のパズル
+		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
+		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY    = true;	// �ς��Ղ�A�v���b�g�ɂ͑��݂��Ȃ��p�Y��
-		k.isKanpenExist   = true;	// pencilbox/�J���y���ɂ���p�Y��
+		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
+		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
 
-		base.setTitle("��΂Ђ낢","Goishi");
+		base.setTitle("碁石ひろい","Goishi");
 		if(k.EDITOR){
-			base.setExpression("�@���N���b�N�Ł��ɏ��Ԃ�\���������A�E�N���b�Nor�������ςȂ��Ō��ɖ߂��܂��BURL�������A��΂̂Ȃ������͎����I�ɃJ�b�g����܂��B",
+			base.setExpression("　左クリックで○に順番を表す数字が、右クリックor押しっぱなしで元に戻せます。URL生成時、碁石のない部分は自動的にカットされます。",
 							   " Left Click to input number of orders, Right Click or Pressing to Undo. The area with no Goishi is cut when outputting URL.");
 		}
 		else{
-			base.setExpression("�@���N���b�N�Ł��ɏ��Ԃ�\���������A�E�N���b�Nor�������ςȂ��Ō��ɖ߂��܂��B",
+			base.setExpression("　左クリックで○に順番を表す数字が、右クリックor押しっぱなしで元に戻せます。",
 							   " Left Click to input number of orders, Right Click or Pressing to Undo.");
 		}
 		base.setFloatbgcolor("rgb(96, 96, 96)");
@@ -50,8 +50,8 @@ Puzzles.goishi.prototype = {
 	},
 	menufix : function(){
 		if(k.EDITOR){
-			pp.addCheck('bdpadding','setting',true, '�󌄂�URL', 'URL with Padding');
-			pp.setLabel('bdpadding', 'URL�������Ɏ���1�}�X�����Ȃ�����������', 'Add Padding around the Board in outputting URL.');
+			pp.addCheck('bdpadding','setting',true, '空隙つきURL', 'URL with Padding');
+			pp.setLabel('bdpadding', 'URL生成時に周り1マス何もない部分をつける', 'Add Padding around the Board in outputting URL.');
 			pp.funcs['bdpadding'] = function(){ };
 		}
 	},
@@ -99,9 +99,9 @@ Puzzles.goishi.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//���͌n�֐��I�[�o�[���C�h
+	//入力系関数オーバーライド
 	input_init : function(){
-		// �}�E�X���͌n
+		// マウス入力系
 		mv.mousedown = function(){
 			if     (k.editmode) this.inputstone();
 			else if(k.playmode){
@@ -144,13 +144,13 @@ Puzzles.goishi.prototype = {
 				}
 			}
 
-			// ���ł�1�ȏ�̌�΂�����Ă���ꍇ
+			// すでに1つ以上の碁石が取られている場合
 			if(bcc!==-1){
 				var tmp, d = {x1:-1, y1:-1, x2:-1, y2:-1};
 				d.x1 = bd.cell[cc].bx, d.x2 = bd.cell[bcc].bx;
 				d.y1 = bd.cell[cc].by, d.y2 = bd.cell[bcc].by;
 
-				// �����̏㉺���E��max�Ȍ�΂��Ȃ��ꍇ�͉������Ȃ�
+				// 自分の上下左右にmaxな碁石がない場合は何もしない
 				if(d.x1!==d.x2 && d.y1!==d.y2){ return;}
 				else if(d.x1===d.x2){
 					if(d.y1>d.y2){ tmp=d.y2; d.y2=d.y1; d.y1=tmp;}
@@ -160,7 +160,7 @@ Puzzles.goishi.prototype = {
 					if(d.x1>d.x2){ tmp=d.x2; d.x2=d.x1; d.x1=tmp;}
 					d.x1+=2; d.x2-=2;
 				}
-				// �ԂɌ�΂�����ꍇ�͉������Ȃ�
+				// 間に碁石がある場合は何もしない
 				for(var bx=d.x1;bx<=d.x2;bx+=2){ for(var by=d.y1;by<=d.y2;by+=2){
 					var c = bd.cnum(bx,by);
 					if(c!==-1 && bd.cell[c].ques===7){
@@ -174,7 +174,7 @@ Puzzles.goishi.prototype = {
 			pc.paintCell(cc);
 		};
 
-		// �L�[�{�[�h���͌n
+		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
@@ -192,12 +192,12 @@ Puzzles.goishi.prototype = {
 
 		bd.setStone = function(cc){
 			if     (bd.QuC(cc)!== 7){ bd.sQuC(cc,7);}
-			else if(bd.QaC(cc)===-1){ bd.sQuC(cc,0);} // �����̃}�X�͏����܂���
+			else if(bd.QaC(cc)===-1){ bd.sQuC(cc,0);} // 数字のマスは消せません
 		};
 	},
 
 	//---------------------------------------------------------
-	//�摜�\���n�֐��I�[�o�[���C�h
+	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.errcolor1 = "rgb(208, 0, 0)";
 		pc.errbcolor1 = "rgb(255, 192, 192)";
@@ -264,7 +264,7 @@ Puzzles.goishi.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URL�G���R�[�h/�f�R�[�h����
+	// URLエンコード/デコード処理
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeGoishi();
@@ -307,7 +307,7 @@ Puzzles.goishi.prototype = {
 			}
 			this.outbstr = bstr.substr(i+1);
 		};
-		// �G���R�[�h���́A�ՖʃT�C�Y�̏k���Ƃ������ꏈ�����s���Ă܂�
+		// エンコード時は、盤面サイズの縮小という特殊処理を行ってます
 		enc.encodeGoishi = function(){
 			var d = this.getSizeOfBoard_goishi();
 
@@ -405,12 +405,12 @@ Puzzles.goishi.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// ���𔻒菈�����s��
+	// 正解判定処理実行部
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			if( !this.checkAllCell(function(c){ return (bd.cell[c].ques===7 && bd.cell[c].qans===-1);}) ){
-				this.setAlert('�E���Ă��Ȃ���΂�����܂��B','There is remaining Goishi.'); return false;
+				this.setAlert('拾われていない碁石があります。','There is remaining Goishi.'); return false;
 			}
 
 			return true;

@@ -1,11 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <HTML lang="ja">
 <HEAD>
+<META CHARSET="utf-8">
 <META NAME="robots" CONTENTS="noindex,nofollow">
-<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
-<link rel="stylesheet" href="sc7.css" type="text/css" />
-<script type="text/javascript" src="src/pzprBase_develop.js"></script>  <!-- �ς��Ղ�v3���ʃt�@�C���̓ǂݍ���/��p�t�@�C�������ōs�� -->
-<TITLE>�ǂݍ��ݒ��ł�... - �ς��Ղ�v3</TITLE>
+<meta http-equiv="Content-Type" content="text/html">
+<link rel="stylesheet" href="sc8.css" type="text/css" />
+<script type="text/javascript" src="src/pzprBase_develop.js"></script>  <!-- ぱずぷれv3共通ファイルの読み込み/専用ファイルも中で行う -->
+<TITLE>読み込み中です... - ぱずぷれv3</TITLE>
 </HEAD>
 
 <BODY>
@@ -13,132 +14,132 @@
 
 <div id="main">
 
-<h2 id="title2">�ǂݍ��ݒ��ł�...</h2>
+<h2 id="title2">読み込み中です...</h2>
 
 <div id="menuboard">
 	<menu id="menupanel"></menu>
-	<div id="expression">�t�@�C���̓ǂݍ��ݒ��ł�...</div>
+	<div id="expression">ファイルの読み込み中です...</div>
 	<hr id="separator1">
 	<div id="usepanel"></div>
 	<div id="checkpanel"></div>
 	<hr id="separator2">
-	<div id="timerpanel">�o�ߎ��ԁF00:00</div>
+	<div id="timerpanel">経過時間：00:00</div>
 </div>
 
 <div id="quesboard">
-	<div id="divques"></div>		<!-- Canvas�p -->
-	<div id="numobj_parent"></div>	<!-- Canvas�ɕ\�����镶���p -->
-	<div id="btnarea"></div>		<!-- Canvas�����̃{�^�� -->
+	<div id="divques"></div>		<!-- Canvas用 -->
+	<div id="numobj_parent"></div>	<!-- Canvasに表示する文字用 -->
+	<div id="btnarea"></div>		<!-- Canvas下部のボタン -->
 </div>
 
 </div> <!-- div#main close. -->
 
-<!-- �������牺�̓|�b�v�A�b�v���j���[(�{�L�[�|�b�v�A�b�v/for_test)�p�ł� -->
+<!-- ここから下はポップアップメニュー(＋キーポップアップ/for_test)用です -->
 <div id="popup_parent">
 
 <div class="popup" id="pop1_1">
-<div class="titlebar" id="bar1_1">�Ֆʂ̐V�K�쐬</div>
+<div class="titlebar" id="bar1_1">盤面の新規作成</div>
 <form name="newboard">
-<span id="pop1_1_cap0">�Ֆʂ�V�K�쐬���܂��B</span><br>
-<span id="pop1_1_cap1">�悱</span><input type="number" name="col" value="" size="4" maxlength="3" min="1" max="999" />
-<span id="pop1_1_cap2">����</span><input type="number" name="row" value="" size="4" maxlength="3" min="1" max="999" /><br>
-<input type="button" name="newboard" value="�V�K�쐬" /><input type="button" name="cancel" value="�L�����Z��" />
+<span id="pop1_1_cap0">盤面を新規作成します。</span><br>
+<span id="pop1_1_cap1">よこ</span><input type="number" name="col" value="" size="4" maxlength="3" min="1" max="999" />
+<span id="pop1_1_cap2">たて</span><input type="number" name="row" value="" size="4" maxlength="3" min="1" max="999" /><br>
+<input type="button" name="newboard" value="新規作成" /><input type="button" name="cancel" value="キャンセル" />
 </form>
 </div>
 
 <div class="popup" id="pop1_2">
-<div class="titlebar" id="bar1_2">URL����</div>
+<div class="titlebar" id="bar1_2">URL入力</div>
 <form name="urlinput">
-<span id="pop1_2_cap0">URL�������ǂݍ��݂܂��B</span><br>
+<span id="pop1_2_cap0">URLから問題を読み込みます。</span><br>
 <textarea name="ta" cols="48" rows="8" wrap="hard"></textarea><br>
-<input type="button" name="urlinput" value="�ǂݍ���" /><input type="button" name="cancel" value="�L�����Z��" />
+<input type="button" name="urlinput" value="読み込む" /><input type="button" name="cancel" value="キャンセル" />
 </form>
 </div>
 
 <div class="popup" id="pop1_3">
-<div class="titlebar" id="bar1_3">URL�o��</div>
+<div class="titlebar" id="bar1_3">URL出力</div>
 <form name="urloutput">
 <div id="urlbuttonarea"></div>
 <textarea name="ta" cols="48" rows="8" wrap="hard" readonly></textarea><br>
-<input type="button" name="openurl" value="URL����J��" />
-<input type="button" name="close" value="����" />
+<input type="button" name="openurl" value="URLから開く" />
+<input type="button" name="close" value="閉じる" />
 </form>
 </div>
 
 <div class="popup" id="pop1_4">
-<div class="titlebar" id="bar1_4">�t�@�C�����J��</div>
+<div class="titlebar" id="bar1_4">ファイルを開く</div>
 <form name="fileform" id="fileform" action="fileio.xcg" method="post" onsubmit="return false;" enctype="multipart/form-data" target="fileiopanel">
-<span id="pop1_4_cap0">�t�@�C���I��</span><br>
+<span id="pop1_4_cap0">ファイル選択</span><br>
 <input type="file" name="filebox" id="filebox"><br>
-<input type="button" name="close" value="����" />
+<input type="button" name="close" value="閉じる" />
 <input type="hidden" name="pencilbox" value="0">
 <input type="hidden" name="operation" value="open">
 </form>
 </div>
 
 <div class="popup" id="pop1_8">
-<div class="titlebar" id="bar1_8">�ꎞ�ۑ�/�߂�</div>
+<div class="titlebar" id="bar1_8">一時保存/戻す</div>
 <form name="database">
 <table border="0"><tr>
 <td rowspan="3" style="padding-right:12pt;">
 <select name="sorts"></select>
-<input type="button" name="tableup" value="��" />
-<input type="button" name="tabledn" value="��" />
+<input type="button" name="tableup" value="▲" />
+<input type="button" name="tabledn" value="▼" />
 <br><br>
 <select name="datalist" size="8" style="width:100%;"></select>
 </td>
 <td colspan="2" style="vertical-align:middle;">
-<span id="pop1_8_com" style="font-size:10pt;">�R�����g:</span><br>
+<span id="pop1_8_com" style="font-size:10pt;">コメント:</span><br>
 <textarea name="comtext" cols="24" rows="3" wrap="hard" style="background-color:#dfdfdf;" readonly></textarea><br>
 </td></tr>
 <tr><td rowspan="2" style="vertical-align:bottom;padding-right:8pt;">
-<input type="button" name="save" value="�Ֆʂ�ۑ�" /><br>
-<input type="button" name="comedit" value="�R�����g��ҏW����" /><br>
-<input type="button" name="difedit" value="��Փx��ݒ肷��" /><br>
-<input type="button" name="open" value="�f�[�^��ǂݍ���" />
+<input type="button" name="save" value="盤面を保存" /><br>
+<input type="button" name="comedit" value="コメントを編集する" /><br>
+<input type="button" name="difedit" value="難易度を設定する" /><br>
+<input type="button" name="open" value="データを読み込む" />
 </td>
 <td style="vertical-align:top;padding-top:4pt;">
-<input type="button" name="del" value="�폜" style="color:red;" /><br>
+<input type="button" name="del" value="削除" style="color:red;" /><br>
 </td></tr>
 <tr><td style="vertical-align:bottom;">
-<input type="button" name="close" value="����" />
+<input type="button" name="close" value="閉じる" />
 </td></tr>
 </table>
 </form>
 </div>
 
 <div class="popup" id="pop2_1">
-<div class="titlebar" id="bar2_1">�Ֆʂ̒���</div>
+<div class="titlebar" id="bar2_1">盤面の調整</div>
 <form name="adjust">
-<span id="pop2_1_cap0">�Ֆʂ̒������s���܂��B</span><br>
-<span id="pop2_1_cap1">�g��</span>
-<input type="button" name="expandup" value="��" /><input type="button" name="expanddn" value="��" />
-<input type="button" name="expandlt" value="��" /><input type="button" name="expandrt" value="�E" /><br>
-<span id="pop2_1_cap2">�k��</span>
-<input type="button" name="reduceup" value="��" /><input type="button" name="reducedn" value="��" />
-<input type="button" name="reducelt" value="��" /><input type="button" name="reducert" value="�E" /><br>
+<span id="pop2_1_cap0">盤面の調整を行います。</span><br>
+<span id="pop2_1_cap1">拡大</span>
+<input type="button" name="expandup" value="上" /><input type="button" name="expanddn" value="下" />
+<input type="button" name="expandlt" value="左" /><input type="button" name="expandrt" value="右" /><br>
+<span id="pop2_1_cap2">縮小</span>
+<input type="button" name="reduceup" value="上" /><input type="button" name="reducedn" value="下" />
+<input type="button" name="reducelt" value="左" /><input type="button" name="reducert" value="右" /><br>
 <br>
-<input type="button" name="close" value="����" />
+<input type="button" name="close" value="閉じる" />
 </form>
 </div>
 
 <div class="popup" id="pop2_2">
-<div class="titlebar" id="bar2_2">���]�E��]</div>
+<div class="titlebar" id="bar2_2">反転・回転</div>
 <form name="flip">
-<span id="pop2_2_cap0">�Ֆʂ̉�]�E���]���s���܂��B</span><br>
-<input type="button" name="turnl" value="��90����]" /><input type="button" name="turnr" value="�E90����]" /><br>
-<input type="button" name="flipy" value="�㉺���]" /><input type="button" name="flipx" value="���E���]" /><br>
+<span id="pop2_2_cap0">盤面の回転・反転を行います。</span><br>
+<input type="button" name="turnl" value="左90°回転" /><input type="button" name="turnr" value="右90°回転" /><br>
+<input type="button" name="flipy" value="上下反転" /><input type="button" name="flipx" value="左右反転" /><br>
 <br>
-<input type="button" name="close" value="����" />
+<input type="button" name="close" value="閉じる" />
 </form>
 </div>
 
 <div class="popup" id="pop4_1">
-<div class="titlebar" id="bar4_1">�\���T�C�Y�̕ύX</div>
+<div class="titlebar" id="bar4_1">表示サイズの変更</div>
 <form name="dispsize" onsubmit="return false;">
-<span id="pop4_1_cap0">�\���T�C�Y��ύX���܂��B</span><br>
-<span id="pop4_1_cap1">�\���T�C�Y</span><input type="number" name="cs" value="" size="4" maxlength="3" min="8" max="999" /><br>
-<input type="button" name="dispsize" value="�ύX����" /><input type="button" name="cancel" value="�L�����Z��" />
+<span id="pop4_1_cap0">表示サイズを変更します。</span><br>
+<span id="pop4_1_cap1">表示サイズ</span><input type="number" name="cs" value="" size="4" maxlength="3" min="8" max="999" /><br>
+<input type="button" name="dispsize" value="変更する" /><input type="button" name="cancel" value="キャンセル" />
 </form>
 </div>
 
@@ -146,7 +147,7 @@
 <div class="titlebar" id="bar3_1">credit</div>
 <div class="credit" id="credit3_1"></div>
 <form name="credit">
-<input type="button" name="close" value="����" />
+<input type="button" name="close" value="閉じる" />
 </form>
 </div>
 
@@ -155,7 +156,7 @@
 <form name="testform">
 <textarea name="testarea" id="testarea" rows="16" cols="40" wrap="off"></textarea>
 <br>
-<input type="button" name="starttest" value="�e�X�g" /> 
+<input type="button" name="starttest" value="テスト" /> 
 <input type="button" name="t1" value="T1" /
 ><input type="button" name="t2" value="T2" /
 ><input type="button" name="t3" value="T3" />
@@ -165,8 +166,8 @@
 <input type="button" name="filesave" value="Save" /
 ><input type="button" name="pbfilesave" value="PSave" />
 <input type="button" name="fileopen" value="Load" /> 
-<input type="button" name="erasetext" value="����" /> 
-<input type="button" name="close" value="����" /> 
+<input type="button" name="erasetext" value="消去" /> 
+<input type="button" name="close" value="閉じる" /> 
 </form>
 </div>
 
@@ -174,17 +175,17 @@
 <div class="keypopup" id="keypopup3"></div>
 
 </div> <!-- div#popup_parent close. -->
-<!-- �����܂Ń|�b�v�A�b�v���j���[ -->
+<!-- ここまでポップアップメニュー -->
 
-<!-- �t���[�g�p�l���p -->
+<!-- フロートパネル用 -->
 <div id="float_parent"></div>
 
-<!-- �B���v�f -->
+<!-- 隠し要素 -->
 <div id="hidden_element">
-  <!-- �t�@�C�����o�͗p�C�����C���t���[�� -->
+  <!-- ファイル入出力用インラインフレーム -->
   <iframe name="fileiopanel" id="fileiopanel" src="about:blank"></iframe>
 
-  <!-- ��������t�@�C���o�͗p�t�H�[�� -->
+  <!-- ここからファイル出力用フォーム -->
   <form name="fileform2" id="fileform2" target="fileiopanel"
         action="fileio.xcg" method="post" onsubmit="return false;">
     <input type="hidden" name="operation" value="save">
@@ -194,10 +195,10 @@
     <input type="hidden" name="platform" value="">
   </form>
 
-  <!-- �摜�o�͗p -->
+  <!-- 画像出力用 -->
   <div id="divques_sub"></div>
 </div>
-<!-- �����܂� -->
+<!-- ここまで -->
 
 </BODY>
 </HTML>
