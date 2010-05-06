@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤギとオオカミ版 shwolf.js v3.3.0
+// パズル固有スクリプト部 ヤギとオオカミ版 shwolf.js v3.3.1
 //
 Puzzles.shwolf = function(){ };
 Puzzles.shwolf.prototype = {
@@ -171,9 +171,9 @@ Puzzles.shwolf.prototype = {
 					img.style.width  = ""+(this.imgobj.cols*this.cw)+"px";
 					img.style.height = ""+(this.imgobj.rows*this.ch)+"px";
 				}
-				img.style.left   = mf(k.cv_oft.x+bd.cell[c].px+1 - xpos*this.cw)+"px";
-				img.style.top    = mf(k.cv_oft.y+bd.cell[c].py+1 - ypos*this.cw)+"px";
-				img.style.clip   = "rect("+mf(this.cw*ypos+1)+"px,"+mf(this.cw*(xpos+1))+"px,"+mf(this.cw*(ypos+1))+"px,"+mf(this.cw*xpos+1)+"px)";
+				img.style.left   = ((k.cv_oft.x+bd.cell[c].px+1 - xpos*this.cw)|0)+"px";
+				img.style.top    = ((k.cv_oft.y+bd.cell[c].py+1 - ypos*this.cw)|0)+"px";
+				img.style.clip   = "rect("+((this.cw*ypos+1)|0)+"px,"+((this.cw*(xpos+1))|0)+"px,"+((this.cw*(ypos+1))|0)+"px,"+((this.cw*xpos+1)|0)+"px)";
 				this.showEL(key);
 			}
 			else{

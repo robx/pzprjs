@@ -1,4 +1,4 @@
-// Menu.js v3.3.0
+// Menu.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -633,8 +633,8 @@ Menu.prototype = {
 		}
 		this.titlebarfunc(ee('credit3_1').el);
 
-		document.onmousemove = ee.ebinder(this,this.titlebarmove);
-		document.onmouseup   = ee.ebinder(this,this.titlebarup);
+		_doc.onmousemove = ee.ebinder(this,this.titlebarmove);
+		_doc.onmouseup   = ee.ebinder(this,this.titlebarup);
 
 		//=====================================================================
 		//// formボタンの動作設定・その他のCaption設定
@@ -651,15 +651,15 @@ Menu.prototype = {
 			lab(ee('pop1_1_cap1').el, "よこ",                   "Cols");
 			lab(ee('pop1_1_cap2').el, "たて",                   "Rows");
 		}
-		btn(document.newboard.newboard, func,  "新規作成",   "Create");
-		btn(document.newboard.cancel,   close, "キャンセル", "Cancel");
+		btn(_doc.newboard.newboard, func,  "新規作成",   "Create");
+		btn(_doc.newboard.cancel,   close, "キャンセル", "Cancel");
 
 		// URL入力 ------------------------------------------------------------
 		func = ee.ebinder(this.ex, this.ex.urlinput);
 		lab(ee('bar1_2').el,      "URL入力",                     "Import from URL");
 		lab(ee('pop1_2_cap0').el, "URLから問題を読み込みます。", "Import a question from URL.");
-		btn(document.urlinput.urlinput, func,  "読み込む",   "Import");
-		btn(document.urlinput.cancel,   close, "キャンセル", "Cancel");
+		btn(_doc.urlinput.urlinput, func,  "読み込む",   "Import");
+		btn(_doc.urlinput.cancel,   close, "キャンセル", "Cancel");
 
 		// URL出力 ------------------------------------------------------------
 		func = ee.ebinder(this.ex, this.ex.urloutput);
@@ -677,69 +677,69 @@ Menu.prototype = {
 		btt('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
 		ee("urlbuttonarea").appendBR();
 		func = ee.ebinder(this.ex, this.ex.openurl);
-		btn(document.urloutput.openurl, func,  "このURLを開く", "Open this URL on another window/tab");
-		btn(document.urloutput.close,   close, "閉じる", "Close");
+		btn(_doc.urloutput.openurl, func,  "このURLを開く", "Open this URL on another window/tab");
+		btn(_doc.urloutput.close,   close, "閉じる", "Close");
 
 		// ファイル入力 -------------------------------------------------------
 		func = ee.ebinder(this.ex, this.ex.fileopen);
 		lab(ee('bar1_4').el,      "ファイルを開く", "Open file");
 		lab(ee('pop1_4_cap0').el, "ファイル選択",   "Choose file");
-		document.fileform.filebox.onchange = func;
-		btn(document.fileform.close,    close, "閉じる",     "Close");
+		_doc.fileform.filebox.onchange = func;
+		btn(_doc.fileform.close,    close, "閉じる",     "Close");
 
 		// データベースを開く -------------------------------------------------
 		func = ee.ebinder(fio.dbm, fio.dbm.clickHandler);
 		lab(ee('bar1_8').el, "一時保存/戻す", "Temporary Stack");
-		document.database.sorts   .onchange = func;
-		document.database.datalist.onchange = func;
-		document.database.tableup .onclick  = func;
-		document.database.tabledn .onclick  = func;
-		btn(document.database.open,     func,  "データを読み込む",   "Load");
-		btn(document.database.save,     func,  "盤面を保存",         "Save");
+		_doc.database.sorts   .onchange = func;
+		_doc.database.datalist.onchange = func;
+		_doc.database.tableup .onclick  = func;
+		_doc.database.tabledn .onclick  = func;
+		btn(_doc.database.open,     func,  "データを読み込む",   "Load");
+		btn(_doc.database.save,     func,  "盤面を保存",         "Save");
 		lab(ee('pop1_8_com').el, "コメント:", "Comment:");
-		btn(document.database.comedit,  func,  "コメントを編集する", "Edit Comment");
-		btn(document.database.difedit,  func,  "難易度を設定する",   "Set difficulty");
-		btn(document.database.del,      func,  "削除",               "Delete");
-		btn(document.database.close,    close, "閉じる",             "Close");
+		btn(_doc.database.comedit,  func,  "コメントを編集する", "Edit Comment");
+		btn(_doc.database.difedit,  func,  "難易度を設定する",   "Set difficulty");
+		btn(_doc.database.del,      func,  "削除",               "Delete");
+		btn(_doc.database.close,    close, "閉じる",             "Close");
 
 		// 盤面の調整 ---------------------------------------------------------
 		func = ee.ebinder(this.ex, this.ex.popupadjust);
 		lab(ee('bar2_1').el,      "盤面の調整",             "Adjust the board");
 		lab(ee('pop2_1_cap0').el, "盤面の調整を行います。", "Adjust the board.");
 		lab(ee('pop2_1_cap1').el, "拡大",  "Expand");
-		btn(document.adjust.expandup,   func,  "上",     "UP");
-		btn(document.adjust.expanddn,   func,  "下",     "Down");
-		btn(document.adjust.expandlt,   func,  "左",     "Left");
-		btn(document.adjust.expandrt,   func,  "右",     "Right");
+		btn(_doc.adjust.expandup,   func,  "上",     "UP");
+		btn(_doc.adjust.expanddn,   func,  "下",     "Down");
+		btn(_doc.adjust.expandlt,   func,  "左",     "Left");
+		btn(_doc.adjust.expandrt,   func,  "右",     "Right");
 		lab(ee('pop2_1_cap2').el, "縮小", "Reduce");
-		btn(document.adjust.reduceup,   func,  "上",     "UP");
-		btn(document.adjust.reducedn,   func,  "下",     "Down");
-		btn(document.adjust.reducelt,   func,  "左",     "Left");
-		btn(document.adjust.reducert,   func,  "右",     "Right");
-		btn(document.adjust.close,      close, "閉じる", "Close");
+		btn(_doc.adjust.reduceup,   func,  "上",     "UP");
+		btn(_doc.adjust.reducedn,   func,  "下",     "Down");
+		btn(_doc.adjust.reducelt,   func,  "左",     "Left");
+		btn(_doc.adjust.reducert,   func,  "右",     "Right");
+		btn(_doc.adjust.close,      close, "閉じる", "Close");
 
 		// 反転・回転 ---------------------------------------------------------
 		lab(ee('bar2_2').el,      "反転・回転",                  "Flip/Turn the board");
 		lab(ee('pop2_2_cap0').el, "盤面の回転・反転を行います。","Flip/Turn the board.");
-		btn(document.flip.turnl,  func,  "左90°回転", "Turn left by 90 degree");
-		btn(document.flip.turnr,  func,  "右90°回転", "Turn right by 90 degree");
-		btn(document.flip.flipy,  func,  "上下反転",   "Flip upside down");
-		btn(document.flip.flipx,  func,  "左右反転",   "Flip leftside right");
-		btn(document.flip.close,  close, "閉じる",     "Close");
+		btn(_doc.flip.turnl,  func,  "左90°回転", "Turn left by 90 degree");
+		btn(_doc.flip.turnr,  func,  "右90°回転", "Turn right by 90 degree");
+		btn(_doc.flip.flipy,  func,  "上下反転",   "Flip upside down");
+		btn(_doc.flip.flipx,  func,  "左右反転",   "Flip leftside right");
+		btn(_doc.flip.close,  close, "閉じる",     "Close");
 
 		// credit -------------------------------------------------------------
 		lab(ee('bar3_1').el,   "credit", "credit");
 		lab(ee('credit3_1').el,"ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\nライブラリとしてuuCanvas1.0, Google Gearsを使用しています。<br>\n<br>\n",
 							   "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\nThis script use uuCanvas1.0 and Google Gears as libraries.&nbsp;<br>\n<br>\n");
-		btn(document.credit.close,  close, "閉じる", "OK");
+		btn(_doc.credit.close,  close, "閉じる", "OK");
 
 		// 表示サイズ ---------------------------------------------------------
 		func = ee.ebinder(this, this.ex.dispsize);
 		lab(ee('bar4_1').el,      "表示サイズの変更",         "Change size");
 		lab(ee('pop4_1_cap0').el, "表示サイズを変更します。", "Change the display size.");
 		lab(ee('pop4_1_cap1').el, "表示サイズ",               "Display size");
-		btn(document.dispsize.dispsize, func,  "変更する",   "Change");
-		btn(document.dispsize.cancel,   close, "キャンセル", "Cancel");
+		btn(_doc.dispsize.dispsize, func,  "変更する",   "Change");
+		btn(_doc.dispsize.cancel,   close, "キャンセル", "Cancel");
 
 		// poptest ------------------------------------------------------------
 		debug.poptest_func();
@@ -834,7 +834,7 @@ Menu.prototype = {
 	setLangEN : function(){ this.setLangStr('en');},
 	setLangStr : function(ln){
 		this.language = ln;
-		document.title = base.gettitle();
+		_doc.title = base.gettitle();
 		ee('title2').el.innerHTML = base.gettitle();
 		ee('expression').el.innerHTML = base.expression[this.language];
 
@@ -974,7 +974,7 @@ Properties.prototype = {
 	// submenuから呼び出される関数たち
 	funcs : {
 		urlinput  : function(){ menu.pop = ee("pop1_2");},
-		urloutput : function(){ menu.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
+		urloutput : function(){ menu.pop = ee("pop1_3"); _doc.urloutput.ta.value = "";},
 		fileopen  : function(){ menu.pop = ee("pop1_4");},
 		filesave  : function(){ menu.ex.filesave(fio.PZPR);},
 		filesave2 : function(){ if(!!fio.kanpenSave){ menu.ex.filesave(fio.PBOX);}},
@@ -998,14 +998,14 @@ Properties.prototype = {
 		newboard : function(){
 			menu.pop = ee("pop1_1");
 			if(k.puzzleid!="sudoku"){
-				document.newboard.col.value = k.qcols;
-				document.newboard.row.value = k.qrows;
+				_doc.newboard.col.value = k.qcols;
+				_doc.newboard.row.value = k.qrows;
 			}
 			kc.enableKey = false;
 		},
 		dispsize : function(){
 			menu.pop = ee("pop4_1");
-			document.dispsize.cs.value = k.cellsize;
+			_doc.dispsize.cs.value = k.cellsize;
 			kc.enableKey = false;
 		},
 		keypopup : function(){
@@ -1027,27 +1027,27 @@ var debug = {
 	poptest_func : function(){
 		menu.titlebarfunc(ee('bartest').el);
 
-		document.testform.t1.onclick        = ee.binder(this, this.perfeval);
-		document.testform.t2.onclick        = ee.binder(this, this.painteval);
-		document.testform.t3.onclick        = ee.binder(this, this.resizeeval);
-		document.testform.perfload.onclick  = ee.binder(this, this.loadperf);
+		_doc.testform.t1.onclick        = ee.binder(this, this.perfeval);
+		_doc.testform.t2.onclick        = ee.binder(this, this.painteval);
+		_doc.testform.t3.onclick        = ee.binder(this, this.resizeeval);
+		_doc.testform.perfload.onclick  = ee.binder(this, this.loadperf);
 
-		document.testform.filesave.onclick  = ee.binder(this, this.filesave);
-		document.testform.pbfilesave.onclick  = ee.binder(this, this.filesave_pencilbox);
+		_doc.testform.filesave.onclick  = ee.binder(this, this.filesave);
+		_doc.testform.pbfilesave.onclick  = ee.binder(this, this.filesave_pencilbox);
 
-		document.testform.fileopen.onclick  = ee.binder(this, this.fileopen);
-		document.testform.database.onclick  = ee.binder(this, this.dispdatabase);
+		_doc.testform.fileopen.onclick  = ee.binder(this, this.fileopen);
+		_doc.testform.database.onclick  = ee.binder(this, this.dispdatabase);
 
-		document.testform.erasetext.onclick = ee.binder(this, this.erasetext);
-		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
+		_doc.testform.erasetext.onclick = ee.binder(this, this.erasetext);
+		_doc.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
 
-		document.testform.testarea.style.fontSize = '10pt';
+		_doc.testform.testarea.style.fontSize = '10pt';
 
-		document.testform.starttest.style.display = 'none';
+		_doc.testform.starttest.style.display = 'none';
 
-		document.testform.perfload.style.display = (k.puzzleid!=='country' ? 'none' : 'inline');
-		document.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
-		document.testform.database.style.display = (!fio.DBaccept<0x08 ? 'none' : 'inline');
+		_doc.testform.perfload.style.display = (k.puzzleid!=='country' ? 'none' : 'inline');
+		_doc.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
+		_doc.testform.database.style.display = (!fio.DBaccept<0x08 ? 'none' : 'inline');
 
 		if(k.scriptcheck){ debug.testonly_func();}	// テスト用
 	},
@@ -1125,7 +1125,7 @@ var debug = {
 		pp.setVal('irowake',true);
 	},
 
-	getTA : function(){ return document.testform.testarea.value;},
-	setTA : function(str){ document.testform.testarea.value  = str;},
-	addTA : function(str){ document.testform.testarea.value += (str+"\n");}
+	getTA : function(){ return _doc.testform.testarea.value;},
+	setTA : function(str){ _doc.testform.testarea.value  = str;},
+	addTA : function(str){ _doc.testform.testarea.value += (str+"\n");}
 };

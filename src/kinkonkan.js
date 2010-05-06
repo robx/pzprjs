@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.3.0
+// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.3.1
 //
 Puzzles.kinkonkan = function(){ };
 Puzzles.kinkonkan.prototype = {
@@ -382,7 +382,7 @@ Puzzles.kinkonkan.prototype = {
 
 				if(val> 0 && val<=104){
 					if(val<=26){ pstr = (val+9).toString(36).toUpperCase();}
-					else       { pstr = mf((val-1)/26-1).toString() + ((val-1)%26+10).toString(16).toUpperCase();}
+					else       { pstr = (((val-1)/26-1)|0).toString() + ((val-1)%26+10).toString(16).toUpperCase();}
 
 					if     (qnum==-2){ cm2+=".";}
 					else if(qnum <16){ cm2+=("" +qnum.toString(16));}
@@ -407,7 +407,7 @@ Puzzles.kinkonkan.prototype = {
 				var ca = item[i];
 				if(ca=="."){ continue;}
 
-				var ec = bd.exnum(i%(k.qcols+2)*2-1,mf(i/(k.qcols+2))*2-1);
+				var ec = bd.exnum(i%(k.qcols+2)*2-1,((i/(k.qcols+2))<<1)-1);
 				if(ec!==-1){
 					var inp = ca.split(",");
 					if(inp[0]!=""){ bd.sDiE(ec, parseInt(inp[0]));}
@@ -415,7 +415,7 @@ Puzzles.kinkonkan.prototype = {
 				}
 
 				if(this.filever==1){
-					var c = bd.cnum(i%(k.qcols+2)*2-1,mf(i/(k.qcols+2))*2-1);
+					var c = bd.cnum(i%(k.qcols+2)*2-1,((i/(k.qcols+2))<<1)-1);
 					if(c!==-1){
 						if     (ca==="+"){ bd.sQsC(c, 1);}
 						else if(ca!=="."){ bd.sQaC(c, parseInt(ca));}

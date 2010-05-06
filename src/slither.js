@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スリザーリンク版 slither.js v3.3.0
+// パズル固有スクリプト部 スリザーリンク版 slither.js v3.3.1
 //
 Puzzles.slither = function(){ };
 Puzzles.slither.prototype = {
@@ -191,7 +191,7 @@ Puzzles.slither.prototype = {
 			g.fillStyle = this.cellcolor;
 			if(this.vnop(vid,this.NONE)){
 				var csize = (this.lw+1)/2;
-				var bx = (id%(k.qcols+1))*2, by = mf(id/(k.qcols+1))*2;
+				var bx = (id%(k.qcols+1))*2, by = (id/(k.qcols+1))<<1;
 				g.fillCircle(k.p0.x+bx*this.bw, k.p0.x+by*this.bh, csize);
 			}
 		};

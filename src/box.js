@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボックス版 box.js v3.3.0
+// パズル固有スクリプト部 ボックス版 box.js v3.3.1
 //
 Puzzles.box = function(){ };
 Puzzles.box.prototype = {
@@ -283,12 +283,12 @@ Puzzles.box.prototype = {
 				var ca = item[i];
 				if(ca=="."){ continue;}
 
-				var ec = bd.exnum(i%(k.qcols+1)*2-1,mf(i/(k.qcols+1))*2-1);
+				var ec = bd.exnum(i%(k.qcols+1)*2-1,((i/(k.qcols+1))<<1)-1);
 				if(ec!==-1){
 					bd.sQnE(ec, parseInt(ca));
 				}
 
-				var c = bd.cnum(i%(k.qcols+1)*2-1,mf(i/(k.qcols+1))*2-1);
+				var c = bd.cnum(i%(k.qcols+1)*2-1,((i/(k.qcols+1))<<1)-1);
 				if(c!==-1){
 					if     (ca==="#"){ bd.sQaC(c, 1);}
 					else if(ca==="+"){ bd.sQsC(c, 1);}

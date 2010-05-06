@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.3.0
+// パズル固有スクリプト部 スラローム版 slalom.js v3.3.1
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -353,20 +353,20 @@ Puzzles.slalom.prototype = {
 
 				for(var j=bd.cell[c].py,max=bd.cell[c].py+this.ch;j<max;j+=ll*2){ //たて
 					if(bd.cell[c].ques===21){
-						if(this.vnop([headers[0],c,mf(j)].join("_"),this.FILL)){
+						if(this.vnop([headers[0],c,(j|0)].join("_"),this.FILL)){
 							g.fillRect(bd.cell[c].cpx-lm+1, j, lw, ll);
 						}
 					}
-					else{ this.vhide([headers[0],c,mf(j)].join("_"));}
+					else{ this.vhide([headers[0],c,(j|0)].join("_"));}
 				}
 
 				for(var j=bd.cell[c].px,max=bd.cell[c].px+this.cw;j<max;j+=ll*2){ //よこ
 					if(bd.cell[c].ques===22){
-						if(this.vnop([headers[1],c,mf(j)].join("_"),this.FILL)){
+						if(this.vnop([headers[1],c,(j|0)].join("_"),this.FILL)){
 							g.fillRect(j, bd.cell[c].cpy-lm+1, ll, lw);
 						}
 					}
-					else{ this.vhide([headers[1],c,mf(j)].join("_"));}
+					else{ this.vhide([headers[1],c,(j|0)].join("_"));}
 				}
 			}
 		};

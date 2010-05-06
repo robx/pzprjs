@@ -1,4 +1,4 @@
-// KeyInput.js v3.3.0
+// KeyInput.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -532,9 +532,9 @@ KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
 	resize : function(){
 		var tfunc = function(el,tsize){
-			el.style.width    = ""+mf(tsize*0.90)+"px"
-			el.style.height   = ""+mf(tsize*0.90)+"px"
-			el.style.fontSize = ""+mf(tsize*0.70)+"px";
+			el.style.width    = ""+((tsize*0.90)|0)+"px"
+			el.style.height   = ""+((tsize*0.90)|0)+"px"
+			el.style.fontSize = ""+((tsize*0.70)|0)+"px";
 		};
 		var ifunc = function(obj,bsize){
 			obj.el.style.width  = ""+(bsize*kp.imgCR[0])+"px";
@@ -546,7 +546,7 @@ KeyPopup.prototype = {
 
 		if(k.cellsize>=24){
 			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  k.cellsize);}
-			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], mf(k.cellsize*0.90));}
+			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], (k.cellsize*0.90)|0);}
 		}
 		else{
 			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  22);}

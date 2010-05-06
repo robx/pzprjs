@@ -1,4 +1,4 @@
-// Encode.js v3.3.0p2
+// Encode.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -550,8 +550,8 @@ Encode.prototype = {
 		var pos1, pos2, bstr = this.outbstr;
 
 		if(bstr){
-			pos1 = Math.min(mf(((k.qcols-1)*k.qrows+4)/5)     , bstr.length);
-			pos2 = Math.min(mf((k.qcols*(k.qrows-1)+4)/5)+pos1, bstr.length);
+			pos1 = Math.min(((((k.qcols-1)*k.qrows+4)/5)|0)     , bstr.length);
+			pos2 = Math.min((((k.qcols*(k.qrows-1)+4)/5)|0)+pos1, bstr.length);
 		}
 		else{ pos1 = 0; pos2 = 0;}
 
@@ -605,8 +605,8 @@ Encode.prototype = {
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","z")){
 				cc += (parseInt(ca,36)+1);
-				var bx = (k.iscross===2?   cc%(k.qcols+1) :   cc%(k.qcols-1) +1)*2;
-				var by = (k.iscross===2?mf(cc/(k.qcols+1)):mf(cc/(k.qcols-1))+1)*2;
+				var bx = (k.iscross===2?  cc%(k.qcols+1)    :  cc%(k.qcols-1)    +1)*2;
+				var by = (k.iscross===2?((cc/(k.qcols+1))|0):((cc/(k.qcols-1))|0)+1)*2;
 
 				if(by>=bd.maxby+(k.iscross===2?2:0)){ i++; break;}
 				bd.sQnX(bd.xnum(bx,by), 1);
@@ -622,8 +622,8 @@ Encode.prototype = {
 		var cm = "", count = 0;
 		for(var i=0;i<(k.iscross===2?(k.qcols+1)*(k.qrows+1):(k.qcols-1)*(k.qrows-1));i++){
 			var pstr = "";
-			var bx = (k.iscross===2?   i%(k.qcols+1) :   i%(k.qcols-1) +1)*2;
-			var by = (k.iscross===2?mf(i/(k.qcols+1)):mf(i/(k.qcols-1))+1)*2;
+			var bx = (k.iscross===2?  i%(k.qcols+1)    :  i%(k.qcols-1)    +1)*2;
+			var by = (k.iscross===2?((i/(k.qcols+1))|0):((i/(k.qcols-1))|0)+1)*2;
 
 			if(bd.QnX(bd.xnum(bx,by))==1){ pstr = ".";}
 			else{ pstr=" "; count++;}
@@ -642,13 +642,13 @@ Encode.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCircle41_42 : function(){
 		var bstr = this.outbstr;
-		var pos = bstr?Math.min(mf((k.qcols*k.qrows+2)/3), bstr.length):0;
+		var pos = bstr?Math.min(((k.qcols*k.qrows+2)/3)|0, bstr.length):0;
 		for(var i=0;i<pos;i++){
 			var ca = parseInt(bstr.charAt(i),27);
 			for(var w=0;w<3;w++){
 				if(i*3+w<k.qcols*k.qrows){
-					if     (mf(ca/Math.pow(3,2-w))%3==1){ bd.sQuC(i*3+w,41);}
-					else if(mf(ca/Math.pow(3,2-w))%3==2){ bd.sQuC(i*3+w,42);}
+					if     (((ca/Math.pow(3,2-w))|0)%3==1){ bd.sQuC(i*3+w,41);}
+					else if(((ca/Math.pow(3,2-w))|0)%3==2){ bd.sQuC(i*3+w,42);}
 				}
 			}
 		}

@@ -1,4 +1,4 @@
-// pzprUtil.js v3.3.0p2
+// pzprUtil.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★AreaInfoクラス 主に色分けの情報を管理する
@@ -119,7 +119,7 @@ LineManager.prototype = {
 			return !bd.isLine(bd.bnum( 2*bd.cell[cc].bx-bd.border[id].bx, 2*bd.cell[cc].by-bd.border[id].by ));
 		}
 		else{
-			return !bd.isLine(bd.bnum( 4*(cc%(k.qcols+1))-bd.border[id].bx, 4*mf(cc/(k.qcols+1))-bd.border[id].by ));
+			return !bd.isLine(bd.bnum( 4*(cc%(k.qcols+1))-bd.border[id].bx, 4*((cc/(k.qcols+1))|0)-bd.border[id].by ));
 		}
 	},
 	iscrossing : function(cc){ return k.isLineCross;},

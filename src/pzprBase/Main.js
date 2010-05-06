@@ -1,4 +1,4 @@
-// Main.js v3.3.0p2
+// Main.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -30,14 +30,14 @@ PBase.prototype = {
 
 		// パズル専用ファイルの読み込み
 		if(k.scriptcheck){
-			document.writeln("<script type=\"text/javascript\" src=\"src/for_test.js\"></script>");
+			_doc.writeln("<script type=\"text/javascript\" src=\"src/for_test.js\"></script>");
 		}
-		document.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
+		_doc.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
 
 		fio = new FileIO();
 		if(fio.dbm.requireGears()){
 			// 必要な場合、gears_init.jsの読み込み
-			document.writeln("<script type=\"text/javascript\" src=\"src/gears_init.js\"></script>");
+			_doc.writeln("<script type=\"text/javascript\" src=\"src/gears_init.js\"></script>");
 		}
 
 		// onLoadとonResizeに動作を割り当てる
@@ -56,7 +56,7 @@ PBase.prototype = {
 	//---------------------------------------------------------------------------
 	onload_func : function(){
 		Camp('divques');
-		if(Camp.enable.canvas && !!document.createElement('canvas').toDataURL){
+		if(Camp.enable.canvas && !!_doc.createElement('canvas').toDataURL){
 			this.enableSaveImage = true;
 			Camp('divques_sub', 'canvas');
 		}
@@ -75,7 +75,7 @@ PBase.prototype = {
 		this.setEvents(true);	// イベントをくっつける
 		this.translationEN();
 
-		if(document.domain=='indi.s58.xrea.com' && k.PLAYER){ this.accesslog();}	// アクセスログをとってみる
+		if(_doc.domain=='indi.s58.xrea.com' && k.PLAYER){ this.accesslog();}	// アクセスログをとってみる
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
 
 		this.initProcess = false;
@@ -129,9 +129,9 @@ PBase.prototype = {
 		this.numparent.oncontextmenu = function(){ return false;};
 
 		if(first){
-			document.onkeydown  = ee.ebinder(kc, kc.e_keydown);
-			document.onkeyup    = ee.ebinder(kc, kc.e_keyup);
-			document.onkeypress = ee.ebinder(kc, kc.e_keypress);
+			_doc.onkeydown  = ee.ebinder(kc, kc.e_keydown);
+			_doc.onkeyup    = ee.ebinder(kc, kc.e_keyup);
+			_doc.onkeypress = ee.ebinder(kc, kc.e_keypress);
 			if(g.use.sl){ this.initSilverlight();}
 
 			if(!!menu.ex.reader){
@@ -145,7 +145,7 @@ PBase.prototype = {
 			}
 
 			// onBlurにイベントを割り当てる
-			document.onblur = ee.ebinder(this, this.onblur_func);
+			_doc.onblur = ee.ebinder(this, this.onblur_func);
 		}
 	},
 	translationEN : function(){
@@ -271,32 +271,32 @@ PBase.prototype = {
 		// 特に縮小が必要ない場合
 		if(!pp.getVal('adjsize') || cols < ci[0]){
 			mwidth = wwidth*ws.base-4;
-			k.cwidth = k.cheight = mf(k.cellsize*cr.base);
+			k.cwidth = k.cheight = (k.cellsize*cr.base)|0;
 		}
 		// base〜limit間でサイズを自動調節する場合
 		else if(cols < ci[1]){
 			var ws_tmp = ws.base+(ws.limit-ws.base)*((k.qcols-ci[0])/(ci[1]-ci[0]));
 			mwidth = wwidth*ws_tmp-4;
-			k.cwidth = k.cheight = mf(mwidth/cols); // 外枠ぎりぎりにする
+			k.cwidth = k.cheight = (mwidth/cols)|0; // 外枠ぎりぎりにする
 		}
 		// 自動調整の下限値を超える場合
 		else{
 			mwidth = wwidth*ws.limit-4;
-			k.cwidth = k.cheight = mf(k.cellsize*cr.limit);
+			k.cwidth = k.cheight = (k.cellsize*cr.limit)|0;
 		}
 		k.bwidth  = k.cwidth/2; k.bheight = k.cheight/2;
 
 		// mainのサイズ変更
-		ee('main').el.style.width = ''+mf(mwidth)+'px';
+		ee('main').el.style.width = ''+(mwidth|0)+'px';
 
 		// 盤面のセルID:0が描画される位置の設定
-		k.p0.x = k.p0.y = mf(k.cwidth*k.bdmargin);
+		k.p0.x = k.p0.y = (k.cwidth*k.bdmargin)|0;
 		// extendxell==0でない時は位置をずらす
 		if(!!k.isexcell){ k.p0.x += k.cwidth; k.p0.y += k.cheight;}
 
 		// Canvasのサイズ変更
 		pc.setVectorFunctions();
-		g.changeSize(mf(cols*k.cwidth), mf(rows*k.cheight));
+		g.changeSize((cols*k.cwidth)|0, (rows*k.cheight)|0);
 
 		// canvasの上に文字・画像を表示する時のOffset指定
 		var rect = ee('divques').getRect();
@@ -387,7 +387,7 @@ PBase.prototype = {
 	// base.accesslog() playerのアクセスログをとる
 	//---------------------------------------------------------------------------
 	accesslog : function(){
-		var refer = document.referrer;
+		var refer = _doc.referrer;
 		refer = refer.replace(/\?/g,"%3f");
 		refer = refer.replace(/\&/g,"%26");
 		refer = refer.replace(/\=/g,"%3d");

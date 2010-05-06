@@ -1,4 +1,4 @@
-// global.js v3.3.0
+// global.js v3.3.1
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -116,10 +116,8 @@ if(typeof localStorage != "object" && typeof globalStorage == "object"){
 
 //---------------------------------------------------------------------------
 // ★共通グローバル関数
-// mf()            小数点以下を切捨てる(旧int())
-// f_true()        trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
+// f_true()  trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
 //---------------------------------------------------------------------------
-var mf = Math.floor;
 function f_true(){ return true;}
 
 //---------------------------------------------------------------------------
@@ -513,11 +511,11 @@ Timer.prototype = {
 	// tm.label()      経過時間に表示する文字列を返す
 	//---------------------------------------------------------------------------
 	updatetime : function(){
-		var seconds = mf((this.current - this.st)/1000);
+		var seconds = ((this.current - this.st)/1000)|0;
 		if(this.bseconds == seconds){ return;}
 
-		var hours   = mf(seconds/3600);
-		var minutes = mf(seconds/60) - hours*60;
+		var hours   = (seconds/3600)|0;
+		var minutes = ((seconds/60)|0) - hours*60;
 		seconds = seconds - minutes*60 - hours*3600;
 
 		if(minutes < 10) minutes = "0" + minutes;

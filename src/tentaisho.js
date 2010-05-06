@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.3.0
+// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.3.1
 //
 Puzzles.tentaisho = function(){ };
 Puzzles.tentaisho.prototype = {
@@ -102,7 +102,7 @@ Puzzles.tentaisho.prototype = {
 
 			var cc;
 			var bx=id%(2*k.qcols-1)+1;
-			var by=mf(id/(2*k.qcols-1))+1;
+			var by=((id/(2*k.qcols-1))|0)+1;
 			if     ( (bx&1) &&  (by&1)){ cc = bd.cnum(bx,by);}
 			else if(!(bx&1) && !(by&1)){
 				var xc = bd.xnum(bx,by);
@@ -208,7 +208,7 @@ Puzzles.tentaisho.prototype = {
 		bd.getStar = function(id){
 			if(id<0||(2*k.qcols-1)*(2*k.qrows-1)<=id){ return -1;}
 			var bx=id%(2*k.qcols-1)+1;
-			var by=mf(id/(2*k.qcols-1))+1;
+			var by=((id/(2*k.qcols-1))|0)+1;
 
 			if     ( (bx&1) &&  (by&1)){ return bd.QuC(bd.cnum(bx,by));}
 			else if(!(bx&1) && !(by&1)){ return bd.QuX(bd.xnum(bx,by));}
@@ -217,7 +217,7 @@ Puzzles.tentaisho.prototype = {
 		bd.getStarError = function(id){
 			if(id<0||(2*k.qcols-1)*(2*k.qrows-1)<id){ return -1;}
 			var bx=id%(2*k.qcols-1)+1;
-			var by=mf(id/(2*k.qcols-1))+1;
+			var by=((id/(2*k.qcols-1))|0)+1;
 
 			if     ( (bx&1) &&  (by&1)){ return bd.ErC(bd.cnum(bx,by));}
 			else if(!(bx&1) && !(by&1)){ return bd.ErX(bd.xnum(bx,by));}
@@ -226,7 +226,7 @@ Puzzles.tentaisho.prototype = {
 		bd.setStar = function(id,val){
 			if(id<0||(2*k.qcols-1)*(2*k.qrows-1)<id){ return;}
 			var bx=id%(2*k.qcols-1)+1;
-			var by=mf(id/(2*k.qcols-1))+1;
+			var by=((id/(2*k.qcols-1))|0)+1;
 
 			if     ( (bx&1) &&  (by&1)){ bd.sQuC(bd.cnum(bx,by),val);}
 			else if(!(bx&1) && !(by&1)){ bd.sQuX(bd.xnum(bx,by),val);}
@@ -348,7 +348,7 @@ Puzzles.tentaisho.prototype = {
 				if(this.include(ca,"0","f")){
 					var val = parseInt(ca,16);
 					bd.setStar(s,val%2+1);
-					s+=(mf(val/2)+1);
+					s+=((val>>1)+1);
 				}
 				else if(this.include(ca,"g","z")){ s+=(parseInt(ca,36)-15);}
 
@@ -454,7 +454,7 @@ Puzzles.tentaisho.prototype = {
 			var result = true;
 			for(var s=0;s<(2*k.qcols-1)*(2*k.qrows-1);s++){
 				if(bd.getStar(s)<=0){ continue;}
-				var bx=s%(2*k.qcols-1)+1, by=mf(s/(2*k.qcols-1))+1;
+				var bx=s%(2*k.qcols-1)+1, by=((s/(2*k.qcols-1))|0)+1;
 				if(!(bx&1) && !(by&1)){
 					if(area.lcntCross(bd.xnum(bx,by))!=0){
 						if(this.inAutoCheck){ return false;}
@@ -507,7 +507,7 @@ Puzzles.tentaisho.prototype = {
 			for(var r=1;r<=rinfo.max;r++){
 				var sc = rinfo.starid[r];
 				if(sc<0){ continue;}
-				var sx=sc%(2*k.qcols-1)+1, sy=mf(sc/(2*k.qcols-1))+1;
+				var sx=sc%(2*k.qcols-1)+1, sy=((sc/(2*k.qcols-1))|0)+1;
 				for(var i=0;i<rinfo.room[r].idlist.length;i++){
 					var c=rinfo.room[r].idlist[i];
 					var ccopy = bd.cnum(sx*2-bd.cell[c].bx, sy*2-bd.cell[c].by);

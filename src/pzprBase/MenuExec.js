@@ -1,4 +1,4 @@
-// MenuExec.js v3.3.0p2
+// MenuExec.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -103,14 +103,14 @@ MenuExec.prototype = {
 		if(menu.pop){
 			var col,row;
 			if(k.puzzleid!=="sudoku"){
-				col = mf(parseInt(document.newboard.col.value));
-				row = mf(parseInt(document.newboard.row.value));
+				col = (parseInt(_doc.newboard.col.value))|0;
+				row = (parseInt(_doc.newboard.row.value))|0;
 			}
 			else{
-				if     (document.newboard.size[0].checked){ col=row= 9;}
-				else if(document.newboard.size[1].checked){ col=row=16;}
-				else if(document.newboard.size[2].checked){ col=row=25;}
-				else if(document.newboard.size[3].checked){ col=row= 4;}
+				if     (_doc.newboard.size[0].checked){ col=row= 9;}
+				else if(_doc.newboard.size[1].checked){ col=row=16;}
+				else if(_doc.newboard.size[2].checked){ col=row=25;}
+				else if(_doc.newboard.size[3].checked){ col=row= 4;}
 			}
 
 			if(col>0 && row>0){ bd.initBoardSize(col,row);}
@@ -128,7 +128,7 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	urlinput : function(e){
 		if(menu.pop){
-			enc.parseURI(document.urlinput.ta.value);
+			enc.parseURI(_doc.urlinput.ta.value);
 			enc.pzlinput();
 
 			tm.reset();
@@ -138,18 +138,18 @@ MenuExec.prototype = {
 	urloutput : function(e){
 		if(menu.pop){
 			switch(ee.getSrcElement(e).name){
-				case "pzprv3":     document.urloutput.ta.value = enc.pzloutput(enc.PZPRV3);  break;
-				case "pzprapplet": document.urloutput.ta.value = enc.pzloutput(enc.PAPRAPP); break;
-				case "kanpen":     document.urloutput.ta.value = enc.pzloutput(enc.KANPEN);  break;
-				case "pzprv3edit": document.urloutput.ta.value = enc.pzloutput(enc.PZPRV3E); break;
-				case "heyaapp":    document.urloutput.ta.value = enc.pzloutput(enc.HEYAAPP); break;
+				case "pzprv3":     _doc.urloutput.ta.value = enc.pzloutput(enc.PZPRV3);  break;
+				case "pzprapplet": _doc.urloutput.ta.value = enc.pzloutput(enc.PAPRAPP); break;
+				case "kanpen":     _doc.urloutput.ta.value = enc.pzloutput(enc.KANPEN);  break;
+				case "pzprv3edit": _doc.urloutput.ta.value = enc.pzloutput(enc.PZPRV3E); break;
+				case "heyaapp":    _doc.urloutput.ta.value = enc.pzloutput(enc.HEYAAPP); break;
 			}
 		}
 	},
 	openurl : function(e){
 		if(menu.pop){
-			if(document.urloutput.ta.value!==''){
-				var win = window.open(document.urloutput.ta.value, '', '');
+			if(_doc.urloutput.ta.value!==''){
+				var win = window.open(_doc.urloutput.ta.value, '', '');
 			}
 		}
 	},
@@ -161,7 +161,7 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	fileopen : function(e){
 		if(menu.pop){ menu.popclose();}
-		var fileEL = document.fileform.filebox;
+		var fileEL = _doc.fileform.filebox;
 
 		if(!!this.reader || this.enableGetText){
 			var fitem = fileEL.files[0];
@@ -172,10 +172,10 @@ MenuExec.prototype = {
 		}
 		else{
 			if(!fileEL.value){ return;}
-			document.fileform.submit();
+			_doc.fileform.submit();
 		}
 
-		document.fileform.reset();
+		_doc.fileform.reset();
 		tm.reset();
 	},
 	fileonload : function(data){
@@ -188,7 +188,7 @@ MenuExec.prototype = {
 
 		fio.filedecode(fstr);
 
-		document.fileform.reset();
+		_doc.fileform.reset();
 		tm.reset();
 	},
 
@@ -198,17 +198,17 @@ MenuExec.prototype = {
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;} }
 
-		document.fileform2.filename.value = fname;
+		_doc.fileform2.filename.value = fname;
 
-		if     (navigator.platform.indexOf("Win")!==-1){ document.fileform2.platform.value = "Win";}
-		else if(navigator.platform.indexOf("Mac")!==-1){ document.fileform2.platform.value = "Mac";}
-		else                                           { document.fileform2.platform.value = "Others";}
+		if     (navigator.platform.indexOf("Win")!==-1){ _doc.fileform2.platform.value = "Win";}
+		else if(navigator.platform.indexOf("Mac")!==-1){ _doc.fileform2.platform.value = "Mac";}
+		else                                           { _doc.fileform2.platform.value = "Others";}
 
-		document.fileform2.ques.value   = fio.fileencode(ftype);
-		document.fileform2.urlstr.value = fio.urlstr;
-		document.fileform2.operation.value = 'save';
+		_doc.fileform2.ques.value   = fio.fileencode(ftype);
+		_doc.fileform2.urlstr.value = fio.urlstr;
+		_doc.fileform2.operation.value = 'save';
 
-		document.fileform2.submit();
+		_doc.fileform2.submit();
 	},
 
 	//------------------------------------------------------------------------------
@@ -233,10 +233,10 @@ MenuExec.prototype = {
 		var url = g.canvas.toDataURL();
 
 		if(isDL){
-			document.fileform2.filename.value  = k.puzzleid+'.gif';
-			document.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
-			document.fileform2.operation.value = 'imagesave';
-			document.fileform2.submit();
+			_doc.fileform2.filename.value  = k.puzzleid+'.gif';
+			_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
+			_doc.fileform2.operation.value = 'imagesave';
+			_doc.fileform2.submit();
 		}
 		else{
 			window.open(url, '', '');
@@ -257,8 +257,8 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	dispsize : function(e){
 		if(menu.pop){
-			var csize = parseInt(document.dispsize.cs.value);
-			if(csize>0){ k.cellsize = mf(csize);}
+			var csize = parseInt(_doc.dispsize.cs.value);
+			if(csize>0){ k.cellsize = (csize|0);}
 
 			menu.popclose();
 			base.resize_canvas();	// Canvasを更新する

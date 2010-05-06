@@ -1,9 +1,9 @@
-// for_test.js v3.3.0p2
+// for_test.js v3.3.1
 
 debug.extend({
 	testonly_func : function(){
-		document.testform.starttest.style.display = 'inline';
-		document.testform.starttest.onclick = ee.binder(this, this.starttest);
+		_doc.testform.starttest.style.display = 'inline';
+		_doc.testform.starttest.onclick = ee.binder(this, this.starttest);
 		
 		if(!ee('testdiv')){
 			var el = _doc.createElement('div');
@@ -93,7 +93,7 @@ debug.extend({
 			(function(){
 				var bd2 = debug.bd_freezecopy();
 
-				document.urlinput.ta.value = enc.pzloutput(enc.KANPEN);
+				_doc.urlinput.ta.value = enc.pzloutput(enc.KANPEN);
 				menu.pop = ee("pop1_5");
 				menu.ex.urlinput({});
 
@@ -282,7 +282,7 @@ debug.extend({
 			})();
 			break;
 		case 61: // ワンクッション置く
-			setTimeout(function(){ debug.phase = 62;},mf(fint/2));
+			setTimeout(function(){ debug.phase = 62;},((fint/2)|0));
 			break;
 		case 62:
 			(function(){

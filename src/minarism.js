@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 マイナリズム版 minarism.js v3.3.0
+// パズル固有スクリプト部 マイナリズム版 minarism.js v3.3.1
 //
 Puzzles.minarism = function(){ };
 Puzzles.minarism.prototype = {
@@ -266,7 +266,7 @@ Puzzles.minarism.prototype = {
 				var ca = bstr.charAt(i);
 
 				if(type==1){
-					if     (id<k.qcols*k.qrows)  { mgn=mf(id/k.qcols);}
+					if     (id<k.qcols*k.qrows)  { mgn=((id/k.qcols)|0);}
 					else if(id<2*k.qcols*k.qrows){ mgn=k.qrows;}
 				}
 

@@ -1,4 +1,4 @@
-// Board.js v3.3.0p2
+// Board.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★Cellクラス BoardクラスがCellの数だけ保持する
@@ -348,7 +348,7 @@ Board.prototype = {
 		for(var id=0;id<this.cellmax;id++){
 			var obj = this.cell[id];
 			obj.bx = (id%k.qcols)*2+1;
-			obj.by = mf(id/k.qcols)*2+1;
+			obj.by = ((id/k.qcols)<<1)+1;
 		}
 	},
 	setposCrosses : function(){
@@ -356,7 +356,7 @@ Board.prototype = {
 		for(var id=0;id<this.crossmax;id++){
 			var obj = this.cross[id];
 			obj.bx = (id%(k.qcols+1))*2;
-			obj.by = mf(id/(k.qcols+1))*2;
+			obj.by = (id/(k.qcols+1))<<1;
 		}
 	},
 	setposBorders : function(){
@@ -364,8 +364,8 @@ Board.prototype = {
 		this.bdmax = this.border.length;
 		for(var id=0;id<this.bdmax;id++){
 			var obj=this.border[id], i=id;
-			if(i>=0 && i<(k.qcols-1)*k.qrows){ obj.bx=(i%(k.qcols-1))*2+2; obj.by=mf(i/(k.qcols-1))*2+1;} i-=((k.qcols-1)*k.qrows);
-			if(i>=0 && i<k.qcols*(k.qrows-1)){ obj.bx=(i%k.qcols)*2+1;     obj.by=mf(i/k.qcols)*2+2;    } i-=(k.qcols*(k.qrows-1));
+			if(i>=0 && i<(k.qcols-1)*k.qrows){ obj.bx=(i%(k.qcols-1))*2+2; obj.by=((i/(k.qcols-1))<<1)+1;} i-=((k.qcols-1)*k.qrows);
+			if(i>=0 && i<k.qcols*(k.qrows-1)){ obj.bx=(i%k.qcols)*2+1;     obj.by=((i/k.qcols)<<1)+2;    } i-=(k.qcols*(k.qrows-1));
 			if(k.isborder===2){
 				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;     obj.by=0;        } i-=k.qcols;
 				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;     obj.by=2*k.qrows;} i-=k.qcols;

@@ -1,4 +1,4 @@
-// MouseInput.js v3.3.0
+// MouseInput.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -160,8 +160,8 @@ MouseEvent.prototype = {
 	},
 
 	borderid : function(spc){
-		var bx = mf(this.inputPos.x/k.cwidth)*2+1, by = mf(this.inputPos.y/k.cheight)*2+1;
-		var dx = this.inputPos.x%k.cwidth,         dy = this.inputPos.y%k.cheight;
+		var bx = ((this.inputPos.x/k.cwidth)<<1)+1, by = ((this.inputPos.y/k.cheight)<<1)+1;
+		var dx = this.inputPos.x%k.cwidth,          dy = this.inputPos.y%k.cheight;
 
 		// 真ん中のあたりはどこにも該当しないようにする
 		if(k.isLineCross){
@@ -630,8 +630,8 @@ MouseEvent.prototype = {
 			if(cc==-1 || (line.iscrossing(cc) && (line.lcntCell(cc)==3 || line.lcntCell(cc)==4))){ return;}
 
 			var bx, by;
-			if(k.isbordeAsLine==0){ bx = (cc%k.qcols)*2, by = mf(cc/k.qcols)*2;}
-			else{ bx = (cc%(k.qcols+1))*2, by = mf(cc/(k.qcols+1))*2;}
+			if(k.isbordeAsLine==0){ bx = (cc%k.qcols)<<1, by = (cc/k.qcols)<<1;}
+			else{ bx = (cc%(k.qcols+1))<<1, by = (cc/(k.qcols+1))<<1;}
 			id = (function(bx,by){
 				if     (bd.isLine(bd.bnum(bx-1,by))){ return bd.bnum(bx-1,by);}
 				else if(bd.isLine(bd.bnum(bx+1,by))){ return bd.bnum(bx+1,by);}

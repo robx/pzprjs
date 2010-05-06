@@ -1,4 +1,4 @@
-// Filesys.js v3.3.0p2
+// Filesys.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -478,7 +478,7 @@ FileIO.prototype = {
 	decodeCellQnum51 : function(){
 		var item = this.getItemList(k.qrows+1);
 		for(var i=0;i<item.length;i++) {
-			var bx=(i%(k.qcols+1)-1)*2+1, by=(mf(i/(k.qcols+1))-1)*2+1;
+			var bx=(i%(k.qcols+1)-1)*2+1, by=(((i/(k.qcols+1))|0)-1)*2+1;
 			if(item[i]!="."){
 				if     (by===-1){ bd.sDiE(bd.exnum(bx,by), parseInt(item[i]));}
 				else if(bx===-1){ bd.sQnE(bd.exnum(bx,by), parseInt(item[i]));}
@@ -682,7 +682,7 @@ DataBaseManager.prototype = {
 		var sortlist = { idlist:"ID順", newsave:"保存が新しい順", oldsave:"保存が古い順", size:"サイズ/難易度順"};
 		var str="";
 		for(s in sortlist){ str += ("<option value=\""+s+"\">"+sortlist[s]+"</option>");}
-		document.database.sorts.innerHTML = str;
+		_doc.database.sorts.innerHTML = str;
 	},
 
 	//---------------------------------------------------------------------------
@@ -711,9 +711,9 @@ DataBaseManager.prototype = {
 	// fio.dbm.update()     管理テーブル情報やダイアログの表示を更新する
 	//---------------------------------------------------------------------------
 	getDataID : function(){
-		if(document.database.datalist.value!="new" && document.database.datalist.value!=""){
+		if(_doc.database.datalist.value!="new" && _doc.database.datalist.value!=""){
 			for(var i=0;i<this.DBlist.length;i++){
-				if(this.DBlist[i].id==document.database.datalist.value){ return i;}
+				if(this.DBlist[i].id==_doc.database.datalist.value){ return i;}
 			}
 		}
 		return -1;
@@ -730,7 +730,7 @@ DataBaseManager.prototype = {
 	// fio.dbm.dateString()           時刻の文字列を生成する
 	//---------------------------------------------------------------------------
 	displayDataTableList : function(){
-			switch(document.database.sorts.value){
+			switch(_doc.database.sorts.value){
 				case 'idlist':  this.DBlist = this.DBlist.sort(function(a,b){ return (a.id-b.id);}); break;
 				case 'newsave': this.DBlist = this.DBlist.sort(function(a,b){ return (b.time-a.time || a.id-b.id);}); break;
 				case 'oldsave': this.DBlist = this.DBlist.sort(function(a,b){ return (a.time-b.time || a.id-b.id);}); break;
@@ -747,7 +747,7 @@ DataBaseManager.prototype = {
 			html += ("<option" + valstr + selstr + ">" + this.getRowString(row)+"</option>\n");
 			}
 			html += ("<option value=\"new\""+(this.DBsid==-1?" selected":"")+">&nbsp;&lt;新しく保存する&gt;</option>\n");
-			document.database.datalist.innerHTML = html;
+			_doc.database.datalist.innerHTML = html;
 	},
 	getRowString : function(row){
 		var hardstr = [
@@ -784,20 +784,20 @@ DataBaseManager.prototype = {
 	selectDataTable : function(){
 		var selected = this.getDataID();
 		if(selected>=0){
-			document.database.comtext.value = ""+this.DBlist[selected].comment;
+			_doc.database.comtext.value = ""+this.DBlist[selected].comment;
 			this.DBsid = parseInt(this.DBlist[selected].id);
 		}
 		else{
-			document.database.comtext.value = "";
+			_doc.database.comtext.value = "";
 			this.DBsid = -1;
 		}
 
-		document.database.tableup.disabled = (document.database.sorts.value!=='idlist' || this.DBsid===-1 || this.DBsid===1);
-		document.database.tabledn.disabled = (document.database.sorts.value!=='idlist' || this.DBsid===-1 || this.DBsid===this.DBlist.length);
-		document.database.comedit.disabled = (this.DBsid===-1);
-		document.database.difedit.disabled = (this.DBsid===-1);
-		document.database.open.disabled    = (this.DBsid===-1);
-		document.database.del.disabled     = (this.DBsid===-1);
+		_doc.database.tableup.disabled = (_doc.database.sorts.value!=='idlist' || this.DBsid===-1 || this.DBsid===1);
+		_doc.database.tabledn.disabled = (_doc.database.sorts.value!=='idlist' || this.DBsid===-1 || this.DBsid===this.DBlist.length);
+		_doc.database.comedit.disabled = (this.DBsid===-1);
+		_doc.database.difedit.disabled = (this.DBsid===-1);
+		_doc.database.open.disabled    = (this.DBsid===-1);
+		_doc.database.del.disabled     = (this.DBsid===-1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -854,7 +854,7 @@ DataBaseManager.prototype = {
 		}
 		this.DBlist[id].col   = k.qcols;
 		this.DBlist[id].row   = k.qrows;
-		this.DBlist[id].time  = mf(tm.now()/1000);
+		this.DBlist[id].time  = (tm.now()/1000)|0;
 
 		this.dbh.saveDataTable(this, id);
 		this.update();
@@ -958,7 +958,7 @@ DataBaseHandler_LS.prototype = {
 	updateManageData : function(parent){
 		var mheader = 'pzprv3_manage:manage!'+k.puzzleid;
 		localStorage[mheader+'!count'] = parent.DBlist.length;
-		localStorage[mheader+'!time']  = mf(tm.now()/1000);
+		localStorage[mheader+'!time']  = (tm.now()/1000)|0;
 	},
 
 	//---------------------------------------------------------------------------
@@ -1079,7 +1079,7 @@ DataBaseHandler_SQL.prototype = {
 	},
 	updateManageData : function(parent){
 		var count = parent.DBlist.length;
-		var time = mf(tm.now()/1000);
+		var time = (tm.now()/1000)|0;
 		this.dbmgr.transaction( function(tx){
 			tx.executeSql('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)', [k.puzzleid, '1.0', count, time]);
 		});

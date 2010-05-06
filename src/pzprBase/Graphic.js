@@ -1,4 +1,4 @@
-// Graphic.js v3.3.0
+// Graphic.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
@@ -213,9 +213,9 @@ Graphic.prototype = {
 		var loopcount = 0;
 
 		while(1){
-			var Rdeg = mf(Math.random() * 384)-64; if(Rdeg<0){Rdeg=0;} if(Rdeg>255){Rdeg=255;}
-			var Gdeg = mf(Math.random() * 384)-64; if(Gdeg<0){Gdeg=0;} if(Gdeg>255){Gdeg=255;}
-			var Bdeg = mf(Math.random() * 384)-64; if(Bdeg<0){Bdeg=0;} if(Bdeg>255){Bdeg=255;}
+			var Rdeg = ((Math.random() * 384)|0)-64; if(Rdeg<0){Rdeg=0;} if(Rdeg>255){Rdeg=255;}
+			var Gdeg = ((Math.random() * 384)|0)-64; if(Gdeg<0){Gdeg=0;} if(Gdeg>255){Gdeg=255;}
+			var Bdeg = ((Math.random() * 384)|0)-64; if(Bdeg<0){Bdeg=0;} if(Bdeg>255){Bdeg=255;}
 
 			// HLSの各組成値を求める
 			var Cmax = Math.max(Rdeg,Math.max(Gdeg,Bdeg));
@@ -237,7 +237,7 @@ Graphic.prototype = {
 				 && (((360+this.lastHdeg-Hdeg)%360>=45)&&((360+this.lastHdeg-Hdeg)%360<=315)) ){
 				this.lastHdeg = Hdeg;
 				this.lastYdeg = Ydeg;
-				//alert("rgb("+Rdeg+", "+Gdeg+", "+Bdeg+")\nHLS("+mf(Hdeg)+", "+(""+mf(Ldeg*1000)*0.001).slice(0,5)+", "+(""+mf(Sdeg*1000)*0.001).slice(0,5)+")\nY("+(""+mf(Ydeg*1000)*0.001).slice(0,5)+")");
+				//alert("rgb("+Rdeg+", "+Gdeg+", "+Bdeg+")\nHLS("+(Hdeg|0)+", "+(""+((Ldeg*1000)|0)*0.001).slice(0,5)+", "+(""+((Sdeg*1000|0))*0.001).slice(0,5)+")\nY("+(""+((Ydeg*1000)|0)*0.001).slice(0,5)+")");
 				return "rgb("+Rdeg+","+Gdeg+","+Bdeg+")";
 			}
 
@@ -1161,8 +1161,8 @@ Graphic.prototype = {
 			var cpx = k.p0.x + tc.cursorx*this.bw + 0.5;
 			var cpy = k.p0.y + tc.cursory*this.bh + 0.5;
 			var w, size;
-			if(islarge!==false){ w = mf(Math.max(this.cw/16, 2)); size = this.bw-0.5;}
-			else	           { w = mf(Math.max(this.cw/24, 1)); size = this.bw*0.56;}
+			if(islarge!==false){ w = (Math.max(this.cw/16, 2))|0; size = this.bw-0.5;}
+			else	           { w = (Math.max(this.cw/24, 1))|0; size = this.bw*0.56;}
 
 			this.vdel(["ti1_","ti2_","ti3_","ti4_"]);
 			g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
@@ -1543,7 +1543,7 @@ Graphic.prototype = {
 
 			el.innerHTML = text;
 
-			var fontsize = mf(this.cw*fontratio*this.fontsizeratio);
+			var fontsize = (this.cw*fontratio*this.fontsizeratio)|0;
 			el.style.fontSize = (""+ fontsize + 'px');
 
 			this.showEL(key);	// 先に表示しないとwid,hgt=0になって位置がずれる
@@ -1567,7 +1567,7 @@ Graphic.prototype = {
 		}
 		// Nativeな方法はこっちなんだけど、、(前は計5〜6%くらい遅くなってた)
 		else{
-			g.font = ""+mf(this.cw*fontratio*this.fontsizeratio)+"px 'Serif'";
+			g.font = ""+((this.cw*fontratio*this.fontsizeratio)|0)+"px 'Serif'";
 			g.fillStyle = color;
 			if(type===1){
 				g.textAlign = 'center'; g.textBaseline = 'middle';

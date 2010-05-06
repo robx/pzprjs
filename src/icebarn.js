@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.3.0
+// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.3.1
 //
 Puzzles.icebarn = function(){ };
 Puzzles.icebarn.prototype = {
@@ -403,7 +403,7 @@ Puzzles.icebarn.prototype = {
 			var id=0;
 			for(var i=a;i<barray[2].length;i++){
 				var ca = barray[2].charAt(i);
-				if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, num%2+1); id+=(mf(num/2)+1);}
+				if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, num%2+1); id+=((num>>1)+1);}
 				else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 				else{ id++;}
 				if(id>=(k.qcols-1)*k.qrows){ a=i+1; break;}
@@ -411,7 +411,7 @@ Puzzles.icebarn.prototype = {
 			id=(k.qcols-1)*k.qrows;
 			for(var i=a;i<barray[2].length;i++){
 				var ca = barray[2].charAt(i);
-				if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, num%2+1); id+=(mf(num/2)+1);}
+				if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, num%2+1); id+=((num>>1)+1);}
 				else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 				else{ id++;}
 				if(id>=bd.bdinside){ break;}

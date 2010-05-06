@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たわむれんが版 tawa.js v3.3.0p2
+// パズル固有スクリプト部 たわむれんが版 tawa.js v3.3.1
 //
 Puzzles.tawa = function(){ };
 Puzzles.tawa.prototype = {
@@ -57,8 +57,8 @@ Puzzles.tawa.prototype = {
 
 		Board.prototype.estimateSize = function(type, col, row){
 			var total = 0;
-			if     (this.lap==0){ total = mf(row*0.5)*(2*col-1)+((row%2==1)?col:0);}
-			else if(this.lap==3 || this.lap==undefined){ total = mf(row*0.5)*(2*col+1)+((row%2==1)?col:0);}
+			if     (this.lap==0){ total = (row>>1)*(2*col-1)+((row%2==1)?col:0);}
+			else if(this.lap==3 || this.lap==undefined){ total = (row>>1)*(2*col+1)+((row%2==1)?col:0);}
 			else{ total = col*row;}
 
 			return total;
@@ -70,37 +70,37 @@ Puzzles.tawa.prototype = {
 			for(var id=0;id<this.cellmax;id++){
 				var obj = this.cell[id];
 				if(this.lap==0){
-					var row = mf((2*id)/(2*k.qcols-1));
-					obj.bx = mf((2*id)%(2*k.qcols-1))+1;
+					var row = (((2*id)/(2*k.qcols-1))|0);
+					obj.bx = (((2*id)%(2*k.qcols-1))|0)+1;
 					obj.by = row*2+1;
 				}
 				else if(this.lap==1){
-					var row = mf(id/k.qcols);
-					obj.bx = mf(id%k.qcols)*2+(!!(row&1)?1:0)+1;
+					var row = ((id/k.qcols)|0);
+					obj.bx = ((id%k.qcols)|0)*2+(!!(row&1)?1:0)+1;
 					obj.by = row*2+1;
 				}
 				else if(this.lap==2){
-					var row = mf(id/k.qcols);
-					obj.bx = mf(id%k.qcols)*2+(!(row&1)?1:0)+1;
+					var row = ((id/k.qcols)|0);
+					obj.bx = ((id%k.qcols)|0)*2+(!(row&1)?1:0)+1;
 					obj.by = row*2+1;
 				}
 				else if(this.lap==3){
-					var row = mf((2*id+1)/(2*k.qcols+1));
-					obj.bx = mf((2*id+1)%(2*k.qcols+1))+1;
+					var row = (((2*id+1)/(2*k.qcols+1))|0);
+					obj.bx = (((2*id+1)%(2*k.qcols+1))|0)+1;
 					obj.by = row*2+1;
 				}
 			}
 		};
 
-		this.newboard_html_original = document.newboard.innerHTML;
+		this.newboard_html_original = _doc.newboard.innerHTML;
 	},
 	protoOriginal : function(){
 		Board.prototype.estimateSize = this.protofunc.estsize;
 		Board.prototype.setposCells  = this.protofunc.spcells;
-		document.newboard.innerHTML  = this.newboard_html_original;
+		_doc.newboard.innerHTML  = this.newboard_html_original;
 
-		document.flip.turnl.disabled = false;
-		document.flip.turnr.disabled = false;
+		_doc.flip.turnl.disabled = false;
+		_doc.flip.turnr.disabled = false;
 	},
 
 	//---------------------------------------------------------
@@ -161,8 +161,8 @@ Puzzles.tawa.prototype = {
 		pp.funcs.newboard = function(){
 			menu.pop = ee("pop1_1");
 			pp.funcs.setimg({0:0,1:2,2:3,3:1}[bd.lap]);
-			document.newboard.col.value = (k.qcols+(bd.lap==3?1:0));
-			document.newboard.row.value = k.qrows;
+			_doc.newboard.col.value = (k.qcols+(bd.lap==3?1:0));
+			_doc.newboard.row.value = k.qrows;
 			kc.enableKey = false;
 		};
 		pp.funcs.clickimg = function(e){
@@ -174,7 +174,7 @@ Puzzles.tawa.prototype = {
 			menu.ex.clap = num;
 		};
 
-		document.newboard.innerHTML =
+		_doc.newboard.innerHTML =
 			["<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n",
 			 "<input type=\"number\" name=\"col\" value=\"\" size=\"4\" maxlength=\"3\" min=\"1\" max=\"999\" /> <span id=\"pop1_1_cap1x\">横幅 (黄色の数)</span><br>\n",
 			 "<input type=\"number\" name=\"row\" value=\"\" size=\"4\" maxlength=\"3\" min=\"1\" max=\"999\" /> <span id=\"pop1_1_cap2x\">高さ</span><br>\n",
@@ -289,15 +289,15 @@ Puzzles.tawa.prototype = {
 			return cand;
 		};
 		mv.borderpos = function(rc){
-			return new Pos(mf(this.inputPos.x/k.bwidth), mf(this.inputPos.y/k.cheight)*2+1);
+			return new Pos((this.inputPos.x/k.bwidth)|0, ((this.inputPos.y/k.cheight)|0)*2+1);
 		};
 	},
 	input_init_menuex : function(){	// 処理が大きくなったので分割(input_init()から呼ばれる)
 
 		menu.ex.newboard = function(e){
 			if(menu.pop){
-				var col = mf(parseInt(document.newboard.col.value));
-				var row = mf(parseInt(document.newboard.row.value));
+				var col = ((parseInt(_doc.newboard.col.value))|0);
+				var row = ((parseInt(_doc.newboard.row.value))|0);
 				var slap = {0:0,1:3,2:1,3:2}[this.clap];
 
 				if(col==1 && (slap==0||slap==3)){ menu.popclose(); return;}
@@ -397,8 +397,8 @@ Puzzles.tawa.prototype = {
 			return -1;
 		};
 
-		document.flip.turnl.disabled = true;
-		document.flip.turnr.disabled = true;
+		_doc.flip.turnl.disabled = true;
+		_doc.flip.turnr.disabled = true;
 	},
 
 	//---------------------------------------------------------

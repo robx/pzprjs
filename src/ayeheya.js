@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ∀人∃ＨＥＹＡ版 ayeheya.js v3.3.0
+// パズル固有スクリプト部 ∀人∃ＨＥＹＡ版 ayeheya.js v3.3.1
 //
 Puzzles.ayeheya = function(){ };
 Puzzles.ayeheya.prototype = {
@@ -89,7 +89,7 @@ Puzzles.ayeheya.prototype = {
 			var id = area.room.id[cc];
 			var d = ans.getSizeOfClist(area.room[id].clist,f_true);
 			var m=d.cols, n=d.rows; if(m>n){ var t=m;m=n;n=t;}
-			if     (m===1){ return mf((n+1)/2);}
+			if     (m===1){ return ((n+1)>>1);}
 			else if(m===2){ return n;}
 			else if(m===3){
 				if     (n%4===0){ return (n  )/4*5  ;}
@@ -99,8 +99,8 @@ Puzzles.ayeheya.prototype = {
 			}
 			else{
 				if(((Math.log(m+1)/Math.log(2))%1===0)&&(m===n)){ return (m*n+m+n)/3;}
-				else if((m&1)&&(n&1)){ return mf((m*n+m+n-1)/3);}
-				else{ return mf((m*n+m+n-2)/3);}
+				else if((m&1)&&(n&1)){ return (((m*n+m+n-1)/3)|0);}
+				else{ return (((m*n+m+n-2)/3)|0);}
 			}
 		};
 	},

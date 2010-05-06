@@ -12,7 +12,6 @@ var _win = this,
 	_doc = document,
 	_ms = Math.sin,
 	_mc = Math.cos,
-	_mr = Math.round,
 	_2PI = 2*Math.PI,
 
 	_IE = !!(window.attachEvent && !window.opera),
@@ -450,8 +449,8 @@ VectorContext.prototype = {
 	moveTo : function(x,y){
 		if(this.type===VML){ x=(x*Z-Z2)|0; y=(y*Z-Z2)|0;}
 		else if(this.type===SL) {
-			x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
-			y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+			x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
+			y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
 		}
 		this.currentpath.push(this.PATH_MOVE,x,y);
 		this.lastpath = this.PATH_MOVE;
@@ -460,8 +459,8 @@ VectorContext.prototype = {
 		if(this.lastpath!==this.PATH_LINE){ this.currentpath.push(this.PATH_LINE);}
 		if(this.type===VML){ x=(x*Z-Z2)|0; y=(y*Z-Z2)|0;}
 		else if(this.type===SL) {
-			x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
-			y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+			x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
+			y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
 		}
 		this.currentpath.push(x,y);
 		this.lastpath = this.PATH_LINE;
@@ -469,20 +468,24 @@ VectorContext.prototype = {
 	rect : function(x,y,w,h){
 		if(this.type===VML){ x=(x*Z-Z2)|0; y=(y*Z-Z2)|0, w=(w*Z)|0, h=(h*Z)|0;}
 		else if(this.type===SL) {
-			x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
-			y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
-			w = (this.isedge ? _mr(w) : w);
-			h = (this.isedge ? _mr(h) : h);
+			x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
+			y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
+			w = (this.isedge ? (w+0.5)|0 : w);
+			h = (this.isedge ? (h+0.5)|0 : h);
 		}
 		this.currentpath.push(this.PATH_MOVE,x,y,this.PATH_LINE,(x+w),y,(x+w),(y+h),x,(y+h),this.PATH_CLOSE);
 	},
 	arc : function(cx,cy,r,startRad,endRad,antiClockWise){
 		if(this.type===SL) {
-			cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
-			cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+			cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
+			cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
 		}
-		var sx = cx + r*_mc(startRad), sy = cy + r*_ms(startRad),
+		var sx,sy,ex,ey;
+		if(endRad-startRad>=_2PI){ sx=cx+r, sy=cy, ex=cx+r, ey=cy;}
+		else{
+			sx = cx + r*_mc(startRad), sy = cy + r*_ms(startRad),
 			ex = cx + r*_mc(endRad),   ey = cy + r*_ms(endRad);
+		}
 		if(this.type===VML){
 			cx=(cx*Z-Z2)|0, cy=(cy*Z-Z2)|0, r=(r*Z)|0;
 			sx=(sx*Z-Z2)|0, sy=(sy*Z-Z2)|0, ex=(ex*Z-Z2)|0, ey=(ey*Z-Z2)|0;
@@ -603,8 +606,8 @@ VectorContext.prototype = {
 			var a1=_args[i], a2=_args[i+1];
 			if(this.type===VML){ a1=(a1*Z-Z2)|0, a2=(a2*Z-Z2)|0;}
 			else if(this.type===SL) {
-				a1 = (this.isedge ? _mr(a1+this.OFFSETX) : a1+this.OFFSETX);
-				a2 = (this.isedge ? _mr(a2+this.OFFSETY) : a2+this.OFFSETY);
+				a1 = (this.isedge ? (a1+this.OFFSETX+0.5)|0 : a1+this.OFFSETX);
+				a2 = (this.isedge ? (a2+this.OFFSETY+0.5)|0 : a2+this.OFFSETY);
 			}
 			this.currentpath.push(a1,a2);
 		}
@@ -619,8 +622,8 @@ VectorContext.prototype = {
 
 			if(this.type===VML){ m[i]=(m[i]*Z-Z2)|0, m[i+1]=(m[i+1]*Z-Z2)|0;}
 			else if(this.type===SL) {
-				m[i]   = (this.isedge ? _mr(m[i]  +this.OFFSETX) : m[i]  +this.OFFSETX);
-				m[i+1] = (this.isedge ? _mr(m[i+1]+this.OFFSETY) : m[i+1]+this.OFFSETY);
+				m[i]   = (this.isedge ? (m[i]  +this.OFFSETX+0.5)|0 : m[i]  +this.OFFSETX);
+				m[i+1] = (this.isedge ? (m[i+1]+this.OFFSETY+0.5)|0 : m[i+1]+this.OFFSETY);
 			}
 		}
 		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
@@ -650,10 +653,10 @@ VectorContext.prototype = {
 	strokeLine : function(x1,y1,x2,y2){
 		if     (this.type===VML){ x1=(x1*Z)|0, y1=(y1*Z)|0, x2=(x2*Z)|0, y2=(y2*Z)|0;}
 		else if(this.type===SL) {
-			x1 = (this.isedge ? _mr(x1+this.OFFSETX) : x1+this.OFFSETX);
-			y1 = (this.isedge ? _mr(y1+this.OFFSETY) : y1+this.OFFSETY);
-			x2 = (this.isedge ? _mr(x2+this.OFFSETX) : x2+this.OFFSETX);
-			y2 = (this.isedge ? _mr(y2+this.OFFSETY) : y2+this.OFFSETY);
+			x1 = (this.isedge ? (x1+this.OFFSETX+0.5)|0 : x1+this.OFFSETX);
+			y1 = (this.isedge ? (y1+this.OFFSETY+0.5)|0 : y1+this.OFFSETY);
+			x2 = (this.isedge ? (x2+this.OFFSETX+0.5)|0 : x2+this.OFFSETX);
+			y2 = (this.isedge ? (y2+this.OFFSETY+0.5)|0 : y2+this.OFFSETY);
 		}
 		var stack = this.currentpath;
 		this.currentpath = [this.PATH_MOVE,x1,y1,this.PATH_LINE,x2,y2];
@@ -663,9 +666,9 @@ VectorContext.prototype = {
 	strokeCross : function(cx,cy,l){
 		if     (this.type===VML){ cx=(cx*Z-Z2)|0, cy=(cy*Z-Z2)|0, l=(l*Z)|0;}
 		else if(this.type===SL) {
-			cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
-			cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
-			l  = (this.isedge ? _mr(l) : l);
+			cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
+			cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
+			l  = (this.isedge ? (l+0.5)|0 : l);
 		}
 		var stack = this.currentpath;
 		this.currentpath = [this.PATH_MOVE,(cx-l),(cy-l),this.PATH_LINE,(cx+l),(cy+l),
@@ -883,25 +886,25 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	beginPath : function(){ this.context.beginPath();},
 	closePath : function(){ this.context.closePath();},
 	moveTo : function(x,y){
-		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
-		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
+		y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
 		this.context.moveTo(x,y);
 	},
 	lineTo : function(x,y){
-		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
-		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
+		y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
 		this.context.lineTo(x,y);
 	},
 	rect : function(x,y,w,h){
-		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
-		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
-		w = (this.isedge ? _mr(w) : w);
-		h = (this.isedge ? _mr(h) : h);
+		x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
+		y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
+		w = (this.isedge ? (w+0.5)|0 : w);
+		h = (this.isedge ? (h+0.5)|0 : h);
 		this.context.rect(x,y,w,h);
 	},
 	arc  : function(cx,cy,r,startRad,endRad,antiClockWise){
-		cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
-		cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+		cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
+		cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
 		this.context.arc(px,py,r,startRad,endRad,antiClockWise);
 	},
 
@@ -909,19 +912,19 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	fill       : function(){ this.setProperties(); this.context.fill();},
 	stroke     : function(){ this.setProperties(); this.context.stroke();},
 	fillRect   : function(x,y,w,h){
-		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
-		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
-		w = (this.isedge ? _mr(w) : w);
-		h = (this.isedge ? _mr(h) : h);
+		x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
+		y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
+		w = (this.isedge ? (w+0.5)|0 : w);
+		h = (this.isedge ? (h+0.5)|0 : h);
 
 		this.setProperties();
 		this.context.fillRect(x,y,w,h);
 	},
 	strokeRect : function(x,y,w,h){
-		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
-		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
-		w = (this.isedge ? _mr(w) : w);
-		h = (this.isedge ? _mr(h) : h);
+		x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
+		y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
+		w = (this.isedge ? (w+0.5)|0 : w);
+		h = (this.isedge ? (h+0.5)|0 : h);
 
 		this.setProperties();
 		this.context.strokeRect(x,y,w,h);
@@ -938,10 +941,10 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		this.context.stroke();
 	},
 	shapeRect : function(x,y,w,h){
-		x = (this.isedge ? _mr(x) : x);
-		y = (this.isedge ? _mr(y) : y);
-		w = (this.isedge ? _mr(w) : w);
-		h = (this.isedge ? _mr(h) : h);
+		x = (this.isedge ? (x+0.5)|0 : x);
+		y = (this.isedge ? (y+0.5)|0 : y);
+		w = (this.isedge ? (w+0.5)|0 : w);
+		h = (this.isedge ? (h+0.5)|0 : h);
 
 		this.setProperties();
 		this.context.fillRect(x,y,w,h);
@@ -951,8 +954,8 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	setLinePath : function(){
 		var _args = arguments, _len = _args.length;
 		for(var i=0,len=_len-((_len|1)?1:2);i<len;i+=2){
-			var a1 = (this.isedge ? _mr(_args[i]  +this.OFFSETX) : _args[i]  +this.OFFSETX);
-				a2 = (this.isedge ? _mr(_args[i+1]+this.OFFSETY) : _args[i+1]+this.OFFSETY);
+			var a1 = (this.isedge ? (_args[i]  +this.OFFSETX+0.5)|0 : _args[i]  +this.OFFSETX);
+				a2 = (this.isedge ? (_args[i+1]+this.OFFSETY+0.5)|0 : _args[i+1]+this.OFFSETY);
 			if(i==0){ this.context.moveTo(a1,a2);}
 			else    { this.context.lineTo(a1,a2);}
 		}
@@ -965,8 +968,8 @@ CanvasRenderingContext2D_wrapper.prototype = {
 			m[i+1] = _args[i+1] + m[1];
 		}
 		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
-			var a1 = (this.isedge ? _mr(m[i])   : m[i]);
-				a2 = (this.isedge ? _mr(m[i+1]) : m[i+1]);
+			var a1 = (this.isedge ? (m[i]  +0.5)|0 : m[i]);
+				a2 = (this.isedge ? (m[i+1]+0.5)|0 : m[i+1]);
 			if(i===2){ this.context.moveTo(a1,a2);}
 			else     { this.context.lineTo(a1,a2);}
 		}
@@ -975,10 +978,10 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	setDashSize : function(size){ },
 
 	strokeLine : function(x1,y1,x2,y2){
-		x1 = (this.isedge ? _mr(x1+this.OFFSETX) : x1+this.OFFSETX);
-		y1 = (this.isedge ? _mr(y1+this.OFFSETY) : y1+this.OFFSETY);
-		x2 = (this.isedge ? _mr(x2+this.OFFSETX) : x2+this.OFFSETX);
-		y2 = (this.isedge ? _mr(y2+this.OFFSETY) : y2+this.OFFSETY);
+		x1 = (this.isedge ? (x1+this.OFFSETX+0.5)|0 : x1+this.OFFSETX);
+		y1 = (this.isedge ? (y1+this.OFFSETY+0.5)|0 : y1+this.OFFSETY);
+		x2 = (this.isedge ? (x2+this.OFFSETX+0.5)|0 : x2+this.OFFSETX);
+		y2 = (this.isedge ? (y2+this.OFFSETY+0.5)|0 : y2+this.OFFSETY);
 
 		this.setProperties();
 		this.context.beginPath();
@@ -987,10 +990,10 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		this.context.stroke();
 	},
 	strokeCross : function(cx,cy,l){
-		var x1 = (this.isedge ? _mr(cx-l+this.OFFSETX) : cx-l+this.OFFSETX),
-			y1 = (this.isedge ? _mr(cy-l+this.OFFSETY) : cy-l+this.OFFSETY),
-			x2 = (this.isedge ? _mr(cx+l+this.OFFSETX) : cx+l+this.OFFSETX),
-			y2 = (this.isedge ? _mr(cy+l+this.OFFSETY) : cy+l+this.OFFSETY);
+		var x1 = (this.isedge ? (cx-l+this.OFFSETX+0.5)|0 : cx-l+this.OFFSETX),
+			y1 = (this.isedge ? (cy-l+this.OFFSETY+0.5)|0 : cy-l+this.OFFSETY),
+			x2 = (this.isedge ? (cx+l+this.OFFSETX+0.5)|0 : cx+l+this.OFFSETX),
+			y2 = (this.isedge ? (cy+l+this.OFFSETY+0.5)|0 : cy+l+this.OFFSETY);
 
 		this.setProperties();
 		this.context.beginPath();
@@ -1001,24 +1004,24 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		this.context.stroke();
 	},
 	fillCircle : function(cx,cy,r){
-		cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
-		cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+		cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
+		cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
 		this.setProperties();
 		this.context.beginPath();
 		this.context.arc(cx,cy,r,0,_2PI,false);
 		this.context.fill();
 	},
 	strokeCircle : function(cx,cy,r){
-		cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
-		cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+		cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
+		cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
 		this.setProperties();
 		this.context.beginPath();
 		this.context.arc(cx,cy,r,0,_2PI,false);
 		this.context.stroke();
 	},
 	shapeCircle : function(cx,cy,r){
-		cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
-		cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+		cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
+		cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
 		this.setProperties();
 		this.context.beginPath();
 		this.context.arc(cx,cy,r,0,_2PI,false);

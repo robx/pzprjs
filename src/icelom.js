@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスローム版 icelom.js v3.3.0
+// パズル固有スクリプト部 アイスローム版 icelom.js v3.3.1
 //
 Puzzles.icelom = function(){ };
 Puzzles.icelom.prototype = {
@@ -57,7 +57,7 @@ Puzzles.icelom.prototype = {
 			pp.funcs['allwhite'] = function(){
 				if(pp.getVal('allwhite')){ base.setTitle("アイスローム","Icelom");}
 				else                     { base.setTitle("アイスローム２","Icelom 2");}
-				document.title = base.gettitle();
+				_doc.title = base.gettitle();
 				ee('title2').el.innerHTML = base.gettitle();
 			};
 		}
@@ -362,7 +362,7 @@ Puzzles.icelom.prototype = {
 			else{
 				if(this.checkpflag("a")){ base.setTitle("アイスローム","Icelom");}
 				else                    { base.setTitle("アイスローム２","Icelom 2");}
-				document.title = base.gettitle();
+				_doc.title = base.gettitle();
 				ee('title2').el.innerHTML = base.gettitle();
 			}
 		};
@@ -423,7 +423,7 @@ Puzzles.icelom.prototype = {
 			else{
 				if(pzltype==="allwhite"){ base.setTitle("アイスローム","Icelom");}
 				else                    { base.setTitle("アイスローム２","Icelom 2");}
-				document.title = base.gettitle();
+				_doc.title = base.gettitle();
 				ee('title2').el.innerHTML = base.gettitle();
 			}
 
