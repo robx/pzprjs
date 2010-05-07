@@ -88,7 +88,7 @@ MenuExec.prototype = {
 	modechange : function(num){
 		k.editmode = (num==1);
 		k.playmode = (num==3);
-		kc.prev = -1;
+		kc.prev = null;
 		ans.errDisp=true;
 		bd.errclear();
 		if(kp.ctl[1].enable || kp.ctl[3].enable){ pp.funcs.keypopup();}
@@ -542,7 +542,7 @@ MenuExec.prototype = {
 		else if(key===k.DN){ return bd.bnum(bx, by-2);}
 		else if(key===k.LT){ return bd.bnum(bx+2, by);}
 		else if(key===k.RT){ return bd.bnum(bx-2, by);}
-		return -1;
+		return null;
 	},
 	outerBorder : function(id,key){
 		var bx=bd.border[id].bx, by=bd.border[id].by;
@@ -551,7 +551,7 @@ MenuExec.prototype = {
 		else if(key===k.DN){ return bd.bnum(bx, by+2);}
 		else if(key===k.LT){ return bd.bnum(bx-2, by);}
 		else if(key===k.RT){ return bd.bnum(bx+2, by);}
-		return -1;
+		return null;
 	},
 
 	//------------------------------------------------------------------------------

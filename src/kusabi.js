@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.3.0
+// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.3.1
 //
 Puzzles.kusabi = function(){ };
 Puzzles.kusabi.prototype = {
@@ -221,12 +221,12 @@ Puzzles.kusabi.prototype = {
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 || line.lcntCell(c)==0){ continue;}
 
-				var cc      = -1;	// ループから抜けたときに到達地点のIDが入る
-				var ccnt    =  0;	// 曲がった回数
-				var dir     =  0;	// 現在向かっている方向/最後に向かった方向
-				var dir1    =  0;	// 最初に向かった方向
-				var length1 =  0;	// 一回曲がる前の線の長さ
-				var length2 =  0;	// 二回曲がった後の線の長さ
+				var cc      = null;	// ループから抜けたときに到達地点のIDが入る
+				var ccnt    = 0;	// 曲がった回数
+				var dir     = 0;	// 現在向かっている方向/最後に向かった方向
+				var dir1    = 0;	// 最初に向かった方向
+				var length1 = 0;	// 一回曲がる前の線の長さ
+				var length2 = 0;	// 二回曲がった後の線の長さ
 				var idlist  = [];	// 通過したlineのリスト(エラー表示用)
 				var bx=bd.cell[c].bx, by=bd.cell[c].by;	// 現在地
 				while(1){
@@ -240,9 +240,9 @@ Puzzles.kusabi.prototype = {
 						else if(dir!=4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!=0&&dir!=3){ ccnt++;} dir=3;}
 					}
 					else{
-						cc=-1;
+						cc=null;
 						var id = bd.bnum(bx,by);
-						if(id==-1||visited[id]!=0||!bd.isLine(id)){ break;}
+						if(id===null || visited[id]!=0 || !bd.isLine(id)){ break;}
 						idlist.push(id);
 						visited[id]=1;
 						if(dir1==0){ dir1=dir;}
@@ -256,25 +256,25 @@ Puzzles.kusabi.prototype = {
 					errinfo.data.push({errflag:7,cells:[c,cc],idlist:idlist}); continue;
 				}
 				if(!((bd.QnC(c)==1 && bd.QnC(cc)==1) || (bd.QnC(c)==2 && bd.QnC(cc)==3) ||
-						  (bd.QnC(c)==3 && bd.QnC(cc)==2) || bd.QnC(c)==-2 || bd.QnC(cc)==-2) && cc!=-1 && ccnt==2)
+						  (bd.QnC(c)==3 && bd.QnC(cc)==2) || bd.QnC(c)==-2 || bd.QnC(cc)==-2) && cc!==null && ccnt==2)
 				{
 					errinfo.data.push({errflag:6,cells:[c,cc],idlist:idlist}); continue;
 				}
 				if(ccnt>2){
 					errinfo.data.push({errflag:5,cells:[c,cc],idlist:idlist}); continue;
 				}
-				if(ccnt<2 && cc!=-1){
+				if(ccnt<2 && cc!==null){
 					errinfo.data.push({errflag:4,cells:[c,cc],idlist:idlist}); continue;
 				}
-				if((bd.QnC(c)==1 || bd.QnC(cc)==1) && ccnt==2 && cc!=-1 && length1!=length2){
+				if((bd.QnC(c)==1 || bd.QnC(cc)==1) && ccnt==2 && cc!==null && length1!=length2){
 					errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist}); continue;
 				}
 				if((((bd.QnC(c)==2 || bd.QnC(cc)==3) && length1>=length2) ||
-						 ((bd.QnC(c)==3 || bd.QnC(cc)==2) && length1<=length2)) && ccnt==2 && cc!=-1)
+						 ((bd.QnC(c)==3 || bd.QnC(cc)==2) && length1<=length2)) && ccnt==2 && cc!==null)
 				{
 					errinfo.data.push({errflag:2,cells:[c,cc],idlist:idlist}); continue;
 				}
-				if((cc==-1 || bd.QnC(cc)==-1)){
+				if((cc===null || bd.QnC(cc)==-1)){
 					errinfo.data.push({errflag:1,cells:[c],idlist:idlist}); continue;
 				}
 			}

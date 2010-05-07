@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バーンズ版 barns.js v3.3.0
+// パズル固有スクリプト部 バーンズ版 barns.js v3.3.1
 //
 Puzzles.barns = function(){ };
 Puzzles.barns.prototype = {
@@ -77,8 +77,8 @@ Puzzles.barns.prototype = {
 		};
 		mv.inputIcebarn = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell){ return;}
-			if(this.inputData==-1){ this.inputData = (bd.QuC(cc)==6?0:6);}
+			if(cc===null || cc==this.mouseCell){ return;}
+			if(this.inputData===null){ this.inputData = (bd.QuC(cc)==6?0:6);}
 
 			bd.sQuC(cc, this.inputData);
 			pc.paintCell(cc);

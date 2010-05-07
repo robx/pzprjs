@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 連番窓口版 renban.js v3.3.0
+// パズル固有スクリプト部 連番窓口版 renban.js v3.3.1
 //
 Puzzles.renban = function(){ };
 Puzzles.renban.prototype = {
@@ -190,13 +190,13 @@ Puzzles.renban.prototype = {
 			var result = true;
 			// 線の長さを取得する
 			var rdata = new AreaInfo();
-			for(var i=0;i<bd.bdmax;i++){ rdata.id[i] = (bd.isBorder(i)?0:-1);}
+			for(var i=0;i<bd.bdmax;i++){ rdata.id[i] = (bd.isBorder(i)?0:null);}
 			for(var i=0;i<bd.bdmax;i++){
 				if(rdata.id[i]!==0){ continue;}
 				var bx=bd.border[i].bx, by=bd.border[i].by, idlist=[];
 				while(1){
 					var id = bd.bnum(bx,by);
-					if(id===-1 || rdata.id[id]!==0){ break;}
+					if(id===null || rdata.id[id]!==0){ break;}
 
 					idlist.push(id);
 					if(bx%2===1){ bx+=2;}else{ by+=2;}
@@ -208,7 +208,7 @@ Puzzles.renban.prototype = {
 
 			// 実際に差を調査する
 			for(var i=0;i<bd.bdmax;i++){
-				if(rdata.id[i]===-1){ continue;}
+				if(rdata.id[i]===null){ continue;}
 				var cc1 = bd.border[i].cellcc[0], cc2 = bd.border[i].cellcc[1];
 				var val1=bd.getNum(cc1), val2=bd.getNum(cc2);
 				if(val1<=0 || val2<=0){ continue;}

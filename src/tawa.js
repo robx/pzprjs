@@ -246,7 +246,7 @@ Puzzles.tawa.prototype = {
 			this.maxx = 2*k.qcols-1 + [0,1,1,2][bd.lap];
 			this.maxy = 2*k.qrows-1;
 
-			if(bd.cnum(this.cursorx,this.cursory)===-1){
+			if(bd.cnum(this.cursorx,this.cursory)===null){
 				this.cursorx++;
 			}
 		};
@@ -254,7 +254,7 @@ Puzzles.tawa.prototype = {
 		// PositionからのセルID取得
 		bd.cnum = function(bx,by,qc,qr){
 			if(qc===(void 0)){ qc=k.qcols; qr=k.qrows;}
-			if(bx<this.minbx+1 || bx>this.maxbx-1 || by<this.minby+1 || by>this.maxby-1){ return -1;}
+			if(bx<this.minbx+1 || bx>this.maxbx-1 || by<this.minby+1 || by>this.maxby-1){ return null;}
 
 			var cy = (by>>1);	// 上から数えて何段目か(0〜k.qrows-1)
 			if     (this.lap===0){ if(!!((bx+cy)&1)){ return ((bx-1)+cy*(2*qc-1))>>1;}}
@@ -262,13 +262,13 @@ Puzzles.tawa.prototype = {
 			else if(this.lap===2){ if( !((bx+cy)&1)){ return ((bx-1)+cy*(2*qc  ))>>1;}}
 			else if(this.lap===3){ if( !((bx+cy)&1)){ return ((bx-1)+cy*(2*qc+1))>>1;}}
 
-			return -1;
+			return null;
 		};
 		bd.cellinside = function(x1,y1,x2,y2){
 			var clist = [];
 			for(var by=(y1|1);by<=y2;by+=2){ for(var bx=x1;bx<=x2;bx++){
 				var c = this.cnum(bx,by);
-				if(c!==-1){ clist.push(c);}
+				if(c!==null){ clist.push(c);}
 			}}
 			return clist;
 		};
@@ -282,11 +282,11 @@ Puzzles.tawa.prototype = {
 		// マウス入力時のセルID取得系
 		mv.cellid = function(){
 			var pos = this.borderpos(0);
-			if(this.inputY%k.cheight==0){ return -1;} // 縦方向だけ、ぴったりは無効
-			if(!bd.isinside(pos.x,pos.y)){ return -1;}
+			if(this.inputY%k.cheight==0){ return null;} // 縦方向だけ、ぴったりは無効
+			if(!bd.isinside(pos.x,pos.y)){ return null;}
 
 			var cand = bd.cnum(pos.x, pos.y);
-			cand = (cand!=-1?cand:bd.cnum(pos.x+1, pos.y));
+			cand = (cand!==null?cand:bd.cnum(pos.x+1, pos.y));
 			return cand;
 		};
 		mv.borderpos = function(rc){
@@ -501,7 +501,7 @@ Puzzles.tawa.prototype = {
 			for(var by=bd.minby+1;by<bd.maxby;by+=2){
 				for(var bx=0;bx<=bd.maxbx;bx++){
 					var cc=bd.cnum(bx,by);
-					if(cc==-1){ continue;}
+					if(cc===null){ continue;}
 					if     (item[n]=="#"){ bd.setBlack(cc);}
 					else if(item[n]=="+"){ bd.sQsC(cc, 1);}
 					else if(item[n]=="-"){ bd.sQnC(cc, -2);}
@@ -517,7 +517,7 @@ Puzzles.tawa.prototype = {
 			for(var by=bd.minby+1;by<bd.maxby;by+=2){
 				for(var bx=0;bx<=bd.maxbx;bx++){
 					var cc=bd.cnum(bx,by);
-					if(cc==-1){ continue;}
+					if(cc===null){ continue;}
 					if     (bd.QnC(cc)==-2){ bstr += "- ";}
 					else if(bd.QnC(cc)!=-1){ bstr += (""+bd.QnC(cc).toString()+" ");}
 					else if(bd.isBlack(cc)){ bstr += "# ";}
@@ -556,7 +556,7 @@ Puzzles.tawa.prototype = {
 				var clist = [];
 				for(var bx=0;bx<=bd.maxbx;bx++){
 					var cc = bd.cnum(bx,by);
-					if(cc==-1){ continue;}
+					if(cc===null){ continue;}
 					else if(bd.isWhite(cc) || bd.QnC(cc)!=-1){
 						if(clist.length>=3){ break;}
 						clist=[];

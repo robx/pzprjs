@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.3.0
+// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.3.1
 //
 Puzzles.loopsp = function(){ };
 Puzzles.loopsp.prototype = {
@@ -75,12 +75,12 @@ Puzzles.loopsp.prototype = {
 
 		mv.inputLoopsp = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell){ return;}
+			if(cc===null || cc===this.mouseCell){ return;}
 
-			if(cc==tc.getTCC()){
-				var qs = bd.QuC(cc); var qn = bd.QnC(cc);
+			if(cc===tc.getTCC()){
+				var qs = bd.QuC(cc), qn = bd.QnC(cc);
 				if(this.btn.Left){
-					if(qn==-1){
+					if(qn===-1){
 						if     (qs==0)           { bd.sQuC(cc,101);}
 						else if(qs>=101&&qs<=106){ bd.sQuC(cc,qs+1);}
 						else if(qs==107)         { bd.sQuC(cc,0); bd.sQnC(cc,-2);}
@@ -90,7 +90,7 @@ Puzzles.loopsp.prototype = {
 					else{ bd.sQuC(cc,0); bd.sQnC(cc,-1);}
 				}
 				else if(this.btn.Right){
-					if(qn==-1){
+					if(qn===-1){
 						if     (qs==0)           { bd.sQuC(cc,0); bd.sQnC(cc,-2);}
 						else if(qs==101)         { bd.sQuC(cc,0); bd.sQnC(cc,-1);}
 						else if(qs>=102&&qs<=107){ bd.sQuC(cc,qs-1);}
@@ -387,8 +387,8 @@ Puzzles.loopsp.prototype = {
 			clist.include = function(val){ for(var i=0,len=this.length;i<len;i++){ if(this[i]==val) return true;} return false;};
 			for(var i=0,len=idlist.length;i<len;i++){
 				var id=idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(cc1!=-1 && !clist.include(cc1)){ clist.push(cc1);}
-				if(cc2!=-1 && !clist.include(cc2)){ clist.push(cc2);}
+				if(cc1!==null && !clist.include(cc1)){ clist.push(cc1);}
+				if(cc2!==null && !clist.include(cc2)){ clist.push(cc2);}
 			}
 			return clist;
 		};

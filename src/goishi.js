@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 碁石ひろい版 goishi.js v3.3.0
+// パズル固有スクリプト部 碁石ひろい版 goishi.js v3.3.1
 //
 Puzzles.goishi = function(){ };
 Puzzles.goishi.prototype = {
@@ -117,7 +117,7 @@ Puzzles.goishi.prototype = {
 
 		mv.inputstone = function(){
 			var cc = this.cellid();
-			if(cc===-1){ return;}
+			if(cc===null){ return;}
 
 			var cc0 = tc.getTCC();
 			if(cc!==cc0){
@@ -130,13 +130,13 @@ Puzzles.goishi.prototype = {
 		};
 		mv.inputqans = function(){
 			var cc = this.cellid();
-			if(cc===-1 || bd.cell[cc].ques!==7 || bd.cell[cc].qans!==-1){
+			if(cc===null || bd.cell[cc].ques!==7 || bd.cell[cc].qans!==-1){
 				kc.inREDO = true;
 				tm.startMouseUndoTimer();
 				return;
 			}
 
-			var max=0, bcc=-1;
+			var max=0, bcc=null;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.cell[c].qans>max){
 					max = bd.cell[c].qans;
@@ -145,7 +145,7 @@ Puzzles.goishi.prototype = {
 			}
 
 			// すでに1つ以上の碁石が取られている場合
-			if(bcc!==-1){
+			if(bcc!==null){
 				var tmp, d = {x1:-1, y1:-1, x2:-1, y2:-1};
 				d.x1 = bd.cell[cc].bx, d.x2 = bd.cell[bcc].bx;
 				d.y1 = bd.cell[cc].by, d.y2 = bd.cell[bcc].by;
@@ -163,7 +163,7 @@ Puzzles.goishi.prototype = {
 				// 間に碁石がある場合は何もしない
 				for(var bx=d.x1;bx<=d.x2;bx+=2){ for(var by=d.y1;by<=d.y2;by+=2){
 					var c = bd.cnum(bx,by);
-					if(c!==-1 && bd.cell[c].ques===7){
+					if(c!==null && bd.cell[c].ques===7){
 						var qa = bd.cell[c].qans;
 						if(qa===-1 || (max>=2 && qa===max-1)){ return;}
 					}
@@ -315,7 +315,7 @@ Puzzles.goishi.prototype = {
 			for(var by=d.y1;by<=d.y2;by+=2){
 				for(var bx=d.x1;bx<=d.x2;bx+=2){
 					var c=bd.cnum(bx,by);
-					if(c===-1 || bd.QuC(c)==0){ pass+=Math.pow(2,4-count);}
+					if(c===null || bd.QuC(c)==0){ pass+=Math.pow(2,4-count);}
 					count++; if(count==5){ cm += pass.toString(32); count=0; pass=0;}
 				}
 			}

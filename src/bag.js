@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バッグ版 bag.js v3.3.0
+// パズル固有スクリプト部 バッグ版 bag.js v3.3.1
 //
 Puzzles.bag = function(){ };
 Puzzles.bag.prototype = {
@@ -46,7 +46,7 @@ Puzzles.bag.prototype = {
 		menu.ex.modechange = function(num){
 			k.editmode = (num==1);
 			k.playmode = (num==3);
-			kc.prev = -1;
+			kc.prev = null;
 			ans.errDisp=true;
 			bd.errclear();
 			if(kp.ctl[1].enable || kp.ctl[3].enable){ pp.funcs.keypopup();}
@@ -99,8 +99,8 @@ Puzzles.bag.prototype = {
 		};
 		mv.inputBGcolor = function(isnormal){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell){ return;}
-			if(this.inputData==-1){
+			if(cc===null || cc==this.mouseCell){ return;}
+			if(this.inputData===null){
 				if(isnormal || this.btn.Left){
 					if     (bd.cell[cc].qsub===0){ this.inputData=11;}
 					else if(bd.cell[cc].qsub===1){ this.inputData=12;}
@@ -211,11 +211,11 @@ Puzzles.bag.prototype = {
 
 		ans.generateIarea = function(){
 			var icheck = [];
-			icheck[0]=(line.lcntCell(0)==0?-1:1);
+			icheck[0]=(line.lcntCell(0)!==0);
 			for(var by=1;by<bd.maxby;by+=2){
-				if(by>1){ icheck[bd.cnum(1,by)]=icheck[bd.cnum(1,by-2)]*(bd.isLine(bd.bnum(1,by-1))?-1:1);}
+				if(by>1){ icheck[bd.cnum(1,by)] = !!(icheck[bd.cnum(1,by-2)] ^ bd.isLine(bd.bnum(1,by-1)));}
 				for(var bx=3;bx<bd.maxbx;bx+=2){
-					icheck[bd.cnum(bx,by)]=icheck[bd.cnum(bx-2,by)]*(bd.isLine(bd.bnum(bx-1,by))?-1:1);
+					icheck[bd.cnum(bx,by)] = !!(icheck[bd.cnum(bx-2,by)] ^ bd.isLine(bd.bnum(bx-1,by)));
 				}
 			}
 			return icheck;
@@ -223,7 +223,7 @@ Puzzles.bag.prototype = {
 		ans.checkNumberInside = function(icheck){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(icheck[c]==-1 && bd.QnC(c)!=-1){
+				if(!icheck[c] && bd.QnC(c)!==-1){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
 					result = false;
@@ -241,13 +241,13 @@ Puzzles.bag.prototype = {
 				var cnt = 1;
 				var tx, ty;
 				tx = bd.cell[cc].bx-2; ty = bd.cell[cc].by;
-				while(tx>bd.minbx){ var c=bd.cnum(tx,ty); if(icheck[c]!==-1){ cnt++; list.push(c); tx-=2;} else{ break;} }
+				while(tx>bd.minbx){ var c=bd.cnum(tx,ty); if(icheck[c]){ cnt++; list.push(c); tx-=2;} else{ break;} }
 				tx = bd.cell[cc].bx+2; ty = bd.cell[cc].by;
-				while(tx<bd.maxbx){ var c=bd.cnum(tx,ty); if(icheck[c]!==-1){ cnt++; list.push(c); tx+=2;} else{ break;} }
+				while(tx<bd.maxbx){ var c=bd.cnum(tx,ty); if(icheck[c]){ cnt++; list.push(c); tx+=2;} else{ break;} }
 				tx = bd.cell[cc].bx; ty = bd.cell[cc].by-2;
-				while(ty>bd.minby){ var c=bd.cnum(tx,ty); if(icheck[c]!==-1){ cnt++; list.push(c); ty-=2;} else{ break;} }
+				while(ty>bd.minby){ var c=bd.cnum(tx,ty); if(icheck[c]){ cnt++; list.push(c); ty-=2;} else{ break;} }
 				tx = bd.cell[cc].bx; ty = bd.cell[cc].by+2;
-				while(ty<bd.maxby){ var c=bd.cnum(tx,ty); if(icheck[c]!==-1){ cnt++; list.push(c); ty+=2;} else{ break;} }
+				while(ty<bd.maxby){ var c=bd.cnum(tx,ty); if(icheck[c]){ cnt++; list.push(c); ty+=2;} else{ break;} }
 
 				if(bd.QnC(cc)!=cnt){
 					if(this.inAutoCheck){ return false;}

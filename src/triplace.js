@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 トリプレイス版 triplace.js v3.3.0
+// パズル固有スクリプト部 トリプレイス版 triplace.js v3.3.1
 //
 Puzzles.triplace = function(){ };
 Puzzles.triplace.prototype = {
@@ -77,29 +77,18 @@ Puzzles.triplace.prototype = {
 			}
 		};
 		mv.set51cell = function(cc,val){
-			if(val==true){
-				bd.sQuC(cc,51);
-				bd.sQnC(cc,-1);
-				bd.sDiC(cc,-1);
-				if(bd.ub(cc)!==-1){ bd.sQuB(bd.ub(cc), ((bd.up(cc)!=-1 && bd.QuC(bd.up(cc))!=51)?1:0));}
-				if(bd.db(cc)!==-1){ bd.sQuB(bd.db(cc), ((bd.dn(cc)!=-1 && bd.QuC(bd.dn(cc))!=51)?1:0));}
-				if(bd.lb(cc)!==-1){ bd.sQuB(bd.lb(cc), ((bd.lt(cc)!=-1 && bd.QuC(bd.lt(cc))!=51)?1:0));}
-				if(bd.rb(cc)!==-1){ bd.sQuB(bd.rb(cc), ((bd.rt(cc)!=-1 && bd.QuC(bd.rt(cc))!=51)?1:0));}
-			}
-			else{
-				bd.sQuC(cc,0);
-				bd.sQnC(cc,-1);
-				bd.sDiC(cc,-1);
-				if(bd.ub(cc)!==-1){ bd.sQuB(bd.ub(cc), ((bd.up(cc)!=-1 && bd.QuC(bd.up(cc))==51)?1:0));}
-				if(bd.db(cc)!==-1){ bd.sQuB(bd.db(cc), ((bd.dn(cc)!=-1 && bd.QuC(bd.dn(cc))==51)?1:0));}
-				if(bd.lb(cc)!==-1){ bd.sQuB(bd.lb(cc), ((bd.lt(cc)!=-1 && bd.QuC(bd.lt(cc))==51)?1:0));}
-				if(bd.rb(cc)!==-1){ bd.sQuB(bd.rb(cc), ((bd.rt(cc)!=-1 && bd.QuC(bd.rt(cc))==51)?1:0));}
-			}
+			bd.sQuC(cc,(val?51:0));
+			bd.sQnC(cc,-1);
+			bd.sDiC(cc,-1);
+			if(bd.ub(cc)!==null){ bd.sQuB(bd.ub(cc), ((bd.up(cc)!==null && bd.QuC(bd.up(cc))!=51)?1:0));}
+			if(bd.db(cc)!==null){ bd.sQuB(bd.db(cc), ((bd.dn(cc)!==null && bd.QuC(bd.dn(cc))!=51)?1:0));}
+			if(bd.lb(cc)!==null){ bd.sQuB(bd.lb(cc), ((bd.lt(cc)!==null && bd.QuC(bd.lt(cc))!=51)?1:0));}
+			if(bd.rb(cc)!==null){ bd.sQuB(bd.rb(cc), ((bd.rt(cc)!==null && bd.QuC(bd.rt(cc))!=51)?1:0));}
 		};
 		mv.inputBGcolor = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell || bd.QuC(cc)==51){ return;}
-			if(this.inputData==-1){
+			if(cc===null || cc===this.mouseCell || bd.QuC(cc)==51){ return;}
+			if(this.inputData===null){
 				if(this.btn.Left){
 					if     (bd.QsC(cc)==0){ this.inputData=1;}
 					else if(bd.QsC(cc)==1){ this.inputData=2;}
@@ -360,9 +349,9 @@ Puzzles.triplace.prototype = {
 
 		ans.getTileInfo = function(){
 			var tinfo = new AreaInfo();
-			for(var c=0;c<bd.cellmax;c++){ tinfo.id[c]=(bd.QuC(c)!=51?0:-1);}
+			for(var c=0;c<bd.cellmax;c++){ tinfo.id[c]=(bd.QuC(c)!=51?0:null);}
 			for(var c=0;c<bd.cellmax;c++){
-				if(tinfo.id[c]!=0){ continue;}
+				if(tinfo.id[c]!==0){ continue;}
 				tinfo.max++;
 				tinfo[tinfo.max] = {clist:[]};
 				area.sr0(c, tinfo, bd.isBorder);

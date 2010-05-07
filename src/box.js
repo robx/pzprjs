@@ -65,11 +65,11 @@ Puzzles.box.prototype = {
 			if(ec<0 || bd.excellmax<=ec){ return false;}
 			var ec0 = tc.getTEC();
 
-			if(ec!==-1 && ec!==ec0){
+			if(ec!==null && ec!==ec0){
 				tc.setTEC(ec);
 				pc.paintEXcell(ec0);
 			}
-			else if(ec!==-1 && ec===ec0){
+			else if(ec!==null && ec===ec0){
 				var qn = bd.QnE(ec), max=bd.nummaxfunc(ec);
 				if(this.btn.Left){ bd.sQnE(ec,(qn!==max ? qn+1 : 0));}
 				else if(this.btn.Right){ bd.sQnE(ec,(qn!==0 ? qn-1 : max));}
@@ -284,12 +284,12 @@ Puzzles.box.prototype = {
 				if(ca=="."){ continue;}
 
 				var ec = bd.exnum(i%(k.qcols+1)*2-1,((i/(k.qcols+1))<<1)-1);
-				if(ec!==-1){
+				if(ec!==null){
 					bd.sQnE(ec, parseInt(ca));
 				}
 
 				var c = bd.cnum(i%(k.qcols+1)*2-1,((i/(k.qcols+1))<<1)-1);
-				if(c!==-1){
+				if(c!==null){
 					if     (ca==="#"){ bd.sQaC(c, 1);}
 					else if(ca==="+"){ bd.sQsC(c, 1);}
 				}
@@ -299,13 +299,13 @@ Puzzles.box.prototype = {
 			for(var by=-1;by<bd.maxby;by+=2){
 				for(var bx=-1;bx<bd.maxbx;bx+=2){
 					var ec = bd.exnum(bx,by);
-					if(ec!==-1){
+					if(ec!==null){
 						this.datastr += (bd.QnE(ec).toString()+" ");
 						continue;
 					}
 
 					var c = bd.cnum(bx,by);
-					if(c!==-1){
+					if(c!==null){
 						if     (bd.QaC(c)===1){ this.datastr += "# ";}
 						else if(bd.QsC(c)===1){ this.datastr += "+ ";}
 						else                  { this.datastr += ". ";}

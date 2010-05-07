@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンロー版 nanro.js v3.3.0
+// パズル固有スクリプト部 ナンロー版 nanro.js v3.3.1
 //
 Puzzles.nanro = function(){ };
 Puzzles.nanro.prototype = {
@@ -57,7 +57,7 @@ Puzzles.nanro.prototype = {
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(!kp.enabled()){ this.mouseCell=-1; this.inputqnum();}
+				if(!kp.enabled()){ this.mouseCell=null; this.inputqnum();}
 				else{ kp.display();}
 			}
 		};
@@ -70,28 +70,29 @@ Puzzles.nanro.prototype = {
 		};
 		mv.dragnumber = function(){
 			var cc = this.cellid();
-			if(cc==-1||cc==this.mouseCell){ return;}
-			if(this.mouseCell==-1){
+			if(cc===null||cc===this.mouseCell){ return;}
+			if(this.mouseCell===null){
 				this.inputData = bd.getNum(cc);
 				if   (this.inputData==-2){ this.inputData=-4;}
-				else if(this.inputData==-1){
+				else if(this.inputData===null){
 					if     (bd.QsC(cc)==1){ this.inputData=-2;}
 					else if(bd.QsC(cc)==2){ this.inputData=-3;}
 				}
 				this.mouseCell = cc;
 			}
-			else if(bd.QnC(cc)==-1){
-				if(this.inputData>=-1){ bd.sQaC(cc, this.inputData); bd.sQsC(cc,0);}
-				else if(this.inputData==-2){ bd.sQaC(cc,-1); bd.sQsC(cc,1);}
-				else if(this.inputData==-3){ bd.sQaC(cc,-1); bd.sQsC(cc,2);}
+			else if(bd.QnC(cc)===-1){
+				if(this.inputData>0){ bd.sQaC(cc, this.inputData); bd.sQsC(cc,0);}
+				else if(this.inputData===null){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
+				else if(this.inputData===-2)  { bd.sQaC(cc,-1); bd.sQsC(cc,1);}
+				else if(this.inputData===-3)  { bd.sQaC(cc,-1); bd.sQsC(cc,2);}
 				this.mouseCell = cc;
 				pc.paintCell(cc);
 			}
 		};
 		mv.inputDot = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell || bd.isNum(cc)){ return;}
-			if(this.inputData==-1){ this.inputData = (bd.QsC(cc)==2?0:2);}
+			if(cc===null || cc===this.mouseCell || bd.isNum(cc)){ return;}
+			if(this.inputData===null){ this.inputData = (bd.QsC(cc)===2?0:2);}
 			if     (this.inputData==2){ bd.sQaC(cc,-1); bd.sQsC(cc,2);}
 			else if(this.inputData==0){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
 			this.mouseCell = cc;

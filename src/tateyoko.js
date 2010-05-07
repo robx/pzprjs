@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.3.0
+// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.3.1
 //
 Puzzles.tateyoko = function(){ };
 Puzzles.tateyoko.prototype = {
@@ -64,17 +64,17 @@ Puzzles.tateyoko.prototype = {
 		};
 		mv.inputTateyoko = function(){
 			var cc   = this.cellid();
-			if(cc==-1){ return;}
+			if(cc===null){ return;}
 			var cpos = this.borderpos(0);
 
 			var input=false;
 
 			// 初回はこの中に入ってきます。
-			if(this.mouseCell==-1){ this.firstPos = this.inputPos.clone();}
+			if(this.mouseCell===null){ this.firstPos = this.inputPos.clone();}
 			// 黒マス上なら何もしない
 			else if(bd.QuC(cc)==1){ }
 			// まだ入力されていない(1つめの入力の)場合
-			else if(this.inputData==-1){
+			else if(this.inputData===null){
 				if(cc==this.mouseCell){
 					pos = this.inputPos.clone();
 					if     (Math.abs(pos.y-this.firstPos.y)>=8){ this.inputData=1; input=true;}
@@ -87,7 +87,7 @@ Puzzles.tateyoko.prototype = {
 
 				if(input){
 					if(bd.QaC(cc)==this.inputData){ this.inputData=0;}
-					this.firstPos = new Pos(-1,-1);
+					this.firstPos = new Pos(null,null);
  				}
 			}
 			// 入力し続けていて、別のマスに移動した場合
@@ -107,7 +107,7 @@ Puzzles.tateyoko.prototype = {
 		};
 		mv.clickTateyoko = function(){
 			var cc  = this.cellid();
-			if(cc==-1 || bd.QuC(cc)==1){ return;}
+			if(cc===null || bd.QuC(cc)==1){ return;}
 
 			if(this.btn.Left){
 				if     (bd.QaC(cc)==-1){ bd.sQaC(cc, 1);}
@@ -121,7 +121,7 @@ Puzzles.tateyoko.prototype = {
 			}
 			pc.paintCell(cc);
 		};
-		mv.prevCPos = new Pos(-1,-1);
+		mv.prevCPos = new Pos(null,null);
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
@@ -403,13 +403,13 @@ Puzzles.tateyoko.prototype = {
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)!==1 || bd.QnC(c)<0){ continue;}
 
-				var cnt1=0, cnt2=0;
-				if(bd.QaC(bd.up(c))==1){ cnt1++;} else if(bd.up(c)==-1 || bd.QaC(bd.up(c))==2){ cnt2++;}
-				if(bd.QaC(bd.dn(c))==1){ cnt1++;} else if(bd.dn(c)==-1 || bd.QaC(bd.dn(c))==2){ cnt2++;}
-				if(bd.QaC(bd.lt(c))==2){ cnt1++;} else if(bd.lt(c)==-1 || bd.QaC(bd.lt(c))==1){ cnt2++;}
-				if(bd.QaC(bd.rt(c))==2){ cnt1++;} else if(bd.rt(c)==-1 || bd.QaC(bd.rt(c))==1){ cnt2++;}
+				var cnt1=0, cnt2=0, cc;
+				cc=bd.up(c); if(cc!==null){ if(bd.QaC(cc)==1){ cnt1++;}else if(bd.QaC(cc)==2){ cnt2++;} }
+				cc=bd.dn(c); if(cc!==null){ if(bd.QaC(cc)==1){ cnt1++;}else if(bd.QaC(cc)==2){ cnt2++;} }
+				cc=bd.lt(c); if(cc!==null){ if(bd.QaC(cc)==2){ cnt1++;}else if(bd.QaC(cc)==1){ cnt2++;} }
+				cc=bd.rt(c); if(cc!==null){ if(bd.QaC(cc)==2){ cnt1++;}else if(bd.QaC(cc)==1){ cnt2++;} }
 
-				if((type==1 && (bd.QnC(c)>4-cnt2 || bd.QnC(c)<cnt1)) || (type==2 && bd.QnC(c)!=cnt1)){
+				if((type===1 && (bd.QnC(c)>4-cnt2 || bd.QnC(c)<cnt1)) || (type===2 && bd.QnC(c)!=cnt1)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
 					result = false;
@@ -420,9 +420,9 @@ Puzzles.tateyoko.prototype = {
 
 		ans.getBarInfo = function(){
 			var binfo = new AreaInfo();
-			for(var c=0;c<bd.cellmax;c++){ binfo.id[c]=(bd.QuC(c)==1 || bd.QaC(c)==-1?-1:0);}
+			for(var c=0;c<bd.cellmax;c++){ binfo.id[c]=((bd.QuC(c)===1 || bd.QaC(c)===-1) ? null : 0);}
 			for(var c=0;c<bd.cellmax;c++){
-				if(binfo.id[c]!=0){ continue;}
+				if(binfo.id[c]!==0){ continue;}
 				var bx=bd.cell[c].bx, by=bd.cell[c].by, val=bd.QaC(c);
 
 				binfo.max++;

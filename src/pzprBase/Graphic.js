@@ -698,7 +698,7 @@ Graphic.prototype = {
 		case 'ice':
 			this.setBorderColor = function(id){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(cc1!==-1 && cc2!==-1 && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
+				if(cc1!==null && cc2!==null && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
 					g.fillStyle = this.cellcolor;
 					return true;
 				}
@@ -978,13 +978,13 @@ Graphic.prototype = {
 		for(var i=0;i<clist.length;i++){ this.drawCircle1AtNumber(clist[i]);}
 	},
 	drawCircle1AtNumber : function(c){
-		if(c===-1){ return;}
+		if(c===null){ return;}
 
 		var rsize  = this.cw*this.circleratio[0];
 		var rsize2 = this.cw*this.circleratio[1];
 		var headers = ["c_cira_", "c_cirb_"];
 
-		if(bd.cell[c].qnum!=-1){
+		if(bd.cell[c].qnum!==-1){
 			g.lineWidth = this.cw*0.05;
 			g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : this.circledcolor);
 			if(this.vnop(headers[1]+c,this.FILL)){
@@ -1108,12 +1108,12 @@ Graphic.prototype = {
 				// cell上だった場合
 				if(bx!==-1 && by!==-1){
 					var c = bd.cnum(bx,by);
-					if(c!==-1){ this.drawNumbersOn51_1('cell', c);}
+					if(c!==null){ this.drawNumbersOn51_1('cell', c);}
 				}
 				// excell上だった場合
 				else{
 					var c = bd.exnum(bx,by);
-					if(c!==-1){ this.drawNumbersOn51_1('excell', c);}
+					if(c!==null){ this.drawNumbersOn51_1('excell', c);}
 				}
 			}
 		}
@@ -1127,7 +1127,7 @@ Graphic.prototype = {
 				if     (i===0){ val=obj.qnum,  guard=obj.by, nb=bd.cnum(obj.bx+2, obj.by), type=4;} // 1回目は右向き
 				else if(i===1){ val=obj.direc, guard=obj.bx, nb=bd.cnum(obj.bx, obj.by+2), type=2;} // 2回目は下向き
 
-				if(val!==-1 && guard!==-1 && nb!==-1 && bd.cell[nb].ques!==51){
+				if(val!==-1 && guard!==-1 && nb!==null && bd.cell[nb].ques!==51){
 					var color = (obj.error===1?this.fontErrcolor:this.fontcolor);
 					var text = (val>=0?""+val:"");
 
@@ -1185,10 +1185,10 @@ Graphic.prototype = {
 		if(tc.cursorx < x1 || x2+2 < tc.cursorx){ return;}
 		if(tc.cursory < y1 || y2+2 < tc.cursory){ return;}
 
-		var cc = tc.getTCC(), ex = -1;
-		if(cc===-1){ ex = tc.getTEC();}
+		var cc = tc.getTCC(), ex = null;
+		if(cc===null){ ex = tc.getTEC();}
 		var target = kc.detectTarget(cc,ex);
-		if(target===-1){ return;}
+		if(target===0){ return;}
 
 		g.fillStyle = this.ttcolor;
 		this.drawTriangle1(k.p0.x+(tc.cursorx>>1)*this.cw, k.p0.y+(tc.cursory>>1)*this.ch, (target===2?4:2), vid);

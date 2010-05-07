@@ -95,10 +95,10 @@ Puzzles.icelom.prototype = {
 		};
 		mv.inputIcebarn = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell){ return;}
-			if(bd.QnC(cc)!==-1){ this.inputqnum(); return;}
+			if(cc===null || cc===this.mouseCell){ return;}
+			if(bd.QnC(cc)!==null){ this.inputqnum(); return;}
 
-			if(this.inputData==-1){ this.inputData = (bd.QuC(cc)==6?0:6);}
+			if(this.inputData===null){ this.inputData = (bd.QuC(cc)==6?0:6);}
 
 			bd.sQuC(cc, this.inputData);
 			pc.paintCellAround(cc);
@@ -108,7 +108,7 @@ Puzzles.icelom.prototype = {
 			var pos = this.borderpos(0);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
-			var id = -1;
+			var id = null;
 			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1); if(this.inputData!=0){ this.inputData=1;} }
 			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1); if(this.inputData!=0){ this.inputData=2;} }
 			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  ); if(this.inputData!=0){ this.inputData=1;} }
@@ -116,7 +116,7 @@ Puzzles.icelom.prototype = {
 
 			this.mouseCell = pos;
 
-			if(id==-1 || id<bd.bdinside){ return;}
+			if(id===null || id<bd.bdinside){ return;}
 			else{
 				if(bd.border[id].bx===0 || bd.border[id].by===0){
 					if     (this.inputData==1){ bd.inputarrowout(id);}
@@ -157,8 +157,8 @@ Puzzles.icelom.prototype = {
 			return true;
 		};
 
-		if(!bd.arrowin) { bd.arrowin  = -1;}
-		if(!bd.arrowout){ bd.arrowout = -1;}
+		if(!bd.arrowin) { bd.arrowin  = null;}
+		if(!bd.arrowout){ bd.arrowout = null;}
 		bd.inputarrowin = function(id){
 			var dir=((this.border[id].bx===0||this.border[id].by===0)?1:2);
 			this.setArrow(this.arrowin,0);
@@ -184,12 +184,12 @@ Puzzles.icelom.prototype = {
 			this.setArrow(this.arrowout, ((dir+1)%2)+1);
 		};
 		bd.getArrow = function(id){ return this.QuB(id); };
-		bd.setArrow = function(id,val){ if(id!==-1){ this.sQuB(id,val);}};
+		bd.setArrow = function(id,val){ if(id!==null){ this.sQuB(id,val);}};
 		bd.isArrow  = function(id){ return (this.QuB(id)>0);};
 
 		bd.initSpecial = function(col,row){
 			this.bdinside = 2*col*row-(col+row);
-			if(this.arrowin==-1 && this.arrowout==-1){
+			if(this.arrowin===null && this.arrowout===null){
 				this.inputarrowin (0 + this.bdinside, 1);
 				this.inputarrowout(2 + this.bdinside, 1);
 			}
@@ -401,7 +401,7 @@ Puzzles.icelom.prototype = {
 			var barray = this.outbstr.substr(1).split("/");
 
 			bd.setArrow(bd.arrowin,0); bd.setArrow(bd.arrowout,0);
-			bd.arrowin = bd.arrowout = -1;
+			bd.arrowin = bd.arrowout = null;
 			bd.inputarrowin (parseInt(barray[0])+bd.bdinside);
 			bd.inputarrowout(parseInt(barray[1])+bd.bdinside);
 
@@ -516,9 +516,9 @@ Puzzles.icelom.prototype = {
 
 		ans.checkIcebarns = function(){
 			var iarea = new AreaInfo();
-			for(var cc=0;cc<bd.cellmax;cc++){ iarea.id[cc]=(bd.QuC(cc)==6?0:-1); }
+			for(var cc=0;cc<bd.cellmax;cc++){ iarea.id[cc]=(bd.QuC(cc)==6?0:null); }
 			for(var cc=0;cc<bd.cellmax;cc++){
-				if(iarea.id[cc]!=0){ continue;}
+				if(iarea.id[cc]!==0){ continue;}
 				iarea.max++;
 				iarea[iarea.max] = {clist:[]};
 				area.sc0(cc,iarea);
@@ -561,8 +561,8 @@ Puzzles.icelom.prototype = {
 					var id = bd.bnum(bx,by);
 					bd.sErB([id],1);
 					if(!bd.isLine(id)){ return 2;}
-					if(bd.arrowout==id){ break;}
-					else if(id==-1 || id>=bd.bdinside){ return 3;}
+					if(bd.arrowout===id){ break;}
+					else if(id===null || id>=bd.bdinside){ return 3;}
 				}
 			}
 

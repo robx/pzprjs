@@ -80,9 +80,9 @@ Puzzles.slalom.prototype = {
 
 		mv.inputQues_slalom = function(){
 			var cc = this.cellid();
-			if(cc==-1){ return;}
+			if(cc===null){ return;}
 
-			if(cc!=tc.getTCC()){
+			if(cc!==tc.getTCC()){
 				var cc0 = tc.getTCC(); tc.setTCC(cc);
 				pc.paintCell(cc0);
 			}
@@ -97,19 +97,19 @@ Puzzles.slalom.prototype = {
 			pc.dispnumStartpos(bd.startid);
 		};
 		mv.inputStartid_up = function(){
-			this.inputData = -1;
+			this.inputData = null;
 			var cc0 = bd.startid;
 			pc.paintCell(cc0);
 		};
 		mv.inputGate = function(){
 			var cc   = this.cellid();
-			if(cc==-1){ return;}
+			if(cc===null){ return;}
 			var cpos = this.borderpos(0);
 
 			var input=false;
 
 			// 初回はこの中に入ってきます。
-			if(this.mouseCell==-1){
+			if(this.mouseCell===null){
 				if(cc===bd.startid){ this.inputData=10; input=true;}
 				else{ this.firstPos = this.inputPos.clone();}
 			}
@@ -125,7 +125,7 @@ Puzzles.slalom.prototype = {
 				}
 			}
 			// まだ入力されていない(1つめの入力の)場合
-			else if(this.inputData==-1){
+			else if(this.inputData===null){
 				if(cc==this.mouseCell){
 					pos = this.inputPos.clone();
 					if     (Math.abs(pos.y-this.firstPos.y)>=8){ this.inputData=21; input=true;}
@@ -138,7 +138,7 @@ Puzzles.slalom.prototype = {
 
 				if(input){
 					if(bd.QuC(cc)==this.inputData){ this.inputData=0;}
-					this.firstPos = new Pos(-1,-1);
+					this.firstPos = new Pos(null,null);
  				}
 			}
 			// 入力し続けていて、別のマスに移動した場合
@@ -159,7 +159,7 @@ Puzzles.slalom.prototype = {
 			this.prevCPos  = cpos;
 			this.mouseCell = cc;
 		};
-		mv.prevCPos = new Pos(-1,-1);
+		mv.prevCPos = new Pos(null,null);
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
@@ -794,7 +794,6 @@ Puzzles.slalom.prototype = {
 					else{
 						var id = bd.bnum(bx,by);
 						if(!bd.isLine(id)){ break;} // 途切れてたら、何事もなかったように終了
-						else if(id==-1 || id>=bd.bdinside){ break;}
 					}
 				}
 			}
@@ -837,8 +836,8 @@ Hurdle.prototype = {
 			cc2 = bd.cnum(this.data[gateid].x2+2, this.data[gateid].y1);
 		}
 		else{ return [];}
-		if(cc1!=-1 && bd.QuC(cc1)==1){ clist.push(cc1);}
-		if(cc2!=-1 && bd.QuC(cc2)==1){ clist.push(cc2);}
+		if(cc1!==null && bd.QuC(cc1)===1){ clist.push(cc1);}
+		if(cc2!==null && bd.QuC(cc2)===1){ clist.push(cc2);}
 		return clist;
 	},
 	// 黒マスの周りに繋がっている旗門IDをリストにして返す

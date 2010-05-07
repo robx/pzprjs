@@ -196,7 +196,7 @@ Puzzles.ichimaga.prototype = {
 				this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
 			}
 
-			if( !this.checkAllCell( function(c){ return bd.QnC(c)>0&&bd.QnC(c)!=line.lcntCell(c); } ) ){
+			if( !this.checkAllCell( function(c){ return bd.QnC(c)>0 && bd.QnC(c)!==line.lcntCell(c); } ) ){
 				this.setAlert('○から出る線の本数が正しくありません。', 'The number is not equal to the number of lines out of the circle.'); return false;
 			}
 
@@ -204,7 +204,7 @@ Puzzles.ichimaga.prototype = {
 				this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
 			}
 
-			if( !this.checkAllCell( function(c){ return bd.QnC(c)!=-1&&line.lcntCell(c)==0; } ) ){
+			if( !this.checkAllCell( function(c){ return bd.QnC(c)!==-1 && line.lcntCell(c)===0; } ) ){
 				this.setAlert('○から線が出ていません。', 'There is a lonely circle.'); return false;
 			}
 
@@ -299,10 +299,10 @@ Puzzles.ichimaga.prototype = {
 		ans.checkConnectedLine = function(){
 			var lcnt=0;
 			var visited = new AreaInfo();
-			for(var id=0;id<bd.bdmax;id++){ if(bd.isLine(id)){ visited.id[id]=0; lcnt++;}else{ visited.id[id]=-1;} }
-			var fc=-1;
+			for(var id=0;id<bd.bdmax;id++){ if(bd.isLine(id)){ visited.id[id]=0; lcnt++;}else{ visited.id[id]=null;} }
+			var fc=null;
 			for(var c=0;c<bd.cellmax;c++){ if(bd.QnC(c)!=-1 && line.lcntCell(c)>0){ fc=c; break;} }
-			if(fc==-1){ return true;}
+			if(fc===null){ return true;}
 
 			this.cl0(visited.id, bd.cell[fc].bx, bd.cell[fc].by,0);
 			var lcnt2=0, idlist=[];

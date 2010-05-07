@@ -50,7 +50,7 @@ Puzzles.slither.prototype = {
 		menu.ex.modechange = function(num){
 			k.editmode = (num==1);
 			k.playmode = (num==3);
-			kc.prev = -1;
+			kc.prev = null;
 			ans.errDisp=true;
 			bd.errclear();
 			if(kp.ctl[1].enable || kp.ctl[3].enable){ pp.funcs.keypopup();}
@@ -104,8 +104,8 @@ Puzzles.slither.prototype = {
 		};
 		mv.inputBGcolor = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell){ return;}
-			if(this.inputData==-1){
+			if(cc===null || cc==this.mouseCell){ return;}
+			if(this.inputData===null){
 				if(this.btn.Left){
 					if     (bd.cell[cc].qsub===0){ this.inputData=11;}
 					else if(bd.cell[cc].qsub===1){ this.inputData=12;}

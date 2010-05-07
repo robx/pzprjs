@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.3.0
+// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.3.1
 //
 Puzzles.fillomino = function(){ };
 Puzzles.fillomino.prototype = {
@@ -58,7 +58,7 @@ Puzzles.fillomino.prototype = {
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(!kp.enabled()){ this.mouseCell=-1; 	this.inputqnum();}
+				if(!kp.enabled()){ this.mouseCell=null; this.inputqnum();}
 				else{ kp.display();}
 			}
 		};
@@ -73,9 +73,9 @@ Puzzles.fillomino.prototype = {
 		};
 		mv.inputborder_fillomino = function(){
 			var pos = this.borderpos(0.25);
-			if(this.mouseCell===-1 && (pos.x&1) && (pos.y&1)){
+			if(this.mouseCell===null && (pos.x&1) && (pos.y&1)){
 				pos = this.cellid();
-				if(pos===-1){ return true;}
+				if(pos===null){ return true;}
 				this.inputData = bd.getNum(pos);
 				this.mouseCell = pos;
 				return false;
@@ -83,16 +83,16 @@ Puzzles.fillomino.prototype = {
 			if(pos.x===this.mouseCell.x && pos.y===this.mouseCell.y){ return true;}
 
 			var id = bd.bnum(pos.x, pos.y);
-			if(id===-1 && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
+			if(id===null && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
 
-			if(this.mouseCell!=-1 && id!=-1){
+			if(this.mouseCell!==null && id!==null){
 				if((!(pos.x&1) && this.mouseCell.x===pos.x && Math.abs(this.mouseCell.y-pos.y)===1) ||
 				   (!(pos.y&1) && this.mouseCell.y===pos.y && Math.abs(this.mouseCell.x-pos.x)===1) )
 				{
-					this.mouseCell=-1
+					this.mouseCell=null
 
-					if(this.inputData===-1){ this.inputData=(bd.QaB(id)===0?1:0);}
-					if(this.inputData!==-1){ bd.sQaB(id, this.inputData);}
+					if(this.inputData===null){ this.inputData=(bd.QaB(id)===0?1:0);}
+					if(this.inputData!==null){ bd.sQaB(id, this.inputData);}
 					else{ return true;}
 					pc.paintBorder(id);
 				}
@@ -102,7 +102,7 @@ Puzzles.fillomino.prototype = {
 		};
 		mv.dragnumber = function(){
 			var cc = this.cellid();
-			if(cc===-1||cc===this.mouseCell){ return;}
+			if(cc===null||cc===this.mouseCell){ return;}
 			bd.sQaC(cc, this.inputData);
 			this.mouseCell = cc;
 			pc.paintCell(cc);
@@ -124,25 +124,25 @@ Puzzles.fillomino.prototype = {
 			if(k.editmode){ return false;}
 
 			var cc = tc.getTCC();
-			if(cc==-1){ return;}
+			if(cc===null){ return;}
 			var flag = false;
 
-			if     (ca===k.KEYUP && bd.up(cc)!==-1){
+			if     (ca===k.KEYUP && bd.up(cc)!==null){
 				if(kc.isCTRL)  { bd.sQsB(bd.ub(cc),(bd.QsB(bd.ub(cc))===0?1:0)); tc.decTCY(2); flag = true;}
 				else if(kc.isZ){ bd.sQaB(bd.ub(cc),(bd.QaB(bd.ub(cc))===0?1:0)); flag = true;}
 				else if(kc.isX){ bd.sQaC(bd.up(cc),bd.getNum(cc)); tc.decTCY(2); flag = true;}
 			}
-			else if(ca===k.KEYDN && bd.dn(cc)!==-1){
+			else if(ca===k.KEYDN && bd.dn(cc)!==null){
 				if(kc.isCTRL)  { bd.sQsB(bd.db(cc),(bd.QsB(bd.db(cc))===0?1:0)); tc.incTCY(2); flag = true;}
 				else if(kc.isZ){ bd.sQaB(bd.db(cc),(bd.QaB(bd.db(cc))===0?1:0)); flag = true;}
 				else if(kc.isX){ bd.sQaC(bd.dn(cc),bd.getNum(cc)); tc.incTCY(2); flag = true;}
 			}
-			else if(ca===k.KEYLT && bd.lt(cc)!==-1){
+			else if(ca===k.KEYLT && bd.lt(cc)!==null){
 				if(kc.isCTRL)  { bd.sQsB(bd.lb(cc),(bd.QsB(bd.lb(cc))===0?1:0)); tc.decTCX(2); flag = true;}
 				else if(kc.isZ){ bd.sQaB(bd.lb(cc),(bd.QaB(bd.lb(cc))===0?1:0)); kc.tcMoved = true; flag = true;}
 				else if(kc.isX){ bd.sQaC(bd.lt(cc),bd.getNum(cc)); tc.decTCX(2); kc.tcMoved = true; flag = true;}
 			}
-			else if(ca===k.KEYRT && bd.rt(cc)!==-1){
+			else if(ca===k.KEYRT && bd.rt(cc)!==null){
 				if(kc.isCTRL)  { bd.sQsB(bd.rb(cc),(bd.QsB(bd.rb(cc))===0?1:0)); tc.incTCX(2); flag = true;}
 				else if(kc.isZ){ bd.sQaB(bd.rb(cc),(bd.QaB(bd.rb(cc))===0?1:0)); flag = true;}
 				else if(kc.isX){ bd.sQaC(bd.rt(cc),bd.getNum(cc)); tc.incTCX(2); flag = true;}
@@ -217,7 +217,7 @@ Puzzles.fillomino.prototype = {
 			// 境界線を自動入力
 			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				var bdflag = (cc1!==-1 && cc2!==-1 && bd.getNum(cc1)!==-1 && bd.getNum(cc2)!==-1 && bd.getNum(cc1)!==bd.getNum(cc2));
+				var bdflag = (cc1!==null && cc2!==null && bd.getNum(cc1)!==-1 && bd.getNum(cc2)!==-1 && bd.getNum(cc1)!==bd.getNum(cc2));
 				bd.sQaB(id,(bdflag?1:0));
 			}
 		};

@@ -67,15 +67,15 @@ Puzzles.kinkonkan.prototype = {
 		};
 		mv.mousemove = function(){
 			if     (k.editmode && this.btn.Left) this.inputborder();
-			else if(k.playmode && this.inputData!=-1) this.inputslash();
+			else if(k.playmode && this.inputData!==null) this.inputslash();
 		};
 		mv.inputslash = function(){
 			var cc = this.cellid();
-			if(cc==-1){ this.inputflash(); return;}
+			if(cc===null){ this.inputflash(); return;}
 
 			if     (this.inputData== 3){ bd.sQaC(cc,-1); bd.sQsC(cc,1);}
 			else if(this.inputData== 4){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
-			else if(this.inputData!=-1){ return;}
+			else if(this.inputData!==null){ return;}
 			else if(this.btn.Left){
 				if     (bd.QaC(cc)==1) { bd.sQaC(cc, 2); bd.sQsC(cc,0); this.inputData=2;}
 				else if(bd.QaC(cc)==2) { bd.sQaC(cc,-1); bd.sQsC(cc,1); this.inputData=3;}
@@ -94,9 +94,9 @@ Puzzles.kinkonkan.prototype = {
 		mv.inputflash = function(){
 			var pos = this.borderpos(0);
 			var ec = bd.exnum(pos.x,pos.y)
-			if(ec==-1 || this.mouseCell==ec || (this.inputData!=11 && this.inputData!=-1)){ return;}
+			if(ec===null || this.mouseCell===ec || (this.inputData!=11 && this.inputData!==null)){ return;}
 
-			if(this.inputData==-1 && bd.ErE(ec)==6){ this.inputData=12;}
+			if(this.inputData===null && bd.ErE(ec)==6){ this.inputData=12;}
 			else{
 				ans.errDisp=true;
 				bd.errclear();
@@ -112,12 +112,12 @@ Puzzles.kinkonkan.prototype = {
 			if(ec<0 || bd.excellmax<=ec){ return false;}
 			var ec0 = tc.getTEC();
 
-			if(ec!=-1 && ec!=ec0){
+			if(ec!==null && ec!=ec0){
 				tc.setTEC(ec);
 				pc.paintEXcell(ec);
 				pc.paintEXcell(ec0);
 			}
-			else if(ec!=-1 && ec==ec0){
+			else if(ec!==null && ec==ec0){
 				var flag = (bd.ErE(ec)!=6);
 				ans.errDisp=true;
 				bd.errclear();
@@ -273,7 +273,7 @@ Puzzles.kinkonkan.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
-				if(bd.cell[c].qans!=-1){
+				if(bd.cell[c].qans!==-1){
 					g.strokeStyle = this.cellcolor;
 					if(bd.cell[c].qans==1){
 						if(this.vnop(headers[0]+c,this.NONE)){
@@ -408,7 +408,7 @@ Puzzles.kinkonkan.prototype = {
 				if(ca=="."){ continue;}
 
 				var ec = bd.exnum(i%(k.qcols+2)*2-1,((i/(k.qcols+2))<<1)-1);
-				if(ec!==-1){
+				if(ec!==null){
 					var inp = ca.split(",");
 					if(inp[0]!=""){ bd.sDiE(ec, parseInt(inp[0]));}
 					if(inp[1]!=""){ bd.sQnE(ec, parseInt(inp[1]));}
@@ -416,7 +416,7 @@ Puzzles.kinkonkan.prototype = {
 
 				if(this.filever==1){
 					var c = bd.cnum(i%(k.qcols+2)*2-1,((i/(k.qcols+2))<<1)-1);
-					if(c!==-1){
+					if(c!==null){
 						if     (ca==="+"){ bd.sQsC(c, 1);}
 						else if(ca!=="."){ bd.sQaC(c, parseInt(ca));}
 					}
@@ -434,7 +434,7 @@ Puzzles.kinkonkan.prototype = {
 			for(var by=-1;by<bd.maxby;by+=2){
 				for(var bx=-1;bx<bd.maxbx;bx+=2){
 					var ec = bd.exnum(bx,by);
-					if(ec!==-1){
+					if(ec!==null){
 						var str1 = (bd.DiE(ec)== 0?"":bd.DiE(ec).toString());
 						var str2 = (bd.QnE(ec)==-1?"":bd.QnE(ec).toString());
 						this.datastr += ((str1=="" && str2=="")?(". "):(""+str1+","+str2+" "));
@@ -442,7 +442,7 @@ Puzzles.kinkonkan.prototype = {
 					}
 
 					var c = bd.cnum(bx,by);
-					if(c!==-1){
+					if(c!==null){
 						if     (bd.QaC(c)!==-1){ this.datastr += (bd.QaC(c).toString() + " ");}
 						else if(bd.QsC(c)=== 1){ this.datastr += "+ ";}
 						else                   { this.datastr += ". ";}
@@ -527,7 +527,7 @@ Puzzles.kinkonkan.prototype = {
 					else if(dir===3){ ldata[cc]=(!isNaN({5:1,6:1}[ldata[cc]])?6:3); dir=2;}
 					else if(dir===4){ ldata[cc]=(!isNaN({3:1,6:1}[ldata[cc]])?6:5); dir=1;}
 				}
-				else if(cc!==-1){ ldata[cc]=6; continue;}
+				else if(cc!==null){ ldata[cc]=6; continue;}
 				else{ break;}
 
 				ccnt++;

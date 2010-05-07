@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ホタルビーム版 firefly.js v3.3.0
+// パズル固有スクリプト部 ホタルビーム版 firefly.js v3.3.1
 //
 Puzzles.firefly = function(){ };
 Puzzles.firefly.prototype = {
@@ -111,7 +111,7 @@ Puzzles.firefly.prototype = {
 			for(var i=0;i<clist.length;i++){ this.drawFirefly1(clist[i]);}
 		};
 		pc.drawFirefly1 = function(c){
-			if(c===-1){ return;}
+			if(c===null){ return;}
 
 			var rsize  = this.cw*0.40;
 			var rsize3 = this.cw*0.10;

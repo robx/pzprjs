@@ -117,7 +117,7 @@ Puzzles.mejilink.prototype = {
 				if(bd.border[id].qans===1){ this.setLineColor(id);}
 				else{
 					var cc2=bd.border[id].cellcc[1];
-					g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.borderQuescolor : this.errbcolor1);
+					g.fillStyle = ((cc2===null || bd.cell[cc2].error===0) ? this.borderQuescolor : this.errbcolor1);
 				}
 				return true;
 			}
@@ -239,7 +239,7 @@ Puzzles.mejilink.prototype = {
 				if(tarea.id[cc]!=0){ continue;}
 				tarea.max++;
 				tarea[tarea.max] = {clist:[]};
-				area.sr0(cc,tarea,function(id){ return (id==-1 || bd.QuB(id)!=1);});
+				area.sr0(cc,tarea,function(id){ return (id===null || bd.QuB(id)!=1);});
 
 				tarea.room[tarea.max] = {idlist:tarea[tarea.max].clist};
 			}
@@ -250,14 +250,14 @@ Puzzles.mejilink.prototype = {
 				if(bd.QuB(id)==1 && id>=
 				bd.bdinside){
 					var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-					if(cc1!=-1){ tcount[tarea.id[cc1]] -= numerous_value;}
-					if(cc2!=-1){ tcount[tarea.id[cc2]] -= numerous_value;}
+					if(cc1!==null){ tcount[tarea.id[cc1]] -= numerous_value;}
+					if(cc2!==null){ tcount[tarea.id[cc2]] -= numerous_value;}
 					continue;
 				}
 				else if(bd.QuB(id)==1 || bd.QaB(id)==1){ continue;}
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(cc1!=-1){ tcount[tarea.id[cc1]]++;}
-				if(cc2!=-1){ tcount[tarea.id[cc2]]++;}
+				if(cc1!==null){ tcount[tarea.id[cc1]]++;}
+				if(cc2!==null){ tcount[tarea.id[cc2]]++;}
 			}
 			for(var r=1;r<=tarea.max;r++){
 				if(tcount[r]>=0 && tcount[r]!=tarea.room[r].idlist.length){

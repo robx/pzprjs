@@ -64,16 +64,16 @@ Puzzles.minarism.prototype = {
 
 		mv.inputmark1 = function(){
 			var pos = this.borderpos(0);
-			if(bd.cnum(pos.x,pos.y)==-1){ return;}
+			if(bd.cnum(pos.x,pos.y)===null){ return;}
 
-			var id=-1;
+			var id=null;
 			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1); this.inputData=1; }
 			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1); this.inputData=2; }
 			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  ); this.inputData=1; }
 			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  ); this.inputData=2; }
 
 			this.mouseCell = pos;
-			if(id==-1){ return;}
+			if(id===null){ return;}
 
 			bd.sQuB(id,(this.inputData!=bd.QuB(id)?this.inputData:0));
 			pc.paintBorder(id);
@@ -89,7 +89,7 @@ Puzzles.minarism.prototype = {
 				pc.paintPos(tcp);
 				pc.paintPos(pos);
 			}
-			else if(id!=-1){
+			else if(id!==null){
 				this.inputbqnum(id);
 				pc.paintBorder(id);
 			}
@@ -125,7 +125,7 @@ Puzzles.minarism.prototype = {
 		};
 		kc.key_inputmark = function(ca){
 			var id = tc.getTBC();
-			if(id==-1){ return false;}
+			if(id===null){ return false;}
 
 			if     (ca=='q'){ bd.sQuB(id,(bd.QuB(id)!=1?1:0)); bd.sQnB(id,-1); }
 			else if(ca=='w'){ bd.sQuB(id,(bd.QuB(id)!=2?2:0)); bd.sQnB(id,-1); }

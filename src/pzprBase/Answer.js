@@ -90,10 +90,10 @@ AnsCheck.prototype = {
 	checkdir4Cell : function(cc, func){
 		if(cc<0 || cc>=bd.cellmax){ return 0;}
 		var cnt=0, c;
-		c=bd.up(cc); if(c!==-1 && func(c)){ cnt++;}
-		c=bd.dn(cc); if(c!==-1 && func(c)){ cnt++;}
-		c=bd.lt(cc); if(c!==-1 && func(c)){ cnt++;}
-		c=bd.rt(cc); if(c!==-1 && func(c)){ cnt++;}
+		c=bd.up(cc); if(c!==null && func(c)){ cnt++;}
+		c=bd.dn(cc); if(c!==null && func(c)){ cnt++;}
+		c=bd.lt(cc); if(c!==null && func(c)){ cnt++;}
+		c=bd.rt(cc); if(c!==null && func(c)){ cnt++;}
 		return cnt;
 	},
 
@@ -103,12 +103,12 @@ AnsCheck.prototype = {
 		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isLine(id)){ continue;}
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if(cc1!=-1 && cc2!=-1 && cinfo.id[cc1]==areaid && cinfo.id[cc1]==cinfo.id[cc2]){ blist.push(id);}
+			if(cinfo.id[cc1]===areaid && cinfo.id[cc1]===cinfo.id[cc2]){ blist.push(id);}
 		}
 		bd.sErB(blist,val);
 
 		var clist = [];
-		for(var c=0;c<bd.cellmax;c++){ if(cinfo.id[c]==areaid && bd.QnC(c)!=-1){ clist.push(c);} }
+		for(var c=0;c<bd.cellmax;c++){ if(cinfo.id[c]===areaid && bd.QnC(c)!==-1){ clist.push(c);} }
 		bd.sErC(clist,4);
 	},
 
@@ -256,15 +256,15 @@ AnsCheck.prototype = {
 
 	checkenableLineParts : function(val){
 		var result = true;
-		var func = function(i){
-			return ((bd.ub(i)!=-1 && bd.isLine(bd.ub(i)) && bd.isnoLPup(i)) ||
-					(bd.db(i)!=-1 && bd.isLine(bd.db(i)) && bd.isnoLPdown(i)) ||
-					(bd.lb(i)!=-1 && bd.isLine(bd.lb(i)) && bd.isnoLPleft(i)) ||
-					(bd.rb(i)!=-1 && bd.isLine(bd.rb(i)) && bd.isnoLPright(i)) ); };
-		for(var i=0;i<bd.cellmax;i++){
-			if(func(i)){
+		for(var c=0;c<bd.cellmax;c++){
+			var iserror = false, id=null;
+			id=bd.ub(c); if(iserror || (id!==null && bd.isLine(id) && bd.isnoLPup(c)))   { iserror=true;}
+			id=bd.db(c); if(iserror || (id!==null && bd.isLine(id) && bd.isnoLPdown(c))) { iserror=true;}
+			id=bd.lb(c); if(iserror || (id!==null && bd.isLine(id) && bd.isnoLPleft(c))) { iserror=true;}
+			id=bd.rb(c); if(iserror || (id!==null && bd.isLine(id) && bd.isnoLPright(c))){ iserror=true;}
+			if(iserror){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([i],1);
+				bd.sErC([c],1);
 				result = false;
 			}
 		}
@@ -294,7 +294,7 @@ AnsCheck.prototype = {
 			var d = this.getSizeOfClist(cinfo.room[id].idlist,func);
 			var n = bd.QnC(k.roomNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0])
 										: this.getQnumCellOfClist(cinfo.room[id].idlist));
-			if( !evalfunc(d.cols, d.rows, d.cnt, n) ){
+			if( !evalfunc(d.cols, d.rows, d.cnt, (n!==(void 0)?n:-1)) ){
 				if(this.inAutoCheck){ return false;}
 				if(this.performAsLine){ if(result){ bd.sErBAll(2);} this.setErrLareaById(cinfo,id,1);}
 				else{ bd.sErC(cinfo.room[id].idlist,(k.puzzleid!="tateyoko"?1:4));}
@@ -311,18 +311,18 @@ AnsCheck.prototype = {
 	checkDoubleNumber    : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (a< 2);}          );},
 	checkTripleNumber    : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (a< 3);}          );},
 
-	checkBlackCellCount  : function(cinfo)          { return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return (n<0 || n==a);} );},
-	checkBlackCellInArea : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return evalfunc(a);}     );},
-	checkAreaRect        : function(cinfo)          { return this.checkAllArea(cinfo, f_true,     function(w,h,a,n){ return (w*h==a)});},
+	checkBlackCellCount  : function(cinfo)          { return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return (n<0 || n===a);});},
+	checkBlackCellInArea : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return evalfunc(a);}   );},
+	checkAreaRect        : function(cinfo)          { return this.checkAllArea(cinfo, f_true,     function(w,h,a,n){ return (w*h===a)}      );},
 
 	checkLinesInArea     : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, function(c){ return line.lcnt[c]>0;}, evalfunc);},
-	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkAllArea(cinfo, function(c){ return getvalue(c)!=-1;}, function(w,h,a,n){ return (a!=0);});},
+	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkAllArea(cinfo, function(c){ return getvalue(c)!==-1;}, function(w,h,a,n){ return (a!=0);});},
 
 	getQnumCellOfClist : function(clist){
 		for(var i=0,len=clist.length;i<len;i++){
-			if(bd.QnC(clist[i])!=-1){ return clist[i];}
+			if(bd.QnC(clist[i])!==-1){ return clist[i];}
 		}
-		return -1;
+		return null;
 	},
 	getSizeOfClist : function(clist, func){
 		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1, cols:0, rows:0, cnt:0 };
@@ -355,7 +355,7 @@ AnsCheck.prototype = {
 		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isBorder(id)){ continue;}
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if(cc1==-1 || cc2==-1){ continue;}
+			if(cc1===null || cc2===null){ continue;}
 			var r1=rinfo.id[cc1], r2=rinfo.id[cc2];
 			try{
 				if(r1<r2){ adjs[r1][r2]++;}
@@ -382,7 +382,7 @@ AnsCheck.prototype = {
 		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isBorder(id)){ continue;}
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if(cc1!=-1 && cc2!=-1 && func(cc1, cc2)){
+			if(cc1!==null && cc2!==null && func(cc1, cc2)){
 				if(!flag){ bd.sErC([cc1,cc2],1);}
 				else{ bd.sErC(area.room[area.room.id[cc1]].clist,1); bd.sErC(area.room[area.room.id[cc2]].clist,1); }
 				return false;
@@ -395,9 +395,9 @@ AnsCheck.prototype = {
 		var result = true;
 		for(var id=1;id<=area.room.max;id++){
 			var data = {max:0,id:[]};
-			for(var c=0;c<bd.cellmax;c++){ data.id[c] = ((area.room.id[c]==id && bd.isBlack(c))?0:-1);}
+			for(var c=0;c<bd.cellmax;c++){ data.id[c] = ((area.room.id[c]==id && bd.isBlack(c))?0:null);}
 			for(var c=0;c<bd.cellmax;c++){
-				if(data.id[c]!=0){ continue;}
+				if(data.id[c]!==0){ continue;}
 				data.max++;
 				data[data.max] = {clist:[]};
 				area.sc0(c, data);
@@ -416,8 +416,8 @@ AnsCheck.prototype = {
 		var d = [];
 		for(var i=1;i<=rinfo.max;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cellmax;c++){
-			if(rinfo.id[c]==-1 || getvalue(c)==-1){ continue;}
-			if(d[rinfo.id[c]]==-1 && getvalue(c)!=-1){ d[rinfo.id[c]] = getvalue(c);}
+			if(rinfo.id[c]===null || getvalue(c)===-1){ continue;}
+			if(d[rinfo.id[c]]===-1 && getvalue(c)!==-1){ d[rinfo.id[c]] = getvalue(c);}
 			else if(d[rinfo.id[c]]!=getvalue(c)){
 				if(this.inAutoCheck){ return false;}
 
@@ -425,7 +425,7 @@ AnsCheck.prototype = {
 				else{ bd.sErC(rinfo.room[rinfo.id[c]].idlist,1);}
 				if(k.puzzleid=="kaero"){
 					for(var cc=0;cc<bd.cellmax;cc++){
-						if(rinfo.id[c]==rinfo.id[cc] && this.getBeforeCell(cc)!=-1 && rinfo.id[c]!=rinfo.id[this.getBeforeCell(cc)]){
+						if(rinfo.id[c]==rinfo.id[cc] && this.getBeforeCell(cc)!==null && rinfo.id[c]!=rinfo.id[this.getBeforeCell(cc)]){
 							bd.sErC([this.getBeforeCell(cc)],4);
 						}
 					}
@@ -436,14 +436,13 @@ AnsCheck.prototype = {
 		return result;
 	},
 	checkObjectRoom : function(rinfo, getvalue){
-		var d = [];
-		var dmax = 0;
+		var d=[], dmax=0;
 		for(var c=0;c<bd.cellmax;c++){ if(dmax<getvalue(c)){ dmax=getvalue(c);} }
 		for(var i=0;i<=dmax;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cellmax;c++){
-			if(getvalue(c)==-1){ continue;}
-			if(d[getvalue(c)]==-1){ d[getvalue(c)] = rinfo.id[c];}
-			else if(d[getvalue(c)]!=rinfo.id[c]){
+			if(getvalue(c)===-1){ continue;}
+			if(d[getvalue(c)]===-1){ d[getvalue(c)] = rinfo.id[c];}
+			else if(d[getvalue(c)]!==rinfo.id[c]){
 				var clist = [];
 				for(var cc=0;cc<bd.cellmax;cc++){
 					if(k.puzzleid=="kaero"){ if(getvalue(c)==bd.QnC(cc)){ clist.push(cc);}}

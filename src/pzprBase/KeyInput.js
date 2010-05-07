@@ -32,7 +32,7 @@ KeyEvent.prototype = {
 		this.inREDO  = false;
 		this.tcMoved = false;
 		this.keyPressed = false;
-		this.prev = -1;
+		this.prev = null;
 		this.ca = '';
 		if(this.isZ){ this.isZ = false;}
 		if(this.isX){ this.isX = false;}
@@ -274,17 +274,17 @@ KeyEvent.prototype = {
 	inputnumber51 : function(ca,max_obj){
 		if(this.chtarget(ca)){ return;}
 
-		var cc = tc.getTCC(), ex = -1;
-		if(cc==-1){ ex = tc.getTEC();}
+		var cc = tc.getTCC(), ex = null;
+		if(cc===null){ ex = tc.getTEC();}
 		var target = this.detectTarget(cc,ex);
-		if(target==-1 || (cc!=-1 && bd.QuC(cc)==51)){
-			if(ca=='q' && cc!=-1){
-				mv.set51cell(cc,(bd.QuC(cc)!=51));
+		if(target===0 || (cc!==null && bd.QuC(cc)===51)){
+			if(ca==='q' && cc!==null){
+				mv.set51cell(cc,(bd.QuC(cc)!==51));
 				pc.paintPos(tc.getTCP());
 				return;
 			}
 		}
-		if(target==-1){ return;}
+		if(target==0){ return;}
 
 		var max = max_obj[target];
 
@@ -303,16 +303,16 @@ KeyEvent.prototype = {
 		else{ return;}
 
 		this.prev = cc;
-		if(cc!=-1){ pc.paintCell(tc.getTCC());}
-		else      { pc.paintPos (tc.getTCP());}
+		if(cc!=null){ pc.paintCell(tc.getTCC());}
+		else        { pc.paintPos (tc.getTCP());}
 	},
 	setnum51 : function(cc,ex,target,val){
-		if(cc!=-1){ (target==2 ? bd.sQnC(cc,val) : bd.sDiC(cc,val));}
-		else      { (target==2 ? bd.sQnE(ex,val) : bd.sDiE(ex,val));}
+		if(cc!=null){ (target==2 ? bd.sQnC(cc,val) : bd.sDiC(cc,val));}
+		else        { (target==2 ? bd.sQnE(ex,val) : bd.sDiE(ex,val));}
 	},
 	getnum51 : function(cc,ex,target){
-		if(cc!=-1){ return (target==2 ? bd.QnC(cc) : bd.DiC(cc));}
-		else      { return (target==2 ? bd.QnE(ex) : bd.DiE(ex));}
+		if(cc!=null){ return (target==2 ? bd.QnC(cc) : bd.DiC(cc));}
+		else        { return (target==2 ? bd.QnE(ex) : bd.DiE(ex));}
 	},
 
 	//---------------------------------------------------------------------------
@@ -327,17 +327,17 @@ KeyEvent.prototype = {
 		return true;
 	},
 	detectTarget : function(cc,ex){
-		if((cc==-1 && ex==-1) || (cc!=-1 && bd.QuC(cc)!=51)){ return -1;}
-		if(cc==bd.cellmax-1 || ex==k.qcols+k.qrows){ return -1;}
-		if(cc!=-1){
-			if	  ((bd.rt(cc)==-1 || bd.QuC(bd.rt(cc))==51) &&
-				   (bd.dn(cc)==-1 || bd.QuC(bd.dn(cc))==51)){ return -1;}
-			else if(bd.rt(cc)==-1 || bd.QuC(bd.rt(cc))==51){ return 4;}
-			else if(bd.dn(cc)==-1 || bd.QuC(bd.dn(cc))==51){ return 2;}
+		if((cc===null && ex===null) || (cc!==null && bd.QuC(cc)!==51)){ return 0;}
+		if(cc===bd.cellmax-1 || ex===k.qcols+k.qrows){ return 0;}
+		if(cc!==null){
+			if	  ((bd.rt(cc)===null || bd.QuC(bd.rt(cc))===51) &&
+				   (bd.dn(cc)===null || bd.QuC(bd.dn(cc))===51)){ return 0;}
+			else if(bd.rt(cc)===null || bd.QuC(bd.rt(cc))===51){ return 4;}
+			else if(bd.dn(cc)===null || bd.QuC(bd.dn(cc))===51){ return 2;}
 		}
-		else if(ex!=-1){
+		else if(ex!==null){
 			if	  ((bd.excell[ex].by===-1 && bd.QuC(bd.cnum(bd.excell[ex].bx,1))===51) ||
-				   (bd.excell[ex].bx===-1 && bd.QuC(bd.cnum(1,bd.excell[ex].by))===51)){ return -1;}
+				   (bd.excell[ex].bx===-1 && bd.QuC(bd.cnum(1,bd.excell[ex].by))===51)){ return 0;}
 			else if(bd.excell[ex].by===-1){ return 4;}
 			else if(bd.excell[ex].bx===-1){ return 2;}
 		}
@@ -499,7 +499,7 @@ KeyPopup.prototype = {
 			if(this.ctl[mode].target==k.CELL){
 				var cc0 = tc.getTCC();
 				var cc = mv.cellid();
-				if(cc==-1){ return;}
+				if(cc===null){ return;}
 				tc.setTCC(cc);
 				pc.paintCell(cc);
 				pc.paintCell(cc0);
@@ -507,7 +507,7 @@ KeyPopup.prototype = {
 			else if(this.ctl[mode].target==k.CROSS){
 				var cc0 = tc.getTXC();
 				var cc = mv.crossid();
-				if(cc==-1){ return;}
+				if(cc===null){ return;}
 				tc.setTXC(cc);
 				pc.paintCross(cc);
 				pc.paintCross(cc0);
@@ -634,22 +634,22 @@ TCell.prototype = {
 	},
 	getTCC : function(){ return bd.cnum(this.cursorx, this.cursory);},
 	setTCC : function(id){
-		if(id<0 || bd.cellmax<=id){ return;}
+		if(!bd.cell[id]){ return;}
 		this.cursorx = bd.cell[id].bx; this.cursory = bd.cell[id].by;
 	},
 	getTXC : function(){ return bd.xnum(this.cursorx, this.cursory);},
 	setTXC : function(id){
-		if(!k.iscross || id<0 || bd.crossmax<=id){ return;}
+		if(!bd.cross[id]){ return;}
 		this.cursorx = bd.cross[id].bx; this.cursory = bd.cross[id].by;
 	},
 	getTBC : function(){ return bd.bnum(this.cursorx, this.cursory);},
 	setTBC : function(id){
-		if(!k.isborder || id<0 || bd.bdmax<=id){ return;}
+		if(!bd.border[id]){ return;}
 		this.cursorx = bd.border[id].bx; this.cursory = bd.border[id].by;
 	},
 	getTEC : function(){ return bd.exnum(this.cursorx, this.cursory);},
 	setTEC : function(id){
-		if(!k.isexcell || id<0 || bd.excellmax<=id){ return;}
+		if(!bd.excell[id]){ return;}
 		this.cursorx = bd.excell[id].bx; this.cursory = bd.excell[id].by;
 	}
 };

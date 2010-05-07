@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 遠い誓い版 toichika.js v3.3.0
+// パズル固有スクリプト部 遠い誓い版 toichika.js v3.3.1
 //
 Puzzles.toichika = function(){ };
 Puzzles.toichika.prototype = {
@@ -88,7 +88,7 @@ Puzzles.toichika.prototype = {
 
 			var inp = 0;
 			var cc = bd.cnum(this.mouseCell.x, this.mouseCell.y);
-			if(cc!=-1){
+			if(cc!==null){
 				if     (pos.y-this.mouseCell.y==-2){ inp=k.UP;}
 				else if(pos.y-this.mouseCell.y== 2){ inp=k.DN;}
 				else if(pos.x-this.mouseCell.x==-2){ inp=k.LT;}
@@ -106,9 +106,9 @@ Puzzles.toichika.prototype = {
 		};
 		mv.inputdirec_mouseup = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell){ return;}
+			if(cc===null || cc===this.mouseCell){ return;}
 
-			if(cc==tc.getTCC()){
+			if(cc===tc.getTCC()){
 				var nex = (this.btn.Left ? [k.UP, k.RT, k.LT, -1, k.DN]
 										 : [k.LT, -1, k.RT, k.DN, k.UP]);
 				if     (k.editmode)    { bd.setCell(cc,nex[bd.DiC(cc)]);}
@@ -127,9 +127,9 @@ Puzzles.toichika.prototype = {
 
 		mv.inputDot = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell || bd.DiC(cc)!==0){ return;}
+			if(cc===null || cc===this.mouseCell || bd.DiC(cc)!==0){ return;}
 
-			if(this.inputData===-1){ this.inputData=(bd.QsC(cc)===1?0:1);}
+			if(this.inputData===null){ this.inputData=(bd.QsC(cc)===1?0:1);}
 			
 			var cc0 = tc.getTCC(); //tc.setTCC(cc);
 			bd.sQaC(cc,-1);
@@ -179,7 +179,7 @@ Puzzles.toichika.prototype = {
 		};
 
 		bd.setCell = function(cc,val){
-			if(cc===-1){ return;}
+			if(cc===null){ return;}
 
 			if(val>0){
 				// キー・マウス入力しか考えていないので、
@@ -363,21 +363,21 @@ Puzzles.toichika.prototype = {
 			return true;
 		};
 
-		ans.isObject = function(c){ return (c!==-1 && (bd.cell[c].direc!==0 || bd.cell[c].qans!==-1));};
+		ans.isObject = function(c){ return (!!bd.cell[c] && (bd.cell[c].direc!==0 || bd.cell[c].qans!==-1));};
 
 		ans.getPairedArrows = function(){
-			var ainfo=[], check=[];
-			for(var c=0;c<bd.cellmax;c++){ check[c]=(ans.isObject(c)?0:-1);}
+			var ainfo=[], isarrow=[];
+			for(var c=0;c<bd.cellmax;c++){ isarrow[c]=ans.isObject(c);}
 			for(var c=0;c<bd.cellmax;c++){
-				if(check[c]!==0){ continue;}
+				if(!isarrow[c]){ continue;}
 				var bx=bd.cell[c].bx, by=bd.cell[c].by, tc=c,
 					dir=(bd.cell[c].direc!==0 ? bd.cell[c].direc : bd.cell[c].qans);
 
 				while(1){
 					switch(dir){ case k.UP: by-=2; break; case k.DN: by+=2; break; case k.LT: bx-=2; break; case k.RT: bx+=2; break;}
 					tc = bd.cnum(bx,by);
-					if(tc===-1){ ainfo.push([c]); break;}
-					if(tc!==-1 && check[tc]!==-1){
+					if(tc===null){ ainfo.push([c]); break;}
+					if(!!isarrow[tc]){
 						var tdir = (bd.cell[tc].direc!==0 ? bd.cell[tc].direc : bd.cell[tc].qans);
 						if(tdir!==[0,k.DN,k.UP,k.RT,k.LT][dir]){ ainfo.push([c]);}
 						else{ ainfo.push([c,tc]);}
@@ -408,7 +408,7 @@ Puzzles.toichika.prototype = {
 			for(var id=0;id<bd.bdmax;id++){
 				if(!bd.isBorder(id)){ continue;}
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(cc1==-1 || cc2==-1){ continue;}
+				if(cc1===null || cc2===null){ continue;}
 				var r1=rinfo.id[cc1], r2=rinfo.id[cc2];
 				try{
 					if(r1<r2){ adjs[r1][r2]++;}

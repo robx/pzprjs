@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.3.0
+// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.3.1
 //
 Puzzles.shakashaka = function(){ };
 Puzzles.shakashaka.prototype = {
@@ -65,7 +65,7 @@ Puzzles.shakashaka.prototype = {
 			}
 		};
 		mv.mousemove = function(){
-			if(k.playmode && pp.getVal('use')===2 && this.mouseCell!=-1){
+			if(k.playmode && pp.getVal('use')===2 && this.mouseCell!==null){
 				this.inputTriangle(1);
 			}
 		};
@@ -73,7 +73,7 @@ Puzzles.shakashaka.prototype = {
 			var cc;
 			if(pp.getVal('use')!==2 || use2step==0){
 				cc = this.cellid();
-				if(cc==-1 || bd.QnC(cc)!=-1){ this.mousereset(); return;}
+				if(cc===null || bd.QnC(cc)!==-1){ this.mousereset(); return;}
 			}
 
 			var use = pp.getVal('use');
@@ -90,7 +90,7 @@ Puzzles.shakashaka.prototype = {
 						else if  (dy>k.cheight/2){ this.inputData = 3;}
 					}
 
-					bd.sQaC(cc, (bd.QaC(cc)!=this.inputData?this.inputData:-1));
+					bd.sQaC(cc, (bd.QaC(cc)!==this.inputData?this.inputData:-1));
 					bd.sQsC(cc, 0);
 				}
 				else if(this.btn.Right){
@@ -117,8 +117,8 @@ Puzzles.shakashaka.prototype = {
 					else if(dx>= moves && dy>= moves){ this.inputData=3;}
 					else if(dx>= moves && dy<=-moves){ this.inputData=4;}
 
-					if(this.inputData!=-1){
-						bd.sQaC(cc, (bd.QaC(cc)!=this.inputData)?this.inputData:-1);
+					if(this.inputData!==null){
+						bd.sQaC(cc, (bd.QaC(cc)!==this.inputData)?this.inputData:-1);
 						bd.sQsC(cc, 0);
 						this.mousereset();
 					}
@@ -278,10 +278,10 @@ Puzzles.shakashaka.prototype = {
 			for(var i=0;i<winfo.room[id].idlist.length;i++){
 				var c = winfo.room[id].idlist[i];
 				var a = bd.QaC(c);
-				if( ((a==4||a==5)^(bd.up(c)==-1||winfo.id[bd.up(c)]!=id)) ||
-					((a==2||a==3)^(bd.dn(c)==-1||winfo.id[bd.dn(c)]!=id)) ||
-					((a==2||a==5)^(bd.lt(c)==-1||winfo.id[bd.lt(c)]!=id)) ||
-					((a==3||a==4)^(bd.rt(c)==-1||winfo.id[bd.rt(c)]!=id)) )
+				if( ((a==4||a==5)^(bd.up(c)===null||winfo.id[bd.up(c)]!=id)) ||
+					((a==2||a==3)^(bd.dn(c)===null||winfo.id[bd.dn(c)]!=id)) ||
+					((a==2||a==5)^(bd.lt(c)===null||winfo.id[bd.lt(c)]!=id)) ||
+					((a==3||a==4)^(bd.rt(c)===null||winfo.id[bd.rt(c)]!=id)) )
 				{
 					return false;
 				}
@@ -291,24 +291,23 @@ Puzzles.shakashaka.prototype = {
 
 		ans.searchWarea_slope = function(){
 			var winfo = new AreaInfo();
-			for(var c=0;c<bd.cellmax;c++){ winfo.id[c]=(bd.QnC(c)==-1?0:-1);}
+			for(var c=0;c<bd.cellmax;c++){ winfo.id[c]=(bd.QnC(c)===-1?0:null);}
 			for(var c=0;c<bd.cellmax;c++){
-				if(winfo.id[c]!=0){ continue;}
+				if(winfo.id[c]!==0){ continue;}
 				winfo.max++;
 				winfo.room[winfo.max] = {idlist:[]};
 				this.sw0(winfo, c, winfo.max);
 			}
 			return winfo;
 		};
-		ans.sw0 = function(winfo,i,areaid){
-			winfo.id[i] = areaid;
-			winfo.room[areaid].idlist.push(i);
-			var a = bd.QaC(i), b1 = bd.QaC(bd.up(i)), b2 = bd.QaC(bd.dn(i)), b3 = bd.QaC(bd.lt(i)), b4 = bd.QaC(bd.rt(i));
-			var cc;
-			cc=bd.up(i); if( cc!=-1 && winfo.id[cc]==0 && (a!=4 && a!=5) && (b1!=2 && b1!=3) ){ this.sw0(winfo, cc, areaid);}
-			cc=bd.dn(i); if( cc!=-1 && winfo.id[cc]==0 && (a!=2 && a!=3) && (b2!=4 && b2!=5) ){ this.sw0(winfo, cc, areaid);}
-			cc=bd.lt(i); if( cc!=-1 && winfo.id[cc]==0 && (a!=2 && a!=5) && (b3!=3 && b3!=4) ){ this.sw0(winfo, cc, areaid);}
-			cc=bd.rt(i); if( cc!=-1 && winfo.id[cc]==0 && (a!=3 && a!=4) && (b4!=2 && b4!=5) ){ this.sw0(winfo, cc, areaid);}
+		ans.sw0 = function(winfo,c,areaid){
+			winfo.id[c] = areaid;
+			winfo.room[areaid].idlist.push(c);
+			var a=bd.QaC(c), b, cc;
+			cc=bd.up(c); b=bd.QaC(cc); if( cc!==null && winfo.id[cc]===0 && (a!==4 && a!==5) && (b!==2 && b!==3) ){ this.sw0(winfo, cc, areaid);}
+			cc=bd.dn(c); b=bd.QaC(cc); if( cc!==null && winfo.id[cc]===0 && (a!==2 && a!==3) && (b!==4 && b!==5) ){ this.sw0(winfo, cc, areaid);}
+			cc=bd.lt(c); b=bd.QaC(cc); if( cc!==null && winfo.id[cc]===0 && (a!==2 && a!==5) && (b!==3 && b!==4) ){ this.sw0(winfo, cc, areaid);}
+			cc=bd.rt(c); b=bd.QaC(cc); if( cc!==null && winfo.id[cc]===0 && (a!==3 && a!==4) && (b!==2 && b!==5) ){ this.sw0(winfo, cc, areaid);}
 		};
 	}
 };

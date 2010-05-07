@@ -87,8 +87,8 @@ Puzzles.tentaisho.prototype = {
 
 		mv.inputBGcolor1 = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell){ return;}
-			if(this.inputData==-1){ this.inputData=(bd.QsC(cc)==0)?3:0;}
+			if(cc===null || cc==this.mouseCell){ return;}
+			if(this.inputData===null){ this.inputData=(bd.QsC(cc)==0)?3:0;}
 			bd.sQsC(cc, this.inputData);
 			this.mouseCell = cc; 
 			pc.paintCell(cc);
@@ -98,7 +98,7 @@ Puzzles.tentaisho.prototype = {
 
 			var pos = this.borderpos(0.34);
 			var id = bd.snum(pos.x, pos.y);
-			if(id==-1 || bd.getStar(id)==0){ return;}
+			if(id===null || bd.getStar(id)==0){ return;}
 
 			var cc;
 			var bx=id%(2*k.qcols-1)+1;
@@ -125,16 +125,16 @@ Puzzles.tentaisho.prototype = {
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = bd.bnum(pos.x, pos.y);
-			if(id==-1 && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
+			if(id===null && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
 
-			if(this.mouseCell!=-1 && id!=-1){
+			if(this.mouseCell!==null && id!==null){
 				if((!(pos.x&1) && this.mouseCell.x==pos.x && Math.abs(this.mouseCell.y-pos.y)==1) ||
 				   (!(pos.y&1) && this.mouseCell.y==pos.y && Math.abs(this.mouseCell.x-pos.x)==1) )
 				{
-					this.mouseCell=-1
+					this.mouseCell=null
 
-					if(this.inputData==-1){ this.inputData=(bd.QaB(id)==0?1:0);}
-					if(this.inputData!=-1){
+					if(this.inputData===null){ this.inputData=(bd.QaB(id)==0?1:0);}
+					if(this.inputData!==null){
 						bd.sQaB(id, this.inputData);
 						pc.paintBorder(id);
 					}
@@ -147,9 +147,9 @@ Puzzles.tentaisho.prototype = {
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = bd.snum(pos.x, pos.y);
-			if(id==-1 && this.mouseCell.x){ id = bd.snum(this.mouseCell.x, this.mouseCell.y);}
+			if(id===null && this.mouseCell.x){ id = bd.snum(this.mouseCell.x, this.mouseCell.y);}
 
-			if(id!=-1){
+			if(id!==null){
 				if(this.btn.Left)      { bd.setStar(id, {0:1,1:2,2:0}[bd.getStar(id)]);}
 				else if(this.btn.Right){ bd.setStar(id, {0:2,1:0,2:1}[bd.getStar(id)]);}
 			}
@@ -202,7 +202,7 @@ Puzzles.tentaisho.prototype = {
 		};
 
 		bd.snum = function(sx,sy){
-			if(sx<=bd.minbx || bd.maxbx<=sx || sy<=bd.minby || bd.maxby<=sy){ return -1;}
+			if(sx<=bd.minbx || bd.maxbx<=sx || sy<=bd.minby || bd.maxby<=sy){ return null;}
 			return ((sx-1)+(sy-1)*(2*k.qcols-1));
 		};
 		bd.getStar = function(id){
@@ -487,13 +487,13 @@ Puzzles.tentaisho.prototype = {
 				if(bd.getStar(bd.snum(bx,by))>0){
 					cnt++; ret=bd.snum(bx,by);
 				}
-				if(bd.db(c)!=-1 && bd.QaB(bd.db(c))==0 && bd.getStar(bd.snum(bx,by+1))>0){
+				if(bd.db(c)!==null && bd.QaB(bd.db(c))==0 && bd.getStar(bd.snum(bx,by+1))>0){
 					cnt++; ret=bd.snum(bx,by+1);
 				}
-				if(bd.rb(c)!=-1 && bd.QaB(bd.rb(c))==0 && bd.getStar(bd.snum(bx+1,by))>0){
+				if(bd.rb(c)!==null && bd.QaB(bd.rb(c))==0 && bd.getStar(bd.snum(bx+1,by))>0){
 					cnt++; ret=bd.snum(bx+1,by);
 				}
-				if(bd.xnum(bx+1,by+1)!=-1 && area.lcntCross(bd.xnum(bx+1,by+1))==0 && bd.getStar(bd.snum(bx+1,by+1))>0){
+				if(bd.xnum(bx+1,by+1)!==null && area.lcntCross(bd.xnum(bx+1,by+1))==0 && bd.getStar(bd.snum(bx+1,by+1))>0){
 					cnt++; ret=bd.snum(bx+1,by+1);
 				}
 
@@ -511,7 +511,7 @@ Puzzles.tentaisho.prototype = {
 				for(var i=0;i<rinfo.room[r].idlist.length;i++){
 					var c=rinfo.room[r].idlist[i];
 					var ccopy = bd.cnum(sx*2-bd.cell[c].bx, sy*2-bd.cell[c].by);
-					if(ccopy==-1||rinfo.id[c]!=rinfo.id[ccopy]){
+					if(ccopy===null || rinfo.id[c]!=rinfo.id[ccopy]){
 						if(this.inAutoCheck){ return false;}
 						bd.sErC(rinfo.room[r].idlist,1); result = false;
 					}

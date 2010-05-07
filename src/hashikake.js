@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.3.0
+// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.3.1
 //
 Puzzles.hashikake = function(){ };
 Puzzles.hashikake.prototype = {
@@ -77,24 +77,24 @@ Puzzles.hashikake.prototype = {
 			var pos = this.borderpos(0);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
-			var id = -1;
+			var id = null;
 			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1);}
 			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1);}
 			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  );}
 			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  );}
 
 			var include = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
-			if(this.mouseCell!=-1 && id!=-1){
+			if(this.mouseCell!==null && id!==null){
 				var idlist = this.getidlist(id);
-				if(this.firstPos.x==-1 || !include(this.firstPos,id)){ this.inputData=-1;}
-				if(this.inputData==-1){
+				if(this.firstPos.x===null || !include(this.firstPos,id)){ this.inputData=null;}
+				if(this.inputData===null){
 					if     (bd.LiB(id)==0){ this.inputData=1;}
 					else if(bd.LiB(id)==1){ this.inputData=2;}
 					else                  { this.inputData=0;}
 				}
 				if(this.inputData> 0 && ((pos.x-this.mouseCell.x==-2)||(pos.y-this.mouseCell.y==-2))){ idlist=idlist.reverse();} // 色分けの都合上の処理
 				for(var i=0;i<idlist.length;i++){
-					if(this.inputData!=-1){ bd.sLiB(idlist[i], this.inputData); bd.sQsB(idlist[i], 0);}
+					if(this.inputData!==null){ bd.sLiB(idlist[i], this.inputData); bd.sQsB(idlist[i], 0);}
 					pc.paintLine(idlist[i]);
 				}
 				this.firstPos=idlist;
@@ -125,9 +125,9 @@ Puzzles.hashikake.prototype = {
 		mv.inputpeke = function(){
 			var pos = this.borderpos(0.22);
 			var id = bd.bnum(pos.x, pos.y);
-			if(id==-1 || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
+			if(id===null || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
 
-			if(this.inputData==-1){ this.inputData=(bd.QsB(id)!=2?2:0);}
+			if(this.inputData===null){ this.inputData=(bd.QsB(id)!=2?2:0);}
 			bd.sQsB(id, this.inputData);
 
 			var idlist = this.getidlist(id);
@@ -226,7 +226,7 @@ Puzzles.hashikake.prototype = {
 		};
 		// 背景色をつける為オーバーライド
 		pc.drawCircle1AtNumber = function(c){
-			if(c===-1){ return;}
+			if(c===null){ return;}
 
 			var rsize = this.cw*0.44;
 			var header = "c_cir_";
@@ -359,7 +359,7 @@ Puzzles.hashikake.prototype = {
 			var cnt=0, idlist=[bd.ub(cc), bd.db(cc), bd.lb(cc), bd.rb(cc)];
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
-				if(id!==-1 && bd.border[id].line>0){ cnt+=bd.border[id].line;}
+				if(!!bd.border[id] && bd.border[id].line>0){ cnt+=bd.border[id].line;}
 			}
 			return cnt;
 		};

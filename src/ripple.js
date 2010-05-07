@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 波及効果版 ripple.js v3.3.0
+// パズル固有スクリプト部 波及効果版 ripple.js v3.3.1
 //
 Puzzles.ripple = function(){ };
 Puzzles.ripple.prototype = {
@@ -173,7 +173,7 @@ Puzzles.ripple.prototype = {
 				if(num<=0){ continue;}
 				for(var i=2;i<=num*2;i+=2){
 					var tc = bd.cnum(bx+i,by);
-					if(tc!=-1 && bd.getNum(tc)==num){
+					if(tc!==null && bd.getNum(tc)===num){
 						if(this.inAutoCheck){ return false;}
 						bd.sErC([c,tc],1);
 						result = false;
@@ -181,7 +181,7 @@ Puzzles.ripple.prototype = {
 				}
 				for(var i=2;i<=num*2;i+=2){
 					var tc = bd.cnum(bx,by+i);
-					if(tc!=-1 && bd.getNum(tc)==num){
+					if(tc!==null && bd.getNum(tc)===num){
 						if(this.inAutoCheck){ return false;}
 						bd.sErC([c,tc],1);
 						result = false;

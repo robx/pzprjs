@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 快刀乱麻版 kramma.js v3.3.0
+// パズル固有スクリプト部 快刀乱麻版 kramma.js v3.3.1
 //
 Puzzles.kramma = function(){ };
 Puzzles.kramma.prototype = {
@@ -69,14 +69,14 @@ Puzzles.kramma.prototype = {
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = bd.bnum(pos.x, pos.y);
-			if(id==-1 && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
+			if(id===null && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
 
-			if(this.mouseCell!==-1 && id!==-1){
+			if(this.mouseCell!==null && id!==null){
 				if((!(pos.x&1) && this.mouseCell.x===pos.x && Math.abs(this.mouseCell.y-pos.y)===1) ||
 				   (!(pos.y&1) && this.mouseCell.y===pos.y && Math.abs(this.mouseCell.x-pos.x)===1) )
 				{
-					this.mouseCell=-1
-					if(this.inputData==-1){ this.inputData=(bd.isBorder(id)?0:1);}
+					this.mouseCell=null
+					if(this.inputData===null){ this.inputData=(bd.isBorder(id)?0:1);}
 
 					var idlist = [id];
 					var bx1, bx2, by1, by2;
@@ -96,7 +96,7 @@ Puzzles.kramma.prototype = {
 					for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
 
 					for(var i=0;i<idlist.length;i++){
-						if(idlist[i]===-1){ continue;}
+						if(idlist[i]===null){ continue;}
 						if     (this.inputData==1){ bd.setBorder(idlist[i]);}
 						else if(this.inputData==0){ bd.removeBorder(idlist[i]);}
 						pc.paintBorder(idlist[i]);

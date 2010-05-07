@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.3.0p2
+// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.3.1
 //
 Puzzles.shugaku = function(){ };
 Puzzles.shugaku.prototype = {
@@ -69,8 +69,8 @@ Puzzles.shugaku.prototype = {
 		mv.inputFuton = function(){
 			var cc = this.cellid();
 
-			if(this.firstPos.x==-1 && this.firstPos.y==-1){
-				if(cc==-1 || bd.QnC(cc)!=-1){ return;}
+			if(this.firstPos.x===null && this.firstPos.y===null){
+				if(cc===null || bd.QnC(cc)!==-1){ return;}
 				this.mouseCell = cc;
 				this.inputData = 1;
 				this.firstPos = this.inputPos.clone();
@@ -81,17 +81,17 @@ Puzzles.shugaku.prototype = {
 				if(this.mouseCell==cc){ this.inputData = 1;}
 				else{
 					var mx=this.inputPos.x-this.firstPos.x, my=this.inputPos.y-this.firstPos.y;
-					if     (cc==-1){ /* nop */ }
-					else if(mx-my>0 && mx+my>0){ this.inputData = (bd.QnC(bd.rt(this.mouseCell))==-1?5:6);}
-					else if(mx-my>0 && mx+my<0){ this.inputData = (bd.QnC(bd.up(this.mouseCell))==-1?2:6);}
-					else if(mx-my<0 && mx+my>0){ this.inputData = (bd.QnC(bd.dn(this.mouseCell))==-1?3:6);}
-					else if(mx-my<0 && mx+my<0){ this.inputData = (bd.QnC(bd.lt(this.mouseCell))==-1?4:6);}
+					if     (cc===null){ /* nop */ }
+					else if(mx-my>0 && mx+my>0){ this.inputData = (bd.QnC(bd.rt(this.mouseCell))===-1?5:6);}
+					else if(mx-my>0 && mx+my<0){ this.inputData = (bd.QnC(bd.up(this.mouseCell))===-1?2:6);}
+					else if(mx-my<0 && mx+my>0){ this.inputData = (bd.QnC(bd.dn(this.mouseCell))===-1?3:6);}
+					else if(mx-my<0 && mx+my<0){ this.inputData = (bd.QnC(bd.lt(this.mouseCell))===-1?4:6);}
 				}
 				if(old!=this.inputData){ pc.paintCellAround(this.mouseCell);}
 			}
 		};
 		mv.inputFuton2 = function(){
-			if(this.mouseCell==-1 || (this.firstPos.x==-1 && this.firstPos.y==-1)){ return;}
+			if(this.mouseCell===null || (this.firstPos.x===null && this.firstPos.y===null)){ return;}
 			var cc=this.mouseCell
 
 			this.changeHalf(cc);
@@ -105,20 +105,20 @@ Puzzles.shugaku.prototype = {
 			}
 
 			cc = this.getTargetADJ();
-			if(cc!=-1){
+			if(cc!==null){
 				this.changeHalf(cc);
 				bd.sQaC(cc, {2:18,3:17,4:20,5:19}[this.inputData]); bd.sQsC(cc, 0);
 			}
 
 			cc = this.mouseCell;
-			this.mouseCell = -1;
+			this.mouseCell = null;
 			pc.paintCellAround(cc);
 		};
 
 		mv.inputcell_shugaku = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell || bd.QnC(cc)!=-1){ return;}
-			if(this.inputData==-1){
+			if(cc===null || cc===this.mouseCell || bd.QnC(cc)!==-1){ return;}
+			if(this.inputData===null){
 				if     (bd.QaC(cc)==1){ this.inputData = 2;}
 				else if(bd.QsC(cc)==1){ this.inputData = 3;}
 				else{ this.inputData = 1;}
@@ -133,25 +133,25 @@ Puzzles.shugaku.prototype = {
 		};
 
 		mv.changeHalf = function(cc){
-			var adj=-1;
-			if     (bd.QaC(cc)==12 || bd.QaC(cc)==17){ adj=bd.up(cc);}
-			else if(bd.QaC(cc)==13 || bd.QaC(cc)==18){ adj=bd.dn(cc);}
-			else if(bd.QaC(cc)==14 || bd.QaC(cc)==19){ adj=bd.lt(cc);}
-			else if(bd.QaC(cc)==15 || bd.QaC(cc)==20){ adj=bd.rt(cc);}
+			var adj=null;
+			if     (bd.QaC(cc)===12 || bd.QaC(cc)===17){ adj=bd.up(cc);}
+			else if(bd.QaC(cc)===13 || bd.QaC(cc)===18){ adj=bd.dn(cc);}
+			else if(bd.QaC(cc)===14 || bd.QaC(cc)===19){ adj=bd.lt(cc);}
+			else if(bd.QaC(cc)===15 || bd.QaC(cc)===20){ adj=bd.rt(cc);}
 
-			if     (adj==-1){ /* nop */ }
+			if     (adj===null){ /* nop */ }
 			else if(bd.QaC(adj)>=12 && bd.QaC(adj)<=15){ bd.sQaC(adj,11);}
 			else if(bd.QaC(adj)>=17 && bd.QaC(adj)<=20){ bd.sQaC(adj,16);}
 		};
 		mv.getTargetADJ = function(){
-			if(this.mouseCell==-1){ return -1;}
+			if(this.mouseCell===null){ return null;}
 			switch(this.inputData){
 				case 2: return bd.up(this.mouseCell);
 				case 3: return bd.dn(this.mouseCell);
 				case 4: return bd.lt(this.mouseCell);
 				case 5: return bd.rt(this.mouseCell);
 			}
-			return -1;
+			return null;
 		};
 		mv.enableInputHatena = true;
 
@@ -205,7 +205,7 @@ Puzzles.shugaku.prototype = {
 			um.addOpe(k.CELL, k.QANS, id, old, num);
 			this.cell[id].qans = num;
 
-			if(num===1 ^ area.bcell.id[id]!==-1){
+			if(num===1 ^ area.bcell.id[id]!==null){
 				area.setCell(id,(num===1?1:0));
 			}
 		};
@@ -311,9 +311,8 @@ Puzzles.shugaku.prototype = {
 		};
 
 		pc.drawTargetFuton = function(x1,y1,x2,y2){
-
 			var cc=mv.mouseCell;
-			var inputting = ((mv.firstPos.x!==-1 || mv.firstPos.y!==-1) && cc!==-1);
+			var inputting = ((mv.firstPos.x!==null || mv.firstPos.y!==null) && cc!==null);
 
 			if(inputting){
 				this.vinc('cell_back', 'crispEdges');
@@ -322,7 +321,7 @@ Puzzles.shugaku.prototype = {
 				var header = "c_full_";
 				g.fillStyle = this.targetbgcolor;
 
-				if(cc!=-1){
+				if(cc!==null){
 					if(this.vnop(header+cc,this.FILL)){
 						g.fillRect(bd.cell[cc].px+1, bd.cell[cc].py+1, this.cw-1, this.ch-1);
 					}
@@ -330,7 +329,7 @@ Puzzles.shugaku.prototype = {
 				else{ this.vhide(header+cc);}
 
 				var adj=mv.getTargetADJ();
-				if(adj!=-1){
+				if(adj!==null){
 					if(this.vnop(header+adj,this.FILL)){
 						g.fillRect(bd.cell[adj].px+1, bd.cell[adj].py+1, this.cw-1, this.ch-1);
 					}
@@ -341,15 +340,15 @@ Puzzles.shugaku.prototype = {
 				this.drawPillow1(cc,true,true);
 
 				// 入力中ふとんの下になるまくらを消す
-				if(!g.use.canvas && adj!==-1){ this.drawPillow1(adj,false,true);}
+				if(!g.use.canvas && adj!==null){ this.drawPillow1(adj,false,true);}
 
 				// 入力中ふとんの周りの境界線描画
 				this.vinc('border_futon', 'crispEdges');
 
 				this.vdel(["tbd1_","tbd2_","tbd3_","tbd4_"]);
 				var lw = this.lw, lm = this.lm;
-				var bx1 = (adj===-1?bd.cell[cc].bx:Math.min(bd.cell[cc].bx,bd.cell[adj].bx));
-				var by1 = (adj===-1?bd.cell[cc].by:Math.min(bd.cell[cc].by,bd.cell[adj].by));
+				var bx1 = (adj===null?bd.cell[cc].bx:Math.min(bd.cell[cc].bx,bd.cell[adj].bx));
+				var by1 = (adj===null?bd.cell[cc].by:Math.min(bd.cell[cc].by,bd.cell[adj].by));
 				var px = k.p0.x+(bx1-1)*this.bw, py = k.p0.y+(by1-1)*this.bh;
 				var wid = (mv.inputData===4||mv.inputData===5?2:1)*this.cw;
 				var hgt = (mv.inputData===2||mv.inputData===3?2:1)*this.ch;
@@ -361,7 +360,7 @@ Puzzles.shugaku.prototype = {
 				if(this.vnop("tbd4_",this.NONE)){ g.fillRect(px-lm    , py+hgt-lm, wid+lw, lw);}
 
 				// 入力中ふとんの間の太線を消す
-				if(!g.use.canvas && cc!==-1 && adj!==-1){
+				if(!g.use.canvas && cc!==null && adj!==null){
 					var bx = (bd.cell[cc].bx+bd.cell[adj].bx)/2;
 					var by = (bd.cell[cc].by+bd.cell[adj].by)/2;
 					this.vhide([["b_bd",bx,by].join("_")]);
@@ -491,7 +490,7 @@ Puzzles.shugaku.prototype = {
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)==-1 && bd.QaC(c)>=12 && bd.QaC(c)<=15){
-					var adj=-1;
+					var adj=null;
 					switch(bd.QaC(c)){
 						case 12: adj = bd.up(c); break;
 						case 13: adj = bd.dn(c); break;

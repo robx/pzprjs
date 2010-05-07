@@ -80,10 +80,10 @@ Puzzles.tilepaint.prototype = {
 				bd.sDiC(cc, 0);
 				bd.setWhite(cc);
 				bd.sQsC(cc, 0);
-				if(bd.ub(cc)!==-1){ bd.sQuB(bd.ub(cc), ((bd.up(cc)!=-1 && bd.QuC(bd.up(cc))!=51)?1:0));}
-				if(bd.db(cc)!==-1){ bd.sQuB(bd.db(cc), ((bd.dn(cc)!=-1 && bd.QuC(bd.dn(cc))!=51)?1:0));}
-				if(bd.lb(cc)!==-1){ bd.sQuB(bd.lb(cc), ((bd.lt(cc)!=-1 && bd.QuC(bd.lt(cc))!=51)?1:0));}
-				if(bd.rb(cc)!==-1){ bd.sQuB(bd.rb(cc), ((bd.rt(cc)!=-1 && bd.QuC(bd.rt(cc))!=51)?1:0));}
+				if(bd.ub(cc)!==null){ bd.sQuB(bd.ub(cc), ((bd.up(cc)!==null && bd.QuC(bd.up(cc))!=51)?1:0));}
+				if(bd.db(cc)!==null){ bd.sQuB(bd.db(cc), ((bd.dn(cc)!==null && bd.QuC(bd.dn(cc))!=51)?1:0));}
+				if(bd.lb(cc)!==null){ bd.sQuB(bd.lb(cc), ((bd.lt(cc)!==null && bd.QuC(bd.lt(cc))!=51)?1:0));}
+				if(bd.rb(cc)!==null){ bd.sQuB(bd.rb(cc), ((bd.rt(cc)!==null && bd.QuC(bd.rt(cc))!=51)?1:0));}
 			}
 			else{
 				bd.sQuC(cc, 0);
@@ -96,8 +96,8 @@ Puzzles.tilepaint.prototype = {
 
 		mv.inputBGcolor1 = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell || bd.QuC(cc)==51){ return;}
-			if(this.inputData==-1){ this.inputData=(bd.QsC(cc)==0)?3:0;}
+			if(cc===null || cc==this.mouseCell || bd.QuC(cc)==51){ return;}
+			if(this.inputData===null){ this.inputData=(bd.QsC(cc)==0)?3:0;}
 			bd.sQsC(cc, this.inputData);
 			this.mouseCell = cc; 
 			pc.paintCell(cc);

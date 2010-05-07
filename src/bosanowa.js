@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.3.0p2
+// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.3.1
 //
 Puzzles.bosanowa = function(){ };
 Puzzles.bosanowa.prototype = {
@@ -144,7 +144,7 @@ Puzzles.bosanowa.prototype = {
 			else if((tcp.x+tcp.y)&1){
 				var id = tc.getTBC();
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if((cc1==-1||bd.QuC(cc1)!=7)||(cc2==-1||bd.QuC(cc2)!=7)){ return false;}
+				if(!bd.isBox(cc1) || !bd.isBox(cc2)){ return false;}
 				if('0'<=ca && ca<='9'){
 					var num = parseInt(ca);
 					var qsubmax = 99;
@@ -165,12 +165,15 @@ Puzzles.bosanowa.prototype = {
 			return true;
 		};
 
+		// 入力可能なマスかどうか
+		bd.isBox = function(c){ return (!!bd.cell[c] && bd.cell[c].ques===7)};
+
 		// カーソルを最初真ん中においておく
 		tc.cursorx = k.qcols-1-k.qcols%2;
 		tc.cursory = k.qrows-1-k.qrows%2;
 		if(k.EDITOR){
 			var c = tc.getTCC();
-			if(c!==-1){ bd.cell[c].ques = 7;}
+			if(c!==null){ bd.cell[c].ques = 7;}
 		}
 	},
 
@@ -255,10 +258,7 @@ Puzzles.bosanowa.prototype = {
 			var idlist = bd.borderinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				var onboard1 = (cc1!==-1&&bd.cell[cc1].ques===7);
-				var onboard2 = (cc2!==-1&&bd.cell[cc2].ques===7);
-
-				if(onboard1 && onboard2){
+				if(bd.isBox(cc1) && bd.isBox(cc2)){
 					if(!g.use.canvas){
 						if(this.vnop(header+id,this.NONE)){
 							if(bd.border[id].by&1){
@@ -300,10 +300,7 @@ Puzzles.bosanowa.prototype = {
 			var idlist = bd.borderinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				var onboard1 = (cc1!==-1&&bd.cell[cc1].ques===7);
-				var onboard2 = (cc2!==-1&&bd.cell[cc2].ques===7);
-
-				if(onboard1 && onboard2){
+				if(bd.isBox(cc1) && bd.isBox(cc2)){
 					g.fillStyle=this.gridcolor;
 					if(this.vnop(headers[0]+id,this.NONE)){
 						if     (bd.border[id].by&1){ g.fillRect(bd.border[id].px, bd.border[id].py-this.bh, 1, this.ch+1);}
@@ -329,7 +326,7 @@ Puzzles.bosanowa.prototype = {
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 
-				if(bd.border[id].qsub>=0 && ((cc1!==-1&&bd.cell[cc1].ques===7)&&(cc2!==-1&&bd.cell[cc2].ques===7))){
+				if(bd.border[id].qsub>=0 && (bd.isBox(cc1) && bd.isBox(cc2))){
 					g.fillStyle = "white";
 					if(this.vnop(header+id,this.NONE)){
 						g.fillRect(bd.border[id].px-csize, bd.border[id].py-csize, 2*csize+1, 2*csize+1);
@@ -359,7 +356,7 @@ Puzzles.bosanowa.prototype = {
 			for(var bx=(x1-2)|1;bx<=x2+2;bx+=2){
 				for(var by=(y1-2)|1;by<=y2+2;by+=2){
 					var c=bd.cnum(bx,by);
-					if( (c==-1 || bd.cell[c].ques!=7) && (
+					if( !bd.isBox(c) && (
 						bd.QuC(bd.cnum(bx-2,by  ))===7 || bd.QuC(bd.cnum(bx+2,by  ))===7 || 
 						bd.QuC(bd.cnum(bx  ,by-2))===7 || bd.QuC(bd.cnum(bx  ,by+2))===7 || 
 						bd.QuC(bd.cnum(bx-2,by-2))===7 || bd.QuC(bd.cnum(bx+2,by-2))===7 || 
@@ -377,7 +374,7 @@ Puzzles.bosanowa.prototype = {
 		// ワリタイの太線描画用
 		pc.setBorderColor = function(id){
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if((cc1===-1 || bd.cell[cc1].ques!==7)^(cc2===-1 || bd.cell[cc2].ques!==7)){
+			if(bd.isBox(cc1)^bd.isBox(cc2)){
 				g.fillStyle = this.cellcolor;
 				return true;
 			}
@@ -488,7 +485,7 @@ Puzzles.bosanowa.prototype = {
 			});
 			this.encodeBorder( function(id){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if((cc1==-1||bd.QuC(cc1)!=7)||(cc2==-1||bd.QuC(cc2)!=7)){ return ". ";}
+				if(!bd.isBox(cc1) || !bd.isBox(cc2)){ return ". ";}
 				if(bd.QsB(id)==-1){ return ". ";}
 				else{ return ""+bd.QsB(id).toString()+" ";}
 			});
@@ -504,7 +501,7 @@ Puzzles.bosanowa.prototype = {
 				this.setAlert('数字とその隣の数字の差の合計が合っていません。', 'Sum of the differences between the number and adjacent numbers is not equal to the number.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QuC(c)==7 && bd.noNum(c));}) ){
+			if( !this.checkAllCell(function(c){ return (bd.isBox(c) && bd.noNum(c));}) ){
 				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 			}
 
@@ -513,14 +510,13 @@ Puzzles.bosanowa.prototype = {
 		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)==7 && bd.noNum(c));});};
 
 		ans.isSubsNumber = function(c){
-			if(bd.QuC(c)!=7||bd.noNum(c)){ return false;}
-			var sum=0, cc=-1;
-			var cc=bd.up(c); if(cc!=-1&&bd.QuC(cc)==7){ if(bd.isNum(cc)){ sum+=Math.abs(bd.getNum(c)-bd.getNum(cc)); }else{ return false;} }
-			var cc=bd.dn(c); if(cc!=-1&&bd.QuC(cc)==7){ if(bd.isNum(cc)){ sum+=Math.abs(bd.getNum(c)-bd.getNum(cc)); }else{ return false;} }
-			var cc=bd.lt(c); if(cc!=-1&&bd.QuC(cc)==7){ if(bd.isNum(cc)){ sum+=Math.abs(bd.getNum(c)-bd.getNum(cc)); }else{ return false;} }
-			var cc=bd.rt(c); if(cc!=-1&&bd.QuC(cc)==7){ if(bd.isNum(cc)){ sum+=Math.abs(bd.getNum(c)-bd.getNum(cc)); }else{ return false;} }
-
-			return (bd.getNum(c)!=sum);
+			if(!bd.isBox(c) || bd.noNum(c)){ return false;}
+			var num=bd.getNum(c), sum=0, cc;
+			cc=bd.up(c); if(bd.isBox(cc)){ if(bd.isNum(cc)){ sum+=Math.abs(num-bd.getNum(cc));}else{ return false;} }
+			cc=bd.dn(c); if(bd.isBox(cc)){ if(bd.isNum(cc)){ sum+=Math.abs(num-bd.getNum(cc));}else{ return false;} }
+			cc=bd.lt(c); if(bd.isBox(cc)){ if(bd.isNum(cc)){ sum+=Math.abs(num-bd.getNum(cc));}else{ return false;} }
+			cc=bd.rt(c); if(bd.isBox(cc)){ if(bd.isNum(cc)){ sum+=Math.abs(num-bd.getNum(cc));}else{ return false;} }
+			return (num!==sum);
 		};
 	}
 };

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックル版 kakuru.js v3.3.0
+// パズル固有スクリプト部 カックル版 kakuru.js v3.3.1
 //
 Puzzles.kakuru = function(){ };
 Puzzles.kakuru.prototype = {
@@ -62,7 +62,7 @@ Puzzles.kakuru.prototype = {
 		mv.mousemove = function(){ };
 		mv.inputqnum_kakuru = function(){
 			var cc = this.cellid();
-			if(cc==-1 || (bd.QuC(cc)==1 && cc==tc.getTCC())){ return;}
+			if(cc===null || (bd.QuC(cc)==1 && cc==tc.getTCC())){ return;}
 			this.inputqnum();
 		};
 
@@ -285,18 +285,16 @@ Puzzles.kakuru.prototype = {
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==1 || bd.QnC(c)<=0){ continue;}
 
-				var clist=[c], d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
-				var bx=bd.cell[c].bx, by=bd.cell[c].by, cc;
-				var func = function(cc){ return (cc!=-1 && bd.QuC(cc)==0 && bd.QnC(cc)==-1);}
-				cc=bd.cnum(bx-2,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx  ,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx+2,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx-2,by  ); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx+2,by  ); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx-2,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx  ,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx+2,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-
+				var bx=bd.cell[c].bx, by=bd.cell[c].by;
+				var d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
+				var clist=[c], clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
+				for(var i=0;i<clist0.length;i++){
+					var cc = clist0[i];
+					if(cc!==c && bd.cell[cc].ques===0 && bd.cell[cc].qnum===-1){
+						var qa = bd.cell[cc].qans;
+						if(qa>0){ d[qa]++; clist.push(cc);}
+					}
+				}
 				for(var n=1;n<=9;n++){
 					if(d[n]>1){
 						if(this.inAutoCheck){ return false;}
@@ -313,19 +311,17 @@ Puzzles.kakuru.prototype = {
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==1 || bd.QnC(c)<=0){ continue;}
 
-				var cnt=0, clist=[c];
-				var bx=bd.cell[c].bx, by=bd.cell[c].by, cc;
-				var func = function(cc){ return (cc!=-1 && bd.QuC(cc)==0 && bd.QnC(cc)==-1);}
-				cc=bd.cnum(bx-2,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx  ,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx+2,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx-2,by  ); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx+2,by  ); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx-2,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx  ,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx+2,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-
-				if(bd.QnC(c)!=cnt){
+				var cnt=0, bx=bd.cell[c].bx, by=bd.cell[c].by;
+				var clist=[c], clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
+				for(var i=0;i<clist0.length;i++){
+					var cc = clist0[i];
+					if(cc!==c && bd.cell[cc].ques===0 && bd.cell[cc].qnum===-1){
+						var qa = bd.cell[cc].qans;
+						if(qa>0){ cnt+=qa; clist.push(cc);}
+						else    { cnt=bd.QnC(c); break;}
+					}
+				}
+				if(bd.QnC(c)!==cnt){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(clist,1); result = false;
 				}
@@ -336,14 +332,13 @@ Puzzles.kakuru.prototype = {
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QaC(c)<=0){ continue;}
-				var bx = bd.cell[c].bx, by = bd.cell[c].by, target=0, clist = [c];
-				var func = function(cc){ return (cc!=-1 && bd.QaC(c)==bd.QaC(cc));};
-				// 右・左下・下・右下の4箇所だけチェック
-				target=bd.cnum(bx+2,by  ); if(func(target)){ clist.push(target);}
-				target=bd.cnum(bx  ,by+2); if(func(target)){ clist.push(target);}
-				target=bd.cnum(bx-2,by+2); if(func(target)){ clist.push(target);}
-				target=bd.cnum(bx+2,by+2); if(func(target)){ clist.push(target);}
-
+				var bx = bd.cell[c].bx, by = bd.cell[c].by;
+				var clist=[c], clist0 = bd.cellinside(bx,by,bx+2,by+2);
+				clist0.push(bd.cnum(bx-2,by+2)); // 右・左下・下・右下の4箇所だけチェック
+				for(var i=0;i<clist0.length;i++){
+					var cc = clist0[i];
+					if(cc!==null && cc!==c && bd.cell[c].qans===bd.cell[cc].qans){ clist.push(cc);}
+				}
 				if(clist.length>1){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(clist,1); result = false;

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックロ版 kakuro.js v3.3.0
+// パズル固有スクリプト部 カックロ版 kakuro.js v3.3.1
 //
 Puzzles.kakuro = function(){ };
 Puzzles.kakuro.prototype = {
@@ -73,7 +73,7 @@ Puzzles.kakuro.prototype = {
 			if(k.editmode){ this.inputnumber51(ca,{2:45,4:45});}
 			else{
 				var cc = tc.getTCC();
-				if(cc!=-1&&bd.QuC(cc)!=51){ this.key_inputqnum(ca);}
+				if(cc!==null&&bd.QuC(cc)!=51){ this.key_inputqnum(ca);}
 			}
 		};
 
@@ -161,7 +161,7 @@ Puzzles.kakuro.prototype = {
 		// オーバーライド 境界線用
 		pc.setBorderColor = function(id){
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if(cc1!==-1 && cc2!==-1 && ((bd.cell[cc1].ques===51)^(bd.cell[cc2].ques===51))){
+			if(cc1!==null && cc2!==null && ((bd.cell[cc1].ques===51)^(bd.cell[cc2].ques===51))){
 				g.fillStyle = this.cellcolor;
 				return true;
 			}
@@ -174,8 +174,6 @@ Puzzles.kakuro.prototype = {
 			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], key = ['cell',c,'qans'].join('_');
-				var target = ((k.editmode&&c===tc.getTCC())?kc.detectTarget(c,-1):-1);
-
 				if(bd.cell[c].ques!==51 && bd.cell[c].qans>0){
 					var obj = bd.cell[c];
 					var color = (bd.cell[c].error===1 ? this.fontErrcolor : this.fontAnscolor);
@@ -358,7 +356,7 @@ Puzzles.kakuro.prototype = {
 				for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 					if(arr[(bx+1)>>1]==''){ continue;}
 					var c = bd.cnum(bx,by);
-					if(c!=-1&&arr[(bx+1)>>1]!="."&&arr[(bx+1)>>1]!="0"){ bd.sQaC(c, parseInt(arr[(bx+1)>>1]));}
+					if(c!==null && arr[(bx+1)>>1]!="." && arr[(bx+1)>>1]!="0"){ bd.sQaC(c, parseInt(arr[(bx+1)>>1]));}
 				}
 			}
 		};
@@ -366,7 +364,7 @@ Puzzles.kakuro.prototype = {
 			for(var by=bd.minby+1;by<bd.maxby;by+=2){
 				for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 					var c = bd.cnum(bx,by);
-					if(c==-1){ this.datastr += ". ";}
+					if(c===null){ this.datastr += ". ";}
 					else if(bd.QuC(c)==51){ this.datastr += ". ";}
 					else if(bd.QaC(c) > 0){ this.datastr += (bd.QaC(c).toString() + " ");}
 					else                  { this.datastr += "0 ";}

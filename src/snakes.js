@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へびいちご版 snakes.js v3.3.0
+// パズル固有スクリプト部 へびいちご版 snakes.js v3.3.1
 //
 Puzzles.snakes = function(){ };
 Puzzles.snakes.prototype = {
@@ -82,7 +82,7 @@ Puzzles.snakes.prototype = {
 
 		mv.inputqnum_snakes = function(){
 			var cc = this.cellid();
-			if(cc==-1){ return;}
+			if(cc===null){ return;}
 			k.dispzero=0;
 			cc = this.inputqnum3(cc);
 			bd.sQsC(cc,0);
@@ -91,8 +91,8 @@ Puzzles.snakes.prototype = {
 		},
 		mv.dragnumber = function(){
 			var cc = this.cellid();
-			if(cc==-1||cc==this.mouseCell){ return;}
-			if(this.mouseCell==-1){
+			if(cc===null||cc===this.mouseCell){ return;}
+			if(this.mouseCell===null){
 				this.inputData = bd.QaC(cc)!=-1?bd.QaC(cc):10;
 				this.mouseCell = cc;
 			}
@@ -113,9 +113,9 @@ Puzzles.snakes.prototype = {
 		};
 		mv.inputDot = function(){
 			var cc = this.cellid();
-			if(!this.btn.Right||cc==-1||cc==this.mouseCell||this.inputData>=0){ return false;}
+			if(!this.btn.Right||cc===null||cc===this.mouseCell||this.inputData>=0){ return false;}
 
-			if(this.inputData==-1){
+			if(this.inputData===null){
 				if(bd.QaC(cc)==-1){
 					this.inputData = bd.QsC(cc)!=1?-2:-3;
 					return true;
@@ -183,7 +183,7 @@ Puzzles.snakes.prototype = {
 			if(!pp.getVal('snakebd')){ return false;}
 
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if(cc1!==-1 && cc2!==-1 &&
+			if(cc1!==null && cc2!==null &&
 			   (bd.cell[cc1].qnum===-1 && bd.cell[cc2].qnum===-1) &&
 			   (bd.cell[cc1].qans!==-1 || bd.cell[cc2].qans!==-1) &&
 			   ( ((bd.cell[cc1].qans===-1)^(bd.cell[cc2].qans===-1)) ||
@@ -262,7 +262,7 @@ Puzzles.snakes.prototype = {
 
 		ans.getSnakeInfo = function(){
 			var sinfo = new AreaInfo();
-			var func = function(c,cc){ return (cc!=-1 && (Math.abs(bd.QaC(c)-bd.QaC(cc))==1)); };
+			var func = function(c,cc){ return (cc!==null && (Math.abs(bd.QaC(c)-bd.QaC(cc))==1)); };
 			for(var c=0;c<bd.cellmax;c++){ sinfo.id[c]=(bd.QaC(c)>0?0:-1);}
 			for(var c=0;c<bd.cellmax;c++){
 				if(sinfo.id[c]!=0){ continue;}
@@ -343,7 +343,7 @@ Puzzles.snakes.prototype = {
 			};
 
 			for(var r=1;r<=sinfo.max;r++){
-				var c1=-1, dir=0, idlist = sinfo.room[r].idlist;
+				var c1=null, dir=0, idlist = sinfo.room[r].idlist;
 				for(var i=0;i<idlist.length;i++){ if(bd.QaC(idlist[i])==1){c1=idlist[i]; break;}}
 				if     (bd.QaC(bd.dn(c1))==2){ dir=1;}
 				else if(bd.QaC(bd.up(c1))==2){ dir=2;}

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.3.0
+// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.3.1
 //
 Puzzles.gokigen = function(){ };
 Puzzles.gokigen.prototype = {
@@ -74,7 +74,7 @@ Puzzles.gokigen.prototype = {
 		mv.mousemove = function(){ };
 		mv.dispBlue = function(){
 			var cc = this.cellid();
-			if(cc==-1 || bd.QaC(cc)==-1){ return;}
+			if(cc===null || bd.QaC(cc)===-1){ return;}
 
 			var check = [];
 			for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
@@ -91,7 +91,7 @@ Puzzles.gokigen.prototype = {
 		};
 		mv.inputslash = function(){
 			var cc = this.cellid();
-			if(cc==-1){ return;}
+			if(cc===null){ return;}
 
 			var use = pp.getVal('use');
 			if     (use===1){ bd.sQaC(cc, (bd.QaC(cc)!=(this.btn.Left?1:2)?(this.btn.Left?1:2):-1));}
@@ -241,23 +241,23 @@ Puzzles.gokigen.prototype = {
 		};
 
 		ans.scntCross = function(id){
-			if(id==-1){ return -1;}
+			if(id===null){ return 0;}
 			var bx=bd.cross[id].bx, by=bd.cross[id].by;
-			var cc, cnt=0;
-			cc=bd.cnum(bx-1,by-1); if(cc!=-1 && bd.QaC(cc)==1){ cnt++;}
-			cc=bd.cnum(bx+1,by-1); if(cc!=-1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(bx-1,by+1); if(cc!=-1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(bx+1,by+1); if(cc!=-1 && bd.QaC(cc)==1){ cnt++;}
+			var obj, cnt=0;
+			obj=bd.cell[bd.cnum(bx-1,by-1)]; if(!!obj && obj.qans===1){ cnt++;}
+			obj=bd.cell[bd.cnum(bx+1,by-1)]; if(!!obj && obj.qans===2){ cnt++;}
+			obj=bd.cell[bd.cnum(bx-1,by+1)]; if(!!obj && obj.qans===2){ cnt++;}
+			obj=bd.cell[bd.cnum(bx+1,by+1)]; if(!!obj && obj.qans===1){ cnt++;}
 			return cnt;
 		};
 		ans.scntCross2 = function(id){
-			if(id==-1){ return -1;}
+			if(id===null){ return 0;}
 			var bx=bd.cross[id].bx, by=bd.cross[id].by;
-			var cc, cnt=0;
-			cc=bd.cnum(bx-1,by-1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==1){ cnt++;}
-			cc=bd.cnum(bx+1,by-1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(bx-1,by+1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(bx+1,by+1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==1){ cnt++;}
+			var obj, cnt=0;
+			obj=bd.cell[bd.cnum(bx-1,by-1)]; if(!!obj && obj.error===1 && obj.qans===1){ cnt++;}
+			obj=bd.cell[bd.cnum(bx+1,by-1)]; if(!!obj && obj.error===1 && obj.qans===2){ cnt++;}
+			obj=bd.cell[bd.cnum(bx-1,by+1)]; if(!!obj && obj.error===1 && obj.qans===2){ cnt++;}
+			obj=bd.cell[bd.cnum(bx+1,by+1)]; if(!!obj && obj.error===1 && obj.qans===1){ cnt++;}
 			return cnt;
 		};
 
@@ -266,9 +266,9 @@ Puzzles.gokigen.prototype = {
 			for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
 
 			while(1){
-				var fc=-1;
+				var fc=null;
 				for(var i=0;i<bd.crossmax;i++){ if(check[i]==0){ fc=i; break;}}
-				if(fc==-1){ break;}
+				if(fc===null){ break;}
 
 				if(!this.searchline(check, 0, fc)){
 					for(var c=0;c<bd.cellmax;c++){
@@ -299,13 +299,13 @@ Puzzles.gokigen.prototype = {
 			check[c]=1;
 
 			nc = bd.xnum(tx-2,ty-2);
-			if(nc!=-1 && dir!=4 && bd.QaC(bd.cnum(tx-1,ty-1))==1 && (check[nc]!=0 || !this.searchline(check,1,nc))){ flag = false;}
+			if(nc!==null && dir!=4 && bd.QaC(bd.cnum(tx-1,ty-1))==1 && (check[nc]!=0 || !this.searchline(check,1,nc))){ flag = false;}
 			nc = bd.xnum(tx-2,ty+2);
-			if(nc!=-1 && dir!=3 && bd.QaC(bd.cnum(tx-1,ty+1))==2 && (check[nc]!=0 || !this.searchline(check,2,nc))){ flag = false;}
+			if(nc!==null && dir!=3 && bd.QaC(bd.cnum(tx-1,ty+1))==2 && (check[nc]!=0 || !this.searchline(check,2,nc))){ flag = false;}
 			nc = bd.xnum(tx+2,ty-2);
-			if(nc!=-1 && dir!=2 && bd.QaC(bd.cnum(tx+1,ty-1))==2 && (check[nc]!=0 || !this.searchline(check,3,nc))){ flag = false;}
+			if(nc!==null && dir!=2 && bd.QaC(bd.cnum(tx+1,ty-1))==2 && (check[nc]!=0 || !this.searchline(check,3,nc))){ flag = false;}
 			nc = bd.xnum(tx+2,ty+2);
-			if(nc!=-1 && dir!=1 && bd.QaC(bd.cnum(tx+1,ty+1))==1 && (check[nc]!=0 || !this.searchline(check,4,nc))){ flag = false;}
+			if(nc!==null && dir!=1 && bd.QaC(bd.cnum(tx+1,ty+1))==1 && (check[nc]!=0 || !this.searchline(check,4,nc))){ flag = false;}
 
 			return flag;
 		};

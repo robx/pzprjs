@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.3.0
+// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.3.1
 //
 Puzzles.wblink = function(){ };
 Puzzles.wblink.prototype = {
@@ -68,18 +68,18 @@ Puzzles.wblink.prototype = {
 			var pos = this.borderpos(0);
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
-			var id = -1;
+			var id = null;
 			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1);}
 			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1);}
 			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  );}
 			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  );}
 
-			if(this.mouseCell!=-1 && id!=-1){
+			if(this.mouseCell!==null && id!==null){
 				var idlist = this.getidlist(id);
-				if(this.inputData==-1){ this.inputData=(bd.isLine(id)?0:1);}
+				if(this.inputData===null){ this.inputData=(bd.isLine(id)?0:1);}
 				if(this.inputData> 0 && ((pos.x-this.mouseCell.x==-2)||(pos.y-this.mouseCell.y==-2))){ idlist=idlist.reverse();} // 色分けの都合上の処理
 				for(var i=0;i<idlist.length;i++){
-					if(idlist[i]===-1){ continue;}
+					if(idlist[i]===null){ continue;}
 					if(this.inputData==1){ bd.setLine(idlist[i]);}
 					else                 { bd.removeLine(idlist[i]);}
 					pc.paintLine(idlist[i]);
@@ -112,9 +112,9 @@ Puzzles.wblink.prototype = {
 		mv.inputpeke = function(){
 			var pos = this.borderpos(0.22);
 			var id = bd.bnum(pos.x, pos.y);
-			if(id==-1 || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
+			if(id===null || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
 
-			if(this.inputData==-1){ this.inputData=(bd.QsB(id)!=2?2:0);}
+			if(this.inputData===null){ this.inputData=(bd.QsB(id)!=2?2:0);}
 			bd.sQsB(id, this.inputData);
 
 			var idlist = this.getidlist(id);

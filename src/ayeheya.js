@@ -151,11 +151,11 @@ Puzzles.ayeheya.prototype = {
 
 		enc.decodeHeyaApp = function(){
 			var c=0, rdata=[];
-			while(c<bd.cellmax){ rdata[c]=-1; c++;}
+			while(c<bd.cellmax){ rdata[c]=null; c++;}
 
 			var i=0, inp=this.uri.bstr.split("/");
 			for(var c=0;c<bd.cellmax;c++){
-				if(rdata[c]>-1){ continue;}
+				if(rdata[c]!==null){ continue;}
 
 				if(inp[i].match(/(\d+in)?(\d+)x(\d+)$/)){
 					if(RegExp.$1.length>0){ bd.sQnC(c, parseInt(RegExp.$1));}

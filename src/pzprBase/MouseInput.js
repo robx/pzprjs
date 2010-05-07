@@ -28,10 +28,10 @@ MouseEvent.prototype = {
 	// mv.mousereset() マウス入力に関する情報を初期化する
 	//---------------------------------------------------------------------------
 	mousereset : function(){
-		this.inputPos = new Pos(-1, -1);
-		this.mouseCell = -1;
-		this.inputData = -1;
-		this.firstPos = new Pos(-1, -1);
+		this.inputPos = new Pos(null, null);
+		this.mouseCell = null;
+		this.inputData = null;
+		this.firstPos = new Pos(null, null);
 		this.btn = { Left:false, Middle:false, Right:false};
 	},
 
@@ -143,7 +143,7 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	cellid : function(){
 		var pos = this.borderpos(0);
-		if(this.inputPos.x%k.cwidth===0 || this.inputPos.y%k.cheight===0){ return -1;} // ぴったりは無効
+		if(this.inputPos.x%k.cwidth===0 || this.inputPos.y%k.cheight===0){ return null;} // ぴったりは無効
 		return bd.cnum(pos.x,pos.y);
 	},
 	crossid : function(){
@@ -167,11 +167,11 @@ MouseEvent.prototype = {
 		if(k.isLineCross){
 			if(!k.isborderAsLine){
 				var m1=spc*k.cwidth, m2=(1-spc)*k.cwidth;
-				if((dx<m1||m2<dx) && (dy<m1||m2<dy)){ return -1;}
+				if((dx<m1||m2<dx) && (dy<m1||m2<dy)){ return null;}
 			}
 			else{
 				var m1=(0.5-spc)*k.cwidth, m2=(0.5+spc)*k.cwidth;
-				if(m1<dx && dx<m2 && m1<dy && dy<m2){ return -1;}
+				if(m1<dx && dx<m2 && m1<dy && dy<m2){ return null;}
 			}
 		}
 
@@ -183,7 +183,7 @@ MouseEvent.prototype = {
 			if(dx>dy){ return bd.bnum(bx+1,by  );}	//右下＆右上 -> 右
 			else     { return bd.bnum(bx,  by+1);}	//右下＆左下 -> 下
 		}
-		return -1;
+		return null;
 	},
 
 	//---------------------------------------------------------------------------
@@ -192,14 +192,14 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	inputcell : function(){
 		var cc = this.cellid();
-		if(cc==-1 || cc==this.mouseCell){ return;}
-		if(this.inputData==-1){ this.decIC(cc);}
+		if(cc===null || cc===this.mouseCell){ return;}
+		if(this.inputData===null){ this.decIC(cc);}
 
 		this.mouseCell = cc; 
 
 		if(k.NumberIsWhite && bd.QnC(cc)!=-1 && (this.inputData==1||(this.inputData==2 && pc.bcolor=="white"))){ return;}
 		if(k.RBBlackCell && this.inputData==1){
-			if(this.firstPos.x == -1 && this.firstPos.y == -1){ this.firstPos = new Pos(bd.cell[cc].bx, bd.cell[cc].by);}
+			if(this.firstPos.x===null && this.firstPos.y===null){ this.firstPos = new Pos(bd.cell[cc].bx, bd.cell[cc].by);}
 			if( (((this.firstPos.x>>1)+(this.firstPos.y>>1))&1) != (((bd.cell[cc].bx>>1)+(bd.cell[cc].by>>1))&1) ){ return;}
 		}
 
@@ -233,7 +233,7 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	inputqnum : function(){
 		var cc = this.cellid();
-		if(cc===-1 || cc===this.mouseCell){ return;}
+		if(cc===null || cc===this.mouseCell){ return;}
 
 		if(cc===tc.getTCC()){
 			cc =(k.playmode ?
@@ -320,7 +320,7 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	inputQues : function(array){
 		var cc = this.cellid();
-		if(cc==-1){ return;}
+		if(cc===null){ return;}
 
 		var flag=false;
 		if(cc!=tc.getTCC() && !this.inputQuesDirectly){
@@ -352,7 +352,7 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	inputMB : function(){
 		var cc = this.cellid();
-		if(cc==-1){ return;}
+		if(cc===null){ return;}
 
 		if(this.btn.Left){
 			if     (bd.QsC(cc)==0){ bd.sQsC(cc, 1);}
@@ -376,7 +376,7 @@ MouseEvent.prototype = {
 
 		var inp = 0;
 		var cc = bd.cnum(this.mouseCell.x, this.mouseCell.y);
-		if(cc!=-1 && bd.QnC(cc)!=-1){
+		if(cc!==null && bd.QnC(cc)!=-1){
 			if     (pos.y-this.mouseCell.y==-2){ inp=k.UP;}
 			else if(pos.y-this.mouseCell.y== 2){ inp=k.DN;}
 			else if(pos.x-this.mouseCell.x==-2){ inp=k.LT;}
@@ -395,8 +395,8 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	inputtile : function(){
 		var cc = this.cellid();
-		if(cc==-1 || cc==this.mouseCell || bd.QuC(cc)==51){ return;}
-		if(this.inputData==-1){ this.decIC(cc);}
+		if(cc===null || cc===this.mouseCell || bd.QuC(cc)===51){ return;}
+		if(this.inputData===null){ this.decIC(cc);}
 
 		this.mouseCell = cc; 
 		var areaid = area.getRoomID(cc);
@@ -421,19 +421,19 @@ MouseEvent.prototype = {
 		var pos = this.borderpos(0);
 		var cc = bd.cnum(pos.x, pos.y);
 
-		if((pos.x==-1 && pos.y>bd.minby && pos.y<bd.maxby) || (pos.y==-1 && pos.x>bd.minbx && pos.x<bd.maxbx)){
+		if((pos.x===-1 && pos.y>bd.minby && pos.y<bd.maxby) || (pos.y===-1 && pos.x>bd.minbx && pos.x<bd.maxbx)){
 			var tcp=tc.getTCP();
 			tc.setTCP(new Pos(pos.x,pos.y));
 			pc.paintPos(tcp);
 			pc.paintPos(pos);
 			return;
 		}
-		else if(cc!=-1 && cc!=tc.getTCC()){
+		else if(cc!==null && cc!==tc.getTCC()){
 			var tcp=tc.getTCP();
 			tc.setTCC(cc);
 			pc.paintPos(tcp);
 		}
-		else if(cc!=-1){
+		else if(cc!==null){
 			if(this.btn.Left){
 				if(bd.QuC(cc)!=51){ this.set51cell(cc,true);}
 				else{ kc.chtarget('shift');}
@@ -466,9 +466,9 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	inputcross : function(){
 		var cc = this.crossid();
-		if(cc==-1 || cc==this.mouseCell){ return;}
+		if(cc===null || cc===this.mouseCell){ return;}
 
-		if(cc==tc.getTXC()){
+		if(cc===tc.getTXC()){
 			if(this.btn.Left){
 				if(bd.QnX(cc)==4){ bd.sQnX(cc,-2);}
 				else{ bd.sQnX(cc,bd.QnX(cc)+1);}
@@ -513,14 +513,14 @@ MouseEvent.prototype = {
 		if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 		var id = bd.bnum(pos.x, pos.y);
-		if(id==-1 && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
+		if(id===null && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
 
-		if(this.mouseCell!=-1 && id!=-1){
+		if(this.mouseCell!==null && id!==null){
 			if((pos.x%2==0 && this.mouseCell.x==pos.x && Math.abs(this.mouseCell.y-pos.y)==1) ||
 			   (pos.y%2==0 && this.mouseCell.y==pos.y && Math.abs(this.mouseCell.x-pos.x)==1) )
 			{
-				this.mouseCell=-1;
-				if(this.inputData==-1){ this.inputData=(bd.isBorder(id)?0:1);}
+				this.mouseCell=null;
+				if(this.inputData==null){ this.inputData=(bd.isBorder(id)?0:1);}
 
 				if(!(k.playmode && bd.QuB(id)!==0)){
 					if     (this.inputData==1){ bd.setBorder(id); if(k.isborderAsLine){ bd.sQsB(id, 0);} }
@@ -544,9 +544,10 @@ MouseEvent.prototype = {
 	inputQsubLine : function(){ this.inputLine1(1);},
 	inputLine1 : function(flag){
 		var pos = this.borderpos(0);
-		if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
+		if(this.mouseCell===null){ this.mouseCell = pos;}
+		if(pos.x===this.mouseCell.x && pos.y===this.mouseCell.y){ return;}
 
-		var id = -1;
+		var id = null;
 		if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1);}
 		else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1);}
 		else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  );}
@@ -554,19 +555,19 @@ MouseEvent.prototype = {
 
 		this.mouseCell = pos;
 		if(this.inputData==2 || this.inputData==3){ this.inputpeke2(id);}
-		else if(this.mouseCell!=-1 && id!=-1){
+		else if(this.mouseCell!==null && id!==null){
 			if     (flag==0) this.inputLine2(id);
 			else if(flag==1) this.inputqsub2(id);
 		}
 	},
 	inputLine2 : function(id){
-		if(this.inputData==-1){ this.inputData=(bd.isLine(id)?0:1);}
+		if(this.inputData===null){ this.inputData=(bd.isLine(id)?0:1);}
 		if     (this.inputData==1){ bd.setLine(id);}
 		else if(this.inputData==0){ bd.removeLine(id);}
 		pc.paintLine(id);
 	},
 	inputqsub2 : function(id){
-		if(this.inputData==-1){ this.inputData=(bd.QsB(id)==0?1:0);}
+		if(this.inputData===null){ this.inputData=(bd.QsB(id)==0?1:0);}
 		if     (this.inputData==1){ bd.sQsB(id, 1);}
 		else if(this.inputData==0){ bd.sQsB(id, 0);}
 		pc.paintLine(id);
@@ -579,13 +580,13 @@ MouseEvent.prototype = {
 	inputpeke : function(){
 		var pos = this.borderpos(0.22);
 		var id = bd.bnum(pos.x, pos.y);
-		if(id==-1 || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
+		if(id===null || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
 
 		this.mouseCell = pos;
 		this.inputpeke2(id);
 	},
 	inputpeke2 : function(id){
-		if(this.inputData==-1){ if(bd.QsB(id)==0){ this.inputData=2;}else{ this.inputData=3;} }
+		if(this.inputData===null){ if(bd.QsB(id)==0){ this.inputData=2;}else{ this.inputData=3;} }
 		if     (this.inputData==2){ bd.setPeke(id);}
 		else if(this.inputData==3){ bd.removeLine(id);}
 		pc.paintLine(id);
@@ -623,11 +624,11 @@ MouseEvent.prototype = {
 	dispRedLine : function(){
 		var id = this.borderid(0.15);
 		this.mousereset();
-		if(id!=-1 && id==this.mouseCell){ return;}
+		if(id!==null && id===this.mouseCell){ return;}
 
 		if(!bd.isLine(id)){
 			var cc = (!k.isborderAsLine?this.cellid():this.crossid());
-			if(cc==-1 || (line.iscrossing(cc) && (line.lcntCell(cc)==3 || line.lcntCell(cc)==4))){ return;}
+			if(cc===null || (line.iscrossing(cc) && (line.lcntCell(cc)==3 || line.lcntCell(cc)==4))){ return;}
 
 			var bx, by;
 			if(k.isbordeAsLine==0){ bx = (cc%k.qcols)<<1, by = (cc/k.qcols)<<1;}
@@ -637,10 +638,10 @@ MouseEvent.prototype = {
 				else if(bd.isLine(bd.bnum(bx+1,by))){ return bd.bnum(bx+1,by);}
 				else if(bd.isLine(bd.bnum(bx,by-1))){ return bd.bnum(bx,by-1);}
 				else if(bd.isLine(bd.bnum(bx,by+1))){ return bd.bnum(bx,by+1);}
-				return -1;
+				return null;
 			})(bx,by);
 		}
-		if(id==-1){ return;}
+		if(id===null){ return;}
 
 		bd.sErBAll(2); bd.sErB(line.data[line.data.id[id]].idlist,1);
 		ans.errDisp = true;

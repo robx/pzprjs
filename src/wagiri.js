@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ごきげんななめ・輪切版 wagiri.js v3.3.0
+// パズル固有スクリプト部 ごきげんななめ・輪切版 wagiri.js v3.3.1
 //
 Puzzles.wagiri = function(){ };
 Puzzles.wagiri.prototype = {
@@ -86,7 +86,7 @@ Puzzles.wagiri.prototype = {
 					pc.paintCell(cc0);
 					pc.paintCell(cc);
 				}
-				else if(cc!=-1){
+				else if(cc!==null){
 					var trans = (this.btn.Left ? [-1,1,0,2,-2] : [2,-2,0,-1,1]);
 					bd.sQnC(cc,trans[bd.QnC(cc)+2]);
 					pc.paintCell(cc);
@@ -105,7 +105,7 @@ Puzzles.wagiri.prototype = {
 
 		mv.inputslash = function(){
 			var cc = this.cellid();
-			if(cc==-1){ return;}
+			if(cc===null){ return;}
 
 			var use = pp.getVal('use');
 			if     (use===1){ bd.sQaC(cc, (bd.QaC(cc)!=(this.btn.Left?1:2)?(this.btn.Left?1:2):-1));}
@@ -135,7 +135,7 @@ Puzzles.wagiri.prototype = {
 				else if(ca=='-'){ val=-2;}
 				else if(ca==' '){ val=-1;}
 
-				if(cc!==-1 && val!==0){
+				if(cc!==null && val!==0){
 					bd.sQnC(cc,(bd.QnC(cc)!==val?val:-1));
 					pc.paintCell(cc);
 				}
@@ -303,49 +303,48 @@ Puzzles.wagiri.prototype = {
 		};
 
 		ans.getSlashData = function(){
-			var check=[], scnt=this.getScnt();
-			for(var c=0;c<bd.cellmax;c++) { check[c] =(bd.QaC(c)!==-1?0:-1);}
+			var sdata=[], scnt=this.getScnt();
+			for(var c=0;c<bd.cellmax;c++){ sdata[c] =(bd.QaC(c)!==-1?0:-1);}
 			for(var c=0;c<bd.cellmax;c++){
-				if(check[c]!==0){ continue;}
+				if(sdata[c]!==0){ continue;}
 				// history -> スタックみたいなオブジェクト
 				var history={cell:[],cross:[]};
-				for(var cc=0;cc<bd.cellmax;cc++) { history.cell[cc] =(check[cc]!==-1?0:-1);}
-				for(var xc=0;xc<bd.crossmax;xc++){ history.cross[xc]=(scnt[xc]>0    ?0:-1);}
+				for(var cc=0;cc<bd.cellmax;cc++) { history.cell[cc] =0;}
+				for(var xc=0;xc<bd.crossmax;xc++){ history.cross[xc]=0;}
 
-				var fc = (bd.QaC(c)===1 ? bd.xnum(bd.cell[c].bx-1, bd.cell[c].by-1)
-										: bd.xnum(bd.cell[c].bx+1, bd.cell[c].by+1));
-				this.sp0(fc, 1, scnt, check, history);
+				var fc = bd.xnum(bd.cell[c].bx+(bd.QaC(c)===1 ? -1 : 1), bd.cell[c].by-1);
+				this.sp0(fc, 1, scnt, sdata, history);
 			}
-			for(var c=0;c<bd.cellmax;c++) { if(check[c]===0){ check[c]=2;} }
-			return check;
+			for(var c=0;c<bd.cellmax;c++){ if(sdata[c]===0){ sdata[c]=2;} }
+			return sdata;
 		};
-		ans.sp0 = function(xc, depth, scnt, check, history){
+		ans.sp0 = function(xc, depth, scnt, sdata, history){
 			// 過ぎ去った地点に到達した→その地点からココまではループしてる
 			if(history.cross[xc]>0){
 				var min = history.cross[xc];
-				for(var cc=0;cc<bd.cellmax;cc++){ if(history.cell[cc]>=min){ check[cc]=1;} }
+				for(var cc=0;cc<bd.cellmax;cc++){ if(history.cell[cc]>=min){ sdata[cc]=1;} }
 				return;
 			}
 
 			// 別に到達していない -> 隣に進んでみる
 			history.cross[xc] = depth; // この交点にマーキング
-			var bx=bd.cross[xc].bx, by=bd.cross[xc].by, isloop=false;
+			var bx=bd.cross[xc].bx, by=bd.cross[xc].by;
 			var nb = [
-					{ cell:bd.cnum(bx-1,by-1), cross:bd.xnum(bx-2,by-2), qans:1},
-					{ cell:bd.cnum(bx+1,by-1), cross:bd.xnum(bx+2,by-2), qans:2},
-					{ cell:bd.cnum(bx-1,by+1), cross:bd.xnum(bx-2,by+2), qans:2},
-					{ cell:bd.cnum(bx+1,by+1), cross:bd.xnum(bx+2,by+2), qans:1}
-				];
+				{ cell:bd.cnum(bx-1,by-1), cross:bd.xnum(bx-2,by-2), qans:1},
+				{ cell:bd.cnum(bx+1,by-1), cross:bd.xnum(bx+2,by-2), qans:2},
+				{ cell:bd.cnum(bx-1,by+1), cross:bd.xnum(bx-2,by+2), qans:2},
+				{ cell:bd.cnum(bx+1,by+1), cross:bd.xnum(bx+2,by+2), qans:1}
+			];
 			for(var i=0;i<4;i++){
-				if( nb[i].cell===-1 ||					// そっちは盤面の外だよ！
+				if( nb[i].cell===null ||				// そっちは盤面の外だよ！
 					history.cell[nb[i].cell]!==0 ||		// そっちは通って来た道だよ！
 					nb[i].qans!==bd.QaC(nb[i].cell) ||	// そっちは繋がってない。
 					scnt[nb[i].cross]===1 || 			// そっちは行き止まり。
-					check[nb[i].cell]===1 )		// checkが1になってるってことは前にそっちから既に来ている
-				{ continue;}					// 先に分岐があるとしても、その時に探索済みです.
+					sdata[nb[i].cell]===1 )		// sdataが1になってるってことは前にそっちから既に来ている
+				{ continue;}					//  -> 先に分岐があるとしても、既に探索済みです.
 
 				history.cell[nb[i].cell] = depth;	 // 隣のセルにマーキング
-				this.sp0(nb[i].cross, depth+1, scnt, check, history);
+				this.sp0(nb[i].cross, depth+1, scnt, sdata, history);
 				history.cell[nb[i].cell] = 0;		 // セルのマーキングを外す
 			}
 			history.cross[xc] = 0; // 交点のマーキングを外す

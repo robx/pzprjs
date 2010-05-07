@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.3.0
+// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.3.1
 //
 Puzzles.hakoiri = function(){ };
 Puzzles.hakoiri.prototype = {
@@ -73,9 +73,9 @@ Puzzles.hakoiri.prototype = {
 
 		mv.inputmark = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell){ return;}
+			if(cc===null || cc===this.mouseCell){ return;}
 
-			if(cc==tc.getTCC()){
+			if(cc===tc.getTCC()){
 				this.inputmark3(cc);
 				this.mouseCell = cc;
 			}
@@ -109,7 +109,7 @@ Puzzles.hakoiri.prototype = {
 
 		mv.inputDot = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell || this.inputData!=1 || bd.QnC(cc)!=-1){ return;}
+			if(cc===null || cc==this.mouseCell || this.inputData!=1 || bd.QnC(cc)!=-1){ return;}
 			var cc0 = tc.getTCC(); tc.setTCC(cc);
 			bd.sQaC(cc,-1);
 			bd.sQsC(cc,1);
@@ -296,7 +296,7 @@ Puzzles.hakoiri.prototype = {
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.getNum(c)<0){ continue;}
 				var bx = bd.cell[c].bx, by = bd.cell[c].by, target=0, clist=[c];
-				var func = function(cc){ return (cc!=-1 && bd.getNum(c)==bd.getNum(cc));};
+				var func = function(cc){ return (cc!==null && bd.getNum(c)==bd.getNum(cc));};
 				// 右・左下・下・右下だけチェック
 				target = bd.cnum(bx+2,by  ); if(func(target)){ clist.push(target);}
 				target = bd.cnum(bx  ,by+2); if(func(target)){ clist.push(target);}
