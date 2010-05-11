@@ -46,10 +46,14 @@ Menu = function(){
 	this.EL_SMENU    = ee.addTemplate('','li', {className:'smenu'}, null, smenu_funcs);
 	this.EL_SPARENT  = ee.addTemplate('','li', {className:'smenu'}, null, select_funcs);
 	this.EL_SELECT   = ee.addTemplate('','li', {className:'smenu'}, {fontWeight :'900', fontSize:'10pt'}, select_funcs);
-	this.EL_SEPARATE = ee.addTemplate('','li', {className:'smenusep', innerHTML:'&nbsp;'}, null, null);
 	this.EL_CHECK    = ee.addTemplate('','li', {className:'smenu'}, {paddingLeft:'6pt', fontSize:'10pt'}, smenu_funcs);
 	this.EL_LABEL    = ee.addTemplate('','li', {className:'smenulabel'}, null, null);
-	this.EL_CHILD = this.EL_CHECK;
+	this.EL_CHILD    = this.EL_CHECK;
+	this.EL_SEPARATE = (
+		// IE7以下向けのCSSハックをやめて、ここで設定するようにした
+		(!k.br.IE6) ? ee.addTemplate('','li', {className:'smenusep', innerHTML:'&nbsp;'}, null, null)
+					: ee.addTemplate('','li', {className:'smenusep', innerHTML:'&nbsp;'}, {lineHeight :'2pt', display:'inline'}, null)
+	);
 
 	// ElementTemplate : 管理領域
 	this.EL_DIVPACK  = ee.addTemplate('','div',  null, null, null);
@@ -318,14 +322,8 @@ Menu.prototype = {
 
 	//---------------------------------------------------------------------------
 	// menu.createAllFloat() 登録されたサブメニューから全てのフロートメニューを作成する
-	// menu.csshack_forIE6() セパレータのstyleを変更する
 	//---------------------------------------------------------------------------
 	createAllFloat : function(){
-		var _IE6 = false;
-		if(navigator.userAgent.match(/MSIE (\d+)/)){
-			if(parseInt(RegExp.$1)<=7){ _IE6=true;}
-		}
-
 		for(var i=0;i<pp.flaglist.length;i++){
 			var id = pp.flaglist[i];
 			if(!pp.flags[id]){ continue;}
@@ -333,7 +331,7 @@ Menu.prototype = {
 			var smenu, smenuid = 'ms_'+id;
 			switch(pp.type(id)){
 				case pp.MENU:     smenu = ee.createEL(this.EL_MENU,    smenuid); continue; break;
-				case pp.SEPARATE: smenu = ee.createEL(this.EL_SEPARATE,smenuid); if(_IE6){ this.csshack_forIE6(smenu);} break;
+				case pp.SEPARATE: smenu = ee.createEL(this.EL_SEPARATE,smenuid); break;
 				case pp.LABEL:    smenu = ee.createEL(this.EL_LABEL,   smenuid); break;
 				case pp.SELECT:   smenu = ee.createEL(this.EL_SELECT,  smenuid); break;
 				case pp.SMENU:    smenu = ee.createEL(this.EL_SMENU,   smenuid); break;
@@ -358,7 +356,7 @@ Menu.prototype = {
 		for(var i=1,len=el.childNodes.length;i<len;i++){
 			var node = el.childNodes[i];
 			if(fw!=node.style.fontWeight){
-				var smenu = ee.createEL(this.EL_SEPARATE,''); if(_IE6){ this.csshack_forIE6(smenu);}
+				var smenu = ee.createEL(this.EL_SEPARATE,'');
 				ee(smenu).insertBefore(node);
 				i++; len++; // 追加したので1たしておく
 			}
@@ -374,13 +372,6 @@ Menu.prototype = {
 		ee('ms_jumpv3')  .el.style.fontSize = '10pt'; ee('ms_jumpv3')  .el.style.paddingLeft = '8pt';
 		ee('ms_jumptop') .el.style.fontSize = '10pt'; ee('ms_jumptop') .el.style.paddingLeft = '8pt';
 		ee('ms_jumpblog').el.style.fontSize = '10pt'; ee('ms_jumpblog').el.style.paddingLeft = '8pt';
-	},
-	// IE7以下向けのCSSハックをやめて、ここで設定するようにした
-	csshack_forIE6 : function(smenu){
-		if(smenu.className == 'smenusep'){
-			smenu.style.lineHeight = '2pt';
-			smenu.style.display = 'inline';
-		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -460,7 +451,7 @@ Menu.prototype = {
 			_float.style.top  = rect.bottom + 1 + 'px';
 		}
 		else{
-			if(!k.br.IEmoz4){
+			if(!k.br.IE6){
 				_float.style.left = rect.right - 3 + 'px';
 				_float.style.top  = rect.top   - 3 + 'px';
 			}

@@ -187,7 +187,7 @@ PBase.prototype = {
 		ee('title2').el.innerHTML = this.gettitle();
 
 		_doc.body.style.backgroundImage = "url(./bg/"+k.puzzleid+".gif)";
-		if(k.br.IEmoz4){
+		if(k.br.IE6){
 			ee('title2').el.style.marginTop = "24px";
 			ee('separator1').el.style.margin = '0pt';
 			ee('separator2').el.style.margin = '0pt';
