@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.3.0
+// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.3.1
 //
 Puzzles.tilepaint = function(){ };
 Puzzles.tilepaint.prototype = {
@@ -73,24 +73,18 @@ Puzzles.tilepaint.prototype = {
 			}
 			else if(k.playmode) this.inputtile();
 		};
-		mv.set51cell = function(cc,val){
-			if(val==true){
-				bd.sQuC(cc,51);
-				bd.sQnC(cc, 0);
-				bd.sDiC(cc, 0);
-				bd.setWhite(cc);
-				bd.sQsC(cc, 0);
-				if(bd.ub(cc)!==null){ bd.sQuB(bd.ub(cc), ((bd.up(cc)!==null && bd.QuC(bd.up(cc))!=51)?1:0));}
-				if(bd.db(cc)!==null){ bd.sQuB(bd.db(cc), ((bd.dn(cc)!==null && bd.QuC(bd.dn(cc))!=51)?1:0));}
-				if(bd.lb(cc)!==null){ bd.sQuB(bd.lb(cc), ((bd.lt(cc)!==null && bd.QuC(bd.lt(cc))!=51)?1:0));}
-				if(bd.rb(cc)!==null){ bd.sQuB(bd.rb(cc), ((bd.rt(cc)!==null && bd.QuC(bd.rt(cc))!=51)?1:0));}
-			}
-			else{
-				bd.sQuC(cc, 0);
-				bd.sQnC(cc, 0);
-				bd.sDiC(cc, 0);
-				bd.setWhite(cc);
-				bd.sQsC(cc, 0);
+		mv.set51cell = function(c,val){
+			bd.sQuC(c,(val?51:0));
+			bd.sQnC(c, 0);
+			bd.sDiC(c, 0);
+			bd.setWhite(c);
+			bd.sQsC(c, 0);
+			if(val===true){
+				var id, cc;
+				id=bd.ub(c),cc=bd.up(c); if(id!==null){ bd.sQuB(id, ((cc!==null && bd.QuC(cc)!==51)?1:0));}
+				id=bd.db(c),cc=bd.dn(c); if(id!==null){ bd.sQuB(id, ((cc!==null && bd.QuC(cc)!==51)?1:0));}
+				id=bd.lb(c),cc=bd.lt(c); if(id!==null){ bd.sQuB(id, ((cc!==null && bd.QuC(cc)!==51)?1:0));}
+				id=bd.rb(c),cc=bd.rt(c); if(id!==null){ bd.sQuB(id, ((cc!==null && bd.QuC(cc)!==51)?1:0));}
 			}
 		};
 

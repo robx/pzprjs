@@ -511,21 +511,21 @@ MouseEvent.prototype = {
 	inputborderans : function(){ this.inputBD(1);},
 	inputBD : function(flag){
 		var pos = this.borderpos(0.35);
-		if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
+		if(this.mouseCell===null){ this.mouseCell = pos;}
+		if(pos.x===this.mouseCell.x && pos.y===this.mouseCell.y){ return;}
 
 		var id = bd.bnum(pos.x, pos.y);
-		if(id===null && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
-
-		if(this.mouseCell!==null && id!==null){
-			if((pos.x%2==0 && this.mouseCell.x==pos.x && Math.abs(this.mouseCell.y-pos.y)==1) ||
-			   (pos.y%2==0 && this.mouseCell.y==pos.y && Math.abs(this.mouseCell.x-pos.x)==1) )
+		if(id===null){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
+		if(id!==null){
+			if((pos.x&1===0 && this.mouseCell.x===pos.x && Math.abs(this.mouseCell.y-pos.y)===1) ||
+			   (pos.y&1===0 && this.mouseCell.y===pos.y && Math.abs(this.mouseCell.x-pos.x)===1) )
 			{
 				this.mouseCell=null;
-				if(this.inputData==null){ this.inputData=(bd.isBorder(id)?0:1);}
+				if(this.inputData===null){ this.inputData=(bd.isBorder(id)?0:1);}
 
 				if(!(k.playmode && bd.QuB(id)!==0)){
-					if     (this.inputData==1){ bd.setBorder(id); if(k.isborderAsLine){ bd.sQsB(id, 0);} }
-					else if(this.inputData==0){ bd.removeBorder(id);}
+					if     (this.inputData===1){ bd.setBorder(id); if(k.isborderAsLine){ bd.sQsB(id, 0);} }
+					else if(this.inputData===0){ bd.removeBorder(id);}
 
 					pc.paintBorder(id);
 				}

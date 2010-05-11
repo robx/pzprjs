@@ -75,6 +75,7 @@ Puzzles.hashikake.prototype = {
 
 		mv.inputLine = function(){
 			var pos = this.borderpos(0);
+			if(this.mouseCell===null){ this.mouseCell = pos;}
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = null;

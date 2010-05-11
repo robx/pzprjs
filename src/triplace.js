@@ -76,14 +76,16 @@ Puzzles.triplace.prototype = {
 				else this.inputBGcolor();
 			}
 		};
-		mv.set51cell = function(cc,val){
-			bd.sQuC(cc,(val?51:0));
-			bd.sQnC(cc,-1);
-			bd.sDiC(cc,-1);
-			if(bd.ub(cc)!==null){ bd.sQuB(bd.ub(cc), ((bd.up(cc)!==null && bd.QuC(bd.up(cc))!=51)?1:0));}
-			if(bd.db(cc)!==null){ bd.sQuB(bd.db(cc), ((bd.dn(cc)!==null && bd.QuC(bd.dn(cc))!=51)?1:0));}
-			if(bd.lb(cc)!==null){ bd.sQuB(bd.lb(cc), ((bd.lt(cc)!==null && bd.QuC(bd.lt(cc))!=51)?1:0));}
-			if(bd.rb(cc)!==null){ bd.sQuB(bd.rb(cc), ((bd.rt(cc)!==null && bd.QuC(bd.rt(cc))!=51)?1:0));}
+		mv.set51cell = function(c,val){
+			bd.sQuC(c,(val?51:0));
+			bd.sQnC(c,-1);
+			bd.sDiC(c,-1);
+
+			var id, cc;
+			id=bd.ub(c),cc=bd.up(c); if(id!==null){ bd.sQuB(id, ((cc!==null && bd.QuC(cc)!==51)?1:0));}
+			id=bd.db(c),cc=bd.dn(c); if(id!==null){ bd.sQuB(id, ((cc!==null && bd.QuC(cc)!==51)?1:0));}
+			id=bd.lb(c),cc=bd.lt(c); if(id!==null){ bd.sQuB(id, ((cc!==null && bd.QuC(cc)!==51)?1:0));}
+			id=bd.rb(c),cc=bd.rt(c); if(id!==null){ bd.sQuB(id, ((cc!==null && bd.QuC(cc)!==51)?1:0));}
 		};
 		mv.inputBGcolor = function(){
 			var cc = this.cellid();

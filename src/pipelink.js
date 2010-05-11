@@ -79,14 +79,7 @@ Puzzles.pipelink.prototype = {
 		};
 
 		bd.enableLineNG = true;
-
-		// オーバーライト
-		bd.sQuC = function(id, num) {
-			um.addOpe(k.CELL, k.QUES, id, this.cell[id].ques, num);
-			this.cell[id].ques = num;
-
-			this.checkLPCombined(id);
-		};
+		bd.enableLineCombined = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){

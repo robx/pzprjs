@@ -66,6 +66,7 @@ Puzzles.wblink.prototype = {
 		mv.inputLine = function(){
 			if(this.inputData==2){ return;}
 			var pos = this.borderpos(0);
+			if(this.mouseCell===null){ this.mouseCell = pos;}
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = null;

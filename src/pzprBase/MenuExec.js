@@ -656,13 +656,15 @@ MenuExec.prototype = {
 		for(var by=(d.y1|1);by<=d.y2;by+=2){
 			this.qnumw[by] = [bd.QnE(bd.exnum(-1,by))];
 			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
-				if(bd.QuC(bd.cnum(bx,by))===51){ this.qnumw[by].push(bd.QnC(bd.cnum(bx,by)));}
+				var cc = bd.cnum(bx,by);
+				if(cc!==null && bd.QuC(cc)===51){ this.qnumw[by].push(bd.QnC(cc));}
 			}
 		}
 		for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 			this.qnumh[bx] = [bd.DiE(bd.exnum(bx,-1))];
 			for(var by=(d.y1|1);by<=d.y2;by+=2){
-				if(bd.QuC(bd.cnum(bx,by))===51){ this.qnumh[bx].push(bd.DiC(bd.cnum(bx,by)));}
+				var cc = bd.cnum(bx,by);
+				if(cc!==null && bd.QuC(cc)===51){ this.qnumh[bx].push(bd.DiC(cc));}
 			}
 		}
 	},
@@ -675,7 +677,8 @@ MenuExec.prototype = {
 				idx = 1; this.qnumh[bx] = this.qnumh[bx].reverse();
 				bd.sDiE(bd.exnum(bx,-1), this.qnumh[bx][0]);
 				for(var by=(d.y1|1);by<=d.y2;by+=2){
-					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sDiC(bd.cnum(bx,by), this.qnumh[bx][idx]); idx++;}
+					var cc = bd.cnum(bx,by);
+					if(cc!==null && bd.QuC(cc)===51){ bd.sDiC(cc, this.qnumh[bx][idx]); idx++;}
 				}
 			}
 			break;
@@ -685,7 +688,8 @@ MenuExec.prototype = {
 				idx = 1; this.qnumw[by] = this.qnumw[by].reverse();
 				bd.sQnE(bd.exnum(-1,by), this.qnumw[by][0]);
 				for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
-					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sQnC(bd.cnum(bx,by), this.qnumw[by][idx]); idx++;}
+					var cc = bd.cnum(bx,by);
+					if(cc!==null && bd.QuC(cc)===51){ bd.sQnC(cc, this.qnumw[by][idx]); idx++;}
 				}
 			}
 			break;
@@ -695,14 +699,16 @@ MenuExec.prototype = {
 				idx = 1; this.qnumh[by] = this.qnumh[by].reverse();
 				bd.sQnE(bd.exnum(-1,by), this.qnumh[by][0]);
 				for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
-					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sQnC(bd.cnum(bx,by), this.qnumh[by][idx]); idx++;}
+					var cc = bd.cnum(bx,by);
+					if(cc!==null && bd.QuC(cc)===51){ bd.sQnC(cc, this.qnumh[by][idx]); idx++;}
 				}
 			}
 			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 				idx = 1;
 				bd.sDiE(bd.exnum(bx,-1), this.qnumw[xx-bx][0]);
 				for(var by=(d.y1|1);by<=d.y2;by+=2){
-					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sDiC(bd.cnum(bx,by), this.qnumw[xx-bx][idx]); idx++;}
+					var cc = bd.cnum(bx,by);
+					if(cc!==null && bd.QuC(cc)===51){ bd.sDiC(cc, this.qnumw[xx-bx][idx]); idx++;}
 				}
 			}
 			break;
@@ -712,14 +718,16 @@ MenuExec.prototype = {
 				idx = 1;
 				bd.sQnE(bd.exnum(-1,by), this.qnumh[yy-by][0]);
 				for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
-					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sQnC(bd.cnum(bx,by), this.qnumh[yy-by][idx]); idx++;}
+					var cc = bd.cnum(bx,by);
+					if(cc!==null && bd.QuC(cc)===51){ bd.sQnC(cc, this.qnumh[yy-by][idx]); idx++;}
 				}
 			}
 			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 				idx = 1; this.qnumw[bx] = this.qnumw[bx].reverse();
 				bd.sDiE(bd.exnum(bx,-1), this.qnumw[bx][0]);
 				for(var by=(d.y1|1);by<=d.y2;by+=2){
-					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sDiC(bd.cnum(bx,by), this.qnumw[bx][idx]); idx++;}
+					var cc = bd.cnum(bx,by);
+					if(cc!==null && bd.QuC(cc)===51){ bd.sDiC(cc, this.qnumw[bx][idx]); idx++;}
 				}
 			}
 			break;

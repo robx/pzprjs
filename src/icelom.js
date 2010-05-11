@@ -544,6 +544,7 @@ Puzzles.icelom.prototype = {
 				switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 				if(!((bx+by)&1)){
 					var cc = bd.cnum(bx,by);
+					if(cc===null){ continue;}
 					if(bd.QuC(cc)!=6){
 						if     (line.lcntCell(cc)!=2){ dir=dir;}
 						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}

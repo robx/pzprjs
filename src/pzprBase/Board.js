@@ -237,8 +237,23 @@ Board = function(){
 	this.defborder = new Border(0);
 	this.defexcell = new EXCell(0);
 
+	// isLineNG関連の変数など
 	this.enableLineNG = false;
+	this.enableLineCombined = false;
 
+	this.isLPobj = {};
+	this.isLPobj[k.UP] = {101:1,102:1,104:1,105:1};
+	this.isLPobj[k.DN] = {101:1,102:1,106:1,107:1};
+	this.isLPobj[k.LT] = {101:1,103:1,105:1,106:1};
+	this.isLPobj[k.RT] = {101:1,103:1,104:1,107:1};
+
+	this.noLPobj = {};
+	this.noLPobj[k.UP] = {1:1,4:1,5:1,21:1,103:1,106:1,107:1};
+	this.noLPobj[k.DN] = {1:1,2:1,3:1,21:1,103:1,104:1,105:1};
+	this.noLPobj[k.LT] = {1:1,2:1,5:1,22:1,102:1,104:1,107:1};
+	this.noLPobj[k.RT] = {1:1,3:1,4:1,22:1,102:1,105:1,106:1};
+
+	// 盤面サイズの初期化
 	this.initBoardSize(k.qcols,k.qrows);
 };
 Board.prototype = {
@@ -615,6 +630,7 @@ Board.prototype = {
 	dn : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx  ,this.cell[cc].by+2):null;},	//下のセルのIDを求める
 	lt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx-2,this.cell[cc].by  ):null;},	//左のセルのIDを求める
 	rt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx+2,this.cell[cc].by  ):null;},	//右のセルのIDを求める
+
 	//---------------------------------------------------------------------------
 	// bd.ub() bd.db() bd.lb() bd.rb()  セルの上下左右にある境界線のIDを返す
 	//---------------------------------------------------------------------------
@@ -624,59 +640,56 @@ Board.prototype = {
 	rb : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx+1,this.cell[cc].by  ):null;},	//セルの右の境界線のIDを求める
 
 	//---------------------------------------------------------------------------
-	// bd.bcntCross() 指定された位置のCrossの周り4マスのうちqans==1のマスの数を求める
+	// bd.isLineEX() 線が必ず存在するborderの条件を判定する
+	// bd.isLP***()  線が必ず存在するセルの条件を判定する
+	// 
+	// bd.isLineNG() 線が引けないborderの条件を判定する
+	// bd.noLP***()  線が引けないセルの条件を判定する
 	//---------------------------------------------------------------------------
-	bcntCross : function(c) {
-		var cnt=0, bx=bd.cross[c].bx, by=bd.cross[c].by;
-		if(this.isBlack(this.cnum(bx-1, by-1))){ cnt++;}
-		if(this.isBlack(this.cnum(bx+1, by-1))){ cnt++;}
-		if(this.isBlack(this.cnum(bx-1, by+1))){ cnt++;}
-		if(this.isBlack(this.cnum(bx+1, by+1))){ cnt++;}
-		return cnt;
+	// bd.sQuC => bd.setCombinedLineから呼ばれる関数 (exist->ex)
+	//  -> cellidの片方がnullになっていることを考慮していません
+	isLineEX : function(id){
+		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+		return bd.border[id].bx&1 ? (bd.isLP(cc1,k.DN) && bd.isLP(cc2,k.UP)) :
+									(bd.isLP(cc1,k.RT) && bd.isLP(cc2,k.LT));
+	},
+	isLP : function(cc,dir){
+		return !!this.isLPobj[dir][this.cell[cc].ques];
+	},
+
+	// bd.sLiB => bd.checkStableLineから呼ばれる関数
+	//  -> cellidの片方がnullになっていることを考慮していません
+	isLineNG : function(id){
+		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+		return bd.border[id].bx&1 ? (bd.noLP(cc1,k.DN) || bd.noLP(cc2,k.UP)) :
+									(bd.noLP(cc1,k.RT) || bd.noLP(cc2,k.LT));
+	},
+	// ans.checkenableLinePartsからnoLP()関数が直接呼ばれている
+	noLP : function(cc,dir){
+		return !!this.noLPobj[dir][this.cell[cc].ques];
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.isLPup(), bd.isLPdown(), bd.isLPleft(), bd.isLPright()
-	//   上下左右にLinePartsが存在しているか判定する
-	// bd.isnoLPup(), bd.isnoLPdown(), bd.isnoLPleft(), bd.isnoLPright()
-	//   上下左右が線が引けない条件になっているか判定する
+	// bd.checkStableLine() 線が引けない or 必ず存在する状態になっているか判定する
+	// bd.setCombinedLine() 自分のセルの設定に応じて周りの線を設定する
 	//---------------------------------------------------------------------------
-	isLPup    : function(cc){ return ({101:1,102:1,104:1,105:1}[this.QuC(cc)] === 1);},
-	isLPdown  : function(cc){ return ({101:1,102:1,106:1,107:1}[this.QuC(cc)] === 1);},
-	isLPleft  : function(cc){ return ({101:1,103:1,105:1,106:1}[this.QuC(cc)] === 1);},
-	isLPright : function(cc){ return ({101:1,103:1,104:1,107:1}[this.QuC(cc)] === 1);},
-	isnoLPup    : function(cc){ return ({1:1,4:1,5:1,21:1,103:1,106:1,107:1}[this.QuC(cc)] === 1);},
-	isnoLPdown  : function(cc){ return ({1:1,2:1,3:1,21:1,103:1,104:1,105:1}[this.QuC(cc)] === 1);},
-	isnoLPleft  : function(cc){ return ({1:1,2:1,5:1,22:1,102:1,104:1,107:1}[this.QuC(cc)] === 1);},
-	isnoLPright : function(cc){ return ({1:1,3:1,4:1,22:1,102:1,105:1,106:1}[this.QuC(cc)] === 1);},
-	//---------------------------------------------------------------------------
-	// bd.isLPMarked()      Lineのどちらか側にLinePartsが存在しているかどうか判定する
-	// bd.isLPCombined()    Lineの2方向ともLinePartsが存在しているかどうか判定する
-	// bd.isLineNG()        Lineのどちらかが、線が引けないようになっているか判定する
-	// bd.isLP()            上の3つの共通関数
-	// bd.checkLPCombined() 線がつながっているかどうか見て、Line==1を設定する
-	//---------------------------------------------------------------------------
-	isLPMarked : function(id){
-		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-		return bd.border[id].bx&1 ? (bd.isLPdown(cc1) || bd.isLPup(cc2)) :
-									(bd.isLPright(cc1) || bd.isLPleft(cc2));
+	// [pipelink, loopsp], [barns, slalom, reflect, yajirin]で呼ばれる関数
+	checkStableLine : function(id, num){	// bd.sLiBから呼ばれる
+		if(this.enableLineCombined){
+			return ( (num!==0 && this.isLineNG(id)) ||
+					 (num===0 && this.isLineEX(id)) );
+		}
+		return (num!==0 && this.isLineNG(id));
 	},
-	isLPCombined : function(id){
-		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-		return bd.border[id].bx&1 ? (bd.isLPdown(cc1) && bd.isLPup(cc2)) :
-									(bd.isLPright(cc1) && bd.isLPleft(cc2));
-	},
-	isLineNG : function(id){
-		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-		return bd.border[id].bx&1 ? (bd.isnoLPdown(cc1) || bd.isnoLPup(cc2)) :
-									(bd.isnoLPright(cc1) || bd.isnoLPleft(cc2));
-	},
-	checkLPCombined : function(cc){
-		var id;
-		id = this.ub(cc); if(!!this.border[id] && this.border[id].line===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.db(cc); if(!!this.border[id] && this.border[id].line===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.lb(cc); if(!!this.border[id] && this.border[id].line===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.rb(cc); if(!!this.border[id] && this.border[id].line===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+	setCombinedLine : function(cc){	// bd.sQuBから呼ばれる
+		var bx=bd.cell[cc].bx, by=bd.cell[cc].by;
+		var idlist = this.borderinside(bx-1,by-1,bx+1,by+1);
+		for(var i=0;i<idlist.length;i++){
+			var id=idlist[i];
+			if        (this.border[id].line===0 && this.isLineEX(id)){ this.sLiB(id,1);}
+			// 黒マスが入力されたら線を消すとかやりたい場合、↓のコメントアウトをはずす
+			// else if(this.border[id].line!==0 && this.isLineNG(id)){ this.sLiB(id,0);}
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -698,6 +711,8 @@ Board.prototype = {
 	sQuC : function(id, num) {
 		um.addOpe(k.CELL, k.QUES, id, this.cell[id].ques, num);
 		this.cell[id].ques = num;
+
+		if(this.enableLineCombined){ this.setCombinedLine(id);}
 	},
 	// overwrite by lightup.js and kakuro.js
 	sQnC : function(id, num) {
@@ -732,7 +747,7 @@ Board.prototype = {
 		this.cell[id].direc = num;
 	},
 
-	QuC : function(id){ return (!!this.cell[id]?this.cell[id].ques:undef);},
+	QuC : function(id){ return this.cell[id].ques;},
 	QnC : function(id){ return (!!this.cell[id]?this.cell[id].qnum:undef);},
 	QaC : function(id){ return (!!this.cell[id]?this.cell[id].qans:undef);},
 	QsC : function(id){ return (!!this.cell[id]?this.cell[id].qsub:undef);},
@@ -808,7 +823,7 @@ Board.prototype = {
 		this.border[id].qsub = num;
 	},
 	sLiB : function(id, num) {
-		if(this.enableLineNG && (num===1?bd.isLineNG:bd.isLPCombined)(id)){ return;}
+		if(this.enableLineNG && this.checkStableLine(id,num)){ return;}
 
 		var old = this.border[id].line;
 		um.addOpe(k.BORDER, k.LINE, id, old, num);

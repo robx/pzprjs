@@ -102,7 +102,7 @@ Puzzles.slalom.prototype = {
 			pc.paintCell(cc0);
 		};
 		mv.inputGate = function(){
-			var cc   = this.cellid();
+			var cc = this.cellid();
 			if(cc===null){ return;}
 			var cpos = this.borderpos(0);
 
@@ -841,12 +841,12 @@ Hurdle.prototype = {
 		return clist;
 	},
 	// 黒マスの周りに繋がっている旗門IDをリストにして返す
-	getConnectingGate : function(cc){
-		var idlist = [];
-		if(bd.QuC(bd.up(cc))==21){ idlist.push(this.gateid[bd.up(cc)]);}
-		if(bd.QuC(bd.dn(cc))==21){ idlist.push(this.gateid[bd.dn(cc)]);}
-		if(bd.QuC(bd.lt(cc))==22){ idlist.push(this.gateid[bd.lt(cc)]);}
-		if(bd.QuC(bd.rt(cc))==22){ idlist.push(this.gateid[bd.rt(cc)]);}
+	getConnectingGate : function(c){
+		var cc, idlist=[];
+		cc=bd.up(c); if(cc!==null && bd.QuC(cc)===21){ idlist.push(this.gateid[cc]);}
+		cc=bd.dn(c); if(cc!==null && bd.QuC(cc)===21){ idlist.push(this.gateid[cc]);}
+		cc=bd.lt(c); if(cc!==null && bd.QuC(cc)===22){ idlist.push(this.gateid[cc]);}
+		cc=bd.rt(c); if(cc!==null && bd.QuC(cc)===22){ idlist.push(this.gateid[cc]);}
 		return idlist;
 	},
 
@@ -872,9 +872,12 @@ Hurdle.prototype = {
 
 			this.max++;
 			this.data[this.max] = new HurdleData();
-			while(bd.QuC(bd.cnum(bx,by))==val){
-				this.data[this.max].clist.push(bd.cnum(bx,by));
-				this.gateid[bd.cnum(bx,by)]=this.max;
+			while(1){
+				var cc = bd.cnum(bx,by);
+				if(cc===null || bd.QuC(cc)!==val){ break;}
+
+				this.data[this.max].clist.push(cc);
+				this.gateid[cc]=this.max;
 				if(val==21){ by+=2;}else{ bx+=2;}
 			}
 			this.data[this.max].x1 = bd.cell[c].bx;

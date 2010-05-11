@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.3.0
+// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.3.1
 // 
 Puzzles.yajirin = function(){ };
 Puzzles.yajirin.prototype = {
@@ -79,10 +79,7 @@ Puzzles.yajirin.prototype = {
 		};
 
 		// 線を引かせたくないので上書き
-		bd.isnoLPup    = function(cc){ return (bd.isBlack(cc) || bd.QnC(cc)!=-1);},
-		bd.isnoLPdown  = function(cc){ return (bd.isBlack(cc) || bd.QnC(cc)!=-1);},
-		bd.isnoLPleft  = function(cc){ return (bd.isBlack(cc) || bd.QnC(cc)!=-1);},
-		bd.isnoLPright = function(cc){ return (bd.isBlack(cc) || bd.QnC(cc)!=-1);},
+		bd.isnoLP = function(cc,dir){ return (bd.isBlack(cc) || bd.QnC(cc)!=-1);},
 		bd.enableLineNG = true;
 
 		// キーボード入力系

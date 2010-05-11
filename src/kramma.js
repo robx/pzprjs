@@ -66,6 +66,7 @@ Puzzles.kramma.prototype = {
 		// オーバーライド
 		mv.inputBD = function(flag){
 			var pos = this.borderpos(0.35);
+			if(this.mouseCell===null){ this.mouseCell = pos;}
 			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
 
 			var id = bd.bnum(pos.x, pos.y);

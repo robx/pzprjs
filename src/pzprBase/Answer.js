@@ -171,20 +171,6 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkQnumCross()  crossが条件func==falseの時、エラーを設定する
-	//---------------------------------------------------------------------------
-	checkQnumCross : function(func){	//func(cr,bcnt){} -> エラーならfalseを返す関数にする
-		for(var c=0;c<bd.crossmax;c++){
-			if(bd.QnX(c)<0){ continue;}
-			if(!func(bd.QnX(c), bd.bcntCross(c))){
-				bd.sErX([c],1);
-				return false;
-			}
-		}
-		return true;
-	},
-
-	//---------------------------------------------------------------------------
 	// ans.checkOneLoop()  交差あり線が一つかどうか判定する
 	// ans.checkLcntCell() セルから出ている線の本数について判定する
 	// ans.isLineStraight()   セルの上で線が直進しているか判定する
@@ -258,10 +244,10 @@ AnsCheck.prototype = {
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
 			var iserror = false, id=null;
-			id=bd.ub(c); if(iserror || (id!==null && bd.isLine(id) && bd.isnoLPup(c)))   { iserror=true;}
-			id=bd.db(c); if(iserror || (id!==null && bd.isLine(id) && bd.isnoLPdown(c))) { iserror=true;}
-			id=bd.lb(c); if(iserror || (id!==null && bd.isLine(id) && bd.isnoLPleft(c))) { iserror=true;}
-			id=bd.rb(c); if(iserror || (id!==null && bd.isLine(id) && bd.isnoLPright(c))){ iserror=true;}
+			id=bd.ub(c); if(iserror || (id!==null && bd.isLine(id) && bd.noLP(c,k.UP))){ iserror=true;}
+			id=bd.db(c); if(iserror || (id!==null && bd.isLine(id) && bd.noLP(c,k.DN))){ iserror=true;}
+			id=bd.lb(c); if(iserror || (id!==null && bd.isLine(id) && bd.noLP(c,k.LT))){ iserror=true;}
+			id=bd.rb(c); if(iserror || (id!==null && bd.isLine(id) && bd.noLP(c,k.RT))){ iserror=true;}
 			if(iserror){
 				if(this.inAutoCheck){ return false;}
 				bd.sErC([c],1);
