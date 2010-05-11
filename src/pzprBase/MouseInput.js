@@ -103,8 +103,8 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// mv.setButtonFlag() 左/中/右ボタンが押されているか設定する
 	//---------------------------------------------------------------------------
-	setButtonFlag : (
-		((k.br.IE) ?
+	setButtonFlag : function(e){
+		this.setButtonFlag = ((k.br.IE) ?
 			function(e){ this.btn = { Left:(e.button===1), Middle:(e.button===4), Right:(e.button===2)};}
 		:(k.br.WinWebKit) ?
 			function(e){ this.btn = { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)};}
@@ -117,8 +117,9 @@ MouseEvent.prototype = {
 				this.btn = (!!e.which ? { Left:(e.which ===1), Middle:(e.which ===2), Right:(e.which ===3)}
 									  : { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)});
 			}
-		)
-	),
+		);
+		this.setButtonFlag(e);
+	},
 
 	//---------------------------------------------------------------------------
 	// mv.setposition()   イベントが起こった座標をinputPosに代入

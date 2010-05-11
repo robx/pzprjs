@@ -240,7 +240,6 @@ Board = function(){
 	this.enableLineNG = false;
 
 	this.initBoardSize(k.qcols,k.qrows);
-	this.setFunctions();
 };
 Board.prototype = {
 	//---------------------------------------------------------------------------
@@ -862,87 +861,93 @@ Board.prototype = {
 	ErB : function(id){ return (!!this.border[id]?this.border[id].error:undef);},
 	ErE : function(id){ return (!!this.excell[id]?this.excell[id].error:undef);},
 
-	//---------------------------------------------------------------------------
-	// bd.setFunctions()  条件フラグを見て関数を設定する
-	//---------------------------------------------------------------------------
-	setFunctions : function(){
-		//-----------------------------------------------------------------------
-		// bd.isLine()      該当するBorderにlineが引かれているか判定する
-		// bd.setLine()     該当するBorderに線を引く
-		// bd.setPeke()     該当するBorderに×をつける
-		// bd.removeLine()  該当するBorderから線を消す
-		//-----------------------------------------------------------------------
-		this.isLine = (
-			(!k.isborderAsLine) ? function(id){ return (!!bd.border[id] && bd.border[id].line>0);}
-								: function(id){ return (!!bd.border[id] && bd.border[id].qans>0);}
-		);
-		this.setLine = (
-			(!k.isborderAsLine) ? function(id){ this.sLiB(id, 1); this.sQsB(id, 0);}
-								: function(id){ this.sQaB(id, 1); this.sQsB(id, 0);}
-		);
-		this.setPeke = (
-			(!k.isborderAsLine) ? function(id){ this.sLiB(id, 0); this.sQsB(id, 2);}
-								: function(id){ this.sQaB(id, 0); this.sQsB(id, 2);}
-		);
-		this.removeLine = (
-			(!k.isborderAsLine) ? function(id){ this.sLiB(id, 0); this.sQsB(id, 0);}
-								: function(id){ this.sQaB(id, 0); this.sQsB(id, 0);}
-		);
+	//-----------------------------------------------------------------------
+	// bd.isLine()      該当するBorderにlineが引かれているか判定する
+	// bd.setLine()     該当するBorderに線を引く
+	// bd.setPeke()     該当するBorderに×をつける
+	// bd.removeLine()  該当するBorderから線を消す
+	//-----------------------------------------------------------------------
+	isLine : function(id){
+		this.isLine = (!k.isborderAsLine) ? function(id){ return (!!bd.border[id] && bd.border[id].line>0);}
+										  : function(id){ return (!!bd.border[id] && bd.border[id].qans>0);};
+		return this.isLine(id);
+	},
+	setLine : function(id){
+		this.setLine = (!k.isborderAsLine) ? function(id){ this.sLiB(id, 1); this.sQsB(id, 0);}
+										   : function(id){ this.sQaB(id, 1); this.sQsB(id, 0);};
+		this.setLine(id);
+	},
+	setPeke : function(id){
+		this.setPeke = (!k.isborderAsLine) ? function(id){ this.sLiB(id, 0); this.sQsB(id, 2);}
+										   : function(id){ this.sQaB(id, 0); this.sQsB(id, 2);};
+		this.setPeke(id);
+	},
+	removeLine : function(id){
+		this.removeLine = (!k.isborderAsLine) ? function(id){ this.sLiB(id, 0); this.sQsB(id, 0);}
+											  : function(id){ this.sQaB(id, 0); this.sQsB(id, 0);};
+		this.removeLine(id);
+	},
 
-		//-----------------------------------------------------------------------
-		// bd.isNum()      該当するCellに数字があるか返す
-		// bd.noNum()      該当するCellに数字がないか返す
-		// bd.isValidNum() 該当するCellに0以上の数字があるか返す
-		// bd.sameNumber() ２つのCellに同じ有効な数字があるか返す
-		//-----------------------------------------------------------------------
-		this.isNum = (
-			k.isAnsNumber ? function(c){ return (!!bd.cell[c] && (bd.cell[c].qnum!==-1 || bd.cell[c].qans!==-1));}
-						  : function(c){ return (!!bd.cell[c] &&  bd.cell[c].qnum!==-1);}
-		);
-		this.noNum = (
-			k.isAnsNumber ? function(c){ return (!bd.cell[c] || (bd.cell[c].qnum===-1 && bd.cell[c].qans===-1));}
-						  : function(c){ return (!bd.cell[c] ||  bd.cell[c].qnum===-1);}
-		);
-		this.isValidNum = (
-			k.isAnsNumber ? function(c){ return (!!bd.cell[c] && (bd.cell[c].qnum>=  0 ||(bd.cell[c].qans>=0 && bd.cell[c].qnum===-1)));}
-						  : function(c){ return (!!bd.cell[c] &&  bd.cell[c].qnum>=  0);}
-		);
-		this.sameNumber     = function(c1,c2){ return (bd.isValidNum(c1) && (bd.getNum(c1)===bd.getNum(c2)));};
+	//-----------------------------------------------------------------------
+	// bd.isNum()      該当するCellに数字があるか返す
+	// bd.noNum()      該当するCellに数字がないか返す
+	// bd.isValidNum() 該当するCellに0以上の数字があるか返す
+	// bd.sameNumber() ２つのCellに同じ有効な数字があるか返す
+	//-----------------------------------------------------------------------
+	isNum : function(c){
+		this.isNum = k.isAnsNumber ? function(c){ return (!!bd.cell[c] && (bd.cell[c].qnum!==-1 || bd.cell[c].qans!==-1));}
+								   : function(c){ return (!!bd.cell[c] &&  bd.cell[c].qnum!==-1);};
+		return this.isNum(c);
+	},
+	noNum : function(c){
+		this.noNum = k.isAnsNumber ? function(c){ return (!bd.cell[c] || (bd.cell[c].qnum===-1 && bd.cell[c].qans===-1));}
+								   : function(c){ return (!bd.cell[c] ||  bd.cell[c].qnum===-1);};
+		return this.noNum(c);
+	},
+	isValidNum : function(c){
+		this.isValidNum = k.isAnsNumber ? function(c){ return (!!bd.cell[c] && (bd.cell[c].qnum>=0 ||(bd.cell[c].qans>=0 && bd.cell[c].qnum===-1)));}
+										: function(c){ return (!!bd.cell[c] &&  bd.cell[c].qnum>=0);};
+		return this.isValidNum(c);
+	},
+	sameNumber : function(c1,c2){
+		return (bd.isValidNum(c1) && (bd.getNum(c1)===bd.getNum(c2)));
+	},
 
-		//-----------------------------------------------------------------------
-		// bd.getNum()     該当するCellの数字を返す
-		// bd.setNum()     該当するCellに数字を設定する
-		//-----------------------------------------------------------------------
-		this.getNum = (
-			k.isAnsNumber ? function(c){ return (!!this.cell[c] ? (this.cell[c].qnum!==-1 ? this.cell[c].qnum : this.cell[c].qans) : undef);}
-						  : function(c){ return (!!this.cell[c] ? this.cell[c].qnum : undef);}
-		);
-		this.setNum = (
-			(k.NumberIsWhite ?
-				function(c,val){
-					if(!k.dispzero && val===0){ return;}
+	//-----------------------------------------------------------------------
+	// bd.getNum()     該当するCellの数字を返す
+	// bd.setNum()     該当するCellに数字を設定する
+	//-----------------------------------------------------------------------
+	getNum : function(c){
+		this.getNum = k.isAnsNumber ? function(c){ return (!!this.cell[c] ? (this.cell[c].qnum!==-1 ? this.cell[c].qnum : this.cell[c].qans) : undef);}
+									: function(c){ return (!!this.cell[c] ? this.cell[c].qnum : undef);};
+		return this.getNum(c);
+	},
+	setNum : function(c,val){
+		this.setNum = (k.NumberIsWhite ?
+			function(c,val){
+				if(!k.dispzero && val===0){ return;}
+				this.sQnC(c,val);
+				this.sQaC(c,bd.defcell.qnum);
+			}
+		: k.isAnsNumber ?
+			function(c,val){
+				if(!k.dispzero && val===0){ return;}
+				if(k.editmode){
 					this.sQnC(c,val);
 					this.sQaC(c,bd.defcell.qnum);
 				}
-			: k.isAnsNumber ?
-				function(c,val){
-					if(!k.dispzero && val===0){ return;}
-					if(k.editmode){
-						this.sQnC(c,val);
-						this.sQaC(c,bd.defcell.qnum);
-					}
-					else if(this.cell[c].qnum===bd.defcell.qnum){
-						this.sQaC(c,val);
-					}
-					this.sQsC(c,0);
+				else if(this.cell[c].qnum===bd.defcell.qnum){
+					this.sQaC(c,val);
 				}
-			:
-				function(c,val){
-					if(!k.dispzero && val===0){ return;}
-					this.sQnC(c,val);
-				}
-			)
+				this.sQsC(c,0);
+			}
+		:
+			function(c,val){
+				if(!k.dispzero && val===0){ return;}
+				this.sQnC(c,val);
+			}
 		);
+		this.setNum(c,val);
 	},
 
 	//---------------------------------------------------------------------------

@@ -253,39 +253,35 @@ _extend( _ElementManager, {
 	getSrcElement : function(e){
 		return e.target || e.srcElement;
 	},
-	pageX : (
-		((!_IE) ?
-			function(e){ return e.pageX;}
-		:
-			function(e){ return e.clientX + (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);}
-		)
-	),
-	pageY : (
-		((!_IE) ?
-			function(e){ return e.pageY;}
-		:
-			function(e){ return e.clientY + (_doc.documentElement.scrollTop  || _doc.body.scrollTop);}
-		)
-	),
+	pageX : function(e){
+		_ElementManager.pageX = (
+			(!_IE) ? function(e){ return e.pageX;}
+				   : function(e){ return e.clientX + (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);}
+		);
+		return _ElementManager.pageX(e);
+	},
+	pageY : function(e){
+		_ElementManager.pageY = (
+			(!_IE) ? function(e){ return e.pageY;}
+				   : function(e){ return e.clientY + (_doc.documentElement.scrollTop  || _doc.body.scrollTop);}
+		);
+		return _ElementManager.pageY(e);
+	},
 
-	windowWidth : (
-		((_doc.all) ?
-			function(){ return _doc.body.clientWidth;}
-		:(_doc.layers || _doc.getElementById)?
-			function(){ return innerWidth;}
-		:
-			function(){ return 0;}
-		)
-	),
-	windowHeight : (
-		((_doc.all) ?
-			function(){ return _doc.body.clientHeight;}
-		:(_doc.layers || _doc.getElementById)?
-			function(){ return innerHeight;}
-		:
-			function(){ return 0;}
-		)
-	),
+	windowWidth : function(){
+		_ElementManager.windowWidth = (
+			(!_IE) ? function(){ return innerWidth;}
+				   : function(){ return _doc.body.clientWidth;}
+		);
+		return _ElementManager.windowWidth();
+	},
+	windowHeight : function(){
+		_ElementManager.windowHeight = (
+			(!_IE) ? function(){ return innerHeight;}
+				   : function(){ return _doc.body.clientHeight;}
+		);
+		return _ElementManager.windowHeight();
+	},
 
 	//----------------------------------------------------------------------
 	// ee.binder()   thisをbindする
@@ -327,8 +323,8 @@ _ElementManager.ElementExt.prototype = {
 	// ee.getWidth()  エレメントの幅を返す
 	// ee.getHeight() エレメントの高さを返す
 	//----------------------------------------------------------------------
-	getRect : (
-		((!!document.createElement('div').getBoundingClientRect) ?
+	getRect : function(){
+		this.getRect = ((!!document.createElement('div').getBoundingClientRect) ?
 			((!_IE) ?
 				function(){
 					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
@@ -360,8 +356,9 @@ _ElementManager.ElementExt.prototype = {
 				var bottom = top  + (this.el.offsetHeight || this.el.clientHeight);
 				return { top:top, bottom:bottom, left:left, right:right};
 			}
-		)
-	),
+		);
+		return this.getRect();
+	},
 	getWidth  : function(){ return this.el.offsetWidth  || this.el.clientWidth; },
 	getHeight : function(){ return this.el.offsetHeight || this.el.clientHeight;},
 

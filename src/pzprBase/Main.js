@@ -295,7 +295,7 @@ PBase.prototype = {
 		if(!!k.isexcell){ k.p0.x += k.cwidth; k.p0.y += k.cheight;}
 
 		// Canvasのサイズ変更
-		pc.setVectorFunctions();
+		pc.resetVectorFunctions();
 		g.changeSize((cols*k.cwidth)|0, (rows*k.cheight)|0);
 
 		// canvasの上に文字・画像を表示する時のOffset指定

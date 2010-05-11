@@ -1408,41 +1408,27 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// pc.resetVectorFunctions() flushCanvas, vnop系関数をリセットする
 	// pc.flushCanvas()    指定された領域を白で塗りつぶす
 	// pc.flushCanvasAll() Canvas全面を白で塗りつぶす
-	//
-	// pc.vnop()  VMLで既に描画されているオブジェクトを再描画せず、色は設定する
-	// pc.vhide() VMLで既に描画されているオブジェクトを隠す
-	// pc.vdel()  VMLで既に描画されているオブジェクトを削除する
-	// pc.vinc()  z-indexに設定される値を+1する
 	//---------------------------------------------------------------------------
-	flushCanvasAll : f_true,
-	flushCanvas    : f_true,
-	vnop  : f_true,
-	vhide : f_true,
-	vdel  : f_true,
-	vinc  : f_true,
+	resetVectorFunctions : function(){
+		this.flushCanvasAll = Graphic.prototype.flushCanvasAll;
+		this.flushCanvas    = Graphic.prototype.flushCanvas;
+		this.vnop  = Graphic.prototype.vnop;
+		this.vhide = Graphic.prototype.vhide;
+		this.vdel  = Graphic.prototype.vdel;
+		this.vinc  = Graphic.prototype.vinc;
+	},
 
-	setVectorFunctions : function(){
-		if(g.use.canvas){
-			this.flushCanvasAll = function(x1,y1,x2,y2){
+	flushCanvasAll : function(){
+		this.flushCanvasAll = ((g.use.canvas) ?
+			function(){
 				this.numobj = {};
 				base.numparent.innerHTML = '';
-			};
-			this.flushCanvas = function(x1,y1,x2,y2){
-				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
-				g.fillRect(k.p0.x+x1*this.bw, k.p0.y+y1*this.bh, (x2-x1)*this.bw, (y2-y1)*this.bh);
-			};
-			this.vnop  = f_true;
-			this.vhide = f_true;
-			this.vdel  = f_true;
-			this.vinc = function(layerid, rendering){
-				g.setLayer(layerid);
-				if(rendering){ g.setRendering(rendering);}
-			};
-		}
-		else{
-			this.flushCanvasAll = function(x1,y1,x2,y2){
+			}
+		:
+			function(){
 				g.clear();
 				this.zidx=0;
 				this.zidx_array=[];
@@ -1455,55 +1441,101 @@ Graphic.prototype = {
 				if(this.vnop("boardfull",this.NONE)){
 					g.fillRect(k.p0.x, k.p0.y, k.qcols*this.cw, k.qrows*this.ch);
 				}
-			};
-			this.flushCanvas = function(x1,y1,x2,y2){
-				this.zidx=1;
-			};
-			this.vnop = function(vid, ccflag){ // strokeのみ:0, fillのみ:1, 両方:2, 色の変更なし:3
-				g.vid = vid;
-				if(!!g.elements[vid]){
-					var el = g.elements[vid],
-						isfill   = this.vnop_FILL[ccflag],
-						isstroke = this.vnop_STROKE[ccflag];
+			}
+		);
+		this.flushCanvasAll();
+	},
+	flushCanvas : function(x1,y1,x2,y2){
+		this.flushCanvas = ((g.use.canvas) ?
+			function(x1,y1,x2,y2){
+				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
+				g.fillRect(k.p0.x+x1*this.bw, k.p0.y+y1*this.bh, (x2-x1)*this.bw, (y2-y1)*this.bh);
+			}
+		:
+			function(x1,y1,x2,y2){ this.zidx=1;}
+		);
+		this.flushCanvas(x1,y1,x2,y2);
+	},
 
-					if(g.use.vml){
-						el.style.display = 'inline';
-						if(isfill)  { el.fillcolor   = Camp.parse(g.fillStyle);}
-						if(isstroke){ el.strokecolor = Camp.parse(g.strokeStyle);}
-					}
-					else if(g.use.sl){
-						el.Visibility = "Visible";
-						if(isfill)  { el.fill   = Camp.parse(g.fillStyle);  }
-						if(isstroke){ el.stroke = Camp.parse(g.strokeStyle);}
-					}
-					else if(g.use.svg){
-						el.style.display = 'inline';
-						if(isfill)  { el.setAttribute('fill',  Camp.parse(g.fillStyle));}
-						if(isstroke){ el.setAttribute('stroke',Camp.parse(g.strokeStyle));}
-					}
-					return false;
+	//---------------------------------------------------------------------------
+	// pc.vnop()  VMLで既に描画されているオブジェクトを再描画せず、色は設定する
+	// pc.vhide() VMLで既に描画されているオブジェクトを隠す
+	// pc.vdel()  VMLで既に描画されているオブジェクトを削除する
+	// pc.vinc()  z-indexに設定される値を+1する
+	//---------------------------------------------------------------------------
+	vnop : function(vid, ccflag){
+		this.vnop = ((g.use.canvas) ?
+			f_true
+		:
+			// ccflag -> 0:strokeのみ, 1:fillのみ, 2:両方, 3:色の変更なし
+			function(vid, ccflag){
+				g.vid = vid;
+				if(!g.elements[vid]){ return true;}
+
+				var el = g.elements[vid],
+					isfill   = this.vnop_FILL[ccflag],
+					isstroke = this.vnop_STROKE[ccflag];
+
+				if(g.use.vml){
+					el.style.display = 'inline';
+					if(isfill)  { el.fillcolor   = Camp.parse(g.fillStyle);}
+					if(isstroke){ el.strokecolor = Camp.parse(g.strokeStyle);}
 				}
-				return true;
-			};
-			this.vhide = function(vid){
+				else if(g.use.sl){
+					el.Visibility = "Visible";
+					if(isfill)  { el.fill   = Camp.parse(g.fillStyle);  }
+					if(isstroke){ el.stroke = Camp.parse(g.strokeStyle);}
+				}
+				else if(g.use.svg){
+					el.style.display = 'inline';
+					if(isfill)  { el.setAttribute('fill',  Camp.parse(g.fillStyle));}
+					if(isstroke){ el.setAttribute('stroke',Camp.parse(g.strokeStyle));}
+				}
+				return false;
+			}
+		);
+		this.vnop(vid, ccflag);
+	},
+	vhide : function(vid){
+		this.vhide = ((g.use.canvas) ?
+			f_true
+		:
+			function(vid){
 				if(typeof vid === 'string'){ vid = [vid];}
 				for(var i=0;i<vid.length;i++){
-					if(g.elements[vid[i]]){
-						if(!g.use.sl){ g.elements[vid[i]].style.display = 'none';}
-						else{ g.elements[vid[i]].Visibility = "Collapsed";}
-					}
+					if(!g.elements[vid[i]]){ continue;}
+
+					if(!g.use.sl){ g.elements[vid[i]].style.display = 'none';}
+					else{ g.elements[vid[i]].Visibility = "Collapsed";}
 				}
-			};
-			this.vdel = function(vid){
+			}
+		);
+		this.vhide(vid);
+	},
+	vdel : function(vid){
+		this.vdel = ((g.use.canvas) ?
+			f_true
+		:
+			function(vid){
 				for(var i=0;i<vid.length;i++){
-					if(g.elements[vid[i]]){
-						if(!g.use.sl){ g.target.removeChild(g.elements[vid[i]]);}
-						else{ g.elements[vid[i]].Visibility = "Collapsed";}
-						g.elements[vid[i]] = null;
-					}
+					if(!g.elements[vid[i]]){ continue;}
+
+					if(!g.use.sl){ g.target.removeChild(g.elements[vid[i]]);}
+					else{ g.elements[vid[i]].Visibility = "Collapsed";}
+					g.elements[vid[i]] = null;
 				}
-			};
-			this.vinc = function(layerid, rendering){
+			}
+		);
+		this.vdel(vid);
+	},
+	vinc : function(layerid, rendering){
+		this.vinc = ((g.use.canvas) ?
+			function(layerid, rendering){
+				g.setLayer(layerid);
+				if(rendering){ g.setRendering(rendering);}
+			}
+		:
+			function(layerid, rendering){
 				g.vid = "";
 				g.setLayer(layerid);
 
@@ -1514,8 +1546,9 @@ Graphic.prototype = {
 					if(!g.use.sl){ g.getLayerElement().style.zIndex = this.zidx;}
 					else{ g.getLayerElement()["Canvas.ZIndex"] = this.zidx;}
 				}
-			};
-		}
+			}
+		);
+		this.vinc(layerid, rendering);
 	},
 
 	//---------------------------------------------------------------------------
