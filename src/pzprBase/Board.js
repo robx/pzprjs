@@ -94,7 +94,8 @@ Cross.prototype = {
 		this.error = 0;
 	},
 	isempty : function(){
-		return (this.qnum===bd.defcross.qnum);
+		return ((this.ques === bd.defcross.ques) &&
+				(this.qnum === bd.defcross.qnum));
 	}
 };
 
@@ -283,6 +284,7 @@ Board.prototype = {
 	// bd.getGroup()      指定したタイプのオブジェクト配列を返す
 	// bd.estimateSize()  指定したオブジェクトがいくつになるか計算を行う
 	// bd.newObject()     指定されたタイプの新しいオブジェクトを返す
+	// bd.getObject()     指定されたタイプ・IDのオブジェクトを返す
 	//---------------------------------------------------------------------------
 	initGroup : function(type, col, row){
 		var group = this.getGroup(type);
@@ -323,6 +325,14 @@ Board.prototype = {
 		else if(type===k.CROSS) { return (new Cross(id));}
 		else if(type===k.BORDER){ return (new Border(id));}
 		else if(type===k.EXCELL){ return (new EXCell(id));}
+		return (void 0);
+	},
+	getObject : function(type,id){
+		if     (type===k.CELL)  { return bd.cell[id];}
+		else if(type===k.CROSS) { return bd.cross[id];}
+		else if(type===k.BORDER){ return bd.border[id];}
+		else if(type===k.EXCELL){ return bd.excell[id];}
+		return (void 0);
 	},
 
 	//---------------------------------------------------------------------------

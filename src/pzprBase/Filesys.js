@@ -9,6 +9,7 @@ FileIO = function(){
 	this.dataarray = [];
 	this.datastr = "";
 	this.urlstr = "";
+	this.currentType = 1;
 
 	// 定数(ファイル形式)
 	this.PZPR = 1;
@@ -25,17 +26,16 @@ FileIO.prototype = {
 		this.filever = 0;
 		this.lineseek = 0;
 		this.dataarray = datastr.split("/");
-		var type = this.PZPR;
 
 		// ヘッダの処理
 		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
 			if(this.readLine()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。'); return;}
-			type = this.PZPR;
+			this.currentType = this.PZPR;
 		}
 		else{
 			this.lineseek = 0;
-			type = this.PBOX;
+			this.currentType = this.PBOX;
 		}
 
 		// サイズを表す文字列
@@ -43,7 +43,7 @@ FileIO.prototype = {
 		if(k.puzzleid!=="sudoku"){
 			row = parseInt(this.readLine(), 10);
 			col = parseInt(this.readLine(), 10);
-			if(type===2 && k.puzzleid==="kakuro"){ row--; col--;}
+			if(this.currentType===this.PBOX && k.puzzleid==="kakuro"){ row--; col--;}
 		}
 		else{
 			row = col = parseInt(this.readLine(), 10);
@@ -53,8 +53,8 @@ FileIO.prototype = {
 
 		// メイン処理
 		base.disableInfo();
-		if     (type===1){ this.decodeData();}
-		else if(type===2){ this.kanpenOpen();}
+		if     (this.currentType===this.PZPR){ this.decodeData();}
+		else if(this.currentType===this.PBOX){ this.kanpenOpen();}
 		base.enableInfo();
 
 		this.dataarray = null; // 重くなりそうなので初期化
@@ -71,24 +71,25 @@ FileIO.prototype = {
 		this.sizestr = "";
 		this.datastr = "";
 		this.urlstr = "";
+		this.currentType = type;
 
 		// メイン処理
-		if     (type===this.PZPR){ this.encodeData();}
-		else if(type===this.PBOX){ this.kanpenSave();}
+		if     (this.currentType===this.PZPR){ this.encodeData();}
+		else if(this.currentType===this.PBOX){ this.kanpenSave();}
 
 		// サイズを表す文字列
 		if(!this.sizestr){ this.sizestr = [k.qrows, k.qcols].join("/");}
 		this.datastr = [this.sizestr, this.datastr].join("/");
 
 		// ヘッダの処理
-		if(type===1){
+		if(this.currentType===this.PZPR){
 			var header = (this.filever===0 ? "pzprv3" : ("pzprv3."+this.filever));
 			this.datastr = [header, k.puzzleid, this.datastr].join("/");
 		}
 		var bstr = this.datastr;
 
 		// 末尾のURL追加処理
-		if(type===1){
+		if(this.currentType===this.PZPR){
 			this.urlstr = enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? enc.PZPRV3 : enc.KANPEN);
 		}
 
@@ -128,8 +129,7 @@ FileIO.prototype = {
 	// fio.decodeObj()     配列で、個別文字列から個別セルなどの設定を行う
 	// fio.decodeCell()    配列で、個別文字列から個別セルの設定を行う
 	// fio.decodeCross()   配列で、個別文字列から個別Crossの設定を行う
-	// fio.decodeBorder()  配列で、個別文字列から個別Border(外枠上なし)の設定を行う
-	// fio.decodeBorder2() 配列で、個別文字列から個別Border(外枠上あり)の設定を行う
+	// fio.decodeBorder()  配列で、個別文字列から個別Borderの設定を行う
 	//---------------------------------------------------------------------------
 	decodeObj : function(func, getid, startbx, startby, endbx, endby){
 		var bx=startbx, by=startby, step=2;
@@ -149,20 +149,28 @@ FileIO.prototype = {
 		this.decodeObj(func, bd.xnum, 0, 0, 2*k.qcols,   2*k.qrows  );
 	},
 	decodeBorder : function(func){
-		this.decodeObj(func, bd.bnum, 2, 1, 2*k.qcols-2, 2*k.qrows-1);
-		this.decodeObj(func, bd.bnum, 1, 2, 2*k.qcols-1, 2*k.qrows-2);
-	},
-	decodeBorder2: function(func){
-		this.decodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
-		this.decodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
+		if(k.isborder===1 || k.puzzleid==='bosanowa'){
+			this.decodeObj(func, bd.bnum, 2, 1, 2*k.qcols-2, 2*k.qrows-1);
+			this.decodeObj(func, bd.bnum, 1, 2, 2*k.qcols-1, 2*k.qrows-2);
+		}
+		else if(k.isborder===2){
+			if(this.currentType===this.PZPR){
+				this.decodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
+				this.decodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
+			}
+			// pencilboxでは、outsideborderの時はぱずぷれとは順番が逆になってます
+			else if(this.currentType===this.PBOX){
+				this.decodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
+				this.decodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
+			}
+		}
 	},
 
 	//---------------------------------------------------------------------------
 	// fio.encodeObj()     個別セルデータ等から個別文字列の設定を行う
 	// fio.encodeCell()    個別セルデータから個別文字列の設定を行う
 	// fio.encodeCross()   個別Crossデータから個別文字列の設定を行う
-	// fio.encodeBorder()  個別Borderデータ(外枠上なし)から個別文字列の設定を行う
-	// fio.encodeBorder2() 個別Borderデータ(外枠上あり)から個別文字列の設定を行う
+	// fio.encodeBorder()  個別Borderデータから個別文字列の設定を行う
 	//---------------------------------------------------------------------------
 	encodeObj : function(func, getid, startbx, startby, endbx, endby){
 		var step=2;
@@ -180,12 +188,21 @@ FileIO.prototype = {
 		this.encodeObj(func, bd.xnum, 0, 0, 2*k.qcols,   2*k.qrows  );
 	},
 	encodeBorder : function(func){
-		this.encodeObj(func, bd.bnum, 2, 1, 2*k.qcols-2, 2*k.qrows-1);
-		this.encodeObj(func, bd.bnum, 1, 2, 2*k.qcols-1, 2*k.qrows-2);
-	},
-	encodeBorder2: function(func){
-		this.encodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
-		this.encodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
+		if(k.isborder===1 || k.puzzleid==='bosanowa'){
+			this.encodeObj(func, bd.bnum, 2, 1, 2*k.qcols-2, 2*k.qrows-1);
+			this.encodeObj(func, bd.bnum, 1, 2, 2*k.qcols-1, 2*k.qrows-2);
+		}
+		else if(k.isborder===2){
+			if(this.currentType===this.PZPR){
+				this.encodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
+				this.encodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
+			}
+			// pencilboxでは、outsideborderの時はぱずぷれとは順番が逆になってます
+			else if(this.currentType===this.PBOX){
+				this.encodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
+				this.encodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
+			}
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -419,7 +436,7 @@ FileIO.prototype = {
 	// fio.encodeBorderAns2() 問題・回答の境界線のエンコード(外枠あり)を行う
 	//---------------------------------------------------------------------------
 	decodeBorderAns2 : function(){
-		this.decodeBorder2( function(c,ca){
+		this.decodeBorder( function(c,ca){
 			if     (ca === "1" ){ bd.sQaB(c, 1);}
 			else if(ca === "2" ){ bd.sQsB(c, 1);}
 			else if(ca === "3" ){ bd.sQaB(c, 1); bd.sQsB(c, 1);}
@@ -427,7 +444,7 @@ FileIO.prototype = {
 		});
 	},
 	encodeBorderAns2 : function(){
-		this.encodeBorder2( function(c){
+		this.encodeBorder( function(c){
 			if     (bd.QaB(c)===1 && bd.QsB(c)===1){ return "3 ";}
 			else if(bd.QsB(c)===1){ return "2 ";}
 			else if(bd.QaB(c)===1){ return "1 ";}
@@ -510,8 +527,8 @@ FileIO.prototype = {
 		this.datastr += str;
 	},
 	//---------------------------------------------------------------------------
-	// fio.decodeCellQnum_kanpen() カンペン用問題数字のデコードを行う
-	// fio.encodeCellQnum_kanpen() カンペン用問題数字のエンコードを行う
+	// fio.decodeCellQnum_kanpen() pencilbox用問題数字のデコードを行う
+	// fio.encodeCellQnum_kanpen() pencilbox用問題数字のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnum_kanpen : function(){
 		this.decodeCell( function(c,ca){
@@ -524,8 +541,8 @@ FileIO.prototype = {
 		});
 	},
 	//---------------------------------------------------------------------------
-	// fio.decodeCellQans_kanpen() カンペン用回答数字のデコードを行う
-	// fio.encodeCellQans_kanpen() カンペン用回答数字のエンコードを行う
+	// fio.decodeCellQans_kanpen() pencilbox用回答数字のデコードを行う
+	// fio.encodeCellQans_kanpen() pencilbox用回答数字のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQans_kanpen : function(){
 		this.decodeCell( function(c,ca){
@@ -540,8 +557,8 @@ FileIO.prototype = {
 		});
 	},
 	//---------------------------------------------------------------------------
-	// fio.decodeCellQnumAns_kanpen() カンペン用問題数字＋黒マス白マスのデコードを行う
-	// fio.encodeCellQnumAns_kanpen() カンペン用問題数字＋黒マス白マスのエンコードを行う
+	// fio.decodeCellQnumAns_kanpen() pencilbox用問題数字＋黒マス白マスのデコードを行う
+	// fio.encodeCellQnumAns_kanpen() pencilbox用問題数字＋黒マス白マスのエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnumAns_kanpen : function(){
 		this.decodeCell( function(c,ca){
@@ -559,10 +576,10 @@ FileIO.prototype = {
 		});
 	},
 	//---------------------------------------------------------------------------
-	// fio.decodeSquareRoom() カンペン用四角形の部屋のデコードを行う
-	// fio.encodeSquareRoom() カンペン用四角形の部屋のエンコードを行う
-	// fio.decodeAnsSquareRoom() (回答用)カンペン用四角形の部屋のデコードを行う
-	// fio.encodeAnsSquareRoom() (回答用)カンペン用四角形の部屋のエンコードを行う
+	// fio.decodeSquareRoom() pencilbox用四角形の部屋のデコードを行う
+	// fio.encodeSquareRoom() pencilbox用四角形の部屋のエンコードを行う
+	// fio.decodeAnsSquareRoom() (回答用)pencilbox用四角形の部屋のデコードを行う
+	// fio.encodeAnsSquareRoom() (回答用)pencilbox用四角形の部屋のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeSquareRoom : function(){ this.decodeSquareRoom_com(true);},
 	encodeSquareRoom : function(){ this.encodeSquareRoom_com(true);},

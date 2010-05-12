@@ -431,8 +431,7 @@ Puzzles.icelom.prototype = {
 				else if(ca=='?'){ bd.sQnC(c,-2);}
 				else            { bd.sQnC(c,parseInt(ca));}
 			});
-
-			this.decodeBorder2( function(c,ca){
+			this.decodeBorder( function(c,ca){
 				if     (ca == "1" ){ bd.sLiB(c, 1);}
 				else if(ca == "-1"){ bd.sQsB(c, 2);}
 			});
@@ -447,7 +446,7 @@ Puzzles.icelom.prototype = {
 				else if(bd.QnC(c)===-2){ return istr+"? ";}
 				else{ return istr+bd.QnC(c)+" ";}
 			});
-			this.encodeBorder2( function(c){
+			this.encodeBorder( function(c){
 				if     (bd.LiB(c)===1){ return "1 "; }
 				else if(bd.QsB(c)===2){ return "-1 ";}
 				else                  { return "0 "; }

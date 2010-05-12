@@ -492,11 +492,11 @@ Puzzles.icebarn.prototype = {
 			this.decodeCell( function(c,ca){
 				if(ca=="1"){ bd.sQuC(c, 6);}
 			});
-			this.decodeBorder2( function(c,ca){
+			this.decodeBorder( function(c,ca){
 				if     (ca == "1"){ bd.setArrow(c, 1);}
 				else if(ca == "2"){ bd.setArrow(c, 2);}
 			});
-			this.decodeBorder2( function(c,ca){
+			this.decodeBorder( function(c,ca){
 				if     (ca == "1" ){ bd.sLiB(c, 1);}
 				else if(ca == "-1"){ bd.sQsB(c, 2);}
 			});
@@ -506,12 +506,12 @@ Puzzles.icebarn.prototype = {
 			this.encodeCell( function(c){
 				return ""+(bd.QuC(c)==6?"1":"0")+" "; 
 			});
-			this.encodeBorder2( function(c){
+			this.encodeBorder( function(c){
 				if     (bd.getArrow(c)==1){ return "1 ";}
 				else if(bd.getArrow(c)==2){ return "2 ";}
 				else                      { return "0 ";}
 			});
-			this.encodeBorder2( function(c){
+			this.encodeBorder( function(c){
 				if     (bd.LiB(c)==1){ return "1 ";}
 				else if(bd.QsB(c)==2){ return "-1 ";}
 				else                 { return "0 ";}

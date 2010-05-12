@@ -242,28 +242,18 @@ Puzzles.slither.prototype = {
 
 		fio.kanpenOpen = function(){
 			this.decodeCellQnum_kanpen();
-			this.decodeBorder2_kanpen( function(c,ca){
+			this.decodeBorder( function(c,ca){
 				if     (ca == "1") { bd.sQaB(c, 1);}
 				else if(ca == "-1"){ bd.sQsB(c, 2);}
 			});
 		};
 		fio.kanpenSave = function(){
 			this.encodeCellQnum_kanpen();
-			this.encodeBorder2_kanpen( function(c){
+			this.encodeBorder( function(c){
 				if     (bd.QaB(c)==1){ return "1 ";}
 				else if(bd.QsB(c)==2){ return "-1 ";}
 				else{ return "0 ";}
 			});
-		};
-
-		// カンペンでは、outsideborderの時はぱずぷれとは順番が逆になってます
-		fio.decodeBorder2_kanpen = function(func){
-			this.decodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
-			this.decodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
-		};
-		fio.encodeBorder2_kanpen = function(func){
-			this.encodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
-			this.encodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
 		};
 	},
 

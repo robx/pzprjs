@@ -167,7 +167,7 @@ Puzzles.mejilink.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeBorder2( function(c,ca){
+			this.decodeBorder( function(c,ca){
 				if     (ca == "2" ){ bd.sQuB(c, 0); bd.sQaB(c, 1);}
 				else if(ca == "-1"){ bd.sQuB(c, 0); bd.sQsB(c, 2);}
 				else if(ca == "1" ){ bd.sQuB(c, 0);}
@@ -175,7 +175,7 @@ Puzzles.mejilink.prototype = {
 			});
 		};
 		fio.encodeData = function(){
-			this.encodeBorder2( function(c){
+			this.encodeBorder( function(c){
 				if     (bd.QaB(c)==1){ return "2 ";}
 				else if(bd.QsB(c)==2){ return "-1 ";}
 				else if(bd.QuB(c)==0){ return "1 ";}

@@ -338,7 +338,6 @@ MenuExec.prototype = {
 	// menu.ex.expandreduce() 盤面の拡大・縮小を実行する
 	// menu.ex.expandGroup()  オブジェクトの追加を行う
 	// menu.ex.reduceGroup()  オブジェクトの消去を行う
-	// menu.ex.recordObject() 指定されたオブジェクトをOperationManagerに追加する
 	//------------------------------------------------------------------------------
 	expandreduce : function(key,d){
 		base.disableInfo();
@@ -386,28 +385,12 @@ MenuExec.prototype = {
 		var margin=0, group = bd.getGroup(type);
 		for(var i=0;i<group.length;i++){
 			if(!!this.insex[type][this.distObj(type,i,key)]){
-				if(!group[i].isempty()){ this.recordObject(type,i);}
+				if(!group[i].isempty()){ um.recordObject(type,i);}
 				margin++;
 			}
 			else if(margin>0){ group[i-margin] = group[i];}
 		}
 		for(var i=0;i<margin;i++){ group.pop();}
-	},
-	recordObject : function(type, id){
-		if(um.undoExec || um.redoExec){ return;}
-		// オブジェクトを消滅させるのでOperationManagerに登録する
-		// 盤面拡大縮小・回転反転のうち登録されるのは盤面縮小時のみです
-
-		var old = bd.newObject(type, id), obj;
-		if     (type===k.CELL)  { obj = bd.cell[id];  }
-		else if(type===k.CROSS) { obj = bd.cross[id]; }
-		else if(type===k.BORDER){ obj = bd.border[id];}
-		else if(type===k.EXCELL){ obj = bd.excell[id];}
-		for(var i in obj){ old[i] = obj[i];}
-
-		um.forceRecord = true;
-		um.addOpe(type, type, id, old, null);
-		um.forceRecord = false;
 	},
 
 	//------------------------------------------------------------------------------
@@ -476,12 +459,8 @@ MenuExec.prototype = {
 	// menu.ex.distObj()      上下左右いずれかの外枠との距離を求める
 	//---------------------------------------------------------------------------
 	distObj : function(type,id,key){
-		var obj;
-		if     (type===k.CELL)  { obj = bd.cell[id];}
-		else if(type===k.CROSS) { obj = bd.cross[id];}
-		else if(type===k.BORDER){ obj = bd.border[id];}
-		else if(type===k.EXCELL){ obj = bd.excell[id];}
-		else{ return -1;}
+		var obj = bd.getObject(type, id);
+		if(!obj){ return -1;}
 
 		key &= 0x0F;
 		try{

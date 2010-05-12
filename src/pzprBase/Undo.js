@@ -65,7 +65,8 @@ OperationManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// um.addOpe() 指定された操作を追加する。id等が同じ場合は最終操作を変更する
+	// um.addOpe()       指定された操作を追加する。id等が同じ場合は最終操作を変更する
+	// um.recordObject() 指定されたオブジェクトをOperationManagerに追加する
 	//---------------------------------------------------------------------------
 	addOpe : function(obj, property, id, old, num){
 		if(!this.isenableRecord() || (old===num && obj!==k.BOARD)){ return;}
@@ -98,6 +99,38 @@ OperationManager.prototype = {
 		if(property!=k.QSUB){ this.anscount++;}
 		this.changeflag = true;
 		this.enb_btn();
+	},
+	// オブジェクトを消滅させるのでOperationManagerに登録する
+	// この関数が呼び出されるのは盤面縮小処理時のみです
+	recordObject : function(type, id){
+		if(this.undoExec || this.redoExec){ return;}
+
+		var old = bd.newObject(type, id), obj = bd.getObject(type, id);
+
+		this.forceRecord = true;
+		if(type===k.CELL){
+			this.addOpe(type, k.QUES, id, obj.ques, old.ques);
+			this.addOpe(type, k.QNUM, id, obj.qnum, old.qnum);
+			this.addOpe(type, k.DIREC,id, obj.direc,old.direc);
+			this.addOpe(type, k.QANS, id, obj.qans, old.qans);
+			this.addOpe(type, k.QSUB, id, obj.qsub, old.qsub);
+		}
+		else if(type===k.EXCELL){
+			this.addOpe(type, k.QNUM, id, obj.qnum, old.qnum);
+			this.addOpe(type, k.DIREC,id, obj.direc,old.direc);
+		}
+		else if(type===k.CROSS){
+			this.addOpe(type, k.QUES, id, obj.ques, old.ques);
+			this.addOpe(type, k.QNUM, id, obj.qnum, old.qnum);
+		}
+		else if(type===k.BORDER){
+			this.addOpe(type, k.QUES, id, obj.ques, old.ques);
+			this.addOpe(type, k.QNUM, id, obj.qnum, old.qnum);
+			this.addOpe(type, k.LINE, id, obj.line, old.line);
+			this.addOpe(type, k.QANS, id, obj.qans, old.qans);
+			this.addOpe(type, k.QSUB, id, obj.qsub, old.qsub);
+		}
+		this.forceRecord = false;
 	},
 
 	//---------------------------------------------------------------------------
@@ -157,6 +190,7 @@ OperationManager.prototype = {
 
 			bd.setposAll();
 			bd.setminmax();
+			base.enableInfo();
 			base.resetInfo(false);
 			base.resize_canvas();
 		}
@@ -174,18 +208,15 @@ OperationManager.prototype = {
 			else if(pp == k.DIREC){ bd.sDiC(ope.id, num);}
 			else if(pp == k.QANS){ bd.sQaC(ope.id, num);}
 			else if(pp == k.QSUB){ bd.sQsC(ope.id, num);}
-			else if(pp == k.CELL && !!num){ bd.cell[ope.id] = num;}
 			this.paintStack(bd.cell[ope.id].bx-1, bd.cell[ope.id].by-1, bd.cell[ope.id].bx+1, bd.cell[ope.id].by+1);
 		}
 		else if(ope.obj == k.EXCELL){
 			if     (pp == k.QNUM){ bd.sQnE(ope.id, num);}
 			else if(pp == k.DIREC){ bd.sDiE(ope.id, num);}
-			else if(pp == k.EXCELL && !!num){ bd.excell[ope.id] = num;}
 		}
 		else if(ope.obj == k.CROSS){
 			if     (pp == k.QUES){ bd.sQuX(ope.id, num);}
 			else if(pp == k.QNUM){ bd.sQnX(ope.id, num);}
-			else if(pp == k.CROSS && !!num){ bd.cross[ope.id] = num;}
 			this.paintStack(bd.cross[ope.id].bx-1, bd.cross[ope.id].by-1, bd.cross[ope.id].bx+1, bd.cross[ope.id].by+1);
 		}
 		else if(ope.obj == k.BORDER){
@@ -194,7 +225,6 @@ OperationManager.prototype = {
 			else if(pp == k.QANS){ bd.sQaB(ope.id, num);}
 			else if(pp == k.QSUB){ bd.sQsB(ope.id, num);}
 			else if(pp == k.LINE){ bd.sLiB(ope.id, num);}
-			else if(pp == k.BORDER && !!num){ bd.border[ope.id] = num;}
 			this.paintBorder(ope.id);
 		}
 		else if(ope.obj == k.BOARD){
@@ -203,6 +233,7 @@ OperationManager.prototype = {
 			if(num & menu.ex.TURNFLIP){ menu.ex.turnflip    (num,d);}
 			else                      { menu.ex.expandreduce(num,d);}
 
+			base.disableInfo();
 			this.range = {x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby};
 			this.reqReset = true;
 		}
