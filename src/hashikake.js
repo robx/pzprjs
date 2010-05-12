@@ -75,33 +75,29 @@ Puzzles.hashikake.prototype = {
 
 		mv.inputLine = function(){
 			var pos = this.borderpos(0);
-			if(this.mouseCell===null){ this.mouseCell = pos;}
-			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
+			if(this.prevPos.equals(pos)){ return;}
 
-			var id = null;
-			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1);}
-			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1);}
-			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  );}
-			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  );}
-
-			var include = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
-			if(this.mouseCell!==null && id!==null){
+			var id = this.getnb(this.prevPos, pos);
+			if(id!==null){
+				var include = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
+				var dir = this.getdir(this.prevPos, pos);
 				var idlist = this.getidlist(id);
-				if(this.firstPos.x===null || !include(this.firstPos,id)){ this.inputData=null;}
+				if(this.previdlist.length===0 || !include(this.previdlist, id)){ this.inputData=null;}
 				if(this.inputData===null){
 					if     (bd.LiB(id)==0){ this.inputData=1;}
 					else if(bd.LiB(id)==1){ this.inputData=2;}
 					else                  { this.inputData=0;}
 				}
-				if(this.inputData> 0 && ((pos.x-this.mouseCell.x==-2)||(pos.y-this.mouseCell.y==-2))){ idlist=idlist.reverse();} // 色分けの都合上の処理
+				if(this.inputData>0 && (dir===k.UP||dir===k.LT)){ idlist=idlist.reverse();} // 色分けの都合上の処理
 				for(var i=0;i<idlist.length;i++){
 					if(this.inputData!==null){ bd.sLiB(idlist[i], this.inputData); bd.sQsB(idlist[i], 0);}
 					pc.paintLine(idlist[i]);
 				}
-				this.firstPos=idlist;
+				this.previdlist = idlist;
 			}
-			this.mouseCell = pos;
+			this.prevPos = pos;
 		};
+		mv.previdlist = [];
 		mv.getidlist = function(id){
 			var idlist=[], bx=bd.border[id].bx, by=bd.border[id].by;
 			if(bd.border[id].bx&1){
@@ -125,8 +121,10 @@ Puzzles.hashikake.prototype = {
 
 		mv.inputpeke = function(){
 			var pos = this.borderpos(0.22);
+			if(this.prevPos.equals(pos)){ return;}
+
 			var id = bd.bnum(pos.x, pos.y);
-			if(id===null || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
+			if(id===null){ return;}
 
 			if(this.inputData===null){ this.inputData=(bd.QsB(id)!=2?2:0);}
 			bd.sQsB(id, this.inputData);
@@ -136,8 +134,8 @@ Puzzles.hashikake.prototype = {
 				bd.sLiB(idlist[i], 0);
 				pc.paintBorder(idlist[i]);
 			}
-			if(idlist.length==0){ pc.paintBorder(id);}
-			this.mouseCell = pos;
+			if(idlist.length===0){ pc.paintBorder(id);}
+			this.prevPos = pos;
 		},
 		mv.enableInputHatena = true;
 

@@ -79,8 +79,8 @@ Puzzles.shakashaka.prototype = {
 			var use = pp.getVal('use');
 			if(use===1){
 				if(this.btn.Left){
-					var dx = this.inputPos.x - bd.cell[cc].px + k.p0.x;
-					var dy = this.inputPos.y - bd.cell[cc].py + k.p0.y;
+					var dx = this.inputPoint.x - bd.cell[cc].px + k.p0.x;
+					var dy = this.inputPoint.y - bd.cell[cc].py + k.p0.y;
 					if(dx>0&&dx<=k.cwidth/2){
 						if(dy>0&&dy<=k.cheight/2){ this.inputData = 5;}
 						else if  (dy>k.cheight/2){ this.inputData = 2;}
@@ -101,21 +101,21 @@ Puzzles.shakashaka.prototype = {
 			else if(use===2){
 				if(use2step==0){
 					// 最初はどこのセルをクリックしたか取得するだけ
-					this.firstPos = this.inputPos.clone();
+					this.firstPoint.set(this.inputPoint);
 					this.mouseCell = cc;
 					return;
 				}
 
-				var dx=(this.inputPos.x-this.firstPos.x), dy=(this.inputPos.y-this.firstPos.y);
+				var dx=(this.inputPoint.x-this.firstPoint.x), dy=(this.inputPoint.y-this.firstPoint.y);
 				cc = this.mouseCell;
 
 				if(use2step==1){
 					// 一定以上動いていたら三角形を入力
-					var moves = 12;
-					if     (dx<=-moves && dy>= moves){ this.inputData=2;}
-					else if(dx<=-moves && dy<=-moves){ this.inputData=5;}
-					else if(dx>= moves && dy>= moves){ this.inputData=3;}
-					else if(dx>= moves && dy<=-moves){ this.inputData=4;}
+					var diff = 12;
+					if     (dx<=-diff && dy>= diff){ this.inputData=2;}
+					else if(dx<=-diff && dy<=-diff){ this.inputData=5;}
+					else if(dx>= diff && dy>= diff){ this.inputData=3;}
+					else if(dx>= diff && dy<=-diff){ this.inputData=4;}
 
 					if(this.inputData!==null){
 						bd.sQaC(cc, (bd.QaC(cc)!==this.inputData)?this.inputData:-1);

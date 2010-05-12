@@ -66,45 +66,37 @@ Puzzles.kramma.prototype = {
 		// オーバーライド
 		mv.inputBD = function(flag){
 			var pos = this.borderpos(0.35);
-			if(this.mouseCell===null){ this.mouseCell = pos;}
-			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
+			if(this.prevPos.equals(pos)){ return;}
 
-			var id = bd.bnum(pos.x, pos.y);
-			if(id===null && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
+			var id = this.getborderID(this.prevPos, pos);
+			if(id!==null){
+				if(this.inputData===null){ this.inputData=(bd.isBorder(id)?0:1);}
 
-			if(this.mouseCell!==null && id!==null){
-				if((!(pos.x&1) && this.mouseCell.x===pos.x && Math.abs(this.mouseCell.y-pos.y)===1) ||
-				   (!(pos.y&1) && this.mouseCell.y===pos.y && Math.abs(this.mouseCell.x-pos.x)===1) )
-				{
-					this.mouseCell=null
-					if(this.inputData===null){ this.inputData=(bd.isBorder(id)?0:1);}
+				var idlist = [id];
+				var bx1, bx2, by1, by2;
+				if(bd.border[id].bx&1){
+					var bx = bd.border[id].bx;
+					while(bx>bd.minbx){ if(bd.QnX(bd.xnum(bx-1,bd.border[id].by))===1){ break;} bx-=2;} bx1 = bx;
+					while(bx<bd.maxbx){ if(bd.QnX(bd.xnum(bx+1,bd.border[id].by))===1){ break;} bx+=2;} bx2 = bx;
+					by1 = by2 = bd.border[id].by;
+				}
+				else if(bd.border[id].by&1){
+					var by = bd.border[id].by;
+					while(by>bd.minby){ if(bd.QnX(bd.xnum(bd.border[id].bx,by-1))===1){ break;} by-=2;} by1 = by;
+					while(by<bd.maxby){ if(bd.QnX(bd.xnum(bd.border[id].bx,by+1))===1){ break;} by+=2;} by2 = by;
+					bx1 = bx2 = bd.border[id].bx;
+				}
+				idlist = [];
+				for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
 
-					var idlist = [id];
-					var bx1, bx2, by1, by2;
-					if(bd.border[id].bx&1){
-						var bx = bd.border[id].bx;
-						while(bx>bd.minbx){ if(bd.QnX(bd.xnum(bx-1,bd.border[id].by))===1){ break;} bx-=2;} bx1 = bx;
-						while(bx<bd.maxbx){ if(bd.QnX(bd.xnum(bx+1,bd.border[id].by))===1){ break;} bx+=2;} bx2 = bx;
-						by1 = by2 = bd.border[id].by;
-					}
-					else if(bd.border[id].by&1){
-						var by = bd.border[id].by;
-						while(by>bd.minby){ if(bd.QnX(bd.xnum(bd.border[id].bx,by-1))===1){ break;} by-=2;} by1 = by;
-						while(by<bd.maxby){ if(bd.QnX(bd.xnum(bd.border[id].bx,by+1))===1){ break;} by+=2;} by2 = by;
-						bx1 = bx2 = bd.border[id].bx;
-					}
-					idlist = [];
-					for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
-
-					for(var i=0;i<idlist.length;i++){
-						if(idlist[i]===null){ continue;}
-						if     (this.inputData==1){ bd.setBorder(idlist[i]);}
-						else if(this.inputData==0){ bd.removeBorder(idlist[i]);}
-						pc.paintBorder(idlist[i]);
-					}
+				for(var i=0;i<idlist.length;i++){
+					if(idlist[i]===null){ continue;}
+					if     (this.inputData==1){ bd.setBorder(idlist[i]);}
+					else if(this.inputData==0){ bd.removeBorder(idlist[i]);}
+					pc.paintBorder(idlist[i]);
 				}
 			}
-			this.mouseCell = pos;
+			this.prevPos = pos;
 		};
 		mv.inputQuesDirectly = true;
 

@@ -66,17 +66,15 @@ Puzzles.minarism.prototype = {
 			var pos = this.borderpos(0);
 			if(bd.cnum(pos.x,pos.y)===null){ return;}
 
-			var id=null;
-			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1); this.inputData=1; }
-			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1); this.inputData=2; }
-			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  ); this.inputData=1; }
-			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  ); this.inputData=2; }
+			var id = this.getnb(this.prevPos, pos);
+			if(id!==null){
+				var dir = this.getdir(this.prevPos, pos);
+				this.inputData = ((dir===k.UP||dir===k.LT) ? 1 : 2);
 
-			this.mouseCell = pos;
-			if(id===null){ return;}
-
-			bd.sQuB(id,(this.inputData!=bd.QuB(id)?this.inputData:0));
-			pc.paintBorder(id);
+				bd.sQuB(id,(this.inputData!=bd.QuB(id)?this.inputData:0));
+				pc.paintBorder(id);
+			}
+			this.prevPos = pos;
 		};
 		mv.inputmark = function(){
 			var pos = this.borderpos(0.33);

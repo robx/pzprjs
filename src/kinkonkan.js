@@ -73,30 +73,30 @@ Puzzles.kinkonkan.prototype = {
 			var cc = this.cellid();
 			if(cc===null){ this.inputflash(); return;}
 
-			if     (this.inputData== 3){ bd.sQaC(cc,-1); bd.sQsC(cc,1);}
-			else if(this.inputData== 4){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
+			if     (this.inputData===3){ bd.sQaC(cc,-1); bd.sQsC(cc,1);}
+			else if(this.inputData===4){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
 			else if(this.inputData!==null){ return;}
 			else if(this.btn.Left){
-				if     (bd.QaC(cc)==1) { bd.sQaC(cc, 2); bd.sQsC(cc,0); this.inputData=2;}
-				else if(bd.QaC(cc)==2) { bd.sQaC(cc,-1); bd.sQsC(cc,1); this.inputData=3;}
-				else if(bd.QsC(cc)==1) { bd.sQaC(cc,-1); bd.sQsC(cc,0); this.inputData=4;}
+				if     (bd.QaC(cc)===1){ bd.sQaC(cc, 2); bd.sQsC(cc,0); this.inputData=2;}
+				else if(bd.QaC(cc)===2){ bd.sQaC(cc,-1); bd.sQsC(cc,1); this.inputData=3;}
+				else if(bd.QsC(cc)===1){ bd.sQaC(cc,-1); bd.sQsC(cc,0); this.inputData=4;}
 				else                   { bd.sQaC(cc, 1); bd.sQsC(cc,0); this.inputData=1;}
 			}
 			else if(this.btn.Right){
-				if     (bd.QaC(cc)==1) { bd.sQaC(cc,-1); bd.sQsC(cc,0); this.inputData=4;}
-				else if(bd.QaC(cc)==2) { bd.sQaC(cc, 1); bd.sQsC(cc,0); this.inputData=1;}
-				else if(bd.QsC(cc)==1) { bd.sQaC(cc, 2); bd.sQsC(cc,0); this.inputData=2;}
+				if     (bd.QaC(cc)===1){ bd.sQaC(cc,-1); bd.sQsC(cc,0); this.inputData=4;}
+				else if(bd.QaC(cc)===2){ bd.sQaC(cc, 1); bd.sQsC(cc,0); this.inputData=1;}
+				else if(bd.QsC(cc)===1){ bd.sQaC(cc, 2); bd.sQsC(cc,0); this.inputData=2;}
 				else                   { bd.sQaC(cc,-1); bd.sQsC(cc,1); this.inputData=3;}
 			}
 
 			pc.paintCellAround(cc);
 		};
 		mv.inputflash = function(){
-			var pos = this.borderpos(0);
-			var ec = bd.exnum(pos.x,pos.y)
-			if(ec===null || this.mouseCell===ec || (this.inputData!=11 && this.inputData!==null)){ return;}
+			var pos = this.borderpos(0), ec = bd.exnum(pos.x,pos.y)
+			if(ec===null || this.mouseCell===ec){ return;}
 
-			if(this.inputData===null && bd.ErE(ec)==6){ this.inputData=12;}
+			if(this.inputData!=11 && this.inputData!==null){ }
+			else if(this.inputData===null && bd.ErE(ec)==6){ this.inputData=12;}
 			else{
 				ans.errDisp=true;
 				bd.errclear();
@@ -107,18 +107,17 @@ Puzzles.kinkonkan.prototype = {
 			return;
 		};
 		mv.clickexcell = function(){
-			var pos = this.borderpos(0);
-			var ec = bd.exnum(pos.x, pos.y);
-			if(ec<0 || bd.excellmax<=ec){ return false;}
-			var ec0 = tc.getTEC();
+			var ec = this.excellid();
+			if(ec===null){ return false;}
 
+			var ec0 = tc.getTEC();
 			if(ec!==null && ec!=ec0){
 				tc.setTEC(ec);
 				pc.paintEXcell(ec);
 				pc.paintEXcell(ec0);
 			}
-			else if(ec!==null && ec==ec0){
-				var flag = (bd.ErE(ec)!=6);
+			else if(ec!==null && ec===ec0){
+				var flag = (bd.ErE(ec)!==6);
 				ans.errDisp=true;
 				bd.errclear();
 				if(flag){ mv.flashlight(ec);}

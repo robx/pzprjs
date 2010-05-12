@@ -492,8 +492,8 @@ KeyPopup.prototype = {
 	display : function(){
 		var mode = pp.getVal('mode');
 		if(this.ctl[mode].el && this.ctl[mode].enable && pp.getVal('keypopup') && mv.btn.Left){
-			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputPos.x - 3 + 'px';
-			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputPos.y - 3 + 'px';
+			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputPoint.x - 3 + 'px';
+			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputPoint.y - 3 + 'px';
 			this.ctl[mode].el.style.zIndex = 100;
 
 			if(this.ctl[mode].target==k.CELL){
@@ -604,7 +604,7 @@ TCell.prototype = {
 	setCrossType : function(){
 		this.crosstype = true;
 		this.adjust();
-		this.setTCP(new Pos(0,0));
+		this.setTCP(new Address(0,0));
 	},
 
 	//---------------------------------------------------------------------------
@@ -616,8 +616,8 @@ TCell.prototype = {
 	decTCY : function(mv){ this.cursory-=mv;},
 
 	//---------------------------------------------------------------------------
-	// tc.getTCP() ターゲットの位置をPosクラスのオブジェクトで取得する
-	// tc.setTCP() ターゲットの位置をPosクラスのオブジェクトで設定する
+	// tc.getTCP() ターゲットの位置をAddressクラスのオブジェクトで取得する
+	// tc.setTCP() ターゲットの位置をAddressクラスのオブジェクトで設定する
 	// tc.getTCC() ターゲットの位置をCellのIDで取得する
 	// tc.setTCC() ターゲットの位置をCellのIDで設定する
 	// tc.getTXC() ターゲットの位置をCrossのIDで取得する
@@ -627,7 +627,7 @@ TCell.prototype = {
 	// tc.getTEC() ターゲットの位置をEXCellのIDで取得する
 	// tc.setTEC() ターゲットの位置をEXCellのIDで設定する
 	//---------------------------------------------------------------------------
-	getTCP : function(){ return new Pos(this.cursorx,this.cursory);},
+	getTCP : function(){ return new Address(this.cursorx, this.cursory);},
 	setTCP : function(pos){
 		if(pos.x<this.minx || this.maxx<pos.x || pos.y<this.miny || this.maxy<pos.y){ return;}
 		this.cursorx = pos.x; this.cursory = pos.y;

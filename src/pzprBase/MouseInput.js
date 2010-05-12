@@ -8,31 +8,37 @@
 var MouseEvent = function(){
 	this.enableMouse = true;	// マウス入力は有効か
 
-	this.inputPos;
-	this.mouseCell;
-	this.inputData;
-	this.firstPos;
-	this.btn = {};
+	this.inputPoint = new Point(null, null);	// 入力イベントが発生したpixel位置
+
+	this.mouseCell;		// 入力されたセル等のID
+	this.inputData;		// 入力中のデータ番号(実装依存)
+	this.firstCell;		// mousedownされた時のセルのID(連黒分断禁用)
+	this.firstPoint = new Point(null, null);	// mousedownされた時のpixel位置
+	this.prevPos    = new Address(null, null);	// 前回のマウス入力イベントのborder座標
+	this.btn = {};		// 押されているボタン
 	this.mousereset();
 
 	this.enableInputHatena = k.isDispHatena;
 	this.inputQuesDirectly = false;
 
 	this.mouseoffset;
-	if     (k.br.IEmoz4)   { this.mouseoffset = new Pos(2,2);}
-	else if(k.br.WinWebKit){ this.mouseoffset = new Pos(1,1);}
-	else                   { this.mouseoffset = new Pos(0,0);}
+	if     (k.br.IEmoz4)   { this.mouseoffset = {x:2,y:2};}
+	else if(k.br.WinWebKit){ this.mouseoffset = {x:1,y:1};}
+	else                   { this.mouseoffset = {x:0,y:0};}
 };
 MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// mv.mousereset() マウス入力に関する情報を初期化する
 	//---------------------------------------------------------------------------
 	mousereset : function(){
-		this.inputPos = new Pos(null, null);
 		this.mouseCell = null;
 		this.inputData = null;
-		this.firstPos = new Pos(null, null);
+		this.firstCell = null;
+		this.firstPoint.reset();
+		this.prevPos.reset();
 		this.btn = { Left:false, Middle:false, Right:false};
+
+		if(this.previdlist!==(void 0)){ this.previdlist = [];}
 	},
 
 	//---------------------------------------------------------------------------
@@ -122,13 +128,13 @@ MouseEvent.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.setposition()   イベントが起こった座標をinputPosに代入
+	// mv.setposition()   イベントが起こった座標をinputPointに代入
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
 	setposition : function(e){
-		this.inputPos.x = ee.pageX(e) -k.cv_oft.x-k.p0.x - this.mouseoffset.x;
-		this.inputPos.y = ee.pageY(e) -k.cv_oft.y-k.p0.y - this.mouseoffset.y;
+		this.inputPoint.x = ee.pageX(e) -k.cv_oft.x-k.p0.x - this.mouseoffset.x;
+		this.inputPoint.y = ee.pageY(e) -k.cv_oft.y-k.p0.y - this.mouseoffset.y;
 	},
 
 	notInputted : function(){ return !um.changeflag;},
@@ -139,30 +145,36 @@ MouseEvent.prototype = {
 	// mv.cellid()    入力された位置がどのセルのIDに該当するかを返す
 	// mv.crossid()   入力された位置がどの交差点のIDに該当するかを返す
 	// mv.borderid()  入力された位置がどの境界線・LineのIDに該当するかを返す(クリック用)
+	// mv.excellid()  入力された位置がどのEXCELLのIDに該当するかを返す
 	// mv.borderpos() 入力された位置が仮想セル上でどこの(X*2,Y*2)に該当するかを返す。
 	//                外枠の左上が(0,0)で右下は(k.qcols*2,k.qrows*2)。rcは0〜0.5のパラメータ。
 	//---------------------------------------------------------------------------
 	cellid : function(){
 		var pos = this.borderpos(0);
-		if(this.inputPos.x%k.cwidth===0 || this.inputPos.y%k.cheight===0){ return null;} // ぴったりは無効
+		if(this.inputPoint.x%k.cwidth===0 || this.inputPoint.y%k.cheight===0){ return null;} // ぴったりは無効
 		return bd.cnum(pos.x,pos.y);
 	},
 	crossid : function(){
 		var pos = this.borderpos(0.5);
 		return bd.xnum(pos.x,pos.y);
 	},
+	excellid : function(){
+		var pos = this.borderpos(0);
+		if(this.inputPoint.x%k.cwidth===0 || this.inputPoint.y%k.cheight===0){ return null;} // ぴったりは無効
+		return bd.exnum(pos.x,pos.y);
+	},
 	borderpos : function(rc){
 		// マイナスでもシームレスな値にしたいので、+4して-4する
-		var pm = rc*k.cwidth, px=(this.inputPos.x+pm+2*k.cwidth), py=(this.inputPos.y+pm+2*k.cheight);
+		var pm = rc*k.cwidth, px=(this.inputPoint.x+pm+2*k.cwidth), py=(this.inputPoint.y+pm+2*k.cheight);
 		var bx = ((px/k.cwidth)|0)*2  + ((px%k.cwidth <2*pm)?0:1) - 4;
 		var by = ((py/k.cheight)|0)*2 + ((py%k.cheight<2*pm)?0:1) - 4;
 
-		return new Pos(bx,by);
+		return new Address(bx,by);
 	},
 
 	borderid : function(spc){
-		var bx = ((this.inputPos.x/k.cwidth)<<1)+1, by = ((this.inputPos.y/k.cheight)<<1)+1;
-		var dx = this.inputPos.x%k.cwidth,          dy = this.inputPos.y%k.cheight;
+		var bx = ((this.inputPoint.x/k.cwidth)<<1)+1, by = ((this.inputPoint.y/k.cheight)<<1)+1;
+		var dx = this.inputPoint.x%k.cwidth,          dy = this.inputPoint.y%k.cheight;
 
 		// 真ん中のあたりはどこにも該当しないようにする
 		if(k.isLineCross){
@@ -198,10 +210,11 @@ MouseEvent.prototype = {
 
 		this.mouseCell = cc; 
 
-		if(k.NumberIsWhite && bd.QnC(cc)!=-1 && (this.inputData==1||(this.inputData==2 && pc.bcolor=="white"))){ return;}
-		if(k.RBBlackCell && this.inputData==1){
-			if(this.firstPos.x===null && this.firstPos.y===null){ this.firstPos = new Pos(bd.cell[cc].bx, bd.cell[cc].by);}
-			if( (((this.firstPos.x>>1)+(this.firstPos.y>>1))&1) != (((bd.cell[cc].bx>>1)+(bd.cell[cc].by>>1))&1) ){ return;}
+		if(k.NumberIsWhite && bd.QnC(cc)!==-1 && (this.inputData===1||(this.inputData===2 && pc.bcolor==="white"))){ return;}
+		if(k.RBBlackCell && this.inputData===1){
+			if(this.firstCell===null){ this.firstCell = cc;}
+			var obj1=bd.cell[this.firstCell], obj2=bd.cell[cc];
+			if(((obj1.bx&2)^(obj1.by&2))!==((obj2.bx&2)^(obj2.by&2))){ return;}
 		}
 
 		(this.inputData==1?bd.setBlack:bd.setWhite).apply(bd,[cc]);
@@ -369,26 +382,38 @@ MouseEvent.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// mv.getdir()     入力がどの方向になるか取得する
+	// mv.getnb()      上下左右に隣接する境界線のIDを取得する
 	// mv.inputdirec() Cellのdirec(方向)のデータを入力する
 	//---------------------------------------------------------------------------
+	getdir : function(base, current){
+		if     (current.y-base.y===-2){ return k.UP;}
+		else if(current.y-base.y=== 2){ return k.DN;}
+		else if(current.x-base.x===-2){ return k.LT;}
+		else if(current.x-base.x=== 2){ return k.RT;}
+		return k.NONE;
+	},
+	getnb : function(base, current){
+		if     (current.y-base.y===-2){ return bd.bnum(base.x  ,base.y-1);}
+		else if(current.y-base.y=== 2){ return bd.bnum(base.x  ,base.y+1);}
+		else if(current.x-base.x===-2){ return bd.bnum(base.x-1,base.y  );}
+		else if(current.x-base.x=== 2){ return bd.bnum(base.x+1,base.y  );}
+		return null;
+	},
+
 	inputdirec : function(){
 		var pos = this.borderpos(0);
-		if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
+		if(this.prevPos.equals(pos)){ return;}
 
-		var inp = 0;
-		var cc = bd.cnum(this.mouseCell.x, this.mouseCell.y);
-		if(cc!==null && bd.QnC(cc)!=-1){
-			if     (pos.y-this.mouseCell.y==-2){ inp=k.UP;}
-			else if(pos.y-this.mouseCell.y== 2){ inp=k.DN;}
-			else if(pos.x-this.mouseCell.x==-2){ inp=k.LT;}
-			else if(pos.x-this.mouseCell.x== 2){ inp=k.RT;}
-			else{ return;}
-
-			bd.sDiC(cc, (bd.DiC(cc)!=inp?inp:0));
-
-			pc.paintCell(cc);
+		var cc=bd.cnum(this.prevPos.x, this.prevPos.y);
+		if(cc!==null && bd.QnC(cc)!==-1){
+			var dir = this.getdir(this.prevPos, pos);
+			if(dir!==k.NONE){
+				bd.sDiC(cc, (bd.DiC(cc)!==dir?dir:0));
+				pc.paintCell(cc);
+			}
 		}
-		this.mouseCell = pos;
+		this.prevPos = pos;
 	},
 
 	//---------------------------------------------------------------------------
@@ -419,35 +444,35 @@ MouseEvent.prototype = {
 	// mv.set51cell() [＼]を作成・消去するときの共通処理関数(カックロ以外はオーバーライドされる)
 	//---------------------------------------------------------------------------
 	input51 : function(){
-		var pos = this.borderpos(0);
-		var cc = bd.cnum(pos.x, pos.y);
-
-		if((pos.x===-1 && pos.y>bd.minby && pos.y<bd.maxby) || (pos.y===-1 && pos.x>bd.minbx && pos.x<bd.maxbx)){
+		var ec = this.excellid();
+		if(ec!==null){
 			var tcp=tc.getTCP();
-			tc.setTCP(new Pos(pos.x,pos.y));
+			tc.setTCP(pos);
 			pc.paintPos(tcp);
 			pc.paintPos(pos);
 			return;
 		}
-		else if(cc!==null && cc!==tc.getTCC()){
+
+		var cc = this.cellid();
+		if(cc===null){ return;}
+
+		if(cc!==tc.getTCC()){
 			var tcp=tc.getTCP();
 			tc.setTCC(cc);
 			pc.paintPos(tcp);
 		}
-		else if(cc!==null){
+		else{
 			if(this.btn.Left){
 				if(bd.QuC(cc)!=51){ this.set51cell(cc,true);}
 				else{ kc.chtarget('shift');}
 			}
 			else if(this.btn.Right){ this.set51cell(cc,false);}
 		}
-		else{ return;}
-
 		pc.paintCell(cc);
 	},
 	// ※とりあえずカックロ用
 	set51cell : function(cc,val){
-		if(val==true){
+		if(val===true){
 			bd.sQuC(cc,51);
 			bd.sQnC(cc,0);
 			bd.sDiC(cc,0);
@@ -506,32 +531,31 @@ MouseEvent.prototype = {
 	// mv.inputborder()    盤面境界線の問題データを入力する
 	// mv.inputborderans() 盤面境界線の回答データを入力する
 	// mv.inputBD()        上記二つの共通処理関数
+	// mv.getborderID()    入力対象となる境界線のIDを取得する
 	//---------------------------------------------------------------------------
 	inputborder : function(){ this.inputBD(0);},
 	inputborderans : function(){ this.inputBD(1);},
 	inputBD : function(flag){
 		var pos = this.borderpos(0.35);
-		if(this.mouseCell===null){ this.mouseCell = pos;}
-		if(pos.x===this.mouseCell.x && pos.y===this.mouseCell.y){ return;}
+		if(this.prevPos.equals(pos)){ return;}
 
-		var id = bd.bnum(pos.x, pos.y);
-		if(id===null){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
+		var id = this.getborderID(this.prevPos, pos);
 		if(id!==null){
-			if((pos.x&1===0 && this.mouseCell.x===pos.x && Math.abs(this.mouseCell.y-pos.y)===1) ||
-			   (pos.y&1===0 && this.mouseCell.y===pos.y && Math.abs(this.mouseCell.x-pos.x)===1) )
-			{
-				this.mouseCell=null;
-				if(this.inputData===null){ this.inputData=(bd.isBorder(id)?0:1);}
+			if(this.inputData===null){ this.inputData=(bd.isBorder(id)?0:1);}
+			if(k.editmode || bd.QuB(id)===0){
+				if     (this.inputData===1){ bd.setBorder(id); if(k.isborderAsLine){ bd.sQsB(id, 0);} }
+				else if(this.inputData===0){ bd.removeBorder(id);}
 
-				if(!(k.playmode && bd.QuB(id)!==0)){
-					if     (this.inputData===1){ bd.setBorder(id); if(k.isborderAsLine){ bd.sQsB(id, 0);} }
-					else if(this.inputData===0){ bd.removeBorder(id);}
-
-					pc.paintBorder(id);
-				}
+				pc.paintBorder(id);
 			}
 		}
-		this.mouseCell = pos;
+		this.prevPos = pos;
+	},
+	getborderID : function(base, current){
+		if((current.x&1===0 && base.x===current.x && Math.abs(base.y-current.y)===1) ||
+		   (current.y&1===0 && base.y===current.y && Math.abs(base.x-current.x)===1) )
+			{ return ((((base.x+base.y)&1)===1) ? bd.bnum(current.x, current.y) : bd.bnum(base.x, base.y));}
+		return null;
 	},
 
 	//---------------------------------------------------------------------------
@@ -545,21 +569,15 @@ MouseEvent.prototype = {
 	inputQsubLine : function(){ this.inputLine1(1);},
 	inputLine1 : function(flag){
 		var pos = this.borderpos(0);
-		if(this.mouseCell===null){ this.mouseCell = pos;}
-		if(pos.x===this.mouseCell.x && pos.y===this.mouseCell.y){ return;}
+		if(this.prevPos.equals(pos)){ return;}
 
-		var id = null;
-		if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1);}
-		else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1);}
-		else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  );}
-		else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  );}
-
-		this.mouseCell = pos;
+		var id = this.getnb(this.prevPos, pos);
 		if(this.inputData==2 || this.inputData==3){ this.inputpeke2(id);}
-		else if(this.mouseCell!==null && id!==null){
+		else if(id!==null){
 			if     (flag==0) this.inputLine2(id);
 			else if(flag==1) this.inputqsub2(id);
 		}
+		this.prevPos = pos;
 	},
 	inputLine2 : function(id){
 		if(this.inputData===null){ this.inputData=(bd.isLine(id)?0:1);}
@@ -580,16 +598,18 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	inputpeke : function(){
 		var pos = this.borderpos(0.22);
-		var id = bd.bnum(pos.x, pos.y);
-		if(id===null || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
+		if(this.prevPos.equals(pos)){ return;}
 
-		this.mouseCell = pos;
+		var id = bd.bnum(pos.x, pos.y);
+		if(id===null){ return;}
+
+		this.prevPos = pos;
 		this.inputpeke2(id);
 	},
 	inputpeke2 : function(id){
-		if(this.inputData===null){ if(bd.QsB(id)==0){ this.inputData=2;}else{ this.inputData=3;} }
-		if     (this.inputData==2){ bd.setPeke(id);}
-		else if(this.inputData==3){ bd.removeLine(id);}
+		if(this.inputData===null){ this.inputData=(bd.QsB(id)===0?2:3);}
+		if     (this.inputData===2){ bd.setPeke(id);}
+		else if(this.inputData===3){ bd.removeLine(id);}
 		pc.paintLine(id);
 	},
 
@@ -601,7 +621,7 @@ MouseEvent.prototype = {
 	dispRed : function(){
 		var cc = this.cellid();
 		this.mousereset();
-		if(!bd.isBlack(cc) || cc==this.mouseCell){ return;}
+		if(cc===null || !bd.isBlack(cc)){ return;}
 		if(!k.RBBlackCell){ bd.sErC(area.bcell[area.bcell.id[cc]].clist,1);}
 		else{ this.db0(function(c){ return (bd.isBlack(c) && bd.ErC(c)==0);},cc,1);}
 		ans.errDisp = true;
@@ -610,22 +630,17 @@ MouseEvent.prototype = {
 	db0 : function(func, cc, num){
 		if(bd.ErC(cc)!=0){ return;}
 		bd.sErC([cc],num);
-		var bx=bd.cell[cc].bx, by=bd.cell[cc].by;
-		if( func(bd.cnum(bx-2,by-2)) ){ this.db0(func, bd.cnum(bx-2,by-2), num);}
-		if( func(bd.cnum(bx  ,by-2)) ){ this.db0(func, bd.cnum(bx  ,by-2), num);}
-		if( func(bd.cnum(bx+2,by-2)) ){ this.db0(func, bd.cnum(bx+2,by-2), num);}
-		if( func(bd.cnum(bx-2,by  )) ){ this.db0(func, bd.cnum(bx-2,by  ), num);}
-		if( func(bd.cnum(bx+2,by  )) ){ this.db0(func, bd.cnum(bx+2,by  ), num);}
-		if( func(bd.cnum(bx-2,by+2)) ){ this.db0(func, bd.cnum(bx-2,by+2), num);}
-		if( func(bd.cnum(bx  ,by+2)) ){ this.db0(func, bd.cnum(bx  ,by+2), num);}
-		if( func(bd.cnum(bx+2,by+2)) ){ this.db0(func, bd.cnum(bx+2,by+2), num);}
-		return;
+		var bx=bd.cell[cc].bx, by=bd.cell[cc].by, clist=bd.cellinside(bx-2,by-2,bx+2,by+2);
+		for(var i=0;i<clist.length;i++){
+			var c = clist[i];
+			if(c!==cc && func(c)){ this.db0(func, c, num);}
+		}
 	},
 
 	dispRedLine : function(){
 		var id = this.borderid(0.15);
 		this.mousereset();
-		if(id!==null && id===this.mouseCell){ return;}
+		if(id===null){ return;}
 
 		if(!bd.isLine(id)){
 			var cc = (!k.isborderAsLine?this.cellid():this.crossid());

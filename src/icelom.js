@@ -106,28 +106,26 @@ Puzzles.icelom.prototype = {
 		};
 		mv.inputarrow = function(){
 			var pos = this.borderpos(0);
-			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
+			if(this.prevPos.equals(pos)){ return;}
 
-			var id = null;
-			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1); if(this.inputData!=0){ this.inputData=1;} }
-			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1); if(this.inputData!=0){ this.inputData=2;} }
-			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  ); if(this.inputData!=0){ this.inputData=1;} }
-			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  ); if(this.inputData!=0){ this.inputData=2;} }
+			var id = this.getnb(this.prevPos, pos);
+			if(id===null){
+				var dir = this.getdir(this.prevPos, pos);
+				if(this.inputData===null){ this.inputData = ((dir===k.UP||dir===k.LT) ? 1 : 2);}
 
-			this.mouseCell = pos;
-
-			if(id===null || id<bd.bdinside){ return;}
-			else{
-				if(bd.border[id].bx===0 || bd.border[id].by===0){
-					if     (this.inputData==1){ bd.inputarrowout(id);}
-					else if(this.inputData==2){ bd.inputarrowin (id);}
+				if(id>=bd.bdinside){
+					if(bd.border[id].bx===0 || bd.border[id].by===0){
+						if     (this.inputData==1){ bd.inputarrowout(id);}
+						else if(this.inputData==2){ bd.inputarrowin (id);}
+					}
+					else{
+						if     (this.inputData==1){ bd.inputarrowin (id);}
+						else if(this.inputData==2){ bd.inputarrowout(id);}
+					}
 				}
-				else{
-					if     (this.inputData==1){ bd.inputarrowin (id);}
-					else if(this.inputData==2){ bd.inputarrowout(id);}
-				}
+				pc.paintBorder(id);
 			}
-			pc.paintBorder(id);
+			this.prevPos = pos;
 		};
 
 		// キーボード入力系

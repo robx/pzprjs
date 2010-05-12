@@ -20,7 +20,7 @@ Menu = function(){
 	this.pop        = "";			// 現在表示しているポップアップウィンドウ(オブジェクト)
 
 	this.movingpop  = "";			// 移動中のポップアップメニュー
-	this.offset = new Pos(0, 0);	// ポップアップウィンドウの左上からの位置
+	this.offset = new Point(0, 0);	// ポップアップウィンドウの左上からの位置
 
 	this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
 	this.labelstack = [];			// span等の文字列の情報(idnameと文字列のリスト)

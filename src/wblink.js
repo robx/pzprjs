@@ -66,19 +66,14 @@ Puzzles.wblink.prototype = {
 		mv.inputLine = function(){
 			if(this.inputData==2){ return;}
 			var pos = this.borderpos(0);
-			if(this.mouseCell===null){ this.mouseCell = pos;}
-			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
+			if(this.prevPos.equals(pos)){ return;}
 
-			var id = null;
-			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1);}
-			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1);}
-			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  );}
-			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  );}
-
-			if(this.mouseCell!==null && id!==null){
+			var id = this.getnb(this.prevPos, pos);
+			if(id!==null){
+				var dir = this.getdir(this.prevPos, pos);
 				var idlist = this.getidlist(id);
 				if(this.inputData===null){ this.inputData=(bd.isLine(id)?0:1);}
-				if(this.inputData> 0 && ((pos.x-this.mouseCell.x==-2)||(pos.y-this.mouseCell.y==-2))){ idlist=idlist.reverse();} // 色分けの都合上の処理
+				if(this.inputData>0 && (dir===k.UP||dir===k.LT)){ idlist=idlist.reverse();} // 色分けの都合上の処理
 				for(var i=0;i<idlist.length;i++){
 					if(idlist[i]===null){ continue;}
 					if(this.inputData==1){ bd.setLine(idlist[i]);}
@@ -87,7 +82,7 @@ Puzzles.wblink.prototype = {
 				}
 				this.inputData=2;
 			}
-			this.mouseCell = pos;
+			this.prevPos = pos;
 		};
 		mv.getidlist = function(id){
 			var idlist=[], bx=bd.border[id].bx, by=bd.border[id].by;
@@ -113,7 +108,7 @@ Puzzles.wblink.prototype = {
 		mv.inputpeke = function(){
 			var pos = this.borderpos(0.22);
 			var id = bd.bnum(pos.x, pos.y);
-			if(id===null || (pos.x==this.mouseCell.x && pos.y==this.mouseCell.y)){ return;}
+			if(id===null || this.prevPos.equals(pos)){ return;}
 
 			if(this.inputData===null){ this.inputData=(bd.QsB(id)!=2?2:0);}
 			bd.sQsB(id, this.inputData);
@@ -124,7 +119,7 @@ Puzzles.wblink.prototype = {
 				pc.paintBorder(idlist[i]);
 			}
 			if(idlist.length==0){ pc.paintBorder(id);}
-			this.mouseCell = pos;
+			this.prevPos = pos;
 		},
 
 		// キーボード入力系

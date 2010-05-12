@@ -84,24 +84,19 @@ Puzzles.toichika.prototype = {
 			}
 
 			pos = this.borderpos(0);
-			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y && this.inputData===1){ return;}
+			if(this.prevPos.equals(pos) && this.inputData===1){ return;}
 
-			var inp = 0;
-			var cc = bd.cnum(this.mouseCell.x, this.mouseCell.y);
+			var dir = k.NONE, cc = bd.cnum(this.prevPos.x, this.prevPos.y);
 			if(cc!==null){
-				if     (pos.y-this.mouseCell.y==-2){ inp=k.UP;}
-				else if(pos.y-this.mouseCell.y== 2){ inp=k.DN;}
-				else if(pos.x-this.mouseCell.x==-2){ inp=k.LT;}
-				else if(pos.x-this.mouseCell.x== 2){ inp=k.RT;}
-				else{ return;}
-
-				bd.setCell(cc,inp);
-				pc.paintCell(cc);
-
-				this.mousereset();
+				var dir = this.getdir(this.prevPos, pos);
+				if(dir!==k.NONE){
+					bd.setCell(cc,dir);
+					pc.paintCell(cc);
+					this.mousereset();
+				}
 			}
 			else{
-				this.mouseCell = pos;
+				this.prevPos = pos;
 			}
 		};
 		mv.inputdirec_mouseup = function(){

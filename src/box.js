@@ -60,11 +60,10 @@ Puzzles.box.prototype = {
 		};
 
 		mv.clickexcell = function(){
-			var pos = this.borderpos(0);
-			var ec = bd.exnum(pos.x, pos.y);
-			if(ec<0 || bd.excellmax<=ec){ return false;}
-			var ec0 = tc.getTEC();
+			var ec = this.excellid();
+			if(ec===null){ return;}
 
+			var ec0 = tc.getTEC();
 			if(ec!==null && ec!==ec0){
 				tc.setTEC(ec);
 				pc.paintEXcell(ec0);

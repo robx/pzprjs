@@ -3,12 +3,17 @@
 //----------------------------------------------------------------------------
 // ★グローバル変数
 //---------------------------------------------------------------------------
-// Posクラス
-Pos = function(xx,yy){ this.x = xx; this.y = yy;};
-Pos.prototype = {
-	set : function(xx,yy){ this.x = xx; this.y = yy;},
-	clone : function(){ return new Pos(this.x, this.y);}
+// Pointクラス
+Point = function(xx,yy){ this.x = xx; this.y = yy;};
+Point.prototype = {
+	set : function(pos){ this.x = pos.x; this.y = pos.y;},
+	reset : function(){ this.x = null; this.y = null;},
+	valid : function(){ return (this.x!==null && this.y!==null);},
+	equals : function(pos){ return (this.x===pos.x && this.y===pos.y);}
 };
+// Addressクラス
+Address = function(xx,yy){ this.x = xx; this.y = yy;};
+Address.prototype = Point.prototype;
 
 // 各種パラメータの定義
 var k = {
@@ -60,8 +65,8 @@ var k = {
 	bwidth   : 18,			// セルの横幅/2
 	bheight  : 18,			// セルの縦幅/2
 
-	p0       : new Pos(0, 0),	// Canvas中での盤面の左上座標
-	cv_oft   : new Pos(0, 0),	// Canvasのwindow内での左上座標
+	p0       : new Point(0, 0),	// Canvas中での盤面の左上座標
+	cv_oft   : new Point(0, 0),	// Canvasのwindow内での左上座標
 
 	br:{
 		IE    : (!!(window.attachEvent && !window.opera)),
@@ -89,6 +94,7 @@ var k = {
 	LINE  : 'line',
 	QSUB  : 'qsub',
 
+	NONE : 0,	// 方向なし
 	UP : 1,		// up
 	DN : 2,		// down
 	LT : 3,		// left

@@ -62,7 +62,9 @@ Puzzles.firefly.prototype = {
 			}
 		};
 		mv.mouseup = function(){
-			if(k.editmode && this.notInputted() && bd.cnum(this.mouseCell.x,this.mouseCell.y)==this.cellid()) this.inputqnum();
+			if(k.editmode && this.notInputted()){
+				if(bd.cnum(this.prevPos.x,this.prevPos.y)===this.cellid()){ this.inputqnum();}
+			}
 		};
 		mv.mousemove = function(){
 			if(k.editmode){

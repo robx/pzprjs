@@ -121,38 +121,26 @@ Puzzles.tentaisho.prototype = {
 		};
 		mv.inputborder_tentaisho = function(){
 			var pos = this.borderpos(0.34);
-			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
+			if(this.prevPos.equals(pos)){ return;}
 
-			var id = bd.bnum(pos.x, pos.y);
-			if(id===null && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
-
-			if(this.mouseCell!==null && id!==null){
-				if((!(pos.x&1) && this.mouseCell.x==pos.x && Math.abs(this.mouseCell.y-pos.y)==1) ||
-				   (!(pos.y&1) && this.mouseCell.y==pos.y && Math.abs(this.mouseCell.x-pos.x)==1) )
-				{
-					this.mouseCell=null
-
-					if(this.inputData===null){ this.inputData=(bd.QaB(id)==0?1:0);}
-					if(this.inputData!==null){
-						bd.sQaB(id, this.inputData);
-						pc.paintBorder(id);
-					}
-				}
+			var id = this.getborderID(this.prevPos, pos);
+			if(id!==null){
+				if(this.inputData===null){ this.inputData=(bd.QaB(id)===0?1:0);}
+				bd.sQaB(id, this.inputData);
+				pc.paintBorder(id);
 			}
-			this.mouseCell = pos;
+			this.prevPos = pos;
 		};
 		mv.inputstar = function(){
 			var pos = this.borderpos(0.25);
-			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
+			if(this.prevPos.equals(pos)){ return;}
 
 			var id = bd.snum(pos.x, pos.y);
-			if(id===null && this.mouseCell.x){ id = bd.snum(this.mouseCell.x, this.mouseCell.y);}
-
 			if(id!==null){
 				if(this.btn.Left)      { bd.setStar(id, {0:1,1:2,2:0}[bd.getStar(id)]);}
 				else if(this.btn.Right){ bd.setStar(id, {0:2,1:0,2:1}[bd.getStar(id)]);}
 			}
-			this.mouseCell = pos;
+			this.prevPos = pos;
 			pc.paintPos(pos);
 		};
 

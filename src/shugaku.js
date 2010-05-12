@@ -69,30 +69,30 @@ Puzzles.shugaku.prototype = {
 		mv.inputFuton = function(){
 			var cc = this.cellid();
 
-			if(this.firstPos.x===null && this.firstPos.y===null){
+			if(!this.firstPoint.valid()){
 				if(cc===null || bd.QnC(cc)!==-1){ return;}
 				this.mouseCell = cc;
 				this.inputData = 1;
-				this.firstPos = this.inputPos.clone();
+				this.firstPoint.set(this.inputPoint);
 				pc.paintCell(cc);
 			}
 			else{
 				var old = this.inputData;
-				if(this.mouseCell==cc){ this.inputData = 1;}
+				if(this.mouseCell===cc){ this.inputData = 1;}
 				else{
-					var mx=this.inputPos.x-this.firstPos.x, my=this.inputPos.y-this.firstPos.y;
+					var dx=(this.inputPoint.x-this.firstPoint.x), dy=(this.inputPoint.y-this.firstPoint.y);
 					if     (cc===null){ /* nop */ }
-					else if(mx-my>0 && mx+my>0){ this.inputData = (bd.QnC(bd.rt(this.mouseCell))===-1?5:6);}
-					else if(mx-my>0 && mx+my<0){ this.inputData = (bd.QnC(bd.up(this.mouseCell))===-1?2:6);}
-					else if(mx-my<0 && mx+my>0){ this.inputData = (bd.QnC(bd.dn(this.mouseCell))===-1?3:6);}
-					else if(mx-my<0 && mx+my<0){ this.inputData = (bd.QnC(bd.lt(this.mouseCell))===-1?4:6);}
+					else if(dx-dy>0 && dx+dy>0){ this.inputData = (bd.QnC(bd.rt(this.mouseCell))===-1?5:6);}
+					else if(dx-dy>0 && dx+dy<0){ this.inputData = (bd.QnC(bd.up(this.mouseCell))===-1?2:6);}
+					else if(dx-dy<0 && dx+dy>0){ this.inputData = (bd.QnC(bd.dn(this.mouseCell))===-1?3:6);}
+					else if(dx-dy<0 && dx+dy<0){ this.inputData = (bd.QnC(bd.lt(this.mouseCell))===-1?4:6);}
 				}
 				if(old!=this.inputData){ pc.paintCellAround(this.mouseCell);}
 			}
 		};
 		mv.inputFuton2 = function(){
-			if(this.mouseCell===null || (this.firstPos.x===null && this.firstPos.y===null)){ return;}
-			var cc=this.mouseCell
+			if(this.mouseCell===null){ return;}
+			var cc = this.mouseCell
 
 			this.changeHalf(cc);
 			if(this.inputData!=1 && this.inputData!=6){ bd.sQaC(cc, 10+this.inputData); bd.sQsC(cc, 0);}
@@ -311,8 +311,8 @@ Puzzles.shugaku.prototype = {
 		};
 
 		pc.drawTargetFuton = function(x1,y1,x2,y2){
-			var cc=mv.mouseCell;
-			var inputting = ((mv.firstPos.x!==null || mv.firstPos.y!==null) && cc!==null);
+			var cc = mv.mouseCell;
+			var inputting = (cc!==null && mv.firstPoint.valid());
 
 			if(inputting){
 				this.vinc('cell_back', 'crispEdges');

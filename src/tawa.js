@@ -290,7 +290,7 @@ Puzzles.tawa.prototype = {
 			return cand;
 		};
 		mv.borderpos = function(rc){
-			return new Pos((this.inputPos.x/k.bwidth)|0, ((this.inputPos.y/k.cheight)|0)*2+1);
+			return new Address((this.inputPoint.x/k.bwidth)|0, ((this.inputPoint.y/k.cheight)|0)*2+1);
 		};
 	},
 	input_init_menuex : function(){	// 処理が大きくなったので分割(input_init()から呼ばれる)

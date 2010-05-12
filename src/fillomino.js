@@ -52,7 +52,14 @@ Puzzles.fillomino.prototype = {
 		// マウス入力系
 		mv.mousedown = function(){
 			if(k.playmode){
-				if(this.btn.Left){ this.borderinput = this.inputborder_fillomino();}
+				if(this.btn.Left){
+					// マウス入力時にmv.dragnumberするかの判別を行う
+					var pos = this.borderpos(0.25);
+					this.borderinput = (this.cnum(pos.x,pos.y)===null);
+
+					if(this.borderinput){ this.inputborder_fillomino();}
+					else{ this.dragnumber();}
+				}
 				else if(this.btn.Right) this.inputQsubLine();
 			}
 		};
@@ -73,36 +80,21 @@ Puzzles.fillomino.prototype = {
 		};
 		mv.inputborder_fillomino = function(){
 			var pos = this.borderpos(0.25);
-			if(this.mouseCell===null && (pos.x&1) && (pos.y&1)){
-				pos = this.cellid();
-				if(pos===null){ return true;}
-				this.inputData = bd.getNum(pos);
-				this.mouseCell = pos;
-				return false;
+			if(this.prevPos.equals(pos)){ return;}
+
+			var id = this.getborderID(this.prevPos, pos);
+			if(id!==null){
+				if(this.inputData===null){ this.inputData=(bd.QaB(id)===0?1:0);}
+				bd.sQaB(id, this.inputData);
+				pc.paintBorder(id);
 			}
-			if(pos.x===this.mouseCell.x && pos.y===this.mouseCell.y){ return true;}
-
-			var id = bd.bnum(pos.x, pos.y);
-			if(id===null && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
-
-			if(this.mouseCell!==null && id!==null){
-				if((!(pos.x&1) && this.mouseCell.x===pos.x && Math.abs(this.mouseCell.y-pos.y)===1) ||
-				   (!(pos.y&1) && this.mouseCell.y===pos.y && Math.abs(this.mouseCell.x-pos.x)===1) )
-				{
-					this.mouseCell=null
-
-					if(this.inputData===null){ this.inputData=(bd.QaB(id)===0?1:0);}
-					if(this.inputData!==null){ bd.sQaB(id, this.inputData);}
-					else{ return true;}
-					pc.paintBorder(id);
-				}
-			}
-			this.mouseCell = pos;
-			return true;
+			this.prevPos = pos;
 		};
 		mv.dragnumber = function(){
 			var cc = this.cellid();
 			if(cc===null||cc===this.mouseCell){ return;}
+
+			if(this.inputData===null){ this.inputData = bd.getNum(cc);}
 			bd.sQaC(cc, this.inputData);
 			this.mouseCell = cc;
 			pc.paintCell(cc);

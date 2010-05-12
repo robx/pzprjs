@@ -82,6 +82,7 @@ Puzzles.barns.prototype = {
 
 			bd.sQuC(cc, this.inputData);
 			pc.paintCell(cc);
+			this.mouseCell = cc;
 		},
 
 		// 線を引かせたくないので上書き

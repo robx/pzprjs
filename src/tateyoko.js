@@ -65,44 +65,49 @@ Puzzles.tateyoko.prototype = {
 		mv.inputTateyoko = function(){
 			var cc   = this.cellid();
 			if(cc===null){ return;}
-			var cpos = this.borderpos(0);
 
+			var pos = new Address(bd.cell[cc].bx, bd.cell[cc].by);
 			var input=false;
 
 			// 初回はこの中に入ってきます。
-			if(this.mouseCell===null){ this.firstPos = this.inputPos.clone();}
+			if(this.mouseCell===null){ this.firstPoint.set(this.inputPoint);}
 			// 黒マス上なら何もしない
 			else if(bd.QuC(cc)==1){ }
 			// まだ入力されていない(1つめの入力の)場合
 			else if(this.inputData===null){
 				if(cc==this.mouseCell){
-					pos = this.inputPos.clone();
-					if     (Math.abs(pos.y-this.firstPos.y)>=8){ this.inputData=1; input=true;}
-					else if(Math.abs(pos.x-this.firstPos.x)>=8){ this.inputData=2; input=true;}
+					var mx=Math.abs(this.inputPoint.x-this.firstPoint.x);
+					var my=Math.abs(this.inputPoint.y-this.firstPoint.y);
+					if     (mx>=8){ this.inputData=1; input=true;}
+					else if(my>=8){ this.inputData=2; input=true;}
 				}
 				else{
-					if     (Math.abs(cpos.y-this.prevCPos.y)==2){ this.inputData=1; input=true;}
-					else if(Math.abs(cpos.x-this.prevCPos.x)==2){ this.inputData=2; input=true;}
+					var dir = this.getdir(this.prevPos, pos);
+					if     (dir===k.UP || dir===k.DN){ this.inputData=1; input=true;}
+					else if(dir===k.LT || dir===k.RT){ this.inputData=2; input=true;}
 				}
 
 				if(input){
 					if(bd.QaC(cc)==this.inputData){ this.inputData=0;}
-					this.firstPos = new Pos(null,null);
+					this.firstPoint.reset();
  				}
 			}
 			// 入力し続けていて、別のマスに移動した場合
 			else if(cc!==this.mouseCell){
 				if(this.inputData==0){ this.inputData=0; input=true;}
-				else if(Math.abs(cpos.y-this.prevCPos.y)==2){ this.inputData=1; input=true;}
-				else if(Math.abs(cpos.x-this.prevCPos.x)==2){ this.inputData=2; input=true;}
+				else{
+					var dir = this.getdir(this.prevPos, pos);
+					if     (dir===k.UP || dir===k.DN){ this.inputData=1; input=true;}
+					else if(dir===k.LT || dir===k.RT){ this.inputData=2; input=true;}
+				}
 			}
 
 			// 描画・後処理
 			if(input){
-				bd.sQaC(cc,(this.inputData!=0?this.inputData:-1));
+				bd.sQaC(cc,(this.inputData!==0?this.inputData:-1));
 				pc.paintCell(cc);
 			}
-			this.prevCPos  = cpos;
+			this.prevPos   = pos;
 			this.mouseCell = cc;
 		};
 		mv.clickTateyoko = function(){
@@ -121,7 +126,6 @@ Puzzles.tateyoko.prototype = {
 			}
 			pc.paintCell(cc);
 		};
-		mv.prevCPos = new Pos(null,null);
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
