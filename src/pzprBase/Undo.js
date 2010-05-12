@@ -65,8 +65,7 @@ OperationManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// um.addOpe()       指定された操作を追加する。id等が同じ場合は最終操作を変更する
-	// um.recordObject() 指定されたオブジェクトをOperationManagerに追加する
+	// um.addOpe() 指定された操作を追加する。id等が同じ場合は最終操作を変更する
 	//---------------------------------------------------------------------------
 	addOpe : function(obj, property, id, old, num){
 		if(!this.isenableRecord() || (old===num && obj!==k.BOARD)){ return;}
@@ -99,38 +98,6 @@ OperationManager.prototype = {
 		if(property!=k.QSUB){ this.anscount++;}
 		this.changeflag = true;
 		this.enb_btn();
-	},
-	// オブジェクトを消滅させるのでOperationManagerに登録する
-	// この関数が呼び出されるのは盤面縮小処理時のみです
-	recordObject : function(type, id){
-		if(this.undoExec || this.redoExec){ return;}
-
-		var old = bd.newObject(type, id), obj = bd.getObject(type, id);
-
-		this.forceRecord = true;
-		if(type===k.CELL){
-			this.addOpe(type, k.QUES, id, obj.ques, old.ques);
-			this.addOpe(type, k.QNUM, id, obj.qnum, old.qnum);
-			this.addOpe(type, k.DIREC,id, obj.direc,old.direc);
-			this.addOpe(type, k.QANS, id, obj.qans, old.qans);
-			this.addOpe(type, k.QSUB, id, obj.qsub, old.qsub);
-		}
-		else if(type===k.EXCELL){
-			this.addOpe(type, k.QNUM, id, obj.qnum, old.qnum);
-			this.addOpe(type, k.DIREC,id, obj.direc,old.direc);
-		}
-		else if(type===k.CROSS){
-			this.addOpe(type, k.QUES, id, obj.ques, old.ques);
-			this.addOpe(type, k.QNUM, id, obj.qnum, old.qnum);
-		}
-		else if(type===k.BORDER){
-			this.addOpe(type, k.QUES, id, obj.ques, old.ques);
-			this.addOpe(type, k.QNUM, id, obj.qnum, old.qnum);
-			this.addOpe(type, k.LINE, id, obj.line, old.line);
-			this.addOpe(type, k.QANS, id, obj.qans, old.qans);
-			this.addOpe(type, k.QSUB, id, obj.qsub, old.qsub);
-		}
-		this.forceRecord = false;
 	},
 
 	//---------------------------------------------------------------------------

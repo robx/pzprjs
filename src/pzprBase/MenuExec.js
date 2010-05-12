@@ -382,15 +382,17 @@ MenuExec.prototype = {
 	reduceGroup : function(type,key){
 		if(type===k.BORDER){ this.reduceborder(key);}
 
-		var margin=0, group = bd.getGroup(type);
+		var margin=0, group = bd.getGroup(type), isrec=(!um.undoExec && !um.redoExec);
+		if(isrec){ um.forceRecord = true;}
 		for(var i=0;i<group.length;i++){
 			if(!!this.insex[type][this.distObj(type,i,key)]){
-				if(!group[i].isempty()){ um.recordObject(type,i);}
+				group[i].allclear(i,isrec);
 				margin++;
 			}
 			else if(margin>0){ group[i-margin] = group[i];}
 		}
 		for(var i=0;i<margin;i++){ group.pop();}
+		if(isrec){ um.forceRecord = false;}
 	},
 
 	//------------------------------------------------------------------------------
@@ -491,7 +493,7 @@ MenuExec.prototype = {
 
 				var source = (k.isborderAsLine ? this.outerBorder(id,key) : this.innerBorder(id,key));
 				this.copyBorder(id,source);
-				if(k.isborderAsLine){ bd.border[source].allclear(source);}
+				if(k.isborderAsLine){ bd.border[source].allclear(source,false);}
 			}
 		}
 	},
@@ -720,19 +722,6 @@ MenuExec.prototype = {
 	ACconfirm : function(){
 		if(confirm(menu.isLangJP()?"回答を消去しますか？":"Do you want to erase the Answer?")){
 			um.newOperation(true);
-			{
-				for(var i=0;i<bd.cellmax;i++){
-					if(bd.cell[i].qans!==bd.defcell.qans){ um.addOpe(k.CELL,k.QANS,i,bd.cell[i].qans,bd.defcell.qans);}
-					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe(k.CELL,k.QSUB,i,bd.cell[i].qsub,bd.defcell.qsub);}
-				}
-			}
-			if(!!k.isborder){
-				for(var i=0;i<bd.bdmax;i++){
-					if(bd.border[i].qans!==bd.defborder.qans){ um.addOpe(k.BORDER,k.QANS,i,bd.border[i].qans,bd.defborder.qans);}
-					if(bd.border[i].line!==bd.defborder.line){ um.addOpe(k.BORDER,k.LINE,i,bd.border[i].line,bd.defborder.line);}
-					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,k.QSUB,i,bd.border[i].qsub,bd.defborder.qsub);}
-				}
-			}
 
 			bd.ansclear();
 			base.resetInfo(false);
@@ -742,16 +731,6 @@ MenuExec.prototype = {
 	ASconfirm : function(){
 		if(confirm(menu.isLangJP()?"補助記号を消去しますか？":"Do you want to erase the auxiliary marks?")){
 			um.newOperation(true);
-			{
-				for(var i=0;i<bd.cellmax;i++){
-					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe(k.CELL,k.QSUB,i,bd.cell[i].qsub,bd.defcell.qsub);}
-				}
-			}
-			if(!!k.isborder){
-				for(var i=0;i<bd.bdmax;i++){
-					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,k.QSUB,i,bd.border[i].qsub,bd.defborder.qsub);}
-				}
-			}
 
 			bd.subclear();
 			pc.paintAll();

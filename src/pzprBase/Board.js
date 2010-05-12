@@ -20,16 +20,22 @@ Cell = function(id){
 	this.qsub;	// セルの補助データを保持する(白マス or 背景色)
 	this.error;	// エラーデータを保持する
 
-	this.allclear(id);
+	this.allclear(id,false);
 };
 Cell.prototype = {
 	//---------------------------------------------------------------------------
 	// cell.allclear() セルの位置,描画情報以外をクリアする
 	// cell.ansclear() セルのqans,qsub,error情報をクリアする
 	// cell.subclear() セルのqsub,error情報をクリアする
-	// cell.isempty()  プロパティが初期値と同じか判別する
 	//---------------------------------------------------------------------------
-	allclear : function(num) {
+	allclear : function(num,isrec) {
+		if(isrec===true){
+			if(this.ques !==bd.defcell.ques ){ um.addOpe(k.CELL, k.QUES, num, this.ques, bd.defcell.ques);}
+			if(this.qnum !==bd.defcell.qnum ){ um.addOpe(k.CELL, k.QNUM, num, this.qnum, bd.defcell.qnum);}
+			if(this.direc!==bd.defcell.direc){ um.addOpe(k.CELL, k.DIREC,num, this.direc,bd.defcell.direc);}
+			if(this.qans !==bd.defcell.qans ){ um.addOpe(k.CELL, k.QANS, num, this.qans, bd.defcell.qans);}
+			if(this.qsub !==bd.defcell.qsub ){ um.addOpe(k.CELL, k.QSUB, num, this.qsub, bd.defcell.qsub);}
+		}
 		this.ques = 0;
 		this.qans = -1;
 		this.qsub = 0;
@@ -41,20 +47,16 @@ Cell.prototype = {
 		if(k.puzzleid==="triplace"){ this.qnum = this.direc = -1;}
 	},
 	ansclear : function(num) {
+		if(this.qans!==bd.defcell.qans){ um.addOpe(k.CELL, k.QANS, num, this.qans, bd.defcell.qans);}
+		if(this.qsub!==bd.defcell.qsub){ um.addOpe(k.CELL, k.QSUB, num, this.qsub, bd.defcell.qsub);}
 		this.qans = -1;
 		this.qsub = 0;
 		this.error = 0;
 	},
 	subclear : function(num) {
+		if(this.qsub!==bd.defcell.qsub){ um.addOpe(k.CELL, k.QSUB, num, this.qsub, bd.defcell.qsub);}
 		this.qsub = 0;
 		this.error = 0;
-	},
-	isempty : function(){
-		return ((this.qans === bd.defcell.qans) &&
-				(this.qsub === bd.defcell.qsub) &&
-				(this.ques === bd.defcell.ques) &&
-				(this.qnum === bd.defcell.qnum) &&
-				(this.direc=== bd.defcell.direc));
 	}
 };
 
@@ -73,16 +75,19 @@ Cross = function(id){
 	this.qnum;	// 交差点の問題データ(数字)を保持する
 	this.error;	// エラーデータを保持する
 
-	this.allclear(id);
+	this.allclear(id,false);
 };
 Cross.prototype = {
 	//---------------------------------------------------------------------------
 	// cross.allclear() 交差点の位置,描画情報以外をクリアする
 	// cross.ansclear() 交差点のerror情報をクリアする
 	// cross.subclear() 交差点のerror情報をクリアする
-	// cross.isempty()  プロパティが初期値と同じか判別する
 	//---------------------------------------------------------------------------
-	allclear : function(num) {
+	allclear : function(num,isrec) {
+		if(isrec===true){
+			if(this.ques!==bd.defcross.ques){ um.addOpe(k.CROSS, k.QUES, num, this.ques, bd.defcross.ques);}
+			if(this.qnum!==bd.defcross.qnum){ um.addOpe(k.CROSS, k.QNUM, num, this.qnum, bd.defcross.qnum);}
+		}
 		this.ques = 0;
 		this.qnum = -1;
 		this.error = 0;
@@ -92,10 +97,6 @@ Cross.prototype = {
 	},
 	subclear : function(num) {
 		this.error = 0;
-	},
-	isempty : function(){
-		return ((this.ques === bd.defcross.ques) &&
-				(this.qnum === bd.defcross.qnum));
 	}
 };
 
@@ -121,16 +122,22 @@ Border = function(id){
 	this.cellcc  = [null,null];	// 隣接セルのID
 	this.crosscc = [null,null];	// 隣接交点のID
 
-	this.allclear(id);
+	this.allclear(id,false);
 };
 Border.prototype = {
 	//---------------------------------------------------------------------------
 	// border.allclear() 境界線の位置,描画情報以外をクリアする
 	// border.ansclear() 境界線のqans,qsub,line,color,error情報をクリアする
 	// border.subclear() 境界線のqsub,error情報をクリアする
-	// border.isempty()  プロパティが初期値と同じか判別する
 	//---------------------------------------------------------------------------
-	allclear : function(num) {
+	allclear : function(num,isrec) {
+		if(isrec===true){
+			if(this.ques!==bd.defborder.ques){ um.addOpe(k.BORDER, k.QUES, num, this.ques, bd.defborder.ques);}
+			if(this.qnum!==bd.defborder.qnum){ um.addOpe(k.BORDER, k.QNUM, num, this.qnum, bd.defborder.qnum);}
+			if(this.qans!==bd.defborder.qans){ um.addOpe(k.BORDER, k.QANS, num, this.qans, bd.defborder.qans);}
+			if(this.line!==bd.defborder.line){ um.addOpe(k.BORDER, k.LINE, num, this.line, bd.defborder.line);}
+			if(this.qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER, k.QSUB, num, this.qsub, bd.defborder.qsub);}
+		}
 		this.ques = 0;
 		if(k.puzzleid==="mejilink" && num<k.qcols*(k.qrows-1)+(k.qcols-1)*k.qrows){ this.ques = 1;}
 		this.qnum = -1;
@@ -143,6 +150,9 @@ Border.prototype = {
 		this.error = 0;
 	},
 	ansclear : function(num) {
+		if(this.qans!==bd.defborder.qans){ um.addOpe(k.BORDER, k.QANS, num, this.qans, bd.defborder.qans);}
+		if(this.line!==bd.defborder.line){ um.addOpe(k.BORDER, k.LINE, num, this.line, bd.defborder.line);}
+		if(this.qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER, k.QSUB, num, this.qsub, bd.defborder.qsub);}
 		this.qans = 0;
 		this.qsub = 0;
 		if(k.puzzleid==="bosanowa"){ this.qsub = -1;}
@@ -151,16 +161,10 @@ Border.prototype = {
 		this.error = 0;
 	},
 	subclear : function(num) {
+		if(this.qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER, k.QSUB, num, this.qsub, bd.defborder.qsub);}
 		this.qsub = 0;
 		if(k.puzzleid==="bosanowa"){ this.qsub = -1;}
 		this.error = 0;
-	},
-	isempty : function(){
-		return ((this.qans === bd.defborder.qans) &&
-				(this.qsub === bd.defborder.qsub) &&
-				(this.ques === bd.defborder.ques) &&
-				(this.qnum === bd.defborder.qnum) &&
-				(this.line === bd.defborder.line));
 	}
 };
 
@@ -178,16 +182,19 @@ EXCell = function(id){
 	this.qnum;	// セルの問題データ(数字)を保持する(数字 or カックロの右側)
 	this.direc;	// セルの問題データ(方向)を保持する(矢印 or カックロの下側)
 
-	this.allclear(id);
+	this.allclear(id,false);
 };
 EXCell.prototype = {
 	//---------------------------------------------------------------------------
 	// excell.allclear() セルの位置,描画情報以外をクリアする
 	// excell.ansclear() セルのerror情報をクリアする
 	// excell.subclear() セルのerror情報をクリアする
-	// excell.isempty()  プロパティが初期値と同じか判別する
 	//---------------------------------------------------------------------------
-	allclear : function(num) {
+	allclear : function(num,isrec) {
+		if(isrec===true){
+			if(this.qnum !==bd.defexcell.qnum ){ um.addOpe(k.EXCELL, k.QNUM, num, this.qnum, bd.defexcell.qnum);}
+			if(this.direc!==bd.defexcell.direc){ um.addOpe(k.EXCELL, k.DIREC,num, this.direc,bd.defexcell.direc);}
+		}
 		this.qnum = -1;
 		if(k.puzzleid==="box"){ this.qnum = 0;}
 		this.direc = 0;
@@ -200,10 +207,6 @@ EXCell.prototype = {
 	},
 	subclear : function(num) {
 		this.error = 0;
-	},
-	isempty : function(){
-		return ((this.qnum === bd.defexcell.qnum) &&
-				(this.direc=== bd.defexcell.direc));
 	}
 };
 
@@ -275,7 +278,7 @@ Board.prototype = {
 
 		this.setminmax();
 		this.setposAll();
-		if(!base.initProcess){ this.allclear();}
+		if(!base.initProcess){ this.allclear(false);}
 	},
 	initSpecial : function(){ },
 
@@ -485,16 +488,15 @@ Board.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.allclear() 全てのCell, Cross, Borderオブジェクトのallclear()を呼び出す
 	// bd.ansclear() 全てのCell, Cross, Borderオブジェクトのansclear()を呼び出す
 	// bd.subclear() 全てのCell, Cross, Borderオブジェクトのsubclear()を呼び出す
 	// bd.errclear() 全てのCell, Cross, Borderオブジェクトのerrorプロパティを0にして、Canvasを再描画する
 	//---------------------------------------------------------------------------
-	allclear : function(){
-		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].allclear(i);}
-		for(var i=0;i<this.crossmax ;i++){ this.cross[i].allclear(i);}
-		for(var i=0;i<this.bdmax    ;i++){ this.border[i].allclear(i);}
-		for(var i=0;i<this.excellmax;i++){ this.excell[i].allclear(i);}
+	allclear : function(isrec){
+		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].allclear(i,isrec);}
+		for(var i=0;i<this.crossmax ;i++){ this.cross[i].allclear(i,isrec);}
+		for(var i=0;i<this.bdmax    ;i++){ this.border[i].allclear(i,isrec);}
+		for(var i=0;i<this.excellmax;i++){ this.excell[i].allclear(i,isrec);}
 	},
 	ansclear : function(){
 		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].ansclear(i);}
