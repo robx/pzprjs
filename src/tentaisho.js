@@ -44,6 +44,7 @@ Puzzles.tentaisho.prototype = {
 		}
 		base.setTitle("天体ショー","Tentaisho");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
+		base.proto = 1;
 
 		enc.pidKanpen = 'tentaisho';
 	},
@@ -56,6 +57,14 @@ Puzzles.tentaisho.prototype = {
 		var el = ee.createEL(menu.EL_BUTTON, 'btncolor');
 		menu.addButtons(el, ee.binder(mv, mv.encolorall), "色をつける","Color up");
 		ee('btnarea').appendEL(el);
+	},
+
+	protoChange : function(){
+		this.protoval = Border.prototype.defqnum;
+		Border.prototype.defqnum = 0;
+	},
+	protoOriginal : function(){
+		Border.prototype.defqnum = this.protoval;
 	},
 
 	//---------------------------------------------------------

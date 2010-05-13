@@ -47,6 +47,7 @@ Puzzles.bosanowa.prototype = {
 		}
 		base.setTitle("ボサノワ","Bosanowa");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
+		base.proto = 1;
 	},
 	menufix : function(){
 		pp.addSelect('disptype','setting',1,[1,2,3],'表示形式','Display');
@@ -61,6 +62,14 @@ Puzzles.bosanowa.prototype = {
 			else if(num==3){ k.bdmargin = 0.70; k.bdmargin_image = 0.10;}
 			base.resize_canvas();
 		};
+	},
+
+	protoChange : function(){
+		this.protoval = Border.prototype.defqsub;
+		Border.prototype.defqsub = -1;
+	},
+	protoOriginal : function(){
+		Border.prototype.defqsub = this.protoval;
 	},
 
 	//---------------------------------------------------------

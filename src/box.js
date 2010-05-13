@@ -41,9 +41,18 @@ Puzzles.box.prototype = {
 						   " Left Click to input black cells, Right Click to input determined white cells.");
 		base.setTitle("ボックス","Kin-Kon-Kan");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
+		base.proto = 1;
 	},
 	menufix : function(){
 		menu.addUseToFlags();
+	},
+
+	protoChange : function(){
+		this.protoval = EXCell.prototype.defqnum;
+		EXCell.prototype.defqnum = 0;
+	},
+	protoOriginal : function(){
+		EXCell.prototype.defqnum  = this.protoval;
 	},
 
 	//---------------------------------------------------------

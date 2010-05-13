@@ -292,7 +292,7 @@ MouseEvent.prototype = {
 		return cc;
 	},
 	inputqnum3 : function(cc){
-		if(bd.QnC(cc)!==bd.defcell.qnum){ return cc;}
+		if(bd.QnC(cc)!==-1){ return cc;}
 		var max = bd.nummaxfunc(cc);
 		bd.sDiC(cc,0);
 
@@ -552,9 +552,9 @@ MouseEvent.prototype = {
 		this.prevPos = pos;
 	},
 	getborderID : function(base, current){
-		if((current.x&1===0 && base.x===current.x && Math.abs(base.y-current.y)===1) ||
-		   (current.y&1===0 && base.y===current.y && Math.abs(base.x-current.x)===1) )
-			{ return ((((base.x+base.y)&1)===1) ? bd.bnum(current.x, current.y) : bd.bnum(base.x, base.y));}
+		if(((current.x&1)===0 && base.x===current.x && Math.abs(base.y-current.y)===1) ||
+		   ((current.y&1)===0 && base.y===current.y && Math.abs(base.x-current.x)===1) )
+			{ return ((((base.x+base.y)&1)===1) ? bd.bnum(base.x, base.y) : bd.bnum(current.x, current.y));}
 		return null;
 	},
 

@@ -205,8 +205,6 @@ Encode.prototype = {
 				break;
 			}
 			base.enableInfo();
-
-			bd.ansclear();
 			base.resetInfo(true);
 
 			if(!base.initProcess){

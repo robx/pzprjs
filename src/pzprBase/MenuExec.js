@@ -371,7 +371,8 @@ MenuExec.prototype = {
 		var group = bd.getGroup(type);
 		for(var i=group.length-1;i>=0;i--){
 			if(!!this.insex[type][this.distObj(type,i,key)]){
-				group[i] = bd.newObject(type,i);
+				group[i] = bd.newObject(type);
+				group[i].allclear(i,false);
 				margin--;
 			}
 			else if(margin>0){ group[i] = group[i-margin];}

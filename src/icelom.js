@@ -187,12 +187,11 @@ Puzzles.icelom.prototype = {
 
 		bd.initSpecial = function(col,row){
 			this.bdinside = 2*col*row-(col+row);
-			if(this.arrowin===null && this.arrowout===null){
+			if(base.initProcess){
 				this.inputarrowin (0 + this.bdinside, 1);
 				this.inputarrowout(2 + this.bdinside, 1);
 			}
-
-			if(!base.initProcess){
+			else{
 				if(this.arrowin<k.qcols+this.bdinside){ if(this.arrowin>col+this.bdinside){ this.arrowin=col+this.bdinside-1;} }
 				else{ if(this.arrowin>col+row+this.bdinside){ this.arrowin=col+row+this.bdinside-1;} }
 

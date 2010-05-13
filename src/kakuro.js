@@ -44,10 +44,28 @@ Puzzles.kakuro.prototype = {
 		}
 		base.setTitle("カックロ","Kakuro");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
+		base.proto = 1;
 
 		enc.pidKanpen = 'kakuro';
 	},
 	menufix : function(){ },
+
+	protoChange : function(){
+		this.protoval = {
+			cell   : {qnum:Cell.prototype.defqnum,   direc:Cell.prototype.defdirec},
+			excell : {qnum:EXCell.prototype.defqnum, direc:EXCell.prototype.defdirec}
+		};
+		Cell.prototype.defqnum  = 0;
+		Cell.prototype.defdirec = 0;
+		EXCell.prototype.defqnum  = 0;
+		EXCell.prototype.defdirec = 0;
+	},
+	protoOriginal : function(){
+		Cell.prototype.defqnum  = this.protoval.cell.qnum;
+		Cell.prototype.defdirec = this.protoval.cell.direc;
+		EXCell.prototype.defqnum  = this.protoval.excell.qnum;
+		EXCell.prototype.defdirec = this.protoval.excell.direc;
+	},
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド

@@ -38,9 +38,25 @@ Puzzles.mejilink.prototype = {
 		base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
 						   " Left Button Drag to input black cells, Right Click to input a cross.");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
+		base.proto = 1;
 	},
 	menufix : function(){
 		menu.addRedLineToFlags();
+	},
+
+	protoChange : function(){
+		this.protofunc = Border.prototype.allclear;
+		Border.prototype.allclear = function(id,isrec){
+			this.defques = (id<k.qcols*(k.qrows-1)+(k.qcols-1)*k.qrows ? 1 : 0);
+			if(this.ques!==this.defques){ if(isrec){ um.addOpe(k.BORDER, k.QUES, id, this.ques, this.defques);} this.ques=this.defques;}
+			if(this.qans!==this.defqans){ if(isrec){ um.addOpe(k.BORDER, k.QANS, id, this.qans, this.defqans);} this.qans=this.defqans;}
+			if(this.qsub!==this.defqsub){ if(isrec){ um.addOpe(k.BORDER, k.QSUB, id, this.qsub, this.defqsub);} this.qsub=this.defqsub;}
+			this.color = "";
+			this.error = 0;
+		};
+	},
+	protoOriginal : function(){
+		Border.prototype.allclear = this.protofunc;
 	},
 
 	//---------------------------------------------------------
