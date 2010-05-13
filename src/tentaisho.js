@@ -245,10 +245,8 @@ Puzzles.tentaisho.prototype = {
 			else if(bd.star[id].group===k.CROSS){ return bd.QuX(bd.star[id].groupid);}
 			else                                { return bd.QnB(bd.star[id].groupid);}
 		};
-		bd.getStarError = function(id){
-			if     (bd.star[id].group===k.CELL) { return bd.ErC(bd.star[id].groupid);}
-			else if(bd.star[id].group===k.CROSS){ return bd.ErX(bd.star[id].groupid);}
-			else                                { return bd.ErB(bd.star[id].groupid);}
+		bd.isStarError = function(id){
+			return (bd.getObject(bd.star[id].group,bd.star[id].groupid).error!==0);
 		};
 		bd.setStar = function(id,val){
 			if     (bd.star[id].group===k.CELL) { bd.sQuC(bd.star[id].groupid, val);}
@@ -323,8 +321,7 @@ Puzzles.tentaisho.prototype = {
 				var id = idlist[i], bx=bd.star[id].bx, by=bd.star[id].by;
 
 				if(bd.getStar(id)===1){
-					var iserr = bd.getStarError(id);
-					g.strokeStyle = (iserr ? this.errcolor1  : this.cellcolor);
+					g.strokeStyle = (bd.isStarError(id) ? this.errcolor1 : this.cellcolor);
 					g.fillStyle   = "white";
 					if(this.vnop(headers[0]+id,this.FILL_STROKE)){
 						g.shapeCircle(k.p0.x+bx*this.bw, k.p0.y+by*this.bh, this.cw*0.16);
@@ -333,8 +330,7 @@ Puzzles.tentaisho.prototype = {
 				else{ this.vhide(headers[0]+id);}
 
 				if(bd.getStar(id)===2){
-					var iserr = bd.getStarError(id);
-					g.fillStyle = (iserr ? this.errcolor1 : this.cellcolor);
+					g.fillStyle = (bd.isStarError(id) ? this.errcolor1 : this.cellcolor);
 					if(this.vnop(headers[1]+id,this.FILL)){
 						g.fillCircle(k.p0.x+bx*this.bw, k.p0.y+by*this.bh, this.cw*0.18);
 					}

@@ -96,7 +96,7 @@ Puzzles.kinkonkan.prototype = {
 			if(ec===null || this.mouseCell===ec){ return;}
 
 			if(this.inputData!=11 && this.inputData!==null){ }
-			else if(this.inputData===null && bd.ErE(ec)==6){ this.inputData=12;}
+			else if(this.inputData===null && bd.excell[ec].error===6){ this.inputData=12;}
 			else{
 				ans.errDisp=true;
 				bd.errclear();
@@ -117,7 +117,7 @@ Puzzles.kinkonkan.prototype = {
 				pc.paintEXcell(ec0);
 			}
 			else if(ec!==null && ec===ec0){
-				var flag = (bd.ErE(ec)!==6);
+				var flag = (bd.excell[ec].error!==6);
 				ans.errDisp=true;
 				bd.errclear();
 				if(flag){ mv.flashlight(ec);}
@@ -168,7 +168,7 @@ Puzzles.kinkonkan.prototype = {
 				else              { bd.sQnE(ec,-1); bd.sDiE(ec,0);}
 			}
 			else if(ca=='F4'){
-				var flag = (bd.ErE(ec)!=6);
+				var flag = (bd.excell[ec].error!==6);
 				ans.errDisp=true;
 				bd.errclear();
 				if(flag){ mv.flashlight(ec);}

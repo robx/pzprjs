@@ -859,10 +859,10 @@ Board.prototype = {
 		for(var i=0;i<bd.bdmax;i++){ this.border[i].error = num;}
 	},
 
-	ErC : function(id){ return (!!this.cell[id]  ?this.cell[id].error  :undef);},
-	ErX : function(id){ return (!!this.cross[id] ?this.cross[id].error :undef);},
-	ErB : function(id){ return (!!this.border[id]?this.border[id].error:undef);},
-	ErE : function(id){ return (!!this.excell[id]?this.excell[id].error:undef);},
+	// ErC : function(id){ return (!!this.cell[id]  ?this.cell[id].error  :undef);},
+	// ErX : function(id){ return (!!this.cross[id] ?this.cross[id].error :undef);},
+	// ErB : function(id){ return (!!this.border[id]?this.border[id].error:undef);},
+	// ErE : function(id){ return (!!this.excell[id]?this.excell[id].error:undef);},
 
 	//-----------------------------------------------------------------------
 	// bd.isLine()      該当するBorderにlineが引かれているか判定する

@@ -623,12 +623,12 @@ MouseEvent.prototype = {
 		this.mousereset();
 		if(cc===null || !bd.isBlack(cc)){ return;}
 		if(!k.RBBlackCell){ bd.sErC(area.bcell[area.bcell.id[cc]].clist,1);}
-		else{ this.db0(function(c){ return (bd.isBlack(c) && bd.ErC(c)==0);},cc,1);}
+		else{ this.db0(function(c){ return (bd.isBlack(c) && bd.cell[c].error===0);},cc,1);}
 		ans.errDisp = true;
 		pc.paintAll();
 	},
 	db0 : function(func, cc, num){
-		if(bd.ErC(cc)!=0){ return;}
+		if(bd.cell[cc].error!==0){ return;}
 		bd.sErC([cc],num);
 		var bx=bd.cell[cc].bx, by=bd.cell[cc].by, clist=bd.cellinside(bx-2,by-2,bx+2,by+2);
 		for(var i=0;i<clist.length;i++){

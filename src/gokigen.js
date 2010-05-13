@@ -278,7 +278,7 @@ Puzzles.gokigen.prototype = {
 					while(1){
 						var endflag = true;
 						for(var c=0;c<bd.cellmax;c++){
-							if(bd.ErC(c)!==1){ continue;}
+							if(bd.cell[c].error!==1){ continue;}
 							var cc1, cc2, bx=bd.cell[c].bx, by=bd.cell[c].by;
 							if     (bd.QaC(c)==1){ cc1=bd.xnum(bx-1,by-1); cc2=bd.xnum(bx+1,by+1);}
 							else if(bd.QaC(c)==2){ cc1=bd.xnum(bx-1,by+1); cc2=bd.xnum(bx+1,by-1);}
