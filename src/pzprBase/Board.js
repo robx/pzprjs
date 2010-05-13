@@ -43,11 +43,11 @@ Cell.prototype = {
 	},
 	ansclear : function(id) {
 		if(this.qans!==this.defqans){ um.addOpe(k.CELL, k.QANS, id, this.qans, this.defqans); this.qans=this.defqans;}
-		if(this.qsub!==this.defqsub){ um.addOpe(k.CELL, k.QSUB, id, this.qsub, this.defqsub); this.qans=this.defqsub;}
+		if(this.qsub!==this.defqsub){ um.addOpe(k.CELL, k.QSUB, id, this.qsub, this.defqsub); this.qsub=this.defqsub;}
 		this.error = 0;
 	},
 	subclear : function(id) {
-		if(this.qsub!==this.defqsub){ um.addOpe(k.CELL, k.QSUB, id, this.qsub, this.defqsub); this.qans=this.defqsub;}
+		if(this.qsub!==this.defqsub){ um.addOpe(k.CELL, k.QSUB, id, this.qsub, this.defqsub); this.qsub=this.defqsub;}
 		this.error = 0;
 	}
 };

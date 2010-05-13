@@ -79,7 +79,7 @@ Puzzles.yajirin.prototype = {
 		};
 
 		// 線を引かせたくないので上書き
-		bd.isnoLP = function(cc,dir){ return (bd.isBlack(cc) || bd.QnC(cc)!=-1);},
+		bd.noLP = function(cc,dir){ return (bd.isBlack(cc) || bd.QnC(cc)!=-1);},
 		bd.enableLineNG = true;
 
 		// キーボード入力系
