@@ -1598,7 +1598,7 @@ Graphic.prototype = {
 
 			el.style.color = color;
 		}
-		// Nativeな方法はこっちなんだけど、、(前は計5〜6%くらい遅くなってた)
+		// Nativeな方法はこっちなんだけど、、(前は計5～6%くらい遅くなってた)
 		else{
 			g.font = ""+((this.cw*fontratio*this.fontsizeratio)|0)+"px 'Serif'";
 			g.fillStyle = color;

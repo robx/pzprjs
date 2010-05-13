@@ -279,8 +279,8 @@ Encode.prototype = {
 	encodeHeyaApp : function(){ },
 
 	//---------------------------------------------------------------------------
-	// enc.decode4Cell()  quesが0〜4までの場合、デコードする
-	// enc.encode4Cell()  quesが0〜4までの場合、問題部をエンコードする
+	// enc.decode4Cell()  quesが0～4までの場合、デコードする
+	// enc.encode4Cell()  quesが0～4までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decode4Cell : function(){
 		var c=0, i=0, bstr = this.outbstr;
@@ -319,8 +319,8 @@ Encode.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// enc.decode4Cross()  quesが0〜4までの場合、デコードする
-	// enc.encode4Cross()  quesが0〜4までの場合、問題部をエンコードする
+	// enc.decode4Cross()  quesが0～4までの場合、デコードする
+	// enc.encode4Cross()  quesが0～4までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decode4Cross : function(){
 		var c=0, i=0, bstr = this.outbstr;
@@ -359,8 +359,8 @@ Encode.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// enc.decodeNumber10()  quesが0〜9までの場合、デコードする
-	// enc.encodeNumber10()  quesが0〜9までの場合、問題部をエンコードする
+	// enc.decodeNumber10()  quesが0～9までの場合、デコードする
+	// enc.encodeNumber10()  quesが0～9までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeNumber10 : function(){
 		var c=0, i=0, bstr = this.outbstr;
@@ -395,8 +395,8 @@ Encode.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// enc.decodeNumber16()  quesが0〜8192?までの場合、デコードする
-	// enc.encodeNumber16()  quesが0〜8192?までの場合、問題部をエンコードする
+	// enc.decodeNumber16()  quesが0～8192?までの場合、デコードする
+	// enc.encodeNumber16()  quesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeNumber16 : function(){
 		var c=0, i=0, bstr = this.outbstr;
@@ -440,8 +440,8 @@ Encode.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// enc.decodeRoomNumber16()  部屋＋部屋の一つのquesが0〜8192?までの場合、デコードする
-	// enc.encodeRoomNumber16()  部屋＋部屋の一つのquesが0〜8192?までの場合、問題部をエンコードする
+	// enc.decodeRoomNumber16()  部屋＋部屋の一つのquesが0～8192?までの場合、デコードする
+	// enc.encodeRoomNumber16()  部屋＋部屋の一つのquesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeRoomNumber16 : function(){
 		area.resetRarea();
@@ -489,8 +489,8 @@ Encode.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// enc.decodeArrowNumber16()  矢印付きquesが0〜8192?までの場合、デコードする
-	// enc.encodeArrowNumber16()  矢印付きquesが0〜8192?までの場合、問題部をエンコードする
+	// enc.decodeArrowNumber16()  矢印付きquesが0～8192?までの場合、デコードする
+	// enc.encodeArrowNumber16()  矢印付きquesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeArrowNumber16 : function(){
 		var c=0, i=0, bstr = this.outbstr;

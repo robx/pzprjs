@@ -26,7 +26,7 @@ PBase.prototype = {
 		// URLの取得 -> URLの?以下ををpuzzleid部とpzlURI部に分割
 		enc = new Encode();
 		enc.first_parseURI(location.search);
-		if(!k.puzzleid){ location.href = "./";} // 指定されたパズルがない場合はさようなら〜
+		if(!k.puzzleid){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
 
 		// パズル専用ファイルの読み込み
 		if(k.scriptcheck){
@@ -273,7 +273,7 @@ PBase.prototype = {
 			mwidth = wwidth*ws.base-4;
 			k.cwidth = k.cheight = (k.cellsize*cr.base)|0;
 		}
-		// base〜limit間でサイズを自動調節する場合
+		// base～limit間でサイズを自動調節する場合
 		else if(cols < ci[1]){
 			var ws_tmp = ws.base+(ws.limit-ws.base)*((k.qcols-ci[0])/(ci[1]-ci[0]));
 			mwidth = wwidth*ws_tmp-4;

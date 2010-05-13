@@ -244,7 +244,7 @@ Puzzles.toichika.prototype = {
 					else if(bd.cell[c].direc>0)  { g.fillStyle = this.fontcolor;}
 					else if(bd.cell[c].qans >0)  { g.fillStyle = this.fontAnscolor;}
 
-					// 矢印の描画 ここに来る場合、dirは1〜4
+					// 矢印の描画 ここに来る場合、dirは1～4
 					if(this.vnop(headers[(dir-1)]+c,this.FILL)){
 						switch(dir){
 							case k.UP: g.setOffsetLinePath(ax,ay, 0,-al, -tw,-tl, -aw,-tl, -aw, al,  aw, al, aw,-tl,  tw,-tl, true); break;

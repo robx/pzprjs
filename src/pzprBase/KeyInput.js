@@ -44,7 +44,7 @@ KeyEvent.prototype = {
 	// kc.e_keypress() キー入力した際のイベント共通処理(-キー用)
 	//---------------------------------------------------------------------------
 	// この3つのキーイベントはwindowから呼び出される(kcをbindしている)
-	// 48〜57は0〜9キー、65〜90はa〜z、96〜105はテンキー、112〜123はF1〜F12キー
+	// 48～57は0～9キー、65～90はa～z、96～105はテンキー、112～123はF1～F12キー
 	e_keydown : function(e){
 		if(this.enableKey){
 			um.newOperation(true);
@@ -132,7 +132,7 @@ KeyEvent.prototype = {
 		if(this.isCTRL && this.ca=='z'){ this.inUNDO=true; flag = true; tm.startUndoTimer();}
 		if(this.isCTRL && this.ca=='y'){ this.inREDO=true; flag = true; tm.startUndoTimer();}
 
-		if(this.ca=='F2' && k.EDITOR){ // 112〜123はF1〜F12キー
+		if(this.ca=='F2' && k.EDITOR){ // 112～123はF1～F12キー
 			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); flag = true;}
 			else if(k.playmode &&  this.isSHIFT){ pp.setVal('mode',1); flag = true;}
 		}
@@ -385,8 +385,8 @@ KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
 	// kp.generate()   キーポップアップを生成して初期化する
 	// kp.gentable()   キーポップアップのテーブルを作成する
-	// kp.gentable10() キーポップアップの0〜9を入力できるテーブルを作成する
-	// kp.gentable4()  キーポップアップの0〜4を入力できるテーブルを作成する
+	// kp.gentable10() キーポップアップの0～9を入力できるテーブルを作成する
+	// kp.gentable4()  キーポップアップの0～4を入力できるテーブルを作成する
 	//---------------------------------------------------------------------------
 	generate : function(type, enablemake, enableplay, func){
 		if(enablemake && k.EDITOR){ this.gentable(1, type, func);}

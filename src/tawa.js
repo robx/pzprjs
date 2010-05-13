@@ -256,7 +256,7 @@ Puzzles.tawa.prototype = {
 			if(qc===(void 0)){ qc=k.qcols; qr=k.qrows;}
 			if(bx<this.minbx+1 || bx>this.maxbx-1 || by<this.minby+1 || by>this.maxby-1){ return null;}
 
-			var cy = (by>>1);	// 上から数えて何段目か(0〜k.qrows-1)
+			var cy = (by>>1);	// 上から数えて何段目か(0～k.qrows-1)
 			if     (this.lap===0){ if(!!((bx+cy)&1)){ return ((bx-1)+cy*(2*qc-1))>>1;}}
 			else if(this.lap===1){ if(!!((bx+cy)&1)){ return ((bx-1)+cy*(2*qc  ))>>1;}}
 			else if(this.lap===2){ if( !((bx+cy)&1)){ return ((bx-1)+cy*(2*qc  ))>>1;}}
