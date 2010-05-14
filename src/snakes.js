@@ -84,7 +84,7 @@ Puzzles.snakes.prototype = {
 			var cc = this.cellid();
 			if(cc===null){ return;}
 			k.dispzero=0;
-			cc = this.inputqnum3(cc);
+			this.inputqnum3(cc);
 			bd.sQsC(cc,0);
 			k.dispzero=1;
 			pc.paintCellAround(cc);
@@ -305,30 +305,38 @@ Puzzles.snakes.prototype = {
 
 		ans.checkArrowNumber = function(){
 			var result = true;
-			var func = function(clist){
-				var cc=bd.cnum(bx,by); clist.push(cc);
-				if(bd.QnC(cc)!=-1 || bd.QaC(cc)>0){ return false;}
-				return true;
+			var gonext = function(){
+				// bx,by,clist,ccは319行目で宣言されてるものと同一です。
+				cc = bd.cnum(bx,by);
+				if(cc!==null){ clist.push(cc);}
+				return (cc!==null && bd.cell[cc].qnum===-1 && bd.cell[cc].qans===-1);
 			};
+			var noqans = function(cc){ return (cc===null || bd.cell[cc].qnum!==-1 || bd.cell[cc].qans===-1);}
 
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)<0 || bd.DiC(c)==0){ continue;}
-				var bx = bd.cell[c].bx, by = bd.cell[c].by, dir = bd.DiC(c);
-				var num=bd.QnC(c), clist=[c];
-				if     (dir==k.UP){ by-=2; while(by>bd.minby){ if(!func(clist)){ break;} by-=2;} }
-				else if(dir==k.DN){ by+=2; while(by<bd.maxby){ if(!func(clist)){ break;} by+=2;} }
-				else if(dir==k.LT){ bx-=2; while(bx>bd.minbx){ if(!func(clist)){ break;} bx-=2;} }
-				else if(dir==k.RT){ bx+=2; while(bx<bd.maxbx){ if(!func(clist)){ break;} bx+=2;} }
+				var num=bd.QnC(c), dir=bd.DiC(c);
+				if(num<0 || dir===0){ continue;}
 
-				if(num==0^(!bd.isinside(bx,by)||bd.QnC(bd.cnum(bx,by))!=-1)){
+				var bx=bd.cell[c].bx, by=bd.cell[c].by, clist=[c], cc;
+				switch(dir){
+					case k.UP: by-=2; while(gonext()){ by-=2;} break;
+					case k.DN: by+=2; while(gonext()){ by+=2;} break;
+					case k.LT: bx-=2; while(gonext()){ bx-=2;} break;
+					case k.RT: bx+=2; while(gonext()){ bx+=2;} break;
+				}
+				// ccは数字のあるマスのIDか、null(盤面外)を指す
+
+				// 矢印つき数字が0で、その先に回答の数字がある
+				if(num===0 && !noqans(cc)){
 					if(this.inAutoCheck){ return false;}
 					if(num>0){ bd.sErC(clist,1);}
-					else{ bd.sErC([c,bd.cnum(bx,by)],1);}
+					else{ bd.sErC([c,cc],1);}
 					result = false;
 				}
-				else if(num>0 && bd.QaC(bd.cnum(bx,by))!=num){
+				// 矢印つき数字が1以上で、その先に回答の数字がない or 回答の数字が違う
+				else if(num>0 && (noqans(cc) || bd.cell[cc].qans!==num)){
 					if(this.inAutoCheck){ return false;}
-					bd.sErC([c,bd.cnum(bx,by)],1);
+					bd.sErC([c,cc],1);
 					result = false;
 				}
 			}
@@ -336,32 +344,40 @@ Puzzles.snakes.prototype = {
 		};
 		ans.checkSnakesView = function(sinfo){
 			var result = true;
-			var func = function(clist){
-				var cc=bd.cnum(bx,by); clist.push(cc);
-				if(bd.QnC(cc)!=-1 || bd.QaC(cc)>0){ return false;}
-				return true;
+			var gonext = function(){
+				// bx,by,clist,ccは366行目で宣言されてるものと同一です。
+				cc = bd.cnum(bx,by);
+				if(cc!==null){ clist.push(cc);}
+				return (cc!==null && bd.cell[cc].qnum===-1 && bd.cell[cc].qans===-1);
 			};
 
 			for(var r=1;r<=sinfo.max;r++){
-				var c1=null, dir=0, idlist = sinfo.room[r].idlist;
-				for(var i=0;i<idlist.length;i++){ if(bd.QaC(idlist[i])==1){c1=idlist[i]; break;}}
-				if     (bd.QaC(bd.dn(c1))==2){ dir=1;}
-				else if(bd.QaC(bd.up(c1))==2){ dir=2;}
-				else if(bd.QaC(bd.rt(c1))==2){ dir=3;}
-				else if(bd.QaC(bd.lt(c1))==2){ dir=4;}
-				var bx = bd.cell[c1].bx, by = bd.cell[c1].by, clist=[c1];
+				var idlist=sinfo.room[r].idlist, c1=null, dir=k.NONE, c2;
 
-				if     (dir==1){ by-=2; while(by>bd.minby){ if(!func(clist)){ break;} by-=2;} }
-				else if(dir==2){ by+=2; while(by<bd.maxby){ if(!func(clist)){ break;} by+=2;} }
-				else if(dir==3){ bx-=2; while(bx>bd.minbx){ if(!func(clist)){ break;} bx-=2;} }
-				else if(dir==4){ bx+=2; while(bx<bd.maxbx){ if(!func(clist)){ break;} bx+=2;} }
+				for(var i=0;i<idlist.length;i++){ if(bd.QaC(idlist[i])===1){ c1=idlist[i]; break;}}
+				if(c1===null){ continue;}
 
-				var c2 = bd.cnum(bx,by), r2 = sinfo.id[c2];
-				if(bd.QaC(c2)>0 && bd.QnC(c2)==-1 && r2>0 && r!=r2){
+				c2=bd.dn(c1); if(c2!==null && bd.QaC(c2)===2){ dir=k.UP;}
+				c2=bd.up(c1); if(c2!==null && bd.QaC(c2)===2){ dir=k.DN;}
+				c2=bd.rt(c1); if(c2!==null && bd.QaC(c2)===2){ dir=k.LT;}
+				c2=bd.lt(c1); if(c2!==null && bd.QaC(c2)===2){ dir=k.RT;}
+				if(dir===k.NONE){ continue;}
+
+				var bx = bd.cell[c1].bx, by = bd.cell[c1].by, clist=[c1], cc;
+				switch(dir){
+					case k.UP: by-=2; while(gonext()){ by-=2;} break;
+					case k.DN: by+=2; while(gonext()){ by+=2;} break;
+					case k.LT: bx-=2; while(gonext()){ bx-=2;} break;
+					case k.RT: bx+=2; while(gonext()){ bx+=2;} break;
+				}
+				// ccは数字のあるマスのIDか、null(盤面外)を指す
+
+				var sid=sinfo.id[cc];
+				if(cc!==null && bd.QaC(cc)>0 && bd.QnC(cc)===-1 && sid>0 && r!=sid){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(clist,1);
 					bd.sErC(idlist,1);
-					bd.sErC(sinfo.room[r2].idlist,1);
+					bd.sErC(sinfo.room[sid].idlist,1);
 					result = false;
 				}
 			}

@@ -84,6 +84,8 @@ Puzzles.mejilink.prototype = {
 		kc.keyinput = function(ca){ if(ca=='z' && !this.keyPressed){ this.isZ=true;} };
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
+
+		bd.isGround = function(id){ return (!!bd.border[id] && bd.border[id].ques>0);};
 	},
 
 	//---------------------------------------------------------
@@ -171,11 +173,11 @@ Puzzles.mejilink.prototype = {
 		};
 		enc.encodeMejilink = function(){
 			var count = 0;
-			for(var i=bd.bdinside;i<bd.bdmax;i++){ if(bd.QuB(i)==1) count++;}
+			for(var i=bd.bdinside;i<bd.bdmax;i++){ if(bd.isGround(i)) count++;}
 			var num=0, pass=0, cm="";
-			for(var i=0;i<(count==0?bd.bdinside:bd.bdmax);i++){
-				if(bd.QuB(i)==1){ pass+=Math.pow(2,4-num);}
-				num++; if(num==5){ cm += pass.toString(32); num=0; pass=0;}
+			for(var i=0,max=(count===0?bd.bdinside:bd.bdmax);i<max;i++){
+				if(bd.isGround(i)){ pass+=Math.pow(2,4-num);}
+				num++; if(num===5){ cm += pass.toString(32); num=0; pass=0;}
 			}
 			if(num>0){ cm += pass.toString(32);}
 			this.outbstr += cm;
@@ -184,18 +186,18 @@ Puzzles.mejilink.prototype = {
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			this.decodeBorder( function(c,ca){
-				if     (ca == "2" ){ bd.sQuB(c, 0); bd.sQaB(c, 1);}
-				else if(ca == "-1"){ bd.sQuB(c, 0); bd.sQsB(c, 2);}
-				else if(ca == "1" ){ bd.sQuB(c, 0);}
-				else               { bd.sQuB(c, 1);}
+				if     (ca==="2" ){ bd.sQuB(c, 0); bd.sQaB(c, 1);}
+				else if(ca==="-1"){ bd.sQuB(c, 0); bd.sQsB(c, 2);}
+				else if(ca==="1" ){ bd.sQuB(c, 0);}
+				else              { bd.sQuB(c, 1);}
 			});
 		};
 		fio.encodeData = function(){
 			this.encodeBorder( function(c){
-				if     (bd.QaB(c)==1){ return "2 ";}
-				else if(bd.QsB(c)==2){ return "-1 ";}
-				else if(bd.QuB(c)==0){ return "1 ";}
-				else                 { return "0 ";}
+				if     (bd.QaB(c)===1){ return "2 ";}
+				else if(bd.QsB(c)===2){ return "-1 ";}
+				else if(bd.QuB(c)===0){ return "1 ";}
+				else                  { return "0 ";}
 			});
 		};
 	},
@@ -255,7 +257,7 @@ Puzzles.mejilink.prototype = {
 				if(tarea.id[cc]!=0){ continue;}
 				tarea.max++;
 				tarea[tarea.max] = {clist:[]};
-				area.sr0(cc,tarea,function(id){ return (id===null || bd.QuB(id)!=1);});
+				area.sr0(cc,tarea,function(id){ return !bd.isGround(id);});
 
 				tarea.room[tarea.max] = {idlist:tarea[tarea.max].clist};
 			}
@@ -263,14 +265,13 @@ Puzzles.mejilink.prototype = {
 			var tcount = [], numerous_value = 999999;
 			for(var r=1;r<=tarea.max;r++){ tcount[r]=0;}
 			for(var id=0;id<bd.bdmax;id++){
-				if(bd.QuB(id)==1 && id>=
-				bd.bdinside){
+				if(bd.isGround(id) && id>=bd.bdinside){
 					var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 					if(cc1!==null){ tcount[tarea.id[cc1]] -= numerous_value;}
 					if(cc2!==null){ tcount[tarea.id[cc2]] -= numerous_value;}
 					continue;
 				}
-				else if(bd.QuB(id)==1 || bd.QaB(id)==1){ continue;}
+				else if(bd.isGround(id) || bd.isLine(id)){ continue;}
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(cc1!==null){ tcount[tarea.id[cc1]]++;}
 				if(cc2!==null){ tcount[tarea.id[cc2]]++;}

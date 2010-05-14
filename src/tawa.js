@@ -214,21 +214,20 @@ Puzzles.tawa.prototype = {
 	input_init_board : function(){	// 処理が大きくなったので分割(input_init()から呼ばれる)
 
 		// キー移動範囲のminx,maxx,miny,maxy設定関数オーバーライド
-		tc.getTCC = function(){ return bd.cnum(this.cursorx, this.cursory);};
+		tc.getTCC = function(){ return bd.cnum(this.cursor.x, this.cursor.y);};
 		tc.setTCC = function(id){
 			if(id<0 || bd.cellmax<=id){ return;}
-			this.cursorx = bd.cell[id].bx;
-			this.cursory = bd.cell[id].by;
+			this.cursor = new Address(bd.cell[id].bx, bd.cell[id].by);
 		};
 		tc.incTCY = function(mv){
-			this.cursory+=mv;
-			if(this.cursorx==this.minx || (this.cursorx<this.maxx && (this.cursory>>1)%2==1)){ this.cursorx++;}
-			else{ this.cursorx--;}
+			this.cursor.y+=mv;
+			if(this.cursor.x===this.minx || (this.cursor.x<this.maxx && (this.cursor.y&2)===2)){ this.cursor.x++;}
+			else{ this.cursor.x--;}
 		};
 		tc.decTCY = function(mv){
-			this.cursory-=mv;
-			if(this.cursorx==this.maxx || (this.cursorx>this.minx && (this.cursory>>1)%2==0)){ this.cursorx--;}
-			else{ this.cursorx++;}
+			this.cursor.y-=mv;
+			if(this.cursor.x===this.maxx || (this.cursor.x>this.minx && (this.cursor.y&2)===0)){ this.cursor.x--;}
+			else{ this.cursor.x++;}
 		};
 
 		// 盤面の範囲を設定する
@@ -246,8 +245,8 @@ Puzzles.tawa.prototype = {
 			this.maxx = 2*k.qcols-1 + [0,1,1,2][bd.lap];
 			this.maxy = 2*k.qrows-1;
 
-			if(bd.cnum(this.cursorx,this.cursory)===null){
-				this.cursorx++;
+			if(bd.cnum(this.cursor.x,this.cursor.y)===null){
+				this.cursor.x++;
 			}
 		};
 
@@ -277,7 +276,7 @@ Puzzles.tawa.prototype = {
 		bd.setLap = function(val){ this.lap=val; this.setminmax();};
 		bd.setLap(bd.lap);
 		bd.setposAll();
-		tc.cursorx = 2; tc.cursory = 1;
+		tc.cursor = new Address(2,1);
 
 		// マウス入力時のセルID取得系
 		mv.cellid = function(){

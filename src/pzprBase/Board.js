@@ -736,10 +736,10 @@ Board.prototype = {
 	},
 
 	QuC : function(id){ return this.cell[id].ques;},
-	QnC : function(id){ return (!!this.cell[id]?this.cell[id].qnum:undef);},
-	QaC : function(id){ return (!!this.cell[id]?this.cell[id].qans:undef);},
-	QsC : function(id){ return (!!this.cell[id]?this.cell[id].qsub:undef);},
-	DiC : function(id){ return (!!this.cell[id]?this.cell[id].direc:undef);},
+	QnC : function(id){ return this.cell[id].qnum;},
+	QaC : function(id){ return this.cell[id].qans;},
+	QsC : function(id){ return this.cell[id].qsub;},
+	DiC : function(id){ return this.cell[id].direc;},
 
 	//---------------------------------------------------------------------------
 	// sQnE / QnE : bd.setQnumEXcell() / bd.getQnumEXcell()  該当するEXCellのqnumを設定する/返す
@@ -755,8 +755,8 @@ Board.prototype = {
 		this.excell[id].direc = num;
 	},
 
-	QnE : function(id){ return (!!this.excell[id]?this.excell[id].qnum:undef);},
-	DiE : function(id){ return (!!this.excell[id]?this.excell[id].direc:undef);},
+	QnE : function(id){ return this.excell[id].qnum;},
+	DiE : function(id){ return this.excell[id].direc;},
 
 	//---------------------------------------------------------------------------
 	// sQuX / QuX : bd.setQuesCross(id,num) / bd.getQuesCross() 該当するCrossのquesを設定する/返す
@@ -772,8 +772,8 @@ Board.prototype = {
 		this.cross[id].qnum = num;
 	},
 
-	QuX : function(id){ return (!!this.cross[id]?this.cross[id].ques:undef);},
-	QnX : function(id){ return (!!this.cross[id]?this.cross[id].qnum:undef);},
+	QuX : function(id){ return this.cross[id].ques;},
+	QnX : function(id){ return this.cross[id].qnum;},
 
 	//---------------------------------------------------------------------------
 	// sQuB / QuB : bd.setQuesBorder() / bd.getQuesBorder() 該当するBorderのquesを設定する/返す
@@ -820,11 +820,11 @@ Board.prototype = {
 		if(num>0 ^ old>0){ line.setLine(id,num);}
 	},
 
-	QuB : function(id){ return (!!this.border[id]?this.border[id].ques:undef);},
-	QnB : function(id){ return (!!this.border[id]?this.border[id].qnum:undef);},
-	QaB : function(id){ return (!!this.border[id]?this.border[id].qans:undef);},
-	QsB : function(id){ return (!!this.border[id]?this.border[id].qsub:undef);},
-	LiB : function(id){ return (!!this.border[id]?this.border[id].line:undef);},
+	QuB : function(id){ return this.border[id].ques;},
+	QnB : function(id){ return this.border[id].qnum;},
+	QaB : function(id){ return this.border[id].qans;},
+	QsB : function(id){ return this.border[id].qsub;},
+	LiB : function(id){ return this.border[id].line;},
 
 	//---------------------------------------------------------------------------
 	// sErC / ErC : bd.setErrorCell()   / bd.getErrorCell()   該当するCellのerrorを設定する/返す
@@ -978,11 +978,11 @@ Board.prototype = {
 
 	setBorder    : function(id){
 		if(k.editmode){ this.sQuB(id,1); this.sQaB(id,0);}
-		else if(this.QuB(id)!==1){ this.sQaB(id,1);}
+		else if(this.border[id].ques!==1){ this.sQaB(id,1);}
 	},
 	removeBorder : function(id){
 		if(k.editmode){ this.sQuB(id,0); this.sQaB(id,0);}
-		else if(this.QuB(id)!==1){ this.sQaB(id,0);}
+		else if(this.border[id].ques!==1){ this.sQaB(id,0);}
 	},
 	setBsub      : function(id){ this.sQsB(id,1);},
 	removeBsub   : function(id){ this.sQsB(id,0);}

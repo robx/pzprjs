@@ -171,10 +171,8 @@ Puzzles.heyawake.prototype = {
 			var barray=[], rinfo=area.getRoomInfo();
 			for(var id=1;id<=rinfo.max;id++){
 				var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
-				if(bd.QnC(bd.cnum(d.x1,d.y1))>=0){
-					barray.push(""+bd.QnC(bd.cnum(d.x1,d.y1))+"in"+d.cols+"x"+d.rows);
-				}
-				else{ barray.push(""+d.cols+"x"+d.rows);}
+				var ul = bd.QnC(bd.cnum(d.x1,d.y1));
+				barray.push((ul>=0 ? ""+ul+"in" : "")+d.cols+"x"+d.rows);
 			}
 			this.outbstr = barray.join("/");
 		};
@@ -235,13 +233,13 @@ Puzzles.heyawake.prototype = {
 			if(d.x1===d.x2){
 				bx = d.x1;
 				for(by=d.y1+1;by<=d.y2-1;by+=2){
-					if(bd.QuB(bd.bnum(bx,by))===1){ count++;}
+					if(bd.isBorder(bd.bnum(bx,by))){ count++;}
 				}
 			}
 			else if(d.y1===d.y2){
 				by = d.y1;
 				for(bx=d.x1+1;bx<=d.x2-1;bx+=2){
-					if(bd.QuB(bd.bnum(bx,by))===1){ count++;}
+					if(bd.isBorder(bd.bnum(bx,by))){ count++;}
 				}
 			}
 

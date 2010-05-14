@@ -183,20 +183,20 @@ Puzzles.kinkonkan.prototype = {
 			var cc0 = tc.getTEC(), tcp = tc.getTCP();
 			var flag = true;
 
-			if     (ca == k.KEYUP){
-				if(tcp.y==tc.maxy && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.cursory=tc.miny;}
+			if     (ca===k.KEYUP){
+				if(tcp.y===tc.maxy && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.cursor.y=tc.miny;}
 				else if(tcp.y>tc.miny){ tc.decTCY(2);}else{ flag=false;}
 			}
-			else if(ca == k.KEYDN){
-				if(tcp.y==tc.miny && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.cursory=tc.maxy;}
+			else if(ca===k.KEYDN){
+				if(tcp.y===tc.miny && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.cursor.y=tc.maxy;}
 				else if(tcp.y<tc.maxy){ tc.incTCY(2);}else{ flag=false;}
 			}
-			else if(ca == k.KEYLT){
-				if(tcp.x==tc.maxx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.cursorx=tc.minx;}
+			else if(ca===k.KEYLT){
+				if(tcp.x===tc.maxx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.cursor.x=tc.minx;}
 				else if(tcp.x>tc.minx){ tc.decTCX(2);}else{ flag=false;}
 			}
-			else if(ca == k.KEYRT){
-				if(tcp.x==tc.minx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.cursorx=tc.maxx;}
+			else if(ca===k.KEYRT){
+				if(tcp.x===tc.minx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.cursor.x=tc.maxx;}
 				else if(tcp.x<tc.maxx){ tc.incTCX(2);}else{ flag=false;}
 			}
 			else{ flag=false;}
@@ -206,7 +206,6 @@ Puzzles.kinkonkan.prototype = {
 				pc.paintEXcell(tc.getTEC());
 				this.tcMoved = true;
 			}
-
 			return flag;
 		};
 
@@ -510,10 +509,13 @@ Puzzles.kinkonkan.prototype = {
 			else if(bx===bd.minbx+1){ dir=4;}
 			else if(bx===bd.maxbx-1){ dir=3;}
 
-			while(dir!=0){
+			while(dir!==0){
 				switch(dir){ case 1: by-=2; break; case 2: by+=2; break; case 3: bx-=2; break; case 4: bx+=2; break;}
 
-				var cc = bd.cnum(bx,by), qa = bd.QaC(cc);
+				var cc = bd.cnum(bx,by);
+				if(cc===null){ break;}
+
+				var qa = bd.QaC(cc);
 				if(qa===1){
 					if     (dir===1){ ldata[cc]=(!isNaN({4:1,6:1}[ldata[cc]])?6:2); dir=3;}
 					else if(dir===2){ ldata[cc]=(!isNaN({2:1,6:1}[ldata[cc]])?6:4); dir=4;}
@@ -527,7 +529,6 @@ Puzzles.kinkonkan.prototype = {
 					else if(dir===4){ ldata[cc]=(!isNaN({3:1,6:1}[ldata[cc]])?6:5); dir=1;}
 				}
 				else if(cc!==null){ ldata[cc]=6; continue;}
-				else{ break;}
 
 				ccnt++;
 				if(ccnt>bd.cellmax){ break;} // 念のためガード条件(多分引っかからない)

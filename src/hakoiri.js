@@ -125,37 +125,21 @@ Puzzles.hakoiri.prototype = {
 			kc.key_hakoiri(ca);
 		};
 		kc.key_hakoiri = function(ca){
-			var cc = tc.getTCC();
-			var flag = false;
+			var cc = tc.getTCC(), flag = true;
 
-			if     ((ca=='1'||ca=='q'||ca=='a'||ca=='z')){
-				bd.setNum(cc,1);
-				flag = true;
-			}
-			else if((ca=='2'||ca=='w'||ca=='s'||ca=='x')){
-				bd.setNum(cc,2);
-				flag = true;
-			}
-			else if((ca=='3'||ca=='e'||ca=='d'||ca=='c')){
-				bd.setNum(cc,3);
-				flag = true;
-			}
-			else if((ca=='4'||ca=='r'||ca=='f'||ca=='v')){
-				bd.setNum(cc,(k.editmode?-2:-1));
-				flag = true;
-			}
-			else if((ca=='5'||ca=='t'||ca=='g'||ca=='b'||ca==' ')){
-				bd.setNum(cc,-1);
-				flag = true;
-			}
+			if     ((ca=='1'||ca=='q'||ca=='a'||ca=='z')){ bd.setNum(cc,1);}
+			else if((ca=='2'||ca=='w'||ca=='s'||ca=='x')){ bd.setNum(cc,2);}
+			else if((ca=='3'||ca=='e'||ca=='d'||ca=='c')){ bd.setNum(cc,3);}
+			else if((ca=='4'||ca=='r'||ca=='f'||ca=='v')){ bd.setNum(cc,(k.editmode?-2:-1));}
+			else if((ca=='5'||ca=='t'||ca=='g'||ca=='b'||ca==' ')){ bd.setNum(cc,-1);}
 			else if(ca=='-'){
 				if(k.editmode){ bd.sQnC(cc,(bd.QnC(cc)!=-2?-2:-1)); bd.sQaC(cc,-1); bd.sQsC(cc,0);}
 				else if(bd.QnC(cc)==-1){ bd.sQaC(cc,-1); bd.sQsC(cc,(bd.QsC(cc)!=1?1:0));}
-				flag = true;
 			}
+			else{ flag=false;}
 
-			if(flag){ pc.paintCell(cc); return true;}
-			return false;
+			if(flag){ pc.paintCell(cc);}
+			return flag;
 		};
 
 		kp.kpgenerate = function(mode){

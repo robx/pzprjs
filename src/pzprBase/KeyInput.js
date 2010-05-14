@@ -162,10 +162,12 @@ KeyEvent.prototype = {
 	moveTBorder : function(ca){ return this.moveTC(ca,1);},
 	moveTC : function(ca,mv){
 		var tcp = tc.getTCP(), flag = false;
-		if     (ca == k.KEYUP && tcp.y-mv >= tc.miny){ tc.decTCY(mv); flag = true;}
-		else if(ca == k.KEYDN && tcp.y+mv <= tc.maxy){ tc.incTCY(mv); flag = true;}
-		else if(ca == k.KEYLT && tcp.x-mv >= tc.minx){ tc.decTCX(mv); flag = true;}
-		else if(ca == k.KEYRT && tcp.x+mv <= tc.maxx){ tc.incTCX(mv); flag = true;}
+		switch(ca){
+			case k.KEYUP: if(tcp.y-mv>=tc.miny){ tc.decTCY(mv); flag = true;} break;
+			case k.KEYDN: if(tcp.y+mv<=tc.maxy){ tc.incTCY(mv); flag = true;} break;
+			case k.KEYLT: if(tcp.x-mv>=tc.minx){ tc.decTCX(mv); flag = true;} break;
+			case k.KEYRT: if(tcp.x+mv<=tc.maxx){ tc.incTCX(mv); flag = true;} break;
+		}
 
 		if(flag){
 			pc.paintPos(tcp);
@@ -250,14 +252,16 @@ KeyEvent.prototype = {
 		if(!this.isSHIFT){ return false;}
 
 		var cc = tc.getTCC();
-		if(bd.QnC(cc)==-1){ return false;}
+		if(bd.QnC(cc)===-1){ return false;}
 
-		var flag = false;
-
-		if     (ca == k.KEYUP){ bd.sDiC(cc, (bd.DiC(cc)!=k.UP?k.UP:0)); flag = true;}
-		else if(ca == k.KEYDN){ bd.sDiC(cc, (bd.DiC(cc)!=k.DN?k.DN:0)); flag = true;}
-		else if(ca == k.KEYLT){ bd.sDiC(cc, (bd.DiC(cc)!=k.LT?k.LT:0)); flag = true;}
-		else if(ca == k.KEYRT){ bd.sDiC(cc, (bd.DiC(cc)!=k.RT?k.RT:0)); flag = true;}
+		var flag = true;
+		switch(ca){
+			case k.KEYUP: bd.sDiC(cc, (bd.DiC(cc)!=k.UP?k.UP:0)); break;
+			case k.KEYDN: bd.sDiC(cc, (bd.DiC(cc)!=k.DN?k.DN:0)); break;
+			case k.KEYLT: bd.sDiC(cc, (bd.DiC(cc)!=k.LT?k.LT:0)); break;
+			case k.KEYRT: bd.sDiC(cc, (bd.DiC(cc)!=k.RT?k.RT:0)); break;
+			default: flag = false;
+		}
 
 		if(flag){
 			pc.paintPos(tc.getTCP());
@@ -303,8 +307,8 @@ KeyEvent.prototype = {
 		else{ return;}
 
 		this.prev = cc;
-		if(cc!=null){ pc.paintCell(tc.getTCC());}
-		else        { pc.paintPos (tc.getTCP());}
+		if(cc!==null){ pc.paintCell(tc.getTCC());}
+		else         { pc.paintPos (tc.getTCP());}
 	},
 	setnum51 : function(cc,ex,target,val){
 		if(cc!=null){ (target==2 ? bd.sQnC(cc,val) : bd.sDiC(cc,val));}
@@ -561,8 +565,7 @@ KeyPopup.prototype = {
 
 TCell = function(){
 	// 現在入力ターゲットになっている場所(border座標系)
-	this.cursorx = 1;
-	this.cursory = 1;
+	this.cursor = new Address(1,1);
 
 	// 有効な範囲(minx,miny)-(maxx,maxy)
 	this.minx = 1;
@@ -594,10 +597,10 @@ TCell.prototype = {
 			this.maxy = (!extDR ? 2*k.qrows-1 : 2*k.qrows+1);
 		}
 
-		if(this.cursorx<this.minx){ this.cursorx=this.minx;}
-		if(this.cursory<this.miny){ this.cursory=this.miny;}
-		if(this.cursorx>this.maxx){ this.cursorx=this.maxx;}
-		if(this.cursory>this.maxy){ this.cursory=this.maxy;}
+		if(this.cursor.x<this.minx){ this.cursor.x=this.minx;}
+		if(this.cursor.y<this.miny){ this.cursor.y=this.miny;}
+		if(this.cursor.x>this.maxx){ this.cursor.x=this.maxx;}
+		if(this.cursor.y>this.maxy){ this.cursor.y=this.maxy;}
 	},
 	setAlign : function(){ },
 
@@ -610,10 +613,10 @@ TCell.prototype = {
 	//---------------------------------------------------------------------------
 	// tc.incTCX(), tc.incTCY(), tc.decTCX(), tc.decTCY() ターゲットの位置を動かす
 	//---------------------------------------------------------------------------
-	incTCX : function(mv){ this.cursorx+=mv;},
-	incTCY : function(mv){ this.cursory+=mv;},
-	decTCX : function(mv){ this.cursorx-=mv;},
-	decTCY : function(mv){ this.cursory-=mv;},
+	incTCX : function(mv){ this.cursor.x+=mv;},
+	incTCY : function(mv){ this.cursor.y+=mv;},
+	decTCX : function(mv){ this.cursor.x-=mv;},
+	decTCY : function(mv){ this.cursor.y-=mv;},
 
 	//---------------------------------------------------------------------------
 	// tc.getTCP() ターゲットの位置をAddressクラスのオブジェクトで取得する
@@ -627,29 +630,29 @@ TCell.prototype = {
 	// tc.getTEC() ターゲットの位置をEXCellのIDで取得する
 	// tc.setTEC() ターゲットの位置をEXCellのIDで設定する
 	//---------------------------------------------------------------------------
-	getTCP : function(){ return new Address(this.cursorx, this.cursory);},
+	getTCP : function(){ return this.cursor;},
 	setTCP : function(pos){
 		if(pos.x<this.minx || this.maxx<pos.x || pos.y<this.miny || this.maxy<pos.y){ return;}
-		this.cursorx = pos.x; this.cursory = pos.y;
+		this.cursor.set(pos);
 	},
-	getTCC : function(){ return bd.cnum(this.cursorx, this.cursory);},
+	getTCC : function(){ return bd.cnum(this.cursor.x, this.cursor.y);},
 	setTCC : function(id){
 		if(!bd.cell[id]){ return;}
-		this.cursorx = bd.cell[id].bx; this.cursory = bd.cell[id].by;
+		this.cursor = new Address(bd.cell[id].bx, bd.cell[id].by);
 	},
-	getTXC : function(){ return bd.xnum(this.cursorx, this.cursory);},
+	getTXC : function(){ return bd.xnum(this.cursor.x, this.cursor.y);},
 	setTXC : function(id){
 		if(!bd.cross[id]){ return;}
-		this.cursorx = bd.cross[id].bx; this.cursory = bd.cross[id].by;
+		this.cursor = new Address(bd.cross[id].bx, bd.cross[id].by);
 	},
-	getTBC : function(){ return bd.bnum(this.cursorx, this.cursory);},
+	getTBC : function(){ return bd.bnum(this.cursor.x, this.cursor.y);},
 	setTBC : function(id){
 		if(!bd.border[id]){ return;}
-		this.cursorx = bd.border[id].bx; this.cursory = bd.border[id].by;
+		this.cursor = new Address(bd.border[id].bx, bd.border[id].by);
 	},
-	getTEC : function(){ return bd.exnum(this.cursorx, this.cursory);},
+	getTEC : function(){ return bd.exnum(this.cursor.x, this.cursor.y);},
 	setTEC : function(id){
 		if(!bd.excell[id]){ return;}
-		this.cursorx = bd.excell[id].bx; this.cursory = bd.excell[id].by;
+		this.cursor = new Address(bd.excell[id].bx, bd.excell[id].by);
 	}
 };

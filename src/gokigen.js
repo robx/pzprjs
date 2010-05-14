@@ -294,18 +294,17 @@ Puzzles.gokigen.prototype = {
 			return result;
 		};
 		ans.searchline = function(check, dir, c){
-			var flag=true;
-			var nc, tx=bd.cross[c].bx, ty=bd.cross[c].by;
+			var nx, tx=bd.cross[c].bx, ty=bd.cross[c].by, flag=true;
 			check[c]=1;
 
-			nc = bd.xnum(tx-2,ty-2);
-			if(nc!==null && dir!=4 && bd.QaC(bd.cnum(tx-1,ty-1))==1 && (check[nc]!=0 || !this.searchline(check,1,nc))){ flag = false;}
-			nc = bd.xnum(tx-2,ty+2);
-			if(nc!==null && dir!=3 && bd.QaC(bd.cnum(tx-1,ty+1))==2 && (check[nc]!=0 || !this.searchline(check,2,nc))){ flag = false;}
-			nc = bd.xnum(tx+2,ty-2);
-			if(nc!==null && dir!=2 && bd.QaC(bd.cnum(tx+1,ty-1))==2 && (check[nc]!=0 || !this.searchline(check,3,nc))){ flag = false;}
-			nc = bd.xnum(tx+2,ty+2);
-			if(nc!==null && dir!=1 && bd.QaC(bd.cnum(tx+1,ty+1))==1 && (check[nc]!=0 || !this.searchline(check,4,nc))){ flag = false;}
+			nx = bd.xnum(tx-2,ty-2);
+			if(nx!==null && dir!==4 && bd.QaC(bd.cnum(tx-1,ty-1))===1 && (check[nx]!==0 || !this.searchline(check,1,nx))){ flag=false;}
+			nx = bd.xnum(tx-2,ty+2);
+			if(nx!==null && dir!==3 && bd.QaC(bd.cnum(tx-1,ty+1))===2 && (check[nx]!==0 || !this.searchline(check,2,nx))){ flag=false;}
+			nx = bd.xnum(tx+2,ty-2);
+			if(nx!==null && dir!==2 && bd.QaC(bd.cnum(tx+1,ty-1))===2 && (check[nx]!==0 || !this.searchline(check,3,nx))){ flag=false;}
+			nx = bd.xnum(tx+2,ty+2);
+			if(nx!==null && dir!==1 && bd.QaC(bd.cnum(tx+1,ty+1))===1 && (check[nx]!==0 || !this.searchline(check,4,nx))){ flag=false;}
 
 			return flag;
 		};

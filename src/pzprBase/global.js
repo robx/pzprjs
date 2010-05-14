@@ -115,7 +115,6 @@ var k = {
 var g;				// グラフィックコンテキスト
 var Puzzles = [];	// パズル個別クラス
 var _doc = document;
-var undef = (void 0);	// undefined値
 
 // localStorageがなくてglobalStorage対応(Firefox3.0)ブラウザのハック
 if(typeof localStorage != "object" && typeof globalStorage == "object"){

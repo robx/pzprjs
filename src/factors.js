@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 因子の部屋版 factors.js v3.3.0
+// パズル固有スクリプト部 因子の部屋版 factors.js v3.3.1
 //
 Puzzles.factors = function(){ };
 Puzzles.factors.prototype = {
@@ -117,8 +117,8 @@ Puzzles.factors.prototype = {
 
 				if(bd.cell[c].qnum!==-1){
 					var size = 0.45;
-					if     (bd.QnC(c)>=100000){ size = 0.30;}
-					else if(bd.QnC(c)>= 10000){ size = 0.36;}
+					if     (bd.cell[c].qnum>=100000){ size = 0.30;}
+					else if(bd.cell[c].qnum>= 10000){ size = 0.36;}
 					this.dispnum(key_ques, 5, (""+bd.cell[c].qnum), size, this.fontcolor, obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(key_ques);}

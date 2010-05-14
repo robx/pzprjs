@@ -86,7 +86,7 @@ Puzzles.barns.prototype = {
 		},
 
 		// 線を引かせたくないので上書き
-		bd.isLineNG = function(id){ return (bd.QuB(id)==1);},
+		bd.isLineNG = function(id){ return bd.isBorder(id);},
 		bd.enableLineNG = true;
 
 		// キーボード入力系

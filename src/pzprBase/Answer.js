@@ -277,10 +277,12 @@ AnsCheck.prototype = {
 	checkAllArea : function(cinfo, func, evalfunc){
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
+			var cc = (k.roomNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0])
+								   : this.getQnumCellOfClist(cinfo.room[id].idlist));
 			var d = this.getSizeOfClist(cinfo.room[id].idlist,func);
-			var n = bd.QnC(k.roomNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0])
-										: this.getQnumCellOfClist(cinfo.room[id].idlist));
-			if( !evalfunc(d.cols, d.rows, d.cnt, (n!==(void 0)?n:-1)) ){
+			var n = (cc!==null?bd.QnC(cc):-1);
+
+			if( !evalfunc(d.cols, d.rows, d.cnt, n) ){
 				if(this.inAutoCheck){ return false;}
 				if(this.performAsLine){ if(result){ bd.sErBAll(2);} this.setErrLareaById(cinfo,id,1);}
 				else{ bd.sErC(cinfo.room[id].idlist,(k.puzzleid!="tateyoko"?1:4));}
@@ -398,22 +400,21 @@ AnsCheck.prototype = {
 	},
 
 	checkSameObjectInRoom : function(rinfo, getvalue){
-		var result = true;
-		var d = [];
+		var result=true, d=[], val=[];
+		for(var c=0;c<bd.cellmax;c++){ val[c]=getvalue(c);}
 		for(var i=1;i<=rinfo.max;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cellmax;c++){
-			if(rinfo.id[c]===null || getvalue(c)===-1){ continue;}
-			if(d[rinfo.id[c]]===-1 && getvalue(c)!==-1){ d[rinfo.id[c]] = getvalue(c);}
-			else if(d[rinfo.id[c]]!=getvalue(c)){
+			if(rinfo.id[c]===null || val[c]===-1){ continue;}
+			if(d[rinfo.id[c]]===-1 && val[c]!==-1){ d[rinfo.id[c]] = val[c];}
+			else if(d[rinfo.id[c]]!==val[c]){
 				if(this.inAutoCheck){ return false;}
 
 				if(this.performAsLine){ bd.sErBAll(2); this.setErrLareaByCell(rinfo,c,1);}
 				else{ bd.sErC(rinfo.room[rinfo.id[c]].idlist,1);}
 				if(k.puzzleid=="kaero"){
 					for(var cc=0;cc<bd.cellmax;cc++){
-						if(rinfo.id[c]==rinfo.id[cc] && this.getBeforeCell(cc)!==null && rinfo.id[c]!=rinfo.id[this.getBeforeCell(cc)]){
-							bd.sErC([this.getBeforeCell(cc)],4);
-						}
+						if(rinfo.id[c]===rinfo.id[cc] && this.getBeforeCell(cc)!==null && rinfo.id[c]!==rinfo.id[this.getBeforeCell(cc)])
+							{ bd.sErC([this.getBeforeCell(cc)],4);}
 					}
 				}
 				result = false;
@@ -422,17 +423,17 @@ AnsCheck.prototype = {
 		return result;
 	},
 	checkObjectRoom : function(rinfo, getvalue){
-		var d=[], dmax=0;
-		for(var c=0;c<bd.cellmax;c++){ if(dmax<getvalue(c)){ dmax=getvalue(c);} }
+		var d=[], dmax=0, val=[];
+		for(var c=0;c<bd.cellmax;c++){ val[c]=getvalue(c); if(dmax<val[c]){ dmax=val[c];} }
 		for(var i=0;i<=dmax;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cellmax;c++){
-			if(getvalue(c)===-1){ continue;}
-			if(d[getvalue(c)]===-1){ d[getvalue(c)] = rinfo.id[c];}
-			else if(d[getvalue(c)]!==rinfo.id[c]){
+			if(val[c]===-1){ continue;}
+			if(d[val[c]]===-1){ d[val[c]] = rinfo.id[c];}
+			else if(d[val[c]]!==rinfo.id[c]){
 				var clist = [];
 				for(var cc=0;cc<bd.cellmax;cc++){
-					if(k.puzzleid=="kaero"){ if(getvalue(c)==bd.QnC(cc)){ clist.push(cc);}}
-					else{ if(rinfo.id[c]==rinfo.id[cc] || d[getvalue(c)]==rinfo.id[cc]){ clist.push(cc);} }
+					if(k.puzzleid=="kaero"){ if(val[c]===bd.QnC(cc)){ clist.push(cc);}}
+					else{ if(rinfo.id[c]===rinfo.id[cc] || d[val[c]]===rinfo.id[cc]){ clist.push(cc);} }
 				}
 				bd.sErC(clist,1);
 				return false;

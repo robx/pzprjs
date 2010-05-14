@@ -1155,11 +1155,11 @@ Graphic.prototype = {
 		this.vinc('target_cursor', 'crispEdges');
 
 		if(isdraw!==false && pp.getVal('cursor')){
-			if(tc.cursorx < x1-1 || x2+1 < tc.cursorx){ return;}
-			if(tc.cursory < y1-1 || y2+1 < tc.cursory){ return;}
+			if(tc.cursor.x < x1-1 || x2+1 < tc.cursor.x){ return;}
+			if(tc.cursor.y < y1-1 || y2+1 < tc.cursor.y){ return;}
 
-			var cpx = k.p0.x + tc.cursorx*this.bw + 0.5;
-			var cpy = k.p0.y + tc.cursory*this.bh + 0.5;
+			var cpx = k.p0.x + tc.cursor.x*this.bw + 0.5;
+			var cpy = k.p0.y + tc.cursor.y*this.bh + 0.5;
 			var w, size;
 			if(islarge!==false){ w = (Math.max(this.cw/16, 2))|0; size = this.bw-0.5;}
 			else	           { w = (Math.max(this.cw/24, 1))|0; size = this.bw*0.56;}
@@ -1182,8 +1182,8 @@ Graphic.prototype = {
 
 		if(k.playmode){ return;}
 
-		if(tc.cursorx < x1 || x2+2 < tc.cursorx){ return;}
-		if(tc.cursory < y1 || y2+2 < tc.cursory){ return;}
+		if(tc.cursor.x < x1 || x2+2 < tc.cursor.x){ return;}
+		if(tc.cursor.y < y1 || y2+2 < tc.cursor.y){ return;}
 
 		var cc = tc.getTCC(), ex = null;
 		if(cc===null){ ex = tc.getTEC();}
@@ -1191,7 +1191,7 @@ Graphic.prototype = {
 		if(target===0){ return;}
 
 		g.fillStyle = this.ttcolor;
-		this.drawTriangle1(k.p0.x+(tc.cursorx>>1)*this.cw, k.p0.y+(tc.cursory>>1)*this.ch, (target===2?4:2), vid);
+		this.drawTriangle1(k.p0.x+(tc.cursor.x>>1)*this.cw, k.p0.y+(tc.cursor.y>>1)*this.ch, (target===2?4:2), vid);
 	},
 
 	//---------------------------------------------------------------------------

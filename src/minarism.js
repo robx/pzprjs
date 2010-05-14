@@ -52,17 +52,17 @@ Puzzles.minarism.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.editmode && this.btn.Left) this.inputmark1();
+			if(k.editmode && this.btn.Left) this.inputmark_mousemove();
 			else if(k.playmode) this.inputqnum();
 		};
 		mv.mouseup = function(){
-			if(k.editmode && this.notInputted()) this.inputmark();
+			if(k.editmode && this.notInputted()) this.inputmark_mouseup();
 		};
 		mv.mousemove = function(){
-			if(k.editmode && this.btn.Left) this.inputmark1();
+			if(k.editmode && this.btn.Left) this.inputmark_mousemove();
 		};
 
-		mv.inputmark1 = function(){
+		mv.inputmark_mousemove = function(){
 			var pos = this.borderpos(0);
 			if(bd.cnum(pos.x,pos.y)===null){ return;}
 
@@ -76,42 +76,40 @@ Puzzles.minarism.prototype = {
 			}
 			this.prevPos = pos;
 		};
-		mv.inputmark = function(){
+		mv.inputmark_mouseup = function(){
 			var pos = this.borderpos(0.33);
 			if(!bd.isinside(pos.x,pos.y)){ return;}
-			var id = bd.bnum(pos.x, pos.y);
 
-			if(tc.cursorx!==pos.x || tc.cursory!==pos.y){
+			if(!tc.cursor.equals(pos)){
 				var tcp = tc.getTCP(), flag = false;
 				tc.setTCP(pos);
 				pc.paintPos(tcp);
 				pc.paintPos(pos);
 			}
-			else if(id!==null){
-				this.inputbqnum(id);
-				pc.paintBorder(id);
+			else{
+				var id = bd.bnum(pos.x, pos.y);
+				if(id!==null){
+					var qn=bd.QnB(id), qs=bd.QuB(id);
+					if(this.btn.Left){
+						if     (qn===-1 && qs===0){ bd.sQnB(id,-1); bd.sQuB(id,1);}
+						else if(qn===-1 && qs===1){ bd.sQnB(id,-1); bd.sQuB(id,2);}
+						else if(qn===-1 && qs===2){ bd.sQnB(id, 1); bd.sQuB(id,0);}
+						else if(qn===Math.max(k.qcols,k.qrows)-1){ bd.sQnB(id,-2); bd.sQuB(id,0);}
+						else if(qn===-2)          { bd.sQnB(id,-1); bd.sQuB(id,0);}
+						else{ bd.sQnB(id,qn+1);}
+					}
+					else if(this.btn.Right){
+						if     (qn===-1 && qs===0){ bd.sQnB(id,-2); bd.sQuB(id,0);}
+						else if(qn===-2)          { bd.sQnB(id,Math.max(k.qcols,k.qrows)-1); bd.sQuB(id,0);}
+						else if(qn=== 1 && qs===0){ bd.sQnB(id,-1); bd.sQuB(id,2);}
+						else if(qn===-1 && qs===2){ bd.sQnB(id,-1); bd.sQuB(id,1);}
+						else if(qn===-1 && qs===1){ bd.sQnB(id,-1); bd.sQuB(id,0);}
+						else{ bd.sQnB(id,qn-1);}
+					}
+					pc.paintBorder(id);
+				}
 			}
 		};
-		mv.inputbqnum = function(id){
-			var qnum = bd.QnB(id), qs = bd.QuB(id);
-			if(this.btn.Left){
-				if     (qnum==-1 && qs==0){ bd.sQnB(id,-1); bd.sQuB(id,1);}
-				else if(qnum==-1 && qs==1){ bd.sQnB(id,-1); bd.sQuB(id,2);}
-				else if(qnum==-1 && qs==2){ bd.sQnB(id, 1); bd.sQuB(id,0);}
-				else if(qnum==Math.max(k.qcols,k.qrows)-1){ bd.sQnB(id,-2); bd.sQuB(id,0);}
-				else if(qnum==-2)         { bd.sQnB(id,-1); bd.sQuB(id,0);}
-				else{ bd.sQnB(id,qnum+1);}
-			}
-			else if(this.btn.Right){
-				if     (qnum==-1 && qs==0){ bd.sQnB(id,-2); bd.sQuB(id,0);}
-				else if(qnum==-2)         { bd.sQnB(id,Math.max(k.qcols,k.qrows)-1); bd.sQuB(id,0);}
-				else if(qnum== 1 && qs==0){ bd.sQnB(id,-1); bd.sQuB(id,2);}
-				else if(qnum==-1 && qs==2){ bd.sQnB(id,-1); bd.sQuB(id,1);}
-				else if(qnum==-1 && qs==1){ bd.sQnB(id,-1); bd.sQuB(id,0);}
-				else{ bd.sQnB(id,qnum-1);}
-			}
-			pc.paintBorder(id);
-		},
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
@@ -147,14 +145,14 @@ Puzzles.minarism.prototype = {
 
 		menu.ex.adjustSpecial = function(key,d){
 			if(key & this.TURNFLIP){ // 反転・回転全て
-				for(var c=0;c<bd.bdmax;c++){ if(bd.QuB(c)!=0){ bd.sQuB(c,{1:2,2:1}[bd.QuB(c)]); } }
+				for(var id=0;id<bd.bdmax;id++){ if(bd.QuB(id)!=0){ bd.sQuB(id,{1:2,2:1}[bd.QuB(id)]); } }
 			}
 		};
 		menu.ex.expandborder = function(key){ };
 
 		tc.setAlign = function(){
-			this.cursorx -= ((this.cursorx+1)%2);
-			this.cursory -= ((this.cursory+1)%2);
+			this.cursor.x -= ((this.cursor.x+1)%2);
+			this.cursor.y -= ((this.cursor.y+1)%2);
 		};
 
 		bd.nummaxfunc = function(cc){ return Math.max(k.qcols,k.qrows);};

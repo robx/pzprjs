@@ -289,11 +289,12 @@ Puzzles.shwolf.prototype = {
 			while(1){
 				switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 				if(!((bx+by)&1)){
-					if(bd.QnX(bd.xnum(bx,by))==1){
-						if(bd.QaB(bd.bnum(bx,by-1))==1){ this.cl0(lines,bx,by,1);}
-						if(bd.QaB(bd.bnum(bx,by+1))==1){ this.cl0(lines,bx,by,2);}
-						if(bd.QaB(bd.bnum(bx-1,by))==1){ this.cl0(lines,bx,by,3);}
-						if(bd.QaB(bd.bnum(bx+1,by))==1){ this.cl0(lines,bx,by,4);}
+					var xc = bd.xnum(bx,by), id;
+					if(xc!==null && bd.QnX(xc)===1){
+						id=bd.bnum(bx,by-1); if(id!==null && bd.border[id].qans===1){ this.cl0(lines,bx,by,1);}
+						id=bd.bnum(bx,by+1); if(id!==null && bd.border[id].qans===1){ this.cl0(lines,bx,by,2);}
+						id=bd.bnum(bx-1,by); if(id!==null && bd.border[id].qans===1){ this.cl0(lines,bx,by,3);}
+						id=bd.bnum(bx+1,by); if(id!==null && bd.border[id].qans===1){ this.cl0(lines,bx,by,4);}
 						break;
 					}
 				}

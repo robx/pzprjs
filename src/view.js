@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヴィウ版 view.js v3.3.0
+// パズル固有スクリプト部 ヴィウ版 view.js v3.3.1
 //
 Puzzles.view = function(){ };
 Puzzles.view.prototype = {
@@ -166,7 +166,7 @@ Puzzles.view.prototype = {
 				this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QsC(c)==1);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.QsC(c)===1);}) ){
 				this.setAlert('数字の入っていないマスがあります。','There is a cell that is not filled in number.'); return false;
 			}
 
@@ -178,27 +178,28 @@ Puzzles.view.prototype = {
 			for(var c=0;c<bd.cellmax;c++){
 				if(!bd.isValidNum(c)){ continue;}
 
-				var list = [];
-				var cnt=0;
-				var tx, ty;
-
-				tx = bd.cell[c].bx-2; ty = bd.cell[c].by;
-				while(tx>bd.minbx){ var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!==1){ cnt++; list.push(cc); tx-=2;} else{ break;} }
-				tx = bd.cell[c].bx+2; ty = bd.cell[c].by;
-				while(tx<bd.maxbx){ var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!==1){ cnt++; list.push(cc); tx+=2;} else{ break;} }
-				tx = bd.cell[c].bx; ty = bd.cell[c].by-2;
-				while(ty>bd.minby){ var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!==1){ cnt++; list.push(cc); ty-=2;} else{ break;} }
-				tx = bd.cell[c].bx; ty = bd.cell[c].by+2;
-				while(ty<bd.maxby){ var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!==1){ cnt++; list.push(cc); ty+=2;} else{ break;} }
-
-				if(bd.getNum(c)!=cnt){
+				var clist = this.searchNumber(bd.cell[c].bx,bd.cell[c].by);
+				if(bd.getNum(c)!==clist.length){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
-					bd.sErC(list,2);
+					bd.sErC(clist,2);
 					result = false;
 				}
 			}
 			return result;
+		};
+		ans.searchNumber = function(sx,sy){
+			var clist = [];
+			for(var dir=1;dir<=4;dir++){
+				var cc, bx=sx, by=sy;
+				while(1){
+					switch(dir){ case 1: by-=2; break; case 2: by+=2; break; case 3: bx-=2; break; case 4: bx+=2; break;}
+					cc = bd.cnum(bx,by);
+					if(cc!==null && bd.noNum(cc) && bd.cell[cc].qsub!==1){ clist.push(cc);}
+					else{ break;}
+				}
+			}
+			return clist;
 		};
 	}
 };

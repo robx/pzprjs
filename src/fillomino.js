@@ -84,7 +84,7 @@ Puzzles.fillomino.prototype = {
 
 			var id = this.getborderID(this.prevPos, pos);
 			if(id!==null){
-				if(this.inputData===null){ this.inputData=(bd.QaB(id)===0?1:0);}
+				if(this.inputData===null){ this.inputData=(!bd.isBorder(id)?1:0);}
 				bd.sQaB(id, this.inputData);
 				pc.paintBorder(id);
 			}
@@ -117,32 +117,24 @@ Puzzles.fillomino.prototype = {
 
 			var cc = tc.getTCC();
 			if(cc===null){ return;}
-			var flag = false;
 
-			if     (ca===k.KEYUP && bd.up(cc)!==null){
-				if(kc.isCTRL)  { bd.sQsB(bd.ub(cc),(bd.QsB(bd.ub(cc))===0?1:0)); tc.decTCY(2); flag = true;}
-				else if(kc.isZ){ bd.sQaB(bd.ub(cc),(bd.QaB(bd.ub(cc))===0?1:0)); flag = true;}
-				else if(kc.isX){ bd.sQaC(bd.up(cc),bd.getNum(cc)); tc.decTCY(2); flag = true;}
+			var nc, nb, move, flag=false;
+			switch(ca){
+				case k.KEYUP: nc=bd.up(cc); nb=bd.ub(cc); move=function(){tc.decTCY(2);}; break;
+				case k.KEYDN: nc=bd.dn(cc); nb=bd.db(cc); move=function(){tc.incTCY(2);}; break;
+				case k.KEYLT: nc=bd.lt(cc); nb=bd.lb(cc); move=function(){tc.decTCX(2);}; break;
+				case k.KEYRT: nc=bd.rt(cc); nb=bd.rb(cc); move=function(){tc.incTCX(2);}; break;
 			}
-			else if(ca===k.KEYDN && bd.dn(cc)!==null){
-				if(kc.isCTRL)  { bd.sQsB(bd.db(cc),(bd.QsB(bd.db(cc))===0?1:0)); tc.incTCY(2); flag = true;}
-				else if(kc.isZ){ bd.sQaB(bd.db(cc),(bd.QaB(bd.db(cc))===0?1:0)); flag = true;}
-				else if(kc.isX){ bd.sQaC(bd.dn(cc),bd.getNum(cc)); tc.incTCY(2); flag = true;}
-			}
-			else if(ca===k.KEYLT && bd.lt(cc)!==null){
-				if(kc.isCTRL)  { bd.sQsB(bd.lb(cc),(bd.QsB(bd.lb(cc))===0?1:0)); tc.decTCX(2); flag = true;}
-				else if(kc.isZ){ bd.sQaB(bd.lb(cc),(bd.QaB(bd.lb(cc))===0?1:0)); kc.tcMoved = true; flag = true;}
-				else if(kc.isX){ bd.sQaC(bd.lt(cc),bd.getNum(cc)); tc.decTCX(2); kc.tcMoved = true; flag = true;}
-			}
-			else if(ca===k.KEYRT && bd.rt(cc)!==null){
-				if(kc.isCTRL)  { bd.sQsB(bd.rb(cc),(bd.QsB(bd.rb(cc))===0?1:0)); tc.incTCX(2); flag = true;}
-				else if(kc.isZ){ bd.sQaB(bd.rb(cc),(bd.QaB(bd.rb(cc))===0?1:0)); flag = true;}
-				else if(kc.isX){ bd.sQaC(bd.rt(cc),bd.getNum(cc)); tc.incTCX(2); flag = true;}
+			if(nc!==null){
+				flag = (kc.isCTRL || kc.isX || kc.isZ);
+				if(kc.isCTRL)  { if(nb!==null){ bd.sQsB(nb,((bd.QsB(nb)===0)?1:0)); move();}}
+				else if(kc.isZ){ if(nb!==null){ bd.sQaB(nb,(!bd.isBorder(nc)?1:0));        }}
+				else if(kc.isX){ if(nc!==null){ bd.sQaC(nc,bd.getNum(cc));          move();}}
 			}
 
 			kc.tcMoved = flag;
-			if(flag){ pc.paintCell(cc); return true;}
-			return false;
+			if(flag){ pc.paintCell(cc);}
+			return flag;
 		};
 
 		kc.isX = false;

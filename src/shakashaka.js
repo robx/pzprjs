@@ -304,10 +304,10 @@ Puzzles.shakashaka.prototype = {
 			winfo.id[c] = areaid;
 			winfo.room[areaid].idlist.push(c);
 			var a=bd.QaC(c), b, cc;
-			cc=bd.up(c); b=bd.QaC(cc); if( cc!==null && winfo.id[cc]===0 && (a!==4 && a!==5) && (b!==2 && b!==3) ){ this.sw0(winfo, cc, areaid);}
-			cc=bd.dn(c); b=bd.QaC(cc); if( cc!==null && winfo.id[cc]===0 && (a!==2 && a!==3) && (b!==4 && b!==5) ){ this.sw0(winfo, cc, areaid);}
-			cc=bd.lt(c); b=bd.QaC(cc); if( cc!==null && winfo.id[cc]===0 && (a!==2 && a!==5) && (b!==3 && b!==4) ){ this.sw0(winfo, cc, areaid);}
-			cc=bd.rt(c); b=bd.QaC(cc); if( cc!==null && winfo.id[cc]===0 && (a!==3 && a!==4) && (b!==2 && b!==5) ){ this.sw0(winfo, cc, areaid);}
+			cc=bd.up(c); if(cc!==null){ b=bd.QaC(cc); if(winfo.id[cc]===0 && (a!==4&&a!==5) && (b!==2&&b!==3)){ this.sw0(winfo,cc,areaid);} }
+			cc=bd.dn(c); if(cc!==null){ b=bd.QaC(cc); if(winfo.id[cc]===0 && (a!==2&&a!==3) && (b!==4&&b!==5)){ this.sw0(winfo,cc,areaid);} }
+			cc=bd.lt(c); if(cc!==null){ b=bd.QaC(cc); if(winfo.id[cc]===0 && (a!==2&&a!==5) && (b!==3&&b!==4)){ this.sw0(winfo,cc,areaid);} }
+			cc=bd.rt(c); if(cc!==null){ b=bd.QaC(cc); if(winfo.id[cc]===0 && (a!==3&&a!==4) && (b!==2&&b!==5)){ this.sw0(winfo,cc,areaid);} }
 		};
 	}
 };

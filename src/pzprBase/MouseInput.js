@@ -250,20 +250,18 @@ MouseEvent.prototype = {
 		if(cc===null || cc===this.mouseCell){ return;}
 
 		if(cc===tc.getTCC()){
-			cc =(k.playmode ?
-					(k.NumberWithMB ?
-						this.inputqnum3withMB(cc)
-					:
-						this.inputqnum3(cc)
-					)
-				:
-					this.inputqnum1(cc)
-				);
+			if(k.editmode){
+				if(k.roomNumber){ cc = area.getTopOfRoomByCell(cc);}
+				this.inputqnum1(cc);
+			}
+			else{
+				if(k.NumberWithMB){ this.inputqnum3withMB(cc);}
+				else              { this.inputqnum3(cc);}
+			}
 		}
 		else{
 			var cc0 = tc.getTCC();
 			tc.setTCC(cc);
-
 			pc.paintCell(cc0);
 		}
 		this.mouseCell = cc;
@@ -271,7 +269,6 @@ MouseEvent.prototype = {
 		pc.paintCell(cc);
 	},
 	inputqnum1 : function(cc){
-		if(k.roomNumber){ cc = area.getTopOfRoomByCell(cc);}
 		var max = bd.nummaxfunc(cc);
 
 		if(this.btn.Left){
@@ -288,14 +285,12 @@ MouseEvent.prototype = {
 		}
 		if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
 		if(k.isAnsNumber){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
-
-		return cc;
 	},
 	inputqnum3 : function(cc){
-		if(bd.QnC(cc)!==-1){ return cc;}
+		if(bd.QnC(cc)!==-1){ return;}
 		var max = bd.nummaxfunc(cc);
-		bd.sDiC(cc,0);
 
+		bd.sDiC(cc,0);
 		if(this.btn.Left){
 			if     (bd.QaC(cc)===max){ bd.sQaC(cc,-1);              }
 			else if(bd.QaC(cc)===-1) { bd.sQaC(cc,(k.dispzero?0:1));}
@@ -306,10 +301,9 @@ MouseEvent.prototype = {
 			else if(bd.QaC(cc)===(k.dispzero?0:1)){ bd.sQaC(cc,-1); }
 			else                                  { bd.sQaC(cc,bd.QaC(cc)-1);}
 		}
-		return cc;
 	},
 	inputqnum3withMB : function(cc){
-		if(bd.QnC(cc)!==-1){ return cc;}
+		if(bd.QnC(cc)!==-1){ return;}
 		var max = bd.nummaxfunc(cc);
 
 		if(this.btn.Left){
@@ -326,7 +320,6 @@ MouseEvent.prototype = {
 			else if(bd.QaC(cc)===(k.dispzero?0:1)){ bd.sQaC(cc,-1);  }
 			else                    { bd.sQaC(cc,bd.QaC(cc)-1);      }
 		}
-		return cc;
 	},
 
 	//---------------------------------------------------------------------------
@@ -406,11 +399,13 @@ MouseEvent.prototype = {
 		if(this.prevPos.equals(pos)){ return;}
 
 		var cc=bd.cnum(this.prevPos.x, this.prevPos.y);
-		if(cc!==null && bd.QnC(cc)!==-1){
-			var dir = this.getdir(this.prevPos, pos);
-			if(dir!==k.NONE){
-				bd.sDiC(cc, (bd.DiC(cc)!==dir?dir:0));
-				pc.paintCell(cc);
+		if(cc!==null){
+			if(bd.QnC(cc)!==-1){
+				var dir = this.getdir(this.prevPos, pos);
+				if(dir!==k.NONE){
+					bd.sDiC(cc, (bd.DiC(cc)!==dir?dir:0));
+					pc.paintCell(cc);
+				}
 			}
 		}
 		this.prevPos = pos;
@@ -520,6 +515,7 @@ MouseEvent.prototype = {
 		if(pos.x<bd.minbx+bm || pos.x>bd.maxbx-bm || pos.y<bd.minby+bm || pos.y>bd.maxby-bm){ return;}
 
 		var cc = bd.xnum(pos.x,pos.y);
+		if(cc===null){ return;}
 
 		um.disCombine = 1;
 		bd.sQnX(cc,(bd.QnX(cc)==1)?-1:1);

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アホになり切れ版 aho.js v3.3.0
+// パズル固有スクリプト部 アホになり切れ版 aho.js v3.3.1
 //
 Puzzles.aho = function(){ };
 Puzzles.aho.prototype = {
@@ -180,8 +180,11 @@ Puzzles.aho.prototype = {
 		ans.checkAhoArea = function(rinfo){
 			var result = true;
 			for(var id=1;id<=rinfo.max;id++){
-				var n = bd.QnC(this.getQnumCellOfClist(rinfo.room[id].idlist));
-				if(n<0 || (n%3)!=0){ continue;}
+				var cc = this.getQnumCellOfClist(rinfo.room[id].idlist);
+				if(cc===null){ continue;}
+
+				var n = bd.QnC(cc);
+				if(n<0 || (n%3)!==0){ continue;}
 
 				var d = this.getSizeOfClist(rinfo.room[id].idlist,f_true);
 				var clist = [];

@@ -251,12 +251,12 @@ Puzzles.ichimaga.prototype = {
 						switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 						if((bx+by)%2==0){
 							var cc = bd.cnum(bx,by);
-							if     (bd.QnC(cc)!=-1){ break;}
-							else if(line.lcntCell(cc)==4){ }
-							else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!=2){ ccnt++;} dir=2;}
-							else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!=1){ ccnt++;} dir=1;}
-							else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!=4){ ccnt++;} dir=4;}
-							else if(dir!=4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!=3){ ccnt++;} dir=3;}
+							if     (cc===null || bd.QnC(cc)!==-1){ break;}
+							else if(line.lcntCell(cc)===4){ }
+							else if(dir!==1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!==2){ ccnt++;} dir=2;}
+							else if(dir!==2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!==1){ ccnt++;} dir=1;}
+							else if(dir!==3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!==4){ ccnt++;} dir=4;}
+							else if(dir!==4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!==3){ ccnt++;} dir=3;}
 						}
 						else{
 							var id = bd.bnum(bx,by);
@@ -268,14 +268,15 @@ Puzzles.ichimaga.prototype = {
 
 					for(var i=0;i<idlist.length;i++){ errinfo.check[idlist[i]]=2;}
 
-					var cc = bd.cnum(bx,by);
-					if(this.ismag() && bd.QnC(c)!=-2 && bd.QnC(c)==bd.QnC(cc)){
+					var qn=(c!==null?bd.QnC(c):-1);
+					var cc = bd.cnum(bx,by), qnn=(cc!==null?bd.QnC(cc):-1);
+					if(this.ismag() && qn!==-2 && qn===qnn){
 						errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist}); continue;
 					}
-					if(idlist.length>0 && (bx+by)%2==0 && bd.QnC(c)!=-2 && ccnt>1){
+					if(idlist.length>0 && ((bx+by)&1)===0 && qn!==-2 && ccnt>1){
 						errinfo.data.push({errflag:2,cells:[c,cc],idlist:idlist}); continue;
 					}
-					if(idlist.length>0 && (bx+by)%2==1){
+					if(idlist.length>0 && ((bx+by)&1)===1){
 						errinfo.data.push({errflag:1,cells:[c],idlist:idlist}); continue;
 					}
 				}

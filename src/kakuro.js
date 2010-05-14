@@ -127,8 +127,8 @@ Puzzles.kakuro.prototype = {
 
 		tc.setAlign = function(){
 			if(k.playmode){
-				if(this.cursorx<1) this.cursorx = 1;
-				if(this.cursory<1) this.cursory = 1;
+				if(this.cursor.x<1) this.cursor.x = 1;
+				if(this.cursor.y<1) this.cursor.y = 1;
 			}
 		};
 		tc.targetdir = 2;

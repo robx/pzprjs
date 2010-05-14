@@ -77,15 +77,16 @@ Puzzles.shugaku.prototype = {
 				pc.paintCell(cc);
 			}
 			else{
-				var old = this.inputData;
-				if(this.mouseCell===cc){ this.inputData = 1;}
+				var old = this.inputData, adj;
+				if(cc===null){ /* nop */} // 何もしない
+				else if(this.mouseCell===cc){ this.inputData = 1;} // 入力開始時と同じセルの場合
 				else{
 					var dx=(this.inputPoint.x-this.firstPoint.x), dy=(this.inputPoint.y-this.firstPoint.y);
-					if     (cc===null){ /* nop */ }
-					else if(dx-dy>0 && dx+dy>0){ this.inputData = (bd.QnC(bd.rt(this.mouseCell))===-1?5:6);}
-					else if(dx-dy>0 && dx+dy<0){ this.inputData = (bd.QnC(bd.up(this.mouseCell))===-1?2:6);}
-					else if(dx-dy<0 && dx+dy>0){ this.inputData = (bd.QnC(bd.dn(this.mouseCell))===-1?3:6);}
-					else if(dx-dy<0 && dx+dy<0){ this.inputData = (bd.QnC(bd.lt(this.mouseCell))===-1?4:6);}
+					if     (dx-dy>0 && dx+dy>0){ adj=bd.rt(this.mouseCell); this.inputData=5;}
+					else if(dx-dy>0 && dx+dy<0){ adj=bd.up(this.mouseCell); this.inputData=2;}
+					else if(dx-dy<0 && dx+dy>0){ adj=bd.dn(this.mouseCell); this.inputData=3;}
+					else if(dx-dy<0 && dx+dy<0){ adj=bd.lt(this.mouseCell); this.inputData=4;}
+					if(adj==null || bd.QnC(adj)!==-1){ this.inputData=6;}
 				}
 				if(old!=this.inputData){ pc.paintCellAround(this.mouseCell);}
 			}
@@ -288,8 +289,8 @@ Puzzles.shugaku.prototype = {
 			var header = "b_bd";
 			g.fillStyle = "black";
 
-			for(var by=Math.min(bd.minby+1,y1-2),maxy=Math.max(bd.maxby-1,y2+2);by<=maxy;by++){
-				for(var bx=Math.min(bd.minbx+1,x1-2),maxx=Math.max(bd.maxbx-1,x2+2);bx<=maxx;bx++){
+			for(var by=Math.max(bd.minby+1,y1-2),maxy=Math.min(bd.maxby-1,y2+2);by<=maxy;by++){
+				for(var bx=Math.max(bd.minbx+1,x1-2),maxx=Math.min(bd.maxbx-1,x2+2);bx<=maxx;bx++){
 					if(!((bx+by)&1)){ continue;}
 					var a = bd.QaC( bd.cnum(bx-(by&1), by-(bx&1)) );
 					var b = bd.QaC( bd.cnum(bx+(by&1), by+(bx&1)) );

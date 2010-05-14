@@ -266,21 +266,21 @@ Puzzles.firefly.prototype = {
 			for(var i=0;i<bd.bdmax;i++){ errinfo.check[i]=0;}
 
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)==-1 || bd.DiC(c)==0){ continue;}
+				var dir=bd.DiC(c), qn=bd.QnC(c);
+				if(qn===-1 || dir===0){ continue;}
 
-				var ccnt=0;
+				var ccnt = 0;
 				var idlist = [];
-				var dir=bd.DiC(c);
 				var bx=bd.cell[c].bx, by=bd.cell[c].by;
 				while(1){
 					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 					if(!((bx+by)&1)){
 						var cc = bd.cnum(bx,by);
-						if     (bd.QnC(cc)!=-1){ break;}
-						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!=2){ ccnt++;} dir=2;}
-						else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!=1){ ccnt++;} dir=1;}
-						else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!=4){ ccnt++;} dir=4;}
-						else if(dir!=4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!=3){ ccnt++;} dir=3;}
+						if(cc===null || bd.QnC(cc)!==-1){ break;}
+						else if(dir!==1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!==2){ ccnt++;} dir=2;}
+						else if(dir!==2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!==1){ ccnt++;} dir=1;}
+						else if(dir!==3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!==4){ ccnt++;} dir=4;}
+						else if(dir!==4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!==3){ ccnt++;} dir=3;}
 					}
 					else{
 						var id = bd.bnum(bx,by);
@@ -288,21 +288,17 @@ Puzzles.firefly.prototype = {
 						idlist.push(id);
 					}
 				}
+				if(idlist.length<=0){ continue;}
 
 				for(var i=0;i<idlist.length;i++){ errinfo.check[idlist[i]]=2;}
 
-				var cc = bd.cnum(bx,by);
-				if(((bd.DiC(cc)==k.UP && dir==k.DN) || (bd.DiC(cc)==k.DN && dir==k.UP) ||
-					(bd.DiC(cc)==k.LT && dir==k.RT) || (bd.DiC(cc)==k.RT && dir==k.LT) ) && (!((bx+by)&1)))
-				{
-					errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist}); continue;
-				}
-				if(idlist.length>0 && (!((bx+by)&1)) && bd.QnC(c)!=-2 && bd.QnC(c)!=ccnt){
-					errinfo.data.push({errflag:2,cells:[c],idlist:idlist}); continue;
-				}
-				if(idlist.length>0 && ((bx+by)&1)){
-					errinfo.data.push({errflag:1,cells:[c],idlist:idlist}); continue;
-				}
+				var cc=bd.cnum(bx,by), dic=(cc!==null?bd.DiC(cc):k.NONE);
+				if(cc!==null && ((dic===k.UP && dir===k.DN) || (dic===k.DN && dir===k.UP) || (dic===k.LT && dir===k.RT) || (dic===k.RT && dir===k.LT) ))
+					{ errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist});}
+				else if(cc!==null && qn!==-2 && qn!==ccnt)
+					{ errinfo.data.push({errflag:2,cells:[c],idlist:idlist});}
+				else if(cc===null)
+					{ errinfo.data.push({errflag:1,cells:[c],idlist:idlist});}
 			}
 			return errinfo;
 		};

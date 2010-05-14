@@ -73,11 +73,11 @@ Puzzles.box.prototype = {
 			if(ec===null){ return;}
 
 			var ec0 = tc.getTEC();
-			if(ec!==null && ec!==ec0){
+			if(ec!==ec0){
 				tc.setTEC(ec);
 				pc.paintEXcell(ec0);
 			}
-			else if(ec!==null && ec===ec0){
+			else{
 				var qn = bd.QnE(ec), max=bd.nummaxfunc(ec);
 				if(this.btn.Left){ bd.sQnE(ec,(qn!==max ? qn+1 : 0));}
 				else if(this.btn.Right){ bd.sQnE(ec,(qn!==0 ? qn-1 : max));}
@@ -116,29 +116,19 @@ Puzzles.box.prototype = {
 			pc.paintEXcell(tc.getTEC());
 		};
 		kc.moveTCell = function(ca){
-			var cc0 = tc.getTEC(), tcp = tc.getTCP();
-			var flag = true;
-
-			if     (ca===k.KEYUP){
-				if(tcp.x===tc.minx && tc.miny<tcp.y){ tc.decTCY(2);}else{ flag=false;}
+			var cc0 = tc.getTEC(), tcp = tc.getTCP(), flag = false;
+			switch(ca){
+				case k.KEYUP: if(tcp.x===tc.minx && tc.miny<tcp.y){ tc.decTCY(2); flag=true;} break;
+				case k.KEYDN: if(tcp.x===tc.minx && tc.maxy>tcp.y){ tc.incTCY(2); flag=true;} break;
+				case k.KEYLT: if(tcp.y===tc.miny && tc.minx<tcp.x){ tc.decTCX(2); flag=true;} break;
+				case k.KEYRT: if(tcp.y===tc.miny && tc.maxx>tcp.x){ tc.incTCX(2); flag=true;} break;
 			}
-			else if(ca===k.KEYDN){
-				if(tcp.x===tc.minx && tc.maxy>tcp.y){ tc.incTCY(2);}else{ flag=false;}
-			}
-			else if(ca===k.KEYLT){
-				if(tcp.y===tc.miny && tc.minx<tcp.x){ tc.decTCX(2);}else{ flag=false;}
-			}
-			else if(ca===k.KEYRT){
-				if(tcp.y===tc.miny && tc.maxx>tcp.x){ tc.incTCX(2);}else{ flag=false;}
-			}
-			else{ flag=false;}
 
 			if(flag){
 				pc.paintEXcell(cc0);
 				pc.paintEXcell(tc.getTEC());
 				this.tcMoved = true;
 			}
-
 			return flag;
 		};
 		tc.adjust = function(){

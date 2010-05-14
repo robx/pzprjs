@@ -568,10 +568,10 @@ AreaManager.prototype = {
 					var c = clist[i];
 					if(this.room.id[c]===r && bd.cell[c].qnum!==-1){
 						if(val===-1){ val = bd.cell[c].qnum;}
-						if(this.getTopOfRoom(r)!==c){ bd.sQnC(c, -1);}
+						if(this.room[r].top!==c){ bd.sQnC(c, -1);}
 					}
 				}
-				if(val!==-1 && bd.QnC(this.getTopOfRoom(r))===-1){ bd.sQnC(this.getTopOfRoom(r), val);}
+				if(val!==-1 && bd.QnC(this.room[r].top)===-1){ bd.sQnC(this.room[r].top, val);}
 			}
 		}
 	},

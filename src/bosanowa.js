@@ -85,9 +85,9 @@ Puzzles.bosanowa.prototype = {
 		mv.inputqnum_bosanowa = function(){
 			var pos = this.borderpos(0.31);
 			if(!bd.isinside(pos.x,pos.y)){ return;}
-			var tcp = tc.getTCP();
 
-			if(pos.x==tcp.x&&pos.y==tcp.y){
+			var tcp = tc.getTCP();
+			if(tcp.equals(pos)){
 				var max = bd.nummaxfunc();
 				if((pos.x&1)&&(pos.y&1)){
 					var cc = bd.cnum(pos.x,pos.y);
@@ -178,8 +178,7 @@ Puzzles.bosanowa.prototype = {
 		bd.isBox = function(c){ return (!!bd.cell[c] && bd.cell[c].ques===7)};
 
 		// カーソルを最初真ん中においておく
-		tc.cursorx = k.qcols-1-k.qcols%2;
-		tc.cursory = k.qrows-1-k.qrows%2;
+		tc.cursor = new Address(k.qcols-1-k.qcols%2, k.qrows-1-k.qrows%2);
 		if(k.EDITOR){
 			var c = tc.getTCC();
 			if(c!==null){ bd.cell[c].ques = 7;}
@@ -391,7 +390,7 @@ Puzzles.bosanowa.prototype = {
 		};
 
 		pc.drawTarget_bosanowa = function(x1,y1,x2,y2){
-			var islarge = !!((tc.cursorx&1)&&(tc.cursory&1));
+			var islarge = !!((tc.cursor.x&1)&&(tc.cursor.y&1));
 			this.drawCursor(x1,y1,x2,y2,islarge);
 		};
 	},

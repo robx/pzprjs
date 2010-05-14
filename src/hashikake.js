@@ -311,8 +311,8 @@ Puzzles.hashikake.prototype = {
 			});
 			this.encodeCell( function(c){
 				if(bd.QnC(c)!=-1){ return "0 ";}
-				var datah = bd.LiB(bd.ub(c));
-				var dataw = bd.LiB(bd.lb(c));
+				var datah = (bd.ub(c)!==null ? bd.LiB(bd.ub(c)) : 0);
+				var dataw = (bd.lb(c)!==null ? bd.LiB(bd.lb(c)) : 0);
 				return ""+((datah>0?datah:0)+(dataw>0?(dataw<<2):0))+" ";
 			});
 		};

@@ -247,7 +247,7 @@ Puzzles.wagiri.prototype = {
 		};
 
 		pc.drawTarget_wagiri = function(x1,y1,x2,y2){
-			var islarge = ((tc.cursorx&1)===(tc.cursory&1));
+			var islarge = ((tc.cursor.x&1)===(tc.cursor.y&1));
 			this.drawCursor(x1,y1,x2,y2,islarge,k.editmode);
 		};
 	},
