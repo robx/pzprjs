@@ -8,6 +8,7 @@
 PBase = function(){
 	this.floatbgcolor = "black";
 	this.proto        = 0;	// 各クラスのprototypeがパズル用スクリプトによって変更されているか
+	this.userlang     = 'ja';
 	this.expression   = { ja:'' ,en:''};
 	this.puzzlename   = { ja:'' ,en:''};
 	this.numparent    = null;	// 'numobj_parent'を示すエレメント
@@ -48,11 +49,6 @@ PBase.prototype = {
 	//---------------------------------------------------------------------------
 	// base.onload_func()
 	//   ページがLoadされた時の処理。各クラスのオブジェクトへの読み込み等初期設定を行う
-	// 
-	// base.initCanvas()  Canvas関連の初期化
-	// base.initObjects() 各オブジェクトの生成などの処理
-	// base.setEvents()   マウス入力、キー入力のイベントの設定を行う
-	// base.translationEN() 日本語環境でない場合、デフォルトで英語表示にする
 	//---------------------------------------------------------------------------
 	onload_func : function(){
 		Camp('divques');
@@ -73,20 +69,24 @@ PBase.prototype = {
 		this.initCanvas();
 		this.initObjects();
 		this.setEvents(true);	// イベントをくっつける
-		this.translationEN();
 
-		if(_doc.domain=='indi.s58.xrea.com' && k.PLAYER){ this.accesslog();}	// アクセスログをとってみる
+		if(k.PLAYER){ this.accesslog();}	// アクセスログをとってみる
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
 
 		this.initProcess = false;
 	},
 
+	//---------------------------------------------------------------------------
+	// base.initCanvas()    Canvas関連の初期化
+	// base.initObjects()   各オブジェクトの生成などの処理
+	// base.doc_design()    onload_func()で呼ばれる。htmlなどの設定を行う
+	// base.checkUserLang() 言語環境をチェックして日本語でない場合英語表示にする
+	//---------------------------------------------------------------------------
 	initCanvas : function(){
 		this.numparent = ee('numobj_parent').el;		// 数字表示用
 		var canvas = ee('divques').unselectable().el;	// Canvas
 		g = canvas.getContext("2d");
 	},
-
 	initObjects : function(){
 		this.proto = 0;
 
@@ -109,14 +109,49 @@ PBase.prototype = {
 		menu = new Menu();		// メニューを扱うオブジェクト
 		pp = new Properties();	// メニュー関係の設定値を保持するオブジェクト
 
+		// 各パズルごとの設定(後付け分)
+		puz.input_init();
+		puz.graphic_init();
+		puz.encode_init();
+		puz.answer_init();
+
+		// メニュー関係初期化
+		menu.menuinit();		// メニューの設定
 		this.doc_design();		// デザイン変更関連関数の呼び出し
+		this.checkUserLang();	// 言語のチェック
 
 		enc.pzlinput();			// URLからパズルのデータを読み出す
 		this.resize_canvas();
 
 		if(!!puz.finalfix){ puz.finalfix();}		// パズル固有の後付け設定
 	},
+	// 背景画像とかtitle・背景画像・html表示の設定
+	doc_design : function(){
+		_doc.title = this.gettitle();
+		ee('title2').el.innerHTML = this.gettitle();
+
+		_doc.body.style.backgroundImage = "url(./bg/"+k.puzzleid+".gif)";
+		if(k.br.IE6){
+			ee('title2').el.style.marginTop = "24px";
+			ee('separator1').el.style.margin = '0pt';
+			ee('separator2').el.style.margin = '0pt';
+		}
+	},
+	checkUserLang : function(){
+		this.userlang = (navigator.browserLanguage ||
+						 navigator.language        ||
+						 navigator.userLanguage);
+		if(this.userlang.substr(0,2)!=='ja'){ pp.setVal('language', 1);}
+	},
+
+	//---------------------------------------------------------------------------
+	// base.setEvents()       マウス入力、キー入力のイベントの設定を行う
+	// base.initSilverlight() Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
+	// base.e_SLkeydown()     Silverlightオブジェクトにフォーカスがある時、キーを押した際のイベント共通処理
+	// base.e_SLkeyup()       Silverlightオブジェクトにフォーカスがある時、キーを離した際のイベント共通処理
+	//---------------------------------------------------------------------------
 	setEvents : function(first){
+		// マウス入力イベントの設定
 		var canvas = ee('divques').el;
 		canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
 		canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
@@ -129,11 +164,18 @@ PBase.prototype = {
 		this.numparent.oncontextmenu = function(){ return false;};
 
 		if(first){
+			// キー入力イベントの設定
 			_doc.onkeydown  = ee.ebinder(kc, kc.e_keydown);
 			_doc.onkeyup    = ee.ebinder(kc, kc.e_keyup);
 			_doc.onkeypress = ee.ebinder(kc, kc.e_keypress);
-			if(g.use.sl){ this.initSilverlight();}
+			// Silverlightのキー入力イベント設定
+			if(g.use.sl){
+				var sender = g.content.findName(g.canvasid);
+				sender.AddEventListener("KeyDown", this.e_SLkeydown);
+				sender.AddEventListener("KeyUp",   this.e_SLkeyup);
+			}
 
+			// File API＋Drag&Drop APIの設定
 			if(!!menu.ex.reader){
 				var DDhandler = function(e){
 					menu.ex.reader.readAsText(e.dataTransfer.files[0]);
@@ -148,23 +190,6 @@ PBase.prototype = {
 			_doc.onblur = ee.ebinder(this, this.onblur_func);
 		}
 	},
-	translationEN : function(){
-		var lang = (navigator.browserLanguage ||
-					navigator.language        ||
-					navigator.userLanguage      ).substr(0,2);
-		if(lang!=='ja'){ pp.setVal('language', 1);}
-	},
-
-	//---------------------------------------------------------------------------
-	// base.initSilverlight() Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
-	// base.e_SLkeydown()     Silverlightオブジェクトにフォーカスがある時、キーを押した際のイベント共通処理
-	// base.e_SLkeyup()       Silverlightオブジェクトにフォーカスがある時、キーを離した際のイベント共通処理
-	//---------------------------------------------------------------------------
-	initSilverlight : function(){
-		var sender = g.content.findName(g.canvasid);
-		sender.AddEventListener("KeyDown", this.e_SLkeydown);
-		sender.AddEventListener("KeyUp",   this.e_SLkeyup);
-	},
 	e_SLkeydown : function(sender, keyEventArgs){
 		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
 						altKey:false, returnValue:false, preventDefault:f_true };
@@ -174,38 +199,6 @@ PBase.prototype = {
 		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
 						altKey:false, returnValue:false, preventDefault:f_true };
 		return kc.e_keyup(emulate);
-	},
-
-	//---------------------------------------------------------------------------
-	// base.doc_design() onload_func()で呼ばれる。htmlなどの設定を行う
-	// base.postfix()    各パズルの初期化後処理を呼び出す
-	// base.resetInfo()  AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
-	//---------------------------------------------------------------------------
-	// 背景画像とかtitle等/html表示の設定 //
-	doc_design : function(){
-		_doc.title = this.gettitle();
-		ee('title2').el.innerHTML = this.gettitle();
-
-		_doc.body.style.backgroundImage = "url(./bg/"+k.puzzleid+".gif)";
-		if(k.br.IE6){
-			ee('title2').el.style.marginTop = "24px";
-			ee('separator1').el.style.margin = '0pt';
-			ee('separator2').el.style.margin = '0pt';
-		}
-
-		this.postfix();			// 各パズルごとの設定(後付け分)
-		menu.menuinit();
-		um.enb_btn();
-
-		// なぜかF5で更新するとtrueになってるので応急処置...
-		ee('btnclear') .el.disabled = false;
-		ee('btnclear2').el.disabled = false;
-	},
-	postfix : function(){
-		puz.input_init();
-		puz.graphic_init();
-		puz.encode_init();
-		puz.answer_init();
 	},
 
 	//---------------------------------------------------------------------------
@@ -387,11 +380,8 @@ PBase.prototype = {
 	// base.accesslog() playerのアクセスログをとる
 	//---------------------------------------------------------------------------
 	accesslog : function(){
-		var refer = _doc.referrer;
-		refer = refer.replace(/\?/g,"%3f");
-		refer = refer.replace(/\&/g,"%26");
-		refer = refer.replace(/\=/g,"%3d");
-		refer = refer.replace(/\//g,"%2f");
+		if(_doc.domain!=='indi.s58.xrea.com' &&
+		   _doc.domain!=='pzprv3.sakura.ne.jp'){ return;}
 
 		// 送信
 		var xmlhttp = false;
@@ -403,9 +393,23 @@ PBase.prototype = {
 			xmlhttp = new XMLHttpRequest();
 		}
 		if(xmlhttp){
-			xmlhttp.open("GET", ["./record.cgi", "?pid=",k.puzzleid, "&pzldata=",enc.uri.qdata, "&referer=",refer].join(''));
+			var refer = _doc.referrer;
+			refer = refer.replace(/\?/g,"%3f");
+			refer = refer.replace(/\&/g,"%26");
+			refer = refer.replace(/\=/g,"%3d");
+			refer = refer.replace(/\//g,"%2f");
+
+			var data = [
+				("scr="     + "pzprv3"),
+				("pid="     + k.puzzleid),
+				("referer=" + refer),
+				("pzldata=" + enc.uri.qdata)
+			].join('&');
+
+			xmlhttp.open("POST", "./record.cgi");
 			xmlhttp.onreadystatechange = function(){};
-			xmlhttp.send(null);
+			xmlhttp.setRequestHeader("Content-Type" , "application/x-www-form-urlencoded");
+			xmlhttp.send(data);
 		}
 	}
 };

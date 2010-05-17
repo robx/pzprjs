@@ -584,6 +584,14 @@ Menu.prototype = {
 		this.addButtons(ee("btnclear").el,  ee.binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
 		this.addButtons(ee("btnclear2").el, ee.binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
 
+		// 初期値ではどっちも押せない
+		ee('btnundo').el.disabled = true;
+		ee('btnredo').el.disabled = true;
+
+		// なぜかF5で更新するとtrueになってるので応急処置...
+		ee('btnclear') .el.disabled = false;
+		ee('btnclear2').el.disabled = false;
+
 		if(k.irowake!=0){
 			var el = ee.createEL(this.EL_BUTTON, 'btncolor2');
 			this.addButtons(el, ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
