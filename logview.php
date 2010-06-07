@@ -136,7 +136,7 @@
 
 	function menuclick(id, list){
 		disp();
-		foreach(var i in list){
+		for(var i in list){
 			document.getElementById(i).className = (id===list[i]?"menusel":"menu");
 		}
 	}
@@ -147,13 +147,14 @@
 	h2 { color:indianred; text-decoration:underline; margin-top:8pt;}
 	span.menu { color:blue; font-weight:100; text-decoration:underline; margin-right:4pt; cursor:pointer;}
 	span.menusel { color:black; font-weight:900; margin-right:4pt; cursor:default;}
+	table { text-align:left;}
 	td.cap { text-align: center; font-size:10pt; padding: 1pt}
 	td.num { text-align: right; font-size:10pt; font-weight:900; padding-right: 2pt; color:darkgreen; background-color:cornsilk;}
 	td.list { font-size:10pt; padding-left: 6pt; padding-right: 8pt; color:#000033; background-color:aliceblue;}
-	td.bar  { width:240px; padding-left: 3pt; padding-right: 4pt; background-color:snow;}
+	td.bar  { width:240px; position:relative; padding-left: 3pt; padding-right: 4pt; background-color:snow;}
 	td.bar2 { text-align: right; font-size:8pt; color:green; padding-left: 4pt; padding-right: 2pt; background-color:cornsilk;}
 	td { padding-left: 6pt; padding-right: 8pt;}
-	img { margin-right:3pt; vertical-align:middle; position:top; top:-2px;}
+	img { margin-right:3pt; vertical-align:middle; position:relative; top:-2px;}
 --> 
 </style> 
 </HEAD>
@@ -205,6 +206,7 @@
 
 		foreach($fcs as $fc){
 			echo "\tdatas[\"$fc\"] = new Array();\n";
+			if(!is_array($datas[$fc])){ continue;}
 			foreach($datas[$fc] as $range => $val){
 				$text = array();
 				foreach($datas[$fc][$range] as $obj => $val){
