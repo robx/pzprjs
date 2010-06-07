@@ -83,11 +83,7 @@ Puzzles.hashikake.prototype = {
 				var dir = this.getdir(this.prevPos, pos);
 				var idlist = this.getidlist(id);
 				if(this.previdlist.length===0 || !include(this.previdlist, id)){ this.inputData=null;}
-				if(this.inputData===null){
-					if     (bd.LiB(id)==0){ this.inputData=1;}
-					else if(bd.LiB(id)==1){ this.inputData=2;}
-					else                  { this.inputData=0;}
-				}
+				if(this.inputData===null){ this.inputData = [1,2,0][bd.LiB(id)];}
 				if(this.inputData>0 && (dir===k.UP||dir===k.LT)){ idlist=idlist.reverse();} // 色分けの都合上の処理
 				for(var i=0;i<idlist.length;i++){
 					if(this.inputData!==null){ bd.sLiB(idlist[i], this.inputData); bd.sQsB(idlist[i], 0);}
@@ -195,12 +191,12 @@ Puzzles.hashikake.prototype = {
 		};
 
 		// オーバーライド
-		pc.drawLine1 = function(id, forceFlag){
+		pc.drawLine1 = function(id){
 			var vids = ["b_line_"+id,"b_dline1_"+id,"b_dline2_"+id];
 
 			// LineWidth, LineMargin, LineSpace
 			var lw = this.lw + this.addlw, lm = this.lm, ls = lw*1.5;
-			if(forceFlag!==false && this.setLineColor(id)){
+			if(this.setLineColor(id)){
 				if(bd.border[id].line==1){
 					if(this.vnop(vids[0],this.FILL)){
 						if(bd.border[id].bx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
@@ -284,35 +280,38 @@ Puzzles.hashikake.prototype = {
 		};
 
 		fio.kanpenOpen = function(){
-			this.decodeCell( function(c,ca){
-				if(ca>="1" && ca<="8"){ bd.sQnC(c, parseInt(ca));}
-				else if(ca=="9")      { bd.sQsC(c, -2);}
+			this.decodeCell( function(obj,ca){
+				if(ca>="1" && ca<="8"){ obj.qnum = parseInt(ca);}
+				else if(ca==="9")     { obj.qnum = -2;}
 			});
-			this.decodeCell( function(c,ca){
-				if(ca!="0"){
-					var datah = (parseInt(ca)&3);
-					if(datah>0){
-						bd.sLiB(bd.ub(c),datah);
-						bd.sLiB(bd.db(c),datah);
-					}
-					var dataw = ((parseInt(ca)&12)>>2);
-					if(dataw>0){
-						bd.sLiB(bd.lb(c),dataw);
-						bd.sLiB(bd.rb(c),dataw);
-					}
+			this.decodeCell( function(obj,ca){
+				if(ca==="0"){ return;}
+				var val = parseInt(ca);
+				var datah = (val&3);
+				if(datah>0){
+					var ub=bd.bnum(obj.bx,obj.by-1), db=bd.bnum(obj.bx,obj.by+1);
+					if(ub!==null){ bd.border[ub].line = datah;}
+					if(db!==null){ bd.border[db].line = datah;}
+				}
+				var dataw = ((val&12)>>2);
+				if(dataw>0){
+					var lb=bd.bnum(obj.bx-1,obj.by), rb=bd.bnum(obj.bx+1,obj.by);
+					if(lb!==null){ bd.border[lb].line = dataw;}
+					if(rb!==null){ bd.border[rb].line = dataw;}
 				}
 			});
 		};
 		fio.kanpenSave = function(){
-			this.encodeCell( function(c){
-				if     (bd.QnC(c) > 0){ return (bd.QnC(c).toString() + " ");}
-				else if(bd.QnC(c)==-2){ return "9 ";}
+			this.encodeCell( function(obj){
+				if     (obj.qnum  > 0){ return (obj.qnum.toString() + " ");}
+				else if(obj.qnum===-2){ return "9 ";}
 				else                  { return ". ";}
 			});
-			this.encodeCell( function(c){
-				if(bd.QnC(c)!=-1){ return "0 ";}
-				var datah = (bd.ub(c)!==null ? bd.LiB(bd.ub(c)) : 0);
-				var dataw = (bd.lb(c)!==null ? bd.LiB(bd.lb(c)) : 0);
+			this.encodeCell( function(obj){
+				if(obj.qnum!==-1){ return "0 ";}
+				var ub=bd.bnum(obj.bx,obj.by-1), lb=bd.bnum(obj.bx-1,obj.by);
+				var datah = (ub!==null ? bd.border[ub].line : 0);
+				var dataw = (lb!==null ? bd.border[lb].line : 0);
 				return ""+((datah>0?datah:0)+(dataw>0?(dataw<<2):0))+" ";
 			});
 		};

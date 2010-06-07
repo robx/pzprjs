@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ましゅ版 mashu.js v3.3.0
+// パズル固有スクリプト部 ましゅ版 mashu.js v3.3.1
 //
 Puzzles.mashu = function(){ };
 Puzzles.mashu.prototype = {
@@ -158,16 +158,16 @@ Puzzles.mashu.prototype = {
 		};
 
 		fio.decodeCellQues41_42_kanpen = function(){
-			this.decodeCell( function(c,ca){
-				if     (ca === "1"){ bd.sQuC(c, 41);}
-				else if(ca === "2"){ bd.sQuC(c, 42);}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="1"){ obj.ques = 41;}
+				else if(ca==="2"){ obj.ques = 42;}
 			});
 		};
 		fio.encodeCellQues41_42_kanpen = function(){
-			this.encodeCell( function(c){
-				if     (bd.QuC(c)===41){ return "1 ";}
-				else if(bd.QuC(c)===42){ return "2 ";}
-				else                   { return ". ";}
+			this.encodeCell( function(obj){
+				if     (obj.ques===41){ return "1 ";}
+				else if(obj.ques===42){ return "2 ";}
+				else                  { return ". ";}
 			});
 		};
 	},

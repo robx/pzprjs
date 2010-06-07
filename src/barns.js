@@ -130,20 +130,24 @@ Puzzles.barns.prototype = {
 		};
 
 		enc.decodeBarns = function(){
-			var c=0, bstr = this.outbstr;
+			var c=0, bstr = this.outbstr, twi=[16,8,4,2,1];
 			for(var i=0;i<bstr.length;i++){
 				var ca = parseInt(bstr.charAt(i),32);
-				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(ca&Math.pow(2,4-w)?6:0));} }
-				if((i*5+5)>=bd.cellmax){ break;}
+				for(var w=0;w<5;w++){
+					if(c<bd.cellmax){
+						bd.cell[c].ques = (ca&twi[w]?6:0);
+						c++;
+					}
+				}
+				if(c>=bd.cellmax){ break;}
 			}
 			this.outbstr = bstr.substr(i+1);
 		};
 		enc.encodeBarns = function(){
-			var cm = "";
-			var num = 0, pass = 0;
-			for(var i=0;i<bd.cellmax;i++){
-				if(bd.QuC(i)==6){ pass+=Math.pow(2,4-num);}
-				num++; if(num==5){ cm += pass.toString(32); num=0; pass=0;}
+			var cm="", num=0, pass=0, twi=[16,8,4,2,1];
+			for(var c=0;c<bd.cellmax;c++){
+				if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
+				if(num==5){ cm += pass.toString(32); num=0; pass=0;}
 			}
 			if(num>0){ cm += pass.toString(32);}
 
@@ -152,15 +156,15 @@ Puzzles.barns.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCell( function(c,ca){
-				if(ca=="1"){ bd.sQuC(c, 6);}
+			this.decodeCell( function(obj,ca){
+				if(ca==="1"){ obj.ques = 6;}
 			});
 			this.decodeBorderQues();
 			this.decodeBorderLine();
 		};
 		fio.encodeData = function(){
-			this.encodeCell( function(c){
-				return ""+(bd.QuC(c)==6?"1":".")+" ";
+			this.encodeCell( function(obj){
+				return (obj.ques===6?"1 ":". ");
 			});
 			this.encodeBorderQues();
 			this.encodeBorderLine();

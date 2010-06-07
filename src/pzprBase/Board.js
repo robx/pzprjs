@@ -15,33 +15,37 @@ Cell = function(){
 
 	this.ques;	// セルの問題データ(形状)を保持する
 	this.qnum;	// セルの問題データ(数字)を保持する(数字 or カックロの右側)
-	this.direc;	// セルの問題データ(方向)を保持する(矢印 or カックロの下側)
-	this.qans;	// セルの回答データを保持する(黒マス or 回答数字)
+	this.qdir;	// セルの問題データ(方向)を保持する(矢印 or カックロの下側)
+	this.anum;	// セルの回答(数字/○△□/単体矢印))データを保持する
+	this.qans;	// セルの回答(黒マス/斜線/あかり/棒/ふとん)データを保持する
 	this.qsub;	// セルの補助データを保持する(白マス or 背景色)
 	this.error;	// エラーデータを保持する
 };
 Cell.prototype = {
 	// デフォルト値
-	defques  : 0,
-	defqnum  : -1,
-	defdirec : 0,
-	defqans  : -1,
-	defqsub  : 0,
+	defques : 0,
+	defqnum : -1,
+	defqdir : 0,
+	defanum : -1,
+	defqans : 0,
+	defqsub : 0,
 
 	//---------------------------------------------------------------------------
 	// cell.allclear() セルの位置,描画情報以外をクリアする
-	// cell.ansclear() セルのqans,qsub,error情報をクリアする
+	// cell.ansclear() セルのanum,qsub,error情報をクリアする
 	// cell.subclear() セルのqsub,error情報をクリアする
 	//---------------------------------------------------------------------------
 	allclear : function(id,isrec) {
-		if(this.ques !==this.defques ){ if(isrec){ um.addOpe(k.CELL, k.QUES, id, this.ques, this.defques);} this.ques =this.defques;}
-		if(this.qnum !==this.defqnum ){ if(isrec){ um.addOpe(k.CELL, k.QNUM, id, this.qnum, this.defqnum);} this.qnum =this.defqnum;}
-		if(this.direc!==this.defdirec){ if(isrec){ um.addOpe(k.CELL, k.DIREC,id, this.direc,this.defdirec);}this.direc=this.defdirec;}
-		if(this.qans !==this.defqans ){ if(isrec){ um.addOpe(k.CELL, k.QANS, id, this.qans, this.defqans);} this.qans =this.defqans;}
-		if(this.qsub !==this.defqsub ){ if(isrec){ um.addOpe(k.CELL, k.QSUB, id, this.qsub, this.defqsub);} this.qsub =this.defqsub;}
+		if(this.ques!==this.defques){ if(isrec){ um.addOpe(k.CELL, k.QUES, id, this.ques, this.defques);} this.ques=this.defques;}
+		if(this.qnum!==this.defqnum){ if(isrec){ um.addOpe(k.CELL, k.QNUM, id, this.qnum, this.defqnum);} this.qnum=this.defqnum;}
+		if(this.qdir!==this.defqdir){ if(isrec){ um.addOpe(k.CELL, k.QDIR, id, this.qdir, this.defqdir);} this.qdir=this.defqdir;}
+		if(this.anum!==this.defanum){ if(isrec){ um.addOpe(k.CELL, k.ANUM, id, this.anum, this.defanum);} this.anum=this.defanum;}
+		if(this.qans!==this.defqans){ if(isrec){ um.addOpe(k.CELL, k.QANS, id, this.qans, this.defqans);} this.qans=this.defqans;}
+		if(this.qsub!==this.defqsub){ if(isrec){ um.addOpe(k.CELL, k.QSUB, id, this.qsub, this.defqsub);} this.qsub=this.defqsub;}
 		this.error = 0;
 	},
 	ansclear : function(id) {
+		if(this.anum!==this.defanum){ um.addOpe(k.CELL, k.ANUM, id, this.anum, this.defanum); this.anum=this.defanum;}
 		if(this.qans!==this.defqans){ um.addOpe(k.CELL, k.QANS, id, this.qans, this.defqans); this.qans=this.defqans;}
 		if(this.qsub!==this.defqsub){ um.addOpe(k.CELL, k.QSUB, id, this.qsub, this.defqsub); this.qsub=this.defqsub;}
 		this.error = 0;
@@ -159,12 +163,12 @@ EXCell = function(){
 	this.py;	// セルの描画用Y座標を保持する
 
 	this.qnum;	// セルの問題データ(数字)を保持する(数字 or カックロの右側)
-	this.direc;	// セルの問題データ(方向)を保持する(矢印 or カックロの下側)
+	this.qdir;	// セルの問題データ(方向)を保持する(矢印 or カックロの下側)
 };
 EXCell.prototype = {
 	// デフォルト値
-	defqnum  : -1,
-	defdirec : 0,
+	defqnum : -1,
+	defqdir : 0,
 
 	//---------------------------------------------------------------------------
 	// excell.allclear() セルの位置,描画情報以外をクリアする
@@ -172,8 +176,8 @@ EXCell.prototype = {
 	// excell.subclear() セルのerror情報をクリアする
 	//---------------------------------------------------------------------------
 	allclear : function(id,isrec) {
-		if(this.qnum !==this.defqnum ){ if(isrec){ um.addOpe(k.EXCELL, k.QNUM, id, this.qnum, this.defqnum);}  this.qnum =this.defqnum;}
-		if(this.direc!==this.defdirec){ if(isrec){ um.addOpe(k.EXCELL, k.DIREC,id, this.direc,this.defdirec);} this.direc=this.defdirec;}
+		if(this.qnum!==this.defqnum){ if(isrec){ um.addOpe(k.EXCELL, k.QNUM, id, this.qnum, this.defqnum);} this.qnum=this.defqnum;}
+		if(this.qdir!==this.defqdir){ if(isrec){ um.addOpe(k.EXCELL, k.QDIR, id, this.qdir, this.defqdir);} this.qdir=this.defqdir;}
 		this.error = 0;
 	},
 	ansclear : function(id) {
@@ -202,6 +206,8 @@ Board = function(){
 	this.bdinside = 0;		// 盤面の内側(外枠上でない)に存在する境界線の本数
 
 	this.maxnum   = 255;	// 入力できる最大の数字
+
+	this.numberAsObject = false;	// 数字を表示する時に、数字以外で表示する
 
 	// 盤面の範囲
 	this.minbx = 0;
@@ -691,11 +697,10 @@ Board.prototype = {
 	// sQuC / QuC : bd.setQuesCell() / bd.getQuesCell()  該当するCellのquesを設定する/返す
 	// sQnC / QnC : bd.setQnumCell() / bd.getQnumCell()  該当するCellのqnumを設定する/返す
 	// sQsC / QsC : bd.setQsubCell() / bd.getQsubCell()  該当するCellのqsubを設定する/返す
-	// sQaC / QaC : bd.setQansCell() / bd.getQansCell()  該当するCellのqansを設定する/返す
-	// sDiC / DiC : bd.setDirecCell()/ bd.getDirecCell() 該当するCellのdirecを設定する/返す
+	// sAnC / AnC : bd.setQansCell() / bd.getQansCell()  該当するCellのanumを設定する/返す
+	// sDiC / DiC : bd.setDirecCell()/ bd.getDirecCell() 該当するCellのqdirを設定する/返す
 	//---------------------------------------------------------------------------
 	// Cell関連Get/Set関数 <- 各Cellが持っているとメモリを激しく消費するのでここに置くこと.
-	// overwrite by pipelink.js and loopsp.js
 	sQuC : function(id, num) {
 		um.addOpe(k.CELL, k.QUES, id, this.cell[id].ques, num);
 		this.cell[id].ques = num;
@@ -706,44 +711,43 @@ Board.prototype = {
 	sQnC : function(id, num) {
 		if(!k.dispzero && num===0){ return;}
 
-		var old = this.cell[id].qnum;
-		um.addOpe(k.CELL, k.QNUM, id, old, num);
+		um.addOpe(k.CELL, k.QNUM, id, this.cell[id].qnum, num);
 		this.cell[id].qnum = num;
 
-		if(area.numberColony && (num!==-1 ^ area.bcell.id[id]!==null)){
-			area.setCell(id,(num!==-1?1:0));
-		}
+		area.setCell('number',id,(num!==Cell.prototype.defqnum));
 	},
-	// overwrite by lightup.js
+	sAnC : function(id, num) {
+		um.addOpe(k.CELL, k.ANUM, id, this.cell[id].anum, num);
+		this.cell[id].anum = num;
+
+		area.setCell('number',id,(num!==Cell.prototype.defanum));
+	},
+	// override by lightup.js, shugaku.js
 	sQaC : function(id, num) {
-		var old = this.cell[id].qans;
-		um.addOpe(k.CELL, k.QANS, id, old, num);
+		um.addOpe(k.CELL, k.QANS, id, this.cell[id].qans, num);
 		this.cell[id].qans = num;
 
-		if((area.bblock && (num!==-1 ^ area.bcell.id[id]!==null)) || 
-		   (area.wblock && (num===-1 ^ area.wcell.id[id]!==null)))
-		{
-			area.setCell(id,(num!==-1?1:0));
-		}
+		area.setCell('block',id,(num!==Cell.prototype.defqans));
 	},
 	sQsC : function(id, num) {
 		um.addOpe(k.CELL, k.QSUB, id, this.cell[id].qsub, num);
 		this.cell[id].qsub = num;
 	},
 	sDiC : function(id, num) {
-		um.addOpe(k.CELL, k.DIREC, id, this.cell[id].direc, num);
-		this.cell[id].direc = num;
+		um.addOpe(k.CELL, k.QDIR, id, this.cell[id].qdir, num);
+		this.cell[id].qdir = num;
 	},
 
 	QuC : function(id){ return this.cell[id].ques;},
 	QnC : function(id){ return this.cell[id].qnum;},
+	AnC : function(id){ return this.cell[id].anum;},
 	QaC : function(id){ return this.cell[id].qans;},
 	QsC : function(id){ return this.cell[id].qsub;},
-	DiC : function(id){ return this.cell[id].direc;},
+	DiC : function(id){ return this.cell[id].qdir;},
 
 	//---------------------------------------------------------------------------
 	// sQnE / QnE : bd.setQnumEXcell() / bd.getQnumEXcell()  該当するEXCellのqnumを設定する/返す
-	// sDiE / DiE : bd.setDirecEXcell()/ bd.getDirecEXcell() 該当するEXCellのdirecを設定する/返す
+	// sDiE / DiE : bd.setDirecEXcell()/ bd.getDirecEXcell() 該当するEXCellのqdirを設定する/返す
 	//---------------------------------------------------------------------------
 	// EXcell関連Get/Set関数
 	sQnE : function(id, num) {
@@ -751,12 +755,12 @@ Board.prototype = {
 		this.excell[id].qnum = num;
 	},
 	sDiE : function(id, num) {
-		um.addOpe(k.EXCELL, k.DIREC, id, this.excell[id].direc, num);
-		this.excell[id].direc = num;
+		um.addOpe(k.EXCELL, k.QDIR, id, this.excell[id].qdir, num);
+		this.excell[id].qdir = num;
 	},
 
 	QnE : function(id){ return this.excell[id].qnum;},
-	DiE : function(id){ return this.excell[id].direc;},
+	DiE : function(id){ return this.excell[id].qdir;},
 
 	//---------------------------------------------------------------------------
 	// sQuX / QuX : bd.setQuesCross(id,num) / bd.getQuesCross() 該当するCrossのquesを設定する/返す
@@ -784,11 +788,10 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	// Border関連Get/Set関数 <- 各Borderが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuB : function(id, num) {
-		var old = this.border[id].ques;
-		um.addOpe(k.BORDER, k.QUES, id, old, num);
+		um.addOpe(k.BORDER, k.QUES, id, this.border[id].ques, num);
 		this.border[id].ques = num;
 
-		if(num>0 ^ old>0){ area.setBorder(id,num);}
+		area.setBorder(id,(num>0));
 	},
 	sQnB : function(id, num) {
 		um.addOpe(k.BORDER, k.QNUM, id, this.border[id].qnum, num);
@@ -797,14 +800,10 @@ Board.prototype = {
 	sQaB : function(id, num) {
 		if(this.border[id].ques!==0){ return;}
 
-		var old = this.border[id].qans;
-		um.addOpe(k.BORDER, k.QANS, id, old, num);
+		um.addOpe(k.BORDER, k.QANS, id, this.border[id].qans, num);
 		this.border[id].qans = num;
 
-		if(num>0 ^ old>0){
-			if(k.isborderAsLine){ line.setLine(id,num);}
-			else                { area.setBorder(id,num);}
-		}
+		area.setBorder(id,(num>0));
 	},
 	sQsB : function(id, num) {
 		um.addOpe(k.BORDER, k.QSUB, id, this.border[id].qsub, num);
@@ -813,11 +812,10 @@ Board.prototype = {
 	sLiB : function(id, num) {
 		if(this.enableLineNG && this.checkStableLine(id,num)){ return;}
 
-		var old = this.border[id].line;
-		um.addOpe(k.BORDER, k.LINE, id, old, num);
+		um.addOpe(k.BORDER, k.LINE, id, this.border[id].line, num);
 		this.border[id].line = num;
 
-		if(num>0 ^ old>0){ line.setLine(id,num);}
+		line.setLine(id,(num>0));
 	},
 
 	QuB : function(id){ return this.border[id].ques;},
@@ -864,95 +862,6 @@ Board.prototype = {
 	// ErB : function(id){ return (!!this.border[id]?this.border[id].error:undef);},
 	// ErE : function(id){ return (!!this.excell[id]?this.excell[id].error:undef);},
 
-	//-----------------------------------------------------------------------
-	// bd.isLine()      該当するBorderにlineが引かれているか判定する
-	// bd.setLine()     該当するBorderに線を引く
-	// bd.setPeke()     該当するBorderに×をつける
-	// bd.removeLine()  該当するBorderから線を消す
-	//-----------------------------------------------------------------------
-	isLine : function(id){
-		this.isLine = (!k.isborderAsLine) ? function(id){ return (!!bd.border[id] && bd.border[id].line>0);}
-										  : function(id){ return (!!bd.border[id] && bd.border[id].qans>0);};
-		return this.isLine(id);
-	},
-	setLine : function(id){
-		this.setLine = (!k.isborderAsLine) ? function(id){ this.sLiB(id, 1); this.sQsB(id, 0);}
-										   : function(id){ this.sQaB(id, 1); this.sQsB(id, 0);};
-		this.setLine(id);
-	},
-	setPeke : function(id){
-		this.setPeke = (!k.isborderAsLine) ? function(id){ this.sLiB(id, 0); this.sQsB(id, 2);}
-										   : function(id){ this.sQaB(id, 0); this.sQsB(id, 2);};
-		this.setPeke(id);
-	},
-	removeLine : function(id){
-		this.removeLine = (!k.isborderAsLine) ? function(id){ this.sLiB(id, 0); this.sQsB(id, 0);}
-											  : function(id){ this.sQaB(id, 0); this.sQsB(id, 0);};
-		this.removeLine(id);
-	},
-
-	//-----------------------------------------------------------------------
-	// bd.isNum()      該当するCellに数字があるか返す
-	// bd.noNum()      該当するCellに数字がないか返す
-	// bd.isValidNum() 該当するCellに0以上の数字があるか返す
-	// bd.sameNumber() ２つのCellに同じ有効な数字があるか返す
-	//-----------------------------------------------------------------------
-	isNum : function(c){
-		this.isNum = k.isAnsNumber ? function(c){ return (!!bd.cell[c] && (bd.cell[c].qnum!==-1 || bd.cell[c].qans!==-1));}
-								   : function(c){ return (!!bd.cell[c] &&  bd.cell[c].qnum!==-1);};
-		return this.isNum(c);
-	},
-	noNum : function(c){
-		this.noNum = k.isAnsNumber ? function(c){ return (!bd.cell[c] || (bd.cell[c].qnum===-1 && bd.cell[c].qans===-1));}
-								   : function(c){ return (!bd.cell[c] ||  bd.cell[c].qnum===-1);};
-		return this.noNum(c);
-	},
-	isValidNum : function(c){
-		this.isValidNum = k.isAnsNumber ? function(c){ return (!!bd.cell[c] && (bd.cell[c].qnum>=0 ||(bd.cell[c].qans>=0 && bd.cell[c].qnum===-1)));}
-										: function(c){ return (!!bd.cell[c] &&  bd.cell[c].qnum>=0);};
-		return this.isValidNum(c);
-	},
-	sameNumber : function(c1,c2){
-		return (bd.isValidNum(c1) && (bd.getNum(c1)===bd.getNum(c2)));
-	},
-
-	//-----------------------------------------------------------------------
-	// bd.getNum()     該当するCellの数字を返す
-	// bd.setNum()     該当するCellに数字を設定する
-	//-----------------------------------------------------------------------
-	getNum : function(c){
-		this.getNum = k.isAnsNumber ? function(c){ return (!!this.cell[c] ? (this.cell[c].qnum!==-1 ? this.cell[c].qnum : this.cell[c].qans) : undef);}
-									: function(c){ return (!!this.cell[c] ? this.cell[c].qnum : undef);};
-		return this.getNum(c);
-	},
-	setNum : function(c,val){
-		this.setNum = (k.NumberIsWhite ?
-			function(c,val){
-				if(!k.dispzero && val===0){ return;}
-				this.sQnC(c,val);
-				this.sQaC(c,-1);
-			}
-		: k.isAnsNumber ?
-			function(c,val){
-				if(!k.dispzero && val===0){ return;}
-				if(k.editmode){
-					this.sQnC(c,val);
-					this.sQaC(c,-1);
-				}
-				else if(this.cell[c].qnum===-1){
-					this.sQaC(c,val);
-				}
-				this.sQsC(c,0);
-			}
-		:
-			function(c,val){
-				if(!k.dispzero && val===0){ return;}
-				this.sQnC(c,val);
-			}
-		);
-		this.setNum(c,val);
-	},
-
 	//---------------------------------------------------------------------------
 	// bd.isBlack()   該当するCellが黒マスかどうか返す
 	// bd.isWhite()   該当するCellが白マスかどうか返す
@@ -963,7 +872,61 @@ Board.prototype = {
 	isWhite : function(c){ return (!!bd.cell[c] && bd.cell[c].qans!==1);},
 
 	setBlack : function(c){ this.sQaC(c, 1);},
-	setWhite : function(c){ this.sQaC(c,-1);},
+	setWhite : function(c){ this.sQaC(c, 0);},
+
+	//-----------------------------------------------------------------------
+	// bd.isNum()      該当するCellに数字があるか返す
+	// bd.noNum()      該当するCellに数字がないか返す
+	// bd.isValidNum() 該当するCellに0以上の数字があるか返す
+	// bd.sameNumber() ２つのCellに同じ有効な数字があるか返す
+	//
+	// bd.getNum()     該当するCellの数字を返す
+	// bd.setNum()     該当するCellに数字を設定する
+	//-----------------------------------------------------------------------
+	isNum : function(c){
+		return (!!bd.cell[c] && (bd.cell[c].qnum!==-1 || bd.cell[c].anum!==-1));
+	},
+	noNum : function(c){
+		return (!bd.cell[c] || (bd.cell[c].qnum===-1 && bd.cell[c].anum===-1));
+	},
+	isValidNum : function(c){
+		return (!!bd.cell[c] && (bd.cell[c].qnum>=0 ||(bd.cell[c].anum>=0 && bd.cell[c].qnum===-1)));
+	},
+	sameNumber : function(c1,c2){
+		return (bd.isValidNum(c1) && (bd.getNum(c1)===bd.getNum(c2)));
+	},
+
+	getNum : function(c){
+		return (this.cell[c].qnum!==-1 ? this.cell[c].qnum : this.cell[c].anum);
+	},
+	setNum : function(c,val){
+		if(!k.dispzero && val===0){ return;}
+		var fl = this.numberAsObject;
+		if(k.editmode){
+			val = (((fl||val===-2) && this.cell[c].qnum===val)?-1:val);
+			this.sQnC(c, val);
+			if(k.isAnsNumber)  { this.sAnC(c,-1);}
+			if(k.NumberIsWhite){ this.sQaC(c, 0);}
+			if(k.isAnsNumber||pc.bcolor==="white"){ this.sQsC(c, 0);}
+		}
+		else if(this.cell[c].qnum===-1){
+			var vala = ((val>-1 && !(fl && this.cell[c].anum=== val  ))? val  :-1);
+			var vals = ((val<-1 && !(fl && this.cell[c].qsub===-val-1))?-val-1: 0);
+			this.sAnC(c, vala);
+			this.sQsC(c, vals);
+			this.sDiC(c, 0);
+		}
+	},
+
+	//-----------------------------------------------------------------------
+	// bd.isLine()      該当するBorderにlineが引かれているか判定する
+	// bd.setLine()     該当するBorderに線を引く
+	// bd.removeLine()  該当するBorderから線を消す
+	//-----------------------------------------------------------------------
+	isLine     : function(id){ return (!!bd.border[id] && bd.border[id].line>0);},
+	setLine    : function(id){ this.sLiB(id, 1); this.sQsB(id, 0);},
+	setPeke    : function(id){ this.sLiB(id, 0); this.sQsB(id, 2);},
+	removeLine : function(id){ this.sLiB(id, 0); this.sQsB(id, 0);},
 
 	//---------------------------------------------------------------------------
 	// bd.isBorder()     該当するBorderに境界線が引かれているか判定する
@@ -975,7 +938,6 @@ Board.prototype = {
 	isBorder     : function(id){
 		return (!!bd.border[id] && (bd.border[id].ques>0 || bd.border[id].qans>0));
 	},
-
 	setBorder    : function(id){
 		if(k.editmode){ this.sQuB(id,1); this.sQaB(id,0);}
 		else if(this.border[id].ques!==1){ this.sQaB(id,1);}
@@ -983,7 +945,5 @@ Board.prototype = {
 	removeBorder : function(id){
 		if(k.editmode){ this.sQuB(id,0); this.sQaB(id,0);}
 		else if(this.border[id].ques!==1){ this.sQaB(id,0);}
-	},
-	setBsub      : function(id){ this.sQsB(id,1);},
-	removeBsub   : function(id){ this.sQsB(id,0);}
+	}
 };

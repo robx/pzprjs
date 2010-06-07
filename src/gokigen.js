@@ -74,16 +74,16 @@ Puzzles.gokigen.prototype = {
 		mv.mousemove = function(){ };
 		mv.dispBlue = function(){
 			var cc = this.cellid();
-			if(cc===null || bd.QaC(cc)===-1){ return;}
+			if(cc===null || bd.QaC(cc)===0){ return;}
 
 			var check = [];
 			for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
 
-			var fc = bd.xnum(bd.cell[cc].bx+(bd.QaC(cc)==1?-1:1),bd.cell[cc].by-1);
+			var fc = bd.xnum(bd.cell[cc].bx+(bd.isBlack(cc)?-1:1),bd.cell[cc].by-1);
 			ans.searchline(check, 0, fc);
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]==1){ bd.sErC([c],2);}
-				if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]==1){ bd.sErC([c],2);}
+				if(bd.QaC(c)===1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]===1){ bd.sErC([c],2);}
+				if(bd.QaC(c)===2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]===1){ bd.sErC([c],2);}
 			}
 
 			ans.errDisp = true;
@@ -94,11 +94,8 @@ Puzzles.gokigen.prototype = {
 			if(cc===null){ return;}
 
 			var use = pp.getVal('use');
-			if     (use===1){ bd.sQaC(cc, (bd.QaC(cc)!=(this.btn.Left?1:2)?(this.btn.Left?1:2):-1));}
-			else if(use===2){
-				if(bd.QaC(cc)==-1){ bd.sQaC(cc, (this.btn.Left?1:2));}
-				else{ bd.sQaC(cc, (this.btn.Left?{1:2,2:-1}:{1:-1,2:1})[bd.QaC(cc)]);}
-			}
+			if     (use===1){ bd.sQaC(cc, (bd.QaC(cc)!==(this.btn.Left?1:2)?(this.btn.Left?1:2):0));}
+			else if(use===2){ bd.sQaC(cc, (this.btn.Left?[1,2,0]:[2,0,1])[bd.QaC(cc)]);}
 
 			pc.paintCellAround(cc);
 		};
@@ -128,7 +125,7 @@ Puzzles.gokigen.prototype = {
 
 		menu.ex.adjustSpecial = function(key,d){
 			if(key & this.TURNFLIP){ // 反転・回転全て
-				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
+				for(var c=0;c<bd.cellmax;c++){ bd.sQaC(c,[0,2,1][bd.QaC(c)]);}
 			}
 		};
 	},
@@ -170,12 +167,12 @@ Puzzles.gokigen.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
-				if(bd.cell[c].qans!=-1){
-					if     (bd.cell[c].error==1){ g.strokeStyle = this.errcolor1;}
-					else if(bd.cell[c].error==2){ g.strokeStyle = this.errcolor2;}
+				if(bd.cell[c].qans!==-1){
+					if     (bd.cell[c].error===1){ g.strokeStyle = this.errcolor1;}
+					else if(bd.cell[c].error===2){ g.strokeStyle = this.errcolor2;}
 					else                        { g.strokeStyle = this.cellcolor;}
 
-					if(bd.cell[c].qans==1){
+					if(bd.cell[c].qans===1){
 						if(this.vnop(headers[0]+c,this.STROKE)){
 							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, this.cw,this.ch, true);
 							g.stroke();
@@ -183,7 +180,7 @@ Puzzles.gokigen.prototype = {
 					}
 					else{ this.vhide(headers[0]+c);}
 
-					if(bd.cell[c].qans==2){
+					if(bd.cell[c].qans===2){
 						if(this.vnop(headers[1]+c,this.STROKE)){
 							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, this.cw,0, 0,this.ch, true);
 							g.stroke();
@@ -233,7 +230,7 @@ Puzzles.gokigen.prototype = {
 				this.setAlert('数字に繋がる線の数が間違っています。', 'A number is not equal to count of lines that is connected to it.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QaC(c)==-1);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.QaC(c)===0);}) ){
 				this.setAlert('斜線がないマスがあります。','There is a empty cell.'); return false;
 			}
 
@@ -272,16 +269,16 @@ Puzzles.gokigen.prototype = {
 
 				if(!this.searchline(check, 0, fc)){
 					for(var c=0;c<bd.cellmax;c++){
-						if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]==1){ bd.sErC([c],1);}
-						if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]==1){ bd.sErC([c],1);}
+						if(bd.QaC(c)===1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]==1){ bd.sErC([c],1);}
+						if(bd.QaC(c)===2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]==1){ bd.sErC([c],1);}
 					}
 					while(1){
 						var endflag = true;
 						for(var c=0;c<bd.cellmax;c++){
 							if(bd.cell[c].error!==1){ continue;}
 							var cc1, cc2, bx=bd.cell[c].bx, by=bd.cell[c].by;
-							if     (bd.QaC(c)==1){ cc1=bd.xnum(bx-1,by-1); cc2=bd.xnum(bx+1,by+1);}
-							else if(bd.QaC(c)==2){ cc1=bd.xnum(bx-1,by+1); cc2=bd.xnum(bx+1,by-1);}
+							if     (bd.QaC(c)===1){ cc1=bd.xnum(bx-1,by-1); cc2=bd.xnum(bx+1,by+1);}
+							else if(bd.QaC(c)===2){ cc1=bd.xnum(bx-1,by+1); cc2=bd.xnum(bx+1,by-1);}
 							if(this.scntCross2(cc1)==1 || this.scntCross2(cc2)==1){ bd.sErC([c],0); endflag = false; break;}
 						}
 						if(endflag){ break;}

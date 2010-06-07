@@ -223,10 +223,10 @@ Puzzles.pipelink.prototype = {
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodePipelink();
-			if(this.checkpflag("i") && this.disp==0){ pc.changedisp();}
+			if(this.checkpflag("i") && this.disp===0){ pc.changedisp();}
 		};
 		enc.pzlexport = function(type){
-			this.outpflag = (pc.disp==0 ? "" : "i");
+			this.outpflag = (pc.disp===0 ? "" : "i");
 			this.encodePipelink(type);
 		};
 
@@ -235,43 +235,44 @@ Puzzles.pipelink.prototype = {
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
-				if     (ca=='.'){ bd.sQuC(c, -2); c++;}
+				if     (ca=='.'){ bd.cell[c].ques = -2;}
 				else if(ca>='0' && ca<='9'){
-					var imax = parseInt(ca,10)+1; var icur;
-					for(icur=0;icur<imax;icur++){ bd.sQuC(c, 6); c++;}
+					for(var n=0,max=parseInt(ca,10)+1;n<max;n++){
+						if(c<bd.cellmax){ bd.cell[c].ques = 6; c++;}
+					}
+					c--;
 				}
-				else if(ca>='a' && ca<='g'){ bd.sQuC(c, (parseInt(ca,36)+91)); c++;}
-				else if(ca>='h' && ca<='z'){ c += (parseInt(ca,36)-16);}
-				else{ c++;}
+				else if(ca>='a' && ca<='g'){ bd.cell[c].ques = parseInt(ca,36)+91;}
+				else if(ca>='h' && ca<='z'){ c += (parseInt(ca,36)-17);}
 
-				if(c > bd.cellmax){ break;}
+				c++;
+				if(c>=bd.cellmax){ break;}
 			}
 
 			this.outbstr = bstr.substr(i);
 		};
 		enc.encodePipelink = function(type){
-			var count, pass;
-			var cm="";
-			var pstr="";
+			var count, pass, cm="";
 
 			count=0;
-			for(var i=0;i<bd.cellmax;i++){
-				if     (bd.QuC(i) == -2){ pstr = ".";}
-				else if(bd.QuC(i) ==  6){
-					if(type==0){
-						var icur;
-						for(icur=1;icur<10;icur++){ if(bd.QuC(i+icur)!=6){ break;}}
-						pstr = (icur-1).toString(10); i+=(icur-1);
-					}
-					else if(type==1){
-						pstr = "0";
-					}
-				}
-				else if(bd.QuC(i)>=101 && bd.QuC(i)<=107){ pstr = (bd.QuC(i)-91).toString(36);}
-				else{ pstr = ""; count++;}
+			for(var c=0;c<bd.cellmax;c++){
+				var pstr="", qu=bd.cell[c].ques;
 
-				if(count==0){ cm += pstr;}
-				else if(pstr || count==19){ cm+=((16+count).toString(36)+pstr); count=0;}
+				if     (qu===-2){ pstr = ".";}
+				else if(qu=== 6){
+					if(type===0){
+						for(var n=1;n<10;n++){
+							if((c+n)>=bd.cellmax && bd.cell[c+n].ques!==6){ break;}
+						}
+						pstr=(n-1).toString(10); c=(c+n-1);
+					}
+					else if(type===1){ pstr="0";}
+				}
+				else if(qu>=101 && qu<=107){ pstr = (qu-91).toString(36);}
+				else{ count++;}
+
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===19){ cm+=((16+count).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm+=(16+count).toString(36);}
 
@@ -281,20 +282,20 @@ Puzzles.pipelink.prototype = {
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			pc.disp = (this.readLine()=="circle" ? 0 : 1);
-			this.decodeCell( function(c,ca){
-				if(ca == "o")     { bd.sQuC(c, 6); }
-				else if(ca == "-"){ bd.sQuC(c, -2);}
-				else if(ca != "."){ bd.sQuC(c, parseInt(ca,36)+91);}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="o"){ obj.ques = 6; }
+				else if(ca==="-"){ obj.ques = -2;}
+				else if(ca!=="."){ obj.ques = parseInt(ca,36)+91;}
 			});
 			this.decodeBorderLine();
 		};
 		fio.encodeData = function(){
 			this.datastr += (pc.disp==0?"circle/":"ice/");
-			this.encodeCell( function(c){
-				if     (bd.QuC(c)==6) { return "o ";}
-				else if(bd.QuC(c)>=101 && bd.QuC(c)<=107) { return ""+(bd.QuC(c)-91).toString(36)+" ";}
-				else if(bd.QuC(c)==-2){ return "- ";}
-				else                  { return ". ";}
+			this.encodeCell( function(obj){
+				if     (obj.ques==6) { return "o ";}
+				else if(obj.ques==-2){ return "- ";}
+				else if(obj.ques>=101 && obj.ques<=107){ return ""+(obj.ques-91).toString(36)+" ";}
+				else                 { return ". ";}
 			});
 			this.encodeBorderLine();
 		};

@@ -58,7 +58,7 @@ Puzzles.fillomino.prototype = {
 					this.borderinput = (this.cnum(pos.x,pos.y)===null);
 
 					if(this.borderinput){ this.inputborder_fillomino();}
-					else{ this.dragnumber();}
+					else{ this.dragnumber_fillomino();}
 				}
 				else if(this.btn.Right) this.inputQsubLine();
 			}
@@ -73,7 +73,7 @@ Puzzles.fillomino.prototype = {
 			if(k.playmode){
 				if(this.btn.Left){
 					if(this.borderinput){ this.inputborder_fillomino();}
-					else{ this.dragnumber();}
+					else{ this.dragnumber_fillomino();}
 				}
 				else if(this.btn.Right) this.inputQsubLine();
 			}
@@ -90,12 +90,12 @@ Puzzles.fillomino.prototype = {
 			}
 			this.prevPos = pos;
 		};
-		mv.dragnumber = function(){
+		mv.dragnumber_fillomino = function(){
 			var cc = this.cellid();
 			if(cc===null||cc===this.mouseCell){ return;}
 
 			if(this.inputData===null){ this.inputData = bd.getNum(cc);}
-			bd.sQaC(cc, this.inputData);
+			bd.sAnC(cc, this.inputData);
 			this.mouseCell = cc;
 			pc.paintCell(cc);
 		};
@@ -129,7 +129,7 @@ Puzzles.fillomino.prototype = {
 				flag = (kc.isCTRL || kc.isX || kc.isZ);
 				if(kc.isCTRL)  { if(nb!==null){ bd.sQsB(nb,((bd.QsB(nb)===0)?1:0)); move();}}
 				else if(kc.isZ){ if(nb!==null){ bd.sQaB(nb,(!bd.isBorder(nc)?1:0));        }}
-				else if(kc.isX){ if(nc!==null){ bd.sQaC(nc,bd.getNum(cc));          move();}}
+				else if(kc.isX){ if(nc!==null){ bd.sAnC(nc,bd.getNum(cc));          move();}}
 			}
 
 			kc.tcMoved = flag;
@@ -185,29 +185,29 @@ Puzzles.fillomino.prototype = {
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			this.decodeCellQnum();
-			this.decodeCellQanssub();
+			this.decodeCellAnumsub();
 			this.decodeBorderAns();
 		};
 		fio.encodeData = function(){
 			this.encodeCellQnum();
-			this.encodeCellQanssub();
+			this.encodeCellAnumsub();
 			this.encodeBorderAns();
 		};
 
 		fio.kanpenOpen = function(){
 			this.decodeCellQnum_kanpen();
-			this.decodeCellQans_kanpen();
+			this.decodeCellAnum_kanpen();
 
 			// 境界線を自動入力
 			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				var bdflag = (cc1!==null && cc2!==null && bd.getNum(cc1)!==-1 && bd.getNum(cc2)!==-1 && bd.getNum(cc1)!==bd.getNum(cc2));
-				bd.sQaB(id,(bdflag?1:0));
+				bd.border[id].qans = (bdflag?1:0);
 			}
 		};
 		fio.kanpenSave = function(){
 			this.encodeCellQnum_kanpen();
-			this.encodeCellQans_kanpen();
+			this.encodeCellAnum_kanpen();
 		};
 	},
 

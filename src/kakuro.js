@@ -52,19 +52,19 @@ Puzzles.kakuro.prototype = {
 
 	protoChange : function(){
 		this.protoval = {
-			cell   : {qnum:Cell.prototype.defqnum,   direc:Cell.prototype.defdirec},
-			excell : {qnum:EXCell.prototype.defqnum, direc:EXCell.prototype.defdirec}
+			cell   : {qnum:Cell.prototype.defqnum,   qdir:Cell.prototype.defqdir},
+			excell : {qnum:EXCell.prototype.defqnum, qdir:EXCell.prototype.defqdir}
 		};
-		Cell.prototype.defqnum  = 0;
-		Cell.prototype.defdirec = 0;
-		EXCell.prototype.defqnum  = 0;
-		EXCell.prototype.defdirec = 0;
+		Cell.prototype.defqnum = 0;
+		Cell.prototype.defqdir = 0;
+		EXCell.prototype.defqnum = 0;
+		EXCell.prototype.defqdir = 0;
 	},
 	protoOriginal : function(){
-		Cell.prototype.defqnum  = this.protoval.cell.qnum;
-		Cell.prototype.defdirec = this.protoval.cell.direc;
-		EXCell.prototype.defqnum  = this.protoval.excell.qnum;
-		EXCell.prototype.defdirec = this.protoval.excell.direc;
+		Cell.prototype.defqnum = this.protoval.cell.qnum;
+		Cell.prototype.defqdir = this.protoval.cell.qdir;
+		EXCell.prototype.defqnum = this.protoval.excell.qnum;
+		EXCell.prototype.defqdir = this.protoval.excell.qdir;
 	},
 
 	//---------------------------------------------------------
@@ -89,12 +89,8 @@ Puzzles.kakuro.prototype = {
 			if(this.moveTCell(ca)){ return;}
 
 			if(k.editmode){ this.inputnumber51(ca,{2:45,4:45});}
-			else{
-				var cc = tc.getTCC();
-				if(cc!==null&&bd.QuC(cc)!=51){ this.key_inputqnum(ca);}
-			}
+			else if(k.playmode){ this.key_inputqnum(ca);}
 		};
-
 		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				if(mode===3){ this.gentable10(3,0); return;}
@@ -135,11 +131,14 @@ Puzzles.kakuro.prototype = {
 
 		bd.maxnum = 9;
 
-		// オーバーライト
+		// オーバーライド
 		bd.sQnC = function(id, num) {
 			um.addOpe(k.CELL, k.QNUM, id, this.cell[id].qnum, num);
 			this.cell[id].qnum = num;
 		};
+		// オーバーライド (以下の関数は回答モードでしか呼ばれないはず、)
+		bd.getNum = function(c){ return this.cell[c].anum;};
+		bd.setNum = function(c,val){ this.sAnC(c, (val>0 ? val : -1));};
 	},
 
 	//---------------------------------------------------------
@@ -191,11 +190,11 @@ Puzzles.kakuro.prototype = {
 
 			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i], key = ['cell',c,'qans'].join('_');
-				if(bd.cell[c].ques!==51 && bd.cell[c].qans>0){
+				var c = clist[i], key = ['cell',c,'anum'].join('_');
+				if(bd.cell[c].ques!==51 && bd.cell[c].anum>0){
 					var obj = bd.cell[c];
 					var color = (bd.cell[c].error===1 ? this.fontErrcolor : this.fontAnscolor);
-					var text  = ""+bd.cell[c].qans;
+					var text  = ""+bd.cell[c].anum;
 					this.dispnum(key, 1, text, 0.80, color, obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(key);}
@@ -226,13 +225,13 @@ Puzzles.kakuro.prototype = {
 			// 盤面内数字のデコード
 			var cell=0, a=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
+				var ca = bstr.charAt(i), obj=bd.cell[cell];
 				if(ca>='k' && ca<='z'){ cell+=(parseInt(ca,36)-19);}
 				else{
-					bd.sQuC(cell,51);
+					obj.ques = 51;
 					if(ca!='.'){
-						bd.sDiC(cell,this.decval(ca));
-						bd.sQnC(cell,this.decval(bstr.charAt(i+1)));
+						obj.qdir = this.decval(ca);
+						obj.qnum = this.decval(bstr.charAt(i+1));
 						i++;
 					}
 					cell++;
@@ -241,25 +240,18 @@ Puzzles.kakuro.prototype = {
 			}
 
 			// 盤面外数字のデコード
-			cell=0;
-			for(var i=a;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
-				while(cell<k.qcols){
-					if(bd.QuC(bd.cnum(cell*2+1,1))!==51){ bd.sDiE(cell,this.decval(ca)); cell++; i++; break;}
-					cell++;
+			var i=a;
+			for(bx=1;bx<bd.maxbx;bx+=2){
+				if(bd.cell[bd.cnum(bx,1)].ques!==51){
+					bd.excell[bd.exnum(bx,-1)].qdir = this.decval(bstr.charAt(i));
+					i++;
 				}
-				if(cell>=k.qcols){ a=i; break;}
-				i--;
 			}
-			cell=0;
-			for(var i=a;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
-				while(cell<k.qrows){
-					if(bd.QuC(bd.cnum(1,cell*2+1))!==51){ bd.sQnE(cell+k.qcols,this.decval(ca)); cell++; i++; break;}
-					cell++;
+			for(by=1;by<bd.maxby;by+=2){
+				if(bd.cell[bd.cnum(1,by)].ques!==51){
+					bd.excell[bd.exnum(-1,by)].qnum = this.decval(bstr.charAt(i));
+					i++;
 				}
-				if(cell>=k.qrows){ a=i; break;}
-				i--;
 			}
 
 			this.outbstr = bstr.substr(a);
@@ -270,23 +262,30 @@ Puzzles.kakuro.prototype = {
 			// 盤面内側の数字部分のエンコード
 			var count=0;
 			for(var c=0;c<bd.cellmax;c++){
-				var pstr = "";
+				var pstr="", obj=bd.cell[c];
 
-				if(bd.QuC(c)==51){
-					if(bd.QnC(c)<=0 && bd.DiC(c)<=0){ pstr = ".";}
-					else{ pstr = ""+this.encval(bd.DiC(c))+this.encval(bd.QnC(c));}
+				if(obj.ques===51){
+					if(obj.qnum<=0 && obj.qdir<=0){ pstr = ".";}
+					else{ pstr = ""+this.encval(obj.qdir)+this.encval(obj.qnum);}
 				}
-				else{ pstr=" "; count++;}
+				else{ count++;}
 
-				if     (count== 0){ cm += pstr;}
-				else if(pstr!=" "){ cm += ((count+19).toString(36)+pstr); count=0;}
-				else if(count==16){ cm += "z"; count=0;}
+				if     (count===0){ cm += pstr;}
+				else if(pstr || count===16){ cm += ((count+19).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm += (count+19).toString(36);}
 
 			// 盤面外側の数字部分のエンコード
-			for(var c=0;c<k.qcols;c++){ if(bd.QuC(bd.cnum(c*2+1,1))!=51){ cm+=this.encval(bd.DiE(c));} }
-			for(var c=0;c<k.qrows;c++){ if(bd.QuC(bd.cnum(1,c*2+1))!=51){ cm+=this.encval(bd.QnE(c+k.qcols));} }
+			for(var bx=1;bx<bd.maxbx;bx+=2){
+				if(bd.cell[bd.cnum(bx,1)].ques!==51){
+					cm+=this.encval(bd.excell[bd.exnum(bx,-1)].qdir);
+				}
+			}
+			for(var by=1;by<bd.maxby;by+=2){
+				if(bd.cell[bd.cnum(1,by)].ques!==51){
+					cm+=this.encval(bd.excell[bd.exnum(-1,by)].qnum);
+				}
+			}
 
 			this.outbstr += cm;
 		};
@@ -306,11 +305,11 @@ Puzzles.kakuro.prototype = {
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			this.decodeCellQnum51();
-			this.decodeCellQanssub();
+			this.decodeCellAnumsub();
 		};
 		fio.encodeData = function(){
 			this.encodeCellQnum51();
-			this.encodeCellQanssub();
+			this.encodeCellAnumsub();
 		};
 
 		fio.kanpenOpen = function(){
@@ -335,32 +334,32 @@ Puzzles.kakuro.prototype = {
 				else if(item[0]==0 && item[1]==0){ }
 				else if(item[0]==0 || item[1]==0){
 					var ec=bd.exnum(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
-					if     (item[0]==0){ bd.sDiE(ec, parseInt(item[3]));}
-					else if(item[1]==0){ bd.sQnE(ec, parseInt(item[2]));}
+					if     (item[0]==0){ bd.excell[ec].qdir = parseInt(item[3]);}
+					else if(item[1]==0){ bd.excell[ec].qnum = parseInt(item[2]);}
 				}
 				else{
 					var c=bd.cnum(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
-					bd.sQuC(c, 51);
-					bd.sDiC(c, parseInt(item[3]));
-					bd.sQnC(c, parseInt(item[2]));
+					bd.cell[c].ques = 51;
+					bd.cell[c].qdir = parseInt(item[3]);
+					bd.cell[c].qnum = parseInt(item[2]);
 				}
 			}
 		};
 		fio.encodeCellQnum51_kanpen = function(){
 			for(var by=bd.minby+1;by<bd.maxby;by+=2){ for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-				if(bx!==-1 && by!==-1 && bd.QuC(bd.cnum(bx,by))!==51){ continue;}
-
 				var item=[((by+1)>>1).toString(),((bx+1)>>1).toString(),0,0];
+
 				if(bx===-1&&by===-1){ }
-				else if(by===-1){
-					item[3]=bd.DiE(bd.exnum(bx,by)).toString();
-				}
-				else if(bx===-1){
-					item[2]=bd.QnE(bd.exnum(bx,by)).toString();
+				else if(bx===-1||by===-1){
+					var ec = bd.exnum(bx,by);
+					if(bx===-1){ item[2]=bd.excell[ec].qnum.toString();}
+					if(by===-1){ item[3]=bd.excell[ec].qdir.toString();}
 				}
 				else{
-					item[2]=bd.QnC(bd.cnum(bx,by)).toString();
-					item[3]=bd.DiC(bd.cnum(bx,by)).toString();
+					var c = bd.cnum(bx,by);
+					if(bd.cell[c].ques!==51){ continue;}
+					item[2]=bd.cell[c].qnum.toString();
+					item[3]=bd.cell[c].qdir.toString();
 				}
 				this.datastr += (item.join(" ")+"/");
 			}}
@@ -374,17 +373,19 @@ Puzzles.kakuro.prototype = {
 				for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 					if(arr[(bx+1)>>1]==''){ continue;}
 					var c = bd.cnum(bx,by);
-					if(c!==null && arr[(bx+1)>>1]!="." && arr[(bx+1)>>1]!="0"){ bd.sQaC(c, parseInt(arr[(bx+1)>>1]));}
+					if(c!==null && arr[(bx+1)>>1]!="." && arr[(bx+1)>>1]!="0"){
+						bd.cell[c].anum = parseInt(arr[(bx+1)>>1]);
+					}
 				}
 			}
 		};
 		fio.encodeQans_kanpen = function(){
 			for(var by=bd.minby+1;by<bd.maxby;by+=2){
 				for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-					var c = bd.cnum(bx,by);
+					var c = bd.cnum(bx,by), obj = bd.cell[c];
 					if(c===null){ this.datastr += ". ";}
-					else if(bd.QuC(c)==51){ this.datastr += ". ";}
-					else if(bd.QaC(c) > 0){ this.datastr += (bd.QaC(c).toString() + " ");}
+					else if(obj.ques===51){ this.datastr += ". ";}
+					else if(obj.anum  > 0){ this.datastr += (obj.anum.toString() + " ");}
 					else                  { this.datastr += "0 ";}
 				}
 				if(by<bd.maxby-1){ this.datastr += "/";}
@@ -405,16 +406,16 @@ Puzzles.kakuro.prototype = {
 				this.setAlert('数字の下か右にある数字の合計が間違っています。','The sum of the cells is not correct.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QuC(c)!=51 && bd.QaC(c)<=0);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.QuC(c)!==51 && bd.AnC(c)<=0);}) ){
 				this.setAlert('すべてのマスに数字が入っていません。','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)!=51 && bd.QaC(c)<=0);});};
+		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)!==51 && bd.AnC(c)<=0);});};
 
 		ans.isSameNumber = function(nullnum, keycellpos, clist, nullobj){
-			if(!this.isDifferentNumberInClist(clist, bd.QaC)){
+			if(!this.isDifferentNumberInClist(clist, bd.AnC)){
 				var isex = (keycellpos[0]===-1 || keycellpos[1]===-1);
 				if(isex){ bd.sErE(bd.exnum(keycellpos[0],keycellpos[1]),1);}
 				else    { bd.sErC(bd.cnum (keycellpos[0],keycellpos[1]),1);}
@@ -425,7 +426,7 @@ Puzzles.kakuro.prototype = {
 		ans.isTotalNumber = function(number, keycellpos, clist, nullobj){
 			var sum = 0;
 			for(var i=0;i<clist.length;i++){
-				if(bd.QaC(clist[i])>0){ sum += bd.QaC(clist[i]);}
+				if(bd.AnC(clist[i])>0){ sum += bd.AnC(clist[i]);}
 				else{ return true;}
 			}
 			if(number>0 && sum!=number){

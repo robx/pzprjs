@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 なわばり版 nawabari.js v3.3.0
+// パズル固有スクリプト部 なわばり版 nawabari.js v3.3.1
 //
 Puzzles.nawabari = function(){ };
 Puzzles.nawabari.prototype = {
@@ -139,7 +139,7 @@ Puzzles.nawabari.prototype = {
 				this.setAlert('1つの部屋に2つ以上の数字が入っています。','A territory has plural numbers.'); return false;
 			}
 
-			if( !this.checkdir4Border() ){
+			if( !this.checkdir4BorderAns() ){
 				this.setAlert('数字の周りにある境界線の本数が違います。','The number is not equal to the number of border lines around it.'); return false;
 			}
 
@@ -148,6 +148,26 @@ Puzzles.nawabari.prototype = {
 			}
 
 			return true;
+		};
+
+		ans.checkdir4BorderAns = function(){
+			var result = true;
+			for(var c=0;c<bd.cellmax;c++){
+				if(bd.QnC(c)>=0 && this.checkdir4Border1(c)!=bd.QnC(c)){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC([c],1);
+					result = false;
+				}
+			}
+			return result;
+		};
+		ans.checkdir4Border1 = function(cc){
+			var cnt=0, bx=bd.cell[cc].bx, by=bd.cell[cc].by;
+			if( by===bd.minby+1 || bd.isBorder(bd.bnum(bx  ,by-1)) ){ cnt++;}
+			if( by===bd.maxby-1 || bd.isBorder(bd.bnum(bx  ,by+1)) ){ cnt++;}
+			if( bx===bd.minbx+1 || bd.isBorder(bd.bnum(bx-1,by  )) ){ cnt++;}
+			if( bx===bd.maxby-1 || bd.isBorder(bd.bnum(bx+1,by  )) ){ cnt++;}
+			return cnt;
 		};
 	}
 };

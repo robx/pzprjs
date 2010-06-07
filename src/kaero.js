@@ -169,13 +169,13 @@ Puzzles.kaero.prototype = {
 
 			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.QnC(c)!=-1){
-					if     (bd.cell[c].error===1){ g.fillStyle = this.errbcolor1;}
-					else if(bd.cell[c].error===2){ g.fillStyle = this.errbcolor2;}
-					else if(bd.cell[c].qsub ===1){ g.fillStyle = this.qsubcolor1;}
-					else if(bd.cell[c].qsub ===2){ g.fillStyle = this.qsubcolor2;}
-					else                         { g.fillStyle = "white";}
+				var c = clist[i], obj=bd.cell[c];
+				if(obj.qnum!=-1){
+					if     (obj.error===1){ g.fillStyle = this.errbcolor1;}
+					else if(obj.error===2){ g.fillStyle = this.errbcolor2;}
+					else if(obj.qsub ===1){ g.fillStyle = this.qsubcolor1;}
+					else if(obj.qsub ===2){ g.fillStyle = this.qsubcolor2;}
+					else                  { g.fillStyle = "white";}
 
 					if(this.vnop(header+c,this.FILL)){
 						g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, this.cw-mgnw*2-1, this.ch-mgnh*2-1);
@@ -223,16 +223,16 @@ Puzzles.kaero.prototype = {
 		enc.decodeKaero = function(){
 			var c=0, a=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
+				var ca = bstr.charAt(i), obj=bd.cell[c];
 
-				if     (this.include(ca,'0','9')){ bd.sQnC(c, parseInt(ca,36)+27); c++;}
-				else if(this.include(ca,'A','Z')){ bd.sQnC(c, parseInt(ca,36)-9); c++;}
-				else if(ca=="-"){ bd.sQnC(c, 37+parseInt(bstr.charAt(i+1),36)); c++; i++;}
-				else if(ca=="."){ bd.sQnC(c, -2); c++;}
-				else if(this.include(ca,'a','z')){ c+=(parseInt(ca,36)-9);}
-				else{ c++;}
+				if     (this.include(ca,'0','9')){ obj.qnum = parseInt(ca,36)+27;}
+				else if(this.include(ca,'A','Z')){ obj.qnum = parseInt(ca,36)-9; }
+				else if(ca==="-"){ obj.qnum = parseInt(bstr.charAt(i+1),36)+37; i++;}
+				else if(ca==="."){ obj.qnum = -2;}
+				else if(this.include(ca,'a','z')){ c+=(parseInt(ca,36)-10);}
 
-				if(c >= bd.cellmax){ a=i+1; break;}
+				c++;
+				if(c>=bd.cellmax){ a=i+1; break;}
 			}
 
 			this.outbstr = bstr.substring(a);
@@ -240,8 +240,7 @@ Puzzles.kaero.prototype = {
 		enc.encodeKaero = function(){
 			var cm="", count=0;
 			for(var c=0;c<bd.cellmax;c++){
-				var pstr = "";
-				var qnum = bd.QnC(c);
+				var pstr = "", qnum = bd.cell[c].qnum;
 				if     (qnum==-2){ pstr = ".";}
 				else if(qnum>= 1 && qnum<=26){ pstr = ""+ (qnum+9).toString(36).toUpperCase();}
 				else if(qnum>=27 && qnum<=36){ pstr = ""+ (qnum-27).toString(10);}
@@ -258,13 +257,13 @@ Puzzles.kaero.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCellQnumAns();
+			this.decodeCellQnum();
 			this.decodeCellQanssub();
 			this.decodeBorderQues();
 			this.decodeBorderLine();
 		};
 		fio.encodeData = function(){
-			this.encodeCellQnumAns();
+			this.encodeCellQnum();
 			this.encodeCellQanssub();
 			this.encodeBorderQues();
 			this.encodeBorderLine();

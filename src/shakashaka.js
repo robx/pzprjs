@@ -90,12 +90,12 @@ Puzzles.shakashaka.prototype = {
 						else if  (dy>k.cheight/2){ this.inputData = 3;}
 					}
 
-					bd.sQaC(cc, (bd.QaC(cc)!==this.inputData?this.inputData:-1));
+					bd.sQaC(cc, (bd.QaC(cc)!==this.inputData?this.inputData:0));
 					bd.sQsC(cc, 0);
 				}
 				else if(this.btn.Right){
-					bd.sQaC(cc, -1);
-					bd.sQsC(cc, (bd.QsC(cc)==0?1:0));
+					bd.sQaC(cc, 0);
+					bd.sQsC(cc, (bd.QsC(cc)===0?1:0));
 				}
 			}
 			else if(use===2){
@@ -118,7 +118,7 @@ Puzzles.shakashaka.prototype = {
 					else if(dx>= diff && dy<=-diff){ this.inputData=4;}
 
 					if(this.inputData!==null){
-						bd.sQaC(cc, (bd.QaC(cc)!==this.inputData)?this.inputData:-1);
+						bd.sQaC(cc, (bd.QaC(cc)!==this.inputData)?this.inputData:0);
 						bd.sQsC(cc, 0);
 						this.mousereset();
 					}
@@ -126,22 +126,22 @@ Puzzles.shakashaka.prototype = {
 				else if(use2step==2){
 					// ほとんど動いていなかった場合は・を入力
 					if(Math.abs(dx)<=3 && Math.abs(dy)<=3){
-						bd.sQaC(cc, -1);
+						bd.sQaC(cc, 0);
 						bd.sQsC(cc, (bd.QsC(cc)==1?0:1));
 					}
 				}
 			}
 			else if(use===3){
 				if(this.btn.Left){
-					if(bd.QsC(cc)==1)      { bd.sQaC(cc,-1); bd.sQsC(cc,0);}
-					else if(bd.QaC(cc)==-1){ bd.sQaC(cc, 2); bd.sQsC(cc,0);}
-					else if(bd.QaC(cc)==5) { bd.sQaC(cc,-1); bd.sQsC(cc,1);}
+					if     (bd.QsC(cc)===1){ bd.sQaC(cc,0); bd.sQsC(cc,0);}
+					else if(bd.QaC(cc)===0){ bd.sQaC(cc,2); bd.sQsC(cc,0);}
+					else if(bd.QaC(cc)===5){ bd.sQaC(cc,0); bd.sQsC(cc,1);}
 					else{ bd.sQaC(cc,bd.QaC(cc)+1); bd.sQsC(cc,0);}
 				}
 				else if(this.btn.Right){
-					if(bd.QsC(cc)==1)      { bd.sQaC(cc, 5); bd.sQsC(cc,0);}
-					else if(bd.QaC(cc)==-1){ bd.sQaC(cc,-1); bd.sQsC(cc,1);}
-					else if(bd.QaC(cc)==2) { bd.sQaC(cc,-1); bd.sQsC(cc,0);}
+					if     (bd.QsC(cc)===1){ bd.sQaC(cc,5); bd.sQsC(cc,0);}
+					else if(bd.QaC(cc)===0){ bd.sQaC(cc,0); bd.sQsC(cc,1);}
+					else if(bd.QaC(cc)===2){ bd.sQaC(cc,0); bd.sQsC(cc,0);}
 					else{ bd.sQaC(cc,bd.QaC(cc)-1); bd.sQsC(cc,0);}
 				}
 			}
@@ -170,25 +170,25 @@ Puzzles.shakashaka.prototype = {
 			switch(key){
 			case this.FLIPY: // 上下反転
 				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = {2:5,3:4,4:3,5:2}[bd.QaC(cc)];
+					var val = [0,1,5,4,3,2][bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case this.FLIPX: // 左右反転
 				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = {2:3,3:2,4:5,5:4}[bd.QaC(cc)];
+					var val = [0,1,3,2,5,4][bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case this.TURNR: // 右90°反転
 				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = {2:5,3:2,4:3,5:4}[bd.QaC(cc)];
+					var val = [0,1,5,2,3,4][bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
 			case this.TURNL: // 左90°反転
 				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = {2:3,3:4,4:5,5:2}[bd.QaC(cc)];
+					var val = [0,1,3,4,5,2][bd.QaC(cc)];
 					if(!isNaN(val)){ bd.cell[cc].qans = val;}
 				}
 				break;
@@ -258,13 +258,13 @@ Puzzles.shakashaka.prototype = {
 
 			return true;
 		};
-		ans.isTri = function(c){ return (bd.QaC(c)!=-1);};
+		ans.isTri = function(c){ return (bd.QaC(c)!==0);};
 
 		ans.checkWhiteArea = function(){
 			var result = true;
 			var winfo = this.searchWarea_slope();
 			for(var id=1;id<=winfo.max;id++){
-				var d = this.getSizeOfClist(winfo.room[id].idlist,function(cc){ return (bd.QaC(cc)==-1);});
+				var d = this.getSizeOfClist(winfo.room[id].idlist,function(cc){ return (bd.QaC(cc)===0);});
 				if(d.cols*d.rows!=d.cnt && !this.isAreaRect_slope(winfo,id)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(winfo.room[id].idlist,1);

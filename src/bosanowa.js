@@ -91,30 +91,31 @@ Puzzles.bosanowa.prototype = {
 				var max = bd.nummaxfunc();
 				if((pos.x&1)&&(pos.y&1)){
 					var cc = bd.cnum(pos.x,pos.y);
+					var ques = bd.QuC(cc), num = bd.getNum(cc);
 					if(k.editmode){
 						if(this.btn.Left){
-							if     (bd.QuC(cc)==0)       { this.setval(cc,-1); bd.sQuC(cc,7);}
-							else if(this.getval(cc)==max){ this.setval(cc,-1); bd.sQuC(cc,0);}
-							else if(this.getval(cc)==-1) { this.setval(cc, 1); bd.sQuC(cc,7);}
-							else{ this.setval(cc,this.getval(cc)+1);}
+							if     (ques===0) { bd.setNum(cc,-1); bd.sQuC(cc,7);}
+							else if(num===max){ bd.setNum(cc,-1); bd.sQuC(cc,0);}
+							else if(num===-1) { bd.setNum(cc, 1); bd.sQuC(cc,7);}
+							else{ bd.setNum(cc,num+1);}
 						}
 						else if(this.btn.Right){
-							if     (bd.QuC(cc)==0)       { this.setval(cc,max); bd.sQuC(cc,7);}
-							else if(this.getval(cc)== 1) { this.setval(cc, -1); bd.sQuC(cc,7);}
-							else if(this.getval(cc)==-1) { this.setval(cc, -1); bd.sQuC(cc,0);}
-							else{ this.setval(cc,this.getval(cc)-1);}
+							if     (ques===0) { bd.setNum(cc,max); bd.sQuC(cc,7);}
+							else if(num=== 1) { bd.setNum(cc, -1); bd.sQuC(cc,7);}
+							else if(num===-1) { bd.setNum(cc, -1); bd.sQuC(cc,0);}
+							else{ bd.setNum(cc,num-1);}
 						}
 					}
-					if(k.playmode && bd.QuC(cc)==7){
+					if(k.playmode && ques===7){
 						if(this.btn.Left){
-							if     (this.getval(cc)==max){ this.setval(cc,-1);}
-							else if(this.getval(cc)==-1) { this.setval(cc, 1);}
-							else{ this.setval(cc,this.getval(cc)+1);}
+							if     (num===max){ bd.setNum(cc,-1);}
+							else if(num===-1) { bd.setNum(cc, 1);}
+							else{ bd.setNum(cc,num+1);}
 						}
 						else if(this.btn.Right){
-							if     (this.getval(cc)==-1) { this.setval(cc,max);}
-							else if(this.getval(cc)== 1) { this.setval(cc, -1);}
-							else{ this.setval(cc,this.getval(cc)-1);}
+							if     (num===-1) { bd.setNum(cc,max);}
+							else if(num=== 1) { bd.setNum(cc, -1);}
+							else{ bd.setNum(cc,num-1);}
 						}
 					}
 				}
@@ -124,15 +125,6 @@ Puzzles.bosanowa.prototype = {
 				pc.paintPos(tcp);
 			}
 			pc.paintPos(pos);
-		};
-		mv.setval = function(cc,val){
-			if     (k.editmode){ bd.sQnC(cc,val);}
-			else if(k.playmode){ bd.sQaC(cc,val);}
-		};
-		mv.getval = function(cc){
-			if     (k.editmode){ return bd.QnC(cc);}
-			else if(k.playmode){ return bd.QaC(cc);}
-			return -1;
 		};
 
 		// キーボード入力系
@@ -415,11 +407,16 @@ Puzzles.bosanowa.prototype = {
 
 		//---------------------------------------------------------
 		enc.decodeBoard = function(){
-			var bstr = this.outbstr;
+			var bstr = this.outbstr, c=0, twi=[16,8,4,2,1];
 			for(var i=0;i<bstr.length;i++){
 				var num = parseInt(bstr.charAt(i),32);
-				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?0:7));} }
-				if((i*5+5)>=bd.cellmax){ break;}
+				for(var w=0;w<5;w++){
+					if(c<bd.cellmax){
+						bd.cell[c].ques = (num&twi[w]?0:7);
+						c++;
+					}
+				}
+				if(c>=bd.cellmax){ break;}
 			}
 			this.outbstr = bstr.substr(i+1);
 		};
@@ -428,19 +425,19 @@ Puzzles.bosanowa.prototype = {
 		enc.encodeBosanowa = function(type){
 			var x1=9999, x2=-1, y1=9999, y2=-1;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QuC(c)!=7){ continue;}
+				if(bd.cell[c].ques!==7){ continue;}
 				if(x1>bd.cell[c].bx){ x1=bd.cell[c].bx;}
 				if(x2<bd.cell[c].bx){ x2=bd.cell[c].bx;}
 				if(y1>bd.cell[c].by){ y1=bd.cell[c].by;}
 				if(y2<bd.cell[c].by){ y2=bd.cell[c].by;}
 			}
 
-			var cm="", count=0, pass=0;
+			var cm="", count=0, pass=0, twi=[16,8,4,2,1];
 			for(var by=y1;by<=y2;by+=2){
 				for(var bx=x1;bx<=x2;bx+=2){
 					var c=bd.cnum(bx,by);
-					if(bd.QuC(c)==0){ pass+=Math.pow(2,4-count);}
-					count++; if(count==5){ cm += pass.toString(32); count=0; pass=0;}
+					if(bd.cell[c].ques===0){ pass+=twi[count];} count++;
+					if(count===5){ cm += pass.toString(32); count=0; pass=0;}
 				}
 			}
 			if(count>0){ cm += pass.toString(32);}
@@ -449,12 +446,11 @@ Puzzles.bosanowa.prototype = {
 			cm="", count=0;
 			for(var by=y1;by<=y2;by+=2){
 				for(var bx=x1;bx<=x2;bx+=2){
-					var pstr = "";
-					var val = bd.QnC(bd.cnum(bx,by));
+					var pstr="", c=bd.cnum(bx,by), qn=bd.cell[c].qnum;
 
-					if     (val==-2         ){ pstr = ".";}
-					else if(val>= 0&&val< 16){ pstr =       val.toString(16);}
-					else if(val>=16&&val<256){ pstr = "-" + val.toString(16);}
+					if     (qn===-2       ){ pstr = ".";}
+					else if(qn>= 0&&qn< 16){ pstr =       qn.toString(16);}
+					else if(qn>=16&&qn<256){ pstr = "-" + qn.toString(16);}
 					else{ count++;}
 
 					if(count==0){ cm += pstr;}
@@ -469,33 +465,28 @@ Puzzles.bosanowa.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCell( function(c,ca){
-				if(ca!="."){ bd.sQuC(c, 7);}
-				if(ca!="0"&&ca!="."){ bd.sQnC(c, parseInt(ca));}
+			this.decodeCell( function(obj,ca){
+				if(ca!=="."){ obj.ques = 7;}
+				if(ca!=="0"&&ca!=="."){ obj.qnum = parseInt(ca);}
 			});
-			this.decodeCell( function(c,ca){
-				if(ca!="0"&&ca!="."){ bd.sQaC(c, parseInt(ca));}
+			this.decodeCell( function(obj,ca){
+				if(ca!=="0"&&ca!=="."){ obj.anum = parseInt(ca);}
 			});
-			this.decodeBorder( function(id,ca){
-				if(ca!="."){ bd.sQsB(id, parseInt(ca));}
+			this.decodeBorder( function(obj,ca){
+				if(ca!=="."){ obj.qsub = parseInt(ca);}
 			});
 		};
 		fio.encodeData = function(){
-			this.encodeCell(function(c){
-				if(bd.QuC(c)!=7){ return ". ";}
-				if(bd.QnC(c)< 0){ return "0 ";}
-				else{ return ""+bd.QnC(c).toString()+" ";}
+			this.encodeCell(function(obj){
+				if(obj.ques!==7){ return ". ";}
+				return (obj.qnum>=0 ? ""+obj.qnum.toString()+" " : "0 ");
 			});
-			this.encodeCell( function(c){
-				if(bd.QuC(c)!=7 || bd.QnC(c)!=-1){ return ". ";}
-				if(bd.QaC(c)< 0){ return "0 ";}
-				else{ return ""+bd.QaC(c).toString()+" ";}
+			this.encodeCell( function(obj){
+				if(obj.ques!==7 || obj.qnum!==-1){ return ". ";}
+				return (obj.anum>=0 ? ""+obj.anum.toString()+" " : "0 ");
 			});
-			this.encodeBorder( function(id){
-				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(!bd.isBox(cc1) || !bd.isBox(cc2)){ return ". ";}
-				if(bd.QsB(id)==-1){ return ". ";}
-				else{ return ""+bd.QsB(id).toString()+" ";}
+			this.encodeBorder( function(obj){
+				return (obj.qsub!==-1 ? ""+obj.qsub.toString()+" " : ". ");
 			});
 		};
 	},

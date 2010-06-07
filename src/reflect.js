@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.3.0
+// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.3.1
 //
 Puzzles.reflect = function(){ };
 Puzzles.reflect.prototype = {
@@ -234,40 +234,40 @@ Puzzles.reflect.prototype = {
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
-				if     (ca == '5'){ bd.sQuC(c, 101); c++;}
-				else if(ca >= '1' && ca <= '4'){
-					bd.sQuC(c, parseInt(ca)+1);
-					bd.sQnC(c, parseInt(bstr.substr(i+1,1),16));
-					c++; i++;
+				if     (ca==='5'){ bd.sQuC(c, 101);}
+				else if(this.include(ca,'1','4')){
+					bd.cell[c].ques = parseInt(ca)+1;
+					bd.cell[c].qnum = parseInt(bstr.substr(i+1,1),16);
+					i++;
 				}
-				else if(ca >= '6' && ca <= '9'){
-					bd.sQuC(c, parseInt(ca)-4);
-					bd.sQnC(c, parseInt(bstr.substr(i+1,2),16));
-					c++; i+=2;
+				else if(this.include(ca,'6','9')){
+					bd.cell[c].ques = parseInt(ca)-4;
+					bd.cell[c].qnum = parseInt(bstr.substr(i+1,2),16);
+					i+=2;
 				}
-				else if(ca >= 'a' && ca <= 'z'){ c += (parseInt(ca,36)-9);}
-				else{ c++;}
+				else if(this.include(ca,'a','z')){ c+=(parseInt(ca,36)-10);}
 
-				if(c > bd.cellmax){ break;}
+				c++;
+				if(c>=bd.cellmax){ break;}
 			}
 
 			this.outbstr = bstr.substr(i);
 		};
 		enc.encodeReflectlink = function(type){
-			var cm="", pstr="";
-			var count=0;
-			for(var i=0;i<bd.cellmax;i++){
-				if     (bd.QuC(i)==101){ pstr = "5";}
-				else if(bd.QuC(i)>=2 && bd.QuC(i)<=5){
-					var val = bd.QnC(i);
-					if     (val<= 0){ pstr = ""+(bd.QuC(i)-1)+"0";}
-					else if(val>= 1 && val< 16){ pstr = ""+(bd.QuC(i)-1)+val.toString(16);}
-					else if(val>=16 && val<256){ pstr = ""+(bd.QuC(i)+4)+val.toString(16);}
+			var cm="", pstr="", count=0;
+			for(var c=0;c<bd.cellmax;c++){
+				var qu=bd.cell[c].ques;
+				if     (qu===101){ pstr = "5";}
+				else if(qu>=2 && qu<=5){
+					var val = bd.cell[c].qnum;
+					if     (val<= 0){ pstr = ""+(qu-1)+"0";}
+					else if(val>= 1 && val< 16){ pstr = ""+(qu-1)+val.toString(16);}
+					else if(val>=16 && val<256){ pstr = ""+(qu+4)+val.toString(16);}
 				}
 				else{ pstr = ""; count++;}
 
-				if(count==0){ cm += pstr;}
-				else if(pstr || count==26){ cm+=((9+count).toString(36)+pstr); count=0;}
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===26){ cm+=((9+count).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm+=(9+count).toString(36);}
 
@@ -276,21 +276,20 @@ Puzzles.reflect.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCell( function(c,ca){
-				if(ca == "+"){ bd.sQuC(c, 101);}
-				else if(ca != "."){
-					bd.sQuC(c, parseInt(ca.charAt(0))+1);
-					if(ca.length>1){ bd.sQnC(c, parseInt(ca.substr(1)));}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="+"){ obj.ques = 101;}
+				else if(ca!=="."){
+					obj.ques = parseInt(ca.charAt(0))+1;
+					if(ca.length>1){ obj.qnum = parseInt(ca.substr(1));}
 				}
 			});
 			this.decodeBorderLine();
 		};
 		fio.encodeData = function(){
-			this.encodeCell( function(c){
-				if     (bd.QuC(c)==101) { return "+ ";}
-				else if(bd.QuC(c)>=2 && bd.QuC(c)<=5) {
-					if(bd.QnC(c)==-1){ return ""+(bd.QuC(c)-1).toString()+" ";}
-					else{ return ""+(bd.QuC(c)-1).toString()+(bd.QnC(c)).toString()+" ";}
+			this.encodeCell( function(obj){
+				if     (obj.ques===101) { return "+ ";}
+				else if(obj.ques>=2 && obj.ques<=5) {
+					return ""+(obj.ques-1)+(obj.qnum!==-1 ? obj.qnum : "")+" ";
 				}
 				else{ return ". ";}
 			});

@@ -231,15 +231,16 @@ Puzzles.loopsp.prototype = {
 		enc.decodeLoopsp = function(){
 			var c=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
+				var ca = bstr.charAt(i), obj = bd.cell[c];
 
-				if     (ca == '.'){ bd.sQnC(c, -2); c++;}
-				else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),16)); c++; i+=2;}
-				else if((ca >= '0' && ca <= '9')||(ca >= 'a' && ca <= 'f')){ bd.sQnC(c, parseInt(bstr.substr(i,1),16)); c++;}
-				else if(ca >= 'g' && ca <= 'm'){ bd.sQuC(c, (parseInt(ca,36)+85)); c++;}
-				else if(ca >= 'n' && ca <= 'z'){ c += (parseInt(ca,36)-22);}
-				else{ c++;}
+				if     (ca ==='.'){ obj.qnum = -2;}
+				else if(ca ==='-'){ obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+				else if(ca >= '0' && ca <= '9'){ obj.qnum = parseInt(ca,16);}
+				else if(ca >= 'a' && ca <= 'f'){ obj.qnum = parseInt(ca,16);}
+				else if(ca >= 'g' && ca <= 'm'){ obj.ques = parseInt(ca,36)+85;}
+				else if(ca >= 'n' && ca <= 'z'){ c += (parseInt(ca,36)-23);}
 
+				c++;
 				if(c > bd.cellmax){ break;}
 			}
 
@@ -247,15 +248,16 @@ Puzzles.loopsp.prototype = {
 		};
 		enc.encodeLoopsp = function(){
 			var cm="", pstr="", count=0;
-			for(var i=0;i<bd.cellmax;i++){
-				if     (bd.QnC(i)== -2                  ){ pstr = ".";}
-				else if(bd.QnC(i)>=  0 && bd.QnC(i)<  16){ pstr =       bd.QnC(i).toString(16);}
-				else if(bd.QnC(i)>= 16 && bd.QnC(i)< 256){ pstr = "-" + bd.QnC(i).toString(16);}
-				else if(bd.QuC(i)>=101 && bd.QuC(i)<=107){ pstr = (bd.QuC(i)-85).toString(36);}
+			for(var c=0;c<bd.cellmax;c++){
+				var qn=bd.cell[c].qnum, qu=bd.cell[c].ques;
+				if     (qn===-2)         { pstr = ".";}
+				else if(qn>= 0 && qn< 16){ pstr =      qn.toString(16);}
+				else if(qn>=16 && qn<256){ pstr = "-"+ qn.toString(16);}
+				else if(qu>=101&&qu<=107){ pstr = (qu-85).toString(36);}
 				else{ pstr = ""; count++;}
 
-				if(count==0){ cm += pstr;}
-				else if(pstr || count==13){ cm+=((22+count).toString(36)+pstr); count=0;}
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===13){ cm+=((22+count).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm+=(22+count).toString(36);}
 
@@ -264,20 +266,20 @@ Puzzles.loopsp.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCell( function(c,ca){
-				if(ca == "o")     { bd.sQuC(c, 6);}
-				else if(ca == "-"){ bd.sQuC(c, -2);}
-				else if(ca >= "a" && ca <= "g"){ bd.sQuC(c, parseInt(ca,36)+91);}
-				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="o"){ obj.ques = 6;}
+				else if(ca==="-"){ obj.ques =-2;}
+				else if(ca>="a" && ca<="g"){ obj.ques = parseInt(ca,36)+91;}
+				else if(ca!=="."){ obj.qnum = parseInt(ca);}
 			});
 			this.decodeBorderLine();
 		};
 		fio.encodeData = function(){
-			this.encodeCell( function(c){
-				if     (bd.QuC(c)==6) { return "o ";}
-				else if(bd.QuC(c)>=101 && bd.QuC(c)<=107) { return ""+(bd.QuC(c)-91).toString(36)+" ";}
-				else if(bd.QuC(c)==-2){ return "- ";}
-				else if(bd.QnC(c)!=-1){ return bd.QnC(c).toString()+" ";}
+			this.encodeCell( function(obj){
+				if     (obj.ques===6) { return "o ";}
+				else if(obj.ques>=101 && obj.ques<=107) { return ""+(obj.ques-91).toString(36)+" ";}
+				else if(obj.ques===-2){ return "- ";}
+				else if(obj.qnum!==-1){ return obj.qnum.toString()+" ";}
 				else                  { return ". ";}
 			});
 			this.encodeBorderLine();

@@ -76,7 +76,7 @@ Puzzles.bag.prototype = {
 			}
 			else if(k.playmode){
 				if(!pp.getVal('bgcolor') || !this.inputBGcolor0()){
-					if(this.btn.Left) this.inputborderans();
+					if(this.btn.Left) this.inputLine();
 					else if(this.btn.Right) this.inputBGcolor(true);
 				}
 				else{ this.inputBGcolor(false);}
@@ -86,7 +86,7 @@ Puzzles.bag.prototype = {
 		mv.mousemove = function(){
 			if(k.playmode){
 				if(!pp.getVal('bgcolor') || this.inputData<10){
-					if(this.btn.Left) this.inputborderans();
+					if(this.btn.Left) this.inputLine();
 					else if(this.btn.Right) this.inputBGcolor(true);
 				}
 				else{ this.inputBGcolor(false);}
@@ -140,14 +140,13 @@ Puzzles.bag.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.setBGCellColorFunc('qsub2');
-		pc.setBorderColorFunc('line');
 
 		pc.chassisflag = false;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawLines(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
@@ -169,12 +168,12 @@ Puzzles.bag.prototype = {
 		fio.decodeData = function(){
 			this.decodeCellQnum();
 			this.decodeCellQsub();
-			this.decodeBorderAns2();
+			this.decodeBorderLine();
 		};
 		fio.encodeData = function(){
 			this.encodeCellQnum();
 			this.encodeCellQsub();
-			this.encodeBorderAns2();
+			this.encodeBorderLine();
 		};
 	},
 

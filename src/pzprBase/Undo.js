@@ -84,7 +84,7 @@ OperationManager.prototype = {
 			this.ope[lastid].property == property &&
 			this.ope[lastid].id == id             &&
 			this.ope[lastid].num == old           &&
-			( (obj == k.CELL && ( property==k.QNUM || (property==k.QANS && k.isAnsNumber) )) || obj == k.CROSS)
+			( (obj == k.CELL && ( property==k.QNUM || (property==k.ANUM && k.isAnsNumber) )) || obj == k.CROSS)
 		)
 		{
 			this.ope[lastid].num = num;
@@ -172,14 +172,15 @@ OperationManager.prototype = {
 		if(ope.obj == k.CELL){
 			if     (pp == k.QUES){ bd.sQuC(ope.id, num);}
 			else if(pp == k.QNUM){ bd.sQnC(ope.id, num);}
-			else if(pp == k.DIREC){ bd.sDiC(ope.id, num);}
+			else if(pp == k.QDIR){ bd.sDiC(ope.id, num);}
+			else if(pp == k.ANUM){ bd.sAnC(ope.id, num);}
 			else if(pp == k.QANS){ bd.sQaC(ope.id, num);}
 			else if(pp == k.QSUB){ bd.sQsC(ope.id, num);}
 			this.paintStack(bd.cell[ope.id].bx-1, bd.cell[ope.id].by-1, bd.cell[ope.id].bx+1, bd.cell[ope.id].by+1);
 		}
 		else if(ope.obj == k.EXCELL){
 			if     (pp == k.QNUM){ bd.sQnE(ope.id, num);}
-			else if(pp == k.DIREC){ bd.sDiE(ope.id, num);}
+			else if(pp == k.QDIR){ bd.sDiE(ope.id, num);}
 		}
 		else if(ope.obj == k.CROSS){
 			if     (pp == k.QUES){ bd.sQuX(ope.id, num);}

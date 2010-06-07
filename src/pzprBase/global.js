@@ -87,12 +87,13 @@ var k = {
 	BORDER : 'border',
 	EXCELL : 'excell',
 
-	QUES  : 'ques',
-	QNUM  : 'qnum',
-	DIREC : 'direc',
-	QANS  : 'qans',
-	LINE  : 'line',
-	QSUB  : 'qsub',
+	QUES : 'ques',
+	QNUM : 'qnum',
+	QDIR : 'qdir',
+	QANS : 'qans',
+	ANUM : 'anum',
+	LINE : 'line',
+	QSUB : 'qsub',
 
 	NONE : 0,	// 方向なし
 	UP : 1,		// up

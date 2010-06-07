@@ -39,9 +39,9 @@ debug.extend({
 							  callback:ee.binder(debug, debug.sccheck)});
 
 			if(pnum >= term){ clearInterval(tam);}
-			pnum++;
 
 			debug.addTextarea("Test ("+pnum+", "+newid+") start.");
+			pnum++;
 		},500);
 	},
 
@@ -317,17 +317,18 @@ debug.extend({
 		var bd2 = {cell:[],excell:[],cross:[],border:[]};
 		for(var c=0;c<bd.cellmax;c++){
 			bd2.cell[c] = {};
-			bd2.cell[c].ques =bd.cell[c].ques;
-			bd2.cell[c].qnum =bd.cell[c].qnum;
-			bd2.cell[c].direc=bd.cell[c].direc;
-			bd2.cell[c].qans =bd.cell[c].qans;
-			bd2.cell[c].qsub =bd.cell[c].qsub;
+			bd2.cell[c].ques=bd.cell[c].ques;
+			bd2.cell[c].qnum=bd.cell[c].qnum;
+			bd2.cell[c].qdir=bd.cell[c].qdir;
+			bd2.cell[c].anum=bd.cell[c].anum;
+			bd2.cell[c].qans=bd.cell[c].qans;
+			bd2.cell[c].qsub=bd.cell[c].qsub;
 		}
 		if(!!k.isexcell){
 			for(var c=0;c<bd.excellmax;c++){
 				bd2.excell[c] = {};
-				bd2.excell[c].qnum =bd.excell[c].qnum;
-				bd2.excell[c].direc=bd.excell[c].direc;
+				bd2.excell[c].qnum=bd.excell[c].qnum;
+				bd2.excell[c].qdir=bd.excell[c].qdir;
 			}
 		}
 		if(!!k.iscross){
@@ -353,19 +354,20 @@ debug.extend({
 //		debug.taenable = false;
 		var result = true;
 		for(var c=0,len=Math.min(bd1.cell.length,bd2.cell.length);c<len;c++){
-			if(bd1.cell[c].ques !=bd2.cell[c].ques ){ result = false; debug.addTextarea("cell ques "+c+" "+bd1.cell[c].ques+" "+bd2.cell[c].ques);}
-			if(bd1.cell[c].qnum !=bd2.cell[c].qnum ){ result = false; debug.addTextarea("cell qnum "+c+" "+bd1.cell[c].qnum+" "+bd2.cell[c].qnum);}
-			if(bd1.cell[c].direc!=bd2.cell[c].direc){ result = false; debug.addTextarea("cell dirc "+c+" "+bd1.cell[c].direc+" "+bd2.cell[c].direc);}
-			if(bd1.cell[c].qans !=bd2.cell[c].qans ){ result = false; debug.addTextarea("cell qans "+c+" "+bd1.cell[c].qans+" "+bd2.cell[c].qans);}
-			if(bd1.cell[c].qsub !=bd2.cell[c].qsub ){
-				if(debug.qsubf){ result = false; debug.addTextarea("cell qsub "+c+" "+bd1.cell[c].qsub+" "+bd2.cell[c].qsub);}
+			if(bd1.cell[c].ques!=bd2.cell[c].ques){ result = false; debug.addTextarea("cell ques "+c+" "+bd1.cell[c].ques+" &lt;- "+bd2.cell[c].ques);}
+			if(bd1.cell[c].qnum!=bd2.cell[c].qnum){ result = false; debug.addTextarea("cell qnum "+c+" "+bd1.cell[c].qnum+" &lt;- "+bd2.cell[c].qnum);}
+			if(bd1.cell[c].qdir!=bd2.cell[c].qdir){ result = false; debug.addTextarea("cell qdir "+c+" "+bd1.cell[c].qdir+" &lt;- "+bd2.cell[c].qdir);}
+			if(bd1.cell[c].anum!=bd2.cell[c].anum){ result = false; debug.addTextarea("cell anum "+c+" "+bd1.cell[c].anum+" &lt;- "+bd2.cell[c].anum);}
+			if(bd1.cell[c].qans!=bd2.cell[c].qans){ result = false; debug.addTextarea("cell qans "+c+" "+bd1.cell[c].qans+" &lt;- "+bd2.cell[c].qans);}
+			if(bd1.cell[c].qsub!=bd2.cell[c].qsub){
+				if(debug.qsubf){ result = false; debug.addTextarea("cell qsub "+c+" "+bd1.cell[c].qsub+" &lt;- "+bd2.cell[c].qsub);}
 				else{ bd1.cell[c].qsub = bd2.cell[c].qsub;}
 			}
 		}
 		if(!!k.isexcell){
 			for(var c=0;c<bd1.excell.length;c++){
-				if(bd1.excell[c].qnum !=bd2.excell[c].qnum ){ result = false;}
-				if(bd1.excell[c].direc!=bd2.excell[c].direc){ result = false;}
+				if(bd1.excell[c].qnum!=bd2.excell[c].qnum ){ result = false;}
+				if(bd1.excell[c].qdir!=bd2.excell[c].qdir){ result = false;}
 			}
 		}
 		if(!!k.iscross){
@@ -376,12 +378,12 @@ debug.extend({
 		}
 		if(!!k.isborder){
 			for(var i=0;i<bd1.border.length;i++){
-				if(bd1.border[i].ques!=bd2.border[i].ques){ result = false; debug.addTextarea("border ques "+i+" "+bd1.border[i].ques+" "+bd2.border[i].ques);}
-				if(bd1.border[i].qnum!=bd2.border[i].qnum){ result = false; debug.addTextarea("border qnum "+i+" "+bd1.border[i].qnum+" "+bd2.border[i].qnum);}
-				if(bd1.border[i].qans!=bd2.border[i].qans){ result = false; debug.addTextarea("border qans "+i+" "+bd1.border[i].qans+" "+bd2.border[i].qans);}
-				if(bd1.border[i].line!=bd2.border[i].line){ result = false; debug.addTextarea("border line "+i+" "+bd1.border[i].line+" "+bd2.border[i].line);}
+				if(bd1.border[i].ques!=bd2.border[i].ques){ result = false; debug.addTextarea("border ques "+i+" "+bd1.border[i].ques+" &lt;- "+bd2.border[i].ques);}
+				if(bd1.border[i].qnum!=bd2.border[i].qnum){ result = false; debug.addTextarea("border qnum "+i+" "+bd1.border[i].qnum+" &lt;- "+bd2.border[i].qnum);}
+				if(bd1.border[i].qans!=bd2.border[i].qans){ result = false; debug.addTextarea("border qans "+i+" "+bd1.border[i].qans+" &lt;- "+bd2.border[i].qans);}
+				if(bd1.border[i].line!=bd2.border[i].line){ result = false; debug.addTextarea("border line "+i+" "+bd1.border[i].line+" &lt;- "+bd2.border[i].line);}
 				if(bd1.border[i].qsub!=bd2.border[i].qsub){
-					if(debug.qsubf){ result = false; debug.addTextarea("border qsub "+i+" "+bd1.border[i].qsub+" "+bd2.border[i].qsub);}
+					if(debug.qsubf){ result = false; debug.addTextarea("border qsub "+i+" "+bd1.border[i].qsub+" &lt;- "+bd2.border[i].qsub);}
 					else{ bd1.border[i].qsub = bd2.border[i].qsub;}
 				}
 			}

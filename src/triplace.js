@@ -50,19 +50,19 @@ Puzzles.triplace.prototype = {
 
 	protoChange : function(){
 		this.protoval = {
-			cell   : {qnum:Cell.prototype.defqnum,   direc:Cell.prototype.defdirec},
-			excell : {qnum:EXCell.prototype.defqnum, direc:EXCell.prototype.defdirec}
+			cell   : {qnum:Cell.prototype.defqnum,   qdir:Cell.prototype.defqdir},
+			excell : {qnum:EXCell.prototype.defqnum, qdir:EXCell.prototype.defqdir}
 		};
-		Cell.prototype.defqnum  = -1;
-		Cell.prototype.defdirec = -1;
-		EXCell.prototype.defqnum  = -1;
-		EXCell.prototype.defdirec = -1;
+		Cell.prototype.defqnum = -1;
+		Cell.prototype.defqdir = -1;
+		EXCell.prototype.defqnum = -1;
+		EXCell.prototype.defqdir = -1;
 	},
 	protoOriginal : function(){
-		Cell.prototype.defqnum  = this.protoval.cell.qnum;
-		Cell.prototype.defdirec = this.protoval.cell.direc;
-		EXCell.prototype.defqnum  = this.protoval.excell.qnum;
-		EXCell.prototype.defdirec = this.protoval.excell.direc;
+		Cell.prototype.defqnum = this.protoval.cell.qnum;
+		Cell.prototype.defqdir = this.protoval.cell.qdir;
+		EXCell.prototype.defqnum = this.protoval.excell.qnum;
+		EXCell.prototype.defqdir = this.protoval.excell.qdir;
 	},
 
 	//---------------------------------------------------------
@@ -230,53 +230,59 @@ Puzzles.triplace.prototype = {
 		enc.decodeTriplace = function(){
 			// 盤面内数字のデコード
 			var cell=0, a=0, bstr = this.outbstr;
+			base.disableInfo();
 			for(var i=0;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
+				var ca = bstr.charAt(i), obj=bd.cell[cell];
 
-				if(ca>='g' && ca<='z'){ cell+=(parseInt(ca,36)-15);}
+				if(ca>='g' && ca<='z'){ cell+=(parseInt(ca,36)-16);}
 				else{
 					mv.set51cell(cell,true);
-					if     (ca=='_'){ cell++;}
-					else if(ca=='$'){ bd.sQnC(cell,bstr.charAt(i+1)); cell++; i++;}
-					else if(ca=='%'){ bd.sDiC(cell,bstr.charAt(i+1)); cell++; i++;}
-					else if(ca=='-'){
-						bd.sDiC(cell,(bstr.charAt(i+1)!="."?parseInt(bstr.charAt(i+1),16):-1));
-						bd.sQnC(cell,parseInt(bstr.substr(i+2,2),16));
-						cell++; i+=3;
+					if     (ca==='_'){}
+					else if(ca==='%'){ obj.qdir = parseInt(bstr.charAt(i+1),36); i++;}
+					else if(ca==='$'){ obj.qnum = parseInt(bstr.charAt(i+1),36); i++;}
+					else if(ca==='-'){
+						obj.qdir = (bstr.charAt(i+1)!=="." ? parseInt(bstr.charAt(i+1),16) : -1);
+						obj.qnum = parseInt(bstr.substr(i+2,2),16);
+						i+=3;
 					}
-					else if(ca=='+'){
-						bd.sDiC(cell,parseInt(bstr.substr(i+1,2),16));
-						bd.sQnC(cell,(bstr.charAt(i+3)!="."?parseInt(bstr.charAt(i+3),16):-1));
-						cell++; i+=3;
+					else if(ca==='+'){
+						obj.qdir = parseInt(bstr.substr(i+1,2),16);
+						obj.qnum = (bstr.charAt(i+3)!=="." ? parseInt(bstr.charAt(i+3),16) : -1);
+						i+=3;
 					}
-					else if(ca=='='){
-						bd.sDiC(cell,parseInt(bstr.substr(i+1,2),16));
-						bd.sQnC(cell,parseInt(bstr.substr(i+3,2),16));
-						cell++; i+=4;
+					else if(ca==='='){
+						obj.qdir = parseInt(bstr.substr(i+1,2),16);
+						obj.qnum = parseInt(bstr.substr(i+3,2),16);
+						i+=4;
 					}
 					else{
-						bd.sDiC(cell,(bstr.charAt(i)!="."?parseInt(bstr.charAt(i),16):-1));
-						bd.sQnC(cell,(bstr.charAt(i+1)!="."?parseInt(bstr.charAt(i+1),16):-1));
-						cell++; i+=1;
+						obj.qdir = (bstr.charAt(i)  !=="." ? parseInt(bstr.charAt(i),16) : -1);
+						obj.qnum = (bstr.charAt(i+1)!=="." ? parseInt(bstr.charAt(i+1),16) : -1);
+						i+=1;
 					}
 				}
+
+				cell++;
 				if(cell>=bd.cellmax){ a=i+1; break;}
 			}
+			base.enableInfo();
 
 			// 盤面外数字のデコード
 			cell=0;
 			for(var i=a;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
-				if     (ca=='.'){ bd.sDiE(cell,-1); cell++;}
-				else if(ca=='-'){ bd.sDiE(cell,parseInt(bstr.substr(i+1,2),16)); cell++; i+=2;}
-				else            { bd.sDiE(cell,parseInt(ca,16)); cell++;}
+				if     (ca==='.'){ bd.excell[cell].qdir = -1;}
+				else if(ca==='-'){ bd.excell[cell].qdir = parseInt(bstr.substr(i+1,2),16); i+=2;}
+				else             { bd.excell[cell].qdir = parseInt(ca,16);}
+				cell++;
 				if(cell>=k.qcols){ a=i+1; break;}
 			}
 			for(var i=a;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
-				if     (ca=='.'){ bd.sQnE(cell,-1); cell++;}
-				else if(ca=='-'){ bd.sQnE(cell,parseInt(bstr.substr(i+1,2),16)); cell++; i+=2;}
-				else            { bd.sQnE(cell,parseInt(ca,16)); cell++;}
+				if     (ca==='.'){ bd.excell[cell].qnum = -1;}
+				else if(ca==='-'){ bd.excell[cell].qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+				else             { bd.excell[cell].qnum = parseInt(ca,16);}
+				cell++;
 				if(cell>=k.qcols+k.qrows){ a=i+1; break;}
 			}
 
@@ -288,39 +294,40 @@ Puzzles.triplace.prototype = {
 			// 盤面内側の数字部分のエンコード
 			var count=0;
 			for(var c=0;c<bd.cellmax;c++){
-				var pstr = "";
+				var pstr = "", obj=bd.cell[c];
 
-				if(bd.QuC(c)==51){
-					if(bd.QnC(c)==-1 && bd.DiC(c)==-1){ pstr="_";}
-					else if(bd.DiC(c)==-1 && bd.QnC(c)<35){ pstr="$"+bd.QnC(c).toString(36);}
-					else if(bd.QnC(c)==-1 && bd.DiC(c)<35){ pstr="%"+bd.DiC(c).toString(36);}
+				if(obj.ques===51){
+					if(obj.qnum===-1 && obj.qdir===-1){ pstr="_";}
+					else if(obj.qdir==-1 && obj.qnum<35){ pstr="$"+obj.qnum.toString(36);}
+					else if(obj.qnum==-1 && obj.qdir<35){ pstr="%"+obj.qdir.toString(36);}
 					else{
-						pstr+=bd.DiC(c).toString(16);
-						pstr+=bd.QnC(c).toString(16);
+						pstr+=obj.qdir.toString(16);
+						pstr+=obj.qnum.toString(16);
 
-						if     (bd.QnC(c) >=16 && bd.DiC(c)>=16){ pstr = ("="+pstr);}
-						else if(bd.QnC(c) >=16){ pstr = ("-"+pstr);}
-						else if(bd.DiC(c)>=16){ pstr = ("+"+pstr);}
+						if     (obj.qnum>=16 && obj.qdir>=16){ pstr = ("="+pstr);}
+						else if(obj.qnum>=16){ pstr = ("-"+pstr);}
+						else if(obj.qdir>=16){ pstr = ("+"+pstr);}
 					}
 				}
-				else{ pstr=" "; count++;}
+				else{ count++;}
 
-				if     (count== 0){ cm += pstr;}
-				else if(pstr!=" "){ cm += ((count+15).toString(36)+pstr); count=0;}
-				else if(count==20){ cm += "z"; count=0;}
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===20){ cm += ((count+15).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm += (count+15).toString(36);}
 
 			// 盤面外側の数字部分のエンコード
 			for(var c=0;c<k.qcols;c++){
-				if     (bd.DiE(c)<  0){ cm += ".";}
-				else if(bd.DiE(c)< 16){ cm += bd.DiE(c).toString(16);}
-				else if(bd.DiE(c)<256){ cm += ("-"+bd.DiE(c).toString(16));}
+				var num = bd.excell[c].qdir;
+				if     (num<  0){ cm += ".";}
+				else if(num< 16){ cm += num.toString(16);}
+				else if(num<256){ cm += ("-"+num.toString(16));}
 			}
 			for(var c=k.qcols;c<k.qcols+k.qrows;c++){
-				if     (bd.QnE(c)<  0){ cm += ".";}
-				else if(bd.QnE(c)< 16){ cm += bd.QnE(c).toString(16);}
-				else if(bd.QnE(c)<256){ cm += ("-"+bd.QnE(c).toString(16));}
+				var num = bd.excell[c].qnum;
+				if     (num<  0){ cm += ".";}
+				else if(num< 16){ cm += num.toString(16);}
+				else if(num<256){ cm += ("-"+num.toString(16));}
 			}
 
 			this.outbstr += cm;
@@ -330,17 +337,17 @@ Puzzles.triplace.prototype = {
 		fio.decodeData = function(){
 			this.decodeCellQnum51();
 			this.decodeBorderAns();
-			this.decodeCell( function(c,ca){
-				if     (ca == "+"){ bd.sQsC(c, 1);}
-				else if(ca == "-"){ bd.sQsC(c, 2);}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="+"){ obj.qsub = 1;}
+				else if(ca==="-"){ obj.qsub = 2;}
 			});
 		};
 		fio.encodeData = function(){
 			this.encodeCellQnum51();
 			this.encodeBorderAns();
-			this.encodeCell( function(c){
-				if     (bd.QsC(c)==1){ return "+ ";}
-				else if(bd.QsC(c)==2){ return "- ";}
+			this.encodeCell( function(obj){
+				if     (obj.qsub===1){ return "+ ";}
+				else if(obj.qsub===2){ return "- ";}
 				else                 { return ". ";}
 			});
 		};

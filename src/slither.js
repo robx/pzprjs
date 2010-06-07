@@ -81,7 +81,7 @@ Puzzles.slither.prototype = {
 			}
 			else if(k.playmode){
 				if(!pp.getVal('bgcolor') || !this.inputBGcolor0()){
-					if(this.btn.Left) this.inputborderans();
+					if(this.btn.Left) this.inputLine();
 					else if(this.btn.Right) this.inputpeke();
 				}
 				else{ this.inputBGcolor();}
@@ -91,7 +91,7 @@ Puzzles.slither.prototype = {
 		mv.mousemove = function(){
 			if(k.playmode){
 				if(!pp.getVal('bgcolor') || this.inputData<10){
-					if(this.btn.Left) this.inputborderans();
+					if(this.btn.Left) this.inputLine();
 					else if(this.btn.Right) this.inputpeke();
 				}
 				else{ this.inputBGcolor();}
@@ -157,12 +157,11 @@ Puzzles.slither.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.setBGCellColorFunc('qsub2');
-		pc.setBorderColorFunc('line');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
 
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawLines(x1,y1,x2,y2);
 
 			this.drawBaseMarks(x1,y1,x2,y2);
 
@@ -223,37 +222,30 @@ Puzzles.slither.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			if(this.filever==1){
+			if(this.filever===1){
 				this.decodeCellQnum();
 				this.decodeCellQsub();
-				this.decodeBorderAns2();
+				this.decodeBorderLine();
 			}
-			else if(this.filever==0){
+			else if(this.filever===0){
 				this.decodeCellQnum();
-				this.decodeBorderAns2();
+				this.decodeBorderLine();
 			}
 		};
 		fio.encodeData = function(){
 			this.filever = 1;
 			this.encodeCellQnum();
 			this.encodeCellQsub();
-			this.encodeBorderAns2();
+			this.encodeBorderLine();
 		};
 
 		fio.kanpenOpen = function(){
 			this.decodeCellQnum_kanpen();
-			this.decodeBorder( function(c,ca){
-				if     (ca == "1") { bd.sQaB(c, 1);}
-				else if(ca == "-1"){ bd.sQsB(c, 2);}
-			});
+			this.decodeBorderLine();
 		};
 		fio.kanpenSave = function(){
 			this.encodeCellQnum_kanpen();
-			this.encodeBorder( function(c){
-				if     (bd.QaB(c)==1){ return "1 ";}
-				else if(bd.QsB(c)==2){ return "-1 ";}
-				else{ return "0 ";}
-			});
+			this.encodeBorderLine();
 		};
 	},
 
@@ -269,7 +261,7 @@ Puzzles.slither.prototype = {
 				this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 			}
 
-			if( !this.checkdir4Border() ){
+			if( !this.checkdir4BorderLine() ){
 				this.setAlert('数字の周りにある境界線の本数が違います。','The number is not equal to the number of border lines around it.'); return false;
 			}
 
@@ -282,6 +274,27 @@ Puzzles.slither.prototype = {
 			}
 
 			return true;
+		};
+		
+		ans.checkdir4BorderLine = function(){
+			var result = true;
+			for(var c=0;c<bd.cellmax;c++){
+				var qn = bd.QnC(c);
+				if(qn>=0 && qn!==this.checkdir4BorderLine1(c)){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC([c],1);
+					result = false;
+				}
+			}
+			return result;
+		};
+		ans.checkdir4BorderLine1 = function(cc){
+			var cnt=0, bx=bd.cell[cc].bx, by=bd.cell[cc].by;
+			if( bd.isLine(bd.bnum(bx  ,by-1)) ){ cnt++;}
+			if( bd.isLine(bd.bnum(bx  ,by+1)) ){ cnt++;}
+			if( bd.isLine(bd.bnum(bx-1,by  )) ){ cnt++;}
+			if( bd.isLine(bd.bnum(bx+1,by  )) ){ cnt++;}
+			return cnt;
 		};
 	}
 };

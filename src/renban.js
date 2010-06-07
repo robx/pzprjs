@@ -128,12 +128,12 @@ Puzzles.renban.prototype = {
 		fio.decodeData = function(){
 			this.decodeBorderQues();
 			this.decodeCellQnum();
-			this.decodeCellQanssub();
+			this.decodeCellAnumsub();
 		};
 		fio.encodeData = function(){
 			this.encodeBorderQues();
 			this.encodeCellQnum();
-			this.encodeCellQanssub();
+			this.encodeCellAnumsub();
 		};
 	},
 

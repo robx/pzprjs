@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 コージュン版 cojun.js v3.3.0
+// パズル固有スクリプト部 コージュン版 cojun.js v3.3.1
 //
 Puzzles.cojun = function(){ };
 Puzzles.cojun.prototype = {
@@ -114,12 +114,12 @@ Puzzles.cojun.prototype = {
 		fio.decodeData = function(){
 			this.decodeBorderQues();
 			this.decodeCellQnum();
-			this.decodeCellQanssub();
+			this.decodeCellAnumsub();
 		};
 		fio.encodeData = function(){
 			this.encodeBorderQues();
 			this.encodeCellQnum();
-			this.encodeCellQanssub();
+			this.encodeCellAnumsub();
 		};
 	},
 

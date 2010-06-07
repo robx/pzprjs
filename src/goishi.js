@@ -79,12 +79,12 @@ Puzzles.goishi.prototype = {
 		Timer.prototype.execMouseUndo = function(){
 			if(kc.inUNDO){
 				var prop = (um.current>0 ? um.ope[um.current-1].property : '');
-				if(prop===k.QANS){ um.undo();}
+				if(prop===k.ANUM){ um.undo();}
 				else             { kc.inUNDO = false;}
 			}
 			else if(kc.inREDO){
 				var prop = (um.current<um.ope.length ? um.ope[um.current].property : '');
-				if(prop===k.QANS){ um.redo();}
+				if(prop===k.ANUM){ um.redo();}
 				else             { kc.inREDO = false;}
 			}
 		};
@@ -130,7 +130,7 @@ Puzzles.goishi.prototype = {
 		};
 		mv.inputqans = function(){
 			var cc = this.cellid();
-			if(cc===null || bd.cell[cc].ques!==7 || bd.cell[cc].qans!==-1){
+			if(cc===null || bd.cell[cc].ques!==7 || bd.cell[cc].anum!==-1){
 				kc.inREDO = true;
 				tm.startMouseUndoTimer();
 				return;
@@ -138,8 +138,8 @@ Puzzles.goishi.prototype = {
 
 			var max=0, bcc=null;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.cell[c].qans>max){
-					max = bd.cell[c].qans;
+				if(bd.cell[c].anum>max){
+					max = bd.cell[c].anum;
 					bcc = c;
 				}
 			}
@@ -164,13 +164,13 @@ Puzzles.goishi.prototype = {
 				for(var bx=d.x1;bx<=d.x2;bx+=2){ for(var by=d.y1;by<=d.y2;by+=2){
 					var c = bd.cnum(bx,by);
 					if(c!==null && bd.cell[c].ques===7){
-						var qa = bd.cell[c].qans;
+						var qa = bd.cell[c].anum;
 						if(qa===-1 || (max>=2 && qa===max-1)){ return;}
 					}
 				} }
 			}
 
-			bd.sQaC(cc,max+1);
+			bd.sAnC(cc,max+1);
 			pc.paintCell(cc);
 		};
 
@@ -192,7 +192,7 @@ Puzzles.goishi.prototype = {
 
 		bd.setStone = function(cc){
 			if     (bd.QuC(cc)!== 7){ bd.sQuC(cc,7);}
-			else if(bd.QaC(cc)===-1){ bd.sQuC(cc,0);} // 数字のマスは消せません
+			else if(bd.AnC(cc)===-1){ bd.sQuC(cc,0);} // 数字のマスは消せません
 		};
 	},
 
@@ -232,7 +232,7 @@ Puzzles.goishi.prototype = {
 			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.cell[c].ques===7 && bd.cell[c].qans===-1){
+				if(bd.cell[c].ques===7 && bd.cell[c].anum===-1){
 					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.cellcolor);
 					g.fillStyle   = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 					if(this.vnop(header+c,this.FILL_STROKE)){
@@ -252,7 +252,7 @@ Puzzles.goishi.prototype = {
 			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.cell[c].ques===7 && bd.cell[c].qans!==-1){
+				if(bd.cell[c].ques===7 && bd.cell[c].anum!==-1){
 					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 					if(this.vnop(header+c,this.FILL)){
 						g.fillRect(bd.cell[c].px+mgnw+2, bd.cell[c].py+mgnh+2, this.cw-mgnw*2-3, this.ch-mgnh*2-3);
@@ -299,11 +299,16 @@ Puzzles.goishi.prototype = {
 
 		//---------------------------------------------------------
 		enc.decodeGoishi = function(){
-			var bstr = this.outbstr;
+			var bstr = this.outbstr, c=0, twi=[16,8,4,2,1];
 			for(var i=0;i<bstr.length;i++){
 				var num = parseInt(bstr.charAt(i),32);
-				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?0:7));} }
-				if((i*5+5)>=k.qcols*k.qrows){ break;}
+				for(var w=0;w<5;w++){
+					if(c<bd.cellmax){
+						bd.sQuC(c,(num&twi[w]?0:7));
+						c++;
+					}
+				}
+				if(c>=k.qcols*k.qrows){ break;}
 			}
 			this.outbstr = bstr.substr(i+1);
 		};
@@ -311,12 +316,12 @@ Puzzles.goishi.prototype = {
 		enc.encodeGoishi = function(){
 			var d = this.getSizeOfBoard_goishi();
 
-			var cm="", count=0, pass=0;
+			var cm="", count=0, pass=0, twi=[16,8,4,2,1];
 			for(var by=d.y1;by<=d.y2;by+=2){
 				for(var bx=d.x1;bx<=d.x2;bx+=2){
 					var c=bd.cnum(bx,by);
-					if(c===null || bd.QuC(c)==0){ pass+=Math.pow(2,4-count);}
-					count++; if(count==5){ cm += pass.toString(32); count=0; pass=0;}
+					if(c===null || bd.cell[c].ques===0){ pass+=twi[count];} count++;
+					if(count==5){ cm += pass.toString(32); count=0; pass=0;}
 				}
 			}
 			if(count>0){ cm += pass.toString(32);}
@@ -328,7 +333,7 @@ Puzzles.goishi.prototype = {
 		enc.getSizeOfBoard_goishi = function(){
 			var x1=9999, x2=-1, y1=9999, y2=-1, count=0;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QuC(c)!=7){ continue;}
+				if(bd.cell[c].ques!==7){ continue;}
 				if(x1>bd.cell[c].bx){ x1=bd.cell[c].bx;}
 				if(x2<bd.cell[c].bx){ x2=bd.cell[c].bx;}
 				if(y1>bd.cell[c].by){ y1=bd.cell[c].by;}
@@ -342,33 +347,32 @@ Puzzles.goishi.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeGoishiFile = function(){
-			this.decodeCell( function(c,ca){
+			this.decodeCell( function(obj,ca){
 				if(ca!=='.'){
-					bd.sQuC(c, 7);
-					if(ca!=='0'){ bd.sQaC(c, parseInt(ca));}
+					obj.ques = 7;
+					if(ca!=='0'){ obj.anum = parseInt(ca);}
 				}
 			});
 		};
 		fio.encodeGoishiFile = function(){
-			this.encodeCell( function(c){
-				if(bd.QuC(c)===7){
-					if(bd.QaC(c)===-1){ return "0 ";}
-					else{ return ""+parseInt(bd.QaC(c))+" ";}
+			this.encodeCell( function(obj){
+				if(obj.ques===7){
+					return (obj.anum!==-1 ? ""+obj.anum+" " : "0 ");
 				}
 				return ". ";
 			});
 		};
 
 		fio.decodeGoishi_kanpen = function(){
-			this.decodeCell( function(c,ca){
-				if(ca==='1'){ bd.sQuC(c, 7);}
+			this.decodeCell( function(obj,ca){
+				if(ca==='1'){ obj.ques = 7;}
 			});
 		};
 		fio.encodeGoishi_kanpen = function(){
 			for(var by=bd.minby+1;by<bd.maxby;by+=2){
 				for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 					var c = bd.cnum(bx,by);
-					this.datastr += (bd.QuC(c)===7 ? "1 " : ". ");
+					this.datastr += (bd.cell[c].ques===7 ? "1 " : ". ");
 				}
 				this.datastr += "/";
 			}
@@ -383,19 +387,19 @@ Puzzles.goishi.prototype = {
 				if(item.length<=1){ return;}
 				else{
 					var c=bd.cnum(parseInt(item[2])*2+1,parseInt(item[1])*2+1);
-					bd.sQuC(c, 7);
-					bd.sQaC(c, parseInt(item[0]));
+					bd.cell[c].ques = 7;
+					bd.cell[c].anum = parseInt(item[0]);
 				}
 			}
 		};
 		fio.encodeQansPos_kanpen = function(){
 			var stones = []
 			for(var by=bd.minby+1;by<bd.maxby;by+=2){ for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-				var c = bd.cnum(bx,by);
-				if(bd.QuC(c)!==7 || bd.QaC(c)===-1){ continue;}
+				var c = bd.cnum(bx,by), obj=bd.cell[c];
+				if(obj.ques!==7 || obj.anum===-1){ continue;}
 
 				var pos = [(bx>>1).toString(), (by>>1).toString()];
-				stones[bd.QaC(c)-1] = pos;
+				stones[obj.anum-1] = pos;
 			}}
 			for(var i=0,len=stones.length;i<len;i++){
 				var item = [(i+1), stones[i][1], stones[i][0]];
@@ -409,7 +413,7 @@ Puzzles.goishi.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkAllCell(function(c){ return (bd.cell[c].ques===7 && bd.cell[c].qans===-1);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.cell[c].ques===7 && bd.cell[c].anum===-1);}) ){
 				this.setAlert('拾われていない碁石があります。','There is remaining Goishi.'); return false;
 			}
 

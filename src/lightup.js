@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 美術館版 lightup.js v3.3.0
+// パズル固有スクリプト部 美術館版 lightup.js v3.3.1
 //
 Puzzles.lightup = function(){ };
 Puzzles.lightup.prototype = {
@@ -158,7 +158,7 @@ Puzzles.lightup.prototype = {
 			um.addOpe(k.CELL, k.QANS, id, old, num);
 			this.cell[id].qans = num;
 
-			if((old===-1)^(num===-1)){ this.setQlight(id, (num!==-1?1:0));}
+			if((old===0)^(num===0)){ this.setQlight(id, (num!==0?1:0));}
 		};
 	},
 
@@ -226,17 +226,10 @@ Puzzles.lightup.prototype = {
 		};
 
 		enc.decodeKanpen = function(){
-			fio.decodeCell( function(c,ca){
-				if     (ca == "5"){ bd.sQnC(c, -2);}
-				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			});
+			fio.decodeCellQnumb();
 		};
 		enc.encodeKanpen = function(){
-			fio.encodeCell( function(c){
-				if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
-				else if(bd.QnC(c)==-2){ return "5 ";}
-				else                  { return ". ";}
-			});
+			fio.encodeCellQnumb();
 		};
 
 		//---------------------------------------------------------
@@ -244,23 +237,23 @@ Puzzles.lightup.prototype = {
 			this.decodeCellQnumAns();
 		};
 		fio.encodeData = function(){
-			return this.encodeCellQnumAns();
+			this.encodeCellQnumAns();
 		};
 
 		fio.kanpenOpen = function(){
-			this.decodeCell( function(c,ca){
-				if     (ca == "5"){ bd.sQnC(c, -2);}
-				else if(ca == "+"){ bd.sQaC(c, 1);}
-				else if(ca == "*"){ bd.sQsC(c, 1);}
-				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="+"){ obj.qans = 1;}
+				else if(ca==="*"){ obj.qsub = 1;}
+				else if(ca==="5"){ obj.qnum = -2;}
+				else if(ca!=="."){ obj.qnum = parseInt(ca);}
 			});
 		};
 		fio.kanpenSave = function(){
-			this.encodeCell( function(c){
-				if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
-				else if(bd.QaC(c)==1) { return "+ ";}
-				else if(bd.QsC(c)==1) { return "* ";}
-				else if(bd.QnC(c)==-2){ return "5 ";}
+			this.encodeCell( function(obj){
+				if     (obj.qans=== 1){ return "+ ";}
+				else if(obj.qsub=== 1){ return "* ";}
+				else if(obj.qnum>=  0){ return (obj.qnum.toString() + " ");}
+				else if(obj.qnum===-2){ return "5 ";}
 				else                  { return ". ";}
 			});
 		};
@@ -275,7 +268,7 @@ Puzzles.lightup.prototype = {
 				this.setAlert('照明に別の照明の光が当たっています。','Akari is shined from another Akari.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)!==ans.checkdir4Cell(c,function(a){ return (bd.QaC(a)==1);})); }) ){
+			if( !this.checkAllCell(function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)!==ans.checkdir4Cell(c,function(a){ return (bd.QaC(a)===1);})); }) ){
 				this.setAlert('数字のまわりにある照明の数が間違っています。','The number is not equal to the number of Akari around it.'); return false;
 			}
 

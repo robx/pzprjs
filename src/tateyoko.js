@@ -104,7 +104,7 @@ Puzzles.tateyoko.prototype = {
 
 			// 描画・後処理
 			if(input){
-				bd.sQaC(cc,(this.inputData!==0?this.inputData:-1));
+				bd.sQaC(cc,(this.inputData!==0?this.inputData:0));
 				pc.paintCell(cc);
 			}
 			this.prevPos   = pos;
@@ -114,16 +114,7 @@ Puzzles.tateyoko.prototype = {
 			var cc  = this.cellid();
 			if(cc===null || bd.QuC(cc)===1){ return;}
 
-			if(this.btn.Left){
-				if     (bd.QaC(cc)===-1){ bd.sQaC(cc, 1);}
-				else if(bd.QaC(cc)=== 1){ bd.sQaC(cc, 2);}
-				else                    { bd.sQaC(cc,-1);}
-			}
-			else if(this.btn.Right){
-				if     (bd.QaC(cc)===-1){ bd.sQaC(cc, 2);}
-				else if(bd.QaC(cc)=== 1){ bd.sQaC(cc,-1);}
-				else                    { bd.sQaC(cc, 1);}
-			}
+			bd.sQaC(cc, (this.btn.Left?[1,2,0]:[2,0,1])[bd.QaC(cc)]);
 			pc.paintCell(cc);
 		};
 
@@ -139,8 +130,8 @@ Puzzles.tateyoko.prototype = {
 			if(ca=='q'||ca=='q1'||ca=='q2'){
 				if(ca=='q'){ ca = (bd.QuC(cc)!=1?'q1':'q2');}
 				if(ca=='q1'){
-					bd.sQuC(cc, 1);
-					bd.sQaC(cc,-1);
+					bd.sQuC(cc,1);
+					bd.sQaC(cc,0);
 					if(bd.QnC(cc)>4){ bd.sQnC(cc,-1);}
 				}
 				else if(ca=='q2'){ bd.sQuC(cc, 0);}
@@ -182,7 +173,7 @@ Puzzles.tateyoko.prototype = {
 
 		menu.ex.adjustSpecial = function(key,d){
 			if(key & this.TURN){ // 回転だけ
-				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!==-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
+				for(var c=0;c<bd.cellmax;c++){ bd.sQaC(c,[0,2,1][bd.QaC(c)]);}
 			}
 		};
 		bd.nummaxfunc = function(cc){ return (bd.QuC(cc)===1?4:Math.max(k.qcols,k.qrows));};
@@ -289,19 +280,15 @@ Puzzles.tateyoko.prototype = {
 		enc.decodeTateyoko = function(){
 			var c=0, i=0, bstr = this.outbstr;
 			for(i=0;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
+				var ca = bstr.charAt(i), obj=bd.cell[c];
 
-				if     (ca=='o'){ bd.sQuC(c,1); bd.sQnC(c,0); c++;}
-				else if(ca=='p'){ bd.sQuC(c,1); bd.sQnC(c,1); c++;}
-				else if(ca=='q'){ bd.sQuC(c,1); bd.sQnC(c,2); c++;}
-				else if(ca=='r'){ bd.sQuC(c,1); bd.sQnC(c,3); c++;}
-				else if(ca=='s'){ bd.sQuC(c,1); bd.sQnC(c,4); c++;}
-				else if(ca=='x'){ bd.sQuC(c,1); c++;}
-				else if(this.include(ca,"0","9")||this.include(ca,"a","f")){ bd.sQnC(c,parseInt(ca,16)); c++;}
-				else if(ca=="-"){ bd.sQnC(c,parseInt(bstr.substr(i+1,2),16)); c++; i+=2;}
-				else if(ca=="i"){ c+=(parseInt(bstr.charAt(i+1),16)); i++;}
-				else{ c++;}
+				if     (ca==='x'){ obj.ques = 1;}
+				else if(this.include(ca,"o","s")){ obj.ques = 1; obj.qnum = (parseInt(ca,29)-24);}
+				else if(this.include(ca,"0","9")||this.include(ca,"a","f")){ obj.qnum = parseInt(ca,16);}
+				else if(ca==="-"){ obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+				else if(ca==="i"){ c+=(parseInt(bstr.charAt(i+1),16)-1); i++;}
 
+				c++;
 				if(c>=bd.cellmax){ break;}
 			}
 			this.outbstr = bstr.substr(i);
@@ -309,32 +296,26 @@ Puzzles.tateyoko.prototype = {
 		enc.encodeTateyoko = function(type){
 			var cm="", count=0;
 			for(var c=0;c<bd.cellmax;c++){
-				var pstr="";
-				if(bd.QuC(c)==0){
-					if     (bd.QnC(c)==-1){ count++;}
-					else if(bd.QnC(c)==-2){ pstr=".";}
-					else if(bd.QnC(c)< 16){ pstr="" +bd.QnC(c).toString(16);}
-					else if(bd.QnC(c)<256){ pstr="-"+bd.QnC(c).toString(16);}
+				var pstr="", qu=bd.cell[c].ques, qn=bd.cell[c].qnum;
+				if(qu===0){
+					if     (qn===-1){ count++;}
+					else if(qn===-2){ pstr=".";}
+					else if(qn<  16){ pstr="" +qn.toString(16);}
+					else if(qn< 256){ pstr="-"+qn.toString(16);}
 					else{ pstr=""; count++;}
 				}
-				else if(bd.QuC(c)==1){
-					if(bd.QnC(c)==-1||bd.QnC(c)==-2){ pstr="x";}
-					else if(bd.QnC(c)==0){ pstr="o";}
-					else if(bd.QnC(c)==1){ pstr="p";}
-					else if(bd.QnC(c)==2){ pstr="q";}
-					else if(bd.QnC(c)==3){ pstr="r";}
-					else if(bd.QnC(c)==4){ pstr="s";}
-					else{ pstr="x";}
+				else if(qu===1){
+					pstr=(qn>=0 ? (qn+24).toString(29) : "x");
 				}
 
-				if(count==0){ cm+=pstr;}
-				else if(pstr!=""){
-					if(count==1){ cm+=("n"+pstr); count=0;}
-					else{ cm+=("i"+count.toString(16)+pstr); count=0;}
+				if(count===0){ cm+=pstr;}
+				else if(pstr || count===15){
+					if(count===1){ cm+=("n"+pstr);}
+					else{ cm+=("i"+count.toString(16)+pstr);}
+					count=0;
 				}
-				else if(count==15){ cm+="if"; count=0;}
 			}
-			if(count==1){ cm+="n";}
+			if(count===1){ cm+="n";}
 			else if(count>1){ cm+=("i"+count.toString(16));}
 
 			this.outbstr += cm;
@@ -342,30 +323,27 @@ Puzzles.tateyoko.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCell( function(c,ca){
-				if     (ca=="?"){ bd.sQnC(c,-2);}
-				else if(ca>="a"&&ca<='f'){ bd.sQuC(c,1); bd.sQnC(c,{a:1,b:2,c:3,d:4,e:0,f:-1}[ca]);}
-				else if(ca!="."){ bd.sQnC(c, parseInt(ca));}
+			this.decodeCell( function(obj,ca){
+				if     (ca>="a"&&ca<='f'){ obj.ques = 1; obj.qnum = {a:1,b:2,c:3,d:4,e:0,f:-1}[ca];}
+				else if(ca==="?"){ obj.qnum = -2;}
+				else if(ca!=="."){ obj.qnum = parseInt(ca);}
 			});
-			this.decodeCell( function(c,ca){
-				if     (ca=="0"){ bd.sQaC(c,-1);}
-				else if(ca!="."){ bd.sQaC(c,parseInt(ca));}
+			this.decodeCell( function(obj,ca){
+				if(ca!=="."){ obj.qans = parseInt(ca);}
 			});
 		};
 		fio.encodeData = function(){
-			this.encodeCell( function(c){
-				if(bd.QuC(c)==1){
-					if(bd.QnC(c)==-1||bd.QnC(c)==-2){ return "f ";}
-					else{ return {0:"e ",1:"a ",2:"b ",3:"c ",4:"d "}[bd.QnC(c)];}
+			this.encodeCell( function(obj){
+				if(obj.ques===1){
+					if(obj.qnum==-1||obj.qnum==-2){ return "f ";}
+					else{ return {0:"e ",1:"a ",2:"b ",3:"c ",4:"d "}[obj.qnum];}
 				}
-				else if(bd.QnC(c)>= 0){ return ""+bd.QnC(c).toString()+" ";}
-				else if(bd.QnC(c)==-2){ return "? ";}
+				else if(obj.qnum===-2){ return "? ";}
+				else if(obj.qnum>=  0){ return ""+obj.qnum+" ";}
 				else{ return ". ";}
 			});
-			this.encodeCell( function(c){
-				if     (bd.QuC(c)==1 ){ return ". ";}
-				else if(bd.QaC(c)==-1){ return "0 ";}
-				else{ return ""+bd.QaC(c).toString()+" ";}
+			this.encodeCell( function(obj){
+				return (obj.ques!==1 ? ""+obj.qans+" " : ". ");
 			});
 		};
 	},
@@ -394,13 +372,13 @@ Puzzles.tateyoko.prototype = {
 				this.setAlert('黒マスに繋がる線の数が正しくありません。','The number of lines connected to a black cell is wrong.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QuC(c)===0 && bd.QaC(c)===-1);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.QuC(c)===0 && bd.QaC(c)===0);}) ){
 				this.setAlert('何も入っていないマスがあります。','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)===0 && bd.QaC(c)===-1);});};
+		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)===0 && bd.QaC(c)===0);});};
 
 		ans.checkBCell = function(type){
 			var result = true;
@@ -424,7 +402,7 @@ Puzzles.tateyoko.prototype = {
 
 		ans.getBarInfo = function(){
 			var binfo = new AreaInfo();
-			for(var c=0;c<bd.cellmax;c++){ binfo.id[c]=((bd.QuC(c)===1 || bd.QaC(c)===-1) ? null : 0);}
+			for(var c=0;c<bd.cellmax;c++){ binfo.id[c]=((bd.QuC(c)===1 || bd.QaC(c)===0) ? null : 0);}
 			for(var c=0;c<bd.cellmax;c++){
 				if(binfo.id[c]!==0){ continue;}
 				binfo.max++;

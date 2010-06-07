@@ -54,92 +54,56 @@ Puzzles.hakoiri.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.editmode) this.inputborder();
+			if(k.editmode){ this.inputborder();}
 			else if(k.playmode){
-				if(!kp.enabled() || this.btn.Right) this.inputmark();
-				else kp.display();
+				if(this.btn.Left){
+					if(!kp.enabled()){ this.inputqnum();}
+					else{ kp.display();}
+				}
 			}
 		};
 		mv.mouseup = function(){
-			if(k.editmode && this.notInputted()){
-				if(!kp.enabled()) this.inputqnum();
-				else if(this.btn.Left){ kp.display();}
+			if(this.notInputted()){
+				if(k.editmode){
+					if(!kp.enabled()){ this.mouseCell=null; this.inputqnum();}
+					else{ kp.display();}
+				}
+				else if(k.playmode){
+					if(this.btn.Right){ this.inputqnum();}
+				}
 			}
 		};
 		mv.mousemove = function(){
-			if(k.editmode) this.inputborder();
-			else if(k.playmode && this.btn.Right) this.inputDot();
-		};
-
-		mv.inputmark = function(){
-			var cc = this.cellid();
-			if(cc===null || cc===this.mouseCell){ return;}
-
-			if(cc===tc.getTCC()){
-				this.inputmark3(cc);
-				this.mouseCell = cc;
+			if(k.editmode){ this.inputborder();}
+			else if(k.playmode){
+				if(this.btn.Right){ this.inputDot();}
 			}
-			else{
-				var cc0 = tc.getTCC();
-				tc.setTCC(cc);
-				pc.paintCell(cc0);
-				if(bd.QsC(cc)==1 || bd.QaC(cc)==-1){ this.inputData=1;}
-			}
-
-			pc.paintCell(cc);
-		};
-		mv.inputmark3 = function(cc){
-			if(bd.QnC(cc)!=-1){ return;}
-			if(this.btn.Left){
-				if(bd.QsC(cc)== 1){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
-				else{
-					bd.sQsC(cc,(bd.QaC(cc)==3?1:0));
-					bd.sQaC(cc,({'-1':1,'1':2,'2':3,'3':-1})[bd.QaC(cc).toString()]);
-				}
-			}
-			else if(this.btn.Right){
-				if(bd.QsC(cc)== 1){ bd.sQaC(cc, 3); bd.sQsC(cc,0);}
-				else{
-					bd.sQsC(cc,(bd.QaC(cc)==-1?1:0));
-					bd.sQaC(cc,({'-1':-1,'1':-1,'2':1,'3':2})[bd.QaC(cc).toString()]);
-				}
-			}
-			if(bd.QsC(cc)==1){ this.inputData=1;}
 		};
 
 		mv.inputDot = function(){
 			var cc = this.cellid();
-			if(cc===null || cc==this.mouseCell || this.inputData!=1 || bd.QnC(cc)!=-1){ return;}
-			var cc0 = tc.getTCC(); tc.setTCC(cc);
-			bd.sQaC(cc,-1);
-			bd.sQsC(cc,1);
-			this.mouseCell = cc;
+			if(cc===null || cc===this.mouseCell || bd.QnC(cc)!==-1){ return;}
 
-			pc.paintCell(cc0);
+			if(this.inputData===null){ this.inputData=(bd.QsC(cc)===1?0:1);}
+
+			bd.sAnC(cc,-1);
+			bd.sQsC(cc,(this.inputData===1?1:0));
+			this.mouseCell = cc;
 			pc.paintCell(cc);
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
-			kc.key_hakoiri(ca);
+			this.key_hakoiri(ca);
 		};
 		kc.key_hakoiri = function(ca){
-			var cc = tc.getTCC(), flag = true;
-
-			if     ((ca=='1'||ca=='q'||ca=='a'||ca=='z')){ bd.setNum(cc,1);}
-			else if((ca=='2'||ca=='w'||ca=='s'||ca=='x')){ bd.setNum(cc,2);}
-			else if((ca=='3'||ca=='e'||ca=='d'||ca=='c')){ bd.setNum(cc,3);}
-			else if((ca=='4'||ca=='r'||ca=='f'||ca=='v')){ bd.setNum(cc,(k.editmode?-2:-1));}
-			else if((ca=='5'||ca=='t'||ca=='g'||ca=='b'||ca==' ')){ bd.setNum(cc,-1);}
-			else if(ca=='-'){
-				if(k.editmode){ bd.sQnC(cc,(bd.QnC(cc)!=-2?-2:-1)); bd.sQaC(cc,-1); bd.sQsC(cc,0);}
-				else if(bd.QnC(cc)==-1){ bd.sQaC(cc,-1); bd.sQsC(cc,(bd.QsC(cc)!=1?1:0));}
-			}
-			else{ flag=false;}
-
-			if(flag){ pc.paintCell(cc);}
-			return flag;
+			if     (ca==='1'||ca==='q'||ca==='a'||ca==='z'){ ca='1';}
+			else if(ca==='2'||ca==='w'||ca==='s'||ca==='x'){ ca='2';}
+			else if(ca==='3'||ca==='e'||ca==='d'||ca==='c'){ ca='3';}
+			else if(ca==='4'||ca==='r'||ca==='f'||ca==='v'){ ca='s1';}
+			else if(ca==='5'||ca==='t'||ca==='g'||ca==='b'){ ca=' ';}
+			this.key_inputqnum(ca);
 		};
 
 		kp.kpgenerate = function(mode){
@@ -171,6 +135,7 @@ Puzzles.hakoiri.prototype = {
 		kp.kpinput = function(ca){ kc.key_hakoiri(ca);};
 
 		bd.maxnum = 3;
+		bd.numberAsObject = true;
 	},
 
 	//---------------------------------------------------------
@@ -219,12 +184,12 @@ Puzzles.hakoiri.prototype = {
 		fio.decodeData = function(){
 			this.decodeAreaRoom();
 			this.decodeCellQnum();
-			this.decodeCellQanssub();
+			this.decodeCellAnumsub();
 		};
 		fio.encodeData = function(){
 			this.encodeAreaRoom();
 			this.encodeCellQnum();
-			this.encodeCellQanssub();
+			this.encodeCellAnumsub();
 		};
 	},
 
@@ -278,9 +243,10 @@ Puzzles.hakoiri.prototype = {
 		ans.checkAroundMarks = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.getNum(c)<0){ continue;}
+				var num = bd.getNum(c);
+				if(num<0){ continue;}
 				var bx = bd.cell[c].bx, by = bd.cell[c].by, target=0, clist=[c];
-				var func = function(cc){ return (cc!==null && bd.getNum(c)==bd.getNum(cc));};
+				var func = function(cc){ return (cc!==null && num==bd.getNum(cc));};
 				// 右・左下・下・右下だけチェック
 				target = bd.cnum(bx+2,by  ); if(func(target)){ clist.push(target);}
 				target = bd.cnum(bx  ,by+2); if(func(target)){ clist.push(target);}

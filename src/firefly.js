@@ -130,9 +130,9 @@ Puzzles.firefly.prototype = {
 				}
 
 				this.vdel([headers[1]+c]);
-				if(bd.cell[c].direc!=0){
+				if(bd.cell[c].qdir!=0){
 					g.fillStyle = this.cellcolor;
-					switch(bd.cell[c].direc){
+					switch(bd.cell[c].qdir){
 						case k.UP: py-=(rsize-1); break;
 						case k.DN: py+=(rsize-1); break;
 						case k.LT: px-=(rsize-1); break;

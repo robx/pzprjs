@@ -88,7 +88,7 @@ Puzzles.wagiri.prototype = {
 				}
 				else if(cc!==null){
 					var trans = (this.btn.Left ? [-1,1,0,2,-2] : [2,-2,0,-1,1]);
-					bd.sQnC(cc,trans[bd.QnC(cc)+2]);
+					bd.setNum(cc,trans[bd.QnC(cc)+2]);
 					pc.paintCell(cc);
 				}
 			}
@@ -108,11 +108,8 @@ Puzzles.wagiri.prototype = {
 			if(cc===null){ return;}
 
 			var use = pp.getVal('use');
-			if     (use===1){ bd.sQaC(cc, (bd.QaC(cc)!=(this.btn.Left?1:2)?(this.btn.Left?1:2):-1));}
-			else if(use===2){
-				if(bd.QaC(cc)==-1){ bd.sQaC(cc, (this.btn.Left?1:2));}
-				else{ bd.sQaC(cc, (this.btn.Left?{1:2,2:-1}:{1:-1,2:1})[bd.QaC(cc)]);}
-			}
+			if     (use===1){ bd.sQaC(cc, (bd.QaC(cc)!=(this.btn.Left?1:2)?(this.btn.Left?1:2):0));}
+			else if(use===2){ bd.sQaC(cc, (this.btn.Left?[1,2,0]:[2,0,1])[bd.QaC(cc)]);}
 
 			pc.paintCellAround(cc);
 		};
@@ -136,7 +133,7 @@ Puzzles.wagiri.prototype = {
 				else if(ca==' '){ val=-1;}
 
 				if(cc!==null && val!==0){
-					bd.sQnC(cc,(bd.QnC(cc)!==val?val:-1));
+					bd.setNum(cc,val);
 					pc.paintCell(cc);
 				}
 			}
@@ -148,7 +145,7 @@ Puzzles.wagiri.prototype = {
 
 		menu.ex.adjustSpecial = function(key,d){
 			if(key & this.TURNFLIP){ // 反転・回転全て
-				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
+				for(var c=0;c<bd.cellmax;c++){ bd.sQaC(c,[0,2,1][bd.QaC(c)]);}
 			}
 		};
 	},
@@ -295,7 +292,7 @@ Puzzles.wagiri.prototype = {
 				this.setAlert('"輪"が含まれた線が輪っかになっていません。', 'There is not a loop that consists "輪".'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QaC(c)==-1);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.QaC(c)===0);}) ){
 				this.setAlert('斜線がないマスがあります。','There is a empty cell.'); return false;
 			}
 
@@ -304,7 +301,7 @@ Puzzles.wagiri.prototype = {
 
 		ans.getSlashData = function(){
 			var sdata=[], scnt=this.getScnt();
-			for(var c=0;c<bd.cellmax;c++){ sdata[c] =(bd.QaC(c)!==-1?0:-1);}
+			for(var c=0;c<bd.cellmax;c++){ sdata[c] =(bd.QaC(c)!==0?0:-1);}
 			for(var c=0;c<bd.cellmax;c++){
 				if(sdata[c]!==0){ continue;}
 				// history -> スタックみたいなオブジェクト

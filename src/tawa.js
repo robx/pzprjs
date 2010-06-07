@@ -501,10 +501,11 @@ Puzzles.tawa.prototype = {
 				for(var bx=0;bx<=bd.maxbx;bx++){
 					var cc=bd.cnum(bx,by);
 					if(cc===null){ continue;}
-					if     (item[n]=="#"){ bd.setBlack(cc);}
-					else if(item[n]=="+"){ bd.sQsC(cc, 1);}
-					else if(item[n]=="-"){ bd.sQnC(cc, -2);}
-					else if(item[n]!="."){ bd.sQnC(cc, parseInt(item[n]));}
+					var obj = bd.cell[cc];
+					if     (item[n]==="#"){ obj.qans = 1;}
+					else if(item[n]==="+"){ obj.qsub = 1;}
+					else if(item[n]==="-"){ obj.qnum =-2;}
+					else if(item[n]!=="."){ obj.qnum = parseInt(item[n]);}
 					n++;
 				}
 			}
@@ -517,10 +518,11 @@ Puzzles.tawa.prototype = {
 				for(var bx=0;bx<=bd.maxbx;bx++){
 					var cc=bd.cnum(bx,by);
 					if(cc===null){ continue;}
-					if     (bd.QnC(cc)==-2){ bstr += "- ";}
-					else if(bd.QnC(cc)!=-1){ bstr += (""+bd.QnC(cc).toString()+" ");}
-					else if(bd.isBlack(cc)){ bstr += "# ";}
-					else if(bd.QsC(cc)== 1){ bstr += "+ ";}
+					var obj = bd.cell[cc];
+					if     (obj.qnum===-2){ bstr += "- ";}
+					else if(obj.qnum!==-1){ bstr += (""+obj.qnum+" ");}
+					else if(obj.qans=== 1){ bstr += "# ";}
+					else if(obj.qsub=== 1){ bstr += "+ ";}
 					else{ bstr += ". ";}
 				}
 				bstr += "/";

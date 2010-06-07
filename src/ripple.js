@@ -125,23 +125,23 @@ Puzzles.ripple.prototype = {
 		fio.decodeData = function(){
 			this.decodeBorderQues();
 			this.decodeCellQnum();
-			this.decodeCellQanssub();
+			this.decodeCellAnumsub();
 		};
 		fio.encodeData = function(){
 			this.encodeBorderQues();
 			this.encodeCellQnum();
-			this.encodeCellQanssub();
+			this.encodeCellAnumsub();
 		};
 
 		fio.kanpenOpen = function(){
 			this.decodeAreaRoom();
 			this.decodeCellQnum_kanpen();
-			this.decodeCellQans_kanpen();
+			this.decodeCellAnum_kanpen();
 		};
 		fio.kanpenSave = function(){
 			this.encodeAreaRoom();
 			this.encodeCellQnum_kanpen();
-			this.encodeCellQans_kanpen();
+			this.encodeCellAnum_kanpen();
 		};
 	},
 

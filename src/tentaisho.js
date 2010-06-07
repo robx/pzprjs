@@ -358,6 +358,7 @@ Puzzles.tentaisho.prototype = {
 		};
 
 		enc.decodeStar = function(bstr){
+			base.disableInfo();
 			var s=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
@@ -370,6 +371,7 @@ Puzzles.tentaisho.prototype = {
 
 				if(s>=bd.starmax){ break;}
 			}
+			base.enableInfo();
 			this.outbstr = bstr.substr(i+1);
 		};
 		enc.encodeStar = function(){
@@ -385,13 +387,12 @@ Puzzles.tentaisho.prototype = {
 							s+=(i-1); break;
 						}
 					}
-					if(pstr==""){ pstr=(13+bd.getStar(s)).toString(16); s+=7;}
+					if(pstr===""){ pstr=(13+bd.getStar(s)).toString(16); s+=7;}
 				}
-				else{ pstr=" "; count++;}
+				else{ count++;}
 
-				if(count==0)      { cm += pstr;}
-				else if(pstr!=" "){ cm += ((count+15).toString(36)+pstr); count=0;}
-				else if(count==20){ cm += "z"; count=0;}
+				if(count==0){ cm += pstr;}
+				else if(pstr || count==20){ cm += ((count+15).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm += ((count+15).toString(36));}
 
@@ -421,21 +422,23 @@ Puzzles.tentaisho.prototype = {
 
 		fio.decodeStarFile = function(){
 			var array = this.readLines(2*k.qrows-1), s=0;
+			base.disableInfo();
 			for(var i=0;i<array.length;i++){
 				for(var c=0;c<array[i].length;c++){
-					if     (array[i].charAt(c) == "1"){ bd.setStar(s, 1);}
-					else if(array[i].charAt(c) == "2"){ bd.setStar(s, 2);}
+					if     (array[i].charAt(c)==="1"){ bd.setStar(s, 1);}
+					else if(array[i].charAt(c)==="2"){ bd.setStar(s, 2);}
 					s++;
 				}
 			}
+			base.enableInfo();
 		};
 		fio.encodeStarFile = function(){
 			var s=0;
 			for(var by=1;by<=2*k.qrows-1;by++){
 				for(var bx=1;bx<=2*k.qcols-1;bx++){
-					if     (bd.getStar(s)==1){ this.datastr += "1";}
-					else if(bd.getStar(s)==2){ this.datastr += "2";}
-					else                     { this.datastr += ".";}
+					if     (bd.getStar(s)===1){ this.datastr += "1";}
+					else if(bd.getStar(s)===2){ this.datastr += "2";}
+					else                      { this.datastr += ".";}
 					s++;
 				}
 				this.datastr += "/";

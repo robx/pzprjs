@@ -73,20 +73,20 @@ Puzzles.kinkonkan.prototype = {
 			var cc = this.cellid();
 			if(cc===null){ this.inputflash(); return;}
 
-			if     (this.inputData===3){ bd.sQaC(cc,-1); bd.sQsC(cc,1);}
-			else if(this.inputData===4){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
+			if     (this.inputData===3){ bd.sQaC(cc,0); bd.sQsC(cc,1);}
+			else if(this.inputData===4){ bd.sQaC(cc,0); bd.sQsC(cc,0);}
 			else if(this.inputData!==null){ return;}
 			else if(this.btn.Left){
-				if     (bd.QaC(cc)===1){ bd.sQaC(cc, 2); bd.sQsC(cc,0); this.inputData=2;}
-				else if(bd.QaC(cc)===2){ bd.sQaC(cc,-1); bd.sQsC(cc,1); this.inputData=3;}
-				else if(bd.QsC(cc)===1){ bd.sQaC(cc,-1); bd.sQsC(cc,0); this.inputData=4;}
-				else                   { bd.sQaC(cc, 1); bd.sQsC(cc,0); this.inputData=1;}
+				if     (bd.QaC(cc)===1){ bd.sQaC(cc,2); bd.sQsC(cc,0); this.inputData=2;}
+				else if(bd.QaC(cc)===2){ bd.sQaC(cc,0); bd.sQsC(cc,1); this.inputData=3;}
+				else if(bd.QsC(cc)===1){ bd.sQaC(cc,0); bd.sQsC(cc,0); this.inputData=4;}
+				else                   { bd.sQaC(cc,1); bd.sQsC(cc,0); this.inputData=1;}
 			}
 			else if(this.btn.Right){
-				if     (bd.QaC(cc)===1){ bd.sQaC(cc,-1); bd.sQsC(cc,0); this.inputData=4;}
-				else if(bd.QaC(cc)===2){ bd.sQaC(cc, 1); bd.sQsC(cc,0); this.inputData=1;}
-				else if(bd.QsC(cc)===1){ bd.sQaC(cc, 2); bd.sQsC(cc,0); this.inputData=2;}
-				else                   { bd.sQaC(cc,-1); bd.sQsC(cc,1); this.inputData=3;}
+				if     (bd.QaC(cc)===1){ bd.sQaC(cc,0); bd.sQsC(cc,0); this.inputData=4;}
+				else if(bd.QaC(cc)===2){ bd.sQaC(cc,1); bd.sQsC(cc,0); this.inputData=1;}
+				else if(bd.QsC(cc)===1){ bd.sQaC(cc,2); bd.sQsC(cc,0); this.inputData=2;}
+				else                   { bd.sQaC(cc,0); bd.sQsC(cc,1); this.inputData=3;}
 			}
 
 			pc.paintCellAround(cc);
@@ -211,7 +211,7 @@ Puzzles.kinkonkan.prototype = {
 
 		menu.ex.adjustSpecial = function(key,d){
 			if(key & this.TURNFLIP){ // 反転・回転全て
-				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
+				for(var c=0;c<bd.cellmax;c++){ bd.sQaC(c,[0,2,1][bd.QaC(c)]);}
 			}
 		};
 
@@ -308,8 +308,8 @@ Puzzles.kinkonkan.prototype = {
 				}
 				else{ this.vhide(header+c);}
 
-				if(obj.direc!==0 || obj.qnum!==-1){
-					var num=obj.qnum, canum=obj.direc;
+				if(obj.qdir!==0 || obj.qnum!==-1){
+					var num=obj.qnum, canum=obj.qdir;
 
 					var color = this.fontErrcolor;
 					if(obj.error!==1){ color=(canum<=52?this.fontcolor:this.fontAnscolor);}
@@ -348,22 +348,24 @@ Puzzles.kinkonkan.prototype = {
 			var subint = [];
 			var ec=0, a=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
+				var ca = bstr.charAt(i), obj=bd.excell[ec];
 
-				if     (this.include(ca,'A','Z')){ bd.sDiE(ec, parseInt(ca,36)-9); subint.push(ec); ec++;}
-				else if(this.include(ca,'0','9')){ bd.sDiE(ec, (parseInt(bstr.charAt(i+1))+1)*26+parseInt(ca,36)-9); subint.push(ec); ec++; i++;}
-				else if(this.include(ca,'a','z')){ ec+=(parseInt(ca,36)-9);}
-				else{ ec++;}
+				if     (this.include(ca,'A','Z')){ subint.push(ec); obj.qdir = parseInt(ca,36)-9;}
+				else if(this.include(ca,'0','9')){ subint.push(ec); obj.qdir = parseInt(ca,36)-9+(parseInt(bstr.charAt(i+1))+1)*26; i++;}
+				else if(this.include(ca,'a','z')){ ec+=(parseInt(ca,36)-10);}
 
-				if(ec >= bd.excellmax-4){ a=i+1; break;}
+				ec++;
+				if(ec>=bd.excellmax-4){ a=i+1; break;}
 			}
 			ec=0;
 			for(var i=a;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
-				if     (ca == '.'){ bd.sQnE(subint[ec], -2);                              ec++;      }
-				else if(ca == '-'){ bd.sQnE(subint[ec], parseInt(bstr.substr(i+1,2),16)); ec++; i+=2;}
-				else              { bd.sQnE(subint[ec], parseInt(bstr.substr(i  ,1),16)); ec++;      }
-				if(ec >= subint.length){ a=i+1; break;}
+				var ca = bstr.charAt(i), obj=bd.excell[subint[ec]];
+				if     (ca==='.'){ obj.qnum = -2;}
+				else if(ca==='-'){ obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+				else             { obj.qnum = parseInt(bstr.substr(i  ,1),16);}
+
+				ec++;
+				if(ec>=subint.length){ a=i+1; break;}
 			}
 
 			this.outbstr = bstr.substr(a);
@@ -374,9 +376,7 @@ Puzzles.kinkonkan.prototype = {
 			// 盤面外部分のエンコード
 			var count=0;
 			for(var ec=0;ec<bd.excellmax-4;ec++){
-				pstr = "";
-				var val  = bd.DiE(ec);
-				var qnum = bd.QnE(ec);
+				var pstr = "", val = bd.excell[ec].qdir, qnum = bd.excell[ec].qnum;
 
 				if(val> 0 && val<=104){
 					if(val<=26){ pstr = (val+9).toString(36).toUpperCase();}
@@ -388,8 +388,8 @@ Puzzles.kinkonkan.prototype = {
 				}
 				else{ count++;}
 
-				if(count==0){ cm += pstr;}
-				else if(pstr || count==26){ cm+=((9+count).toString(36)+pstr); count=0;}
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===26){ cm+=((9+count).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm+=(9+count).toString(36);}
 
@@ -403,26 +403,31 @@ Puzzles.kinkonkan.prototype = {
 			var item = this.getItemList(k.qrows+2);
 			for(var i=0;i<item.length;i++) {
 				var ca = item[i];
-				if(ca=="."){ continue;}
+				if(ca==="."){ continue;}
 
-				var ec = bd.exnum(i%(k.qcols+2)*2-1,((i/(k.qcols+2))<<1)-1);
+				var bx = i%(k.qcols+2)*2-1, by = ((i/(k.qcols+2))<<1)-1;
+				var ec = bd.exnum(bx,by);
 				if(ec!==null){
 					var inp = ca.split(",");
-					if(inp[0]!=""){ bd.sDiE(ec, parseInt(inp[0]));}
-					if(inp[1]!=""){ bd.sQnE(ec, parseInt(inp[1]));}
+					if(inp[0]!==""){ bd.excell[ec].qdir = parseInt(inp[0]);}
+					if(inp[1]!==""){ bd.excell[ec].qnum = parseInt(inp[1]);}
+					continue;
 				}
 
 				if(this.filever==1){
-					var c = bd.cnum(i%(k.qcols+2)*2-1,((i/(k.qcols+2))<<1)-1);
+					var c = bd.cnum(bx,by);
 					if(c!==null){
-						if     (ca==="+"){ bd.sQsC(c, 1);}
-						else if(ca!=="."){ bd.sQaC(c, parseInt(ca));}
+						if     (ca==="+"){ bd.cell[c].qsub = 1;}
+						else if(ca!=="."){ bd.cell[c].qans = parseInt(ca);}
 					}
 				}
 			}
 
 			if(this.filever==0){
-				this.decodeCellQanssub();
+				this.decodeCell( function(obj,ca){
+					if     (ca==="+"){ obj.qsub = 1;}
+					else if(ca!=="."){ obj.qans = parseInt(ca);}
+				});
 			}
 		};
 		fio.encodeData = function(){
@@ -433,17 +438,18 @@ Puzzles.kinkonkan.prototype = {
 				for(var bx=-1;bx<bd.maxbx;bx+=2){
 					var ec = bd.exnum(bx,by);
 					if(ec!==null){
-						var str1 = (bd.DiE(ec)== 0?"":bd.DiE(ec).toString());
-						var str2 = (bd.QnE(ec)==-1?"":bd.QnE(ec).toString());
+						var dir=bd.excell[ec].qdir, qn=bd.excell[ec].qnum;
+						var str1 = (dir!== 0?dir.toString():"");
+						var str2 = (qn !==-1?qn.toString():"");
 						this.datastr += ((str1=="" && str2=="")?(". "):(""+str1+","+str2+" "));
 						continue;
 					}
 
 					var c = bd.cnum(bx,by);
 					if(c!==null){
-						if     (bd.QaC(c)!==-1){ this.datastr += (bd.QaC(c).toString() + " ");}
-						else if(bd.QsC(c)=== 1){ this.datastr += "+ ";}
-						else                   { this.datastr += ". ";}
+						if     (bd.cell[c].qans!==0){ this.datastr += (bd.cell[c].qans.toString() + " ");}
+						else if(bd.cell[c].qsub===1){ this.datastr += "+ ";}
+						else                        { this.datastr += ". ";}
 						continue;
 					}
 
@@ -460,7 +466,7 @@ Puzzles.kinkonkan.prototype = {
 		ans.checkAns = function(){
 
 			var rinfo = area.getRoomInfo();
-			if( !this.checkAllArea(rinfo, function(cc){ return bd.QaC(cc)>0;}, function(w,h,a,n){ return (a<=1);}) ){
+			if( !this.checkAllArea(rinfo, function(cc){ return bd.QaC(cc)!==0;}, function(w,h,a,n){ return (a<=1);}) ){
 				this.setAlert('斜線が複数引かれた部屋があります。', 'A room has plural mirrors.'); return false;
 			}
 
@@ -472,7 +478,7 @@ Puzzles.kinkonkan.prototype = {
 				this.setAlert('光の反射回数が正しくありません。', 'The count of refrection is wrong.'); return false;
 			}
 
-			if( !this.checkAllArea(rinfo, function(cc){ return bd.QaC(cc)>0;}, function(w,h,a,n){ return (a!=0);}) ){
+			if( !this.checkAllArea(rinfo, function(cc){ return bd.QaC(cc)!==0;}, function(w,h,a,n){ return (a!=0);}) ){
 				this.setAlert('斜線の引かれていない部屋があります。', 'A room has no mirrors.'); return false;
 			}
 
@@ -515,14 +521,14 @@ Puzzles.kinkonkan.prototype = {
 				var cc = bd.cnum(bx,by);
 				if(cc===null){ break;}
 
-				var qa = bd.QaC(cc);
-				if(qa===1){
+				var qb = bd.QaC(cc);
+				if(qb===1){
 					if     (dir===1){ ldata[cc]=(!isNaN({4:1,6:1}[ldata[cc]])?6:2); dir=3;}
 					else if(dir===2){ ldata[cc]=(!isNaN({2:1,6:1}[ldata[cc]])?6:4); dir=4;}
 					else if(dir===3){ ldata[cc]=(!isNaN({2:1,6:1}[ldata[cc]])?6:4); dir=1;}
 					else if(dir===4){ ldata[cc]=(!isNaN({4:1,6:1}[ldata[cc]])?6:2); dir=2;}
 				}
-				else if(qa===2){
+				else if(qb===2){
 					if     (dir===1){ ldata[cc]=(!isNaN({5:1,6:1}[ldata[cc]])?6:3); dir=4;}
 					else if(dir===2){ ldata[cc]=(!isNaN({3:1,6:1}[ldata[cc]])?6:5); dir=3;}
 					else if(dir===3){ ldata[cc]=(!isNaN({5:1,6:1}[ldata[cc]])?6:3); dir=2;}

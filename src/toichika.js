@@ -57,18 +57,17 @@ Puzzles.toichika.prototype = {
 			if     (k.editmode){ this.inputdirec_toichika(true);}
 			else if(k.playmode){
 				if(this.btn.Left){ this.inputdirec_toichika(true);}
+				else if(this.btn.Right){ this.inputDot();}
 			}
 		};
 		mv.mouseup = function(){
-			if(this.notInputted()){
-				this.inputdirec_mouseup();
-			}
+			if(this.notInputted()){ this.inputqnum();}
 		};
 		mv.mousemove = function(){
 			if     (k.editmode){ this.inputdirec_toichika(false);}
 			else if(k.playmode){
 				if     (this.btn.Left){ this.inputdirec_toichika(false);}
-				else if(this.btn.Right){ this.inputDot(false);}
+				else if(this.btn.Right){ this.inputDot();}
 			}
 		};
 
@@ -90,116 +89,44 @@ Puzzles.toichika.prototype = {
 			if(cc!==null){
 				var dir = this.getdir(this.prevPos, pos);
 				if(dir!==k.NONE){
-					bd.setCell(cc,dir);
+					bd.setNum(cc,dir);
 					pc.paintCell(cc);
 					this.mousereset();
+					return;
 				}
 			}
-			else{
-				this.prevPos = pos;
-			}
-		};
-		mv.inputdirec_mouseup = function(){
-			var cc = this.cellid();
-			if(cc===null || cc===this.mouseCell){ return;}
-
-			if(cc===tc.getTCC()){
-				var nex = (this.btn.Left ? [k.UP, k.RT, k.LT, -1, k.DN]
-										 : [k.LT, -1, k.RT, k.DN, k.UP]);
-				if     (k.editmode)    { bd.setCell(cc,nex[bd.DiC(cc)]);}
-				else if(bd.DiC(cc)===0){ bd.setCell(cc,nex[(bd.QaC(cc)!==-1?bd.QaC(cc):0)]);}
-				this.mouseCell = cc;
-			}
-			else{
-				var cc0 = tc.getTCC();
-				tc.setTCC(cc);
-				pc.paintCell(cc0);
-				if(bd.QsC(cc)==1 || bd.QaC(cc)==-1){ this.inputData=1;}
-			}
-
-			pc.paintCell(cc);
+			this.prevPos = pos;
 		};
 
 		mv.inputDot = function(){
 			var cc = this.cellid();
-			if(cc===null || cc===this.mouseCell || bd.DiC(cc)!==0){ return;}
+			if(cc===null || cc===this.mouseCell || bd.QnC(cc)!==-1){ return;}
 
 			if(this.inputData===null){ this.inputData=(bd.QsC(cc)===1?0:1);}
 			
-			var cc0 = tc.getTCC(); //tc.setTCC(cc);
-			bd.sQaC(cc,-1);
+			bd.sAnC(cc,-1);
 			bd.sQsC(cc,(this.inputData===1?1:0));
 			this.mouseCell = cc;
-
-			pc.paintCell(cc0);
 			pc.paintCell(cc);
 		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(!this.isSHIFT && this.moveTCell(ca)){ return;}
-			kc.key_toichika(ca);
+			this.key_toichika(ca);
 		};
 		kc.key_toichika = function(ca){
-			var cc = tc.getTCC();
-			var flag = false;
-
-			if     (ca=='1'||ca=='w'||(this.isSHIFT && ca==k.KEYUP)){
-				bd.setCell(cc,k.UP);
-				flag = true;
-			}
-			else if(ca=='2'||ca=='s'||(this.isSHIFT && ca==k.KEYRT)){
-				bd.setCell(cc,k.RT);
-				flag = true;
-			}
-			else if(ca=='3'||ca=='z'||(this.isSHIFT && ca==k.KEYDN)){
-				bd.setCell(cc,k.DN);
-				flag = true;
-			}
-			else if(ca=='4'||ca=='a'||(this.isSHIFT && ca==k.KEYLT)){
-				bd.setCell(cc,k.LT);
-				flag = true;
-			}
-			else if(ca=='5'||ca=='q'){
-				bd.setCell(cc,-2);
-				flag = true;
-			}
-			else if(ca=='6'||ca=='e'||ca==' '||ca=='-'){
-				bd.setCell(cc,-1);
-				flag = true;
-			}
-
-			if(flag){ pc.paintCell(cc);}
-			return flag;
+			if     (ca==='1'||ca==='w'||(this.isSHIFT && ca===k.KEYUP)){ ca='1';}
+			else if(ca==='2'||ca==='s'||(this.isSHIFT && ca===k.KEYRT)){ ca='4';}
+			else if(ca==='3'||ca==='z'||(this.isSHIFT && ca===k.KEYDN)){ ca='2';}
+			else if(ca==='4'||ca==='a'||(this.isSHIFT && ca===k.KEYLT)){ ca='3';}
+			else if(ca==='5'||ca==='q'||ca==='-')                      { ca='s1';}
+			else if(ca==='6'||ca==='e'||ca===' ')                      { ca=' ';}
+			this.key_inputqnum(ca);
 		};
 
-		bd.setCell = function(cc,val){
-			if(cc===null){ return;}
-
-			if(val>0){
-				// キー・マウス入力しか考えていないので、
-				// 同じのが入力されたら消えるようにしちゃいます。
-				if(k.editmode){
-					bd.sDiC(cc,(this.cell[cc].direc!==val ? val : 0));
-					bd.sQaC(cc, -1);
-				}
-				else if(this.cell[cc].direc===0){
-					bd.sQaC(cc,(this.cell[cc].qans!==val ? val : -1));
-				}
-				bd.sQsC(cc, 0);
-			}
-			else if(val===-1){
-				if(k.editmode){ bd.sDiC(cc,0);}
-				bd.sQaC(cc,-1);
-				bd.sQsC(cc, 0);
-			}
-			else if(val===-2){
-				if(k.playmode && this.cell[cc].direc===0){
-					bd.sQaC(cc,-1);
-					bd.sQsC(cc,(this.cell[cc].qsub!==1 ? 1 : 0));
-				}
-			}
-		};
+		bd.maxnum = 4;
+		bd.numberAsObject = true;
 	},
 
 	//---------------------------------------------------------
@@ -215,6 +142,7 @@ Puzzles.toichika.prototype = {
 
 			this.drawDotCells(x1,y1,x2,y2);
 			this.drawArrows(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
@@ -233,19 +161,15 @@ Puzzles.toichika.prototype = {
 
 			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
+				var c = clist[i], dir=bd.getNum(c);
 				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
-				if(bd.QaC(c)>0 || bd.DiC(c)>0){
-					var ax=px=bd.cell[c].cpx;
-					var ay=py=bd.cell[c].cpy;
-					var dir=(bd.cell[c].direc>0 ? bd.cell[c].direc : bd.cell[c].qans);
-
-					if     (bd.cell[c].error===1){ g.fillStyle = this.fontErrcolor;}
-					else if(bd.cell[c].direc>0)  { g.fillStyle = this.fontcolor;}
-					else if(bd.cell[c].qans >0)  { g.fillStyle = this.fontAnscolor;}
+				if(dir>0){
+					g.fillStyle = this.getCellNumberColor(c);
 
 					// 矢印の描画 ここに来る場合、dirは1～4
 					if(this.vnop(headers[(dir-1)]+c,this.FILL)){
+						var ax=px=bd.cell[c].cpx;
+						var ay=py=bd.cell[c].cpy;
 						switch(dir){
 							case k.UP: g.setOffsetLinePath(ax,ay, 0,-al, -tw,-tl, -aw,-tl, -aw, al,  aw, al, aw,-tl,  tw,-tl, true); break;
 							case k.DN: g.setOffsetLinePath(ax,ay, 0, al, -tw, tl, -aw, tl, -aw,-al,  aw,-al, aw, tl,  tw, tl, true); break;
@@ -257,6 +181,14 @@ Puzzles.toichika.prototype = {
 				}
 			}
 		};
+
+		pc.drawNumber1 = function(c){
+			var num = bd.getNum(c), obj = bd.cell[c], key='cell_'+c;
+			if(num===-2){
+				this.dispnum(key, 1, "?", 0.8, this.fontcolor, obj.cpx, obj.cpy);
+			}
+			else{ this.hideEL(key);}
+		};
 	},
 
 	//---------------------------------------------------------
@@ -264,71 +196,55 @@ Puzzles.toichika.prototype = {
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeBorder();
-			this.decodeDirec4();
+			this.decode4Cell_toichika();
 		};
 		enc.pzlexport = function(type){
 			this.encodeBorder();
-			this.encodeDirec4();
+			this.encode4Cell_toichika();
 		};
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			this.decodeAreaRoom();
-			this.decodeCellDirec();
-			this.decodeCellQanssub();
+			this.decodeCellQnum();
+			this.decodeCellAnumsub();
 		};
 		fio.encodeData = function(){
 			this.encodeAreaRoom();
-			this.encodeCellDirec();
-			this.encodeCellQanssub();
+			this.encodeCellQnum();
+			this.encodeCellAnumsub();
 		};
 
 		//---------------------------------------------------------
-		enc.decodeDirec4 = function(){
+		enc.decode4Cell_toichika = function(){
 			var c=0, i=0, bstr = this.outbstr;
 			for(i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
-				if     (this.include(ca,"1","4")){ bd.sDiC(c, parseInt(bstr.substr(i,1),10)); c++;}
-				else if(this.include(ca,"5","9")){ c += (parseInt(ca,36)-4);}
-				else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-4);}
-				else if(ca == '.'){ bd.sDiC(c, -2); c++;}
-				else{ c++;}
+				if(this.include(ca,"1","4")){ bd.cell[c].qnum = parseInt(bstr.substr(i,1),10);}
+				else if(ca==='.')           { bd.cell[c].qnum = -2;}
+				else                        { c += (parseInt(ca,36)-5);}
 
-				if(c > bd.cellmax){ break;}
+				c++;
+				if(c>=bd.cellmax){ break;}
 			}
 			this.outbstr = bstr.substr(i);
 		};
-		enc.encodeDirec4 = function(){
+		enc.encode4Cell_toichika = function(){
 			var cm="", count=0;
-			for(var i=0;i<bd.cellmax;i++){
-				var pstr = "";
-				var val = bd.DiC(i);
+			for(var c=0;c<bd.cellmax;c++){
+				var pstr = "", val = bd.cell[c].qnum;
 
-				if     (val==-2          ){ pstr = ".";}
-				else if(val>= 1 && val<=4){ pstr = val.toString(10);}
+				if     (val===-2)        { pstr = ".";}
+				else if(val>=1 && val<=4){ pstr = val.toString(10);}
 				else{ count++;}
 
-				if(count==0){ cm += pstr;}
-				else if(pstr || count==31){ cm+=((4+count).toString(36)+pstr); count=0;}
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===31){ cm+=((4+count).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm+=(4+count).toString(36);}
 
 			this.outbstr += cm;
-		};
-
-		fio.decodeCellDirec = function(){
-			this.decodeCell( function(c,ca){
-				if     (ca === "-"){ bd.sDiC(c, -2);}
-				else if(ca !== "."){ bd.sDiC(c, parseInt(ca));}
-			});
-		};
-		fio.encodeCellDirec = function(){
-			this.encodeCell( function(c){
-				if     (bd.DiC(c)>=0)  { return (bd.DiC(c).toString() + " ");}
-				else if(bd.DiC(c)===-2){ return "- ";}
-				else                   { return ". ";}
-			});
 		};
 	},
 
@@ -338,7 +254,7 @@ Puzzles.toichika.prototype = {
 		ans.checkAns = function(){
 
 			var rinfo = area.getRoomInfo();
-			if( !this.checkAllArea(rinfo, ans.isObject, function(w,h,a,n){ return (a<=1);}) ){
+			if( !this.checkAllArea(rinfo, bd.isNum, function(w,h,a,n){ return (a<=1);}) ){
 				this.setAlert('1つの国に2つ以上の矢印が入っています。','A country has plural arrows.'); return false;
 			}
 
@@ -351,29 +267,26 @@ Puzzles.toichika.prototype = {
 				this.setAlert('矢印の先にペアとなる矢印がいません。','There is not paired arrow in the direction of an arrow.'); return false;
 			}
 
-			if( !this.checkAllArea(rinfo, ans.isObject, function(w,h,a,n){ return (a>=1);}) ){
+			if( !this.checkAllArea(rinfo, bd.isNum, function(w,h,a,n){ return (a>=1);}) ){
 				this.setAlert('国に矢印が入っていません。','A country has no arrow.'); return false;
 			}
 
 			return true;
 		};
 
-		ans.isObject = function(c){ return (!!bd.cell[c] && (bd.cell[c].direc!==0 || bd.cell[c].qans!==-1));};
-
 		ans.getPairedArrows = function(){
 			var ainfo=[], isarrow=[];
-			for(var c=0;c<bd.cellmax;c++){ isarrow[c]=ans.isObject(c);}
+			for(var c=0;c<bd.cellmax;c++){ isarrow[c]=bd.isNum(c);}
 			for(var c=0;c<bd.cellmax;c++){
-				if(!isarrow[c]){ continue;}
-				var bx=bd.cell[c].bx, by=bd.cell[c].by, tc=c,
-					dir=(bd.cell[c].direc!==0 ? bd.cell[c].direc : bd.cell[c].qans);
+				if(bd.noNum(c)){ continue;}
+				var bx=bd.cell[c].bx, by=bd.cell[c].by, tc=c, dir=bd.getNum(c);
 
 				while(1){
 					switch(dir){ case k.UP: by-=2; break; case k.DN: by+=2; break; case k.LT: bx-=2; break; case k.RT: bx+=2; break;}
 					tc = bd.cnum(bx,by);
 					if(tc===null){ ainfo.push([c]); break;}
 					if(!!isarrow[tc]){
-						var tdir = (bd.cell[tc].direc!==0 ? bd.cell[tc].direc : bd.cell[tc].qans);
+						var tdir = bd.getNum(tc);
 						if(tdir!==[0,k.DN,k.UP,k.RT,k.LT][dir]){ ainfo.push([c]);}
 						else{ ainfo.push([c,tc]);}
 						break;

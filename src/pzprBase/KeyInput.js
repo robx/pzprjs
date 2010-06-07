@@ -182,28 +182,19 @@ KeyEvent.prototype = {
 	//---------------------------------------------------------------------------
 	key_inputcross : function(ca){
 		var cc = tc.getTXC();
-		var max = bd.nummaxfunc(cc);
+		var max = bd.nummaxfunc(cc), val=-1;
 
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca);
-
-			if(bd.QnX(cc)<=0){
-				if(num<=max){ bd.sQnX(cc,num);}
-			}
-			else{
-				if(bd.QnX(cc)*10+num<=max){ bd.sQnX(cc,bd.QnX(cc)*10+num);}
-				else if(num<=max){ bd.sQnX(cc,num);}
-			}
+			var num = parseInt(ca), cur = bd.QnX(cc);
+			if(cur<=0 || cur*10+num>max){ cur=0;}
+			val = cur*10+num;
+			if(val>max){ return;}
 		}
-		else if(ca=='-'){
-			if(bd.QnX(cc)!=-2){ bd.sQnX(cc,-2);}
-			else{ bd.sQnX(cc,-1);}
-		}
-		else if(ca==' '){
-			bd.sQnX(cc,-1);
-		}
+		else if(ca==='-'){ bd.sQnX(cc,(bd.QnX(cc)!==-2 ? -2 : -1));}
+		else if(ca===' '){ bd.sQnX(cc,-1);}
 		else{ return;}
 
+		bd.sQnX(cc,val);
 		pc.paintCross(cc);
 	},
 	//---------------------------------------------------------------------------
@@ -212,35 +203,21 @@ KeyEvent.prototype = {
 	key_inputqnum : function(ca){
 		var cc = tc.getTCC();
 		if(k.editmode && k.roomNumber){ cc = area.getTopOfRoomByCell(cc);}
-		var max = bd.nummaxfunc(cc);
+		var max = bd.nummaxfunc(cc), val=-1;
 
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca);
-			if(k.playmode && k.puzzleid!=='snakes'){ bd.sDiC(cc,0);}
-
-			if(bd.getNum(cc)<=0 || this.prev!=cc){
-				if(num<=max){ bd.setNum(cc,num);}
-			}
-			else{
-				if(bd.getNum(cc)*10+num<=max){ bd.setNum(cc,bd.getNum(cc)*10+num);}
-				else if(num<=max){ bd.setNum(cc,num);}
-			}
-			if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
-			if(k.isAnsNumber){ if(k.editmode){ bd.sQaC(cc,-1);} bd.sQsC(cc,0); }
+			var num = parseInt(ca), cur = bd.getNum(cc);
+			if(cur<=0 || cur*10+num>max || this.prev!=cc){ cur=0;}
+			val = cur*10+num;
+			if(val>max){ return;}
 		}
-		else if(ca=='-'){
-			if(k.editmode && bd.QnC(cc)!=-2){ bd.setNum(cc,-2);}
-			else{ bd.setNum(cc,-1);}
-			if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
-			if(k.isAnsNumber){ bd.sQsC(cc,0);}
-		}
-		else if(ca==' '){
-			bd.setNum(cc,-1);
-			if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
-			if(k.isAnsNumber){ bd.sQsC(cc,0);}
-		}
+		else if(ca==='-') { val = (k.editmode?-2:-1);}
+		else if(ca===' ') { val = -1;}
+		else if(ca==='s1'){ val = -2;}
+		else if(ca==='s2'){ val = -3;}
 		else{ return;}
 
+		bd.setNum(cc,val);
 		this.prev = cc;
 		pc.paintCell(cc);
 	},
@@ -290,25 +267,21 @@ KeyEvent.prototype = {
 		}
 		if(target==0){ return;}
 
-		var max = max_obj[target];
+		var def = (target==2 ? Cell.prototype.defqnum : Cell.prototype.defqdir);
+		var max = max_obj[target], val=def;
 
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca);
-
-			if(this.getnum51(cc,ex,target)<=0 || this.prev!=cc){
-				if(num<=max){ this.setnum51(cc,ex,target,num);}
-			}
-			else{
-				if(this.getnum51(cc,ex,target)*10+num<=max){ this.setnum51(cc,ex,target,this.getnum51(cc,ex,target)*10+num);}
-				else if(num<=max){ this.setnum51(cc,ex,target,num);}
-			}
+			var num=parseInt(ca), cur=this.getnum51(cc,ex,target);
+			if(cur<=0 || cur*10+num>max || this.prev!=cc){ cur=0;}
+			val = cur*10+num;
+			if(val>max){ return;}
 		}
-		else if(ca=='-' || ca==' '){ this.setnum51(cc,ex,target,-1);}
+		else if(ca=='-' || ca==' '){ val=def;}
 		else{ return;}
 
+		this.setnum51(cc,ex,target,val);
 		this.prev = cc;
-		if(cc!==null){ pc.paintCell(tc.getTCC());}
-		else         { pc.paintPos (tc.getTCP());}
+		pc.paintPos (tc.getTCP());
 	},
 	setnum51 : function(cc,ex,target,val){
 		if(cc!=null){ (target==2 ? bd.sQnC(cc,val) : bd.sDiC(cc,val));}

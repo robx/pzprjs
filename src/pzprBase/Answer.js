@@ -175,6 +175,7 @@ AnsCheck.prototype = {
 	// ans.checkLcntCell() セルから出ている線の本数について判定する
 	// ans.isLineStraight()   セルの上で線が直進しているか判定する
 	// ans.setCellLineError() セルと周りの線にエラーフラグを設定する
+	// ans.checkenableLineParts() '一部があかされている'線の部分に、線が引かれているか判定する
 	//---------------------------------------------------------------------------
 	checkOneLoop : function(){
 		var xinfo = line.getLineInfo();
@@ -213,42 +214,14 @@ AnsCheck.prototype = {
 		bd.sErB(bd.borderinside(bx-1,by-1,bx+1,by+1), 1);
 	},
 
-	//---------------------------------------------------------------------------
-	// ans.checkdir4Border()  セルの周り四方向に惹かれている境界線の本数を判定する
-	// ans.checkdir4Border1() セルの周り四方向に惹かれている境界線の本数を返す
-	// ans.checkenableLineParts() '一部があかされている'線の部分に、線が引かれているか判定する
-	//---------------------------------------------------------------------------
-	checkdir4Border : function(){
-		var result = true;
-		for(var c=0;c<bd.cellmax;c++){
-			if(bd.QnC(c)>=0 && this.checkdir4Border1(c)!=bd.QnC(c)){
-				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1);
-				result = false;
-			}
-		}
-		return result;
-	},
-	checkdir4Border1 : function(cc){
-		if(cc<0 || cc>=bd.cellmax){ return 0;}
-		var cnt = 0;
-		var bx = bd.cell[cc].bx, by = bd.cell[cc].by;
-		if( (k.isborder!==2 && by===bd.minby+1) || bd.isBorder(bd.bnum(bx  ,by-1)) ){ cnt++;}
-		if( (k.isborder!==2 && by===bd.maxby-1) || bd.isBorder(bd.bnum(bx  ,by+1)) ){ cnt++;}
-		if( (k.isborder!==2 && bx===bd.minbx+1) || bd.isBorder(bd.bnum(bx-1,by  )) ){ cnt++;}
-		if( (k.isborder!==2 && bx===bd.maxby-1) || bd.isBorder(bd.bnum(bx+1,by  )) ){ cnt++;}
-		return cnt;
-	},
-
 	checkenableLineParts : function(val){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			var iserror = false, id=null;
-			id=bd.ub(c); if(iserror || (id!==null && bd.isLine(id) && bd.noLP(c,k.UP))){ iserror=true;}
-			id=bd.db(c); if(iserror || (id!==null && bd.isLine(id) && bd.noLP(c,k.DN))){ iserror=true;}
-			id=bd.lb(c); if(iserror || (id!==null && bd.isLine(id) && bd.noLP(c,k.LT))){ iserror=true;}
-			id=bd.rb(c); if(iserror || (id!==null && bd.isLine(id) && bd.noLP(c,k.RT))){ iserror=true;}
-			if(iserror){
+			if( (bd.isLine(bd.ub(c)) && bd.noLP(c,k.UP)) ||
+				(bd.isLine(bd.db(c)) && bd.noLP(c,k.DN)) ||
+				(bd.isLine(bd.lb(c)) && bd.noLP(c,k.LT)) ||
+				(bd.isLine(bd.rb(c)) && bd.noLP(c,k.RT)) )
+			{
 				if(this.inAutoCheck){ return false;}
 				bd.sErC([c],1);
 				result = false;

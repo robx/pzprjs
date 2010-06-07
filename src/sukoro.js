@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 数コロ版 sukoro.js v3.3.0
+// パズル固有スクリプト部 数コロ版 sukoro.js v3.3.1
 //
 Puzzles.sukoro = function(){ };
 Puzzles.sukoro.prototype = {
@@ -55,23 +55,17 @@ Puzzles.sukoro.prototype = {
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
-			if(kc.key_sukoro(ca)){ return;}
-			this.key_inputqnum(ca);
+			this.key_sukoro(ca);
 		};
 		kc.key_sukoro = function(ca){
-			if(k.editmode || bd.QnC(tc.getTCC())!=-1){ return false;}
-
-			var cc = tc.getTCC();
-			var flag = false;
-
-			if     ((ca=='q'||ca=='a'||ca=='z')){ if(bd.QsC(cc)==1){ bd.sQaC(cc,1); bd.sQsC(cc,0);}else{ bd.sQaC(cc,-1); bd.sQsC(cc,1);} flag = true;}
-			else if((ca=='w'||ca=='s'||ca=='x')){ if(bd.QsC(cc)==2){ bd.sQaC(cc,2); bd.sQsC(cc,0);}else{ bd.sQaC(cc,-1); bd.sQsC(cc,2);} flag = true;}
-			else if((ca=='e'||ca=='d'||ca=='c')){ bd.sQaC(cc,-1); bd.sQsC(cc,0); flag = true;}
-			else if(ca=='1' && bd.QaC(cc)==1)   { bd.sQaC(cc,-1); bd.sQsC(cc,1); flag = true;}
-			else if(ca=='2' && bd.QaC(cc)==2)   { bd.sQaC(cc,-1); bd.sQsC(cc,2); flag = true;}
-
-			if(flag){ pc.paintCell(cc); return true;}
-			return false;
+			if(k.playmode){
+				if     (ca==='q'||ca==='a'||ca==='z')          { ca=(bd.QsC(cc)===1?'1':'s1');}
+				else if(ca==='w'||ca==='s'||ca==='x')          { ca=(bd.QsC(cc)===2?'2':'s2');}
+				else if(ca==='e'||ca==='d'||ca==='c'||ca==='-'){ ca=' '; }
+				else if(ca==='1' && bd.AnC(cc)===1)            { ca='s1';}
+				else if(ca==='2' && bd.AnC(cc)===2)            { ca='s2';}
+			}
+			this.key_inputqnum(ca);
 		};
 
 		kp.kpgenerate = function(mode){
@@ -136,11 +130,11 @@ Puzzles.sukoro.prototype = {
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			this.decodeCellQnum();
-			this.decodeCellQanssub();
+			this.decodeCellAnumsub();
 		};
 		fio.encodeData = function(){
 			this.encodeCellQnum();
-			this.encodeCellQanssub();
+			this.encodeCellAnumsub();
 		};
 	},
 

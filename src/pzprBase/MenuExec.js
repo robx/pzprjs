@@ -466,13 +466,10 @@ MenuExec.prototype = {
 		if(!obj){ return -1;}
 
 		key &= 0x0F;
-		try{
-			if     (key===k.UP){ return obj.by;}
-			else if(key===k.DN){ return 2*k.qrows-obj.by;}
-			else if(key===k.LT){ return obj.bx;}
-			else if(key===k.RT){ return 2*k.qcols-obj.bx;}
-		}
-		catch(e){ console.log([type, id].join(''));}
+		if     (key===k.UP){ return obj.by;}
+		else if(key===k.DN){ return 2*k.qrows-obj.by;}
+		else if(key===k.LT){ return obj.bx;}
+		else if(key===k.RT){ return 2*k.qcols-obj.bx;}
 		return -1;
 	},
 
@@ -489,8 +486,9 @@ MenuExec.prototype = {
 			// 直前のexpandGroupで、bx,byプロパティが不定なままなので設定する
 			bd.setposBorders();
 
+			var dist = (k.isborderAsLine?2:1);
 			for(var id=0;id<bd.bdmax;id++){
-				if(this.distObj(k.BORDER,id,key)!==(k.isborderAsLine?2:1)){ continue;}
+				if(this.distObj(k.BORDER,id,key)!==dist){ continue;}
 
 				var source = (k.isborderAsLine ? this.outerBorder(id,key) : this.innerBorder(id,key));
 				this.copyBorder(id,source);
@@ -513,6 +511,7 @@ MenuExec.prototype = {
 		bd.border[id1].ques  = bd.border[id2].ques;
 		bd.border[id1].qans  = bd.border[id2].qans;
 		if(k.isborderAsLine){
+			bd.border[id1].line  = bd.border[id2].line;
 			bd.border[id1].qsub  = bd.border[id2].qsub;
 			bd.border[id1].color = bd.border[id2].color;
 		}

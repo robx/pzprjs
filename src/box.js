@@ -139,12 +139,6 @@ Puzzles.box.prototype = {
 		};
 		tc.adjust();
 
-		menu.ex.adjustSpecial = function(key,d){
-			if(key & this.TURNFLIP){ // 反転・回転全て
-				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
-			}
-		};
-
 		tc.setTEC(0);
 		bd.nummaxfunc = function(ec){
 			var bx=bd.excell[ec].bx, by=bd.excell[ec].by, cnt;
@@ -254,9 +248,9 @@ Puzzles.box.prototype = {
 		enc.decodeBox = function(){
 			var cm="", ec=0, bstr = this.outbstr;
 			for(var a=0;a<bstr.length;a++){
-				var ca=bstr.charAt(a);
-				if(ca==='-'){ bd.sQnE(ec, parseInt(bstr.substr(a+1,2),32)); a+=2;}
-				else        { bd.sQnE(ec, parseInt(ca,32));}
+				var ca=bstr.charAt(a), obj=bd.excell[ec];
+				if(ca==='-'){ obj.qnum = parseInt(bstr.substr(a+1,2),32); a+=2;}
+				else        { obj.qnum = parseInt(ca,32);}
 				ec++;
 				if(ec >= k.qcols+k.qrows){ a++; break;}
 			}
@@ -266,7 +260,7 @@ Puzzles.box.prototype = {
 		enc.encodeBox = function(){
 			var cm="";
 			for(var ec=0,len=k.qcols+k.qrows;ec<len;ec++){
-				var qnum=bd.QnE(ec);
+				var qnum=bd.excell[ec];
 				if(qnum<32){ cm+=("" +qnum.toString(32));}
 				else       { cm+=("-"+qnum.toString(32));}
 			}
@@ -281,15 +275,16 @@ Puzzles.box.prototype = {
 				var ca = item[i];
 				if(ca=="."){ continue;}
 
-				var ec = bd.exnum(i%(k.qcols+1)*2-1,((i/(k.qcols+1))<<1)-1);
+				var bx = i%(k.qcols+1)*2-1, by = ((i/(k.qcols+1))<<1)-1;
+				var ec = bd.exnum(bx,by);
 				if(ec!==null){
-					bd.sQnE(ec, parseInt(ca));
+					bd.excell[ec].qnum = parseInt(ca);
 				}
 
-				var c = bd.cnum(i%(k.qcols+1)*2-1,((i/(k.qcols+1))<<1)-1);
+				var c = bd.cnum(bx,by);
 				if(c!==null){
-					if     (ca==="#"){ bd.sQaC(c, 1);}
-					else if(ca==="+"){ bd.sQsC(c, 1);}
+					if     (ca==="#"){ bd.cell[c].qans = 1;}
+					else if(ca==="+"){ bd.cell[c].qsub = 1;}
 				}
 			}
 		};
@@ -298,15 +293,15 @@ Puzzles.box.prototype = {
 				for(var bx=-1;bx<bd.maxbx;bx+=2){
 					var ec = bd.exnum(bx,by);
 					if(ec!==null){
-						this.datastr += (bd.QnE(ec).toString()+" ");
+						this.datastr += (bd.excell[ec].qnum.toString()+" ");
 						continue;
 					}
 
 					var c = bd.cnum(bx,by);
 					if(c!==null){
-						if     (bd.QaC(c)===1){ this.datastr += "# ";}
-						else if(bd.QsC(c)===1){ this.datastr += "+ ";}
-						else                  { this.datastr += ". ";}
+						if     (bd.cell[c].qans===1){ this.datastr += "# ";}
+						else if(bd.cell[c].qsub===1){ this.datastr += "+ ";}
+						else                        { this.datastr += ". ";}
 						continue;
 					}
 

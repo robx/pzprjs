@@ -158,7 +158,7 @@ Puzzles.heyawake.prototype = {
 				if(rdata[c]!==null){ continue;}
 
 				if(inp[i].match(/(\d+in)?(\d+)x(\d+)$/)){
-					if(RegExp.$1.length>0){ bd.sQnC(c, parseInt(RegExp.$1));}
+					if(RegExp.$1.length>0){ bd.cell[c].qnum = parseInt(RegExp.$1);}
 					var x1 = bd.cell[c].bx, x2 = x1 + 2*parseInt(RegExp.$2) - 2;
 					var y1 = bd.cell[c].by, y2 = y1 + 2*parseInt(RegExp.$3) - 2;
 					fio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
@@ -171,7 +171,7 @@ Puzzles.heyawake.prototype = {
 			var barray=[], rinfo=area.getRoomInfo();
 			for(var id=1;id<=rinfo.max;id++){
 				var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
-				var ul = bd.QnC(bd.cnum(d.x1,d.y1));
+				var ul = bd.cell[bd.cnum(d.x1,d.y1)].qnum;
 				barray.push((ul>=0 ? ""+ul+"in" : "")+d.cols+"x"+d.rows);
 			}
 			this.outbstr = barray.join("/");
@@ -217,7 +217,7 @@ Puzzles.heyawake.prototype = {
 				this.setAlert('部屋の数字と黒マスの数が一致していません。','The number of Black cells in the room and The number written in the room is different.'); return false;
 			}
 
-			if( !this.checkRowsColsPartly(this.isBorderCount, {}, function(cc){ return (bd.QaC(cc)==1);}, false) ){
+			if( !this.checkRowsColsPartly(this.isBorderCount, {}, function(cc){ return bd.isBlack(cc);}, false) ){
 				this.setAlert('白マスが3部屋連続で続いています。','White cells are continued for three consecutive room.'); return false;
 			}
 

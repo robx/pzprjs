@@ -510,7 +510,7 @@ Graphic.prototype = {
 			var c = clist[i];
 
 			if(bd.cell[c].qnum!==-1 && (bd.cell[c].qnum!==-2||k.isDispHatena)){
-				var ax=px=bd.cell[c].px, ay=py=bd.cell[c].py, dir = bd.cell[c].direc;
+				var ax=px=bd.cell[c].px, ay=py=bd.cell[c].py, dir = bd.cell[c].qdir;
 
 				if     (bd.cell[c].qans ===1){ g.fillStyle = this.fontBCellcolor;}
 				else if(bd.cell[c].error===1){ g.fillStyle = this.fontErrcolor;}
@@ -589,7 +589,7 @@ Graphic.prototype = {
 		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var obj = bd.cell[clist[i]], key = 'cell_'+clist[i];
-			if(obj.ques===-2){
+			if(obj.ques===-2||obj.qnum===-2){
 				var color = (obj.error===1 ? this.fontErrcolor : this.fontcolor);
 				this.dispnum(key, 1, "?", 0.8, color, obj.cpx, obj.cpy);
 			}
@@ -660,9 +660,9 @@ Graphic.prototype = {
 		for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 		this.isdrawBD = true;
 	},
-	drawBorder1 : function(id,forceFlag){
+	drawBorder1 : function(id){
 		var vid = [this.bdheader, id].join("_");
-		if(forceFlag!==false && this.setBorderColor(id)){
+		if(this.setBorderColor(id)){
 			if(this.vnop(vid,this.FILL)){
 				var lw = this.lw + this.addlw, lm = this.lm;
 				var bx = bd.border[id].bx, by = bd.border[id].by;
@@ -691,9 +691,6 @@ Graphic.prototype = {
 				}
 				return false;
 			}
-			break;
-		case 'line':
-			this.setBorderColor = this.setLineColor;
 			break;
 		case 'ice':
 			this.setBorderColor = function(id){
@@ -806,13 +803,15 @@ Graphic.prototype = {
 		for(var i=0;i<idlist.length;i++){ this.drawLine1(idlist[i]);}
 		this.addlw = 0;
 	},
-	drawLine1 : function(id, forceFlag){
+	drawLine1 : function(id){
 		var vid = "b_line_"+id;
-		if(forceFlag!==false && this.setLineColor(id)){
+		if(this.setLineColor(id)){
 			if(this.vnop(vid,this.FILL)){
 				var lw = this.lw + this.addlw, lm = this.lm;
-				if     (bd.border[id].bx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
-				else if(bd.border[id].by&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm, this.cw+lw, lw);}
+				var bx = bd.border[id].bx, by = bd.border[id].by;
+				var px = bd.border[id].px, py = bd.border[id].py;
+				if     (k.isCenterLine===!!(bx&1)){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
+				else if(k.isCenterLine===!!(by&1)){ g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
 			}
 		}
 		else{ this.vhide(vid);}
@@ -1124,8 +1123,8 @@ Graphic.prototype = {
 
 		if(family==='excell' || bd.cell[c].ques===51){
 			for(var i=0;i<2;i++){
-				if     (i===0){ val=obj.qnum,  guard=obj.by, nb=bd.cnum(obj.bx+2, obj.by), type=4;} // 1回目は右向き
-				else if(i===1){ val=obj.direc, guard=obj.bx, nb=bd.cnum(obj.bx, obj.by+2), type=2;} // 2回目は下向き
+				if     (i===0){ val=obj.qnum, guard=obj.by, nb=bd.cnum(obj.bx+2, obj.by), type=4;} // 1回目は右向き
+				else if(i===1){ val=obj.qdir, guard=obj.bx, nb=bd.cnum(obj.bx, obj.by+2), type=2;} // 2回目は下向き
 
 				if(val!==-1 && guard!==-1 && nb!==null && bd.cell[nb].ques!==51){
 					var color = (obj.error===1?this.fontErrcolor:this.fontcolor);

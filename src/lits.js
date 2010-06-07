@@ -110,7 +110,7 @@ Puzzles.lits.prototype = {
 			var bstr = this.outbstr;
 			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(cc1!==null && cc2!==null && bstr.charAt(cc1)!=bstr.charAt(cc2)){ bd.sQuB(id,1);}
+				if(cc1!==null && cc2!==null && bstr.charAt(cc1)!=bstr.charAt(cc2)){ bd.border[id].ques = 1;}
 			}
 			this.outbstr = bstr.substr(bd.cellmax);
 		};

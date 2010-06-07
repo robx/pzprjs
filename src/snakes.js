@@ -60,40 +60,31 @@ Puzzles.snakes.prototype = {
 		mv.mousedown = function(){
 			if(k.editmode) this.inputdirec();
 			else if(k.playmode){
-				if(!this.inputDot()){
-					this.dragnumber();
+				if(!this.inputDot_snakes()){
+					this.dragnumber_snakes();
 				}
 			}
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if     (k.editmode) this.inputqnum();
-				else if(k.playmode) this.inputqnum_snakes();
+				this.mouseCell=null;
+				this.inputqnum();
 			}
 		};
 		mv.mousemove = function(){
 			if(k.editmode && this.notInputted()) this.inputdirec();
 			else if(k.playmode){
-				if(!this.inputDot()){
-					this.dragnumber();
+				if(!this.inputDot_snakes()){
+					this.dragnumber_snakes();
 				}
 			}
 		};
 
-		mv.inputqnum_snakes = function(){
-			var cc = this.cellid();
-			if(cc===null){ return;}
-			k.dispzero=0;
-			this.inputqnum3(cc);
-			bd.sQsC(cc,0);
-			k.dispzero=1;
-			pc.paintCellAround(cc);
-		},
-		mv.dragnumber = function(){
+		mv.dragnumber_snakes = function(){
 			var cc = this.cellid();
 			if(cc===null||cc===this.mouseCell){ return;}
 			if(this.mouseCell===null){
-				this.inputData = bd.QaC(cc)!=-1?bd.QaC(cc):10;
+				this.inputData = bd.AnC(cc)!==-1?bd.AnC(cc):10;
 				this.mouseCell = cc;
 			}
 			else if(bd.QnC(cc)==-1 && this.inputData>=1 && this.inputData<=5){
@@ -101,29 +92,29 @@ Puzzles.snakes.prototype = {
 				else if(this.btn.Right) this.inputData--;
 				if(this.inputData>=1 && this.inputData<=5){
 					bd.sDiC(cc, 0);
-					bd.sQaC(cc, this.inputData); bd.sQsC(cc,0);
+					bd.sAnC(cc, this.inputData); bd.sQsC(cc,0);
 					this.mouseCell = cc;
 					pc.paintCell(cc);
 				}
 			}
 			else if(bd.QnC(cc)==-1 && this.inputData==10){
-				bd.sQaC(cc, -1); bd.sQsC(cc,0);
+				bd.sAnC(cc, -1); bd.sQsC(cc,0);
 				pc.paintCell(cc);
 			}
 		};
-		mv.inputDot = function(){
+		mv.inputDot_snakes = function(){
 			var cc = this.cellid();
 			if(!this.btn.Right||cc===null||cc===this.mouseCell||this.inputData>=0){ return false;}
 
 			if(this.inputData===null){
-				if(bd.QaC(cc)==-1){
+				if(bd.AnC(cc)===-1){
 					this.inputData = bd.QsC(cc)!=1?-2:-3;
 					return true;
 				}
 				else{ return false;}
 			}
 			else if(this.inputData!=-2 && this.inputData!=-3){ return false;}
-			bd.sQaC(cc,-1); bd.sQsC(cc,(this.inputData==-2?1:0));
+			bd.sAnC(cc,-1); bd.sQsC(cc,(this.inputData==-2?1:0));
 			pc.paintCell(cc);
 			this.mouseCell = cc;
 			return true;
@@ -134,20 +125,9 @@ Puzzles.snakes.prototype = {
 		kc.keyinput = function(ca){
 			if(k.editmode && this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
-			if(k.playmode && this.key_inputdot(ca)){ return;}
+
+			if(k.playmode && (ca==='q'||ca==='-')){ ca='s1';}
 			this.key_inputqnum(ca);
-		};
-		kc.key_inputdot = function(ca){
-			if(ca=='q'){
-				var cc = tc.getTCC();
-				if(bd.QnC(cc)===-1){
-					bd.sQsC(cc,(bd.QsC(cc)!==1?1:0));
-					bd.sQaC(cc,-1);
-					pc.paintCell(cc);
-					return true;
-				}
-			}
-			return false;
 		};
 
 		bd.maxnum = 5;
@@ -185,9 +165,9 @@ Puzzles.snakes.prototype = {
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1!==null && cc2!==null &&
 			   (bd.cell[cc1].qnum===-1 && bd.cell[cc2].qnum===-1) &&
-			   (bd.cell[cc1].qans!==-1 || bd.cell[cc2].qans!==-1) &&
-			   ( ((bd.cell[cc1].qans===-1)^(bd.cell[cc2].qans===-1)) ||
-				 (Math.abs(bd.cell[cc1].qans-bd.cell[cc2].qans)!==1)) )
+			   (bd.cell[cc1].anum!==-1 || bd.cell[cc2].anum!==-1) &&
+			   ( ((bd.cell[cc1].anum===-1)^(bd.cell[cc2].anum===-1)) ||
+				 (Math.abs(bd.cell[cc1].anum-bd.cell[cc2].anum)!==1)) )
 			{
 				g.fillStyle = this.borderQanscolor;
 				return true;
@@ -201,8 +181,8 @@ Puzzles.snakes.prototype = {
 			var clist = bd.cellinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
-				if(obj.qnum===-1 && obj.qans>0){
-					this.dispnum(key, 1, ""+obj.qans, 0.8, this.fontAnscolor, obj.cpx, obj.cpy);
+				if(obj.qnum===-1 && obj.anum>0){
+					this.dispnum(key, 1, ""+obj.anum, 0.8, this.fontAnscolor, obj.cpx, obj.cpy);
 				}
 				/* 不要な文字はdrawArrowNumbersで消しているので、ここでは消さない */
 			}
@@ -222,11 +202,11 @@ Puzzles.snakes.prototype = {
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			this.decodeCellDirecQnum();
-			this.decodeCellQanssub();
+			this.decodeCellAnumsub();
 		};
 		fio.encodeData = function(){
 			this.encodeCellDirecQnum();
-			this.encodeCellQanssub();
+			this.encodeCellAnumsub();
 		};
 	},
 
@@ -240,7 +220,7 @@ Puzzles.snakes.prototype = {
 				this.setAlert('大きさが５ではない蛇がいます。','The size of a snake is not five.'); return false;
 			}
 
-			if( !this.checkDifferentNumberInRoom(sinfo, bd.QaC) ){
+			if( !this.checkDifferentNumberInRoom(sinfo, bd.AnC) ){
 				this.setAlert('同じ数字が入っています。','A Snake has same plural marks.'); return false;
 			}
 
@@ -262,8 +242,8 @@ Puzzles.snakes.prototype = {
 
 		ans.getSnakeInfo = function(){
 			var sinfo = new AreaInfo();
-			var func = function(c,cc){ return (cc!==null && (Math.abs(bd.QaC(c)-bd.QaC(cc))==1)); };
-			for(var c=0;c<bd.cellmax;c++){ sinfo.id[c]=(bd.QaC(c)>0?0:-1);}
+			var func = function(c,cc){ return (cc!==null && (Math.abs(bd.AnC(c)-bd.AnC(cc))===1)); };
+			for(var c=0;c<bd.cellmax;c++){ sinfo.id[c]=(bd.AnC(c)>0?0:-1);}
 			for(var c=0;c<bd.cellmax;c++){
 				if(sinfo.id[c]!=0){ continue;}
 				sinfo.max++;
@@ -309,9 +289,9 @@ Puzzles.snakes.prototype = {
 				// bx,by,clist,ccは319行目で宣言されてるものと同一です。
 				cc = bd.cnum(bx,by);
 				if(cc!==null){ clist.push(cc);}
-				return (cc!==null && bd.cell[cc].qnum===-1 && bd.cell[cc].qans===-1);
+				return (cc!==null && bd.cell[cc].qnum===-1 && bd.cell[cc].anum===-1);
 			};
-			var noqans = function(cc){ return (cc===null || bd.cell[cc].qnum!==-1 || bd.cell[cc].qans===-1);}
+			var noans = function(cc){ return (cc===null || bd.cell[cc].qnum!==-1 || bd.cell[cc].anum===-1);}
 
 			for(var c=0;c<bd.cellmax;c++){
 				var num=bd.QnC(c), dir=bd.DiC(c);
@@ -327,14 +307,14 @@ Puzzles.snakes.prototype = {
 				// ccは数字のあるマスのIDか、null(盤面外)を指す
 
 				// 矢印つき数字が0で、その先に回答の数字がある
-				if(num===0 && !noqans(cc)){
+				if(num===0 && !noans(cc)){
 					if(this.inAutoCheck){ return false;}
 					if(num>0){ bd.sErC(clist,1);}
 					else{ bd.sErC([c,cc],1);}
 					result = false;
 				}
 				// 矢印つき数字が1以上で、その先に回答の数字がない or 回答の数字が違う
-				else if(num>0 && (noqans(cc) || bd.cell[cc].qans!==num)){
+				else if(num>0 && (noans(cc) || bd.cell[cc].anum!==num)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c,cc],1);
 					result = false;
@@ -348,19 +328,19 @@ Puzzles.snakes.prototype = {
 				// bx,by,clist,ccは366行目で宣言されてるものと同一です。
 				cc = bd.cnum(bx,by);
 				if(cc!==null){ clist.push(cc);}
-				return (cc!==null && bd.cell[cc].qnum===-1 && bd.cell[cc].qans===-1);
+				return (cc!==null && bd.cell[cc].qnum===-1 && bd.cell[cc].anum===-1);
 			};
 
 			for(var r=1;r<=sinfo.max;r++){
 				var idlist=sinfo.room[r].idlist, c1=null, dir=k.NONE, c2;
 
-				for(var i=0;i<idlist.length;i++){ if(bd.QaC(idlist[i])===1){ c1=idlist[i]; break;}}
+				for(var i=0;i<idlist.length;i++){ if(bd.AnC(idlist[i])===1){ c1=idlist[i]; break;}}
 				if(c1===null){ continue;}
 
-				c2=bd.dn(c1); if(c2!==null && bd.QaC(c2)===2){ dir=k.UP;}
-				c2=bd.up(c1); if(c2!==null && bd.QaC(c2)===2){ dir=k.DN;}
-				c2=bd.rt(c1); if(c2!==null && bd.QaC(c2)===2){ dir=k.LT;}
-				c2=bd.lt(c1); if(c2!==null && bd.QaC(c2)===2){ dir=k.RT;}
+				c2=bd.dn(c1); if(c2!==null && bd.AnC(c2)===2){ dir=k.UP;}
+				c2=bd.up(c1); if(c2!==null && bd.AnC(c2)===2){ dir=k.DN;}
+				c2=bd.rt(c1); if(c2!==null && bd.AnC(c2)===2){ dir=k.LT;}
+				c2=bd.lt(c1); if(c2!==null && bd.AnC(c2)===2){ dir=k.RT;}
 				if(dir===k.NONE){ continue;}
 
 				var bx = bd.cell[c1].bx, by = bd.cell[c1].by, clist=[c1], cc;
@@ -373,7 +353,7 @@ Puzzles.snakes.prototype = {
 				// ccは数字のあるマスのIDか、null(盤面外)を指す
 
 				var sid=sinfo.id[cc];
-				if(cc!==null && bd.QaC(cc)>0 && bd.QnC(cc)===-1 && sid>0 && r!=sid){
+				if(cc!==null && bd.AnC(cc)>0 && bd.QnC(cc)===-1 && sid>0 && r!=sid){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(clist,1);
 					bd.sErC(idlist,1);

@@ -374,20 +374,24 @@ Puzzles.icelom.prototype = {
 		enc.decodeIcelom = function(){
 			var bstr = this.outbstr;
 
-			var a=0;
+			var a=0, c=0, twi=[16,8,4,2,1];
 			for(var i=0;i<bstr.length;i++){
 				var num = parseInt(bstr.charAt(i),32);
-				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?6:0));} }
-				if((i*5+5)>=k.qcols*k.qrows){ a=i+1; break;}
+				for(var w=0;w<5;w++){
+					if(c<bd.cellmax){
+						bd.sQuC(c,(num&twi[w]?6:0));
+						c++;
+					}
+				}
+				if(c>=bd.cellmax){ a=i+1; break;}
 			}
 			this.outbstr = bstr.substr(a);
 		};
 		enc.encodeIcelom = function(){
-			var cm = "";
-			var num=0, pass=0;
-			for(i=0;i<bd.cellmax;i++){
-				if(bd.QuC(i)==6){ pass+=Math.pow(2,4-num);}
-				num++; if(num==5){ cm += pass.toString(32); num=0; pass=0;}
+			var cm = "", num=0, pass=0, twi=[16,8,4,2,1];
+			for(var c=0;c<bd.cellmax;c++){
+				if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
+				if(num==5){ cm += pass.toString(32); num=0; pass=0;}
 			}
 			if(num>0){ cm += pass.toString(32);}
 
@@ -397,10 +401,12 @@ Puzzles.icelom.prototype = {
 		enc.decodeInOut = function(){
 			var barray = this.outbstr.substr(1).split("/");
 
+			base.disableInfo();
 			bd.setArrow(bd.arrowin,0); bd.setArrow(bd.arrowout,0);
 			bd.arrowin = bd.arrowout = null;
 			bd.inputarrowin (parseInt(barray[0])+bd.bdinside);
 			bd.inputarrowout(parseInt(barray[1])+bd.bdinside);
+			base.enableInfo();
 
 			this.outbstr = "";
 		};
@@ -410,8 +416,10 @@ Puzzles.icelom.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
+			base.disableInfo();
 			bd.inputarrowin (parseInt(this.readLine()));
 			bd.inputarrowout(parseInt(this.readLine()));
+			base.enableInfo();
 
 			var pzltype = this.readLine();
 			if(k.EDITOR){
@@ -424,31 +432,33 @@ Puzzles.icelom.prototype = {
 				ee('title2').el.innerHTML = base.gettitle();
 			}
 
-			this.decodeCell( function(c,ca){
-				if(ca.charAt(0)=='i'){ bd.sQuC(c,6); ca=ca.substr(1);}
-				if     (ca==''||ca=='.'){ return;}
-				else if(ca=='?'){ bd.sQnC(c,-2);}
-				else            { bd.sQnC(c,parseInt(ca));}
+			this.decodeCell( function(obj,ca){
+				if(ca.charAt(0)==='i'){ obj.ques=6; ca=ca.substr(1);}
+
+				if(ca!=='' && ca!=='.'){
+					obj.qnum = (ca!=='?' ? parseInt(ca) : -2);
+				}
 			});
-			this.decodeBorder( function(c,ca){
-				if     (ca == "1" ){ bd.sLiB(c, 1);}
-				else if(ca == "-1"){ bd.sQsB(c, 2);}
+			this.decodeBorder( function(obj,ca){
+				if     (ca==="1" ){ obj.line = 1;}
+				else if(ca==="-1"){ obj.qsub = 2;}
 			});
 		};
 		fio.encodeData = function(){
 			var pzltype = (pp.getVal('allwhite') ? "allwhite" : "skipwhite");
 
 			this.datastr += (bd.arrowin+"/"+bd.arrowout+"/"+pzltype+"/");
-			this.encodeCell( function(c){
-				var istr = (bd.QuC(c)===6 ? "i" : "");
-				if     (bd.QnC(c)===-1){ return (istr==="" ? ". " : "i ");}
-				else if(bd.QnC(c)===-2){ return istr+"? ";}
-				else{ return istr+bd.QnC(c)+" ";}
+			this.encodeCell( function(obj){
+				var istr = (obj.ques===6 ? "i" : ""), qstr='';
+				if     (obj.qnum===-1){ qstr = (istr==="" ? ". " : " ");}
+				else if(obj.qnum===-2){ qstr = "? ";}
+				else{ qstr = obj.qnum+" ";}
+				return istr+qstr;
 			});
-			this.encodeBorder( function(c){
-				if     (bd.LiB(c)===1){ return "1 "; }
-				else if(bd.QsB(c)===2){ return "-1 ";}
-				else                  { return "0 "; }
+			this.encodeBorder( function(obj){
+				if     (obj.line===1){ return "1 "; }
+				else if(obj.qsub===2){ return "-1 ";}
+				else                 { return "0 "; }
 			});
 		};
 	},
