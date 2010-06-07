@@ -85,6 +85,21 @@ KeyEvent.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// base.e_SLkeydown() Silverlightオブジェクトにフォーカスがある時、キーを押した際のイベント共通処理
+	// base.e_SLkeyup()   Silverlightオブジェクトにフォーカスがある時、キーを離した際のイベント共通処理
+	//---------------------------------------------------------------------------
+	e_SLkeydown : function(sender, keyEventArgs){
+		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
+						altKey:false, returnValue:false, preventDefault:f_true };
+		return kc.e_keydown(emulate);
+	},
+	e_SLkeyup : function(sender, keyEventArgs){
+		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
+						altKey:false, returnValue:false, preventDefault:f_true };
+		return kc.e_keyup(emulate);
+	},
+
+	//---------------------------------------------------------------------------
 	// kc.keyinput() キーを押した際のイベント処理。各パズルのファイルでオーバーライドされる。
 	// kc.keyup()    キーを離した際のイベント処理。各パズルのファイルでオーバーライドされる。
 	//---------------------------------------------------------------------------

@@ -75,8 +75,13 @@ var k = {
 		Gecko : (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1),
 
 		WinWebKit: (navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1),
-		IEmoz4   : (!!(window.attachEvent && !window.opera) && navigator.userAgent.indexOf('Mozilla/4.0') > -1),
-		IE6      : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)<=7)
+		IE6      : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==6),
+		IE7      : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==7),
+		IE8      : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8)
+	},
+	os:{
+		iPhoneOS : (navigator.userAgent.indexOf('like Mac OS X') > -1),
+		Android  : (navigator.userAgent.indexOf('Android') > -1)
 	},
 	vml : Camp.current.vml,
 

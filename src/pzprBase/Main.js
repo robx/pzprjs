@@ -66,9 +66,11 @@ PBase.prototype = {
 		},10);
 	},
 	onload_func2 : function(){
-		this.initCanvas();
+		this.numparent = ee('numobj_parent').el;		// 数字表示用
+		g = ee('divques').unselectable().el.getContext("2d");
+
 		this.initObjects();
-		this.setEvents(true);	// イベントをくっつける
+		this.setEvents();	// イベントをくっつける
 
 		if(k.PLAYER){ this.accesslog();}	// アクセスログをとってみる
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
@@ -77,16 +79,10 @@ PBase.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// base.initCanvas()    Canvas関連の初期化
 	// base.initObjects()   各オブジェクトの生成などの処理
 	// base.doc_design()    onload_func()で呼ばれる。htmlなどの設定を行う
 	// base.checkUserLang() 言語環境をチェックして日本語でない場合英語表示にする
 	//---------------------------------------------------------------------------
-	initCanvas : function(){
-		this.numparent = ee('numobj_parent').el;		// 数字表示用
-		var canvas = ee('divques').unselectable().el;	// Canvas
-		g = canvas.getContext("2d");
-	},
 	initObjects : function(){
 		this.proto = 0;
 
@@ -146,59 +142,56 @@ PBase.prototype = {
 
 	//---------------------------------------------------------------------------
 	// base.setEvents()       マウス入力、キー入力のイベントの設定を行う
-	// base.initSilverlight() Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
-	// base.e_SLkeydown()     Silverlightオブジェクトにフォーカスがある時、キーを押した際のイベント共通処理
-	// base.e_SLkeyup()       Silverlightオブジェクトにフォーカスがある時、キーを離した際のイベント共通処理
 	//---------------------------------------------------------------------------
 	setEvents : function(first){
 		// マウス入力イベントの設定
 		var canvas = ee('divques').el;
-		canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
-		canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
-		canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
-		canvas.oncontextmenu = function(){ return false;};
+		if(!k.os.iPhoneOS && !k.os.Android){
+			canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+			canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+			canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
+			canvas.oncontextmenu = function(){ return false;};
 
-		this.numparent.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
-		this.numparent.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
-		this.numparent.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
-		this.numparent.oncontextmenu = function(){ return false;};
-
-		if(first){
-			// キー入力イベントの設定
-			_doc.onkeydown  = ee.ebinder(kc, kc.e_keydown);
-			_doc.onkeyup    = ee.ebinder(kc, kc.e_keyup);
-			_doc.onkeypress = ee.ebinder(kc, kc.e_keypress);
-			// Silverlightのキー入力イベント設定
-			if(g.use.sl){
-				var sender = g.content.findName(g.canvasid);
-				sender.AddEventListener("KeyDown", this.e_SLkeydown);
-				sender.AddEventListener("KeyUp",   this.e_SLkeyup);
-			}
-
-			// File API＋Drag&Drop APIの設定
-			if(!!menu.ex.reader){
-				var DDhandler = function(e){
-					menu.ex.reader.readAsText(e.dataTransfer.files[0]);
-					e.preventDefault();
-					e.stopPropagation();
-				}
-				window.addEventListener('dragover', function(e){ e.preventDefault();}, true);
-				window.addEventListener('drop', DDhandler, true);
-			}
-
-			// onBlurにイベントを割り当てる
-			_doc.onblur = ee.ebinder(this, this.onblur_func);
+			this.numparent.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+			this.numparent.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+			this.numparent.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
+			this.numparent.oncontextmenu = function(){ return false;};
 		}
-	},
-	e_SLkeydown : function(sender, keyEventArgs){
-		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
-						altKey:false, returnValue:false, preventDefault:f_true };
-		return kc.e_keydown(emulate);
-	},
-	e_SLkeyup : function(sender, keyEventArgs){
-		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
-						altKey:false, returnValue:false, preventDefault:f_true };
-		return kc.e_keyup(emulate);
+		// iPhoneOS用のタッチイベント設定
+		else{
+			canvas.addEventListener("touchstart", ee.ebinder(mv, mv.e_mousedown), false);
+			canvas.addEventListener("touchmove",  ee.ebinder(mv, mv.e_mousemove), false);
+			canvas.addEventListener("touchend",   ee.ebinder(mv, mv.e_mouseup),   false);
+
+			this.numparent.addEventListener("touchstart", ee.ebinder(mv, mv.e_mousedown), false);
+			this.numparent.addEventListener("touchmove",  ee.ebinder(mv, mv.e_mousemove), false);
+			this.numparent.addEventListener("touchend",   ee.ebinder(mv, mv.e_mouseup),   false);
+		}
+
+		// キー入力イベントの設定
+		_doc.onkeydown  = ee.ebinder(kc, kc.e_keydown);
+		_doc.onkeyup    = ee.ebinder(kc, kc.e_keyup);
+		_doc.onkeypress = ee.ebinder(kc, kc.e_keypress);
+		// Silverlightのキー入力イベント設定
+		if(g.use.sl){
+			var sender = g.content.findName(g.canvasid);
+			sender.AddEventListener("KeyDown", kc.e_SLkeydown);
+			sender.AddEventListener("KeyUp",   kc.e_SLkeyup);
+		}
+
+		// File API＋Drag&Drop APIの設定
+		if(!!menu.ex.reader){
+			var DDhandler = function(e){
+				menu.ex.reader.readAsText(e.dataTransfer.files[0]);
+				e.preventDefault();
+				e.stopPropagation();
+			}
+			window.addEventListener('dragover', function(e){ e.preventDefault();}, true);
+			window.addEventListener('drop', DDhandler, true);
+		}
+
+		// onBlurにイベントを割り当てる
+		_doc.onblur = ee.ebinder(this, this.onblur_func);
 	},
 
 	//---------------------------------------------------------------------------
@@ -373,7 +366,6 @@ PBase.prototype = {
 
 		// onload後の初期化ルーチンへジャンプする
 		this.initObjects();
-		this.setEvents(false);
 	},
 
 	//---------------------------------------------------------------------------

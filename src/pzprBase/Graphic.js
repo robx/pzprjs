@@ -1567,7 +1567,7 @@ Graphic.prototype = {
 	},
 	dispnum : function(key, type, text, fontratio, color, px, py){
 		if(!this.fillTextPrecisely){
-			if(k.br.IE6){ py+=2;}
+			if(k.br.IE6 || k.br.IE7){ py+=2;}
 
 			// エレメントを取得
 			var el = this.numobj[key];

@@ -22,7 +22,7 @@ var MouseEvent = function(){
 	this.inputQuesDirectly = false;
 
 	this.mouseoffset;
-	if     (k.br.IEmoz4)   { this.mouseoffset = {x:2,y:2};}
+	if(k.br.IE6||k.br.IE7||k.br.IE8){ this.mouseoffset = {x:2,y:2};}
 	else if(k.br.WinWebKit){ this.mouseoffset = {x:1,y:1};}
 	else                   { this.mouseoffset = {x:0,y:0};}
 };
@@ -110,7 +110,8 @@ MouseEvent.prototype = {
 	// mv.setButtonFlag() 左/中/右ボタンが押されているか設定する
 	//---------------------------------------------------------------------------
 	setButtonFlag : function(e){
-		this.setButtonFlag = ((k.br.IE) ?
+		this.setButtonFlag = ((!k.os.iPhoneOS && !k.os.Android) ? (
+		 (k.br.IE) ?
 			function(e){ this.btn = { Left:(e.button===1), Middle:(e.button===4), Right:(e.button===2)};}
 		:(k.br.WinWebKit) ?
 			function(e){ this.btn = { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)};}
@@ -123,6 +124,8 @@ MouseEvent.prototype = {
 				this.btn = (!!e.which ? { Left:(e.which ===1), Middle:(e.which ===2), Right:(e.which ===3)}
 									  : { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)});
 			}
+		):
+			function(e){ this.btn = { Left:(e.touches.length===1), Middle:false, Right:(e.touches.length>1)};}
 		);
 		this.setButtonFlag(e);
 	},
@@ -133,8 +136,24 @@ MouseEvent.prototype = {
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
 	setposition : function(e){
-		this.inputPoint.x = ee.pageX(e) -k.cv_oft.x-k.p0.x - this.mouseoffset.x;
-		this.inputPoint.y = ee.pageY(e) -k.cv_oft.y-k.p0.y - this.mouseoffset.y;
+		this.setposition = ((!k.os.iPhoneOS && !k.os.Android) ?
+			function(e){
+				this.inputPoint.x = ee.pageX(e) -k.cv_oft.x-k.p0.x - this.mouseoffset.x;
+				this.inputPoint.y = ee.pageY(e) -k.cv_oft.y-k.p0.y - this.mouseoffset.y;
+			}
+		:
+			function(e){
+				var len=e.touches.length , pos=new Pos(0,0);
+				if(len>0){
+					for(var i=0,len=e.touches.length;i<len;i++){
+						pos.x += e.pageX; pos.y += e.pageY;
+					}
+					this.inputPoint.x = (((pos.x/len) -k.cv_oft.x-k.p0.x)|0);
+					this.inputPoint.y = (((pos.y/len) -k.cv_oft.y-k.p0.y)|0);
+				}
+			}
+		);
+		this.setposition(e);
 	},
 
 	notInputted : function(){ return !um.changeflag;},
