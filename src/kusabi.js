@@ -190,15 +190,15 @@ Puzzles.kusabi.prototype = {
 				this.setAlert('丸につながっていない線があります。','A line doesn\'t connect any circle.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && bd.QnC(c)!=-1);}) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===0 && bd.isNum(c));}) ){
 				this.setAlert('どこにもつながっていない丸があります。','A circle is not connected another object.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && bd.QnC(c)!=-1);});};
+		ans.check1st = function(){ return this.checkAllCell(function(c){ return (line.lcntCell(c)===0 && bd.isNum(c));});};
 
-		ans.check2Line = function(){ return this.checkLine(function(i){ return (line.lcntCell(i)>=2 && bd.QnC(i)!=-1);}); };
+		ans.check2Line = function(){ return this.checkLine(function(c){ return (line.lcntCell(c)>=2 && bd.isNum(c));}); };
 		ans.checkLine = function(func){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
@@ -217,7 +217,7 @@ Puzzles.kusabi.prototype = {
 			for(var id=0;id<bd.bdmax;id++){ visited[id]=0;}
 
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)===-1 || line.lcntCell(c)===0){ continue;}
+				if(bd.noNum(c) || line.lcntCell(c)===0){ continue;}
 
 				var cc      = null;	// ループから抜けたときに到達地点のIDが入る
 				var ccnt    = 0;	// 曲がった回数
@@ -231,7 +231,7 @@ Puzzles.kusabi.prototype = {
 					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 					if(((bx+by)&1)===0){
 						cc = bd.cnum(bx,by);
-						if(dir!=0 && bd.QnC(cc)!=-1){ break;}
+						if(dir!=0 && bd.isNum(cc)){ break;}
 						else if(dir!==1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!==0&&dir!==2){ ccnt++;} dir=2;}
 						else if(dir!==2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!==0&&dir!==1){ ccnt++;} dir=1;}
 						else if(dir!==3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!==0&&dir!==4){ ccnt++;} dir=4;}

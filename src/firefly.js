@@ -225,7 +225,7 @@ Puzzles.firefly.prototype = {
 			var result = true;
 			if(line.ltotal[val]==0){ return true;}
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)==-1 && line.lcntCell(c)==val){
+				if(bd.noNum(c) && line.lcntCell(c)==val){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,false);
@@ -237,7 +237,7 @@ Puzzles.firefly.prototype = {
 		ans.checkFireflyBeam = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)==-1 || bd.DiC(c)==0){ continue;}
+				if(bd.noNum(c) || bd.DiC(c)==0){ continue;}
 				if((bd.DiC(c)==k.UP && !bd.isLine(bd.ub(c))) || (bd.DiC(c)==k.DN && !bd.isLine(bd.db(c))) ||
 				   (bd.DiC(c)==k.LT && !bd.isLine(bd.lb(c))) || (bd.DiC(c)==k.RT && !bd.isLine(bd.rb(c))) )
 				{
@@ -276,7 +276,7 @@ Puzzles.firefly.prototype = {
 					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 					if(!((bx+by)&1)){
 						var cc = bd.cnum(bx,by);
-						if(cc===null || bd.QnC(cc)!==-1){ break;}
+						if(cc===null || bd.isNum(cc)){ break;}
 						else if(dir!==1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!==2){ ccnt++;} dir=2;}
 						else if(dir!==2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!==1){ ccnt++;} dir=1;}
 						else if(dir!==3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!==4){ ccnt++;} dir=4;}

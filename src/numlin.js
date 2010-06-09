@@ -185,7 +185,7 @@ Puzzles.numlin.prototype = {
 				this.setAlert('3つ以上の数字がつながっています。','Three or more numbers are connected.'); return false;
 			}
 
-			if( !this.checkSameObjectInRoom(linfo, ee.binder(bd, bd.QnC)) ){
+			if( !this.checkSameObjectInRoom(linfo, bd.getNum) ){
 				this.setAlert('異なる数字がつながっています。','Different numbers are connected.'); return false;
 			}
 
@@ -199,7 +199,7 @@ Puzzles.numlin.prototype = {
 				this.setAlert('数字につながっていない線があります。','A line doesn\'t connect any number.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && bd.QnC(c)!=-1);}) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && bd.isNum(c));}) ){
 				this.setAlert('どこにもつながっていない数字があります。','A number is not connected another number.'); return false;
 			}
 
@@ -207,8 +207,8 @@ Puzzles.numlin.prototype = {
 		};
 		ans.check1st = function(){ return true;};
 
-		ans.check1Line = function(){ return this.checkLine(function(i){ return (line.lcntCell(i)==1 && bd.QnC(i)==-1);}); };
-		ans.check2Line = function(){ return this.checkLine(function(i){ return (line.lcntCell(i)>=2 && bd.QnC(i)!=-1);}); };
+		ans.check1Line = function(){ return this.checkLine(function(c){ return (line.lcntCell(c)===1 && bd.noNum(c));}); };
+		ans.check2Line = function(){ return this.checkLine(function(c){ return (line.lcntCell(c)>= 2 && bd.isNum(c));}); };
 		ans.checkLine = function(func){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){

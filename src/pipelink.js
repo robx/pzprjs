@@ -62,7 +62,7 @@ Puzzles.pipelink.prototype = {
 		mv.mousedown = function(){
 			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode){
-				if(!kp.enabled()){ this.inputQues([0,101,102,103,104,105,106,107,-2]);}
+				if(!kp.enabled()){ this.inputQues([0,11,12,13,14,15,16,17,-2]);}
 				else{ kp.display();}
 			}
 			else if(k.playmode){
@@ -92,17 +92,17 @@ Puzzles.pipelink.prototype = {
 			if(k.playmode){ return false;}
 			var cc = tc.getTCC();
 
-			if     (ca=='q'){ bd.sQuC(cc,101); }
-			else if(ca=='w'){ bd.sQuC(cc,102); }
-			else if(ca=='e'){ bd.sQuC(cc,103); }
-			else if(ca=='r'){ bd.sQuC(cc,  0); }
-			else if(ca==' '){ bd.sQuC(cc,  0); }
-			else if(ca=='a'){ bd.sQuC(cc,104); }
-			else if(ca=='s'){ bd.sQuC(cc,105); }
-			else if(ca=='d'){ bd.sQuC(cc,106); }
-			else if(ca=='f'){ bd.sQuC(cc,107); }
-			else if(ca=='-'){ bd.sQuC(cc, (bd.QuC(cc)!=-2?-2:0)); }
-			else if(ca=='1'){ bd.sQuC(cc,  6); }
+			if     (ca=='q'){ bd.sQuC(cc,11); }
+			else if(ca=='w'){ bd.sQuC(cc,12); }
+			else if(ca=='e'){ bd.sQuC(cc,13); }
+			else if(ca=='r'){ bd.sQuC(cc, 0); }
+			else if(ca==' '){ bd.sQuC(cc, 0); }
+			else if(ca=='a'){ bd.sQuC(cc,14); }
+			else if(ca=='s'){ bd.sQuC(cc,15); }
+			else if(ca=='d'){ bd.sQuC(cc,16); }
+			else if(ca=='f'){ bd.sQuC(cc,17); }
+			else if(ca=='-'){ bd.sQuC(cc,(bd.QuC(cc)!==-2?-2:0)); }
+			else if(ca=='1'){ bd.sQuC(cc, 6); }
 			else{ return false;}
 
 			pc.paintCellAround(cc);
@@ -150,7 +150,7 @@ Puzzles.pipelink.prototype = {
 
 			this.drawBorders(x1,y1,x2,y2);
 
-			this.drawQuesHatenas(x1,y1,x2,y2);
+			this.drawHatenas(x1,y1,x2,y2);
 
 			this.drawLines(x1,y1,x2,y2);
 
@@ -242,7 +242,7 @@ Puzzles.pipelink.prototype = {
 					}
 					c--;
 				}
-				else if(ca>='a' && ca<='g'){ bd.cell[c].ques = parseInt(ca,36)+91;}
+				else if(ca>='a' && ca<='g'){ bd.cell[c].ques = parseInt(ca,36)+1;}
 				else if(ca>='h' && ca<='z'){ c += (parseInt(ca,36)-17);}
 
 				c++;
@@ -268,7 +268,7 @@ Puzzles.pipelink.prototype = {
 					}
 					else if(type===1){ pstr="0";}
 				}
-				else if(qu>=101 && qu<=107){ pstr = (qu-91).toString(36);}
+				else if(qu>=11 && qu<=17){ pstr = (qu-1).toString(36);}
 				else{ count++;}
 
 				if(count===0){ cm += pstr;}
@@ -285,7 +285,7 @@ Puzzles.pipelink.prototype = {
 			this.decodeCell( function(obj,ca){
 				if     (ca==="o"){ obj.ques = 6; }
 				else if(ca==="-"){ obj.ques = -2;}
-				else if(ca!=="."){ obj.ques = parseInt(ca,36)+91;}
+				else if(ca!=="."){ obj.ques = parseInt(ca,36)+1;}
 			});
 			this.decodeBorderLine();
 		};
@@ -294,7 +294,7 @@ Puzzles.pipelink.prototype = {
 			this.encodeCell( function(obj){
 				if     (obj.ques==6) { return "o ";}
 				else if(obj.ques==-2){ return "- ";}
-				else if(obj.ques>=101 && obj.ques<=107){ return ""+(obj.ques-91).toString(36)+" ";}
+				else if(obj.ques>=11 && obj.ques<=17){ return ""+(obj.ques-1).toString(36)+" ";}
 				else                 { return ". ";}
 			});
 			this.encodeBorderLine();
@@ -316,18 +316,18 @@ Puzzles.pipelink.prototype = {
 
 			var rice = false;
 			for(var i=0;i<bd.cellmax;i++){ if(bd.QuC(i)==6){ rice=true; break;}}
-			if( rice && !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101);}) ){
-				this.setAlert((pc.disp==0?'○':'氷')+'の部分以外で線が交差しています。','There is a crossing line out of '+(pc.disp==0?'circles':'ices')+'.'); return false;
+			if( rice && !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==6 && bd.QuC(c)!==11);}) ){
+				this.setAlert((pc.disp==0?'○':'氷')+'の部分以外で線が交差しています。','There is a crossing line out of '+(pc.disp===0?'circles':'ices')+'.'); return false;
 			}
-			if( rice && !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));})) ){
-				ans.setAlert((pc.disp==0?'○':'氷')+'の部分で線が曲がっています。','A line curves on '+(pc.disp==0?'circles':'ices')+'.'); return false;
+			if( rice && !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)===2 && bd.QuC(c)===6 && !this.isLineStraight(c));})) ){
+				ans.setAlert((pc.disp==0?'○':'氷')+'の部分で線が曲がっています。','A line curves on '+(pc.disp===0?'circles':'ices')+'.'); return false;
 			}
 
 			if( !this.checkOneLoop() ){
 				this.setAlert('輪っかが一つではありません。','There are plural loops.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QuC(c)==101 && line.lcntCell(c)!=4);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.QuC(c)===11 && line.lcntCell(c)!==4);}) ){
 				this.setAlert('┼のマスから線が4本出ていません。','A cross-joint cell doesn\'t have four-way lines.'); return false;
 			}
 

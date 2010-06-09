@@ -554,7 +554,7 @@ MenuExec.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(true){
-					var val = ({2:5,3:4,4:3,5:2,104:107,105:106,106:105,107:104})[bd.QuC(c)];
+					var val = ({2:5,3:4,4:3,5:2,14:17,15:16,16:15,17:14})[bd.QuC(c)];
 					if(!isNaN(val)){ bd.sQuC(c,val);}
 				}
 				if(k.isexcell!==1){
@@ -568,7 +568,7 @@ MenuExec.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(true){
-					var val = ({2:3,3:2,4:5,5:4,104:105,105:104,106:107,107:106})[bd.QuC(c)];
+					var val = ({2:3,3:2,4:5,5:4,14:15,15:14,16:17,17:16})[bd.QuC(c)];
 					if(!isNaN(val)){ bd.sQuC(c,val);}
 				}
 				if(k.isexcell!==1){
@@ -582,7 +582,7 @@ MenuExec.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(true){
-					var val = {2:5,3:2,4:3,5:4,21:22,22:21,102:103,103:102,104:107,105:104,106:105,107:106}[bd.QuC(c)];
+					var val = {2:5,3:2,4:3,5:4,12:13,13:12,14:17,15:14,16:15,17:16,21:22,22:21}[bd.QuC(c)];
 					if(!isNaN(val)){ bd.sQuC(c,val);}
 				}
 				if(k.isexcell!==1){
@@ -596,7 +596,7 @@ MenuExec.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(true){
-					var val = {2:3,3:4,4:5,5:2,21:22,22:21,102:103,103:102,104:105,105:106,106:107,107:104}[bd.QuC(c)];
+					var val = {2:3,3:4,4:5,5:2,12:13,13:12,14:15,15:16,16:17,17:14,21:22,22:21}[bd.QuC(c)];
 					if(!isNaN(val)){ bd.sQuC(c,val);}
 				}
 				if(k.isexcell!==1){

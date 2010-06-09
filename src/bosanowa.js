@@ -496,7 +496,7 @@ Puzzles.bosanowa.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkAllCell(this.isSubsNumber) ){
+			if( !this.checkSubsNumber() ){
 				this.setAlert('数字とその隣の数字の差の合計が合っていません。', 'Sum of the differences between the number and adjacent numbers is not equal to the number.'); return false;
 			}
 
@@ -506,16 +506,37 @@ Puzzles.bosanowa.prototype = {
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)==7 && bd.noNum(c));});};
+		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.isBox(c) && bd.noNum(c));});};
 
-		ans.isSubsNumber = function(c){
-			if(!bd.isBox(c) || bd.noNum(c)){ return false;}
-			var num=bd.getNum(c), sum=0, cc;
-			cc=bd.up(c); if(bd.isBox(cc)){ if(bd.isNum(cc)){ sum+=Math.abs(num-bd.getNum(cc));}else{ return false;} }
-			cc=bd.dn(c); if(bd.isBox(cc)){ if(bd.isNum(cc)){ sum+=Math.abs(num-bd.getNum(cc));}else{ return false;} }
-			cc=bd.lt(c); if(bd.isBox(cc)){ if(bd.isNum(cc)){ sum+=Math.abs(num-bd.getNum(cc));}else{ return false;} }
-			cc=bd.rt(c); if(bd.isBox(cc)){ if(bd.isNum(cc)){ sum+=Math.abs(num-bd.getNum(cc));}else{ return false;} }
-			return (num!==sum);
+		ans.checkSubsNumber = function(){
+			var subs=[], UNDEF=-1;
+			for(var id=0;id<bd.bdmax;id++){
+				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+				if(bd.isBox(cc1) && bd.isBox(cc2)){
+					if(bd.isValidNum(cc1) && bd.isValidNum(cc2)){
+						subs[id]=Math.abs(bd.getNum(cc1)-bd.getNum(cc2));
+					}
+					else{ subs[id]=UNDEF;}
+				}
+				else{ subs[id]=null;}
+			}
+
+			var result = true;
+			for(var c=0;c<bd.cellmax;c++){
+				if(!bd.isBox(c) || bd.noNum(c)){ continue;}
+
+				var num=bd.getNum(c), sum=0, id;
+				id=bd.ub(c); if(subs[id]>0){ sum+=subs[id];}else if(subs[id]===UNDEF){ continue;}
+				id=bd.db(c); if(subs[id]>0){ sum+=subs[id];}else if(subs[id]===UNDEF){ continue;}
+				id=bd.lb(c); if(subs[id]>0){ sum+=subs[id];}else if(subs[id]===UNDEF){ continue;}
+				id=bd.rb(c); if(subs[id]>0){ sum+=subs[id];}else if(subs[id]===UNDEF){ continue;}
+				if(num!==sum){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC([c],1);
+					result = false;
+				}
+			}
+			return result;
 		};
 	}
 };

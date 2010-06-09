@@ -164,7 +164,7 @@ Puzzles.wagiri.prototype = {
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
-			this.dispLetters_wagiri(x1,y1,x2,y2);
+			this.dispNumbers(x1,y1,x2,y2);
 			this.drawSlashes(x1,y1,x2,y2);
 
 			this.drawCrosses(x1,y1,x2+1,y2+1);
@@ -187,16 +187,13 @@ Puzzles.wagiri.prototype = {
 			return false;
 		};
 
-		pc.dispLetters_wagiri = function(x1,y1,x2,y2){
-			var clist = bd.cellinside(x1,y1,x2,y2);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i], obj = bd.cell[c], num = obj.qnum, key='cell_'+c;
-				if(num!==-1){
-					var text = (num!==-2 ? ({1:"輪",2:"切"})[num] : "?");
-					this.dispnum(key, 1, text, 0.70, this.fontcolor, obj.cpx, obj.cpy);
-				}
-				else{ this.hideEL(key);}
+		pc.drawNumber1 = function(c){
+			var obj = bd.cell[c], num = obj.qnum, key='cell_'+c;
+			if(num!==-1){
+				var text = (num!==-2 ? ({1:"輪",2:"切"})[num] : "?");
+				this.dispnum(key, 1, text, 0.70, this.fontcolor, obj.cpx, obj.cpy);
 			}
+			else{ this.hideEL(key);}
 		};
 
 		pc.drawSlashes = function(x1,y1,x2,y2){

@@ -149,10 +149,10 @@ Puzzles.bdblock.prototype = {
 			if( !this.checkNoNumber(rinfo) ){
 				this.setAlert('数字のないブロックがあります。','A block has no number.'); return false;
 			}
-			if( !this.checkSameObjectInRoom(rinfo, ee.binder(bd, bd.QnC)) ){
+			if( !this.checkSameObjectInRoom(rinfo, bd.getNum) ){
 				this.setAlert('１つのブロックに異なる数字が入っています。','A block has dirrerent numbers.'); return false;
 			}
-			if( !this.checkObjectRoom(rinfo, ee.binder(bd, bd.QnC)) ){
+			if( !this.checkObjectRoom(rinfo, bd.getNum) ){
 				this.setAlert('同じ数字が異なるブロックに入っています。','One kind of numbers is included in dirrerent blocks.'); return false;
 			}
 

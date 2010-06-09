@@ -153,7 +153,7 @@ Puzzles.nawabari.prototype = {
 		ans.checkdir4BorderAns = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)>=0 && this.checkdir4Border1(c)!=bd.QnC(c)){
+				if(bd.isValidNum(c) && this.checkdir4Border1(c)!=bd.QnC(c)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
 					result = false;

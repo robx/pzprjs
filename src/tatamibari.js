@@ -119,7 +119,7 @@ Puzzles.tatamibari.prototype = {
 
 			this.drawMarks(x1,y1,x2,y2);
 
-			this.drawQuesHatenas(x1,y1,x2,y2);
+			this.drawHatenas(x1,y1,x2,y2);
 			this.drawBorderQsubs(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);

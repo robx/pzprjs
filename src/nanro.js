@@ -80,7 +80,7 @@ Puzzles.nanro.prototype = {
 				}
 				this.mouseCell = cc;
 			}
-			else if(bd.QnC(cc)===-1){
+			else if(bd.noNum(cc)){
 				if(this.inputData>0){ bd.sAnC(cc, this.inputData); bd.sQsC(cc,0);}
 				else if(this.inputData===null){ bd.sAnC(cc,-1); bd.sQsC(cc,0);}
 				else if(this.inputData===-2)  { bd.sAnC(cc,-1); bd.sQsC(cc,1);}

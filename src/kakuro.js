@@ -137,7 +137,7 @@ Puzzles.kakuro.prototype = {
 			this.cell[id].qnum = num;
 		};
 		// オーバーライド (以下の関数は回答モードでしか呼ばれないはず、)
-		bd.getNum = function(c){ return this.cell[c].anum;};
+		bd.getNum = function(c){ return bd.cell[c].anum;};
 		bd.setNum = function(c,val){ this.sAnC(c, (val>0 ? val : -1));};
 	},
 

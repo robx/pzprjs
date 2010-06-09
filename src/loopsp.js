@@ -78,12 +78,12 @@ Puzzles.loopsp.prototype = {
 			if(cc===null || cc===this.mouseCell){ return;}
 
 			if(cc===tc.getTCC()){
-				var qs = bd.QuC(cc), qn = bd.QnC(cc);
+				var qu = bd.QuC(cc), qn = bd.QnC(cc);
 				if(this.btn.Left){
 					if(qn===-1){
-						if     (qs==0)           { bd.sQuC(cc,101);}
-						else if(qs>=101&&qs<=106){ bd.sQuC(cc,qs+1);}
-						else if(qs==107)         { bd.sQuC(cc,0); bd.sQnC(cc,-2);}
+						if     (qu==0)         { bd.sQuC(cc,11);}
+						else if(qu>=11&&qu<=16){ bd.sQuC(cc,qu+1);}
+						else if(qu==17)        { bd.sQuC(cc,0); bd.sQnC(cc,-2);}
 					}
 					else if(qn==-2){ bd.sQnC(cc,1);}
 					else if(qn<bd.maxnum){ bd.sQnC(cc,qn+1);}
@@ -91,11 +91,11 @@ Puzzles.loopsp.prototype = {
 				}
 				else if(this.btn.Right){
 					if(qn===-1){
-						if     (qs==0)           { bd.sQuC(cc,0); bd.sQnC(cc,-2);}
-						else if(qs==101)         { bd.sQuC(cc,0); bd.sQnC(cc,-1);}
-						else if(qs>=102&&qs<=107){ bd.sQuC(cc,qs-1);}
+						if     (qu==0)         { bd.sQuC(cc,0); bd.sQnC(cc,-2);}
+						else if(qu==11)        { bd.sQuC(cc,0); bd.sQnC(cc,-1);}
+						else if(qu>=12&&qs<=17){ bd.sQuC(cc,qu-1);}
 					}
-					else if(qn==-2){ bd.sQuC(cc,107); bd.sQnC(cc,-1);}
+					else if(qn==-2){ bd.sQuC(cc,17); bd.sQnC(cc,-1);}
 					else if(qn>1) { bd.sQnC(cc,qn-1);}
 					else{ bd.sQuC(cc,0); bd.sQnC(cc,-2);}
 				}
@@ -124,15 +124,15 @@ Puzzles.loopsp.prototype = {
 			if(k.playmode){ return false;}
 			var cc = tc.getTCC();
 
-			if     (ca=='q'){ bd.sQuC(cc,101); bd.sQnC(cc,-1); }
-			else if(ca=='w'){ bd.sQuC(cc,102); bd.sQnC(cc,-1); }
-			else if(ca=='e'){ bd.sQuC(cc,103); bd.sQnC(cc,-1); }
-			else if(ca=='r'){ bd.sQuC(cc,  0); bd.sQnC(cc,-1); }
-			else if(ca==' '){ bd.sQuC(cc,  0); bd.sQnC(cc,-1); }
-			else if(ca=='a'){ bd.sQuC(cc,104); bd.sQnC(cc,-1); }
-			else if(ca=='s'){ bd.sQuC(cc,105); bd.sQnC(cc,-1); }
-			else if(ca=='d'){ bd.sQuC(cc,106); bd.sQnC(cc,-1); }
-			else if(ca=='f'){ bd.sQuC(cc,107); bd.sQnC(cc,-1); }
+			if     (ca=='q'){ bd.sQuC(cc,11); bd.sQnC(cc,-1); }
+			else if(ca=='w'){ bd.sQuC(cc,12); bd.sQnC(cc,-1); }
+			else if(ca=='e'){ bd.sQuC(cc,13); bd.sQnC(cc,-1); }
+			else if(ca=='r'){ bd.sQuC(cc, 0); bd.sQnC(cc,-1); }
+			else if(ca==' '){ bd.sQuC(cc, 0); bd.sQnC(cc,-1); }
+			else if(ca=='a'){ bd.sQuC(cc,14); bd.sQnC(cc,-1); }
+			else if(ca=='s'){ bd.sQuC(cc,15); bd.sQnC(cc,-1); }
+			else if(ca=='d'){ bd.sQuC(cc,16); bd.sQnC(cc,-1); }
+			else if(ca=='f'){ bd.sQuC(cc,17); bd.sQnC(cc,-1); }
 			else if((ca>='0' && ca<='9') || ca=='-'){
 				var old = bd.QnC(cc);
 				kc.key_inputqnum(ca);
@@ -237,7 +237,7 @@ Puzzles.loopsp.prototype = {
 				else if(ca ==='-'){ obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
 				else if(ca >= '0' && ca <= '9'){ obj.qnum = parseInt(ca,16);}
 				else if(ca >= 'a' && ca <= 'f'){ obj.qnum = parseInt(ca,16);}
-				else if(ca >= 'g' && ca <= 'm'){ obj.ques = parseInt(ca,36)+85;}
+				else if(ca >= 'g' && ca <= 'm'){ obj.ques = parseInt(ca,36)-5;}
 				else if(ca >= 'n' && ca <= 'z'){ c += (parseInt(ca,36)-23);}
 
 				c++;
@@ -250,10 +250,10 @@ Puzzles.loopsp.prototype = {
 			var cm="", pstr="", count=0;
 			for(var c=0;c<bd.cellmax;c++){
 				var qn=bd.cell[c].qnum, qu=bd.cell[c].ques;
-				if     (qn===-2)         { pstr = ".";}
-				else if(qn>= 0 && qn< 16){ pstr =      qn.toString(16);}
-				else if(qn>=16 && qn<256){ pstr = "-"+ qn.toString(16);}
-				else if(qu>=101&&qu<=107){ pstr = (qu-85).toString(36);}
+				if     (qn===-2)       { pstr = ".";}
+				else if(qn>= 0&&qn< 16){ pstr =     qn.toString(16);}
+				else if(qn>=16&&qn<256){ pstr = "-"+qn.toString(16);}
+				else if(qu>=11&&qu<=17){ pstr = (qu+5).toString(36);}
 				else{ pstr = ""; count++;}
 
 				if(count===0){ cm += pstr;}
@@ -269,7 +269,7 @@ Puzzles.loopsp.prototype = {
 			this.decodeCell( function(obj,ca){
 				if     (ca==="o"){ obj.ques = 6;}
 				else if(ca==="-"){ obj.ques =-2;}
-				else if(ca>="a" && ca<="g"){ obj.ques = parseInt(ca,36)+91;}
+				else if(ca>="a" && ca<="g"){ obj.ques = parseInt(ca,36)+1;}
 				else if(ca!=="."){ obj.qnum = parseInt(ca);}
 			});
 			this.decodeBorderLine();
@@ -277,7 +277,7 @@ Puzzles.loopsp.prototype = {
 		fio.encodeData = function(){
 			this.encodeCell( function(obj){
 				if     (obj.ques===6) { return "o ";}
-				else if(obj.ques>=101 && obj.ques<=107) { return ""+(obj.ques-91).toString(36)+" ";}
+				else if(obj.ques>=11 && obj.ques<=17) { return ""+(obj.ques-1).toString(36)+" ";}
 				else if(obj.ques===-2){ return "- ";}
 				else if(obj.qnum!==-1){ return obj.qnum.toString()+" ";}
 				else                  { return ". ";}
@@ -299,7 +299,7 @@ Puzzles.loopsp.prototype = {
 				this.setAlert('分岐している線があります。','There is a branched line.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QnC(c)!=-1);}) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.isNum(c));}) ){
 				this.setAlert('○の部分で線が交差しています。','The lines are crossed on the number.'); return false;
 			}
 
@@ -313,7 +313,7 @@ Puzzles.loopsp.prototype = {
 				this.setAlert('○を含んでいないループがあります。','A loop has no numbers.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)!=4 && bd.QuC(c)==101);}) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)!==4 && bd.QuC(c)===11);}) ){
 				this.setAlert('┼のマスから線が4本出ていません。','A cross-joint cell doesn\'t have four-way lines.'); return false;
 			}
 
@@ -331,10 +331,10 @@ Puzzles.loopsp.prototype = {
 			return this.checkAllLoops(function(cells){
 				var number = -1;
 				for(var i=0;i<cells.length;i++){
-					if(bd.QnC(cells[i])>=1){
+					if(bd.isValidNum(cells[i])){
 						if(number==-1){ number=bd.QnC(cells[i]);}
 						else if(number!=bd.QnC(cells[i])){
-							for(var c=0;c<cells.length;c++){ if(bd.QnC(cells[c])>=1){ bd.sErC([cells[c]],1);} }
+							for(var c=0;c<cells.length;c++){ if(bd.isValidNum(cells[c])){ bd.sErC([cells[c]],1);} }
 							return false;
 						}
 					}
@@ -346,7 +346,7 @@ Puzzles.loopsp.prototype = {
 			return this.checkAllLoops(function(cells){
 				var number = -1;
 				var include = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
-				for(var i=0;i<cells.length;i++){ if(bd.QnC(cells[i])>=1){ number = bd.QnC(cells[i]); break;} }
+				for(var i=0;i<cells.length;i++){ if(bd.isValidNum(cells[i])){ number = bd.QnC(cells[i]); break;} }
 				if(number==-1){ return true;}
 				for(var c=0;c<bd.cellmax;c++){
 					if(bd.QnC(c)==number && !include(cells,c)){
@@ -359,7 +359,7 @@ Puzzles.loopsp.prototype = {
 		};
 		ans.checkNumberInLoop = function(){
 			return this.checkAllLoops(function(cells){
-				for(var i=0;i<cells.length;i++){ if(bd.QnC(cells[i])!=-1){ return true;} }
+				for(var i=0;i<cells.length;i++){ if(bd.isNum(cells[i])){ return true;} }
 				return false;
 			});
 		};

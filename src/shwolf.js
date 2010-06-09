@@ -61,7 +61,7 @@ Puzzles.shwolf.prototype = {
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.editmode) this.inputQues([0,41,42,-2]);
+				if(k.editmode) this.inputqnum();
 			}
 		};
 		mv.mousemove = function(){
@@ -105,10 +105,12 @@ Puzzles.shwolf.prototype = {
 			}
 			this.prevPos = pos;
 		};
-		mv.inputQuesDirectly = true;
+		mv.inputqnumDirectly = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){ };
+
+		bd.maxnum = 2;
 	},
 
 	//---------------------------------------------------------
@@ -142,19 +144,19 @@ Puzzles.shwolf.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
 				var keyques = ['cell',c].join('_'), keyimg = ['cell',c,'quesimg'].join('_');
-				if(obj.ques===-2){
+				if(obj.qnum===-2){
 					this.dispnum(keyques, 1, "?", 0.8, this.fontcolor, obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(keyques);}
 
-				if(obj.ques>0){
+				if(obj.qnum>0){
 					this.dispimage1(keyimg, c);
 				}
 				else{ this.hideEL(keyimg);}
 			}
 		};
 		pc.dispimage1 = function(key, c){
-			var xpos = {41:0,42:1}[bd.cell[c].ques], ypos=0;
+			var xpos = bd.cell[c].ques-1, ypos=0;
 
 			if(!this.fillTextPrecisely){
 				var img = this.numobj[key];
@@ -183,21 +185,21 @@ Puzzles.shwolf.prototype = {
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeCrossMark();
-			this.decodeCircle41_42();
+			this.decodeCircle();
 		};
 		enc.pzlexport = function(type){
 			this.encodeCrossMark();
-			this.encodeCircle41_42();
+			this.encodeCircle();
 		};
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCellQues41_42();
+			this.decodeCellQnum();
 			this.decodeCrossNum();
 			this.decodeBorderAns();
 		};
 		fio.encodeData = function(){
-			this.encodeCellQues41_42();
+			this.encodeCellQnum();
 			this.encodeCrossNum();
 			this.encodeBorderAns();
 		};
@@ -223,11 +225,11 @@ Puzzles.shwolf.prototype = {
 			}
 
 			var rinfo = area.getRoomInfo();
-			if( !this.checkNoObjectInRoom(rinfo, function(c){ return (bd.QuC(c)!=0?bd.QuC(c):-1);}) ){
+			if( !this.checkNoNumber(rinfo) ){
 				this.setAlert('ヤギもオオカミもいない領域があります。','An area has neither sheeps nor wolves.'); return false;
 			}
 
-			if( !this.checkSameObjectInRoom(rinfo, function(c){ return (bd.QuC(c)!=0?bd.QuC(c):-1);}) ){
+			if( !this.checkSameObjectInRoom(rinfo, bd.getNum) ){
 				this.setAlert('ヤギとオオカミが両方いる領域があります。','An area has both sheeps and wolves.'); return false;
 			}
 

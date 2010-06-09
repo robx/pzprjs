@@ -73,7 +73,7 @@ Puzzles.shakashaka.prototype = {
 			var cc;
 			if(pp.getVal('use')!==2 || use2step==0){
 				cc = this.cellid();
-				if(cc===null || bd.QnC(cc)!==-1){ this.mousereset(); return;}
+				if(cc===null || bd.isNum(cc)){ this.mousereset(); return;}
 			}
 
 			var use = pp.getVal('use');
@@ -244,7 +244,7 @@ Puzzles.shakashaka.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkAllCell(function(c){ return ( bd.QnC(c)>=0 && (bd.QnC(c)<ans.checkdir4Cell(c,ans.isTri)) );} ) ){
+			if( !this.checkAllCell(function(c){ return ( bd.isValidNum(c) && (bd.QnC(c)<ans.checkdir4Cell(c,ans.isTri)) );} ) ){
 				this.setAlert('数字のまわりにある黒い三角形の数が間違っています。','The number of triangles in four adjacent cells is bigger than it.'); return false;
 			}
 
@@ -252,7 +252,7 @@ Puzzles.shakashaka.prototype = {
 				this.setAlert('白マスが長方形(正方形)ではありません。','A mass of white cells is not rectangle.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return ( bd.QnC(c)>=0 && (bd.QnC(c)>ans.checkdir4Cell(c,ans.isTri)) );} ) ){
+			if( !this.checkAllCell(function(c){ return ( bd.isValidNum(c) && (bd.QnC(c)>ans.checkdir4Cell(c,ans.isTri)) );} ) ){
 				this.setAlert('数字のまわりにある黒い三角形の数が間違っています。','The number of triangles in four adjacent cells is smaller than it.'); return false;
 			}
 
@@ -291,7 +291,7 @@ Puzzles.shakashaka.prototype = {
 
 		ans.searchWarea_slope = function(){
 			var winfo = new AreaInfo();
-			for(var c=0;c<bd.cellmax;c++){ winfo.id[c]=(bd.QnC(c)===-1?0:null);}
+			for(var c=0;c<bd.cellmax;c++){ winfo.id[c]=(bd.noNum(c)?0:null);}
 			for(var c=0;c<bd.cellmax;c++){
 				if(winfo.id[c]!==0){ continue;}
 				winfo.max++;

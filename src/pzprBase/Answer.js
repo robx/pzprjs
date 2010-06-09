@@ -108,15 +108,12 @@ AnsCheck.prototype = {
 		bd.sErB(blist,val);
 
 		var clist = [];
-		for(var c=0;c<bd.cellmax;c++){ if(cinfo.id[c]===areaid && bd.QnC(c)!==-1){ clist.push(c);} }
+		for(var c=0;c<bd.cellmax;c++){ if(cinfo.id[c]===areaid && bd.isNum(c)){ clist.push(c);} }
 		bd.sErC(clist,4);
 	},
 
 	//---------------------------------------------------------------------------
 	// ans.checkAllCell()   条件func==trueになるマスがあったらエラーを設定する
-	// ans.checkOneArea()   白マス/黒マス/線がひとつながりかどうかを判定する
-	// ans.check2x2Block()  2x2のセルが全て条件func==trueの時、エラーを設定する
-	// ans.checkSideCell()  隣り合った2つのセルが条件func==trueの時、エラーを設定する
 	//---------------------------------------------------------------------------
 	checkAllCell : function(func){
 		var result = true;
@@ -129,6 +126,12 @@ AnsCheck.prototype = {
 		}
 		return result;
 	},
+
+	//---------------------------------------------------------------------------
+	// ans.checkOneArea()   白マス/黒マス/線がひとつながりかどうかを判定する
+	// ans.check2x2Block()  2x2のセルが全て条件func==trueの時、エラーを設定する
+	// ans.checkSideCell()  隣り合った2つのセルが条件func==trueの時、エラーを設定する
+	//---------------------------------------------------------------------------
 	checkOneArea : function(cinfo){
 		if(cinfo.max>1){
 			if(this.performAsLine){ bd.sErBAll(2); this.setErrLareaByCell(cinfo,1,1); }

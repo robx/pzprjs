@@ -98,16 +98,16 @@ Puzzles.hashikake.prototype = {
 			var idlist=[], bx=bd.border[id].bx, by=bd.border[id].by;
 			if(bd.border[id].bx&1){
 				var by1=by, by2=by;
-				while(by1>bd.minby && bd.QnC(bd.cnum(bx,by1-1))===-1){ by1-=2;}
-				while(by2<bd.maxby && bd.QnC(bd.cnum(bx,by2+1))===-1){ by2+=2;}
+				while(by1>bd.minby && bd.noNum(bd.cnum(bx,by1-1))){ by1-=2;}
+				while(by2<bd.maxby && bd.noNum(bd.cnum(bx,by2+1))){ by2+=2;}
 				if(bd.minby<by1 && by2<bd.maxby){
 					for(by=by1;by<=by2;by+=2){ idlist.push(bd.bnum(bx,by)); }
 				}
 			}
 			else if(bd.border[id].by&1){
 				var bx1=bx, bx2=bx;
-				while(bx1>bd.minbx && bd.QnC(bd.cnum(bx1-1,by))===-1){ bx1-=2;}
-				while(bx2<bd.maxbx && bd.QnC(bd.cnum(bx2+1,by))===-1){ bx2+=2;}
+				while(bx1>bd.minbx && bd.noNum(bd.cnum(bx1-1,by))){ bx1-=2;}
+				while(bx2<bd.maxbx && bd.noNum(bd.cnum(bx2+1,by))){ bx2+=2;}
 				if(bd.minbx<bx1 && bx2<bd.maxbx){
 					for(bx=bx1;bx<=bx2;bx+=2){ idlist.push(bd.bnum(bx,by)); }
 				}
@@ -249,7 +249,7 @@ Puzzles.hashikake.prototype = {
 				pc.drawNumber1(clist[i]);
 			}
 		};
-		line.iscrossing = function(cc){ return (bd.QnC(cc)===-1);};
+		line.iscrossing = function(cc){ return bd.noNum(cc);};
 	},
 
 	//---------------------------------------------------------

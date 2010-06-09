@@ -204,25 +204,6 @@ FileIO.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.decodeCellQues41_42() 黒丸と白丸のデコードを行う
-	// fio.encodeCellQues41_42() 黒丸と白丸のエンコードを行う
-	//---------------------------------------------------------------------------
-	decodeCellQues41_42 : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="1"){ obj.ques = 41;}
-			else if(ca==="2"){ obj.ques = 42;}
-			else if(ca==="-"){ obj.ques = -2;}
-		});
-	},
-	encodeCellQues41_42 : function(){
-		this.encodeCell( function(obj){
-			if     (obj.ques===41){ return "1 ";}
-			else if(obj.ques===42){ return "2 ";}
-			else if(obj.ques===-2){ return "- ";}
-			else                  { return ". ";}
-		});
-	},
-	//---------------------------------------------------------------------------
 	// fio.decodeCellQnum() 問題数字のデコードを行う
 	// fio.encodeCellQnum() 問題数字のエンコードを行う
 	//---------------------------------------------------------------------------

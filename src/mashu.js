@@ -46,8 +46,8 @@ Puzzles.mashu.prototype = {
 		pp.setLabel('uramashu', '裏ましゅにする', 'Change to Ura-Mashu');
 		pp.funcs['uramashu'] = function(){
 			for(var c=0;c<bd.cellmax;c++){
-				if     (bd.QuC(c)==41){ bd.sQuC(c,42);}
-				else if(bd.QuC(c)==42){ bd.sQuC(c,41);}
+				if     (bd.QnC(c)===1){ bd.sQnC(c,2);}
+				else if(bd.QnC(c)===2){ bd.sQnC(c,1);}
 			}
 			pc.paintAll();
 		};
@@ -61,7 +61,7 @@ Puzzles.mashu.prototype = {
 		// マウス入力系
 		mv.mousedown = function(){
 			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
-			if(k.editmode) this.inputQues([0,41,42,-2]);
+			if(k.editmode) this.inputqnum();
 			else if(k.playmode){
 				if(this.btn.Left) this.inputLine();
 				else if(this.btn.Right) this.inputpeke();
@@ -74,12 +74,14 @@ Puzzles.mashu.prototype = {
 				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.inputQuesDirectly = true;
+		mv.inputqnumDirectly = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){ if(ca=='z' && !this.keyPressed){ this.isZ=true;} };
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
+
+		bd.maxnum = 2;
 	},
 
 	//---------------------------------------------------------
@@ -91,8 +93,8 @@ Puzzles.mashu.prototype = {
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
-			this.drawCircles41_42(x1,y1,x2,y2);
-			this.drawQuesHatenas(x1,y1,x2,y2);
+			this.drawQnumCircles(x1,y1,x2,y2);
+			this.drawHatenas(x1,y1,x2,y2);
 
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
@@ -105,70 +107,56 @@ Puzzles.mashu.prototype = {
 	// URLエンコード/デコード処理
 	encode_init : function(){
 		enc.pzlimport = function(type){
-			this.decodeCircle41_42();
+			this.decodeCircle();
 			this.revCircle();
 		};
 		enc.pzlexport = function(){
 			this.revCircle();
-			this.encodeCircle41_42();
+			this.encodeCircle();
 			this.revCircle();
 		};
 
 		enc.decodeKanpen = function(){
-			fio.decodeCellQues41_42_kanpen();
+			fio.decodeCellQnum_kanpen();
 			this.revCircle();
 		};
 		enc.encodeKanpen = function(){
 			this.revCircle();
-			fio.encodeCellQues41_42_kanpen();
+			fio.encodeCellQnum_kanpen();
 			this.revCircle();
 		};
 
 		enc.revCircle = function(){
 			if(!pp.getVal('uramashu')){ return;}
 			for(var c=0;c<bd.cellmax;c++){
-				if     (bd.cell[c].ques===41){ bd.cell[c].ques = 42;}
-				else if(bd.cell[c].ques===42){ bd.cell[c].ques = 41;}
+				if     (bd.cell[c].qnum===1){ bd.cell[c].qnum = 2;}
+				else if(bd.cell[c].qnum===2){ bd.cell[c].qnum = 1;}
 			}
 		}
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCellQues41_42();
+			this.decodeCellQnum();
 			this.decodeBorderLine();
 			enc.revCircle();
 		};
 		fio.encodeData = function(){
 			enc.revCircle();
-			this.encodeCellQues41_42();
+			this.encodeCellQnum();
 			this.encodeBorderLine();
 			enc.revCircle();
 		};
 
 		fio.kanpenOpen = function(){
-			this.decodeCellQues41_42_kanpen();
+			this.decodeCellQnum_kanpen();
 			this.decodeBorderLine();
 			enc.revCircle();
 		};
 		fio.kanpenSave = function(){
 			enc.revCircle();
-			this.encodeCellQues41_42_kanpen();
+			this.encodeCellQnum_kanpen();
 			this.encodeBorderLine();
 			enc.revCircle();
-		};
-
-		fio.decodeCellQues41_42_kanpen = function(){
-			this.decodeCell( function(obj,ca){
-				if     (ca==="1"){ obj.ques = 41;}
-				else if(ca==="2"){ obj.ques = 42;}
-			});
-		};
-		fio.encodeCellQues41_42_kanpen = function(){
-			this.encodeCell( function(obj){
-				if     (obj.ques===41){ return "1 ";}
-				else if(obj.ques===42){ return "2 ";}
-				else                  { return ". ";}
-			});
 		};
 	},
 
@@ -198,7 +186,7 @@ Puzzles.mashu.prototype = {
 				this.setAlert('白丸の隣で線が曲がっていません。','Lines go straight next to white pearl on each side.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QuC(c)!=0 && line.lcntCell(c)==0);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.isNum(c) && line.lcntCell(c)==0);}) ){
 				this.setAlert('線が上を通っていない丸があります。','Lines don\'t pass some pearls.'); return false;
 			}
 
@@ -216,7 +204,7 @@ Puzzles.mashu.prototype = {
 		ans.checkWhitePearl1 = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QuC(c)==41 && line.lcntCell(c)==2 && !ans.isLineStraight(c)){
+				if(bd.QnC(c)===1 && line.lcntCell(c)===2 && !ans.isLineStraight(c)){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,1);
@@ -228,7 +216,7 @@ Puzzles.mashu.prototype = {
 		ans.checkBlackPearl1 = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QuC(c)==42 && line.lcntCell(c)==2 && ans.isLineStraight(c)){
+				if(bd.QnC(c)===2 && line.lcntCell(c)===2 && ans.isLineStraight(c)){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,1);
@@ -241,7 +229,7 @@ Puzzles.mashu.prototype = {
 		ans.checkWhitePearl2 = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QuC(c)!=41 || line.lcntCell(c)!=2){ continue;}
+				if(bd.QnC(c)!==1 || line.lcntCell(c)!==2){ continue;}
 				var stcnt = 0;
 				if(bd.isLine(bd.ub(c)) && line.lcntCell(bd.up(c))===2 && ans.isLineStraight(bd.up(c))){ stcnt++;}
 				if(bd.isLine(bd.db(c)) && line.lcntCell(bd.dn(c))===2 && ans.isLineStraight(bd.dn(c))){ stcnt++;}
@@ -259,7 +247,7 @@ Puzzles.mashu.prototype = {
 		ans.checkBlackPearl2 = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QuC(c)!=42 || line.lcntCell(c)!=2){ continue;}
+				if(bd.QnC(c)!==2 || line.lcntCell(c)!==2){ continue;}
 				if((bd.isLine(bd.ub(c)) && line.lcntCell(bd.up(c))==2 && !ans.isLineStraight(bd.up(c))) ||
 				   (bd.isLine(bd.db(c)) && line.lcntCell(bd.dn(c))==2 && !ans.isLineStraight(bd.dn(c))) ||
 				   (bd.isLine(bd.lb(c)) && line.lcntCell(bd.lt(c))==2 && !ans.isLineStraight(bd.lt(c))) ||

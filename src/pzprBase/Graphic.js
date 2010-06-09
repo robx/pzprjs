@@ -463,7 +463,7 @@ Graphic.prototype = {
 	// pc.getCellNumberColor()  Cellの数字の色を設定する
 	// 
 	// pc.drawArrowNumbers() Cellの数字と矢印をCanvasに書き込む
-	// pc.drawQuesHatenas()  ques===-2の時に？をCanvasに書き込む
+	// pc.drawHatenas()     ques===-2の時に？をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawNumbers : function(x1,y1,x2,y2){
 		this.vinc('cell_number', 'auto');
@@ -583,7 +583,7 @@ Graphic.prototype = {
 			}
 		}
 	},
-	drawQuesHatenas : function(x1,y1,x2,y2){
+	drawHatenas : function(x1,y1,x2,y2){
 		this.vinc('cell_number', 'auto');
 
 		var clist = bd.cellinside(x1,y1,x2,y2);
@@ -937,34 +937,34 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawCircles41_42()    Cell上の黒丸と白丸をCanvasに書き込む
+	// pc.drawQnumCircles()    Cell上の黒丸と白丸をCanvasに書き込む
 	// pc.drawCirclesAtNumber() 数字が描画されるCellの丸を書き込む
 	// pc.drawCircle1AtNumber() 数字が描画されるCellの丸を書き込む(1マスのみ)
 	//---------------------------------------------------------------------------
-	drawCircles41_42 : function(x1,y1,x2,y2){
+	drawQnumCircles : function(x1,y1,x2,y2){
 		this.vinc('cell_circle', 'auto');
 
 		g.lineWidth = Math.max(this.cw*(this.circleratio[0]-this.circleratio[1]), 1);
-		var rsize41 = this.cw*(this.circleratio[0]+this.circleratio[1])/2;
-		var rsize42 = this.cw*this.circleratio[0];
-		var headers = ["c_cir41_", "c_cir42_"];
+		var rsize1 = this.cw*(this.circleratio[0]+this.circleratio[1])/2;
+		var rsize2 = this.cw*this.circleratio[0];
+		var headers = ["c_cirw_", "c_cirb_"];
 		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 
-			if(bd.cell[c].ques===41){
+			if(bd.cell[c].qnum===1){
 				g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.cellcolor);
 				g.fillStyle   = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 				if(this.vnop(headers[0]+c,this.FILL_STROKE)){
-					g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize41);
+					g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize1);
 				}
 			}
 			else{ this.vhide(headers[0]+c);}
 
-			if(bd.cell[c].ques===42){
+			if(bd.cell[c].qnum===2){
 				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(headers[1]+c,this.FILL)){
-					g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize42);
+					g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize2);
 				}
 			}
 			else{ this.vhide(headers[1]+c);}
@@ -1011,15 +1011,15 @@ Graphic.prototype = {
 	drawLineParts1 : function(id){
 		var vids = ["c_lp1_"+id, "c_lp2_"+id, "c_lp3_"+id, "c_lp4_"+id];
 
-		var qs = bd.cell[id].ques;
-		if(qs>=101 && qs<=107){
+		var qu = bd.cell[id].ques;
+		if(qu>=11 && qu<=17){
 			var lw  = this.lw, lm = this.lm;
 			var hhp = this.bh+this.lm, hwp = this.bw+this.lm;
 			var px  = bd.cell[id].px, py = bd.cell[id].py;
 			var cpx = bd.cell[id].cpx, cpy = bd.cell[id].cpy;
 			g.fillStyle = this.borderQuescolor;
 
-			var flag  = {101:15, 102:3, 103:12, 104:9, 105:5, 106:6, 107:10}[qs];
+			var flag  = {11:15, 12:3, 13:12, 14:9, 15:5, 16:6, 17:10}[qu];
 			if(flag&1){ if(this.vnop(vids[0],this.NONE)){ g.fillRect(cpx-lm, py    , lw, hhp);} }else{ this.vhide(vids[0]);}
 			if(flag&2){ if(this.vnop(vids[1],this.NONE)){ g.fillRect(cpx-lm, cpy-lm, lw, hhp);} }else{ this.vhide(vids[1]);}
 			if(flag&4){ if(this.vnop(vids[2],this.NONE)){ g.fillRect(px    , cpy-lm, hwp, lw);} }else{ this.vhide(vids[2]);}

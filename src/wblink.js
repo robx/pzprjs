@@ -49,7 +49,7 @@ Puzzles.wblink.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.editmode) this.inputQues([0,41,42,-2]);
+			if(k.editmode) this.inputqnum();
 			else if(k.playmode){
 				if(this.btn.Left) this.inputLine();
 				else if(this.btn.Right) this.inputpeke();
@@ -88,16 +88,16 @@ Puzzles.wblink.prototype = {
 			var idlist=[], bx=bd.border[id].bx, by=bd.border[id].by;
 			if(bd.border[id].bx&1){
 				var by1=by, by2=by;
-				while(by1>bd.minby && bd.QuC(bd.cnum(bx,by1-1))===0){ by1-=2;}
-				while(by2<bd.maxby && bd.QuC(bd.cnum(bx,by2+1))===0){ by2+=2;}
+				while(by1>bd.minby && bd.noNum(bd.cnum(bx,by1-1))){ by1-=2;}
+				while(by2<bd.maxby && bd.noNum(bd.cnum(bx,by2+1))){ by2+=2;}
 				if(bd.minby<by1 && by2<bd.maxby){
 					for(by=by1;by<=by2;by+=2){ idlist.push(bd.bnum(bx,by)); }
 				}
 			}
 			else if(bd.border[id].by&1){
 				var bx1=bx, bx2=bx;
-				while(bx1>bd.minbx && bd.QuC(bd.cnum(bx1-1,by))===0){ bx1-=2;}
-				while(bx2<bd.maxbx && bd.QuC(bd.cnum(bx2+1,by))===0){ bx2+=2;}
+				while(bx1>bd.minbx && bd.noNum(bd.cnum(bx1-1,by))){ bx1-=2;}
+				while(bx2<bd.maxbx && bd.noNum(bd.cnum(bx2+1,by))){ bx2+=2;}
 				if(bd.minbx<bx1 && bx2<bd.maxbx){
 					for(bx=bx1;bx<=bx2;bx+=2){ idlist.push(bd.bnum(bx,by)); }
 				}
@@ -126,22 +126,24 @@ Puzzles.wblink.prototype = {
 		kc.keyinput = function(ca){
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.input41_42(ca);
+			this.key_inputcircle(ca);
 		};
-		kc.input41_42 = function(ca){
+		kc.key_inputcircle = function(ca){
 			if(k.playmode){ return false;}
 
 			var cc = tc.getTCC();
 			var flag = false;
 
-			if     (ca=='1'){ bd.sQuC(cc,(bd.QuC(cc)!=41?41:0)); flag = true;}
-			else if(ca=='2'){ bd.sQuC(cc,(bd.QuC(cc)!=42?42:0)); flag = true;}
-			else if(ca=='-'){ bd.sQuC(cc,(bd.QuC(cc)!=-2?-2:0)); flag = true;}
-			else if(ca=='3'||ca==" "){ bd.sQuC(cc,0); flag = true;}
+			if     (ca=='1'){ bd.sQnC(cc,(bd.QnC(cc)!==1?1:-1)); flag = true;}
+			else if(ca=='2'){ bd.sQnC(cc,(bd.QnC(cc)!==2?2:-1)); flag = true;}
+			else if(ca=='-'){ bd.sQnC(cc,(bd.QnC(cc)!==-2?-2:-1)); flag = true;}
+			else if(ca=='3'||ca==" "){ bd.sQnC(cc,-1); flag = true;}
 
 			if(flag){ pc.paintCell(cc);}
 			return flag;
 		};
+
+		bd.maxnum = 2;
 	},
 
 	//---------------------------------------------------------
@@ -161,8 +163,8 @@ Puzzles.wblink.prototype = {
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawCircles41_42(x1-2,y1-2,x2+1,y2+1);
-			this.drawQuesHatenas(x1-2,y1-2,x2+1,y2+1);
+			this.drawQnumCircles(x1-2,y1-2,x2+1,y2+1);
+			this.drawHatenas(x1-2,y1-2,x2+1,y2+1);
 
 			this.drawTarget(x1,y1,x2,y2);
 		};
@@ -172,19 +174,19 @@ Puzzles.wblink.prototype = {
 	// URLエンコード/デコード処理
 	encode_init : function(){
 		enc.pzlimport = function(type){
-			this.decodeCircle41_42();
+			this.decodeCircle();
 		};
 		enc.pzlexport = function(type){
-			this.encodeCircle41_42();
+			this.encodeCircle();
 		};
 
 		//---------------------------------------------------------
 		fio.decodeData = function(array){
-			this.decodeCellQues41_42();
+			this.decodeCellQnum();
 			this.decodeBorderLine();
 		};
 		fio.encodeData = function(){
-			this.encodeCellQues41_42();
+			this.encodeCellQnum();
 			this.encodeBorderLine();
 		};
 	},
@@ -199,18 +201,18 @@ Puzzles.wblink.prototype = {
 			}
 
 			var linfo = line.getLareaInfo();
-			if( !this.checkAllArea(linfo, function(c){ return (bd.QuC(c)!=0);}, function(w,h,a,n){ return (a<3);}) ){
+			if( !this.checkTripleNumber(linfo) ){
 				this.setAlert('3つ以上の○が繋がっています。','Three or more objects are connected.'); return false;
 			}
 
-			if( !this.checkWBcircle(linfo, 41) ){
+			if( !this.checkWBcircle(linfo, 1) ){
 				this.setAlert('白丸同士が繋がっています。','Two white circles are connected.'); return false;
 			}
-			if( !this.checkWBcircle(linfo, 42) ){
+			if( !this.checkWBcircle(linfo, 2) ){
 				this.setAlert('黒丸同士が繋がっています。','Two black circles are connected.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QuC(c)!=0 && line.lcntCell(c)==0);} ) ){
+			if( !this.checkAllCell(function(c){ return (bd.isNum(c) && line.lcntCell(c)===0);} ) ){
 				this.setAlert('○から線が出ていません。','A circle doesn\'t start any line.'); return false;
 			}
 
@@ -225,7 +227,7 @@ Puzzles.wblink.prototype = {
 
 				var tip1 = linfo.room[r].idlist[0];
 				var tip2 = linfo.room[r].idlist[linfo.room[r].idlist.length-1];
-				if(bd.QuC(tip1)!==val || bd.QuC(tip2)!==val){ continue;}
+				if(bd.QnC(tip1)!==val || bd.QnC(tip2)!==val){ continue;}
 
 				if(this.inAutoCheck){ return false;}
 				if(result){ bd.sErBAll(2);}

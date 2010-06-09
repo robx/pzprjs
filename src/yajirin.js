@@ -79,7 +79,7 @@ Puzzles.yajirin.prototype = {
 		};
 
 		// 線を引かせたくないので上書き
-		bd.noLP = function(cc,dir){ return (bd.isBlack(cc) || bd.QnC(cc)!=-1);},
+		bd.noLP = function(cc,dir){ return (bd.isBlack(cc) || bd.isNum(cc));},
 		bd.enableLineNG = true;
 
 		// キーボード入力系
@@ -217,7 +217,7 @@ Puzzles.yajirin.prototype = {
 				this.setAlert('輪っかが一つではありません。','There are plural loops.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && !bd.isBlack(c) && bd.QnC(c)==-1);}) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && !bd.isBlack(c) && bd.noNum(c));}) ){
 				this.setAlert('黒マスも線も引かれていないマスがあります。','Theer is an empty cell.'); return false;
 			}
 
@@ -228,7 +228,7 @@ Puzzles.yajirin.prototype = {
 		ans.checkArrowNumber = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)<0 || bd.DiC(c)==0 || bd.isBlack(c)){ continue;}
+				if(!bd.isValidNum(c) || bd.DiC(c)==0 || bd.isBlack(c)){ continue;}
 				var bx = bd.cell[c].bx, by = bd.cell[c].by, dir = bd.DiC(c);
 				var cnt=0, clist = [];
 				if     (dir==k.UP){ by-=2; while(by>bd.minby){ clist.push(bd.cnum(bx,by)); by-=2;} }

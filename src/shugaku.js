@@ -70,7 +70,7 @@ Puzzles.shugaku.prototype = {
 			var cc = this.cellid();
 
 			if(!this.firstPoint.valid()){
-				if(cc===null || bd.QnC(cc)!==-1){ return;}
+				if(cc===null || bd.isNum(cc)){ return;}
 				this.mouseCell = cc;
 				this.inputData = 1;
 				this.firstPoint.set(this.inputPoint);
@@ -86,7 +86,7 @@ Puzzles.shugaku.prototype = {
 					else if(dx-dy>0 && dx+dy<0){ adj=bd.up(this.mouseCell); this.inputData=2;}
 					else if(dx-dy<0 && dx+dy>0){ adj=bd.dn(this.mouseCell); this.inputData=3;}
 					else if(dx-dy<0 && dx+dy<0){ adj=bd.lt(this.mouseCell); this.inputData=4;}
-					if(adj==null || bd.QnC(adj)!==-1){ this.inputData=6;}
+					if(adj==null || bd.isNum(adj)){ this.inputData=6;}
 				}
 				if(old!=this.inputData){ pc.paintCellAround(this.mouseCell);}
 			}
@@ -118,7 +118,7 @@ Puzzles.shugaku.prototype = {
 
 		mv.inputcell_shugaku = function(){
 			var cc = this.cellid();
-			if(cc===null || cc===this.mouseCell || bd.QnC(cc)!==-1){ return;}
+			if(cc===null || cc===this.mouseCell || bd.isNum(cc)){ return;}
 			if(this.inputData===null){
 				if     (bd.QaC(cc)===1){ this.inputData = 2;}
 				else if(bd.QsC(cc)===1){ this.inputData = 3;}
@@ -446,7 +446,7 @@ Puzzles.shugaku.prototype = {
 				this.setAlert('2x2の黒マスのかたまりがあります。', 'There is a 2x2 block of black cells.'); return false;
 			}
 
-			if( !this.checkAllCell(ee.binder(this, function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)<this.checkdir4Cell(c,function(a){ return (bd.QaC(a)>=11&&bd.QaC(a)<=15);}));})) ){
+			if( !this.checkAllCell(ee.binder(this, function(c){ return (bd.isValidNum(c) && bd.QnC(c)<this.checkdir4Cell(c,function(a){ return (bd.QaC(a)>=11&&bd.QaC(a)<=15);}));})) ){
 				this.setAlert('柱のまわりにある枕の数が間違っています。', 'The number of pillows around the number is wrong.'); return false;
 			}
 
@@ -462,11 +462,11 @@ Puzzles.shugaku.prototype = {
 				this.setAlert('黒マスが分断されています。', 'Aisle is divided.'); return false;
 			}
 
-			if( !this.checkAllCell(ee.binder(this, function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)>this.checkdir4Cell(c,function(a){ return (bd.QaC(a)>=11&&bd.QaC(a)<=15);}));})) ){
+			if( !this.checkAllCell(ee.binder(this, function(c){ return (bd.isValidNum(c) && bd.QnC(c)>this.checkdir4Cell(c,function(a){ return (bd.QaC(a)>=11&&bd.QaC(a)<=15);}));})) ){
 				this.setAlert('柱のまわりにある枕の数が間違っています。', 'The number of pillows around the number is wrong.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QnC(c)===-1 && bd.QaC(c)===0);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.noNum(c) && bd.QaC(c)===0);}) ){
 				this.setAlert('布団でも黒マスでもないマスがあります。', 'There is an empty cell.'); return false;
 			}
 
@@ -488,7 +488,7 @@ Puzzles.shugaku.prototype = {
 		ans.checkFutonAisle = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)===-1 && bd.QaC(c)>=12 && bd.QaC(c)<=15){
+				if(bd.noNum(c) && bd.QaC(c)>=12 && bd.QaC(c)<=15){
 					var adj=null;
 					switch(bd.QaC(c)){
 						case 12: adj = bd.up(c); break;

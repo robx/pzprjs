@@ -558,7 +558,7 @@ Puzzles.tawa.prototype = {
 				for(var bx=0;bx<=bd.maxbx;bx++){
 					var cc = bd.cnum(bx,by);
 					if(cc===null){ continue;}
-					else if(bd.isWhite(cc) || bd.QnC(cc)!=-1){
+					else if(bd.isWhite(cc) || bd.isNum(cc)){
 						if(clist.length>=3){ break;}
 						clist=[];
 					}
@@ -575,7 +575,7 @@ Puzzles.tawa.prototype = {
 		ans.checkNumbers = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)==-1||bd.QnC(c)==-2){ continue;}
+				if(!bd.isValidNum(c)){ continue;}
 				var clist = [];
 				clist.push(bd.cnum(bd.cell[c].bx-1,bd.cell[c].by-2));
 				clist.push(bd.cnum(bd.cell[c].bx+1,bd.cell[c].by-2));

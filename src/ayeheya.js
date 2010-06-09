@@ -212,7 +212,7 @@ Puzzles.ayeheya.prototype = {
 				this.setAlert('部屋の数字と黒マスの数が一致していません。','The number of Black cells in the room and The number written in the room is different.'); return false;
 			}
 
-			if( !this.checkRowsColsPartly(this.isBorderCount, {}, function(cc){ return bd.isBlack(cc);}, false) ){
+			if( !this.checkRowsColsPartly(this.isBorderCount, {}, bd.isBlack, false) ){
 				this.setAlert('白マスが3部屋連続で続いています。','White cells are continued for three consecutive room.'); return false;
 			}
 

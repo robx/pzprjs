@@ -54,7 +54,7 @@ Puzzles.kramma.prototype = {
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.editmode) this.inputQues([0,41,42,-2]);
+				if(k.editmode) this.inputqnum();
 			}
 		};
 		mv.mousemove = function(){
@@ -98,10 +98,12 @@ Puzzles.kramma.prototype = {
 			}
 			this.prevPos = pos;
 		};
-		mv.inputQuesDirectly = true;
+		mv.inputqnumDirectly = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){ };
+
+		bd.maxnum = 2;
 	},
 
 	//---------------------------------------------------------
@@ -118,10 +120,10 @@ Puzzles.kramma.prototype = {
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
-			this.drawCircles41_42(x1,y1,x2,y2);
+			this.drawQnumCircles(x1,y1,x2,y2);
 			this.drawCrossMarks(x1,y1,x2+1,y2+1);
 
-			this.drawQuesHatenas(x1,y1,x2,y2);
+			this.drawHatenas(x1,y1,x2,y2);
 
 			this.drawBorderQsubs(x1,y1,x2,y2);
 
@@ -134,21 +136,21 @@ Puzzles.kramma.prototype = {
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeCrossMark();
-			this.decodeCircle41_42();
+			this.decodeCircle();
 		};
 		enc.pzlexport = function(type){
 			this.encodeCrossMark();
-			this.encodeCircle41_42();
+			this.encodeCircle();
 		};
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCellQues41_42();
+			this.decodeCellQnum();
 			this.decodeCrossNum();
 			this.decodeBorderAns();
 		};
 		fio.encodeData = function(){
-			this.encodeCellQues41_42();
+			this.encodeCellQnum();
 			this.encodeCrossNum();
 			this.encodeBorderAns();
 		};
@@ -170,11 +172,11 @@ Puzzles.kramma.prototype = {
 			}
 
 			rinfo = area.getRoomInfo();
-			if( !this.checkNoObjectInRoom(rinfo, function(c){ return (bd.QuC(c)!=0?bd.QuC(c):-1);}) ){
+			if( !this.checkNoNumber(rinfo) ){
 				this.setAlert('白丸も黒丸も含まれない領域があります。','An area has no marks.'); return false;
 			}
 
-			if( !this.checkSameObjectInRoom(rinfo, function(c){ return (bd.QuC(c)!=0?bd.QuC(c):-1);}) ){
+			if( !this.checkSameObjectInRoom(rinfo, bd.getNum) ){
 				this.setAlert('白丸と黒丸が両方含まれる領域があります。','An area has both white and black circles.'); return false;
 			}
 

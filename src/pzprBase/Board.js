@@ -220,16 +220,16 @@ Board = function(){
 	this.enableLineCombined = false;
 
 	this.isLPobj = {};
-	this.isLPobj[k.UP] = {101:1,102:1,104:1,105:1};
-	this.isLPobj[k.DN] = {101:1,102:1,106:1,107:1};
-	this.isLPobj[k.LT] = {101:1,103:1,105:1,106:1};
-	this.isLPobj[k.RT] = {101:1,103:1,104:1,107:1};
+	this.isLPobj[k.UP] = {11:1,12:1,14:1,15:1};
+	this.isLPobj[k.DN] = {11:1,12:1,16:1,17:1};
+	this.isLPobj[k.LT] = {11:1,13:1,15:1,16:1};
+	this.isLPobj[k.RT] = {11:1,13:1,14:1,17:1};
 
 	this.noLPobj = {};
-	this.noLPobj[k.UP] = {1:1,4:1,5:1,21:1,103:1,106:1,107:1};
-	this.noLPobj[k.DN] = {1:1,2:1,3:1,21:1,103:1,104:1,105:1};
-	this.noLPobj[k.LT] = {1:1,2:1,5:1,22:1,102:1,104:1,107:1};
-	this.noLPobj[k.RT] = {1:1,3:1,4:1,22:1,102:1,105:1,106:1};
+	this.noLPobj[k.UP] = {1:1,4:1,5:1,13:1,16:1,17:1,21:1};
+	this.noLPobj[k.DN] = {1:1,2:1,3:1,13:1,14:1,15:1,21:1};
+	this.noLPobj[k.LT] = {1:1,2:1,5:1,12:1,14:1,17:1,22:1};
+	this.noLPobj[k.RT] = {1:1,3:1,4:1,12:1,15:1,16:1,22:1};
 
 	// 盤面サイズの初期化
 	this.initBoardSize(k.qcols,k.qrows);
@@ -717,6 +717,8 @@ Board.prototype = {
 		area.setCell('number',id,(num!==Cell.prototype.defqnum));
 	},
 	sAnC : function(id, num) {
+		if(!k.dispzero && num===0){ return;}
+
 		um.addOpe(k.CELL, k.ANUM, id, this.cell[id].anum, num);
 		this.cell[id].anum = num;
 
@@ -897,7 +899,7 @@ Board.prototype = {
 	},
 
 	getNum : function(c){
-		return (this.cell[c].qnum!==-1 ? this.cell[c].qnum : this.cell[c].anum);
+		return (bd.cell[c].qnum!==-1 ? bd.cell[c].qnum : bd.cell[c].anum);
 	},
 	setNum : function(c,val){
 		if(!k.dispzero && val===0){ return;}

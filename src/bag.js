@@ -222,7 +222,7 @@ Puzzles.bag.prototype = {
 		ans.checkNumberInside = function(icheck){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(!icheck[c] && bd.QnC(c)!==-1){
+				if(!icheck[c] && bd.isNum(c)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
 					result = false;
@@ -233,7 +233,7 @@ Puzzles.bag.prototype = {
 		ans.checkCellNumber = function(icheck){
 			var result = true;
 			for(var cc=0;cc<bd.cellmax;cc++){
-				if(bd.QnC(cc)<0){ continue;}
+				if(!bd.isValidNum(cc)){ continue;}
 
 				var list = [];
 				list.push(cc);
@@ -248,7 +248,7 @@ Puzzles.bag.prototype = {
 				tx = bd.cell[cc].bx; ty = bd.cell[cc].by+2;
 				while(ty<bd.maxby){ var c=bd.cnum(tx,ty); if(icheck[c]){ cnt++; list.push(c); ty+=2;} else{ break;} }
 
-				if(bd.QnC(cc)!=cnt){
+				if(bd.QnC(cc)!==cnt){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(list,1);
 					result = false;

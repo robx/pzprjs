@@ -294,13 +294,13 @@ Puzzles.kaero.prototype = {
 			var rinfo = area.getRoomInfo();
 			this.movedPosition(linfo);
 			this.performAsLine = false;
-			if( !this.checkSameObjectInRoom(rinfo, ee.binder(this, this.getMoved)) ){
+			if( !this.checkSameObjectInRoom(rinfo, this.getMoved) ){
 				this.setAlert('１つのブロックに異なるアルファベットが入っています。','A block has plural kinds of letters.'); return false;
 			}
-			if( !this.checkObjectRoom(rinfo, ee.binder(this, this.getMoved)) ){
+			if( !this.checkObjectRoom(rinfo, this.getMoved) ){
 				this.setAlert('同じアルファベットが異なるブロックに入っています。','Same kinds of letters are placed different blocks.'); return false;
 			}
-			if( !this.checkNoObjectInRoom(rinfo, ee.binder(this, this.getMoved)) ){
+			if( !this.checkNoObjectInRoom(rinfo, this.getMoved) ){
 				this.setAlert('アルファベットのないブロックがあります。','A block has no letters.'); return false;
 			}
 
@@ -316,7 +316,7 @@ Puzzles.kaero.prototype = {
 		ans.checkLineOverLetter = function(func){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(line.lcntCell(c)>=2 && bd.QnC(c)!=-1){
+				if(line.lcntCell(c)>=2 && bd.isNum(c)){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,true);
@@ -333,8 +333,8 @@ Puzzles.kaero.prototype = {
 				var before=null, after=null;
 				for(var i=0;i<linfo.room[r].idlist.length;i++){
 					var c=linfo.room[r].idlist[i];
-					if(line.lcntCell(c)==1){
-						if(bd.QnC(c)!=-1){ before=c;}else{ after=c;}
+					if(line.lcntCell(c)===1){
+						if(bd.isNum(c)){ before=c;}else{ after=c;}
 					}
 				}
 				if(before!==null && after!==null){
@@ -343,7 +343,7 @@ Puzzles.kaero.prototype = {
 				}
 			}
 		};
-		ans.getMoved = function(cc){ return ((cc!==null && this.before.id[cc]!==null) ? bd.QnC(this.before.id[cc]) : -1);};
-		ans.getBeforeCell = function(cc){ return this.before.id[cc];};
+		ans.getMoved = function(cc){ return ((cc!==null && ans.before.id[cc]!==null) ? bd.QnC(ans.before.id[cc]) : -1);};
+		ans.getBeforeCell = function(cc){ return ans.before.id[cc];};
 	}
 };

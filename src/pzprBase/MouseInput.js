@@ -19,7 +19,7 @@ var MouseEvent = function(){
 	this.mousereset();
 
 	this.enableInputHatena = k.isDispHatena;
-	this.inputQuesDirectly = false;
+	this.inputqnumDirectly = false;
 
 	this.mouseoffset;
 	if(k.br.IE6||k.br.IE7||k.br.IE8){ this.mouseoffset = {x:2,y:2};}
@@ -267,7 +267,7 @@ MouseEvent.prototype = {
 		var cc = this.cellid();
 		if(cc===null || cc===this.mouseCell){ return;}
 
-		if(cc===tc.getTCC()){
+		if(cc===tc.getTCC() || this.inputqnumDirectly){
 			if(k.editmode && k.roomNumber){ cc = area.getTopOfRoomByCell(cc);}
 
 			var type=0;
@@ -322,24 +322,25 @@ MouseEvent.prototype = {
 		if(cc===null){ return;}
 
 		var flag=false;
-		if(cc!=tc.getTCC() && !this.inputQuesDirectly){
+		if(cc!==tc.getTCC()){
 			var cc0 = tc.getTCC();
 			tc.setTCC(cc);
 			pc.paintCell(cc0);
 			flag = true;
 		}
 		else{
+			var qu = bd.QuC(cc);
 			if(this.btn.Left){
 				for(var i=0;i<array.length-1;i++){
-					if(!flag && bd.QuC(cc)==array[i]){ bd.sQuC(cc,array[i+1]); flag=true;}
+					if(!flag && qu===array[i]){ bd.sQuC(cc,array[i+1]); flag=true;}
 				}
-				if(!flag && bd.QuC(cc)==array[array.length-1]){ bd.sQuC(cc,array[0]); flag=true;}
+				if(!flag && qu===array[array.length-1]){ bd.sQuC(cc,array[0]); flag=true;}
 			}
 			else if(this.btn.Right){
 				for(var i=array.length;i>0;i--){
-					if(!flag && bd.QuC(cc)==array[i]){ bd.sQuC(cc,array[i-1]); flag=true;}
+					if(!flag && qu===array[i]){ bd.sQuC(cc,array[i-1]); flag=true;}
 				}
-				if(!flag && bd.QuC(cc)==array[0]){ bd.sQuC(cc,array[array.length-1]); flag=true;}
+				if(!flag && qu===array[0]){ bd.sQuC(cc,array[array.length-1]); flag=true;}
 			}
 		}
 

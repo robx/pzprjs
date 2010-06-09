@@ -165,7 +165,7 @@ Puzzles.kurodoko.prototype = {
 		ans.checkCellNumber = function(){
 			var result = true;
 			for(var cc=0;cc<bd.cellmax;cc++){
-				if(bd.QnC(cc)<0){ continue;}
+				if(!bd.isValidNum(cc)){ continue;}
 
 				var tx, ty, list = [cc];
 				tx = bd.cell[cc].bx-2; ty = bd.cell[cc].by;

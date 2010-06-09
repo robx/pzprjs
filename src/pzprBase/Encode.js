@@ -622,10 +622,10 @@ Encode.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// enc.decodeCircle41_42() 白丸・黒丸をデコードする
-	// enc.encodeCircle41_42() 白丸・黒丸をエンコードする
+	// enc.decodeCircle() 白丸・黒丸をデコードする
+	// enc.encodeCircle() 白丸・黒丸をエンコードする
 	//---------------------------------------------------------------------------
-	decodeCircle41_42 : function(){
+	decodeCircle : function(){
 		var bstr = this.outbstr, c=0, tri=[9,3,1], max=(k.qcols*k.qrows);
 		var pos = (bstr ? Math.min(((k.qcols*k.qrows+2)/3)|0, bstr.length) : 0);
 		for(var i=0;i<pos;i++){
@@ -633,18 +633,17 @@ Encode.prototype = {
 			for(var w=0;w<3;w++){
 				if(c<max){
 					var val = ((ca/tri[w])|0)%3;
-					if(val!==0){ bd.cell[c].ques=(40+val);}
+					if(val>0){ bd.cell[c].qnum=val;}
 					c++;
 				}
 			}
 		}
 		this.outbstr = bstr.substr(pos);
 	},
-	encodeCircle41_42 : function(){
+	encodeCircle : function(){
 		var cm="", num=0, pass=0, tri=[9,3,1];
 		for(var c=0;c<bd.cellmax;c++){
-			if     (bd.cell[c].ques===41){ pass+=(  tri[num]);}
-			else if(bd.cell[c].ques===42){ pass+=(2*tri[num]);}
+			if(bd.cell[c].qnum>0){ pass+=(bd.cell[c].qnum*tri[num]);}
 			num++;
 			if(num===3){ cm += pass.toString(27); num=0; pass=0;}
 		}

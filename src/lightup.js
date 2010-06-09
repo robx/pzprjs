@@ -264,15 +264,15 @@ Puzzles.lightup.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkRowsColsPartly(this.isAkariCount, {}, function(cc){ return (bd.QnC(cc)!=-1);}, true) ){
+			if( !this.checkRowsColsPartly(this.isAkariCount, {}, bd.isNum, true) ){
 				this.setAlert('照明に別の照明の光が当たっています。','Akari is shined from another Akari.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)!==ans.checkdir4Cell(c,function(a){ return (bd.QaC(a)===1);})); }) ){
+			if( !this.checkAllCell(function(c){ return (bd.isValidNum(c) && bd.QnC(c)!==ans.checkdir4Cell(c,function(a){ return (bd.QaC(a)===1);})); }) ){
 				this.setAlert('数字のまわりにある照明の数が間違っています。','The number is not equal to the number of Akari around it.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QnC(c)===-1 && !bd.qlight[c]);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.noNum(c) && !bd.qlight[c]);}) ){
 				this.setAlert('照明に照らされていないセルがあります。','A cell is not shined.'); return false;
 			}
 

@@ -96,7 +96,7 @@ Puzzles.icelom.prototype = {
 		mv.inputIcebarn = function(){
 			var cc = this.cellid();
 			if(cc===null || cc===this.mouseCell){ return;}
-			if(bd.QnC(cc)!==null){ this.inputqnum(); return;}
+			if(bd.isNum(cc)){ this.inputqnum(); return;}
 
 			if(this.inputData===null){ this.inputData = (bd.QuC(cc)==6?0:6);}
 
@@ -145,7 +145,7 @@ Puzzles.icelom.prototype = {
 			if(ca==='q'){
 				bd.sQuC(cc, bd.QuC(cc)==6?0:6);
 			}
-			else if(ca===' ' && bd.QnC(cc)===-1){
+			else if(ca===' ' && bd.noNum(cc)){
 				bd.sQuC(cc, 0);
 			}
 			else{ return false;}
@@ -472,10 +472,10 @@ Puzzles.icelom.prototype = {
 				this.setAlert('分岐している線があります。','There is a branch line.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101);}) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==6);}) ){
 				this.setAlert('氷の部分以外で線が交差しています。', 'A Line is crossed outside of ice.'); return false;
 			}
-			if( !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));})) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===2 && bd.QuC(c)===6 && !ans.isLineStraight(c));}) ){
 				this.setAlert('氷の部分で線が曲がっています。', 'A Line curve on ice.'); return false;
 			}
 
@@ -504,7 +504,7 @@ Puzzles.icelom.prototype = {
 				this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
 			}
 
-			if( this.isallwhite() && !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)==0 && bd.QuC(c)!==6);})) ){
+			if( this.isallwhite() && !this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && bd.QuC(c)!==6);}) ){
 				this.setAlert('通過していない白マスがあります。', 'The line doesn\'t pass all of the white cell.'); return false;
 			}
 
@@ -512,7 +512,7 @@ Puzzles.icelom.prototype = {
 				this.setAlert('すべてのアイスバーンを通っていません。', 'A icebarn is not gone through.'); return false;
 			}
 
-			if( !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)==0 && bd.QnC(c)!==-1);})) ){
+			if( !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)==0 && bd.isNum(c));})) ){
 				this.setAlert('通過していない数字があります。', 'The line doesn\'t pass all of the number.'); return false;
 			}
 
