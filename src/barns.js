@@ -183,7 +183,7 @@ Puzzles.barns.prototype = {
 			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==6);}) ){
 				this.setAlert('氷の部分以外で線が交差しています。', 'A Line is crossed outside of ice.'); return false;
 			}
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===2 && bd.QuC(c)===6 && !ans.isLineStraight(c));}) ){
+			if( !this.checkIceLines() ){
 				this.setAlert('氷の部分で線が曲がっています。', 'A Line curve on ice.'); return false;
 			}
 

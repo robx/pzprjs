@@ -319,7 +319,7 @@ Puzzles.pipelink.prototype = {
 			if( rice && !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==6 && bd.QuC(c)!==11);}) ){
 				this.setAlert((pc.disp==0?'○':'氷')+'の部分以外で線が交差しています。','There is a crossing line out of '+(pc.disp===0?'circles':'ices')+'.'); return false;
 			}
-			if( rice && !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)===2 && bd.QuC(c)===6 && !this.isLineStraight(c));})) ){
+			if( rice && !this.checkIceLines() ){
 				ans.setAlert((pc.disp==0?'○':'氷')+'の部分で線が曲がっています。','A line curves on '+(pc.disp===0?'circles':'ices')+'.'); return false;
 			}
 

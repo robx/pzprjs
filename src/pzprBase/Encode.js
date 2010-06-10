@@ -585,30 +585,32 @@ Encode.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCrossMark : function(){
 		var cc=0, i=0, bstr = this.outbstr, cp=(k.iscross===2?1:0), cp2=(cp<<1);
+		var rows=(k.qrows-1+cp2), cols=(k.qcols-1+cp2);
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","z")){
 				cc += parseInt(ca,36);
-				var bx = ((  cc%(k.qcols-1+cp2)    +(1-cp))<<1);
-				var by = ((((cc/(k.qcols-1+cp2))|0)+(1-cp))<<1);
+				var bx = ((  cc%cols    +(1-cp))<<1);
+				var by = ((((cc/cols)|0)+(1-cp))<<1);
 
-				if(by>bd.maxby){ i++; break;}
+				if(by>bd.maxby-2*(1-cp)){ i++; break;}
 				bd.cross[bd.xnum(bx,by)].qnum = 1;
 			}
 			else if(ca == '.'){ cc+=35;}
 
 			cc++;
-			if(cc >= (k.qcols-1+cp2)*(k.qrows-1+cp2)-1){ i++; break;}
+			if(cc>=cols*rows){ i++; break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeCrossMark : function(){
 		var cm="", count=0, cp=(k.iscross===2?1:0), cp2=(cp<<1);
-		for(var c=0,max=(k.qcols-1+cp2)*(k.qrows-1+cp2);c<max;c++){
+		var rows=(k.qrows-1+cp2), cols=(k.qcols-1+cp2);
+		for(var c=0,max=cols*rows;c<max;c++){
 			var pstr="";
-			var bx = ((  c%(k.qcols-1+cp2)    +(1-cp))<<1);
-			var by = ((((c/(k.qcols-1+cp2))|0)+(1-cp))<<1);
+			var bx = ((  c%cols    +(1-cp))<<1);
+			var by = ((((c/cols)|0)+(1-cp))<<1);
 
 			if(bd.cross[bd.xnum(bx,by)].qnum===1){ pstr = ".";}
 			else{ count++;}

@@ -68,23 +68,20 @@ Puzzles.nanro.prototype = {
 				else if(this.btn.Right) this.inputDot_nanro();
 			}
 		};
-		mv.dragnumber = function(){
+		mv.dragnumber_nanro = function(){
 			var cc = this.cellid();
 			if(cc===null||cc===this.mouseCell){ return;}
 			if(this.mouseCell===null){
 				this.inputData = bd.getNum(cc);
-				if   (this.inputData==-2){ this.inputData=-4;}
-				else if(this.inputData===null){
-					if     (bd.QsC(cc)==1){ this.inputData=-2;}
-					else if(bd.QsC(cc)==2){ this.inputData=-3;}
+				if     (this.inputData===-2){ this.inputData=null;}
+				else if(this.inputData===-1){
+					if     (bd.QsC(cc)===1){ this.inputData=-2;}
+					else if(bd.QsC(cc)===2){ this.inputData=-3;}
 				}
 				this.mouseCell = cc;
 			}
-			else if(bd.noNum(cc)){
-				if(this.inputData>0){ bd.sAnC(cc, this.inputData); bd.sQsC(cc,0);}
-				else if(this.inputData===null){ bd.sAnC(cc,-1); bd.sQsC(cc,0);}
-				else if(this.inputData===-2)  { bd.sAnC(cc,-1); bd.sQsC(cc,1);}
-				else if(this.inputData===-3)  { bd.sAnC(cc,-1); bd.sQsC(cc,2);}
+			else if(bd.QnC(cc)===-1){
+				bd.setNum(cc,this.inputData);
 				this.mouseCell = cc;
 				pc.paintCell(cc);
 			}
@@ -106,6 +103,7 @@ Puzzles.nanro.prototype = {
 		};
 		kc.key_view = function(ca){
 			if(k.playmode){
+				var cc=tc.getTCC();
 				if     (ca==='q'||ca==='a'||ca==='z')          { ca='s1';}
 				else if(ca==='w'||ca==='s'||ca==='x')          { ca='s2';}
 				else if(ca==='e'||ca==='d'||ca==='c'||ca==='-'){ ca=' '; }

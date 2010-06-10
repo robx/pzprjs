@@ -156,7 +156,7 @@ Puzzles.shwolf.prototype = {
 			}
 		};
 		pc.dispimage1 = function(key, c){
-			var xpos = bd.cell[c].ques-1, ypos=0;
+			var xpos = bd.cell[c].qnum-1, ypos=0;
 
 			if(!this.fillTextPrecisely){
 				var img = this.numobj[key];

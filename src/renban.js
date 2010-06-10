@@ -155,13 +155,13 @@ Puzzles.renban.prototype = {
 				this.setAlert('数字の差がその間にある線の長さと等しくありません。','The differnece between two numbers is not equal to the length of the line between them.'); return false;
 			}
 
-			if( !this.checkAllCell(bd.noNum) ){
+			if( !this.checkNoNumCell() ){
 				this.setAlert('数字の入っていないマスがあります。','There is an empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
+		ans.check1st = function(){ return this.checkNoNumCell();};
 
 		ans.checkNumbersInRoom = function(rinfo){
 			var result = true;

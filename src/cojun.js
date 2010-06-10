@@ -141,13 +141,13 @@ Puzzles.cojun.prototype = {
 				this.setAlert('同じ部屋で上に小さい数字が乗っています。','There is an small number on big number in a room.'); return false;
 			}
 
-			if( !this.checkAllCell(bd.noNum) ){
+			if( !this.checkNoNumCell() ){
 				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
+		ans.check1st = function(){ return this.checkNoNumCell();};
 
 		ans.checkUpperNumber = function(rinfo){
 			var result = true;

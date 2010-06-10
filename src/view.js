@@ -59,6 +59,7 @@ Puzzles.view.prototype = {
 		};
 		kc.key_view = function(ca){
 			if(k.playmode){
+				var cc=tc.getTCC();
 				if     (ca==='q'||ca==='a'||ca==='z')          { ca='s1';}
 				else if(ca==='w'||ca==='s'||ca==='x')          { ca='s2';}
 				else if(ca==='e'||ca==='d'||ca==='c'||ca==='-'){ ca=' '; }

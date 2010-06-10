@@ -152,7 +152,7 @@ Puzzles.bdblock.prototype = {
 			if( !this.checkSameObjectInRoom(rinfo, bd.getNum) ){
 				this.setAlert('１つのブロックに異なる数字が入っています。','A block has dirrerent numbers.'); return false;
 			}
-			if( !this.checkObjectRoom(rinfo, bd.getNum) ){
+			if( !this.checkGatheredObject(rinfo, bd.getNum) ){
 				this.setAlert('同じ数字が異なるブロックに入っています。','One kind of numbers is included in dirrerent blocks.'); return false;
 			}
 

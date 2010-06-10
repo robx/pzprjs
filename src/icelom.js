@@ -475,7 +475,7 @@ Puzzles.icelom.prototype = {
 			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==6);}) ){
 				this.setAlert('氷の部分以外で線が交差しています。', 'A Line is crossed outside of ice.'); return false;
 			}
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===2 && bd.QuC(c)===6 && !ans.isLineStraight(c));}) ){
+			if( !this.checkIceLines() ){
 				this.setAlert('氷の部分で線が曲がっています。', 'A Line curve on ice.'); return false;
 			}
 
@@ -504,7 +504,7 @@ Puzzles.icelom.prototype = {
 				this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
 			}
 
-			if( this.isallwhite() && !this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && bd.QuC(c)!==6);}) ){
+			if( this.isallwhite() && !this.checkAllCell(function(c){ return (line.lcntCell(c)===0 && bd.QuC(c)!==6);}) ){
 				this.setAlert('通過していない白マスがあります。', 'The line doesn\'t pass all of the white cell.'); return false;
 			}
 
@@ -512,7 +512,7 @@ Puzzles.icelom.prototype = {
 				this.setAlert('すべてのアイスバーンを通っていません。', 'A icebarn is not gone through.'); return false;
 			}
 
-			if( !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)==0 && bd.isNum(c));})) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===0 && bd.isNum(c));}) ){
 				this.setAlert('通過していない数字があります。', 'The line doesn\'t pass all of the number.'); return false;
 			}
 

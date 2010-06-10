@@ -129,8 +129,8 @@ Puzzles.slalom.prototype = {
 				if(cc===this.mouseCell){
 					var mx=Math.abs(this.inputPoint.x-this.firstPoint.x);
 					var my=Math.abs(this.inputPoint.y-this.firstPoint.y);
-					if     (mx>=8){ this.inputData=21; input=true;}
-					else if(my>=8){ this.inputData=22; input=true;}
+					if     (my>=8){ this.inputData=21; input=true;}
+					else if(mx>=8){ this.inputData=22; input=true;}
 				}
 				else{
 					var dir = this.getdir(this.prevPos, pos);

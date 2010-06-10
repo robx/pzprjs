@@ -158,13 +158,13 @@ Puzzles.ripple.prototype = {
 				this.setAlert('数字よりもその間隔が短いところがあります。','The gap of the same kind of number is smaller than the number.'); return false;
 			}
 
-			if( !this.checkAllCell(bd.noNum) ){
+			if( !this.checkNoNumCell() ){
 				this.setAlert('数字の入っていないマスがあります。','There is an empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
+		ans.check1st = function(){ return this.checkNoNumCell();};
 
 		ans.checkRippleNumber = function(){
 			var result = true;

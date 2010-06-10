@@ -55,7 +55,7 @@ Puzzles.fillomino.prototype = {
 				if(this.btn.Left){
 					// マウス入力時にmv.dragnumberするかの判別を行う
 					var pos = this.borderpos(0.25);
-					this.borderinput = (this.cnum(pos.x,pos.y)===null);
+					this.borderinput = (bd.cnum(pos.x,pos.y)===null);
 
 					if(this.borderinput){ this.inputborder_fillomino();}
 					else{ this.dragnumber_fillomino();}
@@ -237,13 +237,13 @@ Puzzles.fillomino.prototype = {
 				this.setAlert('複数種類の数字が入っているブロックがあります。','A block has two or more kinds of numbers.'); return false;
 			}
 
-			if( !pp.getVal('enbnonum') && !this.checkAllCell(bd.noNum) ){
+			if( !pp.getVal('enbnonum') && !this.checkNoNumCell() ){
 				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return (pp.getVal('enbnonum') || this.checkAllCell(bd.noNum));};
+		ans.check1st = function(){ return (pp.getVal('enbnonum') || this.checkNoNumCell());};
 
 		ans.checkAreaSize = function(rinfo, flag){
 			var result = true;

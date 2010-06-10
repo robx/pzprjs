@@ -297,7 +297,7 @@ Puzzles.kaero.prototype = {
 			if( !this.checkSameObjectInRoom(rinfo, this.getMoved) ){
 				this.setAlert('１つのブロックに異なるアルファベットが入っています。','A block has plural kinds of letters.'); return false;
 			}
-			if( !this.checkObjectRoom(rinfo, this.getMoved) ){
+			if( !this.checkGatheredObject(rinfo, this.getMoved) ){
 				this.setAlert('同じアルファベットが異なるブロックに入っています。','Same kinds of letters are placed different blocks.'); return false;
 			}
 			if( !this.checkNoObjectInRoom(rinfo, this.getMoved) ){

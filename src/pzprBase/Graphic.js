@@ -1493,7 +1493,7 @@ Graphic.prototype = {
 				return false;
 			}
 		);
-		this.vnop(vid, ccflag);
+		return this.vnop(vid, ccflag);
 	},
 	vhide : function(vid){
 		this.vhide = ((g.use.canvas) ?

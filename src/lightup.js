@@ -96,7 +96,7 @@ Puzzles.lightup.prototype = {
 			bd.qlight = [];
 			for(var c=0;c<this.cellmax;c++){ this.qlight[c] = false;}
 			for(var c=0;c<this.cellmax;c++){
-				if(this.cell[c].qans!==1){ continue;}
+				if(!this.isAkari(c)){ continue;}
 
 				var bx = this.cell[c].bx, by = this.cell[c].by;
 				var d = this.cellRange(c);
@@ -121,8 +121,8 @@ Puzzles.lightup.prototype = {
 
 					var cbx = this.cell[cc].bx, cby = this.cell[cc].by;
 					var dd  = this.cellRange(cc), isakari = false;
-								  for(var tx=dd.x1;tx<=dd.x2;tx+=2){ if(this.cell[this.cnum(tx,cby)].qans===1){ isakari=true; break;} }
-					if(!isakari){ for(var ty=dd.y1;ty<=dd.y2;ty+=2){ if(this.cell[this.cnum(cbx,ty)].qans===1){ isakari=true; break;} } }
+								  for(var tx=dd.x1;tx<=dd.x2;tx+=2){ if(this.isAkari(this.cnum(tx,cby))){ isakari=true; break;} }
+					if(!isakari){ for(var ty=dd.y1;ty<=dd.y2;ty+=2){ if(this.isAkari(this.cnum(cbx,ty))){ isakari=true; break;} } }
 					this.qlight[cc] = isakari;
 				}
 			}
@@ -142,6 +142,10 @@ Puzzles.lightup.prototype = {
 			tx=bx; ty=by+2; while(ty<bd.maxby){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ d.y2=ty-2; break;} ty+=2; }
 
 			return d;
+		};
+
+		bd.isAkari = function(c){
+			return (!!bd.cell[c] && bd.cell[c].qans===1);
 		};
 
 		// オーバーライド
@@ -204,7 +208,7 @@ Puzzles.lightup.prototype = {
 			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.cell[c].qans===1){
+				if(bd.isAkari(c)){
 					g.fillStyle = (bd.cell[c].error!==4 ? lampcolor : this.errcolor1);
 					if(this.vnop(header+c,this.FILL)){
 						g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
@@ -268,7 +272,7 @@ Puzzles.lightup.prototype = {
 				this.setAlert('照明に別の照明の光が当たっています。','Akari is shined from another Akari.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.isValidNum(c) && bd.QnC(c)!==ans.checkdir4Cell(c,function(a){ return (bd.QaC(a)===1);})); }) ){
+			if( !this.checkDir4Cell(bd.isAkari,0) ){
 				this.setAlert('数字のまわりにある照明の数が間違っています。','The number is not equal to the number of Akari around it.'); return false;
 			}
 
@@ -282,7 +286,7 @@ Puzzles.lightup.prototype = {
 		ans.isAkariCount = function(nullnum, keycellpos, clist, nullobj){
 			var akaris=[];
 			for(var i=0;i<clist.length;i++){
-				if( bd.QaC(clist[i])===1 ){ akaris.push(clist[i]);}
+				if(bd.isAkari(clist[i])){ akaris.push(clist[i]);}
 			}
 			var result = (akaris.length<=1);
 

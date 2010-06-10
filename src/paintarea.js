@@ -141,7 +141,7 @@ Puzzles.paintarea.prototype = {
 		ans.checkAns = function(){
 
 			if( k.EDITOR && !this.checkSameObjectInRoom(area.getRoomInfo(), function(c){ return (bd.isBlack(c)?1:2);}) ){
-				this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both balck and white cells.'); return false;
+				this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both black and white cells.'); return false;
 			}
 
 			if( !this.checkOneArea( area.getBCellInfo() ) ){
@@ -152,7 +152,7 @@ Puzzles.paintarea.prototype = {
 				this.setAlert('2x2の黒マスのかたまりがあります。','There is a 2x2 block of black cells.'); return false;
 			}
 
-			if( !this.checkAllCell(ee.binder(this, function(c){ return (bd.isValidNum(c) && bd.QnC(c)!=this.checkdir4Cell(c,bd.isBlack));})) ){
+			if( !this.checkDir4Cell( bd.isBlack,0 ) ){
 				this.setAlert('数字の上下左右にある黒マスの数が間違っています。','The number is not equal to the number of black cells in four adjacent cells.'); return false;
 			}
 

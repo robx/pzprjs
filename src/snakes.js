@@ -67,8 +67,7 @@ Puzzles.snakes.prototype = {
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				this.mouseCell=null;
-				this.inputqnum();
+				this.inputqnum_snakes();
 			}
 		};
 		mv.mousemove = function(){
@@ -103,23 +102,32 @@ Puzzles.snakes.prototype = {
 			}
 		};
 		mv.inputDot_snakes = function(){
+			if(!this.btn.Right || (this.inputData!==null && this.inputData>=0)){ return false;}
+
 			var cc = this.cellid();
-			if(!this.btn.Right||cc===null||cc===this.mouseCell||this.inputData>=0){ return false;}
+			if(cc===null||cc===this.mouseCell){ return (this.inputData<0);}
 
 			if(this.inputData===null){
 				if(bd.AnC(cc)===-1){
-					this.inputData = bd.QsC(cc)!=1?-2:-3;
+					this.inputData = (bd.QsC(cc)!==1?-2:-3);
 					return true;
 				}
-				else{ return false;}
+				return false;
 			}
-			else if(this.inputData!=-2 && this.inputData!=-3){ return false;}
-			bd.sAnC(cc,-1); bd.sQsC(cc,(this.inputData==-2?1:0));
+
+			bd.sAnC(cc,-1);
+			bd.sQsC(cc,(this.inputData===-2?1:0));
 			pc.paintCell(cc);
 			this.mouseCell = cc;
 			return true;
 		};
-		mv.enableInputHatena = true;
+		mv.inputqnum_snakes = function(){
+			k.dispzero = k.editmode;
+			this.mouseCell=null;
+			this.enableInputHatena = k.editmode;
+			this.inputqnum();
+			k.dispzero = true;
+		};
 
 		// キーボード入力系
 		kc.keyinput = function(ca){

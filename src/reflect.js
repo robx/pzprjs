@@ -232,20 +232,21 @@ Puzzles.reflect.prototype = {
 		enc.decodeReflectlink = function(){
 			var c=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
+				var ca = bstr.charAt(i), obj=bd.cell[c];
 
-				if     (ca==='5'){ bd.sQuC(c, 11);}
+				if     (ca==='5'){ obj.ques = 11;}
 				else if(this.include(ca,'1','4')){
-					bd.cell[c].ques = parseInt(ca)+1;
-					bd.cell[c].qnum = parseInt(bstr.substr(i+1,1),16);
+					obj.ques = parseInt(ca)+1;
+					obj.qnum = parseInt(bstr.substr(i+1,1),16);
 					i++;
 				}
 				else if(this.include(ca,'6','9')){
-					bd.cell[c].ques = parseInt(ca)-4;
-					bd.cell[c].qnum = parseInt(bstr.substr(i+1,2),16);
+					obj.ques = parseInt(ca)-4;
+					obj.qnum = parseInt(bstr.substr(i+1,2),16);
 					i+=2;
 				}
 				else if(this.include(ca,'a','z')){ c+=(parseInt(ca,36)-10);}
+				if(obj.qnum===0){ obj.qnum=-1;}
 
 				c++;
 				if(c>=bd.cellmax){ break;}
@@ -306,7 +307,7 @@ Puzzles.reflect.prototype = {
 			if( !this.checkLcntCell(3) ){
 				this.setAlert('分岐している線があります。','There is a branch line.'); return false;
 			}
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!==11);}) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==11);}) ){
 				this.setAlert('十字以外の場所で線が交差しています。','There is a crossing line out of cross mark.'); return false;
 			}
 
@@ -320,7 +321,7 @@ Puzzles.reflect.prototype = {
 				this.setAlert('三角形の数字とそこから延びる線の長さが一致していません。','A number on triangle is not equal to sum of the length of lines from it.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)!=4 && bd.QuC(c)===11);}) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)!==4 && bd.QuC(c)===11);}) ){
 				this.setAlert('十字の場所で線が交差していません。','There isn\'t a crossing line on a cross mark.'); return false;
 			}
 
@@ -354,19 +355,16 @@ Puzzles.reflect.prototype = {
 				if(bd.QuC(c)<2 || bd.QuC(c)>5 || !bd.isValidNum(c)){ continue;}
 
 				var list = [];
-				var cnt=1;
-				var tx, ty;
-
 				bx = bd.cell[c].bx-1; by = bd.cell[c].by;
-				while(bx>bd.minbx){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); bx-=2;} else{ break;} }
+				while(bx>bd.minbx){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ list.push(id); bx-=2;} else{ break;} }
 				bx = bd.cell[c].bx+1; by = bd.cell[c].by;
-				while(bx<bd.maxbx){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); bx+=2;} else{ break;} }
+				while(bx<bd.maxbx){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ list.push(id); bx+=2;} else{ break;} }
 				bx = bd.cell[c].bx; by = bd.cell[c].by-1;
-				while(by>bd.minby){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); by-=2;} else{ break;} }
+				while(by>bd.minby){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ list.push(id); by-=2;} else{ break;} }
 				bx = bd.cell[c].bx; by = bd.cell[c].by+1;
-				while(by<bd.maxby){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); by+=2;} else{ break;} }
+				while(by<bd.maxby){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ list.push(id); by+=2;} else{ break;} }
 
-				if(type==1?bd.QnC(c)<cnt:bd.QnC(c)>cnt){
+				if(type==1?bd.QnC(c)<(list.length+1):bd.QnC(c)>(list.length+1)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],4);
 					if(result){ bd.sErBAll(2);}

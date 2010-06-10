@@ -165,6 +165,7 @@ Puzzles.shakashaka.prototype = {
 		}
 
 		bd.maxnum = 4;
+		bd.isTri = function(c){ return (!!bd.cell[c] && bd.cell[c].qans!==0);};
 
 		menu.ex.adjustSpecial = function(key,d){
 			switch(key){
@@ -244,7 +245,7 @@ Puzzles.shakashaka.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkAllCell(function(c){ return ( bd.isValidNum(c) && (bd.QnC(c)<ans.checkdir4Cell(c,ans.isTri)) );} ) ){
+			if( !this.checkDir4Cell(bd.isTri,2) ){
 				this.setAlert('数字のまわりにある黒い三角形の数が間違っています。','The number of triangles in four adjacent cells is bigger than it.'); return false;
 			}
 
@@ -252,13 +253,12 @@ Puzzles.shakashaka.prototype = {
 				this.setAlert('白マスが長方形(正方形)ではありません。','A mass of white cells is not rectangle.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return ( bd.isValidNum(c) && (bd.QnC(c)>ans.checkdir4Cell(c,ans.isTri)) );} ) ){
+			if( !this.checkDir4Cell(bd.isTri,1) ){
 				this.setAlert('数字のまわりにある黒い三角形の数が間違っています。','The number of triangles in four adjacent cells is smaller than it.'); return false;
 			}
 
 			return true;
 		};
-		ans.isTri = function(c){ return (bd.QaC(c)!==0);};
 
 		ans.checkWhiteArea = function(){
 			var result = true;

@@ -204,7 +204,7 @@ Puzzles.mashu.prototype = {
 		ans.checkWhitePearl1 = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)===1 && line.lcntCell(c)===2 && !ans.isLineStraight(c)){
+				if(bd.QnC(c)===1 && line.lcntCell(c)===2 && !bd.isLineStraight(c)){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,1);
@@ -216,7 +216,7 @@ Puzzles.mashu.prototype = {
 		ans.checkBlackPearl1 = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)===2 && line.lcntCell(c)===2 && ans.isLineStraight(c)){
+				if(bd.QnC(c)===2 && line.lcntCell(c)===2 && bd.isLineStraight(c)){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,1);
@@ -231,10 +231,10 @@ Puzzles.mashu.prototype = {
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)!==1 || line.lcntCell(c)!==2){ continue;}
 				var stcnt = 0;
-				if(bd.isLine(bd.ub(c)) && line.lcntCell(bd.up(c))===2 && ans.isLineStraight(bd.up(c))){ stcnt++;}
-				if(bd.isLine(bd.db(c)) && line.lcntCell(bd.dn(c))===2 && ans.isLineStraight(bd.dn(c))){ stcnt++;}
-				if(bd.isLine(bd.lb(c)) && line.lcntCell(bd.lt(c))===2 && ans.isLineStraight(bd.lt(c))){ stcnt++;}
-				if(bd.isLine(bd.rb(c)) && line.lcntCell(bd.rt(c))===2 && ans.isLineStraight(bd.rt(c))){ stcnt++;}
+				if(bd.isLine(bd.ub(c)) && line.lcntCell(bd.up(c))===2 && bd.isLineStraight(bd.up(c))){ stcnt++;}
+				if(bd.isLine(bd.db(c)) && line.lcntCell(bd.dn(c))===2 && bd.isLineStraight(bd.dn(c))){ stcnt++;}
+				if(bd.isLine(bd.lb(c)) && line.lcntCell(bd.lt(c))===2 && bd.isLineStraight(bd.lt(c))){ stcnt++;}
+				if(bd.isLine(bd.rb(c)) && line.lcntCell(bd.rt(c))===2 && bd.isLineStraight(bd.rt(c))){ stcnt++;}
 
 				if(stcnt>=2){
 					if(this.inAutoCheck){ return false;}
@@ -248,10 +248,10 @@ Puzzles.mashu.prototype = {
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QnC(c)!==2 || line.lcntCell(c)!==2){ continue;}
-				if((bd.isLine(bd.ub(c)) && line.lcntCell(bd.up(c))==2 && !ans.isLineStraight(bd.up(c))) ||
-				   (bd.isLine(bd.db(c)) && line.lcntCell(bd.dn(c))==2 && !ans.isLineStraight(bd.dn(c))) ||
-				   (bd.isLine(bd.lb(c)) && line.lcntCell(bd.lt(c))==2 && !ans.isLineStraight(bd.lt(c))) ||
-				   (bd.isLine(bd.rb(c)) && line.lcntCell(bd.rt(c))==2 && !ans.isLineStraight(bd.rt(c))) ){
+				if((bd.isLine(bd.ub(c)) && line.lcntCell(bd.up(c))===2 && !bd.isLineStraight(bd.up(c))) ||
+				   (bd.isLine(bd.db(c)) && line.lcntCell(bd.dn(c))===2 && !bd.isLineStraight(bd.dn(c))) ||
+				   (bd.isLine(bd.lb(c)) && line.lcntCell(bd.lt(c))===2 && !bd.isLineStraight(bd.lt(c))) ||
+				   (bd.isLine(bd.rb(c)) && line.lcntCell(bd.rt(c))===2 && !bd.isLineStraight(bd.rt(c))) ){
 
 					if(this.inAutoCheck){ return false;}
 					this.setErrorPearl(c,result);

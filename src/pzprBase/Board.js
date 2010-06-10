@@ -687,6 +687,15 @@ Board.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// bd.isLineStraight()   セルの上で線が直進しているか判定する
+	//---------------------------------------------------------------------------
+	isLineStraight : function(cc){
+		if     (this.isLine(this.ub(cc)) && this.isLine(this.db(cc))){ return true;}
+		else if(this.isLine(this.lb(cc)) && this.isLine(this.rb(cc))){ return true;}
+		return false;
+	},
+
+	//---------------------------------------------------------------------------
 	// bd.nummaxfunc() 入力できる数字の最大値を返す
 	//---------------------------------------------------------------------------
 	nummaxfunc : function(cc){
@@ -714,7 +723,7 @@ Board.prototype = {
 		um.addOpe(k.CELL, k.QNUM, id, this.cell[id].qnum, num);
 		this.cell[id].qnum = num;
 
-		area.setCell('number',id,(num!==Cell.prototype.defqnum));
+		area.setCell('number',id);
 	},
 	sAnC : function(id, num) {
 		if(!k.dispzero && num===0){ return;}
@@ -722,18 +731,20 @@ Board.prototype = {
 		um.addOpe(k.CELL, k.ANUM, id, this.cell[id].anum, num);
 		this.cell[id].anum = num;
 
-		area.setCell('number',id,(num!==Cell.prototype.defanum));
+		area.setCell('number',id);
 	},
 	// override by lightup.js, shugaku.js
 	sQaC : function(id, num) {
 		um.addOpe(k.CELL, k.QANS, id, this.cell[id].qans, num);
 		this.cell[id].qans = num;
 
-		area.setCell('block',id,(num!==Cell.prototype.defqans));
+		area.setCell('block',id);
 	},
 	sQsC : function(id, num) {
 		um.addOpe(k.CELL, k.QSUB, id, this.cell[id].qsub, num);
 		this.cell[id].qsub = num;
+
+		if(k.NumberWithMB){ area.setCell('number',id);}
 	},
 	sDiC : function(id, num) {
 		um.addOpe(k.CELL, k.QDIR, id, this.cell[id].qdir, num);

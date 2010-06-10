@@ -83,20 +83,9 @@ AnsCheck.prototype = {
 	isenableSetError : function(){ return this.setError; },
 
 	//---------------------------------------------------------------------------
-	// ans.checkdir4Cell()     上下左右4方向で条件func==trueになるマスの数をカウントする
 	// ans.setErrLareaByCell() ひとつながりになった線が存在するマスにエラーを設定する
 	// ans.setErrLareaById()   ひとつながりになった線が存在するマスにエラーを設定する
 	//---------------------------------------------------------------------------
-	checkdir4Cell : function(cc, func){
-		if(cc<0 || cc>=bd.cellmax){ return 0;}
-		var cnt=0, c;
-		c=bd.up(cc); if(c!==null && func(c)){ cnt++;}
-		c=bd.dn(cc); if(c!==null && func(c)){ cnt++;}
-		c=bd.lt(cc); if(c!==null && func(c)){ cnt++;}
-		c=bd.rt(cc); if(c!==null && func(c)){ cnt++;}
-		return cnt;
-	},
-
 	setErrLareaByCell : function(cinfo, c, val){ this.setErrLareaById(cinfo, cinfo.id[c], val); },
 	setErrLareaById : function(cinfo, areaid, val){
 		var blist = [];
@@ -114,6 +103,8 @@ AnsCheck.prototype = {
 
 	//---------------------------------------------------------------------------
 	// ans.checkAllCell()   条件func==trueになるマスがあったらエラーを設定する
+	// ans.checkNoNumCell() 数字の入っていないセルがあるか判定する
+	// ans.checkIceLines()  アイスバーン上で線が曲がっているか判定する
 	//---------------------------------------------------------------------------
 	checkAllCell : function(func){
 		var result = true;
@@ -126,36 +117,44 @@ AnsCheck.prototype = {
 		}
 		return result;
 	},
+	checkNoNumCell : function(){
+		return this.checkAllCell(bd.noNum);
+	},
+	checkIceLines : function(){
+		return this.checkAllCell( function(c){
+			return (line.lcntCell(c)===2 && bd.QuC(c)===6 && !bd.isLineStraight(c));
+		});
+	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkOneArea()   白マス/黒マス/線がひとつながりかどうかを判定する
-	// ans.check2x2Block()  2x2のセルが全て条件func==trueの時、エラーを設定する
+	// ans.checkDir4Cell()  セルの周囲4マスの条件がfunc==trueの時、エラーを設定する
+	// ans.countDir4Cell()  上下左右4方向で条件func==trueになるマスの数をカウントする
 	// ans.checkSideCell()  隣り合った2つのセルが条件func==trueの時、エラーを設定する
+	// ans.check2x2Block()  2x2のセルが全て条件func==trueの時、エラーを設定する
 	//---------------------------------------------------------------------------
-	checkOneArea : function(cinfo){
-		if(cinfo.max>1){
-			if(this.performAsLine){ bd.sErBAll(2); this.setErrLareaByCell(cinfo,1,1); }
-			if(!this.performAsLine || k.puzzleid=="firefly"){ bd.sErC(cinfo.room[1].idlist,1);}
-			return false;
-		}
-		return true;
-	},
-	check2x2Block : function(func){
+	checkDir4Cell : function(iscount, type){ // 0:違う 1:numより小さい 2:numより大きい
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].bx<bd.maxbx-1 && bd.cell[c].by<bd.maxby-1){
-				var cnt=0, bx=bd.cell[c].bx, by=bd.cell[c].by;
-				var clist = bd.cellinside(bx, by, bx+2, by+2);
-				for(var i=0;i<clist.length;i++){ if(func(clist[i])){ cnt++;}}
-				if(cnt===4){
-					if(this.inAutoCheck){ return false;}
-					bd.sErC(clist,1);
-					result = false;
-				}
+			if(!bd.isValidNum(c)){ continue;}
+			var num = bd.getNum(c), count=this.countDir4Cell(c,iscount);
+			if((type!==1 && num<count) || (type!==2 && num>count)){
+				if(this.inAutoCheck){ return false;}
+				bd.sErC([c],1);
+				result = false;
 			}
 		}
 		return result;
 	},
+	countDir4Cell : function(c, func){
+		if(c<0 || c>=bd.cellmax || c===null){ return 0;}
+		var cnt=0, cc;
+		cc=bd.up(c); if(cc!==null && func(cc)){ cnt++;}
+		cc=bd.dn(c); if(cc!==null && func(cc)){ cnt++;}
+		cc=bd.lt(c); if(cc!==null && func(cc)){ cnt++;}
+		cc=bd.rt(c); if(cc!==null && func(cc)){ cnt++;}
+		return cnt;
+	},
+
 	checkSideCell : function(func){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
@@ -173,13 +172,39 @@ AnsCheck.prototype = {
 		return result;
 	},
 
+	check2x2Block : function(func){
+		var result = true;
+		for(var c=0;c<bd.cellmax;c++){
+			if(bd.cell[c].bx<bd.maxbx-1 && bd.cell[c].by<bd.maxby-1){
+				var cnt=0, bx=bd.cell[c].bx, by=bd.cell[c].by;
+				var clist = bd.cellinside(bx, by, bx+2, by+2);
+				for(var i=0;i<clist.length;i++){ if(func(clist[i])){ cnt++;}}
+				if(cnt===4){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC(clist,1);
+					result = false;
+				}
+			}
+		}
+		return result;
+	},
+
 	//---------------------------------------------------------------------------
+	// ans.checkOneArea()  白マス/黒マス/線がひとつながりかどうかを判定する
 	// ans.checkOneLoop()  交差あり線が一つかどうか判定する
 	// ans.checkLcntCell() セルから出ている線の本数について判定する
-	// ans.isLineStraight()   セルの上で線が直進しているか判定する
 	// ans.setCellLineError() セルと周りの線にエラーフラグを設定する
 	// ans.checkenableLineParts() '一部があかされている'線の部分に、線が引かれているか判定する
 	//---------------------------------------------------------------------------
+	checkOneArea : function(cinfo){
+		if(cinfo.max>1){
+			if(this.performAsLine){ bd.sErBAll(2); this.setErrLareaByCell(cinfo,1,1); }
+			if(!this.performAsLine || k.puzzleid=="firefly"){ bd.sErC(cinfo.room[1].idlist,1);}
+			return false;
+		}
+		return true;
+	},
+
 	checkOneLoop : function(){
 		var xinfo = line.getLineInfo();
 		if(xinfo.max>1){
@@ -202,13 +227,6 @@ AnsCheck.prototype = {
 			}
 		}
 		return result;
-	},
-
-	isLineStraight : function(cc){
-		if     (bd.isLine(bd.ub(cc)) && bd.isLine(bd.db(cc))){ return true;}
-		else if(bd.isLine(bd.lb(cc)) && bd.isLine(bd.rb(cc))){ return true;}
-
-		return false;
 	},
 
 	setCellLineError : function(cc, flag){
@@ -305,9 +323,6 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	// ans.checkSideAreaSize()     境界線をはさんで接する部屋のgetvalで得られるサイズが異なることを判定する
 	// ans.checkSideAreaCell()     境界線をはさんでタテヨコに接するセルの判定を行う
-	// ans.checkSeqBlocksInRoom()  部屋の中限定で、黒マスがひとつながりかどうか判定する
-	// ans.checkSameObjectInRoom() 部屋の中にgetvalueで複数種類の値が得られることを判定する
-	// ans.checkObjectRoom()       getvalueで同じ値が得られるセルが、複数の部屋の分散しているか判定する
 	//---------------------------------------------------------------------------
 	checkSideAreaSize : function(rinfo, getval){
 		var adjs = [];
@@ -355,11 +370,18 @@ AnsCheck.prototype = {
 		return true;
 	},
 
+	//---------------------------------------------------------------------------
+	// ans.checkSeqBlocksInRoom()   部屋の中限定で、黒マスがひとつながりかどうか判定する
+	// ans.checkSameObjectInRoom()  部屋の中のgetvalueの値が1種類であるか判定する
+	// ans.checkGatheredObject()    同じgetvalueの値であれば、同じ部屋に存在することを判定する
+	// ans.checkDifferentNumberInRoom() 部屋の中に同じ数字が存在しないことを判定する
+	// ans.isDifferentNumberInClist()   clistの中に同じ数字が存在しないことを判定だけを行う
+	//---------------------------------------------------------------------------
 	checkSeqBlocksInRoom : function(){
 		var result = true;
 		for(var id=1;id<=area.room.max;id++){
 			var data = {max:0,id:[]};
-			for(var c=0;c<bd.cellmax;c++){ data.id[c] = ((area.room.id[c]==id && bd.isBlack(c))?0:null);}
+			for(var c=0;c<bd.cellmax;c++){ data.id[c] = ((area.room.id[c]===id && bd.isBlack(c))?0:null);}
 			for(var c=0;c<bd.cellmax;c++){
 				if(data.id[c]!==0){ continue;}
 				data.max++;
@@ -398,7 +420,7 @@ AnsCheck.prototype = {
 		}
 		return result;
 	},
-	checkObjectRoom : function(rinfo, getvalue){
+	checkGatheredObject : function(rinfo, getvalue){
 		var d=[], dmax=0, val=[];
 		for(var c=0;c<bd.cellmax;c++){ val[c]=getvalue(c); if(dmax<val[c]){ dmax=val[c];} }
 		for(var i=0;i<=dmax;i++){ d[i]=-1;}
@@ -418,11 +440,32 @@ AnsCheck.prototype = {
 		return true;
 	},
 
+	checkDifferentNumberInRoom : function(rinfo, numfunc){
+		var result = true;
+		for(var id=1;id<=rinfo.max;id++){
+			if(!this.isDifferentNumberInClist(rinfo.room[id].idlist, numfunc)){
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(rinfo.room[id].idlist,1);
+				result = false;
+			}
+		}
+		return result;
+	},
+	isDifferentNumberInClist : function(clist, numfunc){
+		var result = true, d = [], num = [], bottom = (k.dispzero?1:0);
+		for(var n=bottom,max=bd.nummaxfunc(clist[0]);n<=max;n++){ d[n]=0;}
+		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc.apply(bd,[clist[i]]);}
+
+		for(var i=0;i<clist.length;i++){ if(num[clist[i]]>=bottom){ d[num[clist[i]]]++;} }
+		for(var i=0;i<clist.length;i++){
+			if(num[clist[i]]>=bottom && d[num[clist[i]]]>=2){ bd.sErC([clist[i]],1); result = false;}
+		}
+		return result;
+	},
+
 	//---------------------------------------------------------------------------
 	// ans.checkRowsCols()            タテ列・ヨコ列の数字の判定を行う
 	// ans.checkRowsColsPartly()      黒マスや[＼]等で分かれるタテ列・ヨコ列の数字の判定を行う
-	// ans.checkDifferentNumberInRoom() 部屋の中に同じ数字が存在するか判定する
-	// ans.isDifferentNumberInClist() clistの中に同じ数字が存在するか判定する
 	//---------------------------------------------------------------------------
 	checkRowsCols : function(evalfunc, numfunc){
 		var result = true;
@@ -471,29 +514,6 @@ AnsCheck.prototype = {
 				}
 				by = ty+2;
 			}
-		}
-		return result;
-	},
-
-	checkDifferentNumberInRoom : function(rinfo, numfunc){
-		var result = true;
-		for(var id=1;id<=rinfo.max;id++){
-			if(!this.isDifferentNumberInClist(rinfo.room[id].idlist, numfunc)){
-				if(this.inAutoCheck){ return false;}
-				bd.sErC(rinfo.room[id].idlist,1);
-				result = false;
-			}
-		}
-		return result;
-	},
-	isDifferentNumberInClist : function(clist, numfunc){
-		var result = true, d = [], num = [], bottom = (k.dispzero?1:0);
-		for(var n=bottom,max=bd.nummaxfunc(clist[0]);n<=max;n++){ d[n]=0;}
-		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc.apply(bd,[clist[i]]);}
-
-		for(var i=0;i<clist.length;i++){ if(num[clist[i]]>=bottom){ d[num[clist[i]]]++;} }
-		for(var i=0;i<clist.length;i++){
-			if(num[clist[i]]>=bottom && d[num[clist[i]]]>=2){ bd.sErC([clist[i]],1); result = false;}
 		}
 		return result;
 	},

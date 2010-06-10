@@ -476,6 +476,7 @@ LineManager.prototype = {
 // 部屋のTOPに数字を入力する時の、ハンドリング等
 AreaManager = function(){
 	this.lcnt  = [];	// 交点id -> 交点から出る線の本数
+	this.isbd  = [];
 
 	this.room  = {};	// 部屋情報を保持する
 	this.bcell = {};	// 黒マス情報を保持する
@@ -531,13 +532,13 @@ AreaManager.prototype = {
 			}
 		}
 
+		// isbd変数初期化
+		this.isbd = [];
+		for(var id=0;id<bd.bdmax;id++){ this.isbd[id]=false;}
+
 		if(!k.hasroom){ return;}
 		for(var id=0;id<bd.bdmax;id++){
-			if(bd.isBorder(id)){
-				var cc1 = bd.border[id].crosscc[0], cc2 = bd.border[id].crosscc[1];
-				if(cc1!==null){ this.lcnt[cc1]++;}
-				if(cc2!==null){ this.lcnt[cc2]++;}
-			}
+			if(bd.isBorder(id)){ this.setRinfo(id, true);}
 		}
 	},
 	resetRarea : function(){
@@ -583,20 +584,34 @@ AreaManager.prototype = {
 //	getCntOfRoom       : function(id){ return this.room[id].clist.length;},
 
 	//--------------------------------------------------------------------------------
-	// area.setBorder()    境界線が引かれたり消されてたりした時に、変数lcntの内容を変更する
+	// area.setRinfo()     境界線が引かれたり消されてたりした時に、変数の内容を変更する
+	// area.setBorder()    境界線が引かれたり消されてたりした時に、部屋情報を更新する
 	// area.setTopOfRoom() セルのリストから部屋のTOPを設定する
 	// area.sr0()          setBorder()から呼ばれて、初期idを含む一つの部屋の領域を、指定されたareaidにする
 	//---------------------------------------------------------------------------
+	setRinfo : function(id,isset){
+		var cc1 = bd.border[id].crosscc[0], cc2 = bd.border[id].crosscc[1];
+		if(isset){
+			if(cc1!==null){ this.lcnt[cc1]++;}
+			if(cc2!==null){ this.lcnt[cc2]++;}
+		}
+		else{
+			if(cc1!==null){ this.lcnt[cc1]--;}
+			if(cc2!==null){ this.lcnt[cc2]--;}
+		}
+		this.isbd[id] = isset;
+	},
+
 	setBorder : function(id,isset){
 		if(!k.hasroom || !base.isenableInfo()){ return;}
+		if(isset===this.isbd[id]){ return;}
+		this.setRinfo(id,isset);
 
-		var cc1, cc2, xc1 = bd.border[id].crosscc[0], xc2 = bd.border[id].crosscc[1];
+		var xc1 = bd.border[id].crosscc[0], xc2 = bd.border[id].crosscc[1];
+		var cc1 = bd.border[id].cellcc[0],  cc2 = bd.border[id].cellcc[1];
 		var room = this.room, roomid = room.id;
 		if(isset){
-			this.lcnt[xc1]++; this.lcnt[xc2]++;
-
 			if(this.lcnt[xc1]===1 || this.lcnt[xc2]===1){ return;}
-			cc1 = bd.border[id].cellcc[0]; cc2 = bd.border[id].cellcc[1];
 			if(cc1===null || cc2===null || roomid[cc1]!==roomid[cc2]){ return;}
 
 			var baseid = roomid[cc1];
@@ -635,10 +650,7 @@ AreaManager.prototype = {
 			}
 		}
 		else{
-			this.lcnt[xc1]--; this.lcnt[xc2]--;
-
 			if(this.lcnt[xc1]===0 || this.lcnt[xc2]===0){ return;}
-			cc1 = bd.border[id].cellcc[0]; cc2 = bd.border[id].cellcc[1];
 			if(cc1===null || cc2===null || roomid[cc1]===roomid[cc2]){ return;}
 
 			// k.roomNumberの時 どっちの数字を残すかは、TOP同士の位置で比較する
@@ -690,11 +702,18 @@ AreaManager.prototype = {
 	},
 
 	//--------------------------------------------------------------------------------
+	// area.isBlock()    このオブジェクト内で黒マスがある扱いする条件
 	// area.initBarea()  黒マス関連の変数を初期化する
 	// area.resetBarea() 黒マスの情報をresetして、1から割り当てしなおす
 	// area.initWarea()  白マス関連の変数を初期化する
 	// area.resetWarea() 白マスの情報をresetして、1から割り当てしなおす
 	//--------------------------------------------------------------------------------
+	isBlock : function(cc){
+		if(!k.linkNumber){ return bd.isBlack(cc);}
+		else{ return (bd.isNum(cc)||(k.NumberWithMB && (bd.QsC(cc)===1)));}
+		return false;
+	},
+
 	initBarea : function(){
 		this.bcell = {max:0,id:[]};
 		for(var c=0;c<bd.cellmax;c++){
@@ -704,7 +723,7 @@ AreaManager.prototype = {
 	resetBarea : function(){
 		this.initBarea();
 		for(var cc=0;cc<bd.cellmax;cc++){
-			this.bcell.id[cc]=((!k.linkNumber ? bd.isBlack : bd.isNum).call(bd,cc)? 0 : null);
+			this.bcell.id[cc]=(this.isBlock(cc) ? 0 : null);
 		}
 		for(var cc=0;cc<bd.cellmax;cc++){
 			if(this.bcell.id[cc]!==0){ continue;}
@@ -738,13 +757,13 @@ AreaManager.prototype = {
 	// area.setBWCell()  setCellから呼ばれる関数
 	// area.sc0()        初期idを含む一つの領域内のareaidを指定されたものにする
 	//--------------------------------------------------------------------------------
-	setCell : function(type,cc,isset){
+	setCell : function(type,cc){
 		if(type==='block'){
-			if(k.checkBlackCell){ this.setBWCell(cc, isset,this.bcell);}
-			if(k.checkWhiteCell){ this.setBWCell(cc,!isset,this.wcell);}
+			if(k.checkBlackCell){ this.setBWCell(cc,bd.isBlack(cc),this.bcell);}
+			if(k.checkWhiteCell){ this.setBWCell(cc,bd.isWhite(cc),this.wcell);}
 		}
 		else if(type==='number'){
-			if(k.linkNumber){ this.setBWCell(cc,isset,this.bcell);}
+			if(k.linkNumber)	{ this.setBWCell(cc,this.isBlock(cc),this.bcell);}
 		}
 	},
 	setBWCell : function(cc,isset,data){

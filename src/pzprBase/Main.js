@@ -66,9 +66,7 @@ PBase.prototype = {
 		},10);
 	},
 	onload_func2 : function(){
-		this.numparent = ee('numobj_parent').el;		// 数字表示用
-		g = ee('divques').unselectable().el.getContext("2d");
-
+		this.initCanvas();
 		this.initObjects();
 		this.setEvents();	// イベントをくっつける
 
@@ -79,10 +77,15 @@ PBase.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// base.initObjects()   キャンバスの初期化
 	// base.initObjects()   各オブジェクトの生成などの処理
 	// base.doc_design()    onload_func()で呼ばれる。htmlなどの設定を行う
 	// base.checkUserLang() 言語環境をチェックして日本語でない場合英語表示にする
 	//---------------------------------------------------------------------------
+	initCanvas : function(){
+		this.numparent = ee('numobj_parent').el;		// 数字表示用
+		g = ee('divques').unselectable().el.getContext("2d");
+	},
 	initObjects : function(){
 		this.proto = 0;
 

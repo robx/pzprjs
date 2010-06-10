@@ -201,6 +201,8 @@ Puzzles.shugaku.prototype = {
 			}
 		}
 
+		bd.isPillow = function(c){ return (!!bd.cell[c] && (bd.cell[c].qans>=11 && bd.cell[c].qans<=15));};
+
 		bd.sQaC = function(id, num){
 			um.addOpe(k.CELL, k.QANS, id, this.cell[id].qans, num);
 			this.cell[id].qans = num;
@@ -446,11 +448,11 @@ Puzzles.shugaku.prototype = {
 				this.setAlert('2x2の黒マスのかたまりがあります。', 'There is a 2x2 block of black cells.'); return false;
 			}
 
-			if( !this.checkAllCell(ee.binder(this, function(c){ return (bd.isValidNum(c) && bd.QnC(c)<this.checkdir4Cell(c,function(a){ return (bd.QaC(a)>=11&&bd.QaC(a)<=15);}));})) ){
+			if( !this.checkDir4Cell(bd.isPillow,2) ){
 				this.setAlert('柱のまわりにある枕の数が間違っています。', 'The number of pillows around the number is wrong.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QaC(c)==11||bd.QaC(c)==16);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.QaC(c)===11||bd.QaC(c)===16);}) ){
 				this.setAlert('布団が2マスになっていません。', 'There is a half-size futon.'); return false;
 			}
 
@@ -462,7 +464,7 @@ Puzzles.shugaku.prototype = {
 				this.setAlert('黒マスが分断されています。', 'Aisle is divided.'); return false;
 			}
 
-			if( !this.checkAllCell(ee.binder(this, function(c){ return (bd.isValidNum(c) && bd.QnC(c)>this.checkdir4Cell(c,function(a){ return (bd.QaC(a)>=11&&bd.QaC(a)<=15);}));})) ){
+			if( !this.checkDir4Cell(bd.isPillow,1) ){
 				this.setAlert('柱のまわりにある枕の数が間違っています。', 'The number of pillows around the number is wrong.'); return false;
 			}
 
@@ -476,7 +478,7 @@ Puzzles.shugaku.prototype = {
 		ans.checkKitamakura = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QaC(c)==13){
+				if(bd.QaC(c)===13){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c,bd.dn(c)],1);
 					result = false;
@@ -488,21 +490,22 @@ Puzzles.shugaku.prototype = {
 		ans.checkFutonAisle = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.noNum(c) && bd.QaC(c)>=12 && bd.QaC(c)<=15){
-					var adj=null;
-					switch(bd.QaC(c)){
-						case 12: adj = bd.up(c); break;
-						case 13: adj = bd.dn(c); break;
-						case 14: adj = bd.lt(c); break;
-						case 15: adj = bd.rt(c); break;
-					}
-					if( this.checkdir4Cell(c  ,function(a){ return (bd.QaC(a)===1)})===0 &&
-						this.checkdir4Cell(adj,function(a){ return (bd.QaC(a)===1)})===0 )
-					{
-						if(this.inAutoCheck){ return false;}
-						bd.sErC([c,adj],1);
-						result = false;
-					}
+				if(bd.isNum(c)){ continue;}
+
+				var adj=null;
+				switch(bd.QaC(c)){
+					case 12: adj = bd.up(c); break;
+					case 13: adj = bd.dn(c); break;
+					case 14: adj = bd.lt(c); break;
+					case 15: adj = bd.rt(c); break;
+					default: continue;
+				}
+				if( this.countDir4Cell(c  ,bd.isBlack)===0 &&
+					this.countDir4Cell(adj,bd.isBlack)===0 )
+				{
+					if(this.inAutoCheck){ return false;}
+					bd.sErC([c,adj],1);
+					result = false;
 				}
 			}
 			return result;

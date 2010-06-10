@@ -347,13 +347,13 @@ Puzzles.minarism.prototype = {
 				this.setAlert('不等号と数字が矛盾しています。', 'A inequality sign is not correct.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.getNum(c)===-1);}) ){
+			if( !this.checkAllCell(bd.noNum) ){
 				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.getNum(c)===-1);});};
+		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
 
 		ans.checkBDnumber = function(){
 			return this.checkBDSideCell(function(id,c1,c2){
