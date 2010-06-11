@@ -164,7 +164,7 @@ Puzzles.wagiri.prototype = {
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
-			this.dispNumbers(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 			this.drawSlashes(x1,y1,x2,y2);
 
 			this.drawCrosses(x1,y1,x2+1,y2+1);

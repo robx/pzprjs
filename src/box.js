@@ -134,8 +134,8 @@ Puzzles.box.prototype = {
 		tc.adjust = function(){
 			this.minx = -1;
 			this.miny = -1;
-			this.maxx = bd.maxbx-3;
-			this.maxy = bd.maxby-3;
+			this.maxx = bd.maxbx-1;
+			this.maxy = bd.maxby-1;
 		};
 		tc.adjust();
 
@@ -151,11 +151,10 @@ Puzzles.box.prototype = {
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.bcolor = pc.bcolor_GREEN;
-		pc.setBGCellColorFunc('qsub1');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2,false);
 			this.drawBlackCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 
@@ -260,7 +259,7 @@ Puzzles.box.prototype = {
 		enc.encodeBox = function(){
 			var cm="";
 			for(var ec=0,len=k.qcols+k.qrows;ec<len;ec++){
-				var qnum=bd.excell[ec];
+				var qnum=bd.excell[ec].qnum;
 				if(qnum<32){ cm+=("" +qnum.toString(32));}
 				else       { cm+=("-"+qnum.toString(32));}
 			}
