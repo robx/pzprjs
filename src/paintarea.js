@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ペイントエリア版 paintarea.js v3.3.0
+// パズル固有スクリプト部 ペイントエリア版 paintarea.js v3.3.1
 //
 Puzzles.paintarea = function(){ };
 Puzzles.paintarea.prototype = {

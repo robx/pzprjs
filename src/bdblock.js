@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボーダーブロック版 bdblock.js v3.3.0
+// パズル固有スクリプト部 ボーダーブロック版 bdblock.js v3.3.1
 //
 Puzzles.bdblock = function(){ };
 Puzzles.bdblock.prototype = {
