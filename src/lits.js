@@ -76,7 +76,7 @@ Puzzles.lits.prototype = {
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
-			this.drawRDotCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2,false);
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawBorders(x1,y1,x2,y2);

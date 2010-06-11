@@ -145,7 +145,7 @@ Puzzles.snakes.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
-		pc.dotcolor = "rgb(255, 96, 191)";
+		pc.dotcolor = pc.dotcolor_PINK;
 		pc.fontcolor = pc.fontErrcolor = "white";
 		pc.setCellColorFunc('qnum');
 
@@ -153,7 +153,7 @@ Puzzles.snakes.prototype = {
 			x1--; y1--; x2++; y2++;	// 跡が残ってしまう為
 
 			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2,true);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawBorders(x1,y1,x2,y2);

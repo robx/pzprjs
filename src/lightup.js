@@ -171,7 +171,7 @@ Puzzles.lightup.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.fontcolor = pc.fontErrcolor = "white";
-		pc.dotcolor = "rgb(255, 63, 191)";
+		pc.dotcolor = pc.dotcolor_PINK;
 		pc.setCellColorFunc('qnum');
 
 		pc.lightcolor = "rgb(224, 255, 127)";
@@ -183,7 +183,7 @@ Puzzles.lightup.prototype = {
 			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawAkari(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2,true);
 
 			this.drawChassis(x1,y1,x2,y2);
 

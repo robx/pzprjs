@@ -74,7 +74,8 @@ Graphic = function(){
 	this.gridcolor_SLIGHT = "rgb(191, 191, 191)";	/* 部屋＋線を引くパズル           */
 	this.gridcolor_THIN   = "rgb(224, 224, 224)";	/* 問題入力時のみGrid表示のパズル */
 
-	this.bcolor_GREEN = "rgb(160, 255, 160)";
+	this.bcolor_GREEN  = "rgb(160, 255, 160)";
+	this.dotcolor_PINK = "rgb(255, 96, 191)";
 	this.errbcolor1_DARK = "rgb(255, 127, 127)";
 	this.linecolor_LIGHT = "rgb(0, 192, 0)";
 
@@ -417,31 +418,12 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawRDotCells()  ・だけをCanvasに書き込む(・用)
-	// pc.drawDotCells()   ・だけをCanvasに書き込む(小さい四角形用)
+	// pc.drawDotCells()  ・だけをCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawRDotCells : function(x1,y1,x2,y2){
-		this.vinc('cell_dot', 'auto');
+	drawDotCells : function(x1,y1,x2,y2,isrect){
+		this.vinc('cell_dot', (isrect ? 'crispEdges' : 'auto'));
 
-		var dsize = this.cw*0.06; dsize=(dsize>2?dsize:2);
-		var header = "c_rdot_";
-		g.fillStyle = this.dotcolor;
-
-		var clist = bd.cellinside(x1,y1,x2,y2);
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.cell[c].qsub===1){
-				if(this.vnop(header+c,this.NONE)){
-					g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, dsize);
-				}
-			}
-			else{ this.vhide(header+c);}
-		}
-	},
-	drawDotCells : function(x1,y1,x2,y2){
-		this.vinc('cell_dot', 'crispEdges');
-
-		var dsize = this.cw*0.075;
+		var dsize = Math.max(this.cw*(isrect?0.075:0.06), 2);
 		var header = "c_dot_";
 		g.fillStyle = this.dotcolor;
 
@@ -450,7 +432,8 @@ Graphic.prototype = {
 			var c = clist[i];
 			if(bd.cell[c].qsub===1){
 				if(this.vnop(header+c,this.NONE)){
-					g.fillRect(bd.cell[c].cpx-dsize, bd.cell[c].cpy-dsize, dsize*2, dsize*2);
+					if(isrect){ g.fillRect(bd.cell[c].cpx-dsize, bd.cell[c].cpy-dsize, dsize*2, dsize*2);}
+					else      { g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, dsize);}
 				}
 			}
 			else{ this.vhide(header+c);}

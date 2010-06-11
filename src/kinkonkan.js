@@ -224,11 +224,11 @@ Puzzles.kinkonkan.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 
 		pc.errbcolor2 = "rgb(255, 255, 127)";
-		pc.dotcolor = "rgb(255, 96, 191)";
+		pc.dotcolor = pc.dotcolor_PINK;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawErrorCells_kinkonkan(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2,true);
 
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
