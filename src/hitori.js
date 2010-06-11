@@ -210,7 +210,8 @@ Puzzles.hitori.prototype = {
 		ans.isDifferentNumberInClist_hitori = function(clist_all, numfunc){
 			var clist = [];
 			for(var i=0;i<clist_all.length;i++){
-				if(bd.isWhite(clist_all[i])){ clist.push(clist_all[i]);}
+				var c = clist_all[i];
+				if(bd.isWhite(c) && numfunc.call(bd,c)!==-1){ clist.push(c);}
 			}
 			return this.isDifferentNumberInClist(clist, numfunc);
 		};
