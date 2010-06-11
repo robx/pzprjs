@@ -173,31 +173,16 @@ Puzzles.shugaku.prototype = {
 		bd.maxnum = 4;
 
 		menu.ex.adjustSpecial = function(key,d){
+			var trans = {};
 			switch(key){
-			case this.FLIPY: // 上下反転
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = {12:13,13:12,17:18,18:17}[bd.QaC(cc)];
-					if(!isNaN(val)){ bd.cell[cc].qans = val;}
-				}
-				break;
-			case this.FLIPX: // 左右反転
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = {14:15,15:14,19:20,20:19}[bd.QaC(cc)];
-					if(!isNaN(val)){ bd.cell[cc].qans = val;}
-				}
-				break;
-			case this.TURNR: // 右90°反転
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = {12:15,15:13,13:14,14:12,17:20,20:18,18:19,19:17}[bd.QaC(cc)];
-					if(!isNaN(val)){ bd.cell[cc].qans = val;}
-				}
-				break;
-			case this.TURNL: // 左90°反転
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = {12:14,14:13,13:15,15:12,17:19,19:18,18:20,20:17}[bd.QaC(cc)];
-					if(!isNaN(val)){ bd.cell[cc].qans = val;}
-				}
-				break;
+				case this.FLIPY: trans={12:13,13:12,17:18,18:17}; break;	// 上下反転
+				case this.FLIPX: trans={14:15,15:14,19:20,20:19}; break;	// 左右反転
+				case this.TURNR: trans={12:15,15:13,13:14,14:12,17:20,20:18,18:19,19:17}; break;	// 右90°回転
+				case this.TURNL: trans={12:14,14:13,13:15,15:12,17:19,19:18,18:20,20:17}; break;	// 左90°回転
+				default: return;
+			}
+			for(var c=0;c<bd.cellmax;c++){
+				var val=trans[bd.QaC(c)]; if(!!val){ bd.cell[c].qans=val;}
 			}
 		}
 

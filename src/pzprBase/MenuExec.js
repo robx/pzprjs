@@ -548,63 +548,31 @@ MenuExec.prototype = {
 	adjustBoardData : function(key,d){
 		this.adjustSpecial.call(this,key,d);
 
-		var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
-		switch(key){
-		case this.FLIPY: // 上下反転
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(true){
-					var val = ({2:5,3:4,4:3,5:2,14:17,15:16,16:15,17:14})[bd.QuC(c)];
-					if(!isNaN(val)){ bd.sQuC(c,val);}
-				}
-				if(k.isexcell!==1){
-					var val = ({1:2,2:1})[bd.DiC(c)];
-					if(!isNaN(val)){ bd.sDiC(c,val);}
-				}
+		if(key & this.TURNFLIP){
+			var tques={};
+			switch(key){
+				case this.FLIPY: tques={2:5,3:4,4:3,5:2,14:17,15:16,16:15,17:14}; break;
+				case this.FLIPX: tques={2:3,3:2,4:5,5:4,14:15,15:14,16:17,17:16}; break;
+				case this.TURNR: tques={2:5,3:2,4:3,5:4,12:13,13:12,14:17,15:14,16:15,17:16,21:22,22:21}; break;
+				case this.TURNL: tques={2:3,3:4,4:5,5:2,12:13,13:12,14:15,15:16,16:17,17:14,21:22,22:21}; break;
 			}
-			break;
 
-		case this.FLIPX: // 左右反転
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(true){
-					var val = ({2:3,3:2,4:5,5:4,14:15,15:14,16:17,17:16})[bd.QuC(c)];
-					if(!isNaN(val)){ bd.sQuC(c,val);}
-				}
-				if(k.isexcell!==1){
-					var val = ({3:4,4:3})[bd.DiC(c)];
-					if(!isNaN(val)){ bd.sDiC(c,val);}
-				}
+			var tdir={};
+			switch(key){
+				case this.FLIPY: tdir={1:2,2:1}; break;			// 上下反転
+				case this.FLIPX: tdir={3:4,4:3}; break;			// 左右反転
+				case this.TURNR: tdir={1:4,2:3,3:1,4:2}; break;	// 右90°回転
+				case this.TURNL: tdir={1:3,2:4,3:2,4:1}; break;	// 左90°回転
 			}
-			break;
 
-		case this.TURNR: // 右90°反転
+			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(true){
-					var val = {2:5,3:2,4:3,5:4,12:13,13:12,14:17,15:14,16:15,17:16,21:22,22:21}[bd.QuC(c)];
-					if(!isNaN(val)){ bd.sQuC(c,val);}
-				}
+				var val=tques[bd.QuC(c)]; if(!!val){ bd.sQuC(c,val);}
 				if(k.isexcell!==1){
-					var val = {1:4,2:3,3:1,4:2}[bd.DiC(c)];
-					if(!isNaN(val)){ bd.sDiC(c,val);}
+					var val=tdir[bd.DiC(c)]; if(!!val){ bd.sDiC(c,val);}
 				}
 			}
-			break;
-
-		case this.TURNL: // 左90°反転
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(true){
-					var val = {2:3,3:4,4:5,5:2,12:13,13:12,14:15,15:16,16:17,17:14,21:22,22:21}[bd.QuC(c)];
-					if(!isNaN(val)){ bd.sQuC(c,val);}
-				}
-				if(k.isexcell!==1){
-					var val = {1:3,2:4,3:2,4:1}[bd.DiC(c)];
-					if(!isNaN(val)){ bd.sDiC(c,val);}
-				}
-			}
-			break;
 		}
 
 		if((key & this.REDUCE) && k.roomNumber){
@@ -631,33 +599,34 @@ MenuExec.prototype = {
 	adjustSpecial2 : function(key,d){ },
 
 	adjustQues51_1 : function(key,d){
+		var bx1=(d.x1|1), by1=(d.y1|1);
 		this.qnumw = [];
 		this.qnumh = [];
 
-		for(var by=(d.y1|1);by<=d.y2;by+=2){
+		for(var by=by1;by<=d.y2;by+=2){
 			this.qnumw[by] = [bd.QnE(bd.exnum(-1,by))];
-			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+			for(var bx=bx1;bx<=d.x2;bx+=2){
 				var cc = bd.cnum(bx,by);
 				if(cc!==null && bd.QuC(cc)===51){ this.qnumw[by].push(bd.QnC(cc));}
 			}
 		}
-		for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+		for(var bx=bx1;bx<=d.x2;bx+=2){
 			this.qnumh[bx] = [bd.DiE(bd.exnum(bx,-1))];
-			for(var by=(d.y1|1);by<=d.y2;by+=2){
+			for(var by=by1;by<=d.y2;by+=2){
 				var cc = bd.cnum(bx,by);
 				if(cc!==null && bd.QuC(cc)===51){ this.qnumh[bx].push(bd.DiC(cc));}
 			}
 		}
 	},
 	adjustQues51_2 : function(key,d){
-		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), idx;
+		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=(d.x1|1), by1=(d.y1|1), idx;
 
 		switch(key){
 		case this.FLIPY: // 上下反転
-			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+			for(var bx=bx1;bx<=d.x2;bx+=2){
 				idx = 1; this.qnumh[bx] = this.qnumh[bx].reverse();
 				bd.sDiE(bd.exnum(bx,-1), this.qnumh[bx][0]);
-				for(var by=(d.y1|1);by<=d.y2;by+=2){
+				for(var by=by1;by<=d.y2;by+=2){
 					var cc = bd.cnum(bx,by);
 					if(cc!==null && bd.QuC(cc)===51){ bd.sDiC(cc, this.qnumh[bx][idx]); idx++;}
 				}
@@ -665,10 +634,10 @@ MenuExec.prototype = {
 			break;
 
 		case this.FLIPX: // 左右反転
-			for(var by=(d.y1|1);by<=d.y2;by+=2){
+			for(var by=by1;by<=d.y2;by+=2){
 				idx = 1; this.qnumw[by] = this.qnumw[by].reverse();
 				bd.sQnE(bd.exnum(-1,by), this.qnumw[by][0]);
-				for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+				for(var bx=bx1;bx<=d.x2;bx+=2){
 					var cc = bd.cnum(bx,by);
 					if(cc!==null && bd.QuC(cc)===51){ bd.sQnC(cc, this.qnumw[by][idx]); idx++;}
 				}
@@ -676,18 +645,18 @@ MenuExec.prototype = {
 			break;
 
 		case this.TURNR: // 右90°反転
-			for(var by=(d.y1|1);by<=d.y2;by+=2){
+			for(var by=by1;by<=d.y2;by+=2){
 				idx = 1; this.qnumh[by] = this.qnumh[by].reverse();
 				bd.sQnE(bd.exnum(-1,by), this.qnumh[by][0]);
-				for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+				for(var bx=bx1;bx<=d.x2;bx+=2){
 					var cc = bd.cnum(bx,by);
 					if(cc!==null && bd.QuC(cc)===51){ bd.sQnC(cc, this.qnumh[by][idx]); idx++;}
 				}
 			}
-			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+			for(var bx=bx1;bx<=d.x2;bx+=2){
 				idx = 1;
 				bd.sDiE(bd.exnum(bx,-1), this.qnumw[xx-bx][0]);
-				for(var by=(d.y1|1);by<=d.y2;by+=2){
+				for(var by=by1;by<=d.y2;by+=2){
 					var cc = bd.cnum(bx,by);
 					if(cc!==null && bd.QuC(cc)===51){ bd.sDiC(cc, this.qnumw[xx-bx][idx]); idx++;}
 				}
@@ -695,18 +664,18 @@ MenuExec.prototype = {
 			break;
 
 		case this.TURNL: // 左90°反転
-			for(var by=(d.y1|1);by<=d.y2;by+=2){
+			for(var by=by1;by<=d.y2;by+=2){
 				idx = 1;
 				bd.sQnE(bd.exnum(-1,by), this.qnumh[yy-by][0]);
-				for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+				for(var bx=bx1;bx<=d.x2;bx+=2){
 					var cc = bd.cnum(bx,by);
 					if(cc!==null && bd.QuC(cc)===51){ bd.sQnC(cc, this.qnumh[yy-by][idx]); idx++;}
 				}
 			}
-			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+			for(var bx=bx1;bx<=d.x2;bx+=2){
 				idx = 1; this.qnumw[bx] = this.qnumw[bx].reverse();
 				bd.sDiE(bd.exnum(bx,-1), this.qnumw[bx][0]);
-				for(var by=(d.y1|1);by<=d.y2;by+=2){
+				for(var by=by1;by<=d.y2;by+=2){
 					var cc = bd.cnum(bx,by);
 					if(cc!==null && bd.QuC(cc)===51){ bd.sDiC(cc, this.qnumw[bx][idx]); idx++;}
 				}

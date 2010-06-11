@@ -127,6 +127,23 @@ Puzzles.toichika.prototype = {
 
 		bd.maxnum = 4;
 		bd.numberAsObject = true;
+
+		menu.ex.adjustSpecial = function(key,d){
+			var trans = {};
+			switch(key){
+				case this.FLIPY: trans={1:2,2:1}; break;			// 上下反転
+				case this.FLIPX: trans={3:4,4:3}; break;			// 左右反転
+				case this.TURNR: trans={1:4,2:3,3:1,4:2}; break;	// 右90°回転
+				case this.TURNL: trans={1:3,2:4,3:2,4:1}; break;	// 左90°回転
+				default: return;
+			}
+			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				var val = trans[bd.QnC(c)]; if(!!val){ bd.sQnC(c,val);}
+				var val = trans[bd.AnC(c)]; if(!!val){ bd.sAnC(c,val);}
+			}
+		};
 	},
 
 	//---------------------------------------------------------

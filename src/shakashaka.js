@@ -168,31 +168,16 @@ Puzzles.shakashaka.prototype = {
 		bd.isTri = function(c){ return (!!bd.cell[c] && bd.cell[c].qans!==0);};
 
 		menu.ex.adjustSpecial = function(key,d){
+			var trans = [];
 			switch(key){
-			case this.FLIPY: // 上下反転
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = [0,1,5,4,3,2][bd.QaC(cc)];
-					if(!isNaN(val)){ bd.cell[cc].qans = val;}
-				}
-				break;
-			case this.FLIPX: // 左右反転
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = [0,1,3,2,5,4][bd.QaC(cc)];
-					if(!isNaN(val)){ bd.cell[cc].qans = val;}
-				}
-				break;
-			case this.TURNR: // 右90°反転
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = [0,1,5,2,3,4][bd.QaC(cc)];
-					if(!isNaN(val)){ bd.cell[cc].qans = val;}
-				}
-				break;
-			case this.TURNL: // 左90°反転
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = [0,1,3,4,5,2][bd.QaC(cc)];
-					if(!isNaN(val)){ bd.cell[cc].qans = val;}
-				}
-				break;
+				case this.FLIPY: trans=[0,1,5,4,3,2]; break;	// 上下反転
+				case this.FLIPX: trans=[0,1,3,2,5,4]; break;	// 左右反転
+				case this.TURNR: trans=[0,1,5,2,3,4]; break;	// 右90°回転
+				case this.TURNL: trans=[0,1,3,4,5,2]; break;	// 左90°回転
+				default: return;
+			}
+			for(var c=0;c<bd.cellmax;c++){
+				var val=trans[bd.QaC(c)]; if(!!val){ bd.cell[c].qans=val;}
 			}
 		};
 	},
