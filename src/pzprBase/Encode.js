@@ -251,15 +251,20 @@ Encode.prototype = {
 		return this.getURLBase(type) + pdata;
 	},
 	getURLBase : function(type){
+		var domain = _doc.domain;
+		if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
+
 		var urls = {};
-		urls[this.PZPRV3]  = "http://indi.s58.xrea.com/pzpr/v3/p.html?%PID%/";
-		urls[this.PZPRV3E] = "http://indi.s58.xrea.com/pzpr/v3/p.html?%PID%_edit/";
+		urls[this.PZPRV3]  = "http://%DOMAIN%/p.html?%PID%/";
+		urls[this.PZPRV3E] = "http://%DOMAIN%/p.html?%PID%_edit/";
 		urls[this.PZPRAPP] = "http://indi.s58.xrea.com/%PID%/sa/q.html?";
 		urls[this.KANPEN]  = "http://www.kanpen.net/%KID%.html?problem=";
 		urls[this.KANPENP] = "http://www.kanpen.net/%KID%.html?pzpr=";
 		urls[this.HEYAAPP] = "http://www.geocities.co.jp/heyawake/?problem=";
 
-		return urls[type].replace("%PID%",this.pidforURL).replace("%KID%",this.pidKanpen);
+		return urls[type].replace("%PID%",this.pidforURL)
+						 .replace("%KID%",this.pidKanpen)
+						 .replace("%DOMAIN%",domain);
 	},
 
 	// オーバーライド用

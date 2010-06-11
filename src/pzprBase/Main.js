@@ -376,7 +376,8 @@ PBase.prototype = {
 	//---------------------------------------------------------------------------
 	accesslog : function(){
 		if(_doc.domain!=='indi.s58.xrea.com' &&
-		   _doc.domain!=='pzprv3.sakura.ne.jp'){ return;}
+		   _doc.domain!=='pzprv3.sakura.ne.jp' &&
+		   !_doc.domain.match(/pzv\.jp/)){ return;}
 
 		// 送信
 		var xmlhttp = false;
