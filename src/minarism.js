@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 マイナリズム版 minarism.js v3.3.0
+// パズル固有スクリプト部 マイナリズム版 minarism.js v3.3.1
 //
 Puzzles.minarism = function(){ };
 Puzzles.minarism.prototype = {
@@ -52,68 +52,64 @@ Puzzles.minarism.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.editmode && this.btn.Left) this.inputmark1();
+			if(k.editmode && this.btn.Left) this.inputmark_mousemove();
 			else if(k.playmode) this.inputqnum();
 		};
 		mv.mouseup = function(){
-			if(k.editmode && this.notInputted()) this.inputmark();
+			if(k.editmode && this.notInputted()) this.inputmark_mouseup();
 		};
 		mv.mousemove = function(){
-			if(k.editmode && this.btn.Left) this.inputmark1();
+			if(k.editmode && this.btn.Left) this.inputmark_mousemove();
 		};
 
-		mv.inputmark1 = function(){
+		mv.inputmark_mousemove = function(){
 			var pos = this.borderpos(0);
-			if(bd.cnum(pos.x,pos.y)==-1){ return;}
+			if(bd.cnum(pos.x,pos.y)===null){ return;}
 
-			var id=-1;
-			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1); this.inputData=1; }
-			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1); this.inputData=2; }
-			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  ); this.inputData=1; }
-			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  ); this.inputData=2; }
+			var id = this.getnb(this.prevPos, pos);
+			if(id!==null){
+				var dir = this.getdir(this.prevPos, pos);
+				this.inputData = ((dir===k.UP||dir===k.LT) ? 1 : 2);
 
-			this.mouseCell = pos;
-			if(id==-1){ return;}
-
-			bd.sQuB(id,(this.inputData!=bd.QuB(id)?this.inputData:0));
-			pc.paintBorder(id);
+				bd.sQuB(id,(this.inputData!=bd.QuB(id)?this.inputData:0));
+				pc.paintBorder(id);
+			}
+			this.prevPos = pos;
 		};
-		mv.inputmark = function(){
+		mv.inputmark_mouseup = function(){
 			var pos = this.borderpos(0.33);
 			if(!bd.isinside(pos.x,pos.y)){ return;}
-			var id = bd.bnum(pos.x, pos.y);
 
-			if(tc.cursorx!==pos.x || tc.cursory!==pos.y){
+			if(!tc.cursor.equals(pos)){
 				var tcp = tc.getTCP(), flag = false;
 				tc.setTCP(pos);
 				pc.paintPos(tcp);
 				pc.paintPos(pos);
 			}
-			else if(id!=-1){
-				this.inputbqnum(id);
-				pc.paintBorder(id);
+			else{
+				var id = bd.bnum(pos.x, pos.y);
+				if(id!==null){
+					var qn=bd.QnB(id), qs=bd.QuB(id);
+					if(this.btn.Left){
+						if     (qn===-1 && qs===0){ bd.sQnB(id,-1); bd.sQuB(id,1);}
+						else if(qn===-1 && qs===1){ bd.sQnB(id,-1); bd.sQuB(id,2);}
+						else if(qn===-1 && qs===2){ bd.sQnB(id, 1); bd.sQuB(id,0);}
+						else if(qn===Math.max(k.qcols,k.qrows)-1){ bd.sQnB(id,-2); bd.sQuB(id,0);}
+						else if(qn===-2)          { bd.sQnB(id,-1); bd.sQuB(id,0);}
+						else{ bd.sQnB(id,qn+1);}
+					}
+					else if(this.btn.Right){
+						if     (qn===-1 && qs===0){ bd.sQnB(id,-2); bd.sQuB(id,0);}
+						else if(qn===-2)          { bd.sQnB(id,Math.max(k.qcols,k.qrows)-1); bd.sQuB(id,0);}
+						else if(qn=== 1 && qs===0){ bd.sQnB(id,-1); bd.sQuB(id,2);}
+						else if(qn===-1 && qs===2){ bd.sQnB(id,-1); bd.sQuB(id,1);}
+						else if(qn===-1 && qs===1){ bd.sQnB(id,-1); bd.sQuB(id,0);}
+						else{ bd.sQnB(id,qn-1);}
+					}
+					pc.paintBorder(id);
+				}
 			}
 		};
-		mv.inputbqnum = function(id){
-			var qnum = bd.QnB(id), qs = bd.QuB(id);
-			if(this.btn.Left){
-				if     (qnum==-1 && qs==0){ bd.sQnB(id,-1); bd.sQuB(id,1);}
-				else if(qnum==-1 && qs==1){ bd.sQnB(id,-1); bd.sQuB(id,2);}
-				else if(qnum==-1 && qs==2){ bd.sQnB(id, 1); bd.sQuB(id,0);}
-				else if(qnum==Math.max(k.qcols,k.qrows)-1){ bd.sQnB(id,-2); bd.sQuB(id,0);}
-				else if(qnum==-2)         { bd.sQnB(id,-1); bd.sQuB(id,0);}
-				else{ bd.sQnB(id,qnum+1);}
-			}
-			else if(this.btn.Right){
-				if     (qnum==-1 && qs==0){ bd.sQnB(id,-2); bd.sQuB(id,0);}
-				else if(qnum==-2)         { bd.sQnB(id,Math.max(k.qcols,k.qrows)-1); bd.sQuB(id,0);}
-				else if(qnum== 1 && qs==0){ bd.sQnB(id,-1); bd.sQuB(id,2);}
-				else if(qnum==-1 && qs==2){ bd.sQnB(id,-1); bd.sQuB(id,1);}
-				else if(qnum==-1 && qs==1){ bd.sQnB(id,-1); bd.sQuB(id,0);}
-				else{ bd.sQnB(id,qnum-1);}
-			}
-			pc.paintBorder(id);
-		},
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
@@ -125,7 +121,7 @@ Puzzles.minarism.prototype = {
 		};
 		kc.key_inputmark = function(ca){
 			var id = tc.getTBC();
-			if(id==-1){ return false;}
+			if(id===null){ return false;}
 
 			if     (ca=='q'){ bd.sQuB(id,(bd.QuB(id)!=1?1:0)); bd.sQnB(id,-1); }
 			else if(ca=='w'){ bd.sQuB(id,(bd.QuB(id)!=2?2:0)); bd.sQnB(id,-1); }
@@ -149,14 +145,14 @@ Puzzles.minarism.prototype = {
 
 		menu.ex.adjustSpecial = function(key,d){
 			if(key & this.TURNFLIP){ // 反転・回転全て
-				for(var c=0;c<bd.bdmax;c++){ if(bd.QuB(c)!=0){ bd.sQuB(c,{1:2,2:1}[bd.QuB(c)]); } }
+				for(var id=0;id<bd.bdmax;id++){ if(bd.QuB(id)!=0){ bd.sQuB(id,{1:2,2:1}[bd.QuB(id)]); } }
 			}
 		};
 		menu.ex.expandborder = function(key){ };
 
 		tc.setAlign = function(){
-			this.cursorx -= ((this.cursorx+1)%2);
-			this.cursory -= ((this.cursory+1)%2);
+			this.cursor.x -= ((this.cursor.x+1)%2);
+			this.cursor.y -= ((this.cursor.y+1)%2);
 		};
 
 		bd.nummaxfunc = function(cc){ return Math.max(k.qcols,k.qrows);};
@@ -266,41 +262,40 @@ Puzzles.minarism.prototype = {
 				var ca = bstr.charAt(i);
 
 				if(type==1){
-					if     (id<k.qcols*k.qrows)  { mgn=mf(id/k.qcols);}
+					if     (id<k.qcols*k.qrows)  { mgn=((id/k.qcols)|0);}
 					else if(id<2*k.qcols*k.qrows){ mgn=k.qrows;}
 				}
+				var obj = bd.border[id-mgn];
 
-				if     (this.include(ca,'0','9')||this.include(ca,'a','f')){ bd.sQnB(id-mgn, parseInt(ca,16)); id++;}
-				else if(ca=="-"){ bd.sQnB(id-mgn, parseInt(bstr.substr(i+1,2),16)); id++; i+=2;}
-				else if(ca=="g"){ bd.sQuB(id-mgn, ((type==0 || id<k.qcols*k.qrows)?1:2)); id++;}
-				else if(ca=="h"){ bd.sQuB(id-mgn, ((type==0 || id<k.qcols*k.qrows)?2:1)); id++;}
-				else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-17);}
-				else if(ca=="."){ bd.sQnB(id-mgn,-2); id++;}
-				else if(type==1 && ca=="/"){ id=bd.cellmax;}
-				else{ id++;}
+				if     (this.include(ca,'0','9')||this.include(ca,'a','f')){ obj.qnum = parseInt(ca,16);}
+				else if(ca==="-"){ obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+				else if(ca==="."){ obj.qnum = -2;}
+				else if(ca==="g"){ obj.ques = ((type===0 || id<k.qcols*k.qrows)?1:2);}
+				else if(ca==="h"){ obj.ques = ((type===0 || id<k.qcols*k.qrows)?2:1);}
+				else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-18);}
+				else if(type===1 && ca==="/"){ id=bd.cellmax-1;}
 
-				if(id >= 2*k.qcols*k.qrows){ a=i+1; break;}
+				id++;
+				if(id>=2*k.qcols*k.qrows){ a=i+1; break;}
 			}
 			this.outbstr = bstr.substr(a);
 		};
 		enc.encodeMinarism = function(type){
 			var cm="", count=0, mgn=0;
-			for(var id=0;id<bd.bdmax+(type==0?0:k.qcols);id++){
-				if(type==1){
+			for(var id=0,max=bd.bdmax+(type===0?0:k.qcols);id<max;id++){
+				if(type===1){
 					if(id>0 && id<=(k.qcols-1)*k.qrows && id%(k.qcols-1)==0){ count++;}
 					if(id==(k.qcols-1)*k.qrows){ if(count>0){ cm+=(17+count).toString(36); count=0;} cm += "/";}
 				}
 
 				if(id<bd.bdmax){
-					var pstr = "";
-					var val  = bd.QuB(id);
-					var qnum = bd.QnB(id);
+					var pstr = "", val = bd.border[id].ques, qnum = bd.border[id].qnum;
 
-					if     (val == 1){ pstr = ((type==0 || id<bd.cellmax)?"g":"h");}
-					else if(val == 2){ pstr = ((type==0 || id<bd.cellmax)?"h":"g");}
-					else if(qnum==-2){ pstr = ".";}
-					else if(qnum>= 0 && qnum< 16){ pstr = ""+ qnum.toString(16);}
-					else if(qnum>=16 && qnum<256){ pstr = "-"+qnum.toString(16);}
+					if     (val === 1){ pstr = ((type===0 || id<bd.cellmax)?"g":"h");}
+					else if(val === 2){ pstr = ((type===0 || id<bd.cellmax)?"h":"g");}
+					else if(qnum===-2){ pstr = ".";}
+					else if(qnum>= 0&&qnum< 16){ pstr = ""+ qnum.toString(16);}
+					else if(qnum>=16&&qnum<256){ pstr = "-"+qnum.toString(16);}
 					else{ count++;}
 				}
 				else{ count++;}
@@ -315,23 +310,23 @@ Puzzles.minarism.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeBorder( function(c,ca){
-				if     (ca=="a"){ bd.sQuB(c, 1);}
-				else if(ca=="b"){ bd.sQuB(c, 2);}
-				else if(ca=="."){ bd.sQnB(c, -2);}
-				else if(ca!="0"){ bd.sQnB(c, parseInt(ca));}
+			this.decodeBorder( function(obj,ca){
+				if     (ca==="a"){ obj.ques = 1;}
+				else if(ca==="b"){ obj.ques = 2;}
+				else if(ca==="."){ obj.qnum = -2;}
+				else if(ca!=="0"){ obj.qnum = parseInt(ca);}
 			});
-			this.decodeCellQanssub();
+			this.decodeCellAnumsub();
 		};
 		fio.encodeData = function(){
-			this.encodeBorder( function(c){
-				if     (bd.QuB(c)== 1){ return "a ";}
-				else if(bd.QuB(c)== 2){ return "b ";}
-				else if(bd.QnB(c)==-2){ return ". ";}
-				else if(bd.QnB(c)!=-1){ return ""+bd.QnB(c).toString()+" ";}
+			this.encodeBorder( function(obj){
+				if     (obj.ques=== 1){ return "a ";}
+				else if(obj.ques=== 2){ return "b ";}
+				else if(obj.qnum===-2){ return ". ";}
+				else if(obj.qnum!==-1){ return ""+obj.qnum.toString()+" ";}
 				else                  { return "0 ";}
 			});
-			this.encodeCellQanssub();
+			this.encodeCellAnumsub();
 		};
 	},
 
@@ -340,7 +335,7 @@ Puzzles.minarism.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkRowsCols(this.isDifferentNumberInClist, bd.QaC) ){
+			if( !this.checkRowsCols(this.isDifferentNumberInClist, bd.getNum) ){
 				this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
 			}
 
@@ -352,23 +347,23 @@ Puzzles.minarism.prototype = {
 				this.setAlert('不等号と数字が矛盾しています。', 'A inequality sign is not correct.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QaC(c)==-1);}) ){
+			if( !this.checkAllCell(bd.noNum) ){
 				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QaC(c)==-1);});};
+		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
 
 		ans.checkBDnumber = function(){
 			return this.checkBDSideCell(function(id,c1,c2){
-				return (bd.QnB(id)>0 && bd.QnB(id)!=Math.abs(bd.QaC(c1)-bd.QaC(c2)));
+				return (bd.QnB(id)>0 && bd.QnB(id)!==Math.abs(bd.getNum(c1)-bd.getNum(c2)));
 			});
 		};
 		ans.checkBDmark = function(){
 			return this.checkBDSideCell(function(id,c1,c2){
 				var mark = bd.QuB(id);
-				var a1 = bd.QaC(c1), a2 = bd.QaC(c2);
+				var a1 = bd.getNum(c1), a2 = bd.getNum(c2);
 				return !(mark==0 || (mark==1 && a1<a2) || (mark==2 && a1>a2));
 			});
 		};
@@ -376,7 +371,7 @@ Puzzles.minarism.prototype = {
 			var result = true;
 			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(bd.QaC(cc1)>0 && bd.QaC(cc2)>0 && func(id,cc1,cc2)){
+				if(bd.getNum(cc1)>0 && bd.getNum(cc2)>0 && func(id,cc1,cc2)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([cc1,cc2],1);
 					result = false;

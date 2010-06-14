@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.3.0
+// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.3.1
 //
 Puzzles.kusabi = function(){ };
 Puzzles.kusabi.prototype = {
@@ -190,15 +190,15 @@ Puzzles.kusabi.prototype = {
 				this.setAlert('丸につながっていない線があります。','A line doesn\'t connect any circle.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && bd.QnC(c)!=-1);}) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===0 && bd.isNum(c));}) ){
 				this.setAlert('どこにもつながっていない丸があります。','A circle is not connected another object.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && bd.QnC(c)!=-1);});};
+		ans.check1st = function(){ return this.checkAllCell(function(c){ return (line.lcntCell(c)===0 && bd.isNum(c));});};
 
-		ans.check2Line = function(){ return this.checkLine(function(i){ return (line.lcntCell(i)>=2 && bd.QnC(i)!=-1);}); };
+		ans.check2Line = function(){ return this.checkLine(function(c){ return (line.lcntCell(c)>=2 && bd.isNum(c));}); };
 		ans.checkLine = function(func){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
@@ -213,70 +213,59 @@ Puzzles.kusabi.prototype = {
 		};
 
 		ans.searchConnectedLine = function(){
-			var errinfo = {data:[]};
-			//var saved = {errflag:0,cells:[],idlist:[]};
-			var visited = new AreaInfo();
+			var errinfo = {data:[]}, visited = new AreaInfo();
 			for(var id=0;id<bd.bdmax;id++){ visited[id]=0;}
 
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)==-1 || line.lcntCell(c)==0){ continue;}
+				if(bd.noNum(c) || line.lcntCell(c)===0){ continue;}
 
-				var cc      = -1;	// ループから抜けたときに到達地点のIDが入る
-				var ccnt    =  0;	// 曲がった回数
-				var dir     =  0;	// 現在向かっている方向/最後に向かった方向
-				var dir1    =  0;	// 最初に向かった方向
-				var length1 =  0;	// 一回曲がる前の線の長さ
-				var length2 =  0;	// 二回曲がった後の線の長さ
+				var cc      = null;	// ループから抜けたときに到達地点のIDが入る
+				var ccnt    = 0;	// 曲がった回数
+				var dir     = 0;	// 現在向かっている方向/最後に向かった方向
+				var dir1    = 0;	// 最初に向かった方向
+				var length1 = 0;	// 一回曲がる前の線の長さ
+				var length2 = 0;	// 二回曲がった後の線の長さ
 				var idlist  = [];	// 通過したlineのリスト(エラー表示用)
 				var bx=bd.cell[c].bx, by=bd.cell[c].by;	// 現在地
 				while(1){
 					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-					if((bx+by)%2==0){
+					if(((bx+by)&1)===0){
 						cc = bd.cnum(bx,by);
-						if(dir!=0 && bd.QnC(cc)!=-1){ break;}
-						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!=0&&dir!=2){ ccnt++;} dir=2;}
-						else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!=0&&dir!=1){ ccnt++;} dir=1;}
-						else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!=0&&dir!=4){ ccnt++;} dir=4;}
-						else if(dir!=4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!=0&&dir!=3){ ccnt++;} dir=3;}
+						if(dir!=0 && bd.isNum(cc)){ break;}
+						else if(dir!==1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!==0&&dir!==2){ ccnt++;} dir=2;}
+						else if(dir!==2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!==0&&dir!==1){ ccnt++;} dir=1;}
+						else if(dir!==3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!==0&&dir!==4){ ccnt++;} dir=4;}
+						else if(dir!==4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!==0&&dir!==3){ ccnt++;} dir=3;}
 					}
 					else{
-						cc=-1;
+						cc=null;
 						var id = bd.bnum(bx,by);
-						if(id==-1||visited[id]!=0||!bd.isLine(id)){ break;}
+						if(id===null || visited[id]!==0 || !bd.isLine(id)){ break;}
 						idlist.push(id);
 						visited[id]=1;
-						if(dir1==0){ dir1=dir;}
-						if     (ccnt==0){ length1++;}
-						else if(ccnt==2){ length2++;}
+						if(dir1===0){ dir1=dir;}
+						if     (ccnt===0){ length1++;}
+						else if(ccnt===2){ length2++;}
 					}
 				}
 
 				if(idlist.length<=0){ continue;}
-				if(!((dir1==1&&dir==2)||(dir1==2&&dir==1)||(dir1==3&&dir==4)||(dir1==4&&dir==3)) && ccnt==2){
-					errinfo.data.push({errflag:7,cells:[c,cc],idlist:idlist}); continue;
-				}
-				if(!((bd.QnC(c)==1 && bd.QnC(cc)==1) || (bd.QnC(c)==2 && bd.QnC(cc)==3) ||
-						  (bd.QnC(c)==3 && bd.QnC(cc)==2) || bd.QnC(c)==-2 || bd.QnC(cc)==-2) && cc!=-1 && ccnt==2)
-				{
-					errinfo.data.push({errflag:6,cells:[c,cc],idlist:idlist}); continue;
-				}
-				if(ccnt>2){
-					errinfo.data.push({errflag:5,cells:[c,cc],idlist:idlist}); continue;
-				}
-				if(ccnt<2 && cc!=-1){
-					errinfo.data.push({errflag:4,cells:[c,cc],idlist:idlist}); continue;
-				}
-				if((bd.QnC(c)==1 || bd.QnC(cc)==1) && ccnt==2 && cc!=-1 && length1!=length2){
-					errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist}); continue;
-				}
-				if((((bd.QnC(c)==2 || bd.QnC(cc)==3) && length1>=length2) ||
-						 ((bd.QnC(c)==3 || bd.QnC(cc)==2) && length1<=length2)) && ccnt==2 && cc!=-1)
-				{
-					errinfo.data.push({errflag:2,cells:[c,cc],idlist:idlist}); continue;
-				}
-				if((cc==-1 || bd.QnC(cc)==-1)){
-					errinfo.data.push({errflag:1,cells:[c],idlist:idlist}); continue;
-				}
+
+				var qn=(c!==null?bd.QnC(c):-1), qnn=(cc!==null?bd.QnC(cc):-1);
+				if(ccnt===2 && !((dir1===1&&dir===2)||(dir1===2&&dir===1)||(dir1===3&&dir===4)||(dir1===4&&dir===3)))
+					{ errinfo.data.push({errflag:7,cells:[c,cc],idlist:idlist});}
+				else if(cc!==null && ccnt===2 && !((qn===1&&qnn===1) || (qn===2&&qnn===3) || (qn===3&&qnn===2) || qn===-2 || qnn===-2))
+					{ errinfo.data.push({errflag:6,cells:[c,cc],idlist:idlist});}
+				else if(ccnt>2)
+					{ errinfo.data.push({errflag:5,cells:[c,cc],idlist:idlist});}
+				else if(cc!==null && ccnt<2)
+					{ errinfo.data.push({errflag:4,cells:[c,cc],idlist:idlist});}
+				else if(cc!==null && ccnt===2 && (qn===1||qnn===1) && length1!==length2)
+					{ errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist});}
+				else if(cc!==null && ccnt===2 && (((qn===2||qnn===3) && length1>=length2) || ((qn===3||qnn===2) && length1<=length2)))
+					{ errinfo.data.push({errflag:2,cells:[c,cc],idlist:idlist});}
+				else if(cc===null || qnn===-1)
+					{ errinfo.data.push({errflag:1,cells:[c],idlist:idlist});}
 			}
 			return errinfo;
 		};

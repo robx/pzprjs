@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スリザーリンク版 slither.js v3.3.0
+// パズル固有スクリプト部 スリザーリンク版 slither.js v3.3.1
 //
 Puzzles.slither = function(){ };
 Puzzles.slither.prototype = {
@@ -50,7 +50,7 @@ Puzzles.slither.prototype = {
 		menu.ex.modechange = function(num){
 			k.editmode = (num==1);
 			k.playmode = (num==3);
-			kc.prev = -1;
+			kc.prev = null;
 			ans.errDisp=true;
 			bd.errclear();
 			if(kp.ctl[1].enable || kp.ctl[3].enable){ pp.funcs.keypopup();}
@@ -81,7 +81,7 @@ Puzzles.slither.prototype = {
 			}
 			else if(k.playmode){
 				if(!pp.getVal('bgcolor') || !this.inputBGcolor0()){
-					if(this.btn.Left) this.inputborderans();
+					if(this.btn.Left) this.inputLine();
 					else if(this.btn.Right) this.inputpeke();
 				}
 				else{ this.inputBGcolor();}
@@ -91,7 +91,7 @@ Puzzles.slither.prototype = {
 		mv.mousemove = function(){
 			if(k.playmode){
 				if(!pp.getVal('bgcolor') || this.inputData<10){
-					if(this.btn.Left) this.inputborderans();
+					if(this.btn.Left) this.inputLine();
 					else if(this.btn.Right) this.inputpeke();
 				}
 				else{ this.inputBGcolor();}
@@ -104,8 +104,8 @@ Puzzles.slither.prototype = {
 		};
 		mv.inputBGcolor = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell){ return;}
-			if(this.inputData==-1){
+			if(cc===null || cc==this.mouseCell){ return;}
+			if(this.inputData===null){
 				if(this.btn.Left){
 					if     (bd.cell[cc].qsub===0){ this.inputData=11;}
 					else if(bd.cell[cc].qsub===1){ this.inputData=12;}
@@ -157,12 +157,11 @@ Puzzles.slither.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.setBGCellColorFunc('qsub2');
-		pc.setBorderColorFunc('line');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
 
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawLines(x1,y1,x2,y2);
 
 			this.drawBaseMarks(x1,y1,x2,y2);
 
@@ -191,7 +190,7 @@ Puzzles.slither.prototype = {
 			g.fillStyle = this.cellcolor;
 			if(this.vnop(vid,this.NONE)){
 				var csize = (this.lw+1)/2;
-				var bx = (id%(k.qcols+1))*2, by = mf(id/(k.qcols+1))*2;
+				var bx = (id%(k.qcols+1))*2, by = (id/(k.qcols+1))<<1;
 				g.fillCircle(k.p0.x+bx*this.bw, k.p0.x+by*this.bh, csize);
 			}
 		};
@@ -223,47 +222,30 @@ Puzzles.slither.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			if(this.filever==1){
+			if(this.filever===1){
 				this.decodeCellQnum();
 				this.decodeCellQsub();
-				this.decodeBorderAns2();
+				this.decodeBorderLine();
 			}
-			else if(this.filever==0){
+			else if(this.filever===0){
 				this.decodeCellQnum();
-				this.decodeBorderAns2();
+				this.decodeBorderLine();
 			}
 		};
 		fio.encodeData = function(){
 			this.filever = 1;
 			this.encodeCellQnum();
 			this.encodeCellQsub();
-			this.encodeBorderAns2();
+			this.encodeBorderLine();
 		};
 
 		fio.kanpenOpen = function(){
 			this.decodeCellQnum_kanpen();
-			this.decodeBorder2_kanpen( function(c,ca){
-				if     (ca == "1") { bd.sQaB(c, 1);}
-				else if(ca == "-1"){ bd.sQsB(c, 2);}
-			});
+			this.decodeBorderLine();
 		};
 		fio.kanpenSave = function(){
 			this.encodeCellQnum_kanpen();
-			this.encodeBorder2_kanpen( function(c){
-				if     (bd.QaB(c)==1){ return "1 ";}
-				else if(bd.QsB(c)==2){ return "-1 ";}
-				else{ return "0 ";}
-			});
-		};
-
-		// カンペンでは、outsideborderの時はぱずぷれとは順番が逆になってます
-		fio.decodeBorder2_kanpen = function(func){
-			this.decodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
-			this.decodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
-		};
-		fio.encodeBorder2_kanpen = function(func){
-			this.encodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
-			this.encodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
+			this.encodeBorderLine();
 		};
 	},
 
@@ -279,7 +261,7 @@ Puzzles.slither.prototype = {
 				this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 			}
 
-			if( !this.checkdir4Border() ){
+			if( !this.checkdir4BorderLine() ){
 				this.setAlert('数字の周りにある境界線の本数が違います。','The number is not equal to the number of border lines around it.'); return false;
 			}
 
@@ -292,6 +274,27 @@ Puzzles.slither.prototype = {
 			}
 
 			return true;
+		};
+		
+		ans.checkdir4BorderLine = function(){
+			var result = true;
+			for(var c=0;c<bd.cellmax;c++){
+				var qn = bd.QnC(c);
+				if(qn>=0 && qn!==this.checkdir4BorderLine1(c)){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC([c],1);
+					result = false;
+				}
+			}
+			return result;
+		};
+		ans.checkdir4BorderLine1 = function(cc){
+			var cnt=0, bx=bd.cell[cc].bx, by=bd.cell[cc].by;
+			if( bd.isLine(bd.bnum(bx  ,by-1)) ){ cnt++;}
+			if( bd.isLine(bd.bnum(bx  ,by+1)) ){ cnt++;}
+			if( bd.isLine(bd.bnum(bx-1,by  )) ){ cnt++;}
+			if( bd.isLine(bd.bnum(bx+1,by  )) ){ cnt++;}
+			return cnt;
 		};
 	}
 };

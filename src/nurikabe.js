@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぬりかべ版 nurikabe.js v3.3.0
+// パズル固有スクリプト部 ぬりかべ版 nurikabe.js v3.3.1
 //
 Puzzles.nurikabe = function(){ };
 Puzzles.nurikabe.prototype = {
@@ -87,7 +87,7 @@ Puzzles.nurikabe.prototype = {
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
-			this.drawRDotCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2,false);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 

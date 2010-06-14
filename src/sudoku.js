@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 数独版 sudoku.js v3.3.0
+// パズル固有スクリプト部 数独版 sudoku.js v3.3.1
 //
 Puzzles.sudoku = function(){ };
 Puzzles.sudoku.prototype = {
@@ -45,9 +45,9 @@ Puzzles.sudoku.prototype = {
 	menufix : function(){ },
 
 	protoChange : function(){
-		this.newboard_html_original = document.newboard.innerHTML;
+		this.newboard_html_original = _doc.newboard.innerHTML;
 
-		document.newboard.innerHTML =
+		_doc.newboard.innerHTML =
 			["<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n",
 			 "<input type=\"radio\" name=\"size\" value=\"9\" checked>9×9<br>\n",
 			 "<input type=\"radio\" name=\"size\" value=\"16\">16×16<br>\n",
@@ -57,7 +57,7 @@ Puzzles.sudoku.prototype = {
 			].join('');
 	},
 	protoOriginal : function(){
-		document.newboard.innerHTML = this.newboard_html_original;
+		_doc.newboard.innerHTML = this.newboard_html_original;
 	},
 
 	//---------------------------------------------------------
@@ -129,7 +129,7 @@ Puzzles.sudoku.prototype = {
 			var lw = this.lw, lm = this.lm;
 
 			var max=k.qcols;
-			var block=mf(Math.sqrt(max)+0.1);
+			var block=((Math.sqrt(max)+0.1)|0);
 			var headers = ["bbx_", "bby_"];
 
 			if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
@@ -171,24 +171,24 @@ Puzzles.sudoku.prototype = {
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			this.decodeCellQnum();
-			this.decodeCellQanssub();
+			this.decodeCellAnumsub();
 		};
 		fio.encodeData = function(){
 			this.sizestr = [k.qcols].join("/");
 
 			this.encodeCellQnum();
-			this.encodeCellQanssub();
+			this.encodeCellAnumsub();
 		};
 
 		fio.kanpenOpen = function(){
 			this.decodeCellQnum_kanpen();
-			this.decodeCellQans_kanpen();
+			this.decodeCellAnum_kanpen();
 		};
 		fio.kanpenSave = function(){
 			this.sizestr = [k.qcols].join("/");
 
 			this.encodeCellQnum_kanpen();
-			this.encodeCellQans_kanpen();
+			this.encodeCellAnum_kanpen();
 		};
 	},
 
@@ -205,20 +205,20 @@ Puzzles.sudoku.prototype = {
 				this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
 			}
 
-			if( !this.checkAllCell(bd.noNum) ){
+			if( !this.checkNoNumCell() ){
 				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
+		ans.check1st = function(){ return this.checkNoNumCell();};
 
 		ans.checkRoomNumber = function(){
 			var result = true;
 			var max=k.qcols;
-			var blk=mf(Math.sqrt(max)+0.1);
+			var blk=((Math.sqrt(max)+0.1)|0);
 			for(var i=0;i<max;i++){
-				var clist = bd.cellinside(((i%blk)*blk)*2+1, (mf(i/blk)*blk)*2+1, ((i%blk+1)*blk-1)*2+1, (mf(i/blk+1)*blk-1)*2+1);
+				var clist = bd.cellinside(((i%blk)*blk)*2+1, (((i/blk)|0)*blk)*2+1, ((i%blk+1)*blk-1)*2+1, (((i/blk+1)|0)*blk-1)*2+1);
 				if(!this.isDifferentNumberInClist(clist, bd.getNum)){
 					if(this.inAutoCheck){ return false;}
 					result = false;

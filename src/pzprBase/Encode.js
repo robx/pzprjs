@@ -1,4 +1,4 @@
-// Encode.js v3.3.0p2
+// Encode.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -189,7 +189,6 @@ Encode.prototype = {
 			bd.initBoardSize(this.uri.cols, this.uri.rows);
 		}
 		if(this.uri.bstr){
-			base.disableInfo();
 			switch(this.uri.type){
 			case this.PZPRV3: case this.PZPRAPP: case this.PZPRV3E:
 				this.outbstr = this.uri.bstr;
@@ -204,9 +203,6 @@ Encode.prototype = {
 				this.decodeHeyaApp();
 				break;
 			}
-			base.enableInfo();
-
-			bd.ansclear();
 			base.resetInfo(true);
 
 			if(!base.initProcess){
@@ -216,7 +212,7 @@ Encode.prototype = {
 	},
 	pzloutput : function(type){
 		if(type===this.KANPEN && k.puzzleid=='lits'){ type = this.KANPENP;}
-		var pdata = '', size = '', ispflag = false;
+		var size='', ispflag=false;
 
 		this.outpflag = '';
 		this.outsize = '';
@@ -225,14 +221,12 @@ Encode.prototype = {
 		switch(type){
 		case this.PZPRV3: case this.PZPRV3E:
 			this.pzlexport(this.PZPRV3);
-
 			size = (!this.outsize ? [k.qcols,k.qrows].join('/') : this.outsize);
 			ispflag = (!!this.outpflag);
 			break;
 
 		case this.PZPRAPP: case this.KANPENP:
 			this.pzlexport(this.PZPRAPP);
-
 			size = (!this.outsize ? [k.qcols,k.qrows].join('/') : this.outsize);
 			ispflag = true;
 			break;
@@ -241,13 +235,11 @@ Encode.prototype = {
 			fio.datastr = "";
 			this.encodeKanpen()
 			this.outbstr = fio.datastr.replace(/ /g, "_");
-
 			size = (!this.outsize ? [k.qrows,k.qcols].join('/') : this.outsize);
 			break;
 
 		case this.HEYAAPP:
 			this.encodeHeyaApp();
-
 			size = [k.qcols,k.qrows].join('x');
 			break;
 
@@ -255,21 +247,24 @@ Encode.prototype = {
 			return '';
 		}
 
-		if(ispflag){ pdata = [this.outpflag, size, this.outbstr].join("/");}
-		else{ pdata = [size, this.outbstr].join("/");}
-
+		var pdata = (ispflag?[this.outpflag]:[]).concat([size, this.outbstr]).join("/");
 		return this.getURLBase(type) + pdata;
 	},
 	getURLBase : function(type){
+		var domain = _doc.domain;
+		if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
+
 		var urls = {};
-		urls[this.PZPRV3]  = "http://indi.s58.xrea.com/pzpr/v3/p.html?%PID%/";
-		urls[this.PZPRV3E] = "http://indi.s58.xrea.com/pzpr/v3/p.html?%PID%_edit/";
+		urls[this.PZPRV3]  = "http://%DOMAIN%/p.html?%PID%/";
+		urls[this.PZPRV3E] = "http://%DOMAIN%/p.html?%PID%_edit/";
 		urls[this.PZPRAPP] = "http://indi.s58.xrea.com/%PID%/sa/q.html?";
 		urls[this.KANPEN]  = "http://www.kanpen.net/%KID%.html?problem=";
 		urls[this.KANPENP] = "http://www.kanpen.net/%KID%.html?pzpr=";
 		urls[this.HEYAAPP] = "http://www.geocities.co.jp/heyawake/?problem=";
 
-		return urls[type].replace("%PID%",this.pidforURL).replace("%KID%",this.pidKanpen);
+		return urls[type].replace("%PID%",this.pidforURL)
+						 .replace("%KID%",this.pidKanpen)
+						 .replace("%DOMAIN%",domain);
 	},
 
 	// オーバーライド用
@@ -281,39 +276,39 @@ Encode.prototype = {
 	encodeHeyaApp : function(){ },
 
 	//---------------------------------------------------------------------------
-	// enc.decode4Cell()  quesが0〜4までの場合、デコードする
-	// enc.encode4Cell()  quesが0〜4までの場合、問題部をエンコードする
+	// enc.decode4Cell()  quesが0～4までの場合、デコードする
+	// enc.encode4Cell()  quesが0～4までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decode4Cell : function(){
 		var c=0, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i);
-			if     (this.include(ca,"0","4")){ bd.sQnC(c, parseInt(ca,16));    c++; }
-			else if(this.include(ca,"5","9")){ bd.sQnC(c, parseInt(ca,16)-5);  c+=2;}
-			else if(this.include(ca,"a","e")){ bd.sQnC(c, parseInt(ca,16)-10); c+=3;}
-			else if(this.include(ca,"g","z")){ c+=(parseInt(ca,36)-15);}
-			else if(ca=="."){ bd.sQnC(c, -2); c++;}
+			var obj = bd.cell[c], ca = bstr.charAt(i);
+			if     (this.include(ca,"0","4")){ obj.qnum = parseInt(ca,16);}
+			else if(this.include(ca,"5","9")){ obj.qnum = parseInt(ca,16)-5;  c++; }
+			else if(this.include(ca,"a","e")){ obj.qnum = parseInt(ca,16)-10; c+=2;}
+			else if(this.include(ca,"g","z")){ c+=(parseInt(ca,36)-16);}
+			else if(ca=="."){ obj.qnum=-2;}
 
+			c++;
 			if(c>=bd.cellmax){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encode4Cell : function(){
-		var count=0, cm = "";
-		for(var i=0;i<bd.cellmax;i++){
-			var pstr = "";
+		var count=0, cm="";
+		for(var c=0;c<bd.cellmax;c++){
+			var pstr="", qn=bd.cell[c].qnum;
 
-			if(bd.QnC(i)>=0){
-				if     (i<bd.cellmax-1&&(bd.QnC(i+1)>=0||bd.QnC(i+1)==-2)){ pstr=""+bd.QnC(i).toString(16);}
-				else if(i<bd.cellmax-2&&(bd.QnC(i+2)>=0||bd.QnC(i+2)==-2)){ pstr=""+(5+bd.QnC(i)).toString(16); i++;}
-				else{ pstr=""+(10+bd.QnC(i)).toString(16); i+=2;}
+			if(qn>=0){
+				if     (!!bd.cell[c+1]&&bd.cell[c+1].qnum!==-1){ pstr=""+    qn .toString(16);}
+				else if(!!bd.cell[c+2]&&bd.cell[c+2].qnum!==-1){ pstr=""+ (5+qn).toString(16); c++; }
+				else										   { pstr=""+(10+qn).toString(16); c+=2;}
 			}
-			else if(bd.QnC(i)==-2){ pstr=".";}
-			else{ pstr=" "; count++;}
+			else if(qn===-2){ pstr=".";}
+			else{ count++;}
 
-			if(count==0)      { cm += pstr;}
-			else if(pstr!=" "){ cm += ((count+15).toString(36)+pstr); count=0;}
-			else if(count==20){ cm += "z"; count=0;}
+			if     (count=== 0){ cm += pstr;}
+			else if(pstr || count===20){ cm += ((count+15).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm += ((count+15).toString(36));}
 
@@ -321,39 +316,39 @@ Encode.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// enc.decode4Cross()  quesが0〜4までの場合、デコードする
-	// enc.encode4Cross()  quesが0〜4までの場合、問題部をエンコードする
+	// enc.decode4Cross()  quesが0～4までの場合、デコードする
+	// enc.encode4Cross()  quesが0～4までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decode4Cross : function(){
 		var c=0, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i);
-			if     (this.include(ca,"0","4")){ bd.sQnX(c, parseInt(ca,16));    c++; }
-			else if(this.include(ca,"5","9")){ bd.sQnX(c, parseInt(ca,16)-5);  c+=2;}
-			else if(this.include(ca,"a","e")){ bd.sQnX(c, parseInt(ca,16)-10); c+=3;}
-			else if(this.include(ca,"g","z")){ c+=(parseInt(ca,36)-15);}
-			else if(ca=="."){ bd.sQnX(c, -2); c++;}
+			var obj = bd.cross[c], ca = bstr.charAt(i);
+			if     (this.include(ca,"0","4")){ obj.qnum = parseInt(ca,16);}
+			else if(this.include(ca,"5","9")){ obj.qnum = parseInt(ca,16)-5;  c++; }
+			else if(this.include(ca,"a","e")){ obj.qnum = parseInt(ca,16)-10; c+=2;}
+			else if(this.include(ca,"g","z")){ c+=(parseInt(ca,36)-16);}
+			else if(ca=="."){ obj.qnum=-2;}
 
+			c++;
 			if(c>=bd.crossmax){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encode4Cross : function(){
-		var count = 0, cm = "";
-		for(var i=0;i<bd.crossmax;i++){
-			var pstr = "";
+		var count=0, cm="";
+		for(var c=0;c<bd.crossmax;c++){
+			var pstr="", qn=bd.cross[c].qnum;
 
-			if(bd.QnX(i)>=0){
-				if     (i<bd.crossmax-1&&(bd.QnX(i+1)>=0||bd.QnX(i+1)==-2)){ pstr=""+bd.QnX(i).toString(16);}
-				else if(i<bd.crossmax-2&&(bd.QnX(i+2)>=0||bd.QnX(i+2)==-2)){ pstr=""+(5+bd.QnX(i)).toString(16); i++;}
-				else{ pstr=""+(10+bd.QnX(i)).toString(16); i+=2;}
+			if(qn>=0){
+				if     (!!bd.cross[c+1]&&bd.cross[c+1].qnum!==-1){ pstr=""+    qn .toString(16);}
+				else if(!!bd.cross[c+2]&&bd.cross[c+2].qnum!==-1){ pstr=""+( 5+qn).toString(16); c++; }
+				else											 { pstr=""+(10+qn).toString(16); c+=2;}
 			}
-			else if(bd.QnX(i)==-2){ pstr=".";}
-			else{ pstr=" "; count++;}
+			else if(qn===-2){ pstr=".";}
+			else{ count++;}
 
-			if(count==0)      { cm += pstr;}
-			else if(pstr!=" "){ cm += ((count+15).toString(36)+pstr); count=0;}
-			else if(count==20){ cm += "z"; count=0;}
+			if     (count=== 0){ cm += pstr;}
+			else if(pstr || count===20){ cm += ((count+15).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm += ((count+15).toString(36));}
 
@@ -361,31 +356,30 @@ Encode.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// enc.decodeNumber10()  quesが0〜9までの場合、デコードする
-	// enc.encodeNumber10()  quesが0〜9までの場合、問題部をエンコードする
+	// enc.decodeNumber10()  quesが0～9までの場合、デコードする
+	// enc.encodeNumber10()  quesが0～9までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeNumber10 : function(){
 		var c=0, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i);
+			var obj = bd.cell[c], ca = bstr.charAt(i);
 
-			if     (this.include(ca,"0","9")){ bd.sQnC(c, parseInt(bstr.substr(i,1),10)); c++;}
-			else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-9);}
-			else if(ca == '.'){ bd.sQnC(c, -2); c++;}
-			else{ c++;}
+			if     (ca == '.')				 { obj.qnum = -2;}
+			else if(this.include(ca,"0","9")){ obj.qnum = parseInt(ca,10);}
+			else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-10);}
 
+			c++;
 			if(c > bd.cellmax){ break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeNumber10 : function(){
 		var cm="", count=0;
-		for(var i=0;i<bd.cellmax;i++){
-			pstr = "";
-			var val = bd.QnC(i);
+		for(var c=0;c<bd.cellmax;c++){
+			var pstr="", qn=bd.cell[c].qnum;
 
-			if     (val==  -2            ){ pstr = ".";}
-			else if(val>=   0 && val<  10){ pstr =       val.toString(10);}
+			if     (qn===-2)       { pstr = ".";}
+			else if(qn>=0 && qn<10){ pstr = qn.toString(10);}
 			else{ count++;}
 
 			if(count==0){ cm += pstr;}
@@ -397,40 +391,39 @@ Encode.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// enc.decodeNumber16()  quesが0〜8192?までの場合、デコードする
-	// enc.encodeNumber16()  quesが0〜8192?までの場合、問題部をエンコードする
+	// enc.decodeNumber16()  quesが0～8192?までの場合、デコードする
+	// enc.encodeNumber16()  quesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeNumber16 : function(){
 		var c=0, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i);
+			var obj = bd.cell[c], ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { bd.sQnC(c, parseInt(bstr.substr(i,  1),16));      c++;}
-			else if(ca == '.'){ bd.sQnC(c, -2);                                   c++;      }
-			else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),16));      c++; i+=2;}
-			else if(ca == '+'){ bd.sQnC(c, parseInt(bstr.substr(i+1,3),16));      c++; i+=3;}
-			else if(ca == '='){ bd.sQnC(c, parseInt(bstr.substr(i+1,3),16)+4096); c++; i+=3;}
-			else if(ca == '%'){ bd.sQnC(c, parseInt(bstr.substr(i+1,3),16)+8192); c++; i+=3;}
-			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-15);}
-			else{ c++;}
+							  { obj.qnum = parseInt(ca,16);}
+			else if(ca == '-'){ obj.qnum = parseInt(bstr.substr(i+1,2),16);      i+=2;}
+			else if(ca == '+'){ obj.qnum = parseInt(bstr.substr(i+1,3),16);      i+=3;}
+			else if(ca == '='){ obj.qnum = parseInt(bstr.substr(i+1,3),16)+4096; i+=3;}
+			else if(ca == '%'){ obj.qnum = parseInt(bstr.substr(i+1,3),16)+8192; i+=3;}
+			else if(ca == '.'){ obj.qnum = -2;}
+			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-16);}
 
+			c++;
 			if(c > bd.cellmax){ break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeNumber16 : function(){
 		var count=0, cm="";
-		for(var i=0;i<bd.cellmax;i++){
-			pstr = "";
-			var val = bd.QnC(i);
+		for(var c=0;c<bd.cellmax;c++){
+			var pstr = "", qn = bd.cell[c].qnum;
 
-			if     (val==  -2            ){ pstr = ".";}
-			else if(val>=   0 && val<  16){ pstr =       val.toString(16);}
-			else if(val>=  16 && val< 256){ pstr = "-" + val.toString(16);}
-			else if(val>= 256 && val<4096){ pstr = "+" + val.toString(16);}
-			else if(val>=4096 && val<8192){ pstr = "=" + (val-4096).toString(16);}
-			else if(val>=8192            ){ pstr = "%" + (val-8192).toString(16);}
+			if     (qn==  -2           ){ pstr = ".";}
+			else if(qn>=   0 && qn<  16){ pstr =       qn.toString(16);}
+			else if(qn>=  16 && qn< 256){ pstr = "-" + qn.toString(16);}
+			else if(qn>= 256 && qn<4096){ pstr = "+" + qn.toString(16);}
+			else if(qn>=4096 && qn<8192){ pstr = "=" + (qn-4096).toString(16);}
+			else if(qn>=8192           ){ pstr = "%" + (qn-8192).toString(16);}
 			else{ count++;}
 
 			if(count==0){ cm += pstr;}
@@ -442,26 +435,26 @@ Encode.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// enc.decodeRoomNumber16()  部屋＋部屋の一つのquesが0〜8192?までの場合、デコードする
-	// enc.encodeRoomNumber16()  部屋＋部屋の一つのquesが0〜8192?までの場合、問題部をエンコードする
+	// enc.decodeRoomNumber16()  部屋＋部屋の一つのquesが0～8192?までの場合、デコードする
+	// enc.encodeRoomNumber16()  部屋＋部屋の一つのquesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeRoomNumber16 : function(){
 		area.resetRarea();
 		var r=1, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i);
+			var ca = bstr.charAt(i), c=area.getTopOfRoom(r), obj=bd.cell[c];
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i,  1),16));      r++;}
-			else if(ca == '-'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,2),16));      r++; i+=2;}
-			else if(ca == '+'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,3),16));      r++; i+=3;}
-			else if(ca == '='){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,3),16)+4096); r++; i+=3;}
-			else if(ca == '%'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,3),16)+8192); r++; i+=3;}
-			else if(ca == '*'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,3),16)+12240); r++; i+=4;}
-			else if(ca == '$'){ bd.sQnC(area.getTopOfRoom(r), parseInt(bstr.substr(i+1,3),16)+77776); r++; i+=5;}
-			else if(ca >= 'g' && ca <= 'z'){ r += (parseInt(ca,36)-15);}
-			else{ r++;}
+							  { obj.qnum = parseInt(ca,16);}
+			else if(ca == '-'){ obj.qnum = parseInt(bstr.substr(i+1,2),16);       i+=2;}
+			else if(ca == '+'){ obj.qnum = parseInt(bstr.substr(i+1,3),16);       i+=3;}
+			else if(ca == '='){ obj.qnum = parseInt(bstr.substr(i+1,3),16)+4096;  i+=3;}
+			else if(ca == '%'){ obj.qnum = parseInt(bstr.substr(i+1,3),16)+8192;  i+=3;}
+			else if(ca == '*'){ obj.qnum = parseInt(bstr.substr(i+1,3),16)+12240; i+=4;}
+			else if(ca == '$'){ obj.qnum = parseInt(bstr.substr(i+1,3),16)+77776; i+=5;}
+			else if(ca >= 'g' && ca <= 'z'){ r += (parseInt(ca,36)-16);}
 
+			r++;
 			if(r > area.room.max){ break;}
 		}
 		this.outbstr = bstr.substr(i);
@@ -469,17 +462,16 @@ Encode.prototype = {
 	encodeRoomNumber16 : function(){
 		area.resetRarea();
 		var count=0, cm="";
-		for(var i=1;i<=area.room.max;i++){
-			var pstr = "";
-			var val = bd.QnC(area.getTopOfRoom(i));
+		for(var r=1;r<=area.room.max;r++){
+			var pstr = "", qn = bd.cell[area.getTopOfRoom(r)].qnum;
 
-			if     (val>=     0 && val<    16){ pstr =       val.toString(16);}
-			else if(val>=    16 && val<   256){ pstr = "-" + val.toString(16);}
-			else if(val>=   256 && val<  4096){ pstr = "+" + val.toString(16);}
-			else if(val>=  4096 && val<  8192){ pstr = "=" + (val-4096).toString(16);}
-			else if(val>=  8192 && val< 12240){ pstr = "%" + (val-8192).toString(16);}
-			else if(val>= 12240 && val< 77776){ pstr = "*" + (val-12240).toString(16);}
-			else if(val>= 77776              ){ pstr = "$" + (val-77776).toString(16);} // 最大1126352
+			if     (qn>=    0 && qn<   16){ pstr =       qn.toString(16);}
+			else if(qn>=   16 && qn<  256){ pstr = "-" + qn.toString(16);}
+			else if(qn>=  256 && qn< 4096){ pstr = "+" + qn.toString(16);}
+			else if(qn>= 4096 && qn< 8192){ pstr = "=" + (qn-4096).toString(16);}
+			else if(qn>= 8192 && qn<12240){ pstr = "%" + (qn-8192).toString(16);}
+			else if(qn>=12240 && qn<77776){ pstr = "*" + (qn-12240).toString(16);}
+			else if(qn>=77776            ){ pstr = "$" + (qn-77776).toString(16);} // 最大1126352
 			else{ count++;}
 
 			if(count==0){ cm += pstr;}
@@ -491,33 +483,28 @@ Encode.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// enc.decodeArrowNumber16()  矢印付きquesが0〜8192?までの場合、デコードする
-	// enc.encodeArrowNumber16()  矢印付きquesが0〜8192?までの場合、問題部をエンコードする
+	// enc.decodeArrowNumber16()  矢印付きquesが0～8192?までの場合、デコードする
+	// enc.encodeArrowNumber16()  矢印付きquesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeArrowNumber16 : function(){
 		var c=0, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i);
+			var ca = bstr.charAt(i), obj=bd.cell[c];
 
-			if(ca=='0'){
-				if(bstr.charAt(i+1)=="."){ bd.sQnC(c,-2); c++; i++;}
-				else{ bd.sQnC(c, parseInt(bstr.substr(i+1,1),16)); c++; i++;}
+			if(this.include(ca,"0","4")){
+				var ca1 = bstr.charAt(i+1);
+				obj.qdir = parseInt(ca,16);
+				obj.qnum = (ca1!="." ? parseInt(ca1,16) : -2);
+				i++;
 			}
-			else if(ca=='5'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),16)); c++; i+=2;}
-			else if(this.include(ca,"1","4")){
-				bd.sDiC(c, parseInt(ca,16));
-				if(bstr.charAt(i+1)!="."){ bd.sQnC(c, parseInt(bstr.substr(i+1,1),16));}
-				else{ bd.sQnC(c,-2);}
-				c++; i++;
+			else if(this.include(ca,"5","9")){
+				obj.qdir = parseInt(ca,16)-5;
+				obj.qnum = parseInt(bstr.substr(i+1,2),16);
+				i+=2;
 			}
-			else if(this.include(ca,"6","9")){
-				bd.sDiC(c, parseInt(ca,16)-5);
-				bd.sQnC(c, parseInt(bstr.substr(i+1,2),16));
-				c++; i+=2;
-			}
-			else if(ca>='a' && ca<='z'){ c+=(parseInt(ca,36)-9);}
-			else{ c++;}
+			else if(ca>='a' && ca<='z'){ c+=(parseInt(ca,36)-10);}
 
+			c++;
 			if(c > bd.cellmax){ break;}
 		}
 		this.outbstr = bstr.substr(i);
@@ -525,17 +512,14 @@ Encode.prototype = {
 	encodeArrowNumber16 : function(){
 		var cm = "", count = 0;
 		for(var c=0;c<bd.cellmax;c++){
-			var pstr="";
-			if(bd.QnC(c)!=-1){
-				if     (bd.QnC(c)==-2){ pstr=((bd.DiC(c)==0?0:bd.DiC(c)  )+".");}
-				else if(bd.QnC(c)< 16){ pstr=((bd.DiC(c)==0?0:bd.DiC(c)  )+bd.QnC(c).toString(16));}
-				else if(bd.QnC(c)<256){ pstr=((bd.DiC(c)==0?5:bd.DiC(c)+5)+bd.QnC(c).toString(16));}
-			}
-			else{ pstr=" "; count++;}
+			var pstr="", dir=bd.cell[c].qdir, qn=bd.cell[c].qnum;
+			if     (qn===-2)        { pstr=(dir  )+".";}
+			else if(qn>= 0&&qn<  16){ pstr=(dir  )+qn.toString(16);}
+			else if(qn>=16&&qn< 256){ pstr=(dir+5)+qn.toString(16);}
+			else{ count++;}
 
-			if(count==0)      { cm += pstr;}
-			else if(pstr!=" "){ cm += ((count+9).toString(36)+pstr); count=0;}
-			else if(count==26){ cm += "z"; count=0;}
+			if     (count=== 0){ cm += pstr;}
+			else if(pstr || count===26){ cm += ((count+9).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm += (count+9).toString(36);}
 
@@ -547,26 +531,33 @@ Encode.prototype = {
 	// enc.encodeBorder() 問題の境界線をエンコードする
 	//---------------------------------------------------------------------------
 	decodeBorder : function(){
-		var pos1, pos2, bstr = this.outbstr;
+		var pos1, pos2, bstr = this.outbstr, id, twi=[16,8,4,2,1];
 
 		if(bstr){
-			pos1 = Math.min(mf(((k.qcols-1)*k.qrows+4)/5)     , bstr.length);
-			pos2 = Math.min(mf((k.qcols*(k.qrows-1)+4)/5)+pos1, bstr.length);
+			pos1 = Math.min(((((k.qcols-1)*k.qrows+4)/5)|0)     , bstr.length);
+			pos2 = Math.min((((k.qcols*(k.qrows-1)+4)/5)|0)+pos1, bstr.length);
 		}
 		else{ pos1 = 0; pos2 = 0;}
 
+		id = 0;
 		for(var i=0;i<pos1;i++){
 			var ca = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
-				if(i*5+w<(k.qcols-1)*k.qrows){ bd.sQuB(i*5+w,(ca&Math.pow(2,4-w)?1:0));}
+				if(id<(k.qcols-1)*k.qrows){
+					bd.border[id].ques=((ca&twi[w])?1:0);
+					id++;
+				}
 			}
 		}
 
-		var oft = (k.qcols-1)*k.qrows;
-		for(var i=0;i<pos2-pos1;i++){
-			var ca = parseInt(bstr.charAt(i+pos1),32);
+		id = (k.qcols-1)*k.qrows;
+		for(var i=pos1;i<pos2;i++){
+			var ca = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
-				if(i*5+w<k.qcols*(k.qrows-1)){ bd.sQuB(i*5+w+oft,(ca&Math.pow(2,4-w)?1:0));}
+				if(id<bd.bdinside){
+					bd.border[id].ques=((ca&twi[w])?1:0);
+					id++;
+				}
 			}
 		}
 
@@ -574,20 +565,19 @@ Encode.prototype = {
 		this.outbstr = bstr.substr(pos2);
 	},
 	encodeBorder : function(){
-		var num, pass;
-		var cm = "";
+		var cm="", twi=[16,8,4,2,1], num, pass;
 
 		num = 0; pass = 0;
-		for(var i=0;i<(k.qcols-1)*k.qrows;i++){
-			if(bd.QuB(i)==1){ pass+=Math.pow(2,4-num);}
-			num++; if(num==5){ cm += pass.toString(32); num=0; pass=0;}
+		for(var id=0;id<(k.qcols-1)*k.qrows;id++){
+			pass+=(bd.border[id].ques * twi[num]); num++;
+			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
 		}
 		if(num>0){ cm += pass.toString(32);}
 
 		num = 0; pass = 0;
-		for(var i=(k.qcols-1)*k.qrows;i<bd.bdinside;i++){
-			if(bd.QuB(i)==1){ pass+=Math.pow(2,4-num);}
-			num++; if(num==5){ cm += pass.toString(32); num=0; pass=0;}
+		for(var id=(k.qcols-1)*k.qrows;id<bd.bdinside;id++){
+			pass+=(bd.border[id].ques * twi[num]); num++;
+			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
 		}
 		if(num>0){ cm += pass.toString(32);}
 
@@ -599,36 +589,38 @@ Encode.prototype = {
 	// enc.encodeCrossMark() 黒点をエンコードする
 	//---------------------------------------------------------------------------
 	decodeCrossMark : function(){
-		var cc=-1, i=0, bstr = this.outbstr
+		var cc=0, i=0, bstr = this.outbstr, cp=(k.iscross===2?1:0), cp2=(cp<<1);
+		var rows=(k.qrows-1+cp2), cols=(k.qcols-1+cp2);
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","z")){
-				cc += (parseInt(ca,36)+1);
-				var bx = (k.iscross===2?   cc%(k.qcols+1) :   cc%(k.qcols-1) +1)*2;
-				var by = (k.iscross===2?mf(cc/(k.qcols+1)):mf(cc/(k.qcols-1))+1)*2;
+				cc += parseInt(ca,36);
+				var bx = ((  cc%cols    +(1-cp))<<1);
+				var by = ((((cc/cols)|0)+(1-cp))<<1);
 
-				if(by>=bd.maxby+(k.iscross===2?2:0)){ i++; break;}
-				bd.sQnX(bd.xnum(bx,by), 1);
+				if(by>bd.maxby-2*(1-cp)){ i++; break;}
+				bd.cross[bd.xnum(bx,by)].qnum = 1;
 			}
-			else if(ca == '.'){ cc += 36;}
-			else{ cc++;}
+			else if(ca == '.'){ cc+=35;}
 
-			if(cc >= (k.iscross==2?(k.qcols+1)*(k.qrows+1):(k.qcols-1)*(k.qrows-1))-1){ i++; break;}
+			cc++;
+			if(cc>=cols*rows){ i++; break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeCrossMark : function(){
-		var cm = "", count = 0;
-		for(var i=0;i<(k.iscross===2?(k.qcols+1)*(k.qrows+1):(k.qcols-1)*(k.qrows-1));i++){
-			var pstr = "";
-			var bx = (k.iscross===2?   i%(k.qcols+1) :   i%(k.qcols-1) +1)*2;
-			var by = (k.iscross===2?mf(i/(k.qcols+1)):mf(i/(k.qcols-1))+1)*2;
+		var cm="", count=0, cp=(k.iscross===2?1:0), cp2=(cp<<1);
+		var rows=(k.qrows-1+cp2), cols=(k.qcols-1+cp2);
+		for(var c=0,max=cols*rows;c<max;c++){
+			var pstr="";
+			var bx = ((  c%cols    +(1-cp))<<1);
+			var by = ((((c/cols)|0)+(1-cp))<<1);
 
-			if(bd.QnX(bd.xnum(bx,by))==1){ pstr = ".";}
-			else{ pstr=" "; count++;}
+			if(bd.cross[bd.xnum(bx,by)].qnum===1){ pstr = ".";}
+			else{ count++;}
 
-			if(pstr!=" "){ cm += count.toString(36); count=0;}
+			if(pstr){ cm += count.toString(36); count=0;}
 			else if(count==36){ cm += "."; count=0;}
 		}
 		if(count>0){ cm += count.toString(36);}
@@ -637,29 +629,30 @@ Encode.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// enc.decodeCircle41_42() 白丸・黒丸をデコードする
-	// enc.encodeCircle41_42() 白丸・黒丸をエンコードする
+	// enc.decodeCircle() 白丸・黒丸をデコードする
+	// enc.encodeCircle() 白丸・黒丸をエンコードする
 	//---------------------------------------------------------------------------
-	decodeCircle41_42 : function(){
-		var bstr = this.outbstr;
-		var pos = bstr?Math.min(mf((k.qcols*k.qrows+2)/3), bstr.length):0;
+	decodeCircle : function(){
+		var bstr = this.outbstr, c=0, tri=[9,3,1], max=(k.qcols*k.qrows);
+		var pos = (bstr ? Math.min(((k.qcols*k.qrows+2)/3)|0, bstr.length) : 0);
 		for(var i=0;i<pos;i++){
 			var ca = parseInt(bstr.charAt(i),27);
 			for(var w=0;w<3;w++){
-				if(i*3+w<k.qcols*k.qrows){
-					if     (mf(ca/Math.pow(3,2-w))%3==1){ bd.sQuC(i*3+w,41);}
-					else if(mf(ca/Math.pow(3,2-w))%3==2){ bd.sQuC(i*3+w,42);}
+				if(c<max){
+					var val = ((ca/tri[w])|0)%3;
+					if(val>0){ bd.cell[c].qnum=val;}
+					c++;
 				}
 			}
 		}
 		this.outbstr = bstr.substr(pos);
 	},
-	encodeCircle41_42 : function(){
-		var cm="", num=0, pass=0;
-		for(var i=0;i<bd.cellmax;i++){
-			if     (bd.QuC(i)==41){ pass+=(  Math.pow(3,2-num));}
-			else if(bd.QuC(i)==42){ pass+=(2*Math.pow(3,2-num));}
-			num++; if(num==3){ cm += pass.toString(27); num=0; pass=0;}
+	encodeCircle : function(){
+		var cm="", num=0, pass=0, tri=[9,3,1];
+		for(var c=0;c<bd.cellmax;c++){
+			if(bd.cell[c].qnum>0){ pass+=(bd.cell[c].qnum*tri[num]);}
+			num++;
+			if(num===3){ cm += pass.toString(27); num=0; pass=0;}
 		}
 		if(num>0){ cm += pass.toString(27);}
 
@@ -670,16 +663,14 @@ Encode.prototype = {
 	// enc.decodecross_old() Crossの問題部をデコードする(旧形式)
 	//---------------------------------------------------------------------------
 	decodecross_old : function(){
-		var bstr = this.outbstr;
-		for(var i=0;i<Math.min(bstr.length, bd.crossmax);i++){
-			if     (bstr.charAt(i)=="0"){ bd.sQnX(i,0);}
-			else if(bstr.charAt(i)=="1"){ bd.sQnX(i,1);}
-			else if(bstr.charAt(i)=="2"){ bd.sQnX(i,2);}
-			else if(bstr.charAt(i)=="3"){ bd.sQnX(i,3);}
-			else if(bstr.charAt(i)=="4"){ bd.sQnX(i,4);}
-			else{ bd.sQnX(i,-1);}
+		var bstr = this.outbstr, c=0;
+		for(var i=0;i<bstr.length;i++){
+			var ca = bstr.charAt(i);
+			if(this.include(ca,"0","4")){ bd.cross[c].qnum = parseInt(ca);}
+
+			c++;
+			if(c>=bd.crossmax){ i++; break;}
 		}
-		for(var j=bstr.length;j<bd.crossmax;j++){ bd.sQnX(j,-1);}
 
 		this.outbstr = bstr.substr(i);
 	},
@@ -688,7 +679,6 @@ Encode.prototype = {
 	// enc.include()    文字列caはbottomとupの間にあるか
 	//---------------------------------------------------------------------------
 	include : function(ca, bottom, up){
-		if(bottom <= ca && ca <= up) return true;
-		return false;
+		return (bottom <= ca && ca <= up);
 	}
 };

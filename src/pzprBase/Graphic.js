@@ -1,4 +1,4 @@
-// Graphic.js v3.3.0
+// Graphic.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
@@ -74,7 +74,8 @@ Graphic = function(){
 	this.gridcolor_SLIGHT = "rgb(191, 191, 191)";	/* 部屋＋線を引くパズル           */
 	this.gridcolor_THIN   = "rgb(224, 224, 224)";	/* 問題入力時のみGrid表示のパズル */
 
-	this.bcolor_GREEN = "rgb(160, 255, 160)";
+	this.bcolor_GREEN  = "rgb(160, 255, 160)";
+	this.dotcolor_PINK = "rgb(255, 96, 191)";
 	this.errbcolor1_DARK = "rgb(255, 127, 127)";
 	this.linecolor_LIGHT = "rgb(0, 192, 0)";
 
@@ -213,9 +214,9 @@ Graphic.prototype = {
 		var loopcount = 0;
 
 		while(1){
-			var Rdeg = mf(Math.random() * 384)-64; if(Rdeg<0){Rdeg=0;} if(Rdeg>255){Rdeg=255;}
-			var Gdeg = mf(Math.random() * 384)-64; if(Gdeg<0){Gdeg=0;} if(Gdeg>255){Gdeg=255;}
-			var Bdeg = mf(Math.random() * 384)-64; if(Bdeg<0){Bdeg=0;} if(Bdeg>255){Bdeg=255;}
+			var Rdeg = ((Math.random() * 384)|0)-64; if(Rdeg<0){Rdeg=0;} if(Rdeg>255){Rdeg=255;}
+			var Gdeg = ((Math.random() * 384)|0)-64; if(Gdeg<0){Gdeg=0;} if(Gdeg>255){Gdeg=255;}
+			var Bdeg = ((Math.random() * 384)|0)-64; if(Bdeg<0){Bdeg=0;} if(Bdeg>255){Bdeg=255;}
 
 			// HLSの各組成値を求める
 			var Cmax = Math.max(Rdeg,Math.max(Gdeg,Bdeg));
@@ -237,7 +238,7 @@ Graphic.prototype = {
 				 && (((360+this.lastHdeg-Hdeg)%360>=45)&&((360+this.lastHdeg-Hdeg)%360<=315)) ){
 				this.lastHdeg = Hdeg;
 				this.lastYdeg = Ydeg;
-				//alert("rgb("+Rdeg+", "+Gdeg+", "+Bdeg+")\nHLS("+mf(Hdeg)+", "+(""+mf(Ldeg*1000)*0.001).slice(0,5)+", "+(""+mf(Sdeg*1000)*0.001).slice(0,5)+")\nY("+(""+mf(Ydeg*1000)*0.001).slice(0,5)+")");
+				//alert("rgb("+Rdeg+", "+Gdeg+", "+Bdeg+")\nHLS("+(Hdeg|0)+", "+(""+((Ldeg*1000)|0)*0.001).slice(0,5)+", "+(""+((Sdeg*1000|0))*0.001).slice(0,5)+")\nY("+(""+((Ydeg*1000)|0)*0.001).slice(0,5)+")");
 				return "rgb("+Rdeg+","+Gdeg+","+Bdeg+")";
 			}
 
@@ -417,31 +418,12 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawRDotCells()  ・だけをCanvasに書き込む(・用)
-	// pc.drawDotCells()   ・だけをCanvasに書き込む(小さい四角形用)
+	// pc.drawDotCells()  ・だけをCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawRDotCells : function(x1,y1,x2,y2){
-		this.vinc('cell_dot', 'auto');
+	drawDotCells : function(x1,y1,x2,y2,isrect){
+		this.vinc('cell_dot', (isrect ? 'crispEdges' : 'auto'));
 
-		var dsize = this.cw*0.06; dsize=(dsize>2?dsize:2);
-		var header = "c_rdot_";
-		g.fillStyle = this.dotcolor;
-
-		var clist = bd.cellinside(x1,y1,x2,y2);
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.cell[c].qsub===1){
-				if(this.vnop(header+c,this.NONE)){
-					g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, dsize);
-				}
-			}
-			else{ this.vhide(header+c);}
-		}
-	},
-	drawDotCells : function(x1,y1,x2,y2){
-		this.vinc('cell_dot', 'crispEdges');
-
-		var dsize = this.cw*0.075;
+		var dsize = Math.max(this.cw*(isrect?0.075:0.06), 2);
 		var header = "c_dot_";
 		g.fillStyle = this.dotcolor;
 
@@ -450,7 +432,8 @@ Graphic.prototype = {
 			var c = clist[i];
 			if(bd.cell[c].qsub===1){
 				if(this.vnop(header+c,this.NONE)){
-					g.fillRect(bd.cell[c].cpx-dsize, bd.cell[c].cpy-dsize, dsize*2, dsize*2);
+					if(isrect){ g.fillRect(bd.cell[c].cpx-dsize, bd.cell[c].cpy-dsize, dsize*2, dsize*2);}
+					else      { g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, dsize);}
 				}
 			}
 			else{ this.vhide(header+c);}
@@ -463,7 +446,7 @@ Graphic.prototype = {
 	// pc.getCellNumberColor()  Cellの数字の色を設定する
 	// 
 	// pc.drawArrowNumbers() Cellの数字と矢印をCanvasに書き込む
-	// pc.drawQuesHatenas()  ques===-2の時に？をCanvasに書き込む
+	// pc.drawHatenas()     ques===-2の時に？をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawNumbers : function(x1,y1,x2,y2){
 		this.vinc('cell_number', 'auto');
@@ -510,7 +493,7 @@ Graphic.prototype = {
 			var c = clist[i];
 
 			if(bd.cell[c].qnum!==-1 && (bd.cell[c].qnum!==-2||k.isDispHatena)){
-				var ax=px=bd.cell[c].px, ay=py=bd.cell[c].py, dir = bd.cell[c].direc;
+				var ax=px=bd.cell[c].px, ay=py=bd.cell[c].py, dir = bd.cell[c].qdir;
 
 				if     (bd.cell[c].qans ===1){ g.fillStyle = this.fontBCellcolor;}
 				else if(bd.cell[c].error===1){ g.fillStyle = this.fontErrcolor;}
@@ -583,13 +566,13 @@ Graphic.prototype = {
 			}
 		}
 	},
-	drawQuesHatenas : function(x1,y1,x2,y2){
+	drawHatenas : function(x1,y1,x2,y2){
 		this.vinc('cell_number', 'auto');
 
 		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var obj = bd.cell[clist[i]], key = 'cell_'+clist[i];
-			if(obj.ques===-2){
+			if(obj.ques===-2||obj.qnum===-2){
 				var color = (obj.error===1 ? this.fontErrcolor : this.fontcolor);
 				this.dispnum(key, 1, "?", 0.8, color, obj.cpx, obj.cpy);
 			}
@@ -660,9 +643,9 @@ Graphic.prototype = {
 		for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 		this.isdrawBD = true;
 	},
-	drawBorder1 : function(id,forceFlag){
+	drawBorder1 : function(id){
 		var vid = [this.bdheader, id].join("_");
-		if(forceFlag!==false && this.setBorderColor(id)){
+		if(this.setBorderColor(id)){
 			if(this.vnop(vid,this.FILL)){
 				var lw = this.lw + this.addlw, lm = this.lm;
 				var bx = bd.border[id].bx, by = bd.border[id].by;
@@ -692,13 +675,10 @@ Graphic.prototype = {
 				return false;
 			}
 			break;
-		case 'line':
-			this.setBorderColor = this.setLineColor;
-			break;
 		case 'ice':
 			this.setBorderColor = function(id){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(cc1!==-1 && cc2!==-1 && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
+				if(cc1!==null && cc2!==null && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
 					g.fillStyle = this.cellcolor;
 					return true;
 				}
@@ -806,13 +786,15 @@ Graphic.prototype = {
 		for(var i=0;i<idlist.length;i++){ this.drawLine1(idlist[i]);}
 		this.addlw = 0;
 	},
-	drawLine1 : function(id, forceFlag){
+	drawLine1 : function(id){
 		var vid = "b_line_"+id;
-		if(forceFlag!==false && this.setLineColor(id)){
+		if(this.setLineColor(id)){
 			if(this.vnop(vid,this.FILL)){
 				var lw = this.lw + this.addlw, lm = this.lm;
-				if     (bd.border[id].bx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
-				else if(bd.border[id].by&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm, this.cw+lw, lw);}
+				var bx = bd.border[id].bx, by = bd.border[id].by;
+				var px = bd.border[id].px, py = bd.border[id].py;
+				if     (k.isCenterLine===!!(bx&1)){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
+				else if(k.isCenterLine===!!(by&1)){ g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
 			}
 		}
 		else{ this.vhide(vid);}
@@ -938,34 +920,34 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawCircles41_42()    Cell上の黒丸と白丸をCanvasに書き込む
+	// pc.drawQnumCircles()    Cell上の黒丸と白丸をCanvasに書き込む
 	// pc.drawCirclesAtNumber() 数字が描画されるCellの丸を書き込む
 	// pc.drawCircle1AtNumber() 数字が描画されるCellの丸を書き込む(1マスのみ)
 	//---------------------------------------------------------------------------
-	drawCircles41_42 : function(x1,y1,x2,y2){
+	drawQnumCircles : function(x1,y1,x2,y2){
 		this.vinc('cell_circle', 'auto');
 
 		g.lineWidth = Math.max(this.cw*(this.circleratio[0]-this.circleratio[1]), 1);
-		var rsize41 = this.cw*(this.circleratio[0]+this.circleratio[1])/2;
-		var rsize42 = this.cw*this.circleratio[0];
-		var headers = ["c_cir41_", "c_cir42_"];
+		var rsize1 = this.cw*(this.circleratio[0]+this.circleratio[1])/2;
+		var rsize2 = this.cw*this.circleratio[0];
+		var headers = ["c_cirw_", "c_cirb_"];
 		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 
-			if(bd.cell[c].ques===41){
+			if(bd.cell[c].qnum===1){
 				g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.cellcolor);
 				g.fillStyle   = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 				if(this.vnop(headers[0]+c,this.FILL_STROKE)){
-					g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize41);
+					g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize1);
 				}
 			}
 			else{ this.vhide(headers[0]+c);}
 
-			if(bd.cell[c].ques===42){
+			if(bd.cell[c].qnum===2){
 				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(headers[1]+c,this.FILL)){
-					g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize42);
+					g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize2);
 				}
 			}
 			else{ this.vhide(headers[1]+c);}
@@ -978,13 +960,13 @@ Graphic.prototype = {
 		for(var i=0;i<clist.length;i++){ this.drawCircle1AtNumber(clist[i]);}
 	},
 	drawCircle1AtNumber : function(c){
-		if(c===-1){ return;}
+		if(c===null){ return;}
 
 		var rsize  = this.cw*this.circleratio[0];
 		var rsize2 = this.cw*this.circleratio[1];
 		var headers = ["c_cira_", "c_cirb_"];
 
-		if(bd.cell[c].qnum!=-1){
+		if(bd.cell[c].qnum!==-1){
 			g.lineWidth = this.cw*0.05;
 			g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : this.circledcolor);
 			if(this.vnop(headers[1]+c,this.FILL)){
@@ -1012,15 +994,15 @@ Graphic.prototype = {
 	drawLineParts1 : function(id){
 		var vids = ["c_lp1_"+id, "c_lp2_"+id, "c_lp3_"+id, "c_lp4_"+id];
 
-		var qs = bd.cell[id].ques;
-		if(qs>=101 && qs<=107){
+		var qu = bd.cell[id].ques;
+		if(qu>=11 && qu<=17){
 			var lw  = this.lw, lm = this.lm;
 			var hhp = this.bh+this.lm, hwp = this.bw+this.lm;
 			var px  = bd.cell[id].px, py = bd.cell[id].py;
 			var cpx = bd.cell[id].cpx, cpy = bd.cell[id].cpy;
 			g.fillStyle = this.borderQuescolor;
 
-			var flag  = {101:15, 102:3, 103:12, 104:9, 105:5, 106:6, 107:10}[qs];
+			var flag  = {11:15, 12:3, 13:12, 14:9, 15:5, 16:6, 17:10}[qu];
 			if(flag&1){ if(this.vnop(vids[0],this.NONE)){ g.fillRect(cpx-lm, py    , lw, hhp);} }else{ this.vhide(vids[0]);}
 			if(flag&2){ if(this.vnop(vids[1],this.NONE)){ g.fillRect(cpx-lm, cpy-lm, lw, hhp);} }else{ this.vhide(vids[1]);}
 			if(flag&4){ if(this.vnop(vids[2],this.NONE)){ g.fillRect(px    , cpy-lm, hwp, lw);} }else{ this.vhide(vids[2]);}
@@ -1108,12 +1090,12 @@ Graphic.prototype = {
 				// cell上だった場合
 				if(bx!==-1 && by!==-1){
 					var c = bd.cnum(bx,by);
-					if(c!==-1){ this.drawNumbersOn51_1('cell', c);}
+					if(c!==null){ this.drawNumbersOn51_1('cell', c);}
 				}
 				// excell上だった場合
 				else{
 					var c = bd.exnum(bx,by);
-					if(c!==-1){ this.drawNumbersOn51_1('excell', c);}
+					if(c!==null){ this.drawNumbersOn51_1('excell', c);}
 				}
 			}
 		}
@@ -1124,10 +1106,10 @@ Graphic.prototype = {
 
 		if(family==='excell' || bd.cell[c].ques===51){
 			for(var i=0;i<2;i++){
-				if     (i===0){ val=obj.qnum,  guard=obj.by, nb=bd.cnum(obj.bx+2, obj.by), type=4;} // 1回目は右向き
-				else if(i===1){ val=obj.direc, guard=obj.bx, nb=bd.cnum(obj.bx, obj.by+2), type=2;} // 2回目は下向き
+				if     (i===0){ val=obj.qnum, guard=obj.by, nb=bd.cnum(obj.bx+2, obj.by), type=4;} // 1回目は右向き
+				else if(i===1){ val=obj.qdir, guard=obj.bx, nb=bd.cnum(obj.bx, obj.by+2), type=2;} // 2回目は下向き
 
-				if(val!==-1 && guard!==-1 && nb!==-1 && bd.cell[nb].ques!==51){
+				if(val!==-1 && guard!==-1 && nb!==null && bd.cell[nb].ques!==51){
 					var color = (obj.error===1?this.fontErrcolor:this.fontcolor);
 					var text = (val>=0?""+val:"");
 
@@ -1155,14 +1137,14 @@ Graphic.prototype = {
 		this.vinc('target_cursor', 'crispEdges');
 
 		if(isdraw!==false && pp.getVal('cursor')){
-			if(tc.cursorx < x1-1 || x2+1 < tc.cursorx){ return;}
-			if(tc.cursory < y1-1 || y2+1 < tc.cursory){ return;}
+			if(tc.cursor.x < x1-1 || x2+1 < tc.cursor.x){ return;}
+			if(tc.cursor.y < y1-1 || y2+1 < tc.cursor.y){ return;}
 
-			var cpx = k.p0.x + tc.cursorx*this.bw + 0.5;
-			var cpy = k.p0.y + tc.cursory*this.bh + 0.5;
+			var cpx = k.p0.x + tc.cursor.x*this.bw + 0.5;
+			var cpy = k.p0.y + tc.cursor.y*this.bh + 0.5;
 			var w, size;
-			if(islarge!==false){ w = mf(Math.max(this.cw/16, 2)); size = this.bw-0.5;}
-			else	           { w = mf(Math.max(this.cw/24, 1)); size = this.bw*0.56;}
+			if(islarge!==false){ w = (Math.max(this.cw/16, 2))|0; size = this.bw-0.5;}
+			else	           { w = (Math.max(this.cw/24, 1))|0; size = this.bw*0.56;}
 
 			this.vdel(["ti1_","ti2_","ti3_","ti4_"]);
 			g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
@@ -1182,16 +1164,16 @@ Graphic.prototype = {
 
 		if(k.playmode){ return;}
 
-		if(tc.cursorx < x1 || x2+2 < tc.cursorx){ return;}
-		if(tc.cursory < y1 || y2+2 < tc.cursory){ return;}
+		if(tc.cursor.x < x1 || x2+2 < tc.cursor.x){ return;}
+		if(tc.cursor.y < y1 || y2+2 < tc.cursor.y){ return;}
 
-		var cc = tc.getTCC(), ex = -1;
-		if(cc===-1){ ex = tc.getTEC();}
+		var cc = tc.getTCC(), ex = null;
+		if(cc===null){ ex = tc.getTEC();}
 		var target = kc.detectTarget(cc,ex);
-		if(target===-1){ return;}
+		if(target===0){ return;}
 
 		g.fillStyle = this.ttcolor;
-		this.drawTriangle1(k.p0.x+(tc.cursorx>>1)*this.cw, k.p0.y+(tc.cursory>>1)*this.ch, (target===2?4:2), vid);
+		this.drawTriangle1(k.p0.x+(tc.cursor.x>>1)*this.cw, k.p0.y+(tc.cursor.y>>1)*this.ch, (target===2?4:2), vid);
 	},
 
 	//---------------------------------------------------------------------------
@@ -1408,41 +1390,27 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// pc.resetVectorFunctions() flushCanvas, vnop系関数をリセットする
 	// pc.flushCanvas()    指定された領域を白で塗りつぶす
 	// pc.flushCanvasAll() Canvas全面を白で塗りつぶす
-	//
-	// pc.vnop()  VMLで既に描画されているオブジェクトを再描画せず、色は設定する
-	// pc.vhide() VMLで既に描画されているオブジェクトを隠す
-	// pc.vdel()  VMLで既に描画されているオブジェクトを削除する
-	// pc.vinc()  z-indexに設定される値を+1する
 	//---------------------------------------------------------------------------
-	flushCanvasAll : f_true,
-	flushCanvas    : f_true,
-	vnop  : f_true,
-	vhide : f_true,
-	vdel  : f_true,
-	vinc  : f_true,
+	resetVectorFunctions : function(){
+		this.flushCanvasAll = Graphic.prototype.flushCanvasAll;
+		this.flushCanvas    = Graphic.prototype.flushCanvas;
+		this.vnop  = Graphic.prototype.vnop;
+		this.vhide = Graphic.prototype.vhide;
+		this.vdel  = Graphic.prototype.vdel;
+		this.vinc  = Graphic.prototype.vinc;
+	},
 
-	setVectorFunctions : function(){
-		if(g.use.canvas){
-			this.flushCanvasAll = function(x1,y1,x2,y2){
+	flushCanvasAll : function(){
+		this.flushCanvasAll = ((g.use.canvas) ?
+			function(){
 				this.numobj = {};
 				base.numparent.innerHTML = '';
-			};
-			this.flushCanvas = function(x1,y1,x2,y2){
-				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
-				g.fillRect(k.p0.x+x1*this.bw, k.p0.y+y1*this.bh, (x2-x1)*this.bw, (y2-y1)*this.bh);
-			};
-			this.vnop  = f_true;
-			this.vhide = f_true;
-			this.vdel  = f_true;
-			this.vinc = function(layerid, rendering){
-				g.setLayer(layerid);
-				if(rendering){ g.setRendering(rendering);}
-			};
-		}
-		else{
-			this.flushCanvasAll = function(x1,y1,x2,y2){
+			}
+		:
+			function(){
 				g.clear();
 				this.zidx=0;
 				this.zidx_array=[];
@@ -1455,55 +1423,101 @@ Graphic.prototype = {
 				if(this.vnop("boardfull",this.NONE)){
 					g.fillRect(k.p0.x, k.p0.y, k.qcols*this.cw, k.qrows*this.ch);
 				}
-			};
-			this.flushCanvas = function(x1,y1,x2,y2){
-				this.zidx=1;
-			};
-			this.vnop = function(vid, ccflag){ // strokeのみ:0, fillのみ:1, 両方:2, 色の変更なし:3
-				g.vid = vid;
-				if(!!g.elements[vid]){
-					var el = g.elements[vid],
-						isfill   = this.vnop_FILL[ccflag],
-						isstroke = this.vnop_STROKE[ccflag];
+			}
+		);
+		this.flushCanvasAll();
+	},
+	flushCanvas : function(x1,y1,x2,y2){
+		this.flushCanvas = ((g.use.canvas) ?
+			function(x1,y1,x2,y2){
+				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
+				g.fillRect(k.p0.x+x1*this.bw, k.p0.y+y1*this.bh, (x2-x1)*this.bw, (y2-y1)*this.bh);
+			}
+		:
+			function(x1,y1,x2,y2){ this.zidx=1;}
+		);
+		this.flushCanvas(x1,y1,x2,y2);
+	},
 
-					if(g.use.vml){
-						el.style.display = 'inline';
-						if(isfill)  { el.fillcolor   = Camp.parse(g.fillStyle);}
-						if(isstroke){ el.strokecolor = Camp.parse(g.strokeStyle);}
-					}
-					else if(g.use.sl){
-						el.Visibility = "Visible";
-						if(isfill)  { el.fill   = Camp.parse(g.fillStyle);  }
-						if(isstroke){ el.stroke = Camp.parse(g.strokeStyle);}
-					}
-					else if(g.use.svg){
-						el.style.display = 'inline';
-						if(isfill)  { el.setAttribute('fill',  Camp.parse(g.fillStyle));}
-						if(isstroke){ el.setAttribute('stroke',Camp.parse(g.strokeStyle));}
-					}
-					return false;
+	//---------------------------------------------------------------------------
+	// pc.vnop()  VMLで既に描画されているオブジェクトを再描画せず、色は設定する
+	// pc.vhide() VMLで既に描画されているオブジェクトを隠す
+	// pc.vdel()  VMLで既に描画されているオブジェクトを削除する
+	// pc.vinc()  z-indexに設定される値を+1する
+	//---------------------------------------------------------------------------
+	vnop : function(vid, ccflag){
+		this.vnop = ((g.use.canvas) ?
+			f_true
+		:
+			// ccflag -> 0:strokeのみ, 1:fillのみ, 2:両方, 3:色の変更なし
+			function(vid, ccflag){
+				g.vid = vid;
+				if(!g.elements[vid]){ return true;}
+
+				var el = g.elements[vid],
+					isfill   = this.vnop_FILL[ccflag],
+					isstroke = this.vnop_STROKE[ccflag];
+
+				if(g.use.vml){
+					el.style.display = 'inline';
+					if(isfill)  { el.fillcolor   = Camp.parse(g.fillStyle);}
+					if(isstroke){ el.strokecolor = Camp.parse(g.strokeStyle);}
 				}
-				return true;
-			};
-			this.vhide = function(vid){
+				else if(g.use.sl){
+					el.Visibility = "Visible";
+					if(isfill)  { el.fill   = Camp.parse(g.fillStyle);  }
+					if(isstroke){ el.stroke = Camp.parse(g.strokeStyle);}
+				}
+				else if(g.use.svg){
+					el.style.display = 'inline';
+					if(isfill)  { el.setAttribute('fill',  Camp.parse(g.fillStyle));}
+					if(isstroke){ el.setAttribute('stroke',Camp.parse(g.strokeStyle));}
+				}
+				return false;
+			}
+		);
+		return this.vnop(vid, ccflag);
+	},
+	vhide : function(vid){
+		this.vhide = ((g.use.canvas) ?
+			f_true
+		:
+			function(vid){
 				if(typeof vid === 'string'){ vid = [vid];}
 				for(var i=0;i<vid.length;i++){
-					if(g.elements[vid[i]]){
-						if(!g.use.sl){ g.elements[vid[i]].style.display = 'none';}
-						else{ g.elements[vid[i]].Visibility = "Collapsed";}
-					}
+					if(!g.elements[vid[i]]){ continue;}
+
+					if(!g.use.sl){ g.elements[vid[i]].style.display = 'none';}
+					else{ g.elements[vid[i]].Visibility = "Collapsed";}
 				}
-			};
-			this.vdel = function(vid){
+			}
+		);
+		this.vhide(vid);
+	},
+	vdel : function(vid){
+		this.vdel = ((g.use.canvas) ?
+			f_true
+		:
+			function(vid){
 				for(var i=0;i<vid.length;i++){
-					if(g.elements[vid[i]]){
-						if(!g.use.sl){ g.target.removeChild(g.elements[vid[i]]);}
-						else{ g.elements[vid[i]].Visibility = "Collapsed";}
-						g.elements[vid[i]] = null;
-					}
+					if(!g.elements[vid[i]]){ continue;}
+
+					if(!g.use.sl){ g.target.removeChild(g.elements[vid[i]]);}
+					else{ g.elements[vid[i]].Visibility = "Collapsed";}
+					g.elements[vid[i]] = null;
 				}
-			};
-			this.vinc = function(layerid, rendering){
+			}
+		);
+		this.vdel(vid);
+	},
+	vinc : function(layerid, rendering){
+		this.vinc = ((g.use.canvas) ?
+			function(layerid, rendering){
+				g.setLayer(layerid);
+				if(rendering){ g.setRendering(rendering);}
+			}
+		:
+			function(layerid, rendering){
 				g.vid = "";
 				g.setLayer(layerid);
 
@@ -1514,8 +1528,9 @@ Graphic.prototype = {
 					if(!g.use.sl){ g.getLayerElement().style.zIndex = this.zidx;}
 					else{ g.getLayerElement()["Canvas.ZIndex"] = this.zidx;}
 				}
-			};
-		}
+			}
+		);
+		this.vinc(layerid, rendering);
 	},
 
 	//---------------------------------------------------------------------------
@@ -1535,7 +1550,7 @@ Graphic.prototype = {
 	},
 	dispnum : function(key, type, text, fontratio, color, px, py){
 		if(!this.fillTextPrecisely){
-			if(k.br.IEmoz4){ py+=2;}
+			if(k.br.IE6 || k.br.IE7){ py+=2;}
 
 			// エレメントを取得
 			var el = this.numobj[key];
@@ -1543,7 +1558,7 @@ Graphic.prototype = {
 
 			el.innerHTML = text;
 
-			var fontsize = mf(this.cw*fontratio*this.fontsizeratio);
+			var fontsize = (this.cw*fontratio*this.fontsizeratio)|0;
 			el.style.fontSize = (""+ fontsize + 'px');
 
 			this.showEL(key);	// 先に表示しないとwid,hgt=0になって位置がずれる
@@ -1565,9 +1580,9 @@ Graphic.prototype = {
 
 			el.style.color = color;
 		}
-		// Nativeな方法はこっちなんだけど、、(前は計5〜6%くらい遅くなってた)
+		// Nativeな方法はこっちなんだけど、、(前は計5～6%くらい遅くなってた)
 		else{
-			g.font = ""+mf(this.cw*fontratio*this.fontsizeratio)+"px 'Serif'";
+			g.font = ""+((this.cw*fontratio*this.fontsizeratio)|0)+"px 'Serif'";
 			g.fillStyle = color;
 			if(type===1){
 				g.textAlign = 'center'; g.textBaseline = 'middle';

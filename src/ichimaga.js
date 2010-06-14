@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 イチマガ/磁石イチマガ版 ichimaga.js v3.3.0
+// パズル固有スクリプト部 イチマガ/磁石イチマガ版 ichimaga.js v3.3.1
 //
 Puzzles.ichimaga = function(){ };
 Puzzles.ichimaga.prototype = {
@@ -111,7 +111,7 @@ Puzzles.ichimaga.prototype = {
 				pc.drawNumber1(clist[i]);
 			}
 		};
-		line.iscrossing = function(cc){ return (bd.QnC(cc)===-1);};
+		line.iscrossing = function(cc){ return bd.noNum(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -129,7 +129,7 @@ Puzzles.ichimaga.prototype = {
 				if     (this.checkpflag("m")){ base.setTitle("磁石イチマガ","Magnetic Ichimaga");}
 				else if(this.checkpflag("x")){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
 				else                         { base.setTitle("イチマガ","Ichimaga");}
-				document.title = base.gettitle();
+				_doc.title = base.gettitle();
 				ee('title2').el.innerHTML = base.gettitle();
 			}
 		};
@@ -153,7 +153,7 @@ Puzzles.ichimaga.prototype = {
 				if     (pzlflag=="mag")  { base.setTitle("磁石イチマガ","Magnetic Ichimaga");}
 				else if(pzlflag=="cross"){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
 				else                     { base.setTitle("イチマガ","Ichimaga");}
-				document.title = base.gettitle();
+				_doc.title = base.gettitle();
 				ee('title2').el.innerHTML = base.gettitle();
 			}
 
@@ -196,7 +196,7 @@ Puzzles.ichimaga.prototype = {
 				this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
 			}
 
-			if( !this.checkAllCell( function(c){ return bd.QnC(c)>0&&bd.QnC(c)!=line.lcntCell(c); } ) ){
+			if( !this.checkAllCell( function(c){ return bd.isValidNum(c) && bd.QnC(c)!==line.lcntCell(c); } ) ){
 				this.setAlert('○から出る線の本数が正しくありません。', 'The number is not equal to the number of lines out of the circle.'); return false;
 			}
 
@@ -204,7 +204,7 @@ Puzzles.ichimaga.prototype = {
 				this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
 			}
 
-			if( !this.checkAllCell( function(c){ return bd.QnC(c)!=-1&&line.lcntCell(c)==0; } ) ){
+			if( !this.checkAllCell( function(c){ return bd.isNum(c) && line.lcntCell(c)===0; } ) ){
 				this.setAlert('○から線が出ていません。', 'There is a lonely circle.'); return false;
 			}
 
@@ -219,7 +219,7 @@ Puzzles.ichimaga.prototype = {
 			if(line.ltotal[val]==0){ return true;}
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)!==-1 || line.lcntCell(c)!==val){ continue;}
+				if(bd.isNum(c) || line.lcntCell(c)!==val){ continue;}
 
 				if(this.inAutoCheck){ return false;}
 				if(result){ bd.sErBAll(2);}
@@ -235,7 +235,7 @@ Puzzles.ichimaga.prototype = {
 			for(var i=0;i<bd.bdmax;i++){ errinfo.check[i]=0; visited[i]=0;}
 
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)==-1){ continue;}
+				if(bd.noNum(c)){ continue;}
 
 				var bx=bd.cell[c].bx, by=bd.cell[c].by;
 				var dir4id = [bd.bnum(bx,by-1),bd.bnum(bx,by+1),bd.bnum(bx-1,by),bd.bnum(bx+1,by)];
@@ -251,12 +251,12 @@ Puzzles.ichimaga.prototype = {
 						switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 						if((bx+by)%2==0){
 							var cc = bd.cnum(bx,by);
-							if     (bd.QnC(cc)!=-1){ break;}
-							else if(line.lcntCell(cc)==4){ }
-							else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!=2){ ccnt++;} dir=2;}
-							else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!=1){ ccnt++;} dir=1;}
-							else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!=4){ ccnt++;} dir=4;}
-							else if(dir!=4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!=3){ ccnt++;} dir=3;}
+							if     (cc===null || bd.isNum(cc)){ break;}
+							else if(line.lcntCell(cc)===4){ }
+							else if(dir!==1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!==2){ ccnt++;} dir=2;}
+							else if(dir!==2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!==1){ ccnt++;} dir=1;}
+							else if(dir!==3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!==4){ ccnt++;} dir=4;}
+							else if(dir!==4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!==3){ ccnt++;} dir=3;}
 						}
 						else{
 							var id = bd.bnum(bx,by);
@@ -268,14 +268,15 @@ Puzzles.ichimaga.prototype = {
 
 					for(var i=0;i<idlist.length;i++){ errinfo.check[idlist[i]]=2;}
 
-					var cc = bd.cnum(bx,by);
-					if(this.ismag() && bd.QnC(c)!=-2 && bd.QnC(c)==bd.QnC(cc)){
+					var qn=(c!==null?bd.QnC(c):-1);
+					var cc = bd.cnum(bx,by), qnn=(cc!==null?bd.QnC(cc):-1);
+					if(this.ismag() && qn!==-2 && qn===qnn){
 						errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist}); continue;
 					}
-					if(idlist.length>0 && (bx+by)%2==0 && bd.QnC(c)!=-2 && ccnt>1){
+					if(idlist.length>0 && ((bx+by)&1)===0 && qn!==-2 && ccnt>1){
 						errinfo.data.push({errflag:2,cells:[c,cc],idlist:idlist}); continue;
 					}
-					if(idlist.length>0 && (bx+by)%2==1){
+					if(idlist.length>0 && ((bx+by)&1)===1){
 						errinfo.data.push({errflag:1,cells:[c],idlist:idlist}); continue;
 					}
 				}
@@ -299,10 +300,10 @@ Puzzles.ichimaga.prototype = {
 		ans.checkConnectedLine = function(){
 			var lcnt=0;
 			var visited = new AreaInfo();
-			for(var id=0;id<bd.bdmax;id++){ if(bd.isLine(id)){ visited.id[id]=0; lcnt++;}else{ visited.id[id]=-1;} }
-			var fc=-1;
-			for(var c=0;c<bd.cellmax;c++){ if(bd.QnC(c)!=-1 && line.lcntCell(c)>0){ fc=c; break;} }
-			if(fc==-1){ return true;}
+			for(var id=0;id<bd.bdmax;id++){ if(bd.isLine(id)){ visited.id[id]=0; lcnt++;}else{ visited.id[id]=null;} }
+			var fc=null;
+			for(var c=0;c<bd.cellmax;c++){ if(bd.isNum(c) && line.lcntCell(c)>0){ fc=c; break;} }
+			if(fc===null){ return true;}
 
 			this.cl0(visited.id, bd.cell[fc].bx, bd.cell[fc].by,0);
 			var lcnt2=0, idlist=[];
@@ -319,7 +320,7 @@ Puzzles.ichimaga.prototype = {
 			while(1){
 				switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 				if(!((bx+by)&1)){
-					if(bd.QnC(bd.cnum(bx,by))!=-1){
+					if(bd.isNum(bd.cnum(bx,by))){
 						if(bd.isLine(bd.bnum(bx,by-1))){ this.cl0(check,bx,by,1);}
 						if(bd.isLine(bd.bnum(bx,by+1))){ this.cl0(check,bx,by,2);}
 						if(bd.isLine(bd.bnum(bx-1,by))){ this.cl0(check,bx,by,3);}

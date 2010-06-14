@@ -1,4 +1,4 @@
-// Undo.js v3.3.0p2
+// Undo.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★OperationManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
@@ -84,7 +84,7 @@ OperationManager.prototype = {
 			this.ope[lastid].property == property &&
 			this.ope[lastid].id == id             &&
 			this.ope[lastid].num == old           &&
-			( (obj == k.CELL && ( property==k.QNUM || (property==k.QANS && k.isAnsNumber) )) || obj == k.CROSS)
+			( (obj == k.CELL && ( property==k.QNUM || (property==k.ANUM && k.isAnsNumber) )) || obj == k.CROSS)
 		)
 		{
 			this.ope[lastid].num = num;
@@ -157,6 +157,7 @@ OperationManager.prototype = {
 
 			bd.setposAll();
 			bd.setminmax();
+			base.enableInfo();
 			base.resetInfo(false);
 			base.resize_canvas();
 		}
@@ -171,21 +172,19 @@ OperationManager.prototype = {
 		if(ope.obj == k.CELL){
 			if     (pp == k.QUES){ bd.sQuC(ope.id, num);}
 			else if(pp == k.QNUM){ bd.sQnC(ope.id, num);}
-			else if(pp == k.DIREC){ bd.sDiC(ope.id, num);}
+			else if(pp == k.QDIR){ bd.sDiC(ope.id, num);}
+			else if(pp == k.ANUM){ bd.sAnC(ope.id, num);}
 			else if(pp == k.QANS){ bd.sQaC(ope.id, num);}
 			else if(pp == k.QSUB){ bd.sQsC(ope.id, num);}
-			else if(pp == k.CELL && !!num){ bd.cell[ope.id] = num;}
 			this.paintStack(bd.cell[ope.id].bx-1, bd.cell[ope.id].by-1, bd.cell[ope.id].bx+1, bd.cell[ope.id].by+1);
 		}
 		else if(ope.obj == k.EXCELL){
 			if     (pp == k.QNUM){ bd.sQnE(ope.id, num);}
-			else if(pp == k.DIREC){ bd.sDiE(ope.id, num);}
-			else if(pp == k.EXCELL && !!num){ bd.excell[ope.id] = num;}
+			else if(pp == k.QDIR){ bd.sDiE(ope.id, num);}
 		}
 		else if(ope.obj == k.CROSS){
 			if     (pp == k.QUES){ bd.sQuX(ope.id, num);}
 			else if(pp == k.QNUM){ bd.sQnX(ope.id, num);}
-			else if(pp == k.CROSS && !!num){ bd.cross[ope.id] = num;}
 			this.paintStack(bd.cross[ope.id].bx-1, bd.cross[ope.id].by-1, bd.cross[ope.id].bx+1, bd.cross[ope.id].by+1);
 		}
 		else if(ope.obj == k.BORDER){
@@ -194,7 +193,6 @@ OperationManager.prototype = {
 			else if(pp == k.QANS){ bd.sQaB(ope.id, num);}
 			else if(pp == k.QSUB){ bd.sQsB(ope.id, num);}
 			else if(pp == k.LINE){ bd.sLiB(ope.id, num);}
-			else if(pp == k.BORDER && !!num){ bd.border[ope.id] = num;}
 			this.paintBorder(ope.id);
 		}
 		else if(ope.obj == k.BOARD){
@@ -203,6 +201,7 @@ OperationManager.prototype = {
 			if(num & menu.ex.TURNFLIP){ menu.ex.turnflip    (num,d);}
 			else                      { menu.ex.expandreduce(num,d);}
 
+			base.disableInfo();
 			this.range = {x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby};
 			this.reqReset = true;
 		}

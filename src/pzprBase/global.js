@@ -1,14 +1,19 @@
-// global.js v3.3.0
+// global.js v3.3.1
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
 //---------------------------------------------------------------------------
-// Posクラス
-Pos = function(xx,yy){ this.x = xx; this.y = yy;};
-Pos.prototype = {
-	set : function(xx,yy){ this.x = xx; this.y = yy;},
-	clone : function(){ return new Pos(this.x, this.y);}
+// Pointクラス
+Point = function(xx,yy){ this.x = xx; this.y = yy;};
+Point.prototype = {
+	set : function(pos){ this.x = pos.x; this.y = pos.y;},
+	reset : function(){ this.x = null; this.y = null;},
+	valid : function(){ return (this.x!==null && this.y!==null);},
+	equals : function(pos){ return (this.x===pos.x && this.y===pos.y);}
 };
+// Addressクラス
+Address = function(xx,yy){ this.x = xx; this.y = yy;};
+Address.prototype = Point.prototype;
 
 // 各種パラメータの定義
 var k = {
@@ -60,8 +65,8 @@ var k = {
 	bwidth   : 18,			// セルの横幅/2
 	bheight  : 18,			// セルの縦幅/2
 
-	p0       : new Pos(0, 0),	// Canvas中での盤面の左上座標
-	cv_oft   : new Pos(0, 0),	// Canvasのwindow内での左上座標
+	p0       : new Point(0, 0),	// Canvas中での盤面の左上座標
+	cv_oft   : new Point(0, 0),	// Canvasのwindow内での左上座標
 
 	br:{
 		IE    : (!!(window.attachEvent && !window.opera)),
@@ -70,7 +75,13 @@ var k = {
 		Gecko : (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1),
 
 		WinWebKit: (navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1),
-		IEmoz4   : (!!(window.attachEvent && !window.opera) && navigator.userAgent.indexOf('Mozilla/4.0') > -1)
+		IE6      : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==6),
+		IE7      : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==7),
+		IE8      : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8)
+	},
+	os:{
+		iPhoneOS : (navigator.userAgent.indexOf('like Mac OS X') > -1),
+		Android  : (navigator.userAgent.indexOf('Android') > -1)
 	},
 	vml : Camp.current.vml,
 
@@ -81,13 +92,15 @@ var k = {
 	BORDER : 'border',
 	EXCELL : 'excell',
 
-	QUES  : 'ques',
-	QNUM  : 'qnum',
-	DIREC : 'direc',
-	QANS  : 'qans',
-	LINE  : 'line',
-	QSUB  : 'qsub',
+	QUES : 'ques',
+	QNUM : 'qnum',
+	QDIR : 'qdir',
+	QANS : 'qans',
+	ANUM : 'anum',
+	LINE : 'line',
+	QSUB : 'qsub',
 
+	NONE : 0,	// 方向なし
 	UP : 1,		// up
 	DN : 2,		// down
 	LT : 3,		// left
@@ -116,10 +129,8 @@ if(typeof localStorage != "object" && typeof globalStorage == "object"){
 
 //---------------------------------------------------------------------------
 // ★共通グローバル関数
-// mf()            小数点以下を切捨てる(旧int())
-// f_true()        trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
+// f_true()  trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
 //---------------------------------------------------------------------------
-var mf = Math.floor;
 function f_true(){ return true;}
 
 //---------------------------------------------------------------------------
@@ -254,39 +265,35 @@ _extend( _ElementManager, {
 	getSrcElement : function(e){
 		return e.target || e.srcElement;
 	},
-	pageX : (
-		((!_IE) ?
-			function(e){ return e.pageX;}
-		:
-			function(e){ return e.clientX + (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);}
-		)
-	),
-	pageY : (
-		((!_IE) ?
-			function(e){ return e.pageY;}
-		:
-			function(e){ return e.clientY + (_doc.documentElement.scrollTop  || _doc.body.scrollTop);}
-		)
-	),
+	pageX : function(e){
+		_ElementManager.pageX = (
+			(!_IE) ? function(e){ return e.pageX;}
+				   : function(e){ return e.clientX + (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);}
+		);
+		return _ElementManager.pageX(e);
+	},
+	pageY : function(e){
+		_ElementManager.pageY = (
+			(!_IE) ? function(e){ return e.pageY;}
+				   : function(e){ return e.clientY + (_doc.documentElement.scrollTop  || _doc.body.scrollTop);}
+		);
+		return _ElementManager.pageY(e);
+	},
 
-	windowWidth : (
-		((_doc.all) ?
-			function(){ return _doc.body.clientWidth;}
-		:(_doc.layers || _doc.getElementById)?
-			function(){ return innerWidth;}
-		:
-			function(){ return 0;}
-		)
-	),
-	windowHeight : (
-		((_doc.all) ?
-			function(){ return _doc.body.clientHeight;}
-		:(_doc.layers || _doc.getElementById)?
-			function(){ return innerHeight;}
-		:
-			function(){ return 0;}
-		)
-	),
+	windowWidth : function(){
+		_ElementManager.windowWidth = (
+			(!_IE) ? function(){ return innerWidth;}
+				   : function(){ return _doc.body.clientWidth;}
+		);
+		return _ElementManager.windowWidth();
+	},
+	windowHeight : function(){
+		_ElementManager.windowHeight = (
+			(!_IE) ? function(){ return innerHeight;}
+				   : function(){ return _doc.body.clientHeight;}
+		);
+		return _ElementManager.windowHeight();
+	},
 
 	//----------------------------------------------------------------------
 	// ee.binder()   thisをbindする
@@ -328,8 +335,8 @@ _ElementManager.ElementExt.prototype = {
 	// ee.getWidth()  エレメントの幅を返す
 	// ee.getHeight() エレメントの高さを返す
 	//----------------------------------------------------------------------
-	getRect : (
-		((!!document.createElement('div').getBoundingClientRect) ?
+	getRect : function(){
+		this.getRect = ((!!document.createElement('div').getBoundingClientRect) ?
 			((!_IE) ?
 				function(){
 					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
@@ -361,8 +368,9 @@ _ElementManager.ElementExt.prototype = {
 				var bottom = top  + (this.el.offsetHeight || this.el.clientHeight);
 				return { top:top, bottom:bottom, left:left, right:right};
 			}
-		)
-	),
+		);
+		return this.getRect();
+	},
 	getWidth  : function(){ return this.el.offsetWidth  || this.el.clientWidth; },
 	getHeight : function(){ return this.el.offsetHeight || this.el.clientHeight;},
 
@@ -513,11 +521,11 @@ Timer.prototype = {
 	// tm.label()      経過時間に表示する文字列を返す
 	//---------------------------------------------------------------------------
 	updatetime : function(){
-		var seconds = mf((this.current - this.st)/1000);
+		var seconds = ((this.current - this.st)/1000)|0;
 		if(this.bseconds == seconds){ return;}
 
-		var hours   = mf(seconds/3600);
-		var minutes = mf(seconds/60) - hours*60;
+		var hours   = (seconds/3600)|0;
+		var minutes = ((seconds/60)|0) - hours*60;
 		seconds = seconds - minutes*60 - hours*3600;
 
 		if(minutes < 10) minutes = "0" + minutes;

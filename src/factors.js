@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 因子の部屋版 factors.js v3.3.0
+// パズル固有スクリプト部 因子の部屋版 factors.js v3.3.1
 //
 Puzzles.factors = function(){ };
 Puzzles.factors.prototype = {
@@ -78,7 +78,7 @@ Puzzles.factors.prototype = {
 		bd.nummaxfunc = function(cc){ return k.editmode?999999:Math.max(k.qcols,k.qrows);};
 		bd.setNum = function(c,val){
 			if(val==0){ return;}
-			if(k.editmode){ this.sQnC(c,val);}else{ this.sQaC(c,val);}
+			if(k.editmode){ this.sQnC(c,val);}else{ this.sAnC(c,val);}
 		};
 	},
 
@@ -108,17 +108,17 @@ Puzzles.factors.prototype = {
 				var key_qans = ['cell',c,'qans'].join('_');
 				var key_ques = ['cell',c,'ques'].join('_');
 
-				if(bd.cell[c].qans!==-1){
+				if(bd.cell[c].anum!==-1){
 					var color = (bd.cell[c].error==1?this.fontErrcolor:this.fontAnscolor);
-					var size = (bd.cell[c].qans<10?0.8:0.7);
-					this.dispnum(key_qans, 1, (""+bd.cell[c].qans), size, color, obj.cpx, obj.cpy);
+					var size = (bd.cell[c].anum<10?0.8:0.7);
+					this.dispnum(key_qans, 1, (""+bd.cell[c].anum), size, color, obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(key_qans);}
 
 				if(bd.cell[c].qnum!==-1){
 					var size = 0.45;
-					if     (bd.QnC(c)>=100000){ size = 0.30;}
-					else if(bd.QnC(c)>= 10000){ size = 0.36;}
+					if     (bd.cell[c].qnum>=100000){ size = 0.30;}
+					else if(bd.cell[c].qnum>= 10000){ size = 0.36;}
 					this.dispnum(key_ques, 5, (""+bd.cell[c].qnum), size, this.fontcolor, obj.cpx, obj.cpy);
 				}
 				else{ this.hideEL(key_ques);}
@@ -142,12 +142,12 @@ Puzzles.factors.prototype = {
 		fio.decodeData = function(){
 			this.decodeBorderQues();
 			this.decodeCellQnum();
-			this.decodeCellQanssub();
+			this.decodeCellAnumsub();
 		};
 		fio.encodeData = function(){
 			this.encodeBorderQues();
 			this.encodeCellQnum();
-			this.encodeCellQanssub();
+			this.encodeCellAnumsub();
 		};
 	},
 
@@ -156,7 +156,7 @@ Puzzles.factors.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkRowsCols(this.isDifferentNumberInClist, bd.QaC) ){
+			if( !this.checkRowsCols(this.isDifferentNumberInClist, bd.AnC) ){
 				this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
 			}
 
@@ -164,20 +164,20 @@ Puzzles.factors.prototype = {
 				this.setAlert('ブロックの数字と数字の積が同じではありません。','A number of room is not equal to the product of these numbers.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QaC(c)==-1);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.AnC(c)===-1);}) ){
 				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QaC(c)==-1);});};
+		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.AnC(c)===-1);});};
 
 		ans.checkRoomNumber = function(rinfo){
 			var result = true;
 			for(var id=1;id<=rinfo.max;id++){
 				var product = 1;
 				for(var i=0;i<rinfo.room[id].idlist.length;i++){
-					if(bd.QaC(rinfo.room[id].idlist[i])>0){ product *= bd.QaC(rinfo.room[id].idlist[i]);}
+					if(bd.AnC(rinfo.room[id].idlist[i])>0){ product *= bd.AnC(rinfo.room[id].idlist[i]);}
 					else{ product = 0;}
 				}
 				if(product==0){ continue;}

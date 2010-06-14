@@ -21,6 +21,7 @@
 	li.puzmenu { display:inline; padding:2pt; white-space:nowrap;
 				 background-color:#dfdfdf; border:solid 1px gray; border-bottom:none;
 				 border-top-right-radius:3pt; border-top-left-radius:3pt;
+				 -moz-border-radius-topright:3pt; -moz-border-radius-topleft:3pt;
 				 -webkit-border-top-right-radius:3pt; -webkit-border-top-left-radius:3pt;
 				}
 	table.puztable{ display:none; width:100%; border:solid 1px gray; text-align:left;}

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 波及効果版 ripple.js v3.3.0
+// パズル固有スクリプト部 波及効果版 ripple.js v3.3.1
 //
 Puzzles.ripple = function(){ };
 Puzzles.ripple.prototype = {
@@ -125,23 +125,23 @@ Puzzles.ripple.prototype = {
 		fio.decodeData = function(){
 			this.decodeBorderQues();
 			this.decodeCellQnum();
-			this.decodeCellQanssub();
+			this.decodeCellAnumsub();
 		};
 		fio.encodeData = function(){
 			this.encodeBorderQues();
 			this.encodeCellQnum();
-			this.encodeCellQanssub();
+			this.encodeCellAnumsub();
 		};
 
 		fio.kanpenOpen = function(){
 			this.decodeAreaRoom();
 			this.decodeCellQnum_kanpen();
-			this.decodeCellQans_kanpen();
+			this.decodeCellAnum_kanpen();
 		};
 		fio.kanpenSave = function(){
 			this.encodeAreaRoom();
 			this.encodeCellQnum_kanpen();
-			this.encodeCellQans_kanpen();
+			this.encodeCellAnum_kanpen();
 		};
 	},
 
@@ -158,13 +158,13 @@ Puzzles.ripple.prototype = {
 				this.setAlert('数字よりもその間隔が短いところがあります。','The gap of the same kind of number is smaller than the number.'); return false;
 			}
 
-			if( !this.checkAllCell(bd.noNum) ){
+			if( !this.checkNoNumCell() ){
 				this.setAlert('数字の入っていないマスがあります。','There is an empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
+		ans.check1st = function(){ return this.checkNoNumCell();};
 
 		ans.checkRippleNumber = function(){
 			var result = true;
@@ -173,7 +173,7 @@ Puzzles.ripple.prototype = {
 				if(num<=0){ continue;}
 				for(var i=2;i<=num*2;i+=2){
 					var tc = bd.cnum(bx+i,by);
-					if(tc!=-1 && bd.getNum(tc)==num){
+					if(tc!==null && bd.getNum(tc)===num){
 						if(this.inAutoCheck){ return false;}
 						bd.sErC([c,tc],1);
 						result = false;
@@ -181,7 +181,7 @@ Puzzles.ripple.prototype = {
 				}
 				for(var i=2;i<=num*2;i+=2){
 					var tc = bd.cnum(bx,by+i);
-					if(tc!=-1 && bd.getNum(tc)==num){
+					if(tc!==null && bd.getNum(tc)===num){
 						if(this.inAutoCheck){ return false;}
 						bd.sErC([c,tc],1);
 						result = false;

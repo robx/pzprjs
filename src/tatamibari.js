@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.3.0
+// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.3.1
 //
 Puzzles.tatamibari = function(){ };
 Puzzles.tatamibari.prototype = {
@@ -19,7 +19,7 @@ Puzzles.tatamibari.prototype = {
 		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
 		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
 
-		k.dispzero        = true;	// 0を表示するかどうか
+		k.dispzero        = false;	// 0を表示するかどうか
 		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
 		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
 		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
@@ -119,7 +119,7 @@ Puzzles.tatamibari.prototype = {
 
 			this.drawMarks(x1,y1,x2,y2);
 
-			this.drawQuesHatenas(x1,y1,x2,y2);
+			this.drawHatenas(x1,y1,x2,y2);
 			this.drawBorderQsubs(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
@@ -171,30 +171,30 @@ Puzzles.tatamibari.prototype = {
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
-				if     (ca == '.')             { bd.sQnC(c,-2); c++;}
-				else if(ca == '1')             { bd.sQnC(c, 2); c++;}
-				else if(ca == '2')             { bd.sQnC(c, 3); c++;}
-				else if(ca == '3')             { bd.sQnC(c, 1); c++;}
-				else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-15);}
+				if     (ca==='.'){ bd.cell[c].qnum = -2;}
+				else if(ca==='1'){ bd.cell[c].qnum = 2;}
+				else if(ca==='2'){ bd.cell[c].qnum = 3;}
+				else if(ca==='3'){ bd.cell[c].qnum = 1;}
+				else if(ca>='g' && ca<='z'){ c+=(parseInt(ca,36)-16);}
 				else{ c++;}
 
-				if(c > bd.cellmax){ break;}
+				c++;
+				if(c>=bd.cellmax){ break;}
 			}
 
 			this.outbstr = bstr.substr(i);
 		};
 		enc.encodeTatamibari = function(){
-			var count, pass, i;
-			var cm="";
-			var pstr="";
+			var count, pass, cm="";
 
 			count=0;
-			for(i=0;i<bd.cellmax;i++){
-				if     (bd.QnC(i) == -2){ pstr = ".";}
-				else if(bd.QnC(i) ==  1){ pstr = "3";}
-				else if(bd.QnC(i) ==  2){ pstr = "1";}
-				else if(bd.QnC(i) ==  3){ pstr = "2";}
-				else{ pstr = ""; count++;}
+			for(var c=0;c<bd.cellmax;c++){
+				var pstr="", qn=bd.cell[c].qnum;
+				if     (qn===-2){ pstr = ".";}
+				else if(qn=== 1){ pstr = "3";}
+				else if(qn=== 2){ pstr = "1";}
+				else if(qn=== 3){ pstr = "2";}
+				else{ count++;}
 
 				if(count==0){ cm += pstr;}
 				else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
@@ -206,20 +206,20 @@ Puzzles.tatamibari.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCell( function(c,ca){
-				if     (ca=="a"){ bd.sQnC(c, 2);}
-				else if(ca=="b"){ bd.sQnC(c, 3);}
-				else if(ca=="c"){ bd.sQnC(c, 1);}
-				else if(ca=="-"){ bd.sQnC(c,-2);}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="a"){ obj.qnum = 2;}
+				else if(ca==="b"){ obj.qnum = 3;}
+				else if(ca==="c"){ obj.qnum = 1;}
+				else if(ca==="-"){ obj.qnum =-2;}
 			});
 			this.decodeBorderAns();
 		};
 		fio.encodeData = function(){
-			this.encodeCell( function(c){
-				if     (bd.QnC(c)==-2){ return "- ";}
-				else if(bd.QnC(c)== 1){ return "c ";}
-				else if(bd.QnC(c)== 2){ return "a ";}
-				else if(bd.QnC(c)== 3){ return "b ";}
+			this.encodeCell( function(obj){
+				if     (obj.qnum===-2){ return "- ";}
+				else if(obj.qnum=== 1){ return "c ";}
+				else if(obj.qnum=== 2){ return "a ";}
+				else if(obj.qnum=== 3){ return "b ";}
 				else                  { return ". ";}
 			});
 			this.encodeBorderAns();

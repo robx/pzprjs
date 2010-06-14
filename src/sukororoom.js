@@ -1,8 +1,8 @@
 //
-// パズル固有スクリプト部 コージュン版 cojun.js v3.3.1
+// パズル固有スクリプト部 数コロ部屋版 sukororoom.js v3.3.1
 //
-Puzzles.cojun = function(){ };
-Puzzles.cojun.prototype = {
+Puzzles.sukororoom = function(){ };
+Puzzles.sukororoom.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 8;}	// 盤面の横幅
@@ -22,8 +22,8 @@ Puzzles.cojun.prototype = {
 		k.dispzero        = false;	// 0を表示するかどうか
 		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
 		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.NumberWithMB    = true;	// 回答の数字と○×が入るパズル
+		k.linkNumber      = true;	// 数字がひとつながりになるパズル
 
 		k.BlackCell       = false;	// 黒マスを入力するパズル
 		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
@@ -31,25 +31,23 @@ Puzzles.cojun.prototype = {
 		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
 		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
 
-		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
+		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
 		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
 
-		base.setTitle("コージュン","Cojun");
-		base.setExpression("キーボードやマウスで数字を入力できます。",
-						   " Inputting number is available by keybord or mouse");
+		base.setTitle("数コロ部屋","Sukoro-room");
+		base.setExpression("　マスのクリックやキーボードで数字を入力できます。QAZキーで○、WSXキーで×を入力できます。",
+					   " It is available to input number by keybord or mouse. Each QAZ key to input auxiliary circle, each WSX key to input auxiliary cross.");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
-	menufix : function(){
-		if(k.EDITOR){ kp.defaultdisp = true;}
-	},
+	menufix : function(){ },
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.playmode) this.inputborder();
-			if(k.editmode){
+			if(k.editmode) this.inputborder();
+			if(k.playmode){
 				if(!kp.enabled()){ this.inputqnum();}
 				else{ kp.display();}
 			}
@@ -69,28 +67,64 @@ Puzzles.cojun.prototype = {
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
+			this.key_sukoro(ca);
+		};
+		kc.key_sukoro = function(ca){
+			if(k.playmode){
+				var cc=tc.getTCC();
+				if     (ca==='q'||ca==='a'||ca==='z')          { ca=(bd.QsC(cc)===1?'1':'s1');}
+				else if(ca==='w'||ca==='s'||ca==='x')          { ca=(bd.QsC(cc)===2?'2':'s2');}
+				else if(ca==='e'||ca==='d'||ca==='c'||ca==='-'){ ca=' '; }
+				else if(ca==='1' && bd.AnC(cc)===1)            { ca='s1';}
+				else if(ca==='2' && bd.AnC(cc)===2)            { ca='s2';}
+			}
 			this.key_inputqnum(ca);
 		};
 
-		kp.generate(0, true, true, '');
-		kp.kpinput = function(ca){ kc.key_inputqnum(ca);};
+		kp.kpgenerate = function(mode){
+			this.inputcol('num','knum1','1','1');
+			this.inputcol('num','knum2','2','2');
+			this.inputcol('num','knum3','3','3');
+			this.inputcol('num','knum4','4','4');
+			this.insertrow();
+			if(mode==1){
+				this.inputcol('num','knum.','-','?');
+				this.inputcol('num','knum_',' ',' ');
+				this.inputcol('empty','knumx','','');
+				this.inputcol('empty','knumy','','');
+				this.insertrow();
+			}
+			else{
+				this.tdcolor = pc.mbcolor;
+				this.inputcol('num','knumq','q','○');
+				this.inputcol('num','knumw','w','×');
+				this.tdcolor = "black";
+				this.inputcol('num','knum_',' ',' ');
+				this.inputcol('empty','knumx','','');
+				this.insertrow();
+			}
+		};
+		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
+		kp.kpinput = function(ca){
+			if(kc.key_sukoro(ca)){ return;}
+			kc.key_inputqnum(ca);
+		};
 
-		area.resetArea();
-		bd.nummaxfunc = function(cc){ return area.getCntOfRoomByCell(cc);};
+		bd.maxnum = 4;
 	},
 
 	//---------------------------------------------------------
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
-		pc.gridcolor = pc.gridcolor_DLIGHT;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawGrid(x1,y1,x2,y2);
 
-			this.drawNumbers(x1,y1,x2,y2);
-
 			this.drawBorders(x1,y1,x2,y2);
+
+			this.drawMBs(x1,y1,x2,y2);
+			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
@@ -103,11 +137,11 @@ Puzzles.cojun.prototype = {
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeBorder();
-			this.decodeNumber16();
+			this.decodeNumber10();
 		};
 		enc.pzlexport = function(type){
 			this.encodeBorder();
-			this.encodeNumber16();
+			this.encodeNumber10();
 		};
 
 		//---------------------------------------------------------
@@ -133,34 +167,23 @@ Puzzles.cojun.prototype = {
 				this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 			}
 
-			if( !this.checkSideCell(bd.sameNumber) ){
-				this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
+			if( !this.checkSameObjectInRoom(rinfo, function(c){ return (area.isBlock(c)?1:2);}) ){
+				this.setAlert('数字のあるなしが混在した部屋があります。','A room includes both numbered and non-numbered cells.'); return false;
 			}
 
-			if( !this.checkUpperNumber(rinfo) ){
-				this.setAlert('同じ部屋で上に小さい数字が乗っています。','There is an small number on big number in a room.'); return false;
+			if( !this.checkDir4Cell(area.isBlock,0) ){
+				this.setAlert('数字と、その数字の上下左右に入る数字の数が一致していません。','The number of numbers placed in four adjacent cells is not equal to the number.'); return false;
 			}
 
-			if( !this.checkNoNumCell() ){
-				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
+			if( !this.checkOneArea( area.getNumberInfo() ) ){
+				this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
+			}
+
+			if( !this.checkAllCell(function(c){ return (bd.QsC(c)===1);}) ){
+				this.setAlert('数字の入っていないマスがあります。','There is a cell that is not filled in number.'); return false;
 			}
 
 			return true;
-		};
-		ans.check1st = function(){ return this.checkNoNumCell();};
-
-		ans.checkUpperNumber = function(rinfo){
-			var result = true;
-			for(var c=0;c<bd.cellmax-k.qcols;c++){
-				var dc = bd.dn(c);
-				if(rinfo.id[c]!=rinfo.id[dc] || !bd.isNum(c) || !bd.isNum(dc)){ continue;}
-				if(bd.getNum(dc)>bd.getNum(c)){
-					if(this.inAutoCheck){ return false;}
-					bd.sErC([c,dc],1);
-					result = false;
-				}
-			}
-			return result;
 		};
 	}
 };

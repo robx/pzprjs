@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ひとりにしてくれ版 hitori.js v3.3.0
+// パズル固有スクリプト部 ひとりにしてくれ版 hitori.js v3.3.1
 //
 Puzzles.hitori = function(){ };
 Puzzles.hitori.prototype = {
@@ -131,24 +131,24 @@ Puzzles.hitori.prototype = {
 			for(i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
-				if(this.include(ca,"0","9")||this.include(ca,"a","z")){ bd.sQnC(c, parseInt(bstr.substr(i,1),36)); c++;}
-				else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),36)); c++; i+=2;}
-				else if(ca == '%'){ bd.sQnC(c, -2);                              c++;      }
-				else{ c++;}
+				if(this.include(ca,"0","9")||this.include(ca,"a","z"))
+								 { bd.cell[c].qnum = parseInt(ca,36);}
+				else if(ca==='-'){ bd.cell[c].qnum = parseInt(bstr.substr(i+1,2),36); i+=2;}
+				else if(ca==='%'){ bd.cell[c].qnum = -2;}
 
+				c++;
 				if(c > bd.cellmax){ break;}
 			}
 			this.outbstr = bstr.substr(i);
 		};
 		enc.encodeHitori = function(){
 			var count=0, cm="";
-			for(var i=0;i<bd.cellmax;i++){
-				var pstr = "";
-				var val = bd.QnC(i);
+			for(var c=0;c<bd.cellmax;c++){
+				var pstr = "", qn= bd.cell[c].qnum;
 
-				if     (val==-2           ){ pstr = "%";}
-				else if(val>= 0 && val< 16){ pstr =       val.toString(36);}
-				else if(val>=16 && val<256){ pstr = "-" + val.toString(36);}
+				if     (qn===-2)       { pstr = "%";}
+				else if(qn>= 0&&qn< 16){ pstr =       qn.toString(36);}
+				else if(qn>=16&&qn<256){ pstr = "-" + qn.toString(36);}
 				else{ count++;}
 
 				if(count==0){ cm += pstr;}
@@ -160,10 +160,10 @@ Puzzles.hitori.prototype = {
 		};
 
 		enc.decodeKanpen = function(){
-			fio.decodeCellQnum_kanpen();
+			fio.decodeCellQnum_kanpen_hitori();
 		};
 		enc.encodeKanpen = function(){
-			fio.encodeCellQnum_kanpen();
+			fio.encodeCellQnum_kanpen_hitori();
 		};
 
 		//---------------------------------------------------------
@@ -177,12 +177,23 @@ Puzzles.hitori.prototype = {
 		};
 
 		fio.kanpenOpen = function(){
-			this.decodeCellQnum_kanpen();
+			this.decodeCellQnum_kanpen_hitori();
 			this.decodeCellAns();
 		};
 		fio.kanpenSave = function(){
-			this.encodeCellQnum_kanpen();
+			this.encodeCellQnum_kanpen_hitori();
 			this.encodeCellAns();
+		};
+
+		fio.decodeCellQnum_kanpen_hitori = function(){
+			this.decodeCell( function(obj,ca){
+				if(ca!=="0"){ obj.qnum = parseInt(ca);}
+			});
+		};
+		fio.encodeCellQnum_kanpen_hitori = function(){
+			this.encodeCell( function(obj){
+				return ((obj.qnum>0)?(obj.qnum.toString() + " "):"0 ");
+			});
 		};
 	},
 

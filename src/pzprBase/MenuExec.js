@@ -1,4 +1,4 @@
-// MenuExec.js v3.3.0p2
+// MenuExec.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -88,7 +88,7 @@ MenuExec.prototype = {
 	modechange : function(num){
 		k.editmode = (num==1);
 		k.playmode = (num==3);
-		kc.prev = -1;
+		kc.prev = null;
 		ans.errDisp=true;
 		bd.errclear();
 		if(kp.ctl[1].enable || kp.ctl[3].enable){ pp.funcs.keypopup();}
@@ -103,14 +103,14 @@ MenuExec.prototype = {
 		if(menu.pop){
 			var col,row;
 			if(k.puzzleid!=="sudoku"){
-				col = mf(parseInt(document.newboard.col.value));
-				row = mf(parseInt(document.newboard.row.value));
+				col = (parseInt(_doc.newboard.col.value))|0;
+				row = (parseInt(_doc.newboard.row.value))|0;
 			}
 			else{
-				if     (document.newboard.size[0].checked){ col=row= 9;}
-				else if(document.newboard.size[1].checked){ col=row=16;}
-				else if(document.newboard.size[2].checked){ col=row=25;}
-				else if(document.newboard.size[3].checked){ col=row= 4;}
+				if     (_doc.newboard.size[0].checked){ col=row= 9;}
+				else if(_doc.newboard.size[1].checked){ col=row=16;}
+				else if(_doc.newboard.size[2].checked){ col=row=25;}
+				else if(_doc.newboard.size[3].checked){ col=row= 4;}
 			}
 
 			if(col>0 && row>0){ bd.initBoardSize(col,row);}
@@ -128,7 +128,7 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	urlinput : function(e){
 		if(menu.pop){
-			enc.parseURI(document.urlinput.ta.value);
+			enc.parseURI(_doc.urlinput.ta.value);
 			enc.pzlinput();
 
 			tm.reset();
@@ -138,18 +138,18 @@ MenuExec.prototype = {
 	urloutput : function(e){
 		if(menu.pop){
 			switch(ee.getSrcElement(e).name){
-				case "pzprv3":     document.urloutput.ta.value = enc.pzloutput(enc.PZPRV3);  break;
-				case "pzprapplet": document.urloutput.ta.value = enc.pzloutput(enc.PAPRAPP); break;
-				case "kanpen":     document.urloutput.ta.value = enc.pzloutput(enc.KANPEN);  break;
-				case "pzprv3edit": document.urloutput.ta.value = enc.pzloutput(enc.PZPRV3E); break;
-				case "heyaapp":    document.urloutput.ta.value = enc.pzloutput(enc.HEYAAPP); break;
+				case "pzprv3":     _doc.urloutput.ta.value = enc.pzloutput(enc.PZPRV3);  break;
+				case "pzprapplet": _doc.urloutput.ta.value = enc.pzloutput(enc.PAPRAPP); break;
+				case "kanpen":     _doc.urloutput.ta.value = enc.pzloutput(enc.KANPEN);  break;
+				case "pzprv3edit": _doc.urloutput.ta.value = enc.pzloutput(enc.PZPRV3E); break;
+				case "heyaapp":    _doc.urloutput.ta.value = enc.pzloutput(enc.HEYAAPP); break;
 			}
 		}
 	},
 	openurl : function(e){
 		if(menu.pop){
-			if(document.urloutput.ta.value!==''){
-				var win = window.open(document.urloutput.ta.value, '', '');
+			if(_doc.urloutput.ta.value!==''){
+				var win = window.open(_doc.urloutput.ta.value, '', '');
 			}
 		}
 	},
@@ -161,7 +161,7 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	fileopen : function(e){
 		if(menu.pop){ menu.popclose();}
-		var fileEL = document.fileform.filebox;
+		var fileEL = _doc.fileform.filebox;
 
 		if(!!this.reader || this.enableGetText){
 			var fitem = fileEL.files[0];
@@ -172,10 +172,10 @@ MenuExec.prototype = {
 		}
 		else{
 			if(!fileEL.value){ return;}
-			document.fileform.submit();
+			_doc.fileform.submit();
 		}
 
-		document.fileform.reset();
+		_doc.fileform.reset();
 		tm.reset();
 	},
 	fileonload : function(data){
@@ -188,7 +188,7 @@ MenuExec.prototype = {
 
 		fio.filedecode(fstr);
 
-		document.fileform.reset();
+		_doc.fileform.reset();
 		tm.reset();
 	},
 
@@ -198,17 +198,17 @@ MenuExec.prototype = {
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;} }
 
-		document.fileform2.filename.value = fname;
+		_doc.fileform2.filename.value = fname;
 
-		if     (navigator.platform.indexOf("Win")!==-1){ document.fileform2.platform.value = "Win";}
-		else if(navigator.platform.indexOf("Mac")!==-1){ document.fileform2.platform.value = "Mac";}
-		else                                           { document.fileform2.platform.value = "Others";}
+		if     (navigator.platform.indexOf("Win")!==-1){ _doc.fileform2.platform.value = "Win";}
+		else if(navigator.platform.indexOf("Mac")!==-1){ _doc.fileform2.platform.value = "Mac";}
+		else                                           { _doc.fileform2.platform.value = "Others";}
 
-		document.fileform2.ques.value   = fio.fileencode(ftype);
-		document.fileform2.urlstr.value = fio.urlstr;
-		document.fileform2.operation.value = 'save';
+		_doc.fileform2.ques.value   = fio.fileencode(ftype);
+		_doc.fileform2.urlstr.value = fio.urlstr;
+		_doc.fileform2.operation.value = 'save';
 
-		document.fileform2.submit();
+		_doc.fileform2.submit();
 	},
 
 	//------------------------------------------------------------------------------
@@ -233,10 +233,10 @@ MenuExec.prototype = {
 		var url = g.canvas.toDataURL();
 
 		if(isDL){
-			document.fileform2.filename.value  = k.puzzleid+'.gif';
-			document.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
-			document.fileform2.operation.value = 'imagesave';
-			document.fileform2.submit();
+			_doc.fileform2.filename.value  = k.puzzleid+'.gif';
+			_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
+			_doc.fileform2.operation.value = 'imagesave';
+			_doc.fileform2.submit();
 		}
 		else{
 			window.open(url, '', '');
@@ -257,8 +257,8 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	dispsize : function(e){
 		if(menu.pop){
-			var csize = parseInt(document.dispsize.cs.value);
-			if(csize>0){ k.cellsize = mf(csize);}
+			var csize = parseInt(_doc.dispsize.cs.value);
+			if(csize>0){ k.cellsize = (csize|0);}
 
 			menu.popclose();
 			base.resize_canvas();	// Canvasを更新する
@@ -338,7 +338,6 @@ MenuExec.prototype = {
 	// menu.ex.expandreduce() 盤面の拡大・縮小を実行する
 	// menu.ex.expandGroup()  オブジェクトの追加を行う
 	// menu.ex.reduceGroup()  オブジェクトの消去を行う
-	// menu.ex.recordObject() 指定されたオブジェクトをOperationManagerに追加する
 	//------------------------------------------------------------------------------
 	expandreduce : function(key,d){
 		base.disableInfo();
@@ -372,7 +371,8 @@ MenuExec.prototype = {
 		var group = bd.getGroup(type);
 		for(var i=group.length-1;i>=0;i--){
 			if(!!this.insex[type][this.distObj(type,i,key)]){
-				group[i] = bd.newObject(type,i);
+				group[i] = bd.newObject(type);
+				group[i].allclear(i,false);
 				margin--;
 			}
 			else if(margin>0){ group[i] = group[i-margin];}
@@ -383,31 +383,17 @@ MenuExec.prototype = {
 	reduceGroup : function(type,key){
 		if(type===k.BORDER){ this.reduceborder(key);}
 
-		var margin=0, group = bd.getGroup(type);
+		var margin=0, group = bd.getGroup(type), isrec=(!um.undoExec && !um.redoExec);
+		if(isrec){ um.forceRecord = true;}
 		for(var i=0;i<group.length;i++){
 			if(!!this.insex[type][this.distObj(type,i,key)]){
-				if(!group[i].isempty()){ this.recordObject(type,i);}
+				group[i].allclear(i,isrec);
 				margin++;
 			}
 			else if(margin>0){ group[i-margin] = group[i];}
 		}
 		for(var i=0;i<margin;i++){ group.pop();}
-	},
-	recordObject : function(type, id){
-		if(um.undoExec || um.redoExec){ return;}
-		// オブジェクトを消滅させるのでOperationManagerに登録する
-		// 盤面拡大縮小・回転反転のうち登録されるのは盤面縮小時のみです
-
-		var old = bd.newObject(type, id), obj;
-		if     (type===k.CELL)  { obj = bd.cell[id];  }
-		else if(type===k.CROSS) { obj = bd.cross[id]; }
-		else if(type===k.BORDER){ obj = bd.border[id];}
-		else if(type===k.EXCELL){ obj = bd.excell[id];}
-		for(var i in obj){ old[i] = obj[i];}
-
-		um.forceRecord = true;
-		um.addOpe(type, type, id, old, null);
-		um.forceRecord = false;
+		if(isrec){ um.forceRecord = false;}
 	},
 
 	//------------------------------------------------------------------------------
@@ -476,21 +462,14 @@ MenuExec.prototype = {
 	// menu.ex.distObj()      上下左右いずれかの外枠との距離を求める
 	//---------------------------------------------------------------------------
 	distObj : function(type,id,key){
-		var obj;
-		if     (type===k.CELL)  { obj = bd.cell[id];}
-		else if(type===k.CROSS) { obj = bd.cross[id];}
-		else if(type===k.BORDER){ obj = bd.border[id];}
-		else if(type===k.EXCELL){ obj = bd.excell[id];}
-		else{ return -1;}
+		var obj = bd.getObject(type, id);
+		if(!obj){ return -1;}
 
 		key &= 0x0F;
-		try{
-			if     (key===k.UP){ return obj.by;}
-			else if(key===k.DN){ return 2*k.qrows-obj.by;}
-			else if(key===k.LT){ return obj.bx;}
-			else if(key===k.RT){ return 2*k.qcols-obj.bx;}
-		}
-		catch(e){ console.log([type, id].join(''));}
+		if     (key===k.UP){ return obj.by;}
+		else if(key===k.DN){ return 2*k.qrows-obj.by;}
+		else if(key===k.LT){ return obj.bx;}
+		else if(key===k.RT){ return 2*k.qcols-obj.bx;}
 		return -1;
 	},
 
@@ -507,12 +486,13 @@ MenuExec.prototype = {
 			// 直前のexpandGroupで、bx,byプロパティが不定なままなので設定する
 			bd.setposBorders();
 
+			var dist = (k.isborderAsLine?2:1);
 			for(var id=0;id<bd.bdmax;id++){
-				if(this.distObj(k.BORDER,id,key)!==(k.isborderAsLine?2:1)){ continue;}
+				if(this.distObj(k.BORDER,id,key)!==dist){ continue;}
 
 				var source = (k.isborderAsLine ? this.outerBorder(id,key) : this.innerBorder(id,key));
 				this.copyBorder(id,source);
-				if(k.isborderAsLine){ bd.border[source].allclear(source);}
+				if(k.isborderAsLine){ bd.border[source].allclear(source,false);}
 			}
 		}
 	},
@@ -531,6 +511,7 @@ MenuExec.prototype = {
 		bd.border[id1].ques  = bd.border[id2].ques;
 		bd.border[id1].qans  = bd.border[id2].qans;
 		if(k.isborderAsLine){
+			bd.border[id1].line  = bd.border[id2].line;
 			bd.border[id1].qsub  = bd.border[id2].qsub;
 			bd.border[id1].color = bd.border[id2].color;
 		}
@@ -538,20 +519,20 @@ MenuExec.prototype = {
 	innerBorder : function(id,key){
 		var bx=bd.border[id].bx, by=bd.border[id].by;
 		key &= 0x0F;
-		if     (key===k.UP){ return bd.bnum2(bx, by+2, k.qcols, k.qrows);}
-		else if(key===k.DN){ return bd.bnum2(bx, by-2, k.qcols, k.qrows);}
-		else if(key===k.LT){ return bd.bnum2(bx+2, by, k.qcols, k.qrows);}
-		else if(key===k.RT){ return bd.bnum2(bx-2, by, k.qcols, k.qrows);}
-		return -1;
+		if     (key===k.UP){ return bd.bnum(bx, by+2);}
+		else if(key===k.DN){ return bd.bnum(bx, by-2);}
+		else if(key===k.LT){ return bd.bnum(bx+2, by);}
+		else if(key===k.RT){ return bd.bnum(bx-2, by);}
+		return null;
 	},
 	outerBorder : function(id,key){
 		var bx=bd.border[id].bx, by=bd.border[id].by;
 		key &= 0x0F;
-		if     (key===k.UP){ return bd.bnum2(bx, by-2, k.qcols, k.qrows);}
-		else if(key===k.DN){ return bd.bnum2(bx, by+2, k.qcols, k.qrows);}
-		else if(key===k.LT){ return bd.bnum2(bx-2, by, k.qcols, k.qrows);}
-		else if(key===k.RT){ return bd.bnum2(bx+2, by, k.qcols, k.qrows);}
-		return -1;
+		if     (key===k.UP){ return bd.bnum(bx, by-2);}
+		else if(key===k.DN){ return bd.bnum(bx, by+2);}
+		else if(key===k.LT){ return bd.bnum(bx-2, by);}
+		else if(key===k.RT){ return bd.bnum(bx+2, by);}
+		return null;
 	},
 
 	//------------------------------------------------------------------------------
@@ -567,63 +548,31 @@ MenuExec.prototype = {
 	adjustBoardData : function(key,d){
 		this.adjustSpecial.call(this,key,d);
 
-		var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
-		switch(key){
-		case this.FLIPY: // 上下反転
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(true){
-					var val = ({2:5,3:4,4:3,5:2,104:107,105:106,106:105,107:104})[bd.QuC(c)];
-					if(!isNaN(val)){ bd.sQuC(c,val);}
-				}
-				if(k.isexcell!==1){
-					var val = ({1:2,2:1})[bd.DiC(c)];
-					if(!isNaN(val)){ bd.sDiC(c,val);}
-				}
+		if(key & this.TURNFLIP){
+			var tques={};
+			switch(key){
+				case this.FLIPY: tques={2:5,3:4,4:3,5:2,14:17,15:16,16:15,17:14}; break;
+				case this.FLIPX: tques={2:3,3:2,4:5,5:4,14:15,15:14,16:17,17:16}; break;
+				case this.TURNR: tques={2:5,3:2,4:3,5:4,12:13,13:12,14:17,15:14,16:15,17:16,21:22,22:21}; break;
+				case this.TURNL: tques={2:3,3:4,4:5,5:2,12:13,13:12,14:15,15:16,16:17,17:14,21:22,22:21}; break;
 			}
-			break;
 
-		case this.FLIPX: // 左右反転
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(true){
-					var val = ({2:3,3:2,4:5,5:4,104:105,105:104,106:107,107:106})[bd.QuC(c)];
-					if(!isNaN(val)){ bd.sQuC(c,val);}
-				}
-				if(k.isexcell!==1){
-					var val = ({3:4,4:3})[bd.DiC(c)];
-					if(!isNaN(val)){ bd.sDiC(c,val);}
-				}
+			var tdir={};
+			switch(key){
+				case this.FLIPY: tdir={1:2,2:1}; break;			// 上下反転
+				case this.FLIPX: tdir={3:4,4:3}; break;			// 左右反転
+				case this.TURNR: tdir={1:4,2:3,3:1,4:2}; break;	// 右90°回転
+				case this.TURNL: tdir={1:3,2:4,3:2,4:1}; break;	// 左90°回転
 			}
-			break;
 
-		case this.TURNR: // 右90°反転
+			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(true){
-					var val = {2:5,3:2,4:3,5:4,21:22,22:21,102:103,103:102,104:107,105:104,106:105,107:106}[bd.QuC(c)];
-					if(!isNaN(val)){ bd.sQuC(c,val);}
-				}
+				var val=tques[bd.QuC(c)]; if(!!val){ bd.sQuC(c,val);}
 				if(k.isexcell!==1){
-					var val = {1:4,2:3,3:1,4:2}[bd.DiC(c)];
-					if(!isNaN(val)){ bd.sDiC(c,val);}
+					var val=tdir[bd.DiC(c)]; if(!!val){ bd.sDiC(c,val);}
 				}
 			}
-			break;
-
-		case this.TURNL: // 左90°反転
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(true){
-					var val = {2:3,3:4,4:5,5:2,21:22,22:21,102:103,103:102,104:105,105:106,106:107,107:104}[bd.QuC(c)];
-					if(!isNaN(val)){ bd.sQuC(c,val);}
-				}
-				if(k.isexcell!==1){
-					var val = {1:3,2:4,3:2,4:1}[bd.DiC(c)];
-					if(!isNaN(val)){ bd.sDiC(c,val);}
-				}
-			}
-			break;
 		}
 
 		if((key & this.REDUCE) && k.roomNumber){
@@ -650,76 +599,85 @@ MenuExec.prototype = {
 	adjustSpecial2 : function(key,d){ },
 
 	adjustQues51_1 : function(key,d){
+		var bx1=(d.x1|1), by1=(d.y1|1);
 		this.qnumw = [];
 		this.qnumh = [];
 
-		for(var by=(d.y1|1);by<=d.y2;by+=2){
+		for(var by=by1;by<=d.y2;by+=2){
 			this.qnumw[by] = [bd.QnE(bd.exnum(-1,by))];
-			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
-				if(bd.QuC(bd.cnum(bx,by))===51){ this.qnumw[by].push(bd.QnC(bd.cnum(bx,by)));}
+			for(var bx=bx1;bx<=d.x2;bx+=2){
+				var cc = bd.cnum(bx,by);
+				if(cc!==null && bd.QuC(cc)===51){ this.qnumw[by].push(bd.QnC(cc));}
 			}
 		}
-		for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+		for(var bx=bx1;bx<=d.x2;bx+=2){
 			this.qnumh[bx] = [bd.DiE(bd.exnum(bx,-1))];
-			for(var by=(d.y1|1);by<=d.y2;by+=2){
-				if(bd.QuC(bd.cnum(bx,by))===51){ this.qnumh[bx].push(bd.DiC(bd.cnum(bx,by)));}
+			for(var by=by1;by<=d.y2;by+=2){
+				var cc = bd.cnum(bx,by);
+				if(cc!==null && bd.QuC(cc)===51){ this.qnumh[bx].push(bd.DiC(cc));}
 			}
 		}
 	},
 	adjustQues51_2 : function(key,d){
-		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), idx;
+		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=(d.x1|1), by1=(d.y1|1), idx;
 
 		switch(key){
 		case this.FLIPY: // 上下反転
-			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+			for(var bx=bx1;bx<=d.x2;bx+=2){
 				idx = 1; this.qnumh[bx] = this.qnumh[bx].reverse();
 				bd.sDiE(bd.exnum(bx,-1), this.qnumh[bx][0]);
-				for(var by=(d.y1|1);by<=d.y2;by+=2){
-					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sDiC(bd.cnum(bx,by), this.qnumh[bx][idx]); idx++;}
+				for(var by=by1;by<=d.y2;by+=2){
+					var cc = bd.cnum(bx,by);
+					if(cc!==null && bd.QuC(cc)===51){ bd.sDiC(cc, this.qnumh[bx][idx]); idx++;}
 				}
 			}
 			break;
 
 		case this.FLIPX: // 左右反転
-			for(var by=(d.y1|1);by<=d.y2;by+=2){
+			for(var by=by1;by<=d.y2;by+=2){
 				idx = 1; this.qnumw[by] = this.qnumw[by].reverse();
 				bd.sQnE(bd.exnum(-1,by), this.qnumw[by][0]);
-				for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
-					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sQnC(bd.cnum(bx,by), this.qnumw[by][idx]); idx++;}
+				for(var bx=bx1;bx<=d.x2;bx+=2){
+					var cc = bd.cnum(bx,by);
+					if(cc!==null && bd.QuC(cc)===51){ bd.sQnC(cc, this.qnumw[by][idx]); idx++;}
 				}
 			}
 			break;
 
 		case this.TURNR: // 右90°反転
-			for(var by=(d.y1|1);by<=d.y2;by+=2){
+			for(var by=by1;by<=d.y2;by+=2){
 				idx = 1; this.qnumh[by] = this.qnumh[by].reverse();
 				bd.sQnE(bd.exnum(-1,by), this.qnumh[by][0]);
-				for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
-					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sQnC(bd.cnum(bx,by), this.qnumh[by][idx]); idx++;}
+				for(var bx=bx1;bx<=d.x2;bx+=2){
+					var cc = bd.cnum(bx,by);
+					if(cc!==null && bd.QuC(cc)===51){ bd.sQnC(cc, this.qnumh[by][idx]); idx++;}
 				}
 			}
-			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+			for(var bx=bx1;bx<=d.x2;bx+=2){
 				idx = 1;
 				bd.sDiE(bd.exnum(bx,-1), this.qnumw[xx-bx][0]);
-				for(var by=(d.y1|1);by<=d.y2;by+=2){
-					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sDiC(bd.cnum(bx,by), this.qnumw[xx-bx][idx]); idx++;}
+				for(var by=by1;by<=d.y2;by+=2){
+					var cc = bd.cnum(bx,by);
+					if(cc!==null && bd.QuC(cc)===51){ bd.sDiC(cc, this.qnumw[xx-bx][idx]); idx++;}
 				}
 			}
 			break;
 
 		case this.TURNL: // 左90°反転
-			for(var by=(d.y1|1);by<=d.y2;by+=2){
+			for(var by=by1;by<=d.y2;by+=2){
 				idx = 1;
 				bd.sQnE(bd.exnum(-1,by), this.qnumh[yy-by][0]);
-				for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
-					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sQnC(bd.cnum(bx,by), this.qnumh[yy-by][idx]); idx++;}
+				for(var bx=bx1;bx<=d.x2;bx+=2){
+					var cc = bd.cnum(bx,by);
+					if(cc!==null && bd.QuC(cc)===51){ bd.sQnC(cc, this.qnumh[yy-by][idx]); idx++;}
 				}
 			}
-			for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+			for(var bx=bx1;bx<=d.x2;bx+=2){
 				idx = 1; this.qnumw[bx] = this.qnumw[bx].reverse();
 				bd.sDiE(bd.exnum(bx,-1), this.qnumw[bx][0]);
-				for(var by=(d.y1|1);by<=d.y2;by+=2){
-					if(bd.QuC(bd.cnum(bx,by))===51){ bd.sDiC(bd.cnum(bx,by), this.qnumw[bx][idx]); idx++;}
+				for(var by=by1;by<=d.y2;by+=2){
+					var cc = bd.cnum(bx,by);
+					if(cc!==null && bd.QuC(cc)===51){ bd.sDiC(cc, this.qnumw[bx][idx]); idx++;}
 				}
 			}
 			break;
@@ -733,19 +691,6 @@ MenuExec.prototype = {
 	ACconfirm : function(){
 		if(confirm(menu.isLangJP()?"回答を消去しますか？":"Do you want to erase the Answer?")){
 			um.newOperation(true);
-			{
-				for(var i=0;i<bd.cellmax;i++){
-					if(bd.cell[i].qans!==bd.defcell.qans){ um.addOpe(k.CELL,k.QANS,i,bd.cell[i].qans,bd.defcell.qans);}
-					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe(k.CELL,k.QSUB,i,bd.cell[i].qsub,bd.defcell.qsub);}
-				}
-			}
-			if(!!k.isborder){
-				for(var i=0;i<bd.bdmax;i++){
-					if(bd.border[i].qans!==bd.defborder.qans){ um.addOpe(k.BORDER,k.QANS,i,bd.border[i].qans,bd.defborder.qans);}
-					if(bd.border[i].line!==bd.defborder.line){ um.addOpe(k.BORDER,k.LINE,i,bd.border[i].line,bd.defborder.line);}
-					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,k.QSUB,i,bd.border[i].qsub,bd.defborder.qsub);}
-				}
-			}
 
 			bd.ansclear();
 			base.resetInfo(false);
@@ -755,16 +700,6 @@ MenuExec.prototype = {
 	ASconfirm : function(){
 		if(confirm(menu.isLangJP()?"補助記号を消去しますか？":"Do you want to erase the auxiliary marks?")){
 			um.newOperation(true);
-			{
-				for(var i=0;i<bd.cellmax;i++){
-					if(bd.cell[i].qsub!==bd.defcell.qsub){ um.addOpe(k.CELL,k.QSUB,i,bd.cell[i].qsub,bd.defcell.qsub);}
-				}
-			}
-			if(!!k.isborder){
-				for(var i=0;i<bd.bdmax;i++){
-					if(bd.border[i].qsub!==bd.defborder.qsub){ um.addOpe(k.BORDER,k.QSUB,i,bd.border[i].qsub,bd.defborder.qsub);}
-				}
-			}
 
 			bd.subclear();
 			pc.paintAll();

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.3.0
+// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.3.1
 //
 Puzzles.icebarn = function(){ };
 Puzzles.icebarn.prototype = {
@@ -80,8 +80,8 @@ Puzzles.icebarn.prototype = {
 		};
 		mv.inputIcebarn = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell){ return;}
-			if(this.inputData==-1){ this.inputData = (bd.QuC(cc)==6?0:6);}
+			if(cc===null || cc===this.mouseCell){ return;}
+			if(this.inputData===null){ this.inputData = (bd.QuC(cc)==6?0:6);}
 
 			bd.sQuC(cc, this.inputData);
 			pc.paintCellAround(cc);
@@ -89,32 +89,30 @@ Puzzles.icebarn.prototype = {
 		};
 		mv.inputarrow = function(){
 			var pos = this.borderpos(0);
-			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
+			if(this.prevPos.equals(pos)){ return;}
 
-			var id = -1;
-			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1); if(this.inputData!=0){ this.inputData=1;} }
-			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1); if(this.inputData!=0){ this.inputData=2;} }
-			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  ); if(this.inputData!=0){ this.inputData=1;} }
-			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  ); if(this.inputData!=0){ this.inputData=2;} }
+			var id = this.getnb(this.prevPos, pos);
+			if(id!==null){
+				var dir = this.getdir(this.prevPos, pos);
+				if(this.inputData===null){ this.inputData = ((dir===k.UP||dir===k.LT) ? 1 : 2);}
 
-			this.mouseCell = pos;
-
-			if(id==-1){ return;}
-			else if(id<bd.bdinside){
-				if(this.inputData==bd.getArrow(id)){ this.inputData=0;}
-				bd.setArrow(id,this.inputData);
-			}
-			else{
-				if(bd.border[id].bx===0 || bd.border[id].by===0){
-					if     (this.inputData==1){ bd.inputarrowout(id);}
-					else if(this.inputData==2){ bd.inputarrowin (id);}
+				if(id<bd.bdinside){
+					if(this.inputData==bd.getArrow(id)){ this.inputData=0;}
+					bd.setArrow(id,this.inputData);
 				}
 				else{
-					if     (this.inputData==1){ bd.inputarrowin (id);}
-					else if(this.inputData==2){ bd.inputarrowout(id);}
+					if(bd.border[id].bx===0 || bd.border[id].by===0){
+						if     (this.inputData==1){ bd.inputarrowout(id);}
+						else if(this.inputData==2){ bd.inputarrowin (id);}
+					}
+					else{
+						if     (this.inputData==1){ bd.inputarrowin (id);}
+						else if(this.inputData==2){ bd.inputarrowout(id);}
+					}
 				}
+				pc.paintBorder(id);
 			}
-			pc.paintBorder(id);
+			this.prevPos = pos;
 		};
 
 		// キーボード入力系
@@ -122,8 +120,8 @@ Puzzles.icebarn.prototype = {
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
 
-		if(!bd.arrowin) { bd.arrowin  = -1;}
-		if(!bd.arrowout){ bd.arrowout = -1;}
+		if(!bd.arrowin) { bd.arrowin  = null;}
+		if(!bd.arrowout){ bd.arrowout = null;}
 		bd.inputarrowin = function(id){
 			var dir=((this.border[id].bx===0||this.border[id].by===0)?1:2);
 			this.setArrow(this.arrowin,0);
@@ -149,17 +147,16 @@ Puzzles.icebarn.prototype = {
 			this.setArrow(this.arrowout, ((dir+1)%2)+1);
 		};
 		bd.getArrow = function(id){ return this.QuB(id); };
-		bd.setArrow = function(id,val){ if(id!==-1){ this.sQuB(id,val);}};
+		bd.setArrow = function(id,val){ if(id!==null){ this.sQuB(id,val);}};
 		bd.isArrow  = function(id){ return (this.QuB(id)>0);};
 
 		bd.initSpecial = function(col,row){
 			this.bdinside = 2*col*row-(col+row);
-			if(this.arrowin==-1 && this.arrowout==-1){
+			if(base.initProcess){
 				this.inputarrowin (0 + this.bdinside, 1);
 				this.inputarrowout(2 + this.bdinside, 1);
 			}
-
-			if(!base.initProcess){
+			else{
 				if(this.arrowin<k.qcols+this.bdinside){ if(this.arrowin>col+this.bdinside){ this.arrowin=col+this.bdinside-1;} }
 				else{ if(this.arrowin>col+row+this.bdinside){ this.arrowin=col+row+this.bdinside-1;} }
 
@@ -190,15 +187,15 @@ Puzzles.icebarn.prototype = {
 				}
 				break;
 			case this.TURNR: // 右90°反転
-				bd.arrowin  = bd.bnum2(yy-iby,ibx,k.qrows,k.qcols);
-				bd.arrowout = bd.bnum2(yy-oby,obx,k.qrows,k.qcols);
+				bd.arrowin  = bd.bnum(yy-iby,ibx,k.qrows,k.qcols);
+				bd.arrowout = bd.bnum(yy-oby,obx,k.qrows,k.qcols);
 				for(var id=0;id<bd.bdmax;id++){
 					if((bd.border[id].bx&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
 			case this.TURNL: // 左90°反転
-				bd.arrowin  = bd.bnum2(iby,xx-ibx,k.qrows,k.qcols);
-				bd.arrowout = bd.bnum2(oby,xx-obx,k.qrows,k.qcols);
+				bd.arrowin  = bd.bnum(iby,xx-ibx,k.qrows,k.qcols);
+				bd.arrowout = bd.bnum(oby,xx-obx,k.qrows,k.qcols);
 				for(var id=0;id<bd.bdmax;id++){
 					if((bd.border[id].by&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
@@ -337,52 +334,76 @@ Puzzles.icebarn.prototype = {
 		enc.decodeIcebarn = function(){
 			var barray = this.outbstr.split("/");
 
-			var a=0;
+			var a=0, c=0, twi=[16,8,4,2,1];
 			for(var i=0;i<barray[0].length;i++){
 				var num = parseInt(barray[0].charAt(i),32);
-				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?6:0));} }
-				if((i*5+5)>=k.qcols*k.qrows){ a=i+1; break;}
+				for(var w=0;w<5;w++){
+					if(c<bd.cellmax){
+						bd.cell[c].ques = (num&twi[w]?6:0);
+						c++;
+					}
+				}
+				if(c>=bd.cellmax){ a=i+1; break;}
 			}
 
+			base.disableInfo();
 			var id=0;
 			for(var i=a;i<barray[0].length;i++){
 				var ca = barray[0].charAt(i);
-				if(ca=='z'){ id+=35;}else{ id += parseInt(ca,36); if(id<bd.bdinside){ bd.setArrow(id,1);} id++;}
+				if(ca!=='z'){
+					id += parseInt(ca,36);
+					if(id<bd.bdinside){ bd.setArrow(id,1);}
+					id++;
+				}
+				else{ id+=35;}
 				if(id>=bd.bdinside){ a=i+1; break;}
 			}
 
 			id=0;
 			for(var i=a;i<barray[0].length;i++){
 				var ca = barray[0].charAt(i);
-				if(ca=='z'){ id+=35;}else{ id += parseInt(ca,36); if(id<bd.bdinside){ bd.setArrow(id,2);} id++;}
+				if(ca!=='z'){
+					id += parseInt(ca,36);
+					if(id<bd.bdinside){ bd.setArrow(id,2);}
+					id++;
+				}
+				else{ id+=35;}
 				if(id>=bd.bdinside){ break;}
 			}
 
 			bd.setArrow(bd.arrowin,0); bd.setArrow(bd.arrowout,0);
-			bd.arrowin = bd.arrowout = -1;
+			bd.arrowin = bd.arrowout = null;
 			bd.inputarrowin (parseInt(barray[1])+bd.bdinside);
 			bd.inputarrowout(parseInt(barray[2])+bd.bdinside);
+			base.enableInfo();
 
 			this.outbstr = "";
 		};
 		enc.encodeIcebarn = function(){
-			var cm = "";
-			var num=0, pass=0;
-			for(i=0;i<bd.cellmax;i++){
-				if(bd.QuC(i)==6){ pass+=Math.pow(2,4-num);}
-				num++; if(num==5){ cm += pass.toString(32); num=0; pass=0;}
+			var cm = "", num=0, pass=0, twi=[16,8,4,2,1];
+			for(c=0;c<bd.cellmax;c++){
+				if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
+				if(num==5){ cm += pass.toString(32); num=0; pass=0;}
 			}
 			if(num>0){ cm += pass.toString(32);}
 
 			num=0;
 			for(var id=0;id<bd.bdinside;id++){
-				if(bd.getArrow(id)==1){ cm+=num.toString(36); num=0;}else{ num++;} if(num>=35){ cm+="z"; num=0;}
+				if(bd.getArrow(id)===1){ cm+=num.toString(36); num=0;}
+				else{
+					num++;
+					if(num>=35){ cm+="z"; num=0;}
+				}
 			}
 			if(num>0){ cm+=num.toString(36);}
 
 			num=0;
 			for(var id=0;id<bd.bdinside;id++){
-				if(bd.getArrow(id)==2){ cm+=num.toString(36); num=0;}else{ num++;} if(num>=35){ cm+="z"; num=0;}
+				if(bd.getArrow(id)===2){ cm+=num.toString(36); num=0;}
+				else{
+					num++;
+					if(num>=35){ cm+="z"; num=0;}
+				}
 			}
 			if(num>0){ cm+=num.toString(36);}
 
@@ -394,16 +415,23 @@ Puzzles.icebarn.prototype = {
 		enc.decodeIcebarn_old2 = function(){
 			var barray = this.outbstr.split("/");
 
-			var a;
-			for(var i=0;i<barray[2].length;i++){
-				var num = parseInt(barray[2].charAt(i),32);
-				for(var w=0;w<5;w++){ if((i*5+w)<k.qcols*k.qrows){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?6:0));} }
-				if((i*5+5)>=k.qcols*k.qrows){ a=i+1; break;}
+			var a=0, c=0, twi=[16,8,4,2,1];
+			for(var i=0;i<barray[0].length;i++){
+				var num = parseInt(barray[0].charAt(i),32);
+				for(var w=0;w<5;w++){
+					if(c<bd.cellmax){
+						bd.cell[c].ques = (num&twi[w]?6:0);
+						c++;
+					}
+				}
+				if(c>=bd.cellmax){ a=i+1; break;}
 			}
+
+			base.disableInfo();
 			var id=0;
 			for(var i=a;i<barray[2].length;i++){
 				var ca = barray[2].charAt(i);
-				if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, num%2+1); id+=(mf(num/2)+1);}
+				if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, num%2+1); id+=((num>>1)+1);}
 				else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 				else{ id++;}
 				if(id>=(k.qcols-1)*k.qrows){ a=i+1; break;}
@@ -411,29 +439,36 @@ Puzzles.icebarn.prototype = {
 			id=(k.qcols-1)*k.qrows;
 			for(var i=a;i<barray[2].length;i++){
 				var ca = barray[2].charAt(i);
-				if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, num%2+1); id+=(mf(num/2)+1);}
+				if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, num%2+1); id+=((num>>1)+1);}
 				else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 				else{ id++;}
 				if(id>=bd.bdinside){ break;}
 			}
 
 			bd.setArrow(bd.arrowin,0); bd.setArrow(bd.arrowout,0);
-			bd.arrowin = bd.arrowout = -1;
+			bd.arrowin = bd.arrowout = null;
 			bd.inputarrowin (parseInt(barray[0])+bd.bdinside);
 			bd.inputarrowout(parseInt(barray[1])+bd.bdinside);
+			base.enableInfo();
 
 			this.outbstr = "";
 		};
 		enc.decodeIcebarn_old1 = function(){
 			var barray = this.outbstr.split("/");
 
-			var c=0;
+			var a=0, c=0, twi=[8,4,2,1];
 			for(var i=0;i<barray[0].length;i++){
-				var ca = parseInt(barray[0].charAt(i),16);
-				for(var w=0;w<4;w++){ if((i*4+w)<bd.cellmax){ bd.sQuC(i*4+w,(ca&Math.pow(2,3-w)?6:0));} }
-				if((i*4+4)>=k.qcols*k.qrows){ break;}
+				var num = parseInt(barray[0].charAt(i),32);
+				for(var w=0;w<4;w++){
+					if(c<bd.cellmax){
+						bd.cell[c].ques = (num&twi[w]?6:0);
+						c++;
+					}
+				}
+				if(c>=bd.cellmax){ break;}
 			}
 
+			base.disableInfo();
 			if(barray[1]!=""){
 				var array = barray[1].split("+");
 				for(var i=0;i<array.length;i++){ bd.setArrow(bd.db(array[i]),1);}
@@ -452,18 +487,18 @@ Puzzles.icebarn.prototype = {
 			}
 
 			bd.setArrow(bd.arrowin,0); bd.setArrow(bd.arrowout,0);
-			bd.arrowin = bd.arrowout = -1;
+			bd.arrowin = bd.arrowout = null;
 			bd.inputarrowin (parseInt(barray[5])+bd.bdinside);
 			bd.inputarrowout(parseInt(barray[6])+bd.bdinside);
+			base.enableInfo();
 
 			this.outbstr = "";
 		};
 		enc.encodeIcebarn_old1 = function(){
-			var cm = "";
-			var num=0, pass=0;
-			for(i=0;i<bd.cellmax;i++){
-				if(bd.QuC(i)==6){ pass+=Math.pow(2,3-num);}
-				num++; if(num==4){ cm += pass.toString(16); num=0; pass=0;}
+			var cm = "", num=0, pass=0, twi=[8,4,2,1];
+			for(var c=0;c<bd.cellmax;c++){
+				if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
+				if(num===4){ cm += pass.toString(16); num=0; pass=0;}
 			}
 			if(num>0){ cm += pass.toString(16);}
 			cm += "/";
@@ -491,31 +526,36 @@ Puzzles.icebarn.prototype = {
 			bd.inputarrowin (parseInt(this.readLine()));
 			bd.inputarrowout(parseInt(this.readLine()));
 
-			this.decodeCell( function(c,ca){
-				if(ca=="1"){ bd.sQuC(c, 6);}
+			this.decodeCell( function(obj,ca){
+				if(ca==="1"){ obj.ques = 6;}
 			});
-			this.decodeBorder2( function(c,ca){
-				if     (ca == "1"){ bd.setArrow(c, 1);}
-				else if(ca == "2"){ bd.setArrow(c, 2);}
+			base.disableInfo();
+			this.decodeBorder( function(obj,ca){
+				if(ca!=="0"){
+					var id = bd.bnum(obj.bx, obj.by);
+					bd.setArrow(id, parseInt(ca));
+				}
 			});
-			this.decodeBorder2( function(c,ca){
-				if     (ca == "1" ){ bd.sLiB(c, 1);}
-				else if(ca == "-1"){ bd.sQsB(c, 2);}
+			base.enableInfo();
+			this.decodeBorder( function(obj,ca){
+				if     (ca==="1" ){ obj.line = 1;}
+				else if(ca==="-1"){ obj.qsub = 2;}
 			});
 		};
 		fio.encodeData = function(){
 			this.datastr += (bd.arrowin+"/"+bd.arrowout+"/");
-			this.encodeCell( function(c){
-				return ""+(bd.QuC(c)==6?"1":"0")+" "; 
+			this.encodeCell( function(obj){
+				return (obj.ques===6?"1 ":"0 ");
 			});
-			this.encodeBorder2( function(c){
-				if     (bd.getArrow(c)==1){ return "1 ";}
-				else if(bd.getArrow(c)==2){ return "2 ";}
-				else                      { return "0 ";}
+			this.encodeBorder( function(obj){
+				var id = bd.bnum(obj.bx, obj.by);
+				if     (bd.getArrow(id)===1){ return "1 ";}
+				else if(bd.getArrow(id)===2){ return "2 ";}
+				else                        { return "0 ";}
 			});
-			this.encodeBorder2( function(c){
-				if     (bd.LiB(c)==1){ return "1 ";}
-				else if(bd.QsB(c)==2){ return "-1 ";}
+			this.encodeBorder( function(obj){
+				if     (obj.line===1){ return "1 ";}
+				else if(obj.qsub===2){ return "-1 ";}
 				else                 { return "0 ";}
 			});
 		};
@@ -530,10 +570,10 @@ Puzzles.icebarn.prototype = {
 				this.setAlert('分岐している線があります。','There is a branch line.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101);}) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==6);}) ){
 				this.setAlert('氷の部分以外で線が交差しています。', 'A Line is crossed outside of ice.'); return false;
 			}
-			if( !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));})) ){
+			if( !this.checkIceLines() ){
 				this.setAlert('氷の部分で線が曲がっています。', 'A Line curve on ice.'); return false;
 			}
 
@@ -575,9 +615,9 @@ Puzzles.icebarn.prototype = {
 
 		ans.checkIcebarns = function(){
 			var iarea = new AreaInfo();
-			for(var cc=0;cc<bd.cellmax;cc++){ iarea.id[cc]=(bd.QuC(cc)==6?0:-1); }
+			for(var cc=0;cc<bd.cellmax;cc++){ iarea.id[cc]=(bd.QuC(cc)==6?0:null); }
 			for(var cc=0;cc<bd.cellmax;cc++){
-				if(iarea.id[cc]!=0){ continue;}
+				if(iarea.id[cc]!==0){ continue;}
 				iarea.max++;
 				iarea[iarea.max] = {clist:[]};
 				area.sc0(cc,iarea);
@@ -615,6 +655,7 @@ Puzzles.icebarn.prototype = {
 				switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 				if(!((bx+by)&1)){
 					var cc = bd.cnum(bx,by);
+					if(cc===null){ continue;}
 					if(bd.QuC(cc)!=6){
 						if     (line.lcntCell(cc)!=2){ dir=dir;}
 						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
@@ -628,7 +669,7 @@ Puzzles.icebarn.prototype = {
 					bd.sErB([id],1);
 					if(!bd.isLine(id)){ return 2;}
 					if(bd.arrowout==id){ break;}
-					else if(id==-1 || id>=bd.bdinside){ return 3;}
+					else if(id===null || id>=bd.bdinside){ return 3;}
 
 					if(((dir==1||dir==3) && bd.getArrow(id)==2) || ((dir==2||dir==4) && bd.getArrow(id)==1)){ return 4;}
 				}

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クリーク版 creek.js v3.3.0
+// パズル固有スクリプト部 クリーク版 creek.js v3.3.1
 //
 Puzzles.creek = function(){ };
 Puzzles.creek.prototype = {
@@ -95,7 +95,7 @@ Puzzles.creek.prototype = {
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
-			this.drawRDotCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2,false);
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
@@ -133,17 +133,36 @@ Puzzles.creek.prototype = {
 	// 正解判定処理実行部
 	answer_init : function(){
 		ans.checkAns = function(){
-			if( !this.checkQnumCross(function(cr,bcnt){ return (cr>=bcnt);}) ){
+			if( !this.checkQnumCross(1) ){
 				this.setAlert('数字のまわりにある黒マスの数が間違っています。','The number of black cells around a number on crossing is big.'); return false;
 			}
 			if( !this.checkOneArea( area.getWCellInfo() ) ){
 				this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 			}
-			if( !this.checkQnumCross(function(cr,bcnt){ return (cr<=bcnt);}) ){
+			if( !this.checkQnumCross(2) ){
 				this.setAlert('数字のまわりにある黒マスの数が間違っています。','The number of black cells around a number on crossing is small.'); return false;
 			}
 
 			return true;
+		};
+
+		ans.checkQnumCross = function(type){
+			var result = true;
+			for(var c=0;c<bd.crossmax;c++){
+				var qn = bd.QnX(c);
+				if(qn<0){ continue;}
+
+				var bx=bd.cross[c].bx, by=bd.cross[c].by;
+				var cnt=0, clist = bd.cellinside(bx-1,by-1,bx+1,by+1);
+				for(var i=0;i<clist.length;i++){if(bd.isBlack(clist[i])){ cnt++;}}
+
+				if((type===1 && qn<cnt) || (type===2 && qn>cnt)){
+					if(this.inAutoCheck){ return false;}
+					bd.sErX([c],1);
+					result = false;
+				}
+			}
+			return result;
 		};
 	}
 };

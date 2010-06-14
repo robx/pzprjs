@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バーンズ版 barns.js v3.3.0
+// パズル固有スクリプト部 バーンズ版 barns.js v3.3.1
 //
 Puzzles.barns = function(){ };
 Puzzles.barns.prototype = {
@@ -77,15 +77,16 @@ Puzzles.barns.prototype = {
 		};
 		mv.inputIcebarn = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell){ return;}
-			if(this.inputData==-1){ this.inputData = (bd.QuC(cc)==6?0:6);}
+			if(cc===null || cc==this.mouseCell){ return;}
+			if(this.inputData===null){ this.inputData = (bd.QuC(cc)==6?0:6);}
 
 			bd.sQuC(cc, this.inputData);
 			pc.paintCell(cc);
+			this.mouseCell = cc;
 		},
 
 		// 線を引かせたくないので上書き
-		bd.isLineNG = function(id){ return (bd.QuB(id)==1);},
+		bd.isLineNG = function(id){ return bd.isBorder(id);},
 		bd.enableLineNG = true;
 
 		// キーボード入力系
@@ -129,20 +130,24 @@ Puzzles.barns.prototype = {
 		};
 
 		enc.decodeBarns = function(){
-			var c=0, bstr = this.outbstr;
+			var c=0, bstr = this.outbstr, twi=[16,8,4,2,1];
 			for(var i=0;i<bstr.length;i++){
 				var ca = parseInt(bstr.charAt(i),32);
-				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(ca&Math.pow(2,4-w)?6:0));} }
-				if((i*5+5)>=bd.cellmax){ break;}
+				for(var w=0;w<5;w++){
+					if(c<bd.cellmax){
+						bd.cell[c].ques = (ca&twi[w]?6:0);
+						c++;
+					}
+				}
+				if(c>=bd.cellmax){ break;}
 			}
 			this.outbstr = bstr.substr(i+1);
 		};
 		enc.encodeBarns = function(){
-			var cm = "";
-			var num = 0, pass = 0;
-			for(var i=0;i<bd.cellmax;i++){
-				if(bd.QuC(i)==6){ pass+=Math.pow(2,4-num);}
-				num++; if(num==5){ cm += pass.toString(32); num=0; pass=0;}
+			var cm="", num=0, pass=0, twi=[16,8,4,2,1];
+			for(var c=0;c<bd.cellmax;c++){
+				if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
+				if(num==5){ cm += pass.toString(32); num=0; pass=0;}
 			}
 			if(num>0){ cm += pass.toString(32);}
 
@@ -151,15 +156,15 @@ Puzzles.barns.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCell( function(c,ca){
-				if(ca=="1"){ bd.sQuC(c, 6);}
+			this.decodeCell( function(obj,ca){
+				if(ca==="1"){ obj.ques = 6;}
 			});
 			this.decodeBorderQues();
 			this.decodeBorderLine();
 		};
 		fio.encodeData = function(){
-			this.encodeCell( function(c){
-				return ""+(bd.QuC(c)==6?"1":".")+" ";
+			this.encodeCell( function(obj){
+				return (obj.ques===6?"1 ":". ");
 			});
 			this.encodeBorderQues();
 			this.encodeBorderLine();
@@ -175,10 +180,10 @@ Puzzles.barns.prototype = {
 				this.setAlert('分岐している線があります。','There is a branch line.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101);}) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==6);}) ){
 				this.setAlert('氷の部分以外で線が交差しています。', 'A Line is crossed outside of ice.'); return false;
 			}
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !ans.isLineStraight(c));}) ){
+			if( !this.checkIceLines() ){
 				this.setAlert('氷の部分で線が曲がっています。', 'A Line curve on ice.'); return false;
 			}
 

@@ -1,6 +1,6 @@
 ﻿@charset "UTF-8" ;
 
-	BODY{ background:url(../bg.gif); color:black; line-height:120%; text-align:center; margin:0pt; padding:0pt;}
+	BODY{ background:url(./bg/index.gif); color:black; line-height:120%; text-align:center; margin:0pt; padding:0pt;}
 
 	/* 左上のピンクのやつ */
 	p#translation_p  { position:absolute; width:40%; margin:0pt; margin-left:8pt; text-align:left;}

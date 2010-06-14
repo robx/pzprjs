@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.3.0
+// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.3.1
 //
 Puzzles.bonsan = function(){ };
 Puzzles.bonsan.prototype = {
@@ -68,7 +68,7 @@ Puzzles.bonsan.prototype = {
 		};
 		mv.inputlight = function(){
 			var cc = this.cellid();
-			if(cc==-1){ return;}
+			if(cc===null){ return;}
 
 			if     (bd.QsC(cc)==0){ bd.sQsC(cc, (this.btn.Left?1:2));}
 			else if(bd.QsC(cc)==1){ bd.sQsC(cc, (this.btn.Left?2:0));}
@@ -151,7 +151,7 @@ Puzzles.bonsan.prototype = {
 				var c = clist[i];
 				this.vdel([header+c]);
 				if(line.lcntCell(c)==1 && bd.cell[c].qnum==-1){
-					var dir=0, id=-1;
+					var dir=0, id=null;
 					if     (bd.isLine(bd.ub(c))){ dir=2; id=bd.ub(c);}
 					else if(bd.isLine(bd.db(c))){ dir=1; id=bd.db(c);}
 					else if(bd.isLine(bd.lb(c))){ dir=4; id=bd.lb(c);}
@@ -236,7 +236,7 @@ Puzzles.bonsan.prototype = {
 			if( !this.checkFractal(rinfo) ){
 				this.setAlert('部屋の中の○が点対称に配置されていません。', 'Position of circles in the room is not point symmetric.'); return false;
 			}
-			if( !this.checkNoObjectInRoom(rinfo, ee.binder(this, this.getMoved)) ){
+			if( !this.checkNoObjectInRoom(rinfo, this.getMoved) ){
 				this.setAlert('○のない部屋があります。','A room has no circle.'); return false;
 			}
 
@@ -256,7 +256,7 @@ Puzzles.bonsan.prototype = {
 		ans.checkLineOverLetter = function(func){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(line.lcntCell(c)>=2 && bd.QnC(c)!=-1){
+				if(line.lcntCell(c)>=2 && bd.isNum(c)){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,true);
@@ -269,11 +269,10 @@ Puzzles.bonsan.prototype = {
 		ans.checkFractal = function(rinfo){
 			for(var id=1;id<=rinfo.max;id++){
 				var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
-				var sx=d.x1+d.x2, sy=d.y1+d.y2;
-				var movex=0, movey=0;
+				d.xx=d.x1+d.x2, d.yy=d.y1+d.y2;
 				for(var i=0;i<rinfo.room[id].idlist.length;i++){
 					var c=rinfo.room[id].idlist[i];
-					if(this.getMoved(c)!=-1 ^ this.getMoved(bd.cnum(sx-bd.cell[c].bx, sy-bd.cell[c].by))!=-1){
+					if(this.getMoved(c)!=-1 ^ this.getMoved(bd.cnum(d.xx-bd.cell[c].bx, d.yy-bd.cell[c].by))!=-1){
 						for(var a=0;a<rinfo.room[id].idlist.length;a++){
 							if(this.getMoved(rinfo.room[id].idlist[a])!=-1){
 								bd.sErC([rinfo.room[id].idlist[a]],1);
@@ -288,24 +287,22 @@ Puzzles.bonsan.prototype = {
 
 		ans.movedPosition = function(linfo){
 			this.before = new AreaInfo();
-			for(var c=0;c<bd.cellmax;c++){
-				if(line.lcntCell(c)==0 && bd.QnC(c)!=-1){ this.before.id[c]=c;}
-				else{ this.before.id[c]=-1;}
-			}
+			for(var c=0;c<bd.cellmax;c++){ this.before.id[c]=c;}
 			for(var r=1;r<=linfo.max;r++){
-				var before=-1, after=-1;
-				if(linfo.room[r].idlist.length>1){
-					for(var i=0;i<linfo.room[r].idlist.length;i++){
-						var c=linfo.room[r].idlist[i];
-						if(line.lcntCell(c)==1){
-							if(bd.QnC(c)!=-1){ before=c;} else{ after=c;}
-						}
+				if(linfo.room[r].idlist.length<=1){ continue;}
+				var before=null, after=null;
+				for(var i=0;i<linfo.room[r].idlist.length;i++){
+					var c=linfo.room[r].idlist[i];
+					if(line.lcntCell(c)===1){
+						if(bd.isNum(c)){ before=c;}else{ after=c;}
 					}
 				}
-				this.before.id[after]=before;
+				if(before!==null && after!==null){
+					this.before.id[after]=before;
+					this.before.id[before]=null;
+				}
 			}
 		};
-		ans.getMoved = function(cc){ return bd.QnC(this.before.id[cc]);};
-		ans.getBeforeCell = function(cc){ return this.before.id[cc];};
+		ans.getMoved = function(cc){ return ((cc!==null && ans.before.id[cc]!==null) ? bd.QnC(ans.before.id[cc]) : -1);};
 	}
 };

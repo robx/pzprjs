@@ -1,4 +1,4 @@
-// KeyInput.js v3.3.0
+// KeyInput.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -32,7 +32,7 @@ KeyEvent.prototype = {
 		this.inREDO  = false;
 		this.tcMoved = false;
 		this.keyPressed = false;
-		this.prev = -1;
+		this.prev = null;
 		this.ca = '';
 		if(this.isZ){ this.isZ = false;}
 		if(this.isX){ this.isX = false;}
@@ -44,7 +44,7 @@ KeyEvent.prototype = {
 	// kc.e_keypress() キー入力した際のイベント共通処理(-キー用)
 	//---------------------------------------------------------------------------
 	// この3つのキーイベントはwindowから呼び出される(kcをbindしている)
-	// 48〜57は0〜9キー、65〜90はa〜z、96〜105はテンキー、112〜123はF1〜F12キー
+	// 48～57は0～9キー、65～90はa～z、96～105はテンキー、112～123はF1～F12キー
 	e_keydown : function(e){
 		if(this.enableKey){
 			um.newOperation(true);
@@ -82,6 +82,21 @@ KeyEvent.prototype = {
 
 			if(this.ca){ this.keyinput(this.ca);}	// 各パズルのルーチンへ
 		}
+	},
+
+	//---------------------------------------------------------------------------
+	// base.e_SLkeydown() Silverlightオブジェクトにフォーカスがある時、キーを押した際のイベント共通処理
+	// base.e_SLkeyup()   Silverlightオブジェクトにフォーカスがある時、キーを離した際のイベント共通処理
+	//---------------------------------------------------------------------------
+	e_SLkeydown : function(sender, keyEventArgs){
+		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
+						altKey:false, returnValue:false, preventDefault:f_true };
+		return kc.e_keydown(emulate);
+	},
+	e_SLkeyup : function(sender, keyEventArgs){
+		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
+						altKey:false, returnValue:false, preventDefault:f_true };
+		return kc.e_keyup(emulate);
 	},
 
 	//---------------------------------------------------------------------------
@@ -132,7 +147,7 @@ KeyEvent.prototype = {
 		if(this.isCTRL && this.ca=='z'){ this.inUNDO=true; flag = true; tm.startUndoTimer();}
 		if(this.isCTRL && this.ca=='y'){ this.inREDO=true; flag = true; tm.startUndoTimer();}
 
-		if(this.ca=='F2' && k.EDITOR){ // 112〜123はF1〜F12キー
+		if(this.ca=='F2' && k.EDITOR){ // 112～123はF1～F12キー
 			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); flag = true;}
 			else if(k.playmode &&  this.isSHIFT){ pp.setVal('mode',1); flag = true;}
 		}
@@ -162,10 +177,12 @@ KeyEvent.prototype = {
 	moveTBorder : function(ca){ return this.moveTC(ca,1);},
 	moveTC : function(ca,mv){
 		var tcp = tc.getTCP(), flag = false;
-		if     (ca == k.KEYUP && tcp.y-mv >= tc.miny){ tc.decTCY(mv); flag = true;}
-		else if(ca == k.KEYDN && tcp.y+mv <= tc.maxy){ tc.incTCY(mv); flag = true;}
-		else if(ca == k.KEYLT && tcp.x-mv >= tc.minx){ tc.decTCX(mv); flag = true;}
-		else if(ca == k.KEYRT && tcp.x+mv <= tc.maxx){ tc.incTCX(mv); flag = true;}
+		switch(ca){
+			case k.KEYUP: if(tcp.y-mv>=tc.miny){ tc.decTCY(mv); flag = true;} break;
+			case k.KEYDN: if(tcp.y+mv<=tc.maxy){ tc.incTCY(mv); flag = true;} break;
+			case k.KEYLT: if(tcp.x-mv>=tc.minx){ tc.decTCX(mv); flag = true;} break;
+			case k.KEYRT: if(tcp.x+mv<=tc.maxx){ tc.incTCX(mv); flag = true;} break;
+		}
 
 		if(flag){
 			pc.paintPos(tcp);
@@ -180,28 +197,19 @@ KeyEvent.prototype = {
 	//---------------------------------------------------------------------------
 	key_inputcross : function(ca){
 		var cc = tc.getTXC();
-		var max = bd.nummaxfunc(cc);
+		var max = bd.nummaxfunc(cc), val=-1;
 
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca);
-
-			if(bd.QnX(cc)<=0){
-				if(num<=max){ bd.sQnX(cc,num);}
-			}
-			else{
-				if(bd.QnX(cc)*10+num<=max){ bd.sQnX(cc,bd.QnX(cc)*10+num);}
-				else if(num<=max){ bd.sQnX(cc,num);}
-			}
+			var num = parseInt(ca), cur = bd.QnX(cc);
+			if(cur<=0 || cur*10+num>max){ cur=0;}
+			val = cur*10+num;
+			if(val>max){ return;}
 		}
-		else if(ca=='-'){
-			if(bd.QnX(cc)!=-2){ bd.sQnX(cc,-2);}
-			else{ bd.sQnX(cc,-1);}
-		}
-		else if(ca==' '){
-			bd.sQnX(cc,-1);
-		}
+		else if(ca==='-'){ bd.sQnX(cc,(bd.QnX(cc)!==-2 ? -2 : -1));}
+		else if(ca===' '){ bd.sQnX(cc,-1);}
 		else{ return;}
 
+		bd.sQnX(cc,val);
 		pc.paintCross(cc);
 	},
 	//---------------------------------------------------------------------------
@@ -210,35 +218,21 @@ KeyEvent.prototype = {
 	key_inputqnum : function(ca){
 		var cc = tc.getTCC();
 		if(k.editmode && k.roomNumber){ cc = area.getTopOfRoomByCell(cc);}
-		var max = bd.nummaxfunc(cc);
+		var max = bd.nummaxfunc(cc), val=-1;
 
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca);
-			if(k.playmode && k.puzzleid!=='snakes'){ bd.sDiC(cc,0);}
-
-			if(bd.getNum(cc)<=0 || this.prev!=cc){
-				if(num<=max){ bd.setNum(cc,num);}
-			}
-			else{
-				if(bd.getNum(cc)*10+num<=max){ bd.setNum(cc,bd.getNum(cc)*10+num);}
-				else if(num<=max){ bd.setNum(cc,num);}
-			}
-			if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
-			if(k.isAnsNumber){ if(k.editmode){ bd.sQaC(cc,-1);} bd.sQsC(cc,0); }
+			var num = parseInt(ca), cur = bd.getNum(cc);
+			if(cur<=0 || cur*10+num>max || this.prev!=cc){ cur=0;}
+			val = cur*10+num;
+			if(val>max){ return;}
 		}
-		else if(ca=='-'){
-			if(k.editmode && bd.QnC(cc)!=-2){ bd.setNum(cc,-2);}
-			else{ bd.setNum(cc,-1);}
-			if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
-			if(k.isAnsNumber){ bd.sQsC(cc,0);}
-		}
-		else if(ca==' '){
-			bd.setNum(cc,-1);
-			if(bd.QnC(cc)!=-1 && k.NumberIsWhite){ bd.sQaC(cc,-1); if(pc.bcolor=="white"){ bd.sQsC(cc,0);} }
-			if(k.isAnsNumber){ bd.sQsC(cc,0);}
-		}
+		else if(ca==='-') { val = (k.editmode?-2:-1);}
+		else if(ca===' ') { val = -1;}
+		else if(ca==='s1'){ val = -2;}
+		else if(ca==='s2'){ val = -3;}
 		else{ return;}
 
+		bd.setNum(cc,val);
 		this.prev = cc;
 		pc.paintCell(cc);
 	},
@@ -250,14 +244,16 @@ KeyEvent.prototype = {
 		if(!this.isSHIFT){ return false;}
 
 		var cc = tc.getTCC();
-		if(bd.QnC(cc)==-1){ return false;}
+		if(bd.QnC(cc)===-1){ return false;}
 
-		var flag = false;
-
-		if     (ca == k.KEYUP){ bd.sDiC(cc, (bd.DiC(cc)!=k.UP?k.UP:0)); flag = true;}
-		else if(ca == k.KEYDN){ bd.sDiC(cc, (bd.DiC(cc)!=k.DN?k.DN:0)); flag = true;}
-		else if(ca == k.KEYLT){ bd.sDiC(cc, (bd.DiC(cc)!=k.LT?k.LT:0)); flag = true;}
-		else if(ca == k.KEYRT){ bd.sDiC(cc, (bd.DiC(cc)!=k.RT?k.RT:0)); flag = true;}
+		var flag = true;
+		switch(ca){
+			case k.KEYUP: bd.sDiC(cc, (bd.DiC(cc)!=k.UP?k.UP:0)); break;
+			case k.KEYDN: bd.sDiC(cc, (bd.DiC(cc)!=k.DN?k.DN:0)); break;
+			case k.KEYLT: bd.sDiC(cc, (bd.DiC(cc)!=k.LT?k.LT:0)); break;
+			case k.KEYRT: bd.sDiC(cc, (bd.DiC(cc)!=k.RT?k.RT:0)); break;
+			default: flag = false;
+		}
 
 		if(flag){
 			pc.paintPos(tc.getTCP());
@@ -274,45 +270,41 @@ KeyEvent.prototype = {
 	inputnumber51 : function(ca,max_obj){
 		if(this.chtarget(ca)){ return;}
 
-		var cc = tc.getTCC(), ex = -1;
-		if(cc==-1){ ex = tc.getTEC();}
+		var cc = tc.getTCC(), ex = null;
+		if(cc===null){ ex = tc.getTEC();}
 		var target = this.detectTarget(cc,ex);
-		if(target==-1 || (cc!=-1 && bd.QuC(cc)==51)){
-			if(ca=='q' && cc!=-1){
-				mv.set51cell(cc,(bd.QuC(cc)!=51));
+		if(target===0 || (cc!==null && bd.QuC(cc)===51)){
+			if(ca==='q' && cc!==null){
+				mv.set51cell(cc,(bd.QuC(cc)!==51));
 				pc.paintPos(tc.getTCP());
 				return;
 			}
 		}
-		if(target==-1){ return;}
+		if(target==0){ return;}
 
-		var max = max_obj[target];
+		var def = (target==2 ? Cell.prototype.defqnum : Cell.prototype.defqdir);
+		var max = max_obj[target], val=def;
 
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca);
-
-			if(this.getnum51(cc,ex,target)<=0 || this.prev!=cc){
-				if(num<=max){ this.setnum51(cc,ex,target,num);}
-			}
-			else{
-				if(this.getnum51(cc,ex,target)*10+num<=max){ this.setnum51(cc,ex,target,this.getnum51(cc,ex,target)*10+num);}
-				else if(num<=max){ this.setnum51(cc,ex,target,num);}
-			}
+			var num=parseInt(ca), cur=this.getnum51(cc,ex,target);
+			if(cur<=0 || cur*10+num>max || this.prev!=cc){ cur=0;}
+			val = cur*10+num;
+			if(val>max){ return;}
 		}
-		else if(ca=='-' || ca==' '){ this.setnum51(cc,ex,target,-1);}
+		else if(ca=='-' || ca==' '){ val=def;}
 		else{ return;}
 
+		this.setnum51(cc,ex,target,val);
 		this.prev = cc;
-		if(cc!=-1){ pc.paintCell(tc.getTCC());}
-		else      { pc.paintPos (tc.getTCP());}
+		pc.paintPos (tc.getTCP());
 	},
 	setnum51 : function(cc,ex,target,val){
-		if(cc!=-1){ (target==2 ? bd.sQnC(cc,val) : bd.sDiC(cc,val));}
-		else      { (target==2 ? bd.sQnE(ex,val) : bd.sDiE(ex,val));}
+		if(cc!=null){ (target==2 ? bd.sQnC(cc,val) : bd.sDiC(cc,val));}
+		else        { (target==2 ? bd.sQnE(ex,val) : bd.sDiE(ex,val));}
 	},
 	getnum51 : function(cc,ex,target){
-		if(cc!=-1){ return (target==2 ? bd.QnC(cc) : bd.DiC(cc));}
-		else      { return (target==2 ? bd.QnE(ex) : bd.DiE(ex));}
+		if(cc!=null){ return (target==2 ? bd.QnC(cc) : bd.DiC(cc));}
+		else        { return (target==2 ? bd.QnE(ex) : bd.DiE(ex));}
 	},
 
 	//---------------------------------------------------------------------------
@@ -327,17 +319,17 @@ KeyEvent.prototype = {
 		return true;
 	},
 	detectTarget : function(cc,ex){
-		if((cc==-1 && ex==-1) || (cc!=-1 && bd.QuC(cc)!=51)){ return -1;}
-		if(cc==bd.cellmax-1 || ex==k.qcols+k.qrows){ return -1;}
-		if(cc!=-1){
-			if	  ((bd.rt(cc)==-1 || bd.QuC(bd.rt(cc))==51) &&
-				   (bd.dn(cc)==-1 || bd.QuC(bd.dn(cc))==51)){ return -1;}
-			else if(bd.rt(cc)==-1 || bd.QuC(bd.rt(cc))==51){ return 4;}
-			else if(bd.dn(cc)==-1 || bd.QuC(bd.dn(cc))==51){ return 2;}
+		if((cc===null && ex===null) || (cc!==null && bd.QuC(cc)!==51)){ return 0;}
+		if(cc===bd.cellmax-1 || ex===k.qcols+k.qrows){ return 0;}
+		if(cc!==null){
+			if	  ((bd.rt(cc)===null || bd.QuC(bd.rt(cc))===51) &&
+				   (bd.dn(cc)===null || bd.QuC(bd.dn(cc))===51)){ return 0;}
+			else if(bd.rt(cc)===null || bd.QuC(bd.rt(cc))===51){ return 4;}
+			else if(bd.dn(cc)===null || bd.QuC(bd.dn(cc))===51){ return 2;}
 		}
-		else if(ex!=-1){
+		else if(ex!==null){
 			if	  ((bd.excell[ex].by===-1 && bd.QuC(bd.cnum(bd.excell[ex].bx,1))===51) ||
-				   (bd.excell[ex].bx===-1 && bd.QuC(bd.cnum(1,bd.excell[ex].by))===51)){ return -1;}
+				   (bd.excell[ex].bx===-1 && bd.QuC(bd.cnum(1,bd.excell[ex].by))===51)){ return 0;}
 			else if(bd.excell[ex].by===-1){ return 4;}
 			else if(bd.excell[ex].bx===-1){ return 2;}
 		}
@@ -385,8 +377,8 @@ KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
 	// kp.generate()   キーポップアップを生成して初期化する
 	// kp.gentable()   キーポップアップのテーブルを作成する
-	// kp.gentable10() キーポップアップの0〜9を入力できるテーブルを作成する
-	// kp.gentable4()  キーポップアップの0〜4を入力できるテーブルを作成する
+	// kp.gentable10() キーポップアップの0～9を入力できるテーブルを作成する
+	// kp.gentable4()  キーポップアップの0～4を入力できるテーブルを作成する
 	//---------------------------------------------------------------------------
 	generate : function(type, enablemake, enableplay, func){
 		if(enablemake && k.EDITOR){ this.gentable(1, type, func);}
@@ -492,14 +484,14 @@ KeyPopup.prototype = {
 	display : function(){
 		var mode = pp.getVal('mode');
 		if(this.ctl[mode].el && this.ctl[mode].enable && pp.getVal('keypopup') && mv.btn.Left){
-			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputPos.x - 3 + 'px';
-			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputPos.y - 3 + 'px';
+			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputPoint.x - 3 + 'px';
+			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputPoint.y - 3 + 'px';
 			this.ctl[mode].el.style.zIndex = 100;
 
 			if(this.ctl[mode].target==k.CELL){
 				var cc0 = tc.getTCC();
 				var cc = mv.cellid();
-				if(cc==-1){ return;}
+				if(cc===null){ return;}
 				tc.setTCC(cc);
 				pc.paintCell(cc);
 				pc.paintCell(cc0);
@@ -507,7 +499,7 @@ KeyPopup.prototype = {
 			else if(this.ctl[mode].target==k.CROSS){
 				var cc0 = tc.getTXC();
 				var cc = mv.crossid();
-				if(cc==-1){ return;}
+				if(cc===null){ return;}
 				tc.setTXC(cc);
 				pc.paintCross(cc);
 				pc.paintCross(cc0);
@@ -532,9 +524,9 @@ KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
 	resize : function(){
 		var tfunc = function(el,tsize){
-			el.style.width    = ""+mf(tsize*0.90)+"px"
-			el.style.height   = ""+mf(tsize*0.90)+"px"
-			el.style.fontSize = ""+mf(tsize*0.70)+"px";
+			el.style.width    = ""+((tsize*0.90)|0)+"px"
+			el.style.height   = ""+((tsize*0.90)|0)+"px"
+			el.style.fontSize = ""+((tsize*0.70)|0)+"px";
 		};
 		var ifunc = function(obj,bsize){
 			obj.el.style.width  = ""+(bsize*kp.imgCR[0])+"px";
@@ -546,7 +538,7 @@ KeyPopup.prototype = {
 
 		if(k.cellsize>=24){
 			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  k.cellsize);}
-			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], mf(k.cellsize*0.90));}
+			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], (k.cellsize*0.90)|0);}
 		}
 		else{
 			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  22);}
@@ -561,8 +553,7 @@ KeyPopup.prototype = {
 
 TCell = function(){
 	// 現在入力ターゲットになっている場所(border座標系)
-	this.cursorx = 1;
-	this.cursory = 1;
+	this.cursor = new Address(1,1);
 
 	// 有効な範囲(minx,miny)-(maxx,maxy)
 	this.minx = 1;
@@ -594,30 +585,30 @@ TCell.prototype = {
 			this.maxy = (!extDR ? 2*k.qrows-1 : 2*k.qrows+1);
 		}
 
-		if(this.cursorx<this.minx){ this.cursorx=this.minx;}
-		if(this.cursory<this.miny){ this.cursory=this.miny;}
-		if(this.cursorx>this.maxx){ this.cursorx=this.maxx;}
-		if(this.cursory>this.maxy){ this.cursory=this.maxy;}
+		if(this.cursor.x<this.minx){ this.cursor.x=this.minx;}
+		if(this.cursor.y<this.miny){ this.cursor.y=this.miny;}
+		if(this.cursor.x>this.maxx){ this.cursor.x=this.maxx;}
+		if(this.cursor.y>this.maxy){ this.cursor.y=this.maxy;}
 	},
 	setAlign : function(){ },
 
 	setCrossType : function(){
 		this.crosstype = true;
 		this.adjust();
-		this.setTCP(new Pos(0,0));
+		this.setTCP(new Address(0,0));
 	},
 
 	//---------------------------------------------------------------------------
 	// tc.incTCX(), tc.incTCY(), tc.decTCX(), tc.decTCY() ターゲットの位置を動かす
 	//---------------------------------------------------------------------------
-	incTCX : function(mv){ this.cursorx+=mv;},
-	incTCY : function(mv){ this.cursory+=mv;},
-	decTCX : function(mv){ this.cursorx-=mv;},
-	decTCY : function(mv){ this.cursory-=mv;},
+	incTCX : function(mv){ this.cursor.x+=mv;},
+	incTCY : function(mv){ this.cursor.y+=mv;},
+	decTCX : function(mv){ this.cursor.x-=mv;},
+	decTCY : function(mv){ this.cursor.y-=mv;},
 
 	//---------------------------------------------------------------------------
-	// tc.getTCP() ターゲットの位置をPosクラスのオブジェクトで取得する
-	// tc.setTCP() ターゲットの位置をPosクラスのオブジェクトで設定する
+	// tc.getTCP() ターゲットの位置をAddressクラスのオブジェクトで取得する
+	// tc.setTCP() ターゲットの位置をAddressクラスのオブジェクトで設定する
 	// tc.getTCC() ターゲットの位置をCellのIDで取得する
 	// tc.setTCC() ターゲットの位置をCellのIDで設定する
 	// tc.getTXC() ターゲットの位置をCrossのIDで取得する
@@ -627,29 +618,29 @@ TCell.prototype = {
 	// tc.getTEC() ターゲットの位置をEXCellのIDで取得する
 	// tc.setTEC() ターゲットの位置をEXCellのIDで設定する
 	//---------------------------------------------------------------------------
-	getTCP : function(){ return new Pos(this.cursorx,this.cursory);},
+	getTCP : function(){ return this.cursor;},
 	setTCP : function(pos){
 		if(pos.x<this.minx || this.maxx<pos.x || pos.y<this.miny || this.maxy<pos.y){ return;}
-		this.cursorx = pos.x; this.cursory = pos.y;
+		this.cursor.set(pos);
 	},
-	getTCC : function(){ return bd.cnum(this.cursorx, this.cursory);},
+	getTCC : function(){ return bd.cnum(this.cursor.x, this.cursor.y);},
 	setTCC : function(id){
-		if(id<0 || bd.cellmax<=id){ return;}
-		this.cursorx = bd.cell[id].bx; this.cursory = bd.cell[id].by;
+		if(!bd.cell[id]){ return;}
+		this.cursor = new Address(bd.cell[id].bx, bd.cell[id].by);
 	},
-	getTXC : function(){ return bd.xnum(this.cursorx, this.cursory);},
+	getTXC : function(){ return bd.xnum(this.cursor.x, this.cursor.y);},
 	setTXC : function(id){
-		if(!k.iscross || id<0 || bd.crossmax<=id){ return;}
-		this.cursorx = bd.cross[id].bx; this.cursory = bd.cross[id].by;
+		if(!bd.cross[id]){ return;}
+		this.cursor = new Address(bd.cross[id].bx, bd.cross[id].by);
 	},
-	getTBC : function(){ return bd.bnum(this.cursorx, this.cursory);},
+	getTBC : function(){ return bd.bnum(this.cursor.x, this.cursor.y);},
 	setTBC : function(id){
-		if(!k.isborder || id<0 || bd.bdmax<=id){ return;}
-		this.cursorx = bd.border[id].bx; this.cursory = bd.border[id].by;
+		if(!bd.border[id]){ return;}
+		this.cursor = new Address(bd.border[id].bx, bd.border[id].by);
 	},
-	getTEC : function(){ return bd.exnum(this.cursorx, this.cursory);},
+	getTEC : function(){ return bd.exnum(this.cursor.x, this.cursor.y);},
 	setTEC : function(id){
-		if(!k.isexcell || id<0 || bd.excellmax<=id){ return;}
-		this.cursorx = bd.excell[id].bx; this.cursory = bd.excell[id].by;
+		if(!bd.excell[id]){ return;}
+		this.cursor = new Address(bd.excell[id].bx, bd.excell[id].by);
 	}
 };

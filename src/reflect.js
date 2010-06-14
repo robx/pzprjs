@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.3.0
+// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.3.1
 //
 Puzzles.reflect = function(){ };
 Puzzles.reflect.prototype = {
@@ -57,7 +57,7 @@ Puzzles.reflect.prototype = {
 		mv.mousedown = function(){
 			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode){
-				if(!kp.enabled()){ this.inputQues([0,2,3,4,5,101]);}
+				if(!kp.enabled()){ this.inputQues([0,2,3,4,5,11]);}
 				else{ kp.display();}
 			}
 			else if(k.playmode){
@@ -91,7 +91,7 @@ Puzzles.reflect.prototype = {
 			else if(ca=='w'){ bd.sQuC(cc,3); bd.sQnC(cc,-1);}
 			else if(ca=='e'){ bd.sQuC(cc,4); bd.sQnC(cc,-1);}
 			else if(ca=='r'){ bd.sQuC(cc,5); bd.sQnC(cc,-1);}
-			else if(ca=='t'){ bd.sQuC(cc,101); bd.sQnC(cc,-1);}
+			else if(ca=='t'){ bd.sQuC(cc,11); bd.sQnC(cc,-1);}
 			else if(ca=='y'){ bd.sQuC(cc,0); bd.sQnC(cc,-1);}
 			else{ return false;}
 
@@ -149,7 +149,7 @@ Puzzles.reflect.prototype = {
 			this.drawTriangleBorder(x1,y1,x2,y2);
 			this.drawNumbers(x1,y1,x2,y2);
 
-			this.draw101(x1,y1,x2,y2);
+			this.draw11(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
@@ -180,16 +180,16 @@ Puzzles.reflect.prototype = {
 				else{ this.vhide(header+id);}
 			}
 		};
-		pc.draw101 = function(x1,y1,x2,y2){
+		pc.draw11 = function(x1,y1,x2,y2){
 			this.vinc('cell_ques', 'crispEdges');
 
 			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
-			for(var i=0;i<clist.length;i++){ this.draw101_1(clist[i]);}
+			for(var i=0;i<clist.length;i++){ this.draw11_1(clist[i]);}
 		};
-		pc.draw101_1 = function(id){
+		pc.draw11_1 = function(id){
 			var vids = ["c_lp1_"+id, "c_lp2_"+id];
 
-			if(bd.cell[id].ques===101){
+			if(bd.cell[id].ques===11){
 				var lw = this.lw+2, lm=(lw-1)/2, ll=this.cw*0.76;
 				g.fillStyle = this.cellcolor;
 
@@ -214,7 +214,7 @@ Puzzles.reflect.prototype = {
 		line.repaintParts = function(idlist){
 			var clist = this.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
-				pc.draw101_1(clist[i]);
+				pc.draw11_1(clist[i]);
 			}
 		};
 	},
@@ -232,42 +232,43 @@ Puzzles.reflect.prototype = {
 		enc.decodeReflectlink = function(){
 			var c=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
+				var ca = bstr.charAt(i), obj=bd.cell[c];
 
-				if     (ca == '5'){ bd.sQuC(c, 101); c++;}
-				else if(ca >= '1' && ca <= '4'){
-					bd.sQuC(c, parseInt(ca)+1);
-					bd.sQnC(c, parseInt(bstr.substr(i+1,1),16));
-					c++; i++;
+				if     (ca==='5'){ obj.ques = 11;}
+				else if(this.include(ca,'1','4')){
+					obj.ques = parseInt(ca)+1;
+					obj.qnum = parseInt(bstr.substr(i+1,1),16);
+					i++;
 				}
-				else if(ca >= '6' && ca <= '9'){
-					bd.sQuC(c, parseInt(ca)-4);
-					bd.sQnC(c, parseInt(bstr.substr(i+1,2),16));
-					c++; i+=2;
+				else if(this.include(ca,'6','9')){
+					obj.ques = parseInt(ca)-4;
+					obj.qnum = parseInt(bstr.substr(i+1,2),16);
+					i+=2;
 				}
-				else if(ca >= 'a' && ca <= 'z'){ c += (parseInt(ca,36)-9);}
-				else{ c++;}
+				else if(this.include(ca,'a','z')){ c+=(parseInt(ca,36)-10);}
+				if(obj.qnum===0){ obj.qnum=-1;}
 
-				if(c > bd.cellmax){ break;}
+				c++;
+				if(c>=bd.cellmax){ break;}
 			}
 
 			this.outbstr = bstr.substr(i);
 		};
 		enc.encodeReflectlink = function(type){
-			var cm="", pstr="";
-			var count=0;
-			for(var i=0;i<bd.cellmax;i++){
-				if     (bd.QuC(i)==101){ pstr = "5";}
-				else if(bd.QuC(i)>=2 && bd.QuC(i)<=5){
-					var val = bd.QnC(i);
-					if     (val<= 0){ pstr = ""+(bd.QuC(i)-1)+"0";}
-					else if(val>= 1 && val< 16){ pstr = ""+(bd.QuC(i)-1)+val.toString(16);}
-					else if(val>=16 && val<256){ pstr = ""+(bd.QuC(i)+4)+val.toString(16);}
+			var cm="", pstr="", count=0;
+			for(var c=0;c<bd.cellmax;c++){
+				var qu=bd.cell[c].ques;
+				if     (qu===11){ pstr = "5";}
+				else if(qu>=2 && qu<=5){
+					var val = bd.cell[c].qnum;
+					if     (val<= 0){ pstr = ""+(qu-1)+"0";}
+					else if(val>= 1 && val< 16){ pstr = ""+(qu-1)+val.toString(16);}
+					else if(val>=16 && val<256){ pstr = ""+(qu+4)+val.toString(16);}
 				}
 				else{ pstr = ""; count++;}
 
-				if(count==0){ cm += pstr;}
-				else if(pstr || count==26){ cm+=((9+count).toString(36)+pstr); count=0;}
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===26){ cm+=((9+count).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm+=(9+count).toString(36);}
 
@@ -276,21 +277,20 @@ Puzzles.reflect.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCell( function(c,ca){
-				if(ca == "+"){ bd.sQuC(c, 101);}
-				else if(ca != "."){
-					bd.sQuC(c, parseInt(ca.charAt(0))+1);
-					if(ca.length>1){ bd.sQnC(c, parseInt(ca.substr(1)));}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="+"){ obj.ques = 11;}
+				else if(ca!=="."){
+					obj.ques = parseInt(ca.charAt(0))+1;
+					if(ca.length>1){ obj.qnum = parseInt(ca.substr(1));}
 				}
 			});
 			this.decodeBorderLine();
 		};
 		fio.encodeData = function(){
-			this.encodeCell( function(c){
-				if     (bd.QuC(c)==101) { return "+ ";}
-				else if(bd.QuC(c)>=2 && bd.QuC(c)<=5) {
-					if(bd.QnC(c)==-1){ return ""+(bd.QuC(c)-1).toString()+" ";}
-					else{ return ""+(bd.QuC(c)-1).toString()+(bd.QnC(c)).toString()+" ";}
+			this.encodeCell( function(obj){
+				if     (obj.ques===11) { return "+ ";}
+				else if(obj.ques>=2 && obj.ques<=5) {
+					return ""+(obj.ques-1)+(obj.qnum!==-1 ? obj.qnum : "")+" ";
 				}
 				else{ return ". ";}
 			});
@@ -307,7 +307,7 @@ Puzzles.reflect.prototype = {
 			if( !this.checkLcntCell(3) ){
 				this.setAlert('分岐している線があります。','There is a branch line.'); return false;
 			}
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=101);}) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==11);}) ){
 				this.setAlert('十字以外の場所で線が交差しています。','There is a crossing line out of cross mark.'); return false;
 			}
 
@@ -321,7 +321,7 @@ Puzzles.reflect.prototype = {
 				this.setAlert('三角形の数字とそこから延びる線の長さが一致していません。','A number on triangle is not equal to sum of the length of lines from it.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)!=4 && bd.QuC(c)==101);}) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)!==4 && bd.QuC(c)===11);}) ){
 				this.setAlert('十字の場所で線が交差していません。','There isn\'t a crossing line on a cross mark.'); return false;
 			}
 
@@ -352,22 +352,19 @@ Puzzles.reflect.prototype = {
 		ans.checkTriNumber = function(type){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QuC(c)<2 || bd.QuC(c)>5 || bd.QnC(c)<=0){ continue;}
+				if(bd.QuC(c)<2 || bd.QuC(c)>5 || !bd.isValidNum(c)){ continue;}
 
 				var list = [];
-				var cnt=1;
-				var tx, ty;
-
 				bx = bd.cell[c].bx-1; by = bd.cell[c].by;
-				while(bx>bd.minbx){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); bx-=2;} else{ break;} }
+				while(bx>bd.minbx){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ list.push(id); bx-=2;} else{ break;} }
 				bx = bd.cell[c].bx+1; by = bd.cell[c].by;
-				while(bx<bd.maxbx){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); bx+=2;} else{ break;} }
+				while(bx<bd.maxbx){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ list.push(id); bx+=2;} else{ break;} }
 				bx = bd.cell[c].bx; by = bd.cell[c].by-1;
-				while(by>bd.minby){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); by-=2;} else{ break;} }
+				while(by>bd.minby){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ list.push(id); by-=2;} else{ break;} }
 				bx = bd.cell[c].bx; by = bd.cell[c].by+1;
-				while(by<bd.maxby){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); by+=2;} else{ break;} }
+				while(by<bd.maxby){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ list.push(id); by+=2;} else{ break;} }
 
-				if(type==1?bd.QnC(c)<cnt:bd.QnC(c)>cnt){
+				if(type==1?bd.QnC(c)<(list.length+1):bd.QnC(c)>(list.length+1)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],4);
 					if(result){ bd.sErBAll(2);}

@@ -1,4 +1,4 @@
-// Filesys.js v3.3.0p2
+// Filesys.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -9,6 +9,7 @@ FileIO = function(){
 	this.dataarray = [];
 	this.datastr = "";
 	this.urlstr = "";
+	this.currentType = 1;
 
 	// 定数(ファイル形式)
 	this.PZPR = 1;
@@ -25,17 +26,16 @@ FileIO.prototype = {
 		this.filever = 0;
 		this.lineseek = 0;
 		this.dataarray = datastr.split("/");
-		var type = this.PZPR;
 
 		// ヘッダの処理
 		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
 			if(this.readLine()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。'); return;}
-			type = this.PZPR;
+			this.currentType = this.PZPR;
 		}
 		else{
 			this.lineseek = 0;
-			type = this.PBOX;
+			this.currentType = this.PBOX;
 		}
 
 		// サイズを表す文字列
@@ -43,7 +43,7 @@ FileIO.prototype = {
 		if(k.puzzleid!=="sudoku"){
 			row = parseInt(this.readLine(), 10);
 			col = parseInt(this.readLine(), 10);
-			if(type===2 && k.puzzleid==="kakuro"){ row--; col--;}
+			if(this.currentType===this.PBOX && k.puzzleid==="kakuro"){ row--; col--;}
 		}
 		else{
 			row = col = parseInt(this.readLine(), 10);
@@ -52,10 +52,8 @@ FileIO.prototype = {
 		bd.initBoardSize(col, row); // 盤面を指定されたサイズで初期化
 
 		// メイン処理
-		base.disableInfo();
-		if     (type===1){ this.decodeData();}
-		else if(type===2){ this.kanpenOpen();}
-		base.enableInfo();
+		if     (this.currentType===this.PZPR){ this.decodeData();}
+		else if(this.currentType===this.PBOX){ this.kanpenOpen();}
 
 		this.dataarray = null; // 重くなりそうなので初期化
 
@@ -71,24 +69,25 @@ FileIO.prototype = {
 		this.sizestr = "";
 		this.datastr = "";
 		this.urlstr = "";
+		this.currentType = type;
 
 		// メイン処理
-		if     (type===this.PZPR){ this.encodeData();}
-		else if(type===this.PBOX){ this.kanpenSave();}
+		if     (this.currentType===this.PZPR){ this.encodeData();}
+		else if(this.currentType===this.PBOX){ this.kanpenSave();}
 
 		// サイズを表す文字列
 		if(!this.sizestr){ this.sizestr = [k.qrows, k.qcols].join("/");}
 		this.datastr = [this.sizestr, this.datastr].join("/");
 
 		// ヘッダの処理
-		if(type===1){
+		if(this.currentType===this.PZPR){
 			var header = (this.filever===0 ? "pzprv3" : ("pzprv3."+this.filever));
 			this.datastr = [header, k.puzzleid, this.datastr].join("/");
 		}
 		var bstr = this.datastr;
 
 		// 末尾のURL追加処理
-		if(type===1){
+		if(this.currentType===this.PZPR){
 			this.urlstr = enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? enc.PZPRV3 : enc.KANPEN);
 		}
 
@@ -128,14 +127,13 @@ FileIO.prototype = {
 	// fio.decodeObj()     配列で、個別文字列から個別セルなどの設定を行う
 	// fio.decodeCell()    配列で、個別文字列から個別セルの設定を行う
 	// fio.decodeCross()   配列で、個別文字列から個別Crossの設定を行う
-	// fio.decodeBorder()  配列で、個別文字列から個別Border(外枠上なし)の設定を行う
-	// fio.decodeBorder2() 配列で、個別文字列から個別Border(外枠上あり)の設定を行う
+	// fio.decodeBorder()  配列で、個別文字列から個別Borderの設定を行う
 	//---------------------------------------------------------------------------
-	decodeObj : function(func, getid, startbx, startby, endbx, endby){
+	decodeObj : function(func, group, startbx, startby, endbx, endby){
 		var bx=startbx, by=startby, step=2;
 		var item=this.getItemList((endby-startby)/step+1);
 		for(var i=0;i<item.length;i++){
-			func(getid.call(bd,bx,by), item[i]);
+			func(bd.getObject(group, bd.idnum(group,bx,by)), item[i]);
 
 			bx+=step;
 			if(bx>endbx){ bx=startbx; by+=step;}
@@ -143,102 +141,100 @@ FileIO.prototype = {
 		}
 	},
 	decodeCell   : function(func){
-		this.decodeObj(func, bd.cnum, 1, 1, 2*k.qcols-1, 2*k.qrows-1);
+		this.decodeObj(func, k.CELL, 1, 1, 2*k.qcols-1, 2*k.qrows-1);
 	},
 	decodeCross  : function(func){
-		this.decodeObj(func, bd.xnum, 0, 0, 2*k.qcols,   2*k.qrows  );
+		this.decodeObj(func, k.CROSS, 0, 0, 2*k.qcols,   2*k.qrows  );
 	},
 	decodeBorder : function(func){
-		this.decodeObj(func, bd.bnum, 2, 1, 2*k.qcols-2, 2*k.qrows-1);
-		this.decodeObj(func, bd.bnum, 1, 2, 2*k.qcols-1, 2*k.qrows-2);
-	},
-	decodeBorder2: function(func){
-		this.decodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
-		this.decodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
+		if(k.isborder===1 || k.puzzleid==='bosanowa'){
+			this.decodeObj(func, k.BORDER, 2, 1, 2*k.qcols-2, 2*k.qrows-1);
+			this.decodeObj(func, k.BORDER, 1, 2, 2*k.qcols-1, 2*k.qrows-2);
+		}
+		else if(k.isborder===2){
+			if(this.currentType===this.PZPR){
+				this.decodeObj(func, k.BORDER, 0, 1, 2*k.qcols  , 2*k.qrows-1);
+				this.decodeObj(func, k.BORDER, 1, 0, 2*k.qcols-1, 2*k.qrows  );
+			}
+			// pencilboxでは、outsideborderの時はぱずぷれとは順番が逆になってます
+			else if(this.currentType===this.PBOX){
+				this.decodeObj(func, k.BORDER, 1, 0, 2*k.qcols-1, 2*k.qrows  );
+				this.decodeObj(func, k.BORDER, 0, 1, 2*k.qcols  , 2*k.qrows-1);
+			}
+		}
 	},
 
 	//---------------------------------------------------------------------------
 	// fio.encodeObj()     個別セルデータ等から個別文字列の設定を行う
 	// fio.encodeCell()    個別セルデータから個別文字列の設定を行う
 	// fio.encodeCross()   個別Crossデータから個別文字列の設定を行う
-	// fio.encodeBorder()  個別Borderデータ(外枠上なし)から個別文字列の設定を行う
-	// fio.encodeBorder2() 個別Borderデータ(外枠上あり)から個別文字列の設定を行う
+	// fio.encodeBorder()  個別Borderデータから個別文字列の設定を行う
 	//---------------------------------------------------------------------------
-	encodeObj : function(func, getid, startbx, startby, endbx, endby){
+	encodeObj : function(func, group, startbx, startby, endbx, endby){
 		var step=2;
 		for(var by=startby;by<=endby;by+=step){
 			for(var bx=startbx;bx<=endbx;bx+=step){
-				this.datastr += func(getid.call(bd,bx,by));
+				this.datastr += func(bd.getObject(group, bd.idnum(group,bx,by)));
 			}
 			this.datastr += "/";
 		}
 	},
 	encodeCell   : function(func){
-		this.encodeObj(func, bd.cnum, 1, 1, 2*k.qcols-1, 2*k.qrows-1);
+		this.encodeObj(func, k.CELL, 1, 1, 2*k.qcols-1, 2*k.qrows-1);
 	},
 	encodeCross  : function(func){
-		this.encodeObj(func, bd.xnum, 0, 0, 2*k.qcols,   2*k.qrows  );
+		this.encodeObj(func, k.CROSS, 0, 0, 2*k.qcols,   2*k.qrows  );
 	},
 	encodeBorder : function(func){
-		this.encodeObj(func, bd.bnum, 2, 1, 2*k.qcols-2, 2*k.qrows-1);
-		this.encodeObj(func, bd.bnum, 1, 2, 2*k.qcols-1, 2*k.qrows-2);
-	},
-	encodeBorder2: function(func){
-		this.encodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
-		this.encodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
+		if(k.isborder===1 || k.puzzleid==='bosanowa'){
+			this.encodeObj(func, k.BORDER, 2, 1, 2*k.qcols-2, 2*k.qrows-1);
+			this.encodeObj(func, k.BORDER, 1, 2, 2*k.qcols-1, 2*k.qrows-2);
+		}
+		else if(k.isborder===2){
+			if(this.currentType===this.PZPR){
+				this.encodeObj(func, k.BORDER, 0, 1, 2*k.qcols  , 2*k.qrows-1);
+				this.encodeObj(func, k.BORDER, 1, 0, 2*k.qcols-1, 2*k.qrows  );
+			}
+			// pencilboxでは、outsideborderの時はぱずぷれとは順番が逆になってます
+			else if(this.currentType===this.PBOX){
+				this.encodeObj(func, k.BORDER, 1, 0, 2*k.qcols-1, 2*k.qrows  );
+				this.encodeObj(func, k.BORDER, 0, 1, 2*k.qcols  , 2*k.qrows-1);
+			}
+		}
 	},
 
-	//---------------------------------------------------------------------------
-	// fio.decodeCellQues41_42() 黒丸と白丸のデコードを行う
-	// fio.encodeCellQues41_42() 黒丸と白丸のエンコードを行う
-	//---------------------------------------------------------------------------
-	decodeCellQues41_42 : function(){
-		this.decodeCell( function(c,ca){
-			if     (ca === "-"){ bd.sQnC(c, -2);}
-			else if(ca === "1"){ bd.sQuC(c, 41);}
-			else if(ca === "2"){ bd.sQuC(c, 42);}
-		});
-	},
-	encodeCellQues41_42 : function(){
-		this.encodeCell( function(c){
-			if     (bd.QuC(c)===41){ return "1 ";}
-			else if(bd.QuC(c)===42){ return "2 ";}
-			else if(bd.QnC(c)===-2){ return "- ";}
-			else                   { return ". ";}
-		});
-	},
 	//---------------------------------------------------------------------------
 	// fio.decodeCellQnum() 問題数字のデコードを行う
 	// fio.encodeCellQnum() 問題数字のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnum : function(){
-		this.decodeCell( function(c,ca){
-			if     (ca === "-"){ bd.sQnC(c, -2);}
-			else if(ca !== "."){ bd.sQnC(c, parseInt(ca));}
+		this.decodeCell( function(obj,ca){
+			if     (ca==="-"){ obj.qnum = -2;}
+			else if(ca!=="."){ obj.qnum = parseInt(ca);}
 		});
 	},
 	encodeCellQnum : function(){
-		this.encodeCell( function(c){
-			if     (bd.QnC(c)>=0)  { return (bd.QnC(c).toString() + " ");}
-			else if(bd.QnC(c)===-2){ return "- ";}
-			else                   { return ". ";}
+		this.encodeCell( function(obj){
+			if     (obj.qnum>=0)  { return (obj.qnum.toString()+" ");}
+			else if(obj.qnum===-2){ return "- ";}
+			else                  { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
-	// fio.decodeCellQnumb() 黒＋問題数字のデコードを行う
-	// fio.encodeCellQnumb() 黒＋問題数字のエンコードを行う
+	// fio.decodeCellQnumb() 黒背景な問題数字のデコードを行う
+	// fio.encodeCellQnumb() 黒背景な問題数字のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnumb : function(){
-		this.decodeCell( function(c,ca){
-			if     (ca === "5"){ bd.sQnC(c, -2);}
-			else if(ca !== "."){ bd.sQnC(c, parseInt(ca));}
+		this.decodeCell( function(obj,ca){
+			if     (ca==="5"){ obj.qnum = -2;}
+			else if(ca!=="."){ obj.qnum = parseInt(ca);}
 		});
 	},
 	encodeCellQnumb : function(){
-		this.encodeCell( function(c){
-			if     (bd.QnC(c)>=0)  { return (bd.QnC(c).toString() + " ");}
-			else if(bd.QnC(c)===-2){ return "5 ";}
-			else                   { return ". ";}
+		this.encodeCell( function(obj){
+			if     (obj.qnum>=0)  { return (obj.qnum.toString()+" ");}
+			else if(obj.qnum===-2){ return "5 ";}
+			else                  { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -246,20 +242,20 @@ FileIO.prototype = {
 	// fio.encodeCellQnumAns() 問題数字＋黒マス白マスのエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnumAns : function(){
-		this.decodeCell( function(c,ca){
-			if     (ca === "#"){ bd.setBlack(c);}
-			else if(ca === "+"){ bd.sQsC(c, 1);}
-			else if(ca === "-"){ bd.sQnC(c, -2);}
-			else if(ca !== "."){ bd.sQnC(c, parseInt(ca));}
+		this.decodeCell( function(obj,ca){
+			if     (ca==="#"){ obj.qans = 1;}
+			else if(ca==="+"){ obj.qsub = 1;}
+			else if(ca==="-"){ obj.qnum = -2;}
+			else if(ca!=="."){ obj.qnum = parseInt(ca);}
 		});
 	},
 	encodeCellQnumAns : function(){
-		this.encodeCell( function(c){
-			if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
-			else if(bd.QnC(c)===-2){return "- ";}
-			else if(bd.isBlack(c)){ return "# ";}
-			else if(bd.QsC(c)===1){ return "+ ";}
-			else                  { return ". ";}
+		this.encodeCell( function(obj){
+			if     (obj.qnum>=0) { return (obj.qnum.toString() + " ");}
+			else if(obj.qnum===-2){return "- ";}
+			else if(obj.qans===1){ return "# ";}
+			else if(obj.qsub===1){ return "+ ";}
+			else                 { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -267,20 +263,20 @@ FileIO.prototype = {
 	// fio.encodeCellDirecQnum() 方向＋問題数字のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellDirecQnum : function(){
-		this.decodeCell( function(c,ca){
-			if(ca !== "."){
+		this.decodeCell( function(obj,ca){
+			if(ca!=="."){
 				var inp = ca.split(",");
-				bd.sDiC(c, (inp[0]!=="0"?parseInt(inp[0]): 0));
-				bd.sQnC(c, (inp[1]!=="-"?parseInt(inp[1]):-2));
+				obj.qdir = (inp[0]!=="0"?parseInt(inp[0]): 0);
+				obj.qnum = (inp[1]!=="-"?parseInt(inp[1]):-2);
 			}
 		});
 	},
 	encodeCellDirecQnum : function(){
-		this.encodeCell( function(c){
-			if(bd.QnC(c)!==-1){
-				var ca1 = (bd.DiC(c)!== 0?(bd.DiC(c)).toString():"0");
-				var ca2 = (bd.QnC(c)!==-2?(bd.QnC(c)).toString():"-");
-				return ""+ca1+","+ca2+" ";
+		this.encodeCell( function(obj){
+			if(obj.qnum!==-1){
+				var ca1 = (obj.qdir!== 0?obj.qdir.toString():"0");
+				var ca2 = (obj.qnum!==-2?obj.qnum.toString():"-");
+				return [ca1, ",", ca2, " "].join('');
 			}
 			else{ return ". ";}
 		});
@@ -290,40 +286,62 @@ FileIO.prototype = {
 	// fio.encodeCellAns() 黒マス白マスのエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellAns : function(){
-		this.decodeCell( function(c,ca){
-			if     (ca === "#"){ bd.setBlack(c);}
-			else if(ca === "+"){ bd.sQsC(c, 1); }
+		this.decodeCell( function(obj,ca){
+			if     (ca==="#"){ obj.qans = 1;}
+			else if(ca==="+"){ obj.qsub = 1;}
 		});
 	},
 	encodeCellAns : function(){
-		this.encodeCell( function(c){
-			if     (bd.isBlack(c)){ return "# ";}
-			else if(bd.QsC(c)===1){ return "+ ";}
-			else                  { return ". ";}
+		this.encodeCell( function(obj){
+			if     (obj.qans===1){ return "# ";}
+			else if(obj.qsub===1){ return "+ ";}
+			else                 { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
-	// fio.decodeCellQanssub() 回答数字と背景色のデコードを行う
-	// fio.encodeCellQanssub() 回答数字と背景色のエンコードを行う
+	// fio.decodeCellQanssub() 黒マスと背景色のデコードを行う
+	// fio.encodeCellQanssub() 黒マスと背景色のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQanssub : function(){
-		this.decodeCell( function(c,ca){
-			if     (ca === "+"){ bd.sQsC(c, 1);}
-			else if(ca === "-"){ bd.sQsC(c, 2);}
-			else if(ca === "="){ bd.sQsC(c, 3);}
-			else if(ca === "%"){ bd.sQsC(c, 4);}
-			else if(ca !== "."){ bd.sQaC(c, parseInt(ca));}
+		this.decodeCell( function(obj,ca){
+			if     (ca==="+"){ obj.qsub = 1;}
+			else if(ca==="-"){ obj.qsub = 2;}
+			else if(ca==="="){ obj.qsub = 3;}
+			else if(ca==="%"){ obj.qsub = 4;}
+			else if(ca!=="."){ obj.qans = parseInt(ca);}
 		});
 	},
 	encodeCellQanssub : function(){
-		this.encodeCell( function(c){
-			//if(bd.QuC(c)!=0 || bd.QnC(c)!=-1){ return ". ";}
-			if     (bd.QaC(c)!==-1){ return (bd.QaC(c).toString() + " ");}
-			else if(bd.QsC(c)===1 ){ return "+ ";}
-			else if(bd.QsC(c)===2 ){ return "- ";}
-			else if(bd.QsC(c)===3 ){ return "= ";}
-			else if(bd.QsC(c)===4 ){ return "% ";}
-			else                   { return ". ";}
+		this.encodeCell( function(obj){
+			if     (obj.qans!==0){ return (obj.qans.toString() + " ");}
+			else if(obj.qsub===1){ return "+ ";}
+			else if(obj.qsub===2){ return "- ";}
+			else if(obj.qsub===3){ return "= ";}
+			else if(obj.qsub===4){ return "% ";}
+			else                 { return ". ";}
+		});
+	},
+	//---------------------------------------------------------------------------
+	// fio.decodeCellAnumsub() 回答数字と背景色のデコードを行う
+	// fio.encodeCellAnumsub() 回答数字と背景色のエンコードを行う
+	//---------------------------------------------------------------------------
+	decodeCellAnumsub : function(){
+		this.decodeCell( function(obj,ca){
+			if     (ca==="+"){ obj.qsub = 1;}
+			else if(ca==="-"){ obj.qsub = 2;}
+			else if(ca==="="){ obj.qsub = 3;}
+			else if(ca==="%"){ obj.qsub = 4;}
+			else if(ca!=="."){ obj.anum = parseInt(ca);}
+		});
+	},
+	encodeCellAnumsub : function(){
+		this.encodeCell( function(obj){
+			if     (obj.anum!==-1){ return (obj.anum.toString() + " ");}
+			else if(obj.qsub===1) { return "+ ";}
+			else if(obj.qsub===2) { return "- ";}
+			else if(obj.qsub===3) { return "= ";}
+			else if(obj.qsub===4) { return "% ";}
+			else                  { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -331,14 +349,14 @@ FileIO.prototype = {
 	// fio.encodeCellQsub() 背景色のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQsub : function(){
-		this.decodeCell( function(c,ca){
-			if(ca != "0"){ bd.sQsC(c, parseInt(ca));}
+		this.decodeCell( function(obj,ca){
+			if(ca!=="0"){ obj.qsub = parseInt(ca);}
 		});
 	},
 	encodeCellQsub : function(){
-		this.encodeCell( function(c){
-			if     (bd.QsC(c)>0){ return (bd.QsC(c).toString() + " ");}
-			else                { return "0 ";}
+		this.encodeCell( function(obj){
+			if(obj.qsub>0){ return (obj.qsub.toString() + " ");}
+			else          { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -346,16 +364,16 @@ FileIO.prototype = {
 	// fio.encodeCrossNum() 交点の数字のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCrossNum : function(){
-		this.decodeCross( function(c,ca){
-			if     (ca === "-"){ bd.sQnX(c, -2);}
-			else if(ca !== "."){ bd.sQnX(c, parseInt(ca));}
+		this.decodeCross( function(obj,ca){
+			if     (ca==="-"){ obj.qnum = -2;}
+			else if(ca!=="."){ obj.qnum = parseInt(ca);}
 		});
 	},
 	encodeCrossNum : function(){
-		this.encodeCross( function(c){
-			if     (bd.QnX(c)>=0)  { return (bd.QnX(c).toString() + " ");}
-			else if(bd.QnX(c)===-2){ return "- ";}
-			else                   { return ". ";}
+		this.encodeCross( function(obj){
+			if     (obj.qnum>=0)  { return (obj.qnum.toString() + " ");}
+			else if(obj.qnum===-2){ return "- ";}
+			else                  { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -363,36 +381,13 @@ FileIO.prototype = {
 	// fio.encodeBorderQues() 問題の境界線のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeBorderQues : function(){
-		this.decodeBorder( function(c,ca){
-			if(ca === "1"){ bd.sQuB(c, 1);}
+		this.decodeBorder( function(obj,ca){
+			if(ca==="1"){ obj.ques = 1;}
 		});
 	},
 	encodeBorderQues : function(){
-		this.encodeBorder( function(c){
-			if     (bd.QuB(c)===1){ return "1 ";}
-			else                  { return "0 ";}
-		});
-	},
-	//---------------------------------------------------------------------------
-	// fio.decodeBorderLine() Lineのデコードを行う
-	// fio.encodeBorderLine() Lineのエンコードを行う
-	//---------------------------------------------------------------------------
-	decodeBorderLine : function(){
-		var svfunc = bd.isLineNG;
-		bd.isLineNG = function(id){ return false;};
-
-		this.decodeBorder( function(c,ca){
-			if     (ca === "-1"){ bd.sQsB(c, 2);}
-			else if(ca !== "0" ){ bd.sLiB(c, parseInt(ca));}
-		});
-
-		bd.isLineNG = svfunc;
-	},
-	encodeBorderLine : function(){
-		this.encodeBorder( function(c){
-			if     (bd.LiB(c)>  0){ return ""+bd.LiB(c)+" ";}
-			else if(bd.QsB(c)===2){ return "-1 ";}
-			else                  { return "0 ";}
+		this.encodeBorder( function(obj){
+			return (obj.ques===1?"1":"0")+" ";
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -400,39 +395,35 @@ FileIO.prototype = {
 	// fio.encodeBorderAns() 問題・回答の境界線のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeBorderAns : function(){
-		this.decodeBorder( function(c,ca){
-			if     (ca === "1" ){ bd.sQaB(c, 1);}
-			else if(ca === "2" ){ bd.sQaB(c, 1); bd.sQsB(c, 1);}
-			else if(ca === "-1"){ bd.sQsB(c, 1);}
+		this.decodeBorder( function(obj,ca){
+			if     (ca==="2" ){ obj.qans = 1; obj.qsub = 1;}
+			else if(ca==="1" ){ obj.qans = 1;}
+			else if(ca==="-1"){ obj.qsub = 1;}
 		});
 	},
 	encodeBorderAns : function(){
-		this.encodeBorder( function(c){
-			if     (bd.QaB(c)===1 && bd.QsB(c)===1){ return "2 ";}
-			else if(bd.QaB(c)===1){ return "1 ";}
-			else if(bd.QsB(c)===1){ return "-1 ";}
-			else                  { return "0 ";}
+		this.encodeBorder( function(obj){
+			if     (obj.qans===1 && obj.qsub===1){ return "2 ";}
+			else if(obj.qans===1){ return "1 ";}
+			else if(obj.qsub===1){ return "-1 ";}
+			else                 { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
-	// fio.decodeBorderAns2() 問題・回答の境界線のデコード(外枠あり)を行う
-	// fio.encodeBorderAns2() 問題・回答の境界線のエンコード(外枠あり)を行う
+	// fio.decodeBorderLine() Lineのデコードを行う
+	// fio.encodeBorderLine() Lineのエンコードを行う
 	//---------------------------------------------------------------------------
-	decodeBorderAns2 : function(){
-		this.decodeBorder2( function(c,ca){
-			if     (ca === "1" ){ bd.sQaB(c, 1);}
-			else if(ca === "2" ){ bd.sQsB(c, 1);}
-			else if(ca === "3" ){ bd.sQaB(c, 1); bd.sQsB(c, 1);}
-			else if(ca === "-1"){ bd.sQsB(c, 2);}
+	decodeBorderLine : function(){
+		this.decodeBorder( function(obj,ca){
+			if     (ca==="-1"){ obj.qsub = 2;}
+			else if(ca!=="0" ){ obj.line = parseInt(ca);}
 		});
 	},
-	encodeBorderAns2 : function(){
-		this.encodeBorder2( function(c){
-			if     (bd.QaB(c)===1 && bd.QsB(c)===1){ return "3 ";}
-			else if(bd.QsB(c)===1){ return "2 ";}
-			else if(bd.QaB(c)===1){ return "1 ";}
-			else if(bd.QsB(c)===2){ return "-1 ";}
-			else                  { return "0 ";}
+	encodeBorderLine : function(){
+		this.encodeBorder( function(obj){
+			if     (obj.line>  0){ return ""+obj.line+" ";}
+			else if(obj.qsub===2){ return "-1 ";}
+			else                 { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -458,17 +449,17 @@ FileIO.prototype = {
 		this.datastr += (rinfo.max+"/");
 		for(var c=0;c<bd.cellmax;c++){
 			this.datastr += (""+(rinfo.id[c]-1)+" ");
-			if((c+1)%k.qcols==0){ this.datastr += "/";}
+			if((c+1)%k.qcols===0){ this.datastr += "/";}
 		}
 	},
 	//---------------------------------------------------------------------------
 	// fio.rdata2Border() 入力された配列から境界線を入力する
 	//---------------------------------------------------------------------------
 	rdata2Border : function(isques, rdata){
-		var func = (isques ? bd.sQuB : bd.sQaB);
 		for(var id=0;id<bd.bdmax;id++){
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			func.apply(bd, [id, (cc1!=-1 && cc2!=-1 && rdata[cc1]!=rdata[cc2]?1:0)]);
+			var isdiff = (cc1!==null && cc2!==null && rdata[cc1]!=rdata[cc2]);
+			bd.border[id][(isques?'ques':'qans')] = (isdiff?1:0);
 		}
 	},
 	//---------------------------------------------------------------------------
@@ -477,31 +468,41 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQnum51 : function(){
 		var item = this.getItemList(k.qrows+1);
+		base.disableInfo(); /* mv.set51cell()用 */
 		for(var i=0;i<item.length;i++) {
-			var bx=(i%(k.qcols+1)-1)*2+1, by=(mf(i/(k.qcols+1))-1)*2+1;
-			if(item[i]!="."){
-				if     (by===-1){ bd.sDiE(bd.exnum(bx,by), parseInt(item[i]));}
-				else if(bx===-1){ bd.sQnE(bd.exnum(bx,by), parseInt(item[i]));}
-				else{
-					var inp = item[i].split(",");
-					var c = bd.cnum(bx,by);
-					mv.set51cell(c, true);
-					bd.sQnC(c, inp[0]);
-					bd.sDiC(c, inp[1]);
-				}
+			if(item[i]=="."){ continue;}
+
+			var bx=(i%(k.qcols+1)-1)*2+1, by=(((i/(k.qcols+1))|0)-1)*2+1;
+			if(bx===-1 || by===-1){
+				var ec = bd.exnum(bx,by);
+				var property = ((by===-1)?'qdir':'qnum');
+				bd.excell[ec][property] = parseInt(item[i]);
+			}
+			else{
+				var inp = item[i].split(",");
+				var c = bd.cnum(bx,by);
+				mv.set51cell(c, true);
+				bd.cell[c].qnum = parseInt(inp[0]);
+				bd.cell[c].qdir = parseInt(inp[1]);
 			}
 		}
+		base.enableInfo(); /* mv.set51cell()用 */
 	},
 	encodeCellQnum51 : function(){
 		var str = "";
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-				if     (bx===-1 && by==-1){ str += "0 ";}
-				else if(by===-1){ str += (""+bd.DiE(bd.exnum(bx,by)).toString()+" ");}
-				else if(bx===-1){ str += (""+bd.QnE(bd.exnum(bx,by)).toString()+" ");}
+				if     (bx===-1 && by===-1){ str += "0 ";}
+				else if(bx===-1 || by===-1){
+					var ec = bd.exnum(bx,by);
+					var property = ((by===-1)?'qdir':'qnum');
+					str += (""+bd.excell[ec][property].toString()+" ");
+				}
 				else{
 					var c = bd.cnum(bx,by);
-					if(bd.QuC(c)===51){ str += (""+bd.QnC(c).toString()+","+bd.DiC(c).toString()+" ");}
+					if(bd.cell[c].ques===51){
+						str += (""+bd.cell[c].qnum.toString()+","+bd.cell[c].qdir.toString()+" ");
+					}
 					else{ str += ". ";}
 				}
 			}
@@ -510,59 +511,59 @@ FileIO.prototype = {
 		this.datastr += str;
 	},
 	//---------------------------------------------------------------------------
-	// fio.decodeCellQnum_kanpen() カンペン用問題数字のデコードを行う
-	// fio.encodeCellQnum_kanpen() カンペン用問題数字のエンコードを行う
+	// fio.decodeCellQnum_kanpen() pencilbox用問題数字のデコードを行う
+	// fio.encodeCellQnum_kanpen() pencilbox用問題数字のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnum_kanpen : function(){
-		this.decodeCell( function(c,ca){
-			if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+		this.decodeCell( function(obj,ca){
+			if(ca!=="."){ obj.qnum = parseInt(ca);}
 		});
 	},
 	encodeCellQnum_kanpen : function(){
-		this.encodeCell( function(c){
-			return (bd.QnC(c)>=0)?(bd.QnC(c).toString() + " "):". ";
+		this.encodeCell( function(obj){
+			return ((obj.qnum>=0)?(obj.qnum.toString() + " "):". ");
 		});
 	},
 	//---------------------------------------------------------------------------
-	// fio.decodeCellQans_kanpen() カンペン用回答数字のデコードを行う
-	// fio.encodeCellQans_kanpen() カンペン用回答数字のエンコードを行う
+	// fio.decodeCellAnum_kanpen() pencilbox用回答数字のデコードを行う
+	// fio.encodeCellAnum_kanpen() pencilbox用回答数字のエンコードを行う
 	//---------------------------------------------------------------------------
-	decodeCellQans_kanpen : function(){
-		this.decodeCell( function(c,ca){
-			if(ca!="."&&ca!="0"){ bd.sQaC(c, parseInt(ca));}
+	decodeCellAnum_kanpen : function(){
+		this.decodeCell( function(obj,ca){
+			if(ca!=="."&&ca!=="0"){ obj.anum = parseInt(ca);}
 		});
 	},
-	encodeCellQans_kanpen : function(){
-		this.encodeCell( function(c){
-			if     (bd.QnC(c)!=-1){ return ". ";}
-			else if(bd.QaC(c)==-1){ return "0 ";}
-			else                  { return ""+bd.QaC(c).toString()+" ";}
+	encodeCellAnum_kanpen : function(){
+		this.encodeCell( function(obj){
+			if     (obj.qnum!==-1){ return ". ";}
+			else if(obj.anum===-1){ return "0 ";}
+			else                  { return ""+obj.anum.toString()+" ";}
 		});
 	},
 	//---------------------------------------------------------------------------
-	// fio.decodeCellQnumAns_kanpen() カンペン用問題数字＋黒マス白マスのデコードを行う
-	// fio.encodeCellQnumAns_kanpen() カンペン用問題数字＋黒マス白マスのエンコードを行う
+	// fio.decodeCellQnumAns_kanpen() pencilbox用問題数字＋黒マス白マスのデコードを行う
+	// fio.encodeCellQnumAns_kanpen() pencilbox用問題数字＋黒マス白マスのエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnumAns_kanpen : function(){
-		this.decodeCell( function(c,ca){
-			if     (ca == "#"){ bd.setBlack(c);}
-			else if(ca == "+"){ bd.sQsC(c, 1);}
-			else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+		this.decodeCell( function(obj,ca){
+			if     (ca==="#"){ obj.qans = 1;}
+			else if(ca==="+"){ obj.qsub = 1;}
+			else if(ca!=="."){ obj.qnum = parseInt(ca);}
 		});
 	},
 	encodeCellQnumAns_kanpen : function(){
-		this.encodeCell( function(c){
-			if     (bd.QnC(c)>=0 ){ return (bd.QnC(c).toString() + " ");}
-			else if(bd.isBlack(c)){ return "# ";}
-			else if(bd.QsC(c)==1 ){ return "+ ";}
-			else                  { return ". ";}
+		this.encodeCell( function(obj){
+			if     (obj.qnum>=0 ){ return (obj.qnum.toString() + " ");}
+			else if(obj.qans===1){ return "# ";}
+			else if(obj.qsub===1){ return "+ ";}
+			else                 { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
-	// fio.decodeSquareRoom() カンペン用四角形の部屋のデコードを行う
-	// fio.encodeSquareRoom() カンペン用四角形の部屋のエンコードを行う
-	// fio.decodeAnsSquareRoom() (回答用)カンペン用四角形の部屋のデコードを行う
-	// fio.encodeAnsSquareRoom() (回答用)カンペン用四角形の部屋のエンコードを行う
+	// fio.decodeSquareRoom() pencilbox用四角形の部屋のデコードを行う
+	// fio.encodeSquareRoom() pencilbox用四角形の部屋のエンコードを行う
+	// fio.decodeAnsSquareRoom() (回答用)pencilbox用四角形の部屋のデコードを行う
+	// fio.encodeAnsSquareRoom() (回答用)pencilbox用四角形の部屋のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeSquareRoom : function(){ this.decodeSquareRoom_com(true);},
 	encodeSquareRoom : function(){ this.encodeSquareRoom_com(true);},
@@ -579,7 +580,10 @@ FileIO.prototype = {
 			for(var n=0;n<4;n++){ if(!isNaN(pce[n])){ pce[n]=parseInt(pce[n]);} }
 
 			var sp = {y1:2*pce[0]+1, x1:2*pce[1]+1, y2:2*pce[2]+1, x2:2*pce[3]+1};
-			if(isques && pce[4]!=""){ bd.sQnC(bd.cnum(sp.x1,sp.y1), parseInt(pce[4],10));}
+			if(isques && pce[4]!=""){
+				var c = bd.cnum(sp.x1,sp.y1);
+				bd.cell[c].qnum = parseInt(pce[4],10);
+			}
 			this.setRdataRect(rdata, i, sp);
 		}
 		this.rdata2Border(isques, rdata);
@@ -599,7 +603,7 @@ FileIO.prototype = {
 		this.datastr += (rinfo.max+"/");
 		for(var id=1;id<=rinfo.max;id++){
 			var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
-			var num = (isques ? bd.QnC(area.getTopOfRoom(id)) : -1);
+			var num = (isques ? bd.cell[area.getTopOfRoom(id)].qnum : -1);
 			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" "+(num>=0 ? ""+num : "")+"/");
 		}
 	}
@@ -682,7 +686,7 @@ DataBaseManager.prototype = {
 		var sortlist = { idlist:"ID順", newsave:"保存が新しい順", oldsave:"保存が古い順", size:"サイズ/難易度順"};
 		var str="";
 		for(s in sortlist){ str += ("<option value=\""+s+"\">"+sortlist[s]+"</option>");}
-		document.database.sorts.innerHTML = str;
+		_doc.database.sorts.innerHTML = str;
 	},
 
 	//---------------------------------------------------------------------------
@@ -711,9 +715,9 @@ DataBaseManager.prototype = {
 	// fio.dbm.update()     管理テーブル情報やダイアログの表示を更新する
 	//---------------------------------------------------------------------------
 	getDataID : function(){
-		if(document.database.datalist.value!="new" && document.database.datalist.value!=""){
+		if(_doc.database.datalist.value!="new" && _doc.database.datalist.value!=""){
 			for(var i=0;i<this.DBlist.length;i++){
-				if(this.DBlist[i].id==document.database.datalist.value){ return i;}
+				if(this.DBlist[i].id==_doc.database.datalist.value){ return i;}
 			}
 		}
 		return -1;
@@ -730,7 +734,7 @@ DataBaseManager.prototype = {
 	// fio.dbm.dateString()           時刻の文字列を生成する
 	//---------------------------------------------------------------------------
 	displayDataTableList : function(){
-			switch(document.database.sorts.value){
+			switch(_doc.database.sorts.value){
 				case 'idlist':  this.DBlist = this.DBlist.sort(function(a,b){ return (a.id-b.id);}); break;
 				case 'newsave': this.DBlist = this.DBlist.sort(function(a,b){ return (b.time-a.time || a.id-b.id);}); break;
 				case 'oldsave': this.DBlist = this.DBlist.sort(function(a,b){ return (a.time-b.time || a.id-b.id);}); break;
@@ -747,7 +751,7 @@ DataBaseManager.prototype = {
 			html += ("<option" + valstr + selstr + ">" + this.getRowString(row)+"</option>\n");
 			}
 			html += ("<option value=\"new\""+(this.DBsid==-1?" selected":"")+">&nbsp;&lt;新しく保存する&gt;</option>\n");
-			document.database.datalist.innerHTML = html;
+			_doc.database.datalist.innerHTML = html;
 	},
 	getRowString : function(row){
 		var hardstr = [
@@ -784,20 +788,20 @@ DataBaseManager.prototype = {
 	selectDataTable : function(){
 		var selected = this.getDataID();
 		if(selected>=0){
-			document.database.comtext.value = ""+this.DBlist[selected].comment;
+			_doc.database.comtext.value = ""+this.DBlist[selected].comment;
 			this.DBsid = parseInt(this.DBlist[selected].id);
 		}
 		else{
-			document.database.comtext.value = "";
+			_doc.database.comtext.value = "";
 			this.DBsid = -1;
 		}
 
-		document.database.tableup.disabled = (document.database.sorts.value!=='idlist' || this.DBsid===-1 || this.DBsid===1);
-		document.database.tabledn.disabled = (document.database.sorts.value!=='idlist' || this.DBsid===-1 || this.DBsid===this.DBlist.length);
-		document.database.comedit.disabled = (this.DBsid===-1);
-		document.database.difedit.disabled = (this.DBsid===-1);
-		document.database.open.disabled    = (this.DBsid===-1);
-		document.database.del.disabled     = (this.DBsid===-1);
+		_doc.database.tableup.disabled = (_doc.database.sorts.value!=='idlist' || this.DBsid===-1 || this.DBsid===1);
+		_doc.database.tabledn.disabled = (_doc.database.sorts.value!=='idlist' || this.DBsid===-1 || this.DBsid===this.DBlist.length);
+		_doc.database.comedit.disabled = (this.DBsid===-1);
+		_doc.database.difedit.disabled = (this.DBsid===-1);
+		_doc.database.open.disabled    = (this.DBsid===-1);
+		_doc.database.del.disabled     = (this.DBsid===-1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -854,7 +858,7 @@ DataBaseManager.prototype = {
 		}
 		this.DBlist[id].col   = k.qcols;
 		this.DBlist[id].row   = k.qrows;
-		this.DBlist[id].time  = mf(tm.now()/1000);
+		this.DBlist[id].time  = (tm.now()/1000)|0;
 
 		this.dbh.saveDataTable(this, id);
 		this.update();
@@ -958,7 +962,7 @@ DataBaseHandler_LS.prototype = {
 	updateManageData : function(parent){
 		var mheader = 'pzprv3_manage:manage!'+k.puzzleid;
 		localStorage[mheader+'!count'] = parent.DBlist.length;
-		localStorage[mheader+'!time']  = mf(tm.now()/1000);
+		localStorage[mheader+'!time']  = (tm.now()/1000)|0;
 	},
 
 	//---------------------------------------------------------------------------
@@ -1079,7 +1083,7 @@ DataBaseHandler_SQL.prototype = {
 	},
 	updateManageData : function(parent){
 		var count = parent.DBlist.length;
-		var time = mf(tm.now()/1000);
+		var time = (tm.now()/1000)|0;
 		this.dbmgr.transaction( function(tx){
 			tx.executeSql('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)', [k.puzzleid, '1.0', count, time]);
 		});

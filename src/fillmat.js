@@ -146,7 +146,7 @@ Puzzles.fillmat.prototype = {
 			}
 
 			if( !this.checkAllArea(rinfo, f_true, function(w,h,a,n){ return (w==1||h==1)&&a<=4;}) ){
-				this.setAlert('「幅１マス、長さ１〜４マス」ではないタタミがあります。','The width of Tatami is over 1 or the length is over 4.'); return false;
+				this.setAlert('「幅１マス、長さ１～４マス」ではないタタミがあります。','The width of Tatami is over 1 or the length is over 4.'); return false;
 			}
 
 			if( !this.checkDoubleNumber(rinfo) ){

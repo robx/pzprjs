@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 快刀乱麻版 kramma.js v3.3.0
+// パズル固有スクリプト部 快刀乱麻版 kramma.js v3.3.1
 //
 Puzzles.kramma = function(){ };
 Puzzles.kramma.prototype = {
@@ -54,7 +54,7 @@ Puzzles.kramma.prototype = {
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.editmode) this.inputQues([0,41,42,-2]);
+				if(k.editmode) this.inputqnum();
 			}
 		};
 		mv.mousemove = function(){
@@ -66,49 +66,44 @@ Puzzles.kramma.prototype = {
 		// オーバーライド
 		mv.inputBD = function(flag){
 			var pos = this.borderpos(0.35);
-			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
+			if(this.prevPos.equals(pos)){ return;}
 
-			var id = bd.bnum(pos.x, pos.y);
-			if(id==-1 && this.mouseCell.x){ id = bd.bnum(this.mouseCell.x, this.mouseCell.y);}
+			var id = this.getborderID(this.prevPos, pos);
+			if(id!==null){
+				if(this.inputData===null){ this.inputData=(bd.isBorder(id)?0:1);}
 
-			if(this.mouseCell!==-1 && id!==-1){
-				if((!(pos.x&1) && this.mouseCell.x===pos.x && Math.abs(this.mouseCell.y-pos.y)===1) ||
-				   (!(pos.y&1) && this.mouseCell.y===pos.y && Math.abs(this.mouseCell.x-pos.x)===1) )
-				{
-					this.mouseCell=-1
-					if(this.inputData==-1){ this.inputData=(bd.isBorder(id)?0:1);}
+				var idlist = [id];
+				var bx1, bx2, by1, by2;
+				if(bd.border[id].bx&1){
+					var bx = bd.border[id].bx;
+					while(bx>bd.minbx){ if(bd.QnX(bd.xnum(bx-1,bd.border[id].by))===1){ break;} bx-=2;} bx1 = bx;
+					while(bx<bd.maxbx){ if(bd.QnX(bd.xnum(bx+1,bd.border[id].by))===1){ break;} bx+=2;} bx2 = bx;
+					by1 = by2 = bd.border[id].by;
+				}
+				else if(bd.border[id].by&1){
+					var by = bd.border[id].by;
+					while(by>bd.minby){ if(bd.QnX(bd.xnum(bd.border[id].bx,by-1))===1){ break;} by-=2;} by1 = by;
+					while(by<bd.maxby){ if(bd.QnX(bd.xnum(bd.border[id].bx,by+1))===1){ break;} by+=2;} by2 = by;
+					bx1 = bx2 = bd.border[id].bx;
+				}
+				idlist = [];
+				for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
 
-					var idlist = [id];
-					var bx1, bx2, by1, by2;
-					if(bd.border[id].bx&1){
-						var bx = bd.border[id].bx;
-						while(bx>bd.minbx){ if(bd.QnX(bd.xnum(bx-1,bd.border[id].by))===1){ break;} bx-=2;} bx1 = bx;
-						while(bx<bd.maxbx){ if(bd.QnX(bd.xnum(bx+1,bd.border[id].by))===1){ break;} bx+=2;} bx2 = bx;
-						by1 = by2 = bd.border[id].by;
-					}
-					else if(bd.border[id].by&1){
-						var by = bd.border[id].by;
-						while(by>bd.minby){ if(bd.QnX(bd.xnum(bd.border[id].bx,by-1))===1){ break;} by-=2;} by1 = by;
-						while(by<bd.maxby){ if(bd.QnX(bd.xnum(bd.border[id].bx,by+1))===1){ break;} by+=2;} by2 = by;
-						bx1 = bx2 = bd.border[id].bx;
-					}
-					idlist = [];
-					for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
-
-					for(var i=0;i<idlist.length;i++){
-						if(idlist[i]===-1){ continue;}
-						if     (this.inputData==1){ bd.setBorder(idlist[i]);}
-						else if(this.inputData==0){ bd.removeBorder(idlist[i]);}
-						pc.paintBorder(idlist[i]);
-					}
+				for(var i=0;i<idlist.length;i++){
+					if(idlist[i]===null){ continue;}
+					if     (this.inputData==1){ bd.setBorder(idlist[i]);}
+					else if(this.inputData==0){ bd.removeBorder(idlist[i]);}
+					pc.paintBorder(idlist[i]);
 				}
 			}
-			this.mouseCell = pos;
+			this.prevPos = pos;
 		};
-		mv.inputQuesDirectly = true;
+		mv.inputqnumDirectly = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){ };
+
+		bd.maxnum = 2;
 	},
 
 	//---------------------------------------------------------
@@ -125,10 +120,10 @@ Puzzles.kramma.prototype = {
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
-			this.drawCircles41_42(x1,y1,x2,y2);
+			this.drawQnumCircles(x1,y1,x2,y2);
 			this.drawCrossMarks(x1,y1,x2+1,y2+1);
 
-			this.drawQuesHatenas(x1,y1,x2,y2);
+			this.drawHatenas(x1,y1,x2,y2);
 
 			this.drawBorderQsubs(x1,y1,x2,y2);
 
@@ -141,21 +136,21 @@ Puzzles.kramma.prototype = {
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeCrossMark();
-			this.decodeCircle41_42();
+			this.decodeCircle();
 		};
 		enc.pzlexport = function(type){
 			this.encodeCrossMark();
-			this.encodeCircle41_42();
+			this.encodeCircle();
 		};
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCellQues41_42();
+			this.decodeCellQnum();
 			this.decodeCrossNum();
 			this.decodeBorderAns();
 		};
 		fio.encodeData = function(){
-			this.encodeCellQues41_42();
+			this.encodeCellQnum();
 			this.encodeCrossNum();
 			this.encodeBorderAns();
 		};
@@ -177,11 +172,11 @@ Puzzles.kramma.prototype = {
 			}
 
 			rinfo = area.getRoomInfo();
-			if( !this.checkNoObjectInRoom(rinfo, function(c){ return (bd.QuC(c)!=0?bd.QuC(c):-1);}) ){
+			if( !this.checkNoNumber(rinfo) ){
 				this.setAlert('白丸も黒丸も含まれない領域があります。','An area has no marks.'); return false;
 			}
 
-			if( !this.checkSameObjectInRoom(rinfo, function(c){ return (bd.QuC(c)!=0?bd.QuC(c):-1);}) ){
+			if( !this.checkSameObjectInRoom(rinfo, bd.getNum) ){
 				this.setAlert('白丸と黒丸が両方含まれる領域があります。','An area has both white and black circles.'); return false;
 			}
 

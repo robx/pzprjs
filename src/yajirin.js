@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.3.0
+// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.3.1
 // 
 Puzzles.yajirin = function(){ };
 Puzzles.yajirin.prototype = {
@@ -79,10 +79,7 @@ Puzzles.yajirin.prototype = {
 		};
 
 		// 線を引かせたくないので上書き
-		bd.isnoLPup    = function(cc){ return (bd.isBlack(cc) || bd.QnC(cc)!=-1);},
-		bd.isnoLPdown  = function(cc){ return (bd.isBlack(cc) || bd.QnC(cc)!=-1);},
-		bd.isnoLPleft  = function(cc){ return (bd.isBlack(cc) || bd.QnC(cc)!=-1);},
-		bd.isnoLPright = function(cc){ return (bd.isBlack(cc) || bd.QnC(cc)!=-1);},
+		bd.noLP = function(cc,dir){ return (bd.isBlack(cc) || bd.isNum(cc));},
 		bd.enableLineNG = true;
 
 		// キーボード入力系
@@ -105,7 +102,7 @@ Puzzles.yajirin.prototype = {
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
-			this.drawRDotCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2,false);
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
@@ -159,30 +156,30 @@ Puzzles.yajirin.prototype = {
 		};
 
 		fio.decodeCellDirecQnum_kanpen = function(isurl){
-			this.decodeCell( function(c,ca){
-				if     (ca=="#" && !isurl){ bd.setBlack(c);}
-				else if(ca=="+" && !isurl){ bd.sQsC(c,1);}
-				else if(ca != "."){
+			this.decodeCell( function(obj,ca){
+				if     (ca==="#" && !isurl){ obj.qans = 1;}
+				else if(ca==="+" && !isurl){ obj.qsub = 1;}
+				else if(ca!=="."){
 					var num = parseInt(ca);
-					if     (num<16){ bd.sDiC(c,k.UP); bd.sQnC(c,num   );}
-					else if(num<32){ bd.sDiC(c,k.LT); bd.sQnC(c,num-16);}
-					else if(num<48){ bd.sDiC(c,k.DN); bd.sQnC(c,num-32);}
-					else if(num<64){ bd.sDiC(c,k.RT); bd.sQnC(c,num-48);}
+					if     (num<16){ obj.qdir = k.UP; obj.qnum = num;   }
+					else if(num<32){ obj.qdir = k.LT; obj.qnum = num-16;}
+					else if(num<48){ obj.qdir = k.DN; obj.qnum = num-32;}
+					else if(num<64){ obj.qdir = k.RT; obj.qnum = num-48;}
 				}
 			});
 		};
 		fio.encodeCellDirecQnum_kanpen = function(isurl){
-			this.encodeCell( function(c){
-				var num = (bd.QnC(c)>=0&&bd.QnC(c)<10?bd.QnC(c):-1)
+			this.encodeCell( function(obj){
+				var num = ((obj.qnum>=0&&obj.qnum<10) ? obj.qnum : -1)
 				if(num==-1 && !isurl){
-					if     (bd.isBlack(c)){ return "# ";}
-					else if(bd.QsC(c)==1) { return "+ ";}
-					else                  { return ". ";}
+					if     (obj.qans===1){ return "# ";}
+					else if(obj.qsub===1){ return "+ ";}
+					else                 { return ". ";}
 				}
-				else if(bd.DiC(c)==k.UP){ return ""+( 0+num)+" ";}
-				else if(bd.DiC(c)==k.LT){ return ""+(16+num)+" ";}
-				else if(bd.DiC(c)==k.DN){ return ""+(32+num)+" ";}
-				else if(bd.DiC(c)==k.RT){ return ""+(48+num)+" ";}
+				else if(obj.qdir===k.UP){ return ""+( 0+num)+" ";}
+				else if(obj.qdir===k.LT){ return ""+(16+num)+" ";}
+				else if(obj.qdir===k.DN){ return ""+(32+num)+" ";}
+				else if(obj.qdir===k.RT){ return ""+(48+num)+" ";}
 				else                    { return ". ";}
 			});
 		};
@@ -220,7 +217,7 @@ Puzzles.yajirin.prototype = {
 				this.setAlert('輪っかが一つではありません。','There are plural loops.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && !bd.isBlack(c) && bd.QnC(c)==-1);}) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && !bd.isBlack(c) && bd.noNum(c));}) ){
 				this.setAlert('黒マスも線も引かれていないマスがあります。','Theer is an empty cell.'); return false;
 			}
 
@@ -231,7 +228,7 @@ Puzzles.yajirin.prototype = {
 		ans.checkArrowNumber = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)<0 || bd.DiC(c)==0 || bd.isBlack(c)){ continue;}
+				if(!bd.isValidNum(c) || bd.DiC(c)==0 || bd.isBlack(c)){ continue;}
 				var bx = bd.cell[c].bx, by = bd.cell[c].by, dir = bd.DiC(c);
 				var cnt=0, clist = [];
 				if     (dir==k.UP){ by-=2; while(by>bd.minby){ clist.push(bd.cnum(bx,by)); by-=2;} }

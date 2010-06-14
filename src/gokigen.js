@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.3.0
+// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.3.1
 //
 Puzzles.gokigen = function(){ };
 Puzzles.gokigen.prototype = {
@@ -74,16 +74,16 @@ Puzzles.gokigen.prototype = {
 		mv.mousemove = function(){ };
 		mv.dispBlue = function(){
 			var cc = this.cellid();
-			if(cc==-1 || bd.QaC(cc)==-1){ return;}
+			if(cc===null || bd.QaC(cc)===0){ return;}
 
 			var check = [];
 			for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
 
-			var fc = bd.xnum(bd.cell[cc].bx+(bd.QaC(cc)==1?-1:1),bd.cell[cc].by-1);
+			var fc = bd.xnum(bd.cell[cc].bx+(bd.isBlack(cc)?-1:1),bd.cell[cc].by-1);
 			ans.searchline(check, 0, fc);
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]==1){ bd.sErC([c],2);}
-				if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]==1){ bd.sErC([c],2);}
+				if(bd.QaC(c)===1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]===1){ bd.sErC([c],2);}
+				if(bd.QaC(c)===2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]===1){ bd.sErC([c],2);}
 			}
 
 			ans.errDisp = true;
@@ -91,14 +91,11 @@ Puzzles.gokigen.prototype = {
 		};
 		mv.inputslash = function(){
 			var cc = this.cellid();
-			if(cc==-1){ return;}
+			if(cc===null){ return;}
 
 			var use = pp.getVal('use');
-			if     (use===1){ bd.sQaC(cc, (bd.QaC(cc)!=(this.btn.Left?1:2)?(this.btn.Left?1:2):-1));}
-			else if(use===2){
-				if(bd.QaC(cc)==-1){ bd.sQaC(cc, (this.btn.Left?1:2));}
-				else{ bd.sQaC(cc, (this.btn.Left?{1:2,2:-1}:{1:-1,2:1})[bd.QaC(cc)]);}
-			}
+			if     (use===1){ bd.sQaC(cc, (bd.QaC(cc)!==(this.btn.Left?1:2)?(this.btn.Left?1:2):0));}
+			else if(use===2){ bd.sQaC(cc, (this.btn.Left?[1,2,0]:[2,0,1])[bd.QaC(cc)]);}
 
 			pc.paintCellAround(cc);
 		};
@@ -128,7 +125,7 @@ Puzzles.gokigen.prototype = {
 
 		menu.ex.adjustSpecial = function(key,d){
 			if(key & this.TURNFLIP){ // 反転・回転全て
-				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
+				for(var c=0;c<bd.cellmax;c++){ bd.sQaC(c,[0,2,1][bd.QaC(c)]);}
 			}
 		};
 	},
@@ -170,12 +167,12 @@ Puzzles.gokigen.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
-				if(bd.cell[c].qans!=-1){
-					if     (bd.cell[c].error==1){ g.strokeStyle = this.errcolor1;}
-					else if(bd.cell[c].error==2){ g.strokeStyle = this.errcolor2;}
+				if(bd.cell[c].qans!==-1){
+					if     (bd.cell[c].error===1){ g.strokeStyle = this.errcolor1;}
+					else if(bd.cell[c].error===2){ g.strokeStyle = this.errcolor2;}
 					else                        { g.strokeStyle = this.cellcolor;}
 
-					if(bd.cell[c].qans==1){
+					if(bd.cell[c].qans===1){
 						if(this.vnop(headers[0]+c,this.STROKE)){
 							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, this.cw,this.ch, true);
 							g.stroke();
@@ -183,7 +180,7 @@ Puzzles.gokigen.prototype = {
 					}
 					else{ this.vhide(headers[0]+c);}
 
-					if(bd.cell[c].qans==2){
+					if(bd.cell[c].qans===2){
 						if(this.vnop(headers[1]+c,this.STROKE)){
 							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, this.cw,0, 0,this.ch, true);
 							g.stroke();
@@ -233,7 +230,7 @@ Puzzles.gokigen.prototype = {
 				this.setAlert('数字に繋がる線の数が間違っています。', 'A number is not equal to count of lines that is connected to it.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QaC(c)==-1);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.QaC(c)===0);}) ){
 				this.setAlert('斜線がないマスがあります。','There is a empty cell.'); return false;
 			}
 
@@ -241,23 +238,23 @@ Puzzles.gokigen.prototype = {
 		};
 
 		ans.scntCross = function(id){
-			if(id==-1){ return -1;}
+			if(id===null){ return 0;}
 			var bx=bd.cross[id].bx, by=bd.cross[id].by;
-			var cc, cnt=0;
-			cc=bd.cnum(bx-1,by-1); if(cc!=-1 && bd.QaC(cc)==1){ cnt++;}
-			cc=bd.cnum(bx+1,by-1); if(cc!=-1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(bx-1,by+1); if(cc!=-1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(bx+1,by+1); if(cc!=-1 && bd.QaC(cc)==1){ cnt++;}
+			var obj, cnt=0;
+			obj=bd.cell[bd.cnum(bx-1,by-1)]; if(!!obj && obj.qans===1){ cnt++;}
+			obj=bd.cell[bd.cnum(bx+1,by-1)]; if(!!obj && obj.qans===2){ cnt++;}
+			obj=bd.cell[bd.cnum(bx-1,by+1)]; if(!!obj && obj.qans===2){ cnt++;}
+			obj=bd.cell[bd.cnum(bx+1,by+1)]; if(!!obj && obj.qans===1){ cnt++;}
 			return cnt;
 		};
 		ans.scntCross2 = function(id){
-			if(id==-1){ return -1;}
+			if(id===null){ return 0;}
 			var bx=bd.cross[id].bx, by=bd.cross[id].by;
-			var cc, cnt=0;
-			cc=bd.cnum(bx-1,by-1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==1){ cnt++;}
-			cc=bd.cnum(bx+1,by-1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(bx-1,by+1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(bx+1,by+1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==1){ cnt++;}
+			var obj, cnt=0;
+			obj=bd.cell[bd.cnum(bx-1,by-1)]; if(!!obj && obj.error===1 && obj.qans===1){ cnt++;}
+			obj=bd.cell[bd.cnum(bx+1,by-1)]; if(!!obj && obj.error===1 && obj.qans===2){ cnt++;}
+			obj=bd.cell[bd.cnum(bx-1,by+1)]; if(!!obj && obj.error===1 && obj.qans===2){ cnt++;}
+			obj=bd.cell[bd.cnum(bx+1,by+1)]; if(!!obj && obj.error===1 && obj.qans===1){ cnt++;}
 			return cnt;
 		};
 
@@ -266,22 +263,22 @@ Puzzles.gokigen.prototype = {
 			for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
 
 			while(1){
-				var fc=-1;
+				var fc=null;
 				for(var i=0;i<bd.crossmax;i++){ if(check[i]==0){ fc=i; break;}}
-				if(fc==-1){ break;}
+				if(fc===null){ break;}
 
 				if(!this.searchline(check, 0, fc)){
 					for(var c=0;c<bd.cellmax;c++){
-						if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]==1){ bd.sErC([c],1);}
-						if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]==1){ bd.sErC([c],1);}
+						if(bd.QaC(c)===1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]==1){ bd.sErC([c],1);}
+						if(bd.QaC(c)===2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]==1){ bd.sErC([c],1);}
 					}
 					while(1){
 						var endflag = true;
 						for(var c=0;c<bd.cellmax;c++){
-							if(bd.ErC(c)!==1){ continue;}
+							if(bd.cell[c].error!==1){ continue;}
 							var cc1, cc2, bx=bd.cell[c].bx, by=bd.cell[c].by;
-							if     (bd.QaC(c)==1){ cc1=bd.xnum(bx-1,by-1); cc2=bd.xnum(bx+1,by+1);}
-							else if(bd.QaC(c)==2){ cc1=bd.xnum(bx-1,by+1); cc2=bd.xnum(bx+1,by-1);}
+							if     (bd.QaC(c)===1){ cc1=bd.xnum(bx-1,by-1); cc2=bd.xnum(bx+1,by+1);}
+							else if(bd.QaC(c)===2){ cc1=bd.xnum(bx-1,by+1); cc2=bd.xnum(bx+1,by-1);}
 							if(this.scntCross2(cc1)==1 || this.scntCross2(cc2)==1){ bd.sErC([c],0); endflag = false; break;}
 						}
 						if(endflag){ break;}
@@ -294,18 +291,17 @@ Puzzles.gokigen.prototype = {
 			return result;
 		};
 		ans.searchline = function(check, dir, c){
-			var flag=true;
-			var nc, tx=bd.cross[c].bx, ty=bd.cross[c].by;
+			var nx, tx=bd.cross[c].bx, ty=bd.cross[c].by, flag=true;
 			check[c]=1;
 
-			nc = bd.xnum(tx-2,ty-2);
-			if(nc!=-1 && dir!=4 && bd.QaC(bd.cnum(tx-1,ty-1))==1 && (check[nc]!=0 || !this.searchline(check,1,nc))){ flag = false;}
-			nc = bd.xnum(tx-2,ty+2);
-			if(nc!=-1 && dir!=3 && bd.QaC(bd.cnum(tx-1,ty+1))==2 && (check[nc]!=0 || !this.searchline(check,2,nc))){ flag = false;}
-			nc = bd.xnum(tx+2,ty-2);
-			if(nc!=-1 && dir!=2 && bd.QaC(bd.cnum(tx+1,ty-1))==2 && (check[nc]!=0 || !this.searchline(check,3,nc))){ flag = false;}
-			nc = bd.xnum(tx+2,ty+2);
-			if(nc!=-1 && dir!=1 && bd.QaC(bd.cnum(tx+1,ty+1))==1 && (check[nc]!=0 || !this.searchline(check,4,nc))){ flag = false;}
+			nx = bd.xnum(tx-2,ty-2);
+			if(nx!==null && dir!==4 && bd.QaC(bd.cnum(tx-1,ty-1))===1 && (check[nx]!==0 || !this.searchline(check,1,nx))){ flag=false;}
+			nx = bd.xnum(tx-2,ty+2);
+			if(nx!==null && dir!==3 && bd.QaC(bd.cnum(tx-1,ty+1))===2 && (check[nx]!==0 || !this.searchline(check,2,nx))){ flag=false;}
+			nx = bd.xnum(tx+2,ty-2);
+			if(nx!==null && dir!==2 && bd.QaC(bd.cnum(tx+1,ty-1))===2 && (check[nx]!==0 || !this.searchline(check,3,nx))){ flag=false;}
+			nx = bd.xnum(tx+2,ty+2);
+			if(nx!==null && dir!==1 && bd.QaC(bd.cnum(tx+1,ty+1))===1 && (check[nx]!==0 || !this.searchline(check,4,nx))){ flag=false;}
 
 			return flag;
 		};

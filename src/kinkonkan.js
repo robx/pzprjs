@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.3.0
+// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.3.1
 //
 Puzzles.kinkonkan = function(){ };
 Puzzles.kinkonkan.prototype = {
@@ -67,36 +67,36 @@ Puzzles.kinkonkan.prototype = {
 		};
 		mv.mousemove = function(){
 			if     (k.editmode && this.btn.Left) this.inputborder();
-			else if(k.playmode && this.inputData!=-1) this.inputslash();
+			else if(k.playmode && this.inputData!==null) this.inputslash();
 		};
 		mv.inputslash = function(){
 			var cc = this.cellid();
-			if(cc==-1){ this.inputflash(); return;}
+			if(cc===null){ this.inputflash(); return;}
 
-			if     (this.inputData== 3){ bd.sQaC(cc,-1); bd.sQsC(cc,1);}
-			else if(this.inputData== 4){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
-			else if(this.inputData!=-1){ return;}
+			if     (this.inputData===3){ bd.sQaC(cc,0); bd.sQsC(cc,1);}
+			else if(this.inputData===4){ bd.sQaC(cc,0); bd.sQsC(cc,0);}
+			else if(this.inputData!==null){ return;}
 			else if(this.btn.Left){
-				if     (bd.QaC(cc)==1) { bd.sQaC(cc, 2); bd.sQsC(cc,0); this.inputData=2;}
-				else if(bd.QaC(cc)==2) { bd.sQaC(cc,-1); bd.sQsC(cc,1); this.inputData=3;}
-				else if(bd.QsC(cc)==1) { bd.sQaC(cc,-1); bd.sQsC(cc,0); this.inputData=4;}
-				else                   { bd.sQaC(cc, 1); bd.sQsC(cc,0); this.inputData=1;}
+				if     (bd.QaC(cc)===1){ bd.sQaC(cc,2); bd.sQsC(cc,0); this.inputData=2;}
+				else if(bd.QaC(cc)===2){ bd.sQaC(cc,0); bd.sQsC(cc,1); this.inputData=3;}
+				else if(bd.QsC(cc)===1){ bd.sQaC(cc,0); bd.sQsC(cc,0); this.inputData=4;}
+				else                   { bd.sQaC(cc,1); bd.sQsC(cc,0); this.inputData=1;}
 			}
 			else if(this.btn.Right){
-				if     (bd.QaC(cc)==1) { bd.sQaC(cc,-1); bd.sQsC(cc,0); this.inputData=4;}
-				else if(bd.QaC(cc)==2) { bd.sQaC(cc, 1); bd.sQsC(cc,0); this.inputData=1;}
-				else if(bd.QsC(cc)==1) { bd.sQaC(cc, 2); bd.sQsC(cc,0); this.inputData=2;}
-				else                   { bd.sQaC(cc,-1); bd.sQsC(cc,1); this.inputData=3;}
+				if     (bd.QaC(cc)===1){ bd.sQaC(cc,0); bd.sQsC(cc,0); this.inputData=4;}
+				else if(bd.QaC(cc)===2){ bd.sQaC(cc,1); bd.sQsC(cc,0); this.inputData=1;}
+				else if(bd.QsC(cc)===1){ bd.sQaC(cc,2); bd.sQsC(cc,0); this.inputData=2;}
+				else                   { bd.sQaC(cc,0); bd.sQsC(cc,1); this.inputData=3;}
 			}
 
 			pc.paintCellAround(cc);
 		};
 		mv.inputflash = function(){
-			var pos = this.borderpos(0);
-			var ec = bd.exnum(pos.x,pos.y)
-			if(ec==-1 || this.mouseCell==ec || (this.inputData!=11 && this.inputData!=-1)){ return;}
+			var pos = this.borderpos(0), ec = bd.exnum(pos.x,pos.y)
+			if(ec===null || this.mouseCell===ec){ return;}
 
-			if(this.inputData==-1 && bd.ErE(ec)==6){ this.inputData=12;}
+			if(this.inputData!=11 && this.inputData!==null){ }
+			else if(this.inputData===null && bd.excell[ec].error===6){ this.inputData=12;}
 			else{
 				ans.errDisp=true;
 				bd.errclear();
@@ -107,18 +107,17 @@ Puzzles.kinkonkan.prototype = {
 			return;
 		};
 		mv.clickexcell = function(){
-			var pos = this.borderpos(0);
-			var ec = bd.exnum(pos.x, pos.y);
-			if(ec<0 || bd.excellmax<=ec){ return false;}
-			var ec0 = tc.getTEC();
+			var ec = this.excellid();
+			if(ec===null){ return false;}
 
-			if(ec!=-1 && ec!=ec0){
+			var ec0 = tc.getTEC();
+			if(ec!==null && ec!=ec0){
 				tc.setTEC(ec);
 				pc.paintEXcell(ec);
 				pc.paintEXcell(ec0);
 			}
-			else if(ec!=-1 && ec==ec0){
-				var flag = (bd.ErE(ec)!=6);
+			else if(ec!==null && ec===ec0){
+				var flag = (bd.excell[ec].error!==6);
 				ans.errDisp=true;
 				bd.errclear();
 				if(flag){ mv.flashlight(ec);}
@@ -169,7 +168,7 @@ Puzzles.kinkonkan.prototype = {
 				else              { bd.sQnE(ec,-1); bd.sDiE(ec,0);}
 			}
 			else if(ca=='F4'){
-				var flag = (bd.ErE(ec)!=6);
+				var flag = (bd.excell[ec].error!==6);
 				ans.errDisp=true;
 				bd.errclear();
 				if(flag){ mv.flashlight(ec);}
@@ -184,20 +183,20 @@ Puzzles.kinkonkan.prototype = {
 			var cc0 = tc.getTEC(), tcp = tc.getTCP();
 			var flag = true;
 
-			if     (ca == k.KEYUP){
-				if(tcp.y==tc.maxy && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.cursory=tc.miny;}
+			if     (ca===k.KEYUP){
+				if(tcp.y===tc.maxy && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.cursor.y=tc.miny;}
 				else if(tcp.y>tc.miny){ tc.decTCY(2);}else{ flag=false;}
 			}
-			else if(ca == k.KEYDN){
-				if(tcp.y==tc.miny && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.cursory=tc.maxy;}
+			else if(ca===k.KEYDN){
+				if(tcp.y===tc.miny && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.cursor.y=tc.maxy;}
 				else if(tcp.y<tc.maxy){ tc.incTCY(2);}else{ flag=false;}
 			}
-			else if(ca == k.KEYLT){
-				if(tcp.x==tc.maxx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.cursorx=tc.minx;}
+			else if(ca===k.KEYLT){
+				if(tcp.x===tc.maxx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.cursor.x=tc.minx;}
 				else if(tcp.x>tc.minx){ tc.decTCX(2);}else{ flag=false;}
 			}
-			else if(ca == k.KEYRT){
-				if(tcp.x==tc.minx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.cursorx=tc.maxx;}
+			else if(ca===k.KEYRT){
+				if(tcp.x===tc.minx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.cursor.x=tc.maxx;}
 				else if(tcp.x<tc.maxx){ tc.incTCX(2);}else{ flag=false;}
 			}
 			else{ flag=false;}
@@ -207,13 +206,12 @@ Puzzles.kinkonkan.prototype = {
 				pc.paintEXcell(tc.getTEC());
 				this.tcMoved = true;
 			}
-
 			return flag;
 		};
 
 		menu.ex.adjustSpecial = function(key,d){
 			if(key & this.TURNFLIP){ // 反転・回転全て
-				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
+				for(var c=0;c<bd.cellmax;c++){ bd.sQaC(c,[0,2,1][bd.QaC(c)]);}
 			}
 		};
 
@@ -226,11 +224,11 @@ Puzzles.kinkonkan.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 
 		pc.errbcolor2 = "rgb(255, 255, 127)";
-		pc.dotcolor = "rgb(255, 96, 191)";
+		pc.dotcolor = pc.dotcolor_PINK;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawErrorCells_kinkonkan(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2,true);
 
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
@@ -273,7 +271,7 @@ Puzzles.kinkonkan.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
-				if(bd.cell[c].qans!=-1){
+				if(bd.cell[c].qans!==-1){
 					g.strokeStyle = this.cellcolor;
 					if(bd.cell[c].qans==1){
 						if(this.vnop(headers[0]+c,this.NONE)){
@@ -310,8 +308,8 @@ Puzzles.kinkonkan.prototype = {
 				}
 				else{ this.vhide(header+c);}
 
-				if(obj.direc!==0 || obj.qnum!==-1){
-					var num=obj.qnum, canum=obj.direc;
+				if(obj.qdir!==0 || obj.qnum!==-1){
+					var num=obj.qnum, canum=obj.qdir;
 
 					var color = this.fontErrcolor;
 					if(obj.error!==1){ color=(canum<=52?this.fontcolor:this.fontAnscolor);}
@@ -350,22 +348,24 @@ Puzzles.kinkonkan.prototype = {
 			var subint = [];
 			var ec=0, a=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
+				var ca = bstr.charAt(i), obj=bd.excell[ec];
 
-				if     (this.include(ca,'A','Z')){ bd.sDiE(ec, parseInt(ca,36)-9); subint.push(ec); ec++;}
-				else if(this.include(ca,'0','9')){ bd.sDiE(ec, (parseInt(bstr.charAt(i+1))+1)*26+parseInt(ca,36)-9); subint.push(ec); ec++; i++;}
-				else if(this.include(ca,'a','z')){ ec+=(parseInt(ca,36)-9);}
-				else{ ec++;}
+				if     (this.include(ca,'A','Z')){ subint.push(ec); obj.qdir = parseInt(ca,36)-9;}
+				else if(this.include(ca,'0','9')){ subint.push(ec); obj.qdir = parseInt(ca,36)-9+(parseInt(bstr.charAt(i+1))+1)*26; i++;}
+				else if(this.include(ca,'a','z')){ ec+=(parseInt(ca,36)-10);}
 
-				if(ec >= bd.excellmax-4){ a=i+1; break;}
+				ec++;
+				if(ec>=bd.excellmax-4){ a=i+1; break;}
 			}
 			ec=0;
 			for(var i=a;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
-				if     (ca == '.'){ bd.sQnE(subint[ec], -2);                              ec++;      }
-				else if(ca == '-'){ bd.sQnE(subint[ec], parseInt(bstr.substr(i+1,2),16)); ec++; i+=2;}
-				else              { bd.sQnE(subint[ec], parseInt(bstr.substr(i  ,1),16)); ec++;      }
-				if(ec >= subint.length){ a=i+1; break;}
+				var ca = bstr.charAt(i), obj=bd.excell[subint[ec]];
+				if     (ca==='.'){ obj.qnum = -2;}
+				else if(ca==='-'){ obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+				else             { obj.qnum = parseInt(bstr.substr(i  ,1),16);}
+
+				ec++;
+				if(ec>=subint.length){ a=i+1; break;}
 			}
 
 			this.outbstr = bstr.substr(a);
@@ -376,13 +376,11 @@ Puzzles.kinkonkan.prototype = {
 			// 盤面外部分のエンコード
 			var count=0;
 			for(var ec=0;ec<bd.excellmax-4;ec++){
-				pstr = "";
-				var val  = bd.DiE(ec);
-				var qnum = bd.QnE(ec);
+				var pstr = "", val = bd.excell[ec].qdir, qnum = bd.excell[ec].qnum;
 
 				if(val> 0 && val<=104){
 					if(val<=26){ pstr = (val+9).toString(36).toUpperCase();}
-					else       { pstr = mf((val-1)/26-1).toString() + ((val-1)%26+10).toString(16).toUpperCase();}
+					else       { pstr = (((val-1)/26-1)|0).toString() + ((val-1)%26+10).toString(16).toUpperCase();}
 
 					if     (qnum==-2){ cm2+=".";}
 					else if(qnum <16){ cm2+=("" +qnum.toString(16));}
@@ -390,8 +388,8 @@ Puzzles.kinkonkan.prototype = {
 				}
 				else{ count++;}
 
-				if(count==0){ cm += pstr;}
-				else if(pstr || count==26){ cm+=((9+count).toString(36)+pstr); count=0;}
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===26){ cm+=((9+count).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm+=(9+count).toString(36);}
 
@@ -405,26 +403,31 @@ Puzzles.kinkonkan.prototype = {
 			var item = this.getItemList(k.qrows+2);
 			for(var i=0;i<item.length;i++) {
 				var ca = item[i];
-				if(ca=="."){ continue;}
+				if(ca==="."){ continue;}
 
-				var ec = bd.exnum(i%(k.qcols+2)*2-1,mf(i/(k.qcols+2))*2-1);
-				if(ec!==-1){
+				var bx = i%(k.qcols+2)*2-1, by = ((i/(k.qcols+2))<<1)-1;
+				var ec = bd.exnum(bx,by);
+				if(ec!==null){
 					var inp = ca.split(",");
-					if(inp[0]!=""){ bd.sDiE(ec, parseInt(inp[0]));}
-					if(inp[1]!=""){ bd.sQnE(ec, parseInt(inp[1]));}
+					if(inp[0]!==""){ bd.excell[ec].qdir = parseInt(inp[0]);}
+					if(inp[1]!==""){ bd.excell[ec].qnum = parseInt(inp[1]);}
+					continue;
 				}
 
 				if(this.filever==1){
-					var c = bd.cnum(i%(k.qcols+2)*2-1,mf(i/(k.qcols+2))*2-1);
-					if(c!==-1){
-						if     (ca==="+"){ bd.sQsC(c, 1);}
-						else if(ca!=="."){ bd.sQaC(c, parseInt(ca));}
+					var c = bd.cnum(bx,by);
+					if(c!==null){
+						if     (ca==="+"){ bd.cell[c].qsub = 1;}
+						else if(ca!=="."){ bd.cell[c].qans = parseInt(ca);}
 					}
 				}
 			}
 
 			if(this.filever==0){
-				this.decodeCellQanssub();
+				this.decodeCell( function(obj,ca){
+					if     (ca==="+"){ obj.qsub = 1;}
+					else if(ca!=="."){ obj.qans = parseInt(ca);}
+				});
 			}
 		};
 		fio.encodeData = function(){
@@ -434,18 +437,19 @@ Puzzles.kinkonkan.prototype = {
 			for(var by=-1;by<bd.maxby;by+=2){
 				for(var bx=-1;bx<bd.maxbx;bx+=2){
 					var ec = bd.exnum(bx,by);
-					if(ec!==-1){
-						var str1 = (bd.DiE(ec)== 0?"":bd.DiE(ec).toString());
-						var str2 = (bd.QnE(ec)==-1?"":bd.QnE(ec).toString());
+					if(ec!==null){
+						var dir=bd.excell[ec].qdir, qn=bd.excell[ec].qnum;
+						var str1 = (dir!== 0?dir.toString():"");
+						var str2 = (qn !==-1?qn.toString():"");
 						this.datastr += ((str1=="" && str2=="")?(". "):(""+str1+","+str2+" "));
 						continue;
 					}
 
 					var c = bd.cnum(bx,by);
-					if(c!==-1){
-						if     (bd.QaC(c)!==-1){ this.datastr += (bd.QaC(c).toString() + " ");}
-						else if(bd.QsC(c)=== 1){ this.datastr += "+ ";}
-						else                   { this.datastr += ". ";}
+					if(c!==null){
+						if     (bd.cell[c].qans!==0){ this.datastr += (bd.cell[c].qans.toString() + " ");}
+						else if(bd.cell[c].qsub===1){ this.datastr += "+ ";}
+						else                        { this.datastr += ". ";}
 						continue;
 					}
 
@@ -462,7 +466,7 @@ Puzzles.kinkonkan.prototype = {
 		ans.checkAns = function(){
 
 			var rinfo = area.getRoomInfo();
-			if( !this.checkAllArea(rinfo, function(cc){ return bd.QaC(cc)>0;}, function(w,h,a,n){ return (a<=1);}) ){
+			if( !this.checkAllArea(rinfo, function(cc){ return bd.QaC(cc)!==0;}, function(w,h,a,n){ return (a<=1);}) ){
 				this.setAlert('斜線が複数引かれた部屋があります。', 'A room has plural mirrors.'); return false;
 			}
 
@@ -474,7 +478,7 @@ Puzzles.kinkonkan.prototype = {
 				this.setAlert('光の反射回数が正しくありません。', 'The count of refrection is wrong.'); return false;
 			}
 
-			if( !this.checkAllArea(rinfo, function(cc){ return bd.QaC(cc)>0;}, function(w,h,a,n){ return (a!=0);}) ){
+			if( !this.checkAllArea(rinfo, function(cc){ return bd.QaC(cc)!==0;}, function(w,h,a,n){ return (a!=0);}) ){
 				this.setAlert('斜線の引かれていない部屋があります。', 'A room has no mirrors.'); return false;
 			}
 
@@ -511,24 +515,26 @@ Puzzles.kinkonkan.prototype = {
 			else if(bx===bd.minbx+1){ dir=4;}
 			else if(bx===bd.maxbx-1){ dir=3;}
 
-			while(dir!=0){
+			while(dir!==0){
 				switch(dir){ case 1: by-=2; break; case 2: by+=2; break; case 3: bx-=2; break; case 4: bx+=2; break;}
 
-				var cc = bd.cnum(bx,by), qa = bd.QaC(cc);
-				if(qa===1){
+				var cc = bd.cnum(bx,by);
+				if(cc===null){ break;}
+
+				var qb = bd.QaC(cc);
+				if(qb===1){
 					if     (dir===1){ ldata[cc]=(!isNaN({4:1,6:1}[ldata[cc]])?6:2); dir=3;}
 					else if(dir===2){ ldata[cc]=(!isNaN({2:1,6:1}[ldata[cc]])?6:4); dir=4;}
 					else if(dir===3){ ldata[cc]=(!isNaN({2:1,6:1}[ldata[cc]])?6:4); dir=1;}
 					else if(dir===4){ ldata[cc]=(!isNaN({4:1,6:1}[ldata[cc]])?6:2); dir=2;}
 				}
-				else if(qa===2){
+				else if(qb===2){
 					if     (dir===1){ ldata[cc]=(!isNaN({5:1,6:1}[ldata[cc]])?6:3); dir=4;}
 					else if(dir===2){ ldata[cc]=(!isNaN({3:1,6:1}[ldata[cc]])?6:5); dir=3;}
 					else if(dir===3){ ldata[cc]=(!isNaN({5:1,6:1}[ldata[cc]])?6:3); dir=2;}
 					else if(dir===4){ ldata[cc]=(!isNaN({3:1,6:1}[ldata[cc]])?6:5); dir=1;}
 				}
-				else if(cc!==-1){ ldata[cc]=6; continue;}
-				else{ break;}
+				else if(cc!==null){ ldata[cc]=6; continue;}
 
 				ccnt++;
 				if(ccnt>bd.cellmax){ break;} // 念のためガード条件(多分引っかからない)

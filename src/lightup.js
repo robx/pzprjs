@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 美術館版 lightup.js v3.3.0
+// パズル固有スクリプト部 美術館版 lightup.js v3.3.1
 //
 Puzzles.lightup = function(){ };
 Puzzles.lightup.prototype = {
@@ -96,7 +96,7 @@ Puzzles.lightup.prototype = {
 			bd.qlight = [];
 			for(var c=0;c<this.cellmax;c++){ this.qlight[c] = false;}
 			for(var c=0;c<this.cellmax;c++){
-				if(this.cell[c].qans!==1){ continue;}
+				if(!this.isAkari(c)){ continue;}
 
 				var bx = this.cell[c].bx, by = this.cell[c].by;
 				var d = this.cellRange(c);
@@ -121,8 +121,8 @@ Puzzles.lightup.prototype = {
 
 					var cbx = this.cell[cc].bx, cby = this.cell[cc].by;
 					var dd  = this.cellRange(cc), isakari = false;
-								  for(var tx=dd.x1;tx<=dd.x2;tx+=2){ if(this.cell[this.cnum(tx,cby)].qans===1){ isakari=true; break;} }
-					if(!isakari){ for(var ty=dd.y1;ty<=dd.y2;ty+=2){ if(this.cell[this.cnum(cbx,ty)].qans===1){ isakari=true; break;} } }
+								  for(var tx=dd.x1;tx<=dd.x2;tx+=2){ if(this.isAkari(this.cnum(tx,cby))){ isakari=true; break;} }
+					if(!isakari){ for(var ty=dd.y1;ty<=dd.y2;ty+=2){ if(this.isAkari(this.cnum(cbx,ty))){ isakari=true; break;} } }
 					this.qlight[cc] = isakari;
 				}
 			}
@@ -144,6 +144,10 @@ Puzzles.lightup.prototype = {
 			return d;
 		};
 
+		bd.isAkari = function(c){
+			return (!!bd.cell[c] && bd.cell[c].qans===1);
+		};
+
 		// オーバーライド
 		bd.sQnC = function(id, num) {
 			var old = this.cell[id].qnum;
@@ -158,7 +162,7 @@ Puzzles.lightup.prototype = {
 			um.addOpe(k.CELL, k.QANS, id, old, num);
 			this.cell[id].qans = num;
 
-			if((old===-1)^(num===-1)){ this.setQlight(id, (num!==-1?1:0));}
+			if((old===0)^(num===0)){ this.setQlight(id, (num!==0?1:0));}
 		};
 	},
 
@@ -167,7 +171,7 @@ Puzzles.lightup.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.fontcolor = pc.fontErrcolor = "white";
-		pc.dotcolor = "rgb(255, 63, 191)";
+		pc.dotcolor = pc.dotcolor_PINK;
 		pc.setCellColorFunc('qnum');
 
 		pc.lightcolor = "rgb(224, 255, 127)";
@@ -179,7 +183,7 @@ Puzzles.lightup.prototype = {
 			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawAkari(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2,true);
 
 			this.drawChassis(x1,y1,x2,y2);
 
@@ -204,7 +208,7 @@ Puzzles.lightup.prototype = {
 			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.cell[c].qans===1){
+				if(bd.isAkari(c)){
 					g.fillStyle = (bd.cell[c].error!==4 ? lampcolor : this.errcolor1);
 					if(this.vnop(header+c,this.FILL)){
 						g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
@@ -226,17 +230,10 @@ Puzzles.lightup.prototype = {
 		};
 
 		enc.decodeKanpen = function(){
-			fio.decodeCell( function(c,ca){
-				if     (ca == "5"){ bd.sQnC(c, -2);}
-				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			});
+			fio.decodeCellQnumb();
 		};
 		enc.encodeKanpen = function(){
-			fio.encodeCell( function(c){
-				if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
-				else if(bd.QnC(c)==-2){ return "5 ";}
-				else                  { return ". ";}
-			});
+			fio.encodeCellQnumb();
 		};
 
 		//---------------------------------------------------------
@@ -244,23 +241,23 @@ Puzzles.lightup.prototype = {
 			this.decodeCellQnumAns();
 		};
 		fio.encodeData = function(){
-			return this.encodeCellQnumAns();
+			this.encodeCellQnumAns();
 		};
 
 		fio.kanpenOpen = function(){
-			this.decodeCell( function(c,ca){
-				if     (ca == "5"){ bd.sQnC(c, -2);}
-				else if(ca == "+"){ bd.sQaC(c, 1);}
-				else if(ca == "*"){ bd.sQsC(c, 1);}
-				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="+"){ obj.qans = 1;}
+				else if(ca==="*"){ obj.qsub = 1;}
+				else if(ca==="5"){ obj.qnum = -2;}
+				else if(ca!=="."){ obj.qnum = parseInt(ca);}
 			});
 		};
 		fio.kanpenSave = function(){
-			this.encodeCell( function(c){
-				if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
-				else if(bd.QaC(c)==1) { return "+ ";}
-				else if(bd.QsC(c)==1) { return "* ";}
-				else if(bd.QnC(c)==-2){ return "5 ";}
+			this.encodeCell( function(obj){
+				if     (obj.qans=== 1){ return "+ ";}
+				else if(obj.qsub=== 1){ return "* ";}
+				else if(obj.qnum>=  0){ return (obj.qnum.toString() + " ");}
+				else if(obj.qnum===-2){ return "5 ";}
 				else                  { return ". ";}
 			});
 		};
@@ -271,15 +268,15 @@ Puzzles.lightup.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkRowsColsPartly(this.isAkariCount, {}, function(cc){ return (bd.QnC(cc)!=-1);}, true) ){
+			if( !this.checkRowsColsPartly(this.isAkariCount, {}, bd.isNum, true) ){
 				this.setAlert('照明に別の照明の光が当たっています。','Akari is shined from another Akari.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)!==ans.checkdir4Cell(c,function(a){ return (bd.QaC(a)==1);})); }) ){
+			if( !this.checkDir4Cell(bd.isAkari,0) ){
 				this.setAlert('数字のまわりにある照明の数が間違っています。','The number is not equal to the number of Akari around it.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QnC(c)===-1 && !bd.qlight[c]);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.noNum(c) && !bd.qlight[c]);}) ){
 				this.setAlert('照明に照らされていないセルがあります。','A cell is not shined.'); return false;
 			}
 
@@ -289,7 +286,7 @@ Puzzles.lightup.prototype = {
 		ans.isAkariCount = function(nullnum, keycellpos, clist, nullobj){
 			var akaris=[];
 			for(var i=0;i<clist.length;i++){
-				if( bd.QaC(clist[i])===1 ){ akaris.push(clist[i]);}
+				if(bd.isAkari(clist[i])){ akaris.push(clist[i]);}
 			}
 			var result = (akaris.length<=1);
 

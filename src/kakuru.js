@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックル版 kakuru.js v3.3.0
+// パズル固有スクリプト部 カックル版 kakuru.js v3.3.1
 //
 Puzzles.kakuru = function(){ };
 Puzzles.kakuru.prototype = {
@@ -62,7 +62,7 @@ Puzzles.kakuru.prototype = {
 		mv.mousemove = function(){ };
 		mv.inputqnum_kakuru = function(){
 			var cc = this.cellid();
-			if(cc==-1 || (bd.QuC(cc)==1 && cc==tc.getTCC())){ return;}
+			if(cc===null || (bd.QuC(cc)==1 && cc==tc.getTCC())){ return;}
 			this.inputqnum();
 		};
 
@@ -75,24 +75,22 @@ Puzzles.kakuru.prototype = {
 			var cc = tc.getTCC();
 
 			if('0'<=ca && ca<='9'){
-				if(bd.QuC(cc)==1){ return;}
+				if(bd.QuC(cc)===1){ return;}
 				this.key_inputqnum(ca);
 			}
-			else if(ca=='-'){
-				if(bd.QuC(cc)==1){ return;}
-				if(k.editmode){ bd.sQnC(cc,(bd.QnC(cc)!=-2?-2:-1));}
-				else{ bd.sQaC(cc,-1);}
+			else if(ca==='-'){
+				if(bd.QuC(cc)===1){ return;}
+				bd.setNum(cc,(k.editmode?-2:-1));
 			}
-			else if(ca==' '){
-				if(k.editmode){ bd.sQuC(cc,0); bd.sQnC(cc,-1);}
-				else{ bd.sQaC(cc,-1);}
+			else if(ca===' '){
+				if(k.editmode){ bd.sQuC(cc,0);}
+				bd.setNum(cc,-1);
 			}
-			else if(k.editmode && (ca=='q'||ca=='q1'||ca=='q2')){
-				if(ca=='q'){ ca = (bd.QuC(cc)!=1?'q1':'q2');}
-				if(ca=='q1'){
+			else if(k.editmode && (ca==='q'||ca==='q1'||ca==='q2')){
+				if(ca==='q'){ ca = (bd.QuC(cc)!==1?'q1':'q2');}
+				if(ca==='q1'){
 					bd.sQuC(cc, 1);
-					bd.sQaC(cc,-1);
-					bd.sQnC(cc,-1);
+					bd.setNum(cc, -1);
 				}
 				else if(ca=='q2'){ bd.sQuC(cc, 0);}
 			}
@@ -181,15 +179,13 @@ Puzzles.kakuru.prototype = {
 		enc.decodeKakuru = function(){
 			var cell=0, i=0, bstr = this.outbstr;
 			for(i=0;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
+				var ca = bstr.charAt(i), obj=bd.cell[cell];
 
-				if     (ca=='.'){ cell++;}
-				else if(ca=='+'){ bd.sQuC(cell,1); cell++;}
-				else if(enc.include(ca,"k","z")){ cell+=(parseInt(ca,36)-18);}
-				else if(ca=='_'){ bd.sQnC(cell,-2); cell++;}
-				else if(ca!='.'){ bd.sQnC(cell,this.decval(ca)); cell++;}
-				else{ cell++;}
+				if     (ca==='+'){ obj.ques = 1;}
+				else if(this.include(ca,"k","z")){ cell+=(parseInt(ca,36)-19);}
+				else if(ca!=='.'){ obj.qnum = this.decval(ca);}
 
+				cell++;
 				if(cell>=bd.cellmax){ break;}
 			}
 			this.outbstr = bstr.substr(i);
@@ -197,60 +193,58 @@ Puzzles.kakuru.prototype = {
 		enc.encodeKakuru = function(type){
 			var cm="", count=0;
 			for(var c=0;c<bd.cellmax;c++){
-				var pstr="";
-				if     (bd.QuC(c)==1){ pstr = "+";}
-				else if(bd.QnC(c)!=-1){
-					if(bd.QnC(c)==-2){ pstr = "_";}
-					else{ pstr = ""+this.encval(bd.QnC(c));}
-				}
+				var pstr="", obj=bd.cell[c];
+				if     (obj.ques=== 1){ pstr = "+";}
+				else if(obj.qnum!==-1){ pstr = this.encval(obj.qnum);}
 				else{ count++;}
 
-				if(count==0){ cm+=pstr;}
-				else if(pstr!=""){
-					if(count==1){ cm+=("."+pstr); count=0;}
-					else{ cm+=((count+18).toString(36)+pstr); count=0;}
+				if(count===0){ cm+=pstr;}
+				else if(pstr || count===17){
+					if(count===1){ cm+=("."+pstr);}
+					else{ cm+=((count+18).toString(36)+pstr);}
+					count=0;
 				}
-				else if(count==17){ cm+="z"; count=0;}
 			}
-			if(count==1){ cm+=".";}
+			if(count===1){ cm+=".";}
 			else if(count>1){ cm+=((count+18).toString(36));}
 
 			this.outbstr += cm;
 		};
 		enc.decval = function(ca){
-			if     (ca>='0'&&ca<='9'){ return parseInt(ca,36);}
+			if     (ca==='_')        { return -2;}
+			else if(ca>='0'&&ca<='9'){ return parseInt(ca,36);}
 			else if(ca>='a'&&ca<='j'){ return parseInt(ca,36);}
 			else if(ca>='A'&&ca<='Z'){ return parseInt(ca,36)+10;}
 			return "";
 		};
 		enc.encval = function(val){
-			if     (val>= 1&&val<=19){ return val.toString(36).toLowerCase();}
+			if     (val===-2)        { return "_";}
+			else if(val>= 1&&val<=19){ return val.toString(36).toLowerCase();}
 			else if(val>=20&&val<=45){ return (val-10).toString(36).toUpperCase();}
 			return "0";
 		};
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCell( function(c,ca){
-				if     (ca=="?"){ bd.sQnC(c,-2);}
-				else if(ca=="b"){ bd.sQuC(c, 1);}
-				else if(ca!="."){ bd.sQnC(c, parseInt(ca));}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="b"){ obj.ques = 1;}
+				else if(ca==="?"){ obj.qnum =-2;}
+				else if(ca!=="."){ obj.qnum = parseInt(ca);}
 			});
-			this.decodeCell( function(c,ca){
-				if(ca!="."&&ca!="0"){ bd.sQaC(c,parseInt(ca));}
+			this.decodeCell( function(obj,ca){
+				if(ca!=="."&&ca!=="0"){ obj.anum = parseInt(ca);}
 			});
 		};
 		fio.encodeData = function(){
-			this.encodeCell( function(c){
-				if(bd.QuC(c)==1){ return "b ";}
-				else if(bd.QnC(c)>= 0){ return ""+bd.QnC(c).toString()+" ";}
-				else if(bd.QnC(c)==-2){ return "? ";}
+			this.encodeCell( function(obj){
+				if     (obj.ques=== 1){ return "b ";}
+				else if(obj.qnum===-2){ return "? ";}
+				else if(obj.qnum>=  0){ return ""+obj.qnum.toString()+" ";}
 				else{ return ". ";}
 			});
-			this.encodeCell( function(c){
-				if     (bd.QuC(c)==1||bd.QnC(c)!=-1){ return ". ";}
-				else if(bd.QaC(c)==-1){ return "0 ";}
-				else{ return ""+bd.QaC(c).toString()+" ";}
+			this.encodeCell( function(obj){
+				if(obj.ques===1||obj.qnum!==-1){ return ". ";}
+				return (obj.anum!==-1 ? ""+obj.anum.toString()+" " : "0 ");
 			});
 		};
 	},
@@ -272,36 +266,34 @@ Puzzles.kakuru.prototype = {
 				this.setAlert('同じ数字がタテヨコナナメに隣接しています。','Same numbers is adjacent.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QuC(c)==0 && bd.QnC(c)==-1 && bd.QaC(c)==-1);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.QuC(c)===0 && bd.noNum(c));}) ){
 				this.setAlert('何も入っていないマスがあります。','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)==0 && bd.QnC(c)==-1 && bd.QaC(c)==-1);});};
+		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)===0 && bd.noNum(c));});};
 
 		ans.checkAroundPrenums = function(type){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==1 || bd.QnC(c)<=0){ continue;}
 
-				var clist=[c], d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
-				var bx=bd.cell[c].bx, by=bd.cell[c].by, cc;
-				var func = function(cc){ return (cc!=-1 && bd.QuC(cc)==0 && bd.QnC(cc)==-1);}
-				cc=bd.cnum(bx-2,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx  ,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx+2,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx-2,by  ); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx+2,by  ); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx-2,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx  ,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx+2,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-
+				var bx=bd.cell[c].bx, by=bd.cell[c].by;
+				var d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
+				var clist=[c], clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
+				for(var i=0;i<clist0.length;i++){
+					var cc = clist0[i];
+					if(cc!==c && bd.cell[cc].ques===0 && bd.cell[cc].qnum===-1){
+						var qa = bd.cell[cc].anum;
+						if(qa>0){ d[qa]++; clist.push(cc);}
+					}
+				}
 				for(var n=1;n<=9;n++){
 					if(d[n]>1){
 						if(this.inAutoCheck){ return false;}
 						bd.sErC([c],1);
-						for(i=0;i<clist.length;i++){ if(bd.QaC(clist[i])==n){ bd.sErC(clist[i],1);} }
+						for(i=0;i<clist.length;i++){ if(bd.AnC(clist[i])===n){ bd.sErC(clist[i],1);} }
 						result = false;
 					}
 				}
@@ -313,19 +305,17 @@ Puzzles.kakuru.prototype = {
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==1 || bd.QnC(c)<=0){ continue;}
 
-				var cnt=0, clist=[c];
-				var bx=bd.cell[c].bx, by=bd.cell[c].by, cc;
-				var func = function(cc){ return (cc!=-1 && bd.QuC(cc)==0 && bd.QnC(cc)==-1);}
-				cc=bd.cnum(bx-2,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx  ,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx+2,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx-2,by  ); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx+2,by  ); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx-2,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx  ,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx+2,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-
-				if(bd.QnC(c)!=cnt){
+				var cnt=0, bx=bd.cell[c].bx, by=bd.cell[c].by;
+				var clist=[c], clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
+				for(var i=0;i<clist0.length;i++){
+					var cc = clist0[i];
+					if(cc!==c && bd.cell[cc].ques===0 && bd.cell[cc].qnum===-1){
+						var qa = bd.cell[cc].anum;
+						if(qa>0){ cnt+=qa; clist.push(cc);}
+						else    { cnt=bd.QnC(c); break;}
+					}
+				}
+				if(bd.QnC(c)!==cnt){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(clist,1); result = false;
 				}
@@ -335,15 +325,14 @@ Puzzles.kakuru.prototype = {
 		ans.checkAroundNumbers = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QaC(c)<=0){ continue;}
-				var bx = bd.cell[c].bx, by = bd.cell[c].by, target=0, clist = [c];
-				var func = function(cc){ return (cc!=-1 && bd.QaC(c)==bd.QaC(cc));};
-				// 右・左下・下・右下の4箇所だけチェック
-				target=bd.cnum(bx+2,by  ); if(func(target)){ clist.push(target);}
-				target=bd.cnum(bx  ,by+2); if(func(target)){ clist.push(target);}
-				target=bd.cnum(bx-2,by+2); if(func(target)){ clist.push(target);}
-				target=bd.cnum(bx+2,by+2); if(func(target)){ clist.push(target);}
-
+				if(bd.AnC(c)<=0){ continue;}
+				var bx = bd.cell[c].bx, by = bd.cell[c].by;
+				var clist=[c], clist0 = bd.cellinside(bx,by,bx+2,by+2);
+				clist0.push(bd.cnum(bx-2,by+2)); // 右・左下・下・右下の4箇所だけチェック
+				for(var i=0;i<clist0.length;i++){
+					var cc = clist0[i];
+					if(cc!==null && cc!==c && bd.cell[c].anum===bd.cell[cc].anum){ clist.push(cc);}
+				}
 				if(clist.length>1){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(clist,1); result = false;

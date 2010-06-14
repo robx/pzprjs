@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ∀人∃ＨＥＹＡ版 ayeheya.js v3.3.0
+// パズル固有スクリプト部 ∀人∃ＨＥＹＡ版 ayeheya.js v3.3.1
 //
 Puzzles.ayeheya = function(){ };
 Puzzles.ayeheya.prototype = {
@@ -89,7 +89,7 @@ Puzzles.ayeheya.prototype = {
 			var id = area.room.id[cc];
 			var d = ans.getSizeOfClist(area.room[id].clist,f_true);
 			var m=d.cols, n=d.rows; if(m>n){ var t=m;m=n;n=t;}
-			if     (m===1){ return mf((n+1)/2);}
+			if     (m===1){ return ((n+1)>>1);}
 			else if(m===2){ return n;}
 			else if(m===3){
 				if     (n%4===0){ return (n  )/4*5  ;}
@@ -99,8 +99,8 @@ Puzzles.ayeheya.prototype = {
 			}
 			else{
 				if(((Math.log(m+1)/Math.log(2))%1===0)&&(m===n)){ return (m*n+m+n)/3;}
-				else if((m&1)&&(n&1)){ return mf((m*n+m+n-1)/3);}
-				else{ return mf((m*n+m+n-2)/3);}
+				else if((m&1)&&(n&1)){ return (((m*n+m+n-1)/3)|0);}
+				else{ return (((m*n+m+n-2)/3)|0);}
 			}
 		};
 	},
@@ -151,14 +151,14 @@ Puzzles.ayeheya.prototype = {
 
 		enc.decodeHeyaApp = function(){
 			var c=0, rdata=[];
-			while(c<bd.cellmax){ rdata[c]=-1; c++;}
+			while(c<bd.cellmax){ rdata[c]=null; c++;}
 
 			var i=0, inp=this.uri.bstr.split("/");
 			for(var c=0;c<bd.cellmax;c++){
-				if(rdata[c]>-1){ continue;}
+				if(rdata[c]!==null){ continue;}
 
 				if(inp[i].match(/(\d+in)?(\d+)x(\d+)$/)){
-					if(RegExp.$1.length>0){ bd.sQnC(c, parseInt(RegExp.$1));}
+					if(RegExp.$1.length>0){ bd.cell[c].qnum = parseInt(RegExp.$1);}
 					var x1 = bd.cell[c].bx, x2 = x1 + 2*parseInt(RegExp.$2) - 2;
 					var y1 = bd.cell[c].by, y2 = y1 + 2*parseInt(RegExp.$3) - 2;
 					fio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
@@ -212,7 +212,7 @@ Puzzles.ayeheya.prototype = {
 				this.setAlert('部屋の数字と黒マスの数が一致していません。','The number of Black cells in the room and The number written in the room is different.'); return false;
 			}
 
-			if( !this.checkRowsColsPartly(this.isBorderCount, {}, function(cc){ return (bd.QaC(cc)==1);}, false) ){
+			if( !this.checkRowsColsPartly(this.isBorderCount, {}, bd.isBlack, false) ){
 				this.setAlert('白マスが3部屋連続で続いています。','White cells are continued for three consecutive room.'); return false;
 			}
 
@@ -245,13 +245,13 @@ Puzzles.ayeheya.prototype = {
 			if(d.x1===d.x2){
 				bx = d.x1;
 				for(by=d.y1+1;by<=d.y2-1;by+=2){
-					if(bd.QuB(bd.bnum(bx,by))===1){ count++;}
+					if(bd.isBorder(bd.bnum(bx,by))){ count++;}
 				}
 			}
 			else if(d.y1===d.y2){
 				by = d.y1;
 				for(bx=d.x1+1;bx<=d.x2-1;bx+=2){
-					if(bd.QuB(bd.bnum(bx,by))===1){ count++;}
+					if(bd.isBorder(bd.bnum(bx,by))){ count++;}
 				}
 			}
 

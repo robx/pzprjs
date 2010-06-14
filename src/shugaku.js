@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.3.0p2
+// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.3.1
 //
 Puzzles.shugaku = function(){ };
 Puzzles.shugaku.prototype = {
@@ -69,89 +69,90 @@ Puzzles.shugaku.prototype = {
 		mv.inputFuton = function(){
 			var cc = this.cellid();
 
-			if(this.firstPos.x==-1 && this.firstPos.y==-1){
-				if(cc==-1 || bd.QnC(cc)!=-1){ return;}
+			if(!this.firstPoint.valid()){
+				if(cc===null || bd.isNum(cc)){ return;}
 				this.mouseCell = cc;
 				this.inputData = 1;
-				this.firstPos = this.inputPos.clone();
+				this.firstPoint.set(this.inputPoint);
 				pc.paintCell(cc);
 			}
 			else{
-				var old = this.inputData;
-				if(this.mouseCell==cc){ this.inputData = 1;}
+				var old = this.inputData, adj;
+				if(cc===null){ /* nop */} // 何もしない
+				else if(this.mouseCell===cc){ this.inputData = 1;} // 入力開始時と同じセルの場合
 				else{
-					var mx=this.inputPos.x-this.firstPos.x, my=this.inputPos.y-this.firstPos.y;
-					if     (cc==-1){ /* nop */ }
-					else if(mx-my>0 && mx+my>0){ this.inputData = (bd.QnC(bd.rt(this.mouseCell))==-1?5:6);}
-					else if(mx-my>0 && mx+my<0){ this.inputData = (bd.QnC(bd.up(this.mouseCell))==-1?2:6);}
-					else if(mx-my<0 && mx+my>0){ this.inputData = (bd.QnC(bd.dn(this.mouseCell))==-1?3:6);}
-					else if(mx-my<0 && mx+my<0){ this.inputData = (bd.QnC(bd.lt(this.mouseCell))==-1?4:6);}
+					var dx=(this.inputPoint.x-this.firstPoint.x), dy=(this.inputPoint.y-this.firstPoint.y);
+					if     (dx-dy>0 && dx+dy>0){ adj=bd.rt(this.mouseCell); this.inputData=5;}
+					else if(dx-dy>0 && dx+dy<0){ adj=bd.up(this.mouseCell); this.inputData=2;}
+					else if(dx-dy<0 && dx+dy>0){ adj=bd.dn(this.mouseCell); this.inputData=3;}
+					else if(dx-dy<0 && dx+dy<0){ adj=bd.lt(this.mouseCell); this.inputData=4;}
+					if(adj==null || bd.isNum(adj)){ this.inputData=6;}
 				}
 				if(old!=this.inputData){ pc.paintCellAround(this.mouseCell);}
 			}
 		};
 		mv.inputFuton2 = function(){
-			if(this.mouseCell==-1 || (this.firstPos.x==-1 && this.firstPos.y==-1)){ return;}
-			var cc=this.mouseCell
+			if(this.mouseCell===null){ return;}
+			var cc = this.mouseCell
 
 			this.changeHalf(cc);
-			if(this.inputData!=1 && this.inputData!=6){ bd.sQaC(cc, 10+this.inputData); bd.sQsC(cc, 0);}
-			else if(this.inputData==6){ bd.sQaC(cc, 11); bd.sQsC(cc, 0);}
+			if(this.inputData!==1 && this.inputData!==6){ bd.sQaC(cc, 10+this.inputData); bd.sQsC(cc, 0);}
+			else if(this.inputData===6){ bd.sQaC(cc,11); bd.sQsC(cc, 0);}
 			else{
-				if     (bd.QaC(cc)==11){ bd.sQaC(cc, 16); bd.sQsC(cc, 0);}
-				else if(bd.QaC(cc)==16){ bd.sQaC(cc, -1); bd.sQsC(cc, 1);}
-//				else if(bd.QsC(cc)== 1){ bd.sQaC(cc, -1); bd.sQsC(cc, 0);}
-				else                   { bd.sQaC(cc, 11); bd.sQsC(cc, 0);}
+				if     (bd.QaC(cc)===11){ bd.sQaC(cc,16); bd.sQsC(cc, 0);}
+				else if(bd.QaC(cc)===16){ bd.sQaC(cc, 0); bd.sQsC(cc, 1);}
+//				else if(bd.QsC(cc)=== 1){ bd.sQaC(cc, 0); bd.sQsC(cc, 0);}
+				else                    { bd.sQaC(cc,11); bd.sQsC(cc, 0);}
 			}
 
 			cc = this.getTargetADJ();
-			if(cc!=-1){
+			if(cc!==null){
 				this.changeHalf(cc);
 				bd.sQaC(cc, {2:18,3:17,4:20,5:19}[this.inputData]); bd.sQsC(cc, 0);
 			}
 
 			cc = this.mouseCell;
-			this.mouseCell = -1;
+			this.mouseCell = null;
 			pc.paintCellAround(cc);
 		};
 
 		mv.inputcell_shugaku = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell || bd.QnC(cc)!=-1){ return;}
-			if(this.inputData==-1){
-				if     (bd.QaC(cc)==1){ this.inputData = 2;}
-				else if(bd.QsC(cc)==1){ this.inputData = 3;}
+			if(cc===null || cc===this.mouseCell || bd.isNum(cc)){ return;}
+			if(this.inputData===null){
+				if     (bd.QaC(cc)===1){ this.inputData = 2;}
+				else if(bd.QsC(cc)===1){ this.inputData = 3;}
 				else{ this.inputData = 1;}
 			}
 			this.changeHalf(cc);
 			this.mouseCell = cc; 
 
-			bd.sQaC(cc, (this.inputData==1?1:-1));
+			bd.sQaC(cc, (this.inputData==1?1:0));
 			bd.sQsC(cc, (this.inputData==2?1:0));
 
 			pc.paintCellAround(cc);
 		};
 
 		mv.changeHalf = function(cc){
-			var adj=-1;
-			if     (bd.QaC(cc)==12 || bd.QaC(cc)==17){ adj=bd.up(cc);}
-			else if(bd.QaC(cc)==13 || bd.QaC(cc)==18){ adj=bd.dn(cc);}
-			else if(bd.QaC(cc)==14 || bd.QaC(cc)==19){ adj=bd.lt(cc);}
-			else if(bd.QaC(cc)==15 || bd.QaC(cc)==20){ adj=bd.rt(cc);}
+			var adj=null;
+			if     (bd.QaC(cc)===12 || bd.QaC(cc)===17){ adj=bd.up(cc);}
+			else if(bd.QaC(cc)===13 || bd.QaC(cc)===18){ adj=bd.dn(cc);}
+			else if(bd.QaC(cc)===14 || bd.QaC(cc)===19){ adj=bd.lt(cc);}
+			else if(bd.QaC(cc)===15 || bd.QaC(cc)===20){ adj=bd.rt(cc);}
 
-			if     (adj==-1){ /* nop */ }
+			if     (adj===null){ /* nop */ }
 			else if(bd.QaC(adj)>=12 && bd.QaC(adj)<=15){ bd.sQaC(adj,11);}
 			else if(bd.QaC(adj)>=17 && bd.QaC(adj)<=20){ bd.sQaC(adj,16);}
 		};
 		mv.getTargetADJ = function(){
-			if(this.mouseCell==-1){ return -1;}
+			if(this.mouseCell===null){ return null;}
 			switch(this.inputData){
 				case 2: return bd.up(this.mouseCell);
 				case 3: return bd.dn(this.mouseCell);
 				case 4: return bd.lt(this.mouseCell);
 				case 5: return bd.rt(this.mouseCell);
 			}
-			return -1;
+			return null;
 		};
 		mv.enableInputHatena = true;
 
@@ -172,42 +173,26 @@ Puzzles.shugaku.prototype = {
 		bd.maxnum = 4;
 
 		menu.ex.adjustSpecial = function(key,d){
+			var trans = {};
 			switch(key){
-			case this.FLIPY: // 上下反転
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = {12:13,13:12,17:18,18:17}[bd.QaC(cc)];
-					if(!isNaN(val)){ bd.cell[cc].qans = val;}
-				}
-				break;
-			case this.FLIPX: // 左右反転
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = {14:15,15:14,19:20,20:19}[bd.QaC(cc)];
-					if(!isNaN(val)){ bd.cell[cc].qans = val;}
-				}
-				break;
-			case this.TURNR: // 右90°反転
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = {12:15,15:13,13:14,14:12,17:20,20:18,18:19,19:17}[bd.QaC(cc)];
-					if(!isNaN(val)){ bd.cell[cc].qans = val;}
-				}
-				break;
-			case this.TURNL: // 左90°反転
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = {12:14,14:13,13:15,15:12,17:19,19:18,18:20,20:17}[bd.QaC(cc)];
-					if(!isNaN(val)){ bd.cell[cc].qans = val;}
-				}
-				break;
+				case this.FLIPY: trans={12:13,13:12,17:18,18:17}; break;	// 上下反転
+				case this.FLIPX: trans={14:15,15:14,19:20,20:19}; break;	// 左右反転
+				case this.TURNR: trans={12:15,15:13,13:14,14:12,17:20,20:18,18:19,19:17}; break;	// 右90°回転
+				case this.TURNL: trans={12:14,14:13,13:15,15:12,17:19,19:18,18:20,20:17}; break;	// 左90°回転
+				default: return;
+			}
+			for(var c=0;c<bd.cellmax;c++){
+				var val=trans[bd.QaC(c)]; if(!!val){ bd.cell[c].qans=val;}
 			}
 		}
 
+		bd.isPillow = function(c){ return (!!bd.cell[c] && (bd.cell[c].qans>=11 && bd.cell[c].qans<=15));};
+
 		bd.sQaC = function(id, num){
-			var old = this.cell[id].qans;
-			um.addOpe(k.CELL, k.QANS, id, old, num);
+			um.addOpe(k.CELL, k.QANS, id, this.cell[id].qans, num);
 			this.cell[id].qans = num;
 
-			if(num===1 ^ area.bcell.id[id]!==-1){
-				area.setCell(id,(num===1?1:0));
-			}
+			area.setCell('block',id,(num===1));
 		};
 	},
 
@@ -223,7 +208,7 @@ Puzzles.shugaku.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			x1--; y1--; x2++; y2++;	// Undo時に跡が残ってしまう為
 
-			this.drawRDotCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2,false);
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
@@ -288,8 +273,8 @@ Puzzles.shugaku.prototype = {
 			var header = "b_bd";
 			g.fillStyle = "black";
 
-			for(var by=Math.min(bd.minby+1,y1-2),maxy=Math.max(bd.maxby-1,y2+2);by<=maxy;by++){
-				for(var bx=Math.min(bd.minbx+1,x1-2),maxx=Math.max(bd.maxbx-1,x2+2);bx<=maxx;bx++){
+			for(var by=Math.max(bd.minby+1,y1-2),maxy=Math.min(bd.maxby-1,y2+2);by<=maxy;by++){
+				for(var bx=Math.max(bd.minbx+1,x1-2),maxx=Math.min(bd.maxbx-1,x2+2);bx<=maxx;bx++){
 					if(!((bx+by)&1)){ continue;}
 					var a = bd.QaC( bd.cnum(bx-(by&1), by-(bx&1)) );
 					var b = bd.QaC( bd.cnum(bx+(by&1), by+(bx&1)) );
@@ -311,9 +296,8 @@ Puzzles.shugaku.prototype = {
 		};
 
 		pc.drawTargetFuton = function(x1,y1,x2,y2){
-
-			var cc=mv.mouseCell;
-			var inputting = ((mv.firstPos.x!==-1 || mv.firstPos.y!==-1) && cc!==-1);
+			var cc = mv.mouseCell;
+			var inputting = (cc!==null && mv.firstPoint.valid());
 
 			if(inputting){
 				this.vinc('cell_back', 'crispEdges');
@@ -322,7 +306,7 @@ Puzzles.shugaku.prototype = {
 				var header = "c_full_";
 				g.fillStyle = this.targetbgcolor;
 
-				if(cc!=-1){
+				if(cc!==null){
 					if(this.vnop(header+cc,this.FILL)){
 						g.fillRect(bd.cell[cc].px+1, bd.cell[cc].py+1, this.cw-1, this.ch-1);
 					}
@@ -330,7 +314,7 @@ Puzzles.shugaku.prototype = {
 				else{ this.vhide(header+cc);}
 
 				var adj=mv.getTargetADJ();
-				if(adj!=-1){
+				if(adj!==null){
 					if(this.vnop(header+adj,this.FILL)){
 						g.fillRect(bd.cell[adj].px+1, bd.cell[adj].py+1, this.cw-1, this.ch-1);
 					}
@@ -341,15 +325,15 @@ Puzzles.shugaku.prototype = {
 				this.drawPillow1(cc,true,true);
 
 				// 入力中ふとんの下になるまくらを消す
-				if(!g.use.canvas && adj!==-1){ this.drawPillow1(adj,false,true);}
+				if(!g.use.canvas && adj!==null){ this.drawPillow1(adj,false,true);}
 
 				// 入力中ふとんの周りの境界線描画
 				this.vinc('border_futon', 'crispEdges');
 
 				this.vdel(["tbd1_","tbd2_","tbd3_","tbd4_"]);
 				var lw = this.lw, lm = this.lm;
-				var bx1 = (adj===-1?bd.cell[cc].bx:Math.min(bd.cell[cc].bx,bd.cell[adj].bx));
-				var by1 = (adj===-1?bd.cell[cc].by:Math.min(bd.cell[cc].by,bd.cell[adj].by));
+				var bx1 = (adj===null?bd.cell[cc].bx:Math.min(bd.cell[cc].bx,bd.cell[adj].bx));
+				var by1 = (adj===null?bd.cell[cc].by:Math.min(bd.cell[cc].by,bd.cell[adj].by));
 				var px = k.p0.x+(bx1-1)*this.bw, py = k.p0.y+(by1-1)*this.bh;
 				var wid = (mv.inputData===4||mv.inputData===5?2:1)*this.cw;
 				var hgt = (mv.inputData===2||mv.inputData===3?2:1)*this.ch;
@@ -361,7 +345,7 @@ Puzzles.shugaku.prototype = {
 				if(this.vnop("tbd4_",this.NONE)){ g.fillRect(px-lm    , py+hgt-lm, wid+lw, lw);}
 
 				// 入力中ふとんの間の太線を消す
-				if(!g.use.canvas && cc!==-1 && adj!==-1){
+				if(!g.use.canvas && cc!==null && adj!==null){
 					var bx = (bd.cell[cc].bx+bd.cell[adj].bx)/2;
 					var by = (bd.cell[cc].by+bd.cell[adj].by)/2;
 					this.vhide([["b_bd",bx,by].join("_")]);
@@ -389,25 +373,26 @@ Puzzles.shugaku.prototype = {
 			var c=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
-				if     (ca>='0' && ca<='4'){ bd.sQnC(c, parseInt(ca,36)); c++;}
-				else if(ca=='5')           { bd.sQnC(c, -2);              c++;}
-				else{ c += (parseInt(ca,36)-5);}
+				if     (ca>='0' && ca<='4'){ bd.cell[c].qnum = parseInt(ca,36);}
+				else if(ca==='5')          { bd.cell[c].qnum = -2;}
+				else{ c+=(parseInt(ca,36)-6);}
+
+				c++;
 				if(c>=bd.cellmax){ break;}
 			}
 			this.outbstr = bstr.substr(i);
 		};
 		enc.encodeShugaku = function(){
 			var cm="", count=0;
-			for(var i=0;i<bd.cellmax;i++){
-				var pstr = "";
-				var val = bd.QnC(i);
+			for(var c=0;c<bd.cellmax;c++){
+				var pstr = "", val = bd.cell[c].qnum;
 
-				if     (val==-2){ pstr = "5";}
-				else if(val!=-1){ pstr = val.toString(36);}
+				if     (val===-2){ pstr = "5";}
+				else if(val!==-1){ pstr = val.toString(36);}
 				else{ count++;}
 
-				if(count==0){ cm += pstr;}
-				else if(pstr || count==30){ cm+=((5+count).toString(36)+pstr); count=0;}
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===30){ cm+=((5+count).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm+=(5+count).toString(36);}
 			this.outbstr += cm;
@@ -415,22 +400,22 @@ Puzzles.shugaku.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCell( function(c,ca){
-				if(ca == "5")     { bd.sQnC(c, -2);}
-				else if(ca == "#"){ bd.sQaC(c, 1);}
-				else if(ca == "-"){ bd.sQsC(c, 1);}
-				else if(ca>="a" && ca<="j"){ bd.sQaC(c, parseInt(ca,20)+1);}
-				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="5"){ obj.qnum = -2;}
+				else if(ca==="#"){ obj.qans = 1;}
+				else if(ca==="-"){ obj.qsub = 1;}
+				else if(ca>="a" && ca<="j"){ obj.qans = parseInt(ca,20)+1;}
+				else if(ca!=="."){ obj.qnum = parseInt(ca);}
 			});
 		};
 		fio.encodeData = function(){
-			this.encodeCell( function(c){
-				if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
-				else if(bd.QnC(c)==-2){ return "5 ";}
-				else if(bd.QaC(c)==1) { return "# ";}
-				else if(bd.QaC(c)>=0) { return ((bd.QaC(c)-1).toString(20) + " ");}
-				else if(bd.QsC(c)==1) { return "- ";}
-				else                  { return ". ";}
+			this.encodeCell( function(obj){
+				if     (obj.qnum>=0) { return (obj.qnum.toString() + " ");}
+				else if(obj.qnum===-2){return "5 ";}
+				else if(obj.qans===1){ return "# ";}
+				else if(obj.qans>=0) { return ((obj.qans-1).toString(20) + " ");}
+				else if(obj.qsub===1){ return "- ";}
+				else                 { return ". ";}
 			});
 		};
 	},
@@ -448,11 +433,11 @@ Puzzles.shugaku.prototype = {
 				this.setAlert('2x2の黒マスのかたまりがあります。', 'There is a 2x2 block of black cells.'); return false;
 			}
 
-			if( !this.checkAllCell(ee.binder(this, function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)<this.checkdir4Cell(c,function(a){ return (bd.QaC(a)>=11&&bd.QaC(a)<=15);}));})) ){
+			if( !this.checkDir4Cell(bd.isPillow,2) ){
 				this.setAlert('柱のまわりにある枕の数が間違っています。', 'The number of pillows around the number is wrong.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QaC(c)==11||bd.QaC(c)==16);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.QaC(c)===11||bd.QaC(c)===16);}) ){
 				this.setAlert('布団が2マスになっていません。', 'There is a half-size futon.'); return false;
 			}
 
@@ -464,11 +449,11 @@ Puzzles.shugaku.prototype = {
 				this.setAlert('黒マスが分断されています。', 'Aisle is divided.'); return false;
 			}
 
-			if( !this.checkAllCell(ee.binder(this, function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)>this.checkdir4Cell(c,function(a){ return (bd.QaC(a)>=11&&bd.QaC(a)<=15);}));})) ){
+			if( !this.checkDir4Cell(bd.isPillow,1) ){
 				this.setAlert('柱のまわりにある枕の数が間違っています。', 'The number of pillows around the number is wrong.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QnC(c)==-1 && bd.QaC(c)==-1);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.noNum(c) && bd.QaC(c)===0);}) ){
 				this.setAlert('布団でも黒マスでもないマスがあります。', 'There is an empty cell.'); return false;
 			}
 
@@ -478,7 +463,7 @@ Puzzles.shugaku.prototype = {
 		ans.checkKitamakura = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QaC(c)==13){
+				if(bd.QaC(c)===13){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c,bd.dn(c)],1);
 					result = false;
@@ -490,21 +475,22 @@ Puzzles.shugaku.prototype = {
 		ans.checkFutonAisle = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)==-1 && bd.QaC(c)>=12 && bd.QaC(c)<=15){
-					var adj=-1;
-					switch(bd.QaC(c)){
-						case 12: adj = bd.up(c); break;
-						case 13: adj = bd.dn(c); break;
-						case 14: adj = bd.lt(c); break;
-						case 15: adj = bd.rt(c); break;
-					}
-					if( this.checkdir4Cell(c  ,function(a){ return (bd.QaC(a)==1)})==0 &&
-						this.checkdir4Cell(adj,function(a){ return (bd.QaC(a)==1)})==0 )
-					{
-						if(this.inAutoCheck){ return false;}
-						bd.sErC([c,adj],1);
-						result = false;
-					}
+				if(bd.isNum(c)){ continue;}
+
+				var adj=null;
+				switch(bd.QaC(c)){
+					case 12: adj = bd.up(c); break;
+					case 13: adj = bd.dn(c); break;
+					case 14: adj = bd.lt(c); break;
+					case 15: adj = bd.rt(c); break;
+					default: continue;
+				}
+				if( this.countDir4Cell(c  ,bd.isBlack)===0 &&
+					this.countDir4Cell(adj,bd.isBlack)===0 )
+				{
+					if(this.inAutoCheck){ return false;}
+					bd.sErC([c,adj],1);
+					result = false;
 				}
 			}
 			return result;

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 やじさんかずさん版 yajikazu.js v3.3.0
+// パズル固有スクリプト部 やじさんかずさん版 yajikazu.js v3.3.1
 //
 Puzzles.yajikazu = function(){ };
 Puzzles.yajikazu.prototype = {
@@ -60,7 +60,9 @@ Puzzles.yajikazu.prototype = {
 			else if(k.playmode) this.inputcell();
 		};
 		mv.mouseup = function(){
-			if(k.editmode && this.notInputted() && bd.cnum(this.mouseCell.x,this.mouseCell.y)==this.cellid()) this.inputqnum();
+			if(k.editmode && this.notInputted()){
+				if(bd.cnum(this.prevPos.x,this.prevPos.y)===this.cellid()){ this.inputqnum();}
+			}
 		};
 		mv.mousemove = function(){
 			if(k.editmode){
@@ -147,7 +149,7 @@ Puzzles.yajikazu.prototype = {
 		ans.checkArrowNumber = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)<0 || bd.DiC(c)==0 || bd.isBlack(c)){ continue;}
+				if(!bd.isValidNum(c) || bd.DiC(c)==0 || bd.isBlack(c)){ continue;}
 				var bx = bd.cell[c].bx, by = bd.cell[c].by, dir = bd.DiC(c);
 				var cnt=0, clist = [];
 				if     (dir==k.UP){ by-=2; while(by>bd.minby){ clist.push(bd.cnum(bx,by)); by-=2;} }

@@ -1,4 +1,4 @@
-// Main.js v3.3.0p2
+// Main.js v3.3.1
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -8,6 +8,7 @@
 PBase = function(){
 	this.floatbgcolor = "black";
 	this.proto        = 0;	// 各クラスのprototypeがパズル用スクリプトによって変更されているか
+	this.userlang     = 'ja';
 	this.expression   = { ja:'' ,en:''};
 	this.puzzlename   = { ja:'' ,en:''};
 	this.numparent    = null;	// 'numobj_parent'を示すエレメント
@@ -26,18 +27,18 @@ PBase.prototype = {
 		// URLの取得 -> URLの?以下ををpuzzleid部とpzlURI部に分割
 		enc = new Encode();
 		enc.first_parseURI(location.search);
-		if(!k.puzzleid){ location.href = "./";} // 指定されたパズルがない場合はさようなら〜
+		if(!k.puzzleid){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
 
 		// パズル専用ファイルの読み込み
 		if(k.scriptcheck){
-			document.writeln("<script type=\"text/javascript\" src=\"src/for_test.js\"></script>");
+			_doc.writeln("<script type=\"text/javascript\" src=\"src/for_test.js\"></script>");
 		}
-		document.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
+		_doc.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
 
 		fio = new FileIO();
 		if(fio.dbm.requireGears()){
 			// 必要な場合、gears_init.jsの読み込み
-			document.writeln("<script type=\"text/javascript\" src=\"src/gears_init.js\"></script>");
+			_doc.writeln("<script type=\"text/javascript\" src=\"src/gears_init.js\"></script>");
 		}
 
 		// onLoadとonResizeに動作を割り当てる
@@ -48,15 +49,10 @@ PBase.prototype = {
 	//---------------------------------------------------------------------------
 	// base.onload_func()
 	//   ページがLoadされた時の処理。各クラスのオブジェクトへの読み込み等初期設定を行う
-	// 
-	// base.initCanvas()  Canvas関連の初期化
-	// base.initObjects() 各オブジェクトの生成などの処理
-	// base.setEvents()   マウス入力、キー入力のイベントの設定を行う
-	// base.translationEN() 日本語環境でない場合、デフォルトで英語表示にする
 	//---------------------------------------------------------------------------
 	onload_func : function(){
 		Camp('divques');
-		if(Camp.enable.canvas && !!document.createElement('canvas').toDataURL){
+		if(Camp.enable.canvas && !!_doc.createElement('canvas').toDataURL){
 			this.enableSaveImage = true;
 			Camp('divques_sub', 'canvas');
 		}
@@ -72,21 +68,24 @@ PBase.prototype = {
 	onload_func2 : function(){
 		this.initCanvas();
 		this.initObjects();
-		this.setEvents(true);	// イベントをくっつける
-		this.translationEN();
+		this.setEvents();	// イベントをくっつける
 
-		if(document.domain=='indi.s58.xrea.com' && k.PLAYER){ this.accesslog();}	// アクセスログをとってみる
+		if(k.PLAYER){ this.accesslog();}	// アクセスログをとってみる
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
 
 		this.initProcess = false;
 	},
 
+	//---------------------------------------------------------------------------
+	// base.initObjects()   キャンバスの初期化
+	// base.initObjects()   各オブジェクトの生成などの処理
+	// base.doc_design()    onload_func()で呼ばれる。htmlなどの設定を行う
+	// base.checkUserLang() 言語環境をチェックして日本語でない場合英語表示にする
+	//---------------------------------------------------------------------------
 	initCanvas : function(){
 		this.numparent = ee('numobj_parent').el;		// 数字表示用
-		var canvas = ee('divques').unselectable().el;	// Canvas
-		g = canvas.getContext("2d");
+		g = ee('divques').unselectable().el.getContext("2d");
 	},
-
 	initObjects : function(){
 		this.proto = 0;
 
@@ -109,103 +108,93 @@ PBase.prototype = {
 		menu = new Menu();		// メニューを扱うオブジェクト
 		pp = new Properties();	// メニュー関係の設定値を保持するオブジェクト
 
+		// 各パズルごとの設定(後付け分)
+		puz.input_init();
+		puz.graphic_init();
+		puz.encode_init();
+		puz.answer_init();
+
+		// メニュー関係初期化
+		menu.menuinit();		// メニューの設定
 		this.doc_design();		// デザイン変更関連関数の呼び出し
+		this.checkUserLang();	// 言語のチェック
 
 		enc.pzlinput();			// URLからパズルのデータを読み出す
 		this.resize_canvas();
 
 		if(!!puz.finalfix){ puz.finalfix();}		// パズル固有の後付け設定
 	},
-	setEvents : function(first){
-		var canvas = ee('divques').el;
-		canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
-		canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
-		canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
-		canvas.oncontextmenu = function(){ return false;};
-
-		this.numparent.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
-		this.numparent.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
-		this.numparent.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
-		this.numparent.oncontextmenu = function(){ return false;};
-
-		if(first){
-			document.onkeydown  = ee.ebinder(kc, kc.e_keydown);
-			document.onkeyup    = ee.ebinder(kc, kc.e_keyup);
-			document.onkeypress = ee.ebinder(kc, kc.e_keypress);
-			if(g.use.sl){ this.initSilverlight();}
-
-			if(!!menu.ex.reader){
-				var DDhandler = function(e){
-					menu.ex.reader.readAsText(e.dataTransfer.files[0]);
-					e.preventDefault();
-					e.stopPropagation();
-				}
-				window.addEventListener('dragover', function(e){ e.preventDefault();}, true);
-				window.addEventListener('drop', DDhandler, true);
-			}
-
-			// onBlurにイベントを割り当てる
-			document.onblur = ee.ebinder(this, this.onblur_func);
-		}
-	},
-	translationEN : function(){
-		var lang = (navigator.browserLanguage ||
-					navigator.language        ||
-					navigator.userLanguage      ).substr(0,2);
-		if(lang!=='ja'){ pp.setVal('language', 1);}
-	},
-
-	//---------------------------------------------------------------------------
-	// base.initSilverlight() Silverlightオブジェクトにイベントの設定を行う(IEのSilverlightモード時)
-	// base.e_SLkeydown()     Silverlightオブジェクトにフォーカスがある時、キーを押した際のイベント共通処理
-	// base.e_SLkeyup()       Silverlightオブジェクトにフォーカスがある時、キーを離した際のイベント共通処理
-	//---------------------------------------------------------------------------
-	initSilverlight : function(){
-		var sender = g.content.findName(g.canvasid);
-		sender.AddEventListener("KeyDown", this.e_SLkeydown);
-		sender.AddEventListener("KeyUp",   this.e_SLkeyup);
-	},
-	e_SLkeydown : function(sender, keyEventArgs){
-		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
-						altKey:false, returnValue:false, preventDefault:f_true };
-		return kc.e_keydown(emulate);
-	},
-	e_SLkeyup : function(sender, keyEventArgs){
-		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
-						altKey:false, returnValue:false, preventDefault:f_true };
-		return kc.e_keyup(emulate);
-	},
-
-	//---------------------------------------------------------------------------
-	// base.doc_design() onload_func()で呼ばれる。htmlなどの設定を行う
-	// base.postfix()    各パズルの初期化後処理を呼び出す
-	// base.resetInfo()  AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
-	//---------------------------------------------------------------------------
-	// 背景画像とかtitle等/html表示の設定 //
+	// 背景画像とかtitle・背景画像・html表示の設定
 	doc_design : function(){
 		_doc.title = this.gettitle();
 		ee('title2').el.innerHTML = this.gettitle();
 
 		_doc.body.style.backgroundImage = "url(./bg/"+k.puzzleid+".gif)";
-		if(k.br.IEmoz4){
+		if(k.br.IE6){
 			ee('title2').el.style.marginTop = "24px";
 			ee('separator1').el.style.margin = '0pt';
 			ee('separator2').el.style.margin = '0pt';
 		}
-
-		this.postfix();			// 各パズルごとの設定(後付け分)
-		menu.menuinit();
-		um.enb_btn();
-
-		// なぜかF5で更新するとtrueになってるので応急処置...
-		ee('btnclear') .el.disabled = false;
-		ee('btnclear2').el.disabled = false;
 	},
-	postfix : function(){
-		puz.input_init();
-		puz.graphic_init();
-		puz.encode_init();
-		puz.answer_init();
+	checkUserLang : function(){
+		this.userlang = (navigator.browserLanguage ||
+						 navigator.language        ||
+						 navigator.userLanguage);
+		if(this.userlang.substr(0,2)!=='ja'){ pp.setVal('language', 1);}
+	},
+
+	//---------------------------------------------------------------------------
+	// base.setEvents()       マウス入力、キー入力のイベントの設定を行う
+	//---------------------------------------------------------------------------
+	setEvents : function(first){
+		// マウス入力イベントの設定
+		var canvas = ee('divques').el;
+		if(!k.os.iPhoneOS && !k.os.Android){
+			canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+			canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+			canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
+			canvas.oncontextmenu = function(){ return false;};
+
+			this.numparent.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
+			this.numparent.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
+			this.numparent.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
+			this.numparent.oncontextmenu = function(){ return false;};
+		}
+		// iPhoneOS用のタッチイベント設定
+		else{
+			canvas.addEventListener("touchstart", ee.ebinder(mv, mv.e_mousedown), false);
+			canvas.addEventListener("touchmove",  ee.ebinder(mv, mv.e_mousemove), false);
+			canvas.addEventListener("touchend",   ee.ebinder(mv, mv.e_mouseup),   false);
+
+			this.numparent.addEventListener("touchstart", ee.ebinder(mv, mv.e_mousedown), false);
+			this.numparent.addEventListener("touchmove",  ee.ebinder(mv, mv.e_mousemove), false);
+			this.numparent.addEventListener("touchend",   ee.ebinder(mv, mv.e_mouseup),   false);
+		}
+
+		// キー入力イベントの設定
+		_doc.onkeydown  = ee.ebinder(kc, kc.e_keydown);
+		_doc.onkeyup    = ee.ebinder(kc, kc.e_keyup);
+		_doc.onkeypress = ee.ebinder(kc, kc.e_keypress);
+		// Silverlightのキー入力イベント設定
+		if(g.use.sl){
+			var sender = g.content.findName(g.canvasid);
+			sender.AddEventListener("KeyDown", kc.e_SLkeydown);
+			sender.AddEventListener("KeyUp",   kc.e_SLkeyup);
+		}
+
+		// File API＋Drag&Drop APIの設定
+		if(!!menu.ex.reader){
+			var DDhandler = function(e){
+				menu.ex.reader.readAsText(e.dataTransfer.files[0]);
+				e.preventDefault();
+				e.stopPropagation();
+			}
+			window.addEventListener('dragover', function(e){ e.preventDefault();}, true);
+			window.addEventListener('drop', DDhandler, true);
+		}
+
+		// onBlurにイベントを割り当てる
+		_doc.onblur = ee.ebinder(this, this.onblur_func);
 	},
 
 	//---------------------------------------------------------------------------
@@ -271,32 +260,32 @@ PBase.prototype = {
 		// 特に縮小が必要ない場合
 		if(!pp.getVal('adjsize') || cols < ci[0]){
 			mwidth = wwidth*ws.base-4;
-			k.cwidth = k.cheight = mf(k.cellsize*cr.base);
+			k.cwidth = k.cheight = (k.cellsize*cr.base)|0;
 		}
-		// base〜limit間でサイズを自動調節する場合
+		// base～limit間でサイズを自動調節する場合
 		else if(cols < ci[1]){
 			var ws_tmp = ws.base+(ws.limit-ws.base)*((k.qcols-ci[0])/(ci[1]-ci[0]));
 			mwidth = wwidth*ws_tmp-4;
-			k.cwidth = k.cheight = mf(mwidth/cols); // 外枠ぎりぎりにする
+			k.cwidth = k.cheight = (mwidth/cols)|0; // 外枠ぎりぎりにする
 		}
 		// 自動調整の下限値を超える場合
 		else{
 			mwidth = wwidth*ws.limit-4;
-			k.cwidth = k.cheight = mf(k.cellsize*cr.limit);
+			k.cwidth = k.cheight = (k.cellsize*cr.limit)|0;
 		}
 		k.bwidth  = k.cwidth/2; k.bheight = k.cheight/2;
 
 		// mainのサイズ変更
-		ee('main').el.style.width = ''+mf(mwidth)+'px';
+		ee('main').el.style.width = ''+(mwidth|0)+'px';
 
 		// 盤面のセルID:0が描画される位置の設定
-		k.p0.x = k.p0.y = mf(k.cwidth*k.bdmargin);
+		k.p0.x = k.p0.y = (k.cwidth*k.bdmargin)|0;
 		// extendxell==0でない時は位置をずらす
 		if(!!k.isexcell){ k.p0.x += k.cwidth; k.p0.y += k.cheight;}
 
 		// Canvasのサイズ変更
-		pc.setVectorFunctions();
-		g.changeSize(mf(cols*k.cwidth), mf(rows*k.cheight));
+		pc.resetVectorFunctions();
+		g.changeSize((cols*k.cwidth)|0, (rows*k.cheight)|0);
 
 		// canvasの上に文字・画像を表示する時のOffset指定
 		var rect = ee('divques').getRect();
@@ -380,18 +369,15 @@ PBase.prototype = {
 
 		// onload後の初期化ルーチンへジャンプする
 		this.initObjects();
-		this.setEvents(false);
 	},
 
 	//---------------------------------------------------------------------------
 	// base.accesslog() playerのアクセスログをとる
 	//---------------------------------------------------------------------------
 	accesslog : function(){
-		var refer = document.referrer;
-		refer = refer.replace(/\?/g,"%3f");
-		refer = refer.replace(/\&/g,"%26");
-		refer = refer.replace(/\=/g,"%3d");
-		refer = refer.replace(/\//g,"%2f");
+		if(_doc.domain!=='indi.s58.xrea.com' &&
+		   _doc.domain!=='pzprv3.sakura.ne.jp' &&
+		   !_doc.domain.match(/pzv\.jp/)){ return;}
 
 		// 送信
 		var xmlhttp = false;
@@ -403,9 +389,23 @@ PBase.prototype = {
 			xmlhttp = new XMLHttpRequest();
 		}
 		if(xmlhttp){
-			xmlhttp.open("GET", ["./record.cgi", "?pid=",k.puzzleid, "&pzldata=",enc.uri.qdata, "&referer=",refer].join(''));
+			var refer = _doc.referrer;
+			refer = refer.replace(/\?/g,"%3f");
+			refer = refer.replace(/\&/g,"%26");
+			refer = refer.replace(/\=/g,"%3d");
+			refer = refer.replace(/\//g,"%2f");
+
+			var data = [
+				("scr="     + "pzprv3"),
+				("pid="     + k.puzzleid),
+				("referer=" + refer),
+				("pzldata=" + enc.uri.qdata)
+			].join('&');
+
+			xmlhttp.open("POST", "./record.cgi");
 			xmlhttp.onreadystatechange = function(){};
-			xmlhttp.send(null);
+			xmlhttp.setRequestHeader("Content-Type" , "application/x-www-form-urlencoded");
+			xmlhttp.send(data);
 		}
 	}
 };

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ＬＩＴＳ版 lits.js v3.3.0
+// パズル固有スクリプト部 ＬＩＴＳ版 lits.js v3.3.1
 //
 Puzzles.lits = function(){ };
 Puzzles.lits.prototype = {
@@ -76,7 +76,7 @@ Puzzles.lits.prototype = {
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
-			this.drawRDotCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2,false);
 			this.drawGrid(x1,y1,x2,y2);
 
 			this.drawBorders(x1,y1,x2,y2);
@@ -110,7 +110,7 @@ Puzzles.lits.prototype = {
 			var bstr = this.outbstr;
 			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(cc1!=-1 && cc2!=-1 && bstr.charAt(cc1)!=bstr.charAt(cc2)){ bd.sQuB(id,1);}
+				if(cc1!==null && cc2!==null && bstr.charAt(cc1)!=bstr.charAt(cc2)){ bd.border[id].ques = 1;}
 			}
 			this.outbstr = bstr.substr(bd.cellmax);
 		};
@@ -174,7 +174,7 @@ Puzzles.lits.prototype = {
 
 		ans.checkTetromino = function(rinfo){
 			var tinfo = new AreaInfo(), result = true;
-			for(var c=0;c<bd.cellmax;c++){ tinfo.id[c]=-1;}
+			for(var c=0;c<bd.cellmax;c++){ tinfo.id[c]=null;}
 			for(var r=1;r<=rinfo.max;r++){
 				var bcells = [];
 				for(var i=0;i<rinfo.room[r].idlist.length;i++){ if(bd.isBlack(rinfo.room[r].idlist[i])){ bcells.push(rinfo.room[r].idlist[i]);} }
@@ -195,7 +195,7 @@ Puzzles.lits.prototype = {
 				}
 			}
 			var dinfo = new AreaInfo();
-			for(var c=0;c<bd.cellmax;c++){ dinfo.id[c]=(tinfo.id[c]!=-1?0:-1);}
+			for(var c=0;c<bd.cellmax;c++){ dinfo.id[c]=(tinfo.id[c]!==null?0:null);}
 			for(var c=0;c<bd.cellmax;c++){
 				if(dinfo.id[c]!=0){ continue;}
 				dinfo.max++;
@@ -214,7 +214,7 @@ Puzzles.lits.prototype = {
 			if(dinfo.id[c]!=0){ return;}
 			dinfo.id[c] = id;
 			dinfo.room[id].idlist.push(c);
-			var func = function(cc){ return (cc!=-1 && tinfo.id[c]==tinfo.id[cc]);};
+			var func = function(cc){ return (cc!==null && tinfo.id[c]==tinfo.id[cc]);};
 			if( func(bd.up(c)) ){ this.st0(dinfo, bd.up(c), id, tinfo);}
 			if( func(bd.dn(c)) ){ this.st0(dinfo, bd.dn(c), id, tinfo);}
 			if( func(bd.lt(c)) ){ this.st0(dinfo, bd.lt(c), id, tinfo);}

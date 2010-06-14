@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンロー版 nanro.js v3.3.0
+// パズル固有スクリプト部 ナンロー版 nanro.js v3.3.1
 //
 Puzzles.nanro = function(){ };
 Puzzles.nanro.prototype = {
@@ -52,48 +52,46 @@ Puzzles.nanro.prototype = {
 		mv.mousedown = function(){
 			if(k.editmode) this.inputborder();
 			else if(k.playmode){
-				if(this.btn.Left) this.dragnumber();
+				if(this.btn.Left) this.dragnumber_nanro();
 			}
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(!kp.enabled()){ this.mouseCell=-1; this.inputqnum();}
+				if(!kp.enabled()){ this.mouseCell=null; this.inputqnum();}
 				else{ kp.display();}
 			}
 		};
 		mv.mousemove = function(){
 			if(k.editmode) this.inputborder();
 			else if(k.playmode){
-				if(this.btn.Left) this.dragnumber();
-				else if(this.btn.Right) this.inputDot();
+				if(this.btn.Left) this.dragnumber_nanro();
+				else if(this.btn.Right) this.inputDot_nanro();
 			}
 		};
-		mv.dragnumber = function(){
+		mv.dragnumber_nanro = function(){
 			var cc = this.cellid();
-			if(cc==-1||cc==this.mouseCell){ return;}
-			if(this.mouseCell==-1){
+			if(cc===null||cc===this.mouseCell){ return;}
+			if(this.mouseCell===null){
 				this.inputData = bd.getNum(cc);
-				if   (this.inputData==-2){ this.inputData=-4;}
-				else if(this.inputData==-1){
-					if     (bd.QsC(cc)==1){ this.inputData=-2;}
-					else if(bd.QsC(cc)==2){ this.inputData=-3;}
+				if     (this.inputData===-2){ this.inputData=null;}
+				else if(this.inputData===-1){
+					if     (bd.QsC(cc)===1){ this.inputData=-2;}
+					else if(bd.QsC(cc)===2){ this.inputData=-3;}
 				}
 				this.mouseCell = cc;
 			}
-			else if(bd.QnC(cc)==-1){
-				if(this.inputData>=-1){ bd.sQaC(cc, this.inputData); bd.sQsC(cc,0);}
-				else if(this.inputData==-2){ bd.sQaC(cc,-1); bd.sQsC(cc,1);}
-				else if(this.inputData==-3){ bd.sQaC(cc,-1); bd.sQsC(cc,2);}
+			else if(bd.QnC(cc)===-1){
+				bd.setNum(cc,this.inputData);
 				this.mouseCell = cc;
 				pc.paintCell(cc);
 			}
 		};
-		mv.inputDot = function(){
+		mv.inputDot_nanro = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell || bd.isNum(cc)){ return;}
-			if(this.inputData==-1){ this.inputData = (bd.QsC(cc)==2?0:2);}
-			if     (this.inputData==2){ bd.sQaC(cc,-1); bd.sQsC(cc,2);}
-			else if(this.inputData==0){ bd.sQaC(cc,-1); bd.sQsC(cc,0);}
+			if(cc===null || cc===this.mouseCell || bd.isNum(cc)){ return;}
+			if(this.inputData===null){ this.inputData = (bd.QsC(cc)===2?0:2);}
+			if     (this.inputData==2){ bd.sAnC(cc,-1); bd.sQsC(cc,2);}
+			else if(this.inputData==0){ bd.sAnC(cc,-1); bd.sQsC(cc,0);}
 			this.mouseCell = cc;
 			pc.paintCell(cc);
 		};
@@ -101,23 +99,18 @@ Puzzles.nanro.prototype = {
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
-			if(this.key_view(ca)){ return;}
-			this.key_inputqnum(ca);
+			this.key_view(ca);
 		};
 		kc.key_view = function(ca){
-			if(k.editmode || bd.QnC(tc.getTCC())!=-1){ return false;}
-
-			var cc = tc.getTCC();
-			var flag = false;
-
-			if     ((ca=='q'||ca=='a'||ca=='z')){ bd.sQaC(cc,-1); bd.sQsC(cc,1); flag = true;}
-			else if((ca=='w'||ca=='s'||ca=='x')){ bd.sQaC(cc,-1); bd.sQsC(cc,2); flag = true;}
-			else if((ca=='e'||ca=='d'||ca=='c')){ bd.sQaC(cc,-1); bd.sQsC(cc,0); flag = true;}
-			else if(ca=='1' && bd.QaC(cc)==1)   { bd.sQaC(cc,-1); bd.sQsC(cc,1); flag = true;}
-			else if(ca=='2' && bd.QaC(cc)==2)   { bd.sQaC(cc,-1); bd.sQsC(cc,2); flag = true;}
-
-			if(flag){ pc.paintCell(cc); return true;}
-			return false;
+			if(k.playmode){
+				var cc=tc.getTCC();
+				if     (ca==='q'||ca==='a'||ca==='z')          { ca='s1';}
+				else if(ca==='w'||ca==='s'||ca==='x')          { ca='s2';}
+				else if(ca==='e'||ca==='d'||ca==='c'||ca==='-'){ ca=' '; }
+				else if(ca==='1' && bd.AnC(cc)===1)            { ca='s1';}
+				else if(ca==='2' && bd.AnC(cc)===2)            { ca='s2';}
+			}
+			this.key_inputqnum(ca);
 		};
 
 		kp.kpgenerate = function(mode){
@@ -198,12 +191,12 @@ Puzzles.nanro.prototype = {
 		fio.decodeData = function(){
 			this.decodeAreaRoom();
 			this.decodeCellQnum();
-			this.decodeCellQanssub();
+			this.decodeCellAnumsub();
 		};
 		fio.encodeData = function(){
 			this.encodeAreaRoom();
 			this.encodeCellQnum();
-			this.encodeCellQanssub();
+			this.encodeCellAnumsub();
 		};
 	},
 

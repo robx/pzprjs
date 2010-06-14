@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.3.0
+// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.3.1
 //
 Puzzles.loopsp = function(){ };
 Puzzles.loopsp.prototype = {
@@ -75,27 +75,27 @@ Puzzles.loopsp.prototype = {
 
 		mv.inputLoopsp = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell){ return;}
+			if(cc===null || cc===this.mouseCell){ return;}
 
-			if(cc==tc.getTCC()){
-				var qs = bd.QuC(cc); var qn = bd.QnC(cc);
+			if(cc===tc.getTCC()){
+				var qu = bd.QuC(cc), qn = bd.QnC(cc);
 				if(this.btn.Left){
-					if(qn==-1){
-						if     (qs==0)           { bd.sQuC(cc,101);}
-						else if(qs>=101&&qs<=106){ bd.sQuC(cc,qs+1);}
-						else if(qs==107)         { bd.sQuC(cc,0); bd.sQnC(cc,-2);}
+					if(qn===-1){
+						if     (qu==0)         { bd.sQuC(cc,11);}
+						else if(qu>=11&&qu<=16){ bd.sQuC(cc,qu+1);}
+						else if(qu==17)        { bd.sQuC(cc,0); bd.sQnC(cc,-2);}
 					}
 					else if(qn==-2){ bd.sQnC(cc,1);}
 					else if(qn<bd.maxnum){ bd.sQnC(cc,qn+1);}
 					else{ bd.sQuC(cc,0); bd.sQnC(cc,-1);}
 				}
 				else if(this.btn.Right){
-					if(qn==-1){
-						if     (qs==0)           { bd.sQuC(cc,0); bd.sQnC(cc,-2);}
-						else if(qs==101)         { bd.sQuC(cc,0); bd.sQnC(cc,-1);}
-						else if(qs>=102&&qs<=107){ bd.sQuC(cc,qs-1);}
+					if(qn===-1){
+						if     (qu==0)         { bd.sQuC(cc,0); bd.sQnC(cc,-2);}
+						else if(qu==11)        { bd.sQuC(cc,0); bd.sQnC(cc,-1);}
+						else if(qu>=12&&qs<=17){ bd.sQuC(cc,qu-1);}
 					}
-					else if(qn==-2){ bd.sQuC(cc,107); bd.sQnC(cc,-1);}
+					else if(qn==-2){ bd.sQuC(cc,17); bd.sQnC(cc,-1);}
 					else if(qn>1) { bd.sQnC(cc,qn-1);}
 					else{ bd.sQuC(cc,0); bd.sQnC(cc,-2);}
 				}
@@ -111,14 +111,7 @@ Puzzles.loopsp.prototype = {
 		};
 
 		bd.enableLineNG = true;
-
-		// オーバーライト
-		bd.sQuC = function(id, num) {
-			um.addOpe(k.CELL, k.QUES, id, this.cell[id].ques, num);
-			this.cell[id].ques = num;
-
-			this.checkLPCombined(id);
-		};
+		bd.enableLineCombined = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
@@ -131,15 +124,15 @@ Puzzles.loopsp.prototype = {
 			if(k.playmode){ return false;}
 			var cc = tc.getTCC();
 
-			if     (ca=='q'){ bd.sQuC(cc,101); bd.sQnC(cc,-1); }
-			else if(ca=='w'){ bd.sQuC(cc,102); bd.sQnC(cc,-1); }
-			else if(ca=='e'){ bd.sQuC(cc,103); bd.sQnC(cc,-1); }
-			else if(ca=='r'){ bd.sQuC(cc,  0); bd.sQnC(cc,-1); }
-			else if(ca==' '){ bd.sQuC(cc,  0); bd.sQnC(cc,-1); }
-			else if(ca=='a'){ bd.sQuC(cc,104); bd.sQnC(cc,-1); }
-			else if(ca=='s'){ bd.sQuC(cc,105); bd.sQnC(cc,-1); }
-			else if(ca=='d'){ bd.sQuC(cc,106); bd.sQnC(cc,-1); }
-			else if(ca=='f'){ bd.sQuC(cc,107); bd.sQnC(cc,-1); }
+			if     (ca=='q'){ bd.sQuC(cc,11); bd.sQnC(cc,-1); }
+			else if(ca=='w'){ bd.sQuC(cc,12); bd.sQnC(cc,-1); }
+			else if(ca=='e'){ bd.sQuC(cc,13); bd.sQnC(cc,-1); }
+			else if(ca=='r'){ bd.sQuC(cc, 0); bd.sQnC(cc,-1); }
+			else if(ca==' '){ bd.sQuC(cc, 0); bd.sQnC(cc,-1); }
+			else if(ca=='a'){ bd.sQuC(cc,14); bd.sQnC(cc,-1); }
+			else if(ca=='s'){ bd.sQuC(cc,15); bd.sQnC(cc,-1); }
+			else if(ca=='d'){ bd.sQuC(cc,16); bd.sQnC(cc,-1); }
+			else if(ca=='f'){ bd.sQuC(cc,17); bd.sQnC(cc,-1); }
 			else if((ca>='0' && ca<='9') || ca=='-'){
 				var old = bd.QnC(cc);
 				kc.key_inputqnum(ca);
@@ -238,15 +231,16 @@ Puzzles.loopsp.prototype = {
 		enc.decodeLoopsp = function(){
 			var c=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
+				var ca = bstr.charAt(i), obj = bd.cell[c];
 
-				if     (ca == '.'){ bd.sQnC(c, -2); c++;}
-				else if(ca == '-'){ bd.sQnC(c, parseInt(bstr.substr(i+1,2),16)); c++; i+=2;}
-				else if((ca >= '0' && ca <= '9')||(ca >= 'a' && ca <= 'f')){ bd.sQnC(c, parseInt(bstr.substr(i,1),16)); c++;}
-				else if(ca >= 'g' && ca <= 'm'){ bd.sQuC(c, (parseInt(ca,36)+85)); c++;}
-				else if(ca >= 'n' && ca <= 'z'){ c += (parseInt(ca,36)-22);}
-				else{ c++;}
+				if     (ca ==='.'){ obj.qnum = -2;}
+				else if(ca ==='-'){ obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+				else if(ca >= '0' && ca <= '9'){ obj.qnum = parseInt(ca,16);}
+				else if(ca >= 'a' && ca <= 'f'){ obj.qnum = parseInt(ca,16);}
+				else if(ca >= 'g' && ca <= 'm'){ obj.ques = parseInt(ca,36)-5;}
+				else if(ca >= 'n' && ca <= 'z'){ c += (parseInt(ca,36)-23);}
 
+				c++;
 				if(c > bd.cellmax){ break;}
 			}
 
@@ -254,15 +248,16 @@ Puzzles.loopsp.prototype = {
 		};
 		enc.encodeLoopsp = function(){
 			var cm="", pstr="", count=0;
-			for(var i=0;i<bd.cellmax;i++){
-				if     (bd.QnC(i)== -2                  ){ pstr = ".";}
-				else if(bd.QnC(i)>=  0 && bd.QnC(i)<  16){ pstr =       bd.QnC(i).toString(16);}
-				else if(bd.QnC(i)>= 16 && bd.QnC(i)< 256){ pstr = "-" + bd.QnC(i).toString(16);}
-				else if(bd.QuC(i)>=101 && bd.QuC(i)<=107){ pstr = (bd.QuC(i)-85).toString(36);}
+			for(var c=0;c<bd.cellmax;c++){
+				var qn=bd.cell[c].qnum, qu=bd.cell[c].ques;
+				if     (qn===-2)       { pstr = ".";}
+				else if(qn>= 0&&qn< 16){ pstr =     qn.toString(16);}
+				else if(qn>=16&&qn<256){ pstr = "-"+qn.toString(16);}
+				else if(qu>=11&&qu<=17){ pstr = (qu+5).toString(36);}
 				else{ pstr = ""; count++;}
 
-				if(count==0){ cm += pstr;}
-				else if(pstr || count==13){ cm+=((22+count).toString(36)+pstr); count=0;}
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===13){ cm+=((22+count).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm+=(22+count).toString(36);}
 
@@ -271,20 +266,20 @@ Puzzles.loopsp.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCell( function(c,ca){
-				if(ca == "o")     { bd.sQuC(c, 6);}
-				else if(ca == "-"){ bd.sQuC(c, -2);}
-				else if(ca >= "a" && ca <= "g"){ bd.sQuC(c, parseInt(ca,36)+91);}
-				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="o"){ obj.ques = 6;}
+				else if(ca==="-"){ obj.ques =-2;}
+				else if(ca>="a" && ca<="g"){ obj.ques = parseInt(ca,36)+1;}
+				else if(ca!=="."){ obj.qnum = parseInt(ca);}
 			});
 			this.decodeBorderLine();
 		};
 		fio.encodeData = function(){
-			this.encodeCell( function(c){
-				if     (bd.QuC(c)==6) { return "o ";}
-				else if(bd.QuC(c)>=101 && bd.QuC(c)<=107) { return ""+(bd.QuC(c)-91).toString(36)+" ";}
-				else if(bd.QuC(c)==-2){ return "- ";}
-				else if(bd.QnC(c)!=-1){ return bd.QnC(c).toString()+" ";}
+			this.encodeCell( function(obj){
+				if     (obj.ques===6) { return "o ";}
+				else if(obj.ques>=11 && obj.ques<=17) { return ""+(obj.ques-1).toString(36)+" ";}
+				else if(obj.ques===-2){ return "- ";}
+				else if(obj.qnum!==-1){ return obj.qnum.toString()+" ";}
 				else                  { return ". ";}
 			});
 			this.encodeBorderLine();
@@ -304,7 +299,7 @@ Puzzles.loopsp.prototype = {
 				this.setAlert('分岐している線があります。','There is a branched line.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QnC(c)!=-1);}) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.isNum(c));}) ){
 				this.setAlert('○の部分で線が交差しています。','The lines are crossed on the number.'); return false;
 			}
 
@@ -318,7 +313,7 @@ Puzzles.loopsp.prototype = {
 				this.setAlert('○を含んでいないループがあります。','A loop has no numbers.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)!=4 && bd.QuC(c)==101);}) ){
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)!==4 && bd.QuC(c)===11);}) ){
 				this.setAlert('┼のマスから線が4本出ていません。','A cross-joint cell doesn\'t have four-way lines.'); return false;
 			}
 
@@ -336,10 +331,10 @@ Puzzles.loopsp.prototype = {
 			return this.checkAllLoops(function(cells){
 				var number = -1;
 				for(var i=0;i<cells.length;i++){
-					if(bd.QnC(cells[i])>=1){
+					if(bd.isValidNum(cells[i])){
 						if(number==-1){ number=bd.QnC(cells[i]);}
 						else if(number!=bd.QnC(cells[i])){
-							for(var c=0;c<cells.length;c++){ if(bd.QnC(cells[c])>=1){ bd.sErC([cells[c]],1);} }
+							for(var c=0;c<cells.length;c++){ if(bd.isValidNum(cells[c])){ bd.sErC([cells[c]],1);} }
 							return false;
 						}
 					}
@@ -351,7 +346,7 @@ Puzzles.loopsp.prototype = {
 			return this.checkAllLoops(function(cells){
 				var number = -1;
 				var include = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
-				for(var i=0;i<cells.length;i++){ if(bd.QnC(cells[i])>=1){ number = bd.QnC(cells[i]); break;} }
+				for(var i=0;i<cells.length;i++){ if(bd.isValidNum(cells[i])){ number = bd.QnC(cells[i]); break;} }
 				if(number==-1){ return true;}
 				for(var c=0;c<bd.cellmax;c++){
 					if(bd.QnC(c)==number && !include(cells,c)){
@@ -364,7 +359,7 @@ Puzzles.loopsp.prototype = {
 		};
 		ans.checkNumberInLoop = function(){
 			return this.checkAllLoops(function(cells){
-				for(var i=0;i<cells.length;i++){ if(bd.QnC(cells[i])!=-1){ return true;} }
+				for(var i=0;i<cells.length;i++){ if(bd.isNum(cells[i])){ return true;} }
 				return false;
 			});
 		};
@@ -387,8 +382,8 @@ Puzzles.loopsp.prototype = {
 			clist.include = function(val){ for(var i=0,len=this.length;i<len;i++){ if(this[i]==val) return true;} return false;};
 			for(var i=0,len=idlist.length;i<len;i++){
 				var id=idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(cc1!=-1 && !clist.include(cc1)){ clist.push(cc1);}
-				if(cc2!=-1 && !clist.include(cc2)){ clist.push(cc2);}
+				if(cc1!==null && !clist.include(cc1)){ clist.push(cc1);}
+				if(cc2!==null && !clist.include(cc2)){ clist.push(cc2);}
 			}
 			return clist;
 		};

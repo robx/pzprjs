@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カントリーロード版 country.js v3.3.0
+// パズル固有スクリプト部 カントリーロード版 country.js v3.3.1
 //
 Puzzles.country = function(){ };
 Puzzles.country.prototype = {
@@ -183,11 +183,11 @@ Puzzles.country.prototype = {
 			for(var r=1;r<=rinfo.max;r++){
 				var cnt=0;
 				for(var i=0;i<rinfo.room[r].idlist.length;i++){
-					var c=rinfo.room[r].idlist[i];
-					var ub=bd.ub(c); if(bd.up(c)!=-1 && bd.isBorder(ub) && bd.isLine(ub)){ cnt++;}
-					var db=bd.db(c); if(bd.dn(c)!=-1 && bd.isBorder(db) && bd.isLine(db)){ cnt++;}
-					var lb=bd.lb(c); if(bd.lt(c)!=-1 && bd.isBorder(lb) && bd.isLine(lb)){ cnt++;}
-					var rb=bd.rb(c); if(bd.rt(c)!=-1 && bd.isBorder(rb) && bd.isLine(rb)){ cnt++;}
+					var c=rinfo.room[r].idlist[i], id;
+					id=bd.ub(c); if(!!bd.border[id] && bd.border[id].ques===1 && bd.border[id].line===1){ cnt++;}
+					id=bd.db(c); if(!!bd.border[id] && bd.border[id].ques===1 && bd.border[id].line===1){ cnt++;}
+					id=bd.lb(c); if(!!bd.border[id] && bd.border[id].ques===1 && bd.border[id].line===1){ cnt++;}
+					id=bd.rb(c); if(!!bd.border[id] && bd.border[id].ques===1 && bd.border[id].line===1){ cnt++;}
 				}
 				if(cnt>2){
 					if(this.inAutoCheck){ return false;}

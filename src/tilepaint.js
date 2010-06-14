@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.3.0
+// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.3.1
 //
 Puzzles.tilepaint = function(){ };
 Puzzles.tilepaint.prototype = {
@@ -44,9 +44,27 @@ Puzzles.tilepaint.prototype = {
 		}
 		base.setTitle("タイルペイント","TilePaint");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
+		base.proto = 1;
 	},
 	menufix : function(){
 		menu.addUseToFlags();
+	},
+
+	protoChange : function(){
+		this.protoval = {
+			cell   : {qnum:Cell.prototype.defqnum,   qdir:Cell.prototype.defqdir},
+			excell : {qnum:EXCell.prototype.defqnum, qdir:EXCell.prototype.defqdir}
+		};
+		Cell.prototype.defqnum = 0;
+		Cell.prototype.defqdir = 0;
+		EXCell.prototype.defqnum = 0;
+		EXCell.prototype.defqdir = 0;
+	},
+	protoOriginal : function(){
+		Cell.prototype.defqnum = this.protoval.cell.qnum;
+		Cell.prototype.defqdir = this.protoval.cell.qdir;
+		EXCell.prototype.defqnum = this.protoval.excell.qnum;
+		EXCell.prototype.defqdir = this.protoval.excell.qdir;
 	},
 
 	//---------------------------------------------------------
@@ -73,31 +91,25 @@ Puzzles.tilepaint.prototype = {
 			}
 			else if(k.playmode) this.inputtile();
 		};
-		mv.set51cell = function(cc,val){
-			if(val==true){
-				bd.sQuC(cc,51);
-				bd.sQnC(cc, 0);
-				bd.sDiC(cc, 0);
-				bd.setWhite(cc);
-				bd.sQsC(cc, 0);
-				if(bd.ub(cc)!==-1){ bd.sQuB(bd.ub(cc), ((bd.up(cc)!=-1 && bd.QuC(bd.up(cc))!=51)?1:0));}
-				if(bd.db(cc)!==-1){ bd.sQuB(bd.db(cc), ((bd.dn(cc)!=-1 && bd.QuC(bd.dn(cc))!=51)?1:0));}
-				if(bd.lb(cc)!==-1){ bd.sQuB(bd.lb(cc), ((bd.lt(cc)!=-1 && bd.QuC(bd.lt(cc))!=51)?1:0));}
-				if(bd.rb(cc)!==-1){ bd.sQuB(bd.rb(cc), ((bd.rt(cc)!=-1 && bd.QuC(bd.rt(cc))!=51)?1:0));}
-			}
-			else{
-				bd.sQuC(cc, 0);
-				bd.sQnC(cc, 0);
-				bd.sDiC(cc, 0);
-				bd.setWhite(cc);
-				bd.sQsC(cc, 0);
+		mv.set51cell = function(c,val){
+			bd.sQuC(c,(val?51:0));
+			bd.sQnC(c, 0);
+			bd.sDiC(c, 0);
+			bd.setWhite(c);
+			bd.sQsC(c, 0);
+			if(val===true){
+				var id, cc;
+				id=bd.ub(c),cc=bd.up(c); if(id!==null){ bd.sQuB(id, ((cc!==null && bd.QuC(cc)!==51)?1:0));}
+				id=bd.db(c),cc=bd.dn(c); if(id!==null){ bd.sQuB(id, ((cc!==null && bd.QuC(cc)!==51)?1:0));}
+				id=bd.lb(c),cc=bd.lt(c); if(id!==null){ bd.sQuB(id, ((cc!==null && bd.QuC(cc)!==51)?1:0));}
+				id=bd.rb(c),cc=bd.rt(c); if(id!==null){ bd.sQuB(id, ((cc!==null && bd.QuC(cc)!==51)?1:0));}
 			}
 		};
 
 		mv.inputBGcolor1 = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell || bd.QuC(cc)==51){ return;}
-			if(this.inputData==-1){ this.inputData=(bd.QsC(cc)==0)?3:0;}
+			if(cc===null || cc==this.mouseCell || bd.QuC(cc)==51){ return;}
+			if(this.inputData===null){ this.inputData=(bd.QsC(cc)==0)?3:0;}
 			bd.sQsC(cc, this.inputData);
 			this.mouseCell = cc; 
 			pc.paintCell(cc);
@@ -107,7 +119,7 @@ Puzzles.tilepaint.prototype = {
 		kc.keyinput = function(ca){
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
-			this.inputnumber51(ca,{2:(k.qcols-(tc.cursorx>>1)-1), 4:(k.qrows-(tc.cursory>>1)-1)});
+			this.inputnumber51(ca,{2:(k.qcols-(tc.cursor.x>>1)-1), 4:(k.qrows-(tc.cursor.y>>1)-1)});
 		};
 
 		if(k.EDITOR){
@@ -131,7 +143,7 @@ Puzzles.tilepaint.prototype = {
 			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
-				kc.inputnumber51(ca,{2:(k.qcols-(tc.cursorx>>1)-1), 4:(k.qrows-(tc.cursory>>1)-1)});
+				kc.inputnumber51(ca,{2:(k.qcols-(tc.cursor.x>>1)-1), 4:(k.qrows-(tc.cursor.y>>1)-1)});
 			};
 		}
 
@@ -198,50 +210,56 @@ Puzzles.tilepaint.prototype = {
 		enc.decodeTilePaint = function(){
 			// 盤面内数字のデコード
 			var cell=0, a=0, bstr = this.outbstr;
+			base.disableInfo();
 			for(var i=0;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
+				var ca = bstr.charAt(i), obj=bd.cell[cell];
 
-				if(ca>='g' && ca<='z'){ cell+=(parseInt(ca,36)-15);}
+				if(ca>='g' && ca<='z'){ cell+=(parseInt(ca,36)-16);}
 				else{
 					mv.set51cell(cell,true);
-					if     (ca=='-'){
-						bd.sDiC(cell,(bstr.charAt(i+1)!="."?parseInt(bstr.charAt(i+1),16):-1));
-						bd.sQnC(cell,parseInt(bstr.substr(i+2,2),16));
-						cell++; i+=3;
+					if     (ca==='-'){
+						obj.qdir = (bstr.charAt(i+1)!=="." ? parseInt(bstr.charAt(i+1),16) : -1);
+						obj.qnum = parseInt(bstr.substr(i+2,2),16);
+						i+=3;
 					}
-					else if(ca=='+'){
-						bd.sDiC(cell,parseInt(bstr.substr(i+1,2),16));
-						bd.sQnC(cell,(bstr.charAt(i+3)!="."?parseInt(bstr.charAt(i+3),16):-1));
-						cell++; i+=3;
+					else if(ca==='+'){
+						obj.qdir = parseInt(bstr.substr(i+1,2),16);
+						obj.qnum = (bstr.charAt(i+3)!=="." ? parseInt(bstr.charAt(i+3),16) : -1);
+						i+=3;
 					}
-					else if(ca=='='){
-						bd.sDiC(cell,parseInt(bstr.substr(i+1,2),16));
-						bd.sQnC(cell,parseInt(bstr.substr(i+3,2),16));
-						cell++; i+=4;
+					else if(ca==='='){
+						obj.qdir = parseInt(bstr.substr(i+1,2),16);
+						obj.qnum = parseInt(bstr.substr(i+3,2),16);
+						i+=4;
 					}
 					else{
-						bd.sDiC(cell,(bstr.charAt(i)!="."?parseInt(bstr.charAt(i),16):-1));
-						bd.sQnC(cell,(bstr.charAt(i+1)!="."?parseInt(bstr.charAt(i+1),16):-1));
-						cell++; i+=1;
+						obj.qdir = (bstr.charAt(i)  !=="." ? parseInt(bstr.charAt(i),16) : -1);
+						obj.qnum = (bstr.charAt(i+1)!=="." ? parseInt(bstr.charAt(i+1),16) : -1);
+						i+=1;
 					}
 				}
+
+				cell++;
 				if(cell>=bd.cellmax){ a=i+1; break;}
 			}
+			base.enableInfo();
 
 			// 盤面外数字のデコード
 			cell=0;
 			for(var i=a;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
-				if     (ca=='.'){ bd.sDiE(cell,-1); cell++;}
-				else if(ca=='-'){ bd.sDiE(cell,parseInt(bstr.substr(i+1,1),16)); cell++; i+=2;}
-				else            { bd.sDiE(cell,parseInt(ca,16)); cell++;}
+				if     (ca==='.'){ bd.excell[cell].qdir = -1;}
+				else if(ca==='-'){ bd.excell[cell].qdir = parseInt(bstr.substr(i+1,1),16); i+=2;}
+				else             { bd.excell[cell].qdir = parseInt(ca,16);}
+				cell++;
 				if(cell>=k.qcols){ a=i+1; break;}
 			}
 			for(var i=a;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
-				if     (ca=='.'){ bd.sQnE(cell,-1); cell++;}
-				else if(ca=='-'){ bd.sQnE(cell,parseInt(bstr.substr(i+1,2),16)); cell++; i+=2;}
-				else            { bd.sQnE(cell,parseInt(ca,16)); cell++;}
+				if     (ca==='.'){ bd.excell[cell].qnum = -1;}
+				else if(ca==='-'){ bd.excell[cell].qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+				else             { bd.excell[cell].qnum = parseInt(ca,16);}
+				cell++;
 				if(cell>=k.qcols+k.qrows){ a=i+1; break;}
 			}
 
@@ -253,34 +271,35 @@ Puzzles.tilepaint.prototype = {
 			// 盤面内側の数字部分のエンコード
 			var count=0;
 			for(var c=0;c<bd.cellmax;c++){
-				var pstr = "";
+				var pstr = "", obj=bd.cell[c];
 
-				if(bd.QuC(c)==51){
-					pstr+=bd.DiC(c).toString(16);
-					pstr+=bd.QnC(c).toString(16);
+				if(obj.ques===51){
+					pstr+=obj.qdir.toString(16);
+					pstr+=obj.qnum.toString(16);
 
-					if     (bd.QnC(c) >=16 && bd.DiC(c)>=16){ pstr = ("="+pstr);}
-					else if(bd.QnC(c) >=16){ pstr = ("-"+pstr);}
-					else if(bd.DiC(c)>=16){ pstr = ("+"+pstr);}
+					if     (obj.qnum>=16 && obj.qdir>=16){ pstr = ("="+pstr);}
+					else if(obj.qnum>=16){ pstr = ("-"+pstr);}
+					else if(obj.qdir>=16){ pstr = ("+"+pstr);}
 				}
-				else{ pstr=" "; count++;}
+				else{ count++;}
 
-				if     (count== 0){ cm += pstr;}
-				else if(pstr!=" "){ cm += ((count+15).toString(36)+pstr); count=0;}
-				else if(count==20){ cm += "z"; count=0;}
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===20){ cm += ((count+15).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm += (count+15).toString(36);}
 
 			// 盤面外側の数字部分のエンコード
 			for(var c=0;c<k.qcols;c++){
-				if     (bd.DiE(c)<  0){ cm += ".";}
-				else if(bd.DiE(c)< 16){ cm += bd.DiE(c).toString(16);}
-				else if(bd.DiE(c)<256){ cm += ("-"+bd.DiE(c).toString(16));}
+				var num = bd.excell[c].qdir;
+				if     (num<  0){ cm += ".";}
+				else if(num< 16){ cm += num.toString(16);}
+				else if(num<256){ cm += ("-"+num.toString(16));}
 			}
 			for(var c=k.qcols;c<k.qcols+k.qrows;c++){
-				if     (bd.QnE(c)<  0){ cm += ".";}
-				else if(bd.QnE(c)< 16){ cm += bd.QnE(c).toString(16);}
-				else if(bd.QnE(c)<256){ cm += ("-"+bd.QnE(c).toString(16));}
+				var num = bd.excell[c].qnum;
+				if     (num<  0){ cm += ".";}
+				else if(num< 16){ cm += num.toString(16);}
+				else if(num<256){ cm += ("-"+num.toString(16));}
 			}
 
 			this.outbstr += cm;
@@ -290,20 +309,20 @@ Puzzles.tilepaint.prototype = {
 		fio.decodeData = function(){
 			this.decodeAreaRoom();
 			this.decodeCellQnum51();
-			this.decodeCell( function(c,ca){
-				if     (ca == "#"){ bd.setBlack(c);}
-				else if(ca == "+"){ bd.sQsC(c, 1);}
-				else if(ca == "-"){ bd.sQsC(c, 3);}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="#"){ obj.qans = 1;}
+				else if(ca==="+"){ obj.qsub = 1;}
+				else if(ca==="-"){ obj.qsub = 3;}
 			});
 		};
 		fio.encodeData = function(){
 			this.encodeAreaRoom();
 			this.encodeCellQnum51();
-			this.encodeCell( function(c){
-				if     (bd.isBlack(c)){ return "# ";}
-				else if(bd.QsC(c)==1) { return "+ ";}
-				else if(bd.QsC(c)==3) { return "- ";}
-				else                  { return ". ";}
+			this.encodeCell( function(obj){
+				if     (obj.qans===1){ return "# ";}
+				else if(obj.qsub===1){ return "+ ";}
+				else if(obj.qsub===3){ return "- ";}
+				else                 { return ". ";}
 			});
 		};
 	},
@@ -314,7 +333,7 @@ Puzzles.tilepaint.prototype = {
 		ans.checkAns = function(){
 
 			if( !this.checkSameObjectInRoom(area.getRoomInfo(), function(c){ return (bd.isBlack(c)?1:2);}) ){
-				this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both balck and white cells.'); return false;
+				this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both black and white cells.'); return false;
 			}
 
 			if( !this.checkRowsColsPartly(this.isBCellCount, {}, function(cc){ return (bd.QuC(cc)==51);}, false) ){

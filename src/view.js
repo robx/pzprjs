@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヴィウ版 view.js v3.3.0
+// パズル固有スクリプト部 ヴィウ版 view.js v3.3.1
 //
 Puzzles.view = function(){ };
 Puzzles.view.prototype = {
@@ -55,23 +55,18 @@ Puzzles.view.prototype = {
 		// キーボード入力系
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
-			if(kc.key_view(ca)){ return;}
-			this.key_inputqnum(ca);
+			this.key_view(ca);
 		};
 		kc.key_view = function(ca){
-			if(k.editmode || bd.QnC(tc.getTCC())!=-1){ return false;}
-
-			var cc = tc.getTCC();
-			var flag = false;
-
-			if     ((ca=='q'||ca=='a'||ca=='z')){ bd.sQaC(cc,-1); bd.sQsC(cc,1); flag = true;}
-			else if((ca=='w'||ca=='s'||ca=='x')){ bd.sQaC(cc,-1); bd.sQsC(cc,2); flag = true;}
-			else if((ca=='e'||ca=='d'||ca=='c')){ bd.sQaC(cc,-1); bd.sQsC(cc,0); flag = true;}
-			else if(ca=='1' && bd.QaC(cc)==1)   { bd.sQaC(cc,-1); bd.sQsC(cc,1); flag = true;}
-			else if(ca=='2' && bd.QaC(cc)==2)   { bd.sQaC(cc,-1); bd.sQsC(cc,2); flag = true;}
-
-			if(flag){ pc.paintCell(cc); return true;}
-			return false;
+			if(k.playmode){
+				var cc=tc.getTCC();
+				if     (ca==='q'||ca==='a'||ca==='z')          { ca='s1';}
+				else if(ca==='w'||ca==='s'||ca==='x')          { ca='s2';}
+				else if(ca==='e'||ca==='d'||ca==='c'||ca==='-'){ ca=' '; }
+				else if(ca==='1' && bd.AnC(cc)===1)            { ca='s1';}
+				else if(ca==='2' && bd.AnC(cc)===2)            { ca='s2';}
+			}
+			this.key_inputqnum(ca);
 		};
 
 		kp.kpgenerate = function(mode){
@@ -141,11 +136,11 @@ Puzzles.view.prototype = {
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			this.decodeCellQnum();
-			this.decodeCellQanssub();
+			this.decodeCellAnumsub();
 		};
 		fio.encodeData = function(){
 			this.encodeCellQnum();
-			this.encodeCellQanssub();
+			this.encodeCellAnumsub();
 		};
 	},
 
@@ -166,7 +161,7 @@ Puzzles.view.prototype = {
 				this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QsC(c)==1);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.QsC(c)===1);}) ){
 				this.setAlert('数字の入っていないマスがあります。','There is a cell that is not filled in number.'); return false;
 			}
 
@@ -178,27 +173,28 @@ Puzzles.view.prototype = {
 			for(var c=0;c<bd.cellmax;c++){
 				if(!bd.isValidNum(c)){ continue;}
 
-				var list = [];
-				var cnt=0;
-				var tx, ty;
-
-				tx = bd.cell[c].bx-2; ty = bd.cell[c].by;
-				while(tx>bd.minbx){ var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!==1){ cnt++; list.push(cc); tx-=2;} else{ break;} }
-				tx = bd.cell[c].bx+2; ty = bd.cell[c].by;
-				while(tx<bd.maxbx){ var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!==1){ cnt++; list.push(cc); tx+=2;} else{ break;} }
-				tx = bd.cell[c].bx; ty = bd.cell[c].by-2;
-				while(ty>bd.minby){ var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!==1){ cnt++; list.push(cc); ty-=2;} else{ break;} }
-				tx = bd.cell[c].bx; ty = bd.cell[c].by+2;
-				while(ty<bd.maxby){ var cc=bd.cnum(tx,ty); if(bd.noNum(cc)&&bd.QsC(cc)!==1){ cnt++; list.push(cc); ty+=2;} else{ break;} }
-
-				if(bd.getNum(c)!=cnt){
+				var clist = this.searchNumber(bd.cell[c].bx,bd.cell[c].by);
+				if(bd.getNum(c)!==clist.length){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
-					bd.sErC(list,2);
+					bd.sErC(clist,2);
 					result = false;
 				}
 			}
 			return result;
+		};
+		ans.searchNumber = function(sx,sy){
+			var clist = [];
+			for(var dir=1;dir<=4;dir++){
+				var cc, bx=sx, by=sy;
+				while(1){
+					switch(dir){ case 1: by-=2; break; case 2: by+=2; break; case 3: bx-=2; break; case 4: bx+=2; break;}
+					cc = bd.cnum(bx,by);
+					if(cc!==null && bd.noNum(cc) && bd.cell[cc].qsub!==1){ clist.push(cc);}
+					else{ break;}
+				}
+			}
+			return clist;
 		};
 	}
 };
