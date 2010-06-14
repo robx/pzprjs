@@ -73,6 +73,7 @@
 		snakes     : 'へびいちご',
 		sudoku     : '数独',
 		sukoro     : '数コロ',
+		sukororoom : '数コロ部屋',
 		tasquare   : 'たすくえあ',
 		tatamibari : 'タタミバリ',
 		tateyoko   : 'タテボーヨコボー',
