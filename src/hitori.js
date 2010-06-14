@@ -160,10 +160,10 @@ Puzzles.hitori.prototype = {
 		};
 
 		enc.decodeKanpen = function(){
-			fio.decodeCellQnum_kanpen();
+			fio.decodeCellQnum_kanpen_hitori();
 		};
 		enc.encodeKanpen = function(){
-			fio.encodeCellQnum_kanpen();
+			fio.encodeCellQnum_kanpen_hitori();
 		};
 
 		//---------------------------------------------------------
@@ -177,12 +177,23 @@ Puzzles.hitori.prototype = {
 		};
 
 		fio.kanpenOpen = function(){
-			this.decodeCellQnum_kanpen();
+			this.decodeCellQnum_kanpen_hitori();
 			this.decodeCellAns();
 		};
 		fio.kanpenSave = function(){
-			this.encodeCellQnum_kanpen();
+			this.encodeCellQnum_kanpen_hitori();
 			this.encodeCellAns();
+		};
+
+		fio.decodeCellQnum_kanpen_hitori = function(){
+			this.decodeCell( function(obj,ca){
+				if(ca!=="0"){ obj.qnum = parseInt(ca);}
+			});
+		};
+		fio.encodeCellQnum_kanpen_hitori = function(){
+			this.encodeCell( function(obj){
+				return ((obj.qnum>0)?(obj.qnum.toString() + " "):"0 ");
+			});
 		};
 	},
 
