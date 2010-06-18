@@ -180,7 +180,7 @@ Puzzles.hitori.prototype = {
 
 		fio.decodeCellQnum_kanpen_hitori = function(){
 			this.decodeCell( function(obj,ca){
-				if(ca!=="0"){ obj.qnum = parseInt(ca);}
+				if(ca!=="0" && ca!=="."){ obj.qnum = parseInt(ca);}
 			});
 		};
 		fio.encodeCellQnum_kanpen_hitori = function(){

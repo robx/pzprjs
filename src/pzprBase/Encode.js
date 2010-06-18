@@ -252,7 +252,8 @@ Encode.prototype = {
 	},
 	getURLBase : function(type){
 		var domain = _doc.domain;
-		if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
+		if(!domain){ domain = "pzv.jp";}
+		else if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
 
 		var urls = {};
 		urls[this.PZPRV3]  = "http://%DOMAIN%/p.html?%PID%/";

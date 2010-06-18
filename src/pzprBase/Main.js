@@ -140,7 +140,7 @@ PBase.prototype = {
 		this.userlang = (navigator.browserLanguage ||
 						 navigator.language        ||
 						 navigator.userLanguage);
-		if(this.userlang.substr(0,2)!=='ja'){ pp.setVal('language', 1);}
+		if(this.userlang.substr(0,2)!=='ja'){ pp.setVal('language','en');}
 	},
 
 	//---------------------------------------------------------------------------
@@ -228,12 +228,12 @@ PBase.prototype = {
 	// base.setFloatbgcolor()  フロートメニューの背景色を設定する
 	//---------------------------------------------------------------------------
 	gettitle : function(){
-		if(k.EDITOR){ return ""+this.getPuzzleName()+(menu.isLangJP()?" エディタ - ぱずぷれv3":" editor - PUZ-PRE v3");}
-		else		{ return ""+this.getPuzzleName()+(menu.isLangJP()?" player - ぱずぷれv3"  :" player - PUZ-PRE v3");}
+		if(k.EDITOR){ return ""+this.getPuzzleName()+menu.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
+		else		{ return ""+this.getPuzzleName()+menu.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
 	},
-	getPuzzleName : function(){ return (menu.isLangJP()||!this.puzzlename.en)?this.puzzlename.ja:this.puzzlename.en;},
-	setTitle      : function(strJP, strEN){ this.puzzlename.ja = strJP; this.puzzlename.en = strEN;},
-	setExpression : function(strJP, strEN){ this.expression.ja = strJP; this.expression.en = strEN;},
+	getPuzzleName : function(){ return menu.selectStr(this.puzzlename.ja,this.puzzlename.en);},
+	setTitle      : function(strJP, strEN){ this.puzzlename.ja = strJP; this.puzzlename.en = (!!strEN ? strEN : strJP);},
+	setExpression : function(strJP, strEN){ this.expression.ja = strJP; this.expression.en = (!!strEN ? strEN : strJP);},
 	setFloatbgcolor : function(color){ this.floatbgcolor = color;},
 
 	//---------------------------------------------------------------------------
@@ -366,6 +366,8 @@ PBase.prototype = {
 		fio = new FileIO();
 
 		if(!!contents.url){ enc.parseURI_pzpr(contents.url);}
+		if(!!enc.uri.cols){ k.qcols = enc.uri.cols;}
+		if(!!enc.uri.rows){ k.qrows = enc.uri.rows;}
 
 		// onload後の初期化ルーチンへジャンプする
 		this.initObjects();

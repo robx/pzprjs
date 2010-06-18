@@ -177,7 +177,7 @@ Puzzles.tentaisho.prototype = {
 
 		// 一部qsubで消したくないものがあるため上書き
 		menu.ex.ASconfirm = function(){
-			if(confirm(menu.isLangJP()?"補助記号を消去しますか？":"Do you want to erase the auxiliary marks?")){
+			if(menu.confirmStr("補助記号を消去しますか？","Do you want to erase the auxiliary marks?")){
 				um.newOperation(true);
 				for(i=0;i<bd.cellmax;i++){
 					if(bd.QsC(i)===1){

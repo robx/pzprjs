@@ -220,32 +220,37 @@ MenuExec.prototype = {
 		var temp_margin = k.bdmargin;
 		var temp_cursor = pp.getVal('cursor');
 
-		// 設定値・変数をcanvas用のものに変更
-		pc.fillTextPrecisely = true;
-		k.bdmargin = k.bdmargin_image;
-		pp.setVal('cursor', false, false);
-		g = ee('divques_sub').el.getContext("2d");
+		try{
+			// 設定値・変数をcanvas用のものに変更
+			pc.fillTextPrecisely = true;
+			k.bdmargin = k.bdmargin_image;
+			pp.setValOnly('cursor', false);
+			g = ee('divques_sub').el.getContext("2d");
 
-		// canvas要素の設定を適用して、再描画
-		base.resize_canvas();
+			// canvas要素の設定を適用して、再描画
+			base.resize_canvas();
 
-		// canvasの描画内容をDataURLとして取得する
-		var url = g.canvas.toDataURL();
+			// canvasの描画内容をDataURLとして取得する
+			var url = g.canvas.toDataURL();
 
-		if(isDL){
-			_doc.fileform2.filename.value  = k.puzzleid+'.gif';
-			_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
-			_doc.fileform2.operation.value = 'imagesave';
-			_doc.fileform2.submit();
+			if(isDL){
+				_doc.fileform2.filename.value  = k.puzzleid+'.gif';
+				_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
+				_doc.fileform2.operation.value = 'imagesave';
+				_doc.fileform2.submit();
+			}
+			else{
+				window.open(url, '', '');
+			}
 		}
-		else{
-			window.open(url, '', '');
+		catch(e){
+			menu.alertStr('画像の出力に失敗しました..','Fail to Output the Image..');
 		}
 
 		// 設定値・変数を元に戻す
 		pc.fillTextPrecisely = temp_flag;
 		k.bdmargin = temp_margin;
-		pp.setVal('cursor', temp_cursor, false);
+		pp.setValOnly('cursor', temp_cursor);
 		base.initCanvas();
 
 		// その他の設定を元に戻して、再描画
@@ -299,8 +304,8 @@ MenuExec.prototype = {
 		base.resize_canvas();	// canvasの左上座標等を更新して再描画
 	},
 	dispmanstr : function(){
-		if(!this.displaymanage){ ee('ms_manarea').el.innerHTML = menu.isLangJP()?"管理領域を表示":"Show management area";}
-		else                   { ee('ms_manarea').el.innerHTML = menu.isLangJP()?"管理領域を隠す":"Hide management area";}
+		if(!this.displaymanage){ ee('ms_manarea').el.innerHTML = menu.selectStr("管理領域を表示","Show management area");}
+		else                   { ee('ms_manarea').el.innerHTML = menu.selectStr("管理領域を隠す","Hide management area");}
 	},
 
 	//------------------------------------------------------------------------------
@@ -689,7 +694,7 @@ MenuExec.prototype = {
 	// menu.ex.ASconfirm()  「補助消去」ボタンを押したときの処理
 	//------------------------------------------------------------------------------
 	ACconfirm : function(){
-		if(confirm(menu.isLangJP()?"回答を消去しますか？":"Do you want to erase the Answer?")){
+		if(menu.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){
 			um.newOperation(true);
 
 			bd.ansclear();
@@ -698,7 +703,7 @@ MenuExec.prototype = {
 		}
 	},
 	ASconfirm : function(){
-		if(confirm(menu.isLangJP()?"補助記号を消去しますか？":"Do you want to erase the auxiliary marks?")){
+		if(menu.confirmStr("補助記号を消去しますか？","Do you want to erase the auxiliary marks?")){
 			um.newOperation(true);
 
 			bd.subclear();
