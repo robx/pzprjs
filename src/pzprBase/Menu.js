@@ -259,8 +259,8 @@ Menu.prototype = {
 		ac('autocheck','setting', k.playmode, '正答自動判定', 'Auto Answer Check');
 		ac('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
 		sl('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
-		if(kp.ctl[1].enable || kp.ctl[3].enable){
-			ac('keypopup', 'setting', kp.defaultdisp, 'パネル入力', 'Panel inputting');
+		if(kp.haspanel[1] || kp.haspanel[3]){
+			ac('keypopup', 'setting', false, 'パネル入力', 'Panel inputting');
 			sl('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
 		}
 		au('language', 'setting', 'ja', ['ja','en'], '言語', 'Language');
@@ -1008,9 +1008,11 @@ Properties.prototype = {
 			kc.enableKey = false;
 		},
 		keypopup : function(){
-			var f = kp.ctl[pp.flags['mode'].val].enable;
+			var f = kp.haspanel[pp.flags['mode'].val];
 			ee('ck_keypopup').el.disabled    = (f?"":"true");
 			ee('cl_keypopup').el.style.color = (f?"black":"silver");
+
+			kp.display();
 		}
 	}
 };

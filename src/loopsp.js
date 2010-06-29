@@ -46,7 +46,6 @@ Puzzles.loopsp.prototype = {
 		base.setFloatbgcolor("rgb(0, 191, 0)");
 	},
 	menufix : function(){
-		if(k.EDITOR){ kp.defaultdisp = true;}
 		menu.addRedLineToFlags();
 	},
 
@@ -56,10 +55,7 @@ Puzzles.loopsp.prototype = {
 		// マウス入力系
 		mv.mousedown = function(){
 			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
-			if(k.editmode){
-				if(!kp.enabled()){ this.inputLoopsp();}
-				else{ kp.display();}
-			}
+			if(k.editmode){ this.inputLoopsp();}
 			else if(k.playmode){
 				if(this.btn.Left) this.inputLine();
 				else if(this.btn.Right) this.inputpeke();

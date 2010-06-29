@@ -39,31 +39,23 @@ Puzzles.cojun.prototype = {
 						   " Inputting number is available by keybord or mouse");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
-	menufix : function(){
-		if(k.EDITOR){ kp.defaultdisp = true;}
-	},
+	menufix : function(){ },
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.playmode) this.inputborder();
-			if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum();}
-				else{ kp.display();}
-			}
+			if(k.playmode){ this.inputborder();}
+			if(k.editmode){ this.inputqnum();}
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.editmode){
-					if(!kp.enabled()){ this.inputqnum();}
-					else{ kp.display();}
-				}
+				if(k.editmode){ this.inputqnum();}
 			}
 		};
 		mv.mousemove = function(){
-			if(k.editmode && this.btn.Left) this.inputborder();
+			if(k.editmode && this.btn.Left){ this.inputborder();}
 		};
 
 		// キーボード入力系

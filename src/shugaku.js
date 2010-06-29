@@ -50,10 +50,7 @@ Puzzles.shugaku.prototype = {
 				if(this.btn.Left) this.inputFuton();
 				else if(this.btn.Right) this.inputcell_shugaku();
 			}
-			else if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum();}
-				else{ kp.display();}
-			}
+			else if(k.editmode){ this.inputqnum();}
 		};
 		mv.mouseup = function(){
 			if(k.playmode){

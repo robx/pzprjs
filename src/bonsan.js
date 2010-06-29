@@ -53,10 +53,7 @@ Puzzles.bonsan.prototype = {
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.editmode){
-					if(!kp.enabled()){this.inputqnum();}
-					else{ kp.display();}
-				}
+				if(k.editmode){ this.inputqnum();}
 				else if(k.playmode){ this.inputlight();}
 			}
 		};

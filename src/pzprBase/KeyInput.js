@@ -344,17 +344,17 @@ KeyEvent.prototype = {
 // キー入力用Popupウィンドウ
 // KeyPopupクラス
 KeyPopup = function(){
-	this.ctl = { 1:{ el:null, enable:false, target:k.CELL},		// 問題入力時用popup
-				 3:{ el:null, enable:false, target:k.CELL} };	// 回答入力時用popup
+	this.haspanel = {1:false, 3:false};	// 有効かどうか
+	this.element = null;				// キーポップアップのエレメント
+
 	this.tdcolor = "black";
 	this.imgCR = [1,1];		// img表示用画像の横×縦のサイズ
 
 	this.tds  = [];			// resize用
 	this.imgs = [];			// resize用
 
-	this.defaultdisp = false;
-
-	this.tbodytmp=null, this.trtmp=null;
+	this.tbodytmp = null;
+	this.trtmp    = null;
 
 	this.ORIGINAL = 99;
 
@@ -367,12 +367,29 @@ KeyPopup = function(){
 };
 KeyPopup.prototype = {
 	//---------------------------------------------------------------------------
-	// kp.kpinput()  キーポップアップから入力された時の処理をオーバーライドで記述する
-	// kp.enabled()  キーポップアップ自体が有効かどうかを返す
+	// kp.kpinput()     キーポップアップから入力された時の処理をオーバーライドで記述する
+	// kp.display()     キーポップアップを表示する
+	// kp.inputnumber() kpinput関数を呼び出す
 	//---------------------------------------------------------------------------
 	// オーバーライド用
 	kpinput : function(ca){ },
-	enabled : function(){ return pp.getVal('keypopup');},
+
+	display : function(){
+		var mode = pp.getVal('mode');
+		if(this.element && this.haspanel[mode] && pp.getVal('keypopup')){
+
+			this.element.style.display = 'block';
+
+			ee('panelbase1').el.style.display = (mode==1?'block':'none');
+			ee('panelbase3').el.style.display = (mode==3?'block':'none');
+		}
+		else{
+			this.element.style.display = 'none';
+		}
+	},
+	inputnumber : function(e, ca){
+		this.kpinput(ca);
+	},
 
 	//---------------------------------------------------------------------------
 	// kp.generate()   キーポップアップを生成して初期化する
@@ -381,18 +398,28 @@ KeyPopup.prototype = {
 	// kp.gentable4()  キーポップアップの0～4を入力できるテーブルを作成する
 	//---------------------------------------------------------------------------
 	generate : function(type, enablemake, enableplay, func){
+		if(!this.element){
+			var rect = ee('divques').getRect();
+			this.element = ee('keypopup').el;
+			this.element.style.left   = (rect.left+48)+'px';
+			this.element.style.top    = (rect.top +48)+'px';
+			this.element.style.zIndex = 100;
+			ee('barkeypopup').el.ondblclick = function(){ pp.setVal('keypopup',false)};
+		}
+
 		if(enablemake && k.EDITOR){ this.gentable(1, type, func);}
 		if(enableplay)            { this.gentable(3, type, func);}
 	},
 
 	gentable : function(mode, type, func){
-		this.ctl[mode].enable = true;
-		this.ctl[mode].el     = ee('keypopup'+mode).el;
-		this.ctl[mode].el.onmouseout = ee.ebinder(this, this.hide);
+		this.haspanel[mode] = true;
+
+		var basediv = ee('panelbase'+mode).el;
+		basediv.innerHTML = '';
 
 		var table = _doc.createElement('table');
 		table.cellSpacing = '2pt';
-		this.ctl[mode].el.appendChild(table);
+		basediv.appendChild(table);
 
 		this.tbodytmp = _doc.createElement('tbody');
 		table.appendChild(this.tbodytmp);
@@ -473,49 +500,6 @@ KeyPopup.prototype = {
 		if(this.trtmp){
 			this.tbodytmp.appendChild(this.trtmp);
 			this.trtmp = null;
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// kp.display()     キーポップアップを表示する
-	// kp.inputnumber() kpinput関数を呼び出してキーポップアップを隠す
-	// kp.hide()        キーポップアップを隠す
-	//---------------------------------------------------------------------------
-	display : function(){
-		var mode = pp.getVal('mode');
-		if(this.ctl[mode].el && this.ctl[mode].enable && pp.getVal('keypopup') && mv.btn.Left){
-			this.ctl[mode].el.style.left   = k.cv_oft.x + mv.inputPoint.x - 3 + 'px';
-			this.ctl[mode].el.style.top    = k.cv_oft.y + mv.inputPoint.y - 3 + 'px';
-			this.ctl[mode].el.style.zIndex = 100;
-
-			if(this.ctl[mode].target==k.CELL){
-				var cc0 = tc.getTCC();
-				var cc = mv.cellid();
-				if(cc===null){ return;}
-				tc.setTCC(cc);
-				pc.paintCell(cc);
-				pc.paintCell(cc0);
-			}
-			else if(this.ctl[mode].target==k.CROSS){
-				var cc0 = tc.getTXC();
-				var cc = mv.crossid();
-				if(cc===null){ return;}
-				tc.setTXC(cc);
-				pc.paintCross(cc);
-				pc.paintCross(cc0);
-			}
-
-			this.ctl[mode].el.style.display = 'block';
-		}
-	},
-	inputnumber : function(e, ca){
-		this.kpinput(ca);
-		this.ctl[pp.getVal('mode')].el.style.display = 'none';
-	},
-	hide : function(e){
-		var mode = pp.getVal('mode');
-		if(!!this.ctl[mode].el && !menu.insideOf(this.ctl[mode].el, e)){
-			this.ctl[mode].el.style.display = 'none';
 		}
 	},
 

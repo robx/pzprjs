@@ -51,13 +51,7 @@ Puzzles.kakuru.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(){
-			if(k.editmode && !kp.enabled()){
-				if(this.notInputted() && kp.enabled()){ kp.display();}
-				else{ this.inputqnum_kakuru();}
-			}
-			else if(k.playmode){ this.inputqnum_kakuru();}
-		};
+		mv.mousedown = function(){ this.inputqnum_kakuru();};
 		mv.mouseup = function(){ };
 		mv.mousemove = function(){ };
 		mv.inputqnum_kakuru = function(){

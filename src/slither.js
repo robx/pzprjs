@@ -53,7 +53,7 @@ Puzzles.slither.prototype = {
 			kc.prev = null;
 			ans.errDisp=true;
 			bd.errclear();
-			if(kp.ctl[1].enable || kp.ctl[3].enable){ pp.funcs.keypopup();}
+			if(kp.haspanel[1] || kp.haspanel[3]){ pp.funcs.keypopup();}
 			tc.setAlign();
 			pc.paintAll();
 			// ここまで元と同じ
@@ -75,10 +75,7 @@ Puzzles.slither.prototype = {
 		// マウス入力系
 		mv.mousedown = function(){
 			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
-			if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum();}
-				else{ kp.display();}
-			}
+			if(k.editmode){ this.inputqnum();}
 			else if(k.playmode){
 				if(!pp.getVal('bgcolor') || !this.inputBGcolor0()){
 					if(this.btn.Left) this.inputLine();

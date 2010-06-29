@@ -39,9 +39,7 @@ Puzzles.renban.prototype = {
 							   " It is available to input number by keybord or mouse");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
-	menufix : function(){
-		if(k.EDITOR){ kp.defaultdisp = true;}
-	},
+	menufix : function(){ },
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
@@ -52,17 +50,11 @@ Puzzles.renban.prototype = {
 				if     (this.btn.Left)  this.inputborder();
 				else if(this.btn.Right) this.inputQsubLine();
 			}
-			if(k.playmode){
-				if(!kp.enabled()){ this.inputqnum();}
-				else{ kp.display();}
-			}
+			if(k.playmode){ this.inputqnum();}
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.editmode){
-					if(!kp.enabled()){ this.inputqnum();}
-					else{ kp.display();}
-				}
+				if(k.editmode){ this.inputqnum();}
 			}
 		};
 		mv.mousemove = function(){

@@ -56,11 +56,8 @@ Puzzles.country.prototype = {
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.editmode){
-					if(!kp.enabled()){ this.inputqnum();}
-					else{ kp.display();}
-				}
-				else if(k.playmode) this.inputMB();
+				if     (k.editmode){ this.inputqnum();}
+				else if(k.playmode){ this.inputMB();}
 			}
 		};
 		mv.mousemove = function(){

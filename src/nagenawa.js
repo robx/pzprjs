@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 なげなわ版 nagenawa.js v3.3.0
+// パズル固有スクリプト部 なげなわ版 nagenawa.js v3.3.1
 //
 Puzzles.nagenawa = function(){ };
 Puzzles.nagenawa.prototype = {
@@ -56,11 +56,8 @@ Puzzles.nagenawa.prototype = {
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.editmode){
-					if(!kp.enabled()){ this.inputqnum();}
-					else{ kp.display();}
-				}
-				else if(k.playmode) this.inputMB();
+				if     (k.editmode){ this.inputqnum();}
+				else if(k.playmode){ this.inputMB();}
 			}
 		};
 		mv.mousemove = function(){

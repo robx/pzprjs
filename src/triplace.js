@@ -70,10 +70,7 @@ Puzzles.triplace.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.editmode){
-				if(!kp.enabled()){ this.input51();}
-				else{ kp.display();}
-			}
+			if(k.editmode){ this.input51();}
 			else if(k.playmode){
 				if(!kc.isZ){
 					if(this.btn.Left) this.inputborderans();

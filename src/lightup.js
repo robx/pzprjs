@@ -63,11 +63,8 @@ Puzzles.lightup.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.playmode) this.inputcell();
-			else if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum();}
-				else{ kp.display();}
-			}
+			if     (k.playmode){ this.inputcell();}
+			else if(k.editmode){ this.inputqnum();}
 		};
 		mv.mouseup = function(){ };
 		mv.mousemove = function(){

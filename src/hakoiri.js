@@ -45,9 +45,7 @@ Puzzles.hakoiri.prototype = {
 		base.setTitle("はこいり○△□","Triplets");
 		base.setFloatbgcolor("rgb(127, 160, 96)");
 	},
-	menufix : function(){
-		kp.defaultdisp = true;
-	},
+	menufix : function(){ },
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
@@ -56,17 +54,14 @@ Puzzles.hakoiri.prototype = {
 		mv.mousedown = function(){
 			if(k.editmode){ this.inputborder();}
 			else if(k.playmode){
-				if(this.btn.Left){
-					if(!kp.enabled()){ this.inputqnum();}
-					else{ kp.display();}
-				}
+				if(this.btn.Left){ this.inputqnum();}
 			}
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
 				if(k.editmode){
-					if(!kp.enabled()){ this.mouseCell=null; this.inputqnum();}
-					else{ kp.display();}
+					this.mouseCell=null;
+					this.inputqnum();
 				}
 				else if(k.playmode){
 					if(this.btn.Right){ this.inputqnum();}

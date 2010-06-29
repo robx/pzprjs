@@ -64,11 +64,8 @@ Puzzles.wagiri.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.playmode){ this.inputslash();}
-			else if(k.editmode){
-				if(!kp.enabled()){ this.inputquestion();}
-				else{ kp.display();}
-			}
+			if     (k.playmode){ this.inputslash();}
+			else if(k.editmode){ this.inputquestion();}
 		};
 		mv.mouseup = function(){ };
 		mv.mousemove = function(){ };

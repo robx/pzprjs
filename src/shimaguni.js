@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 島国版 shimaguni.js v3.3.0
+// パズル固有スクリプト部 島国版 shimaguni.js v3.3.1
 //
 Puzzles.shimaguni = function(){ };
 Puzzles.shimaguni.prototype = {
@@ -53,10 +53,7 @@ Puzzles.shimaguni.prototype = {
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.editmode){
-					if(!kp.enabled()){ this.inputqnum();}
-					else{ kp.display();}
-				}
+				if(k.editmode){ this.inputqnum();}
 			}
 		};
 		mv.mousemove = function(){

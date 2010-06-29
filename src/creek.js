@@ -55,10 +55,7 @@ Puzzles.creek.prototype = {
 		// マウス入力系
 		mv.mousedown = function(){
 			if(k.playmode) this.inputcell();
-			else if(k.editmode){
-				if(!kp.enabled()){ this.inputcross();}
-				else{ kp.display();}
-			}
+			else if(k.editmode){ this.inputcross();}
 		};
 		mv.mouseup = function(){ };
 		mv.mousemove = function(){
@@ -74,7 +71,6 @@ Puzzles.creek.prototype = {
 
 		if(k.EDITOR){
 			kp.generate(4, true, false, '');
-			kp.ctl[1].target = k.CROSS;
 			kp.kpinput = function(ca){
 				kc.key_inputcross(ca);
 			};

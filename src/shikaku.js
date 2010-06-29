@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.3.0
+// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.3.1
 //
 Puzzles.shikaku = function(){ };
 Puzzles.shikaku.prototype = {
@@ -48,10 +48,7 @@ Puzzles.shikaku.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum();}
-				else{ kp.display();}
-			}
+			if(k.editmode){ this.inputqnum();}
 			else if(k.playmode){
 				if(this.btn.Left) this.inputborderans();
 				else if(this.btn.Right) this.inputQsubLine();

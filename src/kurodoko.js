@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 黒マスはどこだ版 kurodoko.js v3.3.0
+// パズル固有スクリプト部 黒マスはどこだ版 kurodoko.js v3.3.1
 //
 Puzzles.kurodoko = function(){ };
 Puzzles.kurodoko.prototype = {
@@ -52,11 +52,8 @@ Puzzles.kurodoko.prototype = {
 		// マウス入力系
 		mv.mousedown = function(){
 			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
-			else if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum();}
-				else{ kp.display();}
-			}
-			else if(k.playmode) this.inputcell();
+			else if(k.editmode){ this.inputqnum();}
+			else if(k.playmode){ this.inputcell();}
 		};
 		mv.mouseup = function(){ };
 		mv.mousemove = function(){

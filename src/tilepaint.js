@@ -79,10 +79,7 @@ Puzzles.tilepaint.prototype = {
 			else if(k.playmode) this.inputtile();
 		};
 		mv.mouseup = function(){
-			if(k.editmode && this.notInputted()){
-				if(!kp.enabled()){ this.input51();}
-				else{ kp.display();}
-			}
+			if(k.editmode && this.notInputted()){ this.input51();}
 		};
 		mv.mousemove = function(){
 			if(k.editmode){

@@ -91,7 +91,7 @@ MenuExec.prototype = {
 		kc.prev = null;
 		ans.errDisp=true;
 		bd.errclear();
-		if(kp.ctl[1].enable || kp.ctl[3].enable){ pp.funcs.keypopup();}
+		if(kp.haspanel[1] || kp.haspanel[3]){ pp.funcs.keypopup();}
 		tc.setAlign();
 		pc.paintAll();
 	},

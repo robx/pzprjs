@@ -347,8 +347,6 @@ PBase.prototype = {
 		// 各HTML要素等を初期化する
 		menu.menureset();
 		this.numparent.innerHTML = '';
-		if(kp.ctl[1].enable){ kp.ctl[1].el.innerHTML = '';}
-		if(kp.ctl[3].enable){ kp.ctl[3].el.innerHTML = '';}
 
 		ee.clean();
 
