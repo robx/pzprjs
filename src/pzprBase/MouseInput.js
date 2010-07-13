@@ -136,24 +136,8 @@ MouseEvent.prototype = {
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
 	setposition : function(e){
-		this.setposition = ((!k.os.iPhoneOS && !k.os.Android) ?
-			function(e){
-				this.inputPoint.x = ee.pageX(e) -k.cv_oft.x-k.p0.x - this.mouseoffset.x;
-				this.inputPoint.y = ee.pageY(e) -k.cv_oft.y-k.p0.y - this.mouseoffset.y;
-			}
-		:
-			function(e){
-				var len=e.touches.length , pos=new Pos(0,0);
-				if(len>0){
-					for(var i=0,len=e.touches.length;i<len;i++){
-						pos.x += e.pageX; pos.y += e.pageY;
-					}
-					this.inputPoint.x = (((pos.x/len) -k.cv_oft.x-k.p0.x)|0);
-					this.inputPoint.y = (((pos.y/len) -k.cv_oft.y-k.p0.y)|0);
-				}
-			}
-		);
-		this.setposition(e);
+		this.inputPoint.x = ee.pageX(e) -k.cv_oft.x-k.p0.x - this.mouseoffset.x;
+		this.inputPoint.y = ee.pageY(e) -k.cv_oft.y-k.p0.y - this.mouseoffset.y;
 	},
 
 	notInputted : function(){ return !um.changeflag;},

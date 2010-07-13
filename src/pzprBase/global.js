@@ -146,7 +146,8 @@ var
 	_win = this,
 
 	// browsers
-	_IE     = k.br.IE,
+	_IEmoz4 = (k.br.IE6 || k.br.IE7 || k.br.IE8),
+	_iOS    = k.os.iPhoneOS,
 
 	/* ここからクラス定義です  varでドット付きは、最左辺に置けません */
 
@@ -259,6 +260,8 @@ _extend( _ElementManager, {
 	// ee.getSrcElement() イベントが起こったエレメントを返す
 	// ee.pageX()         イベントが起こったページ上のX座標を返す
 	// ee.pageY()         イベントが起こったページ上のY座標を返す
+	// ee.scrollLeft()    ウィンドウのXスクロール量を返す
+	// ee.scrollTop()     ウィンドウのYスクロール量を返す
 	// ee.windowWidth()   ウィンドウの幅を返す
 	// ee.windowHeight()  ウィンドウの高さを返す
 	//----------------------------------------------------------------------
@@ -266,31 +269,65 @@ _extend( _ElementManager, {
 		return e.target || e.srcElement;
 	},
 	pageX : function(e){
-		_ElementManager.pageX = (
-			(!_IE) ? function(e){ return e.pageX;}
-				   : function(e){ return e.clientX + (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);}
+		_ElementManager.pageX = ((!_iOS && !_IEmoz4) ?
+			function(e){ return e.pageX;}
+		: (_IEmoz4) ?
+			function(e){ return e.clientX + this.scrollLeft();}
+		:
+			function(e){
+				if(!!e.touches){
+					var len=e.touches.length, pos=0;
+					if(len>0){
+						for(var i=0;i<len;i++){ pos += e.touches[i].clientX;}
+						return pos/len + this.scrollLeft();
+					}
+				}
+				else if(!!e.clientX){ return e.clientX + this.scrollLeft();}
+				return e.pageX;
+			}
 		);
 		return _ElementManager.pageX(e);
 	},
 	pageY : function(e){
-		_ElementManager.pageY = (
-			(!_IE) ? function(e){ return e.pageY;}
-				   : function(e){ return e.clientY + (_doc.documentElement.scrollTop  || _doc.body.scrollTop);}
+		_ElementManager.pageY = ((!_iOS && !_IEmoz4) ?
+			function(e){ return e.pageY;}
+		: (_IEmoz4) ?
+			function(e){ return e.clientY + this.scrollTop();}
+		:
+			function(e){
+				if(!!e.touches){
+					var len=e.touches.length, pos=0;
+					if(len>0){
+						for(var i=0;i<len;i++){ pos += e.touches[i].clientY;}
+						return pos/len + this.scrollTop();
+					}
+				}
+				else if(!!e.clientY){ return e.clientY + this.scrollTop();}
+				return e.pageY;
+			}
 		);
 		return _ElementManager.pageY(e);
 	},
+	scrollLeft : function(){ return (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);},
+	scrollTop  : function(){ return (_doc.documentElement.scrollTop  || _doc.body.scrollTop );},
 
 	windowWidth : function(){
-		_ElementManager.windowWidth = (
-			(!_IE) ? function(){ return innerWidth;}
-				   : function(){ return _doc.body.clientWidth;}
+		_ElementManager.windowWidth = ((!_iOS && !_IEmoz4) ?
+			function(){ return _win.innerWidth;}
+		: (_IEmoz4) ?
+			function(){ return _doc.body.clientWidth;}
+		:
+			function(){ return 980;}
 		);
 		return _ElementManager.windowWidth();
 	},
 	windowHeight : function(){
-		_ElementManager.windowHeight = (
-			(!_IE) ? function(){ return innerHeight;}
-				   : function(){ return _doc.body.clientHeight;}
+		_ElementManager.windowHeight = ((!_iOS && !_IEmoz4) ?
+			function(){ return _win.innerHeight;}
+		: (_IEmoz4) ?
+			function(){ return _doc.body.clientHeight;}
+		:
+			function(){ return (980*(_win.innerHeight/_win.innerWidth))|0;}
 		);
 		return _ElementManager.windowHeight();
 	},
@@ -337,7 +374,7 @@ _ElementManager.ElementExt.prototype = {
 	//----------------------------------------------------------------------
 	getRect : function(){
 		this.getRect = ((!!document.createElement('div').getBoundingClientRect) ?
-			((!_IE) ?
+			((!_IEmoz4) ?
 				function(){
 					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
 					var left   = rect.left   + _win.scrollX;

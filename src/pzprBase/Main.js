@@ -43,7 +43,12 @@ PBase.prototype = {
 
 		// onLoadとonResizeに動作を割り当てる
 		window.onload   = ee.ebinder(this, this.onload_func);
-		window.onresize = ee.ebinder(this, this.onresize_func);
+		if(!k.os.iPhoneOS){
+			window.onresize = ee.ebinder(this, this.onresize_func);
+		}
+		else{
+			document.addEventListener("gestureend", ee.ebinder(this, this.onresize_func), false);
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -245,7 +250,7 @@ PBase.prototype = {
 		this.resizetimer = setTimeout(ee.binder(this, this.resize_canvas),250);
 	},
 	resize_canvas : function(){
-		var wwidth = ee.windowWidth()-6;	//  margin/borderがあるので、適当に引いておく
+		var wwidth = ee.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
 		var cols   = (bd.maxbx-bd.minbx)/2+2*k.bdmargin; // canvasの横幅がセル何個分に相当するか
 		var rows   = (bd.maxby-bd.minby)/2+2*k.bdmargin; // canvasの縦幅がセル何個分に相当するか
 		if(k.puzzleid==='box'){ cols++; rows++;}
@@ -255,10 +260,14 @@ PBase.prototype = {
 		ci[0] = (wwidth*ws.base )/(k.cellsize*cr.base );
 		ci[1] = (wwidth*ws.limit)/(k.cellsize*cr.limit);
 
-		var mwidth = wwidth*ws.base-4; // margin/borderがあるので、適当に引いておく
-
-		// 特に縮小が必要ない場合
-		if(!pp.getVal('adjsize') || cols < ci[0]){
+		// 横幅いっぱいに広げたい場合
+		if(k.os.iPhoneOS){
+			mwidth = wwidth*0.98;
+			k.cwidth = k.cheight = ((mwidth*0.92)/cols)|0;
+			if(k.cwidth < k.cellsize){ k.cwidth = k.cheight = k.cellsize;}
+		}
+		// 縮小が必要ない場合
+		else if(!pp.getVal('adjsize') || cols < ci[0]){
 			mwidth = wwidth*ws.base-4;
 			k.cwidth = k.cheight = (k.cellsize*cr.base)|0;
 		}
