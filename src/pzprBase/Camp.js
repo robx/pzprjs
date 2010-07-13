@@ -1,4 +1,4 @@
-// Camp.js rev86
+// Camp.js rev88
  
 (function(){
 
@@ -953,6 +953,7 @@ CanvasRenderingContext2D_wrapper.prototype = {
 
 	setLinePath : function(){
 		var _args = arguments, _len = _args.length;
+		this.context.beginPath();
 		for(var i=0,len=_len-((_len|1)?1:2);i<len;i+=2){
 			var a1 = (this.isedge ? (_args[i]  +this.OFFSETX+0.5)|0 : _args[i]  +this.OFFSETX);
 				a2 = (this.isedge ? (_args[i+1]+this.OFFSETY+0.5)|0 : _args[i+1]+this.OFFSETY);
@@ -963,6 +964,7 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	},
 	setOffsetLinePath : function(){
 		var _args = arguments, _len = _args.length, m=[_args[0]+this.OFFSETX,_args[1]+this.OFFSETY];
+		this.context.beginPath();
 		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
 			m[i]   = _args[i]   + m[0];
 			m[i+1] = _args[i+1] + m[1];
