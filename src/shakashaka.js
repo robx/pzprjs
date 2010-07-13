@@ -53,11 +53,8 @@ Puzzles.shakashaka.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.playmode) this.inputTriangle(0);
-			if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum();}
-				else{ kp.display();}
-			}
+			if(k.playmode){ this.inputTriangle(0);}
+			if(k.editmode){ this.inputqnum();}
 		};
 		mv.mouseup = function(){
 			if(k.playmode && pp.getVal('use')===2 && this.notInputted()){

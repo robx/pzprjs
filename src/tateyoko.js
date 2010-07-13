@@ -52,12 +52,11 @@ Puzzles.tateyoko.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.editmode && !kp.enabled()){ this.inputqnum();}
+			if     (k.editmode){ this.inputqnum();}
 			else if(k.playmode){ this.inputTateyoko();}
 		};
 		mv.mouseup = function(){
-			if(k.editmode && this.notInputted() && kp.enabled()){ kp.display();}
-			else if(k.playmode && this.notInputted()){ this.clickTateyoko();}
+			if(k.playmode && this.notInputted()){ this.clickTateyoko();}
 		};
 		mv.mousemove = function(){
 			if(k.playmode){ this.inputTateyoko();}

@@ -48,11 +48,8 @@ Puzzles.mochinyoro.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum();}
-				else{ kp.display();}
-			}
-			else if(k.playmode) this.inputcell();
+			if     (k.editmode){ this.inputqnum();}
+			else if(k.playmode){ this.inputcell();}
 		};
 		mv.mouseup = function(){ };
 		mv.mousemove = function(){

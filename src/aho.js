@@ -47,8 +47,7 @@ Puzzles.aho.prototype = {
 		// マウス入力系
 		mv.mousedown = function(){
 			if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum();}
-				else{ kp.display();}
+				this.inputqnum();
 			}
 			else if(k.playmode){
 				if(this.btn.Left) this.inputborderans();

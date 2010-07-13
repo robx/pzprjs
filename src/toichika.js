@@ -45,9 +45,7 @@ Puzzles.toichika.prototype = {
 		base.setTitle("遠い誓い","Toichika");
 		base.setFloatbgcolor("rgb(127, 160, 96)");
 	},
-	menufix : function(){
-		kp.defaultdisp = true;
-	},
+	menufix : function(){ },
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド

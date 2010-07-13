@@ -74,8 +74,9 @@
 	div#credit3_1{ line-height:110%; margin:4pt 0pt 2pt 4pt;}
 
 	/* キーポップアップ用 */
-	div.keypopup{ display:none; margin:0pt; padding:3pt; text-align:left;
+	div#keypopup{ display:none; margin:0pt; text-align:left;
 				  background-color:silver; border:1px black solid; position:absolute; left:0pt; top:0pt; z-index:100;}
+	div.panelbase{ margin:1pt;}
 
 	td.kpnum { width:32px; height:32px; font-size:24px; text-align:center; vertical-align:middle; background-color:white; cursor:default;}
 	td.kpimgcell { width:32px; height:32px; text-align:left; vertical-align:top; background-color:white; cursor:default;}

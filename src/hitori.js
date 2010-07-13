@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ひとりにしてくれ版 hitori.js v3.3.1
+// パズル固有スクリプト部 ひとりにしてくれ hitori.js v3.3.1
 //
 Puzzles.hitori = function(){ };
 Puzzles.hitori.prototype = {
@@ -35,7 +35,7 @@ Puzzles.hitori.prototype = {
 		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
 
 		base.setTitle("ひとりにしてくれ","Hitori");
-		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
+		base.setExpression("左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
 						   " Left Click to input black cells, Right Click to input determined white cells.");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 
@@ -45,7 +45,7 @@ Puzzles.hitori.prototype = {
 		menu.addUseToFlags();
 		menu.addRedBlockRBToFlags();
 
-		pp.addCheck('plred','setting',false, '重複数字を表示', 'Show overlapped number');
+		pp.addCheck('plred','setting',false, '重複した数字を表示', 'Show overlapped number');
 		pp.setLabel('plred', '重複している数字を赤くする', 'Show overlapped number as red.');
 		pp.funcs['plred'] = function(){ pc.paintAll();};
 	},
@@ -187,7 +187,7 @@ Puzzles.hitori.prototype = {
 
 		fio.decodeCellQnum_kanpen_hitori = function(){
 			this.decodeCell( function(obj,ca){
-				if(ca!=="0"){ obj.qnum = parseInt(ca);}
+				if(ca!=="0" && ca!=="."){ obj.qnum = parseInt(ca);}
 			});
 		};
 		fio.encodeCellQnum_kanpen_hitori = function(){
@@ -221,7 +221,8 @@ Puzzles.hitori.prototype = {
 		ans.isDifferentNumberInClist_hitori = function(clist_all, numfunc){
 			var clist = [];
 			for(var i=0;i<clist_all.length;i++){
-				if(bd.isWhite(clist_all[i])){ clist.push(clist_all[i]);}
+				var c = clist_all[i];
+				if(bd.isWhite(c) && numfunc.call(bd,c)!==-1){ clist.push(c);}
 			}
 			return this.isDifferentNumberInClist(clist, numfunc);
 		};

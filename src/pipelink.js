@@ -46,7 +46,6 @@ Puzzles.pipelink.prototype = {
 		base.setFloatbgcolor("rgb(0, 191, 0)");
 	},
 	menufix : function(){
-		if(k.EDITOR){ kp.defaultdisp = true;}
 		menu.addRedLineToFlags();
 
 		var el = ee.createEL(menu.EL_BUTTON, 'btncircle');
@@ -61,10 +60,7 @@ Puzzles.pipelink.prototype = {
 		// マウス入力系
 		mv.mousedown = function(){
 			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
-			if(k.editmode){
-				if(!kp.enabled()){ this.inputQues([0,11,12,13,14,15,16,17,-2]);}
-				else{ kp.display();}
-			}
+			if(k.editmode){ this.inputQues([0,11,12,13,14,15,16,17,-2]);}
 			else if(k.playmode){
 				if(this.btn.Left) this.inputLine();
 				else if(this.btn.Right) this.inputpeke();

@@ -536,7 +536,7 @@ Timer.prototype = {
 		this.bseconds = seconds;
 	},
 	label : function(){
-		return menu.isLangJP()?"経過時間：":"Time: ";
+		return menu.selectStr("経過時間：","Time: ");
 	},
 
 	//---------------------------------------------------------------------------

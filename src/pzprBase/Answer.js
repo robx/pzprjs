@@ -29,20 +29,23 @@ AnsCheck.prototype = {
 		mv.mousereset();
 
 		if(!this.checkAns()){
-			alert((menu.isLangJP()||!this.alstr.en)?this.alstr.jp:this.alstr.en);
+			menu.alertStr(this.alstr.jp, this.alstr.en);
 			this.errDisp = true;
 			pc.paintAll();
 			this.inCheck = false;
 			return false;
 		}
 
-		alert(menu.isLangJP()?"正解です！":"Complete!");
+		menu.alertStr("正解です！","Complete!");
 		this.inCheck = false;
 		return true;
 	},
 	checkAns : function(){},	//オーバーライド用
 	//check1st : function(){},	//オーバーライド用
-	setAlert : function(strJP, strEN){ this.alstr.jp = strJP; this.alstr.en = strEN;},
+	setAlert : function(strJP, strEN){
+		this.alstr.jp = strJP;
+		this.alstr.en = (!!strEN ? strEN : strJP);
+	},
 
 	//---------------------------------------------------------------------------
 	// ans.autocheck()    答えの自動チェックを行う(alertがでなかったり、エラー表示を行わない)
@@ -62,7 +65,7 @@ AnsCheck.prototype = {
 
 		if(this.autocheck1st() && this.checkAns() && this.inCheck){
 			mv.mousereset();
-			alert(menu.isLangJP()?"正解です！":"Complete!");
+			menu.alertStr("正解です！","Complete!");
 			ret = true;
 			pp.setVal('autocheck',false);
 		}

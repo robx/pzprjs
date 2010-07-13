@@ -156,31 +156,30 @@ Puzzles.yajirin.prototype = {
 		};
 
 		fio.decodeCellDirecQnum_kanpen = function(isurl){
+			var dirs = [k.UP, k.LT, k.DN, k.RT];
 			this.decodeCell( function(obj,ca){
 				if     (ca==="#" && !isurl){ obj.qans = 1;}
 				else if(ca==="+" && !isurl){ obj.qsub = 1;}
 				else if(ca!=="."){
 					var num = parseInt(ca);
-					if     (num<16){ obj.qdir = k.UP; obj.qnum = num;   }
-					else if(num<32){ obj.qdir = k.LT; obj.qnum = num-16;}
-					else if(num<48){ obj.qdir = k.DN; obj.qnum = num-32;}
-					else if(num<64){ obj.qdir = k.RT; obj.qnum = num-48;}
+					obj.qdir = dirs[(num & 0x30) >> 4];
+					obj.qnum = (num & 0x0F);
 				}
 			});
 		};
 		fio.encodeCellDirecQnum_kanpen = function(isurl){
+			var dirs = [k.UP, k.LT, k.DN, k.RT];
 			this.encodeCell( function(obj){
-				var num = ((obj.qnum>=0&&obj.qnum<10) ? obj.qnum : -1)
-				if(num==-1 && !isurl){
+				var num = ((obj.qnum>=0&&obj.qnum<16) ? obj.qnum : -1), dir;
+				if(num!==-1 && obj.qdir!==k.NONE){
+					for(dir=0;dir<4;dir++){ if(dirs[dir]===obj.qdir){ break;}}
+					return (""+((dir<<4)+(num&0x0F))+" ");
+				}
+				else if(!isurl){
 					if     (obj.qans===1){ return "# ";}
 					else if(obj.qsub===1){ return "+ ";}
-					else                 { return ". ";}
 				}
-				else if(obj.qdir===k.UP){ return ""+( 0+num)+" ";}
-				else if(obj.qdir===k.LT){ return ""+(16+num)+" ";}
-				else if(obj.qdir===k.DN){ return ""+(32+num)+" ";}
-				else if(obj.qdir===k.RT){ return ""+(48+num)+" ";}
-				else                    { return ". ";}
+				return ". ";
 			});
 		};
 	},

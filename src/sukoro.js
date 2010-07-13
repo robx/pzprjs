@@ -45,10 +45,7 @@ Puzzles.sukoro.prototype = {
 	//入力系関数オーバーライド
 	input_init : function(){
 		// マウス入力系
-		mv.mousedown = function(){
-			if(!kp.enabled()){ this.inputqnum();}
-			else{ kp.display();}
-		};
+		mv.mousedown = function(){ this.inputqnum();};
 		mv.mouseup = function(){ };
 		mv.mousemove = function(){ };
 

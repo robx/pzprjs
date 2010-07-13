@@ -3,14 +3,6 @@
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
 //---------------------------------------------------------------------------
-Caption = function(){
-	this.menu     = '';
-	this.label    = '';
-};
-MenuData = function(strJP, strEN){
-	this.caption = { ja: strJP, en: strEN};
-	this.smenus = [];
-};
 
 // メニュー描画/取得/html表示系
 // Menuクラス
@@ -227,6 +219,9 @@ Menu.prototype = {
 		// *表示 ==============================================================
 		am('disp', "表示", "Display");
 
+		as('dispsize', 'disp','サイズ指定','Cell Size');
+		ap('sep_disp0',  'disp');
+
 		au('size','disp',2,[0,1,2,3,4], '表示サイズ','Cell Size');
 		ap('sep_disp1',  'disp');
 
@@ -235,20 +230,18 @@ Menu.prototype = {
 			sl('irowake', '線の色分けをする', 'Color each lines');
 		}
 		ac('cursor','disp',true,'カーソルの表示','Display cursor');
+		ac('adjsize', 'disp', true, '自動横幅調節', 'Auto Size Adjust');
 		ap('sep_disp2', 'disp');
 		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
 
 		// *表示 - 表示サイズ -------------------------------------------------
-		as('dispsize',    'size','サイズ指定','Cell Size');
 		aa('cap_dispmode','size','表示モード','Display mode');
 		ai('size_0', 'size', 'サイズ 極小', 'Ex Small');
 		ai('size_1', 'size', 'サイズ 小',   'Small');
 		ai('size_2', 'size', 'サイズ 標準', 'Normal');
 		ai('size_3', 'size', 'サイズ 大',   'Large');
 		ai('size_4', 'size', 'サイズ 特大', 'Ex Large');
-		ap('sep_size', 'size');
-		ac('adjsize', 'size', true, 'サイズの自動調節', 'Auto Adjustment');
 
 		// *設定 ==============================================================
 		am('setting', "設定", "Setting");
@@ -266,19 +259,19 @@ Menu.prototype = {
 		ac('autocheck','setting', k.playmode, '正答自動判定', 'Auto Answer Check');
 		ac('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
 		sl('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
-		if(kp.ctl[1].enable || kp.ctl[3].enable){
-			ac('keypopup', 'setting', kp.defaultdisp, 'パネル入力', 'Panel inputting');
+		if(kp.haspanel[1] || kp.haspanel[3]){
+			ac('keypopup', 'setting', false, 'パネル入力', 'Panel inputting');
 			sl('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
 		}
-		au('language', 'setting', 0,[0,1], '言語', 'Language');
+		au('language', 'setting', 'ja', ['ja','en'], '言語', 'Language');
 
 		// *設定 - モード -----------------------------------------------------
 		ai('mode_1', 'mode', '問題作成モード', 'Edit mode'  );
 		ai('mode_3', 'mode', '回答モード',     'Answer mode');
 
 		// *設定 - 言語 -------------------------------------------------------
-		ai('language_0', 'language', '日本語',  '日本語');
-		ai('language_1', 'language', 'English', 'English');
+		ai('language_ja', 'language', '日本語',  '日本語');
+		ai('language_en', 'language', 'English', 'English');
 
 		// *その他 ============================================================
 		am('other', "その他", "Others");
@@ -286,10 +279,15 @@ Menu.prototype = {
 		as('credit',  'other', 'ぱずぷれv3について',   'About PUZ-PRE v3');
 		ap('sep_other','other');
 		at('link',     'other', 'リンク', 'Link');
-		// *その他 - リンク -----------------------------------------------------
+		at('debug',    'other', 'デバッグ', 'Debug');
+
+		// *その他 - リンク ---------------------------------------------------
 		as('jumpv3',  'link', 'ぱずぷれv3のページへ', 'Jump to PUZ-PRE v3 page');
 		as('jumptop', 'link', '連続発破保管庫TOPへ',  'Jump to indi.s58.xrea.com');
 		as('jumpblog','link', 'はっぱ日記(blog)へ',   'Jump to my blog');
+
+		// *その他 - デバッグ -------------------------------------------------
+		as('poptest', 'debug', 'pop_testを表示', 'Show pop_test window');
 
 		this.createAllFloat();
 	},
@@ -811,27 +809,16 @@ Menu.prototype = {
 //--------------------------------------------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------------
-	// menu.isLangJP()  言語モードを日本語にする
-	// menu.isLangEN()  言語モードを英語にする
+	// menu.translate()  htmlの言語を変える
+	// menu.setLang()    言語を設定する
+	// menu.selectStr()  現在の言語に応じた文字列を返す
+	// menu.alertStr()   現在の言語に応じたダイアログを表示する
+	// menu.confirmStr() 現在の言語に応じた選択ダイアログを表示し、結果を返す
 	//--------------------------------------------------------------------------------
-	isLangJP : function(){ return this.language == 'ja';},
-	isLangEN : function(){ return this.language == 'en';},
-
-	//--------------------------------------------------------------------------------
-	// menu.setLang()   言語を設定する
-	// menu.translate() htmlの言語を変える
-	//--------------------------------------------------------------------------------
-	setLang : function(ln){ (ln=='ja')       ?this.setLangJP():this.setLangEN();},
-	translate : function(){ (this.isLangJP())?this.setLangEN():this.setLangJP();},
-
-	//--------------------------------------------------------------------------------
-	// menu.setLangJP()  文章を日本語にする
-	// menu.setLangEN()  文章を英語にする
-	// menu.setLangStr() 文章を設定する
-	//--------------------------------------------------------------------------------
-	setLangJP : function(){ this.setLangStr('ja');},
-	setLangEN : function(){ this.setLangStr('en');},
-	setLangStr : function(ln){
+	translate : function(){
+		this.setLang(this.language==='ja' ? 'en' : 'ja');
+	},
+	setLang : function(ln){
 		this.language = ln;
 		_doc.title = base.gettitle();
 		ee('title2').el.innerHTML = base.gettitle();
@@ -841,7 +828,10 @@ Menu.prototype = {
 		this.ex.dispmanstr();
 
 		base.resize_canvas();
-	}
+	},
+	selectStr  : function(strJP, strEN){ return (this.language==='ja' ? strJP : strEN);},
+	alertStr   : function(strJP, strEN){ alert(this.language==='ja' ? strJP : strEN);},
+	confirmStr : function(strJP, strEN){ return confirm(this.language==='ja' ? strJP : strEN);},
 };
 
 //--------------------------------------------------------------------------------------------------------------
@@ -849,6 +839,10 @@ Menu.prototype = {
 //---------------------------------------------------------------------------
 // ★Propertiesクラス 設定値の値などを保持する
 //---------------------------------------------------------------------------
+Caption = function(){
+	this.menu  = '';
+	this.label = '';
+};
 SSData = function(){
 	this.id     = '';
 	this.type   = 0;
@@ -891,21 +885,21 @@ Properties.prototype = {
 	// pp.addFlagOnly()  情報のみを登録する
 	//---------------------------------------------------------------------------
 	addMenu : function(idname, strJP, strEN){
-		this.addFlags(idname, '', this.MENU, 0, strJP, strEN);
+		this.addFlags(idname, '', this.MENU, null, strJP, strEN);
 	},
 	addSParent : function(idname, parent, strJP, strEN){
-		this.addFlags(idname, parent, this.SPARENT, 0, strJP, strEN);
+		this.addFlags(idname, parent, this.SPARENT, null, strJP, strEN);
 	},
 
 	addSmenu : function(idname, parent, strJP, strEN){
-		this.addFlags(idname, parent, this.SMENU, 0, strJP, strEN);
+		this.addFlags(idname, parent, this.SMENU, null, strJP, strEN);
 	},
 
 	addCaption : function(idname, parent, strJP, strEN){
-		this.addFlags(idname, parent, this.LABEL, 0, strJP, strEN);
+		this.addFlags(idname, parent, this.LABEL, null, strJP, strEN);
 	},
 	addSeparator : function(idname, parent){
-		this.addFlags(idname, parent, this.SEPARATE, 0, '', '');
+		this.addFlags(idname, parent, this.SEPARATE, null, '', '');
 	},
 
 	addCheck : function(idname, parent, first, strJP, strEN){
@@ -929,13 +923,16 @@ Properties.prototype = {
 	// pp.setLabel()  管理領域に表記するラベル文字列を設定する
 	//---------------------------------------------------------------------------
 	addFlags : function(idname, parent, type, first, strJP, strEN){
-		this.flags[idname] = new SSData();
-		this.flags[idname].id     = idname;
-		this.flags[idname].type   = type;
-		this.flags[idname].val    = first;
-		this.flags[idname].parent = parent;
-		this.flags[idname].str.ja.menu = strJP;
-		this.flags[idname].str.en.menu = strEN;
+		this.flags[idname] = {
+			id     : idname,
+			type   : type,
+			val    : first,
+			parent : parent,
+			str : {
+				ja : { menu:strJP, label:''},
+				en : { menu:strEN, label:''}
+			}
+		}
 		this.flaglist.push(idname);
 	},
 
@@ -949,25 +946,26 @@ Properties.prototype = {
 	// pp.getMenuStr() 管理パネルと選択型/チェック型サブメニューに表示する文字列を返す
 	// pp.getLabel()   管理パネルとチェック型サブメニューに表示する文字列を返す
 	// pp.type()       設定値のサブメニュータイプを返す
-	// pp.istype()     設定値のサブメニュータイプが指定された値かどうかを返す
 	//
 	// pp.getVal()     各フラグのvalの値を返す
 	// pp.setVal()     各フラグの設定値を設定する
+	// pp.setValOnly() 各フラグの設定値を設定する。設定時に実行される関数は呼ばない
 	//---------------------------------------------------------------------------
 	getMenuStr : function(idname){ return this.flags[idname].str[menu.language].menu; },
 	getLabel   : function(idname){ return this.flags[idname].str[menu.language].label;},
-	type   : function(idname)     { return this.flags[idname].type;},
-	istype : function(idname,type){ return (this.flags[idname].type===type);},
+	type       : function(idname){ return this.flags[idname].type;},
 
-	getVal : function(idname)  { return this.flags[idname]?this.flags[idname].val:0;},
-	setVal : function(idname, newval, callfunc){
-		if(!this.flags[idname]){ return;}
-		else if(this.flags[idname].type===this.CHECK || this.flags[idname].type===this.SELECT){
+	getVal : function(idname){ return this.flags[idname]?this.flags[idname].val:null;},
+	setVal : function(idname, newval, isexecfunc){
+		if(!!this.flags[idname] && (this.flags[idname].type===this.CHECK ||
+									this.flags[idname].type===this.SELECT))
+		{
 			this.flags[idname].val = newval;
 			menu.setdisplay(idname);
-			if(this.funcs[idname] && callfunc!==false){ this.funcs[idname](newval);}
+			if(this.funcs[idname] && isexecfunc!==false){ this.funcs[idname](newval);}
 		}
 	},
+	setValOnly : function(idname, newval){ this.setVal(idname, newval, false);},
 
 //--------------------------------------------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
@@ -989,10 +987,12 @@ Properties.prototype = {
 		irowake   : function(){ pc.paintAll();},
 		cursor    : function(){ pc.paintAll();},
 		manarea   : function(){ menu.ex.dispman();},
+		poptest   : function(){ debug.disppoptest();},
 		mode      : function(num){ menu.ex.modechange(num);},
 		size      : function(num){ base.resize_canvas();},
 		repaint   : function(num){ base.resize_canvas();},
-		language  : function(num){ menu.setLang({0:'ja',1:'en'}[num]);},
+		adjsize   : function(num){ base.resize_canvas();},
+		language  : function(str){ menu.setLang(str);},
 
 		newboard : function(){
 			menu.pop = ee("pop1_1");
@@ -1008,9 +1008,11 @@ Properties.prototype = {
 			kc.enableKey = false;
 		},
 		keypopup : function(){
-			var f = kp.ctl[pp.flags['mode'].val].enable;
+			var f = kp.haspanel[pp.flags['mode'].val];
 			ee('ck_keypopup').el.disabled    = (f?"":"true");
 			ee('cl_keypopup').el.style.color = (f?"black":"silver");
+
+			kp.display();
 		}
 	}
 };

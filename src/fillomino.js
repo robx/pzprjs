@@ -65,8 +65,8 @@ Puzzles.fillomino.prototype = {
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(!kp.enabled()){ this.mouseCell=null; this.inputqnum();}
-				else{ kp.display();}
+				this.mouseCell=null;
+				this.inputqnum();
 			}
 		};
 		mv.mousemove = function(){

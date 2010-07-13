@@ -41,9 +41,7 @@ Puzzles.nanro.prototype = {
 
 		enc.pidKanpen = 'nanro';
 	},
-	menufix : function(){
-		kp.defaultdisp = true;
-	},
+	menufix : function(){ },
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
@@ -57,8 +55,8 @@ Puzzles.nanro.prototype = {
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(!kp.enabled()){ this.mouseCell=null; this.inputqnum();}
-				else{ kp.display();}
+				this.mouseCell=null;
+				this.inputqnum();
 			}
 		};
 		mv.mousemove = function(){
