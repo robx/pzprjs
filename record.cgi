@@ -5,7 +5,7 @@ $q = new CGI;
 
 print "Content-type: text/plain\n\n";
 
-$filename = "accesslog.txt";
+$filename = "../logview/accesslog.txt";
 if($q->param('scr') eq 'pzprapp'){ $filename = "accesslog_regacy.txt";}
 
 if($filename && $q->param('pid'))
