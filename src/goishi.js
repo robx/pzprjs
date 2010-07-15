@@ -1,46 +1,46 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ŒéÎ‚Ğ‚ë‚¢”Å goishi.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ç¢çŸ³ã²ã‚ã„ç‰ˆ goishi.js v3.3.1
 //
 Puzzles.goishi = function(){ };
 Puzzles.goishi.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 10;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 10;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 10;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 10;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 0;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 0;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = false;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = false;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = false;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = false;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = false;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = false;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = true;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = false;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = false;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = true;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = true;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = true;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = true;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = true;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
-		base.setTitle("ŒéÎ‚Ğ‚ë‚¢","Goishi");
+		base.setTitle("ç¢çŸ³ã²ã‚ã„","Goishi");
 		if(k.EDITOR){
-			base.setExpression("@¶ƒNƒŠƒbƒN‚Å›‚É‡”Ô‚ğ•\‚·”š‚ªA‰EƒNƒŠƒbƒNor‰Ÿ‚µ‚Á‚Ï‚È‚µ‚ÅŒ³‚É–ß‚¹‚Ü‚·BURL¶¬AŒéÎ‚Ì‚È‚¢•”•ª‚Í©“®“I‚ÉƒJƒbƒg‚³‚ê‚Ü‚·B",
+			base.setExpression("ã€€å·¦ã‚¯ãƒªãƒƒã‚¯ã§â—‹ã«é †ç•ªã‚’è¡¨ã™æ•°å­—ãŒã€å³ã‚¯ãƒªãƒƒã‚¯oræŠ¼ã—ã£ã±ãªã—ã§å…ƒã«æˆ»ã›ã¾ã™ã€‚URLç”Ÿæˆæ™‚ã€ç¢çŸ³ã®ãªã„éƒ¨åˆ†ã¯è‡ªå‹•çš„ã«ã‚«ãƒƒãƒˆã•ã‚Œã¾ã™ã€‚",
 							   " Left Click to input number of orders, Right Click or Pressing to Undo. The area with no Goishi is cut when outputting URL.");
 		}
 		else{
-			base.setExpression("@¶ƒNƒŠƒbƒN‚Å›‚É‡”Ô‚ğ•\‚·”š‚ªA‰EƒNƒŠƒbƒNor‰Ÿ‚µ‚Á‚Ï‚È‚µ‚ÅŒ³‚É–ß‚¹‚Ü‚·B",
+			base.setExpression("ã€€å·¦ã‚¯ãƒªãƒƒã‚¯ã§â—‹ã«é †ç•ªã‚’è¡¨ã™æ•°å­—ãŒã€å³ã‚¯ãƒªãƒƒã‚¯oræŠ¼ã—ã£ã±ãªã—ã§å…ƒã«æˆ»ã›ã¾ã™ã€‚",
 							   " Left Click to input number of orders, Right Click or Pressing to Undo.");
 		}
 		base.setFloatbgcolor("rgb(96, 96, 96)");
@@ -50,8 +50,8 @@ Puzzles.goishi.prototype = {
 	},
 	menufix : function(){
 		if(k.EDITOR){
-			pp.addCheck('bdpadding','setting',true, '‹óŒ„‚Â‚«URL', 'URL with Padding');
-			pp.setLabel('bdpadding', 'URL¶¬‚Éü‚è1ƒ}ƒX‰½‚à‚È‚¢•”•ª‚ğ‚Â‚¯‚é', 'Add Padding around the Board in outputting URL.');
+			pp.addCheck('bdpadding','setting',true, 'ç©ºéš™ã¤ãURL', 'URL with Padding');
+			pp.setLabel('bdpadding', 'URLç”Ÿæˆæ™‚ã«å‘¨ã‚Š1ãƒã‚¹ä½•ã‚‚ãªã„éƒ¨åˆ†ã‚’ã¤ã‘ã‚‹', 'Add Padding around the Board in outputting URL.');
 			pp.funcs['bdpadding'] = function(){ };
 		}
 	},
@@ -79,12 +79,12 @@ Puzzles.goishi.prototype = {
 		Timer.prototype.execMouseUndo = function(){
 			if(kc.inUNDO){
 				var prop = (um.current>0 ? um.ope[um.current-1].property : '');
-				if(prop===k.QANS){ um.undo();}
+				if(prop===k.ANUM){ um.undo();}
 				else             { kc.inUNDO = false;}
 			}
 			else if(kc.inREDO){
 				var prop = (um.current<um.ope.length ? um.ope[um.current].property : '');
-				if(prop===k.QANS){ um.redo();}
+				if(prop===k.ANUM){ um.redo();}
 				else             { kc.inREDO = false;}
 			}
 		};
@@ -99,9 +99,9 @@ Puzzles.goishi.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if     (k.editmode) this.inputstone();
 			else if(k.playmode){
@@ -117,7 +117,7 @@ Puzzles.goishi.prototype = {
 
 		mv.inputstone = function(){
 			var cc = this.cellid();
-			if(cc===-1){ return;}
+			if(cc===null){ return;}
 
 			var cc0 = tc.getTCC();
 			if(cc!==cc0){
@@ -130,27 +130,27 @@ Puzzles.goishi.prototype = {
 		};
 		mv.inputqans = function(){
 			var cc = this.cellid();
-			if(cc===-1 || bd.cell[cc].ques!==7 || bd.cell[cc].qans!==-1){
+			if(cc===null || bd.cell[cc].ques!==7 || bd.cell[cc].anum!==-1){
 				kc.inREDO = true;
 				tm.startMouseUndoTimer();
 				return;
 			}
 
-			var max=0, bcc=-1;
+			var max=0, bcc=null;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.cell[c].qans>max){
-					max = bd.cell[c].qans;
+				if(bd.cell[c].anum>max){
+					max = bd.cell[c].anum;
 					bcc = c;
 				}
 			}
 
-			// ‚·‚Å‚É1‚ÂˆÈã‚ÌŒéÎ‚ªæ‚ç‚ê‚Ä‚¢‚éê‡
-			if(bcc!==-1){
+			// ã™ã§ã«1ã¤ä»¥ä¸Šã®ç¢çŸ³ãŒå–ã‚‰ã‚Œã¦ã„ã‚‹å ´åˆ
+			if(bcc!==null){
 				var tmp, d = {x1:-1, y1:-1, x2:-1, y2:-1};
 				d.x1 = bd.cell[cc].bx, d.x2 = bd.cell[bcc].bx;
 				d.y1 = bd.cell[cc].by, d.y2 = bd.cell[bcc].by;
 
-				// ©•ª‚Ìã‰º¶‰E‚Émax‚ÈŒéÎ‚ª‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+				// è‡ªåˆ†ã®ä¸Šä¸‹å·¦å³ã«maxãªç¢çŸ³ãŒãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
 				if(d.x1!==d.x2 && d.y1!==d.y2){ return;}
 				else if(d.x1===d.x2){
 					if(d.y1>d.y2){ tmp=d.y2; d.y2=d.y1; d.y1=tmp;}
@@ -160,21 +160,21 @@ Puzzles.goishi.prototype = {
 					if(d.x1>d.x2){ tmp=d.x2; d.x2=d.x1; d.x1=tmp;}
 					d.x1+=2; d.x2-=2;
 				}
-				// ŠÔ‚ÉŒéÎ‚ª‚ ‚éê‡‚Í‰½‚à‚µ‚È‚¢
+				// é–“ã«ç¢çŸ³ãŒã‚ã‚‹å ´åˆã¯ä½•ã‚‚ã—ãªã„
 				for(var bx=d.x1;bx<=d.x2;bx+=2){ for(var by=d.y1;by<=d.y2;by+=2){
 					var c = bd.cnum(bx,by);
-					if(c!==-1 && bd.cell[c].ques===7){
-						var qa = bd.cell[c].qans;
+					if(c!==null && bd.cell[c].ques===7){
+						var qa = bd.cell[c].anum;
 						if(qa===-1 || (max>=2 && qa===max-1)){ return;}
 					}
 				} }
 			}
 
-			bd.sQaC(cc,max+1);
+			bd.sAnC(cc,max+1);
 			pc.paintCell(cc);
 		};
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
@@ -192,12 +192,12 @@ Puzzles.goishi.prototype = {
 
 		bd.setStone = function(cc){
 			if     (bd.QuC(cc)!== 7){ bd.sQuC(cc,7);}
-			else if(bd.QaC(cc)===-1){ bd.sQuC(cc,0);} // ”š‚Ìƒ}ƒX‚ÍÁ‚¹‚Ü‚¹‚ñ
+			else if(bd.AnC(cc)===-1){ bd.sQuC(cc,0);} // æ•°å­—ã®ãƒã‚¹ã¯æ¶ˆã›ã¾ã›ã‚“
 		};
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.errcolor1 = "rgb(208, 0, 0)";
 		pc.errbcolor1 = "rgb(255, 192, 192)";
@@ -232,7 +232,7 @@ Puzzles.goishi.prototype = {
 			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.cell[c].ques===7 && bd.cell[c].qans===-1){
+				if(bd.cell[c].ques===7 && bd.cell[c].anum===-1){
 					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.cellcolor);
 					g.fillStyle   = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 					if(this.vnop(header+c,this.FILL_STROKE)){
@@ -252,7 +252,7 @@ Puzzles.goishi.prototype = {
 			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.cell[c].ques===7 && bd.cell[c].qans!==-1){
+				if(bd.cell[c].ques===7 && bd.cell[c].anum!==-1){
 					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 					if(this.vnop(header+c,this.FILL)){
 						g.fillRect(bd.cell[c].px+mgnw+2, bd.cell[c].py+mgnh+2, this.cw-mgnw*2-3, this.ch-mgnh*2-3);
@@ -264,7 +264,7 @@ Puzzles.goishi.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeGoishi();
@@ -299,24 +299,29 @@ Puzzles.goishi.prototype = {
 
 		//---------------------------------------------------------
 		enc.decodeGoishi = function(){
-			var bstr = this.outbstr;
+			var bstr = this.outbstr, c=0, twi=[16,8,4,2,1];
 			for(var i=0;i<bstr.length;i++){
 				var num = parseInt(bstr.charAt(i),32);
-				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?0:7));} }
-				if((i*5+5)>=k.qcols*k.qrows){ break;}
+				for(var w=0;w<5;w++){
+					if(c<bd.cellmax){
+						bd.sQuC(c,(num&twi[w]?0:7));
+						c++;
+					}
+				}
+				if(c>=k.qcols*k.qrows){ break;}
 			}
 			this.outbstr = bstr.substr(i+1);
 		};
-		// ƒGƒ“ƒR[ƒh‚ÍA”Õ–ÊƒTƒCƒY‚Ìk¬‚Æ‚¢‚¤“Áêˆ—‚ğs‚Á‚Ä‚Ü‚·
+		// ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰æ™‚ã¯ã€ç›¤é¢ã‚µã‚¤ã‚ºã®ç¸®å°ã¨ã„ã†ç‰¹æ®Šå‡¦ç†ã‚’è¡Œã£ã¦ã¾ã™
 		enc.encodeGoishi = function(){
 			var d = this.getSizeOfBoard_goishi();
 
-			var cm="", count=0, pass=0;
+			var cm="", count=0, pass=0, twi=[16,8,4,2,1];
 			for(var by=d.y1;by<=d.y2;by+=2){
 				for(var bx=d.x1;bx<=d.x2;bx+=2){
 					var c=bd.cnum(bx,by);
-					if(c===-1 || bd.QuC(c)==0){ pass+=Math.pow(2,4-count);}
-					count++; if(count==5){ cm += pass.toString(32); count=0; pass=0;}
+					if(c===null || bd.cell[c].ques===0){ pass+=twi[count];} count++;
+					if(count==5){ cm += pass.toString(32); count=0; pass=0;}
 				}
 			}
 			if(count>0){ cm += pass.toString(32);}
@@ -328,7 +333,7 @@ Puzzles.goishi.prototype = {
 		enc.getSizeOfBoard_goishi = function(){
 			var x1=9999, x2=-1, y1=9999, y2=-1, count=0;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QuC(c)!=7){ continue;}
+				if(bd.cell[c].ques!==7){ continue;}
 				if(x1>bd.cell[c].bx){ x1=bd.cell[c].bx;}
 				if(x2<bd.cell[c].bx){ x2=bd.cell[c].bx;}
 				if(y1>bd.cell[c].by){ y1=bd.cell[c].by;}
@@ -342,33 +347,32 @@ Puzzles.goishi.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeGoishiFile = function(){
-			this.decodeCell( function(c,ca){
+			this.decodeCell( function(obj,ca){
 				if(ca!=='.'){
-					bd.sQuC(c, 7);
-					if(ca!=='0'){ bd.sQaC(c, parseInt(ca));}
+					obj.ques = 7;
+					if(ca!=='0'){ obj.anum = parseInt(ca);}
 				}
 			});
 		};
 		fio.encodeGoishiFile = function(){
-			this.encodeCell( function(c){
-				if(bd.QuC(c)===7){
-					if(bd.QaC(c)===-1){ return "0 ";}
-					else{ return ""+parseInt(bd.QaC(c))+" ";}
+			this.encodeCell( function(obj){
+				if(obj.ques===7){
+					return (obj.anum!==-1 ? ""+obj.anum+" " : "0 ");
 				}
 				return ". ";
 			});
 		};
 
 		fio.decodeGoishi_kanpen = function(){
-			this.decodeCell( function(c,ca){
-				if(ca==='1'){ bd.sQuC(c, 7);}
+			this.decodeCell( function(obj,ca){
+				if(ca==='1'){ obj.ques = 7;}
 			});
 		};
 		fio.encodeGoishi_kanpen = function(){
 			for(var by=bd.minby+1;by<bd.maxby;by+=2){
 				for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 					var c = bd.cnum(bx,by);
-					this.datastr += (bd.QuC(c)===7 ? "1 " : ". ");
+					this.datastr += (bd.cell[c].ques===7 ? "1 " : ". ");
 				}
 				this.datastr += "/";
 			}
@@ -383,19 +387,19 @@ Puzzles.goishi.prototype = {
 				if(item.length<=1){ return;}
 				else{
 					var c=bd.cnum(parseInt(item[2])*2+1,parseInt(item[1])*2+1);
-					bd.sQuC(c, 7);
-					bd.sQaC(c, parseInt(item[0]));
+					bd.cell[c].ques = 7;
+					bd.cell[c].anum = parseInt(item[0]);
 				}
 			}
 		};
 		fio.encodeQansPos_kanpen = function(){
 			var stones = []
 			for(var by=bd.minby+1;by<bd.maxby;by+=2){ for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-				var c = bd.cnum(bx,by);
-				if(bd.QuC(c)!==7 || bd.QaC(c)===-1){ continue;}
+				var c = bd.cnum(bx,by), obj=bd.cell[c];
+				if(obj.ques!==7 || obj.anum===-1){ continue;}
 
 				var pos = [(bx>>1).toString(), (by>>1).toString()];
-				stones[bd.QaC(c)-1] = pos;
+				stones[obj.anum-1] = pos;
 			}}
 			for(var i=0,len=stones.length;i<len;i++){
 				var item = [(i+1), stones[i][1], stones[i][0]];
@@ -405,12 +409,12 @@ Puzzles.goishi.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkAllCell(function(c){ return (bd.cell[c].ques===7 && bd.cell[c].qans===-1);}) ){
-				this.setAlert('E‚í‚ê‚Ä‚¢‚È‚¢ŒéÎ‚ª‚ ‚è‚Ü‚·B','There is remaining Goishi.'); return false;
+			if( !this.checkAllCell(function(c){ return (bd.cell[c].ques===7 && bd.cell[c].anum===-1);}) ){
+				this.setAlert('æ‹¾ã‚ã‚Œã¦ã„ãªã„ç¢çŸ³ãŒã‚ã‚Šã¾ã™ã€‚','There is remaining Goishi.'); return false;
 			}
 
 			return true;

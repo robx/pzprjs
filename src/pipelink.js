@@ -1,70 +1,66 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ƒpƒCƒvƒŠƒ“ƒN”Å pipelink.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ãƒ‘ã‚¤ãƒ—ãƒªãƒ³ã‚¯ç‰ˆ pipelink.js v3.3.1
 //
 Puzzles.pipelink = function(){ };
 Puzzles.pipelink.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 10;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 10;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 1;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 10;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 10;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 1;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 1;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 1;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = true;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = true;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = false;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = true;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = true;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = false;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = false;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = true;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = false;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = false;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = true;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = false;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = false;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = false;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = false;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = false;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
 		if(k.EDITOR){
-			base.setExpression("@–â‘è‚Ì‹L†‚ÍQWEASDF‚ÌŠeƒL[‚Å“ü—Í‚Å‚«‚Ü‚·B<br>RƒL[‚â-ƒL[‚ÅÁ‹‚Å‚«‚Ü‚·B1ƒL[‚Å‹L†‚ğ“ü—Í‚Å‚«‚Ü‚·B",
+			base.setExpression("ã€€å•é¡Œã®è¨˜å·ã¯QWEASDFã®å„ã‚­ãƒ¼ã§å…¥åŠ›ã§ãã¾ã™ã€‚<br>Rã‚­ãƒ¼ã‚„-ã‚­ãƒ¼ã§æ¶ˆå»ã§ãã¾ã™ã€‚1ã‚­ãƒ¼ã§è¨˜å·ã‚’å…¥åŠ›ã§ãã¾ã™ã€‚",
 							   " Press each QWEASDF key to input question. <br> Press 'R' or '-' key to erase. '1' keys to input circles.");
 		}
 		else{
-			base.setExpression("@¶ƒhƒ‰ƒbƒO‚Åü‚ªA‰EƒNƒŠƒbƒN‚Å~‚ª“ü—Í‚Å‚«‚Ü‚·B",
+			base.setExpression("ã€€å·¦ãƒ‰ãƒ©ãƒƒã‚°ã§ç·šãŒã€å³ã‚¯ãƒªãƒƒã‚¯ã§Ã—ãŒå…¥åŠ›ã§ãã¾ã™ã€‚",
 							   " Left Button Drag to input black cells, Right Click to input a cross.");
 		}
-		base.setTitle("ƒpƒCƒvƒŠƒ“ƒN","Pipelink");
+		base.setTitle("ãƒ‘ã‚¤ãƒ—ãƒªãƒ³ã‚¯","Pipelink");
 		base.setFloatbgcolor("rgb(0, 191, 0)");
 	},
 	menufix : function(){
-		if(k.EDITOR){ kp.defaultdisp = true;}
 		menu.addRedLineToFlags();
 
 		var el = ee.createEL(menu.EL_BUTTON, 'btncircle');
-		menu.addButtons(el, ee.binder(pc, pc.changedisp), "›", "›");
+		menu.addButtons(el, ee.binder(pc, pc.changedisp), "â—‹", "â—‹");
 		ee('btnarea').appendEL(el);
 	},
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
-			if(k.editmode){
-				if(!kp.enabled()){ this.inputQues([0,101,102,103,104,105,106,107,-2]);}
-				else{ kp.display();}
-			}
+			if(k.editmode){ this.inputQues([0,11,12,13,14,15,16,17,-2]);}
 			else if(k.playmode){
 				if(this.btn.Left) this.inputLine();
 				else if(this.btn.Right) this.inputpeke();
@@ -79,16 +75,9 @@ Puzzles.pipelink.prototype = {
 		};
 
 		bd.enableLineNG = true;
+		bd.enableLineCombined = true;
 
-		// ƒI[ƒo[ƒ‰ƒCƒg
-		bd.sQuC = function(id, num) {
-			um.addOpe(k.CELL, k.QUES, id, this.cell[id].ques, num);
-			this.cell[id].ques = num;
-
-			this.checkLPCombined(id);
-		};
-
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
@@ -99,17 +88,17 @@ Puzzles.pipelink.prototype = {
 			if(k.playmode){ return false;}
 			var cc = tc.getTCC();
 
-			if     (ca=='q'){ bd.sQuC(cc,101); }
-			else if(ca=='w'){ bd.sQuC(cc,102); }
-			else if(ca=='e'){ bd.sQuC(cc,103); }
-			else if(ca=='r'){ bd.sQuC(cc,  0); }
-			else if(ca==' '){ bd.sQuC(cc,  0); }
-			else if(ca=='a'){ bd.sQuC(cc,104); }
-			else if(ca=='s'){ bd.sQuC(cc,105); }
-			else if(ca=='d'){ bd.sQuC(cc,106); }
-			else if(ca=='f'){ bd.sQuC(cc,107); }
-			else if(ca=='-'){ bd.sQuC(cc, (bd.QuC(cc)!=-2?-2:0)); }
-			else if(ca=='1'){ bd.sQuC(cc,  6); }
+			if     (ca=='q'){ bd.sQuC(cc,11); }
+			else if(ca=='w'){ bd.sQuC(cc,12); }
+			else if(ca=='e'){ bd.sQuC(cc,13); }
+			else if(ca=='r'){ bd.sQuC(cc, 0); }
+			else if(ca==' '){ bd.sQuC(cc, 0); }
+			else if(ca=='a'){ bd.sQuC(cc,14); }
+			else if(ca=='s'){ bd.sQuC(cc,15); }
+			else if(ca=='d'){ bd.sQuC(cc,16); }
+			else if(ca=='f'){ bd.sQuC(cc,17); }
+			else if(ca=='-'){ bd.sQuC(cc,(bd.QuC(cc)!==-2?-2:0)); }
+			else if(ca=='1'){ bd.sQuC(cc, 6); }
 			else{ return false;}
 
 			pc.paintCellAround(cc);
@@ -120,20 +109,20 @@ Puzzles.pipelink.prototype = {
 
 		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
-				this.inputcol('num','knumq','q','„´');
-				this.inputcol('num','knumw','w','„«');
-				this.inputcol('num','knume','e','„ª');
+				this.inputcol('num','knumq','q','â•‹');
+				this.inputcol('num','knumw','w','â”ƒ');
+				this.inputcol('num','knume','e','â”');
 				this.inputcol('num','knumr','r',' ');
 				this.insertrow();
-				this.inputcol('num','knuma','a','„¯');
-				this.inputcol('num','knums','s','„®');
-				this.inputcol('num','knumd','d','„­');
-				this.inputcol('num','knumf','f','„¬');
+				this.inputcol('num','knuma','a','â”—');
+				this.inputcol('num','knums','s','â”›');
+				this.inputcol('num','knumd','d','â”“');
+				this.inputcol('num','knumf','f','â”');
 				this.insertrow();
 				this.inputcol('num','knum_','-','?');
 				this.inputcol('empty','knumx','','');
 				this.inputcol('empty','knumy','','');
-				this.inputcol('num','knum.','1','›');
+				this.inputcol('num','knum.','1','â—‹');
 				this.insertrow();
 			};
 			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
@@ -142,7 +131,7 @@ Puzzles.pipelink.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.linecolor = pc.linecolor_LIGHT;
@@ -157,7 +146,7 @@ Puzzles.pipelink.prototype = {
 
 			this.drawBorders(x1,y1,x2,y2);
 
-			this.drawQuesHatenas(x1,y1,x2,y2);
+			this.drawHatenas(x1,y1,x2,y2);
 
 			this.drawLines(x1,y1,x2,y2);
 
@@ -178,7 +167,7 @@ Puzzles.pipelink.prototype = {
 		pc.setBorderColor = function(id){
 			if(this.disp===1){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(cc1!==-1 && cc2!==-1 && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
+				if(cc1!==null && cc2!==null && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
 					g.fillStyle = this.cellcolor;
 					return true;
 				}
@@ -212,8 +201,8 @@ Puzzles.pipelink.prototype = {
 
 		pc.disp = 0;
 		pc.changedisp = function(){
-			if     (this.disp===1){ ee('btncircle').el.value="›"; this.disp=0;}
-			else if(this.disp===0){ ee('btncircle').el.value="¡"; this.disp=1;}
+			if     (this.disp===1){ ee('btncircle').el.value="â—‹"; this.disp=0;}
+			else if(this.disp===0){ ee('btncircle').el.value="â– "; this.disp=1;}
 			this.paintAll();
 		};
 
@@ -226,14 +215,14 @@ Puzzles.pipelink.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodePipelink();
-			if(this.checkpflag("i") && this.disp==0){ pc.changedisp();}
+			if(this.checkpflag("i") && this.disp===0){ pc.changedisp();}
 		};
 		enc.pzlexport = function(type){
-			this.outpflag = (pc.disp==0 ? "" : "i");
+			this.outpflag = (pc.disp===0 ? "" : "i");
 			this.encodePipelink(type);
 		};
 
@@ -242,43 +231,44 @@ Puzzles.pipelink.prototype = {
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
-				if     (ca=='.'){ bd.sQuC(c, -2); c++;}
+				if     (ca=='.'){ bd.cell[c].ques = -2;}
 				else if(ca>='0' && ca<='9'){
-					var imax = parseInt(ca,10)+1; var icur;
-					for(icur=0;icur<imax;icur++){ bd.sQuC(c, 6); c++;}
+					for(var n=0,max=parseInt(ca,10)+1;n<max;n++){
+						if(c<bd.cellmax){ bd.cell[c].ques = 6; c++;}
+					}
+					c--;
 				}
-				else if(ca>='a' && ca<='g'){ bd.sQuC(c, (parseInt(ca,36)+91)); c++;}
-				else if(ca>='h' && ca<='z'){ c += (parseInt(ca,36)-16);}
-				else{ c++;}
+				else if(ca>='a' && ca<='g'){ bd.cell[c].ques = parseInt(ca,36)+1;}
+				else if(ca>='h' && ca<='z'){ c += (parseInt(ca,36)-17);}
 
-				if(c > bd.cellmax){ break;}
+				c++;
+				if(c>=bd.cellmax){ break;}
 			}
 
 			this.outbstr = bstr.substr(i);
 		};
 		enc.encodePipelink = function(type){
-			var count, pass;
-			var cm="";
-			var pstr="";
+			var count, pass, cm="";
 
 			count=0;
-			for(var i=0;i<bd.cellmax;i++){
-				if     (bd.QuC(i) == -2){ pstr = ".";}
-				else if(bd.QuC(i) ==  6){
-					if(type==0){
-						var icur;
-						for(icur=1;icur<10;icur++){ if(bd.QuC(i+icur)!=6){ break;}}
-						pstr = (icur-1).toString(10); i+=(icur-1);
-					}
-					else if(type==1){
-						pstr = "0";
-					}
-				}
-				else if(bd.QuC(i)>=101 && bd.QuC(i)<=107){ pstr = (bd.QuC(i)-91).toString(36);}
-				else{ pstr = ""; count++;}
+			for(var c=0;c<bd.cellmax;c++){
+				var pstr="", qu=bd.cell[c].ques;
 
-				if(count==0){ cm += pstr;}
-				else if(pstr || count==19){ cm+=((16+count).toString(36)+pstr); count=0;}
+				if     (qu===-2){ pstr = ".";}
+				else if(qu=== 6){
+					if(type===0){
+						for(var n=1;n<10;n++){
+							if((c+n)>=bd.cellmax && bd.cell[c+n].ques!==6){ break;}
+						}
+						pstr=(n-1).toString(10); c=(c+n-1);
+					}
+					else if(type===1){ pstr="0";}
+				}
+				else if(qu>=11 && qu<=17){ pstr = (qu-1).toString(36);}
+				else{ count++;}
+
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===19){ cm+=((16+count).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm+=(16+count).toString(36);}
 
@@ -288,61 +278,61 @@ Puzzles.pipelink.prototype = {
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			pc.disp = (this.readLine()=="circle" ? 0 : 1);
-			this.decodeCell( function(c,ca){
-				if(ca == "o")     { bd.sQuC(c, 6); }
-				else if(ca == "-"){ bd.sQuC(c, -2);}
-				else if(ca != "."){ bd.sQuC(c, parseInt(ca,36)+91);}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="o"){ obj.ques = 6; }
+				else if(ca==="-"){ obj.ques = -2;}
+				else if(ca!=="."){ obj.ques = parseInt(ca,36)+1;}
 			});
 			this.decodeBorderLine();
 		};
 		fio.encodeData = function(){
 			this.datastr += (pc.disp==0?"circle/":"ice/");
-			this.encodeCell( function(c){
-				if     (bd.QuC(c)==6) { return "o ";}
-				else if(bd.QuC(c)>=101 && bd.QuC(c)<=107) { return ""+(bd.QuC(c)-91).toString(36)+" ";}
-				else if(bd.QuC(c)==-2){ return "- ";}
-				else                  { return ". ";}
+			this.encodeCell( function(obj){
+				if     (obj.ques==6) { return "o ";}
+				else if(obj.ques==-2){ return "- ";}
+				else if(obj.ques>=11 && obj.ques<=17){ return ""+(obj.ques-1).toString(36)+" ";}
+				else                 { return ". ";}
 			});
 			this.encodeBorderLine();
 		};
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			if( !this.checkenableLineParts(1) ){
-				this.setAlert('Å‰‚©‚çˆø‚©‚ê‚Ä‚¢‚éü‚ª‚ ‚éƒ}ƒX‚Éü‚ª‘«‚³‚ê‚Ä‚¢‚Ü‚·B','Lines are added to the cell that the mark lie in by the question.'); return false;
+				this.setAlert('æœ€åˆã‹ã‚‰å¼•ã‹ã‚Œã¦ã„ã‚‹ç·šãŒã‚ã‚‹ãƒã‚¹ã«ç·šãŒè¶³ã•ã‚Œã¦ã„ã¾ã™ã€‚','Lines are added to the cell that the mark lie in by the question.'); return false;
 			}
 
 			if( !this.checkLcntCell(3) ){
-				this.setAlert('•ªŠò‚µ‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B','There is a branched line.'); return false;
+				this.setAlert('åˆ†å²ã—ã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚','There is a branched line.'); return false;
 			}
 
 			var rice = false;
 			for(var i=0;i<bd.cellmax;i++){ if(bd.QuC(i)==6){ rice=true; break;}}
-			if( rice && !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101);}) ){
-				this.setAlert((pc.disp==0?'›':'•X')+'‚Ì•”•ªˆÈŠO‚Åü‚ªŒğ·‚µ‚Ä‚¢‚Ü‚·B','There is a crossing line out of '+(pc.disp==0?'circles':'ices')+'.'); return false;
+			if( rice && !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==6 && bd.QuC(c)!==11);}) ){
+				this.setAlert((pc.disp==0?'â—‹':'æ°·')+'ã®éƒ¨åˆ†ä»¥å¤–ã§ç·šãŒäº¤å·®ã—ã¦ã„ã¾ã™ã€‚','There is a crossing line out of '+(pc.disp===0?'circles':'ices')+'.'); return false;
 			}
-			if( rice && !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));})) ){
-				ans.setAlert((pc.disp==0?'›':'•X')+'‚Ì•”•ª‚Åü‚ª‹È‚ª‚Á‚Ä‚¢‚Ü‚·B','A line curves on '+(pc.disp==0?'circles':'ices')+'.'); return false;
+			if( rice && !this.checkIceLines() ){
+				ans.setAlert((pc.disp==0?'â—‹':'æ°·')+'ã®éƒ¨åˆ†ã§ç·šãŒæ›²ãŒã£ã¦ã„ã¾ã™ã€‚','A line curves on '+(pc.disp===0?'circles':'ices')+'.'); return false;
 			}
 
 			if( !this.checkOneLoop() ){
-				this.setAlert('—Ö‚Á‚©‚ªˆê‚Â‚Å‚Í‚ ‚è‚Ü‚¹‚ñB','There are plural loops.'); return false;
+				this.setAlert('è¼ªã£ã‹ãŒä¸€ã¤ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚','There are plural loops.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QuC(c)==101 && line.lcntCell(c)!=4);}) ){
-				this.setAlert('„©‚Ìƒ}ƒX‚©‚çü‚ª4–{o‚Ä‚¢‚Ü‚¹‚ñB','A cross-joint cell doesn\'t have four-way lines.'); return false;
+			if( !this.checkAllCell(function(c){ return (bd.QuC(c)===11 && line.lcntCell(c)!==4);}) ){
+				this.setAlert('â”¼ã®ãƒã‚¹ã‹ã‚‰ç·šãŒ4æœ¬å‡ºã¦ã„ã¾ã›ã‚“ã€‚','A cross-joint cell doesn\'t have four-way lines.'); return false;
 			}
 
 			if( !this.checkLcntCell(0) ){
-				this.setAlert('ü‚ªˆø‚©‚ê‚Ä‚¢‚È‚¢ƒ}ƒX‚ª‚ ‚è‚Ü‚·B','There is an empty cell.'); return false;
+				this.setAlert('ç·šãŒå¼•ã‹ã‚Œã¦ã„ãªã„ãƒã‚¹ãŒã‚ã‚Šã¾ã™ã€‚','There is an empty cell.'); return false;
 			}
 
 			if( !this.checkLcntCell(1) ){
-				this.setAlert('“r’†‚Å“rØ‚ê‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B','There is a dead-end line.'); return false;
+				this.setAlert('é€”ä¸­ã§é€”åˆ‡ã‚Œã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚','There is a dead-end line.'); return false;
 			}
 
 			return true;

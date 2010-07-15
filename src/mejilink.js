@@ -1,57 +1,73 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ƒƒWƒŠƒ“ƒN”Å mejilink.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ãƒ¡ã‚¸ãƒªãƒ³ã‚¯ç‰ˆ mejilink.js v3.3.1
 //
 Puzzles.mejilink = function(){ };
 Puzzles.mejilink.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 8;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 8;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 8;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 8;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 2;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 2;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = false;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = true;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = false;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = false;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = true;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = false;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = false;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = false;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = false;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = false;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = false;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = false;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = true;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = false;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = true;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = false;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
-		base.setTitle("ƒƒWƒŠƒ“ƒN","Mejilink");
-		base.setExpression("@¶ƒhƒ‰ƒbƒO‚Åü‚ªA‰EƒNƒŠƒbƒN‚Å~‚ª“ü—Í‚Å‚«‚Ü‚·B",
+		base.setTitle("ãƒ¡ã‚¸ãƒªãƒ³ã‚¯","Mejilink");
+		base.setExpression("ã€€å·¦ãƒ‰ãƒ©ãƒƒã‚°ã§ç·šãŒã€å³ã‚¯ãƒªãƒƒã‚¯ã§Ã—ãŒå…¥åŠ›ã§ãã¾ã™ã€‚",
 						   " Left Button Drag to input black cells, Right Click to input a cross.");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
+		base.proto = 1;
 	},
 	menufix : function(){
 		menu.addRedLineToFlags();
 	},
 
+	protoChange : function(){
+		this.protofunc = Border.prototype.allclear;
+		Border.prototype.allclear = function(id,isrec){
+			this.defques = (id<k.qcols*(k.qrows-1)+(k.qcols-1)*k.qrows ? 1 : 0);
+			if(this.ques!==this.defques){ if(isrec){ um.addOpe(k.BORDER, k.QUES, id, this.ques, this.defques);} this.ques=this.defques;}
+			if(this.line!==this.defline){ if(isrec){ um.addOpe(k.BORDER, k.LINE, id, this.line, this.defline);} this.line=this.defline;}
+			if(this.qsub!==this.defqsub){ if(isrec){ um.addOpe(k.BORDER, k.QSUB, id, this.qsub, this.defqsub);} this.qsub=this.defqsub;}
+			this.color = "";
+			this.error = 0;
+		};
+	},
+	protoOriginal : function(){
+		Border.prototype.allclear = this.protofunc;
+	},
+
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode) this.inputborder();
 			else if(k.playmode){
-				if(this.btn.Left) this.inputborderans();
+				if(this.btn.Left) this.inputLine();
 				else if(this.btn.Right) this.inputpeke();
 			}
 		};
@@ -59,19 +75,25 @@ Puzzles.mejilink.prototype = {
 		mv.mousemove = function(){
 			if(k.editmode) this.inputborder();
 			else if(k.playmode){
-				if(this.btn.Left) this.inputborderans();
+				if(this.btn.Left) this.inputLine();
 				else if(this.btn.Right) this.inputpeke();
 			}
 		};
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ç·šã‚’å¼•ã‹ã›ãŸããªã„ã®ã§ä¸Šæ›¸ã
+		bd.isLineNG = function(id){ return (bd.border[id].ques===1);},
+		bd.enableLineNG = true;
+
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){ if(ca=='z' && !this.keyPressed){ this.isZ=true;} };
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
+
+		bd.isGround = function(id){ return (!!bd.border[id] && bd.border[id].ques>0);};
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.borderQuescolor = "white";
@@ -82,6 +104,7 @@ Puzzles.mejilink.prototype = {
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
+			this.drawLines(x1,y1,x2,y2);
 
 			this.drawBaseMarks(x1,y1,x2,y2);
 
@@ -106,19 +129,16 @@ Puzzles.mejilink.prototype = {
 			g.fillStyle = this.cellcolor;
 			if(this.vnop(vid,this.NONE)){
 				var csize = (this.lw+1)/2;
-				var bx = (id%(k.qcols+1))*2, by = mf(id/(k.qcols+1))*2;
+				var bx = (id%(k.qcols+1))*2, by = (id/(k.qcols+1))<<1;
 				g.fillCircle(k.p0.x+bx*this.bw, k.p0.x+by*this.bh, csize);
 			}
 		};
 
-		// ƒI[ƒo[ƒ‰ƒCƒh
+		// ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 		pc.setBorderColor = function(id){
-			if(bd.border[id].qans===1 || bd.border[id].ques===1){
-				if(bd.border[id].qans===1){ this.setLineColor(id);}
-				else{
-					var cc2=bd.border[id].cellcc[1];
-					g.fillStyle = ((cc2==-1 || bd.cell[cc2].error==0) ? this.borderQuescolor : this.errbcolor1);
-				}
+			if(bd.border[id].ques===1){
+				var cc2=bd.border[id].cellcc[1];
+				g.fillStyle = ((cc2===null || bd.cell[cc2].error===0) ? this.borderQuescolor : this.errbcolor1);
 				return true;
 			}
 			return false;
@@ -133,7 +153,7 @@ Puzzles.mejilink.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeMejilink();
@@ -143,23 +163,26 @@ Puzzles.mejilink.prototype = {
 		};
 
 		enc.decodeMejilink = function(){
-			var bstr = this.outbstr;
-			var pos = bstr?Math.min(mf((bd.bdmax+4)/5),bstr.length):0;
+			var bstr = this.outbstr, twi=[16,8,4,2,1];
+			var pos = (bstr?Math.min((((bd.bdmax+4)/5)|0),bstr.length):0), id=0;
 			for(var i=0;i<pos;i++){
 				var ca = parseInt(bstr.charAt(i),32);
 				for(var w=0;w<5;w++){
-					if(i*5+w<bd.bdmax){ bd.sQuB(i*5+w,(ca&Math.pow(2,4-w)?1:0));}
+					if(id<bd.bdmax){
+						bd.border[id].ques = (ca&twi[w]?1:0);
+						id++;
+					}
 				}
 			}
 			this.outbstr = bstr.substr(pos);
 		};
 		enc.encodeMejilink = function(){
 			var count = 0;
-			for(var i=bd.bdinside;i<bd.bdmax;i++){ if(bd.QuB(i)==1) count++;}
-			var num=0, pass=0, cm="";
-			for(var i=0;i<(count==0?bd.bdinside:bd.bdmax);i++){
-				if(bd.QuB(i)==1){ pass+=Math.pow(2,4-num);}
-				num++; if(num==5){ cm += pass.toString(32); num=0; pass=0;}
+			for(var id=bd.bdinside;id<bd.bdmax;id++){ if(bd.isGround(id)) count++;}
+			var num=0, pass=0, cm="", twi=[16,8,4,2,1];
+			for(var id=0,max=(count===0?bd.bdinside:bd.bdmax);id<max;id++){
+				if(bd.isGround(id)){ pass+=twi[num];} num++;
+				if(num===5){ cm += pass.toString(32); num=0; pass=0;}
 			}
 			if(num>0){ cm += pass.toString(32);}
 			this.outbstr += cm;
@@ -167,45 +190,45 @@ Puzzles.mejilink.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeBorder2( function(c,ca){
-				if     (ca == "2" ){ bd.sQuB(c, 0); bd.sQaB(c, 1);}
-				else if(ca == "-1"){ bd.sQuB(c, 0); bd.sQsB(c, 2);}
-				else if(ca == "1" ){ bd.sQuB(c, 0);}
-				else               { bd.sQuB(c, 1);}
+			this.decodeBorder( function(obj,ca){
+				if     (ca==="2" ){ obj.ques = 0; obj.line = 1;}
+				else if(ca==="-1"){ obj.ques = 0; obj.qsub = 2;}
+				else if(ca==="1" ){ obj.ques = 0;}
+				else              { obj.ques = 1;}
 			});
 		};
 		fio.encodeData = function(){
-			this.encodeBorder2( function(c){
-				if     (bd.QaB(c)==1){ return "2 ";}
-				else if(bd.QsB(c)==2){ return "-1 ";}
-				else if(bd.QuB(c)==0){ return "1 ";}
+			this.encodeBorder( function(obj){
+				if     (obj.line===1){ return "2 ";}
+				else if(obj.qsub===2){ return "-1 ";}
+				else if(obj.ques===0){ return "1 ";}
 				else                 { return "0 ";}
 			});
 		};
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			if( !this.checkdir4Line_meji(3) ){
-				this.setAlert('•ªŠò‚µ‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B','There is a branched line.'); return false;
+				this.setAlert('åˆ†å²ã—ã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚','There is a branched line.'); return false;
 			}
 			if( !this.checkdir4Line_meji(4) ){
-				this.setAlert('ü‚ªŒğ·‚µ‚Ä‚¢‚Ü‚·B','There is a crossing line.'); return false;
+				this.setAlert('ç·šãŒäº¤å·®ã—ã¦ã„ã¾ã™ã€‚','There is a crossing line.'); return false;
 			}
 
 			if( !this.checkDotLength() ){
-				this.setAlert('ƒ^ƒCƒ‹‚ÆüˆÍ‚Ìü‚ªˆø‚©‚ê‚È‚¢“_ü‚Ì’·‚³‚ªˆÙ‚È‚è‚Ü‚·B','The size of the tile is not equal to the total of length of lines that is remained dotted around the tile.'); return false;
+				this.setAlert('ã‚¿ã‚¤ãƒ«ã¨å‘¨å›²ã®ç·šãŒå¼•ã‹ã‚Œãªã„ç‚¹ç·šã®é•·ã•ãŒç•°ãªã‚Šã¾ã™ã€‚','The size of the tile is not equal to the total of length of lines that is remained dotted around the tile.'); return false;
 			}
 
 			if( !this.checkdir4Line_meji(1) ){
-				this.setAlert('“r’†‚Å“rØ‚ê‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B','There is a dead-end line.'); return false;
+				this.setAlert('é€”ä¸­ã§é€”åˆ‡ã‚Œã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚','There is a dead-end line.'); return false;
 			}
 
 			if( !this.checkOneLoop() ){
-				this.setAlert('—Ö‚Á‚©‚ªˆê‚Â‚Å‚Í‚ ‚è‚Ü‚¹‚ñB','There are plural loops.'); return false;
+				this.setAlert('è¼ªã£ã‹ãŒä¸€ã¤ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚','There are plural loops.'); return false;
 			}
 
 			return true;
@@ -239,7 +262,7 @@ Puzzles.mejilink.prototype = {
 				if(tarea.id[cc]!=0){ continue;}
 				tarea.max++;
 				tarea[tarea.max] = {clist:[]};
-				area.sr0(cc,tarea,function(id){ return (id==-1 || bd.QuB(id)!=1);});
+				area.sr0(cc,tarea,function(id){ return !bd.isGround(id);});
 
 				tarea.room[tarea.max] = {idlist:tarea[tarea.max].clist};
 			}
@@ -247,17 +270,16 @@ Puzzles.mejilink.prototype = {
 			var tcount = [], numerous_value = 999999;
 			for(var r=1;r<=tarea.max;r++){ tcount[r]=0;}
 			for(var id=0;id<bd.bdmax;id++){
-				if(bd.QuB(id)==1 && id>=
-				bd.bdinside){
+				if(bd.isGround(id) && id>=bd.bdinside){
 					var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-					if(cc1!=-1){ tcount[tarea.id[cc1]] -= numerous_value;}
-					if(cc2!=-1){ tcount[tarea.id[cc2]] -= numerous_value;}
+					if(cc1!==null){ tcount[tarea.id[cc1]] -= numerous_value;}
+					if(cc2!==null){ tcount[tarea.id[cc2]] -= numerous_value;}
 					continue;
 				}
-				else if(bd.QuB(id)==1 || bd.QaB(id)==1){ continue;}
+				else if(bd.isGround(id) || bd.isLine(id)){ continue;}
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(cc1!=-1){ tcount[tarea.id[cc1]]++;}
-				if(cc2!=-1){ tcount[tarea.id[cc2]]++;}
+				if(cc1!==null){ tcount[tarea.id[cc1]]++;}
+				if(cc2!==null){ tcount[tarea.id[cc2]]++;}
 			}
 			for(var r=1;r<=tarea.max;r++){
 				if(tcount[r]>=0 && tcount[r]!=tarea.room[r].idlist.length){

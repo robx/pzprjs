@@ -1,258 +1,247 @@
-// Board.js v3.3.0
+// Board.js v3.3.1
 
 //---------------------------------------------------------------------------
-// šCellƒNƒ‰ƒX BoardƒNƒ‰ƒX‚ªCell‚Ì”‚¾‚¯•Û‚·‚é
+// â˜…Cellã‚¯ãƒ©ã‚¹ Boardã‚¯ãƒ©ã‚¹ãŒCellã®æ•°ã ã‘ä¿æŒã™ã‚‹
 //---------------------------------------------------------------------------
-// ƒ{[ƒhƒƒ“ƒoƒf[ƒ^‚Ì’è‹`(1)
-// CellƒNƒ‰ƒX‚Ì’è‹`
-Cell = function(id){
-	this.bx;	// ƒZƒ‹‚ÌXÀ•W(borderÀ•WŒn)‚ğ•Û‚·‚é
-	this.by;	// ƒZƒ‹‚ÌYÀ•W(borderÀ•WŒn)‚ğ•Û‚·‚é
-	this.px;	// ƒZƒ‹‚Ì•`‰æ—pXÀ•W‚ğ•Û‚·‚é
-	this.py;	// ƒZƒ‹‚Ì•`‰æ—pYÀ•W‚ğ•Û‚·‚é
-	this.cpx;	// ƒZƒ‹‚Ì•`‰æ—p’†SXÀ•W‚ğ•Û‚·‚é
-	this.cpy;	// ƒZƒ‹‚Ì•`‰æ—p’†SYÀ•W‚ğ•Û‚·‚é
+// ãƒœãƒ¼ãƒ‰ãƒ¡ãƒ³ãƒãƒ‡ãƒ¼ã‚¿ã®å®šç¾©(1)
+// Cellã‚¯ãƒ©ã‚¹ã®å®šç¾©
+Cell = function(){
+	this.bx;	// ã‚»ãƒ«ã®Xåº§æ¨™(borderåº§æ¨™ç³»)ã‚’ä¿æŒã™ã‚‹
+	this.by;	// ã‚»ãƒ«ã®Yåº§æ¨™(borderåº§æ¨™ç³»)ã‚’ä¿æŒã™ã‚‹
+	this.px;	// ã‚»ãƒ«ã®æç”»ç”¨Xåº§æ¨™ã‚’ä¿æŒã™ã‚‹
+	this.py;	// ã‚»ãƒ«ã®æç”»ç”¨Yåº§æ¨™ã‚’ä¿æŒã™ã‚‹
+	this.cpx;	// ã‚»ãƒ«ã®æç”»ç”¨ä¸­å¿ƒXåº§æ¨™ã‚’ä¿æŒã™ã‚‹
+	this.cpy;	// ã‚»ãƒ«ã®æç”»ç”¨ä¸­å¿ƒYåº§æ¨™ã‚’ä¿æŒã™ã‚‹
 
-	this.ques;	// ƒZƒ‹‚Ì–â‘èƒf[ƒ^(Œ`ó)‚ğ•Û‚·‚é
-	this.qnum;	// ƒZƒ‹‚Ì–â‘èƒf[ƒ^(”š)‚ğ•Û‚·‚é(”š or ƒJƒbƒNƒ‚Ì‰E‘¤)
-	this.direc;	// ƒZƒ‹‚Ì–â‘èƒf[ƒ^(•ûŒü)‚ğ•Û‚·‚é(–îˆó or ƒJƒbƒNƒ‚Ì‰º‘¤)
-	this.qans;	// ƒZƒ‹‚Ì‰ñ“šƒf[ƒ^‚ğ•Û‚·‚é(•ƒ}ƒX or ‰ñ“š”š)
-	this.qsub;	// ƒZƒ‹‚Ì•â•ƒf[ƒ^‚ğ•Û‚·‚é(”’ƒ}ƒX or ”wŒiF)
-	this.error;	// ƒGƒ‰[ƒf[ƒ^‚ğ•Û‚·‚é
-
-	this.allclear(id);
+	this.ques;	// ã‚»ãƒ«ã®å•é¡Œãƒ‡ãƒ¼ã‚¿(å½¢çŠ¶)ã‚’ä¿æŒã™ã‚‹
+	this.qnum;	// ã‚»ãƒ«ã®å•é¡Œãƒ‡ãƒ¼ã‚¿(æ•°å­—)ã‚’ä¿æŒã™ã‚‹(æ•°å­— or ã‚«ãƒƒã‚¯ãƒ­ã®å³å´)
+	this.qdir;	// ã‚»ãƒ«ã®å•é¡Œãƒ‡ãƒ¼ã‚¿(æ–¹å‘)ã‚’ä¿æŒã™ã‚‹(çŸ¢å° or ã‚«ãƒƒã‚¯ãƒ­ã®ä¸‹å´)
+	this.anum;	// ã‚»ãƒ«ã®å›ç­”(æ•°å­—/â—‹â–³â–¡/å˜ä½“çŸ¢å°))ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹
+	this.qans;	// ã‚»ãƒ«ã®å›ç­”(é»’ãƒã‚¹/æ–œç·š/ã‚ã‹ã‚Š/æ£’/ãµã¨ã‚“)ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹
+	this.qsub;	// ã‚»ãƒ«ã®è£œåŠ©ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(ç™½ãƒã‚¹ or èƒŒæ™¯è‰²)
+	this.error;	// ã‚¨ãƒ©ãƒ¼ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹
 };
 Cell.prototype = {
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
+	defques : 0,
+	defqnum : -1,
+	defqdir : 0,
+	defanum : -1,
+	defqans : 0,
+	defqsub : 0,
+
 	//---------------------------------------------------------------------------
-	// cell.allclear() ƒZƒ‹‚ÌˆÊ’u,•`‰æî•ñˆÈŠO‚ğƒNƒŠƒA‚·‚é
-	// cell.ansclear() ƒZƒ‹‚Ìqans,qsub,errorî•ñ‚ğƒNƒŠƒA‚·‚é
-	// cell.subclear() ƒZƒ‹‚Ìqsub,errorî•ñ‚ğƒNƒŠƒA‚·‚é
-	// cell.isempty()  ƒvƒƒpƒeƒB‚ª‰Šú’l‚Æ“¯‚¶‚©”»•Ê‚·‚é
+	// cell.allclear() ã‚»ãƒ«ã®ä½ç½®,æç”»æƒ…å ±ä»¥å¤–ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
+	// cell.ansclear() ã‚»ãƒ«ã®anum,qsub,erroræƒ…å ±ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
+	// cell.subclear() ã‚»ãƒ«ã®qsub,erroræƒ…å ±ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
 	//---------------------------------------------------------------------------
-	allclear : function(num) {
-		this.ques = 0;
-		this.qans = -1;
-		this.qsub = 0;
-		this.ques = 0;
-		this.qnum = -1;
-		this.direc = 0;
-		this.error = 0;
-		if(k.puzzleid==="tilepaint"||k.puzzleid==="kakuro"){ this.qnum = this.direc = 0;}
-		if(k.puzzleid==="triplace"){ this.qnum = this.direc = -1;}
-	},
-	ansclear : function(num) {
-		this.qans = -1;
-		this.qsub = 0;
+	allclear : function(id,isrec) {
+		if(this.ques!==this.defques){ if(isrec){ um.addOpe(k.CELL, k.QUES, id, this.ques, this.defques);} this.ques=this.defques;}
+		if(this.qnum!==this.defqnum){ if(isrec){ um.addOpe(k.CELL, k.QNUM, id, this.qnum, this.defqnum);} this.qnum=this.defqnum;}
+		if(this.qdir!==this.defqdir){ if(isrec){ um.addOpe(k.CELL, k.QDIR, id, this.qdir, this.defqdir);} this.qdir=this.defqdir;}
+		if(this.anum!==this.defanum){ if(isrec){ um.addOpe(k.CELL, k.ANUM, id, this.anum, this.defanum);} this.anum=this.defanum;}
+		if(this.qans!==this.defqans){ if(isrec){ um.addOpe(k.CELL, k.QANS, id, this.qans, this.defqans);} this.qans=this.defqans;}
+		if(this.qsub!==this.defqsub){ if(isrec){ um.addOpe(k.CELL, k.QSUB, id, this.qsub, this.defqsub);} this.qsub=this.defqsub;}
 		this.error = 0;
 	},
-	subclear : function(num) {
-		this.qsub = 0;
+	ansclear : function(id) {
+		if(this.anum!==this.defanum){ um.addOpe(k.CELL, k.ANUM, id, this.anum, this.defanum); this.anum=this.defanum;}
+		if(this.qans!==this.defqans){ um.addOpe(k.CELL, k.QANS, id, this.qans, this.defqans); this.qans=this.defqans;}
+		if(this.qsub!==this.defqsub){ um.addOpe(k.CELL, k.QSUB, id, this.qsub, this.defqsub); this.qsub=this.defqsub;}
 		this.error = 0;
 	},
-	isempty : function(){
-		return ((this.qans === bd.defcell.qans) &&
-				(this.qsub === bd.defcell.qsub) &&
-				(this.ques === bd.defcell.ques) &&
-				(this.qnum === bd.defcell.qnum) &&
-				(this.direc=== bd.defcell.direc));
+	subclear : function(id) {
+		if(this.qsub!==this.defqsub){ um.addOpe(k.CELL, k.QSUB, id, this.qsub, this.defqsub); this.qsub=this.defqsub;}
+		this.error = 0;
 	}
 };
 
 //---------------------------------------------------------------------------
-// šCrossƒNƒ‰ƒX BoardƒNƒ‰ƒX‚ªCross‚Ì”‚¾‚¯•Û‚·‚é(iscross==1‚Ì)
+// â˜…Crossã‚¯ãƒ©ã‚¹ Boardã‚¯ãƒ©ã‚¹ãŒCrossã®æ•°ã ã‘ä¿æŒã™ã‚‹(iscross==1ã®æ™‚)
 //---------------------------------------------------------------------------
-// ƒ{[ƒhƒƒ“ƒoƒf[ƒ^‚Ì’è‹`(2)
-// CrossƒNƒ‰ƒX‚Ì’è‹`
-Cross = function(id){
-	this.bx;	// Œğ·“_‚ÌXÀ•W(borderÀ•WŒn)‚ğ•Û‚·‚é
-	this.by;	// Œğ·“_‚ÌYÀ•W(borderÀ•WŒn)‚ğ•Û‚·‚é
-	this.px;	// Œğ·“_‚Ì•`‰æ—pXÀ•W‚ğ•Û‚·‚é
-	this.py;	// Œğ·“_‚Ì•`‰æ—pYÀ•W‚ğ•Û‚·‚é
+// ãƒœãƒ¼ãƒ‰ãƒ¡ãƒ³ãƒãƒ‡ãƒ¼ã‚¿ã®å®šç¾©(2)
+// Crossã‚¯ãƒ©ã‚¹ã®å®šç¾©
+Cross = function(){
+	this.bx;	// äº¤å·®ç‚¹ã®Xåº§æ¨™(borderåº§æ¨™ç³»)ã‚’ä¿æŒã™ã‚‹
+	this.by;	// äº¤å·®ç‚¹ã®Yåº§æ¨™(borderåº§æ¨™ç³»)ã‚’ä¿æŒã™ã‚‹
+	this.px;	// äº¤å·®ç‚¹ã®æç”»ç”¨Xåº§æ¨™ã‚’ä¿æŒã™ã‚‹
+	this.py;	// äº¤å·®ç‚¹ã®æç”»ç”¨Yåº§æ¨™ã‚’ä¿æŒã™ã‚‹
 
-	this.ques;	// Œğ·“_‚Ì–â‘èƒf[ƒ^(•“_)‚ğ•Û‚·‚é
-	this.qnum;	// Œğ·“_‚Ì–â‘èƒf[ƒ^(”š)‚ğ•Û‚·‚é
-	this.error;	// ƒGƒ‰[ƒf[ƒ^‚ğ•Û‚·‚é
-
-	this.allclear(id);
+	this.ques;	// äº¤å·®ç‚¹ã®å•é¡Œãƒ‡ãƒ¼ã‚¿(é»’ç‚¹)ã‚’ä¿æŒã™ã‚‹
+	this.qnum;	// äº¤å·®ç‚¹ã®å•é¡Œãƒ‡ãƒ¼ã‚¿(æ•°å­—)ã‚’ä¿æŒã™ã‚‹
+	this.error;	// ã‚¨ãƒ©ãƒ¼ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹
 };
 Cross.prototype = {
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
+	defques : 0,
+	defqnum : -1,
+
 	//---------------------------------------------------------------------------
-	// cross.allclear() Œğ·“_‚ÌˆÊ’u,•`‰æî•ñˆÈŠO‚ğƒNƒŠƒA‚·‚é
-	// cross.ansclear() Œğ·“_‚Ìerrorî•ñ‚ğƒNƒŠƒA‚·‚é
-	// cross.subclear() Œğ·“_‚Ìerrorî•ñ‚ğƒNƒŠƒA‚·‚é
-	// cross.isempty()  ƒvƒƒpƒeƒB‚ª‰Šú’l‚Æ“¯‚¶‚©”»•Ê‚·‚é
+	// cross.allclear() äº¤å·®ç‚¹ã®ä½ç½®,æç”»æƒ…å ±ä»¥å¤–ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
+	// cross.ansclear() äº¤å·®ç‚¹ã®erroræƒ…å ±ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
+	// cross.subclear() äº¤å·®ç‚¹ã®erroræƒ…å ±ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
 	//---------------------------------------------------------------------------
-	allclear : function(num) {
-		this.ques = 0;
-		this.qnum = -1;
+	allclear : function(id,isrec) {
+		if(this.ques!==this.defques){ if(isrec){ um.addOpe(k.CROSS, k.QUES, id, this.ques, this.defques);} this.ques=this.defques;}
+		if(this.qnum!==this.defqnum){ if(isrec){ um.addOpe(k.CROSS, k.QNUM, id, this.qnum, this.defqnum);} this.qnum=this.defqnum;}
 		this.error = 0;
 	},
-	ansclear : function(num) {
+	ansclear : function(id) {
 		this.error = 0;
 	},
-	subclear : function(num) {
+	subclear : function(id) {
 		this.error = 0;
-	},
-	isempty : function(){
-		return (this.qnum===bd.defcross.qnum);
 	}
 };
 
 //---------------------------------------------------------------------------
-// šBorderƒNƒ‰ƒX BoardƒNƒ‰ƒX‚ªBorder‚Ì”‚¾‚¯•Û‚·‚é(isborder==1‚Ì)
+// â˜…Borderã‚¯ãƒ©ã‚¹ Boardã‚¯ãƒ©ã‚¹ãŒBorderã®æ•°ã ã‘ä¿æŒã™ã‚‹(isborder==1ã®æ™‚)
 //---------------------------------------------------------------------------
-// ƒ{[ƒhƒƒ“ƒoƒf[ƒ^‚Ì’è‹`(3)
-// BorderƒNƒ‰ƒX‚Ì’è‹`
-Border = function(id){
-	this.bx;	// ‹«ŠEü‚ÌXÀ•W(borderÀ•WŒn)‚ğ•Û‚·‚é
-	this.by;	// ‹«ŠEü‚ÌYÀ•W(borderÀ•WŒn)‚ğ•Û‚·‚é
-	this.px;	// ‹«ŠEü‚Ì•`‰æXÀ•W‚ğ•Û‚·‚é
-	this.py;	// ‹«ŠEü‚Ì•`‰æYÀ•W‚ğ•Û‚·‚é
+// ãƒœãƒ¼ãƒ‰ãƒ¡ãƒ³ãƒãƒ‡ãƒ¼ã‚¿ã®å®šç¾©(3)
+// Borderã‚¯ãƒ©ã‚¹ã®å®šç¾©
+Border = function(){
+	this.bx;	// å¢ƒç•Œç·šã®Xåº§æ¨™(borderåº§æ¨™ç³»)ã‚’ä¿æŒã™ã‚‹
+	this.by;	// å¢ƒç•Œç·šã®Yåº§æ¨™(borderåº§æ¨™ç³»)ã‚’ä¿æŒã™ã‚‹
+	this.px;	// å¢ƒç•Œç·šã®æç”»Xåº§æ¨™ã‚’ä¿æŒã™ã‚‹
+	this.py;	// å¢ƒç•Œç·šã®æç”»Yåº§æ¨™ã‚’ä¿æŒã™ã‚‹
 
-	this.ques;	// ‹«ŠEü‚Ì–â‘èƒf[ƒ^‚ğ•Û‚·‚é(‹«ŠEü or ƒ}ƒCƒiƒŠƒYƒ€‚Ì•s“™†)
-	this.qnum;	// ‹«ŠEü‚Ì–â‘èƒf[ƒ^‚ğ•Û‚·‚é(ƒ}ƒCƒiƒŠƒYƒ€‚Ì”š)
-	this.qans;	// ‹«ŠEü‚Ì‰ñ“šƒf[ƒ^‚ğ•Û‚·‚é(‰ñ“š‹«ŠEü or ƒXƒŠƒŠƒ“‚È‚Ç‚Ìü)
-	this.qsub;	// ‹«ŠEü‚Ì•â•ƒf[ƒ^‚ğ•Û‚·‚é(1:•â•ü/2:~)
-	this.line;	// ü‚Ì‰ñ“šƒf[ƒ^‚ğ•Û‚·‚é
-	this.color;	// ü‚ÌF•ª‚¯ƒf[ƒ^‚ğ•Û‚·‚é
-	this.error;	// ƒGƒ‰[ƒf[ƒ^‚ğ•Û‚·‚é
+	this.ques;	// å¢ƒç•Œç·šã®å•é¡Œãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(å¢ƒç•Œç·š or ãƒã‚¤ãƒŠãƒªã‚ºãƒ ã®ä¸ç­‰å·)
+	this.qnum;	// å¢ƒç•Œç·šã®å•é¡Œãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(ãƒã‚¤ãƒŠãƒªã‚ºãƒ ã®æ•°å­—)
+	this.qans;	// å¢ƒç•Œç·šã®å›ç­”ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(å›ç­”å¢ƒç•Œç·š or ã‚¹ãƒªãƒªãƒ³ãªã©ã®ç·š)
+	this.qsub;	// å¢ƒç•Œç·šã®è£œåŠ©ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(1:è£œåŠ©ç·š/2:Ã—)
+	this.line;	// ç·šã®å›ç­”ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹
+	this.color;	// ç·šã®è‰²åˆ†ã‘ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹
+	this.error;	// ã‚¨ãƒ©ãƒ¼ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹
 
-	this.cellcc  = [-1,-1];	// —×ÚƒZƒ‹‚ÌID
-	this.crosscc = [-1,-1];	// —×ÚŒğ“_‚ÌID
-
-	this.allclear(id);
+	this.cellcc  = [null,null];	// éš£æ¥ã‚»ãƒ«ã®ID
+	this.crosscc = [null,null];	// éš£æ¥äº¤ç‚¹ã®ID
 };
 Border.prototype = {
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
+	defques : 0,
+	defqnum : -1,
+	defqans : 0,
+	defline : 0,
+	defqsub : 0,
+
 	//---------------------------------------------------------------------------
-	// border.allclear() ‹«ŠEü‚ÌˆÊ’u,•`‰æî•ñˆÈŠO‚ğƒNƒŠƒA‚·‚é
-	// border.ansclear() ‹«ŠEü‚Ìqans,qsub,line,color,errorî•ñ‚ğƒNƒŠƒA‚·‚é
-	// border.subclear() ‹«ŠEü‚Ìqsub,errorî•ñ‚ğƒNƒŠƒA‚·‚é
-	// border.isempty()  ƒvƒƒpƒeƒB‚ª‰Šú’l‚Æ“¯‚¶‚©”»•Ê‚·‚é
+	// border.allclear() å¢ƒç•Œç·šã®ä½ç½®,æç”»æƒ…å ±ä»¥å¤–ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
+	// border.ansclear() å¢ƒç•Œç·šã®qans,qsub,line,color,erroræƒ…å ±ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
+	// border.subclear() å¢ƒç•Œç·šã®qsub,erroræƒ…å ±ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
 	//---------------------------------------------------------------------------
-	allclear : function(num) {
-		this.ques = 0;
-		if(k.puzzleid==="mejilink" && num<k.qcols*(k.qrows-1)+(k.qcols-1)*k.qrows){ this.ques = 1;}
-		this.qnum = -1;
-		if(k.puzzleid==="tentaisho"){ this.qnum = 0;}
-		this.qans = 0;
-		this.qsub = 0;
-		if(k.puzzleid==="bosanowa"){ this.qsub = -1;}
-		this.line = 0;
+	allclear : function(id,isrec) {
+		if(this.ques!==this.defques){ if(isrec){ um.addOpe(k.BORDER, k.QUES, id, this.ques, this.defques);} this.ques=this.defques;}
+		if(this.qnum!==this.defqnum){ if(isrec){ um.addOpe(k.BORDER, k.QNUM, id, this.qnum, this.defqnum);} this.qnum=this.defqnum;}
+		if(this.qans!==this.defqans){ if(isrec){ um.addOpe(k.BORDER, k.QANS, id, this.qans, this.defqans);} this.qans=this.defqans;}
+		if(this.line!==this.defline){ if(isrec){ um.addOpe(k.BORDER, k.LINE, id, this.line, this.defline);} this.line=this.defline;}
+		if(this.qsub!==this.defqsub){ if(isrec){ um.addOpe(k.BORDER, k.QSUB, id, this.qsub, this.defqsub);} this.qsub=this.defqsub;}
 		this.color = "";
 		this.error = 0;
 	},
-	ansclear : function(num) {
-		this.qans = 0;
-		this.qsub = 0;
-		if(k.puzzleid==="bosanowa"){ this.qsub = -1;}
-		this.line = 0;
+	ansclear : function(id) {
+		if(this.qans!==this.defqans){ um.addOpe(k.BORDER, k.QANS, id, this.qans, this.defqans); this.qans=this.defqans;}
+		if(this.line!==this.defline){ um.addOpe(k.BORDER, k.LINE, id, this.line, this.defline); this.line=this.defline;}
+		if(this.qsub!==this.defqsub){ um.addOpe(k.BORDER, k.QSUB, id, this.qsub, this.defqsub); this.qsub=this.defqsub;}
 		this.color = "";
 		this.error = 0;
 	},
-	subclear : function(num) {
-		this.qsub = 0;
-		if(k.puzzleid==="bosanowa"){ this.qsub = -1;}
+	subclear : function(id) {
+		if(this.qsub!==this.defqsub){ um.addOpe(k.BORDER, k.QSUB, id, this.qsub, this.defqsub); this.qsub=this.defqsub;}
 		this.error = 0;
-	},
-	isempty : function(){
-		return ((this.qans === bd.defborder.qans) &&
-				(this.qsub === bd.defborder.qsub) &&
-				(this.ques === bd.defborder.ques) &&
-				(this.qnum === bd.defborder.qnum) &&
-				(this.line === bd.defborder.line));
 	}
 };
 
 //---------------------------------------------------------------------------
-// šEXCellƒNƒ‰ƒX BoardƒNƒ‰ƒX‚ªEXCell‚Ì”‚¾‚¯•Û‚·‚é
+// â˜…EXCellã‚¯ãƒ©ã‚¹ Boardã‚¯ãƒ©ã‚¹ãŒEXCellã®æ•°ã ã‘ä¿æŒã™ã‚‹
 //---------------------------------------------------------------------------
-// ƒ{[ƒhƒƒ“ƒoƒf[ƒ^‚Ì’è‹`(4)
-// EXCellƒNƒ‰ƒX‚Ì’è‹`
-EXCell = function(id){
-	this.bx;	// ƒZƒ‹‚ÌXÀ•W(borderÀ•WŒn)‚ğ•Û‚·‚é
-	this.by;	// ƒZƒ‹‚ÌYÀ•W(borderÀ•WŒn)‚ğ•Û‚·‚é
-	this.px;	// ƒZƒ‹‚Ì•`‰æ—pXÀ•W‚ğ•Û‚·‚é
-	this.py;	// ƒZƒ‹‚Ì•`‰æ—pYÀ•W‚ğ•Û‚·‚é
+// ãƒœãƒ¼ãƒ‰ãƒ¡ãƒ³ãƒãƒ‡ãƒ¼ã‚¿ã®å®šç¾©(4)
+// EXCellã‚¯ãƒ©ã‚¹ã®å®šç¾©
+EXCell = function(){
+	this.bx;	// ã‚»ãƒ«ã®Xåº§æ¨™(borderåº§æ¨™ç³»)ã‚’ä¿æŒã™ã‚‹
+	this.by;	// ã‚»ãƒ«ã®Yåº§æ¨™(borderåº§æ¨™ç³»)ã‚’ä¿æŒã™ã‚‹
+	this.px;	// ã‚»ãƒ«ã®æç”»ç”¨Xåº§æ¨™ã‚’ä¿æŒã™ã‚‹
+	this.py;	// ã‚»ãƒ«ã®æç”»ç”¨Yåº§æ¨™ã‚’ä¿æŒã™ã‚‹
 
-	this.qnum;	// ƒZƒ‹‚Ì–â‘èƒf[ƒ^(”š)‚ğ•Û‚·‚é(”š or ƒJƒbƒNƒ‚Ì‰E‘¤)
-	this.direc;	// ƒZƒ‹‚Ì–â‘èƒf[ƒ^(•ûŒü)‚ğ•Û‚·‚é(–îˆó or ƒJƒbƒNƒ‚Ì‰º‘¤)
-
-	this.allclear(id);
+	this.qnum;	// ã‚»ãƒ«ã®å•é¡Œãƒ‡ãƒ¼ã‚¿(æ•°å­—)ã‚’ä¿æŒã™ã‚‹(æ•°å­— or ã‚«ãƒƒã‚¯ãƒ­ã®å³å´)
+	this.qdir;	// ã‚»ãƒ«ã®å•é¡Œãƒ‡ãƒ¼ã‚¿(æ–¹å‘)ã‚’ä¿æŒã™ã‚‹(çŸ¢å° or ã‚«ãƒƒã‚¯ãƒ­ã®ä¸‹å´)
 };
 EXCell.prototype = {
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
+	defqnum : -1,
+	defqdir : 0,
+
 	//---------------------------------------------------------------------------
-	// excell.allclear() ƒZƒ‹‚ÌˆÊ’u,•`‰æî•ñˆÈŠO‚ğƒNƒŠƒA‚·‚é
-	// excell.ansclear() ƒZƒ‹‚Ìerrorî•ñ‚ğƒNƒŠƒA‚·‚é
-	// excell.subclear() ƒZƒ‹‚Ìerrorî•ñ‚ğƒNƒŠƒA‚·‚é
-	// excell.isempty()  ƒvƒƒpƒeƒB‚ª‰Šú’l‚Æ“¯‚¶‚©”»•Ê‚·‚é
+	// excell.allclear() ã‚»ãƒ«ã®ä½ç½®,æç”»æƒ…å ±ä»¥å¤–ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
+	// excell.ansclear() ã‚»ãƒ«ã®erroræƒ…å ±ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
+	// excell.subclear() ã‚»ãƒ«ã®erroræƒ…å ±ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
 	//---------------------------------------------------------------------------
-	allclear : function(num) {
-		this.qnum = -1;
-		if(k.puzzleid==="box"){ this.qnum = 0;}
-		this.direc = 0;
-		this.error = 0;
-		if(k.puzzleid==="tilepaint"||k.puzzleid==="kakuro"){ this.qnum = this.direc = 0;}
-		if(k.puzzleid==="triplace"){ this.qnum = this.direc = -1;}
-	},
-	ansclear : function(num) {
+	allclear : function(id,isrec) {
+		if(this.qnum!==this.defqnum){ if(isrec){ um.addOpe(k.EXCELL, k.QNUM, id, this.qnum, this.defqnum);} this.qnum=this.defqnum;}
+		if(this.qdir!==this.defqdir){ if(isrec){ um.addOpe(k.EXCELL, k.QDIR, id, this.qdir, this.defqdir);} this.qdir=this.defqdir;}
 		this.error = 0;
 	},
-	subclear : function(num) {
+	ansclear : function(id) {
 		this.error = 0;
 	},
-	isempty : function(){
-		return ((this.qnum === bd.defexcell.qnum) &&
-				(this.direc=== bd.defexcell.direc));
+	subclear : function(id) {
+		this.error = 0;
 	}
 };
 
 //---------------------------------------------------------------------------
-// šBoardƒNƒ‰ƒX ”Õ–Ê‚Ìî•ñ‚ğ•Û‚·‚éBCell, Cross, Border‚ÌƒIƒuƒWƒFƒNƒg‚à•Û‚·‚é
+// â˜…Boardã‚¯ãƒ©ã‚¹ ç›¤é¢ã®æƒ…å ±ã‚’ä¿æŒã™ã‚‹ã€‚Cell, Cross, Borderã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚‚ä¿æŒã™ã‚‹
 //---------------------------------------------------------------------------
-// BoardƒNƒ‰ƒX‚Ì’è‹`
+// Boardã‚¯ãƒ©ã‚¹ã®å®šç¾©
 Board = function(){
 	this.cell   = [];
 	this.cross  = [];
 	this.border = [];
 	this.excell = [];
 
-	this.cellmax   = 0;		// ƒZƒ‹‚Ì”
-	this.crossmax  = 0;		// Œğ“_‚Ì”
-	this.bdmax     = 0;		// ‹«ŠEü‚Ì”
-	this.excellmax = 0;		// Šg’£ƒZƒ‹‚Ì”
+	this.cellmax   = 0;		// ã‚»ãƒ«ã®æ•°
+	this.crossmax  = 0;		// äº¤ç‚¹ã®æ•°
+	this.bdmax     = 0;		// å¢ƒç•Œç·šã®æ•°
+	this.excellmax = 0;		// æ‹¡å¼µã‚»ãƒ«ã®æ•°
 
-	this._cnum  = {};		// cnumŠÖ”‚ÌƒLƒƒƒbƒVƒ…
-	this._xnum  = {};		// xnumŠÖ”‚ÌƒLƒƒƒbƒVƒ…
-	this._bnum  = {};		// bnumŠÖ”‚ÌƒLƒƒƒbƒVƒ…
-	this._exnum = {};		// exnumŠÖ”‚ÌƒLƒƒƒbƒVƒ…
+	this.bdinside = 0;		// ç›¤é¢ã®å†…å´(å¤–æ ä¸Šã§ãªã„)ã«å­˜åœ¨ã™ã‚‹å¢ƒç•Œç·šã®æœ¬æ•°
 
-	this.bdinside = 0;		// ”Õ–Ê‚Ì“à‘¤(ŠO˜gã‚Å‚È‚¢)‚É‘¶İ‚·‚é‹«ŠEü‚Ì–{”
+	this.maxnum   = 255;	// å…¥åŠ›ã§ãã‚‹æœ€å¤§ã®æ•°å­—
 
-	this.maxnum   = 255;	// “ü—Í‚Å‚«‚éÅ‘å‚Ì”š
+	this.numberAsObject = false;	// æ•°å­—ã‚’è¡¨ç¤ºã™ã‚‹æ™‚ã«ã€æ•°å­—ä»¥å¤–ã§è¡¨ç¤ºã™ã‚‹
 
-	// ”Õ–Ê‚Ì”ÍˆÍ
+	// ç›¤é¢ã®ç¯„å›²
 	this.minbx = 0;
 	this.minby = 0;
 	this.maxbx = 2*k.qcols;
 	this.maxby = 2*k.qrows;
 
-	// ƒfƒtƒHƒ‹ƒg‚ÌƒZƒ‹‚È‚Ç
-	this.defcell   = new Cell(0);
-	this.defcross  = new Cross(0);
-	this.defborder = new Border(0);
-	this.defexcell = new EXCell(0);
-
+	// isLineNGé–¢é€£ã®å¤‰æ•°ãªã©
 	this.enableLineNG = false;
+	this.enableLineCombined = false;
 
+	this.isLPobj = {};
+	this.isLPobj[k.UP] = {11:1,12:1,14:1,15:1};
+	this.isLPobj[k.DN] = {11:1,12:1,16:1,17:1};
+	this.isLPobj[k.LT] = {11:1,13:1,15:1,16:1};
+	this.isLPobj[k.RT] = {11:1,13:1,14:1,17:1};
+
+	this.noLPobj = {};
+	this.noLPobj[k.UP] = {1:1,4:1,5:1,13:1,16:1,17:1,21:1};
+	this.noLPobj[k.DN] = {1:1,2:1,3:1,13:1,14:1,15:1,21:1};
+	this.noLPobj[k.LT] = {1:1,2:1,5:1,12:1,14:1,17:1,22:1};
+	this.noLPobj[k.RT] = {1:1,3:1,4:1,12:1,15:1,16:1,22:1};
+
+	// ç›¤é¢ã‚µã‚¤ã‚ºã®åˆæœŸåŒ–
 	this.initBoardSize(k.qcols,k.qrows);
-	this.setFunctions();
 };
 Board.prototype = {
 	//---------------------------------------------------------------------------
-	// bd.initBoardSize() w’è‚³‚ê‚½ƒTƒCƒY‚Å”Õ–Ê‚Ì‰Šú‰»‚ğs‚¤
-	// bd.initSpecial()   ƒpƒYƒ‹ŒÂ•Ê‚Å‰Šú‰»‚ğs‚¢‚½‚¢ˆ—‚ğ“ü—Í‚·‚é
+	// bd.initBoardSize() æŒ‡å®šã•ã‚ŒãŸã‚µã‚¤ã‚ºã§ç›¤é¢ã®åˆæœŸåŒ–ã‚’è¡Œã†
+	// bd.initSpecial()   ãƒ‘ã‚ºãƒ«å€‹åˆ¥ã§åˆæœŸåŒ–ã‚’è¡Œã„ãŸã„å‡¦ç†ã‚’å…¥åŠ›ã™ã‚‹
 	//---------------------------------------------------------------------------
 	initBoardSize : function(col,row){
+		this.allclear(false); // initGroupã§ã€æ–°Objectã«å¯¾ã—ã¦ã¯allclearãŒå€‹åˆ¥ã«å‘¼ã°ã‚Œã¾ã™
+
 						{ this.initGroup(k.CELL,   col, row);}
 		if(!!k.iscross) { this.initGroup(k.CROSS,  col, row);}
 		if(!!k.isborder){ this.initGroup(k.BORDER, col, row);}
@@ -265,26 +254,29 @@ Board.prototype = {
 
 		this.setminmax();
 		this.setposAll();
-		if(!base.initProcess){ this.allclear();}
 	},
 	initSpecial : function(){ },
 
 	//---------------------------------------------------------------------------
-	// bd.initGroup()     ”‚ğ”äŠr‚µ‚ÄAƒIƒuƒWƒFƒNƒg‚Ì’Ç‰Á‚©íœ‚ğs‚¤
-	// bd.getGroup()      w’è‚µ‚½ƒ^ƒCƒv‚ÌƒIƒuƒWƒFƒNƒg”z—ñ‚ğ•Ô‚·
-	// bd.estimateSize()  w’è‚µ‚½ƒIƒuƒWƒFƒNƒg‚ª‚¢‚­‚Â‚É‚È‚é‚©ŒvZ‚ğs‚¤
-	// bd.newObject()     w’è‚³‚ê‚½ƒ^ƒCƒv‚ÌV‚µ‚¢ƒIƒuƒWƒFƒNƒg‚ğ•Ô‚·
+	// bd.initGroup()     æ•°ã‚’æ¯”è¼ƒã—ã¦ã€ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è¿½åŠ ã‹å‰Šé™¤ã‚’è¡Œã†
+	// bd.getGroup()      æŒ‡å®šã—ãŸã‚¿ã‚¤ãƒ—ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—ã‚’è¿”ã™
+	// bd.estimateSize()  æŒ‡å®šã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒã„ãã¤ã«ãªã‚‹ã‹è¨ˆç®—ã‚’è¡Œã†
+	// bd.newObject()     æŒ‡å®šã•ã‚ŒãŸã‚¿ã‚¤ãƒ—ã®æ–°ã—ã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¿”ã™
+	// bd.getObject()     æŒ‡å®šã•ã‚ŒãŸã‚¿ã‚¤ãƒ—ãƒ»IDã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	initGroup : function(type, col, row){
 		var group = this.getGroup(type);
 		var len = this.estimateSize(type, col, row), clen = group.length;
-		// Šù‘¶‚ÌƒTƒCƒY‚æ‚è¬‚³‚­‚È‚é‚È‚çdelete‚·‚é
+		// æ—¢å­˜ã®ã‚µã‚¤ã‚ºã‚ˆã‚Šå°ã•ããªã‚‹ãªã‚‰deleteã™ã‚‹
 		if(clen>len){
 			for(var id=clen-1;id>=len;id--){ delete group[id]; group.pop();}
 		}
-		// Šù‘¶‚ÌƒTƒCƒY‚æ‚è‘å‚«‚­‚È‚é‚È‚ç’Ç‰Á‚·‚é
+		// æ—¢å­˜ã®ã‚µã‚¤ã‚ºã‚ˆã‚Šå¤§ãããªã‚‹ãªã‚‰è¿½åŠ ã™ã‚‹
 		else if(clen<len){
-			for(var id=clen;id<len;id++){ group.push(this.newObject(type,id));}
+			for(var id=clen;id<len;id++){
+				group.push(this.newObject(type));
+				group[id].allclear(id,false);
+			}
 		}
 		this.setposGroup(type);
 		return (len-clen);
@@ -309,24 +301,32 @@ Board.prototype = {
 		}
 		return 0;
 	},
-	newObject : function(type,id){
-		if     (type===k.CELL)  { return (new Cell(id));}
-		else if(type===k.CROSS) { return (new Cross(id));}
-		else if(type===k.BORDER){ return (new Border(id));}
-		else if(type===k.EXCELL){ return (new EXCell(id));}
+	newObject : function(type){
+		if     (type===k.CELL)  { return (new Cell());}
+		else if(type===k.CROSS) { return (new Cross());}
+		else if(type===k.BORDER){ return (new Border());}
+		else if(type===k.EXCELL){ return (new EXCell());}
+		return (void 0);
+	},
+	getObject : function(type,id){
+		if     (type===k.CELL)  { return bd.cell[id];}
+		else if(type===k.CROSS) { return bd.cross[id];}
+		else if(type===k.BORDER){ return bd.border[id];}
+		else if(type===k.EXCELL){ return bd.excell[id];}
+		return (void 0);
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.setposAll()    ‘S‚Ä‚ÌCell, Cross, BorderƒIƒuƒWƒFƒNƒg‚ÌsetposCell()“™‚ğŒÄ‚Ño‚·
-	//                   ”Õ–Ê‚ÌV‹Kì¬‚âAŠg‘å/k¬/‰ñ“]/”½“]‚È‚Ç‚ÉŒÄ‚Ño‚³‚ê‚é
-	// bd.setposGroup()  w’è‚³‚ê‚½ƒ^ƒCƒv‚ÌsetposŠÖ”‚ğŒÄ‚Ño‚·
-	// bd.setposCell()   ŠY“–‚·‚éid‚ÌƒZƒ‹‚Ìbx,byƒvƒƒpƒeƒB‚ğİ’è‚·‚é
-	// bd.setposCross()  ŠY“–‚·‚éid‚ÌŒğ·“_‚Ìbx,byƒvƒƒpƒeƒB‚ğİ’è‚·‚é
-	// bd.setposBorder() ŠY“–‚·‚éid‚Ì‹«ŠEü/Line‚Ìbx,byƒvƒƒpƒeƒB‚ğİ’è‚·‚é
-	// bd.setposEXCell() ŠY“–‚·‚éid‚ÌExtendƒZƒ‹‚Ìbx,byƒvƒƒpƒeƒB‚ğİ’è‚·‚é
-	// bd.set_xnum()     cross‚Í‘¶İ‚µ‚È‚¢‚ªAbd._xnum‚¾‚¯İ’è‚µ‚½‚¢ê‡‚ÉŒÄ‚Ño‚·
+	// bd.setposAll()    å…¨ã¦ã®Cell, Cross, Borderã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®setposCell()ç­‰ã‚’å‘¼ã³å‡ºã™
+	//                   ç›¤é¢ã®æ–°è¦ä½œæˆã‚„ã€æ‹¡å¤§/ç¸®å°/å›è»¢/åè»¢æ™‚ãªã©ã«å‘¼ã³å‡ºã•ã‚Œã‚‹
+	// bd.setposGroup()  æŒ‡å®šã•ã‚ŒãŸã‚¿ã‚¤ãƒ—ã®setposé–¢æ•°ã‚’å‘¼ã³å‡ºã™
+	// bd.setposCell()   è©²å½“ã™ã‚‹idã®ã‚»ãƒ«ã®bx,byãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’è¨­å®šã™ã‚‹
+	// bd.setposCross()  è©²å½“ã™ã‚‹idã®äº¤å·®ç‚¹ã®bx,byãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’è¨­å®šã™ã‚‹
+	// bd.setposBorder() è©²å½“ã™ã‚‹idã®å¢ƒç•Œç·š/Lineã®bx,byãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’è¨­å®šã™ã‚‹
+	// bd.setposEXCell() è©²å½“ã™ã‚‹idã®Extendã‚»ãƒ«ã®bx,byãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’è¨­å®šã™ã‚‹
+	// bd.set_xnum()     crossã¯å­˜åœ¨ã—ãªã„ãŒã€bd._xnumã ã‘è¨­å®šã—ãŸã„å ´åˆã«å‘¼ã³å‡ºã™
 	//---------------------------------------------------------------------------
-	// setposŠÖ˜AŠÖ” <- ŠeCell“™‚ª‚Á‚Ä‚¢‚é‚Æƒƒ‚ƒŠ‚ğŒƒ‚µ‚­Á”ï‚·‚é‚Ì‚Å‚±‚±‚É’u‚­‚±‚Æ.
+	// setposé–¢é€£é–¢æ•° <- å„Cellç­‰ãŒæŒã£ã¦ã„ã‚‹ã¨ãƒ¡ãƒ¢ãƒªã‚’æ¿€ã—ãæ¶ˆè²»ã™ã‚‹ã®ã§ã“ã“ã«ç½®ãã“ã¨.
 	setposAll : function(){
 		this.setposCells();
 		if(!!k.iscross) { this.setposCrosses();}
@@ -348,7 +348,7 @@ Board.prototype = {
 		for(var id=0;id<this.cellmax;id++){
 			var obj = this.cell[id];
 			obj.bx = (id%k.qcols)*2+1;
-			obj.by = mf(id/k.qcols)*2+1;
+			obj.by = ((id/k.qcols)<<1)+1;
 		}
 	},
 	setposCrosses : function(){
@@ -356,7 +356,7 @@ Board.prototype = {
 		for(var id=0;id<this.crossmax;id++){
 			var obj = this.cross[id];
 			obj.bx = (id%(k.qcols+1))*2;
-			obj.by = mf(id/(k.qcols+1))*2;
+			obj.by = (id/(k.qcols+1))<<1;
 		}
 	},
 	setposBorders : function(){
@@ -364,8 +364,8 @@ Board.prototype = {
 		this.bdmax = this.border.length;
 		for(var id=0;id<this.bdmax;id++){
 			var obj=this.border[id], i=id;
-			if(i>=0 && i<(k.qcols-1)*k.qrows){ obj.bx=(i%(k.qcols-1))*2+2; obj.by=mf(i/(k.qcols-1))*2+1;} i-=((k.qcols-1)*k.qrows);
-			if(i>=0 && i<k.qcols*(k.qrows-1)){ obj.bx=(i%k.qcols)*2+1;     obj.by=mf(i/k.qcols)*2+2;    } i-=(k.qcols*(k.qrows-1));
+			if(i>=0 && i<(k.qcols-1)*k.qrows){ obj.bx=(i%(k.qcols-1))*2+2; obj.by=((i/(k.qcols-1))<<1)+1;} i-=((k.qcols-1)*k.qrows);
+			if(i>=0 && i<k.qcols*(k.qrows-1)){ obj.bx=(i%k.qcols)*2+1;     obj.by=((i/k.qcols)<<1)+2;    } i-=(k.qcols*(k.qrows-1));
 			if(k.isborder===2){
 				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;     obj.by=0;        } i-=k.qcols;
 				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;     obj.by=2*k.qrows;} i-=k.qcols;
@@ -398,30 +398,11 @@ Board.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.setcacheAll() ‘S‚Ä‚ÌCell, Cross, BorderƒIƒuƒWƒFƒNƒg‚Ì_cnum“™‚ğƒLƒƒƒbƒVƒ…‚·‚é
+	// bd.setcacheAll() å…¨ã¦ã®Cell, Cross, Borderã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®_cnumç­‰ã‚’ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã™ã‚‹
 	//---------------------------------------------------------------------------
 	setcacheAll : function(){
-		this._cnum = {};
-		this._xnum = {};
-		this._bnum = {};
-		this._exnum = {};
-
-		for(var id=0;id<this.cellmax;id++){
-			var obj = this.cell[id];
-			this._cnum[[obj.bx, obj.by].join("_")] = id;
-		}
-		for(var id=0;id<this.crossmax;id++){
-			var obj = this.cross[id];
-			this._xnum[[obj.bx, obj.by].join("_")] = id;
-		}
-		if(k.iscross===0){
-			for(var by=0;by<=this.maxby;by+=2){ for(var bx=0;bx<=this.maxbx;bx+=2){
-				this._xnum[[bx, by].join("_")] = (bx>>1)+(by>>1)*(k.qcols+1);
-			}}
-		}
 		for(var id=0;id<this.bdmax;id++){
 			var obj = this.border[id];
-			this._bnum[[obj.bx, obj.by].join("_")] = id;
 
 			obj.cellcc[0] = this.cnum(obj.bx-(obj.by&1), obj.by-(obj.bx&1));
 			obj.cellcc[1] = this.cnum(obj.bx+(obj.by&1), obj.by+(obj.bx&1));
@@ -429,16 +410,12 @@ Board.prototype = {
 			obj.crosscc[0] = this.xnum(obj.bx-(obj.bx&1), obj.by-(obj.by&1));
 			obj.crosscc[1] = this.xnum(obj.bx+(obj.bx&1), obj.by+(obj.by&1));
 		}
-		for(var id=0;id<this.excellmax;id++){
-			var obj = this.excell[id];
-			this._exnum[[obj.bx, obj.by].join("_")] = id;
-		}
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.setcoordAll() ‘S‚Ä‚ÌCell, Cross, BorderƒIƒuƒWƒFƒNƒg‚ÌsetcoordCell()“™‚ğŒÄ‚Ño‚·
-	// bd.setminmax()   ”Õ–Ê‚Ìbx,by‚ÌÅ¬’l/Å‘å’l‚ğƒZƒbƒg‚·‚é
-	// bd.isinside()    w’è‚³‚ê‚½(bx,by)‚ª”Õ–Ê“à‚©‚Ç‚¤‚©”»’f‚·‚é
+	// bd.setcoordAll() å…¨ã¦ã®Cell, Cross, Borderã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®setcoordCell()ç­‰ã‚’å‘¼ã³å‡ºã™
+	// bd.setminmax()   ç›¤é¢ã®bx,byã®æœ€å°å€¤/æœ€å¤§å€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
+	// bd.isinside()    æŒ‡å®šã•ã‚ŒãŸ(bx,by)ãŒç›¤é¢å†…ã‹ã©ã†ã‹åˆ¤æ–­ã™ã‚‹
 	//---------------------------------------------------------------------------
 	setcoordAll : function(){
 		var x0=k.p0.x, y0=k.p0.y;
@@ -489,23 +466,26 @@ Board.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.allclear() ‘S‚Ä‚ÌCell, Cross, BorderƒIƒuƒWƒFƒNƒg‚Ìallclear()‚ğŒÄ‚Ño‚·
-	// bd.ansclear() ‘S‚Ä‚ÌCell, Cross, BorderƒIƒuƒWƒFƒNƒg‚Ìansclear()‚ğŒÄ‚Ño‚·
-	// bd.subclear() ‘S‚Ä‚ÌCell, Cross, BorderƒIƒuƒWƒFƒNƒg‚Ìsubclear()‚ğŒÄ‚Ño‚·
-	// bd.errclear() ‘S‚Ä‚ÌCell, Cross, BorderƒIƒuƒWƒFƒNƒg‚ÌerrorƒvƒƒpƒeƒB‚ğ0‚É‚µ‚ÄACanvas‚ğÄ•`‰æ‚·‚é
+	// bd.allclear() å…¨ã¦ã®Cell, Cross, Borderã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®allclear()ã‚’å‘¼ã³å‡ºã™
+	// bd.ansclear() å…¨ã¦ã®Cell, Cross, Borderã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ansclear()ã‚’å‘¼ã³å‡ºã™
+	// bd.subclear() å…¨ã¦ã®Cell, Cross, Borderã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®subclear()ã‚’å‘¼ã³å‡ºã™
+	// bd.errclear() å…¨ã¦ã®Cell, Cross, Borderã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®errorãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’0ã«ã—ã¦ã€Canvasã‚’å†æç”»ã™ã‚‹
 	//---------------------------------------------------------------------------
-	allclear : function(){
-		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].allclear(i);}
-		for(var i=0;i<this.crossmax ;i++){ this.cross[i].allclear(i);}
-		for(var i=0;i<this.bdmax    ;i++){ this.border[i].allclear(i);}
-		for(var i=0;i<this.excellmax;i++){ this.excell[i].allclear(i);}
+	// å‘¼ã³å‡ºã—å…ƒï¼šthis.initBoardSize()
+	allclear : function(isrec){
+		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].allclear(i,isrec);}
+		for(var i=0;i<this.crossmax ;i++){ this.cross[i].allclear(i,isrec);}
+		for(var i=0;i<this.bdmax    ;i++){ this.border[i].allclear(i,isrec);}
+		for(var i=0;i<this.excellmax;i++){ this.excell[i].allclear(i,isrec);}
 	},
+	// å‘¼ã³å‡ºã—å…ƒï¼šå›ç­”æ¶ˆå»ãƒœã‚¿ãƒ³æŠ¼ã—ãŸæ™‚
 	ansclear : function(){
 		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].ansclear(i);}
 		for(var i=0;i<this.crossmax ;i++){ this.cross[i].ansclear(i);}
 		for(var i=0;i<this.bdmax    ;i++){ this.border[i].ansclear(i);}
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].ansclear(i);}
 	},
+	// å‘¼ã³å‡ºã—å…ƒï¼šè£œåŠ©æ¶ˆå»ãƒœã‚¿ãƒ³æŠ¼ã—ãŸæ™‚
 	subclear : function(){
 		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].subclear(i);}
 		for(var i=0;i<this.crossmax ;i++){ this.cross[i].subclear(i);}
@@ -526,62 +506,34 @@ Board.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.idnum()  (X,Y)‚ÌˆÊ’u‚É‚ ‚éƒIƒuƒWƒFƒNƒg‚ÌID‚ğ•Ô‚·
+	// bd.idnum()  (X,Y)ã®ä½ç½®ã«ã‚ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®IDã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	idnum : function(type,bx,by,qc,qr){
-		if(qc===(void 0)){
-			if     (type===k.CELL)  { return this.cnum(bx,by);}
-			else if(type===k.CROSS) { return this.xnum(bx,by);}
-			else if(type===k.BORDER){ return this.bnum(bx,by);}
-			else if(type===k.EXCELL){ return this.exnum(bx,by);}
-		}
-		else{
-			if     (type===k.CELL)  { return this.cnum2(bx,by,qc,qr);}
-			else if(type===k.CROSS) { return this.xnum2(bx,by,qc,qr);}
-			else if(type===k.BORDER){ return this.bnum2(bx,by,qc,qr);}
-			else if(type===k.EXCELL){ return this.exnum2(bx,by,qc,qr);}
-		}
-		return -1;
+		if     (type===k.CELL)  { return this.cnum(bx,by,qc,qr);}
+		else if(type===k.CROSS) { return this.xnum(bx,by,qc,qr);}
+		else if(type===k.BORDER){ return this.bnum(bx,by,qc,qr);}
+		else if(type===k.EXCELL){ return this.exnum(bx,by,qc,qr);}
+		return null;
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.cnum()   (X,Y)‚ÌˆÊ’u‚É‚ ‚éCell‚ÌID‚ğ•Ô‚·
-	// bd.xnum()   (X,Y)‚ÌˆÊ’u‚É‚ ‚éCross‚ÌID‚ğ•Ô‚·
-	// bd.bnum()   (X,Y)‚ÌˆÊ’u‚É‚ ‚éBorder‚ÌID‚ğ•Ô‚·
-	// bd.exnum()  (X,Y)‚ÌˆÊ’u‚É‚ ‚éextendCell‚ÌID‚ğ•Ô‚·
+	// bd.cnum()  (X,Y)ã®ä½ç½®ã«ã‚ã‚‹Cellã®IDã‚’ã€ç›¤é¢ã®å¤§ãã•ã‚’(qcÃ—qr)ã§è¨ˆç®—ã—ã¦è¿”ã™
+	// bd.xnum()  (X,Y)ã®ä½ç½®ã«ã‚ã‚‹Crossã®IDã‚’ã€ç›¤é¢ã®å¤§ãã•ã‚’(qcÃ—qr)ã§è¨ˆç®—ã—ã¦è¿”ã™
+	// bd.bnum()  (X,Y)ã®ä½ç½®ã«ã‚ã‚‹Borderã®IDã‚’ã€ç›¤é¢ã®å¤§ãã•ã‚’(qcÃ—qr)ã§è¨ˆç®—ã—ã¦è¿”ã™
+	// bd.exnum() (X,Y)ã®ä½ç½®ã«ã‚ã‚‹extendCellã®IDã‚’ã€ç›¤é¢ã®å¤§ãã•ã‚’(qcÃ—qr)ã§è¨ˆç®—ã—ã¦è¿”ã™
 	//---------------------------------------------------------------------------
-	cnum : function(bx,by){
-		var key = [bx,by].join("_");
-		return (this._cnum[key]!==(void 0) ? this._cnum[key] : -1);
-	},
-	xnum : function(bx,by){
-		var key = [bx,by].join("_");
-		return (this._xnum[key]!==(void 0) ? this._xnum[key] : -1);
-	},
-	bnum : function(bx,by){
-		var key = [bx,by].join("_");
-		return (this._bnum[key]!==(void 0) ? this._bnum[key] : -1);
-	},
-	exnum : function(bx,by){
-		var key = [bx,by].join("_");
-		return (this._exnum[key]!==(void 0) ? this._exnum[key] : -1);
-	},
-
-	//---------------------------------------------------------------------------
-	// bd.cnum2()  (X,Y)‚ÌˆÊ’u‚É‚ ‚éCell‚ÌID‚ğA”Õ–Ê‚Ì‘å‚«‚³‚ğ(qc~qr)‚ÅŒvZ‚µ‚Ä•Ô‚·
-	// bd.xnum2()  (X,Y)‚ÌˆÊ’u‚É‚ ‚éCross‚ÌID‚ğA”Õ–Ê‚Ì‘å‚«‚³‚ğ(qc~qr)‚ÅŒvZ‚µ‚Ä•Ô‚·
-	// bd.bnum2()  (X,Y)‚ÌˆÊ’u‚É‚ ‚éBorder‚ÌID‚ğA”Õ–Ê‚Ì‘å‚«‚³‚ğ(qc~qr)‚ÅŒvZ‚µ‚Ä•Ô‚·
-	// bd.exnum2() (X,Y)‚ÌˆÊ’u‚É‚ ‚éextendCell‚ÌID‚ğA”Õ–Ê‚Ì‘å‚«‚³‚ğ(qc~qr)‚ÅŒvZ‚µ‚Ä•Ô‚·
-	//---------------------------------------------------------------------------
-	cnum2 : function(bx,by,qc,qr){
-		if((bx<0||bx>2*qc||by<0||by>2*qr)||(!(bx&1))||(!(by&1))){ return -1;}
+	cnum : function(bx,by,qc,qr){
+		if(qc===(void 0)){ qc=k.qcols; qr=k.qrows;}
+		if((bx<0||bx>(qc<<1)||by<0||by>(qr<<1))||(!(bx&1))||(!(by&1))){ return null;}
 		return (bx>>1)+(by>>1)*qc;
 	},
-	xnum2 : function(bx,by,qc,qr){
-		if((bx<0||bx>2*qc||by<0||by>2*qr)||(!!(bx&1))||(!!(by&1))){ return -1;}
+	xnum : function(bx,by,qc,qr){
+		if(qc===(void 0)){ qc=k.qcols; qr=k.qrows;}
+		if((bx<0||bx>(qc<<1)||by<0||by>(qr<<1))||(!!(bx&1))||(!!(by&1))){ return null;}
 		return (bx>>1)+(by>>1)*(qc+1);
 	},
-	bnum2 : function(bx,by,qc,qr){
+	bnum : function(bx,by,qc,qr){
+		if(qc===(void 0)){ qc=k.qcols; qr=k.qrows;}
 		if(bx>=1&&bx<=2*qc-1&&by>=1&&by<=2*qr-1){
 			if     (!(bx&1) &&  (by&1)){ return ((bx>>1)-1)+(by>>1)*(qc-1);}
 			else if( (bx&1) && !(by&1)){ return (bx>>1)+((by>>1)-1)*qc+(qc-1)*qr;}
@@ -592,9 +544,10 @@ Board.prototype = {
 			else if(bx===0   &&(by&1)&&(by>=1&&by<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+(by>>1);}
 			else if(bx===2*qc&&(by&1)&&(by>=1&&by<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+qr+(by>>1);}
 		}
-		return -1;
+		return null;
 	},
-	exnum2 : function(bx,by,qc,qr){
+	exnum : function(bx,by,qc,qr){
+		if(qc===(void 0)){ qc=k.qcols; qr=k.qrows;}
 		if(k.isexcell===1){
 			if(bx===-1&&by===-1){ return qc+qr;}
 			else if(by===-1&&bx>0&&bx<2*qc){ return (bx>>1);}
@@ -610,11 +563,11 @@ Board.prototype = {
 			else if(bx===-1    &&by===2*qr+1){ return 2*qc+2*qr+2;}
 			else if(bx===2*qc+1&&by===2*qr+1){ return 2*qc+2*qr+3;}
 		}
-		return -1;
+		return null;
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.objectinside() À•W(x1,y1)-(x2,y2)‚ÉŠÜ‚Ü‚ê‚éƒIƒuƒWƒFƒNƒg‚ÌIDƒŠƒXƒg‚ğæ“¾‚·‚é
+	// bd.objectinside() åº§æ¨™(x1,y1)-(x2,y2)ã«å«ã¾ã‚Œã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®IDãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 	//---------------------------------------------------------------------------
 	objectinside : function(type,x1,y1,x2,y2){
 		if     (type===k.CELL)  { return this.cellinside  (x1,y1,x2,y2);}
@@ -625,24 +578,24 @@ Board.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.cellinside()   À•W(x1,y1)-(x2,y2)‚ÉŠÜ‚Ü‚ê‚éCell‚ÌIDƒŠƒXƒg‚ğæ“¾‚·‚é
-	// bd.crossinside()  À•W(x1,y1)-(x2,y2)‚ÉŠÜ‚Ü‚ê‚éCross‚ÌIDƒŠƒXƒg‚ğæ“¾‚·‚é
-	// bd.borderinside() À•W(x1,y1)-(x2,y2)‚ÉŠÜ‚Ü‚ê‚éBorder‚ÌIDƒŠƒXƒg‚ğæ“¾‚·‚é
-	// bd.excellinside() À•W(x1,y1)-(x2,y2)‚ÉŠÜ‚Ü‚ê‚éExcell‚ÌIDƒŠƒXƒg‚ğæ“¾‚·‚é
+	// bd.cellinside()   åº§æ¨™(x1,y1)-(x2,y2)ã«å«ã¾ã‚Œã‚‹Cellã®IDãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
+	// bd.crossinside()  åº§æ¨™(x1,y1)-(x2,y2)ã«å«ã¾ã‚Œã‚‹Crossã®IDãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
+	// bd.borderinside() åº§æ¨™(x1,y1)-(x2,y2)ã«å«ã¾ã‚Œã‚‹Borderã®IDãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
+	// bd.excellinside() åº§æ¨™(x1,y1)-(x2,y2)ã«å«ã¾ã‚Œã‚‹Excellã®IDãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 	//---------------------------------------------------------------------------
 	cellinside : function(x1,y1,x2,y2){
 		var clist = [];
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
-			var c = this._cnum[[bx,by].join("_")];
-			if(c!==(void 0)){ clist.push(c);}
+			var c = this.cnum(bx,by);
+			if(c!==null){ clist.push(c);}
 		}}
 		return clist;
 	},
 	crossinside : function(x1,y1,x2,y2){
 		var clist = [];
 		for(var by=y1+(y1&1);by<=y2;by+=2){ for(var bx=x1+(x1&1);bx<=x2;bx+=2){
-			var c = this._xnum[[bx,by].join("_")];
-			if(c!==(void 0)){ clist.push(c);}
+			var c = this.xnum(bx,by);
+			if(c!==null){ clist.push(c);}
 		}}
 		return clist;
 	},
@@ -650,171 +603,183 @@ Board.prototype = {
 		var idlist = [];
 		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
 			if(bx&1===by&1){ continue;}
-			var id = this._bnum[[bx,by].join("_")];
-			if(id!==(void 0)){ idlist.push(id);}
+			var id = this.bnum(bx,by);
+			if(id!==null){ idlist.push(id);}
 		}}
 		return idlist;
 	},
 	excellinside : function(x1,y1,x2,y2){
 		var exlist = [];
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
-			var c = this._exnum[[bx,by].join("_")];
-			if(c!==(void 0)){ exlist.push(c);}
+			var c = this.exnum(bx,by);
+			if(c!==null){ exlist.push(c);}
 		}}
 		return exlist;
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.up() bd.dn() bd.lt() bd.rt()  ƒZƒ‹‚Ìã‰º¶‰E‚ÉÚ‚·‚éƒZƒ‹‚ÌID‚ğ•Ô‚·
+	// bd.up() bd.dn() bd.lt() bd.rt()  ã‚»ãƒ«ã®ä¸Šä¸‹å·¦å³ã«æ¥ã™ã‚‹ã‚»ãƒ«ã®IDã‚’è¿”ã™
 	//---------------------------------------------------------------------------
-	up : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx  ,this.cell[cc].by-2):-1;},	//ã‚ÌƒZƒ‹‚ÌID‚ğ‹‚ß‚é
-	dn : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx  ,this.cell[cc].by+2):-1;},	//‰º‚ÌƒZƒ‹‚ÌID‚ğ‹‚ß‚é
-	lt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx-2,this.cell[cc].by  ):-1;},	//¶‚ÌƒZƒ‹‚ÌID‚ğ‹‚ß‚é
-	rt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx+2,this.cell[cc].by  ):-1;},	//‰E‚ÌƒZƒ‹‚ÌID‚ğ‹‚ß‚é
-	//---------------------------------------------------------------------------
-	// bd.ub() bd.db() bd.lb() bd.rb()  ƒZƒ‹‚Ìã‰º¶‰E‚É‚ ‚é‹«ŠEü‚ÌID‚ğ•Ô‚·
-	//---------------------------------------------------------------------------
-	ub : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx  ,this.cell[cc].by-1):-1;},	//ƒZƒ‹‚Ìã‚Ì‹«ŠEü‚ÌID‚ğ‹‚ß‚é
-	db : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx  ,this.cell[cc].by+1):-1;},	//ƒZƒ‹‚Ì‰º‚Ì‹«ŠEü‚ÌID‚ğ‹‚ß‚é
-	lb : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx-1,this.cell[cc].by  ):-1;},	//ƒZƒ‹‚Ì¶‚Ì‹«ŠEü‚ÌID‚ğ‹‚ß‚é
-	rb : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx+1,this.cell[cc].by  ):-1;},	//ƒZƒ‹‚Ì‰E‚Ì‹«ŠEü‚ÌID‚ğ‹‚ß‚é
+	up : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx  ,this.cell[cc].by-2):null;},	//ä¸Šã®ã‚»ãƒ«ã®IDã‚’æ±‚ã‚ã‚‹
+	dn : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx  ,this.cell[cc].by+2):null;},	//ä¸‹ã®ã‚»ãƒ«ã®IDã‚’æ±‚ã‚ã‚‹
+	lt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx-2,this.cell[cc].by  ):null;},	//å·¦ã®ã‚»ãƒ«ã®IDã‚’æ±‚ã‚ã‚‹
+	rt : function(cc){ return this.cell[cc]?this.cnum(this.cell[cc].bx+2,this.cell[cc].by  ):null;},	//å³ã®ã‚»ãƒ«ã®IDã‚’æ±‚ã‚ã‚‹
 
 	//---------------------------------------------------------------------------
-	// bd.bcntCross() w’è‚³‚ê‚½ˆÊ’u‚ÌCross‚Ìü‚è4ƒ}ƒX‚Ì‚¤‚¿qans==1‚Ìƒ}ƒX‚Ì”‚ğ‹‚ß‚é
+	// bd.ub() bd.db() bd.lb() bd.rb()  ã‚»ãƒ«ã®ä¸Šä¸‹å·¦å³ã«ã‚ã‚‹å¢ƒç•Œç·šã®IDã‚’è¿”ã™
 	//---------------------------------------------------------------------------
-	bcntCross : function(c) {
-		var cnt=0, bx=bd.cross[c].bx, by=bd.cross[c].by;
-		if(this.isBlack(this.cnum(bx-1, by-1))){ cnt++;}
-		if(this.isBlack(this.cnum(bx+1, by-1))){ cnt++;}
-		if(this.isBlack(this.cnum(bx-1, by+1))){ cnt++;}
-		if(this.isBlack(this.cnum(bx+1, by+1))){ cnt++;}
-		return cnt;
-	},
+	ub : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx  ,this.cell[cc].by-1):null;},	//ã‚»ãƒ«ã®ä¸Šã®å¢ƒç•Œç·šã®IDã‚’æ±‚ã‚ã‚‹
+	db : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx  ,this.cell[cc].by+1):null;},	//ã‚»ãƒ«ã®ä¸‹ã®å¢ƒç•Œç·šã®IDã‚’æ±‚ã‚ã‚‹
+	lb : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx-1,this.cell[cc].by  ):null;},	//ã‚»ãƒ«ã®å·¦ã®å¢ƒç•Œç·šã®IDã‚’æ±‚ã‚ã‚‹
+	rb : function(cc){ return this.cell[cc]?this.bnum(this.cell[cc].bx+1,this.cell[cc].by  ):null;},	//ã‚»ãƒ«ã®å³ã®å¢ƒç•Œç·šã®IDã‚’æ±‚ã‚ã‚‹
 
 	//---------------------------------------------------------------------------
-	// bd.isLPup(), bd.isLPdown(), bd.isLPleft(), bd.isLPright()
-	//   ã‰º¶‰E‚ÉLineParts‚ª‘¶İ‚µ‚Ä‚¢‚é‚©”»’è‚·‚é
-	// bd.isnoLPup(), bd.isnoLPdown(), bd.isnoLPleft(), bd.isnoLPright()
-	//   ã‰º¶‰E‚ªü‚ªˆø‚¯‚È‚¢ğŒ‚É‚È‚Á‚Ä‚¢‚é‚©”»’è‚·‚é
+	// bd.isLineEX() ç·šãŒå¿…ãšå­˜åœ¨ã™ã‚‹borderã®æ¡ä»¶ã‚’åˆ¤å®šã™ã‚‹
+	// bd.isLP***()  ç·šãŒå¿…ãšå­˜åœ¨ã™ã‚‹ã‚»ãƒ«ã®æ¡ä»¶ã‚’åˆ¤å®šã™ã‚‹
+	// 
+	// bd.isLineNG() ç·šãŒå¼•ã‘ãªã„borderã®æ¡ä»¶ã‚’åˆ¤å®šã™ã‚‹
+	// bd.noLP***()  ç·šãŒå¼•ã‘ãªã„ã‚»ãƒ«ã®æ¡ä»¶ã‚’åˆ¤å®šã™ã‚‹
 	//---------------------------------------------------------------------------
-	isLPup    : function(cc){ return ({101:1,102:1,104:1,105:1}[this.QuC(cc)] === 1);},
-	isLPdown  : function(cc){ return ({101:1,102:1,106:1,107:1}[this.QuC(cc)] === 1);},
-	isLPleft  : function(cc){ return ({101:1,103:1,105:1,106:1}[this.QuC(cc)] === 1);},
-	isLPright : function(cc){ return ({101:1,103:1,104:1,107:1}[this.QuC(cc)] === 1);},
-	isnoLPup    : function(cc){ return ({1:1,4:1,5:1,21:1,103:1,106:1,107:1}[this.QuC(cc)] === 1);},
-	isnoLPdown  : function(cc){ return ({1:1,2:1,3:1,21:1,103:1,104:1,105:1}[this.QuC(cc)] === 1);},
-	isnoLPleft  : function(cc){ return ({1:1,2:1,5:1,22:1,102:1,104:1,107:1}[this.QuC(cc)] === 1);},
-	isnoLPright : function(cc){ return ({1:1,3:1,4:1,22:1,102:1,105:1,106:1}[this.QuC(cc)] === 1);},
-	//---------------------------------------------------------------------------
-	// bd.isLPMarked()      Line‚Ì‚Ç‚¿‚ç‚©‘¤‚ÉLineParts‚ª‘¶İ‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©”»’è‚·‚é
-	// bd.isLPCombined()    Line‚Ì2•ûŒü‚Æ‚àLineParts‚ª‘¶İ‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©”»’è‚·‚é
-	// bd.isLineNG()        Line‚Ì‚Ç‚¿‚ç‚©‚ªAü‚ªˆø‚¯‚È‚¢‚æ‚¤‚É‚È‚Á‚Ä‚¢‚é‚©”»’è‚·‚é
-	// bd.isLP()            ã‚Ì3‚Â‚Ì‹¤’ÊŠÖ”
-	// bd.checkLPCombined() ü‚ª‚Â‚È‚ª‚Á‚Ä‚¢‚é‚©‚Ç‚¤‚©Œ©‚ÄALine==1‚ğİ’è‚·‚é
-	//---------------------------------------------------------------------------
-	isLPMarked : function(id){
+	// bd.sQuC => bd.setCombinedLineã‹ã‚‰å‘¼ã°ã‚Œã‚‹é–¢æ•° (exist->ex)
+	//  -> cellidã®ç‰‡æ–¹ãŒnullã«ãªã£ã¦ã„ã‚‹ã“ã¨ã‚’è€ƒæ…®ã—ã¦ã„ã¾ã›ã‚“
+	isLineEX : function(id){
 		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-		return bd.border[id].bx&1 ? (bd.isLPdown(cc1) || bd.isLPup(cc2)) :
-									(bd.isLPright(cc1) || bd.isLPleft(cc2));
+		return bd.border[id].bx&1 ? (bd.isLP(cc1,k.DN) && bd.isLP(cc2,k.UP)) :
+									(bd.isLP(cc1,k.RT) && bd.isLP(cc2,k.LT));
 	},
-	isLPCombined : function(id){
-		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-		return bd.border[id].bx&1 ? (bd.isLPdown(cc1) && bd.isLPup(cc2)) :
-									(bd.isLPright(cc1) && bd.isLPleft(cc2));
+	isLP : function(cc,dir){
+		return !!this.isLPobj[dir][this.cell[cc].ques];
 	},
+
+	// bd.sLiB => bd.checkStableLineã‹ã‚‰å‘¼ã°ã‚Œã‚‹é–¢æ•°
+	//  -> cellidã®ç‰‡æ–¹ãŒnullã«ãªã£ã¦ã„ã‚‹ã“ã¨ã‚’è€ƒæ…®ã—ã¦ã„ã¾ã›ã‚“
 	isLineNG : function(id){
 		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-		return bd.border[id].bx&1 ? (bd.isnoLPdown(cc1) || bd.isnoLPup(cc2)) :
-									(bd.isnoLPright(cc1) || bd.isnoLPleft(cc2));
+		return bd.border[id].bx&1 ? (bd.noLP(cc1,k.DN) || bd.noLP(cc2,k.UP)) :
+									(bd.noLP(cc1,k.RT) || bd.noLP(cc2,k.LT));
 	},
-	checkLPCombined : function(cc){
-		var id;
-		id = this.ub(cc); if(id!==-1 && this.border[id].line===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.db(cc); if(id!==-1 && this.border[id].line===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.lb(cc); if(id!==-1 && this.border[id].line===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
-		id = this.rb(cc); if(id!==-1 && this.border[id].line===0 && this.isLPCombined(id)){ this.sLiB(id,1);}
+	// ans.checkenableLinePartsã‹ã‚‰noLP()é–¢æ•°ãŒç›´æ¥å‘¼ã°ã‚Œã¦ã„ã‚‹
+	noLP : function(cc,dir){
+		return !!this.noLPobj[dir][this.cell[cc].ques];
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.nummaxfunc() “ü—Í‚Å‚«‚é”š‚ÌÅ‘å’l‚ğ•Ô‚·
+	// bd.checkStableLine() ç·šãŒå¼•ã‘ãªã„ or å¿…ãšå­˜åœ¨ã™ã‚‹çŠ¶æ…‹ã«ãªã£ã¦ã„ã‚‹ã‹åˆ¤å®šã™ã‚‹
+	// bd.setCombinedLine() è‡ªåˆ†ã®ã‚»ãƒ«ã®è¨­å®šã«å¿œã˜ã¦å‘¨ã‚Šã®ç·šã‚’è¨­å®šã™ã‚‹
+	//---------------------------------------------------------------------------
+	// [pipelink, loopsp], [barns, slalom, reflect, yajirin]ã§å‘¼ã°ã‚Œã‚‹é–¢æ•°
+	checkStableLine : function(id, num){	// bd.sLiBã‹ã‚‰å‘¼ã°ã‚Œã‚‹
+		if(this.enableLineCombined){
+			return ( (num!==0 && this.isLineNG(id)) ||
+					 (num===0 && this.isLineEX(id)) );
+		}
+		return (num!==0 && this.isLineNG(id));
+	},
+	setCombinedLine : function(cc){	// bd.sQuBã‹ã‚‰å‘¼ã°ã‚Œã‚‹
+		var bx=bd.cell[cc].bx, by=bd.cell[cc].by;
+		var idlist = this.borderinside(bx-1,by-1,bx+1,by+1);
+		for(var i=0;i<idlist.length;i++){
+			var id=idlist[i];
+			if        (this.border[id].line===0 && this.isLineEX(id)){ this.sLiB(id,1);}
+			// é»’ãƒã‚¹ãŒå…¥åŠ›ã•ã‚ŒãŸã‚‰ç·šã‚’æ¶ˆã™ã¨ã‹ã‚„ã‚ŠãŸã„å ´åˆã€â†“ã®ã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆã‚’ã¯ãšã™
+			// else if(this.border[id].line!==0 && this.isLineNG(id)){ this.sLiB(id,0);}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.isLineStraight()   ã‚»ãƒ«ã®ä¸Šã§ç·šãŒç›´é€²ã—ã¦ã„ã‚‹ã‹åˆ¤å®šã™ã‚‹
+	//---------------------------------------------------------------------------
+	isLineStraight : function(cc){
+		if     (this.isLine(this.ub(cc)) && this.isLine(this.db(cc))){ return true;}
+		else if(this.isLine(this.lb(cc)) && this.isLine(this.rb(cc))){ return true;}
+		return false;
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.nummaxfunc() å…¥åŠ›ã§ãã‚‹æ•°å­—ã®æœ€å¤§å€¤ã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	nummaxfunc : function(cc){
 		return this.maxnum;
 	},
 
 	//---------------------------------------------------------------------------
-	// sQuC / QuC : bd.setQuesCell() / bd.getQuesCell()  ŠY“–‚·‚éCell‚Ìques‚ğİ’è‚·‚é/•Ô‚·
-	// sQnC / QnC : bd.setQnumCell() / bd.getQnumCell()  ŠY“–‚·‚éCell‚Ìqnum‚ğİ’è‚·‚é/•Ô‚·
-	// sQsC / QsC : bd.setQsubCell() / bd.getQsubCell()  ŠY“–‚·‚éCell‚Ìqsub‚ğİ’è‚·‚é/•Ô‚·
-	// sQaC / QaC : bd.setQansCell() / bd.getQansCell()  ŠY“–‚·‚éCell‚Ìqans‚ğİ’è‚·‚é/•Ô‚·
-	// sDiC / DiC : bd.setDirecCell()/ bd.getDirecCell() ŠY“–‚·‚éCell‚Ìdirec‚ğİ’è‚·‚é/•Ô‚·
+	// sQuC / QuC : bd.setQuesCell() / bd.getQuesCell()  è©²å½“ã™ã‚‹Cellã®quesã‚’è¨­å®šã™ã‚‹/è¿”ã™
+	// sQnC / QnC : bd.setQnumCell() / bd.getQnumCell()  è©²å½“ã™ã‚‹Cellã®qnumã‚’è¨­å®šã™ã‚‹/è¿”ã™
+	// sQsC / QsC : bd.setQsubCell() / bd.getQsubCell()  è©²å½“ã™ã‚‹Cellã®qsubã‚’è¨­å®šã™ã‚‹/è¿”ã™
+	// sAnC / AnC : bd.setQansCell() / bd.getQansCell()  è©²å½“ã™ã‚‹Cellã®anumã‚’è¨­å®šã™ã‚‹/è¿”ã™
+	// sDiC / DiC : bd.setDirecCell()/ bd.getDirecCell() è©²å½“ã™ã‚‹Cellã®qdirã‚’è¨­å®šã™ã‚‹/è¿”ã™
 	//---------------------------------------------------------------------------
-	// CellŠÖ˜AGet/SetŠÖ” <- ŠeCell‚ª‚Á‚Ä‚¢‚é‚Æƒƒ‚ƒŠ‚ğŒƒ‚µ‚­Á”ï‚·‚é‚Ì‚Å‚±‚±‚É’u‚­‚±‚Æ.
-	// overwrite by pipelink.js and loopsp.js
+	// Cellé–¢é€£Get/Seté–¢æ•° <- å„CellãŒæŒã£ã¦ã„ã‚‹ã¨ãƒ¡ãƒ¢ãƒªã‚’æ¿€ã—ãæ¶ˆè²»ã™ã‚‹ã®ã§ã“ã“ã«ç½®ãã“ã¨.
 	sQuC : function(id, num) {
 		um.addOpe(k.CELL, k.QUES, id, this.cell[id].ques, num);
 		this.cell[id].ques = num;
+
+		if(this.enableLineCombined){ this.setCombinedLine(id);}
 	},
 	// overwrite by lightup.js and kakuro.js
 	sQnC : function(id, num) {
 		if(!k.dispzero && num===0){ return;}
 
-		var old = this.cell[id].qnum;
-		um.addOpe(k.CELL, k.QNUM, id, old, num);
+		um.addOpe(k.CELL, k.QNUM, id, this.cell[id].qnum, num);
 		this.cell[id].qnum = num;
 
-		if(um.isenableInfo() &&
-			(area.numberColony && (num!==-1 ^ area.bcell.id[id]!==-1))
-		){ area.setCell(id,(num!==-1?1:0));}
+		area.setCell('number',id);
 	},
-	// overwrite by lightup.js
+	sAnC : function(id, num) {
+		if(!k.dispzero && num===0){ return;}
+
+		um.addOpe(k.CELL, k.ANUM, id, this.cell[id].anum, num);
+		this.cell[id].anum = num;
+
+		area.setCell('number',id);
+	},
+	// override by lightup.js, shugaku.js
 	sQaC : function(id, num) {
-		var old = this.cell[id].qans;
-		um.addOpe(k.CELL, k.QANS, id, old, num);
+		um.addOpe(k.CELL, k.QANS, id, this.cell[id].qans, num);
 		this.cell[id].qans = num;
 
-		if(um.isenableInfo() && (
-			(area.bblock && (num!==-1 ^ area.bcell.id[id]!==-1)) || 
-			(area.wblock && (num===-1 ^ area.wcell.id[id]!==-1))
-		)){ area.setCell(id,(num!==-1?1:0));}
+		area.setCell('block',id);
 	},
 	sQsC : function(id, num) {
 		um.addOpe(k.CELL, k.QSUB, id, this.cell[id].qsub, num);
 		this.cell[id].qsub = num;
+
+		if(k.NumberWithMB){ area.setCell('number',id);}
 	},
 	sDiC : function(id, num) {
-		um.addOpe(k.CELL, k.DIREC, id, this.cell[id].direc, num);
-		this.cell[id].direc = num;
+		um.addOpe(k.CELL, k.QDIR, id, this.cell[id].qdir, num);
+		this.cell[id].qdir = num;
 	},
 
-	QuC : function(id){ return (id!==-1?this.cell[id].ques:-1);},
-	QnC : function(id){ return (id!==-1?this.cell[id].qnum:-1);},
-	QaC : function(id){ return (id!==-1?this.cell[id].qans:-1);},
-	QsC : function(id){ return (id!==-1?this.cell[id].qsub:-1);},
-	DiC : function(id){ return (id!==-1?this.cell[id].direc:-1);},
+	QuC : function(id){ return this.cell[id].ques;},
+	QnC : function(id){ return this.cell[id].qnum;},
+	AnC : function(id){ return this.cell[id].anum;},
+	QaC : function(id){ return this.cell[id].qans;},
+	QsC : function(id){ return this.cell[id].qsub;},
+	DiC : function(id){ return this.cell[id].qdir;},
 
 	//---------------------------------------------------------------------------
-	// sQnE / QnE : bd.setQnumEXcell() / bd.getQnumEXcell()  ŠY“–‚·‚éEXCell‚Ìqnum‚ğİ’è‚·‚é/•Ô‚·
-	// sDiE / DiE : bd.setDirecEXcell()/ bd.getDirecEXcell() ŠY“–‚·‚éEXCell‚Ìdirec‚ğİ’è‚·‚é/•Ô‚·
+	// sQnE / QnE : bd.setQnumEXcell() / bd.getQnumEXcell()  è©²å½“ã™ã‚‹EXCellã®qnumã‚’è¨­å®šã™ã‚‹/è¿”ã™
+	// sDiE / DiE : bd.setDirecEXcell()/ bd.getDirecEXcell() è©²å½“ã™ã‚‹EXCellã®qdirã‚’è¨­å®šã™ã‚‹/è¿”ã™
 	//---------------------------------------------------------------------------
-	// EXcellŠÖ˜AGet/SetŠÖ”
+	// EXcellé–¢é€£Get/Seté–¢æ•°
 	sQnE : function(id, num) {
 		um.addOpe(k.EXCELL, k.QNUM, id, this.excell[id].qnum, num);
 		this.excell[id].qnum = num;
 	},
 	sDiE : function(id, num) {
-		um.addOpe(k.EXCELL, k.DIREC, id, this.excell[id].direc, num);
-		this.excell[id].direc = num;
+		um.addOpe(k.EXCELL, k.QDIR, id, this.excell[id].qdir, num);
+		this.excell[id].qdir = num;
 	},
 
-	QnE : function(id){ return (id!==-1?this.excell[id].qnum:-1);},
-	DiE : function(id){ return (id!==-1?this.excell[id].direc:-1);},
+	QnE : function(id){ return this.excell[id].qnum;},
+	DiE : function(id){ return this.excell[id].qdir;},
 
 	//---------------------------------------------------------------------------
-	// sQuX / QuX : bd.setQuesCross(id,num) / bd.getQuesCross() ŠY“–‚·‚éCross‚Ìques‚ğİ’è‚·‚é/•Ô‚·
-	// sQnX / QnX : bd.setQnumCross(id,num) / bd.getQnumCross() ŠY“–‚·‚éCross‚Ìqnum‚ğİ’è‚·‚é/•Ô‚·
+	// sQuX / QuX : bd.setQuesCross(id,num) / bd.getQuesCross() è©²å½“ã™ã‚‹Crossã®quesã‚’è¨­å®šã™ã‚‹/è¿”ã™
+	// sQnX / QnX : bd.setQnumCross(id,num) / bd.getQnumCross() è©²å½“ã™ã‚‹Crossã®qnumã‚’è¨­å®šã™ã‚‹/è¿”ã™
 	//---------------------------------------------------------------------------
-	// CrossŠÖ˜AGet/SetŠÖ” <- ŠeCross‚ª‚Á‚Ä‚¢‚é‚Æƒƒ‚ƒŠ‚ğŒƒ‚µ‚­Á”ï‚·‚é‚Ì‚Å‚±‚±‚É’u‚­‚±‚Æ.
+	// Crossé–¢é€£Get/Seté–¢æ•° <- å„CrossãŒæŒã£ã¦ã„ã‚‹ã¨ãƒ¡ãƒ¢ãƒªã‚’æ¿€ã—ãæ¶ˆè²»ã™ã‚‹ã®ã§ã“ã“ã«ç½®ãã“ã¨.
 	sQuX : function(id, num) {
 		um.addOpe(k.CROSS, k.QUES, id, this.cross[id].ques, num);
 		this.cross[id].ques = num;
@@ -824,212 +789,174 @@ Board.prototype = {
 		this.cross[id].qnum = num;
 	},
 
-	QuX : function(id){ return (id!==-1?this.cross[id].ques:-1);},
-	QnX : function(id){ return (id!==-1?this.cross[id].qnum:-1);},
+	QuX : function(id){ return this.cross[id].ques;},
+	QnX : function(id){ return this.cross[id].qnum;},
 
 	//---------------------------------------------------------------------------
-	// sQuB / QuB : bd.setQuesBorder() / bd.getQuesBorder() ŠY“–‚·‚éBorder‚Ìques‚ğİ’è‚·‚é/•Ô‚·
-	// sQnB / QnB : bd.setQnumBorder() / bd.getQnumBorder() ŠY“–‚·‚éBorder‚Ìqnum‚ğİ’è‚·‚é/•Ô‚·
-	// sQaB / QaB : bd.setQansBorder() / bd.getQansBorder() ŠY“–‚·‚éBorder‚Ìqans‚ğİ’è‚·‚é/•Ô‚·
-	// sQsB / QsB : bd.setQsubBorder() / bd.getQsubBorder() ŠY“–‚·‚éBorder‚Ìqsub‚ğİ’è‚·‚é/•Ô‚·
-	// sLiB / LiB : bd.setLineBorder() / bd.getLineBorder() ŠY“–‚·‚éBorder‚Ìline‚ğİ’è‚·‚é/•Ô‚·
+	// sQuB / QuB : bd.setQuesBorder() / bd.getQuesBorder() è©²å½“ã™ã‚‹Borderã®quesã‚’è¨­å®šã™ã‚‹/è¿”ã™
+	// sQnB / QnB : bd.setQnumBorder() / bd.getQnumBorder() è©²å½“ã™ã‚‹Borderã®qnumã‚’è¨­å®šã™ã‚‹/è¿”ã™
+	// sQaB / QaB : bd.setQansBorder() / bd.getQansBorder() è©²å½“ã™ã‚‹Borderã®qansã‚’è¨­å®šã™ã‚‹/è¿”ã™
+	// sQsB / QsB : bd.setQsubBorder() / bd.getQsubBorder() è©²å½“ã™ã‚‹Borderã®qsubã‚’è¨­å®šã™ã‚‹/è¿”ã™
+	// sLiB / LiB : bd.setLineBorder() / bd.getLineBorder() è©²å½“ã™ã‚‹Borderã®lineã‚’è¨­å®šã™ã‚‹/è¿”ã™
 	//---------------------------------------------------------------------------
-	// BorderŠÖ˜AGet/SetŠÖ” <- ŠeBorder‚ª‚Á‚Ä‚¢‚é‚Æƒƒ‚ƒŠ‚ğŒƒ‚µ‚­Á”ï‚·‚é‚Ì‚Å‚±‚±‚É’u‚­‚±‚Æ.
+	// Borderé–¢é€£Get/Seté–¢æ•° <- å„BorderãŒæŒã£ã¦ã„ã‚‹ã¨ãƒ¡ãƒ¢ãƒªã‚’æ¿€ã—ãæ¶ˆè²»ã™ã‚‹ã®ã§ã“ã“ã«ç½®ãã“ã¨.
 	sQuB : function(id, num) {
-		var old = this.border[id].ques;
-		um.addOpe(k.BORDER, k.QUES, id, old, num);
+		um.addOpe(k.BORDER, k.QUES, id, this.border[id].ques, num);
 		this.border[id].ques = num;
 
-		if(um.isenableInfo() && (num>0 ^ old>0)){ area.setBorder(id,num);}
+		area.setBorder(id,(num>0));
 	},
 	sQnB : function(id, num) {
 		um.addOpe(k.BORDER, k.QNUM, id, this.border[id].qnum, num);
 		this.border[id].qnum = num;
 	},
 	sQaB : function(id, num) {
-		if(this.border[id].ques!=0){ return;}
+		if(this.border[id].ques!==0){ return;}
 
-		var old = this.border[id].qans;
-		um.addOpe(k.BORDER, k.QANS, id, old, num);
+		um.addOpe(k.BORDER, k.QANS, id, this.border[id].qans, num);
 		this.border[id].qans = num;
 
-		if(um.isenableInfo() && (num>0 ^ old>0)){
-			if(k.isborderAsLine){ line.setLine(id,num);}
-			else                { area.setBorder(id,num);}
-		}
+		area.setBorder(id,(num>0));
 	},
 	sQsB : function(id, num) {
 		um.addOpe(k.BORDER, k.QSUB, id, this.border[id].qsub, num);
 		this.border[id].qsub = num;
 	},
 	sLiB : function(id, num) {
-		if(this.enableLineNG && (num==1?bd.isLineNG:bd.isLPCombined)(id)){ return;}
+		if(this.enableLineNG && this.checkStableLine(id,num)){ return;}
 
-		var old = this.border[id].line;
-		um.addOpe(k.BORDER, k.LINE, id, old, num);
+		um.addOpe(k.BORDER, k.LINE, id, this.border[id].line, num);
 		this.border[id].line = num;
 
-		if(um.isenableInfo() && (num>0 ^ old>0)){ line.setLine(id,num);}
+		line.setLine(id,(num>0));
 	},
 
-	QuB : function(id){ return (id!==-1?this.border[id].ques:-1);},
-	QnB : function(id){ return (id!==-1?this.border[id].qnum:-1);},
-	QaB : function(id){ return (id!==-1?this.border[id].qans:-1);},
-	QsB : function(id){ return (id!==-1?this.border[id].qsub:-1);},
-	LiB : function(id){ return (id!==-1?this.border[id].line:-1);},
+	QuB : function(id){ return this.border[id].ques;},
+	QnB : function(id){ return this.border[id].qnum;},
+	QaB : function(id){ return this.border[id].qans;},
+	QsB : function(id){ return this.border[id].qsub;},
+	LiB : function(id){ return this.border[id].line;},
 
 	//---------------------------------------------------------------------------
-	// sErC / ErC : bd.setErrorCell()   / bd.getErrorCell()   ŠY“–‚·‚éCell‚Ìerror‚ğİ’è‚·‚é/•Ô‚·
-	// sErX / ErX : bd.setErrorCross()  / bd.getErrorCross()  ŠY“–‚·‚éCross‚Ìerror‚ğİ’è‚·‚é/•Ô‚·
-	// sErB / ErB : bd.setErrorBorder() / bd.getErrorBorder() ŠY“–‚·‚éBorder‚Ìerror‚ğİ’è‚·‚é/•Ô‚·
-	// sErE / ErE : bd.setErrorEXcell() / bd.getErrorEXcell() ŠY“–‚·‚éEXcell‚Ìerror‚ğİ’è‚·‚é/•Ô‚·
-	// sErBAll() ‚·‚×‚Ä‚Ìborder‚ÉƒGƒ‰[’l‚ğİ’è‚·‚é
+	// sErC / ErC : bd.setErrorCell()   / bd.getErrorCell()   è©²å½“ã™ã‚‹Cellã®errorã‚’è¨­å®šã™ã‚‹/è¿”ã™
+	// sErX / ErX : bd.setErrorCross()  / bd.getErrorCross()  è©²å½“ã™ã‚‹Crossã®errorã‚’è¨­å®šã™ã‚‹/è¿”ã™
+	// sErB / ErB : bd.setErrorBorder() / bd.getErrorBorder() è©²å½“ã™ã‚‹Borderã®errorã‚’è¨­å®šã™ã‚‹/è¿”ã™
+	// sErE / ErE : bd.setErrorEXcell() / bd.getErrorEXcell() è©²å½“ã™ã‚‹EXcellã®errorã‚’è¨­å®šã™ã‚‹/è¿”ã™
+	// sErBAll() ã™ã¹ã¦ã®borderã«ã‚¨ãƒ©ãƒ¼å€¤ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
-	// Get/SetErrorŠÖ”(set‚Í”z—ñ‚Å“ü—Í)
+	// Get/SetErroré–¢æ•°(setã¯é…åˆ—ã§å…¥åŠ›)
 	sErC : function(idlist, num) {
 		if(!ans.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
-		for(var i=0;i<idlist.length;i++){ if(idlist[i]!==-1){ this.cell[idlist[i]].error = num;} }
+		for(var i=0;i<idlist.length;i++){ if(!!this.cell[idlist[i]]){ this.cell[idlist[i]].error = num;} }
 	},
 	sErX : function(idlist, num) {
 		if(!ans.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
-		for(var i=0;i<idlist.length;i++){ if(idlist[i]!==-1){ this.cross[idlist[i]].error = num;} }
+		for(var i=0;i<idlist.length;i++){ if(!!this.cross[idlist[i]]){ this.cross[idlist[i]].error = num;} }
 	},
 	sErB : function(idlist, num) {
 		if(!ans.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
-		for(var i=0;i<idlist.length;i++){ if(idlist[i]!==-1){ this.border[idlist[i]].error = num;} }
+		for(var i=0;i<idlist.length;i++){ if(!!this.border[idlist[i]]){ this.border[idlist[i]].error = num;} }
 	},
 	sErE : function(idlist, num) {
 		if(!ans.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
-		for(var i=0;i<idlist.length;i++){ if(idlist[i]!==-1){ this.excell[idlist[i]].error = num;} }
+		for(var i=0;i<idlist.length;i++){ if(!!this.excell[idlist[i]]){ this.excell[idlist[i]].error = num;} }
 	},
 	sErBAll : function(num){
 		if(!ans.isenableSetError()){ return;}
 		for(var i=0;i<bd.bdmax;i++){ this.border[i].error = num;}
 	},
 
-	ErC : function(id){ return (id!==-1?this.cell[id].error:0);},
-	ErX : function(id){ return (id!==-1?this.cross[id].error:0);},
-	ErB : function(id){ return (id!==-1?this.border[id].error:0);},
-	ErE : function(id){ return (id!==-1?this.excell[id].error:0);},
+	// ErC : function(id){ return (!!this.cell[id]  ?this.cell[id].error  :undef);},
+	// ErX : function(id){ return (!!this.cross[id] ?this.cross[id].error :undef);},
+	// ErB : function(id){ return (!!this.border[id]?this.border[id].error:undef);},
+	// ErE : function(id){ return (!!this.excell[id]?this.excell[id].error:undef);},
 
 	//---------------------------------------------------------------------------
-	// bd.setFunctions()  ğŒƒtƒ‰ƒO‚ğŒ©‚ÄŠÖ”‚ğİ’è‚·‚é
+	// bd.isBlack()   è©²å½“ã™ã‚‹CellãŒé»’ãƒã‚¹ã‹ã©ã†ã‹è¿”ã™
+	// bd.isWhite()   è©²å½“ã™ã‚‹CellãŒç™½ãƒã‚¹ã‹ã©ã†ã‹è¿”ã™
+	// bd.setBlack()  è©²å½“ã™ã‚‹Cellã«é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
+	// bd.setWhite()  è©²å½“ã™ã‚‹Cellã«ç™½ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	//---------------------------------------------------------------------------
-	setFunctions : function(){
-		//-----------------------------------------------------------------------
-		// bd.isLine()      ŠY“–‚·‚éBorder‚Éline‚ªˆø‚©‚ê‚Ä‚¢‚é‚©”»’è‚·‚é
-		// bd.setLine()     ŠY“–‚·‚éBorder‚Éü‚ğˆø‚­
-		// bd.setPeke()     ŠY“–‚·‚éBorder‚É~‚ğ‚Â‚¯‚é
-		// bd.removeLine()  ŠY“–‚·‚éBorder‚©‚çü‚ğÁ‚·
-		//-----------------------------------------------------------------------
-		this.isLine = (
-			(!k.isborderAsLine) ? function(id){ return (id!==-1 && bd.border[id].line>0);}
-								: function(id){ return (id!==-1 && bd.border[id].qans>0);}
-		);
-		this.setLine = (
-			(!k.isborderAsLine) ? function(id){ this.sLiB(id, 1); this.sQsB(id, 0);}
-								: function(id){ this.sQaB(id, 1); this.sQsB(id, 0);}
-		);
-		this.setPeke = (
-			(!k.isborderAsLine) ? function(id){ this.sLiB(id, 0); this.sQsB(id, 2);}
-								: function(id){ this.sQaB(id, 0); this.sQsB(id, 2);}
-		);
-		this.removeLine = (
-			(!k.isborderAsLine) ? function(id){ this.sLiB(id, 0); this.sQsB(id, 0);}
-								: function(id){ this.sQaB(id, 0); this.sQsB(id, 0);}
-		);
-
-		//-----------------------------------------------------------------------
-		// bd.isNum()      ŠY“–‚·‚éCell‚É”š‚ª‚ ‚é‚©•Ô‚·
-		// bd.noNum()      ŠY“–‚·‚éCell‚É”š‚ª‚È‚¢‚©•Ô‚·
-		// bd.isValidNum() ŠY“–‚·‚éCell‚É0ˆÈã‚Ì”š‚ª‚ ‚é‚©•Ô‚·
-		// bd.sameNumber() ‚Q‚Â‚ÌCell‚É“¯‚¶—LŒø‚È”š‚ª‚ ‚é‚©•Ô‚·
-		//-----------------------------------------------------------------------
-		this.isNum = (
-			k.isAnsNumber ? function(c){ return (c!==-1 && (bd.cell[c].qnum!==-1 || bd.cell[c].qans!==-1));}
-						  : function(c){ return (c!==-1 &&  bd.cell[c].qnum!==-1);}
-		);
-		this.noNum = (
-			k.isAnsNumber ? function(c){ return (c===-1 || (bd.cell[c].qnum===-1 && bd.cell[c].qans===-1));}
-						  : function(c){ return (c===-1 ||  bd.cell[c].qnum===-1);}
-		);
-		this.isValidNum = (
-			k.isAnsNumber ? function(c){ return (c!==-1 && (bd.cell[c].qnum>=  0 ||(bd.cell[c].qans>=0 && bd.cell[c].qnum===-1)));}
-						  : function(c){ return (c!==-1 &&  bd.cell[c].qnum>=  0);}
-		);
-		this.sameNumber     = function(c1,c2){ return (bd.isValidNum(c1) && (bd.getNum(c1)===bd.getNum(c2)));};
-
-		//-----------------------------------------------------------------------
-		// bd.getNum()     ŠY“–‚·‚éCell‚Ì”š‚ğ•Ô‚·
-		// bd.setNum()     ŠY“–‚·‚éCell‚É”š‚ğİ’è‚·‚é
-		//-----------------------------------------------------------------------
-		this.getNum = (
-			k.isAnsNumber ? function(c){ return (c!==-1 ? this.cell[c].qnum!==-1 ? this.cell[c].qnum : this.cell[c].qans : -1);}
-						  : function(c){ return (c!==-1 ? this.cell[c].qnum : -1);}
-		);
-		this.setNum = (
-			(k.NumberIsWhite ?
-				function(c,val){
-					if(!k.dispzero && val===0){ return;}
-					this.sQnC(c,val);
-					this.sQaC(c,bd.defcell.qnum);
-				}
-			: k.isAnsNumber ?
-				function(c,val){
-					if(!k.dispzero && val===0){ return;}
-					if(k.editmode){
-						this.sQnC(c,val);
-						this.sQaC(c,bd.defcell.qnum);
-					}
-					else if(this.cell[c].qnum===bd.defcell.qnum){
-						this.sQaC(c,val);
-					}
-					this.sQsC(c,0);
-				}
-			:
-				function(c,val){
-					if(!k.dispzero && val===0){ return;}
-					this.sQnC(c,val);
-				}
-			)
-		);
-	},
-
-	//---------------------------------------------------------------------------
-	// bd.isBlack()   ŠY“–‚·‚éCell‚ª•ƒ}ƒX‚©‚Ç‚¤‚©•Ô‚·
-	// bd.isWhite()   ŠY“–‚·‚éCell‚ª”’ƒ}ƒX‚©‚Ç‚¤‚©•Ô‚·
-	// bd.setBlack()  ŠY“–‚·‚éCell‚É•ƒ}ƒX‚ğƒZƒbƒg‚·‚é
-	// bd.setWhite()  ŠY“–‚·‚éCell‚É”’ƒ}ƒX‚ğƒZƒbƒg‚·‚é
-	//---------------------------------------------------------------------------
-	isBlack : function(c){ return (c!==-1 && bd.cell[c].qans===1);},
-	isWhite : function(c){ return (c!==-1 && bd.cell[c].qans!==1);},
+	isBlack : function(c){ return (!!bd.cell[c] && bd.cell[c].qans===1);},
+	isWhite : function(c){ return (!!bd.cell[c] && bd.cell[c].qans!==1);},
 
 	setBlack : function(c){ this.sQaC(c, 1);},
-	setWhite : function(c){ this.sQaC(c,-1);},
+	setWhite : function(c){ this.sQaC(c, 0);},
 
-	//---------------------------------------------------------------------------
-	// bd.isBorder()     ŠY“–‚·‚éBorder‚É‹«ŠEü‚ªˆø‚©‚ê‚Ä‚¢‚é‚©”»’è‚·‚é
-	// bd.setBorder()    ŠY“–‚·‚éBorder‚É‹«ŠEü‚ğˆø‚­
-	// bd.removeBorder() ŠY“–‚·‚éBorder‚©‚çü‚ğÁ‚·
-	// bd.setBsub()      ŠY“–‚·‚éBorder‚É‹«ŠEü—p‚Ì•â•‹L†‚ğ‚Â‚¯‚é
-	// bd.removeBsub()   ŠY“–‚·‚éBorder‚©‚ç‹«ŠEü—p‚Ì•â•‹L†‚ğ‚Í‚¸‚·
-	//---------------------------------------------------------------------------
-	isBorder     : function(id){
-		return (id!==-1 && (bd.border[id].ques>0 || bd.border[id].qans>0));
+	//-----------------------------------------------------------------------
+	// bd.isNum()      è©²å½“ã™ã‚‹Cellã«æ•°å­—ãŒã‚ã‚‹ã‹è¿”ã™
+	// bd.noNum()      è©²å½“ã™ã‚‹Cellã«æ•°å­—ãŒãªã„ã‹è¿”ã™
+	// bd.isValidNum() è©²å½“ã™ã‚‹Cellã«0ä»¥ä¸Šã®æ•°å­—ãŒã‚ã‚‹ã‹è¿”ã™
+	// bd.sameNumber() ï¼’ã¤ã®Cellã«åŒã˜æœ‰åŠ¹ãªæ•°å­—ãŒã‚ã‚‹ã‹è¿”ã™
+	//
+	// bd.getNum()     è©²å½“ã™ã‚‹Cellã®æ•°å­—ã‚’è¿”ã™
+	// bd.setNum()     è©²å½“ã™ã‚‹Cellã«æ•°å­—ã‚’è¨­å®šã™ã‚‹
+	//-----------------------------------------------------------------------
+	isNum : function(c){
+		return (!!bd.cell[c] && (bd.cell[c].qnum!==-1 || bd.cell[c].anum!==-1));
+	},
+	noNum : function(c){
+		return (!bd.cell[c] || (bd.cell[c].qnum===-1 && bd.cell[c].anum===-1));
+	},
+	isValidNum : function(c){
+		return (!!bd.cell[c] && (bd.cell[c].qnum>=0 ||(bd.cell[c].anum>=0 && bd.cell[c].qnum===-1)));
+	},
+	sameNumber : function(c1,c2){
+		return (bd.isValidNum(c1) && (bd.getNum(c1)===bd.getNum(c2)));
 	},
 
+	getNum : function(c){
+		return (bd.cell[c].qnum!==-1 ? bd.cell[c].qnum : bd.cell[c].anum);
+	},
+	setNum : function(c,val){
+		if(!k.dispzero && val===0){ return;}
+		var fl = this.numberAsObject;
+		if(k.editmode){
+			val = (((fl||val===-2) && this.cell[c].qnum===val)?-1:val);
+			this.sQnC(c, val);
+			if(k.isAnsNumber)  { this.sAnC(c,-1);}
+			if(k.NumberIsWhite){ this.sQaC(c, 0);}
+			if(k.isAnsNumber||pc.bcolor==="white"){ this.sQsC(c, 0);}
+		}
+		else if(this.cell[c].qnum===-1){
+			var vala = ((val>-1 && !(fl && this.cell[c].anum=== val  ))? val  :-1);
+			var vals = ((val<-1 && !(fl && this.cell[c].qsub===-val-1))?-val-1: 0);
+			this.sAnC(c, vala);
+			this.sQsC(c, vals);
+			this.sDiC(c, 0);
+		}
+	},
+
+	//-----------------------------------------------------------------------
+	// bd.isLine()      è©²å½“ã™ã‚‹Borderã«lineãŒå¼•ã‹ã‚Œã¦ã„ã‚‹ã‹åˆ¤å®šã™ã‚‹
+	// bd.setLine()     è©²å½“ã™ã‚‹Borderã«ç·šã‚’å¼•ã
+	// bd.removeLine()  è©²å½“ã™ã‚‹Borderã‹ã‚‰ç·šã‚’æ¶ˆã™
+	//-----------------------------------------------------------------------
+	isLine     : function(id){ return (!!bd.border[id] && bd.border[id].line>0);},
+	setLine    : function(id){ this.sLiB(id, 1); this.sQsB(id, 0);},
+	setPeke    : function(id){ this.sLiB(id, 0); this.sQsB(id, 2);},
+	removeLine : function(id){ this.sLiB(id, 0); this.sQsB(id, 0);},
+
+	//---------------------------------------------------------------------------
+	// bd.isBorder()     è©²å½“ã™ã‚‹Borderã«å¢ƒç•Œç·šãŒå¼•ã‹ã‚Œã¦ã„ã‚‹ã‹åˆ¤å®šã™ã‚‹
+	// bd.setBorder()    è©²å½“ã™ã‚‹Borderã«å¢ƒç•Œç·šã‚’å¼•ã
+	// bd.removeBorder() è©²å½“ã™ã‚‹Borderã‹ã‚‰ç·šã‚’æ¶ˆã™
+	// bd.setBsub()      è©²å½“ã™ã‚‹Borderã«å¢ƒç•Œç·šç”¨ã®è£œåŠ©è¨˜å·ã‚’ã¤ã‘ã‚‹
+	// bd.removeBsub()   è©²å½“ã™ã‚‹Borderã‹ã‚‰å¢ƒç•Œç·šç”¨ã®è£œåŠ©è¨˜å·ã‚’ã¯ãšã™
+	//---------------------------------------------------------------------------
+	isBorder     : function(id){
+		return (!!bd.border[id] && (bd.border[id].ques>0 || bd.border[id].qans>0));
+	},
 	setBorder    : function(id){
 		if(k.editmode){ this.sQuB(id,1); this.sQaB(id,0);}
-		else if(this.QuB(id)!==1){ this.sQaB(id,1);}
+		else if(this.border[id].ques!==1){ this.sQaB(id,1);}
 	},
 	removeBorder : function(id){
 		if(k.editmode){ this.sQuB(id,0); this.sQaB(id,0);}
-		else if(this.QuB(id)!==1){ this.sQaB(id,0);}
-	},
-	setBsub      : function(id){ this.sQsB(id,1);},
-	removeBsub   : function(id){ this.sQsB(id,0);}
+		else if(this.border[id].ques!==1){ this.sQaB(id,0);}
+	}
 };

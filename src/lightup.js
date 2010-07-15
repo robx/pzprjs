@@ -1,41 +1,41 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ”üpŠÙ”Å lightup.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ç¾è¡“é¤¨ç‰ˆ lightup.js v3.3.1
 //
 Puzzles.lightup = function(){ };
 Puzzles.lightup.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 10;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 10;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 10;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 10;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 0;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 0;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = false;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = false;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = false;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = false;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = true;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = false;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = false;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = true;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = false;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = false;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = true;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = true;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = true;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = true;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = true;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = true;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
-		base.setTitle("”üpŠÙ","Akari (Light Up)");
-		base.setExpression("@ƒ}ƒEƒX‚ÅŒõŒ¹‚Æ”’ƒ}ƒXŠm’èƒ}ƒX‚ª“ü—Í‚Å‚«‚Ü‚·B",
+		base.setTitle("ç¾è¡“é¤¨","Akari (Light Up)");
+		base.setExpression("ã€€ãƒã‚¦ã‚¹ã§å…‰æºã¨ç™½ãƒã‚¹ç¢ºå®šãƒã‚¹ãŒå…¥åŠ›ã§ãã¾ã™ã€‚",
 						   " Click to input Akari (Light source) or determined white cells.");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 		base.proto = 1;
@@ -59,15 +59,12 @@ Puzzles.lightup.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
-			if(k.playmode) this.inputcell();
-			else if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum();}
-				else{ kp.display();}
-			}
+			if     (k.playmode){ this.inputcell();}
+			else if(k.editmode){ this.inputqnum();}
 		};
 		mv.mouseup = function(){ };
 		mv.mousemove = function(){
@@ -75,7 +72,7 @@ Puzzles.lightup.prototype = {
 		};
 		mv.enableInputHatena = true;
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
@@ -96,7 +93,7 @@ Puzzles.lightup.prototype = {
 			bd.qlight = [];
 			for(var c=0;c<this.cellmax;c++){ this.qlight[c] = false;}
 			for(var c=0;c<this.cellmax;c++){
-				if(this.cell[c].qans!==1){ continue;}
+				if(!this.isAkari(c)){ continue;}
 
 				var bx = this.cell[c].bx, by = this.cell[c].by;
 				var d = this.cellRange(c);
@@ -121,8 +118,8 @@ Puzzles.lightup.prototype = {
 
 					var cbx = this.cell[cc].bx, cby = this.cell[cc].by;
 					var dd  = this.cellRange(cc), isakari = false;
-								  for(var tx=dd.x1;tx<=dd.x2;tx+=2){ if(this.cell[this.cnum(tx,cby)].qans===1){ isakari=true; break;} }
-					if(!isakari){ for(var ty=dd.y1;ty<=dd.y2;ty+=2){ if(this.cell[this.cnum(cbx,ty)].qans===1){ isakari=true; break;} } }
+								  for(var tx=dd.x1;tx<=dd.x2;tx+=2){ if(this.isAkari(this.cnum(tx,cby))){ isakari=true; break;} }
+					if(!isakari){ for(var ty=dd.y1;ty<=dd.y2;ty+=2){ if(this.isAkari(this.cnum(cbx,ty))){ isakari=true; break;} } }
 					this.qlight[cc] = isakari;
 				}
 			}
@@ -144,7 +141,11 @@ Puzzles.lightup.prototype = {
 			return d;
 		};
 
-		// ƒI[ƒo[ƒ‰ƒCƒh
+		bd.isAkari = function(c){
+			return (!!bd.cell[c] && bd.cell[c].qans===1);
+		};
+
+		// ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 		bd.sQnC = function(id, num) {
 			var old = this.cell[id].qnum;
 			um.addOpe(k.CELL, k.QNUM, id, old, num);
@@ -152,22 +153,22 @@ Puzzles.lightup.prototype = {
 
 			if((old===-1)^(num===-1)){ this.setQlight(id, (num!==-1?0:2));}
 		};
-		// ƒI[ƒo[ƒ‰ƒCƒh
+		// ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 		bd.sQaC = function(id, num) {
 			var old = this.cell[id].qans;
 			um.addOpe(k.CELL, k.QANS, id, old, num);
 			this.cell[id].qans = num;
 
-			if((old===-1)^(num===-1)){ this.setQlight(id, (num!==-1?1:0));}
+			if((old===0)^(num===0)){ this.setQlight(id, (num!==0?1:0));}
 		};
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.fontcolor = pc.fontErrcolor = "white";
-		pc.dotcolor = "rgb(255, 63, 191)";
+		pc.dotcolor = pc.dotcolor_PINK;
 		pc.setCellColorFunc('qnum');
 
 		pc.lightcolor = "rgb(224, 255, 127)";
@@ -179,14 +180,14 @@ Puzzles.lightup.prototype = {
 			this.drawNumbers(x1,y1,x2,y2);
 
 			this.drawAkari(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2,true);
 
 			this.drawChassis(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		// ƒI[ƒo[ƒ‰ƒCƒh drawBGCells—p
+		// ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ drawBGCellsç”¨
 		pc.setBGCellColor = function(cc){
 			if     (bd.cell[cc].qnum!==-1){ return false;}
 			else if(bd.cell[cc].error===1){ g.fillStyle = this.errbcolor1; return true;}
@@ -204,7 +205,7 @@ Puzzles.lightup.prototype = {
 			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.cell[c].qans===1){
+				if(bd.isAkari(c)){
 					g.fillStyle = (bd.cell[c].error!==4 ? lampcolor : this.errcolor1);
 					if(this.vnop(header+c,this.FILL)){
 						g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
@@ -216,7 +217,7 @@ Puzzles.lightup.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decode4Cell();
@@ -226,17 +227,10 @@ Puzzles.lightup.prototype = {
 		};
 
 		enc.decodeKanpen = function(){
-			fio.decodeCell( function(c,ca){
-				if     (ca == "5"){ bd.sQnC(c, -2);}
-				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
-			});
+			fio.decodeCellQnumb();
 		};
 		enc.encodeKanpen = function(){
-			fio.encodeCell( function(c){
-				if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
-				else if(bd.QnC(c)==-2){ return "5 ";}
-				else                  { return ". ";}
-			});
+			fio.encodeCellQnumb();
 		};
 
 		//---------------------------------------------------------
@@ -244,43 +238,43 @@ Puzzles.lightup.prototype = {
 			this.decodeCellQnumAns();
 		};
 		fio.encodeData = function(){
-			return this.encodeCellQnumAns();
+			this.encodeCellQnumAns();
 		};
 
 		fio.kanpenOpen = function(){
-			this.decodeCell( function(c,ca){
-				if     (ca == "5"){ bd.sQnC(c, -2);}
-				else if(ca == "+"){ bd.sQaC(c, 1);}
-				else if(ca == "*"){ bd.sQsC(c, 1);}
-				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="+"){ obj.qans = 1;}
+				else if(ca==="*"){ obj.qsub = 1;}
+				else if(ca==="5"){ obj.qnum = -2;}
+				else if(ca!=="."){ obj.qnum = parseInt(ca);}
 			});
 		};
 		fio.kanpenSave = function(){
-			this.encodeCell( function(c){
-				if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
-				else if(bd.QaC(c)==1) { return "+ ";}
-				else if(bd.QsC(c)==1) { return "* ";}
-				else if(bd.QnC(c)==-2){ return "5 ";}
+			this.encodeCell( function(obj){
+				if     (obj.qans=== 1){ return "+ ";}
+				else if(obj.qsub=== 1){ return "* ";}
+				else if(obj.qnum>=  0){ return (obj.qnum.toString() + " ");}
+				else if(obj.qnum===-2){ return "5 ";}
 				else                  { return ". ";}
 			});
 		};
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkRowsColsPartly(this.isAkariCount, {}, function(cc){ return (bd.QnC(cc)!=-1);}, true) ){
-				this.setAlert('Æ–¾‚É•Ê‚ÌÆ–¾‚ÌŒõ‚ª“–‚½‚Á‚Ä‚¢‚Ü‚·B','Akari is shined from another Akari.'); return false;
+			if( !this.checkRowsColsPartly(this.isAkariCount, {}, bd.isNum, true) ){
+				this.setAlert('ç…§æ˜ã«åˆ¥ã®ç…§æ˜ã®å…‰ãŒå½“ãŸã£ã¦ã„ã¾ã™ã€‚','Akari is shined from another Akari.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)!==ans.checkdir4Cell(c,function(a){ return (bd.QaC(a)==1);})); }) ){
-				this.setAlert('”š‚Ì‚Ü‚í‚è‚É‚ ‚éÆ–¾‚Ì”‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B','The number is not equal to the number of Akari around it.'); return false;
+			if( !this.checkDir4Cell(bd.isAkari,0) ){
+				this.setAlert('æ•°å­—ã®ã¾ã‚ã‚Šã«ã‚ã‚‹ç…§æ˜ã®æ•°ãŒé–“é•ã£ã¦ã„ã¾ã™ã€‚','The number is not equal to the number of Akari around it.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QnC(c)===-1 && !bd.qlight[c]);}) ){
-				this.setAlert('Æ–¾‚ÉÆ‚ç‚³‚ê‚Ä‚¢‚È‚¢ƒZƒ‹‚ª‚ ‚è‚Ü‚·B','A cell is not shined.'); return false;
+			if( !this.checkAllCell(function(c){ return (bd.noNum(c) && !bd.qlight[c]);}) ){
+				this.setAlert('ç…§æ˜ã«ç…§ã‚‰ã•ã‚Œã¦ã„ãªã„ã‚»ãƒ«ãŒã‚ã‚Šã¾ã™ã€‚','A cell is not shined.'); return false;
 			}
 
 			return true;
@@ -289,7 +283,7 @@ Puzzles.lightup.prototype = {
 		ans.isAkariCount = function(nullnum, keycellpos, clist, nullobj){
 			var akaris=[];
 			for(var i=0;i<clist.length;i++){
-				if( bd.QaC(clist[i])===1 ){ akaris.push(clist[i]);}
+				if(bd.isAkari(clist[i])){ akaris.push(clist[i]);}
 			}
 			var result = (akaris.length<=1);
 

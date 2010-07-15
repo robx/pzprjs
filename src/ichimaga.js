@@ -1,62 +1,62 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ƒCƒ`ƒ}ƒK/¥ÎƒCƒ`ƒ}ƒK”Å ichimaga.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ã‚¤ãƒãƒã‚¬/ç£çŸ³ã‚¤ãƒãƒã‚¬ç‰ˆ ichimaga.js v3.3.1
 //
 Puzzles.ichimaga = function(){ };
 Puzzles.ichimaga.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 10;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 10;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 1;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 10;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 10;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 1;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 1;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 1;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = true;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = false;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = true;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = false;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = false;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = false;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = false;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = false;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = false;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = false;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = true;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = false;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = true;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = false;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.bdmargin       = 0.50;	// ˜gŠO‚Ìˆê•Ó‚Ìmargin(ƒZƒ‹”Š·Z)
-		k.bdmargin_image = 0.10;	// ‰æ‘œo—Í‚Ìbdmargin’l
+		k.bdmargin       = 0.50;	// æ å¤–ã®ä¸€è¾ºã®margin(ã‚»ãƒ«æ•°æ›ç®—)
+		k.bdmargin_image = 0.10;	// ç”»åƒå‡ºåŠ›æ™‚ã®bdmarginå€¤
 
-		base.setTitle("ƒCƒ`ƒ}ƒK/¥ÎƒCƒ`ƒ}ƒK","Ichimaga / Magnetic Ichimaga");
-		base.setExpression("@¶ƒhƒ‰ƒbƒO‚Åü‚ªA‰Eƒhƒ‰ƒbƒO‚Å•â•‹L†‚ª“ü—Í‚Å‚«‚Ü‚·B",
+		base.setTitle("ã‚¤ãƒãƒã‚¬/ç£çŸ³ã‚¤ãƒãƒã‚¬","Ichimaga / Magnetic Ichimaga");
+		base.setExpression("ã€€å·¦ãƒ‰ãƒ©ãƒƒã‚°ã§ç·šãŒã€å³ãƒ‰ãƒ©ãƒƒã‚°ã§è£œåŠ©è¨˜å·ãŒå…¥åŠ›ã§ãã¾ã™ã€‚",
 						   " Left Button Drag to input lines, Right to input auxiliary marks.");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){
 		if(k.EDITOR){
-			pp.addSelect('puztype','setting',1,[1,2,3], 'ƒpƒYƒ‹‚Ìí—Ş', 'Kind of the puzzle');
-			pp.setLabel ('puztype', 'ƒpƒYƒ‹‚Ìí—Ş', 'Kind of the puzzle');
+			pp.addSelect('puztype','setting',1,[1,2,3], 'ãƒ‘ã‚ºãƒ«ã®ç¨®é¡', 'Kind of the puzzle');
+			pp.setLabel ('puztype', 'ãƒ‘ã‚ºãƒ«ã®ç¨®é¡', 'Kind of the puzzle');
 
-			pp.addChild('puztype_1', 'puztype', 'ƒCƒ`ƒ}ƒK', 'Ichimaga');
-			pp.addChild('puztype_2', 'puztype', '¥ÎƒCƒ`ƒ}ƒK', 'Magnetic Ichimaga');
-			pp.addChild('puztype_3', 'puztype', 'Œğ·‚à', 'Crossing Ichimaga');
+			pp.addChild('puztype_1', 'puztype', 'ã‚¤ãƒãƒã‚¬', 'Ichimaga');
+			pp.addChild('puztype_2', 'puztype', 'ç£çŸ³ã‚¤ãƒãƒã‚¬', 'Magnetic Ichimaga');
+			pp.addChild('puztype_3', 'puztype', 'äº¤å·®ã‚‚', 'Crossing Ichimaga');
 		}
 	},
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if(k.editmode) this.inputqnum();
 			else if(k.playmode){
@@ -72,7 +72,7 @@ Puzzles.ichimaga.prototype = {
 			}
 		};
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(k.playmode){ return;}
 			if(this.key_inputdirec(ca)){ return;}
@@ -84,7 +84,7 @@ Puzzles.ichimaga.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 
@@ -111,11 +111,11 @@ Puzzles.ichimaga.prototype = {
 				pc.drawNumber1(clist[i]);
 			}
 		};
-		line.iscrossing = function(cc){ return (bd.QnC(cc)===-1);};
+		line.iscrossing = function(cc){ return bd.noNum(cc);};
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decode4Cell();
@@ -126,10 +126,10 @@ Puzzles.ichimaga.prototype = {
 				else                         { pp.setVal('puztype',1);}
 			}
 			else{
-				if     (this.checkpflag("m")){ base.setTitle("¥ÎƒCƒ`ƒ}ƒK","Magnetic Ichimaga");}
-				else if(this.checkpflag("x")){ base.setTitle("ˆê‰ñ‹È‚ª‚Á‚ÄŒğ·‚à‚·‚é‚Ì","Crossing Ichimaga");}
-				else                         { base.setTitle("ƒCƒ`ƒ}ƒK","Ichimaga");}
-				document.title = base.gettitle();
+				if     (this.checkpflag("m")){ base.setTitle("ç£çŸ³ã‚¤ãƒãƒã‚¬","Magnetic Ichimaga");}
+				else if(this.checkpflag("x")){ base.setTitle("ä¸€å›æ›²ãŒã£ã¦äº¤å·®ã‚‚ã™ã‚‹ã®","Crossing Ichimaga");}
+				else                         { base.setTitle("ã‚¤ãƒãƒã‚¬","Ichimaga");}
+				_doc.title = base.gettitle();
 				ee('title2').el.innerHTML = base.gettitle();
 			}
 		};
@@ -150,10 +150,10 @@ Puzzles.ichimaga.prototype = {
 				else                     { pp.setVal('puztype',1);}
 			}
 			else{
-				if     (pzlflag=="mag")  { base.setTitle("¥ÎƒCƒ`ƒ}ƒK","Magnetic Ichimaga");}
-				else if(pzlflag=="cross"){ base.setTitle("ˆê‰ñ‹È‚ª‚Á‚ÄŒğ·‚à‚·‚é‚Ì","Crossing Ichimaga");}
-				else                     { base.setTitle("ƒCƒ`ƒ}ƒK","Ichimaga");}
-				document.title = base.gettitle();
+				if     (pzlflag=="mag")  { base.setTitle("ç£çŸ³ã‚¤ãƒãƒã‚¬","Magnetic Ichimaga");}
+				else if(pzlflag=="cross"){ base.setTitle("ä¸€å›æ›²ãŒã£ã¦äº¤å·®ã‚‚ã™ã‚‹ã®","Crossing Ichimaga");}
+				else                     { base.setTitle("ã‚¤ãƒãƒã‚¬","Ichimaga");}
+				_doc.title = base.gettitle();
 				ee('title2').el.innerHTML = base.gettitle();
 			}
 
@@ -168,44 +168,44 @@ Puzzles.ichimaga.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			if( !this.checkLcntCell(3) ){
-				this.setAlert('•ªŠò‚µ‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B', 'There is a branch line.'); return false;
+				this.setAlert('åˆ†å²ã—ã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚', 'There is a branch line.'); return false;
 			}
 			if( !this.iscross() && !this.checkLcntCell(4) ){
-				this.setAlert('ü‚ªŒğ·‚µ‚Ä‚¢‚Ü‚·B', 'There is a crossing line.'); return false;
+				this.setAlert('ç·šãŒäº¤å·®ã—ã¦ã„ã¾ã™ã€‚', 'There is a crossing line.'); return false;
 			}
 
 			var errinfo = this.searchFireflies();
 			if( !this.checkErrorFlag(errinfo,3) ){
-				this.setAlert('“¯‚¶”š“¯m‚ªü‚ÅŒq‚ª‚Á‚Ä‚¢‚Ü‚·B', 'Same numbers are connected each other.'); return false;
+				this.setAlert('åŒã˜æ•°å­—åŒå£«ãŒç·šã§ç¹‹ãŒã£ã¦ã„ã¾ã™ã€‚', 'Same numbers are connected each other.'); return false;
 			}
 			if( !this.checkErrorFlag(errinfo,2) ){
-				this.setAlert('ü‚ª2‰ñˆÈã‹È‚ª‚Á‚Ä‚¢‚Ü‚·B', 'The number of curves is twice or more.'); return false;
+				this.setAlert('ç·šãŒ2å›ä»¥ä¸Šæ›²ãŒã£ã¦ã„ã¾ã™ã€‚', 'The number of curves is twice or more.'); return false;
 			}
 
 			this.performAsLine = true
 			if( !this.checkConnectedLine() ){
-				this.setAlert('ü‚ª‘S‘Ì‚Åˆê‚Â‚È‚ª‚è‚É‚È‚Á‚Ä‚¢‚Ü‚¹‚ñB', 'All lines and circles are not connected each other.'); return false;
+				this.setAlert('ç·šãŒå…¨ä½“ã§ä¸€ã¤ãªãŒã‚Šã«ãªã£ã¦ã„ã¾ã›ã‚“ã€‚', 'All lines and circles are not connected each other.'); return false;
 			}
 
 			if( !this.checkErrorFlag(errinfo,1) ){
-				this.setAlert('ü‚ª“r’†‚Å“rØ‚ê‚Ä‚¢‚Ü‚·B', 'There is a dead-end line.'); return false;
+				this.setAlert('ç·šãŒé€”ä¸­ã§é€”åˆ‡ã‚Œã¦ã„ã¾ã™ã€‚', 'There is a dead-end line.'); return false;
 			}
 
-			if( !this.checkAllCell( function(c){ return bd.QnC(c)>0&&bd.QnC(c)!=line.lcntCell(c); } ) ){
-				this.setAlert('›‚©‚ço‚éü‚Ì–{”‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB', 'The number is not equal to the number of lines out of the circle.'); return false;
+			if( !this.checkAllCell( function(c){ return bd.isValidNum(c) && bd.QnC(c)!==line.lcntCell(c); } ) ){
+				this.setAlert('â—‹ã‹ã‚‰å‡ºã‚‹ç·šã®æœ¬æ•°ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚', 'The number is not equal to the number of lines out of the circle.'); return false;
 			}
 
 			if( !this.checkLcntCell(1) ){
-				this.setAlert('ü‚ª“r’†‚Å“rØ‚ê‚Ä‚¢‚Ü‚·B', 'There is a dead-end line.'); return false;
+				this.setAlert('ç·šãŒé€”ä¸­ã§é€”åˆ‡ã‚Œã¦ã„ã¾ã™ã€‚', 'There is a dead-end line.'); return false;
 			}
 
-			if( !this.checkAllCell( function(c){ return bd.QnC(c)!=-1&&line.lcntCell(c)==0; } ) ){
-				this.setAlert('›‚©‚çü‚ªo‚Ä‚¢‚Ü‚¹‚ñB', 'There is a lonely circle.'); return false;
+			if( !this.checkAllCell( function(c){ return bd.isNum(c) && line.lcntCell(c)===0; } ) ){
+				this.setAlert('â—‹ã‹ã‚‰ç·šãŒå‡ºã¦ã„ã¾ã›ã‚“ã€‚', 'There is a lonely circle.'); return false;
 			}
 
 			return true;
@@ -219,7 +219,7 @@ Puzzles.ichimaga.prototype = {
 			if(line.ltotal[val]==0){ return true;}
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)!==-1 || line.lcntCell(c)!==val){ continue;}
+				if(bd.isNum(c) || line.lcntCell(c)!==val){ continue;}
 
 				if(this.inAutoCheck){ return false;}
 				if(result){ bd.sErBAll(2);}
@@ -235,7 +235,7 @@ Puzzles.ichimaga.prototype = {
 			for(var i=0;i<bd.bdmax;i++){ errinfo.check[i]=0; visited[i]=0;}
 
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)==-1){ continue;}
+				if(bd.noNum(c)){ continue;}
 
 				var bx=bd.cell[c].bx, by=bd.cell[c].by;
 				var dir4id = [bd.bnum(bx,by-1),bd.bnum(bx,by+1),bd.bnum(bx-1,by),bd.bnum(bx+1,by)];
@@ -251,12 +251,12 @@ Puzzles.ichimaga.prototype = {
 						switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 						if((bx+by)%2==0){
 							var cc = bd.cnum(bx,by);
-							if     (bd.QnC(cc)!=-1){ break;}
-							else if(line.lcntCell(cc)==4){ }
-							else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!=2){ ccnt++;} dir=2;}
-							else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!=1){ ccnt++;} dir=1;}
-							else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!=4){ ccnt++;} dir=4;}
-							else if(dir!=4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!=3){ ccnt++;} dir=3;}
+							if     (cc===null || bd.isNum(cc)){ break;}
+							else if(line.lcntCell(cc)===4){ }
+							else if(dir!==1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!==2){ ccnt++;} dir=2;}
+							else if(dir!==2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!==1){ ccnt++;} dir=1;}
+							else if(dir!==3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!==4){ ccnt++;} dir=4;}
+							else if(dir!==4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!==3){ ccnt++;} dir=3;}
 						}
 						else{
 							var id = bd.bnum(bx,by);
@@ -268,14 +268,15 @@ Puzzles.ichimaga.prototype = {
 
 					for(var i=0;i<idlist.length;i++){ errinfo.check[idlist[i]]=2;}
 
-					var cc = bd.cnum(bx,by);
-					if(this.ismag() && bd.QnC(c)!=-2 && bd.QnC(c)==bd.QnC(cc)){
+					var qn=(c!==null?bd.QnC(c):-1);
+					var cc = bd.cnum(bx,by), qnn=(cc!==null?bd.QnC(cc):-1);
+					if(this.ismag() && qn!==-2 && qn===qnn){
 						errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist}); continue;
 					}
-					if(idlist.length>0 && (bx+by)%2==0 && bd.QnC(c)!=-2 && ccnt>1){
+					if(idlist.length>0 && ((bx+by)&1)===0 && qn!==-2 && ccnt>1){
 						errinfo.data.push({errflag:2,cells:[c,cc],idlist:idlist}); continue;
 					}
-					if(idlist.length>0 && (bx+by)%2==1){
+					if(idlist.length>0 && ((bx+by)&1)===1){
 						errinfo.data.push({errflag:1,cells:[c],idlist:idlist}); continue;
 					}
 				}
@@ -299,10 +300,10 @@ Puzzles.ichimaga.prototype = {
 		ans.checkConnectedLine = function(){
 			var lcnt=0;
 			var visited = new AreaInfo();
-			for(var id=0;id<bd.bdmax;id++){ if(bd.isLine(id)){ visited.id[id]=0; lcnt++;}else{ visited.id[id]=-1;} }
-			var fc=-1;
-			for(var c=0;c<bd.cellmax;c++){ if(bd.QnC(c)!=-1 && line.lcntCell(c)>0){ fc=c; break;} }
-			if(fc==-1){ return true;}
+			for(var id=0;id<bd.bdmax;id++){ if(bd.isLine(id)){ visited.id[id]=0; lcnt++;}else{ visited.id[id]=null;} }
+			var fc=null;
+			for(var c=0;c<bd.cellmax;c++){ if(bd.isNum(c) && line.lcntCell(c)>0){ fc=c; break;} }
+			if(fc===null){ return true;}
 
 			this.cl0(visited.id, bd.cell[fc].bx, bd.cell[fc].by,0);
 			var lcnt2=0, idlist=[];
@@ -319,7 +320,7 @@ Puzzles.ichimaga.prototype = {
 			while(1){
 				switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 				if(!((bx+by)&1)){
-					if(bd.QnC(bd.cnum(bx,by))!=-1){
+					if(bd.isNum(bd.cnum(bx,by))){
 						if(bd.isLine(bd.bnum(bx,by-1))){ this.cl0(check,bx,by,1);}
 						if(bd.isLine(bd.bnum(bx,by+1))){ this.cl0(check,bx,by,2);}
 						if(bd.isLine(bd.bnum(bx-1,by))){ this.cl0(check,bx,by,3);}

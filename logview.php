@@ -1,160 +1,106 @@
-<?php
-	require_once('../logview/logutil.php');
-	header("Content-type: text/html");
-	startup();
-	$datas = input();
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+ï»¿<!DOCTYPE html>
 <HTML>
 <HEAD>
-<META NAME="robots" CONTENTS="noindex,nofollow">
-<TITLE><?php echo("$title"); ?></TITLE>
+<META CHARSET="utf-8">
+<META NAME="robots" CONTENTS="nofollow">
+<TITLE>ã±ãšã·ã‚Œãƒ­ã‚°é–²è¦§æ‰€</TITLE>
 <script type="text/javascript">
-<!--
-	var fc = 'pz';
-	var rn = 'table';
-	var st = 'number';
 
+	var fc = 'pz';
+	var rn = 'monthly';
+	var st = 'number';
 	var pname = {
-		aho        : 'ƒAƒz‚É‚È‚èØ‚ê',
-		ayeheya    : 'ÍlÎ‚g‚d‚x‚`',
-		bag        : 'ƒoƒbƒO',
-		barns      : 'ƒo[ƒ“ƒY',
-		bdblock    : 'ƒ{[ƒ_[ƒuƒƒbƒN',
-		bonsan     : '‚Ú‚ñ‚³‚ñ',
-		bosanowa   : 'ƒ{ƒTƒmƒ',
-		box        : 'ƒ{ƒbƒNƒX',
-		chocona    : 'ƒ`ƒ‡ƒRƒi',
-		cojun      : 'ƒR[ƒWƒ…ƒ“',
-		country    : 'ƒJƒ“ƒgƒŠ[ƒ[ƒh',
-		creek      : 'ƒNƒŠ[ƒN',
-		factors    : 'ˆöq‚Ì•”‰®',
-		fillmat    : 'ƒtƒBƒ‹ƒ}ƒbƒg',
-		fillomino  : 'ƒtƒBƒ‹ƒIƒ~ƒm',
-		firefly    : 'ƒzƒ^ƒ‹ƒr[ƒ€',
-		goishi     : 'ŒéÎ‚Ğ‚ë‚¢',
-		gokigen    : '‚²‚«‚°‚ñ‚È‚È‚ß',
-		hakoiri    : '‚Í‚±‚¢‚è›¢ ',
-		hashikake  : '‹´‚ğ‚©‚¯‚ë',
-		heyawake   : '‚Ö‚â‚í‚¯',
-		hitori     : '‚Ğ‚Æ‚è‚É‚µ‚Ä‚­‚ê',
-		icebarn    : 'ƒAƒCƒXƒo[ƒ“',
-		icelom     : 'ƒAƒCƒXƒ[ƒ€',
-		ichimaga   : 'ƒCƒ`ƒ}ƒK',
-		kaero      : '‚¨‰Æ‚É‹A‚ë‚¤',
-		kakuro     : 'ƒJƒbƒNƒ',
-		kakuru     : 'ƒJƒbƒNƒ‹',
-		kinkonkan  : 'ƒLƒ“ƒRƒ“ƒJƒ“',
-		kramma     : '‰õ“—–ƒ',
-		kurochute  : 'ƒNƒƒVƒ…[ƒg',
-		kurodoko   : '•‚Ç‚±',
-		kusabi     : 'ƒNƒTƒrƒŠƒ“ƒN',
-		lightup    : '”üpŠÙ',
+		aho        : 'ã‚¢ãƒ›ã«ãªã‚Šåˆ‡ã‚Œ',
+		ayeheya    : 'âˆ€äººâˆƒï¼¨ï¼¥ï¼¹ï¼¡',
+		bag        : 'ãƒãƒƒã‚°',
+		barns      : 'ãƒãƒ¼ãƒ³ã‚º',
+		bdblock    : 'ãƒœãƒ¼ãƒ€ãƒ¼ãƒ–ãƒ­ãƒƒã‚¯',
+		bonsan     : 'ã¼ã‚“ã•ã‚“',
+		bosanowa   : 'ãƒœã‚µãƒãƒ¯',
+		box        : 'ãƒœãƒƒã‚¯ã‚¹',
+		chocona    : 'ãƒãƒ§ã‚³ãƒŠ',
+		cojun      : 'ã‚³ãƒ¼ã‚¸ãƒ¥ãƒ³',
+		country    : 'ã‚«ãƒ³ãƒˆãƒªãƒ¼ãƒ­ãƒ¼ãƒ‰',
+		creek      : 'ã‚¯ãƒªãƒ¼ã‚¯',
+		factors    : 'å› å­ã®éƒ¨å±‹',
+		fillmat    : 'ãƒ•ã‚£ãƒ«ãƒãƒƒãƒˆ',
+		fillomino  : 'ãƒ•ã‚£ãƒ«ã‚ªãƒŸãƒ',
+		firefly    : 'ãƒ›ã‚¿ãƒ«ãƒ“ãƒ¼ãƒ ',
+		goishi     : 'ç¢çŸ³ã²ã‚ã„',
+		gokigen    : 'ã”ãã’ã‚“ãªãªã‚',
+		hakoiri    : 'ã¯ã“ã„ã‚Šâ—‹â–³â–¡',
+		hashikake  : 'æ©‹ã‚’ã‹ã‘ã‚',
+		heyawake   : 'ã¸ã‚„ã‚ã‘',
+		hitori     : 'ã²ã¨ã‚Šã«ã—ã¦ãã‚Œ',
+		icebarn    : 'ã‚¢ã‚¤ã‚¹ãƒãƒ¼ãƒ³',
+		icelom     : 'ã‚¢ã‚¤ã‚¹ãƒ­ãƒ¼ãƒ ',
+		ichimaga   : 'ã‚¤ãƒãƒã‚¬',
+		kaero      : 'ãŠå®¶ã«å¸°ã‚ã†',
+		kakuro     : 'ã‚«ãƒƒã‚¯ãƒ­',
+		kakuru     : 'ã‚«ãƒƒã‚¯ãƒ«',
+		kinkonkan  : 'ã‚­ãƒ³ã‚³ãƒ³ã‚«ãƒ³',
+		kramma     : 'å¿«åˆ€ä¹±éº»',
+		kurochute  : 'ã‚¯ãƒ­ã‚·ãƒ¥ãƒ¼ãƒˆ',
+		kurodoko   : 'é»’ã©ã“',
+		kusabi     : 'ã‚¯ã‚µãƒ“ãƒªãƒ³ã‚¯',
+		lightup    : 'ç¾è¡“é¤¨',
 		lits       : 'LITS',
-		loopsp     : 'ŠÂóüƒXƒyƒVƒƒƒ‹',
-		mashu      : '‚Ü‚µ‚ã',
-		mejilink   : 'ƒƒWƒŠƒ“ƒN',
-		minarism   : 'ƒ}ƒCƒiƒŠƒYƒ€',
-		mochikoro  : 'ƒ‚ƒ`ƒRƒ',
-		mochinyoro : 'ƒ‚ƒ`‚É‚å‚ë',
-		nagenawa   : '‚È‚°‚È‚í',
-		nanro      : 'ƒiƒ“ƒ[',
-		nawabari   : '‚È‚í‚Î‚è',
-		norinori   : '‚Ì‚è‚Ì‚è',
-		numlin     : 'ƒiƒ“ƒo[ƒŠƒ“ƒN',
-		nuribou    : '‚Ê‚è‚Ú‚¤',
-		nurikabe   : '‚Ê‚è‚©‚×',
-		paintarea  : 'ƒyƒCƒ“ƒgƒGƒŠƒA',
-		pipelink   : 'ƒpƒCƒvƒŠƒ“ƒN',
-		reflect    : 'ƒŠƒtƒŒƒNƒgƒŠƒ“ƒN',
-		renban     : '˜A”Ô‘‹Œû',
-		ripple     : '”g‹yŒø‰Ê',
-		shakashaka : 'ƒVƒƒƒJƒVƒƒƒJ',
-		shikaku    : 'lŠp‚ÉØ‚ê',
-		shimaguni  : '“‡‘',
-		shugaku    : 'CŠw—·s‚Ì–é',
-		shwolf     : 'ƒ„ƒM‚ÆƒIƒIƒJƒ~',
-		slalom     : 'ƒXƒ‰ƒ[ƒ€',
-		slither    : 'ƒXƒŠƒU[ƒŠƒ“ƒN',
-		snakes     : '‚Ö‚Ñ‚¢‚¿‚²',
-		sudoku     : '”“Æ',
-		sukoro     : '”ƒRƒ',
-		tasquare   : '‚½‚·‚­‚¦‚ ',
-		tatamibari : 'ƒ^ƒ^ƒ~ƒoƒŠ',
-		tateyoko   : 'ƒ^ƒeƒ{[ƒˆƒRƒ{[',
-		tawa       : '‚½‚í‚Ş‚ê‚ñ‚ª',
-		tentaisho  : '“V‘ÌƒVƒ‡[',
-		tilepaint  : 'ƒ^ƒCƒ‹ƒyƒCƒ“ƒg',
-		triplace   : 'ƒgƒŠƒvƒŒƒCƒX',
-		usotatami  : 'ƒEƒ\ƒ^ƒ^ƒ~',
-		view       : 'ƒ”ƒBƒE',
-		wblink     : 'ƒVƒƒNƒƒŠƒ“ƒN',
-		yajikazu   : '‚â‚¶‚³‚ñ‚©‚¸‚³‚ñ',
-		yajirin    : 'ƒ„ƒWƒŠƒ“'
+		loopsp     : 'ç’°çŠ¶ç·šã‚¹ãƒšã‚·ãƒ£ãƒ«',
+		mashu      : 'ã¾ã—ã‚…',
+		mejilink   : 'ãƒ¡ã‚¸ãƒªãƒ³ã‚¯',
+		minarism   : 'ãƒã‚¤ãƒŠãƒªã‚ºãƒ ',
+		mochikoro  : 'ãƒ¢ãƒã‚³ãƒ­',
+		mochinyoro : 'ãƒ¢ãƒã«ã‚‡ã‚',
+		nagenawa   : 'ãªã’ãªã‚',
+		nanro      : 'ãƒŠãƒ³ãƒ­ãƒ¼',
+		nawabari   : 'ãªã‚ã°ã‚Š',
+		norinori   : 'ã®ã‚Šã®ã‚Š',
+		numlin     : 'ãƒŠãƒ³ãƒãƒ¼ãƒªãƒ³ã‚¯',
+		nuribou    : 'ã¬ã‚Šã¼ã†',
+		nurikabe   : 'ã¬ã‚Šã‹ã¹',
+		paintarea  : 'ãƒšã‚¤ãƒ³ãƒˆã‚¨ãƒªã‚¢',
+		pipelink   : 'ãƒ‘ã‚¤ãƒ—ãƒªãƒ³ã‚¯',
+		reflect    : 'ãƒªãƒ•ãƒ¬ã‚¯ãƒˆãƒªãƒ³ã‚¯',
+		renban     : 'é€£ç•ªçª“å£',
+		ripple     : 'æ³¢åŠåŠ¹æœ',
+		shakashaka : 'ã‚·ãƒ£ã‚«ã‚·ãƒ£ã‚«',
+		shikaku    : 'å››è§’ã«åˆ‡ã‚Œ',
+		shimaguni  : 'å³¶å›½',
+		shugaku    : 'ä¿®å­¦æ—…è¡Œã®å¤œ',
+		shwolf     : 'ãƒ¤ã‚®ã¨ã‚ªã‚ªã‚«ãƒŸ',
+		slalom     : 'ã‚¹ãƒ©ãƒ­ãƒ¼ãƒ ',
+		slither    : 'ã‚¹ãƒªã‚¶ãƒ¼ãƒªãƒ³ã‚¯',
+		snakes     : 'ã¸ã³ã„ã¡ã”',
+		sudoku     : 'æ•°ç‹¬',
+		sukoro     : 'æ•°ã‚³ãƒ­',
+		sukororoom : 'æ•°ã‚³ãƒ­éƒ¨å±‹',
+		tasquare   : 'ãŸã™ããˆã‚',
+		tatamibari : 'ã‚¿ã‚¿ãƒŸãƒãƒª',
+		tateyoko   : 'ã‚¿ãƒ†ãƒœãƒ¼ãƒ¨ã‚³ãƒœãƒ¼',
+		tawa       : 'ãŸã‚ã‚€ã‚Œã‚“ãŒ',
+		tentaisho  : 'å¤©ä½“ã‚·ãƒ§ãƒ¼',
+		tilepaint  : 'ã‚¿ã‚¤ãƒ«ãƒšã‚¤ãƒ³ãƒˆ',
+		toichika   : 'é ã„èª“ã„',
+		triplace   : 'ãƒˆãƒªãƒ—ãƒ¬ã‚¤ã‚¹',
+		usotatami  : 'ã‚¦ã‚½ã‚¿ã‚¿ãƒŸ',
+		view       : 'ãƒ´ã‚£ã‚¦',
+		wagiri     : 'ã”ãã’ã‚“ãªãªã‚ãƒ»è¼ªåˆ‡',
+		wblink     : 'ã‚·ãƒ­ã‚¯ãƒ­ãƒªãƒ³ã‚¯',
+		yajikazu   : 'ã‚„ã˜ã•ã‚“ã‹ãšã•ã‚“',
+		yajirin    : 'ãƒ¤ã‚¸ãƒªãƒ³'
 	};
 
 	var datas = new Array();
-
-	var array_dt  = new Array();
-	var array_col = new Array();
-
-<?php output($datas); ?>
+<?php
+	$datas = inputlogdata();
+	output($datas);
+?>
 
 	function disp(){
-		if(tkey==0){ displog(); return;}<?php // ŒöŠJ”Å‚Ídisplog()ŠÖ”‚É”ò‚ñ‚ÅI—¹ // ?>
-
-		var inhtml = "";
-
-//		array_col[fc] = array_col[fc].sort(function(a,b){ return (a>b?1:-1)});
-		array_dt = array_dt.sort(function(a,b){ return (a>b?1:-1);});
-
-		if(rn=="table"){
-			inhtml = "<table border=1 cellpadding=0 cellspacing=1>\n";
-			var i;
-			inhtml += "<tr>\n<td></td>\n";
-			for(i=0;i<array_col[fc].length;i++){
-				inhtml += "<td class=\"cap\">"+array_col[fc][i]+"</td>\n";
-			}
-			inhtml += "</tr>\n";
-			for(i=0;i<array_dt.length;i++){
-				inhtml += "<tr>\n<td>"+array_dt[i]+"</td>\n";
-				var j
-				for(j=0;j<array_col[fc].length;j++){
-					if(isNaN(datas[fc][array_dt[i]][array_col[fc][j]])){ inhtml += "<td class=\"num\">0</td>\n";}
-					else{ inhtml += "<td class=\"num\">"+datas[fc][array_dt[i]][array_col[fc][j]]+"</td>\n";}
-				}
-				inhtml += "</tr>\n";
-			}
-			inhtml += "</table>\n";
-		}
-		else{
-			inhtml = "<table border=1 cellpadding=0 cellspacing=1><tr><td>\n";
-			var i;
-			inhtml += "";
-			for(i=0;i<array_col[fc].length;i++){
-				inhtml += ",\""+array_col[fc][i]+"\"";
-			}
-			inhtml += "<br>\n";
-			for(i=0;i<array_dt.length;i++){
-				inhtml += "\""+array_dt[i]+"\"";
-				var j
-				for(j=0;j<array_col[fc].length;j++){
-					if(isNaN(datas[fc][array_dt[i]][array_col[fc][j]])){ inhtml += ",0";}
-					else{ inhtml += ","+datas[fc][array_dt[i]][array_col[fc][j]];}
-				}
-				inhtml += "<br>\n";
-			}
-			inhtml += "</td></tr></table>\n";
-		}
-		document.getElementById("main").innerHTML = inhtml;
-	}
-
-	function displog(){
-		var inhtml = "<table border=1 cellpadding=0 cellspacing=1 style=\"margin:auto;\">\n";
 		var array = datas[fc][rn];
-		if(st=="number"){ array = array.sort(function(a,b){ return (a[1]!=b[1]?b[1]-a[1]:(a[0]>b[0]?1:-1));} );}
-		else if(fc!="pz"){ array = array.sort(function(a,b){ return (a[0]>b[0]?1:-1);} );}	// ‚É‚Í‚È‚ç‚È‚¢
-		else if(fc=="pz"){ array = array.sort(function(a,b){ return (((pname[a[0]]&&pname[b[0]])?pname[a[0]]>pname[b[0]]:a[0]>b[0])?1:-1);} ); }
+		if(st==="number"){ array = array.sort(function(a,b){ return (a[1]!==b[1]?b[1]-a[1]:(a[0]>b[0]?1:-1));} );}
+		else if(fc!=="pz"){ array = array.sort(function(a,b){ return (a[0]>b[0]?1:-1);} );}	// ï¼ã«ã¯ãªã‚‰ãªã„
+		else if(fc==="pz"){ array = array.sort(function(a,b){ return (((pname[a[0]]&&pname[b[0]])?pname[a[0]]>pname[b[0]]:a[0]>b[0])?1:-1);} ); }
 
 		var max = 1;
 		var total = 0;
@@ -162,86 +108,82 @@
 		total = (total>0?total:1);
 		var ratio = (max>240?240/max:1.0);
 
-		for(var i=0;i<array.length;i++){
-			var listname = ""+array[i][0];
-			if(fc=="pz" && pname[array[i][0]]){ listname = ""+pname[array[i][0]];}
-			inhtml += "<tr><td class=\"list\">"+listname+"</td><td class=\"num\">"+array[i][1]+"</td>";
-			inhtml += "<td class=\"bar\"><img src=\"rbar.gif\" width=\""+Math.ceil(array[i][1]*ratio)+"px\" height=\"8px\"></td>";
+		var inhtml = ['<table border=1 cellpadding=0 cellspacing=1 style="margin:auto;">', '\n'];
+		for(var i=0;i<array.length;i++){ // >
+			var listname = ""+(fc==="pz" && pname[array[i][0]] ? pname[array[i][0]] : array[i][0]);
 			var permill = Math.round(1000*array[i][1]/total);
-			inhtml += ("<td class=\"bar2\">"+(Math.floor(permill/10))+"."+(permill%10)+"%</td></tr>\n");
+			var percent = [Math.floor(permill/10), '.', (permill%10), '%'].join('');
+			var barwidth = ['"', Math.ceil(array[i][1]*ratio), 'px"'].join('');
+			inhtml.push(
+				'<tr>',
+					'<td class="list">', listname, '</td>',
+					'<td class="num">', array[i][1], '</td>',
+					'<td class="bar">', '<img src="rbar.gif" width=', barwidth, ' height="8px">', '</td>',
+					'<td class="bar2">', percent, '</td>',
+				'</tr>',
+				'\n'
+			);
 		}
-		inhtml += "</table>\n";
-		document.getElementById("main").innerHTML = inhtml;
+		inhtml.push('</table>', '\n');
+		document.getElementById("main").innerHTML = inhtml.join('');
 	}
 
-	function chfcs(fc1){
-		fc = fc1;
-		disp();
-		document.getElementById("fcs1").className = (fc=="pz"?"menusel":"menu");
-		document.getElementById("fcs2").className = (fc=="rf"?"menusel":"menu");
-		document.getElementById("fcs3").className = (fc=="os"?"menusel":"menu");
-		document.getElementById("fcs4").className = (fc=="bz"?"menusel":"menu");
-		document.getElementById("fcs5").className = (fc=="bz3"?"menusel":"menu");
-		//if(tkey!=0){ return;}
-		//document.getElementById("fcs6").className = (fc=="matrix"?"menusel":"menu");
-		//document.getElementById("fcs7").className = (fc=="matrix2"?"menusel":"menu");
-	}
+	var fclist = { fcs1:'pz', fcs2:'rf', fcs3:'os', fcs4:'bz', fcs5:'bz3', fcs6:'lang'};
+	var rnlist = { range1:'daily', range2:'weekly', range3:'monthly', range4:'season', range5:'yearly', range6:'allrange'};
+	var stlist = { sorts1:'number', sorts2:'dictionary'};
+	function chfcs(fc1)  { fc = fc1; menuclick(fc,fclist);}
+	function chrange(rn1){ rn = rn1; menuclick(rn,rnlist);}
+	function chsort(st1) { st = st1; menuclick(st,stlist);}
 
-	function chrange(rn1){
-		rn = rn1;
+	function menuclick(id, list){
 		disp();
-		if(tkey!=0){
-			document.getElementById("range1").className = (rn=="table"?"menusel":"menu");
-			document.getElementById("range2").className = (rn=="tab"?"menusel":"menu");
-		}
-		else{
-			document.getElementById("range1").className = (rn=="daily"?"menusel":"menu");
-			document.getElementById("range2").className = (rn=="weekly"?"menusel":"menu");
-			document.getElementById("range3").className = (rn=="monthly"?"menusel":"menu");
-			document.getElementById("range4").className = (rn=="season"?"menusel":"menu");
-			document.getElementById("range5").className = (rn=="yearly"?"menusel":"menu");
-			document.getElementById("range6").className = (rn=="allrange"?"menusel":"menu");
+		for(var i in list){
+			document.getElementById(i).className = (id===list[i]?"menusel":"menu");
 		}
 	}
 
-	function chsort(st1){
-		if(tkey!=0){ return;}
-		st = st1;
-		disp();
-		document.getElementById("sorts1").className = (st=="number"?"menusel":"menu");
-		document.getElementById("sorts2").className = (st=="dictionary"?"menusel":"menu");
-	}
-//-->
 </script>
 <style type="text/css"> 
 <!--
 	h2 { color:indianred; text-decoration:underline; margin-top:8pt;}
 	span.menu { color:blue; font-weight:100; text-decoration:underline; margin-right:4pt; cursor:pointer;}
 	span.menusel { color:black; font-weight:900; margin-right:4pt; cursor:default;}
+	table { text-align:left;}
 	td.cap { text-align: center; font-size:10pt; padding: 1pt}
 	td.num { text-align: right; font-size:10pt; font-weight:900; padding-right: 2pt; color:darkgreen; background-color:cornsilk;}
 	td.list { font-size:10pt; padding-left: 6pt; padding-right: 8pt; color:#000033; background-color:aliceblue;}
-	td.bar  { width:240px; padding-left: 3pt; padding-right: 4pt; background-color:snow;}
+	td.bar  { width:240px; position:relative; padding-left: 3pt; padding-right: 4pt; background-color:snow;}
 	td.bar2 { text-align: right; font-size:8pt; color:green; padding-left: 4pt; padding-right: 2pt; background-color:cornsilk;}
 	td { padding-left: 6pt; padding-right: 8pt;}
-	img { margin-right:3pt;}
+	img { margin-right:3pt; vertical-align:middle; position:relative; top:-2px;}
 --> 
 </style> 
 </HEAD>
 <BODY onLoad="javascript:disp();" style="text-align:center;background-color:lemonchiffon;">
 
-<h2>‚Ï‚¸‚Õ‚êƒƒO‰{——Š</h2>
+<h2>ã±ãšã·ã‚Œãƒ­ã‚°é–²è¦§æ‰€</h2>
 
 <p id="clickmenu">
 <table border=1 cellspacing=1 style="background-color:#efefef;margin:auto auto 8pt auto;\">
 <tr><td colspan=2>
-<?php dispmenu1(); ?>
+  <span id="fcs1" class="menusel" onClick="javascript:chfcs('pz');">ãƒ‘ã‚ºãƒ«</span>
+  <span id="fcs2" class="menu" onClick="javascript:chfcs('rf');">ãƒªãƒ³ã‚¯å…ƒ</span>
+  <span id="fcs3" class="menu" onClick="javascript:chfcs('os');">OS</span>
+  <span id="fcs5" class="menu" onClick="javascript:chfcs('bz3');">ãƒ–ãƒ©ã‚¦ã‚¶</span>
+  <span id="fcs4" class="menu" onClick="javascript:chfcs('bz');">ãƒ–ãƒ©ã‚¦ã‚¶(è©³ç´°)</span>
+  <span id="fcs6" class="menu" onClick="javascript:chfcs('lang');">è¨€èª</span>
 </td></tr>
 <tr><td>
-<?php dispmenu2(); ?>
+  <span id="range1" class="menu" onClick="javascript:chrange('daily');">1æ—¥</span>
+  <span id="range2" class="menu" onClick="javascript:chrange('weekly');">1é€±é–“</span>
+  <span id="range3" class="menusel" onClick="javascript:chrange('monthly');">1ãƒ¶æœˆ</span>
+  <span id="range4" class="menu" onClick="javascript:chrange('season');">3ãƒ¶æœˆ</span>
+  <span id="range5" class="menu" onClick="javascript:chrange('yearly');">1å¹´</span>
+  <span id="range6" class="menu" onClick="javascript:chrange('allrange');">ALL</span>
 </td>
 <td>
-<?php dispmenu3(); ?>
+  <span id="sorts1" class="menusel" onClick="javascript:chsort('number');">ã‚«ã‚¦ãƒ³ãƒˆé †</span>
+  <span id="sorts2" class="menu" onClick="javascript:chsort('dictionary');">ABCé †</span>
 </td></tr>
 </table>
 </p>
@@ -250,194 +192,22 @@
 
 </BODY>
 </HTML>
-<?php ///////////////////////////////////////////////////////////////////////////////////////////////// ?>
-<?php
+<?php /////////////////////////////////////////////////////////////////////////
 
-	function startup(){
-		global $title, $label, $tkey;
-
-		// t=0‚©A“ü—Í‚³‚ê‚Ä‚¢‚È‚¢‚Æ‚«
-		$title = "ƒƒO‰{——Š";
-		$label = "";
+	function inputlogdata(){
+		global $tkey;
 		$tkey = 0;
-
-		if(array_key_exists("t", $_GET)){
-			switch($_GET["t"]){
-				case 1:
-					$title = "TŠÔ30“úƒƒO‰{——Š";
-					$label = "“úŠ§";
-					$tkey = 1;
-					break;
-				case 2:
-					$title = "TŠÔƒƒO‰{——Š";
-					$label = "TŠÔ";
-					$tkey = 2;
-					break;
-				case 3;
-					$title = "Œ—áƒƒO‰{——Š";
-					$label = "ŒŠÔ";
-					$tkey = 3;
-			}
-		}
-	}
-
-	function dispmenu1(){
-		global $tkey;
-
-		echo "<span id=\"fcs1\" class=\"menusel\" onClick=\"javascript:chfcs('pz');\">ƒpƒYƒ‹</span>\n";
-		echo "<span id=\"fcs2\" class=\"menu\" onClick=\"javascript:chfcs('rf');\">ƒŠƒ“ƒNŒ³</span>\n";
-		echo "<span id=\"fcs3\" class=\"menu\" onClick=\"javascript:chfcs('os');\">OS</span>\n";
-		echo "<span id=\"fcs5\" class=\"menu\" onClick=\"javascript:chfcs('bz3');\">ƒuƒ‰ƒEƒU</span>\n";
-		echo "<span id=\"fcs4\" class=\"menu\" onClick=\"javascript:chfcs('bz');\">ƒuƒ‰ƒEƒU(Ú×)</span>\n";
-		//if($tkey==0){
-		//	echo "<span id=\"fcs6\" class=\"menu\" onClick=\"javascript:chfcs('matrix');\">OS/ƒuƒ‰ƒEƒU</span>\n";
-		//	echo "<span id=\"fcs7\" class=\"menu\" onClick=\"javascript:chfcs('matrix2');\">ƒuƒ‰ƒEƒU/OS</span>\n";
-		//}
-	}
-	function dispmenu2(){
-		global $tkey;
-
-		if($tkey!=0){
-			echo "<span id=\"range1\" class=\"menusel\" onClick=\"javascript:chrange('table');\">$label(table)</span>\n";
-			echo "<span id=\"range2\" class=\"menu\" onClick=\"javascript:chrange('tab');\">$label(ƒRƒ“ƒ}‹æØ‚è)</span>\n";
-		}
-		else{
-			echo "<span id=\"range1\" class=\"menu\" onClick=\"javascript:chrange('daily');\">1“ú</span>\n";
-			echo "<span id=\"range2\" class=\"menu\" onClick=\"javascript:chrange('weekly');\">1TŠÔ</span>\n";
-			echo "<span id=\"range3\" class=\"menusel\" onClick=\"javascript:chrange('monthly');\">1ƒ–Œ</span>\n";
-			echo "<span id=\"range4\" class=\"menu\" onClick=\"javascript:chrange('season');\">3ƒ–Œ</span>\n";
-			echo "<span id=\"range5\" class=\"menu\" onClick=\"javascript:chrange('yearly');\">1”N</span>\n";
-			echo "<span id=\"range6\" class=\"menu\" onClick=\"javascript:chrange('allrange');\">ALL</span>\n";
-		}
-	}
-	function dispmenu3(){
-		global $tkey;
-
-		if($tkey!=0){
-			echo "<span id=\"sorts2\" class=\"menusel\">ABC‡</span>\n";
-		}
-		else{
-			echo "<span id=\"sorts1\" class=\"menusel\" onClick=\"javascript:chsort('number');\">ƒJƒEƒ“ƒg‡</span>\n";
-			echo "<span id=\"sorts2\" class=\"menu\" onClick=\"javascript:chsort('dictionary');\">ABC‡</span>\n";
-		}
-	}
-
-	function input(){
-		global $tkey;
-
-		$datas = array();
-		$files = array("../logview/logdata.txt");
-		$state = 0;
-		$pastday = 1;
-
-//		$nowdate,$nowweek,$nowmonth,$key;
-
-		foreach($files as $file){
-			$fp = fopen($file, 'r');
-			while(!feof($fp)){
-				$sline = rtrim(fgets($fp));
-				$inp = split("\t",$sline);
-
-				if($state==0){
-					if($sline=="_EOL_"){ $state=1;}
-					else{
-						$nowdate = $inp[0];
-						$nowweek = $inp[1];
-						preg_match("/^(\d+\/\d+)/",$nowdate,$ma); $nowmonth = $ma[1];
-
-						if    ($tkey==1){ $key = $nowdate;}
-						elseif($tkey==2){ $key = $nowweek;}
-						elseif($tkey==3){ $key = $nowmonth;}
-					}
-				}
-				elseif($state==1){
-					if($sline=="_EOL_"){ $state=2;}
-					else{ input1($datas['pz'],$pastday,$key,$inp[0],$inp[1]);}
-				}
-				elseif($state==2){
-					if($sline=="_EOL_"){ $state=3;}
-					else{
-						if(preg_match("/^([^\?]+?)\?/",$inp[0],$ma)){ $inp[0] = $ma[1];}
-						$inp[0] = referrer($inp[0]);
-						input1($datas['rf'],$pastday,$key,$inp[0],$inp[1]);
-					}
-				}
-				elseif($state==3){
-					if(strstr($sline,"_EOD_")){ $state=0; ++$pastday;}
-					else{
-						input1($datas['os'],$pastday,$key,$inp[0],$inp[2]);
-						input1($datas['bz'],$pastday,$key,$inp[1],$inp[2]);
-						input1($datas['bz3'],$pastday,$key,bz3($inp[1]),$inp[2]);
-						//if($tkey==0){
-						//	input1($datas['matrix'],$pastday,$key,"$inp[0]</td><td class=\\\"list\\\">$inp[1]",$inp[2]);
-						//	input1($datas['matrix2'],$pastday,$key,"$inp[1]</td><td class=\\\"list\\\">$inp[0]",$inp[2]);
-						//}
-					}
-				}
-
-				if($tkey==1 && $pastday>30){ break;}
-			}
-			fclose($fp);
-		}
-		return $datas;
-	}
-
-	function input1(&$data1, $pastday, $key, $key2, $val){
-		global $tkey;
-		if($tkey!=0){ $data1[$key][$key2] += $val;}
-		else{
-			if($pastday<=1){ $data1{'daily'}{$key2} += $val;}
-			if($pastday<=7){ $data1{'weekly'}{$key2} += $val;}
-			if($pastday<=30){ $data1{'monthly'}{$key2} += $val;}
-			if($pastday<=90){ $data1{'season'}{$key2} += $val;}
-			if($pastday<=365){ $data1{'yearly'}{$key2} += $val;}
-			$data1{'allrange'}{$key2} += $val;
-		}
+		require_once('../logview/logutil.php');
+		return read_logdata(array("../logview/logdata.txt"));
 	}
 
 	function output($datas){
-		global $tkey;
-
-		if($tkey==0){ output0($datas); return;}
-
-		$fcs = array('pz', 'rf', 'os', 'bz', 'bz3');
-		$colh = array();
-		$dateh = array();
-		$dates = array();
-
-		foreach($fcs as $fc){
-			echo "\tdatas[\"$fc\"] = new Array();\n";
-			foreach($datas[$fc] as $date => $val){
-				ksort($datas[$fc][$date]);
-				$text = array();
-				foreach($datas[$fc][$date] as $obj => $val){
-					array_push($text, "\"$obj\":$val");
-					$colh[$fc][$obj]++;
-				}
-				echo "\tdatas[\"$fc\"][\"$date\"] = {".join(",",$text)."};\n";
-				$dateh[$date]++;
-			}
-		}
-		foreach($fcs as $fc){
-			$cols = array();
-			ksort($colh[$fc]);
-			foreach($colh[$fc] as $key => $val){ array_push($cols, "\"$key\"");}
-			echo "\tarray_col[\"$fc\"] = [".join(",",$cols)."];\n";
-		}
-		ksort($dateh);
-		foreach($dateh as $key => $val){ array_push($dates, "\"$key\"");}
-		echo "\tarray_dt = [".join(",",$dates)."];\n";
-
-		echo "\n";
-		echo "\tvar tkey = $tkey;\n";
-	}
-
-	function output0($datas){
 		//$fcs = array('pz', 'rf', 'matrix', 'matrix2', 'os', 'bz', 'bz3');
-		$fcs = array('pz', 'rf', 'os', 'bz', 'bz3');
+		$fcs = array('pz', 'rf', 'os', 'bz', 'bz3', 'lang');
 
 		foreach($fcs as $fc){
 			echo "\tdatas[\"$fc\"] = new Array();\n";
+			if(!is_array($datas[$fc])){ continue;}
 			foreach($datas[$fc] as $range => $val){
 				$text = array();
 				foreach($datas[$fc][$range] as $obj => $val){
@@ -446,9 +216,5 @@
 				echo "\tdatas[\"$fc\"][\"$range\"] = [".join(",",$text)."];\n";
 			}
 		}
-
-		echo "\n";
-		echo "\tvar tkey = 0;\n";
-		echo "\tvar rn = 'monthly';\n";
 	}
 ?>

@@ -1,58 +1,58 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ƒoƒbƒO”Å bag.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ãƒãƒƒã‚°ç‰ˆ bag.js v3.3.1
 //
 Puzzles.bag = function(){ };
 Puzzles.bag.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 10;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 10;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 10;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 10;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 2;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 2;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = false;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = true;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = false;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = false;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = true;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = false;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = false;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = true;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = false;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = false;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = true;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = false;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = false;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = false;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = false;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = false;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
-		base.setTitle("ƒoƒbƒO", "BAG (Corral)");
-		base.setExpression("@¶ƒhƒ‰ƒbƒO‚Åü‚ªA‰EƒNƒŠƒbƒN‚ÅƒZƒ‹‚Ì”wŒiF(—Î/‰©F)‚ª“ü—Í‚Å‚«‚Ü‚·B",
+		base.setTitle("ãƒãƒƒã‚°", "BAG (Corral)");
+		base.setExpression("ã€€å·¦ãƒ‰ãƒ©ãƒƒã‚°ã§ç·šãŒã€å³ã‚¯ãƒªãƒƒã‚¯ã§ã‚»ãƒ«ã®èƒŒæ™¯è‰²(ç·‘/é»„è‰²)ãŒå…¥åŠ›ã§ãã¾ã™ã€‚",
 						   " Left Button Drag to input lines, Right Click to input background color (lime or yellow) of the cell.");
 		base.setFloatbgcolor("rgb(160, 0, 0)");
 	},
 	menufix : function(){
-		pp.addCheck('bgcolor','setting',false, '”wŒiF“ü—Í', 'Background-color');
-		pp.setLabel('bgcolor', 'ƒZƒ‹‚Ì’†‰›‚ğƒNƒŠƒbƒN‚µ‚½‚É”wŒiF‚Ì“ü—Í‚ğ—LŒø‚É‚·‚é', 'Enable to Input BGColor When the Center of the Cell is Clicked');
+		pp.addCheck('bgcolor','setting',false, 'èƒŒæ™¯è‰²å…¥åŠ›', 'Background-color');
+		pp.setLabel('bgcolor', 'ã‚»ãƒ«ã®ä¸­å¤®ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ãŸæ™‚ã«èƒŒæ™¯è‰²ã®å…¥åŠ›ã‚’æœ‰åŠ¹ã«ã™ã‚‹', 'Enable to Input BGColor When the Center of the Cell is Clicked');
 
 		menu.ex.modechange = function(num){
 			k.editmode = (num==1);
 			k.playmode = (num==3);
-			kc.prev = -1;
+			kc.prev = null;
 			ans.errDisp=true;
 			bd.errclear();
-			if(kp.ctl[1].enable || kp.ctl[3].enable){ pp.funcs.keypopup();}
+			if(kp.haspanel[1] || kp.haspanel[3]){ pp.funcs.keypopup();}
 			tc.setAlign();
 			pc.paintAll();
-			// ‚±‚±‚Ü‚ÅŒ³‚Æ“¯‚¶
+			// ã“ã“ã¾ã§å…ƒã¨åŒã˜
 
 			ee('ck_bgcolor').el.disabled    = (num===3?"":"true");
 			ee('cl_bgcolor').el.style.color = (num===3?"black":"silver");
@@ -66,17 +66,14 @@ Puzzles.bag.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
-			if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum();}
-				else{ kp.display();}
-			}
+			if(k.editmode){ this.inputqnum();}
 			else if(k.playmode){
 				if(!pp.getVal('bgcolor') || !this.inputBGcolor0()){
-					if(this.btn.Left) this.inputborderans();
+					if(this.btn.Left) this.inputLine();
 					else if(this.btn.Right) this.inputBGcolor(true);
 				}
 				else{ this.inputBGcolor(false);}
@@ -86,7 +83,7 @@ Puzzles.bag.prototype = {
 		mv.mousemove = function(){
 			if(k.playmode){
 				if(!pp.getVal('bgcolor') || this.inputData<10){
-					if(this.btn.Left) this.inputborderans();
+					if(this.btn.Left) this.inputLine();
 					else if(this.btn.Right) this.inputBGcolor(true);
 				}
 				else{ this.inputBGcolor(false);}
@@ -99,8 +96,8 @@ Puzzles.bag.prototype = {
 		};
 		mv.inputBGcolor = function(isnormal){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell){ return;}
-			if(this.inputData==-1){
+			if(cc===null || cc==this.mouseCell){ return;}
+			if(this.inputData===null){
 				if(isnormal || this.btn.Left){
 					if     (bd.cell[cc].qsub===0){ this.inputData=11;}
 					else if(bd.cell[cc].qsub===1){ this.inputData=12;}
@@ -118,7 +115,7 @@ Puzzles.bag.prototype = {
 			this.mouseCell = cc; 
 		};
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
@@ -136,18 +133,17 @@ Puzzles.bag.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.setBGCellColorFunc('qsub2');
-		pc.setBorderColorFunc('line');
 
 		pc.chassisflag = false;
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawLines(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
 
@@ -156,7 +152,7 @@ Puzzles.bag.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeNumber16();
@@ -169,41 +165,41 @@ Puzzles.bag.prototype = {
 		fio.decodeData = function(){
 			this.decodeCellQnum();
 			this.decodeCellQsub();
-			this.decodeBorderAns2();
+			this.decodeBorderLine();
 		};
 		fio.encodeData = function(){
 			this.encodeCellQnum();
 			this.encodeCellQsub();
-			this.encodeBorderAns2();
+			this.encodeBorderLine();
 		};
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			if( !this.checkLcntCross(3,0) ){
-				this.setAlert('•ªŠò‚µ‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B', 'There is a branch line.'); return false;
+				this.setAlert('åˆ†å²ã—ã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚', 'There is a branch line.'); return false;
 			}
 			if( !this.checkLcntCross(4,0) ){
-				this.setAlert('ü‚ªŒğ·‚µ‚Ä‚¢‚Ü‚·B', 'There is a crossing line.'); return false;
+				this.setAlert('ç·šãŒäº¤å·®ã—ã¦ã„ã¾ã™ã€‚', 'There is a crossing line.'); return false;
 			}
 
 			if( !this.checkOneLoop() ){
-				this.setAlert('—Ö‚Á‚©‚ªˆê‚Â‚Å‚Í‚ ‚è‚Ü‚¹‚ñB','There are two or more loops.'); return false;
+				this.setAlert('è¼ªã£ã‹ãŒä¸€ã¤ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚','There are two or more loops.'); return false;
 			}
 
 			if( !this.checkLcntCross(1,0) ){
-				this.setAlert('“r’†‚Å“rØ‚ê‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B', 'There is a dead-end line.'); return false;
+				this.setAlert('é€”ä¸­ã§é€”åˆ‡ã‚Œã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚', 'There is a dead-end line.'); return false;
 			}
 
 			var icheck = this.generateIarea();
 			if( !this.checkNumberInside(icheck) ){
-				this.setAlert('—Ö‚Ì“à‘¤‚É“ü‚Á‚Ä‚¢‚È‚¢”š‚ª‚ ‚è‚Ü‚·B','There is an outside number.'); return false;
+				this.setAlert('è¼ªã®å†…å´ã«å…¥ã£ã¦ã„ãªã„æ•°å­—ãŒã‚ã‚Šã¾ã™ã€‚','There is an outside number.'); return false;
 			}
 			if( !this.checkCellNumber(icheck) ){
-				this.setAlert('”š‚Æ—Ö‚Ì“à‘¤‚É‚È‚é4•ûŒü‚Ìƒ}ƒX‚Ì‡Œv‚ªˆá‚¢‚Ü‚·B','The number and the sum of the inside cells of four direction is different.'); return false;
+				this.setAlert('æ•°å­—ã¨è¼ªã®å†…å´ã«ãªã‚‹4æ–¹å‘ã®ãƒã‚¹ã®åˆè¨ˆãŒé•ã„ã¾ã™ã€‚','The number and the sum of the inside cells of four direction is different.'); return false;
 			}
 
 			return true;
@@ -211,11 +207,11 @@ Puzzles.bag.prototype = {
 
 		ans.generateIarea = function(){
 			var icheck = [];
-			icheck[0]=(line.lcntCell(0)==0?-1:1);
+			icheck[0]=(line.lcntCell(0)!==0);
 			for(var by=1;by<bd.maxby;by+=2){
-				if(by>1){ icheck[bd.cnum(1,by)]=icheck[bd.cnum(1,by-2)]*(bd.isLine(bd.bnum(1,by-1))?-1:1);}
+				if(by>1){ icheck[bd.cnum(1,by)] = !!(icheck[bd.cnum(1,by-2)] ^ bd.isLine(bd.bnum(1,by-1)));}
 				for(var bx=3;bx<bd.maxbx;bx+=2){
-					icheck[bd.cnum(bx,by)]=icheck[bd.cnum(bx-2,by)]*(bd.isLine(bd.bnum(bx-1,by))?-1:1);
+					icheck[bd.cnum(bx,by)] = !!(icheck[bd.cnum(bx-2,by)] ^ bd.isLine(bd.bnum(bx-1,by)));
 				}
 			}
 			return icheck;
@@ -223,7 +219,7 @@ Puzzles.bag.prototype = {
 		ans.checkNumberInside = function(icheck){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(icheck[c]==-1 && bd.QnC(c)!=-1){
+				if(!icheck[c] && bd.isNum(c)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],1);
 					result = false;
@@ -234,22 +230,22 @@ Puzzles.bag.prototype = {
 		ans.checkCellNumber = function(icheck){
 			var result = true;
 			for(var cc=0;cc<bd.cellmax;cc++){
-				if(bd.QnC(cc)<0){ continue;}
+				if(!bd.isValidNum(cc)){ continue;}
 
 				var list = [];
 				list.push(cc);
 				var cnt = 1;
 				var tx, ty;
 				tx = bd.cell[cc].bx-2; ty = bd.cell[cc].by;
-				while(tx>bd.minbx){ var c=bd.cnum(tx,ty); if(icheck[c]!==-1){ cnt++; list.push(c); tx-=2;} else{ break;} }
+				while(tx>bd.minbx){ var c=bd.cnum(tx,ty); if(icheck[c]){ cnt++; list.push(c); tx-=2;} else{ break;} }
 				tx = bd.cell[cc].bx+2; ty = bd.cell[cc].by;
-				while(tx<bd.maxbx){ var c=bd.cnum(tx,ty); if(icheck[c]!==-1){ cnt++; list.push(c); tx+=2;} else{ break;} }
+				while(tx<bd.maxbx){ var c=bd.cnum(tx,ty); if(icheck[c]){ cnt++; list.push(c); tx+=2;} else{ break;} }
 				tx = bd.cell[cc].bx; ty = bd.cell[cc].by-2;
-				while(ty>bd.minby){ var c=bd.cnum(tx,ty); if(icheck[c]!==-1){ cnt++; list.push(c); ty-=2;} else{ break;} }
+				while(ty>bd.minby){ var c=bd.cnum(tx,ty); if(icheck[c]){ cnt++; list.push(c); ty-=2;} else{ break;} }
 				tx = bd.cell[cc].bx; ty = bd.cell[cc].by+2;
-				while(ty<bd.maxby){ var c=bd.cnum(tx,ty); if(icheck[c]!==-1){ cnt++; list.push(c); ty+=2;} else{ break;} }
+				while(ty<bd.maxby){ var c=bd.cnum(tx,ty); if(icheck[c]){ cnt++; list.push(c); ty+=2;} else{ break;} }
 
-				if(bd.QnC(cc)!=cnt){
+				if(bd.QnC(cc)!==cnt){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(list,1);
 					result = false;

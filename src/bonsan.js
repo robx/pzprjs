@@ -1,50 +1,50 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ‚Ú‚ñ‚³‚ñ/‚Ö‚â‚Ú‚ñ”Å bonsan.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ã¼ã‚“ã•ã‚“/ã¸ã‚„ã¼ã‚“ç‰ˆ bonsan.js v3.3.1
 //
 Puzzles.bonsan = function(){ };
 Puzzles.bonsan.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 8;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 8;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 8;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 8;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 1;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 1;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = true;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = true;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = true;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = true;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = true;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = false;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = false;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = true;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = false;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = false;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = false;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = false;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = false;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = false;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
-		base.setTitle("‚Ú‚ñ‚³‚ñ/‚Ö‚â‚Ú‚ñ","Bonsan/Heya-Bon");
-		base.setExpression("@¶ƒhƒ‰ƒbƒO‚Åü‚ªAƒ}ƒX‚ÌƒNƒŠƒbƒN‚ÅƒZƒ‹‚Ì”wŒiF‚ª“ü—Í‚Å‚«‚Ü‚·B",
+		base.setTitle("ã¼ã‚“ã•ã‚“/ã¸ã‚„ã¼ã‚“","Bonsan/Heya-Bon");
+		base.setExpression("ã€€å·¦ãƒ‰ãƒ©ãƒƒã‚°ã§ç·šãŒã€ãƒã‚¹ã®ã‚¯ãƒªãƒƒã‚¯ã§ã‚»ãƒ«ã®èƒŒæ™¯è‰²ãŒå…¥åŠ›ã§ãã¾ã™ã€‚",
 						   " Left Button Drag to input lines, Click the cell to input background color of the cell.");
 		base.setFloatbgcolor("rgb(127,96,64)");
 	},
 	menufix : function(){ },
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if(k.editmode){ this.inputborder();}
 			else if(k.playmode){
@@ -53,10 +53,7 @@ Puzzles.bonsan.prototype = {
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.editmode){
-					if(!kp.enabled()){this.inputqnum();}
-					else{ kp.display();}
-				}
+				if(k.editmode){ this.inputqnum();}
 				else if(k.playmode){ this.inputlight();}
 			}
 		};
@@ -68,7 +65,7 @@ Puzzles.bonsan.prototype = {
 		};
 		mv.inputlight = function(){
 			var cc = this.cellid();
-			if(cc==-1){ return;}
+			if(cc===null){ return;}
 
 			if     (bd.QsC(cc)==0){ bd.sQsC(cc, (this.btn.Left?1:2));}
 			else if(bd.QsC(cc)==1){ bd.sQsC(cc, (this.btn.Left?2:0));}
@@ -77,7 +74,7 @@ Puzzles.bonsan.prototype = {
 		};
 		mv.enableInputHatena = true;
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
@@ -88,7 +85,7 @@ Puzzles.bonsan.prototype = {
 			kp.kpgenerate = function(mode){
 				this.inputcol('num','knum0','0','0');
 				this.inputcol('num','knum1','1','1');
-				this.inputcol('num','knum.','-','›');
+				this.inputcol('num','knum.','-','â—‹');
 				this.inputcol('num','knum_',' ',' ');
 				this.insertrow();
 				this.inputcol('num','knum2','2','2');
@@ -112,14 +109,14 @@ Puzzles.bonsan.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.qsubcolor1 = "rgb(224, 224, 255)";
 		pc.qsubcolor2 = "rgb(255, 255, 144)";
 		pc.setBGCellColorFunc('qsub2');
 
-		pc.fontsizeratio = 0.9;	// ”š‚Ì”{—¦
+		pc.fontsizeratio = 0.9;	// æ•°å­—ã®å€ç‡
 		pc.circleratio = [0.38, 0.38];
 
 		pc.paint = function(x1,y1,x2,y2){
@@ -151,7 +148,7 @@ Puzzles.bonsan.prototype = {
 				var c = clist[i];
 				this.vdel([header+c]);
 				if(line.lcntCell(c)==1 && bd.cell[c].qnum==-1){
-					var dir=0, id=-1;
+					var dir=0, id=null;
 					if     (bd.isLine(bd.ub(c))){ dir=2; id=bd.ub(c);}
 					else if(bd.isLine(bd.db(c))){ dir=1; id=bd.db(c);}
 					else if(bd.isLine(bd.lb(c))){ dir=4; id=bd.lb(c);}
@@ -176,7 +173,7 @@ Puzzles.bonsan.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeBorder();
@@ -203,50 +200,50 @@ Puzzles.bonsan.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 			this.performAsLine = true;
 
 			if( !this.checkLcntCell(3) ){
-				this.setAlert('•ªŠò‚µ‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B','There is a branch line.'); return false;
+				this.setAlert('åˆ†å²ã—ã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚','There is a branch line.'); return false;
 			}
 			if( !this.checkLcntCell(4) ){
-				this.setAlert('ü‚ªŒğ·‚µ‚Ä‚¢‚Ü‚·B','There is a crossing line.'); return false;
+				this.setAlert('ç·šãŒäº¤å·®ã—ã¦ã„ã¾ã™ã€‚','There is a crossing line.'); return false;
 			}
 
 			this.performAsLine = false;
 			var linfo = line.getLareaInfo();
 			if( !this.checkDoubleNumber(linfo) ){
-				this.setAlert('›‚ªŒq‚ª‚Á‚Ä‚¢‚Ü‚·B','There are connected circles.'); return false;
+				this.setAlert('â—‹ãŒç¹‹ãŒã£ã¦ã„ã¾ã™ã€‚','There are connected circles.'); return false;
 			}
 			if( !this.checkLineOverLetter() ){
-				this.setAlert('›‚Ìã‚ğü‚ª’Ê‰ß‚µ‚Ä‚¢‚Ü‚·B','A line goes through a circle.'); return false;
+				this.setAlert('â—‹ã®ä¸Šã‚’ç·šãŒé€šéã—ã¦ã„ã¾ã™ã€‚','A line goes through a circle.'); return false;
 			}
 
 			if( !this.checkAllArea(linfo, f_true, function(w,h,a,n){ return (w==1||h==1);}) ){
-				this.setAlert('‹È‚ª‚Á‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B','A line has curve.'); return false;
+				this.setAlert('æ›²ãŒã£ã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚','A line has curve.'); return false;
 			}
 			if( !this.checkAllArea(linfo, f_true, function(w,h,a,n){ return (n<0||n==a-1);}) ){
-				this.setAlert('”š‚Æü‚Ì’·‚³‚ªˆá‚¢‚Ü‚·B','The length of a line is wrong.'); return false;
+				this.setAlert('æ•°å­—ã¨ç·šã®é•·ã•ãŒé•ã„ã¾ã™ã€‚','The length of a line is wrong.'); return false;
 			}
 
 			var rinfo = area.getRoomInfo();
 			this.movedPosition(linfo);
 			if( !this.checkFractal(rinfo) ){
-				this.setAlert('•”‰®‚Ì’†‚Ì›‚ª“_‘ÎÌ‚É”z’u‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB', 'Position of circles in the room is not point symmetric.'); return false;
+				this.setAlert('éƒ¨å±‹ã®ä¸­ã®â—‹ãŒç‚¹å¯¾ç§°ã«é…ç½®ã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚', 'Position of circles in the room is not point symmetric.'); return false;
 			}
-			if( !this.checkNoObjectInRoom(rinfo, ee.binder(this, this.getMoved)) ){
-				this.setAlert('›‚Ì‚È‚¢•”‰®‚ª‚ ‚è‚Ü‚·B','A room has no circle.'); return false;
+			if( !this.checkNoObjectInRoom(rinfo, this.getMoved) ){
+				this.setAlert('â—‹ã®ãªã„éƒ¨å±‹ãŒã‚ã‚Šã¾ã™ã€‚','A room has no circle.'); return false;
 			}
 
 			if( !this.checkAllCell(function(c){ return (bd.QnC(c)>=1 && line.lcntCell(c)==0);} ) ){
-				this.setAlert('›‚©‚çü‚ªo‚Ä‚¢‚Ü‚¹‚ñB','A circle doesn\'t start any line.'); return false;
+				this.setAlert('â—‹ã‹ã‚‰ç·šãŒå‡ºã¦ã„ã¾ã›ã‚“ã€‚','A circle doesn\'t start any line.'); return false;
 			}
 
 			this.performAsLine = true;
 			if( !this.checkDisconnectLine(linfo) ){
-				this.setAlert('›‚É‚Â‚È‚ª‚Á‚Ä‚¢‚È‚¢ü‚ª‚ ‚è‚Ü‚·B','A line doesn\'t connect any circle.'); return false;
+				this.setAlert('â—‹ã«ã¤ãªãŒã£ã¦ã„ãªã„ç·šãŒã‚ã‚Šã¾ã™ã€‚','A line doesn\'t connect any circle.'); return false;
 			}
 
 			return true;
@@ -256,7 +253,7 @@ Puzzles.bonsan.prototype = {
 		ans.checkLineOverLetter = function(func){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(line.lcntCell(c)>=2 && bd.QnC(c)!=-1){
+				if(line.lcntCell(c)>=2 && bd.isNum(c)){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,true);
@@ -269,11 +266,10 @@ Puzzles.bonsan.prototype = {
 		ans.checkFractal = function(rinfo){
 			for(var id=1;id<=rinfo.max;id++){
 				var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
-				var sx=d.x1+d.x2, sy=d.y1+d.y2;
-				var movex=0, movey=0;
+				d.xx=d.x1+d.x2, d.yy=d.y1+d.y2;
 				for(var i=0;i<rinfo.room[id].idlist.length;i++){
 					var c=rinfo.room[id].idlist[i];
-					if(this.getMoved(c)!=-1 ^ this.getMoved(bd.cnum(sx-bd.cell[c].bx, sy-bd.cell[c].by))!=-1){
+					if(this.getMoved(c)!=-1 ^ this.getMoved(bd.cnum(d.xx-bd.cell[c].bx, d.yy-bd.cell[c].by))!=-1){
 						for(var a=0;a<rinfo.room[id].idlist.length;a++){
 							if(this.getMoved(rinfo.room[id].idlist[a])!=-1){
 								bd.sErC([rinfo.room[id].idlist[a]],1);
@@ -288,24 +284,22 @@ Puzzles.bonsan.prototype = {
 
 		ans.movedPosition = function(linfo){
 			this.before = new AreaInfo();
-			for(var c=0;c<bd.cellmax;c++){
-				if(line.lcntCell(c)==0 && bd.QnC(c)!=-1){ this.before.id[c]=c;}
-				else{ this.before.id[c]=-1;}
-			}
+			for(var c=0;c<bd.cellmax;c++){ this.before.id[c]=c;}
 			for(var r=1;r<=linfo.max;r++){
-				var before=-1, after=-1;
-				if(linfo.room[r].idlist.length>1){
-					for(var i=0;i<linfo.room[r].idlist.length;i++){
-						var c=linfo.room[r].idlist[i];
-						if(line.lcntCell(c)==1){
-							if(bd.QnC(c)!=-1){ before=c;} else{ after=c;}
-						}
+				if(linfo.room[r].idlist.length<=1){ continue;}
+				var before=null, after=null;
+				for(var i=0;i<linfo.room[r].idlist.length;i++){
+					var c=linfo.room[r].idlist[i];
+					if(line.lcntCell(c)===1){
+						if(bd.isNum(c)){ before=c;}else{ after=c;}
 					}
 				}
-				this.before.id[after]=before;
+				if(before!==null && after!==null){
+					this.before.id[after]=before;
+					this.before.id[before]=null;
+				}
 			}
 		};
-		ans.getMoved = function(cc){ return bd.QnC(this.before.id[cc]);};
-		ans.getBeforeCell = function(cc){ return this.before.id[cc];};
+		ans.getMoved = function(cc){ return ((cc!==null && ans.before.id[cc]!==null) ? bd.QnC(ans.before.id[cc]) : -1);};
 	}
 };

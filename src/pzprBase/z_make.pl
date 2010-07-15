@@ -1,7 +1,7 @@
 
 our $debug = 0;
 our $filech = 1;
-our $version = 'v3.2.3';
+our $version = 'v3.3.0p2';
 
 &main();
 exit(0);
@@ -9,37 +9,28 @@ exit(0);
 sub main{
 	&input_flags();
 
-	if($filech==1){
-		if(!$debug){
-			&eraseLOG();
-			&printLOG("pzprBase.js $version contents\n");
-		}
-
-		&output_pzprBase();
-		if(!$debug){
-			&output_puzzles(); # contents.txt‚Éƒtƒ@ƒCƒ‹–¼o—Í‚·‚é‚¾‚¯
-		}
+	if(!$debug){
+		&eraseLOG();
+		&printLOG("pzprBase.js $version contents\n");
 	}
-	elsif($filech==2){
-		&output_puzzles();
+
+	&output_pzprBase();
+	if(!$debug){
+		&output_puzzles(); # contents.txtã«ãƒ•ã‚¡ã‚¤ãƒ«åå‡ºåŠ›ã™ã‚‹ã ã‘
 	}
 }
 
 sub input_flags{
-	print "‚Ç‚Ìƒtƒ@ƒCƒ‹‚ğo—Í‚µ‚Ü‚·‚©H 1:pzprBase.js 2:puzzles.js [1] ";
-	$_ = <STDIN>; tr/\r\n//d;
-	if(/2/){ $filech=2;}
-
-	print "ƒŠƒŠ[ƒX—p‚Ìƒtƒ@ƒCƒ‹‚ğo—Í‚µ‚Ü‚·‚©H[y] ";
+	print "Output release file? [y] ";
 	$_ = <STDIN>; tr/\r\n//d;
 	if(/n/i){ $debug=1;}
 
-	print "ƒo[ƒWƒ‡ƒ“‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢[$version] ";
+	print "Input version number [$version] ";
 	$_ = <STDIN>; tr/\r\n//d;
 	if($_){
 		$version = $_;
-		$version =~ s/\[a\]/ƒ¿/g;
-		$version =~ s/\[b\]/ƒÀ/g;
+		$version =~ s/\[a\]/Î±/g;
+		$version =~ s/\[b\]/Î²/g;
 	}
 }
 
@@ -63,7 +54,7 @@ sub output_pzprBase{
 
 	open OUT, ">pzprBase_body_Full.js";
 	if($debug){
-		print OUT "// pzplBase.js ƒeƒXƒg—p\n";
+		print OUT "// pzplBase.js ãƒ†ã‚¹ãƒˆç”¨\n";
 	}
 	print OUT "\nvar pzprversion=\"$version\";\n";
 	&printfiles(\@files,1);
@@ -104,28 +95,8 @@ sub output_puzzles{
 		push @files, "../$file";
 	}
 	closedir PAR;
-	if($filech==1){
-		&printfiles(\@files,3);
-		return;
-	}
 
-	open OUT, ">puzzles_Full.js";
-	&printfiles(\@files,2);
-	close OUT;
-
-	if(!$debug){
-		system("java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar -o ./puzzles.js ./puzzles_Full.js");
-
-		system("copy /Y .\\puzzles.js ..");
-		system("copy /Y .\\puzzles_Full.js ..");
-
-		unlink("puzzles.js");
-		unlink("puzzles_Full.js");
-	}
-	else{
-		system("copy /Y .\\puzzles_Full.js ..\\puzzles.js");
-		unlink("puzzles_Full.js");
-	}
+	&printfiles(\@files,3);
 }
 
 sub output_doc{
@@ -154,7 +125,7 @@ EOR
 	close DOC;
 }
 
-# ƒtƒ@ƒCƒ‹o—ÍŠÖ”
+# ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›é–¢æ•°
 sub printfiles{
 	my @files = @{$_[0]};
 	my $type = $_[1];
@@ -169,21 +140,21 @@ sub printfiles{
 			next;
 		}
 
-		# header•”‚Ìˆ— => ƒo[ƒWƒ‡ƒ“‚ğæ“¾‚·‚é
+		# headeréƒ¨ã®å‡¦ç† => ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚’å–å¾—ã™ã‚‹
 		if($type!=2){
 			my @val = &get_version($filename, $type);
 			&printLOG(sprintf("%-14s %-s\n",@val));
 
-			# $type‚ª3‚È‚çAƒo[ƒWƒ‡ƒ“‚¾‚¯‘‚«o‚µ‚ÄI—¹
+			# $typeãŒ3ãªã‚‰ã€ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã ã‘æ›¸ãå‡ºã—ã¦çµ‚äº†
 			if($type==3){ next;}
 		}
 
-		# ÀÛ‚Ìo—Í•”
+		# å®Ÿéš›ã®å‡ºåŠ›éƒ¨
 		open SRC, $filename;
 		{
-			if($type==1){ <SRC>;}	# pzprBase‚Ìƒtƒ@ƒCƒ‹‚Íƒwƒbƒ_•”‚ğo—Í‚µ‚È‚¢
+			if($type==1){ <SRC>;}	# pzprBaseã®ãƒ•ã‚¡ã‚¤ãƒ«ã¯ãƒ˜ãƒƒãƒ€éƒ¨ã‚’å‡ºåŠ›ã—ãªã„
 
-			# •ÏŠ·‚ğ‚©‚¯‚½‚¢ê‡‚ÍAA‚±‚Ì’†‚É•ÏŠ·ˆ—‚ğ“ü‚ê‚é‚×‚µ
+			# å¤‰æ›ã‚’ã‹ã‘ãŸã„å ´åˆã¯ã€ã€ã“ã®ä¸­ã«å¤‰æ›å‡¦ç†ã‚’å…¥ã‚Œã‚‹ã¹ã—
 			while(<SRC>){
 				my $sline = $_;
 				print OUT $sline;
@@ -193,20 +164,20 @@ sub printfiles{
 	}
 }
 
-# ƒo[ƒWƒ‡ƒ“æ“¾—pŠÖ”
+# ãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—ç”¨é–¢æ•°
 sub get_version{
 	my($filename, $type) = @_;
 	my $sline = '';
 	my @ret = ();
 
 	open SRC, $filename;
-	# pzprBaseƒtƒHƒ‹ƒ_‚Ìƒtƒ@ƒCƒ‹‚Íversion‚ª1s–Ú
+	# pzprBaseãƒ•ã‚©ãƒ«ãƒ€ã®ãƒ•ã‚¡ã‚¤ãƒ«ã¯versionãŒ1è¡Œç›®
 	if($type == 1){
 		$_ = <SRC>;
 		/\/\/ +([^ ]+) +([^ \r\n]+)[\r\n]*/;
 		@ret = ($1,$2);
 	}
-	# puzzles‚Ìƒtƒ@ƒCƒ‹‚Íversion‚ª2s–Ú
+	# puzzlesã®ãƒ•ã‚¡ã‚¤ãƒ«ã¯versionãŒ2è¡Œç›®
 	elsif($type == 3){
 		<SRC>; $_ = <SRC>;
 		/(\w+\.js) +([^ \r\n]+)[\r\n]*/;

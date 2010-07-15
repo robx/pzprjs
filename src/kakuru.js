@@ -1,72 +1,66 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ƒJƒbƒNƒ‹”Å kakuru.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ã‚«ãƒƒã‚¯ãƒ«ç‰ˆ kakuru.js v3.3.1
 //
 Puzzles.kakuru = function(){ };
 Puzzles.kakuru.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 7;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 7;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 7;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 7;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 0;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 0;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = false;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = false;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = false;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = false;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = false;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = true;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = true;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = false;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = true;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = true;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = true;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = false;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = true;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = false;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
 		if(k.EDITOR){
-			base.setExpression("@•ƒ}ƒX‚ÍQƒL[‚Å“ü—Í‚Å‚«‚Ü‚·B",
+			base.setExpression("ã€€é»’ãƒã‚¹ã¯Qã‚­ãƒ¼ã§å…¥åŠ›ã§ãã¾ã™ã€‚",
 							   " Press 'Q' key to input black cell.");
 		}
 		else{
-			base.setExpression("@ƒ}ƒEƒX‚âƒL[ƒ{[ƒh‚Å”š‚ª“ü—Í‚Å‚«‚Ü‚·B",
+			base.setExpression("ã€€ãƒã‚¦ã‚¹ã‚„ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã§æ•°å­—ãŒå…¥åŠ›ã§ãã¾ã™ã€‚",
 							   " It is available to input number by keybord or mouse");
 		}
-		base.setTitle("ƒJƒbƒNƒ‹","Kakuru");
+		base.setTitle("ã‚«ãƒƒã‚¯ãƒ«","Kakuru");
 		base.setFloatbgcolor("rgb(96, 255, 96)");
 	},
 	menufix : function(){ },
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
-		mv.mousedown = function(){
-			if(k.editmode && !kp.enabled()){
-				if(this.notInputted() && kp.enabled()){ kp.display();}
-				else{ this.inputqnum_kakuru();}
-			}
-			else if(k.playmode){ this.inputqnum_kakuru();}
-		};
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
+		mv.mousedown = function(){ this.inputqnum_kakuru();};
 		mv.mouseup = function(){ };
 		mv.mousemove = function(){ };
 		mv.inputqnum_kakuru = function(){
 			var cc = this.cellid();
-			if(cc==-1 || (bd.QuC(cc)==1 && cc==tc.getTCC())){ return;}
+			if(cc===null || (bd.QuC(cc)==1 && cc==tc.getTCC())){ return;}
 			this.inputqnum();
 		};
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputqnum_kakuru(ca);
@@ -75,24 +69,22 @@ Puzzles.kakuru.prototype = {
 			var cc = tc.getTCC();
 
 			if('0'<=ca && ca<='9'){
-				if(bd.QuC(cc)==1){ return;}
+				if(bd.QuC(cc)===1){ return;}
 				this.key_inputqnum(ca);
 			}
-			else if(ca=='-'){
-				if(bd.QuC(cc)==1){ return;}
-				if(k.editmode){ bd.sQnC(cc,(bd.QnC(cc)!=-2?-2:-1));}
-				else{ bd.sQaC(cc,-1);}
+			else if(ca==='-'){
+				if(bd.QuC(cc)===1){ return;}
+				bd.setNum(cc,(k.editmode?-2:-1));
 			}
-			else if(ca==' '){
-				if(k.editmode){ bd.sQuC(cc,0); bd.sQnC(cc,-1);}
-				else{ bd.sQaC(cc,-1);}
+			else if(ca===' '){
+				if(k.editmode){ bd.sQuC(cc,0);}
+				bd.setNum(cc,-1);
 			}
-			else if(k.editmode && (ca=='q'||ca=='q1'||ca=='q2')){
-				if(ca=='q'){ ca = (bd.QuC(cc)!=1?'q1':'q2');}
-				if(ca=='q1'){
+			else if(k.editmode && (ca==='q'||ca==='q1'||ca==='q2')){
+				if(ca==='q'){ ca = (bd.QuC(cc)!==1?'q1':'q2');}
+				if(ca==='q1'){
 					bd.sQuC(cc, 1);
-					bd.sQaC(cc,-1);
-					bd.sQnC(cc,-1);
+					bd.setNum(cc, -1);
 				}
 				else if(ca=='q2'){ bd.sQuC(cc, 0);}
 			}
@@ -104,8 +96,8 @@ Puzzles.kakuru.prototype = {
 		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
 				if(mode==1){
-					this.inputcol('num','knumq1','q1','¡');
-					this.inputcol('num','knumq2','q2',' ');
+					this.inputcol('num','knumq1','q1','â– ');
+					this.inputcol('num','knumq2','q2','â–¡');
 					this.inputcol('empty','knumx','','');
 					this.inputcol('empty','knumy','','');
 					this.insertrow();
@@ -128,7 +120,7 @@ Puzzles.kakuru.prototype = {
 			};
 			kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
 			kp.kpinput = function(ca){
-				kc.key_inputqnum_tateyoko(ca);
+				kc.key_inputqnum_kakuru(ca);
 			};
 		}
 
@@ -136,7 +128,7 @@ Puzzles.kakuru.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 
@@ -155,13 +147,13 @@ Puzzles.kakuru.prototype = {
 			this.drawCursor(x1,y1,x2,y2);
 		};
 
-		// ƒI[ƒo[ƒ‰ƒCƒh drawBGCells—p
+		// ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ drawBGCellsç”¨
 		pc.setBGCellColor = function(cc){
 			if     (bd.cell[cc].qnum !==-1){ g.fillStyle = "rgb(208, 208, 208)"; return true;}
 			else if(bd.cell[cc].error=== 1){ g.fillStyle = this.errbcolor1;      return true;}
 			return false;
 		};
-		// ƒI[ƒo[ƒ‰ƒCƒh drawBlackCells—p
+		// ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ drawBlackCellsç”¨
 		pc.setCellColor = function(cc){
 			if(bd.cell[cc].ques===1){ g.fillStyle = this.cellcolor; return true;}
 			return false;
@@ -169,7 +161,7 @@ Puzzles.kakuru.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeKakuru();
@@ -181,15 +173,13 @@ Puzzles.kakuru.prototype = {
 		enc.decodeKakuru = function(){
 			var cell=0, i=0, bstr = this.outbstr;
 			for(i=0;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
+				var ca = bstr.charAt(i), obj=bd.cell[cell];
 
-				if     (ca=='.'){ cell++;}
-				else if(ca=='+'){ bd.sQuC(cell,1); cell++;}
-				else if(enc.include(ca,"k","z")){ cell+=(parseInt(ca,36)-18);}
-				else if(ca=='_'){ bd.sQnC(cell,-2); cell++;}
-				else if(ca!='.'){ bd.sQnC(cell,this.decval(ca)); cell++;}
-				else{ cell++;}
+				if     (ca==='+'){ obj.ques = 1;}
+				else if(this.include(ca,"k","z")){ cell+=(parseInt(ca,36)-19);}
+				else if(ca!=='.'){ obj.qnum = this.decval(ca);}
 
+				cell++;
 				if(cell>=bd.cellmax){ break;}
 			}
 			this.outbstr = bstr.substr(i);
@@ -197,111 +187,107 @@ Puzzles.kakuru.prototype = {
 		enc.encodeKakuru = function(type){
 			var cm="", count=0;
 			for(var c=0;c<bd.cellmax;c++){
-				var pstr="";
-				if     (bd.QuC(c)==1){ pstr = "+";}
-				else if(bd.QnC(c)!=-1){
-					if(bd.QnC(c)==-2){ pstr = "_";}
-					else{ pstr = ""+this.encval(bd.QnC(c));}
-				}
+				var pstr="", obj=bd.cell[c];
+				if     (obj.ques=== 1){ pstr = "+";}
+				else if(obj.qnum!==-1){ pstr = this.encval(obj.qnum);}
 				else{ count++;}
 
-				if(count==0){ cm+=pstr;}
-				else if(pstr!=""){
-					if(count==1){ cm+=("."+pstr); count=0;}
-					else{ cm+=((count+18).toString(36)+pstr); count=0;}
+				if(count===0){ cm+=pstr;}
+				else if(pstr || count===17){
+					if(count===1){ cm+=("."+pstr);}
+					else{ cm+=((count+18).toString(36)+pstr);}
+					count=0;
 				}
-				else if(count==17){ cm+="z"; count=0;}
 			}
-			if(count==1){ cm+=".";}
+			if(count===1){ cm+=".";}
 			else if(count>1){ cm+=((count+18).toString(36));}
 
 			this.outbstr += cm;
 		};
 		enc.decval = function(ca){
-			if     (ca>='0'&&ca<='9'){ return parseInt(ca,36);}
+			if     (ca==='_')        { return -2;}
+			else if(ca>='0'&&ca<='9'){ return parseInt(ca,36);}
 			else if(ca>='a'&&ca<='j'){ return parseInt(ca,36);}
 			else if(ca>='A'&&ca<='Z'){ return parseInt(ca,36)+10;}
 			return "";
 		};
 		enc.encval = function(val){
-			if     (val>= 1&&val<=19){ return val.toString(36).toLowerCase();}
+			if     (val===-2)        { return "_";}
+			else if(val>= 1&&val<=19){ return val.toString(36).toLowerCase();}
 			else if(val>=20&&val<=45){ return (val-10).toString(36).toUpperCase();}
 			return "0";
 		};
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCell( function(c,ca){
-				if     (ca=="?"){ bd.sQnC(c,-2);}
-				else if(ca=="b"){ bd.sQuC(c, 1);}
-				else if(ca!="."){ bd.sQnC(c, parseInt(ca));}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="b"){ obj.ques = 1;}
+				else if(ca==="?"){ obj.qnum =-2;}
+				else if(ca!=="."){ obj.qnum = parseInt(ca);}
 			});
-			this.decodeCell( function(c,ca){
-				if(ca!="."&&ca!="0"){ bd.sQaC(c,parseInt(ca));}
+			this.decodeCell( function(obj,ca){
+				if(ca!=="."&&ca!=="0"){ obj.anum = parseInt(ca);}
 			});
 		};
 		fio.encodeData = function(){
-			this.encodeCell( function(c){
-				if(bd.QuC(c)==1){ return "b ";}
-				else if(bd.QnC(c)>= 0){ return ""+bd.QnC(c).toString()+" ";}
-				else if(bd.QnC(c)==-2){ return "? ";}
+			this.encodeCell( function(obj){
+				if     (obj.ques=== 1){ return "b ";}
+				else if(obj.qnum===-2){ return "? ";}
+				else if(obj.qnum>=  0){ return ""+obj.qnum.toString()+" ";}
 				else{ return ". ";}
 			});
-			this.encodeCell( function(c){
-				if     (bd.QuC(c)==1||bd.QnC(c)!=-1){ return ". ";}
-				else if(bd.QaC(c)==-1){ return "0 ";}
-				else{ return ""+bd.QaC(c).toString()+" ";}
+			this.encodeCell( function(obj){
+				if(obj.ques===1||obj.qnum!==-1){ return ". ";}
+				return (obj.anum!==-1 ? ""+obj.anum.toString()+" " : "0 ");
 			});
 		};
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			if( !this.checkAroundPrenums() ){
-				this.setAlert('‰‚ß‚©‚ço‚Ä‚¢‚é”š‚Ìü‚è‚É“¯‚¶”š‚ª“ü‚Á‚Ä‚¢‚Ü‚·B','There are same numbers around the pre-numbered cell.'); return false;
+				this.setAlert('åˆã‚ã‹ã‚‰å‡ºã¦ã„ã‚‹æ•°å­—ã®å‘¨ã‚Šã«åŒã˜æ•°å­—ãŒå…¥ã£ã¦ã„ã¾ã™ã€‚','There are same numbers around the pre-numbered cell.'); return false;
 			}
 
 			if( !this.checkNumber() ){
-				this.setAlert('‰‚ß‚©‚ço‚Ä‚¢‚é”š‚Ìü‚è‚É“ü‚é”‚Ì‡Œv‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB','A sum of numbers around the pre-numbered cell is incorrect.'); return false;
+				this.setAlert('åˆã‚ã‹ã‚‰å‡ºã¦ã„ã‚‹æ•°å­—ã®å‘¨ã‚Šã«å…¥ã‚‹æ•°ã®åˆè¨ˆãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚','A sum of numbers around the pre-numbered cell is incorrect.'); return false;
 			}
 
 			if( !this.checkAroundNumbers() ){
-				this.setAlert('“¯‚¶”š‚ªƒ^ƒeƒˆƒRƒiƒiƒ‚É—×Ú‚µ‚Ä‚¢‚Ü‚·B','Same numbers is adjacent.'); return false;
+				this.setAlert('åŒã˜æ•°å­—ãŒã‚¿ãƒ†ãƒ¨ã‚³ãƒŠãƒŠãƒ¡ã«éš£æ¥ã—ã¦ã„ã¾ã™ã€‚','Same numbers is adjacent.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QuC(c)==0 && bd.QnC(c)==-1 && bd.QaC(c)==-1);}) ){
-				this.setAlert('‰½‚à“ü‚Á‚Ä‚¢‚È‚¢ƒ}ƒX‚ª‚ ‚è‚Ü‚·B','There is a empty cell.'); return false;
+			if( !this.checkAllCell(function(c){ return (bd.QuC(c)===0 && bd.noNum(c));}) ){
+				this.setAlert('ä½•ã‚‚å…¥ã£ã¦ã„ãªã„ãƒã‚¹ãŒã‚ã‚Šã¾ã™ã€‚','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)==0 && bd.QnC(c)==-1 && bd.QaC(c)==-1);});};
+		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)===0 && bd.noNum(c));});};
 
 		ans.checkAroundPrenums = function(type){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==1 || bd.QnC(c)<=0){ continue;}
 
-				var clist=[c], d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
-				var bx=bd.cell[c].bx, by=bd.cell[c].by, cc;
-				var func = function(cc){ return (cc!=-1 && bd.QuC(cc)==0 && bd.QnC(cc)==-1);}
-				cc=bd.cnum(bx-2,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx  ,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx+2,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx-2,by  ); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx+2,by  ); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx-2,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx  ,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-				cc=bd.cnum(bx+2,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ d[bd.QaC(cc)]++; clist.push(cc);} }
-
+				var bx=bd.cell[c].bx, by=bd.cell[c].by;
+				var d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
+				var clist=[c], clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
+				for(var i=0;i<clist0.length;i++){
+					var cc = clist0[i];
+					if(cc!==c && bd.cell[cc].ques===0 && bd.cell[cc].qnum===-1){
+						var qa = bd.cell[cc].anum;
+						if(qa>0){ d[qa]++; clist.push(cc);}
+					}
+				}
 				for(var n=1;n<=9;n++){
 					if(d[n]>1){
 						if(this.inAutoCheck){ return false;}
 						bd.sErC([c],1);
-						for(i=0;i<clist.length;i++){ if(bd.QaC(clist[i])==n){ bd.sErC(clist[i],1);} }
+						for(i=0;i<clist.length;i++){ if(bd.AnC(clist[i])===n){ bd.sErC(clist[i],1);} }
 						result = false;
 					}
 				}
@@ -313,19 +299,17 @@ Puzzles.kakuru.prototype = {
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.QuC(c)==1 || bd.QnC(c)<=0){ continue;}
 
-				var cnt=0, clist=[c];
-				var bx=bd.cell[c].bx, by=bd.cell[c].by, cc;
-				var func = function(cc){ return (cc!=-1 && bd.QuC(cc)==0 && bd.QnC(cc)==-1);}
-				cc=bd.cnum(bx-2,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx  ,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx+2,by-2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx-2,by  ); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx+2,by  ); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx-2,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx  ,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-				cc=bd.cnum(bx+2,by+2); if(func(cc)){ if(bd.QaC(cc)>0){ cnt+=bd.QaC(cc); clist.push(cc);}else{ continue;} }
-
-				if(bd.QnC(c)!=cnt){
+				var cnt=0, bx=bd.cell[c].bx, by=bd.cell[c].by;
+				var clist=[c], clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
+				for(var i=0;i<clist0.length;i++){
+					var cc = clist0[i];
+					if(cc!==c && bd.cell[cc].ques===0 && bd.cell[cc].qnum===-1){
+						var qa = bd.cell[cc].anum;
+						if(qa>0){ cnt+=qa; clist.push(cc);}
+						else    { cnt=bd.QnC(c); break;}
+					}
+				}
+				if(bd.QnC(c)!==cnt){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(clist,1); result = false;
 				}
@@ -335,15 +319,14 @@ Puzzles.kakuru.prototype = {
 		ans.checkAroundNumbers = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QaC(c)<=0){ continue;}
-				var bx = bd.cell[c].bx, by = bd.cell[c].by, target=0, clist = [c];
-				var func = function(cc){ return (cc!=-1 && bd.QaC(c)==bd.QaC(cc));};
-				// ‰EE¶‰ºE‰ºE‰E‰º‚Ì4‰ÓŠ‚¾‚¯ƒ`ƒFƒbƒN
-				target=bd.cnum(bx+2,by  ); if(func(target)){ clist.push(target);}
-				target=bd.cnum(bx  ,by+2); if(func(target)){ clist.push(target);}
-				target=bd.cnum(bx-2,by+2); if(func(target)){ clist.push(target);}
-				target=bd.cnum(bx+2,by+2); if(func(target)){ clist.push(target);}
-
+				if(bd.AnC(c)<=0){ continue;}
+				var bx = bd.cell[c].bx, by = bd.cell[c].by;
+				var clist=[c], clist0 = bd.cellinside(bx,by,bx+2,by+2);
+				clist0.push(bd.cnum(bx-2,by+2)); // å³ãƒ»å·¦ä¸‹ãƒ»ä¸‹ãƒ»å³ä¸‹ã®4ç®‡æ‰€ã ã‘ãƒã‚§ãƒƒã‚¯
+				for(var i=0;i<clist0.length;i++){
+					var cc = clist0[i];
+					if(cc!==null && cc!==c && bd.cell[c].anum===bd.cell[cc].anum){ clist.push(cc);}
+				}
 				if(clist.length>1){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(clist,1); result = false;

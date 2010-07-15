@@ -1,11 +1,11 @@
-// Answer.js v3.3.0
+// Answer.js v3.3.1
 
 //---------------------------------------------------------------------------
-// šAnsCheckƒNƒ‰ƒX “š‚¦ƒ`ƒFƒbƒNŠÖ˜A‚ÌŠÖ”‚ğˆµ‚¤
+// â˜…AnsCheckã‚¯ãƒ©ã‚¹ ç­”ãˆãƒã‚§ãƒƒã‚¯é–¢é€£ã®é–¢æ•°ã‚’æ‰±ã†
 //---------------------------------------------------------------------------
 
-// ‰ñ“šƒ`ƒFƒbƒNƒNƒ‰ƒX
-// AnsCheckƒNƒ‰ƒX
+// å›ç­”ãƒã‚§ãƒƒã‚¯ã‚¯ãƒ©ã‚¹
+// AnsCheckã‚¯ãƒ©ã‚¹
 AnsCheck = function(){
 	this.performAsLine = false;
 	this.errDisp = false;
@@ -17,10 +17,10 @@ AnsCheck = function(){
 AnsCheck.prototype = {
 
 	//---------------------------------------------------------------------------
-	// ans.check()     “š‚¦‚Ìƒ`ƒFƒbƒN‚ğs‚¤(checkAns()‚ğŒÄ‚Ño‚·)
-	// ans.checkAns()  “š‚¦‚Ìƒ`ƒFƒbƒN‚ğs‚¤(ƒI[ƒo[ƒ‰ƒCƒh—p)
-	// ans.check1st()  ƒI[ƒgƒ`ƒFƒbƒN‚É‰‚ß‚É”»’è‚ğs‚¤(ƒI[ƒo[ƒ‰ƒCƒh—p)
-	// ans.setAlert()  check()‚©‚ç–ß‚Á‚Ä‚«‚½‚Æ‚«‚É•Ô‚·AƒGƒ‰[“à—e‚ğ•\¦‚·‚éalert•¶‚ğİ’è‚·‚é
+	// ans.check()     ç­”ãˆã®ãƒã‚§ãƒƒã‚¯ã‚’è¡Œã†(checkAns()ã‚’å‘¼ã³å‡ºã™)
+	// ans.checkAns()  ç­”ãˆã®ãƒã‚§ãƒƒã‚¯ã‚’è¡Œã†(ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ç”¨)
+	// ans.check1st()  ã‚ªãƒ¼ãƒˆãƒã‚§ãƒƒã‚¯æ™‚ã«åˆã‚ã«åˆ¤å®šã‚’è¡Œã†(ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ç”¨)
+	// ans.setAlert()  check()ã‹ã‚‰æˆ»ã£ã¦ããŸã¨ãã«è¿”ã™ã€ã‚¨ãƒ©ãƒ¼å†…å®¹ã‚’è¡¨ç¤ºã™ã‚‹alertæ–‡ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	check : function(){
 		this.inCheck = true;
@@ -29,28 +29,31 @@ AnsCheck.prototype = {
 		mv.mousereset();
 
 		if(!this.checkAns()){
-			alert((menu.isLangJP()||!this.alstr.en)?this.alstr.jp:this.alstr.en);
+			menu.alertStr(this.alstr.jp, this.alstr.en);
 			this.errDisp = true;
 			pc.paintAll();
 			this.inCheck = false;
 			return false;
 		}
 
-		alert(menu.isLangJP()?"³‰ğ‚Å‚·I":"Complete!");
+		menu.alertStr("æ­£è§£ã§ã™ï¼","Complete!");
 		this.inCheck = false;
 		return true;
 	},
-	checkAns : function(){},	//ƒI[ƒo[ƒ‰ƒCƒh—p
-	//check1st : function(){},	//ƒI[ƒo[ƒ‰ƒCƒh—p
-	setAlert : function(strJP, strEN){ this.alstr.jp = strJP; this.alstr.en = strEN;},
+	checkAns : function(){},	//ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ç”¨
+	//check1st : function(){},	//ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ç”¨
+	setAlert : function(strJP, strEN){
+		this.alstr.jp = strJP;
+		this.alstr.en = (!!strEN ? strEN : strJP);
+	},
 
 	//---------------------------------------------------------------------------
-	// ans.autocheck()    “š‚¦‚Ì©“®ƒ`ƒFƒbƒN‚ğs‚¤(alert‚ª‚Å‚È‚©‚Á‚½‚èAƒGƒ‰[•\¦‚ğs‚í‚È‚¢)
-	// ans.autocheck1st() autocheck‘O‚ÉAŒy‚¢³“š”»’è‚ğs‚¤
+	// ans.autocheck()    ç­”ãˆã®è‡ªå‹•ãƒã‚§ãƒƒã‚¯ã‚’è¡Œã†(alertãŒã§ãªã‹ã£ãŸã‚Šã€ã‚¨ãƒ©ãƒ¼è¡¨ç¤ºã‚’è¡Œã‚ãªã„)
+	// ans.autocheck1st() autocheckå‰ã«ã€è»½ã„æ­£ç­”åˆ¤å®šã‚’è¡Œã†
 	//
-	// ans.disableSetError()  ”Õ–Ê‚ÌƒIƒuƒWƒFƒNƒg‚ÉƒGƒ‰[ƒtƒ‰ƒO‚ğİ’è‚Å‚«‚È‚¢‚æ‚¤‚É‚·‚é
-	// ans.enableSetError()   ”Õ–Ê‚ÌƒIƒuƒWƒFƒNƒg‚ÉƒGƒ‰[ƒtƒ‰ƒO‚ğİ’è‚Å‚«‚é‚æ‚¤‚É‚·‚é
-	// ans.isenableSetError() ”Õ–Ê‚ÌƒIƒuƒWƒFƒNƒg‚ÉƒGƒ‰[ƒtƒ‰ƒO‚ğİ’è‚Å‚«‚é‚©‚Ç‚¤‚©‚ğ•Ô‚·
+	// ans.disableSetError()  ç›¤é¢ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ã‚¨ãƒ©ãƒ¼ãƒ•ãƒ©ã‚°ã‚’è¨­å®šã§ããªã„ã‚ˆã†ã«ã™ã‚‹
+	// ans.enableSetError()   ç›¤é¢ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ã‚¨ãƒ©ãƒ¼ãƒ•ãƒ©ã‚°ã‚’è¨­å®šã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
+	// ans.isenableSetError() ç›¤é¢ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ã‚¨ãƒ©ãƒ¼ãƒ•ãƒ©ã‚°ã‚’è¨­å®šã§ãã‚‹ã‹ã©ã†ã‹ã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	autocheck : function(){
 		if(!pp.getVal('autocheck') || k.editmode || this.inCheck){ return;}
@@ -62,7 +65,7 @@ AnsCheck.prototype = {
 
 		if(this.autocheck1st() && this.checkAns() && this.inCheck){
 			mv.mousereset();
-			alert(menu.isLangJP()?"³‰ğ‚Å‚·I":"Complete!");
+			menu.alertStr("æ­£è§£ã§ã™ï¼","Complete!");
 			ret = true;
 			pp.setVal('autocheck',false);
 		}
@@ -71,7 +74,7 @@ AnsCheck.prototype = {
 
 		return ret;
 	},
-	// ƒŠƒ“ƒNŒn‚Íd‚¢‚Ì‚ÅÅ‰‚É’[“_‚ğ”»’è‚·‚é
+	// ãƒªãƒ³ã‚¯ç³»ã¯é‡ã„ã®ã§æœ€åˆã«ç«¯ç‚¹ã‚’åˆ¤å®šã™ã‚‹
 	autocheck1st : function(){
 		if(this.check1st){ return this.check1st();}
 		else if( (k.isCenterLine && !ans.checkLcntCell(1)) || (k.isborderAsLine && !ans.checkLcntCross(1,0)) ){ return false;}
@@ -83,40 +86,28 @@ AnsCheck.prototype = {
 	isenableSetError : function(){ return this.setError; },
 
 	//---------------------------------------------------------------------------
-	// ans.checkdir4Cell()     ã‰º¶‰E4•ûŒü‚ÅğŒfunc==true‚É‚È‚éƒ}ƒX‚Ì”‚ğƒJƒEƒ“ƒg‚·‚é
-	// ans.setErrLareaByCell() ‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚Á‚½ü‚ª‘¶İ‚·‚éƒ}ƒX‚ÉƒGƒ‰[‚ğİ’è‚·‚é
-	// ans.setErrLareaById()   ‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚Á‚½ü‚ª‘¶İ‚·‚éƒ}ƒX‚ÉƒGƒ‰[‚ğİ’è‚·‚é
+	// ans.setErrLareaByCell() ã²ã¨ã¤ãªãŒã‚Šã«ãªã£ãŸç·šãŒå­˜åœ¨ã™ã‚‹ãƒã‚¹ã«ã‚¨ãƒ©ãƒ¼ã‚’è¨­å®šã™ã‚‹
+	// ans.setErrLareaById()   ã²ã¨ã¤ãªãŒã‚Šã«ãªã£ãŸç·šãŒå­˜åœ¨ã™ã‚‹ãƒã‚¹ã«ã‚¨ãƒ©ãƒ¼ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
-	checkdir4Cell : function(cc, func){
-		if(cc<0 || cc>=bd.cellmax){ return 0;}
-		var cnt = 0;
-		if(bd.up(cc)!=-1 && func(bd.up(cc))){ cnt++;}
-		if(bd.dn(cc)!=-1 && func(bd.dn(cc))){ cnt++;}
-		if(bd.lt(cc)!=-1 && func(bd.lt(cc))){ cnt++;}
-		if(bd.rt(cc)!=-1 && func(bd.rt(cc))){ cnt++;}
-		return cnt;
-	},
-
 	setErrLareaByCell : function(cinfo, c, val){ this.setErrLareaById(cinfo, cinfo.id[c], val); },
 	setErrLareaById : function(cinfo, areaid, val){
 		var blist = [];
 		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isLine(id)){ continue;}
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if(cc1!=-1 && cc2!=-1 && cinfo.id[cc1]==areaid && cinfo.id[cc1]==cinfo.id[cc2]){ blist.push(id);}
+			if(cinfo.id[cc1]===areaid && cinfo.id[cc1]===cinfo.id[cc2]){ blist.push(id);}
 		}
 		bd.sErB(blist,val);
 
 		var clist = [];
-		for(var c=0;c<bd.cellmax;c++){ if(cinfo.id[c]==areaid && bd.QnC(c)!=-1){ clist.push(c);} }
+		for(var c=0;c<bd.cellmax;c++){ if(cinfo.id[c]===areaid && bd.isNum(c)){ clist.push(c);} }
 		bd.sErC(clist,4);
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkAllCell()   ğŒfunc==true‚É‚È‚éƒ}ƒX‚ª‚ ‚Á‚½‚çƒGƒ‰[‚ğİ’è‚·‚é
-	// ans.checkOneArea()   ”’ƒ}ƒX/•ƒ}ƒX/ü‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚©‚Ç‚¤‚©‚ğ”»’è‚·‚é
-	// ans.check2x2Block()  2x2‚ÌƒZƒ‹‚ª‘S‚ÄğŒfunc==true‚ÌAƒGƒ‰[‚ğİ’è‚·‚é
-	// ans.checkSideCell()  —×‚è‡‚Á‚½2‚Â‚ÌƒZƒ‹‚ªğŒfunc==true‚ÌAƒGƒ‰[‚ğİ’è‚·‚é
+	// ans.checkAllCell()   æ¡ä»¶func==trueã«ãªã‚‹ãƒã‚¹ãŒã‚ã£ãŸã‚‰ã‚¨ãƒ©ãƒ¼ã‚’è¨­å®šã™ã‚‹
+	// ans.checkNoNumCell() æ•°å­—ã®å…¥ã£ã¦ã„ãªã„ã‚»ãƒ«ãŒã‚ã‚‹ã‹åˆ¤å®šã™ã‚‹
+	// ans.checkIceLines()  ã‚¢ã‚¤ã‚¹ãƒãƒ¼ãƒ³ä¸Šã§ç·šãŒæ›²ãŒã£ã¦ã„ã‚‹ã‹åˆ¤å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	checkAllCell : function(func){
 		var result = true;
@@ -129,6 +120,85 @@ AnsCheck.prototype = {
 		}
 		return result;
 	},
+	checkNoNumCell : function(){
+		return this.checkAllCell(bd.noNum);
+	},
+	checkIceLines : function(){
+		return this.checkAllCell( function(c){
+			return (line.lcntCell(c)===2 && bd.QuC(c)===6 && !bd.isLineStraight(c));
+		});
+	},
+
+	//---------------------------------------------------------------------------
+	// ans.checkDir4Cell()  ã‚»ãƒ«ã®å‘¨å›²4ãƒã‚¹ã®æ¡ä»¶ãŒfunc==trueã®æ™‚ã€ã‚¨ãƒ©ãƒ¼ã‚’è¨­å®šã™ã‚‹
+	// ans.countDir4Cell()  ä¸Šä¸‹å·¦å³4æ–¹å‘ã§æ¡ä»¶func==trueã«ãªã‚‹ãƒã‚¹ã®æ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆã™ã‚‹
+	// ans.checkSideCell()  éš£ã‚Šåˆã£ãŸ2ã¤ã®ã‚»ãƒ«ãŒæ¡ä»¶func==trueã®æ™‚ã€ã‚¨ãƒ©ãƒ¼ã‚’è¨­å®šã™ã‚‹
+	// ans.check2x2Block()  2x2ã®ã‚»ãƒ«ãŒå…¨ã¦æ¡ä»¶func==trueã®æ™‚ã€ã‚¨ãƒ©ãƒ¼ã‚’è¨­å®šã™ã‚‹
+	//---------------------------------------------------------------------------
+	checkDir4Cell : function(iscount, type){ // 0:é•ã† 1:numã‚ˆã‚Šå°ã•ã„ 2:numã‚ˆã‚Šå¤§ãã„
+		var result = true;
+		for(var c=0;c<bd.cellmax;c++){
+			if(!bd.isValidNum(c)){ continue;}
+			var num = bd.getNum(c), count=this.countDir4Cell(c,iscount);
+			if((type!==1 && num<count) || (type!==2 && num>count)){
+				if(this.inAutoCheck){ return false;}
+				bd.sErC([c],1);
+				result = false;
+			}
+		}
+		return result;
+	},
+	countDir4Cell : function(c, func){
+		if(c<0 || c>=bd.cellmax || c===null){ return 0;}
+		var cnt=0, cc;
+		cc=bd.up(c); if(cc!==null && func(cc)){ cnt++;}
+		cc=bd.dn(c); if(cc!==null && func(cc)){ cnt++;}
+		cc=bd.lt(c); if(cc!==null && func(cc)){ cnt++;}
+		cc=bd.rt(c); if(cc!==null && func(cc)){ cnt++;}
+		return cnt;
+	},
+
+	checkSideCell : function(func){
+		var result = true;
+		for(var c=0;c<bd.cellmax;c++){
+			if(bd.cell[c].bx<bd.maxbx-1 && func(c,bd.rt(c))){
+				if(this.inAutoCheck){ return false;}
+				bd.sErC([c,bd.rt(c)],1);
+				result = false;
+			}
+			if(bd.cell[c].by<bd.maxby-1 && func(c,bd.dn(c))){
+				if(this.inAutoCheck){ return false;}
+				bd.sErC([c,bd.dn(c)],1);
+				result = false;
+			}
+		}
+		return result;
+	},
+
+	check2x2Block : function(func){
+		var result = true;
+		for(var c=0;c<bd.cellmax;c++){
+			if(bd.cell[c].bx<bd.maxbx-1 && bd.cell[c].by<bd.maxby-1){
+				var cnt=0, bx=bd.cell[c].bx, by=bd.cell[c].by;
+				var clist = bd.cellinside(bx, by, bx+2, by+2);
+				for(var i=0;i<clist.length;i++){ if(func(clist[i])){ cnt++;}}
+				if(cnt===4){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC(clist,1);
+					result = false;
+				}
+			}
+		}
+		return result;
+	},
+
+	//---------------------------------------------------------------------------
+	// ans.checkOneArea()  ç™½ãƒã‚¹/é»’ãƒã‚¹/ç·šãŒã²ã¨ã¤ãªãŒã‚Šã‹ã©ã†ã‹ã‚’åˆ¤å®šã™ã‚‹
+	// ans.checkOneLoop()  äº¤å·®ã‚ã‚Šç·šãŒä¸€ã¤ã‹ã©ã†ã‹åˆ¤å®šã™ã‚‹
+	// ans.checkLcntCell() ã‚»ãƒ«ã‹ã‚‰å‡ºã¦ã„ã‚‹ç·šã®æœ¬æ•°ã«ã¤ã„ã¦åˆ¤å®šã™ã‚‹
+	// ans.setCellLineError() ã‚»ãƒ«ã¨å‘¨ã‚Šã®ç·šã«ã‚¨ãƒ©ãƒ¼ãƒ•ãƒ©ã‚°ã‚’è¨­å®šã™ã‚‹
+	// ans.checkenableLineParts() 'ä¸€éƒ¨ãŒã‚ã‹ã•ã‚Œã¦ã„ã‚‹'ç·šã®éƒ¨åˆ†ã«ã€ç·šãŒå¼•ã‹ã‚Œã¦ã„ã‚‹ã‹åˆ¤å®šã™ã‚‹
+	//---------------------------------------------------------------------------
 	checkOneArea : function(cinfo){
 		if(cinfo.max>1){
 			if(this.performAsLine){ bd.sErBAll(2); this.setErrLareaByCell(cinfo,1,1); }
@@ -137,56 +207,7 @@ AnsCheck.prototype = {
 		}
 		return true;
 	},
-	check2x2Block : function(func){
-		var result = true;
-		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].bx<bd.maxbx-1 && bd.cell[c].by<bd.maxby-1){
-				if( func(c) && func(c+1) && func(c+k.qcols) && func(c+k.qcols+1) ){
-					if(this.inAutoCheck){ return false;}
-					bd.sErC([c,c+1,c+k.qcols,c+k.qcols+1],1);
-					result = false;
-				}
-			}
-		}
-		return result;
-	},
-	checkSideCell : function(func){
-		var result = true;
-		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].bx<bd.maxbx-1 && func(c,c+1)){
-				if(this.inAutoCheck){ return false;}
-				bd.sErC([c,c+1],1);
-				result = false;
-			}
-			if(bd.cell[c].by<bd.maxby-1 && func(c,c+k.qcols)){
-				if(this.inAutoCheck){ return false;}
-				bd.sErC([c,c+k.qcols],1);
-				result = false;
-			}
-		}
-		return result;
-	},
 
-	//---------------------------------------------------------------------------
-	// ans.checkQnumCross()  cross‚ªğŒfunc==false‚ÌAƒGƒ‰[‚ğİ’è‚·‚é
-	//---------------------------------------------------------------------------
-	checkQnumCross : function(func){	//func(cr,bcnt){} -> ƒGƒ‰[‚È‚çfalse‚ğ•Ô‚·ŠÖ”‚É‚·‚é
-		for(var c=0;c<bd.crossmax;c++){
-			if(bd.QnX(c)<0){ continue;}
-			if(!func(bd.QnX(c), bd.bcntCross(c))){
-				bd.sErX([c],1);
-				return false;
-			}
-		}
-		return true;
-	},
-
-	//---------------------------------------------------------------------------
-	// ans.checkOneLoop()  Œğ·‚ ‚èü‚ªˆê‚Â‚©‚Ç‚¤‚©”»’è‚·‚é
-	// ans.checkLcntCell() ƒZƒ‹‚©‚ço‚Ä‚¢‚éü‚Ì–{”‚É‚Â‚¢‚Ä”»’è‚·‚é
-	// ans.isLineStraight()   ƒZƒ‹‚Ìã‚Åü‚ª’¼i‚µ‚Ä‚¢‚é‚©”»’è‚·‚é
-	// ans.setCellLineError() ƒZƒ‹‚Æü‚è‚Ìü‚ÉƒGƒ‰[ƒtƒ‰ƒO‚ğİ’è‚·‚é
-	//---------------------------------------------------------------------------
 	checkOneLoop : function(){
 		var xinfo = line.getLineInfo();
 		if(xinfo.max>1){
@@ -211,28 +232,20 @@ AnsCheck.prototype = {
 		return result;
 	},
 
-	isLineStraight : function(cc){
-		if     (bd.isLine(bd.ub(cc)) && bd.isLine(bd.db(cc))){ return true;}
-		else if(bd.isLine(bd.lb(cc)) && bd.isLine(bd.rb(cc))){ return true;}
-
-		return false;
-	},
-
 	setCellLineError : function(cc, flag){
 		if(flag){ bd.sErC([cc],1);}
 		var bx=bd.cell[cc].bx, by=bd.cell[cc].by;
 		bd.sErB(bd.borderinside(bx-1,by-1,bx+1,by+1), 1);
 	},
 
-	//---------------------------------------------------------------------------
-	// ans.checkdir4Border()  ƒZƒ‹‚Ìü‚èl•ûŒü‚Éä‚©‚ê‚Ä‚¢‚é‹«ŠEü‚Ì–{”‚ğ”»’è‚·‚é
-	// ans.checkdir4Border1() ƒZƒ‹‚Ìü‚èl•ûŒü‚Éä‚©‚ê‚Ä‚¢‚é‹«ŠEü‚Ì–{”‚ğ•Ô‚·
-	// ans.checkenableLineParts() 'ˆê•”‚ª‚ ‚©‚³‚ê‚Ä‚¢‚é'ü‚Ì•”•ª‚ÉAü‚ªˆø‚©‚ê‚Ä‚¢‚é‚©”»’è‚·‚é
-	//---------------------------------------------------------------------------
-	checkdir4Border : function(){
+	checkenableLineParts : function(val){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.QnC(c)>=0 && this.checkdir4Border1(c)!=bd.QnC(c)){
+			if( (bd.isLine(bd.ub(c)) && bd.noLP(c,k.UP)) ||
+				(bd.isLine(bd.db(c)) && bd.noLP(c,k.DN)) ||
+				(bd.isLine(bd.lb(c)) && bd.noLP(c,k.LT)) ||
+				(bd.isLine(bd.rb(c)) && bd.noLP(c,k.RT)) )
+			{
 				if(this.inAutoCheck){ return false;}
 				bd.sErC([c],1);
 				result = false;
@@ -240,57 +253,32 @@ AnsCheck.prototype = {
 		}
 		return result;
 	},
-	checkdir4Border1 : function(cc){
-		if(cc<0 || cc>=bd.cellmax){ return 0;}
-		var cnt = 0;
-		var bx = bd.cell[cc].bx, by = bd.cell[cc].by;
-		if( (k.isborder!==2 && by===bd.minby+1) || bd.isBorder(bd.bnum(bx  ,by-1)) ){ cnt++;}
-		if( (k.isborder!==2 && by===bd.maxby-1) || bd.isBorder(bd.bnum(bx  ,by+1)) ){ cnt++;}
-		if( (k.isborder!==2 && bx===bd.minbx+1) || bd.isBorder(bd.bnum(bx-1,by  )) ){ cnt++;}
-		if( (k.isborder!==2 && bx===bd.maxby-1) || bd.isBorder(bd.bnum(bx+1,by  )) ){ cnt++;}
-		return cnt;
-	},
-
-	checkenableLineParts : function(val){
-		var result = true;
-		var func = function(i){
-			return ((bd.ub(i)!=-1 && bd.isLine(bd.ub(i)) && bd.isnoLPup(i)) ||
-					(bd.db(i)!=-1 && bd.isLine(bd.db(i)) && bd.isnoLPdown(i)) ||
-					(bd.lb(i)!=-1 && bd.isLine(bd.lb(i)) && bd.isnoLPleft(i)) ||
-					(bd.rb(i)!=-1 && bd.isLine(bd.rb(i)) && bd.isnoLPright(i)) ); };
-		for(var i=0;i<bd.cellmax;i++){
-			if(func(i)){
-				if(this.inAutoCheck){ return false;}
-				bd.sErC([i],1);
-				result = false;
-			}
-		}
-		return result;
-	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkAllArea()    ‚·‚×‚Ä‚Ìfunc‚ğ–‚½‚·ƒ}ƒX‚Å\¬‚³‚ê‚éƒGƒŠƒA‚ªevalfunc‚ğ–‚½‚·‚©‚Ç‚¤‚©”»’è‚·‚é
+	// ans.checkAllArea()    ã™ã¹ã¦ã®funcã‚’æº€ãŸã™ãƒã‚¹ã§æ§‹æˆã•ã‚Œã‚‹ã‚¨ãƒªã‚¢ãŒevalfuncã‚’æº€ãŸã™ã‹ã©ã†ã‹åˆ¤å®šã™ã‚‹
 	//
-	// ans.checkDisconnectLine() ”š‚È‚Ç‚ÉŒq‚ª‚Á‚Ä‚¢‚È‚¢ü‚Ì”»’è‚ğs‚¤
-	// ans.checkNumberAndSize()  ƒGƒŠƒA‚É‚ ‚é”š‚Æ–ÊÏ‚ª“™‚µ‚¢‚©”»’è‚·‚é
-	// ans.checkNoNumber()       •”‰®‚É”š‚ªŠÜ‚Ü‚ê‚Ä‚¢‚È‚¢‚©‚Ì”»’è‚ğs‚¤
-	// ans.checkDoubleNumber()   •”‰®‚É”š‚ª2‚ÂˆÈãŠÜ‚Ü‚ê‚Ä‚¢‚È‚¢‚æ‚¤‚É”»’è‚ğs‚¤
-	// ans.checkTripleNumber()   •”‰®‚É”š‚ª3‚ÂˆÈãŠÜ‚Ü‚ê‚Ä‚¢‚È‚¢‚æ‚¤‚É”»’è‚ğs‚¤
-	// ans.checkBlackCellCount() —Ìˆæ“à‚Ì”š‚Æ•ƒ}ƒX‚Ì”‚ª“™‚µ‚¢‚©”»’è‚·‚é
-	// ans.checkBlackCellInArea()•”‰®‚É‚ ‚é•ƒ}ƒX‚Ì”‚Ì”»’è‚ğs‚¤
-	// ans.checkAreaRect()       —Ìˆæ‚ª‘S‚ÄlŠpŒ`‚Å‚ ‚é‚©‚Ç‚¤‚©”»’è‚·‚é
-	// ans.checkLinesInArea()    —Ìˆæ‚Ì’†‚Åü‚ª’Ê‚Á‚Ä‚¢‚éƒZƒ‹‚Ì”‚ğ”»’è‚·‚é
-	// ans.checkNoObjectInRoom() ƒGƒŠƒA‚Éw’è‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ª‚È‚¢‚Æ”»’è‚·‚é
+	// ans.checkDisconnectLine() æ•°å­—ãªã©ã«ç¹‹ãŒã£ã¦ã„ãªã„ç·šã®åˆ¤å®šã‚’è¡Œã†
+	// ans.checkNumberAndSize()  ã‚¨ãƒªã‚¢ã«ã‚ã‚‹æ•°å­—ã¨é¢ç©ãŒç­‰ã—ã„ã‹åˆ¤å®šã™ã‚‹
+	// ans.checkNoNumber()       éƒ¨å±‹ã«æ•°å­—ãŒå«ã¾ã‚Œã¦ã„ãªã„ã‹ã®åˆ¤å®šã‚’è¡Œã†
+	// ans.checkDoubleNumber()   éƒ¨å±‹ã«æ•°å­—ãŒ2ã¤ä»¥ä¸Šå«ã¾ã‚Œã¦ã„ãªã„ã‚ˆã†ã«åˆ¤å®šã‚’è¡Œã†
+	// ans.checkTripleNumber()   éƒ¨å±‹ã«æ•°å­—ãŒ3ã¤ä»¥ä¸Šå«ã¾ã‚Œã¦ã„ãªã„ã‚ˆã†ã«åˆ¤å®šã‚’è¡Œã†
+	// ans.checkBlackCellCount() é ˜åŸŸå†…ã®æ•°å­—ã¨é»’ãƒã‚¹ã®æ•°ãŒç­‰ã—ã„ã‹åˆ¤å®šã™ã‚‹
+	// ans.checkBlackCellInArea()éƒ¨å±‹ã«ã‚ã‚‹é»’ãƒã‚¹ã®æ•°ã®åˆ¤å®šã‚’è¡Œã†
+	// ans.checkAreaRect()       é ˜åŸŸãŒå…¨ã¦å››è§’å½¢ã§ã‚ã‚‹ã‹ã©ã†ã‹åˆ¤å®šã™ã‚‹
+	// ans.checkLinesInArea()    é ˜åŸŸã®ä¸­ã§ç·šãŒé€šã£ã¦ã„ã‚‹ã‚»ãƒ«ã®æ•°ã‚’åˆ¤å®šã™ã‚‹
+	// ans.checkNoObjectInRoom() ã‚¨ãƒªã‚¢ã«æŒ‡å®šã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒãªã„ã¨åˆ¤å®šã™ã‚‹
 	//
-	// ans.getQnumCellInArea() •”‰®‚Ì’†‚Åˆê”Ô¶ã‚É‚ ‚é”š‚ğ•Ô‚·
-	// ans.getSizeOfClist()    w’è‚³‚ê‚½Cell‚ÌƒŠƒXƒg‚Ìã‰º¶‰E‚Ì’[‚ÆA‚»‚Ì’†‚ÅğŒfunc‚ğ–‚½‚·ƒZƒ‹‚Ì”‚ğ•Ô‚·
+	// ans.getQnumCellInArea() éƒ¨å±‹ã®ä¸­ã§ä¸€ç•ªå·¦ä¸Šã«ã‚ã‚‹æ•°å­—ã‚’è¿”ã™
+	// ans.getSizeOfClist()    æŒ‡å®šã•ã‚ŒãŸCellã®ãƒªã‚¹ãƒˆã®ä¸Šä¸‹å·¦å³ã®ç«¯ã¨ã€ãã®ä¸­ã§æ¡ä»¶funcã‚’æº€ãŸã™ã‚»ãƒ«ã®æ•°ã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	checkAllArea : function(cinfo, func, evalfunc){
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
+			var cc = (k.roomNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0])
+								   : this.getQnumCellOfClist(cinfo.room[id].idlist));
 			var d = this.getSizeOfClist(cinfo.room[id].idlist,func);
-			var n = bd.QnC(k.roomNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0])
-										: this.getQnumCellOfClist(cinfo.room[id].idlist));
+			var n = (cc!==null?bd.QnC(cc):-1);
+
 			if( !evalfunc(d.cols, d.rows, d.cnt, n) ){
 				if(this.inAutoCheck){ return false;}
 				if(this.performAsLine){ if(result){ bd.sErBAll(2);} this.setErrLareaById(cinfo,id,1);}
@@ -308,18 +296,18 @@ AnsCheck.prototype = {
 	checkDoubleNumber    : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (a< 2);}          );},
 	checkTripleNumber    : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (a< 3);}          );},
 
-	checkBlackCellCount  : function(cinfo)          { return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return (n<0 || n==a);} );},
-	checkBlackCellInArea : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return evalfunc(a);}     );},
-	checkAreaRect        : function(cinfo)          { return this.checkAllArea(cinfo, f_true,     function(w,h,a,n){ return (w*h==a)});},
+	checkBlackCellCount  : function(cinfo)          { return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return (n<0 || n===a);});},
+	checkBlackCellInArea : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return evalfunc(a);}   );},
+	checkAreaRect        : function(cinfo)          { return this.checkAllArea(cinfo, f_true,     function(w,h,a,n){ return (w*h===a)}      );},
 
 	checkLinesInArea     : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, function(c){ return line.lcnt[c]>0;}, evalfunc);},
-	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkAllArea(cinfo, function(c){ return getvalue(c)!=-1;}, function(w,h,a,n){ return (a!=0);});},
+	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkAllArea(cinfo, function(c){ return getvalue(c)!==-1;}, function(w,h,a,n){ return (a!=0);});},
 
 	getQnumCellOfClist : function(clist){
 		for(var i=0,len=clist.length;i<len;i++){
-			if(bd.QnC(clist[i])!=-1){ return clist[i];}
+			if(bd.QnC(clist[i])!==-1){ return clist[i];}
 		}
-		return -1;
+		return null;
 	},
 	getSizeOfClist : function(clist, func){
 		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1, cols:0, rows:0, cnt:0 };
@@ -336,11 +324,8 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkSideAreaSize()     ‹«ŠEü‚ğ‚Í‚³‚ñ‚ÅÚ‚·‚é•”‰®‚Ìgetval‚Å“¾‚ç‚ê‚éƒTƒCƒY‚ªˆÙ‚È‚é‚±‚Æ‚ğ”»’è‚·‚é
-	// ans.checkSideAreaCell()     ‹«ŠEü‚ğ‚Í‚³‚ñ‚Åƒ^ƒeƒˆƒR‚ÉÚ‚·‚éƒZƒ‹‚Ì”»’è‚ğs‚¤
-	// ans.checkSeqBlocksInRoom()  •”‰®‚Ì’†ŒÀ’è‚ÅA•ƒ}ƒX‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚©‚Ç‚¤‚©”»’è‚·‚é
-	// ans.checkSameObjectInRoom() •”‰®‚Ì’†‚Égetvalue‚Å•¡”í—Ş‚Ì’l‚ª“¾‚ç‚ê‚é‚±‚Æ‚ğ”»’è‚·‚é
-	// ans.checkObjectRoom()       getvalue‚Å“¯‚¶’l‚ª“¾‚ç‚ê‚éƒZƒ‹‚ªA•¡”‚Ì•”‰®‚Ì•ªU‚µ‚Ä‚¢‚é‚©”»’è‚·‚é
+	// ans.checkSideAreaSize()     å¢ƒç•Œç·šã‚’ã¯ã•ã‚“ã§æ¥ã™ã‚‹éƒ¨å±‹ã®getvalã§å¾—ã‚‰ã‚Œã‚‹ã‚µã‚¤ã‚ºãŒç•°ãªã‚‹ã“ã¨ã‚’åˆ¤å®šã™ã‚‹
+	// ans.checkSideAreaCell()     å¢ƒç•Œç·šã‚’ã¯ã•ã‚“ã§ã‚¿ãƒ†ãƒ¨ã‚³ã«æ¥ã™ã‚‹ã‚»ãƒ«ã®åˆ¤å®šã‚’è¡Œã†
 	//---------------------------------------------------------------------------
 	checkSideAreaSize : function(rinfo, getval){
 		var adjs = [];
@@ -352,7 +337,7 @@ AnsCheck.prototype = {
 		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isBorder(id)){ continue;}
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if(cc1==-1 || cc2==-1){ continue;}
+			if(cc1===null || cc2===null){ continue;}
 			var r1=rinfo.id[cc1], r2=rinfo.id[cc2];
 			try{
 				if(r1<r2){ adjs[r1][r2]++;}
@@ -379,7 +364,7 @@ AnsCheck.prototype = {
 		for(var id=0;id<bd.bdmax;id++){
 			if(!bd.isBorder(id)){ continue;}
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if(cc1!=-1 && cc2!=-1 && func(cc1, cc2)){
+			if(cc1!==null && cc2!==null && func(cc1, cc2)){
 				if(!flag){ bd.sErC([cc1,cc2],1);}
 				else{ bd.sErC(area.room[area.room.id[cc1]].clist,1); bd.sErC(area.room[area.room.id[cc2]].clist,1); }
 				return false;
@@ -388,13 +373,20 @@ AnsCheck.prototype = {
 		return true;
 	},
 
+	//---------------------------------------------------------------------------
+	// ans.checkSeqBlocksInRoom()   éƒ¨å±‹ã®ä¸­é™å®šã§ã€é»’ãƒã‚¹ãŒã²ã¨ã¤ãªãŒã‚Šã‹ã©ã†ã‹åˆ¤å®šã™ã‚‹
+	// ans.checkSameObjectInRoom()  éƒ¨å±‹ã®ä¸­ã®getvalueã®å€¤ãŒ1ç¨®é¡ã§ã‚ã‚‹ã‹åˆ¤å®šã™ã‚‹
+	// ans.checkGatheredObject()    åŒã˜getvalueã®å€¤ã§ã‚ã‚Œã°ã€åŒã˜éƒ¨å±‹ã«å­˜åœ¨ã™ã‚‹ã“ã¨ã‚’åˆ¤å®šã™ã‚‹
+	// ans.checkDifferentNumberInRoom() éƒ¨å±‹ã®ä¸­ã«åŒã˜æ•°å­—ãŒå­˜åœ¨ã—ãªã„ã“ã¨ã‚’åˆ¤å®šã™ã‚‹
+	// ans.isDifferentNumberInClist()   clistã®ä¸­ã«åŒã˜æ•°å­—ãŒå­˜åœ¨ã—ãªã„ã“ã¨ã‚’åˆ¤å®šã ã‘ã‚’è¡Œã†
+	//---------------------------------------------------------------------------
 	checkSeqBlocksInRoom : function(){
 		var result = true;
 		for(var id=1;id<=area.room.max;id++){
 			var data = {max:0,id:[]};
-			for(var c=0;c<bd.cellmax;c++){ data.id[c] = ((area.room.id[c]==id && bd.isBlack(c))?0:-1);}
+			for(var c=0;c<bd.cellmax;c++){ data.id[c] = ((area.room.id[c]===id && bd.isBlack(c))?0:null);}
 			for(var c=0;c<bd.cellmax;c++){
-				if(data.id[c]!=0){ continue;}
+				if(data.id[c]!==0){ continue;}
 				data.max++;
 				data[data.max] = {clist:[]};
 				area.sc0(c, data);
@@ -409,22 +401,21 @@ AnsCheck.prototype = {
 	},
 
 	checkSameObjectInRoom : function(rinfo, getvalue){
-		var result = true;
-		var d = [];
+		var result=true, d=[], val=[];
+		for(var c=0;c<bd.cellmax;c++){ val[c]=getvalue(c);}
 		for(var i=1;i<=rinfo.max;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cellmax;c++){
-			if(rinfo.id[c]==-1 || getvalue(c)==-1){ continue;}
-			if(d[rinfo.id[c]]==-1 && getvalue(c)!=-1){ d[rinfo.id[c]] = getvalue(c);}
-			else if(d[rinfo.id[c]]!=getvalue(c)){
+			if(rinfo.id[c]===null || val[c]===-1){ continue;}
+			if(d[rinfo.id[c]]===-1 && val[c]!==-1){ d[rinfo.id[c]] = val[c];}
+			else if(d[rinfo.id[c]]!==val[c]){
 				if(this.inAutoCheck){ return false;}
 
 				if(this.performAsLine){ bd.sErBAll(2); this.setErrLareaByCell(rinfo,c,1);}
 				else{ bd.sErC(rinfo.room[rinfo.id[c]].idlist,1);}
 				if(k.puzzleid=="kaero"){
 					for(var cc=0;cc<bd.cellmax;cc++){
-						if(rinfo.id[c]==rinfo.id[cc] && this.getBeforeCell(cc)!=-1 && rinfo.id[c]!=rinfo.id[this.getBeforeCell(cc)]){
-							bd.sErC([this.getBeforeCell(cc)],4);
-						}
+						if(rinfo.id[c]===rinfo.id[cc] && this.getBeforeCell(cc)!==null && rinfo.id[c]!==rinfo.id[this.getBeforeCell(cc)])
+							{ bd.sErC([this.getBeforeCell(cc)],4);}
 					}
 				}
 				result = false;
@@ -432,19 +423,18 @@ AnsCheck.prototype = {
 		}
 		return result;
 	},
-	checkObjectRoom : function(rinfo, getvalue){
-		var d = [];
-		var dmax = 0;
-		for(var c=0;c<bd.cellmax;c++){ if(dmax<getvalue(c)){ dmax=getvalue(c);} }
+	checkGatheredObject : function(rinfo, getvalue){
+		var d=[], dmax=0, val=[];
+		for(var c=0;c<bd.cellmax;c++){ val[c]=getvalue(c); if(dmax<val[c]){ dmax=val[c];} }
 		for(var i=0;i<=dmax;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cellmax;c++){
-			if(getvalue(c)==-1){ continue;}
-			if(d[getvalue(c)]==-1){ d[getvalue(c)] = rinfo.id[c];}
-			else if(d[getvalue(c)]!=rinfo.id[c]){
+			if(val[c]===-1){ continue;}
+			if(d[val[c]]===-1){ d[val[c]] = rinfo.id[c];}
+			else if(d[val[c]]!==rinfo.id[c]){
 				var clist = [];
 				for(var cc=0;cc<bd.cellmax;cc++){
-					if(k.puzzleid=="kaero"){ if(getvalue(c)==bd.QnC(cc)){ clist.push(cc);}}
-					else{ if(rinfo.id[c]==rinfo.id[cc] || d[getvalue(c)]==rinfo.id[cc]){ clist.push(cc);} }
+					if(k.puzzleid=="kaero"){ if(val[c]===bd.QnC(cc)){ clist.push(cc);}}
+					else{ if(rinfo.id[c]===rinfo.id[cc] || d[val[c]]===rinfo.id[cc]){ clist.push(cc);} }
 				}
 				bd.sErC(clist,1);
 				return false;
@@ -453,11 +443,32 @@ AnsCheck.prototype = {
 		return true;
 	},
 
+	checkDifferentNumberInRoom : function(rinfo, numfunc){
+		var result = true;
+		for(var id=1;id<=rinfo.max;id++){
+			if(!this.isDifferentNumberInClist(rinfo.room[id].idlist, numfunc)){
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(rinfo.room[id].idlist,1);
+				result = false;
+			}
+		}
+		return result;
+	},
+	isDifferentNumberInClist : function(clist, numfunc){
+		var result = true, d = [], num = [], bottom = (k.dispzero?1:0);
+		for(var n=bottom,max=bd.nummaxfunc(clist[0]);n<=max;n++){ d[n]=0;}
+		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc.apply(bd,[clist[i]]);}
+
+		for(var i=0;i<clist.length;i++){ if(num[clist[i]]>=bottom){ d[num[clist[i]]]++;} }
+		for(var i=0;i<clist.length;i++){
+			if(num[clist[i]]>=bottom && d[num[clist[i]]]>=2){ bd.sErC([clist[i]],1); result = false;}
+		}
+		return result;
+	},
+
 	//---------------------------------------------------------------------------
-	// ans.checkRowsCols()            ƒ^ƒe—ñEƒˆƒR—ñ‚Ì”š‚Ì”»’è‚ğs‚¤
-	// ans.checkRowsColsPartly()      •ƒ}ƒX‚â[_]“™‚Å•ª‚©‚ê‚éƒ^ƒe—ñEƒˆƒR—ñ‚Ì”š‚Ì”»’è‚ğs‚¤
-	// ans.checkDifferentNumberInRoom() •”‰®‚Ì’†‚É“¯‚¶”š‚ª‘¶İ‚·‚é‚©”»’è‚·‚é
-	// ans.isDifferentNumberInClist() clist‚Ì’†‚É“¯‚¶”š‚ª‘¶İ‚·‚é‚©”»’è‚·‚é
+	// ans.checkRowsCols()            ã‚¿ãƒ†åˆ—ãƒ»ãƒ¨ã‚³åˆ—ã®æ•°å­—ã®åˆ¤å®šã‚’è¡Œã†
+	// ans.checkRowsColsPartly()      é»’ãƒã‚¹ã‚„[ï¼¼]ç­‰ã§åˆ†ã‹ã‚Œã‚‹ã‚¿ãƒ†åˆ—ãƒ»ãƒ¨ã‚³åˆ—ã®æ•°å­—ã®åˆ¤å®šã‚’è¡Œã†
 	//---------------------------------------------------------------------------
 	checkRowsCols : function(evalfunc, numfunc){
 		var result = true;
@@ -510,32 +521,9 @@ AnsCheck.prototype = {
 		return result;
 	},
 
-	checkDifferentNumberInRoom : function(rinfo, numfunc){
-		var result = true;
-		for(var id=1;id<=rinfo.max;id++){
-			if(!this.isDifferentNumberInClist(rinfo.room[id].idlist, numfunc)){
-				if(this.inAutoCheck){ return false;}
-				bd.sErC(rinfo.room[id].idlist,1);
-				result = false;
-			}
-		}
-		return result;
-	},
-	isDifferentNumberInClist : function(clist, numfunc){
-		var result = true, d = [], num = [], bottom = (k.dispzero?1:0);
-		for(var n=bottom,max=bd.nummaxfunc(clist[0]);n<=max;n++){ d[n]=0;}
-		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc.apply(bd,[clist[i]]);}
-
-		for(var i=0;i<clist.length;i++){ if(num[clist[i]]>=bottom){ d[num[clist[i]]]++;} }
-		for(var i=0;i<clist.length;i++){
-			if(num[clist[i]]>=bottom && d[num[clist[i]]]>=2){ bd.sErC([clist[i]],1); result = false;}
-		}
-		return result;
-	},
-
 	//---------------------------------------------------------------------------
-	// ans.checkLcntCross()      ‚ ‚éŒğ“_‚Æ‚Ìü‚èl•ûŒü‚Ì‹«ŠEü‚Ì”‚ğ”»’è‚·‚é(bp==1:•“_‚ª‘Å‚½‚ê‚Ä‚¢‚éê‡)
-	// ans.setCrossBorderError() ‚ ‚éŒğ“_‚Æ‚»‚Ìü‚èl•ûŒü‚ÉƒGƒ‰[ƒtƒ‰ƒO‚ğİ’è‚·‚é
+	// ans.checkLcntCross()      ã‚ã‚‹äº¤ç‚¹ã¨ã®å‘¨ã‚Šå››æ–¹å‘ã®å¢ƒç•Œç·šã®æ•°ã‚’åˆ¤å®šã™ã‚‹(bp==1:é»’ç‚¹ãŒæ‰“ãŸã‚Œã¦ã„ã‚‹å ´åˆ)
+	// ans.setCrossBorderError() ã‚ã‚‹äº¤ç‚¹ã¨ãã®å‘¨ã‚Šå››æ–¹å‘ã«ã‚¨ãƒ©ãƒ¼ãƒ•ãƒ©ã‚°ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	checkLcntCross : function(val, bp){
 		var result = true;

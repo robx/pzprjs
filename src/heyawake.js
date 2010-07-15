@@ -1,41 +1,41 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ‚Ö‚â‚í‚¯”Å heyawake.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ã¸ã‚„ã‚ã‘ç‰ˆ heyawake.js v3.3.1
 //
 Puzzles.heyawake = function(){ };
 Puzzles.heyawake.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 10;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 10;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 10;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 10;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 1;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 1;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = false;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = true;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = true;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = false;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = true;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = true;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = true;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = true;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = false;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = true;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = true;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = false;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = true;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = true;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = true;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = true;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = true;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = true;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = true;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = true;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = true;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = true;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
-		base.setTitle("‚Ö‚â‚í‚¯","Heyawake");
-		base.setExpression("@¶ƒNƒŠƒbƒN‚Å•ƒ}ƒX‚ªA‰EƒNƒŠƒbƒN‚Å”’ƒ}ƒXŠm’èƒ}ƒX‚ª“ü—Í‚Å‚«‚Ü‚·B",
+		base.setTitle("ã¸ã‚„ã‚ã‘","Heyawake");
+		base.setExpression("ã€€å·¦ã‚¯ãƒªãƒƒã‚¯ã§é»’ãƒã‚¹ãŒã€å³ã‚¯ãƒªãƒƒã‚¯ã§ç™½ãƒã‚¹ç¢ºå®šãƒã‚¹ãŒå…¥åŠ›ã§ãã¾ã™ã€‚",
 						   " Left Click to input black cells, Right Click to input determined white cells.");
 		base.setFloatbgcolor("rgb(0, 191, 0)");
 
@@ -47,9 +47,9 @@ Puzzles.heyawake.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
 			else if(k.editmode) this.inputborder();
@@ -57,10 +57,7 @@ Puzzles.heyawake.prototype = {
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if(k.editmode){
-					if(!kp.enabled()){ this.inputqnum();}
-					else{ kp.display();}
-				}
+				if(k.editmode){ this.inputqnum();}
 			}
 		};
 		mv.mousemove = function(){
@@ -68,7 +65,7 @@ Puzzles.heyawake.prototype = {
 			else if(k.playmode) this.inputcell();
 		};
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
@@ -89,7 +86,7 @@ Puzzles.heyawake.prototype = {
 			var id = area.room.id[cc];
 			var d = ans.getSizeOfClist(area.room[id].clist,f_true);
 			var m=d.cols, n=d.rows; if(m>n){ var t=m;m=n;n=t;}
-			if     (m===1){ return mf((n+1)/2);}
+			if     (m===1){ return ((n+1)>>1);}
 			else if(m===2){ return n;}
 			else if(m===3){
 				if     (n%4===0){ return (n  )/4*5  ;}
@@ -99,14 +96,14 @@ Puzzles.heyawake.prototype = {
 			}
 			else{
 				if(((Math.log(m+1)/Math.log(2))%1===0)&&(m===n)){ return (m*n+m+n)/3;}
-				else if((m&1)&&(n&1)){ return mf((m*n+m+n-1)/3);}
-				else{ return mf((m*n+m+n-2)/3);}
+				else if((m&1)&&(n&1)){ return (((m*n+m+n-1)/3)|0);}
+				else{ return (((m*n+m+n-2)/3)|0);}
 			}
 		};
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.bcolor = pc.bcolor_GREEN;
@@ -131,7 +128,7 @@ Puzzles.heyawake.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeBorder();
@@ -151,14 +148,14 @@ Puzzles.heyawake.prototype = {
 
 		enc.decodeHeyaApp = function(){
 			var c=0, rdata=[];
-			while(c<bd.cellmax){ rdata[c]=-1; c++;}
+			while(c<bd.cellmax){ rdata[c]=null; c++;}
 
 			var i=0, inp=this.uri.bstr.split("/");
 			for(var c=0;c<bd.cellmax;c++){
-				if(rdata[c]>-1){ continue;}
+				if(rdata[c]!==null){ continue;}
 
 				if(inp[i].match(/(\d+in)?(\d+)x(\d+)$/)){
-					if(RegExp.$1.length>0){ bd.sQnC(c, parseInt(RegExp.$1));}
+					if(RegExp.$1.length>0){ bd.cell[c].qnum = parseInt(RegExp.$1);}
 					var x1 = bd.cell[c].bx, x2 = x1 + 2*parseInt(RegExp.$2) - 2;
 					var y1 = bd.cell[c].by, y2 = y1 + 2*parseInt(RegExp.$3) - 2;
 					fio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
@@ -171,10 +168,8 @@ Puzzles.heyawake.prototype = {
 			var barray=[], rinfo=area.getRoomInfo();
 			for(var id=1;id<=rinfo.max;id++){
 				var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
-				if(bd.QnC(bd.cnum(d.x1,d.y1))>=0){
-					barray.push(""+bd.QnC(bd.cnum(d.x1,d.y1))+"in"+d.cols+"x"+d.rows);
-				}
-				else{ barray.push(""+d.cols+"x"+d.rows);}
+				var ul = bd.cell[bd.cnum(d.x1,d.y1)].qnum;
+				barray.push((ul>=0 ? ""+ul+"in" : "")+d.cols+"x"+d.rows);
 			}
 			this.outbstr = barray.join("/");
 		};
@@ -202,29 +197,29 @@ Puzzles.heyawake.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			if( !this.checkSideCell(function(c1,c2){ return (bd.isBlack(c1) && bd.isBlack(c2));}) ){
-				this.setAlert('•ƒ}ƒX‚ªƒ^ƒeƒˆƒR‚É˜A‘±‚µ‚Ä‚¢‚Ü‚·B','Black cells are adjacent.'); return false;
+				this.setAlert('é»’ãƒã‚¹ãŒã‚¿ãƒ†ãƒ¨ã‚³ã«é€£ç¶šã—ã¦ã„ã¾ã™ã€‚','Black cells are adjacent.'); return false;
 			}
 
 			if( !this.checkOneArea( area.getWCellInfo() ) ){
-				this.setAlert('”’ƒ}ƒX‚ª•ª’f‚³‚ê‚Ä‚¢‚Ü‚·B','White cells are devided.'); return false;
+				this.setAlert('ç™½ãƒã‚¹ãŒåˆ†æ–­ã•ã‚Œã¦ã„ã¾ã™ã€‚','White cells are devided.'); return false;
 			}
 
 			var rinfo = area.getRoomInfo();
 			if( !this.checkBlackCellCount(rinfo) ){
-				this.setAlert('•”‰®‚Ì”š‚Æ•ƒ}ƒX‚Ì”‚ªˆê’v‚µ‚Ä‚¢‚Ü‚¹‚ñB','The number of Black cells in the room and The number written in the room is different.'); return false;
+				this.setAlert('éƒ¨å±‹ã®æ•°å­—ã¨é»’ãƒã‚¹ã®æ•°ãŒä¸€è‡´ã—ã¦ã„ã¾ã›ã‚“ã€‚','The number of Black cells in the room and The number written in the room is different.'); return false;
 			}
 
-			if( !this.checkRowsColsPartly(this.isBorderCount, {}, function(cc){ return (bd.QaC(cc)==1);}, false) ){
-				this.setAlert('”’ƒ}ƒX‚ª3•”‰®˜A‘±‚Å‘±‚¢‚Ä‚¢‚Ü‚·B','White cells are continued for three consecutive room.'); return false;
+			if( !this.checkRowsColsPartly(this.isBorderCount, {}, bd.isBlack, false) ){
+				this.setAlert('ç™½ãƒã‚¹ãŒ3éƒ¨å±‹é€£ç¶šã§ç¶šã„ã¦ã„ã¾ã™ã€‚','White cells are continued for three consecutive room.'); return false;
 			}
 
 			if( !this.checkAreaRect(rinfo) ){
-				this.setAlert('lŠpŒ`‚Å‚Í‚È‚¢•”‰®‚ª‚ ‚è‚Ü‚·B','There is a room whose shape is not square.'); return false;
+				this.setAlert('å››è§’å½¢ã§ã¯ãªã„éƒ¨å±‹ãŒã‚ã‚Šã¾ã™ã€‚','There is a room whose shape is not square.'); return false;
 			}
 
 			return true;
@@ -235,13 +230,13 @@ Puzzles.heyawake.prototype = {
 			if(d.x1===d.x2){
 				bx = d.x1;
 				for(by=d.y1+1;by<=d.y2-1;by+=2){
-					if(bd.QuB(bd.bnum(bx,by))===1){ count++;}
+					if(bd.isBorder(bd.bnum(bx,by))){ count++;}
 				}
 			}
 			else if(d.y1===d.y2){
 				by = d.y1;
 				for(bx=d.x1+1;bx<=d.x2-1;bx+=2){
-					if(bd.QuB(bd.bnum(bx,by))===1){ count++;}
+					if(bd.isBorder(bd.bnum(bx,by))){ count++;}
 				}
 			}
 

@@ -1,59 +1,56 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” CŠw—·s‚Ì–é”Å shugaku.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ä¿®å­¦æ—…è¡Œã®å¤œç‰ˆ shugaku.js v3.3.1
 //
 Puzzles.shugaku = function(){ };
 Puzzles.shugaku.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰ŠúÝ’è
-		if(!k.qcols){ k.qcols = 10;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 10;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯Ý’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 10;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 10;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ðŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 0;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ð—pˆÓ‚·‚éƒpƒYƒ‹ 2:Žl•û‚ÉƒZƒ‹‚ð—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æž ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 0;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æž ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒð·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = false;	// ƒ}ƒX‚Ì^‚ñ’†‚ð’Ê‚éü‚ð‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ðline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = false;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”Žš‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = false;	// ãƒžã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›žç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = false;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = true;	// 0‚ð•\Ž¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = false;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ð•\Ž¦‚·‚é
-		k.isAnsNumber     = false;	// ‰ñ“š‚É”Žš‚ð“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”Žš‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”Žš‚ª‚Ð‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = true;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = false;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = false;	// å›žç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›žç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = true;	// •ƒ}ƒX‚ð“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = true;	// ”Žš‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = true;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ðƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ðƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = true;	// é»’ãƒžã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = true;	// æ•°å­—ã®ã‚ã‚‹ãƒžã‚¹ãŒé»’ãƒžã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = true;	// æ­£ç­”åˆ¤å®šã§é»’ãƒžã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒžã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = false;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶Ý‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = false;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = false;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = false;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
-		base.setTitle("CŠw—·s‚Ì–é","School Trip");
-		base.setExpression("@ƒ}ƒEƒX‚Ì¶ƒ{ƒ^ƒ“ƒhƒ‰ƒbƒO‚Å•z’c‚ðA‰Eƒ{ƒ^ƒ“‚Å’Ê˜H‚ð“ü—Í‚Å‚«‚Ü‚·B",
+		base.setTitle("ä¿®å­¦æ—…è¡Œã®å¤œ","School Trip");
+		base.setExpression("ã€€ãƒžã‚¦ã‚¹ã®å·¦ãƒœã‚¿ãƒ³ãƒ‰ãƒ©ãƒƒã‚°ã§å¸ƒå›£ã‚’ã€å³ãƒœã‚¿ãƒ³ã§é€šè·¯ã‚’å…¥åŠ›ã§ãã¾ã™ã€‚",
 						   " Left Button Drag to input Futon, Right Click to input aisle.");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 	},
 	menufix : function(){ },
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒžã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if(k.playmode){
 				if(this.btn.Left) this.inputFuton();
 				else if(this.btn.Right) this.inputcell_shugaku();
 			}
-			else if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum();}
-				else{ kp.display();}
-			}
+			else if(k.editmode){ this.inputqnum();}
 		};
 		mv.mouseup = function(){
 			if(k.playmode){
@@ -69,93 +66,94 @@ Puzzles.shugaku.prototype = {
 		mv.inputFuton = function(){
 			var cc = this.cellid();
 
-			if(this.firstPos.x==-1 && this.firstPos.y==-1){
-				if(cc==-1 || bd.QnC(cc)!=-1){ return;}
+			if(!this.firstPoint.valid()){
+				if(cc===null || bd.isNum(cc)){ return;}
 				this.mouseCell = cc;
 				this.inputData = 1;
-				this.firstPos = this.inputPos.clone();
+				this.firstPoint.set(this.inputPoint);
 				pc.paintCell(cc);
 			}
 			else{
-				var old = this.inputData;
-				if(this.mouseCell==cc){ this.inputData = 1;}
+				var old = this.inputData, adj;
+				if(cc===null){ /* nop */} // ä½•ã‚‚ã—ãªã„
+				else if(this.mouseCell===cc){ this.inputData = 1;} // å…¥åŠ›é–‹å§‹æ™‚ã¨åŒã˜ã‚»ãƒ«ã®å ´åˆ
 				else{
-					var mx=this.inputPos.x-this.firstPos.x, my=this.inputPos.y-this.firstPos.y;
-					if     (cc==-1){ /* nop */ }
-					else if(mx-my>0 && mx+my>0){ this.inputData = (bd.QnC(bd.rt(this.mouseCell))==-1?5:6);}
-					else if(mx-my>0 && mx+my<0){ this.inputData = (bd.QnC(bd.up(this.mouseCell))==-1?2:6);}
-					else if(mx-my<0 && mx+my>0){ this.inputData = (bd.QnC(bd.dn(this.mouseCell))==-1?3:6);}
-					else if(mx-my<0 && mx+my<0){ this.inputData = (bd.QnC(bd.lt(this.mouseCell))==-1?4:6);}
+					var dx=(this.inputPoint.x-this.firstPoint.x), dy=(this.inputPoint.y-this.firstPoint.y);
+					if     (dx-dy>0 && dx+dy>0){ adj=bd.rt(this.mouseCell); this.inputData=5;}
+					else if(dx-dy>0 && dx+dy<0){ adj=bd.up(this.mouseCell); this.inputData=2;}
+					else if(dx-dy<0 && dx+dy>0){ adj=bd.dn(this.mouseCell); this.inputData=3;}
+					else if(dx-dy<0 && dx+dy<0){ adj=bd.lt(this.mouseCell); this.inputData=4;}
+					if(adj==null || bd.isNum(adj)){ this.inputData=6;}
 				}
 				if(old!=this.inputData){ pc.paintCellAround(this.mouseCell);}
 			}
 		};
 		mv.inputFuton2 = function(){
-			if(this.mouseCell==-1 || (this.firstPos.x==-1 && this.firstPos.y==-1)){ return;}
-			var cc=this.mouseCell
+			if(this.mouseCell===null){ return;}
+			var cc = this.mouseCell
 
 			this.changeHalf(cc);
-			if(this.inputData!=1 && this.inputData!=6){ bd.sQaC(cc, 10+this.inputData); bd.sQsC(cc, 0);}
-			else if(this.inputData==6){ bd.sQaC(cc, 11); bd.sQsC(cc, 0);}
+			if(this.inputData!==1 && this.inputData!==6){ bd.sQaC(cc, 10+this.inputData); bd.sQsC(cc, 0);}
+			else if(this.inputData===6){ bd.sQaC(cc,11); bd.sQsC(cc, 0);}
 			else{
-				if     (bd.QaC(cc)==11){ bd.sQaC(cc, 16); bd.sQsC(cc, 0);}
-				else if(bd.QaC(cc)==16){ bd.sQaC(cc, -1); bd.sQsC(cc, 1);}
-//				else if(bd.QsC(cc)== 1){ bd.sQaC(cc, -1); bd.sQsC(cc, 0);}
-				else                   { bd.sQaC(cc, 11); bd.sQsC(cc, 0);}
+				if     (bd.QaC(cc)===11){ bd.sQaC(cc,16); bd.sQsC(cc, 0);}
+				else if(bd.QaC(cc)===16){ bd.sQaC(cc, 0); bd.sQsC(cc, 1);}
+//				else if(bd.QsC(cc)=== 1){ bd.sQaC(cc, 0); bd.sQsC(cc, 0);}
+				else                    { bd.sQaC(cc,11); bd.sQsC(cc, 0);}
 			}
 
 			cc = this.getTargetADJ();
-			if(cc!=-1){
+			if(cc!==null){
 				this.changeHalf(cc);
 				bd.sQaC(cc, {2:18,3:17,4:20,5:19}[this.inputData]); bd.sQsC(cc, 0);
 			}
 
 			cc = this.mouseCell;
-			this.mouseCell = -1;
+			this.mouseCell = null;
 			pc.paintCellAround(cc);
 		};
 
 		mv.inputcell_shugaku = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell || bd.QnC(cc)!=-1){ return;}
-			if(this.inputData==-1){
-				if     (bd.QaC(cc)==1){ this.inputData = 2;}
-				else if(bd.QsC(cc)==1){ this.inputData = 3;}
+			if(cc===null || cc===this.mouseCell || bd.isNum(cc)){ return;}
+			if(this.inputData===null){
+				if     (bd.QaC(cc)===1){ this.inputData = 2;}
+				else if(bd.QsC(cc)===1){ this.inputData = 3;}
 				else{ this.inputData = 1;}
 			}
 			this.changeHalf(cc);
 			this.mouseCell = cc; 
 
-			bd.sQaC(cc, (this.inputData==1?1:-1));
+			bd.sQaC(cc, (this.inputData==1?1:0));
 			bd.sQsC(cc, (this.inputData==2?1:0));
 
 			pc.paintCellAround(cc);
 		};
 
 		mv.changeHalf = function(cc){
-			var adj=-1;
-			if     (bd.QaC(cc)==12 || bd.QaC(cc)==17){ adj=bd.up(cc);}
-			else if(bd.QaC(cc)==13 || bd.QaC(cc)==18){ adj=bd.dn(cc);}
-			else if(bd.QaC(cc)==14 || bd.QaC(cc)==19){ adj=bd.lt(cc);}
-			else if(bd.QaC(cc)==15 || bd.QaC(cc)==20){ adj=bd.rt(cc);}
+			var adj=null;
+			if     (bd.QaC(cc)===12 || bd.QaC(cc)===17){ adj=bd.up(cc);}
+			else if(bd.QaC(cc)===13 || bd.QaC(cc)===18){ adj=bd.dn(cc);}
+			else if(bd.QaC(cc)===14 || bd.QaC(cc)===19){ adj=bd.lt(cc);}
+			else if(bd.QaC(cc)===15 || bd.QaC(cc)===20){ adj=bd.rt(cc);}
 
-			if     (adj==-1){ /* nop */ }
+			if     (adj===null){ /* nop */ }
 			else if(bd.QaC(adj)>=12 && bd.QaC(adj)<=15){ bd.sQaC(adj,11);}
 			else if(bd.QaC(adj)>=17 && bd.QaC(adj)<=20){ bd.sQaC(adj,16);}
 		};
 		mv.getTargetADJ = function(){
-			if(this.mouseCell==-1){ return -1;}
+			if(this.mouseCell===null){ return null;}
 			switch(this.inputData){
 				case 2: return bd.up(this.mouseCell);
 				case 3: return bd.dn(this.mouseCell);
 				case 4: return bd.lt(this.mouseCell);
 				case 5: return bd.rt(this.mouseCell);
 			}
-			return -1;
+			return null;
 		};
 		mv.enableInputHatena = true;
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
@@ -172,47 +170,31 @@ Puzzles.shugaku.prototype = {
 		bd.maxnum = 4;
 
 		menu.ex.adjustSpecial = function(key,d){
+			var trans = {};
 			switch(key){
-			case this.FLIPY: // ã‰º”½“]
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = {12:13,13:12,17:18,18:17}[bd.QaC(cc)];
-					if(!isNaN(val)){ bd.cell[cc].qans = val;}
-				}
-				break;
-			case this.FLIPX: // ¶‰E”½“]
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = {14:15,15:14,19:20,20:19}[bd.QaC(cc)];
-					if(!isNaN(val)){ bd.cell[cc].qans = val;}
-				}
-				break;
-			case this.TURNR: // ‰E90‹”½“]
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = {12:15,15:13,13:14,14:12,17:20,20:18,18:19,19:17}[bd.QaC(cc)];
-					if(!isNaN(val)){ bd.cell[cc].qans = val;}
-				}
-				break;
-			case this.TURNL: // ¶90‹”½“]
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var val = {12:14,14:13,13:15,15:12,17:19,19:18,18:20,20:17}[bd.QaC(cc)];
-					if(!isNaN(val)){ bd.cell[cc].qans = val;}
-				}
-				break;
+				case this.FLIPY: trans={12:13,13:12,17:18,18:17}; break;	// ä¸Šä¸‹åè»¢
+				case this.FLIPX: trans={14:15,15:14,19:20,20:19}; break;	// å·¦å³åè»¢
+				case this.TURNR: trans={12:15,15:13,13:14,14:12,17:20,20:18,18:19,19:17}; break;	// å³90Â°å›žè»¢
+				case this.TURNL: trans={12:14,14:13,13:15,15:12,17:19,19:18,18:20,20:17}; break;	// å·¦90Â°å›žè»¢
+				default: return;
+			}
+			for(var c=0;c<bd.cellmax;c++){
+				var val=trans[bd.QaC(c)]; if(!!val){ bd.cell[c].qans=val;}
 			}
 		}
 
+		bd.isPillow = function(c){ return (!!bd.cell[c] && (bd.cell[c].qans>=11 && bd.cell[c].qans<=15));};
+
 		bd.sQaC = function(id, num){
-			var old = this.cell[id].qans;
-			um.addOpe(k.CELL, k.QANS, id, old, num);
+			um.addOpe(k.CELL, k.QANS, id, this.cell[id].qans, num);
 			this.cell[id].qans = num;
 
-			if(um.isenableInfo() && (num===1 ^ area.bcell.id[id]!==-1)){
-				area.setCell(id,(num===1?1:0));
-			}
+			area.setCell('block',id,(num===1));
 		};
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\Ž¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.errbcolor1 = pc.errbcolor1_DARK;
@@ -221,9 +203,9 @@ Puzzles.shugaku.prototype = {
 		pc.circleratio = [0.44, 0.44];
 
 		pc.paint = function(x1,y1,x2,y2){
-			x1--; y1--; x2++; y2++;	// UndoŽž‚ÉÕ‚ªŽc‚Á‚Ä‚µ‚Ü‚¤ˆ×
+			x1--; y1--; x2++; y2++;	// Undoæ™‚ã«è·¡ãŒæ®‹ã£ã¦ã—ã¾ã†ç‚º
 
-			this.drawRDotCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2,false);
 			this.drawDashedGrid(x1,y1,x2,y2);
 			this.drawBlackCells(x1,y1,x2,y2);
 
@@ -288,8 +270,8 @@ Puzzles.shugaku.prototype = {
 			var header = "b_bd";
 			g.fillStyle = "black";
 
-			for(var by=Math.min(bd.minby+1,y1-2),maxy=Math.max(bd.maxby-1,y2+2);by<=maxy;by++){
-				for(var bx=Math.min(bd.minbx+1,x1-2),maxx=Math.max(bd.maxbx-1,x2+2);bx<=maxx;bx++){
+			for(var by=Math.max(bd.minby+1,y1-2),maxy=Math.min(bd.maxby-1,y2+2);by<=maxy;by++){
+				for(var bx=Math.max(bd.minbx+1,x1-2),maxx=Math.min(bd.maxbx-1,x2+2);bx<=maxx;bx++){
 					if(!((bx+by)&1)){ continue;}
 					var a = bd.QaC( bd.cnum(bx-(by&1), by-(bx&1)) );
 					var b = bd.QaC( bd.cnum(bx+(by&1), by+(bx&1)) );
@@ -311,18 +293,17 @@ Puzzles.shugaku.prototype = {
 		};
 
 		pc.drawTargetFuton = function(x1,y1,x2,y2){
-
-			var cc=mv.mouseCell;
-			var inputting = ((mv.firstPos.x!==-1 || mv.firstPos.y!==-1) && cc!==-1);
+			var cc = mv.mouseCell;
+			var inputting = (cc!==null && mv.firstPoint.valid());
 
 			if(inputting){
 				this.vinc('cell_back', 'crispEdges');
 
-				// “ü—Í’†‚Ó‚Æ‚ñ‚Ì”wŒiƒJƒ‰[•`‰æ
+				// å…¥åŠ›ä¸­ãµã¨ã‚“ã®èƒŒæ™¯ã‚«ãƒ©ãƒ¼æç”»
 				var header = "c_full_";
 				g.fillStyle = this.targetbgcolor;
 
-				if(cc!=-1){
+				if(cc!==null){
 					if(this.vnop(header+cc,this.FILL)){
 						g.fillRect(bd.cell[cc].px+1, bd.cell[cc].py+1, this.cw-1, this.ch-1);
 					}
@@ -330,26 +311,26 @@ Puzzles.shugaku.prototype = {
 				else{ this.vhide(header+cc);}
 
 				var adj=mv.getTargetADJ();
-				if(adj!=-1){
+				if(adj!==null){
 					if(this.vnop(header+adj,this.FILL)){
 						g.fillRect(bd.cell[adj].px+1, bd.cell[adj].py+1, this.cw-1, this.ch-1);
 					}
 				}
 				else{ this.vhide(header+adj);}
 
-				// “ü—Í’†‚Ó‚Æ‚ñ‚Ì‚Ü‚­‚ç•`‰æ
+				// å…¥åŠ›ä¸­ãµã¨ã‚“ã®ã¾ãã‚‰æç”»
 				this.drawPillow1(cc,true,true);
 
-				// “ü—Í’†‚Ó‚Æ‚ñ‚Ì‰º‚É‚È‚é‚Ü‚­‚ç‚ðÁ‚·
-				if(!g.use.canvas && adj!==-1){ this.drawPillow1(adj,false,true);}
+				// å…¥åŠ›ä¸­ãµã¨ã‚“ã®ä¸‹ã«ãªã‚‹ã¾ãã‚‰ã‚’æ¶ˆã™
+				if(!g.use.canvas && adj!==null){ this.drawPillow1(adj,false,true);}
 
-				// “ü—Í’†‚Ó‚Æ‚ñ‚ÌŽü‚è‚Ì‹«ŠEü•`‰æ
+				// å…¥åŠ›ä¸­ãµã¨ã‚“ã®å‘¨ã‚Šã®å¢ƒç•Œç·šæç”»
 				this.vinc('border_futon', 'crispEdges');
 
 				this.vdel(["tbd1_","tbd2_","tbd3_","tbd4_"]);
 				var lw = this.lw, lm = this.lm;
-				var bx1 = (adj===-1?bd.cell[cc].bx:Math.min(bd.cell[cc].bx,bd.cell[adj].bx));
-				var by1 = (adj===-1?bd.cell[cc].by:Math.min(bd.cell[cc].by,bd.cell[adj].by));
+				var bx1 = (adj===null?bd.cell[cc].bx:Math.min(bd.cell[cc].bx,bd.cell[adj].bx));
+				var by1 = (adj===null?bd.cell[cc].by:Math.min(bd.cell[cc].by,bd.cell[adj].by));
 				var px = k.p0.x+(bx1-1)*this.bw, py = k.p0.y+(by1-1)*this.bh;
 				var wid = (mv.inputData===4||mv.inputData===5?2:1)*this.cw;
 				var hgt = (mv.inputData===2||mv.inputData===3?2:1)*this.ch;
@@ -360,15 +341,15 @@ Puzzles.shugaku.prototype = {
 				if(this.vnop("tbd3_",this.NONE)){ g.fillRect(px+wid-lm, py-lm    , lw, hgt+lw);}
 				if(this.vnop("tbd4_",this.NONE)){ g.fillRect(px-lm    , py+hgt-lm, wid+lw, lw);}
 
-				// “ü—Í’†‚Ó‚Æ‚ñ‚ÌŠÔ‚Ì‘¾ü‚ðÁ‚·
-				if(!g.use.canvas && cc!==-1 && adj!==-1){
+				// å…¥åŠ›ä¸­ãµã¨ã‚“ã®é–“ã®å¤ªç·šã‚’æ¶ˆã™
+				if(!g.use.canvas && cc!==null && adj!==null){
 					var bx = (bd.cell[cc].bx+bd.cell[adj].bx)/2;
 					var by = (bd.cell[cc].by+bd.cell[adj].by)/2;
 					this.vhide([["b_bd",bx,by].join("_")]);
 				}
 			}
 			else{
-				// “ü—Í’†‚Å‚È‚¢Žž‚ÍŽü‚è‚Ì‹«ŠEü‚ðÁ‚·
+				// å…¥åŠ›ä¸­ã§ãªã„æ™‚ã¯å‘¨ã‚Šã®å¢ƒç•Œç·šã‚’æ¶ˆã™
 				this.vinc('border_futon', 'crispEdges');
 				this.vdel(["tbd1_","tbd2_","tbd3_","tbd4_"]);
 			}
@@ -376,7 +357,7 @@ Puzzles.shugaku.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeShugaku();
@@ -389,25 +370,26 @@ Puzzles.shugaku.prototype = {
 			var c=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
-				if     (ca>='0' && ca<='4'){ bd.sQnC(c, parseInt(ca,36)); c++;}
-				else if(ca=='5')           { bd.sQnC(c, -2);              c++;}
-				else{ c += (parseInt(ca,36)-5);}
+				if     (ca>='0' && ca<='4'){ bd.cell[c].qnum = parseInt(ca,36);}
+				else if(ca==='5')          { bd.cell[c].qnum = -2;}
+				else{ c+=(parseInt(ca,36)-6);}
+
+				c++;
 				if(c>=bd.cellmax){ break;}
 			}
 			this.outbstr = bstr.substr(i);
 		};
 		enc.encodeShugaku = function(){
 			var cm="", count=0;
-			for(var i=0;i<bd.cellmax;i++){
-				var pstr = "";
-				var val = bd.QnC(i);
+			for(var c=0;c<bd.cellmax;c++){
+				var pstr = "", val = bd.cell[c].qnum;
 
-				if     (val==-2){ pstr = "5";}
-				else if(val!=-1){ pstr = val.toString(36);}
+				if     (val===-2){ pstr = "5";}
+				else if(val!==-1){ pstr = val.toString(36);}
 				else{ count++;}
 
-				if(count==0){ cm += pstr;}
-				else if(pstr || count==30){ cm+=((5+count).toString(36)+pstr); count=0;}
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===30){ cm+=((5+count).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm+=(5+count).toString(36);}
 			this.outbstr += cm;
@@ -415,61 +397,61 @@ Puzzles.shugaku.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCell( function(c,ca){
-				if(ca == "5")     { bd.sQnC(c, -2);}
-				else if(ca == "#"){ bd.sQaC(c, 1);}
-				else if(ca == "-"){ bd.sQsC(c, 1);}
-				else if(ca>="a" && ca<="j"){ bd.sQaC(c, parseInt(ca,20)+1);}
-				else if(ca != "."){ bd.sQnC(c, parseInt(ca));}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="5"){ obj.qnum = -2;}
+				else if(ca==="#"){ obj.qans = 1;}
+				else if(ca==="-"){ obj.qsub = 1;}
+				else if(ca>="a" && ca<="j"){ obj.qans = parseInt(ca,20)+1;}
+				else if(ca!=="."){ obj.qnum = parseInt(ca);}
 			});
 		};
 		fio.encodeData = function(){
-			this.encodeCell( function(c){
-				if     (bd.QnC(c)>=0) { return (bd.QnC(c).toString() + " ");}
-				else if(bd.QnC(c)==-2){ return "5 ";}
-				else if(bd.QaC(c)==1) { return "# ";}
-				else if(bd.QaC(c)>=0) { return ((bd.QaC(c)-1).toString(20) + " ");}
-				else if(bd.QsC(c)==1) { return "- ";}
-				else                  { return ". ";}
+			this.encodeCell( function(obj){
+				if     (obj.qnum>=0) { return (obj.qnum.toString() + " ");}
+				else if(obj.qnum===-2){return "5 ";}
+				else if(obj.qans===1){ return "# ";}
+				else if(obj.qans>=0) { return ((obj.qans-1).toString(20) + " ");}
+				else if(obj.qsub===1){ return "- ";}
+				else                 { return ". ";}
 			});
 		};
 	},
 
 	//---------------------------------------------------------
-	// ³‰ð”»’èˆ—ŽÀs•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			if( !this.checkKitamakura() ){
-				this.setAlert('–k–‚É‚È‚Á‚Ä‚¢‚é•z’c‚ª‚ ‚è‚Ü‚·B', 'There is a \'Kita-makura\' futon.'); return false;
+				this.setAlert('åŒ—æž•ã«ãªã£ã¦ã„ã‚‹å¸ƒå›£ãŒã‚ã‚Šã¾ã™ã€‚', 'There is a \'Kita-makura\' futon.'); return false;
 			}
 
 			if( !this.check2x2Block( bd.isBlack ) ){
-				this.setAlert('2x2‚Ì•ƒ}ƒX‚Ì‚©‚½‚Ü‚è‚ª‚ ‚è‚Ü‚·B', 'There is a 2x2 block of black cells.'); return false;
+				this.setAlert('2x2ã®é»’ãƒžã‚¹ã®ã‹ãŸã¾ã‚ŠãŒã‚ã‚Šã¾ã™ã€‚', 'There is a 2x2 block of black cells.'); return false;
 			}
 
-			if( !this.checkAllCell(ee.binder(this, function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)<this.checkdir4Cell(c,function(a){ return (bd.QaC(a)>=11&&bd.QaC(a)<=15);}));})) ){
-				this.setAlert('’Œ‚Ì‚Ü‚í‚è‚É‚ ‚é–‚Ì”‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B', 'The number of pillows around the number is wrong.'); return false;
+			if( !this.checkDir4Cell(bd.isPillow,2) ){
+				this.setAlert('æŸ±ã®ã¾ã‚ã‚Šã«ã‚ã‚‹æž•ã®æ•°ãŒé–“é•ã£ã¦ã„ã¾ã™ã€‚', 'The number of pillows around the number is wrong.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QaC(c)==11||bd.QaC(c)==16);}) ){
-				this.setAlert('•z’c‚ª2ƒ}ƒX‚É‚È‚Á‚Ä‚¢‚Ü‚¹‚ñB', 'There is a half-size futon.'); return false;
+			if( !this.checkAllCell(function(c){ return (bd.QaC(c)===11||bd.QaC(c)===16);}) ){
+				this.setAlert('å¸ƒå›£ãŒ2ãƒžã‚¹ã«ãªã£ã¦ã„ã¾ã›ã‚“ã€‚', 'There is a half-size futon.'); return false;
 			}
 
 			if( !this.checkFutonAisle() ){
-				this.setAlert('’Ê˜H‚ÉÚ‚µ‚Ä‚¢‚È‚¢•z’c‚ª‚ ‚è‚Ü‚·B', 'There is a futon separated to aisle.'); return false;
+				this.setAlert('é€šè·¯ã«æŽ¥ã—ã¦ã„ãªã„å¸ƒå›£ãŒã‚ã‚Šã¾ã™ã€‚', 'There is a futon separated to aisle.'); return false;
 			}
 
 			if( !this.checkOneArea( area.getBCellInfo() ) ){
-				this.setAlert('•ƒ}ƒX‚ª•ª’f‚³‚ê‚Ä‚¢‚Ü‚·B', 'Aisle is divided.'); return false;
+				this.setAlert('é»’ãƒžã‚¹ãŒåˆ†æ–­ã•ã‚Œã¦ã„ã¾ã™ã€‚', 'Aisle is divided.'); return false;
 			}
 
-			if( !this.checkAllCell(ee.binder(this, function(c){ return (bd.QnC(c)>=0 && bd.QnC(c)>this.checkdir4Cell(c,function(a){ return (bd.QaC(a)>=11&&bd.QaC(a)<=15);}));})) ){
-				this.setAlert('’Œ‚Ì‚Ü‚í‚è‚É‚ ‚é–‚Ì”‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B', 'The number of pillows around the number is wrong.'); return false;
+			if( !this.checkDir4Cell(bd.isPillow,1) ){
+				this.setAlert('æŸ±ã®ã¾ã‚ã‚Šã«ã‚ã‚‹æž•ã®æ•°ãŒé–“é•ã£ã¦ã„ã¾ã™ã€‚', 'The number of pillows around the number is wrong.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QnC(c)==-1 && bd.QaC(c)==-1);}) ){
-				this.setAlert('•z’c‚Å‚à•ƒ}ƒX‚Å‚à‚È‚¢ƒ}ƒX‚ª‚ ‚è‚Ü‚·B', 'There is an empty cell.'); return false;
+			if( !this.checkAllCell(function(c){ return (bd.noNum(c) && bd.QaC(c)===0);}) ){
+				this.setAlert('å¸ƒå›£ã§ã‚‚é»’ãƒžã‚¹ã§ã‚‚ãªã„ãƒžã‚¹ãŒã‚ã‚Šã¾ã™ã€‚', 'There is an empty cell.'); return false;
 			}
 
 			return true;
@@ -478,7 +460,7 @@ Puzzles.shugaku.prototype = {
 		ans.checkKitamakura = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QaC(c)==13){
+				if(bd.QaC(c)===13){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c,bd.dn(c)],1);
 					result = false;
@@ -490,21 +472,22 @@ Puzzles.shugaku.prototype = {
 		ans.checkFutonAisle = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)==-1 && bd.QaC(c)>=12 && bd.QaC(c)<=15){
-					var adj=-1;
-					switch(bd.QaC(c)){
-						case 12: adj = bd.up(c); break;
-						case 13: adj = bd.dn(c); break;
-						case 14: adj = bd.lt(c); break;
-						case 15: adj = bd.rt(c); break;
-					}
-					if( this.checkdir4Cell(c  ,function(a){ return (bd.QaC(a)==1)})==0 &&
-						this.checkdir4Cell(adj,function(a){ return (bd.QaC(a)==1)})==0 )
-					{
-						if(this.inAutoCheck){ return false;}
-						bd.sErC([c,adj],1);
-						result = false;
-					}
+				if(bd.isNum(c)){ continue;}
+
+				var adj=null;
+				switch(bd.QaC(c)){
+					case 12: adj = bd.up(c); break;
+					case 13: adj = bd.dn(c); break;
+					case 14: adj = bd.lt(c); break;
+					case 15: adj = bd.rt(c); break;
+					default: continue;
+				}
+				if( this.countDir4Cell(c  ,bd.isBlack)===0 &&
+					this.countDir4Cell(adj,bd.isBlack)===0 )
+				{
+					if(this.inAutoCheck){ return false;}
+					bd.sErC([c,adj],1);
+					result = false;
 				}
 			}
 			return result;

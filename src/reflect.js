@@ -1,65 +1,61 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ƒŠƒtƒŒƒNƒgƒŠƒ“ƒN”Å reflect.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ãƒªãƒ•ãƒ¬ã‚¯ãƒˆãƒªãƒ³ã‚¯ç‰ˆ reflect.js v3.3.1
 //
 Puzzles.reflect = function(){ };
 Puzzles.reflect.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 10;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 10;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 1;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 10;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 10;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 1;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 1;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 1;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = true;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = true;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = false;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = true;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = true;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = false;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = false;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = false;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = false;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = false;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = false;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = false;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = false;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = false;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = false;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = false;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
 		if(k.EDITOR){
-			base.setExpression("@–â‘è‚Ì‹L†‚ÍQWEAS‚ÌŠeƒL[‚Å“ü—ÍATƒL[‚â-ƒL[‚ÅÁ‹‚Å‚«‚Ü‚·B",
+			base.setExpression("ã€€å•é¡Œã®è¨˜å·ã¯QWEASã®å„ã‚­ãƒ¼ã§å…¥åŠ›ã€Tã‚­ãƒ¼ã‚„-ã‚­ãƒ¼ã§æ¶ˆå»ã§ãã¾ã™ã€‚",
 							   " Press each QWEAS key to input question. Press 'T' or '-' key to erase.");
 		}
 		else{
-			base.setExpression("@¶ƒhƒ‰ƒbƒO‚Åü‚ªA‰EƒNƒŠƒbƒN‚Å~‚ª“ü—Í‚Å‚«‚Ü‚·B",
+			base.setExpression("ã€€å·¦ãƒ‰ãƒ©ãƒƒã‚°ã§ç·šãŒã€å³ã‚¯ãƒªãƒƒã‚¯ã§Ã—ãŒå…¥åŠ›ã§ãã¾ã™ã€‚",
 							   " Left Button Drag to input black cells, Right Click to input a cross.");
 		}
-		base.setTitle("ƒŠƒtƒŒƒNƒgƒŠƒ“ƒN","Reflect Link");
+		base.setTitle("ãƒªãƒ•ãƒ¬ã‚¯ãƒˆãƒªãƒ³ã‚¯","Reflect Link");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){
-		if(k.EDITOR){ kp.defaultdisp = true;}
 		menu.addRedLineToFlags();
 	},
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
-			if(k.editmode){
-				if(!kp.enabled()){ this.inputQues([0,2,3,4,5,101]);}
-				else{ kp.display();}
-			}
+			if(k.editmode){ this.inputQues([0,2,3,4,5,11]);}
 			else if(k.playmode){
 				if     (this.btn.Left)  this.inputLine();
 				else if(this.btn.Right) this.inputpeke();
@@ -75,7 +71,7 @@ Puzzles.reflect.prototype = {
 
 		bd.enableLineNG = true;
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
@@ -91,7 +87,7 @@ Puzzles.reflect.prototype = {
 			else if(ca=='w'){ bd.sQuC(cc,3); bd.sQnC(cc,-1);}
 			else if(ca=='e'){ bd.sQuC(cc,4); bd.sQnC(cc,-1);}
 			else if(ca=='r'){ bd.sQuC(cc,5); bd.sQnC(cc,-1);}
-			else if(ca=='t'){ bd.sQuC(cc,101); bd.sQnC(cc,-1);}
+			else if(ca=='t'){ bd.sQuC(cc,11); bd.sQnC(cc,-1);}
 			else if(ca=='y'){ bd.sQuC(cc,0); bd.sQnC(cc,-1);}
 			else{ return false;}
 
@@ -107,7 +103,7 @@ Puzzles.reflect.prototype = {
 				this.inputcol('image','knumw','w',[1,0]);
 				this.inputcol('image','knume','e',[2,0]);
 				this.inputcol('image','knumr','r',[3,0]);
-				this.inputcol('num','knumt','t','„´');
+				this.inputcol('num','knumt','t','â•‹');
 				this.inputcol('num','knumy','y',' ');
 				this.insertrow();
 				this.inputcol('num','knum1','1','1');
@@ -134,7 +130,7 @@ Puzzles.reflect.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 
@@ -149,7 +145,7 @@ Puzzles.reflect.prototype = {
 			this.drawTriangleBorder(x1,y1,x2,y2);
 			this.drawNumbers(x1,y1,x2,y2);
 
-			this.draw101(x1,y1,x2,y2);
+			this.draw11(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
@@ -180,20 +176,20 @@ Puzzles.reflect.prototype = {
 				else{ this.vhide(header+id);}
 			}
 		};
-		pc.draw101 = function(x1,y1,x2,y2){
+		pc.draw11 = function(x1,y1,x2,y2){
 			this.vinc('cell_ques', 'crispEdges');
 
 			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
-			for(var i=0;i<clist.length;i++){ this.draw101_1(clist[i]);}
+			for(var i=0;i<clist.length;i++){ this.draw11_1(clist[i]);}
 		};
-		pc.draw101_1 = function(id){
+		pc.draw11_1 = function(id){
 			var vids = ["c_lp1_"+id, "c_lp2_"+id];
 
-			if(bd.cell[id].ques===101){
+			if(bd.cell[id].ques===11){
 				var lw = this.lw+2, lm=(lw-1)/2, ll=this.cw*0.76;
 				g.fillStyle = this.cellcolor;
 
-				// Grid‚Ì^‚ñ’†cpx,cpy+0.5
+				// Gridã®çœŸã‚“ä¸­ï¼cpx,cpy+0.5
 				if(this.vnop(vids[0],this.NONE)){
 					g.fillRect(bd.cell[id].cpx+0.5-lm, bd.cell[id].cpy+0.5-ll/2,  lw, ll);
 				}
@@ -214,13 +210,13 @@ Puzzles.reflect.prototype = {
 		line.repaintParts = function(idlist){
 			var clist = this.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
-				pc.draw101_1(clist[i]);
+				pc.draw11_1(clist[i]);
 			}
 		};
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeReflectlink();
@@ -232,42 +228,43 @@ Puzzles.reflect.prototype = {
 		enc.decodeReflectlink = function(){
 			var c=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
-				var ca = bstr.charAt(i);
+				var ca = bstr.charAt(i), obj=bd.cell[c];
 
-				if     (ca == '5'){ bd.sQuC(c, 101); c++;}
-				else if(ca >= '1' && ca <= '4'){
-					bd.sQuC(c, parseInt(ca)+1);
-					bd.sQnC(c, parseInt(bstr.substr(i+1,1),16));
-					c++; i++;
+				if     (ca==='5'){ obj.ques = 11;}
+				else if(this.include(ca,'1','4')){
+					obj.ques = parseInt(ca)+1;
+					obj.qnum = parseInt(bstr.substr(i+1,1),16);
+					i++;
 				}
-				else if(ca >= '6' && ca <= '9'){
-					bd.sQuC(c, parseInt(ca)-4);
-					bd.sQnC(c, parseInt(bstr.substr(i+1,2),16));
-					c++; i+=2;
+				else if(this.include(ca,'6','9')){
+					obj.ques = parseInt(ca)-4;
+					obj.qnum = parseInt(bstr.substr(i+1,2),16);
+					i+=2;
 				}
-				else if(ca >= 'a' && ca <= 'z'){ c += (parseInt(ca,36)-9);}
-				else{ c++;}
+				else if(this.include(ca,'a','z')){ c+=(parseInt(ca,36)-10);}
+				if(obj.qnum===0){ obj.qnum=-1;}
 
-				if(c > bd.cellmax){ break;}
+				c++;
+				if(c>=bd.cellmax){ break;}
 			}
 
 			this.outbstr = bstr.substr(i);
 		};
 		enc.encodeReflectlink = function(type){
-			var cm="", pstr="";
-			var count=0;
-			for(var i=0;i<bd.cellmax;i++){
-				if     (bd.QuC(i)==101){ pstr = "5";}
-				else if(bd.QuC(i)>=2 && bd.QuC(i)<=5){
-					var val = bd.QnC(i);
-					if     (val<= 0){ pstr = ""+(bd.QuC(i)-1)+"0";}
-					else if(val>= 1 && val< 16){ pstr = ""+(bd.QuC(i)-1)+val.toString(16);}
-					else if(val>=16 && val<256){ pstr = ""+(bd.QuC(i)+4)+val.toString(16);}
+			var cm="", pstr="", count=0;
+			for(var c=0;c<bd.cellmax;c++){
+				var qu=bd.cell[c].ques;
+				if     (qu===11){ pstr = "5";}
+				else if(qu>=2 && qu<=5){
+					var val = bd.cell[c].qnum;
+					if     (val<= 0){ pstr = ""+(qu-1)+"0";}
+					else if(val>= 1 && val< 16){ pstr = ""+(qu-1)+val.toString(16);}
+					else if(val>=16 && val<256){ pstr = ""+(qu+4)+val.toString(16);}
 				}
 				else{ pstr = ""; count++;}
 
-				if(count==0){ cm += pstr;}
-				else if(pstr || count==26){ cm+=((9+count).toString(36)+pstr); count=0;}
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===26){ cm+=((9+count).toString(36)+pstr); count=0;}
 			}
 			if(count>0){ cm+=(9+count).toString(36);}
 
@@ -276,21 +273,20 @@ Puzzles.reflect.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeCell( function(c,ca){
-				if(ca == "+"){ bd.sQuC(c, 101);}
-				else if(ca != "."){
-					bd.sQuC(c, parseInt(ca.charAt(0))+1);
-					if(ca.length>1){ bd.sQnC(c, parseInt(ca.substr(1)));}
+			this.decodeCell( function(obj,ca){
+				if     (ca==="+"){ obj.ques = 11;}
+				else if(ca!=="."){
+					obj.ques = parseInt(ca.charAt(0))+1;
+					if(ca.length>1){ obj.qnum = parseInt(ca.substr(1));}
 				}
 			});
 			this.decodeBorderLine();
 		};
 		fio.encodeData = function(){
-			this.encodeCell( function(c){
-				if     (bd.QuC(c)==101) { return "+ ";}
-				else if(bd.QuC(c)>=2 && bd.QuC(c)<=5) {
-					if(bd.QnC(c)==-1){ return ""+(bd.QuC(c)-1).toString()+" ";}
-					else{ return ""+(bd.QuC(c)-1).toString()+(bd.QnC(c)).toString()+" ";}
+			this.encodeCell( function(obj){
+				if     (obj.ques===11) { return "+ ";}
+				else if(obj.ques>=2 && obj.ques<=5) {
+					return ""+(obj.ques-1)+(obj.qnum!==-1 ? obj.qnum : "")+" ";
 				}
 				else{ return ". ";}
 			});
@@ -299,38 +295,38 @@ Puzzles.reflect.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 			this.performAsLine = true;
 
 			if( !this.checkLcntCell(3) ){
-				this.setAlert('•ªŠò‚µ‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B','There is a branch line.'); return false;
+				this.setAlert('åˆ†å²ã—ã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚','There is a branch line.'); return false;
 			}
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=101);}) ){
-				this.setAlert('\šˆÈŠO‚ÌêŠ‚Åü‚ªŒğ·‚µ‚Ä‚¢‚Ü‚·B','There is a crossing line out of cross mark.'); return false;
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==11);}) ){
+				this.setAlert('åå­—ä»¥å¤–ã®å ´æ‰€ã§ç·šãŒäº¤å·®ã—ã¦ã„ã¾ã™ã€‚','There is a crossing line out of cross mark.'); return false;
 			}
 
 			if( !this.checkTriNumber(1) ){
-				this.setAlert('OŠpŒ`‚Ì”š‚Æ‚»‚±‚©‚ç‰„‚Ñ‚éü‚Ì’·‚³‚ªˆê’v‚µ‚Ä‚¢‚Ü‚¹‚ñB','A number on triangle is not equal to sum of the length of lines from it.'); return false;
+				this.setAlert('ä¸‰è§’å½¢ã®æ•°å­—ã¨ãã“ã‹ã‚‰å»¶ã³ã‚‹ç·šã®é•·ã•ãŒä¸€è‡´ã—ã¦ã„ã¾ã›ã‚“ã€‚','A number on triangle is not equal to sum of the length of lines from it.'); return false;
 			}
 			if( !this.checkTriangle() ){
-				this.setAlert('ü‚ªOŠpŒ`‚ğ’Ê‰ß‚µ‚Ä‚¢‚Ü‚¹‚ñB','A line doesn\'t goes through a triangle.'); return false;
+				this.setAlert('ç·šãŒä¸‰è§’å½¢ã‚’é€šéã—ã¦ã„ã¾ã›ã‚“ã€‚','A line doesn\'t goes through a triangle.'); return false;
 			}
 			if( !this.checkTriNumber(2) ){
-				this.setAlert('OŠpŒ`‚Ì”š‚Æ‚»‚±‚©‚ç‰„‚Ñ‚éü‚Ì’·‚³‚ªˆê’v‚µ‚Ä‚¢‚Ü‚¹‚ñB','A number on triangle is not equal to sum of the length of lines from it.'); return false;
+				this.setAlert('ä¸‰è§’å½¢ã®æ•°å­—ã¨ãã“ã‹ã‚‰å»¶ã³ã‚‹ç·šã®é•·ã•ãŒä¸€è‡´ã—ã¦ã„ã¾ã›ã‚“ã€‚','A number on triangle is not equal to sum of the length of lines from it.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)!=4 && bd.QuC(c)==101);}) ){
-				this.setAlert('\š‚ÌêŠ‚Åü‚ªŒğ·‚µ‚Ä‚¢‚Ü‚¹‚ñB','There isn\'t a crossing line on a cross mark.'); return false;
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)!==4 && bd.QuC(c)===11);}) ){
+				this.setAlert('åå­—ã®å ´æ‰€ã§ç·šãŒäº¤å·®ã—ã¦ã„ã¾ã›ã‚“ã€‚','There isn\'t a crossing line on a cross mark.'); return false;
 			}
 
 			if( !this.checkLcntCell(1) ){
-				this.setAlert('ü‚ª“r’†‚Å“rØ‚ê‚Ä‚¢‚Ü‚·B','There is a dead-end line.'); return false;
+				this.setAlert('ç·šãŒé€”ä¸­ã§é€”åˆ‡ã‚Œã¦ã„ã¾ã™ã€‚','There is a dead-end line.'); return false;
 			}
 
 			if( !this.checkOneLoop() ){
-				this.setAlert('—Ö‚Á‚©‚ªˆê‚Â‚Å‚Í‚ ‚è‚Ü‚¹‚ñB','There are two or more loops.'); return false;
+				this.setAlert('è¼ªã£ã‹ãŒä¸€ã¤ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚','There are two or more loops.'); return false;
 			}
 
 			return true;
@@ -352,22 +348,19 @@ Puzzles.reflect.prototype = {
 		ans.checkTriNumber = function(type){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QuC(c)<2 || bd.QuC(c)>5 || bd.QnC(c)<=0){ continue;}
+				if(bd.QuC(c)<2 || bd.QuC(c)>5 || !bd.isValidNum(c)){ continue;}
 
 				var list = [];
-				var cnt=1;
-				var tx, ty;
-
 				bx = bd.cell[c].bx-1; by = bd.cell[c].by;
-				while(bx>bd.minbx){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); bx-=2;} else{ break;} }
+				while(bx>bd.minbx){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ list.push(id); bx-=2;} else{ break;} }
 				bx = bd.cell[c].bx+1; by = bd.cell[c].by;
-				while(bx<bd.maxbx){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); bx+=2;} else{ break;} }
+				while(bx<bd.maxbx){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ list.push(id); bx+=2;} else{ break;} }
 				bx = bd.cell[c].bx; by = bd.cell[c].by-1;
-				while(by>bd.minby){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); by-=2;} else{ break;} }
+				while(by>bd.minby){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ list.push(id); by-=2;} else{ break;} }
 				bx = bd.cell[c].bx; by = bd.cell[c].by+1;
-				while(by<bd.maxby){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ cnt++; list.push(id); by+=2;} else{ break;} }
+				while(by<bd.maxby){ var id=bd.bnum(bx,by); if(bd.isLine(id)){ list.push(id); by+=2;} else{ break;} }
 
-				if(type==1?bd.QnC(c)<cnt:bd.QnC(c)>cnt){
+				if(type==1?bd.QnC(c)<(list.length+1):bd.QnC(c)>(list.length+1)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],4);
 					if(result){ bd.sErBAll(2);}

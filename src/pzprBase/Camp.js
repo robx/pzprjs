@@ -1,8 +1,8 @@
-// Camp.js rev86
+// Camp.js rev88
  
 (function(){
 
-// ‘½d’è‹`–h~
+// å¤šé‡å®šç¾©é˜²æ­¢
 if(!!window.Camp){ return;}
 
 /* ------------- */
@@ -12,7 +12,6 @@ var _win = this,
 	_doc = document,
 	_ms = Math.sin,
 	_mc = Math.cos,
-	_mr = Math.round,
 	_2PI = 2*Math.PI,
 
 	_IE = !!(window.attachEvent && !window.opera),
@@ -43,7 +42,7 @@ var _hex = (function(){
 })();
 
 /* ------------ */
-/*   ‹¤’ÊŠÖ”   */
+/*   å…±é€šé–¢æ•°   */
 /* ------------ */
 function getRectSize(el){
 	return { width :(el.offsetWidth  || el.clientWidth),
@@ -73,7 +72,7 @@ function _extend(obj, ads){
 }
 
 /* ------------------ */
-/*   TypeListƒNƒ‰ƒX   */
+/*   TypeListã‚¯ãƒ©ã‚¹   */
 /* ------------------ */
 var TypeList = function(){
 	this.canvas = false;
@@ -84,14 +83,14 @@ var TypeList = function(){
 };
 
 /* ------------------------------------------- */
-/*   VectorContext(VML)ƒNƒ‰ƒX—pconst•¶š—ñW   */
+/*   VectorContext(VML)ã‚¯ãƒ©ã‚¹ç”¨constæ–‡å­—åˆ—é›†   */
 /* ------------------------------------------- */
 var V_TAG_SHAPE    = '<v:shape',
 	V_TAG_GROUP    = '<v:group',
 	V_TAG_TEXTPATH = '<v:textpath',
 	V_TAG_POLYLINE = '<v:polyline',
 	V_TAG_PATH_FOR_TEXTPATH = '<v:path textpathok="t" />';
-	V_EL_UNSELECTABLE = '', // ƒfƒtƒHƒ‹ƒg‚Íunselectable‚Å‚È‚¢
+	V_EL_UNSELECTABLE = '', // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯unselectableã§ãªã„
 //	V_EL_UNSELECTABLE = ' unselectable="on"',
 	V_TAGEND      = '>',
 	V_TAGEND_NULL = ' />',
@@ -129,7 +128,7 @@ var V_TAG_SHAPE    = '<v:shape',
 	V_HEIGHT = { top:-0.3, hanging:-0.3, middle:0, alphabetic:0.4, bottom:0.45 };
 
 /* ------------------------------------------- */
-/*   VectorContext(SVG)ƒNƒ‰ƒX—pconst•¶š—ñW   */
+/*   VectorContext(SVG)ã‚¯ãƒ©ã‚¹ç”¨constæ–‡å­—åˆ—é›†   */
 /* ------------------------------------------- */
 var SVGNS = "http://www.w3.org/2000/svg",
 	S_PATH_MOVE   = ' M',
@@ -154,13 +153,13 @@ var SVGNS = "http://www.w3.org/2000/svg",
 	S_HEIGHT = { top:-0.7, hanging:-0.66, middle:-0.35, alphabetic:0, bottom:0.1 },
 
 /* ------------------------------------------ */
-/*   VectorContext(SL)ƒNƒ‰ƒX—pconst•¶š—ñW   */
+/*   VectorContext(SL)ã‚¯ãƒ©ã‚¹ç”¨constæ–‡å­—åˆ—é›†   */
 /* ------------------------------------------ */
 	SL_WIDTH = { left:0, center:0.5, right:1 },
 	SL_HEIGHT = { top:0.2, hanging:0.2, middle:0.5, alphabetic:0.7, bottom:0.8 },
 
 /* --------------------------------- */
-/*   VectorContextƒNƒ‰ƒX—p•Ï”‚È‚Ç   */
+/*   VectorContextã‚¯ãƒ©ã‚¹ç”¨å¤‰æ•°ãªã©   */
 /* --------------------------------- */
 	EL_ID_HEADER = "canvas_o_",
 	ME    = null,
@@ -178,31 +177,31 @@ function initME(){
 }
 
 /* ----------------------- */
-/*   VectorContextƒNƒ‰ƒX   */
+/*   VectorContextã‚¯ãƒ©ã‚¹   */
 /* ----------------------- */
 var VectorContext = function(type, idname){
-	// canvas‚É‘¶İ‚·‚éƒvƒƒpƒeƒB•ƒfƒtƒHƒ‹ƒg’l
+	// canvasã«å­˜åœ¨ã™ã‚‹ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ï¼†ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
 	this.fillStyle    = 'black';
 	this.strokeStyle  = 'black';
 	this.lineWidth    = 1;
 	this.font         = '14px system';
 	this.textAlign    = 'center';
 	this.textBaseline = 'middle';
-	this.canvas = null;	// eƒGƒŒƒƒ“ƒg‚Æ‚È‚édivƒGƒŒƒƒ“ƒg
+	this.canvas = null;	// è¦ªã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆã¨ãªã‚‹divã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆ
 
-	// changeOrigin—p(Sinverlight—p)
+	// changeOriginç”¨(Sinverlightç”¨)
 	this.OFFSETX = 0;
 	this.OFFSETY = 0;
 
-	// ŠO•”‚©‚ç•ÏX‚³‚ê‚é’Ç‰ÁƒvƒƒpƒeƒB
+	// å¤–éƒ¨ã‹ã‚‰å¤‰æ›´ã•ã‚Œã‚‹è¿½åŠ ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£
 	this.vid      = '';
 	this.elements = [];
 	this.lastElement = null;
 
 	// variables for internal
 	this.type   = type;
-	this.target = null;	// ƒGƒŒƒƒ“ƒg‚Ì’Ç‰Á‘ÎÛ‚Æ‚È‚éƒIƒuƒWƒFƒNƒg
-	this.child  = null;	// this.canvas‚Ì’¼‰º‚É‚ ‚éƒGƒŒƒƒ“ƒg
+	this.target = null;	// ã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆã®è¿½åŠ å¯¾è±¡ã¨ãªã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+	this.child  = null;	// this.canvasã®ç›´ä¸‹ã«ã‚ã‚‹ã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆ
 	this.idname = idname;
 	this.canvasid = EL_ID_HEADER+idname;
 	this.currentpath = [];
@@ -212,7 +211,7 @@ var VectorContext = function(type, idname){
 	this.isedgearray    = {_empty:false};
 	this.isedge         = false;
 
-	// Silverlight—p
+	// Silverlightç”¨
 	this.content = null;
 
 	this.use = new TypeList();
@@ -269,7 +268,7 @@ VectorContext.prototype = {
 			parent.style.border = "solid 1px silver";
 		}
 		parent.getContext = function(type){ return self;};
-		parent.toDataURL = function(type){ return null; /* –¢ƒTƒ|[ƒg */ };
+		parent.toDataURL = function(type){ return null; /* æœªã‚µãƒãƒ¼ãƒˆ */ };
 		this.canvas = parent;
 
 		this.target = this.child;
@@ -315,9 +314,9 @@ VectorContext.prototype = {
 		parent.innerHTML = [
 			'<object type="application/x-silverlight" width="100%" height="100%" id="',this.canvasid,'_object" />',
 			'<param name="windowless" value="true" />',
-			'<param name="background" value="#00000000" />',	// ƒAƒ‹ƒtƒ@’l0 = “§–¾
+			'<param name="background" value="#00000000" />',	// ã‚¢ãƒ«ãƒ•ã‚¡å€¤0 = é€æ˜
 			'<param name="source" value="#',this.canvasid,'_script" />',
-			'<param name="onLoad" value="',funcname,'" />',	// ‘O‚Í100%,100%İ’è‚ª•K—v‚¾‚Á‚½‚İ‚½‚¢
+			'<param name="onLoad" value="',funcname,'" />',	// å‰ã¯100%,100%è¨­å®šãŒå¿…è¦ã ã£ãŸã¿ãŸã„
 			'</object>',
 			'<script type="text/xaml" id="',this.canvasid,'_script">',
 			'<Canvas xmlns="http://schemas.microsoft.com/client/2007" Name="',this.canvasid,'" />',
@@ -399,7 +398,7 @@ VectorContext.prototype = {
 			child.setAttribute('viewBox', [0,0,width,height].join(' '));
 		}
 		else if(this.type==SL){
-			// •`‰æ‚³‚ê‚È‚¢‚±‚Æ‚ª‚ ‚é‚½‚ßAƒTƒCƒY‚ğ2“xİ’è‚·‚é‚¨‚Ü‚¶‚È‚¢
+			// æç”»ã•ã‚Œãªã„ã“ã¨ãŒã‚ã‚‹ãŸã‚ã€ã‚µã‚¤ã‚ºã‚’2åº¦è¨­å®šã™ã‚‹ãŠã¾ã˜ãªã„
 			child.height = (height+1)+'px';
 
 			child.width  = width + 'px';
@@ -450,8 +449,8 @@ VectorContext.prototype = {
 	moveTo : function(x,y){
 		if(this.type===VML){ x=(x*Z-Z2)|0; y=(y*Z-Z2)|0;}
 		else if(this.type===SL) {
-			x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
-			y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+			x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
+			y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
 		}
 		this.currentpath.push(this.PATH_MOVE,x,y);
 		this.lastpath = this.PATH_MOVE;
@@ -460,8 +459,8 @@ VectorContext.prototype = {
 		if(this.lastpath!==this.PATH_LINE){ this.currentpath.push(this.PATH_LINE);}
 		if(this.type===VML){ x=(x*Z-Z2)|0; y=(y*Z-Z2)|0;}
 		else if(this.type===SL) {
-			x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
-			y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+			x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
+			y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
 		}
 		this.currentpath.push(x,y);
 		this.lastpath = this.PATH_LINE;
@@ -469,20 +468,24 @@ VectorContext.prototype = {
 	rect : function(x,y,w,h){
 		if(this.type===VML){ x=(x*Z-Z2)|0; y=(y*Z-Z2)|0, w=(w*Z)|0, h=(h*Z)|0;}
 		else if(this.type===SL) {
-			x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
-			y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
-			w = (this.isedge ? _mr(w) : w);
-			h = (this.isedge ? _mr(h) : h);
+			x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
+			y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
+			w = (this.isedge ? (w+0.5)|0 : w);
+			h = (this.isedge ? (h+0.5)|0 : h);
 		}
 		this.currentpath.push(this.PATH_MOVE,x,y,this.PATH_LINE,(x+w),y,(x+w),(y+h),x,(y+h),this.PATH_CLOSE);
 	},
 	arc : function(cx,cy,r,startRad,endRad,antiClockWise){
 		if(this.type===SL) {
-			cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
-			cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+			cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
+			cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
 		}
-		var sx = cx + r*_mc(startRad), sy = cy + r*_ms(startRad),
+		var sx,sy,ex,ey;
+		if(endRad-startRad>=_2PI){ sx=cx+r, sy=cy, ex=cx+r, ey=cy;}
+		else{
+			sx = cx + r*_mc(startRad), sy = cy + r*_ms(startRad),
 			ex = cx + r*_mc(endRad),   ey = cy + r*_ms(endRad);
+		}
 		if(this.type===VML){
 			cx=(cx*Z-Z2)|0, cy=(cy*Z-Z2)|0, r=(r*Z)|0;
 			sx=(sx*Z-Z2)|0, sy=(sy*Z-Z2)|0, ex=(ex*Z-Z2)|0, ey=(ey*Z-Z2)|0;
@@ -603,8 +606,8 @@ VectorContext.prototype = {
 			var a1=_args[i], a2=_args[i+1];
 			if(this.type===VML){ a1=(a1*Z-Z2)|0, a2=(a2*Z-Z2)|0;}
 			else if(this.type===SL) {
-				a1 = (this.isedge ? _mr(a1+this.OFFSETX) : a1+this.OFFSETX);
-				a2 = (this.isedge ? _mr(a2+this.OFFSETY) : a2+this.OFFSETY);
+				a1 = (this.isedge ? (a1+this.OFFSETX+0.5)|0 : a1+this.OFFSETX);
+				a2 = (this.isedge ? (a2+this.OFFSETY+0.5)|0 : a2+this.OFFSETY);
 			}
 			this.currentpath.push(a1,a2);
 		}
@@ -619,8 +622,8 @@ VectorContext.prototype = {
 
 			if(this.type===VML){ m[i]=(m[i]*Z-Z2)|0, m[i+1]=(m[i+1]*Z-Z2)|0;}
 			else if(this.type===SL) {
-				m[i]   = (this.isedge ? _mr(m[i]  +this.OFFSETX) : m[i]  +this.OFFSETX);
-				m[i+1] = (this.isedge ? _mr(m[i+1]+this.OFFSETY) : m[i+1]+this.OFFSETY);
+				m[i]   = (this.isedge ? (m[i]  +this.OFFSETX+0.5)|0 : m[i]  +this.OFFSETX);
+				m[i+1] = (this.isedge ? (m[i+1]+this.OFFSETY+0.5)|0 : m[i+1]+this.OFFSETY);
 			}
 		}
 		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
@@ -650,10 +653,10 @@ VectorContext.prototype = {
 	strokeLine : function(x1,y1,x2,y2){
 		if     (this.type===VML){ x1=(x1*Z)|0, y1=(y1*Z)|0, x2=(x2*Z)|0, y2=(y2*Z)|0;}
 		else if(this.type===SL) {
-			x1 = (this.isedge ? _mr(x1+this.OFFSETX) : x1+this.OFFSETX);
-			y1 = (this.isedge ? _mr(y1+this.OFFSETY) : y1+this.OFFSETY);
-			x2 = (this.isedge ? _mr(x2+this.OFFSETX) : x2+this.OFFSETX);
-			y2 = (this.isedge ? _mr(y2+this.OFFSETY) : y2+this.OFFSETY);
+			x1 = (this.isedge ? (x1+this.OFFSETX+0.5)|0 : x1+this.OFFSETX);
+			y1 = (this.isedge ? (y1+this.OFFSETY+0.5)|0 : y1+this.OFFSETY);
+			x2 = (this.isedge ? (x2+this.OFFSETX+0.5)|0 : x2+this.OFFSETX);
+			y2 = (this.isedge ? (y2+this.OFFSETY+0.5)|0 : y2+this.OFFSETY);
 		}
 		var stack = this.currentpath;
 		this.currentpath = [this.PATH_MOVE,x1,y1,this.PATH_LINE,x2,y2];
@@ -663,9 +666,9 @@ VectorContext.prototype = {
 	strokeCross : function(cx,cy,l){
 		if     (this.type===VML){ cx=(cx*Z-Z2)|0, cy=(cy*Z-Z2)|0, l=(l*Z)|0;}
 		else if(this.type===SL) {
-			cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
-			cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
-			l  = (this.isedge ? _mr(l) : l);
+			cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
+			cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
+			l  = (this.isedge ? (l+0.5)|0 : l);
 		}
 		var stack = this.currentpath;
 		this.currentpath = [this.PATH_MOVE,(cx-l),(cy-l),this.PATH_LINE,(cx+l),(cy+l),
@@ -739,26 +742,26 @@ VectorContext.prototype = {
 };
 
 /* -------------------- */
-/*   Canvas’Ç‰ÁŠÖ”ŒQ   */
+/*   Canvasè¿½åŠ é–¢æ•°ç¾¤   */
 /* -------------------- */
 CanvasRenderingContext2D_wrapper = function(type, idname){
-	// canvas‚É‘¶İ‚·‚éƒvƒƒpƒeƒB•ƒfƒtƒHƒ‹ƒg’l
+	// canvasã«å­˜åœ¨ã™ã‚‹ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ï¼†ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
 	this.fillStyle    = 'black';
 	this.strokeStyle  = 'black';
 	this.lineWidth    = 1;
 	this.font         = '14px system';
 	this.textAlign    = 'center';
 	this.textBaseline = 'middle';
-	this.canvas = null;		// eƒGƒŒƒƒ“ƒg‚Æ‚È‚édivƒGƒŒƒƒ“ƒg
+	this.canvas = null;		// è¦ªã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆã¨ãªã‚‹divã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆ
 
-	// changeOrigin—p
+	// changeOriginç”¨
 	this.OFFSETX = 0;
 	this.OFFSETY = 0;
 
 	// variables for internal
 	this.canvasid = '';
-	this.child  = null;		// this.canvas‚Ì’¼‰º‚É‚ ‚éƒGƒŒƒƒ“ƒg
-	this.context  = null;	// –{—ˆ‚ÌCanvasRenderingContext2DƒIƒuƒWƒFƒNƒg
+	this.child  = null;		// this.canvasã®ç›´ä¸‹ã«ã‚ã‚‹ã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆ
+	this.context  = null;	// æœ¬æ¥ã®CanvasRenderingContext2Dã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 
 	this.currentLayerId = '_empty';
 	this.isedgearray    = {_empty:false};
@@ -869,7 +872,7 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		}
 	},
 
-	/* “à•”—pŠÖ” */
+	/* å†…éƒ¨ç”¨é–¢æ•° */
 	setProperties : function(){
 		this.context.fillStyle    = this.fillStyle;
 		this.context.strokeStyle  = this.strokeStyle;
@@ -883,25 +886,25 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	beginPath : function(){ this.context.beginPath();},
 	closePath : function(){ this.context.closePath();},
 	moveTo : function(x,y){
-		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
-		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
+		y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
 		this.context.moveTo(x,y);
 	},
 	lineTo : function(x,y){
-		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
-		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
+		x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
+		y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
 		this.context.lineTo(x,y);
 	},
 	rect : function(x,y,w,h){
-		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
-		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
-		w = (this.isedge ? _mr(w) : w);
-		h = (this.isedge ? _mr(h) : h);
+		x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
+		y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
+		w = (this.isedge ? (w+0.5)|0 : w);
+		h = (this.isedge ? (h+0.5)|0 : h);
 		this.context.rect(x,y,w,h);
 	},
 	arc  : function(cx,cy,r,startRad,endRad,antiClockWise){
-		cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
-		cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+		cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
+		cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
 		this.context.arc(px,py,r,startRad,endRad,antiClockWise);
 	},
 
@@ -909,19 +912,19 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	fill       : function(){ this.setProperties(); this.context.fill();},
 	stroke     : function(){ this.setProperties(); this.context.stroke();},
 	fillRect   : function(x,y,w,h){
-		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
-		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
-		w = (this.isedge ? _mr(w) : w);
-		h = (this.isedge ? _mr(h) : h);
+		x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
+		y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
+		w = (this.isedge ? (w+0.5)|0 : w);
+		h = (this.isedge ? (h+0.5)|0 : h);
 
 		this.setProperties();
 		this.context.fillRect(x,y,w,h);
 	},
 	strokeRect : function(x,y,w,h){
-		x = (this.isedge ? _mr(x+this.OFFSETX) : x+this.OFFSETX);
-		y = (this.isedge ? _mr(y+this.OFFSETY) : y+this.OFFSETY);
-		w = (this.isedge ? _mr(w) : w);
-		h = (this.isedge ? _mr(h) : h);
+		x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
+		y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
+		w = (this.isedge ? (w+0.5)|0 : w);
+		h = (this.isedge ? (h+0.5)|0 : h);
 
 		this.setProperties();
 		this.context.strokeRect(x,y,w,h);
@@ -938,10 +941,10 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		this.context.stroke();
 	},
 	shapeRect : function(x,y,w,h){
-		x = (this.isedge ? _mr(x) : x);
-		y = (this.isedge ? _mr(y) : y);
-		w = (this.isedge ? _mr(w) : w);
-		h = (this.isedge ? _mr(h) : h);
+		x = (this.isedge ? (x+0.5)|0 : x);
+		y = (this.isedge ? (y+0.5)|0 : y);
+		w = (this.isedge ? (w+0.5)|0 : w);
+		h = (this.isedge ? (h+0.5)|0 : h);
 
 		this.setProperties();
 		this.context.fillRect(x,y,w,h);
@@ -950,9 +953,10 @@ CanvasRenderingContext2D_wrapper.prototype = {
 
 	setLinePath : function(){
 		var _args = arguments, _len = _args.length;
+		this.context.beginPath();
 		for(var i=0,len=_len-((_len|1)?1:2);i<len;i+=2){
-			var a1 = (this.isedge ? _mr(_args[i]  +this.OFFSETX) : _args[i]  +this.OFFSETX);
-				a2 = (this.isedge ? _mr(_args[i+1]+this.OFFSETY) : _args[i+1]+this.OFFSETY);
+			var a1 = (this.isedge ? (_args[i]  +this.OFFSETX+0.5)|0 : _args[i]  +this.OFFSETX);
+				a2 = (this.isedge ? (_args[i+1]+this.OFFSETY+0.5)|0 : _args[i+1]+this.OFFSETY);
 			if(i==0){ this.context.moveTo(a1,a2);}
 			else    { this.context.lineTo(a1,a2);}
 		}
@@ -960,13 +964,14 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	},
 	setOffsetLinePath : function(){
 		var _args = arguments, _len = _args.length, m=[_args[0]+this.OFFSETX,_args[1]+this.OFFSETY];
+		this.context.beginPath();
 		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
 			m[i]   = _args[i]   + m[0];
 			m[i+1] = _args[i+1] + m[1];
 		}
 		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
-			var a1 = (this.isedge ? _mr(m[i])   : m[i]);
-				a2 = (this.isedge ? _mr(m[i+1]) : m[i+1]);
+			var a1 = (this.isedge ? (m[i]  +0.5)|0 : m[i]);
+				a2 = (this.isedge ? (m[i+1]+0.5)|0 : m[i+1]);
 			if(i===2){ this.context.moveTo(a1,a2);}
 			else     { this.context.lineTo(a1,a2);}
 		}
@@ -975,10 +980,10 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	setDashSize : function(size){ },
 
 	strokeLine : function(x1,y1,x2,y2){
-		x1 = (this.isedge ? _mr(x1+this.OFFSETX) : x1+this.OFFSETX);
-		y1 = (this.isedge ? _mr(y1+this.OFFSETY) : y1+this.OFFSETY);
-		x2 = (this.isedge ? _mr(x2+this.OFFSETX) : x2+this.OFFSETX);
-		y2 = (this.isedge ? _mr(y2+this.OFFSETY) : y2+this.OFFSETY);
+		x1 = (this.isedge ? (x1+this.OFFSETX+0.5)|0 : x1+this.OFFSETX);
+		y1 = (this.isedge ? (y1+this.OFFSETY+0.5)|0 : y1+this.OFFSETY);
+		x2 = (this.isedge ? (x2+this.OFFSETX+0.5)|0 : x2+this.OFFSETX);
+		y2 = (this.isedge ? (y2+this.OFFSETY+0.5)|0 : y2+this.OFFSETY);
 
 		this.setProperties();
 		this.context.beginPath();
@@ -987,10 +992,10 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		this.context.stroke();
 	},
 	strokeCross : function(cx,cy,l){
-		var x1 = (this.isedge ? _mr(cx-l+this.OFFSETX) : cx-l+this.OFFSETX),
-			y1 = (this.isedge ? _mr(cy-l+this.OFFSETY) : cy-l+this.OFFSETY),
-			x2 = (this.isedge ? _mr(cx+l+this.OFFSETX) : cx+l+this.OFFSETX),
-			y2 = (this.isedge ? _mr(cy+l+this.OFFSETY) : cy+l+this.OFFSETY);
+		var x1 = (this.isedge ? (cx-l+this.OFFSETX+0.5)|0 : cx-l+this.OFFSETX),
+			y1 = (this.isedge ? (cy-l+this.OFFSETY+0.5)|0 : cy-l+this.OFFSETY),
+			x2 = (this.isedge ? (cx+l+this.OFFSETX+0.5)|0 : cx+l+this.OFFSETX),
+			y2 = (this.isedge ? (cy+l+this.OFFSETY+0.5)|0 : cy+l+this.OFFSETY);
 
 		this.setProperties();
 		this.context.beginPath();
@@ -1001,24 +1006,24 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		this.context.stroke();
 	},
 	fillCircle : function(cx,cy,r){
-		cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
-		cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+		cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
+		cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
 		this.setProperties();
 		this.context.beginPath();
 		this.context.arc(cx,cy,r,0,_2PI,false);
 		this.context.fill();
 	},
 	strokeCircle : function(cx,cy,r){
-		cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
-		cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+		cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
+		cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
 		this.setProperties();
 		this.context.beginPath();
 		this.context.arc(cx,cy,r,0,_2PI,false);
 		this.context.stroke();
 	},
 	shapeCircle : function(cx,cy,r){
-		cx = (this.isedge ? _mr(cx+this.OFFSETX) : cx+this.OFFSETX);
-		cy = (this.isedge ? _mr(cy+this.OFFSETY) : cy+this.OFFSETY);
+		cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
+		cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
 		this.setProperties();
 		this.context.beginPath();
 		this.context.arc(cx,cy,r,0,_2PI,false);
@@ -1029,7 +1034,7 @@ CanvasRenderingContext2D_wrapper.prototype = {
 };
 
 /* -------------------- */
-/*   CampƒIƒuƒWƒFƒNƒg   */
+/*   Campã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ   */
 /* -------------------- */
 var Camp = function(idname, type){
 	Camp.initElementById.apply(Camp, [idname, type]);
@@ -1083,17 +1088,17 @@ _extend( Camp, {
 });
 
 /* ----------------------------------------------- */
-/* Camp.enable, Camp.currentƒIƒuƒWƒFƒNƒgƒf[ƒ^İ’è */
+/* Camp.enable, Camp.currentã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ‡ãƒ¼ã‚¿è¨­å®š */
 /* ----------------------------------------------- */
 
-//	/* Camp.enable İ’è */
+//	/* Camp.enable è¨­å®š */
 	Camp.enable.canvas = (!!_doc.createElement('canvas').getContext);
 	Camp.enable.svg    = (!!_doc.createElementNS && !!_doc.createElementNS(SVGNS, 'svg').suspendRedraw);
 	Camp.enable.sl     = (function(){ try{ return (new ActiveXObject("AgControl.AgControl")).IsVersionSupported("1.0");}catch(e){} return false;})();
 	Camp.enable.flash  = false;
 	Camp.enable.vml    = _IE;
 
-//	/* Camp.currentİ’è */
+//	/* Camp.currentè¨­å®š */
 	for(var i=0;i<_types.length;i++){ Camp.current[_types[i]]=false;}
 	if     (Camp.enable.svg)   { Camp.current.svg    = true;}
 	else if(Camp.enable.canvas){ Camp.current.canvas = true;}
@@ -1101,7 +1106,7 @@ _extend( Camp, {
 	else if(Camp.enable.flash) { Camp.current.flash  = true;}
 	else if(Camp.enable.vml)   { Camp.current.vml    = true;}
 
-	/* ‰Šúİ’è for VML */
+	/* åˆæœŸè¨­å®š for VML */
 	if(Camp.enable.vml){
 		/* addNameSpace for VML */
 		_doc.namespaces.add("v", "urn:schemas-microsoft-com:vml");
@@ -1115,14 +1120,14 @@ _extend( Camp, {
 		_doc.write('</style>');
 	}
 
-	/* ‰Šúİ’è for Campƒ^ƒO */
+	/* åˆæœŸè¨­å®š for Campã‚¿ã‚° */
 	var text = [];
 	text.push("camp { display: block; }\n");
 	_doc.write('<style type="text/css" rel="stylesheet">');
 	_doc.write(text.join(''));
 	_doc.write('</style>');
 
-		// IE—pƒnƒbƒN
+		// IEç”¨ãƒãƒƒã‚¯
 	if(_IE){ _doc.createElement('camp');}
 
 	_win.Camp = Camp;

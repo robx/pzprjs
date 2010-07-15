@@ -1,44 +1,44 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ‚²‚«‚°‚ñ‚È‚È‚ß”Å gokigen.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ã”ãã’ã‚“ãªãªã‚ç‰ˆ gokigen.js v3.3.1
 //
 Puzzles.gokigen = function(){ };
 Puzzles.gokigen.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 7;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 7;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 7;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 7;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 2;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 0;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 2;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 0;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = false;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = false;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = false;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = false;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = true;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = false;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = false;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = true;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = false;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = false;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = false;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = false;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = false;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = false;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.bdmargin       = 0.70;	// ˜gŠO‚Ìˆê•Ó‚Ìmargin(ƒZƒ‹”Š·Z)
-		k.bdmargin_image = 0.50;	// ‰æ‘œo—Í‚Ìbdmargin’l
+		k.bdmargin       = 0.70;	// æ å¤–ã®ä¸€è¾ºã®margin(ã‚»ãƒ«æ•°æ›ç®—)
+		k.bdmargin_image = 0.50;	// ç”»åƒå‡ºåŠ›æ™‚ã®bdmarginå€¤
 
-		base.setTitle("‚²‚«‚°‚ñ‚È‚È‚ß","Gokigen-naname");
-		base.setExpression("@ƒ}ƒEƒX‚ÅÎü‚ğ“ü—Í‚Å‚«‚Ü‚·B",
+		base.setTitle("ã”ãã’ã‚“ãªãªã‚","Gokigen-naname");
+		base.setExpression("ã€€ãƒã‚¦ã‚¹ã§æ–œç·šã‚’å…¥åŠ›ã§ãã¾ã™ã€‚",
 						   " Click to input slashes.");
 		base.setFloatbgcolor("rgb(0, 127, 0)");
 		base.proto = 1;
@@ -57,33 +57,30 @@ Puzzles.gokigen.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if(k.playmode){
 				if(!(kc.isZ ^ pp.getVal('dispred'))){ this.inputslash();}
 				else{ this.dispBlue();}
 			}
-			else if(k.editmode){
-				if(!kp.enabled()){ this.inputcross();}
-				else{ kp.display();}
-			}
+			else if(k.editmode){ this.inputcross();}
 		};
 		mv.mouseup = function(){ };
 		mv.mousemove = function(){ };
 		mv.dispBlue = function(){
 			var cc = this.cellid();
-			if(cc==-1 || bd.QaC(cc)==-1){ return;}
+			if(cc===null || bd.QaC(cc)===0){ return;}
 
 			var check = [];
 			for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
 
-			var fc = bd.xnum(bd.cell[cc].bx+(bd.QaC(cc)==1?-1:1),bd.cell[cc].by-1);
+			var fc = bd.xnum(bd.cell[cc].bx+(bd.isBlack(cc)?-1:1),bd.cell[cc].by-1);
 			ans.searchline(check, 0, fc);
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]==1){ bd.sErC([c],2);}
-				if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]==1){ bd.sErC([c],2);}
+				if(bd.QaC(c)===1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]===1){ bd.sErC([c],2);}
+				if(bd.QaC(c)===2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]===1){ bd.sErC([c],2);}
 			}
 
 			ans.errDisp = true;
@@ -91,19 +88,16 @@ Puzzles.gokigen.prototype = {
 		};
 		mv.inputslash = function(){
 			var cc = this.cellid();
-			if(cc==-1){ return;}
+			if(cc===null){ return;}
 
 			var use = pp.getVal('use');
-			if     (use===1){ bd.sQaC(cc, (bd.QaC(cc)!=(this.btn.Left?1:2)?(this.btn.Left?1:2):-1));}
-			else if(use===2){
-				if(bd.QaC(cc)==-1){ bd.sQaC(cc, (this.btn.Left?1:2));}
-				else{ bd.sQaC(cc, (this.btn.Left?{1:2,2:-1}:{1:-1,2:1})[bd.QaC(cc)]);}
-			}
+			if     (use===1){ bd.sQaC(cc, (bd.QaC(cc)!==(this.btn.Left?1:2)?(this.btn.Left?1:2):0));}
+			else if(use===2){ bd.sQaC(cc, (this.btn.Left?[1,2,0]:[2,0,1])[bd.QaC(cc)]);}
 
 			pc.paintCellAround(cc);
 		};
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
@@ -116,7 +110,6 @@ Puzzles.gokigen.prototype = {
 
 		if(k.EDITOR){
 			kp.generate(4, true, false, '');
-			kp.ctl[1].target = k.CROSS;
 			kp.kpinput = function(ca){
 				kc.key_inputcross(ca);
 			};
@@ -127,14 +120,14 @@ Puzzles.gokigen.prototype = {
 		bd.maxnum = 4;
 
 		menu.ex.adjustSpecial = function(key,d){
-			if(key & this.TURNFLIP){ // ”½“]E‰ñ“]‘S‚Ä
-				for(var c=0;c<bd.cellmax;c++){ if(bd.QaC(c)!=-1){ bd.sQaC(c,{1:2,2:1}[bd.QaC(c)]); } }
+			if(key & this.TURNFLIP){ // åè»¢ãƒ»å›è»¢å…¨ã¦
+				for(var c=0;c<bd.cellmax;c++){ bd.sQaC(c,[0,2,1][bd.QaC(c)]);}
 			}
 		};
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 
@@ -151,7 +144,7 @@ Puzzles.gokigen.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		// ƒI[ƒo[ƒ‰ƒCƒh
+		// ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 		pc.setBGCellColor = function(c){
 			if(bd.cell[c].qans===-1 && bd.cell[c].error===1){
 				g.fillStyle = this.errbcolor1;
@@ -170,12 +163,12 @@ Puzzles.gokigen.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
-				if(bd.cell[c].qans!=-1){
-					if     (bd.cell[c].error==1){ g.strokeStyle = this.errcolor1;}
-					else if(bd.cell[c].error==2){ g.strokeStyle = this.errcolor2;}
+				if(bd.cell[c].qans!==-1){
+					if     (bd.cell[c].error===1){ g.strokeStyle = this.errcolor1;}
+					else if(bd.cell[c].error===2){ g.strokeStyle = this.errcolor2;}
 					else                        { g.strokeStyle = this.cellcolor;}
 
-					if(bd.cell[c].qans==1){
+					if(bd.cell[c].qans===1){
 						if(this.vnop(headers[0]+c,this.STROKE)){
 							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, this.cw,this.ch, true);
 							g.stroke();
@@ -183,7 +176,7 @@ Puzzles.gokigen.prototype = {
 					}
 					else{ this.vhide(headers[0]+c);}
 
-					if(bd.cell[c].qans==2){
+					if(bd.cell[c].qans===2){
 						if(this.vnop(headers[1]+c,this.STROKE)){
 							g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, this.cw,0, 0,this.ch, true);
 							g.stroke();
@@ -197,7 +190,7 @@ Puzzles.gokigen.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			var oldflag = ((type==1 && !this.checkpflag("c")) || (type==0 && this.checkpflag("d")));
@@ -221,43 +214,43 @@ Puzzles.gokigen.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			if( !this.checkLoopLine() ){
-				this.setAlert('Îü‚Å—Ö‚Á‚©‚ª‚Å‚«‚Ä‚¢‚Ü‚·B', 'There is a loop consisted in some slashes.'); return false;
+				this.setAlert('æ–œç·šã§è¼ªã£ã‹ãŒã§ãã¦ã„ã¾ã™ã€‚', 'There is a loop consisted in some slashes.'); return false;
 			}
 
 			if( !this.checkQnumCross() ){
-				this.setAlert('”š‚ÉŒq‚ª‚éü‚Ì”‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B', 'A number is not equal to count of lines that is connected to it.'); return false;
+				this.setAlert('æ•°å­—ã«ç¹‹ãŒã‚‹ç·šã®æ•°ãŒé–“é•ã£ã¦ã„ã¾ã™ã€‚', 'A number is not equal to count of lines that is connected to it.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QaC(c)==-1);}) ){
-				this.setAlert('Îü‚ª‚È‚¢ƒ}ƒX‚ª‚ ‚è‚Ü‚·B','There is a empty cell.'); return false;
+			if( !this.checkAllCell(function(c){ return (bd.QaC(c)===0);}) ){
+				this.setAlert('æ–œç·šãŒãªã„ãƒã‚¹ãŒã‚ã‚Šã¾ã™ã€‚','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
 
 		ans.scntCross = function(id){
-			if(id==-1){ return -1;}
+			if(id===null){ return 0;}
 			var bx=bd.cross[id].bx, by=bd.cross[id].by;
-			var cc, cnt=0;
-			cc=bd.cnum(bx-1,by-1); if(cc!=-1 && bd.QaC(cc)==1){ cnt++;}
-			cc=bd.cnum(bx+1,by-1); if(cc!=-1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(bx-1,by+1); if(cc!=-1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(bx+1,by+1); if(cc!=-1 && bd.QaC(cc)==1){ cnt++;}
+			var obj, cnt=0;
+			obj=bd.cell[bd.cnum(bx-1,by-1)]; if(!!obj && obj.qans===1){ cnt++;}
+			obj=bd.cell[bd.cnum(bx+1,by-1)]; if(!!obj && obj.qans===2){ cnt++;}
+			obj=bd.cell[bd.cnum(bx-1,by+1)]; if(!!obj && obj.qans===2){ cnt++;}
+			obj=bd.cell[bd.cnum(bx+1,by+1)]; if(!!obj && obj.qans===1){ cnt++;}
 			return cnt;
 		};
 		ans.scntCross2 = function(id){
-			if(id==-1){ return -1;}
+			if(id===null){ return 0;}
 			var bx=bd.cross[id].bx, by=bd.cross[id].by;
-			var cc, cnt=0;
-			cc=bd.cnum(bx-1,by-1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==1){ cnt++;}
-			cc=bd.cnum(bx+1,by-1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(bx-1,by+1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==2){ cnt++;}
-			cc=bd.cnum(bx+1,by+1); if(cc!=-1 && bd.ErC(cc)==1 && bd.QaC(cc)==1){ cnt++;}
+			var obj, cnt=0;
+			obj=bd.cell[bd.cnum(bx-1,by-1)]; if(!!obj && obj.error===1 && obj.qans===1){ cnt++;}
+			obj=bd.cell[bd.cnum(bx+1,by-1)]; if(!!obj && obj.error===1 && obj.qans===2){ cnt++;}
+			obj=bd.cell[bd.cnum(bx-1,by+1)]; if(!!obj && obj.error===1 && obj.qans===2){ cnt++;}
+			obj=bd.cell[bd.cnum(bx+1,by+1)]; if(!!obj && obj.error===1 && obj.qans===1){ cnt++;}
 			return cnt;
 		};
 
@@ -266,22 +259,22 @@ Puzzles.gokigen.prototype = {
 			for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
 
 			while(1){
-				var fc=-1;
+				var fc=null;
 				for(var i=0;i<bd.crossmax;i++){ if(check[i]==0){ fc=i; break;}}
-				if(fc==-1){ break;}
+				if(fc===null){ break;}
 
 				if(!this.searchline(check, 0, fc)){
 					for(var c=0;c<bd.cellmax;c++){
-						if(bd.QaC(c)==1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]==1){ bd.sErC([c],1);}
-						if(bd.QaC(c)==2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]==1){ bd.sErC([c],1);}
+						if(bd.QaC(c)===1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]==1){ bd.sErC([c],1);}
+						if(bd.QaC(c)===2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]==1){ bd.sErC([c],1);}
 					}
 					while(1){
 						var endflag = true;
 						for(var c=0;c<bd.cellmax;c++){
-							if(bd.ErC(c)!==1){ continue;}
+							if(bd.cell[c].error!==1){ continue;}
 							var cc1, cc2, bx=bd.cell[c].bx, by=bd.cell[c].by;
-							if     (bd.QaC(c)==1){ cc1=bd.xnum(bx-1,by-1); cc2=bd.xnum(bx+1,by+1);}
-							else if(bd.QaC(c)==2){ cc1=bd.xnum(bx-1,by+1); cc2=bd.xnum(bx+1,by-1);}
+							if     (bd.QaC(c)===1){ cc1=bd.xnum(bx-1,by-1); cc2=bd.xnum(bx+1,by+1);}
+							else if(bd.QaC(c)===2){ cc1=bd.xnum(bx-1,by+1); cc2=bd.xnum(bx+1,by-1);}
 							if(this.scntCross2(cc1)==1 || this.scntCross2(cc2)==1){ bd.sErC([c],0); endflag = false; break;}
 						}
 						if(endflag){ break;}
@@ -294,18 +287,17 @@ Puzzles.gokigen.prototype = {
 			return result;
 		};
 		ans.searchline = function(check, dir, c){
-			var flag=true;
-			var nc, tx=bd.cross[c].bx, ty=bd.cross[c].by;
+			var nx, tx=bd.cross[c].bx, ty=bd.cross[c].by, flag=true;
 			check[c]=1;
 
-			nc = bd.xnum(tx-2,ty-2);
-			if(nc!=-1 && dir!=4 && bd.QaC(bd.cnum(tx-1,ty-1))==1 && (check[nc]!=0 || !this.searchline(check,1,nc))){ flag = false;}
-			nc = bd.xnum(tx-2,ty+2);
-			if(nc!=-1 && dir!=3 && bd.QaC(bd.cnum(tx-1,ty+1))==2 && (check[nc]!=0 || !this.searchline(check,2,nc))){ flag = false;}
-			nc = bd.xnum(tx+2,ty-2);
-			if(nc!=-1 && dir!=2 && bd.QaC(bd.cnum(tx+1,ty-1))==2 && (check[nc]!=0 || !this.searchline(check,3,nc))){ flag = false;}
-			nc = bd.xnum(tx+2,ty+2);
-			if(nc!=-1 && dir!=1 && bd.QaC(bd.cnum(tx+1,ty+1))==1 && (check[nc]!=0 || !this.searchline(check,4,nc))){ flag = false;}
+			nx = bd.xnum(tx-2,ty-2);
+			if(nx!==null && dir!==4 && bd.QaC(bd.cnum(tx-1,ty-1))===1 && (check[nx]!==0 || !this.searchline(check,1,nx))){ flag=false;}
+			nx = bd.xnum(tx-2,ty+2);
+			if(nx!==null && dir!==3 && bd.QaC(bd.cnum(tx-1,ty+1))===2 && (check[nx]!==0 || !this.searchline(check,2,nx))){ flag=false;}
+			nx = bd.xnum(tx+2,ty-2);
+			if(nx!==null && dir!==2 && bd.QaC(bd.cnum(tx+1,ty-1))===2 && (check[nx]!==0 || !this.searchline(check,3,nx))){ flag=false;}
+			nx = bd.xnum(tx+2,ty+2);
+			if(nx!==null && dir!==1 && bd.QaC(bd.cnum(tx+1,ty+1))===1 && (check[nx]!==0 || !this.searchline(check,4,nx))){ flag=false;}
 
 			return flag;
 		};

@@ -1,121 +1,117 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ƒ}ƒCƒiƒŠƒYƒ€”Å minarism.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ãƒã‚¤ãƒŠãƒªã‚ºãƒ ç‰ˆ minarism.js v3.3.1
 //
 Puzzles.minarism = function(){ };
 Puzzles.minarism.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 7;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 7;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 7;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 7;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 1;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 1;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = false;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = false;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = false;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = false;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = false;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = false;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = true;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = false;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = false;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = true;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = false;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = false;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = false;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = false;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
 		if(k.EDITOR){
-			base.setExpression("@ƒL[ƒ{[ƒh‚Å”š‚¨‚æ‚ÑAQWƒL[‚Å•s“™†‚ª“ü—Í‚Å‚«‚Ü‚·B•s“™†‚Íƒ}ƒEƒX‚Ìƒhƒ‰ƒbƒO‚ÅA”š‚ÍƒNƒŠƒbƒN‚Å‚à“ü—Í‚Å‚«‚Ü‚·B",
+			base.setExpression("ã€€ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã§æ•°å­—ãŠã‚ˆã³ã€QWã‚­ãƒ¼ã§ä¸ç­‰å·ãŒå…¥åŠ›ã§ãã¾ã™ã€‚ä¸ç­‰å·ã¯ãƒã‚¦ã‚¹ã®ãƒ‰ãƒ©ãƒƒã‚°ã§ã€æ•°å­—ã¯ã‚¯ãƒªãƒƒã‚¯ã§ã‚‚å…¥åŠ›ã§ãã¾ã™ã€‚",
 							   " It is able to input number of question by keyboard, and 'QW' key to input inequality mark. It is also available to Left Button Drag to input inequality mark, to Click to input number.");
 		}
 		else{
-			base.setExpression("@ƒL[ƒ{[ƒh‚âƒ}ƒEƒX‚Å”š‚ª“ü—Í‚Å‚«‚Ü‚·B",
+			base.setExpression("ã€€ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚„ãƒã‚¦ã‚¹ã§æ•°å­—ãŒå…¥åŠ›ã§ãã¾ã™ã€‚",
 							   " It is available to input number by keybord or mouse");
 		}
-		base.setTitle("ƒ}ƒCƒiƒŠƒYƒ€","Minarism");
+		base.setTitle("ãƒã‚¤ãƒŠãƒªã‚ºãƒ ","Minarism");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){ },
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
-			if(k.editmode && this.btn.Left) this.inputmark1();
+			if(k.editmode && this.btn.Left) this.inputmark_mousemove();
 			else if(k.playmode) this.inputqnum();
 		};
 		mv.mouseup = function(){
-			if(k.editmode && this.notInputted()) this.inputmark();
+			if(k.editmode && this.notInputted()) this.inputmark_mouseup();
 		};
 		mv.mousemove = function(){
-			if(k.editmode && this.btn.Left) this.inputmark1();
+			if(k.editmode && this.btn.Left) this.inputmark_mousemove();
 		};
 
-		mv.inputmark1 = function(){
+		mv.inputmark_mousemove = function(){
 			var pos = this.borderpos(0);
-			if(bd.cnum(pos.x,pos.y)==-1){ return;}
+			if(bd.cnum(pos.x,pos.y)===null){ return;}
 
-			var id=-1;
-			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1); this.inputData=1; }
-			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1); this.inputData=2; }
-			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  ); this.inputData=1; }
-			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  ); this.inputData=2; }
+			var id = this.getnb(this.prevPos, pos);
+			if(id!==null){
+				var dir = this.getdir(this.prevPos, pos);
+				this.inputData = ((dir===k.UP||dir===k.LT) ? 1 : 2);
 
-			this.mouseCell = pos;
-			if(id==-1){ return;}
-
-			bd.sQuB(id,(this.inputData!=bd.QuB(id)?this.inputData:0));
-			pc.paintBorder(id);
+				bd.sQuB(id,(this.inputData!=bd.QuB(id)?this.inputData:0));
+				pc.paintBorder(id);
+			}
+			this.prevPos = pos;
 		};
-		mv.inputmark = function(){
+		mv.inputmark_mouseup = function(){
 			var pos = this.borderpos(0.33);
 			if(!bd.isinside(pos.x,pos.y)){ return;}
-			var id = bd.bnum(pos.x, pos.y);
 
-			if(tc.cursorx!==pos.x || tc.cursory!==pos.y){
+			if(!tc.cursor.equals(pos)){
 				var tcp = tc.getTCP(), flag = false;
 				tc.setTCP(pos);
 				pc.paintPos(tcp);
 				pc.paintPos(pos);
 			}
-			else if(id!=-1){
-				this.inputbqnum(id);
-				pc.paintBorder(id);
+			else{
+				var id = bd.bnum(pos.x, pos.y);
+				if(id!==null){
+					var qn=bd.QnB(id), qs=bd.QuB(id);
+					if(this.btn.Left){
+						if     (qn===-1 && qs===0){ bd.sQnB(id,-1); bd.sQuB(id,1);}
+						else if(qn===-1 && qs===1){ bd.sQnB(id,-1); bd.sQuB(id,2);}
+						else if(qn===-1 && qs===2){ bd.sQnB(id, 1); bd.sQuB(id,0);}
+						else if(qn===Math.max(k.qcols,k.qrows)-1){ bd.sQnB(id,-2); bd.sQuB(id,0);}
+						else if(qn===-2)          { bd.sQnB(id,-1); bd.sQuB(id,0);}
+						else{ bd.sQnB(id,qn+1);}
+					}
+					else if(this.btn.Right){
+						if     (qn===-1 && qs===0){ bd.sQnB(id,-2); bd.sQuB(id,0);}
+						else if(qn===-2)          { bd.sQnB(id,Math.max(k.qcols,k.qrows)-1); bd.sQuB(id,0);}
+						else if(qn=== 1 && qs===0){ bd.sQnB(id,-1); bd.sQuB(id,2);}
+						else if(qn===-1 && qs===2){ bd.sQnB(id,-1); bd.sQuB(id,1);}
+						else if(qn===-1 && qs===1){ bd.sQnB(id,-1); bd.sQuB(id,0);}
+						else{ bd.sQnB(id,qn-1);}
+					}
+					pc.paintBorder(id);
+				}
 			}
 		};
-		mv.inputbqnum = function(id){
-			var qnum = bd.QnB(id), qs = bd.QuB(id);
-			if(this.btn.Left){
-				if     (qnum==-1 && qs==0){ bd.sQnB(id,-1); bd.sQuB(id,1);}
-				else if(qnum==-1 && qs==1){ bd.sQnB(id,-1); bd.sQuB(id,2);}
-				else if(qnum==-1 && qs==2){ bd.sQnB(id, 1); bd.sQuB(id,0);}
-				else if(qnum==Math.max(k.qcols,k.qrows)-1){ bd.sQnB(id,-2); bd.sQuB(id,0);}
-				else if(qnum==-2)         { bd.sQnB(id,-1); bd.sQuB(id,0);}
-				else{ bd.sQnB(id,qnum+1);}
-			}
-			else if(this.btn.Right){
-				if     (qnum==-1 && qs==0){ bd.sQnB(id,-2); bd.sQuB(id,0);}
-				else if(qnum==-2)         { bd.sQnB(id,Math.max(k.qcols,k.qrows)-1); bd.sQuB(id,0);}
-				else if(qnum== 1 && qs==0){ bd.sQnB(id,-1); bd.sQuB(id,2);}
-				else if(qnum==-1 && qs==2){ bd.sQnB(id,-1); bd.sQuB(id,1);}
-				else if(qnum==-1 && qs==1){ bd.sQnB(id,-1); bd.sQuB(id,0);}
-				else{ bd.sQnB(id,qnum-1);}
-			}
-			pc.paintBorder(id);
-		},
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if     (k.editmode && this.moveTBorder(ca)){ return;}
 			else if(k.playmode && this.moveTCell(ca)){ return;}
@@ -125,7 +121,7 @@ Puzzles.minarism.prototype = {
 		};
 		kc.key_inputmark = function(ca){
 			var id = tc.getTBC();
-			if(id==-1){ return false;}
+			if(id===null){ return false;}
 
 			if     (ca=='q'){ bd.sQuB(id,(bd.QuB(id)!=1?1:0)); bd.sQnB(id,-1); }
 			else if(ca=='w'){ bd.sQuB(id,(bd.QuB(id)!=2?2:0)); bd.sQnB(id,-1); }
@@ -148,22 +144,22 @@ Puzzles.minarism.prototype = {
 		};
 
 		menu.ex.adjustSpecial = function(key,d){
-			if(key & this.TURNFLIP){ // ”½“]E‰ñ“]‘S‚Ä
-				for(var c=0;c<bd.bdmax;c++){ if(bd.QuB(c)!=0){ bd.sQuB(c,{1:2,2:1}[bd.QuB(c)]); } }
+			if(key & this.TURNFLIP){ // åè»¢ãƒ»å›è»¢å…¨ã¦
+				for(var id=0;id<bd.bdmax;id++){ if(bd.QuB(id)!=0){ bd.sQuB(id,{1:2,2:1}[bd.QuB(id)]); } }
 			}
 		};
 		menu.ex.expandborder = function(key){ };
 
 		tc.setAlign = function(){
-			this.cursorx -= ((this.cursorx+1)%2);
-			this.cursory -= ((this.cursory+1)%2);
+			this.cursor.x -= ((this.cursor.x+1)%2);
+			this.cursor.y -= ((this.cursor.y+1)%2);
 		};
 
 		bd.nummaxfunc = function(cc){ return Math.max(k.qcols,k.qrows);};
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 
@@ -207,7 +203,7 @@ Puzzles.minarism.prototype = {
 			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], obj = bd.border[id], key = ['border',id].join('_');
-				// ›‚Ì•`‰æ
+				// â—‹ã®æç”»
 				if(obj.qnum!=-1){
 					g.fillStyle = (obj.error==1 ? this.errcolor1 : "white");
 					if(this.vnop(headers[0]+id,this.FILL)){
@@ -216,13 +212,13 @@ Puzzles.minarism.prototype = {
 				}
 				else{ this.vhide([headers[0]+id]);}
 
-				// ”š‚Ì•`‰æ
+				// æ•°å­—ã®æç”»
 				if(obj.qnum>0){
 					this.dispnum(key, 1, ""+obj.qnum, 0.45, this.borderfontcolor, obj.px, obj.py);
 				}
 				else{ this.hideEL(key);}
 
-				// •s“™†‚Ì•`‰æ
+				// ä¸ç­‰å·ã®æç”»
 				if(obj.ques===1){
 					if(this.vnop(headers[1]+id,this.NONE)){
 						if(obj.bx&1){ g.setOffsetLinePath(obj.px,obj.py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false);}
@@ -250,7 +246,7 @@ Puzzles.minarism.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeMinarism(type);
@@ -260,47 +256,46 @@ Puzzles.minarism.prototype = {
 		};
 
 		enc.decodeMinarism = function(type){
-			// ”Õ–ÊŠO”š‚ÌƒfƒR[ƒh
+			// ç›¤é¢å¤–æ•°å­—ã®ãƒ‡ã‚³ãƒ¼ãƒ‰
 			var id=0, a=0, mgn=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
 
 				if(type==1){
-					if     (id<k.qcols*k.qrows)  { mgn=mf(id/k.qcols);}
+					if     (id<k.qcols*k.qrows)  { mgn=((id/k.qcols)|0);}
 					else if(id<2*k.qcols*k.qrows){ mgn=k.qrows;}
 				}
+				var obj = bd.border[id-mgn];
 
-				if     (this.include(ca,'0','9')||this.include(ca,'a','f')){ bd.sQnB(id-mgn, parseInt(ca,16)); id++;}
-				else if(ca=="-"){ bd.sQnB(id-mgn, parseInt(bstr.substr(i+1,2),16)); id++; i+=2;}
-				else if(ca=="g"){ bd.sQuB(id-mgn, ((type==0 || id<k.qcols*k.qrows)?1:2)); id++;}
-				else if(ca=="h"){ bd.sQuB(id-mgn, ((type==0 || id<k.qcols*k.qrows)?2:1)); id++;}
-				else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-17);}
-				else if(ca=="."){ bd.sQnB(id-mgn,-2); id++;}
-				else if(type==1 && ca=="/"){ id=bd.cellmax;}
-				else{ id++;}
+				if     (this.include(ca,'0','9')||this.include(ca,'a','f')){ obj.qnum = parseInt(ca,16);}
+				else if(ca==="-"){ obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+				else if(ca==="."){ obj.qnum = -2;}
+				else if(ca==="g"){ obj.ques = ((type===0 || id<k.qcols*k.qrows)?1:2);}
+				else if(ca==="h"){ obj.ques = ((type===0 || id<k.qcols*k.qrows)?2:1);}
+				else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-18);}
+				else if(type===1 && ca==="/"){ id=bd.cellmax-1;}
 
-				if(id >= 2*k.qcols*k.qrows){ a=i+1; break;}
+				id++;
+				if(id>=2*k.qcols*k.qrows){ a=i+1; break;}
 			}
 			this.outbstr = bstr.substr(a);
 		};
 		enc.encodeMinarism = function(type){
 			var cm="", count=0, mgn=0;
-			for(var id=0;id<bd.bdmax+(type==0?0:k.qcols);id++){
-				if(type==1){
+			for(var id=0,max=bd.bdmax+(type===0?0:k.qcols);id<max;id++){
+				if(type===1){
 					if(id>0 && id<=(k.qcols-1)*k.qrows && id%(k.qcols-1)==0){ count++;}
 					if(id==(k.qcols-1)*k.qrows){ if(count>0){ cm+=(17+count).toString(36); count=0;} cm += "/";}
 				}
 
 				if(id<bd.bdmax){
-					var pstr = "";
-					var val  = bd.QuB(id);
-					var qnum = bd.QnB(id);
+					var pstr = "", val = bd.border[id].ques, qnum = bd.border[id].qnum;
 
-					if     (val == 1){ pstr = ((type==0 || id<bd.cellmax)?"g":"h");}
-					else if(val == 2){ pstr = ((type==0 || id<bd.cellmax)?"h":"g");}
-					else if(qnum==-2){ pstr = ".";}
-					else if(qnum>= 0 && qnum< 16){ pstr = ""+ qnum.toString(16);}
-					else if(qnum>=16 && qnum<256){ pstr = "-"+qnum.toString(16);}
+					if     (val === 1){ pstr = ((type===0 || id<bd.cellmax)?"g":"h");}
+					else if(val === 2){ pstr = ((type===0 || id<bd.cellmax)?"h":"g");}
+					else if(qnum===-2){ pstr = ".";}
+					else if(qnum>= 0&&qnum< 16){ pstr = ""+ qnum.toString(16);}
+					else if(qnum>=16&&qnum<256){ pstr = "-"+qnum.toString(16);}
 					else{ count++;}
 				}
 				else{ count++;}
@@ -315,60 +310,60 @@ Puzzles.minarism.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			this.decodeBorder( function(c,ca){
-				if     (ca=="a"){ bd.sQuB(c, 1);}
-				else if(ca=="b"){ bd.sQuB(c, 2);}
-				else if(ca=="."){ bd.sQnB(c, -2);}
-				else if(ca!="0"){ bd.sQnB(c, parseInt(ca));}
+			this.decodeBorder( function(obj,ca){
+				if     (ca==="a"){ obj.ques = 1;}
+				else if(ca==="b"){ obj.ques = 2;}
+				else if(ca==="."){ obj.qnum = -2;}
+				else if(ca!=="0"){ obj.qnum = parseInt(ca);}
 			});
-			this.decodeCellQanssub();
+			this.decodeCellAnumsub();
 		};
 		fio.encodeData = function(){
-			this.encodeBorder( function(c){
-				if     (bd.QuB(c)== 1){ return "a ";}
-				else if(bd.QuB(c)== 2){ return "b ";}
-				else if(bd.QnB(c)==-2){ return ". ";}
-				else if(bd.QnB(c)!=-1){ return ""+bd.QnB(c).toString()+" ";}
+			this.encodeBorder( function(obj){
+				if     (obj.ques=== 1){ return "a ";}
+				else if(obj.ques=== 2){ return "b ";}
+				else if(obj.qnum===-2){ return ". ";}
+				else if(obj.qnum!==-1){ return ""+obj.qnum.toString()+" ";}
 				else                  { return "0 ";}
 			});
-			this.encodeCellQanssub();
+			this.encodeCellAnumsub();
 		};
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkRowsCols(this.isDifferentNumberInClist, bd.QaC) ){
-				this.setAlert('“¯‚¶—ñ‚É“¯‚¶”š‚ª“ü‚Á‚Ä‚¢‚Ü‚·B','There are same numbers in a row.'); return false;
+			if( !this.checkRowsCols(this.isDifferentNumberInClist, bd.getNum) ){
+				this.setAlert('åŒã˜åˆ—ã«åŒã˜æ•°å­—ãŒå…¥ã£ã¦ã„ã¾ã™ã€‚','There are same numbers in a row.'); return false;
 			}
 
 			if( !this.checkBDnumber() ){
-				this.setAlert('ŠÛ•t‚«”š‚Æ‚»‚Ì—¼‘¤‚Ì”š‚Ì·‚ªˆê’v‚µ‚Ä‚¢‚Ü‚¹‚ñB', 'The Difference between two Adjacent cells is not equal to the number on circle.'); return false;
+				this.setAlert('ä¸¸ä»˜ãæ•°å­—ã¨ãã®ä¸¡å´ã®æ•°å­—ã®å·®ãŒä¸€è‡´ã—ã¦ã„ã¾ã›ã‚“ã€‚', 'The Difference between two Adjacent cells is not equal to the number on circle.'); return false;
 			}
 
 			if( !this.checkBDmark() ){
-				this.setAlert('•s“™†‚Æ”š‚ª–µ‚‚µ‚Ä‚¢‚Ü‚·B', 'A inequality sign is not correct.'); return false;
+				this.setAlert('ä¸ç­‰å·ã¨æ•°å­—ãŒçŸ›ç›¾ã—ã¦ã„ã¾ã™ã€‚', 'A inequality sign is not correct.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QaC(c)==-1);}) ){
-				this.setAlert('”š‚Ì“ü‚Á‚Ä‚¢‚È‚¢ƒ}ƒX‚ª‚ ‚è‚Ü‚·B','There is a empty cell.'); return false;
+			if( !this.checkAllCell(bd.noNum) ){
+				this.setAlert('æ•°å­—ã®å…¥ã£ã¦ã„ãªã„ãƒã‚¹ãŒã‚ã‚Šã¾ã™ã€‚','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.QaC(c)==-1);});};
+		ans.check1st = function(){ return this.checkAllCell(bd.noNum);};
 
 		ans.checkBDnumber = function(){
 			return this.checkBDSideCell(function(id,c1,c2){
-				return (bd.QnB(id)>0 && bd.QnB(id)!=Math.abs(bd.QaC(c1)-bd.QaC(c2)));
+				return (bd.QnB(id)>0 && bd.QnB(id)!==Math.abs(bd.getNum(c1)-bd.getNum(c2)));
 			});
 		};
 		ans.checkBDmark = function(){
 			return this.checkBDSideCell(function(id,c1,c2){
 				var mark = bd.QuB(id);
-				var a1 = bd.QaC(c1), a2 = bd.QaC(c2);
+				var a1 = bd.getNum(c1), a2 = bd.getNum(c2);
 				return !(mark==0 || (mark==1 && a1<a2) || (mark==2 && a1>a2));
 			});
 		};
@@ -376,7 +371,7 @@ Puzzles.minarism.prototype = {
 			var result = true;
 			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(bd.QaC(cc1)>0 && bd.QaC(cc2)>0 && func(id,cc1,cc2)){
+				if(bd.getNum(cc1)>0 && bd.getNum(cc2)>0 && func(id,cc1,cc2)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([cc1,cc2],1);
 					result = false;

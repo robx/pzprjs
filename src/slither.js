@@ -1,62 +1,62 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ƒXƒŠƒU[ƒŠƒ“ƒN”Å slither.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ã‚¹ãƒªã‚¶ãƒ¼ãƒªãƒ³ã‚¯ç‰ˆ slither.js v3.3.1
 //
 Puzzles.slither = function(){ };
 Puzzles.slither.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 10;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 10;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 1;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 10;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 10;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 1;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 2;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 2;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = false;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = true;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = false;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = false;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = true;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = false;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = true;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = true;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = false;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = true;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = true;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = false;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = true;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = true;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = true;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = true;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
-		base.setTitle("ƒXƒŠƒU[ƒŠƒ“ƒN","Slitherlink");
-		base.setExpression("@¶ƒhƒ‰ƒbƒO‚Åü‚ªA‰EƒNƒŠƒbƒN‚Å~‚ª“ü—Í‚Å‚«‚Ü‚·B",
+		base.setTitle("ã‚¹ãƒªã‚¶ãƒ¼ãƒªãƒ³ã‚¯","Slitherlink");
+		base.setExpression("ã€€å·¦ãƒ‰ãƒ©ãƒƒã‚°ã§ç·šãŒã€å³ã‚¯ãƒªãƒƒã‚¯ã§Ã—ãŒå…¥åŠ›ã§ãã¾ã™ã€‚",
 						   " Left Button Drag to input black cells, Right Click to input a cross.");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 
 		enc.pidKanpen = 'slitherlink';
 	},
 	menufix : function(){
-		pp.addCheck('bgcolor','setting',false, '”wŒiF“ü—Í', 'Background-color');
-		pp.setLabel('bgcolor', 'ƒZƒ‹‚Ì’†‰›‚ğƒNƒŠƒbƒN‚µ‚½‚É”wŒiF‚Ì“ü—Í‚ğ—LŒø‚É‚·‚é', 'Enable to Input BGColor When the Center of the Cell is Clicked');
+		pp.addCheck('bgcolor','setting',false, 'èƒŒæ™¯è‰²å…¥åŠ›', 'Background-color');
+		pp.setLabel('bgcolor', 'ã‚»ãƒ«ã®ä¸­å¤®ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ãŸæ™‚ã«èƒŒæ™¯è‰²ã®å…¥åŠ›ã‚’æœ‰åŠ¹ã«ã™ã‚‹', 'Enable to Input BGColor When the Center of the Cell is Clicked');
 
 		menu.addRedLineToFlags();
 
 		menu.ex.modechange = function(num){
 			k.editmode = (num==1);
 			k.playmode = (num==3);
-			kc.prev = -1;
+			kc.prev = null;
 			ans.errDisp=true;
 			bd.errclear();
-			if(kp.ctl[1].enable || kp.ctl[3].enable){ pp.funcs.keypopup();}
+			if(kp.haspanel[1] || kp.haspanel[3]){ pp.funcs.keypopup();}
 			tc.setAlign();
 			pc.paintAll();
-			// ‚±‚±‚Ü‚ÅŒ³‚Æ“¯‚¶
+			// ã“ã“ã¾ã§å…ƒã¨åŒã˜
 
 			ee('ck_bgcolor').el.disabled    = (num==3?"":"true");
 			ee('cl_bgcolor').el.style.color = (num==3?"black":"silver");
@@ -70,18 +70,15 @@ Puzzles.slither.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
-			if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum();}
-				else{ kp.display();}
-			}
+			if(k.editmode){ this.inputqnum();}
 			else if(k.playmode){
 				if(!pp.getVal('bgcolor') || !this.inputBGcolor0()){
-					if(this.btn.Left) this.inputborderans();
+					if(this.btn.Left) this.inputLine();
 					else if(this.btn.Right) this.inputpeke();
 				}
 				else{ this.inputBGcolor();}
@@ -91,7 +88,7 @@ Puzzles.slither.prototype = {
 		mv.mousemove = function(){
 			if(k.playmode){
 				if(!pp.getVal('bgcolor') || this.inputData<10){
-					if(this.btn.Left) this.inputborderans();
+					if(this.btn.Left) this.inputLine();
 					else if(this.btn.Right) this.inputpeke();
 				}
 				else{ this.inputBGcolor();}
@@ -104,8 +101,8 @@ Puzzles.slither.prototype = {
 		};
 		mv.inputBGcolor = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell){ return;}
-			if(this.inputData==-1){
+			if(cc===null || cc==this.mouseCell){ return;}
+			if(this.inputData===null){
 				if(this.btn.Left){
 					if     (bd.cell[cc].qsub===0){ this.inputData=11;}
 					else if(bd.cell[cc].qsub===1){ this.inputData=12;}
@@ -123,7 +120,7 @@ Puzzles.slither.prototype = {
 			this.mouseCell = cc; 
 		};
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
@@ -154,15 +151,14 @@ Puzzles.slither.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.setBGCellColorFunc('qsub2');
-		pc.setBorderColorFunc('line');
 
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawBGCells(x1,y1,x2,y2);
 
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawLines(x1,y1,x2,y2);
 
 			this.drawBaseMarks(x1,y1,x2,y2);
 
@@ -191,7 +187,7 @@ Puzzles.slither.prototype = {
 			g.fillStyle = this.cellcolor;
 			if(this.vnop(vid,this.NONE)){
 				var csize = (this.lw+1)/2;
-				var bx = (id%(k.qcols+1))*2, by = mf(id/(k.qcols+1))*2;
+				var bx = (id%(k.qcols+1))*2, by = (id/(k.qcols+1))<<1;
 				g.fillCircle(k.p0.x+bx*this.bw, k.p0.x+by*this.bh, csize);
 			}
 		};
@@ -205,7 +201,7 @@ Puzzles.slither.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decode4Cell();
@@ -223,75 +219,79 @@ Puzzles.slither.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			if(this.filever==1){
+			if(this.filever===1){
 				this.decodeCellQnum();
 				this.decodeCellQsub();
-				this.decodeBorderAns2();
+				this.decodeBorderLine();
 			}
-			else if(this.filever==0){
+			else if(this.filever===0){
 				this.decodeCellQnum();
-				this.decodeBorderAns2();
+				this.decodeBorderLine();
 			}
 		};
 		fio.encodeData = function(){
 			this.filever = 1;
 			this.encodeCellQnum();
 			this.encodeCellQsub();
-			this.encodeBorderAns2();
+			this.encodeBorderLine();
 		};
 
 		fio.kanpenOpen = function(){
 			this.decodeCellQnum_kanpen();
-			this.decodeBorder2_kanpen( function(c,ca){
-				if     (ca == "1") { bd.sQaB(c, 1);}
-				else if(ca == "-1"){ bd.sQsB(c, 2);}
-			});
+			this.decodeBorderLine();
 		};
 		fio.kanpenSave = function(){
 			this.encodeCellQnum_kanpen();
-			this.encodeBorder2_kanpen( function(c){
-				if     (bd.QaB(c)==1){ return "1 ";}
-				else if(bd.QsB(c)==2){ return "-1 ";}
-				else{ return "0 ";}
-			});
-		};
-
-		// ƒJƒ“ƒyƒ“‚Å‚ÍAoutsideborder‚Ì‚Í‚Ï‚¸‚Õ‚ê‚Æ‚Í‡”Ô‚ª‹t‚É‚È‚Á‚Ä‚Ü‚·
-		fio.decodeBorder2_kanpen = function(func){
-			this.decodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
-			this.decodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
-		};
-		fio.encodeBorder2_kanpen = function(func){
-			this.encodeObj(func, bd.bnum, 1, 0, 2*k.qcols-1, 2*k.qrows  );
-			this.encodeObj(func, bd.bnum, 0, 1, 2*k.qcols  , 2*k.qrows-1);
+			this.encodeBorderLine();
 		};
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			if( !this.checkLcntCross(3,0) ){
-				this.setAlert('•ªŠò‚µ‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B','There is a branched line.'); return false;
+				this.setAlert('åˆ†å²ã—ã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚','There is a branched line.'); return false;
 			}
 			if( !this.checkLcntCross(4,0) ){
-				this.setAlert('ü‚ªŒğ·‚µ‚Ä‚¢‚Ü‚·B','There is a crossing line.'); return false;
+				this.setAlert('ç·šãŒäº¤å·®ã—ã¦ã„ã¾ã™ã€‚','There is a crossing line.'); return false;
 			}
 
-			if( !this.checkdir4Border() ){
-				this.setAlert('”š‚Ìü‚è‚É‚ ‚é‹«ŠEü‚Ì–{”‚ªˆá‚¢‚Ü‚·B','The number is not equal to the number of border lines around it.'); return false;
+			if( !this.checkdir4BorderLine() ){
+				this.setAlert('æ•°å­—ã®å‘¨ã‚Šã«ã‚ã‚‹å¢ƒç•Œç·šã®æœ¬æ•°ãŒé•ã„ã¾ã™ã€‚','The number is not equal to the number of border lines around it.'); return false;
 			}
 
 			if( !this.checkOneLoop() ){
-				this.setAlert('—Ö‚Á‚©‚ªˆê‚Â‚Å‚Í‚ ‚è‚Ü‚¹‚ñB','There are plural loops.'); return false;
+				this.setAlert('è¼ªã£ã‹ãŒä¸€ã¤ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚','There are plural loops.'); return false;
 			}
 
 			if( !this.checkLcntCross(1,0) ){
-				this.setAlert('“r’†‚Å“rØ‚ê‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B','There is a dead-end line.'); return false;
+				this.setAlert('é€”ä¸­ã§é€”åˆ‡ã‚Œã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚','There is a dead-end line.'); return false;
 			}
 
 			return true;
+		};
+		
+		ans.checkdir4BorderLine = function(){
+			var result = true;
+			for(var c=0;c<bd.cellmax;c++){
+				var qn = bd.QnC(c);
+				if(qn>=0 && qn!==this.checkdir4BorderLine1(c)){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC([c],1);
+					result = false;
+				}
+			}
+			return result;
+		};
+		ans.checkdir4BorderLine1 = function(cc){
+			var cnt=0, bx=bd.cell[cc].bx, by=bd.cell[cc].by;
+			if( bd.isLine(bd.bnum(bx  ,by-1)) ){ cnt++;}
+			if( bd.isLine(bd.bnum(bx  ,by+1)) ){ cnt++;}
+			if( bd.isLine(bd.bnum(bx-1,by  )) ){ cnt++;}
+			if( bd.isLine(bd.bnum(bx+1,by  )) ){ cnt++;}
+			return cnt;
 		};
 	}
 };

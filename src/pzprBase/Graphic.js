@@ -1,31 +1,31 @@
-// Graphic.js v3.3.0
+// Graphic.js v3.3.1
 
 //---------------------------------------------------------------------------
-// šGraphicƒNƒ‰ƒX Canvas‚É•`‰æ‚·‚é
+// â˜…Graphicã‚¯ãƒ©ã‚¹ Canvasã«æç”»ã™ã‚‹
 //---------------------------------------------------------------------------
-// ƒpƒYƒ‹‹¤’Ê Canvas/DOM§Œä•”
-// GraphicƒNƒ‰ƒX‚Ì’è‹`
+// ãƒ‘ã‚ºãƒ«å…±é€š Canvas/DOMåˆ¶å¾¡éƒ¨
+// Graphicã‚¯ãƒ©ã‚¹ã®å®šç¾©
 Graphic = function(){
-	// ”Õ–Ê‚ÌCell‚ğ•ª‚¯‚éF
+	// ç›¤é¢ã®Cellã‚’åˆ†ã‘ã‚‹è‰²
 	this.gridcolor = "black";
 
-	// ƒZƒ‹‚ÌF(•ƒ}ƒX)
+	// ã‚»ãƒ«ã®è‰²(é»’ãƒã‚¹)
 	this.cellcolor = "black";
 	this.errcolor1 = "rgb(224, 0, 0)";
 	this.errcolor2 = "rgb(64, 64, 255)";
 	this.errcolor3 = "rgb(0, 191, 0)";
 
-	// ƒZƒ‹‚ÌŠÛ”š‚Ì’†‚É‘‚­F
+	// ã‚»ãƒ«ã®ä¸¸æ•°å­—ã®ä¸­ã«æ›¸ãè‰²
 	this.circledcolor = "white";
 
-	// ƒZƒ‹‚Ì›~‚ÌF(•â•‹L†)
+	// ã‚»ãƒ«ã®â—‹Ã—ã®è‰²(è£œåŠ©è¨˜å·)
 	this.mbcolor = "rgb(255, 160, 127)";
 
 	this.qsubcolor1 = "rgb(160,255,160)";
 	this.qsubcolor2 = "rgb(255,255,127)";
-	this.qsubcolor3 = "rgb(192,192,192)";	// ŠG‚ªo‚éƒpƒYƒ‹‚Ì”wŒi“ü—Í
+	this.qsubcolor3 = "rgb(192,192,192)";	// çµµãŒå‡ºã‚‹ãƒ‘ã‚ºãƒ«ã®èƒŒæ™¯å…¥åŠ›
 
-	// ƒtƒHƒ“ƒg‚ÌF(”’ƒ}ƒX/•ƒ}ƒX)
+	// ãƒ•ã‚©ãƒ³ãƒˆã®è‰²(ç™½ãƒã‚¹/é»’ãƒã‚¹)
 	this.fontcolor = "black";
 	this.fontAnscolor = "rgb(0, 160, 0)";
 	this.fontErrcolor = "rgb(191, 0, 0)";
@@ -33,7 +33,7 @@ Graphic = function(){
 
 	this.borderfontcolor = "black";
 
-	// ƒZƒ‹‚Ì”wŒiF(”’ƒ}ƒX)
+	// ã‚»ãƒ«ã®èƒŒæ™¯è‰²(ç™½ãƒã‚¹)
 	this.bcolor = "white";
 	this.dotcolor = "black";
 	this.errbcolor1 = "rgb(255, 160, 160)";
@@ -41,62 +41,63 @@ Graphic = function(){
 
 	this.icecolor = "rgb(192, 224, 255)";
 
-	// ques=51‚Ì‚Æ‚«A“ü—Í‚Å‚«‚éêŠ‚Ì”wŒiF(TargetTriangle)
+	// ques=51ã®ã¨ãã€å…¥åŠ›ã§ãã‚‹å ´æ‰€ã®èƒŒæ™¯è‰²(TargetTriangle)
 	this.ttcolor = "rgb(127,255,127)";
 
-	// ‹«ŠEü‚ÌF
+	// å¢ƒç•Œç·šã®è‰²
 	this.borderQuescolor = "black";
 	this.borderQanscolor = "rgb(0, 191, 0)";
 	this.borderQsubcolor = "rgb(255, 0, 255)";
 
 	this.errborderQanscolor2 = "rgb(160, 160, 160)";
 
-	this.bbcolor = "rgb(96, 96, 96)"; // ‹«ŠEü‚Æ•ƒ}ƒX‚ğ•ª‚¯‚éF(BoxBorder)
+	this.bbcolor = "rgb(96, 96, 96)"; // å¢ƒç•Œç·šã¨é»’ãƒã‚¹ã‚’åˆ†ã‘ã‚‹è‰²(BoxBorder)
 
-	// üE~‚ÌF
-	this.linecolor = "rgb(0, 160, 0)";	// F•ª‚¯‚È‚µ‚Ìê‡
+	// ç·šãƒ»Ã—ã®è‰²
+	this.linecolor = "rgb(0, 160, 0)";	// è‰²åˆ†ã‘ãªã—ã®å ´åˆ
 	this.pekecolor = "rgb(32, 32, 255)";
 
 	this.errlinecolor1 = "rgb(255, 0, 0)";
 	this.errlinecolor2 = "rgb(160, 160, 160)";
 
-	// “ü—Íƒ^[ƒQƒbƒg‚ÌF
+	// å…¥åŠ›ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®è‰²
 	this.targetColor1 = "rgb(255, 64,  64)";
 	this.targetColor3 = "rgb(64,  64, 255)";
 
-	// ”Õ–Ê(˜g‚Ì’†)‚Ì”wŒiF
+	// ç›¤é¢(æ ã®ä¸­)ã®èƒŒæ™¯è‰²
 	this.bgcolor = '';
 
-	// FX‚ÈƒpƒYƒ‹‚Å’è‹`‚µ‚Ä‚½ŒÅ’èF
+	// è‰²ã€…ãªãƒ‘ã‚ºãƒ«ã§å®šç¾©ã—ã¦ãŸå›ºå®šè‰²
 	this.gridcolor_BLACK  = "black";
-	this.gridcolor_LIGHT  = "rgb(127, 127, 127)";	/* ‚Ù‚Æ‚ñ‚Ç‚Í‚±‚ÌF‚ğw’è‚µ‚Ä‚¢‚é */
-	this.gridcolor_DLIGHT = "rgb(160, 160, 160)";	/* —Ìˆæ•ªŠ„Œn‚Åg‚Á‚Ä‚é‚±‚Æ‚ª‘½‚¢ */
-	this.gridcolor_SLIGHT = "rgb(191, 191, 191)";	/* •”‰®{ü‚ğˆø‚­ƒpƒYƒ‹           */
-	this.gridcolor_THIN   = "rgb(224, 224, 224)";	/* –â‘è“ü—Í‚Ì‚İGrid•\¦‚ÌƒpƒYƒ‹ */
+	this.gridcolor_LIGHT  = "rgb(127, 127, 127)";	/* ã»ã¨ã‚“ã©ã¯ã“ã®è‰²ã‚’æŒ‡å®šã—ã¦ã„ã‚‹ */
+	this.gridcolor_DLIGHT = "rgb(160, 160, 160)";	/* é ˜åŸŸåˆ†å‰²ç³»ã§ä½¿ã£ã¦ã‚‹ã“ã¨ãŒå¤šã„ */
+	this.gridcolor_SLIGHT = "rgb(191, 191, 191)";	/* éƒ¨å±‹ï¼‹ç·šã‚’å¼•ããƒ‘ã‚ºãƒ«           */
+	this.gridcolor_THIN   = "rgb(224, 224, 224)";	/* å•é¡Œå…¥åŠ›æ™‚ã®ã¿Gridè¡¨ç¤ºã®ãƒ‘ã‚ºãƒ« */
 
-	this.bcolor_GREEN = "rgb(160, 255, 160)";
+	this.bcolor_GREEN  = "rgb(160, 255, 160)";
+	this.dotcolor_PINK = "rgb(255, 96, 191)";
 	this.errbcolor1_DARK = "rgb(255, 127, 127)";
 	this.linecolor_LIGHT = "rgb(0, 192, 0)";
 
-	// ‚»‚Ì‘¼
-	this.fontsizeratio = 1.0;	// ”šFontƒTƒCƒY‚Ì”{—¦
+	// ãã®ä»–
+	this.fontsizeratio = 1.0;	// æ•°å­—Fontã‚µã‚¤ã‚ºã®å€ç‡
 	this.crosssize = 0.4;
 	this.circleratio = [0.40, 0.34];
 
-	// •`‰æ’PˆÊ
+	// æç”»å˜ä½
 	this.cw = k.cwidth;
 	this.ch = k.cheight;
 	this.bw = k.bwidth;
 	this.bh = k.bheight;
 
-	this.lw = 1;		// LineWidth ‹«ŠEüELine‚Ì‘¾‚³
+	this.lw = 1;		// LineWidth å¢ƒç•Œç·šãƒ»Lineã®å¤ªã•
 	this.lm = 1;		// LineMargin
-	this.lwratio = 12;	// onresize_process‚Ålw‚Ì’l‚ÌZo‚É—p‚¢‚é
-	this.addlw = 0;		// ƒGƒ‰[‚Éü‚Ì‘¾‚³‚ğL‚°‚é
+	this.lwratio = 12;	// onresize_processã§lwã®å€¤ã®ç®—å‡ºã«ç”¨ã„ã‚‹
+	this.addlw = 0;		// ã‚¨ãƒ©ãƒ¼æ™‚ã«ç·šã®å¤ªã•ã‚’åºƒã’ã‚‹
 
-	this.bdheader = "b_bd";	// drawBorder1‚Åg‚¤header
+	this.bdheader = "b_bd";	// drawBorder1ã§ä½¿ã†header
 
-	this.chassisflag = true;	// false: Grid‚ğŠO˜g‚ÌˆÊ’u‚É‚à•`‰æ‚·‚é
+	this.chassisflag = true;	// false: Gridã‚’å¤–æ ã®ä½ç½®ã«ã‚‚æç”»ã™ã‚‹
 
 	this.lastHdeg = 0;
 	this.lastYdeg = 0;
@@ -109,13 +110,13 @@ Graphic = function(){
 	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', {className:'divnum', unselectable:'on'}, null, null);
 	this.EL_IMGOBJ = ee.addTemplate('numobj_parent', 'img', {className:'imgnum', unselectable:'on'}, null, null);
 
-	this.numobj = {};					// ƒGƒŒƒƒ“ƒg‚Ö‚ÌQÆ‚ğ•Û‚·‚é
-	this.fillTextPrecisely  = false;	// ”š‚ğg.fillText()‚Å•`‰æ
+	this.numobj = {};					// ã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆã¸ã®å‚ç…§ã‚’ä¿æŒã™ã‚‹
+	this.fillTextPrecisely  = false;	// æ•°å­—ã‚’g.fillText()ã§æç”»
 
 	this.isdrawBC = false;
 	this.isdrawBD = false;
 
-	/* vnopŠÖ”—p */
+	/* vnopé–¢æ•°ç”¨ */
 	this.STROKE      = 0;
 	this.FILL        = 1;
 	this.FILL_STROKE = 2;
@@ -125,7 +126,7 @@ Graphic = function(){
 };
 Graphic.prototype = {
 	//---------------------------------------------------------------------------
-	// pc.onresize_process() resize‚ÉƒTƒCƒY‚ğ•ÏX‚·‚é
+	// pc.onresize_process() resizeæ™‚ã«ã‚µã‚¤ã‚ºã‚’å¤‰æ›´ã™ã‚‹
 	//---------------------------------------------------------------------------
 	onresize_process : function(){
 		this.cw = k.cwidth;
@@ -138,21 +139,21 @@ Graphic.prototype = {
 		this.lm = (this.lw-1)/2;
 	},
 	//---------------------------------------------------------------------------
-	// pc.prepaint()    paintŠÖ”‚ğŒÄ‚Ño‚·
-	// pc.paint()       À•W(x1,y1)-(x2,y2)‚ğÄ•`‰æ‚·‚éBŠeƒpƒYƒ‹‚Ìƒtƒ@ƒCƒ‹‚ÅƒI[ƒo[ƒ‰ƒCƒh‚³‚ê‚éB
+	// pc.prepaint()    painté–¢æ•°ã‚’å‘¼ã³å‡ºã™
+	// pc.paint()       åº§æ¨™(x1,y1)-(x2,y2)ã‚’å†æç”»ã™ã‚‹ã€‚å„ãƒ‘ã‚ºãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«ã§ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã•ã‚Œã‚‹ã€‚
 	//
-	// pc.paintAll()    ‘S‘Ì‚ğÄ•`‰æ‚·‚é
-	// pc.paintRange()  À•W(x1,y1)-(x2,y2)‚ğÄ•`‰æ‚·‚éB
-	// pc.paintPos()    w’è‚³‚ê‚½(X,Y)‚ğÄ•`‰æ‚·‚é
+	// pc.paintAll()    å…¨ä½“ã‚’å†æç”»ã™ã‚‹
+	// pc.paintRange()  åº§æ¨™(x1,y1)-(x2,y2)ã‚’å†æç”»ã™ã‚‹ã€‚
+	// pc.paintPos()    æŒ‡å®šã•ã‚ŒãŸ(X,Y)ã‚’å†æç”»ã™ã‚‹
 	//
-	// pc.paintCell()   w’è‚³‚ê‚½Cell‚ğÄ•`‰æ‚·‚é
-	// pc.paintCellAround() w’è‚³‚ê‚½Cell‚Ìü‚è‚ğŠÜ‚ß‚ÄÄ•`‰æ‚·‚é
-	// pc.paintCross()  w’è‚³‚ê‚½Cross‚ğÄ•`‰æ‚·‚é
-	// pc.paintBorder() w’è‚³‚ê‚½Border‚Ìü‚è‚ğÄ•`‰æ‚·‚é
-	// pc.paintLine()   w’è‚³‚ê‚½Line‚Ìü‚è‚ğÄ•`‰æ‚·‚é
-	// pc.paintEXcell() w’è‚³‚ê‚½EXCell‚ğÄ•`‰æ‚·‚é
+	// pc.paintCell()   æŒ‡å®šã•ã‚ŒãŸCellã‚’å†æç”»ã™ã‚‹
+	// pc.paintCellAround() æŒ‡å®šã•ã‚ŒãŸCellã®å‘¨ã‚Šã‚’å«ã‚ã¦å†æç”»ã™ã‚‹
+	// pc.paintCross()  æŒ‡å®šã•ã‚ŒãŸCrossã‚’å†æç”»ã™ã‚‹
+	// pc.paintBorder() æŒ‡å®šã•ã‚ŒãŸBorderã®å‘¨ã‚Šã‚’å†æç”»ã™ã‚‹
+	// pc.paintLine()   æŒ‡å®šã•ã‚ŒãŸLineã®å‘¨ã‚Šã‚’å†æç”»ã™ã‚‹
+	// pc.paintEXcell() æŒ‡å®šã•ã‚ŒãŸEXCellã‚’å†æç”»ã™ã‚‹
 	//---------------------------------------------------------------------------
-	paint : function(x1,y1,x2,y2){ }, //ƒI[ƒo[ƒ‰ƒCƒh—p
+	paint : function(x1,y1,x2,y2){ }, //ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ç”¨
 
 	prepaint : function(x1,y1,x2,y2){
 		this.flushCanvas(x1,y1,x2,y2);
@@ -207,17 +208,17 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.getNewLineColor() V‚µ‚¢F‚ğ•Ô‚·
+	// pc.getNewLineColor() æ–°ã—ã„è‰²ã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	getNewLineColor : function(){
 		var loopcount = 0;
 
 		while(1){
-			var Rdeg = mf(Math.random() * 384)-64; if(Rdeg<0){Rdeg=0;} if(Rdeg>255){Rdeg=255;}
-			var Gdeg = mf(Math.random() * 384)-64; if(Gdeg<0){Gdeg=0;} if(Gdeg>255){Gdeg=255;}
-			var Bdeg = mf(Math.random() * 384)-64; if(Bdeg<0){Bdeg=0;} if(Bdeg>255){Bdeg=255;}
+			var Rdeg = ((Math.random() * 384)|0)-64; if(Rdeg<0){Rdeg=0;} if(Rdeg>255){Rdeg=255;}
+			var Gdeg = ((Math.random() * 384)|0)-64; if(Gdeg<0){Gdeg=0;} if(Gdeg>255){Gdeg=255;}
+			var Bdeg = ((Math.random() * 384)|0)-64; if(Bdeg<0){Bdeg=0;} if(Bdeg>255){Bdeg=255;}
 
-			// HLS‚ÌŠe‘g¬’l‚ğ‹‚ß‚é
+			// HLSã®å„çµ„æˆå€¤ã‚’æ±‚ã‚ã‚‹
 			var Cmax = Math.max(Rdeg,Math.max(Gdeg,Bdeg));
 			var Cmin = Math.min(Rdeg,Math.min(Gdeg,Bdeg));
 
@@ -230,14 +231,14 @@ Graphic.prototype = {
 			else if(Gdeg>=Rdeg && Gdeg>=Bdeg){ Hdeg = (120+60*(Bdeg-Rdeg)/(Cmax-Cmin)+360)%360;}
 			else if(Bdeg>=Gdeg && Bdeg>=Rdeg){ Hdeg = (240+60*(Rdeg-Gdeg)/(Cmax-Cmin)+360)%360;}
 
-			// YCbCr‚ÌY‚ğ‹‚ß‚é
+			// YCbCrã®Yã‚’æ±‚ã‚ã‚‹
 			var Ydeg = (0.29891*Rdeg + 0.58661*Gdeg + 0.11448*Bdeg) / 255;
 
 			if( (this.minYdeg<Ydeg && Ydeg<this.maxYdeg) && (Math.abs(this.lastYdeg-Ydeg)>0.15) && (Sdeg<0.02 || 0.40<Sdeg)
 				 && (((360+this.lastHdeg-Hdeg)%360>=45)&&((360+this.lastHdeg-Hdeg)%360<=315)) ){
 				this.lastHdeg = Hdeg;
 				this.lastYdeg = Ydeg;
-				//alert("rgb("+Rdeg+", "+Gdeg+", "+Bdeg+")\nHLS("+mf(Hdeg)+", "+(""+mf(Ldeg*1000)*0.001).slice(0,5)+", "+(""+mf(Sdeg*1000)*0.001).slice(0,5)+")\nY("+(""+mf(Ydeg*1000)*0.001).slice(0,5)+")");
+				//alert("rgb("+Rdeg+", "+Gdeg+", "+Bdeg+")\nHLS("+(Hdeg|0)+", "+(""+((Ldeg*1000)|0)*0.001).slice(0,5)+", "+(""+((Sdeg*1000|0))*0.001).slice(0,5)+")\nY("+(""+((Ydeg*1000)|0)*0.001).slice(0,5)+")");
 				return "rgb("+Rdeg+","+Gdeg+","+Bdeg+")";
 			}
 
@@ -247,15 +248,15 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawBlackCells() Cell‚ÌA‹«ŠEü‚Ìã‚©‚ç•`‰æ‚³‚ê‚é¡•ƒ}ƒX‚ğCanvas‚É‘‚«‚Ş
-	// pc.setCellColor()   ‘OŒiF‚Ìİ’èE•`‰æ”»’è‚·‚é
-	// pc.setCellColorFunc()   pc.setCellColorŠÖ”‚ğİ’è‚·‚é
+	// pc.drawBlackCells() Cellã®ã€å¢ƒç•Œç·šã®ä¸Šã‹ã‚‰æç”»ã•ã‚Œã‚‹â– é»’ãƒã‚¹ã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.setCellColor()   å‰æ™¯è‰²ã®è¨­å®šãƒ»æç”»åˆ¤å®šã™ã‚‹
+	// pc.setCellColorFunc()   pc.setCellColoré–¢æ•°ã‚’è¨­å®šã™ã‚‹
 	//
-	// pc.drawBGCells()    Cell‚ÌA‹«ŠEü‚Ì‰º‚É•`‰æ‚³‚ê‚é”wŒiF‚ğCanvas‚É‘‚«‚Ş
-	// pc.setBGCellColor() ”wŒiF‚Ìİ’èE•`‰æ”»’è‚·‚é
-	// pc.setBGCellColorFunc() pc.setBGCellColorŠÖ”‚ğİ’è‚·‚é
+	// pc.drawBGCells()    Cellã®ã€å¢ƒç•Œç·šã®ä¸‹ã«æç”»ã•ã‚Œã‚‹èƒŒæ™¯è‰²ã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.setBGCellColor() èƒŒæ™¯è‰²ã®è¨­å®šãƒ»æç”»åˆ¤å®šã™ã‚‹
+	// pc.setBGCellColorFunc() pc.setBGCellColoré–¢æ•°ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
-	// err==2‚É‚È‚élits‚ÍAdrawBGCells‚Å•`‰æ‚µ‚Ä‚Ü‚·BB
+	// err==2ã«ãªã‚‹litsã¯ã€drawBGCellsã§æç”»ã—ã¦ã¾ã™ã€‚ã€‚
 	drawBlackCells : function(x1,y1,x2,y2){
 		this.vinc('cell_front', 'crispEdges');
 		var header = "c_fullb_";
@@ -273,7 +274,7 @@ Graphic.prototype = {
 		}
 		this.isdrawBC = true;
 	},
-	// 'qans'—p
+	// 'qans'ç”¨
 	setCellColor : function(c){
 		var err = bd.cell[c].error;
 		if(bd.cell[c].qans!==1){ return false;}
@@ -311,7 +312,7 @@ Graphic.prototype = {
 			else{ this.vhide(header+c); continue;}
 		}
 	},
-	// 'error1'—p
+	// 'error1'ç”¨
 	setBGCellColor : function(c){
 		if(bd.cell[c].error===1){ g.fillStyle = this.errbcolor1; return true;}
 		return false;
@@ -393,8 +394,8 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawBGEXcells()    EXCell‚É•`‰æ‚³‚ê‚é”wŒiF‚ğCanvas‚É‘‚«‚Ş
-	// pc.setBGEXcellColor() ”wŒiF‚Ìİ’èE•`‰æ”»’è‚·‚é
+	// pc.drawBGEXcells()    EXCellã«æç”»ã•ã‚Œã‚‹èƒŒæ™¯è‰²ã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.setBGEXcellColor() èƒŒæ™¯è‰²ã®è¨­å®šãƒ»æç”»åˆ¤å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	drawBGEXcells : function(x1,y1,x2,y2){
 		this.vinc('excell_back', 'crispEdges');
@@ -417,31 +418,12 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawRDotCells()  E‚¾‚¯‚ğCanvas‚É‘‚«‚Ş(E—p)
-	// pc.drawDotCells()   E‚¾‚¯‚ğCanvas‚É‘‚«‚Ş(¬‚³‚¢lŠpŒ`—p)
+	// pc.drawDotCells()  ãƒ»ã ã‘ã‚’Canvasã«æ›¸ãè¾¼ã‚€
 	//---------------------------------------------------------------------------
-	drawRDotCells : function(x1,y1,x2,y2){
-		this.vinc('cell_dot', 'auto');
+	drawDotCells : function(x1,y1,x2,y2,isrect){
+		this.vinc('cell_dot', (isrect ? 'crispEdges' : 'auto'));
 
-		var dsize = this.cw*0.06; dsize=(dsize>2?dsize:2);
-		var header = "c_rdot_";
-		g.fillStyle = this.dotcolor;
-
-		var clist = bd.cellinside(x1,y1,x2,y2);
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.cell[c].qsub===1){
-				if(this.vnop(header+c,this.NONE)){
-					g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, dsize);
-				}
-			}
-			else{ this.vhide(header+c);}
-		}
-	},
-	drawDotCells : function(x1,y1,x2,y2){
-		this.vinc('cell_dot', 'crispEdges');
-
-		var dsize = this.cw*0.075;
+		var dsize = Math.max(this.cw*(isrect?0.075:0.06), 2);
 		var header = "c_dot_";
 		g.fillStyle = this.dotcolor;
 
@@ -450,7 +432,8 @@ Graphic.prototype = {
 			var c = clist[i];
 			if(bd.cell[c].qsub===1){
 				if(this.vnop(header+c,this.NONE)){
-					g.fillRect(bd.cell[c].cpx-dsize, bd.cell[c].cpy-dsize, dsize*2, dsize*2);
+					if(isrect){ g.fillRect(bd.cell[c].cpx-dsize, bd.cell[c].cpy-dsize, dsize*2, dsize*2);}
+					else      { g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, dsize);}
 				}
 			}
 			else{ this.vhide(header+c);}
@@ -458,12 +441,12 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawNumbers()  Cell‚Ì”š‚ğCanvas‚É‘‚«‚Ş
-	// pc.drawNumber1()  Cell‚É”š‚ğ‹L“ü‚·‚é‚½‚ßdispnumŠÖ”‚ğŒÄ‚Ño‚·
-	// pc.getCellNumberColor()  Cell‚Ì”š‚ÌF‚ğİ’è‚·‚é
+	// pc.drawNumbers()  Cellã®æ•°å­—ã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.drawNumber1()  Cellã«æ•°å­—ã‚’è¨˜å…¥ã™ã‚‹ãŸã‚dispnumé–¢æ•°ã‚’å‘¼ã³å‡ºã™
+	// pc.getCellNumberColor()  Cellã®æ•°å­—ã®è‰²ã‚’è¨­å®šã™ã‚‹
 	// 
-	// pc.drawArrowNumbers() Cell‚Ì”š‚Æ–îˆó‚ğCanvas‚É‘‚«‚Ş
-	// pc.drawQuesHatenas()  ques===-2‚Ì‚ÉH‚ğCanvas‚É‘‚«‚Ş
+	// pc.drawArrowNumbers() Cellã®æ•°å­—ã¨çŸ¢å°ã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.drawHatenas()     ques===-2ã®æ™‚ã«ï¼Ÿã‚’Canvasã«æ›¸ãè¾¼ã‚€
 	//---------------------------------------------------------------------------
 	drawNumbers : function(x1,y1,x2,y2){
 		this.vinc('cell_number', 'auto');
@@ -510,20 +493,20 @@ Graphic.prototype = {
 			var c = clist[i];
 
 			if(bd.cell[c].qnum!==-1 && (bd.cell[c].qnum!==-2||k.isDispHatena)){
-				var ax=px=bd.cell[c].px, ay=py=bd.cell[c].py, dir = bd.cell[c].direc;
+				var ax=px=bd.cell[c].px, ay=py=bd.cell[c].py, dir = bd.cell[c].qdir;
 
 				if     (bd.cell[c].qans ===1){ g.fillStyle = this.fontBCellcolor;}
 				else if(bd.cell[c].error===1){ g.fillStyle = this.fontErrcolor;}
 				else                         { g.fillStyle = this.fontcolor;}
 
-				// –îˆó‚Ì•`‰æ(ã‰ºŒü‚«)
+				// çŸ¢å°ã®æç”»(ä¸Šä¸‹å‘ã)
 				if(dir===k.UP||dir===k.DN){
-					// –îˆó‚Ìü‚Ì•`‰æ
+					// çŸ¢å°ã®ç·šã®æç”»
 					ax+=(this.cw-ls*1.5-lm); ay+=(ls+1);
 					if(this.vnop(headers[0]+c,this.FILL)){ g.fillRect(ax, ay, lw, ll);}
 					ax+=lw/2;
 
-					// –î‚¶‚è‚Ì•`‰æ
+					// çŸ¢ã˜ã‚Šã®æç”»
 					if(dir===k.UP){
 						if(this.vnop(headers[1]+c,this.FILL)){
 							g.setOffsetLinePath(ax,ay, 0,0, -ll/6,ll/3, ll/6,ll/3, true);
@@ -541,14 +524,14 @@ Graphic.prototype = {
 				}
 				else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c]);}
 
-				// –îˆó‚Ì•`‰æ(¶‰EŒü‚«)
+				// çŸ¢å°ã®æç”»(å·¦å³å‘ã)
 				if(dir===k.LT||dir===k.RT){
-					// –îˆó‚Ìü‚Ì•`‰æ
+					// çŸ¢å°ã®ç·šã®æç”»
 					ax+=(ls+1); ay+=(ls*1.5-lm);
 					if(this.vnop(headers[3]+c,this.FILL)){ g.fillRect(ax, ay, ll, lw);}
 					ay+=lw/2;
 
-					// –î‚¶‚è‚Ì•`‰æ
+					// çŸ¢ã˜ã‚Šã®æç”»
 					if(dir===k.LT){
 						if(this.vnop(headers[4]+c,this.FILL)){
 							g.setOffsetLinePath(ax,ay, 0,0, ll/3,-ll/6, ll/3,ll/6, true);
@@ -566,7 +549,7 @@ Graphic.prototype = {
 				}
 				else{ this.vhide([headers[3]+c, headers[4]+c, headers[5]+c]);}
 
-				// ”š‚Ì•`‰æ
+				// æ•°å­—ã®æç”»
 				var num = bd.getNum(c), text = (num>=0 ? ""+num : "?");
 				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
 				var color = g.fillStyle;
@@ -583,13 +566,13 @@ Graphic.prototype = {
 			}
 		}
 	},
-	drawQuesHatenas : function(x1,y1,x2,y2){
+	drawHatenas : function(x1,y1,x2,y2){
 		this.vinc('cell_number', 'auto');
 
 		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var obj = bd.cell[clist[i]], key = 'cell_'+clist[i];
-			if(obj.ques===-2){
+			if(obj.ques===-2||obj.qnum===-2){
 				var color = (obj.error===1 ? this.fontErrcolor : this.fontcolor);
 				this.dispnum(key, 1, "?", 0.8, color, obj.cpx, obj.cpy);
 			}
@@ -598,8 +581,8 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawCrosses()    Cross‚ÌŠÛ”š‚ğCanvas‚É‘‚«‚Ş
-	// pc.drawCrossMarks() Crossã‚Ì•“_‚ğCanvas‚É‘‚«‚Ş
+	// pc.drawCrosses()    Crossã®ä¸¸æ•°å­—ã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.drawCrossMarks() Crossä¸Šã®é»’ç‚¹ã‚’Canvasã«æ›¸ãè¾¼ã‚€
 	//---------------------------------------------------------------------------
 	drawCrosses : function(x1,y1,x2,y2){
 		this.vinc('cross_base', 'auto');
@@ -611,7 +594,7 @@ Graphic.prototype = {
 		var clist = bd.crossinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i], obj = bd.cross[c], key = ['cross',c].join('_');
-			// ›‚Ì•`‰æ
+			// â—‹ã®æç”»
 			if(obj.qnum!==-1){
 				g.fillStyle = (obj.error===1 ? this.errcolor1 : "white");
 				g.strokeStyle = "black";
@@ -621,7 +604,7 @@ Graphic.prototype = {
 			}
 			else{ this.vhide([header+c]);}
 
-			// ”š‚Ì•`‰æ
+			// æ•°å­—ã®æç”»
 			if(obj.qnum>=0){
 				this.dispnum(key, 1, ""+obj.qnum, 0.6, this.fontcolor, obj.px, obj.py);
 			}
@@ -648,10 +631,10 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawBorders()        ‹«ŠEü‚ğCanvas‚É‘‚«‚Ş
-	// pc.drawBorder1()        1ƒJŠ‚Ì‹«ŠEü‚ğCanvas‚É‘‚«‚Ş
-	// pc.setBorderColor()     ‹«ŠEü‚Ìİ’èE•`‰æ”»’è‚·‚é
-	// pc.setBorderColorFunc() pc.setBorderColorŠÖ”‚ğİ’è‚·‚é
+	// pc.drawBorders()        å¢ƒç•Œç·šã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.drawBorder1()        1ã‚«æ‰€ã®å¢ƒç•Œç·šã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.setBorderColor()     å¢ƒç•Œç·šã®è¨­å®šãƒ»æç”»åˆ¤å®šã™ã‚‹
+	// pc.setBorderColorFunc() pc.setBorderColoré–¢æ•°ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	drawBorders : function(x1,y1,x2,y2){
 		this.vinc('border', 'crispEdges');
@@ -660,9 +643,9 @@ Graphic.prototype = {
 		for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 		this.isdrawBD = true;
 	},
-	drawBorder1 : function(id,forceFlag){
+	drawBorder1 : function(id){
 		var vid = [this.bdheader, id].join("_");
-		if(forceFlag!==false && this.setBorderColor(id)){
+		if(this.setBorderColor(id)){
 			if(this.vnop(vid,this.FILL)){
 				var lw = this.lw + this.addlw, lm = this.lm;
 				var bx = bd.border[id].bx, by = bd.border[id].by;
@@ -692,13 +675,10 @@ Graphic.prototype = {
 				return false;
 			}
 			break;
-		case 'line':
-			this.setBorderColor = this.setLineColor;
-			break;
 		case 'ice':
 			this.setBorderColor = function(id){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(cc1!==-1 && cc2!==-1 && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
+				if(cc1!==null && cc2!==null && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
 					g.fillStyle = this.cellcolor;
 					return true;
 				}
@@ -709,8 +689,8 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawBorderQsubs() ‹«ŠEü—p‚Ì•â•‹L†‚ğCanvas‚É‘‚«‚Ş
-	// pc.drawBoxBorders()  ‹«ŠEü‚Æ•ƒ}ƒX‚ÌŠÔ‚Ìü‚ğ•`‰æ‚·‚é
+	// pc.drawBorderQsubs() å¢ƒç•Œç·šç”¨ã®è£œåŠ©è¨˜å·ã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.drawBoxBorders()  å¢ƒç•Œç·šã¨é»’ãƒã‚¹ã®é–“ã®ç·šã‚’æç”»ã™ã‚‹
 	//---------------------------------------------------------------------------
 	drawBorderQsubs : function(x1,y1,x2,y2){
 		this.vinc('border_qsub', 'crispEdges');
@@ -732,7 +712,7 @@ Graphic.prototype = {
 		}
 	},
 
-	// ŠO˜g‚ª‚È‚¢ê‡‚Íl—¶‚µ‚Ä‚¢‚Ü‚¹‚ñ
+	// å¤–æ ãŒãªã„å ´åˆã¯è€ƒæ…®ã—ã¦ã„ã¾ã›ã‚“
 	drawBoxBorders  : function(x1,y1,x2,y2,tileflag){
 		this.vinc('boxborder', 'crispEdges');
 
@@ -754,8 +734,8 @@ Graphic.prototype = {
 			var px1 = px+lm+1, px2 = px+cw-lm-1;
 			var py1 = py+lm+1, py2 = py+ch-lm-1;
 
-			// ‚±‚ÌŠÖ”‚ğŒÄ‚Ôê‡‚Í‘S‚Äk.isoutsideborder===0‚È‚Ì‚Å
-			// ŠO˜g—p‚Ìl—¶•”•ª‚ğíœ‚µ‚Ä‚¢‚Ü‚·B
+			// ã“ã®é–¢æ•°ã‚’å‘¼ã¶å ´åˆã¯å…¨ã¦k.isoutsideborder===0ãªã®ã§
+			// å¤–æ ç”¨ã®è€ƒæ…®éƒ¨åˆ†ã‚’å‰Šé™¤ã—ã¦ã„ã¾ã™ã€‚
 			var UPin = (by>2), DNin = (by<2*k.qrows-2);
 			var LTin = (bx>2), RTin = (bx<2*k.qcols-2);
 
@@ -794,10 +774,10 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawLines()    ‰ñ“š‚Ìü‚ğCanvas‚É‘‚«‚Ş
-	// pc.drawLine1()    ‰ñ“š‚Ìü‚ğCanvas‚É‘‚«‚Ş(1ƒJŠ‚Ì‚İ)
-	// pc.setLineColor() •`‰æ‚·‚éü‚ÌF‚ğİ’è‚·‚é
-	// pc.drawPekes()    ‹«ŠEüã‚Ì~‚ğCanvas‚É‘‚«‚Ş
+	// pc.drawLines()    å›ç­”ã®ç·šã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.drawLine1()    å›ç­”ã®ç·šã‚’Canvasã«æ›¸ãè¾¼ã‚€(1ã‚«æ‰€ã®ã¿)
+	// pc.setLineColor() æç”»ã™ã‚‹ç·šã®è‰²ã‚’è¨­å®šã™ã‚‹
+	// pc.drawPekes()    å¢ƒç•Œç·šä¸Šã®Ã—ã‚’Canvasã«æ›¸ãè¾¼ã‚€
 	//---------------------------------------------------------------------------
 	drawLines : function(x1,y1,x2,y2){
 		this.vinc('line', 'crispEdges');
@@ -806,13 +786,15 @@ Graphic.prototype = {
 		for(var i=0;i<idlist.length;i++){ this.drawLine1(idlist[i]);}
 		this.addlw = 0;
 	},
-	drawLine1 : function(id, forceFlag){
+	drawLine1 : function(id){
 		var vid = "b_line_"+id;
-		if(forceFlag!==false && this.setLineColor(id)){
+		if(this.setLineColor(id)){
 			if(this.vnop(vid,this.FILL)){
 				var lw = this.lw + this.addlw, lm = this.lm;
-				if     (bd.border[id].bx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
-				else if(bd.border[id].by&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm, this.cw+lw, lw);}
+				var bx = bd.border[id].bx, by = bd.border[id].by;
+				var px = bd.border[id].px, py = bd.border[id].py;
+				if     (k.isCenterLine===!!(bx&1)){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
+				else if(k.isCenterLine===!!(by&1)){ g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
 			}
 		}
 		else{ this.vhide(vid);}
@@ -863,8 +845,8 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawTriangle()   OŠpŒ`‚ğCanvas‚É‘‚«‚Ş
-	// pc.drawTriangle1()  OŠpŒ`‚ğCanvas‚É‘‚«‚Ş(1ƒ}ƒX‚Ì‚İ)
+	// pc.drawTriangle()   ä¸‰è§’å½¢ã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.drawTriangle1()  ä¸‰è§’å½¢ã‚’Canvasã«æ›¸ãè¾¼ã‚€(1ãƒã‚¹ã®ã¿)
 	//---------------------------------------------------------------------------
 	drawTriangle : function(x1,y1,x2,y2){
 		this.vinc('cell_triangle', 'auto');
@@ -905,7 +887,7 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawMBs()    Cellã‚Ì›,~‚ğCanvas‚É‘‚«‚Ş
+	// pc.drawMBs()    Cellä¸Šã®â—‹,Ã—ã‚’Canvasã«æ›¸ãè¾¼ã‚€
 	//---------------------------------------------------------------------------
 	drawMBs : function(x1,y1,x2,y2){
 		this.vinc('cell_mb', 'auto');
@@ -938,34 +920,34 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawCircles41_42()    Cellã‚Ì•ŠÛ‚Æ”’ŠÛ‚ğCanvas‚É‘‚«‚Ş
-	// pc.drawCirclesAtNumber() ”š‚ª•`‰æ‚³‚ê‚éCell‚ÌŠÛ‚ğ‘‚«‚Ş
-	// pc.drawCircle1AtNumber() ”š‚ª•`‰æ‚³‚ê‚éCell‚ÌŠÛ‚ğ‘‚«‚Ş(1ƒ}ƒX‚Ì‚İ)
+	// pc.drawQnumCircles()    Cellä¸Šã®é»’ä¸¸ã¨ç™½ä¸¸ã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.drawCirclesAtNumber() æ•°å­—ãŒæç”»ã•ã‚Œã‚‹Cellã®ä¸¸ã‚’æ›¸ãè¾¼ã‚€
+	// pc.drawCircle1AtNumber() æ•°å­—ãŒæç”»ã•ã‚Œã‚‹Cellã®ä¸¸ã‚’æ›¸ãè¾¼ã‚€(1ãƒã‚¹ã®ã¿)
 	//---------------------------------------------------------------------------
-	drawCircles41_42 : function(x1,y1,x2,y2){
+	drawQnumCircles : function(x1,y1,x2,y2){
 		this.vinc('cell_circle', 'auto');
 
 		g.lineWidth = Math.max(this.cw*(this.circleratio[0]-this.circleratio[1]), 1);
-		var rsize41 = this.cw*(this.circleratio[0]+this.circleratio[1])/2;
-		var rsize42 = this.cw*this.circleratio[0];
-		var headers = ["c_cir41_", "c_cir42_"];
+		var rsize1 = this.cw*(this.circleratio[0]+this.circleratio[1])/2;
+		var rsize2 = this.cw*this.circleratio[0];
+		var headers = ["c_cirw_", "c_cirb_"];
 		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 
-			if(bd.cell[c].ques===41){
+			if(bd.cell[c].qnum===1){
 				g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.cellcolor);
 				g.fillStyle   = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 				if(this.vnop(headers[0]+c,this.FILL_STROKE)){
-					g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize41);
+					g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize1);
 				}
 			}
 			else{ this.vhide(headers[0]+c);}
 
-			if(bd.cell[c].ques===42){
+			if(bd.cell[c].qnum===2){
 				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(headers[1]+c,this.FILL)){
-					g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize42);
+					g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize2);
 				}
 			}
 			else{ this.vhide(headers[1]+c);}
@@ -978,13 +960,13 @@ Graphic.prototype = {
 		for(var i=0;i<clist.length;i++){ this.drawCircle1AtNumber(clist[i]);}
 	},
 	drawCircle1AtNumber : function(c){
-		if(c===-1){ return;}
+		if(c===null){ return;}
 
 		var rsize  = this.cw*this.circleratio[0];
 		var rsize2 = this.cw*this.circleratio[1];
 		var headers = ["c_cira_", "c_cirb_"];
 
-		if(bd.cell[c].qnum!=-1){
+		if(bd.cell[c].qnum!==-1){
 			g.lineWidth = this.cw*0.05;
 			g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : this.circledcolor);
 			if(this.vnop(headers[1]+c,this.FILL)){
@@ -1000,8 +982,8 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawLineParts()   „´‚È‚Ç‚ğCanvas‚É‘‚«‚Ş
-	// pc.drawLineParts1()  „´‚È‚Ç‚ğCanvas‚É‘‚«‚Ş(1ƒ}ƒX‚Ì‚İ)
+	// pc.drawLineParts()   â•‹ãªã©ã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.drawLineParts1()  â•‹ãªã©ã‚’Canvasã«æ›¸ãè¾¼ã‚€(1ãƒã‚¹ã®ã¿)
 	//---------------------------------------------------------------------------
 	drawLineParts : function(x1,y1,x2,y2){
 		this.vinc('cell_lineparts', 'crispEdges');
@@ -1012,15 +994,15 @@ Graphic.prototype = {
 	drawLineParts1 : function(id){
 		var vids = ["c_lp1_"+id, "c_lp2_"+id, "c_lp3_"+id, "c_lp4_"+id];
 
-		var qs = bd.cell[id].ques;
-		if(qs>=101 && qs<=107){
+		var qu = bd.cell[id].ques;
+		if(qu>=11 && qu<=17){
 			var lw  = this.lw, lm = this.lm;
 			var hhp = this.bh+this.lm, hwp = this.bw+this.lm;
 			var px  = bd.cell[id].px, py = bd.cell[id].py;
 			var cpx = bd.cell[id].cpx, cpy = bd.cell[id].cpy;
 			g.fillStyle = this.borderQuescolor;
 
-			var flag  = {101:15, 102:3, 103:12, 104:9, 105:5, 106:6, 107:10}[qs];
+			var flag  = {11:15, 12:3, 13:12, 14:9, 15:5, 16:6, 17:10}[qu];
 			if(flag&1){ if(this.vnop(vids[0],this.NONE)){ g.fillRect(cpx-lm, py    , lw, hhp);} }else{ this.vhide(vids[0]);}
 			if(flag&2){ if(this.vnop(vids[1],this.NONE)){ g.fillRect(cpx-lm, cpy-lm, lw, hhp);} }else{ this.vhide(vids[1]);}
 			if(flag&4){ if(this.vnop(vids[2],this.NONE)){ g.fillRect(px    , cpy-lm, hwp, lw);} }else{ this.vhide(vids[2]);}
@@ -1030,10 +1012,10 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawQues51()         Ques===51‚ª‚ ‚é‚æ‚¤‚ÈƒpƒYƒ‹‚ÅA•`‰æŠÖ”‚ğŒÄ‚Ño‚·
-	// pc.drawSlash51Cells()   [_]‚Ìƒiƒiƒü‚ğCanvas‚É‘‚«‚Ş
-	// pc.drawSlash51EXcells() EXCellã‚Ì[_]‚Ìƒiƒiƒü‚ğCanvas‚É‘‚«‚Ş
-	// pc.drawEXCellGrid()     EXCellŠÔ‚Ì‹«ŠEü‚ğCanvas‚É‘‚«‚Ş
+	// pc.drawQues51()         Ques===51ãŒã‚ã‚‹ã‚ˆã†ãªãƒ‘ã‚ºãƒ«ã§ã€æç”»é–¢æ•°ã‚’å‘¼ã³å‡ºã™
+	// pc.drawSlash51Cells()   [ï¼¼]ã®ãƒŠãƒŠãƒ¡ç·šã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.drawSlash51EXcells() EXCellä¸Šã®[ï¼¼]ã®ãƒŠãƒŠãƒ¡ç·šã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.drawEXCellGrid()     EXCellé–“ã®å¢ƒç•Œç·šã‚’Canvasã«æ›¸ãè¾¼ã‚€
 	//---------------------------------------------------------------------------
 	drawQues51 : function(x1,y1,x2,y2){
 		this.drawEXCellGrid(x1,y1,x2,y2);
@@ -1097,23 +1079,23 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawNumbersOn51()   [_]‚É”š‚ğ‹L“ü‚·‚é
-	// pc.drawNumbersOn51_1() 1‚Â‚Ì[_]‚É”š‚ğ‹L“ü‚·‚é
+	// pc.drawNumbersOn51()   [ï¼¼]ã«æ•°å­—ã‚’è¨˜å…¥ã™ã‚‹
+	// pc.drawNumbersOn51_1() 1ã¤ã®[ï¼¼]ã«æ•°å­—ã‚’è¨˜å…¥ã™ã‚‹
 	//---------------------------------------------------------------------------
 	drawNumbersOn51 : function(x1,y1,x2,y2){
 		this.vinc('cell_number51', 'auto');
 
 		for(var bx=(x1|1)-2;bx<=x2+2;bx+=2){
 			for(var by=(y1|1)-2;by<=y2+2;by+=2){
-				// cellã‚¾‚Á‚½ê‡
+				// cellä¸Šã ã£ãŸå ´åˆ
 				if(bx!==-1 && by!==-1){
 					var c = bd.cnum(bx,by);
-					if(c!==-1){ this.drawNumbersOn51_1('cell', c);}
+					if(c!==null){ this.drawNumbersOn51_1('cell', c);}
 				}
-				// excellã‚¾‚Á‚½ê‡
+				// excellä¸Šã ã£ãŸå ´åˆ
 				else{
 					var c = bd.exnum(bx,by);
-					if(c!==-1){ this.drawNumbersOn51_1('excell', c);}
+					if(c!==null){ this.drawNumbersOn51_1('excell', c);}
 				}
 			}
 		}
@@ -1124,10 +1106,10 @@ Graphic.prototype = {
 
 		if(family==='excell' || bd.cell[c].ques===51){
 			for(var i=0;i<2;i++){
-				if     (i===0){ val=obj.qnum,  guard=obj.by, nb=bd.cnum(obj.bx+2, obj.by), type=4;} // 1‰ñ–Ú‚Í‰EŒü‚«
-				else if(i===1){ val=obj.direc, guard=obj.bx, nb=bd.cnum(obj.bx, obj.by+2), type=2;} // 2‰ñ–Ú‚Í‰ºŒü‚«
+				if     (i===0){ val=obj.qnum, guard=obj.by, nb=bd.cnum(obj.bx+2, obj.by), type=4;} // 1å›ç›®ã¯å³å‘ã
+				else if(i===1){ val=obj.qdir, guard=obj.bx, nb=bd.cnum(obj.bx, obj.by+2), type=2;} // 2å›ç›®ã¯ä¸‹å‘ã
 
-				if(val!==-1 && guard!==-1 && nb!==-1 && bd.cell[nb].ques!==51){
+				if(val!==-1 && guard!==-1 && nb!==null && bd.cell[nb].ques!==51){
 					var color = (obj.error===1?this.fontErrcolor:this.fontcolor);
 					var text = (val>=0?""+val:"");
 
@@ -1143,9 +1125,9 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawTarget()  “ü—Í‘ÎÛ‚Æ‚È‚éêŠ‚ğ•`‰æ‚·‚é
-	// pc.drawCursor()  ƒL[ƒ{[ƒh‚©‚ç‚Ì“ü—Í‘ÎÛ‚ğCanvas‚É‘‚«‚Ş
-	// pc.drawTargetTriangle() [_]‚Ì‚¤‚¿“ü—Í‘ÎÛ‚Ì‚Ù‚¤‚É”wŒiF‚ğ‚Â‚¯‚é
+	// pc.drawTarget()  å…¥åŠ›å¯¾è±¡ã¨ãªã‚‹å ´æ‰€ã‚’æç”»ã™ã‚‹
+	// pc.drawCursor()  ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‹ã‚‰ã®å…¥åŠ›å¯¾è±¡ã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.drawTargetTriangle() [ï¼¼]ã®ã†ã¡å…¥åŠ›å¯¾è±¡ã®ã»ã†ã«èƒŒæ™¯è‰²ã‚’ã¤ã‘ã‚‹
 	//---------------------------------------------------------------------------
 	drawTarget : function(x1,y1,x2,y2){
 		this.drawCursor(x1, y1, x2, y2, true, k.editmode);
@@ -1155,14 +1137,14 @@ Graphic.prototype = {
 		this.vinc('target_cursor', 'crispEdges');
 
 		if(isdraw!==false && pp.getVal('cursor')){
-			if(tc.cursorx < x1-1 || x2+1 < tc.cursorx){ return;}
-			if(tc.cursory < y1-1 || y2+1 < tc.cursory){ return;}
+			if(tc.cursor.x < x1-1 || x2+1 < tc.cursor.x){ return;}
+			if(tc.cursor.y < y1-1 || y2+1 < tc.cursor.y){ return;}
 
-			var cpx = k.p0.x + tc.cursorx*this.bw + 0.5;
-			var cpy = k.p0.y + tc.cursory*this.bh + 0.5;
+			var cpx = k.p0.x + tc.cursor.x*this.bw + 0.5;
+			var cpy = k.p0.y + tc.cursor.y*this.bh + 0.5;
 			var w, size;
-			if(islarge!==false){ w = mf(Math.max(this.cw/16, 2)); size = this.bw-0.5;}
-			else	           { w = mf(Math.max(this.cw/24, 1)); size = this.bw*0.56;}
+			if(islarge!==false){ w = (Math.max(this.cw/16, 2))|0; size = this.bw-0.5;}
+			else	           { w = (Math.max(this.cw/24, 1))|0; size = this.bw*0.56;}
 
 			this.vdel(["ti1_","ti2_","ti3_","ti4_"]);
 			g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
@@ -1182,20 +1164,20 @@ Graphic.prototype = {
 
 		if(k.playmode){ return;}
 
-		if(tc.cursorx < x1 || x2+2 < tc.cursorx){ return;}
-		if(tc.cursory < y1 || y2+2 < tc.cursory){ return;}
+		if(tc.cursor.x < x1 || x2+2 < tc.cursor.x){ return;}
+		if(tc.cursor.y < y1 || y2+2 < tc.cursor.y){ return;}
 
-		var cc = tc.getTCC(), ex = -1;
-		if(cc===-1){ ex = tc.getTEC();}
+		var cc = tc.getTCC(), ex = null;
+		if(cc===null){ ex = tc.getTEC();}
 		var target = kc.detectTarget(cc,ex);
-		if(target===-1){ return;}
+		if(target===0){ return;}
 
 		g.fillStyle = this.ttcolor;
-		this.drawTriangle1(k.p0.x+(tc.cursorx>>1)*this.cw, k.p0.y+(tc.cursory>>1)*this.ch, (target===2?4:2), vid);
+		this.drawTriangle1(k.p0.x+(tc.cursor.x>>1)*this.cw, k.p0.y+(tc.cursor.y>>1)*this.ch, (target===2?4:2), vid);
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawDashedCenterLines() ƒZƒ‹‚Ì’†S‚©‚ç’†S‚É‚Ğ‚©‚ê‚é“_ü‚ğCanvas‚É•`‰æ‚·‚é
+	// pc.drawDashedCenterLines() ã‚»ãƒ«ã®ä¸­å¿ƒã‹ã‚‰ä¸­å¿ƒã«ã²ã‹ã‚Œã‚‹ç‚¹ç·šã‚’Canvasã«æç”»ã™ã‚‹
 	//---------------------------------------------------------------------------
 	drawDashedCenterLines : function(x1,y1,x2,y2){
 		this.vinc('centerline', 'crispEdges');
@@ -1233,13 +1215,13 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawGrid()        ƒZƒ‹‚Ì˜gü(Àü)‚ğCanvas‚É‘‚«‚Ş
-	// pc.drawDashedGrid()  ƒZƒ‹‚Ì˜gü(“_ü)‚ğCanvas‚É‘‚«‚Ş
+	// pc.drawGrid()        ã‚»ãƒ«ã®æ ç·š(å®Ÿç·š)ã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.drawDashedGrid()  ã‚»ãƒ«ã®æ ç·š(ç‚¹ç·š)ã‚’Canvasã«æ›¸ãè¾¼ã‚€
 	//---------------------------------------------------------------------------
 	drawGrid : function(x1,y1,x2,y2,isdraw){
 		this.vinc('grid', 'crispEdges');
 
-		// ŠO˜g‚Ü‚Å•`‰æ‚·‚é‚í‚¯‚¶‚á‚È‚¢‚Ì‚ÅAmaxbx‚Æ‚©g‚¢‚Ü‚¹‚ñ
+		// å¤–æ ã¾ã§æç”»ã™ã‚‹ã‚ã‘ã˜ã‚ƒãªã„ã®ã§ã€maxbxã¨ã‹ä½¿ã„ã¾ã›ã‚“
 		if(x1<0){ x1=0;} if(x2>2*k.qcols){ x2=2*k.qcols;}
 		if(y1<0){ y1=0;} if(y2>2*k.qrows){ y2=2*k.qrows;}
 		x1-=(x1&1), y1-=(y1&1);
@@ -1292,7 +1274,7 @@ Graphic.prototype = {
 			}
 		}
 		else{
-			// stroke‚Ô‚ñ0.5‚¸‚ç‚·
+			// strokeã¶ã‚“0.5ãšã‚‰ã™
 			g.lineWidth = 1;
 			g.strokeStyle = this.gridcolor;
 			for(var i=xa;i<=xb;i+=2){ if(this.vnop("bdy_"+i,this.NONE)){
@@ -1309,13 +1291,13 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawChassis()     ŠO˜g‚ğCanvas‚É‘‚«‚Ş
-	// pc.drawChassis_ex1() k.isextencdell==1‚Ì‚ÌŠO˜g‚ğCanvas‚É‘‚«‚Ş
+	// pc.drawChassis()     å¤–æ ã‚’Canvasã«æ›¸ãè¾¼ã‚€
+	// pc.drawChassis_ex1() k.isextencdell==1ã®æ™‚ã®å¤–æ ã‚’Canvasã«æ›¸ãè¾¼ã‚€
 	//---------------------------------------------------------------------------
 	drawChassis : function(x1,y1,x2,y2){
 		this.vinc('chassis', 'crispEdges');
 
-		// ex===0‚Æex===2‚Å“¯‚¶êŠ‚É•`‰æ‚·‚é‚Ì‚ÅAmaxbx‚Æ‚©g‚¢‚Ü‚¹‚ñ
+		// ex===0ã¨ex===2ã§åŒã˜å ´æ‰€ã«æç”»ã™ã‚‹ã®ã§ã€maxbxã¨ã‹ä½¿ã„ã¾ã›ã‚“
 		if(x1<0){ x1=0;} if(x2>2*k.qcols){ x2=2*k.qcols;}
 		if(y1<0){ y1=0;} if(y2>2*k.qrows){ y2=2*k.qrows;}
 
@@ -1345,7 +1327,7 @@ Graphic.prototype = {
 		var boardWidth = k.qcols*this.cw, boardHeight = k.qrows*this.ch;
 		g.fillStyle = "black";
 
-		// extendcell==1‚àŠÜ‚ñ‚¾ŠO˜g‚Ì•`‰æ
+		// extendcell==1ã‚‚å«ã‚“ã å¤–æ ã®æç”»
 		if(g.use.canvas){
 			if(x1===bd.minbx){ g.fillRect(k.p0.x-this.cw-lw+1, k.p0.y+y1*bh-lw+1,   lw, (y2-y1)*bh+2*lw-2);}
 			if(x2===bd.maxbx){ g.fillRect(k.p0.x+boardWidth,   k.p0.y+y1*bh-lw+1,   lw, (y2-y1)*bh+2*lw-2);}
@@ -1359,9 +1341,9 @@ Graphic.prototype = {
 			if(this.vnop("chsex1_4_",this.NONE)){ g.fillRect(k.p0.x-this.cw-lw+1, k.p0.y+boardHeight,  boardWidth+this.cw+2*lw-2, lw); }
 		}
 
-		// ’Êí‚ÌƒZƒ‹‚Æextendcell==1‚ÌŠÔ‚Ì•`‰æ
+		// é€šå¸¸ã®ã‚»ãƒ«ã¨extendcell==1ã®é–“ã®æç”»
 		if(boldflag){
-			// ‚·‚×‚Ä‘¾ü‚Å•`‰æ‚·‚éê‡
+			// ã™ã¹ã¦å¤ªç·šã§æç”»ã™ã‚‹å ´åˆ
 			if(g.use.canvas){
 				if(x1<=0){ g.fillRect(k.p0.x-lw+1, k.p0.y+y1*bh-lw+1, lw, (y2-y1)*bh+lw-1);}
 				if(y1<=0){ g.fillRect(k.p0.x+x1*bw-lw+1, k.p0.y-lw+1, (x2-x1)*bw+lw-1, lw); }
@@ -1372,7 +1354,7 @@ Graphic.prototype = {
 			}
 		}
 		else{
-			// ques==51‚ÌƒZƒ‹‚ª—×Ú‚µ‚Ä‚¢‚é‚É×ü‚ğ•`‰æ‚·‚éê‡
+			// ques==51ã®ã‚»ãƒ«ãŒéš£æ¥ã—ã¦ã„ã‚‹æ™‚ã«ç´°ç·šã‚’æç”»ã™ã‚‹å ´åˆ
 			if(g.use.canvas){
 				if(x1<=0){ g.fillRect(k.p0.x, k.p0.y+y1*bh, 1, (y2-y1)*bh);}
 				if(y1<=0){ g.fillRect(k.p0.x+x1*bw, k.p0.y, (x2-x1)*bw, 1); }
@@ -1408,41 +1390,27 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.flushCanvas()    w’è‚³‚ê‚½—Ìˆæ‚ğ”’‚Å“h‚è‚Â‚Ô‚·
-	// pc.flushCanvasAll() Canvas‘S–Ê‚ğ”’‚Å“h‚è‚Â‚Ô‚·
-	//
-	// pc.vnop()  VML‚ÅŠù‚É•`‰æ‚³‚ê‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚ğÄ•`‰æ‚¹‚¸AF‚Íİ’è‚·‚é
-	// pc.vhide() VML‚ÅŠù‚É•`‰æ‚³‚ê‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚ğ‰B‚·
-	// pc.vdel()  VML‚ÅŠù‚É•`‰æ‚³‚ê‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚ğíœ‚·‚é
-	// pc.vinc()  z-index‚Éİ’è‚³‚ê‚é’l‚ğ+1‚·‚é
+	// pc.resetVectorFunctions() flushCanvas, vnopç³»é–¢æ•°ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹
+	// pc.flushCanvas()    æŒ‡å®šã•ã‚ŒãŸé ˜åŸŸã‚’ç™½ã§å¡—ã‚Šã¤ã¶ã™
+	// pc.flushCanvasAll() Canvaså…¨é¢ã‚’ç™½ã§å¡—ã‚Šã¤ã¶ã™
 	//---------------------------------------------------------------------------
-	flushCanvasAll : f_true,
-	flushCanvas    : f_true,
-	vnop  : f_true,
-	vhide : f_true,
-	vdel  : f_true,
-	vinc  : f_true,
+	resetVectorFunctions : function(){
+		this.flushCanvasAll = Graphic.prototype.flushCanvasAll;
+		this.flushCanvas    = Graphic.prototype.flushCanvas;
+		this.vnop  = Graphic.prototype.vnop;
+		this.vhide = Graphic.prototype.vhide;
+		this.vdel  = Graphic.prototype.vdel;
+		this.vinc  = Graphic.prototype.vinc;
+	},
 
-	setVectorFunctions : function(){
-		if(g.use.canvas){
-			this.flushCanvasAll = function(x1,y1,x2,y2){
+	flushCanvasAll : function(){
+		this.flushCanvasAll = ((g.use.canvas) ?
+			function(){
 				this.numobj = {};
 				base.numparent.innerHTML = '';
-			};
-			this.flushCanvas = function(x1,y1,x2,y2){
-				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
-				g.fillRect(k.p0.x+x1*this.bw, k.p0.y+y1*this.bh, (x2-x1)*this.bw, (y2-y1)*this.bh);
-			};
-			this.vnop  = f_true;
-			this.vhide = f_true;
-			this.vdel  = f_true;
-			this.vinc = function(layerid, rendering){
-				g.setLayer(layerid);
-				if(rendering){ g.setRendering(rendering);}
-			};
-		}
-		else{
-			this.flushCanvasAll = function(x1,y1,x2,y2){
+			}
+		:
+			function(){
 				g.clear();
 				this.zidx=0;
 				this.zidx_array=[];
@@ -1455,55 +1423,101 @@ Graphic.prototype = {
 				if(this.vnop("boardfull",this.NONE)){
 					g.fillRect(k.p0.x, k.p0.y, k.qcols*this.cw, k.qrows*this.ch);
 				}
-			};
-			this.flushCanvas = function(x1,y1,x2,y2){
-				this.zidx=1;
-			};
-			this.vnop = function(vid, ccflag){ // stroke‚Ì‚İ:0, fill‚Ì‚İ:1, —¼•û:2, F‚Ì•ÏX‚È‚µ:3
-				g.vid = vid;
-				if(!!g.elements[vid]){
-					var el = g.elements[vid],
-						isfill   = this.vnop_FILL[ccflag],
-						isstroke = this.vnop_STROKE[ccflag];
+			}
+		);
+		this.flushCanvasAll();
+	},
+	flushCanvas : function(x1,y1,x2,y2){
+		this.flushCanvas = ((g.use.canvas) ?
+			function(x1,y1,x2,y2){
+				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
+				g.fillRect(k.p0.x+x1*this.bw, k.p0.y+y1*this.bh, (x2-x1)*this.bw, (y2-y1)*this.bh);
+			}
+		:
+			function(x1,y1,x2,y2){ this.zidx=1;}
+		);
+		this.flushCanvas(x1,y1,x2,y2);
+	},
 
-					if(g.use.vml){
-						el.style.display = 'inline';
-						if(isfill)  { el.fillcolor   = Camp.parse(g.fillStyle);}
-						if(isstroke){ el.strokecolor = Camp.parse(g.strokeStyle);}
-					}
-					else if(g.use.sl){
-						el.Visibility = "Visible";
-						if(isfill)  { el.fill   = Camp.parse(g.fillStyle);  }
-						if(isstroke){ el.stroke = Camp.parse(g.strokeStyle);}
-					}
-					else if(g.use.svg){
-						el.style.display = 'inline';
-						if(isfill)  { el.setAttribute('fill',  Camp.parse(g.fillStyle));}
-						if(isstroke){ el.setAttribute('stroke',Camp.parse(g.strokeStyle));}
-					}
-					return false;
+	//---------------------------------------------------------------------------
+	// pc.vnop()  VMLã§æ—¢ã«æç”»ã•ã‚Œã¦ã„ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å†æç”»ã›ãšã€è‰²ã¯è¨­å®šã™ã‚‹
+	// pc.vhide() VMLã§æ—¢ã«æç”»ã•ã‚Œã¦ã„ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’éš ã™
+	// pc.vdel()  VMLã§æ—¢ã«æç”»ã•ã‚Œã¦ã„ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤ã™ã‚‹
+	// pc.vinc()  z-indexã«è¨­å®šã•ã‚Œã‚‹å€¤ã‚’+1ã™ã‚‹
+	//---------------------------------------------------------------------------
+	vnop : function(vid, ccflag){
+		this.vnop = ((g.use.canvas) ?
+			f_true
+		:
+			// ccflag -> 0:strokeã®ã¿, 1:fillã®ã¿, 2:ä¸¡æ–¹, 3:è‰²ã®å¤‰æ›´ãªã—
+			function(vid, ccflag){
+				g.vid = vid;
+				if(!g.elements[vid]){ return true;}
+
+				var el = g.elements[vid],
+					isfill   = this.vnop_FILL[ccflag],
+					isstroke = this.vnop_STROKE[ccflag];
+
+				if(g.use.vml){
+					el.style.display = 'inline';
+					if(isfill)  { el.fillcolor   = Camp.parse(g.fillStyle);}
+					if(isstroke){ el.strokecolor = Camp.parse(g.strokeStyle);}
 				}
-				return true;
-			};
-			this.vhide = function(vid){
+				else if(g.use.sl){
+					el.Visibility = "Visible";
+					if(isfill)  { el.fill   = Camp.parse(g.fillStyle);  }
+					if(isstroke){ el.stroke = Camp.parse(g.strokeStyle);}
+				}
+				else if(g.use.svg){
+					el.style.display = 'inline';
+					if(isfill)  { el.setAttribute('fill',  Camp.parse(g.fillStyle));}
+					if(isstroke){ el.setAttribute('stroke',Camp.parse(g.strokeStyle));}
+				}
+				return false;
+			}
+		);
+		return this.vnop(vid, ccflag);
+	},
+	vhide : function(vid){
+		this.vhide = ((g.use.canvas) ?
+			f_true
+		:
+			function(vid){
 				if(typeof vid === 'string'){ vid = [vid];}
 				for(var i=0;i<vid.length;i++){
-					if(g.elements[vid[i]]){
-						if(!g.use.sl){ g.elements[vid[i]].style.display = 'none';}
-						else{ g.elements[vid[i]].Visibility = "Collapsed";}
-					}
+					if(!g.elements[vid[i]]){ continue;}
+
+					if(!g.use.sl){ g.elements[vid[i]].style.display = 'none';}
+					else{ g.elements[vid[i]].Visibility = "Collapsed";}
 				}
-			};
-			this.vdel = function(vid){
+			}
+		);
+		this.vhide(vid);
+	},
+	vdel : function(vid){
+		this.vdel = ((g.use.canvas) ?
+			f_true
+		:
+			function(vid){
 				for(var i=0;i<vid.length;i++){
-					if(g.elements[vid[i]]){
-						if(!g.use.sl){ g.target.removeChild(g.elements[vid[i]]);}
-						else{ g.elements[vid[i]].Visibility = "Collapsed";}
-						g.elements[vid[i]] = null;
-					}
+					if(!g.elements[vid[i]]){ continue;}
+
+					if(!g.use.sl){ g.target.removeChild(g.elements[vid[i]]);}
+					else{ g.elements[vid[i]].Visibility = "Collapsed";}
+					g.elements[vid[i]] = null;
 				}
-			};
-			this.vinc = function(layerid, rendering){
+			}
+		);
+		this.vdel(vid);
+	},
+	vinc : function(layerid, rendering){
+		this.vinc = ((g.use.canvas) ?
+			function(layerid, rendering){
+				g.setLayer(layerid);
+				if(rendering){ g.setRendering(rendering);}
+			}
+		:
+			function(layerid, rendering){
 				g.vid = "";
 				g.setLayer(layerid);
 
@@ -1514,18 +1528,19 @@ Graphic.prototype = {
 					if(!g.use.sl){ g.getLayerElement().style.zIndex = this.zidx;}
 					else{ g.getLayerElement()["Canvas.ZIndex"] = this.zidx;}
 				}
-			};
-		}
+			}
+		);
+		this.vinc(layerid, rendering);
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.showEL()   ƒGƒŒƒƒ“ƒg‚ğ•\¦‚·‚é
-	// pc.hideEL()   ƒGƒŒƒƒ“ƒg‚ğ‰B‚·
-	// pc.dispnum()  ”š‚ğ‹L“ü‚·‚é‚½‚ß‚Ì‹¤’ÊŠÖ”
+	// pc.showEL()   ã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆã‚’è¡¨ç¤ºã™ã‚‹
+	// pc.hideEL()   ã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆã‚’éš ã™
+	// pc.dispnum()  æ•°å­—ã‚’è¨˜å…¥ã™ã‚‹ãŸã‚ã®å…±é€šé–¢æ•°
 	//---------------------------------------------------------------------------
 	showEL : function(key){
-		// ŒÄ‚Ño‚µŒ³‚Í if(!this.fillTextPrecisely) ‚Ì’†‚¾‚¯‚È‚Ì‚Å
-		// hideEL‚É‚ ‚éğŒ‚ÍŒ©‚È‚­‚Ä‚à‚æ‚³‚»‚¤B
+		// å‘¼ã³å‡ºã—å…ƒã¯ if(!this.fillTextPrecisely) ã®ä¸­ã ã‘ãªã®ã§
+		// hideELã«ã‚ã‚‹æ¡ä»¶ã¯è¦‹ãªãã¦ã‚‚ã‚ˆã•ãã†ã€‚
 		this.numobj[key].style.display = 'inline';
 	},
 	hideEL : function(key){
@@ -1535,24 +1550,24 @@ Graphic.prototype = {
 	},
 	dispnum : function(key, type, text, fontratio, color, px, py){
 		if(!this.fillTextPrecisely){
-			if(k.br.IEmoz4){ py+=2;}
+			if(k.br.IE6 || k.br.IE7){ py+=2;}
 
-			// ƒGƒŒƒƒ“ƒg‚ğæ“¾
+			// ã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆã‚’å–å¾—
 			var el = this.numobj[key];
 			if(!el){ el = this.numobj[key] = ee.createEL(this.EL_NUMOBJ,'');}
 
 			el.innerHTML = text;
 
-			var fontsize = mf(this.cw*fontratio*this.fontsizeratio);
+			var fontsize = (this.cw*fontratio*this.fontsizeratio)|0;
 			el.style.fontSize = (""+ fontsize + 'px');
 
-			this.showEL(key);	// æ‚É•\¦‚µ‚È‚¢‚Æwid,hgt=0‚É‚È‚Á‚ÄˆÊ’u‚ª‚¸‚ê‚é
+			this.showEL(key);	// å…ˆã«è¡¨ç¤ºã—ãªã„ã¨wid,hgt=0ã«ãªã£ã¦ä½ç½®ãŒãšã‚Œã‚‹
 
 			var wid = el.offsetWidth;
 			var hgt = el.offsetHeight;
 
 			if(type===1){
-				px+=2; // ‚È‚ñ‚©‚¿‚å‚Á‚Æ‚¸‚ê‚é
+				px+=2; // ãªã‚“ã‹ã¡ã‚‡ã£ã¨ãšã‚Œã‚‹
 				el.style.left = k.cv_oft.x+px-wid/2 + 'px';
 				el.style.top  = k.cv_oft.y+py-hgt/2 + 'px';
 			}
@@ -1565,9 +1580,9 @@ Graphic.prototype = {
 
 			el.style.color = color;
 		}
-		// Native‚È•û–@‚Í‚±‚Á‚¿‚È‚ñ‚¾‚¯‚ÇAA(‘O‚ÍŒv5`6%‚­‚ç‚¢’x‚­‚È‚Á‚Ä‚½)
+		// Nativeãªæ–¹æ³•ã¯ã“ã£ã¡ãªã‚“ã ã‘ã©ã€ã€(å‰ã¯è¨ˆ5ï½6%ãã‚‰ã„é…ããªã£ã¦ãŸ)
 		else{
-			g.font = ""+mf(this.cw*fontratio*this.fontsizeratio)+"px 'Serif'";
+			g.font = ""+((this.cw*fontratio*this.fontsizeratio)|0)+"px 'Serif'";
 			g.fillStyle = color;
 			if(type===1){
 				g.textAlign = 'center'; g.textBaseline = 'middle';

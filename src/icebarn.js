@@ -1,51 +1,51 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ƒAƒCƒXƒo[ƒ“”Å icebarn.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ã‚¢ã‚¤ã‚¹ãƒãƒ¼ãƒ³ç‰ˆ icebarn.js v3.3.1
 //
 Puzzles.icebarn = function(){ };
 Puzzles.icebarn.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 8;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 8;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 1;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 8;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 8;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 1;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 2;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 2;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = true;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = true;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = false;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = true;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = true;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = false;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = false;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = true;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = false;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = false;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = true;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = false;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = false;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = false;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = false;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = false;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.bdmargin       = 1.00;	// ˜gŠO‚Ìˆê•Ó‚Ìmargin(ƒZƒ‹”Š·Z)
-		k.bdmargin_image = 1.00;	// ‰æ‘œo—Í‚Ìbdmargin’l
+		k.bdmargin       = 1.00;	// æ å¤–ã®ä¸€è¾ºã®margin(ã‚»ãƒ«æ•°æ›ç®—)
+		k.bdmargin_image = 1.00;	// ç”»åƒå‡ºåŠ›æ™‚ã®bdmarginå€¤
 
 		if(k.EDITOR){
-			base.setExpression("@¶ƒhƒ‰ƒbƒO‚Å–îˆó‚ªA‰EƒNƒŠƒbƒN‚Å•X‚ª“ü—Í‚Å‚«‚Ü‚·B",
+			base.setExpression("ã€€å·¦ãƒ‰ãƒ©ãƒƒã‚°ã§çŸ¢å°ãŒã€å³ã‚¯ãƒªãƒƒã‚¯ã§æ°·ãŒå…¥åŠ›ã§ãã¾ã™ã€‚",
 							   " Left Button Drag to input arrows, Right Click to input ice.");
 		}
 		else{
-			base.setExpression("@¶ƒhƒ‰ƒbƒO‚Åü‚ªA‰EƒNƒŠƒbƒN‚Å~‚ª“ü—Í‚Å‚«‚Ü‚·B",
+			base.setExpression("ã€€å·¦ãƒ‰ãƒ©ãƒƒã‚°ã§ç·šãŒã€å³ã‚¯ãƒªãƒƒã‚¯ã§Ã—ãŒå…¥åŠ›ã§ãã¾ã™ã€‚",
 							   " Left Button Drag to input black cells, Right Click to input a cross.");
 		}
-		base.setTitle("ƒAƒCƒXƒo[ƒ“","Icebarn");
+		base.setTitle("ã‚¢ã‚¤ã‚¹ãƒãƒ¼ãƒ³","Icebarn");
 		base.setFloatbgcolor("rgb(0, 0, 127)");
 	},
 	menufix : function(){
@@ -53,9 +53,9 @@ Puzzles.icebarn.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode){
@@ -80,8 +80,8 @@ Puzzles.icebarn.prototype = {
 		};
 		mv.inputIcebarn = function(){
 			var cc = this.cellid();
-			if(cc==-1 || cc==this.mouseCell){ return;}
-			if(this.inputData==-1){ this.inputData = (bd.QuC(cc)==6?0:6);}
+			if(cc===null || cc===this.mouseCell){ return;}
+			if(this.inputData===null){ this.inputData = (bd.QuC(cc)==6?0:6);}
 
 			bd.sQuC(cc, this.inputData);
 			pc.paintCellAround(cc);
@@ -89,41 +89,39 @@ Puzzles.icebarn.prototype = {
 		};
 		mv.inputarrow = function(){
 			var pos = this.borderpos(0);
-			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
+			if(this.prevPos.equals(pos)){ return;}
 
-			var id = -1;
-			if     (pos.y-this.mouseCell.y==-2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y-1); if(this.inputData!=0){ this.inputData=1;} }
-			else if(pos.y-this.mouseCell.y== 2){ id=bd.bnum(this.mouseCell.x  ,this.mouseCell.y+1); if(this.inputData!=0){ this.inputData=2;} }
-			else if(pos.x-this.mouseCell.x==-2){ id=bd.bnum(this.mouseCell.x-1,this.mouseCell.y  ); if(this.inputData!=0){ this.inputData=1;} }
-			else if(pos.x-this.mouseCell.x== 2){ id=bd.bnum(this.mouseCell.x+1,this.mouseCell.y  ); if(this.inputData!=0){ this.inputData=2;} }
+			var id = this.getnb(this.prevPos, pos);
+			if(id!==null){
+				var dir = this.getdir(this.prevPos, pos);
+				if(this.inputData===null){ this.inputData = ((dir===k.UP||dir===k.LT) ? 1 : 2);}
 
-			this.mouseCell = pos;
-
-			if(id==-1){ return;}
-			else if(id<bd.bdinside){
-				if(this.inputData==bd.getArrow(id)){ this.inputData=0;}
-				bd.setArrow(id,this.inputData);
-			}
-			else{
-				if(bd.border[id].bx===0 || bd.border[id].by===0){
-					if     (this.inputData==1){ bd.inputarrowout(id);}
-					else if(this.inputData==2){ bd.inputarrowin (id);}
+				if(id<bd.bdinside){
+					if(this.inputData==bd.getArrow(id)){ this.inputData=0;}
+					bd.setArrow(id,this.inputData);
 				}
 				else{
-					if     (this.inputData==1){ bd.inputarrowin (id);}
-					else if(this.inputData==2){ bd.inputarrowout(id);}
+					if(bd.border[id].bx===0 || bd.border[id].by===0){
+						if     (this.inputData==1){ bd.inputarrowout(id);}
+						else if(this.inputData==2){ bd.inputarrowin (id);}
+					}
+					else{
+						if     (this.inputData==1){ bd.inputarrowin (id);}
+						else if(this.inputData==2){ bd.inputarrowout(id);}
+					}
 				}
+				pc.paintBorder(id);
 			}
-			pc.paintBorder(id);
+			this.prevPos = pos;
 		};
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){ if(ca=='z' && !this.keyPressed){ this.isZ=true;}};
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
 
-		if(!bd.arrowin) { bd.arrowin  = -1;}
-		if(!bd.arrowout){ bd.arrowout = -1;}
+		if(!bd.arrowin) { bd.arrowin  = null;}
+		if(!bd.arrowout){ bd.arrowout = null;}
 		bd.inputarrowin = function(id){
 			var dir=((this.border[id].bx===0||this.border[id].by===0)?1:2);
 			this.setArrow(this.arrowin,0);
@@ -149,17 +147,16 @@ Puzzles.icebarn.prototype = {
 			this.setArrow(this.arrowout, ((dir+1)%2)+1);
 		};
 		bd.getArrow = function(id){ return this.QuB(id); };
-		bd.setArrow = function(id,val){ if(id!==-1){ this.sQuB(id,val);}};
+		bd.setArrow = function(id,val){ if(id!==null){ this.sQuB(id,val);}};
 		bd.isArrow  = function(id){ return (this.QuB(id)>0);};
 
 		bd.initSpecial = function(col,row){
 			this.bdinside = 2*col*row-(col+row);
-			if(this.arrowin==-1 && this.arrowout==-1){
+			if(base.initProcess){
 				this.inputarrowin (0 + this.bdinside, 1);
 				this.inputarrowout(2 + this.bdinside, 1);
 			}
-
-			if(!base.initProcess){
+			else{
 				if(this.arrowin<k.qcols+this.bdinside){ if(this.arrowin>col+this.bdinside){ this.arrowin=col+this.bdinside-1;} }
 				else{ if(this.arrowin>col+row+this.bdinside){ this.arrowin=col+row+this.bdinside-1;} }
 
@@ -175,47 +172,47 @@ Puzzles.icebarn.prototype = {
 			var ibx=bd.border[bd.arrowin ].bx, iby=bd.border[bd.arrowin ].by;
 			var obx=bd.border[bd.arrowout].bx, oby=bd.border[bd.arrowout].by;
 			switch(key){
-			case this.FLIPY: // ã‰º”½“]
+			case this.FLIPY: // ä¸Šä¸‹åè»¢
 				bd.arrowin  = bd.bnum(ibx,yy-iby);
 				bd.arrowout = bd.bnum(obx,yy-oby);
 				for(var id=0;id<bd.bdmax;id++){
 					if((bd.border[id].bx&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
-			case this.FLIPX: // ¶‰E”½“]
+			case this.FLIPX: // å·¦å³åè»¢
 				bd.arrowin  = bd.bnum(xx-ibx,iby);
 				bd.arrowout = bd.bnum(xx-obx,oby);
 				for(var id=0;id<bd.bdmax;id++){
 					if((bd.border[id].by&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
-			case this.TURNR: // ‰E90‹”½“]
-				bd.arrowin  = bd.bnum2(yy-iby,ibx,k.qrows,k.qcols);
-				bd.arrowout = bd.bnum2(yy-oby,obx,k.qrows,k.qcols);
+			case this.TURNR: // å³90Â°åè»¢
+				bd.arrowin  = bd.bnum(yy-iby,ibx,k.qrows,k.qcols);
+				bd.arrowout = bd.bnum(yy-oby,obx,k.qrows,k.qcols);
 				for(var id=0;id<bd.bdmax;id++){
 					if((bd.border[id].bx&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
-			case this.TURNL: // ¶90‹”½“]
-				bd.arrowin  = bd.bnum2(iby,xx-ibx,k.qrows,k.qcols);
-				bd.arrowout = bd.bnum2(oby,xx-obx,k.qrows,k.qcols);
+			case this.TURNL: // å·¦90Â°åè»¢
+				bd.arrowin  = bd.bnum(iby,xx-ibx,k.qrows,k.qcols);
+				bd.arrowout = bd.bnum(oby,xx-obx,k.qrows,k.qcols);
 				for(var id=0;id<bd.bdmax;id++){
 					if((bd.border[id].by&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
 				}
 				break;
-			case this.EXPANDUP: case this.EXPANDDN: // ã‰º”Õ–ÊŠg‘å
+			case this.EXPANDUP: case this.EXPANDDN: // ä¸Šä¸‹ç›¤é¢æ‹¡å¤§
 				bd.arrowin  += 2*k.qcols-1;
 				bd.arrowout += 2*k.qcols-1;
 				break;
-			case this.EXPANDLT: case this.EXPANDRT: // ¶‰E”Õ–ÊŠg‘å
+			case this.EXPANDLT: case this.EXPANDRT: // å·¦å³ç›¤é¢æ‹¡å¤§
 				bd.arrowin  += 2*k.qrows-1;
 				bd.arrowout += 2*k.qrows-1;
 				break;
-			case this.REDUCEUP: case this.REDUCEDN: // ã‰º”Õ–Êk¬
+			case this.REDUCEUP: case this.REDUCEDN: // ä¸Šä¸‹ç›¤é¢ç¸®å°
 				bd.arrowin  -= 2*k.qcols-1;
 				bd.arrowout -= 2*k.qcols-1;
 				break;
-			case this.REDUCELT: case this.REDUCERT: // ¶‰E”Õ–Êk¬
+			case this.REDUCELT: case this.REDUCERT: // å·¦å³ç›¤é¢ç¸®å°
 				bd.arrowin  -= 2*k.qrows-1;
 				bd.arrowout -= 2*k.qrows-1;
 				break;
@@ -225,7 +222,7 @@ Puzzles.icebarn.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.linecolor = pc.linecolor_LIGHT;
@@ -320,7 +317,7 @@ Puzzles.icebarn.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			if(type==0){ bstr = this.decodeIcebarn();}
@@ -337,52 +334,76 @@ Puzzles.icebarn.prototype = {
 		enc.decodeIcebarn = function(){
 			var barray = this.outbstr.split("/");
 
-			var a=0;
+			var a=0, c=0, twi=[16,8,4,2,1];
 			for(var i=0;i<barray[0].length;i++){
 				var num = parseInt(barray[0].charAt(i),32);
-				for(var w=0;w<5;w++){ if((i*5+w)<bd.cellmax){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?6:0));} }
-				if((i*5+5)>=k.qcols*k.qrows){ a=i+1; break;}
+				for(var w=0;w<5;w++){
+					if(c<bd.cellmax){
+						bd.cell[c].ques = (num&twi[w]?6:0);
+						c++;
+					}
+				}
+				if(c>=bd.cellmax){ a=i+1; break;}
 			}
 
+			base.disableInfo();
 			var id=0;
 			for(var i=a;i<barray[0].length;i++){
 				var ca = barray[0].charAt(i);
-				if(ca=='z'){ id+=35;}else{ id += parseInt(ca,36); if(id<bd.bdinside){ bd.setArrow(id,1);} id++;}
+				if(ca!=='z'){
+					id += parseInt(ca,36);
+					if(id<bd.bdinside){ bd.setArrow(id,1);}
+					id++;
+				}
+				else{ id+=35;}
 				if(id>=bd.bdinside){ a=i+1; break;}
 			}
 
 			id=0;
 			for(var i=a;i<barray[0].length;i++){
 				var ca = barray[0].charAt(i);
-				if(ca=='z'){ id+=35;}else{ id += parseInt(ca,36); if(id<bd.bdinside){ bd.setArrow(id,2);} id++;}
+				if(ca!=='z'){
+					id += parseInt(ca,36);
+					if(id<bd.bdinside){ bd.setArrow(id,2);}
+					id++;
+				}
+				else{ id+=35;}
 				if(id>=bd.bdinside){ break;}
 			}
 
 			bd.setArrow(bd.arrowin,0); bd.setArrow(bd.arrowout,0);
-			bd.arrowin = bd.arrowout = -1;
+			bd.arrowin = bd.arrowout = null;
 			bd.inputarrowin (parseInt(barray[1])+bd.bdinside);
 			bd.inputarrowout(parseInt(barray[2])+bd.bdinside);
+			base.enableInfo();
 
 			this.outbstr = "";
 		};
 		enc.encodeIcebarn = function(){
-			var cm = "";
-			var num=0, pass=0;
-			for(i=0;i<bd.cellmax;i++){
-				if(bd.QuC(i)==6){ pass+=Math.pow(2,4-num);}
-				num++; if(num==5){ cm += pass.toString(32); num=0; pass=0;}
+			var cm = "", num=0, pass=0, twi=[16,8,4,2,1];
+			for(c=0;c<bd.cellmax;c++){
+				if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
+				if(num==5){ cm += pass.toString(32); num=0; pass=0;}
 			}
 			if(num>0){ cm += pass.toString(32);}
 
 			num=0;
 			for(var id=0;id<bd.bdinside;id++){
-				if(bd.getArrow(id)==1){ cm+=num.toString(36); num=0;}else{ num++;} if(num>=35){ cm+="z"; num=0;}
+				if(bd.getArrow(id)===1){ cm+=num.toString(36); num=0;}
+				else{
+					num++;
+					if(num>=35){ cm+="z"; num=0;}
+				}
 			}
 			if(num>0){ cm+=num.toString(36);}
 
 			num=0;
 			for(var id=0;id<bd.bdinside;id++){
-				if(bd.getArrow(id)==2){ cm+=num.toString(36); num=0;}else{ num++;} if(num>=35){ cm+="z"; num=0;}
+				if(bd.getArrow(id)===2){ cm+=num.toString(36); num=0;}
+				else{
+					num++;
+					if(num>=35){ cm+="z"; num=0;}
+				}
 			}
 			if(num>0){ cm+=num.toString(36);}
 
@@ -394,16 +415,23 @@ Puzzles.icebarn.prototype = {
 		enc.decodeIcebarn_old2 = function(){
 			var barray = this.outbstr.split("/");
 
-			var a;
-			for(var i=0;i<barray[2].length;i++){
-				var num = parseInt(barray[2].charAt(i),32);
-				for(var w=0;w<5;w++){ if((i*5+w)<k.qcols*k.qrows){ bd.sQuC(i*5+w,(num&Math.pow(2,4-w)?6:0));} }
-				if((i*5+5)>=k.qcols*k.qrows){ a=i+1; break;}
+			var a=0, c=0, twi=[16,8,4,2,1];
+			for(var i=0;i<barray[0].length;i++){
+				var num = parseInt(barray[0].charAt(i),32);
+				for(var w=0;w<5;w++){
+					if(c<bd.cellmax){
+						bd.cell[c].ques = (num&twi[w]?6:0);
+						c++;
+					}
+				}
+				if(c>=bd.cellmax){ a=i+1; break;}
 			}
+
+			base.disableInfo();
 			var id=0;
 			for(var i=a;i<barray[2].length;i++){
 				var ca = barray[2].charAt(i);
-				if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, num%2+1); id+=(mf(num/2)+1);}
+				if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, num%2+1); id+=((num>>1)+1);}
 				else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 				else{ id++;}
 				if(id>=(k.qcols-1)*k.qrows){ a=i+1; break;}
@@ -411,29 +439,36 @@ Puzzles.icebarn.prototype = {
 			id=(k.qcols-1)*k.qrows;
 			for(var i=a;i<barray[2].length;i++){
 				var ca = barray[2].charAt(i);
-				if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, num%2+1); id+=(mf(num/2)+1);}
+				if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, num%2+1); id+=((num>>1)+1);}
 				else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 				else{ id++;}
 				if(id>=bd.bdinside){ break;}
 			}
 
 			bd.setArrow(bd.arrowin,0); bd.setArrow(bd.arrowout,0);
-			bd.arrowin = bd.arrowout = -1;
+			bd.arrowin = bd.arrowout = null;
 			bd.inputarrowin (parseInt(barray[0])+bd.bdinside);
 			bd.inputarrowout(parseInt(barray[1])+bd.bdinside);
+			base.enableInfo();
 
 			this.outbstr = "";
 		};
 		enc.decodeIcebarn_old1 = function(){
 			var barray = this.outbstr.split("/");
 
-			var c=0;
+			var a=0, c=0, twi=[8,4,2,1];
 			for(var i=0;i<barray[0].length;i++){
-				var ca = parseInt(barray[0].charAt(i),16);
-				for(var w=0;w<4;w++){ if((i*4+w)<bd.cellmax){ bd.sQuC(i*4+w,(ca&Math.pow(2,3-w)?6:0));} }
-				if((i*4+4)>=k.qcols*k.qrows){ break;}
+				var num = parseInt(barray[0].charAt(i),32);
+				for(var w=0;w<4;w++){
+					if(c<bd.cellmax){
+						bd.cell[c].ques = (num&twi[w]?6:0);
+						c++;
+					}
+				}
+				if(c>=bd.cellmax){ break;}
 			}
 
+			base.disableInfo();
 			if(barray[1]!=""){
 				var array = barray[1].split("+");
 				for(var i=0;i<array.length;i++){ bd.setArrow(bd.db(array[i]),1);}
@@ -452,18 +487,18 @@ Puzzles.icebarn.prototype = {
 			}
 
 			bd.setArrow(bd.arrowin,0); bd.setArrow(bd.arrowout,0);
-			bd.arrowin = bd.arrowout = -1;
+			bd.arrowin = bd.arrowout = null;
 			bd.inputarrowin (parseInt(barray[5])+bd.bdinside);
 			bd.inputarrowout(parseInt(barray[6])+bd.bdinside);
+			base.enableInfo();
 
 			this.outbstr = "";
 		};
 		enc.encodeIcebarn_old1 = function(){
-			var cm = "";
-			var num=0, pass=0;
-			for(i=0;i<bd.cellmax;i++){
-				if(bd.QuC(i)==6){ pass+=Math.pow(2,3-num);}
-				num++; if(num==4){ cm += pass.toString(16); num=0; pass=0;}
+			var cm = "", num=0, pass=0, twi=[8,4,2,1];
+			for(var c=0;c<bd.cellmax;c++){
+				if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
+				if(num===4){ cm += pass.toString(16); num=0; pass=0;}
 			}
 			if(num>0){ cm += pass.toString(16);}
 			cm += "/";
@@ -491,83 +526,88 @@ Puzzles.icebarn.prototype = {
 			bd.inputarrowin (parseInt(this.readLine()));
 			bd.inputarrowout(parseInt(this.readLine()));
 
-			this.decodeCell( function(c,ca){
-				if(ca=="1"){ bd.sQuC(c, 6);}
+			this.decodeCell( function(obj,ca){
+				if(ca==="1"){ obj.ques = 6;}
 			});
-			this.decodeBorder2( function(c,ca){
-				if     (ca == "1"){ bd.setArrow(c, 1);}
-				else if(ca == "2"){ bd.setArrow(c, 2);}
+			base.disableInfo();
+			this.decodeBorder( function(obj,ca){
+				if(ca!=="0"){
+					var id = bd.bnum(obj.bx, obj.by);
+					bd.setArrow(id, parseInt(ca));
+				}
 			});
-			this.decodeBorder2( function(c,ca){
-				if     (ca == "1" ){ bd.sLiB(c, 1);}
-				else if(ca == "-1"){ bd.sQsB(c, 2);}
+			base.enableInfo();
+			this.decodeBorder( function(obj,ca){
+				if     (ca==="1" ){ obj.line = 1;}
+				else if(ca==="-1"){ obj.qsub = 2;}
 			});
 		};
 		fio.encodeData = function(){
 			this.datastr += (bd.arrowin+"/"+bd.arrowout+"/");
-			this.encodeCell( function(c){
-				return ""+(bd.QuC(c)==6?"1":"0")+" "; 
+			this.encodeCell( function(obj){
+				return (obj.ques===6?"1 ":"0 ");
 			});
-			this.encodeBorder2( function(c){
-				if     (bd.getArrow(c)==1){ return "1 ";}
-				else if(bd.getArrow(c)==2){ return "2 ";}
-				else                      { return "0 ";}
+			this.encodeBorder( function(obj){
+				var id = bd.bnum(obj.bx, obj.by);
+				if     (bd.getArrow(id)===1){ return "1 ";}
+				else if(bd.getArrow(id)===2){ return "2 ";}
+				else                        { return "0 ";}
 			});
-			this.encodeBorder2( function(c){
-				if     (bd.LiB(c)==1){ return "1 ";}
-				else if(bd.QsB(c)==2){ return "-1 ";}
+			this.encodeBorder( function(obj){
+				if     (obj.line===1){ return "1 ";}
+				else if(obj.qsub===2){ return "-1 ";}
 				else                 { return "0 ";}
 			});
 		};
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			if( !this.checkLcntCell(3) ){
-				this.setAlert('•ªŠò‚µ‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B','There is a branch line.'); return false;
+				this.setAlert('åˆ†å²ã—ã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚','There is a branch line.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==4 && bd.QuC(c)!=6 && bd.QuC(c)!=101);}) ){
-				this.setAlert('•X‚Ì•”•ªˆÈŠO‚Åü‚ªŒğ·‚µ‚Ä‚¢‚Ü‚·B', 'A Line is crossed outside of ice.'); return false;
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==6);}) ){
+				this.setAlert('æ°·ã®éƒ¨åˆ†ä»¥å¤–ã§ç·šãŒäº¤å·®ã—ã¦ã„ã¾ã™ã€‚', 'A Line is crossed outside of ice.'); return false;
 			}
-			if( !this.checkAllCell(ee.binder(this, function(c){ return (line.lcntCell(c)==2 && bd.QuC(c)==6 && !this.isLineStraight(c));})) ){
-				this.setAlert('•X‚Ì•”•ª‚Åü‚ª‹È‚ª‚Á‚Ä‚¢‚Ü‚·B', 'A Line curve on ice.'); return false;
+			if( !this.checkIceLines() ){
+				this.setAlert('æ°·ã®éƒ¨åˆ†ã§ç·šãŒæ›²ãŒã£ã¦ã„ã¾ã™ã€‚', 'A Line curve on ice.'); return false;
 			}
 
 			var flag = this.searchLine();
 			if( flag==-1 ){
-				this.setAlert('ƒXƒ^[ƒgˆÊ’u‚ğ“Á’è‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B', 'The system can\'t detect start position.'); return false;
+				this.setAlert('ã‚¹ã‚¿ãƒ¼ãƒˆä½ç½®ã‚’ç‰¹å®šã§ãã¾ã›ã‚“ã§ã—ãŸã€‚', 'The system can\'t detect start position.'); return false;
 			}
 			if( flag==1 ){
-				this.setAlert('IN‚Éü‚ª’Ê‚Á‚Ä‚¢‚Ü‚¹‚ñB', 'The line doesn\'t go through the \'IN\' arrow.'); return false;
+				this.setAlert('INã«ç·šãŒé€šã£ã¦ã„ã¾ã›ã‚“ã€‚', 'The line doesn\'t go through the \'IN\' arrow.'); return false;
 			}
 			if( flag==2 ){
-				this.setAlert('“r’†‚Å“rØ‚ê‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B', 'There is a dead-end line.'); return false;
+				this.setAlert('é€”ä¸­ã§é€”åˆ‡ã‚Œã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚', 'There is a dead-end line.'); return false;
 			}
 			if( flag==3 ){
-				this.setAlert('”Õ–Ê‚ÌŠO‚Éo‚Ä‚µ‚Ü‚Á‚½ü‚ª‚ ‚è‚Ü‚·B', 'A line is not reached out the \'OUT\' arrow.'); return false;
+				this.setAlert('ç›¤é¢ã®å¤–ã«å‡ºã¦ã—ã¾ã£ãŸç·šãŒã‚ã‚Šã¾ã™ã€‚', 'A line is not reached out the \'OUT\' arrow.'); return false;
 			}
 			if( flag==4 ){
-				this.setAlert('–îˆó‚ğ‹t‚É’Ê‚Á‚Ä‚¢‚Ü‚·B', 'A line goes through an arrow reverse.'); return false;
+				this.setAlert('çŸ¢å°ã‚’é€†ã«é€šã£ã¦ã„ã¾ã™ã€‚', 'A line goes through an arrow reverse.'); return false;
 			}
 
 			if( !this.checkOneLoop() ){
-				this.setAlert('ü‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚Å‚Í‚ ‚è‚Ü‚¹‚ñB', 'Lines are not countinuous.'); return false;
+				this.setAlert('ç·šãŒã²ã¨ã¤ãªãŒã‚Šã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚', 'Lines are not countinuous.'); return false;
 			}
 
 			if( !this.checkIcebarns() ){
-				this.setAlert('‚·‚×‚Ä‚ÌƒAƒCƒXƒo[ƒ“‚ğ’Ê‚Á‚Ä‚¢‚Ü‚¹‚ñB', 'A icebarn is not gone through.'); return false;
+				this.setAlert('ã™ã¹ã¦ã®ã‚¢ã‚¤ã‚¹ãƒãƒ¼ãƒ³ã‚’é€šã£ã¦ã„ã¾ã›ã‚“ã€‚', 'A icebarn is not gone through.'); return false;
 			}
 
 			if( !this.checkAllArrow() ){
-				this.setAlert('ü‚ª’Ê‚Á‚Ä‚¢‚È‚¢–îˆó‚ª‚ ‚è‚Ü‚·B', 'A line doesn\'t go through some arrows.'); return false;
+				this.setAlert('ç·šãŒé€šã£ã¦ã„ãªã„çŸ¢å°ãŒã‚ã‚Šã¾ã™ã€‚', 'A line doesn\'t go through some arrows.'); return false;
 			}
 
 			if( !this.checkLcntCell(1) ){
-				this.setAlert('“r’†‚Å“rØ‚ê‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B', 'There is a dead-end line.'); return false;
+				this.setAlert('é€”ä¸­ã§é€”åˆ‡ã‚Œã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚', 'There is a dead-end line.'); return false;
 			}
 
 			return true;
@@ -575,9 +615,9 @@ Puzzles.icebarn.prototype = {
 
 		ans.checkIcebarns = function(){
 			var iarea = new AreaInfo();
-			for(var cc=0;cc<bd.cellmax;cc++){ iarea.id[cc]=(bd.QuC(cc)==6?0:-1); }
+			for(var cc=0;cc<bd.cellmax;cc++){ iarea.id[cc]=(bd.QuC(cc)==6?0:null); }
 			for(var cc=0;cc<bd.cellmax;cc++){
-				if(iarea.id[cc]!=0){ continue;}
+				if(iarea.id[cc]!==0){ continue;}
 				iarea.max++;
 				iarea[iarea.max] = {clist:[]};
 				area.sc0(cc,iarea);
@@ -615,6 +655,7 @@ Puzzles.icebarn.prototype = {
 				switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 				if(!((bx+by)&1)){
 					var cc = bd.cnum(bx,by);
+					if(cc===null){ continue;}
 					if(bd.QuC(cc)!=6){
 						if     (line.lcntCell(cc)!=2){ dir=dir;}
 						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
@@ -628,7 +669,7 @@ Puzzles.icebarn.prototype = {
 					bd.sErB([id],1);
 					if(!bd.isLine(id)){ return 2;}
 					if(bd.arrowout==id){ break;}
-					else if(id==-1 || id>=bd.bdinside){ return 3;}
+					else if(id===null || id>=bd.bdinside){ return 3;}
 
 					if(((dir==1||dir==3) && bd.getArrow(id)==2) || ((dir==2||dir==4) && bd.getArrow(id)==1)){ return 4;}
 				}

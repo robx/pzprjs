@@ -1,55 +1,52 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ƒNƒTƒrƒŠƒ“ƒN”Å kusabi.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ã‚¯ã‚µãƒ“ãƒªãƒ³ã‚¯ç‰ˆ kusabi.js v3.3.1
 //
 Puzzles.kusabi = function(){ };
 Puzzles.kusabi.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰ŠúÝ’è
-		if(!k.qcols){ k.qcols = 10;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 10;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯Ý’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 10;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 10;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ðŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 1;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ð—pˆÓ‚·‚éƒpƒYƒ‹ 2:Žl•û‚ÉƒZƒ‹‚ð—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æž ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 1;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æž ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒð·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = true;	// ƒ}ƒX‚Ì^‚ñ’†‚ð’Ê‚éü‚ð‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ðline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = false;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”Žš‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = true;	// ãƒžã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›žç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = false;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = false;	// 0‚ð•\Ž¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = false;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ð•\Ž¦‚·‚é
-		k.isAnsNumber     = false;	// ‰ñ“š‚É”Žš‚ð“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”Žš‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”Žš‚ª‚Ð‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = false;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = false;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = false;	// å›žç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›žç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ð“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”Žš‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ðƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ðƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒžã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒžã‚¹ãŒé»’ãƒžã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒžã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒžã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = true;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶Ý‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = false;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = true;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = false;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
-		base.setTitle("ƒNƒTƒrƒŠƒ“ƒN","Kusabi");
-		base.setExpression("@¶ƒhƒ‰ƒbƒO‚Åü‚ªA‰Eƒhƒ‰ƒbƒO‚Å~ˆó‚ª“ü—Í‚Å‚«‚Ü‚·B",
+		base.setTitle("ã‚¯ã‚µãƒ“ãƒªãƒ³ã‚¯","Kusabi");
+		base.setExpression("ã€€å·¦ãƒ‰ãƒ©ãƒƒã‚°ã§ç·šãŒã€å³ãƒ‰ãƒ©ãƒƒã‚°ã§Ã—å°ãŒå…¥åŠ›ã§ãã¾ã™ã€‚",
 						   " Left Button Drag to input black cells, Right Click to input a cross.");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){ },
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒžã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
-			if(k.editmode){
-				if(!kp.enabled()){ this.inputqnum();}
-				else{ kp.display();}
-			}
+			if(k.editmode){ this.inputqnum();}
 			else if(k.playmode){
 				if(this.btn.Left) this.inputLine();
 				else if(this.btn.Right) this.inputpeke();
@@ -64,7 +61,7 @@ Puzzles.kusabi.prototype = {
 		};
 		mv.enableInputHatena = true;
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
@@ -73,11 +70,11 @@ Puzzles.kusabi.prototype = {
 
 		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
-				this.inputcol('num','knum1','1','“¯');
-				this.inputcol('num','knum2','2','’Z');
-				this.inputcol('num','knum3','3','’·');
+				this.inputcol('num','knum1','1','åŒ');
+				this.inputcol('num','knum2','2','çŸ­');
+				this.inputcol('num','knum3','3','é•·');
 				this.insertrow();
-				this.inputcol('num','knum.','-','›');
+				this.inputcol('num','knum.','-','â—‹');
 				this.inputcol('num','knum_',' ',' ');
 				this.inputcol('empty','knumx','','');
 				this.insertrow();
@@ -92,7 +89,7 @@ Puzzles.kusabi.prototype = {
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\Ž¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.circleratio = [0.40, 0.40];
@@ -114,7 +111,7 @@ Puzzles.kusabi.prototype = {
 		pc.drawNumber1 = function(id){
 			var num = bd.cell[id].qnum, obj = bd.cell[id], key='cell_'+id;
 			if(num>=1 && num<=3){
-				var text = ({1:"“¯",2:"’Z",3:"’·"})[num];
+				var text = ({1:"åŒ",2:"çŸ­",3:"é•·"})[num];
 				this.dispnum(key, 1, text, 0.65, this.fontcolor, obj.cpx, obj.cpy);
 			}
 			else{ this.hideEL(key);}
@@ -122,7 +119,7 @@ Puzzles.kusabi.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeNumber10();
@@ -143,62 +140,62 @@ Puzzles.kusabi.prototype = {
 	},
 
 	//---------------------------------------------------------
-	// ³‰ð”»’èˆ—ŽÀs•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 			this.performAsLine = true;
 
 			if( !this.checkLcntCell(3) ){
-				this.setAlert('•ªŠò‚µ‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B','There is a branch line.'); return false;
+				this.setAlert('åˆ†å²ã—ã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚','There is a branch line.'); return false;
 			}
 			if( !this.checkLcntCell(4) ){
-				this.setAlert('ü‚ªŒð·‚µ‚Ä‚¢‚Ü‚·B','There is a crossing line.'); return false;
+				this.setAlert('ç·šãŒäº¤å·®ã—ã¦ã„ã¾ã™ã€‚','There is a crossing line.'); return false;
 			}
 
 			var linfo = line.getLareaInfo();
 			if( !this.checkTripleNumber(linfo) ){
-				this.setAlert('3‚ÂˆÈã‚ÌŠÛ‚ª‚Â‚È‚ª‚Á‚Ä‚¢‚Ü‚·B','Three or more objects are connected.'); return false;
+				this.setAlert('3ã¤ä»¥ä¸Šã®ä¸¸ãŒã¤ãªãŒã£ã¦ã„ã¾ã™ã€‚','Three or more objects are connected.'); return false;
 			}
 			if( !this.check2Line() ){
-				this.setAlert('ŠÛ‚Ìã‚ðü‚ª’Ê‰ß‚µ‚Ä‚¢‚Ü‚·B','A line goes through a circle.'); return false;
+				this.setAlert('ä¸¸ã®ä¸Šã‚’ç·šãŒé€šéŽã—ã¦ã„ã¾ã™ã€‚','A line goes through a circle.'); return false;
 			}
 
 			var errinfo = this.searchConnectedLine();
 			if( !this.checkErrorFlag(errinfo,7) ){
-				this.setAlert('ŠÛ‚ªƒR‚ÌŽšŒ^‚ÉŒq‚ª‚Á‚Ä‚¢‚Ü‚¹‚ñB','The shape of a line is not correct.'); return false;
+				this.setAlert('ä¸¸ãŒã‚³ã®å­—åž‹ã«ç¹‹ãŒã£ã¦ã„ã¾ã›ã‚“ã€‚','The shape of a line is not correct.'); return false;
 			}
 			if( !this.checkErrorFlag(errinfo,6) ){
-				this.setAlert('Œq‚ª‚éŠÛ‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB','The type of connected circle is wrong.'); return false;
+				this.setAlert('ç¹‹ãŒã‚‹ä¸¸ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚','The type of connected circle is wrong.'); return false;
 			}
 			if( !this.checkErrorFlag(errinfo,5) ){
-				this.setAlert('ü‚ª2‰ñˆÈã‹È‚ª‚Á‚Ä‚¢‚Ü‚·B','A line turns twice or more.'); return false;
+				this.setAlert('ç·šãŒ2å›žä»¥ä¸Šæ›²ãŒã£ã¦ã„ã¾ã™ã€‚','A line turns twice or more.'); return false;
 			}
 			if( !this.checkErrorFlag(errinfo,4) ){
-				this.setAlert('ü‚ª2‰ñ‹È‚ª‚Á‚Ä‚¢‚Ü‚¹‚ñB','A line turns only once or lower.'); return false;
+				this.setAlert('ç·šãŒ2å›žæ›²ãŒã£ã¦ã„ã¾ã›ã‚“ã€‚','A line turns only once or lower.'); return false;
 			}
 			if( !this.checkErrorFlag(errinfo,3) ){
-				this.setAlert('ü‚Ì’·‚³‚ª“¯‚¶‚Å‚Í‚ ‚è‚Ü‚¹‚ñB','The length of lines is differnet.'); return false;
+				this.setAlert('ç·šã®é•·ã•ãŒåŒã˜ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚','The length of lines is differnet.'); return false;
 			}
 			if( !this.checkErrorFlag(errinfo,2) ){
-				this.setAlert('ü‚Ì’·’Z‚ÌŽwŽ¦‚É”½‚µ‚Ä‚Ü‚·B','The length of lines is not suit for the label of object.'); return false;
+				this.setAlert('ç·šã®é•·çŸ­ã®æŒ‡ç¤ºã«åã—ã¦ã¾ã™ã€‚','The length of lines is not suit for the label of object.'); return false;
 			}
 			if( !this.checkErrorFlag(errinfo,1) ){
-				this.setAlert('“rØ‚ê‚Ä‚¢‚éü‚ª‚ ‚è‚Ü‚·B','There is a dead-end line.'); return false;
+				this.setAlert('é€”åˆ‡ã‚Œã¦ã„ã‚‹ç·šãŒã‚ã‚Šã¾ã™ã€‚','There is a dead-end line.'); return false;
 			}
 
 			if( !this.checkDisconnectLine(linfo) ){
-				this.setAlert('ŠÛ‚É‚Â‚È‚ª‚Á‚Ä‚¢‚È‚¢ü‚ª‚ ‚è‚Ü‚·B','A line doesn\'t connect any circle.'); return false;
+				this.setAlert('ä¸¸ã«ã¤ãªãŒã£ã¦ã„ãªã„ç·šãŒã‚ã‚Šã¾ã™ã€‚','A line doesn\'t connect any circle.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && bd.QnC(c)!=-1);}) ){
-				this.setAlert('‚Ç‚±‚É‚à‚Â‚È‚ª‚Á‚Ä‚¢‚È‚¢ŠÛ‚ª‚ ‚è‚Ü‚·B','A circle is not connected another object.'); return false;
+			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===0 && bd.isNum(c));}) ){
+				this.setAlert('ã©ã“ã«ã‚‚ã¤ãªãŒã£ã¦ã„ãªã„ä¸¸ãŒã‚ã‚Šã¾ã™ã€‚','A circle is not connected another object.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && bd.QnC(c)!=-1);});};
+		ans.check1st = function(){ return this.checkAllCell(function(c){ return (line.lcntCell(c)===0 && bd.isNum(c));});};
 
-		ans.check2Line = function(){ return this.checkLine(function(i){ return (line.lcntCell(i)>=2 && bd.QnC(i)!=-1);}); };
+		ans.check2Line = function(){ return this.checkLine(function(c){ return (line.lcntCell(c)>=2 && bd.isNum(c));}); };
 		ans.checkLine = function(func){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
@@ -213,70 +210,59 @@ Puzzles.kusabi.prototype = {
 		};
 
 		ans.searchConnectedLine = function(){
-			var errinfo = {data:[]};
-			//var saved = {errflag:0,cells:[],idlist:[]};
-			var visited = new AreaInfo();
+			var errinfo = {data:[]}, visited = new AreaInfo();
 			for(var id=0;id<bd.bdmax;id++){ visited[id]=0;}
 
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)==-1 || line.lcntCell(c)==0){ continue;}
+				if(bd.noNum(c) || line.lcntCell(c)===0){ continue;}
 
-				var cc      = -1;	// ƒ‹[ƒv‚©‚ç”²‚¯‚½‚Æ‚«‚É“ž’B’n“_‚ÌID‚ª“ü‚é
-				var ccnt    =  0;	// ‹È‚ª‚Á‚½‰ñ”
-				var dir     =  0;	// Œ»ÝŒü‚©‚Á‚Ä‚¢‚é•ûŒü/ÅŒã‚ÉŒü‚©‚Á‚½•ûŒü
-				var dir1    =  0;	// Å‰‚ÉŒü‚©‚Á‚½•ûŒü
-				var length1 =  0;	// ˆê‰ñ‹È‚ª‚é‘O‚Ìü‚Ì’·‚³
-				var length2 =  0;	// “ñ‰ñ‹È‚ª‚Á‚½Œã‚Ìü‚Ì’·‚³
-				var idlist  = [];	// ’Ê‰ß‚µ‚½line‚ÌƒŠƒXƒg(ƒGƒ‰[•\Ž¦—p)
-				var bx=bd.cell[c].bx, by=bd.cell[c].by;	// Œ»Ý’n
+				var cc      = null;	// ãƒ«ãƒ¼ãƒ—ã‹ã‚‰æŠœã‘ãŸã¨ãã«åˆ°é”åœ°ç‚¹ã®IDãŒå…¥ã‚‹
+				var ccnt    = 0;	// æ›²ãŒã£ãŸå›žæ•°
+				var dir     = 0;	// ç¾åœ¨å‘ã‹ã£ã¦ã„ã‚‹æ–¹å‘/æœ€å¾Œã«å‘ã‹ã£ãŸæ–¹å‘
+				var dir1    = 0;	// æœ€åˆã«å‘ã‹ã£ãŸæ–¹å‘
+				var length1 = 0;	// ä¸€å›žæ›²ãŒã‚‹å‰ã®ç·šã®é•·ã•
+				var length2 = 0;	// äºŒå›žæ›²ãŒã£ãŸå¾Œã®ç·šã®é•·ã•
+				var idlist  = [];	// é€šéŽã—ãŸlineã®ãƒªã‚¹ãƒˆ(ã‚¨ãƒ©ãƒ¼è¡¨ç¤ºç”¨)
+				var bx=bd.cell[c].bx, by=bd.cell[c].by;	// ç¾åœ¨åœ°
 				while(1){
 					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-					if((bx+by)%2==0){
+					if(((bx+by)&1)===0){
 						cc = bd.cnum(bx,by);
-						if(dir!=0 && bd.QnC(cc)!=-1){ break;}
-						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!=0&&dir!=2){ ccnt++;} dir=2;}
-						else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!=0&&dir!=1){ ccnt++;} dir=1;}
-						else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!=0&&dir!=4){ ccnt++;} dir=4;}
-						else if(dir!=4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!=0&&dir!=3){ ccnt++;} dir=3;}
+						if(dir!=0 && bd.isNum(cc)){ break;}
+						else if(dir!==1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!==0&&dir!==2){ ccnt++;} dir=2;}
+						else if(dir!==2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!==0&&dir!==1){ ccnt++;} dir=1;}
+						else if(dir!==3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!==0&&dir!==4){ ccnt++;} dir=4;}
+						else if(dir!==4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!==0&&dir!==3){ ccnt++;} dir=3;}
 					}
 					else{
-						cc=-1;
+						cc=null;
 						var id = bd.bnum(bx,by);
-						if(id==-1||visited[id]!=0||!bd.isLine(id)){ break;}
+						if(id===null || visited[id]!==0 || !bd.isLine(id)){ break;}
 						idlist.push(id);
 						visited[id]=1;
-						if(dir1==0){ dir1=dir;}
-						if     (ccnt==0){ length1++;}
-						else if(ccnt==2){ length2++;}
+						if(dir1===0){ dir1=dir;}
+						if     (ccnt===0){ length1++;}
+						else if(ccnt===2){ length2++;}
 					}
 				}
 
 				if(idlist.length<=0){ continue;}
-				if(!((dir1==1&&dir==2)||(dir1==2&&dir==1)||(dir1==3&&dir==4)||(dir1==4&&dir==3)) && ccnt==2){
-					errinfo.data.push({errflag:7,cells:[c,cc],idlist:idlist}); continue;
-				}
-				if(!((bd.QnC(c)==1 && bd.QnC(cc)==1) || (bd.QnC(c)==2 && bd.QnC(cc)==3) ||
-						  (bd.QnC(c)==3 && bd.QnC(cc)==2) || bd.QnC(c)==-2 || bd.QnC(cc)==-2) && cc!=-1 && ccnt==2)
-				{
-					errinfo.data.push({errflag:6,cells:[c,cc],idlist:idlist}); continue;
-				}
-				if(ccnt>2){
-					errinfo.data.push({errflag:5,cells:[c,cc],idlist:idlist}); continue;
-				}
-				if(ccnt<2 && cc!=-1){
-					errinfo.data.push({errflag:4,cells:[c,cc],idlist:idlist}); continue;
-				}
-				if((bd.QnC(c)==1 || bd.QnC(cc)==1) && ccnt==2 && cc!=-1 && length1!=length2){
-					errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist}); continue;
-				}
-				if((((bd.QnC(c)==2 || bd.QnC(cc)==3) && length1>=length2) ||
-						 ((bd.QnC(c)==3 || bd.QnC(cc)==2) && length1<=length2)) && ccnt==2 && cc!=-1)
-				{
-					errinfo.data.push({errflag:2,cells:[c,cc],idlist:idlist}); continue;
-				}
-				if((cc==-1 || bd.QnC(cc)==-1)){
-					errinfo.data.push({errflag:1,cells:[c],idlist:idlist}); continue;
-				}
+
+				var qn=(c!==null?bd.QnC(c):-1), qnn=(cc!==null?bd.QnC(cc):-1);
+				if(ccnt===2 && !((dir1===1&&dir===2)||(dir1===2&&dir===1)||(dir1===3&&dir===4)||(dir1===4&&dir===3)))
+					{ errinfo.data.push({errflag:7,cells:[c,cc],idlist:idlist});}
+				else if(cc!==null && ccnt===2 && !((qn===1&&qnn===1) || (qn===2&&qnn===3) || (qn===3&&qnn===2) || qn===-2 || qnn===-2))
+					{ errinfo.data.push({errflag:6,cells:[c,cc],idlist:idlist});}
+				else if(ccnt>2)
+					{ errinfo.data.push({errflag:5,cells:[c,cc],idlist:idlist});}
+				else if(cc!==null && ccnt<2)
+					{ errinfo.data.push({errflag:4,cells:[c,cc],idlist:idlist});}
+				else if(cc!==null && ccnt===2 && (qn===1||qnn===1) && length1!==length2)
+					{ errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist});}
+				else if(cc!==null && ccnt===2 && (((qn===2||qnn===3) && length1>=length2) || ((qn===3||qnn===2) && length1<=length2)))
+					{ errinfo.data.push({errflag:2,cells:[c,cc],idlist:idlist});}
+				else if(cc===null || qnn===-1)
+					{ errinfo.data.push({errflag:1,cells:[c],idlist:idlist});}
 			}
 			return errinfo;
 		};

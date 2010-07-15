@@ -1,99 +1,89 @@
 //
-// ƒpƒYƒ‹ŒÅ—LƒXƒNƒŠƒvƒg•” ‚Ö‚Ñ‚¢‚¿‚²”Å snakes.js v3.3.0
+// ãƒ‘ã‚ºãƒ«å›ºæœ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆéƒ¨ ã¸ã³ã„ã¡ã”ç‰ˆ snakes.js v3.3.1
 //
 Puzzles.snakes = function(){ };
 Puzzles.snakes.prototype = {
 	setting : function(){
-		// ƒOƒ[ƒoƒ‹•Ï”‚Ì‰Šúİ’è
-		if(!k.qcols){ k.qcols = 10;}	// ”Õ–Ê‚Ì‰¡•
-		if(!k.qrows){ k.qrows = 10;}	// ”Õ–Ê‚Ìc•
-		k.irowake  = 0;		// 0:F•ª‚¯İ’è–³‚µ 1:F•ª‚¯‚µ‚È‚¢ 2:F•ª‚¯‚·‚é
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®åˆæœŸè¨­å®š
+		if(!k.qcols){ k.qcols = 10;}	// ç›¤é¢ã®æ¨ªå¹…
+		if(!k.qrows){ k.qrows = 10;}	// ç›¤é¢ã®ç¸¦å¹…
+		k.irowake  = 0;		// 0:è‰²åˆ†ã‘è¨­å®šç„¡ã— 1:è‰²åˆ†ã‘ã—ãªã„ 2:è‰²åˆ†ã‘ã™ã‚‹
 
-		k.iscross  = 0;		// 1:”Õ–Ê“à‘¤‚ÌCross‚ª‚ ‚éƒpƒYƒ‹ 2:ŠO˜gã‚ğŠÜ‚ß‚ÄCross‚ª‚ ‚éƒpƒYƒ‹
-		k.isborder = 1;		// 1:Border/Line‚ª‘€ì‰Â”\‚ÈƒpƒYƒ‹ 2:ŠO˜gã‚à‘€ì‰Â”\‚ÈƒpƒYƒ‹
-		k.isexcell = 0;		// 1:ãE¶‘¤‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹ 2:l•û‚ÉƒZƒ‹‚ğ—pˆÓ‚·‚éƒpƒYƒ‹
+		k.iscross  = 0;		// 1:ç›¤é¢å†…å´ã®CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚’å«ã‚ã¦CrossãŒã‚ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborder = 1;		// 1:Border/LineãŒæ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ« 2:å¤–æ ä¸Šã‚‚æ“ä½œå¯èƒ½ãªãƒ‘ã‚ºãƒ«
+		k.isexcell = 0;		// 1:ä¸Šãƒ»å·¦å´ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ« 2:å››æ–¹ã«ã‚»ãƒ«ã‚’ç”¨æ„ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.isLineCross     = false;	// ü‚ªŒğ·‚·‚éƒpƒYƒ‹
-		k.isCenterLine    = false;	// ƒ}ƒX‚Ì^‚ñ’†‚ğ’Ê‚éü‚ğ‰ñ“š‚Æ‚µ‚Ä“ü—Í‚·‚éƒpƒYƒ‹
-		k.isborderAsLine  = false;	// ‹«ŠEü‚ğline‚Æ‚µ‚Äˆµ‚¤
-		k.hasroom         = false;	// ‚¢‚­‚Â‚©‚Ì—Ìˆæ‚É•ª‚©‚ê‚Ä‚¢‚é/•ª‚¯‚éƒpƒYƒ‹
-		k.roomNumber      = false;	// •”‰®‚Ì–â‘è‚Ì”š‚ª1‚Â‚¾‚¯“ü‚éƒpƒYƒ‹
+		k.isLineCross     = false;	// ç·šãŒäº¤å·®ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isCenterLine    = false;	// ãƒã‚¹ã®çœŸã‚“ä¸­ã‚’é€šã‚‹ç·šã‚’å›ç­”ã¨ã—ã¦å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.isborderAsLine  = false;	// å¢ƒç•Œç·šã‚’lineã¨ã—ã¦æ‰±ã†
+		k.hasroom         = false;	// ã„ãã¤ã‹ã®é ˜åŸŸã«åˆ†ã‹ã‚Œã¦ã„ã‚‹/åˆ†ã‘ã‚‹ãƒ‘ã‚ºãƒ«
+		k.roomNumber      = false;	// éƒ¨å±‹ã®å•é¡Œã®æ•°å­—ãŒ1ã¤ã ã‘å…¥ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.dispzero        = true;	// 0‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©
-		k.isDispHatena    = false;	// qnum‚ª-2‚Ì‚Æ‚«‚ÉH‚ğ•\¦‚·‚é
-		k.isAnsNumber     = true;	// ‰ñ“š‚É”š‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberWithMB    = false;	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹
-		k.linkNumber      = false;	// ”š‚ª‚Ğ‚Æ‚Â‚È‚ª‚è‚É‚È‚éƒpƒYƒ‹
+		k.dispzero        = true;	// 0ã‚’è¡¨ç¤ºã™ã‚‹ã‹ã©ã†ã‹
+		k.isDispHatena    = false;	// qnumãŒ-2ã®ã¨ãã«ï¼Ÿã‚’è¡¨ç¤ºã™ã‚‹
+		k.isAnsNumber     = true;	// å›ç­”ã«æ•°å­—ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberWithMB    = false;	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«
+		k.linkNumber      = false;	// æ•°å­—ãŒã²ã¨ã¤ãªãŒã‚Šã«ãªã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.BlackCell       = false;	// •ƒ}ƒX‚ğ“ü—Í‚·‚éƒpƒYƒ‹
-		k.NumberIsWhite   = false;	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
-		k.RBBlackCell     = false;	// ˜A••ª’f‹Ö‚ÌƒpƒYƒ‹
-		k.checkBlackCell  = false;	// ³“š”»’è‚Å•ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
-		k.checkWhiteCell  = false;	// ³“š”»’è‚Å”’ƒ}ƒX‚Ìî•ñ‚ğƒ`ƒFƒbƒN‚·‚éƒpƒYƒ‹
+		k.BlackCell       = false;	// é»’ãƒã‚¹ã‚’å…¥åŠ›ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.NumberIsWhite   = false;	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
+		k.RBBlackCell     = false;	// é€£é»’åˆ†æ–­ç¦ã®ãƒ‘ã‚ºãƒ«
+		k.checkBlackCell  = false;	// æ­£ç­”åˆ¤å®šã§é»’ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
+		k.checkWhiteCell  = false;	// æ­£ç­”åˆ¤å®šã§ç™½ãƒã‚¹ã®æƒ…å ±ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãƒ‘ã‚ºãƒ«
 
-		k.ispzprv3ONLY    = false;	// ‚Ï‚¸‚Õ‚êƒAƒvƒŒƒbƒg‚É‚Í‘¶İ‚µ‚È‚¢ƒpƒYƒ‹
-		k.isKanpenExist   = false;	// pencilbox/ƒJƒ“ƒyƒ“‚É‚ ‚éƒpƒYƒ‹
+		k.ispzprv3ONLY    = false;	// ã±ãšã·ã‚Œã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã«ã¯å­˜åœ¨ã—ãªã„ãƒ‘ã‚ºãƒ«
+		k.isKanpenExist   = false;	// pencilbox/ã‚«ãƒ³ãƒšãƒ³ã«ã‚ã‚‹ãƒ‘ã‚ºãƒ«
 
 		if(k.EDITOR){
-			base.setExpression("@–îˆó‚ÍAƒ}ƒEƒX‚Ì¶ƒhƒ‰ƒbƒO‚©ASHIFT‰Ÿ‚µ‚È‚ª‚ç–îˆóƒL[‚Å“ü—Í‚Å‚«‚Ü‚·B",
+			base.setExpression("ã€€çŸ¢å°ã¯ã€ãƒã‚¦ã‚¹ã®å·¦ãƒ‰ãƒ©ãƒƒã‚°ã‹ã€SHIFTæŠ¼ã—ãªãŒã‚‰çŸ¢å°ã‚­ãƒ¼ã§å…¥åŠ›ã§ãã¾ã™ã€‚",
 							   " To input Arrows, Left Button Drag or Press arrow key with SHIFT key.");
 		}
 		else{
-			base.setExpression("@¶ƒNƒŠƒbƒN‚Å•ƒ}ƒX‚ªA‰EƒNƒŠƒbƒN‚Å‚Ö‚Ñ‚Ì‚¢‚È‚¢ƒ}ƒX‚ª“ü—Í‚Å‚«‚Ü‚·BƒL[ƒ{[ƒh‚Å‚ÍAQƒL[‚Å•â•‹L†‚ª‘Å‚Ä‚Ü‚·B",
+			base.setExpression("ã€€å·¦ã‚¯ãƒªãƒƒã‚¯ã§é»’ãƒã‚¹ãŒã€å³ã‚¯ãƒªãƒƒã‚¯ã§ã¸ã³ã®ã„ãªã„ãƒã‚¹ãŒå…¥åŠ›ã§ãã¾ã™ã€‚ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã§ã¯ã€Qã‚­ãƒ¼ã§è£œåŠ©è¨˜å·ãŒæ‰“ã¦ã¾ã™ã€‚",
 							   " Left Click or Press Keys to input numbers, Right Click to input determined snake not existing cells. Q Key to input auxiliary mark.");
 		}
-		base.setTitle("‚Ö‚Ñ‚¢‚¿‚²","Hebi-Ichigo");
+		base.setTitle("ã¸ã³ã„ã¡ã”","Hebi-Ichigo");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){
 		menu.addUseToFlags();
 
-		pp.addCheck('snakebd','setting',false,'‚Ö‚Ñ‹«ŠEü—LŒø','Enable snake border');
-		pp.setLabel('snakebd', '‚Ö‚Ñ‚Ìü‚è‚É‹«ŠEü‚ğ•\¦‚·‚é', 'Draw border around a snake.');
+		pp.addCheck('snakebd','setting',false,'ã¸ã³å¢ƒç•Œç·šæœ‰åŠ¹','Enable snake border');
+		pp.setLabel('snakebd', 'ã¸ã³ã®å‘¨ã‚Šã«å¢ƒç•Œç·šã‚’è¡¨ç¤ºã™ã‚‹', 'Draw border around a snake.');
 		pp.funcs['snakebd'] = function(){ pc.paintAll();};
 	},
 
 	//---------------------------------------------------------
-	//“ü—ÍŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//å…¥åŠ›ç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	input_init : function(){
-		// ƒ}ƒEƒX“ü—ÍŒn
+		// ãƒã‚¦ã‚¹å…¥åŠ›ç³»
 		mv.mousedown = function(){
 			if(k.editmode) this.inputdirec();
 			else if(k.playmode){
-				if(!this.inputDot()){
-					this.dragnumber();
+				if(!this.inputDot_snakes()){
+					this.dragnumber_snakes();
 				}
 			}
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
-				if     (k.editmode) this.inputqnum();
-				else if(k.playmode) this.inputqnum_snakes();
+				this.inputqnum_snakes();
 			}
 		};
 		mv.mousemove = function(){
 			if(k.editmode && this.notInputted()) this.inputdirec();
 			else if(k.playmode){
-				if(!this.inputDot()){
-					this.dragnumber();
+				if(!this.inputDot_snakes()){
+					this.dragnumber_snakes();
 				}
 			}
 		};
 
-		mv.inputqnum_snakes = function(){
+		mv.dragnumber_snakes = function(){
 			var cc = this.cellid();
-			if(cc==-1){ return;}
-			k.dispzero=0;
-			cc = this.inputqnum3(cc);
-			bd.sQsC(cc,0);
-			k.dispzero=1;
-			pc.paintCellAround(cc);
-		},
-		mv.dragnumber = function(){
-			var cc = this.cellid();
-			if(cc==-1||cc==this.mouseCell){ return;}
-			if(this.mouseCell==-1){
-				this.inputData = bd.QaC(cc)!=-1?bd.QaC(cc):10;
+			if(cc===null||cc===this.mouseCell){ return;}
+			if(this.mouseCell===null){
+				this.inputData = bd.AnC(cc)!==-1?bd.AnC(cc):10;
 				this.mouseCell = cc;
 			}
 			else if(bd.QnC(cc)==-1 && this.inputData>=1 && this.inputData<=5){
@@ -101,71 +91,69 @@ Puzzles.snakes.prototype = {
 				else if(this.btn.Right) this.inputData--;
 				if(this.inputData>=1 && this.inputData<=5){
 					bd.sDiC(cc, 0);
-					bd.sQaC(cc, this.inputData); bd.sQsC(cc,0);
+					bd.sAnC(cc, this.inputData); bd.sQsC(cc,0);
 					this.mouseCell = cc;
 					pc.paintCell(cc);
 				}
 			}
 			else if(bd.QnC(cc)==-1 && this.inputData==10){
-				bd.sQaC(cc, -1); bd.sQsC(cc,0);
+				bd.sAnC(cc, -1); bd.sQsC(cc,0);
 				pc.paintCell(cc);
 			}
 		};
-		mv.inputDot = function(){
-			var cc = this.cellid();
-			if(!this.btn.Right||cc==-1||cc==this.mouseCell||this.inputData>=0){ return false;}
+		mv.inputDot_snakes = function(){
+			if(!this.btn.Right || (this.inputData!==null && this.inputData>=0)){ return false;}
 
-			if(this.inputData==-1){
-				if(bd.QaC(cc)==-1){
-					this.inputData = bd.QsC(cc)!=1?-2:-3;
+			var cc = this.cellid();
+			if(cc===null||cc===this.mouseCell){ return (this.inputData<0);}
+
+			if(this.inputData===null){
+				if(bd.AnC(cc)===-1){
+					this.inputData = (bd.QsC(cc)!==1?-2:-3);
 					return true;
 				}
-				else{ return false;}
+				return false;
 			}
-			else if(this.inputData!=-2 && this.inputData!=-3){ return false;}
-			bd.sQaC(cc,-1); bd.sQsC(cc,(this.inputData==-2?1:0));
+
+			bd.sAnC(cc,-1);
+			bd.sQsC(cc,(this.inputData===-2?1:0));
 			pc.paintCell(cc);
 			this.mouseCell = cc;
 			return true;
 		};
-		mv.enableInputHatena = true;
+		mv.inputqnum_snakes = function(){
+			k.dispzero = k.editmode;
+			this.mouseCell=null;
+			this.enableInputHatena = k.editmode;
+			this.inputqnum();
+			k.dispzero = true;
+		};
 
-		// ƒL[ƒ{[ƒh“ü—ÍŒn
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ç³»
 		kc.keyinput = function(ca){
 			if(k.editmode && this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
-			if(k.playmode && this.key_inputdot(ca)){ return;}
+
+			if(k.playmode && (ca==='q'||ca==='-')){ ca='s1';}
 			this.key_inputqnum(ca);
-		};
-		kc.key_inputdot = function(ca){
-			if(ca=='q'){
-				var cc = tc.getTCC();
-				if(bd.QnC(cc)===-1){
-					bd.sQsC(cc,(bd.QsC(cc)!==1?1:0));
-					bd.sQaC(cc,-1);
-					pc.paintCell(cc);
-					return true;
-				}
-			}
-			return false;
 		};
 
 		bd.maxnum = 5;
 	},
 
 	//---------------------------------------------------------
-	//‰æ‘œ•\¦ŒnŠÖ”ƒI[ƒo[ƒ‰ƒCƒh
+	//ç”»åƒè¡¨ç¤ºç³»é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
-		pc.dotcolor = "rgb(255, 96, 191)";
+		pc.dotcolor = pc.dotcolor_PINK;
 		pc.fontcolor = pc.fontErrcolor = "white";
 		pc.setCellColorFunc('qnum');
 
 		pc.paint = function(x1,y1,x2,y2){
-			x1--; y1--; x2++; y2++;	// Õ‚ªc‚Á‚Ä‚µ‚Ü‚¤ˆ×
+			x1--; y1--; x2++; y2++;	// è·¡ãŒæ®‹ã£ã¦ã—ã¾ã†ç‚º
 
 			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2);
+			this.drawDotCells(x1,y1,x2,y2,true);
 			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawBorders(x1,y1,x2,y2);
@@ -183,11 +171,11 @@ Puzzles.snakes.prototype = {
 			if(!pp.getVal('snakebd')){ return false;}
 
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if(cc1!==-1 && cc2!==-1 &&
+			if(cc1!==null && cc2!==null &&
 			   (bd.cell[cc1].qnum===-1 && bd.cell[cc2].qnum===-1) &&
-			   (bd.cell[cc1].qans!==-1 || bd.cell[cc2].qans!==-1) &&
-			   ( ((bd.cell[cc1].qans===-1)^(bd.cell[cc2].qans===-1)) ||
-				 (Math.abs(bd.cell[cc1].qans-bd.cell[cc2].qans)!==1)) )
+			   (bd.cell[cc1].anum!==-1 || bd.cell[cc2].anum!==-1) &&
+			   ( ((bd.cell[cc1].anum===-1)^(bd.cell[cc2].anum===-1)) ||
+				 (Math.abs(bd.cell[cc1].anum-bd.cell[cc2].anum)!==1)) )
 			{
 				g.fillStyle = this.borderQanscolor;
 				return true;
@@ -201,16 +189,16 @@ Puzzles.snakes.prototype = {
 			var clist = bd.cellinside(x1-1,y1-1,x2+1,y2+1);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
-				if(obj.qnum===-1 && obj.qans>0){
-					this.dispnum(key, 1, ""+obj.qans, 0.8, this.fontAnscolor, obj.cpx, obj.cpy);
+				if(obj.qnum===-1 && obj.anum>0){
+					this.dispnum(key, 1, ""+obj.anum, 0.8, this.fontAnscolor, obj.cpx, obj.cpy);
 				}
-				/* •s—v‚È•¶š‚ÍdrawArrowNumbers‚ÅÁ‚µ‚Ä‚¢‚é‚Ì‚ÅA‚±‚±‚Å‚ÍÁ‚³‚È‚¢ */
+				/* ä¸è¦ãªæ–‡å­—ã¯drawArrowNumbersã§æ¶ˆã—ã¦ã„ã‚‹ã®ã§ã€ã“ã“ã§ã¯æ¶ˆã•ãªã„ */
 			}
 		};
 	},
 
 	//---------------------------------------------------------
-	// URLƒGƒ“ƒR[ƒh/ƒfƒR[ƒhˆ—
+	// URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰/ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeArrowNumber16();
@@ -222,38 +210,38 @@ Puzzles.snakes.prototype = {
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			this.decodeCellDirecQnum();
-			this.decodeCellQanssub();
+			this.decodeCellAnumsub();
 		};
 		fio.encodeData = function(){
 			this.encodeCellDirecQnum();
-			this.encodeCellQanssub();
+			this.encodeCellAnumsub();
 		};
 	},
 
 	//---------------------------------------------------------
-	// ³‰ğ”»’èˆ—Às•”
+	// æ­£è§£åˆ¤å®šå‡¦ç†å®Ÿè¡Œéƒ¨
 	answer_init : function(){
 		ans.checkAns = function(){
 
 			var sinfo = this.getSnakeInfo();
 			if( !this.checkAllArea(sinfo, f_true, function(w,h,a,n){ return (a==5);} ) ){
-				this.setAlert('‘å‚«‚³‚ª‚T‚Å‚Í‚È‚¢Ö‚ª‚¢‚Ü‚·B','The size of a snake is not five.'); return false;
+				this.setAlert('å¤§ãã•ãŒï¼•ã§ã¯ãªã„è›‡ãŒã„ã¾ã™ã€‚','The size of a snake is not five.'); return false;
 			}
 
-			if( !this.checkDifferentNumberInRoom(sinfo, bd.QaC) ){
-				this.setAlert('“¯‚¶”š‚ª“ü‚Á‚Ä‚¢‚Ü‚·B','A Snake has same plural marks.'); return false;
+			if( !this.checkDifferentNumberInRoom(sinfo, bd.AnC) ){
+				this.setAlert('åŒã˜æ•°å­—ãŒå…¥ã£ã¦ã„ã¾ã™ã€‚','A Snake has same plural marks.'); return false;
 			}
 
 			if( !this.checkSideCell2(sinfo) ){
-				this.setAlert('•ÊX‚ÌÖ‚ªÚ‚µ‚Ä‚¢‚Ü‚·B','Other snakes are adjacent.'); return false;
+				this.setAlert('åˆ¥ã€…ã®è›‡ãŒæ¥ã—ã¦ã„ã¾ã™ã€‚','Other snakes are adjacent.'); return false;
 			}
 
 			if( !this.checkArrowNumber() ){
-				this.setAlert('–îˆó‚Ì•ûŒü‚É‚ ‚é”š‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB','The number in the direction of the arrow is not correct.'); return false;
+				this.setAlert('çŸ¢å°ã®æ–¹å‘ã«ã‚ã‚‹æ•°å­—ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚','The number in the direction of the arrow is not correct.'); return false;
 			}
 
 			if( !this.checkSnakesView(sinfo) ){
-				this.setAlert('Ö‚Ì‹ü‚Ìæ‚É•Ê‚ÌÖ‚ª‚¢‚Ü‚·B','A snake can see another snake.'); return false;
+				this.setAlert('è›‡ã®è¦–ç·šã®å…ˆã«åˆ¥ã®è›‡ãŒã„ã¾ã™ã€‚','A snake can see another snake.'); return false;
 			}
 
 			return true;
@@ -262,8 +250,8 @@ Puzzles.snakes.prototype = {
 
 		ans.getSnakeInfo = function(){
 			var sinfo = new AreaInfo();
-			var func = function(c,cc){ return (cc!=-1 && (Math.abs(bd.QaC(c)-bd.QaC(cc))==1)); };
-			for(var c=0;c<bd.cellmax;c++){ sinfo.id[c]=(bd.QaC(c)>0?0:-1);}
+			var func = function(c,cc){ return (cc!==null && (Math.abs(bd.AnC(c)-bd.AnC(cc))===1)); };
+			for(var c=0;c<bd.cellmax;c++){ sinfo.id[c]=(bd.AnC(c)>0?0:-1);}
 			for(var c=0;c<bd.cellmax;c++){
 				if(sinfo.id[c]!=0){ continue;}
 				sinfo.max++;
@@ -305,30 +293,38 @@ Puzzles.snakes.prototype = {
 
 		ans.checkArrowNumber = function(){
 			var result = true;
-			var func = function(clist){
-				var cc=bd.cnum(bx,by); clist.push(cc);
-				if(bd.QnC(cc)!=-1 || bd.QaC(cc)>0){ return false;}
-				return true;
+			var gonext = function(){
+				// bx,by,clist,ccã¯319è¡Œç›®ã§å®£è¨€ã•ã‚Œã¦ã‚‹ã‚‚ã®ã¨åŒä¸€ã§ã™ã€‚
+				cc = bd.cnum(bx,by);
+				if(cc!==null){ clist.push(cc);}
+				return (cc!==null && bd.cell[cc].qnum===-1 && bd.cell[cc].anum===-1);
 			};
+			var noans = function(cc){ return (cc===null || bd.cell[cc].qnum!==-1 || bd.cell[cc].anum===-1);}
 
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)<0 || bd.DiC(c)==0){ continue;}
-				var bx = bd.cell[c].bx, by = bd.cell[c].by, dir = bd.DiC(c);
-				var num=bd.QnC(c), clist=[c];
-				if     (dir==k.UP){ by-=2; while(by>bd.minby){ if(!func(clist)){ break;} by-=2;} }
-				else if(dir==k.DN){ by+=2; while(by<bd.maxby){ if(!func(clist)){ break;} by+=2;} }
-				else if(dir==k.LT){ bx-=2; while(bx>bd.minbx){ if(!func(clist)){ break;} bx-=2;} }
-				else if(dir==k.RT){ bx+=2; while(bx<bd.maxbx){ if(!func(clist)){ break;} bx+=2;} }
+				var num=bd.QnC(c), dir=bd.DiC(c);
+				if(num<0 || dir===0){ continue;}
 
-				if(num==0^(!bd.isinside(bx,by)||bd.QnC(bd.cnum(bx,by))!=-1)){
+				var bx=bd.cell[c].bx, by=bd.cell[c].by, clist=[c], cc;
+				switch(dir){
+					case k.UP: by-=2; while(gonext()){ by-=2;} break;
+					case k.DN: by+=2; while(gonext()){ by+=2;} break;
+					case k.LT: bx-=2; while(gonext()){ bx-=2;} break;
+					case k.RT: bx+=2; while(gonext()){ bx+=2;} break;
+				}
+				// ccã¯æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ã®IDã‹ã€null(ç›¤é¢å¤–)ã‚’æŒ‡ã™
+
+				// çŸ¢å°ã¤ãæ•°å­—ãŒ0ã§ã€ãã®å…ˆã«å›ç­”ã®æ•°å­—ãŒã‚ã‚‹
+				if(num===0 && !noans(cc)){
 					if(this.inAutoCheck){ return false;}
 					if(num>0){ bd.sErC(clist,1);}
-					else{ bd.sErC([c,bd.cnum(bx,by)],1);}
+					else{ bd.sErC([c,cc],1);}
 					result = false;
 				}
-				else if(num>0 && bd.QaC(bd.cnum(bx,by))!=num){
+				// çŸ¢å°ã¤ãæ•°å­—ãŒ1ä»¥ä¸Šã§ã€ãã®å…ˆã«å›ç­”ã®æ•°å­—ãŒãªã„ or å›ç­”ã®æ•°å­—ãŒé•ã†
+				else if(num>0 && (noans(cc) || bd.cell[cc].anum!==num)){
 					if(this.inAutoCheck){ return false;}
-					bd.sErC([c,bd.cnum(bx,by)],1);
+					bd.sErC([c,cc],1);
 					result = false;
 				}
 			}
@@ -336,32 +332,40 @@ Puzzles.snakes.prototype = {
 		};
 		ans.checkSnakesView = function(sinfo){
 			var result = true;
-			var func = function(clist){
-				var cc=bd.cnum(bx,by); clist.push(cc);
-				if(bd.QnC(cc)!=-1 || bd.QaC(cc)>0){ return false;}
-				return true;
+			var gonext = function(){
+				// bx,by,clist,ccã¯366è¡Œç›®ã§å®£è¨€ã•ã‚Œã¦ã‚‹ã‚‚ã®ã¨åŒä¸€ã§ã™ã€‚
+				cc = bd.cnum(bx,by);
+				if(cc!==null){ clist.push(cc);}
+				return (cc!==null && bd.cell[cc].qnum===-1 && bd.cell[cc].anum===-1);
 			};
 
 			for(var r=1;r<=sinfo.max;r++){
-				var c1=-1, dir=0, idlist = sinfo.room[r].idlist;
-				for(var i=0;i<idlist.length;i++){ if(bd.QaC(idlist[i])==1){c1=idlist[i]; break;}}
-				if     (bd.QaC(bd.dn(c1))==2){ dir=1;}
-				else if(bd.QaC(bd.up(c1))==2){ dir=2;}
-				else if(bd.QaC(bd.rt(c1))==2){ dir=3;}
-				else if(bd.QaC(bd.lt(c1))==2){ dir=4;}
-				var bx = bd.cell[c1].bx, by = bd.cell[c1].by, clist=[c1];
+				var idlist=sinfo.room[r].idlist, c1=null, dir=k.NONE, c2;
 
-				if     (dir==1){ by-=2; while(by>bd.minby){ if(!func(clist)){ break;} by-=2;} }
-				else if(dir==2){ by+=2; while(by<bd.maxby){ if(!func(clist)){ break;} by+=2;} }
-				else if(dir==3){ bx-=2; while(bx>bd.minbx){ if(!func(clist)){ break;} bx-=2;} }
-				else if(dir==4){ bx+=2; while(bx<bd.maxbx){ if(!func(clist)){ break;} bx+=2;} }
+				for(var i=0;i<idlist.length;i++){ if(bd.AnC(idlist[i])===1){ c1=idlist[i]; break;}}
+				if(c1===null){ continue;}
 
-				var c2 = bd.cnum(bx,by), r2 = sinfo.id[c2];
-				if(bd.QaC(c2)>0 && bd.QnC(c2)==-1 && r2>0 && r!=r2){
+				c2=bd.dn(c1); if(c2!==null && bd.AnC(c2)===2){ dir=k.UP;}
+				c2=bd.up(c1); if(c2!==null && bd.AnC(c2)===2){ dir=k.DN;}
+				c2=bd.rt(c1); if(c2!==null && bd.AnC(c2)===2){ dir=k.LT;}
+				c2=bd.lt(c1); if(c2!==null && bd.AnC(c2)===2){ dir=k.RT;}
+				if(dir===k.NONE){ continue;}
+
+				var bx = bd.cell[c1].bx, by = bd.cell[c1].by, clist=[c1], cc;
+				switch(dir){
+					case k.UP: by-=2; while(gonext()){ by-=2;} break;
+					case k.DN: by+=2; while(gonext()){ by+=2;} break;
+					case k.LT: bx-=2; while(gonext()){ bx-=2;} break;
+					case k.RT: bx+=2; while(gonext()){ bx+=2;} break;
+				}
+				// ccã¯æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ã®IDã‹ã€null(ç›¤é¢å¤–)ã‚’æŒ‡ã™
+
+				var sid=sinfo.id[cc];
+				if(cc!==null && bd.AnC(cc)>0 && bd.QnC(cc)===-1 && sid>0 && r!=sid){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(clist,1);
 					bd.sErC(idlist,1);
-					bd.sErC(sinfo.room[r2].idlist,1);
+					bd.sErC(sinfo.room[sid].idlist,1);
 					result = false;
 				}
 			}

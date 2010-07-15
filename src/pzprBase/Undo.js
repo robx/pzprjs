@@ -1,10 +1,10 @@
-// Undo.js v3.3.0
+// Undo.js v3.3.1
 
 //---------------------------------------------------------------------------
-// šOperationManagerƒNƒ‰ƒX ‘€ìî•ñ‚ðˆµ‚¢AUndo/Redo‚Ì“®ì‚ðŽÀ‘•‚·‚é
+// â˜…OperationManagerã‚¯ãƒ©ã‚¹ æ“ä½œæƒ…å ±ã‚’æ‰±ã„ã€Undo/Redoã®å‹•ä½œã‚’å®Ÿè£…ã™ã‚‹
 //---------------------------------------------------------------------------
-// “ü—Íî•ñŠÇ—ƒNƒ‰ƒX
-// OperationƒNƒ‰ƒX
+// å…¥åŠ›æƒ…å ±ç®¡ç†ã‚¯ãƒ©ã‚¹
+// Operationã‚¯ãƒ©ã‚¹
 Operation = function(obj, property, id, old, num){
 	this.obj = obj;
 	this.property = property;
@@ -14,44 +14,40 @@ Operation = function(obj, property, id, old, num){
 	this.chain = um.chainflag;
 };
 
-// OperationManagerƒNƒ‰ƒX
+// OperationManagerã‚¯ãƒ©ã‚¹
 OperationManager = function(){
-	this.ope = [];			// OperationƒNƒ‰ƒX‚ð•ÛŽ‚·‚é”z—ñ
-	this.current = 0;		// Œ»Ý‚Ì•\Ž¦‘€ì”Ô†‚ð•ÛŽ‚·‚é
-	this.disrec = 0;		// ‚±‚ÌƒNƒ‰ƒX‚©‚ç‚ÌŒÄ‚Ño‚µŽž‚Í1‚É‚·‚é
-	this.disinfo = 0;		// LineManager, AreaManager‚ðŒÄ‚Ño‚³‚È‚¢‚æ‚¤‚É‚·‚é
-	this.chainflag = 0;		// ‘O‚ÌOperation‚Æ‚­‚Á‚Â‚¯‚ÄAˆê‰ñ‚ÌUndo/Redo‚Å•Ï‰»‚Å‚«‚é‚æ‚¤‚É‚·‚é
-	this.disCombine = 0;	// ”Žš‚ª‚­‚Á‚Â‚¢‚Ä‚µ‚Ü‚¤‚Ì‚ÅA‚»‚ê‚ðˆêŽž“I‚É–³Œø‚É‚·‚é‚½‚ß‚Ìƒtƒ‰ƒO
+	this.ope = [];			// Operationã‚¯ãƒ©ã‚¹ã‚’ä¿æŒã™ã‚‹é…åˆ—
+	this.current = 0;		// ç¾åœ¨ã®è¡¨ç¤ºæ“ä½œç•ªå·ã‚’ä¿æŒã™ã‚‹
+	this.disrec = 0;		// ã“ã®ã‚¯ãƒ©ã‚¹ã‹ã‚‰ã®å‘¼ã³å‡ºã—æ™‚ã¯1ã«ã™ã‚‹
+	this.forceRecord = false;	// å¼·åˆ¶çš„ã«ç™»éŒ²ã™ã‚‹(ç›¤é¢ç¸®å°æ™‚é™å®š)
+	this.chainflag = 0;		// å‰ã®Operationã¨ãã£ã¤ã‘ã¦ã€ä¸€å›žã®Undo/Redoã§å¤‰åŒ–ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
+	this.disCombine = 0;	// æ•°å­—ãŒãã£ã¤ã„ã¦ã—ã¾ã†ã®ã§ã€ãã‚Œã‚’ä¸€æ™‚çš„ã«ç„¡åŠ¹ã«ã™ã‚‹ãŸã‚ã®ãƒ•ãƒ©ã‚°
 
-	this.anscount = 0;			// •â•ˆÈŠO‚Ì‘€ì‚ªs‚í‚ê‚½”‚ð•ÛŽ‚·‚é(autocheck—p)
-	this.changeflag = false;	// ‘€ì‚ªs‚í‚ê‚½‚çtrue‚É‚·‚é(mv.notInputted()—p)
+	this.anscount = 0;			// è£œåŠ©ä»¥å¤–ã®æ“ä½œãŒè¡Œã‚ã‚ŒãŸæ•°ã‚’ä¿æŒã™ã‚‹(autocheckç”¨)
+	this.changeflag = false;	// æ“ä½œãŒè¡Œã‚ã‚ŒãŸã‚‰trueã«ã™ã‚‹(mv.notInputted()ç”¨)
 
-	this.undoExec = false;		// Undo’†
-	this.redoExec = false;		// Redo’†
-	this.reqReset = false;		// Undo/RedoŽž‚É”Õ–Ê‰ñ“]“™‚ª“ü‚Á‚Ä‚¢‚½ŽžAresize,resetInfoŠÖ”‚Ìcall‚ð—v‹‚·‚é
+	this.undoExec = false;		// Undoä¸­
+	this.redoExec = false;		// Redoä¸­
+	this.reqReset = false;		// Undo/Redoæ™‚ã«ç›¤é¢å›žè»¢ç­‰ãŒå…¥ã£ã¦ã„ãŸæ™‚ã€resize,resetInfoé–¢æ•°ã®callã‚’è¦æ±‚ã™ã‚‹
 	this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
 };
 OperationManager.prototype = {
 	//---------------------------------------------------------------------------
-	// um.disableRecord()  ‘€ì‚Ì“o˜^‚ð‹ÖŽ~‚·‚é
-	// um.enableRecord()   ‘€ì‚Ì“o˜^‚ð‹–‰Â‚·‚é
-	// um.isenableRecord() ‘€ì‚Ì“o˜^‚Å‚«‚é‚©‚ð•Ô‚·
-	// um.enb_btn()        htmlã‚Ì[–ß][i]ƒ{ƒ^ƒ“‚ð‰Ÿ‚·‚±‚Æ‚ª‰Â”\‚©Ý’è‚·‚é
-	// um.allerase()       ‹L‰¯‚µ‚Ä‚¢‚½‘€ì‚ð‘S‚Ä”jŠü‚·‚é
-	// um.newOperation()   ƒ}ƒEƒXAƒL[“ü—ÍŠJŽnŽž‚ÉŒÄ‚Ño‚·
+	// um.disableRecord()  æ“ä½œã®ç™»éŒ²ã‚’ç¦æ­¢ã™ã‚‹
+	// um.enableRecord()   æ“ä½œã®ç™»éŒ²ã‚’è¨±å¯ã™ã‚‹
+	// um.isenableRecord() æ“ä½œã®ç™»éŒ²ã§ãã‚‹ã‹ã‚’è¿”ã™
+	// um.enb_btn()        htmlä¸Šã®[æˆ»][é€²]ãƒœã‚¿ãƒ³ã‚’æŠ¼ã™ã“ã¨ãŒå¯èƒ½ã‹è¨­å®šã™ã‚‹
+	// um.allerase()       è¨˜æ†¶ã—ã¦ã„ãŸæ“ä½œã‚’å…¨ã¦ç ´æ£„ã™ã‚‹
+	// um.newOperation()   ãƒžã‚¦ã‚¹ã€ã‚­ãƒ¼å…¥åŠ›é–‹å§‹æ™‚ã«å‘¼ã³å‡ºã™
 	//---------------------------------------------------------------------------
 
-	// ¡‚±‚ÌŠÖ”‚ÅƒŒƒR[ƒh‹ÖŽ~‚É‚È‚é‚Ì‚ÍAUndoRedoŽžAURLdecodeAfileopenAadjustGeneral/SpecialŽž
-	// ˜A“®‚µ‚ÄŽÀs‚µ‚È‚­‚È‚é‚Ì‚ÍaddOpe()‚ÆALineInfo/AreaInfo‚Ì’†g.
-	//  -> ‚±‚±‚ÅŽg‚Á‚Ä‚¢‚éUndo/Redo‚ÆaddOpeˆÈŠO‚Íbd.QuCŒnŠÖ”‚ðŽg—p‚µ‚È‚¢‚æ‚¤‚É•ÏX
-	//     •Ï‚È§ŒÀŽ–€‚ª‚È‚­‚È‚é‚µA“®ì‘¬“x‚É‚à‚©‚È‚èŒø‚­‚µ‚Ë
+	// ä»Šã“ã®é–¢æ•°ã§ãƒ¬ã‚³ãƒ¼ãƒ‰ç¦æ­¢ã«ãªã‚‹ã®ã¯ã€UndoRedoæ™‚ã€URLdecodeã€fileopenã€adjustGeneral/Specialæ™‚
+	// é€£å‹•ã—ã¦å®Ÿè¡Œã—ãªããªã‚‹ã®ã¯addOpe().
+	//  -> ã“ã“ã§ä½¿ã£ã¦ã„ã‚‹Undo/Redoã¨addOpeä»¥å¤–ã¯bd.QuCç³»é–¢æ•°ã‚’ä½¿ç”¨ã—ãªã„ã‚ˆã†ã«å¤‰æ›´
+	//     å¤‰ãªåˆ¶é™äº‹é …ãŒãªããªã‚‹ã—ã€å‹•ä½œé€Ÿåº¦ã«ã‚‚ã‹ãªã‚ŠåŠ¹ãã—ã­
 	disableRecord : function(){ this.disrec++; },
 	enableRecord  : function(){ if(this.disrec>0){ this.disrec--;} },
-	isenableRecord : function(){ return (this.disrec==0);},
-
-	disableInfo : function(){ this.disinfo++; },
-	enableInfo  : function(){ if(this.disinfo>0){ this.disinfo--;} },
-	isenableInfo : function(){ return (this.disinfo==0);},
+	isenableRecord : function(){ return (this.forceRecord || this.disrec===0);},
 
 	enb_btn : function(){
 		ee('btnundo').el.disabled = ((!this.ope.length || this.current==0)               ? 'true' : '');
@@ -63,18 +59,16 @@ OperationManager.prototype = {
 		this.anscount = 0;
 		this.enb_btn();
 	},
-	newOperation : function(flag){	// ƒL[Aƒ{ƒ^ƒ“‚ð‰Ÿ‚µŽn‚ß‚½‚Æ‚«‚Ítrue
+	newOperation : function(flag){	// ã‚­ãƒ¼ã€ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—å§‹ã‚ãŸã¨ãã¯true
 		this.chainflag = 0;
 		if(flag){ this.changeflag = false;}
 	},
 
 	//---------------------------------------------------------------------------
-	// um.addOpe() Žw’è‚³‚ê‚½‘€ì‚ð’Ç‰Á‚·‚éBid“™‚ª“¯‚¶ê‡‚ÍÅI‘€ì‚ð•ÏX‚·‚é
-	// um.addObj() Žw’è‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ð‘€ì‚Æ‚µ‚Ä’Ç‰Á‚·‚é
+	// um.addOpe() æŒ‡å®šã•ã‚ŒãŸæ“ä½œã‚’è¿½åŠ ã™ã‚‹ã€‚idç­‰ãŒåŒã˜å ´åˆã¯æœ€çµ‚æ“ä½œã‚’å¤‰æ›´ã™ã‚‹
 	//---------------------------------------------------------------------------
 	addOpe : function(obj, property, id, old, num){
-		if(!this.isenableRecord()){ return;}
-		else if(old==num && obj!==k.BOARD){ return;}
+		if(!this.isenableRecord() || (old===num && obj!==k.BOARD)){ return;}
 
 		var lastid = this.ope.length-1;
 
@@ -83,9 +77,14 @@ OperationManager.prototype = {
 			lastid = -1;
 		}
 
-		// ‘O‰ñ‚Æ“¯‚¶êŠ‚È‚ç‘O‰ñ‚ÌXV‚Ì‚Ý
-		if(lastid>=0 && this.ope[lastid].obj == obj && this.ope[lastid].property == property && this.ope[lastid].id == id && this.ope[lastid].num == old
-			&& this.disCombine==0 && ( (obj == k.CELL && ( property==k.QNUM || (property==k.QANS && k.isAnsNumber) )) || obj == k.CROSS)
+		// å‰å›žã¨åŒã˜å ´æ‰€ãªã‚‰å‰å›žã®æ›´æ–°ã®ã¿
+		if( lastid>=0 &&
+			this.disCombine==0 &&
+			this.ope[lastid].obj == obj           &&
+			this.ope[lastid].property == property &&
+			this.ope[lastid].id == id             &&
+			this.ope[lastid].num == old           &&
+			( (obj == k.CELL && ( property==k.QNUM || (property==k.ANUM && k.isAnsNumber) )) || obj == k.CROSS)
 		)
 		{
 			this.ope[lastid].num = num;
@@ -100,27 +99,18 @@ OperationManager.prototype = {
 		this.changeflag = true;
 		this.enb_btn();
 	},
-	addObj : function(type, id){
-		var old, obj;
-		if     (type==k.CELL)  { old = new Cell();   obj = bd.cell[id];  }
-		else if(type==k.CROSS) { old = new Cross();  obj = bd.cross[id]; }
-		else if(type==k.BORDER){ old = new Border(); obj = bd.border[id];}
-		else if(type==k.EXCELL){ old = new Cell();   obj = bd.excell[id];}
-		for(var i in obj){ old[i] = obj[i];}
-		this.addOpe(type, type, id, old, null);
-	},
 
 	//---------------------------------------------------------------------------
-	// um.undo()  Undo‚ðŽÀs‚·‚é
-	// um.redo()  Redo‚ðŽÀs‚·‚é
-	// um.postproc() Undo/RedoŽÀsŒã‚Ìˆ—‚ðs‚¤
-	// um.exec()  ‘€ìope‚ð”½‰f‚·‚éBundo(),redo()‚©‚ç“à•”“I‚ÉŒÄ‚Î‚ê‚é
+	// um.undo()  Undoã‚’å®Ÿè¡Œã™ã‚‹
+	// um.redo()  Redoã‚’å®Ÿè¡Œã™ã‚‹
+	// um.preproc()  Undo/Redoå®Ÿè¡Œå‰ã®å‡¦ç†ã‚’è¡Œã†
+	// um.postproc() Undo/Redoå®Ÿè¡Œå¾Œã®å‡¦ç†ã‚’è¡Œã†
+	// um.exec()  æ“ä½œopeã‚’åæ˜ ã™ã‚‹ã€‚undo(),redo()ã‹ã‚‰å†…éƒ¨çš„ã«å‘¼ã°ã‚Œã‚‹
 	//---------------------------------------------------------------------------
 	undo : function(){
 		if(this.current==0){ return;}
 		this.undoExec = true;
-		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
-		this.disableRecord();
+		this.preproc();
 
 		while(this.current>0){
 			var ope = this.ope[this.current-1];
@@ -139,8 +129,7 @@ OperationManager.prototype = {
 	redo : function(){
 		if(this.current==this.ope.length){ return;}
 		this.redoExec = true;
-		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
-		this.disableRecord();
+		this.preproc();
 
 		while(this.current<this.ope.length){
 			var ope = this.ope[this.current];
@@ -156,12 +145,19 @@ OperationManager.prototype = {
 		this.redoExec = false;
 		if(this.ope.length==0){ kc.inREDO=false;}
 	},
+	preproc : function(){
+		this.reqReset=false;
+
+		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
+		this.disableRecord();
+	},
 	postproc : function(){
 		if(this.reqReset){
 			this.reqReset=false;
 
 			bd.setposAll();
 			bd.setminmax();
+			base.enableInfo();
 			base.resetInfo(false);
 			base.resize_canvas();
 		}
@@ -169,7 +165,6 @@ OperationManager.prototype = {
 			pc.paintRange(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
 		}
 		this.enableRecord();
-		this.enableInfo();
 		this.enb_btn();
 	},
 	exec : function(ope, num){
@@ -177,21 +172,19 @@ OperationManager.prototype = {
 		if(ope.obj == k.CELL){
 			if     (pp == k.QUES){ bd.sQuC(ope.id, num);}
 			else if(pp == k.QNUM){ bd.sQnC(ope.id, num);}
-			else if(pp == k.DIREC){ bd.sDiC(ope.id, num);}
+			else if(pp == k.QDIR){ bd.sDiC(ope.id, num);}
+			else if(pp == k.ANUM){ bd.sAnC(ope.id, num);}
 			else if(pp == k.QANS){ bd.sQaC(ope.id, num);}
 			else if(pp == k.QSUB){ bd.sQsC(ope.id, num);}
-			else if(pp == k.CELL && !!num){ bd.cell[ope.id] = num;}
 			this.paintStack(bd.cell[ope.id].bx-1, bd.cell[ope.id].by-1, bd.cell[ope.id].bx+1, bd.cell[ope.id].by+1);
 		}
 		else if(ope.obj == k.EXCELL){
 			if     (pp == k.QNUM){ bd.sQnE(ope.id, num);}
-			else if(pp == k.DIREC){ bd.sDiE(ope.id, num);}
-			else if(pp == k.EXCELL && !!num){ bd.excell[ope.id] = num;}
+			else if(pp == k.QDIR){ bd.sDiE(ope.id, num);}
 		}
 		else if(ope.obj == k.CROSS){
 			if     (pp == k.QUES){ bd.sQuX(ope.id, num);}
 			else if(pp == k.QNUM){ bd.sQnX(ope.id, num);}
-			else if(pp == k.CROSS && !!num){ bd.cross[ope.id] = num;}
 			this.paintStack(bd.cross[ope.id].bx-1, bd.cross[ope.id].by-1, bd.cross[ope.id].bx+1, bd.cross[ope.id].by+1);
 		}
 		else if(ope.obj == k.BORDER){
@@ -200,23 +193,22 @@ OperationManager.prototype = {
 			else if(pp == k.QANS){ bd.sQaB(ope.id, num);}
 			else if(pp == k.QSUB){ bd.sQsB(ope.id, num);}
 			else if(pp == k.LINE){ bd.sLiB(ope.id, num);}
-			else if(pp == k.BORDER && !!num){ bd.border[ope.id] = num;}
 			this.paintBorder(ope.id);
 		}
 		else if(ope.obj == k.BOARD){
 			var d = {x1:0, y1:0, x2:2*k.qcols, y2:2*k.qrows};
 
-			this.disableInfo();
 			if(num & menu.ex.TURNFLIP){ menu.ex.turnflip    (num,d);}
 			else                      { menu.ex.expandreduce(num,d);}
 
+			base.disableInfo();
 			this.range = {x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby};
 			this.reqReset = true;
 		}
 	},
 	//---------------------------------------------------------------------------
-	// um.paintBorder()  Border‚ÌŽü‚è‚ð•`‰æ‚·‚é‚½‚ßA‚Ç‚Ì”ÍˆÍ‚Ü‚Å•ÏX‚ª“ü‚Á‚½‚©‹L‰¯‚µ‚Ä‚¨‚­
-	// um.paintStack()   •ÏX‚ª“ü‚Á‚½”ÍˆÍ‚ð•Ô‚·
+	// um.paintBorder()  Borderã®å‘¨ã‚Šã‚’æç”»ã™ã‚‹ãŸã‚ã€ã©ã®ç¯„å›²ã¾ã§å¤‰æ›´ãŒå…¥ã£ãŸã‹è¨˜æ†¶ã—ã¦ãŠã
+	// um.paintStack()   å¤‰æ›´ãŒå…¥ã£ãŸç¯„å›²ã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
