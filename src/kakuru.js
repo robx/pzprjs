@@ -120,7 +120,7 @@ Puzzles.kakuru.prototype = {
 			};
 			kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
 			kp.kpinput = function(ca){
-				kc.key_inputqnum_tateyoko(ca);
+				kc.key_inputqnum_kakuru(ca);
 			};
 		}
 

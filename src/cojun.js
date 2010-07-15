@@ -46,8 +46,8 @@ Puzzles.cojun.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.playmode){ this.inputborder();}
-			if(k.editmode){ this.inputqnum();}
+			if(k.editmode){ this.inputborder();}
+			if(k.playmode){ this.inputqnum();}
 		};
 		mv.mouseup = function(){
 			if(this.notInputted()){
