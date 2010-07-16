@@ -74,16 +74,12 @@ var k = {
 		WebKit: (navigator.userAgent.indexOf('AppleWebKit/') > -1),
 		Gecko : (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1),
 
-		WinWebKit: (navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1),
-		IE6      : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==6),
-		IE7      : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==7),
-		IE8      : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8)
+		IE6 : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==6),
+		IE7 : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==7),
+		IE8 : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8)
 	},
-	os:{
-		iPhoneOS : (navigator.userAgent.indexOf('like Mac OS X') > -1),
-		Android  : (navigator.userAgent.indexOf('Android') > -1)
-	},
-	vml : Camp.current.vml,
+	os : { iPhoneOS : (navigator.userAgent.indexOf('like Mac OS X') > -1)},
+	mobile : (navigator.userAgent.indexOf('like Mac OS X') > -1 || navigator.userAgent.indexOf('Android') > -1),
 
 	// const値
 	BOARD  : 'board',
@@ -509,7 +505,7 @@ Timer = function(){
 	this.undoWaitTime  = 300;	// 1回目にwaitを多く入れるための値
 	this.undoWaitCount = 0;
 
-	if(k.br.IE){
+	if(k.br.IE6 || k.br.IE7 || k.br.IE8){
 		this.timerInterval *= 2;
 		this.undoInterval  *= 2;
 	}
@@ -594,8 +590,8 @@ Timer.prototype = {
 		this.TIDundo = null;
 	},
 	procUndo : function(){
-		if(!kc.isCTRL || (!kc.inUNDO && !kc.inREDO)){ this.stopUndoTimer();}
-		else if(this.undoWaitCount>0)               { this.undoWaitCount--;}
+		if((!kc.isCTRL && !kc.isMETA) || (!kc.inUNDO && !kc.inREDO)){ this.stopUndoTimer();}
+		else if(this.undoWaitCount>0){ this.undoWaitCount--;}
 		else{ execUndo();}
 	},
 	execUndo : function(){

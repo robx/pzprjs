@@ -23,8 +23,8 @@ var MouseEvent = function(){
 
 	this.mouseoffset;
 	if(k.br.IE6||k.br.IE7||k.br.IE8){ this.mouseoffset = {x:2,y:2};}
-	else if(k.br.WinWebKit){ this.mouseoffset = {x:1,y:1};}
-	else                   { this.mouseoffset = {x:0,y:0};}
+	else if(k.br.WebKit)            { this.mouseoffset = {x:1,y:1};}
+	else{ this.mouseoffset = {x:0,y:0};}
 };
 MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
@@ -51,17 +51,16 @@ MouseEvent.prototype = {
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
 	e_mousedown : function(e){
 		if(this.enableMouse){
-			this.setButtonFlag(e);
-			// SHIFTキーを押している時は左右ボタン反転
-			if(((kc.isSHIFT)^pp.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
-				this.btn.Left = !this.btn.Left; this.btn.Right = !this.btn.Right;
-			}
-			if(this.btn.Middle){ this.modeflip();} //中ボタン
-			else{
+			this.btn = this.getMouseButton(e);
+			if(this.btn.Left || this.btn.Right){
 				if(ans.errDisp){ bd.errclear();}
 				um.newOperation(true);
 				this.setposition(e);
 				this.mousedown();	// 各パズルのルーチンへ
+			}
+			else if(this.btn.Middle){ //中ボタン
+				this.modeflip();
+				this.btn.Middle = false;
 			}
 		}
 		ee.stopPropagation(e);
@@ -69,7 +68,7 @@ MouseEvent.prototype = {
 		return false;
 	},
 	e_mouseup   : function(e){
-		if(this.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
+		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
 			this.setposition(e);
 			this.mouseup();		// 各パズルのルーチンへ
@@ -83,7 +82,7 @@ MouseEvent.prototype = {
 		// ポップアップメニュー移動中は当該処理が最優先
 		if(!!menu.movingpop){ return true;}
 
-		if(this.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
+		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
 			this.setposition(e);
 			this.mousemove();	// 各パズルのルーチンへ
@@ -107,27 +106,29 @@ MouseEvent.prototype = {
 	mousemove : function(){ },
 
 	//---------------------------------------------------------------------------
-	// mv.setButtonFlag() 左/中/右ボタンが押されているか設定する
+	// mv.getMouseButton() 左/中/右ボタンが押されているかチェックする
 	//---------------------------------------------------------------------------
-	setButtonFlag : function(e){
-		this.setButtonFlag = ((!k.os.iPhoneOS && !k.os.Android) ? (
-		 (k.br.IE) ?
-			function(e){ this.btn = { Left:(e.button===1), Middle:(e.button===4), Right:(e.button===2)};}
-		:(k.br.WinWebKit) ?
-			function(e){ this.btn = { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)};}
-		:(k.br.WebKit) ?
-			function(e){
-				this.btn = { Left:(e.which===1 && !e.metaKey), Middle:false, Right:(e.which===1 && !!e.metaKey) };
+	getMouseButton : function(e){
+		var left=false, mid=false, right=false;
+		if(!k.mobile){
+			if(k.br.IE6 || k.br.IE7 || k.br.IE8){
+				left  = (e.button===1);
+				mid   = (e.button===4);
+				right = (e.button===2);
 			}
-		:
-			function(e){
-				this.btn = (!!e.which ? { Left:(e.which ===1), Middle:(e.which ===2), Right:(e.which ===3)}
-									  : { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)});
+			else{
+				left  = (!!e.which ? e.which===1 : e.button===0);
+				mid   = (!!e.which ? e.which===2 : e.button===1);
+				right = (!!e.which ? e.which===3 : e.button===2);
 			}
-		):
-			function(e){ this.btn = { Left:(e.touches.length===1), Middle:false, Right:(e.touches.length>1)};}
-		);
-		this.setButtonFlag(e);
+		}
+		else{ left=(e.touches.length===1); right=(e.touches.length>1);}
+
+		// SHIFTキー/Commandキーを押している時は左右ボタン反転
+		if(((kc.isSHIFT || kc.isMETA)^pp.getVal('lrcheck'))&&(left!==right))
+			{ left=!left; right=!right;}
+
+		return {Left:left, Middle:mid, Right:right};
 	},
 
 	//---------------------------------------------------------------------------
@@ -338,7 +339,7 @@ MouseEvent.prototype = {
 		var cc = this.cellid();
 		if(cc===null){ return;}
 
-		bd.sQsC(cc, (this.btn.Left?[1,2,0]:[2,0,1])[bd.QsB(cc)]);
+		bd.sQsC(cc, (this.btn.Left?[1,2,0]:[2,0,1])[bd.QsC(cc)]);
 		pc.paintCell(cc);
 	},
 

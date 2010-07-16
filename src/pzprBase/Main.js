@@ -154,7 +154,7 @@ PBase.prototype = {
 	setEvents : function(first){
 		// マウス入力イベントの設定
 		var canvas = ee('divques').el;
-		if(!k.os.iPhoneOS && !k.os.Android){
+		if(!k.mobile){
 			canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
 			canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
 			canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
