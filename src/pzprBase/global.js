@@ -144,10 +144,7 @@ var
 	// local scope
 	_doc = document,
 	_win = this,
-
-	// browsers
-	_IEmoz4 = (k.br.IE6 || k.br.IE7 || k.br.IE8),
-	_iOS    = k.os.iPhoneOS,
+	_iOS = k.os.iPhoneOS,
 
 	/* ここからクラス定義です  varでドット付きは、最左辺に置けません */
 
@@ -269,10 +266,8 @@ _extend( _ElementManager, {
 		return e.target || e.srcElement;
 	},
 	pageX : function(e){
-		_ElementManager.pageX = ((!_iOS && !_IEmoz4) ?
-			function(e){ return e.pageX;}
-		: (_IEmoz4) ?
-			function(e){ return e.clientX + this.scrollLeft();}
+		_ElementManager.pageX = ((!_iOS) ?
+			function(e){ return ((e.pageX!==void 0) ? e.pageX : e.clientX + this.scrollLeft());}
 		:
 			function(e){
 				if(!!e.touches){
@@ -289,10 +284,8 @@ _extend( _ElementManager, {
 		return _ElementManager.pageX(e);
 	},
 	pageY : function(e){
-		_ElementManager.pageY = ((!_iOS && !_IEmoz4) ?
-			function(e){ return e.pageY;}
-		: (_IEmoz4) ?
-			function(e){ return e.clientY + this.scrollTop();}
+		_ElementManager.pageY = ((!_iOS) ?
+			function(e){ return ((e.pageY!==void 0) ? e.pageY : e.clientY + this.scrollTop());}
 		:
 			function(e){
 				if(!!e.touches){
@@ -312,20 +305,16 @@ _extend( _ElementManager, {
 	scrollTop  : function(){ return (_doc.documentElement.scrollTop  || _doc.body.scrollTop );},
 
 	windowWidth : function(){
-		_ElementManager.windowWidth = ((!_iOS && !_IEmoz4) ?
-			function(){ return _win.innerWidth;}
-		: (_IEmoz4) ?
-			function(){ return _doc.body.clientWidth;}
+		_ElementManager.windowWidth = ((!_iOS) ?
+			function(){ return ((_win.innerHeight!==void 0) ? _win.innerWidth : _doc.body.clientWidth);}
 		:
 			function(){ return 980;}
 		);
 		return _ElementManager.windowWidth();
 	},
 	windowHeight : function(){
-		_ElementManager.windowHeight = ((!_iOS && !_IEmoz4) ?
-			function(){ return _win.innerHeight;}
-		: (_IEmoz4) ?
-			function(){ return _doc.body.clientHeight;}
+		_ElementManager.windowHeight = ((!_iOS) ?
+			function(){ return ((_win.innerHeight!==void 0) ? _win.innerHeight : _doc.body.clientHeight);}
 		:
 			function(){ return (980*(_win.innerHeight/_win.innerWidth))|0;}
 		);
@@ -374,25 +363,23 @@ _ElementManager.ElementExt.prototype = {
 	//----------------------------------------------------------------------
 	getRect : function(){
 		this.getRect = ((!!document.createElement('div').getBoundingClientRect) ?
-			((!_IEmoz4) ?
-				function(){
-					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
-					var left   = rect.left   + _win.scrollX;
-					var top    = rect.top    + _win.scrollY;
-					var right  = rect.right  + _win.scrollX;
-					var bottom = rect.bottom + _win.scrollY;
-					return { top:top, bottom:bottom, left:left, right:right};
+			function(){
+				var rect = this.el.getBoundingClientRect(), _html, _body, scrollLeft, scrollTop;
+				if(!_win.scrollX==void 0){
+					scrollLeft = _win.scrollX;
+					scrollTop  = _win.scrollY;
 				}
-			:
-				function(){
-					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
-					var left   = rect.left   + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
-					var top    = rect.top    + ((_body.scrollTop  || _html.scrollTop ) - _html.clientTop );
-					var right  = rect.right  + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
-					var bottom = rect.bottom + ((_body.scrollTop  || _html.scrollTop ) - _html.clientTop );
-					return { top:top, bottom:bottom, left:left, right:right};
+				else{
+					_html = _doc.documentElement; _body = _doc.body;
+					scrollLeft = (_body.scrollLeft || _html.scrollLeft) - _html.clientLeft;
+					scrollTop  = (_body.scrollTop  || _html.scrollTop ) - _html.clientTop;
 				}
-			)
+				var left   = rect.left   + scrollLeft;
+				var top    = rect.top    + scrollTop;
+				var right  = rect.right  + scrollLeft;
+				var bottom = rect.bottom + scrollTop;
+				return { top:top, bottom:bottom, left:left, right:right};
+			}
 		:
 			function(){
 				var left = 0, top = 0, el = this.el;
