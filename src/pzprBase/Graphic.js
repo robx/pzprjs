@@ -1549,6 +1549,7 @@ Graphic.prototype = {
 		}
 	},
 	dispnum : function(key, type, text, fontratio, color, px, py){
+		var fontsize = (this.cw*fontratio*this.fontsizeratio)|0;
 		if(!this.fillTextPrecisely){
 			if(k.br.IE6 || k.br.IE7){ py+=2;}
 
@@ -1558,39 +1559,40 @@ Graphic.prototype = {
 
 			el.innerHTML = text;
 
-			var fontsize = (this.cw*fontratio*this.fontsizeratio)|0;
-			el.style.fontSize = (""+ fontsize + 'px');
+			el.style.fontSize = ("" + fontsize + 'px');
+			el.style.color = color;
 
 			this.showEL(key);	// 先に表示しないとwid,hgt=0になって位置がずれる
 
-			var wid = el.offsetWidth;
-			var hgt = el.offsetHeight;
-
-			if(type===1){
-				px+=2; // なんかちょっとずれる
-				el.style.left = k.cv_oft.x+px-wid/2 + 'px';
-				el.style.top  = k.cv_oft.y+py-hgt/2 + 'px';
+			var wid = el.offsetWidth; // 横位置の調整
+			switch(type){
+				case 1:         px-=wid/2; px+=2;          break; //ちょっとずれる
+				case 2: case 5:            px+=-this.bw+3; break;
+				case 3: case 4: px-=wid;   px+= this.bw-1; break;
 			}
-			else{
-				if     (type===3||type===4){ el.style.left = k.cv_oft.x+px+this.bw-wid -1 + 'px';}
-				else if(type===2||type===5){ el.style.left = k.cv_oft.x+px-this.bw     +3 + 'px';}
-				if     (type===2||type===3){ el.style.top  = k.cv_oft.y+py+this.bh-hgt -1 + 'px';}
-				else if(type===4||type===5){ el.style.top  = k.cv_oft.y+py-this.bh     +2 + 'px';}
+			var hgt = el.offsetHeight; // 縦位置の調整
+			switch(type){
+				case 1:         py-=hgt/2;                 break;
+				case 2: case 3:            py+=-this.bh+2; break;
+				case 4: case 5: py-=hgt;   py+= this.bh-1; break;
 			}
-
-			el.style.color = color;
+			el.style.left = (k.cv_oft.x+px) + 'px';
+			el.style.top  = (k.cv_oft.y+py) + 'px';
 		}
 		// Nativeな方法はこっちなんだけど、、(前は計5～6%くらい遅くなってた)
 		else{
-			g.font = ""+((this.cw*fontratio*this.fontsizeratio)|0)+"px 'Serif'";
+			g.font = ("" + fontsize + "px 'Serif'");
 			g.fillStyle = color;
-			if(type===1){
-				g.textAlign = 'center'; g.textBaseline = 'middle';
+
+			switch(type){
+				case 1:         g.textAlign='center';                break;
+				case 2: case 5: g.textAlign='left';  px+=-this.bw+2; break;
+				case 3: case 4: g.textAlign='right'; px+= this.bw-1; break;
 			}
-			else{
-				g.textAlign    = ((type===3||type===4)?'right':'left');
-				g.textBaseline = ((type===2||type===3)?'alphabetic':'top');
-				px += ((type===3||type===4)?this.bw-1:-this.bw+2), py += ((type===2||type===3)?this.bh-2:-this.bh+1);
+			switch(type){
+				case 1:         g.textBaseline='middle';                     break;
+				case 2: case 3: g.textBaseline='alphabetic'; py+=-this.bh+1; break;
+				case 4: case 5: g.textBaseline='top';        py+= this.bh-2; break;
 			}
 			g.fillText(text, px, py);
 		}
