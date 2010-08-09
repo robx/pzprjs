@@ -74,16 +74,12 @@ var k = {
 		WebKit: (navigator.userAgent.indexOf('AppleWebKit/') > -1),
 		Gecko : (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1),
 
-		WinWebKit: (navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1),
-		IE6      : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==6),
-		IE7      : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==7),
-		IE8      : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8)
+		IE6 : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==6),
+		IE7 : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==7),
+		IE8 : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8)
 	},
-	os:{
-		iPhoneOS : (navigator.userAgent.indexOf('like Mac OS X') > -1),
-		Android  : (navigator.userAgent.indexOf('Android') > -1)
-	},
-	vml : Camp.current.vml,
+	os : { iPhoneOS : (navigator.userAgent.indexOf('like Mac OS X') > -1)},
+	mobile : (navigator.userAgent.indexOf('like Mac OS X') > -1 || navigator.userAgent.indexOf('Android') > -1),
 
 	// const値
 	BOARD  : 'board',
@@ -144,9 +140,7 @@ var
 	// local scope
 	_doc = document,
 	_win = this,
-
-	// browsers
-	_IE     = k.br.IE,
+	_iOS = k.os.iPhoneOS,
 
 	/* ここからクラス定義です  varでドット付きは、最左辺に置けません */
 
@@ -259,6 +253,8 @@ _extend( _ElementManager, {
 	// ee.getSrcElement() イベントが起こったエレメントを返す
 	// ee.pageX()         イベントが起こったページ上のX座標を返す
 	// ee.pageY()         イベントが起こったページ上のY座標を返す
+	// ee.scrollLeft()    ウィンドウのXスクロール量を返す
+	// ee.scrollTop()     ウィンドウのYスクロール量を返す
 	// ee.windowWidth()   ウィンドウの幅を返す
 	// ee.windowHeight()  ウィンドウの高さを返す
 	//----------------------------------------------------------------------
@@ -266,31 +262,57 @@ _extend( _ElementManager, {
 		return e.target || e.srcElement;
 	},
 	pageX : function(e){
-		_ElementManager.pageX = (
-			(!_IE) ? function(e){ return e.pageX;}
-				   : function(e){ return e.clientX + (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);}
+		_ElementManager.pageX = ((!_iOS) ?
+			function(e){ return ((e.pageX!==void 0) ? e.pageX : e.clientX + this.scrollLeft());}
+		:
+			function(e){
+				if(!!e.touches){
+					var len=e.touches.length, pos=0;
+					if(len>0){
+						for(var i=0;i<len;i++){ pos += e.touches[i].clientX;}
+						return pos/len + this.scrollLeft();
+					}
+				}
+				else if(!!e.clientX){ return e.clientX + this.scrollLeft();}
+				return e.pageX;
+			}
 		);
 		return _ElementManager.pageX(e);
 	},
 	pageY : function(e){
-		_ElementManager.pageY = (
-			(!_IE) ? function(e){ return e.pageY;}
-				   : function(e){ return e.clientY + (_doc.documentElement.scrollTop  || _doc.body.scrollTop);}
+		_ElementManager.pageY = ((!_iOS) ?
+			function(e){ return ((e.pageY!==void 0) ? e.pageY : e.clientY + this.scrollTop());}
+		:
+			function(e){
+				if(!!e.touches){
+					var len=e.touches.length, pos=0;
+					if(len>0){
+						for(var i=0;i<len;i++){ pos += e.touches[i].clientY;}
+						return pos/len + this.scrollTop();
+					}
+				}
+				else if(!!e.clientY){ return e.clientY + this.scrollTop();}
+				return e.pageY;
+			}
 		);
 		return _ElementManager.pageY(e);
 	},
+	scrollLeft : function(){ return (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);},
+	scrollTop  : function(){ return (_doc.documentElement.scrollTop  || _doc.body.scrollTop );},
 
 	windowWidth : function(){
-		_ElementManager.windowWidth = (
-			(!_IE) ? function(){ return innerWidth;}
-				   : function(){ return _doc.body.clientWidth;}
+		_ElementManager.windowWidth = ((!_iOS) ?
+			function(){ return ((_win.innerHeight!==void 0) ? _win.innerWidth : _doc.body.clientWidth);}
+		:
+			function(){ return 980;}
 		);
 		return _ElementManager.windowWidth();
 	},
 	windowHeight : function(){
-		_ElementManager.windowHeight = (
-			(!_IE) ? function(){ return innerHeight;}
-				   : function(){ return _doc.body.clientHeight;}
+		_ElementManager.windowHeight = ((!_iOS) ?
+			function(){ return ((_win.innerHeight!==void 0) ? _win.innerHeight : _doc.body.clientHeight);}
+		:
+			function(){ return (980*(_win.innerHeight/_win.innerWidth))|0;}
 		);
 		return _ElementManager.windowHeight();
 	},
@@ -337,25 +359,23 @@ _ElementManager.ElementExt.prototype = {
 	//----------------------------------------------------------------------
 	getRect : function(){
 		this.getRect = ((!!document.createElement('div').getBoundingClientRect) ?
-			((!_IE) ?
-				function(){
-					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
-					var left   = rect.left   + _win.scrollX;
-					var top    = rect.top    + _win.scrollY;
-					var right  = rect.right  + _win.scrollX;
-					var bottom = rect.bottom + _win.scrollY;
-					return { top:top, bottom:bottom, left:left, right:right};
+			function(){
+				var rect = this.el.getBoundingClientRect(), _html, _body, scrollLeft, scrollTop;
+				if(!_win.scrollX==void 0){
+					scrollLeft = _win.scrollX;
+					scrollTop  = _win.scrollY;
 				}
-			:
-				function(){
-					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
-					var left   = rect.left   + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
-					var top    = rect.top    + ((_body.scrollTop  || _html.scrollTop ) - _html.clientTop );
-					var right  = rect.right  + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
-					var bottom = rect.bottom + ((_body.scrollTop  || _html.scrollTop ) - _html.clientTop );
-					return { top:top, bottom:bottom, left:left, right:right};
+				else{
+					_html = _doc.documentElement; _body = _doc.body;
+					scrollLeft = (_body.scrollLeft || _html.scrollLeft) - _html.clientLeft;
+					scrollTop  = (_body.scrollTop  || _html.scrollTop ) - _html.clientTop;
 				}
-			)
+				var left   = rect.left   + scrollLeft;
+				var top    = rect.top    + scrollTop;
+				var right  = rect.right  + scrollLeft;
+				var bottom = rect.bottom + scrollTop;
+				return { top:top, bottom:bottom, left:left, right:right};
+			}
 		:
 			function(){
 				var left = 0, top = 0, el = this.el;
@@ -485,7 +505,7 @@ Timer = function(){
 	this.undoWaitTime  = 300;	// 1回目にwaitを多く入れるための値
 	this.undoWaitCount = 0;
 
-	if(k.br.IE){
+	if(k.br.IE6 || k.br.IE7 || k.br.IE8){
 		this.timerInterval *= 2;
 		this.undoInterval  *= 2;
 	}
@@ -570,8 +590,8 @@ Timer.prototype = {
 		this.TIDundo = null;
 	},
 	procUndo : function(){
-		if(!kc.isCTRL || (!kc.inUNDO && !kc.inREDO)){ this.stopUndoTimer();}
-		else if(this.undoWaitCount>0)               { this.undoWaitCount--;}
+		if((!kc.isCTRL && !kc.isMETA) || (!kc.inUNDO && !kc.inREDO)){ this.stopUndoTimer();}
+		else if(this.undoWaitCount>0){ this.undoWaitCount--;}
 		else{ execUndo();}
 	},
 	execUndo : function(){
