@@ -5,15 +5,15 @@
  * written in JavaScript.
  * 
  * @author  dk22
- * @version v3.3.1pre
- * @date    2010-07-16
+ * @version v3.3.1
+ * @date    2010-08-10
  * 
  * This script is licensed under the MIT license. See below,
  * http://www.opensource.org/licenses/mit-license.php
  * 
  */
 
-var pzprversion="v3.3.1pre";
+var pzprversion="v3.3.1";
  
 (function(){
 
@@ -205,8 +205,8 @@ var VectorContext = function(type, idname){
 	this.canvas = null;	// 親エレメントとなるdivエレメント
 
 	// changeOrigin用(Sinverlight用)
-	this.OFFSETX = 0;
-	this.OFFSETY = 0;
+	this.x0 = 0;
+	this.y0 = 0;
 
 	// 外部から変更される追加プロパティ
 	this.vid      = '';
@@ -219,8 +219,8 @@ var VectorContext = function(type, idname){
 	this.child  = null;	// this.canvasの直下にあるエレメント
 	this.idname = idname;
 	this.canvasid = EL_ID_HEADER+idname;
-	this.currentpath = [];
-	this.lastpath    = '';
+	this.cpath    = [];
+	this.lastpath = '';
 
 	this.currentLayerId = '_empty';
 	this.isedgearray    = {_empty:false};
@@ -246,21 +246,20 @@ var VectorContext = function(type, idname){
 		this.use.vml = true;
 	}
 
-	this.initElement(idname);
+	this.initElement();
 };
 VectorContext.prototype = {
 	/* additional functions (for initialize) */
-	initElement : function(idname){
+	initElement : function(){
 		var child = null;
 		if(this.type!==SL){ child = _doc.getElementById(this.canvasid)}
 		else if(!!this.content){ child = this.content.findName(this.canvasid);}
 
 		if(!child){
-			var parent = _doc.getElementById(idname);
-			var rect = getRectSize(parent);
-			if     (this.type===SVG){ this.appendSVG(parent,rect.width,rect.height);}
-			else if(this.type===SL) { this.appendSL (parent,rect.width,rect.height);}
-			else if(this.type===VML){ this.appendVML(parent,rect.width,rect.height);}
+			this.canvas = _doc.getElementById(this.idname);
+			if     (this.type===SVG){ this.appendSVG();}
+			else if(this.type===SL) { this.appendSL ();}
+			else if(this.type===VML){ this.appendVML();}
 
 			if(this.type!==SL){ this.afterInit();}
 		}
@@ -269,9 +268,9 @@ VectorContext.prototype = {
 		}
 	},
 	afterInit : function(){
-		var parent = _doc.getElementById(this.idname);
-		var rect   = getRectSize(parent);
+		var parent = this.canvas;
 		var child  = this.child;
+		var rect   = getRectSize(parent);
 
 		var self = this;
 		//parent.className = "canvas";
@@ -284,7 +283,6 @@ VectorContext.prototype = {
 		}
 		parent.getContext = function(type){ return self;};
 		parent.toDataURL = function(type){ return null; /* 未サポート */ };
-		this.canvas = parent;
 
 		this.target = this.child;
 		this.rect(0,0,rect.width,rect.height);
@@ -293,32 +291,36 @@ VectorContext.prototype = {
 		_initializing--;
 	},
 
-	appendSVG : function(parent, width, height){
-		var svgtop = _doc.createElementNS(SVGNS,'svg');
-		svgtop.setAttribute('id', this.canvasid);
-		svgtop.setAttribute('font-size', "10px");
-		svgtop.setAttribute('font-family', "sans-serif");
-		svgtop.setAttribute('width', width);
-		svgtop.setAttribute('height', height);
-		svgtop.setAttribute('viewBox', [0,0,width,height].join(' '));
+	appendSVG : function(){
+		var rect = getRectSize(this.canvas);
 
-		parent.appendChild(svgtop);
-		this.child = svgtop;
+		var top = _doc.createElementNS(SVGNS,'svg');
+		top.setAttribute('id', this.canvasid);
+		top.setAttribute('font-size', "10px");
+		top.setAttribute('font-family', "sans-serif");
+		top.setAttribute('width', rect.width);
+		top.setAttribute('height', rect.height);
+		top.setAttribute('viewBox', [0,0,rect.width,rect.height].join(' '));
+
+		this.canvas.appendChild(top);
+		this.child = top;
 	},
-	appendVML : function(parent, width, height){
-		var vmltop = _doc.createElement('div');
-		vmltop.id = this.canvasid;
+	appendVML : function(){
+		var rect = getRectSize(this.canvas);
 
-		vmltop.style.position = 'absolute';
-		vmltop.style.left   = '-2px';
-		vmltop.style.top    = '-2px';
-		vmltop.style.width  = width + 'px';
-		vmltop.style.height = height + 'px';
+		var top = _doc.createElement('div');
+		top.id = this.canvasid;
 
-		parent.appendChild(vmltop);
-		this.child = vmltop;
+		top.style.position = 'absolute';
+		top.style.left   = '-2px';
+		top.style.top    = '-2px';
+		top.style.width  = rect.width + 'px';
+		top.style.height = rect.height + 'px';
+
+		this.canvas.appendChild(top);
+		this.child = top;
 	},
-	appendSL : function(parent, width, height){
+	appendSL : function(){
 		var self = this, funcname = "_function_" + this.canvasid + "_onload";
 		_win[funcname] = function(sender, context, source){
 			self.content = document.getElementById([self.canvasid,'object'].join('_')).content;
@@ -326,7 +328,7 @@ VectorContext.prototype = {
 			self.afterInit.call(self);
 		};
 
-		parent.innerHTML = [
+		this.canvas.innerHTML = [
 			'<object type="application/x-silverlight" width="100%" height="100%" id="',this.canvasid,'_object" />',
 			'<param name="windowless" value="true" />',
 			'<param name="background" value="#00000000" />',	// アルファ値0 = 透明
@@ -339,7 +341,7 @@ VectorContext.prototype = {
 		].join('');
 	},
 	setLayer : function(layerid){
-		this.initElement(this.idname);
+		this.initElement();
 		if(!!layerid){
 			var lid = [this.canvasid,"layer",layerid].join('_');
 			var layer = (this.type!==SL ? _doc.getElementById(lid) : this.content.findName(lid));
@@ -410,7 +412,8 @@ VectorContext.prototype = {
 		if(this.type===SVG){
 			child.setAttribute('width', width);
 			child.setAttribute('height', height);
-			child.setAttribute('viewBox', [0,0,width,height].join(' '));
+			var m = child.getAttribute('viewBox').split(/ /);
+			child.setAttribute('viewBox', [m[0],m[1],width,height].join(' '));
 		}
 		else if(this.type==SL){
 			// 描画されないことがあるため、サイズを2度設定するおまじない
@@ -428,72 +431,74 @@ VectorContext.prototype = {
 		var child = this.canvas.firstChild;
 		if(this.type===SVG){
 			var m = child.getAttribute('viewBox').split(/ /);
-			m[0]=left, m[1]=top;
+			m[0]=-left, m[1]=-top;
 			child.setAttribute('viewBox', m.join(' '));
 		}
 		else if(this.type===VML){
 			child.style.position = 'absolute';
-			child.style.left = (-left-2)+'px';
-			child.style.top  = (-top -2)+'px';
+			child.style.left = left+'px';
+			child.style.top  = top +'px';
 		}
 		else if(this.type===SL){
-			this.OFFSETX = -left;//(left<0?-left:0);
-			this.OFFSETY = -top;//(top<0?-top:0);
+			this.x0 = left;//(left<0?-left:0);
+			this.y0 = top;//(top<0?-top:0);
 		}
 	},
 	clear : function(){
-		if(this.type!==SL){ _doc.getElementById(this.idname).innerHTML = '';}
+		if(this.type===SVG || this.type===VML){
+			var top = this.canvas.firstChild, el = top.firstChild;
+			while(!!el){ top.removeChild(el); el=top.firstChild;}
+		}
+		else if(this.type===SL) { this.content.findName(this.canvasid).children.clear();}
 
 		this.vid = '';
 		this.elements = [];
 		this.lastElement = null;
-		this.initElement(this.idname);
-
-		if(this.type===SL){ this.target.children.clear();}
+		this.initElement();
 	},
 
 	/* Canvas API functions (for path) */
 	beginPath : function(){
-		this.currentpath = [];
+		this.cpath = [];
 		this.lastpath = '';
 	},
 	closePath : function(){
-		this.currentpath.push(this.PATH_CLOSE);
+		this.cpath.push(this.PATH_CLOSE);
 		this.lastpath = this.PATH_CLOSE;
 	},
 	moveTo : function(x,y){
 		if(this.type===VML){ x=(x*Z-Z2)|0; y=(y*Z-Z2)|0;}
 		else if(this.type===SL) {
-			x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
-			y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
+			x = (this.isedge ? (x+this.x0+0.5)|0 : x+this.x0);
+			y = (this.isedge ? (y+this.y0+0.5)|0 : y+this.y0);
 		}
-		this.currentpath.push(this.PATH_MOVE,x,y);
+		this.cpath.push(this.PATH_MOVE,x,y);
 		this.lastpath = this.PATH_MOVE;
 	},
 	lineTo : function(x,y){
-		if(this.lastpath!==this.PATH_LINE){ this.currentpath.push(this.PATH_LINE);}
+		if(this.lastpath!==this.PATH_LINE){ this.cpath.push(this.PATH_LINE);}
 		if(this.type===VML){ x=(x*Z-Z2)|0; y=(y*Z-Z2)|0;}
 		else if(this.type===SL) {
-			x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
-			y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
+			x = (this.isedge ? (x+this.x0+0.5)|0 : x+this.x0);
+			y = (this.isedge ? (y+this.y0+0.5)|0 : y+this.y0);
 		}
-		this.currentpath.push(x,y);
+		this.cpath.push(x,y);
 		this.lastpath = this.PATH_LINE;
 	},
 	rect : function(x,y,w,h){
 		if(this.type===VML){ x=(x*Z-Z2)|0; y=(y*Z-Z2)|0, w=(w*Z)|0, h=(h*Z)|0;}
 		else if(this.type===SL) {
-			x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
-			y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
+			x = (this.isedge ? (x+this.x0+0.5)|0 : x+this.x0);
+			y = (this.isedge ? (y+this.y0+0.5)|0 : y+this.y0);
 			w = (this.isedge ? (w+0.5)|0 : w);
 			h = (this.isedge ? (h+0.5)|0 : h);
 		}
-		this.currentpath.push(this.PATH_MOVE,x,y,this.PATH_LINE,(x+w),y,(x+w),(y+h),x,(y+h),this.PATH_CLOSE);
+		this.cpath.push(this.PATH_MOVE,x,y,this.PATH_LINE,(x+w),y,(x+w),(y+h),x,(y+h),this.PATH_CLOSE);
 	},
 	arc : function(cx,cy,r,startRad,endRad,antiClockWise){
 		if(this.type===SL) {
-			cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
-			cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
+			cx = (this.isedge ? (cx+this.x0+0.5)|0 : cx+this.x0);
+			cy = (this.isedge ? (cy+this.y0+0.5)|0 : cy+this.y0);
 		}
 		var sx,sy,ex,ey;
 		if(endRad-startRad>=_2PI){ sx=cx+r, sy=cy, ex=cx+r, ey=cy;}
@@ -506,14 +511,14 @@ VectorContext.prototype = {
 			sx=(sx*Z-Z2)|0, sy=(sy*Z-Z2)|0, ex=(ex*Z-Z2)|0, ey=(ey*Z-Z2)|0;
 			var com = (antiClockWise ? 'at' : 'wa');
 			if(endRad-startRad>=_2PI){ sx+=1;}
-			this.currentpath.push(com,(cx-r),(cy-r),(cx+r),(cy+r),sx,sy,ex,ey);
+			this.cpath.push(com,(cx-r),(cy-r),(cx+r),(cy+r),sx,sy,ex,ey);
 			this.lastpath = com;
 		}
 		else{
 			if(endRad-startRad>=_2PI){ sy+=0.125;}
 			var unknownflag = (startRad>endRad)^(Math.abs(endRad-startRad)>Math.PI);
 			var islong = ((antiClockWise^unknownflag)?1:0), sweep = ((islong==0^unknownflag)?1:0);
-			this.currentpath.push(this.PATH_MOVE,sx,sy,S_PATH_ARCTO,r,r,0,islong,sweep,ex,ey);
+			this.cpath.push(this.PATH_MOVE,sx,sy,S_PATH_ARCTO,r,r,0,islong,sweep,ex,ey);
 			this.lastpath = S_PATH_ARCTO;
 		}
 	},
@@ -522,25 +527,25 @@ VectorContext.prototype = {
 	fill       : function(){ this.addVectorElement(true,false);},
 	stroke     : function(){ this.addVectorElement(false,true);},
 	fillRect   : function(x,y,w,h){
-		var stack = this.currentpath;
-		this.currentpath = [];
+		var stack = this.cpath;
+		this.cpath = [];
 		this.rect(x,y,w,h);
 		this.addVectorElement(true,false);
-		this.currentpath = stack;
+		this.cpath = stack;
 	},
 	strokeRect : function(x,y,w,h){
-		var stack = this.currentpath;
-		this.currentpath = [];
+		var stack = this.cpath;
+		this.cpath = [];
 		this.rect(x,y,w,h);
 		this.addVectorElement(false,true);
-		this.currentpath = stack;
+		this.cpath = stack;
 	},
 	shapeRect  : function(x,y,w,h){
-		var stack = this.currentpath;
-		this.currentpath = [];
+		var stack = this.cpath;
+		this.cpath = [];
 		this.rect(x,y,w,h);
 		this.addVectorElement(true,true);
-		this.currentpath = stack;
+		this.cpath = stack;
 	},
 
 	fillText : function(text,x,y){
@@ -565,9 +570,9 @@ VectorContext.prototype = {
 			var fontFamily = ME.style.fontFamily.replace(/\"/g,'\'');
 			var fontSize   = parseInt(ME.style.fontSize);
 			var wid = parseInt(this.canvas.offsetWidth);
-			var left = x + this.OFFSETX - wid * SL_WIDTH[this.textAlign.toLowerCase()];
+			var left = x + this.x0 - wid * SL_WIDTH[this.textAlign.toLowerCase()];
 			var ar = [
-				'<TextBlock Canvas.Left="', left, '" Canvas.Top="',(y+this.OFFSETY),
+				'<TextBlock Canvas.Left="', left, '" Canvas.Top="',(y+this.y0),
 				'" Width="', wid, '" TextAlignment="', this.textAlign,
 				'" FontFamily="', fontFamily, '" FontSize="', fontSize,
 				'" Foreground="', parsecolor(this.fillStyle), '" Text="',text, '" />'
@@ -576,7 +581,7 @@ VectorContext.prototype = {
 			this.lastElement = this.elements[this.vid] = xaml;
 
 			var offset = xaml.ActualHeight * SL_HEIGHT[this.textBaseline.toLowerCase()];
-			xaml["Canvas.Top"] = y+this.OFFSETY - (!isNaN(offset)?offset:0);
+			xaml["Canvas.Top"] = y+this.y0 - (!isNaN(offset)?offset:0);
 			this.target.children.add(xaml);
 			break;
 
@@ -613,40 +618,40 @@ VectorContext.prototype = {
 
 	setLinePath : function(){
 		var _args = arguments, _len = _args.length, svg=(this.type!==VML);
-		this.currentpath = [];
+		this.cpath = [];
 		for(var i=0,len=_len-((_len|1)?1:2);i<len;i+=2){
-			if     (i==0){ this.currentpath.push(this.PATH_MOVE);}
-			else if(i==2){ this.currentpath.push(this.PATH_LINE);}
+			if     (i==0){ this.cpath.push(this.PATH_MOVE);}
+			else if(i==2){ this.cpath.push(this.PATH_LINE);}
 
 			var a1=_args[i], a2=_args[i+1];
 			if(this.type===VML){ a1=(a1*Z-Z2)|0, a2=(a2*Z-Z2)|0;}
 			else if(this.type===SL) {
-				a1 = (this.isedge ? (a1+this.OFFSETX+0.5)|0 : a1+this.OFFSETX);
-				a2 = (this.isedge ? (a2+this.OFFSETY+0.5)|0 : a2+this.OFFSETY);
+				a1 = (this.isedge ? (a1+this.x0+0.5)|0 : a1+this.x0);
+				a2 = (this.isedge ? (a2+this.y0+0.5)|0 : a2+this.y0);
 			}
-			this.currentpath.push(a1,a2);
+			this.cpath.push(a1,a2);
 		}
-		if(_args[_len-1]){ this.currentpath.push(this.PATH_CLOSE);}
+		if(_args[_len-1]){ this.cpath.push(this.PATH_CLOSE);}
 	},
 	setOffsetLinePath : function(){
 		var _args = arguments, _len = _args.length, svg=(this.type!==VML), m=[_args[0],_args[1]];
-		this.currentpath = [];
+		this.cpath = [];
 		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
 			m[i] = _args[i] + m[0];
 			m[i+1] = _args[i+1] + m[1];
 
 			if(this.type===VML){ m[i]=(m[i]*Z-Z2)|0, m[i+1]=(m[i+1]*Z-Z2)|0;}
 			else if(this.type===SL) {
-				m[i]   = (this.isedge ? (m[i]  +this.OFFSETX+0.5)|0 : m[i]  +this.OFFSETX);
-				m[i+1] = (this.isedge ? (m[i+1]+this.OFFSETY+0.5)|0 : m[i+1]+this.OFFSETY);
+				m[i]   = (this.isedge ? (m[i]  +this.x0+0.5)|0 : m[i]  +this.x0);
+				m[i+1] = (this.isedge ? (m[i+1]+this.y0+0.5)|0 : m[i+1]+this.y0);
 			}
 		}
 		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
-			if     (i==2){ this.currentpath.push(this.PATH_MOVE);}
-			else if(i==4){ this.currentpath.push(this.PATH_LINE);}
-			this.currentpath.push(m[i], m[i+1]);
+			if     (i==2){ this.cpath.push(this.PATH_MOVE);}
+			else if(i==4){ this.cpath.push(this.PATH_LINE);}
+			this.cpath.push(m[i], m[i+1]);
 		}
-		if(_args[_len-1]){ this.currentpath.push(this.PATH_CLOSE);}
+		if(_args[_len-1]){ this.cpath.push(this.PATH_CLOSE);}
 	},
 	setDashSize : function(size){
 		if(!this.lastElement){ return;}
@@ -668,56 +673,56 @@ VectorContext.prototype = {
 	strokeLine : function(x1,y1,x2,y2){
 		if     (this.type===VML){ x1=(x1*Z)|0, y1=(y1*Z)|0, x2=(x2*Z)|0, y2=(y2*Z)|0;}
 		else if(this.type===SL) {
-			x1 = (this.isedge ? (x1+this.OFFSETX+0.5)|0 : x1+this.OFFSETX);
-			y1 = (this.isedge ? (y1+this.OFFSETY+0.5)|0 : y1+this.OFFSETY);
-			x2 = (this.isedge ? (x2+this.OFFSETX+0.5)|0 : x2+this.OFFSETX);
-			y2 = (this.isedge ? (y2+this.OFFSETY+0.5)|0 : y2+this.OFFSETY);
+			x1 = (this.isedge ? (x1+this.x0+0.5)|0 : x1+this.x0);
+			y1 = (this.isedge ? (y1+this.y0+0.5)|0 : y1+this.y0);
+			x2 = (this.isedge ? (x2+this.x0+0.5)|0 : x2+this.x0);
+			y2 = (this.isedge ? (y2+this.y0+0.5)|0 : y2+this.y0);
 		}
-		var stack = this.currentpath;
-		this.currentpath = [this.PATH_MOVE,x1,y1,this.PATH_LINE,x2,y2];
+		var stack = this.cpath;
+		this.cpath = [this.PATH_MOVE,x1,y1,this.PATH_LINE,x2,y2];
 		this.addVectorElement(false,true);
-		this.currentpath = stack;
+		this.cpath = stack;
 	},
 	strokeCross : function(cx,cy,l){
 		if     (this.type===VML){ cx=(cx*Z-Z2)|0, cy=(cy*Z-Z2)|0, l=(l*Z)|0;}
 		else if(this.type===SL) {
-			cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
-			cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
+			cx = (this.isedge ? (cx+this.x0+0.5)|0 : cx+this.x0);
+			cy = (this.isedge ? (cy+this.y0+0.5)|0 : cy+this.y0);
 			l  = (this.isedge ? (l+0.5)|0 : l);
 		}
-		var stack = this.currentpath;
-		this.currentpath = [this.PATH_MOVE,(cx-l),(cy-l),this.PATH_LINE,(cx+l),(cy+l),
+		var stack = this.cpath;
+		this.cpath = [this.PATH_MOVE,(cx-l),(cy-l),this.PATH_LINE,(cx+l),(cy+l),
 							this.PATH_MOVE,(cx-l),(cy+l),this.PATH_LINE,(cx+l),(cy-l)];
 		this.addVectorElement(false,true);
-		this.currentpath = stack;
+		this.cpath = stack;
 	},
 	fillCircle : function(cx,cy,r){
-		var stack = this.currentpath;
-		this.currentpath = [];
+		var stack = this.cpath;
+		this.cpath = [];
 		this.arc(cx,cy,r,0,_2PI,false);
-		this.currentpath.push(this.PATH_CLOSE);
+		this.cpath.push(this.PATH_CLOSE);
 		this.addVectorElement(true,false);
-		this.currentpath = stack;
+		this.cpath = stack;
 	},
 	strokeCircle : function(cx,cy,r){
-		var stack = this.currentpath;
-		this.currentpath = [];
+		var stack = this.cpath;
+		this.cpath = [];
 		this.arc(cx,cy,r,0,_2PI,false);
-		this.currentpath.push(this.PATH_CLOSE);
+		this.cpath.push(this.PATH_CLOSE);
 		this.addVectorElement(false,true);
-		this.currentpath = stack;
+		this.cpath = stack;
 	},
 	shapeCircle : function(cx,cy,r){
-		var stack = this.currentpath;
-		this.currentpath = [];
+		var stack = this.cpath;
+		this.cpath = [];
 		this.arc(cx,cy,r,0,_2PI,false);
-		this.currentpath.push(this.PATH_CLOSE);
+		this.cpath.push(this.PATH_CLOSE);
 		this.addVectorElement(true,true);
-		this.currentpath = stack;
+		this.cpath = stack;
 	},
 
 	addVectorElement : function(isfill,isstroke){
-	var path = this.currentpath.join(' ');
+	var path = this.cpath.join(' ');
 	switch(this.type){
 	case SVG:
 		var el = _doc.createElementNS(SVGNS,'path');
@@ -770,12 +775,13 @@ CanvasRenderingContext2D_wrapper = function(type, idname){
 	this.canvas = null;		// 親エレメントとなるdivエレメント
 
 	// changeOrigin用
-	this.OFFSETX = 0;
-	this.OFFSETY = 0;
+	this.x0 = 0;
+	this.y0 = 0;
 
 	// variables for internal
-	this.canvasid = '';
-	this.child  = null;		// this.canvasの直下にあるエレメント
+	this.idname   = idname;
+	this.canvasid = EL_ID_HEADER+idname;
+	this.child    = null;		// this.canvasの直下にあるエレメント
 	this.context  = null;	// 本来のCanvasRenderingContext2Dオブジェクト
 
 	this.currentLayerId = '_empty';
@@ -789,16 +795,14 @@ CanvasRenderingContext2D_wrapper = function(type, idname){
 	this.use.sl     = (type===SL);
 	this.use.flash  = (type===FLASH);
 
-	this.initElement(idname);
+	this.initElement();
 };
 
 //function addCanvasFunctions(){ _extend(CanvasRenderingContext2D.prototype, {
 CanvasRenderingContext2D_wrapper.prototype = {
 	/* extend functions (initialize) */
-	initElement : function(idname){
-		this.canvasid = EL_ID_HEADER+idname;
-
-		var parent = _doc.getElementById(idname);
+	initElement : function(){
+		var parent = _doc.getElementById(this.idname);
 		var canvas = _doc.getElementById(this.canvasid);
 
 		if(!canvas){
@@ -875,15 +879,15 @@ CanvasRenderingContext2D_wrapper.prototype = {
 //		canvas.style.left = (parseInt(canvas.style.left) - left) + 'px';
 //		canvas.style.top  = (parseInt(canvas.style.top ) - top)  + 'px';
 
-		this.OFFSETX = -left;//(left<0?-left:0);
-		this.OFFSETY = -top;//(top<0?-top:0);
+		this.x0 = left;//(left<0?-left:0);
+		this.y0 = top;//(top<0?-top:0);
 	},
 	clear : function(){
 		if(!!this.canvas.style.backgroundColor){
 			this.setProperties();
 			this.context.fillStyle = parsecolorrev(this.canvas.style.backgroundColor);
 			var rect = getRectSize(this.canvas);
-			this.context.fillRect(this.OFFSETX,this.OFFSETY,rect.width,rect.height);
+			this.context.fillRect(this.x0,this.y0,rect.width,rect.height);
 		}
 	},
 
@@ -901,25 +905,25 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	beginPath : function(){ this.context.beginPath();},
 	closePath : function(){ this.context.closePath();},
 	moveTo : function(x,y){
-		x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
-		y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
+		x = (this.isedge ? (x+this.x0+0.5)|0 : x+this.x0);
+		y = (this.isedge ? (y+this.y0+0.5)|0 : y+this.y0);
 		this.context.moveTo(x,y);
 	},
 	lineTo : function(x,y){
-		x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
-		y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
+		x = (this.isedge ? (x+this.x0+0.5)|0 : x+this.x0);
+		y = (this.isedge ? (y+this.y0+0.5)|0 : y+this.y0);
 		this.context.lineTo(x,y);
 	},
 	rect : function(x,y,w,h){
-		x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
-		y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
+		x = (this.isedge ? (x+this.x0+0.5)|0 : x+this.x0);
+		y = (this.isedge ? (y+this.y0+0.5)|0 : y+this.y0);
 		w = (this.isedge ? (w+0.5)|0 : w);
 		h = (this.isedge ? (h+0.5)|0 : h);
 		this.context.rect(x,y,w,h);
 	},
 	arc  : function(cx,cy,r,startRad,endRad,antiClockWise){
-		cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
-		cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
+		cx = (this.isedge ? (cx+this.x0+0.5)|0 : cx+this.x0);
+		cy = (this.isedge ? (cy+this.y0+0.5)|0 : cy+this.y0);
 		this.context.arc(px,py,r,startRad,endRad,antiClockWise);
 	},
 
@@ -927,8 +931,8 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	fill       : function(){ this.setProperties(); this.context.fill();},
 	stroke     : function(){ this.setProperties(); this.context.stroke();},
 	fillRect   : function(x,y,w,h){
-		x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
-		y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
+		x = (this.isedge ? (x+this.x0+0.5)|0 : x+this.x0);
+		y = (this.isedge ? (y+this.y0+0.5)|0 : y+this.y0);
 		w = (this.isedge ? (w+0.5)|0 : w);
 		h = (this.isedge ? (h+0.5)|0 : h);
 
@@ -936,8 +940,8 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		this.context.fillRect(x,y,w,h);
 	},
 	strokeRect : function(x,y,w,h){
-		x = (this.isedge ? (x+this.OFFSETX+0.5)|0 : x+this.OFFSETX);
-		y = (this.isedge ? (y+this.OFFSETY+0.5)|0 : y+this.OFFSETY);
+		x = (this.isedge ? (x+this.x0+0.5)|0 : x+this.x0);
+		y = (this.isedge ? (y+this.y0+0.5)|0 : y+this.y0);
 		w = (this.isedge ? (w+0.5)|0 : w);
 		h = (this.isedge ? (h+0.5)|0 : h);
 
@@ -946,7 +950,7 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	},
 	fillText : function(text,x,y){
 		this.setProperties();
-		this.context.fillText(text,x+this.OFFSETX,y+this.OFFSETY);
+		this.context.fillText(text,x+this.x0,y+this.y0);
 	},
 
 	/* extended functions */
@@ -970,15 +974,15 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		var _args = arguments, _len = _args.length;
 		this.context.beginPath();
 		for(var i=0,len=_len-((_len|1)?1:2);i<len;i+=2){
-			var a1 = (this.isedge ? (_args[i]  +this.OFFSETX+0.5)|0 : _args[i]  +this.OFFSETX);
-				a2 = (this.isedge ? (_args[i+1]+this.OFFSETY+0.5)|0 : _args[i+1]+this.OFFSETY);
+			var a1 = (this.isedge ? (_args[i]  +this.x0+0.5)|0 : _args[i]  +this.x0);
+				a2 = (this.isedge ? (_args[i+1]+this.y0+0.5)|0 : _args[i+1]+this.y0);
 			if(i==0){ this.context.moveTo(a1,a2);}
 			else    { this.context.lineTo(a1,a2);}
 		}
 		if(_args[_len-1]){ this.context.closePath();}
 	},
 	setOffsetLinePath : function(){
-		var _args = arguments, _len = _args.length, m=[_args[0]+this.OFFSETX,_args[1]+this.OFFSETY];
+		var _args = arguments, _len = _args.length, m=[_args[0]+this.x0,_args[1]+this.y0];
 		this.context.beginPath();
 		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
 			m[i]   = _args[i]   + m[0];
@@ -995,10 +999,10 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	setDashSize : function(size){ },
 
 	strokeLine : function(x1,y1,x2,y2){
-		x1 = (this.isedge ? (x1+this.OFFSETX+0.5)|0 : x1+this.OFFSETX);
-		y1 = (this.isedge ? (y1+this.OFFSETY+0.5)|0 : y1+this.OFFSETY);
-		x2 = (this.isedge ? (x2+this.OFFSETX+0.5)|0 : x2+this.OFFSETX);
-		y2 = (this.isedge ? (y2+this.OFFSETY+0.5)|0 : y2+this.OFFSETY);
+		x1 = (this.isedge ? (x1+this.x0+0.5)|0 : x1+this.x0);
+		y1 = (this.isedge ? (y1+this.y0+0.5)|0 : y1+this.y0);
+		x2 = (this.isedge ? (x2+this.x0+0.5)|0 : x2+this.x0);
+		y2 = (this.isedge ? (y2+this.y0+0.5)|0 : y2+this.y0);
 
 		this.setProperties();
 		this.context.beginPath();
@@ -1007,10 +1011,10 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		this.context.stroke();
 	},
 	strokeCross : function(cx,cy,l){
-		var x1 = (this.isedge ? (cx-l+this.OFFSETX+0.5)|0 : cx-l+this.OFFSETX),
-			y1 = (this.isedge ? (cy-l+this.OFFSETY+0.5)|0 : cy-l+this.OFFSETY),
-			x2 = (this.isedge ? (cx+l+this.OFFSETX+0.5)|0 : cx+l+this.OFFSETX),
-			y2 = (this.isedge ? (cy+l+this.OFFSETY+0.5)|0 : cy+l+this.OFFSETY);
+		var x1 = (this.isedge ? (cx-l+this.x0+0.5)|0 : cx-l+this.x0),
+			y1 = (this.isedge ? (cy-l+this.y0+0.5)|0 : cy-l+this.y0),
+			x2 = (this.isedge ? (cx+l+this.x0+0.5)|0 : cx+l+this.x0),
+			y2 = (this.isedge ? (cy+l+this.y0+0.5)|0 : cy+l+this.y0);
 
 		this.setProperties();
 		this.context.beginPath();
@@ -1021,24 +1025,24 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		this.context.stroke();
 	},
 	fillCircle : function(cx,cy,r){
-		cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
-		cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
+		cx = (this.isedge ? (cx+this.x0+0.5)|0 : cx+this.x0);
+		cy = (this.isedge ? (cy+this.y0+0.5)|0 : cy+this.y0);
 		this.setProperties();
 		this.context.beginPath();
 		this.context.arc(cx,cy,r,0,_2PI,false);
 		this.context.fill();
 	},
 	strokeCircle : function(cx,cy,r){
-		cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
-		cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
+		cx = (this.isedge ? (cx+this.x0+0.5)|0 : cx+this.x0);
+		cy = (this.isedge ? (cy+this.y0+0.5)|0 : cy+this.y0);
 		this.setProperties();
 		this.context.beginPath();
 		this.context.arc(cx,cy,r,0,_2PI,false);
 		this.context.stroke();
 	},
 	shapeCircle : function(cx,cy,r){
-		cx = (this.isedge ? (cx+this.OFFSETX+0.5)|0 : cx+this.OFFSETX);
-		cy = (this.isedge ? (cy+this.OFFSETY+0.5)|0 : cy+this.OFFSETY);
+		cx = (this.isedge ? (cx+this.x0+0.5)|0 : cx+this.x0);
+		cy = (this.isedge ? (cy+this.y0+0.5)|0 : cy+this.y0);
 		this.setProperties();
 		this.context.beginPath();
 		this.context.arc(cx,cy,r,0,_2PI,false);
@@ -1214,25 +1218,18 @@ var k = {
 	bwidth   : 18,			// セルの横幅/2
 	bheight  : 18,			// セルの縦幅/2
 
-	p0       : new Point(0, 0),	// Canvas中での盤面の左上座標
-	cv_oft   : new Point(0, 0),	// Canvasのwindow内での左上座標
-
 	br:{
 		IE    : (!!(window.attachEvent && !window.opera)),
 		Opera : (!!window.opera),
 		WebKit: (navigator.userAgent.indexOf('AppleWebKit/') > -1),
 		Gecko : (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1),
 
-		WinWebKit: (navigator.userAgent.indexOf('AppleWebKit/') > -1 && navigator.userAgent.indexOf('Win') > -1),
-		IE6      : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==6),
-		IE7      : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==7),
-		IE8      : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8)
+		IE6 : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==6),
+		IE7 : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==7),
+		IE8 : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8)
 	},
-	os:{
-		iPhoneOS : (navigator.userAgent.indexOf('like Mac OS X') > -1),
-		Android  : (navigator.userAgent.indexOf('Android') > -1)
-	},
-	vml : Camp.current.vml,
+	os : { iPhoneOS : (navigator.userAgent.indexOf('like Mac OS X') > -1)},
+	mobile : (navigator.userAgent.indexOf('like Mac OS X') > -1 || navigator.userAgent.indexOf('Android') > -1),
 
 	// const値
 	BOARD  : 'board',
@@ -1293,9 +1290,7 @@ var
 	// local scope
 	_doc = document,
 	_win = this,
-
-	// browsers
-	_IE     = k.br.IE,
+	_iOS = k.os.iPhoneOS,
 
 	/* ここからクラス定義です  varでドット付きは、最左辺に置けません */
 
@@ -1408,6 +1403,8 @@ _extend( _ElementManager, {
 	// ee.getSrcElement() イベントが起こったエレメントを返す
 	// ee.pageX()         イベントが起こったページ上のX座標を返す
 	// ee.pageY()         イベントが起こったページ上のY座標を返す
+	// ee.scrollLeft()    ウィンドウのXスクロール量を返す
+	// ee.scrollTop()     ウィンドウのYスクロール量を返す
 	// ee.windowWidth()   ウィンドウの幅を返す
 	// ee.windowHeight()  ウィンドウの高さを返す
 	//----------------------------------------------------------------------
@@ -1415,31 +1412,57 @@ _extend( _ElementManager, {
 		return e.target || e.srcElement;
 	},
 	pageX : function(e){
-		_ElementManager.pageX = (
-			(!_IE) ? function(e){ return e.pageX;}
-				   : function(e){ return e.clientX + (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);}
+		_ElementManager.pageX = ((!_iOS) ?
+			function(e){ return ((e.pageX!==void 0) ? e.pageX : e.clientX + this.scrollLeft());}
+		:
+			function(e){
+				if(!!e.touches){
+					var len=e.touches.length, pos=0;
+					if(len>0){
+						for(var i=0;i<len;i++){ pos += e.touches[i].clientX;}
+						return pos/len + this.scrollLeft();
+					}
+				}
+				else if(!!e.clientX){ return e.clientX + this.scrollLeft();}
+				return e.pageX;
+			}
 		);
 		return _ElementManager.pageX(e);
 	},
 	pageY : function(e){
-		_ElementManager.pageY = (
-			(!_IE) ? function(e){ return e.pageY;}
-				   : function(e){ return e.clientY + (_doc.documentElement.scrollTop  || _doc.body.scrollTop);}
+		_ElementManager.pageY = ((!_iOS) ?
+			function(e){ return ((e.pageY!==void 0) ? e.pageY : e.clientY + this.scrollTop());}
+		:
+			function(e){
+				if(!!e.touches){
+					var len=e.touches.length, pos=0;
+					if(len>0){
+						for(var i=0;i<len;i++){ pos += e.touches[i].clientY;}
+						return pos/len + this.scrollTop();
+					}
+				}
+				else if(!!e.clientY){ return e.clientY + this.scrollTop();}
+				return e.pageY;
+			}
 		);
 		return _ElementManager.pageY(e);
 	},
+	scrollLeft : function(){ return (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);},
+	scrollTop  : function(){ return (_doc.documentElement.scrollTop  || _doc.body.scrollTop );},
 
 	windowWidth : function(){
-		_ElementManager.windowWidth = (
-			(!_IE) ? function(){ return innerWidth;}
-				   : function(){ return _doc.body.clientWidth;}
+		_ElementManager.windowWidth = ((!_iOS) ?
+			function(){ return ((_win.innerHeight!==void 0) ? _win.innerWidth : _doc.body.clientWidth);}
+		:
+			function(){ return 980;}
 		);
 		return _ElementManager.windowWidth();
 	},
 	windowHeight : function(){
-		_ElementManager.windowHeight = (
-			(!_IE) ? function(){ return innerHeight;}
-				   : function(){ return _doc.body.clientHeight;}
+		_ElementManager.windowHeight = ((!_iOS) ?
+			function(){ return ((_win.innerHeight!==void 0) ? _win.innerHeight : _doc.body.clientHeight);}
+		:
+			function(){ return (980*(_win.innerHeight/_win.innerWidth))|0;}
 		);
 		return _ElementManager.windowHeight();
 	},
@@ -1486,25 +1509,23 @@ _ElementManager.ElementExt.prototype = {
 	//----------------------------------------------------------------------
 	getRect : function(){
 		this.getRect = ((!!document.createElement('div').getBoundingClientRect) ?
-			((!_IE) ?
-				function(){
-					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
-					var left   = rect.left   + _win.scrollX;
-					var top    = rect.top    + _win.scrollY;
-					var right  = rect.right  + _win.scrollX;
-					var bottom = rect.bottom + _win.scrollY;
-					return { top:top, bottom:bottom, left:left, right:right};
+			function(){
+				var rect = this.el.getBoundingClientRect(), _html, _body, scrollLeft, scrollTop;
+				if(!_win.scrollX==void 0){
+					scrollLeft = _win.scrollX;
+					scrollTop  = _win.scrollY;
 				}
-			:
-				function(){
-					var _html = _doc.documentElement, _body = _doc.body, rect = this.el.getBoundingClientRect();
-					var left   = rect.left   + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
-					var top    = rect.top    + ((_body.scrollTop  || _html.scrollTop ) - _html.clientTop );
-					var right  = rect.right  + ((_body.scrollLeft || _html.scrollLeft) - _html.clientLeft);
-					var bottom = rect.bottom + ((_body.scrollTop  || _html.scrollTop ) - _html.clientTop );
-					return { top:top, bottom:bottom, left:left, right:right};
+				else{
+					_html = _doc.documentElement; _body = _doc.body;
+					scrollLeft = (_body.scrollLeft || _html.scrollLeft) - _html.clientLeft;
+					scrollTop  = (_body.scrollTop  || _html.scrollTop ) - _html.clientTop;
 				}
-			)
+				var left   = rect.left   + scrollLeft;
+				var top    = rect.top    + scrollTop;
+				var right  = rect.right  + scrollLeft;
+				var bottom = rect.bottom + scrollTop;
+				return { top:top, bottom:bottom, left:left, right:right};
+			}
 		:
 			function(){
 				var left = 0, top = 0, el = this.el;
@@ -1634,7 +1655,7 @@ Timer = function(){
 	this.undoWaitTime  = 300;	// 1回目にwaitを多く入れるための値
 	this.undoWaitCount = 0;
 
-	if(k.br.IE){
+	if(k.br.IE6 || k.br.IE7 || k.br.IE8){
 		this.timerInterval *= 2;
 		this.undoInterval  *= 2;
 	}
@@ -1719,9 +1740,9 @@ Timer.prototype = {
 		this.TIDundo = null;
 	},
 	procUndo : function(){
-		if(!kc.isCTRL || (!kc.inUNDO && !kc.inREDO)){ this.stopUndoTimer();}
-		else if(this.undoWaitCount>0)               { this.undoWaitCount--;}
-		else{ execUndo();}
+		if((!kc.isCTRL && !kc.isMETA) || (!kc.inUNDO && !kc.inREDO)){ this.stopUndoTimer();}
+		else if(this.undoWaitCount>0){ this.undoWaitCount--;}
+		else{ this.execUndo();}
 	},
 	execUndo : function(){
 		if     (kc.inUNDO){ um.undo();}
@@ -2147,35 +2168,34 @@ Board.prototype = {
 	// bd.isinside()    指定された(bx,by)が盤面内かどうか判断する
 	//---------------------------------------------------------------------------
 	setcoordAll : function(){
-		var x0=k.p0.x, y0=k.p0.y;
 		{
 			for(var id=0;id<this.cellmax;id++){
 				var obj = this.cell[id];
-				obj.px = x0 + (obj.bx-1)*k.bwidth;
-				obj.py = y0 + (obj.by-1)*k.bheight;
-				obj.cpx = x0 + obj.bx*k.bwidth;
-				obj.cpy = y0 + obj.by*k.bheight;
+				obj.px = (obj.bx-1)*k.bwidth;
+				obj.py = (obj.by-1)*k.bheight;
+				obj.cpx = obj.bx*k.bwidth;
+				obj.cpy = obj.by*k.bheight;
 			}
 		}
 		if(!!k.iscross){
 			for(var id=0;id<this.crossmax;id++){
 				var obj = this.cross[id];
-				obj.px = x0 + obj.bx*k.bwidth;
-				obj.py = y0 + obj.by*k.bheight;
+				obj.px = obj.bx*k.bwidth;
+				obj.py = obj.by*k.bheight;
 			}
 		}
 		if(!!k.isborder){
 			for(var id=0;id<this.bdmax;id++){
 				var obj = this.border[id];
-				obj.px = x0 + obj.bx*k.bwidth;
-				obj.py = y0 + obj.by*k.bheight;
+				obj.px = obj.bx*k.bwidth;
+				obj.py = obj.by*k.bheight;
 			}
 		}
 		if(!!k.isexcell){
 			for(var id=0;id<this.excellmax;id++){
 				var obj = this.excell[id];
-				obj.px = x0 + (obj.bx-1)*k.bwidth;
-				obj.py = y0 + (obj.by-1)*k.bheight;
+				obj.px = (obj.bx-1)*k.bwidth;
+				obj.py = (obj.by-1)*k.bheight;
 			}
 		}
 	},
@@ -2773,6 +2793,10 @@ Graphic = function(){
 	this.fontsizeratio = 1.0;	// 数字Fontサイズの倍率
 	this.crosssize = 0.4;
 	this.circleratio = [0.40, 0.34];
+
+	// 盤面のページ内の左上座標
+	this.pageX = 0;
+	this.pageY = 0;
 
 	// 描画単位
 	this.cw = k.cwidth;
@@ -3830,8 +3854,8 @@ Graphic.prototype = {
 			if(tc.cursor.x < x1-1 || x2+1 < tc.cursor.x){ return;}
 			if(tc.cursor.y < y1-1 || y2+1 < tc.cursor.y){ return;}
 
-			var cpx = k.p0.x + tc.cursor.x*this.bw + 0.5;
-			var cpy = k.p0.y + tc.cursor.y*this.bh + 0.5;
+			var cpx = tc.cursor.x*this.bw + 0.5;
+			var cpy = tc.cursor.y*this.bh + 0.5;
 			var w, size;
 			if(islarge!==false){ w = (Math.max(this.cw/16, 2))|0; size = this.bw-0.5;}
 			else	           { w = (Math.max(this.cw/24, 1))|0; size = this.bw*0.56;}
@@ -3863,7 +3887,7 @@ Graphic.prototype = {
 		if(target===0){ return;}
 
 		g.fillStyle = this.ttcolor;
-		this.drawTriangle1(k.p0.x+(tc.cursor.x>>1)*this.cw, k.p0.y+(tc.cursor.y>>1)*this.ch, (target===2?4:2), vid);
+		this.drawTriangle1((tc.cursor.x>>1)*this.cw, (tc.cursor.y>>1)*this.ch, (target===2?4:2), vid);
 	},
 
 	//---------------------------------------------------------------------------
@@ -3878,13 +3902,13 @@ Graphic.prototype = {
 		if(g.use.canvas){
 			g.fillStyle = this.gridcolor;
 			for(var i=x1;i<=x2;i+=2){
-				for(var j=(k.p0.y+y1*this.bh),len=(k.p0.y+y2*this.bh);j<len;j+=6){
-					g.fillRect(k.p0.x+i*this.bw, j, 1, 3);
+				for(var j=(y1*this.bh),len=(y2*this.bh);j<len;j+=6){
+					g.fillRect(i*this.bw, j, 1, 3);
 				}
 			}
 			for(var i=y1;i<=y2;i+=2){
-				for(var j=(k.p0.x+x1*this.bw),len=(k.p0.x+x2*this.bw);j<len;j+=6){
-					g.fillRect(j, k.p0.y+i*this.bh, 3, 1);
+				for(var j=(x1*this.bw),len=(x2*this.bw);j<len;j+=6){
+					g.fillRect(j, i*this.bh, 3, 1);
 				}
 			}
 		}
@@ -3892,12 +3916,12 @@ Graphic.prototype = {
 			g.lineWidth = 1;
 			g.strokeStyle = this.gridcolor;
 			for(var i=x1;i<=x2;i+=2){ if(this.vnop("cliney_"+i,this.NONE)){
-				var px = k.p0.x+i*this.bw, py1 = k.p0.y+y1*this.bh, py2 = k.p0.y+y2*this.bh;
+				var px = i*this.bw, py1 = y1*this.bh, py2 = y2*this.bh;
 				g.strokeLine(px, py1, px, py2);
 				g.setDashSize(3);
 			}}
 			for(var i=y1;i<=y2;i+=2){ if(this.vnop("clinex_"+i,this.NONE)){
-				var py = k.p0.y+i*this.bh, px1 = k.p0.x+x1*this.bw, px2 = k.p0.x+x2*this.bw;
+				var py = i*this.bh, px1 = x1*this.bw, px2 = x2*this.bw;
 				g.strokeLine(px1, py, px2, py);
 				g.setDashSize(3);
 			}}
@@ -3923,8 +3947,8 @@ Graphic.prototype = {
 		isdraw = (isdraw!==false?true:false);
 		if(isdraw){
 			g.fillStyle = this.gridcolor;
-			for(var i=xa;i<=xb;i+=2){ if(this.vnop("bdy_"+i,this.NONE)){ g.fillRect(k.p0.x+i*this.bw, k.p0.y+y1*this.bh, 1, (y2-y1)*this.bh+1);} }
-			for(var i=ya;i<=yb;i+=2){ if(this.vnop("bdx_"+i,this.NONE)){ g.fillRect(k.p0.x+x1*this.bw, k.p0.y+i*this.bh, (x2-x1)*this.bw+1, 1);} }
+			for(var i=xa;i<=xb;i+=2){ if(this.vnop("bdy_"+i,this.NONE)){ g.fillRect(i*this.bw, y1*this.bh, 1, (y2-y1)*this.bh+1);} }
+			for(var i=ya;i<=yb;i+=2){ if(this.vnop("bdx_"+i,this.NONE)){ g.fillRect(x1*this.bw, i*this.bh, (x2-x1)*this.bw+1, 1);} }
 		}
 		else{
 			if(!g.use.canvas){
@@ -3951,14 +3975,14 @@ Graphic.prototype = {
 		if(g.use.canvas){
 			g.fillStyle = this.gridcolor;
 			for(var i=xa;i<=xb;i+=2){
-				var px = k.p0.x+i*this.bw;
-				for(var j=(k.p0.y+y1*this.bh),len=(k.p0.y+y2*this.bh);j<len;j+=(2*dotSize)){
+				var px = i*this.bw;
+				for(var j=(y1*this.bh),len=(y2*this.bh);j<len;j+=(2*dotSize)){
 					g.fillRect(px, j, 1, dotSize);
 				}
 			}
 			for(var i=ya;i<=yb;i+=2){
-				var py = k.p0.y+i*this.bh;
-				for(var j=(k.p0.x+x1*this.bw),len=(k.p0.x+x2*this.bw);j<len;j+=(2*dotSize)){
+				var py = i*this.bh;
+				for(var j=(x1*this.bw),len=(x2*this.bw);j<len;j+=(2*dotSize)){
 					g.fillRect(j, py, dotSize, 1);
 				}
 			}
@@ -3968,12 +3992,12 @@ Graphic.prototype = {
 			g.lineWidth = 1;
 			g.strokeStyle = this.gridcolor;
 			for(var i=xa;i<=xb;i+=2){ if(this.vnop("bdy_"+i,this.NONE)){
-				var px = k.p0.x+i*this.bw+0.5, py1 = k.p0.y+y1*this.bh, py2 = k.p0.y+y2*this.bh;
+				var px = i*this.bw+0.5, py1 = y1*this.bh, py2 = y2*this.bh;
 				g.strokeLine(px, py1, px, py2);
 				g.setDashSize(dotSize);
 			}}
 			for(var i=ya;i<=yb;i+=2){ if(this.vnop("bdx_"+i,this.NONE)){
-				var py = k.p0.y+i*this.bh+0.5, px1 = k.p0.x+x1*this.bw, px2 = k.p0.x+x2*this.bw;
+				var py = i*this.bh+0.5, px1 = x1*this.bw, px2 = x2*this.bw;
 				g.strokeLine(px1, py, px2, py);
 				g.setDashSize(dotSize);
 			}}
@@ -3996,16 +4020,16 @@ Graphic.prototype = {
 		g.fillStyle = "black";
 
 		if(g.use.canvas){
-			if(x1===0)        { g.fillRect(k.p0.x      -lw+1, k.p0.y+y1*bh-lw+1,  lw, (y2-y1)*bh+2*lw-2);}
-			if(x2===2*k.qcols){ g.fillRect(k.p0.x+boardWidth, k.p0.y+y1*bh-lw+1,  lw, (y2-y1)*bh+2*lw-2);}
-			if(y1===0)        { g.fillRect(k.p0.x+x1*bw-lw+1, k.p0.y      -lw+1,  (x2-x1)*bw+2*lw-2, lw); }
-			if(y2===2*k.qrows){ g.fillRect(k.p0.x+x1*bw-lw+1, k.p0.y+boardHeight, (x2-x1)*bw+2*lw-2, lw); }
+			if(x1===0)        { g.fillRect(     -lw+1, y1*bh-lw+1,  lw, (y2-y1)*bh+2*lw-2);}
+			if(x2===2*k.qcols){ g.fillRect(boardWidth, y1*bh-lw+1,  lw, (y2-y1)*bh+2*lw-2);}
+			if(y1===0)        { g.fillRect(x1*bw-lw+1,      -lw+1,  (x2-x1)*bw+2*lw-2, lw); }
+			if(y2===2*k.qrows){ g.fillRect(x1*bw-lw+1, boardHeight, (x2-x1)*bw+2*lw-2, lw); }
 		}
 		else{
-			if(this.vnop("chs1_",this.NONE)){ g.fillRect(k.p0.x-lw+1,        k.p0.y-lw+1, lw, boardHeight+2*lw-2);}
-			if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x+boardWidth,  k.p0.y-lw+1, lw, boardHeight+2*lw-2);}
-			if(this.vnop("chs3_",this.NONE)){ g.fillRect(k.p0.x-lw+1,        k.p0.y-lw+1, boardWidth+2*lw-2, lw); }
-			if(this.vnop("chs4_",this.NONE)){ g.fillRect(k.p0.x-lw+1, k.p0.y+boardHeight, boardWidth+2*lw-2, lw); }
+			if(this.vnop("chs1_",this.NONE)){ g.fillRect(-lw+1,       -lw+1, lw, boardHeight+2*lw-2);}
+			if(this.vnop("chs2_",this.NONE)){ g.fillRect(boardWidth,  -lw+1, lw, boardHeight+2*lw-2);}
+			if(this.vnop("chs3_",this.NONE)){ g.fillRect(-lw+1,       -lw+1, boardWidth+2*lw-2, lw); }
+			if(this.vnop("chs4_",this.NONE)){ g.fillRect(-lw+1, boardHeight, boardWidth+2*lw-2, lw); }
 		}
 	},
 	drawChassis_ex1 : function(x1,y1,x2,y2,boldflag){
@@ -4019,39 +4043,39 @@ Graphic.prototype = {
 
 		// extendcell==1も含んだ外枠の描画
 		if(g.use.canvas){
-			if(x1===bd.minbx){ g.fillRect(k.p0.x-this.cw-lw+1, k.p0.y+y1*bh-lw+1,   lw, (y2-y1)*bh+2*lw-2);}
-			if(x2===bd.maxbx){ g.fillRect(k.p0.x+boardWidth,   k.p0.y+y1*bh-lw+1,   lw, (y2-y1)*bh+2*lw-2);}
-			if(y1===bd.minby){ g.fillRect(k.p0.x+x1*bw-lw+1,   k.p0.y-this.ch-lw+1, (x2-x1)*bw+2*lw-2, lw);}
-			if(y2===bd.maxby){ g.fillRect(k.p0.x+x1*bw-lw+1,   k.p0.y+boardHeight,  (x2-x1)*bw+2*lw-2, lw);}
+			if(x1===bd.minbx){ g.fillRect(-this.cw-lw+1, y1*bh-lw+1,   lw, (y2-y1)*bh+2*lw-2);}
+			if(x2===bd.maxbx){ g.fillRect(boardWidth,    y1*bh-lw+1,   lw, (y2-y1)*bh+2*lw-2);}
+			if(y1===bd.minby){ g.fillRect(x1*bw-lw+1,   -this.ch-lw+1, (x2-x1)*bw+2*lw-2, lw);}
+			if(y2===bd.maxby){ g.fillRect(x1*bw-lw+1,    boardHeight,  (x2-x1)*bw+2*lw-2, lw);}
 		}
 		else{
-			if(this.vnop("chsex1_1_",this.NONE)){ g.fillRect(k.p0.x-this.cw-lw+1, k.p0.y-this.ch-lw+1, lw, boardHeight+this.ch+2*lw-2);}
-			if(this.vnop("chsex1_2_",this.NONE)){ g.fillRect(k.p0.x+boardWidth,   k.p0.y-this.ch-lw+1, lw, boardHeight+this.ch+2*lw-2);}
-			if(this.vnop("chsex1_3_",this.NONE)){ g.fillRect(k.p0.x-this.cw-lw+1, k.p0.y-this.ch-lw+1, boardWidth+this.cw+2*lw-2, lw); }
-			if(this.vnop("chsex1_4_",this.NONE)){ g.fillRect(k.p0.x-this.cw-lw+1, k.p0.y+boardHeight,  boardWidth+this.cw+2*lw-2, lw); }
+			if(this.vnop("chsex1_1_",this.NONE)){ g.fillRect(-this.cw-lw+1, -this.ch-lw+1, lw, boardHeight+this.ch+2*lw-2);}
+			if(this.vnop("chsex1_2_",this.NONE)){ g.fillRect(   boardWidth, -this.ch-lw+1, lw, boardHeight+this.ch+2*lw-2);}
+			if(this.vnop("chsex1_3_",this.NONE)){ g.fillRect(-this.cw-lw+1, -this.ch-lw+1, boardWidth+this.cw+2*lw-2, lw); }
+			if(this.vnop("chsex1_4_",this.NONE)){ g.fillRect(-this.cw-lw+1,   boardHeight, boardWidth+this.cw+2*lw-2, lw); }
 		}
 
 		// 通常のセルとextendcell==1の間の描画
 		if(boldflag){
 			// すべて太線で描画する場合
 			if(g.use.canvas){
-				if(x1<=0){ g.fillRect(k.p0.x-lw+1, k.p0.y+y1*bh-lw+1, lw, (y2-y1)*bh+lw-1);}
-				if(y1<=0){ g.fillRect(k.p0.x+x1*bw-lw+1, k.p0.y-lw+1, (x2-x1)*bw+lw-1, lw); }
+				if(x1<=0){ g.fillRect(-lw+1, y1*bh-lw+1, lw, (y2-y1)*bh+lw-1);}
+				if(y1<=0){ g.fillRect(x1*bw-lw+1, -lw+1, (x2-x1)*bw+lw-1, lw); }
 			}
 			else{
-				if(this.vnop("chs1_",this.NONE)){ g.fillRect(k.p0.x-lw+1, k.p0.y-lw+1, lw, boardHeight+lw-1);}
-				if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x-lw+1, k.p0.y-lw+1, boardWidth+lw-1,  lw);}
+				if(this.vnop("chs1_",this.NONE)){ g.fillRect(-lw+1, -lw+1, lw, boardHeight+lw-1);}
+				if(this.vnop("chs2_",this.NONE)){ g.fillRect(-lw+1, -lw+1, boardWidth+lw-1,  lw);}
 			}
 		}
 		else{
 			// ques==51のセルが隣接している時に細線を描画する場合
 			if(g.use.canvas){
-				if(x1<=0){ g.fillRect(k.p0.x, k.p0.y+y1*bh, 1, (y2-y1)*bh);}
-				if(y1<=0){ g.fillRect(k.p0.x+x1*bw, k.p0.y, (x2-x1)*bw, 1); }
+				if(x1<=0){ g.fillRect(0, y1*bh, 1, (y2-y1)*bh);}
+				if(y1<=0){ g.fillRect(x1*bw, 0, (x2-x1)*bw, 1); }
 			}
 			else{
-				if(this.vnop("chs1_",this.NONE)){ g.fillRect(k.p0.x, k.p0.y, 1, boardHeight);}
-				if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x, k.p0.y, boardWidth, 1); }
+				if(this.vnop("chs1_",this.NONE)){ g.fillRect(0, 0, 1, boardHeight);}
+				if(this.vnop("chs2_",this.NONE)){ g.fillRect(0, 0, boardWidth, 1); }
 			}
 
 			var headers = ["chs1_sub_", "chs2_sub_"];
@@ -4062,7 +4086,7 @@ Graphic.prototype = {
 				if(bx===1){
 					if(bd.cell[c].ques!==51){
 						if(this.vnop(headers[0]+by,this.NONE)){
-							g.fillRect(k.p0.x-lm, py-lm, lw, this.ch+lw);
+							g.fillRect(-lm, py-lm, lw, this.ch+lw);
 						}
 					}
 					else{ this.vhide([headers[0]+by]);}
@@ -4070,7 +4094,7 @@ Graphic.prototype = {
 				if(by===1){
 					if(bd.cell[c].ques!==51){
 						if(this.vnop(headers[1]+bx,this.NONE)){
-							g.fillRect(px-lm, k.p0.x-lm, this.cw+lw, lw);
+							g.fillRect(px-lm, -lm, this.cw+lw, lw);
 						}
 					}
 					else{ this.vhide([headers[1]+bx]);}
@@ -4111,7 +4135,7 @@ Graphic.prototype = {
 				this.vinc('board_base', 'crispEdges');
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
 				if(this.vnop("boardfull",this.NONE)){
-					g.fillRect(k.p0.x, k.p0.y, k.qcols*this.cw, k.qrows*this.ch);
+					g.fillRect(0, 0, k.qcols*this.cw, k.qrows*this.ch);
 				}
 			}
 		);
@@ -4121,7 +4145,7 @@ Graphic.prototype = {
 		this.flushCanvas = ((g.use.canvas) ?
 			function(x1,y1,x2,y2){
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
-				g.fillRect(k.p0.x+x1*this.bw, k.p0.y+y1*this.bh, (x2-x1)*this.bw, (y2-y1)*this.bh);
+				g.fillRect(x1*this.bw, y1*this.bh, (x2-x1)*this.bw, (y2-y1)*this.bh);
 			}
 		:
 			function(x1,y1,x2,y2){ this.zidx=1;}
@@ -4239,6 +4263,7 @@ Graphic.prototype = {
 		}
 	},
 	dispnum : function(key, type, text, fontratio, color, px, py){
+		var fontsize = (this.cw*fontratio*this.fontsizeratio)|0;
 		if(!this.fillTextPrecisely){
 			if(k.br.IE6 || k.br.IE7){ py+=2;}
 
@@ -4248,39 +4273,40 @@ Graphic.prototype = {
 
 			el.innerHTML = text;
 
-			var fontsize = (this.cw*fontratio*this.fontsizeratio)|0;
-			el.style.fontSize = (""+ fontsize + 'px');
+			el.style.fontSize = ("" + fontsize + 'px');
+			el.style.color = color;
 
 			this.showEL(key);	// 先に表示しないとwid,hgt=0になって位置がずれる
 
-			var wid = el.offsetWidth;
-			var hgt = el.offsetHeight;
-
-			if(type===1){
-				px+=2; // なんかちょっとずれる
-				el.style.left = k.cv_oft.x+px-wid/2 + 'px';
-				el.style.top  = k.cv_oft.y+py-hgt/2 + 'px';
+			var wid = el.offsetWidth; // 横位置の調整
+			switch(type){
+				case 1:         px-=wid/2; px+=2;          break; //ちょっとずれる
+				case 2: case 5:            px+=-this.bw+3; break;
+				case 3: case 4: px-=wid;   px+= this.bw-1; break;
 			}
-			else{
-				if     (type===3||type===4){ el.style.left = k.cv_oft.x+px+this.bw-wid -1 + 'px';}
-				else if(type===2||type===5){ el.style.left = k.cv_oft.x+px-this.bw     +3 + 'px';}
-				if     (type===2||type===3){ el.style.top  = k.cv_oft.y+py+this.bh-hgt -1 + 'px';}
-				else if(type===4||type===5){ el.style.top  = k.cv_oft.y+py-this.bh     +2 + 'px';}
+			var hgt = el.offsetHeight; // 縦位置の調整
+			switch(type){
+				case 1:         py-=hgt/2;                 break;
+				case 4: case 5:            py+=-this.bh+1; break;
+				case 2: case 3: py-=hgt;   py+= this.bh+2; break;
 			}
-
-			el.style.color = color;
+			el.style.left = (pc.pageX + px) + 'px';
+			el.style.top  = (pc.pageY + py) + 'px';
 		}
 		// Nativeな方法はこっちなんだけど、、(前は計5～6%くらい遅くなってた)
 		else{
-			g.font = ""+((this.cw*fontratio*this.fontsizeratio)|0)+"px 'Serif'";
+			g.font = ("" + fontsize + "px 'Serif'");
 			g.fillStyle = color;
-			if(type===1){
-				g.textAlign = 'center'; g.textBaseline = 'middle';
+
+			switch(type){
+				case 1:         g.textAlign='center';                break;
+				case 2: case 5: g.textAlign='left';  px+=-this.bw+2; break;
+				case 3: case 4: g.textAlign='right'; px+= this.bw-1; break;
 			}
-			else{
-				g.textAlign    = ((type===3||type===4)?'right':'left');
-				g.textBaseline = ((type===2||type===3)?'alphabetic':'top');
-				px += ((type===3||type===4)?this.bw-1:-this.bw+2), py += ((type===2||type===3)?this.bh-2:-this.bh+1);
+			switch(type){
+				case 1:         g.textBaseline='middle';                     break;
+				case 4: case 5: g.textBaseline='top';        py+=-this.bh+1; break;
+				case 2: case 3: g.textBaseline='alphabetic'; py+= this.bh-2; break;
 			}
 			g.fillText(text, px, py);
 		}
@@ -4310,8 +4336,8 @@ var MouseEvent = function(){
 
 	this.mouseoffset;
 	if(k.br.IE6||k.br.IE7||k.br.IE8){ this.mouseoffset = {x:2,y:2};}
-	else if(k.br.WinWebKit){ this.mouseoffset = {x:1,y:1};}
-	else                   { this.mouseoffset = {x:0,y:0};}
+	else if(k.br.WebKit)            { this.mouseoffset = {x:1,y:1};}
+	else{ this.mouseoffset = {x:0,y:0};}
 };
 MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
@@ -4338,17 +4364,16 @@ MouseEvent.prototype = {
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
 	e_mousedown : function(e){
 		if(this.enableMouse){
-			this.setButtonFlag(e);
-			// SHIFTキーを押している時は左右ボタン反転
-			if(((kc.isSHIFT)^pp.getVal('lrcheck'))&&(this.btn.Left^this.btn.Right)){
-				this.btn.Left = !this.btn.Left; this.btn.Right = !this.btn.Right;
-			}
-			if(this.btn.Middle){ this.modeflip();} //中ボタン
-			else{
+			this.btn = this.getMouseButton(e);
+			if(this.btn.Left || this.btn.Right){
 				if(ans.errDisp){ bd.errclear();}
 				um.newOperation(true);
 				this.setposition(e);
 				this.mousedown();	// 各パズルのルーチンへ
+			}
+			else if(this.btn.Middle){ //中ボタン
+				this.modeflip();
+				this.btn.Middle = false;
 			}
 		}
 		ee.stopPropagation(e);
@@ -4356,7 +4381,7 @@ MouseEvent.prototype = {
 		return false;
 	},
 	e_mouseup   : function(e){
-		if(this.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
+		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
 			this.setposition(e);
 			this.mouseup();		// 各パズルのルーチンへ
@@ -4370,7 +4395,7 @@ MouseEvent.prototype = {
 		// ポップアップメニュー移動中は当該処理が最優先
 		if(!!menu.movingpop){ return true;}
 
-		if(this.enableMouse && !this.btn.Middle && (this.btn.Left || this.btn.Right)){
+		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
 			this.setposition(e);
 			this.mousemove();	// 各パズルのルーチンへ
@@ -4394,27 +4419,29 @@ MouseEvent.prototype = {
 	mousemove : function(){ },
 
 	//---------------------------------------------------------------------------
-	// mv.setButtonFlag() 左/中/右ボタンが押されているか設定する
+	// mv.getMouseButton() 左/中/右ボタンが押されているかチェックする
 	//---------------------------------------------------------------------------
-	setButtonFlag : function(e){
-		this.setButtonFlag = ((!k.os.iPhoneOS && !k.os.Android) ? (
-		 (k.br.IE) ?
-			function(e){ this.btn = { Left:(e.button===1), Middle:(e.button===4), Right:(e.button===2)};}
-		:(k.br.WinWebKit) ?
-			function(e){ this.btn = { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)};}
-		:(k.br.WebKit) ?
-			function(e){
-				this.btn = { Left:(e.which===1 && !e.metaKey), Middle:false, Right:(e.which===1 && !!e.metaKey) };
+	getMouseButton : function(e){
+		var left=false, mid=false, right=false;
+		if(!k.mobile){
+			if(k.br.IE6 || k.br.IE7 || k.br.IE8){
+				left  = (e.button===1);
+				mid   = (e.button===4);
+				right = (e.button===2);
 			}
-		:
-			function(e){
-				this.btn = (!!e.which ? { Left:(e.which ===1), Middle:(e.which ===2), Right:(e.which ===3)}
-									  : { Left:(e.button===0), Middle:(e.button===1), Right:(e.button===2)});
+			else{
+				left  = (!!e.which ? e.which===1 : e.button===0);
+				mid   = (!!e.which ? e.which===2 : e.button===1);
+				right = (!!e.which ? e.which===3 : e.button===2);
 			}
-		):
-			function(e){ this.btn = { Left:(e.touches.length===1), Middle:false, Right:(e.touches.length>1)};}
-		);
-		this.setButtonFlag(e);
+		}
+		else{ left=(e.touches.length===1); right=(e.touches.length>1);}
+
+		// SHIFTキー/Commandキーを押している時は左右ボタン反転
+		if(((kc.isSHIFT || kc.isMETA)^pp.getVal('lrcheck'))&&(left!==right))
+			{ left=!left; right=!right;}
+
+		return {Left:left, Middle:mid, Right:right};
 	},
 
 	//---------------------------------------------------------------------------
@@ -4423,24 +4450,8 @@ MouseEvent.prototype = {
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
 	setposition : function(e){
-		this.setposition = ((!k.os.iPhoneOS && !k.os.Android) ?
-			function(e){
-				this.inputPoint.x = ee.pageX(e) -k.cv_oft.x-k.p0.x - this.mouseoffset.x;
-				this.inputPoint.y = ee.pageY(e) -k.cv_oft.y-k.p0.y - this.mouseoffset.y;
-			}
-		:
-			function(e){
-				var len=e.touches.length , pos=new Pos(0,0);
-				if(len>0){
-					for(var i=0,len=e.touches.length;i<len;i++){
-						pos.x += e.pageX; pos.y += e.pageY;
-					}
-					this.inputPoint.x = (((pos.x/len) -k.cv_oft.x-k.p0.x)|0);
-					this.inputPoint.y = (((pos.y/len) -k.cv_oft.y-k.p0.y)|0);
-				}
-			}
-		);
-		this.setposition(e);
+		this.inputPoint.x = ee.pageX(e) - pc.pageX - this.mouseoffset.x;
+		this.inputPoint.y = ee.pageY(e) - pc.pageY - this.mouseoffset.y;
 	},
 
 	notInputted : function(){ return !um.changeflag;},
@@ -4641,7 +4652,7 @@ MouseEvent.prototype = {
 		var cc = this.cellid();
 		if(cc===null){ return;}
 
-		bd.sQsC(cc, (this.btn.Left?[1,2,0]:[2,0,1])[bd.QsB(cc)]);
+		bd.sQsC(cc, (this.btn.Left?[1,2,0]:[2,0,1])[bd.QsC(cc)]);
 		pc.paintCell(cc);
 	},
 
@@ -4938,7 +4949,8 @@ KeyEvent = function(){
 	this.enableKey = true;	// キー入力は有効か
 
 	this.isCTRL;
-	this.isALT;	// ALTはメニュー用なので極力使わない
+	this.isMETA;	// MacのCommandキーなど
+	this.isALT;		// ALTはメニュー用なので基本的に使わない
 	this.isSHIFT;
 	this.inUNDO;
 	this.inREDO;
@@ -4955,6 +4967,7 @@ KeyEvent.prototype = {
 	//---------------------------------------------------------------------------
 	keyreset : function(){
 		this.isCTRL  = false;
+		this.isMETA  = false;
 		this.isALT   = false;
 		this.isSHIFT = false;
 		this.inUNDO  = false;
@@ -4973,11 +4986,10 @@ KeyEvent.prototype = {
 	// kc.e_keypress() キー入力した際のイベント共通処理(-キー用)
 	//---------------------------------------------------------------------------
 	// この3つのキーイベントはwindowから呼び出される(kcをbindしている)
-	// 48～57は0～9キー、65～90はa～z、96～105はテンキー、112～123はF1～F12キー
 	e_keydown : function(e){
 		if(this.enableKey){
 			um.newOperation(true);
-			this.ca = this.getchar(e, this.getKeyCode(e));
+			this.ca = this.getchar(e);
 			this.tcMoved = false;
 			if(!this.isZ){ bd.errclear();}
 
@@ -4995,7 +5007,7 @@ KeyEvent.prototype = {
 	e_keyup : function(e){
 		if(this.enableKey){
 			um.newOperation(false);
-			this.ca = this.getchar(e, this.getKeyCode(e));
+			this.ca = this.getchar(e);
 			this.keyPressed = false;
 
 			if(!this.keyup_common(e)){
@@ -5003,11 +5015,10 @@ KeyEvent.prototype = {
 			}
 		}
 	},
-	//(keypressのみ)45は-(マイナス)
 	e_keypress : function(e){
 		if(this.enableKey){
 			um.newOperation(false);
-			this.ca = this.getcharp(e, this.getKeyCode(e));
+			this.ca = this.getcharp(e);
 
 			if(this.ca){ this.keyinput(this.ca);}	// 各パズルのルーチンへ
 		}
@@ -5037,30 +5048,32 @@ KeyEvent.prototype = {
 	keyup    : function(ca){ },
 
 	//---------------------------------------------------------------------------
-	// kc.getchar()    入力されたキーを表す文字列を返す
-	// kc.getcharp()   入力されたキーを表す文字列を返す(keypressの時)
-	// kc.getKeyCode() 入力されたキーのコードを数字で返す
+	// kc.getchar()  入力されたキーを表す文字列を返す
+	// kc.getcharp() 入力されたキーを表す文字列を返す(keypressの時)
 	//---------------------------------------------------------------------------
-	getchar : function(e, keycode){
-		if     (e.keyCode == 38)            { return k.KEYUP;}
-		else if(e.keyCode == 40)            { return k.KEYDN;}
-		else if(e.keyCode == 37)            { return k.KEYLT;}
-		else if(e.keyCode == 39)            { return k.KEYRT;}
-		else if(48<=keycode && keycode<=57) { return (keycode - 48).toString(36);}
-		else if(65<=keycode && keycode<=90) { return (keycode - 55).toString(36);} //アルファベット
-		else if(96<=keycode && keycode<=105){ return (keycode - 96).toString(36);} //テンキー対応
-		else if(112<=keycode && keycode<=123){return 'F'+(keycode - 111).toString(10);}
-		else if(keycode==32 || keycode==46) { return ' ';} // 32はスペースキー 46はdelキー
-		else if(keycode==8)                 { return 'BS';}
-		else if(e.shiftKey)                 { return 'shift';}
-		else{ return '';}
+	// 48～57は0～9キー、65～90はa～z、96～105はテンキー、112～123はF1～F12キー
+	getchar : function(e){
+		if     (e.keyCode==38){ return k.KEYUP;}
+		else if(e.keyCode==40){ return k.KEYDN;}
+		else if(e.keyCode==37){ return k.KEYLT;}
+		else if(e.keyCode==39){ return k.KEYRT;}
+
+		var keycode = (!!e.keyCode ? e.keyCode: e.charCode);
+		if     ( 48<=keycode && keycode<= 57){ return (keycode-48).toString(36);}
+		else if( 65<=keycode && keycode<= 90){ return (keycode-55).toString(36);} //アルファベット
+		else if( 96<=keycode && keycode<=105){ return (keycode-96).toString(36);} //テンキー対応
+		else if(112<=keycode && keycode<=123){ return 'F'+(keycode - 111).toString(10);}
+		else if(keycode==32 || keycode==46)  { return ' ';} // 32はスペースキー 46はdelキー
+		else if(keycode==8)                  { return 'BS';}
+
+		else if(e.shiftKey){ return 'shift';}
+
+		return '';
 	},
-	getcharp : function(e, keycode){
-		if(keycode==45){ return '-';}
-		else{ return '';}
-	},
-	getKeyCode : function(e){
-		return !!e.keyCode ? e.keyCode: e.charCode;
+	// (keypressのみ)45は-(マイナス)
+	getcharp : function(e){
+		if((!!e.keyCode ? e.keyCode: e.charCode)==45){ return '-';}
+		return '';
 	},
 
 	//---------------------------------------------------------------------------
@@ -5069,16 +5082,17 @@ KeyEvent.prototype = {
 	//---------------------------------------------------------------------------
 	keydown_common : function(e){
 		var flag = false;
-		if(!this.isSHIFT && e.shiftKey){ this.isSHIFT=true; }
-		if(!this.isCTRL  && e.ctrlKey ){ this.isCTRL=true;  flag = true; }
-		if(!this.isALT   && e.altKey  ){ this.isALT=true;   flag = true; }
+		if(!this.isSHIFT && e.shiftKey){ this.isSHIFT=true;}
+		if(!this.isCTRL  && e.ctrlKey ){ this.isCTRL=true; flag=true;}
+		if(!this.isMETA  && e.metaKey ){ this.isMETA=true; flag=true;}
+		if(!this.isALT   && e.altKey  ){ this.isALT=true;  flag=true;}
 
-		if(this.isCTRL && this.ca=='z'){ this.inUNDO=true; flag = true; tm.startUndoTimer();}
-		if(this.isCTRL && this.ca=='y'){ this.inREDO=true; flag = true; tm.startUndoTimer();}
+		if((this.isCTRL || this.isMETA) && !this.inUNDO && this.ca=='z'){ this.inUNDO=true; flag=true; tm.startUndoTimer();}
+		if((this.isCTRL || this.isMETA) && !this.inREDO && this.ca=='y'){ this.inREDO=true; flag=true; tm.startUndoTimer();}
 
 		if(this.ca=='F2' && k.EDITOR){ // 112～123はF1～F12キー
-			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); flag = true;}
-			else if(k.playmode &&  this.isSHIFT){ pp.setVal('mode',1); flag = true;}
+			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); flag=true;}
+			else if(k.playmode &&  this.isSHIFT){ pp.setVal('mode',1); flag=true;}
 		}
 		flag = (flag || debug.keydown(this.ca));
 
@@ -5086,12 +5100,13 @@ KeyEvent.prototype = {
 	},
 	keyup_common : function(e){
 		var flag = false;
-		if(this.isSHIFT && !e.shiftKey){ this.isSHIFT=false; flag = true; }
-		if((this.isCTRL || this.inUNDO || this.inREDO)  && !e.ctrlKey ){ this.isCTRL=false;  flag = true; this.inUNDO = false; this.inREDO = false; }
-		if(this.isALT   && !e.altKey  ){ this.isALT=false;   flag = true; }
+		if(this.isSHIFT && !e.shiftKey){ this.isSHIFT=false; flag=true;}
+		if(this.isCTRL  && !e.ctrlKey ){ this.isCTRL=false;  flag=true;}
+		if(this.isMETA  && !e.metaKey ){ this.isMETA=false;  flag=true;}
+		if(this.isALT   && !e.altKey  ){ this.isALT=false;   flag=true;}
 
-		if(this.inUNDO && this.ca=='z'){ this.inUNDO=false; flag = true; }
-		if(this.inREDO && this.ca=='y'){ this.inREDO=false; flag = true; }
+		if(!(this.isCTRL || this.isMETA) && this.inUNDO && this.ca=='z'){ this.inUNDO=false; flag=true;}
+		if(!(this.isCTRL || this.isMETA) && this.inREDO && this.ca=='y'){ this.inREDO=false; flag=true;}
 
 		return flag;
 	},
@@ -9090,7 +9105,7 @@ Menu.prototype = {
 	},
 	selectStr  : function(strJP, strEN){ return (this.language==='ja' ? strJP : strEN);},
 	alertStr   : function(strJP, strEN){ alert(this.language==='ja' ? strJP : strEN);},
-	confirmStr : function(strJP, strEN){ return confirm(this.language==='ja' ? strJP : strEN);},
+	confirmStr : function(strJP, strEN){ return confirm(this.language==='ja' ? strJP : strEN);}
 };
 
 //--------------------------------------------------------------------------------------------------------------
@@ -11024,7 +11039,12 @@ PBase.prototype = {
 
 		// onLoadとonResizeに動作を割り当てる
 		window.onload   = ee.ebinder(this, this.onload_func);
-		window.onresize = ee.ebinder(this, this.onresize_func);
+		if(!k.os.iPhoneOS){
+			window.onresize = ee.ebinder(this, this.onresize_func);
+		}
+		else{
+			document.addEventListener("gestureend", ee.ebinder(this, this.onresize_func), false);
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -11130,7 +11150,7 @@ PBase.prototype = {
 	setEvents : function(first){
 		// マウス入力イベントの設定
 		var canvas = ee('divques').el;
-		if(!k.os.iPhoneOS && !k.os.Android){
+		if(!k.mobile){
 			canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
 			canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
 			canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
@@ -11226,7 +11246,7 @@ PBase.prototype = {
 		this.resizetimer = setTimeout(ee.binder(this, this.resize_canvas),250);
 	},
 	resize_canvas : function(){
-		var wwidth = ee.windowWidth()-6;	//  margin/borderがあるので、適当に引いておく
+		var wwidth = ee.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
 		var cols   = (bd.maxbx-bd.minbx)/2+2*k.bdmargin; // canvasの横幅がセル何個分に相当するか
 		var rows   = (bd.maxby-bd.minby)/2+2*k.bdmargin; // canvasの縦幅がセル何個分に相当するか
 		if(k.puzzleid==='box'){ cols++; rows++;}
@@ -11236,10 +11256,14 @@ PBase.prototype = {
 		ci[0] = (wwidth*ws.base )/(k.cellsize*cr.base );
 		ci[1] = (wwidth*ws.limit)/(k.cellsize*cr.limit);
 
-		var mwidth = wwidth*ws.base-4; // margin/borderがあるので、適当に引いておく
-
-		// 特に縮小が必要ない場合
-		if(!pp.getVal('adjsize') || cols < ci[0]){
+		// 横幅いっぱいに広げたい場合
+		if(k.os.iPhoneOS){
+			mwidth = wwidth*0.98;
+			k.cwidth = k.cheight = ((mwidth*0.92)/cols)|0;
+			if(k.cwidth < k.cellsize){ k.cwidth = k.cheight = k.cellsize;}
+		}
+		// 縮小が必要ない場合
+		else if(!pp.getVal('adjsize') || cols < ci[0]){
 			mwidth = wwidth*ws.base-4;
 			k.cwidth = k.cheight = (k.cellsize*cr.base)|0;
 		}
@@ -11260,19 +11284,20 @@ PBase.prototype = {
 		ee('main').el.style.width = ''+(mwidth|0)+'px';
 
 		// 盤面のセルID:0が描画される位置の設定
-		k.p0.x = k.p0.y = (k.cwidth*k.bdmargin)|0;
+		var x0, y0; x0 = y0 = (k.cwidth*k.bdmargin)|0;
 		// extendxell==0でない時は位置をずらす
-		if(!!k.isexcell){ k.p0.x += k.cwidth; k.p0.y += k.cheight;}
+		if(!!k.isexcell){ x0 += k.cwidth; y0 += k.cheight;}
 
-		// Canvasのサイズ変更
-		pc.resetVectorFunctions();
+		// Canvasのサイズ・Offset変更
 		g.changeSize((cols*k.cwidth)|0, (rows*k.cheight)|0);
+		g.changeOrigin(x0, y0);
 
-		// canvasの上に文字・画像を表示する時のOffset指定
+		// 盤面のページ内座標を設定
 		var rect = ee('divques').getRect();
-		k.cv_oft.x = rect.left;
-		k.cv_oft.y = rect.top;
+		pc.pageX = (x0 + rect.left);
+		pc.pageY = (y0 + rect.top);
 
+		pc.resetVectorFunctions();
 		kp.resize();
 		bd.setcoordAll();
 		pc.onresize_process();
