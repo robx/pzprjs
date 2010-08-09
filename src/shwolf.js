@@ -166,8 +166,8 @@ Puzzles.shwolf.prototype = {
 					img.style.width  = ""+(this.imgobj.cols*this.cw)+"px";
 					img.style.height = ""+(this.imgobj.rows*this.ch)+"px";
 				}
-				img.style.left   = ((k.cv_oft.x+bd.cell[c].px+1 - xpos*this.cw)|0)+"px";
-				img.style.top    = ((k.cv_oft.y+bd.cell[c].py+1 - ypos*this.cw)|0)+"px";
+				img.style.left   = ((pc.pageX + bd.cell[c].px+1 - xpos*this.cw)|0)+"px";
+				img.style.top    = ((pc.pageY + bd.cell[c].py+1 - ypos*this.cw)|0)+"px";
 				img.style.clip   = "rect("+((this.cw*ypos+1)|0)+"px,"+((this.cw*(xpos+1))|0)+"px,"+((this.cw*(ypos+1))|0)+"px,"+((this.cw*xpos+1)|0)+"px)";
 				this.showEL(key);
 			}

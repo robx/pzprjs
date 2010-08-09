@@ -364,7 +364,7 @@ Puzzles.bosanowa.prototype = {
 					{
 						g.fillStyle = "rgb(127,127,127)";
 						if(this.vnop([header,bx,by].join('_'),this.NONE)){
-							g.fillRect(k.p0.x+(bx-1)*this.bw, k.p0.y+(by-1)*this.bh, this.cw+1, this.ch+1);
+							g.fillRect((bx-1)*this.bw, (by-1)*this.bh, this.cw+1, this.ch+1);
 						}
 					}
 					else{ this.vhide([header,bx,by].join('_'));}

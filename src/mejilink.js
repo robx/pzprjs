@@ -130,7 +130,7 @@ Puzzles.mejilink.prototype = {
 			if(this.vnop(vid,this.NONE)){
 				var csize = (this.lw+1)/2;
 				var bx = (id%(k.qcols+1))*2, by = (id/(k.qcols+1))<<1;
-				g.fillCircle(k.p0.x+bx*this.bw, k.p0.x+by*this.bh, csize);
+				g.fillCircle(bx*this.bw, by*this.bh, csize);
 			}
 		};
 

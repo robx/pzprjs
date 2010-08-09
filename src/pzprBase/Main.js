@@ -288,19 +288,20 @@ PBase.prototype = {
 		ee('main').el.style.width = ''+(mwidth|0)+'px';
 
 		// 盤面のセルID:0が描画される位置の設定
-		k.p0.x = k.p0.y = (k.cwidth*k.bdmargin)|0;
+		var x0, y0; x0 = y0 = (k.cwidth*k.bdmargin)|0;
 		// extendxell==0でない時は位置をずらす
-		if(!!k.isexcell){ k.p0.x += k.cwidth; k.p0.y += k.cheight;}
+		if(!!k.isexcell){ x0 += k.cwidth; y0 += k.cheight;}
 
-		// Canvasのサイズ変更
-		pc.resetVectorFunctions();
+		// Canvasのサイズ・Offset変更
 		g.changeSize((cols*k.cwidth)|0, (rows*k.cheight)|0);
+		g.changeOrigin(x0, y0);
 
-		// canvasの上に文字・画像を表示する時のOffset指定
+		// 盤面のページ内座標を設定
 		var rect = ee('divques').getRect();
-		k.cv_oft.x = rect.left;
-		k.cv_oft.y = rect.top;
+		pc.pageX = (x0 + rect.left);
+		pc.pageY = (y0 + rect.top);
 
+		pc.resetVectorFunctions();
 		kp.resize();
 		bd.setcoordAll();
 		pc.onresize_process();

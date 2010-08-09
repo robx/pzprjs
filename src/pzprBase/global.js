@@ -65,9 +65,6 @@ var k = {
 	bwidth   : 18,			// セルの横幅/2
 	bheight  : 18,			// セルの縦幅/2
 
-	p0       : new Point(0, 0),	// Canvas中での盤面の左上座標
-	cv_oft   : new Point(0, 0),	// Canvasのwindow内での左上座標
-
 	br:{
 		IE    : (!!(window.attachEvent && !window.opera)),
 		Opera : (!!window.opera),
