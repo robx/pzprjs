@@ -137,8 +137,8 @@ MouseEvent.prototype = {
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
 	setposition : function(e){
-		this.inputPoint.x = ee.pageX(e) -k.cv_oft.x-k.p0.x - this.mouseoffset.x;
-		this.inputPoint.y = ee.pageY(e) -k.cv_oft.y-k.p0.y - this.mouseoffset.y;
+		this.inputPoint.x = ee.pageX(e) - pc.pageX - this.mouseoffset.x;
+		this.inputPoint.y = ee.pageY(e) - pc.pageY - this.mouseoffset.y;
 	},
 
 	notInputted : function(){ return !um.changeflag;},

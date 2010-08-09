@@ -84,6 +84,10 @@ Graphic = function(){
 	this.crosssize = 0.4;
 	this.circleratio = [0.40, 0.34];
 
+	// 盤面のページ内の左上座標
+	this.pageX = 0;
+	this.pageY = 0;
+
 	// 描画単位
 	this.cw = k.cwidth;
 	this.ch = k.cheight;
@@ -1140,8 +1144,8 @@ Graphic.prototype = {
 			if(tc.cursor.x < x1-1 || x2+1 < tc.cursor.x){ return;}
 			if(tc.cursor.y < y1-1 || y2+1 < tc.cursor.y){ return;}
 
-			var cpx = k.p0.x + tc.cursor.x*this.bw + 0.5;
-			var cpy = k.p0.y + tc.cursor.y*this.bh + 0.5;
+			var cpx = tc.cursor.x*this.bw + 0.5;
+			var cpy = tc.cursor.y*this.bh + 0.5;
 			var w, size;
 			if(islarge!==false){ w = (Math.max(this.cw/16, 2))|0; size = this.bw-0.5;}
 			else	           { w = (Math.max(this.cw/24, 1))|0; size = this.bw*0.56;}
@@ -1173,7 +1177,7 @@ Graphic.prototype = {
 		if(target===0){ return;}
 
 		g.fillStyle = this.ttcolor;
-		this.drawTriangle1(k.p0.x+(tc.cursor.x>>1)*this.cw, k.p0.y+(tc.cursor.y>>1)*this.ch, (target===2?4:2), vid);
+		this.drawTriangle1((tc.cursor.x>>1)*this.cw, (tc.cursor.y>>1)*this.ch, (target===2?4:2), vid);
 	},
 
 	//---------------------------------------------------------------------------
@@ -1188,13 +1192,13 @@ Graphic.prototype = {
 		if(g.use.canvas){
 			g.fillStyle = this.gridcolor;
 			for(var i=x1;i<=x2;i+=2){
-				for(var j=(k.p0.y+y1*this.bh),len=(k.p0.y+y2*this.bh);j<len;j+=6){
-					g.fillRect(k.p0.x+i*this.bw, j, 1, 3);
+				for(var j=(y1*this.bh),len=(y2*this.bh);j<len;j+=6){
+					g.fillRect(i*this.bw, j, 1, 3);
 				}
 			}
 			for(var i=y1;i<=y2;i+=2){
-				for(var j=(k.p0.x+x1*this.bw),len=(k.p0.x+x2*this.bw);j<len;j+=6){
-					g.fillRect(j, k.p0.y+i*this.bh, 3, 1);
+				for(var j=(x1*this.bw),len=(x2*this.bw);j<len;j+=6){
+					g.fillRect(j, i*this.bh, 3, 1);
 				}
 			}
 		}
@@ -1202,12 +1206,12 @@ Graphic.prototype = {
 			g.lineWidth = 1;
 			g.strokeStyle = this.gridcolor;
 			for(var i=x1;i<=x2;i+=2){ if(this.vnop("cliney_"+i,this.NONE)){
-				var px = k.p0.x+i*this.bw, py1 = k.p0.y+y1*this.bh, py2 = k.p0.y+y2*this.bh;
+				var px = i*this.bw, py1 = y1*this.bh, py2 = y2*this.bh;
 				g.strokeLine(px, py1, px, py2);
 				g.setDashSize(3);
 			}}
 			for(var i=y1;i<=y2;i+=2){ if(this.vnop("clinex_"+i,this.NONE)){
-				var py = k.p0.y+i*this.bh, px1 = k.p0.x+x1*this.bw, px2 = k.p0.x+x2*this.bw;
+				var py = i*this.bh, px1 = x1*this.bw, px2 = x2*this.bw;
 				g.strokeLine(px1, py, px2, py);
 				g.setDashSize(3);
 			}}
@@ -1233,8 +1237,8 @@ Graphic.prototype = {
 		isdraw = (isdraw!==false?true:false);
 		if(isdraw){
 			g.fillStyle = this.gridcolor;
-			for(var i=xa;i<=xb;i+=2){ if(this.vnop("bdy_"+i,this.NONE)){ g.fillRect(k.p0.x+i*this.bw, k.p0.y+y1*this.bh, 1, (y2-y1)*this.bh+1);} }
-			for(var i=ya;i<=yb;i+=2){ if(this.vnop("bdx_"+i,this.NONE)){ g.fillRect(k.p0.x+x1*this.bw, k.p0.y+i*this.bh, (x2-x1)*this.bw+1, 1);} }
+			for(var i=xa;i<=xb;i+=2){ if(this.vnop("bdy_"+i,this.NONE)){ g.fillRect(i*this.bw, y1*this.bh, 1, (y2-y1)*this.bh+1);} }
+			for(var i=ya;i<=yb;i+=2){ if(this.vnop("bdx_"+i,this.NONE)){ g.fillRect(x1*this.bw, i*this.bh, (x2-x1)*this.bw+1, 1);} }
 		}
 		else{
 			if(!g.use.canvas){
@@ -1261,14 +1265,14 @@ Graphic.prototype = {
 		if(g.use.canvas){
 			g.fillStyle = this.gridcolor;
 			for(var i=xa;i<=xb;i+=2){
-				var px = k.p0.x+i*this.bw;
-				for(var j=(k.p0.y+y1*this.bh),len=(k.p0.y+y2*this.bh);j<len;j+=(2*dotSize)){
+				var px = i*this.bw;
+				for(var j=(y1*this.bh),len=(y2*this.bh);j<len;j+=(2*dotSize)){
 					g.fillRect(px, j, 1, dotSize);
 				}
 			}
 			for(var i=ya;i<=yb;i+=2){
-				var py = k.p0.y+i*this.bh;
-				for(var j=(k.p0.x+x1*this.bw),len=(k.p0.x+x2*this.bw);j<len;j+=(2*dotSize)){
+				var py = i*this.bh;
+				for(var j=(x1*this.bw),len=(x2*this.bw);j<len;j+=(2*dotSize)){
 					g.fillRect(j, py, dotSize, 1);
 				}
 			}
@@ -1278,12 +1282,12 @@ Graphic.prototype = {
 			g.lineWidth = 1;
 			g.strokeStyle = this.gridcolor;
 			for(var i=xa;i<=xb;i+=2){ if(this.vnop("bdy_"+i,this.NONE)){
-				var px = k.p0.x+i*this.bw+0.5, py1 = k.p0.y+y1*this.bh, py2 = k.p0.y+y2*this.bh;
+				var px = i*this.bw+0.5, py1 = y1*this.bh, py2 = y2*this.bh;
 				g.strokeLine(px, py1, px, py2);
 				g.setDashSize(dotSize);
 			}}
 			for(var i=ya;i<=yb;i+=2){ if(this.vnop("bdx_"+i,this.NONE)){
-				var py = k.p0.y+i*this.bh+0.5, px1 = k.p0.x+x1*this.bw, px2 = k.p0.x+x2*this.bw;
+				var py = i*this.bh+0.5, px1 = x1*this.bw, px2 = x2*this.bw;
 				g.strokeLine(px1, py, px2, py);
 				g.setDashSize(dotSize);
 			}}
@@ -1306,16 +1310,16 @@ Graphic.prototype = {
 		g.fillStyle = "black";
 
 		if(g.use.canvas){
-			if(x1===0)        { g.fillRect(k.p0.x      -lw+1, k.p0.y+y1*bh-lw+1,  lw, (y2-y1)*bh+2*lw-2);}
-			if(x2===2*k.qcols){ g.fillRect(k.p0.x+boardWidth, k.p0.y+y1*bh-lw+1,  lw, (y2-y1)*bh+2*lw-2);}
-			if(y1===0)        { g.fillRect(k.p0.x+x1*bw-lw+1, k.p0.y      -lw+1,  (x2-x1)*bw+2*lw-2, lw); }
-			if(y2===2*k.qrows){ g.fillRect(k.p0.x+x1*bw-lw+1, k.p0.y+boardHeight, (x2-x1)*bw+2*lw-2, lw); }
+			if(x1===0)        { g.fillRect(     -lw+1, y1*bh-lw+1,  lw, (y2-y1)*bh+2*lw-2);}
+			if(x2===2*k.qcols){ g.fillRect(boardWidth, y1*bh-lw+1,  lw, (y2-y1)*bh+2*lw-2);}
+			if(y1===0)        { g.fillRect(x1*bw-lw+1,      -lw+1,  (x2-x1)*bw+2*lw-2, lw); }
+			if(y2===2*k.qrows){ g.fillRect(x1*bw-lw+1, boardHeight, (x2-x1)*bw+2*lw-2, lw); }
 		}
 		else{
-			if(this.vnop("chs1_",this.NONE)){ g.fillRect(k.p0.x-lw+1,        k.p0.y-lw+1, lw, boardHeight+2*lw-2);}
-			if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x+boardWidth,  k.p0.y-lw+1, lw, boardHeight+2*lw-2);}
-			if(this.vnop("chs3_",this.NONE)){ g.fillRect(k.p0.x-lw+1,        k.p0.y-lw+1, boardWidth+2*lw-2, lw); }
-			if(this.vnop("chs4_",this.NONE)){ g.fillRect(k.p0.x-lw+1, k.p0.y+boardHeight, boardWidth+2*lw-2, lw); }
+			if(this.vnop("chs1_",this.NONE)){ g.fillRect(-lw+1,       -lw+1, lw, boardHeight+2*lw-2);}
+			if(this.vnop("chs2_",this.NONE)){ g.fillRect(boardWidth,  -lw+1, lw, boardHeight+2*lw-2);}
+			if(this.vnop("chs3_",this.NONE)){ g.fillRect(-lw+1,       -lw+1, boardWidth+2*lw-2, lw); }
+			if(this.vnop("chs4_",this.NONE)){ g.fillRect(-lw+1, boardHeight, boardWidth+2*lw-2, lw); }
 		}
 	},
 	drawChassis_ex1 : function(x1,y1,x2,y2,boldflag){
@@ -1329,39 +1333,39 @@ Graphic.prototype = {
 
 		// extendcell==1も含んだ外枠の描画
 		if(g.use.canvas){
-			if(x1===bd.minbx){ g.fillRect(k.p0.x-this.cw-lw+1, k.p0.y+y1*bh-lw+1,   lw, (y2-y1)*bh+2*lw-2);}
-			if(x2===bd.maxbx){ g.fillRect(k.p0.x+boardWidth,   k.p0.y+y1*bh-lw+1,   lw, (y2-y1)*bh+2*lw-2);}
-			if(y1===bd.minby){ g.fillRect(k.p0.x+x1*bw-lw+1,   k.p0.y-this.ch-lw+1, (x2-x1)*bw+2*lw-2, lw);}
-			if(y2===bd.maxby){ g.fillRect(k.p0.x+x1*bw-lw+1,   k.p0.y+boardHeight,  (x2-x1)*bw+2*lw-2, lw);}
+			if(x1===bd.minbx){ g.fillRect(-this.cw-lw+1, y1*bh-lw+1,   lw, (y2-y1)*bh+2*lw-2);}
+			if(x2===bd.maxbx){ g.fillRect(boardWidth,    y1*bh-lw+1,   lw, (y2-y1)*bh+2*lw-2);}
+			if(y1===bd.minby){ g.fillRect(x1*bw-lw+1,   -this.ch-lw+1, (x2-x1)*bw+2*lw-2, lw);}
+			if(y2===bd.maxby){ g.fillRect(x1*bw-lw+1,    boardHeight,  (x2-x1)*bw+2*lw-2, lw);}
 		}
 		else{
-			if(this.vnop("chsex1_1_",this.NONE)){ g.fillRect(k.p0.x-this.cw-lw+1, k.p0.y-this.ch-lw+1, lw, boardHeight+this.ch+2*lw-2);}
-			if(this.vnop("chsex1_2_",this.NONE)){ g.fillRect(k.p0.x+boardWidth,   k.p0.y-this.ch-lw+1, lw, boardHeight+this.ch+2*lw-2);}
-			if(this.vnop("chsex1_3_",this.NONE)){ g.fillRect(k.p0.x-this.cw-lw+1, k.p0.y-this.ch-lw+1, boardWidth+this.cw+2*lw-2, lw); }
-			if(this.vnop("chsex1_4_",this.NONE)){ g.fillRect(k.p0.x-this.cw-lw+1, k.p0.y+boardHeight,  boardWidth+this.cw+2*lw-2, lw); }
+			if(this.vnop("chsex1_1_",this.NONE)){ g.fillRect(-this.cw-lw+1, -this.ch-lw+1, lw, boardHeight+this.ch+2*lw-2);}
+			if(this.vnop("chsex1_2_",this.NONE)){ g.fillRect(   boardWidth, -this.ch-lw+1, lw, boardHeight+this.ch+2*lw-2);}
+			if(this.vnop("chsex1_3_",this.NONE)){ g.fillRect(-this.cw-lw+1, -this.ch-lw+1, boardWidth+this.cw+2*lw-2, lw); }
+			if(this.vnop("chsex1_4_",this.NONE)){ g.fillRect(-this.cw-lw+1,   boardHeight, boardWidth+this.cw+2*lw-2, lw); }
 		}
 
 		// 通常のセルとextendcell==1の間の描画
 		if(boldflag){
 			// すべて太線で描画する場合
 			if(g.use.canvas){
-				if(x1<=0){ g.fillRect(k.p0.x-lw+1, k.p0.y+y1*bh-lw+1, lw, (y2-y1)*bh+lw-1);}
-				if(y1<=0){ g.fillRect(k.p0.x+x1*bw-lw+1, k.p0.y-lw+1, (x2-x1)*bw+lw-1, lw); }
+				if(x1<=0){ g.fillRect(-lw+1, y1*bh-lw+1, lw, (y2-y1)*bh+lw-1);}
+				if(y1<=0){ g.fillRect(x1*bw-lw+1, -lw+1, (x2-x1)*bw+lw-1, lw); }
 			}
 			else{
-				if(this.vnop("chs1_",this.NONE)){ g.fillRect(k.p0.x-lw+1, k.p0.y-lw+1, lw, boardHeight+lw-1);}
-				if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x-lw+1, k.p0.y-lw+1, boardWidth+lw-1,  lw);}
+				if(this.vnop("chs1_",this.NONE)){ g.fillRect(-lw+1, -lw+1, lw, boardHeight+lw-1);}
+				if(this.vnop("chs2_",this.NONE)){ g.fillRect(-lw+1, -lw+1, boardWidth+lw-1,  lw);}
 			}
 		}
 		else{
 			// ques==51のセルが隣接している時に細線を描画する場合
 			if(g.use.canvas){
-				if(x1<=0){ g.fillRect(k.p0.x, k.p0.y+y1*bh, 1, (y2-y1)*bh);}
-				if(y1<=0){ g.fillRect(k.p0.x+x1*bw, k.p0.y, (x2-x1)*bw, 1); }
+				if(x1<=0){ g.fillRect(0, y1*bh, 1, (y2-y1)*bh);}
+				if(y1<=0){ g.fillRect(x1*bw, 0, (x2-x1)*bw, 1); }
 			}
 			else{
-				if(this.vnop("chs1_",this.NONE)){ g.fillRect(k.p0.x, k.p0.y, 1, boardHeight);}
-				if(this.vnop("chs2_",this.NONE)){ g.fillRect(k.p0.x, k.p0.y, boardWidth, 1); }
+				if(this.vnop("chs1_",this.NONE)){ g.fillRect(0, 0, 1, boardHeight);}
+				if(this.vnop("chs2_",this.NONE)){ g.fillRect(0, 0, boardWidth, 1); }
 			}
 
 			var headers = ["chs1_sub_", "chs2_sub_"];
@@ -1372,7 +1376,7 @@ Graphic.prototype = {
 				if(bx===1){
 					if(bd.cell[c].ques!==51){
 						if(this.vnop(headers[0]+by,this.NONE)){
-							g.fillRect(k.p0.x-lm, py-lm, lw, this.ch+lw);
+							g.fillRect(-lm, py-lm, lw, this.ch+lw);
 						}
 					}
 					else{ this.vhide([headers[0]+by]);}
@@ -1380,7 +1384,7 @@ Graphic.prototype = {
 				if(by===1){
 					if(bd.cell[c].ques!==51){
 						if(this.vnop(headers[1]+bx,this.NONE)){
-							g.fillRect(px-lm, k.p0.x-lm, this.cw+lw, lw);
+							g.fillRect(px-lm, -lm, this.cw+lw, lw);
 						}
 					}
 					else{ this.vhide([headers[1]+bx]);}
@@ -1421,7 +1425,7 @@ Graphic.prototype = {
 				this.vinc('board_base', 'crispEdges');
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
 				if(this.vnop("boardfull",this.NONE)){
-					g.fillRect(k.p0.x, k.p0.y, k.qcols*this.cw, k.qrows*this.ch);
+					g.fillRect(0, 0, k.qcols*this.cw, k.qrows*this.ch);
 				}
 			}
 		);
@@ -1431,7 +1435,7 @@ Graphic.prototype = {
 		this.flushCanvas = ((g.use.canvas) ?
 			function(x1,y1,x2,y2){
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
-				g.fillRect(k.p0.x+x1*this.bw, k.p0.y+y1*this.bh, (x2-x1)*this.bw, (y2-y1)*this.bh);
+				g.fillRect(x1*this.bw, y1*this.bh, (x2-x1)*this.bw, (y2-y1)*this.bh);
 			}
 		:
 			function(x1,y1,x2,y2){ this.zidx=1;}
@@ -1573,11 +1577,11 @@ Graphic.prototype = {
 			var hgt = el.offsetHeight; // 縦位置の調整
 			switch(type){
 				case 1:         py-=hgt/2;                 break;
-				case 2: case 3:            py+=-this.bh+2; break;
-				case 4: case 5: py-=hgt;   py+= this.bh-1; break;
+				case 4: case 5:            py+=-this.bh+1; break;
+				case 2: case 3: py-=hgt;   py+= this.bh+2; break;
 			}
-			el.style.left = (k.cv_oft.x+px) + 'px';
-			el.style.top  = (k.cv_oft.y+py) + 'px';
+			el.style.left = (pc.pageX + px) + 'px';
+			el.style.top  = (pc.pageY + py) + 'px';
 		}
 		// Nativeな方法はこっちなんだけど、、(前は計5～6%くらい遅くなってた)
 		else{
@@ -1591,8 +1595,8 @@ Graphic.prototype = {
 			}
 			switch(type){
 				case 1:         g.textBaseline='middle';                     break;
-				case 2: case 3: g.textBaseline='alphabetic'; py+=-this.bh+1; break;
-				case 4: case 5: g.textBaseline='top';        py+= this.bh-2; break;
+				case 4: case 5: g.textBaseline='top';        py+=-this.bh+1; break;
+				case 2: case 3: g.textBaseline='alphabetic'; py+= this.bh-2; break;
 			}
 			g.fillText(text, px, py);
 		}

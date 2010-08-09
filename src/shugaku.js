@@ -279,12 +279,12 @@ Puzzles.shugaku.prototype = {
 
 					if     ((bx&1) && !(isNaN(doma1[a])&&isNaN(domb1[b]))){
 						if(this.vnop(vid,this.NONE)){
-							g.fillRect(k.p0.x+(bx-1)*this.bw-lm, k.p0.x+by*this.bh-lm, this.cw+lw, lw);
+							g.fillRect((bx-1)*this.bw-lm, by*this.bh-lm, this.cw+lw, lw);
 						}
 					}
 					else if((by&1) && !(isNaN(doma2[a])&&isNaN(domb2[b]))){
 						if(this.vnop(vid,this.NONE)){
-							g.fillRect(k.p0.x+bx*this.bw-lm, k.p0.x+(by-1)*this.bh-lm, lw, this.ch+lw);
+							g.fillRect(bx*this.bw-lm, (by-1)*this.bh-lm, lw, this.ch+lw);
 						}
 					}
 					else{ this.vhide(vid);}
@@ -331,7 +331,7 @@ Puzzles.shugaku.prototype = {
 				var lw = this.lw, lm = this.lm;
 				var bx1 = (adj===null?bd.cell[cc].bx:Math.min(bd.cell[cc].bx,bd.cell[adj].bx));
 				var by1 = (adj===null?bd.cell[cc].by:Math.min(bd.cell[cc].by,bd.cell[adj].by));
-				var px = k.p0.x+(bx1-1)*this.bw, py = k.p0.y+(by1-1)*this.bh;
+				var px  = (bx1-1)*this.bw, py = (by1-1)*this.bh;
 				var wid = (mv.inputData===4||mv.inputData===5?2:1)*this.cw;
 				var hgt = (mv.inputData===2||mv.inputData===3?2:1)*this.ch;
 

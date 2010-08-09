@@ -324,7 +324,7 @@ Puzzles.tentaisho.prototype = {
 					g.strokeStyle = (bd.isStarError(id) ? this.errcolor1 : this.cellcolor);
 					g.fillStyle   = "white";
 					if(this.vnop(headers[0]+id,this.FILL_STROKE)){
-						g.shapeCircle(k.p0.x+bx*this.bw, k.p0.y+by*this.bh, this.cw*0.16);
+						g.shapeCircle(bx*this.bw, by*this.bh, this.cw*0.16);
 					}
 				}
 				else{ this.vhide(headers[0]+id);}
@@ -332,7 +332,7 @@ Puzzles.tentaisho.prototype = {
 				if(bd.getStar(id)===2){
 					g.fillStyle = (bd.isStarError(id) ? this.errcolor1 : this.cellcolor);
 					if(this.vnop(headers[1]+id,this.FILL)){
-						g.fillCircle(k.p0.x+bx*this.bw, k.p0.y+by*this.bh, this.cw*0.18);
+						g.fillCircle(bx*this.bw, by*this.bh, this.cw*0.18);
 					}
 				}
 				else{ this.vhide(headers[1]+id);}

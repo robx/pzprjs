@@ -418,35 +418,34 @@ Board.prototype = {
 	// bd.isinside()    指定された(bx,by)が盤面内かどうか判断する
 	//---------------------------------------------------------------------------
 	setcoordAll : function(){
-		var x0=k.p0.x, y0=k.p0.y;
 		{
 			for(var id=0;id<this.cellmax;id++){
 				var obj = this.cell[id];
-				obj.px = x0 + (obj.bx-1)*k.bwidth;
-				obj.py = y0 + (obj.by-1)*k.bheight;
-				obj.cpx = x0 + obj.bx*k.bwidth;
-				obj.cpy = y0 + obj.by*k.bheight;
+				obj.px = (obj.bx-1)*k.bwidth;
+				obj.py = (obj.by-1)*k.bheight;
+				obj.cpx = obj.bx*k.bwidth;
+				obj.cpy = obj.by*k.bheight;
 			}
 		}
 		if(!!k.iscross){
 			for(var id=0;id<this.crossmax;id++){
 				var obj = this.cross[id];
-				obj.px = x0 + obj.bx*k.bwidth;
-				obj.py = y0 + obj.by*k.bheight;
+				obj.px = obj.bx*k.bwidth;
+				obj.py = obj.by*k.bheight;
 			}
 		}
 		if(!!k.isborder){
 			for(var id=0;id<this.bdmax;id++){
 				var obj = this.border[id];
-				obj.px = x0 + obj.bx*k.bwidth;
-				obj.py = y0 + obj.by*k.bheight;
+				obj.px = obj.bx*k.bwidth;
+				obj.py = obj.by*k.bheight;
 			}
 		}
 		if(!!k.isexcell){
 			for(var id=0;id<this.excellmax;id++){
 				var obj = this.excell[id];
-				obj.px = x0 + (obj.bx-1)*k.bwidth;
-				obj.py = y0 + (obj.by-1)*k.bheight;
+				obj.px = (obj.bx-1)*k.bwidth;
+				obj.py = (obj.by-1)*k.bheight;
 			}
 		}
 	},

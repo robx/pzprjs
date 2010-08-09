@@ -220,8 +220,8 @@ Puzzles.goishi.prototype = {
 			x1|=1, y1|=1;
 
 			g.fillStyle = this.gridcolor_LIGHT;
-			for(var i=x1;i<=x2;i+=2){ if(this.vnop("cliney_"+i,this.NONE)){ g.fillRect(k.p0.x+ i*this.bw, k.p0.y+y1*this.bh, 1, (y2-y1)*this.bh+1);} }
-			for(var i=y1;i<=y2;i+=2){ if(this.vnop("clinex_"+i,this.NONE)){ g.fillRect(k.p0.x+x1*this.bw, k.p0.y+ i*this.bh, (x2-x1)*this.bw+1, 1);} }
+			for(var i=x1;i<=x2;i+=2){ if(this.vnop("cliney_"+i,this.NONE)){ g.fillRect( i*this.bw, y1*this.bh, 1, (y2-y1)*this.bh+1);} }
+			for(var i=y1;i<=y2;i+=2){ if(this.vnop("clinex_"+i,this.NONE)){ g.fillRect(x1*this.bw,  i*this.bh, (x2-x1)*this.bw+1, 1);} }
 		};
 		pc.drawCircles_goishi = function(x1,y1,x2,y2){
 			this.vinc('cell_goishi', 'auto');

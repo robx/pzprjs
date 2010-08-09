@@ -65,9 +65,6 @@ var k = {
 	bwidth   : 18,			// セルの横幅/2
 	bheight  : 18,			// セルの縦幅/2
 
-	p0       : new Point(0, 0),	// Canvas中での盤面の左上座標
-	cv_oft   : new Point(0, 0),	// Canvasのwindow内での左上座標
-
 	br:{
 		IE    : (!!(window.attachEvent && !window.opera)),
 		Opera : (!!window.opera),
@@ -592,7 +589,7 @@ Timer.prototype = {
 	procUndo : function(){
 		if((!kc.isCTRL && !kc.isMETA) || (!kc.inUNDO && !kc.inREDO)){ this.stopUndoTimer();}
 		else if(this.undoWaitCount>0){ this.undoWaitCount--;}
-		else{ execUndo();}
+		else{ this.execUndo();}
 	},
 	execUndo : function(){
 		if     (kc.inUNDO){ um.undo();}

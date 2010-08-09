@@ -247,8 +247,7 @@ Puzzles.box.prototype = {
 				if(num<=0){ continue;}
 
 				if(this.vnop([header,exlist[i][0],exlist[i][1]].join("_"),this.NONE)){
-					var px=k.p0.x+exlist[i][0]*this.bw, py=k.p0.y+exlist[i][1]*this.bh;
-					g.shapeCircle(px, py, rsize);
+					g.shapeCircle(exlist[i][0]*this.bw, exlist[i][1]*this.bh, rsize);
 				}
 			}
 
@@ -259,9 +258,8 @@ Puzzles.box.prototype = {
 				if(num<=0){ continue;}
 
 				var key = [header,exlist[i][0],exlist[i][1]].join("_");
-				var px=k.p0.x+exlist[i][0]*this.bw, py=k.p0.y+exlist[i][1]*this.bh;
 				var fontratio = (num<10?0.7:0.6);
-				this.dispnum(key, 1, ""+num, fontratio, this.fontcolor, px, py);
+				this.dispnum(key, 1, ""+num, fontratio, this.fontcolor, exlist[i][0]*this.bw, exlist[i][1]*this.bh);
 			}
 		};
 	},

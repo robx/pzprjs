@@ -421,7 +421,7 @@ Puzzles.tawa.prototype = {
 				}
 				else{
 					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(k.p0.x+x1*this.bw, k.p0.y+y1*this.ch, (x2-x1+1)*this.bw, (y2-y1+1)*this.ch);
+					g.fillRect(x1*this.bw, y1*this.ch, (x2-x1+1)*this.bw, (y2-y1+1)*this.ch);
 				}
 			}
 			else{
@@ -451,7 +451,7 @@ Puzzles.tawa.prototype = {
 					if     ((bd.lap===3 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.lap===0 && (by===bd.maxby&&!(cy&1)))){ redx=1; redw=2;}
 					else if((bd.lap===2 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.lap===1 && (by===bd.maxby&&!(cy&1)))){ redx=1; redw=1;}
 					else if((bd.lap===1 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.lap===2 && (by===bd.maxby&&!(cy&1)))){ redx=0; redw=1;}
-					g.fillRect(k.p0.x+(x1+redx)*this.bw-lm, k.p0.y+by*this.bh-lm, (x2-x1-redw)*this.bw+1, lw);
+					g.fillRect((x1+redx)*this.bw-lm, by*this.bh-lm, (x2-x1-redw)*this.bw+1, lw);
 				}
 				if(by>=bd.maxby){ break;}
 
@@ -459,7 +459,7 @@ Puzzles.tawa.prototype = {
 				if((bd.lap===2 || bd.lap===3) ^ ((cy&1)!==(xs&1))){ xs++;}
 				for(var bx=xs;bx<=xb;bx+=2){
 					if(this.vnop([headers[1],bx,by].join("_"),this.NONE)){
-						g.fillRect(k.p0.x+bx*this.bw-lm, k.p0.y+by*this.bh-lm, lw, this.ch+1);
+						g.fillRect(bx*this.bw-lm, by*this.bh-lm, lw, this.ch+1);
 					}
 				}
 			}

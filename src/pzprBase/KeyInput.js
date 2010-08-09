@@ -117,15 +117,16 @@ KeyEvent.prototype = {
 		else if(e.keyCode==40){ return k.KEYDN;}
 		else if(e.keyCode==37){ return k.KEYLT;}
 		else if(e.keyCode==39){ return k.KEYRT;}
-		else if(e.shiftKey)   { return 'shift';}
 
 		var keycode = (!!e.keyCode ? e.keyCode: e.charCode);
 		if     ( 48<=keycode && keycode<= 57){ return (keycode-48).toString(36);}
 		else if( 65<=keycode && keycode<= 90){ return (keycode-55).toString(36);} //アルファベット
 		else if( 96<=keycode && keycode<=105){ return (keycode-96).toString(36);} //テンキー対応
-		else if(112<=keycode && keycode<=123){return 'F'+(keycode - 111).toString(10);}
+		else if(112<=keycode && keycode<=123){ return 'F'+(keycode - 111).toString(10);}
 		else if(keycode==32 || keycode==46)  { return ' ';} // 32はスペースキー 46はdelキー
 		else if(keycode==8)                  { return 'BS';}
+
+		else if(e.shiftKey){ return 'shift';}
 
 		return '';
 	},
@@ -147,7 +148,7 @@ KeyEvent.prototype = {
 		if(!this.isALT   && e.altKey  ){ this.isALT=true;  flag=true;}
 
 		if((this.isCTRL || this.isMETA) && !this.inUNDO && this.ca=='z'){ this.inUNDO=true; flag=true; tm.startUndoTimer();}
-		if((this.isCTRL || this.isMETA) && !this.inreDO && this.ca=='y'){ this.inREDO=true; flag=true; tm.startUndoTimer();}
+		if((this.isCTRL || this.isMETA) && !this.inREDO && this.ca=='y'){ this.inREDO=true; flag=true; tm.startUndoTimer();}
 
 		if(this.ca=='F2' && k.EDITOR){ // 112～123はF1～F12キー
 			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); flag=true;}

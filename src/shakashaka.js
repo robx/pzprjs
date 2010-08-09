@@ -76,8 +76,8 @@ Puzzles.shakashaka.prototype = {
 			var use = pp.getVal('use');
 			if(use===1){
 				if(this.btn.Left){
-					var dx = this.inputPoint.x - bd.cell[cc].px + k.p0.x;
-					var dy = this.inputPoint.y - bd.cell[cc].py + k.p0.y;
+					var dx = this.inputPoint.x - bd.cell[cc].px;
+					var dy = this.inputPoint.y - bd.cell[cc].py;
 					if(dx>0&&dx<=k.cwidth/2){
 						if(dy>0&&dy<=k.cheight/2){ this.inputData = 5;}
 						else if  (dy>k.cheight/2){ this.inputData = 2;}
