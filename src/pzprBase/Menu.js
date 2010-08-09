@@ -831,7 +831,7 @@ Menu.prototype = {
 	},
 	selectStr  : function(strJP, strEN){ return (this.language==='ja' ? strJP : strEN);},
 	alertStr   : function(strJP, strEN){ alert(this.language==='ja' ? strJP : strEN);},
-	confirmStr : function(strJP, strEN){ return confirm(this.language==='ja' ? strJP : strEN);},
+	confirmStr : function(strJP, strEN){ return confirm(this.language==='ja' ? strJP : strEN);}
 };
 
 //--------------------------------------------------------------------------------------------------------------
