@@ -9,7 +9,8 @@ KeyEvent = function(){
 	this.enableKey = true;	// キー入力は有効か
 
 	this.isCTRL;
-	this.isALT;	// ALTはメニュー用なので極力使わない
+	this.isMETA;	// MacのCommandキーなど
+	this.isALT;		// ALTはメニュー用なので基本的に使わない
 	this.isSHIFT;
 	this.inUNDO;
 	this.inREDO;
@@ -26,6 +27,7 @@ KeyEvent.prototype = {
 	//---------------------------------------------------------------------------
 	keyreset : function(){
 		this.isCTRL  = false;
+		this.isMETA  = false;
 		this.isALT   = false;
 		this.isSHIFT = false;
 		this.inUNDO  = false;
@@ -44,11 +46,10 @@ KeyEvent.prototype = {
 	// kc.e_keypress() キー入力した際のイベント共通処理(-キー用)
 	//---------------------------------------------------------------------------
 	// この3つのキーイベントはwindowから呼び出される(kcをbindしている)
-	// 48～57は0～9キー、65～90はa～z、96～105はテンキー、112～123はF1～F12キー
 	e_keydown : function(e){
 		if(this.enableKey){
 			um.newOperation(true);
-			this.ca = this.getchar(e, this.getKeyCode(e));
+			this.ca = this.getchar(e);
 			this.tcMoved = false;
 			if(!this.isZ){ bd.errclear();}
 
@@ -66,7 +67,7 @@ KeyEvent.prototype = {
 	e_keyup : function(e){
 		if(this.enableKey){
 			um.newOperation(false);
-			this.ca = this.getchar(e, this.getKeyCode(e));
+			this.ca = this.getchar(e);
 			this.keyPressed = false;
 
 			if(!this.keyup_common(e)){
@@ -74,11 +75,10 @@ KeyEvent.prototype = {
 			}
 		}
 	},
-	//(keypressのみ)45は-(マイナス)
 	e_keypress : function(e){
 		if(this.enableKey){
 			um.newOperation(false);
-			this.ca = this.getcharp(e, this.getKeyCode(e));
+			this.ca = this.getcharp(e);
 
 			if(this.ca){ this.keyinput(this.ca);}	// 各パズルのルーチンへ
 		}
@@ -108,30 +108,31 @@ KeyEvent.prototype = {
 	keyup    : function(ca){ },
 
 	//---------------------------------------------------------------------------
-	// kc.getchar()    入力されたキーを表す文字列を返す
-	// kc.getcharp()   入力されたキーを表す文字列を返す(keypressの時)
-	// kc.getKeyCode() 入力されたキーのコードを数字で返す
+	// kc.getchar()  入力されたキーを表す文字列を返す
+	// kc.getcharp() 入力されたキーを表す文字列を返す(keypressの時)
 	//---------------------------------------------------------------------------
-	getchar : function(e, keycode){
-		if     (e.keyCode == 38)            { return k.KEYUP;}
-		else if(e.keyCode == 40)            { return k.KEYDN;}
-		else if(e.keyCode == 37)            { return k.KEYLT;}
-		else if(e.keyCode == 39)            { return k.KEYRT;}
-		else if(48<=keycode && keycode<=57) { return (keycode - 48).toString(36);}
-		else if(65<=keycode && keycode<=90) { return (keycode - 55).toString(36);} //アルファベット
-		else if(96<=keycode && keycode<=105){ return (keycode - 96).toString(36);} //テンキー対応
+	// 48～57は0～9キー、65～90はa～z、96～105はテンキー、112～123はF1～F12キー
+	getchar : function(e){
+		if     (e.keyCode==38){ return k.KEYUP;}
+		else if(e.keyCode==40){ return k.KEYDN;}
+		else if(e.keyCode==37){ return k.KEYLT;}
+		else if(e.keyCode==39){ return k.KEYRT;}
+		else if(e.shiftKey)   { return 'shift';}
+
+		var keycode = (!!e.keyCode ? e.keyCode: e.charCode);
+		if     ( 48<=keycode && keycode<= 57){ return (keycode-48).toString(36);}
+		else if( 65<=keycode && keycode<= 90){ return (keycode-55).toString(36);} //アルファベット
+		else if( 96<=keycode && keycode<=105){ return (keycode-96).toString(36);} //テンキー対応
 		else if(112<=keycode && keycode<=123){return 'F'+(keycode - 111).toString(10);}
-		else if(keycode==32 || keycode==46) { return ' ';} // 32はスペースキー 46はdelキー
-		else if(keycode==8)                 { return 'BS';}
-		else if(e.shiftKey)                 { return 'shift';}
-		else{ return '';}
+		else if(keycode==32 || keycode==46)  { return ' ';} // 32はスペースキー 46はdelキー
+		else if(keycode==8)                  { return 'BS';}
+
+		return '';
 	},
-	getcharp : function(e, keycode){
-		if(keycode==45){ return '-';}
-		else{ return '';}
-	},
-	getKeyCode : function(e){
-		return !!e.keyCode ? e.keyCode: e.charCode;
+	// (keypressのみ)45は-(マイナス)
+	getcharp : function(e){
+		if((!!e.keyCode ? e.keyCode: e.charCode)==45){ return '-';}
+		return '';
 	},
 
 	//---------------------------------------------------------------------------
@@ -140,16 +141,17 @@ KeyEvent.prototype = {
 	//---------------------------------------------------------------------------
 	keydown_common : function(e){
 		var flag = false;
-		if(!this.isSHIFT && e.shiftKey){ this.isSHIFT=true; }
-		if(!this.isCTRL  && e.ctrlKey ){ this.isCTRL=true;  flag = true; }
-		if(!this.isALT   && e.altKey  ){ this.isALT=true;   flag = true; }
+		if(!this.isSHIFT && e.shiftKey){ this.isSHIFT=true;}
+		if(!this.isCTRL  && e.ctrlKey ){ this.isCTRL=true; flag=true;}
+		if(!this.isMETA  && e.metaKey ){ this.isMETA=true; flag=true;}
+		if(!this.isALT   && e.altKey  ){ this.isALT=true;  flag=true;}
 
-		if(this.isCTRL && this.ca=='z'){ this.inUNDO=true; flag = true; tm.startUndoTimer();}
-		if(this.isCTRL && this.ca=='y'){ this.inREDO=true; flag = true; tm.startUndoTimer();}
+		if((this.isCTRL || this.isMETA) && !this.inUNDO && this.ca=='z'){ this.inUNDO=true; flag=true; tm.startUndoTimer();}
+		if((this.isCTRL || this.isMETA) && !this.inreDO && this.ca=='y'){ this.inREDO=true; flag=true; tm.startUndoTimer();}
 
 		if(this.ca=='F2' && k.EDITOR){ // 112～123はF1～F12キー
-			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); flag = true;}
-			else if(k.playmode &&  this.isSHIFT){ pp.setVal('mode',1); flag = true;}
+			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); flag=true;}
+			else if(k.playmode &&  this.isSHIFT){ pp.setVal('mode',1); flag=true;}
 		}
 		flag = (flag || debug.keydown(this.ca));
 
@@ -157,12 +159,13 @@ KeyEvent.prototype = {
 	},
 	keyup_common : function(e){
 		var flag = false;
-		if(this.isSHIFT && !e.shiftKey){ this.isSHIFT=false; flag = true; }
-		if((this.isCTRL || this.inUNDO || this.inREDO)  && !e.ctrlKey ){ this.isCTRL=false;  flag = true; this.inUNDO = false; this.inREDO = false; }
-		if(this.isALT   && !e.altKey  ){ this.isALT=false;   flag = true; }
+		if(this.isSHIFT && !e.shiftKey){ this.isSHIFT=false; flag=true;}
+		if(this.isCTRL  && !e.ctrlKey ){ this.isCTRL=false;  flag=true;}
+		if(this.isMETA  && !e.metaKey ){ this.isMETA=false;  flag=true;}
+		if(this.isALT   && !e.altKey  ){ this.isALT=false;   flag=true;}
 
-		if(this.inUNDO && this.ca=='z'){ this.inUNDO=false; flag = true; }
-		if(this.inREDO && this.ca=='y'){ this.inREDO=false; flag = true; }
+		if(!(this.isCTRL || this.isMETA) && this.inUNDO && this.ca=='z'){ this.inUNDO=false; flag=true;}
+		if(!(this.isCTRL || this.isMETA) && this.inREDO && this.ca=='y'){ this.inREDO=false; flag=true;}
 
 		return flag;
 	},
