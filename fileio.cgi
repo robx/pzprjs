@@ -1,4 +1,4 @@
-﻿#!/usr/local/bin/perl
+#!/usr/local/bin/perl
 
 use CGI;
 use MIME::Base64;
