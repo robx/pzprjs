@@ -69,7 +69,7 @@
 
 <div class="popup" id="pop1_4">
 <div class="titlebar" id="bar1_4">ファイルを開く</div>
-<form name="fileform" id="fileform" action="fileio.xcg" method="post" onsubmit="return false;" enctype="multipart/form-data" target="fileiopanel">
+<form name="fileform" id="fileform" action="fileio.cgi" method="post" onsubmit="return false;" enctype="multipart/form-data" target="fileiopanel">
 <span id="pop1_4_cap0">ファイル選択</span><br>
 <input type="file" name="filebox" id="filebox"><br>
 <input type="button" name="close" value="閉じる" />
@@ -196,7 +196,7 @@
 
   <!-- ここからファイル出力用フォーム -->
   <form name="fileform2" id="fileform2" target="fileiopanel"
-        action="fileio.xcg" method="post" onsubmit="return false;">
+        action="fileio.cgi" method="post" onsubmit="return false;">
     <input type="hidden" name="operation" value="save">
     <input type="hidden" name="filename" value="">
     <input type="hidden" name="ques" value="">
