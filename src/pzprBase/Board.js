@@ -1,4 +1,4 @@
-// Board.js v3.3.1
+// Board.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★Cellクラス BoardクラスがCellの数だけ保持する
@@ -600,8 +600,7 @@ Board.prototype = {
 	},
 	borderinside : function(x1,y1,x2,y2){
 		var idlist = [];
-		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
-			if(bx&1===by&1){ continue;}
+		for(var by=y1;by<=y2;by++){ for(var bx=x1+(((x1+by)&1)^1);bx<=x2;bx+=2){
 			var id = this.bnum(bx,by);
 			if(id!==null){ idlist.push(id);}
 		}}
