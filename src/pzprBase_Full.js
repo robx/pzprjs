@@ -5,15 +5,15 @@
  * written in JavaScript.
  * 
  * @author  dk22
- * @version v3.3.1
- * @date    2010-08-10
+ * @version v3.3.1p1
+ * @date    2010-08-11
  * 
  * This script is licensed under the MIT license. See below,
  * http://www.opensource.org/licenses/mit-license.php
  * 
  */
 
-var pzprversion="v3.3.1";
+var pzprversion="v3.3.1p1";
  
 (function(){
 
@@ -2350,8 +2350,7 @@ Board.prototype = {
 	},
 	borderinside : function(x1,y1,x2,y2){
 		var idlist = [];
-		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
-			if(bx&1===by&1){ continue;}
+		for(var by=y1;by<=y2;by++){ for(var bx=x1+(((x1+by)&1)^1);bx<=x2;bx+=2){
 			var id = this.bnum(bx,by);
 			if(id!==null){ idlist.push(id);}
 		}}
@@ -4383,7 +4382,7 @@ MouseEvent.prototype = {
 	e_mouseup   : function(e){
 		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
-			this.setposition(e);
+			if(!k.mobile){ this.setposition(e);}
 			this.mouseup();		// 各パズルのルーチンへ
 			this.mousereset();
 		}
@@ -5291,6 +5290,7 @@ KeyPopup = function(){
 	this.haspanel = {1:false, 3:false};	// 有効かどうか
 	this.element = null;				// キーポップアップのエレメント
 
+	this.prefix;
 	this.tdcolor = "black";
 	this.imgCR = [1,1];		// img表示用画像の横×縦のサイズ
 
@@ -5341,7 +5341,7 @@ KeyPopup.prototype = {
 	// kp.gentable10() キーポップアップの0～9を入力できるテーブルを作成する
 	// kp.gentable4()  キーポップアップの0～4を入力できるテーブルを作成する
 	//---------------------------------------------------------------------------
-	generate : function(type, enablemake, enableplay, func){
+	generate : function(type, enablemake, enableplay){
 		if(!this.element){
 			var rect = ee('divques').getRect();
 			this.element = ee('keypopup').el;
@@ -5351,12 +5351,13 @@ KeyPopup.prototype = {
 			ee('barkeypopup').el.ondblclick = function(){ pp.setVal('keypopup',false)};
 		}
 
-		if(enablemake && k.EDITOR){ this.gentable(1, type, func);}
-		if(enableplay)            { this.gentable(3, type, func);}
+		if(enablemake && k.EDITOR){ this.gentable(1, type);}
+		if(enableplay)            { this.gentable(3, type);}
 	},
 
-	gentable : function(mode, type, func){
+	gentable : function(mode, type){
 		this.haspanel[mode] = true;
+		this.prefix = ['kp',mode,'_'].join('');
 
 		var basediv = ee('panelbase'+mode).el;
 		basediv.innerHTML = '';
@@ -5369,12 +5370,14 @@ KeyPopup.prototype = {
 		table.appendChild(this.tbodytmp);
 
 		this.trtmp = null;
-		if(func)							  { func.apply(kp, [mode]);}
-		else if(type==0 || type==3)			  { this.gentable10(mode,type);}
-		else if(type==1 || type==2 || type==4){ this.gentable4 (mode,type);}
+		if(type===this.ORIGINAL){ this.kpgenerate(mode);}
+		else if(type===0)       { this.gentable10(mode);}
+		else if(type===51)      { this.gentable51(mode);}
+		else                    { this.gentable4 (mode,type);}
 	},
+	kpgenerate : function(mode){ }, // オーバーライド用
 
-	gentable10 : function(mode, type){
+	gentable10 : function(mode){
 		this.inputcol('num','knum0','0','0');
 		this.inputcol('num','knum1','1','1');
 		this.inputcol('num','knum2','2','2');
@@ -5388,22 +5391,39 @@ KeyPopup.prototype = {
 		this.inputcol('num','knum8','8','8');
 		this.inputcol('num','knum9','9','9');
 		this.inputcol('num','knum_',' ',' ');
-		if     (type==0){ (mode==1)?this.inputcol('num','knum.','-','?'):this.inputcol('empty','knum.','','');}
-		else if(type==3){ this.inputcol('num','knum.','-','□');}
+		if(mode==1){ this.inputcol('num','knum.','-','?');}else{ this.inputcol('empty','','','');}
 		this.insertrow();
 	},
-	gentable4 : function(mode, type, tbody){
+	gentable4 : function(mode, type){
 		this.inputcol('num','knum0','0','0');
 		this.inputcol('num','knum1','1','1');
 		this.inputcol('num','knum2','2','2');
 		this.inputcol('num','knum3','3','3');
 		this.insertrow();
 		this.inputcol('num','knum4','4','4');
-		this.inputcol('empty','knumx','','');
+		this.inputcol('empty','','','');
 		this.inputcol('num','knum_',' ',' ');
-		if     (type==1){ (mode==1)?this.inputcol('num','knum.','-','?'):this.inputcol('empty','knum.','','');}
-		else if(type==2){ this.inputcol('num','knum.', '-', '■');}
-		else if(type==4){ this.inputcol('num','knum.', '-', '○');}
+		if     (type==1){ this.inputcol('num','knum.','-','?');}
+		else if(type==2){ this.inputcol('num','knum.','-','■');}
+		else if(type==4){ this.inputcol('num','knum.','-','○');}
+		this.insertrow();
+	},
+	gentable51 : function(mode){
+		if(mode===3){ this.gentable10(mode); return;}
+		this.inputcol('image','knumq','q',[0,0]);
+		this.inputcol('num','knum_',' ',' ');
+		this.inputcol('num','knum1','1','1');
+		this.inputcol('num','knum2','2','2');
+		this.insertrow();
+		this.inputcol('num','knum3','3','3');
+		this.inputcol('num','knum4','4','4');
+		this.inputcol('num','knum5','5','5');
+		this.inputcol('num','knum6','6','6');
+		this.insertrow();
+		this.inputcol('num','knum7','7','7');
+		this.inputcol('num','knum8','8','8');
+		this.inputcol('num','knum9','9','9');
+		this.inputcol('num','knum0','0','0');
 		this.insertrow();
 	},
 
@@ -5414,22 +5434,22 @@ KeyPopup.prototype = {
 	inputcol : function(type, id, ca, disp){
 		if(!this.trtmp){ this.trtmp = _doc.createElement('tr');}
 		var _td = null;
-		if(type==='num'){
-			_td = ee.createEL(this.EL_KPNUM, id);
+		if(type==='empty'){
+			_td = ee.createEL(this.EL_KPEMPTY, '');
+		}
+		else if(type==='num'){
+			_td = ee.createEL(this.EL_KPNUM, this.prefix+id);
 			_td.style.color = this.tdcolor;
 			_td.innerHTML   = disp;
 			_td.onclick     = ee.ebinder(this, this.inputnumber, [ca]);
 		}
-		else if(type==='empty'){
-			_td = ee.createEL(this.EL_KPEMPTY, '');
-		}
 		else if(type==='image'){
-			var _img = ee.createEL(this.EL_KPIMG_IMG, ""+id+"_i");
+			var _img = ee.createEL(this.EL_KPIMG_IMG, this.prefix+id+"_i");
 			var _div = ee.createEL(this.EL_KPIMG_DIV, '');
 			_div.appendChild(_img);
 
 			_td = ee.createEL(this.EL_KPIMG, id);
-			_td.onclick   = ee.ebinder(this, this.inputnumber, [ca]);
+			_td.onclick = ee.ebinder(this, this.inputnumber, [ca]);
 			_td.appendChild(_div);
 
 			this.imgs.push({'el':_img, 'x':disp[0], 'y':disp[1]});
@@ -6879,6 +6899,10 @@ DataBaseManager = function(){
 	this.DBlist = [];	// 現在一覧にある問題のリスト
 	this.keys = ['id', 'col', 'row', 'hard', 'pdata', 'time', 'comment']; // キーの並び
 
+	var self    = this;
+	this.update = function(){ self.updateDialog.call(self);};
+	this.sync   = false;
+
 	this.selectDBtype();
 };
 DataBaseManager.prototype = {
@@ -6896,7 +6920,7 @@ DataBaseManager.prototype = {
 		// HTML5 - Web DataBase判定用
 		if(!!window.openDatabase){
 			try{	// Opera10.50対策
-				var dbtmp = openDatabase('pzprv3_manage', '1.0');	// Chrome3対策
+				var dbtmp = openDatabase('pzprv3_manage', '1.0', 'manager', 1024*1024*5);	// Chrome3対策
 				if(!!dbtmp){ this.DBaccept |= 0x02;}
 			}
 			catch(e){}
@@ -6918,14 +6942,9 @@ DataBaseManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.openDialog()    データベースダイアログが開いた時の処理
-	// fio.dbm.openHandler()   データベースハンドラを開く
+	// fio.dbm.openDialog() データベースダイアログが開いた時の処理
 	//---------------------------------------------------------------------------
 	openDialog : function(){
-		this.openHandler();
-		this.update();
-	},
-	openHandler : function(){
 		// データベースを開く
 		var type = 0;
 		if     (this.DBaccept & 0x08){ type = 4;}
@@ -6938,12 +6957,9 @@ DataBaseManager.prototype = {
 			case 4:         this.dbh = new DataBaseHandler_LS(); break;
 			default: return;
 		}
-		this.dbh.importDBlist(this);
 
-		var sortlist = { idlist:"ID順", newsave:"保存が新しい順", oldsave:"保存が古い順", size:"サイズ/難易度順"};
-		var str="";
-		for(s in sortlist){ str += ("<option value=\""+s+"\">"+sortlist[s]+"</option>");}
-		_doc.database.sorts.innerHTML = str;
+		this.sync = false;
+		this.dbh.importDBlist(this, this.update);
 	},
 
 	//---------------------------------------------------------------------------
@@ -6954,6 +6970,7 @@ DataBaseManager.prototype = {
 		this.DBlist = [];
 	},
 	clickHandler : function(e){
+		if(this.sync===false){ return;}
 		switch(ee.getSrcElement(e).name){
 			case 'sorts'   : this.displayDataTableList();	// breakがないのはわざとです
 			case 'datalist': this.selectDataTable();   break;
@@ -6968,8 +6985,8 @@ DataBaseManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.getDataID()  選択中データの(this.DBlistのkeyとなる)IDを取得する
-	// fio.dbm.update()     管理テーブル情報やダイアログの表示を更新する
+	// fio.dbm.getDataID()    選択中データの(this.DBlistのkeyとなる)IDを取得する
+	// fio.dbm.updateDialog() 管理テーブル情報やダイアログの表示を更新する
 	//---------------------------------------------------------------------------
 	getDataID : function(){
 		if(_doc.database.datalist.value!="new" && _doc.database.datalist.value!=""){
@@ -6979,10 +6996,11 @@ DataBaseManager.prototype = {
 		}
 		return -1;
 	},
-	update : function(){
+	updateDialog : function(){
 		this.dbh.updateManageData(this);
-			this.displayDataTableList();
-			this.selectDataTable();
+		this.displayDataTableList();
+		this.selectDataTable();
+		this.sync = true;
 	},
 
 	//---------------------------------------------------------------------------
@@ -6991,28 +7009,28 @@ DataBaseManager.prototype = {
 	// fio.dbm.dateString()           時刻の文字列を生成する
 	//---------------------------------------------------------------------------
 	displayDataTableList : function(){
-			switch(_doc.database.sorts.value){
-				case 'idlist':  this.DBlist = this.DBlist.sort(function(a,b){ return (a.id-b.id);}); break;
-				case 'newsave': this.DBlist = this.DBlist.sort(function(a,b){ return (b.time-a.time || a.id-b.id);}); break;
-				case 'oldsave': this.DBlist = this.DBlist.sort(function(a,b){ return (a.time-b.time || a.id-b.id);}); break;
-				case 'size':    this.DBlist = this.DBlist.sort(function(a,b){ return (a.col-b.col || a.row-b.row || a.hard-b.hard || a.id-b.id);}); break;
-			}
+		switch(_doc.database.sorts.value){
+			case 'idlist' : this.DBlist = this.DBlist.sort(function(a,b){ return (a.id-b.id);}); break;
+			case 'newsave': this.DBlist = this.DBlist.sort(function(a,b){ return (b.time-a.time || a.id-b.id);}); break;
+			case 'oldsave': this.DBlist = this.DBlist.sort(function(a,b){ return (a.time-b.time || a.id-b.id);}); break;
+			case 'size'   : this.DBlist = this.DBlist.sort(function(a,b){ return (a.col-b.col || a.row-b.row || a.hard-b.hard || a.id-b.id);}); break;
+		}
 
-			var html = "";
-			for(var i=0;i<this.DBlist.length;i++){
-				var row = this.DBlist[i];
+		var html = "";
+		for(var i=0;i<this.DBlist.length;i++){
+			var row = this.DBlist[i];
 			if(!row){ continue;}//alert(i);}
 
 			var valstr = " value=\""+row.id+"\"";
 			var selstr = (this.DBsid==row.id?" selected":"");
 			html += ("<option" + valstr + selstr + ">" + this.getRowString(row)+"</option>\n");
-			}
-			html += ("<option value=\"new\""+(this.DBsid==-1?" selected":"")+">&nbsp;&lt;新しく保存する&gt;</option>\n");
-			_doc.database.datalist.innerHTML = html;
+		}
+		html += ("<option value=\"new\""+(this.DBsid==-1?" selected":"")+">&nbsp;&lt;新しく保存する&gt;</option>\n");
+		_doc.database.datalist.innerHTML = html;
 	},
 	getRowString : function(row){
 		var hardstr = [
-			{ja:'−'      , en:'-'     },
+			{ja:'−'       , en:'-'     },
 			{ja:'らくらく', en:'Easy'  },
 			{ja:'おてごろ', en:'Normal'},
 			{ja:'たいへん', en:'Hard'  },
@@ -7083,8 +7101,8 @@ DataBaseManager.prototype = {
 		for(var c=1;c<7;c++){ this.DBlist[sid][this.keys[c]] = this.DBlist[tid][this.keys[c]];}
 		for(var c=1;c<7;c++){ this.DBlist[tid][this.keys[c]] = row[this.keys[c]];}
 
-		this.dbh.convertDataTableID(this, sid, tid);
-		this.update();
+		this.sync = false;
+		this.dbh.convertDataTableID(this, sid, tid, this.update);
 	},
 
 	//---------------------------------------------------------------------------
@@ -7095,11 +7113,11 @@ DataBaseManager.prototype = {
 		var id = this.getDataID(); if(id===-1){ return;}
 		if(!confirm("このデータを読み込みますか？ (現在の盤面は破棄されます)")){ return;}
 
-		this.dbh.openDataTable(this, id);
+		this.dbh.openDataTable(this, id, null);
 	},
 	saveDataTable_M : function(){
 		var id = this.getDataID(), refresh = false;
-			if(id===-1){
+		if(id===-1){
 			id = this.DBlist.length;
 			refresh = true;
 
@@ -7109,16 +7127,16 @@ DataBaseManager.prototype = {
 			this.DBlist[id].hard = 0;
 			this.DBlist[id].id = id+1;
 			this.DBsid = this.DBlist[id].id;
-			}
-			else{
+		}
+		else{
 			if(!confirm("このデータに上書きしますか？")){ return;}
 		}
 		this.DBlist[id].col   = k.qcols;
 		this.DBlist[id].row   = k.qrows;
 		this.DBlist[id].time  = (tm.now()/1000)|0;
 
-		this.dbh.saveDataTable(this, id);
-		this.update();
+		this.sync = false;
+		this.dbh.saveDataTable(this, id, this.update);
 	},
 
 	//---------------------------------------------------------------------------
@@ -7130,20 +7148,20 @@ DataBaseManager.prototype = {
 
 		var str = prompt("この問題に対するコメントを入力してください。",this.DBlist[id].comment);
 		if(str==null){ return;}
-
 		this.DBlist[id].comment = str;
-		this.dbh.updateComment(this, id);
-		this.update();
+
+		this.sync = false;
+		this.dbh.updateComment(this, id, this.update);
 	},
 	editDifficult_M : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
 
 		var hard = prompt("この問題の難易度を設定してください。\n[0:なし 1:らくらく 2:おてごろ 3:たいへん 4:アゼン]",this.DBlist[id].hard);
 		if(hard==null){ return;}
-
 		this.DBlist[id].hard = ((hard=='1'||hard=='2'||hard=='3'||hard=='4')?hard:0);
-		this.dbh.updateDifficult(this, id);
-		this.update();
+
+		this.sync = false;
+		this.dbh.updateDifficult(this, id, this.update);
 	},
 
 	//---------------------------------------------------------------------------
@@ -7159,8 +7177,8 @@ DataBaseManager.prototype = {
 		}
 		this.DBlist.pop();
 
-		this.dbh.deleteDataTable(this, sID, max);
-		this.update();
+		this.sync = false;
+		this.dbh.deleteDataTable(this, sID, max, this.update);
 	}
 
 	//---------------------------------------------------------------------------
@@ -7196,7 +7214,7 @@ DataBaseHandler_LS.prototype = {
 		this.createManageDataTable();
 		this.createDataBase();
 	},
-	importDBlist : function(parent){
+	importDBlist : function(parent, callback){
 		parent.DBlist = [];
 		var r=0;
 		while(1){
@@ -7206,6 +7224,7 @@ DataBaseHandler_LS.prototype = {
 			row.pdata = "";
 			parent.DBlist.push(row);
 		}
+		if(!!callback){ callback();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -7233,48 +7252,54 @@ DataBaseHandler_LS.prototype = {
 	//---------------------------------------------------------------------------
 	// fio.dbm.dbh.convertDataTableID() データのIDを付け直す
 	//---------------------------------------------------------------------------
-	convertDataTableID : function(parent, sid, tid){
+	convertDataTableID : function(parent, sid, tid, callback){
 		var sID = parent.DBlist[sid].id, tID = parent.DBlist[tid].id;
 		var sheader=this.pheader+'!'+sID, theader=this.pheader+'!'+tID, row = {};
 		for(var c=1;c<7;c++){ localStorage[sheader+'!'+this.keys[c]] = parent.DBlist[sid][this.keys[c]];}
 		for(var c=1;c<7;c++){ localStorage[theader+'!'+this.keys[c]] = parent.DBlist[tid][this.keys[c]];}
+		if(!!callback){ callback();}
 	},
 
 	//---------------------------------------------------------------------------
 	// fio.dbm.dbh.openDataTable()   データの盤面に読み込む
 	// fio.dbm.dbh.saveDataTable()   データの盤面を保存する
 	//---------------------------------------------------------------------------
-	openDataTable : function(parent, id){
+	openDataTable : function(parent, id, callback){
 		var pdata = localStorage[this.pheader+'!'+parent.DBlist[id].id+'!pdata'];
 		fio.filedecode(pdata);
+		if(!!callback){ callback();}
 	},
-	saveDataTable : function(parent, id){
+	saveDataTable : function(parent, id, callback){
 		var row = parent.DBlist[id];
 		for(var c=0;c<7;c++){ localStorage[this.pheader+'!'+row.id+'!'+this.keys[c]] = (c!==4 ? row[this.keys[c]] : fio.fileencode(1));}
+		if(!!callback){ callback();}
 	},
 
 	//---------------------------------------------------------------------------
 	// fio.dbm.dbh.updateComment()   データのコメントを更新する
 	// fio.dbm.dbh.updateDifficult() データの難易度を更新する
 	//---------------------------------------------------------------------------
-	updateComment : function(parent, id){
+	updateComment : function(parent, id, callback){
 		var row = parent.DBlist[id];
 		localStorage[this.pheader+'!'+row.id+'!comment'] = row.comment;
+		if(!!callback){ callback();}
 	},
-	updateDifficult : function(parent, id){
+	updateDifficult : function(parent, id, callback){
 		var row = parent.DBlist[id];
 		localStorage[this.pheader+'!'+row.id+'!hard'] = row.hard;
+		if(!!callback){ callback();}
 	},
 	//---------------------------------------------------------------------------
 	// fio.dbm.dbh.deleteDataTable() 選択している盤面データを削除する
 	//---------------------------------------------------------------------------
-	deleteDataTable : function(parent, sID, max){
+	deleteDataTable : function(parent, sID, max, callback){
 		for(var i=parseInt(sID);i<max;i++){
 			var headers = [this.pheader+'!'+(i+1), this.pheader+'!'+i];
 			for(var c=1;c<7;c++){ localStorage[headers[1]+'!'+this.keys[c]] = localStorage[headers[0]+'!'+this.keys[c]];}
 		}
 		var dheader = this.pheader+'!'+max;
 		for(var c=0;c<7;c++){ localStorage.removeItem(dheader+'!'+this.keys[c]);}
+		if(!!callback){ callback();}
 	}
 };
 
@@ -7298,13 +7323,13 @@ DataBaseHandler_SQL.prototype = {
 		var wrapper1 = new DataBaseObject_SQL(this.isSQLDB);
 		var wrapper2 = new DataBaseObject_SQL(this.isSQLDB);
 
-		this.dbmgr = wrapper1.openDatabase('pzprv3_manage', '1.0');
-		this.db    = wrapper2.openDatabase('pzprv3_'+k.puzzleid, '1.0');
+		this.dbmgr = wrapper1.openDatabase('pzprv3_manage', '1.0', 'manager', 1024*1024*5);
+		this.db    = wrapper2.openDatabase('pzprv3_'+k.puzzleid, '1.0', 'pzldata', 1024*1024*5);
 
 		this.createManageDataTable();
 		this.createDataBase();
 	},
-	importDBlist : function(parent){
+	importDBlist : function(parent, callback){
 		parent.DBlist = [];
 		this.db.transaction(
 			function(tx){
@@ -7319,7 +7344,7 @@ DataBaseHandler_SQL.prototype = {
 				});
 			},
 			function(){ },
-			function(){ fio.dbm.update();}
+			function(){ if(!!callback){ callback();}}
 		);
 	},
 /*	setupDBlist : function(parent){
@@ -7374,60 +7399,90 @@ DataBaseHandler_SQL.prototype = {
 	//---------------------------------------------------------------------------
 	// fio.dbm.dbh.convertDataTableID() データのIDを付け直す
 	//---------------------------------------------------------------------------
-	convertDataTableID : function(parent, sid, tid){
+	convertDataTableID : function(parent, sid, tid, callback){
 		var sID = parent.DBlist[sid].id, tID = parent.DBlist[tid].id;
-		this.db.transaction( function(tx){
-			tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[0  ,sID]);
-			tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[sID,tID]);
-			tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[tID,  0]);
-		});
+		this.db.transaction(
+			function(tx){
+				tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[0  ,sID]);
+				tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[sID,tID]);
+				tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[tID,  0]);
+			},
+			function(){ },
+			function(){ if(!!callback){ callback();}}
+		);
 	},
 
 	//---------------------------------------------------------------------------
 	// fio.dbm.dbh.openDataTable()   データの盤面に読み込む
 	// fio.dbm.dbh.saveDataTable()   データの盤面を保存する
 	//---------------------------------------------------------------------------
-	openDataTable : function(parent, id){
-		this.db.transaction( function(tx){
-			tx.executeSql('SELECT * FROM pzldata WHERE ID==?',[parent.DBlist[id].id],
-				function(tx,rs){ fio.filedecode(rs.rows.item(0)['pdata']);}
-			);
-		});
+	openDataTable : function(parent, id, callback){
+		var data = "";
+		this.db.transaction(
+			function(tx){
+				tx.executeSql('SELECT * FROM pzldata WHERE ID==?',[parent.DBlist[id].id],
+					function(tx,rs){ data = rs.rows.item(0)['pdata'];}
+				);
+			},
+			function(){ },
+			function(){
+				if(!!data){ fio.filedecode(data);}
+				if(!!callback){ callback();}
+			}
+		);
 	},
-	saveDataTable : function(parent, id){
-		var row = parent.DBlist[id];
-		this.db.transaction( function(tx){
-			tx.executeSql('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',[row.id,row.col,row.row,row.hard,fio.fileencode(1),row.time,row.comment]);
-		});
+	saveDataTable : function(parent, id, callback){
+		var row = parent.DBlist[id], data = fio.fileencode(1);
+		this.db.transaction(
+			function(tx){
+				tx.executeSql('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',
+					[row.id,row.col,row.row,row.hard,data,row.time,row.comment]
+				);
+			},
+			function(){ },
+			function(){ if(!!callback){ callback();}}
+		);
 	},
 
 	//---------------------------------------------------------------------------
 	// fio.dbm.dbh.updateComment()   データのコメントを更新する
 	// fio.dbm.dbh.updateDifficult() データの難易度を更新する
 	//---------------------------------------------------------------------------
-	updateComment : function(parent, id){
+	updateComment : function(parent, id, callback){
 		var row = parent.DBlist[id];
-		this.db.transaction( function(tx){
-			tx.executeSql('UPDATE pzldata SET comment=? WHERE ID==?',[row.comment, row.id]);
-		});
+		this.db.transaction(
+			function(tx){
+				tx.executeSql('UPDATE pzldata SET comment=? WHERE ID==?',[row.comment, row.id]);
+			},
+			function(){ },
+			function(){ if(!!callback){ callback();}}
+		);
 	},
-	updateDifficult : function(parent, id){
+	updateDifficult : function(parent, id, callback){
 		var row = parent.DBlist[id];
-		this.db.transaction( function(tx){
-			tx.executeSql('UPDATE pzldata SET hard=? WHERE ID==?',[row.hard, row.id]);
-		});
+		this.db.transaction(
+			function(tx){
+				tx.executeSql('UPDATE pzldata SET hard=? WHERE ID==?',[row.hard, row.id]);
+			},
+			function(){ },
+			function(){ if(!!callback){ callback();}}
+		);
 	},
 
 	//---------------------------------------------------------------------------
 	// fio.dbm.dbh.deleteDataTable() 選択している盤面データを削除する
 	//---------------------------------------------------------------------------
-	deleteDataTable : function(parent, sID, max){
-		this.db.transaction( function(tx){
-			tx.executeSql('DELETE FROM pzldata WHERE ID==?',[sID]);
-			for(var i=parseInt(sID);i<max;i++){
-				tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[i,i+1]);
-			}
-		});
+	deleteDataTable : function(parent, sID, max, callback){
+		this.db.transaction(
+			function(tx){
+				tx.executeSql('DELETE FROM pzldata WHERE ID==?',[sID]);
+				for(var i=parseInt(sID);i<max;i++){
+					tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[i,i+1]);
+				}
+			},
+			function(){ },
+			function(){ if(!!callback){ callback();}}
+		);
 	}
 };
 
@@ -7442,15 +7497,13 @@ DataBaseObject_SQL = function(isSQLDB){
 	this.object = null;
 };
 DataBaseObject_SQL.prototype = {
-	openDatabase : function(name, ver){
+	openDatabase : function(name, ver, dispname, size){
 		this.name    = name;
 		this.version = ver;
-		if(this.isSQLDB){
-			this.object = openDatabase(this.name, this.version);
-		}
-		else{
-			this.object = google.gears.factory.create('beta.database', this.version);
-		}
+		this.object  = (this.isSQLDB ?
+			  openDatabase(this.name, this.version, dispname, size)
+			: google.gears.factory.create('beta.database', this.version)
+		);
 		return this;
 	},
 
@@ -8311,8 +8364,8 @@ Menu = function(){
 	var select_funcs = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout)};
 	this.EL_SMENU    = ee.addTemplate('','li', {className:'smenu'}, null, smenu_funcs);
 	this.EL_SPARENT  = ee.addTemplate('','li', {className:'smenu'}, null, select_funcs);
-	this.EL_SELECT   = ee.addTemplate('','li', {className:'smenu'}, {fontWeight :'900', fontSize:'10pt'}, select_funcs);
-	this.EL_CHECK    = ee.addTemplate('','li', {className:'smenu'}, {paddingLeft:'6pt', fontSize:'10pt'}, smenu_funcs);
+	this.EL_SELECT   = ee.addTemplate('','li', {className:'smenu'}, {fontWeight :'900', fontSize:'0.9em'}, select_funcs);
+	this.EL_CHECK    = ee.addTemplate('','li', {className:'smenu'}, {paddingLeft:'6pt', fontSize:'0.9em'}, smenu_funcs);
 	this.EL_LABEL    = ee.addTemplate('','li', {className:'smenulabel'}, null, null);
 	this.EL_CHILD    = this.EL_CHECK;
 	this.EL_SEPARATE = (
@@ -8497,6 +8550,7 @@ Menu.prototype = {
 		ap('sep_disp0',  'disp');
 
 		au('size','disp',2,[0,1,2,3,4], '表示サイズ','Cell Size');
+		au('text','disp',(!k.mobile?0:2),[0,1,2,3], 'テキストのサイズ','Text Size');
 		ap('sep_disp1',  'disp');
 
 		if(!!k.irowake){
@@ -8516,6 +8570,14 @@ Menu.prototype = {
 		ai('size_2', 'size', 'サイズ 標準', 'Normal');
 		ai('size_3', 'size', 'サイズ 大',   'Large');
 		ai('size_4', 'size', 'サイズ 特大', 'Ex Large');
+
+		// *表示 - テキストのサイズ -------------------------------------------
+		aa('cap_textmode','text','テキストのサイズ','Text Size');
+		ai('text_0', 'text', '通常',         'Normal');
+		ai('text_1', 'text', '大きい',       'Big');
+		ai('text_2', 'text', 'かなり大きい', 'Ex Big');
+		ai('text_3', 'text', 'とても大きい', 'Ex Big 2');
+		this.textsize(pp.getVal('text'));
 
 		// *設定 ==============================================================
 		am('setting', "設定", "Setting");
@@ -8573,7 +8635,7 @@ Menu.prototype = {
 	// menu.addRedBlockRBToFlags()「ナナメ黒マスのつながりをチェック」サブメニュー登録用共通関数
 	//---------------------------------------------------------------------------
 	addUseToFlags : function(){
-		pp.addSelect('use','setting',1,[1,2], '操作方法', 'Input Type');
+		pp.addSelect('use','setting',(!k.mobile?1:2),[1,2], '操作方法', 'Input Type');
 		pp.setLabel ('use', '操作方法', 'Input Type');
 
 		pp.addChild('use_1','use','左右ボタン','LR Button');
@@ -8641,9 +8703,9 @@ Menu.prototype = {
 			ee('ms_urloutput').el.className = 'smenunull';
 			ee('ms_adjust')   .el.className = 'smenunull';
 		}
-		ee('ms_jumpv3')  .el.style.fontSize = '10pt'; ee('ms_jumpv3')  .el.style.paddingLeft = '8pt';
-		ee('ms_jumptop') .el.style.fontSize = '10pt'; ee('ms_jumptop') .el.style.paddingLeft = '8pt';
-		ee('ms_jumpblog').el.style.fontSize = '10pt'; ee('ms_jumpblog').el.style.paddingLeft = '8pt';
+		ee('ms_jumpv3')  .el.style.fontSize = '0.9em'; ee('ms_jumpv3')  .el.style.paddingLeft = '8pt';
+		ee('ms_jumptop') .el.style.fontSize = '0.9em'; ee('ms_jumptop') .el.style.paddingLeft = '8pt';
+		ee('ms_jumpblog').el.style.fontSize = '0.9em'; ee('ms_jumpblog').el.style.paddingLeft = '8pt';
 	},
 
 	//---------------------------------------------------------------------------
@@ -8826,10 +8888,6 @@ Menu.prototype = {
 			var el = ee('checkpanel').el.removeChild(ee('div_irowake').el);
 			ee('checkpanel').el.appendChild(el);
 		}
-
-		// 左上に出てくるやつ
-		ee('translation').unselectable().el.onclick = ee.binder(this, this.translate);
-		this.addLabels(ee('translation').el, "English", "日本語");
 
 		// 説明文の場所
 		ee('expression').el.innerHTML = base.expression.ja;
@@ -9083,15 +9141,48 @@ Menu.prototype = {
 //--------------------------------------------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------------
-	// menu.translate()  htmlの言語を変える
+	// menu.textsize()   テキストのサイズを設定する
+	//--------------------------------------------------------------------------------
+	textsize : function(num){
+		var sheet = _doc.styleSheets[0];
+		var rules = (!!sheet.cssRules ? sheet.cssRules : sheet.rules);
+		for(var i=0,len=rules.length;i<len;i++){
+			var rule = rules[i];
+			if(!rule.selectorText){ continue;}
+			switch(rule.selectorText.toLowerCase()){
+			case 'div#menuboard':
+				rule.style.fontSize = ['1.0em','1.6em','2.0em','3.0em'][num];
+				rule.style.lineHeight = ['1.2','1.1','1.1','1.1'][num];
+				break;
+			case 'menu.floatmenu':
+				rule.style.fontSize = ['0.9em','1.5em','1.9em','2.9em'][num];
+				break;
+			case 'div.popup':
+				rule.style.fontSize = ['0.9em','1.5em','1.9em','2.9em'][num];
+				rule.style.lineHeight = ['1.6','1.2','1.1','1.1'][num];
+				break;
+			case 'div#btnarea input[type="button"]':
+				rule.style.fontSize = ['1.0em','1.6em','2.0em','3.0em'][num];
+				break;
+			case 'form input':
+				rule.style.fontSize = ['1.0em','1.2em','1.4em','1.6em'][num];
+				break;
+			case 'input[type="checkbox"]':
+				rule.style.width  = ['','24px','32px','50px'][num];
+				rule.style.height = ['','24px','32px','50px'][num];
+				break;
+			}
+		}
+	},
+
+//--------------------------------------------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
 	// menu.setLang()    言語を設定する
 	// menu.selectStr()  現在の言語に応じた文字列を返す
 	// menu.alertStr()   現在の言語に応じたダイアログを表示する
 	// menu.confirmStr() 現在の言語に応じた選択ダイアログを表示し、結果を返す
 	//--------------------------------------------------------------------------------
-	translate : function(){
-		this.setLang(this.language==='ja' ? 'en' : 'ja');
-	},
 	setLang : function(ln){
 		this.language = ln;
 		_doc.title = base.gettitle();
@@ -9263,6 +9354,7 @@ Properties.prototype = {
 		manarea   : function(){ menu.ex.dispman();},
 		poptest   : function(){ debug.disppoptest();},
 		mode      : function(num){ menu.ex.modechange(num);},
+		text      : function(num){ menu.textsize(num); base.resize_canvas();},
 		size      : function(num){ base.resize_canvas();},
 		repaint   : function(num){ base.resize_canvas();},
 		adjsize   : function(num){ base.resize_canvas();},
@@ -9577,6 +9669,7 @@ MenuExec.prototype = {
 		}
 		else{
 			if(!fileEL.value){ return;}
+			_doc.fileform.action = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
 			_doc.fileform.submit();
 		}
 
@@ -9613,6 +9706,7 @@ MenuExec.prototype = {
 		_doc.fileform2.urlstr.value = fio.urlstr;
 		_doc.fileform2.operation.value = 'save';
 
+		_doc.fileform2.action = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
 		_doc.fileform2.submit();
 	},
 
@@ -11282,6 +11376,7 @@ PBase.prototype = {
 
 		// mainのサイズ変更
 		ee('main').el.style.width = ''+(mwidth|0)+'px';
+		if(k.mobile){ ee('menuboard').el.style.width = '90%';}
 
 		// 盤面のセルID:0が描画される位置の設定
 		var x0, y0; x0 = y0 = (k.cwidth*k.bdmargin)|0;
