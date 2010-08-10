@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.3.2
+// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.3.1
 //
 Puzzles.loopsp = function(){ };
 Puzzles.loopsp.prototype = {

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンロー版 nanro.js v3.3.2
+// パズル固有スクリプト部 ナンロー版 nanro.js v3.3.1
 //
 Puzzles.nanro = function(){ };
 Puzzles.nanro.prototype = {

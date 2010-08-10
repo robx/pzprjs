@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.3.2
+// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.3.1
 //
 Puzzles.kusabi = function(){ };
 Puzzles.kusabi.prototype = {

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.3.2
+// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.3.1
 //
 Puzzles.tateyoko = function(){ };
 Puzzles.tateyoko.prototype = {

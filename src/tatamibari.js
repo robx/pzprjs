@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.3.2
+// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.3.1
 //
 Puzzles.tatamibari = function(){ };
 Puzzles.tatamibari.prototype = {

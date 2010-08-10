@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 数コロ部屋版 sukororoom.js v3.3.2
+// パズル固有スクリプト部 数コロ部屋版 sukororoom.js v3.3.1
 //
 Puzzles.sukororoom = function(){ };
 Puzzles.sukororoom.prototype = {

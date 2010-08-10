@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 数コロ版 sukoro.js v3.3.2
+// パズル固有スクリプト部 数コロ版 sukoro.js v3.3.1
 //
 Puzzles.sukoro = function(){ };
 Puzzles.sukoro.prototype = {

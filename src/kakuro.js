@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックロ版 kakuro.js v3.3.2
+// パズル固有スクリプト部 カックロ版 kakuro.js v3.3.1
 //
 Puzzles.kakuro = function(){ };
 Puzzles.kakuro.prototype = {

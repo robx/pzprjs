@@ -140,7 +140,7 @@ Puzzles.fillomino.prototype = {
 		kc.isX = false;
 		kc.isZ = false;
 
-		kp.generate(0, true, true, '');
+		kp.generate(0, true, true);
 		kp.kpinput = function(ca){ kc.key_inputqnum(ca);};
 	},
 

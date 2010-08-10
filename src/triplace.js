@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 トリプレイス版 triplace.js v3.3.2
+// パズル固有スクリプト部 トリプレイス版 triplace.js v3.3.1
 //
 Puzzles.triplace = function(){ };
 Puzzles.triplace.prototype = {

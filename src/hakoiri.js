@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.3.2
+// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.3.1
 //
 Puzzles.hakoiri = function(){ };
 Puzzles.hakoiri.prototype = {

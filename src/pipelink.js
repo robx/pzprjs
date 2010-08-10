@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.3.2
+// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.3.1
 //
 Puzzles.pipelink = function(){ };
 Puzzles.pipelink.prototype = {
@@ -125,7 +125,7 @@ Puzzles.pipelink.prototype = {
 				this.inputcol('num','knum.','1','○');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
+			kp.generate(kp.ORIGINAL, true, false);
 			kp.kpinput = function(ca){ kc.key_inputLineParts(ca);};
 		}
 	},

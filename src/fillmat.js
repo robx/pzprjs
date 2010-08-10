@@ -81,7 +81,7 @@ Puzzles.fillmat.prototype = {
 				this.inputcol('num','knum.','-','?');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
+			kp.generate(kp.ORIGINAL, true, false);
 		}
 
 		bd.maxnum = 4;

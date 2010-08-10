@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 数独版 sudoku.js v3.3.2
+// パズル固有スクリプト部 数独版 sudoku.js v3.3.1
 //
 Puzzles.sudoku = function(){ };
 Puzzles.sudoku.prototype = {
