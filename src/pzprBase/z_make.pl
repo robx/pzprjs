@@ -44,6 +44,7 @@ sub output_pzprBase{
 		'KeyInput.js',
 		'Encode.js',
 		'Filesys.js',
+		'DataBase.js',
 		'Answer.js',
 		'Undo.js',
 		'Menu.js',

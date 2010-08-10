@@ -1,6 +1,6 @@
 // pzplBase.js テスト用
 
-var pzprversion="v3.3.1pre";
+var pzprversion="v3.3.2pre";
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Camp.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/global.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Board.js\"></script>");
@@ -9,6 +9,7 @@ document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/MouseInput
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/KeyInput.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Encode.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Filesys.js\"></script>");
+document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/DataBase.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Answer.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Undo.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Menu.js\"></script>");
