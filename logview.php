@@ -2,7 +2,7 @@
 <HTML>
 <HEAD>
 <META CHARSET="utf-8">
-<META NAME="robots" CONTENTS="nofollow">
+<META NAME="robots" CONTENT="nofollow">
 <TITLE>ぱずぷれログ閲覧所</TITLE>
 <script type="text/javascript">
 
