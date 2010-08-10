@@ -11,6 +11,7 @@
 	/* 管理領域 */
 	div#menuboard{ width:380pt; margin:auto; margin-bottom:8pt; padding:0pt 0pt 8pt 0pt;
 				   text-align:left; font-size:1.0em; line-height:1.2; border:1px red solid;}
+	input[type="checkbox"] { width:16px; height:16px;}
 
 	/* メニュー領域 */
 	menu#menupanel{ display:block; font-size:0.9em; background-color:#efefef; margin:0pt; padding:2pt 4pt 2pt 4pt; margin:0pt;}

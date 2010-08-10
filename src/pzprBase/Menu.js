@@ -223,7 +223,7 @@ Menu.prototype = {
 		ap('sep_disp0',  'disp');
 
 		au('size','disp',2,[0,1,2,3,4], '表示サイズ','Cell Size');
-		au('text','disp',(!k.mobile?0:1),[0,1,2], 'テキストのサイズ','Text Size');
+		au('text','disp',(!k.mobile?0:2),[0,1,2,3], 'テキストのサイズ','Text Size');
 		ap('sep_disp1',  'disp');
 
 		if(!!k.irowake){
@@ -248,7 +248,8 @@ Menu.prototype = {
 		aa('cap_textmode','text','テキストのサイズ','Text Size');
 		ai('text_0', 'text', '通常',         'Normal');
 		ai('text_1', 'text', '大きい',       'Big');
-		ai('text_2', 'text', 'とても大きい', 'Ex Big');
+		ai('text_2', 'text', 'かなり大きい', 'Ex Big');
+		ai('text_3', 'text', 'とても大きい', 'Ex Big 2');
 		this.textsize(pp.getVal('text'));
 
 		// *設定 ==============================================================
@@ -823,21 +824,25 @@ Menu.prototype = {
 			if(!rule.selectorText){ continue;}
 			switch(rule.selectorText.toLowerCase()){
 			case 'div#menuboard':
-				rule.style.fontSize = ['1.0em','1.6em','2.0em'][num];
-				rule.style.lineHeight = ['1.2','1.1','1.1'][num];
+				rule.style.fontSize = ['1.0em','1.6em','2.0em','3.0em'][num];
+				rule.style.lineHeight = ['1.2','1.1','1.1','1.1'][num];
 				break;
 			case 'menu.floatmenu':
-				rule.style.fontSize = ['0.9em','1.5em','1.9em'][num];
+				rule.style.fontSize = ['0.9em','1.5em','1.9em','2.9em'][num];
 				break;
 			case 'div.popup':
-				rule.style.fontSize = ['0.9em','1.5em','1.9em'][num];
-				rule.style.lineHeight = ['1.6','1.2','1.1'][num];
+				rule.style.fontSize = ['0.9em','1.5em','1.9em','2.9em'][num];
+				rule.style.lineHeight = ['1.6','1.2','1.1','1.1'][num];
 				break;
 			case 'div#btnarea input[type="button"]':
-				rule.style.fontSize = ['1.0em','1.6em','2.0em'][num];
+				rule.style.fontSize = ['1.0em','1.6em','2.0em','3.0em'][num];
 				break;
 			case 'form input':
-				rule.style.fontSize = ['1.0em','1.2em','1.4em'][num];
+				rule.style.fontSize = ['1.0em','1.2em','1.4em','1.6em'][num];
+				break;
+			case 'input[type="checkbox"]':
+				rule.style.width  = ['','24px','32px','50px'][num];
+				rule.style.height = ['','24px','32px','50px'][num];
 				break;
 			}
 		}
