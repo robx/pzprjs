@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.3.1
+// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.3.2
 //
 Puzzles.kusabi = function(){ };
 Puzzles.kusabi.prototype = {
@@ -76,10 +76,10 @@ Puzzles.kusabi.prototype = {
 				this.insertrow();
 				this.inputcol('num','knum.','-','○');
 				this.inputcol('num','knum_',' ',' ');
-				this.inputcol('empty','knumx','','');
+				this.inputcol('empty','','','');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
+			kp.generate(kp.ORIGINAL, true, false);
 			kp.kpinput = function(ca){
 				kc.key_inputqnum(ca);
 			};

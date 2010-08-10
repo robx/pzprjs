@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックロ版 kakuro.js v3.3.1
+// パズル固有スクリプト部 カックロ版 kakuro.js v3.3.2
 //
 Puzzles.kakuro = function(){ };
 Puzzles.kakuro.prototype = {
@@ -86,25 +86,7 @@ Puzzles.kakuro.prototype = {
 			else if(k.playmode){ this.key_inputqnum(ca);}
 		};
 		if(k.EDITOR){
-			kp.kpgenerate = function(mode){
-				if(mode===3){ this.gentable10(3,0); return;}
-				this.inputcol('image','knumq','q',[0,0]);
-				this.inputcol('num','knum_',' ',' ');
-				this.inputcol('num','knum1','1','1');
-				this.inputcol('num','knum2','2','2');
-				this.insertrow();
-				this.inputcol('num','knum3','3','3');
-				this.inputcol('num','knum4','4','4');
-				this.inputcol('num','knum5','5','5');
-				this.inputcol('num','knum6','6','6');
-				this.insertrow();
-				this.inputcol('num','knum7','7','7');
-				this.inputcol('num','knum8','8','8');
-				this.inputcol('num','knum9','9','9');
-				this.inputcol('num','knum0','0','0');
-				this.insertrow();
-			};
-			kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
+			kp.generate(51, true, true);
 			kp.imgCR = [1,1];
 			kp.kpinput = function(ca){
 				if(k.editmode){ kc.inputnumber51(ca,{2:45,4:45});}

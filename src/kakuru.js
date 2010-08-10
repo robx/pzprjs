@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックル版 kakuru.js v3.3.1
+// パズル固有スクリプト部 カックル版 kakuru.js v3.3.2
 //
 Puzzles.kakuru = function(){ };
 Puzzles.kakuru.prototype = {
@@ -98,8 +98,8 @@ Puzzles.kakuru.prototype = {
 				if(mode==1){
 					this.inputcol('num','knumq1','q1','■');
 					this.inputcol('num','knumq2','q2','□');
-					this.inputcol('empty','knumx','','');
-					this.inputcol('empty','knumy','','');
+					this.inputcol('empty','','','');
+					this.inputcol('empty','','','');
 					this.insertrow();
 				}
 				this.inputcol('num','knum1','1','1');
@@ -118,7 +118,7 @@ Puzzles.kakuru.prototype = {
 				this.inputcol('num','knum.',' ',' ');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
+			kp.generate(kp.ORIGINAL, true, true);
 			kp.kpinput = function(ca){
 				kc.key_inputqnum_kakuru(ca);
 			};

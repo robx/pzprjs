@@ -1,4 +1,4 @@
-// KeyInput.js v3.3.1
+// KeyInput.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -351,6 +351,7 @@ KeyPopup = function(){
 	this.haspanel = {1:false, 3:false};	// 有効かどうか
 	this.element = null;				// キーポップアップのエレメント
 
+	this.prefix;
 	this.tdcolor = "black";
 	this.imgCR = [1,1];		// img表示用画像の横×縦のサイズ
 
@@ -401,7 +402,7 @@ KeyPopup.prototype = {
 	// kp.gentable10() キーポップアップの0～9を入力できるテーブルを作成する
 	// kp.gentable4()  キーポップアップの0～4を入力できるテーブルを作成する
 	//---------------------------------------------------------------------------
-	generate : function(type, enablemake, enableplay, func){
+	generate : function(type, enablemake, enableplay){
 		if(!this.element){
 			var rect = ee('divques').getRect();
 			this.element = ee('keypopup').el;
@@ -411,12 +412,13 @@ KeyPopup.prototype = {
 			ee('barkeypopup').el.ondblclick = function(){ pp.setVal('keypopup',false)};
 		}
 
-		if(enablemake && k.EDITOR){ this.gentable(1, type, func);}
-		if(enableplay)            { this.gentable(3, type, func);}
+		if(enablemake && k.EDITOR){ this.gentable(1, type);}
+		if(enableplay)            { this.gentable(3, type);}
 	},
 
-	gentable : function(mode, type, func){
+	gentable : function(mode, type){
 		this.haspanel[mode] = true;
+		this.prefix = ['kp',mode,'_'].join('');
 
 		var basediv = ee('panelbase'+mode).el;
 		basediv.innerHTML = '';
@@ -429,12 +431,14 @@ KeyPopup.prototype = {
 		table.appendChild(this.tbodytmp);
 
 		this.trtmp = null;
-		if(func)							  { func.apply(kp, [mode]);}
-		else if(type==0 || type==3)			  { this.gentable10(mode,type);}
-		else if(type==1 || type==2 || type==4){ this.gentable4 (mode,type);}
+		if(type===this.ORIGINAL){ this.kpgenerate(mode);}
+		else if(type===0)       { this.gentable10(mode);}
+		else if(type===51)      { this.gentable51(mode);}
+		else                    { this.gentable4 (mode,type);}
 	},
+	kpgenerate : function(mode){ }, // オーバーライド用
 
-	gentable10 : function(mode, type){
+	gentable10 : function(mode){
 		this.inputcol('num','knum0','0','0');
 		this.inputcol('num','knum1','1','1');
 		this.inputcol('num','knum2','2','2');
@@ -448,22 +452,39 @@ KeyPopup.prototype = {
 		this.inputcol('num','knum8','8','8');
 		this.inputcol('num','knum9','9','9');
 		this.inputcol('num','knum_',' ',' ');
-		if     (type==0){ (mode==1)?this.inputcol('num','knum.','-','?'):this.inputcol('empty','knum.','','');}
-		else if(type==3){ this.inputcol('num','knum.','-','□');}
+		if(mode==1){ this.inputcol('num','knum.','-','?');}else{ this.inputcol('empty','','','');}
 		this.insertrow();
 	},
-	gentable4 : function(mode, type, tbody){
+	gentable4 : function(mode, type){
 		this.inputcol('num','knum0','0','0');
 		this.inputcol('num','knum1','1','1');
 		this.inputcol('num','knum2','2','2');
 		this.inputcol('num','knum3','3','3');
 		this.insertrow();
 		this.inputcol('num','knum4','4','4');
-		this.inputcol('empty','knumx','','');
+		this.inputcol('empty','','','');
 		this.inputcol('num','knum_',' ',' ');
-		if     (type==1){ (mode==1)?this.inputcol('num','knum.','-','?'):this.inputcol('empty','knum.','','');}
-		else if(type==2){ this.inputcol('num','knum.', '-', '■');}
-		else if(type==4){ this.inputcol('num','knum.', '-', '○');}
+		if     (type==1){ this.inputcol('num','knum.','-','?');}
+		else if(type==2){ this.inputcol('num','knum.','-','■');}
+		else if(type==4){ this.inputcol('num','knum.','-','○');}
+		this.insertrow();
+	},
+	gentable51 : function(mode){
+		if(mode===3){ this.gentable10(mode); return;}
+		this.inputcol('image','knumq','q',[0,0]);
+		this.inputcol('num','knum_',' ',' ');
+		this.inputcol('num','knum1','1','1');
+		this.inputcol('num','knum2','2','2');
+		this.insertrow();
+		this.inputcol('num','knum3','3','3');
+		this.inputcol('num','knum4','4','4');
+		this.inputcol('num','knum5','5','5');
+		this.inputcol('num','knum6','6','6');
+		this.insertrow();
+		this.inputcol('num','knum7','7','7');
+		this.inputcol('num','knum8','8','8');
+		this.inputcol('num','knum9','9','9');
+		this.inputcol('num','knum0','0','0');
 		this.insertrow();
 	},
 
@@ -474,22 +495,22 @@ KeyPopup.prototype = {
 	inputcol : function(type, id, ca, disp){
 		if(!this.trtmp){ this.trtmp = _doc.createElement('tr');}
 		var _td = null;
-		if(type==='num'){
-			_td = ee.createEL(this.EL_KPNUM, id);
+		if(type==='empty'){
+			_td = ee.createEL(this.EL_KPEMPTY, '');
+		}
+		else if(type==='num'){
+			_td = ee.createEL(this.EL_KPNUM, this.prefix+id);
 			_td.style.color = this.tdcolor;
 			_td.innerHTML   = disp;
 			_td.onclick     = ee.ebinder(this, this.inputnumber, [ca]);
 		}
-		else if(type==='empty'){
-			_td = ee.createEL(this.EL_KPEMPTY, '');
-		}
 		else if(type==='image'){
-			var _img = ee.createEL(this.EL_KPIMG_IMG, ""+id+"_i");
+			var _img = ee.createEL(this.EL_KPIMG_IMG, this.prefix+id+"_i");
 			var _div = ee.createEL(this.EL_KPIMG_DIV, '');
 			_div.appendChild(_img);
 
 			_td = ee.createEL(this.EL_KPIMG, id);
-			_td.onclick   = ee.ebinder(this, this.inputnumber, [ca]);
+			_td.onclick = ee.ebinder(this, this.inputnumber, [ca]);
 			_td.appendChild(_div);
 
 			this.imgs.push({'el':_img, 'x':disp[0], 'y':disp[1]});

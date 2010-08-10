@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.3.1
+// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.3.2
 //
 Puzzles.hakoiri = function(){ };
 Puzzles.hakoiri.prototype = {
@@ -102,31 +102,19 @@ Puzzles.hakoiri.prototype = {
 		};
 
 		kp.kpgenerate = function(mode){
-			if(mode==1){
-				this.inputcol('num','knum1','1','○');
-				this.inputcol('num','knum2','2','△');
-				this.inputcol('num','knum3','3','□');
-				this.insertrow();
-				this.inputcol('num','knum4','4','?');
-				this.inputcol('num','knum_',' ',' ');
-				this.inputcol('empty','knumx','','');
-				this.insertrow();
-			}
-			else{
-				this.tdcolor = pc.fontAnscolor;
-				this.inputcol('num','qnum1','1','○');
-				this.inputcol('num','qnum2','2','△');
-				this.inputcol('num','qnum3','3','□');
-				this.insertrow();
-				this.tdcolor = "rgb(255, 96, 191)";
-				this.inputcol('num','qnum4','4','・');
-				this.tdcolor = "black";
-				this.inputcol('num','qnum_',' ',' ');
-				this.inputcol('empty','qnumx','','');
-				this.insertrow();
-			}
+			if(mode==3){ this.tdcolor = pc.fontAnscolor;}
+			this.inputcol('num','knum1','1','○');
+			this.inputcol('num','knum2','2','△');
+			this.inputcol('num','knum3','3','□');
+			this.insertrow();
+			if(mode==3){ this.tdcolor = "rgb(255, 96, 191)";}
+			this.inputcol('num','knum4','4',(mode===1 ? '?' : '・'));
+			if(mode==3){ this.tdcolor = "black";}
+			this.inputcol('num','knum_',' ',' ');
+			this.inputcol('empty','','','');
+			this.insertrow();
 		};
-		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
+		kp.generate(kp.ORIGINAL, true, true);
 		kp.kpinput = function(ca){ kc.key_hakoiri(ca);};
 
 		bd.maxnum = 3;

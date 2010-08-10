@@ -72,8 +72,8 @@ Puzzles.view.prototype = {
 				this.inputcol('num','knumq','q','○');
 				this.inputcol('num','knumw','w','×');
 				this.tdcolor = "black";
-				this.inputcol('empty','knumx','','');
-				this.inputcol('empty','knumy','','');
+				this.inputcol('empty','','','');
+				this.inputcol('empty','','','');
 				this.insertrow();
 			}
 			this.inputcol('num','knum0','0','0');
@@ -89,10 +89,10 @@ Puzzles.view.prototype = {
 			this.inputcol('num','knum8','8','8');
 			this.inputcol('num','knum9','9','9');
 			this.inputcol('num','knum_',' ',' ');
-			((mode==1)?this.inputcol('num','knum.','-','?'):this.inputcol('empty','knumz','',''));
+			((mode==1)?this.inputcol('num','knum.','-','?'):this.inputcol('empty','','',''));
 			this.insertrow();
 		};
-		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
+		kp.generate(kp.ORIGINAL, true, true);
 		kp.kpinput = function(ca){
 			if(kc.key_view(ca)){ return;}
 			kc.key_inputqnum(ca);
