@@ -139,7 +139,7 @@ Puzzles.tawa.prototype = {
 		};
 
 		if(k.EDITOR){
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
+			kp.generate(kp.ORIGINAL, true, false);
 			kp.kpinput = function(ca){
 				kc.key_inputqnum(ca);
 			};

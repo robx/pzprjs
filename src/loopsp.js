@@ -154,7 +154,7 @@ Puzzles.loopsp.prototype = {
 				this.inputcol('num','knums','s','┛');
 				this.inputcol('num','knumd','d','┓');
 				this.inputcol('num','knumf','f','┏');
-				this.inputcol('empty','knumx','','');
+				this.inputcol('empty','','','');
 				this.insertrow();
 				this.inputcol('num','knum1','1','1');
 				this.inputcol('num','knum2','2','2');
@@ -169,7 +169,7 @@ Puzzles.loopsp.prototype = {
 				this.inputcol('num','knum0','0','0');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
+			kp.generate(kp.ORIGINAL, true, false);
 			kp.kpinput = function(ca){ kc.key_inputLineParts(ca);};
 		}
 	},

@@ -227,7 +227,7 @@ Puzzles.slalom.prototype = {
 				this.inputcol('num','knum_',' ',' ');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
+			kp.generate(kp.ORIGINAL, true, false);
 			kp.imgCR = [4,1];
 			kp.kpinput = function(ca){
 				kc.key_inputqnum_slalom(ca);

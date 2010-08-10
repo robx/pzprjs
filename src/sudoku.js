@@ -86,18 +86,12 @@ Puzzles.sudoku.prototype = {
 			this.inputcol('num','knum8','8','8');
 			this.insertrow();
 			this.inputcol('num','knum9','9','9');
-			if(mode==1){
-				this.inputcol('num','knum.','-','?');
-				this.inputcol('num','knum_',' ',' ');
-			}
-			else{
-				this.inputcol('empty','knumx','','');
-				this.inputcol('num','knum_',' ',' ');
-			}
+			((mode==1)?this.inputcol('num','knum.','-','?'):this.inputcol('empty','','',''));
+			this.inputcol('num','knum_',' ',' ');
 			this.inputcol('num','knum0','0','0');
 			this.insertrow();
 		};
-		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
+		kp.generate(kp.ORIGINAL, true, true);
 		kp.kpinput = function(ca){
 			kc.key_inputqnum(ca);
 		};

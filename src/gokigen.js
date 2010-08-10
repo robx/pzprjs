@@ -109,7 +109,7 @@ Puzzles.gokigen.prototype = {
 		kc.isZ = false;
 
 		if(k.EDITOR){
-			kp.generate(4, true, false, '');
+			kp.generate(4, true, false);
 			kp.kpinput = function(ca){
 				kc.key_inputcross(ca);
 			};

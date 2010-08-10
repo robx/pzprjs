@@ -64,7 +64,7 @@ Puzzles.factors.prototype = {
 			this.key_inputqnum(ca);
 		};
 
-		kp.generate(0, true, true, '');
+		kp.generate(0, true, true);
 		kp.kpinput = function(ca){ kc.key_inputqnum(ca,Math.max(k.qcols,k.qrows));};
 
 		bd.nummaxfunc = function(cc){ return k.editmode?999999:Math.max(k.qcols,k.qrows);};

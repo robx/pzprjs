@@ -120,12 +120,12 @@ Puzzles.pipelink.prototype = {
 				this.inputcol('num','knumf','f','┏');
 				this.insertrow();
 				this.inputcol('num','knum_','-','?');
-				this.inputcol('empty','knumx','','');
-				this.inputcol('empty','knumy','','');
+				this.inputcol('empty','','','');
+				this.inputcol('empty','','','');
 				this.inputcol('num','knum.','1','○');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
+			kp.generate(kp.ORIGINAL, true, false);
 			kp.kpinput = function(ca){ kc.key_inputLineParts(ca);};
 		}
 	},

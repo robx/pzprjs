@@ -64,7 +64,7 @@ Puzzles.nuribou.prototype = {
 		};
 
 		if(k.EDITOR){
-			kp.generate(0, true, false, '');
+			kp.generate(0, true, false);
 			kp.kpinput = function(ca){
 				kc.key_inputqnum(ca);
 			};

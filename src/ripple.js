@@ -66,7 +66,7 @@ Puzzles.ripple.prototype = {
 			this.key_inputqnum(ca);
 		};
 
-		kp.generate(0, true, true, '');
+		kp.generate(0, true, true);
 		kp.kpinput = function(ca){ kc.key_inputqnum(ca);};
 
 		area.resetArea();

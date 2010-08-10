@@ -145,8 +145,8 @@ Puzzles.tateyoko.prototype = {
 			kp.kpgenerate = function(mode){
 				this.inputcol('num','knumq1','q1','■');
 				this.inputcol('num','knumq2','q2','□');
-				this.inputcol('empty','knumx','','');
-				this.inputcol('empty','knumy','','');
+				this.inputcol('num','knum_','-','?');
+				this.inputcol('num','knum.',' ',' ');
 				this.insertrow();
 				this.inputcol('num','knum1','1','1');
 				this.inputcol('num','knum2','2','2');
@@ -160,11 +160,11 @@ Puzzles.tateyoko.prototype = {
 				this.insertrow();
 				this.inputcol('num','knum9','9','9');
 				this.inputcol('num','knum0','0','0');
-				this.inputcol('num','knum_','-','?');
-				this.inputcol('num','knum.',' ',' ');
+				this.inputcol('empty','','','');
+				this.inputcol('empty','','','');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
+			kp.generate(kp.ORIGINAL, true, false);
 			kp.kpinput = function(ca){
 				kc.key_inputqnum_tateyoko(ca);
 			};

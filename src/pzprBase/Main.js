@@ -286,6 +286,7 @@ PBase.prototype = {
 
 		// mainのサイズ変更
 		ee('main').el.style.width = ''+(mwidth|0)+'px';
+		if(k.mobile){ ee('menuboard').el.style.width = '90%';}
 
 		// 盤面のセルID:0が描画される位置の設定
 		var x0, y0; x0 = y0 = (k.cwidth*k.bdmargin)|0;

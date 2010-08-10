@@ -90,10 +90,10 @@ Puzzles.tatamibari.prototype = {
 				this.insertrow();
 				this.inputcol('num','knumr','r',' ');
 				this.inputcol('num','knum.','-','?');
-				this.inputcol('empty','knumx','','');
+				this.inputcol('empty','','','');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
+			kp.generate(kp.ORIGINAL, true, false);
 			kp.kpinput = function(ca){
 				kc.key_inputMarks(ca);
 			};

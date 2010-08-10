@@ -2,10 +2,6 @@
 
 	BODY{ background:url(./bg/index.gif); color:black; line-height:120%; text-align:center; margin:0pt; padding:0pt;}
 
-	/* 左上のピンクのやつ */
-	p#translation_p  { position:absolute; width:40%; margin:0pt; margin-left:8pt; text-align:left;}
-	span#translation { position:absolute; color:green; background-color:#dfdfdf; font-size:10pt; cursor:pointer;}
-
 	/* メインの白背景領域 */
 	div#main{ width:80%; background-color:white; text-align:center;
 			  margin:auto; margin-top:8pt; padding-bottom:6pt; border:2pt green solid;}
@@ -13,29 +9,28 @@
 	h2#title{ text-align:center;margin:16pt 0pt 24pt 0pt;}
 
 	/* 管理領域 */
-	div#menuboard{ width:380pt; margin:auto; margin-bottom:8pt; padding:0pt 0pt 8pt 0pt; text-align:left; border:1px red solid;}
+	div#menuboard{ width:380pt; margin:auto; margin-bottom:8pt; padding:0pt 0pt 8pt 0pt;
+				   text-align:left; font-size:1.0em; line-height:1.2; border:1px red solid;}
+	input[type="checkbox"] { width:16px; height:16px;}
 
 	/* メニュー領域 */
-	menu#menupanel{ display:block; font-size:11pt; background-color:#efefef; margin:0pt; padding:2pt 4pt 2pt 4pt; margin:0pt;}
+	menu#menupanel{ display:block; font-size:0.9em; background-color:#efefef; margin:0pt; padding:2pt 4pt 2pt 4pt; margin:0pt;}
 	/* メニュー項目 */
-	li.menu    { display:inline; margin-right:4pt; color:blue; text-decoration:underline; cursor:pointer;}
-	li.menusel { display:inline; margin-right:4pt; color:maroon; text-decoration:underline; font-weight:bold;
-				 background-color:#efefef; cursor:pointer;}
-	li.menunull{ display:inline; margin-right:4pt; color:silver; cursor:pointer;}
+	li.menu, li.menusel{ display:inline; color:blue; margin-right:4pt; cursor:pointer; text-decoration:underline;}
+	li.menusel { color:maroon; font-weight:bold; background-color:#efefef;}
+	/* li.menunull{ display:inline; margin-right:4pt; color:silver; cursor:pointer;} */
 
 	/* フロートメニュー */
 	menu.floatmenu{ visibility:visible; display:none; margin:0pt; padding:2pt; position:absolute;
-					list-style-type:none; text-align:left; font-size:11pt; background-color:blue; z-index:101;}
+					list-style-type:none; text-align:left; font-size:0.9em; line-height:1.33; background-color:blue; z-index:101;}
 	/* フロートメニュー - サブメニュー項目 */
-	li.smenu     { display:block; text-align:left; background-color:white;   color:black;
-				   margin:0pt; padding:1pt 8pt 0pt 4pt; cursor:pointer;}
-	li.smenusel  { display:block; text-align:left; background-color:#ffe8e8; color:black; text-decoration:underline;
-				   margin:0pt; padding:1pt 8pt 0pt 4pt; cursor:pointer;}
-	li.smenunull { display:block; text-align:left; background-color:#dfdfdf; color:gray;
-				   margin:0pt; padding:1pt 8pt 0pt 4pt; cursor:default;}
+	menu.floatmenu li { display:block; margin:0pt; padding:1pt 8pt 0pt 4pt; text-align:left; color:black; cursor:default;}
+	li.smenu     { background-color:white;   cursor:pointer;}
+	li.smenusel  { background-color:#ffe8e8; cursor:pointer; text-decoration:underline;}
+	li.smenunull { background-color:#dfdfdf; color:gray;}
 
-	li.smenulabel{ display:inline; text-align:left; color:white; margin:0pt; padding:1pt 8pt 0pt 4pt; cursor:default;}
-	li.smenusep  { display:block; height:3pt; text-align:left; margin:0pt; padding:0pt 8pt 0pt 4pt;}
+	li.smenulabel{ display:inline; color:white;}
+	li.smenusep  { height:3pt; padding-top:0pt;}
 
 	/* メニューより下の管理領域 */
 	div#expression{ margin:6pt 12pt 0pt 12pt;}
@@ -59,27 +54,27 @@
 	img.imgnum{ display:inline; position:absolute; cursor:default;}
 
 	div#btnarea{ position:relative;}
-	div#btnarea input[type="button"]{ height:18pt;}
+	div#btnarea input[type="button"]{ font-size:1.0em; line-height:1;}
 
 	/* ポップアップウィンドウ */
-	div.popup{ display:none; margin:0pt; text-align:left; font-size:11pt; line-height:160%;
-			   background-color:#efefff; border:1px black solid; position:absolute; left:0pt; top:0pt; z-index:100;}
+	div.popup{ display:none; position:absolute; left:0pt; top:0pt; margin:0pt; text-align:left;
+			   background-color:#efefff; border:1px black solid; font-size:0.9em; line-height:1.6; z-index:100;}
 
 	div.titlebar{ display:block; text-align:left; background-color:gray; color:white; cursor:pointer;
-					margin:0pt; padding-top:1pt; padding-bottom:1pt; padding-left:8pt; font-size:11pt;}
+					margin:0pt; padding:1pt 0pt 1pt 8pt; font-size:1.0em;}
 
 	form{ margin:2pt 8pt 4pt 4pt; padding:0pt;}
-	form input[type="button"]{ height:16pt;}
+	form input{ font-size:1.0em; line-height:1;}
 
-	div#credit3_1{ line-height:110%; margin:4pt 0pt 2pt 4pt;}
+	div#credit3_1{ line-height:1.1; margin:4pt 0pt 2pt 4pt;}
 
 	/* キーポップアップ用 */
-	div#keypopup{ display:none; margin:0pt; text-align:left;
-				  background-color:silver; border:1px black solid; position:absolute; left:0pt; top:0pt; z-index:100;}
+	div#keypopup { background-color:silver; line-height:1;}
 	div.panelbase{ margin:1pt;}
 
-	td.kpnum { width:32px; height:32px; font-size:24px; text-align:center; vertical-align:middle; background-color:white; cursor:default;}
-	td.kpimgcell { width:32px; height:32px; text-align:left; vertical-align:top; background-color:white; cursor:default;}
+	div.panelbase td { width:32px; height:32px; background-color:white; cursor:pointer;}
+	td.kpnum     { text-align:center; vertical-align:middle; font-size:24px;}
+	td.kpimgcell { text-align:left; vertical-align:top;}
 	div.kpimgdiv { position:absolute; display:inline;}
 	img.kpimg    { position:absolute; overflow:hidden;}
 

@@ -99,7 +99,7 @@ Puzzles.bonsan.prototype = {
 				this.inputcol('num','knum9','9','9');
 				this.insertrow();
 			};
-			kp.generate(kp.ORIGINAL, true, false, kp.kpgenerate);
+			kp.generate(kp.ORIGINAL, true, false);
 			kp.kpinput = function(ca){
 				kc.key_inputqnum(ca);
 			};

@@ -43,7 +43,7 @@ sub fileopen{
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
 <HEAD>
-<META NAME="robots" CONTENTS="noindex,nofollow">
+<META NAME="robots" CONTENT="noindex,nofollow">
 <script type="text/javascript">
 if(parent.base){ parent.menu.ex.fileonload(\"$str\");}
 </script>

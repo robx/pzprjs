@@ -65,7 +65,24 @@ Puzzles.tasquare.prototype = {
 		};
 
 		if(k.EDITOR){
-			kp.generate(3, true, false, '');
+			kp.kpgenerate = function(mode){
+				this.inputcol('num','knum0','0','0');
+				this.inputcol('num','knum1','1','1');
+				this.inputcol('num','knum2','2','2');
+				this.inputcol('num','knum3','3','3');
+				this.insertrow();
+				this.inputcol('num','knum4','4','4');
+				this.inputcol('num','knum5','5','5');
+				this.inputcol('num','knum6','6','6');
+				this.inputcol('num','knum7','7','7');
+				this.insertrow();
+				this.inputcol('num','knum8','8','8');
+				this.inputcol('num','knum9','9','9');
+				this.inputcol('num','knum_',' ',' ');
+				this.inputcol('num','knum.','-','□');
+				this.insertrow();
+			};
+			kp.generate(kp.ORIGINAL, true, false);
 			kp.kpinput = function(ca){
 				kc.key_inputqnum(ca);
 			};

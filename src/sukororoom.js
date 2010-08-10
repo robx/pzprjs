@@ -84,8 +84,8 @@ Puzzles.sukororoom.prototype = {
 			if(mode==1){
 				this.inputcol('num','knum.','-','?');
 				this.inputcol('num','knum_',' ',' ');
-				this.inputcol('empty','knumx','','');
-				this.inputcol('empty','knumy','','');
+				this.inputcol('empty','','','');
+				this.inputcol('empty','','','');
 				this.insertrow();
 			}
 			else{
@@ -94,11 +94,11 @@ Puzzles.sukororoom.prototype = {
 				this.inputcol('num','knumw','w','×');
 				this.tdcolor = "black";
 				this.inputcol('num','knum_',' ',' ');
-				this.inputcol('empty','knumx','','');
+				this.inputcol('empty','','','');
 				this.insertrow();
 			}
 		};
-		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
+		kp.generate(kp.ORIGINAL, true, true);
 		kp.kpinput = function(ca){
 			if(kc.key_sukoro(ca)){ return;}
 			kc.key_inputqnum(ca);

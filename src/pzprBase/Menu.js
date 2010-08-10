@@ -37,8 +37,8 @@ Menu = function(){
 	var select_funcs = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout)};
 	this.EL_SMENU    = ee.addTemplate('','li', {className:'smenu'}, null, smenu_funcs);
 	this.EL_SPARENT  = ee.addTemplate('','li', {className:'smenu'}, null, select_funcs);
-	this.EL_SELECT   = ee.addTemplate('','li', {className:'smenu'}, {fontWeight :'900', fontSize:'10pt'}, select_funcs);
-	this.EL_CHECK    = ee.addTemplate('','li', {className:'smenu'}, {paddingLeft:'6pt', fontSize:'10pt'}, smenu_funcs);
+	this.EL_SELECT   = ee.addTemplate('','li', {className:'smenu'}, {fontWeight :'900', fontSize:'0.9em'}, select_funcs);
+	this.EL_CHECK    = ee.addTemplate('','li', {className:'smenu'}, {paddingLeft:'6pt', fontSize:'0.9em'}, smenu_funcs);
 	this.EL_LABEL    = ee.addTemplate('','li', {className:'smenulabel'}, null, null);
 	this.EL_CHILD    = this.EL_CHECK;
 	this.EL_SEPARATE = (
@@ -223,6 +223,7 @@ Menu.prototype = {
 		ap('sep_disp0',  'disp');
 
 		au('size','disp',2,[0,1,2,3,4], '表示サイズ','Cell Size');
+		au('text','disp',(!k.mobile?0:2),[0,1,2,3], 'テキストのサイズ','Text Size');
 		ap('sep_disp1',  'disp');
 
 		if(!!k.irowake){
@@ -242,6 +243,14 @@ Menu.prototype = {
 		ai('size_2', 'size', 'サイズ 標準', 'Normal');
 		ai('size_3', 'size', 'サイズ 大',   'Large');
 		ai('size_4', 'size', 'サイズ 特大', 'Ex Large');
+
+		// *表示 - テキストのサイズ -------------------------------------------
+		aa('cap_textmode','text','テキストのサイズ','Text Size');
+		ai('text_0', 'text', '通常',         'Normal');
+		ai('text_1', 'text', '大きい',       'Big');
+		ai('text_2', 'text', 'かなり大きい', 'Ex Big');
+		ai('text_3', 'text', 'とても大きい', 'Ex Big 2');
+		this.textsize(pp.getVal('text'));
 
 		// *設定 ==============================================================
 		am('setting', "設定", "Setting");
@@ -299,7 +308,7 @@ Menu.prototype = {
 	// menu.addRedBlockRBToFlags()「ナナメ黒マスのつながりをチェック」サブメニュー登録用共通関数
 	//---------------------------------------------------------------------------
 	addUseToFlags : function(){
-		pp.addSelect('use','setting',1,[1,2], '操作方法', 'Input Type');
+		pp.addSelect('use','setting',(!k.mobile?1:2),[1,2], '操作方法', 'Input Type');
 		pp.setLabel ('use', '操作方法', 'Input Type');
 
 		pp.addChild('use_1','use','左右ボタン','LR Button');
@@ -367,9 +376,9 @@ Menu.prototype = {
 			ee('ms_urloutput').el.className = 'smenunull';
 			ee('ms_adjust')   .el.className = 'smenunull';
 		}
-		ee('ms_jumpv3')  .el.style.fontSize = '10pt'; ee('ms_jumpv3')  .el.style.paddingLeft = '8pt';
-		ee('ms_jumptop') .el.style.fontSize = '10pt'; ee('ms_jumptop') .el.style.paddingLeft = '8pt';
-		ee('ms_jumpblog').el.style.fontSize = '10pt'; ee('ms_jumpblog').el.style.paddingLeft = '8pt';
+		ee('ms_jumpv3')  .el.style.fontSize = '0.9em'; ee('ms_jumpv3')  .el.style.paddingLeft = '8pt';
+		ee('ms_jumptop') .el.style.fontSize = '0.9em'; ee('ms_jumptop') .el.style.paddingLeft = '8pt';
+		ee('ms_jumpblog').el.style.fontSize = '0.9em'; ee('ms_jumpblog').el.style.paddingLeft = '8pt';
 	},
 
 	//---------------------------------------------------------------------------
@@ -552,10 +561,6 @@ Menu.prototype = {
 			var el = ee('checkpanel').el.removeChild(ee('div_irowake').el);
 			ee('checkpanel').el.appendChild(el);
 		}
-
-		// 左上に出てくるやつ
-		ee('translation').unselectable().el.onclick = ee.binder(this, this.translate);
-		this.addLabels(ee('translation').el, "English", "日本語");
 
 		// 説明文の場所
 		ee('expression').el.innerHTML = base.expression.ja;
@@ -809,15 +814,48 @@ Menu.prototype = {
 //--------------------------------------------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------------
-	// menu.translate()  htmlの言語を変える
+	// menu.textsize()   テキストのサイズを設定する
+	//--------------------------------------------------------------------------------
+	textsize : function(num){
+		var sheet = _doc.styleSheets[0];
+		var rules = (!!sheet.cssRules ? sheet.cssRules : sheet.rules);
+		for(var i=0,len=rules.length;i<len;i++){
+			var rule = rules[i];
+			if(!rule.selectorText){ continue;}
+			switch(rule.selectorText.toLowerCase()){
+			case 'div#menuboard':
+				rule.style.fontSize = ['1.0em','1.6em','2.0em','3.0em'][num];
+				rule.style.lineHeight = ['1.2','1.1','1.1','1.1'][num];
+				break;
+			case 'menu.floatmenu':
+				rule.style.fontSize = ['0.9em','1.5em','1.9em','2.9em'][num];
+				break;
+			case 'div.popup':
+				rule.style.fontSize = ['0.9em','1.5em','1.9em','2.9em'][num];
+				rule.style.lineHeight = ['1.6','1.2','1.1','1.1'][num];
+				break;
+			case 'div#btnarea input[type="button"]':
+				rule.style.fontSize = ['1.0em','1.6em','2.0em','3.0em'][num];
+				break;
+			case 'form input':
+				rule.style.fontSize = ['1.0em','1.2em','1.4em','1.6em'][num];
+				break;
+			case 'input[type="checkbox"]':
+				rule.style.width  = ['','24px','32px','50px'][num];
+				rule.style.height = ['','24px','32px','50px'][num];
+				break;
+			}
+		}
+	},
+
+//--------------------------------------------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
 	// menu.setLang()    言語を設定する
 	// menu.selectStr()  現在の言語に応じた文字列を返す
 	// menu.alertStr()   現在の言語に応じたダイアログを表示する
 	// menu.confirmStr() 現在の言語に応じた選択ダイアログを表示し、結果を返す
 	//--------------------------------------------------------------------------------
-	translate : function(){
-		this.setLang(this.language==='ja' ? 'en' : 'ja');
-	},
 	setLang : function(ln){
 		this.language = ln;
 		_doc.title = base.gettitle();
@@ -989,6 +1027,7 @@ Properties.prototype = {
 		manarea   : function(){ menu.ex.dispman();},
 		poptest   : function(){ debug.disppoptest();},
 		mode      : function(num){ menu.ex.modechange(num);},
+		text      : function(num){ menu.textsize(num); base.resize_canvas();},
 		size      : function(num){ base.resize_canvas();},
 		repaint   : function(num){ base.resize_canvas();},
 		adjsize   : function(num){ base.resize_canvas();},
