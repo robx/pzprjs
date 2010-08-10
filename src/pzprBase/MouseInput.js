@@ -70,7 +70,7 @@ MouseEvent.prototype = {
 	e_mouseup   : function(e){
 		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
-			this.setposition(e);
+			if(!k.mobile){ this.setposition(e);}
 			this.mouseup();		// 各パズルのルーチンへ
 			this.mousereset();
 		}
