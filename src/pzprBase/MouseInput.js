@@ -232,7 +232,10 @@ MouseEvent.prototype = {
 			else if(this.btn.Right){ this.inputData=((bd.QsC(cc)!==1)? 2 : 0); }
 		}
 		else if(pp.getVal('use')==2){
-			if(this.btn.Left){
+			if(k.NumberIsWhite && bd.QnC(cc)!==-1){
+				this.inputData=((bd.QsC(cc)!==1)? 2 : 0);
+			}
+			else if(this.btn.Left){
 				if     (bd.isBlack(cc)){ this.inputData=2;}
 				else if(bd.QsC(cc)===1){ this.inputData=0;}
 				else{ this.inputData=1;}
