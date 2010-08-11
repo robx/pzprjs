@@ -81,7 +81,10 @@ Puzzles.icelom.prototype = {
 			}
 		};
 		mv.mouseup = function(){
-			if(this.notInputted()){ this.inputqnum();}
+			if(this.notInputted()){
+				if(k.editmode){ this.inputqnum();}
+				else if(k.playmode && this.btn.Left){ this.inputpeke();}
+			}
 		};
 		mv.mousemove = function(){
 			if(k.editmode){

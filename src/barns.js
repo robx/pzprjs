@@ -64,7 +64,11 @@ Puzzles.barns.prototype = {
 				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(){ };
+		mv.mouseup = function(){
+			if(k.playmode && this.btn.Left && this.notInputted()){
+				this.inputpeke();
+			}
+		};
 		mv.mousemove = function(){
 			if(k.editmode){
 				if(this.btn.Left) this.inputborder();

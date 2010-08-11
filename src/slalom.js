@@ -68,6 +68,9 @@ Puzzles.slalom.prototype = {
 				if(this.inputData==10){ this.inputStartid_up(); }
 				else if(this.notInputted()){ this.inputQues_slalom();}
 			}
+			else if(k.playmode && this.btn.Left && this.notInputted()){
+				this.inputpeke();
+			}
 		};
 		mv.mousemove = function(){
 			if(k.editmode){ this.inputGate();}

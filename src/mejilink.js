@@ -71,7 +71,12 @@ Puzzles.mejilink.prototype = {
 				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(){ };
+		mv.mouseup = function(){
+			if(k.playmode && this.btn.Left && this.notInputted()){
+				this.prevPos.reset();
+				this.inputpeke();
+			}
+		};
 		mv.mousemove = function(){
 			if(k.editmode) this.inputborder();
 			else if(k.playmode){

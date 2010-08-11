@@ -67,7 +67,11 @@ Puzzles.mashu.prototype = {
 				else if(this.btn.Right) this.inputpeke();
 			}
 		};
-		mv.mouseup = function(){ };
+		mv.mouseup = function(){
+			if(k.playmode && this.btn.Left && this.notInputted()){
+				this.inputpeke();
+			}
+		};
 		mv.mousemove = function(){
 			if(k.playmode){
 				if(this.btn.Left) this.inputLine();

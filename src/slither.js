@@ -84,7 +84,11 @@ Puzzles.slither.prototype = {
 				else{ this.inputBGcolor();}
 			}
 		};
-		mv.mouseup = function(){ };
+		mv.mouseup = function(){
+			if(k.playmode && this.btn.Left && this.notInputted()){
+				this.inputpeke();
+			}
+		};
 		mv.mousemove = function(){
 			if(k.playmode){
 				if(!pp.getVal('bgcolor') || this.inputData<10){
