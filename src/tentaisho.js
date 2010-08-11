@@ -77,8 +77,9 @@ Puzzles.tentaisho.prototype = {
 				else if(this.btn.Right) this.inputBGcolor1();
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputborder_tentaisho();
-				else if(this.btn.Right) this.inputQsubLine();
+				if(this.btn.Left){ this.checkBorderMode();}
+				if(this.bordermode){ this.inputborder_tentaisho();}
+				else{ this.inputQsubLine();}
 			}
 		};
 		mv.mouseup = function(){
@@ -89,8 +90,8 @@ Puzzles.tentaisho.prototype = {
 				if(this.btn.Right) this.inputBGcolor1();
 			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputborder_tentaisho();
-				else if(this.btn.Right) this.inputQsubLine();
+				if(this.bordermode){ this.inputborder_tentaisho();}
+				else{ this.inputQsubLine();}
 			}
 		};
 
