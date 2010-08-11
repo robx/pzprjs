@@ -40,7 +40,7 @@ Puzzles.shakashaka.prototype = {
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 	},
 	menufix : function(){
-		pp.addSelect('use','setting',1,[1,2,3], '三角形の入力方法', 'Input Triangle Type');
+		pp.addSelect('use','setting',(!k.mobile?1:2),[1,2,3], '三角形の入力方法', 'Input Triangle Type');
 		pp.setLabel ('use', '三角形の入力方法', 'Input Triangle Type');
 
 		pp.addChild('use_1', 'use', 'クリックした位置', 'Position of Cell');
@@ -57,24 +57,23 @@ Puzzles.shakashaka.prototype = {
 			if(k.editmode){ this.inputqnum();}
 		};
 		mv.mouseup = function(){
-			if(k.playmode && pp.getVal('use')===2 && this.notInputted()){
+			if(k.playmode && pp.getVal('use')==2 && this.notInputted()){
 				this.inputTriangle(2);
 			}
 		};
 		mv.mousemove = function(){
-			if(k.playmode && pp.getVal('use')===2 && this.mouseCell!==null){
+			if(k.playmode && pp.getVal('use')==2 && this.mouseCell!==null){
 				this.inputTriangle(1);
 			}
 		};
 		mv.inputTriangle = function(use2step){
-			var cc;
-			if(pp.getVal('use')!==2 || use2step==0){
+			var use = pp.getVal('use'), cc;
+			if(use!=2 || use2step==0){
 				cc = this.cellid();
 				if(cc===null || bd.isNum(cc)){ this.mousereset(); return;}
 			}
 
-			var use = pp.getVal('use');
-			if(use===1){
+			if(use==1){
 				if(this.btn.Left){
 					var dx = this.inputPoint.x - bd.cell[cc].px;
 					var dy = this.inputPoint.y - bd.cell[cc].py;
@@ -95,7 +94,7 @@ Puzzles.shakashaka.prototype = {
 					bd.sQsC(cc, (bd.QsC(cc)===0?1:0));
 				}
 			}
-			else if(use===2){
+			else if(use==2){
 				if(use2step==0){
 					// 最初はどこのセルをクリックしたか取得するだけ
 					this.firstPoint.set(this.inputPoint);
@@ -128,7 +127,7 @@ Puzzles.shakashaka.prototype = {
 					}
 				}
 			}
-			else if(use===3){
+			else if(use==3){
 				if(this.btn.Left){
 					if     (bd.QsC(cc)===1){ bd.sQaC(cc,0); bd.sQsC(cc,0);}
 					else if(bd.QaC(cc)===0){ bd.sQaC(cc,2); bd.sQsC(cc,0);}

@@ -53,14 +53,11 @@ Puzzles.fillomino.prototype = {
 		mv.mousedown = function(){
 			if(k.playmode){
 				if(this.btn.Left){
-					// マウス入力時にmv.dragnumberするかの判別を行う
-					var pos = this.borderpos(0.25);
-					this.borderinput = (bd.cnum(pos.x,pos.y)===null);
-
-					if(this.borderinput){ this.inputborder_fillomino();}
-					else{ this.dragnumber_fillomino();}
+					this.checkBorderMode();
+					if(this.bordermode){ this.inputborderans();}
+					else               { this.dragnumber_fillomino();}
 				}
-				else if(this.btn.Right) this.inputQsubLine();
+				else if(this.btn.Right){ this.inputQsubLine();}
 			}
 		};
 		mv.mouseup = function(){
@@ -72,32 +69,40 @@ Puzzles.fillomino.prototype = {
 		mv.mousemove = function(){
 			if(k.playmode){
 				if(this.btn.Left){
-					if(this.borderinput){ this.inputborder_fillomino();}
-					else{ this.dragnumber_fillomino();}
+					if(this.bordermode){ this.inputborderans();}
+					else               { this.dragnumber_fillomino();}
 				}
-				else if(this.btn.Right) this.inputQsubLine();
+				else if(this.btn.Right){ this.inputQsubLine();}
 			}
-		};
-		mv.inputborder_fillomino = function(){
-			var pos = this.borderpos(0.25);
-			if(this.prevPos.equals(pos)){ return;}
-
-			var id = this.getborderID(this.prevPos, pos);
-			if(id!==null){
-				if(this.inputData===null){ this.inputData=(!bd.isBorder(id)?1:0);}
-				bd.sQaB(id, this.inputData);
-				pc.paintBorder(id);
-			}
-			this.prevPos = pos;
 		};
 		mv.dragnumber_fillomino = function(){
 			var cc = this.cellid();
 			if(cc===null||cc===this.mouseCell){ return;}
 
-			if(this.inputData===null){ this.inputData = bd.getNum(cc);}
-			bd.sAnC(cc, this.inputData);
+			if(this.inputData===null){
+				this.inputData = bd.getNum(cc);
+				if(this.inputData===-1){ this.inputData=-2;}
+				this.mouseCell = cc;
+				return;
+			}
+			else if(this.inputData===-2){
+				this.inputData=(bd.getNum(cc)===-1?-3:-1);
+			}
+
+			if(this.inputData>=-1){
+				bd.sAnC(cc, this.inputData);
+				pc.paintCell(cc);
+			}
+			else if(this.inputData<=-3){
+				var id = bd.bnum(((bd.cell[cc].bx+bd.cell[this.mouseCell].bx)>>1),
+								 ((bd.cell[cc].by+bd.cell[this.mouseCell].by)>>1));
+				if(this.inputData===-3){ this.inputData=(bd.QsB(id)===1?-5:-4);}
+				if(id!==null){
+					bd.sQsB(id, (this.inputData===-4?1:0));
+					pc.paintBorder(id);
+				}
+			}
 			this.mouseCell = cc;
-			pc.paintCell(cc);
 		};
 
 		// キーボード入力系

@@ -52,9 +52,13 @@ Puzzles.toichika.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if     (k.editmode){ this.inputdirec_toichika(true);}
+			if(k.editmode){
+				this.checkBorderMode();
+				if(this.bordermode){ this.inputborder();}
+				else               { this.inputdirec_toichika();}
+			}
 			else if(k.playmode){
-				if(this.btn.Left){ this.inputdirec_toichika(true);}
+				if(this.btn.Left){ this.inputdirec_toichika();}
 				else if(this.btn.Right){ this.inputDot();}
 			}
 		};
@@ -62,25 +66,18 @@ Puzzles.toichika.prototype = {
 			if(this.notInputted()){ this.inputqnum();}
 		};
 		mv.mousemove = function(){
-			if     (k.editmode){ this.inputdirec_toichika(false);}
+			if(k.editmode){
+				if(this.bordermode){ this.inputborder();}
+				else               { this.inputdirec_toichika();}
+			}
 			else if(k.playmode){
-				if     (this.btn.Left){ this.inputdirec_toichika(false);}
+				if     (this.btn.Left){ this.inputdirec_toichika();}
 				else if(this.btn.Right){ this.inputDot();}
 			}
 		};
 
-		mv.bordermode = false;
-		mv.inputdirec_toichika = function(ismousedown){
-			var pos;
-			if(k.editmode){
-				if(ismousedown){
-					pos = this.borderpos(0.15);
-					this.bordermode = (!((pos.x&1)&&(pos.y&1)));
-				}
-				if(this.bordermode){ this.inputborder(); return;}
-			}
-
-			pos = this.borderpos(0);
+		mv.inputdirec_toichika = function(){
+			var pos = this.borderpos(0);
 			if(this.prevPos.equals(pos) && this.inputData===1){ return;}
 
 			var dir = k.NONE, cc = bd.cnum(this.prevPos.x, this.prevPos.y);

@@ -16,6 +16,10 @@ var MouseEvent = function(){
 	this.firstPoint = new Point(null, null);	// mousedownされた時のpixel位置
 	this.prevPos    = new Address(null, null);	// 前回のマウス入力イベントのborder座標
 	this.btn = {};		// 押されているボタン
+
+	this.bordermode;	// 境界線を入力中かどうか
+	this.ismousedown;	// mousedownイベントかどうか
+
 	this.mousereset();
 
 	this.enableInputHatena = k.isDispHatena;
@@ -38,6 +42,9 @@ MouseEvent.prototype = {
 		this.prevPos.reset();
 		this.btn = { Left:false, Middle:false, Right:false};
 
+		this.bordermode = false;
+		this.ismousedown = false;
+
 		if(this.previdlist!==(void 0)){ this.previdlist = [];}
 	},
 
@@ -56,6 +63,7 @@ MouseEvent.prototype = {
 				if(ans.errDisp){ bd.errclear();}
 				um.newOperation(true);
 				this.setposition(e);
+				this.ismousedown = true;
 				this.mousedown();	// 各パズルのルーチンへ
 			}
 			else if(this.btn.Middle){ //中ボタン
@@ -71,6 +79,7 @@ MouseEvent.prototype = {
 		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
 			if(!k.mobile){ this.setposition(e);}
+			this.ismousedown = false;
 			this.mouseup();		// 各パズルのルーチンへ
 			this.mousereset();
 		}
@@ -85,6 +94,7 @@ MouseEvent.prototype = {
 		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
 			this.setposition(e);
+			this.ismousedown = false;
 			this.mousemove();	// 各パズルのルーチンへ
 		}
 		ee.stopPropagation(e);
@@ -152,6 +162,7 @@ MouseEvent.prototype = {
 	// mv.excellid()  入力された位置がどのEXCELLのIDに該当するかを返す
 	// mv.borderpos() 入力された位置が仮想セル上でどこの(X*2,Y*2)に該当するかを返す。
 	//                外枠の左上が(0,0)で右下は(k.qcols*2,k.qrows*2)。rcは0～0.5のパラメータ。
+	// mv.checkBorderMode() 境界線入力モードかどうか判定する
 	//---------------------------------------------------------------------------
 	cellid : function(){
 		var pos = this.borderpos(0);
@@ -203,6 +214,11 @@ MouseEvent.prototype = {
 		return null;
 	},
 
+	checkBorderMode : function(){
+		var pos = this.borderpos(0.25);
+		this.bordermode = (!((pos.x&1)&&(pos.y&1)));
+	},
+
 	//---------------------------------------------------------------------------
 	// mv.inputcell() Cellのqans(回答データ)に0/1/2のいずれかを入力する。
 	// mv.decIC()     0/1/2どれを入力すべきかを決定する。
@@ -232,7 +248,10 @@ MouseEvent.prototype = {
 			else if(this.btn.Right){ this.inputData=((bd.QsC(cc)!==1)? 2 : 0); }
 		}
 		else if(pp.getVal('use')==2){
-			if(this.btn.Left){
+			if(k.NumberIsWhite && bd.QnC(cc)!==-1){
+				this.inputData=((bd.QsC(cc)!==1)? 2 : 0);
+			}
+			else if(this.btn.Left){
 				if     (bd.isBlack(cc)){ this.inputData=2;}
 				else if(bd.QsC(cc)===1){ this.inputData=0;}
 				else{ this.inputData=1;}
@@ -485,14 +504,18 @@ MouseEvent.prototype = {
 		pc.paintCross(cc);
 	},
 	//---------------------------------------------------------------------------
-	// mv.inputborder()    盤面境界線の問題データを入力する
-	// mv.inputborderans() 盤面境界線の回答データを入力する
-	// mv.inputBD()        上記二つの共通処理関数
-	// mv.getborderID()    入力対象となる境界線のIDを取得する
+	// mv.inputborder()     盤面境界線の問題データを入力する
+	// mv.inputborderans()  盤面境界線の回答データを入力する
+	// mv.inputBD()         上記二つの共通処理関数
+	// mv.getborderID()     入力対象となる境界線のIDを取得する
 	//---------------------------------------------------------------------------
 	inputborder : function(){ this.inputBD(0);},
-	inputborderans : function(){ this.inputBD(1);},
-	inputBD : function(flag){
+	inputborderans : function(){
+		if(this.ismousedown){ this.checkBorderMode();}
+		if(this.bordermode){ this.inputBD(1);}
+		else               { this.inputLine1(1);}
+	},
+	inputBD : function(flag){ // 0:問題の境界線 1:回答の境界線 2:borderAsLine
 		var pos = this.borderpos(0.35);
 		if(this.prevPos.equals(pos)){ return;}
 
@@ -530,7 +553,7 @@ MouseEvent.prototype = {
 		else                 { this.inputBD(2);}
 	},
 	inputQsubLine : function(){ this.inputLine1(1);},
-	inputLine1 : function(flag){
+	inputLine1 : function(flag){ // 0:line 1:borderQsub
 		var pos = this.borderpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 
