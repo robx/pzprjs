@@ -62,8 +62,13 @@ Puzzles.firefly.prototype = {
 			}
 		};
 		mv.mouseup = function(){
-			if(k.editmode && this.notInputted()){
-				if(bd.cnum(this.prevPos.x,this.prevPos.y)===this.cellid()){ this.inputqnum();}
+			if(this.notInputted()){
+				if(k.editmode && bd.cnum(this.prevPos.x,this.prevPos.y)===this.cellid()){
+					this.inputqnum();
+				}
+				else if(k.playmode && this.btn.Left){
+					this.inputpeke();
+				}
 			}
 		};
 		mv.mousemove = function(){

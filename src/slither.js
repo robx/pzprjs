@@ -86,6 +86,7 @@ Puzzles.slither.prototype = {
 		};
 		mv.mouseup = function(){
 			if(k.playmode && this.btn.Left && this.notInputted()){
+				this.prevPos.reset();
 				this.inputpeke();
 			}
 		};
