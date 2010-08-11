@@ -332,11 +332,16 @@ _extend( _ElementManager, {
 	},
 
 	//----------------------------------------------------------------------
+	// ee.addEvent()        addEventListner(など)を呼び出す
 	// ee.stopPropagation() イベントの起こったエレメントより上にイベントを
 	//                      伝播させないようにする
 	// ee.preventDefault()  イベントの起こったエレメントで、デフォルトの
 	//                      イベントが起こらないようにする
 	//----------------------------------------------------------------------
+	addEvent : function(el, event, func, capt){
+		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
+		else                     { el.attachEvent('on'+event, func);}
+	},
 	stopPropagation : function(e){
 		if(!!e.stopPropagation){ e.stopPropagation();}
 		else{ e.cancelBubble = true;}
