@@ -5,7 +5,7 @@
  * written in JavaScript.
  * 
  * @author  dk22
- * @version v3.3.1p1
+ * @version v3.3.1p2
  * @date    2010-08-11
  * 
  * This script is licensed under the MIT license. See below,
@@ -13,7 +13,7 @@
  * 
  */
 
-var pzprversion="v3.3.1p1";
+var pzprversion="v3.3.1p2";
  
 (function(){
 
@@ -1485,11 +1485,16 @@ _extend( _ElementManager, {
 	},
 
 	//----------------------------------------------------------------------
+	// ee.addEvent()        addEventListner(など)を呼び出す
 	// ee.stopPropagation() イベントの起こったエレメントより上にイベントを
 	//                      伝播させないようにする
 	// ee.preventDefault()  イベントの起こったエレメントで、デフォルトの
 	//                      イベントが起こらないようにする
 	//----------------------------------------------------------------------
+	addEvent : function(el, event, func, capt){
+		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
+		else                     { el.attachEvent('on'+event, func);}
+	},
 	stopPropagation : function(e){
 		if(!!e.stopPropagation){ e.stopPropagation();}
 		else{ e.cancelBubble = true;}
@@ -4328,6 +4333,10 @@ var MouseEvent = function(){
 	this.firstPoint = new Point(null, null);	// mousedownされた時のpixel位置
 	this.prevPos    = new Address(null, null);	// 前回のマウス入力イベントのborder座標
 	this.btn = {};		// 押されているボタン
+
+	this.bordermode;	// 境界線を入力中かどうか
+	this.ismousedown;	// mousedownイベントかどうか
+
 	this.mousereset();
 
 	this.enableInputHatena = k.isDispHatena;
@@ -4350,6 +4359,9 @@ MouseEvent.prototype = {
 		this.prevPos.reset();
 		this.btn = { Left:false, Middle:false, Right:false};
 
+		this.bordermode = false;
+		this.ismousedown = false;
+
 		if(this.previdlist!==(void 0)){ this.previdlist = [];}
 	},
 
@@ -4368,6 +4380,7 @@ MouseEvent.prototype = {
 				if(ans.errDisp){ bd.errclear();}
 				um.newOperation(true);
 				this.setposition(e);
+				this.ismousedown = true;
 				this.mousedown();	// 各パズルのルーチンへ
 			}
 			else if(this.btn.Middle){ //中ボタン
@@ -4383,6 +4396,7 @@ MouseEvent.prototype = {
 		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
 			if(!k.mobile){ this.setposition(e);}
+			this.ismousedown = false;
 			this.mouseup();		// 各パズルのルーチンへ
 			this.mousereset();
 		}
@@ -4397,6 +4411,7 @@ MouseEvent.prototype = {
 		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
 			this.setposition(e);
+			this.ismousedown = false;
 			this.mousemove();	// 各パズルのルーチンへ
 		}
 		ee.stopPropagation(e);
@@ -4464,6 +4479,7 @@ MouseEvent.prototype = {
 	// mv.excellid()  入力された位置がどのEXCELLのIDに該当するかを返す
 	// mv.borderpos() 入力された位置が仮想セル上でどこの(X*2,Y*2)に該当するかを返す。
 	//                外枠の左上が(0,0)で右下は(k.qcols*2,k.qrows*2)。rcは0～0.5のパラメータ。
+	// mv.checkBorderMode() 境界線入力モードかどうか判定する
 	//---------------------------------------------------------------------------
 	cellid : function(){
 		var pos = this.borderpos(0);
@@ -4515,6 +4531,11 @@ MouseEvent.prototype = {
 		return null;
 	},
 
+	checkBorderMode : function(){
+		var pos = this.borderpos(0.25);
+		this.bordermode = (!((pos.x&1)&&(pos.y&1)));
+	},
+
 	//---------------------------------------------------------------------------
 	// mv.inputcell() Cellのqans(回答データ)に0/1/2のいずれかを入力する。
 	// mv.decIC()     0/1/2どれを入力すべきかを決定する。
@@ -4544,7 +4565,10 @@ MouseEvent.prototype = {
 			else if(this.btn.Right){ this.inputData=((bd.QsC(cc)!==1)? 2 : 0); }
 		}
 		else if(pp.getVal('use')==2){
-			if(this.btn.Left){
+			if(k.NumberIsWhite && bd.QnC(cc)!==-1){
+				this.inputData=((bd.QsC(cc)!==1)? 2 : 0);
+			}
+			else if(this.btn.Left){
 				if     (bd.isBlack(cc)){ this.inputData=2;}
 				else if(bd.QsC(cc)===1){ this.inputData=0;}
 				else{ this.inputData=1;}
@@ -4797,14 +4821,18 @@ MouseEvent.prototype = {
 		pc.paintCross(cc);
 	},
 	//---------------------------------------------------------------------------
-	// mv.inputborder()    盤面境界線の問題データを入力する
-	// mv.inputborderans() 盤面境界線の回答データを入力する
-	// mv.inputBD()        上記二つの共通処理関数
-	// mv.getborderID()    入力対象となる境界線のIDを取得する
+	// mv.inputborder()     盤面境界線の問題データを入力する
+	// mv.inputborderans()  盤面境界線の回答データを入力する
+	// mv.inputBD()         上記二つの共通処理関数
+	// mv.getborderID()     入力対象となる境界線のIDを取得する
 	//---------------------------------------------------------------------------
 	inputborder : function(){ this.inputBD(0);},
-	inputborderans : function(){ this.inputBD(1);},
-	inputBD : function(flag){
+	inputborderans : function(){
+		if(this.ismousedown){ this.checkBorderMode();}
+		if(this.bordermode){ this.inputBD(1);}
+		else               { this.inputLine1(1);}
+	},
+	inputBD : function(flag){ // 0:問題の境界線 1:回答の境界線 2:borderAsLine
 		var pos = this.borderpos(0.35);
 		if(this.prevPos.equals(pos)){ return;}
 
@@ -4842,7 +4870,7 @@ MouseEvent.prototype = {
 		else                 { this.inputBD(2);}
 	},
 	inputQsubLine : function(){ this.inputLine1(1);},
-	inputLine1 : function(flag){
+	inputLine1 : function(flag){ // 0:line 1:borderQsub
 		var pos = this.borderpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 
@@ -11131,14 +11159,8 @@ PBase.prototype = {
 			_doc.writeln("<script type=\"text/javascript\" src=\"src/gears_init.js\"></script>");
 		}
 
-		// onLoadとonResizeに動作を割り当てる
-		window.onload   = ee.ebinder(this, this.onload_func);
-		if(!k.os.iPhoneOS){
-			window.onresize = ee.ebinder(this, this.onresize_func);
-		}
-		else{
-			document.addEventListener("gestureend", ee.ebinder(this, this.onresize_func), false);
-		}
+		// onLoadに動作を割り当てる
+		window.onload = ee.ebinder(this, this.onload_func);
 	},
 
 	//---------------------------------------------------------------------------
@@ -11156,7 +11178,7 @@ PBase.prototype = {
 		var tim = setInterval(function(){
 			if(Camp.isready()){
 				clearInterval(tim);
-				self.onload_func2.apply(self);
+				self.onload_func2.call(self);
 			}
 		},10);
 	},
@@ -11172,9 +11194,9 @@ PBase.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// base.initObjects()   キャンバスの初期化
+	// base.initCanvas()    キャンバスの初期化
 	// base.initObjects()   各オブジェクトの生成などの処理
-	// base.doc_design()    onload_func()で呼ばれる。htmlなどの設定を行う
+	// base.doc_design()    initObjects()で呼ばれる。htmlなどの設定を行う
 	// base.checkUserLang() 言語環境をチェックして日本語でない場合英語表示にする
 	//---------------------------------------------------------------------------
 	initCanvas : function(){
@@ -11232,44 +11254,42 @@ PBase.prototype = {
 		}
 	},
 	checkUserLang : function(){
-		this.userlang = (navigator.browserLanguage ||
-						 navigator.language        ||
-						 navigator.userLanguage);
+		this.userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
 		if(this.userlang.substr(0,2)!=='ja'){ pp.setVal('language','en');}
 	},
 
 	//---------------------------------------------------------------------------
 	// base.setEvents()       マウス入力、キー入力のイベントの設定を行う
 	//---------------------------------------------------------------------------
-	setEvents : function(first){
+	setEvents : function(){
 		// マウス入力イベントの設定
 		var canvas = ee('divques').el;
 		if(!k.mobile){
-			canvas.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
-			canvas.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
-			canvas.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
+			ee.addEvent(canvas, "mousedown", ee.ebinder(mv, mv.e_mousedown));
+			ee.addEvent(canvas, "mousemove", ee.ebinder(mv, mv.e_mousemove));
+			ee.addEvent(canvas, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
 			canvas.oncontextmenu = function(){ return false;};
 
-			this.numparent.onmousedown   = ee.ebinder(mv, mv.e_mousedown);
-			this.numparent.onmousemove   = ee.ebinder(mv, mv.e_mousemove);
-			this.numparent.onmouseup     = ee.ebinder(mv, mv.e_mouseup  );
+			ee.addEvent(this.numparent, "mousedown", ee.ebinder(mv, mv.e_mousedown));
+			ee.addEvent(this.numparent, "mousemove", ee.ebinder(mv, mv.e_mousemove));
+			ee.addEvent(this.numparent, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
 			this.numparent.oncontextmenu = function(){ return false;};
 		}
 		// iPhoneOS用のタッチイベント設定
 		else{
-			canvas.addEventListener("touchstart", ee.ebinder(mv, mv.e_mousedown), false);
-			canvas.addEventListener("touchmove",  ee.ebinder(mv, mv.e_mousemove), false);
-			canvas.addEventListener("touchend",   ee.ebinder(mv, mv.e_mouseup),   false);
+			ee.addEvent(canvas, "touchstart", ee.ebinder(mv, mv.e_mousedown));
+			ee.addEvent(canvas, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
+			ee.addEvent(canvas, "touchend",   ee.ebinder(mv, mv.e_mouseup));
 
-			this.numparent.addEventListener("touchstart", ee.ebinder(mv, mv.e_mousedown), false);
-			this.numparent.addEventListener("touchmove",  ee.ebinder(mv, mv.e_mousemove), false);
-			this.numparent.addEventListener("touchend",   ee.ebinder(mv, mv.e_mouseup),   false);
+			ee.addEvent(this.numparent, "touchstart", ee.ebinder(mv, mv.e_mousedown));
+			ee.addEvent(this.numparent, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
+			ee.addEvent(this.numparent, "touchend",   ee.ebinder(mv, mv.e_mouseup));
 		}
 
 		// キー入力イベントの設定
-		_doc.onkeydown  = ee.ebinder(kc, kc.e_keydown);
-		_doc.onkeyup    = ee.ebinder(kc, kc.e_keyup);
-		_doc.onkeypress = ee.ebinder(kc, kc.e_keypress);
+		ee.addEvent(_doc, 'keydown',  ee.ebinder(kc, kc.e_keydown));
+		ee.addEvent(_doc, 'keyup',    ee.ebinder(kc, kc.e_keyup));
+		ee.addEvent(_doc, 'keypress', ee.ebinder(kc, kc.e_keypress));
 		// Silverlightのキー入力イベント設定
 		if(g.use.sl){
 			var sender = g.content.findName(g.canvasid);
@@ -11284,12 +11304,16 @@ PBase.prototype = {
 				e.preventDefault();
 				e.stopPropagation();
 			}
-			window.addEventListener('dragover', function(e){ e.preventDefault();}, true);
-			window.addEventListener('drop', DDhandler, true);
+			ee.addEvent(window, 'dragover', function(e){ e.preventDefault();}, true);
+			ee.addEvent(window, 'drop', DDhandler, true);
 		}
 
 		// onBlurにイベントを割り当てる
-		_doc.onblur = ee.ebinder(this, this.onblur_func);
+		ee.addEvent(_doc, 'blur', ee.ebinder(this, this.onblur_func));
+
+		// onresizeイベントを割り当てる
+		ee.addEvent(window, (!k.os.iPhoneOS ? 'resize' : 'orientationchange'),
+										ee.ebinder(this, this.onresize_func));
 	},
 
 	//---------------------------------------------------------------------------
@@ -11433,11 +11457,6 @@ PBase.prototype = {
 			if(!!Puzzles[contents.id]){
 				clearInterval(tim);
 				self.reload_func2.call(self, contents);
-				self.initProcess = false;
-
-				if(!!contents.callback){
-					contents.callback();
-				}
 			}
 		},10);
 	},
@@ -11470,6 +11489,10 @@ PBase.prototype = {
 
 		// onload後の初期化ルーチンへジャンプする
 		this.initObjects();
+
+		this.initProcess = false;
+
+		if(!!contents.callback){ contents.callback();}
 	},
 
 	//---------------------------------------------------------------------------
