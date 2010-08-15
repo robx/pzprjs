@@ -1,4 +1,4 @@
-// Main.js v3.3.1
+// Main.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -66,7 +66,7 @@ PBase.prototype = {
 	},
 	onload_func2 : function(){
 		this.initCanvas();
-		this.initObjects();
+		this.initObjects(true);
 		this.setEvents();	// イベントをくっつける
 
 		if(k.PLAYER){ this.accesslog();}	// アクセスログをとってみる
@@ -85,7 +85,7 @@ PBase.prototype = {
 		this.numparent = ee('numobj_parent').el;		// 数字表示用
 		g = ee('divques').unselectable().el.getContext("2d");
 	},
-	initObjects : function(){
+	initObjects : function(onload){
 		this.proto = 0;
 
 		puz = new Puzzles[k.puzzleid]();	// パズル固有オブジェクト
@@ -114,7 +114,7 @@ PBase.prototype = {
 		puz.answer_init();
 
 		// メニュー関係初期化
-		menu.menuinit();		// メニューの設定
+		menu.menuinit(onload);	// メニューの設定
 		this.doc_design();		// デザイン変更関連関数の呼び出し
 		this.checkUserLang();	// 言語のチェック
 
@@ -131,7 +131,6 @@ PBase.prototype = {
 		_doc.body.style.backgroundImage = "url(./bg/"+k.puzzleid+".gif)";
 		if(k.br.IE6){
 			ee('title2').el.style.marginTop = "24px";
-			ee('separator1').el.style.margin = '0pt';
 			ee('separator2').el.style.margin = '0pt';
 		}
 	},
@@ -370,7 +369,7 @@ PBase.prototype = {
 		if(!!enc.uri.rows){ k.qrows = enc.uri.rows;}
 
 		// onload後の初期化ルーチンへジャンプする
-		this.initObjects();
+		this.initObjects(false);
 
 		this.initProcess = false;
 

@@ -1,4 +1,4 @@
-// MenuExec.js v3.3.1
+// MenuExec.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -286,7 +286,7 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	dispman : function(e){
 		var idlist = ['expression','usepanel','checkpanel'];
-		var seplist = k.EDITOR ? ['separator1'] : ['separator1','separator2'];
+		var seplist = k.EDITOR ? [] : ['separator2'];
 
 		if(this.displaymanage){
 			for(var i=0;i<idlist.length;i++)        { ee(idlist[i])  .el.style.display = 'none';}

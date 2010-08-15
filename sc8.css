@@ -14,7 +14,7 @@
 	input[type="checkbox"] { width:16px; height:16px;}
 
 	/* メニュー領域 */
-	menu#menupanel{ display:block; font-size:0.9em; background-color:#efefef; margin:0pt; padding:2pt 4pt 2pt 4pt; margin:0pt;}
+	menu#menupanel{ display:block; font-size:0.9em; background-color:#efefef; margin:0pt 0pt 6pt 0pt; padding:2pt 4pt 2pt 4pt;}
 	/* メニュー項目 */
 	li.menu, li.menusel{ display:inline; color:blue; margin-right:4pt; cursor:pointer; text-decoration:underline;}
 	li.menusel { color:maroon; font-weight:bold; background-color:#efefef;}
