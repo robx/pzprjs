@@ -545,7 +545,7 @@ KeyPopup.prototype = {
 			obj.el.style.left   = "-"+(obj.x*bsize+1)+"px";
 		};
 
-		var cellsize = Math.max(k.cwidth, 120);
+		var cellsize = Math.min(k.cwidth, 120);
 		if(cellsize>=24){
 			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],   cellsize);}
 			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], (cellsize*0.90)|0);}
