@@ -44,7 +44,7 @@ MouseEvent.prototype = {
 		this.bordermode = false;
 		this.ismousedown = false;
 
-		if(this.previdlist!==(void 0)){ this.previdlist = [];}
+		if(this.previdlist!==(void 0)){ this.previdlist = new IDList();}
 	},
 
 	//---------------------------------------------------------------------------

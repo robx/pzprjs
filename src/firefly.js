@@ -151,11 +151,11 @@ Puzzles.firefly.prototype = {
 			else{ this.vhide([headers[0]+c, headers[1]+c]);}
 		};
 
-		line.repaintParts = function(idlist){
-			var clist = this.getClistFromIdlist(idlist);
+		pc.repaintParts = function(idlist){
+			var clist = line.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
-				pc.drawFirefly1(clist[i]);
-				pc.drawNumber1(clist[i]);
+				this.drawFirefly1(clist[i]);
+				this.drawNumber1(clist[i]);
 			}
 		};
 	},

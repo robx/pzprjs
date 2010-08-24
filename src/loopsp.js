@@ -208,12 +208,12 @@ Puzzles.loopsp.prototype = {
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
-		line.repaintParts = function(idlist){
-			var clist = this.getClistFromIdlist(idlist);
+		pc.repaintParts = function(idlist){
+			var clist = line.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
-				pc.drawLineParts1(clist[i]);
-				pc.drawCircle1AtNumber(clist[i]);
-				pc.drawNumber1(clist[i]);
+				this.drawLineParts1(clist[i]);
+				this.drawCircle1AtNumber(clist[i]);
+				this.drawNumber1(clist[i]);
 			}
 		};
 	},

@@ -79,27 +79,29 @@ Puzzles.shwolf.prototype = {
 			if(id!==null){
 				if(this.inputData===null){ this.inputData=(bd.isBorder(id)?0:1);}
 
-				var idlist = this.getidlist(id);
+				var d = this.getrange(id);
+				var idlist = new IDList(bd.borderinside(d.x1,d.y1,d.x2,d.y2));
 				for(var i=0;i<idlist.data.length;i++){
 					if     (this.inputData===1){ bd.setBorder(idlist.data[i]);}
 					else if(this.inputData===0){ bd.removeBorder(idlist.data[i]);}
-					pc.paintBorder(idlist.data[i]);
 				}
+
+				pc.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 			}
 			this.prevPos = pos;
 		};
-		mv.getidlist = function(id){
+		mv.getrange = function(id){
 			var bx=bd.border[id].bx, by=bd.border[id].by;
-			var bx1=bx, bx2=bx, by1=by, by2=by;
+			var d = {x1:bx, x2:bx, y1:by, y2:by};
 			if(bd.border[id].bx&1){
-				while(bx1>bd.minbx && bd.QnX(bd.xnum(bx1-1,by))!==1){ bx1-=2;}
-				while(bx2<bd.maxbx && bd.QnX(bd.xnum(bx2+1,by))!==1){ bx2+=2;}
+				while(d.x1>bd.minbx && bd.QnX(bd.xnum(d.x1-1,by))!==1){d.x1-=2;}
+				while(d.x2<bd.maxbx && bd.QnX(bd.xnum(d.x2+1,by))!==1){d.x2+=2;}
 			}
 			else if(bd.border[id].by&1){
-				while(by1>bd.minby && bd.QnX(bd.xnum(bx,by1-1))!==1){ by1-=2;}
-				while(by2<bd.maxby && bd.QnX(bd.xnum(bx,by2+1))!==1){ by2+=2;}
+				while(d.y1>bd.minby && bd.QnX(bd.xnum(bx,d.y1-1))!==1){d.y1-=2;}
+				while(d.y2<bd.maxby && bd.QnX(bd.xnum(bx,d.y2+1))!==1){d.y2+=2;}
 			}
-			return new IDList(bd.borderinside(bx1,by1,bx2,by2));
+			return d;
 		};
 		mv.inputqnumDirectly = true;
 

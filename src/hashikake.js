@@ -81,32 +81,36 @@ Puzzles.hashikake.prototype = {
 			var id = this.getnb(this.prevPos, pos);
 			if(id!==null){
 				var dir = this.getdir(this.prevPos, pos);
-				var idlist = this.getidlist(id);
+				var d = this.getrange(id);
+				var idlist = new IDList(bd.borderinside(d.x1,d.y1,d.x2,d.y2));
+
 				if(this.previdlist.isnull() || !this.previdlist.include(id)){ this.inputData=null;}
 				if(this.inputData===null){ this.inputData = [1,2,0][bd.LiB(id)];}
 				if(this.inputData>0 && (dir===k.UP||dir===k.LT)){ idlist.reverseData();} // 色分けの都合上の処理
 				for(var i=0;i<idlist.data.length;i++){
 					bd.sLiB(idlist.data[i], this.inputData);
 					bd.sQsB(idlist.data[i], 0);
-					pc.paintLine(idlist.data[i]);
 				}
 				this.previdlist = idlist;
+
+				pc.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 			}
 			this.prevPos = pos;
 		};
-		mv.previdlist = [];
-		mv.getidlist = function(id){
+		mv.previdlist = new IDList();
+
+		mv.getrange = function(id){
 			var bx=bd.border[id].bx, by=bd.border[id].by;
-			var bx1=bx, bx2=bx, by1=by, by2=by;
+			var d = {x1:bx, x2:bx, y1:by, y2:by};
 			if(bd.border[id].bx&1){
-				while(by1>bd.minby && bd.noNum(bd.cnum(bx,by1-1))){ by1-=2;}
-				while(by2<bd.maxby && bd.noNum(bd.cnum(bx,by2+1))){ by2+=2;}
+				while(d.y1>bd.minby && bd.noNum(bd.cnum(bx,d.y1-1))){d.y1-=2;}
+				while(d.y2<bd.maxby && bd.noNum(bd.cnum(bx,d.y2+1))){d.y2+=2;}
 			}
 			else if(bd.border[id].by&1){
-				while(bx1>bd.minbx && bd.noNum(bd.cnum(bx1-1,by))){ bx1-=2;}
-				while(bx2<bd.maxbx && bd.noNum(bd.cnum(bx2+1,by))){ bx2+=2;}
+				while(d.x1>bd.minbx && bd.noNum(bd.cnum(d.x1-1,by))){d.x1-=2;}
+				while(d.x2<bd.maxbx && bd.noNum(bd.cnum(d.x2+1,by))){d.x2+=2;}
 			}
-			return new IDList(bd.borderinside(bx1,by1,bx2,by2));
+			return d;
 		};
 
 		mv.inputpeke = function(){
@@ -119,13 +123,12 @@ Puzzles.hashikake.prototype = {
 			if(this.inputData===null){ this.inputData=(bd.QsB(id)!=2?2:0);}
 			bd.sQsB(id, this.inputData);
 
-			var idlist = this.getidlist(id);
-			for(var i=0;i<idlist.length;i++){
-				bd.sLiB(idlist[i], 0);
-				pc.paintBorder(idlist[i]);
-			}
-			if(idlist.length===0){ pc.paintBorder(id);}
+			var d = this.getrange(id);
+			var idlist = new IDList(bd.borderinside(d.x1,d.y1,d.x2,d.y2));
+			for(var i=0;i<idlist.length;i++){ bd.sLiB(idlist.data[i], 0);}
 			this.prevPos = pos;
+
+			pc.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 		},
 		mv.enableInputHatena = true;
 
@@ -159,6 +162,8 @@ Puzzles.hashikake.prototype = {
 		}
 
 		bd.maxnum = 8;
+
+		line.iscrossing = function(cc){ return bd.noNum(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -236,14 +241,13 @@ Puzzles.hashikake.prototype = {
 			else{ this.vhide([header+c]);}
 		};
 
-		line.repaintParts = function(idlist){
-			var clist = this.getClistFromIdlist(idlist);
+		pc.repaintParts = function(idlist){
+			var clist = line.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
-				pc.drawCircle1AtNumber(clist[i]);
-				pc.drawNumber1(clist[i]);
+				this.drawCircle1AtNumber(clist[i]);
+				this.drawNumber1(clist[i]);
 			}
 		};
-		line.iscrossing = function(cc){ return bd.noNum(cc);};
 	},
 
 	//---------------------------------------------------------

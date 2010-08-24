@@ -210,10 +210,10 @@ Puzzles.pipelink.prototype = {
 			this.paintAll();
 		};
 
-		line.repaintParts = function(idlist){
-			var clist = this.getClistFromIdlist(idlist);
+		pc.repaintParts = function(idlist){
+			var clist = line.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
-				pc.drawLineParts1(clist[i]);
+				this.drawLineParts1(clist[i]);
 			}
 		};
 	},

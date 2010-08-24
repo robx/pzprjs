@@ -311,10 +311,10 @@ Puzzles.icebarn.prototype = {
 			else if(bx===bd.maxbx){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px+0.7*this.cw, py-0.3*this.ch);}
 		};
 
-		line.repaintParts = function(idlist){
+		pc.repaintParts = function(idlist){
 			for(var i=0;i<idlist.length;i++){
 				if(bd.isArrow(idlist[i])){
-					pc.drawArrow1(idlist[i],true);
+					this.drawArrow1(idlist[i],true);
 				}
 			}
 		};

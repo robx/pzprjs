@@ -408,14 +408,14 @@ Puzzles.slalom.prototype = {
 			else{ this.hideEL(key);}
 		};
 
-		line.repaintParts = function(idlist){
-			var clist = this.getClistFromIdlist(idlist);
+		pc.repaintParts = function(idlist){
+			var clist = line.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(c!==bd.startid){ continue;}
 
 				var bx = bd.cell[c].bx, by = bd.cell[c].by;
-				pc.drawStartpos(bx,by,bx,by);
+				this.drawStartpos(bx,by,bx,by);
 
 				// startは一箇所だけなので、描画したら終了してよい
 				break;

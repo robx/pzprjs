@@ -779,6 +779,9 @@ Graphic.prototype = {
 
 	//---------------------------------------------------------------------------
 	// pc.drawLines()    回答の線をCanvasに書き込む
+	// pc.repaintLines() ひとつながりの線を再描画する
+	// pc.repaintParts() repaintLine()関数で、さらに上から描画しなおしたい処理を書く
+	//                   canvas描画時のみ呼ばれます(他は描画しなおす必要なし)
 	// pc.drawLine1()    回答の線をCanvasに書き込む(1カ所のみ)
 	// pc.setLineColor() 描画する線の色を設定する
 	// pc.drawPekes()    境界線上の×をCanvasに書き込む
@@ -790,6 +793,16 @@ Graphic.prototype = {
 		for(var i=0;i<idlist.length;i++){ this.drawLine1(idlist[i]);}
 		this.addlw = 0;
 	},
+	repaintLines : function(idlist, id){
+		this.vinc('line', 'crispEdges');
+
+		for(var i=0;i<idlist.length;i++){
+			if(id!==idlist[i]){ this.drawLine1(idlist[i]);}
+		}
+		if(g.use.canvas){ this.repaintParts(idlist);}
+	},
+	repaintParts : function(idlist){ }, // オーバーライド用
+
 	drawLine1 : function(id){
 		var vid = "b_line_"+id;
 		if(this.setLineColor(id)){

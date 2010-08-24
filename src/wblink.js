@@ -75,29 +75,33 @@ Puzzles.wblink.prototype = {
 			var id = this.getnb(this.prevPos, pos);
 			if(id!==null){
 				var dir = this.getdir(this.prevPos, pos);
-				var idlist = this.getidlist(id);
+				var d = this.getrange(id);
+				var idlist = new IDList(bd.borderinside(d.x1,d.y1,d.x2,d.y2));
+
 				if(this.inputData===null){ this.inputData=(bd.isLine(id)?0:1);}
 				for(var i=0;i<idlist.data.length;i++){
 					if(this.inputData==1){ bd.setLine(idlist.data[i]);}
 					else                 { bd.removeLine(idlist.data[i]);}
-					pc.paintLine(idlist.data[i]);
 				}
 				this.inputData=2;
+
+				pc.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 			}
 			this.prevPos = pos;
 		};
-		mv.getidlist = function(id){
+
+		mv.getrange = function(id){
 			var bx=bd.border[id].bx, by=bd.border[id].by;
-			var bx1=bx, bx2=bx, by1=by, by2=by;
+			var d = {x1:bx, x2:bx, y1:by, y2:by};
 			if(bd.border[id].bx&1){
-				while(by1>bd.minby && bd.noNum(bd.cnum(bx,by1-1))){ by1-=2;}
-				while(by2<bd.maxby && bd.noNum(bd.cnum(bx,by2+1))){ by2+=2;}
+				while(d.y1>bd.minby && bd.noNum(bd.cnum(bx,d.y1-1))){d.y1-=2;}
+				while(d.y2<bd.maxby && bd.noNum(bd.cnum(bx,d.y2+1))){d.y2+=2;}
 			}
 			else if(bd.border[id].by&1){
-				while(bx1>bd.minbx && bd.noNum(bd.cnum(bx1-1,by))){ bx1-=2;}
-				while(bx2<bd.maxbx && bd.noNum(bd.cnum(bx2+1,by))){ bx2+=2;}
+				while(d.x1>bd.minbx && bd.noNum(bd.cnum(d.x1-1,by))){d.x1-=2;}
+				while(d.x2<bd.maxbx && bd.noNum(bd.cnum(d.x2+1,by))){d.x2+=2;}
 			}
-			return new IDList(bd.borderinside(bx1,by1,bx2,by2));
+			return d;
 		};
 
 		mv.inputpeke = function(){
@@ -108,13 +112,12 @@ Puzzles.wblink.prototype = {
 			if(this.inputData===null){ this.inputData=(bd.QsB(id)!=2?2:0);}
 			bd.sQsB(id, this.inputData);
 
-			var idlist = this.getidlist(id);
-			for(var i=0;i<idlist.data.length;i++){
-				bd.sLiB(idlist.data[i], 0);
-				pc.paintBorder(idlist.data[i]);
-			}
-			if(idlist.isnull()){ pc.paintBorder(id);}
+			var d = this.getrange(id);
+			var idlist = new IDList(bd.borderinside(d.x1,d.y1,d.x2,d.y2));
+			for(var i=0;i<idlist.data.length;i++){ bd.sLiB(idlist.data[i], 0);}
 			this.prevPos = pos;
+
+			pc.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 		},
 
 		// キーボード入力系

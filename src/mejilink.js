@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 メジリンク版 mejilink.js v3.3.1
+// パズル固有スクリプト部 メジリンク版 mejilink.js v3.3.2
 //
 Puzzles.mejilink = function(){ };
 Puzzles.mejilink.prototype = {
@@ -149,10 +149,10 @@ Puzzles.mejilink.prototype = {
 			return false;
 		};
 
-		line.repaintParts = function(idlist){
-			var xlist = this.getXlistFromIdlist(idlist);
+		pc.repaintParts = function(idlist){
+			var xlist = line.getXlistFromIdlist(idlist);
 			for(var i=0;i<xlist.length;i++){
-				pc.drawBaseMark1(xlist[i]);
+				this.drawBaseMark1(xlist[i]);
 			}
 		};
 	},
