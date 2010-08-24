@@ -1,4 +1,4 @@
-// global.js v3.3.1
+// global.js v3.3.2
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -14,6 +14,48 @@ Point.prototype = {
 // Addressクラス
 Address = function(xx,yy){ this.x = xx; this.y = yy;};
 Address.prototype = Point.prototype;
+
+// IDListクラス
+IDList = function(list){
+	this.data = ((list instanceof Array) ? list : []);
+};
+IDList.prototype = {
+	push : function(val){
+		this.data.push(val);
+		return this;
+	},
+	reverseData : function(){
+		this.data = this.data.reverse();
+		return this;
+	},
+	unique : function(){
+		var newArray=[], newHash={};
+		for(var i=0,len=this.data.length;i<len;i++){
+			if(!newHash[this.data[i]]){
+				newArray.push(this.data[i]);
+				newHash[this.data[i]] = true;
+			}
+		}
+		this.data = newArray;
+		return this;
+	},
+
+	sublist : function(func){
+		var newList = new IDList();
+		for(var i=0,len=this.data.length;i<len;i++){
+			if(!!func(this.data[i])){ newList.data.push(this.data[i]);}
+		}
+		return newList;
+	},
+
+	isnull  : function(){ return (this.data.length===0);},
+	include : function(val){
+		for(var i=0,len=this.data.length;i<len;i++){
+			if(this.data[i]===val){ return true;}
+		}
+		return false;
+	}
+};
 
 // 各種パラメータの定義
 var k = {

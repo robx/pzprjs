@@ -1,4 +1,4 @@
-// Answer.js v3.3.1
+// Answer.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
@@ -457,7 +457,7 @@ AnsCheck.prototype = {
 	isDifferentNumberInClist : function(clist, numfunc){
 		var result = true, d = [], num = [], bottom = (k.dispzero?1:0);
 		for(var n=bottom,max=bd.nummaxfunc(clist[0]);n<=max;n++){ d[n]=0;}
-		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc.apply(bd,[clist[i]]);}
+		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc.call(bd,clist[i]);}
 
 		for(var i=0;i<clist.length;i++){ if(num[clist[i]]>=bottom){ d[num[clist[i]]]++;} }
 		for(var i=0;i<clist.length;i++){
@@ -474,14 +474,14 @@ AnsCheck.prototype = {
 		var result = true;
 		for(var by=1;by<=bd.maxby;by+=2){
 			var clist = bd.cellinside(bd.minbx+1,by,bd.maxbx-1,by);
-			if(!evalfunc.apply(this,[clist, numfunc])){
+			if(!evalfunc.call(this, clist, numfunc)){
 				if(this.inAutoCheck){ return false;}
 				result = false;
 			}
 		}
 		for(var bx=1;bx<=bd.maxbx;bx+=2){
 			var clist = bd.cellinside(bx,bd.minby+1,bx,bd.maxby-1);
-			if(!evalfunc.apply(this,[clist, numfunc])){
+			if(!evalfunc.call(this, clist, numfunc)){
 				if(this.inAutoCheck){ return false;}
 				result = false;
 			}
@@ -493,11 +493,11 @@ AnsCheck.prototype = {
 		for(var by=1;by<=bd.maxby;by+=2){
 			var bx=1;
 			while(bx<=bd.maxbx){
-				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc.apply(this,[bd.cnum(tx,by)])){ break;}}
+				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc.call(this,bd.cnum(tx,by))){ break;}}
 				var clist = bd.cellinside(bx,by,tx-2,by);
 				var total = (k.isexcell!==1 ? 0 : (bx===1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx-2,by))));
 
-				if(!evalfunc.apply(this,[total, [bx-2,by], clist, areainfo])){
+				if(!evalfunc.call(this, total, [bx-2,by], clist, areainfo)){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}
@@ -507,11 +507,11 @@ AnsCheck.prototype = {
 		for(var bx=1;bx<=bd.maxbx;bx+=2){
 			var by=1;
 			while(by<=bd.maxby){
-				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc.apply(this,[bd.cnum(bx,ty)])){ break;}}
+				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc.call(this,bd.cnum(bx,ty))){ break;}}
 				var clist = bd.cellinside(bx,by,bx,ty-2);
 				var total = (k.isexcell!==1 ? 0 : (by===1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by-2))));
 
-				if(!evalfunc.apply(this,[total, [bx,by-2], clist, areainfo])){
+				if(!evalfunc.call(this, total, [bx,by-2], clist, areainfo)){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}

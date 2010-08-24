@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.3.1
+// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.3.2
 //
 Puzzles.hashikake = function(){ };
 Puzzles.hashikake.prototype = {
@@ -80,15 +80,15 @@ Puzzles.hashikake.prototype = {
 
 			var id = this.getnb(this.prevPos, pos);
 			if(id!==null){
-				var include = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
 				var dir = this.getdir(this.prevPos, pos);
 				var idlist = this.getidlist(id);
-				if(this.previdlist.length===0 || !include(this.previdlist, id)){ this.inputData=null;}
+				if(this.previdlist.isnull() || !this.previdlist.include(id)){ this.inputData=null;}
 				if(this.inputData===null){ this.inputData = [1,2,0][bd.LiB(id)];}
-				if(this.inputData>0 && (dir===k.UP||dir===k.LT)){ idlist=idlist.reverse();} // 色分けの都合上の処理
-				for(var i=0;i<idlist.length;i++){
-					if(this.inputData!==null){ bd.sLiB(idlist[i], this.inputData); bd.sQsB(idlist[i], 0);}
-					pc.paintLine(idlist[i]);
+				if(this.inputData>0 && (dir===k.UP||dir===k.LT)){ idlist.reverseData();} // 色分けの都合上の処理
+				for(var i=0;i<idlist.data.length;i++){
+					bd.sLiB(idlist.data[i], this.inputData);
+					bd.sQsB(idlist.data[i], 0);
+					pc.paintLine(idlist.data[i]);
 				}
 				this.previdlist = idlist;
 			}
@@ -96,24 +96,17 @@ Puzzles.hashikake.prototype = {
 		};
 		mv.previdlist = [];
 		mv.getidlist = function(id){
-			var idlist=[], bx=bd.border[id].bx, by=bd.border[id].by;
+			var bx=bd.border[id].bx, by=bd.border[id].by;
+			var bx1=bx, bx2=bx, by1=by, by2=by;
 			if(bd.border[id].bx&1){
-				var by1=by, by2=by;
 				while(by1>bd.minby && bd.noNum(bd.cnum(bx,by1-1))){ by1-=2;}
 				while(by2<bd.maxby && bd.noNum(bd.cnum(bx,by2+1))){ by2+=2;}
-				if(bd.minby<by1 && by2<bd.maxby){
-					for(by=by1;by<=by2;by+=2){ idlist.push(bd.bnum(bx,by)); }
-				}
 			}
 			else if(bd.border[id].by&1){
-				var bx1=bx, bx2=bx;
 				while(bx1>bd.minbx && bd.noNum(bd.cnum(bx1-1,by))){ bx1-=2;}
 				while(bx2<bd.maxbx && bd.noNum(bd.cnum(bx2+1,by))){ bx2+=2;}
-				if(bd.minbx<bx1 && bx2<bd.maxbx){
-					for(bx=bx1;bx<=bx2;bx+=2){ idlist.push(bd.bnum(bx,by)); }
-				}
 			}
-			return idlist;
+			return new IDList(bd.borderinside(bx1,by1,bx2,by2));
 		};
 
 		mv.inputpeke = function(){

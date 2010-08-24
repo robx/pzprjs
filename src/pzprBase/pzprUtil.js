@@ -1,4 +1,4 @@
-// pzprUtil.js v3.3.1
+// pzprUtil.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★AreaInfoクラス 主に色分けの情報を管理する
@@ -322,24 +322,20 @@ LineManager.prototype = {
 	repaintParts : function(idlist){ }, // オーバーライド用
 
 	getClistFromIdlist : function(idlist){
-		var cdata=[], clist=[];
-		for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
+		var clist = new IDList();
 		for(var i=0;i<idlist.length;i++){
-			cdata[bd.border[idlist[i]].cellcc[0]] = true;
-			cdata[bd.border[idlist[i]].cellcc[1]] = true;
+			clist.push(bd.border[idlist[i]].cellcc[0]);
+			clist.push(bd.border[idlist[i]].cellcc[1]);
 		}
-		for(var c=0;c<bd.cellmax;c++){ if(cdata[c]){ clist.push(c);} }
-		return clist;
+		return clist.unique().data;
 	},
 	getXlistFromIdlist : function(idlist){
-		var cdata=[], xlist=[], crossmax=(k.qcols+1)*(k.qrows+1);
-		for(var c=0;c<crossmax;c++){ cdata[c]=false;}
+		var xlist = new IDList();
 		for(var i=0;i<idlist.length;i++){
-			cdata[bd.border[idlist[i]].crosscc[0]] = true;
-			cdata[bd.border[idlist[i]].crosscc[1]] = true;
+			xlist.push(bd.border[idlist[i]].crosscc[0]);
+			xlist.push(bd.border[idlist[i]].crosscc[1]);
 		}
-		for(var c=0;c<crossmax;c++){ if(cdata[c]){ xlist.push(c);} }
-		return xlist;
+		return xlist.unique().data;
 	},
 
 	//---------------------------------------------------------------------------

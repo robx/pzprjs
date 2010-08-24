@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 快刀乱麻版 kramma.js v3.3.1
+// パズル固有スクリプト部 快刀乱麻版 kramma.js v3.3.2
 //
 Puzzles.kramma = function(){ };
 Puzzles.kramma.prototype = {
@@ -72,31 +72,27 @@ Puzzles.kramma.prototype = {
 			if(id!==null){
 				if(this.inputData===null){ this.inputData=(bd.isBorder(id)?0:1);}
 
-				var idlist = [id];
-				var bx1, bx2, by1, by2;
-				if(bd.border[id].bx&1){
-					var bx = bd.border[id].bx;
-					while(bx>bd.minbx){ if(bd.QnX(bd.xnum(bx-1,bd.border[id].by))===1){ break;} bx-=2;} bx1 = bx;
-					while(bx<bd.maxbx){ if(bd.QnX(bd.xnum(bx+1,bd.border[id].by))===1){ break;} bx+=2;} bx2 = bx;
-					by1 = by2 = bd.border[id].by;
-				}
-				else if(bd.border[id].by&1){
-					var by = bd.border[id].by;
-					while(by>bd.minby){ if(bd.QnX(bd.xnum(bd.border[id].bx,by-1))===1){ break;} by-=2;} by1 = by;
-					while(by<bd.maxby){ if(bd.QnX(bd.xnum(bd.border[id].bx,by+1))===1){ break;} by+=2;} by2 = by;
-					bx1 = bx2 = bd.border[id].bx;
-				}
-				idlist = [];
-				for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
-
-				for(var i=0;i<idlist.length;i++){
-					if(idlist[i]===null){ continue;}
-					if     (this.inputData==1){ bd.setBorder(idlist[i]);}
-					else if(this.inputData==0){ bd.removeBorder(idlist[i]);}
-					pc.paintBorder(idlist[i]);
+				var idlist = this.getidlist(id);
+				for(var i=0;i<idlist.data.length;i++){
+					if     (this.inputData===1){ bd.setBorder(idlist.data[i]);}
+					else if(this.inputData===0){ bd.removeBorder(idlist.data[i]);}
+					pc.paintBorder(idlist.data[i]);
 				}
 			}
 			this.prevPos = pos;
+		};
+		mv.getidlist = function(id){
+			var bx=bd.border[id].bx, by=bd.border[id].by;
+			var bx1=bx, bx2=bx, by1=by, by2=by;
+			if(bd.border[id].bx&1){
+				while(bx1>bd.minbx && bd.QnX(bd.xnum(bx1-1,by))!==1){ bx1-=2;}
+				while(bx2<bd.maxbx && bd.QnX(bd.xnum(bx2+1,by))!==1){ bx2+=2;}
+			}
+			else if(bd.border[id].by&1){
+				while(by1>bd.minby && bd.QnX(bd.xnum(bx,by1-1))!==1){ by1-=2;}
+				while(by2<bd.maxby && bd.QnX(bd.xnum(bx,by2+1))!==1){ by2+=2;}
+			}
+			return new IDList(bd.borderinside(bx1,by1,bx2,by2));
 		};
 		mv.inputqnumDirectly = true;
 

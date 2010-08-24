@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.3.1
+// パズル固有スクリプト部 シロクロリンク版 wblink.js v3.3.2
 //
 Puzzles.wblink = function(){ };
 Puzzles.wblink.prototype = {
@@ -77,36 +77,27 @@ Puzzles.wblink.prototype = {
 				var dir = this.getdir(this.prevPos, pos);
 				var idlist = this.getidlist(id);
 				if(this.inputData===null){ this.inputData=(bd.isLine(id)?0:1);}
-				if(this.inputData>0 && (dir===k.UP||dir===k.LT)){ idlist=idlist.reverse();} // 色分けの都合上の処理
-				for(var i=0;i<idlist.length;i++){
-					if(idlist[i]===null){ continue;}
-					if(this.inputData==1){ bd.setLine(idlist[i]);}
-					else                 { bd.removeLine(idlist[i]);}
-					pc.paintLine(idlist[i]);
+				for(var i=0;i<idlist.data.length;i++){
+					if(this.inputData==1){ bd.setLine(idlist.data[i]);}
+					else                 { bd.removeLine(idlist.data[i]);}
+					pc.paintLine(idlist.data[i]);
 				}
 				this.inputData=2;
 			}
 			this.prevPos = pos;
 		};
 		mv.getidlist = function(id){
-			var idlist=[], bx=bd.border[id].bx, by=bd.border[id].by;
+			var bx=bd.border[id].bx, by=bd.border[id].by;
+			var bx1=bx, bx2=bx, by1=by, by2=by;
 			if(bd.border[id].bx&1){
-				var by1=by, by2=by;
 				while(by1>bd.minby && bd.noNum(bd.cnum(bx,by1-1))){ by1-=2;}
 				while(by2<bd.maxby && bd.noNum(bd.cnum(bx,by2+1))){ by2+=2;}
-				if(bd.minby<by1 && by2<bd.maxby){
-					for(by=by1;by<=by2;by+=2){ idlist.push(bd.bnum(bx,by)); }
-				}
 			}
 			else if(bd.border[id].by&1){
-				var bx1=bx, bx2=bx;
 				while(bx1>bd.minbx && bd.noNum(bd.cnum(bx1-1,by))){ bx1-=2;}
 				while(bx2<bd.maxbx && bd.noNum(bd.cnum(bx2+1,by))){ bx2+=2;}
-				if(bd.minbx<bx1 && bx2<bd.maxbx){
-					for(bx=bx1;bx<=bx2;bx+=2){ idlist.push(bd.bnum(bx,by)); }
-				}
 			}
-			return idlist;
+			return new IDList(bd.borderinside(bx1,by1,bx2,by2));
 		};
 
 		mv.inputpeke = function(){
@@ -118,11 +109,11 @@ Puzzles.wblink.prototype = {
 			bd.sQsB(id, this.inputData);
 
 			var idlist = this.getidlist(id);
-			for(var i=0;i<idlist.length;i++){
-				bd.sLiB(idlist[i], 0);
-				pc.paintBorder(idlist[i]);
+			for(var i=0;i<idlist.data.length;i++){
+				bd.sLiB(idlist.data[i], 0);
+				pc.paintBorder(idlist.data[i]);
 			}
-			if(idlist.length==0){ pc.paintBorder(id);}
+			if(idlist.isnull()){ pc.paintBorder(id);}
 			this.prevPos = pos;
 		},
 

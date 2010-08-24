@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.3.1
+// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.3.2
 //
 Puzzles.loopsp = function(){ };
 Puzzles.loopsp.prototype = {
@@ -329,14 +329,13 @@ Puzzles.loopsp.prototype = {
 
 		ans.checkLoopNumber = function(){
 			return this.checkAllLoops(function(cells){
-				var number = -1;
-				for(var i=0;i<cells.length;i++){
-					if(bd.isValidNum(cells[i])){
-						if(number==-1){ number=bd.QnC(cells[i]);}
-						else if(number!=bd.QnC(cells[i])){
-							for(var c=0;c<cells.length;c++){ if(bd.isValidNum(cells[c])){ bd.sErC([cells[c]],1);} }
-							return false;
-						}
+				var sub = (new IDList(cells)).sublist(bd.isValidNum);
+				var number = null;
+				for(var i=0;i<sub.data.length;i++){
+					if(number===null){ number=bd.QnC(sub.data[i]);}
+					else if(number!==bd.QnC(sub.data[i])){
+						bd.sErC(sub.data,1);
+						return false;
 					}
 				}
 				return true;
@@ -344,13 +343,12 @@ Puzzles.loopsp.prototype = {
 		};
 		ans.checkNumberLoop = function(){
 			return this.checkAllLoops(function(cells){
-				var number = -1;
-				var include = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
-				for(var i=0;i<cells.length;i++){ if(bd.isValidNum(cells[i])){ number = bd.QnC(cells[i]); break;} }
-				if(number==-1){ return true;}
+				var sub = (new IDList(cells)).sublist(bd.isValidNum);
+				if(sub.isnull()){ return true;}
+				var number = bd.QnC(sub.data[0]);
 				for(var c=0;c<bd.cellmax;c++){
-					if(bd.QnC(c)==number && !include(cells,c)){
-						for(var cc=0;cc<bd.cellmax;cc++){ if(bd.QnC(cc)==number){ bd.sErC([cc],1);} }
+					if(bd.QnC(c)===number && !sub.include(c)){
+						bd.sErC(sub.data,1);
 						return false;
 					}
 				}
@@ -359,33 +357,21 @@ Puzzles.loopsp.prototype = {
 		};
 		ans.checkNumberInLoop = function(){
 			return this.checkAllLoops(function(cells){
-				for(var i=0;i<cells.length;i++){ if(bd.isNum(cells[i])){ return true;} }
-				return false;
+				return (!(new IDList(cells)).sublist(bd.isNum).isnull());
 			});
 		};
 		ans.checkAllLoops = function(func){
 			var result = true;
-			var xinfo = line.getLineInfo();
-			for(var r=1;r<=xinfo.max;r++){
-				if(func(line.LineList2Clist(xinfo.room[r].idlist))){ continue;}
+			var linfo = line.getLineInfo();
+			for(var r=1;r<=linfo.max;r++){
+				if(func(line.getClistFromIdlist(linfo.room[r].idlist))){ continue;}
 
 				if(this.inAutoCheck){ return false;}
 				if(result){ bd.sErBAll(2);}
-				bd.sErB(xinfo.room[r].idlist,1);
+				bd.sErB(linfo.room[r].idlist,1);
 				result = false;
 			}
 			return result;
-		};
-
-		line.LineList2Clist = function(idlist){
-			var clist = [];
-			clist.include = function(val){ for(var i=0,len=this.length;i<len;i++){ if(this[i]==val) return true;} return false;};
-			for(var i=0,len=idlist.length;i<len;i++){
-				var id=idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(cc1!==null && !clist.include(cc1)){ clist.push(cc1);}
-				if(cc2!==null && !clist.include(cc2)){ clist.push(cc2);}
-			}
-			return clist;
 		};
 	}
 };
