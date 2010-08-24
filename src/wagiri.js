@@ -157,22 +157,23 @@ Puzzles.wagiri.prototype = {
 		pc.crosssize = 0.33;
 		pc.chassisflag = false;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
 
-			this.drawNumbers(x1,y1,x2,y2);
-			this.drawSlashes(x1,y1,x2,y2);
+			this.drawNumbers();
+			this.drawSlashes();
 
-			this.drawCrosses(x1,y1,x2,y2);
-			this.drawTarget_wagiri(x1,y1,x2,y2);
+			this.drawCrosses();
+			this.drawTarget_wagiri();
 		};
 		// オーバーライド
 		pc.prepaint = function(x1,y1,x2,y2){
 			if(!ans.errDisp && pp.getVal('colorslash')){ x1=bd.minbx; y1=bd.minby; x2=bd.maxbx; y2=bd.maxby;}
-			pc.flushCanvas(x1,y1,x2,y2);
+			this.setRange(x1,y1,x2,y2);
 
-			pc.paint(x1,y1,x2,y2);
+			this.flushCanvas();
+			this.paint();
 		};
 
 		// オーバーライド
@@ -193,7 +194,7 @@ Puzzles.wagiri.prototype = {
 			else{ this.hideEL(key);}
 		};
 
-		pc.drawSlashes = function(x1,y1,x2,y2){
+		pc.drawSlashes = function(){
 			this.vinc('cell_slash', 'auto');
 
 			var headers = ["c_sl1_", "c_sl2_"], check=[];
@@ -204,7 +205,7 @@ Puzzles.wagiri.prototype = {
 				for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.sErC([c],sdata[c]);} }
 			}
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
@@ -237,9 +238,9 @@ Puzzles.wagiri.prototype = {
 			}
 		};
 
-		pc.drawTarget_wagiri = function(x1,y1,x2,y2){
+		pc.drawTarget_wagiri = function(){
 			var islarge = ((tc.cursor.x&1)===(tc.cursor.y&1));
-			this.drawCursor(x1,y1,x2,y2,islarge,k.editmode);
+			this.drawCursor(islarge,k.editmode);
 		};
 	},
 

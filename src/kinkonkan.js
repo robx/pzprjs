@@ -226,26 +226,26 @@ Puzzles.kinkonkan.prototype = {
 		pc.errbcolor2 = "rgb(255, 255, 127)";
 		pc.dotcolor = pc.dotcolor_PINK;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawErrorCells_kinkonkan(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2,true);
+		pc.paint = function(){
+			this.drawErrorCells_kinkonkan();
+			this.drawDotCells(true);
 
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawGrid();
+			this.drawBorders();
 
-			this.drawSlashes(x1,y1,x2,y2);
+			this.drawSlashes();
 
-			this.drawEXcells_kinkonkan(x1,y1,x2,y2);
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawEXcells_kinkonkan();
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawErrorCells_kinkonkan = function(x1,y1,x2,y2){
+		pc.drawErrorCells_kinkonkan = function(){
 			this.vinc('cell_back', 'crispEdges');
 
 			var headers = ["c_full_", "c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_", "c_full_"];
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], err = bd.cell[c].error;
 				if(err!==0){
@@ -261,13 +261,13 @@ Puzzles.kinkonkan.prototype = {
 				else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c, headers[4]+c, headers[5]+c]);}
 			}
 		};
-		pc.drawSlashes = function(x1,y1,x2,y2){
+		pc.drawSlashes = function(){
 			this.vinc('cell_slash', 'auto');
 
 			var headers = ["c_sl1_", "c_sl2_"];
 			g.lineWidth = Math.max(this.cw/8, 2);
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
@@ -292,11 +292,11 @@ Puzzles.kinkonkan.prototype = {
 			}
 		};
 
-		pc.drawEXcells_kinkonkan = function(x1,y1,x2,y2){
+		pc.drawEXcells_kinkonkan = function(){
 			this.vinc('excell_number', 'auto');
 
 			var header = "ex_full_";
-			var exlist = bd.excellinside(x1,y1,x2,y2);
+			var exlist = this.range.excells;
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i], obj = bd.excell[c], key = 'excell_'+c;
 

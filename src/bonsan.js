@@ -119,31 +119,31 @@ Puzzles.bonsan.prototype = {
 		pc.fontsizeratio = 0.9;	// 数字の倍率
 		pc.circleratio = [0.38, 0.38];
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
+			this.drawBorders();
 
-			this.drawTip(x1,y1,x2,y2);
-			this.drawLines(x1,y1,x2,y2);
-			//this.drawPekes(x1,y1,x2,y2,0);
+			this.drawTip();
+			this.drawLines();
+			//this.drawPekes(0);
 
-			this.drawCirclesAtNumber(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawCirclesAtNumber();
+			this.drawNumbers();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawTip = function(x1,y1,x2,y2){
+		pc.drawTip = function(){
 			this.vinc('cell_linetip', 'auto');
 
 			var tsize = this.cw*0.30;
 			var tplus = this.cw*0.05;
 			var header = "c_tip_";
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				this.vdel([header+c]);

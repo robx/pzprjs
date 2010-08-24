@@ -149,22 +149,20 @@ Puzzles.snakes.prototype = {
 		pc.fontcolor = pc.fontErrcolor = "white";
 		pc.setCellColorFunc('qnum');
 
-		pc.paint = function(x1,y1,x2,y2){
-			if(g.use.canvas){ x1--; y1--; x2++; y2++;}	// 跡が残ってしまう為
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDotCells(true);
+			this.drawDashedGrid();
 
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2,true);
-			this.drawDashedGrid(x1,y1,x2,y2);
+			this.drawBorders();
 
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBlackCells();
+			this.drawArrowNumbers();
+			this.drawAnswerNumbers();
 
-			this.drawBlackCells(x1,y1,x2,y2);
-			this.drawArrowNumbers(x1,y1,x2,y2);
-			this.drawAnswerNumbers(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawChassis(x1,y1,x2,y2);
-
-			this.drawCursor(x1,y1,x2,y2);
+			this.drawCursor();
 		};
 
 		pc.setBorderColor = function(id){
@@ -183,10 +181,10 @@ Puzzles.snakes.prototype = {
 			return false;
 		};
 
-		pc.drawAnswerNumbers = function(x1,y1,x2,y2){
+		pc.drawAnswerNumbers = function(){
 			this.vinc('cell_number', 'auto');
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
 				if(obj.qnum===-1 && obj.anum>0){

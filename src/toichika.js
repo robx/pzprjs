@@ -147,21 +147,21 @@ Puzzles.toichika.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.dotcolor = pc.dotcolor_PINK;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
+			this.drawBorders();
 
-			this.drawDotCells(x1,y1,x2,y2,true);
-			this.drawArrows(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawDotCells(true);
+			this.drawArrows();
+			this.drawNumbers();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawCursor(x1,y1,x2,y2);
+			this.drawCursor();
 		};
 
-		pc.drawArrows = function(x1,y1,x2,y2){
+		pc.drawArrows = function(){
 			this.vinc('cell_arrow', 'auto');
 
 			var headers = ["c_arup_", "c_ardn_", "c_arlt_", "c_arrt_"];
@@ -171,7 +171,7 @@ Puzzles.toichika.prototype = {
 			var tl = ll*0.5-ll*0.3;			// 矢じりの長さの座標(中心-長さ)
 			var tw = Math.max(ll*0.2, 5);	// 矢じりの幅
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], dir=bd.getNum(c);
 				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);

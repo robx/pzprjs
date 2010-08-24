@@ -184,27 +184,27 @@ Puzzles.box.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2,false);
-			this.drawBlackCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDotCells(false);
+			this.drawBlackCells();
+			this.drawGrid();
 
-			this.drawErrorEXCells(x1,y1,x2,y2);
-			this.drawNumbers_box(x1,y1,x2,y2);
+			this.drawErrorEXCells();
+			this.drawNumbers_box();
 
-			this.drawCircledNumbers_box(x1,y1,x2,y2);
+			this.drawCircledNumbers_box();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawErrorEXCells = function(x1,y1,x2,y2){
+		pc.drawErrorEXCells = function(){
 			this.vinc('excell_full', 'crispEdges');
 
 			var header = "ex_full_";
-			var exlist = bd.excellinside(x1,y1,x2,y2);
+			var exlist = this.range.excells;
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i], obj = bd.excell[c];
 
@@ -217,11 +217,11 @@ Puzzles.box.prototype = {
 				else{ this.vhide(header+c)}
 			}
 		};
-		pc.drawNumbers_box = function(x1,y1,x2,y2){
+		pc.drawNumbers_box = function(){
 			this.vinc('excell_number', 'auto');
 
 			var header = "ex_full_";
-			var exlist = bd.excellinside(x1,y1,x2,y2);
+			var exlist = this.range.excells;
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i], obj = bd.excell[c], key="excell_"+c;
 				if(c>=k.qcols+k.qrows){ continue;}
@@ -233,8 +233,9 @@ Puzzles.box.prototype = {
 			}
 		};
 
-		pc.drawCircledNumbers_box = function(x1,y1,x2,y2){
+		pc.drawCircledNumbers_box = function(){
 			var exlist = [];
+			var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 			if(x2>=bd.maxbx){ for(var by=(y1|1),max=Math.min(bd.maxby,y2);by<=max;by+=2){ exlist.push([bd.maxbx+1,by]);}}
 			if(y2>=bd.maxby){ for(var bx=(x1|1),max=Math.min(bd.maxbx,x2);bx<=max;bx+=2){ exlist.push([bx,bd.maxby+1]);}}
 

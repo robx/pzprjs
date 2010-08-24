@@ -182,39 +182,39 @@ Puzzles.bosanowa.prototype = {
 	graphic_init : function(){
 		pc.borderfontcolor = "blue";
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
 
 			if(pp.getVal('disptype')==1){
-				this.drawCircles_bosanowa(x1,y1,x2,y2);
-				this.drawBDnumbase(x1,y1,x2,y2);
+				this.drawCircles_bosanowa();
+				this.drawBDnumbase();
 			}
 			else if(pp.getVal('disptype')==2){
-				this.drawOutside_souko(x1,y1,x2,y2);
-				this.drawGrid_souko(x1,y1,x2,y2);
-				this.drawBDnumbase(x1,y1,x2,y2);
+				this.drawOutside_souko();
+				this.drawGrid_souko();
+				this.drawBDnumbase();
 			}
 			else if(pp.getVal('disptype')==3){
-				this.drawBorders(x1,y1,x2,y2);
-				this.drawGrid_waritai(x1,y1,x2,y2);
+				this.drawBorders();
+				this.drawGrid_waritai();
 			}
 
-			this.drawNumbers(x1,y1,x2,y2);
-			this.drawNumbersBD(x1,y1,x2,y2);
+			this.drawNumbers();
+			this.drawNumbersBD();
 
 			if(k.EDITOR && !this.fillTextPrecisely){
-				this.drawChassis(x1,y1,x2,y2);
+				this.drawChassis();
 			}
 
-			this.drawTarget_bosanowa(x1,y1,x2,y2);
+			this.drawTarget_bosanowa();
 		};
 
-		pc.drawErrorCells_bosanowa = function(x1,y1,x2,y2){
+		pc.drawErrorCells_bosanowa = function(){
 			this.vinc('cell_back', 'crispEdges');
 
 			var header = "c_fullerr_";
 			g.fillStyle = this.errbcolor1;
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].error===1){
@@ -226,7 +226,7 @@ Puzzles.bosanowa.prototype = {
 			}
 		};
 
-		pc.drawCircles_bosanowa = function(x1,y1,x2,y2){
+		pc.drawCircles_bosanowa = function(){
 			this.vinc('cell_circle', 'auto');
 
 			g.lineWidth = 1;
@@ -234,7 +234,7 @@ Puzzles.bosanowa.prototype = {
 			var rsize  = this.cw*0.44;
 			var header = "c_cir_";
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && !bd.isNum(c)){
@@ -247,7 +247,7 @@ Puzzles.bosanowa.prototype = {
 			}
 		};
 
-		pc.drawGrid_souko = function(x1,y1,x2,y2){
+		pc.drawGrid_souko = function(){
 			this.vinc('grid_souko', 'crispEdges');
 
 			var header = "b_grids_";
@@ -255,7 +255,7 @@ Puzzles.bosanowa.prototype = {
 			g.fillStyle="rgb(127,127,127)";
 			g.strokeStyle="rgb(127,127,127)";
 
-			var idlist = bd.borderinside(x1,y1,x2,y2);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(bd.isBox(cc1) && bd.isBox(cc2)){
@@ -292,12 +292,12 @@ Puzzles.bosanowa.prototype = {
 				else{ this.vhide([header+id]);} 
 			}
 		};
-		pc.drawGrid_waritai = function(x1,y1,x2,y2){
+		pc.drawGrid_waritai = function(){
 			this.vinc('grid_waritai', 'crispEdges');
 
 			var csize = this.cw*0.20;
 			var headers = ["b_grid_", "b_grid2_"];
-			var idlist = bd.borderinside(x1,y1,x2,y2);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(bd.isBox(cc1) && bd.isBox(cc2)){
@@ -317,12 +317,12 @@ Puzzles.bosanowa.prototype = {
 			}
 		};
 
-		pc.drawBDnumbase = function(x1,y1,x2,y2){
+		pc.drawBDnumbase = function(){
 			this.vinc('border_number_base', 'crispEdges');
 
 			var csize = this.cw*0.20;
 			var header = "b_bbse_";
-			var idlist = bd.borderinside(x1,y1,x2,y2);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 
@@ -335,10 +335,10 @@ Puzzles.bosanowa.prototype = {
 				else{ this.vhide(header+id);}
 			}
 		};
-		pc.drawNumbersBD = function(x1,y1,x2,y2){
+		pc.drawNumbersBD = function(){
 			this.vinc('border_number', 'auto');
 
-			var idlist = bd.borderinside(x1,y1,x2,y2);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){
 				var id=idlist[i], obj=bd.border[id], key='border_'+id;
 				if(bd.border[id].qsub>=0){
@@ -349,12 +349,12 @@ Puzzles.bosanowa.prototype = {
 		};
 
 		// 倉庫番の外側(グレー)描画用
-		pc.drawOutside_souko = function(x1,y1,x2,y2){
+		pc.drawOutside_souko = function(){
 			this.vinc('cell_outside_souko', 'crispEdges');
 
-			var header = "c_full_";
-			for(var bx=(x1-2)|1;bx<=x2+2;bx+=2){
-				for(var by=(y1-2)|1;by<=y2+2;by+=2){
+			var header = "c_full_", d = this.range;
+			for(var bx=(d.x1-2)|1;bx<=d.x2+2;bx+=2){
+				for(var by=(d.y1-2)|1;by<=d.y2+2;by+=2){
 					var c=bd.cnum(bx,by);
 					if( !bd.isBox(c) && (
 						bd.QuC(bd.cnum(bx-2,by  ))===7 || bd.QuC(bd.cnum(bx+2,by  ))===7 || 
@@ -381,9 +381,9 @@ Puzzles.bosanowa.prototype = {
 			return false;
 		};
 
-		pc.drawTarget_bosanowa = function(x1,y1,x2,y2){
+		pc.drawTarget_bosanowa = function(){
 			var islarge = !!((tc.cursor.x&1)&&(tc.cursor.y&1));
-			this.drawCursor(x1,y1,x2,y2,islarge);
+			this.drawCursor(islarge);
 		};
 	},
 

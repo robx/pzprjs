@@ -177,16 +177,16 @@ Puzzles.hashikake.prototype = {
 		// 線の太さを通常より少し太くする
 		pc.lwratio = 8;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawGrid(x1,y1,x2,y2,(k.editmode && !this.fillTextPrecisely));
+		pc.paint = function(){
+			this.drawGrid((k.editmode && !this.fillTextPrecisely));
 
-			this.drawPekes(x1,y1,x2,y2,0);
-			this.drawLines(x1,y1,x2,y2);
+			this.drawPekes(0);
+			this.drawLines();
 
-			this.drawCirclesAtNumber(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawCirclesAtNumber();
+			this.drawNumbers();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
 		// オーバーライド

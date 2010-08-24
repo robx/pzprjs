@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バッグ版 bag.js v3.3.1
+// パズル固有スクリプト部 バッグ版 bag.js v3.3.2
 //
 Puzzles.bag = function(){ };
 Puzzles.bag.prototype = {
@@ -140,14 +140,14 @@ Puzzles.bag.prototype = {
 
 		pc.chassisflag = false;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawLines(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
+			this.drawLines();
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawNumbers();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 	},
 

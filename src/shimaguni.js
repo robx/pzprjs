@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 島国版 shimaguni.js v3.3.1
+// パズル固有スクリプト部 島国版 shimaguni.js v3.3.2
 //
 Puzzles.shimaguni = function(){ };
 Puzzles.shimaguni.prototype = {
@@ -86,20 +86,20 @@ Puzzles.shimaguni.prototype = {
 		pc.bbcolor = "rgb(191, 191, 255)";
 		pc.setBGCellColorFunc('qsub1');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
+			this.drawBlackCells();
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawNumbers();
 
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBorders();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawBoxBorders(x1,y1,x2,y2,false);
+			this.drawBoxBorders(false);
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 	},
 

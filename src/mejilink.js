@@ -9,7 +9,7 @@ Puzzles.mejilink.prototype = {
 		if(!k.qrows){ k.qrows = 8;}	// 盤面の縦幅
 		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		k.iscross  = 1;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
 		k.isborder = 2;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
 		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
@@ -105,37 +105,28 @@ Puzzles.mejilink.prototype = {
 
 		pc.chassisflag = false;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
-			this.drawLines(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
+			this.drawBorders();
+			this.drawLines();
 
-			this.drawBaseMarks(x1,y1,x2,y2);
+			this.drawBaseMarks();
 
-			this.drawPekes(x1,y1,x2,y2,0);
+			this.drawPekes(0);
 		};
 
-		pc.drawBaseMarks = function(x1,y1,x2,y2){
+		pc.drawBaseMarks = function(){
 			this.vinc('cross_mark', 'auto');
 
-			for(var by=bd.minby;by<=bd.maxby;by+=2){
-				for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
-					if(bx < x1-1 || x2+1 < bx){ continue;}
-					if(by < y1-1 || y2+1 < by){ continue;}
-
-					this.drawBaseMark1((bx>>1)+(by>>1)*(k.qcols+1));
-				}
-			}
+			var clist = this.range.crosses;
+			for(var i=0;i<clist.length;i++){ this.drawBaseMark1(clist[i]);}
 		};
 		pc.drawBaseMark1 = function(id){
 			var vid = "x_cm_"+id;
-
 			g.fillStyle = this.cellcolor;
 			if(this.vnop(vid,this.NONE)){
-				var csize = (this.lw+1)/2;
-				var bx = (id%(k.qcols+1))*2, by = (id/(k.qcols+1))<<1;
-				g.fillCircle(bx*this.bw, by*this.bh, csize);
+				g.fillCircle(bd.cross[id].px, bd.cross[id].py, (this.lw+1)/2);
 			}
 		};
 

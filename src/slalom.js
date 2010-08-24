@@ -318,23 +318,23 @@ Puzzles.slalom.prototype = {
 		pc.errbcolor1 = pc.errbcolor1_DARK;
 		pc.fontcolor = pc.fontErrcolor = "white";
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
 
-			this.drawGates(x1,y1,x2,y2)
+			this.drawGates()
 
-			this.drawBlackCells(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawBlackCells();
+			this.drawNumbers();
 
-			this.drawPekes(x1,y1,x2,y2,1);
-			this.drawLines(x1,y1,x2,y2);
+			this.drawPekes(1);
+			this.drawLines();
 
-			this.drawStartpos(x1,y1,x2,y2);
+			this.drawStartpos();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
 		// オーバーライド drawBlackCells用
@@ -346,13 +346,13 @@ Puzzles.slalom.prototype = {
 			return false;
 		};
 
-		pc.drawGates = function(x1,y1,x2,y2){
+		pc.drawGates = function(){
 			var lw = Math.max(this.cw/10, 3);	//LineWidth
 			var lm = lw/2;						//LineMargin
 			var ll = lw*1.1;					//LineLength
 			var headers = ["c_dl21", "c_dl22"];
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				g.fillStyle = (bd.cell[c].error===4 ? this.errcolor1 : this.cellcolor);
@@ -377,11 +377,11 @@ Puzzles.slalom.prototype = {
 			}
 		};
 
-		pc.drawStartpos = function(x1,y1,x2,y2){
+		pc.drawStartpos = function(){
 			this.vinc('cell_circle', 'auto');
 
-			var c = bd.startid;
-			if(bd.cell[c].bx<x1 || x2<bd.cell[c].bx || bd.cell[c].by<y1 || y2<bd.cell[c].by){ return;}
+			var c = bd.startid, d = this.range;
+			if(bd.cell[c].bx<d.x1 || d.x2<bd.cell[c].bx || bd.cell[c].by<d.y1 || d.y2<bd.cell[c].by){ return;}
 
 			var rsize = this.cw*0.45, rsize2 = this.cw*0.40;
 			var csize = (rsize+rsize2)/2, csize2 = rsize2-rsize;

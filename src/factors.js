@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 因子の部屋版 factors.js v3.3.1
+// パズル固有スクリプト部 因子の部屋版 factors.js v3.3.2
 //
 Puzzles.factors = function(){ };
 Puzzles.factors.prototype = {
@@ -79,22 +79,22 @@ Puzzles.factors.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
 
-			this.drawNumbers_factors(x1,y1,x2,y2);
+			this.drawNumbers_factors();
 
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBorders();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawCursor(x1,y1,x2,y2);
+			this.drawCursor();
 		};
-		pc.drawNumbers_factors = function(x1,y1,x2,y2){
+		pc.drawNumbers_factors = function(){
 			this.vinc('cell_number', 'auto');
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
 				var key_qans = ['cell',c,'qans'].join('_');

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ウソタタミ版 usotatami.js v3.3.1
+// パズル固有スクリプト部 ウソタタミ版 usotatami.js v3.3.2
 //
 Puzzles.usotatami = function(){ };
 Puzzles.usotatami.prototype = {
@@ -81,17 +81,17 @@ Puzzles.usotatami.prototype = {
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.setBorderColorFunc('qans');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
+			this.drawBorders();
 
-			this.drawNumbers(x1,y1,x2,y2);
-			this.drawBorderQsubs(x1,y1,x2,y2);
+			this.drawNumbers();
+			this.drawBorderQsubs();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 	},
 

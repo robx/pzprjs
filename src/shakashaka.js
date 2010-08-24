@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.3.1
+// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.3.2
 //
 Puzzles.shakashaka = function(){ };
 Puzzles.shakashaka.prototype = {
@@ -185,18 +185,18 @@ Puzzles.shakashaka.prototype = {
 		pc.fontcolor = pc.fontErrcolor = "white";
 		pc.setCellColorFunc('qnum');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2,false);
-			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDotCells(false);
+			this.drawDashedGrid();
+			this.drawBlackCells();
+			this.drawNumbers();
 
-			this.drawTriangle(x1,y1,x2,y2);
+			this.drawTriangle();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 	},
 

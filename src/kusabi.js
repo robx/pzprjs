@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.3.1
+// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.3.2
 //
 Puzzles.kusabi = function(){ };
 Puzzles.kusabi.prototype = {
@@ -98,19 +98,19 @@ Puzzles.kusabi.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.circleratio = [0.40, 0.40];
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
 
-			this.drawPekes(x1,y1,x2,y2,0);
-			this.drawLines(x1,y1,x2,y2);
+			this.drawPekes(0);
+			this.drawLines();
 
-			this.drawCirclesAtNumber(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawCirclesAtNumber();
+			this.drawNumbers();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 		pc.drawNumber1 = function(id){
 			var num = bd.cell[id].qnum, obj = bd.cell[id], key='cell_'+id;

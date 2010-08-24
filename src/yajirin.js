@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.3.1
+// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.3.2
 // 
 Puzzles.yajirin = function(){ };
 Puzzles.yajirin.prototype = {
@@ -100,20 +100,20 @@ Puzzles.yajirin.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.dotcolor = "rgb(255, 96, 191)";
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2,false);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDotCells(false);
+			this.drawGrid();
+			this.drawBlackCells();
 
-			this.drawArrowNumbers(x1,y1,x2,y2);
+			this.drawArrowNumbers();
 
-			this.drawLines(x1,y1,x2,y2);
-			this.drawPekes(x1,y1,x2,y2,1);
+			this.drawLines();
+			this.drawPekes(1);
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 	},
 

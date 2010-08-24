@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.3.1
+// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.3.2
 //
 Puzzles.fillomino = function(){ };
 Puzzles.fillomino.prototype = {
@@ -155,18 +155,18 @@ Puzzles.fillomino.prototype = {
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.setBorderColorFunc('qans');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawNumbers();
 
-			this.drawBorders(x1,y1,x2,y2);
-			this.drawBorderQsubs(x1,y1,x2,y2);
+			this.drawBorders();
+			this.drawBorderQsubs();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawCursor(x1,y1,x2,y2);
+			this.drawCursor();
 		};
 	},
 

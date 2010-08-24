@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バーンズ版 barns.js v3.3.1
+// パズル固有スクリプト部 バーンズ版 barns.js v3.3.2
 //
 Puzzles.barns = function(){ };
 Puzzles.barns.prototype = {
@@ -109,15 +109,15 @@ Puzzles.barns.prototype = {
 
 		pc.maxYdeg = 0.70;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
+			this.drawBorders();
 
-			this.drawLines(x1,y1,x2,y2);
-			this.drawPekes(x1,y1,x2,y2,0);
+			this.drawLines();
+			this.drawPekes(0);
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 		};
 	},
 

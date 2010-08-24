@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぬりぼう版 nuribou.js v3.3.1
+// パズル固有スクリプト部 ぬりぼう版 nuribou.js v3.3.2
 //
 Puzzles.nuribou = function(){ };
 Puzzles.nuribou.prototype = {
@@ -77,16 +77,16 @@ Puzzles.nuribou.prototype = {
 		pc.bcolor = pc.bcolor_GREEN;
 		pc.setBGCellColorFunc('qsub1');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
+			this.drawBlackCells();
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawNumbers();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 	},
 

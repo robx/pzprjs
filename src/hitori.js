@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ひとりにしてくれ hitori.js v3.3.1
+// パズル固有スクリプト部 ひとりにしてくれ hitori.js v3.3.2
 //
 Puzzles.hitori = function(){ };
 Puzzles.hitori.prototype = {
@@ -87,28 +87,29 @@ Puzzles.hitori.prototype = {
 		pc.fontBCellcolor = "rgb(96,96,96)";
 		pc.setBGCellColorFunc('qsub1');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
+			this.drawBlackCells();
 
-			this.drawNumbers_hitori(x1,y1,x2,y2);
+			this.drawNumbers_hitori();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawNumbers_hitori = function(x1,y1,x2,y2){
-			if(!pp.getVal('plred') || ans.errDisp){
-				this.drawNumbers(x1,y1,x2,y2);
-			}
-			else{
+		pc.drawNumbers_hitori = function(){
+
+			this.drawNumbers();
+
+			if(pp.getVal('plred') && !ans.errDisp){
 				ans.inCheck = true;
 				ans.checkRowsCols(ans.isDifferentNumberInClist_hitori, bd.QnC);
 				ans.inCheck = false;
 
-				this.drawNumbers(bd.minbx, bd.minby, bd.maxbx, bd.maxby);
+				var clist = bd.cellinside(bd.minbx, bd.minby, bd.maxbx, bd.maxby);
+				for(var i=0;i<clist.length;i++){ this.drawNumber1(clist[i]);}
 
 				ans.errDisp = true;
 				bd.errclear(false);

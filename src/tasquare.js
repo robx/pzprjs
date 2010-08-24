@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たすくえあ版 tasquare.js v3.3.1
+// パズル固有スクリプト部 たすくえあ版 tasquare.js v3.3.2
 //
 Puzzles.tasquare = function(){ };
 Puzzles.tasquare.prototype = {
@@ -95,29 +95,29 @@ Puzzles.tasquare.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.fontsizeratio = 0.85;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2,false);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDotCells(false);
+			this.drawGrid();
+			this.drawBlackCells();
 
-			this.drawCellSquare(x1,y1,x2,y2);
+			this.drawCellSquare();
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawNumbers();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawCellSquare = function(x1,y1,x2,y2){
+		pc.drawCellSquare = function(){
 			this.vinc('cell_square', 'crispEdges');
 
 			var mgnw = this.cw*0.1;
 			var mgnh = this.ch*0.1;
 			var header = "c_sq_";
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].qnum!==-1){

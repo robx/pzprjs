@@ -121,24 +121,24 @@ Puzzles.shwolf.prototype = {
 		pc.crosssize = 0.15;
 		pc.imgobj = new ImageManager_shwolf();
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
+			this.drawBorders();
 
-			this.drawSheepWolf(x1,y1,x2,y2);
-			this.drawCrossMarks(x1,y1,x2,y2);
+			this.drawSheepWolf();
+			this.drawCrossMarks();
 
-			this.drawBorderQsubs(x1,y1,x2,y2);
+			this.drawBorderQsubs();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 		};
 
 		// numobj:？表示用 numobj2:画像表示用
-		pc.drawSheepWolf = function(x1,y1,x2,y2){
+		pc.drawSheepWolf = function(){
 			this.vinc('cell_number_image', 'auto');
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
 				var keyques = ['cell',c].join('_'), keyimg = ['cell',c,'quesimg'].join('_');

@@ -156,22 +156,22 @@ Puzzles.tilepaint.prototype = {
 		pc.bbcolor = "rgb(127, 127, 127)";
 		pc.setBGCellColorFunc('qsub3');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawBGEXcells(x1,y1,x2,y2);
-			this.drawQues51(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawBGEXcells();
+			this.drawQues51();
 
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawGrid();
+			this.drawBorders();
 
-			this.drawBlackCells(x1,y1,x2,y2);
-			this.drawBoxBorders(x1,y1,x2,y2,true);
+			this.drawBlackCells();
+			this.drawBoxBorders(true);
 
-			this.drawChassis_ex1(x1,y1,x2,y2,true);
+			this.drawChassis_ex1(true);
 
-			this.drawNumbersOn51(x1,y1,x2,y2);
+			this.drawNumbersOn51();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 	},
 

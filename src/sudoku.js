@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 数独版 sudoku.js v3.3.1
+// パズル固有スクリプト部 数独版 sudoku.js v3.3.2
 //
 Puzzles.sudoku = function(){ };
 Puzzles.sudoku.prototype = {
@@ -103,18 +103,18 @@ Puzzles.sudoku.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlockBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
+			this.drawBlockBorders();
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawNumbers();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawCursor(x1,y1,x2,y2);
+			this.drawCursor();
 		};
-		pc.drawBlockBorders = function(x1,y1,x2,y2){
+		pc.drawBlockBorders = function(){
 			this.vinc('border_block', 'crispEdges');
 
 			var lw = this.lw, lm = this.lm;
@@ -123,6 +123,7 @@ Puzzles.sudoku.prototype = {
 			var block=((Math.sqrt(max)+0.1)|0);
 			var headers = ["bbx_", "bby_"];
 
+			var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 			if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
 			if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
 

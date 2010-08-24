@@ -259,31 +259,31 @@ Puzzles.icelom.prototype = {
 
 		pc.maxYdeg = 0.70;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
 
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBorders();
 
-			this.drawLines(x1,y1,x2,y2);
-			this.drawPekes(x1,y1,x2,y2,1);
+			this.drawLines();
+			this.drawPekes(1);
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawNumbers();
 
-			this.drawArrows(x1,y1,x2,y2);
+			this.drawArrows();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 
 			this.drawInOut();
 		};
 
 		// IN/OUTの矢印用に必要ですね。。
-		pc.drawArrows = function(x1,y1,x2,y2){
+		pc.drawArrows = function(){
 			this.vinc('border_arrow', 'crispEdges');
 
-			var idlist = bd.borderinside(x1,y1,x2,y2);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){ this.drawArrow1(idlist[i], bd.isArrow(idlist[i]));}
 		};
 		pc.drawArrow1 = function(id, flag){

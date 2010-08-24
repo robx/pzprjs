@@ -156,42 +156,42 @@ Puzzles.triplace.prototype = {
 		pc.borderQanscolor = "rgb(0, 160, 0)";
 		pc.setBGCellColorFunc('qsub2');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawBGEXcells(x1,y1,x2,y2);
-			this.drawQues51(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawBGEXcells();
+			this.drawQues51();
 
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawQansBorders(x1,y1,x2,y2);
-			this.drawQuesBorders(x1,y1,x2,y2);
+			this.drawGrid();
+			this.drawQansBorders();
+			this.drawQuesBorders();
 
-			this.drawBorderQsubs(x1,y1,x2,y2);
+			this.drawBorderQsubs();
 
-			this.drawChassis_ex1(x1,y1,x2,y2,false);
+			this.drawChassis_ex1(false);
 
-			this.drawNumbersOn51(x1,y1,x2,y2);
+			this.drawNumbersOn51();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
 		// 問題と回答の境界線を別々に描画するようにします
-		pc.drawQansBorders = function(x1,y1,x2,y2){
+		pc.drawQansBorders = function(){
 			this.vinc('border_answer', 'crispEdges');
 			this.bdheader = "b_bdans";
 			this.setBorderColor = function(id){ return (bd.border[id].qans===1);};
 
 			g.fillStyle = this.borderQanscolor;
-			var idlist = bd.borderinside(x1,y1,x2,y2);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 			this.isdrawBD = true;
 		};
-		pc.drawQuesBorders = function(x1,y1,x2,y2){
+		pc.drawQuesBorders = function(){
 			this.vinc('border_question', 'crispEdges');
 			this.bdheader = "b_bdques";
 			this.setBorderColor = function(id){ return (bd.border[id].ques===1);};
 
 			g.fillStyle = this.borderQuescolor;
-			var idlist = bd.borderinside(x1,y1,x2,y2);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 			this.isdrawBD = true;
 		};

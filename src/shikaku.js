@@ -89,26 +89,26 @@ Puzzles.shikaku.prototype = {
 		pc.fontsizeratio = 0.85;
 		pc.circleratio = [0, 0.40];
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
+			this.drawBorders();
 
-			this.drawCirclesAtNumber_shikaku(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
-			this.drawBorderQsubs(x1,y1,x2,y2);
+			this.drawCirclesAtNumber_shikaku();
+			this.drawNumbers();
+			this.drawBorderQsubs();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawCirclesAtNumber_shikaku = function(x1,y1,x2,y2){
+		pc.drawCirclesAtNumber_shikaku = function(){
 			this.vinc('cell_circle', 'auto');
 
 			var rsize2 = this.cw*this.circleratio[1];
 			var header = "c_cir_";
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].qnum!=-1){

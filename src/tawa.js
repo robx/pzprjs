@@ -403,17 +403,19 @@ Puzzles.tawa.prototype = {
 	graphic_init : function(){
 		pc.setBGCellColorFunc('qans1');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2,false);
-			this.drawGrid_tawa(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDotCells(false);
+			this.drawGrid_tawa();
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawNumbers();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 		// オーバーライド
 		pc.prepaint = function(x1,y1,x2,y2){
+			this.setRange(x1,y1,x2,y2);
+
 			// pc.flushCanvasの代替
 			if(g.use.canvas){
 				if(x1<=bd.minbx && y1<=bd.minby && x2>=bd.maxbx && y2>=bd.maxby){
@@ -428,11 +430,13 @@ Puzzles.tawa.prototype = {
 				this.zidx=0;
 			}
 
-			pc.paint(x1,y1,x2,y2);
+			this.paint();
 		};
 
-		pc.drawGrid_tawa = function(x1,y1,x2,y2){
+		pc.drawGrid_tawa = function(){
 			this.vinc('grid', 'crispEdges');
+
+			var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 			if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
 			if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
 

@@ -122,20 +122,20 @@ Puzzles.kakuro.prototype = {
 	graphic_init : function(){
 		pc.ttcolor = "rgb(255,255,127)";
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawBGEXcells(x1,y1,x2,y2);
-			this.drawQues51(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawBGEXcells();
+			this.drawQues51();
 
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawGrid();
+			this.drawBorders();
 
-			this.drawChassis_ex1(x1,y1,x2,y2,false);
+			this.drawChassis_ex1(false);
 
-			this.drawNumbersOn51(x1,y1,x2,y2);
-			this.drawNumbers_kakuro(x1,y1,x2,y2);
+			this.drawNumbersOn51();
+			this.drawNumbers_kakuro();
 
-			this.drawCursor(x1,y1,x2,y2);
+			this.drawCursor();
 		};
 
 		// オーバーライド drawBGCells用
@@ -161,10 +161,10 @@ Puzzles.kakuro.prototype = {
 			return false;
 		};
 
-		pc.drawNumbers_kakuro = function(x1,y1,x2,y2){
+		pc.drawNumbers_kakuro = function(){
 			this.vinc('cell_number', 'auto');
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], key = ['cell',c,'anum'].join('_');
 				if(bd.cell[c].ques!==51 && bd.cell[c].anum>0){

@@ -163,24 +163,24 @@ Puzzles.minarism.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBDMbase(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBDMbase();
 
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+			this.drawBGCells();
+			this.drawDashedGrid();
 
-			this.drawBDMarks(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawBDMarks();
+			this.drawNumbers();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget_minarism(x1,y1,x2,y2);
+			this.drawTarget_minarism();
 		};
 
-		pc.drawBDMbase = function(x1,y1,x2,y2){
+		pc.drawBDMbase = function(){
 			if(!g.use.canvas){ return;}
 			var csize = this.cw*0.29;
-			var idlist = bd.borderinside(x1,y1,x2,y2);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 
@@ -190,7 +190,7 @@ Puzzles.minarism.prototype = {
 				}
 			}
 		};
-		pc.drawBDMarks = function(x1,y1,x2,y2){
+		pc.drawBDMarks = function(){
 			this.vinc('border_mark', 'auto');
 
 			var csize = this.cw*0.27;
@@ -200,7 +200,7 @@ Puzzles.minarism.prototype = {
 			g.lineWidth = 1;
 			g.strokeStyle = this.cellcolor;
 
-			var idlist = bd.borderinside(x1,y1,x2,y2);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], obj = bd.border[id], key = ['border',id].join('_');
 				// ○の描画
@@ -239,9 +239,8 @@ Puzzles.minarism.prototype = {
 			}
 		};
 
-		pc.drawTarget_minarism = function(x1,y1,x2,y2){
-			var islarge = k.playmode;
-			this.drawCursor(x1,y1,x2,y2,islarge);
+		pc.drawTarget_minarism = function(){
+			this.drawCursor(k.playmode);
 		};
 	},
 

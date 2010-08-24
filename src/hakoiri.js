@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.3.1
+// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.3.2
 //
 Puzzles.hakoiri = function(){ };
 Puzzles.hakoiri.prototype = {
@@ -128,17 +128,17 @@ Puzzles.hakoiri.prototype = {
 		pc.bbcolor = "rgb(127, 127, 127)";
 		pc.dotcolor = pc.dotcolor_PINK;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
+			this.drawBorders();
 
-			this.drawDotCells(x1,y1,x2,y2,true);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawDotCells(true);
+			this.drawNumbers();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawCursor(x1,y1,x2,y2);
+			this.drawCursor();
 		};
 
 		pc.drawNumber1 = function(c){

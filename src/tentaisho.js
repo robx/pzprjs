@@ -277,25 +277,25 @@ Puzzles.tentaisho.prototype = {
 		pc.errbcolor1 = pc.errbcolor1_DARK;
 		pc.setBGCellColorFunc('qsub3');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
 
-			this.drawBorderAnswers(x1,y1,x2,y2);
-			this.drawBorderQsubs(x1,y1,x2,y2);
+			this.drawBorderAnswers();
+			this.drawBorderQsubs();
 
-			this.drawStars(x1,y1,x2,y2);
+			this.drawStars();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 		};
 
-		pc.drawBorderAnswers = function(x1,y1,x2,y2){
+		pc.drawBorderAnswers = function(){
 			this.vinc('border', 'crispEdges');
 
 			var lw = this.lw, lm = this.lm;
 			var header = "b_bd_";
 
-			var idlist = bd.borderinside(x1,y1,x2,y2);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 				if(bd.border[id].qans===1){
@@ -311,13 +311,14 @@ Puzzles.tentaisho.prototype = {
 				else{ this.vhide(header+id);}
 			}
 		};
-		pc.drawStars = function(x1,y1,x2,y2){
+		pc.drawStars = function(){
 			this.vinc('star', 'auto');
 
 			g.lineWidth = Math.max(this.cw*0.04, 1);
 			var headers = ["s_star1_", "s_star2_"];
 
-			var idlist = bd.starinside(x1,y1,x2,y2);
+			var d = this.range;
+			var idlist = bd.starinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], bx=bd.star[id].bx, by=bd.star[id].by;
 

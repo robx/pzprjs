@@ -113,19 +113,19 @@ Puzzles.kramma.prototype = {
 
 		pc.crosssize = 0.15;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
+			this.drawBorders();
 
-			this.drawQnumCircles(x1,y1,x2,y2);
-			this.drawCrossMarks(x1,y1,x2,y2);
+			this.drawQnumCircles();
+			this.drawCrossMarks();
 
-			this.drawHatenas(x1,y1,x2,y2);
+			this.drawHatenas();
 
-			this.drawBorderQsubs(x1,y1,x2,y2);
+			this.drawBorderQsubs();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 		};
 	},
 

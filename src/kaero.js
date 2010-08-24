@@ -109,31 +109,31 @@ Puzzles.kaero.prototype = {
 		pc.qsubcolor2 = "rgb(255, 255, 144)";
 		pc.setBGCellColorFunc('qsub2');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
+			this.drawBorders();
 
-			this.drawTip(x1,y1,x2,y2);
-			this.drawPekes(x1,y1,x2,y2,0);
-			this.drawLines(x1,y1,x2,y2);
+			this.drawTip();
+			this.drawPekes(0);
+			this.drawLines();
 
-			this.drawCellSquare(x1,y1,x2,y2);
-			this.drawNumbers_kaero(x1,y1,x2,y2);
+			this.drawCellSquare();
+			this.drawNumbers_kaero();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawTip = function(x1,y1,x2,y2){
+		pc.drawTip = function(){
 			this.vinc('cell_linetip', 'auto');
 
 			var tsize = this.cw*0.30;
 			var tplus = this.cw*0.05;
 			var header = "c_tip_";
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				this.vdel([header+c]);
@@ -160,14 +160,14 @@ Puzzles.kaero.prototype = {
 				}
 			}
 		};
-		pc.drawCellSquare = function(x1,y1,x2,y2){
+		pc.drawCellSquare = function(){
 			this.vinc('cell_number_base', 'crispEdges');
 
 			var mgnw = this.cw*0.15;
 			var mgnh = this.ch*0.15;
 			var header = "c_sq_";
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj=bd.cell[c];
 				if(obj.qnum!=-1){
@@ -184,10 +184,10 @@ Puzzles.kaero.prototype = {
 				else{ this.vhide(header+c);}
 			}
 		};
-		pc.drawNumbers_kaero = function(x1,y1,x2,y2){
+		pc.drawNumbers_kaero = function(){
 			this.vinc('cell_number', 'auto');
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
 				if(bd.cell[c].qnum!==-1){

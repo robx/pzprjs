@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 美術館版 lightup.js v3.3.1
+// パズル固有スクリプト部 美術館版 lightup.js v3.3.2
 //
 Puzzles.lightup = function(){ };
 Puzzles.lightup.prototype = {
@@ -173,18 +173,18 @@ Puzzles.lightup.prototype = {
 
 		pc.lightcolor = "rgb(224, 255, 127)";
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
+			this.drawBlackCells();
+			this.drawNumbers();
 
-			this.drawAkari(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2,true);
+			this.drawAkari();
+			this.drawDotCells(true);
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
 		// オーバーライド drawBGCells用
@@ -195,14 +195,14 @@ Puzzles.lightup.prototype = {
 			return false;
 		};
 
-		pc.drawAkari = function(x1,y1,x2,y2){
+		pc.drawAkari = function(){
 			this.vinc('cell_akari', 'auto');
 
 			var rsize = this.cw*0.40;
 			var lampcolor = "rgb(0, 127, 96)";
 			var header = "c_AK_";
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.isAkari(c)){

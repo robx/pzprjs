@@ -138,29 +138,29 @@ Puzzles.reflect.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
 
-			this.drawPekes(x1,y1,x2,y2,0);
-			this.drawLines(x1,y1,x2,y2);
+			this.drawPekes(0);
+			this.drawLines();
 
-			this.drawTriangle(x1,y1,x2,y2);
-			this.drawTriangleBorder(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawTriangle();
+			this.drawTriangleBorder();
+			this.drawNumbers();
 
-			this.draw11(x1,y1,x2,y2);
+			this.draw11();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawTriangleBorder = function(x1,y1,x2,y2){
+		pc.drawTriangleBorder = function(){
 			this.vinc('cell_triangle_border', 'crispEdges');
 
 			var header = "b_tb_";
-			var idlist = bd.borderinside(x1,y1,x2,y2);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], lflag = !(bd.border[id].bx&1);
 				var qs1 = bd.QuC(bd.border[id].cellcc[0]),
@@ -180,10 +180,10 @@ Puzzles.reflect.prototype = {
 				else{ this.vhide(header+id);}
 			}
 		};
-		pc.draw11 = function(x1,y1,x2,y2){
+		pc.draw11 = function(){
 			this.vinc('cell_ques', 'crispEdges');
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){ this.draw11_1(clist[i]);}
 		};
 		pc.draw11_1 = function(id){

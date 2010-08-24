@@ -202,19 +202,20 @@ Puzzles.goishi.prototype = {
 		pc.errcolor1 = "rgb(208, 0, 0)";
 		pc.errbcolor1 = "rgb(255, 192, 192)";
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawCenterLines(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawCenterLines();
 
-			if(g.use.canvas){ x1--; y1--; x2++; y2++;}
-			this.drawCircles_goishi(x1,y1,x2,y2);
-			this.drawCellSquare(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawCircles_goishi();
+			this.drawCellSquare();
+			this.drawNumbers();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawCenterLines = function(x1,y1,x2,y2){
+		pc.drawCenterLines = function(){
 			this.vinc('centerline', 'crispEdges');
+
+			var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 			if(x1<bd.minbx+1){ x1=bd.minbx+1;} if(x2>bd.maxbx-1){ x2=bd.maxbx-1;}
 			if(y1<bd.minby+1){ y1=bd.minby+1;} if(y2>bd.maxby-1){ y2=bd.maxby-1;}
 			x1|=1, y1|=1;
@@ -223,13 +224,13 @@ Puzzles.goishi.prototype = {
 			for(var i=x1;i<=x2;i+=2){ if(this.vnop("cliney_"+i,this.NONE)){ g.fillRect( i*this.bw, y1*this.bh, 1, (y2-y1)*this.bh+1);} }
 			for(var i=y1;i<=y2;i+=2){ if(this.vnop("clinex_"+i,this.NONE)){ g.fillRect(x1*this.bw,  i*this.bh, (x2-x1)*this.bw+1, 1);} }
 		};
-		pc.drawCircles_goishi = function(x1,y1,x2,y2){
+		pc.drawCircles_goishi = function(){
 			this.vinc('cell_goishi', 'auto');
 
 			g.lineWidth = Math.max(this.cw*0.05, 1);
 			var rsize  = this.cw*0.38;
 			var header = "c_cir_";
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && bd.cell[c].anum===-1){
@@ -242,14 +243,14 @@ Puzzles.goishi.prototype = {
 				else{ this.vhide([header+c]);}
 			}
 		};
-		pc.drawCellSquare = function(x1,y1,x2,y2){
+		pc.drawCellSquare = function(){
 			this.vinc('cell_number_base', 'crispEdges');
 
 			var mgnw = this.cw*0.1;
 			var mgnh = this.ch*0.1;
 			var header = "c_sq2_";
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && bd.cell[c].anum!==-1){

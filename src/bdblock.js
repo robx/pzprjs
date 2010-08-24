@@ -87,19 +87,19 @@ Puzzles.bdblock.prototype = {
 		pc.borderQanscolor = "black";
 		pc.crosssize = 0.15;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
+			this.drawBorders();
 
-			this.drawNumbers(x1,y1,x2,y2);
-			this.drawCrossMarks(x1,y1,x2,y2);
+			this.drawNumbers();
+			this.drawCrossMarks();
 
-			this.drawBorderQsubs(x1,y1,x2,y2);
+			this.drawBorderQsubs();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 	},
 

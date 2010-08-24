@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.3.1
+// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.3.2
 //
 Puzzles.tatamibari = function(){ };
 Puzzles.tatamibari.prototype = {
@@ -109,22 +109,22 @@ Puzzles.tatamibari.prototype = {
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.setBorderColorFunc('qans');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
+			this.drawBorders();
 
-			this.drawMarks(x1,y1,x2,y2);
+			this.drawMarks();
 
-			this.drawHatenas(x1,y1,x2,y2);
-			this.drawBorderQsubs(x1,y1,x2,y2);
+			this.drawHatenas();
+			this.drawBorderQsubs();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawMarks = function(x1,y1,x2,y2){
+		pc.drawMarks = function(){
 			this.vinc('cell_ques', 'crispEdges');
 
 			var lw = Math.max(this.cw/12, 3);	//LineWidth
@@ -132,7 +132,7 @@ Puzzles.tatamibari.prototype = {
 			var headers = ["c_lp1_", "c_lp2_"];
 			g.fillStyle = this.borderQuescolor;
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				var qn = bd.cell[c].qnum;

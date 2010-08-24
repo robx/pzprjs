@@ -99,22 +99,22 @@ Puzzles.firefly.prototype = {
 		pc.fontErrcolor = pc.fontcolor;
 		pc.fontsizeratio = 0.85;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawDashedCenterLines(x1,y1,x2,y2);
-			this.drawLines(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawDashedCenterLines();
+			this.drawLines();
 
-			this.drawPekes(x1,y1,x2,y2,0);
+			this.drawPekes(0);
 
-			this.drawFireflies(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawFireflies();
+			this.drawNumbers();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawFireflies = function(x1,y1,x2,y2){
+		pc.drawFireflies = function(){
 			this.vinc('cell_firefly', 'auto');
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){ this.drawFirefly1(clist[i]);}
 		};
 		pc.drawFirefly1 = function(c){

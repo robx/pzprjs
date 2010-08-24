@@ -134,14 +134,14 @@ Puzzles.gokigen.prototype = {
 		pc.crosssize = 0.33;
 		pc.chassisflag = false;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
 
-			this.drawSlashes(x1,y1,x2,y2);
+			this.drawSlashes();
 
-			this.drawCrosses(x1,y1,x2,y2);
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawCrosses();
+			this.drawTarget();
 		};
 
 		// オーバーライド
@@ -153,13 +153,13 @@ Puzzles.gokigen.prototype = {
 			return false;
 		};
 
-		pc.drawSlashes = function(x1,y1,x2,y2){
+		pc.drawSlashes = function(){
 			this.vinc('cell_slash', 'auto');
 
 			var headers = ["c_sl1_", "c_sl2_"];
 			g.lineWidth = Math.max(this.cw/8, 2);
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 

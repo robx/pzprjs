@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クロシュート版 kurochute.js v3.3.1
+// パズル固有スクリプト部 クロシュート版 kurochute.js v3.3.2
 //
 Puzzles.kurochute = function(){ };
 Puzzles.kurochute.prototype = {
@@ -85,17 +85,17 @@ Puzzles.kurochute.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.qsubcolor2 = pc.bcolor_GREEN;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2,false);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDotCells(false);
+			this.drawGrid();
+			this.drawBlackCells();
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawNumbers();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
 		// オーバーライド drawBGCells用 (qsub==1は表示しない..)

@@ -10,7 +10,7 @@ Puzzles.shugaku.prototype = {
 		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
 
 		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
 		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
 		k.isLineCross     = false;	// 線が交差するパズル
@@ -202,31 +202,29 @@ Puzzles.shugaku.prototype = {
 		pc.targetbgcolor = "rgb(255, 192, 192)";
 		pc.circleratio = [0.44, 0.44];
 
-		pc.paint = function(x1,y1,x2,y2){
-			if(g.use.canvas){ x1--; y1--; x2++; y2++;}	// Undo時に跡が残ってしまう為
+		pc.paint = function(){
+			this.drawDotCells(false);
+			this.drawDashedGrid();
+			this.drawBlackCells();
 
-			this.drawDotCells(x1,y1,x2,y2,false);
-			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+			this.drawFutons();
+			this.drawFutonBorders();
 
-			this.drawFutons(x1,y1,x2,y2);
-			this.drawFutonBorders(x1,y1,x2,y2);
+			this.drawTargetFuton();
 
-			this.drawTargetFuton(x1,y1,x2,y2);
+			this.drawCirclesAtNumber();
+			this.drawNumbers();
 
-			this.drawCirclesAtNumber(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawChassis(x1,y1,x2,y2);
-
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawFutons = function(x1,y1,x2,y2){
+		pc.drawFutons = function(){
 			this.vinc('cell_back', 'crispEdges');
 
 			var header = "c_full_";
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].qans>=11){
@@ -259,7 +257,7 @@ Puzzles.shugaku.prototype = {
 			else{ this.vhide([header]);}
 		};
 
-		pc.drawFutonBorders = function(x1,y1,x2,y2){
+		pc.drawFutonBorders = function(){
 			this.vinc('border_futon', 'crispEdges');
 
 			var lw = this.lw, lm = this.lm;
@@ -267,32 +265,23 @@ Puzzles.shugaku.prototype = {
 			var domb1 = {11:1,13:1,14:1,15:1,16:1,18:1,19:1,20:1};
 			var doma2 = {11:1,12:1,13:1,14:1,16:1,17:1,18:1,19:1};
 			var domb2 = {11:1,12:1,13:1,15:1,16:1,17:1,18:1,20:1};
-			var header = "b_bd";
 			g.fillStyle = "black";
 
-			for(var by=Math.max(bd.minby+1,y1),maxy=Math.min(bd.maxby-1,y2);by<=maxy;by++){
-				for(var bx=Math.max(bd.minbx+1,x1),maxx=Math.min(bd.maxbx-1,x2);bx<=maxx;bx++){
-					if(!((bx+by)&1)){ continue;}
-					var a = bd.QaC( bd.cnum(bx-(by&1), by-(bx&1)) );
-					var b = bd.QaC( bd.cnum(bx+(by&1), by+(bx&1)) );
-					var vid = [header,bx,by].join("_");
+			var idlist = this.range.borders;
+			for(var i=0;i<idlist.length;i++){
+				var id=idlist[i], bx=bd.border[id].bx;
+				var a = bd.QaC(bd.border[id].cellcc[0]);
+				var b = bd.QaC(bd.border[id].cellcc[1]);
+				var isdraw = ((bx&1)?(!!doma1[a]||!!domb1[b]):(!!doma2[a]||!!domb2[b]));
 
-					if     ((bx&1) && !(isNaN(doma1[a])&&isNaN(domb1[b]))){
-						if(this.vnop(vid,this.NONE)){
-							g.fillRect((bx-1)*this.bw-lm, by*this.bh-lm, this.cw+lw, lw);
-						}
-					}
-					else if((by&1) && !(isNaN(doma2[a])&&isNaN(domb2[b]))){
-						if(this.vnop(vid,this.NONE)){
-							g.fillRect(bx*this.bw-lm, (by-1)*this.bh-lm, lw, this.ch+lw);
-						}
-					}
-					else{ this.vhide(vid);}
-				}
+				if(isdraw){ this.drawBorder1(id);}
+				else      { this.vhide([[this.bdheader,id].join("_")]);}
 			}
+			this.isdrawBD = true;
 		};
+		pc.setBorderColor = function(id){ return true;};
 
-		pc.drawTargetFuton = function(x1,y1,x2,y2){
+		pc.drawTargetFuton = function(){
 			var cc = mv.mouseCell;
 			var inputting = (cc!==null && mv.firstPoint.valid());
 
@@ -343,9 +332,8 @@ Puzzles.shugaku.prototype = {
 
 				// 入力中ふとんの間の太線を消す
 				if(!g.use.canvas && cc!==null && adj!==null){
-					var bx = (bd.cell[cc].bx+bd.cell[adj].bx)/2;
-					var by = (bd.cell[cc].by+bd.cell[adj].by)/2;
-					this.vhide([["b_bd",bx,by].join("_")]);
+					var id = bd.bnum((bd.cell[cc].bx+bd.cell[adj].bx)/2, (bd.cell[cc].by+bd.cell[adj].by)/2);
+					this.vhide([[this.bdheader,id].join("_")]);
 				}
 			}
 			else{

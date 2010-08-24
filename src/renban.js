@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 連番窓口版 renban.js v3.3.1
+// パズル固有スクリプト部 連番窓口版 renban.js v3.3.2
 //
 Puzzles.renban = function(){ };
 Puzzles.renban.prototype = {
@@ -80,18 +80,18 @@ Puzzles.renban.prototype = {
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.borderQsubcolor = pc.borderQuescolor;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawNumbers();
 
-			this.drawBorders(x1,y1,x2,y2);
-			this.drawBorderQsubs(x1,y1,x2,y2);
+			this.drawBorders();
+			this.drawBorderQsubs();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawCursor(x1,y1,x2,y2);
+			this.drawCursor();
 		};
 
 		// エラー時に赤く表示したいので上書き

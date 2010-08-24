@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.3.1
+// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.3.2
 //
 Puzzles.tateyoko = function(){ };
 Puzzles.tateyoko.prototype = {
@@ -186,25 +186,25 @@ Puzzles.tateyoko.prototype = {
 		pc.errbcolor1 = pc.errbcolor1_DARK;
 		pc.errbcolor2 = "white";
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
 
-			this.drawTateyokos(x1,y1,x2,y2)
+			this.drawTateyokos()
 
-			this.drawBcellsAtNumber(x1,y1,x2,y2);
-			this.drawNumbers_tateyoko(x1,y1,x2,y2);
+			this.drawBcellsAtNumber();
+			this.drawNumbers_tateyoko();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawTateyokos = function(x1,y1,x2,y2){
+		pc.drawTateyokos = function(){
 			this.vinc('cell_tateyoko', 'crispEdges');
 
 			var headers = ["c_bar1_", "c_bar2_"];
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				var lw = Math.max(this.cw/6, 3);	//LineWidth
@@ -234,11 +234,11 @@ Puzzles.tateyoko.prototype = {
 			}
 		};
 
-		pc.drawBcellsAtNumber = function(x1,y1,x2,y2){
+		pc.drawBcellsAtNumber = function(){
 			this.vinc('cell_number', 'crispEdges');
 
 			var header = "c_full_";
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c=clist[i], obj=bd.cell[c];
 				if(bd.cell[c].ques===1){
@@ -250,10 +250,10 @@ Puzzles.tateyoko.prototype = {
 				else{ this.vhide(header+c);}
 			}
 		};
-		pc.drawNumbers_tateyoko = function(x1,y1,x2,y2){
+		pc.drawNumbers_tateyoko = function(){
 			this.vinc('cell_number', 'auto');
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
 				var num = bd.cell[c].qnum;

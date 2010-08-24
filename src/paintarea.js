@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ペイントエリア版 paintarea.js v3.3.1
+// パズル固有スクリプト部 ペイントエリア版 paintarea.js v3.3.2
 //
 Puzzles.paintarea = function(){ };
 Puzzles.paintarea.prototype = {
@@ -90,20 +90,20 @@ Puzzles.paintarea.prototype = {
 		pc.bbcolor = "rgb(127, 127, 127)";
 		pc.setBGCellColorFunc('qans1');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
+			this.drawBlackCells();
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawNumbers();
 
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBorders();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawBoxBorders(x1,y1,x2,y2,true);
+			this.drawBoxBorders(true);
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 	},
 

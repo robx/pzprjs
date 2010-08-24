@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ましゅ版 mashu.js v3.3.1
+// パズル固有スクリプト部 ましゅ版 mashu.js v3.3.2
 //
 Puzzles.mashu = function(){ };
 Puzzles.mashu.prototype = {
@@ -93,17 +93,17 @@ Puzzles.mashu.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
 
-			this.drawQnumCircles(x1,y1,x2,y2);
-			this.drawHatenas(x1,y1,x2,y2);
+			this.drawQnumCircles();
+			this.drawHatenas();
 
-			this.drawPekes(x1,y1,x2,y2,0);
-			this.drawLines(x1,y1,x2,y2);
+			this.drawPekes(0);
+			this.drawLines();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 		};
 	},
 

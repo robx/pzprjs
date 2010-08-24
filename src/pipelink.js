@@ -142,25 +142,25 @@ Puzzles.pipelink.prototype = {
 
 		pc.minYdeg = 0.42;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
 
-			this.drawCircles_pipelink(x1,y1,x2,y2,(this.disp===0));
+			this.drawCircles_pipelink((this.disp===0));
 
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBorders();
 
-			this.drawHatenas(x1,y1,x2,y2);
+			this.drawHatenas();
 
-			this.drawLines(x1,y1,x2,y2);
+			this.drawLines();
 
-			this.drawPekes(x1,y1,x2,y2,0);
+			this.drawPekes(0);
 
-			this.drawLineParts(x1,y1,x2,y2);
+			this.drawLineParts();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
 		pc.setBGCellColor = function(c){
@@ -179,11 +179,11 @@ Puzzles.pipelink.prototype = {
 			return false;
 		};
 
-		pc.drawCircles_pipelink = function(x1,y1,x2,y2,isdraw){
+		pc.drawCircles_pipelink = function(isdraw){
 			this.vinc('cell_circle', 'auto');
 
 			var header = "c_cir_";
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			if(isdraw){
 				var rsize  = this.cw*0.40;
 				for(var i=0;i<clist.length;i++){

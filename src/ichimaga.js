@@ -98,16 +98,16 @@ Puzzles.ichimaga.prototype = {
 		pc.fontsizeratio = 0.85;
 		pc.circleratio = [0.38, 0.38];
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawDashedCenterLines(x1,y1,x2,y2);
-			this.drawLines(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawDashedCenterLines();
+			this.drawLines();
 
-			this.drawPekes(x1,y1,x2,y2,0);
+			this.drawPekes(0);
 
-			this.drawCirclesAtNumber(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawCirclesAtNumber();
+			this.drawNumbers();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
 		pc.repaintParts = function(idlist){

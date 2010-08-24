@@ -189,23 +189,23 @@ Puzzles.loopsp.prototype = {
 		pc.minYdeg = 0.36;
 		pc.maxYdeg = 0.74;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			if(g.use.canvas){ this.drawPekes(x1,y1,x2,y2,2);}
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			if(g.use.canvas){ this.drawPekes(2);}
+			this.drawDashedGrid();
 
-			this.drawLines(x1,y1,x2,y2);
+			this.drawLines();
 
-			this.drawCirclesAtNumber(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawCirclesAtNumber();
+			this.drawNumbers();
 
-			this.drawPekes(x1,y1,x2,y2,1);
+			this.drawPekes(1);
 
-			this.drawLineParts(x1,y1,x2,y2);
+			this.drawLineParts();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
 		pc.repaintParts = function(idlist){
