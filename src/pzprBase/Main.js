@@ -256,7 +256,7 @@ PBase.prototype = {
 		ci[1] = (wwidth*ws.limit)/(k.cellsize*cr.limit);
 
 		// 横幅いっぱいに広げたい場合
-		if(k.os.iPhoneOS){
+		if(k.mobile){
 			mwidth = wwidth*0.98;
 			k.cwidth = k.cheight = ((mwidth*0.92)/cols)|0;
 			if(k.cwidth < k.cellsize){ k.cwidth = k.cheight = k.cellsize;}
@@ -359,6 +359,7 @@ PBase.prototype = {
 		k.cellsize = 36;
 		k.bdmargin = 0.70;
 		k.bdmargin_image = 0.10;
+		if(k.mobile){ k.bdmargin = k.bdmargin_image;}
 
 		// 通常preload_funcで初期化されるenc,fioをここで生成する
 		enc = new Encode();

@@ -149,6 +149,7 @@ var k = {
 	// for_test.js用
 	scriptcheck : false
 };
+if(k.mobile){ k.bdmargin = k.bdmargin_image;}
 
 //---------------------------------------------------------------------------
 // ★その他のグローバル変数
