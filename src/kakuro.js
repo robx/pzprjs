@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カックロ版 kakuro.js v3.3.1
+// パズル固有スクリプト部 カックロ版 kakuro.js v3.3.2
 //
 Puzzles.kakuro = function(){ };
 Puzzles.kakuro.prototype = {
@@ -130,7 +130,7 @@ Puzzles.kakuro.prototype = {
 			this.drawGrid(x1,y1,x2,y2);
 			this.drawBorders(x1,y1,x2,y2);
 
-			this.drawChassis_ex1(x1-1,y1-1,x2,y2,false);
+			this.drawChassis_ex1(x1,y1,x2,y2,false);
 
 			this.drawNumbersOn51(x1,y1,x2,y2);
 			this.drawNumbers_kakuro(x1,y1,x2,y2);

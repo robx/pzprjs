@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.3.1
+// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.3.2
 //
 Puzzles.icebarn = function(){ };
 Puzzles.icebarn.prototype = {
@@ -255,7 +255,7 @@ Puzzles.icebarn.prototype = {
 		pc.drawArrows = function(x1,y1,x2,y2){
 			this.vinc('border_arrow', 'crispEdges');
 
-			var idlist = bd.borderinside(x1-1,y1-1,x2+2,y2+2);
+			var idlist = bd.borderinside(x1,y1,x2,y2);
 			for(var i=0;i<idlist.length;i++){ this.drawArrow1(idlist[i], bd.isArrow(idlist[i]));}
 		};
 		pc.drawArrow1 = function(id, flag){
@@ -265,7 +265,7 @@ Puzzles.icebarn.prototype = {
 			var ll = this.cw*0.35;				//LineLength
 			var lw = Math.max(this.cw/36, 1);	//LineWidth
 			var lm = lw/2;					//LineMargin
-			var px=bd.border[id].px; var py=bd.border[id].py;
+			var px=bd.border[id].px, py=bd.border[id].py;
 
 			g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.cellcolor);
 			if(this.vnop(vids[0],this.FILL)){

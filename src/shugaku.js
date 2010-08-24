@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.3.1
+// パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.3.2
 //
 Puzzles.shugaku = function(){ };
 Puzzles.shugaku.prototype = {
@@ -203,7 +203,7 @@ Puzzles.shugaku.prototype = {
 		pc.circleratio = [0.44, 0.44];
 
 		pc.paint = function(x1,y1,x2,y2){
-			x1--; y1--; x2++; y2++;	// Undo時に跡が残ってしまう為
+			if(g.use.canvas){ x1--; y1--; x2++; y2++;}	// Undo時に跡が残ってしまう為
 
 			this.drawDotCells(x1,y1,x2,y2,false);
 			this.drawDashedGrid(x1,y1,x2,y2);
@@ -270,8 +270,8 @@ Puzzles.shugaku.prototype = {
 			var header = "b_bd";
 			g.fillStyle = "black";
 
-			for(var by=Math.max(bd.minby+1,y1-2),maxy=Math.min(bd.maxby-1,y2+2);by<=maxy;by++){
-				for(var bx=Math.max(bd.minbx+1,x1-2),maxx=Math.min(bd.maxbx-1,x2+2);bx<=maxx;bx++){
+			for(var by=Math.max(bd.minby+1,y1),maxy=Math.min(bd.maxby-1,y2);by<=maxy;by++){
+				for(var bx=Math.max(bd.minbx+1,x1),maxx=Math.min(bd.maxbx-1,x2);bx<=maxx;bx++){
 					if(!((bx+by)&1)){ continue;}
 					var a = bd.QaC( bd.cnum(bx-(by&1), by-(bx&1)) );
 					var b = bd.QaC( bd.cnum(bx+(by&1), by+(bx&1)) );

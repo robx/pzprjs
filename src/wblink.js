@@ -158,8 +158,8 @@ Puzzles.wblink.prototype = {
 			this.drawPekes(x1,y1,x2,y2,0);
 			this.drawLines(x1,y1,x2,y2);
 
-			this.drawQnumCircles(x1-2,y1-2,x2+1,y2+1);
-			this.drawHatenas(x1-2,y1-2,x2+1,y2+1);
+			this.drawQnumCircles(x1,y1,x2,y2);
+			this.drawHatenas(x1,y1,x2,y2);
 
 			this.drawTarget(x1,y1,x2,y2);
 		};

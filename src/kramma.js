@@ -117,7 +117,7 @@ Puzzles.kramma.prototype = {
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawQnumCircles(x1,y1,x2,y2);
-			this.drawCrossMarks(x1,y1,x2+1,y2+1);
+			this.drawCrossMarks(x1,y1,x2,y2);
 
 			this.drawHatenas(x1,y1,x2,y2);
 

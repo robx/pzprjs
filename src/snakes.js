@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へびいちご版 snakes.js v3.3.1
+// パズル固有スクリプト部 へびいちご版 snakes.js v3.3.2
 //
 Puzzles.snakes = function(){ };
 Puzzles.snakes.prototype = {
@@ -150,7 +150,7 @@ Puzzles.snakes.prototype = {
 		pc.setCellColorFunc('qnum');
 
 		pc.paint = function(x1,y1,x2,y2){
-			x1--; y1--; x2++; y2++;	// 跡が残ってしまう為
+			if(g.use.canvas){ x1--; y1--; x2++; y2++;}	// 跡が残ってしまう為
 
 			this.drawBGCells(x1,y1,x2,y2);
 			this.drawDotCells(x1,y1,x2,y2,true);
@@ -159,8 +159,8 @@ Puzzles.snakes.prototype = {
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawBlackCells(x1,y1,x2,y2);
-			this.drawArrowNumbers(x1-2,y1-2,x2+2,y2+2);
-			this.drawAnswerNumbers(x1-2,y1-2,x2+2,y2+2);
+			this.drawArrowNumbers(x1,y1,x2,y2);
+			this.drawAnswerNumbers(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 
@@ -186,7 +186,7 @@ Puzzles.snakes.prototype = {
 		pc.drawAnswerNumbers = function(x1,y1,x2,y2){
 			this.vinc('cell_number', 'auto');
 
-			var clist = bd.cellinside(x1-1,y1-1,x2+1,y2+1);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
 				if(obj.qnum===-1 && obj.anum>0){

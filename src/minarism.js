@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 マイナリズム版 minarism.js v3.3.1
+// パズル固有スクリプト部 マイナリズム版 minarism.js v3.3.2
 //
 Puzzles.minarism = function(){ };
 Puzzles.minarism.prototype = {
@@ -167,7 +167,7 @@ Puzzles.minarism.prototype = {
 			this.drawBDMbase(x1,y1,x2,y2);
 
 			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1-1,y1-1,x2,y2);
+			this.drawDashedGrid(x1,y1,x2,y2);
 
 			this.drawBDMarks(x1,y1,x2,y2);
 			this.drawNumbers(x1,y1,x2,y2);
@@ -180,7 +180,7 @@ Puzzles.minarism.prototype = {
 		pc.drawBDMbase = function(x1,y1,x2,y2){
 			if(!g.use.canvas){ return;}
 			var csize = this.cw*0.29;
-			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+			var idlist = bd.borderinside(x1,y1,x2,y2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 
@@ -200,7 +200,7 @@ Puzzles.minarism.prototype = {
 			g.lineWidth = 1;
 			g.strokeStyle = this.cellcolor;
 
-			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+			var idlist = bd.borderinside(x1,y1,x2,y2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], obj = bd.border[id], key = ['border',id].join('_');
 				// ○の描画

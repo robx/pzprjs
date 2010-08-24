@@ -1,4 +1,4 @@
-// Graphic.js v3.3.1
+// Graphic.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
@@ -405,7 +405,7 @@ Graphic.prototype = {
 		this.vinc('excell_back', 'crispEdges');
 
 		var header = "ex_full_";
-		var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
+		var exlist = bd.excellinside(x1,y1,x2,y2);
 		for(var i=0;i<exlist.length;i++){
 			var c = exlist[i];
 			if(this.setBGEXcellColor(c)){
@@ -643,7 +643,7 @@ Graphic.prototype = {
 	drawBorders : function(x1,y1,x2,y2){
 		this.vinc('border', 'crispEdges');
 
-		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+		var idlist = bd.borderinside(x1,y1,x2,y2);
 		for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 		this.isdrawBD = true;
 	},
@@ -703,7 +703,7 @@ Graphic.prototype = {
 		var header = "b_qsub1_";
 		g.fillStyle = this.borderQsubcolor;
 
-		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+		var idlist = bd.borderinside(x1,y1,x2,y2);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
 			if(bd.border[id].qsub===1){
@@ -786,7 +786,7 @@ Graphic.prototype = {
 	drawLines : function(x1,y1,x2,y2){
 		this.vinc('line', 'crispEdges');
 
-		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+		var idlist = bd.borderinside(x1,y1,x2,y2);
 		for(var i=0;i<idlist.length;i++){ this.drawLine1(idlist[i]);}
 		this.addlw = 0;
 	},
@@ -825,7 +825,7 @@ Graphic.prototype = {
 		g.strokeStyle = this.pekecolor;
 		g.lineWidth = 1;
 
-		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+		var idlist = bd.borderinside(x1,y1,x2,y2);
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
 			if(bd.border[id].qsub!==2){ this.vhide([headers[0]+id, headers[1]+id]); continue;}
@@ -960,7 +960,7 @@ Graphic.prototype = {
 	drawCirclesAtNumber : function(x1,y1,x2,y2){
 		this.vinc('cell_circle', 'auto');
 
-		var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
+		var clist = bd.cellinside(x1,y1,x2,y2);
 		for(var i=0;i<clist.length;i++){ this.drawCircle1AtNumber(clist[i]);}
 	},
 	drawCircle1AtNumber : function(c){
@@ -1051,7 +1051,7 @@ Graphic.prototype = {
 		var header = "ex_slash51_";
 		g.strokeStyle = this.cellcolor;
 		g.lineWidth = 1;
-		var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
+		var exlist = bd.excellinside(x1,y1,x2,y2);
 		for(var i=0;i<exlist.length;i++){
 			var c = exlist[i], px = bd.excell[c].px, py = bd.excell[c].py;
 			if(this.vnop(header+c,this.NONE)){
@@ -1064,7 +1064,7 @@ Graphic.prototype = {
 
 		g.fillStyle = this.cellcolor;
 		var headers = ["ex_bdx_", "ex_bdy_"];
-		var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
+		var exlist = bd.excellinside(x1,y1,x2,y2);
 		for(var i=0;i<exlist.length;i++){
 			var c = exlist[i], px = bd.excell[c].px, py = bd.excell[c].py;
 
@@ -1089,8 +1089,8 @@ Graphic.prototype = {
 	drawNumbersOn51 : function(x1,y1,x2,y2){
 		this.vinc('cell_number51', 'auto');
 
-		for(var bx=(x1|1)-2;bx<=x2+2;bx+=2){
-			for(var by=(y1|1)-2;by<=y2+2;by+=2){
+		for(var bx=(x1|1);bx<=x2;bx+=2){
+			for(var by=(y1|1);by<=y2;by+=2){
 				// cell上だった場合
 				if(bx!==-1 && by!==-1){
 					var c = bd.cnum(bx,by);
@@ -1168,8 +1168,8 @@ Graphic.prototype = {
 
 		if(k.playmode){ return;}
 
-		if(tc.cursor.x < x1 || x2+2 < tc.cursor.x){ return;}
-		if(tc.cursor.y < y1 || y2+2 < tc.cursor.y){ return;}
+		if(tc.cursor.x < x1 || x2 < tc.cursor.x){ return;}
+		if(tc.cursor.y < y1 || y2 < tc.cursor.y){ return;}
 
 		var cc = tc.getTCC(), ex = null;
 		if(cc===null){ ex = tc.getTEC();}
@@ -1369,7 +1369,7 @@ Graphic.prototype = {
 			}
 
 			var headers = ["chs1_sub_", "chs2_sub_"];
-			var clist = bd.cellinside(x1-1,y1-1,x2+1,y2+1);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], bx = bd.cell[c].bx, by = bd.cell[c].by;
 				var px = bd.cell[c].px, py = bd.cell[c].py;

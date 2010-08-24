@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 碁石ひろい版 goishi.js v3.3.1
+// パズル固有スクリプト部 碁石ひろい版 goishi.js v3.3.2
 //
 Puzzles.goishi = function(){ };
 Puzzles.goishi.prototype = {
@@ -205,7 +205,7 @@ Puzzles.goishi.prototype = {
 		pc.paint = function(x1,y1,x2,y2){
 			this.drawCenterLines(x1,y1,x2,y2);
 
-			x1--; y1--; x2++; y2++;
+			if(g.use.canvas){ x1--; y1--; x2++; y2++;}
 			this.drawCircles_goishi(x1,y1,x2,y2);
 			this.drawCellSquare(x1,y1,x2,y2);
 			this.drawNumbers(x1,y1,x2,y2);

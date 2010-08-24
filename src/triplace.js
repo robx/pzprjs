@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 トリプレイス版 triplace.js v3.3.1
+// パズル固有スクリプト部 トリプレイス版 triplace.js v3.3.2
 //
 Puzzles.triplace = function(){ };
 Puzzles.triplace.prototype = {
@@ -167,7 +167,7 @@ Puzzles.triplace.prototype = {
 
 			this.drawBorderQsubs(x1,y1,x2,y2);
 
-			this.drawChassis_ex1(x1-1,y1-1,x2,y2,false);
+			this.drawChassis_ex1(x1,y1,x2,y2,false);
 
 			this.drawNumbersOn51(x1,y1,x2,y2);
 
@@ -181,7 +181,7 @@ Puzzles.triplace.prototype = {
 			this.setBorderColor = function(id){ return (bd.border[id].qans===1);};
 
 			g.fillStyle = this.borderQanscolor;
-			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+			var idlist = bd.borderinside(x1,y1,x2,y2);
 			for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 			this.isdrawBD = true;
 		};
@@ -191,7 +191,7 @@ Puzzles.triplace.prototype = {
 			this.setBorderColor = function(id){ return (bd.border[id].ques===1);};
 
 			g.fillStyle = this.borderQuescolor;
-			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+			var idlist = bd.borderinside(x1,y1,x2,y2);
 			for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 			this.isdrawBD = true;
 		};

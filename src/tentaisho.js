@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.3.1
+// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.3.2
 //
 Puzzles.tentaisho = function(){ };
 Puzzles.tentaisho.prototype = {
@@ -295,7 +295,7 @@ Puzzles.tentaisho.prototype = {
 			var lw = this.lw, lm = this.lm;
 			var header = "b_bd_";
 
-			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+			var idlist = bd.borderinside(x1,y1,x2,y2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 				if(bd.border[id].qans===1){
@@ -317,7 +317,7 @@ Puzzles.tentaisho.prototype = {
 			g.lineWidth = Math.max(this.cw*0.04, 1);
 			var headers = ["s_star1_", "s_star2_"];
 
-			var idlist = bd.starinside(x1-1,y1-1,x2+1,y2+1);
+			var idlist = bd.starinside(x1,y1,x2,y2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], bx=bd.star[id].bx, by=bd.star[id].by;
 

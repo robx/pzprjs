@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.3.1
+// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.3.2
 //
 Puzzles.tilepaint = function(){ };
 Puzzles.tilepaint.prototype = {
@@ -167,7 +167,7 @@ Puzzles.tilepaint.prototype = {
 			this.drawBlackCells(x1,y1,x2,y2);
 			this.drawBoxBorders(x1,y1,x2,y2,true);
 
-			this.drawChassis_ex1(x1-1,y1-1,x2,y2,true);
+			this.drawChassis_ex1(x1,y1,x2,y2,true);
 
 			this.drawNumbersOn51(x1,y1,x2,y2);
 

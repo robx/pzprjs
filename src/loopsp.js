@@ -201,7 +201,7 @@ Puzzles.loopsp.prototype = {
 
 			this.drawPekes(x1,y1,x2,y2,1);
 
-			this.drawLineParts(x1-2,y1-2,x2+2,y2+2);
+			this.drawLineParts(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 

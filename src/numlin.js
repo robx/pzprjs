@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.3.1
+// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.3.2
 //
 Puzzles.numlin = function(){ };
 Puzzles.numlin.prototype = {
@@ -114,7 +114,7 @@ Puzzles.numlin.prototype = {
 			var mgnh = this.ch*0.15;
 			var header = "c_sq_";
 
-			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].qnum!==-1){

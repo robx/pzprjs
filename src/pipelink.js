@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.3.1
+// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.3.2
 //
 Puzzles.pipelink = function(){ };
 Puzzles.pipelink.prototype = {
@@ -156,7 +156,7 @@ Puzzles.pipelink.prototype = {
 
 			this.drawPekes(x1,y1,x2,y2,0);
 
-			this.drawLineParts(x1-2,y1-2,x2+2,y2+2);
+			this.drawLineParts(x1,y1,x2,y2);
 
 			this.drawChassis(x1,y1,x2,y2);
 

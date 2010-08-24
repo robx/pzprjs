@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.3.1
+// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.3.2
 //
 Puzzles.bosanowa = function(){ };
 Puzzles.bosanowa.prototype = {
@@ -255,7 +255,7 @@ Puzzles.bosanowa.prototype = {
 			g.fillStyle="rgb(127,127,127)";
 			g.strokeStyle="rgb(127,127,127)";
 
-			var idlist = bd.borderinside(x1-2,y1-2,x2+2,y2+2);
+			var idlist = bd.borderinside(x1,y1,x2,y2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(bd.isBox(cc1) && bd.isBox(cc2)){
@@ -297,7 +297,7 @@ Puzzles.bosanowa.prototype = {
 
 			var csize = this.cw*0.20;
 			var headers = ["b_grid_", "b_grid2_"];
-			var idlist = bd.borderinside(x1-2,y1-2,x2+2,y2+2);
+			var idlist = bd.borderinside(x1,y1,x2,y2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(bd.isBox(cc1) && bd.isBox(cc2)){
@@ -322,7 +322,7 @@ Puzzles.bosanowa.prototype = {
 
 			var csize = this.cw*0.20;
 			var header = "b_bbse_";
-			var idlist = bd.borderinside(x1-2,y1-2,x2+3,y2+3);
+			var idlist = bd.borderinside(x1,y1,x2,y2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 
@@ -338,7 +338,7 @@ Puzzles.bosanowa.prototype = {
 		pc.drawNumbersBD = function(x1,y1,x2,y2){
 			this.vinc('border_number', 'auto');
 
-			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+			var idlist = bd.borderinside(x1,y1,x2,y2);
 			for(var i=0;i<idlist.length;i++){
 				var id=idlist[i], obj=bd.border[id], key='border_'+id;
 				if(bd.border[id].qsub>=0){

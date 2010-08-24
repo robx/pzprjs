@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボックス版 box.js v3.3.1
+// パズル固有スクリプト部 ボックス版 box.js v3.3.2
 //
 Puzzles.box = function(){ };
 Puzzles.box.prototype = {
@@ -197,14 +197,14 @@ Puzzles.box.prototype = {
 
 			this.drawChassis(x1,y1,x2,y2);
 
-			this.drawTarget(x1-1,y1-1,x2,y2);
+			this.drawTarget(x1,y1,x2,y2);
 		};
 
 		pc.drawErrorEXCells = function(x1,y1,x2,y2){
 			this.vinc('excell_full', 'crispEdges');
 
 			var header = "ex_full_";
-			var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
+			var exlist = bd.excellinside(x1,y1,x2,y2);
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i], obj = bd.excell[c];
 
@@ -221,7 +221,7 @@ Puzzles.box.prototype = {
 			this.vinc('excell_number', 'auto');
 
 			var header = "ex_full_";
-			var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
+			var exlist = bd.excellinside(x1,y1,x2,y2);
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i], obj = bd.excell[c], key="excell_"+c;
 				if(c>=k.qcols+k.qrows){ continue;}

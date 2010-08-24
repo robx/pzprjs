@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.3.1
+// パズル固有スクリプト部 スラローム版 slalom.js v3.3.2
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -381,7 +381,7 @@ Puzzles.slalom.prototype = {
 			this.vinc('cell_circle', 'auto');
 
 			var c = bd.startid;
-			if(bd.cell[c].bx<x1-2 || x2+2<bd.cell[c].bx || bd.cell[c].by<y1-2 || y2+2<bd.cell[c].by){ return;}
+			if(bd.cell[c].bx<x1 || x2<bd.cell[c].bx || bd.cell[c].by<y1 || y2<bd.cell[c].by){ return;}
 
 			var rsize = this.cw*0.45, rsize2 = this.cw*0.40;
 			var csize = (rsize+rsize2)/2, csize2 = rsize2-rsize;

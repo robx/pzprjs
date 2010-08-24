@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.3.1
+// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.3.2
 //
 Puzzles.shikaku = function(){ };
 Puzzles.shikaku.prototype = {
@@ -108,7 +108,7 @@ Puzzles.shikaku.prototype = {
 
 			var rsize2 = this.cw*this.circleratio[1];
 			var header = "c_cir_";
-			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].qnum!=-1){

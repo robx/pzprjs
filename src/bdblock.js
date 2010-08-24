@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボーダーブロック版 bdblock.js v3.3.1
+// パズル固有スクリプト部 ボーダーブロック版 bdblock.js v3.3.2
 //
 Puzzles.bdblock = function(){ };
 Puzzles.bdblock.prototype = {
@@ -93,7 +93,7 @@ Puzzles.bdblock.prototype = {
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawNumbers(x1,y1,x2,y2);
-			this.drawCrossMarks(x1,y1,x2+1,y2+1);
+			this.drawCrossMarks(x1,y1,x2,y2);
 
 			this.drawBorderQsubs(x1,y1,x2,y2);
 

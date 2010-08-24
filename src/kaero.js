@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.3.1
+// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.3.2
 //
 Puzzles.kaero = function(){ };
 Puzzles.kaero.prototype = {
@@ -133,7 +133,7 @@ Puzzles.kaero.prototype = {
 			var tplus = this.cw*0.05;
 			var header = "c_tip_";
 
-			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				this.vdel([header+c]);
@@ -167,7 +167,7 @@ Puzzles.kaero.prototype = {
 			var mgnh = this.ch*0.15;
 			var header = "c_sq_";
 
-			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj=bd.cell[c];
 				if(obj.qnum!=-1){
@@ -187,7 +187,7 @@ Puzzles.kaero.prototype = {
 		pc.drawNumbers_kaero = function(x1,y1,x2,y2){
 			this.vinc('cell_number', 'auto');
 
-			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
 				if(bd.cell[c].qnum!==-1){

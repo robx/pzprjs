@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.3.1
+// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.3.2
 //
 Puzzles.bonsan = function(){ };
 Puzzles.bonsan.prototype = {
@@ -143,7 +143,7 @@ Puzzles.bonsan.prototype = {
 			var tplus = this.cw*0.05;
 			var header = "c_tip_";
 
-			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				this.vdel([header+c]);

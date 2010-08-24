@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.3.1
+// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.3.2
 //
 Puzzles.reflect = function(){ };
 Puzzles.reflect.prototype = {
@@ -160,7 +160,7 @@ Puzzles.reflect.prototype = {
 			this.vinc('cell_triangle_border', 'crispEdges');
 
 			var header = "b_tb_";
-			var idlist = bd.borderinside(x1-1,y1-1,x2+2,y2+2);
+			var idlist = bd.borderinside(x1,y1,x2,y2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], lflag = !(bd.border[id].bx&1);
 				var qs1 = bd.QuC(bd.border[id].cellcc[0]),
@@ -183,7 +183,7 @@ Puzzles.reflect.prototype = {
 		pc.draw11 = function(x1,y1,x2,y2){
 			this.vinc('cell_ques', 'crispEdges');
 
-			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){ this.draw11_1(clist[i]);}
 		};
 		pc.draw11_1 = function(id){

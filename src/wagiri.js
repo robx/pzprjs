@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ごきげんななめ・輪切版 wagiri.js v3.3.1
+// パズル固有スクリプト部 ごきげんななめ・輪切版 wagiri.js v3.3.2
 //
 Puzzles.wagiri = function(){ };
 Puzzles.wagiri.prototype = {
@@ -164,7 +164,7 @@ Puzzles.wagiri.prototype = {
 			this.drawNumbers(x1,y1,x2,y2);
 			this.drawSlashes(x1,y1,x2,y2);
 
-			this.drawCrosses(x1,y1,x2+1,y2+1);
+			this.drawCrosses(x1,y1,x2,y2);
 			this.drawTarget_wagiri(x1,y1,x2,y2);
 		};
 		// オーバーライド

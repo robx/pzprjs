@@ -125,7 +125,7 @@ Puzzles.shwolf.prototype = {
 			this.drawBorders(x1,y1,x2,y2);
 
 			this.drawSheepWolf(x1,y1,x2,y2);
-			this.drawCrossMarks(x1,y1,x2+1,y2+1);
+			this.drawCrossMarks(x1,y1,x2,y2);
 
 			this.drawBorderQsubs(x1,y1,x2,y2);
 

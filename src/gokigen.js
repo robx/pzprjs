@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.3.1
+// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.3.2
 //
 Puzzles.gokigen = function(){ };
 Puzzles.gokigen.prototype = {
@@ -140,7 +140,7 @@ Puzzles.gokigen.prototype = {
 
 			this.drawSlashes(x1,y1,x2,y2);
 
-			this.drawCrosses(x1,y1,x2+1,y2+1);
+			this.drawCrosses(x1,y1,x2,y2);
 			this.drawTarget(x1,y1,x2,y2);
 		};
 
@@ -166,7 +166,7 @@ Puzzles.gokigen.prototype = {
 				if(bd.cell[c].qans!==-1){
 					if     (bd.cell[c].error===1){ g.strokeStyle = this.errcolor1;}
 					else if(bd.cell[c].error===2){ g.strokeStyle = this.errcolor2;}
-					else                        { g.strokeStyle = this.cellcolor;}
+					else                         { g.strokeStyle = this.cellcolor;}
 
 					if(bd.cell[c].qans===1){
 						if(this.vnop(headers[0]+c,this.STROKE)){

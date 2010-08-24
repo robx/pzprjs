@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 遠い誓い版 toichika.js v3.3.1
+// パズル固有スクリプト部 遠い誓い版 toichika.js v3.3.2
 //
 Puzzles.toichika = function(){ };
 Puzzles.toichika.prototype = {
@@ -171,7 +171,7 @@ Puzzles.toichika.prototype = {
 			var tl = ll*0.5-ll*0.3;			// 矢じりの長さの座標(中心-長さ)
 			var tw = Math.max(ll*0.2, 5);	// 矢じりの幅
 
-			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = bd.cellinside(x1,y1,x2,y2);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], dir=bd.getNum(c);
 				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
