@@ -7,35 +7,12 @@ Puzzles.bag.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}
 		if(!k.qrows){ k.qrows = 10;}
-		k.irowake  = 0;
 
-		k.iscross  = 0;
 		k.isborder = 2;
-		k.isexcell = 0;
 
-		k.isLineCross     = false;
-		k.isCenterLine    = false;
 		k.isborderAsLine  = true;
-		k.hasroom         = false;
-		k.roomNumber      = false;
-
-		k.dispzero        = false;
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
-		k.inputQnumDirect = false;
-		k.isAnsNumber     = false;
-		k.NumberWithMB    = false;
-		k.linkNumber      = false;
-
-		k.BlackCell       = false;
-		k.NumberIsWhite   = false;
-		k.numberAsObject  = false;
-		k.RBBlackCell     = false;
-		k.checkBlackCell  = false;
-		k.checkWhiteCell  = false;
-
-		k.ispzprv3ONLY    = false;
-		k.isKanpenExist   = false;
 
 		base.setTitle("バッグ", "BAG (Corral)");
 		base.setExpression("　左ドラッグで線が、右クリックでセルの背景色(緑/黄色)が入力できます。",

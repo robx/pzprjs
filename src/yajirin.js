@@ -7,32 +7,16 @@ Puzzles.yajirin.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}
 		if(!k.qrows){ k.qrows = 10;}
+
 		k.irowake  = 1;
-
-		k.iscross  = 0;
 		k.isborder = 1;
-		k.isexcell = 0;
 
-		k.isLineCross     = false;
 		k.isCenterLine    = true;
-		k.isborderAsLine  = false;
-		k.hasroom         = false;
-		k.roomNumber      = false;
-
 		k.dispzero        = true;
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
-		k.inputQnumDirect = false;
-		k.isAnsNumber     = false;
-		k.NumberWithMB    = false;
-		k.linkNumber      = false;
-
 		k.BlackCell       = true;
 		k.NumberIsWhite   = true;
-		k.numberAsObject  = false;
-		k.RBBlackCell     = false;
-		k.checkBlackCell  = false;
-		k.checkWhiteCell  = false;
 
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;

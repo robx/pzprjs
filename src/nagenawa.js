@@ -7,35 +7,19 @@ Puzzles.nagenawa.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 8;}
 		if(!k.qrows){ k.qrows = 8;}
-		k.irowake  = 1;
 
-		k.iscross  = 0;
+		k.irowake  = 1;
 		k.isborder = 1;
-		k.isexcell = 0;
 
 		k.isLineCross     = true;
 		k.isCenterLine    = true;
-		k.isborderAsLine  = false;
 		k.hasroom         = true;
 		k.roomNumber      = true;
-
 		k.dispzero        = true;
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
-		k.inputQnumDirect = false;
-		k.isAnsNumber     = false;
-		k.NumberWithMB    = false;
-		k.linkNumber      = false;
-
-		k.BlackCell       = false;
-		k.NumberIsWhite   = false;
-		k.numberAsObject  = false;
-		k.RBBlackCell     = false;
-		k.checkBlackCell  = false;
-		k.checkWhiteCell  = false;
 
 		k.ispzprv3ONLY    = true;
-		k.isKanpenExist   = false;
 
 		base.setTitle("なげなわ","Nagenawa");
 		base.setExpression("　ドラッグで線が、マスのクリックで○×(補助記号)が入力できます。",

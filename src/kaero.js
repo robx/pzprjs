@@ -7,35 +7,13 @@ Puzzles.kaero.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 6;}
 		if(!k.qrows){ k.qrows = 6;}
-		k.irowake = 0;
 
-		k.iscross  = 0;
 		k.isborder = 1;
-		k.isexcell = 0;
 
-		k.isLineCross     = false;
 		k.isCenterLine    = true;
-		k.isborderAsLine  = false;
 		k.hasroom         = true;
-		k.roomNumber      = false;
-
-		k.dispzero        = false;
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
-		k.inputQnumDirect = false;
-		k.isAnsNumber     = false;
-		k.NumberWithMB    = false;
-		k.linkNumber      = false;
-
-		k.BlackCell       = false;
-		k.NumberIsWhite   = false;
-		k.numberAsObject  = false;
-		k.RBBlackCell     = false;
-		k.checkBlackCell  = false;
-		k.checkWhiteCell  = false;
-
-		k.ispzprv3ONLY    = false;
-		k.isKanpenExist   = false;
 
 		base.setTitle("お家に帰ろう","Return Home");
 		base.setExpression("　左ドラッグで線が、マスのクリックで背景色が入力できます。",

@@ -7,32 +7,13 @@ Puzzles.hashikake.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 9;}
 		if(!k.qrows){ k.qrows = 9;}
-		k.irowake  = 1;
 
-		k.iscross  = 0;
+		k.irowake  = 1;
 		k.isborder = 1;
-		k.isexcell = 0;
 
 		k.isLineCross     = true;
 		k.isCenterLine    = true;
-		k.isborderAsLine  = false;
-		k.hasroom         = false;
-		k.roomNumber      = false;
-
-		k.dispzero        = false;
-		k.isDispHatena    = false;
 		k.isInputHatena   = true;
-		k.inputQnumDirect = false;
-		k.isAnsNumber     = false;
-		k.NumberWithMB    = false;
-		k.linkNumber      = false;
-
-		k.BlackCell       = false;
-		k.NumberIsWhite   = false;
-		k.numberAsObject  = false;
-		k.RBBlackCell     = false;
-		k.checkBlackCell  = false;
-		k.checkWhiteCell  = false;
 
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;

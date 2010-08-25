@@ -65,6 +65,7 @@ PBase.prototype = {
 		},10);
 	},
 	onload_func2 : function(){
+		k.initFlags();
 		this.initCanvas();
 		this.initObjects(true);
 		this.setEvents();	// イベントをくっつける
@@ -354,12 +355,7 @@ PBase.prototype = {
 		k.puzzleid = contents.id;
 
 		// 各種パラメータのうち各パズルで初期化されないやつをここで初期化
-		k.qcols = 0;
-		k.qrows = 0;
-		k.cellsize = 36;
-		k.bdmargin = 0.70;
-		k.bdmargin_image = 0.10;
-		if(k.mobile){ k.bdmargin = k.bdmargin_image;}
+		k.initFlags();
 
 		// 通常preload_funcで初期化されるenc,fioをここで生成する
 		enc = new Encode();

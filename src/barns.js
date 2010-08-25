@@ -7,35 +7,12 @@ Puzzles.barns.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 8;}
 		if(!k.qrows){ k.qrows = 8;}
-		k.irowake  = 1;
 
-		k.iscross  = 0;
+		k.irowake  = 1;
 		k.isborder = 1;
-		k.isexcell = 0;
 
 		k.isLineCross     = true;
 		k.isCenterLine    = true;
-		k.isborderAsLine  = false;
-		k.hasroom         = false;
-		k.roomNumber      = false;
-
-		k.dispzero        = false;
-		k.isDispHatena    = true;
-		k.isInputHatena   = true;
-		k.inputQnumDirect = false;
-		k.isAnsNumber     = false;
-		k.NumberWithMB    = false;
-		k.linkNumber      = false;
-
-		k.BlackCell       = false;
-		k.NumberIsWhite   = false;
-		k.numberAsObject  = false;
-		k.RBBlackCell     = false;
-		k.checkBlackCell  = false;
-		k.checkWhiteCell  = false;
-
-		k.ispzprv3ONLY    = false;
-		k.isKanpenExist   = false;
 
 		if(k.EDITOR){
 			base.setExpression("　左ドラッグで境界線が、右クリックで氷が入力できます。",

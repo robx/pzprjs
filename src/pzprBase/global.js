@@ -60,41 +60,46 @@ IDList.prototype = {
 // 各種パラメータの定義
 var k = {
 	// 各パズルのsetting()関数で設定されるもの
-	qcols    : 0,			// 盤面の横幅
-	qrows    : 0,			// 盤面の縦幅
-	irowake  : 0,			// 0:色分け設定無し 1:色分けしない 2:色分けする
+	qcols : 0,				// 盤面の横幅
+	qrows : 0,				// 盤面の縦幅
 
-	iscross  : 0,			// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-	isborder : 0,			// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-	isexcell : 0,			// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+	initFlags : function(){
+		this.irowake  = 0;	// 0:色分け設定無し 1:色分けしない 2:色分けする
 
-	isLineCross    : false,	// 線が交差するパズル
-	isCenterLine   : false,	// マスの真ん中を通る線を回答として入力するパズル
-	isborderAsLine : false,	// 境界線をlineとして扱う
-	hasroom        : false,	// いくつかの領域に分かれている/分けるパズル
-	roomNumber     : false,	// 問題の数字が部屋の左上に1つだけ入るパズル
+		this.iscross  = 0;	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		this.isborder = 0;	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		this.isexcell = 0;	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-	dispzero       : false,	// 0を表示するかどうか
-	isDispHatena   : true,	// qnumが-2のときに？を表示する
-	isInputHatena  : true,	// ？か否かに関わらずqnum==-2を入力できる
-	isQnumDirect   : false,	// TCellを使わずにqnumを入力する
-	isAnsNumber    : false,	// 回答に数字を入力するパズル
-	NumberWithMB   : false,	// 回答の数字と○×が入るパズル
-	linkNumber     : false,	// 数字がひとつながりになるパズル
+		this.isLineCross    =	// 線が交差するパズル
+		this.isCenterLine   =	// マスの真ん中を通る線を回答として入力するパズル
+		this.isborderAsLine =	// 境界線をlineとして扱う
+		this.hasroom        =	// いくつかの領域に分かれている/分けるパズル
+		this.roomNumber     =	// 問題の数字が部屋の左上に1つだけ入るパズル
 
-	BlackCell      : false,	// 黒マスを入力するパズル
-	NumberIsWhite  : false,	// 数字のあるマスが黒マスにならないパズル
-	numberAsObject : false,	// 数字を表示する時に、数字以外で表示する
-	RBBlackCell    : false,	// 連黒分断禁のパズル
-	checkBlackCell : false,	// 正答判定で黒マスの情報をチェックするパズル
-	checkWhiteCell : false,	// 正答判定で白マスの情報をチェックするパズル
+		this.dispzero       =	// 0を表示するかどうか
+		this.isDispHatena   =	// qnumが-2のときに？を表示する
+		this.isInputHatena  =	// ？か否かに関わらずqnum==-2を入力できる
+		this.isQnumDirect   =	// TCellを使わずにqnumを入力する
+		this.isAnsNumber    =	// 回答に数字を入力するパズル
+		this.NumberWithMB   =	// 回答の数字と○×が入るパズル
+		this.linkNumber     =	// 数字がひとつながりになるパズル
 
-	ispzprv3ONLY   : false,	// ぱずぷれアプレットには存在しないパズル
-	isKanpenExist  : false,	// pencilbox/カンペンにあるパズル
+		this.BlackCell      =	// 黒マスを入力するパズル
+		this.NumberIsWhite  =	// 数字のあるマスが黒マスにならないパズル
+		this.numberAsObject =	// 数字を表示する時に、数字以外で表示する
+		this.RBBlackCell    =	// 連黒分断禁のパズル
+		this.checkBlackCell =	// 正答判定で黒マスの情報をチェックするパズル
+		this.checkWhiteCell =	// 正答判定で白マスの情報をチェックするパズル
 
-	// 各パズルのsetting()関数で設定されることがあるもの
-	bdmargin       : 0.70,	// 枠外の一辺のmargin(セル数換算)
-	bdmargin_image : 0.15,	// 画像出力時のbdmargin値
+		this.ispzprv3ONLY   =	// ぱずぷれアプレットには存在しないパズル
+		this.isKanpenExist	= false; // pencilbox/カンペンにあるパズル
+
+		// 各パズルのsetting()関数で設定されることがあるもの
+		this.bdmargin       = 0.70;	// 枠外の一辺のmargin(セル数換算)
+		this.bdmargin_image = 0.15;	// 画像出力時のbdmargin値
+
+		if(this.mobile){ this.bdmargin = this.bdmargin_image;}
+	},
 
 	// 内部で自動的に設定されるグローバル変数
 	puzzleid  : '',			// パズルのID("creek"など)
@@ -152,7 +157,7 @@ var k = {
 	// for_test.js用
 	scriptcheck : false
 };
-if(k.mobile){ k.bdmargin = k.bdmargin_image;}
+k.initFlags();
 
 //---------------------------------------------------------------------------
 // ★その他のグローバル変数

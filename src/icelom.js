@@ -7,38 +7,19 @@ Puzzles.icelom.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 8;}
 		if(!k.qrows){ k.qrows = 8;}
-		k.irowake  = 1;
 
-		k.iscross  = 0;
+		k.irowake  = 1;
 		k.isborder = 2;
-		k.isexcell = 0;
 
 		k.isLineCross     = true;
 		k.isCenterLine    = true;
-		k.isborderAsLine  = false;
-		k.hasroom         = false;
-		k.roomNumber      = false;
-
-		k.dispzero        = false;
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
-		k.inputQnumDirect = false;
-		k.isAnsNumber     = false;
-		k.NumberWithMB    = false;
-		k.linkNumber      = false;
-
-		k.BlackCell       = false;
-		k.NumberIsWhite   = false;
-		k.numberAsObject  = false;
-		k.RBBlackCell     = false;
-		k.checkBlackCell  = false;
-		k.checkWhiteCell  = false;
 
 		k.ispzprv3ONLY    = true;
-		k.isKanpenExist   = false;
 
-		k.bdmargin       = 1.0;
-		k.bdmargin_image = 1.0;
+		k.bdmargin       = 1.00;
+		k.bdmargin_image = 1.00;
 
 		if(k.EDITOR){
 			base.setExpression("　左クリックで数字、左ドラッグでIN/OUTが、右クリックで氷が入力できます。"+

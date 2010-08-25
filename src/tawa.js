@@ -7,35 +7,14 @@ Puzzles.tawa.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 6;}	// ※本スクリプトでは一番上の段のマスの数を表すこととする.
 		if(!k.qrows){ k.qrows = 7;}
-		k.irowake  = 0;
-
-		k.iscross  = 0;
-		k.isborder = 0;
-		k.isexcell = 0;
-
-		k.isLineCross     = false;
-		k.isCenterLine    = false;
-		k.isborderAsLine  = false;
-		k.hasroom         = false;
-		k.roomNumber      = false;
 
 		k.dispzero        = true;
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
-		k.inputQnumDirect = false;
-		k.isAnsNumber     = false;
-		k.NumberWithMB    = false;
-		k.linkNumber      = false;
-
 		k.BlackCell       = true;
 		k.NumberIsWhite   = true;
-		k.numberAsObject  = false;
-		k.RBBlackCell     = false;
-		k.checkBlackCell  = false;
-		k.checkWhiteCell  = false;
 
 		k.ispzprv3ONLY    = true;
-		k.isKanpenExist   = false;
 
 		base.setTitle("たわむれんが","Tawamurenga");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",

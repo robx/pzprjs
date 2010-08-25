@@ -7,35 +7,14 @@ Puzzles.shugaku.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}
 		if(!k.qrows){ k.qrows = 10;}
-		k.irowake  = 0;
 
-		k.iscross  = 0;
 		k.isborder = 1;
-		k.isexcell = 0;
-
-		k.isLineCross     = false;
-		k.isCenterLine    = false;
-		k.isborderAsLine  = false;
-		k.hasroom         = false;
-		k.roomNumber      = false;
 
 		k.dispzero        = true;
-		k.isDispHatena    = false;
 		k.isInputHatena   = true;
-		k.inputQnumDirect = false;
-		k.isAnsNumber     = false;
-		k.NumberWithMB    = false;
-		k.linkNumber      = false;
-
 		k.BlackCell       = true;
 		k.NumberIsWhite   = true;
-		k.numberAsObject  = false;
-		k.RBBlackCell     = false;
 		k.checkBlackCell  = true;
-		k.checkWhiteCell  = false;
-
-		k.ispzprv3ONLY    = false;
-		k.isKanpenExist   = false;
 
 		base.setTitle("修学旅行の夜","School Trip");
 		base.setExpression("　マウスの左ボタンドラッグで布団を、右ボタンで通路を入力できます。",

@@ -7,35 +7,15 @@ Puzzles.sukororoom.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 8;}
 		if(!k.qrows){ k.qrows = 8;}
-		k.irowake  = 0;
 
-		k.iscross  = 0;
 		k.isborder = 1;
-		k.isexcell = 0;
 
-		k.isLineCross     = false;
-		k.isCenterLine    = false;
-		k.isborderAsLine  = false;
 		k.hasroom         = true;
-		k.roomNumber      = false;
-
-		k.dispzero        = false;
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
-		k.inputQnumDirect = false;
 		k.isAnsNumber     = true;
 		k.NumberWithMB    = true;
 		k.linkNumber      = true;
-
-		k.BlackCell       = false;
-		k.NumberIsWhite   = false;
-		k.numberAsObject  = false;
-		k.RBBlackCell     = false;
-		k.checkBlackCell  = false;
-		k.checkWhiteCell  = false;
-
-		k.ispzprv3ONLY    = false;
-		k.isKanpenExist   = false;
 
 		base.setTitle("数コロ部屋","Sukoro-room");
 		base.setExpression("　マスのクリックやキーボードで数字を入力できます。QAZキーで○、WSXキーで×を入力できます。",

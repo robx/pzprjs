@@ -7,35 +7,14 @@ Puzzles.norinori.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}
 		if(!k.qrows){ k.qrows = 10;}
-		k.irowake  = 0;
 
-		k.iscross  = 0;
 		k.isborder = 1;
-		k.isexcell = 0;
 
-		k.isLineCross     = false;
-		k.isCenterLine    = false;
-		k.isborderAsLine  = false;
 		k.hasroom         = true;
-		k.roomNumber      = false;
-
-		k.dispzero        = false;
-		k.isDispHatena    = false;
-		k.isInputHatena   = false;
-		k.inputQnumDirect = false;
-		k.isAnsNumber     = false;
-		k.NumberWithMB    = false;
-		k.linkNumber      = false;
-
 		k.BlackCell       = true;
-		k.NumberIsWhite   = false;
-		k.numberAsObject  = false;
-		k.RBBlackCell     = false;
 		k.checkBlackCell  = true;
-		k.checkWhiteCell  = false;
 
 		k.ispzprv3ONLY    = true;
-		k.isKanpenExist   = false;
 
 		base.setTitle("のりのり","Norinori");
 		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",

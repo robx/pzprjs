@@ -7,35 +7,13 @@ Puzzles.yajikazu.prototype = {
 		// グローバル変数の初期設定
 		if(!k.qcols){ k.qcols = 10;}
 		if(!k.qrows){ k.qrows = 10;}
-		k.irowake  = 0;
-
-		k.iscross  = 0;
-		k.isborder = 0;
-		k.isexcell = 0;
-
-		k.isLineCross     = false;
-		k.isCenterLine    = false;
-		k.isborderAsLine  = false;
-		k.hasroom         = false;
-		k.roomNumber      = false;
 
 		k.dispzero        = true;
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
-		k.inputQnumDirect = false;
-		k.isAnsNumber     = false;
-		k.NumberWithMB    = false;
-		k.linkNumber      = false;
-
 		k.BlackCell       = true;
-		k.NumberIsWhite   = false;
-		k.numberAsObject  = false;
 		k.RBBlackCell     = true;
-		k.checkBlackCell  = false;
 		k.checkWhiteCell  = true;
-
-		k.ispzprv3ONLY    = false;
-		k.isKanpenExist   = false;
 
 		if(k.EDITOR){
 			base.setExpression("　矢印は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
