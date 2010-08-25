@@ -25,12 +25,12 @@
 					list-style-type:none; text-align:left; font-size:0.9em; line-height:1.33; background-color:blue; z-index:101;}
 	/* フロートメニュー - サブメニュー項目 */
 	menu.floatmenu li { display:block; margin:0pt; padding:1pt 8pt 0pt 4pt; text-align:left; color:black; cursor:default;}
-	li.smenu     { background-color:white;   cursor:pointer;}
-	li.smenusel  { background-color:#ffe8e8; cursor:pointer; text-decoration:underline;}
-	li.smenunull { background-color:#dfdfdf; color:gray;}
+	menu.floatmenu li.smenu     { background-color:white;   cursor:pointer;}
+	menu.floatmenu li.smenusel  { background-color:#ffe8e8; cursor:pointer; text-decoration:underline;}
+	menu.floatmenu li.smenunull { background-color:#dfdfdf; color:gray;}
 
-	li.smenulabel{ display:inline; color:white;}
-	li.smenusep  { height:3pt; padding-top:0pt;}
+	menu.floatmenu li.smenulabel{ display:inline; color:white;}
+	menu.floatmenu li.smenusep  { height:3pt; padding-top:0pt;}
 
 	/* メニューより下の管理領域 */
 	div#expression{ margin:6pt 12pt 0pt 12pt;}
