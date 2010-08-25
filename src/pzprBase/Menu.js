@@ -867,6 +867,10 @@ Menu.prototype = {
 				rule.style.width  = ['','24px','32px','50px'][num];
 				rule.style.height = ['','24px','32px','50px'][num];
 				break;
+			case 'div.titlebar':
+				rule.style.paddingTop    = ['1pt','10pt','16px','24px'][num];
+				rule.style.paddingBottom = ['1pt','10pt','16px','24px'][num];
+				break;
 			}
 		}
 	},
