@@ -5,34 +5,37 @@ Puzzles.shakashaka = function(){ };
 Puzzles.shakashaka.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
+		k.irowake  = 0;
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;
+		k.isborder = 0;
+		k.isexcell = 0;
 
-		k.isLineCross     = true;	// 線が交差するパズル
-		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.isLineCross     = true;
+		k.isCenterLine    = true;
+		k.isborderAsLine  = false;
+		k.hasroom         = false;
+		k.roomNumber      = false;
 
-		k.dispzero        = true;	// 0を表示するかどうか
-		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.dispzero        = true;
+		k.isDispHatena    = false;
+		k.isInputHatena   = true;
+		k.inputQnumDirect = false;
+		k.isAnsNumber     = false;
+		k.NumberWithMB    = false;
+		k.linkNumber      = false;
 
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = true;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
+		k.BlackCell       = false;
+		k.NumberIsWhite   = true;
+		k.numberAsObject  = false;
+		k.RBBlackCell     = false;
+		k.checkBlackCell  = false;
+		k.checkWhiteCell  = false;
 
-		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
+		k.ispzprv3ONLY    = true;
+		k.isKanpenExist   = false;
 
 		base.setTitle("シャカシャカ","ShakaShaka");
 		base.setExpression("　\"クリックした位置\"ではマス目の角のほうをクリックすることで三角形が入力できます。<br>　\"ドラッグ入力\"では斜め4方向にドラッグして三角形を入力できます。",
@@ -144,7 +147,6 @@ Puzzles.shakashaka.prototype = {
 
 			pc.paintCell(cc);
 		};
-		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){

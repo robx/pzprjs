@@ -5,34 +5,37 @@ Puzzles.renban = function(){ };
 Puzzles.renban.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 6;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 6;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 6;}
+		if(!k.qrows){ k.qrows = 6;}
+		k.irowake  = 0;
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 0;
+		k.isborder = 1;
+		k.isexcell = 0;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.isLineCross     = false;
+		k.isCenterLine    = false;
+		k.isborderAsLine  = false;
+		k.hasroom         = true;
+		k.roomNumber      = false;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.dispzero        = false;
+		k.isDispHatena    = true;
+		k.isInputHatena   = true;
+		k.inputQnumDirect = false;
+		k.isAnsNumber     = true;
+		k.NumberWithMB    = false;
+		k.linkNumber      = false;
 
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
+		k.BlackCell       = false;
+		k.NumberIsWhite   = false;
+		k.numberAsObject  = false;
+		k.RBBlackCell     = false;
+		k.checkBlackCell  = false;
+		k.checkWhiteCell  = false;
 
-		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
+		k.ispzprv3ONLY    = true;
+		k.isKanpenExist   = false;
 
 		base.setTitle("連番窓口","Renban-Madoguchi");
 			base.setExpression("　キーボードやマウスで数字が入力できます。",

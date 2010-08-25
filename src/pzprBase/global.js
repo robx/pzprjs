@@ -76,12 +76,15 @@ var k = {
 
 	dispzero       : false,	// 0を表示するかどうか
 	isDispHatena   : true,	// qnumが-2のときに？を表示する
+	isInputHatena  : true,	// ？か否かに関わらずqnum==-2を入力できる
+	isQnumDirect   : false,	// TCellを使わずにqnumを入力する
 	isAnsNumber    : false,	// 回答に数字を入力するパズル
 	NumberWithMB   : false,	// 回答の数字と○×が入るパズル
 	linkNumber     : false,	// 数字がひとつながりになるパズル
 
 	BlackCell      : false,	// 黒マスを入力するパズル
 	NumberIsWhite  : false,	// 数字のあるマスが黒マスにならないパズル
+	numberAsObject : false,	// 数字を表示する時に、数字以外で表示する
 	RBBlackCell    : false,	// 連黒分断禁のパズル
 	checkBlackCell : false,	// 正答判定で黒マスの情報をチェックするパズル
 	checkWhiteCell : false,	// 正答判定で白マスの情報をチェックするパズル

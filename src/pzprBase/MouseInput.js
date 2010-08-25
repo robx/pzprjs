@@ -22,9 +22,6 @@ var MouseEvent = function(){
 
 	this.mousereset();
 
-	this.enableInputHatena = k.isDispHatena;
-	this.inputqnumDirectly = false;
-
 	this.mouseoffset = {x:0,y:0};
 	if(k.br.IE6||k.br.IE7||k.br.IE8){ this.mouseoffset = {x:2,y:2};}
 	else if(k.br.WebKit)            { this.mouseoffset = {x:1,y:1};}
@@ -270,13 +267,13 @@ MouseEvent.prototype = {
 		var cc = this.cellid();
 		if(cc===null || cc===this.mouseCell){ return;}
 
-		if(cc===tc.getTCC() || this.inputqnumDirectly){
+		if(cc===tc.getTCC() || k.inputQnumDirect){
 			if(k.editmode && k.roomNumber){ cc = area.getTopOfRoomByCell(cc);}
 
 			var type=0;
-			if     (k.editmode)       { type =-1;}
-			else if(k.NumberWithMB)   { type = 2;}
-			else if(bd.numberAsObject){ type = 1;}
+			if     (k.editmode)      { type =-1;}
+			else if(k.NumberWithMB)  { type = 2;}
+			else if(k.numberAsObject){ type = 1;}
 			this.inputqnum_main(cc,type);
 		}
 		else{
@@ -293,7 +290,7 @@ MouseEvent.prototype = {
 
 		var max = bd.nummaxfunc(cc), bn = (k.dispzero?0:1);
 		var num=bd.getNum(cc), sub=(k.editmode ? 0 : bd.QsC(cc));
-		var val=-1, vals=0, ishatena=(k.editmode && this.enableInputHatena);
+		var val=-1, vals=0, ishatena=(k.editmode && k.isInputHatena);
 
 		// playmode: typeは0以上、subに何かの値が入る
 		// editmode: typeは-1固定、subは常に0が入る

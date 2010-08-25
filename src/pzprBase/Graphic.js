@@ -107,8 +107,6 @@ Graphic = function(){
 
 	this.bdheader = "b_bd";	// drawBorder1で使うheader
 
-	this.chassisflag = true;	// false: Gridを外枠の位置にも描画する
-
 	this.lastHdeg = 0;
 	this.lastYdeg = 0;
 	this.minYdeg = 0.18;
@@ -1256,7 +1254,8 @@ Graphic.prototype = {
 	// pc.drawGrid()        セルの枠線(実線)をCanvasに書き込む
 	// pc.drawDashedGrid()  セルの枠線(点線)をCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawGrid : function(isdraw){
+
+	drawGrid : function(haschassis, isdraw){
 		this.vinc('grid', 'crispEdges');
 
 		// 外枠まで描画するわけじゃないので、maxbxとか使いません
@@ -1265,12 +1264,11 @@ Graphic.prototype = {
 		if(y1<0){ y1=0;} if(y2>2*k.qrows){ y2=2*k.qrows;}
 		x1-=(x1&1), y1-=(y1&1);
 
-		var bs=((k.isborder!==2&&this.chassisflag)?2:0);
+		var bs = ((k.isborder!==2&&haschassis!==false)?2:0);
 		var xa = Math.max(x1,0+bs), xb = Math.min(x2,2*k.qcols-bs);
 		var ya = Math.max(y1,0+bs), yb = Math.min(y2,2*k.qrows-bs);
 
-		isdraw = (isdraw!==false?true:false);
-		if(isdraw){
+		if(isdraw!==false){ // 指定無しかtrueのとき
 			g.fillStyle = this.gridcolor;
 			for(var i=xa;i<=xb;i+=2){ if(this.vnop("bdy_"+i,this.NONE)){ g.fillRect(i*this.bw, y1*this.bh, 1, (y2-y1)*this.bh+1);} }
 			for(var i=ya;i<=yb;i+=2){ if(this.vnop("bdx_"+i,this.NONE)){ g.fillRect(x1*this.bw, i*this.bh, (x2-x1)*this.bw+1, 1);} }
@@ -1282,7 +1280,7 @@ Graphic.prototype = {
 			}
 		}
 	},
-	drawDashedGrid : function(){
+	drawDashedGrid : function(haschassis){
 		this.vinc('grid', 'crispEdges');
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
@@ -1294,8 +1292,7 @@ Graphic.prototype = {
 		var dotCount = Math.max(this.cw/dotmax, 1);
 		var dotSize  = this.cw/(dotCount*2);
 
-		//var bs=((k.isborder!==2&&this.chassisflag)?1:0);
-		var bs=(this.chassisflag?2:0);
+		var bs = ((haschassis!==false)?2:0);
 		var xa = Math.max(x1,bd.minbx+bs), xb = Math.min(x2,bd.maxbx-bs);
 		var ya = Math.max(y1,bd.minby+bs), yb = Math.min(y2,bd.maxby-bs);
 
