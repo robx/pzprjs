@@ -1,4 +1,4 @@
-// Camp.js rev90
+// Camp.js rev91
  
 (function(){
 
@@ -412,23 +412,6 @@ VectorContext.prototype = {
 			child.style.height = height + 'px';
 		}
 	},
-	changeOrigin : function(left,top){
-		var child = this.canvas.firstChild;
-		if(this.type===SVG){
-			var m = child.getAttribute('viewBox').split(/ /);
-			m[0]=-left, m[1]=-top;
-			child.setAttribute('viewBox', m.join(' '));
-		}
-		else if(this.type===VML){
-			child.style.position = 'absolute';
-			child.style.left = left+'px';
-			child.style.top  = top +'px';
-		}
-		else if(this.type===SL){
-			this.x0 = left;//(left<0?-left:0);
-			this.y0 = top;//(top<0?-top:0);
-		}
-	},
 	clear : function(){
 		if(this.type===SVG || this.type===VML){
 			var top = this.canvas.firstChild, el = top.firstChild;
@@ -598,6 +581,25 @@ VectorContext.prototype = {
 		if(!!this.vid){ this.elements[this.vid] = this.lastElement;}
 	},
 
+	/* Canvas API functions (for transform) */
+	translate : function(left,top){
+		var child = this.canvas.firstChild;
+		if(this.type===SVG){
+			var m = child.getAttribute('viewBox').split(/ /);
+			m[0]=-left, m[1]=-top;
+			child.setAttribute('viewBox', m.join(' '));
+		}
+		else if(this.type===VML){
+			child.style.position = 'absolute';
+			child.style.left = left+'px';
+			child.style.top  = top +'px';
+		}
+		else if(this.type===SL){
+			this.x0 = left;//(left<0?-left:0);
+			this.y0 = top;//(top<0?-top:0);
+		}
+	},
+
 	/* extended functions */
 	shape : function(){ this.addVectorElement(true,true);},
 
@@ -759,10 +761,6 @@ CanvasRenderingContext2D_wrapper = function(type, idname){
 	this.textBaseline = 'middle';
 	this.canvas = null;		// 親エレメントとなるdivエレメント
 
-	// changeOrigin用
-	this.x0 = 0;
-	this.y0 = 0;
-
 	// variables for internal
 	this.idname   = idname;
 	this.canvasid = EL_ID_HEADER+idname;
@@ -858,21 +856,13 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		canvas.width  = width;
 		canvas.height = height;
 	},
-	changeOrigin : function(left,top){
-//		var canvas = this.canvas.firstChild;
-//		canvas.style.position = 'relative';
-//		canvas.style.left = (parseInt(canvas.style.left) - left) + 'px';
-//		canvas.style.top  = (parseInt(canvas.style.top ) - top)  + 'px';
-
-		this.x0 = left;//(left<0?-left:0);
-		this.y0 = top;//(top<0?-top:0);
-	},
 	clear : function(){
 		if(!!this.canvas.style.backgroundColor){
 			this.setProperties();
+			this.context.setTransform(1,0,0,1,0,0); // 変形をリセット
 			this.context.fillStyle = parsecolorrev(this.canvas.style.backgroundColor);
 			var rect = getRectSize(this.canvas);
-			this.context.fillRect(this.x0,this.y0,rect.width,rect.height);
+			this.context.fillRect(0,0,rect.width,rect.height);
 		}
 	},
 
@@ -890,25 +880,23 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	beginPath : function(){ this.context.beginPath();},
 	closePath : function(){ this.context.closePath();},
 	moveTo : function(x,y){
-		x = (this.isedge ? (x+this.x0+0.5)|0 : x+this.x0);
-		y = (this.isedge ? (y+this.y0+0.5)|0 : y+this.y0);
+		x = (this.isedge ? (x+0.5)|0 : x);
+		y = (this.isedge ? (y+0.5)|0 : y);
 		this.context.moveTo(x,y);
 	},
 	lineTo : function(x,y){
-		x = (this.isedge ? (x+this.x0+0.5)|0 : x+this.x0);
-		y = (this.isedge ? (y+this.y0+0.5)|0 : y+this.y0);
+		x = (this.isedge ? (x+0.5)|0 : x);
+		y = (this.isedge ? (y+0.5)|0 : y);
 		this.context.lineTo(x,y);
 	},
 	rect : function(x,y,w,h){
-		x = (this.isedge ? (x+this.x0+0.5)|0 : x+this.x0);
-		y = (this.isedge ? (y+this.y0+0.5)|0 : y+this.y0);
-		w = (this.isedge ? (w+0.5)|0 : w);
-		h = (this.isedge ? (h+0.5)|0 : h);
+		x = (this.isedge ? (x+0.5)|0 : x);
+		y = (this.isedge ? (y+0.5)|0 : y);
 		this.context.rect(x,y,w,h);
 	},
 	arc  : function(cx,cy,r,startRad,endRad,antiClockWise){
-		cx = (this.isedge ? (cx+this.x0+0.5)|0 : cx+this.x0);
-		cy = (this.isedge ? (cy+this.y0+0.5)|0 : cy+this.y0);
+		cx = (this.isedge ? (cx+0.5)|0 : cx);
+		cy = (this.isedge ? (cy+0.5)|0 : cy);
 		this.context.arc(px,py,r,startRad,endRad,antiClockWise);
 	},
 
@@ -916,26 +904,25 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	fill       : function(){ this.setProperties(); this.context.fill();},
 	stroke     : function(){ this.setProperties(); this.context.stroke();},
 	fillRect   : function(x,y,w,h){
-		x = (this.isedge ? (x+this.x0+0.5)|0 : x+this.x0);
-		y = (this.isedge ? (y+this.y0+0.5)|0 : y+this.y0);
-		w = (this.isedge ? (w+0.5)|0 : w);
-		h = (this.isedge ? (h+0.5)|0 : h);
-
+		x = (this.isedge ? (x+0.5)|0 : x);
+		y = (this.isedge ? (y+0.5)|0 : y);
 		this.setProperties();
 		this.context.fillRect(x,y,w,h);
 	},
 	strokeRect : function(x,y,w,h){
-		x = (this.isedge ? (x+this.x0+0.5)|0 : x+this.x0);
-		y = (this.isedge ? (y+this.y0+0.5)|0 : y+this.y0);
-		w = (this.isedge ? (w+0.5)|0 : w);
-		h = (this.isedge ? (h+0.5)|0 : h);
-
+		x = (this.isedge ? (x+0.5)|0 : x);
+		y = (this.isedge ? (y+0.5)|0 : y);
 		this.setProperties();
 		this.context.strokeRect(x,y,w,h);
 	},
 	fillText : function(text,x,y){
 		this.setProperties();
-		this.context.fillText(text,x+this.x0,y+this.y0);
+		this.context.fillText(text,x,y);
+	},
+
+	/* Canvas API functions (for transform) */
+	translate : function(left,top){
+		this.context.translate(left, top);
 	},
 
 	/* extended functions */
@@ -959,15 +946,15 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		var _args = arguments, _len = _args.length;
 		this.context.beginPath();
 		for(var i=0,len=_len-((_len|1)?1:2);i<len;i+=2){
-			var a1 = (this.isedge ? (_args[i]  +this.x0+0.5)|0 : _args[i]  +this.x0);
-				a2 = (this.isedge ? (_args[i+1]+this.y0+0.5)|0 : _args[i+1]+this.y0);
+			var a1 = (this.isedge ? (_args[i]  +0.5)|0 : _args[i]  );
+				a2 = (this.isedge ? (_args[i+1]+0.5)|0 : _args[i+1]);
 			if(i==0){ this.context.moveTo(a1,a2);}
 			else    { this.context.lineTo(a1,a2);}
 		}
 		if(_args[_len-1]){ this.context.closePath();}
 	},
 	setOffsetLinePath : function(){
-		var _args = arguments, _len = _args.length, m=[_args[0]+this.x0,_args[1]+this.y0];
+		var _args = arguments, _len = _args.length, m=[_args[0],_args[1]];
 		this.context.beginPath();
 		for(var i=2,len=_len-((_len|1)?1:2);i<len;i+=2){
 			m[i]   = _args[i]   + m[0];
@@ -984,10 +971,10 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	setDashSize : function(size){ },
 
 	strokeLine : function(x1,y1,x2,y2){
-		x1 = (this.isedge ? (x1+this.x0+0.5)|0 : x1+this.x0);
-		y1 = (this.isedge ? (y1+this.y0+0.5)|0 : y1+this.y0);
-		x2 = (this.isedge ? (x2+this.x0+0.5)|0 : x2+this.x0);
-		y2 = (this.isedge ? (y2+this.y0+0.5)|0 : y2+this.y0);
+		x1 = (this.isedge ? (x1+0.5)|0 : x1);
+		y1 = (this.isedge ? (y1+0.5)|0 : y1);
+		x2 = (this.isedge ? (x2+0.5)|0 : x2);
+		y2 = (this.isedge ? (y2+0.5)|0 : y2);
 
 		this.setProperties();
 		this.context.beginPath();
@@ -996,10 +983,10 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		this.context.stroke();
 	},
 	strokeCross : function(cx,cy,l){
-		var x1 = (this.isedge ? (cx-l+this.x0+0.5)|0 : cx-l+this.x0),
-			y1 = (this.isedge ? (cy-l+this.y0+0.5)|0 : cy-l+this.y0),
-			x2 = (this.isedge ? (cx+l+this.x0+0.5)|0 : cx+l+this.x0),
-			y2 = (this.isedge ? (cy+l+this.y0+0.5)|0 : cy+l+this.y0);
+		var x1 = (this.isedge ? (cx-l+0.5)|0 : cx-l),
+			y1 = (this.isedge ? (cy-l+0.5)|0 : cy-l),
+			x2 = (this.isedge ? (cx+l+0.5)|0 : cx+l),
+			y2 = (this.isedge ? (cy+l+0.5)|0 : cy+l);
 
 		this.setProperties();
 		this.context.beginPath();
@@ -1010,24 +997,24 @@ CanvasRenderingContext2D_wrapper.prototype = {
 		this.context.stroke();
 	},
 	fillCircle : function(cx,cy,r){
-		cx = (this.isedge ? (cx+this.x0+0.5)|0 : cx+this.x0);
-		cy = (this.isedge ? (cy+this.y0+0.5)|0 : cy+this.y0);
+		cx = (this.isedge ? (cx+0.5)|0 : cx);
+		cy = (this.isedge ? (cy+0.5)|0 : cy);
 		this.setProperties();
 		this.context.beginPath();
 		this.context.arc(cx,cy,r,0,_2PI,false);
 		this.context.fill();
 	},
 	strokeCircle : function(cx,cy,r){
-		cx = (this.isedge ? (cx+this.x0+0.5)|0 : cx+this.x0);
-		cy = (this.isedge ? (cy+this.y0+0.5)|0 : cy+this.y0);
+		cx = (this.isedge ? (cx+0.5)|0 : cx);
+		cy = (this.isedge ? (cy+0.5)|0 : cy);
 		this.setProperties();
 		this.context.beginPath();
 		this.context.arc(cx,cy,r,0,_2PI,false);
 		this.context.stroke();
 	},
 	shapeCircle : function(cx,cy,r){
-		cx = (this.isedge ? (cx+this.x0+0.5)|0 : cx+this.x0);
-		cy = (this.isedge ? (cy+this.y0+0.5)|0 : cy+this.y0);
+		cx = (this.isedge ? (cx+0.5)|0 : cx);
+		cy = (this.isedge ? (cy+0.5)|0 : cy);
 		this.setProperties();
 		this.context.beginPath();
 		this.context.arc(cx,cy,r,0,_2PI,false);

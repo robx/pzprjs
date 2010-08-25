@@ -290,7 +290,7 @@ PBase.prototype = {
 
 		// Canvasのサイズ・Offset変更
 		g.changeSize((cols*k.cwidth)|0, (rows*k.cheight)|0);
-		g.changeOrigin(x0, y0);
+		g.translate(x0, y0);
 
 		// 盤面のページ内座標を設定
 		var rect = ee('divques').getRect();
