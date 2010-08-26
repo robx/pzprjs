@@ -1115,7 +1115,7 @@ var debug = {
 
 		_doc.testform.perfload.style.display = (k.puzzleid!=='country' ? 'none' : 'inline');
 		_doc.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
-		_doc.testform.database.style.display = (!fio.DBaccept<0x08 ? 'none' : 'inline');
+		_doc.testform.database.style.display = (!!(fio.DBaccept&0x04) ? 'none' : 'inline');
 
 		if(k.scriptcheck){ debug.testonly_func();}	// テスト用
 	},

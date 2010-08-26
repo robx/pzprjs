@@ -33,16 +33,16 @@ DataBaseManager.prototype = {
 		}
 		catch(e){}
 
-		// HTML5 - Web localStorage判定用(localStorage)
-		if(!!window.localStorage){
-			// FirefoxはローカルだとlocalStorageが使えない
-			if(!k.br.Gecko || !!location.hostname){ this.DBaccept |= 0x08;}
-		}
-
 		// HTML5 - Indexed Dataase API判定用
 		if(!!window.indexedDB){
 			// FirefoxはローカルだとlocalStorageが使えない
-			this.DBaccept |= 0x04;
+			this.DBaccept |= 0x08;
+		}
+
+		// HTML5 - Web localStorage判定用(localStorage)
+		if(!!window.localStorage){
+			// FirefoxはローカルだとlocalStorageが使えない
+			if(!k.br.Gecko || !!location.hostname){ this.DBaccept |= 0x04;}
 		}
 
 		// HTML5 - Web SQL DataBase判定用
@@ -62,17 +62,24 @@ DataBaseManager.prototype = {
 		// データベースを開く
 		var type = 0;
 		if     (this.DBaccept & 0x08){ type = 4;}
-	//	else if(this.DBaccept & 0x04){ type = 3;}
+		else if(this.DBaccept & 0x04){ type = 3;}
 		else if(this.DBaccept & 0x02){ type = 2;}
 
 		switch(type){
 			case 2: this.dbh = new DataBaseHandler_SQL(); break;
-			case 4: this.dbh = new DataBaseHandler_LS(); break;
+			case 3: this.dbh = new DataBaseHandler_LS();  break;
+			case 4: this.dbh = new DataBaseHandler_IDB(); break;
 			default: return;
 		}
 
 		this.sync = false;
-		this.dbh.importDBlist(this, this.update);
+		this.initDatabase.call(this);
+	},
+	initDatabase : function(){
+		this.dbh.openManageDataTable();
+
+		this.sync = false;
+		this.dbh.openAndImport(this, this.update);
 	},
 
 	//---------------------------------------------------------------------------
@@ -80,6 +87,11 @@ DataBaseManager.prototype = {
 	// dbm.clickHandler()  フォーム上のボタンが押された時、各関数にジャンプする
 	//---------------------------------------------------------------------------
 	closeDialog : function(){
+		if(this.DBlist.length==0){
+			this.dbh.deleteManageData();
+			this.dbh.dropDataBase();
+		}
+		this.dbh.close();
 		this.DBlist = [];
 	},
 	clickHandler : function(e){
@@ -110,7 +122,7 @@ DataBaseManager.prototype = {
 		return -1;
 	},
 	updateDialog : function(){
-		this.dbh.updateManageData(this);
+		this.dbh.updateManageData(this, this.DBlist.length, (tm.now()/1000)|0);
 		this.displayDataTableList();
 		this.selectDataTable();
 		this.sync = true;
@@ -299,12 +311,12 @@ DataBaseManager.prototype = {
 	//---------------------------------------------------------------------------
 /*	convertDataBase : function(){
 		// ここまで旧データベース
-		this.dbh.importDBlist(this);
+		this.dbh.openAndImport(this, null);
 		this.dbh.dropDataBase();
 
 		// ここから新データベース
 		this.dbh.createDataBase();
-		this.dbh.setupDBlist(this);
+		this.dbh.saveDataTableAll(this);
 	}
 */
 };
@@ -315,23 +327,42 @@ DataBaseManager.prototype = {
 DataBaseHandler_LS = function(){
 	this.pheader = 'pzprv3_' + k.puzzleid + ':puzdata';
 	this.keys = dbm.keys;
-
-	this.initialize();
 };
 DataBaseHandler_LS.prototype = {
 	//---------------------------------------------------------------------------
-	// dbm.dbh.initialize()    初期化時にデータベースを開く
-	// dbm.dbh.importDBlist()  DataBaseからDBlistを作成する
+	// dbm.dbh.openManageDataTable() 管理情報テーブルを作成する(消去はなし)
+	// dbm.dbh.updateManageData()    管理情報レコードを更新する
+	// dbm.dbh.deleteManageData()    管理情報レコードを削除する
 	//---------------------------------------------------------------------------
-	initialize : function(){
-		this.createManageDataTable();
-		this.createDataBase();
+	openManageDataTable : function(){
+		localStorage['pzprv3_manage']        = 'DataBase';
+		localStorage['pzprv3_manage:manage'] = 'Table';
 	},
-	importDBlist : function(parent, callback){
+	updateManageData : function(parent, count, time){
+		var mheader = 'pzprv3_manage:manage!'+k.puzzleid;
+		localStorage[mheader+'!count'] = count;
+		localStorage[mheader+'!time']  = time;
+	},
+	deleteManageData : function(){
+		var mheader = 'pzprv3_manage:manage!'+k.puzzleid;
+		localStorage.removeItem(mheader+'!count');
+		localStorage.removeItem(mheader+'!time');
+	},
+
+	//---------------------------------------------------------------------------
+	// dbm.dbh.openAndImport()  DataBaseからDBlistを作成する
+	// dbm.dbh.close()          データベースを閉じる
+	// dbm.dbh.dropDataBase()   テーブルを削除する
+	//---------------------------------------------------------------------------
+	openAndImport : function(parent, callback){
 		parent.DBlist = [];
+
+		localStorage['pzprv3_'+k.puzzleid]            = 'DataBase';
+		localStorage['pzprv3_'+k.puzzleid+':puzdata'] = 'Table';
+
 		var r=0;
 		while(1){
-			r++; var row = {};
+			var row = {}; r++;
 			for(var c=0;c<7;c++){ row[this.keys[c]] = localStorage[this.pheader+'!'+r+'!'+this.keys[c]];}
 			if(row.id==null){ break;}
 			row.pdata = "";
@@ -339,27 +370,10 @@ DataBaseHandler_LS.prototype = {
 		}
 		if(!!callback){ callback();}
 	},
-
-	//---------------------------------------------------------------------------
-	// dbm.dbh.createManageDataTable() 管理情報テーブルを作成する(消去はなし)
-	// dbm.dbh.updateManageData()      管理情報レコードを更新する
-	//---------------------------------------------------------------------------
-	createManageDataTable : function(){
-		localStorage['pzprv3_manage']        = 'DataBase';
-		localStorage['pzprv3_manage:manage'] = 'Table';
-	},
-	updateManageData : function(parent){
-		var mheader = 'pzprv3_manage:manage!'+k.puzzleid;
-		localStorage[mheader+'!count'] = parent.DBlist.length;
-		localStorage[mheader+'!time']  = (tm.now()/1000)|0;
-	},
-
-	//---------------------------------------------------------------------------
-	// dbm.dbh.createDataBase()     テーブルを作成する
-	//---------------------------------------------------------------------------
-	createDataBase : function(){
-		localStorage['pzprv3_'+k.puzzleid]            = 'DataBase';
-		localStorage['pzprv3_'+k.puzzleid+':puzdata'] = 'Table';
+	close : function(){	},
+	dropDataBase : function(){
+		localStorage.removeItem('pzprv3_'+k.puzzleid);
+		localStorage.removeItem('pzprv3_'+k.puzzleid+':puzdata');
 	},
 
 	//---------------------------------------------------------------------------
@@ -379,12 +393,12 @@ DataBaseHandler_LS.prototype = {
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback){
 		var pdata = localStorage[this.pheader+'!'+parent.DBlist[id].id+'!pdata'];
-		filedecode(pdata);
+		fio.filedecode(pdata);
 		if(!!callback){ callback();}
 	},
 	saveDataTable : function(parent, id, callback){
 		var row = parent.DBlist[id];
-		for(var c=0;c<7;c++){ localStorage[this.pheader+'!'+row.id+'!'+this.keys[c]] = (c!==4 ? row[this.keys[c]] : fileencode(1));}
+		for(var c=0;c<7;c++){ localStorage[this.pheader+'!'+row.id+'!'+this.keys[c]] = (c!==4 ? row[this.keys[c]] : fio.fileencode(1));}
 		if(!!callback){ callback();}
 	},
 
@@ -417,38 +431,206 @@ DataBaseHandler_LS.prototype = {
 };
 
 //---------------------------------------------------------------------------
+// ★DataBaseHandler_IDBクラス Web SQL DataBase用 データベースハンドラ
+//---------------------------------------------------------------------------
+DataBaseHandler_IDB = function(){
+	this.db = null;	// パズル個別のデータベース
+};
+DataBaseHandler_IDB.prototype = {
+	//---------------------------------------------------------------------------
+	// dbm.dbh.openManageDataTable() 管理情報テーブルを作成する(消去はなし)
+	// dbm.dbh.updateManageData()    管理情報レコードを作成・更新する
+	// dbm.dbh.deleteManageData()    管理情報レコードを削除する
+	//---------------------------------------------------------------------------
+	openManageDataTable : function(){
+		var req = indexedDB.open('pzprv3_manage', 'manager');
+		req.onsuccess = function(event){
+			var dbmgr = event.result;
+			if(dbmgr.version != "1.0"){
+				dbmgr.setVersion("1.0").onsuccess = function(event){
+					dbmgr.createObjectStore("manage", "key", false);
+				};
+			}
+		};
+	},
+	updateManageData : function(parent, count, time){
+		var req = indexedDB.open('pzprv3_manage', 'manager');
+		req.onsuccess = function(event){
+			var record = {key:k.puzzleid, version:"1.0", count:count, lastupdate:time};
+			event.result.objectStore("manage").put(record);
+		}
+	},
+	deleteManageData : function(){
+		var req = indexedDB.open('pzprv3_manage', 'manager');
+		req.onsuccess = function(event){
+			event.result.objectStore("manage").remove(k.puzzleid);
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// dbm.dbh.openAndImport()  DataBaseからDBlistを作成する
+	// dbm.dbh.close()          データベースを閉じる
+	// dbm.dbh.dropDataBase()   テーブルを削除する
+	//---------------------------------------------------------------------------
+	openAndImport : function(parent, callback){
+		parent.DBlist = [];
+		indexedDB.open('pzprv3_'+k.puzzleid, 'puzzle data').onsuccess =
+		function(event){
+			var db = event.result;
+			if(db.version != "1.0"){
+				db.setVersion("1.0").onsuccess =
+					function(event){ db.createObjectStore("pzldata", "id", false);};
+			}
+			else{
+				db.objectStore("pzldata").openCursor().onsuccess =
+				function(event){
+					var cursor = event.result;
+					if(!cursor){ return;}
+					var row = cursor.value;
+					row.pdata = "";
+					parent.DBlist.push(row);
+					cursor.continue();
+				};
+			}
+
+			event.transaction.oncomplete = function(){ if(!!callback){ callback();}};
+		};
+	},
+	close : function(){
+		indexedDB.open('pzprv3_'+k.puzzleid, 'puzzle data').onsuccess =
+			function(event){ event.result.close();}
+
+		indexedDB.open('pzprv3_manage', 'manager').onsuccess =
+			function(event){ event.result.close();}
+	},
+	dropDataBase : function(){
+		indexedDB.open('pzprv3_'+k.puzzleid, 'puzzle data').onsuccess =
+		function(event){
+			var db = event.result;
+			db.setVersion("0.0").onsuccess =
+				function(event){ db.removeObjectStore("pzldata");};
+		};
+	},
+
+	//---------------------------------------------------------------------------
+	// dbm.dbh.convertDataTableID() データのIDを付け直す
+	//---------------------------------------------------------------------------
+	convertDataTableID : function(parent, sid, tid, callback){
+		indexedDB.open('pzprv3_'+k.puzzleid, 'puzzle data').onsuccess =
+		function(event){
+			var store = event.result.objectStore("pzldata");
+			store.put(parent.DBlist[sid]);
+			store.put(parent.DBlist[tid]);
+			event.transaction.oncomplete = function(){ if(!!callback){ callback();};}
+		};
+	},
+
+	//---------------------------------------------------------------------------
+	// dbm.dbh.openDataTable()   データの盤面に読み込む
+	// dbm.dbh.saveDataTable()   データの盤面を保存する
+	//---------------------------------------------------------------------------
+	openDataTable : function(parent, id, callback){
+		indexedDB.open('pzprv3_'+k.puzzleid, 'puzzle data').onsuccess =
+		function(event){
+			event.result.objectStore("pzldata").get(parent.DBlist[id].id).onsuccess =
+			function(event){
+				if(!!event.result.pdata){ fio.filedecode(event.result.pdata);}
+				if(!!callback){ callback();}
+			};
+		};
+	},
+	saveDataTable : function(parent, id, callback){
+		var row = parent.DBlist[id]; row.pdata = fio.fileencode(1);
+		indexedDB.open('pzprv3_'+k.puzzleid, 'puzzle data').onsuccess =
+		function(event){
+			event.result.objectStore("pzldata").put(row).onsuccess =
+				function(event){ row.pdata = ""; if(!!callback){ callback();}};
+		};
+	},
+
+	//---------------------------------------------------------------------------
+	// dbm.dbh.updateComment()   データのコメントを更新する
+	// dbm.dbh.updateDifficult() データの難易度を更新する
+	// dbm.dbh.putdata()         上記2つの関数の内容が同じなので内容を移動した
+	//---------------------------------------------------------------------------
+	updateComment : function(parent, id, callback){
+		this.putdata(parent, id, callback);
+	},
+	updateDifficult : function(parent, id, callback){
+		this.putdata(parent, id, callback);
+	},
+	putdata : function(parent, id, callback){
+		var row = parent.DBlist[id];
+		indexedDB.open('pzprv3_'+k.puzzleid, 'puzzle data').onsuccess =
+		function(event){
+			event.result.objectStore("pzldata").put(row).onsuccess =
+				function(event){ if(!!callback){ callback();}};
+		};
+	},
+
+	//---------------------------------------------------------------------------
+	// dbm.dbh.deleteDataTable() 選択している盤面データを削除する
+	//---------------------------------------------------------------------------
+	deleteDataTable : function(parent, sID, max, callback){
+		indexedDB.open('pzprv3_'+k.puzzleid, 'puzzle data').onsuccess =
+		function(event){
+			var store = event.result.objectStore("pzldata"), i=0;
+			store.remove(max);
+			for(var i=parseInt(sID);i<max;i++){ store.put(paremt.DBlist[i]);}
+			event.transaction.oncomplete = function(){ if(!!callback){ callback();};}
+		};
+	}
+};
+
+//---------------------------------------------------------------------------
 // ★DataBaseHandler_SQLクラス Web SQL DataBase用 データベースハンドラ
 //---------------------------------------------------------------------------
 DataBaseHandler_SQL = function(){
-	this.db    = null;	// パズル個別のデータベース
-	this.dbmgr = null;	// pzprv3_managerデータベース
-
-	this.initialize();
+	this.db = null;	// パズル個別のデータベース
 };
 DataBaseHandler_SQL.prototype = {
 	//---------------------------------------------------------------------------
-	// dbm.dbh.initialize()    初期化時にデータベースを開く
-	// dbm.dbh.importDBlist()  DataBaseからDBlistを作成する
-	// dbm.dbh.setupDBlist()   DBlistのデータをDataBaseに代入する
+	// dbm.dbh.openManageDataTable() 管理情報テーブルを作成する(消去はなし)
+	// dbm.dbh.updateManageData()    管理情報レコードを作成・更新する
+	// dbm.dbh.deleteManageData()    管理情報レコードを削除する
 	//---------------------------------------------------------------------------
-	initialize : function(){
-		this.dbmgr = window.openDatabase('pzprv3_manage', '1.0', 'manager', 1024*1024*5);
-		this.db    = window.openDatabase('pzprv3_'+k.puzzleid, '1.0', 'pzldata', 1024*1024*5);
-
-		this.createManageDataTable();
-		this.createDataBase();
+	openManageDataTable : function(){
+		var dbmgr = openDatabase('pzprv3_manage', '1.0', 'manager', 1024*1024*5);
+		dbmgr.transaction( function(tx){
+			tx.executeSql('CREATE TABLE IF NOT EXISTS manage (puzzleid primary key,version,count,lastupdate)',[]);
+		});
 	},
-	importDBlist : function(parent, callback){
+	updateManageData : function(parent, count, time){
+		var dbmgr = openDatabase('pzprv3_manage', '1.0', 'manager', 1024*1024*5);
+		dbmgr.transaction( function(tx){
+			tx.executeSql('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)', [k.puzzleid, '1.0', count, time]);
+		});
+	},
+	deleteManageData : function(){
+		var dbmgr = openDatabase('pzprv3_manage', '1.0', 'manager', 1024*1024*5);
+		this.dbmgr.transaction( function(tx){
+			tx.executeSql('DELETE FROM manage WHERE puzzleid=?',[k.puzzleid]);
+		});
+	},
+
+	//---------------------------------------------------------------------------
+	// dbm.dbh.openAndImport()  DataBaseからDBlistを作成する
+	// dbm.dbh.close()          データベースを閉じる
+	// dbm.dbh.dropDataBase()   テーブルを削除する
+	//---------------------------------------------------------------------------
+	openAndImport : function(parent, callback){
 		parent.DBlist = [];
+		this.db = openDatabase('pzprv3_'+k.puzzleid, '1.0', 'pzldata', 1024*1024*5);
 		this.db.transaction(
 			function(tx){
+				tx.executeSql('CREATE TABLE IF NOT EXISTS pzldata (id int primary key,col,row,hard,pdata,time,comment)',[]);
 				tx.executeSql('SELECT * FROM pzldata',[],function(tx,rs){
-					var i=0, keys=parent.keys;
+					var keys=parent.keys;
 					for(var r=0;r<rs.rows.length;r++){
-						parent.DBlist[i] = {};
-						for(var c=0;c<7;c++){ parent.DBlist[i][keys[c]] = rs.rows.item(r)[keys[c]];}
-						parent.DBlist[i].pdata = "";
-						i++;
+						var row = {};
+						for(var c=0;c<7;c++){ row[keys[c]] = rs.rows.item(r)[keys[c]];}
+						row.pdata = "";
+						parent.DBlist.push(row);
 					}
 				});
 			},
@@ -456,54 +638,14 @@ DataBaseHandler_SQL.prototype = {
 			function(){ if(!!callback){ callback();}}
 		);
 	},
-/*	setupDBlist : function(parent){
-		for(var r=0;r<parent.DBlist.length;r++){
-			this.saveDataTable(parent, r);
-		}
+	close : function(){
+		/* Web SQL Databaseってclose()ないんですかね、 */
 	},
-*/
-	//---------------------------------------------------------------------------
-	// dbm.dbh.createManageDataTable() 管理情報テーブルを作成する(消去はなし)
-	// dbm.dbh.updateManageData()      管理情報レコードを作成・更新する
-	// dbm.dbh.deleteManageData()      管理情報レコードを削除する
-	//---------------------------------------------------------------------------
-	createManageDataTable : function(){
-		this.dbmgr.transaction( function(tx){
-			tx.executeSql('CREATE TABLE IF NOT EXISTS manage (puzzleid primary key,version,count,lastupdate)',[]);
-		});
-	},
-	updateManageData : function(parent){
-		var count = parent.DBlist.length;
-		var time = (tm.now()/1000)|0;
-		this.dbmgr.transaction( function(tx){
-			tx.executeSql('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)', [k.puzzleid, '1.0', count, time]);
-		});
-	},
-/*	deleteManageData : function(){
-		this.dbmgr.transaction( function(tx){
-			tx.executeSql('DELETE FROM manage WHERE puzzleid=?',[k.puzzleid]);
-		});
-	},
-*/
-	//---------------------------------------------------------------------------
-	// dbm.dbh.createDataBase()      テーブルを作成する
-	// dbm.dbh.dropDataBase()        テーブルを削除する
-	// dbm.dbh.forcedeleteDataBase() テーブルを削除する
-	//---------------------------------------------------------------------------
-	createDataBase : function(){
-		this.db.transaction( function(tx){
-			tx.executeSql('CREATE TABLE IF NOT EXISTS pzldata (id int primary key,col,row,hard,pdata,time,comment)',[]);
-		});
-	},
-/*	dropDataBase : function(){
+	dropDataBase : function(){
 		this.db.transaction( function(tx){
 			tx.executeSql('DROP TABLE IF EXISTS pzldata',[]);
 		});
 	},
-	forceDeleteDataBase : function(parent){
-		this.deleteManageData();
-		this.dropDataBase();
-	},*/
 
 	//---------------------------------------------------------------------------
 	// dbm.dbh.convertDataTableID() データのIDを付け直す
@@ -522,8 +664,9 @@ DataBaseHandler_SQL.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// dbm.dbh.openDataTable()   データの盤面に読み込む
-	// dbm.dbh.saveDataTable()   データの盤面を保存する
+	// dbm.dbh.openDataTable()    データの盤面に読み込む
+	// dbm.dbh.saveDataTable()    データの盤面を保存する
+	// dbm.dbh.saveDataTableAll() DBlistのデータをDataBaseに代入する
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback){
 		var data = "";
@@ -535,13 +678,13 @@ DataBaseHandler_SQL.prototype = {
 			},
 			function(){ },
 			function(){
-				if(!!data){ filedecode(data);}
+				if(!!data){ fio.filedecode(data);}
 				if(!!callback){ callback();}
 			}
 		);
 	},
 	saveDataTable : function(parent, id, callback){
-		var row = parent.DBlist[id], data = fileencode(1);
+		var row = parent.DBlist[id], data = fio.fileencode(1);
 		this.db.transaction(
 			function(tx){
 				tx.executeSql('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',
@@ -552,6 +695,11 @@ DataBaseHandler_SQL.prototype = {
 			function(){ if(!!callback){ callback();}}
 		);
 	},
+/*	saveDataTableAll : function(parent){
+		for(var r=0;r<parent.DBlist.length;r++){
+			this.saveDataTable(parent, r);
+		}
+	},*/
 
 	//---------------------------------------------------------------------------
 	// dbm.dbh.updateComment()   データのコメントを更新する
