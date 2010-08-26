@@ -178,9 +178,9 @@ Graphic.prototype = {
 			x1:x1, y1:y1, x2:x2, y2:y2, cells:bd.cellinside(x1,y1,x2,y2),
 			crosses:[], borders:[], excells:[]
 		}
-		if(!!bd.cross) { this.range.crosses = bd.crossinside(x1,y1,x2,y2);}
-		if(!!bd.border){ this.range.borders = bd.borderinside(x1,y1,x2,y2);}
-		if(!!bd.excell){ this.range.excells = bd.excellinside(x1,y1,x2,y2);}
+		if(!!k.iscross) { this.range.crosses = bd.crossinside(x1,y1,x2,y2);}
+		if(!!k.isborder){ this.range.borders = bd.borderinside(x1,y1,x2,y2);}
+		if(!!k.isexcell){ this.range.excells = bd.excellinside(x1,y1,x2,y2);}
 	},
 
 	paintAll : function(){
