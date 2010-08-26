@@ -35,12 +35,6 @@ PBase.prototype = {
 		}
 		_doc.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
 
-		fio = new FileIO();
-		if(fio.dbm.requireGears()){
-			// 必要な場合、gears_init.jsの読み込み
-			_doc.writeln("<script type=\"text/javascript\" src=\"src/gears_init.js\"></script>");
-		}
-
 		// onLoadに動作を割り当てる
 		window.onload = ee.ebinder(this, this.onload_func);
 	},
@@ -94,6 +88,8 @@ PBase.prototype = {
 		if(this.proto){ puz.protoChange();}
 
 		// クラス初期化
+		fio = new FileIO();				// ファイル入出力用オブジェクト
+		dbm = new DataBaseManager();	// データベースアクセス用オブジェクト
 		tc = new TCell();		// キー入力のターゲット管理オブジェクト
 		bd = new Board();		// 盤面オブジェクト
 		mv = new MouseEvent();	// マウス入力オブジェクト
@@ -359,7 +355,6 @@ PBase.prototype = {
 
 		// 通常preload_funcで初期化されるenc,fioをここで生成する
 		enc = new Encode();
-		fio = new FileIO();
 
 		if(!!contents.url){ enc.parseURI_pzpr(contents.url);}
 		if(!!enc.uri.cols){ k.qcols = enc.uri.cols;}

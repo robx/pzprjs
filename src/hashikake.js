@@ -269,15 +269,15 @@ Puzzles.hashikake.prototype = {
 				var val = parseInt(ca);
 				var datah = (val&3);
 				if(datah>0){
-					var ub=bd.bnum(obj.bx,obj.by-1), db=bd.bnum(obj.bx,obj.by+1);
-					if(ub!==null){ bd.border[ub].line = datah;}
-					if(db!==null){ bd.border[db].line = datah;}
+					var uid=bd.bnum(obj.bx,obj.by-1), did=bd.bnum(obj.bx,obj.by+1);
+					if(uid!==null){ bd.border[uid].line = datah;}
+					if(did!==null){ bd.border[did].line = datah;}
 				}
 				var dataw = ((val&12)>>2);
 				if(dataw>0){
-					var lb=bd.bnum(obj.bx-1,obj.by), rb=bd.bnum(obj.bx+1,obj.by);
-					if(lb!==null){ bd.border[lb].line = dataw;}
-					if(rb!==null){ bd.border[rb].line = dataw;}
+					var lid=bd.bnum(obj.bx-1,obj.by), rid=bd.bnum(obj.bx+1,obj.by);
+					if(lid!==null){ bd.border[lid].line = dataw;}
+					if(rid!==null){ bd.border[rid].line = dataw;}
 				}
 			});
 		};
@@ -289,9 +289,9 @@ Puzzles.hashikake.prototype = {
 			});
 			this.encodeCell( function(obj){
 				if(obj.qnum!==-1){ return "0 ";}
-				var ub=bd.bnum(obj.bx,obj.by-1), lb=bd.bnum(obj.bx-1,obj.by);
-				var datah = (ub!==null ? bd.border[ub].line : 0);
-				var dataw = (lb!==null ? bd.border[lb].line : 0);
+				var uid=bd.bnum(obj.bx,obj.by-1), lid=bd.bnum(obj.bx-1,obj.by);
+				var datah = (uid!==null ? bd.border[uid].line : 0);
+				var dataw = (lid!==null ? bd.border[lid].line : 0);
 				return ""+((datah>0?datah:0)+(dataw>0?(dataw<<2):0))+" ";
 			});
 		};

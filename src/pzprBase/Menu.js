@@ -190,7 +190,7 @@ Menu.prototype = {
 		ap('sep_file', 'file');
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
 		at('filesavep', 'file', 'ファイル保存 ->',  'Save the file as ... ->');
-		if(fio.dbm.DBaccept>0){
+		if(dbm.DBaccept>0){
 			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
 		}
 		if(base.enableSaveImage){
@@ -696,7 +696,7 @@ Menu.prototype = {
 		btn(_doc.fileform.close,    close, "閉じる",     "Close");
 
 		// データベースを開く -------------------------------------------------
-		func = ee.ebinder(fio.dbm, fio.dbm.clickHandler);
+		func = ee.ebinder(dbm, dbm.clickHandler);
 		lab(ee('bar1_8').el, "一時保存/戻す", "Temporary Stack");
 		_doc.database.sorts   .onchange = func;
 		_doc.database.datalist.onchange = func;
@@ -737,8 +737,8 @@ Menu.prototype = {
 
 		// credit -------------------------------------------------------------
 		lab(ee('bar3_1').el,   "credit", "credit");
-		lab(ee('credit3_1').el,"ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\nライブラリとしてuuCanvas1.0, Google Gearsを使用しています。<br>\n<br>\n",
-							   "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\nThis script use uuCanvas1.0 and Google Gears as libraries.&nbsp;<br>\n<br>\n");
+		lab(ee('credit3_1').el,"ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\n",
+							   "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\n");
 		btn(_doc.credit.close,  close, "閉じる", "OK");
 
 		// 説明 ---------------------------------------------------------------
@@ -786,7 +786,7 @@ Menu.prototype = {
 	popclose : function(){
 		if(this.pop){
 			if(this.pop.el.id=='pop1_8'){
-				fio.dbm.closeDialog();
+				dbm.closeDialog();
 			}
 
 			this.pop.el.style.display = "none";
@@ -1042,7 +1042,7 @@ Properties.prototype = {
 		filesave2 : function(){ if(!!fio.kanpenSave){ menu.ex.filesave(fio.PBOX);}},
 		imagedl   : function(){ menu.ex.imagesave(true);},
 		imagesave : function(){ menu.ex.imagesave(false);},
-		database  : function(){ menu.pop = ee("pop1_8"); fio.dbm.openDialog();},
+		database  : function(){ menu.pop = ee("pop1_8"); dbm.openDialog();},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
 		credit    : function(){ menu.pop = ee("pop3_1");},

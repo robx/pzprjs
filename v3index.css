@@ -17,6 +17,8 @@
 
 	p.expression{ margin-bottom:0pt;}
 
+	table#table_notice ul { margin:0pt;}
+
 	menu#puztypes { float:left; list-style-type:none; margin:0px; padding:2pt; padding-bottom:0pt;}
 	li.puzmenu { display:inline; padding:2pt; white-space:nowrap;
 				 background-color:#dfdfdf; border:solid 1px gray; border-bottom:none;
