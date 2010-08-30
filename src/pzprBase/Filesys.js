@@ -8,7 +8,7 @@ FileIO = function(){
 	this.lineseek = 0;
 	this.dataarray = [];
 	this.datastr = "";
-	this.urlstr = "";
+	this.history = "";
 	this.currentType = 1;
 
 	// 定数(ファイル形式)
@@ -53,10 +53,12 @@ FileIO.prototype = {
 		if     (this.currentType===this.PZPR){ this.decodeData();}
 		else if(this.currentType===this.PBOX){ this.kanpenOpen();}
 
-		this.dataarray = null; // 重くなりそうなので初期化
-
 		base.resetInfo(true);
 		base.resize_canvas();
+
+		if(this.readLine().match("<history>")){ um.decodeLines();}
+
+		this.dataarray = null;
 	},
 	//---------------------------------------------------------------------------
 	// fio.fileencode() ファイル文字列へのエンコード、ファイル保存実行関数
@@ -66,7 +68,7 @@ FileIO.prototype = {
 		this.filever = 0;
 		this.sizestr = "";
 		this.datastr = "";
-		this.urlstr = "";
+		this.history = "";
 		this.currentType = type;
 
 		// メイン処理
@@ -84,9 +86,9 @@ FileIO.prototype = {
 		}
 		var bstr = this.datastr;
 
-		// 末尾のURL追加処理
+		// 末尾の履歴情報追加処理
 		if(this.currentType===this.PZPR){
-			this.urlstr = enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? enc.PZPRV3 : enc.KANPEN);
+			this.history = um.toString();
 		}
 
 		return bstr;

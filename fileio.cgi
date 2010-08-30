@@ -38,6 +38,7 @@ sub fileopen{
 	close ($FH) if ($CGI::OS ne 'UNIX'); # Windowsプラットフォーム用
 
 	$str =~ s/[\r\n]+/\t/g;
+	$str =~ s/\//\[\[slash\]\]/g
 
 	print <<"EOL";
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -71,14 +72,13 @@ sub filesave{
 	$rn = "\012";
 
 	my @lines = split(/\//, $q->param('ques'));
-
 	if($#lines>=3){
 		for(@lines){ printf "$_$rn";}
 	}
 
 	if($q->param('urlstr')){
-		printf "$rn";
-		printf "%s$rn",$q->param('urlstr');
+		@lines = split(/\//, $q->param('urlstr'));
+		for(@lines){ s/\[\[slash\]\]/\//g; printf "$_$rn";}
 	}
 }
 

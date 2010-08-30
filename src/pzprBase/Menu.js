@@ -1139,15 +1139,14 @@ var debug = {
 
 	filesave : function(){
 		this.setTA(fio.fileencode(fio.PZPR).replace(/\//g,"\n"));
-		this.addTA('');
-		this.addTA(fio.urlstr);
+		this.addTA(fio.history.replace(/\//g,"\n").replace(/\[\[slash\]\]/g,"/"));
 	},
 	filesave_pencilbox : function(){
 		this.setTA(fio.fileencode(fio.PBOX).replace(/\//g,"\n"));
 	},
 
 	fileopen : function(){
-		var dataarray = this.getTA().split("\n");
+		var dataarray = this.getTA().replace(/\//g,"[[slash]]").split("\n");
 		fio.filedecode(dataarray.join("/"));
 	},
 
