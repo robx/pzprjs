@@ -11,6 +11,7 @@ Puzzles.tentaisho.prototype = {
 		k.iscross  = 1;
 		k.isborder = 1;
 
+		k.dispzero        = true;
 		k.hasroom         = true;
 
 		k.ispzprv3ONLY    = true;
@@ -42,11 +43,19 @@ Puzzles.tentaisho.prototype = {
 	},
 
 	protoChange : function(){
-		this.protoval = Border.prototype.defqnum;
+		this.protoval = {
+			cell   : Cell.prototype.defqnum,
+			cross  : Cross.prototype.defqnum,
+			border : Border.prototype.defqnum
+		};
+		Cell.prototype.defqnum = 0;
+		Cross.prototype.defqnum = 0;
 		Border.prototype.defqnum = 0;
 	},
 	protoOriginal : function(){
-		Border.prototype.defqnum = this.protoval;
+		Cell.prototype.defqnum   = this.protoval.cell;
+		Cross.prototype.defqnum  = this.protoval.cross;
+		Border.prototype.defqnum = this.protoval.border;
 	},
 
 	//---------------------------------------------------------
@@ -224,28 +233,19 @@ Puzzles.tentaisho.prototype = {
 		};
 
 		bd.getStar = function(id){
-			if     (bd.star[id].group===k.CELL) { return bd.QuC(bd.star[id].groupid);}
-			else if(bd.star[id].group===k.CROSS){ return bd.QuX(bd.star[id].groupid);}
+			if     (bd.star[id].group===k.CELL) { return bd.QnC(bd.star[id].groupid);}
+			else if(bd.star[id].group===k.CROSS){ return bd.QnX(bd.star[id].groupid);}
 			else                                { return bd.QnB(bd.star[id].groupid);}
 		};
 		bd.isStarError = function(id){
 			return (bd.getObject(bd.star[id].group,bd.star[id].groupid).error!==0);
 		};
 		bd.setStar = function(id,val){
-			if     (bd.star[id].group===k.CELL) { bd.sQuC(bd.star[id].groupid, val);}
-			else if(bd.star[id].group===k.CROSS){ bd.sQuX(bd.star[id].groupid, val);}
-			else{
-				um.disCombine = 1;
-				bd.sQnB(bd.star[id].groupid, val);
-				um.disCombine = 0;
-			}
-		};
-
-		/* setBorderを呼び出さないようにオーバーライド */
-		bd.sQuB = function(){
-			var old = this.border[id].ques;
-			um.addOpe(k.BORDER, k.QUES, id, old, num);
-			this.border[id].ques = num;
+			um.disCombine = 1;
+			if     (bd.star[id].group===k.CELL) { bd.sQnC(bd.star[id].groupid, val);}
+			else if(bd.star[id].group===k.CROSS){ bd.sQnX(bd.star[id].groupid, val);}
+			else                                { bd.sQnB(bd.star[id].groupid, val);}
+			um.disCombine = 0;
 		};
 	},
 
@@ -307,7 +307,7 @@ Puzzles.tentaisho.prototype = {
 				if(bd.getStar(id)===1){
 					g.strokeStyle = (bd.isStarError(id) ? this.errcolor1 : this.cellcolor);
 					g.fillStyle   = "white";
-					if(this.vnop(headers[0]+id,this.FILL_STROKE)){
+					if(this.vnop(headers[0]+id,this.STROKE)){
 						g.shapeCircle(bx*this.bw, by*this.bh, this.cw*0.16);
 					}
 				}
