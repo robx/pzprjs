@@ -206,7 +206,7 @@ MenuExec.prototype = {
 		else                                           { _doc.fileform2.platform.value = "Others";}
 
 		_doc.fileform2.ques.value   = fio.fileencode(ftype);
-		_doc.fileform2.urlstr.value = fio.urlstr;
+		_doc.fileform2.urlstr.value = fio.history;
 		_doc.fileform2.operation.value = 'save';
 
 		_doc.fileform2.action = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
