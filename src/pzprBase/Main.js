@@ -44,7 +44,9 @@ PBase.prototype = {
 	//   ページがLoadされた時の処理。各クラスのオブジェクトへの読み込み等初期設定を行う
 	//---------------------------------------------------------------------------
 	onload_func : function(){
-		Camp('divques');
+		if(navigator.userAgent.match(/Chrome\/6\.0/)){ Camp('divques','canvas');}
+		else{ Camp('divques');}
+
 		if(Camp.enable.canvas && !!_doc.createElement('canvas').toDataURL){
 			this.enableSaveImage = true;
 			Camp('divques_sub', 'canvas');

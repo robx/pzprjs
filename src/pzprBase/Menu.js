@@ -842,6 +842,7 @@ Menu.prototype = {
 	textsize : function(num){
 		var sheet = _doc.styleSheets[0];
 		var rules = (!!sheet.cssRules ? sheet.cssRules : sheet.rules);
+		if(!rules){ return;} /* Chrome6の挙動がおかしいのでエラー回避用 */
 		for(var i=0,len=rules.length;i<len;i++){
 			var rule = rules[i];
 			if(!rule.selectorText){ continue;}
