@@ -171,6 +171,11 @@ if(typeof localStorage != "object" && typeof globalStorage == "object"){
 	localStorage = globalStorage[location.host];
 }
 
+// Firefox4.0betaのindexedDBのハック
+if(typeof indexedDB != "object" && typeof moz_indexedDB == "object"){
+	indexedDB = moz_indexedDB;
+}
+
 //---------------------------------------------------------------------------
 // ★共通グローバル関数
 // f_true()  trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)

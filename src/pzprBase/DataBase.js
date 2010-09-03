@@ -443,28 +443,27 @@ DataBaseHandler_IDB.prototype = {
 	// dbm.dbh.deleteManageData()    管理情報レコードを削除する
 	//---------------------------------------------------------------------------
 	openManageDataTable : function(){
-		var req = indexedDB.open('pzprv3_manage', 'manager');
-		req.onsuccess = function(event){
+		indexedDB.open('pzprv3_manage', 'manager').onsuccess =
+		function(event){
 			var dbmgr = event.result;
 			if(dbmgr.version != "1.0"){
-				dbmgr.setVersion("1.0").onsuccess = function(event){
-					dbmgr.createObjectStore("manage", "key", false);
-				};
+				dbmgr.setVersion("1.0").onsuccess =
+					function(event){ dbmgr.createObjectStore("manage", "key", false);};
 			}
 		};
 	},
 	updateManageData : function(parent, count, time){
-		var req = indexedDB.open('pzprv3_manage', 'manager');
-		req.onsuccess = function(event){
+		indexedDB.open('pzprv3_manage', 'manager').onsuccess =
+		function(event){
 			var record = {key:k.puzzleid, version:"1.0", count:count, lastupdate:time};
-			event.result.objectStore("manage").put(record);
-		}
+			var store = event.result.objectStore("manage").put(record);
+		};
 	},
 	deleteManageData : function(){
-		var req = indexedDB.open('pzprv3_manage', 'manager');
-		req.onsuccess = function(event){
+		indexedDB.open('pzprv3_manage', 'manager').onsuccess =
+		function(event){
 			event.result.objectStore("manage").remove(k.puzzleid);
-		}
+		};
 	},
 
 	//---------------------------------------------------------------------------
@@ -477,6 +476,8 @@ DataBaseHandler_IDB.prototype = {
 		indexedDB.open('pzprv3_'+k.puzzleid, 'puzzle data').onsuccess =
 		function(event){
 			var db = event.result;
+			db.transaction("pzldata").oncomplete = function(){ if(!!callback){ callback();}};
+
 			if(db.version != "1.0"){
 				db.setVersion("1.0").onsuccess =
 					function(event){ db.createObjectStore("pzldata", "id", false);};
@@ -492,16 +493,10 @@ DataBaseHandler_IDB.prototype = {
 					cursor.continue();
 				};
 			}
-
-			event.transaction.oncomplete = function(){ if(!!callback){ callback();}};
 		};
 	},
 	close : function(){
-		indexedDB.open('pzprv3_'+k.puzzleid, 'puzzle data').onsuccess =
-			function(event){ event.result.close();}
-
-		indexedDB.open('pzprv3_manage', 'manager').onsuccess =
-			function(event){ event.result.close();}
+		/* database.close() いらなさそうなので削りました */
 	},
 	dropDataBase : function(){
 		indexedDB.open('pzprv3_'+k.puzzleid, 'puzzle data').onsuccess =
@@ -518,10 +513,10 @@ DataBaseHandler_IDB.prototype = {
 	convertDataTableID : function(parent, sid, tid, callback){
 		indexedDB.open('pzprv3_'+k.puzzleid, 'puzzle data').onsuccess =
 		function(event){
-			var store = event.result.objectStore("pzldata");
+			var db = event.result, store = db.objectStore("pzldata");
 			store.put(parent.DBlist[sid]);
 			store.put(parent.DBlist[tid]);
-			event.transaction.oncomplete = function(){ if(!!callback){ callback();};}
+			db.transaction("pzldata").oncomplete = function(){ if(!!callback){ callback();}};
 		};
 	},
 
@@ -574,10 +569,10 @@ DataBaseHandler_IDB.prototype = {
 	deleteDataTable : function(parent, sID, max, callback){
 		indexedDB.open('pzprv3_'+k.puzzleid, 'puzzle data').onsuccess =
 		function(event){
-			var store = event.result.objectStore("pzldata"), i=0;
+			var db = event.result, store = db.objectStore("pzldata"), i=0;
 			store.remove(max);
 			for(var i=parseInt(sID);i<max;i++){ store.put(paremt.DBlist[i]);}
-			event.transaction.oncomplete = function(){ if(!!callback){ callback();};}
+			db.transaction("pzldata").oncomplete = function(){ if(!!callback){ callback();}};
 		};
 	}
 };
