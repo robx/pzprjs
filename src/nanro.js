@@ -20,7 +20,6 @@ Puzzles.nanro.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("ナンロー","Nanro");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 
 		enc.pidKanpen = 'nanro';

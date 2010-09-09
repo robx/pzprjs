@@ -14,7 +14,6 @@ Puzzles.barns.prototype = {
 		k.isLineCross     = true;
 		k.isCenterLine    = true;
 
-		base.setTitle("バーンズ","Barns");
 		base.setFloatbgcolor("rgb(0, 0, 191)");
 	},
 	menufix : function(){

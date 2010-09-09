@@ -18,7 +18,6 @@ Puzzles.firefly.prototype = {
 		k.bdmargin       = 0.50;
 		k.bdmargin_image = 0.10;
 
-		base.setTitle("ホタルビーム", 'Hotaru Beam'); //'Glow of Fireflies');
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){ },

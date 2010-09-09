@@ -22,7 +22,6 @@ Puzzles.ayeheya.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("∀人∃ＨＥＹＡ", "ekawayeh");
 		base.setFloatbgcolor("rgb(0, 191, 0)");
 
 		enc.pidKanpen = 'ayeheya';

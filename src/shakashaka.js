@@ -16,7 +16,6 @@ Puzzles.shakashaka.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("シャカシャカ","ShakaShaka");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 	},
 	menufix : function(){

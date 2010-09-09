@@ -14,7 +14,6 @@ Puzzles.factors.prototype = {
 		k.roomNumber      = true;
 		k.isAnsNumber     = true;
 
-		base.setTitle("因子の部屋",'Rooms of Factors');
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){ },

@@ -14,7 +14,6 @@ Puzzles.fillmat.prototype = {
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
 
-		base.setTitle("フィルマット","Fillmat");
 		base.setFloatbgcolor("rgb(127, 191, 0)");
 	},
 	menufix : function(){ },

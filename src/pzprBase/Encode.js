@@ -96,7 +96,7 @@ Encode.prototype = {
 			case 'masyu'      : this.pidforURL = pid = 'mashu';   break;
 			default           : this.pidforURL = pid;
 		}
-		k.puzzleid = pid;
+		k.pzlnameid = k.puzzleid = pid;
 	},
 	parseURI : function(url){
 		this.init();

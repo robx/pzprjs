@@ -16,7 +16,6 @@ Puzzles.triplace.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("トリプレイス","Tri-place");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 		base.proto = 1;
 	},

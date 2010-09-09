@@ -15,7 +15,6 @@ Puzzles.mejilink.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("メジリンク","Mejilink");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 		base.proto = 1;
 	},

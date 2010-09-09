@@ -19,7 +19,6 @@ Puzzles.wagiri.prototype = {
 		k.bdmargin       = 0.70;
 		k.bdmargin_image = 0.50;
 
-		base.setTitle("ごきげんななめ・輪切","Gokigen-naname:wagiri");
 		base.setFloatbgcolor("rgb(0, 127, 0)");
 		base.proto = 1;
 	},

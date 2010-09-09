@@ -14,7 +14,6 @@ Puzzles.bag.prototype = {
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
 
-		base.setTitle("バッグ", "BAG (Corral)");
 		base.setFloatbgcolor("rgb(160, 0, 0)");
 	},
 	menufix : function(){

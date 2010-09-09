@@ -16,7 +16,6 @@ Puzzles.shikaku.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("四角に切れ","Shikaku");
 		base.setFloatbgcolor("rgb(127, 191, 0)");
 
 		enc.pidKanpen = 'shikaku';

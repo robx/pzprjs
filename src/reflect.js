@@ -14,7 +14,6 @@ Puzzles.reflect.prototype = {
 		k.isLineCross     = true;
 		k.isCenterLine    = true;
 
-		base.setTitle("リフレクトリンク","Reflect Link");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){

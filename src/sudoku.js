@@ -15,7 +15,6 @@ Puzzles.sudoku.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("数独","Sudoku");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 		base.proto = 1;
 

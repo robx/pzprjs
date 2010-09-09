@@ -15,7 +15,6 @@ Puzzles.aho.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("アホになり切れ","Aho-ni-Narikire");
 		base.setFloatbgcolor("rgb(127, 191, 0)");
 	},
 	menufix : function(){ },

@@ -15,7 +15,6 @@ Puzzles.view.prototype = {
 		k.NumberWithMB    = true;
 		k.linkNumber      = true;
 
-		base.setTitle("ヴィウ","View");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){ },

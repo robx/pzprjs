@@ -20,7 +20,6 @@ Puzzles.wblink.prototype = {
 		k.bdmargin       = 0.50;
 		k.bdmargin_image = 0.10;
 
-		base.setTitle("シロクロリンク","Shirokuro-link");
 		base.setFloatbgcolor("rgb(127, 191, 0)");
 	},
 	menufix : function(){ },

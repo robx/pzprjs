@@ -15,7 +15,6 @@ Puzzles.nuribou.prototype = {
 		k.checkBlackCell  = true;
 		k.checkWhiteCell  = true;
 
-		base.setTitle("ぬりぼう","Nuribou");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){

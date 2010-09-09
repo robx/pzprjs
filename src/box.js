@@ -18,7 +18,6 @@ Puzzles.box.prototype = {
 		k.bdmargin       = 0.15;
 		k.bdmargin_image = 0.10;
 
-		base.setTitle("ボックス","Kin-Kon-Kan");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 		base.proto = 1;
 	},

@@ -15,7 +15,6 @@ Puzzles.nawabari.prototype = {
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
 
-		base.setTitle("なわばり","Territory");
 		base.setFloatbgcolor("rgb(127, 127, 255)");
 	},
 	menufix : function(){ },

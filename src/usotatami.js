@@ -16,7 +16,6 @@ Puzzles.usotatami.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("ウソタタミ","Uso-tatami");
 		base.setFloatbgcolor("rgb(127, 191, 0)");
 	},
 	menufix : function(){ },

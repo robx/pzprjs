@@ -21,7 +21,6 @@ Puzzles.hashikake.prototype = {
 		k.bdmargin       = 0.50;
 		k.bdmargin_image = 0.10;
 
-		base.setTitle("橋をかけろ","Bridges");
 		base.setFloatbgcolor("rgb(127, 191, 0)");
 
 		enc.pidKanpen = 'hashi';

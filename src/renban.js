@@ -17,7 +17,6 @@ Puzzles.renban.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("連番窓口","Renban-Madoguchi");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){ },

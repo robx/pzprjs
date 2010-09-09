@@ -21,7 +21,6 @@ Puzzles.nagenawa.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("なげなわ","Nagenawa");
 		base.setFloatbgcolor("rgb(0, 127, 0)");
 	},
 	menufix : function(){

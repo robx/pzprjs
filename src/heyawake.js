@@ -22,7 +22,6 @@ Puzzles.heyawake.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("へやわけ","Heyawake");
 		base.setFloatbgcolor("rgb(0, 191, 0)");
 
 		enc.pidKanpen = 'heyawake';

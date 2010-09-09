@@ -18,7 +18,6 @@ Puzzles.fillomino.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("フィルオミノ","Fillomino");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 
 		enc.pidKanpen = 'fillomino';

@@ -18,7 +18,6 @@ Puzzles.toichika.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("遠い誓い","Toichika");
 		base.setFloatbgcolor("rgb(127, 160, 96)");
 	},
 	menufix : function(){ },

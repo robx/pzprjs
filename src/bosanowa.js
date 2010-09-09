@@ -17,7 +17,6 @@ Puzzles.bosanowa.prototype = {
 		k.bdmargin       = 0.70;
 		k.bdmargin_image = 0.10;
 
-		base.setTitle("ボサノワ","Bosanowa");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 		base.proto = 1;
 	},

@@ -17,7 +17,6 @@ Puzzles.kurodoko.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("黒どこ(黒マスはどこだ)","Kurodoko");
 		base.setFloatbgcolor("rgb(127, 191, 0)");
 
 		enc.pidKanpen = 'kurodoko';

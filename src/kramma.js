@@ -19,7 +19,6 @@ Puzzles.kramma.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("快刀乱麻","KaitoRamma");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){ },

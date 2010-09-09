@@ -16,7 +16,6 @@ Puzzles.norinori.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("のりのり","Norinori");
 		base.setFloatbgcolor("rgb(0, 127, 127)");
 	},
 	menufix : function(){

@@ -16,7 +16,6 @@ Puzzles.tasquare.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("たすくえあ","Tasquare");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){

@@ -12,7 +12,6 @@ Puzzles.tateyoko.prototype = {
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
 
-		base.setTitle("タテボーヨコボー","Tatebo-Yokobo");
 		base.setFloatbgcolor("rgb(96, 255, 96)");
 	},
 	menufix : function(){ },

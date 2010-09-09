@@ -13,7 +13,6 @@ Puzzles.goishi.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("碁石ひろい","Goishi");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 		base.proto = 1;
 

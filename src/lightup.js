@@ -15,7 +15,6 @@ Puzzles.lightup.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("美術館","Akari (Light Up)");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 		base.proto = 1;
 

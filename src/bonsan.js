@@ -15,7 +15,6 @@ Puzzles.bonsan.prototype = {
 		k.dispzero        = true;
 		k.isInputHatena   = true;
 
-		base.setTitle("ぼんさん/へやぼん","Bonsan/Heya-Bon");
 		base.setFloatbgcolor("rgb(127,96,64)");
 	},
 	menufix : function(){ },

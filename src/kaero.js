@@ -15,7 +15,6 @@ Puzzles.kaero.prototype = {
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
 
-		base.setTitle("お家に帰ろう","Return Home");
 		base.setFloatbgcolor("rgb(127,96,64)");
 	},
 	menufix : function(){ },

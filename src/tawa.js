@@ -16,7 +16,6 @@ Puzzles.tawa.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("たわむれんが","Tawamurenga");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 		base.proto = 1;
 	},

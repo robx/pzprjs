@@ -18,7 +18,6 @@ Puzzles.kurochute.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("クロシュート","Kurochute");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 
 		enc.pidKanpen = 'kurochute';

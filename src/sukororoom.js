@@ -17,7 +17,6 @@ Puzzles.sukororoom.prototype = {
 		k.NumberWithMB    = true;
 		k.linkNumber      = true;
 
-		base.setTitle("数コロ部屋","Sukoro-room");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){ },

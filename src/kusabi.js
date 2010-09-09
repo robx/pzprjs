@@ -16,7 +16,6 @@ Puzzles.kusabi.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("クサビリンク","Kusabi");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){ },

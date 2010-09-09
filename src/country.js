@@ -17,7 +17,6 @@ Puzzles.country.prototype = {
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
 
-		base.setTitle("カントリーロード","Country Road");
 		base.setFloatbgcolor("rgb(191, 0, 0)");
 	},
 	menufix : function(){

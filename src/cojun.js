@@ -17,7 +17,6 @@ Puzzles.cojun.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("コージュン","Cojun");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){ },

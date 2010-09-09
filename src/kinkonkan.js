@@ -19,7 +19,6 @@ Puzzles.kinkonkan.prototype = {
 		k.bdmargin       = 0.15;
 		k.bdmargin_image = 0.10;
 
-		base.setTitle("キンコンカン","Kin-Kon-Kan");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){ },

@@ -16,7 +16,6 @@ Puzzles.creek.prototype = {
 		k.bdmargin       = 0.70;
 		k.bdmargin_image = 0.50;
 
-		base.setTitle("クリーク","Creek");
 		base.setFloatbgcolor("rgb(0, 0, 255)");
 	},
 	menufix : function(){

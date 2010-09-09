@@ -15,7 +15,6 @@ Puzzles.tatamibari.prototype = {
 		k.isInputHatena   = true;
 		k.numberAsObject  = true;
 
-		base.setTitle("タタミバリ","Tatamibari");
 		base.setFloatbgcolor("rgb(96, 224, 0)");
 	},
 	menufix : function(){ },

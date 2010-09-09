@@ -18,7 +18,6 @@ Puzzles.nurikabe.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("ぬりかべ","Nurikabe");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 
 		enc.pidKanpen = 'nurikabe';

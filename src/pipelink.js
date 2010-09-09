@@ -16,7 +16,6 @@ Puzzles.pipelink.prototype = {
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
 
-		base.setTitle("パイプリンク","Pipelink");
 		base.setFloatbgcolor("rgb(0, 191, 0)");
 	},
 	menufix : function(){

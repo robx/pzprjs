@@ -103,6 +103,7 @@ var k = {
 
 	// 内部で自動的に設定されるグローバル変数
 	puzzleid  : '',			// パズルのID("creek"など)
+	pzlnameid : '',			// パズルの名前用ID
 
 	EDITOR    : true,		// エディタモード
 	PLAYER    : false,		// playerモード

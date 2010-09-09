@@ -15,7 +15,6 @@ Puzzles.yajikazu.prototype = {
 		k.RBBlackCell     = true;
 		k.checkWhiteCell  = true;
 
-		base.setTitle("やじさんかずさん","Yajisan-Kazusan");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){

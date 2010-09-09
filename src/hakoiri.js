@@ -17,7 +17,6 @@ Puzzles.hakoiri.prototype = {
 		k.linkNumber      = true;
 		k.numberAsObject  = true;
 
-		base.setTitle("はこいり○△□","Triplets");
 		base.setFloatbgcolor("rgb(127, 160, 96)");
 	},
 	menufix : function(){ },

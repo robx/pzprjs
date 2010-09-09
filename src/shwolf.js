@@ -19,7 +19,6 @@ Puzzles.shwolf.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("ヤギとオオカミ","Sheeps and Wolves");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){ },

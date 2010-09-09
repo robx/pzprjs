@@ -20,7 +20,6 @@ Puzzles.mashu.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("ましゅ","Masyu (Pearl Puzzle)");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 
 		enc.pidKanpen = 'masyu';

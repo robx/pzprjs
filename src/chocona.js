@@ -20,7 +20,6 @@ Puzzles.chocona.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("チョコナ", "Chocona");
 		base.setFloatbgcolor("rgb(127, 0, 0)");
 	},
 	menufix : function(){

@@ -21,7 +21,6 @@ Puzzles.yajirin.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("ヤジリン","Yajilin");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 
 		enc.pidKanpen = 'yajilin';

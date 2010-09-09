@@ -21,18 +21,19 @@ Puzzles.icelom.prototype = {
 		k.bdmargin       = 1.00;
 		k.bdmargin_image = 1.00;
 
-		base.setTitle("アイスローム","Icelom");
 		base.setFloatbgcolor("rgb(0, 0, 127)");
 	},
 	menufix : function(){
 		if(k.EDITOR){
-			pp.addCheck('allwhite','setting',true, '白マスは全部通る', 'Pass All White Cell');
-			pp.setLabel('allwhite', '白マスを全部通ったら正解にする', 'Complete if the line passes all white cell');
-			pp.funcs['allwhite'] = function(){
-				if(pp.getVal('allwhite')){ base.setTitle("アイスローム","Icelom");}
-				else                     { base.setTitle("アイスローム２","Icelom 2");}
-				_doc.title = base.gettitle();
-				ee('title2').el.innerHTML = base.gettitle();
+			pp.addSelect('puztype','setting',1,[1,2], 'パズルの種類', 'Kind of the puzzle');
+			pp.setLabel ('puztype', 'パズルの種類', 'Kind of the puzzle');
+
+			pp.addChild('puztype_1', 'puztype', 'アイスローム', 'Icelom');
+			pp.addChild('puztype_2', 'puztype', 'アイスローム２', 'Icelom2');
+
+			pp.funcs['puztype'] = function(num){
+				k.pzlnameid = (num==1?'icelom':'icelom2');
+				base.displayTitle();
 			};
 		}
 
@@ -330,22 +331,18 @@ Puzzles.icelom.prototype = {
 			this.decodeInOut();
 
 			if(k.EDITOR){
-				if(this.checkpflag("a")){ pp.setVal('allwhite',true);}
-				else                    { pp.setVal('allwhite',false);}
+				if(this.checkpflag("a")){ pp.setVal('puztype',1);}
+				else                    { pp.setVal('puztype',2);}
 			}
-			else{
-				if(this.checkpflag("a")){ base.setTitle("アイスローム","Icelom");}
-				else                    { base.setTitle("アイスローム２","Icelom 2");}
-				_doc.title = base.gettitle();
-				ee('title2').el.innerHTML = base.gettitle();
-			}
+			k.pzlnameid = (this.checkpflag("a")?'icelom':'icelom2');
+			base.displayTitle();
 		};
 		enc.pzlexport = function(type){
 			this.encodeIcelom();
 			this.encodeNumber16();
 			this.encodeInOut();
 
-			this.outpflag = (pp.getVal('allwhite') ? "a" : "");
+			this.outpflag = (pp.getVal('puztype')==1 ? "a" : "");
 		};
 
 		enc.decodeIcelom = function(){
@@ -400,14 +397,10 @@ Puzzles.icelom.prototype = {
 
 			var pzltype = this.readLine();
 			if(k.EDITOR){
-				pp.setVal('allwhite',(pzltype==="allwhite"));
+				pp.setVal('puztype',(pzltype==="allwhite"?1:2));
 			}
-			else{
-				if(pzltype==="allwhite"){ base.setTitle("アイスローム","Icelom");}
-				else                    { base.setTitle("アイスローム２","Icelom 2");}
-				_doc.title = base.gettitle();
-				ee('title2').el.innerHTML = base.gettitle();
-			}
+			k.pzlnameid = (pzltype==="allwhite"?'icelom':'icelom2');
+			base.displayTitle();
 
 			this.decodeCell( function(obj,ca){
 				if(ca.charAt(0)==='i'){ obj.ques=6; ca=ca.substr(1);}
@@ -422,7 +415,7 @@ Puzzles.icelom.prototype = {
 			});
 		};
 		fio.encodeData = function(){
-			var pzltype = (pp.getVal('allwhite') ? "allwhite" : "skipwhite");
+			var pzltype = (pp.getVal('puztype')==1 ? "allwhite" : "skipwhite");
 
 			this.datastr += (bd.arrowin+"/"+bd.arrowout+"/"+pzltype+"/");
 			this.encodeCell( function(obj){
@@ -495,7 +488,7 @@ Puzzles.icelom.prototype = {
 
 			return true;
 		};
-		ans.isallwhite = function(){ return ((k.EDITOR&&pp.getVal('allwhite'))||(k.PLAYER&&enc.checkpflag("t")));};
+		ans.isallwhite = function(){ return ((k.EDITOR&&(pp.getVal('puztype')==1))||(k.PLAYER&&enc.checkpflag("t")));};
 
 		ans.checkIcebarns = function(){
 			var iarea = new AreaInfo();

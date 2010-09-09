@@ -15,7 +15,6 @@ Puzzles.slalom.prototype = {
 
 		k.isKanpenExist   = true;
 
-		base.setTitle("スラローム","Slalom");
 		base.setFloatbgcolor("rgb(96, 96, 255)");
 
 		enc.pidKanpen = 'slalom';

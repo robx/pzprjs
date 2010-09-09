@@ -14,7 +14,6 @@ Puzzles.kakuru.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		base.setTitle("カックル","Kakuru");
 		base.setFloatbgcolor("rgb(96, 255, 96)");
 	},
 	menufix : function(){ },

@@ -20,7 +20,6 @@ Puzzles.slither.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("スリザーリンク","Slitherlink");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 
 		enc.pidKanpen = 'slitherlink';

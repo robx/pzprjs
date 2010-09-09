@@ -17,7 +17,6 @@ Puzzles.paintarea.prototype = {
 		k.BlackCell       = true;
 		k.checkBlackCell  = true;
 
-		base.setTitle("ペイントエリア","Paintarea");
 		base.setFloatbgcolor("rgb(127, 160, 96)");
 	},
 	menufix : function(){

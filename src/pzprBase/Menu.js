@@ -881,8 +881,7 @@ Menu.prototype = {
 	//--------------------------------------------------------------------------------
 	setLang : function(ln){
 		this.language = ln;
-		_doc.title = base.gettitle();
-		ee('title2').el.innerHTML = base.gettitle();
+		base.displayTitle();
 
 		this.displayAll();
 		this.ex.dispmanstr();

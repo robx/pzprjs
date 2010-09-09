@@ -12,7 +12,6 @@ Puzzles.minarism.prototype = {
 
 		k.isAnsNumber     = true;
 
-		base.setTitle("マイナリズム","Minarism");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){ },

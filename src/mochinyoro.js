@@ -15,7 +15,6 @@ Puzzles.mochinyoro.prototype = {
 		k.checkBlackCell  = true;
 		k.checkWhiteCell  = true;
 
-		base.setTitle("モチにょろ","Mochinyoro");
 		base.setFloatbgcolor("rgb(127, 127, 127)");
 	},
 	menufix : function(){

@@ -17,7 +17,6 @@ Puzzles.icebarn.prototype = {
 		k.bdmargin       = 1.00;
 		k.bdmargin_image = 1.00;
 
-		base.setTitle("アイスバーン","Icebarn");
 		base.setFloatbgcolor("rgb(0, 0, 127)");
 	},
 	menufix : function(){

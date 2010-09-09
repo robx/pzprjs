@@ -17,7 +17,6 @@ Puzzles.numlin.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("　ナンバーリンク","Numberlink");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 
 		enc.pidKanpen= 'numberlink';

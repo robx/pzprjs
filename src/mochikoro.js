@@ -14,7 +14,6 @@ Puzzles.mochikoro.prototype = {
 		k.NumberIsWhite   = true;
 		k.checkWhiteCell  = true;
 
-		base.setTitle("モチコロ","Mochikoro");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){

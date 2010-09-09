@@ -16,7 +16,6 @@ Puzzles.tilepaint.prototype = {
 		k.BlackCell       = true;
 		k.NumberIsWhite   = true;
 
-		base.setTitle("タイルペイント","TilePaint");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 		base.proto = 1;
 	},

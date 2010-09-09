@@ -16,7 +16,6 @@ Puzzles.shugaku.prototype = {
 		k.NumberIsWhite   = true;
 		k.checkBlackCell  = true;
 
-		base.setTitle("修学旅行の夜","School Trip");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 	},
 	menufix : function(){ },

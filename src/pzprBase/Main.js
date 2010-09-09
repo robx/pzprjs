@@ -9,7 +9,6 @@ PBase = function(){
 	this.floatbgcolor = "black";
 	this.proto        = 0;	// 各クラスのprototypeがパズル用スクリプトによって変更されているか
 	this.userlang     = 'ja';
-	this.puzzlename   = { ja:'' ,en:''};
 	this.numparent    = null;	// 'numobj_parent'を示すエレメント
 	this.resizetimer  = null;	// resizeタイマー
 	this.initProcess  = true;	// 初期化中かどうか
@@ -123,9 +122,7 @@ PBase.prototype = {
 	},
 	// 背景画像とかtitle・背景画像・html表示の設定
 	doc_design : function(){
-		_doc.title = this.gettitle();
-		ee('title2').el.innerHTML = this.gettitle();
-
+		this.displayTitle();
 		_doc.body.style.backgroundImage = "url(./bg/"+k.puzzleid+".gif)";
 		if(k.br.IE6){
 			ee('title2').el.style.marginTop = "24px";
@@ -219,17 +216,19 @@ PBase.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// base.gettitle()         現在開いているタイトルを返す
+	// base.displayTitle()     タイトルに文字列を設定する
 	// base.getPuzzleName()    現在開いているパズルの名前を返す
-	// base.setTitle()         パズルの名前を設定する
 	// base.setFloatbgcolor()  フロートメニューの背景色を設定する
 	//---------------------------------------------------------------------------
-	gettitle : function(){
-		if(k.EDITOR){ return ""+this.getPuzzleName()+menu.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
-		else		{ return ""+this.getPuzzleName()+menu.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
+	displayTitle : function(){
+		var title;
+		if(k.EDITOR){ title = ""+this.getPuzzleName()+menu.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
+		else		{ title = ""+this.getPuzzleName()+menu.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
+
+		_doc.title = title;
+		ee('title2').el.innerHTML = title;
 	},
-	getPuzzleName : function(){ return menu.selectStr(this.puzzlename.ja,this.puzzlename.en);},
-	setTitle      : function(strJP, strEN){ this.puzzlename.ja = strJP; this.puzzlename.en = (!!strEN ? strEN : strJP);},
+	getPuzzleName : function(){ return menu.selectStr(PZLNAME.ja[k.pzlnameid],PZLNAME.en[k.pzlnameid]);},
 	setFloatbgcolor : function(color){ this.floatbgcolor = color;},
 
 	//---------------------------------------------------------------------------
@@ -347,7 +346,7 @@ PBase.prototype = {
 
 		ee.clean();
 
-		k.puzzleid = contents.id;
+		k.pzlnameid = k.puzzleid = contents.id;
 
 		// 各種パラメータのうち各パズルで初期化されないやつをここで初期化
 		k.initFlags();

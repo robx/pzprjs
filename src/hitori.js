@@ -15,7 +15,6 @@ Puzzles.hitori.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("ひとりにしてくれ","Hitori");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 
 		enc.pidKanpen = 'hitori';

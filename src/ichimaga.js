@@ -19,7 +19,6 @@ Puzzles.ichimaga.prototype = {
 		k.bdmargin       = 0.50;
 		k.bdmargin_image = 0.10;
 
-		base.setTitle("イチマガ/磁石イチマガ","Ichimaga / Magnetic Ichimaga");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){
@@ -30,6 +29,13 @@ Puzzles.ichimaga.prototype = {
 			pp.addChild('puztype_1', 'puztype', 'イチマガ', 'Ichimaga');
 			pp.addChild('puztype_2', 'puztype', '磁石イチマガ', 'Magnetic Ichimaga');
 			pp.addChild('puztype_3', 'puztype', '交差も', 'Crossing Ichimaga');
+
+			pp.funcs['puztype'] = function(num){
+				if     (num==2){ k.pzlnameid="ichimagam";}
+				else if(num==3){ k.pzlnameid="ichimagax";}
+				else           { k.pzlnameid="ichimaga"; }
+				base.displayTitle();
+			};
 		}
 	},
 
@@ -110,13 +116,10 @@ Puzzles.ichimaga.prototype = {
 				else if(this.checkpflag("x")){ pp.setVal('puztype',3);}
 				else                         { pp.setVal('puztype',1);}
 			}
-			else{
-				if     (this.checkpflag("m")){ base.setTitle("磁石イチマガ","Magnetic Ichimaga");}
-				else if(this.checkpflag("x")){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
-				else                         { base.setTitle("イチマガ","Ichimaga");}
-				_doc.title = base.gettitle();
-				ee('title2').el.innerHTML = base.gettitle();
-			}
+			if     (this.checkpflag("m")){ k.pzlnameid="ichimagam";}
+			else if(this.checkpflag("x")){ k.pzlnameid="ichimagax";}
+			else                         { k.pzlnameid="ichimaga"; }
+			base.displayTitle();
 		};
 		enc.pzlexport = function(type){
 			this.encode4Cell();
@@ -134,13 +137,10 @@ Puzzles.ichimaga.prototype = {
 				else if(pzlflag=="cross"){ pp.setVal('puztype',3);}
 				else                     { pp.setVal('puztype',1);}
 			}
-			else{
-				if     (pzlflag=="mag")  { base.setTitle("磁石イチマガ","Magnetic Ichimaga");}
-				else if(pzlflag=="cross"){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
-				else                     { base.setTitle("イチマガ","Ichimaga");}
-				_doc.title = base.gettitle();
-				ee('title2').el.innerHTML = base.gettitle();
-			}
+			if     (pzlflag=="mag")  { k.pzlnameid="ichimagam";}
+			else if(pzlflag=="cross"){ k.pzlnameid="ichimagax";}
+			else                     { k.pzlnameid="ichimaga"; }
+			base.displayTitle();
 
 			this.decodeCellQnum();
 			this.decodeBorderLine();

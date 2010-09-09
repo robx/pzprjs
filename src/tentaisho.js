@@ -17,7 +17,6 @@ Puzzles.tentaisho.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		base.setTitle("天体ショー","Tentaisho");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 		base.proto = 1;
 

@@ -17,7 +17,6 @@ Puzzles.shimaguni.prototype = {
 		k.BlackCell       = true;
 		k.checkBlackCell  = true;
 
-		base.setTitle("島国","Islands");
 		base.setFloatbgcolor("rgb(0, 127, 127)");
 	},
 	menufix : function(){

@@ -15,7 +15,6 @@ Puzzles.bdblock.prototype = {
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
 
-		base.setTitle("ボーダーブロック","Border Block");
 		base.setFloatbgcolor("rgb(0, 127, 96)");
 	},
 	menufix : function(){ },

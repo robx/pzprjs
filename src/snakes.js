@@ -14,7 +14,6 @@ Puzzles.snakes.prototype = {
 		k.isInputHatena   = true;
 		k.isAnsNumber     = true;
 
-		base.setTitle("へびいちご","Hebi-Ichigo");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){

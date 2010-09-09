@@ -14,7 +14,6 @@ Puzzles.loopsp.prototype = {
 		k.isLineCross     = true;
 		k.isCenterLine    = true;
 
-		base.setTitle("環状線スペシャル","Loop Special");
 		base.setFloatbgcolor("rgb(0, 191, 0)");
 	},
 	menufix : function(){

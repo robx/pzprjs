@@ -16,7 +16,6 @@ Puzzles.lits.prototype = {
 
 		k.isKanpenExist   = true;
 
-		base.setTitle("ＬＩＴＳ","LITS");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 
 		enc.pidKanpen = 'lits';
