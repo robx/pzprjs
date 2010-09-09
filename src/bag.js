@@ -15,8 +15,6 @@ Puzzles.bag.prototype = {
 		k.isInputHatena   = true;
 
 		base.setTitle("バッグ", "BAG (Corral)");
-		base.setExpression("　左ドラッグで線が、右クリックでセルの背景色(緑/黄色)が入力できます。",
-						   " Left Button Drag to input lines, Right Click to input background color (lime or yellow) of the cell.");
 		base.setFloatbgcolor("rgb(160, 0, 0)");
 	},
 	menufix : function(){

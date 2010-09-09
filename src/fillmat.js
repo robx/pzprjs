@@ -15,8 +15,6 @@ Puzzles.fillmat.prototype = {
 		k.isInputHatena   = true;
 
 		base.setTitle("フィルマット","Fillmat");
-		base.setExpression("　左ドラッグで線が、右ドラッグで補助記号が入力できます。",
-						   " Left Button Drag to inputs lines, Right to inputs auxiliary marks.");
 		base.setFloatbgcolor("rgb(127, 191, 0)");
 	},
 	menufix : function(){ },

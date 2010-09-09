@@ -16,14 +16,6 @@ Puzzles.pipelink.prototype = {
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
 
-		if(k.EDITOR){
-			base.setExpression("　問題の記号はQWEASDFの各キーで入力できます。<br>Rキーや-キーで消去できます。1キーで記号を入力できます。",
-							   " Press each QWEASDF key to input question. <br> Press 'R' or '-' key to erase. '1' keys to input circles.");
-		}
-		else{
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
 		base.setTitle("パイプリンク","Pipelink");
 		base.setFloatbgcolor("rgb(0, 191, 0)");
 	},

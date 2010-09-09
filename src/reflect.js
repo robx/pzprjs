@@ -14,14 +14,6 @@ Puzzles.reflect.prototype = {
 		k.isLineCross     = true;
 		k.isCenterLine    = true;
 
-		if(k.EDITOR){
-			base.setExpression("　問題の記号はQWEASの各キーで入力、Tキーや-キーで消去できます。",
-							   " Press each QWEAS key to input question. Press 'T' or '-' key to erase.");
-		}
-		else{
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
 		base.setTitle("リフレクトリンク","Reflect Link");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},

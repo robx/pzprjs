@@ -22,8 +22,6 @@ Puzzles.hashikake.prototype = {
 		k.bdmargin_image = 0.10;
 
 		base.setTitle("橋をかけろ","Bridges");
-		base.setExpression("　左ボタンで線が、右ボタンで×が入力できます。",
-						   " Left Button Drag to inpur lines, Right to input a cross.");
 		base.setFloatbgcolor("rgb(127, 191, 0)");
 
 		enc.pidKanpen = 'hashi';

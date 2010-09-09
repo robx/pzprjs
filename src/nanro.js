@@ -21,8 +21,6 @@ Puzzles.nanro.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setTitle("ナンロー","Nanro");
-		base.setExpression("　数字などをクリックして動かすことで、数字を入力することができます。右クリックしてマウスを動かして×を入力することもできます。",
-						   " Press Mouse Button on the number and Move to copy the number. It is able to Press Right Mouse Button and Move to input a cross.");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 
 		enc.pidKanpen = 'nanro';

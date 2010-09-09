@@ -14,14 +14,6 @@ Puzzles.loopsp.prototype = {
 		k.isLineCross     = true;
 		k.isCenterLine    = true;
 
-		if(k.EDITOR){
-			base.setExpression("　問題の記号はQWEASDFの各キーで入力できます。<br>Rキーや-キーで消去できます。数字キーで数字を入力できます。",
-							   " Press each QWEASDF key to input question. <br> Press 'R' or '-' key to erase. Number keys to input numbers.");
-		}
-		else{
-			base.setExpression("　左ドラッグで線が、右クリックで×印が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
 		base.setTitle("環状線スペシャル","Loop Special");
 		base.setFloatbgcolor("rgb(0, 191, 0)");
 	},

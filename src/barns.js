@@ -14,14 +14,6 @@ Puzzles.barns.prototype = {
 		k.isLineCross     = true;
 		k.isCenterLine    = true;
 
-		if(k.EDITOR){
-			base.setExpression("　左ドラッグで境界線が、右クリックで氷が入力できます。",
-							   " Left Button Drag to input border lines, Right Click to input ice.");
-		}
-		else{
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
 		base.setTitle("バーンズ","Barns");
 		base.setFloatbgcolor("rgb(0, 0, 191)");
 	},

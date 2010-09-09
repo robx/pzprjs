@@ -14,14 +14,6 @@ Puzzles.kakuru.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		if(k.EDITOR){
-			base.setExpression("　黒マスはQキーで入力できます。",
-							   " Press 'Q' key to input black cell.");
-		}
-		else{
-			base.setExpression("　マウスやキーボードで数字が入力できます。",
-							   " It is available to input number by keybord or mouse");
-		}
 		base.setTitle("カックル","Kakuru");
 		base.setFloatbgcolor("rgb(96, 255, 96)");
 	},

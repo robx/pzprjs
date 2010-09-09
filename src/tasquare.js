@@ -17,8 +17,6 @@ Puzzles.tasquare.prototype = {
 		k.ispzprv3ONLY    = true;
 
 		base.setTitle("たすくえあ","Tasquare");
-		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
-						   " Left Click to input black cells, Right Click to input determined white cells.");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){

@@ -20,8 +20,6 @@ Puzzles.kramma.prototype = {
 		k.ispzprv3ONLY    = true;
 
 		base.setTitle("快刀乱麻","KaitoRamma");
-		base.setExpression("　左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
-						   " Left Button Drag to input border lines, Right to input auxiliary marks.");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){ },

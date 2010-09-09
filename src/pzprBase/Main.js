@@ -9,7 +9,6 @@ PBase = function(){
 	this.floatbgcolor = "black";
 	this.proto        = 0;	// 各クラスのprototypeがパズル用スクリプトによって変更されているか
 	this.userlang     = 'ja';
-	this.expression   = { ja:'' ,en:''};
 	this.puzzlename   = { ja:'' ,en:''};
 	this.numparent    = null;	// 'numobj_parent'を示すエレメント
 	this.resizetimer  = null;	// resizeタイマー
@@ -223,7 +222,6 @@ PBase.prototype = {
 	// base.gettitle()         現在開いているタイトルを返す
 	// base.getPuzzleName()    現在開いているパズルの名前を返す
 	// base.setTitle()         パズルの名前を設定する
-	// base.setExpression()    説明文を設定する
 	// base.setFloatbgcolor()  フロートメニューの背景色を設定する
 	//---------------------------------------------------------------------------
 	gettitle : function(){
@@ -232,7 +230,6 @@ PBase.prototype = {
 	},
 	getPuzzleName : function(){ return menu.selectStr(this.puzzlename.ja,this.puzzlename.en);},
 	setTitle      : function(strJP, strEN){ this.puzzlename.ja = strJP; this.puzzlename.en = (!!strEN ? strEN : strJP);},
-	setExpression : function(strJP, strEN){ this.expression.ja = strJP; this.expression.en = (!!strEN ? strEN : strJP);},
 	setFloatbgcolor : function(color){ this.floatbgcolor = color;},
 
 	//---------------------------------------------------------------------------

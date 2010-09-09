@@ -20,8 +20,6 @@ Puzzles.wagiri.prototype = {
 		k.bdmargin_image = 0.50;
 
 		base.setTitle("ごきげんななめ・輪切","Gokigen-naname:wagiri");
-		base.setExpression("　マウスで斜線を入力できます。",
-						   " Click to input slashes.");
 		base.setFloatbgcolor("rgb(0, 127, 0)");
 		base.proto = 1;
 	},

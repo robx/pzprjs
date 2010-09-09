@@ -14,14 +14,6 @@ Puzzles.goishi.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setTitle("碁石ひろい","Goishi");
-		if(k.EDITOR){
-			base.setExpression("　左クリックで○に順番を表す数字が、右クリックor押しっぱなしで元に戻せます。URL生成時、碁石のない部分は自動的にカットされます。",
-							   " Left Click to input number of orders, Right Click or Pressing to Undo. The area with no Goishi is cut when outputting URL.");
-		}
-		else{
-			base.setExpression("　左クリックで○に順番を表す数字が、右クリックor押しっぱなしで元に戻せます。",
-							   " Left Click to input number of orders, Right Click or Pressing to Undo.");
-		}
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 		base.proto = 1;
 

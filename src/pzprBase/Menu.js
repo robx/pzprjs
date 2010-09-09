@@ -285,8 +285,8 @@ Menu.prototype = {
 		// *その他 ============================================================
 		am('other', "その他", "Others");
 
-		as('credit',     'other', 'ぱずぷれv3について',   'About PUZ-PRE v3');
-		as('expression', 'other', '簡単な操作説明',       'How to Input');
+		as('credit',   'other', 'ぱずぷれv3について', 'About PUZ-PRE v3');
+		as('jumpexp',  'other', '操作説明',           'How to Input');
 		ap('sep_other','other');
 		at('link',     'other', 'リンク', 'Link');
 		at('debug',    'other', 'デバッグ', 'Debug');
@@ -741,11 +741,6 @@ Menu.prototype = {
 							   "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\n");
 		btn(_doc.credit.close,  close, "閉じる", "OK");
 
-		// 説明 ---------------------------------------------------------------
-		lab(ee('bar3_2').el,   "説明", "expression");
-		lab(ee('expression').el,base.expression.ja, base.expression.en);
-		btn(_doc.expression.close,  close, "閉じる", "OK");
-
 		// 表示サイズ ---------------------------------------------------------
 		func = ee.ebinder(this, this.ex.dispsize);
 		lab(ee('bar4_1').el,      "表示サイズの変更",         "Change size");
@@ -888,7 +883,6 @@ Menu.prototype = {
 		this.language = ln;
 		_doc.title = base.gettitle();
 		ee('title2').el.innerHTML = base.gettitle();
-		ee('expression').el.innerHTML = base.expression[this.language];
 
 		this.displayAll();
 		this.ex.dispmanstr();
@@ -1047,7 +1041,7 @@ Properties.prototype = {
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
 		credit    : function(){ menu.pop = ee("pop3_1");},
-		expression: function(){ menu.pop = ee("pop3_2");},
+		jumpexp   : function(){ window.open('./faq.html?'+k.puzzleid+(k.EDITOR?"_edit":""), '');},
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
 		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},

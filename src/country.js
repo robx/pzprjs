@@ -18,8 +18,6 @@ Puzzles.country.prototype = {
 		k.isInputHatena   = true;
 
 		base.setTitle("カントリーロード","Country Road");
-		base.setExpression("　ドラッグで線が、マスのクリックで○×(補助記号)が入力できます。",
-						   " Left Button Drag to input lines, Click to input auxiliary marks.");
 		base.setFloatbgcolor("rgb(191, 0, 0)");
 	},
 	menufix : function(){

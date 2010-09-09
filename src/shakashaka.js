@@ -17,8 +17,6 @@ Puzzles.shakashaka.prototype = {
 		k.ispzprv3ONLY    = true;
 
 		base.setTitle("シャカシャカ","ShakaShaka");
-		base.setExpression("　\"クリックした位置\"ではマス目の角のほうをクリックすることで三角形が入力できます。<br>　\"ドラッグ入力\"では斜め4方向にドラッグして三角形を入力できます。",
-						   " Click corner-side to input triangles if 'Position of Cell'.<br> Left Button Drag to skew-ward to input triangle if 'Drag Type'.");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 	},
 	menufix : function(){

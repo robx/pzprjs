@@ -16,14 +16,6 @@ Puzzles.tilepaint.prototype = {
 		k.BlackCell       = true;
 		k.NumberIsWhite   = true;
 
-		if(k.EDITOR){
-			base.setExpression("　左クリックで境界線や数字のブロックが、右クリックで下絵が入力できます。数字を入力する場所はSHIFTキーを押すと切り替えられます。",
-							   " Left Click to input border lines or number block, Right Click to paint a design. Press SHIFT key to change the side of inputting numbers.");
-		}
-		else{
-			base.setExpression("　左クリックで黒タイルが、右クリックで白タイル確定タイルが入力できます。",
-							   " Left Click to input black tile, Right Click to determined white tile.");
-		}
 		base.setTitle("タイルペイント","TilePaint");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 		base.proto = 1;

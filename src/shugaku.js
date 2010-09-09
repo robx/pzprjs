@@ -17,8 +17,6 @@ Puzzles.shugaku.prototype = {
 		k.checkBlackCell  = true;
 
 		base.setTitle("修学旅行の夜","School Trip");
-		base.setExpression("　マウスの左ボタンドラッグで布団を、右ボタンで通路を入力できます。",
-						   " Left Button Drag to input Futon, Right Click to input aisle.");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 	},
 	menufix : function(){ },

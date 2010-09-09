@@ -16,8 +16,6 @@ Puzzles.bdblock.prototype = {
 		k.isInputHatena   = true;
 
 		base.setTitle("ボーダーブロック","Border Block");
-		base.setExpression("　左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
-						   " Left Button Drag to input border lines, Right to input auxiliary marks.");
 		base.setFloatbgcolor("rgb(0, 127, 96)");
 	},
 	menufix : function(){ },

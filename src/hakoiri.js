@@ -17,14 +17,6 @@ Puzzles.hakoiri.prototype = {
 		k.linkNumber      = true;
 		k.numberAsObject  = true;
 
-		if(k.EDITOR){
-			base.setExpression("　キーボードの左側や-キー等で、記号の入力ができます。",
-							   " Press left side of the keyboard or '-' key to input marks.");
-		}
-		else{
-			base.setExpression("　左クリックで記号が、右ドラッグで補助記号が入力できます。",
-							   " Left Click to input answers, Right Button Drag to input auxiliary marks.");
-		}
 		base.setTitle("はこいり○△□","Triplets");
 		base.setFloatbgcolor("rgb(127, 160, 96)");
 	},

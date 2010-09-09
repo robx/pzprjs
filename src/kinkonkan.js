@@ -19,14 +19,6 @@ Puzzles.kinkonkan.prototype = {
 		k.bdmargin       = 0.15;
 		k.bdmargin_image = 0.10;
 
-		if(k.EDITOR){
-			base.setExpression("　マウスの左ボタンで境界線が入力できます。外側のアルファベットは、同じキーを何回か押して大文字小文字／色違いの計4種類を入力できます。",
-							   " Left Click to input border lines. It is able to change outside alphabets to four type that is either capital or lower, is either black or blue type by pressing the same key.");
-		}
-		else{
-			base.setExpression("　マウスのクリックで斜線などが入力できます。外側をクリックすると光が発射されます。",
-							   " Click to input mirrors or auxiliary marks. Click Outside of the board to give off the light.");
-		}
 		base.setTitle("キンコンカン","Kin-Kon-Kan");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},

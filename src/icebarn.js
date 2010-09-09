@@ -17,14 +17,6 @@ Puzzles.icebarn.prototype = {
 		k.bdmargin       = 1.00;
 		k.bdmargin_image = 1.00;
 
-		if(k.EDITOR){
-			base.setExpression("　左ドラッグで矢印が、右クリックで氷が入力できます。",
-							   " Left Button Drag to input arrows, Right Click to input ice.");
-		}
-		else{
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
 		base.setTitle("アイスバーン","Icebarn");
 		base.setFloatbgcolor("rgb(0, 0, 127)");
 	},

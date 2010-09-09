@@ -18,8 +18,6 @@ Puzzles.paintarea.prototype = {
 		k.checkBlackCell  = true;
 
 		base.setTitle("ペイントエリア","Paintarea");
-		base.setExpression("　左クリックで黒タイルが、右クリックで白タイル確定タイルが入力できます。",
-						   " Left Click to input black tile, Right Click to determined white tile.");
 		base.setFloatbgcolor("rgb(127, 160, 96)");
 	},
 	menufix : function(){

@@ -18,14 +18,6 @@ Puzzles.firefly.prototype = {
 		k.bdmargin       = 0.50;
 		k.bdmargin_image = 0.10;
 
-		if(k.EDITOR){
-			base.setExpression("　黒点は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
-							   " To input black marks, Left Button Drag or Press arrow key with SHIFT key.");
-		}
-		else{
-			base.setExpression("　左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
-							   " Left Button Drag to input border lines, Right to input auxiliary marks.");
-		}
 		base.setTitle("ホタルビーム", 'Hotaru Beam'); //'Glow of Fireflies');
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},

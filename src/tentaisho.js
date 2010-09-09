@@ -17,14 +17,6 @@ Puzzles.tentaisho.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		if(k.EDITOR){
-			base.setExpression("　問題作成モード時に、マウスの右ボタンで下絵を描くことが出来ます。この背景色は「星をクリック」や「色をつける」ボタンで上書きされます。",
-							   " In edit mode, it is able to paint a design by Right Click. This background color is superscripted by clicking star or pressing 'Color up' button.");
-		}
-		else{
-			base.setExpression("　星をクリックすると色がぬれます。",
-							   " Click star to paint.");
-		}
 		base.setTitle("天体ショー","Tentaisho");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 		base.proto = 1;

@@ -12,14 +12,6 @@ Puzzles.tateyoko.prototype = {
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
 
-		if(k.EDITOR){
-			base.setExpression("　黒マスはQキーで入力できます。数字はキーボード及びマウスで入力できます。",
-							   " Press Q key to input black cells. It is available to input number by keybord or mouse.");
-		}
-		else{
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
 		base.setTitle("タテボーヨコボー","Tatebo-Yokobo");
 		base.setFloatbgcolor("rgb(96, 255, 96)");
 	},

@@ -20,8 +20,6 @@ Puzzles.ichimaga.prototype = {
 		k.bdmargin_image = 0.10;
 
 		base.setTitle("イチマガ/磁石イチマガ","Ichimaga / Magnetic Ichimaga");
-		base.setExpression("　左ドラッグで線が、右ドラッグで補助記号が入力できます。",
-						   " Left Button Drag to input lines, Right to input auxiliary marks.");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){

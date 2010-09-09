@@ -16,8 +16,6 @@ Puzzles.mejilink.prototype = {
 		k.ispzprv3ONLY    = true;
 
 		base.setTitle("メジリンク","Mejilink");
-		base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-						   " Left Button Drag to input black cells, Right Click to input a cross.");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 		base.proto = 1;
 	},

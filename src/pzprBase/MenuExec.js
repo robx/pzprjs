@@ -285,7 +285,7 @@ MenuExec.prototype = {
 	// menu.ex.dispmanstr() 管理領域を隠す/表示するにどの文字列を表示するか
 	//------------------------------------------------------------------------------
 	dispman : function(e){
-		var idlist = ['expression','usepanel','checkpanel'];
+		var idlist = ['usepanel','checkpanel'];
 		var seplist = k.EDITOR ? [] : ['separator2'];
 
 		if(this.displaymanage){

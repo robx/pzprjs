@@ -14,14 +14,6 @@ Puzzles.snakes.prototype = {
 		k.isInputHatena   = true;
 		k.isAnsNumber     = true;
 
-		if(k.EDITOR){
-			base.setExpression("　矢印は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
-							   " To input Arrows, Left Button Drag or Press arrow key with SHIFT key.");
-		}
-		else{
-			base.setExpression("　左クリックで黒マスが、右クリックでへびのいないマスが入力できます。キーボードでは、Qキーで補助記号が打てます。",
-							   " Left Click or Press Keys to input numbers, Right Click to input determined snake not existing cells. Q Key to input auxiliary mark.");
-		}
 		base.setTitle("へびいちご","Hebi-Ichigo");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},

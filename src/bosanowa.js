@@ -17,14 +17,6 @@ Puzzles.bosanowa.prototype = {
 		k.bdmargin       = 0.70;
 		k.bdmargin_image = 0.10;
 
-		if(k.EDITOR){
-			base.setExpression("　キーボードで数字および、Wキーで数字を入力するマス/しないマスの切り替えが来出ます。",
-							   " It is able to input number of question by keyboard, and 'W' key toggles cell that is able to be inputted number or not.");
-		}
-		else{
-			base.setExpression("　キーボードやマウスで数字が入力できます。",
-							   " It is available to input number by keybord or mouse.");
-		}
 		base.setTitle("ボサノワ","Bosanowa");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 		base.proto = 1;

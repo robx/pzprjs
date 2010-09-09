@@ -21,16 +21,6 @@ Puzzles.icelom.prototype = {
 		k.bdmargin       = 1.00;
 		k.bdmargin_image = 1.00;
 
-		if(k.EDITOR){
-			base.setExpression("　左クリックで数字、左ドラッグでIN/OUTが、右クリックで氷が入力できます。"+
-							   "またキーボードの数字キーで数字が、Qキーで氷が入力できます。",
-							   " Left Click to input numbers, Left Button Drag to input arrows and Right Click to input ice."+
-							   " By keyboard, number keys to input numbers and Q key to input ice.");
-		}
-		else{
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
 		base.setTitle("アイスローム","Icelom");
 		base.setFloatbgcolor("rgb(0, 0, 127)");
 	},

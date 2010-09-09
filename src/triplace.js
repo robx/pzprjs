@@ -16,14 +16,6 @@ Puzzles.triplace.prototype = {
 
 		k.ispzprv3ONLY    = true;
 
-		if(k.EDITOR){
-			base.setExpression("　左ボタンで境界線が、右ボタンで補助記号が入力できます。数字を入力する場所はSHIFTキーを押すと切り替えられます。",
-							   " Left Button Drag to input border lines, Right Click to auxiliary marks. Press SHIFT key to change the side of inputting numbers.");
-		}
-		else{
-			base.setExpression("　左ボタンで境界線が、右ボタンで補助記号が入力できます。セルのクリックか、Zキー押しながら背景色(2種類)を入力することもできます。",
-							   " Left Button Drag to input border lines, Right Click to auxiliary marks. Click cell or Click with Pressing Z key to input background color.");
-		}
 		base.setTitle("トリプレイス","Tri-place");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 		base.proto = 1;

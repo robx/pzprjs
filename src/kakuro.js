@@ -16,14 +16,6 @@ Puzzles.kakuro.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		if(k.EDITOR){
-			base.setExpression("　Qキーでブロックが入力できます。数字を入力する場所はSHIFTキーを押すと切り替えられます。",
-							   " 'Q' key toggles question block. Press SHIFT key to change the target side of the block to input the number.");
-		}
-		else{
-			base.setExpression("　マウスやキーボードで数字が入力できます。",
-							   " It is available to input number by keybord or mouse");
-		}
 		base.setTitle("カックロ","Kakuro");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 		base.proto = 1;

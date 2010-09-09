@@ -22,8 +22,6 @@ Puzzles.nagenawa.prototype = {
 		k.ispzprv3ONLY    = true;
 
 		base.setTitle("なげなわ","Nagenawa");
-		base.setExpression("　ドラッグで線が、マスのクリックで○×(補助記号)が入力できます。",
-						   " Left Button Drag to input lines, Click to input auxiliary marks.");
 		base.setFloatbgcolor("rgb(0, 127, 0)");
 	},
 	menufix : function(){

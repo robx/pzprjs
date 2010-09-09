@@ -18,8 +18,6 @@ Puzzles.numlin.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setTitle("　ナンバーリンク","Numberlink");
-		base.setExpression("　左ドラッグで線が、右ドラッグで×印が入力できます。",
-						   " Left Button Drag to input black cells, Right Click to input a cross.");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 
 		enc.pidKanpen= 'numberlink';

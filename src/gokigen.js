@@ -16,8 +16,6 @@ Puzzles.gokigen.prototype = {
 		k.bdmargin_image = 0.50;
 
 		base.setTitle("ごきげんななめ","Gokigen-naname");
-		base.setExpression("　マウスで斜線を入力できます。",
-						   " Click to input slashes.");
 		base.setFloatbgcolor("rgb(0, 127, 0)");
 		base.proto = 1;
 	},

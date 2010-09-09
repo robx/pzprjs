@@ -16,8 +16,6 @@ Puzzles.sudoku.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setTitle("数独","Sudoku");
-		base.setExpression("　キーボードやマウスで数字が入力できます。",
-						   " It is available to input number by keybord or mouse");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 		base.proto = 1;
 

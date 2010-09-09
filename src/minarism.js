@@ -12,14 +12,6 @@ Puzzles.minarism.prototype = {
 
 		k.isAnsNumber     = true;
 
-		if(k.EDITOR){
-			base.setExpression("　キーボードで数字および、QWキーで不等号が入力できます。不等号はマウスのドラッグで、数字はクリックでも入力できます。",
-							   " It is able to input number of question by keyboard, and 'QW' key to input inequality mark. It is also available to Left Button Drag to input inequality mark, to Click to input number.");
-		}
-		else{
-			base.setExpression("　キーボードやマウスで数字が入力できます。",
-							   " It is available to input number by keybord or mouse");
-		}
 		base.setTitle("マイナリズム","Minarism");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},

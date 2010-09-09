@@ -19,8 +19,6 @@ Puzzles.ripple.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setTitle("波及効果","Ripple Effect");
-			base.setExpression("　キーボードやマウスで数字が入力できます。",
-							   " It is available to input number by keybord or mouse");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 
 		enc.pidKanpen = 'hakyukoka';

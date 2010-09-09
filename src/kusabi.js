@@ -17,8 +17,6 @@ Puzzles.kusabi.prototype = {
 		k.ispzprv3ONLY    = true;
 
 		base.setTitle("クサビリンク","Kusabi");
-		base.setExpression("　左ドラッグで線が、右ドラッグで×印が入力できます。",
-						   " Left Button Drag to input black cells, Right Click to input a cross.");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){ },

@@ -16,8 +16,6 @@ Puzzles.hitori.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setTitle("ひとりにしてくれ","Hitori");
-		base.setExpression("左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
-						   " Left Click to input black cells, Right Click to input determined white cells.");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 
 		enc.pidKanpen = 'hitori';

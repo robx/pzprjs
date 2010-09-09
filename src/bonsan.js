@@ -16,8 +16,6 @@ Puzzles.bonsan.prototype = {
 		k.isInputHatena   = true;
 
 		base.setTitle("ぼんさん/へやぼん","Bonsan/Heya-Bon");
-		base.setExpression("　左ドラッグで線が、マスのクリックでセルの背景色が入力できます。",
-						   " Left Button Drag to input lines, Click the cell to input background color of the cell.");
 		base.setFloatbgcolor("rgb(127,96,64)");
 	},
 	menufix : function(){ },

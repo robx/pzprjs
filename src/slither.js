@@ -21,8 +21,6 @@ Puzzles.slither.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setTitle("スリザーリンク","Slitherlink");
-		base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-						   " Left Button Drag to input black cells, Right Click to input a cross.");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 
 		enc.pidKanpen = 'slitherlink';

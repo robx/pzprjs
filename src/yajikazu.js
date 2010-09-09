@@ -15,14 +15,6 @@ Puzzles.yajikazu.prototype = {
 		k.RBBlackCell     = true;
 		k.checkWhiteCell  = true;
 
-		if(k.EDITOR){
-			base.setExpression("　矢印は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
-							   " To input Arrows, Left Button Drag or Press arrow key with SHIFT key.");
-		}
-		else{
-			base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
-							   " Left Click to input black cells, Right Click to input determined white cells.");
-		}
 		base.setTitle("やじさんかずさん","Yajisan-Kazusan");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},

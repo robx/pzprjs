@@ -16,8 +16,6 @@ Puzzles.lightup.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setTitle("美術館","Akari (Light Up)");
-		base.setExpression("　マウスで光源と白マス確定マスが入力できます。",
-						   " Click to input Akari (Light source) or determined white cells.");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 		base.proto = 1;
 

@@ -18,8 +18,6 @@ Puzzles.cojun.prototype = {
 		k.ispzprv3ONLY    = true;
 
 		base.setTitle("コージュン","Cojun");
-		base.setExpression("キーボードやマウスで数字を入力できます。",
-						   " Inputting number is available by keybord or mouse");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){ },

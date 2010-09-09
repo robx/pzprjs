@@ -15,8 +15,6 @@ Puzzles.factors.prototype = {
 		k.isAnsNumber     = true;
 
 		base.setTitle("因子の部屋",'Rooms of Factors');
-		base.setExpression("　キーボードやマウスで数字が入力できます。",
-						   " Inputting number is available by keybord or mouse");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){ },

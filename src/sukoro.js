@@ -15,8 +15,6 @@ Puzzles.sukoro.prototype = {
 		k.linkNumber      = true;
 
 		base.setTitle("数コロ","Sukoro");
-		base.setExpression("　マスのクリックやキーボードで数字を入力できます。QAZキーで○、WSXキーで×を入力できます。",
-					   " It is available to input number by keybord or mouse. Each QAZ key to input auxiliary circle, each WSX key to input auxiliary cross.");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){ },

@@ -17,8 +17,6 @@ Puzzles.shikaku.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setTitle("四角に切れ","Shikaku");
-		base.setExpression("　左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
-						   " Left Button Drag to input border lines, Right to input auxiliary marks.");
 		base.setFloatbgcolor("rgb(127, 191, 0)");
 
 		enc.pidKanpen = 'shikaku';

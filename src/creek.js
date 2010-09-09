@@ -17,8 +17,6 @@ Puzzles.creek.prototype = {
 		k.bdmargin_image = 0.50;
 
 		base.setTitle("クリーク","Creek");
-		base.setExpression("　左クリックで黒マスが、右クリックで白マスを入力できます。",
-						   " Left Click to input black cells, Right Click to input white cells.");
 		base.setFloatbgcolor("rgb(0, 0, 255)");
 	},
 	menufix : function(){

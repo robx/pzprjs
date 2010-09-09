@@ -21,8 +21,6 @@ Puzzles.mashu.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setTitle("ましゅ","Masyu (Pearl Puzzle)");
-		base.setExpression("　左ドラッグで線が、右クリックで×印が入力できます。",
-						   " Left Button Drag to input black cells, Right Click to input a cross.");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 
 		enc.pidKanpen = 'masyu';

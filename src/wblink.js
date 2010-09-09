@@ -21,8 +21,6 @@ Puzzles.wblink.prototype = {
 		k.bdmargin_image = 0.10;
 
 		base.setTitle("シロクロリンク","Shirokuro-link");
-		base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-						   " Left Button Drag to input black cells, Right Click to input a cross.");
 		base.setFloatbgcolor("rgb(127, 191, 0)");
 	},
 	menufix : function(){ },

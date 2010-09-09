@@ -21,14 +21,6 @@ Puzzles.yajirin.prototype = {
 		k.ispzprv3ONLY    = true;
 		k.isKanpenExist   = true;
 
-		if(k.EDITOR){
-			base.setExpression("　矢印は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
-							   " To input Arrows, Left Button Drag or Press arrow key with SHIFT key.");
-		}
-		else{
-			base.setExpression("　左ドラッグで線が、左クリックで黒マスが入力できます。",
-							   " Left Button Drag to input black cells, Left Click to input black cells.");
-		}
 		base.setTitle("ヤジリン","Yajilin");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 
