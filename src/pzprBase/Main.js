@@ -9,7 +9,6 @@ PBase = function(){
 	this.floatbgcolor = "black";
 	this.proto        = 0;	// 各クラスのprototypeがパズル用スクリプトによって変更されているか
 	this.userlang     = 'ja';
-	this.numparent    = null;	// 'numobj_parent'を示すエレメント
 	this.resizetimer  = null;	// resizeタイマー
 	this.initProcess  = true;	// 初期化中かどうか
 	this.enableSaveImage = false;	// 画像保存が有効か
@@ -22,64 +21,89 @@ PBase.prototype = {
 	//   このファイルが呼ばれたときに実行される関数 -> onLoad前の最小限の設定を行う
 	//---------------------------------------------------------------------------
 	preload_func : function(){
-		// URLの取得 -> URLの?以下ををpuzzleid部とpzlURI部に分割
-		enc = new Encode();
-		enc.first_parseURI(location.search);
-		if(!k.puzzleid){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
-
-		// パズル専用ファイルの読み込み
-		if(k.scriptcheck){
+		// デバッグ用ファイルの読み込み
+		if(location.search.match(/[\?_]test/)){
 			_doc.writeln("<script type=\"text/javascript\" src=\"src/for_test.js\"></script>");
 		}
-		_doc.writeln("<script type=\"text/javascript\" src=\"src/"+k.puzzleid+".js\"></script>");
 
 		// onLoadに動作を割り当てる
 		window.onload = ee.ebinder(this, this.onload_func);
 	},
 
 	//---------------------------------------------------------------------------
-	// base.onload_func()
-	//   ページがLoadされた時の処理。各クラスのオブジェクトへの読み込み等初期設定を行う
+	// base.onload_func()   ページがLoadされた時の処理
+	// base.reload_func()   個別パズルのファイルを読み込む関数
+	// base.init_func()     新しくパズルのファイルを開く時の処理
+	// base.postload_func() ページがLoad終了時の処理
 	//---------------------------------------------------------------------------
 	onload_func : function(){
-		if(k.br.Chrome6){ Camp('divques','canvas');}else{ Camp('divques');}
+		// encオブジェクトを生成する
+		enc = new Encode();
+		var dec = enc.first_parseURI(location.search);
+		if(!dec.id){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
 
+		// Campの設定
+		if(k.br.Chrome6){ Camp('divques','canvas');}else{ Camp('divques');}
 		if(Camp.enable.canvas && !!_doc.createElement('canvas').toDataURL){
 			this.enableSaveImage = true;
 			Camp('divques_sub', 'canvas');
 		}
 
+		this.init_func(dec.id, dec.url, true, ee.binder(this, this.postload_func));
+	},
+	reload_func : function(pid, purl, callback){
+		// 各パズルでオーバーライドしているものを、元に戻す
+		if(this.proto){ puz.protoOriginal();}
+
+		menu.menureset();
+		ee('numobj_parent').el.innerHTML = '';
+		ee.clean();
+
+		this.init_func(pid, purl, false, callback);
+	},
+	init_func : function(pid, purl, onload, callback){
+		this.initProcess = true;
+
+		// idを取得して、ファイルを読み込み
+		if(!Puzzles[pid]){
+			var _script = _doc.createElement('script');
+			_script.type = 'text/javascript';
+			_script.src = "src/"+pid+".js";
+			_doc.body.appendChild(_script);
+		}
+		k.pzlnameid = k.puzzleid = pid;
+
+		// urlの構造解析(あとでpzlinputで読み込む準備)
+		enc.init();
+		if(!!purl){ enc.parseURI_pzpr(purl);}
+
+		// 中身を読み取れるまでwait
 		var self = this;
 		var tim = setInterval(function(){
-			if(Camp.isready()){
-				clearInterval(tim);
-				self.onload_func2.call(self);
-			}
+			if(!Puzzles[pid] || !Camp.isready()){ return;}
+			clearInterval(tim);
+
+			// 初期化ルーチンへジャンプ
+			g = ee('divques').unselectable().el.getContext("2d");
+			self.initObjects(onload);
+			self.initProcess = false;
+
+			if(!!callback){ callback();}
 		},10);
 	},
-	onload_func2 : function(){
-		k.initFlags();
-		this.initCanvas();
-		this.initObjects(true);
-		this.setEvents();	// イベントをくっつける
-
-		if(k.PLAYER){ this.accesslog();}	// アクセスログをとってみる
+	postload_func : function(){
+		if(k.PLAYER){ self.accesslog();}	// アクセスログをとってみる
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
-
-		this.initProcess = false;
 	},
 
 	//---------------------------------------------------------------------------
-	// base.initCanvas()    キャンバスの初期化
 	// base.initObjects()   各オブジェクトの生成などの処理
 	// base.doc_design()    initObjects()で呼ばれる。htmlなどの設定を行う
 	// base.checkUserLang() 言語環境をチェックして日本語でない場合英語表示にする
 	//---------------------------------------------------------------------------
-	initCanvas : function(){
-		this.numparent = ee('numobj_parent').el;		// 数字表示用
-		g = ee('divques').unselectable().el.getContext("2d");
-	},
 	initObjects : function(onload){
+		k.initFlags();						// 共通フラグの初期化
+
 		this.proto = 0;
 
 		puz = new Puzzles[k.puzzleid]();	// パズル固有オブジェクト
@@ -118,6 +142,8 @@ PBase.prototype = {
 		this.resize_canvas();
 
 		if(!!puz.finalfix){ puz.finalfix();}		// パズル固有の後付け設定
+
+		if(onload){ this.setEvents();}				// イベントをくっつける
 	},
 	// 背景画像とかtitle・背景画像・html表示の設定
 	doc_design : function(){
@@ -138,17 +164,17 @@ PBase.prototype = {
 	//---------------------------------------------------------------------------
 	setEvents : function(){
 		// マウス入力イベントの設定
-		var canvas = ee('divques').el;
+		var canvas = ee('divques').el, numparent = ee('numobj_parent').el;
 		if(!k.mobile){
 			ee.addEvent(canvas, "mousedown", ee.ebinder(mv, mv.e_mousedown));
 			ee.addEvent(canvas, "mousemove", ee.ebinder(mv, mv.e_mousemove));
 			ee.addEvent(canvas, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
 			canvas.oncontextmenu = function(){ return false;};
 
-			ee.addEvent(this.numparent, "mousedown", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(this.numparent, "mousemove", ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(this.numparent, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
-			this.numparent.oncontextmenu = function(){ return false;};
+			ee.addEvent(numparent, "mousedown", ee.ebinder(mv, mv.e_mousedown));
+			ee.addEvent(numparent, "mousemove", ee.ebinder(mv, mv.e_mousemove));
+			ee.addEvent(numparent, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
+			numparent.oncontextmenu = function(){ return false;};
 		}
 		// iPhoneOS用のタッチイベント設定
 		else{
@@ -156,9 +182,9 @@ PBase.prototype = {
 			ee.addEvent(canvas, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
 			ee.addEvent(canvas, "touchend",   ee.ebinder(mv, mv.e_mouseup));
 
-			ee.addEvent(this.numparent, "touchstart", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(this.numparent, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(this.numparent, "touchend",   ee.ebinder(mv, mv.e_mouseup));
+			ee.addEvent(numparent, "touchstart", ee.ebinder(mv, mv.e_mousedown));
+			ee.addEvent(numparent, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
+			ee.addEvent(numparent, "touchend",   ee.ebinder(mv, mv.e_mouseup));
 		}
 
 		// キー入力イベントの設定
@@ -307,62 +333,6 @@ PBase.prototype = {
 	onblur_func : function(){
 		kc.keyreset();
 		mv.mousereset();
-	},
-
-	//---------------------------------------------------------------------------
-	// base.reload_func()  別パズルのファイルを読み込む関数
-	// base.reload_func2() パズル種類を変更して、初期化する関数
-	//---------------------------------------------------------------------------
-	reload_func : function(contents){
-		this.initProcess = true;
-
-		// idを取得して、ファイルを読み込み
-		if(!Puzzles[contents.id]){
-			var _script = _doc.createElement('script');
-			_script.type = 'text/javascript';
-			_script.src = "src/"+contents.id+".js";
-
-			// headじゃないけど、、しょうがないかぁ。。
-			_doc.body.appendChild(_script);
-		}
-
-		// 中身を読み取れるまでwait
-		var self = this;
-		var tim = setInterval(function(){
-			if(!!Puzzles[contents.id]){
-				clearInterval(tim);
-				self.reload_func2.call(self, contents);
-			}
-		},10);
-	},
-	reload_func2 : function(contents){
-		// 各パズルでオーバーライドしているものを、元に戻す
-		if(base.proto){ puz.protoOriginal();}
-
-		// 各HTML要素等を初期化する
-		menu.menureset();
-		this.numparent.innerHTML = '';
-
-		ee.clean();
-
-		k.pzlnameid = k.puzzleid = contents.id;
-
-		// 各種パラメータのうち各パズルで初期化されないやつをここで初期化
-		k.initFlags();
-
-		// 通常preload_funcで初期化されるenc,fioをここで生成する
-		enc = new Encode();
-
-		if(!!contents.url){ enc.parseURI_pzpr(contents.url);}
-		if(!!enc.uri.cols){ k.qcols = enc.uri.cols;}
-		if(!!enc.uri.rows){ k.qrows = enc.uri.rows;}
-
-		// onload後の初期化ルーチンへジャンプする
-		this.initObjects(false);
-
-		this.initProcess = false;
-
-		if(!!contents.callback){ contents.callback();}
 	},
 
 	//---------------------------------------------------------------------------

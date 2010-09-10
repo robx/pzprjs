@@ -60,10 +60,10 @@ IDList.prototype = {
 // 各種パラメータの定義
 var k = {
 	// 各パズルのsetting()関数で設定されるもの
-	qcols : 0,				// 盤面の横幅
-	qrows : 0,				// 盤面の縦幅
-
 	initFlags : function(){
+		this.qcols = 0;		// 盤面の横幅
+		this.qrows = 0;		// 盤面の縦幅
+
 		this.irowake  = 0;	// 0:色分け設定無し 1:色分けしない 2:色分けする
 
 		this.iscross  = 0;	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル

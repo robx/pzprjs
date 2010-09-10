@@ -1,4 +1,4 @@
-// Encode.js v3.3.1
+// Encode.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -75,17 +75,14 @@ Encode.prototype = {
 		k.PLAYER    = !k.EDITOR;
 		k.playmode  = !k.editmode;
 
+		var pid = search, purl = '';
 		var qs = search.indexOf("/");
 		if(qs>=0){
-			this.parseURI_pzpr(search.substr(qs+1));
-			if(!!this.uri.cols){ k.qcols = this.uri.cols;}
-			if(!!this.uri.rows){ k.qrows = this.uri.rows;}
-
-			search = search.substr(0,qs);
+			pid  = search.substr(0,qs);
+			purl = search.substr(qs+1);
 		}
 
 		// alias機能
-		var pid = search;
 		switch(pid){
 			case 'yajilin'    : this.pidforURL = 'yajilin'; pid = 'yajirin'; break;
 			case 'akari'      : this.pidforURL = 'akari';   pid = 'lightup'; break;
@@ -96,7 +93,8 @@ Encode.prototype = {
 			case 'masyu'      : this.pidforURL = pid = 'mashu';   break;
 			default           : this.pidforURL = pid;
 		}
-		k.pzlnameid = k.puzzleid = pid;
+
+		return {id:pid, url:purl}
 	},
 	parseURI : function(url){
 		this.init();

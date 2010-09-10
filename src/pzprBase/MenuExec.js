@@ -253,7 +253,7 @@ MenuExec.prototype = {
 		pc.fillTextPrecisely = temp_flag;
 		k.bdmargin = temp_margin;
 		pp.setValOnly('cursor', temp_cursor);
-		base.initCanvas();
+		g = ee('divques').unselectable().el.getContext("2d");
 
 		// その他の設定を元に戻して、再描画
 		base.resize_canvas();

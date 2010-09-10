@@ -35,8 +35,7 @@ debug.extend({
 			debug.phase = 0;
 
 			var newid = debug.urls[pnum][0];
-			base.reload_func({id:newid, url:debug.urls[pnum][1],
-							  callback:ee.binder(debug, debug.sccheck)});
+			base.reload_func(newid, debug.urls[pnum][1], ee.binder(debug, debug.sccheck));
 
 			if(pnum >= term){ clearInterval(tam);}
 

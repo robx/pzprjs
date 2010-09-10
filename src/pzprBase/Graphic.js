@@ -1453,7 +1453,7 @@ Graphic.prototype = {
 		this.flushCanvasAll = ((g.use.canvas) ?
 			function(){
 				this.numobj = {};
-				base.numparent.innerHTML = '';
+				ee('numobj_parent').el.innerHTML = '';
 			}
 		:
 			function(){
@@ -1462,7 +1462,7 @@ Graphic.prototype = {
 				this.zidx_array=[];
 
 				this.numobj = {};
-				base.numparent.innerHTML = '';
+				ee('numobj_parent').el.innerHTML = '';
 
 				this.vinc('board_base', 'crispEdges');
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
