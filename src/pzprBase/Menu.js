@@ -854,10 +854,10 @@ Menu.prototype = {
 				rule.style.lineHeight = ['1.6','1.2','1.1','1.1'][num];
 				break;
 			case 'div#btnarea input[type="button"]':
-				rule.style.fontSize = ['1.0em','1.6em','2.0em','3.0em'][num];
+				rule.style.fontSize = ['','1.6em','2.0em','3.0em'][num];
 				break;
 			case 'form input':
-				rule.style.fontSize = ['1.0em','1.2em','1.4em','1.6em'][num];
+				rule.style.fontSize = ['','1.2em','1.4em','1.6em'][num];
 				break;
 			case 'input[type="checkbox"]':
 				rule.style.width  = ['','24px','32px','50px'][num];
