@@ -201,7 +201,9 @@ Encode.prototype = {
 				this.decodeHeyaApp();
 				break;
 			}
-			base.resetInfo(true);
+
+			um.allerase();
+			base.resetInfo();
 
 			if(!base.initProcess){
 				base.resize_canvas();

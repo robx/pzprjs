@@ -198,23 +198,35 @@ OperationManager.prototype = {
 	decodeLines : function(){
 		this.allerase();
 
-		fio.readLine();	/* <info> */
-		fio.readLine().match(/history=(\d+)/);
-		var count = RegExp.$1;
-		fio.readLine().match(/current=(\d+)/);
-		this.current=parseInt(RegExp.$1);
-		fio.readLine();	/* </info> */
-
-		fio.readLine();	/* <data> */
-		this.ope = [];
+		var line = '', state = -1;
 		while(1){
-			var line = fio.readLine()
-			if(line.match(/\<\[\[slash\]\]data\>/)){ break;}
-			if(line.match(/,0$/)){ this.addOpeArray();}
-			this.lastope.push((new Operation()).decode(line));
+			var line = fio.readLine();
+			if(line===(void 0)){ break;}
+
+			line = line.replace(/\[\[slash\]\]/g, "/");
+			switch(state){
+			case -1:
+				if(line.match("<history>")){ state = 0;}
+				break;
+			case 0:
+				if     (line.match("<info>")){ state = 10;}
+				else if(line.match("<data>")){ state = 20; this.ope=[];}
+				else if(line.match("</history>")){ break;}
+				break;
+			case 10:
+				if     (line.match(/history=(\d+)/)){ var count = RegExp.$1;}
+				else if(line.match(/current=(\d+)/)){ this.current=parseInt(RegExp.$1);}
+				else if(line.match("</info>")){ state = 0;}
+				break;
+			case 20:
+				if(line.match(/,(\d+)$/)){
+					if(RegExp.$1=='0'){ this.addOpeArray();}
+					this.lastope.push((new Operation()).decode(line));
+				}
+				else if(line.match("</data>")){ state = 0; this.addOpeArray();}
+				break;
+			}
 		}
-		this.addOpeArray();
-		fio.readLine();	/* </history> */
 
 		this.enb_btn();
 	},
@@ -289,7 +301,7 @@ OperationManager.prototype = {
 			bd.setposAll();
 			bd.setminmax();
 			base.enableInfo();
-			base.resetInfo(false);
+			base.resetInfo();
 			base.resize_canvas();
 		}
 		else{

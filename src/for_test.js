@@ -142,7 +142,7 @@ debug.extend({
 				var bd2 = debug.bd_freezecopy();
 
 				bd.initBoardSize(1,1);
-				base.resetInfo(true);
+				base.resetInfo();
 				base.resize_canvas();
 
 				setTimeout(function(){
@@ -161,7 +161,7 @@ debug.extend({
 				var bd2 = debug.bd_freezecopy();
 
 				bd.initBoardSize(1,1);
-				base.resetInfo(true);
+				base.resetInfo();
 				base.resize_canvas();
 
 				setTimeout(function(){

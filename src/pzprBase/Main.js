@@ -231,8 +231,7 @@ PBase.prototype = {
 	isenableInfo : function(){
 		return (this.disinfo===0);
 	},
-	resetInfo : function(iserase){
-		if(iserase){ um.allerase();}
+	resetInfo : function(){
 		area.resetArea();
 		line.resetLcnts();
 	},

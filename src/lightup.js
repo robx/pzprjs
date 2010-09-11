@@ -26,8 +26,7 @@ Puzzles.lightup.prototype = {
 	protoChange : function(){
 		this.protofunc = { resetinfo : base.resetInfo};
 
-		base.resetInfo = function(iserase){
-			if(iserase){ um.allerase();}
+		base.resetInfo = function(){
 			bd.initQlight();
 		};
 	},

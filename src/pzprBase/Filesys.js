@@ -53,10 +53,10 @@ FileIO.prototype = {
 		if     (this.currentType===this.PZPR){ this.decodeData();}
 		else if(this.currentType===this.PBOX){ this.kanpenOpen();}
 
-		base.resetInfo(true);
-		base.resize_canvas();
+		um.decodeLines();
 
-		if(this.readLine().match("<history>")){ um.decodeLines();}
+		base.resetInfo();
+		base.resize_canvas();
 
 		this.dataarray = null;
 	},
