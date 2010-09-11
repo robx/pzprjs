@@ -18,7 +18,6 @@ Puzzles.tentaisho.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(0, 224, 0)");
-		base.proto = 1;
 
 		enc.pidKanpen = 'tentaisho';
 	},

@@ -17,7 +17,6 @@ Puzzles.tilepaint.prototype = {
 		k.NumberIsWhite   = true;
 
 		base.setFloatbgcolor("rgb(96, 96, 96)");
-		base.proto = 1;
 	},
 	menufix : function(){
 		menu.addUseToFlags();

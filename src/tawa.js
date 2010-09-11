@@ -17,7 +17,6 @@ Puzzles.tawa.prototype = {
 		k.ispzprv3ONLY    = true;
 
 		base.setFloatbgcolor("rgb(64, 64, 64)");
-		base.proto = 1;
 	},
 	menufix : function(){
 		menu.addUseToFlags();

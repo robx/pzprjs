@@ -20,7 +20,6 @@ Puzzles.wagiri.prototype = {
 		k.bdmargin_image = 0.50;
 
 		base.setFloatbgcolor("rgb(0, 127, 0)");
-		base.proto = 1;
 	},
 	menufix : function(){
 		menu.addUseToFlags();

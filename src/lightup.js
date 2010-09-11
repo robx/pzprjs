@@ -16,7 +16,6 @@ Puzzles.lightup.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(32, 32, 32)");
-		base.proto = 1;
 
 		enc.pidKanpen = 'bijutsukan';
 	},

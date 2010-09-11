@@ -16,7 +16,6 @@ Puzzles.sudoku.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(64, 64, 64)");
-		base.proto = 1;
 
 		enc.pidKanpen = 'sudoku';
 	},

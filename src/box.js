@@ -19,7 +19,6 @@ Puzzles.box.prototype = {
 		k.bdmargin_image = 0.10;
 
 		base.setFloatbgcolor("rgb(96, 96, 96)");
-		base.proto = 1;
 	},
 	menufix : function(){
 		menu.addUseToFlags();
@@ -30,7 +29,7 @@ Puzzles.box.prototype = {
 		EXCell.prototype.defqnum = 0;
 	},
 	protoOriginal : function(){
-		EXCell.prototype.defqnum  = this.protoval;
+		EXCell.prototype.defqnum = this.protoval;
 	},
 
 	//---------------------------------------------------------

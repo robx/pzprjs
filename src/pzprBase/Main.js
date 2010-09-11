@@ -7,7 +7,6 @@
 // PBaseクラス
 PBase = function(){
 	this.floatbgcolor = "black";
-	this.proto        = 0;	// 各クラスのprototypeがパズル用スクリプトによって変更されているか
 	this.userlang     = 'ja';
 	this.resizetimer  = null;	// resizeタイマー
 	this.initProcess  = true;	// 初期化中かどうか
@@ -53,7 +52,7 @@ PBase.prototype = {
 	},
 	reload_func : function(pid, purl, callback){
 		// 各パズルでオーバーライドしているものを、元に戻す
-		if(this.proto){ puz.protoOriginal();}
+		if(!!puz.protoOriginal){ puz.protoOriginal();}
 
 		menu.menureset();
 		ee('numobj_parent').el.innerHTML = '';
@@ -104,11 +103,9 @@ PBase.prototype = {
 	initObjects : function(onload){
 		k.initFlags();						// 共通フラグの初期化
 
-		this.proto = 0;
-
 		puz = new Puzzles[k.puzzleid]();	// パズル固有オブジェクト
 		puz.setting();						// パズル固有の変数設定(デフォルト等)
-		if(this.proto){ puz.protoChange();}
+		if(!!puz.protoChange){ puz.protoChange();}
 
 		// クラス初期化
 		fio = new FileIO();				// ファイル入出力用オブジェクト

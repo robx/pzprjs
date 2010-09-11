@@ -18,7 +18,6 @@ Puzzles.bosanowa.prototype = {
 		k.bdmargin_image = 0.10;
 
 		base.setFloatbgcolor("rgb(96, 96, 96)");
-		base.proto = 1;
 	},
 	menufix : function(){
 		pp.addSelect('disptype','setting',1,[1,2,3],'表示形式','Display');

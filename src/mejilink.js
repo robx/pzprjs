@@ -16,7 +16,6 @@ Puzzles.mejilink.prototype = {
 		k.ispzprv3ONLY    = true;
 
 		base.setFloatbgcolor("rgb(32, 32, 32)");
-		base.proto = 1;
 	},
 	menufix : function(){
 		menu.addRedLineToFlags();
