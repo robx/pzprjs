@@ -23,6 +23,19 @@ Puzzles.slalom.prototype = {
 		menu.addRedLineToFlags();
 	},
 
+	protoChange : function(){
+		Operation.prototype.decodeSpecial = function(strs){
+			this.property = 'st';
+		};
+		Operation.prototype.toStringSpecial = function(){
+			return ['PS', 0, 0, this.old, this.num].join(',');
+		};
+	},
+	protoOriginal : function(){
+		Operation.prototype.decodeSpecial = function(strs){};
+		Operation.prototype.toStringSpecial = function(){};
+	},
+
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
 	input_init : function(){
@@ -74,6 +87,10 @@ Puzzles.slalom.prototype = {
 			this.inputData = null;
 			var cc0 = bd.startid;
 			pc.paintCell(cc0);
+
+			if(this.firstCell!==bd.startid){
+				um.addOpe(k.OTHER, 'st', 0, this.firstCell, bd.startid);
+			}
 		};
 		mv.inputGate = function(){
 			var cc = this.cellid();
@@ -92,6 +109,7 @@ Puzzles.slalom.prototype = {
 			// startposの入力中の場合
 			else if(this.inputData==10){
 				if(cc!==this.mouseCell){
+					if(this.firstCell===null){ this.firstCell = cc;}
 					var cc0 = bd.startid;
 					bd.startid=cc;
 					pc.paintCell(cc0);
@@ -156,16 +174,20 @@ Puzzles.slalom.prototype = {
 				else if(ca=='w'){ newques=21;}
 				else if(ca=='e'){ newques=22;}
 				else if(ca=='r'||ca==' '){ newques= 0;}
-				else if(ca=='s'){ bd.inputstartid(cc); return;}
+				else if(ca=='s'){ bd.inputstartid(cc);}
 				else{ return;}
 				if(old==newques){ return;}
 
-				bd.sQuC(cc,newques);
-				if(newques==0){ bd.setNum(cc,-1);}
-				if(old==21||old==22||newques==21||newques==22){ bd.hinfo.generateGates();}
+				if(newques!==-1){
+					bd.sQuC(cc,newques);
+					if(newques==0){ bd.setNum(cc,-1);}
+					if(old==21||old==22||newques==21||newques==22){ bd.hinfo.generateGates();}
 
-				pc.paintCell(cc);
-				pc.dispnumStartpos(bd.startid);
+					pc.paintCell(cc);
+					pc.dispnumStartpos(bd.startid);
+				}
+				else{
+				}
 			}
 			else if(bd.QuC(cc)==1){
 				this.key_inputqnum(ca);
@@ -214,11 +236,16 @@ Puzzles.slalom.prototype = {
 		bd.startid = 0;
 		bd.inputstartid = function(cc){
 			if(cc!=this.startid){
+				um.addOpe(k.OTHER, 'st', 0, cc, this.startid);
 				var cc0 = this.startid;
 				this.startid = cc;
 				pc.paintCell(cc0);
 				pc.paintCell(cc);
 			}
+		};
+		um.execSpecial = function(ope, num){
+			bd.startid = num;
+			this.stackCell(num);
 		};
 
 		bd.hinfo = new Hurdle();

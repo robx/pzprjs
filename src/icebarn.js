@@ -23,6 +23,20 @@ Puzzles.icebarn.prototype = {
 		menu.addRedLineToFlags();
 	},
 
+	protoChange : function(){
+		Operation.prototype.decodeSpecial = function(strs){
+			this.property = (strs[0]=='PI'?'in':'out');
+		};
+		Operation.prototype.toStringSpecial = function(){
+			var prefix = (this.property=='in'?'PI':'PO');
+			return [prefix, 0, 0, this.old, this.num].join(',');
+		};
+	},
+	protoOriginal : function(){
+		Operation.prototype.decodeSpecial = function(strs){};
+		Operation.prototype.toStringSpecial = function(){};
+	},
+
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
 	input_init : function(){
@@ -95,6 +109,10 @@ Puzzles.icebarn.prototype = {
 		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
 		kc.isZ = false;
 
+		bd.getArrow = function(id){ return this.QuB(id); };
+		bd.setArrow = function(id,val){ if(id!==null){ this.sQuB(id,val);}};
+		bd.isArrow  = function(id){ return (this.QuB(id)>0);};
+
 		if(!bd.arrowin) { bd.arrowin  = null;}
 		if(!bd.arrowout){ bd.arrowout = null;}
 		bd.inputarrowin = function(id){
@@ -102,10 +120,12 @@ Puzzles.icebarn.prototype = {
 			this.setArrow(this.arrowin,0);
 			pc.paintBorder(this.arrowin);
 			if(this.arrowout==id){
+				um.addOpe(k.OTHER, 'out', 0, this.arrowout, this.arrowin);
 				this.arrowout = this.arrowin;
 				this.setArrow(this.arrowout, ((dir+1)%2)+1);
 				pc.paintBorder(this.arrowout);
 			}
+			um.addOpe(k.OTHER, 'in', 0, this.arrowin, id);
 			this.arrowin = id;
 			this.setArrow(this.arrowin, (dir%2)+1);
 		};
@@ -114,16 +134,20 @@ Puzzles.icebarn.prototype = {
 			this.setArrow(this.arrowout,0);
 			pc.paintBorder(this.arrowout);
 			if(this.arrowin==id){
+				um.addOpe(k.OTHER, 'in', 0, this.arrowin, this.arrowout);
 				this.arrowin = this.arrowout;
 				this.setArrow(this.arrowin, (dir%2)+1);
 				pc.paintBorder(this.arrowin);
 			}
+			um.addOpe(k.OTHER, 'out', 0, this.arrowout, id);
 			this.arrowout = id;
 			this.setArrow(this.arrowout, ((dir+1)%2)+1);
 		};
-		bd.getArrow = function(id){ return this.QuB(id); };
-		bd.setArrow = function(id,val){ if(id!==null){ this.sQuB(id,val);}};
-		bd.isArrow  = function(id){ return (this.QuB(id)>0);};
+		um.execSpecial = function(ope, num){
+			if     (this.property==='in') { bd.arrowin  = num;}
+			else if(this.property==='out'){ bd.arrowout = num;}
+			this.stackBorder(num);
+		};
 
 		bd.initSpecial = function(col,row){
 			this.bdinside = 2*col*row-(col+row);

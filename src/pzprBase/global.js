@@ -137,6 +137,7 @@ var k = {
 	CROSS  : 'cross',
 	BORDER : 'border',
 	EXCELL : 'excell',
+	OTHER  : 'other',
 
 	QUES : 'ques',
 	QNUM : 'qnum',

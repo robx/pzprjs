@@ -17,28 +17,36 @@ Operation = function(group, property, id, old, num){
 Operation.prototype = {
 	decode : function(str){
 		var strs = str.split(/,/);
-		if(strs[0]!=='AL'){
+		if(!!um.STRGROUP[strs[0].charAt(0)]){
 			this.group = um.STRGROUP[strs[0].charAt(0)];
 			this.property = um.STRPROP[strs[0].charAt(1)];
 			this.id = bd.idnum(this.group, strs[1], strs[2]);
 		}
-		else{
+		else if(strs[0]==='AL'){
 			this.group = k.BOARD;
 			this.property = k.BOARD;
 			this.id = 0;
+		}
+		else{
+			this.group = k.OTHER;
+			this.decodeSpecial(strs);
 		}
 		this.old = parseInt(strs[3]);
 		this.num = parseInt(strs[4]);
 		return this;
 	},
 	toString : function(){
-		if(this.group!==k.BOARD){
+		if(this.group!==k.BOARD && this.group !== k.OTHER){
 			var prefix = (um.GROUPSTR[this.group]+um.PROPSTR[this.property]);
 			var obj = bd.getObject(this.group, this.id);
 			return [prefix, obj.bx, obj.by, this.old, this.num].join(',');
 		}
-		else{ return ['AL', 0, 0, this.old, this.num].join(',');}
-	}
+		else if(this.group===k.BOARD){ return ['AL', 0, 0, this.old, this.num].join(',');}
+		else{ return this.toStringSpecial();}
+	},
+	
+	decodeSpecial : function(strs){ },
+	toStringSpecial : function(){ }
 };
 
 OperationArray = function(){
@@ -203,7 +211,6 @@ OperationManager.prototype = {
 			var line = fio.readLine();
 			if(line===(void 0)){ break;}
 
-			line = line.replace(/\[\[slash\]\]/g, "/");
 			switch(state){
 			case -1:
 				if(line.match("<history>")){ state = 0;}
@@ -211,19 +218,19 @@ OperationManager.prototype = {
 			case 0:
 				if     (line.match("<info>")){ state = 10;}
 				else if(line.match("<data>")){ state = 20; this.ope=[];}
-				else if(line.match("</history>")){ break;}
+				else if(line.match("<[[slash]]history>")){ break;}
 				break;
 			case 10:
 				if     (line.match(/history=(\d+)/)){ var count = RegExp.$1;}
 				else if(line.match(/current=(\d+)/)){ this.current=parseInt(RegExp.$1);}
-				else if(line.match("</info>")){ state = 0;}
+				else if(line.match("<[[slash]]info>")){ state = 0;}
 				break;
 			case 20:
 				if(line.match(/,(\d+)$/)){
 					if(RegExp.$1=='0'){ this.addOpeArray();}
 					this.lastope.push((new Operation()).decode(line));
 				}
-				else if(line.match("</data>")){ state = 0; this.addOpeArray();}
+				else if(line.match("<[[slash]]data>")){ state = 0; this.addOpeArray();}
 				break;
 			}
 		}
@@ -313,36 +320,51 @@ OperationManager.prototype = {
 
 	//---------------------------------------------------------------------------
 	// um.exec()  操作opeを反映する。undo(),redo()から内部的に呼ばれる
+	// um.execSpecial() パズル個別で操作を反映させたい処理を入力する
 	//---------------------------------------------------------------------------
 	exec : function(ope, num){
-		var id = ope.id;
-		if(ope.group !== k.BOARD){
+		if(ope.group !== k.BOARD && ope.group !== k.OTHER){
 			var name = this.PROPFUNC[ope.property] + this.GROUPSTR[ope.group];
 			if(!!bd[name]){ bd[name].call(bd, ope.id, num);}
 
 			switch(ope.group){
-				case k.CELL:   this.paintStack(bd.cell[id].bx-1, bd.cell[id].by-1, bd.cell[id].bx+1, bd.cell[id].by+1); break;
-				case k.CROSS:  this.paintStack(bd.cross[id].bx-1, bd.cross[id].by-1, bd.cross[id].bx+1, bd.cross[id].by+1); break;
-				case k.BORDER: this.paintBorder(id); break;
+				case k.CELL:   this.stackCell(ope.id); break;
+				case k.CROSS:  this.stackCross(ope.id); break;
+				case k.BORDER: this.stackBorder(ope.id); break;
 			}
 		}
-		else{
-			var d = {x1:0, y1:0, x2:2*k.qcols, y2:2*k.qrows};
-
+		else if(ope.group === k.BOARD){
+			var d = {x1:0,y1:0,x2:2*k.qcols,y2:2*k.qrows};
 			if(num & menu.ex.TURNFLIP){ menu.ex.turnflip    (num,d);}
 			else                      { menu.ex.expandreduce(num,d);}
 
 			base.disableInfo();
-			this.range = {x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby};
+			this.stackAll();
 			this.reqReset = true;
 		}
+		else{
+			this.execSpecial(ope, num);
+		}
 	},
+	execSpecial : function(ope, num){ },
 
 	//---------------------------------------------------------------------------
-	// um.paintBorder()  Borderの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
-	// um.paintStack()   変更が入った範囲を返す
+	// um.stackAll()    盤面全部を描画するため、どの範囲まで変更が入ったか記憶しておく
+	// um.stackCell()   Cellの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
+	// um.stackCross()  Crossの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
+	// um.stackBorder() Borderの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
+	// um.paintStack()  変更が入った範囲を保持する
 	//---------------------------------------------------------------------------
-	paintBorder : function(id){
+	stackAll : function(){
+		this.range = {x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby};
+	},
+	stackCell : function(id){
+		this.paintStack(bd.cell[id].bx-1, bd.cell[id].by-1, bd.cell[id].bx+1, bd.cell[id].by+1);
+	},
+	stackCross : function(id){
+		this.paintStack(bd.cross[id].bx-1, bd.cross[id].by-1, bd.cross[id].bx+1, bd.cross[id].by+1);
+	},
+	stackBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
 		if(bd.border[id].bx&1){
 			this.paintStack(bd.border[id].bx-2, bd.border[id].by-1, bd.border[id].bx+2, bd.border[id].by+1);
