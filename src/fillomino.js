@@ -88,43 +88,35 @@ Puzzles.fillomino.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(!this.isCTRL && !this.isZ && !this.isX && this.moveTCell(ca)){ return;}
-			if(kc.key_fillomino(ca)){ return;}
-			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(ca=='x' && !this.keyPressed){ this.isX=true; return;}
-			this.key_inputqnum(ca);
-		};
-		kc.keyup = function(ca){
-			if(ca=='z'){ this.isZ=false;}
-			if(ca=='x'){ this.isX=false;}
+			if(this.isCTRL || this.isX || this.isZ){
+				if(k.playmode){ this.key_fillomino(ca);}
+			}
+			else{
+				if(this.moveTCell(ca)){ return;}
+				this.key_inputqnum(ca);
+			}
 		};
 		kc.key_fillomino = function(ca){
-			if(k.editmode){ return false;}
-
 			var cc = tc.getTCC();
 			if(cc===null){ return;}
 
-			var nc, nb, move, flag=false;
+			var nc, nb, move, flag;
 			switch(ca){
-				case k.KEYUP: nc=bd.up(cc); nb=bd.ub(cc); move=function(){tc.decTCY(2);}; break;
-				case k.KEYDN: nc=bd.dn(cc); nb=bd.db(cc); move=function(){tc.incTCY(2);}; break;
-				case k.KEYLT: nc=bd.lt(cc); nb=bd.lb(cc); move=function(){tc.decTCX(2);}; break;
-				case k.KEYRT: nc=bd.rt(cc); nb=bd.rb(cc); move=function(){tc.incTCX(2);}; break;
+				case k.KEYUP: nc=bd.up(cc); nb=bd.ub(cc); move=function(){ tc.decTCY(2);}; break;
+				case k.KEYDN: nc=bd.dn(cc); nb=bd.db(cc); move=function(){ tc.incTCY(2);}; break;
+				case k.KEYLT: nc=bd.lt(cc); nb=bd.lb(cc); move=function(){ tc.decTCX(2);}; break;
+				case k.KEYRT: nc=bd.rt(cc); nb=bd.rb(cc); move=function(){ tc.incTCX(2);}; break;
+				default: return;
 			}
 			if(nc!==null){
-				flag = (kc.isCTRL || kc.isX || kc.isZ);
-				if(kc.isCTRL)  { if(nb!==null){ bd.sQsB(nb,((bd.QsB(nb)===0)?1:0)); move();}}
-				else if(kc.isZ){ if(nb!==null){ bd.sQaB(nb,(!bd.isBorder(nc)?1:0));        }}
-				else if(kc.isX){ if(nc!==null){ bd.sAnC(nc,bd.getNum(cc));          move();}}
+				this.tcMoved = (this.isCTRL || this.isX || this.isZ);
+				if(this.isCTRL)  { if(nb!==null){ bd.sQsB(nb,((bd.QsB(nb)===0)?1:0)); move();}}
+				else if(this.isZ){ if(nb!==null){ bd.sQaB(nb,(!bd.isBorder(nb)?1:0));        }}
+				else if(this.isX){ if(nc!==null){ bd.sAnC(nc,bd.getNum(cc));          move();}}
+
+				if(this.tcMoved){ pc.paintCell(cc);}
 			}
-
-			kc.tcMoved = flag;
-			if(flag){ pc.paintCell(cc);}
-			return flag;
 		};
-
-		kc.isX = false;
-		kc.isZ = false;
 
 		kp.generate(0, true, true);
 		kp.kpinput = function(ca){ kc.key_inputqnum(ca);};

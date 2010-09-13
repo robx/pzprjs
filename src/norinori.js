@@ -35,9 +35,6 @@ Puzzles.norinori.prototype = {
 			if     (k.editmode) this.inputborder();
 			else if(k.playmode) this.inputcell();
 		};
-
-		// キーボード入力系
-		kc.keyinput = function(ca){ };
 	},
 
 	//---------------------------------------------------------

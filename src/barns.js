@@ -63,11 +63,6 @@ Puzzles.barns.prototype = {
 		// 線を引かせたくないので上書き
 		bd.isLineNG = function(id){ return bd.isBorder(id);},
 		bd.enableLineNG = true;
-
-		// キーボード入力系
-		kc.keyinput = function(ca){ if(ca=='z' && !this.keyPressed){ this.isZ=true;}};
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
-		kc.isZ = false;
 	},
 
 	//---------------------------------------------------------

@@ -73,14 +73,10 @@ Puzzles.gokigen.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
 			if(this.moveTCross(ca)){ return;}
 			this.key_inputcross(ca);
 		};
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;} };
-
-		kc.isZ = false;
 
 		if(k.EDITOR){
 			kp.generate(4, true, false);

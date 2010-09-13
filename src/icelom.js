@@ -122,14 +122,11 @@ Puzzles.icelom.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(ca=='z' && !this.keyPressed){ this.isZ=true;}
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			if(this.key_inputIcebarn(ca)){ return;}
 			this.key_inputqnum(ca);
 		};
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
-		kc.isZ = false;
 
 		kc.key_inputIcebarn = function(ca){
 			var cc = tc.getTCC();

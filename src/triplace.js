@@ -96,16 +96,10 @@ Puzzles.triplace.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.playmode){
-				if(ca=='z' && !this.keyPressed){ this.isZ=true; }
-				return;
-			}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.inputnumber51(ca,{2:(k.qcols-(tc.cursor.x>>1)-1), 4:(k.qrows-(tc.cursor.y>>1)-1)});
 		};
-		kc.keyup    = function(ca){ if(ca=='z'){ this.isZ=false;}};
-
-		kc.isZ = false;
 
 		if(k.EDITOR){
 			kp.generate(51, true, false);

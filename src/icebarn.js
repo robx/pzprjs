@@ -104,11 +104,6 @@ Puzzles.icebarn.prototype = {
 			this.prevPos = pos;
 		};
 
-		// キーボード入力系
-		kc.keyinput = function(ca){ if(ca=='z' && !this.keyPressed){ this.isZ=true;}};
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
-		kc.isZ = false;
-
 		bd.getArrow = function(id){ return this.QuB(id); };
 		bd.setArrow = function(id,val){ if(id!==null){ this.sQuB(id,val);}};
 		bd.isArrow  = function(id){ return (this.QuB(id)>0);};

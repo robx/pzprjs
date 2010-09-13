@@ -79,9 +79,6 @@ Puzzles.kramma.prototype = {
 			return d;
 		};
 
-		// キーボード入力系
-		kc.keyinput = function(ca){ };
-
 		bd.maxnum = 2;
 	},
 

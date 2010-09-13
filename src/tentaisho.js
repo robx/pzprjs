@@ -154,8 +154,7 @@ Puzzles.tentaisho.prototype = {
 			return flag;
 		};
 
-		// キーボード入力系
-		kc.keyinput = function(ca){ };
+		// キーボード入力系 => なし
 
 		// 一部qsubで消したくないものがあるため上書き
 		menu.ex.ASconfirm = function(){

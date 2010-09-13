@@ -62,11 +62,6 @@ Puzzles.mashu.prototype = {
 			}
 		};
 
-		// キーボード入力系
-		kc.keyinput = function(ca){ if(ca=='z' && !this.keyPressed){ this.isZ=true;} };
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
-		kc.isZ = false;
-
 		bd.maxnum = 2;
 	},
 

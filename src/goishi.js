@@ -149,8 +149,6 @@ Puzzles.goishi.prototype = {
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputstone(ca);
 		};
-		kc.keyup = function(ca){ };
-
 		kc.key_inputstone = function(ca){
 			if(ca=='q'){
 				var cc = tc.getTCC();

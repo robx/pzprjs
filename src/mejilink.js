@@ -66,11 +66,6 @@ Puzzles.mejilink.prototype = {
 		bd.isLineNG = function(id){ return (bd.border[id].ques===1);},
 		bd.enableLineNG = true;
 
-		// キーボード入力系
-		kc.keyinput = function(ca){ if(ca=='z' && !this.keyPressed){ this.isZ=true;} };
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
-		kc.isZ = false;
-
 		bd.isGround = function(id){ return (!!bd.border[id] && bd.border[id].ques>0);};
 	},
 

@@ -48,7 +48,6 @@ Puzzles.reflect.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			if(this.key_inputLineParts(ca)){ return;}
@@ -69,8 +68,6 @@ Puzzles.reflect.prototype = {
 			pc.paintCellAround(cc);
 			return true;
 		};
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
-		kc.isZ = false;
 
 		if(k.EDITOR){
 			kp.kpgenerate = function(mode){

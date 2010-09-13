@@ -39,11 +39,6 @@ Puzzles.lits.prototype = {
 			if     (k.editmode) this.inputborder();
 			else if(k.playmode) this.inputcell();
 		};
-
-		// キーボード入力系
-		kc.keyinput = function(ca){ if(ca=='z' && !this.keyPressed){ this.isZ=true; }};
-		kc.keyup    = function(ca){ if(ca=='z'){ this.isZ=false;}};
-		kc.isZ = false;
 	},
 
 	//---------------------------------------------------------

@@ -56,7 +56,6 @@ Puzzles.pipelink.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			kc.key_inputLineParts(ca);
@@ -81,8 +80,6 @@ Puzzles.pipelink.prototype = {
 			pc.paintCellAround(cc);
 			return true;
 		};
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
-		kc.isZ = false;
 
 		if(k.EDITOR){
 			kp.kpgenerate = function(mode){

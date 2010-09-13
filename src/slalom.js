@@ -159,8 +159,7 @@ Puzzles.slalom.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(ca=='x' && !this.keyPressed){ this.isX=true; pc.drawNumbersOnGate(true); return;}
+			if(ca=='x'){ pc.drawNumbersOnGate(true); return;}
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputqnum_slalom(ca);
@@ -194,11 +193,8 @@ Puzzles.slalom.prototype = {
 			}
 		};
 		kc.keyup = function(ca){
-			if(ca=='z'){ this.isZ=false;}
-			if(ca=='x'){ pc.drawNumbersOnGate(false); this.isX=false;}
+			if(ca=='x'){ pc.drawNumbersOnGate(false);}
 		};
-		kc.isZ = false;
-		kc.isX = false;
 
 		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
