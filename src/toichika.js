@@ -128,7 +128,7 @@ Puzzles.toichika.prototype = {
 
 			this.drawDotCells(true);
 			this.drawArrows();
-			this.drawNumbers();
+			this.drawHatenas();
 
 			this.drawChassis();
 
@@ -166,14 +166,6 @@ Puzzles.toichika.prototype = {
 					}
 				}
 			}
-		};
-
-		pc.drawNumber1 = function(c){
-			var num = bd.getNum(c), obj = bd.cell[c], key='cell_'+c;
-			if(num===-2){
-				this.dispnum(key, 1, "?", 0.8, this.fontcolor, obj.cpx, obj.cpy);
-			}
-			else{ this.hideEL(key);}
 		};
 	},
 

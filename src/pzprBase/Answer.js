@@ -324,31 +324,37 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkSideAreaSize()     境界線をはさんで接する部屋のgetvalで得られるサイズが異なることを判定する
-	// ans.checkSideAreaCell()     境界線をはさんでタテヨコに接するセルの判定を行う
+	// ans.getSideAreaInfo()   境界線をはさんで接する部屋を取得する
+	// ans.checkSideAreaSize() 境界線をはさんで接する部屋のgetvalで得られるサイズが異なることを判定する
+	// ans.checkSideAreaCell() 境界線をはさんでタテヨコに接するセルの判定を行う
 	//---------------------------------------------------------------------------
-	checkSideAreaSize : function(rinfo, getval){
-		var adjs = [];
-		for(var r=1;r<=rinfo.max-1;r++){
-			adjs[r] = [];
-			for(var s=r+1;s<=rinfo.max;s++){ adjs[r][s]=0;}
-		}
+	getSideAreaInfo : function(rinfo){
+		var adjs=[], sides=[], max=rinfo.max;
+		for(var r=1;r<=max-1;r++){ adjs[r]=[];}
 
 		for(var id=0;id<bd.bdmax;id++){
-			if(!bd.isBorder(id)){ continue;}
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1===null || cc2===null){ continue;}
 			var r1=rinfo.id[cc1], r2=rinfo.id[cc2];
-			try{
-				if(r1<r2){ adjs[r1][r2]++;}
-				if(r1>r2){ adjs[r2][r1]++;}
-			}catch(e){ alert([r1,r2]); throw 0;}
+			if(r1===null || r2===null){ continue;}
+
+			if(r1<r2){ adjs[r1][r2]=true;}
+			if(r1>r2){ adjs[r2][r1]=true;}
 		}
 
+		for(var r=1;r<=max-1;r++){
+			sides[r]=[];
+			for(var s=r+1;s<=max;s++){
+				if(!!adjs[r][s]){ sides[r].push(s);}
+			}
+		}
+		return sides;
+	},
+	checkSideAreaSize : function(rinfo, getval){
+		var sides = this.getSideAreaInfo(rinfo);
 		for(var r=1;r<=rinfo.max-1;r++){
-			for(var s=r+1;s<=rinfo.max;s++){
-				if(adjs[r][s]==0){ continue;}
-				var a1=getval(rinfo,r), a2=getval(rinfo,s);
+			for(var i=0;i<sides[r].length;i++){
+				var s=sides[r][i], a1=getval(rinfo,r), a2=getval(rinfo,s);
 				if(a1>0 && a2>0 && a1==a2){
 					bd.sErC(rinfo.room[r].idlist,1);
 					bd.sErC(rinfo.room[s].idlist,1);
@@ -356,7 +362,6 @@ AnsCheck.prototype = {
 				}
 			}
 		}
-
 		return true;
 	},
 

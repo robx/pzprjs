@@ -274,6 +274,7 @@ MouseEvent.prototype = {
 			if     (k.editmode)      { type =-1;}
 			else if(k.NumberWithMB)  { type = 2;}
 			else if(k.numberAsObject){ type = 1;}
+			if(k.puzzleid==="roma" && k.playmode){ type=0;}
 			this.inputqnum_main(cc,type);
 		}
 		else{

@@ -882,6 +882,24 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// pc.drawBaseMarks() 交点のdotをCanvasに書き込む
+	// pc.drawBaseMark1() 交点のdotをCanvasに書き込む(1つのみ)
+	//---------------------------------------------------------------------------
+	drawBaseMarks : function(){
+		this.vinc('cross_mark', 'auto');
+
+		var clist = this.range.crosses;
+		for(var i=0;i<clist.length;i++){ this.drawBaseMark1(clist[i]);}
+	},
+	drawBaseMark1 : function(id){
+		var vid = "x_cm_"+id;
+		g.fillStyle = this.cellcolor;
+		if(this.vnop(vid,this.NONE)){
+			g.fillCircle(bd.cross[id].px, bd.cross[id].py, (this.lw+3)/2);
+		}
+	},
+
+	//---------------------------------------------------------------------------
 	// pc.drawTriangle()   三角形をCanvasに書き込む
 	// pc.drawTriangle1()  三角形をCanvasに書き込む(1マスのみ)
 	//---------------------------------------------------------------------------

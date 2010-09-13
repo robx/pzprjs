@@ -86,20 +86,6 @@ Puzzles.mejilink.prototype = {
 			this.drawPekes(0);
 		};
 
-		pc.drawBaseMarks = function(){
-			this.vinc('cross_mark', 'auto');
-
-			var clist = this.range.crosses;
-			for(var i=0;i<clist.length;i++){ this.drawBaseMark1(clist[i]);}
-		};
-		pc.drawBaseMark1 = function(id){
-			var vid = "x_cm_"+id;
-			g.fillStyle = this.cellcolor;
-			if(this.vnop(vid,this.NONE)){
-				g.fillCircle(bd.cross[id].px, bd.cross[id].py, (this.lw+1)/2);
-			}
-		};
-
 		// オーバーライド
 		pc.setBorderColor = function(id){
 			if(bd.border[id].ques===1){

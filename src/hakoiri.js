@@ -163,7 +163,7 @@ Puzzles.hakoiri.prototype = {
 				this.setAlert('1つのハコに4つ以上の記号が入っています。','A box has four or more marks.'); return false;
 			}
 
-			if( !this.checkDifferentObjectInRoom(rinfo) ){
+			if( !this.checkDifferentNumberInRoom(rinfo, bd.getNum) ){
 				this.setAlert('1つのハコに同じ記号が複数入っています。','A box has same plural marks.'); return false;
 			}
 
@@ -178,24 +178,6 @@ Puzzles.hakoiri.prototype = {
 			return true;
 		};
 
-		ans.checkDifferentObjectInRoom = function(rinfo){
-			result = true;
-			for(var r=1;r<=rinfo.max;r++){
-				var d = [];
-				d[-2]=0; d[1]=0; d[2]=0; d[3]=0;
-				for(var i=0;i<rinfo.room[r].idlist.length;i++){
-					var val = bd.getNum(rinfo.room[r].idlist[i]);
-					if(val==-1){ continue;}
-
-					if(d[val]==0){ d[val]++; continue;}
-
-					if(this.inAutoCheck){ return false;}
-					bd.sErC(rinfo.room[r].idlist,1);
-					result = false;
-				}
-			}
-			return result;
-		};
 		ans.checkAroundMarks = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
