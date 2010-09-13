@@ -98,7 +98,7 @@ OperationManager = function(){
 	this.PROPFUNC[k.LINE] = 'sLi';
 
 	this.PROPSTR={};
-	this.PROPSTR[k.QUES] = 'Q';
+	this.PROPSTR[k.QUES] = 'U';
 	this.PROPSTR[k.QNUM] = 'N';
 	this.PROPSTR[k.ANUM] = 'M';
 	this.PROPSTR[k.QDIR] = 'D';
@@ -218,19 +218,19 @@ OperationManager.prototype = {
 			case 0:
 				if     (line.match("<info>")){ state = 10;}
 				else if(line.match("<data>")){ state = 20; this.ope=[];}
-				else if(line.match("<[[slash]]history>")){ break;}
+				else if(line.match("\<\[\[slash\]\]history\>")){ break;}
 				break;
 			case 10:
 				if     (line.match(/history=(\d+)/)){ var count = RegExp.$1;}
 				else if(line.match(/current=(\d+)/)){ this.current=parseInt(RegExp.$1);}
-				else if(line.match("<[[slash]]info>")){ state = 0;}
+				else if(line.match(/\<\[\[slash\]\]info\>/)){ state = 0;}
 				break;
 			case 20:
 				if(line.match(/,(\d+)$/)){
 					if(RegExp.$1=='0'){ this.addOpeArray();}
 					this.lastope.push((new Operation()).decode(line));
 				}
-				else if(line.match("<[[slash]]data>")){ state = 0; this.addOpeArray();}
+				else if(line.match(/\<\[\[slash\]\]data\>/)){ state = 0; this.addOpeArray();}
 				break;
 			}
 		}

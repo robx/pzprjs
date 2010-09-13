@@ -165,7 +165,7 @@ Puzzles.roma.prototype = {
 				var c = clist[i], dir=bd.getNum(c);
 				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
 				if(dir>=1 && dir<=4){
-					g.fillStyle = this.getCellNumberColor(c);
+					g.fillColor = (bd.cell[c].ques===1?this.fontcolor:this.fontAnscolor);
 
 					// 矢印の描画 ここに来る場合、dirは1～4
 					if(this.vnop(headers[(dir-1)]+c,this.FILL)){

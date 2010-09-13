@@ -11,13 +11,11 @@ Puzzles.cbblock.prototype = {
 		k.iscross  = 1;
 		k.isborder = 1;
 
-		k.ispzprv3ONLY    = true;
+		k.ispzprv3ONLY = true;
 
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 	},
-	menufix : function(){
-		menu.addRedLineToFlags();
-	},
+	menufix : function(){ },
 
 	protoChange : function(){
 		this.protodef = Border.prototype.defques;
@@ -32,7 +30,6 @@ Puzzles.cbblock.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
 			if(k.editmode) this.inputborder();
 			else if(k.playmode){
 				if(this.btn.Left) this.inputborderans();
@@ -65,6 +62,8 @@ Puzzles.cbblock.prototype = {
 			this.drawBGCells();
 			this.drawDashedGrid();
 			this.drawBorders();
+
+			this.drawBorderQsubs();
 
 			this.drawBaseMarks();
 
@@ -127,7 +126,8 @@ Puzzles.cbblock.prototype = {
 			this.decodeBorder( function(obj,ca){
 				if     (ca==="3" ){ obj.ques = 0; obj.qans = 1; obj.qsub = 1;}
 				else if(ca==="1" ){ obj.ques = 0; obj.qans = 1;}
-				else if(ca==="-1"){ obj.ques = 0; obj.qsub = 1;}
+				else if(ca==="-1"){ obj.ques = 1; obj.qsub = 1;}
+				else if(ca==="-2"){ obj.ques = 0; obj.qsub = 1;}
 				else if(ca==="2" ){ obj.ques = 0;}
 				else              { obj.ques = 1;}
 			});
@@ -136,7 +136,8 @@ Puzzles.cbblock.prototype = {
 			this.encodeBorder( function(obj){
 				if     (obj.qans===1 && obj.qsub===1){ return "3 ";}
 				else if(obj.qans===1){ return "1 ";}
-				else if(obj.qsub===1){ return "-1 ";}
+				else if(obj.ques===1 && obj.qsub===1){ return "-1 ";}
+				else if(obj.ques===0 && obj.qsub===1){ return "-2 ";}
 				else if(obj.ques===0){ return "2 ";}
 				else                 { return "0 ";}
 			});
@@ -229,7 +230,11 @@ Puzzles.cbblock.prototype = {
 			if(sc1.cnt!==sc2.cnt || sc1.rect!==sc2.rect){ return true;}
 
 			// 実際の形をチェック
-			for(var t=0;t<8;t++){
+			var t1, t2;
+			if     (sc1.cols===sc1.rows && sc1.cols===sc2.cols){ t1=0; t2=8;}
+			else if(sc1.cols===sc2.cols && sc1.rows===sc2.rows){ t1=0; t2=4;}
+			else if(sc1.cols===sc2.rows && sc1.rows===sc2.cols){ t1=4; t2=8;}
+			for(var t=t1;t<t2;t++){
 				var issame=true;
 				for(var i=0;i<len;i++){
 					if(sc1.data[0][i]!==sc2.data[t][i]){ issame=false; break;}
@@ -240,18 +245,19 @@ Puzzles.cbblock.prototype = {
 		};
 		ans.getBlockShapes = function(cinfo, r){
 			var d=this.getSizeOfClist(cinfo.room[r].idlist, f_true);
-			var shapes={ cnt:d.cnt, rect:(d.cols*d.rows), data:[[],[],[],[],[],[],[],[]]};
+			var shapes={ cnt:d.cnt, cols:d.cols, rows:d.rows, rect:(d.cols*d.rows),
+						 data:[[],[],[],[],[],[],[],[]]};
 
-			for(var by=0;by<d.rows;by+=2){
-				for(var bx=0;bx<d.cols;bx+=2){
+			for(var by=0;by<2*d.rows;by+=2){
+				for(var bx=0;bx<2*d.cols;bx+=2){
 					shapes.data[0].push((cinfo.id[bd.cnum(d.x1+bx,d.y1+by)]===r));
 					shapes.data[1].push((cinfo.id[bd.cnum(d.x1+bx,d.y2-by)]===r));
 					shapes.data[2].push((cinfo.id[bd.cnum(d.x2-bx,d.y1+by)]===r));
 					shapes.data[3].push((cinfo.id[bd.cnum(d.x2-bx,d.y2-by)]===r));
 				}
 			}
-			for(var bx=0;bx<d.cols;bx+=2){
-				for(var by=0;by<d.rows;by+=2){
+			for(var bx=0;bx<2*d.cols;bx+=2){
+				for(var by=0;by<2*d.rows;by+=2){
 					shapes.data[4].push((cinfo.id[bd.cnum(d.x1+bx,d.y1+by)]===r));
 					shapes.data[5].push((cinfo.id[bd.cnum(d.x1+bx,d.y2-by)]===r));
 					shapes.data[6].push((cinfo.id[bd.cnum(d.x2-bx,d.y1+by)]===r));
