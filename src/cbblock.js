@@ -150,9 +150,8 @@ Puzzles.cbblock.prototype = {
 		ans.checkAns = function(){
 
 			// それぞれ点線、境界線で作られる領域の情報
-			var tinfo = this.getArea(function(id){ return !bd.isGround(id);});
-			var cinfo = this.getArea(function(id){ return bd.border[id].qans>0;});
-			if( !this.checkMiniBlockCount(cinfo, tinfo, 1) ){
+			var cinfo = this.getBlockData();
+			if( !this.checkMiniBlockCount(cinfo, 1) ){
 				this.setAlert('ブロックが1つの点線からなる領域で構成されています。','A block has one area framed by dotted line.'); return false;
 			}
 
@@ -164,7 +163,7 @@ Puzzles.cbblock.prototype = {
 				this.setAlert('同じ形のブロックが接しています。','The blocks that has the same shape are adjacent.'); return false;
 			}
 
-			if( !this.checkMiniBlockCount(cinfo, tinfo, 3) ){
+			if( !this.checkMiniBlockCount(cinfo, 3) ){
 				this.setAlert('ブロックが3つ以上の点線からなる領域で構成されています。','A block has three or more areas framed by dotted line.'); return false;
 			}
 
@@ -172,6 +171,22 @@ Puzzles.cbblock.prototype = {
 		};
 		ans.check1st = function(){ return true;};
 
+		ans.getBlockData = function(){
+			var tinfo = this.getArea(function(id){ return !bd.isGround(id);});
+			var cinfo = this.getArea(function(id){ return bd.border[id].qans>0;});
+			for(var r=1;r<=cinfo.max;r++){
+				var d=[], cnt=0, room=cinfo.room[r], clist=room.idlist;
+				room.size = room.idlist.length;
+
+				for(var i=1;i<=tinfo.max;i++){ d[i]=0;}
+				for(var i=0,len=room.size;i<len;i++){
+					d[ tinfo.id[clist[i]] ]++;
+				}
+				for(var i=1;i<=tinfo.max;i++){ if(d[i]>0){ cnt++;}}
+				room.dotcnt = cnt;
+			}
+			return cinfo;
+		};
 		ans.getArea = function(func){
 			var tarea = new AreaInfo();
 			for(var cc=0;cc<bd.cellmax;cc++){ tarea.id[cc]=null;}
@@ -186,19 +201,13 @@ Puzzles.cbblock.prototype = {
 			return tarea;
 		};
 
-		ans.checkMiniBlockCount = function(cinfo, tinfo, flag){
-			var result=true, d=[];
+		ans.checkMiniBlockCount = function(cinfo, flag){
+			var result=true;
 			for(var r=1;r<=cinfo.max;r++){
-				var cnt=0, clist=cinfo.room[r].idlist;
-				for(var i=1;i<=tinfo.max;i++){ d[i]=0;}
-				for(var i=0,len=clist.length;i<len;i++){
-					d[ tinfo.id[clist[i]] ]++;
-				}
-				for(var i=1;i<=tinfo.max;i++){ if(d[i]>0){ cnt++;}}
-
+				var cnt=cinfo.room[r].dotcnt;
 				if((flag===1&&cnt===1) || (flag===3&&cnt>=3)){
 					if(this.inAutoCheck){ return false;}
-					bd.sErC(clist,1);
+					bd.sErC(cinfo.room[r].idlist,1);
 					result = false;
 				}
 			}
@@ -208,12 +217,14 @@ Puzzles.cbblock.prototype = {
 		ans.checkDifferentShapeBlock = function(cinfo){
 			var result=true, sides=this.getSideAreaInfo(cinfo), sc={};
 			for(var r=1;r<=cinfo.max-1;r++){
+				if(cinfo.room[r].dotcnt!==2){ continue;}
 				for(var i=0;i<sides[r].length;i++){
 					var s = sides[r][i];
-					if(!sc[r]){ sc[r]=this.getBlockShapes(cinfo,r);}
-					if(!sc[s]){ sc[s]=this.getBlockShapes(cinfo,s);}
+					// サイズ等は先に確認
+					if(cinfo.room[s].dotcnt!==2){ continue;}
+					if(cinfo.room[r].size!==cinfo.room[s].size){ continue;}
 
-					if(!this.isDifferentShapeBlock(sc[r],sc[s])){
+					if(!this.isDifferentShapeBlock(cinfo, r, s, sc)){
 						if(this.inAutoCheck){ return false;}
 						bd.sErC(cinfo.room[r].idlist,1);
 						bd.sErC(cinfo.room[s].idlist,1);
@@ -223,47 +234,34 @@ Puzzles.cbblock.prototype = {
 			}
 			return result;
 		};
-		ans.isDifferentShapeBlock = function(sc1, sc2){
-			var result=true, len=sc1.rect;
-
-			// まずサイズだけチェック
-			if(sc1.cnt!==sc2.cnt || sc1.rect!==sc2.rect){ return true;}
-
-			// 実際の形をチェック
-			var t1, t2;
-			if     (sc1.cols===sc1.rows && sc1.cols===sc2.cols){ t1=0; t2=8;}
-			else if(sc1.cols===sc2.cols && sc1.rows===sc2.rows){ t1=0; t2=4;}
-			else if(sc1.cols===sc2.rows && sc1.rows===sc2.cols){ t1=4; t2=8;}
-			for(var t=t1;t<t2;t++){
-				var issame=true;
-				for(var i=0;i<len;i++){
-					if(sc1.data[0][i]!==sc2.data[t][i]){ issame=false; break;}
-				}
-				if(issame){ result=false; break;}
-			}
-			return result;
+		ans.isDifferentShapeBlock = function(cinfo, r, s, sc){
+			if(!sc[r]){ sc[r]=this.getBlockShapes(cinfo,r);}
+			if(!sc[s]){ sc[s]=this.getBlockShapes(cinfo,s);}
+			var t1=((sc[r].cols===sc[s].cols && sc[r].rows===sc[s].rows)?0:4);
+			var t2=((sc[r].cols===sc[s].rows && sc[r].rows===sc[s].cols)?8:4);
+			for(var t=t1;t<t2;t++){ if(sc[r].data[0]===sc[s].data[t]){ return false;}}
+			return true;
 		};
 		ans.getBlockShapes = function(cinfo, r){
 			var d=this.getSizeOfClist(cinfo.room[r].idlist, f_true);
-			var shapes={ cnt:d.cnt, cols:d.cols, rows:d.rows, rect:(d.cols*d.rows),
-						 data:[[],[],[],[],[],[],[],[]]};
+			var data=[[],[],[],[],[],[],[],[]];
+			var shapes={cols:d.cols, rows:d.rows, data:[]};
 
 			for(var by=0;by<2*d.rows;by+=2){
 				for(var bx=0;bx<2*d.cols;bx+=2){
-					shapes.data[0].push((cinfo.id[bd.cnum(d.x1+bx,d.y1+by)]===r));
-					shapes.data[1].push((cinfo.id[bd.cnum(d.x1+bx,d.y2-by)]===r));
-					shapes.data[2].push((cinfo.id[bd.cnum(d.x2-bx,d.y1+by)]===r));
-					shapes.data[3].push((cinfo.id[bd.cnum(d.x2-bx,d.y2-by)]===r));
+					data[0].push((cinfo.id[bd.cnum(d.x1+bx,d.y1+by)]===r?1:0));
+					data[1].push((cinfo.id[bd.cnum(d.x1+bx,d.y2-by)]===r?1:0));
 				}
 			}
 			for(var bx=0;bx<2*d.cols;bx+=2){
 				for(var by=0;by<2*d.rows;by+=2){
-					shapes.data[4].push((cinfo.id[bd.cnum(d.x1+bx,d.y1+by)]===r));
-					shapes.data[5].push((cinfo.id[bd.cnum(d.x1+bx,d.y2-by)]===r));
-					shapes.data[6].push((cinfo.id[bd.cnum(d.x2-bx,d.y1+by)]===r));
-					shapes.data[7].push((cinfo.id[bd.cnum(d.x2-bx,d.y2-by)]===r));
+					data[4].push((cinfo.id[bd.cnum(d.x1+bx,d.y1+by)]===r?1:0));
+					data[5].push((cinfo.id[bd.cnum(d.x1+bx,d.y2-by)]===r?1:0));
 				}
 			}
+			data[2]=data[1].concat().reverse(); data[3]=data[0].concat().reverse();
+			data[6]=data[5].concat().reverse(); data[7]=data[4].concat().reverse();
+			for(var i=0;i<8;i++){ console.log(data[i]); shapes.data[i]=data[i].join('');}
 			return shapes;
 		};
 	}
