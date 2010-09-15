@@ -21,6 +21,8 @@ FileIO.prototype = {
 	//                  [menu.ex.fileopen] -> [fileio.xcg@iframe] -> [ここ]
 	//---------------------------------------------------------------------------
 	filedecode : function(datastr){
+		datastr = datastr.replace(/[\r\n]/g,"");
+
 		this.filever = 0;
 		this.lineseek = 0;
 		this.dataarray = datastr.split("/");

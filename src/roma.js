@@ -73,11 +73,10 @@ Puzzles.roma.prototype = {
 			if(cc===null){ return;}
 
 			var ldata = [];
-			for(var c=0;c<bd.cellmax;c++){ ldata[c]=(bd.getNum(c)===5?2:-1);}
+			for(var c=0;c<bd.cellmax;c++){ ldata[c]=-1;}
 			ans.checkBall1(cc,ldata);
 			for(var c=0;c<bd.cellmax;c++){
-				if     (c===cc)      { bd.sErC([c],1);}
-				else if(ldata[c]===1){ bd.sErC([c],2);}
+				if     (ldata[c]===1){ bd.sErC([c],2);}
 				else if(ldata[c]===2){ bd.sErC([c],3);}
 			}
 			ans.errDisp = true;
@@ -165,7 +164,7 @@ Puzzles.roma.prototype = {
 				var c = clist[i], dir=bd.getNum(c);
 				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
 				if(dir>=1 && dir<=4){
-					g.fillColor = (bd.cell[c].ques===1?this.fontcolor:this.fontAnscolor);
+					g.fillStyle = (bd.cell[c].qnum!==-1?this.fontcolor:this.fontAnscolor);
 
 					// 矢印の描画 ここに来る場合、dirは1～4
 					if(this.vnop(headers[(dir-1)]+c,this.FILL)){
@@ -265,13 +264,14 @@ Puzzles.roma.prototype = {
 
 			while(dir>=1 && dir<=4){
 				switch(dir){ case 1: by-=2; break; case 2: by+=2; break; case 3: bx-=2; break; case 4: bx+=2; break;}
-				var cc = bd.cnum(bx,by);
-				if(cc===null || ldata[cc]!==-1){
-					if(ldata[cc]===2){ result=true;}
-					break;
-				}
+				cc = bd.cnum(bx,by);
+				if(cc===null){ break;}
+				if(ldata[cc]!==-1){ result=(ldata[cc]===2); break;}
+
 				ldata[cc]=0;
+
 				dir=bd.getNum(cc);
+				if(dir===5){ result=true;}
 			}
 			ans.cb0(startcc, ldata);
 
