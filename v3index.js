@@ -12,21 +12,28 @@ function addEvent(element,type,func){
 
 /* onload function */
 function onload_func(){
-	var el = document.getElementById("puztypes").firstChild;
-	while(!!el){
-		if(!!el.tagName && el.tagName.toLowerCase()==='li' &&
-		   !!el.id      && el.id.match(/puzmenu_(.+)$/)){
-			var typename = RegExp.$1;
-			typelist.push(typename);
-			addEvent(el,"click",click_tab);
-			if(el.className=="puzmenusel"){ current = typename;}
+	if(!current){
+		var el = document.getElementById("puztypes").firstChild;
+		while(!!el){
+			if(!!el.tagName && el.tagName.toLowerCase()==='li' &&
+			   !!el.id      && el.id.match(/puzmenu_(.+)$/)){
+				var typename = RegExp.$1;
+				typelist.push(typename);
+				addEvent(el,"click",click_tab);
+				if(el.className=="puzmenusel"){ current = typename;}
+			}
+			el = el.nextSibling;
 		}
-		el = el.nextSibling;
+		if(!current && typelist.length>0){ current = typelist[0];}
 	}
-	if(!current && typelist.length>0){ current = typelist[0];}
-
 	disp();
 }
+function reset_func(){
+	typelist = [];
+	current  = '';
+	onload_func();
+}
+
 /* tab-click function */
 function click_tab(e){
 	var el = (e.target || e.srcElement);
