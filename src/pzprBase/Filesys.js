@@ -31,7 +31,7 @@ FileIO.prototype = {
 		// ヘッダの処理
 		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
-			if(this.readLine()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。'); return;}
+			if(this.readLine()!=k.puzzleid){ return (base.getPuzzleName()+'のファイルではありません。');}
 			this.currentType = this.PZPR;
 		}
 		else{
@@ -49,7 +49,7 @@ FileIO.prototype = {
 		else{
 			row = col = parseInt(this.readLine(), 10);
 		}
-		if(row<=0 || col<=0){ return;}
+		if(row<=0 || col<=0){ return '';}
 		bd.initBoardSize(col, row); // 盤面を指定されたサイズで初期化
 
 		// メイン処理
@@ -62,6 +62,8 @@ FileIO.prototype = {
 		base.resize_canvas();
 
 		this.dataarray = null;
+
+		return '';
 	},
 	//---------------------------------------------------------------------------
 	// fio.fileencode() ファイル文字列へのエンコード、ファイル保存実行関数

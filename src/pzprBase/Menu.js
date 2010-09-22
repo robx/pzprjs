@@ -1146,7 +1146,7 @@ var debug = {
 	},
 
 	filesave : function(){
-		this.setTA(fio.fileencode(fio.PZPR).replace(/\//g,"\n"));
+		this.setTA(fio.fileencode(fio.PZPH).replace(/\//g,"\n"));
 		this.addTA(fio.history.replace(/\//g,"\n").replace(/\[\[slash\]\]/g,"/"));
 	},
 	filesave_pencilbox : function(){

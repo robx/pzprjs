@@ -46,7 +46,10 @@ sub fileopen{
 <HEAD>
 <META NAME="robots" CONTENT="noindex,nofollow">
 <script type="text/javascript">
-if(parent.base){ parent.menu.ex.fileonload(\"$str\");}
+if(parent.base){
+	var errmsg = parent.menu.ex.fileonload(\"$str\");
+	if(!!errmsg){ alert(errmsg);}
+}
 </script>
 </HEAD>
 <BODY>
