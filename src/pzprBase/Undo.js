@@ -57,14 +57,7 @@ OperationArray.prototype = {
 	item : function(id){ return this.items[id];},
 	count: function(){ return this.items.length;},
 	last : function(){ return (this.items.length>0 ? this.items[this.items.length-1] : null);},
-	isnull : function(){ return (this.items.length===0);},
-	toString : function(){
-		var strs = [];
-		for(var i=0,len=this.items.length;i<len;i++){
-			strs.push([this.items[i].toString(), ',', i].join(''));
-		}
-		return strs.join("/");
-	}
+	isnull : function(){ return (this.items.length===0);}
 };
 
 // OperationManagerクラス
@@ -242,7 +235,12 @@ OperationManager.prototype = {
 		var strs = ['<history>'];
 		strs.push('<info>',('history='+lastid),('current='+this.current),'<[[slash]]info>')
 		strs.push('<data>');
-		for(var i=0,len=lastid;i<len;i++){ strs.push(this.ope[i].toString());}
+		for(var i=0,len=lastid;i<len;i++){
+			var ope=this.ope[i];
+			for(var t=0,len=ope.item.length;t<len;t++){
+				strs.push([ope.items[t].toString(), ',', t].join(''));
+			}
+		}
 		strs.push('<[[slash]]data>','<[[slash]]history>');
 		return strs.join('/');
 	},
