@@ -94,6 +94,12 @@ Encode.prototype = {
 			default           : this.pidforURL = pid;
 		}
 
+		// 複製かどうか
+		if(purl==='duplicate'){
+			base.isduplicate = true;
+			purl = '';
+		}
+
 		return {id:pid, url:purl}
 	},
 	parseURI : function(url){

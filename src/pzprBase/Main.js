@@ -9,6 +9,7 @@ PBase = function(){
 	this.floatbgcolor = "black";
 	this.userlang     = 'ja';
 	this.resizetimer  = null;	// resizeタイマー
+	this.isduplicate  = false;	// 複製されたタブか
 	this.initProcess  = true;	// 初期化中かどうか
 	this.enableSaveImage = false;	// 画像保存が有効か
 
@@ -91,7 +92,7 @@ PBase.prototype = {
 		},10);
 	},
 	postload_func : function(){
-		if(k.PLAYER){ self.accesslog();}	// アクセスログをとってみる
+		if(k.PLAYER && !this.isduplicate){ self.accesslog();}	// アクセスログをとってみる
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
 	},
 
@@ -99,6 +100,7 @@ PBase.prototype = {
 	// base.initObjects()   各オブジェクトの生成などの処理
 	// base.doc_design()    initObjects()で呼ばれる。htmlなどの設定を行う
 	// base.checkUserLang() 言語環境をチェックして日本語でない場合英語表示にする
+	// base.importPredata() URLや複製されたデータを読み出す
 	//---------------------------------------------------------------------------
 	initObjects : function(onload){
 		k.initFlags();						// 共通フラグの初期化
@@ -135,7 +137,7 @@ PBase.prototype = {
 		this.doc_design();		// デザイン変更関連関数の呼び出し
 		this.checkUserLang();	// 言語のチェック
 
-		enc.pzlinput();			// URLからパズルのデータを読み出す
+		this.importPredata();
 		this.resize_canvas();
 
 		if(!!puz.finalfix){ puz.finalfix();}		// パズル固有の後付け設定
@@ -154,6 +156,11 @@ PBase.prototype = {
 	checkUserLang : function(){
 		this.userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
 		if(this.userlang.substr(0,2)!=='ja'){ pp.setVal('language','en');}
+	},
+	importPredata : function(){
+		if(!this.isduplicate){ enc.pzlinput();}	// URLからパズルのデータを読み出す
+		else{ fio.importDuplicate();}			// 複製されたデータを読み出す
+		this.isduplicate = false;
 	},
 
 	//---------------------------------------------------------------------------

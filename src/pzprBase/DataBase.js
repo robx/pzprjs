@@ -384,7 +384,7 @@ DataBaseHandler_LS.prototype = {
 	},
 	saveDataTable : function(parent, id, callback){
 		var row = parent.DBlist[id];
-		for(var c=0;c<7;c++){ localStorage[this.pheader+'!'+row.id+'!'+this.keys[c]] = (c!==4 ? row[this.keys[c]] : fileencode(1));}
+		for(var c=0;c<7;c++){ localStorage[this.pheader+'!'+row.id+'!'+this.keys[c]] = (c!==4 ? row[this.keys[c]] : fio.fileencode(fio.PZPH));}
 		if(!!callback){ callback();}
 	},
 
@@ -541,7 +541,7 @@ DataBaseHandler_SQL.prototype = {
 		);
 	},
 	saveDataTable : function(parent, id, callback){
-		var row = parent.DBlist[id], data = fileencode(1);
+		var row = parent.DBlist[id], data = fio.fileencode(fio.PZPH);
 		this.db.transaction(
 			function(tx){
 				tx.executeSql('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',

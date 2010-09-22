@@ -14,6 +14,7 @@ FileIO = function(){
 	// 定数(ファイル形式)
 	this.PZPR = 1;
 	this.PBOX = 2;
+	this.PZPH = 3;
 };
 FileIO.prototype = {
 	//---------------------------------------------------------------------------
@@ -72,6 +73,7 @@ FileIO.prototype = {
 		this.datastr = "";
 		this.history = "";
 		this.currentType = type;
+		if(this.currentType===this.PZPH){ this.currentType = this.PZPR;}
 
 		// メイン処理
 		if     (this.currentType===this.PZPR){ this.encodeData();}
@@ -89,11 +91,19 @@ FileIO.prototype = {
 		var bstr = this.datastr;
 
 		// 末尾の履歴情報追加処理
-		if(this.currentType===this.PZPR){
-			this.history = um.toString();
-		}
+		if(type===this.PZPH){ this.history = um.toString();}
 
 		return bstr;
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.importDuplicate() 複製されたプロセスでデータの読み込みを行う
+	//---------------------------------------------------------------------------
+	importDuplicate : function(){
+		if(!(dbm.DBaccept&0x10)){ return;}
+		var str = window.sessionStorage.getItem('duplicate');
+		if(!!str){ this.filedecode(str);}
+		// ここでは消しません
 	},
 
 	//---------------------------------------------------------------------------

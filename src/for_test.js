@@ -45,7 +45,7 @@ debug.extend({
 	},
 
 	accheck1 : function(){
-		var outputstr = fio.fileencode(fio.PZPR);
+		var outputstr = fio.fileencode(fio.PZPH);
 
 		ans.inCheck = true;
 		ans.disableSetError();

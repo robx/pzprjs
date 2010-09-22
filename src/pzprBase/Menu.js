@@ -200,6 +200,7 @@ Menu.prototype = {
 
 		// *ファイル - ファイル保存 -------------------------------------------
 		as('filesave',  'filesavep', 'ぱずぷれv3形式',  'Puz-Pre v3 format');
+		as('filesave3',  'filesavep', 'ぱずぷれv3(履歴つき)',  'Puz-Pre v3 with history');
 		if(this.ispencilbox){
 			as('filesave2', 'filesavep', 'pencilbox形式', 'Pencilbox format');
 		}
@@ -215,6 +216,10 @@ Menu.prototype = {
 
 		as('adjust', 'edit', '盤面の調整', 'Adjust the Board');
 		as('turn',   'edit', '反転・回転', 'Filp/Turn the Board');
+		if(!!(dbm.DBaccept&0x10)){
+			ap('sep_edit',  'edit');
+			as('duplicate', 'edit', '盤面の複製', 'Duplicate the Board');
+		}
 
 		// *表示 ==============================================================
 		am('disp', "表示", "Display");
@@ -1033,6 +1038,7 @@ Properties.prototype = {
 		urloutput : function(){ menu.pop = ee("pop1_3"); _doc.urloutput.ta.value = "";},
 		fileopen  : function(){ menu.pop = ee("pop1_4");},
 		filesave  : function(){ menu.ex.filesave(fio.PZPR);},
+		filesave3 : function(){ menu.ex.filesave(fio.PZPH);},
 		filesave2 : function(){ if(!!fio.kanpenSave){ menu.ex.filesave(fio.PBOX);}},
 		imagedl   : function(){ menu.ex.imagesave(true);},
 		imagesave : function(){ menu.ex.imagesave(false);},
@@ -1062,6 +1068,14 @@ Properties.prototype = {
 				_doc.newboard.row.value = k.qrows;
 			}
 			kc.enableKey = false;
+		},
+		duplicate : function(){
+			var str = fio.fileencode(fio.PZPH);
+			var old = window.sessionStorage.getItem('duplicate');
+			window.sessionStorage.setItem('duplicate', str+fio.history);
+			window.open('./p.html?'+k.puzzleid+(k.EDITOR?"_edit":"")+'/duplicate', '');
+			if(!!old){ window.sessionStorage.setItem('duplicate', old);}
+			else     { window.sessionStorage.removeItem('duplicate');}
 		},
 		dispsize : function(){
 			menu.pop = ee("pop4_1");
