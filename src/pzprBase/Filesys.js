@@ -99,13 +99,39 @@ FileIO.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.importDuplicate() 複製されたプロセスでデータの読み込みを行う
+	// fio.exportDuplicate() 複製するタブ用のにデータを出力してタブを開く
+	// fio.importDuplicate() 複製されたタブでデータの読み込みを行う
 	//---------------------------------------------------------------------------
+	exportDuplicate : function(){
+		var str = this.fileencode(this.PZPH);
+		var url = './p.html?'+k.puzzleid+(k.EDITOR?"_edit":"")+'/duplicate';
+		if(!k.br.Opera){
+			var old = sessionStorage['duplicate'];
+			sessionStorage['duplicate'] = (str+this.history);
+			window.open(url,'');
+			if(!!old){ sessionStorage['duplicate'] = old;}
+			else     { delete sessionStorage['duplicate'];}
+		}
+		else{
+			localStorage['pzprv3_duplicate'] = (str+this.history);
+			window.open(url,'');
+		}
+	},
 	importDuplicate : function(){
 		if(!(dbm.DBaccept&0x10)){ return;}
-		var str = window.sessionStorage.getItem('duplicate');
-		if(!!str){ this.filedecode(str);}
-		// ここでは消しません
+		var str = sessionStorage['duplicate'];
+		if(!!str){
+			this.filedecode(str);
+			// ここでは消しません
+		}
+		else{
+			str = localStorage['pzprv3_duplicate'];
+			if(!!str){
+				delete localStorage['pzprv3_duplicate'];
+				this.filedecode(str);
+				sessionStorage['duplicate'] = str;
+			}
+		}
 	},
 
 	//---------------------------------------------------------------------------

@@ -1045,6 +1045,7 @@ Properties.prototype = {
 		database  : function(){ menu.pop = ee("pop1_8"); dbm.openDialog();},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
+		duplicate : function(){ fio.exportDuplicate();},
 		credit    : function(){ menu.pop = ee("pop3_1");},
 		jumpexp   : function(){ window.open('./faq.html?'+k.puzzleid+(k.EDITOR?"_edit":""), '');},
 		jumpv3    : function(){ window.open('./', '', '');},
@@ -1068,14 +1069,6 @@ Properties.prototype = {
 				_doc.newboard.row.value = k.qrows;
 			}
 			kc.enableKey = false;
-		},
-		duplicate : function(){
-			var str = fio.fileencode(fio.PZPH);
-			var old = window.sessionStorage.getItem('duplicate');
-			window.sessionStorage.setItem('duplicate', str+fio.history);
-			window.open('./p.html?'+k.puzzleid+(k.EDITOR?"_edit":"")+'/duplicate', '');
-			if(!!old){ window.sessionStorage.setItem('duplicate', old);}
-			else     { window.sessionStorage.removeItem('duplicate');}
 		},
 		dispsize : function(){
 			menu.pop = ee("pop4_1");
