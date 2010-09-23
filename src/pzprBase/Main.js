@@ -92,7 +92,7 @@ PBase.prototype = {
 		},10);
 	},
 	postload_func : function(){
-		if(k.PLAYER && !this.isduplicate){ self.accesslog();}	// アクセスログをとってみる
+		if(k.PLAYER && !this.isduplicate){ this.accesslog();}	// アクセスログをとってみる
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
 	},
 

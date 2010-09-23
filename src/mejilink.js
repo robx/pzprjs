@@ -62,6 +62,14 @@ Puzzles.mejilink.prototype = {
 			}
 		};
 
+		bd.initSpecial = function(col,row){
+			k.qcols = col;
+			k.qrows = row;
+			for(var id=0;id<bd.bdmax;id++){
+				this.border[id].allclear(id,false);
+			}
+		};
+
 		// 線を引かせたくないので上書き
 		bd.isLineNG = function(id){ return (bd.border[id].ques===1);},
 		bd.enableLineNG = true;
