@@ -167,14 +167,14 @@ KeyEvent.prototype = {
 	keyup_common : function(e){
 		var flag = false;
 		if(this.isSHIFT && !e.shiftKey){ this.isSHIFT=false; flag=true;}
-		if(this.isCTRL  && !e.ctrlKey ){ this.isCTRL=false;  flag=true;}
-		if(this.isMETA  && !e.metaKey ){ this.isMETA=false;  flag=true;}
+		if(this.isCTRL  && !e.ctrlKey ){ this.isCTRL=false;  flag=true; this.inUNDO=false; this.inREDO=false;}
+		if(this.isMETA  && !e.metaKey ){ this.isMETA=false;  flag=true; this.inUNDO=false; this.inREDO=false;}
 		if(this.isALT   && !e.altKey  ){ this.isALT=false;   flag=true;}
 		if(this.isZ && this.ca==='z')  { this.isZ=false;}
 		if(this.isX && this.ca==='x')  { this.isX=false;}
 
-		if(!(this.isCTRL || this.isMETA) && this.inUNDO && this.ca=='z'){ this.inUNDO=false; flag=true;}
-		if(!(this.isCTRL || this.isMETA) && this.inREDO && this.ca=='y'){ this.inREDO=false; flag=true;}
+		if((this.isCTRL || this.isMETA) && this.inUNDO && this.ca=='z'){ this.inUNDO=false; flag=true;}
+		if((this.isCTRL || this.isMETA) && this.inREDO && this.ca=='y'){ this.inREDO=false; flag=true;}
 
 		return flag;
 	},

@@ -647,7 +647,7 @@ Timer.prototype = {
 		this.TIDundo = null;
 	},
 	procUndo : function(){
-		if((!kc.isCTRL && !kc.isMETA) || (!kc.inUNDO && !kc.inREDO)){ this.stopUndoTimer();}
+		if(!kc.inUNDO && !kc.inREDO){ this.stopUndoTimer();}
 		else if(this.undoWaitCount>0){ this.undoWaitCount--;}
 		else{ this.execUndo();}
 	},

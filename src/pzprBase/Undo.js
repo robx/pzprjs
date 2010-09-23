@@ -237,7 +237,7 @@ OperationManager.prototype = {
 		strs.push('<data>');
 		for(var i=0,len=lastid;i<len;i++){
 			var ope=this.ope[i];
-			for(var t=0,len=ope.item.length;t<len;t++){
+			for(var t=0,len1=ope.items.length;t<len1;t++){
 				strs.push([ope.items[t].toString(), ',', t].join(''));
 			}
 		}
