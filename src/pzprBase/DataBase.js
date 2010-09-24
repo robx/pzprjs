@@ -379,7 +379,7 @@ DataBaseHandler_LS.prototype = {
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback){
 		var pdata = localStorage[this.pheader+'!'+parent.DBlist[id].id+'!pdata'];
-		filedecode(pdata);
+		fio.filedecode(pdata);
 		if(!!callback){ callback();}
 	},
 	saveDataTable : function(parent, id, callback){
@@ -535,7 +535,7 @@ DataBaseHandler_SQL.prototype = {
 			},
 			function(){ },
 			function(){
-				if(!!data){ filedecode(data);}
+				if(!!data){ fio.filedecode(data);}
 				if(!!callback){ callback();}
 			}
 		);
