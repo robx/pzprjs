@@ -652,7 +652,7 @@ Timer.prototype = {
 		else{ this.execUndo();}
 	},
 	execUndo : function(){
-		if     (kc.inUNDO){ um.undo();}
-		else if(kc.inREDO){ um.redo();}
+		if     (kc.inUNDO){ um.undo(1);}
+		else if(kc.inREDO){ um.redo(1);}
 	}
 };

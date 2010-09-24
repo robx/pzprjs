@@ -48,12 +48,12 @@ Puzzles.goishi.prototype = {
 		Timer.prototype.execMouseUndo = function(){
 			if(kc.inUNDO){
 				var prop = (um.current>0 ? um.ope[um.current-1].property : '');
-				if(prop===k.ANUM){ um.undo();}
+				if(prop===k.ANUM){ um.undo(1);}
 				else             { kc.inUNDO = false;}
 			}
 			else if(kc.inREDO){
 				var prop = (um.current<um.ope.length ? um.ope[um.current].property : '');
-				if(prop===k.ANUM){ um.redo();}
+				if(prop===k.ANUM){ um.redo(1);}
 				else             { kc.inREDO = false;}
 			}
 		};

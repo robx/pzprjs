@@ -144,6 +144,11 @@ OperationManager.prototype = {
 
 		ee('btnundo').el.disabled = (!this.enableUndo ? 'disabled' : '');
 		ee('btnredo').el.disabled = (!this.enableRedo ? 'disabled' : '');
+
+		ee('ms_h_oldest').el.className = (this.enableUndo ? 'smenu' : 'smenunull');
+		ee('ms_h_undo').el.className   = (this.enableUndo ? 'smenu' : 'smenunull');
+		ee('ms_h_redo').el.className   = (this.enableRedo ? 'smenu' : 'smenunull');
+		ee('ms_h_latest').el.className = (this.enableRedo ? 'smenu' : 'smenunull');
 	},
 	allerase : function(){
 		this.lastope  = new OperationArray();
@@ -246,29 +251,33 @@ OperationManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// um.undo()  Undoを1回実行する
-	// um.redo()  Redoを1回実行する
+	// um.undo()  Undoを指定された回数実行する
+	// um.redo()  Redoを指定された回数実行する
+	// um.undoall()  Undoを最後まで実行する
+	// um.redoall()  Redoを最後まで実行する
 	// um.undoSingle()  Undoを実行する
 	// um.redoSingle()  Redoを実行する
 	//---------------------------------------------------------------------------
-	undo : function(){
+	undo : function(num){
 		if(!this.enableUndo){ return;}
 		this.undoExec = true;
 		this.preproc();
-		this.undoSingle();
+		for(var i=0;i<num;i++){ this.undoSingle();}
 		this.postproc();
 		this.undoExec = false;
 		if(!this.enableUndo){ kc.inUNDO=false;}
 	},
-	redo : function(){
+	redo : function(num){
 		if(!this.enableRedo){ return;}
 		this.redoExec = true;
 		this.preproc();
-		this.redoSingle();
+		for(var i=0;i<num;i++){ this.redoSingle();}
 		this.postproc();
 		this.redoExec = false;
 		if(!this.enableRedo){ kc.inREDO=false;}
 	},
+	undoall : function(){ this.undo(this.current);},
+	redoall : function(){ this.redo(this.ope.length-this.current-1);},
 
 	undoSingle : function(){
 		var refope = this.ope[this.current-1].items;

@@ -123,6 +123,7 @@ Menu.prototype = {
 			if(!this.labelstack[i].el){ continue;}
 			this.labelstack[i].el.innerHTML = this.labelstack[i].str[menu.language];
 		}
+		um.enb_btn();
 	},
 	setdisplay : function(idname){
 		switch(pp.type(idname)){
@@ -214,12 +215,29 @@ Menu.prototype = {
 		// *編集 ==============================================================
 		am('edit', "編集", "Edit");
 
+		at('hist', 'edit', '履歴', 'History');
+		at('board','edit', '盤面', 'Board');
+		ap('sep_edit1', 'edit');
+
 		as('adjust', 'edit', '盤面の調整', 'Adjust the Board');
 		as('turn',   'edit', '反転・回転', 'Filp/Turn the Board');
 		if(!!(dbm.DBaccept&0x10)){
-			ap('sep_edit',  'edit');
+			ap('sep_edit2',  'edit');
 			as('duplicate', 'edit', '盤面の複製', 'Duplicate the Board');
 		}
+
+		// *編集 - 履歴 -----------------------------------------------------
+		aa('cap_hist', 'hist', '履歴','Display mode');
+		as('h_oldest', 'hist', '最初にジャンプ', 'Jump to oldest');
+		as('h_undo',   'hist', '元に戻す/Undo', 'Undo');
+		as('h_redo',   'hist', 'やり直し/Redo', 'Redo');
+		as('h_latest', 'hist', '最後にジャンプ', 'Jump to latest');
+
+		// *編集 - 盤面 -----------------------------------------------------
+		aa('cap_board','board', '盤面','Display mode');
+		as('check',    'board', 'チェック', 'Check the Answer');
+		as('ansclear', 'board', '回答消去', 'Erase answer');
+		as('subclear', 'board', '補助記号消去', 'Erase auxiliary marks');
 
 		// *表示 ==============================================================
 		am('disp', "表示", "Display");
@@ -585,8 +603,8 @@ Menu.prototype = {
 		ee.createEL(this.EL_UBUTTON, 'btnclear2');
 
 		this.addButtons(ee("btncheck").el,  ee.binder(ans, ans.check),             "チェック", "Check");
-		this.addButtons(ee("btnundo").el,   ee.binder(um, um.undo),                "戻",       "<-");
-		this.addButtons(ee("btnredo").el,   ee.binder(um, um.redo),                "進",       "->");
+		this.addButtons(ee("btnundo").el,   ee.binder(um, um.undo, [1]),             "戻",       "<-");
+		this.addButtons(ee("btnredo").el,   ee.binder(um, um.redo, [1]),             "進",       "->");
 		this.addButtons(ee("btnclear").el,  ee.binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
 		this.addButtons(ee("btnclear2").el, ee.binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
 
@@ -1043,9 +1061,18 @@ Properties.prototype = {
 		imagedl   : function(){ menu.ex.imagesave(true);},
 		imagesave : function(){ menu.ex.imagesave(false);},
 		database  : function(){ menu.pop = ee("pop1_8"); dbm.openDialog();},
+
+		h_oldest  : function(){ um.undoall();},
+		h_undo    : function(){ um.undo(1);},
+		h_redo    : function(){ um.redo(1);},
+		h_latest  : function(){ um.redoall();},
+		check     : function(){ ans.check();},
+		ansclear  : function(){ menu.ex.ACconfirm();},
+		subclear  : function(){ menu.ex.ASconfirm();},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
 		duplicate : function(){ fio.exportDuplicate();},
+
 		credit    : function(){ menu.pop = ee("pop3_1");},
 		jumpexp   : function(){ window.open('./faq.html?'+k.puzzleid+(k.EDITOR?"_edit":""), '');},
 		jumpv3    : function(){ window.open('./', '', '');},
@@ -1055,6 +1082,7 @@ Properties.prototype = {
 		cursor    : function(){ pc.paintAll();},
 		manarea   : function(){ menu.ex.dispman();},
 		poptest   : function(){ debug.disppoptest();},
+
 		mode      : function(num){ menu.ex.modechange(num);},
 		text      : function(num){ menu.textsize(num); base.resize_canvas();},
 		size      : function(num){ base.resize_canvas();},
