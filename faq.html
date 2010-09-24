@@ -6,6 +6,15 @@
 <meta http-equiv="Content-Type" content="text/html">
 <TITLE>ぱずぷれv3 操作方法</TITLE>
 <link rel="stylesheet" href="v3index.css" type="text/css" />
+<style type="text/css">
+	td.sentence hr { margin-top:1.0em; margin-bottom:1.0em;}
+	td.sentence h4 { margin-top:0.5em; margin-bottom:0.1em;}
+	td.sentence p  { margin-top:0em; margin-bottom:0.8em;}
+	td.sentence dl { margin-top:0em;}
+	td.sentence dl dt { margin-top:0.3em; font-weight:bold; font-size:small;}
+	td.sentence dl dd { margin-left:24px; font-size:small;}
+	td.sentence dl dd span.brreq { color:red;}
+</style>
 <script type="text/javascript" src="puzzlename.js"></script>
 <script type="text/javascript" src="v3index.js"></script>
 </HEAD>
@@ -49,8 +58,63 @@
 <table class="puztable" id="table_common" border=0>
  <tr>
   <td class="sentence" id="common_ja">
+   <h4>管理領域</h4>
+   <p class=expression style="margin-left:0.5em;" id="expression_p">
+     メニュー項目の下、盤面の上に管理領域という部分があります。[設定]メニューなどから
+     設定できる項目の一部はここからでも設定可能です。
+   </p>
+   <hr>
+   <h4>共通マウス操作</h4>
+   <p class=expression style="margin-left:0.5em;" id="expression_p">
+     各パズルは、マウスから数字や黒マス、境界線などを入力することができます。
+     「数字・記号をパネルで入力する」のチェックボックスがonになっている場合は、
+     ポップアップの数字をクリックすることでも数字などを入力することができます。
+     詳細は各パズルの操作説明を参照してください。
+   </p>
+   <hr>
+   <h4>共通キーボード操作</h4>
+   <dl>
+    <dt>数字キー</dt><dd>カーソルの位置に数字を入力する</dd>
+    <dt>矢印キー</dt><dd>カーソルを移動する</dd>
+    <dt>-(マイナス)キー</dt><dd>問題入力モード時、カーソルの位置に？を入力したり消去する</dd>
+    <dt>DELキー/Spaceキー</dt><dd>カーソルの位置の数字・文字を消去する</dd>
+    <dt>Shiftキー/(Mac)Commandキーを押し続ける</dt><dd>マウスの左右のボタンを反転する</dd>
+    <dt>Ctrl/(Mac)Commandキー+Zキー</dt><dd>操作をUndoする</dd>
+    <dt>Ctrl/(Mac)Commandキー+Yキー</dt><dd>操作をRedoする</dd>
+    <dt>Zキーを押し続ける</dt><dd>線や黒マスの色分け機能がある場合、クリックした部分を着色する</dd>
+    <dt>F2キー</dt><dd>(エディタのみ)回答入力モードへ移る</dd>
+    <dt>Shift+F2キー</dt><dd>(エディタのみ)問題入力モードへ移る</dd>
+    <dt>Ctrl+F8キー</dt><dd>デバッグ用ウィンドウを表示する</dd>
+   </dl>
   </td>
   <td class="sentence" id="common_en">
+   <h4>Management-Area</h4>
+   <p class=expression style="margin-left:0.5em;" id="expression_p">
+     There is Management-Area between the menus and the board. Some features that is
+     in 'Setting' menu is able to be set here.
+   </p>
+   <hr>
+   <h4>Mouse Usage</h4>
+   <p class=expression style="margin-left:0.5em;" id="expression_p">
+     You are able to input numbers, black cells, borders, etc. by mouse or some pointer devices.
+     If checkbox 'Input numbers by panel' is checked, you are able to input numbers or marks
+     by displayed panel. Details are referred each puzzle help menu.
+   </p>
+   <hr>
+   <h4>Keyboard Usage</h4>
+   <dl>
+    <dt>Number keys</dt><dd>Input number at the cursor.</dd>
+    <dt>Arrow keys</dt><dd>Move the cursor.</dd>
+    <dt>-(minus) key</dt><dd>Input or Erase question marks at the cursor (in edit mode).</dd>
+    <dt>DEL/Space key</dt><dd>Clear at the cursor.</dd>
+    <dt>Pressing Shift/(Mac)Command key</dt><dd>Toggle Mouse Left/Right button.</dd>
+    <dt>Z key with Ctrl/(Mac)Command key</dt><dd>Undo</dd>
+    <dt>Y key with Ctrl/(Mac)Command key</dt><dd>Redo</dd>
+    <dt>Pressing Z key</dt><dd>Emphasis connected line or black cells if the feature enabled.</dd>
+    <dt>F2 key</dt><dd>(Editor only) To edit mode.</dd>
+    <dt>F2 key with Shift key</dt><dd>(Editor only) To play mode.</dd>
+    <dt>F8 key with Ctrl key</dt><dd>Display debug popup.</dd>
+   </dl>
   </td>
  </tr>
 </table>
@@ -60,8 +124,72 @@
 <table class="puztable" id="table_menu1" border=0>
  <tr>
   <td class="sentence" id="menu1_ja">
+   <h4>[ファイル]メニュー</h4>
+   <dl>
+    <dt>新規作成</dt><dd>指定したサイズの盤面を新規に作成します。現在の盤面は消去されます。</dd>
+    <dt>URL入力</dt><dd>URLを入力して盤面を表示します。ぱずぷれ(v3/アプレット)、カンペン、
+    へやわけアプレットに対応しています。現在の盤面は消去されます。</dd>
+    <dt>URL出力</dt><dd>現在の盤面をWebで公開する為のURLを生成します。ぱずぷれv3、カンペン、
+    へやわけアプレットのURLを出力することができます。</dd>
+    <dt>ファイルを開く</dt><dd>ぱずぷれv3、pencilboxで出力されたファイルを開くことができます。
+    現在の盤面は消去されます。</dd>
+    <dt>ファイル保存</dt><dd>ぱずぷれv3形式、pencilbox形式のファイルを保存できます。</dd>
+    <dt>一時保存/戻す</dt><dd>現在の盤面データをブラウザの記憶領域に保存しておくことができます。
+    難易度やコメントも記録することができます。別ブラウザからは参照できません。<br>
+    <span class="brreq">※Internet Explorer8.0+, Firefox2.0+, Google Chrome 4.0+,
+    Safari 4.0+, Opera 10.50+のみ使用できます</span></dd>
+    <dt>画像を保存</dt><dd>現在の盤面の画像を別タブで開くか、画像としてpng形式でダウンロードできます。
+    カーソルは表示されません。<br><span class="brreq">※Internet Explorer9.0+,
+    Firefox3.5+, Google Chrome 2.0+, Safari 4.0+, Opera 10.50+のみ使用できます</span></dd>
+   </dl>
+   <hr>
+   <h4>[編集]メニュー</h4>
+   <dl>
+    <dt>履歴</dt><dd>UndoしたりRedoしたりできます。</dd>
+    <dt>盤面</dt><dd>正答判定や回答の消去を行います。</dd>
+    <dt>[盤面] - チェック</dt><dd>盤面の正答判定ができます。</dd>
+    <dt>[盤面] - 回答消去</dt><dd>回答情報を全て消去します。</dd>
+    <dt>[盤面] - 補助記号消去</dt><dd>補助記号を全て消去します。</dd>
+    <dt>盤面の調整</dt><dd>盤面のサイズを調整します。上下左右方向のサイズを1ずつ増やしたり減らしたりできます。</dd>
+    <dt>回転・反転</dt><dd>盤面の90°回転あるいは上下・左右の反転を行うことができます。</dd>
+    <dt>盤面の複製</dt><dd>現在の盤面を複製します。履歴も複製されます。<br>
+    <span class="brreq">※Internet Explorer8.0+, Firefox2.0+,
+    Google Chrome 5.0+, Safari 4.0+, Opera 10.50+のみ使用できます</span></dd>
+   </dl>
   </td>
   <td class="sentence" id="menu1_en">
+   <h4>[File] Menu</h4>
+   <dl>
+    <dt>New Board</dt><dd>Create new board whose size is set. Current board is wiped out.</dd>
+    <dt>Input URL</dt><dd>Import URL and display it. URL of PUZ-PRE (v3/applet), Kanpen and Heyawake-Applet
+    is enabled. Current board is wiped out.</dd>
+    <dt>Output URL</dt><dd>Export URL that is used for releasing on Web. URL of PUZPRE v3, Kanpen and
+    Heyawake-Applet is enabled.</dd>
+    <dt>Open the file</dt><dd>Open the file that is saved from PUZPRE v3 and pencilbox.
+     Current board is wiped out.</dd>
+    <dt>Save the file AS ...</dt><dd>Save the PUZPRE v3 or pencilbox file.</dd>
+    <dt>Temporary save</dt><dd>Save current board to browser storage with difficulty and comment.
+    Same machine and browser will be able to access the data.<br>
+    <span class="brreq">- This feature is enabled with Internet Explorer8.0+, Firefox2.0+,
+     Google Chrome 4.0+, Safari 4.0+ and Opera 10.50+.</span></dd>
+    <dt>Save the Image</dt><dd>Open another tab and output the image of current board there or
+    download it as png format. The cursor is hidden.<br><span class="brreq">- This feature is enabled
+    with Internet Explorer9.0+, Firefox3.5+, Google Chrome 2.0+, Safari 4.0+ and Opera 10.50+.</span></dd>
+   </dl>
+   <hr>
+   <h4>[Edit] menu</h4>
+   <dl>
+    <dt>History</dt><dd>Undo or Redo menu.</dd>
+    <dt>Board</dt><dd>Check or erase the answer.</dd>
+    <dt>[Board] - Check</dt><dd>Check the answer.</dd>
+    <dt>[Board] - Erase answer</dt><dd>Erase the answer.</dd>
+    <dt>[Board] - Erase auxiliary marks</dt><dd>Erase auxiliary marks.</dd>
+    <dt>Adjust the board</dt><dd>Adjust the board size. Increase or decrease one step for four direction.</dd>
+    <dt>Turn/Filp the board</dt><dd>Turn quarter or X/Y-filp the board.</dd>
+    <dt>Duplicate the board</dt><dd>Duplicate current board with history.<br>
+    <span class="brreq">- This feature is enabled with Internet Explorer8.0+, Firefox2.0+,
+    Google Chrome 5.0+, Safari 4.0+ and Opera 10.50+.</span></dd>
+   </dl>
   </td>
  </tr>
 </table>
@@ -71,8 +199,78 @@
 <table class="puztable" id="table_menu2" border=0>
  <tr>
   <td class="sentence" id="menu2_ja">
+   <h4>[表示]メニュー</h4>
+   <dl>
+    <dt>サイズ指定</dt><dd>盤面のサイズを指定します。セルのサイズをピクセル単位で入力します。</dd>
+    <dt>表示サイズ</dt><dd>「サイズ指定」で指定したサイズの拡大率を指定します。</dd>
+    <dt>テキストのサイズ</dt><dd>盤面以外のテキストのサイズを大きくします。</dd>
+    <dt>線の色分け</dt><dd>線の自動色分け機能がついているパズルで、色分け機能の有効/無効を切り替えます。</dd>
+    <dt>カーソルの表示</dt><dd>カーソルの表示/非表示を切り替えます。</dd>
+    <dt>自動横幅調節</dt><dd>ウィンドウに入るように盤面のサイズを調節する機能の有効/無効を切り替えます。</dd>
+    <dt>盤面の再描画</dt><dd>盤面全体を再描画します。数字がずれた時などに使用してください。</dd>
+    <dt>管理領域を隠す/管理領域の表示</dt><dd>メニュー下のチェックボックスがある領域の表示/非表示を切り替えます。</dd>
+   </dl>
+   <hr>
+   <h4>[設定]メニュー</h4>
+   <dl>
+    <dt>モード</dt><dd>(エディタ)問題入力モード、回答入力モードを切り替えます。</dd>
+    <dt>入力方法</dt><dd>黒マスを入力するパズル等で、左右ボタンで黒マス/補助記号別々に入力するか、
+    なし-&gt;黒マス-&gt;白マス-&gt;なしでループさせるか設定できます。シャカシャカはパズル個別の
+    入力設定を参照してください。</dd>
+    <dt>繋がりチェック</dt><dd>黒マス、線を入力するパズルでひと繋がりになった部分を表示するモードにします。
+    Zキーを押し続けたのと同じ状態になります。</dd>
+    <dt>正答自動判定</dt><dd>正解判定を自動で行い、正解になったら通知するようにします。</dd>
+    <dt>マウス左右反転</dt><dd>マウスの左右ボタンを反転します。Shiftキーや、MacでCommandキーを押した時と
+    同じ効果になります。</dd>
+    <dt>パネル入力</dt><dd>マウスから数字・記号を入力する為のポップアップを表示します。</dd>
+    <dt>言語</dt><dd>言語を切り替えます。</dd>
+    <dt>(その他)</dt><dd>そのほか、パズルによって様々な項目が追加されています。</dd>
+   </dl>
+   <hr>
+   <h4>[その他]メニュー</h4>
+   <dl>
+    <dt>ぱずぷれv3について</dt><dd>creditやバージョンを表示します。</dd>
+    <dt>操作説明</dt><dd>このページを開きます。</dd>
+    <dt>リンク</dt><dd>指定したリンク先を別ウィンドウで開きます。</dd>
+    <dt>デバッグ</dt><dd>デバッグ用ポップアップを表示します。</dd>
+   </dl>
   </td>
   <td class="sentence" id="menu2_en">
+   <h4>[Display] menu</h4>
+   <dl>
+    <dt>Cell Size</dt><dd>Set the pixel size of the cells.</dd>
+    <dt>Display size</dt><dd>Set the zoom ratio of the board.</dd>
+    <dt>Text size</dt><dd>Zoom text size without themselves in the board.</dd>
+    <dt>Encolor lines</dt><dd>If the puzzle has the feature, set the encolor line feature enabled.</dd>
+    <dt>Display cursor</dt><dd>Toggles to display the cursor on the board.</dd>
+    <dt>Auto Size Fix</dt><dd>Set the feature that reduces the size in order to squeeze up the whole board.</dd>
+    <dt>Repaint the board</dt><dd>Repaint the whole board. It is used if the number is not in the proper position.</dd>
+    <dt>Show/Hide management area</dt><dd>Show/Hide the Management-Area.</dd>
+   </dl>
+   <hr>
+   <h4>[Setting] menu</h4>
+   <dl>
+    <dt>Mode</dt><dd>(EDITOR) Change the mode whether edit ot play mode.</dd>
+    <dt>Use</dt><dd>Change the mouse usage whether left/right click inputs each black or white cells or
+    loop empty-&gt;black cell-&gt;white cell-&gt;empty if the puzzle need black cells. Shakashaka is
+    special setting, so please refer the 'How to Input this puzzle'.</dd>
+    <dt>Continueous Check</dt><dd>Set the mode that emphasis the continueous line or black cells.
+    It is the same state with pressing Z key.</dd>
+    <dt>Automatically check</dt><dd>Check the asnwer automatically and notice if the board is complete.</dd>
+    <dt>Flip mouse button</dt><dd>Set mouse left/right button inversed. It is the same state with perssing
+    Shift key or Command key on Mac.</dd>
+    <dt>Display panel</dt><dd>Display the popup in order to input numbers or marks by mouse directly.</dd>
+    <dt>Language</dt><dd>Set the PUZPRE v3 language.</dd>
+    <dt>(others)</dt><dd>Some features are added in some puzzles.</dd>
+   </dl>
+   <hr>
+   <h4>[Other] menu</h4>
+   <dl>
+    <dt>About PUZ-PRE v3</dt><dd>Show credit and version.</dd>
+    <dt>How to Use</dt><dd>Open this page.</dd>
+    <dt>Link</dt><dd>Open in another window with clicked URL.</dd>
+    <dt>Debug</dt><dd>Display the popup for debug.</dd>
+   </dl>
   </td>
  </tr>
 </table>
@@ -150,9 +348,12 @@ function dispExpression(){
 	}
 
 	setText("puzmenu_common", {ja:"共通部分の操作説明", en:"Common"}[langcode]);
+	setText("puzmenu_menu1", {ja:"メニュー(ファイル・編集)", en:"Menu (File, Edit)"}[langcode]);
+	setText("puzmenu_menu2", {ja:"メニュー(表示・設定・その他)", en:"Menu (Display, Setting, Other)"}[langcode]);
+
+	removeEL({ja:"common_en", en:"common_ja"}[langcode]);
 	removeEL({ja:"menu1_en", en:"menu1_ja"}[langcode]);
 	removeEL({ja:"menu2_en", en:"menu2_ja"}[langcode]);
-	removeEL({ja:"common_en", en:"common_ja"}[langcode]);
 }
 
 addEvent(window, 'load', onload_func_FAQ);
