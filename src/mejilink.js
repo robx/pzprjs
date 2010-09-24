@@ -8,7 +8,7 @@ Puzzles.mejilink.prototype = {
 		if(!k.qcols){ k.qcols = 8;}
 		if(!k.qrows){ k.qrows = 8;}
 
-		k.iscross  = 1;
+		k.iscross  = 2;
 		k.isborder = 2;
 
 		k.isborderAsLine  = true;

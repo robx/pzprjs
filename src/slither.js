@@ -9,7 +9,7 @@ Puzzles.slither.prototype = {
 		if(!k.qrows){ k.qrows = 10;}
 
 		k.irowake  = 1;
-		k.iscross  = 1;
+		k.iscross  = 2;
 		k.isborder = 2;
 
 		k.isborderAsLine  = true;

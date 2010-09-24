@@ -531,10 +531,9 @@ AnsCheck.prototype = {
 	// ans.setCrossBorderError() ある交点とその周り四方向にエラーフラグを設定する
 	//---------------------------------------------------------------------------
 	checkLcntCross : function(val, bp){
-		var result = true;
-		for(var by=0;by<=bd.maxby;by+=2){
-			for(var bx=0;bx<=bd.maxbx;bx+=2){
-				if(k.iscross===1 && (bx===bd.minbx||by===bd.minby||bx===bd.maxbx||by===bd.maxby)){ continue;}
+		var result=true, mm=(k.iscross===1?2:0);
+		for(var by=mm;by<=bd.maxby-mm;by+=2){
+			for(var bx=mm;bx<=bd.maxbx-mm;bx+=2){
 				var id = (bx>>1)+(by>>1)*(k.qcols+1);
 				var lcnts = (!k.isborderAsLine?area.lcnt[id]:line.lcnt[id]);
 				if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(bx,by))==1) || (bp==2&&bd.QnX(bd.xnum(bx,by))!=1) )){
