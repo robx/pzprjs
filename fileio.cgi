@@ -38,6 +38,7 @@ sub fileopen{
 	close ($FH) if ($CGI::OS ne 'UNIX'); # Windowsプラットフォーム用
 
 	$str =~ s/[\r\n]+/\t/g;
+	$str =~ s/\"/\\\"/g;
 	$str =~ s/\//\[\[slash\]\]/g;
 
 	print <<"EOL";

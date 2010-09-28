@@ -204,50 +204,35 @@ OperationManager.prototype = {
 	decodeLines : function(){
 		this.allerase();
 
-		var line = '', state = -1;
-		while(1){
+		while(!!window.JSON){
 			var line = fio.readLine();
 			if(line===(void 0)){ break;}
-
-			switch(state){
-			case -1:
-				if(line.match("<history>")){ state = 0;}
-				break;
-			case 0:
-				if     (line.match("<info>")){ state = 10;}
-				else if(line.match("<data>")){ state = 20; this.ope=[];}
-				else if(line.match("\<\[\[slash\]\]history\>")){ break;}
-				break;
-			case 10:
-				if     (line.match(/history=(\d+)/)){ var count = RegExp.$1;}
-				else if(line.match(/current=(\d+)/)){ this.current=parseInt(RegExp.$1);}
-				else if(line.match(/\<\[\[slash\]\]info\>/)){ state = 0;}
-				break;
-			case 20:
-				if(line.match(/,(\d+)$/)){
-					if(RegExp.$1=='0'){ this.addOpeArray();}
+			else if(line.match("__HISTORY__")){
+				var data = JSON.parse(fio.readLine());
+				this.ope = [];
+				this.current = data.current;
+				for(var i=0,len=data.datas.length;i<len;i++){
+					var line = data.datas[i];
+					if(line.match(/,0$/)){ this.addOpeArray();}
 					this.lastope.push((new Operation()).decode(line));
 				}
-				else if(line.match(/\<\[\[slash\]\]data\>/)){ state = 0; this.addOpeArray();}
-				break;
 			}
+			break;
 		}
 
 		this.enb_btn();
 	},
 	toString : function(){
+		if(!window.JSON){ return '';}
 		var lastid = this.ope.length-(this.lastope.isnull()?1:0);
-		var strs = ['<history>'];
-		strs.push('<info>',('history='+lastid),('current='+this.current),'<[[slash]]info>')
-		strs.push('<data>');
-		for(var i=0,len=lastid;i<len;i++){
+		var data = {version:0, history:lastid, current:this.current, datas:[]};
+		for(var i=0;i<lastid;i++){
 			var ope=this.ope[i];
 			for(var t=0,len1=ope.items.length;t<len1;t++){
-				strs.push([ope.items[t].toString(), ',', t].join(''));
+				data.datas.push([ope.items[t].toString(), t].join(','));
 			}
 		}
-		strs.push('<[[slash]]data>','<[[slash]]history>');
-		return strs.join('/');
+		return ['__HISTORY__',JSON.stringify(data)].join('/');
 	},
 
 	//---------------------------------------------------------------------------
