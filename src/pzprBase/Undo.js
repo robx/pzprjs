@@ -11,6 +11,10 @@ Operation = function(group, property, id, old, num){
 	this.id = id;
 	this.old = old;
 	this.num = num;
+	
+	if(arguments[0]!==(void 0) && arguments[1]===(void 0)){
+		this.decode(group);
+	}
 
 	return this;
 };
@@ -21,19 +25,20 @@ Operation.prototype = {
 			this.group = um.STRGROUP[strs[0].charAt(0)];
 			this.property = um.STRPROP[strs[0].charAt(1)];
 			this.id = bd.idnum(this.group, strs[1], strs[2]);
+			this.old = parseInt(strs[3]);
+			this.num = parseInt(strs[4]);
 		}
 		else if(strs[0]==='AL'){
 			this.group = k.BOARD;
 			this.property = k.BOARD;
 			this.id = 0;
+			this.old = parseInt(strs[3]);
+			this.num = parseInt(strs[4]);
 		}
 		else{
 			this.group = k.OTHER;
 			this.decodeSpecial(strs);
 		}
-		this.old = parseInt(strs[3]);
-		this.num = parseInt(strs[4]);
-		return this;
 	},
 	toString : function(){
 		if(this.group!==k.BOARD && this.group !== k.OTHER){
@@ -54,8 +59,6 @@ OperationArray = function(){
 };
 OperationArray.prototype = {
 	push : function(ope){ this.items.push(ope);},
-	item : function(id){ return this.items[id];},
-	count: function(){ return this.items.length;},
 	last : function(){ return (this.items.length>0 ? this.items[this.items.length-1] : null);},
 	isnull : function(){ return (this.items.length===0);}
 };
@@ -199,37 +202,41 @@ OperationManager.prototype = {
 
 	//---------------------------------------------------------------------------
 	// um.decodeLines() ファイル等から読み込んだ文字列を履歴情報に変換する
+	// um.parse()       文字列を履歴情報に変換する
 	// um.toString()    履歴情報を文字列に変換する
 	//---------------------------------------------------------------------------
 	decodeLines : function(){
 		this.allerase();
-
-		while(!!window.JSON){
+		var linepos = fio.lineseek;
+		while(1){
 			var line = fio.readLine();
-			if(line===(void 0)){ break;}
-			else if(line.match("__HISTORY__")){
-				var data = JSON.parse(fio.readLine());
-				this.ope = [];
-				this.current = data.current;
-				for(var i=0,len=data.datas.length;i<len;i++){
-					var line = data.datas[i];
-					if(line.match(/,0$/)){ this.addOpeArray();}
-					this.lastope.push((new Operation()).decode(line));
-				}
-			}
-			break;
+			if(line===(void 0)){ fio.lineseek=linepos; break;}
+			else if(line==="__HISTORY__"){ this.parse(); break;}
 		}
-
 		this.enb_btn();
+	},
+	parse : function(){
+		if(!window.JSON){ return;}
+		var data = JSON.parse(fio.readLine());
+		this.ope = [];
+		this.current = data.current;
+		for(var i=0,len=data.datas.length;i<len;i++){
+			this.addOpeArray();
+			var strs = data.datas[i];
+			for(var t=0,len1=strs.length;t<len1;t++){
+				this.lastope.push(new Operation(strs[t]));
+			}
+		}
 	},
 	toString : function(){
 		if(!window.JSON){ return '';}
 		var lastid = this.ope.length-(this.lastope.isnull()?1:0);
 		var data = {version:0, history:lastid, current:this.current, datas:[]};
 		for(var i=0;i<lastid;i++){
-			var ope=this.ope[i];
-			for(var t=0,len1=ope.items.length;t<len1;t++){
-				data.datas.push([ope.items[t].toString(), t].join(','));
+			var items=this.ope[i].items;
+			data.datas[i] = [];
+			for(var t=0,len1=items.length;t<len1;t++){
+				data.datas[i][t] = items[t].toString();
 			}
 		}
 		return ['__HISTORY__',JSON.stringify(data)].join('/');

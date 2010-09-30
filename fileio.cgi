@@ -48,7 +48,7 @@ sub fileopen{
 <META NAME="robots" CONTENT="noindex,nofollow">
 <script type="text/javascript">
 if(parent.base){
-	var errmsg = parent.menu.ex.fileonload(\"$str\");
+	var errmsg = parent.menu.ex.fileonload("$str");
 	if(!!errmsg){ alert(errmsg);}
 }
 </script>

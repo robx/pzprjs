@@ -26,10 +26,15 @@ Puzzles.icebarn.prototype = {
 	protoChange : function(){
 		Operation.prototype.decodeSpecial = function(strs){
 			this.property = (strs[0]=='PI'?'in':'out');
+			this.old = bd.bnum(strs[1], strs[2]);
+			this.num = bd.bnum(strs[3], strs[4]);
 		};
 		Operation.prototype.toStringSpecial = function(){
 			var prefix = (this.property=='in'?'PI':'PO');
-			return [prefix, 0, 0, this.old, this.num].join(',');
+			var obj1=bd.border[this.old], obj2=bd.border[this.num];
+			var bx1=(!!obj1 ? obj1.bx : -1), by1=(!!obj1 ? obj1.by : -1);
+			var bx2=(!!obj2 ? obj2.bx : -1), by2=(!!obj2 ? obj2.by : -1);
+			return [prefix, bx1, by1, bx2, by2].join(',');
 		};
 	},
 	protoOriginal : function(){
@@ -139,8 +144,10 @@ Puzzles.icebarn.prototype = {
 			this.setArrow(this.arrowout, ((dir+1)%2)+1);
 		};
 		um.execSpecial = function(ope, num){
+			var id0 = bd.startid;
 			if     (this.property==='in') { bd.arrowin  = num;}
 			else if(this.property==='out'){ bd.arrowout = num;}
+			this.stackBorder(id0);
 			this.stackBorder(num);
 		};
 

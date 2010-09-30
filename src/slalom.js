@@ -26,9 +26,14 @@ Puzzles.slalom.prototype = {
 	protoChange : function(){
 		Operation.prototype.decodeSpecial = function(strs){
 			this.property = 'st';
+			this.old = bd.cnum(strs[1], strs[2]);
+			this.num = bd.cnum(strs[3], strs[4]);
 		};
 		Operation.prototype.toStringSpecial = function(){
-			return ['PS', 0, 0, this.old, this.num].join(',');
+			var obj1=bd.cell[this.old], obj2=bd.cell[this.num];
+			var bx1=(!!obj1 ? obj1.bx : -1), by1=(!!obj1 ? obj1.by : -1);
+			var bx2=(!!obj2 ? obj2.bx : -1), by2=(!!obj2 ? obj2.by : -1);
+			return ['PS', bx1, by1, bx2, by2].join(',');
 		};
 	},
 	protoOriginal : function(){
@@ -109,7 +114,7 @@ Puzzles.slalom.prototype = {
 			// startposの入力中の場合
 			else if(this.inputData==10){
 				if(cc!==this.mouseCell){
-					if(this.firstCell===null){ this.firstCell = cc;}
+					if(this.firstCell===null){ this.firstCell = this.mouseCell;}
 					var cc0 = bd.startid;
 					bd.startid=cc;
 					pc.paintCell(cc0);
@@ -240,7 +245,9 @@ Puzzles.slalom.prototype = {
 			}
 		};
 		um.execSpecial = function(ope, num){
+			var cc0 = bd.startid;
 			bd.startid = num;
+			this.stackCell(cc0);
 			this.stackCell(num);
 		};
 
