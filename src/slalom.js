@@ -16,8 +16,6 @@ Puzzles.slalom.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(96, 96, 255)");
-
-		enc.pidKanpen = 'slalom';
 	},
 	menufix : function(){
 		menu.addRedLineToFlags();

@@ -18,8 +18,6 @@ Puzzles.numlin.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(96, 96, 96)");
-
-		enc.pidKanpen= 'numberlink';
 	},
 	menufix : function(){
 		menu.addRedLineToFlags();

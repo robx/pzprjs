@@ -19,8 +19,6 @@ Puzzles.nurikabe.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(96, 96, 96)");
-
-		enc.pidKanpen = 'nurikabe';
 	},
 	menufix : function(){
 		menu.addUseToFlags();

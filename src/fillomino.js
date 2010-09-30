@@ -19,8 +19,6 @@ Puzzles.fillomino.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(64, 64, 64)");
-
-		enc.pidKanpen = 'fillomino';
 	},
 	menufix : function(){
 		pp.addCheck('enbnonum','setting',false,'未入力で正答判定','Allow Empty cell');

@@ -14,8 +14,6 @@ Puzzles.goishi.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(96, 96, 96)");
-
-		enc.pidKanpen = 'goishi';
 	},
 	menufix : function(){
 		if(k.EDITOR){

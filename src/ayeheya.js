@@ -23,8 +23,6 @@ Puzzles.ayeheya.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(0, 191, 0)");
-
-		enc.pidKanpen = 'ayeheya';
 	},
 	menufix : function(){
 		menu.addUseToFlags();

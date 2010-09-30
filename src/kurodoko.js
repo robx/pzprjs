@@ -18,8 +18,6 @@ Puzzles.kurodoko.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(127, 191, 0)");
-
-		enc.pidKanpen = 'kurodoko';
 	},
 	menufix : function(){
 		menu.addUseToFlags();

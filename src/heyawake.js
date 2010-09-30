@@ -23,8 +23,6 @@ Puzzles.heyawake.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(0, 191, 0)");
-
-		enc.pidKanpen = 'heyawake';
 	},
 	menufix : function(){
 		menu.addUseToFlags();

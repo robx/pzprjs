@@ -22,8 +22,6 @@ Puzzles.hashikake.prototype = {
 		k.bdmargin_image = 0.10;
 
 		base.setFloatbgcolor("rgb(127, 191, 0)");
-
-		enc.pidKanpen = 'hashi';
 	},
 	menufix : function(){
 		pp.addCheck('circolor','setting',false,'数字をグレーにする','Set Grey Color');

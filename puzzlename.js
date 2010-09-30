@@ -170,5 +170,33 @@
 		wblink     : 'Shirokuro-link',
 		yajikazu   : 'Yajisan-Kazusan',
 		yajirin    : 'Yajilin'
+	},
+	/* 別名 */
+	alias : {
+		hashikake : { kanpen:'hashi'},
+		lightup   : { url:'akari', kanpen:'bijutsukan'},
+		mashu     : { kanpen:'masyu'},
+		numlin    : { kanpen:'numberlink'},
+		ripple    : { kanpen:'hakyukoka'},
+		slither   : { kanpen:'slitherlink'},
+		yajirin   : { url:'yajilin', kanpen:'yajilin'}
+	},
+	/* 関数 */
+	exists : function(name){ return !!this.toPID(name);},
+	toPID : function(name){
+		if(!!this.ja[name]){ return name;}
+		for(var pid in this.alias){
+			if(!this.alias[pid]){ continue;}
+			for(var type in this.alias[pid]){
+				if(this.alias[pid][type]===name){ return pid;}
+			}
+		}
+		return '';
+	},
+	toURLID : function(pid){
+		return (!!this.alias[pid] && !!this.alias[pid].url ? this.alias[pid].url : pid);
+	},
+	toKanpen : function(pid){
+		return (!!this.alias[pid] && !!this.alias[pid].kanpen ? this.alias[pid].kanpen : pid);
 	}
 };

@@ -22,8 +22,6 @@ Puzzles.yajirin.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(0, 224, 0)");
-
-		enc.pidKanpen = 'yajilin';
 	},
 	menufix : function(){
 		menu.addUseToFlags();

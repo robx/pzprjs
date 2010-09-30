@@ -18,8 +18,6 @@ Puzzles.tentaisho.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(0, 224, 0)");
-
-		enc.pidKanpen = 'tentaisho';
 	},
 	menufix : function(){
 		if(k.EDITOR){

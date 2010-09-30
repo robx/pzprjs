@@ -21,8 +21,6 @@ Puzzles.nanro.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(64, 64, 64)");
-
-		enc.pidKanpen = 'nanro';
 	},
 	menufix : function(){ },
 

@@ -21,8 +21,6 @@ Puzzles.slither.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(32, 32, 32)");
-
-		enc.pidKanpen = 'slitherlink';
 	},
 	menufix : function(){
 		pp.addCheck('bgcolor','setting',false, '背景色入力', 'Background-color');

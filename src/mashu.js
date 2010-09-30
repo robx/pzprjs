@@ -21,8 +21,6 @@ Puzzles.mashu.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(0, 224, 0)");
-
-		enc.pidKanpen = 'masyu';
 	},
 	menufix : function(){
 		pp.addCheck('uramashu','setting',false, '裏ましゅ', 'Ura-Mashu');

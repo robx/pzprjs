@@ -16,8 +16,6 @@ Puzzles.hitori.prototype = {
 		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(0, 224, 0)");
-
-		enc.pidKanpen = 'hitori';
 	},
 	menufix : function(){
 		menu.addUseToFlags();
