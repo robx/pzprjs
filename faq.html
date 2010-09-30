@@ -331,7 +331,8 @@ function dispExpression(){
 	setText("title", title);
 
 	if(EDITOR || PLAYER){
-		document.getElementById('pzlname').innerHTML = PZLNAME[langcode][puzzleid]+'の操作方法';
+		document.getElementById('pzlname').innerHTML = PZLNAME[langcode][puzzleid]
+										+ {ja:"の操作方法", en:" - How to Input"}[langcode];
 
 		setText("puzmenu_expression", {ja:"パズルの操作説明",   en:"How to Input the board"}[langcode]);
 		setText("h4_player", {ja:"回答の入力方法", en:"Input Answer"}[langcode]);
