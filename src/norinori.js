@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 のりのり版 norinori.js v3.3.0
+// パズル固有スクリプト部 のりのり版 norinori.js v3.3.2
 //
 Puzzles.norinori = function(){ };
 Puzzles.norinori.prototype = {
