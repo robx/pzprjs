@@ -1,4 +1,4 @@
-// Filesys.js v3.3.1
+// Filesys.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -8,14 +8,13 @@ FileIO = function(){
 	this.lineseek = 0;
 	this.dataarray = [];
 	this.datastr = "";
-	this.urlstr = "";
+	this.history = "";
 	this.currentType = 1;
 
 	// 定数(ファイル形式)
 	this.PZPR = 1;
 	this.PBOX = 2;
-
-	this.dbm = new DataBaseManager();
+	this.PZPH = 3;
 };
 FileIO.prototype = {
 	//---------------------------------------------------------------------------
@@ -23,6 +22,8 @@ FileIO.prototype = {
 	//                  [menu.ex.fileopen] -> [fileio.xcg@iframe] -> [ここ]
 	//---------------------------------------------------------------------------
 	filedecode : function(datastr){
+		datastr = datastr.replace(/[\r\n]/g,"");
+
 		this.filever = 0;
 		this.lineseek = 0;
 		this.dataarray = datastr.split("/");
@@ -30,7 +31,7 @@ FileIO.prototype = {
 		// ヘッダの処理
 		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
-			if(this.readLine()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。'); return;}
+			if(this.readLine()!=k.puzzleid){ return (base.getPuzzleName()+'のファイルではありません。');}
 			this.currentType = this.PZPR;
 		}
 		else{
@@ -48,17 +49,21 @@ FileIO.prototype = {
 		else{
 			row = col = parseInt(this.readLine(), 10);
 		}
-		if(row<=0 || col<=0){ return;}
+		if(row<=0 || col<=0){ return '';}
 		bd.initBoardSize(col, row); // 盤面を指定されたサイズで初期化
 
 		// メイン処理
 		if     (this.currentType===this.PZPR){ this.decodeData();}
 		else if(this.currentType===this.PBOX){ this.kanpenOpen();}
 
-		this.dataarray = null; // 重くなりそうなので初期化
+		um.decodeLines();
 
-		base.resetInfo(true);
+		base.resetInfo();
 		base.resize_canvas();
+
+		this.dataarray = null;
+
+		return '';
 	},
 	//---------------------------------------------------------------------------
 	// fio.fileencode() ファイル文字列へのエンコード、ファイル保存実行関数
@@ -68,8 +73,9 @@ FileIO.prototype = {
 		this.filever = 0;
 		this.sizestr = "";
 		this.datastr = "";
-		this.urlstr = "";
+		this.history = "";
 		this.currentType = type;
+		if(this.currentType===this.PZPH){ this.currentType = this.PZPR;}
 
 		// メイン処理
 		if     (this.currentType===this.PZPR){ this.encodeData();}
@@ -86,12 +92,46 @@ FileIO.prototype = {
 		}
 		var bstr = this.datastr;
 
-		// 末尾のURL追加処理
-		if(this.currentType===this.PZPR){
-			this.urlstr = enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? enc.PZPRV3 : enc.KANPEN);
-		}
+		// 末尾の履歴情報追加処理
+		if(type===this.PZPH){ this.history = um.toString();}
 
 		return bstr;
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.exportDuplicate() 複製するタブ用のにデータを出力してタブを開く
+	// fio.importDuplicate() 複製されたタブでデータの読み込みを行う
+	//---------------------------------------------------------------------------
+	exportDuplicate : function(){
+		var str = this.fileencode(this.PZPH);
+		var url = './p.html?'+k.puzzleid+(k.EDITOR?"_edit":"")+'/duplicate';
+		if(!k.br.Opera){
+			var old = sessionStorage['duplicate'];
+			sessionStorage['duplicate'] = (str+this.history);
+			window.open(url,'');
+			if(!!old){ sessionStorage['duplicate'] = old;}
+			else     { delete sessionStorage['duplicate'];}
+		}
+		else{
+			localStorage['pzprv3_duplicate'] = (str+this.history);
+			window.open(url,'');
+		}
+	},
+	importDuplicate : function(){
+		if(!(dbm.DBaccept&0x10)){ return;}
+		var str = sessionStorage['duplicate'];
+		if(!!str){
+			this.filedecode(str);
+			// ここでは消しません
+		}
+		else{
+			str = localStorage['pzprv3_duplicate'];
+			if(!!str){
+				delete localStorage['pzprv3_duplicate'];
+				this.filedecode(str);
+				sessionStorage['duplicate'] = str;
+			}
+		}
 	},
 
 	//---------------------------------------------------------------------------

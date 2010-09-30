@@ -1,48 +1,27 @@
 //
-// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.3.1
+// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.3.2
 //
 Puzzles.hashikake = function(){ };
 Puzzles.hashikake.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 9;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 9;}	// 盤面の縦幅
-		k.irowake  = 1;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 9;}
+		if(!k.qrows){ k.qrows = 9;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.irowake  = 1;
+		k.isborder = 1;
 
-		k.isLineCross     = true;	// 線が交差するパズル
-		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.isLineCross     = true;
+		k.isCenterLine    = true;
+		k.isInputHatena   = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.ispzprv3ONLY    = true;
+		k.isKanpenExist   = true;
 
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
+		k.bdmargin       = 0.50;
+		k.bdmargin_image = 0.10;
 
-		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
-
-		k.bdmargin       = 0.50;	// 枠外の一辺のmargin(セル数換算)
-		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
-
-		base.setTitle("橋をかけろ","Bridges");
-		base.setExpression("　左ボタンで線が、右ボタンで×が入力できます。",
-						   " Left Button Drag to inpur lines, Right to input a cross.");
 		base.setFloatbgcolor("rgb(127, 191, 0)");
-
-		enc.pidKanpen = 'hashi';
 	},
 	menufix : function(){
 		pp.addCheck('circolor','setting',false,'数字をグレーにする','Set Grey Color');
@@ -80,40 +59,37 @@ Puzzles.hashikake.prototype = {
 
 			var id = this.getnb(this.prevPos, pos);
 			if(id!==null){
-				var include = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
 				var dir = this.getdir(this.prevPos, pos);
-				var idlist = this.getidlist(id);
-				if(this.previdlist.length===0 || !include(this.previdlist, id)){ this.inputData=null;}
+				var d = this.getrange(id);
+				var idlist = new IDList(bd.borderinside(d.x1,d.y1,d.x2,d.y2));
+
+				if(this.previdlist.isnull() || !this.previdlist.include(id)){ this.inputData=null;}
 				if(this.inputData===null){ this.inputData = [1,2,0][bd.LiB(id)];}
-				if(this.inputData>0 && (dir===k.UP||dir===k.LT)){ idlist=idlist.reverse();} // 色分けの都合上の処理
-				for(var i=0;i<idlist.length;i++){
-					if(this.inputData!==null){ bd.sLiB(idlist[i], this.inputData); bd.sQsB(idlist[i], 0);}
-					pc.paintLine(idlist[i]);
+				if(this.inputData>0 && (dir===k.UP||dir===k.LT)){ idlist.reverseData();} // 色分けの都合上の処理
+				for(var i=0;i<idlist.data.length;i++){
+					bd.sLiB(idlist.data[i], this.inputData);
+					bd.sQsB(idlist.data[i], 0);
 				}
 				this.previdlist = idlist;
+
+				pc.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 			}
 			this.prevPos = pos;
 		};
-		mv.previdlist = [];
-		mv.getidlist = function(id){
-			var idlist=[], bx=bd.border[id].bx, by=bd.border[id].by;
+		mv.previdlist = new IDList();
+
+		mv.getrange = function(id){
+			var bx=bd.border[id].bx, by=bd.border[id].by;
+			var d = {x1:bx, x2:bx, y1:by, y2:by};
 			if(bd.border[id].bx&1){
-				var by1=by, by2=by;
-				while(by1>bd.minby && bd.noNum(bd.cnum(bx,by1-1))){ by1-=2;}
-				while(by2<bd.maxby && bd.noNum(bd.cnum(bx,by2+1))){ by2+=2;}
-				if(bd.minby<by1 && by2<bd.maxby){
-					for(by=by1;by<=by2;by+=2){ idlist.push(bd.bnum(bx,by)); }
-				}
+				while(d.y1>bd.minby && bd.noNum(bd.cnum(bx,d.y1-1))){d.y1-=2;}
+				while(d.y2<bd.maxby && bd.noNum(bd.cnum(bx,d.y2+1))){d.y2+=2;}
 			}
 			else if(bd.border[id].by&1){
-				var bx1=bx, bx2=bx;
-				while(bx1>bd.minbx && bd.noNum(bd.cnum(bx1-1,by))){ bx1-=2;}
-				while(bx2<bd.maxbx && bd.noNum(bd.cnum(bx2+1,by))){ bx2+=2;}
-				if(bd.minbx<bx1 && bx2<bd.maxbx){
-					for(bx=bx1;bx<=bx2;bx+=2){ idlist.push(bd.bnum(bx,by)); }
-				}
+				while(d.x1>bd.minbx && bd.noNum(bd.cnum(d.x1-1,by))){d.x1-=2;}
+				while(d.x2<bd.maxbx && bd.noNum(bd.cnum(d.x2+1,by))){d.x2+=2;}
 			}
-			return idlist;
+			return d;
 		};
 
 		mv.inputpeke = function(){
@@ -126,15 +102,13 @@ Puzzles.hashikake.prototype = {
 			if(this.inputData===null){ this.inputData=(bd.QsB(id)!=2?2:0);}
 			bd.sQsB(id, this.inputData);
 
-			var idlist = this.getidlist(id);
-			for(var i=0;i<idlist.length;i++){
-				bd.sLiB(idlist[i], 0);
-				pc.paintBorder(idlist[i]);
-			}
-			if(idlist.length===0){ pc.paintBorder(id);}
+			var d = this.getrange(id);
+			var idlist = new IDList(bd.borderinside(d.x1,d.y1,d.x2,d.y2));
+			for(var i=0;i<idlist.length;i++){ bd.sLiB(idlist.data[i], 0);}
 			this.prevPos = pos;
+
+			pc.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 		},
-		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
@@ -166,6 +140,8 @@ Puzzles.hashikake.prototype = {
 		}
 
 		bd.maxnum = 8;
+
+		line.iscrossing = function(cc){ return bd.noNum(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -174,21 +150,20 @@ Puzzles.hashikake.prototype = {
 		pc.gridcolor = pc.gridcolor_THIN;
 		pc.bcolor    = "silver";
 		pc.fontsizeratio = 0.85;
-		pc.chassisflag = false;
 
 		// 線の太さを通常より少し太くする
 		pc.lwratio = 8;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawGrid(x1,y1,x2,y2,(k.editmode && !this.fillTextPrecisely));
+		pc.paint = function(){
+			this.drawGrid(false, (k.editmode && !this.fillTextPrecisely));
 
-			this.drawPekes(x1,y1,x2,y2,0);
-			this.drawLines(x1,y1,x2,y2);
+			this.drawPekes(0);
+			this.drawLines();
 
-			this.drawCirclesAtNumber(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawCirclesAtNumber();
+			this.drawNumbers();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
 		// オーバーライド
@@ -243,14 +218,13 @@ Puzzles.hashikake.prototype = {
 			else{ this.vhide([header+c]);}
 		};
 
-		line.repaintParts = function(idlist){
-			var clist = this.getClistFromIdlist(idlist);
+		pc.repaintParts = function(idlist){
+			var clist = line.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
-				pc.drawCircle1AtNumber(clist[i]);
-				pc.drawNumber1(clist[i]);
+				this.drawCircle1AtNumber(clist[i]);
+				this.drawNumber1(clist[i]);
 			}
 		};
-		line.iscrossing = function(cc){ return bd.noNum(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -290,15 +264,15 @@ Puzzles.hashikake.prototype = {
 				var val = parseInt(ca);
 				var datah = (val&3);
 				if(datah>0){
-					var ub=bd.bnum(obj.bx,obj.by-1), db=bd.bnum(obj.bx,obj.by+1);
-					if(ub!==null){ bd.border[ub].line = datah;}
-					if(db!==null){ bd.border[db].line = datah;}
+					var uid=bd.bnum(obj.bx,obj.by-1), did=bd.bnum(obj.bx,obj.by+1);
+					if(uid!==null){ bd.border[uid].line = datah;}
+					if(did!==null){ bd.border[did].line = datah;}
 				}
 				var dataw = ((val&12)>>2);
 				if(dataw>0){
-					var lb=bd.bnum(obj.bx-1,obj.by), rb=bd.bnum(obj.bx+1,obj.by);
-					if(lb!==null){ bd.border[lb].line = dataw;}
-					if(rb!==null){ bd.border[rb].line = dataw;}
+					var lid=bd.bnum(obj.bx-1,obj.by), rid=bd.bnum(obj.bx+1,obj.by);
+					if(lid!==null){ bd.border[lid].line = dataw;}
+					if(rid!==null){ bd.border[rid].line = dataw;}
 				}
 			});
 		};
@@ -310,9 +284,9 @@ Puzzles.hashikake.prototype = {
 			});
 			this.encodeCell( function(obj){
 				if(obj.qnum!==-1){ return "0 ";}
-				var ub=bd.bnum(obj.bx,obj.by-1), lb=bd.bnum(obj.bx-1,obj.by);
-				var datah = (ub!==null ? bd.border[ub].line : 0);
-				var dataw = (lb!==null ? bd.border[lb].line : 0);
+				var uid=bd.bnum(obj.bx,obj.by-1), lid=bd.bnum(obj.bx-1,obj.by);
+				var datah = (uid!==null ? bd.border[uid].line : 0);
+				var dataw = (lid!==null ? bd.border[lid].line : 0);
 				return ""+((datah>0?datah:0)+(dataw>0?(dataw<<2):0))+" ";
 			});
 		};

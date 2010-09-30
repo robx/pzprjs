@@ -1,48 +1,19 @@
 //
-// パズル固有スクリプト部 バーンズ版 barns.js v3.3.1
+// パズル固有スクリプト部 バーンズ版 barns.js v3.3.2
 //
 Puzzles.barns = function(){ };
 Puzzles.barns.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 8;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 8;}	// 盤面の縦幅
-		k.irowake  = 1;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 8;}
+		if(!k.qrows){ k.qrows = 8;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.irowake  = 1;
+		k.isborder = 1;
 
-		k.isLineCross     = true;	// 線が交差するパズル
-		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.isLineCross     = true;
+		k.isCenterLine    = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
-
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		if(k.EDITOR){
-			base.setExpression("　左ドラッグで境界線が、右クリックで氷が入力できます。",
-							   " Left Button Drag to input border lines, Right Click to input ice.");
-		}
-		else{
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
-		base.setTitle("バーンズ","Barns");
 		base.setFloatbgcolor("rgb(0, 0, 191)");
 	},
 	menufix : function(){
@@ -92,11 +63,6 @@ Puzzles.barns.prototype = {
 		// 線を引かせたくないので上書き
 		bd.isLineNG = function(id){ return bd.isBorder(id);},
 		bd.enableLineNG = true;
-
-		// キーボード入力系
-		kc.keyinput = function(ca){ if(ca=='z' && !this.keyPressed){ this.isZ=true;}};
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
-		kc.isZ = false;
 	},
 
 	//---------------------------------------------------------
@@ -109,15 +75,15 @@ Puzzles.barns.prototype = {
 
 		pc.maxYdeg = 0.70;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
+			this.drawBorders();
 
-			this.drawLines(x1,y1,x2,y2);
-			this.drawPekes(x1,y1,x2,y2,0);
+			this.drawLines();
+			this.drawPekes(0);
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 		};
 	},
 

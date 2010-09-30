@@ -1,52 +1,22 @@
 //
-// パズル固有スクリプト部 カックロ版 kakuro.js v3.3.1
+// パズル固有スクリプト部 カックロ版 kakuro.js v3.3.2
 //
 Puzzles.kakuro = function(){ };
 Puzzles.kakuro.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 11;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 11;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 11;}
+		if(!k.qrows){ k.qrows = 11;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 1;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isborder = 1;
+		k.isexcell = 1;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.isAnsNumber     = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.ispzprv3ONLY    = true;
+		k.isKanpenExist   = true;
 
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
-
-		if(k.EDITOR){
-			base.setExpression("　Qキーでブロックが入力できます。数字を入力する場所はSHIFTキーを押すと切り替えられます。",
-							   " 'Q' key toggles question block. Press SHIFT key to change the target side of the block to input the number.");
-		}
-		else{
-			base.setExpression("　マウスやキーボードで数字が入力できます。",
-							   " It is available to input number by keybord or mouse");
-		}
-		base.setTitle("カックロ","Kakuro");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
-		base.proto = 1;
-
-		enc.pidKanpen = 'kakuro';
 	},
 	menufix : function(){ },
 
@@ -122,20 +92,20 @@ Puzzles.kakuro.prototype = {
 	graphic_init : function(){
 		pc.ttcolor = "rgb(255,255,127)";
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawBGEXcells(x1,y1,x2,y2);
-			this.drawQues51(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawBGEXcells();
+			this.drawQues51();
 
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawGrid();
+			this.drawBorders();
 
-			this.drawChassis_ex1(x1-1,y1-1,x2,y2,false);
+			this.drawChassis_ex1(false);
 
-			this.drawNumbersOn51(x1,y1,x2,y2);
-			this.drawNumbers_kakuro(x1,y1,x2,y2);
+			this.drawNumbersOn51();
+			this.drawNumbers_kakuro();
 
-			this.drawCursor(x1,y1,x2,y2);
+			this.drawCursor();
 		};
 
 		// オーバーライド drawBGCells用
@@ -161,10 +131,10 @@ Puzzles.kakuro.prototype = {
 			return false;
 		};
 
-		pc.drawNumbers_kakuro = function(x1,y1,x2,y2){
+		pc.drawNumbers_kakuro = function(){
 			this.vinc('cell_number', 'auto');
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], key = ['cell',c,'anum'].join('_');
 				if(bd.cell[c].ques!==51 && bd.cell[c].anum>0){

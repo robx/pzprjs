@@ -1,48 +1,22 @@
 //
-// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.3.1
+// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.3.2
 //
 Puzzles.hakoiri = function(){ };
 Puzzles.hakoiri.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isborder = 1;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.hasroom         = true;
+		k.isDispHatena    = true;
+		k.isInputHatena   = true;
+		k.isAnsNumber     = true;
+		k.linkNumber      = true;
+		k.numberAsObject  = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = true;	// 数字がひとつながりになるパズル
-
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		if(k.EDITOR){
-			base.setExpression("　キーボードの左側や-キー等で、記号の入力ができます。",
-							   " Press left side of the keyboard or '-' key to input marks.");
-		}
-		else{
-			base.setExpression("　左クリックで記号が、右ドラッグで補助記号が入力できます。",
-							   " Left Click to input answers, Right Button Drag to input auxiliary marks.");
-		}
-		base.setTitle("はこいり○△□","Triplets");
 		base.setFloatbgcolor("rgb(127, 160, 96)");
 	},
 	menufix : function(){ },
@@ -118,7 +92,6 @@ Puzzles.hakoiri.prototype = {
 		kp.kpinput = function(ca){ kc.key_hakoiri(ca);};
 
 		bd.maxnum = 3;
-		bd.numberAsObject = true;
 	},
 
 	//---------------------------------------------------------
@@ -128,17 +101,17 @@ Puzzles.hakoiri.prototype = {
 		pc.bbcolor = "rgb(127, 127, 127)";
 		pc.dotcolor = pc.dotcolor_PINK;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
+			this.drawBorders();
 
-			this.drawDotCells(x1,y1,x2,y2,true);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawDotCells(true);
+			this.drawNumbers();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawCursor(x1,y1,x2,y2);
+			this.drawCursor();
 		};
 
 		pc.drawNumber1 = function(c){
@@ -190,7 +163,7 @@ Puzzles.hakoiri.prototype = {
 				this.setAlert('1つのハコに4つ以上の記号が入っています。','A box has four or more marks.'); return false;
 			}
 
-			if( !this.checkDifferentObjectInRoom(rinfo) ){
+			if( !this.checkDifferentNumberInRoom(rinfo, bd.getNum) ){
 				this.setAlert('1つのハコに同じ記号が複数入っています。','A box has same plural marks.'); return false;
 			}
 
@@ -205,24 +178,6 @@ Puzzles.hakoiri.prototype = {
 			return true;
 		};
 
-		ans.checkDifferentObjectInRoom = function(rinfo){
-			result = true;
-			for(var r=1;r<=rinfo.max;r++){
-				var d = [];
-				d[-2]=0; d[1]=0; d[2]=0; d[3]=0;
-				for(var i=0;i<rinfo.room[r].idlist.length;i++){
-					var val = bd.getNum(rinfo.room[r].idlist[i]);
-					if(val==-1){ continue;}
-
-					if(d[val]==0){ d[val]++; continue;}
-
-					if(this.inAutoCheck){ return false;}
-					bd.sErC(rinfo.room[r].idlist,1);
-					result = false;
-				}
-			}
-			return result;
-		};
 		ans.checkAroundMarks = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){

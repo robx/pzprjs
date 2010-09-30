@@ -35,8 +35,7 @@ debug.extend({
 			debug.phase = 0;
 
 			var newid = debug.urls[pnum][0];
-			base.reload_func({id:newid, url:debug.urls[pnum][1],
-							  callback:ee.binder(debug, debug.sccheck)});
+			base.reload_func(newid, debug.urls[pnum][1], ee.binder(debug, debug.sccheck));
 
 			if(pnum >= term){ clearInterval(tam);}
 
@@ -46,7 +45,7 @@ debug.extend({
 	},
 
 	accheck1 : function(){
-		var outputstr = fio.fileencode(fio.PZPR);
+		var outputstr = fio.fileencode(fio.PZPH);
 
 		ans.inCheck = true;
 		ans.disableSetError();
@@ -143,7 +142,7 @@ debug.extend({
 				var bd2 = debug.bd_freezecopy();
 
 				bd.initBoardSize(1,1);
-				base.resetInfo(true);
+				base.resetInfo();
 				base.resize_canvas();
 
 				setTimeout(function(){
@@ -162,7 +161,7 @@ debug.extend({
 				var bd2 = debug.bd_freezecopy();
 
 				bd.initBoardSize(1,1);
-				base.resetInfo(true);
+				base.resetInfo();
 				base.resize_canvas();
 
 				setTimeout(function(){
@@ -191,7 +190,7 @@ debug.extend({
 		case 41:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(){ um.undo();};
+				var func = function(){ um.undo(1);};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("TurnR test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
@@ -213,7 +212,7 @@ debug.extend({
 		case 46:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(){ um.undo();};
+				var func = function(){ um.undo(1);};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 					debug.addTextarea("TurnL test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
@@ -236,9 +235,9 @@ debug.extend({
 		case 51:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				um.undo();
+				um.undo(1);
 
-				setTimeout(function(){ um.undo();
+				setTimeout(function(){ um.undo(1);
 					debug.addTextarea("FlipX test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					debug.phase = 55;
 				},fint);
@@ -258,9 +257,9 @@ debug.extend({
 		case 56:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				um.undo();
+				um.undo(1);
 
-				setTimeout(function(){ um.undo();
+				setTimeout(function(){ um.undo(1);
 					debug.addTextarea("FlipY test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 					debug.phase = 60;
 				},fint);
@@ -287,7 +286,7 @@ debug.extend({
 		case 62:
 			(function(){
 				var bd2 = debug.bd_freezecopy();
-				var func = function(){ um.undo();};
+				var func = function(){ um.undo(1);};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();

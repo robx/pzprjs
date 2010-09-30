@@ -1,52 +1,23 @@
 //
-// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.3.1
+// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.3.2
 //
 Puzzles.tentaisho = function(){ };
 Puzzles.tentaisho.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 1;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 1;
+		k.isborder = 1;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.dispzero        = true;
+		k.hasroom         = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.ispzprv3ONLY    = true;
+		k.isKanpenExist   = true;
 
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
-
-		if(k.EDITOR){
-			base.setExpression("　問題作成モード時に、マウスの右ボタンで下絵を描くことが出来ます。この背景色は「星をクリック」や「色をつける」ボタンで上書きされます。",
-							   " In edit mode, it is able to paint a design by Right Click. This background color is superscripted by clicking star or pressing 'Color up' button.");
-		}
-		else{
-			base.setExpression("　星をクリックすると色がぬれます。",
-							   " Click star to paint.");
-		}
-		base.setTitle("天体ショー","Tentaisho");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
-		base.proto = 1;
-
-		enc.pidKanpen = 'tentaisho';
 	},
 	menufix : function(){
 		if(k.EDITOR){
@@ -60,11 +31,19 @@ Puzzles.tentaisho.prototype = {
 	},
 
 	protoChange : function(){
-		this.protoval = Border.prototype.defqnum;
+		this.protoval = {
+			cell   : Cell.prototype.defqnum,
+			cross  : Cross.prototype.defqnum,
+			border : Border.prototype.defqnum
+		};
+		Cell.prototype.defqnum = 0;
+		Cross.prototype.defqnum = 0;
 		Border.prototype.defqnum = 0;
 	},
 	protoOriginal : function(){
-		Border.prototype.defqnum = this.protoval;
+		Cell.prototype.defqnum   = this.protoval.cell;
+		Cross.prototype.defqnum  = this.protoval.cross;
+		Border.prototype.defqnum = this.protoval.border;
 	},
 
 	//---------------------------------------------------------
@@ -173,8 +152,7 @@ Puzzles.tentaisho.prototype = {
 			return flag;
 		};
 
-		// キーボード入力系
-		kc.keyinput = function(ca){ };
+		// キーボード入力系 => なし
 
 		// 一部qsubで消したくないものがあるため上書き
 		menu.ex.ASconfirm = function(){
@@ -242,28 +220,19 @@ Puzzles.tentaisho.prototype = {
 		};
 
 		bd.getStar = function(id){
-			if     (bd.star[id].group===k.CELL) { return bd.QuC(bd.star[id].groupid);}
-			else if(bd.star[id].group===k.CROSS){ return bd.QuX(bd.star[id].groupid);}
+			if     (bd.star[id].group===k.CELL) { return bd.QnC(bd.star[id].groupid);}
+			else if(bd.star[id].group===k.CROSS){ return bd.QnX(bd.star[id].groupid);}
 			else                                { return bd.QnB(bd.star[id].groupid);}
 		};
 		bd.isStarError = function(id){
 			return (bd.getObject(bd.star[id].group,bd.star[id].groupid).error!==0);
 		};
 		bd.setStar = function(id,val){
-			if     (bd.star[id].group===k.CELL) { bd.sQuC(bd.star[id].groupid, val);}
-			else if(bd.star[id].group===k.CROSS){ bd.sQuX(bd.star[id].groupid, val);}
-			else{
-				um.disCombine = 1;
-				bd.sQnB(bd.star[id].groupid, val);
-				um.disCombine = 0;
-			}
-		};
-
-		/* setBorderを呼び出さないようにオーバーライド */
-		bd.sQuB = function(){
-			var old = this.border[id].ques;
-			um.addOpe(k.BORDER, k.QUES, id, old, num);
-			this.border[id].ques = num;
+			um.disCombine = 1;
+			if     (bd.star[id].group===k.CELL) { bd.sQnC(bd.star[id].groupid, val);}
+			else if(bd.star[id].group===k.CROSS){ bd.sQnX(bd.star[id].groupid, val);}
+			else                                { bd.sQnB(bd.star[id].groupid, val);}
+			um.disCombine = 0;
 		};
 	},
 
@@ -277,25 +246,25 @@ Puzzles.tentaisho.prototype = {
 		pc.errbcolor1 = pc.errbcolor1_DARK;
 		pc.setBGCellColorFunc('qsub3');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
 
-			this.drawBorderAnswers(x1,y1,x2,y2);
-			this.drawBorderQsubs(x1,y1,x2,y2);
+			this.drawBorderAnswers();
+			this.drawBorderQsubs();
 
-			this.drawStars(x1,y1,x2,y2);
+			this.drawStars();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 		};
 
-		pc.drawBorderAnswers = function(x1,y1,x2,y2){
+		pc.drawBorderAnswers = function(){
 			this.vinc('border', 'crispEdges');
 
 			var lw = this.lw, lm = this.lm;
 			var header = "b_bd_";
 
-			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i];
 				if(bd.border[id].qans===1){
@@ -311,20 +280,21 @@ Puzzles.tentaisho.prototype = {
 				else{ this.vhide(header+id);}
 			}
 		};
-		pc.drawStars = function(x1,y1,x2,y2){
+		pc.drawStars = function(){
 			this.vinc('star', 'auto');
 
 			g.lineWidth = Math.max(this.cw*0.04, 1);
 			var headers = ["s_star1_", "s_star2_"];
 
-			var idlist = bd.starinside(x1-1,y1-1,x2+1,y2+1);
+			var d = this.range;
+			var idlist = bd.starinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], bx=bd.star[id].bx, by=bd.star[id].by;
 
 				if(bd.getStar(id)===1){
 					g.strokeStyle = (bd.isStarError(id) ? this.errcolor1 : this.cellcolor);
 					g.fillStyle   = "white";
-					if(this.vnop(headers[0]+id,this.FILL_STROKE)){
+					if(this.vnop(headers[0]+id,this.STROKE)){
 						g.shapeCircle(bx*this.bw, by*this.bh, this.cw*0.16);
 					}
 				}

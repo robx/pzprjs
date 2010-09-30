@@ -21,7 +21,7 @@
   <li class="puzmenu" id="puzmenu_nigun">Nigun puzzles</li>
   <li class="puzmenu" id="puzmenu_omopa">Omopa puzzles</li>
   <li class="puzmenu" id="puzmenu_other">Other puzzles</li>
-  <li class="puzmenu" id="puzmenu_notice">Explanation</li>
+  <li class="puzmenusel" id="puzmenu_notice">Explanation</li>
  </menu>
 <br clear="all">
 
@@ -29,17 +29,17 @@
 
 <table class="puztable" id="table_notice" border=0>
  <tr>
-  <td style="background-color:#f8f8f8; padding:12pt; border:solid 1px gray;">
+  <td class="sentence">
    <p class=expression>
     <h4 class="notice_item">About PUZ-PRE v3</h4>
     <div style="margin-left:6pt;">
-      PUZ-PRE<small>(Tentative)</small> is a Web application that is for editing and playing the puzzles
+      PUZ-PRE is a Web application that is for editing and playing the puzzles
      that is mainly published by <a href="http://www.nikoli.co.jp/">nikoli</a>.
      I develop the script by JavaScript, and also work for implementing HTML5 feature.
     </div>
     <div style="margin-left:6pt; margin-top:6pt;">
       I develop the script mainly with Firefox 3.6,
-     test on Google Chrome 4.0, Safari 4.0 and Sometimes Internet Explorer 8.0, Firefox 3.0+ and Opera 9.64+.
+     test on Google Chrome 5.0, Safari 4.0 and Sometimes Internet Explorer 8.0, Firefox 3.0+ and Opera 9.64+.
     </div>
     <div style="margin-left:6pt; margin-top:6pt;">
      <a href="./index.html">to Japanese Menu</a>
@@ -49,18 +49,31 @@
    <p class=expression style="margin-top:6pt;">
     <h4 class="notice_item">Browsers recommanded</h4>
     <div style="margin-left:6pt;">
-     Firefox 3.0+, Google Chrome, Safari 4.0+, Opera 10.60+<br>
-     - Opera 10.5x is unstable for condtional branch.
+     Firefox 3.5+, Google Chrome 4.0+, Safari 4.0+, Opera 10.60+, (Internet Explorer 9.0?)
     </div>
    </p>
    <hr>
    <p class=expression style="margin-top:6pt;">
     <h4 class="notice_item">Browser requirements</h4>
     <div style="margin-left:6pt;">
-     Firefox 2.0+, Google Chrome, Safari 3.2+, Opera 9.64+ (except 10.5x) or Internet Explorer 8.0,<br>
-     or another browsers that uses IE component (Trident).
-      But due to Internet Explorer or another IE component browser's processing speed,
-     I recommand another browser to enjoy PUZ-PRE v3.</p>
+     Firefox 2.0+, Google Chrome, Safari 3.2+, Opera 9.64 to 10.10, 10.60+ or Internet Explorer 8.0+,
+     or another browsers that uses IE component (Trident). PUZ-PRE v3 supports iOS4 limitedly.
+    </div>
+   </p>
+   <hr>
+   <p class=expression style="margin-top:6pt;">
+    <h4 class="notice_item">Restriction</h4>
+    <div style="margin-left:6pt;">
+     <ul>
+     <li>The temporary save function doesn't work with Firefox1.5, Google Chrome3.0, Safari3.2,
+         Opera10.10 or earlier browsers.</li>
+     <li>The output-image function works incorrectly with Firefox3.0, Google Chrome1.0, Safari3.2,
+         Opera10.10, InternetExplorer8.0 or earlier browsers.</li>
+     <li>Google Chrome 6.0 is not supported for its unstableness of SVG and CSS.</li>
+     <li>Opera 10.5x is not supported for its unstableness of condtional branch.</li>
+     <li>Due to Internet Explorer or another IE component browser's performance,
+         I recommand another browser to enjoy PUZ-PRE v3.</li>
+     </ul>
     </div>
    </p>
    <hr>
@@ -155,6 +168,7 @@
     <li class="lunch"><a href="p.html?tentaisho">Tentaisho</a></li>
     <li class="lunch"><a href="p.html?shikaku">Shikaku (Devide by Box)</a></li>
     <li class="nigun"><a href="p.html?bdblock">Border Block</a></li>
+    <li class="omopa"><a href="p.html?cbblock">Combi Block</a></li>
     <li class="subpa"><a href="p.html?nawabari">Territory</a></li>
     <li class="subpa"><a href="p.html?triplace">Tri-Place</a></li>
     <li class="subpa"><a href="p.html?kramma">KaitoRamma</a></li>
@@ -226,6 +240,7 @@
     <li class="lunch2"><a href="p.html?goishi">Goishi</a></li>
     <li class="testa"><a href="p.html?shakashaka">Shakashaka</a></li>
     <li class="testa"><a href="p.html?snakes">Hebi-Ichigo</a></li>
+    <li class="omopa"><a href="p.html?roma">Roma</a></li>
     <li class="omopa"><a href="p.html?toichika">Toichika</a></li>
     <li class="nigun"><a href="p.html?kinkonkan">Kinkonkan</a></li>
     <li class="subpa"><a href="p.html?hakoiri">Hakoiri</a></li>
@@ -396,6 +411,7 @@
   <td class="lists" style="background-color:#ccffcc;">
    <b>Devideing Puzzles</b>
    <ul>
+    <li class="omopa"><a href="p.html?cbblock">Combi Block</a></li>
     <li class="subpa"><a href="p.html?fillmat">Fillmat</a></li>
     <li class="subpa"><a href="p.html?nawabari">Territory</a></li>
     <li class="subpa"><a href="p.html?triplace">Tri-Place</a></li>
@@ -418,6 +434,7 @@
   <td class="lists" style="background-color:#ffffcc;">
    <b>Variety Puzzles</b>
    <ul>
+    <li class="omopa"><a href="p.html?roma">Roma</a></li>
     <li class="omopa"><a href="p.html?toichika">Toichika</a></li>
     <li class="subpa"><a href="p.html?hakoiri">Hakoiri</a></li>
     <li class="subpa"><a href="p.html?shugaku">School Trip</a></li>

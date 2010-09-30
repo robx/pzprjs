@@ -1,4 +1,4 @@
-// Answer.js v3.3.1
+// Answer.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
@@ -324,31 +324,37 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkSideAreaSize()     境界線をはさんで接する部屋のgetvalで得られるサイズが異なることを判定する
-	// ans.checkSideAreaCell()     境界線をはさんでタテヨコに接するセルの判定を行う
+	// ans.getSideAreaInfo()   境界線をはさんで接する部屋を取得する
+	// ans.checkSideAreaSize() 境界線をはさんで接する部屋のgetvalで得られるサイズが異なることを判定する
+	// ans.checkSideAreaCell() 境界線をはさんでタテヨコに接するセルの判定を行う
 	//---------------------------------------------------------------------------
-	checkSideAreaSize : function(rinfo, getval){
-		var adjs = [];
-		for(var r=1;r<=rinfo.max-1;r++){
-			adjs[r] = [];
-			for(var s=r+1;s<=rinfo.max;s++){ adjs[r][s]=0;}
-		}
+	getSideAreaInfo : function(rinfo){
+		var adjs=[], sides=[], max=rinfo.max;
+		for(var r=1;r<=max-1;r++){ adjs[r]=[];}
 
 		for(var id=0;id<bd.bdmax;id++){
-			if(!bd.isBorder(id)){ continue;}
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1===null || cc2===null){ continue;}
 			var r1=rinfo.id[cc1], r2=rinfo.id[cc2];
-			try{
-				if(r1<r2){ adjs[r1][r2]++;}
-				if(r1>r2){ adjs[r2][r1]++;}
-			}catch(e){ alert([r1,r2]); throw 0;}
+			if(r1===null || r2===null){ continue;}
+
+			if(r1<r2){ adjs[r1][r2]=true;}
+			if(r1>r2){ adjs[r2][r1]=true;}
 		}
 
+		for(var r=1;r<=max-1;r++){
+			sides[r]=[];
+			for(var s=r+1;s<=max;s++){
+				if(!!adjs[r][s]){ sides[r].push(s);}
+			}
+		}
+		return sides;
+	},
+	checkSideAreaSize : function(rinfo, getval){
+		var sides = this.getSideAreaInfo(rinfo);
 		for(var r=1;r<=rinfo.max-1;r++){
-			for(var s=r+1;s<=rinfo.max;s++){
-				if(adjs[r][s]==0){ continue;}
-				var a1=getval(rinfo,r), a2=getval(rinfo,s);
+			for(var i=0;i<sides[r].length;i++){
+				var s=sides[r][i], a1=getval(rinfo,r), a2=getval(rinfo,s);
 				if(a1>0 && a2>0 && a1==a2){
 					bd.sErC(rinfo.room[r].idlist,1);
 					bd.sErC(rinfo.room[s].idlist,1);
@@ -356,7 +362,6 @@ AnsCheck.prototype = {
 				}
 			}
 		}
-
 		return true;
 	},
 
@@ -457,7 +462,7 @@ AnsCheck.prototype = {
 	isDifferentNumberInClist : function(clist, numfunc){
 		var result = true, d = [], num = [], bottom = (k.dispzero?1:0);
 		for(var n=bottom,max=bd.nummaxfunc(clist[0]);n<=max;n++){ d[n]=0;}
-		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc.apply(bd,[clist[i]]);}
+		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc.call(bd,clist[i]);}
 
 		for(var i=0;i<clist.length;i++){ if(num[clist[i]]>=bottom){ d[num[clist[i]]]++;} }
 		for(var i=0;i<clist.length;i++){
@@ -474,14 +479,14 @@ AnsCheck.prototype = {
 		var result = true;
 		for(var by=1;by<=bd.maxby;by+=2){
 			var clist = bd.cellinside(bd.minbx+1,by,bd.maxbx-1,by);
-			if(!evalfunc.apply(this,[clist, numfunc])){
+			if(!evalfunc.call(this, clist, numfunc)){
 				if(this.inAutoCheck){ return false;}
 				result = false;
 			}
 		}
 		for(var bx=1;bx<=bd.maxbx;bx+=2){
 			var clist = bd.cellinside(bx,bd.minby+1,bx,bd.maxby-1);
-			if(!evalfunc.apply(this,[clist, numfunc])){
+			if(!evalfunc.call(this, clist, numfunc)){
 				if(this.inAutoCheck){ return false;}
 				result = false;
 			}
@@ -493,11 +498,11 @@ AnsCheck.prototype = {
 		for(var by=1;by<=bd.maxby;by+=2){
 			var bx=1;
 			while(bx<=bd.maxbx){
-				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc.apply(this,[bd.cnum(tx,by)])){ break;}}
+				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc.call(this,bd.cnum(tx,by))){ break;}}
 				var clist = bd.cellinside(bx,by,tx-2,by);
 				var total = (k.isexcell!==1 ? 0 : (bx===1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx-2,by))));
 
-				if(!evalfunc.apply(this,[total, [bx-2,by], clist, areainfo])){
+				if(!evalfunc.call(this, total, [bx-2,by], clist, areainfo)){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}
@@ -507,11 +512,11 @@ AnsCheck.prototype = {
 		for(var bx=1;bx<=bd.maxbx;bx+=2){
 			var by=1;
 			while(by<=bd.maxby){
-				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc.apply(this,[bd.cnum(bx,ty)])){ break;}}
+				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc.call(this,bd.cnum(bx,ty))){ break;}}
 				var clist = bd.cellinside(bx,by,bx,ty-2);
 				var total = (k.isexcell!==1 ? 0 : (by===1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by-2))));
 
-				if(!evalfunc.apply(this,[total, [bx,by-2], clist, areainfo])){
+				if(!evalfunc.call(this, total, [bx,by-2], clist, areainfo)){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}
@@ -526,10 +531,9 @@ AnsCheck.prototype = {
 	// ans.setCrossBorderError() ある交点とその周り四方向にエラーフラグを設定する
 	//---------------------------------------------------------------------------
 	checkLcntCross : function(val, bp){
-		var result = true;
-		for(var by=0;by<=bd.maxby;by+=2){
-			for(var bx=0;bx<=bd.maxbx;bx+=2){
-				if(k.iscross===1 && (bx===bd.minbx||by===bd.minby||bx===bd.maxbx||by===bd.maxby)){ continue;}
+		var result=true, mm=(k.iscross===1?2:0);
+		for(var by=mm;by<=bd.maxby-mm;by+=2){
+			for(var bx=mm;bx<=bd.maxbx-mm;bx+=2){
 				var id = (bx>>1)+(by>>1)*(k.qcols+1);
 				var lcnts = (!k.isborderAsLine?area.lcnt[id]:line.lcnt[id]);
 				if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(bx,by))==1) || (bp==2&&bd.QnX(bd.xnum(bx,by))!=1) )){

@@ -1,48 +1,17 @@
 //
-// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.3.1
+// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.3.2
 //
 Puzzles.tateyoko = function(){ };
 Puzzles.tateyoko.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.dispzero        = true;
+		k.isDispHatena    = true;
+		k.isInputHatena   = true;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
-
-		k.dispzero        = true;	// 0を表示するかどうか
-		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
-
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		if(k.EDITOR){
-			base.setExpression("　黒マスはQキーで入力できます。数字はキーボード及びマウスで入力できます。",
-							   " Press Q key to input black cells. It is available to input number by keybord or mouse.");
-		}
-		else{
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
-		base.setTitle("タテボーヨコボー","Tatebo-Yokobo");
 		base.setFloatbgcolor("rgb(96, 255, 96)");
 	},
 	menufix : function(){ },
@@ -186,25 +155,25 @@ Puzzles.tateyoko.prototype = {
 		pc.errbcolor1 = pc.errbcolor1_DARK;
 		pc.errbcolor2 = "white";
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
 
-			this.drawTateyokos(x1,y1,x2,y2)
+			this.drawTateyokos()
 
-			this.drawBcellsAtNumber(x1,y1,x2,y2);
-			this.drawNumbers_tateyoko(x1,y1,x2,y2);
+			this.drawBcellsAtNumber();
+			this.drawNumbers_tateyoko();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawTateyokos = function(x1,y1,x2,y2){
+		pc.drawTateyokos = function(){
 			this.vinc('cell_tateyoko', 'crispEdges');
 
 			var headers = ["c_bar1_", "c_bar2_"];
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				var lw = Math.max(this.cw/6, 3);	//LineWidth
@@ -234,11 +203,11 @@ Puzzles.tateyoko.prototype = {
 			}
 		};
 
-		pc.drawBcellsAtNumber = function(x1,y1,x2,y2){
+		pc.drawBcellsAtNumber = function(){
 			this.vinc('cell_number', 'crispEdges');
 
 			var header = "c_full_";
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c=clist[i], obj=bd.cell[c];
 				if(bd.cell[c].ques===1){
@@ -250,10 +219,10 @@ Puzzles.tateyoko.prototype = {
 				else{ this.vhide(header+c);}
 			}
 		};
-		pc.drawNumbers_tateyoko = function(x1,y1,x2,y2){
+		pc.drawNumbers_tateyoko = function(){
 			this.vinc('cell_number', 'auto');
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
 				var num = bd.cell[c].qnum;

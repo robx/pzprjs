@@ -1,45 +1,24 @@
 //
-// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.3.1
+// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.3.2
 //
 Puzzles.fillomino = function(){ };
 Puzzles.fillomino.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isborder = 1;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.hasroom         = true;
+		k.isDispHatena    = true;
+		k.isInputHatena   = true;
+		k.isAnsNumber     = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.ispzprv3ONLY    = true;
+		k.isKanpenExist   = true;
 
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
-
-		base.setTitle("フィルオミノ","Fillomino");
-		base.setExpression("<small><span style=\"line-height:125%;\">　マウスの左ボタンを押しながら点線上を動かすと境界線が引けます。マスの中央から同じことをすると数字を隣のマスにコピーできます。右ボタンは補助記号です。<br>　キーボードでは同じ入力を、それぞれZキー、Xキー、Ctrlキーを押しながら矢印キーで行うことができます。</span></small>",
-						   "<small><span style=\"line-height:125%;\"> Left Button Drag on dotted line to input border line. Do it from center of the cell to copy the number. Right Button Drag to input auxiliary marks.<br> By keyboard, it is available to input each ones by using arrow keys with 'Z', 'X' or 'Ctrl' key.</span></small>");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
-
-		enc.pidKanpen = 'fillomino';
 	},
 	menufix : function(){
 		pp.addCheck('enbnonum','setting',false,'未入力で正答判定','Allow Empty cell');
@@ -107,43 +86,35 @@ Puzzles.fillomino.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(!this.isCTRL && !this.isZ && !this.isX && this.moveTCell(ca)){ return;}
-			if(kc.key_fillomino(ca)){ return;}
-			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(ca=='x' && !this.keyPressed){ this.isX=true; return;}
-			this.key_inputqnum(ca);
-		};
-		kc.keyup = function(ca){
-			if(ca=='z'){ this.isZ=false;}
-			if(ca=='x'){ this.isX=false;}
+			if(this.isCTRL || this.isX || this.isZ){
+				if(k.playmode){ this.key_fillomino(ca);}
+			}
+			else{
+				if(this.moveTCell(ca)){ return;}
+				this.key_inputqnum(ca);
+			}
 		};
 		kc.key_fillomino = function(ca){
-			if(k.editmode){ return false;}
-
 			var cc = tc.getTCC();
 			if(cc===null){ return;}
 
-			var nc, nb, move, flag=false;
+			var nc, nb, move, flag;
 			switch(ca){
-				case k.KEYUP: nc=bd.up(cc); nb=bd.ub(cc); move=function(){tc.decTCY(2);}; break;
-				case k.KEYDN: nc=bd.dn(cc); nb=bd.db(cc); move=function(){tc.incTCY(2);}; break;
-				case k.KEYLT: nc=bd.lt(cc); nb=bd.lb(cc); move=function(){tc.decTCX(2);}; break;
-				case k.KEYRT: nc=bd.rt(cc); nb=bd.rb(cc); move=function(){tc.incTCX(2);}; break;
+				case k.KEYUP: nc=bd.up(cc); nb=bd.ub(cc); move=function(){ tc.decTCY(2);}; break;
+				case k.KEYDN: nc=bd.dn(cc); nb=bd.db(cc); move=function(){ tc.incTCY(2);}; break;
+				case k.KEYLT: nc=bd.lt(cc); nb=bd.lb(cc); move=function(){ tc.decTCX(2);}; break;
+				case k.KEYRT: nc=bd.rt(cc); nb=bd.rb(cc); move=function(){ tc.incTCX(2);}; break;
+				default: return;
 			}
 			if(nc!==null){
-				flag = (kc.isCTRL || kc.isX || kc.isZ);
-				if(kc.isCTRL)  { if(nb!==null){ bd.sQsB(nb,((bd.QsB(nb)===0)?1:0)); move();}}
-				else if(kc.isZ){ if(nb!==null){ bd.sQaB(nb,(!bd.isBorder(nc)?1:0));        }}
-				else if(kc.isX){ if(nc!==null){ bd.sAnC(nc,bd.getNum(cc));          move();}}
+				this.tcMoved = (this.isCTRL || this.isX || this.isZ);
+				if(this.isCTRL)  { if(nb!==null){ bd.sQsB(nb,((bd.QsB(nb)===0)?1:0)); move();}}
+				else if(this.isZ){ if(nb!==null){ bd.sQaB(nb,(!bd.isBorder(nb)?1:0));        }}
+				else if(this.isX){ if(nc!==null){ bd.sAnC(nc,bd.getNum(cc));          move();}}
+
+				if(this.tcMoved){ pc.paintCell(cc);}
 			}
-
-			kc.tcMoved = flag;
-			if(flag){ pc.paintCell(cc);}
-			return flag;
 		};
-
-		kc.isX = false;
-		kc.isZ = false;
 
 		kp.generate(0, true, true);
 		kp.kpinput = function(ca){ kc.key_inputqnum(ca);};
@@ -155,18 +126,18 @@ Puzzles.fillomino.prototype = {
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 		pc.setBorderColorFunc('qans');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawNumbers();
 
-			this.drawBorders(x1,y1,x2,y2);
-			this.drawBorderQsubs(x1,y1,x2,y2);
+			this.drawBorders();
+			this.drawBorderQsubs();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawCursor(x1,y1,x2,y2);
+			this.drawCursor();
 		};
 	},
 

@@ -1,48 +1,19 @@
 //
-// パズル固有スクリプト部 へびいちご版 snakes.js v3.3.1
+// パズル固有スクリプト部 へびいちご版 snakes.js v3.3.2
 //
 Puzzles.snakes = function(){ };
 Puzzles.snakes.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isborder = 1;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.dispzero        = true;
+		k.isInputHatena   = true;
+		k.isAnsNumber     = true;
 
-		k.dispzero        = true;	// 0を表示するかどうか
-		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
-
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		if(k.EDITOR){
-			base.setExpression("　矢印は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
-							   " To input Arrows, Left Button Drag or Press arrow key with SHIFT key.");
-		}
-		else{
-			base.setExpression("　左クリックで黒マスが、右クリックでへびのいないマスが入力できます。キーボードでは、Qキーで補助記号が打てます。",
-							   " Left Click or Press Keys to input numbers, Right Click to input determined snake not existing cells. Q Key to input auxiliary mark.");
-		}
-		base.setTitle("へびいちご","Hebi-Ichigo");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){
@@ -124,7 +95,6 @@ Puzzles.snakes.prototype = {
 		mv.inputqnum_snakes = function(){
 			k.dispzero = k.editmode;
 			this.mouseCell=null;
-			this.enableInputHatena = k.editmode;
 			this.inputqnum();
 			k.dispzero = true;
 		};
@@ -149,22 +119,20 @@ Puzzles.snakes.prototype = {
 		pc.fontcolor = pc.fontErrcolor = "white";
 		pc.setCellColorFunc('qnum');
 
-		pc.paint = function(x1,y1,x2,y2){
-			x1--; y1--; x2++; y2++;	// 跡が残ってしまう為
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDotCells(true);
+			this.drawDashedGrid();
 
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2,true);
-			this.drawDashedGrid(x1,y1,x2,y2);
+			this.drawBorders();
 
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBlackCells();
+			this.drawArrowNumbers();
+			this.drawAnswerNumbers();
 
-			this.drawBlackCells(x1,y1,x2,y2);
-			this.drawArrowNumbers(x1-2,y1-2,x2+2,y2+2);
-			this.drawAnswerNumbers(x1-2,y1-2,x2+2,y2+2);
+			this.drawChassis();
 
-			this.drawChassis(x1,y1,x2,y2);
-
-			this.drawCursor(x1,y1,x2,y2);
+			this.drawCursor();
 		};
 
 		pc.setBorderColor = function(id){
@@ -183,10 +151,10 @@ Puzzles.snakes.prototype = {
 			return false;
 		};
 
-		pc.drawAnswerNumbers = function(x1,y1,x2,y2){
+		pc.drawAnswerNumbers = function(){
 			this.vinc('cell_number', 'auto');
 
-			var clist = bd.cellinside(x1-1,y1-1,x2+1,y2+1);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c], key='cell_'+c;
 				if(obj.qnum===-1 && obj.anum>0){

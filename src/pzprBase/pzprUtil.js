@@ -1,4 +1,4 @@
-// pzprUtil.js v3.3.1
+// pzprUtil.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★AreaInfoクラス 主に色分けの情報を管理する
@@ -248,7 +248,7 @@ LineManager.prototype = {
 			for(var i=0,len=longidlist.length;i<len;i++){
 				bd.border[longidlist[i]].color = newColor;
 			}
-			this.repaintLine(longidlist, id);
+			if(pp.getVal('irowake')){ pc.repaintLines(longidlist, id);}
 		}
 		// くっつく線のID数が1種類の場合 => 既存の線にくっつける
 		else{
@@ -300,46 +300,29 @@ LineManager.prototype = {
 			var newColor = (current===newlongid ? longColor : pc.getNewLineColor());
 			var idlist = this.data[current].idlist;
 			for(var n=0,len=idlist.length;n<len;n++){ bd.border[idlist[n]].color = newColor;}
-			this.repaintLine(idlist, id);
+			if(pp.getVal('irowake')){ pc.repaintLines(idlist, id);}
 		}
 	},
 
 	//---------------------------------------------------------------------------
-	// line.repaintLine()  ひとつながりの線を再描画する
-	// line.repaintParts() repaintLine()関数で、さらに上から描画しなおしたい処理を書く
-	//                     canvas描画時のみ呼ばれます(他は描画しなおす必要なし)
 	// line.getClistFromIdlist() idlistの線が重なるセルのリストを取得する
 	// line.getXlistFromIdlist() idlistの線が重なる交点のリストを取得する
 	//---------------------------------------------------------------------------
-	repaintLine : function(idlist, id){
-		if(!pp.getVal('irowake')){ return;}
-		for(var i=0,len=idlist.length;i<len;i++){
-			if(id===idlist[i]){ continue;}
-			pc.drawLine1(idlist[i]);
-		}
-		if(g.use.canvas){ this.repaintParts(idlist);}
-	},
-	repaintParts : function(idlist){ }, // オーバーライド用
-
 	getClistFromIdlist : function(idlist){
-		var cdata=[], clist=[];
-		for(var c=0;c<bd.cellmax;c++){ cdata[c]=false;}
+		var clist = new IDList();
 		for(var i=0;i<idlist.length;i++){
-			cdata[bd.border[idlist[i]].cellcc[0]] = true;
-			cdata[bd.border[idlist[i]].cellcc[1]] = true;
+			clist.push(bd.border[idlist[i]].cellcc[0]);
+			clist.push(bd.border[idlist[i]].cellcc[1]);
 		}
-		for(var c=0;c<bd.cellmax;c++){ if(cdata[c]){ clist.push(c);} }
-		return clist;
+		return clist.unique().data;
 	},
 	getXlistFromIdlist : function(idlist){
-		var cdata=[], xlist=[], crossmax=(k.qcols+1)*(k.qrows+1);
-		for(var c=0;c<crossmax;c++){ cdata[c]=false;}
+		var xlist = new IDList();
 		for(var i=0;i<idlist.length;i++){
-			cdata[bd.border[idlist[i]].crosscc[0]] = true;
-			cdata[bd.border[idlist[i]].crosscc[1]] = true;
+			xlist.push(bd.border[idlist[i]].crosscc[0]);
+			xlist.push(bd.border[idlist[i]].crosscc[1]);
 		}
-		for(var c=0;c<crossmax;c++){ if(cdata[c]){ xlist.push(c);} }
-		return xlist;
+		return xlist.unique().data;
 	},
 
 	//---------------------------------------------------------------------------

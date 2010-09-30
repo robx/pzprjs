@@ -1,48 +1,20 @@
 //
-// パズル固有スクリプト部 やじさんかずさん版 yajikazu.js v3.3.1
+// パズル固有スクリプト部 やじさんかずさん版 yajikazu.js v3.3.2
 //
 Puzzles.yajikazu = function(){ };
 Puzzles.yajikazu.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.dispzero        = true;
+		k.isDispHatena    = true;
+		k.isInputHatena   = true;
+		k.BlackCell       = true;
+		k.RBBlackCell     = true;
+		k.checkWhiteCell  = true;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
-
-		k.dispzero        = true;	// 0を表示するかどうか
-		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
-
-		k.BlackCell       = true;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = true;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = true;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		if(k.EDITOR){
-			base.setExpression("　矢印は、マウスの左ドラッグか、SHIFT押しながら矢印キーで入力できます。",
-							   " To input Arrows, Left Button Drag or Press arrow key with SHIFT key.");
-		}
-		else{
-			base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
-							   " Left Click to input black cells, Right Click to input determined white cells.");
-		}
-		base.setTitle("やじさんかずさん","Yajisan-Kazusan");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){
@@ -73,14 +45,11 @@ Puzzles.yajikazu.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
 			if(this.key_inputdirec(ca)){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputqnum(ca);
 		};
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
-		kc.isZ = false;
 	},
 
 	//---------------------------------------------------------
@@ -91,16 +60,16 @@ Puzzles.yajikazu.prototype = {
 		pc.fontBCellcolor = "rgb(96,96,96)";
 		pc.setBGCellColorFunc('qsub1');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
+			this.drawBlackCells();
 
-			this.drawArrowNumbers(x1,y1,x2,y2);
+			this.drawArrowNumbers();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 	},
 

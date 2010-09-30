@@ -1,4 +1,4 @@
-// Board.js v3.3.1
+// Board.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★Cellクラス BoardクラスがCellの数だけ保持する
@@ -206,8 +206,6 @@ Board = function(){
 	this.bdinside = 0;		// 盤面の内側(外枠上でない)に存在する境界線の本数
 
 	this.maxnum   = 255;	// 入力できる最大の数字
-
-	this.numberAsObject = false;	// 数字を表示する時に、数字以外で表示する
 
 	// 盤面の範囲
 	this.minbx = 0;
@@ -912,17 +910,16 @@ Board.prototype = {
 	},
 	setNum : function(c,val){
 		if(!k.dispzero && val===0){ return;}
-		var fl = this.numberAsObject;
 		if(k.editmode){
-			val = (((fl||val===-2) && this.cell[c].qnum===val)?-1:val);
+			val = (((k.numberAsObject||val===-2) && this.cell[c].qnum===val)?-1:val);
 			this.sQnC(c, val);
 			if(k.isAnsNumber)  { this.sAnC(c,-1);}
 			if(k.NumberIsWhite){ this.sQaC(c, 0);}
 			if(k.isAnsNumber||pc.bcolor==="white"){ this.sQsC(c, 0);}
 		}
 		else if(this.cell[c].qnum===-1){
-			var vala = ((val>-1 && !(fl && this.cell[c].anum=== val  ))? val  :-1);
-			var vals = ((val<-1 && !(fl && this.cell[c].qsub===-val-1))?-val-1: 0);
+			var vala = ((val>-1 && !(k.numberAsObject && this.cell[c].anum=== val  ))? val  :-1);
+			var vals = ((val<-1 && !(k.numberAsObject && this.cell[c].qsub===-val-1))?-val-1: 0);
 			this.sAnC(c, vala);
 			this.sQsC(c, vals);
 			this.sDiC(c, 0);

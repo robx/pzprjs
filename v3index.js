@@ -1,25 +1,39 @@
 ﻿
 /* variables */
-var typelist = ['all','lunch','nigun','omopa','other','notice'];
-var current  = 'notice';
+var typelist = [];
+var current  = '';
 
 /* common function */
 function addEvent(element,type,func){
-	if(!!element.addEventListener){
-		element.addEventListener(type,func,false);
-	}
-	else if(!!element.attachEvent){
-		element.attachEvent("on"+type,func);
-	}
+	if(!!element.addEventListener){ element.addEventListener(type,func,false);}
+	else if(!!element.attachEvent){ element.attachEvent("on"+type,func);}
+	else                          { element["on"+type] = func;}
 }
 
 /* onload function */
 function onload_func(){
-	for(var i=0;i<typelist.length;i++){
-		addEvent(document.getElementById("puzmenu_"+typelist[i]),"click",click_tab);
+	if(!current){
+		var el = document.getElementById("puztypes").firstChild;
+		while(!!el){
+			if(!!el.tagName && el.tagName.toLowerCase()==='li' &&
+			   !!el.id      && el.id.match(/puzmenu_(.+)$/)){
+				var typename = RegExp.$1;
+				typelist.push(typename);
+				addEvent(el,"click",click_tab);
+				if(el.className=="puzmenusel"){ current = typename;}
+			}
+			el = el.nextSibling;
+		}
+		if(!current && typelist.length>0){ current = typelist[0];}
 	}
 	disp();
 }
+function reset_func(){
+	typelist = [];
+	current  = '';
+	onload_func();
+}
+
 /* tab-click function */
 function click_tab(e){
 	var el = (e.target || e.srcElement);
@@ -32,19 +46,12 @@ function disp(){
 		var el = document.getElementById("puzmenu_"+typelist[i]);
 		var table = document.getElementById("table_"+typelist[i]);
 		if(typelist[i]===current){
-			el.style.backgroundColor = "white";
-			el.style.color           = "black";
-			el.style.cursor          = "default";
-
-			try{ table.style.display = 'table';}
+			el.className = "puzmenusel";
+			try     { table.style.display = 'table';}
 			catch(e){ table.style.display = 'block';} //IE raises error
-			table.style.width   = '100%';
 		}
 		else{
-			el.style.backgroundColor = "#dfdfdf";
-			el.style.color           = "gray";
-			el.style.cursor          = "pointer";
-
+			el.className = "puzmenu";
 			table.style.display = 'none';
 		}
 	}

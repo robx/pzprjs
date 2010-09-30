@@ -1,4 +1,4 @@
-// DataBase.js v3.3.1
+// DataBase.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★DataBaseManagerクラス Web SQL DataBase用 データベースの設定・管理を行う
@@ -21,17 +21,31 @@ DataBaseManager = function(){
 };
 DataBaseManager.prototype = {
 	//---------------------------------------------------------------------------
-	// fio.dbm.selectDBtype() Web DataBaseが使えるかどうか判定する(起動時)
-	// fio.dbm.requestGears() gears_init.jsを読み出すか判定する
+	// dbm.selectDBtype() Web DataBaseが使えるかどうか判定する(起動時)
+	// dbm.requestGears() gears_init.jsを読み出すか判定する
 	//---------------------------------------------------------------------------
 	selectDBtype : function(){
-		// HTML5 - Web localStorage判定用
+		// HTML5 - Web localStorage判定用(sessionStorage)
+		try{
+			if(!!window.sessionStorage){
+				this.DBaccept |= 0x10;
+			}
+		}
+		catch(e){}
+
+		// HTML5 - Web localStorage判定用(localStorage)
 		if(!!window.localStorage){
 			// FirefoxはローカルだとlocalStorageが使えない
 			if(!k.br.Gecko || !!location.hostname){ this.DBaccept |= 0x08;}
 		}
 
-		// HTML5 - Web DataBase判定用
+		// HTML5 - Indexed Dataase API判定用
+		if(!!window.indexedDB){
+			// FirefoxはローカルだとlocalStorageが使えない
+			this.DBaccept |= 0x04;
+		}
+
+		// HTML5 - Web SQL DataBase判定用
 		if(!!window.openDatabase){
 			try{	// Opera10.50対策
 				var dbtmp = openDatabase('pzprv3_manage', '1.0', 'manager', 1024*1024*5);	// Chrome3対策
@@ -39,36 +53,21 @@ DataBaseManager.prototype = {
 			}
 			catch(e){}
 		}
-
-		// 以下はGears用(gears_init.jsの判定ルーチン的なもの)
-		// Google Chorme用(既にGearsが存在するか判定)
-		try{
-			if((window.google && google.gears) || // 既にGearsが初期化済
-			   (typeof GearsFactory != 'undefined') || 										// Firefoxの時
-			   (!!window.ActiveXObject && (!!(new ActiveXObject('Gears.Factory')))) ||		// IEの時
-			   (!!navigator.mimeTypes && navigator.mimeTypes["application/x-googlegears"]))	// Webkitの時
-			{ this.DBaccept |= 0x01;}
-		}
-		catch(e){}
-	},
-	requireGears : function(){
-		return !!(this.DBaccept & 0x01);
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.openDialog() データベースダイアログが開いた時の処理
+	// dbm.openDialog() データベースダイアログが開いた時の処理
 	//---------------------------------------------------------------------------
 	openDialog : function(){
 		// データベースを開く
 		var type = 0;
 		if     (this.DBaccept & 0x08){ type = 4;}
-		else if(this.DBaccept & 0x04){ type = 3;}
+	//	else if(this.DBaccept & 0x04){ type = 3;}
 		else if(this.DBaccept & 0x02){ type = 2;}
-		else if(this.DBaccept & 0x01){ type = 1;}
 
 		switch(type){
-			case 1: case 2: this.dbh = new DataBaseHandler_SQL((type===2)); break;
-			case 4:         this.dbh = new DataBaseHandler_LS(); break;
+			case 2: this.dbh = new DataBaseHandler_SQL(); break;
+			case 4: this.dbh = new DataBaseHandler_LS(); break;
 			default: return;
 		}
 
@@ -77,8 +76,8 @@ DataBaseManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.closeDialog()   データベースダイアログが閉じた時の処理
-	// fio.dbm.clickHandler()  フォーム上のボタンが押された時、各関数にジャンプする
+	// dbm.closeDialog()   データベースダイアログが閉じた時の処理
+	// dbm.clickHandler()  フォーム上のボタンが押された時、各関数にジャンプする
 	//---------------------------------------------------------------------------
 	closeDialog : function(){
 		this.DBlist = [];
@@ -99,8 +98,8 @@ DataBaseManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.getDataID()    選択中データの(this.DBlistのkeyとなる)IDを取得する
-	// fio.dbm.updateDialog() 管理テーブル情報やダイアログの表示を更新する
+	// dbm.getDataID()    選択中データの(this.DBlistのkeyとなる)IDを取得する
+	// dbm.updateDialog() 管理テーブル情報やダイアログの表示を更新する
 	//---------------------------------------------------------------------------
 	getDataID : function(){
 		if(_doc.database.datalist.value!="new" && _doc.database.datalist.value!=""){
@@ -118,9 +117,9 @@ DataBaseManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.displayDataTableList() 保存しているデータの一覧を表示する
-	// fio.dbm.getRowString()         1データから文字列を生成する
-	// fio.dbm.dateString()           時刻の文字列を生成する
+	// dbm.displayDataTableList() 保存しているデータの一覧を表示する
+	// dbm.getRowString()         1データから文字列を生成する
+	// dbm.dateString()           時刻の文字列を生成する
 	//---------------------------------------------------------------------------
 	displayDataTableList : function(){
 		switch(_doc.database.sorts.value){
@@ -172,7 +171,7 @@ DataBaseManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.selectDataTable() データを選択して、コメントなどを表示する
+	// dbm.selectDataTable() データを選択して、コメントなどを表示する
 	//---------------------------------------------------------------------------
 	selectDataTable : function(){
 		var selected = this.getDataID();
@@ -194,9 +193,9 @@ DataBaseManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.upDataTable_M()      データの一覧での位置をひとつ上にする
-	// fio.dbm.downDataTable_M()    データの一覧での位置をひとつ下にする
-	// fio.dbm.convertDataTable_M() データの一覧での位置を入れ替える
+	// dbm.upDataTable_M()      データの一覧での位置をひとつ上にする
+	// dbm.downDataTable_M()    データの一覧での位置をひとつ下にする
+	// dbm.convertDataTable_M() データの一覧での位置を入れ替える
 	//---------------------------------------------------------------------------
 	upDataTable_M : function(){
 		var selected = this.getDataID();
@@ -220,8 +219,8 @@ DataBaseManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.openDataTable_M()  データの盤面に読み込む
-	// fio.dbm.saveDataTable_M()  データの盤面を保存する
+	// dbm.openDataTable_M()  データの盤面に読み込む
+	// dbm.saveDataTable_M()  データの盤面を保存する
 	//---------------------------------------------------------------------------
 	openDataTable_M : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
@@ -254,8 +253,8 @@ DataBaseManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.editComment_M()   データのコメントを更新する
-	// fio.dbm.editDifficult_M() データの難易度を更新する
+	// dbm.editComment_M()   データのコメントを更新する
+	// dbm.editDifficult_M() データの難易度を更新する
 	//---------------------------------------------------------------------------
 	editComment_M : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
@@ -279,7 +278,7 @@ DataBaseManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.deleteDataTable_M() 選択している盤面データを削除する
+	// dbm.deleteDataTable_M() 選択している盤面データを削除する
 	//---------------------------------------------------------------------------
 	deleteDataTable_M : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
@@ -296,7 +295,7 @@ DataBaseManager.prototype = {
 	}
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.convertDataBase() もし将来必要になったら...
+	// dbm.convertDataBase() もし将来必要になったら...
 	//---------------------------------------------------------------------------
 /*	convertDataBase : function(){
 		// ここまで旧データベース
@@ -315,14 +314,14 @@ DataBaseManager.prototype = {
 //---------------------------------------------------------------------------
 DataBaseHandler_LS = function(){
 	this.pheader = 'pzprv3_' + k.puzzleid + ':puzdata';
-	this.keys = fio.dbm.keys;
+	this.keys = dbm.keys;
 
 	this.initialize();
 };
 DataBaseHandler_LS.prototype = {
 	//---------------------------------------------------------------------------
-	// fio.dbm.dbh.initialize()    初期化時にデータベースを開く
-	// fio.dbm.dbh.importDBlist()  DataBaseからDBlistを作成する
+	// dbm.dbh.initialize()    初期化時にデータベースを開く
+	// dbm.dbh.importDBlist()  DataBaseからDBlistを作成する
 	//---------------------------------------------------------------------------
 	initialize : function(){
 		this.createManageDataTable();
@@ -342,8 +341,8 @@ DataBaseHandler_LS.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.dbh.createManageDataTable() 管理情報テーブルを作成する(消去はなし)
-	// fio.dbm.dbh.updateManageData()      管理情報レコードを更新する
+	// dbm.dbh.createManageDataTable() 管理情報テーブルを作成する(消去はなし)
+	// dbm.dbh.updateManageData()      管理情報レコードを更新する
 	//---------------------------------------------------------------------------
 	createManageDataTable : function(){
 		localStorage['pzprv3_manage']        = 'DataBase';
@@ -356,7 +355,7 @@ DataBaseHandler_LS.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.dbh.createDataBase()     テーブルを作成する
+	// dbm.dbh.createDataBase()     テーブルを作成する
 	//---------------------------------------------------------------------------
 	createDataBase : function(){
 		localStorage['pzprv3_'+k.puzzleid]            = 'DataBase';
@@ -364,7 +363,7 @@ DataBaseHandler_LS.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.dbh.convertDataTableID() データのIDを付け直す
+	// dbm.dbh.convertDataTableID() データのIDを付け直す
 	//---------------------------------------------------------------------------
 	convertDataTableID : function(parent, sid, tid, callback){
 		var sID = parent.DBlist[sid].id, tID = parent.DBlist[tid].id;
@@ -375,8 +374,8 @@ DataBaseHandler_LS.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.dbh.openDataTable()   データの盤面に読み込む
-	// fio.dbm.dbh.saveDataTable()   データの盤面を保存する
+	// dbm.dbh.openDataTable()   データの盤面に読み込む
+	// dbm.dbh.saveDataTable()   データの盤面を保存する
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback){
 		var pdata = localStorage[this.pheader+'!'+parent.DBlist[id].id+'!pdata'];
@@ -385,13 +384,13 @@ DataBaseHandler_LS.prototype = {
 	},
 	saveDataTable : function(parent, id, callback){
 		var row = parent.DBlist[id];
-		for(var c=0;c<7;c++){ localStorage[this.pheader+'!'+row.id+'!'+this.keys[c]] = (c!==4 ? row[this.keys[c]] : fio.fileencode(1));}
+		for(var c=0;c<7;c++){ localStorage[this.pheader+'!'+row.id+'!'+this.keys[c]] = (c!==4 ? row[this.keys[c]] : fio.fileencode(fio.PZPH));}
 		if(!!callback){ callback();}
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.dbh.updateComment()   データのコメントを更新する
-	// fio.dbm.dbh.updateDifficult() データの難易度を更新する
+	// dbm.dbh.updateComment()   データのコメントを更新する
+	// dbm.dbh.updateDifficult() データの難易度を更新する
 	//---------------------------------------------------------------------------
 	updateComment : function(parent, id, callback){
 		var row = parent.DBlist[id];
@@ -404,7 +403,7 @@ DataBaseHandler_LS.prototype = {
 		if(!!callback){ callback();}
 	},
 	//---------------------------------------------------------------------------
-	// fio.dbm.dbh.deleteDataTable() 選択している盤面データを削除する
+	// dbm.dbh.deleteDataTable() 選択している盤面データを削除する
 	//---------------------------------------------------------------------------
 	deleteDataTable : function(parent, sID, max, callback){
 		for(var i=parseInt(sID);i<max;i++){
@@ -420,25 +419,21 @@ DataBaseHandler_LS.prototype = {
 //---------------------------------------------------------------------------
 // ★DataBaseHandler_SQLクラス Web SQL DataBase用 データベースハンドラ
 //---------------------------------------------------------------------------
-DataBaseHandler_SQL = function(isSQLDB){
+DataBaseHandler_SQL = function(){
 	this.db    = null;	// パズル個別のデータベース
 	this.dbmgr = null;	// pzprv3_managerデータベース
-	this.isSQLDB = isSQLDB;
 
 	this.initialize();
 };
 DataBaseHandler_SQL.prototype = {
 	//---------------------------------------------------------------------------
-	// fio.dbm.dbh.initialize()    初期化時にデータベースを開く
-	// fio.dbm.dbh.importDBlist()  DataBaseからDBlistを作成する
-	// fio.dbm.dbh.setupDBlist()   DBlistのデータをDataBaseに代入する
+	// dbm.dbh.initialize()    初期化時にデータベースを開く
+	// dbm.dbh.importDBlist()  DataBaseからDBlistを作成する
+	// dbm.dbh.setupDBlist()   DBlistのデータをDataBaseに代入する
 	//---------------------------------------------------------------------------
 	initialize : function(){
-		var wrapper1 = new DataBaseObject_SQL(this.isSQLDB);
-		var wrapper2 = new DataBaseObject_SQL(this.isSQLDB);
-
-		this.dbmgr = wrapper1.openDatabase('pzprv3_manage', '1.0', 'manager', 1024*1024*5);
-		this.db    = wrapper2.openDatabase('pzprv3_'+k.puzzleid, '1.0', 'pzldata', 1024*1024*5);
+		this.dbmgr = window.openDatabase('pzprv3_manage', '1.0', 'manager', 1024*1024*5);
+		this.db    = window.openDatabase('pzprv3_'+k.puzzleid, '1.0', 'pzldata', 1024*1024*5);
 
 		this.createManageDataTable();
 		this.createDataBase();
@@ -468,9 +463,9 @@ DataBaseHandler_SQL.prototype = {
 	},
 */
 	//---------------------------------------------------------------------------
-	// fio.dbm.dbh.createManageDataTable() 管理情報テーブルを作成する(消去はなし)
-	// fio.dbm.dbh.updateManageData()      管理情報レコードを作成・更新する
-	// fio.dbm.dbh.deleteManageData()      管理情報レコードを削除する
+	// dbm.dbh.createManageDataTable() 管理情報テーブルを作成する(消去はなし)
+	// dbm.dbh.updateManageData()      管理情報レコードを作成・更新する
+	// dbm.dbh.deleteManageData()      管理情報レコードを削除する
 	//---------------------------------------------------------------------------
 	createManageDataTable : function(){
 		this.dbmgr.transaction( function(tx){
@@ -491,9 +486,9 @@ DataBaseHandler_SQL.prototype = {
 	},
 */
 	//---------------------------------------------------------------------------
-	// fio.dbm.dbh.createDataBase()      テーブルを作成する
-	// fio.dbm.dbh.dropDataBase()        テーブルを削除する
-	// fio.dbm.dbh.forcedeleteDataBase() テーブルを削除する
+	// dbm.dbh.createDataBase()      テーブルを作成する
+	// dbm.dbh.dropDataBase()        テーブルを削除する
+	// dbm.dbh.forcedeleteDataBase() テーブルを削除する
 	//---------------------------------------------------------------------------
 	createDataBase : function(){
 		this.db.transaction( function(tx){
@@ -511,7 +506,7 @@ DataBaseHandler_SQL.prototype = {
 	},*/
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.dbh.convertDataTableID() データのIDを付け直す
+	// dbm.dbh.convertDataTableID() データのIDを付け直す
 	//---------------------------------------------------------------------------
 	convertDataTableID : function(parent, sid, tid, callback){
 		var sID = parent.DBlist[sid].id, tID = parent.DBlist[tid].id;
@@ -527,8 +522,8 @@ DataBaseHandler_SQL.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.dbh.openDataTable()   データの盤面に読み込む
-	// fio.dbm.dbh.saveDataTable()   データの盤面を保存する
+	// dbm.dbh.openDataTable()   データの盤面に読み込む
+	// dbm.dbh.saveDataTable()   データの盤面を保存する
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback){
 		var data = "";
@@ -546,7 +541,7 @@ DataBaseHandler_SQL.prototype = {
 		);
 	},
 	saveDataTable : function(parent, id, callback){
-		var row = parent.DBlist[id], data = fio.fileencode(1);
+		var row = parent.DBlist[id], data = fio.fileencode(fio.PZPH);
 		this.db.transaction(
 			function(tx){
 				tx.executeSql('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',
@@ -559,8 +554,8 @@ DataBaseHandler_SQL.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.dbh.updateComment()   データのコメントを更新する
-	// fio.dbm.dbh.updateDifficult() データの難易度を更新する
+	// dbm.dbh.updateComment()   データのコメントを更新する
+	// dbm.dbh.updateDifficult() データの難易度を更新する
 	//---------------------------------------------------------------------------
 	updateComment : function(parent, id, callback){
 		var row = parent.DBlist[id];
@@ -584,7 +579,7 @@ DataBaseHandler_SQL.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.dbm.dbh.deleteDataTable() 選択している盤面データを削除する
+	// dbm.dbh.deleteDataTable() 選択している盤面データを削除する
 	//---------------------------------------------------------------------------
 	deleteDataTable : function(parent, sID, max, callback){
 		this.db.transaction(
@@ -597,71 +592,5 @@ DataBaseHandler_SQL.prototype = {
 			function(){ },
 			function(){ if(!!callback){ callback();}}
 		);
-	}
-};
-
-//---------------------------------------------------------------------------
-// ★DataBaseObject_SQLクラス  Web SQL DataBase用 データベースのラッパークラス
-//---------------------------------------------------------------------------
-DataBaseObject_SQL = function(isSQLDB){
-	this.name    = '';
-	this.version = 0;
-	this.isSQLDB = isSQLDB;
-
-	this.object = null;
-};
-DataBaseObject_SQL.prototype = {
-	openDatabase : function(name, ver, dispname, size){
-		this.name    = name;
-		this.version = ver;
-		this.object  = (this.isSQLDB ?
-			  openDatabase(this.name, this.version, dispname, size)
-			: google.gears.factory.create('beta.database', this.version)
-		);
-		return this;
-	},
-
-	// Gears用ラッパーみたいなもの
-	transaction : function(execfunc, errorfunc, compfunc){
-		if(typeof errorfunc == 'undefined'){ errorfunc = f_true;}
-		if(typeof compfunc  == 'undefined'){ compfunc  = f_true;}
-
-		if(this.isSQLDB){
-			// execfuncの第一引数txはSQLTransactionオブジェクト(tx.executeSqlは下の関数を指さない)
-			this.object.transaction(execfunc, errorfunc, compfunc);
-		}
-		else{
-			this.object.open(this.name);
-			// execfuncの第一引数txはthisにしておく(tx.executeSqlは下の関数を指す)
-			execfunc(this);
-			this.object.close();
-
-			compfunc();
-		}
-	},
-	// Gears用ラッパー
-	executeSql : function(statement, args, callback){
-		var resultSet = this.object.execute(statement, args);
-		// 以下はcallback用
-		if(typeof callback != 'undefined'){
-			var r=0, rows = {};
-			rows.rowarray = [];
-			while(resultSet.isValidRow()){
-				var row = {};
-				for(var i=0,len=resultSet.fieldCount();i<len;i++){
-					row[i] = row[resultSet.fieldName(i)] = resultSet.field(i);
-				}
-				rows.rowarray[r] = row;
-				resultSet.next();
-				r++;
-			}
-			resultSet.close();
-
-			rows.length = r;
-			rows.item = function(r){ return this.rowarray[r];};
-
-			var rs = {rows:rows};
-			callback(this, rs);
-		}
 	}
 };

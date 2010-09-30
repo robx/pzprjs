@@ -1,54 +1,42 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.3.1
+// パズル固有スクリプト部 スラローム版 slalom.js v3.3.2
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 1;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.irowake  = 1;
+		k.isborder = 1;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.isCenterLine    = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.isKanpenExist   = true;
 
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
-
-		if(k.EDITOR){
-			base.setExpression("　問題の記号はQWEの各キーで入力、Rキーで消去できます。数字は点線上でキーボード入力です。○はSキーか、マウスドラッグで移動出来ます。黒マスはマウスの左クリック、点線はドラッグでも入力できます。",
-							   " Press each QWE key to input question marks and R key to erase a mark. Type number key on dotted line to input numbers. Type S key or Left Button Drag to move circle. Left Click to input black cells. Left Button Drag out of circles to also input dotted line.");
-		}
-		else{
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
-		base.setTitle("スラローム","Slalom");
 		base.setFloatbgcolor("rgb(96, 96, 255)");
-
-		enc.pidKanpen = 'slalom';
 	},
 	menufix : function(){
 		menu.addRedLineToFlags();
+	},
+
+	protoChange : function(){
+		Operation.prototype.decodeSpecial = function(strs){
+			this.property = 'st';
+			this.old = bd.cnum(strs[1], strs[2]);
+			this.num = bd.cnum(strs[3], strs[4]);
+		};
+		Operation.prototype.toStringSpecial = function(){
+			var obj1=bd.cell[this.old], obj2=bd.cell[this.num];
+			var bx1=(!!obj1 ? obj1.bx : -1), by1=(!!obj1 ? obj1.by : -1);
+			var bx2=(!!obj2 ? obj2.bx : -1), by2=(!!obj2 ? obj2.by : -1);
+			return ['PS', bx1, by1, bx2, by2].join(',');
+		};
+	},
+	protoOriginal : function(){
+		Operation.prototype.decodeSpecial = function(strs){};
+		Operation.prototype.toStringSpecial = function(){};
 	},
 
 	//---------------------------------------------------------
@@ -102,6 +90,10 @@ Puzzles.slalom.prototype = {
 			this.inputData = null;
 			var cc0 = bd.startid;
 			pc.paintCell(cc0);
+
+			if(this.firstCell!==bd.startid){
+				um.addOpe(k.OTHER, 'st', 0, this.firstCell, bd.startid);
+			}
 		};
 		mv.inputGate = function(){
 			var cc = this.cellid();
@@ -120,6 +112,7 @@ Puzzles.slalom.prototype = {
 			// startposの入力中の場合
 			else if(this.inputData==10){
 				if(cc!==this.mouseCell){
+					if(this.firstCell===null){ this.firstCell = this.mouseCell;}
 					var cc0 = bd.startid;
 					bd.startid=cc;
 					pc.paintCell(cc0);
@@ -169,8 +162,7 @@ Puzzles.slalom.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
-			if(ca=='x' && !this.keyPressed){ this.isX=true; pc.drawNumbersOnGate(true); return;}
+			if(ca=='x'){ pc.drawNumbersOnGate(true); return;}
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputqnum_slalom(ca);
@@ -184,27 +176,28 @@ Puzzles.slalom.prototype = {
 				else if(ca=='w'){ newques=21;}
 				else if(ca=='e'){ newques=22;}
 				else if(ca=='r'||ca==' '){ newques= 0;}
-				else if(ca=='s'){ bd.inputstartid(cc); return;}
+				else if(ca=='s'){ bd.inputstartid(cc);}
 				else{ return;}
 				if(old==newques){ return;}
 
-				bd.sQuC(cc,newques);
-				if(newques==0){ bd.setNum(cc,-1);}
-				if(old==21||old==22||newques==21||newques==22){ bd.hinfo.generateGates();}
+				if(newques!==-1){
+					bd.sQuC(cc,newques);
+					if(newques==0){ bd.setNum(cc,-1);}
+					if(old==21||old==22||newques==21||newques==22){ bd.hinfo.generateGates();}
 
-				pc.paintCell(cc);
-				pc.dispnumStartpos(bd.startid);
+					pc.paintCell(cc);
+					pc.dispnumStartpos(bd.startid);
+				}
+				else{
+				}
 			}
 			else if(bd.QuC(cc)==1){
 				this.key_inputqnum(ca);
 			}
 		};
 		kc.keyup = function(ca){
-			if(ca=='z'){ this.isZ=false;}
-			if(ca=='x'){ pc.drawNumbersOnGate(false); this.isX=false;}
+			if(ca=='x'){ pc.drawNumbersOnGate(false);}
 		};
-		kc.isZ = false;
-		kc.isX = false;
 
 		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
@@ -242,11 +235,18 @@ Puzzles.slalom.prototype = {
 		bd.startid = 0;
 		bd.inputstartid = function(cc){
 			if(cc!=this.startid){
+				um.addOpe(k.OTHER, 'st', 0, cc, this.startid);
 				var cc0 = this.startid;
 				this.startid = cc;
 				pc.paintCell(cc0);
 				pc.paintCell(cc);
 			}
+		};
+		um.execSpecial = function(ope, num){
+			var cc0 = bd.startid;
+			bd.startid = num;
+			this.stackCell(cc0);
+			this.stackCell(num);
 		};
 
 		bd.hinfo = new Hurdle();
@@ -318,23 +318,23 @@ Puzzles.slalom.prototype = {
 		pc.errbcolor1 = pc.errbcolor1_DARK;
 		pc.fontcolor = pc.fontErrcolor = "white";
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
 
-			this.drawGates(x1,y1,x2,y2)
+			this.drawGates()
 
-			this.drawBlackCells(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawBlackCells();
+			this.drawNumbers();
 
-			this.drawPekes(x1,y1,x2,y2,1);
-			this.drawLines(x1,y1,x2,y2);
+			this.drawPekes(1);
+			this.drawLines();
 
-			this.drawStartpos(x1,y1,x2,y2);
+			this.drawStartpos();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
 		// オーバーライド drawBlackCells用
@@ -346,13 +346,13 @@ Puzzles.slalom.prototype = {
 			return false;
 		};
 
-		pc.drawGates = function(x1,y1,x2,y2){
+		pc.drawGates = function(){
 			var lw = Math.max(this.cw/10, 3);	//LineWidth
 			var lm = lw/2;						//LineMargin
 			var ll = lw*1.1;					//LineLength
 			var headers = ["c_dl21", "c_dl22"];
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				g.fillStyle = (bd.cell[c].error===4 ? this.errcolor1 : this.cellcolor);
@@ -377,11 +377,11 @@ Puzzles.slalom.prototype = {
 			}
 		};
 
-		pc.drawStartpos = function(x1,y1,x2,y2){
+		pc.drawStartpos = function(){
 			this.vinc('cell_circle', 'auto');
 
-			var c = bd.startid;
-			if(bd.cell[c].bx<x1-2 || x2+2<bd.cell[c].bx || bd.cell[c].by<y1-2 || y2+2<bd.cell[c].by){ return;}
+			var c = bd.startid, d = this.range;
+			if(bd.cell[c].bx<d.x1 || d.x2<bd.cell[c].bx || bd.cell[c].by<d.y1 || d.y2<bd.cell[c].by){ return;}
 
 			var rsize = this.cw*0.45, rsize2 = this.cw*0.40;
 			var csize = (rsize+rsize2)/2, csize2 = rsize2-rsize;
@@ -408,14 +408,14 @@ Puzzles.slalom.prototype = {
 			else{ this.hideEL(key);}
 		};
 
-		line.repaintParts = function(idlist){
-			var clist = this.getClistFromIdlist(idlist);
+		pc.repaintParts = function(idlist){
+			var clist = line.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(c!==bd.startid){ continue;}
 
 				var bx = bd.cell[c].bx, by = bd.cell[c].by;
-				pc.drawStartpos(bx,by,bx,by);
+				this.drawStartpos(bx,by,bx,by);
 
 				// startは一箇所だけなので、描画したら終了してよい
 				break;

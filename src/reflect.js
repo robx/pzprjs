@@ -1,48 +1,19 @@
 //
-// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.3.1
+// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.3.2
 //
 Puzzles.reflect = function(){ };
 Puzzles.reflect.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 1;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.irowake  = 1;
+		k.isborder = 1;
 
-		k.isLineCross     = true;	// 線が交差するパズル
-		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.isLineCross     = true;
+		k.isCenterLine    = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
-
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		if(k.EDITOR){
-			base.setExpression("　問題の記号はQWEASの各キーで入力、Tキーや-キーで消去できます。",
-							   " Press each QWEAS key to input question. Press 'T' or '-' key to erase.");
-		}
-		else{
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
-		base.setTitle("リフレクトリンク","Reflect Link");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){
@@ -77,7 +48,6 @@ Puzzles.reflect.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			if(this.key_inputLineParts(ca)){ return;}
@@ -98,8 +68,6 @@ Puzzles.reflect.prototype = {
 			pc.paintCellAround(cc);
 			return true;
 		};
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
-		kc.isZ = false;
 
 		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
@@ -138,29 +106,29 @@ Puzzles.reflect.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_LIGHT;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
 
-			this.drawPekes(x1,y1,x2,y2,0);
-			this.drawLines(x1,y1,x2,y2);
+			this.drawPekes(0);
+			this.drawLines();
 
-			this.drawTriangle(x1,y1,x2,y2);
-			this.drawTriangleBorder(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawTriangle();
+			this.drawTriangleBorder();
+			this.drawNumbers();
 
-			this.draw11(x1,y1,x2,y2);
+			this.draw11();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawTriangleBorder = function(x1,y1,x2,y2){
+		pc.drawTriangleBorder = function(){
 			this.vinc('cell_triangle_border', 'crispEdges');
 
 			var header = "b_tb_";
-			var idlist = bd.borderinside(x1-1,y1-1,x2+2,y2+2);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], lflag = !(bd.border[id].bx&1);
 				var qs1 = bd.QuC(bd.border[id].cellcc[0]),
@@ -180,10 +148,10 @@ Puzzles.reflect.prototype = {
 				else{ this.vhide(header+id);}
 			}
 		};
-		pc.draw11 = function(x1,y1,x2,y2){
+		pc.draw11 = function(){
 			this.vinc('cell_ques', 'crispEdges');
 
-			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){ this.draw11_1(clist[i]);}
 		};
 		pc.draw11_1 = function(id){
@@ -211,10 +179,10 @@ Puzzles.reflect.prototype = {
 			else{ this.hideEL(key);}
 		},
 
-		line.repaintParts = function(idlist){
-			var clist = this.getClistFromIdlist(idlist);
+		pc.repaintParts = function(idlist){
+			var clist = line.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
-				pc.draw11_1(clist[i]);
+				this.draw11_1(clist[i]);
 			}
 		};
 	},

@@ -1,4 +1,4 @@
-// Graphic.js v3.3.1
+// Graphic.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
@@ -84,6 +84,12 @@ Graphic = function(){
 	this.crosssize = 0.4;
 	this.circleratio = [0.40, 0.34];
 
+	// 描画領域を保持するオブジェクト
+	this.range = {
+		x1:null, y1:null, x2:null, y2:null,
+		cells:[], crosses:[], borders:[], excells:[]
+	};
+
 	// 盤面のページ内の左上座標
 	this.pageX = 0;
 	this.pageY = 0;
@@ -100,8 +106,6 @@ Graphic = function(){
 	this.addlw = 0;		// エラー時に線の太さを広げる
 
 	this.bdheader = "b_bd";	// drawBorder1で使うheader
-
-	this.chassisflag = true;	// false: Gridを外枠の位置にも描画する
 
 	this.lastHdeg = 0;
 	this.lastYdeg = 0;
@@ -144,6 +148,7 @@ Graphic.prototype = {
 	},
 	//---------------------------------------------------------------------------
 	// pc.prepaint()    paint関数を呼び出す
+	// pc.setRange()    rangeオブジェクトを設定する
 	// pc.paint()       座標(x1,y1)-(x2,y2)を再描画する。各パズルのファイルでオーバーライドされる。
 	//
 	// pc.paintAll()    全体を再描画する
@@ -157,13 +162,30 @@ Graphic.prototype = {
 	// pc.paintLine()   指定されたLineの周りを再描画する
 	// pc.paintEXcell() 指定されたEXCellを再描画する
 	//---------------------------------------------------------------------------
-	paint : function(x1,y1,x2,y2){ }, //オーバーライド用
+	paint : function(){ }, //オーバーライド用
 
 	prepaint : function(x1,y1,x2,y2){
-		this.flushCanvas(x1,y1,x2,y2);
-	//	this.flushCanvasAll();
+		this.setRange(x1,y1,x2,y2);
 
-		this.paint(x1,y1,x2,y2);
+		this.flushCanvas();
+		this.paint();
+	},
+	setRange : function(x1,y1,x2,y2){
+		if(g.use.canvas){
+			// 緊急対応
+			if(k.br.Chrome6){ x1=-1; y1=-1; x2=2*k.qcols+1; y2=2*k.qrows+1;}
+
+			// Undo時に跡が残ってしまうこと等を防止
+			if(this.isdrawBC || this.isdrawBD){ x1--; y1--; x2++; y2++;}
+		}
+
+		this.range = {
+			x1:x1, y1:y1, x2:x2, y2:y2, cells:bd.cellinside(x1,y1,x2,y2),
+			crosses:[], borders:[], excells:[]
+		}
+		if(!!k.iscross) { this.range.crosses = bd.crossinside(x1,y1,x2,y2);}
+		if(!!k.isborder){ this.range.borders = bd.borderinside(x1,y1,x2,y2);}
+		if(!!k.isexcell){ this.range.excells = bd.excellinside(x1,y1,x2,y2);}
 	},
 
 	paintAll : function(){
@@ -261,12 +283,11 @@ Graphic.prototype = {
 	// pc.setBGCellColorFunc() pc.setBGCellColor関数を設定する
 	//---------------------------------------------------------------------------
 	// err==2になるlitsは、drawBGCellsで描画してます。。
-	drawBlackCells : function(x1,y1,x2,y2){
+	drawBlackCells : function(){
 		this.vinc('cell_front', 'crispEdges');
 		var header = "c_fullb_";
 
-		if(g.use.canvas && this.isdrawBC && !this.isdrawBD){ x1--; y1--; x2++; y2++;}
-		var clist = bd.cellinside(x1,y1,x2,y2);
+		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(this.setCellColor(c)){
@@ -302,10 +323,10 @@ Graphic.prototype = {
 		}
 	},
 
-	drawBGCells : function(x1,y1,x2,y2){
+	drawBGCells : function(){
 		this.vinc('cell_back', 'crispEdges');
 		var header = "c_full_";
-		var clist = bd.cellinside(x1,y1,x2,y2);
+		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(this.setBGCellColor(c)){
@@ -401,11 +422,11 @@ Graphic.prototype = {
 	// pc.drawBGEXcells()    EXCellに描画される背景色をCanvasに書き込む
 	// pc.setBGEXcellColor() 背景色の設定・描画判定する
 	//---------------------------------------------------------------------------
-	drawBGEXcells : function(x1,y1,x2,y2){
+	drawBGEXcells : function(){
 		this.vinc('excell_back', 'crispEdges');
 
 		var header = "ex_full_";
-		var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
+		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var c = exlist[i];
 			if(this.setBGEXcellColor(c)){
@@ -424,14 +445,14 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	// pc.drawDotCells()  ・だけをCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawDotCells : function(x1,y1,x2,y2,isrect){
+	drawDotCells : function(isrect){
 		this.vinc('cell_dot', (isrect ? 'crispEdges' : 'auto'));
 
 		var dsize = Math.max(this.cw*(isrect?0.075:0.06), 2);
 		var header = "c_dot_";
 		g.fillStyle = this.dotcolor;
 
-		var clist = bd.cellinside(x1,y1,x2,y2);
+		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(bd.cell[c].qsub===1){
@@ -452,10 +473,10 @@ Graphic.prototype = {
 	// pc.drawArrowNumbers() Cellの数字と矢印をCanvasに書き込む
 	// pc.drawHatenas()     ques===-2の時に？をCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawNumbers : function(x1,y1,x2,y2){
+	drawNumbers : function(){
 		this.vinc('cell_number', 'auto');
 
-		var clist = bd.cellinside(x1,y1,x2,y2);
+		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){ this.drawNumber1(clist[i]);}
 	},
 	drawNumber1 : function(c){
@@ -482,7 +503,7 @@ Graphic.prototype = {
 		return color;
 	},
 
-	drawArrowNumbers : function(x1,y1,x2,y2){
+	drawArrowNumbers : function(){
 		this.vinc('cell_arrownumber', 'auto');
 
 		var headers = ["c_ar1_", "c_dt1_", "c_dt2_", "c_ar3_", "c_dt3_", "c_dt4_"];
@@ -491,8 +512,7 @@ Graphic.prototype = {
 		var lw = Math.max(this.cw/24, 1);	//LineWidth
 		var lm = lw/2;						//LineMargin
 
-		if(g.use.canvas && this.isdrawBC && !this.isdrawBD){ x1--; y1--; x2++; y2++;}
-		var clist = bd.cellinside(x1,y1,x2,y2);
+		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 
@@ -570,10 +590,10 @@ Graphic.prototype = {
 			}
 		}
 	},
-	drawHatenas : function(x1,y1,x2,y2){
+	drawHatenas : function(){
 		this.vinc('cell_number', 'auto');
 
-		var clist = bd.cellinside(x1,y1,x2,y2);
+		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var obj = bd.cell[clist[i]], key = 'cell_'+clist[i];
 			if(obj.ques===-2||obj.qnum===-2){
@@ -588,14 +608,14 @@ Graphic.prototype = {
 	// pc.drawCrosses()    Crossの丸数字をCanvasに書き込む
 	// pc.drawCrossMarks() Cross上の黒点をCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawCrosses : function(x1,y1,x2,y2){
+	drawCrosses : function(){
 		this.vinc('cross_base', 'auto');
 
 		var csize = this.cw*this.crosssize+1;
 		var header = "x_cp_";
 		g.lineWidth = 1;
 
-		var clist = bd.crossinside(x1,y1,x2,y2);
+		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i], obj = bd.cross[c], key = ['cross',c].join('_');
 			// ○の描画
@@ -615,13 +635,13 @@ Graphic.prototype = {
 			else{ this.hideEL(key);}
 		}
 	},
-	drawCrossMarks : function(x1,y1,x2,y2){
+	drawCrossMarks : function(){
 		this.vinc('cross_mark', 'auto');
 
 		var csize = this.cw*this.crosssize;
 		var header = "x_cm_";
 
-		var clist = bd.crossinside(x1,y1,x2,y2);
+		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(bd.cross[c].qnum===1){
@@ -640,10 +660,10 @@ Graphic.prototype = {
 	// pc.setBorderColor()     境界線の設定・描画判定する
 	// pc.setBorderColorFunc() pc.setBorderColor関数を設定する
 	//---------------------------------------------------------------------------
-	drawBorders : function(x1,y1,x2,y2){
+	drawBorders : function(){
 		this.vinc('border', 'crispEdges');
 
-		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+		var idlist = this.range.borders;
 		for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 		this.isdrawBD = true;
 	},
@@ -696,14 +716,14 @@ Graphic.prototype = {
 	// pc.drawBorderQsubs() 境界線用の補助記号をCanvasに書き込む
 	// pc.drawBoxBorders()  境界線と黒マスの間の線を描画する
 	//---------------------------------------------------------------------------
-	drawBorderQsubs : function(x1,y1,x2,y2){
+	drawBorderQsubs : function(){
 		this.vinc('border_qsub', 'crispEdges');
 
 		var m = this.cw*0.15; //Margin
 		var header = "b_qsub1_";
 		g.fillStyle = this.borderQsubcolor;
 
-		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+		var idlist = this.range.borders;
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
 			if(bd.border[id].qsub===1){
@@ -717,7 +737,7 @@ Graphic.prototype = {
 	},
 
 	// 外枠がない場合は考慮していません
-	drawBoxBorders  : function(x1,y1,x2,y2,tileflag){
+	drawBoxBorders  : function(tileflag){
 		this.vinc('boxborder', 'crispEdges');
 
 		var lw = this.lw, lm = this.lm;
@@ -727,7 +747,7 @@ Graphic.prototype = {
 
 		g.fillStyle = this.bbcolor;
 
-		var clist = bd.cellinside(x1,y1,x2,y2);
+		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i], vids=[];
 			for(var n=0;n<12;n++){ vids[n]=['c_bb',n,c].join('_');}
@@ -779,17 +799,30 @@ Graphic.prototype = {
 
 	//---------------------------------------------------------------------------
 	// pc.drawLines()    回答の線をCanvasに書き込む
+	// pc.repaintLines() ひとつながりの線を再描画する
+	// pc.repaintParts() repaintLine()関数で、さらに上から描画しなおしたい処理を書く
+	//                   canvas描画時のみ呼ばれます(他は描画しなおす必要なし)
 	// pc.drawLine1()    回答の線をCanvasに書き込む(1カ所のみ)
 	// pc.setLineColor() 描画する線の色を設定する
 	// pc.drawPekes()    境界線上の×をCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawLines : function(x1,y1,x2,y2){
+	drawLines : function(){
 		this.vinc('line', 'crispEdges');
 
-		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+		var idlist = this.range.borders;
 		for(var i=0;i<idlist.length;i++){ this.drawLine1(idlist[i]);}
 		this.addlw = 0;
 	},
+	repaintLines : function(idlist, id){
+		this.vinc('line', 'crispEdges');
+
+		for(var i=0;i<idlist.length;i++){
+			if(id!==idlist[i]){ this.drawLine1(idlist[i]);}
+		}
+		if(g.use.canvas){ this.repaintParts(idlist);}
+	},
+	repaintParts : function(idlist){ }, // オーバーライド用
+
 	drawLine1 : function(id){
 		var vid = "b_line_"+id;
 		if(this.setLineColor(id)){
@@ -814,7 +847,7 @@ Graphic.prototype = {
 		}
 		return false;
 	},
-	drawPekes : function(x1,y1,x2,y2,flag){
+	drawPekes : function(flag){
 		if(!g.use.canvas && flag===2){ return;}
 
 		this.vinc('border_peke', 'auto');
@@ -825,7 +858,7 @@ Graphic.prototype = {
 		g.strokeStyle = this.pekecolor;
 		g.lineWidth = 1;
 
-		var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+		var idlist = this.range.borders;
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
 			if(bd.border[id].qsub!==2){ this.vhide([headers[0]+id, headers[1]+id]); continue;}
@@ -849,15 +882,32 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// pc.drawBaseMarks() 交点のdotをCanvasに書き込む
+	// pc.drawBaseMark1() 交点のdotをCanvasに書き込む(1つのみ)
+	//---------------------------------------------------------------------------
+	drawBaseMarks : function(){
+		this.vinc('cross_mark', 'auto');
+
+		var clist = this.range.crosses;
+		for(var i=0;i<clist.length;i++){ this.drawBaseMark1(clist[i]);}
+	},
+	drawBaseMark1 : function(id){
+		var vid = "x_cm_"+id;
+		g.fillStyle = this.cellcolor;
+		if(this.vnop(vid,this.NONE)){
+			g.fillCircle(bd.cross[id].px, bd.cross[id].py, (this.lw+3)/2);
+		}
+	},
+
+	//---------------------------------------------------------------------------
 	// pc.drawTriangle()   三角形をCanvasに書き込む
 	// pc.drawTriangle1()  三角形をCanvasに書き込む(1マスのみ)
 	//---------------------------------------------------------------------------
-	drawTriangle : function(x1,y1,x2,y2){
+	drawTriangle : function(){
 		this.vinc('cell_triangle', 'auto');
 		var headers = ["c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_"];
 
-		if(g.use.canvas && k.puzzleid!=='reflect'){ x1--; y1--; x2++; y2++;}
-		var clist = bd.cellinside(x1,y1,x2,y2);
+		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			var num = (bd.cell[c].ques!==0?bd.cell[c].ques:bd.cell[c].qans);
@@ -893,7 +943,7 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	// pc.drawMBs()    Cell上の○,×をCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawMBs : function(x1,y1,x2,y2){
+	drawMBs : function(){
 		this.vinc('cell_mb', 'auto');
 		g.strokeStyle = this.mbcolor;
 		g.lineWidth = 1;
@@ -901,7 +951,7 @@ Graphic.prototype = {
 		var rsize = this.cw*0.35;
 		var headers = ["c_MB1_", "c_MB2a_"];
 
-		var clist = bd.cellinside(x1,y1,x2,y2);
+		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(bd.cell[c].qsub===0){ this.vhide([headers[0]+c, headers[1]+c]); continue;}
@@ -928,14 +978,14 @@ Graphic.prototype = {
 	// pc.drawCirclesAtNumber() 数字が描画されるCellの丸を書き込む
 	// pc.drawCircle1AtNumber() 数字が描画されるCellの丸を書き込む(1マスのみ)
 	//---------------------------------------------------------------------------
-	drawQnumCircles : function(x1,y1,x2,y2){
+	drawQnumCircles : function(){
 		this.vinc('cell_circle', 'auto');
 
 		g.lineWidth = Math.max(this.cw*(this.circleratio[0]-this.circleratio[1]), 1);
 		var rsize1 = this.cw*(this.circleratio[0]+this.circleratio[1])/2;
 		var rsize2 = this.cw*this.circleratio[0];
 		var headers = ["c_cirw_", "c_cirb_"];
-		var clist = bd.cellinside(x1,y1,x2,y2);
+		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 
@@ -957,10 +1007,10 @@ Graphic.prototype = {
 			else{ this.vhide(headers[1]+c);}
 		}
 	},
-	drawCirclesAtNumber : function(x1,y1,x2,y2){
+	drawCirclesAtNumber : function(){
 		this.vinc('cell_circle', 'auto');
 
-		var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
+		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){ this.drawCircle1AtNumber(clist[i]);}
 	},
 	drawCircle1AtNumber : function(c){
@@ -989,10 +1039,10 @@ Graphic.prototype = {
 	// pc.drawLineParts()   ╋などをCanvasに書き込む
 	// pc.drawLineParts1()  ╋などをCanvasに書き込む(1マスのみ)
 	//---------------------------------------------------------------------------
-	drawLineParts : function(x1,y1,x2,y2){
+	drawLineParts : function(){
 		this.vinc('cell_lineparts', 'crispEdges');
 
-		var clist = bd.cellinside(x1,y1,x2,y2);
+		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){ this.drawLineParts1(clist[i]);}
 	},
 	drawLineParts1 : function(id){
@@ -1021,19 +1071,19 @@ Graphic.prototype = {
 	// pc.drawSlash51EXcells() EXCell上の[＼]のナナメ線をCanvasに書き込む
 	// pc.drawEXCellGrid()     EXCell間の境界線をCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawQues51 : function(x1,y1,x2,y2){
-		this.drawEXCellGrid(x1,y1,x2,y2);
-		this.drawSlash51Cells(x1,y1,x2,y2);
-		this.drawSlash51EXcells(x1,y1,x2,y2);
-		this.drawTargetTriangle(x1,y1,x2,y2);
+	drawQues51 : function(){
+		this.drawEXCellGrid();
+		this.drawSlash51Cells();
+		this.drawSlash51EXcells();
+		this.drawTargetTriangle();
 	},
-	drawSlash51Cells : function(x1,y1,x2,y2){
+	drawSlash51Cells : function(){
 		this.vinc('cell_ques51', 'crispEdges');
 
 		var header = "c_slash51_";
 		g.strokeStyle = this.cellcolor;
 		g.lineWidth = 1;
-		var clist = bd.cellinside(x1,y1,x2,y2);
+		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i], px = bd.cell[c].px, py = bd.cell[c].py;
 
@@ -1045,13 +1095,13 @@ Graphic.prototype = {
 			else{ this.vhide(header+c);}
 		}
 	},
-	drawSlash51EXcells : function(x1,y1,x2,y2){
+	drawSlash51EXcells : function(){
 		this.vinc('excell_ques51', 'crispEdges');
 
 		var header = "ex_slash51_";
 		g.strokeStyle = this.cellcolor;
 		g.lineWidth = 1;
-		var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
+		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var c = exlist[i], px = bd.excell[c].px, py = bd.excell[c].py;
 			if(this.vnop(header+c,this.NONE)){
@@ -1059,12 +1109,12 @@ Graphic.prototype = {
 			}
 		}
 	},
-	drawEXCellGrid : function(x1,y1,x2,y2){
+	drawEXCellGrid : function(){
 		this.vinc('grid_excell', 'crispEdges');
 
 		g.fillStyle = this.cellcolor;
 		var headers = ["ex_bdx_", "ex_bdy_"];
-		var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
+		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var c = exlist[i], px = bd.excell[c].px, py = bd.excell[c].py;
 
@@ -1086,11 +1136,12 @@ Graphic.prototype = {
 	// pc.drawNumbersOn51()   [＼]に数字を記入する
 	// pc.drawNumbersOn51_1() 1つの[＼]に数字を記入する
 	//---------------------------------------------------------------------------
-	drawNumbersOn51 : function(x1,y1,x2,y2){
+	drawNumbersOn51 : function(){
 		this.vinc('cell_number51', 'auto');
 
-		for(var bx=(x1|1)-2;bx<=x2+2;bx+=2){
-			for(var by=(y1|1)-2;by<=y2+2;by+=2){
+		var d = this.range;
+		for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
+			for(var by=(d.y1|1);by<=d.y2;by+=2){
 				// cell上だった場合
 				if(bx!==-1 && by!==-1){
 					var c = bd.cnum(bx,by);
@@ -1098,8 +1149,8 @@ Graphic.prototype = {
 				}
 				// excell上だった場合
 				else{
-					var c = bd.exnum(bx,by);
-					if(c!==null){ this.drawNumbersOn51_1('excell', c);}
+					var ex = bd.exnum(bx,by);
+					if(ex!==null){ this.drawNumbersOn51_1('excell', ex);}
 				}
 			}
 		}
@@ -1133,16 +1184,17 @@ Graphic.prototype = {
 	// pc.drawCursor()  キーボードからの入力対象をCanvasに書き込む
 	// pc.drawTargetTriangle() [＼]のうち入力対象のほうに背景色をつける
 	//---------------------------------------------------------------------------
-	drawTarget : function(x1,y1,x2,y2){
-		this.drawCursor(x1, y1, x2, y2, true, k.editmode);
+	drawTarget : function(){
+		this.drawCursor(true, k.editmode);
 	},
 
-	drawCursor : function(x1,y1,x2,y2,islarge,isdraw){
+	drawCursor : function(islarge,isdraw){
 		this.vinc('target_cursor', 'crispEdges');
 
 		if(isdraw!==false && pp.getVal('cursor')){
-			if(tc.cursor.x < x1-1 || x2+1 < tc.cursor.x){ return;}
-			if(tc.cursor.y < y1-1 || y2+1 < tc.cursor.y){ return;}
+			var d = this.range;
+			if(tc.cursor.x < d.x1-1 || d.x2+1 < tc.cursor.x){ return;}
+			if(tc.cursor.y < d.y1-1 || d.y2+1 < tc.cursor.y){ return;}
 
 			var cpx = tc.cursor.x*this.bw + 0.5;
 			var cpy = tc.cursor.y*this.bh + 0.5;
@@ -1160,7 +1212,7 @@ Graphic.prototype = {
 		else{ this.vhide(["ti1_","ti2_","ti3_","ti4_"]);}
 	},
 
-	drawTargetTriangle : function(x1,y1,x2,y2){
+	drawTargetTriangle : function(){
 		this.vinc('target_triangle', 'auto');
 
 		var vid = "target_triangle";
@@ -1168,8 +1220,9 @@ Graphic.prototype = {
 
 		if(k.playmode){ return;}
 
-		if(tc.cursor.x < x1 || x2+2 < tc.cursor.x){ return;}
-		if(tc.cursor.y < y1 || y2+2 < tc.cursor.y){ return;}
+		var d = this.range;
+		if(tc.cursor.x < d.x1 || d.x2 < tc.cursor.x){ return;}
+		if(tc.cursor.y < d.y1 || d.y2 < tc.cursor.y){ return;}
 
 		var cc = tc.getTCC(), ex = null;
 		if(cc===null){ ex = tc.getTEC();}
@@ -1183,8 +1236,10 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	// pc.drawDashedCenterLines() セルの中心から中心にひかれる点線をCanvasに描画する
 	//---------------------------------------------------------------------------
-	drawDashedCenterLines : function(x1,y1,x2,y2){
+	drawDashedCenterLines : function(){
 		this.vinc('centerline', 'crispEdges');
+
+		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx+1){ x1=bd.minbx+1;} if(x2>bd.maxbx-1){ x2=bd.maxbx-1;}
 		if(y1<bd.minby+1){ y1=bd.minby+1;} if(y2>bd.maxby-1){ y2=bd.maxby-1;}
 		x1|=1, y1|=1;
@@ -1222,20 +1277,21 @@ Graphic.prototype = {
 	// pc.drawGrid()        セルの枠線(実線)をCanvasに書き込む
 	// pc.drawDashedGrid()  セルの枠線(点線)をCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawGrid : function(x1,y1,x2,y2,isdraw){
+
+	drawGrid : function(haschassis, isdraw){
 		this.vinc('grid', 'crispEdges');
 
 		// 外枠まで描画するわけじゃないので、maxbxとか使いません
+		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<0){ x1=0;} if(x2>2*k.qcols){ x2=2*k.qcols;}
 		if(y1<0){ y1=0;} if(y2>2*k.qrows){ y2=2*k.qrows;}
 		x1-=(x1&1), y1-=(y1&1);
 
-		var bs=((k.isborder!==2&&this.chassisflag)?2:0);
+		var bs = ((k.isborder!==2&&haschassis!==false)?2:0);
 		var xa = Math.max(x1,0+bs), xb = Math.min(x2,2*k.qcols-bs);
 		var ya = Math.max(y1,0+bs), yb = Math.min(y2,2*k.qrows-bs);
 
-		isdraw = (isdraw!==false?true:false);
-		if(isdraw){
+		if(isdraw!==false){ // 指定無しかtrueのとき
 			g.fillStyle = this.gridcolor;
 			for(var i=xa;i<=xb;i+=2){ if(this.vnop("bdy_"+i,this.NONE)){ g.fillRect(i*this.bw, y1*this.bh, 1, (y2-y1)*this.bh+1);} }
 			for(var i=ya;i<=yb;i+=2){ if(this.vnop("bdx_"+i,this.NONE)){ g.fillRect(x1*this.bw, i*this.bh, (x2-x1)*this.bw+1, 1);} }
@@ -1247,8 +1303,10 @@ Graphic.prototype = {
 			}
 		}
 	},
-	drawDashedGrid : function(x1,y1,x2,y2){
+	drawDashedGrid : function(haschassis){
 		this.vinc('grid', 'crispEdges');
+
+		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
 		if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
 		x1-=(x1&1), y1-=(y1&1);
@@ -1257,8 +1315,7 @@ Graphic.prototype = {
 		var dotCount = Math.max(this.cw/dotmax, 1);
 		var dotSize  = this.cw/(dotCount*2);
 
-		//var bs=((k.isborder!==2&&this.chassisflag)?1:0);
-		var bs=(this.chassisflag?2:0);
+		var bs = ((haschassis!==false)?2:0);
 		var xa = Math.max(x1,bd.minbx+bs), xb = Math.min(x2,bd.maxbx-bs);
 		var ya = Math.max(y1,bd.minby+bs), yb = Math.min(y2,bd.maxby-bs);
 
@@ -1298,10 +1355,11 @@ Graphic.prototype = {
 	// pc.drawChassis()     外枠をCanvasに書き込む
 	// pc.drawChassis_ex1() k.isextencdell==1の時の外枠をCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawChassis : function(x1,y1,x2,y2){
+	drawChassis : function(){
 		this.vinc('chassis', 'crispEdges');
 
 		// ex===0とex===2で同じ場所に描画するので、maxbxとか使いません
+		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<0){ x1=0;} if(x2>2*k.qcols){ x2=2*k.qcols;}
 		if(y1<0){ y1=0;} if(y2>2*k.qrows){ y2=2*k.qrows;}
 
@@ -1322,8 +1380,10 @@ Graphic.prototype = {
 			if(this.vnop("chs4_",this.NONE)){ g.fillRect(-lw+1, boardHeight, boardWidth+2*lw-2, lw); }
 		}
 	},
-	drawChassis_ex1 : function(x1,y1,x2,y2,boldflag){
+	drawChassis_ex1 : function(boldflag){
 		this.vinc('chassis_ex1', 'crispEdges');
+
+		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<=0){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
 		if(y1<=0){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
 
@@ -1369,7 +1429,7 @@ Graphic.prototype = {
 			}
 
 			var headers = ["chs1_sub_", "chs2_sub_"];
-			var clist = bd.cellinside(x1-1,y1-1,x2+1,y2+1);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], bx = bd.cell[c].bx, by = bd.cell[c].by;
 				var px = bd.cell[c].px, py = bd.cell[c].py;
@@ -1411,7 +1471,7 @@ Graphic.prototype = {
 		this.flushCanvasAll = ((g.use.canvas) ?
 			function(){
 				this.numobj = {};
-				base.numparent.innerHTML = '';
+				ee('numobj_parent').el.innerHTML = '';
 			}
 		:
 			function(){
@@ -1420,7 +1480,7 @@ Graphic.prototype = {
 				this.zidx_array=[];
 
 				this.numobj = {};
-				base.numparent.innerHTML = '';
+				ee('numobj_parent').el.innerHTML = '';
 
 				this.vinc('board_base', 'crispEdges');
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
@@ -1431,16 +1491,17 @@ Graphic.prototype = {
 		);
 		this.flushCanvasAll();
 	},
-	flushCanvas : function(x1,y1,x2,y2){
+	flushCanvas : function(){
 		this.flushCanvas = ((g.use.canvas) ?
-			function(x1,y1,x2,y2){
+			function(){
+				var d = this.range;
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
-				g.fillRect(x1*this.bw, y1*this.bh, (x2-x1)*this.bw, (y2-y1)*this.bh);
+				g.fillRect(d.x1*this.bw, d.y1*this.bh, (d.x2-d.x1)*this.bw, (d.y2-d.y1)*this.bh);
 			}
 		:
-			function(x1,y1,x2,y2){ this.zidx=1;}
+			function(){ this.zidx=1;}
 		);
-		this.flushCanvas(x1,y1,x2,y2);
+		this.flushCanvas();
 	},
 
 	//---------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-// MenuExec.js v3.3.1
+// MenuExec.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -77,7 +77,7 @@ MenuExec.prototype = {
 		else{
 			this.reader = new FileReader();
 			this.reader.onload = ee.ebinder(this, function(e){
-				this.fileonload(ee.getSrcElement(e).result);
+				this.fileonload(e.target.result.replace(/\//g, "[[slash]]"));
 			});
 		}
 	},
@@ -116,7 +116,8 @@ MenuExec.prototype = {
 			if(col>0 && row>0){ bd.initBoardSize(col,row);}
 			menu.popclose();
 
-			base.resetInfo(true);
+			um.allerase();
+			base.resetInfo();
 			base.resize_canvas();				// Canvasを更新する
 		}
 	},
@@ -206,7 +207,7 @@ MenuExec.prototype = {
 		else                                           { _doc.fileform2.platform.value = "Others";}
 
 		_doc.fileform2.ques.value   = fio.fileencode(ftype);
-		_doc.fileform2.urlstr.value = fio.urlstr;
+		_doc.fileform2.urlstr.value = fio.history;
 		_doc.fileform2.operation.value = 'save';
 
 		_doc.fileform2.action = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
@@ -253,7 +254,7 @@ MenuExec.prototype = {
 		pc.fillTextPrecisely = temp_flag;
 		k.bdmargin = temp_margin;
 		pp.setValOnly('cursor', temp_cursor);
-		base.initCanvas();
+		g = ee('divques').unselectable().el.getContext("2d");
 
 		// その他の設定を元に戻して、再描画
 		base.resize_canvas();
@@ -285,8 +286,8 @@ MenuExec.prototype = {
 	// menu.ex.dispmanstr() 管理領域を隠す/表示するにどの文字列を表示するか
 	//------------------------------------------------------------------------------
 	dispman : function(e){
-		var idlist = ['expression','usepanel','checkpanel'];
-		var seplist = k.EDITOR ? ['separator1'] : ['separator1','separator2'];
+		var idlist = ['usepanel','checkpanel'];
+		var seplist = k.EDITOR ? [] : ['separator2'];
 
 		if(this.displaymanage){
 			for(var i=0;i<idlist.length;i++)        { ee(idlist[i])  .el.style.display = 'none';}
@@ -336,7 +337,7 @@ MenuExec.prototype = {
 			um.addOpe(k.BOARD, name, 0, this.boardtype[name][0], this.boardtype[name][1]);
 
 			bd.setminmax();
-			if(!um.undoExec){ base.resetInfo(false);}
+			if(!um.undoExec){ base.resetInfo();}
 			base.resize_canvas();				// Canvasを更新する
 		}
 	},
@@ -700,7 +701,7 @@ MenuExec.prototype = {
 			um.newOperation(true);
 
 			bd.ansclear();
-			base.resetInfo(false);
+			base.resetInfo();
 			pc.paintAll();
 		}
 	},

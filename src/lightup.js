@@ -1,46 +1,21 @@
 //
-// パズル固有スクリプト部 美術館版 lightup.js v3.3.1
+// パズル固有スクリプト部 美術館版 lightup.js v3.3.2
 //
 Puzzles.lightup = function(){ };
 Puzzles.lightup.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.dispzero        = true;
+		k.isInputHatena   = true;
+		k.NumberIsWhite   = true;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.ispzprv3ONLY    = true;
+		k.isKanpenExist   = true;
 
-		k.dispzero        = true;	// 0を表示するかどうか
-		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
-
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = true;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
-
-		base.setTitle("美術館","Akari (Light Up)");
-		base.setExpression("　マウスで光源と白マス確定マスが入力できます。",
-						   " Click to input Akari (Light source) or determined white cells.");
 		base.setFloatbgcolor("rgb(32, 32, 32)");
-		base.proto = 1;
-
-		enc.pidKanpen = 'bijutsukan';
 	},
 	menufix : function(){
 		menu.addUseToFlags();
@@ -49,8 +24,7 @@ Puzzles.lightup.prototype = {
 	protoChange : function(){
 		this.protofunc = { resetinfo : base.resetInfo};
 
-		base.resetInfo = function(iserase){
-			if(iserase){ um.allerase();}
+		base.resetInfo = function(){
 			bd.initQlight();
 		};
 	},
@@ -70,7 +44,6 @@ Puzzles.lightup.prototype = {
 		mv.mousemove = function(){
 			if(k.playmode && this.btn.Right) this.inputcell();
 		};
-		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
@@ -173,18 +146,18 @@ Puzzles.lightup.prototype = {
 
 		pc.lightcolor = "rgb(224, 255, 127)";
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
+			this.drawBlackCells();
+			this.drawNumbers();
 
-			this.drawAkari(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2,true);
+			this.drawAkari();
+			this.drawDotCells(true);
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
 		// オーバーライド drawBGCells用
@@ -195,14 +168,14 @@ Puzzles.lightup.prototype = {
 			return false;
 		};
 
-		pc.drawAkari = function(x1,y1,x2,y2){
+		pc.drawAkari = function(){
 			this.vinc('cell_akari', 'auto');
 
 			var rsize = this.cw*0.40;
 			var lampcolor = "rgb(0, 127, 96)";
 			var header = "c_AK_";
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.isAkari(c)){

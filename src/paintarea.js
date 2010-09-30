@@ -1,42 +1,22 @@
 //
-// パズル固有スクリプト部 ペイントエリア版 paintarea.js v3.3.1
+// パズル固有スクリプト部 ペイントエリア版 paintarea.js v3.3.2
 //
 Puzzles.paintarea = function(){ };
 Puzzles.paintarea.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isborder = 1;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.hasroom         = true;
+		k.dispzero        = true;
+		k.isDispHatena    = true;
+		k.isInputHatena   = true;
+		k.BlackCell       = true;
+		k.checkBlackCell  = true;
 
-		k.dispzero        = true;	// 0を表示するかどうか
-		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
-
-		k.BlackCell       = true;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = true;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		base.setTitle("ペイントエリア","Paintarea");
-		base.setExpression("　左クリックで黒タイルが、右クリックで白タイル確定タイルが入力できます。",
-						   " Left Click to input black tile, Right Click to determined white tile.");
 		base.setFloatbgcolor("rgb(127, 160, 96)");
 	},
 	menufix : function(){
@@ -65,13 +45,10 @@ Puzzles.paintarea.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputqnum(ca);
 		};
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
-		kc.isZ = false;
 
 		if(k.EDITOR){
 			kp.generate(1, true, false);
@@ -90,20 +67,20 @@ Puzzles.paintarea.prototype = {
 		pc.bbcolor = "rgb(127, 127, 127)";
 		pc.setBGCellColorFunc('qans1');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
+			this.drawBlackCells();
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawNumbers();
 
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBorders();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawBoxBorders(x1,y1,x2,y2,true);
+			this.drawBoxBorders(true);
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 	},
 

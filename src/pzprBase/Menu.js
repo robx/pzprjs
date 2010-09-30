@@ -1,4 +1,4 @@
-// Menu.js v3.3.1
+// Menu.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -66,10 +66,10 @@ Menu.prototype = {
 	// menu.addButtons() ボタンの情報を変数に登録する
 	// menu.addLabels()  ラベルの情報を変数に登録する
 	//---------------------------------------------------------------------------
-	menuinit : function(){
+	menuinit : function(onload){
 		this.menuarea();
 		this.managearea();
-		this.poparea();
+		this.poparea(onload);
 
 		this.displayAll();
 	},
@@ -123,6 +123,7 @@ Menu.prototype = {
 			if(!this.labelstack[i].el){ continue;}
 			this.labelstack[i].el.innerHTML = this.labelstack[i].str[menu.language];
 		}
+		um.enb_btn();
 	},
 	setdisplay : function(idname){
 		switch(pp.type(idname)){
@@ -190,7 +191,7 @@ Menu.prototype = {
 		ap('sep_file', 'file');
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
 		at('filesavep', 'file', 'ファイル保存 ->',  'Save the file as ... ->');
-		if(fio.dbm.DBaccept>0){
+		if(dbm.DBaccept>0){
 			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
 		}
 		if(base.enableSaveImage){
@@ -200,6 +201,7 @@ Menu.prototype = {
 
 		// *ファイル - ファイル保存 -------------------------------------------
 		as('filesave',  'filesavep', 'ぱずぷれv3形式',  'Puz-Pre v3 format');
+		//as('filesave3',  'filesavep', 'ぱずぷれv3(履歴つき)',  'Puz-Pre v3 with history');
 		if(this.ispencilbox){
 			as('filesave2', 'filesavep', 'pencilbox形式', 'Pencilbox format');
 		}
@@ -213,8 +215,29 @@ Menu.prototype = {
 		// *編集 ==============================================================
 		am('edit', "編集", "Edit");
 
+		at('hist', 'edit', '履歴', 'History');
+		at('board','edit', '盤面', 'Board');
+		ap('sep_edit1', 'edit');
+
 		as('adjust', 'edit', '盤面の調整', 'Adjust the Board');
 		as('turn',   'edit', '反転・回転', 'Filp/Turn the Board');
+		if(!!(dbm.DBaccept&0x10)){
+			ap('sep_edit2',  'edit');
+			as('duplicate', 'edit', '盤面の複製', 'Duplicate the Board');
+		}
+
+		// *編集 - 履歴 -----------------------------------------------------
+		aa('cap_hist', 'hist', '履歴','Display mode');
+		as('h_oldest', 'hist', '最初にジャンプ', 'Jump to oldest');
+		as('h_undo',   'hist', '元に戻す/Undo', 'Undo');
+		as('h_redo',   'hist', 'やり直し/Redo', 'Redo');
+		as('h_latest', 'hist', '最後にジャンプ', 'Jump to latest');
+
+		// *編集 - 盤面 -----------------------------------------------------
+		aa('cap_board','board', '盤面','Display mode');
+		as('check',    'board', 'チェック', 'Check the Answer');
+		as('ansclear', 'board', '回答消去', 'Erase answer');
+		as('subclear', 'board', '補助記号消去', 'Erase auxiliary marks');
 
 		// *表示 ==============================================================
 		am('disp', "表示", "Display");
@@ -285,7 +308,8 @@ Menu.prototype = {
 		// *その他 ============================================================
 		am('other', "その他", "Others");
 
-		as('credit',  'other', 'ぱずぷれv3について',   'About PUZ-PRE v3');
+		as('credit',   'other', 'ぱずぷれv3について', 'About PUZ-PRE v3');
+		as('jumpexp',  'other', '操作説明',           'How to Input');
 		ap('sep_other','other');
 		at('link',     'other', 'リンク', 'Link');
 		at('debug',    'other', 'デバッグ', 'Debug');
@@ -562,9 +586,6 @@ Menu.prototype = {
 			ee('checkpanel').el.appendChild(el);
 		}
 
-		// 説明文の場所
-		ee('expression').el.innerHTML = base.expression.ja;
-
 		// 管理領域の表示/非表示設定
 		if(k.EDITOR){
 			ee('timerpanel').el.style.display = 'none';
@@ -582,8 +603,8 @@ Menu.prototype = {
 		ee.createEL(this.EL_UBUTTON, 'btnclear2');
 
 		this.addButtons(ee("btncheck").el,  ee.binder(ans, ans.check),             "チェック", "Check");
-		this.addButtons(ee("btnundo").el,   ee.binder(um, um.undo),                "戻",       "<-");
-		this.addButtons(ee("btnredo").el,   ee.binder(um, um.redo),                "進",       "->");
+		this.addButtons(ee("btnundo").el,   ee.binder(um, um.undo, [1]),             "戻",       "<-");
+		this.addButtons(ee("btnredo").el,   ee.binder(um, um.redo, [1]),             "進",       "->");
 		this.addButtons(ee("btnclear").el,  ee.binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
 		this.addButtons(ee("btnclear2").el, ee.binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
 
@@ -617,26 +638,34 @@ Menu.prototype = {
 	//---------------------------------------------------------------------------
 	// menu.poparea()       ポップアップメニューの初期設定を行う
 	//---------------------------------------------------------------------------
-	poparea : function(){
+	poparea : function(onload){
 
 		//=====================================================================
 		//// 各タイトルバーの動作設定
-		var pop = ee('popup_parent').el.firstChild;
-		while(!!pop){
-			var _el = pop.firstChild;
-			while(!!_el){
-				if(_el.className==='titlebar'){
-					this.titlebarfunc(_el);
-					break;
+		if(onload){
+			var pop = ee('popup_parent').el.firstChild;
+			while(!!pop){
+				var _el = pop.firstChild;
+				while(!!_el){
+					if(_el.className==='titlebar'){
+						this.titlebarfunc(_el);
+						break;
+					}
+					_el = _el.nextSibling;
 				}
-				_el = _el.nextSibling;
+				pop = pop.nextSibling;
 			}
-			pop = pop.nextSibling;
-		}
-		this.titlebarfunc(ee('credit3_1').el);
+			this.titlebarfunc(ee('credit3_1').el);
 
-		_doc.onmousemove = ee.ebinder(this,this.titlebarmove);
-		_doc.onmouseup   = ee.ebinder(this,this.titlebarup);
+			if(!k.mobile){
+				ee.addEvent(_doc, "mousemove", ee.ebinder(this, this.titlebarmove));
+				ee.addEvent(_doc, "mouseup",   ee.ebinder(this, this.titlebarup));
+			}
+			else{
+				ee.addEvent(_doc, "touchmove", ee.ebinder(this, this.titlebarmove));
+				ee.addEvent(_doc, "touchend",  ee.ebinder(this, this.titlebarup));
+			}
+		}
 
 		//=====================================================================
 		//// formボタンの動作設定・その他のCaption設定
@@ -690,7 +719,7 @@ Menu.prototype = {
 		btn(_doc.fileform.close,    close, "閉じる",     "Close");
 
 		// データベースを開く -------------------------------------------------
-		func = ee.ebinder(fio.dbm, fio.dbm.clickHandler);
+		func = ee.ebinder(dbm, dbm.clickHandler);
 		lab(ee('bar1_8').el, "一時保存/戻す", "Temporary Stack");
 		_doc.database.sorts   .onchange = func;
 		_doc.database.datalist.onchange = func;
@@ -731,8 +760,8 @@ Menu.prototype = {
 
 		// credit -------------------------------------------------------------
 		lab(ee('bar3_1').el,   "credit", "credit");
-		lab(ee('credit3_1').el,"ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\nライブラリとしてuuCanvas1.0, Google Gearsを使用しています。<br>\n<br>\n",
-							   "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\nThis script use uuCanvas1.0 and Google Gears as libraries.&nbsp;<br>\n<br>\n");
+		lab(ee('credit3_1').el,"ぱずぷれv3 "+pzprversion+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\n",
+							   "PUZ-PRE v3 "+pzprversion+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\n");
 		btn(_doc.credit.close,  close, "閉じる", "OK");
 
 		// 表示サイズ ---------------------------------------------------------
@@ -761,15 +790,21 @@ Menu.prototype = {
 		// ポップアップメニューを表示する
 		if(this.pop){
 			var _pop = this.pop.el;
-			_pop.style.left = ee.pageX(e) - 8 + 'px';
-			_pop.style.top  = ee.pageY(e) - 8 + 'px';
+			if(!k.mobile){
+				_pop.style.left = ee.pageX(e) - 8 + 'px';
+				_pop.style.top  = ee.pageY(e) - 8 + 'px';
+			}
+			else{
+				_pop.style.left = e.pageX - 8 + 'px';
+				_pop.style.top  = e.pageY - 8 + 'px';
+			}
 			_pop.style.display = 'inline';
 		}
 	},
 	popclose : function(){
 		if(this.pop){
 			if(this.pop.el.id=='pop1_8'){
-				fio.dbm.closeDialog();
+				dbm.closeDialog();
 			}
 
 			this.pop.el.style.display = "none";
@@ -787,7 +822,12 @@ Menu.prototype = {
 	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
 	//---------------------------------------------------------------------------
 	titlebarfunc : function(bar){
-		bar.onmousedown = ee.ebinder(this, this.titlebardown);
+		if(!k.mobile){
+			ee.addEvent(bar, "mousedown", ee.ebinder(this, this.titlebardown));
+		}
+		else{
+			ee.addEvent(bar, "touchstart", ee.ebinder(this, this.titlebardown));
+		}
 		ee(bar).unselectable().el;
 	},
 
@@ -808,6 +848,7 @@ Menu.prototype = {
 		if(!!pop){
 			pop.style.left = ee.pageX(e) - this.offset.x + 'px';
 			pop.style.top  = ee.pageY(e) - this.offset.y + 'px';
+			ee.preventDefault(e);
 		}
 	},
 
@@ -819,6 +860,7 @@ Menu.prototype = {
 	textsize : function(num){
 		var sheet = _doc.styleSheets[0];
 		var rules = (!!sheet.cssRules ? sheet.cssRules : sheet.rules);
+		if(!rules){ return;} /* Chrome6の挙動がおかしいのでエラー回避用 */
 		for(var i=0,len=rules.length;i<len;i++){
 			var rule = rules[i];
 			if(!rule.selectorText){ continue;}
@@ -835,14 +877,18 @@ Menu.prototype = {
 				rule.style.lineHeight = ['1.6','1.2','1.1','1.1'][num];
 				break;
 			case 'div#btnarea input[type="button"]':
-				rule.style.fontSize = ['1.0em','1.6em','2.0em','3.0em'][num];
+				rule.style.fontSize = ['','1.6em','2.0em','3.0em'][num];
 				break;
 			case 'form input':
-				rule.style.fontSize = ['1.0em','1.2em','1.4em','1.6em'][num];
+				rule.style.fontSize = ['','1.2em','1.4em','1.6em'][num];
 				break;
 			case 'input[type="checkbox"]':
 				rule.style.width  = ['','24px','32px','50px'][num];
 				rule.style.height = ['','24px','32px','50px'][num];
+				break;
+			case 'div.titlebar':
+				rule.style.paddingTop    = ['1pt','10pt','16px','24px'][num];
+				rule.style.paddingBottom = ['1pt','10pt','16px','24px'][num];
 				break;
 			}
 		}
@@ -858,9 +904,7 @@ Menu.prototype = {
 	//--------------------------------------------------------------------------------
 	setLang : function(ln){
 		this.language = ln;
-		_doc.title = base.gettitle();
-		ee('title2').el.innerHTML = base.gettitle();
-		ee('expression').el.innerHTML = base.expression[this.language];
+		base.displayTitle();
 
 		this.displayAll();
 		this.ex.dispmanstr();
@@ -1012,13 +1056,25 @@ Properties.prototype = {
 		urloutput : function(){ menu.pop = ee("pop1_3"); _doc.urloutput.ta.value = "";},
 		fileopen  : function(){ menu.pop = ee("pop1_4");},
 		filesave  : function(){ menu.ex.filesave(fio.PZPR);},
+//		filesave3 : function(){ menu.ex.filesave(fio.PZPH);},
 		filesave2 : function(){ if(!!fio.kanpenSave){ menu.ex.filesave(fio.PBOX);}},
 		imagedl   : function(){ menu.ex.imagesave(true);},
 		imagesave : function(){ menu.ex.imagesave(false);},
-		database  : function(){ menu.pop = ee("pop1_8"); fio.dbm.openDialog();},
+		database  : function(){ menu.pop = ee("pop1_8"); dbm.openDialog();},
+
+		h_oldest  : function(){ um.undoall();},
+		h_undo    : function(){ um.undo(1);},
+		h_redo    : function(){ um.redo(1);},
+		h_latest  : function(){ um.redoall();},
+		check     : function(){ ans.check();},
+		ansclear  : function(){ menu.ex.ACconfirm();},
+		subclear  : function(){ menu.ex.ASconfirm();},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
+		duplicate : function(){ fio.exportDuplicate();},
+
 		credit    : function(){ menu.pop = ee("pop3_1");},
+		jumpexp   : function(){ window.open('./faq.html?'+k.puzzleid+(k.EDITOR?"_edit":""), '');},
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
 		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},
@@ -1026,6 +1082,7 @@ Properties.prototype = {
 		cursor    : function(){ pc.paintAll();},
 		manarea   : function(){ menu.ex.dispman();},
 		poptest   : function(){ debug.disppoptest();},
+
 		mode      : function(num){ menu.ex.modechange(num);},
 		text      : function(num){ menu.textsize(num); base.resize_canvas();},
 		size      : function(num){ base.resize_canvas();},
@@ -1110,16 +1167,15 @@ var debug = {
 	},
 
 	filesave : function(){
-		this.setTA(fio.fileencode(fio.PZPR).replace(/\//g,"\n"));
-		this.addTA('');
-		this.addTA(fio.urlstr);
+		this.setTA(fio.fileencode(fio.PZPH).replace(/\//g,"\n"));
+		this.addTA(fio.history.replace(/\//g,"\n").replace(/\[\[slash\]\]/g,"/"));
 	},
 	filesave_pencilbox : function(){
 		this.setTA(fio.fileencode(fio.PBOX).replace(/\//g,"\n"));
 	},
 
 	fileopen : function(){
-		var dataarray = this.getTA().split("\n");
+		var dataarray = this.getTA().replace(/\//g,"[[slash]]").split("\n");
 		fio.filedecode(dataarray.join("/"));
 	},
 

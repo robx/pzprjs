@@ -22,7 +22,7 @@
   <li class="puzmenu" id="puzmenu_nigun">二軍のパズル</li>
   <li class="puzmenu" id="puzmenu_omopa">オモパパズル</li>
   <li class="puzmenu" id="puzmenu_other">その他のパズル</li>
-  <li class="puzmenu" id="puzmenu_notice">説明</li>
+  <li class="puzmenusel" id="puzmenu_notice">説明</li>
  </menu>
 <br clear="all">
 
@@ -30,7 +30,7 @@
 
 <table class="puztable" id="table_notice" border=0>
  <tr>
-  <td style="background-color:#f8f8f8; padding:12pt; border:solid 1px gray;">
+  <td class="sentence">
    <p class=expression>
     <h4 class="notice_item">ぱずぷれv3について</h4>
     <div style="margin-left:6pt;">
@@ -39,7 +39,7 @@
     </div>
     <div style="margin-left:6pt; margin-top:6pt;">
      　スクリプトの作成は主にFirefox3.6上で行っており、
-     動作確認はGoogle Chrome4.0、Safari4.0、たまにInternetExplorer8.0、Firefox3.0+、Opera9.64+でも行っております。
+     動作確認はGoogle Chrome5.0、Safari4.0、たまにInternetExplorer8.0、Firefox3.0+、Opera9.64+でも行っております。
     </div>
     <div style="margin-left:6pt; margin-top:6pt;">
      <a href="./index_en.html">to English Menu</a>
@@ -49,18 +49,31 @@
    <p class=expression style="margin-top:6pt;">
     <h4 class="notice_item">推奨ブラウザ</h4>
     <div style="margin-left:6pt;">
-     Firefox3.0+, Google Chrome, Safari4.0+, Opera10.60+<br>
-     ※Opera10.5xの条件分岐動作が不安定なので、推奨ブラウザから除外しています
+     Firefox3.5+, Google Chrome4.0-5.0, Safari4.0+, Opera10.60+, (Internet Explorer 9.0?)
     </div>
    </p>
    <hr>
    <p class=expression style="margin-top:6pt;">
     <h4 class="notice_item">動作ブラウザ</h4>
     <div style="margin-left:6pt;">
-     Firefox2.0+, Google Chrome, Safari3.2+, Opera9.64+ (10.5x除く) およびInternetExplorer8.0<br>
-     あるいはIEコンポーネントを使用しているブラウザ(Seipnir, Donut, KIKIあたり)<br>
-     ※ただし、InternetExplorerおよびSleipnir等のIEコンポーネント使用ブラウザは描画処理等動作が重いですので、
-     それ以外のブラウザの使用を推奨いたします。
+     Firefox2.0+, Google Chrome5.0まで, Safari3.2+, Opera9.64-10.10, 10.60+ およびInternetExplorer8.0+
+     あるいはIEコンポーネントを使用しているブラウザ(Seipnir, Donut, KIKIあたり)
+     iOS4は制限つきで対応しています。<br>
+    </div>
+   </p>
+   <hr>
+   <p class=expression style="margin-top:6pt;">
+    <h4 class="notice_item">制限事項</h4>
+    <div style="margin-left:6pt;">
+     <ul>
+     <li>盤面の"一時保存/戻す"機能はFirefox1.5まで, Google Chrome3.0まで, Safari3.2まで, Opera10.10まででは動作しません。</li>
+     <li>盤面の画像出力機能はFirefox3.0まで, Google Chrome1.0まで, Safari3.2まで, Opera10.10まで, InternetExplorer8.0で
+         正しく動作しません。</li>
+     <li>Google Chrome 6.0の描画処理およびCSS関連APIの動作が不安定なので、動作ブラウザから除外しています</li>
+     <li>Opera10.5xの条件分岐動作が不安定なので、動作ブラウザから除外しています</li>
+     <li>InternetExplorer8およびSleipnir等のIEコンポーネント使用ブラウザは描画処理等動作が重いですので、
+         それ以外のブラウザの使用を推奨いたします。</li>
+     </ul>
     </div>
    </p>
    <hr>
@@ -156,6 +169,7 @@
     <li class="lunch"><a href="p.html?tentaisho">天体ショー</a></li>
     <li class="lunch"><a href="p.html?shikaku">四角に切れ</a></li>
     <li class="nigun"><a href="p.html?bdblock">ボーダーブロック</a></li>
+    <li class="omopa"><a href="p.html?cbblock">コンビブロック</a></li>
     <li class="subpa"><a href="p.html?nawabari">なわばり</a></li>
     <li class="subpa"><a href="p.html?triplace">トリプレイス</a></li>
     <li class="subpa"><a href="p.html?kramma">快刀乱麻</a></li>
@@ -227,6 +241,7 @@
     <li class="lunch2"><a href="p.html?goishi">碁石ひろい</a></li>
     <li class="testa"><a href="p.html?shakashaka">シャカシャカ</a></li>
     <li class="testa"><a href="p.html?snakes">へびいちご</a></li>
+    <li class="omopa"><a href="p.html?roma">ろーま</a></li>
     <li class="omopa"><a href="p.html?toichika">遠い誓い</a></li>
     <li class="nigun"><a href="p.html?kinkonkan">キンコンカン</a></li>
     <li class="subpa"><a href="p.html?hakoiri">はこいり○△□</a></li>
@@ -398,6 +413,7 @@
   <td class="lists" style="background-color:#ccffcc;">
    <b>領域分割系パズル</b>
    <ul>
+    <li class="omopa"><a href="p.html?cbblock">コンビブロック</a></li>
     <li class="subpa"><a href="p.html?fillmat">フィルマット</a></li>
     <li class="subpa"><a href="p.html?nawabari">なわばり</a></li>
     <li class="subpa"><a href="p.html?triplace">トリプレイス</a></li>
@@ -420,6 +436,7 @@
   <td class="lists" style="background-color:#ffffcc;">
    <b>その他のパズル</b>
    <ul>
+    <li class="omopa"><a href="p.html?roma">ろーま</a></li>
     <li class="omopa"><a href="p.html?toichika">遠い誓い</a></li>
     <li class="subpa"><a href="p.html?hakoiri">はこいり○△□</a></li>
     <li class="subpa"><a href="p.html?shugaku">修学旅行の夜</a></li>

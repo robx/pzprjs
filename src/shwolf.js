@@ -1,42 +1,24 @@
 //
-// パズル固有スクリプト部 ヤギとオオカミ版 shwolf.js v3.3.1
+// パズル固有スクリプト部 ヤギとオオカミ版 shwolf.js v3.3.2
 //
 Puzzles.shwolf = function(){ };
 Puzzles.shwolf.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 1;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 1;
+		k.isborder = 1;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.hasroom         = true;
+		k.isDispHatena    = true;
+		k.isInputHatena   = true;
+		k.inputQnumDirect = true;
+		k.numberAsObject  = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.ispzprv3ONLY    = true;
 
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		base.setTitle("ヤギとオオカミ","Sheeps and Wolves");
-		base.setExpression("　左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
-						   " Left Button Drag to input border lines, Right to input auxiliary marks.");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){ },
@@ -79,36 +61,30 @@ Puzzles.shwolf.prototype = {
 			if(id!==null){
 				if(this.inputData===null){ this.inputData=(bd.isBorder(id)?0:1);}
 
-				var idlist = [id];
-				var bx1, bx2, by1, by2;
-				if(bd.border[id].bx&1){
-					var bx = bd.border[id].bx;
-					while(bx>bd.minbx){ if(bd.QnX(bd.xnum(bx-1,bd.border[id].by))===1){ break;} bx-=2;} bx1 = bx;
-					while(bx<bd.maxbx){ if(bd.QnX(bd.xnum(bx+1,bd.border[id].by))===1){ break;} bx+=2;} bx2 = bx;
-					by1 = by2 = bd.border[id].by;
+				var d = this.getrange(id);
+				var idlist = new IDList(bd.borderinside(d.x1,d.y1,d.x2,d.y2));
+				for(var i=0;i<idlist.data.length;i++){
+					if     (this.inputData===1){ bd.setBorder(idlist.data[i]);}
+					else if(this.inputData===0){ bd.removeBorder(idlist.data[i]);}
 				}
-				else if(bd.border[id].by&1){
-					var by = bd.border[id].by;
-					while(by>bd.minby){ if(bd.QnX(bd.xnum(bd.border[id].bx,by-1))===1){ break;} by-=2;} by1 = by;
-					while(by<bd.maxby){ if(bd.QnX(bd.xnum(bd.border[id].bx,by+1))===1){ break;} by+=2;} by2 = by;
-					bx1 = bx2 = bd.border[id].bx;
-				}
-				idlist = [];
-				for(var i=bx1;i<=bx2;i+=2){ for(var j=by1;j<=by2;j+=2){ idlist.push(bd.bnum(i,j)); } }
 
-				for(var i=0;i<idlist.length;i++){
-					if(idlist[i]===null){ continue;}
-					if     (this.inputData==1){ bd.setBorder(idlist[i]);}
-					else if(this.inputData==0){ bd.removeBorder(idlist[i]);}
-					pc.paintBorder(idlist[i]);
-				}
+				pc.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 			}
 			this.prevPos = pos;
 		};
-		mv.inputqnumDirectly = true;
-
-		// キーボード入力系
-		kc.keyinput = function(ca){ };
+		mv.getrange = function(id){
+			var bx=bd.border[id].bx, by=bd.border[id].by;
+			var d = {x1:bx, x2:bx, y1:by, y2:by};
+			if(bd.border[id].bx&1){
+				while(d.x1>bd.minbx && bd.QnX(bd.xnum(d.x1-1,by))!==1){d.x1-=2;}
+				while(d.x2<bd.maxbx && bd.QnX(bd.xnum(d.x2+1,by))!==1){d.x2+=2;}
+			}
+			else if(bd.border[id].by&1){
+				while(d.y1>bd.minby && bd.QnX(bd.xnum(bx,d.y1-1))!==1){d.y1-=2;}
+				while(d.y2<bd.maxby && bd.QnX(bd.xnum(bx,d.y2+1))!==1){d.y2+=2;}
+			}
+			return d;
+		};
 
 		bd.maxnum = 2;
 	},
@@ -123,24 +99,24 @@ Puzzles.shwolf.prototype = {
 		pc.crosssize = 0.15;
 		pc.imgobj = new ImageManager_shwolf();
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
+			this.drawBorders();
 
-			this.drawSheepWolf(x1,y1,x2,y2);
-			this.drawCrossMarks(x1,y1,x2+1,y2+1);
+			this.drawSheepWolf();
+			this.drawCrossMarks();
 
-			this.drawBorderQsubs(x1,y1,x2,y2);
+			this.drawBorderQsubs();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 		};
 
 		// numobj:？表示用 numobj2:画像表示用
-		pc.drawSheepWolf = function(x1,y1,x2,y2){
+		pc.drawSheepWolf = function(){
 			this.vinc('cell_number_image', 'auto');
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
 				var keyques = ['cell',c].join('_'), keyimg = ['cell',c,'quesimg'].join('_');

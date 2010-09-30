@@ -1,48 +1,23 @@
 //
-// パズル固有スクリプト部 遠い誓い版 toichika.js v3.3.1
+// パズル固有スクリプト部 遠い誓い版 toichika.js v3.3.2
 //
 Puzzles.toichika = function(){ };
 Puzzles.toichika.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isborder = 1;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.hasroom         = true;
+		k.isDispHatena    = true;
+		k.isInputHatena   = true;
+		k.isAnsNumber     = true;
+		k.numberAsObject  = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.ispzprv3ONLY    = true;
 
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		if(k.EDITOR){
-			base.setExpression("　キーボードの左側や-キー等で、記号の入力ができます。",
-							   " Press left side of the keyboard or '-' key to input marks.");
-		}
-		else{
-			base.setExpression("　左クリックで記号が、右ドラッグで補助記号が入力できます。",
-							   " Left Click to input answers, Right Button Drag to input auxiliary marks.");
-		}
-		base.setTitle("遠い誓い","Toichika");
 		base.setFloatbgcolor("rgb(127, 160, 96)");
 	},
 	menufix : function(){ },
@@ -121,7 +96,6 @@ Puzzles.toichika.prototype = {
 		};
 
 		bd.maxnum = 4;
-		bd.numberAsObject = true;
 
 		menu.ex.adjustSpecial = function(key,d){
 			var trans = {};
@@ -147,21 +121,21 @@ Puzzles.toichika.prototype = {
 		pc.gridcolor = pc.gridcolor_LIGHT;
 		pc.dotcolor = pc.dotcolor_PINK;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
+			this.drawBorders();
 
-			this.drawDotCells(x1,y1,x2,y2,true);
-			this.drawArrows(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawDotCells(true);
+			this.drawArrows();
+			this.drawHatenas();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawCursor(x1,y1,x2,y2);
+			this.drawCursor();
 		};
 
-		pc.drawArrows = function(x1,y1,x2,y2){
+		pc.drawArrows = function(){
 			this.vinc('cell_arrow', 'auto');
 
 			var headers = ["c_arup_", "c_ardn_", "c_arlt_", "c_arrt_"];
@@ -171,7 +145,7 @@ Puzzles.toichika.prototype = {
 			var tl = ll*0.5-ll*0.3;			// 矢じりの長さの座標(中心-長さ)
 			var tw = Math.max(ll*0.2, 5);	// 矢じりの幅
 
-			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], dir=bd.getNum(c);
 				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
@@ -192,14 +166,6 @@ Puzzles.toichika.prototype = {
 					}
 				}
 			}
-		};
-
-		pc.drawNumber1 = function(c){
-			var num = bd.getNum(c), obj = bd.cell[c], key='cell_'+c;
-			if(num===-2){
-				this.dispnum(key, 1, "?", 0.8, this.fontcolor, obj.cpx, obj.cpy);
-			}
-			else{ this.hideEL(key);}
 		};
 	},
 

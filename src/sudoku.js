@@ -1,46 +1,21 @@
 //
-// パズル固有スクリプト部 数独版 sudoku.js v3.3.1
+// パズル固有スクリプト部 数独版 sudoku.js v3.3.2
 //
 Puzzles.sudoku = function(){ };
 Puzzles.sudoku.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 9;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 9;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 9;}
+		if(!k.qrows){ k.qrows = 9;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isDispHatena    = true;
+		k.isInputHatena   = true;
+		k.isAnsNumber     = true;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.ispzprv3ONLY    = true;
+		k.isKanpenExist   = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
-
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
-
-		base.setTitle("数独","Sudoku");
-		base.setExpression("　キーボードやマウスで数字が入力できます。",
-						   " It is available to input number by keybord or mouse");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
-		base.proto = 1;
-
-		enc.pidKanpen = 'sudoku';
 	},
 	menufix : function(){ },
 
@@ -103,18 +78,18 @@ Puzzles.sudoku.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlockBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
+			this.drawBlockBorders();
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawNumbers();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawCursor(x1,y1,x2,y2);
+			this.drawCursor();
 		};
-		pc.drawBlockBorders = function(x1,y1,x2,y2){
+		pc.drawBlockBorders = function(){
 			this.vinc('border_block', 'crispEdges');
 
 			var lw = this.lw, lm = this.lm;
@@ -123,6 +98,7 @@ Puzzles.sudoku.prototype = {
 			var block=((Math.sqrt(max)+0.1)|0);
 			var headers = ["bbx_", "bby_"];
 
+			var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 			if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
 			if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
 

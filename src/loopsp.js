@@ -1,48 +1,19 @@
 //
-// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.3.1
+// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.3.2
 //
 Puzzles.loopsp = function(){ };
 Puzzles.loopsp.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 1;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.irowake  = 1;
+		k.isborder = 1;
 
-		k.isLineCross     = true;	// 線が交差するパズル
-		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.isLineCross     = true;
+		k.isCenterLine    = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
-
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		if(k.EDITOR){
-			base.setExpression("　問題の記号はQWEASDFの各キーで入力できます。<br>Rキーや-キーで消去できます。数字キーで数字を入力できます。",
-							   " Press each QWEASDF key to input question. <br> Press 'R' or '-' key to erase. Number keys to input numbers.");
-		}
-		else{
-			base.setExpression("　左ドラッグで線が、右クリックで×印が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
-		base.setTitle("環状線スペシャル","Loop Special");
 		base.setFloatbgcolor("rgb(0, 191, 0)");
 	},
 	menufix : function(){
@@ -115,7 +86,6 @@ Puzzles.loopsp.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			kc.key_inputLineParts(ca);
@@ -143,8 +113,6 @@ Puzzles.loopsp.prototype = {
 			pc.paintCell(cc);
 			return true;
 		};
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
-		kc.isZ = false;
 
 		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
@@ -189,31 +157,31 @@ Puzzles.loopsp.prototype = {
 		pc.minYdeg = 0.36;
 		pc.maxYdeg = 0.74;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			if(g.use.canvas){ this.drawPekes(x1,y1,x2,y2,2);}
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			if(g.use.canvas){ this.drawPekes(2);}
+			this.drawDashedGrid();
 
-			this.drawLines(x1,y1,x2,y2);
+			this.drawLines();
 
-			this.drawCirclesAtNumber(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawCirclesAtNumber();
+			this.drawNumbers();
 
-			this.drawPekes(x1,y1,x2,y2,1);
+			this.drawPekes(1);
 
-			this.drawLineParts(x1-2,y1-2,x2+2,y2+2);
+			this.drawLineParts();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		line.repaintParts = function(idlist){
-			var clist = this.getClistFromIdlist(idlist);
+		pc.repaintParts = function(idlist){
+			var clist = line.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
-				pc.drawLineParts1(clist[i]);
-				pc.drawCircle1AtNumber(clist[i]);
-				pc.drawNumber1(clist[i]);
+				this.drawLineParts1(clist[i]);
+				this.drawCircle1AtNumber(clist[i]);
+				this.drawNumber1(clist[i]);
 			}
 		};
 	},
@@ -329,14 +297,13 @@ Puzzles.loopsp.prototype = {
 
 		ans.checkLoopNumber = function(){
 			return this.checkAllLoops(function(cells){
-				var number = -1;
-				for(var i=0;i<cells.length;i++){
-					if(bd.isValidNum(cells[i])){
-						if(number==-1){ number=bd.QnC(cells[i]);}
-						else if(number!=bd.QnC(cells[i])){
-							for(var c=0;c<cells.length;c++){ if(bd.isValidNum(cells[c])){ bd.sErC([cells[c]],1);} }
-							return false;
-						}
+				var sub = (new IDList(cells)).sublist(bd.isValidNum);
+				var number = null;
+				for(var i=0;i<sub.data.length;i++){
+					if(number===null){ number=bd.QnC(sub.data[i]);}
+					else if(number!==bd.QnC(sub.data[i])){
+						bd.sErC(sub.data,1);
+						return false;
 					}
 				}
 				return true;
@@ -344,13 +311,12 @@ Puzzles.loopsp.prototype = {
 		};
 		ans.checkNumberLoop = function(){
 			return this.checkAllLoops(function(cells){
-				var number = -1;
-				var include = function(array,val){ for(var i=0;i<array.length;i++){ if(array[i]==val) return true;} return false;};
-				for(var i=0;i<cells.length;i++){ if(bd.isValidNum(cells[i])){ number = bd.QnC(cells[i]); break;} }
-				if(number==-1){ return true;}
+				var sub = (new IDList(cells)).sublist(bd.isValidNum);
+				if(sub.isnull()){ return true;}
+				var number = bd.QnC(sub.data[0]);
 				for(var c=0;c<bd.cellmax;c++){
-					if(bd.QnC(c)==number && !include(cells,c)){
-						for(var cc=0;cc<bd.cellmax;cc++){ if(bd.QnC(cc)==number){ bd.sErC([cc],1);} }
+					if(bd.QnC(c)===number && !sub.include(c)){
+						bd.sErC(sub.data,1);
 						return false;
 					}
 				}
@@ -359,33 +325,21 @@ Puzzles.loopsp.prototype = {
 		};
 		ans.checkNumberInLoop = function(){
 			return this.checkAllLoops(function(cells){
-				for(var i=0;i<cells.length;i++){ if(bd.isNum(cells[i])){ return true;} }
-				return false;
+				return (!(new IDList(cells)).sublist(bd.isNum).isnull());
 			});
 		};
 		ans.checkAllLoops = function(func){
 			var result = true;
-			var xinfo = line.getLineInfo();
-			for(var r=1;r<=xinfo.max;r++){
-				if(func(line.LineList2Clist(xinfo.room[r].idlist))){ continue;}
+			var linfo = line.getLineInfo();
+			for(var r=1;r<=linfo.max;r++){
+				if(func(line.getClistFromIdlist(linfo.room[r].idlist))){ continue;}
 
 				if(this.inAutoCheck){ return false;}
 				if(result){ bd.sErBAll(2);}
-				bd.sErB(xinfo.room[r].idlist,1);
+				bd.sErB(linfo.room[r].idlist,1);
 				result = false;
 			}
 			return result;
-		};
-
-		line.LineList2Clist = function(idlist){
-			var clist = [];
-			clist.include = function(val){ for(var i=0,len=this.length;i<len;i++){ if(this[i]==val) return true;} return false;};
-			for(var i=0,len=idlist.length;i<len;i++){
-				var id=idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(cc1!==null && !clist.include(cc1)){ clist.push(cc1);}
-				if(cc2!==null && !clist.include(cc2)){ clist.push(cc2);}
-			}
-			return clist;
 		};
 	}
 };

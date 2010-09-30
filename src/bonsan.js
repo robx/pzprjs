@@ -1,42 +1,20 @@
 //
-// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.3.1
+// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.3.2
 //
 Puzzles.bonsan = function(){ };
 Puzzles.bonsan.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 8;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 8;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 8;}
+		if(!k.qrows){ k.qrows = 8;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isborder = 1;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.isCenterLine    = true;
+		k.hasroom         = true;
+		k.dispzero        = true;
+		k.isInputHatena   = true;
 
-		k.dispzero        = true;	// 0を表示するかどうか
-		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
-
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		base.setTitle("ぼんさん/へやぼん","Bonsan/Heya-Bon");
-		base.setExpression("　左ドラッグで線が、マスのクリックでセルの背景色が入力できます。",
-						   " Left Button Drag to input lines, Click the cell to input background color of the cell.");
 		base.setFloatbgcolor("rgb(127,96,64)");
 	},
 	menufix : function(){ },
@@ -72,7 +50,6 @@ Puzzles.bonsan.prototype = {
 			else if(bd.QsC(cc)==2){ bd.sQsC(cc, (this.btn.Left?0:1));}
 			pc.paintCell(cc);
 		};
-		mv.enableInputHatena = true;
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
@@ -119,31 +96,31 @@ Puzzles.bonsan.prototype = {
 		pc.fontsizeratio = 0.9;	// 数字の倍率
 		pc.circleratio = [0.38, 0.38];
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
+			this.drawBorders();
 
-			this.drawTip(x1,y1,x2,y2);
-			this.drawLines(x1,y1,x2,y2);
-			//this.drawPekes(x1,y1,x2,y2,0);
+			this.drawTip();
+			this.drawLines();
+			//this.drawPekes(0);
 
-			this.drawCirclesAtNumber(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawCirclesAtNumber();
+			this.drawNumbers();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawTip = function(x1,y1,x2,y2){
+		pc.drawTip = function(){
 			this.vinc('cell_linetip', 'auto');
 
 			var tsize = this.cw*0.30;
 			var tplus = this.cw*0.05;
 			var header = "c_tip_";
 
-			var clist = bd.cellinside(x1-2,y1-2,x2+2,y2+2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				this.vdel([header+c]);

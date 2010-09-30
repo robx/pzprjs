@@ -1,45 +1,24 @@
 //
-// パズル固有スクリプト部 ぬりかべ版 nurikabe.js v3.3.1
+// パズル固有スクリプト部 ぬりかべ版 nurikabe.js v3.3.2
 //
 Puzzles.nurikabe = function(){ };
 Puzzles.nurikabe.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isDispHatena    = true;
+		k.isInputHatena   = true;
+		k.BlackCell       = true;
+		k.NumberIsWhite   = true;
+		k.checkBlackCell  = true;
+		k.checkWhiteCell  = true;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.ispzprv3ONLY    = true;
+		k.isKanpenExist   = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
-
-		k.BlackCell       = true;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = true;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = true;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = true;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = true;	// pencilbox/カンペンにあるパズル
-
-		base.setTitle("ぬりかべ","Nurikabe");
-		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
-						   " Left Click to input black cells, Right Click to input determined white cells.");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
-
-		enc.pidKanpen = 'nurikabe';
 	},
 	menufix : function(){
 		menu.addUseToFlags();
@@ -62,13 +41,10 @@ Puzzles.nurikabe.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.key_inputqnum(ca);
 		};
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
-		kc.isZ = false;
 
 		if(k.EDITOR){
 			kp.generate(0, true, false);
@@ -82,17 +58,17 @@ Puzzles.nurikabe.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2,false);
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBlackCells(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDotCells(false);
+			this.drawGrid();
+			this.drawBlackCells();
 
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawNumbers();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 	},
 

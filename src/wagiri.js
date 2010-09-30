@@ -1,47 +1,25 @@
 //
-// パズル固有スクリプト部 ごきげんななめ・輪切版 wagiri.js v3.3.1
+// パズル固有スクリプト部 ごきげんななめ・輪切版 wagiri.js v3.3.2
 //
 Puzzles.wagiri = function(){ };
 Puzzles.wagiri.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 7;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 7;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 7;}
+		if(!k.qrows){ k.qrows = 7;}
 
-		k.iscross  = 2;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 2;
 
-		k.isLineCross     = true;	// 線が交差するパズル
-		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.isLineCross     = true;
+		k.isCenterLine    = true;
+		k.dispzero        = true;
 
-		k.dispzero        = true;	// 0を表示するかどうか
-		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.ispzprv3ONLY    = true;
 
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
+		k.bdmargin       = 0.70;
+		k.bdmargin_image = 0.50;
 
-		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		k.bdmargin       = 0.70;	// 枠外の一辺のmargin(セル数換算)
-		k.bdmargin_image = 0.50;	// 画像出力時のbdmargin値
-
-		base.setTitle("ごきげんななめ・輪切","Gokigen-naname:wagiri");
-		base.setExpression("　マウスで斜線を入力できます。",
-						   " Click to input slashes.");
 		base.setFloatbgcolor("rgb(0, 127, 0)");
-		base.proto = 1;
 	},
 	menufix : function(){
 		menu.addUseToFlags();
@@ -155,24 +133,24 @@ Puzzles.wagiri.prototype = {
 		pc.errcolor2 = "rgb(0, 0, 127)";
 
 		pc.crosssize = 0.33;
-		pc.chassisflag = false;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid(false);
 
-			this.drawNumbers(x1,y1,x2,y2);
-			this.drawSlashes(x1,y1,x2,y2);
+			this.drawNumbers();
+			this.drawSlashes();
 
-			this.drawCrosses(x1,y1,x2+1,y2+1);
-			this.drawTarget_wagiri(x1,y1,x2,y2);
+			this.drawCrosses();
+			this.drawTarget_wagiri();
 		};
 		// オーバーライド
 		pc.prepaint = function(x1,y1,x2,y2){
 			if(!ans.errDisp && pp.getVal('colorslash')){ x1=bd.minbx; y1=bd.minby; x2=bd.maxbx; y2=bd.maxby;}
-			pc.flushCanvas(x1,y1,x2,y2);
+			this.setRange(x1,y1,x2,y2);
 
-			pc.paint(x1,y1,x2,y2);
+			this.flushCanvas();
+			this.paint();
 		};
 
 		// オーバーライド
@@ -193,7 +171,7 @@ Puzzles.wagiri.prototype = {
 			else{ this.hideEL(key);}
 		};
 
-		pc.drawSlashes = function(x1,y1,x2,y2){
+		pc.drawSlashes = function(){
 			this.vinc('cell_slash', 'auto');
 
 			var headers = ["c_sl1_", "c_sl2_"], check=[];
@@ -204,7 +182,7 @@ Puzzles.wagiri.prototype = {
 				for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.sErC([c],sdata[c]);} }
 			}
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
@@ -237,9 +215,9 @@ Puzzles.wagiri.prototype = {
 			}
 		};
 
-		pc.drawTarget_wagiri = function(x1,y1,x2,y2){
+		pc.drawTarget_wagiri = function(){
 			var islarge = ((tc.cursor.x&1)===(tc.cursor.y&1));
-			this.drawCursor(x1,y1,x2,y2,islarge,k.editmode);
+			this.drawCursor(islarge,k.editmode);
 		};
 	},
 

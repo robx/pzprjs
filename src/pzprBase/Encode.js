@@ -1,4 +1,4 @@
-// Encode.js v3.3.1
+// Encode.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -18,9 +18,6 @@ Encode = function(){
 	this.uri.rows;		// 入力されたURLの縦幅部分
 	this.uri.bstr;		// 入力されたURLの盤面部分
 
-	this.pidKanpen = '';
-	this.pidforURL = '';
-
 	this.outpflag  = '';
 	this.outsize   = '';
 	this.outbstr   = '';
@@ -32,6 +29,15 @@ Encode = function(){
 	this.KANPEN  = 2;
 	this.KANPENP = 5;
 	this.HEYAAPP = 4;
+
+	// URL
+	this.urlbase = {};
+	this.urlbase[this.PZPRV3]  = "http://%DOMAIN%/p.html?%PID%/";
+	this.urlbase[this.PZPRV3E] = "http://%DOMAIN%/p.html?%PID%_edit/";
+	this.urlbase[this.PZPRAPP] = "http://indi.s58.xrea.com/%PID%/sa/q.html?";
+	this.urlbase[this.KANPEN]  = "http://www.kanpen.net/%KID%.html?problem=";
+	this.urlbase[this.KANPENP] = "http://www.kanpen.net/%KID%.html?pzpr=";
+	this.urlbase[this.HEYAAPP] = "http://www.geocities.co.jp/heyawake/?problem=";
 };
 Encode.prototype = {
 	//---------------------------------------------------------------------------
@@ -75,28 +81,21 @@ Encode.prototype = {
 		k.PLAYER    = !k.EDITOR;
 		k.playmode  = !k.editmode;
 
+		var pid = search, purl = '';
 		var qs = search.indexOf("/");
 		if(qs>=0){
-			this.parseURI_pzpr(search.substr(qs+1));
-			if(!!this.uri.cols){ k.qcols = this.uri.cols;}
-			if(!!this.uri.rows){ k.qrows = this.uri.rows;}
+			pid  = search.substr(0,qs);
+			purl = search.substr(qs+1);
+		}
+		pid = PZLNAME.toPID(pid);
 
-			search = search.substr(0,qs);
+		// 複製かどうか
+		if(purl==='duplicate'){
+			base.isduplicate = true;
+			purl = '';
 		}
 
-		// alias機能
-		var pid = search;
-		switch(pid){
-			case 'yajilin'    : this.pidforURL = 'yajilin'; pid = 'yajirin'; break;
-			case 'akari'      : this.pidforURL = 'akari';   pid = 'lightup'; break;
-			case 'bijutsukan' : this.pidforURL = 'akari';   pid = 'lightup'; break;
-			case 'slitherlink': this.pidforURL = pid = 'slither'; break;
-			case 'numberlink' : this.pidforURL = pid = 'numlin';  break;
-			case 'hakyukoka'  : this.pidforURL = pid = 'ripple';  break;
-			case 'masyu'      : this.pidforURL = pid = 'mashu';   break;
-			default           : this.pidforURL = pid;
-		}
-		k.puzzleid = pid;
+		return {id:pid, url:purl}
 	},
 	parseURI : function(url){
 		this.init();
@@ -203,7 +202,9 @@ Encode.prototype = {
 				this.decodeHeyaApp();
 				break;
 			}
-			base.resetInfo(true);
+
+			um.allerase();
+			base.resetInfo();
 
 			if(!base.initProcess){
 				base.resize_canvas();
@@ -255,17 +256,10 @@ Encode.prototype = {
 		if(!domain){ domain = "pzv.jp";}
 		else if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
 
-		var urls = {};
-		urls[this.PZPRV3]  = "http://%DOMAIN%/p.html?%PID%/";
-		urls[this.PZPRV3E] = "http://%DOMAIN%/p.html?%PID%_edit/";
-		urls[this.PZPRAPP] = "http://indi.s58.xrea.com/%PID%/sa/q.html?";
-		urls[this.KANPEN]  = "http://www.kanpen.net/%KID%.html?problem=";
-		urls[this.KANPENP] = "http://www.kanpen.net/%KID%.html?pzpr=";
-		urls[this.HEYAAPP] = "http://www.geocities.co.jp/heyawake/?problem=";
-
-		return urls[type].replace("%PID%",this.pidforURL)
-						 .replace("%KID%",this.pidKanpen)
-						 .replace("%DOMAIN%",domain);
+		return this.urlbase[type]
+					.replace("%PID%",PZLNAME.toURLID(k.puzzleid))
+					.replace("%KID%",PZLNAME.toKanpen(k.puzzleid))
+					.replace("%DOMAIN%",domain);
 	},
 
 	// オーバーライド用

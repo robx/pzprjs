@@ -1,4 +1,4 @@
-// KeyInput.js v3.3.1
+// KeyInput.js v3.3.2
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -12,6 +12,9 @@ KeyEvent = function(){
 	this.isMETA;	// MacのCommandキーなど
 	this.isALT;		// ALTはメニュー用なので基本的に使わない
 	this.isSHIFT;
+	this.isZ;
+	this.isX;
+
 	this.inUNDO;
 	this.inREDO;
 	this.tcMoved;	// カーソル移動時にスクロールさせない
@@ -30,14 +33,15 @@ KeyEvent.prototype = {
 		this.isMETA  = false;
 		this.isALT   = false;
 		this.isSHIFT = false;
+		this.isZ = false;
+		this.isX = false;
+
 		this.inUNDO  = false;
 		this.inREDO  = false;
 		this.tcMoved = false;
 		this.keyPressed = false;
 		this.prev = null;
 		this.ca = '';
-		if(this.isZ){ this.isZ = false;}
-		if(this.isX){ this.isX = false;}
 	},
 
 	//---------------------------------------------------------------------------
@@ -146,6 +150,8 @@ KeyEvent.prototype = {
 		if(!this.isCTRL  && e.ctrlKey ){ this.isCTRL=true; flag=true;}
 		if(!this.isMETA  && e.metaKey ){ this.isMETA=true; flag=true;}
 		if(!this.isALT   && e.altKey  ){ this.isALT=true;  flag=true;}
+		if(!this.isZ && this.ca==='z') { this.isZ=true;}
+		if(!this.isX && this.ca==='x') { this.isX=true;}
 
 		if((this.isCTRL || this.isMETA) && !this.inUNDO && this.ca=='z'){ this.inUNDO=true; flag=true; tm.startUndoTimer();}
 		if((this.isCTRL || this.isMETA) && !this.inREDO && this.ca=='y'){ this.inREDO=true; flag=true; tm.startUndoTimer();}
@@ -161,12 +167,14 @@ KeyEvent.prototype = {
 	keyup_common : function(e){
 		var flag = false;
 		if(this.isSHIFT && !e.shiftKey){ this.isSHIFT=false; flag=true;}
-		if(this.isCTRL  && !e.ctrlKey ){ this.isCTRL=false;  flag=true;}
-		if(this.isMETA  && !e.metaKey ){ this.isMETA=false;  flag=true;}
+		if(this.isCTRL  && !e.ctrlKey ){ this.isCTRL=false;  flag=true; this.inUNDO=false; this.inREDO=false;}
+		if(this.isMETA  && !e.metaKey ){ this.isMETA=false;  flag=true; this.inUNDO=false; this.inREDO=false;}
 		if(this.isALT   && !e.altKey  ){ this.isALT=false;   flag=true;}
+		if(this.isZ && this.ca==='z')  { this.isZ=false;}
+		if(this.isX && this.ca==='x')  { this.isX=false;}
 
-		if(!(this.isCTRL || this.isMETA) && this.inUNDO && this.ca=='z'){ this.inUNDO=false; flag=true;}
-		if(!(this.isCTRL || this.isMETA) && this.inREDO && this.ca=='y'){ this.inREDO=false; flag=true;}
+		if((this.isCTRL || this.isMETA) && this.inUNDO && this.ca=='z'){ this.inUNDO=false; flag=true;}
+		if((this.isCTRL || this.isMETA) && this.inREDO && this.ca=='y'){ this.inREDO=false; flag=true;}
 
 		return flag;
 	},
@@ -545,9 +553,10 @@ KeyPopup.prototype = {
 			obj.el.style.left   = "-"+(obj.x*bsize+1)+"px";
 		};
 
-		if(k.cellsize>=24){
-			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  k.cellsize);}
-			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], (k.cellsize*0.90)|0);}
+		var cellsize = Math.min(k.cwidth, 120);
+		if(cellsize>=24){
+			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],   cellsize);}
+			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], (cellsize*0.90)|0);}
 		}
 		else{
 			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  22);}

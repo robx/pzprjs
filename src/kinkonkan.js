@@ -1,51 +1,24 @@
 //
-// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.3.1
+// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.3.2
 //
 Puzzles.kinkonkan = function(){ };
 Puzzles.kinkonkan.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 8;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 8;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 8;}
+		if(!k.qrows){ k.qrows = 8;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 2;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isborder = 1;
+		k.isexcell = 2;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.hasroom         = true;
+		k.dispzero        = true;
+		k.isDispHatena    = true;
+		k.isInputHatena   = true;
 
-		k.dispzero        = true;	// 0を表示するかどうか
-		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.bdmargin       = 0.15;
+		k.bdmargin_image = 0.10;
 
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		k.bdmargin       = 0.15;	// 枠外の一辺のmargin(セル数換算)
-		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
-
-		if(k.EDITOR){
-			base.setExpression("　マウスの左ボタンで境界線が入力できます。外側のアルファベットは、同じキーを何回か押して大文字小文字／色違いの計4種類を入力できます。",
-							   " Left Click to input border lines. It is able to change outside alphabets to four type that is either capital or lower, is either black or blue type by pressing the same key.");
-		}
-		else{
-			base.setExpression("　マウスのクリックで斜線などが入力できます。外側をクリックすると光が発射されます。",
-							   " Click to input mirrors or auxiliary marks. Click Outside of the board to give off the light.");
-		}
-		base.setTitle("キンコンカン","Kin-Kon-Kan");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
 	},
 	menufix : function(){ },
@@ -226,26 +199,26 @@ Puzzles.kinkonkan.prototype = {
 		pc.errbcolor2 = "rgb(255, 255, 127)";
 		pc.dotcolor = pc.dotcolor_PINK;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawErrorCells_kinkonkan(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2,true);
+		pc.paint = function(){
+			this.drawErrorCells_kinkonkan();
+			this.drawDotCells(true);
 
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawGrid();
+			this.drawBorders();
 
-			this.drawSlashes(x1,y1,x2,y2);
+			this.drawSlashes();
 
-			this.drawEXcells_kinkonkan(x1,y1,x2,y2);
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawEXcells_kinkonkan();
+			this.drawChassis();
 
-			this.drawTarget(x1-1,y1-1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawErrorCells_kinkonkan = function(x1,y1,x2,y2){
+		pc.drawErrorCells_kinkonkan = function(){
 			this.vinc('cell_back', 'crispEdges');
 
 			var headers = ["c_full_", "c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_", "c_full_"];
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], err = bd.cell[c].error;
 				if(err!==0){
@@ -261,13 +234,13 @@ Puzzles.kinkonkan.prototype = {
 				else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c, headers[4]+c, headers[5]+c]);}
 			}
 		};
-		pc.drawSlashes = function(x1,y1,x2,y2){
+		pc.drawSlashes = function(){
 			this.vinc('cell_slash', 'auto');
 
 			var headers = ["c_sl1_", "c_sl2_"];
 			g.lineWidth = Math.max(this.cw/8, 2);
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 
@@ -292,11 +265,11 @@ Puzzles.kinkonkan.prototype = {
 			}
 		};
 
-		pc.drawEXcells_kinkonkan = function(x1,y1,x2,y2){
+		pc.drawEXcells_kinkonkan = function(){
 			this.vinc('excell_number', 'auto');
 
 			var header = "ex_full_";
-			var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
+			var exlist = this.range.excells;
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i], obj = bd.excell[c], key = 'excell_'+c;
 

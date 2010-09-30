@@ -17,14 +17,20 @@
 
 	p.expression{ margin-bottom:0pt;}
 
+	table#table_notice ul { margin:0pt;}
+
 	menu#puztypes { float:left; list-style-type:none; margin:0px; padding:2pt; padding-bottom:0pt;}
-	li.puzmenu { display:inline; padding:2pt; white-space:nowrap;
-				 background-color:#dfdfdf; border:solid 1px gray; border-bottom:none;
+	menu#puztypes li { display:inline; padding:2pt; white-space:nowrap;
+				 background-color:#dfdfdf; color:gray; cursor:pointer;
+				 border:solid 1px gray; border-bottom:none;
 				 border-top-right-radius:3pt; border-top-left-radius:3pt;
 				 -moz-border-radius-topright:3pt; -moz-border-radius-topleft:3pt;
 				 -webkit-border-top-right-radius:3pt; -webkit-border-top-left-radius:3pt;
 				}
+	menu#puztypes li.puzmenusel { background-color:white; color:black; cursor:default;}
 	table.puztable{ width:100%; border:solid 1px gray; text-align:left;}
+
+	table.puztable td.sentence { background-color:#f8f8f8; padding:12pt; border:solid 1px gray;}
 
 	h4.notice_item { margin-top:4pt; margin-bottom:4pt;}
 

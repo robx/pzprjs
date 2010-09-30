@@ -1,42 +1,19 @@
 //
-// パズル固有スクリプト部 因子の部屋版 factors.js v3.3.1
+// パズル固有スクリプト部 因子の部屋版 factors.js v3.3.2
 //
 Puzzles.factors = function(){ };
 Puzzles.factors.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 9;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 9;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 9;}
+		if(!k.qrows){ k.qrows = 9;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isborder = 1;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = true;	// 部屋の問題の数字が1つだけ入るパズル
+		k.hasroom         = true;
+		k.roomNumber      = true;
+		k.isAnsNumber     = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
-
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		base.setTitle("因子の部屋",'Rooms of Factors');
-		base.setExpression("　キーボードやマウスで数字が入力できます。",
-						   " Inputting number is available by keybord or mouse");
 		base.setFloatbgcolor("rgb(64, 64, 64)");
 	},
 	menufix : function(){ },
@@ -79,22 +56,22 @@ Puzzles.factors.prototype = {
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawGrid();
 
-			this.drawNumbers_factors(x1,y1,x2,y2);
+			this.drawNumbers_factors();
 
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBorders();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawCursor(x1,y1,x2,y2);
+			this.drawCursor();
 		};
-		pc.drawNumbers_factors = function(x1,y1,x2,y2){
+		pc.drawNumbers_factors = function(){
 			this.vinc('cell_number', 'auto');
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], obj = bd.cell[c];
 				var key_qans = ['cell',c,'qans'].join('_');

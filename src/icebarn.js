@@ -1,55 +1,45 @@
 //
-// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.3.1
+// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.3.2
 //
 Puzzles.icebarn = function(){ };
 Puzzles.icebarn.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 8;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 8;}	// 盤面の縦幅
-		k.irowake  = 1;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 8;}
+		if(!k.qrows){ k.qrows = 8;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 2;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.irowake  = 1;
+		k.isborder = 2;
 
-		k.isLineCross     = true;	// 線が交差するパズル
-		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.isLineCross     = true;
+		k.isCenterLine    = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.bdmargin       = 1.00;
+		k.bdmargin_image = 1.00;
 
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		k.bdmargin       = 1.00;	// 枠外の一辺のmargin(セル数換算)
-		k.bdmargin_image = 1.00;	// 画像出力時のbdmargin値
-
-		if(k.EDITOR){
-			base.setExpression("　左ドラッグで矢印が、右クリックで氷が入力できます。",
-							   " Left Button Drag to input arrows, Right Click to input ice.");
-		}
-		else{
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
-		base.setTitle("アイスバーン","Icebarn");
 		base.setFloatbgcolor("rgb(0, 0, 127)");
 	},
 	menufix : function(){
 		menu.addRedLineToFlags();
+	},
+
+	protoChange : function(){
+		Operation.prototype.decodeSpecial = function(strs){
+			this.property = (strs[0]=='PI'?'in':'out');
+			this.old = bd.bnum(strs[1], strs[2]);
+			this.num = bd.bnum(strs[3], strs[4]);
+		};
+		Operation.prototype.toStringSpecial = function(){
+			var prefix = (this.property=='in'?'PI':'PO');
+			var obj1=bd.border[this.old], obj2=bd.border[this.num];
+			var bx1=(!!obj1 ? obj1.bx : -1), by1=(!!obj1 ? obj1.by : -1);
+			var bx2=(!!obj2 ? obj2.bx : -1), by2=(!!obj2 ? obj2.by : -1);
+			return [prefix, bx1, by1, bx2, by2].join(',');
+		};
+	},
+	protoOriginal : function(){
+		Operation.prototype.decodeSpecial = function(strs){};
+		Operation.prototype.toStringSpecial = function(){};
 	},
 
 	//---------------------------------------------------------
@@ -119,10 +109,9 @@ Puzzles.icebarn.prototype = {
 			this.prevPos = pos;
 		};
 
-		// キーボード入力系
-		kc.keyinput = function(ca){ if(ca=='z' && !this.keyPressed){ this.isZ=true;}};
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
-		kc.isZ = false;
+		bd.getArrow = function(id){ return this.QuB(id); };
+		bd.setArrow = function(id,val){ if(id!==null){ this.sQuB(id,val);}};
+		bd.isArrow  = function(id){ return (this.QuB(id)>0);};
 
 		if(!bd.arrowin) { bd.arrowin  = null;}
 		if(!bd.arrowout){ bd.arrowout = null;}
@@ -131,10 +120,12 @@ Puzzles.icebarn.prototype = {
 			this.setArrow(this.arrowin,0);
 			pc.paintBorder(this.arrowin);
 			if(this.arrowout==id){
+				um.addOpe(k.OTHER, 'out', 0, this.arrowout, this.arrowin);
 				this.arrowout = this.arrowin;
 				this.setArrow(this.arrowout, ((dir+1)%2)+1);
 				pc.paintBorder(this.arrowout);
 			}
+			um.addOpe(k.OTHER, 'in', 0, this.arrowin, id);
 			this.arrowin = id;
 			this.setArrow(this.arrowin, (dir%2)+1);
 		};
@@ -143,16 +134,22 @@ Puzzles.icebarn.prototype = {
 			this.setArrow(this.arrowout,0);
 			pc.paintBorder(this.arrowout);
 			if(this.arrowin==id){
+				um.addOpe(k.OTHER, 'in', 0, this.arrowin, this.arrowout);
 				this.arrowin = this.arrowout;
 				this.setArrow(this.arrowin, (dir%2)+1);
 				pc.paintBorder(this.arrowin);
 			}
+			um.addOpe(k.OTHER, 'out', 0, this.arrowout, id);
 			this.arrowout = id;
 			this.setArrow(this.arrowout, ((dir+1)%2)+1);
 		};
-		bd.getArrow = function(id){ return this.QuB(id); };
-		bd.setArrow = function(id,val){ if(id!==null){ this.sQuB(id,val);}};
-		bd.isArrow  = function(id){ return (this.QuB(id)>0);};
+		um.execSpecial = function(ope, num){
+			var id0 = bd.startid;
+			if     (this.property==='in') { bd.arrowin  = num;}
+			else if(this.property==='out'){ bd.arrowout = num;}
+			this.stackBorder(id0);
+			this.stackBorder(num);
+		};
 
 		bd.initSpecial = function(col,row){
 			this.bdinside = 2*col*row-(col+row);
@@ -236,26 +233,26 @@ Puzzles.icebarn.prototype = {
 
 		pc.maxYdeg = 0.70;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
 
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBorders();
 
-			this.drawLines(x1,y1,x2,y2);
-			this.drawPekes(x1,y1,x2,y2,1);
+			this.drawLines();
+			this.drawPekes(1);
 
-			this.drawArrows(x1,y1,x2,y2);
+			this.drawArrows();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
 			this.drawInOut();
 		};
 
-		pc.drawArrows = function(x1,y1,x2,y2){
+		pc.drawArrows = function(){
 			this.vinc('border_arrow', 'crispEdges');
 
-			var idlist = bd.borderinside(x1-1,y1-1,x2+2,y2+2);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){ this.drawArrow1(idlist[i], bd.isArrow(idlist[i]));}
 		};
 		pc.drawArrow1 = function(id, flag){
@@ -265,7 +262,7 @@ Puzzles.icebarn.prototype = {
 			var ll = this.cw*0.35;				//LineLength
 			var lw = Math.max(this.cw/36, 1);	//LineWidth
 			var lm = lw/2;					//LineMargin
-			var px=bd.border[id].px; var py=bd.border[id].py;
+			var px=bd.border[id].px, py=bd.border[id].py;
 
 			g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.cellcolor);
 			if(this.vnop(vids[0],this.FILL)){
@@ -311,10 +308,10 @@ Puzzles.icebarn.prototype = {
 			else if(bx===bd.maxbx){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px+0.7*this.cw, py-0.3*this.ch);}
 		};
 
-		line.repaintParts = function(idlist){
+		pc.repaintParts = function(idlist){
 			for(var i=0;i<idlist.length;i++){
 				if(bd.isArrow(idlist[i])){
-					pc.drawArrow1(idlist[i],true);
+					this.drawArrow1(idlist[i],true);
 				}
 			}
 		};

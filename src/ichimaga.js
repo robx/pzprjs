@@ -1,45 +1,24 @@
 //
-// パズル固有スクリプト部 イチマガ/磁石イチマガ版 ichimaga.js v3.3.1
+// パズル固有スクリプト部 イチマガ/磁石イチマガ版 ichimaga.js v3.3.2
 //
 Puzzles.ichimaga = function(){ };
 Puzzles.ichimaga.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 1;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.irowake  = 1;
+		k.isborder = 1;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.isCenterLine    = true;
+		k.isInputHatena   = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.ispzprv3ONLY    = true;
 
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
+		k.bdmargin       = 0.50;
+		k.bdmargin_image = 0.10;
 
-		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		k.bdmargin       = 0.50;	// 枠外の一辺のmargin(セル数換算)
-		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
-
-		base.setTitle("イチマガ/磁石イチマガ","Ichimaga / Magnetic Ichimaga");
-		base.setExpression("　左ドラッグで線が、右ドラッグで補助記号が入力できます。",
-						   " Left Button Drag to input lines, Right to input auxiliary marks.");
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
 	menufix : function(){
@@ -50,6 +29,13 @@ Puzzles.ichimaga.prototype = {
 			pp.addChild('puztype_1', 'puztype', 'イチマガ', 'Ichimaga');
 			pp.addChild('puztype_2', 'puztype', '磁石イチマガ', 'Magnetic Ichimaga');
 			pp.addChild('puztype_3', 'puztype', '交差も', 'Crossing Ichimaga');
+
+			pp.funcs['puztype'] = function(num){
+				if     (num==2){ k.pzlnameid="ichimagam";}
+				else if(num==3){ k.pzlnameid="ichimagax";}
+				else           { k.pzlnameid="ichimaga"; }
+				base.displayTitle();
+			};
 		}
 	},
 
@@ -85,6 +71,8 @@ Puzzles.ichimaga.prototype = {
 		};
 
 		bd.maxnum = 4;
+
+		line.iscrossing = function(cc){ return bd.noNum(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -96,26 +84,25 @@ Puzzles.ichimaga.prototype = {
 		pc.fontsizeratio = 0.85;
 		pc.circleratio = [0.38, 0.38];
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawDashedCenterLines(x1,y1,x2,y2);
-			this.drawLines(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawDashedCenterLines();
+			this.drawLines();
 
-			this.drawPekes(x1,y1,x2,y2,0);
+			this.drawPekes(0);
 
-			this.drawCirclesAtNumber(x1,y1,x2,y2);
-			this.drawNumbers(x1,y1,x2,y2);
+			this.drawCirclesAtNumber();
+			this.drawNumbers();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
-		line.repaintParts = function(idlist){
-			var clist = this.getClistFromIdlist(idlist);
+		pc.repaintParts = function(idlist){
+			var clist = line.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
-				pc.drawCircle1AtNumber(clist[i]);
-				pc.drawNumber1(clist[i]);
+				this.drawCircle1AtNumber(clist[i]);
+				this.drawNumber1(clist[i]);
 			}
 		};
-		line.iscrossing = function(cc){ return bd.noNum(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -129,13 +116,10 @@ Puzzles.ichimaga.prototype = {
 				else if(this.checkpflag("x")){ pp.setVal('puztype',3);}
 				else                         { pp.setVal('puztype',1);}
 			}
-			else{
-				if     (this.checkpflag("m")){ base.setTitle("磁石イチマガ","Magnetic Ichimaga");}
-				else if(this.checkpflag("x")){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
-				else                         { base.setTitle("イチマガ","Ichimaga");}
-				_doc.title = base.gettitle();
-				ee('title2').el.innerHTML = base.gettitle();
-			}
+			if     (this.checkpflag("m")){ k.pzlnameid="ichimagam";}
+			else if(this.checkpflag("x")){ k.pzlnameid="ichimagax";}
+			else                         { k.pzlnameid="ichimaga"; }
+			base.displayTitle();
 		};
 		enc.pzlexport = function(type){
 			this.encode4Cell();
@@ -153,13 +137,10 @@ Puzzles.ichimaga.prototype = {
 				else if(pzlflag=="cross"){ pp.setVal('puztype',3);}
 				else                     { pp.setVal('puztype',1);}
 			}
-			else{
-				if     (pzlflag=="mag")  { base.setTitle("磁石イチマガ","Magnetic Ichimaga");}
-				else if(pzlflag=="cross"){ base.setTitle("一回曲がって交差もするの","Crossing Ichimaga");}
-				else                     { base.setTitle("イチマガ","Ichimaga");}
-				_doc.title = base.gettitle();
-				ee('title2').el.innerHTML = base.gettitle();
-			}
+			if     (pzlflag=="mag")  { k.pzlnameid="ichimagam";}
+			else if(pzlflag=="cross"){ k.pzlnameid="ichimagax";}
+			else                     { k.pzlnameid="ichimaga"; }
+			base.displayTitle();
 
 			this.decodeCellQnum();
 			this.decodeBorderLine();

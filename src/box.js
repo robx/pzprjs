@@ -1,47 +1,24 @@
 //
-// パズル固有スクリプト部 ボックス版 box.js v3.3.1
+// パズル固有スクリプト部 ボックス版 box.js v3.3.2
 //
 Puzzles.box = function(){ };
 Puzzles.box.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 9;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 9;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 9;}
+		if(!k.qrows){ k.qrows = 9;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 1;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isexcell = 1;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.dispzero        = true;
+		k.BlackCell       = true;
 
-		k.dispzero        = true;	// 0を表示するかどうか
-		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.ispzprv3ONLY    = true;
 
-		k.BlackCell       = true;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
+		k.bdmargin       = 0.15;
+		k.bdmargin_image = 0.10;
 
-		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		k.bdmargin       = 0.15;	// 枠外の一辺のmargin(セル数換算)
-		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
-
-		base.setExpression("　左クリックで黒マスが、右クリックで白マス確定マスが入力できます。",
-						   " Left Click to input black cells, Right Click to input determined white cells.");
-		base.setTitle("ボックス","Kin-Kon-Kan");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
-		base.proto = 1;
 	},
 	menufix : function(){
 		menu.addUseToFlags();
@@ -52,7 +29,7 @@ Puzzles.box.prototype = {
 		EXCell.prototype.defqnum = 0;
 	},
 	protoOriginal : function(){
-		EXCell.prototype.defqnum  = this.protoval;
+		EXCell.prototype.defqnum = this.protoval;
 	},
 
 	//---------------------------------------------------------
@@ -184,27 +161,27 @@ Puzzles.box.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2,false);
-			this.drawBlackCells(x1,y1,x2,y2);
-			this.drawGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDotCells(false);
+			this.drawBlackCells();
+			this.drawGrid();
 
-			this.drawErrorEXCells(x1,y1,x2,y2);
-			this.drawNumbers_box(x1,y1,x2,y2);
+			this.drawErrorEXCells();
+			this.drawNumbers_box();
 
-			this.drawCircledNumbers_box(x1,y1,x2,y2);
+			this.drawCircledNumbers_box();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1-1,y1-1,x2,y2);
+			this.drawTarget();
 		};
 
-		pc.drawErrorEXCells = function(x1,y1,x2,y2){
+		pc.drawErrorEXCells = function(){
 			this.vinc('excell_full', 'crispEdges');
 
 			var header = "ex_full_";
-			var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
+			var exlist = this.range.excells;
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i], obj = bd.excell[c];
 
@@ -217,11 +194,11 @@ Puzzles.box.prototype = {
 				else{ this.vhide(header+c)}
 			}
 		};
-		pc.drawNumbers_box = function(x1,y1,x2,y2){
+		pc.drawNumbers_box = function(){
 			this.vinc('excell_number', 'auto');
 
 			var header = "ex_full_";
-			var exlist = bd.excellinside(x1-1,y1-1,x2,y2);
+			var exlist = this.range.excells;
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i], obj = bd.excell[c], key="excell_"+c;
 				if(c>=k.qcols+k.qrows){ continue;}
@@ -233,8 +210,9 @@ Puzzles.box.prototype = {
 			}
 		};
 
-		pc.drawCircledNumbers_box = function(x1,y1,x2,y2){
+		pc.drawCircledNumbers_box = function(){
 			var exlist = [];
+			var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 			if(x2>=bd.maxbx){ for(var by=(y1|1),max=Math.min(bd.maxby,y2);by<=max;by+=2){ exlist.push([bd.maxbx+1,by]);}}
 			if(y2>=bd.maxby){ for(var bx=(x1|1),max=Math.min(bd.maxbx,x2);bx<=max;bx+=2){ exlist.push([bx,bd.maxby+1]);}}
 

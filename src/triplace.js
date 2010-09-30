@@ -1,50 +1,22 @@
 //
-// パズル固有スクリプト部 トリプレイス版 triplace.js v3.3.1
+// パズル固有スクリプト部 トリプレイス版 triplace.js v3.3.2
 //
 Puzzles.triplace = function(){ };
 Puzzles.triplace.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 1;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isborder = 1;
+		k.isexcell = 1;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = true;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.hasroom         = true;
+		k.dispzero        = true;
 
-		k.dispzero        = true;	// 0を表示するかどうか
-		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.ispzprv3ONLY    = true;
 
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = true;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		if(k.EDITOR){
-			base.setExpression("　左ボタンで境界線が、右ボタンで補助記号が入力できます。数字を入力する場所はSHIFTキーを押すと切り替えられます。",
-							   " Left Button Drag to input border lines, Right Click to auxiliary marks. Press SHIFT key to change the side of inputting numbers.");
-		}
-		else{
-			base.setExpression("　左ボタンで境界線が、右ボタンで補助記号が入力できます。セルのクリックか、Zキー押しながら背景色(2種類)を入力することもできます。",
-							   " Left Button Drag to input border lines, Right Click to auxiliary marks. Click cell or Click with Pressing Z key to input background color.");
-		}
-		base.setTitle("トリプレイス","Tri-place");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
-		base.proto = 1;
 	},
 	menufix : function(){ },
 
@@ -124,16 +96,10 @@ Puzzles.triplace.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(k.playmode){
-				if(ca=='z' && !this.keyPressed){ this.isZ=true; }
-				return;
-			}
+			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			this.inputnumber51(ca,{2:(k.qcols-(tc.cursor.x>>1)-1), 4:(k.qrows-(tc.cursor.y>>1)-1)});
 		};
-		kc.keyup    = function(ca){ if(ca=='z'){ this.isZ=false;}};
-
-		kc.isZ = false;
 
 		if(k.EDITOR){
 			kp.generate(51, true, false);
@@ -156,42 +122,42 @@ Puzzles.triplace.prototype = {
 		pc.borderQanscolor = "rgb(0, 160, 0)";
 		pc.setBGCellColorFunc('qsub2');
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawBGEXcells(x1,y1,x2,y2);
-			this.drawQues51(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawBGEXcells();
+			this.drawQues51();
 
-			this.drawGrid(x1,y1,x2,y2);
-			this.drawQansBorders(x1,y1,x2,y2);
-			this.drawQuesBorders(x1,y1,x2,y2);
+			this.drawGrid();
+			this.drawQansBorders();
+			this.drawQuesBorders();
 
-			this.drawBorderQsubs(x1,y1,x2,y2);
+			this.drawBorderQsubs();
 
-			this.drawChassis_ex1(x1-1,y1-1,x2,y2,false);
+			this.drawChassis_ex1(false);
 
-			this.drawNumbersOn51(x1,y1,x2,y2);
+			this.drawNumbersOn51();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
 		// 問題と回答の境界線を別々に描画するようにします
-		pc.drawQansBorders = function(x1,y1,x2,y2){
+		pc.drawQansBorders = function(){
 			this.vinc('border_answer', 'crispEdges');
 			this.bdheader = "b_bdans";
 			this.setBorderColor = function(id){ return (bd.border[id].qans===1);};
 
 			g.fillStyle = this.borderQanscolor;
-			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 			this.isdrawBD = true;
 		};
-		pc.drawQuesBorders = function(x1,y1,x2,y2){
+		pc.drawQuesBorders = function(){
 			this.vinc('border_question', 'crispEdges');
 			this.bdheader = "b_bdques";
 			this.setBorderColor = function(id){ return (bd.border[id].ques===1);};
 
 			g.fillStyle = this.borderQuescolor;
-			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
 			this.isdrawBD = true;
 		};

@@ -1,53 +1,23 @@
 //
-// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.3.1
+// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.3.2
 //
 Puzzles.bosanowa = function(){ };
 Puzzles.bosanowa.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 0;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 2;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.isborder = 2;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.isDispHatena    = true;
+		k.isInputHatena   = true;
+		k.isAnsNumber     = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = true;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.bdmargin       = 0.70;
+		k.bdmargin_image = 0.10;
 
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		k.bdmargin       = 0.70;	// 枠外の一辺のmargin(セル数換算)
-		k.bdmargin_image = 0.10;	// 画像出力時のbdmargin値
-
-		if(k.EDITOR){
-			base.setExpression("　キーボードで数字および、Wキーで数字を入力するマス/しないマスの切り替えが来出ます。",
-							   " It is able to input number of question by keyboard, and 'W' key toggles cell that is able to be inputted number or not.");
-		}
-		else{
-			base.setExpression("　キーボードやマウスで数字が入力できます。",
-							   " It is available to input number by keybord or mouse.");
-		}
-		base.setTitle("ボサノワ","Bosanowa");
 		base.setFloatbgcolor("rgb(96, 96, 96)");
-		base.proto = 1;
 	},
 	menufix : function(){
 		pp.addSelect('disptype','setting',1,[1,2,3],'表示形式','Display');
@@ -182,39 +152,39 @@ Puzzles.bosanowa.prototype = {
 	graphic_init : function(){
 		pc.borderfontcolor = "blue";
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
 
 			if(pp.getVal('disptype')==1){
-				this.drawCircles_bosanowa(x1,y1,x2,y2);
-				this.drawBDnumbase(x1,y1,x2,y2);
+				this.drawCircles_bosanowa();
+				this.drawBDnumbase();
 			}
 			else if(pp.getVal('disptype')==2){
-				this.drawOutside_souko(x1,y1,x2,y2);
-				this.drawGrid_souko(x1,y1,x2,y2);
-				this.drawBDnumbase(x1,y1,x2,y2);
+				this.drawOutside_souko();
+				this.drawGrid_souko();
+				this.drawBDnumbase();
 			}
 			else if(pp.getVal('disptype')==3){
-				this.drawBorders(x1,y1,x2,y2);
-				this.drawGrid_waritai(x1,y1,x2,y2);
+				this.drawBorders();
+				this.drawGrid_waritai();
 			}
 
-			this.drawNumbers(x1,y1,x2,y2);
-			this.drawNumbersBD(x1,y1,x2,y2);
+			this.drawNumbers();
+			this.drawNumbersBD();
 
 			if(k.EDITOR && !this.fillTextPrecisely){
-				this.drawChassis(x1,y1,x2,y2);
+				this.drawChassis();
 			}
 
-			this.drawTarget_bosanowa(x1,y1,x2,y2);
+			this.drawTarget_bosanowa();
 		};
 
-		pc.drawErrorCells_bosanowa = function(x1,y1,x2,y2){
+		pc.drawErrorCells_bosanowa = function(){
 			this.vinc('cell_back', 'crispEdges');
 
 			var header = "c_fullerr_";
 			g.fillStyle = this.errbcolor1;
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].error===1){
@@ -226,7 +196,7 @@ Puzzles.bosanowa.prototype = {
 			}
 		};
 
-		pc.drawCircles_bosanowa = function(x1,y1,x2,y2){
+		pc.drawCircles_bosanowa = function(){
 			this.vinc('cell_circle', 'auto');
 
 			g.lineWidth = 1;
@@ -234,7 +204,7 @@ Puzzles.bosanowa.prototype = {
 			var rsize  = this.cw*0.44;
 			var header = "c_cir_";
 
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(bd.cell[c].ques===7 && !bd.isNum(c)){
@@ -247,7 +217,7 @@ Puzzles.bosanowa.prototype = {
 			}
 		};
 
-		pc.drawGrid_souko = function(x1,y1,x2,y2){
+		pc.drawGrid_souko = function(){
 			this.vinc('grid_souko', 'crispEdges');
 
 			var header = "b_grids_";
@@ -255,7 +225,7 @@ Puzzles.bosanowa.prototype = {
 			g.fillStyle="rgb(127,127,127)";
 			g.strokeStyle="rgb(127,127,127)";
 
-			var idlist = bd.borderinside(x1-2,y1-2,x2+2,y2+2);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(bd.isBox(cc1) && bd.isBox(cc2)){
@@ -292,12 +262,12 @@ Puzzles.bosanowa.prototype = {
 				else{ this.vhide([header+id]);} 
 			}
 		};
-		pc.drawGrid_waritai = function(x1,y1,x2,y2){
+		pc.drawGrid_waritai = function(){
 			this.vinc('grid_waritai', 'crispEdges');
 
 			var csize = this.cw*0.20;
 			var headers = ["b_grid_", "b_grid2_"];
-			var idlist = bd.borderinside(x1-2,y1-2,x2+2,y2+2);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(bd.isBox(cc1) && bd.isBox(cc2)){
@@ -317,12 +287,12 @@ Puzzles.bosanowa.prototype = {
 			}
 		};
 
-		pc.drawBDnumbase = function(x1,y1,x2,y2){
+		pc.drawBDnumbase = function(){
 			this.vinc('border_number_base', 'crispEdges');
 
 			var csize = this.cw*0.20;
 			var header = "b_bbse_";
-			var idlist = bd.borderinside(x1-2,y1-2,x2+3,y2+3);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 
@@ -335,10 +305,10 @@ Puzzles.bosanowa.prototype = {
 				else{ this.vhide(header+id);}
 			}
 		};
-		pc.drawNumbersBD = function(x1,y1,x2,y2){
+		pc.drawNumbersBD = function(){
 			this.vinc('border_number', 'auto');
 
-			var idlist = bd.borderinside(x1-1,y1-1,x2+1,y2+1);
+			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){
 				var id=idlist[i], obj=bd.border[id], key='border_'+id;
 				if(bd.border[id].qsub>=0){
@@ -349,12 +319,12 @@ Puzzles.bosanowa.prototype = {
 		};
 
 		// 倉庫番の外側(グレー)描画用
-		pc.drawOutside_souko = function(x1,y1,x2,y2){
+		pc.drawOutside_souko = function(){
 			this.vinc('cell_outside_souko', 'crispEdges');
 
-			var header = "c_full_";
-			for(var bx=(x1-2)|1;bx<=x2+2;bx+=2){
-				for(var by=(y1-2)|1;by<=y2+2;by+=2){
+			var header = "c_full_", d = this.range;
+			for(var bx=(d.x1-2)|1;bx<=d.x2+2;bx+=2){
+				for(var by=(d.y1-2)|1;by<=d.y2+2;by+=2){
 					var c=bd.cnum(bx,by);
 					if( !bd.isBox(c) && (
 						bd.QuC(bd.cnum(bx-2,by  ))===7 || bd.QuC(bd.cnum(bx+2,by  ))===7 || 
@@ -381,9 +351,9 @@ Puzzles.bosanowa.prototype = {
 			return false;
 		};
 
-		pc.drawTarget_bosanowa = function(x1,y1,x2,y2){
+		pc.drawTarget_bosanowa = function(){
 			var islarge = !!((tc.cursor.x&1)&&(tc.cursor.y&1));
-			this.drawCursor(x1,y1,x2,y2,islarge);
+			this.drawCursor(islarge);
 		};
 	},
 

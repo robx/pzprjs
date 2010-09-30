@@ -1,48 +1,21 @@
 //
-// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.3.1
+// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.3.2
 //
 Puzzles.pipelink = function(){ };
 Puzzles.pipelink.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 1;		// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 0;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 1;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.irowake  = 1;
+		k.isborder = 1;
 
-		k.isLineCross     = true;	// 線が交差するパズル
-		k.isCenterLine    = true;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.isLineCross     = true;
+		k.isCenterLine    = true;
+		k.isDispHatena    = true;
+		k.isInputHatena   = true;
 
-		k.dispzero        = false;	// 0を表示するかどうか
-		k.isDispHatena    = true;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
-
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = false;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		if(k.EDITOR){
-			base.setExpression("　問題の記号はQWEASDFの各キーで入力できます。<br>Rキーや-キーで消去できます。1キーで記号を入力できます。",
-							   " Press each QWEASDF key to input question. <br> Press 'R' or '-' key to erase. '1' keys to input circles.");
-		}
-		else{
-			base.setExpression("　左ドラッグで線が、右クリックで×が入力できます。",
-							   " Left Button Drag to input black cells, Right Click to input a cross.");
-		}
-		base.setTitle("パイプリンク","Pipelink");
 		base.setFloatbgcolor("rgb(0, 191, 0)");
 	},
 	menufix : function(){
@@ -83,7 +56,6 @@ Puzzles.pipelink.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(ca=='z' && !this.keyPressed){ this.isZ=true; return;}
 			if(k.playmode){ return;}
 			if(this.moveTCell(ca)){ return;}
 			kc.key_inputLineParts(ca);
@@ -108,8 +80,6 @@ Puzzles.pipelink.prototype = {
 			pc.paintCellAround(cc);
 			return true;
 		};
-		kc.keyup = function(ca){ if(ca=='z'){ this.isZ=false;}};
-		kc.isZ = false;
 
 		if(k.EDITOR){
 			kp.kpgenerate = function(mode){
@@ -142,25 +112,25 @@ Puzzles.pipelink.prototype = {
 
 		pc.minYdeg = 0.42;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDashedGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDashedGrid();
 
-			this.drawCircles_pipelink(x1,y1,x2,y2,(this.disp===0));
+			this.drawCircles_pipelink((this.disp===0));
 
-			this.drawBorders(x1,y1,x2,y2);
+			this.drawBorders();
 
-			this.drawHatenas(x1,y1,x2,y2);
+			this.drawHatenas();
 
-			this.drawLines(x1,y1,x2,y2);
+			this.drawLines();
 
-			this.drawPekes(x1,y1,x2,y2,0);
+			this.drawPekes(0);
 
-			this.drawLineParts(x1-2,y1-2,x2+2,y2+2);
+			this.drawLineParts();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawTarget();
 		};
 
 		pc.setBGCellColor = function(c){
@@ -179,11 +149,11 @@ Puzzles.pipelink.prototype = {
 			return false;
 		};
 
-		pc.drawCircles_pipelink = function(x1,y1,x2,y2,isdraw){
+		pc.drawCircles_pipelink = function(isdraw){
 			this.vinc('cell_circle', 'auto');
 
 			var header = "c_cir_";
-			var clist = bd.cellinside(x1,y1,x2,y2);
+			var clist = this.range.cells;
 			if(isdraw){
 				var rsize  = this.cw*0.40;
 				for(var i=0;i<clist.length;i++){
@@ -210,10 +180,10 @@ Puzzles.pipelink.prototype = {
 			this.paintAll();
 		};
 
-		line.repaintParts = function(idlist){
-			var clist = this.getClistFromIdlist(idlist);
+		pc.repaintParts = function(idlist){
+			var clist = line.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
-				pc.drawLineParts1(clist[i]);
+				this.drawLineParts1(clist[i]);
 			}
 		};
 	},

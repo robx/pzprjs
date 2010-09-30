@@ -1,48 +1,21 @@
 //
-// パズル固有スクリプト部 クリーク版 creek.js v3.3.1
+// パズル固有スクリプト部 クリーク版 creek.js v3.3.2
 //
 Puzzles.creek = function(){ };
 Puzzles.creek.prototype = {
 	setting : function(){
 		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}	// 盤面の横幅
-		if(!k.qrows){ k.qrows = 10;}	// 盤面の縦幅
-		k.irowake  = 0;			// 0:色分け設定無し 1:色分けしない 2:色分けする
+		if(!k.qcols){ k.qcols = 10;}
+		if(!k.qrows){ k.qrows = 10;}
 
-		k.iscross  = 2;		// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		k.isborder = 0;		// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		k.isexcell = 0;		// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		k.iscross  = 2;
 
-		k.isLineCross     = false;	// 線が交差するパズル
-		k.isCenterLine    = false;	// マスの真ん中を通る線を回答として入力するパズル
-		k.isborderAsLine  = false;	// 境界線をlineとして扱う
-		k.hasroom         = false;	// いくつかの領域に分かれている/分けるパズル
-		k.roomNumber      = false;	// 部屋の問題の数字が1つだけ入るパズル
+		k.dispzero        = true;
+		k.checkWhiteCell  = true;
 
-		k.dispzero        = true;	// 0を表示するかどうか
-		k.isDispHatena    = false;	// qnumが-2のときに？を表示する
-		k.isAnsNumber     = false;	// 回答に数字を入力するパズル
-		k.NumberWithMB    = false;	// 回答の数字と○×が入るパズル
-		k.linkNumber      = false;	// 数字がひとつながりになるパズル
+		k.bdmargin       = 0.70;
+		k.bdmargin_image = 0.50;
 
-		k.BlackCell       = false;	// 黒マスを入力するパズル
-		k.NumberIsWhite   = false;	// 数字のあるマスが黒マスにならないパズル
-		k.RBBlackCell     = false;	// 連黒分断禁のパズル
-		k.checkBlackCell  = false;	// 正答判定で黒マスの情報をチェックするパズル
-		k.checkWhiteCell  = true;	// 正答判定で白マスの情報をチェックするパズル
-
-		k.ispzprv3ONLY    = false;	// ぱずぷれアプレットには存在しないパズル
-		k.isKanpenExist   = false;	// pencilbox/カンペンにあるパズル
-
-		k.bdmargin       = 0.70;	// 枠外の一辺のmargin(セル数換算)
-		k.bdmargin_image = 0.50;	// 画像出力時のbdmargin値
-
-		k.bdmargin = 0.70;				// 枠外の一辺のmargin(セル数換算)
-		k.reduceImageMargin = false;	// 画像出力時にmarginを小さくする
-
-		base.setTitle("クリーク","Creek");
-		base.setExpression("　左クリックで黒マスが、右クリックで白マスを入力できます。",
-						   " Left Click to input black cells, Right Click to input white cells.");
 		base.setFloatbgcolor("rgb(0, 0, 255)");
 	},
 	menufix : function(){
@@ -89,15 +62,15 @@ Puzzles.creek.prototype = {
 
 		pc.crosssize = 0.35;
 
-		pc.paint = function(x1,y1,x2,y2){
-			this.drawBGCells(x1,y1,x2,y2);
-			this.drawDotCells(x1,y1,x2,y2,false);
-			this.drawGrid(x1,y1,x2,y2);
+		pc.paint = function(){
+			this.drawBGCells();
+			this.drawDotCells(false);
+			this.drawGrid();
 
-			this.drawChassis(x1,y1,x2,y2);
+			this.drawChassis();
 
-			this.drawCrosses(x1,y1,x2+1,y2+1);
-			this.drawTarget(x1,y1,x2,y2);
+			this.drawCrosses();
+			this.drawTarget();
 		};
 	},
 
