@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.3.2
+// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.3.3
 //
 Puzzles.hakoiri = function(){ };
 Puzzles.hakoiri.prototype = {
@@ -107,20 +107,45 @@ Puzzles.hakoiri.prototype = {
 			this.drawBorders();
 
 			this.drawDotCells(true);
-			this.drawNumbers();
+			this.drawQnumMarks();
+			this.drawHatenas();
 
 			this.drawChassis();
 
 			this.drawCursor();
 		};
 
-		pc.drawNumber1 = function(c){
-			var num = bd.getNum(c), obj = bd.cell[c], key='cell_'+c;
-			if(num!==-1){
-				var text = (num>0 ? ({1:"○",2:"△",3:"□"})[num] : "?");
-				this.dispnum(key, 1, text, 0.8, this.getCellNumberColor(c), obj.cpx, obj.cpy);
+		pc.drawQnumMarks = function(){
+			this.vinc('cell_mark', 'auto');
+
+			var rsize = this.cw*0.30, tsize=this.cw*0.26;
+			var lampcolor = "rgb(0, 127, 96)";
+			var headers = ["c_mk1_", "c_mk2_", "c_mk3_"];
+			g.lineWidth = 2;
+
+			var clist = this.range.cells;
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i], num=bd.getNum(c), cpx, cpy;
+				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c]);
+				if(num<=0){ continue;}
+
+				g.strokeStyle = this.getCellNumberColor(c);
+				var cpx=bd.cell[c].cpx, cpy=bd.cell[c].cpy;
+				if(this.vnop(headers[(num-1)]+c,this.STROKE)){
+					switch(num){
+					case 1:
+						g.strokeCircle(cpx, cpy, rsize);
+						break;
+					case 2:
+						g.setOffsetLinePath(cpx, cpy, 0,-tsize, -rsize,tsize, rsize,tsize, true);
+						g.stroke();
+						break;
+					case 3:
+						g.strokeRect(cpx-rsize, cpy-rsize, 2*rsize, 2*rsize);
+						break;
+					}
+				}
 			}
-			else{ this.hideEL(key);}
 		};
 	},
 
