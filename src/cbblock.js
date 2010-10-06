@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 コンビブロック版 cbblock.js v3.3.2
+// パズル固有スクリプト部 コンビブロック版 cbblock.js v3.3.3
 //
 Puzzles.cbblock = function(){ };
 Puzzles.cbblock.prototype = {
@@ -261,7 +261,7 @@ Puzzles.cbblock.prototype = {
 			}
 			data[2]=data[1].concat().reverse(); data[3]=data[0].concat().reverse();
 			data[6]=data[5].concat().reverse(); data[7]=data[4].concat().reverse();
-			for(var i=0;i<8;i++){ console.log(data[i]); shapes.data[i]=data[i].join('');}
+			for(var i=0;i<8;i++){ shapes.data[i]=data[i].join('');}
 			return shapes;
 		};
 	}
