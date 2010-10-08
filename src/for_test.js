@@ -35,7 +35,7 @@ debug.extend({
 			debug.phase = 0;
 
 			var newid = debug.urls[pnum][0];
-			base.dec = new URLData();
+			base.dec.reset();
 			base.dec.parseURI('?'+newid+'/'+debug.urls[pnum][1]);
 			base.init_func(ee.binder(debug, debug.sccheck));
 

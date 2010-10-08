@@ -1,4 +1,4 @@
-// global.js v3.3.2
+// global.js v3.3.3
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -654,5 +654,167 @@ Timer.prototype = {
 	execUndo : function(){
 		if     (kc.inUNDO){ um.undo(1);}
 		else if(kc.inREDO){ um.redo(1);}
+	}
+};
+
+//---------------------------------------------------------------------------
+// ★ExtDataクラス URL/ファイルのデータを保持する
+//    p.html?(pid)/(qdata)
+//                  qdata -> [(pflag)/](cols)/(rows)/(bstr)
+//---------------------------------------------------------------------------
+ExtData = function(){
+	this.type;		// URLのサイト指定部分
+
+	this.id;		// URLのパズルのid
+	this.qdata;		// URLの問題部分
+
+	this.pflag;		// URLのフラグ部分
+	this.cols;		// URLの横幅部分
+	this.rows;		// URLの縦幅部分
+	this.bstr;		// URLの盤面部分
+
+	this.fstr;		// ファイルの文字列
+
+	this.isduplicate  = false;	// 複製されたタブか
+};
+ExtData.prototype = {
+	//---------------------------------------------------------------------------
+	// reset()   オブジェクトで持つ値を初期化する
+	//---------------------------------------------------------------------------
+	reset : function(){
+		this.type = null;
+
+		this.id = "";
+		this.qdata = "";
+
+		this.pflag = "";
+		this.cols = 0;
+		this.rows = 0;
+		this.bstr = "";
+
+		this.fstr = '';
+	},
+	
+	//---------------------------------------------------------------------------
+	// onload_parseURL() 起動時にURLを解析して、puzzleidの抽出やエディタ/player判定を行う
+	//---------------------------------------------------------------------------
+	onload_parseURL : function(){
+		var search = location.search;
+		if(search.length<=0){ return this;}
+
+		var startmode = '';
+		if     (search=="?test")       { startmode = 'TEST'; search = '?country';}
+		else if(search.match(/_test/)) { startmode = 'TEST';}
+		else if(search.match(/^\?m\+/)){ startmode = 'EDITOR';}
+		else if(search.match(/_edit/)) { startmode = 'EDITOR';}
+		else if(search.match(/_play/)) { startmode = 'PLAYER';}
+
+		this.parseURI(search);
+		if(!startmode){ startmode=(!this.bstr?'EDITOR':'PLAYER');}
+
+		switch(startmode){
+			case 'PLAYER': k.EDITOR = false; k.editmode = false; break;
+			case 'EDITOR': k.EDITOR = true;  k.editmode = true;  break;
+			case 'TEST'  : k.EDITOR = true;  k.editmode = false; k.scriptcheck = true; break;
+		}
+		k.PLAYER    = !k.EDITOR;
+		k.playmode  = !k.editmode;
+	},
+
+	//---------------------------------------------------------------------------
+	// parseURI()     入力されたURLがどのサイト用か判定して値を保存する
+	//---------------------------------------------------------------------------
+	parseURI : function(url){
+		this.reset();
+
+		url = url.replace(/(\r|\n)/g,""); // textarea上の改行が実際の改行扱いになるUAに対応(Operaとか)
+
+		var type=0, en=new Encode();
+		// カンペンの場合
+		if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
+			url.match(/(.+)\.html/);
+			this.id = RegExp.$1;
+			// カンペンだけどデータ形式はへやわけアプレット
+			if(url.indexOf("?heyawake=")>=0){
+				this.qdata = url.substr(url.indexOf("?heyawake=")+10);
+				this.type=en.HEYAAPP;
+			}
+			// カンペンだけどデータ形式はぱずぷれ
+			else if(url.indexOf("?pzpr=")>=0){
+				this.qdata = url.substr(url.indexOf("?pzpr=")+6);
+				this.type=en.PZPRV3;
+			}
+			else{
+				this.qdata = url.substr(url.indexOf("?problem=")+9);
+				this.type=en.KANPEN;
+			}
+		}
+		// へやわけアプレットの場合
+		else if(url.match(/www\.geocities(\.co)?\.jp\/heyawake/)){
+			this.id = 'heyawake';
+			this.qdata = url.substr(url.indexOf("?problem=")+9);
+			this.type = en.HEYAAPP;
+		}
+		// ぱずぷれアプレットの場合
+		else if(url.match(/indi\.s58\.xrea\.com/) && url.match(/\/(.+)\/(sa|sc)\//)){
+			this.id = RegExp.$1;
+			this.qdata = url.substr(url.indexOf("?"));
+			this.type = en.PZPRAPP;
+		}
+		// ぱずぷれv3の場合
+		else{
+			var qs = url.indexOf("/", url.indexOf("?"));
+			if(qs>-1){
+				this.id = url.substring(url.indexOf("?")+1,qs);
+				this.qdata = url.substr(qs+1);
+			}
+			else{
+				this.id = url.substr(1);
+			}
+			this.id = this.id.replace(/(m\+|_edit|_test|_play)/,'');
+			this.type = en.PZPRV3;
+		}
+		this.id = PZLNAME.toPID(this.id);
+
+		if     (type===en.KANPEN) { this.parseURI_kanpen();}
+		else if(type===en.HEYAAPP){ this.parseURI_heyaapp();}
+		else if(type===en.PZPRV3 || this.type===en.PZPRAPP){ this.parseURI_pzpr();}
+	},
+
+	//---------------------------------------------------------------------------
+	// parseURI_xxx() pzlURI部をpflag,bstr等の部分に分割する
+	//---------------------------------------------------------------------------
+	// ぱずぷれv3
+	parseURI_pzpr : function(){
+		var inp = this.qdata.split("/");
+		if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
+
+		this.pflag = inp.shift();
+		this.cols = parseInt(inp.shift());
+		this.rows = parseInt(inp.shift());
+		this.bstr = inp.join("/");
+	},
+	// カンペン
+	parseURI_kanpen : function(){
+		var inp = this.qdata.split("/");
+
+		if(k.puzzleid=="sudoku"){
+			this.rows = this.cols = parseInt(inp.shift());
+		}
+		else{
+			this.rows = parseInt(inp.shift());
+			this.cols = parseInt(inp.shift());
+			if(k.puzzleid=="kakuro"){ this.rows--; this.cols--;}
+		}
+		this.bstr = inp.join("/");
+	},
+	// へやわけアプレット
+	parseURI_heyaapp : function(){
+		var inp = this.qdata.split("/");
+
+		var size = inp.shift().split("x");
+		this.cols = parseInt(size[0]);
+		this.rows = parseInt(size[1]);
+		this.bstr = inp.join("/");
 	}
 };

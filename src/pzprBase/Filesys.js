@@ -15,6 +15,8 @@ FileIO = function(){
 	this.PZPR = 1;
 	this.PBOX = 2;
 	this.PZPH = 3;
+
+	this.importDuplicate();
 };
 FileIO.prototype = {
 	//---------------------------------------------------------------------------
@@ -23,10 +25,10 @@ FileIO.prototype = {
 	// fio.filedecode_main() ファイルを開く時、ファイルデータからのデコード実行関数
 	//---------------------------------------------------------------------------
 	filedecode : function(datastr){
-		base.fstr = datastr;
-		base.dec.reset();
 		var lines = datastr.split('/');
+		base.dec.reset();
 		base.dec.id = (lines[0].match(/^pzprv3/) ? lines[1] : k.puzzleid);
+		base.dec.fstr = datastr;
 		base.init_func(function(){ tm.reset();});
 	},
 	filedecode_main : function(datastr){
@@ -112,7 +114,7 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	exportDuplicate : function(){
 		var str = this.fileencode(this.PZPH);
-		var url = './p.html?'+k.puzzleid+(k.EDITOR?"_edit":"")+'/duplicate';
+		var url = './p.html?'+k.puzzleid+(k.PLAYER?"_play":"");
 		if(!k.br.Opera){
 			var old = sessionStorage['duplicate'];
 			sessionStorage['duplicate'] = (str+this.history);
@@ -126,19 +128,25 @@ FileIO.prototype = {
 		}
 	},
 	importDuplicate : function(){
-		if(!(dbm.DBaccept&0x10)){ return;}
-		var str = sessionStorage['duplicate'];
-		if(!!str){
-			this.filedecode_main(str);
-			// ここでは消しません
-		}
-		else{
+		if(!window.sessionStorage){ return;}
+		var str='';
+
+		// 移し変える処理
+		if(!!window.localStorage){
 			str = localStorage['pzprv3_duplicate'];
 			if(!!str){
 				delete localStorage['pzprv3_duplicate'];
-				this.filedecode_main(str);
 				sessionStorage['duplicate'] = str;
 			}
+		}
+
+		str = sessionStorage['duplicate'];
+		if(!!str){
+			base.dec.reset();
+			base.dec.fstr = str;
+			// sessionStorageのデータは消しません
+
+			base.dec.isduplicate = true;
 		}
 	},
 

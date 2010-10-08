@@ -9,13 +9,11 @@ PBase = function(){
 	this.floatbgcolor = "black";
 	this.userlang     = 'ja';
 	this.resizetimer  = null;	// resizeタイマー
-	this.isduplicate  = false;	// 複製されたタブか
 	this.isonload     = true;	// onload時の初期化処理中かどうか
 	this.initProcess  = true;	// 初期化中かどうか
 	this.enableSaveImage = false;	// 画像保存が有効か
 
-	this.dec  = null;			// 入力されたURLの情報保持用
-	this.fstr = '';				// ファイルの内容
+	this.dec = null;			// 入力されたURLの情報保持用
 
 	this.disinfo = 0;			// LineManager, AreaManagerを呼び出さないようにする
 };
@@ -41,15 +39,9 @@ PBase.prototype = {
 	// base.postload_func() ページがLoad終了時の処理
 	//---------------------------------------------------------------------------
 	onload_func : function(){
-		this.dec = new URLData()
+		this.dec = new ExtData()
 		this.dec.onload_parseURL();
 		if(!this.dec.id){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
-
-		// 複製かどうか
-		if(this.dec.qdata==='duplicate'){
-			this.isduplicate = true;
-			this.dec.qdata = '';
-		}
 
 		// Campの設定
 		if(k.br.Chrome6){ Camp('divques','canvas');}else{ Camp('divques');}
@@ -107,7 +99,7 @@ PBase.prototype = {
 		},10);
 	},
 	postload_func : function(){
-		if(k.PLAYER && !this.isduplicate){ this.accesslog();}	// アクセスログをとってみる
+		if(k.PLAYER && !this.dec.isduplicate){ this.accesslog();}	// アクセスログをとってみる
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
 	},
 
@@ -125,9 +117,9 @@ PBase.prototype = {
 		if(!!puz.protoChange){ puz.protoChange();}
 
 		// クラス初期化
+		dbm = new DataBaseManager();	// データベースアクセス用オブジェクト
 		enc = new Encode();				// URL入出力用オブジェクト
 		fio = new FileIO();				// ファイル入出力用オブジェクト
-		dbm = new DataBaseManager();	// データベースアクセス用オブジェクト
 		tc = new TCell();		// キー入力のターゲット管理オブジェクト
 		bd = new Board();		// 盤面オブジェクト
 		mv = new MouseEvent();	// マウス入力オブジェクト
@@ -181,15 +173,10 @@ PBase.prototype = {
 		if(!!this.dec.cols){
 			enc.pzlinput();
 		}
-		// 複製されたデータを読み出す
-		else if(this.duplicate){
-			fio.importDuplicate();
-			this.isduplicate = false;
-		}
-		// ファイルを開くやつ
-		else if(!!this.fstr){
-			fio.filedecode_main(this.fstr);
-			this.fstr = '';
+		// ファイルを開く・複製されたデータを開く
+		else if(!!this.dec.fstr){
+			fio.filedecode_main(this.dec.fstr);
+			this.dec.fstr = '';
 		}
 		// 何もないとき
 		else{
