@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へやわけ版 heyawake.js v3.3.2
+// パズル固有スクリプト部 へやわけ版 heyawake.js v3.3.3
 //
 Puzzles.heyawake = function(){ };
 Puzzles.heyawake.prototype = {
@@ -130,7 +130,7 @@ Puzzles.heyawake.prototype = {
 			var c=0, rdata=[];
 			while(c<bd.cellmax){ rdata[c]=null; c++;}
 
-			var i=0, inp=this.uri.bstr.split("/");
+			var i=0, inp=this.outbstr.split("/");
 			for(var c=0;c<bd.cellmax;c++){
 				if(rdata[c]!==null){ continue;}
 

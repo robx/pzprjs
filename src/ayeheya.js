@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ∀人∃ＨＥＹＡ版 ayeheya.js v3.3.2
+// パズル固有スクリプト部 ∀人∃ＨＥＹＡ版 ayeheya.js v3.3.3
 //
 Puzzles.ayeheya = function(){ };
 Puzzles.ayeheya.prototype = {
@@ -130,7 +130,7 @@ Puzzles.ayeheya.prototype = {
 			var c=0, rdata=[];
 			while(c<bd.cellmax){ rdata[c]=null; c++;}
 
-			var i=0, inp=this.uri.bstr.split("/");
+			var i=0, inp=this.outbstr.split("/");
 			for(var c=0;c<bd.cellmax;c++){
 				if(rdata[c]!==null){ continue;}
 

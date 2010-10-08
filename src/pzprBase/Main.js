@@ -1,4 +1,4 @@
-// Main.js v3.3.2
+// Main.js v3.3.3
 
 //---------------------------------------------------------------------------
 // ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -10,8 +10,12 @@ PBase = function(){
 	this.userlang     = 'ja';
 	this.resizetimer  = null;	// resizeタイマー
 	this.isduplicate  = false;	// 複製されたタブか
+	this.isonload     = true;	// onload時の初期化処理中かどうか
 	this.initProcess  = true;	// 初期化中かどうか
 	this.enableSaveImage = false;	// 画像保存が有効か
+
+	this.dec  = null;			// 入力されたURLの情報保持用
+	this.fstr = '';				// ファイルの内容
 
 	this.disinfo = 0;			// LineManager, AreaManagerを呼び出さないようにする
 };
@@ -32,15 +36,20 @@ PBase.prototype = {
 
 	//---------------------------------------------------------------------------
 	// base.onload_func()   ページがLoadされた時の処理
-	// base.reload_func()   個別パズルのファイルを読み込む関数
 	// base.init_func()     新しくパズルのファイルを開く時の処理
+	// base.reload_func()   個別パズルのファイルを読み込む関数
 	// base.postload_func() ページがLoad終了時の処理
 	//---------------------------------------------------------------------------
 	onload_func : function(){
-		// encオブジェクトを生成する
-		enc = new Encode();
-		var dec = enc.first_parseURI(location.search);
-		if(!dec.id){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
+		this.dec = new URLData()
+		this.dec.onload_parseURL();
+		if(!this.dec.id){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
+
+		// 複製かどうか
+		if(this.dec.qdata==='duplicate'){
+			this.isduplicate = true;
+			this.dec.qdata = '';
+		}
 
 		// Campの設定
 		if(k.br.Chrome6){ Camp('divques','canvas');}else{ Camp('divques');}
@@ -49,20 +58,21 @@ PBase.prototype = {
 			Camp('divques_sub', 'canvas');
 		}
 
-		this.init_func(dec.id, dec.url, true, ee.binder(this, this.postload_func));
+		this.init_func(ee.binder(this, this.postload_func));
 	},
-	reload_func : function(pid, purl, callback){
-		// 各パズルでオーバーライドしているものを、元に戻す
-		if(!!puz.protoOriginal){ puz.protoOriginal();}
-
-		menu.menureset();
-		ee('numobj_parent').el.innerHTML = '';
-		ee.clean();
-
-		this.init_func(pid, purl, false, callback);
+	init_func : function(callback){
+		// 今のパズルと別idの時
+		if(k.puzzleid!=this.dec.id){
+			this.reload_func(callback);
+		}
+		else{
+			this.importBoardData();
+		}
 	},
-	init_func : function(pid, purl, onload, callback){
+	reload_func : function(callback){
 		this.initProcess = true;
+
+		var pid = this.dec.id;
 
 		// idを取得して、ファイルを読み込み
 		if(!Puzzles[pid]){
@@ -71,11 +81,17 @@ PBase.prototype = {
 			_script.src = "src/"+pid+".js";
 			_doc.body.appendChild(_script);
 		}
-		k.pzlnameid = k.puzzleid = pid;
 
-		// urlの構造解析(あとでpzlinputで読み込む準備)
-		enc.init();
-		if(!!purl){ enc.parseURI_pzpr(purl);}
+		// 今のパズルが存在している場合
+		if(!!k.puzzleid){
+			// 各パズルでオーバーライドしているものを、元に戻す
+			if(!!puz.protoOriginal){ puz.protoOriginal();}
+
+			menu.menureset();
+			ee('numobj_parent').el.innerHTML = '';
+			ee.clean();
+		}
+		k.pzlnameid = k.puzzleid = pid;
 
 		// 中身を読み取れるまでwait
 		var self = this;
@@ -85,8 +101,7 @@ PBase.prototype = {
 
 			// 初期化ルーチンへジャンプ
 			g = ee('divques').unselectable().el.getContext("2d");
-			self.initObjects(onload);
-			self.initProcess = false;
+			self.initObjects();
 
 			if(!!callback){ callback();}
 		},10);
@@ -97,12 +112,12 @@ PBase.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// base.initObjects()   各オブジェクトの生成などの処理
-	// base.doc_design()    initObjects()で呼ばれる。htmlなどの設定を行う
-	// base.checkUserLang() 言語環境をチェックして日本語でない場合英語表示にする
-	// base.importPredata() URLや複製されたデータを読み出す
+	// base.initObjects()     各オブジェクトの生成などの処理
+	// base.doc_design()      initObjects()で呼ばれる。htmlなどの設定を行う
+	// base.checkUserLang()   言語環境をチェックして日本語でない場合英語表示にする
+	// base.importBoardData() URLや複製されたデータを読み出す
 	//---------------------------------------------------------------------------
-	initObjects : function(onload){
+	initObjects : function(){
 		k.initFlags();						// 共通フラグの初期化
 
 		puz = new Puzzles[k.puzzleid]();	// パズル固有オブジェクト
@@ -110,6 +125,7 @@ PBase.prototype = {
 		if(!!puz.protoChange){ puz.protoChange();}
 
 		// クラス初期化
+		enc = new Encode();				// URL入出力用オブジェクト
 		fio = new FileIO();				// ファイル入出力用オブジェクト
 		dbm = new DataBaseManager();	// データベースアクセス用オブジェクト
 		tc = new TCell();		// キー入力のターゲット管理オブジェクト
@@ -133,16 +149,18 @@ PBase.prototype = {
 		puz.answer_init();
 
 		// メニュー関係初期化
-		menu.menuinit(onload);	// メニューの設定
+		menu.menuinit(this.isonload);	// メニューの設定
 		this.doc_design();		// デザイン変更関連関数の呼び出し
 		this.checkUserLang();	// 言語のチェック
 
-		this.importPredata();
-		this.resize_canvas();
+		this.importBoardData();
 
 		if(!!puz.finalfix){ puz.finalfix();}		// パズル固有の後付け設定
 
-		if(onload){ this.setEvents();}				// イベントをくっつける
+		if(this.isonload){ this.setEvents();}		// イベントをくっつける
+
+		this.initProcess = false;
+		this.isonload = false;
 	},
 	// 背景画像とかtitle・背景画像・html表示の設定
 	doc_design : function(){
@@ -157,10 +175,26 @@ PBase.prototype = {
 		this.userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
 		if(this.userlang.substr(0,2)!=='ja'){ pp.setVal('language','en');}
 	},
-	importPredata : function(){
-		if(!this.isduplicate){ enc.pzlinput();}	// URLからパズルのデータを読み出す
-		else{ fio.importDuplicate();}			// 複製されたデータを読み出す
-		this.isduplicate = false;
+
+	importBoardData : function(){
+		// URLからパズルのデータを読み出す
+		if(!!this.dec.cols){
+			enc.pzlinput();
+		}
+		// 複製されたデータを読み出す
+		else if(this.duplicate){
+			fio.importDuplicate();
+			this.isduplicate = false;
+		}
+		// ファイルを開くやつ
+		else if(!!this.fstr){
+			fio.filedecode_main(this.fstr);
+			this.fstr = '';
+		}
+		// 何もないとき
+		else{
+			this.resize_canvas();
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -366,7 +400,7 @@ PBase.prototype = {
 				("scr="     + "pzprv3"),
 				("pid="     + k.puzzleid),
 				("referer=" + refer),
-				("pzldata=" + enc.uri.qdata)
+				("pzldata=" + this.dec.qdata)
 			].join('&');
 
 			xmlhttp.open("POST", "./record.cgi");

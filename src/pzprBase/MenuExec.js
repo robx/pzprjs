@@ -1,4 +1,4 @@
-// MenuExec.js v3.3.2
+// MenuExec.js v3.3.3
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -113,12 +113,10 @@ MenuExec.prototype = {
 				else if(_doc.newboard.size[3].checked){ col=row= 4;}
 			}
 
-			if(col>0 && row>0){ bd.initBoardSize(col,row);}
 			menu.popclose();
 
-			um.allerase();
-			base.resetInfo();
-			base.resize_canvas();				// Canvasを更新する
+			base.dec.parseURI('?'+k.puzzleid+'/'+col+'/'+row);
+			base.init_func(function(){ tm.reset();});
 		}
 	},
 
@@ -129,11 +127,12 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	urlinput : function(e){
 		if(menu.pop){
-			enc.parseURI(_doc.urlinput.ta.value);
-			enc.pzlinput();
-
-			tm.reset();
 			menu.popclose();
+
+			base.dec.parseURI(_doc.urlinput.ta.value);
+			if(!!base.dec.id){
+				base.init_func(function(){ tm.reset();});
+			}
 		}
 	},
 	urloutput : function(e){
@@ -178,11 +177,10 @@ MenuExec.prototype = {
 		}
 
 		_doc.fileform.reset();
-		tm.reset();
 	},
 	fileonload : function(data){
 		var farray = data.split(/[\t\r\n]+/);
-		var fstr = "";
+		var fstr = "", fheader = ['',''];
 		for(var i=0;i<farray.length;i++){
 			if(farray[i].match(/^http\:\/\//)){ break;}
 			fstr += (farray[i]+"/");

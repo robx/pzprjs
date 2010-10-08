@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たわむれんが版 tawa.js v3.3.2
+// パズル固有スクリプト部 たわむれんが版 tawa.js v3.3.3
 //
 Puzzles.tawa = function(){ };
 Puzzles.tawa.prototype = {
@@ -462,7 +462,7 @@ Puzzles.tawa.prototype = {
 			var barray = this.outbstr.split("/");
 
 			bd.setLap(parseInt(barray[0]));
-			bd.initBoardSize(this.uri.cols, this.uri.rows);
+			bd.initBoardSize(base.dec.cols, base.dec.rows);
 
 			this.outbstr = barray[1];
 			this.decodeNumber10();

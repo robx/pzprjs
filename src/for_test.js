@@ -1,4 +1,4 @@
-// for_test.js v3.3.1
+// for_test.js v3.3.3
 
 debug.extend({
 	testonly_func : function(){
@@ -35,7 +35,9 @@ debug.extend({
 			debug.phase = 0;
 
 			var newid = debug.urls[pnum][0];
-			base.reload_func(newid, debug.urls[pnum][1], ee.binder(debug, debug.sccheck));
+			base.dec = new URLData();
+			base.dec.parseURI('?'+newid+'/'+debug.urls[pnum][1]);
+			base.init_func(ee.binder(debug, debug.sccheck));
 
 			if(pnum >= term){ clearInterval(tam);}
 
@@ -108,7 +110,7 @@ debug.extend({
 			(function(){
 				alstr = debug.acs[k.puzzleid][n][0];
 				qstr  = debug.acs[k.puzzleid][n][1];
-				fio.filedecode(debug.acs[k.puzzleid][n][1]);
+				fio.filedecode_main(debug.acs[k.puzzleid][n][1]);
 				setTimeout(function(){
 					ans.inCheck = true;
 					ans.alstr = { jp:'' ,en:''};
@@ -146,10 +148,10 @@ debug.extend({
 				base.resize_canvas();
 
 				setTimeout(function(){
-					fio.filedecode(outputstr);
+					fio.filedecode_main(outputstr);
 					debug.addTextarea("FileIO test   = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
 
-					fio.filedecode(debug.acs[k.puzzleid][debug.acs[k.puzzleid].length-1][1]);
+					fio.filedecode_main(debug.acs[k.puzzleid][debug.acs[k.puzzleid].length-1][1]);
 					debug.phase = (k.puzzleid != 'tawa')?40:50;
 				},fint);
 			})();
@@ -165,7 +167,7 @@ debug.extend({
 				base.resize_canvas();
 
 				setTimeout(function(){
-					fio.filedecode(outputstr);
+					fio.filedecode_main(outputstr);
 
 					debug.qsubf = !(k.puzzleid=='fillomino'||k.puzzleid=='hashikake'||k.puzzleid=='kurodoko'||k.puzzleid=='shikaku'||k.puzzleid=='tentaisho');
 					debug.addTextarea("FileIO kanpen = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));

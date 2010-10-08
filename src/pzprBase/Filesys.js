@@ -1,4 +1,4 @@
-// Filesys.js v3.3.2
+// Filesys.js v3.3.3
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -18,10 +18,18 @@ FileIO = function(){
 };
 FileIO.prototype = {
 	//---------------------------------------------------------------------------
-	// fio.filedecode() ファイルを開く時、ファイルデータからのデコード実行関数
-	//                  [menu.ex.fileopen] -> [fileio.xcg@iframe] -> [ここ]
+	// fio.filedecode()      ファイルを開く用の関数
+	//                       [menu.ex.fileopen] -> [fileio.xcg@iframe] -> [ここ]
+	// fio.filedecode_main() ファイルを開く時、ファイルデータからのデコード実行関数
 	//---------------------------------------------------------------------------
 	filedecode : function(datastr){
+		base.fstr = datastr;
+		base.dec.reset();
+		var lines = datastr.split('/');
+		base.dec.id = (lines[0].match(/^pzprv3/) ? lines[1] : k.puzzleid);
+		base.init_func(function(){ tm.reset();});
+	},
+	filedecode_main : function(datastr){
 		datastr = datastr.replace(/[\r\n]/g,"");
 
 		this.filever = 0;
@@ -31,7 +39,7 @@ FileIO.prototype = {
 		// ヘッダの処理
 		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
-			if(this.readLine()!=k.puzzleid){ return (base.getPuzzleName()+'のファイルではありません。');}
+			if(this.readLine()!=k.puzzleid){ return '読み込みに失敗しました';}
 			this.currentType = this.PZPR;
 		}
 		else{
@@ -121,14 +129,14 @@ FileIO.prototype = {
 		if(!(dbm.DBaccept&0x10)){ return;}
 		var str = sessionStorage['duplicate'];
 		if(!!str){
-			this.filedecode(str);
+			this.filedecode_main(str);
 			// ここでは消しません
 		}
 		else{
 			str = localStorage['pzprv3_duplicate'];
 			if(!!str){
 				delete localStorage['pzprv3_duplicate'];
-				this.filedecode(str);
+				this.filedecode_main(str);
 				sessionStorage['duplicate'] = str;
 			}
 		}
