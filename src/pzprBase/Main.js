@@ -117,7 +117,7 @@ PBase.prototype = {
 		if(!!puz.protoChange){ puz.protoChange();}
 
 		// クラス初期化
-		dbm = new DataBaseManager();	// データベースアクセス用オブジェクト
+		if(this.isonload){ dbm = new DataBaseManager();}	// データベースアクセス用オブジェクト
 		enc = new Encode();				// URL入出力用オブジェクト
 		fio = new FileIO();				// ファイル入出力用オブジェクト
 		tc = new TCell();		// キー入力のターゲット管理オブジェクト

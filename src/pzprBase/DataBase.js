@@ -1,6 +1,47 @@
 // DataBase.js v3.3.3
 
 //---------------------------------------------------------------------------
+// ★ProblemDataクラス データベースに保存する1つのデータを保持する
+//---------------------------------------------------------------------------
+ProblemData = function(){
+	this.id = null;
+	this.pid = '';
+	this.col = '';
+	this.row = '';
+	this.hard = 0;
+	this.pdata = '';
+	this.time = 0;
+	this.comment = '';
+};
+ProblemData.prototype = {
+	setnewData : function(id){
+		this.id = id;
+		this.pid = k.puzzleid;
+		this.col = k.qcols;
+		this.row = k.qrows;
+		this.hard = 0;
+		this.pdata = fio.fileencode(fio.PZPH);
+		this.time = (tm.now()/1000)|0;
+		this.comment = '';
+	},
+	toString : function(){
+		var data = {
+			id:this.id, pid:this.pid,
+			col:this.col, row:this.row,
+			hard:this.hard, pdata:this.pdata,
+			time:this.time, comment:this.comment
+		};
+		return JSON.stringify(data);
+	},
+	parse : function(str){
+		if(str===(void 0)){ this.id=null; return this;}
+		var data = JSON.parse(str);
+		for(var key in data){ this[key]=data[key];}
+		return this;
+	}
+};
+
+//---------------------------------------------------------------------------
 // ★DataBaseManagerクラス Web Storage用 データベースの設定・管理を行う
 //---------------------------------------------------------------------------
 DataBaseManager = function(){
@@ -11,7 +52,6 @@ DataBaseManager = function(){
 
 	this.DBsid  = -1;	// 現在選択されているリスト中のID
 	this.DBlist = [];	// 現在一覧にある問題のリスト
-	this.keys = ['id', 'col', 'row', 'hard', 'pdata', 'time', 'comment']; // キーの並び
 
 	var self    = this;
 	this.update = function(){ self.updateDialog.call(self);};
@@ -71,6 +111,7 @@ DataBaseManager.prototype = {
 		}
 
 		this.sync = false;
+		this.dbh.convert();
 		this.dbh.importDBlist(this, this.update);
 	},
 
@@ -151,11 +192,12 @@ DataBaseManager.prototype = {
 
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (this.dateString(row.time*1000)+" &nbsp;");
+		str += (PZLNAME.ja[row.pid]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
-			str += (hardstr[row.hard][menu.language]);
+			str += (hardstr[row.hard][menu.language]+"&nbsp;");
 		}
+		str += ("("+this.dateString(row.time*1000)+")");
 		return str;
 	},
 	dateString : function(time){
@@ -208,10 +250,12 @@ DataBaseManager.prototype = {
 	},
 	convertDataTable_M : function(sid, tid){
 		this.DBsid = this.DBlist[tid].id;
-		var row = {};
-		for(var c=1;c<7;c++){ row[this.keys[c]]              = this.DBlist[sid][this.keys[c]];}
-		for(var c=1;c<7;c++){ this.DBlist[sid][this.keys[c]] = this.DBlist[tid][this.keys[c]];}
-		for(var c=1;c<7;c++){ this.DBlist[tid][this.keys[c]] = row[this.keys[c]];}
+		var id = this.DBlist[sid].id;
+		this.DBlist[sid].id = this.DBlist[tid].id;
+		this.DBlist[tid].id = id;
+		var row = this.DBlist[sid];
+		this.DBlist[sid] = this.DBlist[tid];
+		this.DBlist[tid] = row;
 
 		this.sync = false;
 		this.dbh.convertDataTableID(this, sid, tid, this.update);
@@ -233,19 +277,15 @@ DataBaseManager.prototype = {
 			id = this.DBlist.length;
 			refresh = true;
 
-			this.DBlist[id] = {};
+			this.DBlist[id] = new ProblemData();
+			this.DBlist[id].setnewData(id+1);
 			var str = prompt("コメントがある場合は入力してください。","");
 			this.DBlist[id].comment = (!!str ? str : '');
-			this.DBlist[id].hard = 0;
-			this.DBlist[id].id = id+1;
 			this.DBsid = this.DBlist[id].id;
 		}
 		else{
 			if(!confirm("このデータに上書きしますか？")){ return;}
 		}
-		this.DBlist[id].col   = k.qcols;
-		this.DBlist[id].row   = k.qrows;
-		this.DBlist[id].time  = (tm.now()/1000)|0;
 
 		this.sync = false;
 		this.dbh.saveDataTable(this, id, this.update);
@@ -284,37 +324,19 @@ DataBaseManager.prototype = {
 		if(!confirm("このデータを完全に削除しますか？")){ return;}
 
 		var sID = this.DBlist[id].id, max = this.DBlist.length;
-		for(var i=sID-1;i<max-1;i++){
-			for(var c=1;c<7;c++){ this.DBlist[i][this.keys[c]] = this.DBlist[i+1][this.keys[c]];}
-		}
+		for(var i=sID-1;i<max-1;i++){ this.DBlist[i] = this.DBlist[i+1];}
 		this.DBlist.pop();
 
 		this.sync = false;
 		this.dbh.deleteDataTable(this, sID, max, this.update);
 	}
-
-	//---------------------------------------------------------------------------
-	// dbm.convertDataBase() もし将来必要になったら...
-	//---------------------------------------------------------------------------
-/*	convertDataBase : function(){
-		// ここまで旧データベース
-		this.dbh.importDBlist(this);
-		this.dbh.dropDataBase();
-
-		// ここから新データベース
-		this.dbh.createDataBase();
-		this.dbh.setupDBlist(this);
-	}
-*/
 };
 
 //---------------------------------------------------------------------------
 // ★DataBaseHandler_LSクラス Web localStorage用 データベースハンドラ
 //---------------------------------------------------------------------------
 DataBaseHandler_LS = function(){
-	this.pheader = 'pzprv3_' + k.puzzleid + ':puzdata';
-	this.keys = dbm.keys;
-
+	this.pheader = 'pzprv3_storage:data:';
 	this.initialize();
 };
 DataBaseHandler_LS.prototype = {
@@ -328,12 +350,9 @@ DataBaseHandler_LS.prototype = {
 	},
 	importDBlist : function(parent, callback){
 		parent.DBlist = [];
-		var r=0;
-		while(1){
-			r++; var row = {};
-			for(var c=0;c<7;c++){ row[this.keys[c]] = localStorage[this.pheader+'!'+r+'!'+this.keys[c]];}
+		for(var r=1;true;r++){
+			var row = (new ProblemData()).parse(localStorage[this.pheader+r]);
 			if(row.id==null){ break;}
-			row.pdata = "";
 			parent.DBlist.push(row);
 		}
 		if(!!callback){ callback();}
@@ -344,21 +363,17 @@ DataBaseHandler_LS.prototype = {
 	// dbm.dbh.updateManageData()      管理情報レコードを更新する
 	//---------------------------------------------------------------------------
 	createManageDataTable : function(){
-		localStorage['pzprv3_manage']        = 'DataBase';
-		localStorage['pzprv3_manage:manage'] = 'Table';
+		localStorage['pzprv3_storage:version'] = '2.0';
 	},
 	updateManageData : function(parent){
-		var mheader = 'pzprv3_manage:manage!'+k.puzzleid;
-		localStorage[mheader+'!count'] = parent.DBlist.length;
-		localStorage[mheader+'!time']  = (tm.now()/1000)|0;
+		localStorage['pzprv3_storage:count'] = parent.DBlist.length;
+		localStorage['pzprv3_storage:time']  = (tm.now()/1000)|0;
 	},
 
 	//---------------------------------------------------------------------------
 	// dbm.dbh.createDataBase()     テーブルを作成する
 	//---------------------------------------------------------------------------
 	createDataBase : function(){
-		localStorage['pzprv3_'+k.puzzleid]            = 'DataBase';
-		localStorage['pzprv3_'+k.puzzleid+':puzdata'] = 'Table';
 	},
 
 	//---------------------------------------------------------------------------
@@ -366,9 +381,8 @@ DataBaseHandler_LS.prototype = {
 	//---------------------------------------------------------------------------
 	convertDataTableID : function(parent, sid, tid, callback){
 		var sID = parent.DBlist[sid].id, tID = parent.DBlist[tid].id;
-		var sheader=this.pheader+'!'+sID, theader=this.pheader+'!'+tID, row = {};
-		for(var c=1;c<7;c++){ localStorage[sheader+'!'+this.keys[c]] = parent.DBlist[sid][this.keys[c]];}
-		for(var c=1;c<7;c++){ localStorage[theader+'!'+this.keys[c]] = parent.DBlist[tid][this.keys[c]];}
+		localStorage[this.pheader+sID] = parent.DBlist[sid].toString();
+		localStorage[this.pheader+tID] = parent.DBlist[tid].toString();
 		if(!!callback){ callback();}
 	},
 
@@ -377,13 +391,13 @@ DataBaseHandler_LS.prototype = {
 	// dbm.dbh.saveDataTable()   データの盤面を保存する
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback){
-		var pdata = localStorage[this.pheader+'!'+parent.DBlist[id].id+'!pdata'];
-		fio.filedecode(pdata);
+		var data = (new ProblemData()).parse(localStorage[this.pheader+parent.DBlist[id].id]);
+		fio.filedecode(data.pdata);
 		if(!!callback){ callback();}
 	},
 	saveDataTable : function(parent, id, callback){
-		var row = parent.DBlist[id];
-		for(var c=0;c<7;c++){ localStorage[this.pheader+'!'+row.id+'!'+this.keys[c]] = (c!==4 ? row[this.keys[c]] : fio.fileencode(fio.PZPH));}
+		parent.DBlist[id].pdata = fio.fileencode(fio.PZPH);
+		localStorage[this.pheader+parent.DBlist[id].id] = parent.DBlist[id].toString();
 		if(!!callback){ callback();}
 	},
 
@@ -392,13 +406,11 @@ DataBaseHandler_LS.prototype = {
 	// dbm.dbh.updateDifficult() データの難易度を更新する
 	//---------------------------------------------------------------------------
 	updateComment : function(parent, id, callback){
-		var row = parent.DBlist[id];
-		localStorage[this.pheader+'!'+row.id+'!comment'] = row.comment;
+		localStorage[this.pheader+parent.DBlist[id].id] = parent.DBlist[id].toString();
 		if(!!callback){ callback();}
 	},
 	updateDifficult : function(parent, id, callback){
-		var row = parent.DBlist[id];
-		localStorage[this.pheader+'!'+row.id+'!hard'] = row.hard;
+		localStorage[this.pheader+parent.DBlist[id].id] = parent.DBlist[id].toString();
 		if(!!callback){ callback();}
 	},
 	//---------------------------------------------------------------------------
@@ -406,11 +418,56 @@ DataBaseHandler_LS.prototype = {
 	//---------------------------------------------------------------------------
 	deleteDataTable : function(parent, sID, max, callback){
 		for(var i=parseInt(sID);i<max;i++){
-			var headers = [this.pheader+'!'+(i+1), this.pheader+'!'+i];
-			for(var c=1;c<7;c++){ localStorage[headers[1]+'!'+this.keys[c]] = localStorage[headers[0]+'!'+this.keys[c]];}
+			localStorage[this.pheader+i] = localStorage[this.pheader+(i+1)];
 		}
-		var dheader = this.pheader+'!'+max;
-		for(var c=0;c<7;c++){ localStorage.removeItem(dheader+'!'+this.keys[c]);}
+		localStorage.removeItem(this.pheader+max);
 		if(!!callback){ callback();}
+	},
+
+	//---------------------------------------------------------------------------
+	// dbm.dbh.convert() データ形式をコンバート
+	//---------------------------------------------------------------------------
+	convert : function(){
+		var keys=['id', 'col', 'row', 'hard', 'pdata', 'time', 'comment'];
+		if(!localStorage['pzprv3_manage']){ return;}
+
+		var timemax=0, countall=0;
+		delete localStorage['pzprv3_manage'];
+		delete localStorage['pzprv3_manage:manage'];
+
+		var puzzles = [];
+		for(var pid in PZLNAME.ja){ // いらないのもあるけど、問題ないのでOK
+			if(!localStorage['pzprv3_'+pid]){ continue;}
+			var mheader = 'pzprv3_manage:manage!'+pid+'!';
+			var count = localStorage[mheader+'count'];
+			var ptime = localStorage[mheader+'time'];
+			delete localStorage[mheader+'count'];
+			delete localStorage[mheader+'time'];
+
+			if(ptime > timemax){ ptime = timemax;}
+			countall += count;
+
+			delete localStorage['pzprv3_'+pid];
+			delete localStorage['pzprv3_'+pid+':puzdata'];
+			for(var r=0;r<count;r++){
+				var pheader = 'pzprv3_'+pid+':puzdata!'+(r+1)+'!';
+				var row = new ProblemData();
+				row.pid = pid;
+				for(var c=0;c<7;c++){
+					row[keys[c]] = localStorage[pheader+keys[c]];
+					delete localStorage[pheader+keys[c]];
+				}
+				puzzles.push(row);
+			}
+		}
+
+		puzzles.sort(function(a,b){ return (a.time-b.time || a.id-b.id);});
+		localStorage['pzprv3_storage:version'] = '2.0';
+		localStorage['pzprv3_storage:count'] = puzzles.length;
+		localStorage['pzprv3_storage:time']  = (tm.now()/1000)|0;
+		for(var i=0;i<puzzles.length;i++){
+			puzzles[r].id = (i+1);
+			localStorage['pzprv3_storage:data:'+(r+1)] = puzzles[r].toString();
+		}
 	}
 };
