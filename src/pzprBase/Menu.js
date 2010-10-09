@@ -66,10 +66,10 @@ Menu.prototype = {
 	// menu.addButtons() ボタンの情報を変数に登録する
 	// menu.addLabels()  ラベルの情報を変数に登録する
 	//---------------------------------------------------------------------------
-	menuinit : function(onload){
+	menuinit : function(){
 		this.menuarea();
 		this.managearea();
-		this.poparea(onload);
+		this.poparea();
 
 		this.displayAll();
 	},
@@ -638,33 +638,31 @@ Menu.prototype = {
 	//---------------------------------------------------------------------------
 	// menu.poparea()       ポップアップメニューの初期設定を行う
 	//---------------------------------------------------------------------------
-	poparea : function(onload){
+	poparea : function(){
 
 		//=====================================================================
 		//// 各タイトルバーの動作設定
-		if(onload){
-			var pop = ee('popup_parent').el.firstChild;
-			while(!!pop){
-				var _el = pop.firstChild;
-				while(!!_el){
-					if(_el.className==='titlebar'){
-						this.titlebarfunc(_el);
-						break;
-					}
-					_el = _el.nextSibling;
+		var pop = ee('popup_parent').el.firstChild;
+		while(!!pop){
+			var _el = pop.firstChild;
+			while(!!_el){
+				if(_el.className==='titlebar'){
+					this.titlebarfunc(_el);
+					break;
 				}
-				pop = pop.nextSibling;
+				_el = _el.nextSibling;
 			}
-			this.titlebarfunc(ee('credit3_1').el);
+			pop = pop.nextSibling;
+		}
+		this.titlebarfunc(ee('credit3_1').el);
 
-			if(!k.mobile){
-				ee.addEvent(_doc, "mousemove", ee.ebinder(this, this.titlebarmove));
-				ee.addEvent(_doc, "mouseup",   ee.ebinder(this, this.titlebarup));
-			}
-			else{
-				ee.addEvent(_doc, "touchmove", ee.ebinder(this, this.titlebarmove));
-				ee.addEvent(_doc, "touchend",  ee.ebinder(this, this.titlebarup));
-			}
+		if(!k.mobile){
+			ee.addEvent(_doc, "mousemove", ee.ebinder(this, this.titlebarmove));
+			ee.addEvent(_doc, "mouseup",   ee.ebinder(this, this.titlebarup));
+		}
+		else{
+			ee.addEvent(_doc, "touchmove", ee.ebinder(this, this.titlebarmove));
+			ee.addEvent(_doc, "touchend",  ee.ebinder(this, this.titlebarup));
 		}
 
 		//=====================================================================

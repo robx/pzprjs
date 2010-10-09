@@ -9,7 +9,6 @@ PBase = function(){
 	this.floatbgcolor = "black";
 	this.userlang     = 'ja';
 	this.resizetimer  = null;	// resizeタイマー
-	this.isonload     = true;	// onload時の初期化処理中かどうか
 	this.initProcess  = true;	// 初期化中かどうか
 	this.enableSaveImage = false;	// 画像保存が有効か
 
@@ -50,6 +49,8 @@ PBase.prototype = {
 			Camp('divques_sub', 'canvas');
 		}
 
+		dbm = new DataBaseManager();			// データベースアクセス用オブジェクト
+
 		this.init_func(ee.binder(this, this.postload_func));
 	},
 	init_func : function(callback){
@@ -78,6 +79,8 @@ PBase.prototype = {
 		if(!!k.puzzleid){
 			// 各パズルでオーバーライドしているものを、元に戻す
 			if(!!puz.protoOriginal){ puz.protoOriginal();}
+
+			ee.removeAllEvents();
 
 			menu.menureset();
 			ee('numobj_parent').el.innerHTML = '';
@@ -117,7 +120,6 @@ PBase.prototype = {
 		if(!!puz.protoChange){ puz.protoChange();}
 
 		// クラス初期化
-		if(this.isonload){ dbm = new DataBaseManager();}	// データベースアクセス用オブジェクト
 		enc = new Encode();				// URL入出力用オブジェクト
 		fio = new FileIO();				// ファイル入出力用オブジェクト
 		tc = new TCell();		// キー入力のターゲット管理オブジェクト
@@ -141,7 +143,7 @@ PBase.prototype = {
 		puz.answer_init();
 
 		// メニュー関係初期化
-		menu.menuinit(this.isonload);	// メニューの設定
+		menu.menuinit();	// メニューの設定
 		this.doc_design();		// デザイン変更関連関数の呼び出し
 		this.checkUserLang();	// 言語のチェック
 
@@ -149,10 +151,9 @@ PBase.prototype = {
 
 		if(!!puz.finalfix){ puz.finalfix();}		// パズル固有の後付け設定
 
-		if(this.isonload){ this.setEvents();}		// イベントをくっつける
+		this.setEvents();		// イベントをくっつける
 
 		this.initProcess = false;
-		this.isonload = false;
 	},
 	// 背景画像とかtitle・背景画像・html表示の設定
 	doc_design : function(){

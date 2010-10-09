@@ -218,6 +218,7 @@ var
 	_elx = _ElementManager._cache    = {},
 	_elp = _ElementManager._template = [],
 	_elpcnt = _ElementManager._tempcnt = 0;
+	_elf = _ElementManager._funcs    = [],
 
 	// define and map _ElementManager.ElementExt class
 	_ELx = _ElementManager.ElementExt = function(el){
@@ -387,7 +388,8 @@ _extend( _ElementManager, {
 	},
 
 	//----------------------------------------------------------------------
-	// ee.addEvent()        addEventListner(など)を呼び出す
+	// ee.addEvent()        addEventListener(など)を呼び出す
+	// ee.removeAllEvents() removeEventListener(など)を呼び出す
 	// ee.stopPropagation() イベントの起こったエレメントより上にイベントを
 	//                      伝播させないようにする
 	// ee.preventDefault()  イベントの起こったエレメントで、デフォルトの
@@ -396,7 +398,18 @@ _extend( _ElementManager, {
 	addEvent : function(el, event, func, capt){
 		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
 		else                     { el.attachEvent('on'+event, func);}
+		_elf.push({el:el, event:event, func:func, capt:!!capt});
 	},
+	removeAllEvents : function(){
+		var islt = !!_doc.removeEventListener;
+		for(var i=0,len=_elf.length;i<len;i++){
+			var e=_elf[i];
+			if(islt){ e.el.removeEventListener(e.event, e.func, e.capt);}
+			else    { e.el.detachEvent('on'+e.event, e.func);}
+		}
+		_elf=[];
+	},
+
 	stopPropagation : function(e){
 		if(!!e.stopPropagation){ e.stopPropagation();}
 		else{ e.cancelBubble = true;}
