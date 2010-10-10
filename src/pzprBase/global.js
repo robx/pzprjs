@@ -789,9 +789,11 @@ ExtData.prototype = {
 		}
 		this.id = PZLNAME.toPID(this.id);
 
-		if     (type===en.KANPEN) { this.parseURI_kanpen();}
-		else if(type===en.HEYAAPP){ this.parseURI_heyaapp();}
-		else if(type===en.PZPRV3 || this.type===en.PZPRAPP){ this.parseURI_pzpr();}
+		switch(this.type){
+			case en.KANPEN:  this.parseURI_kanpen();  break;
+			case en.HEYAAPP: this.parseURI_heyaapp(); break;
+			default:         this.parseURI_pzpr();    break;
+		}
 	},
 
 	//---------------------------------------------------------------------------
