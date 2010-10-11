@@ -46,10 +46,9 @@ Encode.prototype = {
 	// enc.pzlexport()    各パズルのURL出力用(オーバーライド用)
 	//---------------------------------------------------------------------------
 	pzlinput : function(){
-		var uri = base.dec, repaint = false;
+		var uri = base.dec;
 		if(uri.cols && uri.rows){
 			bd.initBoardSize(uri.cols, uri.rows);
-			repaint = true;
 		}
 		if(uri.bstr){
 			this.pflag = uri.pflag;
@@ -70,10 +69,9 @@ Encode.prototype = {
 			}
 
 			um.allerase();
-			base.resetInfo();
-			repaint = true;
 		}
-		if(repaint){ base.resize_canvas();}
+		base.resetInfo();
+		base.resize_canvas();
 	},
 	pzloutput : function(type){
 		if(type===this.KANPEN && k.puzzleid=='lits'){ type = this.KANPENP;}

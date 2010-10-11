@@ -181,6 +181,7 @@ PBase.prototype = {
 		}
 		// 何もないとき
 		else{
+			this.resetInfo();
 			this.resize_canvas();
 		}
 	},
