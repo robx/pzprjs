@@ -728,7 +728,8 @@ ExtData.prototype = {
 		switch(startmode){
 			case 'PLAYER': k.EDITOR = false; k.editmode = false; break;
 			case 'EDITOR': k.EDITOR = true;  k.editmode = true;  break;
-			case 'TEST'  : k.EDITOR = true;  k.editmode = false; k.scriptcheck = true; break;
+			case 'TEST'  : k.EDITOR = true;  k.editmode = false; k.scriptcheck = true;
+				this.parseURI(['?',this.id,'_test/',debug.urls[this.id]].join('')); break;
 		}
 		k.PLAYER    = !k.EDITOR;
 		k.playmode  = !k.editmode;
