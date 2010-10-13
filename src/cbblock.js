@@ -22,7 +22,7 @@ Puzzles.cbblock.prototype = {
 		Border.prototype.defques = 1;
 	},
 	protoOriginal : function(){
-		Border.prototype.defques = Border.prototype.defques;
+		Border.prototype.defques = this.protodef;
 	},
 
 	//---------------------------------------------------------
