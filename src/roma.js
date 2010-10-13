@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ろーま版 roma.js v3.3.2
+// パズル固有スクリプト部 ろーま版 roma.js v3.3.3
 //
 Puzzles.roma = function(){ };
 Puzzles.roma.prototype = {
@@ -241,7 +241,7 @@ Puzzles.roma.prototype = {
 
 			return true;
 		};
-		ans.check1st = function(){ return !this.checkAllCell(bd.noNum);}
+		ans.check1st = function(){ return true;}
 
 		ans.checkBalls = function(){
 			var ldata = [];
