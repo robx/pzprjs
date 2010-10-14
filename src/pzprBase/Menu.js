@@ -1071,7 +1071,7 @@ Properties.prototype = {
 		subclear  : function(){ menu.ex.ASconfirm();},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
-		duplicate : function(){ fio.exportDuplicate();},
+		duplicate : function(){ base.dec.exportFileData();},
 
 		credit    : function(){ menu.pop = ee("pop3_1");},
 		jumpexp   : function(){ window.open('./faq.html?'+k.puzzleid+(k.EDITOR?"_edit":""), '');},

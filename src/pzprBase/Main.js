@@ -39,7 +39,6 @@ PBase.prototype = {
 	//---------------------------------------------------------------------------
 	onload_func : function(){
 		this.dec = new ExtData()
-		this.dec.onload_parseURL();
 		if(!this.dec.id){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
 
 		// Campの設定
@@ -102,7 +101,7 @@ PBase.prototype = {
 		},10);
 	},
 	postload_func : function(){
-		if(k.PLAYER && !this.dec.isduplicate){ this.accesslog();}	// アクセスログをとってみる
+		if(k.PLAYER && !this.dec.disable_accesslog){ this.accesslog();}	// アクセスログをとってみる
 		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
 	},
 
@@ -170,14 +169,14 @@ PBase.prototype = {
 	},
 
 	importBoardData : function(){
-		// URLからパズルのデータを読み出す
-		if(!!this.dec.cols){
-			enc.pzlinput();
-		}
 		// ファイルを開く・複製されたデータを開く
-		else if(!!this.dec.fstr){
+		if(!!this.dec.fstr){
 			fio.filedecode_main(this.dec.fstr);
 			this.dec.fstr = '';
+		}
+		// URLからパズルのデータを読み出す
+		else if(!!this.dec.cols){
+			enc.pzlinput();
 		}
 		// 何もないとき
 		else{

@@ -688,7 +688,10 @@ ExtData = function(){
 
 	this.fstr;		// ファイルの文字列
 
-	this.isduplicate  = false;	// 複製されたタブか
+	this.disable_accesslog = false;	// 複製されたタブか
+
+	this.importURL();
+	this.importFileData();
 };
 ExtData.prototype = {
 	//---------------------------------------------------------------------------
@@ -709,11 +712,21 @@ ExtData.prototype = {
 	},
 	
 	//---------------------------------------------------------------------------
-	// onload_parseURL() 起動時にURLを解析して、puzzleidの抽出やエディタ/player判定を行う
+	// importURL() 起動時に入力されたURLを解析する
+	// checkMode() 起動時にURLを解析して、puzzleidの抽出やエディタ/player判定を行う
 	//---------------------------------------------------------------------------
-	onload_parseURL : function(){
-		var search = location.search;
-		if(search.length<=0){ return this;}
+	importURL : function(){
+		if(!!window.localStorage && !!localStorage['pzprv3_urldata']){
+			this.checkMode(localStorage['pzprv3_urldata']);
+			delete localStorage['pzprv3_urldata'];
+			this.disable_accesslog = true;
+		}
+		else{
+			this.checkMode(location.search);
+		}
+	},
+	checkMode : function(search){
+		if(search.length<=0){ return;}
 
 		var startmode = '';
 		if     (search=="?test")       { startmode = 'TEST'; search = '?country';}
@@ -746,7 +759,7 @@ ExtData.prototype = {
 		var type=0, en=new Encode();
 		// カンペンの場合
 		if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
-			url.match(/(.+)\.html/);
+			url.match(/([a-z]+)\.html/);
 			this.id = RegExp.$1;
 			// カンペンだけどデータ形式はへやわけアプレット
 			if(url.indexOf("?heyawake=")>=0){
@@ -832,5 +845,49 @@ ExtData.prototype = {
 		this.cols = parseInt(size[0]);
 		this.rows = parseInt(size[1]);
 		this.bstr = inp.join("/");
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.exportFileData() 複製するタブ用のにデータを出力してタブを開く
+	// fio.importFileData() 複製されたタブでデータの読み込みを行う
+	//---------------------------------------------------------------------------
+	importFileData : function(){
+		if(!window.sessionStorage){ return;}
+		var str='';
+
+		// 移し変える処理
+		if(!!window.localStorage){
+			str = localStorage['pzprv3_filedata'];
+			if(!!str){
+				delete localStorage['pzprv3_filedata'];
+				sessionStorage['filedata'] = str;
+			}
+		}
+
+		str = sessionStorage['filedata'];
+		if(!!str){
+			var lines = str.split('/');
+			this.reset();
+			this.id = (lines[0].match(/^pzprv3/) ? lines[1] : k.puzzleid);
+			this.fstr = str;
+
+			this.disable_accesslog = true;
+			// sessionStorageのデータは残しておきます
+		}
+	},
+	exportFileData : function(){
+		var str = fio.fileencode(fio.PZPH);
+		var url = './p.html?'+k.puzzleid+(k.PLAYER?"_play":"");
+		if(!k.br.Opera){
+			var old = sessionStorage['filedata'];
+			sessionStorage['filedata'] = (str+fio.history);
+			window.open(url,'');
+			if(!!old){ sessionStorage['filedata'] = old;}
+			else     { delete sessionStorage['filedata'];}
+		}
+		else{
+			localStorage['pzprv3_filedata'] = (str+fio.history);
+			window.open(url,'');
+		}
 	}
 };

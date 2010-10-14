@@ -25,6 +25,16 @@ function onload_func(){
 			el = el.nextSibling;
 		}
 		if(!current && typelist.length>0){ current = typelist[0];}
+
+		var urlinput = function(e){
+			var url = document.getElementById("urlinput_text").value;
+			if(!!url){
+				localStorage['pzprv3_urldata'] = url;
+				window.open('./p.html', '');
+			}
+		};
+		var el = document.getElementById("urlinput_btn");
+		if(!!el){ el.addEventListener("click", urlinput, false);}
 	}
 	disp();
 }

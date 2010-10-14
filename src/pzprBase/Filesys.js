@@ -15,8 +15,6 @@ FileIO = function(){
 	this.PZPR = 1;
 	this.PBOX = 2;
 	this.PZPH = 3;
-
-	this.importDuplicate();
 };
 FileIO.prototype = {
 	//---------------------------------------------------------------------------
@@ -106,48 +104,6 @@ FileIO.prototype = {
 		if(type===this.PZPH){ this.history = um.toString();}
 
 		return bstr;
-	},
-
-	//---------------------------------------------------------------------------
-	// fio.exportDuplicate() 複製するタブ用のにデータを出力してタブを開く
-	// fio.importDuplicate() 複製されたタブでデータの読み込みを行う
-	//---------------------------------------------------------------------------
-	exportDuplicate : function(){
-		var str = this.fileencode(this.PZPH);
-		var url = './p.html?'+k.puzzleid+(k.PLAYER?"_play":"");
-		if(!k.br.Opera){
-			var old = sessionStorage['duplicate'];
-			sessionStorage['duplicate'] = (str+this.history);
-			window.open(url,'');
-			if(!!old){ sessionStorage['duplicate'] = old;}
-			else     { delete sessionStorage['duplicate'];}
-		}
-		else{
-			localStorage['pzprv3_duplicate'] = (str+this.history);
-			window.open(url,'');
-		}
-	},
-	importDuplicate : function(){
-		if(!window.sessionStorage){ return;}
-		var str='';
-
-		// 移し変える処理
-		if(!!window.localStorage){
-			str = localStorage['pzprv3_duplicate'];
-			if(!!str){
-				delete localStorage['pzprv3_duplicate'];
-				sessionStorage['duplicate'] = str;
-			}
-		}
-
-		str = sessionStorage['duplicate'];
-		if(!!str){
-			base.dec.reset();
-			base.dec.fstr = str;
-			// sessionStorageのデータは消しません
-
-			base.dec.isduplicate = true;
-		}
 	},
 
 	//---------------------------------------------------------------------------
