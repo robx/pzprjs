@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.3.2
+// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.3.3
 //
 Puzzles.bosanowa = function(){ };
 Puzzles.bosanowa.prototype = {
@@ -172,7 +172,7 @@ Puzzles.bosanowa.prototype = {
 			this.drawNumbers();
 			this.drawNumbersBD();
 
-			if(k.EDITOR && !this.fillTextPrecisely){
+			if(k.EDITOR && !this.outputImage){
 				this.drawChassis();
 			}
 

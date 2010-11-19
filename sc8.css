@@ -49,12 +49,12 @@
 
 	div#divques{ position:relative; border:solid 1px gray; cursor:default; margin-left:auto; margin-right:auto;}
 
-	div#numobj_parent{ position:absolute; left:0px; top:0px; z-index:20;}
-	div.divnum{ display:inline; position:absolute; cursor:default; line-height:100%;}
-	img.imgnum{ display:inline; position:absolute; cursor:default;}
-
 	div#btnarea{ position:relative;}
 	div#btnarea input[type="button"]{ font-size:1.0em; line-height:1;}
+
+	/* (canvas.context.fillText代替用) */
+	div#numobj_parent{ position:absolute; left:0px; top:0px; z-index:20;}
+	div.divnum{ display:inline; position:absolute; cursor:default; line-height:100%;}
 
 	/* ポップアップウィンドウ */
 	div.popup{ display:none; position:absolute; left:0pt; top:0pt; margin:0pt; text-align:left;

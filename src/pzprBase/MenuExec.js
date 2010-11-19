@@ -217,13 +217,14 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	imagesave : function(isDL){
 		// 現在の設定を保存する
-		var temp_flag   = pc.fillTextPrecisely;
+		var temp_flag   = pc.fillTextEmulate;
 		var temp_margin = k.bdmargin;
 		var temp_cursor = pp.getVal('cursor');
 
 		try{
 			// 設定値・変数をcanvas用のものに変更
-			pc.fillTextPrecisely = true;
+			pc.outputImage = true;
+			pc.fillTextEmulate = false;
 			k.bdmargin = k.bdmargin_image;
 			pp.setValOnly('cursor', false);
 			g = ee('divques_sub').el.getContext("2d");
@@ -249,7 +250,8 @@ MenuExec.prototype = {
 		}
 
 		// 設定値・変数を元に戻す
-		pc.fillTextPrecisely = temp_flag;
+		pc.outputImage = false;
+		pc.fillTextEmulate = temp_flag;
 		k.bdmargin = temp_margin;
 		pp.setValOnly('cursor', temp_cursor);
 		g = ee('divques').unselectable().el.getContext("2d");

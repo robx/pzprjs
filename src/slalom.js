@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.3.2
+// パズル固有スクリプト部 スラローム版 slalom.js v3.3.3
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -398,14 +398,14 @@ Puzzles.slalom.prototype = {
 			this.dispnumStartpos(c);
 		};
 		pc.dispnumStartpos = function(c){
-			this.vinc('cell_number', 'auto');
+			this.vinc('cell_numberpos', 'auto');
 
-			var num = bd.hinfo.max, obj = bd.cell[c], key='cell_'+c;
+			var num = bd.hinfo.max, obj = bd.cell[c];
 			if(num>=0){
 				var fontratio = (num<10?0.75:0.66);
-				this.dispnum(key, 1, ""+num, fontratio, "black", obj.cpx, obj.cpy);
+				this.dispnum('stpos', 1, ""+num, fontratio, "black", obj.cpx, obj.cpy);
 			}
-			else{ this.hideEL(key);}
+			else{ this.hidenum(key);}
 		};
 
 		pc.repaintParts = function(idlist){
@@ -436,7 +436,7 @@ Puzzles.slalom.prototype = {
 					var fontratio = (num<10?0.8:(num<100?0.7:0.55));
 					this.dispnum(key, 1, ""+num, fontratio ,"tomato", obj.cpx, obj.cpy);
 				}
-				else{ this.hideEL(key);}
+				else{ this.hidenum(key);}
 			}
 		};
 	},
