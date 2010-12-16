@@ -14,6 +14,8 @@ MenuExec = function(){
 	this.reader;	// FileReaderオブジェクト
 	this.enableReadText = false;
 
+	this.fileio = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
+
 	// expand/reduce処理用
 	this.insex = {};
 	this.insex[k.CELL]   = {1:true};
@@ -172,7 +174,7 @@ MenuExec.prototype = {
 		}
 		else{
 			if(!fileEL.value){ return;}
-			_doc.fileform.action = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
+			_doc.fileform.action = this.fileio
 			_doc.fileform.submit();
 		}
 
@@ -208,7 +210,7 @@ MenuExec.prototype = {
 		_doc.fileform2.urlstr.value = fio.history;
 		_doc.fileform2.operation.value = 'save';
 
-		_doc.fileform2.action = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
+		_doc.fileform2.action = this.fileio
 		_doc.fileform2.submit();
 	},
 
@@ -239,6 +241,8 @@ MenuExec.prototype = {
 				_doc.fileform2.filename.value  = k.puzzleid+'.gif';
 				_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
 				_doc.fileform2.operation.value = 'imagesave';
+
+				_doc.fileform2.action = this.fileio
 				_doc.fileform2.submit();
 			}
 			else{
