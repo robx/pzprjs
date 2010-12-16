@@ -1542,7 +1542,7 @@ Graphic.prototype = {
 				g.vid = vid;
 				var el = g.elements[vid];
 				if(!el){ return true;}
-				el.style.display = 'inline';
+				el.removeAttribute('opacity');
 				if(this.vnop_FILL[ccflag])  { el.setAttribute('fill',  Camp.parse(g.fillStyle));}
 				if(this.vnop_STROKE[ccflag]){ el.setAttribute('stroke',Camp.parse(g.strokeStyle));}
 				return false;
@@ -1558,7 +1558,8 @@ Graphic.prototype = {
 				g.vid = vid;
 				if(!g.elements[vid]){ return;}
 
-				if(!g.use.sl){ g.elements[vid].style.display = 'inline';}
+				if(g.use.svg){ g.elements[vid].removeAttribute('opacity');}
+				else if(g.use.vml){ g.elements[vid].style.display = 'inline';}
 				else{ g.elements[vid].Visibility = "Visible";}
 			}
 		);
@@ -1573,7 +1574,8 @@ Graphic.prototype = {
 				for(var i=0;i<vid.length;i++){
 					if(!g.elements[vid[i]]){ continue;}
 
-					if(!g.use.sl){ g.elements[vid[i]].style.display = 'none';}
+					if(g.use.svg){ g.elements[vid[i]].setAttribute('opacity',0);}
+					else if(g.use.vml){ g.elements[vid[i]].style.display = 'none';}
 					else{ g.elements[vid[i]].Visibility = "Collapsed";}
 				}
 			}
