@@ -14,6 +14,8 @@ Puzzles.fourcells.prototype = {
 		k.isDispHatena    = true;
 		k.isInputHatena   = true;
 
+		k.ispzprv3ONLY    = true;
+
 		base.setFloatbgcolor("rgb(127, 127, 255)");
 	},
 	menufix : function(){ },
@@ -51,7 +53,7 @@ Puzzles.fourcells.prototype = {
 			};
 		}
 
-		bd.maxnum = 4;
+		bd.maxnum = 3;
 	},
 
 	//---------------------------------------------------------
