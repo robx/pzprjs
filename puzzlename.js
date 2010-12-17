@@ -18,6 +18,7 @@
 		fillmat    : 'フィルマット',
 		fillomino  : 'フィルオミノ',
 		firefly    : 'ホタルビーム',
+		fourcells  : 'フォーセルズ',
 		goishi     : '碁石ひろい',
 		gokigen    : 'ごきげんななめ',
 		hakoiri    : 'はこいり○△□',
@@ -104,6 +105,7 @@
 		fillmat    : 'Fillmat',
 		fillomino  : 'Fillomino',
 		firefly    : 'Hotaru Beam (Glow of Fireflies)',
+		fourcells  : 'FourCells',
 		goishi     : 'Goishi',
 		gokigen    : 'Gokigen-naname',
 		hakoiri    : 'Triplets',
@@ -188,7 +190,7 @@
 		for(var pid in this.alias){
 			if(!this.alias[pid]){ continue;}
 			for(var type in this.alias[pid]){
-				if(this.alias[pid][type]===name){ return pid;}
+				if(this.alias[pid][type]===name){ alert(pid); return pid;}
 			}
 		}
 		return '';
