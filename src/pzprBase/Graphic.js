@@ -146,7 +146,8 @@ Graphic.prototype = {
 		this.lw = Math.max(k.cwidth/this.lwratio, 3);
 		this.lm = (this.lw-1)/2;
 
-		this.fillTextEmulate = (g.use.canvas && !_doc.createElement('canvas').fillText);
+		this.fillTextEmulate = (g.use.canvas && !_doc.createElement('canvas').getContext('2d').fillText);
+		if(g.use.canvas){ g.elements = [];}
 	},
 	//---------------------------------------------------------------------------
 	// pc.prepaint()    paint関数を呼び出す
@@ -1678,7 +1679,7 @@ Graphic.prototype = {
 
 			switch(type){
 				case 1:         g.textAlign='center';                break;
-				case 2: case 5: g.textAlign='left';  px+=-this.bw+2; break;
+				case 2: case 5: g.textAlign='left';  px+=-this.bw+3; break;
 				case 3: case 4: g.textAlign='right'; px+= this.bw-1; break;
 			}
 			switch(type){
@@ -1686,9 +1687,11 @@ Graphic.prototype = {
 				case 4: case 5: g.textBaseline='top';        py+=-this.bh+1; break;
 				case 2: case 3: g.textBaseline='alphabetic'; py+= this.bh-2; break;
 			}
+			if(!g.use.canvas && (type===1||type===4||type===5)){py++;}
 
 			this.vshow("text_"+key);
 			g.fillText(text, px, py);
+			if(k.br.Opera && g.use.svg){g.lastElement.setAttribute('unselectable','on');}
 		}
 	}
 };
