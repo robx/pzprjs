@@ -852,7 +852,13 @@ ExtData.prototype = {
 	// fio.importFileData() 複製されたタブでデータの読み込みを行う
 	//---------------------------------------------------------------------------
 	importFileData : function(){
-		if(!window.sessionStorage){ return;}
+		try{
+			if(!window.sessionStorage){ return;}
+		}
+		catch(e){
+			// FirefoxでLocalURLのときここに飛んでくる
+			return;
+		}
 		var str='';
 
 		// 移し変える処理
