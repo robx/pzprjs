@@ -759,7 +759,7 @@ ExtData.prototype = {
 		var type=0, en=new Encode();
 		// カンペンの場合
 		if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
-			url.match(/([a-z]+)\.html/);
+			url.match(/([0-9a-z]+)\.html/);
 			this.id = RegExp.$1;
 			// カンペンだけどデータ形式はへやわけアプレット
 			if(url.indexOf("?heyawake=")>=0){

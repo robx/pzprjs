@@ -175,6 +175,7 @@
 	},
 	/* 別名 */
 	alias : {
+		fillomino : { kanpen2:'fillomino01'},
 		hashikake : { kanpen:'hashi'},
 		lightup   : { url:'akari', kanpen:'bijutsukan'},
 		mashu     : { kanpen:'masyu'},
@@ -190,7 +191,7 @@
 		for(var pid in this.alias){
 			if(!this.alias[pid]){ continue;}
 			for(var type in this.alias[pid]){
-				if(this.alias[pid][type]===name){ alert(pid); return pid;}
+				if(this.alias[pid][type]===name){ return pid;}
 			}
 		}
 		return '';
