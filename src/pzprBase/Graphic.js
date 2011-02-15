@@ -175,9 +175,6 @@ Graphic.prototype = {
 	},
 	setRange : function(x1,y1,x2,y2){
 		if(g.use.canvas){
-			// 緊急対応
-			if(k.br.Chrome6){ x1=-1; y1=-1; x2=2*k.qcols+1; y2=2*k.qrows+1;}
-
 			// Undo時に跡が残ってしまうこと等を防止
 			if(this.isdrawBC || this.isdrawBD){ x1--; y1--; x2++; y2++;}
 		}

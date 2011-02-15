@@ -42,7 +42,7 @@ PBase.prototype = {
 		if(!this.dec.id){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
 
 		// Campの設定
-		if(k.br.Chrome6){ Camp('divques','canvas');}else{ Camp('divques');}
+		Camp('divques');
 		if(Camp.enable.canvas && !!_doc.createElement('canvas').toDataURL){
 			this.enableSaveImage = true;
 			Camp('divques_sub', 'canvas');
