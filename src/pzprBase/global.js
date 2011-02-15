@@ -125,6 +125,7 @@ var k = {
 		IE6 : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==6),
 		IE7 : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==7),
 		IE8 : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8),
+		IE9 : (navigator.userAgent.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==9),
 
 		Chrome6 : (navigator.userAgent.match(/Chrome\/6\.0/))
 	},

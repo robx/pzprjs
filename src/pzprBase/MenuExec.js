@@ -246,7 +246,15 @@ MenuExec.prototype = {
 				_doc.fileform2.submit();
 			}
 			else{
-				window.open(url, '', '');
+				if(!k.br.IE9){
+					window.open(url, '', '');
+				}
+				else{
+					// IE9だとアドレスバーの長さが2KBだったり、
+					// そもそもDataURL入れても何も起こらなかったりする対策
+					localStorage['pzprv3_savedDataURL'] = url;
+					window.open('image.html', '', '');
+				}
 			}
 		}
 		catch(e){
