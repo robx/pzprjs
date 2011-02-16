@@ -876,6 +876,9 @@ Menu.prototype = {
 				rule.style.fontSize = ['0.9em','1.5em','1.9em','2.9em'][num];
 				rule.style.lineHeight = ['1.6','1.2','1.1','1.1'][num];
 				break;
+			case 'div#btnarea':
+				rule.style.marginTop = ['16px','32px','48px','64px'][num];
+				break;
 			case 'div#btnarea input[type="button"]':
 				rule.style.fontSize = ['','1.6em','2.0em','3.0em'][num];
 				break;
