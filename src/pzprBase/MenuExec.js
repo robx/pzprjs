@@ -238,7 +238,7 @@ MenuExec.prototype = {
 			var url = g.canvas.toDataURL();
 
 			if(isDL){
-				_doc.fileform2.filename.value  = k.puzzleid+'.gif';
+				_doc.fileform2.filename.value  = k.puzzleid+'.png';
 				_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
 				_doc.fileform2.operation.value = 'imagesave';
 
@@ -252,8 +252,13 @@ MenuExec.prototype = {
 				else{
 					// IE9だとアドレスバーの長さが2KBだったり、
 					// そもそもDataURL入れても何も起こらなかったりする対策
-					localStorage['pzprv3_savedDataURL'] = url;
-					window.open('image.html', '', '');
+					var cdoc = window.open('', '', '').document;
+					cdoc.open();
+					cdoc.writeln("<!DOCTYPE html>\n<HTML LANG=\"ja\">\n<HEAD>");
+					cdoc.writeln("<META CHARSET=\"utf-8\">");
+					cdoc.writeln("<TITLE>ぱずぷれv3<\/TITLE>\n<\/HEAD>");
+					cdoc.writeln("<BODY><img src=\"", url, "\"><\/BODY>\n<\/HTML>");
+					cdoc.close();
 				}
 			}
 		}
