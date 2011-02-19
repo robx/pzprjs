@@ -35,11 +35,16 @@ Puzzles.bosanowa.prototype = {
 	},
 
 	protoChange : function(){
-		this.protoval = Border.prototype.defqsub;
+		this.protoval = {
+			cell   : Cell.prototype.defques,
+			border : Border.prototype.defqsub
+		};
+		Cell.prototype.defques   = 7;
 		Border.prototype.defqsub = -1;
 	},
 	protoOriginal : function(){
-		Border.prototype.defqsub = this.protoval;
+		Cell.prototype.defques   = this.protoval.cell;
+		Border.prototype.defqsub = this.protoval.border;
 	},
 
 	//---------------------------------------------------------
@@ -64,19 +69,19 @@ Puzzles.bosanowa.prototype = {
 					var ques = bd.QuC(cc), num = bd.getNum(cc);
 					if(k.editmode){
 						if(this.btn.Left){
-							if     (ques===0) { bd.setNum(cc,-1); bd.sQuC(cc,7);}
-							else if(num===max){ bd.setNum(cc,-1); bd.sQuC(cc,0);}
-							else if(num===-1) { bd.setNum(cc, 1); bd.sQuC(cc,7);}
+							if     (ques===7) { bd.setNum(cc,-1); bd.sQuC(cc,0);}
+							else if(num===-1) { bd.setNum(cc, 1); bd.sQuC(cc,0);}
+							else if(num===max){ bd.setNum(cc,-1); bd.sQuC(cc,7);}
 							else{ bd.setNum(cc,num+1);}
 						}
 						else if(this.btn.Right){
-							if     (ques===0) { bd.setNum(cc,max); bd.sQuC(cc,7);}
-							else if(num=== 1) { bd.setNum(cc, -1); bd.sQuC(cc,7);}
-							else if(num===-1) { bd.setNum(cc, -1); bd.sQuC(cc,0);}
+							if     (ques===7) { bd.setNum(cc,max); bd.sQuC(cc,0);}
+							else if(num=== 1) { bd.setNum(cc, -1); bd.sQuC(cc,0);}
+							else if(num===-1) { bd.setNum(cc, -1); bd.sQuC(cc,7);}
 							else{ bd.setNum(cc,num-1);}
 						}
 					}
-					if(k.playmode && ques===7){
+					if(k.playmode && ques===0){
 						if(this.btn.Left){
 							if     (num===max){ bd.setNum(cc,-1);}
 							else if(num===-1) { bd.setNum(cc, 1);}
@@ -106,16 +111,16 @@ Puzzles.bosanowa.prototype = {
 			var tcp = tc.getTCP();
 			if((tcp.x&1)&&(tcp.y&1)){
 				var cc = tc.getTCC();
-				if(k.editmode && ca=='w'){ bd.sQuC(cc,(bd.QuC(cc)!=7?7:0)); bd.setNum(cc,-1);}
-				else if(bd.QuC(cc)==7 && (k.playmode || '0'<=ca && ca<='9')){ this.key_inputqnum(ca);}
-				else if(k.editmode && '0'<=ca && ca<='9'){ bd.sQuC(cc,7); bd.setNum(cc,-1); this.key_inputqnum(ca);}
-				else if(k.editmode && (ca=='-'||ca==' ')){ bd.sQuC(cc,7); bd.setNum(cc,-1);}
+				if(k.editmode && ca=='w'){ bd.sQuC(cc,(bd.QuC(cc)!==7?7:0)); bd.setNum(cc,-1);}
+				else if(bd.QuC(cc)==0 && (k.playmode || '0'<=ca && ca<='9')){ this.key_inputqnum(ca);}
+				else if(k.editmode && '0'<=ca && ca<='9'){ bd.sQuC(cc,0); bd.setNum(cc,-1); this.key_inputqnum(ca);}
+				else if(k.editmode && (ca=='-'||ca==' ')){ bd.sQuC(cc,0); bd.setNum(cc,-1);}
 				else{ return false;}
 			}
 			else if((tcp.x+tcp.y)&1){
 				var id = tc.getTBC();
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(!bd.isBox(cc1) || !bd.isBox(cc2)){ return false;}
+				if(bd.isEmpty(cc1) || bd.isEmpty(cc2)){ return false;}
 				if('0'<=ca && ca<='9'){
 					var num = parseInt(ca);
 					var qsubmax = 99;
@@ -136,14 +141,15 @@ Puzzles.bosanowa.prototype = {
 			return true;
 		};
 
-		// 入力可能なマスかどうか
-		bd.isBox = function(c){ return (!!bd.cell[c] && bd.cell[c].ques===7)};
+		// 入力可能できないマスかどうか
+		bd.isEmpty = function(c){ return ( !bd.cell[c] || bd.cell[c].ques===7)};
+		bd.isValid = function(c){ return (!!bd.cell[c] && bd.cell[c].ques===0)};
 
 		// カーソルを最初真ん中においておく
 		tc.cursor = new Address(k.qcols-1-k.qcols%2, k.qrows-1-k.qrows%2);
 		if(k.EDITOR){
 			var c = tc.getTCC();
-			if(c!==null){ bd.cell[c].ques = 7;}
+			if(c!==null){ bd.cell[c].ques = 0;}
 		}
 	},
 
@@ -207,7 +213,7 @@ Puzzles.bosanowa.prototype = {
 			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.cell[c].ques===7 && !bd.isNum(c)){
+				if(bd.isValid(c) && !bd.isNum(c)){
 					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
 					if(this.vnop(header+c,this.STROKE)){
 						g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
@@ -228,7 +234,7 @@ Puzzles.bosanowa.prototype = {
 			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(bd.isBox(cc1) && bd.isBox(cc2)){
+				if(bd.isValid(cc1) && bd.isValid(cc2)){
 					if(!g.use.canvas){
 						if(this.vnop(header+id,this.NONE)){
 							if(bd.border[id].by&1){
@@ -270,7 +276,7 @@ Puzzles.bosanowa.prototype = {
 			var idlist = this.range.borders;
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(bd.isBox(cc1) && bd.isBox(cc2)){
+				if(bd.isValid(cc1) && bd.isValid(cc2)){
 					g.fillStyle=this.gridcolor;
 					if(this.vnop(headers[0]+id,this.NONE)){
 						if     (bd.border[id].by&1){ g.fillRect(bd.border[id].px, bd.border[id].py-this.bh, 1, this.ch+1);}
@@ -296,7 +302,7 @@ Puzzles.bosanowa.prototype = {
 			for(var i=0;i<idlist.length;i++){
 				var id = idlist[i], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 
-				if(bd.border[id].qsub>=0 && (bd.isBox(cc1) && bd.isBox(cc2))){
+				if(bd.border[id].qsub>=0 && (!bd.isEmpty(cc1) && !bd.isEmpty(cc2))){
 					g.fillStyle = "white";
 					if(this.vnop(header+id,this.NONE)){
 						g.fillRect(bd.border[id].px-csize, bd.border[id].py-csize, 2*csize+1, 2*csize+1);
@@ -326,11 +332,11 @@ Puzzles.bosanowa.prototype = {
 			for(var bx=(d.x1-2)|1;bx<=d.x2+2;bx+=2){
 				for(var by=(d.y1-2)|1;by<=d.y2+2;by+=2){
 					var c=bd.cnum(bx,by);
-					if( !bd.isBox(c) && (
-						bd.QuC(bd.cnum(bx-2,by  ))===7 || bd.QuC(bd.cnum(bx+2,by  ))===7 || 
-						bd.QuC(bd.cnum(bx  ,by-2))===7 || bd.QuC(bd.cnum(bx  ,by+2))===7 || 
-						bd.QuC(bd.cnum(bx-2,by-2))===7 || bd.QuC(bd.cnum(bx+2,by-2))===7 || 
-						bd.QuC(bd.cnum(bx-2,by+2))===7 || bd.QuC(bd.cnum(bx+2,by+2))===7 ) )
+					if( bd.isEmpty(c) && (
+						bd.QuC(bd.cnum(bx-2,by  ))===0 || bd.QuC(bd.cnum(bx+2,by  ))===0 || 
+						bd.QuC(bd.cnum(bx  ,by-2))===0 || bd.QuC(bd.cnum(bx  ,by+2))===0 || 
+						bd.QuC(bd.cnum(bx-2,by-2))===0 || bd.QuC(bd.cnum(bx+2,by-2))===0 || 
+						bd.QuC(bd.cnum(bx-2,by+2))===0 || bd.QuC(bd.cnum(bx+2,by+2))===0 ) )
 					{
 						g.fillStyle = "rgb(127,127,127)";
 						if(this.vnop([header,bx,by].join('_'),this.NONE)){
@@ -344,7 +350,7 @@ Puzzles.bosanowa.prototype = {
 		// ワリタイの太線描画用
 		pc.setBorderColor = function(id){
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if(bd.isBox(cc1)^bd.isBox(cc2)){
+			if(bd.isEmpty(cc1)^bd.isEmpty(cc2)){
 				g.fillStyle = this.cellcolor;
 				return true;
 			}
@@ -382,7 +388,7 @@ Puzzles.bosanowa.prototype = {
 				var num = parseInt(bstr.charAt(i),32);
 				for(var w=0;w<5;w++){
 					if(c<bd.cellmax){
-						bd.cell[c].ques = (num&twi[w]?0:7);
+						bd.cell[c].ques = (num&twi[w]?7:0);
 						c++;
 					}
 				}
@@ -395,7 +401,7 @@ Puzzles.bosanowa.prototype = {
 		enc.encodeBosanowa = function(type){
 			var x1=9999, x2=-1, y1=9999, y2=-1;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.cell[c].ques!==7){ continue;}
+				if(bd.isEmpty(c)){ continue;}
 				if(x1>bd.cell[c].bx){ x1=bd.cell[c].bx;}
 				if(x2<bd.cell[c].bx){ x2=bd.cell[c].bx;}
 				if(y1>bd.cell[c].by){ y1=bd.cell[c].by;}
@@ -406,7 +412,7 @@ Puzzles.bosanowa.prototype = {
 			for(var by=y1;by<=y2;by+=2){
 				for(var bx=x1;bx<=x2;bx+=2){
 					var c=bd.cnum(bx,by);
-					if(bd.cell[c].ques===0){ pass+=twi[count];} count++;
+					if(bd.isEmpty(c)){ pass+=twi[count];} count++;
 					if(count===5){ cm += pass.toString(32); count=0; pass=0;}
 				}
 			}
@@ -436,7 +442,7 @@ Puzzles.bosanowa.prototype = {
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			this.decodeCell( function(obj,ca){
-				if(ca!=="."){ obj.ques = 7;}
+				if(ca!=="."){ obj.ques = 0;}
 				if(ca!=="0"&&ca!=="."){ obj.qnum = parseInt(ca);}
 			});
 			this.decodeCell( function(obj,ca){
@@ -448,11 +454,11 @@ Puzzles.bosanowa.prototype = {
 		};
 		fio.encodeData = function(){
 			this.encodeCell(function(obj){
-				if(obj.ques!==7){ return ". ";}
+				if(obj.ques===7){ return ". ";}
 				return (obj.qnum>=0 ? ""+obj.qnum.toString()+" " : "0 ");
 			});
 			this.encodeCell( function(obj){
-				if(obj.ques!==7 || obj.qnum!==-1){ return ". ";}
+				if(obj.ques===7 || obj.qnum!==-1){ return ". ";}
 				return (obj.anum>=0 ? ""+obj.anum.toString()+" " : "0 ");
 			});
 			this.encodeBorder( function(obj){
@@ -470,19 +476,19 @@ Puzzles.bosanowa.prototype = {
 				this.setAlert('数字とその隣の数字の差の合計が合っていません。', 'Sum of the differences between the number and adjacent numbers is not equal to the number.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.isBox(c) && bd.noNum(c));}) ){
+			if( !this.checkAllCell(function(c){ return (bd.isValid(c) && bd.noNum(c));}) ){
 				this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.isBox(c) && bd.noNum(c));});};
+		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.isValid(c) && bd.noNum(c));});};
 
 		ans.checkSubsNumber = function(){
 			var subs=[], UNDEF=-1;
 			for(var id=0;id<bd.bdmax;id++){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(bd.isBox(cc1) && bd.isBox(cc2)){
+				if(bd.isValid(cc1) && bd.isValid(cc2)){
 					if(bd.isValidNum(cc1) && bd.isValidNum(cc2)){
 						subs[id]=Math.abs(bd.getNum(cc1)-bd.getNum(cc2));
 					}
@@ -493,7 +499,7 @@ Puzzles.bosanowa.prototype = {
 
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(!bd.isBox(c) || bd.noNum(c)){ continue;}
+				if(bd.isEmpty(c) || bd.noNum(c)){ continue;}
 
 				var num=bd.getNum(c), sum=0, id;
 				id=bd.ub(c); if(subs[id]>0){ sum+=subs[id];}else if(subs[id]===UNDEF){ continue;}
