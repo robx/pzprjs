@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.3.2
+// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.3.3
 //
 Puzzles.kinkonkan = function(){ };
 Puzzles.kinkonkan.prototype = {
@@ -208,6 +208,7 @@ Puzzles.kinkonkan.prototype = {
 
 			this.drawSlashes();
 
+			this.drawBGEXcells();
 			this.drawEXcells_kinkonkan();
 			this.drawChassis();
 
@@ -265,6 +266,10 @@ Puzzles.kinkonkan.prototype = {
 			}
 		};
 
+		pc.setBGEXcellColor = function(c){
+			if(bd.excell[c].error===6){ g.fillStyle = this.errbcolor2; return true;}
+			return false;
+		};
 		pc.drawEXcells_kinkonkan = function(){
 			this.vinc('excell_number', 'auto');
 
@@ -272,14 +277,6 @@ Puzzles.kinkonkan.prototype = {
 			var exlist = this.range.excells;
 			for(var i=0;i<exlist.length;i++){
 				var c = exlist[i], obj = bd.excell[c], key = 'excell_'+c;
-
-				if(obj.error===6){
-					g.fillStyle = this.errbcolor2;
-					if(this.vnop(header+c,this.NONE)){
-						g.fillRect(obj.px+1, obj.py+1, this.cw-1, this.ch-1);
-					}
-				}
-				else{ this.vhide(header+c);}
 
 				if(obj.qdir!==0 || obj.qnum!==-1){
 					var num=obj.qnum, canum=obj.qdir;

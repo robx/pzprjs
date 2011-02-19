@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボックス版 box.js v3.3.2
+// パズル固有スクリプト部 ボックス版 box.js v3.3.3
 //
 Puzzles.box = function(){ };
 Puzzles.box.prototype = {
@@ -167,7 +167,7 @@ Puzzles.box.prototype = {
 			this.drawBlackCells();
 			this.drawGrid();
 
-			this.drawErrorEXCells();
+			this.drawBGEXcells();
 			this.drawNumbers_box();
 
 			this.drawCircledNumbers_box();
@@ -177,23 +177,6 @@ Puzzles.box.prototype = {
 			this.drawTarget();
 		};
 
-		pc.drawErrorEXCells = function(){
-			this.vinc('excell_full', 'crispEdges');
-
-			var header = "ex_full_";
-			var exlist = this.range.excells;
-			for(var i=0;i<exlist.length;i++){
-				var c = exlist[i], obj = bd.excell[c];
-
-				if(obj.error===1){
-					g.fillStyle   = this.errbcolor1;
-					if(this.vnop(header+c,this.FILL)){
-						g.fillRect(obj.px, obj.py, this.cw, this.ch);
-					}
-				}
-				else{ this.vhide(header+c)}
-			}
-		};
 		pc.drawNumbers_box = function(){
 			this.vinc('excell_number', 'auto');
 
