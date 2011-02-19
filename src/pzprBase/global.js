@@ -193,10 +193,10 @@ var
 	_win = this,
 	_iOS = k.os.iPhoneOS,
 
-	/* ここからクラス定義です  varでドット付きは、最左辺に置けません */
+	/* ここからクラス定義です */
 
 	// define and map _ElementManager class
-	_ELm = _ElementManager = _win.ee = function(id){
+	_ElementManager = _win.ee = function(id){
 		if(typeof id === 'string'){
 			if(!_elx[id]){
 				var el = _doc.getElementById(id);
@@ -216,7 +216,7 @@ var
 	},
 	_elx = _ElementManager._cache    = {},
 	_elp = _ElementManager._template = [],
-	_elpcnt = _ElementManager._tempcnt = 0;
+	_elpcnt = _ElementManager._tempcnt = 0,
 	_elf = _ElementManager._funcs    = [],
 
 	// define and map _ElementManager.ElementExt class

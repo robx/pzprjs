@@ -1,4 +1,4 @@
-// Camp.js rev93
+// Camp.js rev94
  
 (function(){
 
@@ -90,7 +90,7 @@ var V_TAG_SHAPE    = '<v:shape',
 	V_TAG_IMAGE    = '<v:image',
 	V_TAG_TEXTPATH = '<v:textpath',
 	V_TAG_POLYLINE = '<v:polyline',
-	V_TAG_PATH_FOR_TEXTPATH = '<v:path textpathok="t" />';
+	V_TAG_PATH_FOR_TEXTPATH = '<v:path textpathok="t" />',
 	V_EL_UNSELECTABLE = '', // デフォルトはunselectableでない
 //	V_EL_UNSELECTABLE = ' unselectable="on"',
 	V_TAGEND      = '>',
@@ -139,9 +139,9 @@ var SVGNS   = "http://www.w3.org/2000/svg",
 	S_PATH_ARCTO  = ' A',
 	S_PATH_CLOSE  = ' z',
 
-	S_ATT_ID          = 'id';
-	S_ATT_FILL        = 'fill';
-	S_ATT_STROKE      = 'stroke';
+	S_ATT_ID          = 'id',
+	S_ATT_FILL        = 'fill',
+	S_ATT_STROKE      = 'stroke',
 	S_ATT_STROKEWIDTH = 'stroke-width',
 	S_ATT_RENDERING   = 'shape-rendering',
 
@@ -879,7 +879,7 @@ VectorContext.prototype = {
 /* -------------------- */
 /*   Canvas追加関数群   */
 /* -------------------- */
-CanvasRenderingContext2D_wrapper = function(type, idname){
+var CanvasRenderingContext2D_wrapper = function(type, idname){
 	// canvasに存在するプロパティ＆デフォルト値
 	this.fillStyle    = 'black';
 	this.strokeStyle  = 'black';
