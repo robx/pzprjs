@@ -134,9 +134,70 @@ Graphic = function(){
 };
 Graphic.prototype = {
 	//---------------------------------------------------------------------------
+	// pc.resize_canvas()    ウィンドウのLoad/Resize時の処理。
+	//                       Canvas/表示するマス目の大きさを設定する。
 	// pc.onresize_process() resize時にサイズを変更する
 	//---------------------------------------------------------------------------
+	resize_canvas : function(){
+		var wwidth = ee.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
+		var cols   = (bd.maxbx-bd.minbx)/2+2*k.bdmargin; // canvasの横幅がセル何個分に相当するか
+		var rows   = (bd.maxby-bd.minby)/2+2*k.bdmargin; // canvasの縦幅がセル何個分に相当するか
+		if(k.puzzleid==='box'){ cols++; rows++;}
+
+		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[pp.getVal('size')];
+		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
+		ci[0] = (wwidth*ws.base )/(k.cellsize*cr.base );
+		ci[1] = (wwidth*ws.limit)/(k.cellsize*cr.limit);
+
+		// 横幅いっぱいに広げたい場合
+		if(k.mobile){
+			mwidth = wwidth*0.98;
+			k.cwidth = k.cheight = ((mwidth*0.92)/cols)|0;
+			if(k.cwidth < k.cellsize){ k.cwidth = k.cheight = k.cellsize;}
+		}
+		// 縮小が必要ない場合
+		else if(!pp.getVal('adjsize') || cols < ci[0]){
+			mwidth = wwidth*ws.base-4;
+			k.cwidth = k.cheight = (k.cellsize*cr.base)|0;
+		}
+		// base～limit間でサイズを自動調節する場合
+		else if(cols < ci[1]){
+			var ws_tmp = ws.base+(ws.limit-ws.base)*((k.qcols-ci[0])/(ci[1]-ci[0]));
+			mwidth = wwidth*ws_tmp-4;
+			k.cwidth = k.cheight = (mwidth/cols)|0; // 外枠ぎりぎりにする
+		}
+		// 自動調整の下限値を超える場合
+		else{
+			mwidth = wwidth*ws.limit-4;
+			k.cwidth = k.cheight = (k.cellsize*cr.limit)|0;
+		}
+		k.bwidth  = k.cwidth/2; k.bheight = k.cheight/2;
+
+		// mainのサイズ変更
+		ee('main').el.style.width = ''+(mwidth|0)+'px';
+		if(k.mobile){ ee('menuboard').el.style.width = '90%';}
+
+		// 盤面のセルID:0が描画される左上の位置の設定
+		var x0, y0; x0 = y0 = (k.cwidth*k.bdmargin)|0;
+		// extendxell==0でない時は位置をずらす
+		if(!!k.isexcell){ x0 += k.cwidth; y0 += k.cheight;}
+
+		// Canvasのサイズ・Offset変更
+		g.changeSize((cols*k.cwidth)|0, (rows*k.cheight)|0);
+		g.translate(x0, y0);
+
+		// 盤面のページ内座標を設定(fillTextEmurate用)
+		var rect = ee('divques').getRect();
+		this.pageX = (x0 + rect.left);
+		this.pageY = (y0 + rect.top);
+
+		this.onresize_process();
+	},
 	onresize_process : function(){
+		this.resetVectorFunctions();
+		kp.resize();
+		bd.setcoordAll();
+
 		this.cw = k.cwidth;
 		this.ch = k.cheight;
 
@@ -148,7 +209,12 @@ Graphic.prototype = {
 
 		this.fillTextEmulate = (g.use.canvas && !_doc.createElement('canvas').getContext('2d').fillText);
 		if(g.use.canvas){ g.elements = [];}
+
+		// 再描画
+		this.flushCanvasAll();
+		this.paintAll();
 	},
+
 	//---------------------------------------------------------------------------
 	// pc.prepaint()    paint関数を呼び出す
 	// pc.setRange()    rangeオブジェクトを設定する

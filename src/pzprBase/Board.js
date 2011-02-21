@@ -228,9 +228,6 @@ Board = function(){
 	this.noLPobj[k.DN] = {1:1,2:1,3:1,13:1,14:1,15:1,21:1};
 	this.noLPobj[k.LT] = {1:1,2:1,5:1,12:1,14:1,17:1,22:1};
 	this.noLPobj[k.RT] = {1:1,3:1,4:1,12:1,15:1,16:1,22:1};
-
-	// 盤面サイズの初期化
-	this.initBoardSize(k.qcols,k.qrows);
 };
 Board.prototype = {
 	//---------------------------------------------------------------------------
@@ -312,6 +309,26 @@ Board.prototype = {
 		else if(type===k.BORDER){ return bd.border[id];}
 		else if(type===k.EXCELL){ return bd.excell[id];}
 		return (void 0);
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.disableInfo()  Area/LineManagerへの登録を禁止する
+	// bd.enableInfo()   Area/LineManagerへの登録を許可する
+	// bd.resetInfo()    AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
+	//---------------------------------------------------------------------------
+	disableInfo : function(){
+		um.disableRecord();
+		line.disableRecord();
+		area.disableRecord();
+	},
+	enableInfo : function(){
+		um.enableRecord();
+		line.enableRecord();
+		area.enableRecord();
+	},
+	resetInfo : function(){
+		area.resetArea();
+		line.resetLcnts();
 	},
 
 	//---------------------------------------------------------------------------

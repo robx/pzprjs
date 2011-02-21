@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 イチマガ/磁石イチマガ版 ichimaga.js v3.3.2
+// パズル固有スクリプト部 イチマガ/磁石イチマガ版 ichimaga.js v3.3.3
 //
 Puzzles.ichimaga = function(){ };
 Puzzles.ichimaga.prototype = {
@@ -34,7 +34,7 @@ Puzzles.ichimaga.prototype = {
 				if     (num==2){ k.pzlnameid="ichimagam";}
 				else if(num==3){ k.pzlnameid="ichimagax";}
 				else           { k.pzlnameid="ichimaga"; }
-				base.displayTitle();
+				menu.displayTitle();
 			};
 		}
 	},
@@ -119,7 +119,7 @@ Puzzles.ichimaga.prototype = {
 			if     (this.checkpflag("m")){ k.pzlnameid="ichimagam";}
 			else if(this.checkpflag("x")){ k.pzlnameid="ichimagax";}
 			else                         { k.pzlnameid="ichimaga"; }
-			base.displayTitle();
+			menu.displayTitle();
 		};
 		enc.pzlexport = function(type){
 			this.encode4Cell();
@@ -140,7 +140,7 @@ Puzzles.ichimaga.prototype = {
 			if     (pzlflag=="mag")  { k.pzlnameid="ichimagam";}
 			else if(pzlflag=="cross"){ k.pzlnameid="ichimagax";}
 			else                     { k.pzlnameid="ichimaga"; }
-			base.displayTitle();
+			menu.displayTitle();
 
 			this.decodeCellQnum();
 			this.decodeBorderLine();

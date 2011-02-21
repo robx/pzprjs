@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.3.2
+// パズル固有スクリプト部 天体ショー版 tentaisho.js v3.3.3
 //
 Puzzles.tentaisho = function(){ };
 Puzzles.tentaisho.prototype = {
@@ -329,7 +329,7 @@ Puzzles.tentaisho.prototype = {
 		};
 
 		enc.decodeStar = function(bstr){
-			base.disableInfo();
+			bd.disableInfo();
 			var s=0, bstr = this.outbstr;
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i);
@@ -342,7 +342,7 @@ Puzzles.tentaisho.prototype = {
 
 				if(s>=bd.starmax){ break;}
 			}
-			base.enableInfo();
+			bd.enableInfo();
 			this.outbstr = bstr.substr(i+1);
 		};
 		enc.encodeStar = function(){
@@ -393,7 +393,7 @@ Puzzles.tentaisho.prototype = {
 
 		fio.decodeStarFile = function(){
 			var array = this.readLines(2*k.qrows-1), s=0;
-			base.disableInfo();
+			bd.disableInfo();
 			for(var i=0;i<array.length;i++){
 				for(var c=0;c<array[i].length;c++){
 					if     (array[i].charAt(c)==="1"){ bd.setStar(s, 1);}
@@ -401,7 +401,7 @@ Puzzles.tentaisho.prototype = {
 					s++;
 				}
 			}
-			base.enableInfo();
+			bd.enableInfo();
 		};
 		fio.encodeStarFile = function(){
 			var s=0;

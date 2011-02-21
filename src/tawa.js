@@ -285,8 +285,8 @@ Puzzles.tawa.prototype = {
 
 				menu.popclose();
 
-				base.resetInfo();
-				base.resize_canvas();				// Canvasを更新する
+				bd.resetInfo();
+				pc.resize_canvas();				// Canvasを更新する
 			}
 		};
 

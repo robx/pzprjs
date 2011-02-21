@@ -232,7 +232,7 @@ MenuExec.prototype = {
 			g = ee('divques_sub').el.getContext("2d");
 
 			// canvas要素の設定を適用して、再描画
-			base.resize_canvas();
+			pc.resize_canvas();
 
 			// canvasの描画内容をDataURLとして取得する
 			var url = g.canvas.toDataURL();
@@ -274,7 +274,7 @@ MenuExec.prototype = {
 		g = ee('divques').unselectable().el.getContext("2d");
 
 		// その他の設定を元に戻して、再描画
-		base.resize_canvas();
+		pc.resize_canvas();
 	},
 
 	//------------------------------------------------------------------------------
@@ -286,7 +286,7 @@ MenuExec.prototype = {
 			if(csize>0){ k.cellsize = (csize|0);}
 
 			menu.popclose();
-			base.resize_canvas();	// Canvasを更新する
+			pc.resize_canvas();	// Canvasを更新する
 		}
 	},
 
@@ -321,7 +321,7 @@ MenuExec.prototype = {
 		this.displaymanage = !this.displaymanage;
 		this.dispmanstr();
 
-		base.resize_canvas();	// canvasの左上座標等を更新して再描画
+		pc.resize_canvas();	// canvasの左上座標等を更新して再描画
 	},
 	dispmanstr : function(){
 		if(!this.displaymanage){ ee('ms_manarea').el.innerHTML = menu.selectStr("管理領域を表示","Show management area");}
@@ -354,8 +354,8 @@ MenuExec.prototype = {
 			um.addOpe(k.BOARD, name, 0, this.boardtype[name][0], this.boardtype[name][1]);
 
 			bd.setminmax();
-			if(!um.undoExec){ base.resetInfo();}
-			base.resize_canvas();				// Canvasを更新する
+			if(!um.undoExec){ bd.resetInfo();}
+			pc.resize_canvas();				// Canvasを更新する
 		}
 	},
 
@@ -365,7 +365,7 @@ MenuExec.prototype = {
 	// menu.ex.reduceGroup()  オブジェクトの消去を行う
 	//------------------------------------------------------------------------------
 	expandreduce : function(key,d){
-		base.disableInfo();
+		bd.disableInfo();
 		this.adjustBoardData(key,d);
 
 		if(key & this.EXPAND){
@@ -389,7 +389,7 @@ MenuExec.prototype = {
 		bd.setposAll();
 
 		this.adjustBoardData2(key,d);
-		base.enableInfo();
+		bd.enableInfo();
 	},
 	expandGroup : function(type,key){
 		var margin = bd.initGroup(type, k.qcols, k.qrows);
@@ -426,7 +426,7 @@ MenuExec.prototype = {
 	// menu.ex.turnflipGroup() turnflip()から内部的に呼ばれる回転実行部
 	//------------------------------------------------------------------------------
 	turnflip : function(key,d){
-		base.disableInfo();
+		bd.disableInfo();
 		this.adjustBoardData(key,d);
 
 		if(key & this.TURN){
@@ -448,7 +448,7 @@ MenuExec.prototype = {
 		bd.setposAll();
 
 		this.adjustBoardData2(key,d);
-		base.enableInfo();
+		bd.enableInfo();
 	},
 	turnflipGroup : function(type,key,d){
 		var ch=[], idlist=bd.objectinside(type,d.x1,d.y1,d.x2,d.y2);
@@ -718,7 +718,7 @@ MenuExec.prototype = {
 			um.newOperation(true);
 
 			bd.ansclear();
-			base.resetInfo();
+			bd.resetInfo();
 			pc.paintAll();
 		}
 	},

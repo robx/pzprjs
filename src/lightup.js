@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 美術館版 lightup.js v3.3.2
+// パズル固有スクリプト部 美術館版 lightup.js v3.3.3
 //
 Puzzles.lightup = function(){ };
 Puzzles.lightup.prototype = {
@@ -22,14 +22,14 @@ Puzzles.lightup.prototype = {
 	},
 
 	protoChange : function(){
-		this.protofunc = { resetinfo : base.resetInfo};
+		this.protofunc = { resetinfo : Board.prototype.resetInfo};
 
-		base.resetInfo = function(){
+		Board.prototype.resetInfo = function(){
 			bd.initQlight();
 		};
 	},
 	protoOriginal : function(){
-		base.resetInfo = this.protofunc.resetinfo;
+		Board.prototype.resetInfo = this.protofunc.resetinfo;
 	},
 
 	//---------------------------------------------------------

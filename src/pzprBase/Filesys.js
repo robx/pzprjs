@@ -66,8 +66,8 @@ FileIO.prototype = {
 
 		um.decodeLines();
 
-		base.resetInfo();
-		base.resize_canvas();
+		bd.resetInfo();
+		pc.resize_canvas();
 
 		this.dataarray = null;
 
@@ -480,7 +480,7 @@ FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	decodeCellQnum51 : function(){
 		var item = this.getItemList(k.qrows+1);
-		base.disableInfo(); /* mv.set51cell()用 */
+		bd.disableInfo(); /* mv.set51cell()用 */
 		for(var i=0;i<item.length;i++) {
 			if(item[i]=="."){ continue;}
 
@@ -498,7 +498,7 @@ FileIO.prototype = {
 				bd.cell[c].qdir = parseInt(inp[1]);
 			}
 		}
-		base.enableInfo(); /* mv.set51cell()用 */
+		bd.enableInfo(); /* mv.set51cell()用 */
 	},
 	encodeCellQnum51 : function(){
 		var str = "";

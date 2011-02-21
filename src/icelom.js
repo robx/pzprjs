@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスローム版 icelom.js v3.3.2
+// パズル固有スクリプト部 アイスローム版 icelom.js v3.3.3
 //
 Puzzles.icelom = function(){ };
 Puzzles.icelom.prototype = {
@@ -33,7 +33,7 @@ Puzzles.icelom.prototype = {
 
 			pp.funcs['puztype'] = function(num){
 				k.pzlnameid = (num==1?'icelom':'icelom2');
-				base.displayTitle();
+				menu.displayTitle();
 			};
 		}
 
@@ -191,22 +191,22 @@ Puzzles.icelom.prototype = {
 			this.stackBorder(num);
 		};
 
+		bd.disableInfo();
+		bd.inputarrowin (0 + bd.bdinside, 1);
+		bd.inputarrowout(2 + bd.bdinside, 1);
+		bd.enableInfo();
+
 		bd.initSpecial = function(col,row){
 			this.bdinside = 2*col*row-(col+row);
-			if(base.initProcess){
-				this.inputarrowin (0 + this.bdinside, 1);
-				this.inputarrowout(2 + this.bdinside, 1);
-			}
-			else{
-				if(this.arrowin<k.qcols+this.bdinside){ if(this.arrowin>col+this.bdinside){ this.arrowin=col+this.bdinside-1;} }
-				else{ if(this.arrowin>col+row+this.bdinside){ this.arrowin=col+row+this.bdinside-1;} }
 
-				if(this.arrowout<k.qcols+this.bdinside){ if(this.arrowout>col+this.bdinside){ this.arrowout=col+this.bdinside-1;} }
-				else{ if(this.arrowout>col+row+this.bdinside){ this.arrowout=col+row+this.bdinside-1;} }
+			if(this.arrowin<k.qcols+this.bdinside){ if(this.arrowin>col+this.bdinside){ this.arrowin=col+this.bdinside-1;} }
+			else{ if(this.arrowin>col+row+this.bdinside){ this.arrowin=col+row+this.bdinside-1;} }
 
-				if(this.arrowin==this.arrowout){ this.arrowin--;}
-			}
-		}
+			if(this.arrowout<k.qcols+this.bdinside){ if(this.arrowout>col+this.bdinside){ this.arrowout=col+this.bdinside-1;} }
+			else{ if(this.arrowout>col+row+this.bdinside){ this.arrowout=col+row+this.bdinside-1;} }
+
+			if(this.arrowin==this.arrowout){ this.arrowin--;}
+		};
 
 		menu.ex.adjustSpecial = function(key,d){
 			var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
@@ -363,7 +363,7 @@ Puzzles.icelom.prototype = {
 				else                    { pp.setVal('puztype',2);}
 			}
 			k.pzlnameid = (this.checkpflag("a")?'icelom':'icelom2');
-			base.displayTitle();
+			menu.displayTitle();
 		};
 		enc.pzlexport = function(type){
 			this.encodeIcelom();
@@ -403,12 +403,12 @@ Puzzles.icelom.prototype = {
 		enc.decodeInOut = function(){
 			var barray = this.outbstr.substr(1).split("/");
 
-			base.disableInfo();
+			bd.disableInfo();
 			bd.setArrow(bd.arrowin,0); bd.setArrow(bd.arrowout,0);
 			bd.arrowin = bd.arrowout = null;
 			bd.inputarrowin (parseInt(barray[0])+bd.bdinside);
 			bd.inputarrowout(parseInt(barray[1])+bd.bdinside);
-			base.enableInfo();
+			bd.enableInfo();
 
 			this.outbstr = "";
 		};
@@ -418,17 +418,17 @@ Puzzles.icelom.prototype = {
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			base.disableInfo();
+			bd.disableInfo();
 			bd.inputarrowin (parseInt(this.readLine()));
 			bd.inputarrowout(parseInt(this.readLine()));
-			base.enableInfo();
+			bd.enableInfo();
 
 			var pzltype = this.readLine();
 			if(k.EDITOR){
 				pp.setVal('puztype',(pzltype==="allwhite"?1:2));
 			}
 			k.pzlnameid = (pzltype==="allwhite"?'icelom':'icelom2');
-			base.displayTitle();
+			menu.displayTitle();
 
 			this.decodeCell( function(obj,ca){
 				if(ca.charAt(0)==='i'){ obj.ques=6; ca=ca.substr(1);}

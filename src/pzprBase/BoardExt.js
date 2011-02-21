@@ -1,4 +1,4 @@
-// pzprUtil.js v3.3.2
+// BoardExt.js v3.3.3
 
 //---------------------------------------------------------------------------
 // ★AreaInfoクラス 主に色分けの情報を管理する
@@ -10,6 +10,50 @@ AreaInfo = function(){
 	this.max  = 0;	// 最大の部屋番号(1～maxまで存在するよう構成してください)
 	this.id   = [];	// 各セル/線などが属する部屋番号を保持する
 	this.room = [];	// 各部屋のidlist等の情報を保持する(info.room[id].idlistで取得)
+};
+
+//---------------------------------------------------------------------------
+// ★IDListクラス 複数IDの集合を扱う
+//---------------------------------------------------------------------------
+IDList = function(list){
+	this.data = ((list instanceof Array) ? list : []);
+};
+IDList.prototype = {
+	push : function(val){
+		this.data.push(val);
+		return this;
+	},
+	reverseData : function(){
+		this.data = this.data.reverse();
+		return this;
+	},
+	unique : function(){
+		var newArray=[], newHash={};
+		for(var i=0,len=this.data.length;i<len;i++){
+			if(!newHash[this.data[i]]){
+				newArray.push(this.data[i]);
+				newHash[this.data[i]] = true;
+			}
+		}
+		this.data = newArray;
+		return this;
+	},
+
+	sublist : function(func){
+		var newList = new IDList();
+		for(var i=0,len=this.data.length;i<len;i++){
+			if(!!func(this.data[i])){ newList.data.push(this.data[i]);}
+		}
+		return newList;
+	},
+
+	isnull  : function(){ return (this.data.length===0);},
+	include : function(val){
+		for(var i=0,len=this.data.length;i<len;i++){
+			if(this.data[i]===val){ return true;}
+		}
+		return false;
+	}
 };
 
 //---------------------------------------------------------------------------
@@ -27,15 +71,17 @@ LineManager = function(){
 	this.typeB = 'B';
 	this.typeC = 'C';
 
+	this.disrec = 0;
+
 	this.init();
 };
 LineManager.prototype = {
 
 	//---------------------------------------------------------------------------
-	// line.init()        変数の起動時の初期化を行う
-	// line.resetLcnts()  lcnts等の変数の初期化を行う
-	// line.newIrowake()  線の情報が再構築された際、線に色をつける
-	// line.lcntCell()    セルに存在する線の本数を返す
+	// line.init()           変数の起動時の初期化を行う
+	// line.disableRecord()  操作の登録を禁止する
+	// line.enableRecord()   操作の登録を許可する
+	// line.isenableRecord() 操作の登録できるかを返す
 	//---------------------------------------------------------------------------
 	init : function(){
 		if(this.disableLine){ return;}
@@ -55,6 +101,15 @@ LineManager.prototype = {
 		for(var id=0;id<bd.bdmax;id++){ this.data.id[id] = null;}
 	},
 
+	disableRecord : function(){ this.disrec++; },
+	enableRecord  : function(){ if(this.disrec>0){ this.disrec--;} },
+	isenableRecord : function(){ return (this.disrec===0);},
+
+	//---------------------------------------------------------------------------
+	// line.resetLcnts()  lcnts等の変数の初期化を行う
+	// line.newIrowake()  線の情報が再構築された際、線に色をつける
+	// line.lcntCell()    セルに存在する線の本数を返す
+	//---------------------------------------------------------------------------
 	resetLcnts : function(){
 		if(this.disableLine){ return;}
 
@@ -134,7 +189,7 @@ LineManager.prototype = {
 	//                        可能性がある場合の線idの再設定を行う
 	//---------------------------------------------------------------------------
 	setLine : function(id, isset){
-		if(this.disableLine || !base.isenableInfo()){ return;}
+		if(this.disableLine || !this.isenableRecord()){ return;}
 		if(isset===(this.data.id[id]!==null)){ return;}
 
 		var cc1, cc2;
@@ -465,18 +520,30 @@ AreaManager = function(){
 	this.bcell = {};	// 黒マス情報を保持する
 	this.wcell = {};	// 白マス情報を保持する
 
+	this.disrec = 0;
+
 	this.init();
 };
 AreaManager.prototype = {
 	//--------------------------------------------------------------------------------
-	// area.init()       起動時に変数を初期化する
-	// area.resetArea()  部屋、黒マス、白マスの情報をresetする
+	// area.init()           起動時に変数を初期化する
+	// area.disableRecord()  操作の登録を禁止する
+	// area.enableRecord()   操作の登録を許可する
+	// area.isenableRecord() 操作の登録できるかを返す
 	//--------------------------------------------------------------------------------
 	init : function(){
 		this.initRarea();
 		this.initBarea();
 		this.initWarea();
 	},
+
+	disableRecord : function(){ this.disrec++; },
+	enableRecord  : function(){ if(this.disrec>0){ this.disrec--;} },
+	isenableRecord : function(){ return (this.disrec===0);},
+
+	//--------------------------------------------------------------------------------
+	// area.resetArea()  部屋、黒マス、白マスの情報をresetする
+	//--------------------------------------------------------------------------------
 	resetArea : function(){
 		if(!!k.isborder && !k.isborderAsLine){ this.resetRarea();}
 		if(k.checkBlackCell || k.linkNumber) { this.resetBarea();}
@@ -586,7 +653,7 @@ AreaManager.prototype = {
 	},
 
 	setBorder : function(id,isset){
-		if(!k.hasroom || !base.isenableInfo()){ return;}
+		if(!k.hasroom || !this.isenableRecord()){ return;}
 		if(isset===this.isbd[id]){ return;}
 		this.setRinfo(id,isset);
 
@@ -750,7 +817,7 @@ AreaManager.prototype = {
 		}
 	},
 	setBWCell : function(cc,isset,data){
-		if(!base.isenableInfo()){ return;}
+		if(!this.isenableRecord()){ return;}
 		if(isset===(data.id[cc]!==null)){ return;}
 
 		var cid = [], dataid = data.id, tc;

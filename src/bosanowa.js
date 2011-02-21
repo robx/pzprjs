@@ -30,7 +30,7 @@ Puzzles.bosanowa.prototype = {
 			if     (num==1){ k.bdmargin = 0.70; k.bdmargin_image = 0.10;}
 			else if(num==2){ k.bdmargin = 1.20; k.bdmargin_image = 1.10;}
 			else if(num==3){ k.bdmargin = 0.70; k.bdmargin_image = 0.10;}
-			base.resize_canvas();
+			pc.resize_canvas();
 		};
 	},
 

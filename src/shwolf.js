@@ -23,7 +23,7 @@ Puzzles.shwolf.prototype = {
 	},
 	menufix : function(){ },
 	finalfix : function(){
-		if(base.enableSaveImage){
+		if(base.dec.enableSaveImage){
 			if(k.br.Gecko && !location.hostname){
 				ee('ms_imagesavep').el.className = 'smenunull';
 			}

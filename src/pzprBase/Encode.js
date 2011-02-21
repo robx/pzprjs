@@ -70,8 +70,8 @@ Encode.prototype = {
 
 			um.allerase();
 		}
-		base.resetInfo();
-		base.resize_canvas();
+		bd.resetInfo();
+		pc.resize_canvas();
 	},
 	pzloutput : function(type){
 		if(type===this.KANPEN && k.puzzleid=='lits'){ type = this.KANPENP;}

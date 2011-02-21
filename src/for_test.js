@@ -148,8 +148,8 @@ debug.extend({
 				var bd2 = debug.bd_freezecopy();
 
 				bd.initBoardSize(1,1);
-				base.resetInfo();
-				base.resize_canvas();
+				bd.resetInfo();
+				pc.resize_canvas();
 
 				setTimeout(function(){
 					fio.filedecode_main(outputstr);
@@ -167,8 +167,8 @@ debug.extend({
 				var bd2 = debug.bd_freezecopy();
 
 				bd.initBoardSize(1,1);
-				base.resetInfo();
-				base.resize_canvas();
+				bd.resetInfo();
+				pc.resize_canvas();
 
 				setTimeout(function(){
 					fio.filedecode_main(outputstr);

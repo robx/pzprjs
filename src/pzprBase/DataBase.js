@@ -47,68 +47,21 @@ ProblemData.prototype = {
 DataBaseManager = function(){
 	this.dbh    = null;	// データベースハンドラ
 
-	//this.DBtype = 0;
-	this.DBaccept = 0;	// データベースのタイプ 1:Gears 2:WebDB 4:IdxDB 8:localStorage
-
 	this.DBsid  = -1;	// 現在選択されているリスト中のID
 	this.DBlist = [];	// 現在一覧にある問題のリスト
 
 	var self    = this;
 	this.update = function(){ self.updateDialog.call(self);};
 	this.sync   = false;
-
-	this.selectDBtype();
 };
 DataBaseManager.prototype = {
-	//---------------------------------------------------------------------------
-	// dbm.selectDBtype() Web DataBaseが使えるかどうか判定する(起動時)
-	// dbm.requestGears() gears_init.jsを読み出すか判定する
-	//---------------------------------------------------------------------------
-	selectDBtype : function(){
-		// HTML5 - Web localStorage判定用(sessionStorage)
-		try{
-			if(!!window.sessionStorage){
-				this.DBaccept |= 0x10;
-			}
-		}
-		catch(e){}
-
-		// HTML5 - Web localStorage判定用(localStorage)
-		if(!!window.localStorage){
-			// FirefoxはローカルだとlocalStorageが使えない
-			if(!k.br.Gecko || !!location.hostname){ this.DBaccept |= 0x08;}
-		}
-
-		// HTML5 - Indexed Dataase API判定用
-		if(!!window.indexedDB){
-			// FirefoxはローカルだとlocalStorageが使えない
-			this.DBaccept |= 0x04;
-		}
-
-		// HTML5 - Web SQL DataBase判定用
-		if(!!window.openDatabase){
-			try{	// Opera10.50対策
-				var dbtmp = openDatabase('pzprv3_manage', '1.0', 'manager', 1024*1024*5);	// Chrome3対策
-				if(!!dbtmp){ this.DBaccept |= 0x02;}
-			}
-			catch(e){}
-		}
-	},
-
 	//---------------------------------------------------------------------------
 	// dbm.openDialog() データベースダイアログが開いた時の処理
 	//---------------------------------------------------------------------------
 	openDialog : function(){
 		// データベースを開く
-		var type = 0;
-		if     (this.DBaccept & 0x08){ type = 4;}
-	//	else if(this.DBaccept & 0x04){ type = 3;}
-	//	else if(this.DBaccept & 0x02){ type = 2;}
-
-		switch(type){
-			case 4: this.dbh = new DataBaseHandler_LS(); break;
-			default: return;
-		}
+		if(base.dec.enLocalStorage()){ this.dbh = new DataBaseHandler_LS();}
+		else{ return;}
 
 		this.sync = false;
 		this.dbh.convert();
