@@ -415,7 +415,7 @@ _extend( _ElementManager, {
 	},
 	preventDefault : function(e){
 		if(!!e.preventDefault){ e.preventDefault();}
-		else{ e.returnValue = true;}
+		else{ e.returnValue = false;}
 	}
 });
 
