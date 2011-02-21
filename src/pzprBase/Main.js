@@ -85,7 +85,6 @@ PBase.prototype = {
 			ee('numobj_parent').el.innerHTML = '';
 			ee.clean();
 		}
-		k.pzlnameid = k.puzzleid = pid;
 
 		// 中身を読み取れるまでwait
 		var self = this;
@@ -93,8 +92,10 @@ PBase.prototype = {
 			if(!Puzzles[pid] || !Camp.isready()){ return;}
 			clearInterval(tim);
 
-			// 初期化ルーチンへジャンプ
 			g = ee('divques').unselectable().el.getContext("2d");
+
+			// 初期化ルーチンへジャンプ
+			k.pzlnameid = k.puzzleid = pid;
 			self.initObjects();
 
 			if(!!callback){ callback();}

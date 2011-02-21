@@ -826,13 +826,13 @@ ExtData.prototype = {
 	parseURI_kanpen : function(){
 		var inp = this.qdata.split("/");
 
-		if(k.puzzleid=="sudoku"){
+		if(this.id=="sudoku"){
 			this.rows = this.cols = parseInt(inp.shift());
 		}
 		else{
 			this.rows = parseInt(inp.shift());
 			this.cols = parseInt(inp.shift());
-			if(k.puzzleid=="kakuro"){ this.rows--; this.cols--;}
+			if(this.id=="kakuro"){ this.rows--; this.cols--;}
 		}
 		this.bstr = inp.join("/");
 	},
@@ -873,7 +873,7 @@ ExtData.prototype = {
 		if(!!str){
 			var lines = str.split('/');
 			this.reset();
-			this.id = (lines[0].match(/^pzprv3/) ? lines[1] : k.puzzleid);
+			this.id = (lines[0].match(/^pzprv3/) ? lines[1] : '');
 			this.fstr = str;
 
 			this.disable_accesslog = true;
