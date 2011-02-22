@@ -391,24 +391,21 @@ Puzzles.tawa.prototype = {
 			this.drawTarget();
 		};
 		// オーバーライド
-		pc.prepaint = function(x1,y1,x2,y2){
-			this.setRange(x1,y1,x2,y2);
-
-			// pc.flushCanvasの代替
-			if(g.use.canvas){
-				if(x1<=bd.minbx && y1<=bd.minby && x2>=bd.maxbx && y2>=bd.maxby){
-					this.flushCanvasAll();
+		pc.flushCanvas = function(){
+			this.flushCanvas = ((g.use.canvas) ?
+				function(){
+					if(x1<=bd.minbx && y1<=bd.minby && x2>=bd.maxbx && y2>=bd.maxby){
+						this.flushCanvasAll();
+					}
+					else{
+						g.fillStyle = "rgb(255, 255, 255)";
+						g.fillRect(x1*this.bw, y1*this.ch, (x2-x1+1)*this.bw, (y2-y1+1)*this.ch);
+					}
 				}
-				else{
-					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(x1*this.bw, y1*this.ch, (x2-x1+1)*this.bw, (y2-y1+1)*this.ch);
-				}
-			}
-			else{
-				this.zidx=0;
-			}
-
-			this.paint();
+			:
+				function(){ this.zidx=1;}
+			);
+			this.flushCanvas();
 		};
 
 		pc.drawGrid_tawa = function(){

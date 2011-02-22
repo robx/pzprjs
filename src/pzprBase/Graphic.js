@@ -255,7 +255,7 @@ Graphic.prototype = {
 	},
 
 	paintAll : function(){
-		this.prepaint(-1,-1,2*k.qcols+1,2*k.qrows+1);
+		this.prepaint(bd.minbx-1,bd.minby-1,bd.maxbx+1,bd.maxby+1);
 	},
 	paintRange : function(x1,y1,x2,y2){
 		this.prepaint(x1,y1,x2,y2);
