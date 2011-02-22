@@ -961,7 +961,7 @@ Graphic.prototype = {
 		var vid = "x_cm_"+id;
 		g.fillStyle = this.cellcolor;
 		if(this.vnop(vid,this.NONE)){
-			g.fillCircle(bd.cross[id].px, bd.cross[id].py, (this.lw+3)/2);
+			g.fillCircle(bd.cross[id].px, bd.cross[id].py, (this.lw*1.2)/2);
 		}
 	},
 
