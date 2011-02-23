@@ -616,7 +616,7 @@ Menu.prototype = {
 		var ex = ee.pageX(e);
 		var ey = ee.pageY(e);
 		var rect_f = ee('ms_file').getRect(), rect_o = ee('ms_other').getRect();
-		return (ex>=rect_f.left && ex<=rect_o.right && ey>=rect_f.top);
+		return (ey>= rect_f.bottom || (ex>=rect_f.left && ex<=rect_o.right && ey>=rect_f.top));
 	},
 
 //--------------------------------------------------------------------------------------------------------------
