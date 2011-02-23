@@ -131,7 +131,7 @@ _extend( _ElementManager, {
 		if(!!id){ el.id = id;}
 		for(var name in temp.attr) { el[name]       = temp.attr[name]; }
 		for(var name in temp.style){ el.style[name] = temp.style[name];}
-		for(var name in temp.func) { el["on"+name]  = temp.func[name]; }
+		for(var name in temp.func) { this.addEvent(el, name, temp.func[name], true); }
 
 		if(!!temp.parent){ temp.parent.appendChild(el);} // 後ろじゃないとIEでエラーになる。。
 		return el;
