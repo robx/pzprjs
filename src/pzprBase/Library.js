@@ -157,12 +157,13 @@ _extend( _ElementManager, {
 				if(!!e.touches){
 					var len=e.touches.length, pos=0;
 					if(len>0){
-						for(var i=0;i<len;i++){ pos += e.touches[i].clientX;}
-						return pos/len + this.scrollLeft();
+						for(var i=0;i<len;i++){ pos += e.touches[i].pageX;}
+						return pos/len;
 					}
 				}
-				else if(!!e.clientX){ return e.clientX + this.scrollLeft();}
-				return e.pageX;
+				else if(!isNaN(e.pageX)){ return e.pageX;}
+				else if(!isNaN(e.clientX)){ return e.clientX + this.scrollLeft();}
+				return 0;
 			}
 		);
 		return _ElementManager.pageX(e);
@@ -175,12 +176,13 @@ _extend( _ElementManager, {
 				if(!!e.touches){
 					var len=e.touches.length, pos=0;
 					if(len>0){
-						for(var i=0;i<len;i++){ pos += e.touches[i].clientY;}
-						return pos/len + this.scrollTop();
+						for(var i=0;i<len;i++){ pos += e.touches[i].pageY;}
+						return pos/len;
 					}
 				}
-				else if(!!e.clientY){ return e.clientY + this.scrollTop();}
-				return e.pageY;
+				else if(!isNaN(e.pageY)){ return e.pageY;}
+				else if(!isNaN(e.clientY)){ return e.clientY + this.scrollTop();}
+				return 0;
 			}
 		);
 		return _ElementManager.pageY(e);
