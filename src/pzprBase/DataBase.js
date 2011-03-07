@@ -111,6 +111,7 @@ DataBaseManager.prototype = {
 
 	//---------------------------------------------------------------------------
 	// dbm.displayDataTableList() 保存しているデータの一覧を表示する
+	// dbm.appendNewOption()      option要素を生成する
 	// dbm.getRowString()         1データから文字列を生成する
 	// dbm.dateString()           時刻の文字列を生成する
 	//---------------------------------------------------------------------------
@@ -122,17 +123,20 @@ DataBaseManager.prototype = {
 			case 'size'   : this.DBlist = this.DBlist.sort(function(a,b){ return (a.col-b.col || a.row-b.row || a.hard-b.hard || a.id-b.id);}); break;
 		}
 
-		var html = "";
+		_doc.database.datalist.innerHTML = "";
 		for(var i=0;i<this.DBlist.length;i++){
 			var row = this.DBlist[i];
-			if(!row){ continue;}//alert(i);}
-
-			var valstr = " value=\""+row.id+"\"";
-			var selstr = (this.DBsid==row.id?" selected":"");
-			html += ("<option" + valstr + selstr + ">" + this.getRowString(row)+"</option>\n");
+			if(!!row){ this.appendNewOption(row.id, this.getRowString(row));}
 		}
-		html += ("<option value=\"new\""+(this.DBsid==-1?" selected":"")+">&nbsp;&lt;新しく保存する&gt;</option>\n");
-		_doc.database.datalist.innerHTML = html;
+		this.appendNewOption(-1, "&nbsp;&lt;新しく保存する&gt;");
+	},
+	appendNewOption : function(id, str){
+		var opt = _doc.createElement('option');
+		opt.setAttribute('value', (id!=-1 ? id : "new"));
+		opt.innerHTML = str;
+		if(this.DBsid==id){ opt.setAttribute('selected', "selected");}
+
+		_doc.database.datalist.appendChild(opt);
 	},
 	getRowString : function(row){
 		var hardstr = [
@@ -155,7 +159,7 @@ DataBaseManager.prototype = {
 	},
 	dateString : function(time){
 		var ni   = function(num){ return (num<10?"0":"")+num;};
-		var str  = " ";
+		var str  = "";
 		var date = new Date();
 		date.setTime(time);
 
@@ -303,8 +307,8 @@ DataBaseHandler_LS.prototype = {
 	},
 	importDBlist : function(parent, callback){
 		parent.DBlist = [];
-		for(var r=1;true;r++){
-			var row = (new ProblemData()).parse(localStorage[this.pheader+r]);
+		for(var i=1;true;i++){
+			var row = (new ProblemData()).parse(localStorage[this.pheader+i]);
 			if(row.id==null){ break;}
 			parent.DBlist.push(row);
 		}
@@ -402,8 +406,8 @@ DataBaseHandler_LS.prototype = {
 
 			delete localStorage['pzprv3_'+pid];
 			delete localStorage['pzprv3_'+pid+':puzdata'];
-			for(var r=0;r<count;r++){
-				var pheader = 'pzprv3_'+pid+':puzdata!'+(r+1)+'!';
+			for(var i=0;i<count;i++){
+				var pheader = 'pzprv3_'+pid+':puzdata!'+(i+1)+'!';
 				var row = new ProblemData();
 				row.pid = pid;
 				for(var c=0;c<7;c++){
@@ -419,8 +423,8 @@ DataBaseHandler_LS.prototype = {
 		localStorage['pzprv3_storage:count'] = puzzles.length;
 		localStorage['pzprv3_storage:time']  = (tm.now()/1000)|0;
 		for(var i=0;i<puzzles.length;i++){
-			puzzles[r].id = (i+1);
-			localStorage['pzprv3_storage:data:'+(r+1)] = puzzles[r].toString();
+			puzzles[i].id = (i+1);
+			localStorage['pzprv3_storage:data:'+(i+1)] = puzzles[i].toString();
 		}
 	}
 };

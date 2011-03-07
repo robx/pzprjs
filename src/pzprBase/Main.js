@@ -498,6 +498,8 @@ PBase.prototype = {
 			Camp('divques_sub', 'canvas');
 		}
 
+		// dbmは、フロートメニューを開いたまま別パズルへの遷移があるのでここにおいておく
+		dbm = new DataBaseManager();	// データベースアクセス用オブジェクト
 		this.reload_func(ee.binder(this, this.postload_func));
 	},
 	includeFile : function(file){
@@ -576,7 +578,6 @@ PBase.prototype = {
 		// クラス初期化
 		enc = new Encode();				// URL入出力用オブジェクト
 		fio = new FileIO();				// ファイル入出力用オブジェクト
-		dbm = new DataBaseManager();	// データベースアクセス用オブジェクト
 		tc = new TCell();		// キー入力のターゲット管理オブジェクト
 		bd = new Board();		// 盤面オブジェクト
 		mv = new MouseEvent();	// マウス入力オブジェクト
