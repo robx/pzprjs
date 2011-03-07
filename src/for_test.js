@@ -27,6 +27,7 @@ debug.extend({
 	},
 
 	all_test : function(){
+		if(debug.alltimer != null){ return;}
 		var pnum=0, term=0, idlist=[];
 		debug.phase = 99;
 
@@ -34,7 +35,7 @@ debug.extend({
 		idlist.sort();
 		term = idlist.length-1;
 
-		var tam = setInterval(function(){
+		debug.alltimer = setInterval(function(){
 			if(debug.phase != 99){ return;}
 			debug.phase = 0;
 
@@ -43,7 +44,7 @@ debug.extend({
 			base.dec.parseURI('?'+newid+'/'+debug.urls[newid]);
 			base.init_func(ee.binder(debug, debug.sccheck));
 
-			if(pnum >= term){ clearInterval(tam);}
+			if(pnum >= term){ clearInterval(debug.alltimer);}
 
 			debug.addTextarea("Test ("+pnum+", "+newid+") start.");
 			pnum++;
@@ -68,10 +69,11 @@ debug.extend({
 		this.sccheck();
 	},
 
-	phase : 0,
+	alltimer : null,
+	phase : 99,
 	sccheck : function(){
 		if(pp.getVal('autocheck')){ pp.setVal('autocheck',false);}
-		var n=0, alstr='', qstr='', mint=80, fint=50;
+		var n=0, alstr='', qstr='', mint=80, fint=50, fails=0;
 		this.phase = 10;
 		var tim = setInterval(function(){
 		//Encode test--------------------------------------------------------------
@@ -86,7 +88,8 @@ debug.extend({
 				var inp = enc.getURLBase(enc.PZPRV3)+(pfg?(pfg+"/"):"")+(col+"/"+row)+("/"+str);
 				var ta  = enc.pzloutput(enc.PZPRV3);
 
-				debug.addTextarea("Encode test   = "+(inp==ta?"pass":"failure...<BR> "+inp+"<BR> "+ta));
+				if(inp!=ta){ debug.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); fails++;}
+				else if(!debug.alltimer){ debug.addTextarea("Encode test   = pass");}
 
 				setTimeout(function(){
 					if(k.isKanpenExist){ debug.phase = 11;}
@@ -102,7 +105,8 @@ debug.extend({
 				menu.pop = ee("pop1_5");
 				menu.ex.urlinput({});
 
-				debug.addTextarea("Encode kanpen = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+				if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("Encode kanpen = failure..."); fails++;}
+				else if(!debug.alltimer){ debug.addTextarea("Encode kanpen = pass");}
 
 				setTimeout(function(){
 					debug.phase = (debug.acs[k.puzzleid])?20:30;
@@ -132,7 +136,8 @@ debug.extend({
 
 					if(ans.alstr.jp != debug.acs[k.puzzleid][n][0]){ misstr = true;}
 
-					debug.addTextarea("Answer test "+(n+1)+" = "+((!iserror&&!misstr)?"pass":"failure...")+" \""+debug.acs[k.puzzleid][n][0]+"\"");
+					if(iserror||misstr){ debug.addTextarea("Answer test "+(n+1)+" = failure... \""+debug.acs[k.puzzleid][n][0]+"\""); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("Answer test "+(n+1)+" = pass \""+debug.acs[k.puzzleid][n][0]+"\"");}
 
 					n++;
 					if(n<debug.acs[k.puzzleid].length){ debug.phase = 20;}
@@ -153,7 +158,8 @@ debug.extend({
 
 				setTimeout(function(){
 					fio.filedecode_main(outputstr);
-					debug.addTextarea("FileIO test   = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FileIO test   = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("FileIO test   = pass");}
 
 					fio.filedecode_main(debug.acs[k.puzzleid][debug.acs[k.puzzleid].length-1][1]);
 					debug.phase = (k.puzzleid != 'tawa')?40:50;
@@ -174,7 +180,8 @@ debug.extend({
 					fio.filedecode_main(outputstr);
 
 					debug.qsubf = !(k.puzzleid=='fillomino'||k.puzzleid=='hashikake'||k.puzzleid=='kurodoko'||k.puzzleid=='shikaku'||k.puzzleid=='tentaisho');
-					debug.addTextarea("FileIO kanpen = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FileIO kanpen = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("FileIO kanpen = pass");}
 					debug.qsubf = true;
 
 					debug.phase = 30;
@@ -188,7 +195,8 @@ debug.extend({
 				var func = function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnr'}}); menu.pop = '';};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-					debug.addTextarea("TurnR test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("TurnR test 1  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("TurnR test 1  = pass");}
 					debug.phase = 41;
 				},fint); },fint); },fint);
 			})();
@@ -199,7 +207,8 @@ debug.extend({
 				var func = function(){ um.undo(1);};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-					debug.addTextarea("TurnR test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("TurnR test 2  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("TurnR test 2  = pass");}
 					debug.phase = 45;
 				},fint); },fint); },fint);
 			})();
@@ -210,7 +219,8 @@ debug.extend({
 				var func = function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnl'}}); menu.pop = '';};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-					debug.addTextarea("TurnL test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("TurnL test 1  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("TurnL test 1  = pass");}
 					debug.phase = 46;
 				},fint); },fint); },fint);
 			})();
@@ -221,7 +231,8 @@ debug.extend({
 				var func = function(){ um.undo(1);};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-					debug.addTextarea("TurnL test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("TurnR test 2  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("TurnR test 2  = pass");}
 					debug.phase = 50;
 				},fint); },fint); },fint);
 			})();
@@ -233,7 +244,8 @@ debug.extend({
 				menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}});
 
 				setTimeout(function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}}); menu.pop = '';
-					debug.addTextarea("FlipX test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FlipX test 1  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("FlipX test 1  = pass");}
 					debug.phase = 51;
 				},fint);
 			})();
@@ -244,7 +256,8 @@ debug.extend({
 				um.undo(1);
 
 				setTimeout(function(){ um.undo(1);
-					debug.addTextarea("FlipX test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FlipX test 2  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("FlipX test 2  = pass");}
 					debug.phase = 55;
 				},fint);
 			})();
@@ -255,7 +268,8 @@ debug.extend({
 				menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}});
 
 				setTimeout(function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}}); menu.pop = '';
-					debug.addTextarea("FlipY test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FlipY test 1  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("FlipY test 1  = pass");}
 					debug.phase = 56;
 				},fint);
 			})();
@@ -266,7 +280,8 @@ debug.extend({
 				um.undo(1);
 
 				setTimeout(function(){ um.undo(1);
-					debug.addTextarea("FlipY test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FlipX test 2  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("FlipX test 2  = pass");}
 					debug.phase = 60;
 				},fint);
 			})();
@@ -281,7 +296,8 @@ debug.extend({
 				setTimeout(function(){ func('expanddn'); setTimeout(function(){ func('expandlt');
 				setTimeout(function(){ func('reduceup'); setTimeout(function(){ func('reducert');
 				setTimeout(function(){ func('reducedn'); setTimeout(function(){ func('reducelt');
-					debug.addTextarea("Adjust test 1 = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("Adjust test 1 = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("Adjust test 1 = pass");}
 					debug.phase = 61;
 				},fint); },fint); },fint); },fint); },fint); },fint); },fint); },fint);
 			})();
@@ -296,7 +312,8 @@ debug.extend({
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-					debug.addTextarea("Adjust test 2 = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("Adjust test 2 = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("Adjust test 2 = pass");}
 					debug.phase = 90;
 				},fint); },fint); },fint); },fint); },fint); },fint); },fint);
 			})();
@@ -304,7 +321,7 @@ debug.extend({
 		//test end--------------------------------------------------------------
 		case 90:
 			clearInterval(tim);
-			debug.addTextarea("Test end.");
+			if(!debug.alltimer){ debug.addTextarea("Test end.");}
 			debug.phase = 99;
 			return;
 		}
