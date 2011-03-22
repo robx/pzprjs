@@ -295,7 +295,7 @@ ExtData.prototype = {
 			this.type = en.HEYAAPP;
 		}
 		// ぱずぷれアプレットの場合
-		else if(url.match(/indi\.s58\.xrea\.com/) && url.match(/\/(.+)\/(sa|sc)\//)){
+		else if(url.match(/indi\.s58\.xrea\.com\/(.+)\/(sa|sc)\//)){
 			this.id = RegExp.$1;
 			this.qdata = url.substr(url.indexOf("?"));
 			this.type = en.PZPRAPP;

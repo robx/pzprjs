@@ -141,7 +141,7 @@ MenuExec.prototype = {
 		if(menu.pop){
 			switch(ee.getSrcElement(e).name){
 				case "pzprv3":     _doc.urloutput.ta.value = enc.pzloutput(enc.PZPRV3);  break;
-				case "pzprapplet": _doc.urloutput.ta.value = enc.pzloutput(enc.PAPRAPP); break;
+				case "pzprapplet": _doc.urloutput.ta.value = enc.pzloutput(enc.PZPRAPP); break;
 				case "kanpen":     _doc.urloutput.ta.value = enc.pzloutput(enc.KANPEN);  break;
 				case "pzprv3edit": _doc.urloutput.ta.value = enc.pzloutput(enc.PZPRV3E); break;
 				case "heyaapp":    _doc.urloutput.ta.value = enc.pzloutput(enc.HEYAAPP); break;

@@ -22,6 +22,7 @@
   <li class="puzmenu" id="puzmenu_omopa">Omopa puzzles</li>
   <li class="puzmenu" id="puzmenu_other">Other puzzles</li>
   <li class="puzmenusel" id="puzmenu_notice">Explanation</li>
+  <li class="puzmenu" id="puzmenu_input">Data Input</li>
  </menu>
 <br clear="all">
 
@@ -30,12 +31,6 @@
 <table class="puztable" id="table_notice" border=0>
  <tr>
   <td class="sentence">
-   <form name="urlinput">
-    <h4 class="notice_item">Input URL</h4>
-    <input type="text" id="urlinput_text" size="80" value="">
-    <input type="button" id="urlinput_btn" value="input"><br>
-   </form>
-   <hr>
    <p class=expression>
     <h4 class="notice_item">About PUZ-PRE v3</h4>
     <div style="margin-left:6pt;">
@@ -100,6 +95,21 @@
      <a href="http://www.opensource.org/licenses/mit-license.php">http://www.opensource.org/licenses/mit-license.php</a>
     </div>
    </p>
+  </td>
+ </tr>
+</table>
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+
+<table class="puztable" id="table_input" border=0>
+ <tr>
+  <td class="sentence">
+   <form name="urlinput">
+    <h4 class="notice_item">Input URL</h4>
+    <textarea id="urlinput_text" cols="72" rows="4" wrap="hard"></textarea>
+    <input type="button" id="urlinput_btn" value="input">
+    <input type="reset" id="urlinput_clr" value="reset"><br>
+   </form>
   </td>
  </tr>
 </table>

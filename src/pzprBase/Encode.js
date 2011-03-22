@@ -14,7 +14,7 @@ Encode = function(){
 	// 定数(URL形式)
 	this.PZPRV3  = 0;
 	this.PZPRV3E = 3;
-	this.PAPRAPP = 1;
+	this.PZPRAPP = 1;
 	this.KANPEN  = 2;
 	this.KANPENP = 5;
 	this.HEYAAPP = 4;

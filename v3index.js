@@ -1,17 +1,18 @@
-﻿
+﻿(function(){
+
 /* variables */
 var typelist = [];
 var current  = '';
 
 /* common function */
-function addEvent(element,type,func){
+var addEvent = function(element,type,func){
 	if(!!element.addEventListener){ element.addEventListener(type,func,false);}
 	else if(!!element.attachEvent){ element.attachEvent("on"+type,func);}
 	else                          { element["on"+type] = func;}
-}
+};
 
 /* onload function */
-function onload_func(){
+var onload_func = function(){
 	if(!current){
 		var el = document.getElementById("puztypes").firstChild;
 		while(!!el){
@@ -26,32 +27,36 @@ function onload_func(){
 		}
 		if(!current && typelist.length>0){ current = typelist[0];}
 
-		var urlinput = function(e){
-			var url = document.getElementById("urlinput_text").value;
-			if(!!url){
-				localStorage['pzprv3_urldata'] = url;
-				window.open('./p.html', '');
-			}
-		};
-		var el = document.getElementById("urlinput_btn");
-		if(!!el){ el.addEventListener("click", urlinput, false);}
+		el = document.getElementById("urlinput_btn");
+		if(!!el){ addEvent(el,"click",urlinput);}
 	}
 	disp();
-}
-function reset_func(){
+};
+
+var reset_func = function(){
 	typelist = [];
 	current  = '';
 	onload_func();
-}
+};
+
+
+/* input-URL function */
+var urlinput = function(e){
+	var url = document.getElementById("urlinput_text").value;
+	if(!!url){
+		localStorage['pzprv3_urldata'] = url;
+		window.open('./p.html', '');
+	}
+};
 
 /* tab-click function */
-function click_tab(e){
+var click_tab = function(e){
 	var el = (e.target || e.srcElement);
 	if(!!el){ current = el.id.substr(8); disp();}
-}
+};
 
 /* display tabs and tables function */
-function disp(){
+var disp = function(){
 	for(var i=0;i<typelist.length;i++){
 		var el = document.getElementById("puzmenu_"+typelist[i]);
 		var table = document.getElementById("table_"+typelist[i]);
@@ -65,7 +70,9 @@ function disp(){
 			table.style.display = 'none';
 		}
 	}
-}
+};
 
 /* addEventListener */
 addEvent(window, 'load', onload_func);
+
+})();

@@ -23,6 +23,7 @@
   <li class="puzmenu" id="puzmenu_omopa">オモパパズル</li>
   <li class="puzmenu" id="puzmenu_other">その他のパズル</li>
   <li class="puzmenusel" id="puzmenu_notice">説明</li>
+  <li class="puzmenu" id="puzmenu_input">データ入力</li>
  </menu>
 <br clear="all">
 
@@ -31,12 +32,6 @@
 <table class="puztable" id="table_notice" border=0>
  <tr>
   <td class="sentence">
-   <form name="urlinput">
-    <h4 class="notice_item">URLを入力する</h4>
-    <input type="text" id="urlinput_text" size="80" value="">
-    <input type="button" id="urlinput_btn" value="入力"><br>
-   </form>
-   <hr>
    <p class=expression>
     <h4 class="notice_item">ぱずぷれv3について</h4>
     <div style="margin-left:6pt;">
@@ -100,6 +95,21 @@
      <a href="http://www.opensource.org/licenses/mit-license.php">http://www.opensource.org/licenses/mit-license.php</a>
     </div>
    </p>
+  </td>
+ </tr>
+</table>
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+
+<table class="puztable" id="table_input" border=0>
+ <tr>
+  <td class="sentence">
+   <form name="urlinput">
+    <h4 class="notice_item">URLを入力する</h4>
+    <textarea id="urlinput_text" cols="72" rows="4" wrap="hard"></textarea>
+    <input type="button" id="urlinput_btn" value="入力">
+    <input type="reset" id="urlinput_clr" value="リセット"><br>
+   </form>
   </td>
  </tr>
 </table>
