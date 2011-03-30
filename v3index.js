@@ -136,8 +136,10 @@ v3index.dbif.extend({
 	importlist : function(callback){
 		DBlist = [];
 		for(var i=1;true;i++){
-			var row = JSON.parse(localStorage[pheader+i]);
-			if(!row || row.id==null){ break;}
+			var data = localStorage[pheader+i];
+			if(!data){ break;}
+			var row = JSON.parse(data);
+			if(row.id==null){ break;}
 			DBlist.push(row);
 		}
 
@@ -165,7 +167,10 @@ v3index.dbif.extend({
 			_form.datalist.firstChild.setAttribute('selected', 'selected');
 			_form.comtext.value = DBlist[0].comment;
 		}
-		else{ _form.comtext.value = "";}
+		else{
+			_form.comtext.value = "";
+			_form.datalist.style.width = "180px";
+		}
 	},
 	getcaption : function(row){
 		var hardstr = [
