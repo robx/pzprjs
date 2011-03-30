@@ -69,6 +69,7 @@ v3index.extend({
 	click_tab : function(e){
 		var el = (e.target || e.srcElement);
 		if(!!el){ self.current = el.id.substr(8); self.disp();}
+		if(self.current=="input"){ self.dbif.display();} /* iPhone用 */
 	},
 
 	/* display tabs and tables function */
@@ -139,6 +140,7 @@ v3index.dbif.extend({
 			if(!row || row.id==null){ break;}
 			DBlist.push(row);
 		}
+
 		if(!!callback){ callback();}
 	},
 	display : function(){
@@ -159,6 +161,11 @@ v3index.dbif.extend({
 				_form.datalist.appendChild(opt);
 			}
 		}
+		if(DBlist.length>=1){
+			_form.datalist.firstChild.setAttribute('selected', 'selected');
+			_form.comtext.value = DBlist[0].comment;
+		}
+		else{ _form.comtext.value = "";}
 	},
 	getcaption : function(row){
 		var hardstr = [
