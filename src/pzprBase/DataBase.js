@@ -281,7 +281,7 @@ DataBaseManager.prototype = {
 		if(!confirm("このデータを完全に削除しますか？")){ return;}
 
 		var sID = this.DBlist[id].id, max = this.DBlist.length;
-		for(var i=sID-1;i<max-1;i++){ this.DBlist[i] = this.DBlist[i+1];}
+		for(var i=sID-1;i<max-1;i++){ this.DBlist[i] = this.DBlist[i+1]; this.DBlist[i].id--;}
 		this.DBlist.pop();
 
 		this.sync = false;
@@ -375,7 +375,9 @@ DataBaseHandler_LS.prototype = {
 	//---------------------------------------------------------------------------
 	deleteDataTable : function(parent, sID, max, callback){
 		for(var i=parseInt(sID);i<max;i++){
-			localStorage[this.pheader+i] = localStorage[this.pheader+(i+1)];
+			var data = (new ProblemData()).parse(localStorage[this.pheader+(i+1)]);
+			data.id--;
+			localStorage[this.pheader+i] = data.toString();
 		}
 		localStorage.removeItem(this.pheader+max);
 		if(!!callback){ callback();}
