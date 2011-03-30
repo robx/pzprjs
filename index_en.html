@@ -112,6 +112,14 @@
     <input type="reset" id="urlinput_clr" value="reset"><br>
    </form>
    <hr>
+   <form name="fileform" id="fileform" action="fileio.cgi" method="post"
+         target="fileiopanel" enctype="multipart/form-data" onsubmit="return false;">
+    <h4 class="notice_item">File Input</h4>
+    <input type="file" name="filebox" id="filebox"><br>
+    <input type="hidden" name="pencilbox" value="0">
+    <input type="hidden" name="operation" value="open">
+   </form>
+   <hr>
    <form name="database">
     <h4 class="notice_item">Temporary Stack</h4>
     <div style="float:left;height:120px;margin-right:24px;">
@@ -515,5 +523,12 @@
 <p class=back><a href="../../">back to Home</a></p>
 
 </div>
+
+<!-- hidden -->
+<div id="hidden_element">
+  <!-- for file input -->
+  <iframe name="fileiopanel" id="fileiopanel" src="about:blank"></iframe>
+</div>
+
 </BODY>
 </HTML>

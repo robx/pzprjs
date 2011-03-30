@@ -44,6 +44,8 @@ v3index.extend({
 			el = _doc.getElementById("urlinput_btn");
 			if(!!el){ self.addEvent(el,"click",self.urlinput);}
 
+			self.addEvent(_doc.fileform.filebox, "change", self.fileinput);
+
 			self.dbif.init();
 		}
 		self.disp();
@@ -61,6 +63,44 @@ v3index.extend({
 		var url = _doc.getElementById("urlinput_text").value;
 		if(!!url){
 			localStorage['pzprv3_urldata'] = url;
+			window.open('./p.html', '');
+		}
+	},
+
+	/* file-read function */
+	fileinput : function(e){
+		var fileEL = _doc.fileform.filebox;
+		if(typeof FileReader != 'undefined'){
+			var reader = new FileReader();
+			reader.onload = function(e){
+				self.fileonload.call(self, e.target.result.replace(/\//g, "[[slash]]"));
+			};
+			reader.readAsText(fileEL.files[0]);
+		}
+		else if(typeof FileList != 'undefined' &&
+			    typeof File.prototype.getAsText != 'undefined')
+		{
+			if(!fileEL.files[0]){ return;}
+			this.fileonload(fileEL.files[0].getAsText(''));
+		}
+		else{
+			if(!fileEL.value){ return;}
+			_doc.fileform.action = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
+			_doc.fileform.submit();
+		}
+
+		_doc.fileform.reset();
+	},
+	fileonload : function(str){
+		if(!!str){
+			var farray = str.split(/[\t\r\n]+/);
+			var fstr = "", fheader = ['',''];
+			for(var i=0;i<farray.length;i++){
+				if(farray[i].match(/^http\:\/\//)){ break;}
+				fstr += (farray[i]+"/");
+			}
+
+			localStorage['pzprv3_filedata'] = fstr;
 			window.open('./p.html', '');
 		}
 	},

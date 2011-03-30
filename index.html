@@ -112,6 +112,14 @@
     <input type="reset" id="urlinput_clr" value="リセット"><br>
    </form>
    <hr>
+   <form name="fileform" id="fileform" action="fileio.cgi" method="post"
+         target="fileiopanel" enctype="multipart/form-data" onsubmit="return false;">
+    <h4 class="notice_item">ファイルを読み込む</h4>
+    <input type="file" name="filebox" id="filebox"><br>
+    <input type="hidden" name="pencilbox" value="0">
+    <input type="hidden" name="operation" value="open">
+   </form>
+   <hr>
    <form name="database">
     <h4 class="notice_item">一時保存/戻す</h4>
     <div style="float:left;height:120px;margin-right:24px;">
@@ -517,5 +525,12 @@
 <p class=back><a href="../../">連続発破保管庫TOPへ戻る</a></p>
 
 </div>
+
+<!-- 隠し要素 -->
+<div id="hidden_element">
+  <!-- ファイル入力用インラインフレーム -->
+  <iframe name="fileiopanel" id="fileiopanel" src="about:blank"></iframe>
+</div>
+
 </BODY>
 </HTML>

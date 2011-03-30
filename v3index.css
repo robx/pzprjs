@@ -53,3 +53,6 @@
 	/* for rules.html */
 	span.pname { font-weight:900;}
 	ol.prule   { margin:0pt;}
+
+	/* hidden element */
+	iframe#fileiopanel { position:absolute; top: 0px; left:-10000px; width:200px; height:200px;}
