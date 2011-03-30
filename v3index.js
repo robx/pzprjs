@@ -117,16 +117,19 @@ v3index.dbif.extend({
 		// HTML5 - Web localStorage判定用(localStorage)
 		try{ if(!!window.localStorage && (!isGecko || !!location.hostname)){ self.LS = true;}}
 		catch(e){}
-
+		
+		_form = _doc.database;
+		
 		if(self.LS){
-			_form = _doc.database;
-			
 			v3index.addEvent(_form.sorts,    "change", self.display);
 			v3index.addEvent(_form.datalist, "change", self.select);
 			v3index.addEvent(_form.open,     "click",  self.open);
 			
 			pheader = 'pzprv3_storage:data:';
 			self.importlist(self.display);
+		}
+		else{
+			_form.style.display = 'none';
 		}
 	},
 	importlist : function(callback){
