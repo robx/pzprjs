@@ -5,6 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html">
 <TITLE>PUZ-PRE v3</TITLE>
 <link rel="stylesheet" href="v3index.css" type="text/css" />
+<script type="text/javascript" src="puzzlename.js"></script>
 <script type="text/javascript" src="v3index.js"></script>
 </HEAD>
 <BODY>
@@ -106,9 +107,26 @@
   <td class="sentence">
    <form name="urlinput">
     <h4 class="notice_item">Input URL</h4>
-    <textarea id="urlinput_text" cols="72" rows="4" wrap="hard"></textarea>
+    <textarea id="urlinput_text" cols="72" rows="4" wrap="hard"></textarea><br>
     <input type="button" id="urlinput_btn" value="input">
     <input type="reset" id="urlinput_clr" value="reset"><br>
+   </form>
+   <hr>
+   <form name="database">
+    <h4 class="notice_item">Temporary Stack</h4>
+    <div style="float:left;height:120px;margin-right:24px;">
+     <select name="sorts" style="height:24px;">
+      <option value="idlist" selected>ID order</option>
+      <option value="newsave">Newer is top</option>
+      <option value="oldsave">Older is top</option>
+      <option value="size">size/difficult order</option>
+     </select>
+     <br>
+     <select name="datalist" size="4" style="height:96px;"></select>
+    </div>
+    <textarea name="comtext" wrap="hard" style="width:240px;height:120px;background-color:#dfdfdf;" readonly></textarea>
+    <br style="clear:both;">
+    <input type="button" name="open" value="Open the puzzle" />
    </form>
   </td>
  </tr>

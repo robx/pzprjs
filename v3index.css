@@ -34,6 +34,8 @@
 
 	h4.notice_item { margin-top:4pt; margin-bottom:4pt;}
 
+	input, button, textarea, select{ font-size:0.9em;}
+
 	/* for index.html, index_en.html, index_test.html */
 	li.lunch { color:black;}
 	li.lunch2{ color:#666666;}

@@ -311,7 +311,7 @@ function onload_func_FAQ(){
 	if(!EDITOR && !PLAYER){
 		removeEL('puzmenu_expression');
 		removeEL('table_expression');
-		reset_func();
+		v3index.reset_func();
 	}
 
 	var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
@@ -357,7 +357,7 @@ function dispExpression(){
 	removeEL({ja:"menu2_en", en:"menu2_ja"}[langcode]);
 }
 
-addEvent(window, 'load', onload_func_FAQ);
+v3index.addEvent(window, 'load', onload_func_FAQ);
 
 /* *********************************************************************** */
 
