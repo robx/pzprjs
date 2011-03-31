@@ -532,6 +532,42 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// pc.drawArrowCells() 矢印だけをCanvasに書き込む
+	//---------------------------------------------------------------------------
+	drawArrowCells : function(isrect){
+		this.vinc('cell_arrow', 'auto');
+
+		var headers = ["c_arup_", "c_ardn_", "c_arlt_", "c_arrt_"];
+		var ll = this.cw*0.8;				//LineLength
+		var lw = Math.max(this.cw/18, 2);	//LineWidth
+		var al = ll*0.5, aw = lw*0.5;	// ArrowLength, ArrowWidth
+		var tl = ll*0.5-ll*0.3;			// 矢じりの長さの座標(中心-長さ)
+		var tw = Math.max(ll*0.2, 5);	// 矢じりの幅
+
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var c = clist[i], dir=bd.getNum(c);
+			this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
+			if(dir>=1 && dir<=4){
+				g.fillStyle = (bd.cell[c].qnum!==-1?this.fontcolor:this.fontAnscolor);
+
+				// 矢印の描画 ここに来る場合、dirは1～4
+				if(this.vnop(headers[(dir-1)]+c,this.FILL)){
+					var ax=px=bd.cell[c].cpx;
+					var ay=py=bd.cell[c].cpy;
+					switch(dir){
+						case k.UP: g.setOffsetLinePath(ax,ay, 0,-al, -tw,-tl, -aw,-tl, -aw, al,  aw, al, aw,-tl,  tw,-tl, true); break;
+						case k.DN: g.setOffsetLinePath(ax,ay, 0, al, -tw, tl, -aw, tl, -aw,-al,  aw,-al, aw, tl,  tw, tl, true); break;
+						case k.LT: g.setOffsetLinePath(ax,ay, -al,0, -tl,-tw, -tl,-aw,  al,-aw,  al, aw, -tl,aw, -tl, tw, true); break;
+						case k.RT: g.setOffsetLinePath(ax,ay,  al,0,  tl,-tw,  tl,-aw, -al,-aw, -al, aw,  tl,aw,  tl, tw, true); break;
+					}
+					g.fill();
+				}
+			}
+		}
+	},
+
+	//---------------------------------------------------------------------------
 	// pc.drawNumbers()  Cellの数字をCanvasに書き込む
 	// pc.drawNumber1()  Cellに数字を記入するためdispnum関数を呼び出す
 	// pc.getCellNumberColor()  Cellの数字の色を設定する
