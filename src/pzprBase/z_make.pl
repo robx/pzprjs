@@ -66,15 +66,15 @@ sub output_pzprBase{
 		&output_doc("notices.txt");
 
 		system("java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar --charset utf-8 -o ./pzprBase_body.js ./pzprBase_body_Full.js");
-		system("copy /Y /B .\\notices.txt + .\\pzprBase_body.js ..\\pzprBase.js");
-		system("copy /Y /B .\\notices.txt + .\\pzprBase_body_Full.js ..\\pzprBase_Full.js");
+		system("cat ./notices.txt ./pzprBase_body.js > ../pzprBase.js");
+		system("cat ./notices.txt ./pzprBase_body_Full.js > ../pzprBase_Full.js");
 
 		unlink("notices.txt");
 		unlink("pzprBase_body.js");
 		unlink("pzprBase_body_Full.js");
 	}
 	else{
-		system("copy /Y .\\pzprBase_body_Full.js ..\\pzprBase.js");
+		system("cp /Y ./pzprBase_body_Full.js ../pzprBase.js");
 		unlink("pzprBase_body_Full.js");
 	}
 }
