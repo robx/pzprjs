@@ -35,7 +35,7 @@ Puzzles.loute.prototype = {
 			}
 		};
 		mv.mouseup = function(){
-			if(k.editmode && this.notInputted()){ this.inputqnum();}
+			if(k.editmode && this.notInputted()){ this.inputqnum_loute();}
 		};
 		mv.mousemove = function(){
 			if(k.editmode){
@@ -45,6 +45,34 @@ Puzzles.loute.prototype = {
 				if(this.btn.Left) this.inputborderans();
 				else if(this.btn.Right) this.inputQsubLine();
 			}
+		};
+
+		mv.inputqnum_loute = function(){
+			var cc = this.cellid();
+			if(cc===null || cc===this.mouseCell){ return;}
+
+			if(cc===tc.getTCC()){
+				var qn = bd.QnC(cc), array = [-1,5,1,2,3,4,-2], flag = false;
+				if(this.btn.Left){
+					for(var i=0;i<array.length-1;i++){
+						if(!flag && qn===array[i]){ bd.sQnC(cc,array[i+1]); flag=true;}
+					}
+					if(!flag && qn===array[array.length-1]){ bd.sQnC(cc,array[0]); flag=true;}
+				}
+				else if(this.btn.Right){
+					for(var i=array.length;i>0;i--){
+						if(!flag && qn===array[i]){ bd.sQnC(cc,array[i-1]); flag=true;}
+					}
+					if(!flag && qn===array[0]){ bd.sQnC(cc,array[array.length-1]); flag=true;}
+				}
+			}
+			else{
+				var cc0 = tc.getTCC();
+				tc.setTCC(cc);
+				pc.paintCell(cc0);
+			}
+
+			pc.paintCell(cc);
 		};
 
 		// キーボード入力系
