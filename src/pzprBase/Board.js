@@ -491,6 +491,7 @@ Board.prototype = {
 		for(var i=0;i<this.crossmax ;i++){ this.cross[i].allclear(i,isrec);}
 		for(var i=0;i<this.bdmax    ;i++){ this.border[i].allclear(i,isrec);}
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].allclear(i,isrec);}
+		this.allclearSpecial(isrec);
 	},
 	// 呼び出し元：回答消去ボタン押した時
 	ansclear : function(){
@@ -498,6 +499,7 @@ Board.prototype = {
 		for(var i=0;i<this.crossmax ;i++){ this.cross[i].ansclear(i);}
 		for(var i=0;i<this.bdmax    ;i++){ this.border[i].ansclear(i);}
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].ansclear(i);}
+		this.ansclearSpecial();
 	},
 	// 呼び出し元：補助消去ボタン押した時
 	subclear : function(){
@@ -505,6 +507,7 @@ Board.prototype = {
 		for(var i=0;i<this.crossmax ;i++){ this.cross[i].subclear(i);}
 		for(var i=0;i<this.bdmax    ;i++){ this.border[i].subclear(i);}
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].subclear(i);}
+		this.subclearSpecial();
 	},
 
 	errclear : function(isrepaint){
@@ -514,10 +517,17 @@ Board.prototype = {
 		for(var i=0;i<this.crossmax ;i++){ this.cross[i].error=0;}
 		for(var i=0;i<this.bdmax    ;i++){ this.border[i].error=0;}
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].error=0;}
+		this.errclearSpecial();
 
 		ans.errDisp = false;
 		if(isrepaint!==false){ pc.paintAll();}
 	},
+
+	// オーバーライド用
+	allclearSpecial : function(isrec){ },
+	ansclearSpecial : function(){ },
+	subclearSpecial : function(){ },
+	errclearSpecial : function(isrepaint){ },
 
 	//---------------------------------------------------------------------------
 	// bd.idnum()  (X,Y)の位置にあるオブジェクトのIDを返す
