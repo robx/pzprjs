@@ -456,7 +456,7 @@ Puzzles.kouchoku.prototype = {
 			}
 
 			if( !this.checkSegmentPoint() ){
-				this.setAlert('線が点のないところから出ています。','A segment comes from no-point cross.'); return false;
+				this.setAlert('線が丸のないところから出ています。','A segment comes from out of circle.'); return false;
 			}
 
 			if( !this.checkSegmentBranch() ){
@@ -464,7 +464,7 @@ Puzzles.kouchoku.prototype = {
 			}
 
 			if( !this.checkSegmentOverPoint(idlist) ){
-				this.setAlert('線が点を通過しています。','A segment passes over a point.'); return false;
+				this.setAlert('線が丸を通過しています。','A segment passes over a circle.'); return false;
 			}
 
 			if( !this.checkDuplicateSegment(idlist) ){
@@ -485,6 +485,10 @@ Puzzles.kouchoku.prototype = {
 
 			if( !this.checkSegmentDeadend() ){
 				this.setAlert('途中で途切れている線があります。','There is a dead-end segment.'); return false;
+			}
+
+			if( !this.checkAlonePoint() ){
+				this.setAlert('線が2本出ていない丸があります。','A circle doesn\'t have two segments.'); return false;
 			}
 
 			if( !this.checkConsequentLetter(idlist) ){
@@ -510,6 +514,9 @@ Puzzles.kouchoku.prototype = {
 			return result;
 		}
 
+		ans.checkAlonePoint = function(){
+			return this.checkSegment(function(c){ return (bd.cross[c].segment.length<2 && bd.cross[c].qnum!==-1);});
+		};
 		ans.checkSegmentPoint = function(){
 			return this.checkSegment(function(c){ return (bd.cross[c].segment.length>0 && bd.cross[c].qnum===-1);});
 		};
