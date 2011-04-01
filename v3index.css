@@ -34,6 +34,8 @@
 
 	h4.notice_item { margin-top:4pt; margin-bottom:4pt;}
 
+	input, button, textarea, select{ font-size:0.9em;}
+
 	/* for index.html, index_en.html, index_test.html */
 	li.lunch { color:black;}
 	li.lunch2{ color:#666666;}
@@ -51,3 +53,6 @@
 	/* for rules.html */
 	span.pname { font-weight:900;}
 	ol.prule   { margin:0pt;}
+
+	/* hidden element */
+	iframe#fileiopanel { position:absolute; top: 0px; left:-10000px; width:200px; height:200px;}

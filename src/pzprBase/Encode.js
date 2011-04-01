@@ -1,23 +1,12 @@
-// Encode.js v3.3.2
+// Encode.js v3.3.3
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
-//    p.html?(pid)/(qdata)
-//                  qdata -> [(pflag)/](cols)/(rows)/(bstr)
 //---------------------------------------------------------------------------
 // URLエンコード/デコード
 // Encodeクラス
 Encode = function(){
-	this.uri = {};
-
-	this.uri.type;		// 入力されたURLのサイト指定部分
-	this.uri.qdata;		// 入力されたURLの問題部分
-
-	this.uri.pflag;		// 入力されたURLのフラグ部分
-	this.uri.cols;		// 入力されたURLの横幅部分
-	this.uri.rows;		// 入力されたURLの縦幅部分
-	this.uri.bstr;		// 入力されたURLの盤面部分
-
+	this.pflag = "";
 	this.outpflag  = '';
 	this.outsize   = '';
 	this.outbstr   = '';
@@ -25,15 +14,19 @@ Encode = function(){
 	// 定数(URL形式)
 	this.PZPRV3  = 0;
 	this.PZPRV3E = 3;
-	this.PAPRAPP = 1;
+	this.PZPRAPP = 1;
 	this.KANPEN  = 2;
 	this.KANPENP = 5;
 	this.HEYAAPP = 4;
 
 	// URL
+	var domain = _doc.domain;
+	if(!domain){ domain = "pzv.jp";}
+	else if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
+
 	this.urlbase = {};
-	this.urlbase[this.PZPRV3]  = "http://%DOMAIN%/p.html?%PID%/";
-	this.urlbase[this.PZPRV3E] = "http://%DOMAIN%/p.html?%PID%_edit/";
+	this.urlbase[this.PZPRV3]  = ["http://",domain,"/p.html?%PID%/"].join('');
+	this.urlbase[this.PZPRV3E] = ["http://",domain,"/p.html?%PID%_edit/"].join('');
 	this.urlbase[this.PZPRAPP] = "http://indi.s58.xrea.com/%PID%/sa/q.html?";
 	this.urlbase[this.KANPEN]  = "http://www.kanpen.net/%KID%.html?problem=";
 	this.urlbase[this.KANPENP] = "http://www.kanpen.net/%KID%.html?pzpr=";
@@ -41,140 +34,9 @@ Encode = function(){
 };
 Encode.prototype = {
 	//---------------------------------------------------------------------------
-	// enc.init()           Encodeオブジェクトで持つ値を初期化する
-	// enc.first_parseURI() 起動時にURLを解析して、puzzleidの抽出やエディタ/player判定を行う
-	// enc.parseURI()       入力されたURLがどのサイト用か判定してthis.uriに値を保存する
-	// enc.parseURI_xxx()   pzlURI部をpflag,bstr等の部分に分割する
-	//---------------------------------------------------------------------------
-	init : function(){
-		this.uri.type = this.PZPRV3;
-		this.uri.qdata = "";
-
-		this.uri.pflag = "";
-		this.uri.cols = 0;
-		this.uri.rows = 0;
-		this.uri.bstr = "";
-
-		this.outpflag  = '';
-		this.outsize   = '';
-		this.outbstr   = '';
-	},
-
-	first_parseURI : function(search){
-		if(search.length<=0){ return "";}
-
-		this.init();
-
-		var startmode = 'PLAYER';
-
-		if     (search=="?test")       { startmode = 'TEST';   search = 'country';}
-		else if(search.match(/^\?m\+/)){ startmode = 'EDITOR'; search = search.substr(3);}
-		else if(search.match(/_test/)) { startmode = 'TEST';   search = search.substr(1).replace(/_test/, '');}
-		else if(search.match(/_edit/)) { startmode = 'EDITOR'; search = search.substr(1).replace(/_edit/, '');}
-		else if(!search.match(/\//))   { startmode = 'EDITER'; search = search.substr(1);}
-		else                           { startmode = 'PLAYER'; search = search.substr(1);}
-		switch(startmode){
-			case 'PLAYER': k.EDITOR = false; k.editmode = false; break;
-			case 'EDITOR': k.EDITOR = true;  k.editmode = true;  break;
-			case 'TEST'  : k.EDITOR = true;  k.editmode = false; k.scriptcheck = true; break;
-		}
-		k.PLAYER    = !k.EDITOR;
-		k.playmode  = !k.editmode;
-
-		var pid = search, purl = '';
-		var qs = search.indexOf("/");
-		if(qs>=0){
-			pid  = search.substr(0,qs);
-			purl = search.substr(qs+1);
-		}
-		pid = PZLNAME.toPID(pid);
-
-		// 複製かどうか
-		if(purl==='duplicate'){
-			base.isduplicate = true;
-			purl = '';
-		}
-
-		return {id:pid, url:purl}
-	},
-	parseURI : function(url){
-		this.init();
-
-		// textarea上の改行が実際の改行扱いになるUAに対応(Operaとか)
-		url = url.replace(/(\r|\n)/g,"");
-
-		// カンペンの場合
-		if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
-			// カンペンだけどデータ形式はへやわけアプレット
-			if(url.indexOf("?heyawake=")>=0){
-				this.parseURI_heyaapp(url.substr(url.indexOf("?heyawake=")+10));
-			}
-			// カンペンだけどデータ形式はぱずぷれ
-			else if(url.indexOf("?pzpr=")>=0){
-				this.parseURI_pzpr(url.substr(url.indexOf("?pzpr=")+6));
-			}
-			else{
-				this.parseURI_kanpen(url.substr(url.indexOf("?problem=")+9));
-			}
-		}
-		// へやわけアプレットの場合
-		else if(url.match(/www\.geocities(\.co)?\.jp\/heyawake/)){
-			this.parseURI_heyaapp(url.substr(url.indexOf("?problem=")+9));
-		}
-		// ぱずぷれの場合
-		else{ // if(url.match(/indi\.s58\.xrea\.com/)){
-			// ぱずぷれアプレットのURL
-			if(url.match(/\/(sa|sc)\/pzpr\/v3/)){
-				this.parseURI_pzpr(url.substr(url.indexOf("?")));
-				this.uri.type = this.PZPRAPP; // ぱずぷれアプレット/URLジェネレータ
-			}
-			// ぱずぷれv3のURL
-			else{
-				this.parseURI_pzpr(url.substr(url.indexOf("/", url.indexOf("?"))+1));
-			}
-		}
-	},
-	parseURI_pzpr : function(qstr){
-		this.uri.type = this.PZPRV3; // ぱずぷれv3
-		this.uri.qdata = qstr;
-		var inp = qstr.split("/");
-		if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
-
-		this.uri.pflag = inp.shift();
-		this.uri.cols = parseInt(inp.shift());
-		this.uri.rows = parseInt(inp.shift());
-		this.uri.bstr = inp.join("/");
-	},
-	parseURI_kanpen : function(qstr){
-		this.uri.type = this.KANPEN; // カンペン
-		this.uri.qdata = qstr;
-		var inp = qstr.split("/");
-
-		if(k.puzzleid=="sudoku"){
-			this.uri.rows = this.uri.cols = parseInt(inp.shift());
-		}
-		else{
-			this.uri.rows = parseInt(inp.shift());
-			this.uri.cols = parseInt(inp.shift());
-			if(k.puzzleid=="kakuro"){ this.uri.rows--; this.uri.cols--;}
-		}
-		this.uri.bstr = inp.join("/");
-	},
-	parseURI_heyaapp : function(qstr){
-		this.uri.type = this.HEYAAPP; // へやわけアプレット
-		this.uri.qdata = qstr;
-		var inp = qstr.split("/");
-
-		var size = inp.shift().split("x");
-		this.uri.cols = parseInt(size[0]);
-		this.uri.rows = parseInt(size[1]);
-		this.uri.bstr = inp.join("/");
-	},
-
-	//---------------------------------------------------------------------------
 	// enc.checkpflag()   pflagに指定した文字列が含まれているか調べる
 	//---------------------------------------------------------------------------
-	checkpflag : function(ca){ return (this.uri.pflag.indexOf(ca)>=0);},
+	checkpflag : function(ca){ return (this.pflag.indexOf(ca)>=0);},
 
 	//---------------------------------------------------------------------------
 	// enc.pzlinput()   parseURI()を行った後に呼び出し、各パズルのpzlimport関数を呼び出す
@@ -184,32 +46,32 @@ Encode.prototype = {
 	// enc.pzlexport()    各パズルのURL出力用(オーバーライド用)
 	//---------------------------------------------------------------------------
 	pzlinput : function(){
-		if(this.uri.cols && this.uri.rows){
-			bd.initBoardSize(this.uri.cols, this.uri.rows);
+		var uri = base.dec;
+		if(uri.cols && uri.rows){
+			bd.initBoardSize(uri.cols, uri.rows);
 		}
-		if(this.uri.bstr){
-			switch(this.uri.type){
+		if(uri.bstr){
+			this.pflag = uri.pflag;
+			switch(uri.type){
 			case this.PZPRV3: case this.PZPRAPP: case this.PZPRV3E:
-				this.outbstr = this.uri.bstr;
-				this.pzlimport(this.uri.type);
+				this.outbstr = uri.bstr;
+				this.pzlimport(uri.type);
 				break;
 			case this.KANPEN:
 				fio.lineseek = 0;
-				fio.dataarray = this.uri.bstr.replace(/_/g, " ").split("/");
+				fio.dataarray = uri.bstr.replace(/_/g, " ").split("/");
 				this.decodeKanpen();
 				break;
 			case this.HEYAAPP:
+				this.outbstr = uri.bstr;
 				this.decodeHeyaApp();
 				break;
 			}
 
 			um.allerase();
-			base.resetInfo();
-
-			if(!base.initProcess){
-				base.resize_canvas();
-			}
 		}
+		bd.resetInfo();
+		pc.resize_canvas();
 	},
 	pzloutput : function(type){
 		if(type===this.KANPEN && k.puzzleid=='lits'){ type = this.KANPENP;}
@@ -252,22 +114,17 @@ Encode.prototype = {
 		return this.getURLBase(type) + pdata;
 	},
 	getURLBase : function(type){
-		var domain = _doc.domain;
-		if(!domain){ domain = "pzv.jp";}
-		else if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
-
 		return this.urlbase[type]
 					.replace("%PID%",PZLNAME.toURLID(k.puzzleid))
-					.replace("%KID%",PZLNAME.toKanpen(k.puzzleid))
-					.replace("%DOMAIN%",domain);
+					.replace("%KID%",PZLNAME.toKanpen(k.puzzleid));
 	},
 
 	// オーバーライド用
-	pzlimport : function(type,bstr){ },
+	pzlimport : function(type){ },
 	pzlexport : function(type){ },
 	decodeKanpen : function(){ },
 	encodeKanpen : function(){ },
-	decodeHeyaApp : function(bstr){ },
+	decodeHeyaApp : function(){ },
 	encodeHeyaApp : function(){ },
 
 	//---------------------------------------------------------------------------

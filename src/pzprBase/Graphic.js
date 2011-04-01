@@ -1,4 +1,4 @@
-// Graphic.js v3.3.2
+// Graphic.js v3.3.3
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
@@ -116,10 +116,10 @@ Graphic = function(){
 	this.zidx_array=[];
 
 	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', {className:'divnum', unselectable:'on'}, null, null);
-	this.EL_IMGOBJ = ee.addTemplate('numobj_parent', 'img', {className:'imgnum', unselectable:'on'}, null, null);
 
 	this.numobj = {};					// エレメントへの参照を保持する
-	this.fillTextPrecisely  = false;	// 数字をg.fillText()で描画
+	this.fillTextEmulate = false;		// 数字をg.fillText()で描画しない
+	this.outputImage = false;			// 画像保存中
 
 	this.isdrawBC = false;
 	this.isdrawBD = false;
@@ -134,9 +134,70 @@ Graphic = function(){
 };
 Graphic.prototype = {
 	//---------------------------------------------------------------------------
+	// pc.resize_canvas()    ウィンドウのLoad/Resize時の処理。
+	//                       Canvas/表示するマス目の大きさを設定する。
 	// pc.onresize_process() resize時にサイズを変更する
 	//---------------------------------------------------------------------------
+	resize_canvas : function(){
+		var wwidth = ee.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
+		var cols   = (bd.maxbx-bd.minbx)/2+2*k.bdmargin; // canvasの横幅がセル何個分に相当するか
+		var rows   = (bd.maxby-bd.minby)/2+2*k.bdmargin; // canvasの縦幅がセル何個分に相当するか
+		if(k.puzzleid==='box'){ cols++; rows++;}
+
+		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[pp.getVal('size')];
+		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
+		ci[0] = (wwidth*ws.base )/(k.cellsize*cr.base );
+		ci[1] = (wwidth*ws.limit)/(k.cellsize*cr.limit);
+
+		// 横幅いっぱいに広げたい場合
+		if(k.mobile){
+			mwidth = wwidth*0.98;
+			k.cwidth = k.cheight = ((mwidth*0.92)/cols)|0;
+			if(k.cwidth < k.cellsize){ k.cwidth = k.cheight = k.cellsize;}
+		}
+		// 縮小が必要ない場合
+		else if(!pp.getVal('adjsize') || cols < ci[0]){
+			mwidth = wwidth*ws.base-4;
+			k.cwidth = k.cheight = (k.cellsize*cr.base)|0;
+		}
+		// base～limit間でサイズを自動調節する場合
+		else if(cols < ci[1]){
+			var ws_tmp = ws.base+(ws.limit-ws.base)*((k.qcols-ci[0])/(ci[1]-ci[0]));
+			mwidth = wwidth*ws_tmp-4;
+			k.cwidth = k.cheight = (mwidth/cols)|0; // 外枠ぎりぎりにする
+		}
+		// 自動調整の下限値を超える場合
+		else{
+			mwidth = wwidth*ws.limit-4;
+			k.cwidth = k.cheight = (k.cellsize*cr.limit)|0;
+		}
+		k.bwidth  = k.cwidth/2; k.bheight = k.cheight/2;
+
+		// mainのサイズ変更
+		ee('main').el.style.width = ''+(mwidth|0)+'px';
+		if(k.mobile){ ee('menuboard').el.style.width = '90%';}
+
+		// 盤面のセルID:0が描画される左上の位置の設定
+		var x0, y0; x0 = y0 = (k.cwidth*k.bdmargin)|0;
+		// extendxell==0でない時は位置をずらす
+		if(!!k.isexcell){ x0 += k.cwidth; y0 += k.cheight;}
+
+		// Canvasのサイズ・Offset変更
+		g.changeSize((cols*k.cwidth)|0, (rows*k.cheight)|0);
+		g.translate(x0, y0);
+
+		// 盤面のページ内座標を設定(fillTextEmurate用)
+		var rect = ee('divques').getRect();
+		this.pageX = (x0 + rect.left);
+		this.pageY = (y0 + rect.top);
+
+		this.onresize_process();
+	},
 	onresize_process : function(){
+		this.resetVectorFunctions();
+		kp.resize();
+		bd.setcoordAll();
+
 		this.cw = k.cwidth;
 		this.ch = k.cheight;
 
@@ -145,7 +206,15 @@ Graphic.prototype = {
 
 		this.lw = Math.max(k.cwidth/this.lwratio, 3);
 		this.lm = (this.lw-1)/2;
+
+		this.fillTextEmulate = (g.use.canvas && !_doc.createElement('canvas').getContext('2d').fillText);
+		if(g.use.canvas){ g.elements = [];}
+
+		// 再描画
+		this.flushCanvasAll();
+		this.paintAll();
 	},
+
 	//---------------------------------------------------------------------------
 	// pc.prepaint()    paint関数を呼び出す
 	// pc.setRange()    rangeオブジェクトを設定する
@@ -172,9 +241,6 @@ Graphic.prototype = {
 	},
 	setRange : function(x1,y1,x2,y2){
 		if(g.use.canvas){
-			// 緊急対応
-			if(k.br.Chrome6){ x1=-1; y1=-1; x2=2*k.qcols+1; y2=2*k.qrows+1;}
-
 			// Undo時に跡が残ってしまうこと等を防止
 			if(this.isdrawBC || this.isdrawBD){ x1--; y1--; x2++; y2++;}
 		}
@@ -189,7 +255,7 @@ Graphic.prototype = {
 	},
 
 	paintAll : function(){
-		this.prepaint(-1,-1,2*k.qcols+1,2*k.qrows+1);
+		this.prepaint(bd.minbx-1,bd.minby-1,bd.maxbx+1,bd.maxby+1);
 	},
 	paintRange : function(x1,y1,x2,y2){
 		this.prepaint(x1,y1,x2,y2);
@@ -466,6 +532,42 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// pc.drawArrowCells() 矢印だけをCanvasに書き込む
+	//---------------------------------------------------------------------------
+	drawArrowCells : function(isrect){
+		this.vinc('cell_arrow', 'auto');
+
+		var headers = ["c_arup_", "c_ardn_", "c_arlt_", "c_arrt_"];
+		var ll = this.cw*0.8;				//LineLength
+		var lw = Math.max(this.cw/18, 2);	//LineWidth
+		var al = ll*0.5, aw = lw*0.5;	// ArrowLength, ArrowWidth
+		var tl = ll*0.5-ll*0.3;			// 矢じりの長さの座標(中心-長さ)
+		var tw = Math.max(ll*0.2, 5);	// 矢じりの幅
+
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var c = clist[i], dir=bd.getNum(c);
+			this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
+			if(dir>=1 && dir<=4){
+				g.fillStyle = (bd.cell[c].qnum!==-1?this.fontcolor:this.fontAnscolor);
+
+				// 矢印の描画 ここに来る場合、dirは1～4
+				if(this.vnop(headers[(dir-1)]+c,this.FILL)){
+					var ax=px=bd.cell[c].cpx;
+					var ay=py=bd.cell[c].cpy;
+					switch(dir){
+						case k.UP: g.setOffsetLinePath(ax,ay, 0,-al, -tw,-tl, -aw,-tl, -aw, al,  aw, al, aw,-tl,  tw,-tl, true); break;
+						case k.DN: g.setOffsetLinePath(ax,ay, 0, al, -tw, tl, -aw, tl, -aw,-al,  aw,-al, aw, tl,  tw, tl, true); break;
+						case k.LT: g.setOffsetLinePath(ax,ay, -al,0, -tl,-tw, -tl,-aw,  al,-aw,  al, aw, -tl,aw, -tl, tw, true); break;
+						case k.RT: g.setOffsetLinePath(ax,ay,  al,0,  tl,-tw,  tl,-aw, -al,-aw, -al, aw,  tl,aw,  tl, tw, true); break;
+					}
+					g.fill();
+				}
+			}
+		}
+	},
+
+	//---------------------------------------------------------------------------
 	// pc.drawNumbers()  Cellの数字をCanvasに書き込む
 	// pc.drawNumber1()  Cellに数字を記入するためdispnum関数を呼び出す
 	// pc.getCellNumberColor()  Cellの数字の色を設定する
@@ -487,7 +589,7 @@ Graphic.prototype = {
 			var color     = this.getCellNumberColor(c);
 			this.dispnum(key, 1, text, fontratio, color, obj.cpx, obj.cpy);
 		}
-		else{ this.hideEL(key);}
+		else{ this.hidenum(key);}
 	},
 	getCellNumberColor : function(c){
 		var obj = bd.cell[c], color = this.fontcolor;
@@ -586,7 +688,7 @@ Graphic.prototype = {
 			}
 			else{
 				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c, headers[4]+c, headers[5]+c]);
-				this.hideEL('cell_'+c);
+				this.hidenum('cell_'+c);
 			}
 		}
 	},
@@ -600,7 +702,7 @@ Graphic.prototype = {
 				var color = (obj.error===1 ? this.fontErrcolor : this.fontcolor);
 				this.dispnum(key, 1, "?", 0.8, color, obj.cpx, obj.cpy);
 			}
-			else{ this.hideEL(key);}
+			else{ this.hidenum(key);}
 		}
 	},
 
@@ -632,7 +734,7 @@ Graphic.prototype = {
 			if(obj.qnum>=0){
 				this.dispnum(key, 1, ""+obj.qnum, 0.6, this.fontcolor, obj.px, obj.py);
 			}
-			else{ this.hideEL(key);}
+			else{ this.hidenum(key);}
 		}
 	},
 	drawCrossMarks : function(){
@@ -895,7 +997,7 @@ Graphic.prototype = {
 		var vid = "x_cm_"+id;
 		g.fillStyle = this.cellcolor;
 		if(this.vnop(vid,this.NONE)){
-			g.fillCircle(bd.cross[id].px, bd.cross[id].py, (this.lw+3)/2);
+			g.fillCircle(bd.cross[id].px, bd.cross[id].py, (this.lw*1.2)/2);
 		}
 	},
 
@@ -1170,12 +1272,12 @@ Graphic.prototype = {
 
 					this.dispnum(keys[i], type, text, 0.45, color, obj.px+this.bw, obj.py+this.bh);
 				}
-				else{ this.hideEL(keys[i]);}
+				else{ this.hidenum(keys[i]);}
 			}
 		}
 		else{
-			this.hideEL(keys[0]);
-			this.hideEL(keys[1]);
+			this.hidenum(keys[0]);
+			this.hidenum(keys[1]);
 		}
 	},
 
@@ -1506,42 +1608,62 @@ Graphic.prototype = {
 
 	//---------------------------------------------------------------------------
 	// pc.vnop()  VMLで既に描画されているオブジェクトを再描画せず、色は設定する
+	// pc.vshow() VMLで既に描画されているオブジェクトを表示する
 	// pc.vhide() VMLで既に描画されているオブジェクトを隠す
 	// pc.vdel()  VMLで既に描画されているオブジェクトを削除する
 	// pc.vinc()  z-indexに設定される値を+1する
 	//---------------------------------------------------------------------------
+	// ccflag -> 0:strokeのみ, 1:fillのみ, 2:両方, 3:色の変更なし
 	vnop : function(vid, ccflag){
 		this.vnop = ((g.use.canvas) ?
 			f_true
-		:
-			// ccflag -> 0:strokeのみ, 1:fillのみ, 2:両方, 3:色の変更なし
+		: (g.use.vml) ?
 			function(vid, ccflag){
 				g.vid = vid;
-				if(!g.elements[vid]){ return true;}
-
-				var el = g.elements[vid],
-					isfill   = this.vnop_FILL[ccflag],
-					isstroke = this.vnop_STROKE[ccflag];
-
-				if(g.use.vml){
-					el.style.display = 'inline';
-					if(isfill)  { el.fillcolor   = Camp.parse(g.fillStyle);}
-					if(isstroke){ el.strokecolor = Camp.parse(g.strokeStyle);}
-				}
-				else if(g.use.sl){
-					el.Visibility = "Visible";
-					if(isfill)  { el.fill   = Camp.parse(g.fillStyle);  }
-					if(isstroke){ el.stroke = Camp.parse(g.strokeStyle);}
-				}
-				else if(g.use.svg){
-					el.style.display = 'inline';
-					if(isfill)  { el.setAttribute('fill',  Camp.parse(g.fillStyle));}
-					if(isstroke){ el.setAttribute('stroke',Camp.parse(g.strokeStyle));}
-				}
+				var el = g.elements[vid];
+				if(!el){ return true;}
+				el.style.display = 'inline';
+				if(this.vnop_FILL[ccflag])  { el.fillcolor   = Camp.parse(g.fillStyle);}
+				if(this.vnop_STROKE[ccflag]){ el.strokecolor = Camp.parse(g.strokeStyle);}
+				return false;
+			}
+		: (g.use.sl) ?
+			function(vid, ccflag){
+				g.vid = vid;
+				var el = g.elements[vid];
+				if(!el){ return true;}
+				el.Visibility = "Visible";
+				if(this.vnop_FILL[ccflag])  { el.fill = Camp.parse(g.fillStyle);}
+				if(this.vnop_STROKE[ccflag]){ el.stroke = Camp.parse(g.strokeStyle);}
+				return false;
+			}
+		: /* (g.use.svg) */
+			function(vid, ccflag){
+				g.vid = vid;
+				var el = g.elements[vid];
+				if(!el){ return true;}
+				el.removeAttribute('opacity');
+				if(this.vnop_FILL[ccflag])  { el.setAttribute('fill',  Camp.parse(g.fillStyle));}
+				if(this.vnop_STROKE[ccflag]){ el.setAttribute('stroke',Camp.parse(g.strokeStyle));}
 				return false;
 			}
 		);
 		return this.vnop(vid, ccflag);
+	},
+	vshow : function(vid){
+		this.vshow = ((g.use.canvas) ?
+			f_true
+		:
+			function(vid){
+				g.vid = vid;
+				if(!g.elements[vid]){ return;}
+
+				if(g.use.svg){ g.elements[vid].removeAttribute('opacity');}
+				else if(g.use.vml){ g.elements[vid].style.display = 'inline';}
+				else{ g.elements[vid].Visibility = "Visible";}
+			}
+		);
+		this.vshow(vid);
 	},
 	vhide : function(vid){
 		this.vhide = ((g.use.canvas) ?
@@ -1552,7 +1674,8 @@ Graphic.prototype = {
 				for(var i=0;i<vid.length;i++){
 					if(!g.elements[vid[i]]){ continue;}
 
-					if(!g.use.sl){ g.elements[vid[i]].style.display = 'none';}
+					if(g.use.svg){ g.elements[vid[i]].setAttribute('opacity',0);}
+					else if(g.use.vml){ g.elements[vid[i]].style.display = 'none';}
 					else{ g.elements[vid[i]].Visibility = "Collapsed";}
 				}
 			}
@@ -1599,23 +1722,27 @@ Graphic.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.showEL()   エレメントを表示する
 	// pc.hideEL()   エレメントを隠す
+	// pc.hidenum()  エレメントを隠す
 	// pc.dispnum()  数字を記入するための共通関数
 	//---------------------------------------------------------------------------
-	showEL : function(key){
-		// 呼び出し元は if(!this.fillTextPrecisely) の中だけなので
-		// hideELにある条件は見なくてもよさそう。
-		this.numobj[key].style.display = 'inline';
-	},
 	hideEL : function(key){
-		if(!!this.numobj[key]){
-			this.numobj[key].style.display = 'none';
+		this.hideEL = this.hidenum;
+		this.hidenum(key);
+	},
+	hidenum : function(key){
+		if(this.fillTextEmulate){
+			if(!!this.numobj[key]){
+				this.numobj[key].style.display = 'none';
+			}
+		}
+		else{
+			this.vhide(["text_"+key]);
 		}
 	},
 	dispnum : function(key, type, text, fontratio, color, px, py){
 		var fontsize = (this.cw*fontratio*this.fontsizeratio)|0;
-		if(!this.fillTextPrecisely){
+		if(this.fillTextEmulate){
 			if(k.br.IE6 || k.br.IE7){ py+=2;}
 
 			// エレメントを取得
@@ -1627,7 +1754,8 @@ Graphic.prototype = {
 			el.style.fontSize = ("" + fontsize + 'px');
 			el.style.color = color;
 
-			this.showEL(key);	// 先に表示しないとwid,hgt=0になって位置がずれる
+			// 先に表示しないとwid,hgt=0になって位置がずれる
+			this.numobj[key].style.display = 'inline';
 
 			var wid = el.offsetWidth; // 横位置の調整
 			switch(type){
@@ -1644,14 +1772,13 @@ Graphic.prototype = {
 			el.style.left = (pc.pageX + px) + 'px';
 			el.style.top  = (pc.pageY + py) + 'px';
 		}
-		// Nativeな方法はこっちなんだけど、、(前は計5～6%くらい遅くなってた)
 		else{
 			g.font = ("" + fontsize + "px 'Serif'");
 			g.fillStyle = color;
 
 			switch(type){
 				case 1:         g.textAlign='center';                break;
-				case 2: case 5: g.textAlign='left';  px+=-this.bw+2; break;
+				case 2: case 5: g.textAlign='left';  px+=-this.bw+3; break;
 				case 3: case 4: g.textAlign='right'; px+= this.bw-1; break;
 			}
 			switch(type){
@@ -1659,7 +1786,11 @@ Graphic.prototype = {
 				case 4: case 5: g.textBaseline='top';        py+=-this.bh+1; break;
 				case 2: case 3: g.textBaseline='alphabetic'; py+= this.bh-2; break;
 			}
+			if(!g.use.canvas && (type===1||type===4||type===5)){py++;}
+
+			this.vshow("text_"+key);
 			g.fillText(text, px, py);
+			if(k.br.Opera && g.use.svg){g.lastElement.setAttribute('unselectable','on');}
 		}
 	}
 };

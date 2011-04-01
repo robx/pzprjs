@@ -18,6 +18,7 @@
 		fillmat    : 'フィルマット',
 		fillomino  : 'フィルオミノ',
 		firefly    : 'ホタルビーム',
+		fivecells  : 'ファイブセルズ',
 		fourcells  : 'フォーセルズ',
 		goishi     : '碁石ひろい',
 		gokigen    : 'ごきげんななめ',
@@ -35,6 +36,7 @@
 		kakuro     : 'カックロ',
 		kakuru     : 'カックル',
 		kinkonkan  : 'キンコンカン',
+		kouchoku   : '交差は直角に限る',
 		kramma     : '快刀乱麻',
 		kurochute  : 'クロシュート',
 		kurodoko   : '黒どこ(黒マスはどこだ)',
@@ -42,6 +44,7 @@
 		lightup    : '美術館',
 		lits       : 'ＬＩＴＳ',
 		loopsp     : '環状線スペシャル',
+		loute      : 'エルート',
 		mashu      : 'ましゅ',
 		mejilink   : 'メジリンク',
 		minarism   : 'マイナリズム',
@@ -105,6 +108,7 @@
 		fillmat    : 'Fillmat',
 		fillomino  : 'Fillomino',
 		firefly    : 'Hotaru Beam (Glow of Fireflies)',
+		fivecells  : 'FiveCells',
 		fourcells  : 'FourCells',
 		goishi     : 'Goishi',
 		gokigen    : 'Gokigen-naname',
@@ -122,6 +126,7 @@
 		kakuro     : 'Kakuro',
 		kakuru     : 'Kakuru',
 		kinkonkan  : 'Kin-Kon-Kan',
+		kouchoku   : 'Kouchoku',
 		kramma     : 'KaitoRamma',
 		kurochute  : 'Kurochute',
 		kurodoko   : 'Kurodoko',
@@ -129,6 +134,7 @@
 		lightup    : 'Akari (Light Up)',
 		lits       : 'LITS',
 		loopsp     : 'Loop Special',
+		loute      : 'L-route',
 		mashu      : 'Masyu (Pearl Puzzle)',
 		mejilink   : 'Mejilink',
 		minarism   : 'Minarism',
@@ -175,6 +181,7 @@
 	},
 	/* 別名 */
 	alias : {
+		fillomino : { kanpen2:'fillomino01'},
 		hashikake : { kanpen:'hashi'},
 		lightup   : { url:'akari', kanpen:'bijutsukan'},
 		mashu     : { kanpen:'masyu'},
@@ -190,7 +197,7 @@
 		for(var pid in this.alias){
 			if(!this.alias[pid]){ continue;}
 			for(var type in this.alias[pid]){
-				if(this.alias[pid][type]===name){ alert(pid); return pid;}
+				if(this.alias[pid][type]===name){ return pid;}
 			}
 		}
 		return '';

@@ -1,4 +1,4 @@
-// Undo.js v3.3.2
+// Undo.js v3.3.3
 
 //---------------------------------------------------------------------------
 // ★OperationManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
@@ -306,9 +306,9 @@ OperationManager.prototype = {
 
 			bd.setposAll();
 			bd.setminmax();
-			base.enableInfo();
-			base.resetInfo();
-			base.resize_canvas();
+			bd.enableInfo();
+			bd.resetInfo();
+			pc.resize_canvas();
 		}
 		else{
 			pc.paintRange(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
@@ -337,7 +337,7 @@ OperationManager.prototype = {
 			if(num & menu.ex.TURNFLIP){ menu.ex.turnflip    (num,d);}
 			else                      { menu.ex.expandreduce(num,d);}
 
-			base.disableInfo();
+			bd.disableInfo();
 			this.stackAll();
 			this.reqReset = true;
 		}

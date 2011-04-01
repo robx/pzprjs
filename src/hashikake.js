@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.3.2
+// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.3.3
 //
 Puzzles.hashikake = function(){ };
 Puzzles.hashikake.prototype = {
@@ -155,7 +155,7 @@ Puzzles.hashikake.prototype = {
 		pc.lwratio = 8;
 
 		pc.paint = function(){
-			this.drawGrid(false, (k.editmode && !this.fillTextPrecisely));
+			this.drawGrid(false, (k.editmode && !this.outputImage));
 
 			this.drawPekes(0);
 			this.drawLines();

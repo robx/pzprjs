@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.3.2
+// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.3.3
 //
 Puzzles.icebarn = function(){ };
 Puzzles.icebarn.prototype = {
@@ -151,22 +151,22 @@ Puzzles.icebarn.prototype = {
 			this.stackBorder(num);
 		};
 
+		bd.disableInfo();
+		bd.inputarrowin (0 + bd.bdinside, 1);
+		bd.inputarrowout(2 + bd.bdinside, 1);
+		bd.enableInfo();
+
 		bd.initSpecial = function(col,row){
 			this.bdinside = 2*col*row-(col+row);
-			if(base.initProcess){
-				this.inputarrowin (0 + this.bdinside, 1);
-				this.inputarrowout(2 + this.bdinside, 1);
-			}
-			else{
-				if(this.arrowin<k.qcols+this.bdinside){ if(this.arrowin>col+this.bdinside){ this.arrowin=col+this.bdinside-1;} }
-				else{ if(this.arrowin>col+row+this.bdinside){ this.arrowin=col+row+this.bdinside-1;} }
 
-				if(this.arrowout<k.qcols+this.bdinside){ if(this.arrowout>col+this.bdinside){ this.arrowout=col+this.bdinside-1;} }
-				else{ if(this.arrowout>col+row+this.bdinside){ this.arrowout=col+row+this.bdinside-1;} }
+			if(this.arrowin<k.qcols+this.bdinside){ if(this.arrowin>col+this.bdinside){ this.arrowin=col+this.bdinside-1;} }
+			else{ if(this.arrowin>col+row+this.bdinside){ this.arrowin=col+row+this.bdinside-1;} }
 
-				if(this.arrowin==this.arrowout){ this.arrowin--;}
-			}
-		}
+			if(this.arrowout<k.qcols+this.bdinside){ if(this.arrowout>col+this.bdinside){ this.arrowout=col+this.bdinside-1;} }
+			else{ if(this.arrowout>col+row+this.bdinside){ this.arrowout=col+row+this.bdinside-1;} }
+
+			if(this.arrowin==this.arrowout){ this.arrowin--;}
+		};
 
 		menu.ex.adjustSpecial = function(key,d){
 			var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
@@ -347,7 +347,7 @@ Puzzles.icebarn.prototype = {
 				if(c>=bd.cellmax){ a=i+1; break;}
 			}
 
-			base.disableInfo();
+			bd.disableInfo();
 			var id=0;
 			for(var i=a;i<barray[0].length;i++){
 				var ca = barray[0].charAt(i);
@@ -376,7 +376,7 @@ Puzzles.icebarn.prototype = {
 			bd.arrowin = bd.arrowout = null;
 			bd.inputarrowin (parseInt(barray[1])+bd.bdinside);
 			bd.inputarrowout(parseInt(barray[2])+bd.bdinside);
-			base.enableInfo();
+			bd.enableInfo();
 
 			this.outbstr = "";
 		};
@@ -428,7 +428,7 @@ Puzzles.icebarn.prototype = {
 				if(c>=bd.cellmax){ a=i+1; break;}
 			}
 
-			base.disableInfo();
+			bd.disableInfo();
 			var id=0;
 			for(var i=a;i<barray[2].length;i++){
 				var ca = barray[2].charAt(i);
@@ -450,7 +450,7 @@ Puzzles.icebarn.prototype = {
 			bd.arrowin = bd.arrowout = null;
 			bd.inputarrowin (parseInt(barray[0])+bd.bdinside);
 			bd.inputarrowout(parseInt(barray[1])+bd.bdinside);
-			base.enableInfo();
+			bd.enableInfo();
 
 			this.outbstr = "";
 		};
@@ -469,7 +469,7 @@ Puzzles.icebarn.prototype = {
 				if(c>=bd.cellmax){ break;}
 			}
 
-			base.disableInfo();
+			bd.disableInfo();
 			if(barray[1]!=""){
 				var array = barray[1].split("+");
 				for(var i=0;i<array.length;i++){ bd.setArrow(bd.db(array[i]),1);}
@@ -491,7 +491,7 @@ Puzzles.icebarn.prototype = {
 			bd.arrowin = bd.arrowout = null;
 			bd.inputarrowin (parseInt(barray[5])+bd.bdinside);
 			bd.inputarrowout(parseInt(barray[6])+bd.bdinside);
-			base.enableInfo();
+			bd.enableInfo();
 
 			this.outbstr = "";
 		};
@@ -530,14 +530,14 @@ Puzzles.icebarn.prototype = {
 			this.decodeCell( function(obj,ca){
 				if(ca==="1"){ obj.ques = 6;}
 			});
-			base.disableInfo();
+			bd.disableInfo();
 			this.decodeBorder( function(obj,ca){
 				if(ca!=="0"){
 					var id = bd.bnum(obj.bx, obj.by);
 					bd.setArrow(id, parseInt(ca));
 				}
 			});
-			base.enableInfo();
+			bd.enableInfo();
 			this.decodeBorder( function(obj,ca){
 				if     (ca==="1" ){ obj.line = 1;}
 				else if(ca==="-1"){ obj.qsub = 2;}

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 遠い誓い版 toichika.js v3.3.2
+// パズル固有スクリプト部 遠い誓い版 toichika.js v3.3.3
 //
 Puzzles.toichika = function(){ };
 Puzzles.toichika.prototype = {
@@ -30,10 +30,10 @@ Puzzles.toichika.prototype = {
 			if(k.editmode){
 				this.checkBorderMode();
 				if(this.bordermode){ this.inputborder();}
-				else               { this.inputdirec_toichika();}
+				else               { this.inputarrow_cell();}
 			}
 			else if(k.playmode){
-				if(this.btn.Left){ this.inputdirec_toichika();}
+				if(this.btn.Left){ this.inputarrow_cell();}
 				else if(this.btn.Right){ this.inputDot();}
 			}
 		};
@@ -43,29 +43,12 @@ Puzzles.toichika.prototype = {
 		mv.mousemove = function(){
 			if(k.editmode){
 				if(this.bordermode){ this.inputborder();}
-				else               { this.inputdirec_toichika();}
+				else               { this.inputarrow_cell();}
 			}
 			else if(k.playmode){
-				if     (this.btn.Left){ this.inputdirec_toichika();}
+				if     (this.btn.Left){ this.inputarrow_cell();}
 				else if(this.btn.Right){ this.inputDot();}
 			}
-		};
-
-		mv.inputdirec_toichika = function(){
-			var pos = this.borderpos(0);
-			if(this.prevPos.equals(pos) && this.inputData===1){ return;}
-
-			var dir = k.NONE, cc = bd.cnum(this.prevPos.x, this.prevPos.y);
-			if(cc!==null){
-				var dir = this.getdir(this.prevPos, pos);
-				if(dir!==k.NONE){
-					bd.setNum(cc,dir);
-					pc.paintCell(cc);
-					this.mousereset();
-					return;
-				}
-			}
-			this.prevPos = pos;
 		};
 
 		mv.inputDot = function(){
@@ -127,45 +110,12 @@ Puzzles.toichika.prototype = {
 			this.drawBorders();
 
 			this.drawDotCells(true);
-			this.drawArrows();
+			this.drawArrowCells();
 			this.drawHatenas();
 
 			this.drawChassis();
 
 			this.drawCursor();
-		};
-
-		pc.drawArrows = function(){
-			this.vinc('cell_arrow', 'auto');
-
-			var headers = ["c_arup_", "c_ardn_", "c_arlt_", "c_arrt_"];
-			var ll = this.cw*0.8;				//LineLength
-			var lw = Math.max(this.cw/18, 2);	//LineWidth
-			var al = ll*0.5, aw = lw*0.5;	// ArrowLength, ArrowWidth
-			var tl = ll*0.5-ll*0.3;			// 矢じりの長さの座標(中心-長さ)
-			var tw = Math.max(ll*0.2, 5);	// 矢じりの幅
-
-			var clist = this.range.cells;
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i], dir=bd.getNum(c);
-				this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
-				if(dir>0){
-					g.fillStyle = this.getCellNumberColor(c);
-
-					// 矢印の描画 ここに来る場合、dirは1～4
-					if(this.vnop(headers[(dir-1)]+c,this.FILL)){
-						var ax=px=bd.cell[c].cpx;
-						var ay=py=bd.cell[c].cpy;
-						switch(dir){
-							case k.UP: g.setOffsetLinePath(ax,ay, 0,-al, -tw,-tl, -aw,-tl, -aw, al,  aw, al, aw,-tl,  tw,-tl, true); break;
-							case k.DN: g.setOffsetLinePath(ax,ay, 0, al, -tw, tl, -aw, tl, -aw,-al,  aw,-al, aw, tl,  tw, tl, true); break;
-							case k.LT: g.setOffsetLinePath(ax,ay, -al,0, -tl,-tw, -tl,-aw,  al,-aw,  al, aw, -tl,aw, -tl, tw, true); break;
-							case k.RT: g.setOffsetLinePath(ax,ay,  al,0,  tl,-tw,  tl,-aw, -al,-aw, -al, aw,  tl,aw,  tl, tw, true); break;
-						}
-						g.fill();
-					}
-				}
-			}
 		};
 	},
 

@@ -1,4 +1,4 @@
-// MenuExec.js v3.3.2
+// MenuExec.js v3.3.3
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -13,6 +13,8 @@ MenuExec = function(){
 
 	this.reader;	// FileReaderオブジェクト
 	this.enableReadText = false;
+
+	this.fileio = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
 
 	// expand/reduce処理用
 	this.insex = {};
@@ -113,12 +115,10 @@ MenuExec.prototype = {
 				else if(_doc.newboard.size[3].checked){ col=row= 4;}
 			}
 
-			if(col>0 && row>0){ bd.initBoardSize(col,row);}
 			menu.popclose();
 
-			um.allerase();
-			base.resetInfo();
-			base.resize_canvas();				// Canvasを更新する
+			base.dec.parseURI('?'+k.puzzleid+'/'+col+'/'+row);
+			base.init_func(function(){ tm.reset();});
 		}
 	},
 
@@ -129,18 +129,19 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	urlinput : function(e){
 		if(menu.pop){
-			enc.parseURI(_doc.urlinput.ta.value);
-			enc.pzlinput();
-
-			tm.reset();
 			menu.popclose();
+
+			base.dec.parseURI(_doc.urlinput.ta.value);
+			if(!!base.dec.id){
+				base.init_func(function(){ tm.reset();});
+			}
 		}
 	},
 	urloutput : function(e){
 		if(menu.pop){
 			switch(ee.getSrcElement(e).name){
 				case "pzprv3":     _doc.urloutput.ta.value = enc.pzloutput(enc.PZPRV3);  break;
-				case "pzprapplet": _doc.urloutput.ta.value = enc.pzloutput(enc.PAPRAPP); break;
+				case "pzprapplet": _doc.urloutput.ta.value = enc.pzloutput(enc.PZPRAPP); break;
 				case "kanpen":     _doc.urloutput.ta.value = enc.pzloutput(enc.KANPEN);  break;
 				case "pzprv3edit": _doc.urloutput.ta.value = enc.pzloutput(enc.PZPRV3E); break;
 				case "heyaapp":    _doc.urloutput.ta.value = enc.pzloutput(enc.HEYAAPP); break;
@@ -173,16 +174,15 @@ MenuExec.prototype = {
 		}
 		else{
 			if(!fileEL.value){ return;}
-			_doc.fileform.action = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
+			_doc.fileform.action = this.fileio
 			_doc.fileform.submit();
 		}
 
 		_doc.fileform.reset();
-		tm.reset();
 	},
 	fileonload : function(data){
 		var farray = data.split(/[\t\r\n]+/);
-		var fstr = "";
+		var fstr = "", fheader = ['',''];
 		for(var i=0;i<farray.length;i++){
 			if(farray[i].match(/^http\:\/\//)){ break;}
 			fstr += (farray[i]+"/");
@@ -210,7 +210,7 @@ MenuExec.prototype = {
 		_doc.fileform2.urlstr.value = fio.history;
 		_doc.fileform2.operation.value = 'save';
 
-		_doc.fileform2.action = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
+		_doc.fileform2.action = this.fileio
 		_doc.fileform2.submit();
 	},
 
@@ -219,31 +219,47 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	imagesave : function(isDL){
 		// 現在の設定を保存する
-		var temp_flag   = pc.fillTextPrecisely;
+		var temp_flag   = pc.fillTextEmulate;
 		var temp_margin = k.bdmargin;
 		var temp_cursor = pp.getVal('cursor');
 
 		try{
 			// 設定値・変数をcanvas用のものに変更
-			pc.fillTextPrecisely = true;
+			pc.outputImage = true;
+			pc.fillTextEmulate = false;
 			k.bdmargin = k.bdmargin_image;
 			pp.setValOnly('cursor', false);
 			g = ee('divques_sub').el.getContext("2d");
 
 			// canvas要素の設定を適用して、再描画
-			base.resize_canvas();
+			pc.resize_canvas();
 
 			// canvasの描画内容をDataURLとして取得する
 			var url = g.canvas.toDataURL();
 
 			if(isDL){
-				_doc.fileform2.filename.value  = k.puzzleid+'.gif';
+				_doc.fileform2.filename.value  = k.puzzleid+'.png';
 				_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
 				_doc.fileform2.operation.value = 'imagesave';
+
+				_doc.fileform2.action = this.fileio
 				_doc.fileform2.submit();
 			}
 			else{
-				window.open(url, '', '');
+				if(!k.br.IE9){
+					window.open(url, '', '');
+				}
+				else{
+					// IE9だとアドレスバーの長さが2KBだったり、
+					// そもそもDataURL入れても何も起こらなかったりする対策
+					var cdoc = window.open('', '', '').document;
+					cdoc.open();
+					cdoc.writeln("<!DOCTYPE html>\n<HTML LANG=\"ja\">\n<HEAD>");
+					cdoc.writeln("<META CHARSET=\"utf-8\">");
+					cdoc.writeln("<TITLE>ぱずぷれv3<\/TITLE>\n<\/HEAD>");
+					cdoc.writeln("<BODY><img src=\"", url, "\"><\/BODY>\n<\/HTML>");
+					cdoc.close();
+				}
 			}
 		}
 		catch(e){
@@ -251,13 +267,14 @@ MenuExec.prototype = {
 		}
 
 		// 設定値・変数を元に戻す
-		pc.fillTextPrecisely = temp_flag;
+		pc.outputImage = false;
+		pc.fillTextEmulate = temp_flag;
 		k.bdmargin = temp_margin;
 		pp.setValOnly('cursor', temp_cursor);
 		g = ee('divques').unselectable().el.getContext("2d");
 
 		// その他の設定を元に戻して、再描画
-		base.resize_canvas();
+		pc.resize_canvas();
 	},
 
 	//------------------------------------------------------------------------------
@@ -269,7 +286,7 @@ MenuExec.prototype = {
 			if(csize>0){ k.cellsize = (csize|0);}
 
 			menu.popclose();
-			base.resize_canvas();	// Canvasを更新する
+			pc.resize_canvas();	// Canvasを更新する
 		}
 	},
 
@@ -304,7 +321,7 @@ MenuExec.prototype = {
 		this.displaymanage = !this.displaymanage;
 		this.dispmanstr();
 
-		base.resize_canvas();	// canvasの左上座標等を更新して再描画
+		pc.resize_canvas();	// canvasの左上座標等を更新して再描画
 	},
 	dispmanstr : function(){
 		if(!this.displaymanage){ ee('ms_manarea').el.innerHTML = menu.selectStr("管理領域を表示","Show management area");}
@@ -337,8 +354,8 @@ MenuExec.prototype = {
 			um.addOpe(k.BOARD, name, 0, this.boardtype[name][0], this.boardtype[name][1]);
 
 			bd.setminmax();
-			if(!um.undoExec){ base.resetInfo();}
-			base.resize_canvas();				// Canvasを更新する
+			if(!um.undoExec){ bd.resetInfo();}
+			pc.resize_canvas();				// Canvasを更新する
 		}
 	},
 
@@ -348,7 +365,7 @@ MenuExec.prototype = {
 	// menu.ex.reduceGroup()  オブジェクトの消去を行う
 	//------------------------------------------------------------------------------
 	expandreduce : function(key,d){
-		base.disableInfo();
+		bd.disableInfo();
 		this.adjustBoardData(key,d);
 
 		if(key & this.EXPAND){
@@ -372,7 +389,7 @@ MenuExec.prototype = {
 		bd.setposAll();
 
 		this.adjustBoardData2(key,d);
-		base.enableInfo();
+		bd.enableInfo();
 	},
 	expandGroup : function(type,key){
 		var margin = bd.initGroup(type, k.qcols, k.qrows);
@@ -409,7 +426,7 @@ MenuExec.prototype = {
 	// menu.ex.turnflipGroup() turnflip()から内部的に呼ばれる回転実行部
 	//------------------------------------------------------------------------------
 	turnflip : function(key,d){
-		base.disableInfo();
+		bd.disableInfo();
 		this.adjustBoardData(key,d);
 
 		if(key & this.TURN){
@@ -431,7 +448,7 @@ MenuExec.prototype = {
 		bd.setposAll();
 
 		this.adjustBoardData2(key,d);
-		base.enableInfo();
+		bd.enableInfo();
 	},
 	turnflipGroup : function(type,key,d){
 		var ch=[], idlist=bd.objectinside(type,d.x1,d.y1,d.x2,d.y2);
@@ -701,7 +718,7 @@ MenuExec.prototype = {
 			um.newOperation(true);
 
 			bd.ansclear();
-			base.resetInfo();
+			bd.resetInfo();
 			pc.paintAll();
 		}
 	},

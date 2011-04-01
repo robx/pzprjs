@@ -1,4 +1,4 @@
-// for_test.js v3.3.1
+// for_test.js v3.3.3
 
 debug.extend({
 	testonly_func : function(){
@@ -27,17 +27,24 @@ debug.extend({
 	},
 
 	all_test : function(){
-		var pnum=0, term=debug.urls.length-1;
+		if(debug.alltimer != null){ return;}
+		var pnum=0, term=0, idlist=[];
 		debug.phase = 99;
 
-		var tam = setInterval(function(){
+		for(var i in debug.urls){ idlist.push(i);}
+		idlist.sort();
+		term = idlist.length-1;
+
+		debug.alltimer = setInterval(function(){
 			if(debug.phase != 99){ return;}
 			debug.phase = 0;
 
-			var newid = debug.urls[pnum][0];
-			base.reload_func(newid, debug.urls[pnum][1], ee.binder(debug, debug.sccheck));
+			var newid = idlist[pnum];
+			base.dec.reset();
+			base.dec.parseURI('?'+newid+'/'+debug.urls[newid]);
+			base.init_func(ee.binder(debug, debug.sccheck));
 
-			if(pnum >= term){ clearInterval(tam);}
+			if(pnum >= term){ clearInterval(debug.alltimer);}
 
 			debug.addTextarea("Test ("+pnum+", "+newid+") start.");
 			pnum++;
@@ -62,10 +69,11 @@ debug.extend({
 		this.sccheck();
 	},
 
-	phase : 0,
+	alltimer : null,
+	phase : 99,
 	sccheck : function(){
 		if(pp.getVal('autocheck')){ pp.setVal('autocheck',false);}
-		var n=0, alstr='', qstr='', mint=80, fint=50;
+		var n=0, alstr='', qstr='', mint=80, fint=50, fails=0;
 		this.phase = 10;
 		var tim = setInterval(function(){
 		//Encode test--------------------------------------------------------------
@@ -74,13 +82,14 @@ debug.extend({
 			(function(){
 				var col = k.qcols;
 				var row = k.qrows;
-				var pfg = enc.uri.pflag;
-				var str = enc.uri.bstr;
+				var pfg = base.dec.pflag;
+				var str = base.dec.bstr;
 
 				var inp = enc.getURLBase(enc.PZPRV3)+(pfg?(pfg+"/"):"")+(col+"/"+row)+("/"+str);
 				var ta  = enc.pzloutput(enc.PZPRV3);
 
-				debug.addTextarea("Encode test   = "+(inp==ta?"pass":"failure...<BR> "+inp+"<BR> "+ta));
+				if(inp!=ta){ debug.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); fails++;}
+				else if(!debug.alltimer){ debug.addTextarea("Encode test   = pass");}
 
 				setTimeout(function(){
 					if(k.isKanpenExist){ debug.phase = 11;}
@@ -96,7 +105,8 @@ debug.extend({
 				menu.pop = ee("pop1_5");
 				menu.ex.urlinput({});
 
-				debug.addTextarea("Encode kanpen = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+				if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("Encode kanpen = failure..."); fails++;}
+				else if(!debug.alltimer){ debug.addTextarea("Encode kanpen = pass");}
 
 				setTimeout(function(){
 					debug.phase = (debug.acs[k.puzzleid])?20:30;
@@ -108,7 +118,7 @@ debug.extend({
 			(function(){
 				alstr = debug.acs[k.puzzleid][n][0];
 				qstr  = debug.acs[k.puzzleid][n][1];
-				fio.filedecode(debug.acs[k.puzzleid][n][1]);
+				fio.filedecode_main(debug.acs[k.puzzleid][n][1]);
 				setTimeout(function(){
 					ans.inCheck = true;
 					ans.alstr = { jp:'' ,en:''};
@@ -126,7 +136,8 @@ debug.extend({
 
 					if(ans.alstr.jp != debug.acs[k.puzzleid][n][0]){ misstr = true;}
 
-					debug.addTextarea("Answer test "+(n+1)+" = "+((!iserror&&!misstr)?"pass":"failure...")+" \""+debug.acs[k.puzzleid][n][0]+"\"");
+					if(iserror||misstr){ debug.addTextarea("Answer test "+(n+1)+" = failure... \""+debug.acs[k.puzzleid][n][0]+"\""); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("Answer test "+(n+1)+" = pass \""+debug.acs[k.puzzleid][n][0]+"\"");}
 
 					n++;
 					if(n<debug.acs[k.puzzleid].length){ debug.phase = 20;}
@@ -142,14 +153,15 @@ debug.extend({
 				var bd2 = debug.bd_freezecopy();
 
 				bd.initBoardSize(1,1);
-				base.resetInfo();
-				base.resize_canvas();
+				bd.resetInfo();
+				pc.resize_canvas();
 
 				setTimeout(function(){
-					fio.filedecode(outputstr);
-					debug.addTextarea("FileIO test   = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					fio.filedecode_main(outputstr);
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FileIO test   = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("FileIO test   = pass");}
 
-					fio.filedecode(debug.acs[k.puzzleid][debug.acs[k.puzzleid].length-1][1]);
+					fio.filedecode_main(debug.acs[k.puzzleid][debug.acs[k.puzzleid].length-1][1]);
 					debug.phase = (k.puzzleid != 'tawa')?40:50;
 				},fint);
 			})();
@@ -161,14 +173,15 @@ debug.extend({
 				var bd2 = debug.bd_freezecopy();
 
 				bd.initBoardSize(1,1);
-				base.resetInfo();
-				base.resize_canvas();
+				bd.resetInfo();
+				pc.resize_canvas();
 
 				setTimeout(function(){
-					fio.filedecode(outputstr);
+					fio.filedecode_main(outputstr);
 
 					debug.qsubf = !(k.puzzleid=='fillomino'||k.puzzleid=='hashikake'||k.puzzleid=='kurodoko'||k.puzzleid=='shikaku'||k.puzzleid=='tentaisho');
-					debug.addTextarea("FileIO kanpen = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FileIO kanpen = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("FileIO kanpen = pass");}
 					debug.qsubf = true;
 
 					debug.phase = 30;
@@ -182,7 +195,8 @@ debug.extend({
 				var func = function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnr'}}); menu.pop = '';};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-					debug.addTextarea("TurnR test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("TurnR test 1  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("TurnR test 1  = pass");}
 					debug.phase = 41;
 				},fint); },fint); },fint);
 			})();
@@ -193,7 +207,8 @@ debug.extend({
 				var func = function(){ um.undo(1);};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-					debug.addTextarea("TurnR test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("TurnR test 2  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("TurnR test 2  = pass");}
 					debug.phase = 45;
 				},fint); },fint); },fint);
 			})();
@@ -204,7 +219,8 @@ debug.extend({
 				var func = function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnl'}}); menu.pop = '';};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-					debug.addTextarea("TurnL test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("TurnL test 1  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("TurnL test 1  = pass");}
 					debug.phase = 46;
 				},fint); },fint); },fint);
 			})();
@@ -215,7 +231,8 @@ debug.extend({
 				var func = function(){ um.undo(1);};
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-					debug.addTextarea("TurnL test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("TurnR test 2  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("TurnR test 2  = pass");}
 					debug.phase = 50;
 				},fint); },fint); },fint);
 			})();
@@ -227,7 +244,8 @@ debug.extend({
 				menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}});
 
 				setTimeout(function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}}); menu.pop = '';
-					debug.addTextarea("FlipX test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FlipX test 1  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("FlipX test 1  = pass");}
 					debug.phase = 51;
 				},fint);
 			})();
@@ -238,7 +256,8 @@ debug.extend({
 				um.undo(1);
 
 				setTimeout(function(){ um.undo(1);
-					debug.addTextarea("FlipX test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FlipX test 2  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("FlipX test 2  = pass");}
 					debug.phase = 55;
 				},fint);
 			})();
@@ -249,7 +268,8 @@ debug.extend({
 				menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}});
 
 				setTimeout(function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}}); menu.pop = '';
-					debug.addTextarea("FlipY test 1  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FlipY test 1  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("FlipY test 1  = pass");}
 					debug.phase = 56;
 				},fint);
 			})();
@@ -260,7 +280,8 @@ debug.extend({
 				um.undo(1);
 
 				setTimeout(function(){ um.undo(1);
-					debug.addTextarea("FlipY test 2  = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FlipX test 2  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("FlipX test 2  = pass");}
 					debug.phase = 60;
 				},fint);
 			})();
@@ -275,7 +296,8 @@ debug.extend({
 				setTimeout(function(){ func('expanddn'); setTimeout(function(){ func('expandlt');
 				setTimeout(function(){ func('reduceup'); setTimeout(function(){ func('reducert');
 				setTimeout(function(){ func('reducedn'); setTimeout(function(){ func('reducelt');
-					debug.addTextarea("Adjust test 1 = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("Adjust test 1 = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("Adjust test 1 = pass");}
 					debug.phase = 61;
 				},fint); },fint); },fint); },fint); },fint); },fint); },fint); },fint);
 			})();
@@ -290,7 +312,8 @@ debug.extend({
 				func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
 				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-					debug.addTextarea("Adjust test 2 = "+(debug.bd_compare(bd,bd2)?"pass":"failure..."));
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("Adjust test 2 = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("Adjust test 2 = pass");}
 					debug.phase = 90;
 				},fint); },fint); },fint); },fint); },fint); },fint); },fint);
 			})();
@@ -298,7 +321,7 @@ debug.extend({
 		//test end--------------------------------------------------------------
 		case 90:
 			clearInterval(tim);
-			debug.addTextarea("Test end.");
+			if(!debug.alltimer){ debug.addTextarea("Test end.");}
 			debug.phase = 99;
 			return;
 		}
@@ -460,6 +483,12 @@ debug.extend({
 		box : [
 			["数字と黒マスになった数字の合計が正しくありません。","pzprv3/box/5/5/0 7 10 9 9 7 /9 . # . . . /6 . + . . . /7 . + . . . /2 + # + + + /15 # # # # # /"],
 			["","pzprv3/box/5/5/0 7 10 9 9 7 /9 + # # # + /6 # + + + # /7 + + # # + /2 + # + + + /15 # # # # # /"]
+		],
+		cbblock : [
+			["ブロックが1つの点線からなる領域で構成されています。","pzprv3/cbblock/4/4/1 0 2 /0 2 0 /2 2 2 /0 2 2 /1 2 2 0 /0 2 2 2 /2 0 2 0 /"],
+			["ブロックが四角形になっています。","pzprv3/cbblock/4/4/-2 0 1 /0 2 0 /2 2 2 /0 2 2 /1 1 1 0 /0 2 2 2 /2 0 2 0 /"],
+			["同じ形のブロックが接しています。","pzprv3/cbblock/4/4/1 0 2 /0 1 0 /1 1 2 /0 2 1 /-2 1 2 0 /0 1 1 1 /1 0 1 0 /"],
+			["","pzprv3/cbblock/4/4/1 0 2 /0 1 0 /1 -2 1 /0 1 2 /-2 1 2 0 /0 1 1 1 /1 0 1 0 /"]
 		],
 		chocona : [
 			["黒マスのカタマリが正方形か長方形ではありません。","pzprv3/chocona/6/6/11/0 0 1 1 1 1 /0 2 2 2 2 2 /3 4 5 6 7 7 /3 4 5 6 7 7 /3 5 5 8 9 9 /3 10 10 8 8 9 /3 . 3 . . . /. 1 . . . . /2 2 . 2 1 . /. . . . . . /. . . . 3 . /. 2 . . . . /# # . . . . /# # # # # # /. . . . . . /. . . . . . /. . . . . . /. . . . . . /"],
@@ -858,6 +887,11 @@ debug.extend({
 			["数字の入っていないマスがあります。","pzprv3/ripple/4/4/0 1 0 /0 1 1 /0 1 1 /1 0 1 /1 1 0 1 /1 1 0 0 /1 0 1 0 /. . . . /. 1 4 . /. 3 2 . /. . . . /1 2 . . /2 . . . /4 . . . /1 2 1 . /"],
 			["","pzprv3/ripple/4/4/0 1 0 /0 1 1 /0 1 1 /1 0 1 /1 1 0 1 /1 1 0 0 /1 0 1 0 /. . . . /. 1 4 . /. 3 2 . /. . . . /1 2 3 1 /2 . . 2 /4 . . 1 /1 2 1 3 /"]
 		],
+		roma : [
+			["1つの領域に2つ以上の同じ矢印が入っています。","pzprv3/roma/4/4/6/0 0 1 1 /0 2 2 1 /3 2 4 5 /3 3 5 5 /. . 2 . /1 2 . . /. . 5 3 /. 3 . . /. 1 . . /. . . . /. . . . /. . . . /"],
+			["ゴールにたどり着かないセルがあります。","pzprv3/roma/4/4/6/0 0 1 1 /0 2 2 1 /3 2 4 5 /3 3 5 5 /. . 2 . /1 2 . . /. . 5 3 /. 3 . . /4 2 . 3 /. . 4 1 /4 . . . /1 . . . /"],
+			["","pzprv3/roma/4/4/6/0 0 1 1 /0 2 2 1 /3 2 4 5 /3 3 5 5 /. . 2 . /1 2 . . /. . 5 3 /. 3 . . /4 2 . 3 /. . 3 1 /4 4 . . /1 . 4 1 /"],
+		],
 		shakashaka : [
 			["数字のまわりにある黒い三角形の数が間違っています。","pzprv3/shakashaka/6/6/2 . . . 1 . /. . . 3 . . /. . 4 . . . /3 . . . . . /. . . . . . /. . . 1 . . /. 5 4 . . . /5 . 3 . . . /2 3 . . . . /. . . . . . /. . . . . . /. 2 3 . 2 3 /"],
 			["白マスが長方形(正方形)ではありません。","pzprv3/shakashaka/6/6/2 . . . 1 . /. . . 3 . . /. . 4 . . . /3 . . . . . /. . . . . . /. . . 1 . . /. 5 4 . . . /5 . 3 . . . /2 3 . . . . /. . . . . . /. . . . . . /. . . . 2 3 /"],
@@ -1054,91 +1088,90 @@ debug.extend({
 			["輪っかが一つではありません。","pzprv3/yajirin/5/5/. . . . . /. . . . . /. . . 3,2 . /. . . . . /. . . . 1,0 /. . . . . /. . . . + /# . # . + /. . + . + /. . . . . /1 1 0 1 /1 1 0 1 /0 0 0 0 /0 0 1 0 /0 0 1 0 /1 0 1 1 1 /0 0 0 0 0 /0 0 0 0 0 /0 0 1 1 0 /"],
 			["黒マスも線も引かれていないマスがあります。","pzprv3/yajirin/5/5/. . . . . /. . . . . /. . . 3,2 . /. . . . . /. . . . 1,0 /. . . . . /. . . . + /# . # . + /. . + . + /. . . . . /1 1 0 1 /1 0 1 0 /0 0 0 0 /0 1 0 1 /0 0 1 0 /1 0 1 1 1 /0 1 0 0 1 /0 1 0 0 1 /0 0 1 1 0 /"],
 			["","pzprv3/yajirin/5/5/. . . . . /. . . . . /. . . 3,2 . /. . . . . /. . . . 1,0 /. . . . . /. . . . + /# . # . + /. . + . + /. . . # . /1 1 -1 1 /1 -1 1 -1 /0 0 0 -1 /1 -1 1 1 /1 1 0 0 /1 -1 1 1 1 /0 1 0 0 1 /0 1 0 0 1 /1 -1 1 0 0 /"]
-		],
-		perftest : [
-			["","pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /"]
 		]
 	},
 
-	urls : [
-		['aho'        , '6/6/4i264n6j3n223i4'],
-		['ayeheya'    , '6/6/99aa8c0vu0ufk2k'],
-		['bag'        , '6/6/g3q2h3jbj3i3i2g'],
-		['barns'      , '5/5/06ec080000100'],
-		['bdblock'    , '5/5/100089082/12345o51g4i3i'],
-		['bonsan'     , '5/5/co360rr0g1h0g.j121g3h1h.g.g'],
-		['bosanowa'   , '6/5/jo9037g2n2n3g4j3i'],
-		['box'        , '5/5/7a9979672f'],
-		['chocona'    , '6/6/8guumlfvo1eq33122g21g32'],
-		['cojun'      , '4/4/pd0hsoh3p3h'],
-		['country'    , '5/5/amda0uf02h12h'],
-		['creek'      , '6/6/gagaich2cgb6769dt'],
-		['factors'    , '5/5/rvvcm9jf54653-28ca2833-14'],
-		['fillmat'    , '5/5/3b3h1h1b4'],
-		['fillomino'  , '6/6/h4j53g2k5233k2g14j3h'],
-		['firefly'    , '5/5/40c21a3.a30g10a22a11c11'],
-		['fourcells'  , '6/6/b1d2a3e3d1f2b2a3b2'],
-		['goishi'     , '6/7/vsten1tvo'],
-		['gokigen'    , '4/4/iaegcgcj6a'],
-		['hakoiri'    , '5/5/4qb44qb41c3c1f23a2b1b1'],
-		['hashikake'  , '5/5/4g2i3h23k3g1g3g4g3'],
-		['heyawake'   , '6/6/lll155007rs12222j'],
-		['hitori'     , '4/4/1114142333214213'],
-		['icebarn'    , '8/8/73btfk05ovbjghzpwz9bwm/3/11'],
-		['icelom'     , 'a/6/6/9e50an10i3zl2g1i/15/4'],
-		['ichimaga'   , 'm/5/5/7cgegbegbgcc'],
-		['kaero'      , '3/3/egh0BCBcAaA'],
-		['kakuro'     , '5/5/48la0.na0lh3l0Bn.0cl.c4a3'],
-		['kakuru'     , '5/5/3.a+4+mD.S.bm+g+A.3'],
-		['kinkonkan'  , '4/4/94gof0BAaDbBaCbCaAaD21122211'],
-		['kramma'     , '5/5/32223i3f2fb99i'],
-		['kurochute'  , '5/5/132k1i1i2k332'],
-		['kurodoko'   , '5/5/i7g5l2l2g4i'],
-		['kusabi'     , '5/5/311e2c12c1f3'],
-		['lightup'    , '6/6/nekcakbl'],
-		['lits'       , '4/4/9q02jg'],
-		['loopsp'     , '5/5/sgnmn1n1n2njnls'],
-		['mashu'      , '6/6/1063000i3000'],
-		['mejilink'   , '4/4/g9rm4'],
-		['minarism'   , '4/4/hhhq21pgi'],
-		['mochikoro'  , '5/5/4p2n1i1'],
-		['mochinyoro' , '5/5/l4g2m2m1'],
-		['nagenawa'   , '6/6/alrrlafbaaqu3011314g223h'],
-		['nanro'      , '4/4/6r0s1oi13n1h'],
-		['nawabari'   , '5/5/f0a1g2a1f'],
-		['norinori'   , '5/5/cag4ocjo'],
-		['numlin'     , '5/5/1j2h3m1h2j3'],
-		['nuribou'    , '5/5/1g2l1g4r7'],
-		['nurikabe'   , '5/5/g5k2o1k3g'],
-		['paintarea'  , '5/5/pmvmfuejf4k1f'],
-		['pipelink'   , '5/5/mamejan'],
-		['reflect'    , '5/5/49l20c5f24'],
-		['renban'     , '4/4/vmok3g1p5g2h'],
-		['ripple'     , '4/4/9n8rigk14h32k'],
-		['shakashaka' , '6/6/cgbhdhegdrb'],
-		['shikaku'    , '6/6/j3g56h6t6h23g5j'],
-		['shimaguni'  , '6/6/7fe608s0e3uf3g3g2g43'],
-		['shugaku'    , '5/5/c5d462b'],
-		['shwolf'     , '5/5/0282bocb6ajf9'],
-		['slalom'     , 'p/6/6/9314131314131a1131ag44j11/33'],
-		['slither'    , '5/5/cbcbcddad'],
-		['snakes'     , '5/5/a21g23b20b45g41a'],
-		['sudoku'     , '4/4/g1k23k3g'],
-		['sukoro'     , '5/5/2a2c4a2g2a4c2a2'],
-		['sukororoom' , '5/5/4vjbtnfpb3i2i3b'],
-		['tasquare'   , '6/6/1g.i4j1i3j5i5j.i2g1'],
-		['tatamibari' , '5/5/m3g11i2g31h13g3g'],
-		['tateyoko'   , '5/5/i23i3ono2i25i22pnqi33i2'],
-		['tawa'       , '5/5/0/a2b2b3g5b2c2'],
-		['tentaisho'  , '5/5/67eh94fi65en8dbf'],
-		['tilepaint'  , '6/6/mfttf5ovqrrvzv234232243331'],
-		['toichika'   , '4/4/n70kt84j'],
-		['triplace'   , '5/5/%2m_m%1m_.0.1....11'],
-		['usotatami'  , '5/5/1a13a2d1a1a3a121b3b2'],
-		['view'       , '5/5/m401g3g2g101m'],
-		['wagiri'     , '4/4/lebcacja1d2b1d1a'],
-		['wblink'     , '5/5/ci6a2ln1i'],
-		['yajikazu'   , '6/6/40d23663i32h12b32a12a11c'],
-		['yajirin'    , '5/5/m32j10']
-	]
+	urls : {
+		aho        : '6/6/4i264n6j3n223i4',
+		ayeheya    : '6/6/99aa8c0vu0ufk2k',
+		bag        : '6/6/g3q2h3jbj3i3i2g',
+		barns      : '5/5/06ec080000100',
+		bdblock    : '5/5/100089082/12345o51g4i3i',
+		bonsan     : '5/5/co360rr0g1h0g.j121g3h1h.g.g',
+		bosanowa   : '6/5/jo9037g2n2n3g4j3i',
+		box        : '5/5/7a9979672f',
+		cbblock    : '4/4/ah0oa',
+		chocona    : '6/6/8guumlfvo1eq33122g21g32',
+		cojun      : '4/4/pd0hsoh3p3h',
+		country    : '5/5/amda0uf02h12h',
+		creek      : '6/6/gagaich2cgb6769dt',
+		factors    : '5/5/rvvcm9jf54653-28ca2833-14',
+		fillmat    : '5/5/3b3h1h1b4',
+		fillomino  : '6/6/h4j53g2k5233k2g14j3h',
+		firefly    : '5/5/40c21a3.a30g10a22a11c11',
+		fourcells  : '6/6/b1d2a3e3d1f2b2a3b2',
+		goishi     : '6/7/vsten1tvo',
+		gokigen    : '4/4/iaegcgcj6a',
+		hakoiri    : '5/5/4qb44qb41c3c1f23a2b1b1',
+		hashikake  : '5/5/4g2i3h23k3g1g3g4g3',
+		heyawake   : '6/6/lll155007rs12222j',
+		hitori     : '4/4/1114142333214213',
+		icebarn    : '8/8/73btfk05ovbjghzpwz9bwm/3/11',
+		icelom     : 'a/6/6/9e50an10i3zl2g1i/15/4',
+		ichimaga   : 'm/5/5/7cgegbegbgcc',
+		kaero      : '3/3/egh0BCBcAaA',
+		kakuro     : '5/5/48la0.na0lh3l0Bn.0cl.c4a3',
+		kakuru     : '5/5/3.a+4+mD.S.bm+g+A.3',
+		kinkonkan  : '4/4/94gof0BAaDbBaCbCaAaD21122211',
+		kramma     : '5/5/32223i3f2fb99i',
+		kurochute  : '5/5/132k1i1i2k332',
+		kurodoko   : '5/5/i7g5l2l2g4i',
+		kusabi     : '5/5/311e2c12c1f3',
+		lightup    : '6/6/nekcakbl',
+		lits       : '4/4/9q02jg',
+		loopsp     : '5/5/sgnmn1n1n2njnls',
+		mashu      : '6/6/1063000i3000',
+		mejilink   : '4/4/g9rm4',
+		minarism   : '4/4/hhhq21pgi',
+		mochikoro  : '5/5/4p2n1i1',
+		mochinyoro : '5/5/l4g2m2m1',
+		nagenawa   : '6/6/alrrlafbaaqu3011314g223h',
+		nanro      : '4/4/6r0s1oi13n1h',
+		nawabari   : '5/5/f0a1g2a1f',
+		norinori   : '5/5/cag4ocjo',
+		numlin     : '5/5/1j2h3m1h2j3',
+		nuribou    : '5/5/1g2l1g4r7',
+		nurikabe   : '5/5/g5k2o1k3g',
+		paintarea  : '5/5/pmvmfuejf4k1f',
+		pipelink   : '5/5/mamejan',
+		reflect    : '5/5/49l20c5f24',
+		renban     : '4/4/vmok3g1p5g2h',
+		ripple     : '4/4/9n8rigk14h32k',
+		roma       : '4/4/augddgb2a12d53a3b',
+		shakashaka : '6/6/cgbhdhegdrb',
+		shikaku    : '6/6/j3g56h6t6h23g5j',
+		shimaguni  : '6/6/7fe608s0e3uf3g3g2g43',
+		shugaku    : '5/5/c5d462b',
+		shwolf     : '5/5/0282bocb6ajf9',
+		slalom     : 'p/6/6/9314131314131a1131ag44j11/33',
+		slither    : '5/5/cbcbcddad',
+		snakes     : '5/5/a21g23b20b45g41a',
+		sudoku     : '4/4/g1k23k3g',
+		sukoro     : '5/5/2a2c4a2g2a4c2a2',
+		sukororoom : '5/5/4vjbtnfpb3i2i3b',
+		tasquare   : '6/6/1g.i4j1i3j5i5j.i2g1',
+		tatamibari : '5/5/m3g11i2g31h13g3g',
+		tateyoko   : '5/5/i23i3ono2i25i22pnqi33i2',
+		tawa       : '5/5/0/a2b2b3g5b2c2',
+		tentaisho  : '5/5/67eh94fi65en8dbf',
+		tilepaint  : '6/6/mfttf5ovqrrvzv234232243331',
+		toichika   : '4/4/n70kt84j',
+		triplace   : '5/5/%2m_m%1m_.0.1....11',
+		usotatami  : '5/5/1a13a2d1a1a3a121b3b2',
+		view       : '5/5/m401g3g2g101m',
+		wagiri     : '4/4/lebcacja1d2b1d1a',
+		wblink     : '5/5/ci6a2ln1i',
+		yajikazu   : '6/6/40d23663i32h12b32a12a11c',
+		yajirin    : '5/5/m32j10'
+	}
 });

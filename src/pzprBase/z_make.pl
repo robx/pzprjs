@@ -37,8 +37,11 @@ sub input_flags{
 sub output_pzprBase{
 	my @files = (
 		'Camp.js',
-		'global.js',
+		'Library.js',
+		'Main.js',
+		'Timer.js',
 		'Board.js',
+		'BoardExt.js',
 		'Graphic.js',
 		'MouseInput.js',
 		'KeyInput.js',
@@ -48,9 +51,7 @@ sub output_pzprBase{
 		'Answer.js',
 		'Undo.js',
 		'Menu.js',
-		'MenuExec.js',
-		'pzprUtil.js',
-		'Main.js'
+		'MenuExec.js'
 	);
 
 	open OUT, ">pzprBase_body_Full.js";

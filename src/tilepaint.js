@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.3.2
+// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.3.3
 //
 Puzzles.tilepaint = function(){ };
 Puzzles.tilepaint.prototype = {
@@ -162,7 +162,7 @@ Puzzles.tilepaint.prototype = {
 		enc.decodeTilePaint = function(){
 			// 盤面内数字のデコード
 			var cell=0, a=0, bstr = this.outbstr;
-			base.disableInfo();
+			bd.disableInfo();
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i), obj=bd.cell[cell];
 
@@ -194,7 +194,7 @@ Puzzles.tilepaint.prototype = {
 				cell++;
 				if(cell>=bd.cellmax){ a=i+1; break;}
 			}
-			base.enableInfo();
+			bd.enableInfo();
 
 			// 盤面外数字のデコード
 			cell=0;

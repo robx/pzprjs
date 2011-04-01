@@ -311,7 +311,7 @@ function onload_func_FAQ(){
 	if(!EDITOR && !PLAYER){
 		removeEL('puzmenu_expression');
 		removeEL('table_expression');
-		reset_func();
+		v3index.reset_func();
 	}
 
 	var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
@@ -357,7 +357,7 @@ function dispExpression(){
 	removeEL({ja:"menu2_en", en:"menu2_ja"}[langcode]);
 }
 
-addEvent(window, 'load', onload_func_FAQ);
+v3index.addEvent(window, 'load', onload_func_FAQ);
 
 /* *********************************************************************** */
 
@@ -379,6 +379,8 @@ var strinfo = {
 	fillmat   : [['pBorder'],['eNumCell']],
 	fillomino : [['pBorder', 'pNumCopy', 'pEXfillomino'],['eNumCell']],
 	firefly   : [['pLine'],['eNumCircle', 'eArrowNum2']],
+	fivecells : [['pBorder'],['eNumCell', 'eEXfivecells']],
+	fourcells : [['pBorder'],['eNumCell']],
 	goishi    : [['pEXgoishi'],['eEXgoishi', 'eReduce2']],
 	gokigen   : [['pEtcSlash', 'pEtcSlashCont'],['eNumCircle']],
 	hakoiri   : [['pEtcMark3'],['eBorder', 'eNumMark']],
@@ -392,6 +394,7 @@ var strinfo = {
 	kakuro    : [['pNum'],['eQues51']],
 	kakuru    : [['pNum'],['eNumCell']],
 	kinkonkan : [['pEtcSlash', 'pEtcSlashLigt'],['eBorder', 'eOutLetter']],
+	kouchoku  : [['pEXkouchoku'],['eEXkouchoku']],
 	kramma    : [['pBorder'],['eShirokuro1', 'eCrossMark']],
 	kusabi    : [['pLine', 'pLineCont'],['eNumCell']],
 	kurochute : [['pBCell'],['eNumCircle']],
@@ -399,6 +402,7 @@ var strinfo = {
 	lightup   : [['pEXakari'],['eNumBCell']],
 	lits      : [['pBCell', 'pBCellCont'],['eBorder']],
 	loopsp    : [['pLine', 'pLineCont'],['eNumCircle', 'eLineMark']],
+	loute     : [['pBorder'],['pEtcArrow', 'eEXloute']],
 	mashu     : [['pLine', 'pLineCont'],['eShirokuro1']],
 	mejilink  : [['pLine', 'pLineCont'],['eBorderDot']],
 	minarism  : [['pNum'],['eNumCircle', 'eEXminarism']],
@@ -483,6 +487,7 @@ strdata.ja = {
 	pEXshaka2    : "\"クリックした位置\"ではマス目の角のほうをクリックすることで三角形が入力できます。"
 				  +"<br>\"ドラッグ入力\"では斜め4方向にドラッグして三角形を入力できます。",
 	pEXshugaku   : "マウスの左ボタンドラッグで布団を、右ボタンで通路を入力できます。",
+	pEXkouchoku  : "マウスのボタンを押しながら動かすことで、2点間に線を入力したり消したりできます。",
 
 	eBorder    : "左ドラッグで境界線が入力できます。",
 	eBorderDot : "左ドラッグで点線が入力・消去できます。",
@@ -511,17 +516,20 @@ strdata.ja = {
 	eTriangle  : "問題の三角形はQWEASの各キーで入力、Tキーや-キーで消去できます。",
 	ePicture   : "マウスの右ボタンで下絵を描くことが出来ます。",
 	ePicture2  : "この背景色は「星をクリック」や「色をつける」ボタンで上書きされます。",
+	eEXloute     : "マウスや5キーで○が入力できます。",
 	eEXtateyoko  : "黒マスはQキーで入力できます。",
 	eEXtentaisho : "クリックで星が入力できます。",
 	eEXminarism  : "QWキーあるいはマウスのドラッグで不等号が入力できます。",
-	eEXbosanowa  : "Wキーで数字を入力するマス/しないマスの切り替えが来出ます。",
+	eEXbosanowa  : "Wキーで数字を入力するマス/しないマスの切り替えが出来ます。",
+	eEXfivecells : "Wキーで盤面に含まれるマスか否かの切り替えができます。",
 	eEXgoishi    : "クリックで碁石が入力できます。",
 	eEXpipelink  : "1キーで記号か氷を入力できます。",
 	eEXwagiri    : "交点でクリックするか数字キーや-キーを押すことで数字や数字のない丸を入力できます。"
 				  +"マス目でクリックするか12キーや-キーを押すことで漢字や?を入力できます。",
 	eEXslalom    : "黒マスはQキーかマウスの左クリックで入力、Rキーで消去できます。"
 				  +"旗門はマウスのドラッグかWEキーで入力できます。○はSキーか、マウスドラッグで移動出来ます。"
-				  +"黒マスの上で数字キーを押すことで数字を入力できます。"
+				  +"黒マスの上で数字キーを押すことで数字を入力できます。",
+	eEXkouchoku  : "キーボードやマウスで記号が入力できます。-キーで黒点を入力することができます。"
 };
 
 strdata.en = {
@@ -562,6 +570,7 @@ strdata.en = {
 	pEXshaka2    : "Click corner-side to input triangles if 'Position of Cell' mode."
 				  +"<br>Left Button Drag to skew-ward to input triangle if 'Drag Type' mode.",
 	pEXshugaku   : "Left Button Drag to input Futon, Right Click to input aisle.",
+	pEXkouchoku  : "Mouse Button Drag to input or erase segment between the points.",
 
 	eBorder    : "Left Button Drag to input border lines.",
 	eBorderDot : "Left Button Drag to input or erase dotted lines.",
@@ -590,17 +599,20 @@ strdata.en = {
 	eTriangle  : "Press each QWEAS key to input triangles. Press 'T' or '-' key to erase.",
 	ePicture   : "It is able to paint a design by Right Click.",
 	ePicture2  : "This background color is superscripted by clicking star or pressing 'Color up' button.",
+	eEXloute     : "Press 5 key or mouse to input a circle.",
 	eEXtateyoko  : "Press Q key to toggle black cells or not.",
 	eEXtentaisho : "Click to input stars.",
 	eEXminarism  : "Q or W key or Drag to input inequality mark.",
 	eEXbosanowa  : "W key toggles cell that is able to be inputted number or not.",
+	eEXfivecells : "W key toggles cell that is included the board or not.",
 	eEXgoishi    : "Click to input a goishi.",
 	eEXpipelink  : "'1' keys to input circles or ice.",
 	eEXwagiri    : "Type number key or Click on crosses to input number or non-numbered mark."
 				  +"Type 1 or 2 key or Click on cells to input kanjis or question marks.",
 	eEXslalom    : "Q key or Left Click to input black marks and R key to erase a mark."
 				  +"W or E key or Drag to input gates. S key or Left Button Drag to move circle."
-				  +"Type number key on a black cell to input number."
+				  +"Type number key on a black cell to input number.",
+	eEXkouchoku  : "Click or Press Keys to input letters. Press - key to input black point."
 };
 </script>
 </HTML>

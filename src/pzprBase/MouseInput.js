@@ -1,4 +1,4 @@
-// MouseInput.js v3.3.2
+// MouseInput.js v3.3.3
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -360,8 +360,9 @@ MouseEvent.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.inputdirec() Cellのdirec(方向)のデータを入力する
-	// mv.getdir()     入力がどの方向になるか取得する
+	// mv.inputdirec()      Cellのdirec(方向)のデータを入力する
+	// mv.inputarrow_cell() Cellの矢印を入力する
+	// mv.getdir()          入力がどの方向になるか取得する
 	//---------------------------------------------------------------------------
 	inputdirec : function(){
 		var pos = this.borderpos(0);
@@ -379,6 +380,23 @@ MouseEvent.prototype = {
 		}
 		this.prevPos = pos;
 	},
+	inputarrow_cell : function(){
+		var pos = this.borderpos(0);
+		if(this.prevPos.equals(pos) && this.inputData===1){ return;}
+
+		var dir = k.NONE, cc = bd.cnum(this.prevPos.x, this.prevPos.y);
+		if(cc!==null){
+			var dir = this.getdir(this.prevPos, pos);
+			if(dir!==k.NONE){
+				bd.setNum(cc,dir);
+				pc.paintCell(cc);
+				this.mousereset();
+				return;
+			}
+		}
+		this.prevPos = pos;
+	},
+
 	getdir : function(base, current){
 		if     (current.y-base.y===-2){ return k.UP;}
 		else if(current.y-base.y=== 2){ return k.DN;}

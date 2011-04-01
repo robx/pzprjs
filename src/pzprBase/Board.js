@@ -1,4 +1,4 @@
-// Board.js v3.3.2
+// Board.js v3.3.3
 
 //---------------------------------------------------------------------------
 // ★Cellクラス BoardクラスがCellの数だけ保持する
@@ -228,9 +228,6 @@ Board = function(){
 	this.noLPobj[k.DN] = {1:1,2:1,3:1,13:1,14:1,15:1,21:1};
 	this.noLPobj[k.LT] = {1:1,2:1,5:1,12:1,14:1,17:1,22:1};
 	this.noLPobj[k.RT] = {1:1,3:1,4:1,12:1,15:1,16:1,22:1};
-
-	// 盤面サイズの初期化
-	this.initBoardSize(k.qcols,k.qrows);
 };
 Board.prototype = {
 	//---------------------------------------------------------------------------
@@ -312,6 +309,26 @@ Board.prototype = {
 		else if(type===k.BORDER){ return bd.border[id];}
 		else if(type===k.EXCELL){ return bd.excell[id];}
 		return (void 0);
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.disableInfo()  Area/LineManagerへの登録を禁止する
+	// bd.enableInfo()   Area/LineManagerへの登録を許可する
+	// bd.resetInfo()    AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
+	//---------------------------------------------------------------------------
+	disableInfo : function(){
+		um.disableRecord();
+		line.disableRecord();
+		area.disableRecord();
+	},
+	enableInfo : function(){
+		um.enableRecord();
+		line.enableRecord();
+		area.enableRecord();
+	},
+	resetInfo : function(){
+		area.resetArea();
+		line.resetLcnts();
 	},
 
 	//---------------------------------------------------------------------------
@@ -474,6 +491,7 @@ Board.prototype = {
 		for(var i=0;i<this.crossmax ;i++){ this.cross[i].allclear(i,isrec);}
 		for(var i=0;i<this.bdmax    ;i++){ this.border[i].allclear(i,isrec);}
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].allclear(i,isrec);}
+		this.allclearSpecial(isrec);
 	},
 	// 呼び出し元：回答消去ボタン押した時
 	ansclear : function(){
@@ -481,6 +499,7 @@ Board.prototype = {
 		for(var i=0;i<this.crossmax ;i++){ this.cross[i].ansclear(i);}
 		for(var i=0;i<this.bdmax    ;i++){ this.border[i].ansclear(i);}
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].ansclear(i);}
+		this.ansclearSpecial();
 	},
 	// 呼び出し元：補助消去ボタン押した時
 	subclear : function(){
@@ -488,6 +507,7 @@ Board.prototype = {
 		for(var i=0;i<this.crossmax ;i++){ this.cross[i].subclear(i);}
 		for(var i=0;i<this.bdmax    ;i++){ this.border[i].subclear(i);}
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].subclear(i);}
+		this.subclearSpecial();
 	},
 
 	errclear : function(isrepaint){
@@ -497,10 +517,17 @@ Board.prototype = {
 		for(var i=0;i<this.crossmax ;i++){ this.cross[i].error=0;}
 		for(var i=0;i<this.bdmax    ;i++){ this.border[i].error=0;}
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].error=0;}
+		this.errclearSpecial();
 
 		ans.errDisp = false;
 		if(isrepaint!==false){ pc.paintAll();}
 	},
+
+	// オーバーライド用
+	allclearSpecial : function(isrec){ },
+	ansclearSpecial : function(){ },
+	subclearSpecial : function(){ },
+	errclearSpecial : function(isrepaint){ },
 
 	//---------------------------------------------------------------------------
 	// bd.idnum()  (X,Y)の位置にあるオブジェクトのIDを返す

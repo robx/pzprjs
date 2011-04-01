@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たわむれんが版 tawa.js v3.3.2
+// パズル固有スクリプト部 たわむれんが版 tawa.js v3.3.3
 //
 Puzzles.tawa = function(){ };
 Puzzles.tawa.prototype = {
@@ -285,8 +285,8 @@ Puzzles.tawa.prototype = {
 
 				menu.popclose();
 
-				base.resetInfo();
-				base.resize_canvas();				// Canvasを更新する
+				bd.resetInfo();
+				pc.resize_canvas();				// Canvasを更新する
 			}
 		};
 
@@ -391,24 +391,21 @@ Puzzles.tawa.prototype = {
 			this.drawTarget();
 		};
 		// オーバーライド
-		pc.prepaint = function(x1,y1,x2,y2){
-			this.setRange(x1,y1,x2,y2);
-
-			// pc.flushCanvasの代替
-			if(g.use.canvas){
-				if(x1<=bd.minbx && y1<=bd.minby && x2>=bd.maxbx && y2>=bd.maxby){
-					this.flushCanvasAll();
+		pc.flushCanvas = function(){
+			this.flushCanvas = ((g.use.canvas) ?
+				function(){
+					if(x1<=bd.minbx && y1<=bd.minby && x2>=bd.maxbx && y2>=bd.maxby){
+						this.flushCanvasAll();
+					}
+					else{
+						g.fillStyle = "rgb(255, 255, 255)";
+						g.fillRect(x1*this.bw, y1*this.ch, (x2-x1+1)*this.bw, (y2-y1+1)*this.ch);
+					}
 				}
-				else{
-					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(x1*this.bw, y1*this.ch, (x2-x1+1)*this.bw, (y2-y1+1)*this.ch);
-				}
-			}
-			else{
-				this.zidx=0;
-			}
-
-			this.paint();
+			:
+				function(){ this.zidx=1;}
+			);
+			this.flushCanvas();
 		};
 
 		pc.drawGrid_tawa = function(){
@@ -462,7 +459,7 @@ Puzzles.tawa.prototype = {
 			var barray = this.outbstr.split("/");
 
 			bd.setLap(parseInt(barray[0]));
-			bd.initBoardSize(this.uri.cols, this.uri.rows);
+			bd.initBoardSize(base.dec.cols, base.dec.rows);
 
 			this.outbstr = barray[1];
 			this.decodeNumber10();

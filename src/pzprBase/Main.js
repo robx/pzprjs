@@ -1,347 +1,420 @@
-// Main.js v3.3.2
+// Main.js v3.3.3
+
+//----------------------------------------------------------------------------
+// ★グローバル変数
+//---------------------------------------------------------------------------
+// Pointクラス
+Point = function(xx,yy){ this.x = xx; this.y = yy;};
+Point.prototype = {
+	set : function(pos){ this.x = pos.x; this.y = pos.y;},
+	reset : function(){ this.x = null; this.y = null;},
+	valid : function(){ return (this.x!==null && this.y!==null);},
+	equals : function(pos){ return (this.x===pos.x && this.y===pos.y);}
+};
+// Addressクラス
+Address = function(xx,yy){ this.x = xx; this.y = yy;};
+Address.prototype = Point.prototype;
+
+// 各種パラメータの定義
+var k = {
+	// 各パズルのsetting()関数で設定されるもの
+	initFlags : function(){
+		this.qcols = 0;		// 盤面の横幅
+		this.qrows = 0;		// 盤面の縦幅
+
+		this.irowake  = 0;	// 0:色分け設定無し 1:色分けしない 2:色分けする
+
+		this.iscross  = 0;	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+		this.isborder = 0;	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+		this.isexcell = 0;	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+
+		this.isLineCross    =	// 線が交差するパズル
+		this.isCenterLine   =	// マスの真ん中を通る線を回答として入力するパズル
+		this.isborderAsLine =	// 境界線をlineとして扱う
+		this.hasroom        =	// いくつかの領域に分かれている/分けるパズル
+		this.roomNumber     =	// 問題の数字が部屋の左上に1つだけ入るパズル
+
+		this.dispzero       =	// 0を表示するかどうか
+		this.isDispHatena   =	// qnumが-2のときに？を表示する
+		this.isInputHatena  =	// ？か否かに関わらずqnum==-2を入力できる
+		this.isQnumDirect   =	// TCellを使わずにqnumを入力する
+		this.isAnsNumber    =	// 回答に数字を入力するパズル
+		this.NumberWithMB   =	// 回答の数字と○×が入るパズル
+		this.linkNumber     =	// 数字がひとつながりになるパズル
+
+		this.BlackCell      =	// 黒マスを入力するパズル
+		this.NumberIsWhite  =	// 数字のあるマスが黒マスにならないパズル
+		this.numberAsObject =	// 数字を表示する時に、数字以外で表示する
+		this.RBBlackCell    =	// 連黒分断禁のパズル
+		this.checkBlackCell =	// 正答判定で黒マスの情報をチェックするパズル
+		this.checkWhiteCell =	// 正答判定で白マスの情報をチェックするパズル
+
+		this.ispzprv3ONLY   =	// ぱずぷれアプレットには存在しないパズル
+		this.isKanpenExist	= false; // pencilbox/カンペンにあるパズル
+
+		// 各パズルのsetting()関数で設定されることがあるもの
+		this.bdmargin       = 0.70;	// 枠外の一辺のmargin(セル数換算)
+		this.bdmargin_image = 0.15;	// 画像出力時のbdmargin値
+
+		if(this.mobile){ this.bdmargin = this.bdmargin_image;}
+	},
+
+	// 内部で自動的に設定されるグローバル変数
+	puzzleid  : '',			// パズルのID("creek"など)
+	pzlnameid : '',			// パズルの名前用ID
+
+	EDITOR    : true,		// エディタモード
+	PLAYER    : false,		// playerモード
+	editmode  : true,		// 問題配置モード
+	playmode  : false,		// 回答モード
+
+	cellsize : 36,			// デフォルトのセルサイズ
+	cwidth   : 36,			// セルの横幅
+	cheight  : 36,			// セルの縦幅
+	bwidth   : 18,			// セルの横幅/2
+	bheight  : 18,			// セルの縦幅/2
+
+	br     : ee.br,
+	os     : ee.os,
+	mobile : ee.mobile,
+
+	// const値
+	BOARD  : 'board',
+	CELL   : 'cell',
+	CROSS  : 'cross',
+	BORDER : 'border',
+	EXCELL : 'excell',
+	OTHER  : 'other',
+
+	QUES : 'ques',
+	QNUM : 'qnum',
+	QDIR : 'qdir',
+	QANS : 'qans',
+	ANUM : 'anum',
+	LINE : 'line',
+	QSUB : 'qsub',
+
+	NONE : 0,	// 方向なし
+	UP : 1,		// up
+	DN : 2,		// down
+	LT : 3,		// left
+	RT : 4,		// right
+
+	KEYUP : 'up',
+	KEYDN : 'down',
+	KEYLT : 'left',
+	KEYRT : 'right',
+
+	// for_test.js用
+	scriptcheck : false
+};
+k.initFlags();
 
 //---------------------------------------------------------------------------
-// ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
+// ★その他のグローバル変数
 //---------------------------------------------------------------------------
+var g;				// グラフィックコンテキスト
+var Puzzles = [];	// パズル個別クラス
+var _doc = document;
 
-// PBaseクラス
-PBase = function(){
-	this.floatbgcolor = "black";
-	this.userlang     = 'ja';
-	this.resizetimer  = null;	// resizeタイマー
-	this.isduplicate  = false;	// 複製されたタブか
-	this.initProcess  = true;	// 初期化中かどうか
+// localStorageがなくてglobalStorage対応(Firefox3.0)ブラウザのハック
+if(typeof localStorage != "object" && typeof globalStorage == "object"){
+	localStorage = globalStorage[location.host];
+}
+
+//---------------------------------------------------------------------------
+// ★共通グローバル関数
+// f_true()  trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
+//---------------------------------------------------------------------------
+function f_true(){ return true;}
+
+//---------------------------------------------------------------------------
+// ★ExtDataクラス URL/ファイルのデータを保持する
+//    p.html?(pid)/(qdata)
+//                  qdata -> [(pflag)/](cols)/(rows)/(bstr)
+//---------------------------------------------------------------------------
+ExtData = function(){
+	this.type;		// URLのサイト指定部分
+
+	this.id;		// URLのパズルのid
+	this.qdata;		// URLの問題部分
+
+	this.pflag;		// URLのフラグ部分
+	this.cols;		// URLの横幅部分
+	this.rows;		// URLの縦幅部分
+	this.bstr;		// URLの盤面部分
+
+	this.fstr;		// ファイルの文字列
+
+	this.disable_accesslog = false;	// 複製されたタブか
+
 	this.enableSaveImage = false;	// 画像保存が有効か
 
-	this.disinfo = 0;			// LineManager, AreaManagerを呼び出さないようにする
+	this.DBaccept = 0;	// データベースのタイプ 1:Gears 2:WebDB 4:IdxDB 8:localStorage
+	// 定数
+	this.Session = 0x10;
+	this.LocalST = 0x08;
+	this.WebIDB  = 0x04;
+	this.WebSQL  = 0x02;
+
+	this.selectDBtype();
 };
-PBase.prototype = {
+ExtData.prototype = {
 	//---------------------------------------------------------------------------
-	// base.preload_func()
-	//   このファイルが呼ばれたときに実行される関数 -> onLoad前の最小限の設定を行う
+	// reset()   オブジェクトで持つ値を初期化する
 	//---------------------------------------------------------------------------
-	preload_func : function(){
-		// デバッグ用ファイルの読み込み
-		if(location.search.match(/[\?_]test/)){
-			_doc.writeln("<script type=\"text/javascript\" src=\"src/for_test.js\"></script>");
+	reset : function(){
+		this.type = null;
+
+		this.id = "";
+		this.qdata = "";
+
+		this.pflag = "";
+		this.cols = 0;
+		this.rows = 0;
+		this.bstr = "";
+
+		this.fstr = '';
+	},
+	
+	//---------------------------------------------------------------------------
+	// selectDBtype()  Web DataBaseが使えるかどうか判定する(起動時)
+	//---------------------------------------------------------------------------
+	selectDBtype : function(){
+		// HTML5 - Web localStorage判定用(sessionStorage)
+		try{
+			if(!!window.sessionStorage){ this.DBaccept |= this.Session;}
 		}
+		catch(e){}
 
-		// onLoadに動作を割り当てる
-		window.onload = ee.ebinder(this, this.onload_func);
-	},
-
-	//---------------------------------------------------------------------------
-	// base.onload_func()   ページがLoadされた時の処理
-	// base.reload_func()   個別パズルのファイルを読み込む関数
-	// base.init_func()     新しくパズルのファイルを開く時の処理
-	// base.postload_func() ページがLoad終了時の処理
-	//---------------------------------------------------------------------------
-	onload_func : function(){
-		// encオブジェクトを生成する
-		enc = new Encode();
-		var dec = enc.first_parseURI(location.search);
-		if(!dec.id){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
-
-		// Campの設定
-		if(k.br.Chrome6){ Camp('divques','canvas');}else{ Camp('divques');}
-		if(Camp.enable.canvas && !!_doc.createElement('canvas').toDataURL){
-			this.enableSaveImage = true;
-			Camp('divques_sub', 'canvas');
-		}
-
-		this.init_func(dec.id, dec.url, true, ee.binder(this, this.postload_func));
-	},
-	reload_func : function(pid, purl, callback){
-		// 各パズルでオーバーライドしているものを、元に戻す
-		if(!!puz.protoOriginal){ puz.protoOriginal();}
-
-		menu.menureset();
-		ee('numobj_parent').el.innerHTML = '';
-		ee.clean();
-
-		this.init_func(pid, purl, false, callback);
-	},
-	init_func : function(pid, purl, onload, callback){
-		this.initProcess = true;
-
-		// idを取得して、ファイルを読み込み
-		if(!Puzzles[pid]){
-			var _script = _doc.createElement('script');
-			_script.type = 'text/javascript';
-			_script.src = "src/"+pid+".js";
-			_doc.body.appendChild(_script);
-		}
-		k.pzlnameid = k.puzzleid = pid;
-
-		// urlの構造解析(あとでpzlinputで読み込む準備)
-		enc.init();
-		if(!!purl){ enc.parseURI_pzpr(purl);}
-
-		// 中身を読み取れるまでwait
-		var self = this;
-		var tim = setInterval(function(){
-			if(!Puzzles[pid] || !Camp.isready()){ return;}
-			clearInterval(tim);
-
-			// 初期化ルーチンへジャンプ
-			g = ee('divques').unselectable().el.getContext("2d");
-			self.initObjects(onload);
-			self.initProcess = false;
-
-			if(!!callback){ callback();}
-		},10);
-	},
-	postload_func : function(){
-		if(k.PLAYER && !this.isduplicate){ this.accesslog();}	// アクセスログをとってみる
-		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
-	},
-
-	//---------------------------------------------------------------------------
-	// base.initObjects()   各オブジェクトの生成などの処理
-	// base.doc_design()    initObjects()で呼ばれる。htmlなどの設定を行う
-	// base.checkUserLang() 言語環境をチェックして日本語でない場合英語表示にする
-	// base.importPredata() URLや複製されたデータを読み出す
-	//---------------------------------------------------------------------------
-	initObjects : function(onload){
-		k.initFlags();						// 共通フラグの初期化
-
-		puz = new Puzzles[k.puzzleid]();	// パズル固有オブジェクト
-		puz.setting();						// パズル固有の変数設定(デフォルト等)
-		if(!!puz.protoChange){ puz.protoChange();}
-
-		// クラス初期化
-		fio = new FileIO();				// ファイル入出力用オブジェクト
-		dbm = new DataBaseManager();	// データベースアクセス用オブジェクト
-		tc = new TCell();		// キー入力のターゲット管理オブジェクト
-		bd = new Board();		// 盤面オブジェクト
-		mv = new MouseEvent();	// マウス入力オブジェクト
-		kc = new KeyEvent();	// キーボード入力オブジェクト
-		kp = new KeyPopup();	// 入力パネルオブジェクト
-		pc = new Graphic();		// 描画系オブジェクト
-		ans = new AnsCheck();	// 正解判定オブジェクト
-		um   = new OperationManager();	// 操作情報管理オブジェクト
-		area = new AreaManager();		// 部屋情報等管理オブジェクト
-		line = new LineManager();		// 線の情報管理オブジェクト
-
-		menu = new Menu();		// メニューを扱うオブジェクト
-		pp = new Properties();	// メニュー関係の設定値を保持するオブジェクト
-
-		// 各パズルごとの設定(後付け分)
-		puz.input_init();
-		puz.graphic_init();
-		puz.encode_init();
-		puz.answer_init();
-
-		// メニュー関係初期化
-		menu.menuinit(onload);	// メニューの設定
-		this.doc_design();		// デザイン変更関連関数の呼び出し
-		this.checkUserLang();	// 言語のチェック
-
-		this.importPredata();
-		this.resize_canvas();
-
-		if(!!puz.finalfix){ puz.finalfix();}		// パズル固有の後付け設定
-
-		if(onload){ this.setEvents();}				// イベントをくっつける
-	},
-	// 背景画像とかtitle・背景画像・html表示の設定
-	doc_design : function(){
-		this.displayTitle();
-		_doc.body.style.backgroundImage = "url(./bg/"+k.puzzleid+".gif)";
-		if(k.br.IE6){
-			ee('title2').el.style.marginTop = "24px";
-			ee('separator2').el.style.margin = '0pt';
-		}
-	},
-	checkUserLang : function(){
-		this.userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
-		if(this.userlang.substr(0,2)!=='ja'){ pp.setVal('language','en');}
-	},
-	importPredata : function(){
-		if(!this.isduplicate){ enc.pzlinput();}	// URLからパズルのデータを読み出す
-		else{ fio.importDuplicate();}			// 複製されたデータを読み出す
-		this.isduplicate = false;
-	},
-
-	//---------------------------------------------------------------------------
-	// base.setEvents()       マウス入力、キー入力のイベントの設定を行う
-	//---------------------------------------------------------------------------
-	setEvents : function(){
-		// マウス入力イベントの設定
-		var canvas = ee('divques').el, numparent = ee('numobj_parent').el;
-		if(!k.mobile){
-			ee.addEvent(canvas, "mousedown", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(canvas, "mousemove", ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(canvas, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
-			canvas.oncontextmenu = function(){ return false;};
-
-			ee.addEvent(numparent, "mousedown", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(numparent, "mousemove", ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(numparent, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
-			numparent.oncontextmenu = function(){ return false;};
-		}
-		// iPhoneOS用のタッチイベント設定
-		else{
-			ee.addEvent(canvas, "touchstart", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(canvas, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(canvas, "touchend",   ee.ebinder(mv, mv.e_mouseup));
-
-			ee.addEvent(numparent, "touchstart", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(numparent, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(numparent, "touchend",   ee.ebinder(mv, mv.e_mouseup));
-		}
-
-		// キー入力イベントの設定
-		ee.addEvent(_doc, 'keydown',  ee.ebinder(kc, kc.e_keydown));
-		ee.addEvent(_doc, 'keyup',    ee.ebinder(kc, kc.e_keyup));
-		ee.addEvent(_doc, 'keypress', ee.ebinder(kc, kc.e_keypress));
-		// Silverlightのキー入力イベント設定
-		if(g.use.sl){
-			var sender = g.content.findName(g.canvasid);
-			sender.AddEventListener("KeyDown", kc.e_SLkeydown);
-			sender.AddEventListener("KeyUp",   kc.e_SLkeyup);
-		}
-
-		// File API＋Drag&Drop APIの設定
-		if(!!menu.ex.reader){
-			var DDhandler = function(e){
-				menu.ex.reader.readAsText(e.dataTransfer.files[0]);
-				e.preventDefault();
-				e.stopPropagation();
+		// HTML5 - Web localStorage判定用(localStorage)
+		try{
+			if(!!window.localStorage){
+				// FirefoxはローカルだとlocalStorageが使えない
+				if(!k.br.Gecko || !!location.hostname){ this.DBaccept |= this.LocalST;}
 			}
-			ee.addEvent(window, 'dragover', function(e){ e.preventDefault();}, true);
-			ee.addEvent(window, 'drop', DDhandler, true);
 		}
+		catch(e){}
 
-		// onBlurにイベントを割り当てる
-		ee.addEvent(_doc, 'blur', ee.ebinder(this, this.onblur_func));
-
-		// onresizeイベントを割り当てる
-		ee.addEvent(window, (!k.os.iPhoneOS ? 'resize' : 'orientationchange'),
-										ee.ebinder(this, this.onresize_func));
-	},
-
-	//---------------------------------------------------------------------------
-	// base.disableInfo()  Area/LineManagerへの登録を禁止する
-	// base.enableInfo()   Area/LineManagerへの登録を許可する
-	// base.isenableInfo() Area/LineManagerへの登録ができるかを返す
-	// base.resetInfo()    AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
-	//---------------------------------------------------------------------------
-	disableInfo : function(){
-		um.disableRecord();
-		this.disinfo++;
-	},
-	enableInfo : function(){
-		um.enableRecord();
-		if(this.disinfo>0){ this.disinfo--;}
-	},
-	isenableInfo : function(){
-		return (this.disinfo===0);
-	},
-	resetInfo : function(){
-		area.resetArea();
-		line.resetLcnts();
-	},
-
-	//---------------------------------------------------------------------------
-	// base.displayTitle()     タイトルに文字列を設定する
-	// base.getPuzzleName()    現在開いているパズルの名前を返す
-	// base.setFloatbgcolor()  フロートメニューの背景色を設定する
-	//---------------------------------------------------------------------------
-	displayTitle : function(){
-		var title;
-		if(k.EDITOR){ title = ""+this.getPuzzleName()+menu.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
-		else		{ title = ""+this.getPuzzleName()+menu.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
-
-		_doc.title = title;
-		ee('title2').el.innerHTML = title;
-	},
-	getPuzzleName : function(){ return menu.selectStr(PZLNAME.ja[k.pzlnameid],PZLNAME.en[k.pzlnameid]);},
-	setFloatbgcolor : function(color){ this.floatbgcolor = color;},
-
-	//---------------------------------------------------------------------------
-	// base.onresize_func()  ウィンドウリサイズ時に呼ばれる関数
-	// base.resize_canvas()  ウィンドウのLoad/Resize時の処理。Canvas/表示するマス目の大きさを設定する。
-	//---------------------------------------------------------------------------
-	onresize_func : function(){
-		if(this.resizetimer){ clearTimeout(this.resizetimer);}
-		this.resizetimer = setTimeout(ee.binder(this, this.resize_canvas),250);
-	},
-	resize_canvas : function(){
-		var wwidth = ee.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
-		var cols   = (bd.maxbx-bd.minbx)/2+2*k.bdmargin; // canvasの横幅がセル何個分に相当するか
-		var rows   = (bd.maxby-bd.minby)/2+2*k.bdmargin; // canvasの縦幅がセル何個分に相当するか
-		if(k.puzzleid==='box'){ cols++; rows++;}
-
-		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[pp.getVal('size')];
-		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
-		ci[0] = (wwidth*ws.base )/(k.cellsize*cr.base );
-		ci[1] = (wwidth*ws.limit)/(k.cellsize*cr.limit);
-
-		// 横幅いっぱいに広げたい場合
-		if(k.mobile){
-			mwidth = wwidth*0.98;
-			k.cwidth = k.cheight = ((mwidth*0.92)/cols)|0;
-			if(k.cwidth < k.cellsize){ k.cwidth = k.cheight = k.cellsize;}
+		// HTML5 - Indexed Dataase API判定用
+		try{
+			if(!!window.indexedDB){
+				// FirefoxはローカルだとlocalStorageが使えない
+				this.DBaccept |= this.WebIDB;
+			}
 		}
-		// 縮小が必要ない場合
-		else if(!pp.getVal('adjsize') || cols < ci[0]){
-			mwidth = wwidth*ws.base-4;
-			k.cwidth = k.cheight = (k.cellsize*cr.base)|0;
+		catch(e){}
+
+		// HTML5 - Web SQL DataBase判定用
+		try{	// Opera10.50対策
+			if(!!window.openDatabase){
+				var dbtmp = openDatabase('pzprv3_manage', '1.0', 'manager', 1024*1024*5);	// Chrome3対策
+				if(!!dbtmp){ this.DBaccept |= this.WebSQL;}
+			}
 		}
-		// base～limit間でサイズを自動調節する場合
-		else if(cols < ci[1]){
-			var ws_tmp = ws.base+(ws.limit-ws.base)*((k.qcols-ci[0])/(ci[1]-ci[0]));
-			mwidth = wwidth*ws_tmp-4;
-			k.cwidth = k.cheight = (mwidth/cols)|0; // 外枠ぎりぎりにする
+		catch(e){}
+	},
+
+	//---------------------------------------------------------------------------
+	// enSessionStorage()など おのおのの機能が有効かどうか
+	//---------------------------------------------------------------------------
+	enSessionStorage  : function(){ return !!(this.DBaccept & this.Session);},
+	enLocalStorage    : function(){ return !!(this.DBaccept & this.LocalST);},
+	enIndexedDatabase : function(){ return !!(this.DBaccept & this.WebIDB);},
+	enWebSQLDatabase  : function(){ return !!(this.DBaccept & this.WebSQL);},
+
+	//---------------------------------------------------------------------------
+	// importURL() 起動時に入力されたURLを解析する
+	// checkMode() 起動時にURLを解析して、puzzleidの抽出やエディタ/player判定を行う
+	//---------------------------------------------------------------------------
+	importURL : function(){
+		if(!!window.localStorage && !!localStorage['pzprv3_urldata']){
+			this.checkMode(localStorage['pzprv3_urldata']);
+			delete localStorage['pzprv3_urldata'];
+			this.disable_accesslog = true;
 		}
-		// 自動調整の下限値を超える場合
 		else{
-			mwidth = wwidth*ws.limit-4;
-			k.cwidth = k.cheight = (k.cellsize*cr.limit)|0;
+			this.checkMode(location.search);
 		}
-		k.bwidth  = k.cwidth/2; k.bheight = k.cheight/2;
+	},
+	checkMode : function(search){
+		if(search.length<=0){ return;}
 
-		// mainのサイズ変更
-		ee('main').el.style.width = ''+(mwidth|0)+'px';
-		if(k.mobile){ ee('menuboard').el.style.width = '90%';}
+		var startmode = '';
+		if     (search=="?test")       { startmode = 'TEST'; search = '?country';}
+		else if(search.match(/_test/)) { startmode = 'TEST';}
+		else if(search.match(/^\?m\+/)){ startmode = 'EDITOR';}
+		else if(search.match(/_edit/)) { startmode = 'EDITOR';}
+		else if(search.match(/_play/)) { startmode = 'PLAYER';}
 
-		// 盤面のセルID:0が描画される位置の設定
-		var x0, y0; x0 = y0 = (k.cwidth*k.bdmargin)|0;
-		// extendxell==0でない時は位置をずらす
-		if(!!k.isexcell){ x0 += k.cwidth; y0 += k.cheight;}
+		this.parseURI(search);
+		if(!startmode){ startmode=(!this.bstr?'EDITOR':'PLAYER');}
 
-		// Canvasのサイズ・Offset変更
-		g.changeSize((cols*k.cwidth)|0, (rows*k.cheight)|0);
-		g.translate(x0, y0);
-
-		// 盤面のページ内座標を設定
-		var rect = ee('divques').getRect();
-		pc.pageX = (x0 + rect.left);
-		pc.pageY = (y0 + rect.top);
-
-		pc.resetVectorFunctions();
-		kp.resize();
-		bd.setcoordAll();
-		pc.onresize_process();
-
-		// 再描画
-		pc.flushCanvasAll();
-		pc.paintAll();
+		switch(startmode){
+			case 'PLAYER': k.EDITOR = false; k.editmode = false; break;
+			case 'EDITOR': k.EDITOR = true;  k.editmode = true;  break;
+			case 'TEST'  : k.EDITOR = true;  k.editmode = false; k.scriptcheck = true;
+				this.parseURI(['?',this.id,'_test/',debug.urls[this.id]].join('')); break;
+		}
+		k.PLAYER    = !k.EDITOR;
+		k.playmode  = !k.editmode;
 	},
 
 	//---------------------------------------------------------------------------
-	// base.onblur_func() ウィンドウからフォーカスが離れた時に呼ばれる関数
+	// parseURI()     入力されたURLがどのサイト用か判定して値を保存する
 	//---------------------------------------------------------------------------
-	onblur_func : function(){
-		kc.keyreset();
-		mv.mousereset();
+	parseURI : function(url){
+		this.reset();
+
+		url = url.replace(/(\r|\n)/g,""); // textarea上の改行が実際の改行扱いになるUAに対応(Operaとか)
+
+		var type=0, en=new Encode();
+		// カンペンの場合
+		if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
+			url.match(/([0-9a-z]+)\.html/);
+			this.id = RegExp.$1;
+			// カンペンだけどデータ形式はへやわけアプレット
+			if(url.indexOf("?heyawake=")>=0){
+				this.qdata = url.substr(url.indexOf("?heyawake=")+10);
+				this.type=en.HEYAAPP;
+			}
+			// カンペンだけどデータ形式はぱずぷれ
+			else if(url.indexOf("?pzpr=")>=0){
+				this.qdata = url.substr(url.indexOf("?pzpr=")+6);
+				this.type=en.PZPRV3;
+			}
+			else{
+				this.qdata = url.substr(url.indexOf("?problem=")+9);
+				this.type=en.KANPEN;
+			}
+		}
+		// へやわけアプレットの場合
+		else if(url.match(/www\.geocities(\.co)?\.jp\/heyawake/)){
+			this.id = 'heyawake';
+			this.qdata = url.substr(url.indexOf("?problem=")+9);
+			this.type = en.HEYAAPP;
+		}
+		// ぱずぷれアプレットの場合
+		else if(url.match(/indi\.s58\.xrea\.com\/(.+)\/(sa|sc)\//)){
+			this.id = RegExp.$1;
+			this.qdata = url.substr(url.indexOf("?"));
+			this.type = en.PZPRAPP;
+		}
+		// ぱずぷれv3の場合
+		else{
+			var qs = url.indexOf("/", url.indexOf("?"));
+			if(qs>-1){
+				this.id = url.substring(url.indexOf("?")+1,qs);
+				this.qdata = url.substr(qs+1);
+			}
+			else{
+				this.id = url.substr(1);
+			}
+			this.id = this.id.replace(/(m\+|_edit|_test|_play)/,'');
+			this.type = en.PZPRV3;
+		}
+		this.id = PZLNAME.toPID(this.id);
+
+		switch(this.type){
+			case en.KANPEN:  this.parseURI_kanpen();  break;
+			case en.HEYAAPP: this.parseURI_heyaapp(); break;
+			default:         this.parseURI_pzpr();    break;
+		}
 	},
 
 	//---------------------------------------------------------------------------
-	// base.accesslog() playerのアクセスログをとる
+	// parseURI_xxx() pzlURI部をpflag,bstr等の部分に分割する
+	//---------------------------------------------------------------------------
+	// ぱずぷれv3
+	parseURI_pzpr : function(){
+		var inp = this.qdata.split("/");
+		if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
+
+		this.pflag = inp.shift();
+		this.cols = parseInt(inp.shift());
+		this.rows = parseInt(inp.shift());
+		this.bstr = inp.join("/");
+	},
+	// カンペン
+	parseURI_kanpen : function(){
+		var inp = this.qdata.split("/");
+
+		if(this.id=="sudoku"){
+			this.rows = this.cols = parseInt(inp.shift());
+		}
+		else{
+			this.rows = parseInt(inp.shift());
+			this.cols = parseInt(inp.shift());
+			if(this.id=="kakuro"){ this.rows--; this.cols--;}
+		}
+		this.bstr = inp.join("/");
+	},
+	// へやわけアプレット
+	parseURI_heyaapp : function(){
+		var inp = this.qdata.split("/");
+
+		var size = inp.shift().split("x");
+		this.cols = parseInt(size[0]);
+		this.rows = parseInt(size[1]);
+		this.bstr = inp.join("/");
+	},
+
+	//---------------------------------------------------------------------------
+	// exportFileData() 複製するタブ用のにデータを出力してタブを開く
+	// importFileData() 複製されたタブでデータの読み込みを行う
+	//---------------------------------------------------------------------------
+	importFileData : function(){
+		try{
+			if(!window.sessionStorage){ return;}
+		}
+		catch(e){
+			// FirefoxでLocalURLのときここに飛んでくる
+			return;
+		}
+		var str='';
+
+		// 移し変える処理
+		if(!!window.localStorage){
+			str = localStorage['pzprv3_filedata'];
+			if(!!str){
+				delete localStorage['pzprv3_filedata'];
+				sessionStorage['filedata'] = str;
+			}
+		}
+
+		str = sessionStorage['filedata'];
+		if(!!str){
+			var lines = str.split('/');
+			this.reset();
+			this.id = (lines[0].match(/^pzprv3/) ? lines[1] : '');
+			this.fstr = str;
+
+			this.disable_accesslog = true;
+			// sessionStorageのデータは残しておきます
+		}
+	},
+	exportFileData : function(){
+		var str = fio.fileencode(fio.PZPH);
+		var url = './p.html?'+k.puzzleid+(k.PLAYER?"_play":"");
+		if(!k.br.Opera){
+			var old = sessionStorage['filedata'];
+			sessionStorage['filedata'] = (str+fio.history);
+			window.open(url,'');
+			if(!!old){ sessionStorage['filedata'] = old;}
+			else     { delete sessionStorage['filedata'];}
+		}
+		else{
+			localStorage['pzprv3_filedata'] = (str+fio.history);
+			window.open(url,'');
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// accesslog() playerのアクセスログをとる
 	//---------------------------------------------------------------------------
 	accesslog : function(){
+		if(this.disable_accesslog){ return;}
+
 		if(_doc.domain!=='indi.s58.xrea.com' &&
 		   _doc.domain!=='pzprv3.sakura.ne.jp' &&
 		   !_doc.domain.match(/pzv\.jp/)){ return;}
@@ -366,7 +439,7 @@ PBase.prototype = {
 				("scr="     + "pzprv3"),
 				("pid="     + k.puzzleid),
 				("referer=" + refer),
-				("pzldata=" + enc.uri.qdata)
+				("pzldata=" + this.qdata)
 			].join('&');
 
 			xmlhttp.open("POST", "./record.cgi");
@@ -377,5 +450,201 @@ PBase.prototype = {
 	}
 };
 
-base = new PBase();	// onLoadまでの最小限の設定を行う
-base.preload_func();
+//---------------------------------------------------------------------------
+// ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
+//---------------------------------------------------------------------------
+
+// PBaseクラス
+PBase = function(){
+	this.floatbgcolor = "black";
+	this.resizetimer  = null;	// resizeタイマー
+	this.initProcess  = true;	// 初期化中かどうか
+
+	this.dec = null;			// 入力されたURLの情報保持用
+
+	this.disinfo = 0;			// LineManager, AreaManagerを呼び出さないようにする
+};
+PBase.prototype = {
+	//---------------------------------------------------------------------------
+	// base.onload_func()   ページがLoadされた時の処理
+	// base.onload_func2()  ページがLoadされた時の処理その2
+	// base.includeFile()   単体ファイルの読み込み
+	//---------------------------------------------------------------------------
+	onload_func : function(){
+		if(location.search.match(/[\?_]test/)){
+			this.includeFile("src/for_test.js");
+			var self = this;
+			setTimeout(function(){
+				if(!!debug.urls){ self.onload_func2.call(self);}
+				else{ setTimeout(arguments.callee,20);}
+			},20);
+		}
+		else{
+			this.onload_func2();
+		}
+	},
+	onload_func2 : function(){
+		if(location.search.match(/[\?_]test/)){ this.includeFile("src/for_test.js");}
+
+		this.dec = new ExtData()
+		this.dec.importURL();
+		this.dec.importFileData();
+		if(!this.dec.id){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
+
+		// Campの設定
+		Camp('divques');
+		if(Camp.enable.canvas && !!_doc.createElement('canvas').toDataURL){
+			this.dec.enableSaveImage = true;
+			Camp('divques_sub', 'canvas');
+		}
+
+		// dbmは、フロートメニューを開いたまま別パズルへの遷移があるのでここにおいておく
+		dbm = new DataBaseManager();	// データベースアクセス用オブジェクト
+		this.reload_func(ee.binder(this, this.postload_func));
+	},
+	includeFile : function(file){
+		var _script = _doc.createElement('script');
+		_script.type = 'text/javascript';
+		_script.src = file;
+		_doc.body.appendChild(_script);
+	},
+
+	//---------------------------------------------------------------------------
+	// base.init_func()     新しくパズルのファイルを開く時の処理
+	// base.reload_func()   個別パズルのファイルを読み込む関数
+	// base.postload_func() ページがLoad終了時の処理
+	//---------------------------------------------------------------------------
+	init_func : function(callback){
+		// 今のパズルと別idの時
+		if(k.puzzleid!=this.dec.id){
+			this.reload_func(callback);
+		}
+		else{
+			this.importBoardData();
+		}
+	},
+	reload_func : function(callback){
+		this.initProcess = true;
+
+		var pid = this.dec.id;
+
+		// idを取得して、ファイルを読み込み
+		if(!Puzzles[pid]){ this.includeFile("src/"+pid+".js");}
+
+		// 今のパズルが存在している場合
+		if(!!k.puzzleid){
+			// 各パズルでオーバーライドしているものを、元に戻す
+			if(!!puz.protoOriginal){ puz.protoOriginal();}
+
+			ee.removeAllEvents();
+
+			menu.menureset();
+			ee('numobj_parent').el.innerHTML = '';
+			ee.clean();
+		}
+
+		// 中身を読み取れるまでwait
+		var self = this;
+		var tim = setInterval(function(){
+			if(!Puzzles[pid] || !Camp.isready()){ return;}
+			clearInterval(tim);
+
+			g = ee('divques').unselectable().el.getContext("2d");
+
+			// 初期化ルーチンへジャンプ
+			k.pzlnameid = k.puzzleid = pid;
+			self.initObjects();
+
+			if(!!callback){ callback();}
+		},10);
+	},
+	postload_func : function(){
+		if(k.PLAYER){ this.dec.accesslog();}	// アクセスログをとってみる
+		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
+	},
+
+	//---------------------------------------------------------------------------
+	// base.initObjects()     各オブジェクトの生成などの処理
+	// base.importBoardData() URLや複製されたデータを読み出す
+	// base.setFloatbgcolor() フロートメニューの背景色を設定する
+	//---------------------------------------------------------------------------
+	initObjects : function(){
+		k.initFlags();						// 共通フラグの初期化
+
+		puz = new Puzzles[k.puzzleid]();	// パズル固有オブジェクト
+		puz.setting();						// パズル固有の変数設定(デフォルト等)
+		if(!!puz.protoChange){ puz.protoChange();}
+
+		// クラス初期化
+		enc = new Encode();				// URL入出力用オブジェクト
+		fio = new FileIO();				// ファイル入出力用オブジェクト
+		tc = new TCell();		// キー入力のターゲット管理オブジェクト
+		bd = new Board();		// 盤面オブジェクト
+		mv = new MouseEvent();	// マウス入力オブジェクト
+		kc = new KeyEvent();	// キーボード入力オブジェクト
+		kp = new KeyPopup();	// 入力パネルオブジェクト
+		pc = new Graphic();		// 描画系オブジェクト
+		ans = new AnsCheck();	// 正解判定オブジェクト
+		um   = new OperationManager();	// 操作情報管理オブジェクト
+		area = new AreaManager();		// 部屋情報等管理オブジェクト
+		line = new LineManager();		// 線の情報管理オブジェクト
+
+		menu = new Menu();		// メニューを扱うオブジェクト
+		pp = new Properties();	// メニュー関係の設定値を保持するオブジェクト
+
+		// 盤面サイズの初期化
+		bd.initBoardSize(k.qcols, k.qrows);
+
+		// 各パズルごとの設定(後付け分)
+		puz.input_init();
+		puz.graphic_init();
+		puz.encode_init();
+		puz.answer_init();
+
+		// メニュー関係初期化
+		menu.menuinit();	// メニューの設定
+
+		this.importBoardData();
+
+		if(!!puz.finalfix){ puz.finalfix();}		// パズル固有の後付け設定
+
+		menu.setEvents();		// イベントをくっつける
+
+		this.initProcess = false;
+	},
+
+	importBoardData : function(){
+		// ファイルを開く・複製されたデータを開く
+		if(!!this.dec.fstr){
+			fio.filedecode_main(this.dec.fstr);
+			this.dec.fstr = '';
+		}
+		// URLからパズルのデータを読み出す
+		else if(!!this.dec.cols){
+			enc.pzlinput();
+		}
+		// 何もないとき
+		else{
+			bd.resetInfo();
+			pc.resize_canvas();
+		}
+	},
+
+	setFloatbgcolor : function(color){ this.floatbgcolor = color;},
+
+	//---------------------------------------------------------------------------
+	// base.onresize_func() ウィンドウリサイズ時に呼ばれる関数
+	// base.onblur_func()   ウィンドウからフォーカスが離れた時に呼ばれる関数
+	//---------------------------------------------------------------------------
+	onresize_func : function(){
+		if(this.resizetimer){ clearTimeout(this.resizetimer);}
+		this.resizetimer = setTimeout(ee.binder(pc, pc.resize_canvas),250);
+	},
+	onblur_func : function(){
+		kc.keyreset();
+		mv.mousereset();
+	}
+};
+
+base = new PBase();
+ee.addEvent(window, "load", ee.ebinder(base, base.onload_func));	// 1回起動したら、消されても大丈夫

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 トリプレイス版 triplace.js v3.3.2
+// パズル固有スクリプト部 トリプレイス版 triplace.js v3.3.3
 //
 Puzzles.triplace = function(){ };
 Puzzles.triplace.prototype = {
@@ -176,7 +176,7 @@ Puzzles.triplace.prototype = {
 		enc.decodeTriplace = function(){
 			// 盤面内数字のデコード
 			var cell=0, a=0, bstr = this.outbstr;
-			base.disableInfo();
+			bd.disableInfo();
 			for(var i=0;i<bstr.length;i++){
 				var ca = bstr.charAt(i), obj=bd.cell[cell];
 
@@ -211,7 +211,7 @@ Puzzles.triplace.prototype = {
 				cell++;
 				if(cell>=bd.cellmax){ a=i+1; break;}
 			}
-			base.enableInfo();
+			bd.enableInfo();
 
 			// 盤面外数字のデコード
 			cell=0;

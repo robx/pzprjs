@@ -1,4 +1,4 @@
-// Camp.js rev91
+// Camp.js rev94
  
 (function(){
 
@@ -87,15 +87,17 @@ var TypeList = function(){
 /* ------------------------------------------- */
 var V_TAG_SHAPE    = '<v:shape',
 	V_TAG_GROUP    = '<v:group',
+	V_TAG_IMAGE    = '<v:image',
 	V_TAG_TEXTPATH = '<v:textpath',
 	V_TAG_POLYLINE = '<v:polyline',
-	V_TAG_PATH_FOR_TEXTPATH = '<v:path textpathok="t" />';
+	V_TAG_PATH_FOR_TEXTPATH = '<v:path textpathok="t" />',
 	V_EL_UNSELECTABLE = '', // デフォルトはunselectableでない
 //	V_EL_UNSELECTABLE = ' unselectable="on"',
 	V_TAGEND      = '>',
 	V_TAGEND_NULL = ' />',
 	V_CLOSETAG_SHAPE    = '</v:shape>',
 	V_CLOSETAG_GROUP    = '</v:group>',
+	V_CLOSETAG_IMAGE    = '</v:image>',
 	V_CLOSETAG_TEXTPATH = '</v:textpath>',
 	V_CLOSETAG_POLYLINE = '</v:polyline>',
 
@@ -125,32 +127,28 @@ var V_TAG_SHAPE    = '<v:shape',
 	V_PATH_NOSTROKE = ' ns',
 	V_PATH_NOFILL   = ' nf',
 
-	V_HEIGHT = { top:-0.3, hanging:-0.3, middle:0, alphabetic:0.4, bottom:0.45 };
+	V_HEIGHT = { top:-0.7, hanging:-0.66, middle:-0.3, alphabetic:0, bottom:0.1 };
 
 /* ------------------------------------------- */
 /*   VectorContext(SVG)クラス用const文字列集   */
 /* ------------------------------------------- */
-var SVGNS = "http://www.w3.org/2000/svg",
+var SVGNS   = "http://www.w3.org/2000/svg",
+	XLINKNS = "http://www.w3.org/1999/xlink",
 	S_PATH_MOVE   = ' M',
 	S_PATH_LINE   = ' L',
 	S_PATH_ARCTO  = ' A',
 	S_PATH_CLOSE  = ' z',
 
-	S_ATT_ID          = 'id';
-	S_ATT_FILL        = 'fill';
-	S_ATT_STROKE      = 'stroke';
+	S_ATT_ID          = 'id',
+	S_ATT_FILL        = 'fill',
+	S_ATT_STROKE      = 'stroke',
 	S_ATT_STROKEWIDTH = 'stroke-width',
 	S_ATT_RENDERING   = 'shape-rendering',
 
-	SVG_ANCHOR = {
-		left   : 'start',
-		center : 'middle',
-		right  : 'end'
-	},
-
 	S_NONE = 'none',
 
-	S_HEIGHT = { top:-0.7, hanging:-0.66, middle:-0.35, alphabetic:0, bottom:0.1 },
+	S_ANCHOR = { left:'start', center:'middle', right:'end'},
+	S_HEIGHT = { top:-0.7, hanging:-0.66, middle:-0.3, alphabetic:0, bottom:0.1 },
 
 /* ------------------------------------------ */
 /*   VectorContext(SL)クラス用const文字列集   */
@@ -517,50 +515,76 @@ VectorContext.prototype = {
 	},
 
 	fillText : function(text,x,y){
-		switch(this.type){
-		case SVG:
-			ME.style.font = this.font; ME.innerHTML = text;
-			var top = y - (ME.offsetHeight * S_HEIGHT[this.textBaseline.toLowerCase()]);
+		if     (this.type===SVG){ this.fillText = this.fillText_SVG;}
+		else if(this.type===SL) { this.fillText = this.fillText_SL;}
+		else if(this.type===VML){ this.fillText = this.fillText_VML;}
+		this.fillText(text,x,y);
+	},
+	fillText_SVG : function(text,x,y){
+		var already = (!!this.vid && !!this.elements[this.vid]);
 
-			var el = _doc.createElementNS(SVGNS,'text');
-			el.setAttribute('x', x);
-			el.setAttribute('y', top);
-			el.setAttribute(S_ATT_FILL, parsecolor(this.fillStyle));
-			el.setAttribute('text-anchor', SVG_ANCHOR[this.textAlign.toLowerCase()]);
-			el.style.font = this.font;
+		ME.style.font = this.font; ME.innerHTML = text;
+		var top = y - (ME.offsetHeight * S_HEIGHT[this.textBaseline.toLowerCase()]);
+
+		var el = (already ? this.elements[this.vid] : _doc.createElementNS(SVGNS,'text'));
+		el.setAttribute('x', x);
+		el.setAttribute('y', top);
+		el.setAttribute(S_ATT_FILL, parsecolor(this.fillStyle));
+		el.setAttribute('text-anchor', S_ANCHOR[this.textAlign.toLowerCase()]);
+		el.style.font = this.font;
+		if(!already){
 			el.appendChild(_doc.createTextNode(text));
 			this.target.appendChild(el);
 			this.lastElement = el;
-			break;
+		}
+		else{
+			el.replaceChild(_doc.createTextNode(text), el.firstChild);
+		}
 
-		case SL:
-			ME.style.font = this.font;
-			var fontFamily = ME.style.fontFamily.replace(/\"/g,'\'');
-			var fontSize   = parseInt(ME.style.fontSize);
+		if(!already && !!this.vid){ this.elements[this.vid] = this.lastElement; this.vid='';}
+	},
+	fillText_SL : function(text,x,y){
+		var already = (!!this.vid && !!this.elements[this.vid]);
+
+		ME.style.font = this.font;
+		var xaml;
+		if(!already){
 			var wid = parseInt(this.canvas.offsetWidth);
 			var left = x + this.x0 - wid * SL_WIDTH[this.textAlign.toLowerCase()];
 			var ar = [
 				'<TextBlock Canvas.Left="', left, '" Canvas.Top="',(y+this.y0),
 				'" Width="', wid, '" TextAlignment="', this.textAlign,
-				'" FontFamily="', fontFamily, '" FontSize="', fontSize,
-				'" Foreground="', parsecolor(this.fillStyle), '" Text="',text, '" />'
+				'" Foreground="black" />'
 			];
-			var xaml = this.content.createFromXaml(ar.join(''));
-			this.lastElement = this.elements[this.vid] = xaml;
+			xaml = this.content.createFromXaml(ar.join(''));
+		}
+		else{ xaml = this.elements[this.vid];}
 
-			var offset = xaml.ActualHeight * SL_HEIGHT[this.textBaseline.toLowerCase()];
-			xaml["Canvas.Top"] = y+this.y0 - (!isNaN(offset)?offset:0);
+		xaml["Foreground"] = parsecolor(this.fillStyle);
+		xaml["FontFamily"] = ME.style.fontFamily.replace(/\"/g,'\'');
+		xaml["FontSize"]   = parseInt(ME.style.fontSize);
+		xaml["Text"] = text;
+		var offset = xaml.ActualHeight * SL_HEIGHT[this.textBaseline.toLowerCase()];
+		xaml["Canvas.Top"] = y+this.y0 - (!isNaN(offset)?offset:0);
+
+		if(!already){
 			this.target.children.add(xaml);
-			break;
+			this.lastElement = xaml;
+		}
 
-		case VML:
-			x=(x*Z-Z2)|0, y=(y*Z-Z2)|0;
-			ME.style.font = this.font; ME.innerHTML = text;
-			var top  = y - ((ME.offsetHeight * V_HEIGHT[this.textBaseline.toLowerCase()])*Z-Z2)|0;
+		if(!already && !!this.vid){ this.elements[this.vid] = this.lastElement; this.vid='';}
+	},
+	fillText_VML : function(text,x,y){
+		var already = (!!this.vid && !!this.elements[this.vid]);
 
-			var wid = (ME.offsetWidth*Z-Z2)|0;
-			var left = x - (wid * SL_WIDTH[this.textAlign.toLowerCase()])|0;
+		x=(x*Z-Z2)|0, y=(y*Z-Z2)|0;
+		ME.style.font = this.font; ME.innerHTML = text;
+		var top  = y - ((ME.offsetHeight * V_HEIGHT[this.textBaseline.toLowerCase()])*Z-Z2)|0;
 
+		var wid = (ME.offsetWidth*Z-Z2)|0;
+		var left = x - (wid * SL_WIDTH[this.textAlign.toLowerCase()])|0;
+
+		if(!already){
 			var ar = [
 				V_TAG_GROUP, V_ATT_COORDSIZE, V_TAGEND,
 					V_TAG_POLYLINE, V_ATT_POINTS, [left,top,left+wid,top].join(','), V_ATT_END,
@@ -576,9 +600,103 @@ VectorContext.prototype = {
 
 			this.target.insertAdjacentHTML(BEFOREEND, ar.join(''));
 			this.lastElement = this.target.lastChild.lastChild;
-			break;
 		}
-		if(!!this.vid){ this.elements[this.vid] = this.lastElement;}
+		else{
+			var el = this.elements[this.vid];
+//			el.points = [left,top,left+wid,top].join(',');
+			el.fillcolor = parsecolor(this.fillStyle);
+			el.lastChild.style.font = this.font;
+			el.lastChild.string = text;
+		}
+
+		if(!already && !!this.vid){ this.elements[this.vid] = this.lastElement; this.vid='';}
+	},
+
+	drawImage : function(image,sx,sy,sw,sh,dx,dy,dw,dh){
+		if     (this.type===SVG){ this.drawImage = this.drawImage_SVG;}
+		else if(this.type===SL) { this.drawImage = this.drawImage_SL;}
+		else if(this.type===VML){ this.drawImage = this.drawImage_VML;}
+		this.drawImage(image,sx,sy,sw,sh,dx,dy,dw,dh);
+	},
+	drawImage_SVG : function(image,sx,sy,sw,sh,dx,dy,dw,dh){
+		if(sw===(void 0)){ sw=image.width; sh=image.height;}
+		if(dx===(void 0)){ dx=sx; sx=0; dy=sy; sy=0; dw=sw; dh=sh;}
+		var already = (!!this.vid && !!this.elements[this.vid]);
+
+		var el = (already ? this.elements[this.vid] : _doc.createElementNS(SVGNS, "svg"));
+		el.setAttribute("viewBox", [sx,sy,sw,sh].join(" "));
+		el.setAttribute("x", dx);
+		el.setAttribute("y", dy);
+		el.setAttribute("width",  dw);
+		el.setAttribute("height", dh);
+
+		var img = (already ? el.firstChild : _doc.createElementNS(SVGNS, "image"));
+		img.setAttributeNS(null, "width",  image.width);
+		img.setAttributeNS(null, "height", image.height);
+		img.setAttributeNS(XLINKNS, "xlink:href", image.src);
+		if(!already){
+			el.appendChild(img);
+			this.target.appendChild(el);
+			this.lastElement = el;
+		}
+
+		if(!already && !!this.vid){ this.elements[this.vid] = this.lastElement; this.vid='';}
+	},
+	drawImage_SL : function(image,sx,sy,sw,sh,dx,dy,dw,dh){
+		if(sw===(void 0)){ sw=image.width; sh=image.height;}
+		if(dx===(void 0)){ dx=sx; sx=0; dy=sy; sy=0; dw=sw; dh=sh;}
+		var already = (!!this.vid && !!this.elements[this.vid]);
+
+		var xaml;
+		if(!already){
+			var ar = ['<Image Source="', image.src, '" />'];
+			xaml = this.content.createFromXaml(ar.join(''));
+		}
+		else{
+			xaml = this.elements[this.vid];
+			xaml["Source"] = image.src;
+		}
+
+		xaml["Canvas.Left"] = dx-sx*(dw/sw)+this.x0;
+		xaml["Canvas.Top"]  = dy-sy*(dh/sh)+this.y0;
+		xaml["Width"]  = image.width*(dw/sw);
+		xaml["Height"] = image.height*(dh/sh);
+		xaml.Clip = this.content.createFromXaml(
+			['<RectangleGeometry Rect="',sx*(dw/sw),',',sy*(dh/sh),',',dw,',',dh,'" />'].join(''));
+
+		if(!already){
+			this.target.children.add(xaml);
+			this.lastElement = xaml;
+		}
+
+		if(!already && !!this.vid){ this.elements[this.vid] = this.lastElement; this.vid='';}
+	},
+	drawImage_VML : function(image,sx,sy,sw,sh,dx,dy,dw,dh){
+		if(sw===(void 0)){ sw=image.width; sh=image.height;}
+		if(dx===(void 0)){ dx=sx; sx=0; dy=sy; sy=0; dw=sw; dh=sh;}
+		var already = (!!this.vid && !!this.elements[this.vid]);
+
+		var el;
+		if(!already){
+			var ar = [V_TAG_IMAGE, ' src="', image.src, V_ATT_END, V_ATT_COORDSIZE, V_TAGEND_NULL];
+			this.target.insertAdjacentHTML(BEFOREEND, ar.join(''));
+			this.lastElement = this.target.lastChild;
+			el = this.lastElement;
+		}
+		else{
+			el = this.elements[this.vid];
+			el.src = image.src;
+		}
+		el.style.left = dx;
+		el.style.top  = dy;
+		el.style.width  = dw;
+		el.style.height = dh;
+		el.cropleft = sx/image.width;
+		el.croptop  = sy/image.height;
+		el.cropright  = (1-(sx+sw)/image.width);
+		el.cropbottom = (1-(sy+sh)/image.height);
+
+		if(!already && !!this.vid){ this.elements[this.vid] = this.lastElement; this.vid='';}
 	},
 
 	/* Canvas API functions (for transform) */
@@ -709,9 +827,14 @@ VectorContext.prototype = {
 	},
 
 	addVectorElement : function(isfill,isstroke){
-	var path = this.cpath.join(' ');
-	switch(this.type){
-	case SVG:
+		if     (this.type===SVG){ this.addVectorElement = this.addVectorElement_SVG;}
+		else if(this.type===SL) { this.addVectorElement = this.addVectorElement_SL;}
+		else if(this.type===VML){ this.addVectorElement = this.addVectorElement_VML;}
+		this.addVectorElement(isfill,isstroke);
+	},
+	addVectorElement_SVG : function(isfill,isstroke){
+		var path = this.cpath.join(' ');
+
 		var el = _doc.createElementNS(SVGNS,'path');
 		el.setAttribute('d', path);
 		el.setAttribute(S_ATT_FILL,   (isfill ? parsecolor(this.fillStyle) : S_NONE));
@@ -720,9 +843,12 @@ VectorContext.prototype = {
 
 		this.target.appendChild(el);
 		this.lastElement = el;
-		break;
 
-	case SL:
+		if(!!this.vid){ this.elements[this.vid] = this.lastElement; this.vid='';}
+	},
+	addVectorElement_SL : function(isfill,isstroke){
+		var path = this.cpath.join(' ');
+
 		var ar = ['<Path Data="', path ,'"'];
 		if(isfill)  { ar.push(' Fill="', parsecolor(this.fillStyle), '"');}
 		if(isstroke){ ar.push(' Stroke="', parsecolor(this.strokeStyle), '" StrokeThickness="', this.lineWidth, '"');}
@@ -731,9 +857,12 @@ VectorContext.prototype = {
 		var xaml = this.content.createFromXaml(ar.join(''));
 		this.lastElement = xaml;
 		this.target.children.add(xaml);
-		break;
 
-	case VML:
+		if(!!this.vid){ this.elements[this.vid] = this.lastElement; this.vid='';}
+	},
+	addVectorElement_VML : function(isfill,isstroke){
+		var path = this.cpath.join(' ');
+
 		path = [path, (!isfill ? V_PATH_NOFILL : EMPTY), (!isstroke ? V_PATH_NOSTROKE : EMPTY)].join('');
 		var ar = [V_TAG_SHAPE, V_EL_UNSELECTABLE, V_ATT_COORDSIZE, V_ATT_PATH, path, V_ATT_END];
 		if(isfill)  { ar.push(V_ATT_FILLCOLOR, parsecolor(this.fillStyle), V_ATT_END);}
@@ -742,16 +871,15 @@ VectorContext.prototype = {
 
 		this.target.insertAdjacentHTML(BEFOREEND, ar.join(''));
 		this.lastElement = this.target.lastChild;
-		break;
-	}
-	if(!!this.vid){ this.elements[this.vid] = this.lastElement;}
+
+		if(!!this.vid){ this.elements[this.vid] = this.lastElement; this.vid='';}
 	}
 };
 
 /* -------------------- */
 /*   Canvas追加関数群   */
 /* -------------------- */
-CanvasRenderingContext2D_wrapper = function(type, idname){
+var CanvasRenderingContext2D_wrapper = function(type, idname){
 	// canvasに存在するプロパティ＆デフォルト値
 	this.fillStyle    = 'black';
 	this.strokeStyle  = 'black';
@@ -918,6 +1046,9 @@ CanvasRenderingContext2D_wrapper.prototype = {
 	fillText : function(text,x,y){
 		this.setProperties();
 		this.context.fillText(text,x,y);
+	},
+	drawImage : function(image,sx,sy,sw,sh,dx,dy,dw,dh){
+		this.context.drawImage(image,sx,sy,sw,sh,dx,dy,dw,dh);
 	},
 
 	/* Canvas API functions (for transform) */
@@ -1104,7 +1235,7 @@ _extend( Camp, {
 
 		/* addStyleSheet for VML */
 		var text = [];
-		text.push("v\\:shape, v\\:group, v\\:polyline { behavior: url(#default#VML); position:absolute; width:10px; height:10px; }");
+		text.push("v\\:shape, v\\:group, v\\:polyline, v\\:image { behavior: url(#default#VML); position:absolute; width:10px; height:10px; }");
 		text.push("v\\:path, v\\:textpath, v\\:stroke { behavior: url(#default#VML); }");
 		_doc.write('<style type="text/css" rel="stylesheet">');
 		_doc.write(text.join(''));

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 のりのり版 norinori.js v3.3.2
+// パズル固有スクリプト部 のりのり版 norinori.js v3.3.3
 //
 Puzzles.norinori = function(){ };
 Puzzles.norinori.prototype = {
@@ -15,6 +15,7 @@ Puzzles.norinori.prototype = {
 		k.checkBlackCell  = true;
 
 		k.ispzprv3ONLY    = true;
+		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(0, 127, 127)");
 	},
@@ -68,12 +69,28 @@ Puzzles.norinori.prototype = {
 			this.encodeBorder();
 		};
 
+		enc.decodeKanpen = function(){
+			fio.decodeAreaRoom();
+		};
+		enc.encodeKanpen = function(){
+			fio.encodeAreaRoom();
+		};
+
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			this.decodeAreaRoom();
 			this.decodeCellAns();
 		};
 		fio.encodeData = function(){
+			this.encodeAreaRoom();
+			this.encodeCellAns();
+		};
+
+		fio.kanpenOpen = function(){
+			this.decodeAreaRoom();
+			this.decodeCellAns();
+		};
+		fio.kanpenSave = function(){
 			this.encodeAreaRoom();
 			this.encodeCellAns();
 		};

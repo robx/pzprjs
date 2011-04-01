@@ -1,4 +1,4 @@
-// Menu.js v3.3.2
+// Menu.js v3.3.3
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -66,12 +66,15 @@ Menu.prototype = {
 	// menu.addButtons() ボタンの情報を変数に登録する
 	// menu.addLabels()  ラベルの情報を変数に登録する
 	//---------------------------------------------------------------------------
-	menuinit : function(onload){
+	menuinit : function(){
 		this.menuarea();
 		this.managearea();
-		this.poparea(onload);
+		this.poparea();
 
 		this.displayAll();
+
+		this.doc_design();		// デザイン変更関連関数の呼び出し
+		this.checkUserLang();	// 言語のチェック
 	},
 
 	menureset : function(){
@@ -110,6 +113,64 @@ Menu.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// menu.setEvents()       マウス入力、キー入力のイベントの設定を行う
+	//---------------------------------------------------------------------------
+	setEvents : function(){
+		// マウス入力イベントの設定
+		var canvas = ee('divques').el, numparent = ee('numobj_parent').el;
+		if(!k.mobile){
+			ee.addEvent(canvas, "mousedown", ee.ebinder(mv, mv.e_mousedown));
+			ee.addEvent(canvas, "mousemove", ee.ebinder(mv, mv.e_mousemove));
+			ee.addEvent(canvas, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
+			canvas.oncontextmenu = function(){ return false;};
+
+			ee.addEvent(numparent, "mousedown", ee.ebinder(mv, mv.e_mousedown));
+			ee.addEvent(numparent, "mousemove", ee.ebinder(mv, mv.e_mousemove));
+			ee.addEvent(numparent, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
+			numparent.oncontextmenu = function(){ return false;};
+		}
+		// iPhoneOS用のタッチイベント設定
+		else{
+			ee.addEvent(canvas, "touchstart", ee.ebinder(mv, mv.e_mousedown));
+			ee.addEvent(canvas, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
+			ee.addEvent(canvas, "touchend",   ee.ebinder(mv, mv.e_mouseup));
+
+			ee.addEvent(numparent, "touchstart", ee.ebinder(mv, mv.e_mousedown));
+			ee.addEvent(numparent, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
+			ee.addEvent(numparent, "touchend",   ee.ebinder(mv, mv.e_mouseup));
+		}
+
+		// キー入力イベントの設定
+		ee.addEvent(_doc, 'keydown',  ee.ebinder(kc, kc.e_keydown));
+		ee.addEvent(_doc, 'keyup',    ee.ebinder(kc, kc.e_keyup));
+		ee.addEvent(_doc, 'keypress', ee.ebinder(kc, kc.e_keypress));
+		// Silverlightのキー入力イベント設定
+		if(g.use.sl){
+			var sender = g.content.findName(g.canvasid);
+			sender.AddEventListener("KeyDown", kc.e_SLkeydown);
+			sender.AddEventListener("KeyUp",   kc.e_SLkeyup);
+		}
+
+		// File API＋Drag&Drop APIの設定
+		if(!!this.ex.reader){
+			var DDhandler = function(e){
+				this.ex.reader.readAsText(e.dataTransfer.files[0]);
+				e.preventDefault();
+				e.stopPropagation();
+			}
+			ee.addEvent(window, 'dragover', function(e){ e.preventDefault();}, true);
+			ee.addEvent(window, 'drop', DDhandler, true);
+		}
+
+		// onBlurにイベントを割り当てる
+		ee.addEvent(_doc, 'blur', ee.ebinder(base, base.onblur_func));
+
+		// onresizeイベントを割り当てる
+		ee.addEvent(window, (!k.os.iPhoneOS ? 'resize' : 'orientationchange'),
+										ee.ebinder(base, base.onresize_func));
+	},
+
+	//---------------------------------------------------------------------------
 	// menu.displayAll() 全てのメニュー、ボタン、ラベルに対して文字列を設定する
 	// menu.setdisplay() 管理パネルとサブメニューに表示する文字列を個別に設定する
 	//---------------------------------------------------------------------------
@@ -117,19 +178,19 @@ Menu.prototype = {
 		for(var i in pp.flags){ this.setdisplay(i);}
 		for(var i=0,len=this.btnstack.length;i<len;i++){
 			if(!this.btnstack[i].el){ continue;}
-			this.btnstack[i].el.value = this.btnstack[i].str[menu.language];
+			this.btnstack[i].el.value = this.btnstack[i].str[this.language];
 		}
 		for(var i=0,len=this.labelstack.length;i<len;i++){
 			if(!this.labelstack[i].el){ continue;}
-			this.labelstack[i].el.innerHTML = this.labelstack[i].str[menu.language];
+			this.labelstack[i].el.innerHTML = this.labelstack[i].str[this.language];
 		}
 		um.enb_btn();
 	},
 	setdisplay : function(idname){
 		switch(pp.type(idname)){
 		case pp.MENU:
-			var menu = ee('ms_'+idname);
-			if(!!menu){ menu.el.innerHTML = "["+pp.getMenuStr(idname)+"]";}
+			var pmenu = ee('ms_'+idname);
+			if(!!pmenu){ pmenu.el.innerHTML = "["+pp.getMenuStr(idname)+"]";}
 			break;
 
 		case pp.SMENU: case pp.LABEL: case pp.SPARENT:
@@ -165,6 +226,30 @@ Menu.prototype = {
 		}
 	},
 
+	//---------------------------------------------------------------------------
+	// menu.doc_design()      背景画像とかtitle・背景画像・html表示の設定
+	// menu.displayTitle()    タイトルに文字列を設定する
+	// menu.getPuzzleName()   現在開いているパズルの名前を返す
+	// menu.setFloatbgcolor() フロートメニューの背景色を設定する
+	//---------------------------------------------------------------------------
+	doc_design : function(){
+		this.displayTitle();
+		_doc.body.style.backgroundImage = "url(./bg/"+k.puzzleid+".gif)";
+		if(k.br.IE6){
+			ee('title2').el.style.marginTop = "24px";
+			ee('separator2').el.style.margin = '0pt';
+		}
+	},
+	displayTitle : function(){
+		var title;
+		if(k.EDITOR){ title = ""+this.getPuzzleName()+this.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
+		else		{ title = ""+this.getPuzzleName()+this.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
+
+		_doc.title = title;
+		ee('title2').el.innerHTML = title;
+	},
+	getPuzzleName : function(){ return this.selectStr(PZLNAME.ja[k.pzlnameid],PZLNAME.en[k.pzlnameid]);},
+
 //--------------------------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------
@@ -191,10 +276,10 @@ Menu.prototype = {
 		ap('sep_file', 'file');
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
 		at('filesavep', 'file', 'ファイル保存 ->',  'Save the file as ... ->');
-		if(dbm.DBaccept>0){
+		if(base.dec.DBaccept!==0){
 			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
 		}
-		if(base.enableSaveImage){
+		if(base.dec.enableSaveImage){
 			ap('sep_image', 'file');
 			at('imagesavep', 'file', '画像を保存 ->', 'Save as image file');
 		}
@@ -207,7 +292,7 @@ Menu.prototype = {
 		}
 
 		// *ファイル - 画像を保存 -------------------------------------------
-		if(base.enableSaveImage){
+		if(base.dec.enableSaveImage){
 			as('imagedl',   'imagesavep', '画像をダウンロード', 'Download the image');
 			as('imagesave', 'imagesavep', '別ウィンドウで開く', 'Open another window');
 		}
@@ -221,7 +306,7 @@ Menu.prototype = {
 
 		as('adjust', 'edit', '盤面の調整', 'Adjust the Board');
 		as('turn',   'edit', '反転・回転', 'Filp/Turn the Board');
-		if(!!(dbm.DBaccept&0x10)){
+		if(base.dec.enSessionStorage()){
 			ap('sep_edit2',  'edit');
 			as('duplicate', 'edit', '盤面の複製', 'Duplicate the Board');
 		}
@@ -531,7 +616,7 @@ Menu.prototype = {
 		var ex = ee.pageX(e);
 		var ey = ee.pageY(e);
 		var rect_f = ee('ms_file').getRect(), rect_o = ee('ms_other').getRect();
-		return (ex>=rect_f.left && ex<=rect_o.right && ey>=rect_f.top);
+		return (ey>= rect_f.bottom || (ex>=rect_f.left && ex<=rect_o.right && ey>=rect_f.top));
 	},
 
 //--------------------------------------------------------------------------------------------------------------
@@ -638,33 +723,31 @@ Menu.prototype = {
 	//---------------------------------------------------------------------------
 	// menu.poparea()       ポップアップメニューの初期設定を行う
 	//---------------------------------------------------------------------------
-	poparea : function(onload){
+	poparea : function(){
 
 		//=====================================================================
 		//// 各タイトルバーの動作設定
-		if(onload){
-			var pop = ee('popup_parent').el.firstChild;
-			while(!!pop){
-				var _el = pop.firstChild;
-				while(!!_el){
-					if(_el.className==='titlebar'){
-						this.titlebarfunc(_el);
-						break;
-					}
-					_el = _el.nextSibling;
+		var pop = ee('popup_parent').el.firstChild;
+		while(!!pop){
+			var _el = pop.firstChild;
+			while(!!_el){
+				if(_el.className==='titlebar'){
+					this.titlebarfunc(_el);
+					break;
 				}
-				pop = pop.nextSibling;
+				_el = _el.nextSibling;
 			}
-			this.titlebarfunc(ee('credit3_1').el);
+			pop = pop.nextSibling;
+		}
+		this.titlebarfunc(ee('credit3_1').el);
 
-			if(!k.mobile){
-				ee.addEvent(_doc, "mousemove", ee.ebinder(this, this.titlebarmove));
-				ee.addEvent(_doc, "mouseup",   ee.ebinder(this, this.titlebarup));
-			}
-			else{
-				ee.addEvent(_doc, "touchmove", ee.ebinder(this, this.titlebarmove));
-				ee.addEvent(_doc, "touchend",  ee.ebinder(this, this.titlebarup));
-			}
+		if(!k.mobile){
+			ee.addEvent(_doc, "mousemove", ee.ebinder(this, this.titlebarmove));
+			ee.addEvent(_doc, "mouseup",   ee.ebinder(this, this.titlebarup));
+		}
+		else{
+			ee.addEvent(_doc, "touchmove", ee.ebinder(this, this.titlebarmove));
+			ee.addEvent(_doc, "touchend",  ee.ebinder(this, this.titlebarup));
 		}
 
 		//=====================================================================
@@ -774,6 +857,8 @@ Menu.prototype = {
 
 		// poptest ------------------------------------------------------------
 		debug.poptest_func();
+
+		if(ee("pop1_8").el.style.display=='inline'){ this.pop = ee("pop1_8");}
 	},
 
 	//---------------------------------------------------------------------------
@@ -866,29 +951,11 @@ Menu.prototype = {
 			if(!rule.selectorText){ continue;}
 			switch(rule.selectorText.toLowerCase()){
 			case 'div#menuboard':
-				rule.style.fontSize = ['1.0em','1.6em','2.0em','3.0em'][num];
+			case 'div#btnarea':
+			case 'div#popup_parent':
+			case 'div#float_parent':
+				rule.style.fontSize = ['1.0em','1.5em','2.0em','3.0em'][num];
 				rule.style.lineHeight = ['1.2','1.1','1.1','1.1'][num];
-				break;
-			case 'menu.floatmenu':
-				rule.style.fontSize = ['0.9em','1.5em','1.9em','2.9em'][num];
-				break;
-			case 'div.popup':
-				rule.style.fontSize = ['0.9em','1.5em','1.9em','2.9em'][num];
-				rule.style.lineHeight = ['1.6','1.2','1.1','1.1'][num];
-				break;
-			case 'div#btnarea input[type="button"]':
-				rule.style.fontSize = ['','1.6em','2.0em','3.0em'][num];
-				break;
-			case 'form input':
-				rule.style.fontSize = ['','1.2em','1.4em','1.6em'][num];
-				break;
-			case 'input[type="checkbox"]':
-				rule.style.width  = ['','24px','32px','50px'][num];
-				rule.style.height = ['','24px','32px','50px'][num];
-				break;
-			case 'div.titlebar':
-				rule.style.paddingTop    = ['1pt','10pt','16px','24px'][num];
-				rule.style.paddingBottom = ['1pt','10pt','16px','24px'][num];
 				break;
 			}
 		}
@@ -897,19 +964,24 @@ Menu.prototype = {
 //--------------------------------------------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------------
+	// menu.checkUserLang() 言語環境をチェックして日本語でない場合英語表示にする
 	// menu.setLang()    言語を設定する
 	// menu.selectStr()  現在の言語に応じた文字列を返す
 	// menu.alertStr()   現在の言語に応じたダイアログを表示する
 	// menu.confirmStr() 現在の言語に応じた選択ダイアログを表示し、結果を返す
 	//--------------------------------------------------------------------------------
+	checkUserLang : function(){
+		var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
+		if(userlang.substr(0,2)!=='ja'){ pp.setVal('language','en');}
+	},
 	setLang : function(ln){
 		this.language = ln;
-		base.displayTitle();
+		this.displayTitle();
 
 		this.displayAll();
 		this.ex.dispmanstr();
 
-		base.resize_canvas();
+		pc.resize_canvas();
 	},
 	selectStr  : function(strJP, strEN){ return (this.language==='ja' ? strJP : strEN);},
 	alertStr   : function(strJP, strEN){ alert(this.language==='ja' ? strJP : strEN);},
@@ -1071,7 +1143,7 @@ Properties.prototype = {
 		subclear  : function(){ menu.ex.ASconfirm();},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
-		duplicate : function(){ fio.exportDuplicate();},
+		duplicate : function(){ base.dec.exportFileData();},
 
 		credit    : function(){ menu.pop = ee("pop3_1");},
 		jumpexp   : function(){ window.open('./faq.html?'+k.puzzleid+(k.EDITOR?"_edit":""), '');},
@@ -1084,10 +1156,10 @@ Properties.prototype = {
 		poptest   : function(){ debug.disppoptest();},
 
 		mode      : function(num){ menu.ex.modechange(num);},
-		text      : function(num){ menu.textsize(num); base.resize_canvas();},
-		size      : function(num){ base.resize_canvas();},
-		repaint   : function(num){ base.resize_canvas();},
-		adjsize   : function(num){ base.resize_canvas();},
+		text      : function(num){ menu.textsize(num); pc.resize_canvas();},
+		size      : function(num){ pc.resize_canvas();},
+		repaint   : function(num){ pc.resize_canvas();},
+		adjsize   : function(num){ pc.resize_canvas();},
 		language  : function(str){ menu.setLang(str);},
 
 		newboard : function(){
@@ -1144,7 +1216,7 @@ var debug = {
 
 		_doc.testform.perfload.style.display = (k.puzzleid!=='country' ? 'none' : 'inline');
 		_doc.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
-		_doc.testform.database.style.display = (!fio.DBaccept<0x08 ? 'none' : 'inline');
+		_doc.testform.database.style.display = (base.dec.enLocalStorage() ? 'none' : 'inline');
 
 		if(k.scriptcheck){ debug.testonly_func();}	// テスト用
 	},
@@ -1191,7 +1263,7 @@ var debug = {
 		this.timeeval("描画時間測定",ee.binder(pc, pc.paintAll));
 	},
 	resizeeval : function(){
-		this.timeeval("resize描画測定",ee.binder(base, base.resize_canvas));
+		this.timeeval("resize描画測定",ee.binder(pc, pc.resize_canvas));
 	},
 	timeeval : function(text,func){
 		this.addTA(text);

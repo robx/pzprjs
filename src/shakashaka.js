@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.3.2
+// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.3.3
 //
 Puzzles.shakashaka = function(){ };
 Puzzles.shakashaka.prototype = {
@@ -15,6 +15,7 @@ Puzzles.shakashaka.prototype = {
 		k.NumberIsWhite   = true;
 
 		k.ispzprv3ONLY    = true;
+		k.isKanpenExist   = true;
 
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 	},
@@ -188,6 +189,13 @@ Puzzles.shakashaka.prototype = {
 			this.encode4Cell();
 		};
 
+		enc.decodeKanpen = function(){
+			fio.decodeCellQnumb();
+		};
+		enc.encodeKanpen = function(){
+			fio.encodeCellQnumb();
+		};
+
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			this.decodeCellQnumb();
@@ -196,6 +204,29 @@ Puzzles.shakashaka.prototype = {
 		fio.encodeData = function(){
 			this.encodeCellQnumb();
 			this.encodeCellQanssub();
+		};
+
+		fio.kanpenOpen = function(){
+			this.decodeCell( function(obj,ca){
+				if     (ca==="5"){ obj.qnum = -2;}
+				else if(ca!=="."){ obj.qnum = parseInt(ca);}
+			});
+			this.decodeCell( function(obj,ca){
+				if     (ca==="+"){ obj.qsub = 1;}
+				else if(ca!=="."){ obj.qans = parseInt(ca);}
+			});
+		};
+		fio.kanpenSave = function(){
+			this.encodeCell( function(obj){
+				if     (obj.qnum>=  0){ return (obj.qnum.toString() + " ");}
+				else if(obj.qnum===-2){ return "5 ";}
+				else                  { return ". ";}
+			});
+			this.encodeCell( function(obj){
+				if     (obj.qsub=== 1){ return "+ ";}
+				else if(obj.qans>=  2){ return (obj.qans.toString() + " ");}
+				else                  { return ". ";}
+			});
 		};
 	},
 

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 碁石ひろい版 goishi.js v3.3.2
+// パズル固有スクリプト部 碁石ひろい版 goishi.js v3.3.3
 //
 Puzzles.goishi = function(){ };
 Puzzles.goishi.prototype = {
@@ -27,6 +27,9 @@ Puzzles.goishi.prototype = {
 	},
 
 	protoChange : function(){
+		this.protoval = Cell.prototype.defques;
+		Cell.prototype.defques = 7;
+
 		Timer.prototype.startMouseUndoTimer = function(){
 			this.undoWaitCount = this.undoWaitTime/this.undoInterval;
 			if(!this.TIDundo){ this.TIDundo = setInterval(ee.binder(this, this.procMouseUndo), this.undoInterval);}
@@ -45,18 +48,20 @@ Puzzles.goishi.prototype = {
 		};
 		Timer.prototype.execMouseUndo = function(){
 			if(kc.inUNDO){
-				var prop = (um.current>0 ? um.ope[um.current-1].property : '');
+				var prop = (um.current>0 ? um.ope[um.current-1].last().property : '');
 				if(prop===k.ANUM){ um.undo(1);}
 				else             { kc.inUNDO = false;}
 			}
 			else if(kc.inREDO){
-				var prop = (um.current<um.ope.length ? um.ope[um.current].property : '');
+				var prop = (um.current<um.ope.length ? um.ope[um.current].last().property : '');
 				if(prop===k.ANUM){ um.redo(1);}
 				else             { kc.inREDO = false;}
 			}
 		};
 	},
 	protoOriginal : function(){
+		Cell.prototype.defques = this.protoval;
+
 		Timer.prototype.startMouseUndoTimer = null;
 		Timer.prototype.stopMouseUndoTimer  = null;
 		Timer.prototype.procMouseUndo       = null;
@@ -97,7 +102,7 @@ Puzzles.goishi.prototype = {
 		};
 		mv.inputqans = function(){
 			var cc = this.cellid();
-			if(cc===null || bd.cell[cc].ques!==7 || bd.cell[cc].anum!==-1){
+			if(cc===null || !bd.isStone(cc) || bd.cell[cc].anum!==-1){
 				kc.inREDO = true;
 				tm.startMouseUndoTimer();
 				return;
@@ -130,7 +135,7 @@ Puzzles.goishi.prototype = {
 				// 間に碁石がある場合は何もしない
 				for(var bx=d.x1;bx<=d.x2;bx+=2){ for(var by=d.y1;by<=d.y2;by+=2){
 					var c = bd.cnum(bx,by);
-					if(c!==null && bd.cell[c].ques===7){
+					if(c!==null && bd.isStone(c)){
 						var qa = bd.cell[c].anum;
 						if(qa===-1 || (max>=2 && qa===max-1)){ return;}
 					}
@@ -155,9 +160,10 @@ Puzzles.goishi.prototype = {
 			}
 		};
 
+		bd.isStone  = function(c){ return (!!bd.cell[c] && bd.cell[c].ques!==7)};
 		bd.setStone = function(cc){
-			if     (bd.QuC(cc)!== 7){ bd.sQuC(cc,7);}
-			else if(bd.AnC(cc)===-1){ bd.sQuC(cc,0);} // 数字のマスは消せません
+			if     (bd.QuC(cc)=== 7){ bd.sQuC(cc,0);}
+			else if(bd.AnC(cc)===-1){ bd.sQuC(cc,7);} // 数字のマスは消せません
 		};
 	},
 
@@ -198,7 +204,7 @@ Puzzles.goishi.prototype = {
 			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.cell[c].ques===7 && bd.cell[c].anum===-1){
+				if(bd.isStone(c) && bd.cell[c].anum===-1){
 					g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.cellcolor);
 					g.fillStyle   = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 					if(this.vnop(header+c,this.FILL_STROKE)){
@@ -218,7 +224,7 @@ Puzzles.goishi.prototype = {
 			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
-				if(bd.cell[c].ques===7 && bd.cell[c].anum!==-1){
+				if(bd.isStone(c) && bd.cell[c].anum!==-1){
 					g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 					if(this.vnop(header+c,this.FILL)){
 						g.fillRect(bd.cell[c].px+mgnw+2, bd.cell[c].py+mgnh+2, this.cw-mgnw*2-3, this.ch-mgnh*2-3);
@@ -270,7 +276,7 @@ Puzzles.goishi.prototype = {
 				var num = parseInt(bstr.charAt(i),32);
 				for(var w=0;w<5;w++){
 					if(c<bd.cellmax){
-						bd.sQuC(c,(num&twi[w]?0:7));
+						bd.sQuC(c,(num&twi[w]?7:0));
 						c++;
 					}
 				}
@@ -286,7 +292,7 @@ Puzzles.goishi.prototype = {
 			for(var by=d.y1;by<=d.y2;by+=2){
 				for(var bx=d.x1;bx<=d.x2;bx+=2){
 					var c=bd.cnum(bx,by);
-					if(c===null || bd.cell[c].ques===0){ pass+=twi[count];} count++;
+					if(c===null || !bd.isStone(c)){ pass+=twi[count];} count++;
 					if(count==5){ cm += pass.toString(32); count=0; pass=0;}
 				}
 			}
@@ -299,7 +305,7 @@ Puzzles.goishi.prototype = {
 		enc.getSizeOfBoard_goishi = function(){
 			var x1=9999, x2=-1, y1=9999, y2=-1, count=0;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.cell[c].ques!==7){ continue;}
+				if(!bd.isStone(c)){ continue;}
 				if(x1>bd.cell[c].bx){ x1=bd.cell[c].bx;}
 				if(x2<bd.cell[c].bx){ x2=bd.cell[c].bx;}
 				if(y1>bd.cell[c].by){ y1=bd.cell[c].by;}
@@ -315,14 +321,14 @@ Puzzles.goishi.prototype = {
 		fio.decodeGoishiFile = function(){
 			this.decodeCell( function(obj,ca){
 				if(ca!=='.'){
-					obj.ques = 7;
+					obj.ques = 0;
 					if(ca!=='0'){ obj.anum = parseInt(ca);}
 				}
 			});
 		};
 		fio.encodeGoishiFile = function(){
 			this.encodeCell( function(obj){
-				if(obj.ques===7){
+				if(obj.ques===0){
 					return (obj.anum!==-1 ? ""+obj.anum+" " : "0 ");
 				}
 				return ". ";
@@ -331,14 +337,14 @@ Puzzles.goishi.prototype = {
 
 		fio.decodeGoishi_kanpen = function(){
 			this.decodeCell( function(obj,ca){
-				if(ca==='1'){ obj.ques = 7;}
+				if(ca==='1'){ obj.ques = 0;}
 			});
 		};
 		fio.encodeGoishi_kanpen = function(){
 			for(var by=bd.minby+1;by<bd.maxby;by+=2){
 				for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 					var c = bd.cnum(bx,by);
-					this.datastr += (bd.cell[c].ques===7 ? "1 " : ". ");
+					this.datastr += (bd.cell[c].ques===0 ? "1 " : ". ");
 				}
 				this.datastr += "/";
 			}
@@ -353,7 +359,7 @@ Puzzles.goishi.prototype = {
 				if(item.length<=1){ return;}
 				else{
 					var c=bd.cnum(parseInt(item[2])*2+1,parseInt(item[1])*2+1);
-					bd.cell[c].ques = 7;
+					bd.cell[c].ques = 0;
 					bd.cell[c].anum = parseInt(item[0]);
 				}
 			}
@@ -362,7 +368,7 @@ Puzzles.goishi.prototype = {
 			var stones = []
 			for(var by=bd.minby+1;by<bd.maxby;by+=2){ for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 				var c = bd.cnum(bx,by), obj=bd.cell[c];
-				if(obj.ques!==7 || obj.anum===-1){ continue;}
+				if(obj.ques!==0 || obj.anum===-1){ continue;}
 
 				var pos = [(bx>>1).toString(), (by>>1).toString()];
 				stones[obj.anum-1] = pos;
@@ -379,7 +385,7 @@ Puzzles.goishi.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkAllCell(function(c){ return (bd.cell[c].ques===7 && bd.cell[c].anum===-1);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.isStone(c) && bd.cell[c].anum===-1);}) ){
 				this.setAlert('拾われていない碁石があります。','There is remaining Goishi.'); return false;
 			}
 
