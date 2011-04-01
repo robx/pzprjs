@@ -44,7 +44,9 @@ v3index.extend({
 			el = _doc.getElementById("urlinput_btn");
 			if(!!el){ self.addEvent(el,"click",self.urlinput);}
 
-			self.addEvent(_doc.fileform.filebox, "change", self.fileinput);
+			el = null;
+			if(!!_doc.fileform){ el = _doc.fileform.filebox;}
+			if(!!el){ self.addEvent(_doc.fileform.filebox, "change", self.fileinput);}
 
 			self.dbif.init();
 		}
@@ -160,17 +162,18 @@ v3index.dbif.extend({
 		catch(e){}
 		
 		_form = _doc.database;
-		
-		if(self.LS){
-			v3index.addEvent(_form.sorts,    "change", self.display);
-			v3index.addEvent(_form.datalist, "change", self.select);
-			v3index.addEvent(_form.open,     "click",  self.open);
-			
-			pheader = 'pzprv3_storage:data:';
-			self.importlist(self.display);
-		}
-		else{
-			_form.style.display = 'none';
+		if(!!_form){
+			if(self.LS){
+				v3index.addEvent(_form.sorts,    "change", self.display);
+				v3index.addEvent(_form.datalist, "change", self.select);
+				v3index.addEvent(_form.open,     "click",  self.open);
+				
+				pheader = 'pzprv3_storage:data:';
+				self.importlist(self.display);
+			}
+			else{
+				_form.style.display = 'none';
+			}
 		}
 	},
 	importlist : function(callback){
