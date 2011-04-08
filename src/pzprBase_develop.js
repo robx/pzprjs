@@ -1,6 +1,6 @@
 // pzplBase.js テスト用
 
-var pzprversion="v3.3.3pre";
+var pzprv3={version:"v3.4.0pre"};
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Camp.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Library.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Main.js\"></script>");

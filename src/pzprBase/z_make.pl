@@ -58,7 +58,7 @@ sub output_pzprBase{
 	if($debug){
 		print OUT "// pzplBase.js テスト用\n";
 	}
-	print OUT "\nvar pzprversion=\"$version\";\n";
+	print OUT "\nvar pzprv3={version:\"$version\"};\n";
 	&printfiles(\@files,1);
 	close OUT;
 
