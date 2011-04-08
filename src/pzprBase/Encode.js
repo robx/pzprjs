@@ -1,4 +1,4 @@
-// Encode.js v3.3.3
+// Encode.js v3.4.0
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -115,8 +115,8 @@ Encode.prototype = {
 	},
 	getURLBase : function(type){
 		return this.urlbase[type]
-					.replace("%PID%",PZLNAME.toURLID(k.puzzleid))
-					.replace("%KID%",PZLNAME.toKanpen(k.puzzleid));
+					.replace("%PID%",PZLINFO.toURLID(k.puzzleid))
+					.replace("%KID%",PZLINFO.toKanpen(k.puzzleid));
 	},
 
 	// オーバーライド用

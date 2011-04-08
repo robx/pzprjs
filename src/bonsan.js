@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぼんさん/へやぼん版 bonsan.js v3.3.2
+// パズル固有スクリプト部 ぼんさん・へやぼん版 bonsan.js v3.4.0
 //
 Puzzles.bonsan = function(){ };
 Puzzles.bonsan.prototype = {
@@ -24,9 +24,11 @@ Puzzles.bonsan.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.editmode){ this.inputborder();}
+			if(k.editmode){
+				if(k.puzzleid==='heyabon'){ this.inputborder();}
+			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine();
+				if(this.btn.Left){ this.inputLine();}
 			}
 		};
 		mv.mouseup = function(){
@@ -36,9 +38,11 @@ Puzzles.bonsan.prototype = {
 			}
 		};
 		mv.mousemove = function(){
-			if(k.editmode){ this.inputborder();}
+			if(k.editmode){
+				if(k.puzzleid==='heyabon'){ this.inputborder();}
+			}
 			else if(k.playmode){
-				if(this.btn.Left) this.inputLine();
+				if(this.btn.Left){ this.inputLine();}
 			}
 		};
 		mv.inputlight = function(){
@@ -99,7 +103,7 @@ Puzzles.bonsan.prototype = {
 		pc.paint = function(){
 			this.drawBGCells();
 			this.drawGrid();
-			this.drawBorders();
+			if(k.puzzleid==='heyabon'){ this.drawBorders();}
 
 			this.drawTip();
 			this.drawLines();
@@ -155,10 +159,21 @@ Puzzles.bonsan.prototype = {
 		enc.pzlimport = function(type){
 			this.decodeBorder();
 			this.decodeNumber16();
+
+			this.checkPuzzleid();
 		};
 		enc.pzlexport = function(type){
 			this.encodeBorder();
 			this.encodeNumber16();
+		};
+
+		enc.checkPuzzleid = function(){
+			if(k.puzzleid==='bonsan'){
+				for(var id=0;id<bd.bdmax;id++){
+					if(bd.border[id].ques===1){ k.puzzleid='heyabon'; break;}
+				}
+				menu.displayTitle();
+			}
 		};
 
 		//---------------------------------------------------------
@@ -167,6 +182,8 @@ Puzzles.bonsan.prototype = {
 			this.decodeCellQsub();
 			this.decodeBorderQues();
 			this.decodeBorderLine();
+
+			enc.checkPuzzleid();
 		};
 		fio.encodeData = function(){
 			this.encodeCellQnum();

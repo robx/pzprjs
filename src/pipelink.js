@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 パイプリンク版 pipelink.js v3.3.2
+// パズル固有スクリプト部 パイプリンク・帰ってきたパイプリンク版 pipelink.js v3.4.0
 //
 Puzzles.pipelink = function(){ };
 Puzzles.pipelink.prototype = {
@@ -21,9 +21,11 @@ Puzzles.pipelink.prototype = {
 	menufix : function(){
 		menu.addRedLineToFlags();
 
-		var el = ee.createEL(menu.EL_BUTTON, 'btncircle');
-		menu.addButtons(el, ee.binder(pc, pc.changedisp), "○", "○");
-		ee('btnarea').appendEL(el);
+		if(k.puzzleid==='pipelinkr'){
+			var el = ee.createEL(menu.EL_BUTTON, 'btncircle');
+			menu.addButtons(el, ee.binder(pc, pc.changedisp), "○", "○");
+			ee('btnarea').appendEL(el);
+		}
 	},
 
 	//---------------------------------------------------------
@@ -74,7 +76,7 @@ Puzzles.pipelink.prototype = {
 			else if(ca=='d'){ bd.sQuC(cc,16); }
 			else if(ca=='f'){ bd.sQuC(cc,17); }
 			else if(ca=='-'){ bd.sQuC(cc,(bd.QuC(cc)!==-2?-2:0)); }
-			else if(ca=='1'){ bd.sQuC(cc, 6); }
+			else if(k.puzzleid==='pipelinkr' && ca=='1'){ bd.sQuC(cc, 6); }
 			else{ return false;}
 
 			pc.paintCellAround(cc);
@@ -116,9 +118,10 @@ Puzzles.pipelink.prototype = {
 			this.drawBGCells();
 			this.drawDashedGrid();
 
-			this.drawCircles_pipelink((this.disp===0));
-
-			this.drawBorders();
+			if(k.puzzleid==='pipelinkr'){
+				this.drawCircles_pipelink((this.disp===0));
+				this.drawBorders();
+			}
 
 			this.drawHatenas();
 
@@ -175,9 +178,14 @@ Puzzles.pipelink.prototype = {
 
 		pc.disp = 0;
 		pc.changedisp = function(){
-			if     (this.disp===1){ ee('btncircle').el.value="○"; this.disp=0;}
-			else if(this.disp===0){ ee('btncircle').el.value="■"; this.disp=1;}
-			this.paintAll();
+			if(k.puzzleid==='pipelinkr'){
+				if     (this.disp===1){ ee('btncircle').el.value="○"; this.disp=0;}
+				else if(this.disp===0){ ee('btncircle').el.value="■"; this.disp=1;}
+				this.paintAll();
+			}
+			else{
+				ee('btncircle').el.style.display = 'none';
+			}
 		};
 
 		pc.repaintParts = function(idlist){
@@ -193,10 +201,11 @@ Puzzles.pipelink.prototype = {
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodePipelink();
-			if(this.checkpflag("i") && this.disp===0){ pc.changedisp();}
+
+			this.checkPuzzleid();
 		};
 		enc.pzlexport = function(type){
-			this.outpflag = (pc.disp===0 ? "" : "i");
+			this.outpflag = ((k.puzzleid==='pipelinkr' && pc.disp===0) ? "" : "i");
 			this.encodePipelink(type);
 		};
 
@@ -249,6 +258,18 @@ Puzzles.pipelink.prototype = {
 			this.outbstr += cm;
 		};
 
+		enc.checkPuzzleid = function(){
+			if(k.puzzleid==='pipelink'){
+				for(var c=0;c<bd.cellmax;c++){
+					if(bd.cell[c].ques===6){ k.puzzleid='pipelinkr'; break;}
+				}
+				menu.displayTitle();
+			}
+			if(k.puzzleid==='pipelink' || (this.checkpflag("i") && this.disp===0)){
+				pc.changedisp();
+			}
+		};
+
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			pc.disp = (this.readLine()=="circle" ? 0 : 1);
@@ -258,6 +279,8 @@ Puzzles.pipelink.prototype = {
 				else if(ca!=="."){ obj.ques = parseInt(ca,36)+1;}
 			});
 			this.decodeBorderLine();
+
+			enc.checkPuzzleid();
 		};
 		fio.encodeData = function(){
 			this.datastr += (pc.disp==0?"circle/":"ice/");

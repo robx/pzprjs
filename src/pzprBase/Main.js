@@ -1,4 +1,4 @@
-// Main.js v3.3.3
+// Main.js v3.4.0
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -60,8 +60,8 @@ var k = {
 	},
 
 	// 内部で自動的に設定されるグローバル変数
-	puzzleid  : '',			// パズルのID("creek"など)
-	pzlnameid : '',			// パズルの名前用ID
+	puzzleid : '',			// パズルのID("creek"など)
+	scriptid : '',			// パズルのスクリプトID
 
 	EDITOR    : true,		// エディタモード
 	PLAYER    : false,		// playerモード
@@ -313,7 +313,7 @@ ExtData.prototype = {
 			this.id = this.id.replace(/(m\+|_edit|_test|_play)/,'');
 			this.type = en.PZPRV3;
 		}
-		this.id = PZLNAME.toPID(this.id);
+		this.id = PZLINFO.toPID(this.id);
 
 		switch(this.type){
 			case en.KANPEN:  this.parseURI_kanpen();  break;
@@ -527,9 +527,10 @@ PBase.prototype = {
 		this.initProcess = true;
 
 		var pid = this.dec.id;
+		var scriptid = PZLINFO.toScript(this.dec.id);
 
 		// idを取得して、ファイルを読み込み
-		if(!Puzzles[pid]){ this.includeFile("src/"+pid+".js");}
+		if(!Puzzles[scriptid]){ this.includeFile("src/"+scriptid+".js");}
 
 		// 今のパズルが存在している場合
 		if(!!k.puzzleid){
@@ -546,13 +547,14 @@ PBase.prototype = {
 		// 中身を読み取れるまでwait
 		var self = this;
 		var tim = setInterval(function(){
-			if(!Puzzles[pid] || !Camp.isready()){ return;}
+			if(!Puzzles[scriptid] || !Camp.isready()){ return;}
 			clearInterval(tim);
 
 			g = ee('divques').unselectable().el.getContext("2d");
 
 			// 初期化ルーチンへジャンプ
-			k.pzlnameid = k.puzzleid = pid;
+			k.scriptid = scriptid;
+			k.puzzleid = pid;
 			self.initObjects();
 
 			if(!!callback){ callback();}
@@ -571,7 +573,7 @@ PBase.prototype = {
 	initObjects : function(){
 		k.initFlags();						// 共通フラグの初期化
 
-		puz = new Puzzles[k.puzzleid]();	// パズル固有オブジェクト
+		puz = new Puzzles[k.scriptid]();	// パズル固有オブジェクト
 		puz.setting();						// パズル固有の変数設定(デフォルト等)
 		if(!!puz.protoChange){ puz.protoChange();}
 

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスローム版 icelom.js v3.3.3
+// パズル固有スクリプト部 アイスローム・アイスローム２版 icelom.js v3.4.0
 //
 Puzzles.icelom = function(){ };
 Puzzles.icelom.prototype = {
@@ -24,19 +24,6 @@ Puzzles.icelom.prototype = {
 		base.setFloatbgcolor("rgb(0, 0, 127)");
 	},
 	menufix : function(){
-		if(k.EDITOR){
-			pp.addSelect('puztype','setting',1,[1,2], 'パズルの種類', 'Kind of the puzzle');
-			pp.setLabel ('puztype', 'パズルの種類', 'Kind of the puzzle');
-
-			pp.addChild('puztype_1', 'puztype', 'アイスローム', 'Icelom');
-			pp.addChild('puztype_2', 'puztype', 'アイスローム２', 'Icelom2');
-
-			pp.funcs['puztype'] = function(num){
-				k.pzlnameid = (num==1?'icelom':'icelom2');
-				menu.displayTitle();
-			};
-		}
-
 		menu.addRedLineToFlags();
 	},
 
@@ -358,19 +345,15 @@ Puzzles.icelom.prototype = {
 			this.decodeNumber16();
 			this.decodeInOut();
 
-			if(k.EDITOR){
-				if(this.checkpflag("a")){ pp.setVal('puztype',1);}
-				else                    { pp.setVal('puztype',2);}
+			if(k.puzzleid==='icelom'){
+				k.puzzleid = (this.checkpflag("a")?'icelom':'icelom2');
+				menu.displayTitle();
 			}
-			k.pzlnameid = (this.checkpflag("a")?'icelom':'icelom2');
-			menu.displayTitle();
 		};
 		enc.pzlexport = function(type){
 			this.encodeIcelom();
 			this.encodeNumber16();
 			this.encodeInOut();
-
-			this.outpflag = (pp.getVal('puztype')==1 ? "a" : "");
 		};
 
 		enc.decodeIcelom = function(){
@@ -424,11 +407,10 @@ Puzzles.icelom.prototype = {
 			bd.enableInfo();
 
 			var pzltype = this.readLine();
-			if(k.EDITOR){
-				pp.setVal('puztype',(pzltype==="allwhite"?1:2));
+			if(k.puzzleid==='icelom'){
+				k.puzzleid = (this.checkpflag("a")?'icelom':'icelom2');
+				menu.displayTitle();
 			}
-			k.pzlnameid = (pzltype==="allwhite"?'icelom':'icelom2');
-			menu.displayTitle();
 
 			this.decodeCell( function(obj,ca){
 				if(ca.charAt(0)==='i'){ obj.ques=6; ca=ca.substr(1);}
@@ -443,7 +425,7 @@ Puzzles.icelom.prototype = {
 			});
 		};
 		fio.encodeData = function(){
-			var pzltype = (pp.getVal('puztype')==1 ? "allwhite" : "skipwhite");
+			var pzltype = (k.puzzleid==='icelom'?"allwhite":"skipwhite");
 
 			this.datastr += (bd.arrowin+"/"+bd.arrowout+"/"+pzltype+"/");
 			this.encodeCell( function(obj){
@@ -502,11 +484,11 @@ Puzzles.icelom.prototype = {
 				this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
 			}
 
-			if( this.isallwhite() && !this.checkAllCell(function(c){ return (line.lcntCell(c)===0 && bd.QuC(c)!==6);}) ){
+			if( (k.puzzleid==='icelom') && !this.checkAllCell(function(c){ return (line.lcntCell(c)===0 && bd.QuC(c)!==6);}) ){
 				this.setAlert('通過していない白マスがあります。', 'The line doesn\'t pass all of the white cell.'); return false;
 			}
 
-			if( !this.isallwhite() && !this.checkIcebarns() ){
+			if( (k.puzzleid==='icelom2') && !this.checkIcebarns() ){
 				this.setAlert('すべてのアイスバーンを通っていません。', 'A icebarn is not gone through.'); return false;
 			}
 
@@ -516,7 +498,6 @@ Puzzles.icelom.prototype = {
 
 			return true;
 		};
-		ans.isallwhite = function(){ return ((k.EDITOR&&(pp.getVal('puztype')==1))||(k.PLAYER&&enc.checkpflag("t")));};
 
 		ans.checkIcebarns = function(){
 			var iarea = new AreaInfo();

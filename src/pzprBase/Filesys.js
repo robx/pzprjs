@@ -1,4 +1,4 @@
-// Filesys.js v3.3.3
+// Filesys.js v3.4.0
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -39,7 +39,6 @@ FileIO.prototype = {
 		// ヘッダの処理
 		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
-			if(this.readLine()!=k.puzzleid){ return '読み込みに失敗しました';}
 			this.currentType = this.PZPR;
 		}
 		else{

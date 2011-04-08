@@ -234,7 +234,7 @@ v3index.dbif.extend({
 
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (PZLNAME[v3index.language][row.pid]+"&nbsp;");
+		str += (PZLINFO.info[row.pid][v3index.language]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
 			str += (hardstr[row.hard][v3index.language]+"&nbsp;");

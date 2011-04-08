@@ -1,4 +1,4 @@
-// Menu.js v3.3.3
+// Menu.js v3.4.0
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -234,7 +234,7 @@ Menu.prototype = {
 	//---------------------------------------------------------------------------
 	doc_design : function(){
 		this.displayTitle();
-		_doc.body.style.backgroundImage = "url(./bg/"+k.puzzleid+".gif)";
+		_doc.body.style.backgroundImage = "url(./bg/"+k.scriptid+".gif)";
 		if(k.br.IE6){
 			ee('title2').el.style.marginTop = "24px";
 			ee('separator2').el.style.margin = '0pt';
@@ -248,7 +248,7 @@ Menu.prototype = {
 		_doc.title = title;
 		ee('title2').el.innerHTML = title;
 	},
-	getPuzzleName : function(){ return this.selectStr(PZLNAME.ja[k.pzlnameid],PZLNAME.en[k.pzlnameid]);},
+	getPuzzleName : function(){ return this.selectStr(PZLINFO.info[k.puzzleid].ja,PZLINFO.info[k.puzzleid].en);},
 
 //--------------------------------------------------------------------------------------------------------------
 

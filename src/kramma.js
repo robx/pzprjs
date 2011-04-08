@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 快刀乱麻版 kramma.js v3.3.2
+// パズル固有スクリプト部 快刀乱麻・新・快刀乱麻版 kramma.js v3.4.0
 //
 Puzzles.kramma = function(){ };
 Puzzles.kramma.prototype = {
@@ -28,7 +28,9 @@ Puzzles.kramma.prototype = {
 	input_init : function(){
 		// マウス入力系
 		mv.mousedown = function(){
-			if(k.editmode) this.inputcrossMark();
+			if(k.editmode){
+				if(k.puzzleid==='kramman'){ this.inputcrossMark();}
+			}
 			else if(k.playmode){
 				if(this.btn.Left) this.inputborderans();
 				else if(this.btn.Right) this.inputQsubLine();
@@ -97,7 +99,7 @@ Puzzles.kramma.prototype = {
 			this.drawBorders();
 
 			this.drawQnumCircles();
-			this.drawCrossMarks();
+			if(k.puzzleid==='kramman'){ this.drawCrossMarks();}
 
 			this.drawHatenas();
 
@@ -113,10 +115,21 @@ Puzzles.kramma.prototype = {
 		enc.pzlimport = function(type){
 			this.decodeCrossMark();
 			this.decodeCircle();
+
+			this.checkPuzzleid();
 		};
 		enc.pzlexport = function(type){
 			this.encodeCrossMark();
 			this.encodeCircle();
+		};
+
+		enc.checkPuzzleid = function(){
+			if(k.puzzleid==='kramma'){
+				for(var c=0;c<bd.crossmax;c++){
+					if(bd.cross[c].qnum===1){ k.puzzleid='kramman'; break;}
+				}
+				menu.displayTitle();
+			}
 		};
 
 		//---------------------------------------------------------
@@ -124,6 +137,8 @@ Puzzles.kramma.prototype = {
 			this.decodeCellQnum();
 			this.decodeCrossNum();
 			this.decodeBorderAns();
+
+			enc.checkPuzzleid();
 		};
 		fio.encodeData = function(){
 			this.encodeCellQnum();

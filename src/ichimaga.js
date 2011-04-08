@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 イチマガ/磁石イチマガ版 ichimaga.js v3.3.3
+// パズル固有スクリプト部 イチマガ・磁石イチマガ・一回曲がって交差もするの版 ichimaga.js v3.4.0
 //
 Puzzles.ichimaga = function(){ };
 Puzzles.ichimaga.prototype = {
@@ -21,23 +21,7 @@ Puzzles.ichimaga.prototype = {
 
 		base.setFloatbgcolor("rgb(0, 224, 0)");
 	},
-	menufix : function(){
-		if(k.EDITOR){
-			pp.addSelect('puztype','setting',1,[1,2,3], 'パズルの種類', 'Kind of the puzzle');
-			pp.setLabel ('puztype', 'パズルの種類', 'Kind of the puzzle');
-
-			pp.addChild('puztype_1', 'puztype', 'イチマガ', 'Ichimaga');
-			pp.addChild('puztype_2', 'puztype', '磁石イチマガ', 'Magnetic Ichimaga');
-			pp.addChild('puztype_3', 'puztype', '交差も', 'Crossing Ichimaga');
-
-			pp.funcs['puztype'] = function(num){
-				if     (num==2){ k.pzlnameid="ichimagam";}
-				else if(num==3){ k.pzlnameid="ichimagax";}
-				else           { k.pzlnameid="ichimaga"; }
-				menu.displayTitle();
-			};
-		}
-	},
+	menufix : function(){},
 
 	//---------------------------------------------------------
 	//入力系関数オーバーライド
@@ -111,42 +95,35 @@ Puzzles.ichimaga.prototype = {
 		enc.pzlimport = function(type){
 			this.decode4Cell();
 
-			if(k.EDITOR){
-				if     (this.checkpflag("m")){ pp.setVal('puztype',2);}
-				else if(this.checkpflag("x")){ pp.setVal('puztype',3);}
-				else                         { pp.setVal('puztype',1);}
+			if(k.puzzleid==='ichimaga'){
+				if     (this.checkpflag("m")){ k.puzzleid="ichimagam";}
+				else if(this.checkpflag("x")){ k.puzzleid="ichimagax";}
+				else                         { k.puzzleid="ichimaga"; }
+				menu.displayTitle();
 			}
-			if     (this.checkpflag("m")){ k.pzlnameid="ichimagam";}
-			else if(this.checkpflag("x")){ k.pzlnameid="ichimagax";}
-			else                         { k.pzlnameid="ichimaga"; }
-			menu.displayTitle();
 		};
 		enc.pzlexport = function(type){
 			this.encode4Cell();
-
-			this.outpflag = "";
-			if     (pp.getVal('puztype')==2){ this.outpflag="m";}
-			else if(pp.getVal('puztype')==3){ this.outpflag="x";}
 		};
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			var pzlflag = this.readLine();
-			if(k.EDITOR){
-				if     (pzlflag=="mag")  { pp.setVal('puztype',2);}
-				else if(pzlflag=="cross"){ pp.setVal('puztype',3);}
-				else                     { pp.setVal('puztype',1);}
+			if(k.puzzleid==='ichimaga'){
+				if     (pzlflag=="mag")  { k.puzzleid="ichimagam";}
+				else if(pzlflag=="cross"){ k.puzzleid="ichimagax";}
+				else                     { k.puzzleid="ichimaga"; }
+				menu.displayTitle();
 			}
-			if     (pzlflag=="mag")  { k.pzlnameid="ichimagam";}
-			else if(pzlflag=="cross"){ k.pzlnameid="ichimagax";}
-			else                     { k.pzlnameid="ichimaga"; }
-			menu.displayTitle();
 
 			this.decodeCellQnum();
 			this.decodeBorderLine();
 		};
 		fio.encodeData = function(){
-			this.datastr += ["/","def/","mag/","cross/"][pp.getVal('puztype')];
+			if     (k.puzzleid==="ichimagam"){ this.datastr+="mag/";}
+			else if(k.puzzleid==="ichimagax"){ this.datastr+="cross/";}
+			else                             { this.datastr+="def/";}
+
 			this.encodeCellQnum();
 			this.encodeBorderLine();
 		};
@@ -160,7 +137,7 @@ Puzzles.ichimaga.prototype = {
 			if( !this.checkLcntCell(3) ){
 				this.setAlert('分岐している線があります。', 'There is a branch line.'); return false;
 			}
-			if( !this.iscross() && !this.checkLcntCell(4) ){
+			if( (k.puzzleid!=='ichimagax') && !this.checkLcntCell(4) ){
 				this.setAlert('線が交差しています。', 'There is a crossing line.'); return false;
 			}
 
@@ -196,9 +173,6 @@ Puzzles.ichimaga.prototype = {
 			return true;
 		};
 		ans.check1st = function(){ return true;};
-		ans.ismag    = function(){ return ((k.EDITOR&&pp.getVal('puztype')==2)||(k.PLAYER&&enc.checkpflag("m")));};
-		ans.iscross  = function(){ return ((k.EDITOR&&pp.getVal('puztype')==3)||(k.PLAYER&&enc.checkpflag("x")));};
-		ans.isnormal = function(){ return ((k.EDITOR&&pp.getVal('puztype')==1)||(k.PLAYER&&!enc.checkpflag("m")&&!enc.checkpflag("x")));};
 
 		ans.checkLcntCell = function(val){
 			if(line.ltotal[val]==0){ return true;}
@@ -255,7 +229,7 @@ Puzzles.ichimaga.prototype = {
 
 					var qn=(c!==null?bd.QnC(c):-1);
 					var cc = bd.cnum(bx,by), qnn=(cc!==null?bd.QnC(cc):-1);
-					if(this.ismag() && qn!==-2 && qn===qnn){
+					if((k.puzzleid==='ichimagam') && qn!==-2 && qn===qnn){
 						errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist}); continue;
 					}
 					if(idlist.length>0 && ((bx+by)&1)===0 && qn!==-2 && ccnt>1){
