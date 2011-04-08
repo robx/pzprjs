@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 交差は直角に限る版 kouchoku.js v3.3.3
+// パズル固有スクリプト部 交差は直角に限る版 kouchoku.js v3.4.0
 //
 Puzzles.kouchoku = function(){ };
 Puzzles.kouchoku.prototype = {
@@ -100,7 +100,7 @@ Puzzles.kouchoku.prototype = {
 						bd.segs.input(bx1,by1,bx2,by2);
 						if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;}
 						if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
-						pc.paintRange(bx1,by1,bx2,by2);
+						pc.paintRange(bx1-1,by1-1,bx2+1,by2+1);
 					}
 				}
 			}
@@ -218,7 +218,7 @@ Puzzles.kouchoku.prototype = {
 				if     (num===1){ bd.segs.setSegment   (bx1,by1,bx2,by2);}
 				else if(num===0){ bd.segs.removeSegment(bx1,by1,bx2,by2);}
 				if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;} if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
-				this.paintStack(bx1,by1,bx2,by2);
+				this.paintStack(bx1-1,by1-1,bx2+1,by2+1);
 			}
 		};
 
@@ -287,10 +287,25 @@ Puzzles.kouchoku.prototype = {
 			this.drawTarget();
 		};
 
+		pc.repaintSegments = function(idlist, id){
+			this.vinc('segment', 'auto');
+
+			for(var i=0;i<idlist.length;i++){
+				if(id!==idlist[i]){ this.drawSegment1(idlist[i],true);}
+			}
+		};
+
 		pc.drawSegments = function(){
 			this.vinc('segment', 'auto');
 
-			var idlist = bd.segs.segmentinside(this.range.x1,this.range.y1,this.range.x2,this.range.y2);
+			var idlist = [];
+			/* 全領域の30%以下なら範囲指定 */
+			if(((this.range.x2-this.range.x1)*(this.range.y2-this.range.y1))/((bd.maxbx-bd.minbx)*(bd.maxby-bd.minby))<0.30){
+				idlist = bd.segs.segmentinside(this.range.x1,this.range.y1,this.range.x2,this.range.y2);
+			}
+			else{
+				idlist = bd.segs.getallsegment();
+			}
 			for(var i=0;i<idlist.length;i++){ this.drawSegment1(idlist[i],true);}
 		};
 		pc.eraseSegment1 = function(id){
@@ -562,17 +577,9 @@ Puzzles.kouchoku.prototype = {
 			return result;
 		};
 		ans.getLatticePoint = function(bx1,by1,bx2,by2){
-			var div=(bx2-bx1), n=(by2-by1);
-			div=(div<0?-div:div); n=(n<0?-n:n);
-			if(div<n){ tmp=div;div=n;n=tmp;}        // (m,n)=(0,0)は想定外
-			while(n>0){ tmp=(div%n); div=n; n=tmp;} // ユークリッドの互助法
-
-			// div-1が格子点を途中で通る数になってる
-			var lattice = [];
-			for(var a=1;a<div;a++){
-				var bx=bx1+(bx2-bx1)*(a/div);
-				var by=by1+(by2-by1)*(a/div);
-				var xc=bd.xnum(bx,by);
+			var seg = new Segment(bx1,by1,bx2,by2), lattice = [];
+			for(var i=0;i<seg.lattices.length;i++){
+				var xc = bd.xnum(seg.lattices[i][0], seg.lattices[i][1]);
 				if(xc!==null && bd.cross[xc].qnum!==-1){ lattice.push(xc);}
 			}
 			return lattice;
@@ -623,89 +630,29 @@ Puzzles.kouchoku.prototype = {
 			return result;
 		};
 
-		ans.isParallel = function(seg1, seg2){
-			var vert1=(seg1.bx1===seg1.bx2), vert2=(seg2.bx1===seg2.bx2); // 縦線
-			var horz1=(seg1.by1===seg1.by2), horz2=(seg2.by1===seg2.by2); // 横線
-			if(vert1&&vert2){ return true;} // 両方縦線
-			if(horz1&&horz2){ return true;} // 両方横線
-			if(!vert1&&!vert2&&!horz1&&!horz2){ // 両方ナナメ
-				return ((seg1.bx2-seg1.bx1)*(seg2.by2-seg2.by1)===(seg2.bx2-seg2.bx1)*(seg1.by2-seg1.by1));
-			}
-			return false;
-		};
-
 		ans.checkDuplicateSegment = function(idlist){
-			var result = true, len = idlist.length, errors = [], tmp;
-			for(var i=0;i<len;i++){
-				var id1=idlist[i], seg1=bd.segs.seg[id1], bx1=seg1.bx1, bx2=seg1.bx2, by1=seg1.by1, by2=seg1.by2;
-				for(var j=i+1;j<len;j++){
-					var id2=idlist[j], seg2=bd.segs.seg[id2], bx3=seg2.bx1, bx4=seg2.bx2, by3=seg2.by1, by4=seg2.by2;
-					if(!this.isParallel(seg1,seg2)){ continue;}
-					if(bx1===bx2 && bx3===bx4 && bx1===bx3){ // 垂直で両方同じX座標
-						if(by1>by2){ tmp=by1;by1=by2;by2=tmp;} if(by3>by4){ tmp=by3;by3=by4;by4=tmp;}
-						if(by3<by2 && by1<by4){ errors.push([id1,id2]);}
-					}
-					else{ // 垂直でない時 => bx=0の時のY座標の値を比較 => 割り算にならないように展開
-						if(by1*(bx2-bx1)*(bx4-bx3)-bx1*(by2-by1)*(bx4-bx3)===by3*(bx2-bx1)*(bx4-bx3)-bx3*(by4-by3)*(bx2-bx1)){
-							if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;} if(bx3>bx4){ tmp=bx3;bx3=bx4;bx4=tmp;}
-							if(bx3<bx2 && bx1<bx4){ errors.push([id1,id2]);}
-						}
-					}
+			var result = true, len = idlist.length;
+			for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
+				var seg1=bd.segs.seg[idlist[i]], seg2=bd.segs.seg[idlist[j]];
+				if(bd.segs.isOverLapSegment(seg1,seg2)){
+					if(result){ bd.segs.seterrorAll(2);}
+					bd.segs.seterror([seg1,seg2],1);
+					result = false;
 				}
-			}
-			/* エラー処理 */
-			for(var i=0;i<errors.length;i++){
-				if(result){ bd.segs.seterrorAll(2);}
-				bd.segs.seterror(errors[i],1);
-				result = false;
-			}
+			}}
 			return result;
 		};
 
 		ans.checkRightAngle = function(idlist){
 			var result = true, len = idlist.length;
-			var cand1 = [], cand2 = [], cand3 = [], tmp;
-			/* 交差している候補の判定 */
-			for(var i=0;i<len;i++){
-				var id1=idlist[i], seg1=bd.segs.seg[id1], bx1=seg1.bx1, bx2=seg1.bx2, by1=seg1.by1, by2=seg1.by2;
-				if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;} if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
-				for(var j=i+1;j<len;j++){
-					var id2=idlist[j], seg2=bd.segs.seg[id2], bx3=seg2.bx1, bx4=seg2.bx2, by3=seg2.by1, by4=seg2.by2;
-					if(this.isParallel(seg1,seg2)){ continue;}
-					if(bx3>bx4){ tmp=bx3;bx3=bx4;bx4=tmp;} if(by3>by4){ tmp=by3;by3=by4;by4=tmp;}
-					if(bx3<bx2 && bx1<bx4 && by3<by2 && by1<by4){ cand1.push([id1,id2]);}
+			for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
+				var seg1=bd.segs.seg[idlist[i]], seg2=bd.segs.seg[idlist[j]];
+				if(bd.segs.isCrossing(seg1,seg2) && !bd.segs.isRightAngle(seg1,seg2)){
+					if(result){ bd.segs.seterrorAll(2);}
+					bd.segs.seterror([seg1,seg2],1);
+					result = false;
 				}
-			}
-			/* 交差判定 */
-			for(var i=0;i<cand1.length;i++){
-				var seg1=bd.segs.seg[cand1[i][0]], bx1=seg1.bx1, bx2=seg1.bx2, by1=seg1.by1, by2=seg1.by2;
-				var seg2=bd.segs.seg[cand1[i][1]], bx3=seg2.bx1, bx4=seg2.bx2, by3=seg2.by1, by4=seg2.by2;
-				if     (bx1===bx2){ // 片方の線だけ垂直
-					var bx0=bx1, by0=(by4-by3)/(bx4-bx3)*(bx0-bx3)+by3;
-					if((by1<by0 && by0<by2)||(by2<by0 && by0<by1)){ cand2.push(cand1[i]);}
-				}
-				else if(bx3===bx4){ // 片方の線だけ垂直
-					var bx0=bx3, by0=(by2-by1)/(bx2-bx1)*(bx0-bx1)+by1;
-					if((by3<by0 && by0<by4)||(by4<by0 && by0<by3)){ cand2.push(cand1[i]);}
-				}
-				else{ // 2本とも垂直でない (SegmentManagerの仕様的にbx1<bx2になるはず)
-					var div1=(by2-by1)/(bx2-bx1), div2=(by4-by3)/(bx4-bx3);
-					var bx0=((bx3*div2-by3)-(bx1*div1-by1))/(div2-div1);
-					if(bx1<bx0 && bx0<bx2 && bx3<bx0 && bx0<bx4){ cand2.push(cand1[i]);}
-				}
-			}
-			/* 直角判定 */ // 傾きベクトルの内積=0なら直角
-			for(var i=0;i<cand2.length;i++){
-				var seg1=bd.segs.seg[cand2[i][0]], bx1=seg1.bx1, bx2=seg1.bx2, by1=seg1.by1, by2=seg1.by2;
-				var seg2=bd.segs.seg[cand2[i][1]], bx3=seg2.bx1, bx4=seg2.bx2, by3=seg2.by1, by4=seg2.by2;
-				if(((bx2-bx1)*(bx4-bx3)+(by2-by1)*(by4-by3))!==0){ cand3.push(cand2[i]);}
-			}
-			/* エラー処理 */
-			for(var i=0;i<cand3.length;i++){
-				if(result){ bd.segs.seterrorAll(2);}
-				bd.segs.seterror(cand3[i],1);
-				result = false;
-			}
+			}}
 			return result;
 		};
 	}
@@ -722,6 +669,11 @@ Segment = function(bx1, by1, bx2, by2){
 	this.bx2;		// 端点2のX座標(border座標系)を保持する
 	this.by2;		// 端点2のY座標(border座標系)を保持する
 
+	this.dx;		// X座標の差分を保持する
+	this.dy;		// Y座標の差分を保持する
+
+	this.lattices;	// 途中で通過する格子点を保持する
+
 	this.color = "";
 	this.error = 0;
 
@@ -736,6 +688,31 @@ Segment.prototype = {
 		this.by1 = by1;
 		this.bx2 = bx2;
 		this.by2 = by2;
+
+		this.dx = (bx2-bx1);
+		this.dy = (by2-by1);
+
+		this.setLattices(bx1,by1,bx2,by2);
+	},
+	setLattices : function(bx1,by1,bx2,by2){
+		// ユークリッドの互助法で最大公約数を求める
+		var div=(bx2-bx1), n=(by2-by1);
+		div=(div<0?-div:div); n=(n<0?-n:n);
+		if(div<n){ tmp=div;div=n;n=tmp;} // (m,n)=(0,0)は想定外
+		while(n>0){ tmp=(div%n); div=n; n=tmp;}
+
+		// div-1が途中で通る格子点の数になってる
+		this.lattices = [];
+		for(var a=1;a<div;a++){
+			var bx=bx1+(bx2-bx1)*(a/div);
+			var by=by1+(by2-by1)*(a/div);
+			var xc=bd.xnum(bx,by);
+			if(xc!==null && bd.cross[xc].qnum!==-1){ this.lattices.push(xc);}
+		}
+	},
+	ispositive : function(bx,by){
+		/* (端点1-P)と(P-端点2)で外積をとった時のZ軸方向の符号がが正か負か */
+		return((bx-this.bx1)*(this.by2-by)-(this.bx2-bx)*(by-this.by1)>0);
 	}
 };
 //---------------------------------------------------------------------------
@@ -848,6 +825,74 @@ SegmentManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// segs.isRightAngle() 2本のsegmentが直角かどうか判定する
+	// segs.isParallel()   2本のsegmentが並行かどうか判定する
+	// segs.isCrossing()   2本のsegmentが並行でなく交差しているかどうか判定する
+	// segs.isOverLapSegment() 2本のsegmentが重なっているかどうか判定する
+	// segs.isOverLap()    (a1-a2)と(b1-b2)の範囲が重なっているかどうか判定する
+	//---------------------------------------------------------------------------
+	isRightAngle : function(seg1, seg2){
+		/* 傾きベクトルの内積が0かどうか */
+		return ((seg1.dx*seg2.dx+seg1.dy*seg2.dy)===0);
+	},
+	isParallel : function(seg1, seg2){
+		var vert1=(seg1.dx===0), vert2=(seg2.dx===0); // 縦線
+		var horz1=(seg1.dy===0), horz2=(seg2.dy===0); // 横線
+		if(vert1&&vert2){ return true;} // 両方縦線
+		if(horz1&&horz2){ return true;} // 両方横線
+		if(!vert1&&!vert2&&!horz1&&!horz2){ // 両方ナナメ
+			return (seg1.dx*seg2.dy===seg2.dx*seg1.dy);
+		}
+		return false;
+	},
+	isCrossing : function(seg1, seg2){
+		/* 平行ならここでは対象外 */
+		if(this.isParallel(seg1,seg2)){ return false;}
+
+		var bx11=seg1.bx1, bx12=seg1.bx2, by11=seg1.by1, by12=seg1.by2, dx1=seg1.dx, dy1=seg1.dy;
+		var bx21=seg2.bx1, bx22=seg2.bx2, by21=seg2.by1, by22=seg2.by2, dx2=seg2.dx, dy2=seg2.dy, tmp;
+
+		/* X座標,Y座標が重なっているかどうか調べる */
+		if(!this.isOverLap(bx11,bx12,bx21,bx22) || !this.isOverLap(by11,by12,by21,by22)){ return false;}
+
+		/* 交差している位置を調べる */
+		if     (dx1===0){ // 片方の線だけ垂直
+			var bx0=bx11, by0=(dy2/dx2)*(bx0-bx21)+by21;
+			if((by11<by0 && by0<by12)||(by12<by0 && by0<by11)){ return true;}
+		}
+		else if(dx2===0){ // 片方の線だけ垂直
+			var bx0=bx21, by0=(dy1/dx1)*(bx0-bx11)+by11;
+			if((by21<by0 && by0<by22)||(by22<by0 && by0<by21)){ return true;}
+		}
+		else{ // 2本とも垂直でない (仕様的にbx1<bx2になるはず)
+			var div1=dy1/dx1, div2=dy2/dx2;
+			var bx0=((bx21*div2-by21)-(bx11*div1-by11))/(div2-div1);
+			if((bx11<bx0 && bx0<bx12)&&(bx21<bx0 && bx0<bx22)){ return true;}
+		}
+		return false;
+	},
+	isOverLapSegment : function(seg1, seg2){
+		if(!this.isParallel(seg1,seg2)){ return false;}
+		if(seg1.dx===0 && seg2.dx===0){ // 2本とも垂直の時
+			if(seg1.bx1===seg2.bx1){ // 垂直で両方同じX座標
+				if(this.isOverLap(seg1.by1,seg1.by2,seg2.by1,seg2.by2)){ return true;}
+			}
+		}
+		else{ // 垂直でない時 => bx=0の時のY座標の値を比較 => 割り算にならないように展開
+			if((seg1.dx*seg1.by1-seg1.bx1*seg1.dy)*seg2.dx===(seg2.dx*seg2.by1-seg2.bx1*seg2.dy)*seg1.dx){
+				if(this.isOverLap(seg1.bx1,seg1.bx2,seg2.bx1,seg2.bx2)){ return true;}
+			}
+		}
+		return false;
+	},
+
+	isOverLap : function(a1,a2,b1,b2){
+		var tmp;
+		if(a1>a2){ tmp=a1;a1=a2;a2=tmp;} if(b1>b2){ tmp=b1;b1=b2;b2=tmp;}
+		return (b1<a2 && a1<b2);
+	},
+
+	//---------------------------------------------------------------------------
 	// segs.seterror()    segmentに指定したエラー値を設定する
 	// segs.seterrorAll() 全てのsegmentに指定したエラー値を設定する
 	//---------------------------------------------------------------------------
@@ -864,12 +909,24 @@ SegmentManager.prototype = {
 	// segs.segmentinside() 座標(x1,y1)-(x2,y2)に含まれるsegmentのIDリストを取得する
 	//---------------------------------------------------------------------------
 	getallsegment : function(){
-		return this.segmentinside(bd.minbx,bd.minby,bd.maxbx,bd.maxby);
-	},
-	segmentinside : function(x1,y1,x2,y2){
-		/* 仮に、全描画にしておきます */
 		var idlist = [];
 		for(var id in this.seg){ idlist.push(id);}
+		return idlist;
+	},
+	segmentinside : function(x1,y1,x2,y2){
+		if(x1<=bd.minbx && x2>=bd.maxbx && y1<=bd.minby && y2>=bd.maxby){ return this.getallsegment();}
+
+		var idlist = [];
+		for(var id in this.seg){
+			var seg=this.seg[id], cnt=0;
+			if(this.isOverLap(seg.bx1,seg.bx2,x1,x2) && this.isOverLap(seg.by1,seg.by2,y1,y2)){
+				if(seg.ispositive(x1,y1)){ cnt++;}
+				if(seg.ispositive(x1,y2)){ cnt++;}
+				if(seg.ispositive(x2,y1)){ cnt++;}
+				if(seg.ispositive(x2,y2)){ cnt++;}
+				if(cnt>0 && cnt<4){ idlist.push(id);}
+			}
+		}
 		return idlist;
 	},
 
@@ -1004,7 +1061,7 @@ SegmentManager.prototype = {
 		this.seg[id].color = newColor;
 
 		if(shortid!==null){
-			if(pp.getVal('irowake')){ pc.repaintLines(this.idlist[longid], id);}
+			if(pp.getVal('irowake')){ pc.repaintSegments(this.idlist[longid], id);}
 		}
 	},
 	remakeLineInfo : function(id,val){
@@ -1056,7 +1113,7 @@ SegmentManager.prototype = {
 				idlist.push(this.idlist[current][n]);
 			}
 		}
-		if(pp.getVal('irowake')){ pc.repaintLines(idlist, id);}
+		if(pp.getVal('irowake')){ pc.repaintSegments(idlist, id);}
 	},
 
 	//---------------------------------------------------------------------------
