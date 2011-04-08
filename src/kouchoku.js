@@ -391,7 +391,7 @@ Puzzles.kouchoku.prototype = {
 			var c=0, i=0, bstr = this.outbstr;
 			for(i=0;i<bstr.length;i++){
 				var obj = bd.cross[c], ca = bstr.charAt(i);
-				if     (this.include(ca,"a","z")){ obj.qnum = parseInt(ca,16)-9;}
+				if     (this.include(ca,"a","z")){ obj.qnum = parseInt(ca,36)-9;}
 				else if(this.include(ca,"0","9")){ c+=(parseInt(ca,36));}
 				else if(ca=="."){ obj.qnum=-2;}
 
