@@ -1,4 +1,4 @@
-// for_test.js v3.3.3
+// for_test.js v3.4.0
 
 debug.extend({
 	testonly_func : function(){
@@ -92,7 +92,7 @@ debug.extend({
 				else if(!debug.alltimer){ debug.addTextarea("Encode test   = pass");}
 
 				setTimeout(function(){
-					if(k.isKanpenExist){ debug.phase = 11;}
+					if(PZLINFO.info[k.puzzleid].exists.kanpen){ debug.phase = 11;}
 					else{ debug.phase = (debug.acs[k.puzzleid])?20:30;}
 				},fint);
 			})();

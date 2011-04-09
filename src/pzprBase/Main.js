@@ -48,9 +48,7 @@ var k = {
 		this.RBBlackCell    =	// 連黒分断禁のパズル
 		this.checkBlackCell =	// 正答判定で黒マスの情報をチェックするパズル
 		this.checkWhiteCell =	// 正答判定で白マスの情報をチェックするパズル
-
-		this.ispzprv3ONLY   =	// ぱずぷれアプレットには存在しないパズル
-		this.isKanpenExist	= false; // pencilbox/カンペンにあるパズル
+		false;
 
 		// 各パズルのsetting()関数で設定されることがあるもの
 		this.bdmargin       = 0.70;	// 枠外の一辺のmargin(セル数換算)

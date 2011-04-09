@@ -1,119 +1,16 @@
 ﻿(function(){
 
 var PZLINFO = {
-	extend : function(obj){ for(var i in obj){ this[i] = obj[i];}},
-	info   : {}
-};
-var register = function(pzprid, scriptid, strja, stren, alias){
-	PZLINFO.info[pzprid] = {
-		pzprid  : pzprid,	/* パズルID */
-		script  : (!!scriptid ? scriptid : pzprid),	/* スクリプトファイル(クラス) */
-		ja      : strja,		/* 日本語パズル名 */
-		en      : stren,		/* 英語パズル名 */
-		alias   : {}
-	};
-	if(alias!==(void 0)){
-		/* pzprurl : ぱずぷれID(URL出力用) */
-		/* kanpen  : カンペンID            */
-		/* kanpen2 : カンペンID(入力のみ)  */
-		PZLINFO.info[pzprid].alias  = alias;
-	}
-};
+	info   : {},
 
-register('aho',        '',           'アホになり切れ',           'Aho-ni-Narikire');
-register('ayeheya',    '',           '∀人∃ＨＥＹＡ',           'ekawayeh');
-register('bag',        '',           'バッグ',                   'BAG (Corral)');
-register('barns',      '',           'バーンズ',                 'Barns');
-register('bdblock',    '',           'ボーダーブロック',         'Border Block');
-register('bonsan',     'bonsan',     'ぼんさん',                 'Bonsan');
-register('bosanowa',   '',           'ボサノワ',                 'Bosanowa');
-register('box',        '',           'ボックス',                 'Box');
-register('cbblock',    '',           'コンビブロック',           'Combi Block');
-register('chocona',    '',           'チョコナ',                 'Chocona');
-register('cojun',      '',           'コージュン',               'Cojun');
-register('country',    '',           'カントリーロード',         'Country Road');
-register('creek',      '',           'クリーク',                 'Creek');
-register('factors',    '',           '因子の部屋',               'Rooms of Factors');
-register('fillmat',    '',           'フィルマット',             'Fillmat');
-register('fillomino',  '',           'フィルオミノ',             'Fillomino', { kanpen2:'fillomino01'});
-register('firefly',    '',           'ホタルビーム',             'Hotaru Beam (Glow of Fireflies)');
-register('fivecells',  '',           'ファイブセルズ',           'FiveCells');
-register('fourcells',  '',           'フォーセルズ',             'FourCells');
-register('goishi',     '',           '碁石ひろい',               'Goishi');
-register('gokigen',    '',           'ごきげんななめ',           'Gokigen-naname');
-register('hakoiri',    '',           'はこいり○△□',           'Triplets');
-register('hashikake',  '',           '橋をかけろ',               'Bridges', { kanpen:'hashi'});
-register('heyawake',   '',           'へやわけ',                 'Heyawake');
-register('heyabon',    'bonsan',     'へやぼん',                 'Heya-Bon');
-register('hitori',     '',           'ひとりにしてくれ',         'Hitori');
-register('icebarn',    '',           'アイスバーン',             'Icebarn');
-register('icelom',     'icelom',     'アイスローム',             'Icelom');
-register('icelom2',    'icelom',     'アイスローム２',           'Icelom2');
-register('ichimaga',   'ichimaga',   'イチマガ',                 'Ichimaga');
-register('ichimagam',  'ichimaga',   '磁石イチマガ',             'Crossing Ichimaga');
-register('ichimagax',  'ichimaga',   '一回曲がって交差もするの', 'Magnetic Ichimaga');
-register('kaero',      '',           'お家に帰ろう',             'Return Home');
-register('kakuro',     '',           'カックロ',                 'Kakuro');
-register('kakuru',     '',           'カックル',                 'Kakuru');
-register('kinkonkan',  '',           'キンコンカン',             'Kin-Kon-Kan');
-register('kouchoku',   '',           '交差は直角に限る',         'Kouchoku');
-register('kramma',     'kramma',     '快刀乱麻',                 'KaitoRamma');
-register('kramman',    'kramma',     '新・快刀乱麻',             'New KaitoRamma');
-register('kurochute',  '',           'クロシュート',             'Kurochute');
-register('kurodoko',   '',           '黒どこ(黒マスはどこだ)',   'Kurodoko');
-register('kusabi',     '',           'クサビリンク',             'Kusabi');
-register('lightup',    '',           '美術館',                   'Akari (Light Up)', { pzprurl:'akari', kanpen:'bijutsukan'});
-register('lits',       '',           'ＬＩＴＳ',                 'LITS');
-register('loopsp',     '',           '環状線スペシャル',         'Loop Special');
-register('loute',      '',           'エルート',                 'L-route');
-register('mashu',      '',           'ましゅ',                   'Masyu (Pearl Puzzle)', { kanpen:'masyu'});
-register('mejilink',   '',           'メジリンク',               'Mejilink');
-register('minarism',   '',           'マイナリズム',             'Minarism');
-register('mochikoro',  '',           'モチコロ',                 'Mochikoro');
-register('mochinyoro', '',           'モチにょろ',               'Mochinyoro');
-register('nagenawa',   '',           'なげなわ',                 'Nagenawa');
-register('nanro',      '',           'ナンロー',                 'Nanro');
-register('nawabari',   '',           'なわばり',                 'Territory');
-register('norinori',   '',           'のりのり',                 'Norinori');
-register('numlin',     '',           'ナンバーリンク',           'Numberlink', { kanpen:'numberlink'});
-register('nuribou',    '',           'ぬりぼう',                 'Nuribou');
-register('nurikabe',   '',           'ぬりかべ',                 'Nurikabe');
-register('paintarea',  '',           'ペイントエリア',           'Paintarea');
-register('pipelink',   'pipelink',   'パイプリンク',             'Pipelink');
-register('pipelinkr',  'pipelink',   '帰ってきたパイプリンク',   'Pipelink Returns');
-register('reflect',    '',           'リフレクトリンク',         'Reflect Link');
-register('renban',     '',           '連番窓口',                 'Renban-Madoguchi');
-register('ripple',     '',           '波及効果',                 'Ripple Effect', { kanpen:'hakyukoka'});
-register('roma',       '',           'ろーま',                   'Roma');
-register('shakashaka', '',           'シャカシャカ',             'ShakaShaka');
-register('shikaku',    '',           '四角に切れ',               'Shikaku');
-register('shimaguni',  '',           '島国',                     'Islands');
-register('shugaku',    '',           '修学旅行の夜',             'School Trip');
-register('shwolf',     '',           'ヤギとオオカミ',           'Sheeps and Wolves');
-register('slalom',     '',           'スラローム',               'Slalom');
-register('slither',    '',           'スリザーリンク',           'Slitherlink', { kanpen:'slitherlink'});
-register('snakes',     '',           'へびいちご',               'Hebi-Ichigo');
-register('sudoku',     '',           '数独',                     'Sudoku');
-register('sukoro',     '',           '数コロ',                   'Sukoro');
-register('sukororoom', '',           '数コロ部屋',               'Sukoro-room');
-register('tasquare',   '',           'たすくえあ',               'Tasquare');
-register('tatamibari', '',           'タタミバリ',               'Tatamibari');
-register('tateyoko',   '',           'タテボーヨコボー',         'Tatebo-Yokobo');
-register('tawa',       '',           'たわむれんが',             'Tawamurenga');
-register('tentaisho',  '',           '天体ショー',               'Tentaisho');
-register('tilepaint',  '',           'タイルペイント',           'Tilepaint');
-register('toichika',   '',           '遠い誓い',                 'Toichika');
-register('triplace',   '',           'トリプレイス',             'Tri-place');
-register('usotatami',  '',           'ウソタタミ',               'Uso-tatami');
-register('view',       '',           'ヴィウ',                   'View');
-register('wagiri',     '',           'ごきげんななめ・輪切',     'Gokigen-naname:wagiri');
-register('wblink',     '',           'シロクロリンク',           'Shirokuro-link');
-register('yajikazu',   '',           'やじさんかずさん',         'Yajisan-Kazusan');
-register('yajirin',    '',           'ヤジリン',                 'Yajilin', { pzprurl:'yajilin', kanpen:'yajilin'});
-
-/* 関数 */
-PZLINFO.extend({
-	exists : function(name){ return !!this.toPID(name);},
+	register : function(obj){
+		for(var pzprid in obj){
+			PZLINFO.info[pzprid] = new PZLDATA(pzprid,obj[pzprid]);
+		}
+	},
+	exists : function(name){
+		return !!this.toPID(name);
+	},
 	toPID : function(name){
 		if(!!this.info[name].ja){ return name;}
 		for(var pid in this.info){
@@ -132,7 +29,120 @@ PZLINFO.extend({
 	},
 	toKanpen : function(pid){
 		return (!!this.info[pid].alias.kanpen ? !!this.info[pid].alias.kanpen : pid);
-	},
+	}
+};
+
+var PZLDATA = function(){
+	this.init.apply(this,arguments);
+};
+PZLDATA.prototype = {
+	init : function(pzprid, datalist){
+		this.pzprid = pzprid;		/* パズルID */
+		this.script = (!!datalist[4] ? datalist[4] : this.pzprid);	/* スクリプトファイル(クラス) */
+		this.ja     = datalist[2];	/* 日本語パズル名 */
+		this.en     = datalist[3];	/* 英語パズル名 */
+		this.exists = {
+			pzprapp : !!datalist[0],
+			kanpen  : !!datalist[1]
+		};
+		/* pzprurl : ぱずぷれID(URL出力用) */
+		/* kanpen  : カンペンID            */
+		/* kanpen2 : カンペンID(入力のみ)  */
+		this.alias  = (datalist[5]!==(void 0) ? datalist[5] : {});
+	}
+};
+
+PZLINFO.register({
+	aho       :[false, false, 'アホになり切れ', 'Aho-ni-Narikire', '', {}],
+	ayeheya   :[false, true,  '∀人∃ＨＥＹＡ', 'ekawayeh', '', {}],
+	bag       :[true,  false, 'バッグ', 'BAG (Corral)', '', {}],
+	barns     :[true,  false, 'バーンズ', 'Barns', '', {}],
+	bdblock   :[true,  false, 'ボーダーブロック', 'Border Block', '', {}],
+	bonsan    :[true,  false, 'ぼんさん', 'Bonsan', 'bonsan', {}],
+	bosanowa  :[true,  false, 'ボサノワ', 'Bosanowa', '', {}],
+	box       :[false, false, 'ボックス', 'Box', '', {}],
+	cbblock   :[false, false, 'コンビブロック', 'Combi Block', '', {}],
+	chocona   :[false, false, 'チョコナ', 'Chocona', '', {}],
+	cojun     :[false, false, 'コージュン', 'Cojun', '', {}],
+	country   :[true,  false, 'カントリーロード', 'Country Road', '', {}],
+	creek     :[true,  false, 'クリーク', 'Creek', '', {}],
+	factors   :[false, false, '因子の部屋', 'Rooms of Factors', '', {}],
+	fillmat   :[true,  false, 'フィルマット', 'Fillmat', '', {}],
+	fillomino :[false, true,  'フィルオミノ', 'Fillomino', '', { kanpen2:'fillomino01'}],
+	firefly   :[true,  false, 'ホタルビーム', 'Hotaru Beam (Glow of Fireflies)', '', {}],
+	fivecells :[false, false, 'ファイブセルズ', 'FiveCells', '', {}],
+	fourcells :[false, false, 'フォーセルズ', 'FourCells', '', {}],
+	goishi    :[false, true,  '碁石ひろい', 'Goishi', '', {}],
+	gokigen   :[true,  false, 'ごきげんななめ', 'Gokigen-naname', '', {}],
+	hakoiri   :[true,  false,  'はこいり○△□', 'Triplets', '', {}],
+	hashikake :[false, true,  '橋をかけろ', 'Bridges', '', { kanpen:'hashi'}],
+	heyawake  :[false, true,  'へやわけ', 'Heyawake', '', {}],
+	heyabon   :[true,  false,  'へやぼん', 'Heya-Bon', 'bonsan', {}],
+	hitori    :[false, true,  'ひとりにしてくれ', 'Hitori', '', {}],
+	icebarn   :[true,  false, 'アイスバーン', 'Icebarn', '', {}],
+	icelom    :[false, false, 'アイスローム', 'Icelom', 'icelom', {}],
+	icelom2   :[false, false, 'アイスローム２', 'Icelom2', 'icelom', {}],
+	ichimaga  :[false, false, 'イチマガ', 'Ichimaga', 'ichimaga', {}],
+	ichimagam :[false, false, '磁石イチマガ', 'Magnetic Ichimaga', 'ichimaga', {}],
+	ichimagax :[false, false, '一回曲がって交差もするの', 'Crossing Ichimaga', 'ichimaga', {}],
+	kaero     :[true,  false, 'お家に帰ろう', 'Return Home', '', {}],
+	kakuro    :[false, true,  'カックロ', 'Kakuro', '', {}],
+	kakuru    :[false, false, 'カックル', 'Kakuru', '', {}],
+	kinkonkan :[true,  false, 'キンコンカン', 'Kin-Kon-Kan', '', {}],
+	kouchoku  :[false, false, '交差は直角に限る', 'Kouchoku', '', {}],
+	kramma    :[false, false, '快刀乱麻', 'KaitoRamma', 'kramma', {}],
+	kramman   :[false, false, '新・快刀乱麻', 'New KaitoRamma', 'kramma', {}],
+	kurochute :[false, true,  'クロシュート', 'Kurochute', '', {}],
+	kurodoko  :[false, true,  '黒どこ(黒マスはどこだ)', 'Kurodoko', '', {}],
+	kusabi    :[false, false, 'クサビリンク', 'Kusabi', '', {}],
+	lightup   :[false, true,  '美術館', 'Akari (Light Up)', '', { pzprurl:'akari', kanpen:'bijutsukan'}],
+	lits      :[true,  true,  'ＬＩＴＳ', 'LITS', '', {}],
+	loopsp    :[true,  false, '環状線スペシャル', 'Loop Special', '', {}],
+	loute     :[false, false, 'エルート', 'L-route', '', {}],
+	mashu     :[false, true,  'ましゅ', 'Masyu (Pearl Puzzle)', '', { kanpen:'masyu'}],
+	mejilink  :[false, false, 'メジリンク', 'Mejilink', '', {}],
+	minarism  :[true,  false, 'マイナリズム', 'Minarism', '', {}],
+	mochikoro :[true,  false, 'モチコロ', 'Mochikoro', '', {}],
+	mochinyoro:[true,  false, 'モチにょろ', 'Mochinyoro', '', {}],
+	nagenawa  :[false, false, 'なげなわ', 'Nagenawa', '', {}],
+	nanro     :[false, true,  'ナンロー', 'Nanro', '', {}],
+	nawabari  :[true,  false, 'なわばり', 'Territory', '', {}],
+	norinori  :[false, true,  'のりのり', 'Norinori', '', {}],
+	numlin    :[false, true,  'ナンバーリンク', 'Numberlink', '', { kanpen:'numberlink'}],
+	nuribou   :[true,  false, 'ぬりぼう', 'Nuribou', '', {}],
+	nurikabe  :[false, true,  'ぬりかべ', 'Nurikabe', '', {}],
+	paintarea :[true,  false, 'ペイントエリア', 'Paintarea', '', {}],
+	pipelink  :[true,  false, 'パイプリンク', 'Pipelink', 'pipelink', {}],
+	pipelinkr :[true,  false, '帰ってきたパイプリンク', 'Pipelink Returns', 'pipelink', {}],
+	reflect   :[true,  false, 'リフレクトリンク', 'Reflect Link', '', {}],
+	renban    :[false, false, '連番窓口', 'Renban-Madoguchi', '', {}],
+	ripple    :[false, true,  '波及効果', 'Ripple Effect', '', { kanpen:'hakyukoka'}],
+	roma      :[false, false, 'ろーま', 'Roma', '', {}],
+	shakashaka:[false, true,  'シャカシャカ', 'ShakaShaka', '', {}],
+	shikaku   :[false, true,  '四角に切れ', 'Shikaku', '', {}],
+	shimaguni :[true,  false, '島国', 'Islands', '', {}],
+	shugaku   :[true,  false, '修学旅行の夜', 'School Trip', '', {}],
+	shwolf    :[false, false, 'ヤギとオオカミ', 'Sheeps and Wolves', '', {}],
+	slalom    :[true,  true,  'スラローム', 'Slalom', '', {}],
+	slither   :[false, true,  'スリザーリンク', 'Slitherlink', '', { kanpen:'slitherlink'}],
+	snakes    :[true,  false, 'へびいちご', 'Hebi-Ichigo', '', {}],
+	sudoku    :[false, true,  '数独', 'Sudoku', '', {}],
+	sukoro    :[true,  false, '数コロ', 'Sukoro', '', {}],
+	sukororoom:[false, false, '数コロ部屋', 'Sukoro-room', '', {}],
+	tasquare  :[false, false, 'たすくえあ', 'Tasquare', '', {}],
+	tatamibari:[true,  false, 'タタミバリ', 'Tatamibari', '', {}],
+	tateyoko  :[true,  false, 'タテボーヨコボー', 'Tatebo-Yokobo', '', {}],
+	tawa      :[false, false, 'たわむれんが', 'Tawamurenga', '', {}],
+	tentaisho :[false, true,  '天体ショー', 'Tentaisho', '', {}],
+	tilepaint :[true,  false, 'タイルペイント', 'Tilepaint', '', {}],
+	toichika  :[false, false, '遠い誓い', 'Toichika', '', {}],
+	triplace  :[false, false, 'トリプレイス', 'Tri-place', '', {}],
+	usotatami :[false, false, 'ウソタタミ', 'Uso-tatami', '', {}],
+	view      :[true,  false, 'ヴィウ', 'View', '', {}],
+	wagiri    :[false, false, 'ごきげんななめ・輪切', 'Gokigen-naname:wagiri', '', {}],
+	wblink    :[false, false, 'シロクロリンク', 'Shirokuro-link', '', {}],
+	yajikazu  :[true,  false, 'やじさんかずさん', 'Yajisan-Kazusan', '', {}],
+	yajirin   :[false, true,  'ヤジリン', 'Yajilin', '', { pzprurl:'yajilin', kanpen:'yajilin'}]
 });
 
 /* extern */
