@@ -93,23 +93,31 @@ Puzzles.icelom.prototype = {
 			if(this.prevPos.equals(pos)){ return;}
 
 			var id = this.getnb(this.prevPos, pos);
-			if(id===null){
+			if(id!==null && !this.ismousedown){
 				var dir = this.getdir(this.prevPos, pos);
-				if(this.inputData===null){ this.inputData = ((dir===k.UP||dir===k.LT) ? 1 : 2);}
+				var val = ((dir===k.UP||dir===k.LT)?1:2);
 
 				if(id>=bd.bdinside){
-					if(bd.border[id].bx===0 || bd.border[id].by===0){
-						if     (this.inputData==1){ bd.inputarrowout(id);}
-						else if(this.inputData==2){ bd.inputarrowin (id);}
-					}
-					else{
-						if     (this.inputData==1){ bd.inputarrowin (id);}
-						else if(this.inputData==2){ bd.inputarrowout(id);}
+					if(this.inputData===null){
+						val = this.checkinout(id,dir);
+						if     (val===1){ bd.inputarrowin(id);  this.mousereset();}
+						else if(val===2){ bd.inputarrowout(id); this.mousereset();}
 					}
 				}
 				pc.paintBorder(id);
+				pc.paintBorder(id);
 			}
 			this.prevPos = pos;
+		};
+		/* 0:どちらでもない 1:IN 2:OUT */
+		mv.checkinout = function(id,dir){
+			if(bd.border[id]===(void 0)){ return 0;}
+			var bx=bd.border[id].bx, by=bd.border[id].by;
+			if     ((bx===bd.minbx && dir===k.RT)||(bx===bd.maxbx && dir===k.LT)||
+					(by===bd.minby && dir===k.DN)||(by===bd.maxby && dir===k.UP)){ return 1;}
+			else if((bx===bd.minbx && dir===k.LT)||(bx===bd.maxbx && dir===k.RT)||
+					(by===bd.minby && dir===k.UP)||(by===bd.maxby && dir===k.DN)){ return 2;}
+			return 0;
 		};
 
 		// キーボード入力系
@@ -142,33 +150,31 @@ Puzzles.icelom.prototype = {
 
 		if(!bd.arrowin) { bd.arrowin  = null;}
 		if(!bd.arrowout){ bd.arrowout = null;}
-		bd.inputarrowin = function(id){
-			var dir=((this.border[id].bx===0||this.border[id].by===0)?1:2);
-			this.setArrow(this.arrowin,0);
-			pc.paintBorder(this.arrowin);
-			if(this.arrowout==id){
-				um.addOpe(k.OTHER, 'out', 0, this.arrowout, this.arrowin);
-				this.arrowout = this.arrowin;
-				this.setArrow(this.arrowout, ((dir+1)%2)+1);
-				pc.paintBorder(this.arrowout);
-			}
+		bd.setarrowin = function(id){
 			um.addOpe(k.OTHER, 'in', 0, this.arrowin, id);
 			this.arrowin = id;
-			this.setArrow(this.arrowin, (dir%2)+1);
+			this.setArrow(id, ((this.border[id].bx===bd.maxbx||this.border[id].by===bd.maxby)?1:2));
 		};
-		bd.inputarrowout = function(id){
-			var dir=((this.border[id].bx===0||this.border[id].by===0)?1:2);
-			this.setArrow(this.arrowout,0);
-			pc.paintBorder(this.arrowout);
-			if(this.arrowin==id){
-				um.addOpe(k.OTHER, 'in', 0, this.arrowin, this.arrowout);
-				this.arrowin = this.arrowout;
-				this.setArrow(this.arrowin, (dir%2)+1);
-				pc.paintBorder(this.arrowin);
-			}
+		bd.setarrowout = function(id){
 			um.addOpe(k.OTHER, 'out', 0, this.arrowout, id);
 			this.arrowout = id;
-			this.setArrow(this.arrowout, ((dir+1)%2)+1);
+			this.setArrow(id, ((this.border[id].bx===bd.minbx||this.border[id].by===bd.minby)?1:2));
+		};
+		bd.inputarrowin = function(id){
+			var old_in=this.arrowin, old_out=this.arrowout;
+			if(old_out==id){ this.setarrowout(old_in);}
+			else{ this.setArrow(old_in, 0);}
+			this.setarrowin(id);
+			
+			pc.paintBorder(old_in);
+		};
+		bd.inputarrowout = function(id){
+			var old_in=this.arrowin, old_out=this.arrowout;
+			if(old_in==id){ this.setarrowin(old_out);}
+			else{ this.setArrow(old_out, 0);}
+			this.setarrowout(id);
+			
+			pc.paintBorder(old_out);
 		};
 		um.execSpecial = function(ope, num){
 			var id0 = bd.startid;
