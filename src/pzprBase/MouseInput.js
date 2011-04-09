@@ -1,4 +1,4 @@
-// MouseInput.js v3.3.3
+// MouseInput.js v3.4.0
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -398,10 +398,10 @@ MouseEvent.prototype = {
 	},
 
 	getdir : function(base, current){
-		if     (current.y-base.y===-2){ return k.UP;}
-		else if(current.y-base.y=== 2){ return k.DN;}
-		else if(current.x-base.x===-2){ return k.LT;}
-		else if(current.x-base.x=== 2){ return k.RT;}
+		if     (current.x-base.x=== 0 && current.y-base.y===-2){ return k.UP;}
+		else if(current.x-base.x=== 0 && current.y-base.y=== 2){ return k.DN;}
+		else if(current.x-base.x===-2 && current.y-base.y=== 0){ return k.LT;}
+		else if(current.x-base.x=== 2 && current.y-base.y=== 0){ return k.RT;}
 		return k.NONE;
 	},
 
@@ -589,10 +589,10 @@ MouseEvent.prototype = {
 		this.prevPos = pos;
 	},
 	getnb : function(base, current){
-		if     (current.y-base.y===-2){ return bd.bnum(base.x  ,base.y-1);}
-		else if(current.y-base.y=== 2){ return bd.bnum(base.x  ,base.y+1);}
-		else if(current.x-base.x===-2){ return bd.bnum(base.x-1,base.y  );}
-		else if(current.x-base.x=== 2){ return bd.bnum(base.x+1,base.y  );}
+		if     (current.x-base.x=== 0 && current.y-base.y===-2){ return bd.bnum(base.x  ,base.y-1);}
+		else if(current.x-base.x=== 0 && current.y-base.y=== 2){ return bd.bnum(base.x  ,base.y+1);}
+		else if(current.x-base.x===-2 && current.y-base.y=== 0){ return bd.bnum(base.x-1,base.y  );}
+		else if(current.x-base.x=== 2 && current.y-base.y=== 0){ return bd.bnum(base.x+1,base.y  );}
 		return null;
 	},
 
