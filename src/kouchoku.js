@@ -83,10 +83,11 @@ Puzzles.kouchoku.prototype = {
 				pc.paintCross(cc);
 				if(old!==null){ pc.paintCross(old);}
 			}
+			
+			this.mouseCell = cc;
 		};
 		mv.inputsegment_up = function(){
-			var cc = this.crossid();
-			if(cc===null || cc===this.mouseCell || this.inputData!==1){ return;}
+			if(this.inputData!==1){ return;}
 
 			var cc1=this.targetPoint[0], cc2=this.targetPoint[1];
 			this.targetPoint = [null, null];
