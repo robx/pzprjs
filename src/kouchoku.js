@@ -764,6 +764,7 @@ SegmentManager.prototype = {
 		var ids = [];
 		for(var id in this.seg){
 			if(this.seg[id]===null){ continue;}
+			id = +id;
 			this.lineid[id] = 0;
 			ids.push(id);
 
@@ -911,7 +912,7 @@ SegmentManager.prototype = {
 	//---------------------------------------------------------------------------
 	getallsegment : function(){
 		var idlist = [];
-		for(var id in this.seg){ idlist.push(id);}
+		for(var id in this.seg){ idlist.push(+id);}
 		return idlist;
 	},
 	segmentinside : function(x1,y1,x2,y2){
@@ -925,7 +926,7 @@ SegmentManager.prototype = {
 				if(seg.ispositive(x1,y2)){ cnt++;}
 				if(seg.ispositive(x2,y1)){ cnt++;}
 				if(seg.ispositive(x2,y2)){ cnt++;}
-				if(cnt>0 && cnt<4){ idlist.push(id);}
+				if(cnt>0 && cnt<4){ idlist.push(+id);}
 			}
 		}
 		return idlist;
