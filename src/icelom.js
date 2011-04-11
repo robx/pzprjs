@@ -414,7 +414,7 @@ Puzzles.icelom.prototype = {
 
 			var pzltype = this.readLine();
 			if(k.puzzleid==='icelom'){
-				k.puzzleid = (this.checkpflag("a")?'icelom':'icelom2');
+				k.puzzleid = (pzltype==="allwhite"?'icelom':'icelom2');
 				menu.displayTitle();
 			}
 

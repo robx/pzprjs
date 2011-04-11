@@ -157,13 +157,13 @@ Puzzles.bonsan.prototype = {
 	// URLエンコード/デコード処理
 	encode_init : function(){
 		enc.pzlimport = function(type){
-			this.decodeBorder();
+			if(!this.checkpflag("c")){ this.decodeBorder();}
 			this.decodeNumber16();
 
 			this.checkPuzzleid();
 		};
 		enc.pzlexport = function(type){
-			this.encodeBorder();
+			if(type===1 || k.puzzleid==='heyabon'){ this.encodeBorder();}else{ this.outpflag="c";}
 			this.encodeNumber16();
 		};
 

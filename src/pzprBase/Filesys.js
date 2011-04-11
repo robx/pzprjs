@@ -39,6 +39,7 @@ FileIO.prototype = {
 		// ヘッダの処理
 		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
+			if(this.readLine()!==k.puzzleid){ ;} /* パズルIDが入っている(filedecode()で使う関数) */
 			this.currentType = this.PZPR;
 		}
 		else{

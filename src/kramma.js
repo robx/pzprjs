@@ -113,13 +113,13 @@ Puzzles.kramma.prototype = {
 	// URLエンコード/デコード処理
 	encode_init : function(){
 		enc.pzlimport = function(type){
-			this.decodeCrossMark();
+			if(!this.checkpflag("c")){ this.decodeCrossMark();}
 			this.decodeCircle();
 
 			this.checkPuzzleid();
 		};
 		enc.pzlexport = function(type){
-			this.encodeCrossMark();
+			if(k.puzzleid==='kramman'){ this.encodeCrossMark();}else{ this.outpflag="c";}
 			this.encodeCircle();
 		};
 
@@ -155,10 +155,10 @@ Puzzles.kramma.prototype = {
 			if( !this.checkLcntCross(3,0) ){
 				this.setAlert('分岐している線があります。','There is a branched line.'); return false;
 			}
-			if( !this.checkLcntCross(4,1) ){
+			if( (k.puzzleid==='kramman') && !this.checkLcntCross(4,1) ){
 				this.setAlert('線が黒点上で交差しています。','There is a crossing line on the black point.'); return false;
 			}
-			if( !this.checkLcntCurve() ){
+			if( (k.puzzleid==='kramman') && !this.checkLcntCurve() ){
 				this.setAlert('線が黒点以外で曲がっています。','A line curves out of the black points.'); return false;
 			}
 
@@ -174,7 +174,7 @@ Puzzles.kramma.prototype = {
 			if( !this.checkLcntCross(1,0) ){
 				this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
 			}
-			if( !this.checkLcntCross(0,1) ){
+			if( (k.puzzleid==='kramman') && !this.checkLcntCross(0,1) ){
 				this.setAlert('黒点上を線が通過していません。','No lines on the black point.'); return false;
 			}
 

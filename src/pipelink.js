@@ -22,10 +22,24 @@ Puzzles.pipelink.prototype = {
 		menu.addRedLineToFlags();
 
 		if(k.puzzleid==='pipelinkr'){
+			pp.addSelect('disptype','setting',1,[1,2],'表示形式','Display');
+
+			pp.addChild('disptype_1', 'disptype', '○', 'Circle');
+			pp.addChild('disptype_2', 'disptype', '■', 'Icebarn');
+			pp.funcs['disptype'] = function(num){
+				if     (num==1){ ee('btncircle').el.value="○";}
+				else if(num==2){ ee('btncircle').el.value="■";}
+				pc.paintAll();
+			};
+			menu.ex.toggledisp = function(){ pp.setVal('disptype', (pp.getVal('disptype')==1?2:1));}
+			
 			var el = ee.createEL(menu.EL_BUTTON, 'btncircle');
-			menu.addButtons(el, ee.binder(pc, pc.changedisp), "○", "○");
+			menu.addButtons(el, ee.binder(menu.ex, menu.ex.toggledisp), "○", "○");
 			ee('btnarea').appendEL(el);
 		}
+	},
+	finalfix : function(){
+		if(k.puzzeid==='pipelinkr'){ pp.funcs['disptype']();}
 	},
 
 	//---------------------------------------------------------
@@ -98,7 +112,12 @@ Puzzles.pipelink.prototype = {
 				this.inputcol('num','knum_','-','?');
 				this.inputcol('empty','','','');
 				this.inputcol('empty','','','');
-				this.inputcol('num','knum.','1','○');
+				if(k.puzzleid==='pipelink'){
+					this.inputcol('empty','','','');
+				}
+				else{
+					this.inputcol('num','knum.','1','○');
+				}
 				this.insertrow();
 			};
 			kp.generate(kp.ORIGINAL, true, false);
@@ -119,7 +138,7 @@ Puzzles.pipelink.prototype = {
 			this.drawDashedGrid();
 
 			if(k.puzzleid==='pipelinkr'){
-				this.drawCircles_pipelink((this.disp===0));
+				this.drawCircles_pipelink((pp.getVal('disptype')==1));
 				this.drawBorders();
 			}
 
@@ -137,12 +156,12 @@ Puzzles.pipelink.prototype = {
 		};
 
 		pc.setBGCellColor = function(c){
-			if     (bd.cell[c].error===1)               { g.fillStyle = this.errbcolor1; return true;}
-			else if(bd.cell[c].ques===6 && this.disp==1){ g.fillStyle = this.icecolor;   return true;}
+			if     (bd.cell[c].error===1)                           { g.fillStyle = this.errbcolor1; return true;}
+			else if(bd.cell[c].ques===6 && pp.getVal('disptype')==2){ g.fillStyle = this.icecolor;   return true;}
 			return false;
 		};
 		pc.setBorderColor = function(id){
-			if(this.disp===1){
+			if(pp.getVal('disptype')==2){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 				if(cc1!==null && cc2!==null && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
 					g.fillStyle = this.cellcolor;
@@ -176,18 +195,6 @@ Puzzles.pipelink.prototype = {
 			}
 		};
 
-		pc.disp = 0;
-		pc.changedisp = function(){
-			if(k.puzzleid==='pipelinkr'){
-				if     (this.disp===1){ ee('btncircle').el.value="○"; this.disp=0;}
-				else if(this.disp===0){ ee('btncircle').el.value="■"; this.disp=1;}
-				this.paintAll();
-			}
-			else{
-				ee('btncircle').el.style.display = 'none';
-			}
-		};
-
 		pc.repaintParts = function(idlist){
 			var clist = line.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
@@ -205,7 +212,7 @@ Puzzles.pipelink.prototype = {
 			this.checkPuzzleid();
 		};
 		enc.pzlexport = function(type){
-			this.outpflag = ((k.puzzleid==='pipelinkr' && pc.disp===0) ? "" : "i");
+			this.outpflag = ((k.puzzleid==='pipelinkr' && pp.getVal('disptype')==1)?"":"i");
 			this.encodePipelink(type);
 		};
 
@@ -241,7 +248,7 @@ Puzzles.pipelink.prototype = {
 				else if(qu=== 6){
 					if(type===0){
 						for(var n=1;n<10;n++){
-							if((c+n)>=bd.cellmax && bd.cell[c+n].ques!==6){ break;}
+							if((c+n)>=bd.cellmax || bd.cell[c+n].ques!==6){ break;}
 						}
 						pstr=(n-1).toString(10); c=(c+n-1);
 					}
@@ -265,14 +272,12 @@ Puzzles.pipelink.prototype = {
 				}
 				menu.displayTitle();
 			}
-			if(k.puzzleid==='pipelink' || (this.checkpflag("i") && this.disp===0)){
-				pc.changedisp();
-			}
 		};
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
-			pc.disp = (this.readLine()=="circle" ? 0 : 1);
+			var disptype = this.readLine();
+			if(k.puzzleid==='pipelinkr'){ pp.setVal('disptype', (disptype=="circle"?1:2));}
 			this.decodeCell( function(obj,ca){
 				if     (ca==="o"){ obj.ques = 6; }
 				else if(ca==="-"){ obj.ques = -2;}
@@ -283,7 +288,8 @@ Puzzles.pipelink.prototype = {
 			enc.checkPuzzleid();
 		};
 		fio.encodeData = function(){
-			this.datastr += (pc.disp==0?"circle/":"ice/");
+			if     (k.puzzleid==='pipelink') { this.datastr += 'pipe/';}
+			else if(k.puzzleid==='pipelinkr'){ this.datastr += (pp.getVal('disptype')==1?"circle/":"ice/");}
 			this.encodeCell( function(obj){
 				if     (obj.ques==6) { return "o ";}
 				else if(obj.ques==-2){ return "- ";}
@@ -307,13 +313,11 @@ Puzzles.pipelink.prototype = {
 				this.setAlert('分岐している線があります。','There is a branched line.'); return false;
 			}
 
-			var rice = false;
-			for(var i=0;i<bd.cellmax;i++){ if(bd.QuC(i)==6){ rice=true; break;}}
-			if( rice && !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==6 && bd.QuC(c)!==11);}) ){
-				this.setAlert((pc.disp==0?'○':'氷')+'の部分以外で線が交差しています。','There is a crossing line out of '+(pc.disp===0?'circles':'ices')+'.'); return false;
+			if( (k.puzzleid==='pipelinkr') && !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==6 && bd.QuC(c)!==11);}) ){
+				this.setAlert((pp.getVal('disptype')==1?'○':'氷')+'の部分以外で線が交差しています。','There is a crossing line out of '+(pp.getVal('disptype')==1?'circles':'ices')+'.'); return false;
 			}
-			if( rice && !this.checkIceLines() ){
-				ans.setAlert((pc.disp==0?'○':'氷')+'の部分で線が曲がっています。','A line curves on '+(pc.disp===0?'circles':'ices')+'.'); return false;
+			if( (k.puzzleid==='pipelinkr') && !this.checkIceLines() ){
+				this.setAlert((pp.getVal('disptype')==1?'○':'氷')+'の部分で線が曲がっています。','A line curves on '+(pp.getVal('disptype')==1?'circles':'ices')+'.'); return false;
 			}
 
 			if( !this.checkOneLoop() ){

@@ -114,9 +114,13 @@ Encode.prototype = {
 		return this.getURLBase(type) + pdata;
 	},
 	getURLBase : function(type){
-		return this.urlbase[type]
-					.replace("%PID%",PZLINFO.toURLID(k.puzzleid))
-					.replace("%KID%",PZLINFO.toKanpen(k.puzzleid));
+		var str = this.urlbase[type];
+		if(type===this.PZPRAPP){
+			if     (k.puzzleid==='pipelinkr'){ str=str.replace("%PID%","pipelink");}
+			else if(k.puzzleid==='heyabon')  { str=str.replace("%PID%","bonsan");}
+		}
+		return str.replace("%PID%", PZLINFO.toURLID(k.puzzleid))
+				  .replace("%KID%", PZLINFO.toKanpen(k.puzzleid));
 	},
 
 	// オーバーライド用
