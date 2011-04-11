@@ -210,9 +210,10 @@ Puzzles.pipelink.prototype = {
 			this.decodePipelink();
 
 			this.checkPuzzleid();
+			if(k.puzzleid==='pipelinkr'){ pp.setVal('disptype', (disptype=="circle"?1:2));}
 		};
 		enc.pzlexport = function(type){
-			this.outpflag = ((k.puzzleid==='pipelinkr' && pp.getVal('disptype')==1)?"":"i");
+			this.outpflag = ((k.puzzleid==='pipelinkr' && pp.getVal('disptype')==2)?"i":"");
 			this.encodePipelink(type);
 		};
 
@@ -277,7 +278,6 @@ Puzzles.pipelink.prototype = {
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			var disptype = this.readLine();
-			if(k.puzzleid==='pipelinkr'){ pp.setVal('disptype', (disptype=="circle"?1:2));}
 			this.decodeCell( function(obj,ca){
 				if     (ca==="o"){ obj.ques = 6; }
 				else if(ca==="-"){ obj.ques = -2;}
@@ -286,6 +286,7 @@ Puzzles.pipelink.prototype = {
 			this.decodeBorderLine();
 
 			enc.checkPuzzleid();
+			if(k.puzzleid==='pipelinkr'){ pp.setVal('disptype', (disptype=="circle"?1:2));}
 		};
 		fio.encodeData = function(){
 			if     (k.puzzleid==='pipelink') { this.datastr += 'pipe/';}
@@ -314,10 +315,10 @@ Puzzles.pipelink.prototype = {
 			}
 
 			if( (k.puzzleid==='pipelinkr') && !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==6 && bd.QuC(c)!==11);}) ){
-				this.setAlert((pp.getVal('disptype')==1?'○':'氷')+'の部分以外で線が交差しています。','There is a crossing line out of '+(pp.getVal('disptype')==1?'circles':'ices')+'.'); return false;
+				this.setAlert((pp.getVal('disptype')==2?'氷':'○')+'の部分以外で線が交差しています。','There is a crossing line out of '+(pp.getVal('disptype')==1?'circles':'ices')+'.'); return false;
 			}
 			if( (k.puzzleid==='pipelinkr') && !this.checkIceLines() ){
-				this.setAlert((pp.getVal('disptype')==1?'○':'氷')+'の部分で線が曲がっています。','A line curves on '+(pp.getVal('disptype')==1?'circles':'ices')+'.'); return false;
+				this.setAlert((pp.getVal('disptype')==2?'氷':'○')+'の部分で線が曲がっています。','A line curves on '+(pp.getVal('disptype')==1?'circles':'ices')+'.'); return false;
 			}
 
 			if( !this.checkOneLoop() ){

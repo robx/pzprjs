@@ -74,6 +74,7 @@ debug.extend({
 	sccheck : function(){
 		if(pp.getVal('autocheck')){ pp.setVal('autocheck',false);}
 		var n=0, alstr='', qstr='', mint=80, fint=50, fails=0;
+		var pid=k.puzzleid, acsstr = debug.acs[pid];
 		this.phase = 10;
 		var tim = setInterval(function(){
 		//Encode test--------------------------------------------------------------
@@ -93,7 +94,7 @@ debug.extend({
 
 				setTimeout(function(){
 					if(PZLINFO.info[k.puzzleid].exists.kanpen){ debug.phase = 11;}
-					else{ debug.phase = (debug.acs[k.puzzleid])?20:30;}
+					else{ debug.phase = (!!acsstr)?20:30;}
 				},fint);
 			})();
 			break;
@@ -109,38 +110,32 @@ debug.extend({
 				else if(!debug.alltimer){ debug.addTextarea("Encode kanpen = pass");}
 
 				setTimeout(function(){
-					debug.phase = (debug.acs[k.puzzleid])?20:30;
+					debug.phase = (!!acsstr)?20:30;
 				},fint);
 			})();
 			break;
 		//Answer test--------------------------------------------------------------
 		case 20:
 			(function(){
-				alstr = debug.acs[k.puzzleid][n][0];
-				qstr  = debug.acs[k.puzzleid][n][1];
-				fio.filedecode_main(debug.acs[k.puzzleid][n][1]);
+				k.puzzleid = pid;
+				alstr = acsstr[n][0];
+				qstr  = acsstr[n][1];
+				fio.filedecode_main(acsstr[n][1]);
 				setTimeout(function(){
 					ans.inCheck = true;
 					ans.alstr = { jp:'' ,en:''};
-					ans.checkAns();
+					var iserror = !ans.checkAns();
 					pc.paintAll();
 					ans.inCheck = false;
 
-					var iserror = false, misstr = false;
-					                  for(var c=0;c<bd.cellmax  ;c++){if(bd.cell[c].error!=0  ){ iserror = true;}}
-					if(!!k.isexcell){ for(var c=0;c<bd.excellmax;c++){if(bd.excell[c].error!=0){ iserror = true;}}}
-					if(!!k.iscross) { for(var c=0;c<bd.crossmax ;c++){if(bd.cross[c].error!=0 ){ iserror = true;}}}
-					if(!!k.isborder){ for(var i=0;i<bd.bdmax    ;i++){if(bd.border[i].error!=0){ iserror = true;}}}
-					if(k.puzzleid=='nagenawa' && n==0){ iserror = true;}
-					if(debug.acs[k.puzzleid][n][0] != ""){ iserror = !iserror;}
+					if(acsstr[n][0] != ""){ iserror = !iserror;}
+					var misstr = (ans.alstr.jp != acsstr[n][0]);
 
-					if(ans.alstr.jp != debug.acs[k.puzzleid][n][0]){ misstr = true;}
-
-					if(iserror||misstr){ debug.addTextarea("Answer test "+(n+1)+" = failure... \""+debug.acs[k.puzzleid][n][0]+"\""); fails++;}
-					else if(!debug.alltimer){ debug.addTextarea("Answer test "+(n+1)+" = pass \""+debug.acs[k.puzzleid][n][0]+"\"");}
+					if(iserror||misstr){ debug.addTextarea("Answer test "+(n+1)+" = failure... \""+acsstr[n][0]+"\""); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("Answer test "+(n+1)+" = pass \""+acsstr[n][0]+"\"");}
 
 					n++;
-					if(n<debug.acs[k.puzzleid].length){ debug.phase = 20;}
+					if(n<acsstr.length){ debug.phase = 20;}
 					else{ debug.phase = (menu.ispencilbox ? 31 : 30);}
 				},fint);
 			})();
@@ -161,7 +156,7 @@ debug.extend({
 					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FileIO test   = failure..."); fails++;}
 					else if(!debug.alltimer){ debug.addTextarea("FileIO test   = pass");}
 
-					fio.filedecode_main(debug.acs[k.puzzleid][debug.acs[k.puzzleid].length-1][1]);
+					fio.filedecode_main(acsstr[acsstr.length-1][1]);
 					debug.phase = (k.puzzleid != 'tawa')?40:50;
 				},fint);
 			})();
