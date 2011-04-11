@@ -55,7 +55,7 @@ Puzzles.shimaguni.prototype = {
 			};
 		}
 
-		bd.nummaxfunc = function(cc){ return Math.min(this.maxnum, area.getCntOfRoomByCell(cc));};
+		bd.nummaxfunc = function(cc){ return Math.min(this.maxnum, this.areas.getCntOfRoomByCell(cc));};
 	},
 
 	//---------------------------------------------------------
@@ -113,7 +113,7 @@ Puzzles.shimaguni.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkSideAreaCell(rinfo, function(c1,c2){ return (bd.isBlack(c1) && bd.isBlack(c2));}, true) ){
 				this.setAlert('異なる海域にある国どうしが辺を共有しています。','Countries in other marine area share the side over border line.'); return false;
 			}

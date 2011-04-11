@@ -93,7 +93,7 @@ Puzzles.tentaisho.prototype = {
 			if(group===k.CELL){
 				cc = bd.star[id].groupid;
 			}
-			else if(group===k.CROSS && area.lcntCross(gid)===0){
+			else if(group===k.CROSS && bd.areas.lcntCross(gid)===0){
 				cc = bd.cnum(bd.star[id].bx-1, bd.star[id].by-1);
 			}
 			else if(group===k.BORDER && bd.QaB(gid)===0){
@@ -101,7 +101,7 @@ Puzzles.tentaisho.prototype = {
 			}
 
 			if(cc!==null){
-				var clist = area.room[area.room.id[cc]].clist;
+				var clist = bd.areas.room[bd.areas.room.id[cc]].clist;
 				if(mv.encolor(clist)){
 					var d = ans.getSizeOfClist(clist,f_true);
 					pc.paintRange(d.x1, d.y1, d.x2, d.y2);
@@ -134,7 +134,7 @@ Puzzles.tentaisho.prototype = {
 		};
 
 		mv.encolorall = function(){
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			for(var id=1;id<=rinfo.max;id++){ this.encolor(rinfo.room[id].idlist);}
 			pc.paintAll();
 		};
@@ -448,7 +448,7 @@ Puzzles.tentaisho.prototype = {
 				if(bd.getStar(s)<=0){ continue;}
 
 				var group=bd.star[s].group, gid=bd.star[s].groupid;
-				if(group===k.CROSS && area.lcntCross(gid)!==0){
+				if(group===k.CROSS && bd.areas.lcntCross(gid)!==0){
 					if(this.inAutoCheck){ return false;}
 					this.setCrossBorderError(bd.star[s].bx, bd.star[s].by);
 					result = false;
@@ -463,7 +463,7 @@ Puzzles.tentaisho.prototype = {
 		};
 
 		ans.getAreaStarInfoAll = function(){
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			for(var id=1;id<=rinfo.max;id++){
 				var obj = this.getAreaStarInfo(rinfo.room[id].idlist);
 				rinfo.room[id].starid = obj.id;
@@ -480,7 +480,7 @@ Puzzles.tentaisho.prototype = {
 					var id=idlist[n], group=bd.star[id].group, gid=bd.star[id].groupid;
 					if(bd.getStar(id)>0){
 						if( group===k.CELL ||
-						   (group===k.CROSS && area.lcntCross(gid)===0) ||
+						   (group===k.CROSS && bd.areas.lcntCross(gid)===0) ||
 						   (group===k.BORDER && bd.QaB(gid)===0)
 						)
 						{ cnt++; ret={id:id, err:0};}

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ひとりにしてくれ hitori.js v3.3.2
+// パズル固有スクリプト部 ひとりにしてくれ hitori.js v3.4.0
 //
 Puzzles.hitori = function(){ };
 Puzzles.hitori.prototype = {
@@ -180,7 +180,7 @@ Puzzles.hitori.prototype = {
 				this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 			}
 
-			if( !this.checkOneArea( area.getWCellInfo() ) ){
+			if( !this.checkOneArea( bd.areas.getWCellInfo() ) ){
 				this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 			}
 

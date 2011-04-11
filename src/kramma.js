@@ -162,7 +162,7 @@ Puzzles.kramma.prototype = {
 				this.setAlert('線が黒点以外で曲がっています。','A line curves out of the black points.'); return false;
 			}
 
-			rinfo = area.getRoomInfo();
+			rinfo = bd.areas.getRoomInfo();
 			if( !this.checkNoNumber(rinfo) ){
 				this.setAlert('白丸も黒丸も含まれない領域があります。','An area has no marks.'); return false;
 			}
@@ -186,7 +186,7 @@ Puzzles.kramma.prototype = {
 			for(var bx=bd.minbx+2;bx<=bd.maxbx-2;bx+=2){
 				for(var by=bd.minby+2;by<=bd.maxby-2;by+=2){
 					var xc = bd.xnum(bx,by);
-					if(area.lcntCross(xc)===2 && bd.QnX(xc)!==1){
+					if(bd.areas.lcntCross(xc)===2 && bd.QnX(xc)!==1){
 						if(    !(bd.QaB(bd.bnum(bx  ,by-1))===1 && bd.QaB(bd.bnum(bx  ,by+1))===1)
 							&& !(bd.QaB(bd.bnum(bx-1,by  ))===1 && bd.QaB(bd.bnum(bx+1,by  ))===1) )
 						{

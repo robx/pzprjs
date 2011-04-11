@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 のりのり版 norinori.js v3.3.3
+// パズル固有スクリプト部 のりのり版 norinori.js v3.4.0
 //
 Puzzles.norinori = function(){ };
 Puzzles.norinori.prototype = {
@@ -101,12 +101,12 @@ Puzzles.norinori.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var binfo = area.getBCellInfo();
+			var binfo = bd.areas.getBCellInfo();
 			if( !this.checkAllArea(binfo, f_true, function(w,h,a,n){ return (a<=2);} ) ){
 				this.setAlert('２マスより大きい黒マスのカタマリがあります。','The size of a mass of black cells is over two.'); return false;
 			}
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a<=2);}) ){
 				this.setAlert('２マス以上の黒マスがある部屋が存在します。','A room has three or mode black cells.'); return false;
 			}

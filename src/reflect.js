@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.3.2
+// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.4.0
 //
 Puzzles.reflect = function(){ };
 Puzzles.reflect.prototype = {
@@ -180,7 +180,7 @@ Puzzles.reflect.prototype = {
 		},
 
 		pc.repaintParts = function(idlist){
-			var clist = line.getClistFromIdlist(idlist);
+			var clist = bd.lines.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
 				this.draw11_1(clist[i]);
 			}
@@ -275,7 +275,7 @@ Puzzles.reflect.prototype = {
 			if( !this.checkLcntCell(3) ){
 				this.setAlert('分岐している線があります。','There is a branch line.'); return false;
 			}
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==11);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===4 && bd.QuC(c)!==11);}) ){
 				this.setAlert('十字以外の場所で線が交差しています。','There is a crossing line out of cross mark.'); return false;
 			}
 
@@ -289,7 +289,7 @@ Puzzles.reflect.prototype = {
 				this.setAlert('三角形の数字とそこから延びる線の長さが一致していません。','A number on triangle is not equal to sum of the length of lines from it.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)!==4 && bd.QuC(c)===11);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)!==4 && bd.QuC(c)===11);}) ){
 				this.setAlert('十字の場所で線が交差していません。','There isn\'t a crossing line on a cross mark.'); return false;
 			}
 
@@ -308,7 +308,7 @@ Puzzles.reflect.prototype = {
 		ans.checkTriangle = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(line.lcntCell(c)==0 && (bd.QuC(c)>=2 && bd.QuC(c)<=5)){
+				if(bd.lines.lcntCell(c)==0 && (bd.QuC(c)>=2 && bd.QuC(c)<=5)){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC([c],4);
 					result = false;

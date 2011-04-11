@@ -72,16 +72,14 @@ LineManager = function(){
 	this.typeC = 'C';
 
 	this.disrec = 0;
-
-	this.init();
 };
 LineManager.prototype = {
 
 	//---------------------------------------------------------------------------
-	// line.init()           変数の起動時の初期化を行う
-	// line.disableRecord()  操作の登録を禁止する
-	// line.enableRecord()   操作の登録を許可する
-	// line.isenableRecord() 操作の登録できるかを返す
+	// bd.lines.init()           変数の起動時の初期化を行う
+	// bd.lines.disableRecord()  操作の登録を禁止する
+	// bd.lines.enableRecord()   操作の登録を許可する
+	// bd.lines.isenableRecord() 操作の登録できるかを返す
 	//---------------------------------------------------------------------------
 	init : function(){
 		if(this.disableLine){ return;}
@@ -106,9 +104,9 @@ LineManager.prototype = {
 	isenableRecord : function(){ return (this.disrec===0);},
 
 	//---------------------------------------------------------------------------
-	// line.resetLcnts()  lcnts等の変数の初期化を行う
-	// line.newIrowake()  線の情報が再構築された際、線に色をつける
-	// line.lcntCell()    セルに存在する線の本数を返す
+	// bd.lines.resetLcnts()  lcnts等の変数の初期化を行う
+	// bd.lines.newIrowake()  線の情報が再構築された際、線に色をつける
+	// bd.lines.lcntCell()    セルに存在する線の本数を返す
 	//---------------------------------------------------------------------------
 	resetLcnts : function(){
 		if(this.disableLine){ return;}
@@ -148,9 +146,9 @@ LineManager.prototype = {
 	lcntCell  : function(cc){ return (!!this.lcnt[cc]?this.lcnt[cc]:0);},
 
 	//---------------------------------------------------------------------------
-	// line.gettype()    線が引かれた/消された時に、typeA/typeB/typeCのいずれか判定する
-	// line.isTpos()     pieceが、指定されたcc内でidの反対側にあるか判定する
-	// line.iscrossing() 指定されたセル/交点で線が交差する場合にtrueを返す
+	// bd.lines.gettype()    線が引かれた/消された時に、typeA/typeB/typeCのいずれか判定する
+	// bd.lines.isTpos()     pieceが、指定されたcc内でidの反対側にあるか判定する
+	// bd.lines.iscrossing() 指定されたセル/交点で線が交差する場合にtrueを返す
 	//---------------------------------------------------------------------------
 	gettype : function(cc,id,isset){
 		var erase = (isset?0:1);
@@ -180,13 +178,13 @@ LineManager.prototype = {
 	iscrossing : function(cc){ return k.isLineCross;},
 
 	//---------------------------------------------------------------------------
-	// line.setLine()         線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
-	// line.setLineInfo()     線が引かれた時に、線の情報を生成しなおす
-	// line.removeLineInfo()  線が消された時に、線の情報を生成しなおす
-	// line.combineLineInfo() 線が引かれた時に、周りの線が全てくっついて1つの線が
-	//                        できる場合の線idの再設定を行う
-	// line.remakeLineInfo()  線が引かれたり消された時、新たに2つ以上の線ができる
-	//                        可能性がある場合の線idの再設定を行う
+	// bd.lines.setLine()         線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
+	// bd.lines.setLineInfo()     線が引かれた時に、線の情報を生成しなおす
+	// bd.lines.removeLineInfo()  線が消された時に、線の情報を生成しなおす
+	// bd.lines.combineLineInfo() 線が引かれた時に、周りの線が全てくっついて1つの線が
+	//                            できる場合の線idの再設定を行う
+	// bd.lines.remakeLineInfo()  線が引かれたり消された時、新たに2つ以上の線ができる
+	//                            可能性がある場合の線idの再設定を行う
 	//---------------------------------------------------------------------------
 	setLine : function(id, isset){
 		if(this.disableLine || !this.isenableRecord()){ return;}
@@ -360,8 +358,8 @@ LineManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// line.getClistFromIdlist() idlistの線が重なるセルのリストを取得する
-	// line.getXlistFromIdlist() idlistの線が重なる交点のリストを取得する
+	// bd.lines.getClistFromIdlist() idlistの線が重なるセルのリストを取得する
+	// bd.lines.getXlistFromIdlist() idlistの線が重なる交点のリストを取得する
 	//---------------------------------------------------------------------------
 	getClistFromIdlist : function(idlist){
 		var clist = new IDList();
@@ -381,9 +379,9 @@ LineManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// line.getbid()  指定したpieceに繋がる、最大6箇所に引かれている線を全て取得する
-	// line.lc0main() 指定されたpieceのリストに対して、lc0関数を呼び出す
-	// line.lc0()     ひとつながりの線にlineidを設定する(再帰呼び出し用関数)
+	// bd.lines.getbid()  指定したpieceに繋がる、最大6箇所に引かれている線を全て取得する
+	// bd.lines.lc0main() 指定されたpieceのリストに対して、lc0関数を呼び出す
+	// bd.lines.lc0()     ひとつながりの線にlineidを設定する(再帰呼び出し用関数)
 	//---------------------------------------------------------------------------
 	getbid : function(id,val){
 		var erase=(val>0?0:1), bx=bd.border[id].bx, by=bd.border[id].by;
@@ -466,9 +464,9 @@ LineManager.prototype = {
 	},
 
 	//--------------------------------------------------------------------------------
-	// line.getLineInfo()    線情報をAreaInfo型のオブジェクトで返す
-	// line.getLareaInfo()   同じ線がまたがるセルの情報をAreaInfo型のオブジェクトで返す
-	//                       (これだけは旧型の生成方法でやってます)
+	// bd.lines.getLineInfo()    線情報をAreaInfo型のオブジェクトで返す
+	// bd.lines.getLareaInfo()   同じ線がまたがるセルの情報をAreaInfo型のオブジェクトで返す
+	//                           (これだけは旧型の生成方法でやってます)
 	//--------------------------------------------------------------------------------
 	getLineInfo : function(){
 		var info = new AreaInfo();
@@ -521,15 +519,13 @@ AreaManager = function(){
 	this.wcell = {};	// 白マス情報を保持する
 
 	this.disrec = 0;
-
-	this.init();
 };
 AreaManager.prototype = {
 	//--------------------------------------------------------------------------------
-	// area.init()           起動時に変数を初期化する
-	// area.disableRecord()  操作の登録を禁止する
-	// area.enableRecord()   操作の登録を許可する
-	// area.isenableRecord() 操作の登録できるかを返す
+	// bd.areas.init()           起動時に変数を初期化する
+	// bd.areas.disableRecord()  操作の登録を禁止する
+	// bd.areas.enableRecord()   操作の登録を許可する
+	// bd.areas.isenableRecord() 操作の登録できるかを返す
 	//--------------------------------------------------------------------------------
 	init : function(){
 		this.initRarea();
@@ -542,7 +538,7 @@ AreaManager.prototype = {
 	isenableRecord : function(){ return (this.disrec===0);},
 
 	//--------------------------------------------------------------------------------
-	// area.resetArea()  部屋、黒マス、白マスの情報をresetする
+	// bd.areas.resetArea()  部屋、黒マス、白マスの情報をresetする
 	//--------------------------------------------------------------------------------
 	resetArea : function(){
 		if(!!k.isborder && !k.isborderAsLine){ this.resetRarea();}
@@ -551,16 +547,16 @@ AreaManager.prototype = {
 	},
 
 	//--------------------------------------------------------------------------------
-	// area.initRarea()  部屋関連の変数を初期化する
-	// area.resetRarea() 部屋の情報をresetして、1から割り当てしなおす
+	// bd.areas.initRarea()  部屋関連の変数を初期化する
+	// bd.areas.resetRarea() 部屋の情報をresetして、1から割り当てしなおす
 	// 
-	// area.lcntCross()  指定された位置のCrossの上下左右のうち境界線が引かれている(ques==1 or qans==1の)数を求める
-	// area.getRoomID()  このオブジェクトで管理しているセルの部屋IDを取得する
-	// area.setRoomID()  このオブジェクトで管理しているセルの部屋IDを設定する
-	// area.getTopOfRoomByCell() 指定したセルが含まれる領域のTOPの部屋を取得する
-	// area.getTopOfRoom()       指定した領域のTOPの部屋を取得する
-	// area.getCntOfRoomByCell() 指定したセルが含まれる領域の大きさを抽出する
-	// area.getCntOfRoom()       指定した領域の大きさを抽出する
+	// bd.areas.lcntCross()  指定された位置のCrossの上下左右のうち境界線が引かれている(ques==1 or qans==1の)数を求める
+	// bd.areas.getRoomID()  このオブジェクトで管理しているセルの部屋IDを取得する
+	// bd.areas.setRoomID()  このオブジェクトで管理しているセルの部屋IDを設定する
+	// bd.areas.getTopOfRoomByCell() 指定したセルが含まれる領域のTOPの部屋を取得する
+	// bd.areas.getTopOfRoom()       指定した領域のTOPの部屋を取得する
+	// bd.areas.getCntOfRoomByCell() 指定したセルが含まれる領域の大きさを抽出する
+	// bd.areas.getCntOfRoom()       指定した領域の大きさを抽出する
 	//--------------------------------------------------------------------------------
 	initRarea : function(){
 		// 部屋情報初期化
@@ -634,10 +630,10 @@ AreaManager.prototype = {
 //	getCntOfRoom       : function(id){ return this.room[id].clist.length;},
 
 	//--------------------------------------------------------------------------------
-	// area.setRinfo()     境界線が引かれたり消されてたりした時に、変数の内容を変更する
-	// area.setBorder()    境界線が引かれたり消されてたりした時に、部屋情報を更新する
-	// area.setTopOfRoom() セルのリストから部屋のTOPを設定する
-	// area.sr0()          setBorder()から呼ばれて、初期idを含む一つの部屋の領域を、指定されたareaidにする
+	// bd.areas.setRinfo()     境界線が引かれたり消されてたりした時に、変数の内容を変更する
+	// bd.areas.setBorder()    境界線が引かれたり消されてたりした時に、部屋情報を更新する
+	// bd.areas.setTopOfRoom() セルのリストから部屋のTOPを設定する
+	// bd.areas.sr0()          setBorder()から呼ばれて、初期idを含む一つの部屋の領域を、指定されたareaidにする
 	//---------------------------------------------------------------------------
 	setRinfo : function(id,isset){
 		var cc1 = bd.border[id].crosscc[0], cc2 = bd.border[id].crosscc[1];
@@ -752,11 +748,11 @@ AreaManager.prototype = {
 	},
 
 	//--------------------------------------------------------------------------------
-	// area.isBlock()    このオブジェクト内で黒マスがある扱いする条件
-	// area.initBarea()  黒マス関連の変数を初期化する
-	// area.resetBarea() 黒マスの情報をresetして、1から割り当てしなおす
-	// area.initWarea()  白マス関連の変数を初期化する
-	// area.resetWarea() 白マスの情報をresetして、1から割り当てしなおす
+	// bd.areas.isBlock()    このオブジェクト内で黒マスがある扱いする条件
+	// bd.areas.initBarea()  黒マス関連の変数を初期化する
+	// bd.areas.resetBarea() 黒マスの情報をresetして、1から割り当てしなおす
+	// bd.areas.initWarea()  白マス関連の変数を初期化する
+	// bd.areas.resetWarea() 白マスの情報をresetして、1から割り当てしなおす
 	//--------------------------------------------------------------------------------
 	isBlock : function(cc){
 		if(!k.linkNumber){ return bd.isBlack(cc);}
@@ -803,9 +799,9 @@ AreaManager.prototype = {
 	},
 
 	//--------------------------------------------------------------------------------
-	// area.setCell()    黒マス・白マスが入力されたり消された時に、黒マス/白マスIDの情報を変更する
-	// area.setBWCell()  setCellから呼ばれる関数
-	// area.sc0()        初期idを含む一つの領域内のareaidを指定されたものにする
+	// bd.areas.setCell()    黒マス・白マスが入力されたり消された時に、黒マス/白マスIDの情報を変更する
+	// bd.areas.setBWCell()  setCellから呼ばれる関数
+	// bd.areas.sc0()        初期idを含む一つの領域内のareaidを指定されたものにする
 	//--------------------------------------------------------------------------------
 	setCell : function(type,cc){
 		if(type==='block'){
@@ -905,11 +901,11 @@ AreaManager.prototype = {
 	},
 
 	//--------------------------------------------------------------------------------
-	// area.getRoomInfo()  部屋情報をAreaInfo型のオブジェクトで返す
-	// area.getBCellInfo() 黒マス情報をAreaInfo型のオブジェクトで返す
-	// area.getWCellInfo() 白マス情報をAreaInfo型のオブジェクトで返す
-	// area.getNumberInfo() 数字情報(=黒マス情報)をAreaInfo型のオブジェクトで返す
-	// area.getAreaInfo()  上記関数の共通処理
+	// bd.areas.getRoomInfo()  部屋情報をAreaInfo型のオブジェクトで返す
+	// bd.areas.getBCellInfo() 黒マス情報をAreaInfo型のオブジェクトで返す
+	// bd.areas.getWCellInfo() 白マス情報をAreaInfo型のオブジェクトで返す
+	// bd.areas.getNumberInfo() 数字情報(=黒マス情報)をAreaInfo型のオブジェクトで返す
+	// bd.areas.getAreaInfo()  上記関数の共通処理
 	//--------------------------------------------------------------------------------
 	getRoomInfo  : function(){ return this.getAreaInfo(this.room);},
 	getBCellInfo : function(){ return this.getAreaInfo(this.bcell);},

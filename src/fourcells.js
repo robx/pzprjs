@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 フォーセルズ版 fourcells.js v3.3.2
+// パズル固有スクリプト部 フォーセルズ版 fourcells.js v3.4.0
 //
 Puzzles.fourcells = function(){ };
 Puzzles.fourcells.prototype = {
@@ -102,7 +102,7 @@ Puzzles.fourcells.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkAllArea(rinfo, f_true, function(w,h,a,n){ return (a>=4);} ) ){
 				this.setAlert('サイズが4マスより小さいブロックがあります。','The size of block is smaller than four.'); return false;
 			}

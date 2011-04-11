@@ -268,7 +268,7 @@ MouseEvent.prototype = {
 		if(cc===null || cc===this.mouseCell){ return;}
 
 		if(cc===tc.getTCC() || k.inputQnumDirect){
-			if(k.editmode && k.roomNumber){ cc = area.getTopOfRoomByCell(cc);}
+			if(k.editmode && k.roomNumber){ cc = bd.areas.getTopOfRoomByCell(cc);}
 
 			var type=0;
 			if     (k.editmode)      { type =-1;}
@@ -414,16 +414,16 @@ MouseEvent.prototype = {
 		if(this.inputData===null){ this.decIC(cc);}
 
 		this.mouseCell = cc; 
-		var areaid = area.getRoomID(cc);
+		var areaid = bd.areas.getRoomID(cc);
 
-		for(var i=0;i<area.room[areaid].clist.length;i++){
-			var c = area.room[areaid].clist[i];
+		for(var i=0;i<bd.areas.room[areaid].clist.length;i++){
+			var c = bd.areas.room[areaid].clist[i];
 			if(this.inputData==1 || bd.QsC(c)!=3){
 				(this.inputData==1?bd.setBlack:bd.setWhite).call(bd,c);
 				bd.sQsC(c, (this.inputData==2?1:0));
 			}
 		}
-		var d = ans.getSizeOfClist(area.room[areaid].clist,f_true);
+		var d = ans.getSizeOfClist(bd.areas.room[areaid].clist,f_true);
 
 		pc.paintRange(d.x1, d.y1, d.x2, d.y2);
 	},
@@ -622,7 +622,7 @@ MouseEvent.prototype = {
 		var cc = this.cellid();
 		this.mousereset();
 		if(cc===null || !bd.isBlack(cc)){ return;}
-		if(!k.RBBlackCell){ bd.sErC(area.bcell[area.bcell.id[cc]].clist,1);}
+		if(!k.RBBlackCell){ bd.sErC(bd.areas.bcell[bd.areas.bcell.id[cc]].clist,1);}
 		else{ this.db0(function(c){ return (bd.isBlack(c) && bd.cell[c].error===0);},cc,1);}
 		ans.errDisp = true;
 		pc.paintAll();
@@ -644,7 +644,7 @@ MouseEvent.prototype = {
 
 		if(!bd.isLine(id)){
 			var cc = (!k.isborderAsLine?this.cellid():this.crossid());
-			if(cc===null || (line.iscrossing(cc) && (line.lcntCell(cc)==3 || line.lcntCell(cc)==4))){ return;}
+			if(cc===null || (bd.lines.iscrossing(cc) && (bd.lines.lcntCell(cc)==3 || bd.lines.lcntCell(cc)==4))){ return;}
 
 			var bx, by;
 			if(k.isbordeAsLine==0){ bx = (cc%k.qcols)<<1, by = (cc/k.qcols)<<1;}
@@ -659,7 +659,7 @@ MouseEvent.prototype = {
 		}
 		if(id===null){ return;}
 
-		bd.sErBAll(2); bd.sErB(line.data[line.data.id[id]].idlist,1);
+		bd.sErBAll(2); bd.sErB(bd.lines.data[bd.lines.data.id[id]].idlist,1);
 		ans.errDisp = true;
 		pc.paintAll();
 	}

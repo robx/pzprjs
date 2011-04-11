@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スリザーリンク版 slither.js v3.3.2
+// パズル固有スクリプト部 スリザーリンク版 slither.js v3.4.0
 //
 Puzzles.slither = function(){ };
 Puzzles.slither.prototype = {
@@ -153,7 +153,7 @@ Puzzles.slither.prototype = {
 		};
 
 		pc.repaintParts = function(idlist){
-			var xlist = line.getXlistFromIdlist(idlist);
+			var xlist = bd.lines.getXlistFromIdlist(idlist);
 			for(var i=0;i<xlist.length;i++){
 				this.drawBaseMark1(xlist[i]);
 			}

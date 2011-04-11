@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.3.2
+// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.4.0
 //
 Puzzles.fillomino = function(){ };
 Puzzles.fillomino.prototype = {
@@ -252,7 +252,7 @@ Puzzles.fillomino.prototype = {
 		};
 
 		ans.searchRarea2 = function(){
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			for(var id=1,max=rinfo.max;id<=max;id++){
 				var room = rinfo.room[id];
 				room.error  =  0;

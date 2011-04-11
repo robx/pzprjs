@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ホタルビーム版 firefly.js v3.3.2
+// パズル固有スクリプト部 ホタルビーム版 firefly.js v3.4.0
 //
 Puzzles.firefly = function(){ };
 Puzzles.firefly.prototype = {
@@ -123,7 +123,7 @@ Puzzles.firefly.prototype = {
 		};
 
 		pc.repaintParts = function(idlist){
-			var clist = line.getClistFromIdlist(idlist);
+			var clist = bd.lines.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
 				this.drawFirefly1(clist[i]);
 				this.drawNumber1(clist[i]);
@@ -176,7 +176,7 @@ Puzzles.firefly.prototype = {
 			}
 
 			this.performAsLine = true;
-			if( !this.checkOneArea( line.getLareaInfo() ) ){
+			if( !this.checkOneArea( bd.lines.getLareaInfo() ) ){
 				this.setAlert('線が全体で一つながりになっていません。', 'All lines and fireflies are not connected each other.'); return false;
 			}
 
@@ -199,9 +199,9 @@ Puzzles.firefly.prototype = {
 
 		ans.checkLcntCell = function(val){
 			var result = true;
-			if(line.ltotal[val]==0){ return true;}
+			if(bd.lines.ltotal[val]==0){ return true;}
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.noNum(c) && line.lcntCell(c)==val){
+				if(bd.noNum(c) && bd.lines.lcntCell(c)==val){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,false);

@@ -165,7 +165,7 @@ Puzzles.mashu.prototype = {
 				this.setAlert('白丸の隣で線が曲がっていません。','Lines go straight next to white pearl on each side.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.isNum(c) && line.lcntCell(c)==0);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.isNum(c) && bd.lines.lcntCell(c)==0);}) ){
 				this.setAlert('線が上を通っていない丸があります。','Lines don\'t pass some pearls.'); return false;
 			}
 
@@ -183,7 +183,7 @@ Puzzles.mashu.prototype = {
 		ans.checkWhitePearl1 = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)===1 && line.lcntCell(c)===2 && !bd.isLineStraight(c)){
+				if(bd.QnC(c)===1 && bd.lines.lcntCell(c)===2 && !bd.isLineStraight(c)){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,1);
@@ -195,7 +195,7 @@ Puzzles.mashu.prototype = {
 		ans.checkBlackPearl1 = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)===2 && line.lcntCell(c)===2 && bd.isLineStraight(c)){
+				if(bd.QnC(c)===2 && bd.lines.lcntCell(c)===2 && bd.isLineStraight(c)){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,1);
@@ -208,12 +208,12 @@ Puzzles.mashu.prototype = {
 		ans.checkWhitePearl2 = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)!==1 || line.lcntCell(c)!==2){ continue;}
+				if(bd.QnC(c)!==1 || bd.lines.lcntCell(c)!==2){ continue;}
 				var stcnt = 0;
-				if(bd.isLine(bd.ub(c)) && line.lcntCell(bd.up(c))===2 && bd.isLineStraight(bd.up(c))){ stcnt++;}
-				if(bd.isLine(bd.db(c)) && line.lcntCell(bd.dn(c))===2 && bd.isLineStraight(bd.dn(c))){ stcnt++;}
-				if(bd.isLine(bd.lb(c)) && line.lcntCell(bd.lt(c))===2 && bd.isLineStraight(bd.lt(c))){ stcnt++;}
-				if(bd.isLine(bd.rb(c)) && line.lcntCell(bd.rt(c))===2 && bd.isLineStraight(bd.rt(c))){ stcnt++;}
+				if(bd.isLine(bd.ub(c)) && bd.lines.lcntCell(bd.up(c))===2 && bd.isLineStraight(bd.up(c))){ stcnt++;}
+				if(bd.isLine(bd.db(c)) && bd.lines.lcntCell(bd.dn(c))===2 && bd.isLineStraight(bd.dn(c))){ stcnt++;}
+				if(bd.isLine(bd.lb(c)) && bd.lines.lcntCell(bd.lt(c))===2 && bd.isLineStraight(bd.lt(c))){ stcnt++;}
+				if(bd.isLine(bd.rb(c)) && bd.lines.lcntCell(bd.rt(c))===2 && bd.isLineStraight(bd.rt(c))){ stcnt++;}
 
 				if(stcnt>=2){
 					if(this.inAutoCheck){ return false;}
@@ -226,11 +226,11 @@ Puzzles.mashu.prototype = {
 		ans.checkBlackPearl2 = function(){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)!==2 || line.lcntCell(c)!==2){ continue;}
-				if((bd.isLine(bd.ub(c)) && line.lcntCell(bd.up(c))===2 && !bd.isLineStraight(bd.up(c))) ||
-				   (bd.isLine(bd.db(c)) && line.lcntCell(bd.dn(c))===2 && !bd.isLineStraight(bd.dn(c))) ||
-				   (bd.isLine(bd.lb(c)) && line.lcntCell(bd.lt(c))===2 && !bd.isLineStraight(bd.lt(c))) ||
-				   (bd.isLine(bd.rb(c)) && line.lcntCell(bd.rt(c))===2 && !bd.isLineStraight(bd.rt(c))) ){
+				if(bd.QnC(c)!==2 || bd.lines.lcntCell(c)!==2){ continue;}
+				if((bd.isLine(bd.ub(c)) && bd.lines.lcntCell(bd.up(c))===2 && !bd.isLineStraight(bd.up(c))) ||
+				   (bd.isLine(bd.db(c)) && bd.lines.lcntCell(bd.dn(c))===2 && !bd.isLineStraight(bd.dn(c))) ||
+				   (bd.isLine(bd.lb(c)) && bd.lines.lcntCell(bd.lt(c))===2 && !bd.isLineStraight(bd.lt(c))) ||
+				   (bd.isLine(bd.rb(c)) && bd.lines.lcntCell(bd.rt(c))===2 && !bd.isLineStraight(bd.rt(c))) ){
 
 					if(this.inAutoCheck){ return false;}
 					this.setErrorPearl(c,result);

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 カントリーロード版 country.js v3.3.2
+// パズル固有スクリプト部 カントリーロード版 country.js v3.4.0
 //
 Puzzles.country = function(){ };
 Puzzles.country.prototype = {
@@ -61,7 +61,7 @@ Puzzles.country.prototype = {
 			};
 		}
 
-		bd.nummaxfunc = function(cc){ return Math.min(this.maxnum, area.getCntOfRoomByCell(cc));};
+		bd.nummaxfunc = function(cc){ return Math.min(this.maxnum, this.areas.getCntOfRoomByCell(cc));};
 	},
 
 	//---------------------------------------------------------
@@ -124,7 +124,7 @@ Puzzles.country.prototype = {
 				this.setAlert('交差している線があります。','There is a crossing line.'); return false;
 			}
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkRoom2( rinfo ) ){
 				this.setAlert('線が１つの国を２回以上通っています。','A line passes a country twice or more.'); return false;
 			}
@@ -136,7 +136,7 @@ Puzzles.country.prototype = {
 				this.setAlert('線の通っていない国があります。','There is a country that is not passed any line.'); return false;
 			}
 
-			if( !this.checkSideAreaCell(rinfo, function(c1,c2){ return (line.lcntCell(c1)==0 && line.lcntCell(c2)==0);}, false) ){
+			if( !this.checkSideAreaCell(rinfo, function(c1,c2){ return (bd.lines.lcntCell(c1)==0 && bd.lines.lcntCell(c2)==0);}, false) ){
 				this.setAlert('線が通らないマスが、太線をはさんでタテヨコにとなりあっています。','The cells that is not passed any line are adjacent over border line.'); return false;
 			}
 

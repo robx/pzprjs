@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 因子の部屋版 factors.js v3.3.2
+// パズル固有スクリプト部 因子の部屋版 factors.js v3.4.0
 //
 Puzzles.factors = function(){ };
 Puzzles.factors.prototype = {
@@ -129,7 +129,7 @@ Puzzles.factors.prototype = {
 				this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
 			}
 
-			if( !this.checkRoomNumber(area.getRoomInfo()) ){
+			if( !this.checkRoomNumber(bd.areas.getRoomInfo()) ){
 				this.setAlert('ブロックの数字と数字の積が同じではありません。','A number of room is not equal to the product of these numbers.'); return false;
 			}
 
@@ -151,7 +151,7 @@ Puzzles.factors.prototype = {
 				}
 				if(product==0){ continue;}
 
-				if(product!=bd.QnC(area.getTopOfRoom(id))){
+				if(product!=bd.QnC(bd.areas.getTopOfRoom(id))){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(rinfo.room[id].idlist,1);
 					result = false;

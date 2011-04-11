@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ∀人∃ＨＥＹＡ版 ayeheya.js v3.3.3
+// パズル固有スクリプト部 ∀人∃ＨＥＹＡ版 ayeheya.js v3.4.0
 //
 Puzzles.ayeheya = function(){ };
 Puzzles.ayeheya.prototype = {
@@ -63,8 +63,8 @@ Puzzles.ayeheya.prototype = {
 		}
 
 		bd.nummaxfunc = function(cc){
-			var id = area.room.id[cc];
-			var d = ans.getSizeOfClist(area.room[id].clist,f_true);
+			var id = this.areas.room.id[cc];
+			var d = ans.getSizeOfClist(this.areas.room[id].clist,f_true);
 			var m=d.cols, n=d.rows; if(m>n){ var t=m;m=n;n=t;}
 			if     (m===1){ return ((n+1)>>1);}
 			else if(m===2){ return n;}
@@ -176,11 +176,11 @@ Puzzles.ayeheya.prototype = {
 				this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 			}
 
-			if( !this.checkOneArea( area.getWCellInfo() ) ){
+			if( !this.checkOneArea( bd.areas.getWCellInfo() ) ){
 				this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 			}
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkFractal(rinfo) ){
 				this.setAlert('部屋の中の黒マスが点対称に配置されていません。', 'Position of black cells in the room is not point symmetric.'); return false;
 			}

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヴィウ版 view.js v3.3.2
+// パズル固有スクリプト部 ヴィウ版 view.js v3.4.0
 //
 Puzzles.view = function(){ };
 Puzzles.view.prototype = {
@@ -132,7 +132,7 @@ Puzzles.view.prototype = {
 				this.setAlert('数字と、他のマスにたどり着くまでのマスの数の合計が一致していません。','Sum of four-way gaps to another number is not equal to the number.'); return false;
 			}
 
-			if( !this.checkOneArea( area.getNumberInfo() ) ){
+			if( !this.checkOneArea( bd.areas.getNumberInfo() ) ){
 				this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
 			}
 

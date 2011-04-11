@@ -453,10 +453,10 @@ FileIO.prototype = {
 		this.readLine();
 		this.rdata2Border(isques, this.getItemList(k.qrows));
 
-		area.resetRarea();
+		bd.areas.resetRarea();
 	},
 	encodeAreaRoom_com : function(isques){
-		var rinfo = area.getRoomInfo();
+		var rinfo = bd.areas.getRoomInfo();
 
 		this.datastr += (rinfo.max+"/");
 		for(var c=0;c<bd.cellmax;c++){
@@ -600,7 +600,7 @@ FileIO.prototype = {
 		}
 		this.rdata2Border(isques, rdata);
 
-		area.resetRarea();
+		bd.areas.resetRarea();
 	},
 	setRdataRect : function(rdata, i, sp){
 		for(var bx=sp.x1;bx<=sp.x2;bx+=2){
@@ -610,12 +610,12 @@ FileIO.prototype = {
 		}
 	},
 	encodeSquareRoom_com : function(isques){
-		var rinfo = area.getRoomInfo();
+		var rinfo = bd.areas.getRoomInfo();
 
 		this.datastr += (rinfo.max+"/");
 		for(var id=1;id<=rinfo.max;id++){
 			var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
-			var num = (isques ? bd.cell[area.getTopOfRoom(id)].qnum : -1);
+			var num = (isques ? bd.cell[bd.areas.getTopOfRoom(id)].qnum : -1);
 			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" "+(num>=0 ? ""+num : "")+"/");
 		}
 	}

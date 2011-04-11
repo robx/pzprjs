@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クリーク版 creek.js v3.3.2
+// パズル固有スクリプト部 クリーク版 creek.js v3.4.0
 //
 Puzzles.creek = function(){ };
 Puzzles.creek.prototype = {
@@ -105,7 +105,7 @@ Puzzles.creek.prototype = {
 			if( !this.checkQnumCross(1) ){
 				this.setAlert('数字のまわりにある黒マスの数が間違っています。','The number of black cells around a number on crossing is big.'); return false;
 			}
-			if( !this.checkOneArea( area.getWCellInfo() ) ){
+			if( !this.checkOneArea( bd.areas.getWCellInfo() ) ){
 				this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 			}
 			if( !this.checkQnumCross(2) ){

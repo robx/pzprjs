@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.3.2
+// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.4.0
 //
 Puzzles.loopsp = function(){ };
 Puzzles.loopsp.prototype = {
@@ -177,7 +177,7 @@ Puzzles.loopsp.prototype = {
 		};
 
 		pc.repaintParts = function(idlist){
-			var clist = line.getClistFromIdlist(idlist);
+			var clist = bd.lines.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
 				this.drawLineParts1(clist[i]);
 				this.drawCircle1AtNumber(clist[i]);
@@ -267,7 +267,7 @@ Puzzles.loopsp.prototype = {
 				this.setAlert('分岐している線があります。','There is a branched line.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.isNum(c));}) ){
+			if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===4 && bd.isNum(c));}) ){
 				this.setAlert('○の部分で線が交差しています。','The lines are crossed on the number.'); return false;
 			}
 
@@ -281,7 +281,7 @@ Puzzles.loopsp.prototype = {
 				this.setAlert('○を含んでいないループがあります。','A loop has no numbers.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)!==4 && bd.QuC(c)===11);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)!==4 && bd.QuC(c)===11);}) ){
 				this.setAlert('┼のマスから線が4本出ていません。','A cross-joint cell doesn\'t have four-way lines.'); return false;
 			}
 
@@ -330,9 +330,9 @@ Puzzles.loopsp.prototype = {
 		};
 		ans.checkAllLoops = function(func){
 			var result = true;
-			var linfo = line.getLineInfo();
+			var linfo = bd.lines.getLineInfo();
 			for(var r=1;r<=linfo.max;r++){
-				if(func(line.getClistFromIdlist(linfo.room[r].idlist))){ continue;}
+				if(func(bd.lines.getClistFromIdlist(linfo.room[r].idlist))){ continue;}
 
 				if(this.inAutoCheck){ return false;}
 				if(result){ bd.sErBAll(2);}

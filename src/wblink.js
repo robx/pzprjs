@@ -177,7 +177,7 @@ Puzzles.wblink.prototype = {
 				this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 			}
 
-			var linfo = line.getLareaInfo();
+			var linfo = bd.lines.getLareaInfo();
 			if( !this.checkTripleNumber(linfo) ){
 				this.setAlert('3つ以上の○が繋がっています。','Three or more objects are connected.'); return false;
 			}
@@ -189,7 +189,7 @@ Puzzles.wblink.prototype = {
 				this.setAlert('黒丸同士が繋がっています。','Two black circles are connected.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.isNum(c) && line.lcntCell(c)===0);} ) ){
+			if( !this.checkAllCell(function(c){ return (bd.isNum(c) && bd.lines.lcntCell(c)===0);} ) ){
 				this.setAlert('○から線が出ていません。','A circle doesn\'t start any line.'); return false;
 			}
 

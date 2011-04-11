@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 コンビブロック版 cbblock.js v3.3.3
+// パズル固有スクリプト部 コンビブロック版 cbblock.js v3.4.0
 //
 Puzzles.cbblock = function(){ };
 Puzzles.cbblock.prototype = {
@@ -194,7 +194,7 @@ Puzzles.cbblock.prototype = {
 				if(tarea.id[cc]!=null){ continue;}
 				tarea.max++;
 				tarea[tarea.max] = {clist:[]};
-				area.sr0(cc,tarea,func);
+				bd.areas.sr0(cc,tarea,func);
 
 				tarea.room[tarea.max] = {idlist:tarea[tarea.max].clist};
 			}

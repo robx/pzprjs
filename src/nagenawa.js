@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 なげなわ版 nagenawa.js v3.3.2
+// パズル固有スクリプト部 なげなわ版 nagenawa.js v3.4.0
 //
 Puzzles.nagenawa = function(){ };
 Puzzles.nagenawa.prototype = {
@@ -65,7 +65,7 @@ Puzzles.nagenawa.prototype = {
 			};
 		}
 
-		bd.nummaxfunc = function(cc){ return Math.min(this.maxnum, area.getCntOfRoomByCell(cc));};
+		bd.nummaxfunc = function(cc){ return Math.min(this.maxnum, this.areas.getCntOfRoomByCell(cc));};
 	},
 
 	//---------------------------------------------------------
@@ -136,7 +136,7 @@ Puzzles.nagenawa.prototype = {
 			for(var i=0;i<bd.bdmax;i++){ if(bd.isLine(i)){ cnt++;} }
 			if( cnt==0 ){ this.setAlert('線が引かれていません。','There is no line on the board.'); return false;}
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n>=a);}) ){
 				this.setAlert('数字のある部屋と線が通過するマスの数が違います。','The number of the cells that is passed any line in the room and the number written in the room is diffrerent.'); return false;
 			}
@@ -161,7 +161,7 @@ Puzzles.nagenawa.prototype = {
 
 		ans.checkAllLoopRect = function(){
 			var result = true;
-			var xinfo = line.getLineInfo();
+			var xinfo = bd.lines.getLineInfo();
 			for(var r=1;r<=xinfo.max;r++){
 				if(this.isLoopRect(xinfo.room[r].idlist)){ continue;}
 

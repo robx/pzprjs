@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 エルート版 loute.js v3.3.3
+// パズル固有スクリプト部 エルート版 loute.js v3.4.0
 //
 Puzzles.loute = function(){ };
 Puzzles.loute.prototype = {
@@ -207,7 +207,7 @@ Puzzles.loute.prototype = {
 		};
 
 		ans.getLblockInfo = function(){
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			rinfo.place = [];
 
 			for(var id=1;id<=rinfo.max;id++){

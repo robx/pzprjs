@@ -295,10 +295,10 @@ Encode.prototype = {
 	// enc.encodeRoomNumber16()  部屋＋部屋の一つのquesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeRoomNumber16 : function(){
-		area.resetRarea();
+		bd.areas.resetRarea();
 		var r=1, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), c=area.getTopOfRoom(r), obj=bd.cell[c];
+			var ca = bstr.charAt(i), c=bd.areas.getTopOfRoom(r), obj=bd.cell[c];
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
 							  { obj.qnum = parseInt(ca,16);}
@@ -311,15 +311,15 @@ Encode.prototype = {
 			else if(ca >= 'g' && ca <= 'z'){ r += (parseInt(ca,36)-16);}
 
 			r++;
-			if(r > area.room.max){ break;}
+			if(r > bd.areas.room.max){ break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeRoomNumber16 : function(){
-		area.resetRarea();
+		bd.areas.resetRarea();
 		var count=0, cm="";
-		for(var r=1;r<=area.room.max;r++){
-			var pstr = "", qn = bd.cell[area.getTopOfRoom(r)].qnum;
+		for(var r=1;r<=bd.areas.room.max;r++){
+			var pstr = "", qn = bd.cell[bd.areas.getTopOfRoom(r)].qnum;
 
 			if     (qn>=    0 && qn<   16){ pstr =       qn.toString(16);}
 			else if(qn>=   16 && qn<  256){ pstr = "-" + qn.toString(16);}
@@ -417,7 +417,7 @@ Encode.prototype = {
 			}
 		}
 
-		area.resetRarea();
+		bd.areas.resetRarea();
 		this.outbstr = bstr.substr(pos2);
 	},
 	encodeBorder : function(){

@@ -48,8 +48,8 @@ Puzzles.ripple.prototype = {
 		kp.generate(0, true, true);
 		kp.kpinput = function(ca){ kc.key_inputqnum(ca);};
 
-		area.resetArea();
-		bd.nummaxfunc = function(cc){ return area.getCntOfRoomByCell(cc);};
+		bd.areas.resetArea();
+		bd.nummaxfunc = function(cc){ return this.areas.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -121,7 +121,7 @@ Puzzles.ripple.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkDifferentNumberInRoom(area.getRoomInfo(), bd.getNum) ){
+			if( !this.checkDifferentNumberInRoom(bd.areas.getRoomInfo(), bd.getNum) ){
 				this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 			}
 

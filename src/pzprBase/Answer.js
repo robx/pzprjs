@@ -1,4 +1,4 @@
-// Answer.js v3.3.2
+// Answer.js v3.4.0
 
 //---------------------------------------------------------------------------
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
@@ -125,7 +125,7 @@ AnsCheck.prototype = {
 	},
 	checkIceLines : function(){
 		return this.checkAllCell( function(c){
-			return (line.lcntCell(c)===2 && bd.QuC(c)===6 && !bd.isLineStraight(c));
+			return (bd.lines.lcntCell(c)===2 && bd.QuC(c)===6 && !bd.isLineStraight(c));
 		});
 	},
 
@@ -209,7 +209,7 @@ AnsCheck.prototype = {
 	},
 
 	checkOneLoop : function(){
-		var xinfo = line.getLineInfo();
+		var xinfo = bd.lines.getLineInfo();
 		if(xinfo.max>1){
 			bd.sErBAll(2);
 			bd.sErB(xinfo.room[1].idlist,1);
@@ -220,9 +220,9 @@ AnsCheck.prototype = {
 
 	checkLcntCell : function(val){
 		var result = true;
-		if(line.ltotal[val]==0){ return true;}
+		if(bd.lines.ltotal[val]==0){ return true;}
 		for(var c=0;c<bd.cellmax;c++){
-			if(line.lcnt[c]==val){
+			if(bd.lines.lcnt[c]==val){
 				if(this.inAutoCheck){ return false;}
 				if(!this.performAsLine){ bd.sErC([c],1);}
 				else{ if(result){ bd.sErBAll(2);} this.setCellLineError(c,true);}
@@ -274,7 +274,7 @@ AnsCheck.prototype = {
 	checkAllArea : function(cinfo, func, evalfunc){
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
-			var cc = (k.roomNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0])
+			var cc = (k.roomNumber ? bd.areas.getTopOfRoomByCell(cinfo.room[id].idlist[0])
 								   : this.getQnumCellOfClist(cinfo.room[id].idlist));
 			var d = this.getSizeOfClist(cinfo.room[id].idlist,func);
 			var n = (cc!==null?bd.QnC(cc):-1);
@@ -300,7 +300,7 @@ AnsCheck.prototype = {
 	checkBlackCellInArea : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return evalfunc(a);}   );},
 	checkAreaRect        : function(cinfo)          { return this.checkAllArea(cinfo, f_true,     function(w,h,a,n){ return (w*h===a)}      );},
 
-	checkLinesInArea     : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, function(c){ return line.lcnt[c]>0;}, evalfunc);},
+	checkLinesInArea     : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, function(c){ return bd.lines.lcnt[c]>0;}, evalfunc);},
 	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkAllArea(cinfo, function(c){ return getvalue(c)!==-1;}, function(w,h,a,n){ return (a!=0);});},
 
 	getQnumCellOfClist : function(clist){
@@ -371,7 +371,10 @@ AnsCheck.prototype = {
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(cc1!==null && cc2!==null && func(cc1, cc2)){
 				if(!flag){ bd.sErC([cc1,cc2],1);}
-				else{ bd.sErC(area.room[area.room.id[cc1]].clist,1); bd.sErC(area.room[area.room.id[cc2]].clist,1); }
+				else{
+					 bd.sErC(bd.areas.room[bd.areas.room.id[cc1]].clist,1);
+					 bd.sErC(bd.areas.room[bd.areas.room.id[cc2]].clist,1);
+				}
 				return false;
 			}
 		}
@@ -387,18 +390,18 @@ AnsCheck.prototype = {
 	//---------------------------------------------------------------------------
 	checkSeqBlocksInRoom : function(){
 		var result = true;
-		for(var id=1;id<=area.room.max;id++){
+		for(var id=1;id<=bd.areas.room.max;id++){
 			var data = {max:0,id:[]};
-			for(var c=0;c<bd.cellmax;c++){ data.id[c] = ((area.room.id[c]===id && bd.isBlack(c))?0:null);}
+			for(var c=0;c<bd.cellmax;c++){ data.id[c] = ((bd.areas.room.id[c]===id && bd.isBlack(c))?0:null);}
 			for(var c=0;c<bd.cellmax;c++){
 				if(data.id[c]!==0){ continue;}
 				data.max++;
 				data[data.max] = {clist:[]};
-				area.sc0(c, data);
+				bd.areas.sc0(c, data);
 			}
 			if(data.max>1){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(area.room[id].clist,1);
+				bd.sErC(bd.areas.room[id].clist,1);
 				result = false;
 			}
 		}
@@ -535,7 +538,7 @@ AnsCheck.prototype = {
 		for(var by=mm;by<=bd.maxby-mm;by+=2){
 			for(var bx=mm;bx<=bd.maxbx-mm;bx+=2){
 				var id = (bx>>1)+(by>>1)*(k.qcols+1);
-				var lcnts = (!k.isborderAsLine?area.lcnt[id]:line.lcnt[id]);
+				var lcnts = (!k.isborderAsLine?bd.areas.lcnt[id]:bd.lines.lcnt[id]);
 				if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(bx,by))==1) || (bp==2&&bd.QnX(bd.xnum(bx,by))!=1) )){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}

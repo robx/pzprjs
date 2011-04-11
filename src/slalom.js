@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.3.3
+// パズル固有スクリプト部 スラローム版 slalom.js v3.4.0
 //
 Puzzles.slalom = function(){ };
 Puzzles.slalom.prototype = {
@@ -409,7 +409,7 @@ Puzzles.slalom.prototype = {
 		};
 
 		pc.repaintParts = function(idlist){
-			var clist = line.getClistFromIdlist(idlist);
+			var clist = bd.lines.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				if(c!==bd.startid){ continue;}
@@ -693,7 +693,7 @@ Puzzles.slalom.prototype = {
 		ans.checkAns = function(){
 			bd.hinfo.generateAll();
 
-			if( !this.checkAllCell(function(c){ return (bd.QuC(c)==1 && line.lcntCell(c)>0);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.QuC(c)==1 && bd.lines.lcntCell(c)>0);}) ){
 				this.setAlert('黒マスに線が通っています。','A line is over a black cell.'); return false;
 			}
 
@@ -734,7 +734,7 @@ Puzzles.slalom.prototype = {
 		ans.check1st = function(){ return this.checkLcntCell(1);};
 
 		ans.checkStartid = function(){
-			if(line.lcntCell(bd.startid)!=2){
+			if(bd.lines.lcntCell(bd.startid)!=2){
 				bd.sErC(bd.startid,1);
 				return false;
 			}
@@ -745,7 +745,7 @@ Puzzles.slalom.prototype = {
 			for(var r=1;r<=bd.hinfo.max;r++){
 				var cnt=0;
 				for(var i=0;i<bd.hinfo.data[r].clist.length;i++){
-					if(line.lcntCell(bd.hinfo.data[r].clist[i])>0){ cnt++;}
+					if(bd.lines.lcntCell(bd.hinfo.data[r].clist[i])>0){ cnt++;}
 				}
 				if((type==1 && cnt>1)||(type==2 && cnt==0)){
 					if(this.inAutoCheck){ return false;}
@@ -795,7 +795,7 @@ Puzzles.slalom.prototype = {
 							}
 						}
 
-						if     (line.lcntCell(cc)!=2){ break;}
+						if     (bd.lines.lcntCell(cc)!=2){ break;}
 						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
 						else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ dir=1;}
 						else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ dir=4;}

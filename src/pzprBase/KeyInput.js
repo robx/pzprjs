@@ -1,4 +1,4 @@
-// KeyInput.js v3.3.2
+// KeyInput.js v3.4.0
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -229,7 +229,7 @@ KeyEvent.prototype = {
 	//---------------------------------------------------------------------------
 	key_inputqnum : function(ca){
 		var cc = tc.getTCC();
-		if(k.editmode && k.roomNumber){ cc = area.getTopOfRoomByCell(cc);}
+		if(k.editmode && k.roomNumber){ cc = bd.areas.getTopOfRoomByCell(cc);}
 		var max = bd.nummaxfunc(cc), val=-1;
 
 		if('0'<=ca && ca<='9'){

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.3.2
+// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.4.0
 //
 Puzzles.tatamibari = function(){ };
 Puzzles.tatamibari.prototype = {
@@ -210,7 +210,7 @@ Puzzles.tatamibari.prototype = {
 				this.setAlert('十字の交差点があります。','There is a crossing border lines,'); return false;
 			}
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkNoNumber(rinfo) ){
 				this.setAlert('記号の入っていないタタミがあります。','A tatami has no marks.'); return false;
 			}

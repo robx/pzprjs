@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぬりかべ版 nurikabe.js v3.3.2
+// パズル固有スクリプト部 ぬりかべ版 nurikabe.js v3.4.0
 //
 Puzzles.nurikabe = function(){ };
 Puzzles.nurikabe.prototype = {
@@ -114,12 +114,12 @@ Puzzles.nurikabe.prototype = {
 				this.setAlert('2x2の黒マスのかたまりがあります。','There is a 2x2 block of black cells.'); return false;
 			}
 
-			var winfo = area.getWCellInfo();
+			var winfo = bd.areas.getWCellInfo();
 			if( !this.checkNoNumber(winfo) ){
 				this.setAlert('数字の入っていないシマがあります。','An area of white cells has no numbers.'); return false;
 			}
 
-			if( !this.checkOneArea( area.getBCellInfo() ) ){
+			if( !this.checkOneArea( bd.areas.getBCellInfo() ) ){
 				this.setAlert('黒マスが分断されています。','Black cells are devided,'); return false;
 			}
 

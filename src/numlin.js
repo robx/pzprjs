@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.3.2
+// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.4.0
 //
 Puzzles.numlin = function(){ };
 Puzzles.numlin.prototype = {
@@ -156,7 +156,7 @@ Puzzles.numlin.prototype = {
 				this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 			}
 
-			var linfo = line.getLareaInfo();
+			var linfo = bd.lines.getLareaInfo();
 			if( !this.checkTripleNumber(linfo) ){
 				this.setAlert('3つ以上の数字がつながっています。','Three or more numbers are connected.'); return false;
 			}
@@ -175,7 +175,7 @@ Puzzles.numlin.prototype = {
 				this.setAlert('数字につながっていない線があります。','A line doesn\'t connect any number.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && bd.isNum(c));}) ){
+			if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)==0 && bd.isNum(c));}) ){
 				this.setAlert('どこにもつながっていない数字があります。','A number is not connected another number.'); return false;
 			}
 
@@ -183,8 +183,8 @@ Puzzles.numlin.prototype = {
 		};
 		ans.check1st = function(){ return true;};
 
-		ans.check1Line = function(){ return this.checkLine(function(c){ return (line.lcntCell(c)===1 && bd.noNum(c));}); };
-		ans.check2Line = function(){ return this.checkLine(function(c){ return (line.lcntCell(c)>= 2 && bd.isNum(c));}); };
+		ans.check1Line = function(){ return this.checkLine(function(c){ return (bd.lines.lcntCell(c)===1 && bd.noNum(c));}); };
+		ans.check2Line = function(){ return this.checkLine(function(c){ return (bd.lines.lcntCell(c)>= 2 && bd.isNum(c));}); };
 		ans.checkLine = function(func){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){

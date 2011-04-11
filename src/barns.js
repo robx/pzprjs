@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 バーンズ版 barns.js v3.3.2
+// パズル固有スクリプト部 バーンズ版 barns.js v3.4.0
 //
 Puzzles.barns = function(){ };
 Puzzles.barns.prototype = {
@@ -150,7 +150,7 @@ Puzzles.barns.prototype = {
 				this.setAlert('分岐している線があります。','There is a branch line.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==6);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===4 && bd.QuC(c)!==6);}) ){
 				this.setAlert('氷の部分以外で線が交差しています。', 'A Line is crossed outside of ice.'); return false;
 			}
 			if( !this.checkIceLines() ){

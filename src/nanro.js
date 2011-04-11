@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ナンロー版 nanro.js v3.3.2
+// パズル固有スクリプト部 ナンロー版 nanro.js v3.4.0
 //
 Puzzles.nanro = function(){ };
 Puzzles.nanro.prototype = {
@@ -121,8 +121,8 @@ Puzzles.nanro.prototype = {
 		kp.generate(kp.ORIGINAL, true, true);
 		kp.kpinput = function(ca){ kc.keyinput(ca);};
 
-		area.resetArea();
-		bd.nummaxfunc = function(cc){ return area.getCntOfRoomByCell(cc);};
+		bd.areas.resetArea();
+		bd.nummaxfunc = function(cc){ return this.areas.getCntOfRoomByCell(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -201,7 +201,7 @@ Puzzles.nanro.prototype = {
 				this.setAlert('入っている数字の数が数字より多いです。','A number is bigger than the size of block.'); return false;
 			}
 
-			if( !this.checkOneArea( area.getNumberInfo() ) ){
+			if( !this.checkOneArea( bd.areas.getNumberInfo() ) ){
 				this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
 			}
 
@@ -230,7 +230,7 @@ Puzzles.nanro.prototype = {
 		};
 
 		ans.searchRarea2 = function(){
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			for(var id=1,max=rinfo.max;id<=max;id++){
 				var room = rinfo.room[id];
 				room.error  =  0;		// 後でエラー表示するエラーのフラグ

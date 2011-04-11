@@ -1,4 +1,4 @@
-// MenuExec.js v3.3.3
+// MenuExec.js v3.4.0
 
 //---------------------------------------------------------------------------
 // ★MenuExecクラス ポップアップウィンドウ内でボタンが押された時の処理内容を記述する
@@ -294,7 +294,7 @@ MenuExec.prototype = {
 	// menu.ex.irowakeRemake() 「色分けしなおす」ボタンを押した時に色分けしなおす
 	//---------------------------------------------------------------------------
 	irowakeRemake : function(){
-		line.newIrowake();
+		bd.lines.newIrowake();
 		if(pp.getVal('irowake')){ pc.paintAll();}
 	},
 
@@ -604,16 +604,16 @@ MenuExec.prototype = {
 			this.qnums = [];
 			for(var i=0;i<bd.cell.length;i++){
 				if(!!this.insex[k.CELL][this.distObj(k.CELL,i,key)] && bd.cell[i].qnum!==-1){
-					this.qnums.push({ areaid:area.getRoomID(i), val:bd.cell[i].qnum});
+					this.qnums.push({ areaid:bd.areas.getRoomID(i), val:bd.cell[i].qnum});
 				}
 			}
 		}
 	},
 	adjustBoardData2 : function(key,d){
 		if((key & this.REDUCE) && k.roomNumber){
-			area.resetArea();
+			bd.areas.resetArea();
 			for(var i=0;i<this.qnums.length;i++){
-				var c = area.getTopOfRoom(this.qnums[i].areaid);
+				var c = bd.areas.getTopOfRoom(this.qnums[i].areaid);
 				bd.cell[c].qnum = this.qnums[i].val;
 			}
 		}

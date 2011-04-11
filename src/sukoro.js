@@ -122,11 +122,11 @@ Puzzles.sukoro.prototype = {
 				this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
 			}
 
-			if( !this.checkDir4Cell(area.isBlock,0) ){
+			if( !this.checkDir4Cell(bd.areas.isBlock,0) ){
 				this.setAlert('数字と、その数字の上下左右に入る数字の数が一致していません。','The number of numbers placed in four adjacent cells is not equal to the number.'); return false;
 			}
 
-			if( !this.checkOneArea( area.getNumberInfo() ) ){
+			if( !this.checkOneArea( bd.areas.getNumberInfo() ) ){
 				this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
 			}
 

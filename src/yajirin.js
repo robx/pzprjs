@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.3.2
+// パズル固有スクリプト部 ヤジリン版 yajirin.js v3.4.0
 // 
 Puzzles.yajirin = function(){ };
 Puzzles.yajirin.prototype = {
@@ -169,7 +169,7 @@ Puzzles.yajirin.prototype = {
 				this.setAlert('交差している線があります。','There is a crossing line.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)>0 && bd.isBlack(c));}) ){
+			if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)>0 && bd.isBlack(c));}) ){
 				this.setAlert('黒マスの上に線が引かれています。','Theer is a line on the black cell.'); return false;
 			}
 
@@ -189,7 +189,7 @@ Puzzles.yajirin.prototype = {
 				this.setAlert('輪っかが一つではありません。','There are plural loops.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)==0 && !bd.isBlack(c) && bd.noNum(c));}) ){
+			if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)==0 && !bd.isBlack(c) && bd.noNum(c));}) ){
 				this.setAlert('黒マスも線も引かれていないマスがあります。','Theer is an empty cell.'); return false;
 			}
 

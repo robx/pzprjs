@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アホになり切れ版 aho.js v3.3.2
+// パズル固有スクリプト部 アホになり切れ版 aho.js v3.4.0
 //
 Puzzles.aho = function(){ };
 Puzzles.aho.prototype = {
@@ -125,7 +125,7 @@ Puzzles.aho.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkNoNumber(rinfo) ){
 				this.setAlert('数字の入っていない領域があります。','An area has no numbers.'); return false;
 			}

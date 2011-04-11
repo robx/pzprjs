@@ -101,7 +101,7 @@ Puzzles.nawabari.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkAreaRect(rinfo) ){
 				this.setAlert('部屋の形が長方形ではありません。','There is not rectangle territory.'); return false;
 			}

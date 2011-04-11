@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.3.2
+// パズル固有スクリプト部 クサビリンク版 kusabi.js v3.4.0
 //
 Puzzles.kusabi = function(){ };
 Puzzles.kusabi.prototype = {
@@ -134,7 +134,7 @@ Puzzles.kusabi.prototype = {
 				this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 			}
 
-			var linfo = line.getLareaInfo();
+			var linfo = bd.lines.getLareaInfo();
 			if( !this.checkTripleNumber(linfo) ){
 				this.setAlert('3つ以上の丸がつながっています。','Three or more objects are connected.'); return false;
 			}
@@ -169,15 +169,15 @@ Puzzles.kusabi.prototype = {
 				this.setAlert('丸につながっていない線があります。','A line doesn\'t connect any circle.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===0 && bd.isNum(c));}) ){
+			if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===0 && bd.isNum(c));}) ){
 				this.setAlert('どこにもつながっていない丸があります。','A circle is not connected another object.'); return false;
 			}
 
 			return true;
 		};
-		ans.check1st = function(){ return this.checkAllCell(function(c){ return (line.lcntCell(c)===0 && bd.isNum(c));});};
+		ans.check1st = function(){ return this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===0 && bd.isNum(c));});};
 
-		ans.check2Line = function(){ return this.checkLine(function(c){ return (line.lcntCell(c)>=2 && bd.isNum(c));}); };
+		ans.check2Line = function(){ return this.checkLine(function(c){ return (bd.lines.lcntCell(c)>=2 && bd.isNum(c));}); };
 		ans.checkLine = function(func){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
@@ -196,7 +196,7 @@ Puzzles.kusabi.prototype = {
 			for(var id=0;id<bd.bdmax;id++){ visited[id]=0;}
 
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.noNum(c) || line.lcntCell(c)===0){ continue;}
+				if(bd.noNum(c) || bd.lines.lcntCell(c)===0){ continue;}
 
 				var cc      = null;	// ループから抜けたときに到達地点のIDが入る
 				var ccnt    = 0;	// 曲がった回数

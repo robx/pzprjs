@@ -114,7 +114,7 @@ Puzzles.renban.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkDifferentNumberInRoom(rinfo, bd.getNum) ){
 				this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 			}

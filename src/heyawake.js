@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へやわけ版 heyawake.js v3.3.3
+// パズル固有スクリプト部 へやわけ版 heyawake.js v3.4.0
 //
 Puzzles.heyawake = function(){ };
 Puzzles.heyawake.prototype = {
@@ -63,8 +63,8 @@ Puzzles.heyawake.prototype = {
 		}
 
 		bd.nummaxfunc = function(cc){
-			var id = area.room.id[cc];
-			var d = ans.getSizeOfClist(area.room[id].clist,f_true);
+			var id = this.areas.room.id[cc];
+			var d = ans.getSizeOfClist(this.areas.room[id].clist,f_true);
 			var m=d.cols, n=d.rows; if(m>n){ var t=m;m=n;n=t;}
 			if     (m===1){ return ((n+1)>>1);}
 			else if(m===2){ return n;}
@@ -145,7 +145,7 @@ Puzzles.heyawake.prototype = {
 			fio.rdata2Border(true, rdata);
 		};
 		enc.encodeHeyaApp = function(){
-			var barray=[], rinfo=area.getRoomInfo();
+			var barray=[], rinfo=bd.areas.getRoomInfo();
 			for(var id=1;id<=rinfo.max;id++){
 				var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
 				var ul = bd.cell[bd.cnum(d.x1,d.y1)].qnum;
@@ -185,11 +185,11 @@ Puzzles.heyawake.prototype = {
 				this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 			}
 
-			if( !this.checkOneArea( area.getWCellInfo() ) ){
+			if( !this.checkOneArea( bd.areas.getWCellInfo() ) ){
 				this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 			}
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkBlackCellCount(rinfo) ){
 				this.setAlert('部屋の数字と黒マスの数が一致していません。','The number of Black cells in the room and The number written in the room is different.'); return false;
 			}

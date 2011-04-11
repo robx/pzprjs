@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.3.3
+// パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.4.0
 //
 Puzzles.tilepaint = function(){ };
 Puzzles.tilepaint.prototype = {
@@ -284,7 +284,7 @@ Puzzles.tilepaint.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkSameObjectInRoom(area.getRoomInfo(), function(c){ return (bd.isBlack(c)?1:2);}) ){
+			if( !this.checkSameObjectInRoom(bd.areas.getRoomInfo(), function(c){ return (bd.isBlack(c)?1:2);}) ){
 				this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both black and white cells.'); return false;
 			}
 

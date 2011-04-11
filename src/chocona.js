@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 チョコナ版 chocona.js v3.3.2
+// パズル固有スクリプト部 チョコナ版 chocona.js v3.4.0
 //
 Puzzles.chocona = function(){ };
 Puzzles.chocona.prototype = {
@@ -58,7 +58,7 @@ Puzzles.chocona.prototype = {
 			};
 		}
 
-		bd.nummaxfunc = function(cc){ return Math.min(this.maxnum, area.getCntOfRoomByCell(cc));};
+		bd.nummaxfunc = function(cc){ return Math.min(this.maxnum, this.areas.getCntOfRoomByCell(cc));};
 	},
 
 	//---------------------------------------------------------
@@ -115,11 +115,11 @@ Puzzles.chocona.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkAreaRect(area.getBCellInfo()) ){
+			if( !this.checkAreaRect(bd.areas.getBCellInfo()) ){
 				this.setAlert('黒マスのカタマリが正方形か長方形ではありません。','A mass of black cells is not rectangle.'); return false;
 			}
 
-			if( !this.checkBlackCellCount( area.getRoomInfo() ) ){
+			if( !this.checkBlackCellCount( bd.areas.getRoomInfo() ) ){
 				this.setAlert('数字のある領域と、領域の中にある黒マスの数が違います。','The number of Black cells in the area and the number written in the area is different.'); return false;
 			}
 

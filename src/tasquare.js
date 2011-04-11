@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 たすくえあ版 tasquare.js v3.3.2
+// パズル固有スクリプト部 たすくえあ版 tasquare.js v3.4.0
 //
 Puzzles.tasquare = function(){ };
 Puzzles.tasquare.prototype = {
@@ -135,12 +135,12 @@ Puzzles.tasquare.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var binfo = area.getBCellInfo();
+			var binfo = bd.areas.getBCellInfo();
 			if( !this.checkAllArea(binfo, f_true, function(w,h,a,n){ return (w*h==a && w==h);} ) ){
 				this.setAlert('正方形でない黒マスのカタマリがあります。','A mass of black cells is not regular rectangle.'); return false;
 			}
 
-			if( !this.checkOneArea( area.getWCellInfo() ) ){
+			if( !this.checkOneArea( bd.areas.getWCellInfo() ) ){
 				this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 			}
 

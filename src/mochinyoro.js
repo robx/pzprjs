@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 モチにょろ版 mochinyoro.js v3.3.2
+// パズル固有スクリプト部 モチにょろ版 mochinyoro.js v3.4.0
 //
 Puzzles.mochinyoro = function(){ };
 Puzzles.mochinyoro.prototype = {
@@ -102,7 +102,7 @@ Puzzles.mochinyoro.prototype = {
 				this.setAlert('孤立した白マスのブロックがあります。','White cells are devided.'); return false;
 			}
 
-			var winfo = area.getWCellInfo();
+			var winfo = bd.areas.getWCellInfo();
 			if( !this.checkAreaRect(winfo) ){
 				this.setAlert('四角形でない白マスのブロックがあります。','There is a block of white cells that is not rectangle.'); return false;
 			}
@@ -115,7 +115,7 @@ Puzzles.mochinyoro.prototype = {
 				this.setAlert('数字とブロックの面積が違います。','A size of tha block and the number written in the block is differrent.'); return false;
 			}
 
-			if( !this.checkAllArea(area.getBCellInfo(), f_true, function(w,h,a,n){ return (w*h!=a);} ) ){
+			if( !this.checkAllArea(bd.areas.getBCellInfo(), f_true, function(w,h,a,n){ return (w*h!=a);} ) ){
 				this.setAlert('四角形になっている黒マスのブロックがあります。','There is a block of black cells that is rectangle.'); return false;
 			}
 

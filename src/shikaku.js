@@ -140,7 +140,7 @@ Puzzles.shikaku.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkNoNumber(rinfo) ){
 				this.setAlert('数字の入っていない領域があります。','An area has no numbers.'); return false;
 			}

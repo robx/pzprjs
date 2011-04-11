@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.3.3
+// パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.4.0
 //
 Puzzles.hakoiri = function(){ };
 Puzzles.hakoiri.prototype = {
@@ -183,7 +183,7 @@ Puzzles.hakoiri.prototype = {
 				this.setAlert('同じ記号がタテヨコナナメに隣接しています。','Same marks are adjacent.'); return false;
 			}
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkAllArea(rinfo, bd.isNum, function(w,h,a,n){ return (a<=3);}) ){
 				this.setAlert('1つのハコに4つ以上の記号が入っています。','A box has four or more marks.'); return false;
 			}
@@ -192,7 +192,7 @@ Puzzles.hakoiri.prototype = {
 				this.setAlert('1つのハコに同じ記号が複数入っています。','A box has same plural marks.'); return false;
 			}
 
-			if( !this.checkOneArea( area.getNumberInfo() ) ){
+			if( !this.checkOneArea( bd.areas.getNumberInfo() ) ){
 				this.setAlert('タテヨコにつながっていない記号があります。','Marks are devided.'); return false;
 			}
 

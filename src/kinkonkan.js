@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.3.3
+// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.4.0
 //
 Puzzles.kinkonkan = function(){ };
 Puzzles.kinkonkan.prototype = {
@@ -435,7 +435,7 @@ Puzzles.kinkonkan.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkAllArea(rinfo, function(cc){ return bd.QaC(cc)!==0;}, function(w,h,a,n){ return (a<=1);}) ){
 				this.setAlert('斜線が複数引かれた部屋があります。', 'A room has plural mirrors.'); return false;
 			}

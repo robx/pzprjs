@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 モチコロ版 mochikoro.js v3.3.2
+// パズル固有スクリプト部 モチコロ版 mochikoro.js v3.4.0
 //
 Puzzles.mochikoro = function(){ };
 Puzzles.mochikoro.prototype = {
@@ -101,7 +101,7 @@ Puzzles.mochikoro.prototype = {
 				this.setAlert('孤立した白マスのブロックがあります。','White cells are devided.'); return false;
 			}
 
-			var winfo = area.getWCellInfo();
+			var winfo = bd.areas.getWCellInfo();
 			if( !this.checkAreaRect(winfo) ){
 				this.setAlert('四角形でない白マスのブロックがあります。','There is a block of white cells that is not rectangle.'); return false;
 			}

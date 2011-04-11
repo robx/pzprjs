@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 メジリンク版 mejilink.js v3.3.2
+// パズル固有スクリプト部 メジリンク版 mejilink.js v3.4.0
 //
 Puzzles.mejilink = function(){ };
 Puzzles.mejilink.prototype = {
@@ -105,7 +105,7 @@ Puzzles.mejilink.prototype = {
 		};
 
 		pc.repaintParts = function(idlist){
-			var xlist = line.getXlistFromIdlist(idlist);
+			var xlist = bd.lines.getXlistFromIdlist(idlist);
 			for(var i=0;i<xlist.length;i++){
 				this.drawBaseMark1(xlist[i]);
 			}
@@ -222,7 +222,7 @@ Puzzles.mejilink.prototype = {
 				if(tarea.id[cc]!=0){ continue;}
 				tarea.max++;
 				tarea[tarea.max] = {clist:[]};
-				area.sr0(cc,tarea,function(id){ return !bd.isGround(id);});
+				bd.areas.sr0(cc,tarea,function(id){ return !bd.isGround(id);});
 
 				tarea.room[tarea.max] = {idlist:tarea[tarea.max].clist};
 			}

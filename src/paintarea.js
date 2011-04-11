@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ペイントエリア版 paintarea.js v3.3.2
+// パズル固有スクリプト部 ペイントエリア版 paintarea.js v3.4.0
 //
 Puzzles.paintarea = function(){ };
 Puzzles.paintarea.prototype = {
@@ -114,11 +114,11 @@ Puzzles.paintarea.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( k.EDITOR && !this.checkSameObjectInRoom(area.getRoomInfo(), function(c){ return (bd.isBlack(c)?1:2);}) ){
+			if( k.EDITOR && !this.checkSameObjectInRoom(bd.areas.getRoomInfo(), function(c){ return (bd.isBlack(c)?1:2);}) ){
 				this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both black and white cells.'); return false;
 			}
 
-			if( !this.checkOneArea( area.getBCellInfo() ) ){
+			if( !this.checkOneArea( bd.areas.getBCellInfo() ) ){
 				this.setAlert('黒マスがひとつながりになっていません。','Black cells are devided.'); return false;
 			}
 

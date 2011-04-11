@@ -181,7 +181,7 @@ Puzzles.roma.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkDifferentNumberInRoom(area.getRoomInfo(), function(c){ var num=bd.getNum(c); return ((num>=1&&num<=4)?num:-1);}) ){
+			if( !this.checkDifferentNumberInRoom(bd.areas.getRoomInfo(), function(c){ var num=bd.getNum(c); return ((num>=1&&num<=4)?num:-1);}) ){
 				this.setAlert('1つの領域に2つ以上の同じ矢印が入っています。','An area has plural same arrows.'); return false;
 			}
 

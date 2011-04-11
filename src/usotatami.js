@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ウソタタミ版 usotatami.js v3.3.2
+// パズル固有スクリプト部 ウソタタミ版 usotatami.js v3.4.0
 //
 Puzzles.usotatami = function(){ };
 Puzzles.usotatami.prototype = {
@@ -104,7 +104,7 @@ Puzzles.usotatami.prototype = {
 				this.setAlert('十字の交差点があります。','There is a crossing border line.'); return false;
 			}
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkNoNumber(rinfo) ){
 				this.setAlert('数字の入っていないタタミがあります。','A tatami has no numbers.'); return false;
 			}

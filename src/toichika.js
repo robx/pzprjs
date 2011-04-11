@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 遠い誓い版 toichika.js v3.3.3
+// パズル固有スクリプト部 遠い誓い版 toichika.js v3.4.0
 //
 Puzzles.toichika = function(){ };
 Puzzles.toichika.prototype = {
@@ -181,7 +181,7 @@ Puzzles.toichika.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkAllArea(rinfo, bd.isNum, function(w,h,a,n){ return (a<=1);}) ){
 				this.setAlert('1つの国に2つ以上の矢印が入っています。','A country has plural arrows.'); return false;
 			}

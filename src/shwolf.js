@@ -184,7 +184,7 @@ Puzzles.shwolf.prototype = {
 				this.setAlert('外枠につながっていない線があります。','A line doesn\'t connect to the chassis.'); return false;
 			}
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkNoNumber(rinfo) ){
 				this.setAlert('ヤギもオオカミもいない領域があります。','An area has neither sheeps nor wolves.'); return false;
 			}
@@ -206,7 +206,7 @@ Puzzles.shwolf.prototype = {
 			for(var bx=bd.minbx+2;bx<=bd.maxbx-2;bx+=2){
 				for(var by=bd.minby+2;by<=bd.maxby-2;by+=2){
 					var xc = bd.xnum(bx,by);
-					if(area.lcntCross(xc)===2 && bd.QnX(xc)!==1){
+					if(bd.areas.lcntCross(xc)===2 && bd.QnX(xc)!==1){
 						if(    !(bd.QaB(bd.bnum(bx  ,by-1))===1 && bd.QaB(bd.bnum(bx  ,by+1))===1)
 							&& !(bd.QaB(bd.bnum(bx-1,by  ))===1 && bd.QaB(bd.bnum(bx+1,by  ))===1) )
 						{

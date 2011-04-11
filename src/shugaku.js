@@ -167,7 +167,7 @@ Puzzles.shugaku.prototype = {
 			um.addOpe(k.CELL, k.QANS, id, this.cell[id].qans, num);
 			this.cell[id].qans = num;
 
-			area.setCell('block',id,(num===1));
+			this.areas.setCell('block',id,(num===1));
 		};
 	},
 
@@ -408,7 +408,7 @@ Puzzles.shugaku.prototype = {
 				this.setAlert('通路に接していない布団があります。', 'There is a futon separated to aisle.'); return false;
 			}
 
-			if( !this.checkOneArea( area.getBCellInfo() ) ){
+			if( !this.checkOneArea( bd.areas.getBCellInfo() ) ){
 				this.setAlert('黒マスが分断されています。', 'Aisle is divided.'); return false;
 			}
 

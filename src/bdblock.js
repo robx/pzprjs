@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ボーダーブロック版 bdblock.js v3.3.2
+// パズル固有スクリプト部 ボーダーブロック版 bdblock.js v3.4.0
 //
 Puzzles.bdblock = function(){ };
 Puzzles.bdblock.prototype = {
@@ -120,7 +120,7 @@ Puzzles.bdblock.prototype = {
 				this.setAlert('黒点以外のところで線が交差しています。','Lines are crossed out of the black point.'); return false;
 			}
 
-			rinfo = area.getRoomInfo();
+			rinfo = bd.areas.getRoomInfo();
 			if( !this.checkNoNumber(rinfo) ){
 				this.setAlert('数字のないブロックがあります。','A block has no number.'); return false;
 			}

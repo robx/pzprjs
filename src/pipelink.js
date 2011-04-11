@@ -196,7 +196,7 @@ Puzzles.pipelink.prototype = {
 		};
 
 		pc.repaintParts = function(idlist){
-			var clist = line.getClistFromIdlist(idlist);
+			var clist = bd.lines.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
 				this.drawLineParts1(clist[i]);
 			}
@@ -314,7 +314,7 @@ Puzzles.pipelink.prototype = {
 				this.setAlert('分岐している線があります。','There is a branched line.'); return false;
 			}
 
-			if( (k.puzzleid==='pipelinkr') && !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==6 && bd.QuC(c)!==11);}) ){
+			if( (k.puzzleid==='pipelinkr') && !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===4 && bd.QuC(c)!==6 && bd.QuC(c)!==11);}) ){
 				this.setAlert((pp.getVal('disptype')==2?'氷':'○')+'の部分以外で線が交差しています。','There is a crossing line out of '+(pp.getVal('disptype')==1?'circles':'ices')+'.'); return false;
 			}
 			if( (k.puzzleid==='pipelinkr') && !this.checkIceLines() ){
@@ -325,7 +325,7 @@ Puzzles.pipelink.prototype = {
 				this.setAlert('輪っかが一つではありません。','There are plural loops.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QuC(c)===11 && line.lcntCell(c)!==4);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.QuC(c)===11 && bd.lines.lcntCell(c)!==4);}) ){
 				this.setAlert('┼のマスから線が4本出ていません。','A cross-joint cell doesn\'t have four-way lines.'); return false;
 			}
 

@@ -128,7 +128,7 @@ Puzzles.bonsan.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				this.vdel([header+c]);
-				if(line.lcntCell(c)==1 && bd.cell[c].qnum==-1){
+				if(bd.lines.lcntCell(c)==1 && bd.cell[c].qnum==-1){
 					var dir=0, id=null;
 					if     (bd.isLine(bd.ub(c))){ dir=2; id=bd.ub(c);}
 					else if(bd.isLine(bd.db(c))){ dir=1; id=bd.db(c);}
@@ -207,7 +207,7 @@ Puzzles.bonsan.prototype = {
 			}
 
 			this.performAsLine = false;
-			var linfo = line.getLareaInfo();
+			var linfo = bd.lines.getLareaInfo();
 			if( !this.checkDoubleNumber(linfo) ){
 				this.setAlert('○が繋がっています。','There are connected circles.'); return false;
 			}
@@ -222,7 +222,7 @@ Puzzles.bonsan.prototype = {
 				this.setAlert('数字と線の長さが違います。','The length of a line is wrong.'); return false;
 			}
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			this.movedPosition(linfo);
 			if( !this.checkFractal(rinfo) ){
 				this.setAlert('部屋の中の○が点対称に配置されていません。', 'Position of circles in the room is not point symmetric.'); return false;
@@ -231,7 +231,7 @@ Puzzles.bonsan.prototype = {
 				this.setAlert('○のない部屋があります。','A room has no circle.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (bd.QnC(c)>=1 && line.lcntCell(c)==0);} ) ){
+			if( !this.checkAllCell(function(c){ return (bd.QnC(c)>=1 && bd.lines.lcntCell(c)==0);} ) ){
 				this.setAlert('○から線が出ていません。','A circle doesn\'t start any line.'); return false;
 			}
 
@@ -247,7 +247,7 @@ Puzzles.bonsan.prototype = {
 		ans.checkLineOverLetter = function(func){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(line.lcntCell(c)>=2 && bd.isNum(c)){
+				if(bd.lines.lcntCell(c)>=2 && bd.isNum(c)){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,true);
@@ -284,7 +284,7 @@ Puzzles.bonsan.prototype = {
 				var before=null, after=null;
 				for(var i=0;i<linfo.room[r].idlist.length;i++){
 					var c=linfo.room[r].idlist[i];
-					if(line.lcntCell(c)===1){
+					if(bd.lines.lcntCell(c)===1){
 						if(bd.isNum(c)){ before=c;}else{ after=c;}
 					}
 				}

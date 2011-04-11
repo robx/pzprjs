@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 フィルマット版 fillmat.js v3.3.2
+// パズル固有スクリプト部 フィルマット版 fillmat.js v3.4.0
 //
 Puzzles.fillmat = function(){ };
 Puzzles.fillmat.prototype = {
@@ -114,7 +114,7 @@ Puzzles.fillmat.prototype = {
 				this.setAlert('十字の交差点があります。','There is a crossing border line.'); return false;
 			}
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.room[r].idlist.length;}) ){
 				this.setAlert('隣り合うタタミの大きさが同じです。','The same size Tatami are adjacent.'); return false;
 			}

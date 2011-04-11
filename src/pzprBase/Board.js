@@ -217,6 +217,10 @@ Board = function(){
 	this.enableLineNG = false;
 	this.enableLineCombined = false;
 
+	// 補助オブジェクト
+	this.lines = new LineManager();
+	this.areas = new AreaManager();
+
 	this.isLPobj = {};
 	this.isLPobj[k.UP] = {11:1,12:1,14:1,15:1};
 	this.isLPobj[k.DN] = {11:1,12:1,16:1,17:1};
@@ -249,6 +253,9 @@ Board.prototype = {
 
 		this.setminmax();
 		this.setposAll();
+
+		this.areas.init();
+		this.lines.init();
 	},
 	initSpecial : function(){ },
 
@@ -318,17 +325,17 @@ Board.prototype = {
 	//---------------------------------------------------------------------------
 	disableInfo : function(){
 		um.disableRecord();
-		line.disableRecord();
-		area.disableRecord();
+		this.lines.disableRecord();
+		this.areas.disableRecord();
 	},
 	enableInfo : function(){
 		um.enableRecord();
-		line.enableRecord();
-		area.enableRecord();
+		this.lines.enableRecord();
+		this.areas.enableRecord();
 	},
 	resetInfo : function(){
-		area.resetArea();
-		line.resetLcnts();
+		this.areas.resetArea();
+		this.lines.resetLcnts();
 	},
 
 	//---------------------------------------------------------------------------
@@ -348,7 +355,6 @@ Board.prototype = {
 		if(!!k.isborder){ this.setposBorders();}
 		if(!!k.isexcell){ this.setposEXcells();}
 
-		this.setcacheAll();
 		this.setcoordAll();
 	},
 	setposGroup : function(type){
@@ -387,6 +393,12 @@ Board.prototype = {
 				if(i>=0 && i<k.qrows){ obj.bx=0;         obj.by=i*2+1;    } i-=k.qrows;
 				if(i>=0 && i<k.qrows){ obj.bx=2*k.qcols; obj.by=i*2+1;    } i-=k.qrows;
 			}
+
+			obj.cellcc[0] = this.cnum(obj.bx-(obj.by&1), obj.by-(obj.bx&1));
+			obj.cellcc[1] = this.cnum(obj.bx+(obj.by&1), obj.by+(obj.bx&1));
+
+			obj.crosscc[0] = this.xnum(obj.bx-(obj.bx&1), obj.by-(obj.by&1));
+			obj.crosscc[1] = this.xnum(obj.bx+(obj.bx&1), obj.by+(obj.by&1));
 		}
 	},
 	setposEXcells : function(){
@@ -409,21 +421,6 @@ Board.prototype = {
 				if(i===0)            { obj.bx=-1;          obj.by=2*k.qrows+1; continue;} i--;
 				if(i===0)            { obj.bx=2*k.qcols+1; obj.by=2*k.qrows+1; continue;} i--;
 			}
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// bd.setcacheAll() 全てのCell, Cross, Borderオブジェクトの_cnum等をキャッシュする
-	//---------------------------------------------------------------------------
-	setcacheAll : function(){
-		for(var id=0;id<this.bdmax;id++){
-			var obj = this.border[id];
-
-			obj.cellcc[0] = this.cnum(obj.bx-(obj.by&1), obj.by-(obj.bx&1));
-			obj.cellcc[1] = this.cnum(obj.bx+(obj.by&1), obj.by+(obj.bx&1));
-
-			obj.crosscc[0] = this.xnum(obj.bx-(obj.bx&1), obj.by-(obj.by&1));
-			obj.crosscc[1] = this.xnum(obj.bx+(obj.bx&1), obj.by+(obj.by&1));
 		}
 	},
 
@@ -746,7 +743,7 @@ Board.prototype = {
 		um.addOpe(k.CELL, k.QNUM, id, this.cell[id].qnum, num);
 		this.cell[id].qnum = num;
 
-		area.setCell('number',id);
+		this.areas.setCell('number',id);
 	},
 	sAnC : function(id, num) {
 		if(!k.dispzero && num===0){ return;}
@@ -754,20 +751,20 @@ Board.prototype = {
 		um.addOpe(k.CELL, k.ANUM, id, this.cell[id].anum, num);
 		this.cell[id].anum = num;
 
-		area.setCell('number',id);
+		this.areas.setCell('number',id);
 	},
 	// override by lightup.js, shugaku.js
 	sQaC : function(id, num) {
 		um.addOpe(k.CELL, k.QANS, id, this.cell[id].qans, num);
 		this.cell[id].qans = num;
 
-		area.setCell('block',id);
+		this.areas.setCell('block',id);
 	},
 	sQsC : function(id, num) {
 		um.addOpe(k.CELL, k.QSUB, id, this.cell[id].qsub, num);
 		this.cell[id].qsub = num;
 
-		if(k.NumberWithMB){ area.setCell('number',id);}
+		if(k.NumberWithMB){ this.areas.setCell('number',id);}
 	},
 	sDiC : function(id, num) {
 		um.addOpe(k.CELL, k.QDIR, id, this.cell[id].qdir, num);
@@ -827,7 +824,7 @@ Board.prototype = {
 		um.addOpe(k.BORDER, k.QUES, id, this.border[id].ques, num);
 		this.border[id].ques = num;
 
-		area.setBorder(id,(num>0));
+		this.areas.setBorder(id,(num>0));
 	},
 	sQnB : function(id, num) {
 		um.addOpe(k.BORDER, k.QNUM, id, this.border[id].qnum, num);
@@ -839,7 +836,7 @@ Board.prototype = {
 		um.addOpe(k.BORDER, k.QANS, id, this.border[id].qans, num);
 		this.border[id].qans = num;
 
-		area.setBorder(id,(num>0));
+		this.areas.setBorder(id,(num>0));
 	},
 	sQsB : function(id, num) {
 		um.addOpe(k.BORDER, k.QSUB, id, this.border[id].qsub, num);
@@ -851,7 +848,7 @@ Board.prototype = {
 		um.addOpe(k.BORDER, k.LINE, id, this.border[id].line, num);
 		this.border[id].line = num;
 
-		line.setLine(id,(num>0));
+		this.lines.setLine(id,(num>0));
 	},
 
 	QuB : function(id){ return this.border[id].ques;},

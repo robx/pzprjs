@@ -55,8 +55,7 @@ Puzzles.ichimaga.prototype = {
 		};
 
 		bd.maxnum = 4;
-
-		line.iscrossing = function(cc){ return bd.noNum(cc);};
+		bd.lines.iscrossing = function(cc){ return bd.noNum(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -81,7 +80,7 @@ Puzzles.ichimaga.prototype = {
 		};
 
 		pc.repaintParts = function(idlist){
-			var clist = line.getClistFromIdlist(idlist);
+			var clist = bd.lines.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
 				this.drawCircle1AtNumber(clist[i]);
 				this.drawNumber1(clist[i]);
@@ -158,7 +157,7 @@ Puzzles.ichimaga.prototype = {
 				this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
 			}
 
-			if( !this.checkAllCell( function(c){ return bd.isValidNum(c) && bd.QnC(c)!==line.lcntCell(c); } ) ){
+			if( !this.checkAllCell( function(c){ return bd.isValidNum(c) && bd.QnC(c)!==bd.lines.lcntCell(c); } ) ){
 				this.setAlert('○から出る線の本数が正しくありません。', 'The number is not equal to the number of lines out of the circle.'); return false;
 			}
 
@@ -166,7 +165,7 @@ Puzzles.ichimaga.prototype = {
 				this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
 			}
 
-			if( !this.checkAllCell( function(c){ return bd.isNum(c) && line.lcntCell(c)===0; } ) ){
+			if( !this.checkAllCell( function(c){ return bd.isNum(c) && bd.lines.lcntCell(c)===0; } ) ){
 				this.setAlert('○から線が出ていません。', 'There is a lonely circle.'); return false;
 			}
 
@@ -175,10 +174,10 @@ Puzzles.ichimaga.prototype = {
 		ans.check1st = function(){ return true;};
 
 		ans.checkLcntCell = function(val){
-			if(line.ltotal[val]==0){ return true;}
+			if(bd.lines.ltotal[val]==0){ return true;}
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.isNum(c) || line.lcntCell(c)!==val){ continue;}
+				if(bd.isNum(c) || bd.lines.lcntCell(c)!==val){ continue;}
 
 				if(this.inAutoCheck){ return false;}
 				if(result){ bd.sErBAll(2);}
@@ -211,7 +210,7 @@ Puzzles.ichimaga.prototype = {
 						if((bx+by)%2==0){
 							var cc = bd.cnum(bx,by);
 							if     (cc===null || bd.isNum(cc)){ break;}
-							else if(line.lcntCell(cc)===4){ }
+							else if(bd.lines.lcntCell(cc)===4){ }
 							else if(dir!==1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!==2){ ccnt++;} dir=2;}
 							else if(dir!==2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!==1){ ccnt++;} dir=1;}
 							else if(dir!==3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!==4){ ccnt++;} dir=4;}
@@ -261,7 +260,7 @@ Puzzles.ichimaga.prototype = {
 			var visited = new AreaInfo();
 			for(var id=0;id<bd.bdmax;id++){ if(bd.isLine(id)){ visited.id[id]=0; lcnt++;}else{ visited.id[id]=null;} }
 			var fc=null;
-			for(var c=0;c<bd.cellmax;c++){ if(bd.isNum(c) && line.lcntCell(c)>0){ fc=c; break;} }
+			for(var c=0;c<bd.cellmax;c++){ if(bd.isNum(c) && bd.lines.lcntCell(c)>0){ fc=c; break;} }
 			if(fc===null){ return true;}
 
 			this.cl0(visited.id, bd.cell[fc].bx, bd.cell[fc].by,0);
@@ -286,7 +285,7 @@ Puzzles.ichimaga.prototype = {
 						if(bd.isLine(bd.bnum(bx+1,by))){ this.cl0(check,bx,by,4);}
 						break;
 					}
-					else if(line.lcntCell(bd.cnum(bx,by))==4){ }
+					else if(bd.lines.lcntCell(bd.cnum(bx,by))==4){ }
 					else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
 					else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ dir=1;}
 					else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ dir=4;}

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.3.2
+// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.4.0
 //
 Puzzles.kaero = function(){ };
 Puzzles.kaero.prototype = {
@@ -115,7 +115,7 @@ Puzzles.kaero.prototype = {
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i];
 				this.vdel([header+c]);
-				if(line.lcntCell(c)===1 && bd.cell[c].qnum===-1){
+				if(bd.lines.lcntCell(c)===1 && bd.cell[c].qnum===-1){
 					var dir=0, id=null;
 					if     (bd.isLine(bd.ub(c))){ dir=2; id=bd.ub(c);}
 					else if(bd.isLine(bd.db(c))){ dir=1; id=bd.db(c);}
@@ -261,7 +261,7 @@ Puzzles.kaero.prototype = {
 				this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 			}
 
-			var linfo = line.getLareaInfo();
+			var linfo = bd.lines.getLareaInfo();
 			if( !this.checkDoubleNumber(linfo) ){
 				this.setAlert('アルファベットが繋がっています。','There are connected letters.'); return false;
 			}
@@ -269,7 +269,7 @@ Puzzles.kaero.prototype = {
 				this.setAlert('アルファベットの上を線が通過しています。','A line goes through a letter.'); return false;
 			}
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			this.movedPosition(linfo);
 			this.performAsLine = false;
 			if( !this.checkSameObjectInRoom(rinfo, this.getMoved) ){
@@ -294,7 +294,7 @@ Puzzles.kaero.prototype = {
 		ans.checkLineOverLetter = function(func){
 			var result = true;
 			for(var c=0;c<bd.cellmax;c++){
-				if(line.lcntCell(c)>=2 && bd.isNum(c)){
+				if(bd.lines.lcntCell(c)>=2 && bd.isNum(c)){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}
 					ans.setCellLineError(c,true);
@@ -311,7 +311,7 @@ Puzzles.kaero.prototype = {
 				var before=null, after=null;
 				for(var i=0;i<linfo.room[r].idlist.length;i++){
 					var c=linfo.room[r].idlist[i];
-					if(line.lcntCell(c)===1){
+					if(bd.lines.lcntCell(c)===1){
 						if(bd.isNum(c)){ before=c;}else{ after=c;}
 					}
 				}

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.3.3
+// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.4.0
 //
 Puzzles.icebarn = function(){ };
 Puzzles.icebarn.prototype = {
@@ -576,7 +576,7 @@ Puzzles.icebarn.prototype = {
 				this.setAlert('分岐している線があります。','There is a branch line.'); return false;
 			}
 
-			if( !this.checkAllCell(function(c){ return (line.lcntCell(c)===4 && bd.QuC(c)!==6);}) ){
+			if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===4 && bd.QuC(c)!==6);}) ){
 				this.setAlert('氷の部分以外で線が交差しています。', 'A Line is crossed outside of ice.'); return false;
 			}
 			if( !this.checkIceLines() ){
@@ -626,7 +626,7 @@ Puzzles.icebarn.prototype = {
 				if(iarea.id[cc]!==0){ continue;}
 				iarea.max++;
 				iarea[iarea.max] = {clist:[]};
-				area.sc0(cc,iarea);
+				bd.areas.sc0(cc,iarea);
 
 				iarea.room[iarea.max] = {idlist:iarea[iarea.max].clist};
 			}
@@ -663,7 +663,7 @@ Puzzles.icebarn.prototype = {
 					var cc = bd.cnum(bx,by);
 					if(cc===null){ continue;}
 					if(bd.QuC(cc)!=6){
-						if     (line.lcntCell(cc)!=2){ dir=dir;}
+						if     (bd.lines.lcntCell(cc)!=2){ dir=dir;}
 						else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
 						else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ dir=1;}
 						else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ dir=4;}

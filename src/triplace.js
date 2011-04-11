@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 トリプレイス版 triplace.js v3.3.3
+// パズル固有スクリプト部 トリプレイス版 triplace.js v3.4.0
 //
 Puzzles.triplace = function(){ };
 Puzzles.triplace.prototype = {
@@ -327,7 +327,7 @@ Puzzles.triplace.prototype = {
 				if(tinfo.id[c]!==0){ continue;}
 				tinfo.max++;
 				tinfo[tinfo.max] = {clist:[]};
-				area.sr0(c, tinfo, bd.isBorder);
+				bd.areas.sr0(c, tinfo, bd.isBorder);
 
 				var clist = tinfo[tinfo.max].clist;
 				var d = ans.getSizeOfClist(clist,f_true);

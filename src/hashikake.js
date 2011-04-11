@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.3.3
+// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.4.0
 //
 Puzzles.hashikake = function(){ };
 Puzzles.hashikake.prototype = {
@@ -140,8 +140,7 @@ Puzzles.hashikake.prototype = {
 		}
 
 		bd.maxnum = 8;
-
-		line.iscrossing = function(cc){ return bd.noNum(cc);};
+		bd.lines.iscrossing = function(cc){ return bd.noNum(cc);};
 	},
 
 	//---------------------------------------------------------
@@ -219,7 +218,7 @@ Puzzles.hashikake.prototype = {
 		};
 
 		pc.repaintParts = function(idlist){
-			var clist = line.getClistFromIdlist(idlist);
+			var clist = bd.lines.getClistFromIdlist(idlist);
 			for(var i=0;i<clist.length;i++){
 				this.drawCircle1AtNumber(clist[i]);
 				this.drawNumber1(clist[i]);
@@ -302,7 +301,7 @@ Puzzles.hashikake.prototype = {
 			}
 
 			this.performAsLine = true;
-			if( !this.checkOneArea( line.getLareaInfo() ) ){
+			if( !this.checkOneArea( bd.lines.getLareaInfo() ) ){
 				this.setAlert('線が全体で一つながりになっていません。', 'All lines and numbers are not connected each other.'); return false;
 			}
 

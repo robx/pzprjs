@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ＬＩＴＳ版 lits.js v3.3.2
+// パズル固有スクリプト部 ＬＩＴＳ版 lits.js v3.4.0
 //
 Puzzles.lits = function(){ };
 Puzzles.lits.prototype = {
@@ -116,7 +116,7 @@ Puzzles.lits.prototype = {
 				this.setAlert('2x2の黒マスのかたまりがあります。', 'There is a 2x2 block of black cells.'); return false;
 			}
 
-			var rinfo = area.getRoomInfo();
+			var rinfo = bd.areas.getRoomInfo();
 			if( !this.checkBlackCellInArea(rinfo, function(a){ return (a<=4);}) ){
 				this.setAlert('５マス以上の黒マスがある部屋が存在します。', 'A room has five or more black cells.'); return false;
 			}
@@ -129,7 +129,7 @@ Puzzles.lits.prototype = {
 				this.setAlert('同じ形のテトロミノが接しています。', 'Some Tetrominos that are the same shape are Adjacent.'); return false;
 			}
 
-			if( !this.checkOneArea( area.getBCellInfo() ) ){
+			if( !this.checkOneArea( bd.areas.getBCellInfo() ) ){
 				this.setAlert('黒マスが分断されています。', 'Black cells are not continued.'); return false;
 			}
 

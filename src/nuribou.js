@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぬりぼう版 nuribou.js v3.3.2
+// パズル固有スクリプト部 ぬりぼう版 nuribou.js v3.4.0
 //
 Puzzles.nuribou = function(){ };
 Puzzles.nuribou.prototype = {
@@ -94,7 +94,7 @@ Puzzles.nuribou.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			var binfo = area.getBCellInfo();
+			var binfo = bd.areas.getBCellInfo();
 			if( !this.checkAllArea(binfo, f_true, function(w,h,a,n){ return (w==1||h==1);} ) ){
 				this.setAlert('「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。','There is a mass of black cells, whose width is more than two.'); return false;
 			}
@@ -103,7 +103,7 @@ Puzzles.nuribou.prototype = {
 				this.setAlert('同じ面積の黒マスのカタマリが、角を共有しています。','Masses of black cells whose length is the same share a corner.'); return false;
 			}
 
-			var winfo = area.getWCellInfo();
+			var winfo = bd.areas.getWCellInfo();
 			if( !this.checkNoNumber(winfo) ){
 				this.setAlert('数字の入っていないシマがあります。','An area of white cells has no numbers.'); return false;
 			}

@@ -585,9 +585,7 @@ PBase.prototype = {
 		kp = new KeyPopup();	// 入力パネルオブジェクト
 		pc = new Graphic();		// 描画系オブジェクト
 		ans = new AnsCheck();	// 正解判定オブジェクト
-		um   = new OperationManager();	// 操作情報管理オブジェクト
-		area = new AreaManager();		// 部屋情報等管理オブジェクト
-		line = new LineManager();		// 線の情報管理オブジェクト
+		um  = new OperationManager();	// 操作情報管理オブジェクト
 
 		menu = new Menu();		// メニューを扱うオブジェクト
 		pp = new Properties();	// メニュー関係の設定値を保持するオブジェクト
