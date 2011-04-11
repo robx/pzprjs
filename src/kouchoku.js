@@ -162,7 +162,7 @@ Puzzles.kouchoku.prototype = {
 		kc.key_inputqnum_kouchoku = function(ca){
 			var c = tc.getTXC();
 
-			if(ca==k.KEYUP||ca==k.KEYDN||ca==k.KEYLT||ca==k.KEYRT||!!menu.pop){ return;}
+			if(ca.length>1){ return;}
 			else if('a'<=ca && ca<='z'){
 				var num = parseInt(ca,36)-9;
 				if(bd.QnX(c)===num){ bd.sQnX(c,-1);}
@@ -571,7 +571,7 @@ Puzzles.kouchoku.prototype = {
 				for(var n=0;n<lattice.length;n++){
 					if(result){ bd.segs.seterrorAll(2);}
 					bd.segs.seterror([id],1);
-					bd.sErX([xc],1);
+					bd.sErX([lattice[n]],1);
 					result = false;
 				}
 			}
@@ -580,7 +580,7 @@ Puzzles.kouchoku.prototype = {
 		ans.getLatticePoint = function(bx1,by1,bx2,by2){
 			var seg = new Segment(bx1,by1,bx2,by2), lattice = [];
 			for(var i=0;i<seg.lattices.length;i++){
-				var xc = bd.xnum(seg.lattices[i][0], seg.lattices[i][1]);
+				var xc = seg.lattices[i][2];
 				if(xc!==null && bd.cross[xc].qnum!==-1){ lattice.push(xc);}
 			}
 			return lattice;
@@ -637,7 +637,7 @@ Puzzles.kouchoku.prototype = {
 				var seg1=bd.segs.seg[idlist[i]], seg2=bd.segs.seg[idlist[j]];
 				if(bd.segs.isOverLapSegment(seg1,seg2)){
 					if(result){ bd.segs.seterrorAll(2);}
-					bd.segs.seterror([seg1,seg2],1);
+					bd.segs.seterror([idlist[i],idlist[j]],1);
 					result = false;
 				}
 			}}
@@ -650,7 +650,7 @@ Puzzles.kouchoku.prototype = {
 				var seg1=bd.segs.seg[idlist[i]], seg2=bd.segs.seg[idlist[j]];
 				if(bd.segs.isCrossing(seg1,seg2) && !bd.segs.isRightAngle(seg1,seg2)){
 					if(result){ bd.segs.seterrorAll(2);}
-					bd.segs.seterror([seg1,seg2],1);
+					bd.segs.seterror([idlist[i],idlist[j]],1);
 					result = false;
 				}
 			}}
@@ -693,11 +693,11 @@ Segment.prototype = {
 		this.dx = (bx2-bx1);
 		this.dy = (by2-by1);
 
-		this.setLattices(bx1,by1,bx2,by2);
+		this.setLattices();
 	},
-	setLattices : function(bx1,by1,bx2,by2){
+	setLattices : function(){
 		// ユークリッドの互助法で最大公約数を求める
-		var div=(bx2-bx1), n=(by2-by1);
+		var div=(this.dx>>1), n=(this.dy>>1);
 		div=(div<0?-div:div); n=(n<0?-n:n);
 		if(div<n){ tmp=div;div=n;n=tmp;} // (m,n)=(0,0)は想定外
 		while(n>0){ tmp=(div%n); div=n; n=tmp;}
@@ -705,10 +705,10 @@ Segment.prototype = {
 		// div-1が途中で通る格子点の数になってる
 		this.lattices = [];
 		for(var a=1;a<div;a++){
-			var bx=bx1+(bx2-bx1)*(a/div);
-			var by=by1+(by2-by1)*(a/div);
+			var bx=this.bx1+this.dx*(a/div);
+			var by=this.by1+this.dy*(a/div);
 			var xc=bd.xnum(bx,by);
-			if(xc!==null && bd.cross[xc].qnum!==-1){ this.lattices.push(xc);}
+			this.lattices.push([bx,by,xc]);
 		}
 	},
 	ispositive : function(bx,by){
