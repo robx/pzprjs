@@ -12,7 +12,7 @@ var PZLINFO = {
 		return !!this.toPID(name);
 	},
 	toPID : function(name){
-		if(!!this.info[name].ja){ return name;}
+		if(!!this.info[name] && !!this.info[name].ja){ return name;}
 		for(var pid in this.info){
 			if(!this.info[pid].alias){ continue;}
 			for(var type in this.info[pid].alias){
