@@ -6,78 +6,82 @@
 
 // メニュー描画/取得/html表示系
 // Menuクラス
-Menu = function(){
-	this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
-	this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
-	this.pop        = "";			// 現在表示しているポップアップウィンドウ(オブジェクト)
+pzprv3.createCommonClass('Menu', '',
+{
+	initialize : function(){
+		this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
+		this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
+		this.pop        = "";			// 現在表示しているポップアップウィンドウ(オブジェクト)
 
-	this.movingpop  = "";			// 移動中のポップアップメニュー
-	this.offset = new Point(0, 0);	// ポップアップウィンドウの左上からの位置
+		this.movingpop  = "";			// 移動中のポップアップメニュー
+		this.offset = new pzprv3.core.Point(0, 0);	// ポップアップウィンドウの左上からの位置
 
-	this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
-	this.labelstack = [];			// span等の文字列の情報(idnameと文字列のリスト)
+		this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
+		this.labelstack = [];			// span等の文字列の情報(idnameと文字列のリスト)
 
-	this.ex = new MenuExec();
-	this.ex.init();
+		this.ex = new (pzprv3.getPuzzleClass('MenuExec'))();	// MenuExecオブジェクト用
 
-	this.language = 'ja';
+		this.ispencilbox = (PZLINFO.info[k.puzzleid].exists.kanpen && (k.puzzleid!=="nanro" && k.puzzleid!=="ayeheya" && k.puzzleid!=="kurochute"));
 
-	this.ispencilbox = (PZLINFO.info[k.puzzleid].exists.kanpen && (k.puzzleid!=="nanro" && k.puzzleid!=="ayeheya" && k.puzzleid!=="kurochute"));
+		// ElementTemplate : メニュー領域
+		var menu_funcs = {mouseover : ee.ebinder(this, this.menuhover), mouseout  : ee.ebinder(this, this.menuout)};
+		this.EL_MENU  = ee.addTemplate('menupanel','li', {className:'menu'}, null, menu_funcs);
 
-	// ElementTemplate : メニュー領域
-	var menu_funcs = {mouseover : ee.ebinder(this, this.menuhover), mouseout  : ee.ebinder(this, this.menuout)};
-	this.EL_MENU  = ee.addTemplate('menupanel','li', {className:'menu'}, null, menu_funcs);
+		// ElementTemplate : フロートメニュー
+		var float_funcs = {mouseout:ee.ebinder(this, this.floatmenuout)};
+		this.EL_FLOAT = ee.addTemplate('float_parent','menu', {className:'floatmenu'}, {backgroundColor:k.floatbgcolor}, float_funcs);
 
-	// ElementTemplate : フロートメニュー
-	var float_funcs = {mouseout:ee.ebinder(this, this.floatmenuout)};
-	this.EL_FLOAT = ee.addTemplate('float_parent','menu', {className:'floatmenu'}, {backgroundColor:base.floatbgcolor}, float_funcs);
+		// ElementTemplate : フロートメニュー(中身)
+		var smenu_funcs  = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout), click:ee.ebinder(this, this.submenuclick)};
+		var select_funcs = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout)};
+		this.EL_SMENU    = ee.addTemplate('','li', {className:'smenu'}, null, smenu_funcs);
+		this.EL_SPARENT  = ee.addTemplate('','li', {className:'smenu'}, null, select_funcs);
+		this.EL_SELECT   = ee.addTemplate('','li', {className:'smenu'}, {fontWeight :'900', fontSize:'0.9em'}, select_funcs);
+		this.EL_CHECK    = ee.addTemplate('','li', {className:'smenu'}, {paddingLeft:'6pt', fontSize:'0.9em'}, smenu_funcs);
+		this.EL_LABEL    = ee.addTemplate('','li', {className:'smenulabel'}, null, null);
+		this.EL_CHILD    = this.EL_CHECK;
+		this.EL_SEPARATE = (
+			// IE7以下向けのCSSハックをやめて、ここで設定するようにした
+			(!ee.br.IE6) ? ee.addTemplate('','li', {className:'smenusep', innerHTML:'&nbsp;'}, null, null)
+						 : ee.addTemplate('','li', {className:'smenusep', innerHTML:'&nbsp;'}, {lineHeight :'2pt', display:'inline'}, null)
+		);
 
-	// ElementTemplate : フロートメニュー(中身)
-	var smenu_funcs  = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout), click:ee.ebinder(this, this.submenuclick)};
-	var select_funcs = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout)};
-	this.EL_SMENU    = ee.addTemplate('','li', {className:'smenu'}, null, smenu_funcs);
-	this.EL_SPARENT  = ee.addTemplate('','li', {className:'smenu'}, null, select_funcs);
-	this.EL_SELECT   = ee.addTemplate('','li', {className:'smenu'}, {fontWeight :'900', fontSize:'0.9em'}, select_funcs);
-	this.EL_CHECK    = ee.addTemplate('','li', {className:'smenu'}, {paddingLeft:'6pt', fontSize:'0.9em'}, smenu_funcs);
-	this.EL_LABEL    = ee.addTemplate('','li', {className:'smenulabel'}, null, null);
-	this.EL_CHILD    = this.EL_CHECK;
-	this.EL_SEPARATE = (
-		// IE7以下向けのCSSハックをやめて、ここで設定するようにした
-		(!k.br.IE6) ? ee.addTemplate('','li', {className:'smenusep', innerHTML:'&nbsp;'}, null, null)
-					: ee.addTemplate('','li', {className:'smenusep', innerHTML:'&nbsp;'}, {lineHeight :'2pt', display:'inline'}, null)
-	);
+		// ElementTemplate : 管理領域
+		this.EL_DIVPACK  = ee.addTemplate('','div',  null, null, null);
+		this.EL_SPAN     = ee.addTemplate('','span', {unselectable:'on'}, null, null);
+		this.EL_CHECKBOX = ee.addTemplate('','input',{type:'checkbox', check:''}, null, {click:ee.ebinder(this, this.checkclick)});
+		this.EL_SELCHILD = ee.addTemplate('','div',  {className:'flag',unselectable:'on'}, null, {click:ee.ebinder(this, this.selectclick)});
 
-	// ElementTemplate : 管理領域
-	this.EL_DIVPACK  = ee.addTemplate('','div',  null, null, null);
-	this.EL_SPAN     = ee.addTemplate('','span', {unselectable:'on'}, null, null);
-	this.EL_CHECKBOX = ee.addTemplate('','input',{type:'checkbox', check:''}, null, {click:ee.ebinder(this, this.checkclick)});
-	this.EL_SELCHILD = ee.addTemplate('','div',  {className:'flag',unselectable:'on'}, null, {click:ee.ebinder(this, this.selectclick)});
+		// ElementTemplate : ボタン
+		this.EL_BUTTON = ee.addTemplate('','input', {type:'button'}, null, null);
+		this.EL_UBUTTON = ee.addTemplate('btnarea','input', {type:'button'}, null, null);
+	},
 
-	// ElementTemplate : ボタン
-	this.EL_BUTTON = ee.addTemplate('','input', {type:'button'}, null, null);
-	this.EL_UBUTTON = ee.addTemplate('btnarea','input', {type:'button'}, null, null);
-};
-Menu.prototype = {
+	language : 'ja',
+
 	//---------------------------------------------------------------------------
 	// menu.menuinit()   メニュー、サブメニュー、フロートメニュー、ボタン、
 	//                   管理領域、ポップアップメニューの初期設定を行う
 	// menu.menureset()  メニュー用の設定を消去する
-	//
-	// menu.addButtons() ボタンの情報を変数に登録する
-	// menu.addLabels()  ラベルの情報を変数に登録する
 	//---------------------------------------------------------------------------
 	menuinit : function(){
+		this.ex.init();
+
 		this.menuarea();
 		this.managearea();
 		this.poparea();
 
 		this.displayAll();
 
-		this.doc_design();		// デザイン変更関連関数の呼び出し
+		this.displayDesign();	// デザイン変更関連関数の呼び出し
 		this.checkUserLang();	// 言語のチェック
+
+		// this.finalfix(); -> menuinitのオーバーライドにしてください
 	},
 
 	menureset : function(){
+		// this.protoOriginal(); -> menuresetのオーバーライドにしてください
+
 		this.dispfloat  = [];
 		this.floatpanel = [];
 		this.pop        = "";
@@ -103,6 +107,10 @@ Menu.prototype = {
 		pp.reset();
 	},
 
+	//---------------------------------------------------------------------------
+	// menu.addButtons() ボタンの情報を変数に登録する
+	// menu.addLabels()  ラベルの情報を変数に登録する
+	//---------------------------------------------------------------------------
 	addButtons : function(el, func, strJP, strEN){
 		if(!!func) el.onclick = func;
 		ee(el).unselectable();
@@ -110,64 +118,6 @@ Menu.prototype = {
 	},
 	addLabels  : function(el, strJP, strEN){
 		this.labelstack.push({el:el, str:{ja:strJP, en:strEN}});
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.setEvents()       マウス入力、キー入力のイベントの設定を行う
-	//---------------------------------------------------------------------------
-	setEvents : function(){
-		// マウス入力イベントの設定
-		var canvas = ee('divques').el, numparent = ee('numobj_parent').el;
-		if(!k.mobile){
-			ee.addEvent(canvas, "mousedown", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(canvas, "mousemove", ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(canvas, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
-			canvas.oncontextmenu = function(){ return false;};
-
-			ee.addEvent(numparent, "mousedown", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(numparent, "mousemove", ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(numparent, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
-			numparent.oncontextmenu = function(){ return false;};
-		}
-		// iPhoneOS用のタッチイベント設定
-		else{
-			ee.addEvent(canvas, "touchstart", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(canvas, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(canvas, "touchend",   ee.ebinder(mv, mv.e_mouseup));
-
-			ee.addEvent(numparent, "touchstart", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(numparent, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(numparent, "touchend",   ee.ebinder(mv, mv.e_mouseup));
-		}
-
-		// キー入力イベントの設定
-		ee.addEvent(_doc, 'keydown',  ee.ebinder(kc, kc.e_keydown));
-		ee.addEvent(_doc, 'keyup',    ee.ebinder(kc, kc.e_keyup));
-		ee.addEvent(_doc, 'keypress', ee.ebinder(kc, kc.e_keypress));
-		// Silverlightのキー入力イベント設定
-		if(g.use.sl){
-			var sender = g.content.findName(g.canvasid);
-			sender.AddEventListener("KeyDown", kc.e_SLkeydown);
-			sender.AddEventListener("KeyUp",   kc.e_SLkeyup);
-		}
-
-		// File API＋Drag&Drop APIの設定
-		if(!!this.ex.reader){
-			var DDhandler = function(e){
-				this.ex.reader.readAsText(e.dataTransfer.files[0]);
-				e.preventDefault();
-				e.stopPropagation();
-			}
-			ee.addEvent(window, 'dragover', function(e){ e.preventDefault();}, true);
-			ee.addEvent(window, 'drop', DDhandler, true);
-		}
-
-		// onBlurにイベントを割り当てる
-		ee.addEvent(_doc, 'blur', ee.ebinder(base, base.onblur_func));
-
-		// onresizeイベントを割り当てる
-		ee.addEvent(window, (!k.os.iPhoneOS ? 'resize' : 'orientationchange'),
-										ee.ebinder(base, base.onresize_func));
 	},
 
 	//---------------------------------------------------------------------------
@@ -227,23 +177,22 @@ Menu.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// menu.doc_design()      背景画像とかtitle・背景画像・html表示の設定
-	// menu.displayTitle()    タイトルに文字列を設定する
-	// menu.getPuzzleName()   現在開いているパズルの名前を返す
-	// menu.setFloatbgcolor() フロートメニューの背景色を設定する
+	// menu.displayDesign()  背景画像とかtitle・背景画像・html表示の設定
+	// menu.displayTitle()   タイトルに文字列を設定する
+	// menu.getPuzzleName()  現在開いているパズルの名前を返す
 	//---------------------------------------------------------------------------
-	doc_design : function(){
+	displayDesign : function(){
 		this.displayTitle();
 		_doc.body.style.backgroundImage = "url(./bg/"+k.puzzleid+".gif)";
-		if(k.br.IE6){
+		if(ee.br.IE6){
 			ee('title2').el.style.marginTop = "24px";
 			ee('separator2').el.style.margin = '0pt';
 		}
 	},
 	displayTitle : function(){
 		var title;
-		if(k.EDITOR){ title = ""+this.getPuzzleName()+this.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
-		else		{ title = ""+this.getPuzzleName()+this.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
+		if(pzprv3.EDITOR){ title = ""+this.getPuzzleName()+this.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
+		else			 { title = ""+this.getPuzzleName()+this.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
 
 		_doc.title = title;
 		ee('title2').el.innerHTML = title;
@@ -254,6 +203,7 @@ Menu.prototype = {
 
 	//---------------------------------------------------------------------------
 	// menu.menuarea()   メニューの初期設定を行う
+	// menu.menufix()    各パズルの設定を追加する
 	//---------------------------------------------------------------------------
 	menuarea : function(){
 		var am = ee.binder(pp, pp.addMenu),
@@ -331,7 +281,7 @@ Menu.prototype = {
 		ap('sep_disp0',  'disp');
 
 		au('size','disp',2,[0,1,2,3,4], '表示サイズ','Cell Size');
-		au('text','disp',(!k.mobile?0:2),[0,1,2,3], 'テキストのサイズ','Text Size');
+		au('text','disp',(!ee.mobile?0:2),[0,1,2,3], 'テキストのサイズ','Text Size');
 		ap('sep_disp1',  'disp');
 
 		if(!!k.irowake){
@@ -363,7 +313,7 @@ Menu.prototype = {
 		// *設定 ==============================================================
 		am('setting', "設定", "Setting");
 
-		if(k.EDITOR){
+		if(pzprv3.EDITOR){
 			au('mode','setting',(k.editmode?1:3),[1,3],'モード', 'mode');
 			sl('mode','モード', 'mode');
 		}
@@ -371,7 +321,7 @@ Menu.prototype = {
 			af('mode', 3);
 		}
 
-		puz.menufix();	// 各パズルごとのメニュー追加
+		this.menufix();		// 各パズルごとのメニュー追加
 
 		ac('autocheck','setting', k.playmode, '正答自動判定', 'Auto Answer Check');
 		ac('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
@@ -409,6 +359,7 @@ Menu.prototype = {
 
 		this.createAllFloat();
 	},
+	menufix : function(){},
 
 	//---------------------------------------------------------------------------
 	// menu.addUseToFlags()       「操作方法」サブメニュー登録用共通関数
@@ -417,7 +368,7 @@ Menu.prototype = {
 	// menu.addRedBlockRBToFlags()「ナナメ黒マスのつながりをチェック」サブメニュー登録用共通関数
 	//---------------------------------------------------------------------------
 	addUseToFlags : function(){
-		pp.addSelect('use','setting',(!k.mobile?1:2),[1,2], '操作方法', 'Input Type');
+		pp.addSelect('use','setting',(!ee.mobile?1:2),[1,2], '操作方法', 'Input Type');
 		pp.setLabel ('use', '操作方法', 'Input Type');
 
 		pp.addChild('use_1','use','左右ボタン','LR Button');
@@ -480,7 +431,7 @@ Menu.prototype = {
 		}
 
 		// その他の調整
-		if(k.PLAYER){
+		if(pzprv3.PLAYER){
 			ee('ms_newboard') .el.className = 'smenunull';
 			ee('ms_urloutput').el.className = 'smenunull';
 			ee('ms_adjust')   .el.className = 'smenunull';
@@ -567,7 +518,7 @@ Menu.prototype = {
 			_float.style.top  = rect.bottom + 1 + 'px';
 		}
 		else{
-			if(!k.br.IE6){
+			if(!ee.br.IE6){
 				_float.style.left = rect.right - 3 + 'px';
 				_float.style.top  = rect.top   - 3 + 'px';
 			}
@@ -672,7 +623,7 @@ Menu.prototype = {
 		}
 
 		// 管理領域の表示/非表示設定
-		if(k.EDITOR){
+		if(pzprv3.EDITOR){
 			ee('timerpanel').el.style.display = 'none';
 			ee('separator2').el.style.display = 'none';
 		}
@@ -688,8 +639,8 @@ Menu.prototype = {
 		ee.createEL(this.EL_UBUTTON, 'btnclear2');
 
 		this.addButtons(ee("btncheck").el,  ee.binder(ans, ans.check),             "チェック", "Check");
-		this.addButtons(ee("btnundo").el,   ee.binder(um, um.undo, [1]),             "戻",       "<-");
-		this.addButtons(ee("btnredo").el,   ee.binder(um, um.redo, [1]),             "進",       "->");
+		this.addButtons(ee("btnundo").el,   ee.binder(um, um.undo, [1]),           "戻",       "<-");
+		this.addButtons(ee("btnredo").el,   ee.binder(um, um.redo, [1]),           "進",       "->");
 		this.addButtons(ee("btnclear").el,  ee.binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
 		this.addButtons(ee("btnclear2").el, ee.binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
 
@@ -741,7 +692,7 @@ Menu.prototype = {
 		}
 		this.titlebarfunc(ee('credit3_1').el);
 
-		if(!k.mobile){
+		if(!ee.mobile){
 			ee.addEvent(_doc, "mousemove", ee.ebinder(this, this.titlebarmove));
 			ee.addEvent(_doc, "mouseup",   ee.ebinder(this, this.titlebarup));
 		}
@@ -875,7 +826,7 @@ Menu.prototype = {
 		// ポップアップメニューを表示する
 		if(this.pop){
 			var _pop = this.pop.el;
-			if(!k.mobile){
+			if(!ee.mobile){
 				_pop.style.left = ee.pageX(e) - 8 + 'px';
 				_pop.style.top  = ee.pageY(e) - 8 + 'px';
 			}
@@ -907,7 +858,7 @@ Menu.prototype = {
 	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
 	//---------------------------------------------------------------------------
 	titlebarfunc : function(bar){
-		if(!k.mobile){
+		if(!ee.mobile){
 			ee.addEvent(bar, "mousedown", ee.ebinder(this, this.titlebardown));
 		}
 		else{
@@ -986,42 +937,33 @@ Menu.prototype = {
 	selectStr  : function(strJP, strEN){ return (this.language==='ja' ? strJP : strEN);},
 	alertStr   : function(strJP, strEN){ alert(this.language==='ja' ? strJP : strEN);},
 	confirmStr : function(strJP, strEN){ return confirm(this.language==='ja' ? strJP : strEN);}
-};
+});
 
 //--------------------------------------------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
 // ★Propertiesクラス 設定値の値などを保持する
 //---------------------------------------------------------------------------
-Caption = function(){
-	this.menu  = '';
-	this.label = '';
-};
-SSData = function(){
-	this.id     = '';
-	this.type   = 0;
-	this.val    = 1;
-	this.parent = 1;
-	this.child  = [];
+pzprv3.createCommonClass('Properties', '',
+{
+	initialize : function(){
+		this.flags    = [];	// サブメニュー項目の情報(オブジェクトの配列になる)
+		this.flaglist = [];	// idnameの配列
+	},
 
-	this.str    = { ja: new Caption(), en: new Caption()};
-	//this.func   = null;
-};
-Properties = function(){
-	this.flags    = [];	// サブメニュー項目の情報(SSDataクラスのオブジェクトの配列になる)
-	this.flaglist = [];	// idnameの配列
+	// 定数
+	MENU     : 6,
+	SPARENT  : 7,
+	SMENU    : 0,
+	SELECT   : 1,
+	CHECK    : 2,
+	LABEL    : 3,
+	CHILD    : 4,
+	SEPARATE : 5,
 
-	// const
-	this.MENU     = 6;
-	this.SPARENT  = 7;
-	this.SMENU    = 0;
-	this.SELECT   = 1;
-	this.CHECK    = 2;
-	this.LABEL    = 3;
-	this.CHILD    = 4;
-	this.SEPARATE = 5;
-};
-Properties.prototype = {
+	//---------------------------------------------------------------------------
+	// pp.reset()      再読み込みを行うときに初期化を行う
+	//---------------------------------------------------------------------------
 	reset : function(){
 		this.flags    = [];
 		this.flaglist = [];
@@ -1086,7 +1028,7 @@ Properties.prototype = {
 				ja : { menu:strJP, label:''},
 				en : { menu:strEN, label:''}
 			}
-		}
+		};
 		this.flaglist.push(idname);
 	},
 
@@ -1146,7 +1088,7 @@ Properties.prototype = {
 		duplicate : function(){ base.dec.exportFileData();},
 
 		credit    : function(){ menu.pop = ee("pop3_1");},
-		jumpexp   : function(){ window.open('./faq.html?'+k.puzzleid+(k.EDITOR?"_edit":""), '');},
+		jumpexp   : function(){ window.open('./faq.html?'+k.puzzleid+(pzprv3.EDITOR?"_edit":""), '');},
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
 		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},
@@ -1172,7 +1114,7 @@ Properties.prototype = {
 		},
 		dispsize : function(){
 			menu.pop = ee("pop4_1");
-			_doc.dispsize.cs.value = k.cellsize;
+			_doc.dispsize.cs.value = pc.cellsize;
 			kc.enableKey = false;
 		},
 		keypopup : function(){
@@ -1183,7 +1125,7 @@ Properties.prototype = {
 			kp.display();
 		}
 	}
-};
+});
 
 //---------------------------------------------------------------------------
 // ★debugオブジェクト  poptest関連の関数など
@@ -1218,7 +1160,7 @@ var debug = {
 		_doc.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
 		_doc.testform.database.style.display = (base.dec.enLocalStorage() ? 'none' : 'inline');
 
-		if(k.scriptcheck){ debug.testonly_func();}	// テスト用
+		if(pzprv3.DEBUG){ debug.testonly_func();}	// テスト用
 	},
 
 	disppoptest : function(){
@@ -1228,7 +1170,7 @@ var debug = {
 		_pop_style.top  = '80px';
 	},
 
-	// k.scriptcheck===true時はオーバーライドされます
+	// pzprv3.DEBUG===true時はオーバーライドされます
 	keydown : function(ca){
 		if(kc.isCTRL && ca=='F8'){
 			this.disppoptest();
@@ -1253,7 +1195,7 @@ var debug = {
 
 	erasetext : function(){
 		this.setTA('');
-		if(k.scriptcheck){ ee('testdiv').el.innerHTML = '';}
+		if(pzprv3.DEBUG){ ee('testdiv').el.innerHTML = '';}
 	},
 
 	perfeval : function(){

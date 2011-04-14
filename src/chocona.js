@@ -1,129 +1,132 @@
 //
 // パズル固有スクリプト部 チョコナ版 chocona.js v3.4.0
 //
-Puzzles.chocona = function(){ };
-Puzzles.chocona.prototype = {
-	setting : function(){
-		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}
-		if(!k.qrows){ k.qrows = 10;}
+pzprv3.custom.chocona = {
+//---------------------------------------------------------
+// フラグ
+Flags:{
+	setting : function(pid){
+		this.qcols = 10;
+		this.qrows = 10;
 
-		k.isborder = 1;
+		this.isborder = 1;
 
-		k.hasroom         = true;
-		k.roomNumber      = true;
-		k.dispzero        = true;
-		k.isDispHatena    = true;
-		k.isInputHatena   = true;
-		k.BlackCell       = true;
-		k.checkBlackCell  = true;
+		this.hasroom         = true;
+		this.roomNumber      = true;
+		this.dispzero        = true;
+		this.isDispHatena    = true;
+		this.isInputHatena   = true;
+		this.BlackCell       = true;
+		this.checkBlackCell  = true;
 
-		k.ispzprv3ONLY    = true;
-
-		base.setFloatbgcolor("rgb(127, 0, 0)");
-	},
-	menufix : function(){
-		menu.addUseToFlags();
-	},
-
-	//---------------------------------------------------------
-	//入力系関数オーバーライド
-	input_init : function(){
-		// マウス入力系
-		mv.mousedown = function(){
-			if     (k.editmode) this.inputborder();
-			else if(k.playmode) this.inputcell();
-		};
-		mv.mouseup = function(){
-			if(this.notInputted()){
-				if(k.editmode){ this.inputqnum();}
-			}
-		};
-		mv.mousemove = function(){
-			if     (k.editmode) this.inputborder();
-			else if(k.playmode) this.inputcell();
-		};
-
-		// キーボード入力系
-		kc.keyinput = function(ca){
-			if(k.playmode){ return;}
-			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca);
-		};
-
-		if(k.EDITOR){
-			kp.generate(0, true, false);
-			kp.kpinput = function(ca){
-				kc.key_inputqnum(ca);
-			};
-		}
-
-		bd.nummaxfunc = function(cc){ return Math.min(this.maxnum, this.areas.getCntOfRoomByCell(cc));};
-	},
-
-	//---------------------------------------------------------
-	//画像表示系関数オーバーライド
-	graphic_init : function(){
-		pc.gridcolor = pc.gridcolor_LIGHT;
-		pc.bcolor = pc.bcolor_GREEN;
-		pc.setBGCellColorFunc('qsub1');
-
-		pc.paint = function(){
-			this.drawBGCells();
-			this.drawGrid();
-			this.drawBlackCells();
-
-			this.drawNumbers();
-
-			this.drawBorders();
-
-			this.drawChassis();
-
-			this.drawBoxBorders(false);
-
-			this.drawTarget();
-		};
-	},
-
-	//---------------------------------------------------------
-	// URLエンコード/デコード処理
-	encode_init : function(){
-		enc.pzlimport = function(type){
-			this.decodeBorder();
-			this.decodeRoomNumber16();
-		};
-		enc.pzlexport = function(type){
-			this.encodeBorder();
-			this.encodeRoomNumber16();
-		};
-
-		//---------------------------------------------------------
-		fio.decodeData = function(){
-			this.decodeAreaRoom();
-			this.decodeCellQnum();
-			this.decodeCellAns();
-		};
-		fio.encodeData = function(){
-			this.encodeAreaRoom();
-			this.encodeCellQnum();
-			this.encodeCellAns();
-		};
-	},
-
-	//---------------------------------------------------------
-	// 正解判定処理実行部
-	answer_init : function(){
-		ans.checkAns = function(){
-
-			if( !this.checkAreaRect(bd.areas.getBCellInfo()) ){
-				this.setAlert('黒マスのカタマリが正方形か長方形ではありません。','A mass of black cells is not rectangle.'); return false;
-			}
-
-			if( !this.checkBlackCellCount( bd.areas.getRoomInfo() ) ){
-				this.setAlert('数字のある領域と、領域の中にある黒マスの数が違います。','The number of Black cells in the area and the number written in the area is different.'); return false;
-			}
-
-			return true;
-		}
+		this.floatbgcolor = "rgb(127, 0, 0)";
 	}
+},
+
+//---------------------------------------------------------
+// マウス入力系
+MouseEvent:{
+	mousedown : function(){
+		if     (k.editmode){ this.inputborder();}
+		else if(k.playmode){ this.inputcell();}
+	},
+	mouseup : function(){
+		if(this.notInputted()){
+			if(k.editmode){ this.inputqnum();}
+		}
+	},
+	mousemove : function(){
+		if     (k.editmode){ this.inputborder();}
+		else if(k.playmode){ this.inputcell();}
+	}
+},
+
+//---------------------------------------------------------
+// キーボード入力系
+KeyPopup:{
+	paneltype  : 10,
+	enablemake : true
+},
+
+//---------------------------------------------------------
+// 盤面管理系
+Board:{
+	nummaxfunc : function(cc){
+		return Math.min(this.maxnum, this.areas.getCntOfRoomByCell(cc));
+	}
+},
+
+Menu:{
+	menufix : function(){
+		this.addUseToFlags();
+	}
+},
+
+//---------------------------------------------------------
+// 画像表示系
+Graphic:{
+	setColors : function(){
+		this.gridcolor = this.gridcolor_LIGHT;
+		this.bcolor = this.bcolor_GREEN;
+		this.setBGCellColorFunc('qsub1');
+	},
+	paint : function(){
+		this.drawBGCells();
+		this.drawGrid();
+		this.drawBlackCells();
+
+		this.drawNumbers();
+
+		this.drawBorders();
+
+		this.drawChassis();
+
+		this.drawBoxBorders(false);
+
+		this.drawTarget();
+	}
+},
+
+//---------------------------------------------------------
+// URLエンコード/デコード処理
+Encode:{
+	pzlimport : function(type){
+		this.decodeBorder();
+		this.decodeRoomNumber16();
+	},
+	pzlexport : function(type){
+		this.encodeBorder();
+		this.encodeRoomNumber16();
+	}
+},
+//---------------------------------------------------------
+FileIO:{
+	decodeData : function(){
+		this.decodeAreaRoom();
+		this.decodeCellQnum();
+		this.decodeCellAns();
+	},
+	encodeData : function(){
+		this.encodeAreaRoom();
+		this.encodeCellQnum();
+		this.encodeCellAns();
+	}
+},
+
+//---------------------------------------------------------
+// 正解判定処理実行部
+AnsCheck:{
+	checkAns : function(){
+
+		if( !this.checkAreaRect(bd.areas.getBCellInfo()) ){
+			this.setAlert('黒マスのカタマリが正方形か長方形ではありません。','A mass of black cells is not rectangle.'); return false;
+		}
+
+		if( !this.checkBlackCellCount( bd.areas.getRoomInfo() ) ){
+			this.setAlert('数字のある領域と、領域の中にある黒マスの数が違います。','The number of Black cells in the area and the number written in the area is different.'); return false;
+		}
+
+		return true;
+	}
+}
 };

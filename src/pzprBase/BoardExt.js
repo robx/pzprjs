@@ -1,79 +1,25 @@
-// BoardExt.js v3.3.3
-
-//---------------------------------------------------------------------------
-// ★AreaInfoクラス 主に色分けの情報を管理する
-//   id : null   どの部屋にも属さないセル(黒マス情報で白マスのセル、等)
-//         0     どの部屋に属させるかの処理中
-//         1以上 その番号の部屋に属する
-//---------------------------------------------------------------------------
-AreaInfo = function(){
-	this.max  = 0;	// 最大の部屋番号(1～maxまで存在するよう構成してください)
-	this.id   = [];	// 各セル/線などが属する部屋番号を保持する
-	this.room = [];	// 各部屋のidlist等の情報を保持する(info.room[id].idlistで取得)
-};
-
-//---------------------------------------------------------------------------
-// ★IDListクラス 複数IDの集合を扱う
-//---------------------------------------------------------------------------
-IDList = function(list){
-	this.data = ((list instanceof Array) ? list : []);
-};
-IDList.prototype = {
-	push : function(val){
-		this.data.push(val);
-		return this;
-	},
-	reverseData : function(){
-		this.data = this.data.reverse();
-		return this;
-	},
-	unique : function(){
-		var newArray=[], newHash={};
-		for(var i=0,len=this.data.length;i<len;i++){
-			if(!newHash[this.data[i]]){
-				newArray.push(this.data[i]);
-				newHash[this.data[i]] = true;
-			}
-		}
-		this.data = newArray;
-		return this;
-	},
-
-	sublist : function(func){
-		var newList = new IDList();
-		for(var i=0,len=this.data.length;i<len;i++){
-			if(!!func(this.data[i])){ newList.data.push(this.data[i]);}
-		}
-		return newList;
-	},
-
-	isnull  : function(){ return (this.data.length===0);},
-	include : function(val){
-		for(var i=0,len=this.data.length;i<len;i++){
-			if(this.data[i]===val){ return true;}
-		}
-		return false;
-	}
-};
+// BoardExt.js v3.4.0
 
 //---------------------------------------------------------------------------
 // ★LineManagerクラス 主に色分けの情報を管理する
 //---------------------------------------------------------------------------
 // LineManagerクラスの定義
-LineManager = function(){
-	this.lcnt    = [];
-	this.ltotal  = [];
+pzprv3.createCommonClass('LineManager', '',
+{
+	initialize : function(){
+		this.lcnt    = [];
+		this.ltotal  = [];
 
-	this.disableLine = (!k.isCenterLine && !k.isborderAsLine);
-	this.data    = {};	// 線id情報
+		this.disableLine = (!k.isCenterLine && !k.isborderAsLine);
+		this.data    = {};	// 線id情報
 
-	this.typeA = 'A';
-	this.typeB = 'B';
-	this.typeC = 'C';
+		this.disrec = 0;
+	},
 
-	this.disrec = 0;
-};
-LineManager.prototype = {
+	// 定数
+	typeA : 'A',
+	typeB : 'B',
+	typeC : 'C',
 
 	//---------------------------------------------------------------------------
 	// bd.lines.init()           変数の起動時の初期化を行う
@@ -362,7 +308,7 @@ LineManager.prototype = {
 	// bd.lines.getXlistFromIdlist() idlistの線が重なる交点のリストを取得する
 	//---------------------------------------------------------------------------
 	getClistFromIdlist : function(idlist){
-		var clist = new IDList();
+		var clist = new pzprv3.core.IDList();
 		for(var i=0;i<idlist.length;i++){
 			clist.push(bd.border[idlist[i]].cellcc[0]);
 			clist.push(bd.border[idlist[i]].cellcc[1]);
@@ -370,7 +316,7 @@ LineManager.prototype = {
 		return clist.unique().data;
 	},
 	getXlistFromIdlist : function(idlist){
-		var xlist = new IDList();
+		var xlist = new pzprv3.core.IDList();
 		for(var i=0;i<idlist.length;i++){
 			xlist.push(bd.border[idlist[i]].crosscc[0]);
 			xlist.push(bd.border[idlist[i]].crosscc[1]);
@@ -469,7 +415,7 @@ LineManager.prototype = {
 	//                           (これだけは旧型の生成方法でやってます)
 	//--------------------------------------------------------------------------------
 	getLineInfo : function(){
-		var info = new AreaInfo();
+		var info = new pzprv3.core.AreaInfo();
 		for(var id=0;id<bd.bdmax;id++){ info.id[id]=(bd.isLine(id)?0:null);}
 		for(var id=0;id<bd.bdmax;id++){
 			if(info.id[id]!=0){ continue;}
@@ -482,7 +428,7 @@ LineManager.prototype = {
 		return info;
 	},
 	getLareaInfo : function(){
-		var linfo = new AreaInfo();
+		var linfo = new pzprv3.core.AreaInfo();
 		for(var c=0;c<bd.cellmax;c++){ linfo.id[c]=(this.lcnt[c]>0?0:null);}
 		for(var c=0;c<bd.cellmax;c++){
 			if(linfo.id[c]!=0){ continue;}
@@ -500,7 +446,7 @@ LineManager.prototype = {
 		if( bd.isLine(bd.lb(i)) && linfo.id[bd.lt(i)]===0 ){ this.sr0(linfo, bd.lt(i), areaid);}
 		if( bd.isLine(bd.rb(i)) && linfo.id[bd.rt(i)]===0 ){ this.sr0(linfo, bd.rt(i), areaid);}
 	}
-};
+});
 
 //--------------------------------------------------------------------------------
 // ★AreaManagerクラス 部屋のTOP-Cellの位置等の情報を扱う
@@ -510,17 +456,19 @@ LineManager.prototype = {
 //     回答チェックやファイル出力前には一旦resetRarea()等が必要です。
 //--------------------------------------------------------------------------------
 // 部屋のTOPに数字を入力する時の、ハンドリング等
-AreaManager = function(){
-	this.lcnt  = [];	// 交点id -> 交点から出る線の本数
-	this.isbd  = [];
+pzprv3.createCommonClass('AreaManager', '',
+{
+	initialize : function(){
+		this.lcnt  = [];	// 交点id -> 交点から出る線の本数
+		this.isbd  = [];
 
-	this.room  = {};	// 部屋情報を保持する
-	this.bcell = {};	// 黒マス情報を保持する
-	this.wcell = {};	// 白マス情報を保持する
+		this.room  = {};	// 部屋情報を保持する
+		this.bcell = {};	// 黒マス情報を保持する
+		this.wcell = {};	// 白マス情報を保持する
 
-	this.disrec = 0;
-};
-AreaManager.prototype = {
+		this.disrec = 0;
+	},
+
 	//--------------------------------------------------------------------------------
 	// bd.areas.init()           起動時に変数を初期化する
 	// bd.areas.disableRecord()  操作の登録を禁止する
@@ -549,14 +497,6 @@ AreaManager.prototype = {
 	//--------------------------------------------------------------------------------
 	// bd.areas.initRarea()  部屋関連の変数を初期化する
 	// bd.areas.resetRarea() 部屋の情報をresetして、1から割り当てしなおす
-	// 
-	// bd.areas.lcntCross()  指定された位置のCrossの上下左右のうち境界線が引かれている(ques==1 or qans==1の)数を求める
-	// bd.areas.getRoomID()  このオブジェクトで管理しているセルの部屋IDを取得する
-	// bd.areas.setRoomID()  このオブジェクトで管理しているセルの部屋IDを設定する
-	// bd.areas.getTopOfRoomByCell() 指定したセルが含まれる領域のTOPの部屋を取得する
-	// bd.areas.getTopOfRoom()       指定した領域のTOPの部屋を取得する
-	// bd.areas.getCntOfRoomByCell() 指定したセルが含まれる領域の大きさを抽出する
-	// bd.areas.getCntOfRoom()       指定した領域の大きさを抽出する
 	//--------------------------------------------------------------------------------
 	initRarea : function(){
 		// 部屋情報初期化
@@ -597,7 +537,7 @@ AreaManager.prototype = {
 			if(this.room.id[cc]!=0){ continue;}
 			this.room.max++;
 			this.room[this.room.max] = {top:null,clist:[]};
-			this.sr0(cc,this.room,bd.isBorder);
+			this.sr0(cc,this.room, function(c){ return bd.isBorder(c);});
 		}
 
 		// 部屋ごとに、TOPの場所に数字があるかどうか判断して移動する
@@ -618,6 +558,16 @@ AreaManager.prototype = {
 		}
 	},
 
+	//--------------------------------------------------------------------------------
+	// bd.areas.lcntCross()  指定された位置のCrossの上下左右のうち境界線が引かれている(ques==1 or qans==1の)数を求める
+	// 
+	// bd.areas.getRoomID()  このオブジェクトで管理しているセルの部屋IDを取得する
+	// bd.areas.setRoomID()  このオブジェクトで管理しているセルの部屋IDを設定する
+	// bd.areas.getTopOfRoomByCell() 指定したセルが含まれる領域のTOPの部屋を取得する
+	// bd.areas.getTopOfRoom()       指定した領域のTOPの部屋を取得する
+	// bd.areas.getCntOfRoomByCell() 指定したセルが含まれる領域の大きさを抽出する
+	// bd.areas.getCntOfRoom()       指定した領域の大きさを抽出する
+	//--------------------------------------------------------------------------------
 	lcntCross : function(id){ return this.lcnt[id];},
 
 	getRoomID : function(cc){ return this.room.id[cc];},
@@ -628,6 +578,16 @@ AreaManager.prototype = {
 
 	getCntOfRoomByCell : function(cc){ return this.room[this.room.id[cc]].clist.length;},
 //	getCntOfRoom       : function(id){ return this.room[id].clist.length;},
+
+	//--------------------------------------------------------------------------------
+	// bd.areas.getQnumCellOfClist()  部屋の中で一番左上にある数字を返す
+	//--------------------------------------------------------------------------------
+	getQnumCellOfClist : function(clist){
+		for(var i=0,len=clist.length;i<len;i++){
+			if(bd.QnC(clist[i])!==-1){ return clist[i];}
+		}
+		return null;
+	},
 
 	//--------------------------------------------------------------------------------
 	// bd.areas.setRinfo()     境界線が引かれたり消されてたりした時に、変数の内容を変更する
@@ -665,7 +625,7 @@ AreaManager.prototype = {
 			// まず下or右側のセルから繋がるセルのroomidを変更する
 			room.max++;
 			room[room.max] = {top:null,clist:[]}
-			this.sr0(cc2,room,bd.isBorder);
+			this.sr0(cc2,room, function(c){ return bd.isBorder(c);});
 
 			// 部屋が分割されていなかったら、元に戻して終了
 			if(roomid[cc1] === room.max){
@@ -729,11 +689,11 @@ AreaManager.prototype = {
 		var cc=null, bx=bd.maxbx, by=bd.maxby;
 		var clist = this.room[roomid].clist;
 		for(var i=0;i<clist.length;i++){
-			var tc = bd.cell[clist[i]];
-			if(tc.bx>bx || (tc.bx===bx && tc.by>=by)){ continue;}
+			var cell = bd.cell[clist[i]];
+			if(cell.bx>bx || (cell.bx===bx && cell.by>=by)){ continue;}
 			cc=clist[i];
-			bx=tc.bx;
-			by=tc.by;
+			bx=cell.bx;
+			by=cell.by;
 		}
 		this.room[roomid].top = cc;
 	},
@@ -900,6 +860,32 @@ AreaManager.prototype = {
 		tc=bd.rt(c); if( tc!==null && data.id[tc]===0 ){ this.sc0(tc,data);}
 	},
 
+	//---------------------------------------------------------------------------
+	// bd.areas.getSideAreaInfo()   境界線をはさんで接する部屋を取得する
+	//---------------------------------------------------------------------------
+	getSideAreaInfo : function(rinfo){
+		var adjs=[], sides=[], max=rinfo.max;
+		for(var r=1;r<=max-1;r++){ adjs[r]=[];}
+
+		for(var id=0;id<bd.bdmax;id++){
+			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+			if(cc1===null || cc2===null){ continue;}
+			var r1=rinfo.id[cc1], r2=rinfo.id[cc2];
+			if(r1===null || r2===null){ continue;}
+
+			if(r1<r2){ adjs[r1][r2]=true;}
+			if(r1>r2){ adjs[r2][r1]=true;}
+		}
+
+		for(var r=1;r<=max-1;r++){
+			sides[r]=[];
+			for(var s=r+1;s<=max;s++){
+				if(!!adjs[r][s]){ sides[r].push(s);}
+			}
+		}
+		return sides;
+	},
+
 	//--------------------------------------------------------------------------------
 	// bd.areas.getRoomInfo()  部屋情報をAreaInfo型のオブジェクトで返す
 	// bd.areas.getBCellInfo() 黒マス情報をAreaInfo型のオブジェクトで返す
@@ -912,7 +898,7 @@ AreaManager.prototype = {
 	getWCellInfo : function(){ return this.getAreaInfo(this.wcell);},
 	getNumberInfo : function(){ return this.getAreaInfo(this.bcell);},
 	getAreaInfo : function(block){
-		var info = new AreaInfo();
+		var info = new pzprv3.core.AreaInfo();
 		for(var c=0;c<bd.cellmax;c++){ info.id[c]=(block.id[c]>0?0:null);}
 		for(var c=0;c<bd.cellmax;c++){
 			if(info.id[c]!==0){ continue;}
@@ -923,4 +909,4 @@ AreaManager.prototype = {
 		}
 		return info;
 	}
-};
+});

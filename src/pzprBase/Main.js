@@ -1,26 +1,19 @@
 // Main.js v3.4.0
 
-//----------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 // ★グローバル変数
 //---------------------------------------------------------------------------
-// Pointクラス
-Point = function(xx,yy){ this.x = xx; this.y = yy;};
-Point.prototype = {
-	set : function(pos){ this.x = pos.x; this.y = pos.y;},
-	reset : function(){ this.x = null; this.y = null;},
-	valid : function(){ return (this.x!==null && this.y!==null);},
-	equals : function(pos){ return (this.x===pos.x && this.y===pos.y);}
-};
-// Addressクラス
-Address = function(xx,yy){ this.x = xx; this.y = yy;};
-Address.prototype = Point.prototype;
+pzprv3.createCommonClass('Flags', '',
+{
+	initialize : function(pid){
+		this.editmode = (pzprv3.EDITOR && !pzprv3.DEBUG);	// 問題配置モード
+		this.playmode = !this.editmode;						// 回答モード
 
-// 各種パラメータの定義
-var k = {
-	// 各パズルのsetting()関数で設定されるもの
-	initFlags : function(){
-		this.qcols = 0;		// 盤面の横幅
-		this.qrows = 0;		// 盤面の縦幅
+		this.puzzleid = pid;					// パズルのID("creek"など)
+		this.scriptid = PZLINFO.toScript(pid);	// パズルのスクリプトID
+
+		this.qcols = 10		// 盤面の横幅(仮設定)
+		this.qrows = 10		// 盤面の縦幅(仮設定)
 
 		this.irowake  = 0;	// 0:色分け設定無し 1:色分けしない 2:色分けする
 
@@ -54,27 +47,12 @@ var k = {
 		this.bdmargin       = 0.70;	// 枠外の一辺のmargin(セル数換算)
 		this.bdmargin_image = 0.15;	// 画像出力時のbdmargin値
 
-		if(this.mobile){ this.bdmargin = this.bdmargin_image;}
+		if(ee.mobile){ this.bdmargin = this.bdmargin_image;}
+
+		this.floatbgcolor = "black";
+
+		this.setting(pid);
 	},
-
-	// 内部で自動的に設定されるグローバル変数
-	puzzleid : '',			// パズルのID("creek"など)
-	scriptid : '',			// パズルのスクリプトID
-
-	EDITOR    : true,		// エディタモード
-	PLAYER    : false,		// playerモード
-	editmode  : true,		// 問題配置モード
-	playmode  : false,		// 回答モード
-
-	cellsize : 36,			// デフォルトのセルサイズ
-	cwidth   : 36,			// セルの横幅
-	cheight  : 36,			// セルの縦幅
-	bwidth   : 18,			// セルの横幅/2
-	bheight  : 18,			// セルの縦幅/2
-
-	br     : ee.br,
-	os     : ee.os,
-	mobile : ee.mobile,
 
 	// const値
 	BOARD  : 'board',
@@ -93,71 +71,52 @@ var k = {
 	QSUB : 'qsub',
 
 	NONE : 0,	// 方向なし
-	UP : 1,		// up
-	DN : 2,		// down
-	LT : 3,		// left
-	RT : 4,		// right
+	UP   : 1,	// up
+	DN   : 2,	// down
+	LT   : 3,	// left
+	RT   : 4,	// right
 
 	KEYUP : 'up',
 	KEYDN : 'down',
 	KEYLT : 'left',
-	KEYRT : 'right',
-
-	// for_test.js用
-	scriptcheck : false
-};
-k.initFlags();
-
-//---------------------------------------------------------------------------
-// ★その他のグローバル変数
-//---------------------------------------------------------------------------
-var g;				// グラフィックコンテキスト
-var Puzzles = [];	// パズル個別クラス
-var _doc = document;
-
-// localStorageがなくてglobalStorage対応(Firefox3.0)ブラウザのハック
-if(typeof localStorage != "object" && typeof globalStorage == "object"){
-	localStorage = globalStorage[location.host];
-}
-
-//---------------------------------------------------------------------------
-// ★共通グローバル関数
-// f_true()  trueを返す関数オブジェクト(引数に空関数を書くのがめんどくさいので)
-//---------------------------------------------------------------------------
-function f_true(){ return true;}
+	KEYRT : 'right'
+});
 
 //---------------------------------------------------------------------------
 // ★ExtDataクラス URL/ファイルのデータを保持する
 //    p.html?(pid)/(qdata)
 //                  qdata -> [(pflag)/](cols)/(rows)/(bstr)
 //---------------------------------------------------------------------------
-ExtData = function(){
-	this.type;		// URLのサイト指定部分
+pzprv3.createCoreClass('ExtData', '',
+{
+	initialize : function(){
+		this.type;		// URLのサイト指定部分
 
-	this.id;		// URLのパズルのid
-	this.qdata;		// URLの問題部分
+		this.id;		// URLのパズルのid
+		this.qdata;		// URLの問題部分
 
-	this.pflag;		// URLのフラグ部分
-	this.cols;		// URLの横幅部分
-	this.rows;		// URLの縦幅部分
-	this.bstr;		// URLの盤面部分
+		this.pflag;		// URLのフラグ部分
+		this.cols;		// URLの横幅部分
+		this.rows;		// URLの縦幅部分
+		this.bstr;		// URLの盤面部分
 
-	this.fstr;		// ファイルの文字列
+		this.fstr;		// ファイルの文字列
 
-	this.disable_accesslog = false;	// 複製されたタブか
+		this.enableSaveImage = false;	// 画像保存が有効か
 
-	this.enableSaveImage = false;	// 画像保存が有効か
+		this.DBaccept = 0;	// データベースのタイプ 1:Gears 2:WebDB 4:IdxDB 8:localStorage
 
-	this.DBaccept = 0;	// データベースのタイプ 1:Gears 2:WebDB 4:IdxDB 8:localStorage
+		this.selectDBtype();
+
+		this.initial_import();
+	},
+
 	// 定数
-	this.Session = 0x10;
-	this.LocalST = 0x08;
-	this.WebIDB  = 0x04;
-	this.WebSQL  = 0x02;
+	Session : 0x10,
+	LocalST : 0x08,
+	WebIDB  : 0x04,
+	WebSQL  : 0x02,
 
-	this.selectDBtype();
-};
-ExtData.prototype = {
 	//---------------------------------------------------------------------------
 	// reset()   オブジェクトで持つ値を初期化する
 	//---------------------------------------------------------------------------
@@ -179,6 +138,14 @@ ExtData.prototype = {
 	// selectDBtype()  Web DataBaseが使えるかどうか判定する(起動時)
 	//---------------------------------------------------------------------------
 	selectDBtype : function(){
+		// localStorageがなくてglobalStorage対応(Firefox3.0)ブラウザのハック
+		try{
+			if(typeof localStorage != "object" && typeof globalStorage == "object"){
+				localStorage = globalStorage[location.host];
+			}
+		}
+		catch(e){}
+
 		// HTML5 - Web localStorage判定用(sessionStorage)
 		try{
 			if(!!window.sessionStorage){ this.DBaccept |= this.Session;}
@@ -189,7 +156,7 @@ ExtData.prototype = {
 		try{
 			if(!!window.localStorage){
 				// FirefoxはローカルだとlocalStorageが使えない
-				if(!k.br.Gecko || !!location.hostname){ this.DBaccept |= this.LocalST;}
+				if(!ee.br.Gecko || !!location.hostname){ this.DBaccept |= this.LocalST;}
 			}
 		}
 		catch(e){}
@@ -222,20 +189,33 @@ ExtData.prototype = {
 	enWebSQLDatabase  : function(){ return !!(this.DBaccept & this.WebSQL);},
 
 	//---------------------------------------------------------------------------
-	// importURL() 起動時に入力されたURLを解析する
-	// checkMode() 起動時にURLを解析して、puzzleidの抽出やエディタ/player判定を行う
+	// initial_import() onload時に、ぱずぷれv3の動作モード・初期パズルを設定する
+	//---------------------------------------------------------------------------
+	initial_import : function(){
+		this.reset();
+
+		// 盤面複製・index.htmlからのファイル入力/Database入力か
+		if(this.importFileData()){ return;}
+
+		// URL(?以降)をチェック
+		this.importURL();
+	},
+
+	//---------------------------------------------------------------------------
+	// importURL() 初期化時に入力されたURLを解析し、
+	//             puzzleidの抽出やエディタ/player判定を行う
 	//---------------------------------------------------------------------------
 	importURL : function(){
+		var search = "";
 		if(!!window.localStorage && !!localStorage['pzprv3_urldata']){
-			this.checkMode(localStorage['pzprv3_urldata']);
+			// index.htmlからのURL読み込み時
+			search = localStorage['pzprv3_urldata'];
 			delete localStorage['pzprv3_urldata'];
-			this.disable_accesslog = true;
+			base.require_accesslog = false;
 		}
-		else{
-			this.checkMode(location.search);
-		}
-	},
-	checkMode : function(search){
+		else{ search = location.search;}
+
+	// checkMode : function(search){
 		if(search.length<=0){ return;}
 
 		var startmode = '';
@@ -249,24 +229,24 @@ ExtData.prototype = {
 		if(!startmode){ startmode=(!this.bstr?'EDITOR':'PLAYER');}
 
 		switch(startmode){
-			case 'PLAYER': k.EDITOR = false; k.editmode = false; break;
-			case 'EDITOR': k.EDITOR = true;  k.editmode = true;  break;
-			case 'TEST'  : k.EDITOR = true;  k.editmode = false; k.scriptcheck = true;
+			case 'PLAYER': pzprv3.EDITOR = false; break;
+			case 'EDITOR': pzprv3.EDITOR = true;  break;
+			case 'TEST'  : pzprv3.EDITOR = true;  pzprv3.DEBUG = true;
 				this.parseURI(['?',this.id,'_test/',debug.urls[this.id]].join('')); break;
 		}
-		k.PLAYER    = !k.EDITOR;
-		k.playmode  = !k.editmode;
+		pzprv3.PLAYER = !pzprv3.EDITOR;
 	},
 
 	//---------------------------------------------------------------------------
-	// parseURI()     入力されたURLがどのサイト用か判定して値を保存する
+	// parseURI() 初期化・URL入力・新規盤面時に、
+	//            入力されたURLがどのサイト用か判定して値を保存する
 	//---------------------------------------------------------------------------
 	parseURI : function(url){
 		this.reset();
 
 		url = url.replace(/(\r|\n)/g,""); // textarea上の改行が実際の改行扱いになるUAに対応(Operaとか)
 
-		var type=0, en=new Encode();
+		var type=0, en=pzprv3.common.Encode.prototype;
 		// カンペンの場合
 		if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
 			url.match(/([0-9a-z]+)\.html/);
@@ -358,16 +338,16 @@ ExtData.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
+	// importFileData() 初期化時にファイルデータの読み込みを行う
 	// exportFileData() 複製するタブ用のにデータを出力してタブを開く
-	// importFileData() 複製されたタブでデータの読み込みを行う
 	//---------------------------------------------------------------------------
 	importFileData : function(){
 		try{
-			if(!window.sessionStorage){ return;}
+			if(!window.sessionStorage){ return false;}
 		}
 		catch(e){
 			// FirefoxでLocalURLのときここに飛んでくる
-			return;
+			return false;
 		}
 		var str='';
 
@@ -383,18 +363,21 @@ ExtData.prototype = {
 		str = sessionStorage['filedata'];
 		if(!!str){
 			var lines = str.split('/');
-			this.reset();
 			this.id = (lines[0].match(/^pzprv3/) ? lines[1] : '');
 			this.fstr = str;
 
-			this.disable_accesslog = true;
+			pzprv3.EDITOR = true; pzprv3.PLAYER = false;
+			base.require_accesslog = false;
 			// sessionStorageのデータは残しておきます
+			
+			return true;
 		}
+		return false;
 	},
 	exportFileData : function(){
 		var str = fio.fileencode(fio.PZPH);
-		var url = './p.html?'+k.puzzleid+(k.PLAYER?"_play":"");
-		if(!k.br.Opera){
+		var url = './p.html?'+k.puzzleid+(pzprv3.PLAYER?"_play":"");
+		if(!ee.br.Opera){
 			var old = sessionStorage['filedata'];
 			sessionStorage['filedata'] = (str+fio.history);
 			window.open(url,'');
@@ -405,13 +388,228 @@ ExtData.prototype = {
 			localStorage['pzprv3_filedata'] = (str+fio.history);
 			window.open(url,'');
 		}
+	}
+});
+
+//---------------------------------------------------------------------------
+// ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
+//---------------------------------------------------------------------------
+
+// PBaseクラス
+pzprv3.createCoreClass('PBase', '',
+{
+	initialize : function(){
+		this.resizetimer  = null;	// resizeタイマー
+		this.initProcess  = true;	// 初期化中かどうか
+		this.require_accesslog = true;	// アクセスログを記録するかどうか
+
+		this.dec = null;			// 入力されたURLの情報保持用
+	},
+
+	//---------------------------------------------------------------------------
+	// base.onload_func()   ページがLoadされた時の処理
+	// base.onload_func2()  ページがLoadされた時の処理その2
+	// base.includeFile()   単体ファイルの読み込み
+	//---------------------------------------------------------------------------
+	onload_func : function(){
+		if(location.search.match(/[\?_]test/)){
+			this.includeFile("src/for_test.js");
+			var self = this;
+			setTimeout(function(){
+				if(!!debug.urls){ self.onload_func2.call(self);}
+				else{ setTimeout(arguments.callee,20);}
+			},20);
+		}
+		else{
+			this.onload_func2();
+		}
+	},
+	onload_func2 : function(){
+		if(location.search.match(/[\?_]test/)){ this.includeFile("src/for_test.js");}
+
+		this.dec = new pzprv3.core.ExtData();
+		if(!this.dec.id){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
+
+		// Campの設定
+		Camp('divques');
+		if(Camp.enable.canvas && !!_doc.createElement('canvas').toDataURL){
+			this.dec.enableSaveImage = true;
+			Camp('divques_sub', 'canvas');
+		}
+
+		// 一般タイマーオブジェクトは1つだけしか使わないので、今のところここにおきます
+		tm = new pzprv3.core.Timer();	// 一般タイマー用オブジェクト
+
+		// dbmは、フロートメニューを開いたまま別パズルへの遷移があるのでここにおいておく
+		dbm = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
+
+		this.reload_func(this.dec.id);
+	},
+	includeFile : function(file){
+		var _script = _doc.createElement('script');
+		_script.type = 'text/javascript';
+		_script.src = file;
+		_doc.body.appendChild(_script);
+	},
+
+	//---------------------------------------------------------------------------
+	// base.reload_func()  個別パズルのファイルを読み込み、初期化する関数
+	//---------------------------------------------------------------------------
+	reload_func : function(pid){
+		this.initProcess = true;
+
+		var scriptid = PZLINFO.toScript(pid);
+
+		// idを取得して、ファイルを読み込み
+		if(!pzprv3.custom[scriptid]){
+			this.includeFile("src/"+scriptid+".js");
+		}
+
+		// 今のパズルが存在している場合
+		if(!!pzprv3.scriptid){
+			ee.removeAllEvents();
+
+			menu.menureset();
+			ee('numobj_parent').el.innerHTML = '';
+			ee.clean();
+		}
+
+		// 中身を読み取れるまでwait
+		var self = this;
+		var tim = setInterval(function(){
+			if(!pzprv3.custom[scriptid] || !Camp.isready()){ return;}
+			clearInterval(tim);
+
+			// 初期化ルーチンへジャンプ
+			self.initObjects(pid);
+		},10);
+	},
+
+	//---------------------------------------------------------------------------
+	// base.initObjects()     各オブジェクトの生成などの処理
+	//---------------------------------------------------------------------------
+	initObjects : function(pid){
+		pzprv3.setPuzzleID(pid);	// パズルIDを設定
+
+		// クラス初期化
+		k = new (pzprv3.getPuzzleClass('Flags'))(pid);	// フラグの初期化・設定
+
+		bd  = new (pzprv3.getPuzzleClass('Board'))();		// 盤面オブジェクト
+		ans = new (pzprv3.getPuzzleClass('AnsCheck'))();	// 正解判定オブジェクト
+		pc  = new (pzprv3.getPuzzleClass('Graphic'))();		// 描画系オブジェクト
+
+		mv  = new (pzprv3.getPuzzleClass('MouseEvent'))();		// マウス入力オブジェクト
+		kc  = new (pzprv3.getPuzzleClass('KeyEvent'))();		// キーボード入力オブジェクト
+		kp  = new (pzprv3.getPuzzleClass('KeyPopup'))();		// 入力パネルオブジェクト
+		tc  = new (pzprv3.getPuzzleClass('TargetCursor'))();	// 入力用カーソルオブジェクト
+
+		um = new (pzprv3.getPuzzleClass('OperationManager'))();	// 操作情報管理オブジェクト
+		ut = new (pzprv3.getPuzzleClass('UndoTimer'))();		// Undo用Timerオブジェクト
+
+		enc = new (pzprv3.getPuzzleClass('Encode'))();		// URL入出力用オブジェクト
+		fio = new (pzprv3.getPuzzleClass('FileIO'))();		// ファイル入出力用オブジェクト
+
+		menu = new (pzprv3.getPuzzleClass('Menu'))();		// メニューを扱うオブジェクト
+		pp = new (pzprv3.getPuzzleClass('Properties'))();	// メニュー関係の設定値を保持するオブジェクト
+
+		// メニュー関係初期化
+		menu.menuinit();
+
+		// URL・ファイルデータの読み込み
+		this.decodeBoardData();
+
+		// イベントをくっつける
+		mv.setEvents();
+		kc.setEvents();
+		this.setEvents();
+
+		this.initProcess = false;
+
+		// アクセスログをとってみる
+		this.accesslog();
+
+		// タイマーリセット(最後)
+		tm.reset();
+
+		// デバッグのスクリプトチェック時は、ここで発火させる
+		if(pzprv3.DEBUG && debug.phase===0){ debug.sccheck.call(debug);}
+	},
+
+	//---------------------------------------------------------------------------
+	// base.importBoardData() 新しくパズルのファイルを開く時の処理
+	// base.decodeBoardData() URLや複製されたデータを読み出す
+	//---------------------------------------------------------------------------
+	importBoardData : function(pid){
+		// 今のパズルと別idの時
+		if(k.puzzleid != pid){ this.reload_func(pid);}
+		else{
+			this.decodeBoardData();
+
+			// デバッグのスクリプトチェック時は、ここで発火させる
+			if(pzprv3.DEBUG && debug.phase===0){ debug.sccheck.call(debug);}
+		}
+	},
+	decodeBoardData : function(){
+		// ファイルを開く・複製されたデータを開く
+		if(!!this.dec.fstr){
+			fio.filedecode_main(this.dec.fstr);
+			this.dec.fstr = '';
+		}
+		// URLからパズルのデータを読み出す
+		else if(!!this.dec.cols){
+			enc.pzlinput();
+		}
+		// 何もないとき
+		else{
+			bd.initBoardSize(k.qcols,k.qrows);
+			pc.resize_canvas();
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// base.setEvents()       マウス入力、キー入力以外のイベントの設定を行う
+	//---------------------------------------------------------------------------
+	setEvents : function(){
+		// File API＋Drag&Drop APIの設定
+		if(!!menu.ex.reader){
+			var DDhandler = function(e){
+				menu.ex.reader.readAsText(e.dataTransfer.files[0]);
+				e.preventDefault();
+				e.stopPropagation();
+			};
+			ee.addEvent(window, 'dragover', function(e){ e.preventDefault();}, true);
+			ee.addEvent(window, 'drop', DDhandler, true);
+		}
+
+		// onBlurにイベントを割り当てる
+		ee.addEvent(_doc, 'blur', ee.ebinder(this, this.onblur_func));
+
+		// onresizeイベントを割り当てる
+		ee.addEvent(window, (!ee.os.iPhoneOS ? 'resize' : 'orientationchange'),
+										ee.ebinder(this, this.onresize_func));
+	},
+
+	//---------------------------------------------------------------------------
+	// base.onresize_func() ウィンドウリサイズ時に呼ばれる関数
+	// base.onblur_func()   ウィンドウからフォーカスが離れた時に呼ばれる関数
+	//---------------------------------------------------------------------------
+	onresize_func : function(){
+		if(this.resizetimer){ clearTimeout(this.resizetimer);}
+		this.resizetimer = setTimeout(ee.binder(pc, pc.resize_canvas),250);
+	},
+	onblur_func : function(){
+		kc.keyreset();
+		mv.mousereset();
 	},
 
 	//---------------------------------------------------------------------------
 	// accesslog() playerのアクセスログをとる
 	//---------------------------------------------------------------------------
 	accesslog : function(){
-		if(this.disable_accesslog){ return;}
+		if(!this.require_accesslog){ return;}
+		this.require_accesslog = false;
+
+		if(pzprv3.EDITOR){ return;}
 
 		if(_doc.domain!=='indi.s58.xrea.com' &&
 		   _doc.domain!=='pzprv3.sakura.ne.jp' &&
@@ -446,203 +644,7 @@ ExtData.prototype = {
 			xmlhttp.send(data);
 		}
 	}
-};
+});
 
-//---------------------------------------------------------------------------
-// ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
-//---------------------------------------------------------------------------
-
-// PBaseクラス
-PBase = function(){
-	this.floatbgcolor = "black";
-	this.resizetimer  = null;	// resizeタイマー
-	this.initProcess  = true;	// 初期化中かどうか
-
-	this.dec = null;			// 入力されたURLの情報保持用
-
-	this.disinfo = 0;			// LineManager, AreaManagerを呼び出さないようにする
-};
-PBase.prototype = {
-	//---------------------------------------------------------------------------
-	// base.onload_func()   ページがLoadされた時の処理
-	// base.onload_func2()  ページがLoadされた時の処理その2
-	// base.includeFile()   単体ファイルの読み込み
-	//---------------------------------------------------------------------------
-	onload_func : function(){
-		if(location.search.match(/[\?_]test/)){
-			this.includeFile("src/for_test.js");
-			var self = this;
-			setTimeout(function(){
-				if(!!debug.urls){ self.onload_func2.call(self);}
-				else{ setTimeout(arguments.callee,20);}
-			},20);
-		}
-		else{
-			this.onload_func2();
-		}
-	},
-	onload_func2 : function(){
-		if(location.search.match(/[\?_]test/)){ this.includeFile("src/for_test.js");}
-
-		this.dec = new ExtData()
-		this.dec.importURL();
-		this.dec.importFileData();
-		if(!this.dec.id){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
-
-		// Campの設定
-		Camp('divques');
-		if(Camp.enable.canvas && !!_doc.createElement('canvas').toDataURL){
-			this.dec.enableSaveImage = true;
-			Camp('divques_sub', 'canvas');
-		}
-
-		// dbmは、フロートメニューを開いたまま別パズルへの遷移があるのでここにおいておく
-		dbm = new DataBaseManager();	// データベースアクセス用オブジェクト
-		this.reload_func(ee.binder(this, this.postload_func));
-	},
-	includeFile : function(file){
-		var _script = _doc.createElement('script');
-		_script.type = 'text/javascript';
-		_script.src = file;
-		_doc.body.appendChild(_script);
-	},
-
-	//---------------------------------------------------------------------------
-	// base.init_func()     新しくパズルのファイルを開く時の処理
-	// base.reload_func()   個別パズルのファイルを読み込む関数
-	// base.postload_func() ページがLoad終了時の処理
-	//---------------------------------------------------------------------------
-	init_func : function(callback){
-		// 今のパズルと別idの時
-		if(k.puzzleid!=this.dec.id){
-			this.reload_func(callback);
-		}
-		else{
-			this.importBoardData();
-		}
-	},
-	reload_func : function(callback){
-		this.initProcess = true;
-
-		var pid = this.dec.id;
-		var scriptid = PZLINFO.toScript(this.dec.id);
-
-		// idを取得して、ファイルを読み込み
-		if(!Puzzles[scriptid]){ this.includeFile("src/"+scriptid+".js");}
-
-		// 今のパズルが存在している場合
-		if(!!k.puzzleid){
-			// 各パズルでオーバーライドしているものを、元に戻す
-			if(!!puz.protoOriginal){ puz.protoOriginal();}
-
-			ee.removeAllEvents();
-
-			menu.menureset();
-			ee('numobj_parent').el.innerHTML = '';
-			ee.clean();
-		}
-
-		// 中身を読み取れるまでwait
-		var self = this;
-		var tim = setInterval(function(){
-			if(!Puzzles[scriptid] || !Camp.isready()){ return;}
-			clearInterval(tim);
-
-			g = ee('divques').unselectable().el.getContext("2d");
-
-			// 初期化ルーチンへジャンプ
-			k.scriptid = scriptid;
-			k.puzzleid = pid;
-			self.initObjects();
-
-			if(!!callback){ callback();}
-		},10);
-	},
-	postload_func : function(){
-		if(k.PLAYER){ this.dec.accesslog();}	// アクセスログをとってみる
-		tm = new Timer();	// タイマーオブジェクトの生成とタイマースタート
-	},
-
-	//---------------------------------------------------------------------------
-	// base.initObjects()     各オブジェクトの生成などの処理
-	// base.importBoardData() URLや複製されたデータを読み出す
-	// base.setFloatbgcolor() フロートメニューの背景色を設定する
-	//---------------------------------------------------------------------------
-	initObjects : function(){
-		k.initFlags();						// 共通フラグの初期化
-
-		puz = new Puzzles[k.scriptid]();	// パズル固有オブジェクト
-		puz.setting();						// パズル固有の変数設定(デフォルト等)
-		if(!!puz.protoChange){ puz.protoChange();}
-
-		// クラス初期化
-		enc = new Encode();				// URL入出力用オブジェクト
-		fio = new FileIO();				// ファイル入出力用オブジェクト
-		tc = new TCell();		// キー入力のターゲット管理オブジェクト
-		bd = new Board();		// 盤面オブジェクト
-		mv = new MouseEvent();	// マウス入力オブジェクト
-		kc = new KeyEvent();	// キーボード入力オブジェクト
-		kp = new KeyPopup();	// 入力パネルオブジェクト
-		pc = new Graphic();		// 描画系オブジェクト
-		ans = new AnsCheck();	// 正解判定オブジェクト
-		um  = new OperationManager();	// 操作情報管理オブジェクト
-
-		menu = new Menu();		// メニューを扱うオブジェクト
-		pp = new Properties();	// メニュー関係の設定値を保持するオブジェクト
-
-		// 盤面サイズの初期化
-		bd.initBoardSize(k.qcols, k.qrows);
-
-		// 各パズルごとの設定(後付け分)
-		puz.input_init();
-		puz.graphic_init();
-		puz.encode_init();
-		puz.answer_init();
-
-		// メニュー関係初期化
-		menu.menuinit();	// メニューの設定
-
-		this.importBoardData();
-
-		if(!!puz.finalfix){ puz.finalfix();}		// パズル固有の後付け設定
-
-		menu.setEvents();		// イベントをくっつける
-
-		this.initProcess = false;
-	},
-
-	importBoardData : function(){
-		// ファイルを開く・複製されたデータを開く
-		if(!!this.dec.fstr){
-			fio.filedecode_main(this.dec.fstr);
-			this.dec.fstr = '';
-		}
-		// URLからパズルのデータを読み出す
-		else if(!!this.dec.cols){
-			enc.pzlinput();
-		}
-		// 何もないとき
-		else{
-			bd.resetInfo();
-			pc.resize_canvas();
-		}
-	},
-
-	setFloatbgcolor : function(color){ this.floatbgcolor = color;},
-
-	//---------------------------------------------------------------------------
-	// base.onresize_func() ウィンドウリサイズ時に呼ばれる関数
-	// base.onblur_func()   ウィンドウからフォーカスが離れた時に呼ばれる関数
-	//---------------------------------------------------------------------------
-	onresize_func : function(){
-		if(this.resizetimer){ clearTimeout(this.resizetimer);}
-		this.resizetimer = setTimeout(ee.binder(pc, pc.resize_canvas),250);
-	},
-	onblur_func : function(){
-		kc.keyreset();
-		mv.mousereset();
-	}
-};
-
-base = new PBase();
+base = new pzprv3.core.PBase();
 ee.addEvent(window, "load", ee.ebinder(base, base.onload_func));	// 1回起動したら、消されても大丈夫

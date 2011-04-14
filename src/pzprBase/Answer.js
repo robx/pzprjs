@@ -6,15 +6,17 @@
 
 // 回答チェッククラス
 // AnsCheckクラス
-AnsCheck = function(){
-	this.performAsLine = false;
-	this.errDisp = false;
-	this.setError = true;
-	this.inCheck = false;
-	this.inAutoCheck = false;
-	this.alstr = { jp:'' ,en:''};
-};
-AnsCheck.prototype = {
+pzprv3.createCommonClass('AnsCheck', '',
+{
+	initialize :  function(){
+		this.performAsLine = false;
+		this.errDisp = false;
+		this.setError = true;
+		this.inCheck = false;
+		this.inAutoCheck = false;
+		this.alstr = { jp:'' ,en:''};
+		this.checkresult = true;
+	},
 
 	//---------------------------------------------------------------------------
 	// ans.check()     答えのチェックを行う(checkAns()を呼び出す)
@@ -28,23 +30,26 @@ AnsCheck.prototype = {
 		kc.keyreset();
 		mv.mousereset();
 
-		if(!this.checkAns()){
+		this.checkresult = true;
+		this.checkAns()
+		if(!this.checkresult){
 			menu.alertStr(this.alstr.jp, this.alstr.en);
 			this.errDisp = true;
 			pc.paintAll();
-			this.inCheck = false;
-			return false;
+		}
+		else{
+			menu.alertStr("正解です！","Complete!");
 		}
 
-		menu.alertStr("正解です！","Complete!");
 		this.inCheck = false;
-		return true;
+		return this.checkresult;
 	},
-	checkAns : function(){},	//オーバーライド用
-	//check1st : function(){},	//オーバーライド用
+	checkAns : function(){ return true;},	//オーバーライド用
+	check1st : function(){ return true;},	//オーバーライド用
 	setAlert : function(strJP, strEN){
 		this.alstr.jp = strJP;
 		this.alstr.en = (!!strEN ? strEN : strJP);
+		this.checkresult = false;
 	},
 
 	//---------------------------------------------------------------------------
@@ -63,11 +68,15 @@ AnsCheck.prototype = {
 		this.inCheck = this.inAutoCheck = true;
 		this.disableSetError();
 
-		if(this.autocheck1st() && this.checkAns() && this.inCheck){
-			mv.mousereset();
-			menu.alertStr("正解です！","Complete!");
-			ret = true;
-			pp.setVal('autocheck',false);
+		if(this.autocheck1st()){
+			this.checkresult = true;
+			this.checkAns();
+			if(this.checkresult && this.inCheck){
+				mv.mousereset();
+				menu.alertStr("正解です！","Complete!");
+				ret = true;
+				pp.setVal('autocheck',false);
+			}
 		}
 		this.enableSetError();
 		this.inCheck = this.inAutoCheck = false;
@@ -76,33 +85,14 @@ AnsCheck.prototype = {
 	},
 	// リンク系は重いので最初に端点を判定する
 	autocheck1st : function(){
-		if(this.check1st){ return this.check1st();}
-		else if( (k.isCenterLine && !ans.checkLcntCell(1)) || (k.isborderAsLine && !ans.checkLcntCross(1,0)) ){ return false;}
+		if(!this.check1st()){ return false;}
+		if((k.isCenterLine && !ans.checkLcntCell(1)) || (k.isborderAsLine && !ans.checkLcntCross(1,0))){ return false;}
 		return true;
 	},
 
 	disableSetError  : function(){ this.setError = false;},
 	enableSetError   : function(){ this.setError = true; },
 	isenableSetError : function(){ return this.setError; },
-
-	//---------------------------------------------------------------------------
-	// ans.setErrLareaByCell() ひとつながりになった線が存在するマスにエラーを設定する
-	// ans.setErrLareaById()   ひとつながりになった線が存在するマスにエラーを設定する
-	//---------------------------------------------------------------------------
-	setErrLareaByCell : function(cinfo, c, val){ this.setErrLareaById(cinfo, cinfo.id[c], val); },
-	setErrLareaById : function(cinfo, areaid, val){
-		var blist = [];
-		for(var id=0;id<bd.bdmax;id++){
-			if(!bd.isLine(id)){ continue;}
-			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if(cinfo.id[cc1]===areaid && cinfo.id[cc1]===cinfo.id[cc2]){ blist.push(id);}
-		}
-		bd.sErB(blist,val);
-
-		var clist = [];
-		for(var c=0;c<bd.cellmax;c++){ if(cinfo.id[c]===areaid && bd.isNum(c)){ clist.push(c);} }
-		bd.sErC(clist,4);
-	},
 
 	//---------------------------------------------------------------------------
 	// ans.checkAllCell()   条件func==trueになるマスがあったらエラーを設定する
@@ -121,7 +111,7 @@ AnsCheck.prototype = {
 		return result;
 	},
 	checkNoNumCell : function(){
-		return this.checkAllCell(bd.noNum);
+		return this.checkAllCell( function(c){ return bd.noNum(c);} );
 	},
 	checkIceLines : function(){
 		return this.checkAllCell( function(c){
@@ -131,7 +121,6 @@ AnsCheck.prototype = {
 
 	//---------------------------------------------------------------------------
 	// ans.checkDir4Cell()  セルの周囲4マスの条件がfunc==trueの時、エラーを設定する
-	// ans.countDir4Cell()  上下左右4方向で条件func==trueになるマスの数をカウントする
 	// ans.checkSideCell()  隣り合った2つのセルが条件func==trueの時、エラーを設定する
 	// ans.check2x2Block()  2x2のセルが全て条件func==trueの時、エラーを設定する
 	//---------------------------------------------------------------------------
@@ -139,7 +128,7 @@ AnsCheck.prototype = {
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
 			if(!bd.isValidNum(c)){ continue;}
-			var num = bd.getNum(c), count=this.countDir4Cell(c,iscount);
+			var num = bd.getNum(c), count=bd.countDir4Cell(c,iscount);
 			if((type!==1 && num<count) || (type!==2 && num>count)){
 				if(this.inAutoCheck){ return false;}
 				bd.sErC([c],1);
@@ -147,15 +136,6 @@ AnsCheck.prototype = {
 			}
 		}
 		return result;
-	},
-	countDir4Cell : function(c, func){
-		if(c<0 || c>=bd.cellmax || c===null){ return 0;}
-		var cnt=0, cc;
-		cc=bd.up(c); if(cc!==null && func(cc)){ cnt++;}
-		cc=bd.dn(c); if(cc!==null && func(cc)){ cnt++;}
-		cc=bd.lt(c); if(cc!==null && func(cc)){ cnt++;}
-		cc=bd.rt(c); if(cc!==null && func(cc)){ cnt++;}
-		return cnt;
 	},
 
 	checkSideCell : function(func){
@@ -196,12 +176,11 @@ AnsCheck.prototype = {
 	// ans.checkOneArea()  白マス/黒マス/線がひとつながりかどうかを判定する
 	// ans.checkOneLoop()  交差あり線が一つかどうか判定する
 	// ans.checkLcntCell() セルから出ている線の本数について判定する
-	// ans.setCellLineError() セルと周りの線にエラーフラグを設定する
 	// ans.checkenableLineParts() '一部があかされている'線の部分に、線が引かれているか判定する
 	//---------------------------------------------------------------------------
 	checkOneArea : function(cinfo){
 		if(cinfo.max>1){
-			if(this.performAsLine){ bd.sErBAll(2); this.setErrLareaByCell(cinfo,1,1); }
+			if(this.performAsLine){ bd.sErBAll(2); bd.setErrLareaByCell(cinfo,1,1); }
 			if(!this.performAsLine || k.puzzleid=="firefly"){ bd.sErC(cinfo.room[1].idlist,1);}
 			return false;
 		}
@@ -225,17 +204,11 @@ AnsCheck.prototype = {
 			if(bd.lines.lcnt[c]==val){
 				if(this.inAutoCheck){ return false;}
 				if(!this.performAsLine){ bd.sErC([c],1);}
-				else{ if(result){ bd.sErBAll(2);} this.setCellLineError(c,true);}
+				else{ if(result){ bd.sErBAll(2);} bd.setCellLineError(c,true);}
 				result = false;
 			}
 		}
 		return result;
-	},
-
-	setCellLineError : function(cc, flag){
-		if(flag){ bd.sErC([cc],1);}
-		var bx=bd.cell[cc].bx, by=bd.cell[cc].by;
-		bd.sErB(bd.borderinside(bx-1,by-1,bx+1,by+1), 1);
 	},
 
 	checkenableLineParts : function(val){
@@ -255,103 +228,64 @@ AnsCheck.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkAllArea()    すべてのfuncを満たすマスで構成されるエリアがevalfuncを満たすかどうか判定する
+	// ans.checkAllArea()    すべてのエリアがevalfuncを満たすかどうか判定する
+	// ans.checkAllBlock()   すべてのfuncを満たすマスで構成されるエリアが
+	//                       evalfuncを満たすかどうか判定する
 	//
-	// ans.checkDisconnectLine() 数字などに繋がっていない線の判定を行う
 	// ans.checkNumberAndSize()  エリアにある数字と面積が等しいか判定する
+	// ans.checkAreaRect()       領域が全て四角形であるかどうか判定する
+	// 
+	// ans.checkDisconnectLine() 数字などに繋がっていない線の判定を行う
 	// ans.checkNoNumber()       部屋に数字が含まれていないかの判定を行う
 	// ans.checkDoubleNumber()   部屋に数字が2つ以上含まれていないように判定を行う
 	// ans.checkTripleNumber()   部屋に数字が3つ以上含まれていないように判定を行う
 	// ans.checkBlackCellCount() 領域内の数字と黒マスの数が等しいか判定する
 	// ans.checkBlackCellInArea()部屋にある黒マスの数の判定を行う
-	// ans.checkAreaRect()       領域が全て四角形であるかどうか判定する
 	// ans.checkLinesInArea()    領域の中で線が通っているセルの数を判定する
 	// ans.checkNoObjectInRoom() エリアに指定されたオブジェクトがないと判定する
-	//
-	// ans.getQnumCellInArea() 部屋の中で一番左上にある数字を返す
-	// ans.getSizeOfClist()    指定されたCellのリストの上下左右の端と、その中で条件funcを満たすセルの数を返す
 	//---------------------------------------------------------------------------
-	checkAllArea : function(cinfo, func, evalfunc){
+	checkAllArea : function(cinfo, evalfunc){ return this.checkAllBlock(cinfo, function(c){ return true;}, evalfunc);},
+	checkAllBlock : function(cinfo, func, evalfunc){
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
-			var cc = (k.roomNumber ? bd.areas.getTopOfRoomByCell(cinfo.room[id].idlist[0])
-								   : this.getQnumCellOfClist(cinfo.room[id].idlist));
-			var d = this.getSizeOfClist(cinfo.room[id].idlist,func);
+			var clist = cinfo.room[id].idlist;
+			var d = bd.getSizeOfClist(clist,func);
+			var a = (function(){ var cnt=0; for(var i=0;i<clist.length;i++){ if(func(clist[i])){ cnt++;}} return cnt;})();
+
+			var cc = (k.roomNumber ? bd.areas.getTopOfRoomByCell(clist[0]) : bd.areas.getQnumCellOfClist(clist));
 			var n = (cc!==null?bd.QnC(cc):-1);
 
-			if( !evalfunc(d.cols, d.rows, d.cnt, n) ){
+			if( !evalfunc(d.cols, d.rows, a, n) ){
 				if(this.inAutoCheck){ return false;}
-				if(this.performAsLine){ if(result){ bd.sErBAll(2);} this.setErrLareaById(cinfo,id,1);}
-				else{ bd.sErC(cinfo.room[id].idlist,(k.puzzleid!="tateyoko"?1:4));}
+				if(this.performAsLine){ if(result){ bd.sErBAll(2);} bd.setErrLareaById(cinfo,id,1);}
+				else{ bd.sErC(clist,(k.puzzleid!="tateyoko"?1:4));}
 				result = false;
 			}
 		}
 		return result;
 	},
 
-	checkDisconnectLine  : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (n!=-1 || a>0); } );},
-	checkNumberAndSize   : function(cinfo){ return this.checkAllArea(cinfo, f_true,     function(w,h,a,n){ return (n<= 0 || n==a);} );},
+	checkNumberAndSize   : function(cinfo){ return this.checkAllArea(cinfo, function(w,h,a,n){ return (n<=0 || n===a);} );},
+	checkAreaRect        : function(cinfo){ return this.checkAllArea(cinfo, function(w,h,a,n){ return (w*h===a)}      );},
 
-	checkNoNumber        : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (a!=0);}          );},
-	checkDoubleNumber    : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (a< 2);}          );},
-	checkTripleNumber    : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (a< 3);}          );},
+	checkDisconnectLine  : function(linfo){ return this.checkAllBlock(linfo, function(c){ return bd.isNum(c);}, function(w,h,a,n){ return (n!=-1 || a>0); }  );},
 
-	checkBlackCellCount  : function(cinfo)          { return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return (n<0 || n===a);});},
-	checkBlackCellInArea : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return evalfunc(a);}   );},
-	checkAreaRect        : function(cinfo)          { return this.checkAllArea(cinfo, f_true,     function(w,h,a,n){ return (w*h===a)}      );},
+	checkNoNumber        : function(cinfo){ return this.checkAllBlock(cinfo, function(c){ return bd.isNum(c);}, function(w,h,a,n){ return (a!=0);} );},
+	checkDoubleNumber    : function(cinfo){ return this.checkAllBlock(cinfo, function(c){ return bd.isNum(c);}, function(w,h,a,n){ return (a< 2);} );},
+	checkTripleNumber    : function(linfo){ return this.checkAllBlock(linfo, function(c){ return bd.isNum(c);}, function(w,h,a,n){ return (a< 3);} );},
 
-	checkLinesInArea     : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, function(c){ return bd.lines.lcnt[c]>0;}, evalfunc);},
-	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkAllArea(cinfo, function(c){ return getvalue(c)!==-1;}, function(w,h,a,n){ return (a!=0);});},
+	checkBlackCellCount  : function(cinfo)          { return this.checkAllBlock(cinfo, function(c){ return bd.isBlack(c);}, function(w,h,a,n){ return (n<0 || n===a);});},
+	checkBlackCellInArea : function(cinfo, evalfunc){ return this.checkAllBlock(cinfo, function(c){ return bd.isBlack(c);}, function(w,h,a,n){ return evalfunc(a);}   );},
 
-	getQnumCellOfClist : function(clist){
-		for(var i=0,len=clist.length;i<len;i++){
-			if(bd.QnC(clist[i])!==-1){ return clist[i];}
-		}
-		return null;
-	},
-	getSizeOfClist : function(clist, func){
-		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1, cols:0, rows:0, cnt:0 };
-		for(var i=0;i<clist.length;i++){
-			if(d.x1>bd.cell[clist[i]].bx){ d.x1=bd.cell[clist[i]].bx;}
-			if(d.x2<bd.cell[clist[i]].bx){ d.x2=bd.cell[clist[i]].bx;}
-			if(d.y1>bd.cell[clist[i]].by){ d.y1=bd.cell[clist[i]].by;}
-			if(d.y2<bd.cell[clist[i]].by){ d.y2=bd.cell[clist[i]].by;}
-			if(func(clist[i])){ d.cnt++;}
-		}
-		d.cols = (d.x2-d.x1+2)/2;
-		d.rows = (d.y2-d.y1+2)/2;
-		return d;
-	},
+	checkLinesInArea     : function(cinfo, evalfunc){ return this.checkAllBlock(cinfo, function(c){ return bd.lines.lcnt[c]>0;}, evalfunc);},
+	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkAllBlock(cinfo, function(c){ return getvalue(c)!==-1;}, function(w,h,a,n){ return (a!=0);});},
 
 	//---------------------------------------------------------------------------
-	// ans.getSideAreaInfo()   境界線をはさんで接する部屋を取得する
 	// ans.checkSideAreaSize() 境界線をはさんで接する部屋のgetvalで得られるサイズが異なることを判定する
 	// ans.checkSideAreaCell() 境界線をはさんでタテヨコに接するセルの判定を行う
 	//---------------------------------------------------------------------------
-	getSideAreaInfo : function(rinfo){
-		var adjs=[], sides=[], max=rinfo.max;
-		for(var r=1;r<=max-1;r++){ adjs[r]=[];}
-
-		for(var id=0;id<bd.bdmax;id++){
-			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if(cc1===null || cc2===null){ continue;}
-			var r1=rinfo.id[cc1], r2=rinfo.id[cc2];
-			if(r1===null || r2===null){ continue;}
-
-			if(r1<r2){ adjs[r1][r2]=true;}
-			if(r1>r2){ adjs[r2][r1]=true;}
-		}
-
-		for(var r=1;r<=max-1;r++){
-			sides[r]=[];
-			for(var s=r+1;s<=max;s++){
-				if(!!adjs[r][s]){ sides[r].push(s);}
-			}
-		}
-		return sides;
-	},
 	checkSideAreaSize : function(rinfo, getval){
-		var sides = this.getSideAreaInfo(rinfo);
+		var sides = bd.areas.getSideAreaInfo(rinfo);
 		for(var r=1;r<=rinfo.max-1;r++){
 			for(var i=0;i<sides[r].length;i++){
 				var s=sides[r][i], a1=getval(rinfo,r), a2=getval(rinfo,s);
@@ -418,7 +352,7 @@ AnsCheck.prototype = {
 			else if(d[rinfo.id[c]]!==val[c]){
 				if(this.inAutoCheck){ return false;}
 
-				if(this.performAsLine){ bd.sErBAll(2); this.setErrLareaByCell(rinfo,c,1);}
+				if(this.performAsLine){ bd.sErBAll(2); bd.setErrLareaByCell(rinfo,c,1);}
 				else{ bd.sErC(rinfo.room[rinfo.id[c]].idlist,1);}
 				if(k.puzzleid=="kaero"){
 					for(var cc=0;cc<bd.cellmax;cc++){
@@ -465,7 +399,7 @@ AnsCheck.prototype = {
 	isDifferentNumberInClist : function(clist, numfunc){
 		var result = true, d = [], num = [], bottom = (k.dispzero?1:0);
 		for(var n=bottom,max=bd.nummaxfunc(clist[0]);n<=max;n++){ d[n]=0;}
-		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc.call(bd,clist[i]);}
+		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc(clist[i]);}
 
 		for(var i=0;i<clist.length;i++){ if(num[clist[i]]>=bottom){ d[num[clist[i]]]++;} }
 		for(var i=0;i<clist.length;i++){
@@ -478,6 +412,7 @@ AnsCheck.prototype = {
 	// ans.checkRowsCols()            タテ列・ヨコ列の数字の判定を行う
 	// ans.checkRowsColsPartly()      黒マスや[＼]等で分かれるタテ列・ヨコ列の数字の判定を行う
 	//---------------------------------------------------------------------------
+	/* ともにevalfuncはAnswerクラスの関数限定 */
 	checkRowsCols : function(evalfunc, numfunc){
 		var result = true;
 		for(var by=1;by<=bd.maxby;by+=2){
@@ -496,34 +431,26 @@ AnsCheck.prototype = {
 		}
 		return result;
 	},
-	checkRowsColsPartly : function(evalfunc, areainfo, termfunc, multierr){
+	checkRowsColsPartly : function(evalfunc, termfunc, multierr){
 		var result = true;
 		for(var by=1;by<=bd.maxby;by+=2){
-			var bx=1;
-			while(bx<=bd.maxbx){
-				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc.call(this,bd.cnum(tx,by))){ break;}}
-				var clist = bd.cellinside(bx,by,tx-2,by);
-				var total = (k.isexcell!==1 ? 0 : (bx===1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx-2,by))));
-
-				if(!evalfunc.call(this, total, [bx-2,by], clist, areainfo)){
+			for(var bx=1;bx<=bd.maxbx;bx+=2){
+				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc(bd.cnum(tx,by))){ break;}}
+				if(!evalfunc.call(this, [bx-2,by,k.RT], bd.cellinside(bx,by,tx-2,by))){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}
-				bx = tx+2;
+				bx = tx; /* 次のループはbx=tx+2 */
 			}
 		}
 		for(var bx=1;bx<=bd.maxbx;bx+=2){
-			var by=1;
-			while(by<=bd.maxby){
-				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc.call(this,bd.cnum(bx,ty))){ break;}}
-				var clist = bd.cellinside(bx,by,bx,ty-2);
-				var total = (k.isexcell!==1 ? 0 : (by===1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by-2))));
-
-				if(!evalfunc.call(this, total, [bx,by-2], clist, areainfo)){
+			for(var by=1;by<=bd.maxby;by+=2){
+				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc(bd.cnum(bx,ty))){ break;}}
+				if(!evalfunc.call(this, [bx,by-2,k.DN], bd.cellinside(bx,by,bx,ty-2))){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}
-				by = ty+2;
+				by = ty; /* 次のループはbx=ty+2 */
 			}
 		}
 		return result;
@@ -531,7 +458,6 @@ AnsCheck.prototype = {
 
 	//---------------------------------------------------------------------------
 	// ans.checkLcntCross()      ある交点との周り四方向の境界線の数を判定する(bp==1:黒点が打たれている場合)
-	// ans.setCrossBorderError() ある交点とその周り四方向にエラーフラグを設定する
 	//---------------------------------------------------------------------------
 	checkLcntCross : function(val, bp){
 		var result=true, mm=(k.iscross===1?2:0);
@@ -542,15 +468,100 @@ AnsCheck.prototype = {
 				if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(bx,by))==1) || (bp==2&&bd.QnX(bd.xnum(bx,by))!=1) )){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}
-					this.setCrossBorderError(bx,by);
+					bd.setCrossBorderError(bx,by);
 					result = false;
 				}
 			}
 		}
 		return result;
 	},
-	setCrossBorderError : function(bx,by){
-		if(k.iscross!==0){ bd.sErX([bd.xnum(bx,by)], 1);}
-		bd.sErB(bd.borderinside(bx-1,by-1,bx+1,by+1), 1);
-	}
-};
+
+	//---------------------------------------------------------------------------
+	// ans.checkErrorFlag_cell()  RoomInfoに付加されたエラー情報を調べます
+	//---------------------------------------------------------------------------
+	checkErrorFlag_cell : function(rinfo, val){
+		var result = true;
+		for(var id=1;id<=rinfo.max;id++){
+			if(rinfo.room[id].error!==val){ continue;}
+
+			if(this.inAutoCheck){ return false;}
+			bd.sErC(rinfo.room[id].idlist,1);
+			result = false;
+		}
+		return result;
+	},
+
+	//---------------------------------------------------------------------------
+	// ans.checkErrorFlag_line()  LineInfoに付加されたエラー情報を調べます
+	// ans.getErrorFlag_line()    丸などで区切られた線を探索してエラー情報を付加します
+	// ans.serachErrorFlag_line() 丸などで区切られた線を探索します
+	// ans.isErrorFlag_line()     探索結果からエラー情報を付加します
+	//---------------------------------------------------------------------------
+	checkErrorFlag_line : function(xinfo, val){
+		var result = true;
+		for(var id=1;id<=xinfo.max;id++){
+			if(xinfo.room[id].error!==val){ continue;}
+
+			if(this.inAutoCheck){ return false;}
+			bd.sErC(xinfo.room[id].cells,1);
+			if(result){ bd.sErBAll(2);}
+			bd.sErB(xinfo.room[id].idlist,1);
+			result = false;
+		}
+		return result;
+	},
+
+	// 丸の場所で線を切り離して考える
+	getErrorFlag_line : function(){
+		var xinfo = new pzprv3.core.AreaInfo();
+		for(var id=0;id<bd.bdmax;id++){ xinfo.id[id]=(bd.isLine(id)?0:null);}
+
+		for(var c=0;c<bd.cellmax;c++){
+			if(bd.noNum(c)){ continue;}
+
+			var bx=bd.cell[c].bx, by=bd.cell[c].by;
+			var dir4id = [bd.bnum(bx,by-1),bd.bnum(bx,by+1),bd.bnum(bx-1,by),bd.bnum(bx+1,by)];
+			for(var a=0;a<4;a++){
+				var firstid = dir4id[a];
+				if(firstid==null||xinfo.id[firstid]!==0){ continue;}
+
+				// dir1 スタート地点で線が出発した方向 dir2 到達地点から見た、到達した線の方向
+				xinfo.max++;
+				xinfo.room[xinfo.max] = {idlist:[],error:0,cells:[c,null],ccnt:0,length:[],dir1:(a+1),dir2:0};
+
+				this.searchErrorFlag_line(xinfo,xinfo.max);
+				if(xinfo.room[xinfo.max].idlist.length===0){ continue;}
+
+				this.isErrorFlag_line(xinfo);
+			}
+		}
+		return xinfo;
+	},
+	searchErrorFlag_line : function(xinfo,areaid){
+		var room=xinfo.room[areaid], dir=room.dir1;
+		var bx=bd.cell[room.cells[0]].bx, by=bd.cell[room.cells[0]].by;
+		while(1){
+			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
+			if(((bx+by)&1)===0){
+				var cc = bd.cnum(bx,by);
+				if(cc===null || bd.isNum(cc)){ break;}
+				else if(bd.lines.iscrossing(cc) && bd.lines.lcntCell(cc)>=3){ }
+				else if(dir!==1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!==2){ room.ccnt++;} dir=2;}
+				else if(dir!==2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!==1){ room.ccnt++;} dir=1;}
+				else if(dir!==3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!==4){ room.ccnt++;} dir=4;}
+				else if(dir!==4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!==3){ room.ccnt++;} dir=3;}
+			}
+			else{
+				var id = bd.bnum(bx,by);
+				if(id===null||xinfo.id[id]!==0){ break;}
+
+				xinfo.id[id] = areaid;
+				room.idlist.push(id);
+				if(isNaN(room.length[room.ccnt])){ room.length[room.ccnt]=0;}else{ room.length[room.ccnt]++;}
+			}
+		}
+		room.cells[1]=bd.cnum(bx,by);
+		room.dir2=[0,2,1,4,3][dir];
+	},
+	isErrorFlag_line : function(xinfo){ }
+});

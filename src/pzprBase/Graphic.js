@@ -1,138 +1,146 @@
-// Graphic.js v3.3.3
+// Graphic.js v3.4.0
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
 //---------------------------------------------------------------------------
 // パズル共通 Canvas/DOM制御部
 // Graphicクラスの定義
-Graphic = function(){
-	// 盤面のCellを分ける色
-	this.gridcolor = "black";
+pzprv3.createCommonClass('Graphic', '',
+{
+	initialize : function(){
+		g = ee('divques').unselectable().el.getContext("2d");
 
-	// セルの色(黒マス)
-	this.cellcolor = "black";
-	this.errcolor1 = "rgb(224, 0, 0)";
-	this.errcolor2 = "rgb(64, 64, 255)";
-	this.errcolor3 = "rgb(0, 191, 0)";
+		// 盤面のCellを分ける色
+		this.gridcolor = "black";
 
-	// セルの丸数字の中に書く色
-	this.circledcolor = "white";
+		// セルの色(黒マス)
+		this.cellcolor = "black";
+		this.errcolor1 = "rgb(224, 0, 0)";
+		this.errcolor2 = "rgb(64, 64, 255)";
+		this.errcolor3 = "rgb(0, 191, 0)";
 
-	// セルの○×の色(補助記号)
-	this.mbcolor = "rgb(255, 160, 127)";
+		// セルの丸数字の中に書く色
+		this.circledcolor = "white";
 
-	this.qsubcolor1 = "rgb(160,255,160)";
-	this.qsubcolor2 = "rgb(255,255,127)";
-	this.qsubcolor3 = "rgb(192,192,192)";	// 絵が出るパズルの背景入力
+		// セルの○×の色(補助記号)
+		this.mbcolor = "rgb(255, 160, 127)";
 
-	// フォントの色(白マス/黒マス)
-	this.fontcolor = "black";
-	this.fontAnscolor = "rgb(0, 160, 0)";
-	this.fontErrcolor = "rgb(191, 0, 0)";
-	this.fontBCellcolor = "rgb(224, 224, 224)";
+		this.qsubcolor1 = "rgb(160,255,160)";
+		this.qsubcolor2 = "rgb(255,255,127)";
+		this.qsubcolor3 = "rgb(192,192,192)";	// 絵が出るパズルの背景入力
 
-	this.borderfontcolor = "black";
+		// フォントの色(白マス/黒マス)
+		this.fontcolor = "black";
+		this.fontAnscolor = "rgb(0, 160, 0)";
+		this.fontErrcolor = "rgb(191, 0, 0)";
+		this.fontBCellcolor = "rgb(224, 224, 224)";
 
-	// セルの背景色(白マス)
-	this.bcolor = "white";
-	this.dotcolor = "black";
-	this.errbcolor1 = "rgb(255, 160, 160)";
-	this.errbcolor2 = "rgb(64, 255, 64)";
+		this.borderfontcolor = "black";
 
-	this.icecolor = "rgb(192, 224, 255)";
+		// セルの背景色(白マス)
+		this.bcolor = "white";
+		this.dotcolor = "black";
+		this.errbcolor1 = "rgb(255, 160, 160)";
+		this.errbcolor2 = "rgb(64, 255, 64)";
 
-	// ques=51のとき、入力できる場所の背景色(TargetTriangle)
-	this.ttcolor = "rgb(127,255,127)";
+		this.icecolor = "rgb(192, 224, 255)";
 
-	// 境界線の色
-	this.borderQuescolor = "black";
-	this.borderQanscolor = "rgb(0, 191, 0)";
-	this.borderQsubcolor = "rgb(255, 0, 255)";
+		// ques=51のとき、入力できる場所の背景色(TargetTriangle)
+		this.ttcolor = "rgb(127,255,127)";
 
-	this.errborderQanscolor2 = "rgb(160, 160, 160)";
+		// 境界線の色
+		this.borderQuescolor = "black";
+		this.borderQanscolor = "rgb(0, 191, 0)";
+		this.borderQsubcolor = "rgb(255, 0, 255)";
 
-	this.bbcolor = "rgb(96, 96, 96)"; // 境界線と黒マスを分ける色(BoxBorder)
+		this.errborderQanscolor2 = "rgb(160, 160, 160)";
 
-	// 線・×の色
-	this.linecolor = "rgb(0, 160, 0)";	// 色分けなしの場合
-	this.pekecolor = "rgb(32, 32, 255)";
+		this.bbcolor = "rgb(96, 96, 96)"; // 境界線と黒マスを分ける色(BoxBorder)
 
-	this.errlinecolor1 = "rgb(255, 0, 0)";
-	this.errlinecolor2 = "rgb(160, 160, 160)";
+		// 線・×の色
+		this.linecolor = "rgb(0, 160, 0)";	// 色分けなしの場合
+		this.pekecolor = "rgb(32, 32, 255)";
 
-	// 入力ターゲットの色
-	this.targetColor1 = "rgb(255, 64,  64)";
-	this.targetColor3 = "rgb(64,  64, 255)";
+		this.errlinecolor1 = "rgb(255, 0, 0)";
+		this.errlinecolor2 = "rgb(160, 160, 160)";
 
-	// 盤面(枠の中)の背景色
-	this.bgcolor = '';
+		// 入力ターゲットの色
+		this.targetColor1 = "rgb(255, 64,  64)";
+		this.targetColor3 = "rgb(64,  64, 255)";
 
-	// 色々なパズルで定義してた固定色
-	this.gridcolor_BLACK  = "black";
-	this.gridcolor_LIGHT  = "rgb(127, 127, 127)";	/* ほとんどはこの色を指定している */
-	this.gridcolor_DLIGHT = "rgb(160, 160, 160)";	/* 領域分割系で使ってることが多い */
-	this.gridcolor_SLIGHT = "rgb(191, 191, 191)";	/* 部屋＋線を引くパズル           */
-	this.gridcolor_THIN   = "rgb(224, 224, 224)";	/* 問題入力時のみGrid表示のパズル */
+		// 盤面(枠の中)の背景色
+		this.bgcolor = '';
 
-	this.bcolor_GREEN  = "rgb(160, 255, 160)";
-	this.dotcolor_PINK = "rgb(255, 96, 191)";
-	this.errbcolor1_DARK = "rgb(255, 127, 127)";
-	this.linecolor_LIGHT = "rgb(0, 192, 0)";
+		// 色々なパズルで定義してた固定色
+		this.gridcolor_BLACK  = "black";
+		this.gridcolor_LIGHT  = "rgb(127, 127, 127)";	/* ほとんどはこの色を指定している */
+		this.gridcolor_DLIGHT = "rgb(160, 160, 160)";	/* 領域分割系で使ってることが多い */
+		this.gridcolor_SLIGHT = "rgb(191, 191, 191)";	/* 部屋＋線を引くパズル           */
+		this.gridcolor_THIN   = "rgb(224, 224, 224)";	/* 問題入力時のみGrid表示のパズル */
 
-	// その他
-	this.fontsizeratio = 1.0;	// 数字Fontサイズの倍率
-	this.crosssize = 0.4;
-	this.circleratio = [0.40, 0.34];
+		this.bcolor_GREEN  = "rgb(160, 255, 160)";
+		this.dotcolor_PINK = "rgb(255, 96, 191)";
+		this.errbcolor1_DARK = "rgb(255, 127, 127)";
+		this.linecolor_LIGHT = "rgb(0, 192, 0)";
 
-	// 描画領域を保持するオブジェクト
-	this.range = {
-		x1:null, y1:null, x2:null, y2:null,
-		cells:[], crosses:[], borders:[], excells:[]
-	};
+		// その他
+		this.fontsizeratio = 1.0;	// 数字Fontサイズの倍率
+		this.crosssize = 0.4;
+		this.circleratio = [0.40, 0.34];
 
-	// 盤面のページ内の左上座標
-	this.pageX = 0;
-	this.pageY = 0;
+		// 描画領域を保持するオブジェクト
+		this.range = {
+			x1:null, y1:null, x2:null, y2:null,
+			cells:[], crosses:[], borders:[], excells:[]
+		};
 
-	// 描画単位
-	this.cw = k.cwidth;
-	this.ch = k.cheight;
-	this.bw = k.bwidth;
-	this.bh = k.bheight;
+		// 盤面のページ内の左上座標
+		this.pageX = 0;
+		this.pageY = 0;
 
-	this.lw = 1;		// LineWidth 境界線・Lineの太さ
-	this.lm = 1;		// LineMargin
-	this.lwratio = 12;	// onresize_processでlwの値の算出に用いる
-	this.addlw = 0;		// エラー時に線の太さを広げる
+		// 描画単位(ここはデフォルト)
+		this.cellsize = 36;		// デフォルトのセルサイズ
+		this.cw = 36; 			// セルの横幅
+		this.ch = 36; 			// セルの縦幅
+		this.bw = 18; 			// セルの横幅
+		this.bh = 18; 			// セルの縦幅
 
-	this.bdheader = "b_bd";	// drawBorder1で使うheader
+		this.lw = 1;		// LineWidth 境界線・Lineの太さ
+		this.lm = 1;		// LineMargin
+		this.lwratio = 12;	// onresize_processでlwの値の算出に用いる
+		this.addlw = 0;		// エラー時に線の太さを広げる
 
-	this.lastHdeg = 0;
-	this.lastYdeg = 0;
-	this.minYdeg = 0.18;
-	this.maxYdeg = 0.70;
+		this.bdheader = "b_bd";	// drawBorder1で使うheader
 
-	this.zidx = 1;
-	this.zidx_array=[];
+		this.lastHdeg = 0;
+		this.lastYdeg = 0;
+		this.minYdeg = 0.18;
+		this.maxYdeg = 0.70;
 
-	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', {className:'divnum', unselectable:'on'}, null, null);
+		this.zidx = 1;
+		this.zidx_array=[];
 
-	this.numobj = {};					// エレメントへの参照を保持する
-	this.fillTextEmulate = false;		// 数字をg.fillText()で描画しない
-	this.outputImage = false;			// 画像保存中
+		this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', {className:'divnum', unselectable:'on'}, null, null);
 
-	this.isdrawBC = false;
-	this.isdrawBD = false;
+		this.numobj = {};					// エレメントへの参照を保持する
+		this.fillTextEmulate = false;		// 数字をg.fillText()で描画しない
+		this.outputImage = false;			// 画像保存中
+
+		this.isdrawBC = false;
+		this.isdrawBD = false;
+
+		this.setColors();
+	},
+	setColors : function(){ },
 
 	/* vnop関数用 */
-	this.STROKE      = 0;
-	this.FILL        = 1;
-	this.FILL_STROKE = 2;
-	this.NONE        = 3;
-	this.vnop_FILL   = [false,true,true,false];
-	this.vnop_STROKE = [true,false,true,false];
-};
-Graphic.prototype = {
+	STROKE      : 0,
+	FILL        : 1,
+	FILL_STROKE : 2,
+	NONE        : 3,
+	vnop_FILL   : [false,true,true,false],
+	vnop_STROKE : [true,false,true,false],
+
 	//---------------------------------------------------------------------------
 	// pc.resize_canvas()    ウィンドウのLoad/Resize時の処理。
 	//                       Canvas/表示するマス目の大きさを設定する。
@@ -146,44 +154,45 @@ Graphic.prototype = {
 
 		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[pp.getVal('size')];
 		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
-		ci[0] = (wwidth*ws.base )/(k.cellsize*cr.base );
-		ci[1] = (wwidth*ws.limit)/(k.cellsize*cr.limit);
+		ci[0] = (wwidth*ws.base )/(this.cellsize*cr.base );
+		ci[1] = (wwidth*ws.limit)/(this.cellsize*cr.limit);
 
 		// 横幅いっぱいに広げたい場合
-		if(k.mobile){
+		if(ee.mobile){
 			mwidth = wwidth*0.98;
-			k.cwidth = k.cheight = ((mwidth*0.92)/cols)|0;
-			if(k.cwidth < k.cellsize){ k.cwidth = k.cheight = k.cellsize;}
+			this.cw = this.ch = ((mwidth*0.92)/cols)|0;
+			if(this.cw < this.cellsize){ this.cw = this.ch = this.cellsize;}
 		}
 		// 縮小が必要ない場合
 		else if(!pp.getVal('adjsize') || cols < ci[0]){
 			mwidth = wwidth*ws.base-4;
-			k.cwidth = k.cheight = (k.cellsize*cr.base)|0;
+			this.cw = this.ch = (this.cellsize*cr.base)|0;
 		}
 		// base～limit間でサイズを自動調節する場合
 		else if(cols < ci[1]){
 			var ws_tmp = ws.base+(ws.limit-ws.base)*((k.qcols-ci[0])/(ci[1]-ci[0]));
 			mwidth = wwidth*ws_tmp-4;
-			k.cwidth = k.cheight = (mwidth/cols)|0; // 外枠ぎりぎりにする
+			this.cw = this.ch = (mwidth/cols)|0; // 外枠ぎりぎりにする
 		}
 		// 自動調整の下限値を超える場合
 		else{
 			mwidth = wwidth*ws.limit-4;
-			k.cwidth = k.cheight = (k.cellsize*cr.limit)|0;
+			this.cw = this.ch = (this.cellsize*cr.limit)|0;
 		}
-		k.bwidth  = k.cwidth/2; k.bheight = k.cheight/2;
+		this.bw = this.cw/2;
+		this.bh = this.ch/2;
 
 		// mainのサイズ変更
 		ee('main').el.style.width = ''+(mwidth|0)+'px';
-		if(k.mobile){ ee('menuboard').el.style.width = '90%';}
+		if(ee.mobile){ ee('menuboard').el.style.width = '90%';}
 
 		// 盤面のセルID:0が描画される左上の位置の設定
-		var x0, y0; x0 = y0 = (k.cwidth*k.bdmargin)|0;
+		var x0, y0; x0 = y0 = (this.cw*k.bdmargin)|0;
 		// extendxell==0でない時は位置をずらす
-		if(!!k.isexcell){ x0 += k.cwidth; y0 += k.cheight;}
+		if(!!k.isexcell){ x0 += this.cw; y0 += this.ch;}
 
 		// Canvasのサイズ・Offset変更
-		g.changeSize((cols*k.cwidth)|0, (rows*k.cheight)|0);
+		g.changeSize((cols*this.cw)|0, (rows*this.ch)|0);
 		g.translate(x0, y0);
 
 		// 盤面のページ内座標を設定(fillTextEmurate用)
@@ -198,13 +207,7 @@ Graphic.prototype = {
 		kp.resize();
 		bd.setcoordAll();
 
-		this.cw = k.cwidth;
-		this.ch = k.cheight;
-
-		this.bw = k.bwidth;
-		this.bh = k.bheight;
-
-		this.lw = Math.max(k.cwidth/this.lwratio, 3);
+		this.lw = Math.max(this.cw/this.lwratio, 3);
 		this.lm = (this.lw-1)/2;
 
 		this.fillTextEmulate = (g.use.canvas && !_doc.createElement('canvas').getContext('2d').fillText);
@@ -553,8 +556,8 @@ Graphic.prototype = {
 
 				// 矢印の描画 ここに来る場合、dirは1～4
 				if(this.vnop(headers[(dir-1)]+c,this.FILL)){
-					var ax=px=bd.cell[c].cpx;
-					var ay=py=bd.cell[c].cpy;
+					var px=bd.cell[c].cpx, ax=px;
+					var py=bd.cell[c].cpy, ay=py;
 					switch(dir){
 						case k.UP: g.setOffsetLinePath(ax,ay, 0,-al, -tw,-tl, -aw,-tl, -aw, al,  aw, al, aw,-tl,  tw,-tl, true); break;
 						case k.DN: g.setOffsetLinePath(ax,ay, 0, al, -tw, tl, -aw, tl, -aw,-al,  aw,-al, aw, tl,  tw, tl, true); break;
@@ -619,7 +622,7 @@ Graphic.prototype = {
 			var c = clist[i];
 
 			if(bd.cell[c].qnum!==-1 && (bd.cell[c].qnum!==-2||k.isDispHatena)){
-				var ax=px=bd.cell[c].px, ay=py=bd.cell[c].py, dir = bd.cell[c].qdir;
+				var px=bd.cell[c].px, ax=px, py=bd.cell[c].py, ay=py, dir = bd.cell[c].qdir;
 
 				if     (bd.cell[c].qans ===1){ g.fillStyle = this.fontBCellcolor;}
 				else if(bd.cell[c].error===1){ g.fillStyle = this.fontErrcolor;}
@@ -1295,11 +1298,11 @@ Graphic.prototype = {
 
 		if(isdraw!==false && pp.getVal('cursor')){
 			var d = this.range;
-			if(tc.cursor.x < d.x1-1 || d.x2+1 < tc.cursor.x){ return;}
-			if(tc.cursor.y < d.y1-1 || d.y2+1 < tc.cursor.y){ return;}
+			if(tc.pos.x < d.x1-1 || d.x2+1 < tc.pos.x){ return;}
+			if(tc.pos.y < d.y1-1 || d.y2+1 < tc.pos.y){ return;}
 
-			var cpx = tc.cursor.x*this.bw + 0.5;
-			var cpy = tc.cursor.y*this.bh + 0.5;
+			var cpx = tc.pos.x*this.bw + 0.5;
+			var cpy = tc.pos.y*this.bh + 0.5;
 			var w, size;
 			if(islarge!==false){ w = (Math.max(this.cw/16, 2))|0; size = this.bw-0.5;}
 			else	           { w = (Math.max(this.cw/24, 1))|0; size = this.bw*0.56;}
@@ -1323,8 +1326,8 @@ Graphic.prototype = {
 		if(k.playmode){ return;}
 
 		var d = this.range;
-		if(tc.cursor.x < d.x1 || d.x2 < tc.cursor.x){ return;}
-		if(tc.cursor.y < d.y1 || d.y2 < tc.cursor.y){ return;}
+		if(tc.pos.x < d.x1 || d.x2 < tc.pos.x){ return;}
+		if(tc.pos.y < d.y1 || d.y2 < tc.pos.y){ return;}
 
 		var cc = tc.getTCC(), ex = null;
 		if(cc===null){ ex = tc.getTEC();}
@@ -1332,7 +1335,7 @@ Graphic.prototype = {
 		if(target===0){ return;}
 
 		g.fillStyle = this.ttcolor;
-		this.drawTriangle1((tc.cursor.x>>1)*this.cw, (tc.cursor.y>>1)*this.ch, (target===2?4:2), vid);
+		this.drawTriangle1((tc.pos.x>>1)*this.cw, (tc.pos.y>>1)*this.ch, (target===2?4:2), vid);
 	},
 
 	//---------------------------------------------------------------------------
@@ -1561,12 +1564,13 @@ Graphic.prototype = {
 	// pc.flushCanvasAll() Canvas全面を白で塗りつぶす
 	//---------------------------------------------------------------------------
 	resetVectorFunctions : function(){
-		this.flushCanvasAll = Graphic.prototype.flushCanvasAll;
-		this.flushCanvas    = Graphic.prototype.flushCanvas;
-		this.vnop  = Graphic.prototype.vnop;
-		this.vhide = Graphic.prototype.vhide;
-		this.vdel  = Graphic.prototype.vdel;
-		this.vinc  = Graphic.prototype.vinc;
+		var proto = pzprv3.getPuzzleClass('Graphic').prototype;
+		this.flushCanvasAll = proto.flushCanvasAll;
+		this.flushCanvas    = proto.flushCanvas;
+		this.vnop  = proto.vnop;
+		this.vhide = proto.vhide;
+		this.vdel  = proto.vdel;
+		this.vinc  = proto.vinc;
 	},
 
 	flushCanvasAll : function(){
@@ -1616,7 +1620,7 @@ Graphic.prototype = {
 	// ccflag -> 0:strokeのみ, 1:fillのみ, 2:両方, 3:色の変更なし
 	vnop : function(vid, ccflag){
 		this.vnop = ((g.use.canvas) ?
-			f_true
+			function(vid, ccflag){ return true;}
 		: (g.use.vml) ?
 			function(vid, ccflag){
 				g.vid = vid;
@@ -1652,7 +1656,7 @@ Graphic.prototype = {
 	},
 	vshow : function(vid){
 		this.vshow = ((g.use.canvas) ?
-			f_true
+			function(vid){}
 		:
 			function(vid){
 				g.vid = vid;
@@ -1667,7 +1671,7 @@ Graphic.prototype = {
 	},
 	vhide : function(vid){
 		this.vhide = ((g.use.canvas) ?
-			f_true
+			function(vid){}
 		:
 			function(vid){
 				if(typeof vid === 'string'){ vid = [vid];}
@@ -1684,7 +1688,7 @@ Graphic.prototype = {
 	},
 	vdel : function(vid){
 		this.vdel = ((g.use.canvas) ?
-			f_true
+			function(vid){}
 		:
 			function(vid){
 				for(var i=0;i<vid.length;i++){
@@ -1743,7 +1747,7 @@ Graphic.prototype = {
 	dispnum : function(key, type, text, fontratio, color, px, py){
 		var fontsize = (this.cw*fontratio*this.fontsizeratio)|0;
 		if(this.fillTextEmulate){
-			if(k.br.IE6 || k.br.IE7){ py+=2;}
+			if(ee.br.IE6 || ee.br.IE7){ py+=2;}
 
 			// エレメントを取得
 			var el = this.numobj[key];
@@ -1790,7 +1794,7 @@ Graphic.prototype = {
 
 			this.vshow("text_"+key);
 			g.fillText(text, px, py);
-			if(k.br.Opera && g.use.svg){g.lastElement.setAttribute('unselectable','on');}
+			if(ee.br.Opera && g.use.svg){g.lastElement.setAttribute('unselectable','on');}
 		}
 	}
-};
+});

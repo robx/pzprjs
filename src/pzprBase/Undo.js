@@ -1,29 +1,58 @@
-// Undo.js v3.3.3
+// Undo.js v3.4.0
 
 //---------------------------------------------------------------------------
 // ★OperationManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
 //---------------------------------------------------------------------------
 // 入力情報管理クラス
 // Operationクラス
-Operation = function(group, property, id, old, num){
-	this.group = group;
-	this.property = property;
-	this.id = id;
-	this.old = old;
-	this.num = num;
-	
-	if(arguments[0]!==(void 0) && arguments[1]===(void 0)){
-		this.decode(group);
-	}
+pzprv3.createCommonClass('Operation', '',
+{
+	initialize : function(group, property, id, old, num){
+		this.group = group;
+		this.property = property;
+		this.id = id;
+		this.old = old;
+		this.num = num;
+		
+		if(arguments.length===1){ this.decode(arguments[0]);}
+	},
 
-	return this;
-};
-Operation.prototype = {
+	//---------------------------------------------------------------------------
+	// ope.exec()  操作opeを反映する。um.undo(),um.redo()から内部的に呼ばれる
+	//---------------------------------------------------------------------------
+	exec : function(num){
+		if(this.group !== k.BOARD && this.group !== k.OTHER){
+			var name = um.getfuncname(this.group, this.property);
+			if(!!bd[name]){ bd[name].call(bd, this.id, num);}
+
+			switch(this.group){
+				case k.CELL:   um.stackCell(this.id); break;
+				case k.CROSS:  um.stackCross(this.id); break;
+				case k.BORDER: um.stackBorder(this.id); break;
+			}
+		}
+		else if(this.group === k.BOARD){
+			var d = {x1:0,y1:0,x2:2*k.qcols,y2:2*k.qrows};
+			if(num & menu.ex.TURNFLIP){ menu.ex.turnflip    (num,d);}
+			else                      { menu.ex.expandreduce(num,d);}
+
+			bd.disableInfo();
+			um.stackAll();
+			um.reqReset = true;
+		}
+		else{ return false;}
+		return true;
+	},
+
+	//---------------------------------------------------------------------------
+	// ope.decode()   ファイル出力された履歴の入力用ルーチン
+	// ope.toString() ファイル出力する履歴の出力用ルーチン
+	//---------------------------------------------------------------------------
 	decode : function(str){
 		var strs = str.split(/,/);
 		if(!!um.STRGROUP[strs[0].charAt(0)]){
-			this.group = um.STRGROUP[strs[0].charAt(0)];
-			this.property = um.STRPROP[strs[0].charAt(1)];
+			this.group    = um.STRGROUP[strs[0].charAt(0)];
+			this.property = um.STRPROP[strs[0].charAt(1)][0];
 			this.id = bd.idnum(this.group, strs[1], strs[2]);
 			this.old = parseInt(strs[3]);
 			this.num = parseInt(strs[4]);
@@ -35,95 +64,100 @@ Operation.prototype = {
 			this.old = parseInt(strs[3]);
 			this.num = parseInt(strs[4]);
 		}
-		else{
-			this.group = k.OTHER;
-			this.decodeSpecial(strs);
-		}
+		else{ return false;}
+		return true;
 	},
 	toString : function(){
 		if(this.group!==k.BOARD && this.group !== k.OTHER){
-			var prefix = (um.GROUPSTR[this.group]+um.PROPSTR[this.property]);
+			var prefix = um.getprefix(this.group, this.property);
 			var obj = bd.getObject(this.group, this.id);
 			return [prefix, obj.bx, obj.by, this.old, this.num].join(',');
 		}
 		else if(this.group===k.BOARD){ return ['AL', 0, 0, this.old, this.num].join(',');}
-		else{ return this.toStringSpecial();}
-	},
-	
-	decodeSpecial : function(strs){ },
-	toStringSpecial : function(){ }
-};
+		else{ return '';}
+	}
+});
 
-OperationArray = function(){
-	this.items = [];
-};
-OperationArray.prototype = {
+pzprv3.createCommonClass('OperationArray', '',
+{
+	initialize : function(){ this.items = [];},
 	push : function(ope){ this.items.push(ope);},
 	last : function(){ return (this.items.length>0 ? this.items[this.items.length-1] : null);},
-	isnull : function(){ return (this.items.length===0);}
-};
+	isnull : function(){ return (this.items.length===0);},
+
+	decode : function(strs){
+		if(typeof strs == "string"){ strs = [strs];}
+		for(var i=0,len=strs.length;i<len;i++){
+			this.items.push(new (pzprv3.getPuzzleClass('Operation'))(strs[i]));
+		}
+	},
+	toString : function(){
+		if(this.items.length===1){ return this.items[0].toString();}
+		var strs=[];
+		for(var i=0,len=this.items.length;i<len;i++){
+			strs[i] = this.items[i].toString();
+		}
+		return strs;
+	}
+});
 
 // OperationManagerクラス
-OperationManager = function(){
-	this.lastope = new OperationArray();	// this.opeのLasstIndexへのポインタ
-	this.ope = [this.lastope];				// Operationクラスを保持する配列
-	this.current = 0;		// 現在の表示操作番号を保持する
-	this.disrec = 0;		// このクラスからの呼び出し時は1にする
-	this.disCombine = 0;	// 数字がくっついてしまうので、それを一時的に無効にするためのフラグ
-	this.forceRecord = false;	// 強制的に登録する(盤面縮小時限定)
+pzprv3.createCommonClass('OperationManager', '',
+{
+	initialize : function(){
+		this.lastope;		// this.opeのLasstIndexへのポインタ
+		this.ope;			// Operationクラスを保持する配列
+		this.current;		// 現在の表示操作番号を保持する
+		this.anscount;		// 補助以外の操作が行われた数を保持する(autocheck用)
 
-	this.anscount = 0;			// 補助以外の操作が行われた数を保持する(autocheck用)
-	this.changeflag = false;	// 操作が行われたらtrueにする(mv.notInputted()用)
+		this.disrec = 0;		// このクラスからの呼び出し時は1にする
+		this.disCombine = 0;	// 数字がくっついてしまうので、それを一時的に無効にするためのフラグ
+		this.forceRecord = false;	// 強制的に登録する(盤面縮小時限定)
+		this.changeflag = false;	// 操作が行われたらtrueにする(mv.notInputted()用)
 
-	this.enableUndo = false;	// Undoできる状態か？
-	this.enableRedo = false;	// Redoできる状態か？
+		this.enableUndo = false;	// Undoできる状態か？
+		this.enableRedo = false;	// Redoできる状態か？
 
-	this.undoExec = false;		// Undo中
-	this.redoExec = false;		// Redo中
-	this.reqReset = false;		// Undo/Redo時に盤面回転等が入っていた時、resize,resetInfo関数のcallを要求する
-	this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
+		this.undoExec = false;		// Undo中
+		this.redoExec = false;		// Redo中
+		this.reqReset = false;		// Undo/Redo時に盤面回転等が入っていた時、resize,resetInfo関数のcallを要求する
+		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
+	},
 
 	/* 変換テーブル */
-	this.PROPFUNC={};
-	this.PROPFUNC[k.QUES] = 'sQu';
-	this.PROPFUNC[k.QNUM] = 'sQn';
-	this.PROPFUNC[k.ANUM] = 'sAn';
-	this.PROPFUNC[k.QDIR] = 'sDi';
-	this.PROPFUNC[k.QANS] = 'sQa';
-	this.PROPFUNC[k.QSUB] = 'sQs';
-	this.PROPFUNC[k.LINE] = 'sLi';
+	STRGROUP : {
+		C: 'cell',   // k.CELL,
+		X: 'cross',  // k.CROSS,
+		B: 'border', // k.BORDER,
+		E: 'excell'  // k.EXCELL
+	},
+	STRPROP : {
+		U: ['ques', 'sQu'], // k.QUES
+		N: ['qnum', 'sQn'], // k.QNUM
+		M: ['anum', 'sAn'], // k.ANUM
+		D: ['qdir', 'sDi'], // k.QDIR
+		A: ['qans', 'sQa'], // k.QANS
+		S: ['qsub', 'sQs'], // k.QSUB
+		L: ['line', 'sLi']  // k.LINE
+	},
 
-	this.PROPSTR={};
-	this.PROPSTR[k.QUES] = 'U';
-	this.PROPSTR[k.QNUM] = 'N';
-	this.PROPSTR[k.ANUM] = 'M';
-	this.PROPSTR[k.QDIR] = 'D';
-	this.PROPSTR[k.QANS] = 'A';
-	this.PROPSTR[k.QSUB] = 'S';
-	this.PROPSTR[k.LINE] = 'L';
+	//---------------------------------------------------------------------------
+	// um.getfuncname() ope.exec()関数で関数名を取得するのに用いる
+	// um.getprefix()   ope.toString()関数でprefix名を取得するのに用いる
+	//---------------------------------------------------------------------------
+	getfuncname : function(group, prop){
+		var func1, func2;
+		for(var i in this.STRPROP){ if(prop==this.STRPROP[i][0]){ func1=this.STRPROP[i][1]; break;}}
+		for(var i in this.STRGROUP){ if(group==this.STRGROUP[i]){ func2=i; break;}}
+		return func1+func2;
+	},
+	getprefix : function(group, prop){
+		var func1, func2;
+		for(var i in this.STRGROUP){ if(group==this.STRGROUP[i]){ func1=i; break;}}
+		for(var i in this.STRPROP){ if(prop==this.STRPROP[i][0]){ func2=i; break;}}
+		return func1+func2;
+	},
 
-	this.STRPROP={};
-	this.STRPROP['U'] = k.QUES;
-	this.STRPROP['N'] = k.QNUM;
-	this.STRPROP['M'] = k.ANUM;
-	this.STRPROP['D'] = k.QDIR;
-	this.STRPROP['A'] = k.QANS;
-	this.STRPROP['S'] = k.QSUB;
-	this.STRPROP['L'] = k.LINE;
-
-	this.GROUPSTR={};
-	this.GROUPSTR[k.CELL]   = 'C';
-	this.GROUPSTR[k.CROSS]  = 'X';
-	this.GROUPSTR[k.BORDER] = 'B';
-	this.GROUPSTR[k.EXCELL] = 'E';
-
-	this.STRGROUP={};
-	this.STRGROUP['C'] = k.CELL;
-	this.STRGROUP['X'] = k.CROSS;
-	this.STRGROUP['B'] = k.BORDER;
-	this.STRGROUP['E'] = k.EXCELL;
-};
-OperationManager.prototype = {
 	//---------------------------------------------------------------------------
 	// um.disableRecord()  操作の登録を禁止する
 	// um.enableRecord()   操作の登録を許可する
@@ -142,6 +176,8 @@ OperationManager.prototype = {
 	isenableRecord : function(){ return (this.forceRecord || this.disrec===0);},
 
 	enb_btn : function(){
+		if(this.ope===(void 0)){ return;}
+
 		this.enableUndo = (this.current>0);
 		this.enableRedo = (this.current<this.ope.length-(this.lastope.isnull()?1:0));
 
@@ -154,7 +190,7 @@ OperationManager.prototype = {
 		ee('ms_h_latest').el.className = (this.enableRedo ? 'smenu' : 'smenunull');
 	},
 	allerase : function(){
-		this.lastope  = new OperationArray();
+		this.lastope  = new (pzprv3.getPuzzleClass('OperationArray'))();
 		this.ope      = [this.lastope];
 		this.current  = 0;
 		this.anscount = 0;
@@ -170,7 +206,7 @@ OperationManager.prototype = {
 	// um.addOpe()      指定された操作を追加する。id等が同じ場合は最終操作を変更する
 	//---------------------------------------------------------------------------
 	addOpeArray : function(){
-		this.lastope = new OperationArray();
+		this.lastope = new (pzprv3.getPuzzleClass('OperationArray'))();
 		this.ope.push(this.lastope);
 	},
 	addOpe : function(group, property, id, old, num){
@@ -192,7 +228,7 @@ OperationManager.prototype = {
 			{ ref.num = num;}
 		else{
 			if(!ref){ this.current++;}
-			this.lastope.push(new Operation(group, property, id, old, num));
+			this.lastope.push(new (pzprv3.getPuzzleClass('Operation'))(group, property, id, old, num));
 		}
 
 		if(property!=k.QSUB){ this.anscount++;}
@@ -222,22 +258,15 @@ OperationManager.prototype = {
 		this.current = data.current;
 		for(var i=0,len=data.datas.length;i<len;i++){
 			this.addOpeArray();
-			var strs = data.datas[i];
-			for(var t=0,len1=strs.length;t<len1;t++){
-				this.lastope.push(new Operation(strs[t]));
-			}
+			this.lastope.decode(data.datas[i]);
 		}
 	},
 	toString : function(){
 		if(!window.JSON){ return '';}
 		var lastid = this.ope.length-(this.lastope.isnull()?1:0);
-		var data = {version:0, history:lastid, current:this.current, datas:[]};
+		var data = {version:0.1, history:lastid, current:this.current, datas:[]};
 		for(var i=0;i<lastid;i++){
-			var items=this.ope[i].items;
-			data.datas[i] = [];
-			for(var t=0,len1=items.length;t<len1;t++){
-				data.datas[i][t] = items[t].toString();
-			}
+			data.datas[i] = this.ope[i].toString();
 		}
 		return ['__HISTORY__',JSON.stringify(data)].join('/');
 	},
@@ -275,7 +304,7 @@ OperationManager.prototype = {
 		var refope = this.ope[this.current-1].items;
 		if(!refope){ return;}
 		for(var i=refope.length-1;i>=0;i--){
-			this.exec(refope[i], refope[i].old);
+			refope[i].exec(refope[i].old);
 			if(refope[i].property!=k.QSUB){ this.anscount--;}
 		}
 		this.current--;
@@ -284,7 +313,7 @@ OperationManager.prototype = {
 		var refope = this.ope[this.current].items;
 		if(!refope){ return;}
 		for(var i=0,len=refope.length;i<len;i++){
-			this.exec(refope[i], refope[i].num);
+			refope[i].exec(refope[i].num);
 			if(refope[i].property!=k.QSUB){ this.anscount++;}
 		}
 		this.current++;
@@ -318,36 +347,6 @@ OperationManager.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// um.exec()  操作opeを反映する。undo(),redo()から内部的に呼ばれる
-	// um.execSpecial() パズル個別で操作を反映させたい処理を入力する
-	//---------------------------------------------------------------------------
-	exec : function(ope, num){
-		if(ope.group !== k.BOARD && ope.group !== k.OTHER){
-			var name = this.PROPFUNC[ope.property] + this.GROUPSTR[ope.group];
-			if(!!bd[name]){ bd[name].call(bd, ope.id, num);}
-
-			switch(ope.group){
-				case k.CELL:   this.stackCell(ope.id); break;
-				case k.CROSS:  this.stackCross(ope.id); break;
-				case k.BORDER: this.stackBorder(ope.id); break;
-			}
-		}
-		else if(ope.group === k.BOARD){
-			var d = {x1:0,y1:0,x2:2*k.qcols,y2:2*k.qrows};
-			if(num & menu.ex.TURNFLIP){ menu.ex.turnflip    (num,d);}
-			else                      { menu.ex.expandreduce(num,d);}
-
-			bd.disableInfo();
-			this.stackAll();
-			this.reqReset = true;
-		}
-		else{
-			this.execSpecial(ope, num);
-		}
-	},
-	execSpecial : function(ope, num){ },
-
-	//---------------------------------------------------------------------------
 	// um.stackAll()    盤面全部を描画するため、どの範囲まで変更が入ったか記憶しておく
 	// um.stackCell()   Cellの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
 	// um.stackCross()  Crossの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
@@ -378,4 +377,4 @@ OperationManager.prototype = {
 		if(this.range.x2 < x2){ this.range.x2 = x2;}
 		if(this.range.y2 < y2){ this.range.y2 = y2;}
 	}
-};
+});

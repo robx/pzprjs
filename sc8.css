@@ -63,6 +63,10 @@
 
 	div#credit3_1{ line-height:1.1; margin:4pt 0pt 2pt 4pt;}
 
+	/* 新規盤面作成(たわむれんが)用 cw=32, margin=2 cw+(margin*2)=36 */
+	div.popup#pop1_1 #laps div { display:block; position:relative; width:36px; height:36px;}
+	div.popup#pop1_1 #laps img { position:absolute; margin:2px;}
+
 	/* キーポップアップ用 */
 	div#keypopup { background-color:silver; line-height:1;}
 	div.panelbase{ margin:1pt;}

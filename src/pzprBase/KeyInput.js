@@ -5,43 +5,46 @@
 //---------------------------------------------------------------------------
 // パズル共通 キーボード入力部
 // KeyEventクラスを定義
-KeyEvent = function(){
-	this.enableKey = true;	// キー入力は有効か
+pzprv3.createCommonClass('KeyEvent', '',
+{
+	initialize : function(){
+		this.enableKey = true;	// キー入力は有効か
+		this.keyreset();
+	},
 
-	this.isCTRL;
-	this.isMETA;	// MacのCommandキーなど
-	this.isALT;		// ALTはメニュー用なので基本的に使わない
-	this.isSHIFT;
-	this.isZ;
-	this.isX;
-
-	this.inUNDO;
-	this.inREDO;
-	this.tcMoved;	// カーソル移動時にスクロールさせない
-	this.keyPressed;
-	this.ca;
-	this.prev;
-
-	this.keyreset();
-};
-KeyEvent.prototype = {
 	//---------------------------------------------------------------------------
 	// kc.keyreset() キーボード入力に関する情報を初期化する
 	//---------------------------------------------------------------------------
 	keyreset : function(){
 		this.isCTRL  = false;
-		this.isMETA  = false;
-		this.isALT   = false;
+		this.isMETA  = false;	// MacのCommandキーなど
+		this.isALT   = false;	// ALTはメニュー用なので基本的に使わない
 		this.isSHIFT = false;
 		this.isZ = false;
 		this.isX = false;
 
 		this.inUNDO  = false;
 		this.inREDO  = false;
-		this.tcMoved = false;
+		this.tcMoved = false;	// カーソル移動時にスクロールさせない
 		this.keyPressed = false;
 		this.prev = null;
 		this.ca = '';
+	},
+
+	//---------------------------------------------------------------------------
+	// kc.setEvents() キーボード入力に関するイベントを設定する
+	//---------------------------------------------------------------------------
+	setEvents : function(){
+		// キー入力イベントの設定
+		ee.addEvent(_doc, 'keydown',  ee.ebinder(this, this.e_keydown));
+		ee.addEvent(_doc, 'keyup',    ee.ebinder(this, this.e_keyup));
+		ee.addEvent(_doc, 'keypress', ee.ebinder(this, this.e_keypress));
+		// Silverlightのキー入力イベント設定
+		if(g.use.sl){
+			var sender = g.content.findName(g.canvasid);
+			sender.AddEventListener("KeyDown", ee.ebinder(this, this.e_SLkeydown));
+			sender.AddEventListener("KeyUp",   ee.ebinder(this, this.e_SLkeyup));
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -89,18 +92,18 @@ KeyEvent.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// base.e_SLkeydown() Silverlightオブジェクトにフォーカスがある時、キーを押した際のイベント共通処理
-	// base.e_SLkeyup()   Silverlightオブジェクトにフォーカスがある時、キーを離した際のイベント共通処理
+	// kc.e_SLkeydown() Silverlightオブジェクトにフォーカスがある時、キーを押した際のイベント共通処理
+	// kc.e_SLkeyup()   Silverlightオブジェクトにフォーカスがある時、キーを離した際のイベント共通処理
 	//---------------------------------------------------------------------------
 	e_SLkeydown : function(sender, keyEventArgs){
 		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
-						altKey:false, returnValue:false, preventDefault:f_true };
-		return kc.e_keydown(emulate);
+						altKey:false, returnValue:false, preventDefault:function(){} };
+		return this.e_keydown(emulate);
 	},
 	e_SLkeyup : function(sender, keyEventArgs){
 		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
-						altKey:false, returnValue:false, preventDefault:f_true };
-		return kc.e_keyup(emulate);
+						altKey:false, returnValue:false, preventDefault:function(){} };
+		return this.e_keyup(emulate);
 	},
 
 	//---------------------------------------------------------------------------
@@ -108,8 +111,12 @@ KeyEvent.prototype = {
 	// kc.keyup()    キーを離した際のイベント処理。各パズルのファイルでオーバーライドされる。
 	//---------------------------------------------------------------------------
 	// オーバーライド用
-	keyinput : function(ca){ },
-	keyup    : function(ca){ },
+	keyinput : function(ca){
+		if(k.playmode){ return;}
+		if(this.moveTCell(ca)){ return;}
+		this.key_inputqnum(ca);
+	},
+	keyup : function(ca){ },
 
 	//---------------------------------------------------------------------------
 	// kc.getchar()  入力されたキーを表す文字列を返す
@@ -153,10 +160,10 @@ KeyEvent.prototype = {
 		if(!this.isZ && this.ca==='z') { this.isZ=true;}
 		if(!this.isX && this.ca==='x') { this.isX=true;}
 
-		if((this.isCTRL || this.isMETA) && !this.inUNDO && this.ca=='z'){ this.inUNDO=true; flag=true; tm.startUndoTimer();}
-		if((this.isCTRL || this.isMETA) && !this.inREDO && this.ca=='y'){ this.inREDO=true; flag=true; tm.startUndoTimer();}
+		if((this.isCTRL || this.isMETA) && !this.inUNDO && this.ca=='z'){ this.inUNDO=true; flag=true; ut.start();}
+		if((this.isCTRL || this.isMETA) && !this.inREDO && this.ca=='y'){ this.inREDO=true; flag=true; ut.start();}
 
-		if(this.ca=='F2' && k.EDITOR){ // 112～123はF1～F12キー
+		if(this.ca=='F2' && pzprv3.EDITOR){ // 112～123はF1～F12キー
 			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); flag=true;}
 			else if(k.playmode &&  this.isSHIFT){ pp.setVal('mode',1); flag=true;}
 		}
@@ -287,14 +294,15 @@ KeyEvent.prototype = {
 		var target = this.detectTarget(cc,ex);
 		if(target===0 || (cc!==null && bd.QuC(cc)===51)){
 			if(ca==='q' && cc!==null){
-				mv.set51cell(cc,(bd.QuC(cc)!==51));
+				if(bd.QuC(cc)!==51){ bd.set51cell(cc);}
+				else            { bd.remove51cell(cc);}
 				pc.paintPos(tc.getTCP());
 				return;
 			}
 		}
 		if(target==0){ return;}
 
-		var def = (target==2 ? Cell.prototype.defqnum : Cell.prototype.defqdir);
+		var def = pzprv3.getPuzzleClass('Cell').prototype[(target==2?'qnum':'qdir')];
 		var max = max_obj[target], val=def;
 
 		if('0'<=ca && ca<='9'){
@@ -348,44 +356,52 @@ KeyEvent.prototype = {
 
 		return tc.targetdir;
 	}
-};
+});
 
 //---------------------------------------------------------------------------
 // ★KeyPopupクラス マウスからキーボード入力する際のPopupウィンドウを管理する
 //---------------------------------------------------------------------------
 // キー入力用Popupウィンドウ
 // KeyPopupクラス
-KeyPopup = function(){
-	this.haspanel = {1:false, 3:false};	// 有効かどうか
-	this.element = null;				// キーポップアップのエレメント
+pzprv3.createCommonClass('KeyPopup', '',
+{
+	initialize : function(){
+		this.haspanel = {1:false, 3:false};	// 有効かどうか
+		this.element = null;				// キーポップアップのエレメント
 
-	this.prefix;
-	this.tdcolor = "black";
-	this.imgCR = [1,1];		// img表示用画像の横×縦のサイズ
+		this.prefix;
+		this.tdcolor = "black";
+		this.imgCR = [1,1];		// img表示用画像の横×縦のサイズ
 
-	this.tds  = [];			// resize用
-	this.imgs = [];			// resize用
+		this.tds  = [];			// resize用
+		this.imgs = [];			// resize用
 
-	this.tbodytmp = null;
-	this.trtmp    = null;
+		this.tbodytmp = null;
+		this.trtmp    = null;
 
-	this.ORIGINAL = 99;
+		// ElementTemplate
+		this.EL_KPNUM   = ee.addTemplate('','td', {unselectable:'on', className:'kpnum'}, null, null);
+		this.EL_KPEMPTY = ee.addTemplate('','td', {unselectable:'on'}, null, null);
+		this.EL_KPIMG   = ee.addTemplate('','td', {unselectable:'on', className:'kpimgcell'}, null, null);
+		this.EL_KPIMG_DIV = ee.addTemplate('','div', {unselectable:'on', className:'kpimgdiv'}, null, null);
+		this.EL_KPIMG_IMG = ee.addTemplate('','img', {unselectable:'on', className:'kpimg', src:"./src/img/"+k.puzzleid+"_kp.gif"}, null, null);
 
-	// ElementTemplate
-	this.EL_KPNUM   = ee.addTemplate('','td', {unselectable:'on', className:'kpnum'}, null, null);
-	this.EL_KPEMPTY = ee.addTemplate('','td', {unselectable:'on'}, null, null);
-	this.EL_KPIMG   = ee.addTemplate('','td', {unselectable:'on', className:'kpimgcell'}, null, null);
-	this.EL_KPIMG_DIV = ee.addTemplate('','div', {unselectable:'on', className:'kpimgdiv'}, null, null);
-	this.EL_KPIMG_IMG = ee.addTemplate('','img', {unselectable:'on', className:'kpimg', src:"./src/img/"+k.puzzleid+"_kp.gif"}, null, null);
-};
-KeyPopup.prototype = {
+		this.create();
+	},
+
+	paneltype  : 10,
+	enablemake : false,
+	enableplay : false,
+
 	//---------------------------------------------------------------------------
 	// kp.kpinput()     キーポップアップから入力された時の処理をオーバーライドで記述する
 	// kp.display()     キーポップアップを表示する
 	// kp.inputnumber() kpinput関数を呼び出す
 	//---------------------------------------------------------------------------
 	// オーバーライド用
-	kpinput : function(ca){ },
+	kpinput : function(ca){
+		kc.key_inputqnum(ca);
+	},
 
 	display : function(){
 		var mode = pp.getVal('mode');
@@ -405,12 +421,10 @@ KeyPopup.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// kp.generate()   キーポップアップを生成して初期化する
-	// kp.gentable()   キーポップアップのテーブルを作成する
-	// kp.gentable10() キーポップアップの0～9を入力できるテーブルを作成する
-	// kp.gentable4()  キーポップアップの0～4を入力できるテーブルを作成する
+	// kp.create()      キーポップアップを生成して初期化する
+	// kp.createtable() キーポップアップのポップアップを作成する
 	//---------------------------------------------------------------------------
-	generate : function(type, enablemake, enableplay){
+	create : function(){
 		if(!this.element){
 			var rect = ee('divques').getRect();
 			this.element = ee('keypopup').el;
@@ -420,11 +434,10 @@ KeyPopup.prototype = {
 			ee('barkeypopup').el.ondblclick = function(){ pp.setVal('keypopup',false)};
 		}
 
-		if(enablemake && k.EDITOR){ this.gentable(1, type);}
-		if(enableplay)            { this.gentable(3, type);}
+		if(this.enablemake && pzprv3.EDITOR){ this.createtable(1);}
+		if(this.enableplay)                 { this.createtable(3);}
 	},
-
-	gentable : function(mode, type){
+	createtable : function(mode){
 		this.haspanel[mode] = true;
 		this.prefix = ['kp',mode,'_'].join('');
 
@@ -439,14 +452,35 @@ KeyPopup.prototype = {
 		table.appendChild(this.tbodytmp);
 
 		this.trtmp = null;
-		if(type===this.ORIGINAL){ this.kpgenerate(mode);}
-		else if(type===0)       { this.gentable10(mode);}
-		else if(type===51)      { this.gentable51(mode);}
-		else                    { this.gentable4 (mode,type);}
+		this.generate(mode,this.paneltype);
 	},
-	kpgenerate : function(mode){ }, // オーバーライド用
 
-	gentable10 : function(mode){
+	//---------------------------------------------------------------------------
+	// kp.generate()    キーポップアップのテーブルを作成する
+	// kp.gentable4()   キーポップアップの0～4を入力できるテーブルを作成する
+	// kp.gentable10()  キーポップアップの0～9を入力できるテーブルを作成する
+	// kp.gentable51()  キーポップアップの[＼],0～9を入力できるテーブルを作成する
+	//---------------------------------------------------------------------------
+	generate : function(mode,type){
+		if     (type===10){ this.gentable10(mode,type);}
+		else if(type===51){ this.gentable51(mode,type);}
+		else              { this.gentable4 (mode,type);} // 1,2,4の場合
+	},
+	gentable4 : function(mode,type){
+		this.inputcol('num','knum0','0','0');
+		this.inputcol('num','knum1','1','1');
+		this.inputcol('num','knum2','2','2');
+		this.inputcol('num','knum3','3','3');
+		this.insertrow();
+		this.inputcol('num','knum4','4','4');
+		this.inputcol('empty','','','');
+		this.inputcol('num','knum_',' ',' ');
+		if     (type==1){ this.inputcol('num','knum.','-','?');}
+		else if(type==2){ this.inputcol('num','knum.','-','■');}
+		else if(type==4){ this.inputcol('num','knum.','-','○');}
+		this.insertrow();
+	},
+	gentable10 : function(mode,type){
 		this.inputcol('num','knum0','0','0');
 		this.inputcol('num','knum1','1','1');
 		this.inputcol('num','knum2','2','2');
@@ -463,22 +497,7 @@ KeyPopup.prototype = {
 		if(mode==1){ this.inputcol('num','knum.','-','?');}else{ this.inputcol('empty','','','');}
 		this.insertrow();
 	},
-	gentable4 : function(mode, type){
-		this.inputcol('num','knum0','0','0');
-		this.inputcol('num','knum1','1','1');
-		this.inputcol('num','knum2','2','2');
-		this.inputcol('num','knum3','3','3');
-		this.insertrow();
-		this.inputcol('num','knum4','4','4');
-		this.inputcol('empty','','','');
-		this.inputcol('num','knum_',' ',' ');
-		if     (type==1){ this.inputcol('num','knum.','-','?');}
-		else if(type==2){ this.inputcol('num','knum.','-','■');}
-		else if(type==4){ this.inputcol('num','knum.','-','○');}
-		this.insertrow();
-	},
-	gentable51 : function(mode){
-		if(mode===3){ this.gentable10(mode); return;}
+	gentable51 : function(mode,type){
 		this.inputcol('image','knumq','q',[0,0]);
 		this.inputcol('num','knum_',' ',' ');
 		this.inputcol('num','knum1','1','1');
@@ -546,83 +565,90 @@ KeyPopup.prototype = {
 			el.style.fontSize = ""+((tsize*0.70)|0)+"px";
 		};
 		var ifunc = function(obj,bsize){
-			obj.el.style.width  = ""+(bsize*kp.imgCR[0])+"px";
-			obj.el.style.height = ""+(bsize*kp.imgCR[1])+"px";
+			obj.el.style.width  = ""+(bsize*this.imgCR[0])+"px";
+			obj.el.style.height = ""+(bsize*this.imgCR[1])+"px";
 			obj.el.style.clip   = "rect("+(bsize*obj.y+1)+"px,"+(bsize*(obj.x+1))+"px,"+(bsize*(obj.y+1))+"px,"+(bsize*obj.x+1)+"px)";
 			obj.el.style.top    = "-"+(obj.y*bsize+1)+"px";
 			obj.el.style.left   = "-"+(obj.x*bsize+1)+"px";
 		};
 
-		var cellsize = Math.min(k.cwidth, 120);
+		var cellsize = Math.min(pc.cw, 120);
 		if(cellsize>=24){
-			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],   cellsize);}
-			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], (cellsize*0.90)|0);}
+			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i], cellsize);}
+			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc.call(this, this.imgs[i], (cellsize*0.90)|0);}
 		}
 		else{
-			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i],  22);}
-			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc(this.imgs[i], 18);}
+			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i], 22);}
+			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc.call(this, this.imgs[i], 18);}
 		}
 	}
-};
+});
 
 //---------------------------------------------------------------------------
-// ★TCellクラス キー入力のターゲットを保持する
+// ★TargetCursorクラス キー入力のターゲットを保持する
 //---------------------------------------------------------------------------
 
-TCell = function(){
-	// 現在入力ターゲットになっている場所(border座標系)
-	this.cursor = new Address(1,1);
+pzprv3.createCommonClass('TargetCursor', '',
+{
+	initialize : function(){
+		// 現在入力ターゲットになっている場所(border座標系)
+		this.pos = new pzprv3.core.Address(1,1);
 
-	// 有効な範囲(minx,miny)-(maxx,maxy)
-	this.minx = 1;
-	this.miny = 1;
-	this.maxx = 2*k.qcols-1;
-	this.maxy = 2*k.qrows-1;
+		// 有効な範囲(minx,miny)-(maxx,maxy)
+		this.minx;
+		this.miny;
+		this.maxx;
+		this.maxy;
+	},
 
-	this.crosstype = false;
-};
-TCell.prototype = {
+	crosstype : false,
+
 	//---------------------------------------------------------------------------
-	// tc.adjust()   範囲とターゲットの位置を調節する
-	// tc.setAlign() モード変更時に位置がおかしい場合に調節する(オーバーライド用)
-	// tc.setCrossType() 交点入力用にプロパティをセットする
+	// tc.setminmax()  初期化時・モード変更時にプロパティを設定する
+	// tc.initCursor() 初期化時にカーソルの位置を設定する
+	// 
+	// tc.adjust_init()       初期化時にカーソルの位置がおかしい場合に調整する
+	// tc.adjust_modechange() モード変更時に位置がおかしい場合に調節する(オーバーライド用)
 	//---------------------------------------------------------------------------
-	adjust : function(){
-		if(this.crosstype){
-			this.minx = 0;
-			this.miny = 0;
-			this.maxx = 2*k.qcols;
-			this.maxy = 2*k.qrows;
+	setminmax : function(){
+		if(!this.crosstype){
+			this.minx = bd.minbx + 1;
+			this.miny = bd.minby + 1;
+			this.maxx = bd.maxbx - 1;
+			this.maxy = bd.maxby - 1;
 		}
 		else{
-			var extUL = (k.isexcell===1 || k.isexcell===2);
-			var extDR = (k.isexcell===2);
-			this.minx = (!extUL ? 1 : -1);
-			this.miny = (!extUL ? 1 : -1);
-			this.maxx = (!extDR ? 2*k.qcols-1 : 2*k.qcols+1);
-			this.maxy = (!extDR ? 2*k.qrows-1 : 2*k.qrows+1);
+			this.minx = bd.minbx;
+			this.miny = bd.minby;
+			this.maxx = bd.maxbx;
+			this.maxy = bd.maxby;
 		}
 
-		if(this.cursor.x<this.minx){ this.cursor.x=this.minx;}
-		if(this.cursor.y<this.miny){ this.cursor.y=this.miny;}
-		if(this.cursor.x>this.maxx){ this.cursor.x=this.maxx;}
-		if(this.cursor.y>this.maxy){ this.cursor.y=this.maxy;}
+		this.adjust_init();
 	},
-	setAlign : function(){ },
+	initCursor : function(){
+		if(this.crosstype){ this.pos = new pzprv3.core.Address(0,0);}
+		else              { this.pos = new pzprv3.core.Address(1,1);}
 
-	setCrossType : function(){
-		this.crosstype = true;
-		this.adjust();
-		this.setTCP(new Address(0,0));
+		this.adjust_init();
 	},
 
+	adjust_init : function(){
+		if(this.pos===(void 0)){ return;}
+		if(this.pos.x<this.minx){ this.pos.x=this.minx;}
+		if(this.pos.y<this.miny){ this.pos.y=this.miny;}
+		if(this.pos.x>this.maxx){ this.pos.x=this.maxx;}
+		if(this.pos.y>this.maxy){ this.pos.y=this.maxy;}
+	},
+	adjust_modechange : function(){ },
+
 	//---------------------------------------------------------------------------
-	// tc.incTCX(), tc.incTCY(), tc.decTCX(), tc.decTCY() ターゲットの位置を動かす
+	// tc.incTCX(), incTCY(), decTCX(), decTCY() ターゲットの位置を動かす
 	//---------------------------------------------------------------------------
-	incTCX : function(mv){ this.cursor.x+=mv;},
-	incTCY : function(mv){ this.cursor.y+=mv;},
-	decTCX : function(mv){ this.cursor.x-=mv;},
-	decTCY : function(mv){ this.cursor.y-=mv;},
+	incTCX : function(mv){ this.pos.x+=mv;},
+	incTCY : function(mv){ this.pos.y+=mv;},
+	decTCX : function(mv){ this.pos.x-=mv;},
+	decTCY : function(mv){ this.pos.y-=mv;},
 
 	//---------------------------------------------------------------------------
 	// tc.getTCP() ターゲットの位置をAddressクラスのオブジェクトで取得する
@@ -636,29 +662,29 @@ TCell.prototype = {
 	// tc.getTEC() ターゲットの位置をEXCellのIDで取得する
 	// tc.setTEC() ターゲットの位置をEXCellのIDで設定する
 	//---------------------------------------------------------------------------
-	getTCP : function(){ return this.cursor;},
+	getTCP : function(){ return this.pos;},
 	setTCP : function(pos){
 		if(pos.x<this.minx || this.maxx<pos.x || pos.y<this.miny || this.maxy<pos.y){ return;}
-		this.cursor.set(pos);
+		this.pos.set(pos);
 	},
-	getTCC : function(){ return bd.cnum(this.cursor.x, this.cursor.y);},
+	getTCC : function(){ return bd.cnum(this.pos.x, this.pos.y);},
 	setTCC : function(id){
 		if(!bd.cell[id]){ return;}
-		this.cursor = new Address(bd.cell[id].bx, bd.cell[id].by);
+		this.pos = new pzprv3.core.Address(bd.cell[id].bx, bd.cell[id].by);
 	},
-	getTXC : function(){ return bd.xnum(this.cursor.x, this.cursor.y);},
+	getTXC : function(){ return bd.xnum(this.pos.x, this.pos.y);},
 	setTXC : function(id){
 		if(!bd.cross[id]){ return;}
-		this.cursor = new Address(bd.cross[id].bx, bd.cross[id].by);
+		this.pos = new pzprv3.core.Address(bd.cross[id].bx, bd.cross[id].by);
 	},
-	getTBC : function(){ return bd.bnum(this.cursor.x, this.cursor.y);},
+	getTBC : function(){ return bd.bnum(this.pos.x, this.pos.y);},
 	setTBC : function(id){
 		if(!bd.border[id]){ return;}
-		this.cursor = new Address(bd.border[id].bx, bd.border[id].by);
+		this.pos = new pzprv3.core.Address(bd.border[id].bx, bd.border[id].by);
 	},
-	getTEC : function(){ return bd.exnum(this.cursor.x, this.cursor.y);},
+	getTEC : function(){ return bd.exnum(this.pos.x, this.pos.y);},
 	setTEC : function(id){
 		if(!bd.excell[id]){ return;}
-		this.cursor = new Address(bd.excell[id].bx, bd.excell[id].by);
+		this.pos = new pzprv3.core.Address(bd.excell[id].bx, bd.excell[id].by);
 	}
-};
+});

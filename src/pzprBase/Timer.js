@@ -1,42 +1,29 @@
-// Timer.js v3.3.3
+// Timer.js v3.4.0
 
 //---------------------------------------------------------------------------
 // ★Timerクラス
 //---------------------------------------------------------------------------
-Timer = function(){
-	// ** 一般タイマー
-	this.TID;				// タイマーID
-	this.timerInterval = 100;
+pzprv3.createCoreClass('Timer', '',
+{
+	initialize : function(){
+		// ** 一般タイマー
+		this.TID;				// タイマーID
+		this.timerInterval = 100;
+		if(ee.br.IE6 || ee.br.IE7 || ee.br.IE8){ this.timerInterval *= 2;}
 
-	this.st       = 0;		// タイマースタート時のgetTime()取得値(ミリ秒)
-	this.current  = 0;		// 現在のgetTime()取得値(ミリ秒)
+		this.st       = 0;		// タイマースタート時のgetTime()取得値(ミリ秒)
+		this.current  = 0;		// 現在のgetTime()取得値(ミリ秒)
 
-	// 経過時間表示用変数
-	this.bseconds = 0;		// 前回ラベルに表示した時間(秒数)
-	this.timerEL = ee('timerpanel').el;
+		// 経過時間表示用変数
+		this.bseconds = 0;		// 前回ラベルに表示した時間(秒数)
+		this.timerEL = ee('timerpanel').el;
 
-	// 自動正答判定用変数
-	this.lastAnsCnt  = 0;	// 前回正答判定した時の、OperationManagerに記録されてた問題/回答入力のカウント
-	this.worstACtime = 0;	// 正答判定にかかった時間の最悪値(ミリ秒)
-	this.nextACtime  = 0;	// 次に自動正答判定ルーチンに入ることが可能になる時間
+		// 自動正答判定用変数
+		this.lastAnsCnt  = 0;	// 前回正答判定した時の、OperationManagerに記録されてた問題/回答入力のカウント
+		this.worstACtime = 0;	// 正答判定にかかった時間の最悪値(ミリ秒)
+		this.nextACtime  = 0;	// 次に自動正答判定ルーチンに入ることが可能になる時間
+	},
 
-	// 一般タイマースタート
-	this.start();
-
-	// ** Undoタイマー
-	this.TIDundo = null;	// タイマーID
-	this.undoInterval = 25
-
-	// Undo/Redo用変数
-	this.undoWaitTime  = 300;	// 1回目にwaitを多く入れるための値
-	this.undoWaitCount = 0;
-
-	if(k.br.IE6 || k.br.IE7 || k.br.IE8){
-		this.timerInterval *= 2;
-		this.undoInterval  *= 2;
-	}
-};
-Timer.prototype = {
 	//---------------------------------------------------------------------------
 	// tm.now()        現在の時間を取得する
 	// tm.reset()      タイマーのカウントを0にして、スタートする
@@ -58,7 +45,7 @@ Timer.prototype = {
 	update : function(){
 		this.current = this.now();
 
-		if(k.PLAYER){ this.updatetime();}
+		if(pzprv3.PLAYER){ this.updatetime();}
 		if(pp.getVal('autocheck')){ this.ACcheck();}
 	},
 
@@ -96,27 +83,44 @@ Timer.prototype = {
 			this.worstACtime = Math.max(this.worstACtime, (this.now()-this.current));
 			this.nextACtime = this.current + (this.worstACtime<250 ? this.worstACtime*4+120 : this.worstACtime*2+620);
 		}
+	}
+});
+
+//---------------------------------------------------------------------------
+// ★UndoTimerクラス
+//---------------------------------------------------------------------------
+pzprv3.createCommonClass('UndoTimer', '',
+{
+	initialize : function(){
+		// ** Undoタイマー
+		this.TID           = null;	// タイマーID
+		this.timerInterval = 25
+		if(ee.br.IE6 || ee.br.IE7 || ee.br.IE8){ this.timerInterval *= 2;}
+
+		// Undo/Redo用変数
+		this.undoWaitTime  = 300;	// 1回目にwaitを多く入れるための値
+		this.undoWaitCount = 0;
 	},
 
 	//---------------------------------------------------------------------------
-	// tm.startUndoTimer()  Undo/Redo呼び出しを開始する
-	// tm.stopUndoTimer()   Undo/Redo呼び出しを終了する
-	// tm.procUndo()        Undo/Redo呼び出しを実行する
-	// tm.execUndo()        Undo/Redo関数を呼び出す
+	// ut.start()     Undo/Redo呼び出しを開始する
+	// ut.stop()      Undo/Redo呼び出しを終了する
+	// ut.procUndo()  Undo/Redo呼び出しを実行する
+	// ut.execUndo()  Undo/Redo関数を呼び出す
 	//---------------------------------------------------------------------------
-	startUndoTimer : function(){
-		this.undoWaitCount = this.undoWaitTime/this.undoInterval;
-		if(!this.TIDundo){ this.TIDundo = setInterval(ee.binder(this, this.procUndo), this.undoInterval);}
+	start : function(){
+		this.undoWaitCount = this.undoWaitTime/this.timerInterval;
+		if(!this.TID){ this.TID = setInterval(ee.binder(this, this.procUndo), this.timerInterval);}
 		this.execUndo();
 	},
-	stopUndoTimer : function(){
+	stop : function(){
 		kc.inUNDO=false;
 		kc.inREDO=false;
-		clearInterval(this.TIDundo);
-		this.TIDundo = null;
+		clearInterval(this.TID);
+		this.TID = null;
 	},
 	procUndo : function(){
-		if(!kc.inUNDO && !kc.inREDO){ this.stopUndoTimer();}
+		if (!kc.inUNDO && !kc.inREDO){ this.stop();}
 		else if(this.undoWaitCount>0){ this.undoWaitCount--;}
 		else{ this.execUndo();}
 	},
@@ -124,4 +128,4 @@ Timer.prototype = {
 		if     (kc.inUNDO){ um.undo(1);}
 		else if(kc.inREDO){ um.redo(1);}
 	}
-};
+});

@@ -1,295 +1,244 @@
 //
 // パズル固有スクリプト部 ホタルビーム版 firefly.js v3.4.0
 //
-Puzzles.firefly = function(){ };
-Puzzles.firefly.prototype = {
-	setting : function(){
-		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}
-		if(!k.qrows){ k.qrows = 10;}
+pzprv3.custom.firefly = {
+//---------------------------------------------------------
+// フラグ
+Flags:{
+	setting : function(pid){
+		this.qcols = 10;
+		this.qrows = 10;
 
-		k.irowake  = 1;
-		k.isborder = 1;
+		this.irowake  = 1;
+		this.isborder = 1;
 
-		k.isCenterLine    = true;
-		k.dispzero        = true;
-		k.isInputHatena   = true;
+		this.isCenterLine    = true;
+		this.dispzero        = true;
+		this.isInputHatena   = true;
 
-		k.bdmargin       = 0.50;
-		k.bdmargin_image = 0.10;
+		this.bdmargin       = 0.50;
+		this.bdmargin_image = 0.10;
 
-		base.setFloatbgcolor("rgb(0, 224, 0)");
+		this.floatbgcolor = "rgb(0, 224, 0)";
+	}
+},
+
+//---------------------------------------------------------
+// マウス入力系
+MouseEvent:{
+	mousedown : function(){
+		if(k.editmode){ this.inputdirec();}
+		else if(k.playmode){
+			if     (this.btn.Left) { this.inputLine();}
+			else if(this.btn.Right){ this.inputpeke();}
+		}
 	},
-	menufix : function(){ },
-
-	//---------------------------------------------------------
-	//入力系関数オーバーライド
-	input_init : function(){
-		// マウス入力系
-		mv.mousedown = function(){
-			if(k.editmode) this.inputdirec();
-			else if(k.playmode){
-				if(this.btn.Left) this.inputLine();
-				else if(this.btn.Right) this.inputpeke();
+	mouseup : function(){
+		if(this.notInputted()){
+			if(k.editmode && bd.cnum(this.prevPos.x,this.prevPos.y)===this.cellid()){
+				this.inputqnum();
 			}
-		};
-		mv.mouseup = function(){
-			if(this.notInputted()){
-				if(k.editmode && bd.cnum(this.prevPos.x,this.prevPos.y)===this.cellid()){
-					this.inputqnum();
-				}
-				else if(k.playmode && this.btn.Left){
-					this.inputpeke();
-				}
+			else if(k.playmode && this.btn.Left){
+				this.inputpeke();
 			}
-		};
-		mv.mousemove = function(){
-			if(k.editmode){
-				if(this.notInputted()) this.inputdirec();
-			}
-			else if(k.playmode){
-				if(this.btn.Left) this.inputLine();
-				else if(this.btn.Right) this.inputpeke();
-			}
-		};
-
-		// キーボード入力系
-		kc.keyinput = function(ca){
-			if(k.playmode){ return;}
-			if(this.key_inputdirec(ca)){ return;}
-			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca);
-		};
+		}
 	},
+	mousemove : function(){
+		if(k.editmode){
+			if(this.notInputted()){ this.inputdirec();}
+		}
+		else if(k.playmode){
+			if     (this.btn.Left) { this.inputLine();}
+			else if(this.btn.Right){ this.inputpeke();}
+		}
+	}
+},
 
-	//---------------------------------------------------------
-	//画像表示系関数オーバーライド
-	graphic_init : function(){
-		pc.gridcolor = pc.gridcolor_LIGHT;
+//---------------------------------------------------------
+// キーボード入力系
+KeyEvent:{
+	keyinput : function(ca){
+		if(k.playmode){ return;}
+		if(this.key_inputdirec(ca)){ return;}
+		if(this.moveTCell(ca)){ return;}
+		this.key_inputqnum(ca);
+	}
+},
 
-		pc.fontErrcolor = pc.fontcolor;
-		pc.fontsizeratio = 0.85;
+//---------------------------------------------------------
+// 盤面管理系
+MenuExec:{
+	adjustBoardData : function(key,d){
+		this.adjustNumberArrow(key,d);
+	}
+},
 
-		pc.paint = function(){
-			this.drawDashedCenterLines();
-			this.drawLines();
+//---------------------------------------------------------
+// 画像表示系
+Graphic:{
+	setColors : function(){
+		this.gridcolor = this.gridcolor_LIGHT;
 
-			this.drawPekes(0);
+		this.fontErrcolor = this.fontcolor;
+		this.fontsizeratio = 0.85;
+	},
+	paint : function(){
+		this.drawDashedCenterLines();
+		this.drawLines();
 
-			this.drawFireflies();
-			this.drawNumbers();
+		this.drawPekes(0);
 
-			this.drawTarget();
-		};
+		this.drawFireflies();
+		this.drawNumbers();
 
-		pc.drawFireflies = function(){
-			this.vinc('cell_firefly', 'auto');
-
-			var clist = this.range.cells;
-			for(var i=0;i<clist.length;i++){ this.drawFirefly1(clist[i]);}
-		};
-		pc.drawFirefly1 = function(c){
-			if(c===null){ return;}
-
-			var rsize  = this.cw*0.40;
-			var rsize3 = this.cw*0.10;
-			var headers = ["c_cira_", "c_cirb_"];
-
-			if(bd.cell[c].qnum!=-1){
-				var px=bd.cell[c].cpx, py=bd.cell[c].cpy;
-
-				g.lineWidth = 1.5;
-				g.strokeStyle = this.cellcolor;
-				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(headers[0]+c,this.FILL)){
-					g.shapeCircle(px, py, rsize);
-				}
-
-				this.vdel([headers[1]+c]);
-				if(bd.cell[c].qdir!=0){
-					g.fillStyle = this.cellcolor;
-					switch(bd.cell[c].qdir){
-						case k.UP: py-=(rsize-1); break;
-						case k.DN: py+=(rsize-1); break;
-						case k.LT: px-=(rsize-1); break;
-						case k.RT: px+=(rsize-1); break;
-					}
-					if(this.vnop(headers[1]+c,this.NONE)){
-						g.fillCircle(px, py, rsize3);
-					}
-				}
-			}
-			else{ this.vhide([headers[0]+c, headers[1]+c]);}
-		};
-
-		pc.repaintParts = function(idlist){
-			var clist = bd.lines.getClistFromIdlist(idlist);
-			for(var i=0;i<clist.length;i++){
-				this.drawFirefly1(clist[i]);
-				this.drawNumber1(clist[i]);
-			}
-		};
+		this.drawTarget();
 	},
 
-	//---------------------------------------------------------
-	// URLエンコード/デコード処理
-	encode_init : function(){
-		enc.pzlimport = function(type){
-			this.decodeArrowNumber16();
-		};
-		enc.pzlexport = function(type){
-			this.encodeArrowNumber16();
-		};
+	drawFireflies : function(){
+		this.vinc('cell_firefly', 'auto');
 
-		//---------------------------------------------------------
-		fio.decodeData = function(){
-			this.decodeCellDirecQnum();
-			this.decodeBorderLine();
-		};
-		fio.encodeData = function(){
-			this.encodeCellDirecQnum();
-			this.encodeBorderLine();
-		};
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){ this.drawFirefly1(clist[i]);}
+	},
+	drawFirefly1 : function(c){
+		if(c===null){ return;}
+
+		var rsize  = this.cw*0.40;
+		var rsize3 = this.cw*0.10;
+		var headers = ["c_cira_", "c_cirb_"];
+
+		if(bd.cell[c].qnum!=-1){
+			var px=bd.cell[c].cpx, py=bd.cell[c].cpy;
+
+			g.lineWidth = 1.5;
+			g.strokeStyle = this.cellcolor;
+			g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
+			if(this.vnop(headers[0]+c,this.FILL)){
+				g.shapeCircle(px, py, rsize);
+			}
+
+			this.vdel([headers[1]+c]);
+			if(bd.cell[c].qdir!=0){
+				g.fillStyle = this.cellcolor;
+				switch(bd.cell[c].qdir){
+					case k.UP: py-=(rsize-1); break;
+					case k.DN: py+=(rsize-1); break;
+					case k.LT: px-=(rsize-1); break;
+					case k.RT: px+=(rsize-1); break;
+				}
+				if(this.vnop(headers[1]+c,this.NONE)){
+					g.fillCircle(px, py, rsize3);
+				}
+			}
+		}
+		else{ this.vhide([headers[0]+c, headers[1]+c]);}
 	},
 
-	//---------------------------------------------------------
-	// 正解判定処理実行部
-	answer_init : function(){
-		ans.checkAns = function(){
+	repaintParts : function(idlist){
+		var clist = bd.lines.getClistFromIdlist(idlist);
+		for(var i=0;i<clist.length;i++){
+			this.drawFirefly1(clist[i]);
+			this.drawNumber1(clist[i]);
+		}
+	}
+},
 
-			if( !this.checkLcntCell(3) ){
-				this.setAlert('分岐している線があります。', 'There is a branch line.'); return false;
-			}
-			if( !this.checkLcntCell(4) ){
-				this.setAlert('線が交差しています。', 'There is a crossing line.'); return false;
-			}
+//---------------------------------------------------------
+// URLエンコード/デコード処理
+Encode:{
+	pzlimport : function(type){
+		this.decodeArrowNumber16();
+	},
+	pzlexport : function(type){
+		this.encodeArrowNumber16();
+	}
+},
+//---------------------------------------------------------
+FileIO:{
+	decodeData : function(){
+		this.decodeCellDirecQnum();
+		this.decodeBorderLine();
+	},
+	encodeData : function(){
+		this.encodeCellDirecQnum();
+		this.encodeBorderLine();
+	}
+},
 
-			var errinfo = this.searchFireflies();
-			if( !this.checkErrorFlag(errinfo,3) ){
-				this.setAlert('黒点同士が線で繋がっています。', 'Black points are connected each other.'); return false;
-			}
-			if( !this.checkErrorFlag(errinfo,2) ){
-				this.setAlert('線の曲がった回数が数字と違っています。', 'The number of curves is different from a firefly\'s number.'); return false;
-			}
-			if( !this.checkErrorFlag(errinfo,1) ){
-				this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
-			}
+//---------------------------------------------------------
+// 正解判定処理実行部
+AnsCheck:{
+	checkAns : function(){
 
-			this.performAsLine = true;
-			if( !this.checkOneArea( bd.lines.getLareaInfo() ) ){
-				this.setAlert('線が全体で一つながりになっていません。', 'All lines and fireflies are not connected each other.'); return false;
-			}
+		if( !this.checkLcntCell_firefly(3) ){
+			this.setAlert('分岐している線があります。', 'There is a branch line.'); return false;
+		}
+		if( !this.checkLcntCell_firefly(4) ){
+			this.setAlert('線が交差しています。', 'There is a crossing line.'); return false;
+		}
 
-			if( !this.checkLcntCell(1) ){
-				this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
-			}
+		var xinfo = this.getErrorFlag_line();
+		if( !this.checkErrorFlag_line(xinfo,4) ){
+			this.setAlert('黒点同士が線で繋がっています。', 'Black points are connected each other.'); return false;
+		}
+		if( !this.checkErrorFlag_line(xinfo,3) ){
+			this.setAlert('白丸の、黒点でない部分どうしがくっついています。', 'Fireflies are connected without a line starting from black point.'); return false;
+		}
+		if( !this.checkErrorFlag_line(xinfo,2) ){
+			this.setAlert('線の曲がった回数が数字と違っています。', 'The number of curves is different from a firefly\'s number.'); return false;
+		}
+		if( !this.checkErrorFlag_line(xinfo,1) ){
+			this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
+		}
 
-			if( !this.checkFireflyBeam() ){
-				this.setAlert('ホタルから線が出ていません。', 'There is a lonely firefly.'); return false;
-			}
+		this.performAsLine = true;
+		if( !this.checkOneArea( bd.lines.getLareaInfo() ) ){
+			this.setAlert('線が全体で一つながりになっていません。', 'All lines and fireflies are not connected each other.'); return false;
+		}
 
-			if( !this.checkStrangeLine(errinfo) ){
-				this.setAlert('白丸の、黒点でない部分どうしがくっついています。', 'Fireflies are connected without a line starting from black point.'); return false;
-			}
+		if( !this.checkLcntCell_firefly(1) ){
+			this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
+		}
 
-			bd.sErBAll(0);
-			return true;
-		};
-		ans.check1st = function(){ return true;};
+		if( !this.checkFireflyBeam() ){
+			this.setAlert('ホタルから線が出ていません。', 'There is a lonely firefly.'); return false;
+		}
 
-		ans.checkLcntCell = function(val){
-			var result = true;
-			if(bd.lines.ltotal[val]==0){ return true;}
-			for(var c=0;c<bd.cellmax;c++){
-				if(bd.noNum(c) && bd.lines.lcntCell(c)==val){
-					if(this.inAutoCheck){ return false;}
-					if(result){ bd.sErBAll(2);}
-					ans.setCellLineError(c,false);
-					result = false;
-				}
-			}
-			return result;
-		};
-		ans.checkFireflyBeam = function(){
-			var result = true;
-			for(var c=0;c<bd.cellmax;c++){
-				if(bd.noNum(c) || bd.DiC(c)==0){ continue;}
-				if((bd.DiC(c)==k.UP && !bd.isLine(bd.ub(c))) || (bd.DiC(c)==k.DN && !bd.isLine(bd.db(c))) ||
-				   (bd.DiC(c)==k.LT && !bd.isLine(bd.lb(c))) || (bd.DiC(c)==k.RT && !bd.isLine(bd.rb(c))) )
-				{
-					if(this.inAutoCheck){ return false;}
-					bd.sErC([c],1);
-					result = false;
-				}
-			}
-			return result;
-		};
-		ans.checkStrangeLine = function(errinfo){
-			var idlist = [];
-			for(var id=0;id<bd.bdmax;id++){
-				if(bd.isLine(id) && errinfo.check[id]!=2){ idlist.push(id);}
-			}
-			if(idlist.length>0){
-				bd.sErBAll(2);
-				bd.sErB(idlist,1);
-				return false;
-			}
-			return true;
-		};
+		return true;
+	},
 
-		ans.searchFireflies = function(){
-			var errinfo={data:[],check:[]};
-			for(var i=0;i<bd.bdmax;i++){ errinfo.check[i]=0;}
-
-			for(var c=0;c<bd.cellmax;c++){
-				var dir=bd.DiC(c), qn=bd.QnC(c);
-				if(qn===-1 || dir===0){ continue;}
-
-				var ccnt = 0;
-				var idlist = [];
-				var bx=bd.cell[c].bx, by=bd.cell[c].by;
-				while(1){
-					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-					if(!((bx+by)&1)){
-						var cc = bd.cnum(bx,by);
-						if(cc===null || bd.isNum(cc)){ break;}
-						else if(dir!==1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!==2){ ccnt++;} dir=2;}
-						else if(dir!==2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!==1){ ccnt++;} dir=1;}
-						else if(dir!==3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!==4){ ccnt++;} dir=4;}
-						else if(dir!==4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!==3){ ccnt++;} dir=3;}
-					}
-					else{
-						var id = bd.bnum(bx,by);
-						if(!bd.isLine(id)){ break;}
-						idlist.push(id);
-					}
-				}
-				if(idlist.length<=0){ continue;}
-
-				for(var i=0;i<idlist.length;i++){ errinfo.check[idlist[i]]=2;}
-
-				var cc=bd.cnum(bx,by), dic=(cc!==null?bd.DiC(cc):k.NONE);
-				if(cc!==null && ((dic===k.UP && dir===k.DN) || (dic===k.DN && dir===k.UP) || (dic===k.LT && dir===k.RT) || (dic===k.RT && dir===k.LT) ))
-					{ errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist});}
-				else if(cc!==null && qn!==-2 && qn!==ccnt)
-					{ errinfo.data.push({errflag:2,cells:[c],idlist:idlist});}
-				else if(cc===null)
-					{ errinfo.data.push({errflag:1,cells:[c],idlist:idlist});}
-			}
-			return errinfo;
-		};
-		ans.checkErrorFlag = function(errinfo, val){
-			var result = true;
-			for(var i=0,len=errinfo.data.length;i<len;i++){
-				if(errinfo.data[i].errflag!=val){ continue;}
-
+	checkLcntCell_firefly : function(val){
+		if(bd.lines.ltotal[val]==0){ return true;}
+		return this.checkAllCell(function(c){ return (bd.noNum(c) && bd.lines.lcntCell(c)==val);});
+	},
+	checkFireflyBeam : function(){
+		var result = true;
+		for(var c=0;c<bd.cellmax;c++){
+			if(bd.noNum(c) || bd.DiC(c)==0){ continue;}
+			if((bd.DiC(c)==k.UP && !bd.isLine(bd.ub(c))) || (bd.DiC(c)==k.DN && !bd.isLine(bd.db(c))) ||
+			   (bd.DiC(c)==k.LT && !bd.isLine(bd.lb(c))) || (bd.DiC(c)==k.RT && !bd.isLine(bd.rb(c))) )
+			{
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(errinfo.data[i].cells,1);
-				if(result){ bd.sErBAll(2);}
-				bd.sErB(errinfo.data[i].idlist,1);
+				bd.sErC([c],1);
 				result = false;
 			}
-			return result;
-		};
+		}
+		return result;
+	},
+
+	isErrorFlag_line : function(xinfo){
+		var room=xinfo.room[xinfo.max], ccnt=room.ccnt, length=room.length;
+		var c1=room.cells[0], c2=room.cells[1], dir1=room.dir1, dir2=room.dir2;
+
+		// qd1 スタート地点の黒点の方向 qd2 到達地点の線の方向
+		var qd1=bd.DiC(c1), qd2=(c2!==null?bd.DiC(c2):k.NONE), qn=-1, err=0;
+		if((dir1===qd1)^(dir2===qd2)){ qn=bd.QnC((dir1===qd1)?c1:c2);}
+
+		if     (c2!==null && (dir1===qd1) && (dir2===qd2)){ err=4;}
+		else if(c2!==null && (dir1!==qd1) && (dir2!==qd2)){ err=3;}
+		else if(c2!==null && qn>=0 && qn!==ccnt){ err=2; room.cells[1]=null;}
+		else if(c2===null){ err=1;}
+		room.error = err;
 	}
+}
 };

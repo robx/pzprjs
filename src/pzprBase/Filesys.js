@@ -3,20 +3,22 @@
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
 //---------------------------------------------------------------------------
-FileIO = function(){
-	this.filever = 0;
-	this.lineseek = 0;
-	this.dataarray = [];
-	this.datastr = "";
-	this.history = "";
-	this.currentType = 1;
+pzprv3.createCommonClass('FileIO', '',
+{
+	initialize : function(){
+		this.filever = 0;
+		this.lineseek = 0;
+		this.dataarray = [];
+		this.datastr = "";
+		this.history = "";
+		this.currentType = 1;
+	},
 
 	// 定数(ファイル形式)
-	this.PZPR = 1;
-	this.PBOX = 2;
-	this.PZPH = 3;
-};
-FileIO.prototype = {
+	PZPR : 1,
+	PBOX : 2,
+	PZPH : 3,
+
 	//---------------------------------------------------------------------------
 	// fio.filedecode()      ファイルを開く用の関数
 	//                       [menu.ex.fileopen] -> [fileio.xcg@iframe] -> [ここ]
@@ -27,7 +29,7 @@ FileIO.prototype = {
 		base.dec.reset();
 		base.dec.id = (lines[0].match(/^pzprv3/) ? lines[1] : k.puzzleid);
 		base.dec.fstr = datastr;
-		base.init_func(function(){ tm.reset();});
+		base.importBoardData(base.dec.id);
 	},
 	filedecode_main : function(datastr){
 		datastr = datastr.replace(/[\r\n]/g,"");
@@ -493,7 +495,7 @@ FileIO.prototype = {
 			else{
 				var inp = item[i].split(",");
 				var c = bd.cnum(bx,by);
-				mv.set51cell(c, true);
+				bd.set51cell(c);
 				bd.cell[c].qnum = parseInt(inp[0]);
 				bd.cell[c].qdir = parseInt(inp[1]);
 			}
@@ -614,9 +616,9 @@ FileIO.prototype = {
 
 		this.datastr += (rinfo.max+"/");
 		for(var id=1;id<=rinfo.max;id++){
-			var d = ans.getSizeOfClist(rinfo.room[id].idlist,f_true);
+			var d = bd.getSizeOfClist(rinfo.room[id].idlist);
 			var num = (isques ? bd.cell[bd.areas.getTopOfRoom(id)].qnum : -1);
 			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" "+(num>=0 ? ""+num : "")+"/");
 		}
 	}
-};
+});

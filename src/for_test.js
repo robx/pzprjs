@@ -42,7 +42,7 @@ debug.extend({
 			var newid = idlist[pnum];
 			base.dec.reset();
 			base.dec.parseURI('?'+newid+'/'+debug.urls[newid]);
-			base.init_func(ee.binder(debug, debug.sccheck));
+			base.importBoardData(newid);
 
 			if(pnum >= term){ clearInterval(debug.alltimer);}
 
@@ -57,6 +57,7 @@ debug.extend({
 		ans.inCheck = true;
 		ans.disableSetError();
 		ans.alstr = { jp:'' ,en:''};
+		ans.checkresult = true;
 		ans.checkAns();
 		ans.enableSetError();
 		ans.inCheck = false;
@@ -124,14 +125,16 @@ debug.extend({
 				setTimeout(function(){
 					ans.inCheck = true;
 					ans.alstr = { jp:'' ,en:''};
-					var iserror = !ans.checkAns();
+					ans.checkresult = true;
+					ans.checkAns();
+					var iserror = !ans.checkresult;
 					pc.paintAll();
 					ans.inCheck = false;
 
 					if(acsstr[n][0] != ""){ iserror = !iserror;}
 					var misstr = (ans.alstr.jp != acsstr[n][0]);
 
-					if(iserror||misstr){ debug.addTextarea("Answer test "+(n+1)+" = failure... \""+acsstr[n][0]+"\""); fails++;}
+					if(iserror||misstr){ debug.addTextarea("Answer test "+(n+1)+" = failure... \""+acsstr[n][0]+"\""+ans.alstr.jp); fails++;}
 					else if(!debug.alltimer){ debug.addTextarea("Answer test "+(n+1)+" = pass \""+acsstr[n][0]+"\"");}
 
 					n++;
@@ -325,7 +328,7 @@ debug.extend({
 	},
 	taenable : true,
 	addTextarea : function(str){
-		if(!k.br.Gecko){ ee('testarea').el.value += (str+"\n");}
+		if(!ee.br.Gecko){ ee('testarea').el.value += (str+"\n");}
 		else{ ee('testdiv').appendHTML(str).appendBR();}
 	},
 
@@ -1030,7 +1033,7 @@ debug.extend({
 		slither : [
 			["分岐している線があります。","pzprv3/slither/5/5/2 . . 1 . /. 2 . . 1 /. . 2 . . /3 . . 3 . /. 0 . . 3 /1 0 0 0 0 0 /1 1 0 0 0 0 /1 0 0 0 0 0 /1 0 0 0 0 0 /1 0 0 0 0 0 /1 1 0 0 0 /0 1 0 0 0 /0 0 0 0 0 /1 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /"],
 			["線が交差しています。","pzprv3/slither/5/5/2 . . 1 . /. 2 . . 1 /. . 2 . . /3 . . 3 . /. 0 . . 3 /1 0 0 0 0 0 /1 1 0 1 0 0 /1 1 1 0 1 0 /1 1 1 0 1 0 /0 0 0 0 1 0 /1 1 0 0 0 /0 1 1 0 0 /0 0 1 0 0 /0 0 0 0 0 /1 0 1 1 1 /0 0 0 0 0 /"],
-			["数字の周りにある境界線の本数が違います。","pzprv3/slither/5/5/2 . . 1 . /. 2 . . 1 /. . 2 . . /3 . . 3 . /. 0 . . 3 /1 0 0 0 0 0 /1 1 0 1 0 0 /1 1 1 0 0 0 /1 1 1 0 0 0 /0 0 0 0 0 0 /1 1 0 0 0 /0 1 1 0 0 /0 0 1 0 0 /0 0 0 0 0 /1 0 1 1 0 /0 0 0 0 0 /"],
+			["数字の周りにある線の本数が違います。","pzprv3/slither/5/5/2 . . 1 . /. 2 . . 1 /. . 2 . . /3 . . 3 . /. 0 . . 3 /1 0 0 0 0 0 /1 1 0 1 0 0 /1 1 1 0 0 0 /1 1 1 0 0 0 /0 0 0 0 0 0 /1 1 0 0 0 /0 1 1 0 0 /0 0 1 0 0 /0 0 0 0 0 /1 0 1 1 0 /0 0 0 0 0 /"],
 			["輪っかが一つではありません。","pzprv3/slither/5/5/2 . . 0 . /. 2 . . 1 /. . 2 . . /3 . . 3 . /. 0 . . 3 /1 0 1 0 0 0 /1 1 0 0 0 0 /1 1 1 0 0 1 /1 1 1 1 1 1 /0 0 0 0 1 1 /1 1 0 0 0 /0 1 0 0 0 /0 0 1 1 1 /0 0 0 1 0 /1 0 1 0 0 /0 0 0 0 1 /"],
 			["途中で途切れている線があります。","pzprv3/slither/5/5/2 . . 1 . /. 2 . . 1 /. . 2 . . /3 . . 3 . /. 0 . . 3 /1 0 0 0 0 0 /1 1 0 1 0 0 /1 1 1 0 0 1 /1 1 1 1 1 1 /0 0 0 0 1 1 /1 1 1 1 0 /0 1 1 0 0 /0 0 1 0 1 /0 0 0 1 0 /1 0 1 0 0 /0 0 0 0 1 /"],
 			["","pzprv3/slither/5/5/2 . . 1 . /. 2 . . 1 /. . 2 . . /3 . . 3 . /. 0 . . 3 /1 -1 0 -1 -1 1 /1 1 -1 1 -1 1 /1 1 1 0 0 1 /1 1 1 1 1 1 /-1 -1 -1 0 1 1 /1 1 1 1 1 /-1 1 1 -1 -1 /0 -1 1 0 0 /0 0 0 1 0 /1 -1 1 -1 0 /-1 0 -1 0 1 /"]

@@ -3,17 +3,20 @@
 //---------------------------------------------------------------------------
 // ★ProblemDataクラス データベースに保存する1つのデータを保持する
 //---------------------------------------------------------------------------
-ProblemData = function(){
-	this.id = null;
-	this.pid = '';
-	this.col = '';
-	this.row = '';
-	this.hard = 0;
-	this.pdata = '';
-	this.time = 0;
-	this.comment = '';
-};
-ProblemData.prototype = {
+pzprv3.createCoreClass('ProblemData', '',
+{
+	initialize : function(){
+		this.id = null;
+		this.pid = '';
+		this.col = '';
+		this.row = '';
+		this.hard = 0;
+		this.pdata = '';
+		this.time = 0;
+		this.comment = '';
+
+		if(arguments.length>0){ this.parse(arguments[0]);}
+	},
 	setnewData : function(id){
 		this.id = id;
 		this.pid = k.puzzleid;
@@ -39,28 +42,30 @@ ProblemData.prototype = {
 		for(var key in data){ this[key]=data[key];}
 		return this;
 	}
-};
+});
 
 //---------------------------------------------------------------------------
 // ★DataBaseManagerクラス Web Storage用 データベースの設定・管理を行う
 //---------------------------------------------------------------------------
-DataBaseManager = function(){
-	this.dbh    = null;	// データベースハンドラ
+pzprv3.createCoreClass('DataBaseManager', '',
+{
+	initialize : function(){
+		this.dbh    = null;	// データベースハンドラ
 
-	this.DBsid  = -1;	// 現在選択されているリスト中のID
-	this.DBlist = [];	// 現在一覧にある問題のリスト
+		this.DBsid  = -1;	// 現在選択されているリスト中のID
+		this.DBlist = [];	// 現在一覧にある問題のリスト
 
-	var self    = this;
-	this.update = function(){ self.updateDialog.call(self);};
-	this.sync   = false;
-};
-DataBaseManager.prototype = {
+		var self    = this;
+		this.update = function(){ self.updateDialog.call(self);};
+		this.sync   = false;
+	},
+
 	//---------------------------------------------------------------------------
 	// dbm.openDialog() データベースダイアログが開いた時の処理
 	//---------------------------------------------------------------------------
 	openDialog : function(){
 		// データベースを開く
-		if(base.dec.enLocalStorage()){ this.dbh = new DataBaseHandler_LS();}
+		if(base.dec.enLocalStorage()){ this.dbh = new pzprv3.core.DataBaseHandler_LS();}
 		else{ return;}
 
 		this.sync = false;
@@ -234,7 +239,7 @@ DataBaseManager.prototype = {
 			id = this.DBlist.length;
 			refresh = true;
 
-			this.DBlist[id] = new ProblemData();
+			this.DBlist[id] = new pzprv3.core.ProblemData();
 			this.DBlist[id].setnewData(id+1);
 			var str = prompt("コメントがある場合は入力してください。","");
 			this.DBlist[id].comment = (!!str ? str : '');
@@ -287,28 +292,27 @@ DataBaseManager.prototype = {
 		this.sync = false;
 		this.dbh.deleteDataTable(this, sID, max, this.update);
 	}
-};
+});
 
 //---------------------------------------------------------------------------
 // ★DataBaseHandler_LSクラス Web localStorage用 データベースハンドラ
 //---------------------------------------------------------------------------
-DataBaseHandler_LS = function(){
-	this.pheader = 'pzprv3_storage:data:';
-	this.initialize();
-};
-DataBaseHandler_LS.prototype = {
+pzprv3.createCoreClass('DataBaseHandler_LS', '',
+{
 	//---------------------------------------------------------------------------
 	// dbm.dbh.initialize()    初期化時にデータベースを開く
 	// dbm.dbh.importDBlist()  DataBaseからDBlistを作成する
 	//---------------------------------------------------------------------------
 	initialize : function(){
+		this.pheader = 'pzprv3_storage:data:';
+
 		this.createManageDataTable();
 		this.createDataBase();
 	},
 	importDBlist : function(parent, callback){
 		parent.DBlist = [];
 		for(var i=1;true;i++){
-			var row = (new ProblemData()).parse(localStorage[this.pheader+i]);
+			var row = new pzprv3.core.ProblemData(localStorage[this.pheader+i]);
 			if(row.id==null){ break;}
 			parent.DBlist.push(row);
 		}
@@ -348,7 +352,7 @@ DataBaseHandler_LS.prototype = {
 	// dbm.dbh.saveDataTable()   データの盤面を保存する
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback){
-		var data = (new ProblemData()).parse(localStorage[this.pheader+parent.DBlist[id].id]);
+		var data = new pzprv3.core.ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
 		fio.filedecode(data.pdata);
 		if(!!callback){ callback();}
 	},
@@ -375,7 +379,7 @@ DataBaseHandler_LS.prototype = {
 	//---------------------------------------------------------------------------
 	deleteDataTable : function(parent, sID, max, callback){
 		for(var i=parseInt(sID);i<max;i++){
-			var data = (new ProblemData()).parse(localStorage[this.pheader+(i+1)]);
+			var data = new pzprv3.core.ProblemData(localStorage[this.pheader+(i+1)]);
 			data.id--;
 			localStorage[this.pheader+i] = data.toString();
 		}
@@ -410,7 +414,7 @@ DataBaseHandler_LS.prototype = {
 			delete localStorage['pzprv3_'+pid+':puzdata'];
 			for(var i=0;i<count;i++){
 				var pheader = 'pzprv3_'+pid+':puzdata!'+(i+1)+'!';
-				var row = new ProblemData();
+				var row = new pzprv3.core.ProblemData();
 				row.pid = pid;
 				for(var c=0;c<7;c++){
 					row[keys[c]] = localStorage[pheader+keys[c]];
@@ -429,4 +433,4 @@ DataBaseHandler_LS.prototype = {
 			localStorage['pzprv3_storage:data:'+(i+1)] = puzzles[i].toString();
 		}
 	}
-};
+});

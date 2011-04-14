@@ -1,298 +1,186 @@
 //
 // パズル固有スクリプト部 イチマガ・磁石イチマガ・一回曲がって交差もするの版 ichimaga.js v3.4.0
 //
-Puzzles.ichimaga = function(){ };
-Puzzles.ichimaga.prototype = {
-	setting : function(){
-		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 10;}
-		if(!k.qrows){ k.qrows = 10;}
+pzprv3.custom.ichimaga = {
+//---------------------------------------------------------
+// フラグ
+Flags:{
+	setting : function(pid){
+		this.qcols = 10;
+		this.qrows = 10;
 
-		k.irowake  = 1;
-		k.isborder = 1;
+		this.irowake  = 1;
+		this.isborder = 1;
 
-		k.isCenterLine    = true;
-		k.isInputHatena   = true;
+		this.isCenterLine    = true;
+		this.isInputHatena   = true;
 
-		k.ispzprv3ONLY    = true;
+		this.bdmargin       = 0.50;
+		this.bdmargin_image = 0.10;
 
-		k.bdmargin       = 0.50;
-		k.bdmargin_image = 0.10;
-
-		base.setFloatbgcolor("rgb(0, 224, 0)");
-	},
-	menufix : function(){},
-
-	//---------------------------------------------------------
-	//入力系関数オーバーライド
-	input_init : function(){
-		// マウス入力系
-		mv.mousedown = function(){
-			if(k.editmode) this.inputqnum();
-			else if(k.playmode){
-				if(this.btn.Left) this.inputLine();
-				else if(this.btn.Right) this.inputpeke();
-			}
-		};
-		mv.mouseup = function(){
-			if(k.playmode && this.btn.Left && this.notInputted()){
-				this.inputpeke();
-			}
-		};
-		mv.mousemove = function(){
-			if(k.playmode){
-				if(this.btn.Left) this.inputLine();
-				else if(this.btn.Right) this.inputpeke();
-			}
-		};
-
-		// キーボード入力系
-		kc.keyinput = function(ca){
-			if(k.playmode){ return;}
-			if(this.key_inputdirec(ca)){ return;}
-			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca);
-		};
-
-		bd.maxnum = 4;
-		bd.lines.iscrossing = function(cc){ return bd.noNum(cc);};
-	},
-
-	//---------------------------------------------------------
-	//画像表示系関数オーバーライド
-	graphic_init : function(){
-		pc.gridcolor = pc.gridcolor_LIGHT;
-
-		pc.fontErrcolor = pc.fontcolor;
-		pc.fontsizeratio = 0.85;
-		pc.circleratio = [0.38, 0.38];
-
-		pc.paint = function(){
-			this.drawDashedCenterLines();
-			this.drawLines();
-
-			this.drawPekes(0);
-
-			this.drawCirclesAtNumber();
-			this.drawNumbers();
-
-			this.drawTarget();
-		};
-
-		pc.repaintParts = function(idlist){
-			var clist = bd.lines.getClistFromIdlist(idlist);
-			for(var i=0;i<clist.length;i++){
-				this.drawCircle1AtNumber(clist[i]);
-				this.drawNumber1(clist[i]);
-			}
-		};
-	},
-
-	//---------------------------------------------------------
-	// URLエンコード/デコード処理
-	encode_init : function(){
-		enc.pzlimport = function(type){
-			this.decode4Cell();
-
-			if(k.puzzleid==='ichimaga'){
-				if     (this.checkpflag("m")){ k.puzzleid="ichimagam";}
-				else if(this.checkpflag("x")){ k.puzzleid="ichimagax";}
-				else                         { k.puzzleid="ichimaga"; }
-				menu.displayTitle();
-			}
-		};
-		enc.pzlexport = function(type){
-			this.encode4Cell();
-		};
-
-		//---------------------------------------------------------
-		fio.decodeData = function(){
-			var pzlflag = this.readLine();
-			if(k.puzzleid==='ichimaga'){
-				if     (pzlflag=="mag")  { k.puzzleid="ichimagam";}
-				else if(pzlflag=="cross"){ k.puzzleid="ichimagax";}
-				else                     { k.puzzleid="ichimaga"; }
-				menu.displayTitle();
-			}
-
-			this.decodeCellQnum();
-			this.decodeBorderLine();
-		};
-		fio.encodeData = function(){
-			if     (k.puzzleid==="ichimagam"){ this.datastr+="mag/";}
-			else if(k.puzzleid==="ichimagax"){ this.datastr+="cross/";}
-			else                             { this.datastr+="def/";}
-
-			this.encodeCellQnum();
-			this.encodeBorderLine();
-		};
-	},
-
-	//---------------------------------------------------------
-	// 正解判定処理実行部
-	answer_init : function(){
-		ans.checkAns = function(){
-
-			if( !this.checkLcntCell(3) ){
-				this.setAlert('分岐している線があります。', 'There is a branch line.'); return false;
-			}
-			if( (k.puzzleid!=='ichimagax') && !this.checkLcntCell(4) ){
-				this.setAlert('線が交差しています。', 'There is a crossing line.'); return false;
-			}
-
-			var errinfo = this.searchFireflies();
-			if( !this.checkErrorFlag(errinfo,3) ){
-				this.setAlert('同じ数字同士が線で繋がっています。', 'Same numbers are connected each other.'); return false;
-			}
-			if( !this.checkErrorFlag(errinfo,2) ){
-				this.setAlert('線が2回以上曲がっています。', 'The number of curves is twice or more.'); return false;
-			}
-
-			this.performAsLine = true
-			if( !this.checkConnectedLine() ){
-				this.setAlert('線が全体で一つながりになっていません。', 'All lines and circles are not connected each other.'); return false;
-			}
-
-			if( !this.checkErrorFlag(errinfo,1) ){
-				this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
-			}
-
-			if( !this.checkAllCell( function(c){ return bd.isValidNum(c) && bd.QnC(c)!==bd.lines.lcntCell(c); } ) ){
-				this.setAlert('○から出る線の本数が正しくありません。', 'The number is not equal to the number of lines out of the circle.'); return false;
-			}
-
-			if( !this.checkAllCell( function(c){ return bd.isNum(c) && bd.lines.lcntCell(c)===0; } ) ){
-				this.setAlert('○から線が出ていません。', 'There is a lonely circle.'); return false;
-			}
-
-			return true;
-		};
-		ans.check1st = function(){ return true;};
-
-		ans.checkLcntCell = function(val){
-			if(bd.lines.ltotal[val]==0){ return true;}
-			var result = true;
-			for(var c=0;c<bd.cellmax;c++){
-				if(bd.isNum(c) || bd.lines.lcntCell(c)!==val){ continue;}
-
-				if(this.inAutoCheck){ return false;}
-				if(result){ bd.sErBAll(2);}
-				this.setCellLineError(c,false);
-				result = false;
-			}
-			return result;
-		};
-
-		ans.searchFireflies = function(){
-			var errinfo = {data:[],check:[]};
-			var visited = [];
-			for(var i=0;i<bd.bdmax;i++){ errinfo.check[i]=0; visited[i]=0;}
-
-			for(var c=0;c<bd.cellmax;c++){
-				if(bd.noNum(c)){ continue;}
-
-				var bx=bd.cell[c].bx, by=bd.cell[c].by;
-				var dir4id = [bd.bnum(bx,by-1),bd.bnum(bx,by+1),bd.bnum(bx-1,by),bd.bnum(bx+1,by)];
-
-				for(var a=0;a<4;a++){
-					if(dir4id[a]==-1||!bd.isLine(dir4id[a])||visited[dir4id[a]]!=0){ continue;}
-
-					var ccnt=0;	// curve count.
-					var idlist = [];
-					var dir=a+1;
-					bx=bd.cell[c].bx, by=bd.cell[c].by;
-					while(1){
-						switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-						if((bx+by)%2==0){
-							var cc = bd.cnum(bx,by);
-							if     (cc===null || bd.isNum(cc)){ break;}
-							else if(bd.lines.lcntCell(cc)===4){ }
-							else if(dir!==1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!==2){ ccnt++;} dir=2;}
-							else if(dir!==2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!==1){ ccnt++;} dir=1;}
-							else if(dir!==3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!==4){ ccnt++;} dir=4;}
-							else if(dir!==4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!==3){ ccnt++;} dir=3;}
-						}
-						else{
-							var id = bd.bnum(bx,by);
-							if(!bd.isLine(id)){ break;}
-							visited[i]=1;
-							idlist.push(id);
-						}
-					}
-
-					for(var i=0;i<idlist.length;i++){ errinfo.check[idlist[i]]=2;}
-
-					var qn=(c!==null?bd.QnC(c):-1);
-					var cc = bd.cnum(bx,by), qnn=(cc!==null?bd.QnC(cc):-1);
-					if((k.puzzleid==='ichimagam') && qn!==-2 && qn===qnn){
-						errinfo.data.push({errflag:3,cells:[c,cc],idlist:idlist}); continue;
-					}
-					if(idlist.length>0 && ((bx+by)&1)===0 && qn!==-2 && ccnt>1){
-						errinfo.data.push({errflag:2,cells:[c,cc],idlist:idlist}); continue;
-					}
-					if(idlist.length>0 && ((bx+by)&1)===1){
-						errinfo.data.push({errflag:1,cells:[c],idlist:idlist}); continue;
-					}
-				}
-			}
-			return errinfo;
-		};
-		ans.checkErrorFlag = function(errinfo, val){
-			var result = true;
-			for(var i=0,len=errinfo.data.length;i<len;i++){
-				if(errinfo.data[i].errflag!=val){ continue;}
-
-				if(this.inAutoCheck){ return false;}
-				bd.sErC(errinfo.data[i].cells,1);
-				if(result){ bd.sErBAll(2);}
-				bd.sErB(errinfo.data[i].idlist,1);
-				result = false;
-			}
-			return result;
-		};
-
-		ans.checkConnectedLine = function(){
-			var lcnt=0;
-			var visited = new AreaInfo();
-			for(var id=0;id<bd.bdmax;id++){ if(bd.isLine(id)){ visited.id[id]=0; lcnt++;}else{ visited.id[id]=null;} }
-			var fc=null;
-			for(var c=0;c<bd.cellmax;c++){ if(bd.isNum(c) && bd.lines.lcntCell(c)>0){ fc=c; break;} }
-			if(fc===null){ return true;}
-
-			this.cl0(visited.id, bd.cell[fc].bx, bd.cell[fc].by,0);
-			var lcnt2=0, idlist=[];
-			for(var id=0;id<bd.bdmax;id++){ if(visited.id[id]==1){ lcnt2++; idlist.push(id);} }
-
-			if(lcnt!=lcnt2){
-				bd.sErBAll(2);
-				bd.sErB(idlist,1);
-				return false;
-			}
-			return true;
-		};
-		ans.cl0 = function(check,bx,by,dir){
-			while(1){
-				switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-				if(!((bx+by)&1)){
-					if(bd.isNum(bd.cnum(bx,by))){
-						if(bd.isLine(bd.bnum(bx,by-1))){ this.cl0(check,bx,by,1);}
-						if(bd.isLine(bd.bnum(bx,by+1))){ this.cl0(check,bx,by,2);}
-						if(bd.isLine(bd.bnum(bx-1,by))){ this.cl0(check,bx,by,3);}
-						if(bd.isLine(bd.bnum(bx+1,by))){ this.cl0(check,bx,by,4);}
-						break;
-					}
-					else if(bd.lines.lcntCell(bd.cnum(bx,by))==4){ }
-					else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
-					else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ dir=1;}
-					else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ dir=4;}
-					else if(dir!=4 && bd.isLine(bd.bnum(bx-1,by))){ dir=3;}
-				}
-				else{
-					var id = bd.bnum(bx,by);
-					if(check[id]>0 || !bd.isLine(id)){ break;}
-					check[id]=1;
-				}
-			}
-		};
+		this.floatbgcolor = "rgb(0, 224, 0)";
 	}
+},
+
+//---------------------------------------------------------
+// マウス入力系
+MouseEvent:{
+	mousedown : function(){
+		if(k.editmode){ this.inputqnum();}
+		else if(k.playmode){
+			if     (this.btn.Left) { this.inputLine();}
+			else if(this.btn.Right){ this.inputpeke();}
+		}
+	},
+	mouseup : function(){
+		if(k.playmode && this.btn.Left && this.notInputted()){
+			this.inputpeke();
+		}
+	},
+	mousemove : function(){
+		if(k.playmode){
+			if     (this.btn.Left) { this.inputLine();}
+			else if(this.btn.Right){ this.inputpeke();}
+		}
+	}
+},
+
+//---------------------------------------------------------
+// 盤面管理系
+Board:{
+	maxnum : 4
+},
+
+LineManager:{
+	iscrossing : function(cc){ return bd.noNum(cc);}
+},
+
+//---------------------------------------------------------
+// 画像表示系
+Graphic:{
+	setColors : function(){
+		this.gridcolor = this.gridcolor_LIGHT;
+
+		this.fontErrcolor = this.fontcolor;
+		this.fontsizeratio = 0.85;
+		this.circleratio = [0.38, 0.38];
+	},
+	paint : function(){
+		this.drawDashedCenterLines();
+		this.drawLines();
+
+		this.drawPekes(0);
+
+		this.drawCirclesAtNumber();
+		this.drawNumbers();
+
+		this.drawTarget();
+	},
+
+	repaintParts : function(idlist){
+		var clist = bd.lines.getClistFromIdlist(idlist);
+		for(var i=0;i<clist.length;i++){
+			this.drawCircle1AtNumber(clist[i]);
+			this.drawNumber1(clist[i]);
+		}
+	}
+},
+
+//---------------------------------------------------------
+// URLエンコード/デコード処理
+Encode:{
+	pzlimport : function(type){
+		this.decode4Cell();
+
+		if(k.puzzleid==='ichimaga'){
+			if     (this.checkpflag("m")){ k.puzzleid="ichimagam";}
+			else if(this.checkpflag("x")){ k.puzzleid="ichimagax";}
+			else                         { k.puzzleid="ichimaga"; }
+			menu.displayDesign();
+		}
+	},
+	pzlexport : function(type){
+		this.encode4Cell();
+	}
+},
+//---------------------------------------------------------
+FileIO:{
+	decodeData : function(){
+		var pzlflag = this.readLine();
+		if(k.puzzleid==='ichimaga'){
+			if     (pzlflag=="mag")  { k.puzzleid="ichimagam";}
+			else if(pzlflag=="cross"){ k.puzzleid="ichimagax";}
+			else                     { k.puzzleid="ichimaga"; }
+			menu.displayDesign();
+		}
+
+		this.decodeCellQnum();
+		this.decodeBorderLine();
+	},
+	encodeData : function(){
+		if     (k.puzzleid==="ichimagam"){ this.datastr+="mag/";}
+		else if(k.puzzleid==="ichimagax"){ this.datastr+="cross/";}
+		else                             { this.datastr+="def/";}
+
+		this.encodeCellQnum();
+		this.encodeBorderLine();
+	}
+},
+
+//---------------------------------------------------------
+// 正解判定処理実行部
+AnsCheck:{
+	checkAns : function(){
+
+		if( !this.checkLcntCell_firefly(3) ){
+			this.setAlert('分岐している線があります。', 'There is a branch line.'); return false;
+		}
+		if( (k.puzzleid!=='ichimagax') && !this.checkLcntCell_firefly(4) ){
+			this.setAlert('線が交差しています。', 'There is a crossing line.'); return false;
+		}
+
+		var xinfo = this.getErrorFlag_line();
+		if( !this.checkErrorFlag_line(xinfo,3) ){
+			this.setAlert('同じ数字同士が線で繋がっています。', 'Same numbers are connected each other.'); return false;
+		}
+		if( !this.checkErrorFlag_line(xinfo,2) ){
+			this.setAlert('線が2回以上曲がっています。', 'The number of curves is twice or more.'); return false;
+		}
+
+		this.performAsLine = true
+		if( !this.checkOneArea( bd.lines.getLareaInfo() ) ){
+			this.setAlert('線が全体で一つながりになっていません。', 'All lines and circles are not connected each other.'); return false;
+		}
+
+		if( !this.checkErrorFlag_line(xinfo,1) ){
+			this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
+		}
+
+		if( !this.checkAllCell( function(c){ return (bd.isValidNum(c) && bd.QnC(c)!==bd.lines.lcntCell(c)); } ) ){
+			this.setAlert('○から出る線の本数が正しくありません。', 'The number is not equal to the number of lines out of the circle.'); return false;
+		}
+
+		if( !this.checkAllCell( function(c){ return( bd.isNum(c) && bd.lines.lcntCell(c)===0); } ) ){
+			this.setAlert('○から線が出ていません。', 'There is a lonely circle.'); return false;
+		}
+
+		return true;
+	},
+
+	checkLcntCell_firefly : function(val){
+		if(bd.lines.ltotal[val]==0){ return true;}
+		return this.checkAllCell(function(c){ return (bd.noNum(c) && bd.lines.lcntCell(c)==val);});
+	},
+
+	isErrorFlag_line : function(xinfo){
+		var room=xinfo.room[xinfo.max], ccnt=room.ccnt, length=room.length;
+		var c1=room.cells[0], c2=room.cells[1];
+
+		var qn1=bd.QnC(c1), qn2=(c2!==null?bd.QnC(c2):-1), err=0;
+		if((k.puzzleid==='ichimagam') && qn1!==-2 && qn1===qn2){ err=3;}
+		else if(c2!==null && ccnt>1){ err=2;}
+		else if(c2===null){ err=1;}
+		room.error = err;
+	}
+}
 };

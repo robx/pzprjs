@@ -5,64 +5,63 @@
 //---------------------------------------------------------------------------
 
 // Menuクラス実行部
-MenuExec = function(){
-	this.displaymanage = true;
-	this.qnumw;	// Ques==51の回転･反転用
-	this.qnumh;	// Ques==51の回転･反転用
-	this.qnums;	// reduceでisOneNumber時の後処理用
+pzprv3.createCommonClass('MenuExec', '',
+{
+	initialize : function(){
+		this.displaymanage = true;
+		this.qnumw;	// Ques==51の回転･反転用
+		this.qnumh;	// Ques==51の回転･反転用
+		this.qnums;	// reduceでisOneNumber時の後処理用
 
-	this.reader;	// FileReaderオブジェクト
-	this.enableReadText = false;
+		this.reader;	// FileReaderオブジェクト
 
-	this.fileio = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
+		// expand/reduce処理用
+		this.insex = {};
+		this.insex[k.CELL]   = {1:true};
+		this.insex[k.CROSS]  = (k.iscross===1 ? {2:true} : {0:true});
+		this.insex[k.BORDER] = {1:true, 2:true};
+		this.insex[k.EXCELL] = {1:true};
+	},
 
-	// expand/reduce処理用
-	this.insex = {};
-	this.insex[k.CELL]   = {1:true};
-	this.insex[k.CROSS]  = (k.iscross===1 ? {2:true} : {0:true});
-	this.insex[k.BORDER] = {1:true, 2:true};
-	this.insex[k.EXCELL] = {1:true};
+	fileio : (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi"),
+	enableReadText : false,
 
 	// 定数
-	this.EXPAND = 0x10;
-	this.REDUCE = 0x20;
-	this.TURN   = 0x40;
-	this.FLIP   = 0x80;
-	this.TURNFLIP = this.TURN|this.FLIP;
+	EXPAND : 0x10,
+	REDUCE : 0x20,
+	TURN   : 0x40,
+	FLIP   : 0x80,
+	TURNFLIP: 0xC0, // (this.TURN|this.FLIP),
 
-	this.EXPANDUP = this.EXPAND|k.UP;
-	this.EXPANDDN = this.EXPAND|k.DN;
-	this.EXPANDLT = this.EXPAND|k.LT;
-	this.EXPANDRT = this.EXPAND|k.RT;
+	EXPANDUP: 0x11, // (this.EXPAND|k.UP),
+	EXPANDDN: 0x12, // (this.EXPAND|k.DN),
+	EXPANDLT: 0x13, // (this.EXPAND|k.LT),
+	EXPANDRT: 0x14, // (this.EXPAND|k.RT),
 
-	this.REDUCEUP = this.REDUCE|k.UP;
-	this.REDUCEDN = this.REDUCE|k.DN;
-	this.REDUCELT = this.REDUCE|k.LT;
-	this.REDUCERT = this.REDUCE|k.RT;
+	REDUCEUP: 0x21, // (this.REDUCE|k.UP),
+	REDUCEDN: 0x22, // (this.REDUCE|k.DN),
+	REDUCELT: 0x23, // (this.REDUCE|k.LT),
+	REDUCERT: 0x24, // (this.REDUCE|k.RT),
 
-	this.TURNL = this.TURN|1;
-	this.TURNR = this.TURN|2;
+	TURNL: 0x41, // (this.TURN|1),
+	TURNR: 0x42, // (this.TURN|2),
 
-	this.FLIPX = this.FLIP|1;
-	this.FLIPY = this.FLIP|2;
+	FLIPX: 0x81, // (this.FLIP|1),
+	FLIPY: 0x82, // (this.FLIP|2),
 
-	this.boardtype = {
-		expandup: [this.REDUCEUP, this.EXPANDUP],
-		expanddn: [this.REDUCEDN, this.EXPANDDN],
-		expandlt: [this.REDUCELT, this.EXPANDLT],
-		expandrt: [this.REDUCERT, this.EXPANDRT],
-		reduceup: [this.EXPANDUP, this.REDUCEUP],
-		reducedn: [this.EXPANDDN, this.REDUCEDN],
-		reducelt: [this.EXPANDLT, this.REDUCELT],
-		reducert: [this.EXPANDRT, this.REDUCERT],
+	boardtype : {
+		expandup: [0x21, 0x11],
+		expanddn: [0x22, 0x12],
+		expandlt: [0x23, 0x13],
+		expandrt: [0x24, 0x14],
+		reduceup: [0x11, 0x21],
+		reducedn: [0x12, 0x22],
+		reducelt: [0x13, 0x23],
+		reducert: [0x14, 0x24],
+		turnl: [0x42, 0x41], turnr: [0x41, 0x42],
+		flipy: [0x82, 0x82], flipx: [0x81, 0x81]
+	},
 
-		turnl: [this.TURNR, this.TURNL],
-		turnr: [this.TURNL, this.TURNR],
-		flipy: [this.FLIPY, this.FLIPY],
-		flipx: [this.FLIPX, this.FLIPX]
-	};
-};
-MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	// menu.ex.init() オブジェクトの初期化処理
 	//------------------------------------------------------------------------------
@@ -90,36 +89,32 @@ MenuExec.prototype = {
 	modechange : function(num){
 		k.editmode = (num==1);
 		k.playmode = (num==3);
-		kc.prev = null;
-		ans.errDisp=true;
+
+		kc.keyreset();
 		bd.errclear();
+		tc.adjust_modechange();
 		if(kp.haspanel[1] || kp.haspanel[3]){ pp.funcs.keypopup();}
-		tc.setAlign();
+
+		ans.errDisp=true;
 		pc.paintAll();
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.newboard()  新規盤面を作成する
+	// menu.ex.newboard()       新規盤面を作成する
+	// menu.ex.newboard_open()  新規盤面を作成する
 	//------------------------------------------------------------------------------
 	newboard : function(e){
 		if(menu.pop){
-			var col,row;
-			if(k.puzzleid!=="sudoku"){
-				col = (parseInt(_doc.newboard.col.value))|0;
-				row = (parseInt(_doc.newboard.row.value))|0;
-			}
-			else{
-				if     (_doc.newboard.size[0].checked){ col=row= 9;}
-				else if(_doc.newboard.size[1].checked){ col=row=16;}
-				else if(_doc.newboard.size[2].checked){ col=row=25;}
-				else if(_doc.newboard.size[3].checked){ col=row= 4;}
-			}
-
-			menu.popclose();
-
-			base.dec.parseURI('?'+k.puzzleid+'/'+col+'/'+row);
-			base.init_func(function(){ tm.reset();});
+			var col = (parseInt(_doc.newboard.col.value))|0;
+			var row = (parseInt(_doc.newboard.row.value))|0;
+			this.newboard_open('/'+col+'/'+row);
 		}
+	},
+	newboard_open : function(url){
+		menu.popclose();
+
+		base.dec.parseURI('?'+k.puzzleid+url);
+		base.importBoardData(base.dec.id);
 	},
 
 	//------------------------------------------------------------------------------
@@ -133,7 +128,7 @@ MenuExec.prototype = {
 
 			base.dec.parseURI(_doc.urlinput.ta.value);
 			if(!!base.dec.id){
-				base.init_func(function(){ tm.reset();});
+				base.importBoardData(base.dec.id);
 			}
 		}
 	},
@@ -246,7 +241,7 @@ MenuExec.prototype = {
 				_doc.fileform2.submit();
 			}
 			else{
-				if(!k.br.IE9){
+				if(!ee.br.IE9){
 					window.open(url, '', '');
 				}
 				else{
@@ -283,7 +278,7 @@ MenuExec.prototype = {
 	dispsize : function(e){
 		if(menu.pop){
 			var csize = parseInt(_doc.dispsize.cs.value);
-			if(csize>0){ k.cellsize = (csize|0);}
+			if(csize>0){ pc.cellsize = (csize|0);}
 
 			menu.popclose();
 			pc.resize_canvas();	// Canvasを更新する
@@ -304,7 +299,7 @@ MenuExec.prototype = {
 	//------------------------------------------------------------------------------
 	dispman : function(e){
 		var idlist = ['usepanel','checkpanel'];
-		var seplist = k.EDITOR ? [] : ['separator2'];
+		var seplist = pzprv3.EDITOR ? [] : ['separator2'];
 
 		if(this.displaymanage){
 			for(var i=0;i<idlist.length;i++)        { ee(idlist[i])  .el.style.display = 'none';}
@@ -561,67 +556,81 @@ MenuExec.prototype = {
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.adjustBoardData()  回転・反転開始前に各セルの調節を行う(共通処理)
-	// menu.ex.adjustBoardData2() 回転・反転終了後に各セルの調節を行う(共通処理)
+	// menu.ex.adjustBoardData()    回転・反転開始前に各セルの調節を行う(共通処理)
+	// menu.ex.adjustBoardData2()   回転・反転終了後に各セルの調節を行う(共通処理)
 	// 
-	// menu.ex.adjustSpecial()    回転・反転・盤面調節開始前に各セルの調節を行う(各パズルのオーバーライド用)
-	// menu.ex.adjustSpecial2()   回転・反転・盤面調節終了後に各セルの調節を行う(各パズルのオーバーライド用)
+	// menu.ex.adjustRoomNumber()   回転・反転開始前に数字つき部屋の処理を行う
+	// menu.ex.adjustRoomNumber2()  回転・反転終了後に数字つき部屋の処理を行う
 	// 
-	// menu.ex.adjustQues51_1()   [＼]セルの調整(adjustSpecial関数に代入する用)
-	// menu.ex.adjustQues51_2()   [＼]セルの調整(adjustSpecial2関数に代入する用)
+	// menu.ex.adjustNumberArrow()  回転・反転開始前の矢印つき数字の調整
+	// menu.ex.adjustCellArrow()    回転・反転開始前の矢印セルの調整
+	// 
+	// menu.ex.adjustQues51_1()     回転・反転開始前の[＼]セルの調整
+	// menu.ex.adjustQues51_2()     回転・反転終了後の[＼]セルの調整
+	// 
+	// menu.ex.adjustBoardObject()  回転・反転開始前のIN/OUTなどの位置の調整
 	//------------------------------------------------------------------------------
 	adjustBoardData : function(key,d){
-		this.adjustSpecial.call(this,key,d);
+		if(k.roomNumber){ this.adjustRoomNumber(key,d);}
+	},
+	adjustBoardData2 : function(key,d){
+		if(k.roomNumber){ this.adjustRoomNumber2(key,d);}
+	},
 
-		if(key & this.TURNFLIP){
-			var tques={};
-			switch(key){
-				case this.FLIPY: tques={2:5,3:4,4:3,5:2,14:17,15:16,16:15,17:14}; break;
-				case this.FLIPX: tques={2:3,3:2,4:5,5:4,14:15,15:14,16:17,17:16}; break;
-				case this.TURNR: tques={2:5,3:2,4:3,5:4,12:13,13:12,14:17,15:14,16:15,17:16,21:22,22:21}; break;
-				case this.TURNL: tques={2:3,3:4,4:5,5:2,12:13,13:12,14:15,15:16,16:17,17:14,21:22,22:21}; break;
-			}
-
-			var tdir={};
-			switch(key){
-				case this.FLIPY: tdir={1:2,2:1}; break;			// 上下反転
-				case this.FLIPX: tdir={3:4,4:3}; break;			// 左右反転
-				case this.TURNR: tdir={1:4,2:3,3:1,4:2}; break;	// 右90°回転
-				case this.TURNL: tdir={1:3,2:4,3:2,4:1}; break;	// 左90°回転
-			}
-
-			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				var val=tques[bd.QuC(c)]; if(!!val){ bd.sQuC(c,val);}
-				if(k.isexcell!==1){
-					var val=tdir[bd.DiC(c)]; if(!!val){ bd.sDiC(c,val);}
-				}
-			}
-		}
-
-		if((key & this.REDUCE) && k.roomNumber){
+	adjustRoomNumber : function(key,d){
+		if(key & this.REDUCE){
 			this.qnums = [];
 			for(var i=0;i<bd.cell.length;i++){
 				if(!!this.insex[k.CELL][this.distObj(k.CELL,i,key)] && bd.cell[i].qnum!==-1){
-					this.qnums.push({ areaid:bd.areas.getRoomID(i), val:bd.cell[i].qnum});
+					this.qnums.push({areaid:bd.areas.getRoomID(i), val:bd.cell[i].qnum});
 				}
 			}
 		}
 	},
-	adjustBoardData2 : function(key,d){
-		if((key & this.REDUCE) && k.roomNumber){
+	adjustRoomNumber2 : function(key,d){
+		if(key & this.REDUCE){
 			bd.areas.resetArea();
 			for(var i=0;i<this.qnums.length;i++){
 				var c = bd.areas.getTopOfRoom(this.qnums[i].areaid);
 				bd.cell[c].qnum = this.qnums[i].val;
 			}
 		}
-
-		this.adjustSpecial2.call(this,key,d);
 	},
-	adjustSpecial  : function(key,d){ },
-	adjustSpecial2 : function(key,d){ },
+
+	adjustNumberArrow : function(key,d){
+		if(key & this.TURNFLIP){
+			var tdir={};
+			switch(key){
+				case this.FLIPY: tdir={1:2,2:1}; break;				// 上下反転
+				case this.FLIPX: tdir={3:4,4:3}; break;				// 左右反転
+				case this.TURNR: tdir={1:4,2:3,3:1,4:2}; break;		// 右90°回転
+				case this.TURNL: tdir={1:3,2:4,3:2,4:1}; break;		// 左90°回転
+			}
+			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				var val=tdir[bd.DiC(c)]; if(!!val){ bd.sDiC(c,val);}
+			}
+		}
+	},
+	adjustCellArrow : function(key,d){
+		if(key & this.TURNFLIP){
+			var trans = {};
+			switch(key){
+				case this.FLIPY: trans={1:2,2:1}; break;			// 上下反転
+				case this.FLIPX: trans={3:4,4:3}; break;			// 左右反転
+				case this.TURNR: trans={1:4,2:3,3:1,4:2}; break;	// 右90°回転
+				case this.TURNL: trans={1:3,2:4,3:2,4:1}; break;	// 左90°回転
+				default: return;
+			}
+			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
+			for(var i=0;i<clist.length;i++){
+				var c = clist[i];
+				var val = trans[bd.QnC(c)]; if(!!val){ bd.sQnC(c,val);}
+				var val = trans[bd.AnC(c)]; if(!!val){ bd.sAnC(c,val);}
+			}
+		}
+	},
 
 	adjustQues51_1 : function(key,d){
 		var bx1=(d.x1|1), by1=(d.y1|1);
@@ -709,6 +718,28 @@ MenuExec.prototype = {
 		}
 	},
 
+	adjustBoardObject : function(key,d,group,id){
+		var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
+
+		var obj=bd.getObject(group,id), bx=obj.bx, by=obj.by, newid;
+		switch(key){
+			case this.FLIPY: newid = bd.idnum(group, bx,yy-by); break;
+			case this.FLIPX: newid = bd.idnum(group, xx-bx,by); break;
+			case this.TURNR: newid = bd.idnum(group, yy-by,bx,k.qrows,k.qcols); break;
+			case this.TURNL: newid = bd.idnum(group, by,xx-bx,k.qrows,k.qcols); break;
+			case this.EXPANDUP: newid = bd.idnum(group, bx,by+(by===bd.minby?0:2), k.qcols,k.qrows+1); break;
+			case this.EXPANDDN: newid = bd.idnum(group, bx,by+(by===bd.maxby?2:0), k.qcols,k.qrows+1); break;
+			case this.EXPANDLT: newid = bd.idnum(group, bx+(bx===bd.minbx?0:2),by ,k.qcols+1,k.qrows); break;
+			case this.EXPANDRT: newid = bd.idnum(group, bx+(bx===bd.maxbx?2:0),by ,k.qcols+1,k.qrows); break;
+			case this.REDUCEUP: newid = bd.idnum(group, bx,by-(by<=bd.minby+2?0:2), k.qcols,k.qrows-1); break;
+			case this.REDUCEDN: newid = bd.idnum(group, bx,by-(by>=bd.maxby-2?2:0), k.qcols,k.qrows-1); break;
+			case this.REDUCELT: newid = bd.idnum(group, bx-(bx<=bd.minbx+2?0:2),by, k.qcols-1,k.qrows); break;
+			case this.REDUCERT: newid = bd.idnum(group, bx-(bx>=bd.maxbx-2?2:0),by, k.qcols-1,k.qrows); break;
+			default: newid = id; break;
+		}
+		return newid;
+	},
+
 	//------------------------------------------------------------------------------
 	// menu.ex.ACconfirm()  「回答消去」ボタンを押したときの処理
 	// menu.ex.ASconfirm()  「補助消去」ボタンを押したときの処理
@@ -730,4 +761,4 @@ MenuExec.prototype = {
 			pc.paintAll();
 		}
 	}
-};
+});

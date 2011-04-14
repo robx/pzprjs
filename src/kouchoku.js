@@ -1,23 +1,311 @@
 //
 // パズル固有スクリプト部 交差は直角に限る版 kouchoku.js v3.4.0
 //
-Puzzles.kouchoku = function(){ };
-Puzzles.kouchoku.prototype = {
-	setting : function(){
-		// グローバル変数の初期設定
-		if(!k.qcols){ k.qcols = 7;}
-		if(!k.qrows){ k.qrows = 7;}
+pzprv3.custom.kouchoku = {
+//---------------------------------------------------------
+// フラグ
+Flags:{
+	setting : function(pid){
+		this.qcols = 7;
+		this.qrows = 7;
 
-		k.irowake  = 1;
-		k.iscross  = 2;
+		this.irowake  = 1;
+		this.iscross  = 2;
 
-		k.ispzprv3ONLY    = true;
+		this.bdmargin       = 0.70;
+		this.bdmargin_image = 0.50;
 
-		k.bdmargin       = 0.70;
-		k.bdmargin_image = 0.50;
+		this.floatbgcolor = "rgb(127, 127, 127)";
+	}
+},
 
-		base.setFloatbgcolor("rgb(127, 127, 127)");
+//---------------------------------------------------------
+// マウス入力系
+MouseEvent:{
+	mousedown : function(){
+		if     (k.playmode){ this.inputsegment();}
+		else if(k.editmode){ this.inputcross_kouchoku();}
 	},
+	mouseup : function(){
+		if(k.playmode){ this.inputsegment_up();}
+	},
+	mousemove : function(){
+		if(k.playmode){ this.inputsegment();}
+	},
+
+	setEvents : function(){
+		this.SuperFunc.setEvents.call(this);
+
+		var canvas = ee('divques').el;
+		ee.addEvent(canvas, "mouseout", ee.ebinder(this, this.e_mouseout));
+	},
+	e_mouseout : function(e){
+		// 子要素に入ってもイベントが起きてしまうので、サイズを確認する
+		var ex=ee.pageX(e), ey=ee.pageY(e), rect=ee('divques').getRect();
+		if(ex<=rect.left || ex>=rect.right || ey<=rect.top || ey>=rect.bottom){
+			if(this.inputData===1){
+				var cc1=this.targetPoint[0], cc2=this.targetPoint[1];
+				this.targetPoint = [null, null];
+				if(cc1!==null){ pc.paintCross(cc1);}
+				if(cc2!==null){ pc.paintCross(cc2);}
+			}
+			this.mousereset();
+		}
+	},
+
+	targetPoint : [null, null],
+	inputsegment : function(){
+		var cc = this.crossid();
+		if(cc===null || cc===this.mouseCell){ return;}
+
+		if(this.ismousedown){
+			this.inputData = 1;
+			this.targetPoint[0] = cc;
+			pc.paintCross(cc);
+		}
+		else if(this.inputData===1){
+			var old=this.targetPoint[1];
+			this.targetPoint[1] = cc;
+			pc.paintCross(cc);
+			if(old!==null){ pc.paintCross(old);}
+		}
+		
+		this.mouseCell = cc;
+	},
+	inputsegment_up : function(){
+		if(this.inputData!==1){ return;}
+
+		var cc1=this.targetPoint[0], cc2=this.targetPoint[1];
+		this.targetPoint = [null, null];
+		if(cc1!==null){ pc.paintCross(cc1);}
+		if(cc2!==null){ pc.paintCross(cc2);}
+		if(cc1!==null && cc2!==null){
+			if(!pp.getVal('enline') || (bd.cross[cc1].qnum!==-1 && bd.cross[cc2].qnum!==-1)){
+				var bx1=bd.cross[cc1].bx, bx2=bd.cross[cc2].bx,
+					by1=bd.cross[cc1].by, by2=bd.cross[cc2].by, tmp;
+				if(!pp.getVal('lattice') || bd.getLatticePoint(bx1,by1,bx2,by2).length===0){
+					bd.segs.input(bx1,by1,bx2,by2);
+					if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;}
+					if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
+					pc.paintRange(bx1-1,by1-1,bx2+1,by2+1);
+				}
+			}
+		}
+	},
+
+	inputcross_kouchoku : function(){
+		var cc = this.crossid();
+		if(cc===null || cc===this.mouseCell){ return;}
+
+		if(cc===tc.getTXC()){
+			var qn = bd.QnX(cc);
+			if(this.btn.Left){
+				if     (qn===26){ bd.sQnX(cc,-1);}
+				else if(qn===-1){ bd.sQnX(cc,-2);}
+				else if(qn===-2){ bd.sQnX(cc, 1);}
+				else{ bd.sQnX(cc,qn+1);}
+			}
+			else if(this.btn.Right){
+				if     (qn==-2){ bd.sQnX(cc,-1);}
+				else if(qn==-1){ bd.sQnX(cc,26);}
+				else if(qn== 1){ bd.sQnX(cc,-2);}
+				else{ bd.sQnX(cc,qn-1);}
+			}
+		}
+		else{
+			var cc0 = tc.getTXC();
+			tc.setTXC(cc);
+			pc.paintCross(cc0);
+		}
+		this.mouseCell = cc;
+
+		pc.paintCross(cc);
+	}
+},
+
+//---------------------------------------------------------
+// キーボード入力系
+KeyEvent:{
+	keyinput : function(ca){
+		if(k.playmode){ return;}
+		if(this.moveTCross(ca)){ return;}
+		this.key_inputqnum_kouchoku(ca);
+	},
+	key_inputqnum_kouchoku : function(ca){
+		var c = tc.getTXC();
+
+		if(ca.length>1){ return;}
+		else if('a'<=ca && ca<='z'){
+			var num = parseInt(ca,36)-9;
+			if(bd.QnX(c)===num){ bd.sQnX(c,-1);}
+			else{ bd.sQnX(c,num);}
+		}
+		else if(ca=='-'){ bd.sQnX(c,(bd.QnX(c)!==-2?-2:-1));}
+		else if(ca==' '){ bd.sQnX(c,-1);}
+		else{ return;}
+
+		this.prev = c;
+		pc.paintCross(c);
+	}
+},
+
+TargetCursor:{
+	crosstype : true
+},
+
+//---------------------------------------------------------
+// 盤面管理系
+Cross:{
+	segment : []
+},
+
+Board:{
+	maxnum : 26,
+
+	initBoardSize : function(col,row){
+		this.SuperFunc.initBoardSize.call(this,col,row);
+
+		this.segs = new (pzprv3.getPuzzleClass('SegmentManager'))();
+		this.segs.init();
+	},
+
+	disableInfo : function(){
+		this.SuperFunc.disableInfo.call(this);
+		this.segs.disableRecord();
+	},
+	enableInfo : function(){
+		this.SuperFunc.enableInfo.call(this);
+		this.segs.enableRecord();
+	},
+	resetInfo : function(){
+		this.segs.reset();
+	},
+
+	allclear : function(isrec){
+		this.SuperFunc.allclear.call(this,isrec);
+
+		if(!!this.segs){
+			var idlist = this.segs.getallsegment();
+			for(var i=0;i<idlist.length;i++){
+				pc.eraseSegment1(idlist[i]);
+			}
+			this.segs.allclear();
+		}
+	},
+	ansclear : function(){
+		this.SuperFunc.ansclear.call(this);
+
+		if(!!this.segs){
+			var idlist = this.segs.getallsegment();
+			for(var i=0;i<idlist.length;i++){
+				pc.eraseSegment1(idlist[i]);
+				this.segs.removeSegment(idlist[i]);
+			}
+			this.segs.allclear();
+		}
+	},
+	errclear : function(){
+		if(!ans.errDisp){ return;}
+
+		if(!!this.segs){
+			var idlist = this.segs.getallsegment();
+			for(var i=0;i<idlist.length;i++){ this.segs.seg[idlist[i]].error=0;}
+		}
+
+		this.SuperFunc.errclear.call(this);
+	},
+
+	getLatticePoint : function(bx1,by1,bx2,by2){
+		var seg = new (pzprv3.getPuzzleClass('Segment'))(bx1,by1,bx2,by2), lattice = [];
+		for(var i=0;i<seg.lattices.length;i++){
+			var xc = seg.lattices[i][2];
+			if(xc!==null && bd.cross[xc].qnum!==-1){ lattice.push(xc);}
+		}
+		return lattice;
+	}
+},
+
+Operation:{
+	exec : function(num){
+		if(this.SuperFunc.exec.call(this,num)){ return;}
+
+		if(this.property=='segment'){
+			var bx1=+this.id[0],by1=+this.id[1],bx2=+this.id[2],by2=+this.id[3],tmp;
+			if     (num===1){ bd.segs.setSegment   (bx1,by1,bx2,by2);}
+			else if(num===0){ bd.segs.removeSegment(bx1,by1,bx2,by2);}
+			if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;} if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
+			um.paintStack(bx1-1,by1-1,bx2+1,by2+1);
+		}
+	},
+	decode : function(strs){
+		if(this.SuperFunc.decode.call(this,strs)){ return;}
+
+		this.group = k.OTHER;
+		this.property = 'segment';
+		this.id = [strs[1],strs[2],strs[3],strs[4]];
+		this.old = +strs[5];
+		this.num = +strs[6];
+	},
+	toString : function(){
+		var str = this.SuperFunc.toString.call(this);
+		if(!!str){ return str;}
+
+		return ['SG', this.id[0], this.id[1], this.id[2], this.id[3], this.old, this.num].join(',');
+	}
+},
+
+MenuExec:{
+	adjustBoardData : function(key,d){
+		var idlist=bd.segs.getallsegment();
+		if(key & this.REDUCE){
+			var sublist=[];
+			for(var i=0;i<idlist.length;i++){
+				var id=idlist[i], seg=bd.segs.seg[id];
+				var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
+				switch(key){
+					case this.REDUCEUP: if(by1<bd.minby+2||by2<bd.minby+2){ sublist.push(id);} break;
+					case this.REDUCEDN: if(by1>bd.maxby-2||by2>bd.maxby-2){ sublist.push(id);} break;
+					case this.REDUCELT: if(bx1<bd.minbx+2||bx2<bd.minbx+2){ sublist.push(id);} break;
+					case this.REDUCERT: if(bx1>bd.maxbx-2||bx2>bd.maxbx-2){ sublist.push(id);} break;
+				}
+			}
+
+			var isrec = (!um.undoExec && !um.redoExec);
+			if(isrec){ um.forceRecord = true;}
+			for(var i=0;i<sublist.length;i++){ bd.segs.removeSegment(sublist[i]);}
+			if(isrec){ um.forceRecord = false;}
+
+			idlist=bd.segs.getallsegment(); // 再取得
+		}
+
+		var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
+		for(var i=0;i<idlist.length;i++){
+			var id=idlist[i], seg=bd.segs.seg[id];
+			var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
+			switch(key){
+				case this.FLIPY: seg.setpos(bx1,yy-by1,bx2,yy-by2,k.qcols,k.qrows); break;
+				case this.FLIPX: seg.setpos(xx-bx1,by1,xx-bx2,by2,k.qcols,k.qrows); break;
+				case this.TURNR: seg.setpos(yy-by1,bx1,yy-by2,bx2,k.qrows,k.qcols); break;
+				case this.TURNL: seg.setpos(by1,xx-bx1,by2,xx-bx2,k.qrows,k.qcols); break;
+				case this.EXPANDUP: seg.setpos(bx1,  by1+2,bx2,  by2+2,k.qcols,k.qrows+1); break;
+				case this.EXPANDDN: seg.setpos(bx1,  by1,  bx2,  by2,  k.qcols,k.qrows+1); break;
+				case this.EXPANDLT: seg.setpos(bx1+2,by1,  bx2+2,by2,  k.qcols+1,k.qrows); break;
+				case this.EXPANDRT: seg.setpos(bx1,  by1,  bx2,  by2,  k.qcols+1,k.qrows); break;
+				case this.REDUCEUP: seg.setpos(bx1,  by1-2,bx2,  by2-2,k.qcols,k.qrows-1); break;
+				case this.REDUCEDN: seg.setpos(bx1,  by1,  bx2,  by2,  k.qcols,k.qrows-1); break;
+				case this.REDUCELT: seg.setpos(bx1-2,by1,  bx2-2,by2,  k.qcols-1,k.qrows); break;
+				case this.REDUCERT: seg.setpos(bx1,  by1,  bx2,  by2,  k.qcols-1,k.qrows); break;
+			}
+		}
+	},
+
+	irowakeRemake : function(){
+		bd.segs.newIrowake();
+		if(pp.getVal('irowake')){ pc.paintAll();}
+	}
+},
+
+Menu:{
 	menufix : function(){
 		pp.addCheck('circolor','setting',true,'点をグレーにする','Set Grey Color');
 		pp.setLabel('circolor', '線が2本になったら点をグレーにする', 'Grey if the number of linked segment is two.');
@@ -29,658 +317,415 @@ Puzzles.kouchoku.prototype = {
 		pp.addCheck('lattice','setting',true,'格子点チェック','Check lattice point');
 		pp.setLabel('lattice', '点を通過する線を引けないようにする', 'Disable drawing segment passing over a lattice point.');
 	},
-	finalfix : function(){
+
+	menuinit : function(){
+		this.SuperFunc.menuinit.call(this);
 		ee('btnclear2').el.style.display = 'none';
 	},
-	protoChange : function(){
-		Cross.prototype.segment = [];
-
-		Operation.prototype.decodeSpecial = function(strs){
-			this.property = 'segment';
-			this.id = [strs[1],strs[2],strs[3],strs[4]];
-			this.old = +strs[5];
-			this.num = +strs[6];
-		};
-		Operation.prototype.toStringSpecial = function(){
-			return ['SG', this.id[0], this.id[1], this.id[2], this.id[3], this.old, this.num].join(',');
-		};
-	},
-	protoOriginal : function(){
-		delete Cross.prototype.segment;
+	menureset : function(){
 		ee('btnclear2').el.style.display = 'inline';
+		this.SuperFunc.menureset.call(this);
+	}
+},
 
-		Operation.prototype.decodeSpecial = function(strs){};
-		Operation.prototype.toStringSpecial = function(){};
+//---------------------------------------------------------
+// 画像表示系
+Graphic:{
+	setColors : function(){
+		this.gridcolor = this.gridcolor_DLIGHT;
+	},
+	paint : function(){
+		this.drawDashedGrid(false);
+
+		this.drawSegments();
+
+		this.drawCrosses_kouchoku();
+		this.drawSegmentTarget();
+		this.drawTarget();
 	},
 
-	//---------------------------------------------------------
-	//入力系関数オーバーライド
-	input_init : function(){
-		// マウス入力系
-		mv.mousedown = function(){
-			if(k.playmode){ this.inputsegment();}
-			else if(k.editmode){ this.inputcross_kouchoku();}
-		};
-		mv.mouseup = function(){
-			if(k.playmode){ this.inputsegment_up();}
-		};
-		mv.mousemove = function(){
-			if(k.playmode){ this.inputsegment();}
-		};
+	repaintSegments : function(idlist, id){
+		this.vinc('segment', 'auto');
 
-		mv.inputsegment = function(){
-			var cc = this.crossid();
-			if(cc===null || cc===this.mouseCell){ return;}
-
-			if(this.ismousedown){
-				this.inputData = 1;
-				this.targetPoint[0] = cc;
-				pc.paintCross(cc);
-			}
-			else if(this.inputData===1){
-				var old=this.targetPoint[1];
-				this.targetPoint[1] = cc;
-				pc.paintCross(cc);
-				if(old!==null){ pc.paintCross(old);}
-			}
-			
-			this.mouseCell = cc;
-		};
-		mv.inputsegment_up = function(){
-			if(this.inputData!==1){ return;}
-
-			var cc1=this.targetPoint[0], cc2=this.targetPoint[1];
-			this.targetPoint = [null, null];
-			if(cc1!==null){ pc.paintCross(cc1);}
-			if(cc2!==null){ pc.paintCross(cc2);}
-			if(cc1!==null && cc2!==null){
-				if(!pp.getVal('enline') || (bd.cross[cc1].qnum!==-1 && bd.cross[cc2].qnum!==-1)){
-					var bx1=bd.cross[cc1].bx, bx2=bd.cross[cc2].bx,
-						by1=bd.cross[cc1].by, by2=bd.cross[cc2].by, tmp;
-					if(!pp.getVal('lattice') || ans.getLatticePoint(bx1,by1,bx2,by2).length===0){
-						bd.segs.input(bx1,by1,bx2,by2);
-						if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;}
-						if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
-						pc.paintRange(bx1-1,by1-1,bx2+1,by2+1);
-					}
-				}
-			}
-		};
-
-		var canvas = ee('divques').el;
-		ee.addEvent(canvas, "mouseout",  function(e){ mv.mv_e_mouseout.call(mv,e);});
-		mv.mv_e_mouseout = function(e){
-			// 子要素に入ってもイベントが起きてしまうので、サイズを確認する
-			var ex=ee.pageX(e), ey=ee.pageY(e), rect=ee('divques').getRect();
-			if(ex<=rect.left || ex>=rect.right || ey<=rect.top || ey>=rect.bottom){
-				if(this.inputData===1){
-					var cc1=this.targetPoint[0], cc2=this.targetPoint[1];
-					this.targetPoint = [null, null];
-					if(cc1!==null){ pc.paintCross(cc1);}
-					if(cc2!==null){ pc.paintCross(cc2);}
-				}
-				this.mousereset();
-			}
-		};
-
-		mv.inputcross_kouchoku = function(){
-			var cc = this.crossid();
-			if(cc===null || cc===this.mouseCell){ return;}
-
-			if(cc===tc.getTXC()){
-				var qn = bd.QnX(cc);
-				if(this.btn.Left){
-					if     (qn===26){ bd.sQnX(cc,-1);}
-					else if(qn===-1){ bd.sQnX(cc,-2);}
-					else if(qn===-2){ bd.sQnX(cc, 1);}
-					else{ bd.sQnX(cc,qn+1);}
-				}
-				else if(this.btn.Right){
-					if     (qn==-2){ bd.sQnX(cc,-1);}
-					else if(qn==-1){ bd.sQnX(cc,26);}
-					else if(qn== 1){ bd.sQnX(cc,-2);}
-					else{ bd.sQnX(cc,qn-1);}
-				}
-			}
-			else{
-				var cc0 = tc.getTXC();
-				tc.setTXC(cc);
-				pc.paintCross(cc0);
-			}
-			this.mouseCell = cc;
-
-			pc.paintCross(cc);
-		};
-		mv.targetPoint = [null, null];
-
-		// キーボード入力系
-		kc.keyinput = function(ca){
-			if(k.playmode){ return;}
-			if(this.moveTCross(ca)){ return;}
-			this.key_inputqnum_kouchoku(ca);
-		};
-		kc.key_inputqnum_kouchoku = function(ca){
-			var c = tc.getTXC();
-
-			if(ca.length>1){ return;}
-			else if('a'<=ca && ca<='z'){
-				var num = parseInt(ca,36)-9;
-				if(bd.QnX(c)===num){ bd.sQnX(c,-1);}
-				else{ bd.sQnX(c,num);}
-			}
-			else if(ca=='-'){ bd.sQnX(c,(bd.QnX(c)!==-2?-2:-1));}
-			else if(ca==' '){ bd.sQnX(c,-1);}
-			else{ return;}
-
-			this.prev = c;
-			pc.paintCross(c);
-		};
-
-		tc.setCrossType();
-
-		bd.maxnum = 26;
-		bd.segs = new SegmentManager();
-
-		bd.disableInfo = function(){
-			um.disableRecord();
-			this.segs.disableRecord();
-		};
-		bd.enableInfo = function(){
-			um.enableRecord();
-			this.segs.enableRecord();
-		};
-		bd.resetInfo = function(){
-			this.segs.reset();
-		};
-
-		bd.allclearSpecial = function(isrec){
-			var idlist = this.segs.getallsegment();
-			for(var i=0;i<idlist.length;i++){
-				pc.eraseSegment1(idlist[i]);
-			}
-			this.segs.init();
-		};
-		bd.ansclearSpecial = function(){
-			var idlist = this.segs.getallsegment();
-			for(var i=0;i<idlist.length;i++){
-				pc.eraseSegment1(idlist[i]);
-				this.segs.removeSegment(idlist[i]);
-			}
-			this.segs.init();
-		};
-		bd.errclearSpecial = function(){
-			var idlist = this.segs.getallsegment();
-			for(var i=0;i<idlist.length;i++){ this.segs.seg[idlist[i]].error=0;}
-		};
-
-		um.execSpecial = function(ope, num){
-			if(ope.property=='segment'){
-				var bx1=+ope.id[0],by1=+ope.id[1],bx2=+ope.id[2],by2=+ope.id[3],tmp;
-				if     (num===1){ bd.segs.setSegment   (bx1,by1,bx2,by2);}
-				else if(num===0){ bd.segs.removeSegment(bx1,by1,bx2,by2);}
-				if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;} if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
-				this.paintStack(bx1-1,by1-1,bx2+1,by2+1);
-			}
-		};
-
-		menu.ex.adjustSpecial = function(key,d){
-			var idlist=bd.segs.getallsegment();
-			if(key & this.REDUCE){
-				var sublist=[];
-				for(var i=0;i<idlist.length;i++){
-					var id=idlist[i], seg=bd.segs.seg[id];
-					var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
-					switch(key){
-						case this.REDUCEUP: if(by1<bd.minby+2||by2<bd.minby+2){ sublist.push(id);} break;
-						case this.REDUCEDN: if(by1>bd.maxby-2||by2>bd.maxby-2){ sublist.push(id);} break;
-						case this.REDUCELT: if(bx1<bd.minbx+2||bx2<bd.minbx+2){ sublist.push(id);} break;
-						case this.REDUCERT: if(bx1>bd.maxbx-2||bx2>bd.maxbx-2){ sublist.push(id);} break;
-					}
-				}
-
-				var isrec = (!um.undoExec && !um.redoExec);
-				if(isrec){ um.forceRecord = true;}
-				for(var i=0;i<sublist.length;i++){ bd.segs.removeSegment(sublist[i]);}
-				if(isrec){ um.forceRecord = false;}
-
-				idlist=bd.segs.getallsegment(); // 再取得
-			}
-
-			var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
-			for(var i=0;i<idlist.length;i++){
-				var id=idlist[i], seg=bd.segs.seg[id];
-				var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
-				switch(key){
-					case this.FLIPY: seg.setpos(bx1,yy-by1,bx2,yy-by2,k.qcols,k.qrows); break;
-					case this.FLIPX: seg.setpos(xx-bx1,by1,xx-bx2,by2,k.qcols,k.qrows); break;
-					case this.TURNR: seg.setpos(yy-by1,bx1,yy-by2,bx2,k.qrows,k.qcols); break;
-					case this.TURNL: seg.setpos(by1,xx-bx1,by2,xx-bx2,k.qrows,k.qcols); break;
-					case this.EXPANDUP: seg.setpos(bx1,  by1+2,bx2,  by2+2,k.qcols,k.qrows+1); break;
-					case this.EXPANDDN: seg.setpos(bx1,  by1,  bx2,  by2,  k.qcols,k.qrows+1); break;
-					case this.EXPANDLT: seg.setpos(bx1+2,by1,  bx2+2,by2,  k.qcols+1,k.qrows); break;
-					case this.EXPANDRT: seg.setpos(bx1,  by1,  bx2,  by2,  k.qcols+1,k.qrows); break;
-					case this.REDUCEUP: seg.setpos(bx1,  by1-2,bx2,  by2-2,k.qcols,k.qrows-1); break;
-					case this.REDUCEDN: seg.setpos(bx1,  by1,  bx2,  by2,  k.qcols,k.qrows-1); break;
-					case this.REDUCELT: seg.setpos(bx1-2,by1,  bx2-2,by2,  k.qcols-1,k.qrows); break;
-					case this.REDUCERT: seg.setpos(bx1,  by1,  bx2,  by2,  k.qcols-1,k.qrows); break;
-				}
-			}
-		};
-
-		menu.ex.irowakeRemake = function(){
-			bd.segs.newIrowake();
-			if(pp.getVal('irowake')){ pc.paintAll();}
-		};
+		for(var i=0;i<idlist.length;i++){
+			if(id!==idlist[i]){ this.drawSegment1(idlist[i],true);}
+		}
 	},
 
-	//---------------------------------------------------------
-	//画像表示系関数オーバーライド
-	graphic_init : function(){
-		pc.gridcolor = pc.gridcolor_DLIGHT;
+	drawSegments : function(){
+		this.vinc('segment', 'auto');
 
-		pc.paint = function(){
-			this.drawDashedGrid(false);
+		var idlist = [];
+		/* 全領域の30%以下なら範囲指定 */
+		if(((this.range.x2-this.range.x1)*(this.range.y2-this.range.y1))/((bd.maxbx-bd.minbx)*(bd.maxby-bd.minby))<0.30){
+			idlist = bd.segs.segmentinside(this.range.x1,this.range.y1,this.range.x2,this.range.y2);
+		}
+		else{
+			idlist = bd.segs.getallsegment();
+		}
+		for(var i=0;i<idlist.length;i++){ this.drawSegment1(idlist[i],true);}
+	},
+	eraseSegment1 : function(id){
+		this.vinc('segment', 'auto');
+		this.drawSegment1(id,false);
+	},
+	drawSegment1 : function(id,isdraw){
+		g.lineWidth = this.lw;
 
-			this.drawSegments();
+		var seg = bd.segs.seg[id];
+		var header_id = ["seg",seg.bx1,seg.by1,seg.bx2,seg.by2].join("_");
+		if(isdraw){
+			if     (seg.error===1){ g.strokeStyle = this.errlinecolor1;}
+			else if(seg.error===2){ g.strokeStyle = this.errlinecolor2;}
+			else if(k.irowake===0 || !pp.getVal('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
+			else{ g.strokeStyle = seg.color;}
 
-			this.drawCrosses_kouchoku();
-			this.drawSegmentTarget();
-			this.drawTarget();
-		};
-
-		pc.repaintSegments = function(idlist, id){
-			this.vinc('segment', 'auto');
-
-			for(var i=0;i<idlist.length;i++){
-				if(id!==idlist[i]){ this.drawSegment1(idlist[i],true);}
+			if(this.vnop(header_id,this.STROKE)){
+				var px1 = seg.bx1*this.bw, px2 = seg.bx2*this.bw,
+					py1 = seg.by1*this.bh, py2 = seg.by2*this.bh;
+				g.strokeLine(px1,py1,px2,py2);
 			}
-		};
-
-		pc.drawSegments = function(){
-			this.vinc('segment', 'auto');
-
-			var idlist = [];
-			/* 全領域の30%以下なら範囲指定 */
-			if(((this.range.x2-this.range.x1)*(this.range.y2-this.range.y1))/((bd.maxbx-bd.minbx)*(bd.maxby-bd.minby))<0.30){
-				idlist = bd.segs.segmentinside(this.range.x1,this.range.y1,this.range.x2,this.range.y2);
-			}
-			else{
-				idlist = bd.segs.getallsegment();
-			}
-			for(var i=0;i<idlist.length;i++){ this.drawSegment1(idlist[i],true);}
-		};
-		pc.eraseSegment1 = function(id){
-			this.vinc('segment', 'auto');
-			this.drawSegment1(id,false);
-		};
-		pc.drawSegment1 = function(id,isdraw){
-			g.lineWidth = this.lw;
-
-			var seg = bd.segs.seg[id];
-			var header_id = ["seg",seg.bx1,seg.by1,seg.bx2,seg.by2].join("_");
-			if(isdraw){
-				if     (seg.error===1){ g.strokeStyle = this.errlinecolor1;}
-				else if(seg.error===2){ g.strokeStyle = this.errlinecolor2;}
-				else if(k.irowake===0 || !pp.getVal('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
-				else{ g.strokeStyle = seg.color;}
-
-				if(this.vnop(header_id,this.STROKE)){
-					var px1 = seg.bx1*this.bw, px2 = seg.bx2*this.bw,
-						py1 = seg.by1*this.bh, py2 = seg.by2*this.bh;
-					g.strokeLine(px1,py1,px2,py2);
-				}
-			}
-			else{ this.vhide(header_id);}
-		};
-
-		pc.drawCrosses_kouchoku = function(){
-			this.vinc('cross_base', 'auto');
-
-			var isgray = pp.getVal('circolor');
-			var csize1 = this.cw*0.30+1, csize2 = this.cw*0.20;
-			var headers = ["x_cp_", "x_cm_"];
-			g.lineWidth = 1;
-
-			var clist = this.range.crosses;
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i], obj = bd.cross[c], key = ['cross',c].join('_');
-				var graydisp = (isgray && obj.error===0 && obj.segment.length>=2);
-				if(obj.qnum>0){
-					// ○の描画
-					g.fillStyle = (obj.error===1 ? this.errbcolor1 : "white");
-					g.strokeStyle = (graydisp ? "gray" : "black");
-					if(this.vnop(headers[0]+c,this.FILL_STROKE)){
-						g.shapeCircle(obj.px, obj.py, csize1);
-					}
-
-					// アルファベットの描画
-					var letter = (obj.qnum+9).toString(36).toUpperCase();
-					var color = (graydisp ? "gray" : this.fontcolor);
-					this.dispnum(key, 1, letter, 0.55, color, obj.px, obj.py);
-				}
-				else{ this.vhide([headers[0]+c]); this.hidenum(key);}
-
-				if(obj.qnum===-2){
-					g.fillStyle = (obj.error===1 ? this.errcolor1 : this.cellcolor);
-					if(graydisp){ g.fillStyle="gray";}
-					if(this.vnop(headers[1]+c,this.FILL)){
-						g.fillCircle(obj.px, obj.py, csize2);
-					}
-				}
-				else{ this.vhide(headers[1]+c);}
-			}
-		};
-
-		pc.drawSegmentTarget = function(){
-			this.vinc('cross_target_', 'auto');
-
-			var csize = this.cw*0.32;
-			var header = "x_point_";
-			g.strokeStyle = "rgb(64,127,255)";
-			g.lineWidth = this.lw*1.5;
-
-			var clist = this.range.crosses;
-			for(var i=0;i<clist.length;i++){
-				var c = clist[i], obj = bd.cross[c];
-				if(mv.targetPoint[0]===c || mv.targetPoint[1]===c){
-					if(this.vnop(header+c,this.STROKE)){
-						g.strokeCircle(obj.px, obj.py, csize);
-					}
-				}
-				else{ this.vhide(header+c);}
-			}
-		};
+		}
+		else{ this.vhide(header_id);}
 	},
 
-	//---------------------------------------------------------
-	// URLエンコード/デコード処理
-	encode_init : function(){
-		enc.pzlimport = function(type){
-			this.decodeCrossABC();
-		};
-		enc.pzlexport = function(type){
-			this.encodeCrossABC();
-		};
+	drawCrosses_kouchoku : function(){
+		this.vinc('cross_base', 'auto');
 
-		//---------------------------------------------------------------------------
-		enc.decodeCrossABC = function(){
-			var c=0, i=0, bstr = this.outbstr;
-			for(i=0;i<bstr.length;i++){
-				var obj = bd.cross[c], ca = bstr.charAt(i);
-				if     (this.include(ca,"a","z")){ obj.qnum = parseInt(ca,36)-9;}
-				else if(this.include(ca,"0","9")){ c+=(parseInt(ca,36));}
-				else if(ca=="."){ obj.qnum=-2;}
+		var isgray = pp.getVal('circolor');
+		var csize1 = this.cw*0.30+1, csize2 = this.cw*0.20;
+		var headers = ["x_cp_", "x_cm_"];
+		g.lineWidth = 1;
 
-				c++;
-				if(c>=bd.crossmax){ break;}
+		var clist = this.range.crosses;
+		for(var i=0;i<clist.length;i++){
+			var c = clist[i], obj = bd.cross[c], key = ['cross',c].join('_');
+			var graydisp = (isgray && obj.error===0 && obj.segment.length>=2);
+			if(obj.qnum>0){
+				// ○の描画
+				g.fillStyle = (obj.error===1 ? this.errbcolor1 : "white");
+				g.strokeStyle = (graydisp ? "gray" : "black");
+				if(this.vnop(headers[0]+c,this.FILL_STROKE)){
+					g.shapeCircle(obj.px, obj.py, csize1);
+				}
+
+				// アルファベットの描画
+				var letter = (obj.qnum+9).toString(36).toUpperCase();
+				var color = (graydisp ? "gray" : this.fontcolor);
+				this.dispnum(key, 1, letter, 0.55, color, obj.px, obj.py);
 			}
-			this.outbstr = bstr.substr(i+1);
-		};
-		enc.encodeCrossABC = function(){
-			var count=0, cm="";
-			for(var c=0;c<bd.crossmax;c++){
-				var pstr="", qn=bd.cross[c].qnum;
+			else{ this.vhide([headers[0]+c]); this.hidenum(key);}
 
-				if     (qn>=  0){ pstr=(9+qn).toString(36);}
-				else if(qn===-2){ pstr=".";}
-				else{ count++;}
-
-				if     (count=== 0){ cm += pstr;}
-				else if(pstr || count===10){ cm += ((count-1).toString(36)+pstr); count=0;}
+			if(obj.qnum===-2){
+				g.fillStyle = (obj.error===1 ? this.errcolor1 : this.cellcolor);
+				if(graydisp){ g.fillStyle="gray";}
+				if(this.vnop(headers[1]+c,this.FILL)){
+					g.fillCircle(obj.px, obj.py, csize2);
+				}
 			}
-			if(count>0){ cm += ((count-1).toString(36));}
+			else{ this.vhide(headers[1]+c);}
+		}
+	},
 
-			this.outbstr += cm;
-		};
+	drawSegmentTarget : function(){
+		this.vinc('cross_target_', 'auto');
 
-		//---------------------------------------------------------
-		fio.decodeData = function(){
+		var csize = this.cw*0.32;
+		var header = "x_point_";
+		g.strokeStyle = "rgb(64,127,255)";
+		g.lineWidth = this.lw*1.5;
+
+		var clist = this.range.crosses;
+		for(var i=0;i<clist.length;i++){
+			var c = clist[i], obj = bd.cross[c];
+			if(mv.targetPoint[0]===c || mv.targetPoint[1]===c){
+				if(this.vnop(header+c,this.STROKE)){
+					g.strokeCircle(obj.px, obj.py, csize);
+				}
+			}
+			else{ this.vhide(header+c);}
+		}
+	}
+},
+
+//---------------------------------------------------------
+// URLエンコード/デコード処理
+Encode:{
+	pzlimport : function(type){
+		this.decodeCrossABC();
+	},
+	pzlexport : function(type){
+		this.encodeCrossABC();
+	},
+
+	decodeCrossABC : function(){
+		var c=0, i=0, bstr = this.outbstr;
+		for(i=0;i<bstr.length;i++){
+			var obj = bd.cross[c], ca = bstr.charAt(i);
+			if     (this.include(ca,"a","z")){ obj.qnum = parseInt(ca,36)-9;}
+			else if(this.include(ca,"0","9")){ c+=(parseInt(ca,36));}
+			else if(ca=="."){ obj.qnum=-2;}
+
+			c++;
+			if(c>=bd.crossmax){ break;}
+		}
+		this.outbstr = bstr.substr(i+1);
+	},
+	encodeCrossABC : function(){
+		var count=0, cm="";
+		for(var c=0;c<bd.crossmax;c++){
+			var pstr="", qn=bd.cross[c].qnum;
+
+			if     (qn>=  0){ pstr=(9+qn).toString(36);}
+			else if(qn===-2){ pstr=".";}
+			else{ count++;}
+
+			if     (count=== 0){ cm += pstr;}
+			else if(pstr || count===10){ cm += ((count-1).toString(36)+pstr); count=0;}
+		}
+		if(count>0){ cm += ((count-1).toString(36));}
+
+		this.outbstr += cm;
+	}
+},
+//---------------------------------------------------------
+FileIO:{
+	decodeData : function(){
 			this.decodeCrossNum();
 			this.decodeSegment();
-		};
-		fio.encodeData = function(){
+	},
+	encodeData : function(){
 			this.encodeCrossNum();
 			this.encodeSegment();
-		};
-
-		//---------------------------------------------------------
-		fio.decodeSegment = function(){
-			var len = parseInt(this.readLine(),10);
-			for(var i=0;i<len;i++){
-				var data = this.readLine().split(" ");
-				bd.segs.input(+data[0], +data[1], +data[2], +data[3]);
-			}
-		};
-		fio.encodeSegment = function(){
-			var idlist = bd.segs.getallsegment();
-			this.datastr += (idlist.length+"/");
-			for(var i=0;i<idlist.length;i++){
-				var seg = bd.segs.seg[idlist[i]];
-				this.datastr += ([seg.bx1,seg.by1,seg.bx2,seg.by2].join(" ")+"/");
-			}
-		};
 	},
 
-	//---------------------------------------------------------
-	// 正解判定処理実行部
-	answer_init : function(){
-		ans.checkAns = function(){
+	decodeSegment : function(){
+		var len = parseInt(this.readLine(),10);
+		for(var i=0;i<len;i++){
+			var data = this.readLine().split(" ");
+			bd.segs.input(+data[0], +data[1], +data[2], +data[3]);
+		}
+	},
+	encodeSegment : function(){
+		var idlist = bd.segs.getallsegment();
+		this.datastr += (idlist.length+"/");
+		for(var i=0;i<idlist.length;i++){
+			var seg = bd.segs.seg[idlist[i]];
+			this.datastr += ([seg.bx1,seg.by1,seg.bx2,seg.by2].join(" ")+"/");
+		}
+	}
+},
 
-			var idlist = bd.segs.getallsegment();
-			if( !this.checkSegmentExist(idlist) ){
-				this.setAlert('線が存在していません。', 'There is no segment.'); return false;
-			}
+//---------------------------------------------------------
+// 正解判定処理実行部
+AnsCheck:{
+	checkAns : function(){
 
-			if( !this.checkSegmentPoint() ){
-				this.setAlert('線が丸のないところから出ています。','A segment comes from out of circle.'); return false;
-			}
-
-			if( !this.checkSegmentBranch() ){
-				this.setAlert('分岐している線があります。','There is a branched segment.'); return false;
-			}
-
-			if( !this.checkSegmentOverPoint(idlist) ){
-				this.setAlert('線が丸を通過しています。','A segment passes over a circle.'); return false;
-			}
-
-			if( !this.checkDuplicateSegment(idlist) ){
-				this.setAlert('線が同一直線上で重なっています。','Plural segments are overlapped.'); return false;
-			}
-
-			if( !this.checkDifferentLetter(idlist) ){
-				this.setAlert('異なる文字が直接繋がっています。','Different Letters are connected directly.'); return false;
-			}
-
-			if( !this.checkRightAngle(idlist) ){
-				this.setAlert('線が直角に交差していません。','Segments don\'n intersect at a right angle.'); return false;
-			}
-
-			if( !this.checkOneSegmentLoop(idlist) ){
-				this.setAlert('輪っかが一つではありません。','There are plural loops.'); return false;
-			}
-
-			if( !this.checkSegmentDeadend() ){
-				this.setAlert('途中で途切れている線があります。','There is a dead-end segment.'); return false;
-			}
-
-			if( !this.checkAlonePoint() ){
-				this.setAlert('線が2本出ていない丸があります。','A circle doesn\'t have two segments.'); return false;
-			}
-
-			if( !this.checkConsequentLetter(idlist) ){
-				this.setAlert('同じ文字がひとつながりになっていません。','Same Letters are not consequent.'); return false;
-			}
-
-			return true;
-		};
-
-		ans.checkSegmentExist = function(idlist){
-			return (idlist.length!==0);
-		};
-
-		ans.checkSegment = function(func){
-			var result = true;
-			for(var c=0;c<bd.crossmax;c++){
-				if(func(c)){
-					if(result){ bd.segs.seterrorAll(2);}
-					bd.segs.seterror(bd.cross[c].segment,1);
-					result = false;
-				}
-			}
-			return result;
+		var idlist = bd.segs.getallsegment();
+		if( !this.checkSegmentExist(idlist) ){
+			this.setAlert('線が存在していません。', 'There is no segment.'); return false;
 		}
 
-		ans.checkAlonePoint = function(){
-			return this.checkSegment(function(c){ return (bd.cross[c].segment.length<2 && bd.cross[c].qnum!==-1);});
-		};
-		ans.checkSegmentPoint = function(){
-			return this.checkSegment(function(c){ return (bd.cross[c].segment.length>0 && bd.cross[c].qnum===-1);});
-		};
-		ans.checkSegmentBranch = function(){
-			return this.checkSegment(function(c){ return (bd.cross[c].segment.length>2);});
-		};
-		ans.checkSegmentDeadend = function(){
-			return this.checkSegment(function(c){ return (bd.cross[c].segment.length===1);});
-		};
+		if( !this.checkSegmentPoint() ){
+			this.setAlert('線が丸のないところから出ています。','A segment comes from out of circle.'); return false;
+		}
 
-		ans.checkOneSegmentLoop = function(idlist){
-			var xinfo = new AreaInfo();
-			for(var i=0;i<idlist.length;i++){ xinfo.id[idlist[i]]=0;}
-			for(var i=0;i<idlist.length;i++){
-				var id = idlist[i];
-				if(xinfo.id[id]!==0){ continue;}
-				xinfo.max++;
-				xinfo.room[xinfo.max] = {idlist:bd.segs.idlist[bd.segs.lineid[id]]}; /* 参照だけなのでconcat()じゃなくてよい */
-				for(var n=0,len=xinfo.room[xinfo.max].idlist.length;n<len;n++){
-					xinfo.id[xinfo.room[xinfo.max].idlist[n]] = xinfo.max;
-				}
-			}
-			if(xinfo.max>1){
-				bd.segs.seterrorAll(2);
-				bd.segs.seterror(xinfo.room[1].idlist,1);
-				return false;
-			}
-			return true;
-		};
+		if( !this.checkSegmentBranch() ){
+			this.setAlert('分岐している線があります。','There is a branched segment.'); return false;
+		}
 
-		ans.checkSegmentOverPoint = function(idlist){
-			var result = true;
-			for(var i=0;i<idlist.length;i++){
-				var id=idlist[i], seg=bd.segs.seg[id], tmp;
-				var lattice = this.getLatticePoint(seg.bx1,seg.by1,seg.bx2,seg.by2);
-				for(var n=0;n<lattice.length;n++){
-					if(result){ bd.segs.seterrorAll(2);}
-					bd.segs.seterror([id],1);
-					bd.sErX([lattice[n]],1);
-					result = false;
-				}
-			}
-			return result;
-		};
-		ans.getLatticePoint = function(bx1,by1,bx2,by2){
-			var seg = new Segment(bx1,by1,bx2,by2), lattice = [];
-			for(var i=0;i<seg.lattices.length;i++){
-				var xc = seg.lattices[i][2];
-				if(xc!==null && bd.cross[xc].qnum!==-1){ lattice.push(xc);}
-			}
-			return lattice;
-		};
+		if( !this.checkSegmentOverPoint(idlist) ){
+			this.setAlert('線が丸を通過しています。','A segment passes over a circle.'); return false;
+		}
 
-		ans.checkDifferentLetter = function(idlist){
-			var result = true;
-			for(var i=0;i<idlist.length;i++){
-				var id=idlist[i], seg=bd.segs.seg[id], cc1=seg.point1, cc2=seg.point2;
-				if(bd.cross[cc1].qnum!==-2 && bd.cross[cc2].qnum!==-2 && bd.cross[cc1].qnum!==bd.cross[cc2].qnum){
-					if(result){ bd.segs.seterrorAll(2);}
-					bd.segs.seterror([id],1);
-					bd.sErX([cc1,cc2],1);
-					result = false;
-				}
-			}
-			return result;
-		};
+		if( !this.checkDuplicateSegment(idlist) ){
+			this.setAlert('線が同一直線上で重なっています。','Plural segments are overlapped.'); return false;
+		}
 
-		ans.checkConsequentLetter = function(idlist){
-			result = true, count = {}, qnlist = [];
-			// この関数に来る時は、線は黒－黒、黒－文字、文字－文字(同じ)のいずれか
-			for(var c=0;c<bd.crossmax;c++){ var qn = bd.cross[c].qnum; if(qn>=0){ count[qn] = [0,0,0];}}
-			for(var c=0;c<bd.crossmax;c++){
-				var qn = bd.cross[c].qnum;
-				if(qn>=0){
-					if(count[qn][0]===0){ qnlist.push(qn);}
-					count[qn][0]++;
-				}
-			}
-			for(var i=0;i<idlist.length;i++){
-				var id=idlist[i], seg=bd.segs.seg[id], cc1=seg.point1, cc2=seg.point2;
-				if(bd.cross[cc1].qnum>=0 && bd.cross[cc2].qnum>=0 && bd.cross[cc1].qnum===bd.cross[cc2].qnum){
-					var qn = bd.cross[cc1].qnum; if(qn>=0){ count[qn][1]++;}
-				}
-				else if(bd.cross[cc1].qnum>=0 || bd.cross[cc2].qnum>=0){
-					var qn = bd.cross[cc1].qnum; if(qn>=0){ count[qn][2]++;}
-					var qn = bd.cross[cc2].qnum; if(qn>=0){ count[qn][2]++;}
-				}
-			}
-			for(var i=0;i<qnlist.length;i++){
-				var qn = qnlist[i];
-				if(count[qn][2]!==2 || (count[qn][1]!==count[qn][0]-1)){
-					for(var c=0;c<bd.crossmax;c++){ if(bd.cross[c].qnum===qn){ bd.sErX([c],1);}}
-					result = false;
-				}
-			}
-			return result;
-		};
+		if( !this.checkDifferentLetter(idlist) ){
+			this.setAlert('異なる文字が直接繋がっています。','Different Letters are connected directly.'); return false;
+		}
 
-		ans.checkDuplicateSegment = function(idlist){
-			var result = true, len = idlist.length;
-			for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
-				var seg1=bd.segs.seg[idlist[i]], seg2=bd.segs.seg[idlist[j]];
-				if(bd.segs.isOverLapSegment(seg1,seg2)){
-					if(result){ bd.segs.seterrorAll(2);}
-					bd.segs.seterror([idlist[i],idlist[j]],1);
-					result = false;
-				}
-			}}
-			return result;
-		};
+		if( !this.checkRightAngle(idlist) ){
+			this.setAlert('線が直角に交差していません。','Segments don\'n intersect at a right angle.'); return false;
+		}
 
-		ans.checkRightAngle = function(idlist){
-			var result = true, len = idlist.length;
-			for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
-				var seg1=bd.segs.seg[idlist[i]], seg2=bd.segs.seg[idlist[j]];
-				if(bd.segs.isCrossing(seg1,seg2) && !bd.segs.isRightAngle(seg1,seg2)){
-					if(result){ bd.segs.seterrorAll(2);}
-					bd.segs.seterror([idlist[i],idlist[j]],1);
-					result = false;
-				}
-			}}
-			return result;
-		};
+		if( !this.checkOneSegmentLoop(idlist) ){
+			this.setAlert('輪っかが一つではありません。','There are plural loops.'); return false;
+		}
+
+		if( !this.checkSegmentDeadend() ){
+			this.setAlert('途中で途切れている線があります。','There is a dead-end segment.'); return false;
+		}
+
+		if( !this.checkAlonePoint() ){
+			this.setAlert('線が2本出ていない丸があります。','A circle doesn\'t have two segments.'); return false;
+		}
+
+		if( !this.checkConsequentLetter(idlist) ){
+			this.setAlert('同じ文字がひとつながりになっていません。','Same Letters are not consequent.'); return false;
+		}
+
+		return true;
+	},
+
+	checkSegmentExist : function(idlist){
+		return (idlist.length!==0);
+	},
+
+	checkAlonePoint : function(){
+		return this.checkSegment(function(c){ return (bd.cross[c].segment.length<2 && bd.cross[c].qnum!==-1);});
+	},
+	checkSegmentPoint : function(){
+		return this.checkSegment(function(c){ return (bd.cross[c].segment.length>0 && bd.cross[c].qnum===-1);});
+	},
+	checkSegmentBranch : function(){
+		return this.checkSegment(function(c){ return (bd.cross[c].segment.length>2);});
+	},
+	checkSegmentDeadend : function(){
+		return this.checkSegment(function(c){ return (bd.cross[c].segment.length===1);});
+	},
+	checkSegment : function(func){
+		var result = true;
+		for(var c=0;c<bd.crossmax;c++){
+			if(func(c)){
+				if(result){ bd.segs.seterrorAll(2);}
+				bd.segs.seterror(bd.cross[c].segment,1);
+				result = false;
+			}
+		}
+		return result;
+	},
+
+	checkOneSegmentLoop : function(idlist){
+		var xinfo = new pzprv3.core.AreaInfo();
+		for(var i=0;i<idlist.length;i++){ xinfo.id[idlist[i]]=0;}
+		for(var i=0;i<idlist.length;i++){
+			var id = idlist[i];
+			if(xinfo.id[id]!==0){ continue;}
+			xinfo.max++;
+			xinfo.room[xinfo.max] = {idlist:bd.segs.idlist[bd.segs.lineid[id]]}; /* 参照だけなのでconcat()じゃなくてよい */
+			for(var n=0,len=xinfo.room[xinfo.max].idlist.length;n<len;n++){
+				xinfo.id[xinfo.room[xinfo.max].idlist[n]] = xinfo.max;
+			}
+		}
+		if(xinfo.max>1){
+			bd.segs.seterrorAll(2);
+			bd.segs.seterror(xinfo.room[1].idlist,1);
+			return false;
+		}
+		return true;
+	},
+
+	checkSegmentOverPoint : function(idlist){
+		var result = true;
+		for(var i=0;i<idlist.length;i++){
+			var id=idlist[i], seg=bd.segs.seg[id], tmp;
+			var lattice = bd.getLatticePoint(seg.bx1,seg.by1,seg.bx2,seg.by2);
+			for(var n=0;n<lattice.length;n++){
+				if(result){ bd.segs.seterrorAll(2);}
+				bd.segs.seterror([id],1);
+				bd.sErX([lattice[n]],1);
+				result = false;
+			}
+		}
+		return result;
+	},
+
+	checkDifferentLetter : function(idlist){
+		var result = true;
+		for(var i=0;i<idlist.length;i++){
+			var id=idlist[i], seg=bd.segs.seg[id], cc1=seg.point1, cc2=seg.point2;
+			if(bd.cross[cc1].qnum!==-2 && bd.cross[cc2].qnum!==-2 && bd.cross[cc1].qnum!==bd.cross[cc2].qnum){
+				if(result){ bd.segs.seterrorAll(2);}
+				bd.segs.seterror([id],1);
+				bd.sErX([cc1,cc2],1);
+				result = false;
+			}
+		}
+		return result;
+	},
+
+	checkConsequentLetter : function(idlist){
+		result = true, count = {}, qnlist = [];
+		// この関数に来る時は、線は黒－黒、黒－文字、文字－文字(同じ)のいずれか
+		for(var c=0;c<bd.crossmax;c++){ var qn = bd.cross[c].qnum; if(qn>=0){ count[qn] = [0,0,0];}}
+		for(var c=0;c<bd.crossmax;c++){
+			var qn = bd.cross[c].qnum;
+			if(qn>=0){
+				if(count[qn][0]===0){ qnlist.push(qn);}
+				count[qn][0]++;
+			}
+		}
+		for(var i=0;i<idlist.length;i++){
+			var id=idlist[i], seg=bd.segs.seg[id], cc1=seg.point1, cc2=seg.point2;
+			if(bd.cross[cc1].qnum>=0 && bd.cross[cc2].qnum>=0 && bd.cross[cc1].qnum===bd.cross[cc2].qnum){
+				var qn = bd.cross[cc1].qnum; if(qn>=0){ count[qn][1]++;}
+			}
+			else if(bd.cross[cc1].qnum>=0 || bd.cross[cc2].qnum>=0){
+				var qn = bd.cross[cc1].qnum; if(qn>=0){ count[qn][2]++;}
+				var qn = bd.cross[cc2].qnum; if(qn>=0){ count[qn][2]++;}
+			}
+		}
+		for(var i=0;i<qnlist.length;i++){
+			var qn = qnlist[i];
+			if(count[qn][2]!==2 || (count[qn][1]!==count[qn][0]-1)){
+				for(var c=0;c<bd.crossmax;c++){ if(bd.cross[c].qnum===qn){ bd.sErX([c],1);}}
+				result = false;
+			}
+		}
+		return result;
+	},
+
+	checkDuplicateSegment : function(idlist){
+		var result = true, len = idlist.length;
+		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
+			var seg1=bd.segs.seg[idlist[i]], seg2=bd.segs.seg[idlist[j]];
+			if(bd.segs.isOverLapSegment(seg1,seg2)){
+				if(result){ bd.segs.seterrorAll(2);}
+				bd.segs.seterror([idlist[i],idlist[j]],1);
+				result = false;
+			}
+		}}
+		return result;
+	},
+
+	checkRightAngle : function(idlist){
+		var result = true, len = idlist.length;
+		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
+			var seg1=bd.segs.seg[idlist[i]], seg2=bd.segs.seg[idlist[j]];
+			if(bd.segs.isCrossing(seg1,seg2) && !bd.segs.isRightAngle(seg1,seg2)){
+				if(result){ bd.segs.seterrorAll(2);}
+				bd.segs.seterror([idlist[i],idlist[j]],1);
+				result = false;
+			}
+		}}
+		return result;
 	}
-};
+},
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-Segment = function(bx1, by1, bx2, by2){
-	this.point1;	// 端点1のIDを保持する
-	this.point2;	// 端点2のIDを保持する
+Segment:{
+	initialize : function(bx1, by1, bx2, by2){
+		this.point1;	// 端点1のIDを保持する
+		this.point2;	// 端点2のIDを保持する
 
-	this.bx1;		// 端点1のX座標(border座標系)を保持する
-	this.by1;		// 端点1のY座標(border座標系)を保持する
-	this.bx2;		// 端点2のX座標(border座標系)を保持する
-	this.by2;		// 端点2のY座標(border座標系)を保持する
+		this.bx1;		// 端点1のX座標(border座標系)を保持する
+		this.by1;		// 端点1のY座標(border座標系)を保持する
+		this.bx2;		// 端点2のX座標(border座標系)を保持する
+		this.by2;		// 端点2のY座標(border座標系)を保持する
 
-	this.dx;		// X座標の差分を保持する
-	this.dy;		// Y座標の差分を保持する
+		this.dx;		// X座標の差分を保持する
+		this.dy;		// Y座標の差分を保持する
 
-	this.lattices;	// 途中で通過する格子点を保持する
+		this.lattices;	// 途中で通過する格子点を保持する
 
-	this.color = "";
-	this.error = 0;
+		this.color = "";
+		this.error = 0;
 
-	this.setpos(bx1,by1,bx2,by2,k.qcols,k.qrows);
-};
-Segment.prototype = {
+		this.setpos(bx1,by1,bx2,by2,k.qcols,k.qrows);
+	},
 	setpos : function(bx1,by1,bx2,by2,qc,qr){
 		this.point1 = bd.xnum(bx1,by1,qc,qr);
 		this.point2 = bd.xnum(bx2,by2,qc,qr);
@@ -715,44 +760,43 @@ Segment.prototype = {
 		/* (端点1-P)と(P-端点2)で外積をとった時のZ軸方向の符号がが正か負か */
 		return((bx-this.bx1)*(this.by2-by)-(this.bx2-bx)*(by-this.by1)>0);
 	}
-};
-//---------------------------------------------------------------------------
-// ★SegmentManagerクラス 主に色分けの情報を管理する
-//---------------------------------------------------------------------------
-// SegmentManagerクラスの定義
-SegmentManager = function(){
-	this.seg    = {};	// segmentの配列
-	this.segmax = 0;
+},
 
-	this.lineid = {};	// 線id情報(segment->line変換)
-	this.idlist = {};	// 線id情報(line->segment変換)
-	this.linemax = 0;
+SegmentManager:{ /* LineManagerクラスを拡張してます */
+	initialize : function(){
+		this.seg    = {};	// segmentの配列
+		this.segmax = 0;
 
-	this.typeA = 'A';
-	this.typeB = 'B';
+		this.lineid = {};	// 線id情報(segment->line変換)
+		this.idlist = {};	// 線id情報(line->segment変換)
+		this.linemax = 0;
 
-	this.disrec = 0;
+		this.typeA = 'A';
+		this.typeB = 'B';
 
-	this.init();
-};
-SegmentManager.prototype = {
+		this.disrec = 0;
+	},
 
 	//---------------------------------------------------------------------------
 	// segs.init()           変数の起動時の初期化を行う
-	// segs.initInfo()       segment以外の変数の起動時の初期化を行う
+	// segs.allclear()       データを消去する
+	// segs.resetInfo()      segment以外の変数の起動時の初期化を行う
 	// segs.reset()          lcnts等の変数の初期化を行う
-	// segs.newIrowake()     reset()時に色情報を設定しなおす
+	// segs.newIrowake()     reset()時などに色情報を設定しなおす
 	//
 	// segs.disableRecord()  操作の登録を禁止する
 	// segs.enableRecord()   操作の登録を許可する
 	// segs.isenableRecord() 操作の登録できるかを返す
 	//---------------------------------------------------------------------------
 	init : function(){
+		this.allclear();
+	},
+	allclear : function(){
 		this.seg    = {};
 		this.segmax = 0;
-		this.initInfo();
+		this.resetInfo();
 	},
-	initInfo : function(){
+	resetInfo : function(){
 		for(var c=0,len=(k.qcols+1)*(k.qrows+1);c<len;c++){ bd.cross[c].segment=[];}
 
 		this.lineid = {};
@@ -760,7 +804,7 @@ SegmentManager.prototype = {
 		this.linemax = 0;
 	},
 	reset : function(){
-		this.initInfo();
+		this.resetInfo();
 		var ids = [];
 		for(var id in this.seg){
 			if(this.seg[id]===null){ continue;}
@@ -793,7 +837,7 @@ SegmentManager.prototype = {
 	// segs.getSegmentId() 位置情報からsegmentのIDを取得する
 	// segs.lcntPoint()    交点に存在する線の本数を返す
 	// segs.getXlistFromIdlist() idlistの線が重なる交点のリストを取得する
-	// segs.getXlistFromIdlist() idlistの線が含まれる四角形の領域を取得する
+	// segs.getRangeFromIdlist() idlistの線が含まれる四角形の領域を取得する
 	//---------------------------------------------------------------------------
 	getSegmentId : function(bx1,by1,bx2,by2){
 		var cc1 = bd.xnum(bx1,by1), sid = null;
@@ -949,7 +993,7 @@ SegmentManager.prototype = {
 	},
 	setSegment : function(bx1,by1,bx2,by2){
 		this.segmax++;
-		this.seg[this.segmax] = new Segment(bx1,by1,bx2,by2);
+		this.seg[this.segmax] = new (pzprv3.getPuzzleClass('Segment'))(bx1,by1,bx2,by2);
 		this.setSegmentInfo(this.segmax, true);
 		um.addOpe(k.OTHER, 'segment', [bx1,by1,bx2,by2], 0, 1);
 	},
@@ -1154,4 +1198,5 @@ SegmentManager.prototype = {
 			}
 		}
 	}
+}
 };

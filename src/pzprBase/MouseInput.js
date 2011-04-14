@@ -5,28 +5,30 @@
 //---------------------------------------------------------------------------
 // パズル共通 マウス入力部
 // MouseEventクラスを定義
-var MouseEvent = function(){
-	this.enableMouse = true;	// マウス入力は有効か
+pzprv3.createCommonClass('MouseEvent', '',
+{
+	initialize : function(){
+		this.enableMouse = true;	// マウス入力は有効か
 
-	this.inputPoint = new Point(null, null);	// 入力イベントが発生したpixel位置
+		this.inputPoint = new pzprv3.core.Point(null, null);	// 入力イベントが発生したpixel位置
 
-	this.mouseCell;		// 入力されたセル等のID
-	this.inputData;		// 入力中のデータ番号(実装依存)
-	this.firstCell;		// mousedownされた時のセルのID(連黒分断禁用)
-	this.firstPoint = new Point(null, null);	// mousedownされた時のpixel位置
-	this.prevPos    = new Address(null, null);	// 前回のマウス入力イベントのborder座標
-	this.btn = {};		// 押されているボタン
+		this.mouseCell;		// 入力されたセル等のID
+		this.inputData;		// 入力中のデータ番号(実装依存)
+		this.firstCell;		// mousedownされた時のセルのID(連黒分断禁用)
+		this.firstPoint = new pzprv3.core.Point(null, null);	// mousedownされた時のpixel位置
+		this.prevPos    = new pzprv3.core.Address(null, null);	// 前回のマウス入力イベントのborder座標
+		this.btn = {};		// 押されているボタン
 
-	this.bordermode;	// 境界線を入力中かどうか
-	this.ismousedown;	// mousedownイベントかどうか
+		this.bordermode;	// 境界線を入力中かどうか
+		this.ismousedown;	// mousedownイベントかどうか
 
-	this.mousereset();
+		this.mousereset();
 
-	this.mouseoffset = {x:0,y:0};
-	if(k.br.IE6||k.br.IE7||k.br.IE8){ this.mouseoffset = {x:2,y:2};}
-	else if(k.br.WebKit)            { this.mouseoffset = {x:1,y:1};}
-};
-MouseEvent.prototype = {
+		this.mouseoffset = {x:0,y:0};
+		if(ee.br.IE6||ee.br.IE7||ee.br.IE8){ this.mouseoffset = {x:2,y:2};}
+		else if(ee.br.WebKit)              { this.mouseoffset = {x:1,y:1};}
+	},
+
 	//---------------------------------------------------------------------------
 	// mv.mousereset() マウス入力に関する情報を初期化する
 	//---------------------------------------------------------------------------
@@ -41,7 +43,36 @@ MouseEvent.prototype = {
 		this.bordermode = false;
 		this.ismousedown = false;
 
-		if(this.previdlist!==(void 0)){ this.previdlist = new IDList();}
+		if(this.previdlist!==(void 0)){ this.previdlist = new pzprv3.core.IDList();}
+	},
+
+	//---------------------------------------------------------------------------
+	// mv.setEvents() マウス入力に関するイベントを設定する
+	//---------------------------------------------------------------------------
+	setEvents : function(){
+		// マウス入力イベントの設定
+		var canvas = ee('divques').el, numparent = ee('numobj_parent').el;
+		if(!ee.mobile){
+			ee.addEvent(canvas, "mousedown", ee.ebinder(this, this.e_mousedown));
+			ee.addEvent(canvas, "mousemove", ee.ebinder(this, this.e_mousemove));
+			ee.addEvent(canvas, "mouseup",   ee.ebinder(this, this.e_mouseup));
+			canvas.oncontextmenu = function(){ return false;};
+
+			ee.addEvent(numparent, "mousedown", ee.ebinder(this, this.e_mousedown));
+			ee.addEvent(numparent, "mousemove", ee.ebinder(this, this.e_mousemove));
+			ee.addEvent(numparent, "mouseup",   ee.ebinder(this, this.e_mouseup));
+			numparent.oncontextmenu = function(){ return false;};
+		}
+		// iPhoneOS用のタッチイベント設定
+		else{
+			ee.addEvent(canvas, "touchstart", ee.ebinder(this, this.e_mousedown));
+			ee.addEvent(canvas, "touchmove",  ee.ebinder(this, this.e_mousemove));
+			ee.addEvent(canvas, "touchend",   ee.ebinder(this, this.e_mouseup));
+
+			ee.addEvent(numparent, "touchstart", ee.ebinder(this, this.e_mousedown));
+			ee.addEvent(numparent, "touchmove",  ee.ebinder(this, this.e_mousemove));
+			ee.addEvent(numparent, "touchend",   ee.ebinder(this, this.e_mouseup));
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -74,7 +105,7 @@ MouseEvent.prototype = {
 	e_mouseup   : function(e){
 		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
-			if(!k.mobile){ this.setposition(e);}
+			if(!ee.mobile){ this.setposition(e);}
 			this.ismousedown = false;
 			this.mouseup();		// 各パズルのルーチンへ
 			this.mousereset();
@@ -116,8 +147,8 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	getMouseButton : function(e){
 		var left=false, mid=false, right=false;
-		if(!k.mobile){
-			if(k.br.IE6 || k.br.IE7 || k.br.IE8){
+		if(!ee.mobile){
+			if(ee.br.IE6 || ee.br.IE7 || ee.br.IE8){
 				left  = (e.button===1);
 				mid   = (e.button===4);
 				right = (e.button===2);
@@ -148,7 +179,7 @@ MouseEvent.prototype = {
 	},
 
 	notInputted : function(){ return !um.changeflag;},
-	modeflip    : function(){ if(k.EDITOR){ pp.setVal('mode', (k.playmode?1:3));} },
+	modeflip    : function(){ if(pzprv3.EDITOR){ pp.setVal('mode', (k.playmode?1:3));} },
 
 	// 共通関数
 	//---------------------------------------------------------------------------
@@ -162,7 +193,7 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	cellid : function(){
 		var pos = this.borderpos(0);
-		if(this.inputPoint.x%k.cwidth===0 || this.inputPoint.y%k.cheight===0){ return null;} // ぴったりは無効
+		if(this.inputPoint.x%pc.cw===0 || this.inputPoint.y%pc.ch===0){ return null;} // ぴったりは無効
 		return bd.cnum(pos.x,pos.y);
 	},
 	crossid : function(){
@@ -171,35 +202,35 @@ MouseEvent.prototype = {
 	},
 	excellid : function(){
 		var pos = this.borderpos(0);
-		if(this.inputPoint.x%k.cwidth===0 || this.inputPoint.y%k.cheight===0){ return null;} // ぴったりは無効
+		if(this.inputPoint.x%pc.cw===0 || this.inputPoint.y%pc.ch===0){ return null;} // ぴったりは無効
 		return bd.exnum(pos.x,pos.y);
 	},
 	borderpos : function(rc){
 		// マイナスでもシームレスな値にしたいので、+4して-4する
-		var pm = rc*k.cwidth, px=(this.inputPoint.x+pm+2*k.cwidth), py=(this.inputPoint.y+pm+2*k.cheight);
-		var bx = ((px/k.cwidth)|0)*2  + ((px%k.cwidth <2*pm)?0:1) - 4;
-		var by = ((py/k.cheight)|0)*2 + ((py%k.cheight<2*pm)?0:1) - 4;
+		var pm = rc*pc.cw, px=(this.inputPoint.x+pm+2*pc.cw), py=(this.inputPoint.y+pm+2*pc.ch);
+		var bx = ((px/pc.cw)|0)*2 + ((px%pc.cw<2*pm)?0:1) - 4;
+		var by = ((py/pc.ch)|0)*2 + ((py%pc.ch<2*pm)?0:1) - 4;
 
-		return new Address(bx,by);
+		return new pzprv3.core.Address(bx,by);
 	},
 
 	borderid : function(spc){
-		var bx = ((this.inputPoint.x/k.cwidth)<<1)+1, by = ((this.inputPoint.y/k.cheight)<<1)+1;
-		var dx = this.inputPoint.x%k.cwidth,          dy = this.inputPoint.y%k.cheight;
+		var bx = ((this.inputPoint.x/pc.cw)<<1)+1, by = ((this.inputPoint.y/pc.ch)<<1)+1;
+		var dx =   this.inputPoint.x%pc.cw,        dy =   this.inputPoint.y%pc.ch;
 
 		// 真ん中のあたりはどこにも該当しないようにする
 		if(k.isLineCross){
 			if(!k.isborderAsLine){
-				var m1=spc*k.cwidth, m2=(1-spc)*k.cwidth;
+				var m1=spc*pc.cw, m2=(1-spc)*pc.cw;
 				if((dx<m1||m2<dx) && (dy<m1||m2<dy)){ return null;}
 			}
 			else{
-				var m1=(0.5-spc)*k.cwidth, m2=(0.5+spc)*k.cwidth;
+				var m1=(0.5-spc)*pc.cw, m2=(0.5+spc)*pc.cw;
 				if(m1<dx && dx<m2 && m1<dy && dy<m2){ return null;}
 			}
 		}
 
-		if(dx<k.cwidth-dy){	//左上
+		if(dx<pc.cw-dy){	//左上
 			if(dx>dy){ return bd.bnum(bx  ,by-1);}	//左上＆右上 -> 上
 			else     { return bd.bnum(bx-1,by  );}	//左上＆左下 -> 左
 		}
@@ -287,7 +318,7 @@ MouseEvent.prototype = {
 		pc.paintCell(cc);
 	},
 	inputqnum_main : function(cc,type){
-		if(k.playmode && bd.QnC(cc)!==Cell.prototype.defqnum){ return;}
+		if(k.playmode && bd.QnC(cc)!==pzprv3.getPuzzleClass('Cell').prototype.qnum){ return;}
 
 		var max = bd.nummaxfunc(cc), bn = (k.dispzero?0:1);
 		var num=bd.getNum(cc), sub=(k.editmode ? 0 : bd.QsC(cc));
@@ -423,19 +454,18 @@ MouseEvent.prototype = {
 				bd.sQsC(c, (this.inputData==2?1:0));
 			}
 		}
-		var d = ans.getSizeOfClist(bd.areas.room[areaid].clist,f_true);
+		var d = bd.getSizeOfClist(bd.areas.room[areaid].clist);
 
 		pc.paintRange(d.x1, d.y1, d.x2, d.y2);
 	},
 
 	//---------------------------------------------------------------------------
 	// mv.input51()   [＼]を作ったり消したりする
-	// mv.set51cell() [＼]を作成・消去するときの共通処理関数(カックロ以外はオーバーライドされる)
 	//---------------------------------------------------------------------------
 	input51 : function(){
 		var ec = this.excellid();
 		if(ec!==null){
-			var pos = new Address(bd.excell[ec].bx, bd.excell[ec].by);
+			var pos = new pzprv3.core.Address(bd.excell[ec].bx, bd.excell[ec].by);
 			var tcp=tc.getTCP();
 			tc.setTCP(pos);
 			pc.paintPos(tcp);
@@ -453,27 +483,12 @@ MouseEvent.prototype = {
 		}
 		else{
 			if(this.btn.Left){
-				if(bd.QuC(cc)!=51){ this.set51cell(cc,true);}
+				if(bd.QuC(cc)!==51){ bd.set51cell(cc);}
 				else{ kc.chtarget('shift');}
 			}
-			else if(this.btn.Right){ this.set51cell(cc,false);}
+			else if(this.btn.Right){ bd.remove51cell(cc);}
 		}
 		pc.paintCell(cc);
-	},
-	// ※とりあえずカックロ用
-	set51cell : function(cc,val){
-		if(val===true){
-			bd.sQuC(cc,51);
-			bd.sQnC(cc,0);
-			bd.sDiC(cc,0);
-			bd.sAnC(cc,-1);
-		}
-		else{
-			bd.sQuC(cc,0);
-			bd.sQnC(cc,0);
-			bd.sDiC(cc,0);
-			bd.sAnC(cc,-1);
-		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -663,4 +678,4 @@ MouseEvent.prototype = {
 		ans.errDisp = true;
 		pc.paintAll();
 	}
-};
+});
