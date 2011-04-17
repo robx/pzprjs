@@ -195,12 +195,12 @@ Puzzles.loute.prototype = {
 				this.setAlert('白丸がブロックの角にありません。','A circle is out of the corner.'); return false;
 			}
 
-			if( !this.checkLblock(rinfo) ){
-				this.setAlert('ブロックが幅1のL字型になっていません。','A block is not L-shape or whose width is not one.'); return false;
-			}
-
 			if( !this.checkLcntCross(1,0) ){
 				this.setAlert('途切れている線があります。','There is a dead-end line.'); return false;
+			}
+
+			if( !this.checkLblock(rinfo) ){
+				this.setAlert('ブロックが幅1のL字型になっていません。','A block is not L-shape or whose width is not one.'); return false;
 			}
 
 			return true;
