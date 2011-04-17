@@ -360,6 +360,8 @@ Puzzles.icelom.prototype = {
 			this.encodeIcelom();
 			this.encodeNumber16();
 			this.encodeInOut();
+
+			if(k.puzzleid==='icelom'){ this.outpflag="a";}
 		};
 
 		enc.decodeIcelom = function(){

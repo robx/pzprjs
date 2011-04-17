@@ -152,7 +152,7 @@ Puzzles.kramma.prototype = {
 	answer_init : function(){
 		ans.checkAns = function(){
 
-			if( !this.checkLcntCross(3,0) ){
+			if( (k.puzzleid==='kramman') && !this.checkLcntCross(3,0) ){
 				this.setAlert('分岐している線があります。','There is a branched line.'); return false;
 			}
 			if( (k.puzzleid==='kramman') && !this.checkLcntCross(4,1) ){
@@ -171,7 +171,7 @@ Puzzles.kramma.prototype = {
 				this.setAlert('白丸と黒丸が両方含まれる領域があります。','An area has both white and black circles.'); return false;
 			}
 
-			if( !this.checkLcntCross(1,0) ){
+			if( (k.puzzleid==='kramman') && !this.checkLcntCross(1,0) ){
 				this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
 			}
 			if( (k.puzzleid==='kramman') && !this.checkLcntCross(0,1) ){

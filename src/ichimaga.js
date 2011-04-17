@@ -161,10 +161,6 @@ Puzzles.ichimaga.prototype = {
 				this.setAlert('○から出る線の本数が正しくありません。', 'The number is not equal to the number of lines out of the circle.'); return false;
 			}
 
-			if( !this.checkLcntCell(1) ){
-				this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
-			}
-
 			if( !this.checkAllCell( function(c){ return bd.isNum(c) && bd.lines.lcntCell(c)===0; } ) ){
 				this.setAlert('○から線が出ていません。', 'There is a lonely circle.'); return false;
 			}

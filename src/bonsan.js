@@ -224,10 +224,13 @@ Puzzles.bonsan.prototype = {
 
 			var rinfo = bd.areas.getRoomInfo();
 			this.movedPosition(linfo);
-			if( !this.checkFractal(rinfo) ){
+			if( k.puzzleid==='bonsan' && !this.checkFractal(rinfo, mfunc) ){
+				this.setAlert('○が点対称に配置されていません。', 'Position of circles is not point symmetric.'); return false;
+			}
+			if( k.puzzleid==='heyabon' && !this.checkFractal(rinfo, mfunc) ){
 				this.setAlert('部屋の中の○が点対称に配置されていません。', 'Position of circles in the room is not point symmetric.'); return false;
 			}
-			if( !this.checkNoObjectInRoom(rinfo, this.getMoved) ){
+			if( k.puzzleid==='heyabon' && !this.checkNoObjectInRoom(rinfo, this.getMoved) ){
 				this.setAlert('○のない部屋があります。','A room has no circle.'); return false;
 			}
 
