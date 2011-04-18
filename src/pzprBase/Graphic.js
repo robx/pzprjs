@@ -571,6 +571,44 @@ pzprv3.createCommonClass('Graphic', '',
 	},
 
 	//---------------------------------------------------------------------------
+	// pc.drawSlashes() 斜線をCanvasに書き込む
+	//---------------------------------------------------------------------------
+	drawSlashes : function(){
+		this.vinc('cell_slash', 'auto');
+
+		var headers = ["c_sl1_", "c_sl2_"];
+		g.lineWidth = Math.max(this.cw/8, 2);
+
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var c = clist[i];
+
+			if(bd.cell[c].qans!==0){
+				if     (bd.cell[c].error===1){ g.strokeStyle = this.errcolor1;}
+				else if(bd.cell[c].error===2){ g.strokeStyle = this.errcolor2;}
+				else                         { g.strokeStyle = this.cellcolor;}
+
+				if(bd.cell[c].qans==31){
+					if(this.vnop(headers[0]+c,this.STROKE)){
+						g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, this.cw,this.ch, true);
+						g.stroke();
+					}
+				}
+				else{ this.vhide(headers[0]+c);}
+
+				if(bd.cell[c].qans==32){
+					if(this.vnop(headers[1]+c,this.STROKE)){
+						g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, this.cw,0, 0,this.ch, true);
+						g.stroke();
+					}
+				}
+				else{ this.vhide(headers[1]+c);}
+			}
+			else{ this.vhide([headers[0]+c, headers[1]+c]);}
+		}
+	},
+
+	//---------------------------------------------------------------------------
 	// pc.drawNumbers()  Cellの数字をCanvasに書き込む
 	// pc.drawNumber1()  Cellに数字を記入するためdispnum関数を呼び出す
 	// pc.getCellNumberColor()  Cellの数字の色を設定する

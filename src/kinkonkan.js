@@ -51,16 +51,16 @@ MouseEvent:{
 		else if(this.inputData===4){ bd.sQaC(cc,0); bd.sQsC(cc,0);}
 		else if(this.inputData!==null){ return;}
 		else if(this.btn.Left){
-			if     (bd.QaC(cc)===1){ bd.sQaC(cc,2); bd.sQsC(cc,0); this.inputData=2;}
-			else if(bd.QaC(cc)===2){ bd.sQaC(cc,0); bd.sQsC(cc,1); this.inputData=3;}
-			else if(bd.QsC(cc)===1){ bd.sQaC(cc,0); bd.sQsC(cc,0); this.inputData=4;}
-			else                   { bd.sQaC(cc,1); bd.sQsC(cc,0); this.inputData=1;}
+			if     (bd.QaC(cc)===31){ bd.sQaC(cc,32); bd.sQsC(cc,0); this.inputData=2;}
+			else if(bd.QaC(cc)===32){ bd.sQaC(cc, 0); bd.sQsC(cc,1); this.inputData=3;}
+			else if(bd.QsC(cc)=== 1){ bd.sQaC(cc, 0); bd.sQsC(cc,0); this.inputData=4;}
+			else                    { bd.sQaC(cc,31); bd.sQsC(cc,0); this.inputData=1;}
 		}
 		else if(this.btn.Right){
-			if     (bd.QaC(cc)===1){ bd.sQaC(cc,0); bd.sQsC(cc,0); this.inputData=4;}
-			else if(bd.QaC(cc)===2){ bd.sQaC(cc,1); bd.sQsC(cc,0); this.inputData=1;}
-			else if(bd.QsC(cc)===1){ bd.sQaC(cc,2); bd.sQsC(cc,0); this.inputData=2;}
-			else                   { bd.sQaC(cc,0); bd.sQsC(cc,1); this.inputData=3;}
+			if     (bd.QaC(cc)===31){ bd.sQaC(cc, 0); bd.sQsC(cc,0); this.inputData=4;}
+			else if(bd.QaC(cc)===32){ bd.sQaC(cc,31); bd.sQsC(cc,0); this.inputData=1;}
+			else if(bd.QsC(cc)=== 1){ bd.sQaC(cc,32); bd.sQsC(cc,0); this.inputData=2;}
+			else                    { bd.sQaC(cc, 0); bd.sQsC(cc,1); this.inputData=3;}
 		}
 
 		pc.paintCellAround(cc);
@@ -253,13 +253,13 @@ Board:{
 			if(cc===null){ break;}
 
 			var qb = this.QaC(cc);
-			if(qb===1){
+			if(qb===31){
 				if     (dir===1){ ldata[cc]=(!isNaN({4:1,1:1}[ldata[cc]])?1:2); dir=3;}
 				else if(dir===2){ ldata[cc]=(!isNaN({2:1,1:1}[ldata[cc]])?1:4); dir=4;}
 				else if(dir===3){ ldata[cc]=(!isNaN({2:1,1:1}[ldata[cc]])?1:4); dir=1;}
 				else if(dir===4){ ldata[cc]=(!isNaN({4:1,1:1}[ldata[cc]])?1:2); dir=2;}
 			}
-			else if(qb===2){
+			else if(qb===32){
 				if     (dir===1){ ldata[cc]=(!isNaN({5:1,1:1}[ldata[cc]])?1:3); dir=4;}
 				else if(dir===2){ ldata[cc]=(!isNaN({3:1,1:1}[ldata[cc]])?1:5); dir=3;}
 				else if(dir===3){ ldata[cc]=(!isNaN({5:1,1:1}[ldata[cc]])?1:3); dir=2;}
@@ -278,7 +278,7 @@ Board:{
 MenuExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURNFLIP){ // 反転・回転全て
-			for(var c=0;c<bd.cellmax;c++){ bd.sQaC(c,[0,2,1][bd.QaC(c)]);}
+			for(var c=0;c<bd.cellmax;c++){ bd.sQaC(c,{0:0,31:32,32:31}[bd.QaC(c)]);}
 		}
 	}
 },
@@ -288,6 +288,8 @@ MenuExec:{
 Graphic:{
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
+		this.errcolor1 = this.cellcolor; // drawSlashes関係
+		this.errcolor2 = this.cellcolor; // drawSlashes関係
 
 		this.errbcolor2 = "rgb(255, 255, 127)";
 		this.dotcolor = this.dotcolor_PINK;
@@ -326,36 +328,6 @@ Graphic:{
 				else{ this.drawTriangle1(bd.cell[c].px, bd.cell[c].py, ql, headers[ql-1]+c);}
 			}
 			else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c, headers[4]+c, headers[5]+c]);}
-		}
-	},
-	drawSlashes : function(){
-		this.vinc('cell_slash', 'auto');
-
-		var headers = ["c_sl1_", "c_sl2_"];
-		g.lineWidth = Math.max(this.cw/8, 2);
-
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-
-			if(bd.cell[c].qans!==-1){
-				g.strokeStyle = this.cellcolor;
-				if(bd.cell[c].qans==1){
-					if(this.vnop(headers[0]+c,this.NONE)){
-						g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, this.cw,this.ch, true);
-						g.stroke();
-					}
-				}
-				else{ this.vhide(headers[0]+c);}
-				if(bd.cell[c].qans==2){
-					if(this.vnop(headers[1]+c,this.NONE)){
-						g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, this.cw,0, 0,this.ch, true);
-						g.stroke();
-					}
-				}
-				else{ this.vhide(headers[1]+c);}
-			}
-			else{ this.vhide([headers[0]+c, headers[1]+c]);}
 		}
 	},
 
@@ -482,7 +454,8 @@ FileIO:{
 				var c = bd.cnum(bx,by);
 				if(c!==null){
 					if     (ca==="+"){ bd.cell[c].qsub = 1;}
-					else if(ca!=="."){ bd.cell[c].qans = parseInt(ca);}
+					else if(ca==="1"){ bd.cell[c].qans = 31;}
+					else if(ca==="2"){ bd.cell[c].qans = 32;}
 				}
 			}
 		}
@@ -490,7 +463,8 @@ FileIO:{
 		if(this.filever==0){
 			this.decodeCell( function(obj,ca){
 				if     (ca==="+"){ obj.qsub = 1;}
-				else if(ca!=="."){ obj.qans = parseInt(ca);}
+				else if(ca==="1"){ obj.qans = 31;}
+				else if(ca==="2"){ obj.qans = 32;}
 			});
 		}
 	},
@@ -511,9 +485,10 @@ FileIO:{
 
 				var c = bd.cnum(bx,by);
 				if(c!==null){
-					if     (bd.cell[c].qans!==0){ this.datastr += (bd.cell[c].qans.toString() + " ");}
-					else if(bd.cell[c].qsub===1){ this.datastr += "+ ";}
-					else                        { this.datastr += ". ";}
+					if     (bd.cell[c].qans===31){ this.datastr += "1 ";}
+					else if(bd.cell[c].qans===32){ this.datastr += "2 ";}
+					else if(bd.cell[c].qsub=== 1){ this.datastr += "+ ";}
+					else                         { this.datastr += ". ";}
 					continue;
 				}
 

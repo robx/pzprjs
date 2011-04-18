@@ -73,19 +73,19 @@ MouseEvent:{
 		var cc = this.mouseCell
 
 		this.changeHalf(cc);
-		if(this.inputData!==1 && this.inputData!==6){ bd.sQaC(cc, 10+this.inputData); bd.sQsC(cc, 0);}
-		else if(this.inputData===6){ bd.sQaC(cc,11); bd.sQsC(cc, 0);}
+		if(this.inputData!==1 && this.inputData!==6){ bd.sQaC(cc, 40+this.inputData); bd.sQsC(cc, 0);}
+		else if(this.inputData===6){ bd.sQaC(cc,41); bd.sQsC(cc, 0);}
 		else{
-			if     (bd.QaC(cc)===11){ bd.sQaC(cc,16); bd.sQsC(cc, 0);}
-			else if(bd.QaC(cc)===16){ bd.sQaC(cc, 0); bd.sQsC(cc, 1);}
+			if     (bd.QaC(cc)===41){ bd.sQaC(cc,46); bd.sQsC(cc, 0);}
+			else if(bd.QaC(cc)===46){ bd.sQaC(cc, 0); bd.sQsC(cc, 1);}
 //			else if(bd.QsC(cc)=== 1){ bd.sQaC(cc, 0); bd.sQsC(cc, 0);}
-			else                    { bd.sQaC(cc,11); bd.sQsC(cc, 0);}
+			else                    { bd.sQaC(cc,41); bd.sQsC(cc, 0);}
 		}
 
 		cc = this.currentTargetADJ();
 		if(cc!==null){
 			this.changeHalf(cc);
-			bd.sQaC(cc, {2:18,3:17,4:20,5:19}[this.inputData]); bd.sQsC(cc, 0);
+			bd.sQaC(cc, {2:48,3:47,4:50,5:49}[this.inputData]); bd.sQsC(cc, 0);
 		}
 
 		cc = this.mouseCell;
@@ -112,14 +112,14 @@ MouseEvent:{
 
 	changeHalf : function(cc){
 		var adj=null;
-		if     (bd.QaC(cc)===12 || bd.QaC(cc)===17){ adj=bd.up(cc);}
-		else if(bd.QaC(cc)===13 || bd.QaC(cc)===18){ adj=bd.dn(cc);}
-		else if(bd.QaC(cc)===14 || bd.QaC(cc)===19){ adj=bd.lt(cc);}
-		else if(bd.QaC(cc)===15 || bd.QaC(cc)===20){ adj=bd.rt(cc);}
+		if     (bd.QaC(cc)===42 || bd.QaC(cc)===47){ adj=bd.up(cc);}
+		else if(bd.QaC(cc)===43 || bd.QaC(cc)===48){ adj=bd.dn(cc);}
+		else if(bd.QaC(cc)===44 || bd.QaC(cc)===49){ adj=bd.lt(cc);}
+		else if(bd.QaC(cc)===45 || bd.QaC(cc)===50){ adj=bd.rt(cc);}
 
 		if     (adj===null){ /* nop */ }
-		else if(bd.QaC(adj)>=12 && bd.QaC(adj)<=15){ bd.sQaC(adj,11);}
-		else if(bd.QaC(adj)>=17 && bd.QaC(adj)<=20){ bd.sQaC(adj,16);}
+		else if(bd.QaC(adj)>=42 && bd.QaC(adj)<=45){ bd.sQaC(adj,41);}
+		else if(bd.QaC(adj)>=47 && bd.QaC(adj)<=50){ bd.sQaC(adj,46);}
 	},
 	currentTargetADJ : function(){
 		if(this.mouseCell===null){ return null;}
@@ -150,7 +150,7 @@ Board:{
 	maxnum : 4,
 
 	isPillow : function(c){
-		return (!!this.cell[c] && (this.cell[c].qans>=11 && this.cell[c].qans<=15));
+		return (!!this.cell[c] && (this.cell[c].qans>=41 && this.cell[c].qans<=45));
 	},
 	sQaC : function(id, num){
 		um.addOpe(k.CELL, k.QANS, id, this.cell[id].qans, num);
@@ -164,10 +164,10 @@ MenuExec:{
 	adjustBoardData : function(key,d){
 		var trans = {};
 		switch(key){
-			case this.FLIPY: trans={12:13,13:12,17:18,18:17}; break;	// 上下反転
-			case this.FLIPX: trans={14:15,15:14,19:20,20:19}; break;	// 左右反転
-			case this.TURNR: trans={12:15,15:13,13:14,14:12,17:20,20:18,18:19,19:17}; break;	// 右90°回転
-			case this.TURNL: trans={12:14,14:13,13:15,15:12,17:19,19:18,18:20,20:17}; break;	// 左90°回転
+			case this.FLIPY: trans={42:43,43:42,47:48,48:47}; break;	// 上下反転
+			case this.FLIPX: trans={44:45,45:44,49:50,50:49}; break;	// 左右反転
+			case this.TURNR: trans={42:45,45:43,43:44,44:42,47:50,50:48,48:49,49:47}; break;	// 右90°回転
+			case this.TURNL: trans={42:44,44:43,43:45,45:42,47:49,49:48,48:50,50:47}; break;	// 左90°回転
 			default: return;
 		}
 		for(var c=0;c<bd.cellmax;c++){
@@ -219,7 +219,7 @@ Graphic:{
 			}
 			else{ this.vhide(header+c);}
 
-			this.drawPillow1(c, (bd.cell[c].qans>=11 && bd.cell[c].qans<=15), false);
+			this.drawPillow1(c, (bd.cell[c].qans>=41 && bd.cell[c].qans<=45), false);
 		}
 	},
 	drawPillow1 : function(cc, flag, inputting){
@@ -245,10 +245,10 @@ Graphic:{
 		this.vinc('border_futon', 'crispEdges');
 
 		var lw = this.lw, lm = this.lm;
-		var doma1 = {11:1,12:1,14:1,15:1,16:1,17:1,19:1,20:1};
-		var domb1 = {11:1,13:1,14:1,15:1,16:1,18:1,19:1,20:1};
-		var doma2 = {11:1,12:1,13:1,14:1,16:1,17:1,18:1,19:1};
-		var domb2 = {11:1,12:1,13:1,15:1,16:1,17:1,18:1,20:1};
+		var doma1 = {41:1,42:1,44:1,45:1,46:1,47:1,49:1,50:1};
+		var domb1 = {41:1,43:1,44:1,45:1,46:1,48:1,49:1,50:1};
+		var doma2 = {41:1,42:1,43:1,44:1,46:1,47:1,48:1,49:1};
+		var domb2 = {41:1,42:1,43:1,45:1,46:1,47:1,48:1,50:1};
 		g.fillStyle = "black";
 
 		var idlist = this.range.borders;
@@ -374,7 +374,7 @@ FileIO:{
 			if     (ca==="5"){ obj.qnum = -2;}
 			else if(ca==="#"){ obj.qans = 1;}
 			else if(ca==="-"){ obj.qsub = 1;}
-			else if(ca>="a" && ca<="j"){ obj.qans = parseInt(ca,20)+1;}
+			else if(ca>="a" && ca<="j"){ obj.qans = parseInt(ca,20)+31;}
 			else if(ca!=="."){ obj.qnum = parseInt(ca);}
 		});
 	},
@@ -383,7 +383,7 @@ FileIO:{
 			if     (obj.qnum>=0) { return (obj.qnum.toString() + " ");}
 			else if(obj.qnum===-2){return "5 ";}
 			else if(obj.qans===1){ return "# ";}
-			else if(obj.qans>=0) { return ((obj.qans-1).toString(20) + " ");}
+			else if(obj.qans>=41){ return ((obj.qans-31).toString(20) + " ");}
 			else if(obj.qsub===1){ return "- ";}
 			else                 { return ". ";}
 		});
@@ -407,7 +407,7 @@ AnsCheck:{
 			this.setAlert('柱のまわりにある枕の数が間違っています。', 'The number of pillows around the number is wrong.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.QaC(c)===11||bd.QaC(c)===16);}) ){
+		if( !this.checkAllCell(function(c){ return (bd.QaC(c)===41||bd.QaC(c)===46);}) ){
 			this.setAlert('布団が2マスになっていません。', 'There is a half-size futon.'); return false;
 		}
 
@@ -433,7 +433,7 @@ AnsCheck:{
 	checkKitamakura : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.QaC(c)===13){
+			if(bd.QaC(c)===43){
 				if(this.inAutoCheck){ return false;}
 				bd.sErC([c,bd.dn(c)],1);
 				result = false;
@@ -449,10 +449,10 @@ AnsCheck:{
 
 			var adj=null;
 			switch(bd.QaC(c)){
-				case 12: adj = bd.up(c); break;
-				case 13: adj = bd.dn(c); break;
-				case 14: adj = bd.lt(c); break;
-				case 15: adj = bd.rt(c); break;
+				case 42: adj = bd.up(c); break;
+				case 43: adj = bd.dn(c); break;
+				case 44: adj = bd.lt(c); break;
+				case 45: adj = bd.rt(c); break;
 				default: continue;
 			}
 			if( bd.countDir4Cell(c  ,function(c){ return bd.isBlack(c);})===0 &&

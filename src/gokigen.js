@@ -38,11 +38,11 @@ MouseEvent:{
 		var check = [];
 		for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
 
-		var fc = bd.xnum(bd.cell[cc].bx+(bd.isBlack(cc)?-1:1),bd.cell[cc].by-1);
+		var fc = bd.xnum(bd.cell[cc].bx+(bd.QaC(cc)===31?-1:1),bd.cell[cc].by-1);
 		bd.searchline(check, 0, fc);
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.QaC(c)===1 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]===1){ bd.sErC([c],2);}
-			if(bd.QaC(c)===2 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]===1){ bd.sErC([c],2);}
+			if(bd.QaC(c)===31 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]===1){ bd.sErC([c],2);}
+			if(bd.QaC(c)===32 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]===1){ bd.sErC([c],2);}
 		}
 
 		ans.errDisp = true;
@@ -52,9 +52,9 @@ MouseEvent:{
 		var cc = this.cellid();
 		if(cc===null){ return;}
 
-		var use = pp.getVal('use');
-		if     (use===1){ bd.sQaC(cc, (bd.QaC(cc)!==(this.btn.Left?1:2)?(this.btn.Left?1:2):0));}
-		else if(use===2){ bd.sQaC(cc, (this.btn.Left?[1,2,0]:[2,0,1])[bd.QaC(cc)]);}
+		var use = pp.getVal('use'), sl=(this.btn.Left?31:32);
+		if     (use===1){ bd.sQaC(cc, (bd.QaC(cc)!==sl?sl:0));}
+		else if(use===2){ bd.sQaC(cc, (this.btn.Left?{0:31,31:32,32:0}:{0:32,31:0,32:31})[bd.QaC(cc)]);}
 
 		pc.paintCellAround(cc);
 	}
@@ -96,7 +96,7 @@ Board:{
 			for(var cc=0;cc<this.cellmax;cc++) { history.cell[cc] =0;}
 			for(var xc=0;xc<this.crossmax;xc++){ history.cross[xc]=0;}
 
-			var fc = this.xnum(this.cell[c].bx+(this.QaC(c)===1 ? -1 : 1), this.cell[c].by-1);
+			var fc = this.xnum(this.cell[c].bx+(this.QaC(c)===31?-1:1), this.cell[c].by-1);
 			this.sp0(fc, 1, scnt, sdata, history);
 		}
 		for(var c=0;c<this.cellmax;c++){ if(sdata[c]===0){ sdata[c]=2;} }
@@ -114,10 +114,10 @@ Board:{
 		history.cross[xc] = depth; // この交点にマーキング
 		var bx=this.cross[xc].bx, by=this.cross[xc].by;
 		var nb = [
-			{ cell:this.cnum(bx-1,by-1), cross:this.xnum(bx-2,by-2), qans:1},
-			{ cell:this.cnum(bx+1,by-1), cross:this.xnum(bx+2,by-2), qans:2},
-			{ cell:this.cnum(bx-1,by+1), cross:this.xnum(bx-2,by+2), qans:2},
-			{ cell:this.cnum(bx+1,by+1), cross:this.xnum(bx+2,by+2), qans:1}
+			{ cell:this.cnum(bx-1,by-1), cross:this.xnum(bx-2,by-2), qans:31},
+			{ cell:this.cnum(bx+1,by-1), cross:this.xnum(bx+2,by-2), qans:32},
+			{ cell:this.cnum(bx-1,by+1), cross:this.xnum(bx-2,by+2), qans:32},
+			{ cell:this.cnum(bx+1,by+1), cross:this.xnum(bx+2,by+2), qans:31}
 		];
 		for(var i=0;i<4;i++){
 			if( nb[i].cell===null ||					// そっちは盤面の外だよ！
@@ -139,11 +139,11 @@ Board:{
 		for(var c=0;c<this.crossmax;c++){ scnt[c]=0;}
 		for(var c=0;c<this.cellmax;c++){
 			var bx=this.cell[c].bx, by=this.cell[c].by;
-			if(this.QaC(c)===1){
+			if(this.QaC(c)===31){
 				scnt[this.xnum(bx-1,by-1)]++;
 				scnt[this.xnum(bx+1,by+1)]++;
 			}
-			else if(this.QaC(c)===2){
+			else if(this.QaC(c)===32){
 				scnt[this.xnum(bx-1,by+1)]++;
 				scnt[this.xnum(bx+1,by-1)]++;
 			}
@@ -156,13 +156,13 @@ Board:{
 		check[c]=1;
 
 		nx = this.xnum(tx-2,ty-2);
-		if(nx!==null && dir!==4 && this.QaC(this.cnum(tx-1,ty-1))===1 && (check[nx]!==0 || !this.searchline(check,1,nx))){ flag=false;}
+		if(nx!==null && dir!==4 && this.QaC(this.cnum(tx-1,ty-1))===31 && (check[nx]!==0 || !this.searchline(check,1,nx))){ flag=false;}
 		nx = this.xnum(tx-2,ty+2);
-		if(nx!==null && dir!==3 && this.QaC(this.cnum(tx-1,ty+1))===2 && (check[nx]!==0 || !this.searchline(check,2,nx))){ flag=false;}
+		if(nx!==null && dir!==3 && this.QaC(this.cnum(tx-1,ty+1))===32 && (check[nx]!==0 || !this.searchline(check,2,nx))){ flag=false;}
 		nx = this.xnum(tx+2,ty-2);
-		if(nx!==null && dir!==2 && this.QaC(this.cnum(tx+1,ty-1))===2 && (check[nx]!==0 || !this.searchline(check,3,nx))){ flag=false;}
+		if(nx!==null && dir!==2 && this.QaC(this.cnum(tx+1,ty-1))===32 && (check[nx]!==0 || !this.searchline(check,3,nx))){ flag=false;}
 		nx = this.xnum(tx+2,ty+2);
-		if(nx!==null && dir!==1 && this.QaC(this.cnum(tx+1,ty+1))===1 && (check[nx]!==0 || !this.searchline(check,4,nx))){ flag=false;}
+		if(nx!==null && dir!==1 && this.QaC(this.cnum(tx+1,ty+1))===31 && (check[nx]!==0 || !this.searchline(check,4,nx))){ flag=false;}
 
 		return flag;
 	},
@@ -171,7 +171,7 @@ Board:{
 MenuExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURNFLIP){ // 反転・回転全て
-			for(var c=0;c<bd.cellmax;c++){ bd.sQaC(c,[0,2,1][bd.QaC(c)]);}
+			for(var c=0;c<bd.cellmax;c++){ bd.sQaC(c,{0:0,31:32,32:31}[bd.QaC(c)]);}
 		}
 	}
 },
@@ -212,46 +212,11 @@ Graphic:{
 
 	// オーバーライド
 	setBGCellColor : function(c){
-		if(bd.cell[c].qans===-1 && bd.cell[c].error===1){
+		if(bd.cell[c].qans===0 && bd.cell[c].error===1){
 			g.fillStyle = this.errbcolor1;
 			return true;
 		}
 		return false;
-	},
-
-	drawSlashes : function(){
-		this.vinc('cell_slash', 'auto');
-
-		var headers = ["c_sl1_", "c_sl2_"];
-		g.lineWidth = Math.max(this.cw/8, 2);
-
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-
-			if(bd.cell[c].qans!==-1){
-				if     (bd.cell[c].error===1){ g.strokeStyle = this.errcolor1;}
-				else if(bd.cell[c].error===2){ g.strokeStyle = this.errcolor2;}
-				else                         { g.strokeStyle = this.cellcolor;}
-
-				if(bd.cell[c].qans===1){
-					if(this.vnop(headers[0]+c,this.STROKE)){
-						g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, this.cw,this.ch, true);
-						g.stroke();
-					}
-				}
-				else{ this.vhide(headers[0]+c);}
-
-				if(bd.cell[c].qans===2){
-					if(this.vnop(headers[1]+c,this.STROKE)){
-						g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, this.cw,0, 0,this.ch, true);
-						g.stroke();
-					}
-				}
-				else{ this.vhide(headers[1]+c);}
-			}
-			else{ this.vhide([headers[0]+c, headers[1]+c]);}
-		}
 	}
 },
 
@@ -272,11 +237,18 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeCrossNum();
-		this.decodeCellQanssub();
+		this.decodeCell( function(obj,ca){
+			if     (ca==="1"){ obj.qans = 31;}
+			else if(ca==="2"){ obj.qans = 32;}
+		});
 	},
 	encodeData : function(){
 		this.encodeCrossNum();
-		this.encodeCellQanssub();
+		this.encodeCell( function(obj){
+			if     (obj.qans===31){ return "1 ";}
+			else if(obj.qans===32){ return "2 ";}
+			else                  { return ". ";}
+		});
 	}
 },
 

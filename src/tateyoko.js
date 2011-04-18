@@ -47,27 +47,27 @@ MouseEvent:{
 			if(cc==this.mouseCell){
 				var mx=Math.abs(this.inputPoint.x-this.firstPoint.x);
 				var my=Math.abs(this.inputPoint.y-this.firstPoint.y);
-				if     (my>=8){ this.inputData=1; input=true;}
-				else if(mx>=8){ this.inputData=2; input=true;}
+				if     (my>=8){ this.inputData=12; input=true;}
+				else if(mx>=8){ this.inputData=13; input=true;}
 			}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===k.UP || dir===k.DN){ this.inputData=1; input=true;}
-				else if(dir===k.LT || dir===k.RT){ this.inputData=2; input=true;}
+				if     (dir===k.UP || dir===k.DN){ this.inputData=12; input=true;}
+				else if(dir===k.LT || dir===k.RT){ this.inputData=13; input=true;}
 			}
 
 			if(input){
 				if(bd.QaC(cc)===this.inputData){ this.inputData=0;}
 				this.firstPoint.reset();
-				}
+			}
 		}
 		// 入力し続けていて、別のマスに移動した場合
 		else if(cc!==this.mouseCell){
 			if(this.inputData==0){ this.inputData=0; input=true;}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===k.UP || dir===k.DN){ this.inputData=1; input=true;}
-				else if(dir===k.LT || dir===k.RT){ this.inputData=2; input=true;}
+				if     (dir===k.UP || dir===k.DN){ this.inputData=12; input=true;}
+				else if(dir===k.LT || dir===k.RT){ this.inputData=13; input=true;}
 			}
 		}
 
@@ -83,7 +83,7 @@ MouseEvent:{
 		var cc  = this.cellid();
 		if(cc===null || bd.QuC(cc)===1){ return;}
 
-		bd.sQaC(cc, (this.btn.Left?[1,2,0]:[2,0,1])[bd.QaC(cc)]);
+		bd.sQaC(cc, (this.btn.Left?{0:12,12:13,13:0}:{0:13,12:0,13:12})[bd.QaC(cc)]);
 		pc.paintCell(cc);
 	}
 },
@@ -161,7 +161,7 @@ Board:{
 			while(cc!==null && this.cell[cc].qans===val){
 				binfo.room[binfo.max].idlist.push(cc);
 				binfo.id[cc]=binfo.max;
-				if(val===1){ by+=2;}else{ bx+=2;}
+				if(val===12){ by+=2;}else{ bx+=2;}
 				cc = this.cnum(bx,by);
 			}
 		}
@@ -172,7 +172,7 @@ Board:{
 MenuExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURN){ // 回転だけ
-			for(var c=0;c<bd.cellmax;c++){ bd.sQaC(c,[0,2,1][bd.QaC(c)]);}
+			for(var c=0;c<bd.cellmax;c++){ bd.sQaC(c,{0:0,12:13,13:12}[bd.QaC(c)]);}
 		}
 	}
 },
@@ -215,15 +215,15 @@ Graphic:{
 			else if(err===2){ g.fillStyle = this.errlinecolor2;}
 			else{ g.fillStyle = this.linecolor;}
 
-			if(bd.cell[c].qans!==-1){
-				if(bd.cell[c].qans===1){
+			if(bd.cell[c].qans!==0){
+				if(bd.cell[c].qans===12){
 					if(this.vnop(headers[0]+c,this.FILL)){
 						g.fillRect(bd.cell[c].px+lp, bd.cell[c].py, lw, this.ch+1);
 					}
 				}
 				else{ this.vhide(headers[0]+c);}
 
-				if(bd.cell[c].qans===2){
+				if(bd.cell[c].qans===13){
 					if(this.vnop(headers[1]+c,this.FILL)){
 						g.fillRect(bd.cell[c].px, bd.cell[c].py+lp, this.cw+1, lw);
 					}
@@ -329,7 +329,8 @@ FileIO:{
 			else if(ca!=="."){ obj.qnum = parseInt(ca);}
 		});
 		this.decodeCell( function(obj,ca){
-			if(ca!=="."){ obj.qans = parseInt(ca);}
+			if     (ca==="1"){ obj.qans = 12;}
+			else if(ca==="2"){ obj.qans = 13;}
 		});
 	},
 	encodeData : function(){
@@ -343,7 +344,12 @@ FileIO:{
 			else{ return ". ";}
 		});
 		this.encodeCell( function(obj){
-			return (obj.ques!==1 ? ""+obj.qans+" " : ". ");
+			if(obj.ques!==1){
+				if     (obj.qans===0) { return "0 ";}
+				else if(obj.qans===12){ return "1 ";}
+				else if(obj.qans===13){ return "2 ";}
+			}
+			return ". ";
 		});
 	}
 },
@@ -385,10 +391,10 @@ AnsCheck:{
 			if(bd.QuC(c)!==1 || bd.QnC(c)<0){ continue;}
 
 			var cnt1=0, cnt2=0, cc;
-			cc=bd.up(c); if(cc!==null){ if(bd.QaC(cc)===1){ cnt1++;}else if(bd.QaC(cc)===2){ cnt2++;} }
-			cc=bd.dn(c); if(cc!==null){ if(bd.QaC(cc)===1){ cnt1++;}else if(bd.QaC(cc)===2){ cnt2++;} }
-			cc=bd.lt(c); if(cc!==null){ if(bd.QaC(cc)===2){ cnt1++;}else if(bd.QaC(cc)===1){ cnt2++;} }
-			cc=bd.rt(c); if(cc!==null){ if(bd.QaC(cc)===2){ cnt1++;}else if(bd.QaC(cc)===1){ cnt2++;} }
+			cc=bd.up(c); if(cc!==null){ if(bd.QaC(cc)===12){ cnt1++;}else if(bd.QaC(cc)===13){ cnt2++;} }
+			cc=bd.dn(c); if(cc!==null){ if(bd.QaC(cc)===12){ cnt1++;}else if(bd.QaC(cc)===13){ cnt2++;} }
+			cc=bd.lt(c); if(cc!==null){ if(bd.QaC(cc)===13){ cnt1++;}else if(bd.QaC(cc)===12){ cnt2++;} }
+			cc=bd.rt(c); if(cc!==null){ if(bd.QaC(cc)===13){ cnt1++;}else if(bd.QaC(cc)===12){ cnt2++;} }
 
 			if((type===1 && (bd.QnC(c)>4-cnt2 || bd.QnC(c)<cnt1)) || (type===2 && bd.QnC(c)!==cnt1)){
 				if(this.inAutoCheck){ return false;}
