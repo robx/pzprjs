@@ -3,24 +3,6 @@
 //
 pzprv3.custom.view = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.dispzero        = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.isAnsNumber     = true;
-		this.NumberWithMB    = true;
-		this.linkNumber      = true;
-
-		this.floatbgcolor = "rgb(64, 64, 64)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){ this.inputqnum();}
@@ -82,8 +64,15 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 8,
+	qrows : 8,
+
+	numzero : true,
+
+	numberWithMB : true,
+
 	nummaxfunc : function(cc){
-		return Math.min(k.qcols+k.qrows-2, this.maxnum);
+		return Math.min(this.qcols+this.qrows-2, this.maxnum);
 	},
 
 	// 正答判定用
@@ -100,6 +89,10 @@ Board:{
 		}
 		return clist;
 	}
+},
+
+AreaManager:{
+	linkNumber : true
 },
 
 //---------------------------------------------------------

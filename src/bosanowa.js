@@ -3,26 +3,6 @@
 //
 pzprv3.custom.bosanowa = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isborder = 2;
-
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.isAnsNumber     = true;
-
-		this.bdmargin       = 0.70;
-		this.bdmargin_image = 0.10;
-
-		this.floatbgcolor = "rgb(96, 96, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -121,7 +101,7 @@ KeyEvent:{
 
 TargetCursor:{
 	initCursor : function(){
-		this.pos = new pzprv3.core.Address(k.qcols-1-k.qcols%2, k.qrows-1-k.qrows%2);
+		this.pos = new pzprv3.core.Address(bd.qcols-1-bd.qcols%2, bd.qrows-1-bd.qrows%2);
 	}
 },
 
@@ -136,6 +116,8 @@ Border:{
 },
 
 Board:{
+	isborder : 2,
+
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
 
@@ -159,9 +141,9 @@ Menu:{
 		pp.addChild('disptype_2', 'disptype', '倉庫番形式',     'Sokoban Type');
 		pp.addChild('disptype_3', 'disptype', 'ワリタイ形式',   'Waritai type');
 		pp.funcs['disptype'] = function(num){
-			if     (num==1){ k.bdmargin = 0.70; k.bdmargin_image = 0.10;}
-			else if(num==2){ k.bdmargin = 1.20; k.bdmargin_image = 1.10;}
-			else if(num==3){ k.bdmargin = 0.70; k.bdmargin_image = 0.10;}
+			if     (num==1){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
+			else if(num==2){ pc.bdmargin = 1.20; pc.bdmargin_image = 1.10;}
+			else if(num==3){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
 			pc.resize_canvas();
 		};
 	}
@@ -170,6 +152,9 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	bdmargin       : 0.70,
+	bdmargin_image : 0.10,
+
 	setColors : function(){
 		this.borderfontcolor = "blue";
 	},

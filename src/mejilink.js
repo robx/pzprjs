@@ -3,22 +3,6 @@
 //
 pzprv3.custom.mejilink = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.iscross  = 2;
-		this.isborder = 2;
-
-		this.isborderAsLine  = true;
-
-		this.floatbgcolor = "rgb(32, 32, 32)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -49,7 +33,7 @@ MouseEvent:{
 Border:{
 	propall : ['line', 'qsub'], /* quesは取り除いておく */
 	allclear : function(id,isrec){
-		var def = (id<k.qcols*(k.qrows-1)+(k.qcols-1)*k.qrows ? 1 : 0);
+		var def = (id<bd.qcols*(bd.qrows-1)+(bd.qcols-1)*bd.qrows ? 1 : 0);
 		if(this.ques!==def){
 			if(isrec){ um.addOpe(k.BORDER, k.QUES, id, this.ques, def);}
 			this.ques = def;
@@ -59,6 +43,12 @@ Border:{
 	}
 },
 Board:{
+	qcols : 8,
+	qrows : 8,
+
+	iscross  : 2,
+	isborder : 2,
+
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
 
@@ -74,6 +64,10 @@ Board:{
 	isGround : function(id){
 		return (!!this.border[id] && this.border[id].ques>0);
 	}
+},
+
+LineManager:{
+	borderAsLine : true
 },
 
 Menu:{

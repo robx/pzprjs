@@ -3,20 +3,6 @@
 //
 pzprv3.custom.cbblock = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.iscross  = 1;
-		this.isborder = 1;
-
-		this.floatbgcolor = "rgb(32, 32, 32)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -42,6 +28,12 @@ Border:{
 },
 
 Board:{
+	qcols : 8,
+	qrows : 8,
+
+	iscross  : 1,
+	isborder : 1,
+
 	// 線を引かせたくないので上書き
 	enableLineNG : true,
 	isLineNG : function(id){ return (this.border[id].ques===1);},

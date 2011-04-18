@@ -3,22 +3,6 @@
 //
 pzprv3.custom.slalom = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.irowake  = 1;
-		this.isborder = 1;
-
-		this.isCenterLine    = true;
-
-		this.floatbgcolor = "rgb(96, 96, 255)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -214,8 +198,14 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
+	isborder : 1,
+
+	disInputHatena : true,
+
+	hinfo : null,
+
+	initialize : function(pid){
+		this.SuperFunc.initialize.call(this,pid);
 		this.hinfo = new (pzprv3.getPuzzleClass('HurdleManager'))();
 	},
 	initBoardSize : function(col,row){
@@ -271,6 +261,10 @@ Operation:{
 	}
 },
 
+LineManager:{
+	isCenterLine : true
+},
+
 MenuExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURN){
@@ -298,6 +292,8 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	irowake : 1,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.linecolor = "rgb(32, 32, 255)";	// 色分けなしの場合

@@ -3,26 +3,6 @@
 //
 pzprv3.custom.wagiri = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 7;
-		this.qrows = 7;
-
-		this.iscross  = 2;
-
-		this.isLineCross     = true;
-		this.isCenterLine    = true;
-		this.dispzero        = true;
-
-		this.bdmargin       = 0.70;
-		this.bdmargin_image = 0.50;
-
-		this.floatbgcolor = "rgb(0, 127, 0)";
-	},
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -107,6 +87,13 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 7,
+	qrows : 7,
+
+	iscross : 2,
+
+	numzero : true,
+
 	maxnum : 4,
 
 	// 正答判定用
@@ -206,6 +193,11 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	bdmargin       : 0.70,
+	bdmargin_image : 0.50,
+
+	hideHatena : true, /* 輪・切・？の？は個別に表示 */
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_DLIGHT;
 		this.errcolor1 = "red";

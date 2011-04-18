@@ -3,23 +3,6 @@
 //
 pzprv3.custom.shakashaka = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isLineCross     = true;
-		this.isCenterLine    = true;
-		this.dispzero        = true;
-		this.isInputHatena   = true;
-		this.NumberIsWhite   = true;
-
-		this.floatbgcolor = "rgb(32, 32, 32)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -131,6 +114,10 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	numzero : true,
+
+	numberIsWhite : true,
+
 	maxnum : 4,
 	isTri : function(c){ return (!!this.cell[c] && this.cell[c].qans!==0);},
 
@@ -186,6 +173,8 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	hideHatena : true,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.fontcolor = this.fontErrcolor = "white";

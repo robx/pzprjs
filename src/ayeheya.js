@@ -3,30 +3,10 @@
 //
 pzprv3.custom.ayeheya = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.roomNumber      = true;
-		this.dispzero        = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.BlackCell       = true;
-		this.RBBlackCell     = true;
-		this.checkWhiteCell  = true,
-
-		this.floatbgcolor = "rgb(0, 191, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	RBBlackCell : true,
+
 	mousedown : function(){
 		if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
 		else if(k.editmode){ this.inputborder();}
@@ -57,6 +37,10 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 1,
+
+	numzero : true,
+
 	nummaxfunc : function(cc){
 		var id = this.areas.room.id[cc];
 		var d = this.getSizeOfClist(this.areas.room[id].clist);
@@ -75,6 +59,12 @@ Board:{
 			else{ return (((m*n+m+n-2)/3)|0);}
 		}
 	}
+},
+
+AreaManager:{
+	hasroom        : true,
+	roomNumber     : true,
+	checkWhiteCell : true
 },
 
 Menu:{

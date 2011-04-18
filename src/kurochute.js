@@ -3,26 +3,10 @@
 //
 pzprv3.custom.kurochute = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.BlackCell       = true;
-		this.NumberIsWhite   = true;
-		this.RBBlackCell     = true;
-		this.checkWhiteCell  = true;
-
-		this.floatbgcolor = "rgb(96, 96, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	RBBlackCell : true,
+
 	mousedown : function(){
 		if     (k.editmode){ this.inputqnum();}
 		else if(k.playmode){ this.inputcell();}
@@ -52,15 +36,24 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Menu:{
-	menufix : function(){
-		this.addUseToFlags();
+Board:{
+	qcols : 8,
+	qrows : 8,
+
+	numberIsWhite : true,
+
+	nummaxfunc : function(cc){
+		return Math.max(this.qcols,this.qrows)-1;
 	}
 },
 
-Board:{
-	nummaxfunc : function(cc){
-		return Math.max(k.qcols,k.qrows)-1;
+AreaManager:{
+	checkWhiteCell : true
+},
+
+Menu:{
+	menufix : function(){
+		this.addUseToFlags();
 	}
 },
 

@@ -3,23 +3,6 @@
 //
 pzprv3.custom.numlin = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isborder = 1;
-
-		this.isCenterLine    = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-
-		this.floatbgcolor = "rgb(96, 96, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -56,6 +39,14 @@ KeyPopup:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Board:{
+	isborder : 1
+},
+
+LineManager:{
+	isCenterLine : true
+},
+
 Menu:{
 	menufix : function(){
 		this.addRedLineToFlags();

@@ -3,27 +3,6 @@
 // 
 pzprv3.custom.yajirin = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.irowake  = 1;
-		this.isborder = 1;
-
-		this.isCenterLine    = true;
-		this.dispzero        = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.BlackCell       = true;
-		this.NumberIsWhite   = true;
-
-		this.floatbgcolor = "rgb(0, 224, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -68,9 +47,19 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 1,
+
+	numzero : true,
+
+	numberIsWhite : true,
+
 	// 線を引かせたくないので上書き
 	noLP : function(cc,dir){ return (this.isBlack(cc) || this.isNum(cc));},
 	enableLineNG : true
+},
+
+LineManager:{
+	isCenterLine : true
 },
 
 MenuExec:{
@@ -89,6 +78,8 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	irowake : 1,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.dotcolor = "rgb(255, 96, 191)";

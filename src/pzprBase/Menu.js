@@ -21,7 +21,7 @@ pzprv3.createCommonClass('Menu', '',
 
 		this.ex = new (pzprv3.getPuzzleClass('MenuExec'))();	// MenuExecオブジェクト用
 
-		this.ispencilbox = (PZLINFO.info[k.puzzleid].exists.kanpen && (k.puzzleid!=="nanro" && k.puzzleid!=="ayeheya" && k.puzzleid!=="kurochute"));
+		this.ispencilbox = (PZLINFO.info[bd.puzzleid].exists.kanpen && (bd.puzzleid!=="nanro" && bd.puzzleid!=="ayeheya" && bd.puzzleid!=="kurochute"));
 
 		// ElementTemplate : メニュー領域
 		var menu_funcs = {mouseover : ee.ebinder(this, this.menuhover), mouseout  : ee.ebinder(this, this.menuout)};
@@ -29,7 +29,7 @@ pzprv3.createCommonClass('Menu', '',
 
 		// ElementTemplate : フロートメニュー
 		var float_funcs = {mouseout:ee.ebinder(this, this.floatmenuout)};
-		this.EL_FLOAT = ee.addTemplate('float_parent','menu', {className:'floatmenu'}, {backgroundColor:k.floatbgcolor}, float_funcs);
+		this.EL_FLOAT = ee.addTemplate('float_parent','menu', {className:'floatmenu'}, {backgroundColor:PZLINFO.toFBGcolor(bd.puzzleid)}, float_funcs);
 
 		// ElementTemplate : フロートメニュー(中身)
 		var smenu_funcs  = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout), click:ee.ebinder(this, this.submenuclick)};
@@ -183,7 +183,7 @@ pzprv3.createCommonClass('Menu', '',
 	//---------------------------------------------------------------------------
 	displayDesign : function(){
 		this.displayTitle();
-		_doc.body.style.backgroundImage = "url(./bg/"+k.puzzleid+".gif)";
+		_doc.body.style.backgroundImage = "url(./bg/"+bd.puzzleid+".gif)";
 		if(ee.br.IE6){
 			ee('title2').el.style.marginTop = "24px";
 			ee('separator2').el.style.margin = '0pt';
@@ -197,7 +197,7 @@ pzprv3.createCommonClass('Menu', '',
 		_doc.title = title;
 		ee('title2').el.innerHTML = title;
 	},
-	getPuzzleName : function(){ return this.selectStr(PZLINFO.info[k.puzzleid].ja,PZLINFO.info[k.puzzleid].en);},
+	getPuzzleName : function(){ return this.selectStr(PZLINFO.info[bd.puzzleid].ja,PZLINFO.info[bd.puzzleid].en);},
 
 //--------------------------------------------------------------------------------------------------------------
 
@@ -284,8 +284,8 @@ pzprv3.createCommonClass('Menu', '',
 		au('text','disp',(!ee.mobile?0:2),[0,1,2,3], 'テキストのサイズ','Text Size');
 		ap('sep_disp1',  'disp');
 
-		if(!!k.irowake){
-			ac('irowake','disp',(k.irowake==2?true:false),'線の色分け','Color coding');
+		if(!!pc.irowake){
+			ac('irowake','disp',(pc.irowake==2?true:false),'線の色分け','Color coding');
 			sl('irowake', '線の色分けをする', 'Color each lines');
 		}
 		ac('cursor','disp',true,'カーソルの表示','Display cursor');
@@ -611,7 +611,7 @@ pzprv3.createCommonClass('Menu', '',
 		}
 
 		// 色分けチェックボックス用の処理
-		if(k.irowake){
+		if(pc.irowake){
 			// 横にくっつけたいボタンを追加
 			var el = ee.createEL(this.EL_BUTTON, 'ck_btn_irowake');
 			this.addButtons(el, ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
@@ -652,7 +652,7 @@ pzprv3.createCommonClass('Menu', '',
 		ee('btnclear') .el.disabled = false;
 		ee('btnclear2').el.disabled = false;
 
-		if(k.irowake!=0){
+		if(pc.irowake!=0){
 			var el = ee.createEL(this.EL_BUTTON, 'btncolor2');
 			this.addButtons(el, ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
 			ee('btncolor2').insertAfter(ee('btnclear2').el).el.style.display = 'none';
@@ -712,7 +712,7 @@ pzprv3.createCommonClass('Menu', '',
 		func = ee.ebinder(this.ex, this.ex.newboard);
 		lab(ee('bar1_1').el,      "盤面の新規作成",         "Createing New Board");
 		lab(ee('pop1_1_cap0').el, "盤面を新規作成します。", "Create New Board.");
-		if(k.puzzleid!=='sudoku' && k.puzzleid!=='tawa'){
+		if(bd.puzzleid!=='sudoku' && bd.puzzleid!=='tawa'){
 			lab(ee('pop1_1_cap1').el, "よこ",                   "Cols");
 			lab(ee('pop1_1_cap2').el, "たて",                   "Rows");
 		}
@@ -736,9 +736,9 @@ pzprv3.createCommonClass('Menu', '',
 			btn(el, func, strJP, strEN);
 		};
 		btt('pzprv3',     "ぱずぷれv3のURLを出力する",           "Output PUZ-PRE v3 URL",          true);
-		btt('pzprapplet', "ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", PZLINFO.info[k.puzzleid].exists.pzprapp);
-		btt('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              PZLINFO.info[k.puzzleid].exists.kanpen);
-		btt('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (k.puzzleid==="heyawake"));
+		btt('pzprapplet', "ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", PZLINFO.info[bd.puzzleid].exists.pzprapp);
+		btt('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              PZLINFO.info[bd.puzzleid].exists.kanpen);
+		btt('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (bd.puzzleid==="heyawake"));
 		btt('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
 		ee("urlbuttonarea").appendBR();
 		func = ee.ebinder(this.ex, this.ex.openurl);
@@ -1088,7 +1088,7 @@ pzprv3.createCommonClass('Properties', '',
 		duplicate : function(){ base.dec.exportFileData();},
 
 		credit    : function(){ menu.pop = ee("pop3_1");},
-		jumpexp   : function(){ window.open('./faq.html?'+k.puzzleid+(pzprv3.EDITOR?"_edit":""), '');},
+		jumpexp   : function(){ window.open('./faq.html?'+bd.puzzleid+(pzprv3.EDITOR?"_edit":""), '');},
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
 		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},
@@ -1106,9 +1106,9 @@ pzprv3.createCommonClass('Properties', '',
 
 		newboard : function(){
 			menu.pop = ee("pop1_1");
-			if(k.puzzleid!="sudoku"){
-				_doc.newboard.col.value = k.qcols;
-				_doc.newboard.row.value = k.qrows;
+			if(bd.puzzleid!="sudoku"){
+				_doc.newboard.col.value = bd.qcols;
+				_doc.newboard.row.value = bd.qrows;
 			}
 			kc.enableKey = false;
 		},
@@ -1156,7 +1156,7 @@ var debug = {
 
 		_doc.testform.starttest.style.display = 'none';
 
-		_doc.testform.perfload.style.display = (k.puzzleid!=='country' ? 'none' : 'inline');
+		_doc.testform.perfload.style.display = (bd.puzzleid!=='country' ? 'none' : 'inline');
 		_doc.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
 		_doc.testform.database.style.display = (base.dec.enLocalStorage() ? 'none' : 'inline');
 

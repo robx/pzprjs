@@ -3,22 +3,6 @@
 //
 pzprv3.custom.kakuro = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 11;
-		this.qrows = 11;
-
-		this.isborder = 1;
-		this.isexcell = 1;
-
-		this.isAnsNumber     = true;
-
-		this.floatbgcolor = "rgb(96, 96, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -52,8 +36,8 @@ KeyPopup:{
 TargetCursor:{
 	adjust_modechange : function(){
 		if(k.playmode){
-			if(this.pos.x<1) this.pos.x = 1;
-			if(this.pos.y<1) this.pos.y = 1;
+			if(this.pos.x<1){ this.pos.x = 1;}
+			if(this.pos.y<1){ this.pos.y = 1;}
 		}
 	},
 	targetdir : 2
@@ -72,7 +56,16 @@ EXCell:{
 },
 
 Board:{
+	qcols : 11,
+	qrows : 11,
+
+	isborder : 1,
+	isexcell : 1,
+
 	maxnum : 9,
+
+	/* 問題の0入力は↓の特別処理で可能にしてます */
+	disInputHatena : true,
 
 	// 問題入力モードだけ、、0でも入力できるようにする
 	sQnC : function(id, num) {
@@ -170,7 +163,7 @@ Encode:{
 		fio.decodeCellQnum51_kanpen();
 	},
 	encodeKanpen : function(){
-		this.outsize = [k.qrows+1, k.qcols+1].join("/");
+		this.outsize = [bd.qrows+1, bd.qcols+1].join("/");
 
 		fio.encodeCellQnum51_kanpen();
 	},
@@ -272,7 +265,7 @@ FileIO:{
 		this.decodeQans_kanpen();
 	},
 	kanpenSave : function(){
-		this.sizestr = [k.qrows+1, k.qcols+1].join("/");
+		this.sizestr = [bd.qrows+1, bd.qcols+1].join("/");
 
 		this.encodeCellQnum51_kanpen();
 		this.datastr += "/";
@@ -321,7 +314,7 @@ FileIO:{
 	},
 
 	decodeQans_kanpen : function(){
-		var barray = this.readLines(k.qrows+1);
+		var barray = this.readLines(bd.qrows+1);
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			if(((by+1)>>1)>=barray.length){ break;}
 			var arr = barray[(by+1)>>1].split(" ");

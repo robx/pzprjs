@@ -3,24 +3,6 @@
 //
 pzprv3.custom.loute = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.numberAsObject  = true;
-
-		this.floatbgcolor = "rgb(127, 191, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -100,6 +82,13 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 8,
+	qrows : 8,
+
+	isborder : 1,
+
+	numberAsObject : true,
+
 	maxnum : 5,
 
 	getLblockInfo : function(){
@@ -148,6 +137,10 @@ Board:{
 		
 		return rinfo;
 	}
+},
+
+AreaManager:{
+	hasroom : true
 },
 
 MenuExec:{

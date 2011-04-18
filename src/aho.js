@@ -3,22 +3,6 @@
 //
 pzprv3.custom.aho = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.isInputHatena   = true;
-
-		this.floatbgcolor = "rgb(127, 191, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -50,8 +34,20 @@ KeyPopup:{
 },
 
 //---------------------------------------------------------
+// 盤面管理系
+Board:{
+	isborder : 1
+},
+
+AreaManager:{
+	hasroom : true
+},
+
+//---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	hideHatena : true,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_DLIGHT;
 		this.fontcolor = this.fontErrcolor = "white";

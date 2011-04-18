@@ -3,23 +3,6 @@
 //
 pzprv3.custom.fourcells = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-
-		this.floatbgcolor = "rgb(127, 127, 255)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -51,6 +34,8 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 1,
+
 	maxnum : 3,
 
 	getdir4Border : function(cc){
@@ -61,6 +46,10 @@ Board:{
 		if( bx===this.maxby-1 || this.isBorder(this.bnum(bx+1,by  )) ){ cnt++;}
 		return cnt;
 	}
+},
+
+AreaManager:{
+	hasroom : true
 },
 
 //---------------------------------------------------------

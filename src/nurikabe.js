@@ -3,24 +3,6 @@
 //
 pzprv3.custom.nurikabe = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.BlackCell       = true;
-		this.NumberIsWhite   = true;
-		this.checkBlackCell  = true;
-		this.checkWhiteCell  = true;
-
-		this.floatbgcolor = "rgb(96, 96, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -46,6 +28,15 @@ KeyPopup:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Board:{
+	numberIsWhite : true
+},
+
+AreaManager:{
+	checkBlackCell : true,
+	checkWhiteCell : true
+},
+
 Menu:{
 	menufix : function(){
 		this.addUseToFlags();

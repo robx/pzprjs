@@ -3,23 +3,6 @@
 //
 pzprv3.custom.bag = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isborder = 2;
-
-		this.isborderAsLine  = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-
-		this.floatbgcolor = "rgb(160, 0, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -82,8 +65,10 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 2,
+
 	nummaxfunc : function(cc){
-		return Math.min(this.maxnum, k.qcols+k.qrows-1);
+		return Math.min(this.maxnum, this.qcols+this.qrows-1);
 	},
 
 	getInsideArea : function(){
@@ -97,6 +82,10 @@ Board:{
 		}
 		return icheck;
 	}
+},
+
+LineManager:{
+	borderAsLine : true
 },
 
 MenuExec:{

@@ -3,23 +3,6 @@
 //
 pzprv3.custom.kouchoku = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 7;
-		this.qrows = 7;
-
-		this.irowake  = 1;
-		this.iscross  = 2;
-
-		this.bdmargin       = 0.70;
-		this.bdmargin_image = 0.50;
-
-		this.floatbgcolor = "rgb(127, 127, 127)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -161,7 +144,14 @@ Cross:{
 },
 
 Board:{
+	qcols : 7,
+	qrows : 7,
+
+	iscross : 2,
+
 	maxnum : 26,
+
+	segs : null,
 
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
@@ -284,18 +274,18 @@ MenuExec:{
 			var id=idlist[i], seg=bd.segs.seg[id];
 			var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
 			switch(key){
-				case this.FLIPY: seg.setpos(bx1,yy-by1,bx2,yy-by2,k.qcols,k.qrows); break;
-				case this.FLIPX: seg.setpos(xx-bx1,by1,xx-bx2,by2,k.qcols,k.qrows); break;
-				case this.TURNR: seg.setpos(yy-by1,bx1,yy-by2,bx2,k.qrows,k.qcols); break;
-				case this.TURNL: seg.setpos(by1,xx-bx1,by2,xx-bx2,k.qrows,k.qcols); break;
-				case this.EXPANDUP: seg.setpos(bx1,  by1+2,bx2,  by2+2,k.qcols,k.qrows+1); break;
-				case this.EXPANDDN: seg.setpos(bx1,  by1,  bx2,  by2,  k.qcols,k.qrows+1); break;
-				case this.EXPANDLT: seg.setpos(bx1+2,by1,  bx2+2,by2,  k.qcols+1,k.qrows); break;
-				case this.EXPANDRT: seg.setpos(bx1,  by1,  bx2,  by2,  k.qcols+1,k.qrows); break;
-				case this.REDUCEUP: seg.setpos(bx1,  by1-2,bx2,  by2-2,k.qcols,k.qrows-1); break;
-				case this.REDUCEDN: seg.setpos(bx1,  by1,  bx2,  by2,  k.qcols,k.qrows-1); break;
-				case this.REDUCELT: seg.setpos(bx1-2,by1,  bx2-2,by2,  k.qcols-1,k.qrows); break;
-				case this.REDUCERT: seg.setpos(bx1,  by1,  bx2,  by2,  k.qcols-1,k.qrows); break;
+				case this.FLIPY: seg.setpos(bx1,yy-by1,bx2,yy-by2,bd.qcols,bd.qrows); break;
+				case this.FLIPX: seg.setpos(xx-bx1,by1,xx-bx2,by2,bd.qcols,bd.qrows); break;
+				case this.TURNR: seg.setpos(yy-by1,bx1,yy-by2,bx2,bd.qrows,bd.qcols); break;
+				case this.TURNL: seg.setpos(by1,xx-bx1,by2,xx-bx2,bd.qrows,bd.qcols); break;
+				case this.EXPANDUP: seg.setpos(bx1,  by1+2,bx2,  by2+2,bd.qcols,bd.qrows+1); break;
+				case this.EXPANDDN: seg.setpos(bx1,  by1,  bx2,  by2,  bd.qcols,bd.qrows+1); break;
+				case this.EXPANDLT: seg.setpos(bx1+2,by1,  bx2+2,by2,  bd.qcols+1,bd.qrows); break;
+				case this.EXPANDRT: seg.setpos(bx1,  by1,  bx2,  by2,  bd.qcols+1,bd.qrows); break;
+				case this.REDUCEUP: seg.setpos(bx1,  by1-2,bx2,  by2-2,bd.qcols,bd.qrows-1); break;
+				case this.REDUCEDN: seg.setpos(bx1,  by1,  bx2,  by2,  bd.qcols,bd.qrows-1); break;
+				case this.REDUCELT: seg.setpos(bx1-2,by1,  bx2-2,by2,  bd.qcols-1,bd.qrows); break;
+				case this.REDUCERT: seg.setpos(bx1,  by1,  bx2,  by2,  bd.qcols-1,bd.qrows); break;
 			}
 		}
 	},
@@ -332,6 +322,13 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	bdmargin       : 0.70,
+	bdmargin_image : 0.50,
+
+	irowake : 1,
+
+	hideHatena : true,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_DLIGHT;
 	},
@@ -378,7 +375,7 @@ Graphic:{
 		if(isdraw){
 			if     (seg.error===1){ g.strokeStyle = this.errlinecolor1;}
 			else if(seg.error===2){ g.strokeStyle = this.errlinecolor2;}
-			else if(k.irowake===0 || !pp.getVal('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
+			else if(this.irowake===0 || !pp.getVal('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
 			else{ g.strokeStyle = seg.color;}
 
 			if(this.vnop(header_id,this.STROKE)){
@@ -725,7 +722,7 @@ Segment:{
 		this.color = "";
 		this.error = 0;
 
-		this.setpos(bx1,by1,bx2,by2,k.qcols,k.qrows);
+		this.setpos(bx1,by1,bx2,by2,bd.qcols,bd.qrows);
 	},
 	setpos : function(bx1,by1,bx2,by2,qc,qr){
 		this.point1 = bd.xnum(bx1,by1,qc,qr);
@@ -798,7 +795,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.resetInfo();
 	},
 	resetInfo : function(){
-		for(var c=0,len=(k.qcols+1)*(k.qrows+1);c<len;c++){ bd.cross[c].segment=[];}
+		for(var c=0,len=(bd.qcols+1)*(bd.qrows+1);c<len;c++){ bd.cross[c].segment=[];}
 
 		this.lineid = {};
 		this.idlist = {};
@@ -817,7 +814,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 			bd.cross[this.seg[id].point2].segment.push(id);
 		}
 		this.reassignId(ids);
-		if(k.irowake!==0){ this.newIrowake();}
+		if(pc.irowake!==0){ this.newIrowake();}
 	},
 	newIrowake : function(){
 		for(var i=1;i<=this.linemax;i++){

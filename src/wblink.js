@@ -3,27 +3,6 @@
 //
 pzprv3.custom.wblink = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.isborder = 1;
-
-		this.isCenterLine    = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.numberAsObject  = true;
-
-		this.bdmargin       = 0.50;
-		this.bdmargin_image = 0.10;
-
-		this.floatbgcolor = "rgb(127, 191, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -107,6 +86,13 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 8,
+	qrows : 8,
+
+	isborder : 1,
+
+	numberAsObject : true,
+
 	maxnum : 2,
 
 	getlinesize : function(id){
@@ -124,9 +110,16 @@ Board:{
 	}
 },
 
+LineManager:{
+	isCenterLine : true
+},
+
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	bdmargin       : 0.50,
+	bdmargin_image : 0.10,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_THIN;
 		this.errbcolor1 = "white";

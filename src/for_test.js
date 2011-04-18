@@ -75,15 +75,15 @@ debug.extend({
 	sccheck : function(){
 		if(pp.getVal('autocheck')){ pp.setVal('autocheck',false);}
 		var n=0, alstr='', qstr='', mint=80, fint=50, fails=0;
-		var pid=k.puzzleid, acsstr = debug.acs[pid];
+		var pid=bd.puzzleid, acsstr = debug.acs[pid];
 		this.phase = 10;
 		var tim = setInterval(function(){
 		//Encode test--------------------------------------------------------------
 		switch(debug.phase){
 		case 10:
 			(function(){
-				var col = k.qcols;
-				var row = k.qrows;
+				var col = bd.qcols;
+				var row = bd.qrows;
 				var pfg = base.dec.pflag;
 				var str = base.dec.bstr;
 
@@ -94,7 +94,7 @@ debug.extend({
 				else if(!debug.alltimer){ debug.addTextarea("Encode test   = pass");}
 
 				setTimeout(function(){
-					if(PZLINFO.info[k.puzzleid].exists.kanpen){ debug.phase = 11;}
+					if(PZLINFO.info[bd.puzzleid].exists.kanpen){ debug.phase = 11;}
 					else{ debug.phase = (!!acsstr)?20:30;}
 				},fint);
 			})();
@@ -118,7 +118,7 @@ debug.extend({
 		//Answer test--------------------------------------------------------------
 		case 20:
 			(function(){
-				k.puzzleid = pid;
+				bd.puzzleid = pid;
 				alstr = acsstr[n][0];
 				qstr  = acsstr[n][1];
 				fio.filedecode_main(acsstr[n][1]);
@@ -160,7 +160,7 @@ debug.extend({
 					else if(!debug.alltimer){ debug.addTextarea("FileIO test   = pass");}
 
 					fio.filedecode_main(acsstr[acsstr.length-1][1]);
-					debug.phase = (k.puzzleid != 'tawa')?40:50;
+					debug.phase = (bd.puzzleid != 'tawa')?40:50;
 				},fint);
 			})();
 			break;
@@ -177,7 +177,7 @@ debug.extend({
 				setTimeout(function(){
 					fio.filedecode_main(outputstr);
 
-					debug.qsubf = !(k.puzzleid=='fillomino'||k.puzzleid=='hashikake'||k.puzzleid=='kurodoko'||k.puzzleid=='shikaku'||k.puzzleid=='tentaisho');
+					debug.qsubf = !(bd.puzzleid=='fillomino'||bd.puzzleid=='hashikake'||bd.puzzleid=='kurodoko'||bd.puzzleid=='shikaku'||bd.puzzleid=='tentaisho');
 					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FileIO kanpen = failure..."); fails++;}
 					else if(!debug.alltimer){ debug.addTextarea("FileIO kanpen = pass");}
 					debug.qsubf = true;
@@ -344,21 +344,21 @@ debug.extend({
 			bd2.cell[c].qans=bd.cell[c].qans;
 			bd2.cell[c].qsub=bd.cell[c].qsub;
 		}
-		if(!!k.isexcell){
+		if(!!bd.isexcell){
 			for(var c=0;c<bd.excellmax;c++){
 				bd2.excell[c] = {};
 				bd2.excell[c].qnum=bd.excell[c].qnum;
 				bd2.excell[c].qdir=bd.excell[c].qdir;
 			}
 		}
-		if(!!k.iscross){
+		if(!!bd.iscross){
 			for(var c=0;c<bd.crossmax;c++){
 				bd2.cross[c] = {};
 				bd2.cross[c].ques=bd.cross[c].ques;
 				bd2.cross[c].qnum=bd.cross[c].qnum;
 			}
 		}
-		if(!!k.isborder){
+		if(!!bd.isborder){
 			for(var i=0;i<bd.bdmax;i++){
 				bd2.border[i] = {};
 				bd2.border[i].ques=bd.border[i].ques;
@@ -384,19 +384,19 @@ debug.extend({
 				else{ bd1.cell[c].qsub = bd2.cell[c].qsub;}
 			}
 		}
-		if(!!k.isexcell){
+		if(!!bd.isexcell){
 			for(var c=0;c<bd1.excell.length;c++){
 				if(bd1.excell[c].qnum!=bd2.excell[c].qnum ){ result = false;}
 				if(bd1.excell[c].qdir!=bd2.excell[c].qdir){ result = false;}
 			}
 		}
-		if(!!k.iscross){
+		if(!!bd.iscross){
 			for(var c=0;c<bd1.cross.length;c++){
 				if(bd1.cross[c].ques!=bd2.cross[c].ques){ result = false;}
 				if(bd1.cross[c].qnum!=bd2.cross[c].qnum){ result = false;}
 			}
 		}
-		if(!!k.isborder){
+		if(!!bd.isborder){
 			for(var i=0;i<bd1.border.length;i++){
 				if(bd1.border[i].ques!=bd2.border[i].ques){ result = false; debug.addTextarea("border ques "+i+" "+bd1.border[i].ques+" &lt;- "+bd2.border[i].ques);}
 				if(bd1.border[i].qnum!=bd2.border[i].qnum){ result = false; debug.addTextarea("border qnum "+i+" "+bd1.border[i].qnum+" &lt;- "+bd2.border[i].qnum);}

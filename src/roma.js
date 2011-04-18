@@ -3,25 +3,6 @@
 //
 pzprv3.custom.roma = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.isAnsNumber     = true;
-		this.numberAsObject  = true;
-
-		this.floatbgcolor = "rgb(127, 160, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -88,9 +69,20 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 8,
+	qrows : 8,
+
+	isborder : 1,
+
+	numberAsObject : true,
+
 	nummaxfunc : function(){
 		return (k.editmode?5:4);
 	}
+},
+
+AreaManager:{
+	hasroom : true
 },
 
 MenuExec:{

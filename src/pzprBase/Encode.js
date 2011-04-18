@@ -71,7 +71,7 @@ pzprv3.createCommonClass('Encode', '',
 		pc.resize_canvas();
 	},
 	pzloutput : function(type){
-		if(type===this.KANPEN && k.puzzleid=='lits'){ type = this.KANPENP;}
+		if(type===this.KANPEN && bd.puzzleid=='lits'){ type = this.KANPENP;}
 		var size='', ispflag=false;
 
 		this.outpflag = '';
@@ -81,13 +81,13 @@ pzprv3.createCommonClass('Encode', '',
 		switch(type){
 		case this.PZPRV3: case this.PZPRV3E:
 			this.pzlexport(this.PZPRV3);
-			size = (!this.outsize ? [k.qcols,k.qrows].join('/') : this.outsize);
+			size = (!this.outsize ? [bd.qcols,bd.qrows].join('/') : this.outsize);
 			ispflag = (!!this.outpflag);
 			break;
 
 		case this.PZPRAPP: case this.KANPENP:
 			this.pzlexport(this.PZPRAPP);
-			size = (!this.outsize ? [k.qcols,k.qrows].join('/') : this.outsize);
+			size = (!this.outsize ? [bd.qcols,bd.qrows].join('/') : this.outsize);
 			ispflag = true;
 			break;
 
@@ -95,12 +95,12 @@ pzprv3.createCommonClass('Encode', '',
 			fio.datastr = "";
 			this.encodeKanpen()
 			this.outbstr = fio.datastr.replace(/ /g, "_");
-			size = (!this.outsize ? [k.qrows,k.qcols].join('/') : this.outsize);
+			size = (!this.outsize ? [bd.qrows,bd.qcols].join('/') : this.outsize);
 			break;
 
 		case this.HEYAAPP:
 			this.encodeHeyaApp();
-			size = [k.qcols,k.qrows].join('x');
+			size = [bd.qcols,bd.qrows].join('x');
 			break;
 
 		default:
@@ -118,12 +118,12 @@ pzprv3.createCommonClass('Encode', '',
 		else if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
 
 		if(type===this.PZPRAPP){
-			if     (k.puzzleid==='pipelinkr'){ str=str.replace("%PID%","pipelink");}
-			else if(k.puzzleid==='heyabon')  { str=str.replace("%PID%","bonsan");}
+			if     (bd.puzzleid==='pipelinkr'){ str=str.replace("%PID%","pipelink");}
+			else if(bd.puzzleid==='heyabon')  { str=str.replace("%PID%","bonsan");}
 		}
 		return str.replace("%DOMAIN%", domain)
-				  .replace("%PID%", PZLINFO.toURLID(k.puzzleid))
-				  .replace("%KID%", PZLINFO.toKanpen(k.puzzleid));
+				  .replace("%PID%", PZLINFO.toURLID(bd.puzzleid))
+				  .replace("%KID%", PZLINFO.toKanpen(bd.puzzleid));
 	},
 
 	// オーバーライド用
@@ -393,8 +393,8 @@ pzprv3.createCommonClass('Encode', '',
 		var pos1, pos2, bstr = this.outbstr, id, twi=[16,8,4,2,1];
 
 		if(bstr){
-			pos1 = Math.min(((((k.qcols-1)*k.qrows+4)/5)|0)     , bstr.length);
-			pos2 = Math.min((((k.qcols*(k.qrows-1)+4)/5)|0)+pos1, bstr.length);
+			pos1 = Math.min(((((bd.qcols-1)*bd.qrows+4)/5)|0)     , bstr.length);
+			pos2 = Math.min((((bd.qcols*(bd.qrows-1)+4)/5)|0)+pos1, bstr.length);
 		}
 		else{ pos1 = 0; pos2 = 0;}
 
@@ -402,14 +402,14 @@ pzprv3.createCommonClass('Encode', '',
 		for(var i=0;i<pos1;i++){
 			var ca = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
-				if(id<(k.qcols-1)*k.qrows){
+				if(id<(bd.qcols-1)*bd.qrows){
 					bd.border[id].ques=((ca&twi[w])?1:0);
 					id++;
 				}
 			}
 		}
 
-		id = (k.qcols-1)*k.qrows;
+		id = (bd.qcols-1)*bd.qrows;
 		for(var i=pos1;i<pos2;i++){
 			var ca = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
@@ -427,14 +427,14 @@ pzprv3.createCommonClass('Encode', '',
 		var cm="", twi=[16,8,4,2,1], num, pass;
 
 		num = 0; pass = 0;
-		for(var id=0;id<(k.qcols-1)*k.qrows;id++){
+		for(var id=0;id<(bd.qcols-1)*bd.qrows;id++){
 			pass+=(bd.border[id].ques * twi[num]); num++;
 			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
 		}
 		if(num>0){ cm += pass.toString(32);}
 
 		num = 0; pass = 0;
-		for(var id=(k.qcols-1)*k.qrows;id<bd.bdinside;id++){
+		for(var id=(bd.qcols-1)*bd.qrows;id<bd.bdinside;id++){
 			pass+=(bd.border[id].ques * twi[num]); num++;
 			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
 		}
@@ -448,8 +448,8 @@ pzprv3.createCommonClass('Encode', '',
 	// enc.encodeCrossMark() 黒点をエンコードする
 	//---------------------------------------------------------------------------
 	decodeCrossMark : function(){
-		var cc=0, i=0, bstr = this.outbstr, cp=(k.iscross===2?1:0), cp2=(cp<<1);
-		var rows=(k.qrows-1+cp2), cols=(k.qcols-1+cp2);
+		var cc=0, i=0, bstr = this.outbstr, cp=(bd.iscross===2?1:0), cp2=(cp<<1);
+		var rows=(bd.qrows-1+cp2), cols=(bd.qcols-1+cp2);
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
@@ -469,8 +469,8 @@ pzprv3.createCommonClass('Encode', '',
 		this.outbstr = bstr.substr(i);
 	},
 	encodeCrossMark : function(){
-		var cm="", count=0, cp=(k.iscross===2?1:0), cp2=(cp<<1);
-		var rows=(k.qrows-1+cp2), cols=(k.qcols-1+cp2);
+		var cm="", count=0, cp=(bd.iscross===2?1:0), cp2=(cp<<1);
+		var rows=(bd.qrows-1+cp2), cols=(bd.qcols-1+cp2);
 		for(var c=0,max=cols*rows;c<max;c++){
 			var pstr="";
 			var bx = ((  c%cols    +(1-cp))<<1);
@@ -492,8 +492,8 @@ pzprv3.createCommonClass('Encode', '',
 	// enc.encodeCircle() 白丸・黒丸をエンコードする
 	//---------------------------------------------------------------------------
 	decodeCircle : function(){
-		var bstr = this.outbstr, c=0, tri=[9,3,1], max=(k.qcols*k.qrows);
-		var pos = (bstr ? Math.min(((k.qcols*k.qrows+2)/3)|0, bstr.length) : 0);
+		var bstr = this.outbstr, c=0, tri=[9,3,1], max=(bd.qcols*bd.qrows);
+		var pos = (bstr ? Math.min(((bd.qcols*bd.qrows+2)/3)|0, bstr.length) : 0);
 		for(var i=0;i<pos;i++){
 			var ca = parseInt(bstr.charAt(i),27);
 			for(var w=0;w<3;w++){

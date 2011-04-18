@@ -3,25 +3,6 @@
 //
 pzprv3.custom.shwolf = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.iscross  = 1;
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.numberAsObject  = true;
-
-		this.floatbgcolor = "rgb(96, 96, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -74,6 +55,11 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	iscross  : 1,
+	isborder : 1,
+
+	numberAsObject : true,
+
 	maxnum : 2,
 
 	getlinesize : function(id){
@@ -89,6 +75,10 @@ Board:{
 		}
 		return d;
 	}
+},
+
+AreaManager:{
+	hasroom : true
 },
 
 Menu:{

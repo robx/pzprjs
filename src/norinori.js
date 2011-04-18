@@ -3,23 +3,6 @@
 //
 pzprv3.custom.norinori = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.BlackCell       = true;
-		this.checkBlackCell  = true;
-
-		this.floatbgcolor = "rgb(0, 127, 127)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -34,6 +17,15 @@ MouseEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Board:{
+	isborder : 1
+},
+
+AreaManager:{
+	hasroom        : true,
+	checkBlackCell : true
+},
+
 Menu:{
 	menufix : function(){
 		this.addUseToFlags();

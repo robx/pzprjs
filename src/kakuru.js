@@ -3,21 +3,6 @@
 //
 pzprv3.custom.kakuru = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 7;
-		this.qrows = 7;
-
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.isAnsNumber     = true;
-
-		this.floatbgcolor = "rgb(96, 255, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){ this.inputqnum_kakuru();},
@@ -98,6 +83,9 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 7,
+	qrows : 7,
+
 	nummaxfunc : function(cc){
 		return (k.editmode?44:9);
 	}

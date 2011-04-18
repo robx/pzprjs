@@ -3,23 +3,6 @@
 //
 pzprv3.custom.mochikoro = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.BlackCell       = true;
-		this.NumberIsWhite   = true;
-		this.checkWhiteCell  = true;
-
-		this.floatbgcolor = "rgb(64, 64, 64)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -45,6 +28,8 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	numberIsWhite : true,
+
 	getdir8WareaInfo : function(){
 		var winfo = new pzprv3.core.AreaInfo();
 		for(var c=0;c<this.cellmax;c++){ winfo.id[c]=(this.isWhite(c)?0:null);}
@@ -68,6 +53,10 @@ Board:{
 			if(c!==id && winfo.id[c]===0){ this.sk0(winfo, c, areaid);}
 		}
 	}
+},
+
+AreaManager:{
+	checkWhiteCell : true
 },
 
 Menu:{

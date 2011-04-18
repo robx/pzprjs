@@ -3,25 +3,6 @@
 //
 pzprv3.custom.pipelink = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.irowake  = 1;
-		this.isborder = 1;
-
-		this.isLineCross     = true;
-		this.isCenterLine    = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-
-		this.floatbgcolor = "rgb(0, 191, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -67,7 +48,7 @@ KeyEvent:{
 		else if(ca=='d'){ bd.sQuC(cc,16); }
 		else if(ca=='f'){ bd.sQuC(cc,17); }
 		else if(ca=='-'){ bd.sQuC(cc,(bd.QuC(cc)!==-2?-2:0)); }
-		else if(k.puzzleid==='pipelinkr' && ca=='1'){ bd.sQuC(cc, 6); }
+		else if(bd.puzzleid==='pipelinkr' && ca=='1'){ bd.sQuC(cc, 6); }
 		else{ return false;}
 
 		pc.paintCellAround(cc);
@@ -91,7 +72,7 @@ KeyPopup:{
 		this.inputcol('num','knum_','-','?');
 		this.inputcol('empty','','','');
 		this.inputcol('empty','','','');
-		if(k.puzzleid==='pipelink'){
+		if(bd.puzzleid==='pipelink'){
 			this.inputcol('empty','','','');
 		}
 		else{
@@ -104,8 +85,15 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 1,
+
 	enableLineNG : true,
 	enableLineCombined : true
+},
+
+LineManager:{
+	isCenterLine : true,
+	isLineCross  : true
 },
 
 MenuExec:{
@@ -130,7 +118,7 @@ Menu:{
 	menufix : function(){
 		this.addRedLineToFlags();
 
-		if(k.puzzleid==='pipelinkr'){
+		if(bd.puzzleid==='pipelinkr'){
 			pp.addSelect('disptype','setting',1,[1,2],'表示形式','Display');
 
 			pp.addChild('disptype_1', 'disptype', '○', 'Circle');
@@ -157,6 +145,8 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	irowake : 1,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.linecolor = this.linecolor_LIGHT;
@@ -167,7 +157,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDashedGrid();
 
-		if(k.puzzleid==='pipelinkr'){
+		if(bd.puzzleid==='pipelinkr'){
 			this.drawCircles_pipelink((pp.getVal('disptype')==1));
 			this.drawBorders();
 		}
@@ -240,10 +230,10 @@ Encode:{
 		this.decodePipelink();
 
 		this.checkPuzzleid();
-		if(k.puzzleid==='pipelinkr'){ pp.setVal('disptype', (!this.checkpflag('i')?1:2));}
+		if(bd.puzzleid==='pipelinkr'){ pp.setVal('disptype', (!this.checkpflag('i')?1:2));}
 	},
 	pzlexport : function(type){
-		this.outpflag = ((k.puzzleid==='pipelinkr' && pp.getVal('disptype')==2)?"i":"");
+		this.outpflag = ((bd.puzzleid==='pipelinkr' && pp.getVal('disptype')==2)?"i":"");
 		this.encodePipelink(type);
 	},
 
@@ -297,9 +287,9 @@ Encode:{
 	},
 
 	checkPuzzleid : function(){
-		if(k.puzzleid==='pipelink'){
+		if(bd.puzzleid==='pipelink'){
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.cell[c].ques===6){ k.puzzleid='pipelinkr'; break;}
+				if(bd.cell[c].ques===6){ bd.puzzleid='pipelinkr'; break;}
 			}
 			menu.displayDesign();
 		}
@@ -317,11 +307,11 @@ FileIO:{
 		this.decodeBorderLine();
 
 		enc.checkPuzzleid();
-		if(k.puzzleid==='pipelinkr'){ pp.setVal('disptype', (disptype=="circle"?1:2));}
+		if(bd.puzzleid==='pipelinkr'){ pp.setVal('disptype', (disptype=="circle"?1:2));}
 	},
 	encodeData : function(){
-		if     (k.puzzleid==='pipelink') { this.datastr += 'pipe/';}
-		else if(k.puzzleid==='pipelinkr'){ this.datastr += (pp.getVal('disptype')==1?"circle/":"ice/");}
+		if     (bd.puzzleid==='pipelink') { this.datastr += 'pipe/';}
+		else if(bd.puzzleid==='pipelinkr'){ this.datastr += (pp.getVal('disptype')==1?"circle/":"ice/");}
 		this.encodeCell( function(obj){
 			if     (obj.ques==6) { return "o ";}
 			else if(obj.ques==-2){ return "- ";}
@@ -345,10 +335,10 @@ AnsCheck:{
 			this.setAlert('分岐している線があります。','There is a branched line.'); return false;
 		}
 
-		if( (k.puzzleid==='pipelinkr') && !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===4 && bd.QuC(c)!==6 && bd.QuC(c)!==11);}) ){
+		if( (bd.puzzleid==='pipelinkr') && !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===4 && bd.QuC(c)!==6 && bd.QuC(c)!==11);}) ){
 			this.setAlert((pp.getVal('disptype')==2?'氷':'○')+'の部分以外で線が交差しています。','There is a crossing line out of '+(pp.getVal('disptype')==1?'circles':'ices')+'.'); return false;
 		}
-		if( (k.puzzleid==='pipelinkr') && !this.checkIceLines() ){
+		if( (bd.puzzleid==='pipelinkr') && !this.checkIceLines() ){
 			this.setAlert((pp.getVal('disptype')==2?'氷':'○')+'の部分で線が曲がっています。','A line curves on '+(pp.getVal('disptype')==1?'circles':'ices')+'.'); return false;
 		}
 

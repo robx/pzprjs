@@ -3,26 +3,6 @@
 //
 pzprv3.custom.slither = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.irowake  = 1;
-		this.iscross  = 2;
-		this.isborder = 2;
-
-		this.isborderAsLine  = true;
-		this.dispzero        = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-
-		this.floatbgcolor = "rgb(32, 32, 32)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -101,6 +81,11 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	iscross  : 2,
+	isborder : 2,
+
+	numzero : true,
+
 	maxnum : 3,
 
 	getdir4BorderLine1 : function(cc){
@@ -111,6 +96,10 @@ Board:{
 		if( this.isLine(this.bnum(bx+1,by  )) ){ cnt++;}
 		return cnt;
 	}
+},
+
+LineManager:{
+	borderAsLine : true
 },
 
 MenuExec:{
@@ -142,6 +131,8 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	irowake : 1,
+
 	setColors : function(){
 		this.setBGCellColorFunc('qsub2');
 	},

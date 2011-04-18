@@ -3,23 +3,6 @@
 //
 pzprv3.custom.tasquare = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isInputHatena   = true;
-		this.BlackCell       = true;
-		this.NumberIsWhite   = true;
-		this.checkBlackCell  = true;
-		this.checkWhiteCell  = true;
-
-		this.floatbgcolor = "rgb(64, 64, 64)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -60,6 +43,15 @@ KeyPopup:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Board:{
+	numberIsWhite : true
+},
+
+AreaManager:{
+	checkBlackCell : true,
+	checkWhiteCell : true
+},
+
 Menu:{
 	menufix : function(){
 		this.addUseToFlags();
@@ -69,6 +61,8 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	hideHatena : true,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.fontsizeratio = 0.85;

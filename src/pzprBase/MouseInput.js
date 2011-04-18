@@ -29,6 +29,8 @@ pzprv3.createCommonClass('MouseEvent', '',
 		else if(ee.br.WebKit)              { this.mouseoffset = {x:1,y:1};}
 	},
 
+	RBBlackCell : false,	// 連黒分断禁のパズル
+
 	//---------------------------------------------------------------------------
 	// mv.mousereset() マウス入力に関する情報を初期化する
 	//---------------------------------------------------------------------------
@@ -188,7 +190,7 @@ pzprv3.createCommonClass('MouseEvent', '',
 	// mv.borderid()  入力された位置がどの境界線・LineのIDに該当するかを返す(クリック用)
 	// mv.excellid()  入力された位置がどのEXCELLのIDに該当するかを返す
 	// mv.borderpos() 入力された位置が仮想セル上でどこの(X*2,Y*2)に該当するかを返す。
-	//                外枠の左上が(0,0)で右下は(k.qcols*2,k.qrows*2)。rcは0～0.5のパラメータ。
+	//                外枠の左上が(0,0)で右下は(bd.qcols*2,bd.qrows*2)。rcは0～0.5のパラメータ。
 	// mv.checkBorderMode() 境界線入力モードかどうか判定する
 	//---------------------------------------------------------------------------
 	cellid : function(){
@@ -219,8 +221,8 @@ pzprv3.createCommonClass('MouseEvent', '',
 		var dx =   this.inputPoint.x%pc.cw,        dy =   this.inputPoint.y%pc.ch;
 
 		// 真ん中のあたりはどこにも該当しないようにする
-		if(k.isLineCross){
-			if(!k.isborderAsLine){
+		if(bd.lines.isLineCross){
+			if(!bd.lines.borderAsLine){
 				var m1=spc*pc.cw, m2=(1-spc)*pc.cw;
 				if((dx<m1||m2<dx) && (dy<m1||m2<dy)){ return null;}
 			}
@@ -257,8 +259,8 @@ pzprv3.createCommonClass('MouseEvent', '',
 
 		this.mouseCell = cc; 
 
-		if(k.NumberIsWhite && bd.QnC(cc)!==-1 && (this.inputData===1||(this.inputData===2 && pc.bcolor==="white"))){ return;}
-		if(k.RBBlackCell && this.inputData===1){
+		if(bd.numberIsWhite && bd.QnC(cc)!==-1 && (this.inputData===1||(this.inputData===2 && pc.bcolor==="white"))){ return;}
+		if(this.RBBlackCell && this.inputData===1){
 			if(this.firstCell===null){ this.firstCell = cc;}
 			var obj1=bd.cell[this.firstCell], obj2=bd.cell[cc];
 			if(((obj1.bx&2)^(obj1.by&2))!==((obj2.bx&2)^(obj2.by&2))){ return;}
@@ -275,7 +277,7 @@ pzprv3.createCommonClass('MouseEvent', '',
 			else if(this.btn.Right){ this.inputData=((bd.QsC(cc)!==1)? 2 : 0); }
 		}
 		else if(pp.getVal('use')==2){
-			if(k.NumberIsWhite && bd.QnC(cc)!==-1){
+			if(bd.numberIsWhite && bd.QnC(cc)!==-1){
 				this.inputData=((bd.QsC(cc)!==1)? 2 : 0);
 			}
 			else if(this.btn.Left){
@@ -299,14 +301,14 @@ pzprv3.createCommonClass('MouseEvent', '',
 		if(cc===null || cc===this.mouseCell){ return;}
 
 		if(cc===tc.getTCC()){
-			if(k.editmode && k.roomNumber){ cc = bd.areas.getTopOfRoomByCell(cc);}
+			if(k.editmode && bd.areas.roomNumber){ cc = bd.areas.getTopOfRoomByCell(cc);}
 
-			var type=0;
-			if     (k.editmode)      { type =-1;}
-			else if(k.NumberWithMB)  { type = 2;}
-			else if(k.numberAsObject){ type = 1;}
-			if(k.puzzleid==="roma" && k.playmode){ type=0;}
-			this.inputqnum_main(cc,type);
+			var subtype=0;
+			if     (k.editmode)       { subtype =-1;}
+			else if(bd.numberWithMB)  { subtype = 2;}
+			else if(bd.numberAsObject){ subtype = 1;}
+			if(bd.puzzleid==="roma" && k.playmode){ subtype=0;}
+			this.inputqnum_main(cc,subtype);
 		}
 		else{
 			var cc0 = tc.getTCC();
@@ -317,18 +319,18 @@ pzprv3.createCommonClass('MouseEvent', '',
 
 		pc.paintCell(cc);
 	},
-	inputqnum_main : function(cc,type){
+	inputqnum_main : function(cc,subtype){
 		if(k.playmode && bd.QnC(cc)!==pzprv3.getPuzzleClass('Cell').prototype.qnum){ return;}
 
-		var max = bd.nummaxfunc(cc), bn = (k.dispzero?0:1);
+		var max = bd.nummaxfunc(cc), bn = (bd.numzero?0:1);
 		var num=bd.getNum(cc), sub=(k.editmode ? 0 : bd.QsC(cc));
-		var val=-1, vals=0, ishatena=(k.editmode && k.isInputHatena);
+		var val=-1, vals=0, ishatena=(k.editmode && !bd.disInputHatena);
 
-		// playmode: typeは0以上、subに何かの値が入る
-		// editmode: typeは-1固定、subは常に0が入る
+		// playmode: subtypeは0以上、subに何かの値が入る
+		// editmode: subtypeは-1固定、subは常に0が入る
 		if(this.btn.Left){
-			if     (num===max){ if(type>=1){ vals = 1;}}
-			else if(sub===1)  { if(type>=2){ vals = 2;}}
+			if     (num===max){ if(subtype>=1){ vals = 1;}}
+			else if(sub===1)  { if(subtype>=2){ vals = 2;}}
 			else if(sub===2)  { val = -1;}
 			else if(num===-1) { val = (ishatena ? -2 : bn);}
 			else if(num===-2) { val = bn;}
@@ -337,7 +339,7 @@ pzprv3.createCommonClass('MouseEvent', '',
 		else if(this.btn.Right){
 			if     (sub===1) { val = max;}
 			else if(sub===2) { vals = 1;}
-			else if(num===-1 && type>=1){ vals = type;}
+			else if(num===-1 && subtype>=1){ vals = subtype;}
 			else if(num===-1){ val = max;}
 			else if(num===-2){ val = -1;}
 			else if(num===bn){ val = (ishatena ? -2 : -1);}
@@ -521,7 +523,7 @@ pzprv3.createCommonClass('MouseEvent', '',
 	inputcrossMark : function(){
 		var pos = this.borderpos(0.24);
 		if((pos.x&1) || (pos.y&1)){ return;}
-		var bm = (k.iscross===2?0:2);
+		var bm = (bd.iscross===2?0:2);
 		if(pos.x<bd.minbx+bm || pos.x>bd.maxbx-bm || pos.y<bd.minby+bm || pos.y>bd.maxby-bm){ return;}
 
 		var cc = bd.xnum(pos.x,pos.y);
@@ -579,8 +581,8 @@ pzprv3.createCommonClass('MouseEvent', '',
 	// mv.getnb()         上下左右に隣接する境界線のIDを取得する
 	//---------------------------------------------------------------------------
 	inputLine : function(){
-		if(!k.isborderAsLine){ this.inputLine1(0);}
-		else                 { this.inputBD(2);}
+		if(bd.lines.isCenterLine){ this.inputLine1(0);}
+		else                     { this.inputBD(2);}
 	},
 	inputQsubLine : function(){ this.inputLine1(1);},
 	inputLine1 : function(flag){ // 0:line 1:borderQsub
@@ -637,7 +639,7 @@ pzprv3.createCommonClass('MouseEvent', '',
 		var cc = this.cellid();
 		this.mousereset();
 		if(cc===null || !bd.isBlack(cc)){ return;}
-		if(!k.RBBlackCell){ bd.sErC(bd.areas.bcell[bd.areas.bcell.id[cc]].clist,1);}
+		if(!this.RBBlackCell){ bd.sErC(bd.areas.bcell[bd.areas.bcell.id[cc]].clist,1);}
 		else{ this.db0(function(c){ return (bd.isBlack(c) && bd.cell[c].error===0);},cc,1);}
 		ans.errDisp = true;
 		pc.paintAll();
@@ -658,12 +660,12 @@ pzprv3.createCommonClass('MouseEvent', '',
 		if(id===null){ return;}
 
 		if(!bd.isLine(id)){
-			var cc = (!k.isborderAsLine?this.cellid():this.crossid());
+			var cc = (!bd.lines.borderAsLine?this.cellid():this.crossid());
 			if(cc===null || (bd.lines.iscrossing(cc) && (bd.lines.lcntCell(cc)==3 || bd.lines.lcntCell(cc)==4))){ return;}
 
 			var bx, by;
-			if(k.isbordeAsLine==0){ bx = (cc%k.qcols)<<1, by = (cc/k.qcols)<<1;}
-			else{ bx = (cc%(k.qcols+1))<<1, by = (cc/(k.qcols+1))<<1;}
+			if(k.isbordeAsLine==0){ bx = (cc%bd.qcols)<<1, by = (cc/bd.qcols)<<1;}
+			else{ bx = (cc%(bd.qcols+1))<<1, by = (cc/(bd.qcols+1))<<1;}
 			id = (function(bx,by){
 				if     (bd.isLine(bd.bnum(bx-1,by))){ return bd.bnum(bx-1,by);}
 				else if(bd.isLine(bd.bnum(bx+1,by))){ return bd.bnum(bx+1,by);}

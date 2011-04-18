@@ -3,28 +3,6 @@
 //
 pzprv3.custom.icelom = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.irowake  = 1;
-		this.isborder = 2;
-
-		this.isLineCross     = true;
-		this.isCenterLine    = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-
-		this.bdmargin       = 1.00;
-		this.bdmargin_image = 1.00;
-
-		this.floatbgcolor = "rgb(0, 0, 127)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -133,6 +111,11 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 8,
+	qrows : 8,
+
+	isborder : 2,
+
 	arrowin  : 0,
 	arrowout : 1,
 
@@ -220,6 +203,11 @@ Operation:{
 	}
 },
 
+LineManager:{
+	isCenterLine : true,
+	isLineCross  : true
+},
+
 MenuExec:{
 	adjustBoardData : function(key,d){
 		this.adjustBorderArrow(key,d);
@@ -238,6 +226,11 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	bdmargin       : 1.00,
+	bdmargin_image : 1.00,
+
+	irowake : 1,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.linecolor = this.linecolor_LIGHT;
@@ -341,8 +334,8 @@ Encode:{
 		this.decodeNumber16();
 		this.decodeInOut();
 
-		if(k.puzzleid==='icelom'){
-			k.puzzleid = (this.checkpflag("a")?'icelom':'icelom2');
+		if(bd.puzzleid==='icelom'){
+			bd.puzzleid = (this.checkpflag("a")?'icelom':'icelom2');
 			menu.displayDesign();
 		}
 	},
@@ -351,7 +344,7 @@ Encode:{
 		this.encodeNumber16();
 		this.encodeInOut();
 
-		if(k.puzzleid==='icelom'){ this.outpflag="a";}
+		if(bd.puzzleid==='icelom'){ this.outpflag="a";}
 	},
 
 	decodeIcelom : function(){
@@ -402,8 +395,8 @@ FileIO:{
 		bd.inputarrowout(parseInt(this.readLine()));
 
 		var pzltype = this.readLine();
-		if(k.puzzleid==='icelom'){
-			k.puzzleid = (pzltype==="allwhite"?'icelom':'icelom2');
+		if(bd.puzzleid==='icelom'){
+			bd.puzzleid = (pzltype==="allwhite"?'icelom':'icelom2');
 			menu.displayDesign();
 		}
 
@@ -420,7 +413,7 @@ FileIO:{
 		});
 	},
 	encodeData : function(){
-		var pzltype = (k.puzzleid==='icelom'?"allwhite":"skipwhite");
+		var pzltype = (bd.puzzleid==='icelom'?"allwhite":"skipwhite");
 
 		this.datastr += (bd.arrowin+"/"+bd.arrowout+"/"+pzltype+"/");
 		this.encodeCell( function(obj){
@@ -479,11 +472,11 @@ AnsCheck:{
 			this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
 		}
 
-		if( (k.puzzleid==='icelom') && !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===0 && bd.QuC(c)!==6);}) ){
+		if( (bd.puzzleid==='icelom') && !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===0 && bd.QuC(c)!==6);}) ){
 			this.setAlert('通過していない白マスがあります。', 'The line doesn\'t pass all of the white cell.'); return false;
 		}
 
-		if( (k.puzzleid==='icelom2') && !this.checkIcebarns() ){
+		if( (bd.puzzleid==='icelom2') && !this.checkIcebarns() ){
 			this.setAlert('すべてのアイスバーンを通っていません。', 'A icebarn is not gone through.'); return false;
 		}
 

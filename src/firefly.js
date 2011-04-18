@@ -3,27 +3,6 @@
 //
 pzprv3.custom.firefly = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.irowake  = 1;
-		this.isborder = 1;
-
-		this.isCenterLine    = true;
-		this.dispzero        = true;
-		this.isInputHatena   = true;
-
-		this.bdmargin       = 0.50;
-		this.bdmargin_image = 0.10;
-
-		this.floatbgcolor = "rgb(0, 224, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -71,6 +50,16 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Board:{
+	isborder : 1,
+
+	numzero : true
+},
+
+LineManager:{
+	isCenterLine : true
+},
+
 MenuExec:{
 	adjustBoardData : function(key,d){
 		this.adjustNumberArrow(key,d);
@@ -80,6 +69,13 @@ MenuExec:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	bdmargin       : 0.50,
+	bdmargin_image : 0.10,
+
+	irowake : 1,
+
+	hideHatena : true,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 

@@ -3,26 +3,6 @@
 //
 pzprv3.custom.nanro = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.isAnsNumber     = true;
-		this.NumberWithMB    = true;
-		this.linkNumber      = true;
-
-		this.floatbgcolor = "rgb(64, 64, 64)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -130,9 +110,21 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 8,
+	qrows : 8,
+
+	isborder : 1,
+
+	numberWithMB : true,
+
 	nummaxfunc : function(cc){
 		return this.areas.getCntOfRoomByCell(cc);
 	}
+},
+
+AreaManager:{
+	hasroom    : true,
+	linkNumber : true
 },
 
 //---------------------------------------------------------

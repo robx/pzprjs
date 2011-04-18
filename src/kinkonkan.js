@@ -3,28 +3,6 @@
 //
 pzprv3.custom.kinkonkan = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.isborder = 1;
-		this.isexcell = 2;
-
-		this.hasroom         = true;
-		this.dispzero        = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-
-		this.bdmargin       = 0.15;
-		this.bdmargin_image = 0.10;
-
-		this.floatbgcolor = "rgb(96, 96, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -229,6 +207,14 @@ EXCell:{
 },
 
 Board:{
+	qcols : 8,
+	qrows : 8,
+
+	isborder : 1,
+	isexcell : 2,
+
+	numzero : true,
+
 	errclear : function(){
 		if(!ans.errDisp){ return;}
 		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].qlight=0;}
@@ -275,6 +261,10 @@ Board:{
 	}
 },
 
+AreaManager:{
+	hasroom : true
+},
+
 MenuExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURNFLIP){ // 反転・回転全て
@@ -286,6 +276,9 @@ MenuExec:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	bdmargin       : 0.15,
+	bdmargin_image : 0.10,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.errcolor1 = this.cellcolor; // drawSlashes関係
@@ -436,12 +429,12 @@ FileIO:{
 	decodeData : function(){
 		this.decodeAreaRoom();
 
-		var item = this.getItemList(k.qrows+2);
+		var item = this.getItemList(bd.qrows+2);
 		for(var i=0;i<item.length;i++) {
 			var ca = item[i];
 			if(ca==="."){ continue;}
 
-			var bx = i%(k.qcols+2)*2-1, by = ((i/(k.qcols+2))<<1)-1;
+			var bx = i%(bd.qcols+2)*2-1, by = ((i/(bd.qcols+2))<<1)-1;
 			var ec = bd.exnum(bx,by);
 			if(ec!==null){
 				var inp = ca.split(",");

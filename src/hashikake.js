@@ -3,27 +3,6 @@
 //
 pzprv3.custom.hashikake = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 9;
-		this.qrows = 9;
-
-		this.irowake  = 1;
-		this.isborder = 1;
-
-		this.isLineCross     = true;
-		this.isCenterLine    = true;
-		this.isInputHatena   = true;
-
-		this.bdmargin       = 0.50;
-		this.bdmargin_image = 0.10;
-
-		this.floatbgcolor = "rgb(127, 191, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -117,6 +96,11 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 9,
+	qrows : 9,
+
+	isborder : 1,
+
 	maxnum : 8,
 
 	getCountOfBridges : function(cc){
@@ -143,7 +127,9 @@ Board:{
 },
 
 LineManager:{
-	iscrossing : function(cc){ return bd.noNum(cc);},
+	isCenterLine : true,
+	isLineCross  : true,
+	iscrossing : function(cc){ return bd.noNum(cc);}
 },
 
 Menu:{
@@ -158,6 +144,13 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	bdmargin       : 0.50,
+	bdmargin_image : 0.10,
+
+	irowake : 1,
+
+	hideHatena : true,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_THIN;
 		this.bcolor    = "silver";

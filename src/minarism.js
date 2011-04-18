@@ -3,21 +3,6 @@
 //
 pzprv3.custom.minarism = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 7;
-		this.qrows = 7;
-
-		this.isborder = 1;
-
-		this.isAnsNumber     = true;
-
-		this.floatbgcolor = "rgb(96, 96, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -58,7 +43,7 @@ MouseEvent:{
 			var id = bd.bnum(pos.x, pos.y);
 			if(id!==null){
 				var qn=bd.QnB(id), qs=bd.DiB(id);
-				var qm=((pos.x&1)?0:2), max=Math.max(k.qcols,k.qrows)-1;
+				var qm=((pos.x&1)?0:2), max=Math.max(bd.qcols,bd.qrows)-1;
 				if(this.btn.Left){
 					if     (qn===-1 && qs===0)   { bd.sQnB(id,-1); bd.sDiB(id,qm+1);}
 					else if(qn===-1 && qs===qm+1){ bd.sQnB(id,-1); bd.sDiB(id,qm+2);}
@@ -110,7 +95,7 @@ KeyEvent:{
 		}
 		else if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
-			var max = Math.max(k.qcols,k.qrows)-1;
+			var max = Math.max(bd.qcols,bd.qrows)-1;
 
 			bd.sDiB(id,k.NONE);
 			if(bd.QnB(id)<=0 || this.prev!=id){ if(num<=max){ bd.sQnB(id,num);}}
@@ -135,8 +120,13 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 7,
+	qrows : 7,
+
+	isborder : 1,
+
 	nummaxfunc : function(cc){
-		return Math.max(k.qcols,k.qrows);
+		return Math.max(this.qcols,this.qrows);
 	}
 },
 
@@ -149,6 +139,8 @@ MenuExec:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	hideHatena : true,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 	},
@@ -245,8 +237,8 @@ Encode:{
 			var ca = bstr.charAt(i);
 
 			if(type==1){
-				if     (id<k.qcols*k.qrows)  { mgn=((id/k.qcols)|0);}
-				else if(id<2*k.qcols*k.qrows){ mgn=k.qrows;}
+				if     (id<bd.qcols*bd.qrows)  { mgn=((id/bd.qcols)|0);}
+				else if(id<2*bd.qcols*bd.qrows){ mgn=bd.qrows;}
 			}
 			var obj = bd.border[id-mgn];
 
@@ -254,8 +246,8 @@ Encode:{
 			if     (this.include(ca,'0','9')||this.include(ca,'a','f')){ obj.qnum = parseInt(ca,16);}
 			else if(ca==="-"){ obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
 			else if(ca==="."){ obj.qnum = -2;}
-			else if(ca==="g"){ tmp = ((type===0 || id<k.qcols*k.qrows)?1:2);}
-			else if(ca==="h"){ tmp = ((type===0 || id<k.qcols*k.qrows)?2:1);}
+			else if(ca==="g"){ tmp = ((type===0 || id<bd.qcols*bd.qrows)?1:2);}
+			else if(ca==="h"){ tmp = ((type===0 || id<bd.qcols*bd.qrows)?2:1);}
 			else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-18);}
 			else if(type===1 && ca==="/"){ id=bd.cellmax-1;}
 
@@ -263,16 +255,16 @@ Encode:{
 			else if(tmp===2){ obj.qdir = ((obj.bx&1)?k.DN:k.RT);}
 
 			id++;
-			if(id>=2*k.qcols*k.qrows){ a=i+1; break;}
+			if(id>=2*bd.qcols*bd.qrows){ a=i+1; break;}
 		}
 		this.outbstr = bstr.substr(a);
 	},
 	encodeMinarism : function(type){
 		var cm="", count=0, mgn=0;
-		for(var id=0,max=bd.bdmax+(type===0?0:k.qcols);id<max;id++){
+		for(var id=0,max=bd.bdmax+(type===0?0:bd.qcols);id<max;id++){
 			if(type===1){
-				if(id>0 && id<=(k.qcols-1)*k.qrows && id%(k.qcols-1)==0){ count++;}
-				if(id==(k.qcols-1)*k.qrows){ if(count>0){ cm+=(17+count).toString(36); count=0;} cm += "/";}
+				if(id>0 && id<=(bd.qcols-1)*bd.qrows && id%(bd.qcols-1)==0){ count++;}
+				if(id==(bd.qcols-1)*bd.qrows){ if(count>0){ cm+=(17+count).toString(36); count=0;} cm += "/";}
 			}
 
 			if(id<bd.bdmax){

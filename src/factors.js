@@ -3,23 +3,6 @@
 //
 pzprv3.custom.factors = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 9;
-		this.qrows = 9;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.roomNumber      = true;
-		this.isAnsNumber     = true;
-
-		this.floatbgcolor = "rgb(64, 64, 64)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -52,13 +35,25 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 9,
+	qrows : 9,
+
+	isborder : 1,
+
+	disInputHatena : true,
+
 	nummaxfunc : function(cc){
-		return k.editmode?999999:Math.max(k.qcols,k.qrows);
+		return k.editmode?999999:Math.max(this.qcols,this.qrows);
 	},
 	setNum : function(c,val){
 		if(val==0){ return;}
 		if(k.editmode){ this.sQnC(c,val);}else{ this.sAnC(c,val);}
 	}
+},
+
+AreaManager:{
+	hasroom    : true,
+	roomNumber : true
 },
 
 //---------------------------------------------------------

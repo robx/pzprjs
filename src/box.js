@@ -3,25 +3,6 @@
 //
 pzprv3.custom.box = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 9;
-		this.qrows = 9;
-
-		this.isexcell = 1;
-
-		this.dispzero        = true;
-		this.BlackCell       = true;
-
-		this.bdmargin       = 0.15;
-		this.bdmargin_image = 0.10;
-
-		this.floatbgcolor = "rgb(96, 96, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -113,11 +94,19 @@ EXCell:{
 },
 
 Board:{
+	qcols : 9,
+	qrows : 9,
+
+	isexcell : 1,
+
+	numzero        : true,
+	disInputHatena : true,
+
 	nummaxfunc : function(ec){
 		var bx=this.excell[ec].bx, by=this.excell[ec].by, cnt;
 		if(bx===-1 && by===-1){ return;}
 		var sum=0;
-		for(var n=(bx===-1?k.qrows:k.qcols);n>0;n--){ sum+=n;}
+		for(var n=(bx===-1?this.qrows:this.qcols);n>0;n--){ sum+=n;}
 		return sum;
 	}
 },
@@ -165,6 +154,9 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	bdmargin       : 0.15,
+	bdmargin_image : 0.10,
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDotCells(false);
@@ -188,7 +180,7 @@ Graphic:{
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var c = exlist[i], obj = bd.excell[c], key="excell_"+c;
-			if(c>=k.qcols+k.qrows){ continue;}
+			if(c>=bd.qcols+bd.qrows){ continue;}
 
 			if(obj.bx===-1 && obj.by===-1){ continue;}
 			var color = (obj.error!==1 ? this.fontcolor : this.fontErrcolor);
@@ -246,14 +238,14 @@ Encode:{
 			if(ca==='-'){ obj.qnum = parseInt(bstr.substr(a+1,2),32); a+=2;}
 			else        { obj.qnum = parseInt(ca,32);}
 			ec++;
-			if(ec >= k.qcols+k.qrows){ a++; break;}
+			if(ec >= bd.qcols+bd.qrows){ a++; break;}
 		}
 
 		this.outbstr = bstr.substr(a);
 	},
 	encodeBox : function(){
 		var cm="";
-		for(var ec=0,len=k.qcols+k.qrows;ec<len;ec++){
+		for(var ec=0,len=bd.qcols+bd.qrows;ec<len;ec++){
 			var qnum=bd.excell[ec].qnum;
 			if(qnum<32){ cm+=("" +qnum.toString(32));}
 			else       { cm+=("-"+qnum.toString(32));}
@@ -265,12 +257,12 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		var item = this.getItemList(k.qrows+1);
+		var item = this.getItemList(bd.qrows+1);
 		for(var i=0;i<item.length;i++) {
 			var ca = item[i];
 			if(ca=="."){ continue;}
 
-			var bx = i%(k.qcols+1)*2-1, by = ((i/(k.qcols+1))<<1)-1;
+			var bx = i%(bd.qcols+1)*2-1, by = ((i/(bd.qcols+1))<<1)-1;
 			var ec = bd.exnum(bx,by);
 			if(ec!==null){
 				bd.excell[ec].qnum = parseInt(ca);
@@ -323,15 +315,15 @@ AnsCheck:{
 		var result = true;
 		for(var ec=0;ec<bd.excellmax;ec++){
 			var qn=bd.QnE(ec), bx=bd.excell[ec].bx, by=bd.excell[ec].by, val=0, clist=[];
-			if(by===-1 && bx>0 && bx<2*k.qcols){
-				for(var y=1;y<2*k.qrows;y+=2){
+			if(by===-1 && bx>0 && bx<2*bd.qcols){
+				for(var y=1;y<2*bd.qrows;y+=2){
 					var c = bd.cnum(bx,y);
 					if(bd.cell[c].qans===1){ val+=((y+1)>>1);}
 					clist.push(c);
 				}
 			}
-			else if(bx===-1 && by>0 && by<2*k.qrows){
-				for(var x=1;x<2*k.qcols;x+=2){
+			else if(bx===-1 && by>0 && by<2*bd.qrows){
+				for(var x=1;x<2*bd.qcols;x+=2){
 					var c = bd.cnum(x,by);
 					if(bd.cell[c].qans===1){ val+=((x+1)>>1);}
 					clist.push(c);

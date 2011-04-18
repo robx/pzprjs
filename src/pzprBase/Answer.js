@@ -86,7 +86,7 @@ pzprv3.createCommonClass('AnsCheck', '',
 	// リンク系は重いので最初に端点を判定する
 	autocheck1st : function(){
 		if(!this.check1st()){ return false;}
-		if((k.isCenterLine && !ans.checkLcntCell(1)) || (k.isborderAsLine && !ans.checkLcntCross(1,0))){ return false;}
+		if((bd.lines.isCenterLine && !ans.checkLcntCell(1)) || (bd.lines.borderAsLine && !ans.checkLcntCross(1,0))){ return false;}
 		return true;
 	},
 
@@ -181,7 +181,7 @@ pzprv3.createCommonClass('AnsCheck', '',
 	checkOneArea : function(cinfo){
 		if(cinfo.max>1){
 			if(this.performAsLine){ bd.sErBAll(2); bd.setErrLareaByCell(cinfo,1,1); }
-			if(!this.performAsLine || k.puzzleid=="firefly"){ bd.sErC(cinfo.room[1].idlist,1);}
+			if(!this.performAsLine || bd.puzzleid=="firefly"){ bd.sErC(cinfo.room[1].idlist,1);}
 			return false;
 		}
 		return true;
@@ -252,13 +252,13 @@ pzprv3.createCommonClass('AnsCheck', '',
 			var d = bd.getSizeOfClist(clist,func);
 			var a = (function(){ var cnt=0; for(var i=0;i<clist.length;i++){ if(func(clist[i])){ cnt++;}} return cnt;})();
 
-			var cc = (k.roomNumber ? bd.areas.getTopOfRoomByCell(clist[0]) : bd.areas.getQnumCellOfClist(clist));
+			var cc = (bd.areas.roomNumber ? bd.areas.getTopOfRoomByCell(clist[0]) : bd.areas.getQnumCellOfClist(clist));
 			var n = (cc!==null?bd.QnC(cc):-1);
 
 			if( !evalfunc(d.cols, d.rows, a, n) ){
 				if(this.inAutoCheck){ return false;}
 				if(this.performAsLine){ if(result){ bd.sErBAll(2);} bd.setErrLareaById(cinfo,id,1);}
-				else{ bd.sErC(clist,(k.puzzleid!="tateyoko"?1:4));}
+				else{ bd.sErC(clist,(bd.puzzleid!="tateyoko"?1:4));}
 				result = false;
 			}
 		}
@@ -354,7 +354,7 @@ pzprv3.createCommonClass('AnsCheck', '',
 
 				if(this.performAsLine){ bd.sErBAll(2); bd.setErrLareaByCell(rinfo,c,1);}
 				else{ bd.sErC(rinfo.room[rinfo.id[c]].idlist,1);}
-				if(k.puzzleid=="kaero"){
+				if(bd.puzzleid=="kaero"){
 					for(var cc=0;cc<bd.cellmax;cc++){
 						if(rinfo.id[c]===rinfo.id[cc] && this.getBeforeCell(cc)!==null && rinfo.id[c]!==rinfo.id[this.getBeforeCell(cc)])
 							{ bd.sErC([this.getBeforeCell(cc)],4);}
@@ -375,7 +375,7 @@ pzprv3.createCommonClass('AnsCheck', '',
 			else if(d[val[c]]!==rinfo.id[c]){
 				var clist = [];
 				for(var cc=0;cc<bd.cellmax;cc++){
-					if(k.puzzleid=="kaero"){ if(val[c]===bd.QnC(cc)){ clist.push(cc);}}
+					if(bd.puzzleid=="kaero"){ if(val[c]===bd.QnC(cc)){ clist.push(cc);}}
 					else{ if(rinfo.id[c]===rinfo.id[cc] || d[val[c]]===rinfo.id[cc]){ clist.push(cc);} }
 				}
 				bd.sErC(clist,1);
@@ -397,7 +397,7 @@ pzprv3.createCommonClass('AnsCheck', '',
 		return result;
 	},
 	isDifferentNumberInClist : function(clist, numfunc){
-		var result = true, d = [], num = [], bottom = (k.dispzero?1:0);
+		var result = true, d = [], num = [], bottom = (bd.numzero?0:1);
 		for(var n=bottom,max=bd.nummaxfunc(clist[0]);n<=max;n++){ d[n]=0;}
 		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc(clist[i]);}
 
@@ -460,11 +460,11 @@ pzprv3.createCommonClass('AnsCheck', '',
 	// ans.checkLcntCross()      ある交点との周り四方向の境界線の数を判定する(bp==1:黒点が打たれている場合)
 	//---------------------------------------------------------------------------
 	checkLcntCross : function(val, bp){
-		var result=true, mm=(k.iscross===1?2:0);
+		var result=true, mm=(bd.iscross===1?2:0);
 		for(var by=mm;by<=bd.maxby-mm;by+=2){
 			for(var bx=mm;bx<=bd.maxbx-mm;bx+=2){
-				var id = (bx>>1)+(by>>1)*(k.qcols+1);
-				var lcnts = (!k.isborderAsLine?bd.areas.lcnt[id]:bd.lines.lcnt[id]);
+				var id = (bx>>1)+(by>>1)*(bd.qcols+1);
+				var lcnts = (bd.lines.borderAsLine?bd.lines.lcnt[id]:bd.areas.lcnt[id]);
 				if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(bx,by))==1) || (bp==2&&bd.QnX(bd.xnum(bx,by))!=1) )){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}

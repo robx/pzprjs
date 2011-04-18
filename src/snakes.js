@@ -3,23 +3,6 @@
 //
 pzprv3.custom.snakes = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isborder = 1;
-
-		this.dispzero        = true;
-		this.isInputHatena   = true;
-		this.isAnsNumber     = true;
-
-		this.floatbgcolor = "rgb(0, 224, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -87,10 +70,10 @@ MouseEvent:{
 		return true;
 	},
 	inputqnum_snakes : function(){
-		k.dispzero = k.editmode;
+		bd.numzero = k.editmode;
 		this.mouseCell=null;
 		this.inputqnum();
-		k.dispzero = true;
+		bd.numzero = true;
 	}
 },
 
@@ -115,6 +98,10 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 1,
+
+	numzero : true,
+
 	maxnum : 5,
 
 	getSnakeInfo : function(){
@@ -160,6 +147,8 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	hideHatena : true,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.dotcolor = this.dotcolor_PINK;
@@ -273,10 +262,10 @@ AnsCheck:{
 				bd.sErC(sinfo.room[sinfo.id[c+1]].idlist,1);
 				result = false;
 			}
-			if(bd.cell[c].by<bd.maxby-2 && func(sinfo,c,c+k.qcols)){
+			if(bd.cell[c].by<bd.maxby-2 && func(sinfo,c,c+bd.qcols)){
 				if(this.inAutoCheck){ return false;}
 				bd.sErC(sinfo.room[sinfo.id[c]].idlist,1);
-				bd.sErC(sinfo.room[sinfo.id[c+k.qcols]].idlist,1);
+				bd.sErC(sinfo.room[sinfo.id[c+bd.qcols]].idlist,1);
 				result = false;
 			}
 		}

@@ -3,24 +3,6 @@
 //
 pzprv3.custom.tatamibari = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.numberAsObject  = true;
-
-		this.floatbgcolor = "rgb(96, 224, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -78,7 +60,15 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 1,
+
+	numberAsObject : true,
+
 	maxnum : 3
+},
+
+AreaManager:{
+	hasroom : true
 },
 
 MenuExec:{

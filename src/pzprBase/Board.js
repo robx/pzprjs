@@ -156,7 +156,7 @@ pzprv3.createCommonClass('EXCell', 'BoardPiece',
 // Boardクラスの定義
 pzprv3.createCommonClass('Board', '',
 {
-	initialize : function(){
+	initialize : function(pid){
 		this.cell   = [];
 		this.cross  = [];
 		this.border = [];
@@ -178,9 +178,27 @@ pzprv3.createCommonClass('Board', '',
 		// 補助オブジェクト
 		this.lines  = new (pzprv3.getPuzzleClass('LineManager'))();		// 線情報管理オブジェクト
 		this.areas  = new (pzprv3.getPuzzleClass('AreaManager'))();		// 領域情報管理オブジェクト
+
+		this.puzzleid = pid;	// パズルのID("creek"など)
 	},
+
+	qcols : 10,		/* 盤面の横幅(デフォルト) */
+	qrows : 10,		/* 盤面の縦幅(デフォルト) */
+
+	iscross  : 0,	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+	isborder : 0,	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+	isexcell : 0,	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+
  	// 入力できる最大の数字
 	maxnum : 255,
+
+	numzero        : false,	// cell.qnum・anumに0を表示・入力するかどうか
+	disInputHatena : false,	// qnum==-2を入力できないようにする
+
+	numberWithMB   : false,	// 回答の数字と○×が入るパズル(○は数字が入っている扱いされる)
+	numberAsObject : false,	// 数字以外でqnum/anumを使用する(同じ値を入力で消去できたり、回答で・が入力できる)
+
+	numberIsWhite  : false,	// 数字のあるマスが黒マスにならないパズル
 
 	// isLineNG関連の変数など
 	enableLineNG       : false,
@@ -206,13 +224,13 @@ pzprv3.createCommonClass('Board', '',
 	initBoardSize : function(col,row){
 		this.allclear(false); // initGroupで、新Objectに対してはallclearが個別に呼ばれます
 
-						{ this.initGroup(k.CELL,   col, row);}
-		if(!!k.iscross) { this.initGroup(k.CROSS,  col, row);}
-		if(!!k.isborder){ this.initGroup(k.BORDER, col, row);}
-		if(!!k.isexcell){ this.initGroup(k.EXCELL, col, row);}
+						   { this.initGroup(k.CELL,   col, row);}
+		if(!!this.iscross) { this.initGroup(k.CROSS,  col, row);}
+		if(!!this.isborder){ this.initGroup(k.BORDER, col, row);}
+		if(!!this.isexcell){ this.initGroup(k.EXCELL, col, row);}
 
-		k.qcols = col;
-		k.qrows = row;
+		this.qcols = col;
+		this.qrows = row;
 
 		this.setminmax();
 		this.setposAll();
@@ -259,12 +277,12 @@ pzprv3.createCommonClass('Board', '',
 		if     (type===k.CELL)  { return col*row;}
 		else if(type===k.CROSS) { return (col+1)*(row+1);}
 		else if(type===k.BORDER){
-			if     (k.isborder===1){ return 2*col*row-(col+row);}
-			else if(k.isborder===2){ return 2*col*row+(col+row);}
+			if     (this.isborder===1){ return 2*col*row-(col+row);}
+			else if(this.isborder===2){ return 2*col*row+(col+row);}
 		}
 		else if(type===k.EXCELL){
-			if     (k.isexcell===1){ return col+row+1;}
-			else if(k.isexcell===2){ return 2*col+2*row+4;}
+			if     (this.isexcell===1){ return col+row+1;}
+			else if(this.isexcell===2){ return 2*col+2*row+4;}
 		}
 		return 0;
 	},
@@ -316,11 +334,11 @@ pzprv3.createCommonClass('Board', '',
 	// setpos関連関数 <- 各Cell等が持っているとメモリを激しく消費するのでここに置くこと.
 	setposAll : function(){
 		this.setposCells();
-		if(!!k.iscross) { this.setposCrosses();}
-		if(!!k.isborder){ this.setposBorders();}
-		if(!!k.isexcell){ this.setposEXcells();}
+		if(!!this.iscross) { this.setposCrosses();}
+		if(!!this.isborder){ this.setposBorders();}
+		if(!!this.isexcell){ this.setposEXcells();}
 
-		this.latticemax = (k.qcols+1)*(k.qrows+1);
+		this.latticemax = (this.qcols+1)*(this.qrows+1);
 
 		this.setcoordAll();
 	},
@@ -335,30 +353,30 @@ pzprv3.createCommonClass('Board', '',
 		this.cellmax = this.cell.length;
 		for(var id=0;id<this.cellmax;id++){
 			var obj = this.cell[id];
-			obj.bx = (id%k.qcols)*2+1;
-			obj.by = ((id/k.qcols)<<1)+1;
+			obj.bx = (id%this.qcols)*2+1;
+			obj.by = ((id/this.qcols)<<1)+1;
 		}
 	},
 	setposCrosses : function(){
 		this.crossmax = this.cross.length;
 		for(var id=0;id<this.crossmax;id++){
 			var obj = this.cross[id];
-			obj.bx = (id%(k.qcols+1))*2;
-			obj.by = (id/(k.qcols+1))<<1;
+			obj.bx = (id%(this.qcols+1))*2;
+			obj.by = (id/(this.qcols+1))<<1;
 		}
 	},
 	setposBorders : function(){
-		this.bdinside = 2*k.qcols*k.qrows-(k.qcols+k.qrows);
+		this.bdinside = 2*this.qcols*this.qrows-(this.qcols+this.qrows);
 		this.bdmax = this.border.length;
 		for(var id=0;id<this.bdmax;id++){
 			var obj=this.border[id], i=id;
-			if(i>=0 && i<(k.qcols-1)*k.qrows){ obj.bx=(i%(k.qcols-1))*2+2; obj.by=((i/(k.qcols-1))<<1)+1;} i-=((k.qcols-1)*k.qrows);
-			if(i>=0 && i<k.qcols*(k.qrows-1)){ obj.bx=(i%k.qcols)*2+1;     obj.by=((i/k.qcols)<<1)+2;    } i-=(k.qcols*(k.qrows-1));
-			if(k.isborder===2){
-				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;     obj.by=0;        } i-=k.qcols;
-				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;     obj.by=2*k.qrows;} i-=k.qcols;
-				if(i>=0 && i<k.qrows){ obj.bx=0;         obj.by=i*2+1;    } i-=k.qrows;
-				if(i>=0 && i<k.qrows){ obj.bx=2*k.qcols; obj.by=i*2+1;    } i-=k.qrows;
+			if(i>=0 && i<(this.qcols-1)*this.qrows){ obj.bx=(i%(this.qcols-1))*2+2; obj.by=((i/(this.qcols-1))<<1)+1;} i-=((this.qcols-1)*this.qrows);
+			if(i>=0 && i<this.qcols*(this.qrows-1)){ obj.bx=(i%this.qcols)*2+1;     obj.by=((i/this.qcols)<<1)+2;    } i-=(this.qcols*(this.qrows-1));
+			if(this.isborder===2){
+				if(i>=0 && i<this.qcols){ obj.bx=i*2+1;        obj.by=0;           } i-=this.qcols;
+				if(i>=0 && i<this.qcols){ obj.bx=i*2+1;        obj.by=2*this.qrows;} i-=this.qcols;
+				if(i>=0 && i<this.qrows){ obj.bx=0;            obj.by=i*2+1;       } i-=this.qrows;
+				if(i>=0 && i<this.qrows){ obj.bx=2*this.qcols; obj.by=i*2+1;       } i-=this.qrows;
 			}
 
 			obj.cellcc[0] = this.cnum(obj.bx-(obj.by&1), obj.by-(obj.bx&1));
@@ -374,19 +392,19 @@ pzprv3.createCommonClass('Board', '',
 			var obj = this.excell[id], i=id;
 			obj.bx=-1;
 			obj.by=-1;
-			if(k.isexcell===1){
-				if(i>=0 && i<k.qcols){ obj.bx=i*2+1; obj.by=-1;    continue;} i-=k.qcols;
-				if(i>=0 && i<k.qrows){ obj.bx=-1;    obj.by=i*2+1; continue;} i-=k.qrows;
+			if(this.isexcell===1){
+				if(i>=0 && i<this.qcols){ obj.bx=i*2+1; obj.by=-1;    continue;} i-=this.qcols;
+				if(i>=0 && i<this.qrows){ obj.bx=-1;    obj.by=i*2+1; continue;} i-=this.qrows;
 			}
-			else if(k.isexcell===2){
-				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;       obj.by=-1;          continue;} i-=k.qcols;
-				if(i>=0 && i<k.qcols){ obj.bx=i*2+1;       obj.by=2*k.qrows+1; continue;} i-=k.qcols;
-				if(i>=0 && i<k.qrows){ obj.bx=-1;          obj.by=i*2+1;       continue;} i-=k.qrows;
-				if(i>=0 && i<k.qrows){ obj.bx=2*k.qcols+1; obj.by=i*2+1;       continue;} i-=k.qrows;
-				if(i===0)            { obj.bx=-1;          obj.by=-1;          continue;} i--;
-				if(i===0)            { obj.bx=2*k.qcols+1; obj.by=-1;          continue;} i--;
-				if(i===0)            { obj.bx=-1;          obj.by=2*k.qrows+1; continue;} i--;
-				if(i===0)            { obj.bx=2*k.qcols+1; obj.by=2*k.qrows+1; continue;} i--;
+			else if(this.isexcell===2){
+				if(i>=0 && i<this.qcols){ obj.bx=i*2+1;          obj.by=-1;             continue;} i-=this.qcols;
+				if(i>=0 && i<this.qcols){ obj.bx=i*2+1;          obj.by=2*this.qrows+1; continue;} i-=this.qcols;
+				if(i>=0 && i<this.qrows){ obj.bx=-1;             obj.by=i*2+1;          continue;} i-=this.qrows;
+				if(i>=0 && i<this.qrows){ obj.bx=2*this.qcols+1; obj.by=i*2+1;          continue;} i-=this.qrows;
+				if(i===0)               { obj.bx=-1;             obj.by=-1;             continue;} i--;
+				if(i===0)               { obj.bx=2*this.qcols+1; obj.by=-1;             continue;} i--;
+				if(i===0)               { obj.bx=-1;             obj.by=2*this.qrows+1; continue;} i--;
+				if(i===0)               { obj.bx=2*this.qcols+1; obj.by=2*this.qrows+1; continue;} i--;
 			}
 		}
 	},
@@ -406,21 +424,21 @@ pzprv3.createCommonClass('Board', '',
 				obj.cpy = obj.by*pc.bh;
 			}
 		}
-		if(!!k.iscross){
+		if(!!this.iscross){
 			for(var id=0;id<this.crossmax;id++){
 				var obj = this.cross[id];
 				obj.px = obj.bx*pc.bw;
 				obj.py = obj.by*pc.bh;
 			}
 		}
-		if(!!k.isborder){
+		if(!!this.isborder){
 			for(var id=0;id<this.bdmax;id++){
 				var obj = this.border[id];
 				obj.px = obj.bx*pc.bw;
 				obj.py = obj.by*pc.bh;
 			}
 		}
-		if(!!k.isexcell){
+		if(!!this.isexcell){
 			for(var id=0;id<this.excellmax;id++){
 				var obj = this.excell[id];
 				obj.px = (obj.bx-1)*pc.bw;
@@ -430,12 +448,12 @@ pzprv3.createCommonClass('Board', '',
 	},
 
 	setminmax : function(){
-		var extUL = (k.isexcell===1 || k.isexcell===2);
-		var extDR = (k.isexcell===2);
+		var extUL = (this.isexcell===1 || this.isexcell===2);
+		var extDR = (this.isexcell===2);
 		this.minbx = (!extUL ? 0 : -2);
 		this.minby = (!extUL ? 0 : -2);
-		this.maxbx = (!extDR ? 2*k.qcols : 2*k.qcols+2);
-		this.maxby = (!extDR ? 2*k.qrows : 2*k.qrows+2);
+		this.maxbx = (!extDR ? 2*this.qcols : 2*this.qcols+2);
+		this.maxby = (!extDR ? 2*this.qrows : 2*this.qrows+2);
 
 		tc.setminmax();
 	},
@@ -501,22 +519,22 @@ pzprv3.createCommonClass('Board', '',
 	// bd.exnum() (X,Y)の位置にあるextendCellのIDを、盤面の大きさを(qc×qr)で計算して返す
 	//---------------------------------------------------------------------------
 	cnum : function(bx,by,qc,qr){
-		if(qc===(void 0)){ qc=k.qcols; qr=k.qrows;}
+		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
 		if((bx<0||bx>(qc<<1)||by<0||by>(qr<<1))||(!(bx&1))||(!(by&1))){ return null;}
 		return (bx>>1)+(by>>1)*qc;
 	},
 	xnum : function(bx,by,qc,qr){
-		if(qc===(void 0)){ qc=k.qcols; qr=k.qrows;}
+		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
 		if((bx<0||bx>(qc<<1)||by<0||by>(qr<<1))||(!!(bx&1))||(!!(by&1))){ return null;}
 		return (bx>>1)+(by>>1)*(qc+1);
 	},
 	bnum : function(bx,by,qc,qr){
-		if(qc===(void 0)){ qc=k.qcols; qr=k.qrows;}
+		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
 		if(bx>=1&&bx<=2*qc-1&&by>=1&&by<=2*qr-1){
 			if     (!(bx&1) &&  (by&1)){ return ((bx>>1)-1)+(by>>1)*(qc-1);}
 			else if( (bx&1) && !(by&1)){ return (bx>>1)+((by>>1)-1)*qc+(qc-1)*qr;}
 		}
-		else if(k.isborder==2){
+		else if(this.isborder==2){
 			if     (by===0   &&(bx&1)&&(bx>=1&&bx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+(bx>>1);}
 			else if(by===2*qr&&(bx&1)&&(bx>=1&&bx<=2*qc-1)){ return (qc-1)*qr+qc*(qr-1)+qc+(bx>>1);}
 			else if(bx===0   &&(by&1)&&(by>=1&&by<=2*qr-1)){ return (qc-1)*qr+qc*(qr-1)+2*qc+(by>>1);}
@@ -525,13 +543,13 @@ pzprv3.createCommonClass('Board', '',
 		return null;
 	},
 	exnum : function(bx,by,qc,qr){
-		if(qc===(void 0)){ qc=k.qcols; qr=k.qrows;}
-		if(k.isexcell===1){
+		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
+		if(this.isexcell===1){
 			if(bx===-1&&by===-1){ return qc+qr;}
 			else if(by===-1&&bx>0&&bx<2*qc){ return (bx>>1);}
 			else if(bx===-1&&by>0&&by<2*qr){ return qc+(by>>1);}
 		}
-		else if(k.isexcell===2){
+		else if(this.isexcell===2){
 			if     (by===-1    &&bx>0&&bx<2*qc){ return (bx>>1);}
 			else if(by===2*qr+1&&bx>0&&bx<2*qc){ return qc+(bx>>1);}
 			else if(bx===-1    &&by>0&&by<2*qr){ return 2*qc+(by>>1);}
@@ -695,7 +713,7 @@ pzprv3.createCommonClass('Board', '',
 	},
 	// overwrite by lightup.js
 	sQnC : function(id, num) {
-		if(!k.dispzero && num===0){ return;}
+		if(!this.numzero && num===0){ return;}
 
 		um.addOpe(k.CELL, k.QNUM, id, this.cell[id].qnum, num);
 		this.cell[id].qnum = num;
@@ -703,7 +721,7 @@ pzprv3.createCommonClass('Board', '',
 		this.areas.setCell('number',id);
 	},
 	sAnC : function(id, num) {
-		if(!k.dispzero && num===0){ return;}
+		if(!this.numzero && num===0){ return;}
 
 		um.addOpe(k.CELL, k.ANUM, id, this.cell[id].anum, num);
 		this.cell[id].anum = num;
@@ -721,7 +739,7 @@ pzprv3.createCommonClass('Board', '',
 		um.addOpe(k.CELL, k.QSUB, id, this.cell[id].qsub, num);
 		this.cell[id].qsub = num;
 
-		if(k.NumberWithMB){ this.areas.setCell('number',id);}
+		if(this.numberWithMB){ this.areas.setCell('number',id);}
 	},
 	sDiC : function(id, num) {
 		um.addOpe(k.CELL, k.QDIR, id, this.cell[id].qdir, num);
@@ -896,17 +914,19 @@ pzprv3.createCommonClass('Board', '',
 		return (this.cell[c].qnum!==-1 ? this.cell[c].qnum : this.cell[c].anum);
 	},
 	setNum : function(c,val){
-		if(!k.dispzero && val===0){ return;}
+		if(!this.numzero && val===0){ return;}
+		// editmode時 val>=0は数字 val=-1は消去 val=-2は？など
 		if(k.editmode){
-			val = (((k.numberAsObject||val===-2) && this.cell[c].qnum===val)?-1:val);
+			val = (((this.numberAsObject||val===-2) && this.cell[c].qnum===val)?-1:val);
 			this.sQnC(c, val);
-			if(k.isAnsNumber)  { this.sAnC(c,-1);}
-			if(k.NumberIsWhite){ this.sQaC(c, 0);}
-			if(k.isAnsNumber||pc.bcolor==="white"){ this.sQsC(c, 0);}
+			this.sAnC(c, -1);
+			if(this.numberIsWhite){ this.sQaC(c, 0);}
+			if(pc.bcolor==="white"){ this.sQsC(c, 0);}
 		}
+		// playmode時 val>=0は数字 val=-1は消去 numberAsObjectの・はval=-2 numberWithMBの○×はval=-2,-3
 		else if(this.cell[c].qnum===-1){
-			var vala = ((val>-1 && !(k.numberAsObject && this.cell[c].anum=== val  ))? val  :-1);
-			var vals = ((val<-1 && !(k.numberAsObject && this.cell[c].qsub===-val-1))?-val-1: 0);
+			var vala = ((val>-1 && !(this.numberAsObject && this.cell[c].anum=== val  ))? val  :-1);
+			var vals = ((val<-1 && !(this.numberAsObject && this.cell[c].qsub===-val-1))?-val-1: 0);
 			this.sAnC(c, vala);
 			this.sQsC(c, vals);
 			this.sDiC(c, 0);
@@ -995,7 +1015,7 @@ pzprv3.createCommonClass('Board', '',
 		this.sErB(this.borderinside(bx-1,by-1,bx+1,by+1), 1);
 	},
 	setCrossBorderError : function(bx,by){
-		if(k.iscross!==0){ this.sErX([this.xnum(bx,by)], 1);}
+		if(this.iscross!==0){ this.sErX([this.xnum(bx,by)], 1);}
 		this.sErB(this.borderinside(bx-1,by-1,bx+1,by+1), 1);
 	},
 

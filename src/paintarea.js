@@ -3,26 +3,6 @@
 //
 pzprv3.custom.paintarea = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.dispzero        = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.BlackCell       = true;
-		this.checkBlackCell  = true;
-
-		this.floatbgcolor = "rgb(127, 160, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -55,7 +35,16 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 1,
+
+	numzero : true,
+
 	maxnum : 4
+},
+
+AreaManager:{
+	hasroom        : true,
+	checkBlackCell : true
 },
 
 Menu:{

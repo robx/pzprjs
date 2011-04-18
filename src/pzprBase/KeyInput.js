@@ -243,7 +243,7 @@ pzprv3.createCommonClass('KeyEvent', '',
 	//---------------------------------------------------------------------------
 	key_inputqnum : function(ca){
 		var cc = tc.getTCC();
-		if(k.editmode && k.roomNumber){ cc = bd.areas.getTopOfRoomByCell(cc);}
+		if(k.editmode && bd.areas.roomNumber){ cc = bd.areas.getTopOfRoomByCell(cc);}
 		var max = bd.nummaxfunc(cc), val=-1;
 
 		if('0'<=ca && ca<='9'){
@@ -347,7 +347,7 @@ pzprv3.createCommonClass('KeyEvent', '',
 	},
 	detectTarget : function(cc,ex){
 		if((cc===null && ex===null) || (cc!==null && bd.QuC(cc)!==51)){ return 0;}
-		if(cc===bd.cellmax-1 || ex===k.qcols+k.qrows){ return 0;}
+		if(cc===bd.cellmax-1 || ex===bd.qcols+bd.qrows){ return 0;}
 		if(cc!==null){
 			if	  ((bd.rt(cc)===null || bd.QuC(bd.rt(cc))===51) &&
 				   (bd.dn(cc)===null || bd.QuC(bd.dn(cc))===51)){ return 0;}
@@ -391,7 +391,7 @@ pzprv3.createCommonClass('KeyPopup', '',
 		this.EL_KPEMPTY = ee.addTemplate('','td', {unselectable:'on'}, null, null);
 		this.EL_KPIMG   = ee.addTemplate('','td', {unselectable:'on', className:'kpimgcell'}, null, null);
 		this.EL_KPIMG_DIV = ee.addTemplate('','div', {unselectable:'on', className:'kpimgdiv'}, null, null);
-		this.EL_KPIMG_IMG = ee.addTemplate('','img', {unselectable:'on', className:'kpimg', src:"./src/img/"+k.puzzleid+"_kp.gif"}, null, null);
+		this.EL_KPIMG_IMG = ee.addTemplate('','img', {unselectable:'on', className:'kpimg', src:"./src/img/"+bd.puzzleid+"_kp.gif"}, null, null);
 
 		this.create();
 	},

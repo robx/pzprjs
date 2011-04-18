@@ -3,23 +3,6 @@
 //
 pzprv3.custom.tentaisho = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.iscross  = 1;
-		this.isborder = 1;
-
-		this.dispzero        = true;
-		this.hasroom         = true;
-
-		this.floatbgcolor = "rgb(0, 224, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -148,6 +131,11 @@ Border:{
 },
 
 Board:{
+	iscross  : 1,
+	isborder : 1,
+
+	disInputHatena : true,
+
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
 
@@ -181,7 +169,7 @@ Board:{
 	},
 	snum : function(sx,sy){
 		if(sx<=this.minbx || this.maxbx<=sx || sy<=this.minby || this.maxby<=sy){ return null;}
-		return ((sx-1)+(sy-1)*(2*k.qcols-1));
+		return ((sx-1)+(sy-1)*(2*this.qcols-1));
 	},
 	starinside : function(x1,y1,x2,y2){
 		var idlist = [];
@@ -260,9 +248,13 @@ Board:{
 	}
 },
 
+AreaManager:{
+	hasroom : true
+},
+
 MenuExec:{
 	adjustBoardData2 : function(key,d){
-		bd.initStar(k.qcols, k.qrows);
+		bd.initStar(bd.qcols, bd.qrows);
 	}
 },
 
@@ -443,7 +435,7 @@ FileIO:{
 	},
 
 	decodeStarFile : function(){
-		var array = this.readLines(2*k.qrows-1), s=0;
+		var array = this.readLines(2*bd.qrows-1), s=0;
 		bd.disableInfo();
 		for(var i=0;i<array.length;i++){
 			for(var c=0;c<array[i].length;c++){
@@ -456,8 +448,8 @@ FileIO:{
 	},
 	encodeStarFile : function(){
 		var s=0;
-		for(var by=1;by<=2*k.qrows-1;by++){
-			for(var bx=1;bx<=2*k.qcols-1;bx++){
+		for(var by=1;by<=2*bd.qrows-1;by++){
+			for(var bx=1;bx<=2*bd.qcols-1;bx++){
 				if     (bd.getStar(s)===1){ this.datastr += "1";}
 				else if(bd.getStar(s)===2){ this.datastr += "2";}
 				else                      { this.datastr += ".";}

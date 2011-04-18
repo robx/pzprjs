@@ -3,28 +3,6 @@
 //
 pzprv3.custom.nagenawa = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.irowake  = 1;
-		this.isborder = 1;
-
-		this.isLineCross     = true;
-		this.isCenterLine    = true;
-		this.hasroom         = true;
-		this.roomNumber      = true;
-		this.dispzero        = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-
-		this.floatbgcolor = "rgb(0, 127, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -62,9 +40,26 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 8,
+	qrows : 8,
+
+	isborder : 1,
+
+	numzero : true,
+
 	nummaxfunc : function(cc){
 		return Math.min(this.maxnum, this.areas.getCntOfRoomByCell(cc));
 	}
+},
+
+LineManager:{
+	isCenterLine : true,
+	isLineCross  : true
+},
+
+AreaManager:{
+	hasroom    : true,
+	roomNumber : true
 },
 
 Menu:{
@@ -76,6 +71,8 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	irowake : 1,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_SLIGHT;
 	},

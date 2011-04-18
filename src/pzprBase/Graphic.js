@@ -129,9 +129,18 @@ pzprv3.createCommonClass('Graphic', '',
 		this.isdrawBC = false;
 		this.isdrawBD = false;
 
+		if(ee.mobile){ this.bdmargin = this.bdmargin_image;}
+
 		this.setColors();
 	},
 	setColors : function(){ },
+
+	bdmargin       : 0.70,	// 枠外の一辺のmargin(セル数換算)
+	bdmargin_image : 0.15,	// 画像出力時のbdmargin値
+
+	irowake : 0,		// 0:色分け設定無し 1:色分けしない 2:色分けする
+
+	hideHatena : false,	// qnumが-2のときに？を表示しない
 
 	/* vnop関数用 */
 	STROKE      : 0,
@@ -148,9 +157,9 @@ pzprv3.createCommonClass('Graphic', '',
 	//---------------------------------------------------------------------------
 	resize_canvas : function(){
 		var wwidth = ee.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
-		var cols   = (bd.maxbx-bd.minbx)/2+2*k.bdmargin; // canvasの横幅がセル何個分に相当するか
-		var rows   = (bd.maxby-bd.minby)/2+2*k.bdmargin; // canvasの縦幅がセル何個分に相当するか
-		if(k.puzzleid==='box'){ cols++; rows++;}
+		var cols   = (bd.maxbx-bd.minbx)/2+2*this.bdmargin; // canvasの横幅がセル何個分に相当するか
+		var rows   = (bd.maxby-bd.minby)/2+2*this.bdmargin; // canvasの縦幅がセル何個分に相当するか
+		if(bd.puzzleid==='box'){ cols++; rows++;}
 
 		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[pp.getVal('size')];
 		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
@@ -170,7 +179,7 @@ pzprv3.createCommonClass('Graphic', '',
 		}
 		// base～limit間でサイズを自動調節する場合
 		else if(cols < ci[1]){
-			var ws_tmp = ws.base+(ws.limit-ws.base)*((k.qcols-ci[0])/(ci[1]-ci[0]));
+			var ws_tmp = ws.base+(ws.limit-ws.base)*((bd.qcols-ci[0])/(ci[1]-ci[0]));
 			mwidth = wwidth*ws_tmp-4;
 			this.cw = this.ch = (mwidth/cols)|0; // 外枠ぎりぎりにする
 		}
@@ -187,9 +196,9 @@ pzprv3.createCommonClass('Graphic', '',
 		if(ee.mobile){ ee('menuboard').el.style.width = '90%';}
 
 		// 盤面のセルID:0が描画される左上の位置の設定
-		var x0, y0; x0 = y0 = (this.cw*k.bdmargin)|0;
+		var x0, y0; x0 = y0 = (this.cw*this.bdmargin)|0;
 		// extendxell==0でない時は位置をずらす
-		if(!!k.isexcell){ x0 += this.cw; y0 += this.ch;}
+		if(!!bd.isexcell){ x0 += this.cw; y0 += this.ch;}
 
 		// Canvasのサイズ・Offset変更
 		g.changeSize((cols*this.cw)|0, (rows*this.ch)|0);
@@ -252,9 +261,9 @@ pzprv3.createCommonClass('Graphic', '',
 			x1:x1, y1:y1, x2:x2, y2:y2, cells:bd.cellinside(x1,y1,x2,y2),
 			crosses:[], borders:[], excells:[]
 		}
-		if(!!k.iscross) { this.range.crosses = bd.crossinside(x1,y1,x2,y2);}
-		if(!!k.isborder){ this.range.borders = bd.borderinside(x1,y1,x2,y2);}
-		if(!!k.isexcell){ this.range.excells = bd.excellinside(x1,y1,x2,y2);}
+		if(!!bd.iscross) { this.range.crosses = bd.crossinside(x1,y1,x2,y2);}
+		if(!!bd.isborder){ this.range.borders = bd.borderinside(x1,y1,x2,y2);}
+		if(!!bd.isexcell){ this.range.excells = bd.excellinside(x1,y1,x2,y2);}
 	},
 
 	paintAll : function(){
@@ -624,7 +633,7 @@ pzprv3.createCommonClass('Graphic', '',
 	},
 	drawNumber1 : function(c){
 		var obj = bd.cell[c], key = ['cell',c].join('_'), num = bd.getNum(c);
-		if(num>0 || (k.dispzero && num===0) || (k.isDispHatena && num===-2)){
+		if(num>0 || (bd.numzero && num===0) || (!this.hideHatena && num===-2)){
 			var text      = (num>=0 ? ""+num : "?");
 			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
 			var color     = this.getCellNumberColor(c);
@@ -634,13 +643,13 @@ pzprv3.createCommonClass('Graphic', '',
 	},
 	getCellNumberColor : function(c){
 		var obj = bd.cell[c], color = this.fontcolor;
-		if(!k.isAnsNumber && ((k.BlackCell && obj.qans===1) || (!k.BlackCell && obj.ques!==0))){
+		if((obj.ques>=1 && obj.ques<=5) || (obj.qans>=1 && obj.qans<=5)){
 			color = this.fontBCellcolor;
 		}
 		else if(obj.error===1 || obj.error===4){
 			color = this.fontErrcolor;
 		}
-		else if(k.isAnsNumber && obj.qnum===-1){
+		else if(obj.qnum===-1 && obj.anum!==-1){
 			color = this.fontAnscolor;
 		}
 		return color;
@@ -657,9 +666,9 @@ pzprv3.createCommonClass('Graphic', '',
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
+			var c=clist[i], num=bd.cell[c].qnum;
 
-			if(bd.cell[c].qnum!==-1 && (bd.cell[c].qnum!==-2||k.isDispHatena)){
+			if(num>0 || (bd.numzero && num===0) || (!this.hideHatena && num===-2)){
 				var px=bd.cell[c].px, ax=px, py=bd.cell[c].py, ay=py, dir = bd.cell[c].qdir;
 
 				if     (bd.cell[c].qans ===1){ g.fillStyle = this.fontBCellcolor;}
@@ -717,7 +726,7 @@ pzprv3.createCommonClass('Graphic', '',
 				else{ this.vhide([headers[3]+c, headers[4]+c, headers[5]+c]);}
 
 				// 数字の描画
-				var num = bd.getNum(c), text = (num>=0 ? ""+num : "?");
+				var text = (num>=0 ? ""+num : "?");
 				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
 				var color = g.fillStyle;
 
@@ -903,8 +912,8 @@ pzprv3.createCommonClass('Graphic', '',
 
 			// この関数を呼ぶ場合は全てk.isoutsideborder===0なので
 			// 外枠用の考慮部分を削除しています。
-			var UPin = (by>2), DNin = (by<2*k.qrows-2);
-			var LTin = (bx>2), RTin = (bx<2*k.qcols-2);
+			var UPin = (by>2), DNin = (by<2*bd.qrows-2);
+			var LTin = (bx>2), RTin = (bx<2*bd.qcols-2);
 
 			var isUP = (!UPin || bd.border[bd.bnum(bx  ,by-1)].ques===1);
 			var isDN = (!DNin || bd.border[bd.bnum(bx  ,by+1)].ques===1);
@@ -973,8 +982,8 @@ pzprv3.createCommonClass('Graphic', '',
 				var lw = this.lw + this.addlw, lm = this.lm;
 				var bx = bd.border[id].bx, by = bd.border[id].by;
 				var px = bd.border[id].px, py = bd.border[id].py;
-				if     (k.isCenterLine===!!(bx&1)){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
-				else if(k.isCenterLine===!!(by&1)){ g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
+				if     (bd.lines.isCenterLine===!!(bx&1)){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
+				else if(bd.lines.isCenterLine===!!(by&1)){ g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
 			}
 		}
 		else{ this.vhide(vid);}
@@ -984,7 +993,7 @@ pzprv3.createCommonClass('Graphic', '',
 		if(bd.isLine(id)){
 			if     (bd.border[id].error===1){ g.fillStyle = this.errlinecolor1; if(g.use.canvas){ this.addlw=1;}}
 			else if(bd.border[id].error===2){ g.fillStyle = this.errlinecolor2;}
-			else if(k.irowake===0 || !pp.getVal('irowake') || !bd.border[id].color){ g.fillStyle = this.linecolor;}
+			else if(this.irowake===0 || !pp.getVal('irowake') || !bd.border[id].color){ g.fillStyle = this.linecolor;}
 			else{ g.fillStyle = bd.border[id].color;}
 			return true;
 		}
@@ -1057,7 +1066,7 @@ pzprv3.createCommonClass('Graphic', '',
 
 			this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
 			if(num>=2 && num<=5){
-				switch(k.puzzleid){
+				switch(bd.puzzleid){
 				case 'reflect':
 					g.fillStyle = ((bd.cell[c].error===1||bd.cell[c].error===4) ? this.errcolor1 : this.cellcolor);
 					break;
@@ -1072,7 +1081,7 @@ pzprv3.createCommonClass('Graphic', '',
 	},
 	drawTriangle1 : function(px,py,num,vid){
 		if(this.vnop(vid,this.FILL)){
-			var cw = this.cw, ch = this.ch, mgn = (k.puzzleid==="reflect"?1:0);
+			var cw = this.cw, ch = this.ch, mgn = (bd.puzzleid==="reflect"?1:0);
 			switch(num){
 				case 2: g.setOffsetLinePath(px,py, mgn,mgn,  mgn,ch+1, cw+1,ch+1, true); break;
 				case 3: g.setOffsetLinePath(px,py, cw+1,mgn, mgn,ch+1, cw+1,ch+1, true); break;
@@ -1426,13 +1435,13 @@ pzprv3.createCommonClass('Graphic', '',
 
 		// 外枠まで描画するわけじゃないので、maxbxとか使いません
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
-		if(x1<0){ x1=0;} if(x2>2*k.qcols){ x2=2*k.qcols;}
-		if(y1<0){ y1=0;} if(y2>2*k.qrows){ y2=2*k.qrows;}
+		if(x1<0){ x1=0;} if(x2>2*bd.qcols){ x2=2*bd.qcols;}
+		if(y1<0){ y1=0;} if(y2>2*bd.qrows){ y2=2*bd.qrows;}
 		x1-=(x1&1), y1-=(y1&1);
 
-		var bs = ((k.isborder!==2&&haschassis!==false)?2:0);
-		var xa = Math.max(x1,0+bs), xb = Math.min(x2,2*k.qcols-bs);
-		var ya = Math.max(y1,0+bs), yb = Math.min(y2,2*k.qrows-bs);
+		var bs = ((bd.isborder!==2&&haschassis!==false)?2:0);
+		var xa = Math.max(x1,0+bs), xb = Math.min(x2,2*bd.qcols-bs);
+		var ya = Math.max(y1,0+bs), yb = Math.min(y2,2*bd.qrows-bs);
 
 		if(isdraw!==false){ // 指定無しかtrueのとき
 			g.fillStyle = this.gridcolor;
@@ -1503,18 +1512,18 @@ pzprv3.createCommonClass('Graphic', '',
 
 		// ex===0とex===2で同じ場所に描画するので、maxbxとか使いません
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
-		if(x1<0){ x1=0;} if(x2>2*k.qcols){ x2=2*k.qcols;}
-		if(y1<0){ y1=0;} if(y2>2*k.qrows){ y2=2*k.qrows;}
+		if(x1<0){ x1=0;} if(x2>2*bd.qcols){ x2=2*bd.qcols;}
+		if(y1<0){ y1=0;} if(y2>2*bd.qrows){ y2=2*bd.qrows;}
 
-		var lw = (k.puzzleid!=='bosanowa'?this.lw:1), bw = this.bw, bh = this.bh;
-		var boardWidth = k.qcols*this.cw, boardHeight = k.qrows*this.ch;
+		var lw = (bd.puzzleid!=='bosanowa'?this.lw:1), bw = this.bw, bh = this.bh;
+		var boardWidth = bd.qcols*this.cw, boardHeight = bd.qrows*this.ch;
 		g.fillStyle = "black";
 
 		if(g.use.canvas){
-			if(x1===0)        { g.fillRect(     -lw+1, y1*bh-lw+1,  lw, (y2-y1)*bh+2*lw-2);}
-			if(x2===2*k.qcols){ g.fillRect(boardWidth, y1*bh-lw+1,  lw, (y2-y1)*bh+2*lw-2);}
-			if(y1===0)        { g.fillRect(x1*bw-lw+1,      -lw+1,  (x2-x1)*bw+2*lw-2, lw); }
-			if(y2===2*k.qrows){ g.fillRect(x1*bw-lw+1, boardHeight, (x2-x1)*bw+2*lw-2, lw); }
+			if(x1===0)         { g.fillRect(     -lw+1, y1*bh-lw+1,  lw, (y2-y1)*bh+2*lw-2);}
+			if(x2===2*bd.qcols){ g.fillRect(boardWidth, y1*bh-lw+1,  lw, (y2-y1)*bh+2*lw-2);}
+			if(y1===0)         { g.fillRect(x1*bw-lw+1,      -lw+1,  (x2-x1)*bw+2*lw-2, lw); }
+			if(y2===2*bd.qrows){ g.fillRect(x1*bw-lw+1, boardHeight, (x2-x1)*bw+2*lw-2, lw); }
 		}
 		else{
 			if(this.vnop("chs1_",this.NONE)){ g.fillRect(-lw+1,       -lw+1, lw, boardHeight+2*lw-2);}
@@ -1531,7 +1540,7 @@ pzprv3.createCommonClass('Graphic', '',
 		if(y1<=0){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
 
 		var lw = this.lw, lm = this.lm, bw = this.bw, bh = this.bh;
-		var boardWidth = k.qcols*this.cw, boardHeight = k.qrows*this.ch;
+		var boardWidth = bd.qcols*this.cw, boardHeight = bd.qrows*this.ch;
 		g.fillStyle = "black";
 
 		// extendcell==1も含んだ外枠の描画
@@ -1629,7 +1638,7 @@ pzprv3.createCommonClass('Graphic', '',
 				this.vinc('board_base', 'crispEdges');
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
 				if(this.vnop("boardfull",this.NONE)){
-					g.fillRect(0, 0, k.qcols*this.cw, k.qrows*this.ch);
+					g.fillRect(0, 0, bd.qcols*this.cw, bd.qrows*this.ch);
 				}
 			}
 		);

@@ -5,52 +5,9 @@
 //---------------------------------------------------------------------------
 pzprv3.createCommonClass('Flags', '',
 {
-	initialize : function(pid){
+	initialize : function(){
 		this.editmode = (pzprv3.EDITOR && !pzprv3.DEBUG);	// 問題配置モード
 		this.playmode = !this.editmode;						// 回答モード
-
-		this.puzzleid = pid;					// パズルのID("creek"など)
-		this.scriptid = PZLINFO.toScript(pid);	// パズルのスクリプトID
-
-		this.qcols = 10		// 盤面の横幅(仮設定)
-		this.qrows = 10		// 盤面の縦幅(仮設定)
-
-		this.irowake  = 0;	// 0:色分け設定無し 1:色分けしない 2:色分けする
-
-		this.iscross  = 0;	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-		this.isborder = 0;	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-		this.isexcell = 0;	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
-
-		this.isLineCross    =	// 線が交差するパズル
-		this.isCenterLine   =	// マスの真ん中を通る線を回答として入力するパズル
-		this.isborderAsLine =	// 境界線をlineとして扱う
-		this.hasroom        =	// いくつかの領域に分かれている/分けるパズル
-		this.roomNumber     =	// 問題の数字が部屋の左上に1つだけ入るパズル
-
-		this.dispzero       =	// 0を表示するかどうか
-		this.isDispHatena   =	// qnumが-2のときに？を表示する
-		this.isInputHatena  =	// ？か否かに関わらずqnum==-2を入力できる
-		this.isAnsNumber    =	// 回答に数字を入力するパズル
-		this.NumberWithMB   =	// 回答の数字と○×が入るパズル
-		this.linkNumber     =	// 数字がひとつながりになるパズル
-
-		this.BlackCell      =	// 黒マスを入力するパズル
-		this.NumberIsWhite  =	// 数字のあるマスが黒マスにならないパズル
-		this.numberAsObject =	// 数字を表示する時に、数字以外で表示する
-		this.RBBlackCell    =	// 連黒分断禁のパズル
-		this.checkBlackCell =	// 正答判定で黒マスの情報をチェックするパズル
-		this.checkWhiteCell =	// 正答判定で白マスの情報をチェックするパズル
-		false;
-
-		// 各パズルのsetting()関数で設定されることがあるもの
-		this.bdmargin       = 0.70;	// 枠外の一辺のmargin(セル数換算)
-		this.bdmargin_image = 0.15;	// 画像出力時のbdmargin値
-
-		if(ee.mobile){ this.bdmargin = this.bdmargin_image;}
-
-		this.floatbgcolor = "black";
-
-		this.setting(pid);
 	},
 
 	// const値
@@ -491,9 +448,9 @@ pzprv3.createCoreClass('PBase', '',
 		pzprv3.setPuzzleID(pid);	// パズルIDを設定
 
 		// クラス初期化
-		k = new (pzprv3.getPuzzleClass('Flags'))(pid);	// フラグの初期化・設定
+		k = new (pzprv3.getPuzzleClass('Flags'))();		// フラグの初期化・設定
 
-		bd  = new (pzprv3.getPuzzleClass('Board'))();		// 盤面オブジェクト
+		bd  = new (pzprv3.getPuzzleClass('Board'))(pid);	// 盤面オブジェクト
 		ans = new (pzprv3.getPuzzleClass('AnsCheck'))();	// 正解判定オブジェクト
 		pc  = new (pzprv3.getPuzzleClass('Graphic'))();		// 描画系オブジェクト
 
@@ -540,7 +497,7 @@ pzprv3.createCoreClass('PBase', '',
 	//---------------------------------------------------------------------------
 	importBoardData : function(pid){
 		// 今のパズルと別idの時
-		if(k.puzzleid != pid){ this.reload_func(pid);}
+		if(bd.puzzleid != pid){ this.reload_func(pid);}
 		else{
 			this.decodeBoardData();
 
@@ -560,7 +517,7 @@ pzprv3.createCoreClass('PBase', '',
 		}
 		// 何もないとき
 		else{
-			bd.initBoardSize(k.qcols,k.qrows);
+			bd.initBoardSize(bd.qcols,bd.qrows);
 			pc.resize_canvas();
 		}
 	},
@@ -632,7 +589,7 @@ pzprv3.createCoreClass('PBase', '',
 
 			var data = [
 				("scr="     + "pzprv3"),
-				("pid="     + k.puzzleid),
+				("pid="     + bd.puzzleid),
 				("referer=" + refer),
 				("pzldata=" + this.qdata)
 			].join('&');

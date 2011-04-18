@@ -32,7 +32,7 @@ pzprv3.createCommonClass('Operation', '',
 			}
 		}
 		else if(this.group === k.BOARD){
-			var d = {x1:0,y1:0,x2:2*k.qcols,y2:2*k.qrows};
+			var d = {x1:0,y1:0,x2:2*bd.qcols,y2:2*bd.qrows};
 			if(num & menu.ex.TURNFLIP){ menu.ex.turnflip    (num,d);}
 			else                      { menu.ex.expandreduce(num,d);}
 
@@ -223,7 +223,7 @@ pzprv3.createCommonClass('OperationManager', '',
 		if( this.disCombine==0 && !!ref &&
 			ref.group == group && ref.property == property &&
 			ref.id == id && ref.num == old &&
-			( (group == k.CELL && ( property==k.QNUM || (property==k.ANUM && k.isAnsNumber) )) || group == k.CROSS)
+			( (group == k.CELL && ( property == k.QNUM || property == k.ANUM )) || group == k.CROSS)
 		)
 			{ ref.num = num;}
 		else{

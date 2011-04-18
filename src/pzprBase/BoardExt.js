@@ -10,11 +10,17 @@ pzprv3.createCommonClass('LineManager', '',
 		this.lcnt    = [];
 		this.ltotal  = [];
 
-		this.disableLine = (!k.isCenterLine && !k.isborderAsLine);
+		this.disableLine = (!this.isCenterLine && !this.borderAsLine);
 		this.data    = {};	// 線id情報
 
 		this.disrec = 0;
 	},
+
+	// 下記の2フラグはどちらかがtrueになります(両方trueはだめです)
+	isCenterLine : false,	// マスの真ん中を通る線を回答として入力するパズル
+	borderAsLine : false,	// 境界線をlineとして扱う
+
+	isLineCross : false,	// 線が交差するパズル
 
 	// 定数
 	typeA : 'A',
@@ -31,13 +37,13 @@ pzprv3.createCommonClass('LineManager', '',
 		if(this.disableLine){ return;}
 
 		// lcnt, ltotal変数(配列)初期化
-		if(k.isCenterLine){
+		if(this.isCenterLine){
 			for(var c=0;c<bd.cellmax;c++){ this.lcnt[c]=0;}
-			this.ltotal=[(k.qcols*k.qrows), 0, 0, 0, 0];
+			this.ltotal=[(bd.qcols*bd.qrows), 0, 0, 0, 0];
 		}
 		else{
-			for(var c=0,len=(k.qcols+1)*(k.qrows+1);c<len;c++){ this.lcnt[c]=0;}
-			this.ltotal=[((k.qcols+1)*(k.qrows+1)), 0, 0, 0, 0];
+			for(var c=0,len=(bd.qcols+1)*(bd.qrows+1);c<len;c++){ this.lcnt[c]=0;}
+			this.ltotal=[((bd.qcols+1)*(bd.qrows+1)), 0, 0, 0, 0];
 		}
 
 		// その他の変数初期化
@@ -65,8 +71,8 @@ pzprv3.createCommonClass('LineManager', '',
 				bid.push(id);
 
 				var cc1, cc2;
-				if(k.isCenterLine){ cc1 = bd.border[id].cellcc[0];  cc2 = bd.border[id].cellcc[1]; }
-				else              { cc1 = bd.border[id].crosscc[0]; cc2 = bd.border[id].crosscc[1];}
+				if(this.isCenterLine){ cc1 = bd.border[id].cellcc[0];  cc2 = bd.border[id].cellcc[1]; }
+				else                 { cc1 = bd.border[id].crosscc[0]; cc2 = bd.border[id].crosscc[1];}
 
 				if(cc1!==null){ this.ltotal[this.lcnt[cc1]]--; this.lcnt[cc1]++; this.ltotal[this.lcnt[cc1]]++;}
 				if(cc2!==null){ this.ltotal[this.lcnt[cc2]]--; this.lcnt[cc2]++; this.ltotal[this.lcnt[cc2]]++;}
@@ -76,7 +82,7 @@ pzprv3.createCommonClass('LineManager', '',
 			}
 		}
 		this.lc0main(bid);
-		if(k.irowake!==0){ this.newIrowake();}
+		if(pc.irowake!==0){ this.newIrowake();}
 	},
 	newIrowake : function(){
 		for(var i=1;i<=this.data.max;i++){
@@ -114,14 +120,14 @@ pzprv3.createCommonClass('LineManager', '',
 		//   │ ←id                    
 		// ━┷━                       
 		//   ・ ←この場所に線があるか？
-		if(k.isCenterLine){
+		if(this.isCenterLine){
 			return !bd.isLine(bd.bnum( 2*bd.cell[cc].bx-bd.border[id].bx, 2*bd.cell[cc].by-bd.border[id].by ));
 		}
 		else{
-			return !bd.isLine(bd.bnum( 4*(cc%(k.qcols+1))-bd.border[id].bx, 4*((cc/(k.qcols+1))|0)-bd.border[id].by ));
+			return !bd.isLine(bd.bnum( 4*(cc%(bd.qcols+1))-bd.border[id].bx, 4*((cc/(bd.qcols+1))|0)-bd.border[id].by ));
 		}
 	},
-	iscrossing : function(cc){ return k.isLineCross;},
+	iscrossing : function(cc){ return this.isLineCross;},
 
 	//---------------------------------------------------------------------------
 	// bd.lines.setLine()         線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
@@ -137,8 +143,8 @@ pzprv3.createCommonClass('LineManager', '',
 		if(isset===(this.data.id[id]!==null)){ return;}
 
 		var cc1, cc2;
-		if(k.isCenterLine){ cc1 = bd.border[id].cellcc[0];  cc2 = bd.border[id].cellcc[1]; }
-		else              { cc1 = bd.border[id].crosscc[0]; cc2 = bd.border[id].crosscc[1];}
+		if(this.isCenterLine){ cc1 = bd.border[id].cellcc[0];  cc2 = bd.border[id].cellcc[1]; }
+		else                 { cc1 = bd.border[id].crosscc[0]; cc2 = bd.border[id].crosscc[1];}
 
 		if(isset){
 			if(cc1!==null){ this.ltotal[this.lcnt[cc1]]--; this.lcnt[cc1]++; this.ltotal[this.lcnt[cc1]]++;}
@@ -331,11 +337,12 @@ pzprv3.createCommonClass('LineManager', '',
 	//---------------------------------------------------------------------------
 	getbid : function(id,val){
 		var erase=(val>0?0:1), bx=bd.border[id].bx, by=bd.border[id].by;
-		var dx=((k.isCenterLine^(bx%2===0))?2:0), dy=(2-dx);	// (dx,dy) = (2,0) or (0,2)
+		var dx=((this.isCenterLine^(bx%2===0))?2:0), dy=(2-dx);	// (dx,dy) = (2,0) or (0,2)
 
-		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-		if(!k.isCenterLine){ cc1 = bd.border[id].crosscc[0]; cc2 = bd.border[id].crosscc[1];}
-		// 交差ありでk.isborderAsLine==true(->k.isCenterLine==false)のパズルは作ってないはず
+		var cc1, cc2;
+		if(this.isCenterLine){ cc1 = bd.border[id].cellcc[0];  cc2 = bd.border[id].cellcc[1]; }
+		else                 { cc1 = bd.border[id].crosscc[0]; cc2 = bd.border[id].crosscc[1];}
+		// 交差ありでborderAsLine==true(->isCenterLine==false)のパズルは作ってないはず
 		// 今までのオモパで該当するのもスリザーボックスくらいだったような、、
 
 		var lines=[];
@@ -373,15 +380,15 @@ pzprv3.createCommonClass('LineManager', '',
 			var bx=bd.border[bid[i]].bx, by=bd.border[bid[i]].by;
 			this.data.max++;
 			this.data[this.data.max] = {idlist:[]};
-			if(!k.isCenterLine^(bx&1)){ this.lc0(bx,by+1,1,this.data.max); this.lc0(bx,by,2,this.data.max);}
-			else                      { this.lc0(bx+1,by,3,this.data.max); this.lc0(bx,by,4,this.data.max);}
+			if(!this.isCenterLine^(bx&1)){ this.lc0(bx,by+1,1,this.data.max); this.lc0(bx,by,2,this.data.max);}
+			else                         { this.lc0(bx+1,by,3,this.data.max); this.lc0(bx,by,4,this.data.max);}
 		}
 	},
 	lc0 : function(bx,by,dir,newid){
 		while(1){
 			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
 			if((bx+by)%2===0){
-				var cc = (k.isCenterLine?bd.cnum:bd.xnum).call(bd,bx,by);
+				var cc = (this.isCenterLine?bd.cnum:bd.xnum).call(bd,bx,by);
 				if(cc===null){ break;}
 				else if(this.lcnt[cc]>=3){
 					if(!this.iscrossing(cc)){
@@ -469,6 +476,13 @@ pzprv3.createCommonClass('AreaManager', '',
 		this.disrec = 0;
 	},
 
+	hasroom        : false,	// いくつかの領域に分かれている/分けるパズル
+	roomNumber     : false,	// 問題の数字が部屋の左上に1つだけ入るパズル
+
+	checkBlackCell : false,	// 正答判定で黒マスの情報をチェックするパズル
+	checkWhiteCell : false,	// 正答判定で白マスの情報をチェックするパズル
+	linkNumber     : false,	// 数字がひとつながりになるパズル
+
 	//--------------------------------------------------------------------------------
 	// bd.areas.init()           起動時に変数を初期化する
 	// bd.areas.disableRecord()  操作の登録を禁止する
@@ -489,9 +503,9 @@ pzprv3.createCommonClass('AreaManager', '',
 	// bd.areas.resetArea()  部屋、黒マス、白マスの情報をresetする
 	//--------------------------------------------------------------------------------
 	resetArea : function(){
-		if(!!k.isborder && !k.isborderAsLine){ this.resetRarea();}
-		if(k.checkBlackCell || k.linkNumber) { this.resetBarea();}
-		if(k.checkWhiteCell)                 { this.resetWarea();}
+		if(!!bd.isborder && !bd.lines.borderAsLine){ this.resetRarea();}
+		if(this.checkBlackCell || this.linkNumber) { this.resetBarea();}
+		if(this.checkWhiteCell)                    { this.resetWarea();}
 	},
 
 	//--------------------------------------------------------------------------------
@@ -505,13 +519,13 @@ pzprv3.createCommonClass('AreaManager', '',
 
 		// lcnt変数初期化
 		this.lcnt = [];
-		for(var c=0;c<(k.qcols+1)*(k.qrows+1);c++){ this.lcnt[c]=0;}
+		for(var c=0;c<(bd.qcols+1)*(bd.qrows+1);c++){ this.lcnt[c]=0;}
 
-		if(k.isborder===1){
+		if(bd.isborder===1){
 			for(var by=bd.minby;by<=bd.maxby;by+=2){
 				for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
 					if(bx===bd.minbx || bx===bd.maxbx || by===bd.minby || by===bd.maxby){
-						var c = (bx>>1)+(by>>1)*(k.qcols+1);
+						var c = (bx>>1)+(by>>1)*(bd.qcols+1);
 						this.lcnt[c]=2;
 					}
 				}
@@ -522,13 +536,13 @@ pzprv3.createCommonClass('AreaManager', '',
 		this.isbd = [];
 		for(var id=0;id<bd.bdmax;id++){ this.isbd[id]=false;}
 
-		if(!k.hasroom){ return;}
+		if(!this.hasroom){ return;}
 		for(var id=0;id<bd.bdmax;id++){
 			if(bd.isBorder(id)){ this.setRinfo(id, true);}
 		}
 	},
 	resetRarea : function(){
-		if(!k.hasroom){ return;}
+		if(!this.hasroom){ return;}
 
 		this.initRarea();
 		this.room.max = 0;
@@ -541,7 +555,7 @@ pzprv3.createCommonClass('AreaManager', '',
 		}
 
 		// 部屋ごとに、TOPの場所に数字があるかどうか判断して移動する
-		if(k.roomNumber){
+		if(this.roomNumber){
 			for(var r=1;r<=this.room.max;r++){
 				this.setTopOfRoom(r);
 
@@ -609,7 +623,7 @@ pzprv3.createCommonClass('AreaManager', '',
 	},
 
 	setBorder : function(id,isset){
-		if(!k.hasroom || !this.isenableRecord()){ return;}
+		if(!this.hasroom || !this.isenableRecord()){ return;}
 		if(isset===this.isbd[id]){ return;}
 		this.setRinfo(id,isset);
 
@@ -645,7 +659,7 @@ pzprv3.createCommonClass('AreaManager', '',
 			}
 
 			// TOPの情報を設定する
-			if(k.roomNumber){
+			if(this.roomNumber){
 				if(roomid[room[baseid].top]===baseid){
 					this.setTopOfRoom(room.max);
 				}
@@ -659,8 +673,8 @@ pzprv3.createCommonClass('AreaManager', '',
 			if(this.lcnt[xc1]===0 || this.lcnt[xc2]===0){ return;}
 			if(cc1===null || cc2===null || roomid[cc1]===roomid[cc2]){ return;}
 
-			// k.roomNumberの時 どっちの数字を残すかは、TOP同士の位置で比較する
-			if(k.roomNumber){
+			// roomNumberの時 どっちの数字を残すかは、TOP同士の位置で比較する
+			if(this.roomNumber){
 				var merged, keep;
 
 				var tc1 = room[roomid[cc1]].top, tc2 = room[roomid[cc2]].top;
@@ -715,8 +729,8 @@ pzprv3.createCommonClass('AreaManager', '',
 	// bd.areas.resetWarea() 白マスの情報をresetして、1から割り当てしなおす
 	//--------------------------------------------------------------------------------
 	isBlock : function(cc){
-		if(!k.linkNumber){ return bd.isBlack(cc);}
-		else{ return (bd.isNum(cc)||(k.NumberWithMB && (bd.QsC(cc)===1)));}
+		if(!this.linkNumber){ return bd.isBlack(cc);}
+		else{ return (bd.isNum(cc)||(bd.numberWithMB && (bd.QsC(cc)===1)));}
 		return false;
 	},
 
@@ -765,11 +779,11 @@ pzprv3.createCommonClass('AreaManager', '',
 	//--------------------------------------------------------------------------------
 	setCell : function(type,cc){
 		if(type==='block'){
-			if(k.checkBlackCell){ this.setBWCell(cc,bd.isBlack(cc),this.bcell);}
-			if(k.checkWhiteCell){ this.setBWCell(cc,bd.isWhite(cc),this.wcell);}
+			if(this.checkBlackCell){ this.setBWCell(cc,bd.isBlack(cc),this.bcell);}
+			if(this.checkWhiteCell){ this.setBWCell(cc,bd.isWhite(cc),this.wcell);}
 		}
 		else if(type==='number'){
-			if(k.linkNumber)	{ this.setBWCell(cc,this.isBlock(cc),this.bcell);}
+			if(this.linkNumber){ this.setBWCell(cc,this.isBlock(cc),this.bcell);}
 		}
 	},
 	setBWCell : function(cc,isset,data){

@@ -3,23 +3,10 @@
 //
 pzprv3.custom.hitori = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.BlackCell       = true;
-		this.RBBlackCell     = true;
-		this.checkWhiteCell  = true;
-
-		this.floatbgcolor = "rgb(0, 224, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	RBBlackCell : true,
+
 	mousedown : function(){
 		if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
 		else if(k.editmode){ this.inputqnum();}
@@ -39,9 +26,18 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 8,
+	qrows : 8,
+
+	disInputHatena : true,
+
 	nummaxfunc : function(cc){
-		return Math.max(k.qcols,k.qrows);
+		return Math.max(this.qcols,this.qrows);
 	}
+},
+
+AreaManager:{
+	checkWhiteCell : true
 },
 
 Menu:{

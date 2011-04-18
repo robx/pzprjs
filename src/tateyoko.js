@@ -3,21 +3,6 @@
 //
 pzprv3.custom.tateyoko = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.dispzero        = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-
-		this.floatbgcolor = "rgb(96, 255, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -145,8 +130,10 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	numzero : true,
+
 	nummaxfunc : function(cc){
-		return (this.cell[cc].ques===1?4:Math.max(k.qcols,k.qrows));
+		return (this.cell[cc].ques===1?4:Math.max(this.qcols,this.qrows));
 	},
 
 	getBarInfo : function(){

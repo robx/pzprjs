@@ -3,23 +3,6 @@
 //
 pzprv3.custom.loopsp = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.irowake  = 1;
-		this.isborder = 1;
-
-		this.isLineCross     = true;
-		this.isCenterLine    = true;
-
-		this.floatbgcolor = "rgb(0, 191, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -144,8 +127,15 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 1,
+
 	enableLineNG : true,
 	enableLineCombined : true,
+},
+
+LineManager:{
+	isCenterLine : true,
+	isLineCross  : true
 },
 
 MenuExec:{
@@ -175,6 +165,10 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	irowake : 1,
+
+	hideHatena : true,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.linecolor = this.linecolor_LIGHT;

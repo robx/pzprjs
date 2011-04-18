@@ -3,27 +3,6 @@
 //
 pzprv3.custom.toichika = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.isAnsNumber     = true;
-		this.numberAsObject  = true;
-
-		this.ispzprv3ONLY    = true;
-
-		this.floatbgcolor = "rgb(127, 160, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -89,6 +68,10 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 1,
+
+	numberAsObject : true,
+
 	maxnum : 4,
 
 	getPairedArrowsInfo : function(){
@@ -112,6 +95,10 @@ Board:{
 		}
 		return ainfo;
 	}
+},
+
+AreaManager:{
+	hasroom : true
 },
 
 MenuExec:{

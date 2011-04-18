@@ -3,24 +3,6 @@
 //
 pzprv3.custom.nuribou = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.BlackCell       = true;
-		this.NumberIsWhite   = true;
-		this.checkBlackCell  = true;
-		this.checkWhiteCell  = true;
-
-		this.floatbgcolor = "rgb(96, 96, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -45,6 +27,15 @@ KeyPopup:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Board:{
+	numberIsWhite : true
+},
+
+AreaManager:{
+	checkBlackCell : true,
+	checkWhiteCell : true
+},
+
 Menu:{
 	menufix : function(){
 		this.addUseToFlags();
@@ -129,8 +120,8 @@ AnsCheck:{
 			if(bd.cell[c].bx===bd.maxbx-1 || bd.cell[c].by===bd.maxby-1){ continue;}
 
 			var cc1, cc2;
-			if     ( bd.isBlack(c) && bd.isBlack(c+k.qcols+1) ){ cc1 = c; cc2 = c+k.qcols+1;}
-			else if( bd.isBlack(c+1) && bd.isBlack(c+k.qcols) ){ cc1 = c+1; cc2 = c+k.qcols;}
+			if     ( bd.isBlack(c) && bd.isBlack(c+bd.qcols+1) ){ cc1 = c; cc2 = c+bd.qcols+1;}
+			else if( bd.isBlack(c+1) && bd.isBlack(c+bd.qcols) ){ cc1 = c+1; cc2 = c+bd.qcols;}
 			else{ continue;}
 
 			if(binfo.room[binfo.id[cc1]].idlist.length == binfo.room[binfo.id[cc2]].idlist.length){

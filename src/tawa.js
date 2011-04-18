@@ -3,23 +3,6 @@
 //
 pzprv3.custom.tawa = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 6;	// ※本スクリプトでは一番上の段のマスの数を表すこととする.
-		this.qrows = 7;
-
-		this.dispzero        = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.BlackCell       = true;
-		this.NumberIsWhite   = true;
-
-		this.floatbgcolor = "rgb(64, 64, 64)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -96,12 +79,18 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
-	// 2段目は => 0:左右引っ込み 1:右のみ出っ張り 2:左のみ出っ張り 3:左右出っ張り
-	lap : 3,
+	qcols : 6,	// ※本スクリプトでは一番上の段のマスの数を表すこととする.
+	qrows : 7,
+	lap   : 3,	// 2段目は => 0:左右引っ込み 1:右のみ出っ張り 2:左のみ出っ張り 3:左右出っ張り
+
 	setLap : function(val){
 		this.lap=val;
 		this.setminmax();
 	},
+
+	numzero : true,
+
+	numberIsWhite : true,
 
 	maxnum : 6,
 
@@ -118,23 +107,23 @@ Board:{
 		for(var id=0;id<this.cellmax;id++){
 			var obj = this.cell[id];
 			if(this.lap==0){
-				var row = (((2*id)/(2*k.qcols-1))|0);
-				obj.bx = (((2*id)%(2*k.qcols-1))|0)+1;
+				var row = (((2*id)/(2*this.qcols-1))|0);
+				obj.bx = (((2*id)%(2*this.qcols-1))|0)+1;
 				obj.by = row*2+1;
 			}
 			else if(this.lap==1){
-				var row = ((id/k.qcols)|0);
-				obj.bx = ((id%k.qcols)|0)*2+(!!(row&1)?1:0)+1;
+				var row = ((id/this.qcols)|0);
+				obj.bx = ((id%this.qcols)|0)*2+(!!(row&1)?1:0)+1;
 				obj.by = row*2+1;
 			}
 			else if(this.lap==2){
-				var row = ((id/k.qcols)|0);
-				obj.bx = ((id%k.qcols)|0)*2+(!(row&1)?1:0)+1;
+				var row = ((id/this.qcols)|0);
+				obj.bx = ((id%this.qcols)|0)*2+(!(row&1)?1:0)+1;
 				obj.by = row*2+1;
 			}
 			else if(this.lap==3){
-				var row = (((2*id+1)/(2*k.qcols+1))|0);
-				obj.bx = (((2*id+1)%(2*k.qcols+1))|0)+1;
+				var row = (((2*id+1)/(2*this.qcols+1))|0);
+				obj.bx = (((2*id+1)%(2*this.qcols+1))|0)+1;
 				obj.by = row*2+1;
 			}
 		}
@@ -142,17 +131,17 @@ Board:{
 	setminmax : function(){
 		this.minbx = 0;
 		this.minby = 0;
-		this.maxbx = 2*k.qcols + [0,1,1,2][this.lap];
-		this.maxby = 2*k.qrows;
+		this.maxbx = 2*this.qcols + [0,1,1,2][this.lap];
+		this.maxby = 2*this.qrows;
 
 		tc.setminmax();
 	},
 
 	cnum : function(bx,by,qc,qr){
-		if(qc===(void 0)){ qc=k.qcols; qr=k.qrows;}
+		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
 		if(bx<this.minbx+1 || bx>this.maxbx-1 || by<this.minby+1 || by>this.maxby-1){ return null;}
 
-		var cy = (by>>1);	// 上から数えて何段目か(0～k.qrows-1)
+		var cy = (by>>1);	// 上から数えて何段目か(0～bd.qrows-1)
 		if     (this.lap===0){ if(!!((bx+cy)&1)){ return ((bx-1)+cy*(2*qc-1))>>1;}}
 		else if(this.lap===1){ if(!!((bx+cy)&1)){ return ((bx-1)+cy*(2*qc  ))>>1;}}
 		else if(this.lap===2){ if( !((bx+cy)&1)){ return ((bx-1)+cy*(2*qc  ))>>1;}}
@@ -174,10 +163,10 @@ MenuExec:{
 	expandreduce : function(key,d){
 		if(key & this.EXPAND){
 			switch(key & 0x0F){
-				case k.LT: k.qcols+=[0,0,1,1][bd.lap];  bd.lap=[2,3,0,1][bd.lap]; break;
-				case k.RT: k.qcols+=[0,1,0,1][bd.lap];  bd.lap=[1,0,3,2][bd.lap]; break;
-				case k.UP: k.qcols+=[-1,0,0,1][bd.lap]; bd.lap=[3,2,1,0][bd.lap]; k.qrows++; break;
-				case k.DN: k.qrows++; break;
+				case k.LT: bd.qcols+=[0,0,1,1][bd.lap];  bd.lap=[2,3,0,1][bd.lap]; break;
+				case k.RT: bd.qcols+=[0,1,0,1][bd.lap];  bd.lap=[1,0,3,2][bd.lap]; break;
+				case k.UP: bd.qcols+=[-1,0,0,1][bd.lap]; bd.lap=[3,2,1,0][bd.lap]; bd.qrows++; break;
+				case k.DN: bd.qrows++; break;
 			}
 			bd.setminmax();
 
@@ -187,10 +176,10 @@ MenuExec:{
 			this.reduceGroup(k.CELL,key);
 
 			switch(key & 0x0F){
-				case k.LT: k.qcols-=[1,1,0,0][bd.lap];  bd.lap=[2,3,0,1][bd.lap]; break;
-				case k.RT: k.qcols-=[1,0,1,0][bd.lap];  bd.lap=[1,0,3,2][bd.lap]; break;
-				case k.UP: k.qcols-=[1,0,0,-1][bd.lap]; bd.lap=[3,2,1,0][bd.lap]; k.qrows--; break;
-				case k.DN: k.qrows--; break;
+				case k.LT: bd.qcols-=[1,1,0,0][bd.lap];  bd.lap=[2,3,0,1][bd.lap]; break;
+				case k.RT: bd.qcols-=[1,0,1,0][bd.lap];  bd.lap=[1,0,3,2][bd.lap]; break;
+				case k.UP: bd.qcols-=[1,0,0,-1][bd.lap]; bd.lap=[3,2,1,0][bd.lap]; bd.qrows--; break;
+				case k.DN: bd.qrows--; break;
 			}
 		}
 		bd.setposAll();
@@ -199,7 +188,7 @@ MenuExec:{
 	turnflip : function(key,d){
 		var d = {x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby};
 
-		if     (key===this.FLIPY){ if(!(k.qrows&1)){ bd.lap = {0:3,1:2,2:1,3:0}[bd.lap];} }
+		if     (key===this.FLIPY){ if(!(bd.qrows&1)){ bd.lap = {0:3,1:2,2:1,3:0}[bd.lap];} }
 		else if(key===this.FLIPX){ bd.lap = {0:0,1:2,2:1,3:3}[bd.lap];}
 
 		this.turnflipGroup(k.CELL, key, d);
@@ -230,8 +219,8 @@ MenuExec:{
 	newboard_show : function(){		// "新規盤面作成"を表示するとき
 		menu.pop = ee("pop1_1");
 		this.selectlap([0,2,3,1][bd.lap]);
-		_doc.newboard.col.value = (k.qcols+(bd.lap==3?1:0));
-		_doc.newboard.row.value = k.qrows;
+		_doc.newboard.col.value = (bd.qcols+(bd.lap==3?1:0));
+		_doc.newboard.row.value = bd.qrows;
 		kc.enableKey = false;
 	},
 	newboard : function(e){			// "新規盤面作成"ボタンが押されたとき
@@ -401,7 +390,7 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		bd.setLap(parseInt(this.readLine()));
-		var n=0, item = this.getItemList(k.qrows);
+		var n=0, item = this.getItemList(bd.qrows);
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			for(var bx=0;bx<=bd.maxbx;bx++){
 				var cc=bd.cnum(bx,by);

@@ -3,30 +3,11 @@
 //
 pzprv3.custom.kramma = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.iscross  = 1;
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.numberAsObject  = true;
-
-		this.floatbgcolor = "rgb(96, 96, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
 		if(k.editmode){
-			if(k.puzzleid==='kramman'){ this.inputcrossMark();}
+			if(bd.puzzleid==='kramman'){ this.inputcrossMark();}
 		}
 		else if(k.playmode){
 			if     (this.btn.Left) { this.inputborderans();}
@@ -76,6 +57,14 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 8,
+	qrows : 8,
+
+	iscross  : 1,
+	isborder : 1,
+
+	numberAsObject : true,
+
 	maxnum : 2,
 
 	getlinesize : function(id){
@@ -91,6 +80,10 @@ Board:{
 		}
 		return d;
 	}
+},
+
+AreaManager:{
+	hasroom : true
 },
 
 //---------------------------------------------------------
@@ -109,7 +102,7 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawQnumCircles();
-		if(k.puzzleid==='kramman'){ this.drawCrossMarks();}
+		if(bd.puzzleid==='kramman'){ this.drawCrossMarks();}
 
 		this.drawHatenas();
 
@@ -131,14 +124,14 @@ Encode:{
 		this.checkPuzzleid();
 	},
 	pzlexport : function(type){
-		if(k.puzzleid==='kramman'){ this.encodeCrossMark();}else{ this.outpflag="c";}
+		if(bd.puzzleid==='kramman'){ this.encodeCrossMark();}else{ this.outpflag="c";}
 		this.encodeCircle();
 	},
 
 	checkPuzzleid : function(){
-		if(k.puzzleid==='kramma'){
+		if(bd.puzzleid==='kramma'){
 			for(var c=0;c<bd.crossmax;c++){
-				if(bd.cross[c].qnum===1){ k.puzzleid='kramman'; break;}
+				if(bd.cross[c].qnum===1){ bd.puzzleid='kramman'; break;}
 			}
 			menu.displayDesign();
 		}
@@ -165,13 +158,13 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( (k.puzzleid==='kramman') && !this.checkLcntCross(3,0) ){
+		if( (bd.puzzleid==='kramman') && !this.checkLcntCross(3,0) ){
 			this.setAlert('分岐している線があります。','There is a branched line.'); return false;
 		}
-		if( (k.puzzleid==='kramman') && !this.checkLcntCross(4,1) ){
+		if( (bd.puzzleid==='kramman') && !this.checkLcntCross(4,1) ){
 			this.setAlert('線が黒点上で交差しています。','There is a crossing line on the black point.'); return false;
 		}
-		if( (k.puzzleid==='kramman') && !this.checkLcntCurve() ){
+		if( (bd.puzzleid==='kramman') && !this.checkLcntCurve() ){
 			this.setAlert('線が黒点以外で曲がっています。','A line curves out of the black points.'); return false;
 		}
 
@@ -184,10 +177,10 @@ AnsCheck:{
 			this.setAlert('白丸と黒丸が両方含まれる領域があります。','An area has both white and black circles.'); return false;
 		}
 
-		if( (k.puzzleid==='kramman') && !this.checkLcntCross(1,0) ){
+		if( (bd.puzzleid==='kramman') && !this.checkLcntCross(1,0) ){
 			this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
 		}
-		if( (k.puzzleid==='kramman') && !this.checkLcntCross(0,1) ){
+		if( (bd.puzzleid==='kramman') && !this.checkLcntCross(0,1) ){
 			this.setAlert('黒点上を線が通過していません。','No lines on the black point.'); return false;
 		}
 

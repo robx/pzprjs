@@ -3,26 +3,6 @@
 //
 pzprv3.custom.shimaguni = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.roomNumber      = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.BlackCell       = true;
-		this.checkBlackCell  = true;
-
-		this.floatbgcolor = "rgb(0, 127, 127)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -54,6 +34,8 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 1,
+
 	nummaxfunc : function(cc){
 		return Math.min(this.maxnum, this.areas.getCntOfRoomByCell(cc));
 	},
@@ -65,6 +47,11 @@ Board:{
 		}
 		return cnt;
 	}
+},
+
+AreaManager:{
+	hasroom    : true,
+	roomNumber : true
 },
 
 Menu:{

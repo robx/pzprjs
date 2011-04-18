@@ -3,25 +3,6 @@
 //
 pzprv3.custom.creek = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.iscross  = 2;
-
-		this.dispzero        = true;
-		this.checkWhiteCell  = true;
-
-		this.bdmargin       = 0.70;
-		this.bdmargin_image = 0.50;
-
-		this.floatbgcolor = "rgb(0, 0, 255)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -56,7 +37,15 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	iscross : 2,
+
+	numzero : true,
+
 	maxunm : 4
+},
+
+AreaManager:{
+	checkWhiteCell : true
 },
 
 Menu:{
@@ -68,6 +57,11 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	bdmargin       : 0.70,
+	bdmargin_image : 0.50,
+
+	hideHatena : true,
+
 	setColors : function(){
 		this.cellcolor = "rgb(96, 96, 96)";
 		this.setBGCellColorFunc('qans1');

@@ -3,23 +3,6 @@
 //
 pzprv3.custom.lits = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.BlackCell       = true;
-		this.checkBlackCell  = true;
-
-		this.floatbgcolor = "rgb(64, 64, 64)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -36,6 +19,8 @@ MouseEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 1,
+
 	getTetrominoInfo : function(rinfo){
 		var tinfo = new pzprv3.core.AreaInfo(); /* 各セルに入る黒マスのテトロミノの形が入る */
 		for(var c=0;c<this.cellmax;c++){ tinfo.id[c]=null;}
@@ -79,6 +64,11 @@ Board:{
 		if( func(this.rt(c)) ){ this.st0(dinfo, this.rt(c), id, tinfo);}
 		return;
 	}
+},
+
+AreaManager:{
+	hasroom        : true,
+	checkBlackCell : true
 },
 
 Menu:{

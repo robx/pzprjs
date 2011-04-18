@@ -3,26 +3,6 @@
 //
 pzprv3.custom.ichimaga = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.irowake  = 1;
-		this.isborder = 1;
-
-		this.isCenterLine    = true;
-		this.isInputHatena   = true;
-
-		this.bdmargin       = 0.50;
-		this.bdmargin_image = 0.10;
-
-		this.floatbgcolor = "rgb(0, 224, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -54,16 +34,26 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 1,
+
 	maxnum : 4
 },
 
 LineManager:{
+	isCenterLine : true,
 	iscrossing : function(cc){ return bd.noNum(cc);}
 },
 
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	bdmargin       : 0.50,
+	bdmargin_image : 0.10,
+
+	irowake : 1,
+
+	hideHatena : true,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 
@@ -98,10 +88,10 @@ Encode:{
 	pzlimport : function(type){
 		this.decode4Cell();
 
-		if(k.puzzleid==='ichimaga'){
-			if     (this.checkpflag("m")){ k.puzzleid="ichimagam";}
-			else if(this.checkpflag("x")){ k.puzzleid="ichimagax";}
-			else                         { k.puzzleid="ichimaga"; }
+		if(bd.puzzleid==='ichimaga'){
+			if     (this.checkpflag("m")){ bd.puzzleid="ichimagam";}
+			else if(this.checkpflag("x")){ bd.puzzleid="ichimagax";}
+			else                         { bd.puzzleid="ichimaga"; }
 			menu.displayDesign();
 		}
 	},
@@ -113,10 +103,10 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		var pzlflag = this.readLine();
-		if(k.puzzleid==='ichimaga'){
-			if     (pzlflag=="mag")  { k.puzzleid="ichimagam";}
-			else if(pzlflag=="cross"){ k.puzzleid="ichimagax";}
-			else                     { k.puzzleid="ichimaga"; }
+		if(bd.puzzleid==='ichimaga'){
+			if     (pzlflag=="mag")  { bd.puzzleid="ichimagam";}
+			else if(pzlflag=="cross"){ bd.puzzleid="ichimagax";}
+			else                     { bd.puzzleid="ichimaga"; }
 			menu.displayDesign();
 		}
 
@@ -124,9 +114,9 @@ FileIO:{
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
-		if     (k.puzzleid==="ichimagam"){ this.datastr+="mag/";}
-		else if(k.puzzleid==="ichimagax"){ this.datastr+="cross/";}
-		else                             { this.datastr+="def/";}
+		if     (bd.puzzleid==="ichimagam"){ this.datastr+="mag/";}
+		else if(bd.puzzleid==="ichimagax"){ this.datastr+="cross/";}
+		else                              { this.datastr+="def/";}
 
 		this.encodeCellQnum();
 		this.encodeBorderLine();
@@ -141,7 +131,7 @@ AnsCheck:{
 		if( !this.checkLcntCell_firefly(3) ){
 			this.setAlert('分岐している線があります。', 'There is a branch line.'); return false;
 		}
-		if( (k.puzzleid!=='ichimagax') && !this.checkLcntCell_firefly(4) ){
+		if( (bd.puzzleid!=='ichimagax') && !this.checkLcntCell_firefly(4) ){
 			this.setAlert('線が交差しています。', 'There is a crossing line.'); return false;
 		}
 
@@ -183,7 +173,7 @@ AnsCheck:{
 		var c1=room.cells[0], c2=room.cells[1];
 
 		var qn1=bd.QnC(c1), qn2=(c2!==null?bd.QnC(c2):-1), err=0;
-		if((k.puzzleid==='ichimagam') && qn1!==-2 && qn1===qn2){ err=3;}
+		if((bd.puzzleid==='ichimagam') && qn1!==-2 && qn1===qn2){ err=3;}
 		else if(c2!==null && ccnt>1){ err=2;}
 		else if(c2===null){ err=1;}
 		room.error = err;

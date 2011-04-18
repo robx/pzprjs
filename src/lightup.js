@@ -3,21 +3,6 @@
 //
 pzprv3.custom.lightup = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.dispzero        = true;
-		this.isInputHatena   = true;
-		this.NumberIsWhite   = true;
-
-		this.floatbgcolor = "rgb(32, 32, 32)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -47,7 +32,11 @@ Cell:{
 },
 
 Board:{
+	numzero : true,
+
 	maxnum : 4,
+
+	numberIsWhite : true,
 
 	resetInfo : function(){
 		this.initQlight();
@@ -133,6 +122,8 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	hideHatena : true,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.fontcolor = this.fontErrcolor = "white";

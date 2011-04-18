@@ -18,7 +18,7 @@ pzprv3.createCommonClass('MenuExec', '',
 		// expand/reduce処理用
 		this.insex = {};
 		this.insex[k.CELL]   = {1:true};
-		this.insex[k.CROSS]  = (k.iscross===1 ? {2:true} : {0:true});
+		this.insex[k.CROSS]  = (bd.iscross===1 ? {2:true} : {0:true});
 		this.insex[k.BORDER] = {1:true, 2:true};
 		this.insex[k.EXCELL] = {1:true};
 	},
@@ -113,7 +113,7 @@ pzprv3.createCommonClass('MenuExec', '',
 	newboard_open : function(url){
 		menu.popclose();
 
-		base.dec.parseURI('?'+k.puzzleid+url);
+		base.dec.parseURI('?'+bd.puzzleid+url);
 		base.importBoardData(base.dec.id);
 	},
 
@@ -190,7 +190,7 @@ pzprv3.createCommonClass('MenuExec', '',
 	},
 
 	filesave : function(ftype){
-		var fname = prompt("保存するファイル名を入力して下さい。", k.puzzleid+".txt");
+		var fname = prompt("保存するファイル名を入力して下さい。", bd.puzzleid+".txt");
 		if(!fname){ return;}
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;} }
@@ -215,14 +215,14 @@ pzprv3.createCommonClass('MenuExec', '',
 	imagesave : function(isDL){
 		// 現在の設定を保存する
 		var temp_flag   = pc.fillTextEmulate;
-		var temp_margin = k.bdmargin;
+		var temp_margin = pc.bdmargin;
 		var temp_cursor = pp.getVal('cursor');
 
 		try{
 			// 設定値・変数をcanvas用のものに変更
 			pc.outputImage = true;
 			pc.fillTextEmulate = false;
-			k.bdmargin = k.bdmargin_image;
+			pc.bdmargin = pc.bdmargin_image;
 			pp.setValOnly('cursor', false);
 			g = ee('divques_sub').el.getContext("2d");
 
@@ -233,7 +233,7 @@ pzprv3.createCommonClass('MenuExec', '',
 			var url = g.canvas.toDataURL();
 
 			if(isDL){
-				_doc.fileform2.filename.value  = k.puzzleid+'.png';
+				_doc.fileform2.filename.value  = bd.puzzleid+'.png';
 				_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
 				_doc.fileform2.operation.value = 'imagesave';
 
@@ -264,7 +264,7 @@ pzprv3.createCommonClass('MenuExec', '',
 		// 設定値・変数を元に戻す
 		pc.outputImage = false;
 		pc.fillTextEmulate = temp_flag;
-		k.bdmargin = temp_margin;
+		pc.bdmargin = temp_margin;
 		pp.setValOnly('cursor', temp_cursor);
 		g = ee('divques').unselectable().el.getContext("2d");
 
@@ -302,15 +302,15 @@ pzprv3.createCommonClass('MenuExec', '',
 		var seplist = pzprv3.EDITOR ? [] : ['separator2'];
 
 		if(this.displaymanage){
-			for(var i=0;i<idlist.length;i++)        { ee(idlist[i])  .el.style.display = 'none';}
-			for(var i=0;i<seplist.length;i++)       { ee(seplist[i]) .el.style.display = 'none';}
-			if(k.irowake!=0 && pp.getVal('irowake')){ ee('btncolor2').el.style.display = 'inline';}
+			for(var i=0;i<idlist.length;i++)         { ee(idlist[i])  .el.style.display = 'none';}
+			for(var i=0;i<seplist.length;i++)        { ee(seplist[i]) .el.style.display = 'none';}
+			if(pc.irowake!=0 && pp.getVal('irowake')){ ee('btncolor2').el.style.display = 'inline';}
 			ee('menuboard').el.style.paddingBottom = '0pt';
 		}
 		else{
-			for(var i=0;i<idlist.length;i++)        { ee(idlist[i])  .el.style.display = 'block';}
-			for(var i=0;i<seplist.length;i++)       { ee(seplist[i]) .el.style.display = 'block';}
-			if(k.irowake!=0 && pp.getVal('irowake')){ ee("btncolor2").el.style.display = 'none';}
+			for(var i=0;i<idlist.length;i++)         { ee(idlist[i])  .el.style.display = 'block';}
+			for(var i=0;i<seplist.length;i++)        { ee(seplist[i]) .el.style.display = 'block';}
+			if(pc.irowake!=0 && pp.getVal('irowake')){ ee("btncolor2").el.style.display = 'none';}
 			ee('menuboard').el.style.paddingBottom = '8pt';
 		}
 		this.displaymanage = !this.displaymanage;
@@ -334,14 +334,14 @@ pzprv3.createCommonClass('MenuExec', '',
 			var name = ee.getSrcElement(e).name;
 			if(name.indexOf("reduce")===0){
 				if(name==="reduceup"||name==="reducedn"){
-					if(k.qrows<=1){ return;}
+					if(bd.qrows<=1){ return;}
 				}
 				else if(name==="reducelt"||name==="reducert"){
-					if(k.qcols<=1 && (k.puzzleid!=="tawa" || bd.lap!==3)){ return;}
+					if(bd.qcols<=1 && (bd.puzzleid!=="tawa" || bd.lap!==3)){ return;}
 				}
 			}
 
-			var d = {x1:0, y1:0, x2:2*k.qcols, y2:2*k.qrows};
+			var d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows};
 			if (name.match(/(expand|reduce)/)){ this.expandreduce(this.boardtype[name][1],d);}
 			else if(name.match(/(turn|flip)/)){ this.turnflip    (this.boardtype[name][1],d);}
 
@@ -364,22 +364,22 @@ pzprv3.createCommonClass('MenuExec', '',
 		this.adjustBoardData(key,d);
 
 		if(key & this.EXPAND){
-			if     (key===this.EXPANDUP||key===this.EXPANDDN){ k.qrows++;}
-			else if(key===this.EXPANDLT||key===this.EXPANDRT){ k.qcols++;}
+			if     (key===this.EXPANDUP||key===this.EXPANDDN){ bd.qrows++;}
+			else if(key===this.EXPANDLT||key===this.EXPANDRT){ bd.qcols++;}
 
-							{ this.expandGroup(k.CELL,   key);}
-			if(!!k.iscross) { this.expandGroup(k.CROSS,  key);}
-			if(!!k.isborder){ this.expandGroup(k.BORDER, key);}
-			if(!!k.isexcell){ this.expandGroup(k.EXCELL, key);}
+							 { this.expandGroup(k.CELL,   key);}
+			if(!!bd.iscross) { this.expandGroup(k.CROSS,  key);}
+			if(!!bd.isborder){ this.expandGroup(k.BORDER, key);}
+			if(!!bd.isexcell){ this.expandGroup(k.EXCELL, key);}
 		}
 		else if(key & this.REDUCE){
-							{ this.reduceGroup(k.CELL,   key);}
-			if(!!k.iscross) { this.reduceGroup(k.CROSS,  key);}
-			if(!!k.isborder){ this.reduceGroup(k.BORDER, key);}
-			if(!!k.isexcell){ this.reduceGroup(k.EXCELL, key);}
+							 { this.reduceGroup(k.CELL,   key);}
+			if(!!bd.iscross) { this.reduceGroup(k.CROSS,  key);}
+			if(!!bd.isborder){ this.reduceGroup(k.BORDER, key);}
+			if(!!bd.isexcell){ this.reduceGroup(k.EXCELL, key);}
 
-			if     (key===this.REDUCEUP||key===this.REDUCEDN){ k.qrows--;}
-			else if(key===this.REDUCELT||key===this.REDUCERT){ k.qcols--;}
+			if     (key===this.REDUCEUP||key===this.REDUCEDN){ bd.qrows--;}
+			else if(key===this.REDUCELT||key===this.REDUCERT){ bd.qcols--;}
 		}
 		bd.setposAll();
 
@@ -387,7 +387,7 @@ pzprv3.createCommonClass('MenuExec', '',
 		bd.enableInfo();
 	},
 	expandGroup : function(type,key){
-		var margin = bd.initGroup(type, k.qcols, k.qrows);
+		var margin = bd.initGroup(type, bd.qcols, bd.qrows);
 		var group = bd.getGroup(type);
 		for(var i=group.length-1;i>=0;i--){
 			if(!!this.insex[type][this.distObj(type,i,key)]){
@@ -425,16 +425,16 @@ pzprv3.createCommonClass('MenuExec', '',
 		this.adjustBoardData(key,d);
 
 		if(key & this.TURN){
-			var tmp = k.qcols; k.qcols = k.qrows; k.qrows = tmp;
+			var tmp = bd.qcols; bd.qcols = bd.qrows; bd.qrows = tmp;
 			bd.setposAll();
-			d = {x1:0, y1:0, x2:2*k.qcols, y2:2*k.qrows};
+			d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows};
 		}
 
-						  { this.turnflipGroup(k.CELL,   key, d);}
-		if(!!k.iscross)   { this.turnflipGroup(k.CROSS,  key, d);}
-		if(!!k.isborder)  { this.turnflipGroup(k.BORDER, key, d);}
-		if(k.isexcell===2){ this.turnflipGroup(k.EXCELL, key, d);}
-		else if(k.isexcell===1 && (key & this.FLIP)){
+						   { this.turnflipGroup(k.CELL,   key, d);}
+		if(!!bd.iscross)   { this.turnflipGroup(k.CROSS,  key, d);}
+		if(!!bd.isborder)  { this.turnflipGroup(k.BORDER, key, d);}
+		if(bd.isexcell===2){ this.turnflipGroup(k.EXCELL, key, d);}
+		else if(bd.isexcell===1 && (key & this.FLIP)){
 			var d2 = {x1:d.x1, y1:d.y1, x2:d.x2, y2:d.y2};
 			if     (key===this.FLIPY){ d2.x1 = d2.x2 = -1;}
 			else if(key===this.FLIPX){ d2.y1 = d2.y2 = -1;}
@@ -462,8 +462,8 @@ pzprv3.createCommonClass('MenuExec', '',
 				switch(key){
 					case this.FLIPY: next = bd.idnum(type, group[target].bx, yy-group[target].by); break;
 					case this.FLIPX: next = bd.idnum(type, xx-group[target].bx, group[target].by); break;
-					case this.TURNR: next = bd.idnum(type, group[target].by, xx-group[target].bx, k.qrows, k.qcols); break;
-					case this.TURNL: next = bd.idnum(type, yy-group[target].by, group[target].bx, k.qrows, k.qcols); break;
+					case this.TURNR: next = bd.idnum(type, group[target].by, xx-group[target].bx, bd.qrows, bd.qcols); break;
+					case this.TURNL: next = bd.idnum(type, yy-group[target].by, group[target].bx, bd.qrows, bd.qcols); break;
 				}
 
 				if(ch[next]===false){
@@ -487,9 +487,9 @@ pzprv3.createCommonClass('MenuExec', '',
 
 		key &= 0x0F;
 		if     (key===k.UP){ return obj.by;}
-		else if(key===k.DN){ return 2*k.qrows-obj.by;}
+		else if(key===k.DN){ return 2*bd.qrows-obj.by;}
 		else if(key===k.LT){ return obj.bx;}
-		else if(key===k.RT){ return 2*k.qcols-obj.bx;}
+		else if(key===k.RT){ return 2*bd.qcols-obj.bx;}
 		return -1;
 	},
 
@@ -502,22 +502,22 @@ pzprv3.createCommonClass('MenuExec', '',
 	//---------------------------------------------------------------------------
 	expandborder : function(key){
 		// borderAsLineじゃないUndo時は、後でオブジェクトを代入するので下の処理はパス
-		if(k.isborderAsLine || !um.undoExec){
+		if(bd.lines.borderAsLine || !um.undoExec){
 			// 直前のexpandGroupで、bx,byプロパティが不定なままなので設定する
 			bd.setposBorders();
 
-			var dist = (k.isborderAsLine?2:1);
+			var dist = (bd.lines.borderAsLine?2:1);
 			for(var id=0;id<bd.bdmax;id++){
 				if(this.distObj(k.BORDER,id,key)!==dist){ continue;}
 
-				var source = (k.isborderAsLine ? this.outerBorder(id,key) : this.innerBorder(id,key));
+				var source = (bd.lines.borderAsLine ? this.outerBorder(id,key) : this.innerBorder(id,key));
 				this.copyBorder(id,source);
-				if(k.isborderAsLine){ bd.border[source].allclear(source,false);}
+				if(bd.lines.borderAsLine){ bd.border[source].allclear(source,false);}
 			}
 		}
 	},
 	reduceborder : function(key){
-		if(k.isborderAsLine){
+		if(bd.lines.borderAsLine){
 			for(var id=0;id<bd.bdmax;id++){
 				if(this.distObj(k.BORDER,id,key)!==0){ continue;}
 
@@ -530,7 +530,7 @@ pzprv3.createCommonClass('MenuExec', '',
 	copyBorder : function(id1,id2){
 		bd.border[id1].ques  = bd.border[id2].ques;
 		bd.border[id1].qans  = bd.border[id2].qans;
-		if(k.isborderAsLine){
+		if(bd.lines.borderAsLine){
 			bd.border[id1].line  = bd.border[id2].line;
 			bd.border[id1].qsub  = bd.border[id2].qsub;
 			bd.border[id1].color = bd.border[id2].color;
@@ -571,10 +571,10 @@ pzprv3.createCommonClass('MenuExec', '',
 	// menu.ex.adjustBoardObject()  回転・反転開始前のIN/OUTなどの位置の調整
 	//------------------------------------------------------------------------------
 	adjustBoardData : function(key,d){
-		if(k.roomNumber){ this.adjustRoomNumber(key,d);}
+		if(bd.areas.roomNumber){ this.adjustRoomNumber(key,d);}
 	},
 	adjustBoardData2 : function(key,d){
-		if(k.roomNumber){ this.adjustRoomNumber2(key,d);}
+		if(bd.areas.roomNumber){ this.adjustRoomNumber2(key,d);}
 	},
 
 	adjustRoomNumber : function(key,d){
@@ -742,16 +742,16 @@ pzprv3.createCommonClass('MenuExec', '',
 		switch(key){
 			case this.FLIPY: newid = bd.idnum(group, bx,yy-by); break;
 			case this.FLIPX: newid = bd.idnum(group, xx-bx,by); break;
-			case this.TURNR: newid = bd.idnum(group, yy-by,bx,k.qrows,k.qcols); break;
-			case this.TURNL: newid = bd.idnum(group, by,xx-bx,k.qrows,k.qcols); break;
-			case this.EXPANDUP: newid = bd.idnum(group, bx,by+(by===bd.minby?0:2), k.qcols,k.qrows+1); break;
-			case this.EXPANDDN: newid = bd.idnum(group, bx,by+(by===bd.maxby?2:0), k.qcols,k.qrows+1); break;
-			case this.EXPANDLT: newid = bd.idnum(group, bx+(bx===bd.minbx?0:2),by ,k.qcols+1,k.qrows); break;
-			case this.EXPANDRT: newid = bd.idnum(group, bx+(bx===bd.maxbx?2:0),by ,k.qcols+1,k.qrows); break;
-			case this.REDUCEUP: newid = bd.idnum(group, bx,by-(by<=bd.minby+2?0:2), k.qcols,k.qrows-1); break;
-			case this.REDUCEDN: newid = bd.idnum(group, bx,by-(by>=bd.maxby-2?2:0), k.qcols,k.qrows-1); break;
-			case this.REDUCELT: newid = bd.idnum(group, bx-(bx<=bd.minbx+2?0:2),by, k.qcols-1,k.qrows); break;
-			case this.REDUCERT: newid = bd.idnum(group, bx-(bx>=bd.maxbx-2?2:0),by, k.qcols-1,k.qrows); break;
+			case this.TURNR: newid = bd.idnum(group, yy-by,bx,bd.qrows,bd.qcols); break;
+			case this.TURNL: newid = bd.idnum(group, by,xx-bx,bd.qrows,bd.qcols); break;
+			case this.EXPANDUP: newid = bd.idnum(group, bx,by+(by===bd.minby?0:2), bd.qcols,bd.qrows+1); break;
+			case this.EXPANDDN: newid = bd.idnum(group, bx,by+(by===bd.maxby?2:0), bd.qcols,bd.qrows+1); break;
+			case this.EXPANDLT: newid = bd.idnum(group, bx+(bx===bd.minbx?0:2),by, bd.qcols+1,bd.qrows); break;
+			case this.EXPANDRT: newid = bd.idnum(group, bx+(bx===bd.maxbx?2:0),by, bd.qcols+1,bd.qrows); break;
+			case this.REDUCEUP: newid = bd.idnum(group, bx,by-(by<=bd.minby+2?0:2), bd.qcols,bd.qrows-1); break;
+			case this.REDUCEDN: newid = bd.idnum(group, bx,by-(by>=bd.maxby-2?2:0), bd.qcols,bd.qrows-1); break;
+			case this.REDUCELT: newid = bd.idnum(group, bx-(bx<=bd.minbx+2?0:2),by, bd.qcols-1,bd.qrows); break;
+			case this.REDUCERT: newid = bd.idnum(group, bx-(bx>=bd.maxbx-2?2:0),by, bd.qcols-1,bd.qrows); break;
 			default: newid = id; break;
 		}
 		return newid;

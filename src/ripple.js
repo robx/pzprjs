@@ -3,24 +3,6 @@
 //
 pzprv3.custom.ripple = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.isAnsNumber     = true;
-
-		this.floatbgcolor = "rgb(64, 64, 64)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -53,9 +35,15 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 1,
+
 	nummaxfunc : function(cc){
 		return this.areas.getCntOfRoomByCell(cc);
 	}
+},
+
+AreaManager:{
+	hasroom : true
 },
 
 //---------------------------------------------------------

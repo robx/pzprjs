@@ -3,24 +3,6 @@
 //
 pzprv3.custom.cojun = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.isAnsNumber     = true;
-
-		this.floatbgcolor = "rgb(64, 64, 64)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -53,9 +35,18 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 8,
+	qrows : 8,
+
+	isborder : 1,
+
 	nummaxfunc : function(cc){
 		return this.areas.getCntOfRoomByCell(cc);
 	}
+},
+
+AreaManager:{
+	hasroom : true
 },
 
 //---------------------------------------------------------
@@ -132,7 +123,7 @@ AnsCheck:{
 
 	checkUpperNumber : function(rinfo){
 		var result = true;
-		for(var c=0;c<bd.cellmax-k.qcols;c++){
+		for(var c=0;c<bd.cellmax-bd.qcols;c++){
 			var dc = bd.dn(c);
 			if(rinfo.id[c]!=rinfo.id[dc] || !bd.isNum(c) || !bd.isNum(dc)){ continue;}
 			if(bd.getNum(dc)>bd.getNum(c)){

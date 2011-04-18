@@ -3,23 +3,6 @@
 //
 pzprv3.custom.usotatami = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-
-		this.floatbgcolor = "rgb(127, 191, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -46,6 +29,19 @@ KeyEvent:{
 KeyPopup:{
 	paneltype  : 10,
 	enablemake : true
+},
+
+//---------------------------------------------------------
+// 盤面管理系
+Board:{
+	qcols : 8,
+	qrows : 8,
+
+	isborder : 1
+},
+
+AreaManager:{
+	hasroom : true
 },
 
 //---------------------------------------------------------

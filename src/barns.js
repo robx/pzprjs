@@ -3,23 +3,6 @@
 //
 pzprv3.custom.barns = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.irowake  = 1;
-		this.isborder = 1;
-
-		this.isLineCross     = true;
-		this.isCenterLine    = true;
-
-		this.floatbgcolor = "rgb(0, 0, 191)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -63,9 +46,19 @@ MouseEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 8,
+	qrows : 8,
+
+	isborder : 1,
+
 	// 線を引かせたくないので上書き
 	enableLineNG : true,
 	isLineNG : function(id){ return this.isBorder(id);}
+},
+
+LineManager:{
+	isCenterLine : true,
+	isLineCross  : true
 },
 
 Menu:{
@@ -77,6 +70,8 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	irowake : 1,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.linecolor = this.linecolor_LIGHT;

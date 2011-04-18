@@ -3,26 +3,10 @@
 //
 pzprv3.custom.yajikazu = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.dispzero        = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.BlackCell       = true;
-		this.RBBlackCell     = true;
-		this.checkWhiteCell  = true;
-
-		this.floatbgcolor = "rgb(0, 224, 0)";
-	},
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	RBBlackCell : true,
+
 	mousedown : function(){
 		if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
 		else if(k.editmode){ this.inputdirec();}
@@ -59,6 +43,14 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Board:{
+	numzero : true
+},
+
+AreaManager:{
+	checkWhiteCell : true
+},
+
 MenuExec:{
 	adjustBoardData : function(key,d){
 		this.adjustNumberArrow(key,d);

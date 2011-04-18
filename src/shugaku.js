@@ -3,25 +3,6 @@
 //
 pzprv3.custom.shugaku = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isborder = 1;
-
-		this.dispzero        = true;
-		this.isInputHatena   = true;
-		this.BlackCell       = true;
-		this.NumberIsWhite   = true;
-		this.checkBlackCell  = true;
-
-		this.floatbgcolor = "rgb(32, 32, 32)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -147,6 +128,12 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 1,
+
+	numzero : true,
+
+	numberIsWhite : true,
+
 	maxnum : 4,
 
 	isPillow : function(c){
@@ -158,6 +145,10 @@ Board:{
 
 		this.areas.setCell('block',id,(num===1)); /* ここを変更 */
 	}
+},
+
+AreaManager:{
+	checkBlackCell : true
 },
 
 MenuExec:{
@@ -179,6 +170,8 @@ MenuExec:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	hideHatena : true,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.errbcolor1 = this.errbcolor1_DARK;

@@ -3,25 +3,6 @@
 //
 pzprv3.custom.mashu = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.irowake  = 1;
-		this.isborder = 1;
-
-		this.isCenterLine    = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.numberAsObject  = true;
-
-		this.floatbgcolor = "rgb(0, 224, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -54,6 +35,10 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 1,
+
+	numberAsObject : true,
+
 	maxnum : 2,
 
 	revCircle : function(){
@@ -71,6 +56,10 @@ Board:{
 		if(this.isLine(this.lb(cc))){ this.setCellLineError(this.lt(cc),0);}
 		if(this.isLine(this.rb(cc))){ this.setCellLineError(this.rt(cc),0);}
 	}
+},
+
+LineManager:{
+	isCenterLine : true
 },
 
 Menu:{
@@ -92,6 +81,8 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	irowake : 1,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 	},

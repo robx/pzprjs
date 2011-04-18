@@ -3,26 +3,6 @@
 //
 pzprv3.custom.renban = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 6;
-		this.qrows = 6;
-
-		this.isborder = 1;
-
-		this.hasroom         = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.isAnsNumber     = true;
-
-		this.ispzprv3ONLY    = true;
-
-		this.floatbgcolor = "rgb(64, 64, 64)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -56,6 +36,19 @@ KeyPopup:{
 	paneltype  : 10,
 	enablemake : true,
 	enableplay : true
+},
+
+//---------------------------------------------------------
+// 盤面管理系
+Board:{
+	qcols : 6,
+	qrows : 6,
+
+	isborder : 1
+},
+
+AreaManager:{
+	hasroom : true
 },
 
 //---------------------------------------------------------

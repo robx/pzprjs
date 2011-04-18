@@ -3,26 +3,6 @@
 //
 pzprv3.custom.country = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.irowake  = 1;
-		this.isborder = 1;
-
-		this.isCenterLine    = true;
-		this.hasroom         = true;
-		this.roomNumber      = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-
-		this.floatbgcolor = "rgb(191, 0, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -60,9 +40,20 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	isborder : 1,
+
 	nummaxfunc : function(cc){
 		return Math.min(this.maxnum, this.areas.getCntOfRoomByCell(cc));
 	}
+},
+
+LineManager:{
+	isCenterLine : true
+},
+
+AreaManager:{
+	hasroom    : true,
+	roomNumber : true
 },
 
 Menu:{
@@ -74,6 +65,8 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	irowake : 1,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_SLIGHT;
 	},

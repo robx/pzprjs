@@ -27,7 +27,7 @@ pzprv3.createCommonClass('FileIO', '',
 	filedecode : function(datastr){
 		var lines = datastr.split('/');
 		base.dec.reset();
-		base.dec.id = (lines[0].match(/^pzprv3/) ? lines[1] : k.puzzleid);
+		base.dec.id = (lines[0].match(/^pzprv3/) ? lines[1] : bd.puzzleid);
 		base.dec.fstr = datastr;
 		base.importBoardData(base.dec.id);
 	},
@@ -41,7 +41,7 @@ pzprv3.createCommonClass('FileIO', '',
 		// ヘッダの処理
 		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
-			if(this.readLine()!==k.puzzleid){ ;} /* パズルIDが入っている(filedecode()で使う関数) */
+			if(this.readLine()!==bd.puzzleid){ ;} /* パズルIDが入っている(filedecode()で使う関数) */
 			this.currentType = this.PZPR;
 		}
 		else{
@@ -51,10 +51,10 @@ pzprv3.createCommonClass('FileIO', '',
 
 		// サイズを表す文字列
 		var row, col;
-		if(k.puzzleid!=="sudoku"){
+		if(bd.puzzleid!=="sudoku"){
 			row = parseInt(this.readLine(), 10);
 			col = parseInt(this.readLine(), 10);
-			if(this.currentType===this.PBOX && k.puzzleid==="kakuro"){ row--; col--;}
+			if(this.currentType===this.PBOX && bd.puzzleid==="kakuro"){ row--; col--;}
 		}
 		else{
 			row = col = parseInt(this.readLine(), 10);
@@ -92,13 +92,13 @@ pzprv3.createCommonClass('FileIO', '',
 		else if(this.currentType===this.PBOX){ this.kanpenSave();}
 
 		// サイズを表す文字列
-		if(!this.sizestr){ this.sizestr = [k.qrows, k.qcols].join("/");}
+		if(!this.sizestr){ this.sizestr = [bd.qrows, bd.qcols].join("/");}
 		this.datastr = [this.sizestr, this.datastr].join("/");
 
 		// ヘッダの処理
 		if(this.currentType===this.PZPR){
 			var header = (this.filever===0 ? "pzprv3" : ("pzprv3."+this.filever));
-			this.datastr = [header, k.puzzleid, this.datastr].join("/");
+			this.datastr = [header, bd.puzzleid, this.datastr].join("/");
 		}
 		var bstr = this.datastr;
 
@@ -155,25 +155,25 @@ pzprv3.createCommonClass('FileIO', '',
 		}
 	},
 	decodeCell   : function(func){
-		this.decodeObj(func, k.CELL, 1, 1, 2*k.qcols-1, 2*k.qrows-1);
+		this.decodeObj(func, k.CELL, 1, 1, 2*bd.qcols-1, 2*bd.qrows-1);
 	},
 	decodeCross  : function(func){
-		this.decodeObj(func, k.CROSS, 0, 0, 2*k.qcols,   2*k.qrows  );
+		this.decodeObj(func, k.CROSS, 0, 0, 2*bd.qcols,   2*bd.qrows  );
 	},
 	decodeBorder : function(func){
-		if(k.isborder===1 || k.puzzleid==='bosanowa'){
-			this.decodeObj(func, k.BORDER, 2, 1, 2*k.qcols-2, 2*k.qrows-1);
-			this.decodeObj(func, k.BORDER, 1, 2, 2*k.qcols-1, 2*k.qrows-2);
+		if(bd.isborder===1 || bd.puzzleid==='bosanowa'){
+			this.decodeObj(func, k.BORDER, 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
+			this.decodeObj(func, k.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
-		else if(k.isborder===2){
+		else if(bd.isborder===2){
 			if(this.currentType===this.PZPR){
-				this.decodeObj(func, k.BORDER, 0, 1, 2*k.qcols  , 2*k.qrows-1);
-				this.decodeObj(func, k.BORDER, 1, 0, 2*k.qcols-1, 2*k.qrows  );
+				this.decodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
+				this.decodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
 			}
 			// pencilboxでは、outsideborderの時はぱずぷれとは順番が逆になってます
 			else if(this.currentType===this.PBOX){
-				this.decodeObj(func, k.BORDER, 1, 0, 2*k.qcols-1, 2*k.qrows  );
-				this.decodeObj(func, k.BORDER, 0, 1, 2*k.qcols  , 2*k.qrows-1);
+				this.decodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
+				this.decodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
 			}
 		}
 	},
@@ -194,25 +194,25 @@ pzprv3.createCommonClass('FileIO', '',
 		}
 	},
 	encodeCell   : function(func){
-		this.encodeObj(func, k.CELL, 1, 1, 2*k.qcols-1, 2*k.qrows-1);
+		this.encodeObj(func, k.CELL, 1, 1, 2*bd.qcols-1, 2*bd.qrows-1);
 	},
 	encodeCross  : function(func){
-		this.encodeObj(func, k.CROSS, 0, 0, 2*k.qcols,   2*k.qrows  );
+		this.encodeObj(func, k.CROSS, 0, 0, 2*bd.qcols,   2*bd.qrows  );
 	},
 	encodeBorder : function(func){
-		if(k.isborder===1 || k.puzzleid==='bosanowa'){
-			this.encodeObj(func, k.BORDER, 2, 1, 2*k.qcols-2, 2*k.qrows-1);
-			this.encodeObj(func, k.BORDER, 1, 2, 2*k.qcols-1, 2*k.qrows-2);
+		if(bd.isborder===1 || bd.puzzleid==='bosanowa'){
+			this.encodeObj(func, k.BORDER, 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
+			this.encodeObj(func, k.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
-		else if(k.isborder===2){
+		else if(bd.isborder===2){
 			if(this.currentType===this.PZPR){
-				this.encodeObj(func, k.BORDER, 0, 1, 2*k.qcols  , 2*k.qrows-1);
-				this.encodeObj(func, k.BORDER, 1, 0, 2*k.qcols-1, 2*k.qrows  );
+				this.encodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
+				this.encodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
 			}
 			// pencilboxでは、outsideborderの時はぱずぷれとは順番が逆になってます
 			else if(this.currentType===this.PBOX){
-				this.encodeObj(func, k.BORDER, 1, 0, 2*k.qcols-1, 2*k.qrows  );
-				this.encodeObj(func, k.BORDER, 0, 1, 2*k.qcols  , 2*k.qrows-1);
+				this.encodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
+				this.encodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
 			}
 		}
 	},
@@ -453,7 +453,7 @@ pzprv3.createCommonClass('FileIO', '',
 
 	decodeAreaRoom_com : function(isques){
 		this.readLine();
-		this.rdata2Border(isques, this.getItemList(k.qrows));
+		this.rdata2Border(isques, this.getItemList(bd.qrows));
 
 		bd.areas.resetRarea();
 	},
@@ -463,7 +463,7 @@ pzprv3.createCommonClass('FileIO', '',
 		this.datastr += (rinfo.max+"/");
 		for(var c=0;c<bd.cellmax;c++){
 			this.datastr += (""+(rinfo.id[c]-1)+" ");
-			if((c+1)%k.qcols===0){ this.datastr += "/";}
+			if((c+1)%bd.qcols===0){ this.datastr += "/";}
 		}
 	},
 	//---------------------------------------------------------------------------
@@ -481,12 +481,12 @@ pzprv3.createCommonClass('FileIO', '',
 	// fio.encodeCellQnum51() [＼]のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnum51 : function(){
-		var item = this.getItemList(k.qrows+1);
+		var item = this.getItemList(bd.qrows+1);
 		bd.disableInfo(); /* mv.set51cell()用 */
 		for(var i=0;i<item.length;i++) {
 			if(item[i]=="."){ continue;}
 
-			var bx=(i%(k.qcols+1)-1)*2+1, by=(((i/(k.qcols+1))|0)-1)*2+1;
+			var bx=(i%(bd.qcols+1)-1)*2+1, by=(((i/(bd.qcols+1))|0)-1)*2+1;
 			if(bx===-1 || by===-1){
 				var ec = bd.exnum(bx,by);
 				var property = ((by===-1)?'qdir':'qnum');

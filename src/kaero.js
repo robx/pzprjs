@@ -3,24 +3,6 @@
 //
 pzprv3.custom.kaero = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 6;
-		this.qrows = 6;
-
-		this.isborder = 1;
-
-		this.isCenterLine    = true;
-		this.hasroom         = true;
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-
-		this.floatbgcolor = "rgb(127,96,64)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -85,6 +67,11 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 6,
+	qrows : 6,
+
+	isborder : 1,
+
 	maxnum : 52,
 
 	getMovedPosition : function(linfo){
@@ -106,6 +93,14 @@ Board:{
 		}
 		return minfo;
 	}
+},
+
+LineManager:{
+	isCenterLine : true
+},
+
+AreaManager:{
+	hasroom : true
 },
 
 //---------------------------------------------------------

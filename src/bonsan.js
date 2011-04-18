@@ -3,29 +3,11 @@
 //
 pzprv3.custom.bonsan = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.isborder = 1;
-
-		this.isCenterLine    = true;
-		this.hasroom         = true;
-		this.dispzero        = true;
-		this.isInputHatena   = true;
-
-		this.floatbgcolor = "rgb(127,96,64)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
 		if(k.editmode){
-			if(k.puzzleid==='heyabon'){ this.inputborder();}
+			if(bd.puzzleid==='heyabon'){ this.inputborder();}
 		}
 		else if(k.playmode){
 			if(this.btn.Left){ this.inputLine();}
@@ -39,7 +21,7 @@ MouseEvent:{
 	},
 	mousemove : function(){
 		if(k.editmode){
-			if(k.puzzleid==='heyabon'){ this.inputborder();}
+			if(bd.puzzleid==='heyabon'){ this.inputborder();}
 		}
 		else if(k.playmode){
 			if(this.btn.Left){ this.inputLine();}
@@ -87,8 +69,15 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 8,
+	qrows : 8,
+
+	isborder : 1,
+
+	numzero : true,
+
 	nummaxfunc : function(cc){
-		return Math.max(k.qcols,k.qrows)-1;
+		return Math.max(this.qcols,this.qrows)-1;
 	},
 
 	getMovedPosition : function(linfo){
@@ -112,9 +101,19 @@ Board:{
 	}
 },
 
+LineManager:{
+	isCenterLine : true
+},
+
+AreaManager:{
+	hasroom : true
+},
+
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	hideHatena : true,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.qsubcolor1 = "rgb(224, 224, 255)";
@@ -127,7 +126,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		if(k.puzzleid==='heyabon'){ this.drawBorders();}
+		if(bd.puzzleid==='heyabon'){ this.drawBorders();}
 
 		this.drawTip();
 		this.drawLines();
@@ -187,14 +186,14 @@ Encode:{
 		this.checkPuzzleid();
 	},
 	pzlexport : function(type){
-		if(type===1 || k.puzzleid==='heyabon'){ this.encodeBorder();}else{ this.outpflag="c";}
+		if(type===1 || bd.puzzleid==='heyabon'){ this.encodeBorder();}else{ this.outpflag="c";}
 		this.encodeNumber16();
 	},
 
 	checkPuzzleid : function(){
-		if(k.puzzleid==='bonsan'){
+		if(bd.puzzleid==='bonsan'){
 			for(var id=0;id<bd.bdmax;id++){
-				if(bd.border[id].ques===1){ k.puzzleid='heyabon'; break;}
+				if(bd.border[id].ques===1){ bd.puzzleid='heyabon'; break;}
 			}
 			menu.displayDesign();
 		}
@@ -249,13 +248,13 @@ AnsCheck:{
 
 		var rinfo = bd.areas.getRoomInfo(), minfo = bd.getMovedPosition(linfo);
 		var mfunc = function(c){ return ((c!==null && minfo.id[c]!==null) ? bd.QnC(minfo.id[c]) : -1);};
-		if( k.puzzleid==='bonsan' && !this.checkFractal(rinfo, mfunc) ){
+		if( bd.puzzleid==='bonsan' && !this.checkFractal(rinfo, mfunc) ){
 			this.setAlert('○が点対称に配置されていません。', 'Position of circles is not point symmetric.'); return false;
 		}
-		if( k.puzzleid==='heyabon' && !this.checkFractal(rinfo, mfunc) ){
+		if( bd.puzzleid==='heyabon' && !this.checkFractal(rinfo, mfunc) ){
 			this.setAlert('部屋の中の○が点対称に配置されていません。', 'Position of circles in the room is not point symmetric.'); return false;
 		}
-		if( k.puzzleid==='heyabon' && !this.checkNoObjectInRoom(rinfo, mfunc) ){
+		if( bd.puzzleid==='heyabon' && !this.checkNoObjectInRoom(rinfo, mfunc) ){
 			this.setAlert('○のない部屋があります。','A room has no circle.'); return false;
 		}
 

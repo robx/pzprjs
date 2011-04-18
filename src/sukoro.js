@@ -3,23 +3,6 @@
 //
 pzprv3.custom.sukoro = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.isAnsNumber     = true;
-		this.NumberWithMB    = true;
-		this.linkNumber      = true;
-
-		this.floatbgcolor = "rgb(64, 64, 64)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){ this.inputqnum();}
@@ -78,7 +61,13 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	numberWithMB : true,
+
 	maxnum : 4
+},
+
+AreaManager:{
+	linkNumber : true
 },
 
 //---------------------------------------------------------

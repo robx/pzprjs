@@ -3,23 +3,6 @@
 //
 pzprv3.custom.triplace = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isborder = 1;
-		this.isexcell = 1;
-
-		this.hasroom         = true;
-		this.dispzero        = true;
-
-		this.floatbgcolor = "rgb(96, 96, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -72,7 +55,7 @@ KeyEvent:{
 	enablemake : true,
 
 	keyinput : function(ca){
-		this.inputnumber51(ca,{2:(k.qcols-(tc.pos.x>>1)-1), 4:(k.qrows-(tc.pos.y>>1)-1)});
+		this.inputnumber51(ca,{2:(bd.qcols-(tc.pos.x>>1)-1), 4:(bd.qrows-(tc.pos.y>>1)-1)});
 	}
 },
 KeyPopup:{
@@ -94,6 +77,12 @@ EXCell:{
 	qdir:-1
 },
 Board:{
+	isborder : 1,
+	isexcell : 1,
+
+	numzero        : true,
+	disInputHatena : true,
+
 	set51cell : function(c){
 		this.sQuC(c,51); this.sQnC(c,-1); this.sDiC(c,-1);
 		this.set51aroundborder(c);
@@ -126,6 +115,10 @@ Board:{
 		}
 		return tinfo;
 	}
+},
+
+AreaManager:{
+	hasroom : true
 },
 
 MenuExec:{
@@ -244,7 +237,7 @@ Encode:{
 			else if(ca==='-'){ bd.excell[cell].qdir = parseInt(bstr.substr(i+1,2),16); i+=2;}
 			else             { bd.excell[cell].qdir = parseInt(ca,16);}
 			cell++;
-			if(cell>=k.qcols){ a=i+1; break;}
+			if(cell>=bd.qcols){ a=i+1; break;}
 		}
 		for(var i=a;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
@@ -252,7 +245,7 @@ Encode:{
 			else if(ca==='-'){ bd.excell[cell].qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
 			else             { bd.excell[cell].qnum = parseInt(ca,16);}
 			cell++;
-			if(cell>=k.qcols+k.qrows){ a=i+1; break;}
+			if(cell>=bd.qcols+bd.qrows){ a=i+1; break;}
 		}
 
 		this.outbstr = bstr.substr(a);
@@ -286,13 +279,13 @@ Encode:{
 		if(count>0){ cm += (count+15).toString(36);}
 
 		// 盤面外側の数字部分のエンコード
-		for(var c=0;c<k.qcols;c++){
+		for(var c=0;c<bd.qcols;c++){
 			var num = bd.excell[c].qdir;
 			if     (num<  0){ cm += ".";}
 			else if(num< 16){ cm += num.toString(16);}
 			else if(num<256){ cm += ("-"+num.toString(16));}
 		}
-		for(var c=k.qcols;c<k.qcols+k.qrows;c++){
+		for(var c=bd.qcols;c<bd.qcols+bd.qrows;c++){
 			var num = bd.excell[c].qnum;
 			if     (num<  0){ cm += ".";}
 			else if(num< 16){ cm += num.toString(16);}

@@ -3,25 +3,10 @@
 //
 pzprv3.custom.kurodoko = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 9;
-		this.qrows = 9;
-
-		this.isInputHatena   = true;
-		this.BlackCell       = true;
-		this.NumberIsWhite   = true;
-		this.RBBlackCell     = true;
-		this.checkWhiteCell  = true;
-
-		this.floatbgcolor = "rgb(127, 191, 0)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	RBBlackCell : true,
+
 	mousedown : function(){
 		if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
 		else if(k.editmode){ this.inputqnum();}
@@ -46,9 +31,18 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 9,
+	qrows : 9,
+
+	numberIsWhite : true,
+
 	nummaxfunc : function(cc){
-		return k.qcols+k.qrows-1;
+		return this.qcols+this.qrows-1;
 	}
+},
+
+AreaManager:{
+	checkWhiteCell : true
 },
 
 Menu:{
@@ -61,6 +55,8 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	hideHatena : true,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_DLIGHT;
 		this.bcolor = this.bcolor_GREEN;

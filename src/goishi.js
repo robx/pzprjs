@@ -3,19 +3,6 @@
 //
 pzprv3.custom.goishi = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 10;
-		this.qrows = 10;
-
-		this.isAnsNumber     = true;
-
-		this.floatbgcolor = "rgb(96, 96, 96)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -264,7 +251,7 @@ Encode:{
 					c++;
 				}
 			}
-			if(c>=k.qcols*k.qrows){ break;}
+			if(c>=bd.qcols*bd.qrows){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},

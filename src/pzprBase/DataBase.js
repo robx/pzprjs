@@ -19,9 +19,9 @@ pzprv3.createCoreClass('ProblemData', '',
 	},
 	setnewData : function(id){
 		this.id = id;
-		this.pid = k.puzzleid;
-		this.col = k.qcols;
-		this.row = k.qrows;
+		this.pid = bd.puzzleid;
+		this.col = bd.qcols;
+		this.row = bd.qrows;
 		this.hard = 0;
 		this.pdata = fio.fileencode(fio.PZPH);
 		this.time = (tm.now()/1000)|0;

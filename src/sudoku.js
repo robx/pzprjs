@@ -3,24 +3,6 @@
 //
 pzprv3.custom.sudoku = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 9;
-		this.qrows = 9;
-
-		this.isDispHatena    = true;
-		this.isInputHatena   = true;
-		this.isAnsNumber     = true;
-
-		this.ispzprv3ONLY    = true;
-		this.isKanpenExist   = true;
-
-		this.floatbgcolor = "rgb(64, 64, 64)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){ this.inputqnum();}
@@ -58,8 +40,11 @@ KeyPopup:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 9,
+	qrows : 9,
+
 	nummaxfunc : function(cc){
-		return Math.max(k.qcols,k.qrows);
+		return Math.max(this.qcols,this.qrows);
 	}
 },
 
@@ -118,7 +103,7 @@ Graphic:{
 
 		var lw = this.lw, lm = this.lm;
 
-		var max=k.qcols;
+		var max=bd.qcols;
 		var block=((Math.sqrt(max)+0.1)|0);
 		var headers = ["bbx_", "bby_"];
 
@@ -154,7 +139,7 @@ Encode:{
 		fio.decodeCellQnum_kanpen();
 	},
 	encodeKanpen : function(){
-		this.outsize = [k.qcols].join('/');
+		this.outsize = [bd.qcols].join('/');
 
 		fio.encodeCellQnum_kanpen();
 	}
@@ -166,7 +151,7 @@ FileIO:{
 		this.decodeCellAnumsub();
 	},
 	encodeData : function(){
-		this.sizestr = [k.qcols].join("/");
+		this.sizestr = [bd.qcols].join("/");
 
 		this.encodeCellQnum();
 		this.encodeCellAnumsub();
@@ -177,7 +162,7 @@ FileIO:{
 		this.decodeCellAnum_kanpen();
 	},
 	kanpenSave : function(){
-		this.sizestr = [k.qcols].join("/");
+		this.sizestr = [bd.qcols].join("/");
 
 		this.encodeCellQnum_kanpen();
 		this.encodeCellAnum_kanpen();
@@ -207,7 +192,7 @@ AnsCheck:{
 
 	checkRoomNumber : function(){
 		var result = true;
-		var max=k.qcols;
+		var max=bd.qcols;
 		var blk=((Math.sqrt(max)+0.1)|0);
 		for(var i=0;i<max;i++){
 			var clist = bd.cellinside(((i%blk)*blk)*2+1, (((i/blk)|0)*blk)*2+1, ((i%blk+1)*blk-1)*2+1, (((i/blk+1)|0)*blk-1)*2+1);

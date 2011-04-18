@@ -3,26 +3,6 @@
 //
 pzprv3.custom.icebarn = {
 //---------------------------------------------------------
-// フラグ
-Flags:{
-	setting : function(pid){
-		this.qcols = 8;
-		this.qrows = 8;
-
-		this.irowake  = 1;
-		this.isborder = 2;
-
-		this.isLineCross     = true;
-		this.isCenterLine    = true;
-
-		this.bdmargin       = 1.00;
-		this.bdmargin_image = 1.00;
-
-		this.floatbgcolor = "rgb(0, 0, 127)";
-	}
-},
-
-//---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
@@ -104,6 +84,11 @@ MouseEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
+	qcols : 8,
+	qrows : 8,
+
+	isborder : 2,
+
 	arrowin  : 0,
 	arrowout : 1,
 
@@ -191,6 +176,11 @@ Operation:{
 	}
 },
 
+LineManager:{
+	isCenterLine : true,
+	isLineCross  : true
+},
+
 MenuExec:{
 	adjustBoardData : function(key,d){
 		this.adjustBorderArrow(key,d);
@@ -209,6 +199,11 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	bdmargin       : 1.00,
+	bdmargin_image : 1.00,
+
+	irowake : 1,
+
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.linecolor = this.linecolor_LIGHT;
@@ -416,9 +411,9 @@ Encode:{
 			if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, ((num&1)?k.UP:k.DN)); id+=((num>>1)+1);}
 			else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 			else{ id++;}
-			if(id>=(k.qcols-1)*k.qrows){ a=i+1; break;}
+			if(id>=(bd.qcols-1)*bd.qrows){ a=i+1; break;}
 		}
-		id=(k.qcols-1)*k.qrows;
+		id=(bd.qcols-1)*bd.qrows;
 		for(var i=a;i<barray[2].length;i++){
 			var ca = barray[2].charAt(i);
 			if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, ((num&1)?k.LT:k.RT)); id+=((num>>1)+1);}
