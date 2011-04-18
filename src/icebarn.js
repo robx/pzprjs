@@ -68,11 +68,10 @@ MouseEvent:{
 		var id = this.getnb(this.prevPos, pos);
 		if(id!==null && !this.ismousedown){
 			var dir = this.getdir(this.prevPos, pos);
-			var val = ((dir===k.UP||dir===k.LT)?1:2);
 
 			if(id<bd.bdinside){
-				if(this.inputData===null){ this.inputData=((bd.getArrow(id)!==val)?1:0);}
-				bd.setArrow(id, ((this.inputData===1)?val:0));
+				if(this.inputData===null){ this.inputData=((bd.getArrow(id)!==dir)?1:0);}
+				bd.setArrow(id, ((this.inputData===1)?dir:0));
 			}
 			else{
 				if(this.inputData===null){ this.inputarrow_inout(id,dir);}
@@ -83,24 +82,12 @@ MouseEvent:{
 	},
 	inputarrow_inout : function(id,dir){
 		val = this.checkinout(id,dir), old_id=null;
-		if     (val===1){ old_id = bd.arrowin;  this.inputarrowin(id);}
-		else if(val===2){ old_id = bd.arrowout; this.inputarrowout(id);}
+		if     (val===1){ old_id = bd.arrowin;  bd.inputarrowin(id);}
+		else if(val===2){ old_id = bd.arrowout; bd.inputarrowout(id);}
 		if(old_id!==null){
 			pc.paintBorder(old_id);
 			this.mousereset();
 		}
-	},
-	inputarrowin : function(id){
-		var old_in=bd.arrowin, old_out=bd.arrowout;
-		if(old_out==id){ bd.setarrowout(old_in);}
-		else{ bd.setArrow(old_in, 0);}
-		bd.setarrowin(id);
-	},
-	inputarrowout : function(id){
-		var old_in=bd.arrowin, old_out=bd.arrowout;
-		if(old_in==id){ bd.setarrowin(old_out);}
-		else{ bd.setArrow(old_out, 0);}
-		bd.setarrowout(id);
 	},
 	/* 0:どちらでもない 1:IN 2:OUT */
 	checkinout : function(id,dir){
@@ -129,41 +116,53 @@ Board:{
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
 
+		this.disableInfo();
 		if(col>=3){
-			this.arrowin  = this.bnum(this.minbx+1, this.minby);
-			this.arrowout = this.bnum(this.minbx+5, this.minby);
+			this.inputarrowin (this.bnum(this.minbx+1, this.minby));
+			this.inputarrowout(this.bnum(this.minbx+5, this.minby));
 		}
 		else{
-			this.arrowin  = this.bnum(1, this.minby);
-			this.arrowout = this.bnum(1, this.maxby);
+			this.inputarrowin (this.bnum(1, this.minby));
+			this.inputarrowout(this.bnum(1, this.maxby));
 		}
-	},
-	resetInfo : function(){
-		this.SuperFunc.resetInfo.call(this);
-
-		this.disableInfo();
-		for(var i=this.bdinside;i<this.bdmax;i++){ this.border[i].ques=0;}
-		this.setarrowin (this.arrowin);
-		this.setarrowout(this.arrowout);
 		this.enableInfo();
 	},
 
-	getArrow : function(id){ return this.QuB(id); },
-	setArrow : function(id,val){ if(id!==null){ this.sQuB(id,val);}},
-	isArrow  : function(id){ return (this.QuB(id)>0);},
+	getArrow : function(id){ return this.DiB(id); },
+	setArrow : function(id,val){ if(id!==null && !!this.border[id]){ this.sDiB(id,val);}},
+	isArrow  : function(id){ return (this.DiB(id)>0);},
+
+	inputarrowin : function(id){
+		var old_in=this.arrowin, old_out=this.arrowout;
+		if(old_out==id){ this.setarrowout(old_in);}
+		else{ this.setArrow(old_in, 0);}
+		this.setarrowin(id);
+	},
+	inputarrowout : function(id){
+		var old_in=this.arrowin, old_out=this.arrowout;
+		if(old_in==id){ this.setarrowin(old_out);}
+		else{ this.setArrow(old_out, 0);}
+		this.setarrowout(id);
+	},
 
 	setarrowin : function(id){
 		if(!isNaN(id)){
 			um.addOpe(k.OTHER, 'in', 0, this.arrowin, id);
 			this.arrowin = id;
-			this.setArrow(id, ((this.border[id].bx===this.maxbx||this.border[id].by===this.maxby)?1:2));
+			if     (this.border[id].by===this.maxby){ this.setArrow(id,k.UP);}
+			else if(this.border[id].by===this.minby){ this.setArrow(id,k.DN);}
+			else if(this.border[id].bx===this.maxbx){ this.setArrow(id,k.LT);}
+			else if(this.border[id].bx===this.minbx){ this.setArrow(id,k.RT);}
 		}
 	},
 	setarrowout : function(id){
 		if(!isNaN(id)){
 			um.addOpe(k.OTHER, 'out', 0, this.arrowout, id);
 			this.arrowout = id;
-			this.setArrow(id, ((this.border[id].bx===this.minbx||this.border[id].by===this.minby)?1:2));
+			if     (this.border[id].by===this.minby){ this.setArrow(id,k.UP);}
+			else if(this.border[id].by===this.maxby){ this.setArrow(id,k.DN);}
+			else if(this.border[id].bx===this.minbx){ this.setArrow(id,k.LT);}
+			else if(this.border[id].bx===this.maxbx){ this.setArrow(id,k.RT);}
 		}
 	}
 },
@@ -200,34 +199,11 @@ Operation:{
 
 MenuExec:{
 	adjustBoardData : function(key,d){
-		var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
-		switch(key){
-		case this.FLIPY: // 上下反転
-			for(var id=0;id<bd.bdinside;id++){
-				if((bd.border[id].bx&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
-			}
-			break;
-		case this.FLIPX: // 左右反転
-			for(var id=0;id<bd.bdinside;id++){
-				if((bd.border[id].by&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
-			}
-			break;
-		case this.TURNR: // 右90°反転
-			for(var id=0;id<bd.bdinside;id++){
-				if((bd.border[id].bx&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
-			}
-			break;
-		case this.TURNL: // 左90°反転
-			for(var id=0;id<bd.bdinside;id++){
-				if((bd.border[id].by&1)&&bd.isArrow(id)){ bd.border[id].ques={1:2,2:1}[bd.getArrow(id)]; }
-			}
-			break;
-		}
+		this.adjustBorderArrow(key,d);
 
 		bd.arrowin  = this.adjustBoardObject(key,d,k.BORDER,bd.arrowin);
 		bd.arrowout = this.adjustBoardObject(key,d,k.BORDER,bd.arrowout);
-	},
-	expandborder : function(key){ /* 空関数 */ }
+	}
 },
 
 Menu:{
@@ -257,50 +233,47 @@ Graphic:{
 		this.drawLines();
 		this.drawPekes(1);
 
-		this.drawArrows();
+		this.drawBorderArrows();
 
 		this.drawChassis();
 
 		this.drawInOut();
 	},
 
-	drawArrows : function(){
+	drawBorderArrows : function(){
 		this.vinc('border_arrow', 'crispEdges');
 
 		var idlist = this.range.borders;
-		for(var i=0;i<idlist.length;i++){ this.drawArrow1(idlist[i], bd.isArrow(idlist[i]));}
+		for(var i=0;i<idlist.length;i++){ this.drawBorderArrow1(idlist[i]);}
 	},
-	drawArrow1 : function(id, flag){
-		var vids = ["b_ar_"+id,"b_dt1_"+id,"b_dt2_"+id];
-		if(!flag){ this.vhide(vids); return;}
+	drawBorderArrow1 : function(id){
+		var headers = ["b_ar_","b_tipa_","b_tipb_"]; /* 1つのidでは2方向しかとれないはず */
 
 		var ll = this.cw*0.35;				//LineLength
 		var lw = Math.max(this.cw/36, 1);	//LineWidth
 		var lm = lw/2;						//LineMargin
-		var px=bd.border[id].px, py=bd.border[id].py;
+		var px=bd.border[id].px, py=bd.border[id].py, dir=bd.getArrow(id);
 
-		g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.cellcolor);
-		if(this.vnop(vids[0],this.FILL)){
-			if(bd.border[id].bx&1){ g.fillRect(px-lm, py-ll, lw, ll*2);}
-			if(bd.border[id].by&1){ g.fillRect(px-ll, py-lm, ll*2, lw);}
-		}
+		this.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);
+		if(dir>=1 && dir<=4){
+			g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.cellcolor);
+			if(this.vnop(headers[0]+id,this.FILL)){
+				switch(dir){
+					case k.UP: case k.DN: g.fillRect(px-lm, py-ll, lw, ll*2); break;
+					case k.LT: case k.RT: g.fillRect(px-ll, py-lm, ll*2, lw); break;
+				}
+			}
 
-		if(bd.getArrow(id)===1){
-			if(this.vnop(vids[1],this.FILL)){
-				if(bd.border[id].bx&1){ g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true);}
-				if(bd.border[id].by&1){ g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true);}
+			if(this.vnop(headers[((dir+1)&1)+1]+id,this.FILL)){
+				switch(dir){
+					case k.UP: g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true); break;
+					case k.DN: g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true); break;
+					case k.LT: g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true); break;
+					case k.RT: g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true); break;
+				}
 				g.fill();
 			}
 		}
-		else{ this.vhide(vids[1]);}
-		if(bd.getArrow(id)===2){
-			if(this.vnop(vids[2],this.FILL)){
-				if(bd.border[id].bx&1){ g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true);}
-				if(bd.border[id].by&1){ g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true);}
-				g.fill();
-			}
-		}
-		else{ this.vhide(vids[2]);}
 	},
 	drawInOut : function(){
 		if(bd.arrowin<bd.bdinside || bd.arrowin>=bd.bdmax || bd.arrowout<bd.bdinside || bd.arrowout>=bd.bdmax){ return;}
@@ -325,7 +298,7 @@ Graphic:{
 	repaintParts : function(idlist){
 		for(var i=0;i<idlist.length;i++){
 			if(bd.isArrow(idlist[i])){
-				this.drawArrow1(idlist[i],true);
+				this.drawBorderArrow1(idlist[i],true);
 			}
 		}
 	}
@@ -367,7 +340,7 @@ Encode:{
 			var ca = barray[0].charAt(i);
 			if(ca!=='z'){
 				id += parseInt(ca,36);
-				if(id<bd.bdinside){ bd.setArrow(id,1);}
+				if(id<bd.bdinside){ bd.setArrow(id,(!!(bd.border[id].bx&1)?k.UP:k.LT));}
 				id++;
 			}
 			else{ id+=35;}
@@ -379,15 +352,15 @@ Encode:{
 			var ca = barray[0].charAt(i);
 			if(ca!=='z'){
 				id += parseInt(ca,36);
-				if(id<bd.bdinside){ bd.setArrow(id,2);}
+				if(id<bd.bdinside){ bd.setArrow(id,(!!(bd.border[id].bx&1)?k.DN:k.RT));}
 				id++;
 			}
 			else{ id+=35;}
 			if(id>=bd.bdinside){ break;}
 		}
 
-		bd.setarrowin (parseInt(barray[1])+bd.bdinside);
-		bd.setarrowout(parseInt(barray[2])+bd.bdinside);
+		bd.inputarrowin (parseInt(barray[1])+bd.bdinside);
+		bd.inputarrowout(parseInt(barray[2])+bd.bdinside);
 		bd.enableInfo();
 
 		this.outbstr = "";
@@ -402,7 +375,8 @@ Encode:{
 
 		num=0;
 		for(var id=0;id<bd.bdinside;id++){
-			if(bd.getArrow(id)===1){ cm+=num.toString(36); num=0;}
+			var dir = bd.getArrow(id);
+			if(dir===k.UP||dir===k.LT){ cm+=num.toString(36); num=0;}
 			else{
 				num++;
 				if(num>=35){ cm+="z"; num=0;}
@@ -412,7 +386,8 @@ Encode:{
 
 		num=0;
 		for(var id=0;id<bd.bdinside;id++){
-			if(bd.getArrow(id)===2){ cm+=num.toString(36); num=0;}
+			var dir = bd.getArrow(id);
+			if(dir===k.DN||dir===k.RT){ cm+=num.toString(36); num=0;}
 			else{
 				num++;
 				if(num>=35){ cm+="z"; num=0;}
@@ -444,7 +419,7 @@ Encode:{
 		var id=0;
 		for(var i=a;i<barray[2].length;i++){
 			var ca = barray[2].charAt(i);
-			if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, num%2+1); id+=((num>>1)+1);}
+			if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, ((num&1)?k.UP:k.DN)); id+=((num>>1)+1);}
 			else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 			else{ id++;}
 			if(id>=(k.qcols-1)*k.qrows){ a=i+1; break;}
@@ -452,14 +427,14 @@ Encode:{
 		id=(k.qcols-1)*k.qrows;
 		for(var i=a;i<barray[2].length;i++){
 			var ca = barray[2].charAt(i);
-			if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, num%2+1); id+=((num>>1)+1);}
+			if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.setArrow(id, ((num&1)?k.LT:k.RT)); id+=((num>>1)+1);}
 			else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 			else{ id++;}
 			if(id>=bd.bdinside){ break;}
 		}
 
-		bd.setarrowin (parseInt(barray[0])+bd.bdinside);
-		bd.setarrowout(parseInt(barray[1])+bd.bdinside);
+		bd.inputarrowin (parseInt(barray[0])+bd.bdinside);
+		bd.inputarrowout(parseInt(barray[1])+bd.bdinside);
 		bd.enableInfo();
 
 		this.outbstr = "";
@@ -482,23 +457,23 @@ Encode:{
 		bd.disableInfo();
 		if(barray[1]!=""){
 			var array = barray[1].split("+");
-			for(var i=0;i<array.length;i++){ bd.setArrow(bd.db(array[i]),1);}
+			for(var i=0;i<array.length;i++){ bd.setArrow(bd.db(array[i]),k.UP);}
 		}
 		if(barray[2]!=""){
 			var array = barray[2].split("+");
-			for(var i=0;i<array.length;i++){ bd.setArrow(bd.db(array[i]),2);}
+			for(var i=0;i<array.length;i++){ bd.setArrow(bd.db(array[i]),k.DN);}
 		}
 		if(barray[3]!=""){
 			var array = barray[3].split("+");
-			for(var i=0;i<array.length;i++){ bd.setArrow(bd.rb(array[i]),1);}
+			for(var i=0;i<array.length;i++){ bd.setArrow(bd.rb(array[i]),k.LT);}
 		}
 		if(barray[4]!=""){
 			var array = barray[4].split("+");
-			for(var i=0;i<array.length;i++){ bd.setArrow(bd.rb(array[i]),2);}
+			for(var i=0;i<array.length;i++){ bd.setArrow(bd.rb(array[i]),k.RT);}
 		}
 
-		bd.arrowin  = parseInt(barray[5])+bd.bdinside;
-		bd.arrowout = parseInt(barray[6])+bd.bdinside;
+		bd.inputarrowin (parseInt(barray[5])+bd.bdinside);
+		bd.inputarrowout(parseInt(barray[6])+bd.bdinside);
 		bd.enableInfo();
 
 		this.outbstr = "";
@@ -513,16 +488,16 @@ Encode:{
 		cm += "/";
 
 		var array = [];
-		for(var c=0;c<bd.cellmax;c++){ if(bd.cell[c].by<bd.maxby && bd.getArrow(bd.db(c))==1){ array.push(c);} }
+		for(var c=0;c<bd.cellmax;c++){ if(bd.cell[c].by<bd.maxby && bd.getArrow(bd.db(c))===k.UP){ array.push(c);} }
 		cm += (array.join("+") + "/");
 		array = [];
-		for(var c=0;c<bd.cellmax;c++){ if(bd.cell[c].by<bd.maxby && bd.getArrow(bd.db(c))==2){ array.push(c);} }
+		for(var c=0;c<bd.cellmax;c++){ if(bd.cell[c].by<bd.maxby && bd.getArrow(bd.db(c))===k.DN){ array.push(c);} }
 		cm += (array.join("+") + "/");
 		array = [];
-		for(var c=0;c<bd.cellmax;c++){ if(bd.cell[c].bx<bd.maxbx && bd.getArrow(bd.rb(c))==1){ array.push(c);} }
+		for(var c=0;c<bd.cellmax;c++){ if(bd.cell[c].bx<bd.maxbx && bd.getArrow(bd.rb(c))===k.LT){ array.push(c);} }
 		cm += (array.join("+") + "/");
 		array = [];
-		for(var c=0;c<bd.cellmax;c++){ if(bd.cell[c].bx<bd.maxbx && bd.getArrow(bd.rb(c))==2){ array.push(c);} }
+		for(var c=0;c<bd.cellmax;c++){ if(bd.cell[c].bx<bd.maxbx && bd.getArrow(bd.rb(c))===k.RT){ array.push(c);} }
 		cm += (array.join("+") + "/");
 
 		cm += ((bd.arrowin-bd.bdinside)+"/"+(bd.arrowout-bd.bdinside));
@@ -533,8 +508,10 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		bd.arrowin  = parseInt(this.readLine());
-		bd.arrowout = parseInt(this.readLine());
+		bd.disableInfo();
+		bd.inputarrowin (parseInt(this.readLine()));
+		bd.inputarrowout(parseInt(this.readLine()));
+		bd.enableInfo();
 
 		this.decodeCell( function(obj,ca){
 			if(ca==="1"){ obj.ques = 6;}
@@ -542,8 +519,11 @@ FileIO:{
 		bd.disableInfo();
 		this.decodeBorder( function(obj,ca){
 			if(ca!=="0"){
-				var id = bd.bnum(obj.bx, obj.by);
-				bd.setArrow(id, parseInt(ca));
+				var id = bd.bnum(obj.bx, obj.by), val = parseInt(ca);
+				if(val===1&&!!(obj.bx&1)){ bd.setArrow(id,k.UP);}
+				if(val===2&&!!(obj.bx&1)){ bd.setArrow(id,k.DN);}
+				if(val===1&& !(obj.bx&1)){ bd.setArrow(id,k.LT);}
+				if(val===2&& !(obj.bx&1)){ bd.setArrow(id,k.RT);}
 			}
 		});
 		bd.enableInfo();
@@ -558,10 +538,10 @@ FileIO:{
 			return (obj.ques===6?"1 ":"0 ");
 		});
 		this.encodeBorder( function(obj){
-			var id = bd.bnum(obj.bx, obj.by);
-			if     (bd.getArrow(id)===1){ return "1 ";}
-			else if(bd.getArrow(id)===2){ return "2 ";}
-			else                        { return "0 ";}
+			var id = bd.bnum(obj.bx, obj.by), dir = bd.getArrow(id);
+			if     (dir===k.UP||dir===k.LT){ return "1 ";}
+			else if(dir===k.DN||dir===k.RT){ return "2 ";}
+			else                           { return "0 ";}
 		});
 		this.encodeBorder( function(obj){
 			if     (obj.line===1){ return "1 ";}
@@ -680,8 +660,7 @@ AnsCheck:{
 				if(!bd.isLine(id)){ return 2;}
 				if(bd.arrowout==id){ break;}
 				else if(id===null || id>=bd.bdinside){ return 3;}
-
-				if(((dir==1||dir==3) && bd.getArrow(id)==2) || ((dir==2||dir==4) && bd.getArrow(id)==1)){ return 4;}
+				if(dir===[0,2,1,4,3][bd.getArrow(id)]){ return 4;}
 			}
 		}
 

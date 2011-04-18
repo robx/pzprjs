@@ -128,7 +128,7 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawDotCells(true);
-		this.drawArrowCells();
+		this.drawCellArrows();
 		this.drawHatenas();
 
 		this.drawChassis();

@@ -115,7 +115,7 @@ Graphic:{
 		this.drawGrid();
 		this.drawBorders();
 
-		this.drawArrowCells();
+		this.drawCellArrows();
 		this.drawGoals();
 		this.drawHatenas();
 

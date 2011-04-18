@@ -236,7 +236,7 @@ MenuExec:{
 			var row = ((parseInt(_doc.newboard.row.value))|0);
 			var slap = [0,3,1,2][this.clap];
 
-			if(!(col==1 && (slap==0||slap==3))){
+			if(!!col && !!row && !isNaN(slap) && !(col==1 && (slap==0||slap==3))){
 				if(slap==3){ col--;}
 
 				this.newboard_open('/'+col+'/'+row+'/'+slap);

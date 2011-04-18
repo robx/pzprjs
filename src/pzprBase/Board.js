@@ -116,14 +116,15 @@ pzprv3.createCommonClass('Border', 'BoardPiece',
 	group : 'border',
 
 	// デフォルト値
-	ques : 0,	// 境界線の問題データを保持する(問題境界線 or マイナリズムの不等号)
+	ques : 0,	// 境界線の問題データを保持する(問題境界線)
 	qans : 0,	// 境界線の回答データを保持する(回答境界線)
+	qdir : 0,	// 境界線の問題データを保持する(アイスバーンの矢印/マイナリズムの不等号)
 	qnum :-1,	// 境界線の問題データを保持する(マイナリズムの数字/天体ショーの星)
 	line : 0,	// 線の回答データを保持する(スリリンなどの線もこっち)
 	qsub : 0,	// 境界線の補助データを保持する(1:補助線/2:×)
 	color: "",	// 色分けデータを保持する
 
-	propall : ['ques', 'qans', 'qnum', 'line', 'qsub'],
+	propall : ['ques', 'qans', 'qdir', 'qnum', 'line', 'qsub'],
 	propans : ['qans', 'line', 'qsub'],
 	propsub : ['qsub']
 });
@@ -774,6 +775,7 @@ pzprv3.createCommonClass('Board', '',
 	// sQaB / QaB : bd.setQansBorder() / bd.getQansBorder() 該当するBorderのqansを設定する/返す
 	// sQsB / QsB : bd.setQsubBorder() / bd.getQsubBorder() 該当するBorderのqsubを設定する/返す
 	// sLiB / LiB : bd.setLineBorder() / bd.getLineBorder() 該当するBorderのlineを設定する/返す
+	// sDiB / DiB : bd.setDirecBorder()/ bd.getDirecBorder()該当するBorderのqdirを設定する/返す
 	//---------------------------------------------------------------------------
 	// Border関連Get/Set関数 <- 各Borderが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuB : function(id, num) {
@@ -806,12 +808,17 @@ pzprv3.createCommonClass('Board', '',
 
 		this.lines.setLine(id,(num>0));
 	},
+	sDiB : function(id, num) {
+		um.addOpe(k.BORDER, k.QDIR, id, this.border[id].qdir, num);
+		this.border[id].qdir = num;
+	},
 
 	QuB : function(id){ return this.border[id].ques;},
 	QnB : function(id){ return this.border[id].qnum;},
 	QaB : function(id){ return this.border[id].qans;},
 	QsB : function(id){ return this.border[id].qsub;},
 	LiB : function(id){ return this.border[id].line;},
+	DiB : function(id){ return this.border[id].qdir;},
 
 	//---------------------------------------------------------------------------
 	// sErC / ErC : bd.setErrorCell()   / bd.getErrorCell()   該当するCellのerrorを設定する/返す

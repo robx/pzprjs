@@ -73,33 +73,24 @@ MouseEvent:{
 		var id = this.getnb(this.prevPos, pos);
 		if(id!==null && !this.ismousedown){
 			var dir = this.getdir(this.prevPos, pos);
-			var val = ((dir===k.UP||dir===k.LT)?1:2);
 
-			if(id>=bd.bdinside){ this.inputarrow_inout(id,dir);}
+			if(id<bd.bdinside){
+			}
+			else{
+				this.inputarrow_inout(id,dir);
+			}
 			pc.paintBorder(id);
 		}
 		this.prevPos = pos;
 	},
 	inputarrow_inout : function(id,dir){
 		val = this.checkinout(id,dir), old_id=null;
-		if     (val===1){ old_id = bd.arrowin;  this.inputarrowin(id);}
-		else if(val===2){ old_id = bd.arrowout; this.inputarrowout(id);}
+		if     (val===1){ old_id = bd.arrowin;  bd.inputarrowin(id);}
+		else if(val===2){ old_id = bd.arrowout; bd.inputarrowout(id);}
 		if(old_id!==null){
 			pc.paintBorder(old_id);
 			this.mousereset();
 		}
-	},
-	inputarrowin : function(id){
-		var old_in=bd.arrowin, old_out=bd.arrowout;
-		if(old_out==id){ bd.setarrowout(old_in);}
-		else{ bd.setArrow(old_in, 0);}
-		bd.setarrowin(id);
-	},
-	inputarrowout : function(id){
-		var old_in=bd.arrowin, old_out=bd.arrowout;
-		if(old_in==id){ bd.setarrowin(old_out);}
-		else{ bd.setArrow(old_out, 0);}
-		bd.setarrowout(id);
 	},
 	/* 0:どちらでもない 1:IN 2:OUT */
 	checkinout : function(id,dir){
@@ -148,41 +139,53 @@ Board:{
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
 
+		this.disableInfo();
 		if(col>=3){
-			this.arrowin  = this.bnum(this.minbx+1, this.minby);
-			this.arrowout = this.bnum(this.minbx+5, this.minby);
+			this.inputarrowin (this.bnum(this.minbx+1, this.minby));
+			this.inputarrowout(this.bnum(this.minbx+5, this.minby));
 		}
 		else{
-			this.arrowin  = this.bnum(1, this.minby);
-			this.arrowout = this.bnum(1, this.maxby);
+			this.inputarrowin (this.bnum(1, this.minby));
+			this.inputarrowout(this.bnum(1, this.maxby));
 		}
-	},
-	resetInfo : function(){
-		this.SuperFunc.resetInfo.call(this);
-
-		this.disableInfo();
-		for(var i=this.bdinside;i<this.bdmax;i++){ this.border[i].ques=0;}
-		this.setarrowin (this.arrowin);
-		this.setarrowout(this.arrowout);
 		this.enableInfo();
 	},
 
-	getArrow : function(id){ return this.QuB(id); },
-	setArrow : function(id,val){ if(id!==null){ this.sQuB(id,val);}},
-	isArrow  : function(id){ return (this.QuB(id)>0);},
+	getArrow : function(id){ return this.DiB(id); },
+	setArrow : function(id,val){ if(id!==null && !!this.border[id]){ this.sDiB(id,val);}},
+	isArrow  : function(id){ return (this.DiB(id)>0);},
+
+	inputarrowin : function(id){
+		var old_in=this.arrowin, old_out=this.arrowout;
+		if(old_out==id){ this.setarrowout(old_in);}
+		else{ this.setArrow(old_in, 0);}
+		this.setarrowin(id);
+	},
+	inputarrowout : function(id){
+		var old_in=this.arrowin, old_out=this.arrowout;
+		if(old_in==id){ this.setarrowin(old_out);}
+		else{ this.setArrow(old_out, 0);}
+		this.setarrowout(id);
+	},
 
 	setarrowin : function(id){
 		if(!isNaN(id)){
 			um.addOpe(k.OTHER, 'in', 0, this.arrowin, id);
 			this.arrowin = id;
-			this.setArrow(id, ((this.border[id].bx===this.maxbx||this.border[id].by===this.maxby)?1:2));
+			if     (this.border[id].by===this.maxby){ this.setArrow(id,k.UP);}
+			else if(this.border[id].by===this.minby){ this.setArrow(id,k.DN);}
+			else if(this.border[id].bx===this.maxbx){ this.setArrow(id,k.LT);}
+			else if(this.border[id].bx===this.minbx){ this.setArrow(id,k.RT);}
 		}
 	},
 	setarrowout : function(id){
 		if(!isNaN(id)){
 			um.addOpe(k.OTHER, 'out', 0, this.arrowout, id);
 			this.arrowout = id;
-			this.setArrow(id, ((this.border[id].bx===this.minbx||this.border[id].by===this.minby)?1:2));
+			if     (this.border[id].by===this.minby){ this.setArrow(id,k.UP);}
+			else if(this.border[id].by===this.maxby){ this.setArrow(id,k.DN);}
+			else if(this.border[id].bx===this.minbx){ this.setArrow(id,k.LT);}
+			else if(this.border[id].bx===this.maxbx){ this.setArrow(id,k.RT);}
 		}
 	}
 },
@@ -219,10 +222,11 @@ Operation:{
 
 MenuExec:{
 	adjustBoardData : function(key,d){
+		this.adjustBorderArrow(key,d);
+
 		bd.arrowin  = this.adjustBoardObject(key,d,k.BORDER,bd.arrowin);
 		bd.arrowout = this.adjustBoardObject(key,d,k.BORDER,bd.arrowout);
-	},
-	expandborder : function(key){ /* 空関数 */ }
+	}
 },
 
 Menu:{
@@ -255,7 +259,7 @@ Graphic:{
 
 		this.drawNumbers();
 
-		this.drawArrows();
+		this.drawBorderArrows();
 
 		this.drawChassis();
 
@@ -265,43 +269,40 @@ Graphic:{
 	},
 
 	// IN/OUTの矢印用に必要ですね。。
-	drawArrows : function(){
+	drawBorderArrows : function(){
 		this.vinc('border_arrow', 'crispEdges');
 
 		var idlist = this.range.borders;
-		for(var i=0;i<idlist.length;i++){ this.drawArrow1(idlist[i], bd.isArrow(idlist[i]));}
+		for(var i=0;i<idlist.length;i++){ this.drawBorderArrow1(idlist[i]);}
 	},
-	drawArrow1 : function(id, flag){
-		var vids = ["b_ar_"+id,"b_dt1_"+id,"b_dt2_"+id];
-		if(!flag){ this.vhide(vids); return;}
+	drawBorderArrow1 : function(id){
+		var headers = ["b_ar_","b_tipa_","b_tipb_"]; /* 1つのidでは2方向しかとれないはず */
 
 		var ll = this.cw*0.35;				//LineLength
 		var lw = Math.max(this.cw/36, 1);	//LineWidth
 		var lm = lw/2;						//LineMargin
-		var px=bd.border[id].px, py=bd.border[id].py;
+		var px=bd.border[id].px, py=bd.border[id].py, dir=bd.getArrow(id);
 
-		g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.cellcolor);
-		if(this.vnop(vids[0],this.FILL)){
-			if(bd.border[id].bx&1){ g.fillRect(px-lm, py-ll, lw, ll*2);}
-			if(bd.border[id].by&1){ g.fillRect(px-ll, py-lm, ll*2, lw);}
-		}
+		this.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);
+		if(dir>=1 && dir<=4){
+			g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.cellcolor);
+			if(this.vnop(headers[0]+id,this.FILL)){
+				switch(dir){
+					case k.UP: case k.DN: g.fillRect(px-lm, py-ll, lw, ll*2); break;
+					case k.LT: case k.RT: g.fillRect(px-ll, py-lm, ll*2, lw); break;
+				}
+			}
 
-		if(bd.getArrow(id)===1){
-			if(this.vnop(vids[1],this.FILL)){
-				if(bd.border[id].bx&1){ g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true);}
-				if(bd.border[id].by&1){ g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true);}
+			if(this.vnop(headers[((dir+1)&1)+1]+id,this.FILL)){
+				switch(dir){
+					case k.UP: g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true); break;
+					case k.DN: g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true); break;
+					case k.LT: g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true); break;
+					case k.RT: g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true); break;
+				}
 				g.fill();
 			}
 		}
-		else{ this.vhide(vids[1]);}
-		if(bd.getArrow(id)===2){
-			if(this.vnop(vids[2],this.FILL)){
-				if(bd.border[id].bx&1){ g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true);}
-				if(bd.border[id].by&1){ g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true);}
-				g.fill();
-			}
-		}
-		else{ this.vhide(vids[2]);}
 	},
 	drawInOut : function(){
 		if(bd.arrowin<bd.bdinside || bd.arrowin>=bd.bdmax || bd.arrowout<bd.bdinside || bd.arrowout>=bd.bdmax){ return;}
@@ -326,7 +327,7 @@ Graphic:{
 	repaintParts : function(idlist){
 		for(var i=0;i<idlist.length;i++){
 			if(idlist[i]===bd.arrowin || idlist[i]===bd.arrowout){
-				this.drawArrow1(idlist[i],true);
+				this.drawBorderArrow1(idlist[i],true);
 			}
 		}
 	}
@@ -384,8 +385,8 @@ Encode:{
 		var barray = this.outbstr.substr(1).split("/");
 
 		bd.disableInfo();
-		bd.setarrowin (parseInt(barray[0])+bd.bdinside);
-		bd.setarrowout(parseInt(barray[1])+bd.bdinside);
+		bd.inputarrowin (parseInt(barray[0])+bd.bdinside);
+		bd.inputarrowout(parseInt(barray[1])+bd.bdinside);
 		bd.enableInfo();
 
 		this.outbstr = "";
@@ -397,8 +398,8 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		bd.arrowin  = parseInt(this.readLine());
-		bd.arrowout = parseInt(this.readLine());
+		bd.inputarrowin (parseInt(this.readLine()));
+		bd.inputarrowout(parseInt(this.readLine()));
 
 		var pzltype = this.readLine();
 		if(k.puzzleid==='icelom'){

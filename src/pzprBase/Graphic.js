@@ -535,9 +535,9 @@ pzprv3.createCommonClass('Graphic', '',
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawArrowCells() 矢印だけをCanvasに書き込む
+	// pc.drawCellArrows() 矢印だけをCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawArrowCells : function(isrect){
+	drawCellArrows : function(){
 		this.vinc('cell_arrow', 'auto');
 
 		var headers = ["c_arup_", "c_ardn_", "c_arlt_", "c_arrt_"];

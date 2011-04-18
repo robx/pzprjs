@@ -556,7 +556,7 @@ pzprv3.createCoreClass('PBase', '',
 			this.dec.fstr = '';
 		}
 		// URLからパズルのデータを読み出す
-		else if(!!this.dec.cols){
+		else if(!!this.dec.cols && !!this.dec.rows){
 			enc.pzlinput();
 		}
 		// 何もないとき

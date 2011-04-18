@@ -48,21 +48,23 @@ pzprv3.createCommonClass('Encode', '',
 
 		bd.initBoardSize(uri.cols, uri.rows);
 
-		this.pflag = uri.pflag;
-		switch(uri.type){
-		case this.PZPRV3: case this.PZPRAPP: case this.PZPRV3E:
-			this.outbstr = uri.bstr;
-			this.pzlimport(uri.type);
-			break;
-		case this.KANPEN:
-			fio.lineseek = 0;
-			fio.dataarray = uri.bstr.replace(/_/g, " ").split("/");
-			this.decodeKanpen();
-			break;
-		case this.HEYAAPP:
-			this.outbstr = uri.bstr;
-			this.decodeHeyaApp();
-			break;
+		if(!!uri.bstr){
+			this.pflag = uri.pflag;
+			switch(uri.type){
+			case this.PZPRV3: case this.PZPRAPP: case this.PZPRV3E:
+				this.outbstr = uri.bstr;
+				this.pzlimport(uri.type);
+				break;
+			case this.KANPEN:
+				fio.lineseek = 0;
+				fio.dataarray = uri.bstr.replace(/_/g, " ").split("/");
+				this.decodeKanpen();
+				break;
+			case this.HEYAAPP:
+				this.outbstr = uri.bstr;
+				this.decodeHeyaApp();
+				break;
+			}
 		}
 
 		bd.resetInfo();

@@ -167,7 +167,7 @@ Graphic:{
 		this.drawDashedGrid();
 		this.drawBorders();
 
-		this.drawArrowCells();
+		this.drawCellArrows();
 		this.drawCircles();
 		this.drawHatenas();
 
