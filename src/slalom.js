@@ -141,10 +141,15 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+	enableplay : true,
+	moveTarget : function(ca){
+		if(k.editmode && ca!='x'){ return this.moveTCell(ca);}
+		return false;
+	},
+
 	keyinput : function(ca){
 		if(ca=='x'){ pc.drawNumbersOnGate(true); return;}
-		if(k.playmode){ return;}
-		if(this.moveTCell(ca)){ return;}
 		this.key_inputqnum_slalom(ca);
 	},
 	key_inputqnum_slalom : function(ca){
@@ -180,7 +185,6 @@ KeyEvent:{
 
 KeyPopup:{
 	enablemake : true,
-	kpinput : function(ca){ kc.key_inputqnum_slalom(ca);},
 	generate : function(mode,type){
 		this.imgCR = [4,1];
 		this.inputcol('image','knumq','q',[0,0]);

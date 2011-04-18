@@ -55,9 +55,9 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+
 	keyinput : function(ca){
-		if(k.playmode){ return;}
-		if(this.moveTCell(ca)){ return;}
 		this.inputnumber51(ca,{2:(k.qcols-(tc.pos.x>>1)-1), 4:(k.qrows-(tc.pos.y>>1)-1)});
 	}
 },

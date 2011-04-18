@@ -298,7 +298,7 @@ pzprv3.createCommonClass('MouseEvent', '',
 		var cc = this.cellid();
 		if(cc===null || cc===this.mouseCell){ return;}
 
-		if(cc===tc.getTCC() || k.inputQnumDirect){
+		if(cc===tc.getTCC()){
 			if(k.editmode && k.roomNumber){ cc = bd.areas.getTopOfRoomByCell(cc);}
 
 			var type=0;

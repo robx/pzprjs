@@ -28,8 +28,10 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+	enableplay : true,
+
 	keyinput : function(ca){
-		if(this.moveTCell(ca)){ return;}
 		this.key_sukoro(ca);
 	},
 	key_sukoro : function(ca){
@@ -48,7 +50,6 @@ KeyEvent:{
 KeyPopup:{
 	enablemake : true,
 	enableplay : true,
-	kpinput : function(ca){ kc.key_sukoro(ca);},
 	generate : function(mode,type){
 		this.inputcol('num','knum1','1','1');
 		this.inputcol('num','knum2','2','2');

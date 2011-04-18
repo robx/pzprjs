@@ -78,8 +78,11 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+	enableplay : true,
+	moveTarget : function(ca){ return this.moveTBorder(ca);},
+
 	keyinput : function(ca){
-		if(this.moveTBorder(ca)){ return;}
 		this.key_inputqnum_bosanowa(ca);
 	},
 	key_inputqnum_bosanowa : function(ca){

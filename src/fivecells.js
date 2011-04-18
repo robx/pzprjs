@@ -40,10 +40,14 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+
 	keyinput : function(ca){
-		if(k.playmode){ return;}
-		else if(this.moveTCell(ca)){ return;}
-		else if(ca=='w'){
+		if(ca=='w'){ this.key_inputvalid(ca);}
+		else{ this.key_inputqnum(ca);}
+	},
+	key_inputvalid : function(){
+		if(ca=='w'){
 			var cc = tc.getTCC();
 			if(cc!==null){
 				bd.sQuC(cc,(bd.QuC(cc)!==7?7:0));
@@ -51,7 +55,6 @@ KeyEvent:{
 				pc.paintCell(cc);
 			}
 		}
-		else{ this.key_inputqnum(ca);}
 	}
 },
 

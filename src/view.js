@@ -29,8 +29,10 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+	enableplay : true,
+
 	keyinput : function(ca){
-		if(this.moveTCell(ca)){ return;}
 		this.key_view(ca);
 	},
 	key_view : function(ca){
@@ -47,10 +49,6 @@ KeyEvent:{
 },
 
 KeyPopup:{
-	kpinput : function(ca){
-		kc.key_view(ca);
-	},
-
 	enablemake : true,
 	enableplay : true,
 	generate : function(mode,type){

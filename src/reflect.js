@@ -46,9 +46,9 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+
 	keyinput : function(ca){
-		if(k.playmode){ return;}
-		if(this.moveTCell(ca)){ return;}
 		if(this.key_inputLineParts(ca)){ return;}
 		this.key_inputqnum(ca);
 	},
@@ -71,10 +71,6 @@ KeyEvent:{
 
 KeyPopup:{
 	enablemake : true,
-	kpinput : function(ca){
-		if(kc.key_inputLineParts(ca)){ return;}
-		kc.key_inputqnum(ca);
-	},
 	generate : function(mode,type){
 		this.imgCR = [4,1];
 		this.inputcol('image','knumq','q',[0,0]);

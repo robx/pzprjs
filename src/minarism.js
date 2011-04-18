@@ -84,10 +84,15 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
-	keyinput : function(ca){
-		if     (k.editmode && this.moveTBorder(ca)){ return;}
-		else if(k.playmode && this.moveTCell(ca)){ return;}
+	enablemake : true,
+	enableplay : true,
+	moveTarget : function(ca){
+		if     (k.editmode){ return this.moveTBorder(ca);}
+		else if(k.playmode){ return this.moveTCell(ca);}
+		return false;
+	},
 
+	keyinput : function(ca){
 		if     (k.editmode){ this.key_inputmark(ca);}
 		else if(k.playmode){ this.key_inputqnum(ca);}
 	},

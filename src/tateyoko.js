@@ -91,9 +91,9 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+
 	keyinput : function(ca){
-		if(k.playmode){ return;}
-		if(this.moveTCell(ca)){ return;}
 		if(this.key_inputqnum_tateyoko(ca)){ return;}
 		this.key_inputqnum(ca);
 	},
@@ -118,10 +118,6 @@ KeyEvent:{
 
 KeyPopup:{
 	enablemake : true,
-	kpinput : function(ca){
-		if(kc.key_inputqnum_tateyoko(ca)){ return;}
-		kc.key_inputqnum(ca);
-	},
 	generate : function(mode,type){
 		this.inputcol('num','knumq1','q1','■');
 		this.inputcol('num','knumq2','q2','□');

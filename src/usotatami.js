@@ -39,6 +39,10 @@ MouseEvent:{
 
 //---------------------------------------------------------
 // キーボード入力系
+KeyEvent:{
+	enablemake : true
+},
+
 KeyPopup:{
 	paneltype  : 10,
 	enablemake : true

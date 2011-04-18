@@ -57,10 +57,10 @@ MouseEvent:{
 
 //---------------------------------------------------------
 // キーボード入力系
-KeyPopup:{
+KeyEvent:{
+	enablemake : true,
+
 	keyinput : function(ca){
-		if(k.playmode){ return;}
-		if(this.moveTCell(ca)){ return;}
 		this.key_inputqnum_kaero(ca);
 	},
 	key_inputqnum_kaero : function(ca){

@@ -15,7 +15,6 @@ Flags:{
 		this.hasroom         = true;
 		this.isDispHatena    = true;
 		this.isInputHatena   = true;
-		this.inputQnumDirect = true;
 		this.numberAsObject  = true;
 
 		this.floatbgcolor = "rgb(96, 96, 96)";
@@ -69,7 +68,7 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
-	keyinput : function(ca){ /* 空関数 */ }
+	enablemake : true
 },
 
 //---------------------------------------------------------
@@ -125,6 +124,8 @@ Graphic:{
 		this.drawBorderQsubs();
 
 		this.drawChassis();
+
+		this.drawTarget();
 	},
 
 	// numobj:？表示用 numobj2:画像表示用

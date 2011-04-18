@@ -74,9 +74,10 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+	moveTarget : function(ca){ return this.moveTBorder(ca);},
+
 	keyinput : function(ca){
-		if(k.playmode){ return;}
-		if(this.moveTBorder(ca)){ return;}
 		this.key_wagiri(ca);
 	},
 	key_wagiri : function(ca){

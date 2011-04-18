@@ -40,10 +40,8 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
-	keyinput : function(ca){
-		if(this.moveTCell(ca)){ return;}
-		this.key_inputqnum(ca);
-	}
+	enablemake : true,
+	enableplay : true
 },
 
 KeyPopup:{

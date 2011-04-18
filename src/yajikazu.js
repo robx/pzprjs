@@ -44,10 +44,15 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+	enableplay : true,
+	moveTarget : function(ca){
+		if(this.isSHIFT){ return false;}
+		return this.moveTCell(ca);
+	},
+
 	keyinput : function(ca){
-		if(k.playmode){ return;}
 		if(this.key_inputdirec(ca)){ return;}
-		if(this.moveTCell(ca)){ return;}
 		this.key_inputqnum(ca);
 	}
 },

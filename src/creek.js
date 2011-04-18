@@ -35,10 +35,18 @@ MouseEvent:{
 
 //---------------------------------------------------------
 // キーボード入力系
+KeyEvent:{
+	enablemake : true,
+	moveTarget : function(ca){ return this.moveTCross(ca);},
+
+	keyinput : function(ca){
+		this.key_inputcross(ca);
+	}
+},
+
 KeyPopup:{
 	paneltype  : 10,
-	enablemake : true,
-	kpinput : function(ca){ kc.key_inputcross(ca);}
+	enablemake : true
 },
 
 TargetCursor:{

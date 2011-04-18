@@ -30,7 +30,6 @@ pzprv3.createCommonClass('Flags', '',
 		this.dispzero       =	// 0を表示するかどうか
 		this.isDispHatena   =	// qnumが-2のときに？を表示する
 		this.isInputHatena  =	// ？か否かに関わらずqnum==-2を入力できる
-		this.isQnumDirect   =	// TCellを使わずにqnumを入力する
 		this.isAnsNumber    =	// 回答に数字を入力するパズル
 		this.NumberWithMB   =	// 回答の数字と○×が入るパズル
 		this.linkNumber     =	// 数字がひとつながりになるパズル

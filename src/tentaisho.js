@@ -109,7 +109,21 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
-	keyinput : function(ca){ /* 空関数 */ }
+	enablemake : true,
+	moveTarget : function(ca){ return this.moveTBorder(ca); },
+
+	keyinput : function(ca){
+		this.key_inputstar(ca);
+	},
+	key_inputstar : function(ca){
+		var pos = tc.getTCP(), id = bd.snum(pos.x, pos.y);
+		if(id!==null){
+			if     (ca=='1'){ bd.setStar(id,1);}
+			else if(ca=='2'){ bd.setStar(id,2);}
+			else if(ca==' '||ca=='-'||ca=='0'||ca=='3'){ bd.setStar(id,0);}
+			pc.paintPos(pos);
+		}
+	}
 },
 
 //---------------------------------------------------------
@@ -286,6 +300,8 @@ Graphic:{
 		this.drawStars();
 
 		this.drawChassis();
+
+		this.drawTarget_tentaisho();
 	},
 
 	drawBorderAnswers : function(){
@@ -338,6 +354,10 @@ Graphic:{
 			}
 			else{ this.vhide(headers[1]+id);}
 		}
+	},
+
+	drawTarget_tentaisho : function(){
+		this.drawCursor(false,k.editmode);
 	}
 },
 

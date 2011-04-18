@@ -12,8 +12,12 @@ pzprv3.createCommonClass('KeyEvent', '',
 		this.keyreset();
 	},
 
+	enablemake : false,
+	enableplay : false,
+
 	//---------------------------------------------------------------------------
-	// kc.keyreset() キーボード入力に関する情報を初期化する
+	// kc.keyreset()  キーボード入力に関する情報を初期化する
+	// kc.isenabled() 現在のモードでキー入力が有効か判定する
 	//---------------------------------------------------------------------------
 	keyreset : function(){
 		this.isCTRL  = false;
@@ -29,6 +33,9 @@ pzprv3.createCommonClass('KeyEvent', '',
 		this.keyPressed = false;
 		this.prev = null;
 		this.ca = '';
+	},
+	isenabled : function(){
+		return ((k.editmode&&this.enablemake)||(k.playmode&&this.enableplay));
 	},
 
 	//---------------------------------------------------------------------------
@@ -60,7 +67,7 @@ pzprv3.createCommonClass('KeyEvent', '',
 			this.tcMoved = false;
 			if(!this.isZ){ bd.errclear();}
 
-			if(!this.keydown_common(e)){
+			if(!this.keydown_common(e) && this.isenabled() && !this.moveTarget(this.ca)){
 				if(this.ca){ this.keyinput(this.ca);}	// 各パズルのルーチンへ
 				this.keyPressed = true;
 			}
@@ -112,9 +119,7 @@ pzprv3.createCommonClass('KeyEvent', '',
 	//---------------------------------------------------------------------------
 	// オーバーライド用
 	keyinput : function(ca){
-		if(k.playmode){ return;}
-		if(this.moveTCell(ca)){ return;}
-		this.key_inputqnum(ca);
+		this.key_inputqnum(ca); /* デフォルトはCell数字入力 */
 	},
 	keyup : function(ca){ },
 
@@ -186,11 +191,13 @@ pzprv3.createCommonClass('KeyEvent', '',
 		return flag;
 	},
 	//---------------------------------------------------------------------------
+	// kc.moveTarget()  キーボードからの入力対象を矢印キーで動かす
 	// kc.moveTCell()   Cellのキーボードからの入力対象を矢印キーで動かす
 	// kc.moveTCross()  Crossのキーボードからの入力対象を矢印キーで動かす
 	// kc.moveTBorder() Borderのキーボードからの入力対象を矢印キーで動かす
 	// kc.moveTC()      上記3つの関数の共通処理
 	//---------------------------------------------------------------------------
+	moveTarget  : function(ca){ return this.moveTCell(ca);},
 	moveTCell   : function(ca){ return this.moveTC(ca,2);},
 	moveTCross  : function(ca){ return this.moveTC(ca,2);},
 	moveTBorder : function(ca){ return this.moveTC(ca,1);},
@@ -395,14 +402,14 @@ pzprv3.createCommonClass('KeyPopup', '',
 
 	//---------------------------------------------------------------------------
 	// kp.kpinput()     キーポップアップから入力された時の処理をオーバーライドで記述する
-	// kp.display()     キーポップアップを表示する
-	// kp.inputnumber() kpinput関数を呼び出す
 	//---------------------------------------------------------------------------
-	// オーバーライド用
-	kpinput : function(ca){
-		kc.key_inputqnum(ca);
+	kpinput : function(e, ca){
+		kc.keyinput(ca);
 	},
 
+	//---------------------------------------------------------------------------
+	// kp.display()     キーポップアップを表示する
+	//---------------------------------------------------------------------------
 	display : function(){
 		var mode = pp.getVal('mode');
 		if(this.element && this.haspanel[mode] && pp.getVal('keypopup')){
@@ -415,9 +422,6 @@ pzprv3.createCommonClass('KeyPopup', '',
 		else{
 			this.element.style.display = 'none';
 		}
-	},
-	inputnumber : function(e, ca){
-		this.kpinput(ca);
 	},
 
 	//---------------------------------------------------------------------------
@@ -529,7 +533,7 @@ pzprv3.createCommonClass('KeyPopup', '',
 			_td = ee.createEL(this.EL_KPNUM, this.prefix+id);
 			_td.style.color = this.tdcolor;
 			_td.innerHTML   = disp;
-			_td.onclick     = ee.ebinder(this, this.inputnumber, [ca]);
+			_td.onclick     = ee.ebinder(this, this.kpinput, [ca]);
 		}
 		else if(type==='image'){
 			var _img = ee.createEL(this.EL_KPIMG_IMG, this.prefix+id+"_i");
@@ -537,7 +541,7 @@ pzprv3.createCommonClass('KeyPopup', '',
 			_div.appendChild(_img);
 
 			_td = ee.createEL(this.EL_KPIMG, id);
-			_td.onclick = ee.ebinder(this, this.inputnumber, [ca]);
+			_td.onclick = ee.ebinder(this, this.kpinput, [ca]);
 			_td.appendChild(_div);
 
 			this.imgs.push({'el':_img, 'x':disp[0], 'y':disp[1]});
@@ -611,18 +615,11 @@ pzprv3.createCommonClass('TargetCursor', '',
 	// tc.adjust_modechange() モード変更時に位置がおかしい場合に調節する(オーバーライド用)
 	//---------------------------------------------------------------------------
 	setminmax : function(){
-		if(!this.crosstype){
-			this.minx = bd.minbx + 1;
-			this.miny = bd.minby + 1;
-			this.maxx = bd.maxbx - 1;
-			this.maxy = bd.maxby - 1;
-		}
-		else{
-			this.minx = bd.minbx;
-			this.miny = bd.minby;
-			this.maxx = bd.maxbx;
-			this.maxy = bd.maxby;
-		}
+		var bm = (!this.crosstype?1:0);
+		this.minx = bd.minbx + bm;
+		this.miny = bd.minby + bm;
+		this.maxx = bd.maxbx - bm;
+		this.maxy = bd.maxby - bm;
 
 		this.adjust_init();
 	},

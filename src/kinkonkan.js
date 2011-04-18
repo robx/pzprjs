@@ -115,9 +115,38 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+	moveTarget : function(ca){
+		var cc0 = tc.getTEC(), tcp = tc.getTCP();
+		var flag = true;
+
+		if     (ca===k.KEYUP){
+			if(tcp.y===tc.maxy && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.pos.y=tc.miny;}
+			else if(tcp.y>tc.miny){ tc.decTCY(2);}else{ flag=false;}
+		}
+		else if(ca===k.KEYDN){
+			if(tcp.y===tc.miny && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.pos.y=tc.maxy;}
+			else if(tcp.y<tc.maxy){ tc.incTCY(2);}else{ flag=false;}
+		}
+		else if(ca===k.KEYLT){
+			if(tcp.x===tc.maxx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.pos.x=tc.minx;}
+			else if(tcp.x>tc.minx){ tc.decTCX(2);}else{ flag=false;}
+		}
+		else if(ca===k.KEYRT){
+			if(tcp.x===tc.minx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.pos.x=tc.maxx;}
+			else if(tcp.x<tc.maxx){ tc.incTCX(2);}else{ flag=false;}
+		}
+		else{ flag=false;}
+
+		if(flag){
+			pc.paintEXcell(cc0);
+			pc.paintEXcell(tc.getTEC());
+			this.tcMoved = true;
+		}
+		return flag;
+	},
+
 	keyinput : function(ca){
-		if(k.playmode){ return;}
-		if(this.moveTCell(ca)){ return;}
 		this.key_inputexcell(ca);
 	},
 	key_inputexcell : function(ca){
@@ -156,35 +185,6 @@ KeyEvent:{
 
 		this.prev = ec;
 		pc.paintEXcell(tc.getTEC());
-	},
-	moveTCell : function(ca){
-		var cc0 = tc.getTEC(), tcp = tc.getTCP();
-		var flag = true;
-
-		if     (ca===k.KEYUP){
-			if(tcp.y===tc.maxy && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.pos.y=tc.miny;}
-			else if(tcp.y>tc.miny){ tc.decTCY(2);}else{ flag=false;}
-		}
-		else if(ca===k.KEYDN){
-			if(tcp.y===tc.miny && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.pos.y=tc.maxy;}
-			else if(tcp.y<tc.maxy){ tc.incTCY(2);}else{ flag=false;}
-		}
-		else if(ca===k.KEYLT){
-			if(tcp.x===tc.maxx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.pos.x=tc.minx;}
-			else if(tcp.x>tc.minx){ tc.decTCX(2);}else{ flag=false;}
-		}
-		else if(ca===k.KEYRT){
-			if(tcp.x===tc.minx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.pos.x=tc.maxx;}
-			else if(tcp.x<tc.maxx){ tc.incTCX(2);}else{ flag=false;}
-		}
-		else{ flag=false;}
-
-		if(flag){
-			pc.paintEXcell(cc0);
-			pc.paintEXcell(tc.getTEC());
-			this.tcMoved = true;
-		}
-		return flag;
 	}
 },
 

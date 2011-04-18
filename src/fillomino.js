@@ -83,16 +83,16 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
-	keyinput : function(ca){
-		if(this.isCTRL || this.isX || this.isZ){
-			if(k.playmode){ this.key_fillomino(ca);}
+	enablemake : true,
+	enableplay : true,
+	moveTarget : function(ca){
+		if(k.playmode && (this.isCTRL || this.isX || this.isZ)){
+			return this.move_fillomino(ca);
 		}
-		else{
-			if(this.moveTCell(ca)){ return;}
-			this.key_inputqnum(ca);
-		}
+		return this.moveTCell(ca);
 	},
-	key_fillomino : function(ca){
+
+	move_fillomino : function(ca){
 		var cc = tc.getTCC();
 		if(cc===null){ return;}
 

@@ -77,8 +77,10 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+	enableplay : true,
+
 	keyinput : function(ca){
-		if(this.moveTCell(ca)){ return;}
 		this.key_view(ca);
 	},
 	key_view : function(ca){
@@ -97,7 +99,6 @@ KeyEvent:{
 KeyPopup:{
 	enablemake : true,
 	enableplay : true,
-	kpinput : function(ca){ kc.key_view(ca);},
 	generate : function(mode,type){
 		if(mode==3){
 			this.tdcolor = pc.mbcolor;

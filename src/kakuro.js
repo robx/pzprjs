@@ -30,9 +30,10 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
-	keyinput : function(ca){
-		if(this.moveTCell(ca)){ return;}
+	enablemake : true,
+	enableplay : true,
 
+	keyinput : function(ca){
 		if     (k.editmode){ this.inputnumber51(ca,{2:45,4:45});}
 		else if(k.playmode){ this.key_inputqnum(ca);}
 	}
@@ -42,10 +43,6 @@ KeyPopup:{
 	paneltype  : 51,
 	enablemake : true,
 	enableplay : true,
-	kpinput : function(ca){
-		if(k.editmode){ kc.inputnumber51(ca,{2:45,4:45});}
-		if(k.playmode){ kc.key_inputqnum(ca);}
-	},
 	generate : function(mode,type){
 		if(mode===3){ this.gentable10(mode,type);}
 		else        { this.gentable51(mode,type);}

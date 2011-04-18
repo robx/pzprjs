@@ -65,8 +65,13 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+	moveTarget : function(ca){
+		if(this.isSHIFT){ return false;}
+		return this.moveTCell(ca);
+	},
+
 	keyinput : function(ca){
-		if(!this.isSHIFT && this.moveTCell(ca)){ return;}
 		this.key_roma(ca);
 	},
 	key_roma : function(ca){

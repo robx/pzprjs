@@ -126,9 +126,10 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+	moveTarget : function(ca){ return this.moveTCross(ca);},
+
 	keyinput : function(ca){
-		if(k.playmode){ return;}
-		if(this.moveTCross(ca)){ return;}
 		this.key_inputqnum_kouchoku(ca);
 	},
 	key_inputqnum_kouchoku : function(ca){

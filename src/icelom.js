@@ -107,9 +107,9 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+
 	keyinput : function(ca){
-		if(k.playmode){ return;}
-		if(this.moveTCell(ca)){ return;}
 		if(this.key_inputIcebarn(ca)){ return;}
 		this.key_inputqnum(ca);
 	},

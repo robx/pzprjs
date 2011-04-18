@@ -56,9 +56,25 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+	moveTarget : function(ca){
+		var cc0 = tc.getTEC(), tcp = tc.getTCP(), flag = false;
+		switch(ca){
+			case k.KEYUP: if(tcp.x===tc.minx && tc.miny<tcp.y){ tc.decTCY(2); flag=true;} break;
+			case k.KEYDN: if(tcp.x===tc.minx && tc.maxy>tcp.y){ tc.incTCY(2); flag=true;} break;
+			case k.KEYLT: if(tcp.y===tc.miny && tc.minx<tcp.x){ tc.decTCX(2); flag=true;} break;
+			case k.KEYRT: if(tcp.y===tc.miny && tc.maxx>tcp.x){ tc.incTCX(2); flag=true;} break;
+		}
+
+		if(flag){
+			pc.paintEXcell(cc0);
+			pc.paintEXcell(tc.getTEC());
+			this.tcMoved = true;
+		}
+		return flag;
+	},
+
 	keyinput : function(ca){
-		if(k.playmode){ return;}
-		if(this.moveTCell(ca)){ return;}
 		this.key_inputexcell(ca);
 	},
 	key_inputexcell : function(ca){
@@ -81,22 +97,6 @@ KeyEvent:{
 
 		this.prev = ec;
 		pc.paintEXcell(tc.getTEC());
-	},
-	moveTCell : function(ca){
-		var cc0 = tc.getTEC(), tcp = tc.getTCP(), flag = false;
-		switch(ca){
-			case k.KEYUP: if(tcp.x===tc.minx && tc.miny<tcp.y){ tc.decTCY(2); flag=true;} break;
-			case k.KEYDN: if(tcp.x===tc.minx && tc.maxy>tcp.y){ tc.incTCY(2); flag=true;} break;
-			case k.KEYLT: if(tcp.y===tc.miny && tc.minx<tcp.x){ tc.decTCX(2); flag=true;} break;
-			case k.KEYRT: if(tcp.y===tc.miny && tc.maxx>tcp.x){ tc.incTCX(2); flag=true;} break;
-		}
-
-		if(flag){
-			pc.paintEXcell(cc0);
-			pc.paintEXcell(tc.getTEC());
-			this.tcMoved = true;
-		}
-		return flag;
 	}
 },
 

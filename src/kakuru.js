@@ -31,8 +31,10 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+	enableplay : true,
+
 	keyinput : function(ca){
-		if(this.moveTCell(ca)){ return;}
 		this.key_inputqnum_kakuru(ca);
 	},
 	key_inputqnum_kakuru : function(ca){
@@ -67,7 +69,6 @@ KeyEvent:{
 KeyPopup:{
 	enablemake : true,
 	enableplay : true,
-	kpinput : function(ca){ kc.key_inputqnum_kakuru(ca);},
 	generate : function(mode,type){
 		if(mode==1){
 			this.inputcol('num','knumq1','q1','■');

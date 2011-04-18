@@ -65,8 +65,10 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
+	enablemake : true,
+	enableplay : true,
+
 	keyinput : function(ca){
-		if(this.moveTCell(ca)){ return;}
 		this.key_hakoiri(ca);
 	},
 	key_hakoiri : function(ca){
@@ -75,14 +77,12 @@ KeyEvent:{
 		else if(ca==='3'||ca==='e'||ca==='d'||ca==='c'){ ca='3';}
 		else if(ca==='4'||ca==='r'||ca==='f'||ca==='v'){ ca='s1';}
 		else if(ca==='5'||ca==='t'||ca==='g'||ca==='b'){ ca=' ';}
-		this.key_inputqnum(ca);
 	}
 },
 
 KeyPopup:{
 	enablemake : true,
 	enableplay : true,
-	kpinput : function(ca){ kc.key_hakoiri(ca);},
 	generate : function(mode,type){
 		if(mode==3){ this.tdcolor = pc.fontAnscolor;}
 		this.inputcol('num','knum1','1','○');
