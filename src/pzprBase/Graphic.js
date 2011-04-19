@@ -910,7 +910,7 @@ pzprv3.createCommonClass('Graphic', '',
 			var px1 = px+lm+1, px2 = px+cw-lm-1;
 			var py1 = py+lm+1, py2 = py+ch-lm-1;
 
-			// この関数を呼ぶ場合は全てk.isoutsideborder===0なので
+			// この関数を呼ぶ場合は全てbd.isborder===1なので
 			// 外枠用の考慮部分を削除しています。
 			var UPin = (by>2), DNin = (by<2*bd.qrows-2);
 			var LTin = (bx>2), RTin = (bx<2*bd.qcols-2);
@@ -1505,7 +1505,7 @@ pzprv3.createCommonClass('Graphic', '',
 
 	//---------------------------------------------------------------------------
 	// pc.drawChassis()     外枠をCanvasに書き込む
-	// pc.drawChassis_ex1() k.isextencdell==1の時の外枠をCanvasに書き込む
+	// pc.drawChassis_ex1() bd.isexcell==1の時の外枠をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawChassis : function(){
 		this.vinc('chassis', 'crispEdges');

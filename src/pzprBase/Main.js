@@ -332,7 +332,7 @@ pzprv3.createCoreClass('ExtData', '',
 	},
 	exportFileData : function(){
 		var str = fio.fileencode(fio.PZPH);
-		var url = './p.html?'+k.puzzleid+(pzprv3.PLAYER?"_play":"");
+		var url = './p.html?'+bd.puzzleid+(pzprv3.PLAYER?"_play":"");
 		if(!ee.br.Opera){
 			var old = sessionStorage['filedata'];
 			sessionStorage['filedata'] = (str+fio.history);

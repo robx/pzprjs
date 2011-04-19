@@ -664,7 +664,7 @@ pzprv3.createCommonClass('MouseEvent', '',
 			if(cc===null || (bd.lines.iscrossing(cc) && (bd.lines.lcntCell(cc)==3 || bd.lines.lcntCell(cc)==4))){ return;}
 
 			var bx, by;
-			if(k.isbordeAsLine==0){ bx = (cc%bd.qcols)<<1, by = (cc/bd.qcols)<<1;}
+			if(bd.lines.bordeAsLine==0){ bx = (cc%bd.qcols)<<1, by = (cc/bd.qcols)<<1;}
 			else{ bx = (cc%(bd.qcols+1))<<1, by = (cc/(bd.qcols+1))<<1;}
 			id = (function(bx,by){
 				if     (bd.isLine(bd.bnum(bx-1,by))){ return bd.bnum(bx-1,by);}
