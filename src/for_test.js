@@ -54,13 +54,13 @@ debug.extend({
 	accheck1 : function(){
 		var outputstr = fio.fileencode(fio.PZPH);
 
+		bd.disableSetError();
 		ans.inCheck = true;
-		ans.disableSetError();
 		ans.alstr = { jp:'' ,en:''};
 		ans.checkresult = true;
 		ans.checkAns();
-		ans.enableSetError();
 		ans.inCheck = false;
+		bd.enableSetError();
 
 		this.addTextarea("\t\t\t[\""+ans.alstr.jp+"\",\""+outputstr+"\"],");
 	},

@@ -42,18 +42,14 @@ Board:{
 		this.initQlight();
 	},
 	sQnC : function(id, num) {
-		var old = this.cell[id].qnum;
-
-		um.addOpe(k.CELL, k.QNUM, id, this.cell[id].qnum, num);
-		this.cell[id].qnum = num;
+		var old = this.getdata(this.CELL, this.QNUM, id, num);
+		this.setdata(this.CELL, this.QNUM, id, num);
 
 		if((old===-1)^(num===-1)){ this.setQlight(id, (num!==-1?0:2));}
 	},
 	sQaC : function(id, num) {
-		var old = this.cell[id].qans;
-
-		um.addOpe(k.CELL, k.QANS, id, this.cell[id].qans, num);
-		this.cell[id].qans = num;
+		var old = this.getdata(this.CELL, this.QNUM, id, num);
+		this.setdata(this.CELL, this.QANS, id, num);
 
 		if((old===0)^(num===0)){ this.setQlight(id, (num!==0?1:0));}
 	},

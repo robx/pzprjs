@@ -59,7 +59,7 @@ Cell:{
 	// 一部qsubで消したくないものがあるため上書き
 	subclear : function(id){
 		if(this.qsub===1){
-			um.addOpe(k.CELL, k.QSUB, id, 1, 0);
+			um.addOpe(bd.CELL, bd.QSUB, id, 1, 0);
 			this.qsub = 0;
 		}
 		this.error = 0;
@@ -292,8 +292,8 @@ AnsCheck:{
 
 	isBCellCount : function(keycellpos, clist){
 		var number, bx=keycellpos[0], by=keycellpos[1], dir=keycellpos[2];
-		if     (dir===k.RT){ number = (bx===-1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx,by)));}
-		else if(dir===k.DN){ number = (by===-1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by)));}
+		if     (dir===bd.RT){ number = (bx===-1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx,by)));}
+		else if(dir===bd.DN){ number = (by===-1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by)));}
 
 		var count = 0;
 		for(var i=0;i<clist.length;i++){

@@ -76,7 +76,7 @@ Graphic:{
 	drawNumbers_hitori : function(){
 		this.drawNumbers();
 
-		if(pp.getVal('plred') && !ans.errDisp){
+		if(!bd.haserror && pp.getVal('plred')){
 			ans.inCheck = true;
 			ans.checkRowsCols(ans.isDifferentNumberInClist_hitori, function(c){ return bd.QnC(c);});
 			ans.inCheck = false;
@@ -84,7 +84,7 @@ Graphic:{
 			var clist = bd.cellinside(bd.minbx, bd.minby, bd.maxbx, bd.maxby);
 			for(var i=0;i<clist.length;i++){ this.drawNumber1(clist[i]);}
 
-			ans.errDisp = true;
+			bd.haserror = true;
 			bd.errclear(false);
 		}
 	}

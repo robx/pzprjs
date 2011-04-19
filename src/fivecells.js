@@ -94,10 +94,10 @@ Board:{
 	},
 	getdir4cblist : function(c){
 		var cc, id, cblist=[];
-		cc=this.up(c); id=this.ub(c); if(cc!==null || id!==null){ cblist.push([cc,id,k.UP]);}
-		cc=this.dn(c); id=this.db(c); if(cc!==null || id!==null){ cblist.push([cc,id,k.DN]);}
-		cc=this.lt(c); id=this.lb(c); if(cc!==null || id!==null){ cblist.push([cc,id,k.LT]);}
-		cc=this.rt(c); id=this.rb(c); if(cc!==null || id!==null){ cblist.push([cc,id,k.RT]);}
+		cc=this.up(c); id=this.ub(c); if(cc!==null || id!==null){ cblist.push([cc,id,this.UP]);}
+		cc=this.dn(c); id=this.db(c); if(cc!==null || id!==null){ cblist.push([cc,id,this.DN]);}
+		cc=this.lt(c); id=this.lb(c); if(cc!==null || id!==null){ cblist.push([cc,id,this.LT]);}
+		cc=this.rt(c); id=this.rb(c); if(cc!==null || id!==null){ cblist.push([cc,id,this.RT]);}
 		return cblist;
 	},
 

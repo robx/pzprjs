@@ -339,8 +339,8 @@ AnsCheck:{
 
 	isTileCount : function(keycellpos, clist, tiles){
 		var number, bx=keycellpos[0], by=keycellpos[1], dir=keycellpos[2];
-		if     (dir===k.RT){ number = (bx===-1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx,by)));}
-		else if(dir===k.DN){ number = (by===-1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by)));}
+		if     (dir===bd.RT){ number = (bx===-1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx,by)));}
+		else if(dir===bd.DN){ number = (by===-1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by)));}
 
 		var count = 0, counted = [];
 		for(var i=0;i<clist.length;i++){

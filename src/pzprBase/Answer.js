@@ -10,8 +10,6 @@ pzprv3.createCommonClass('AnsCheck', '',
 {
 	initialize :  function(){
 		this.performAsLine = false;
-		this.errDisp = false;
-		this.setError = true;
 		this.inCheck = false;
 		this.inAutoCheck = false;
 		this.alstr = { jp:'' ,en:''};
@@ -34,7 +32,7 @@ pzprv3.createCommonClass('AnsCheck', '',
 		this.checkAns()
 		if(!this.checkresult){
 			menu.alertStr(this.alstr.jp, this.alstr.en);
-			this.errDisp = true;
+			bd.haserror = true;
 			pc.paintAll();
 		}
 		else{
@@ -55,10 +53,6 @@ pzprv3.createCommonClass('AnsCheck', '',
 	//---------------------------------------------------------------------------
 	// ans.autocheck()    答えの自動チェックを行う(alertがでなかったり、エラー表示を行わない)
 	// ans.autocheck1st() autocheck前に、軽い正答判定を行う
-	//
-	// ans.disableSetError()  盤面のオブジェクトにエラーフラグを設定できないようにする
-	// ans.enableSetError()   盤面のオブジェクトにエラーフラグを設定できるようにする
-	// ans.isenableSetError() 盤面のオブジェクトにエラーフラグを設定できるかどうかを返す
 	//---------------------------------------------------------------------------
 	autocheck : function(){
 		if(!pp.getVal('autocheck') || k.editmode || this.inCheck){ return;}
@@ -66,7 +60,7 @@ pzprv3.createCommonClass('AnsCheck', '',
 		var ret = false;
 
 		this.inCheck = this.inAutoCheck = true;
-		this.disableSetError();
+		bd.disableSetError();
 
 		if(this.autocheck1st()){
 			this.checkresult = true;
@@ -78,7 +72,7 @@ pzprv3.createCommonClass('AnsCheck', '',
 				pp.setVal('autocheck',false);
 			}
 		}
-		this.enableSetError();
+		bd.enableSetError();
 		this.inCheck = this.inAutoCheck = false;
 
 		return ret;
@@ -86,13 +80,9 @@ pzprv3.createCommonClass('AnsCheck', '',
 	// リンク系は重いので最初に端点を判定する
 	autocheck1st : function(){
 		if(!this.check1st()){ return false;}
-		if((bd.lines.isCenterLine && !ans.checkLcntCell(1)) || (bd.lines.borderAsLine && !ans.checkLcntCross(1,0))){ return false;}
+		if((bd.lines.isCenterLine && !this.checkLcntCell(1)) || (bd.lines.borderAsLine && !this.checkLcntCross(1,0))){ return false;}
 		return true;
 	},
-
-	disableSetError  : function(){ this.setError = false;},
-	enableSetError   : function(){ this.setError = true; },
-	isenableSetError : function(){ return this.setError; },
 
 	//---------------------------------------------------------------------------
 	// ans.checkAllCell()   条件func==trueになるマスがあったらエラーを設定する
@@ -214,10 +204,10 @@ pzprv3.createCommonClass('AnsCheck', '',
 	checkenableLineParts : function(val){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if( (bd.isLine(bd.ub(c)) && bd.noLP(c,k.UP)) ||
-				(bd.isLine(bd.db(c)) && bd.noLP(c,k.DN)) ||
-				(bd.isLine(bd.lb(c)) && bd.noLP(c,k.LT)) ||
-				(bd.isLine(bd.rb(c)) && bd.noLP(c,k.RT)) )
+			if( (bd.isLine(bd.ub(c)) && bd.noLP(c,bd.UP)) ||
+				(bd.isLine(bd.db(c)) && bd.noLP(c,bd.DN)) ||
+				(bd.isLine(bd.lb(c)) && bd.noLP(c,bd.LT)) ||
+				(bd.isLine(bd.rb(c)) && bd.noLP(c,bd.RT)) )
 			{
 				if(this.inAutoCheck){ return false;}
 				bd.sErC([c],1);
@@ -436,7 +426,7 @@ pzprv3.createCommonClass('AnsCheck', '',
 		for(var by=1;by<=bd.maxby;by+=2){
 			for(var bx=1;bx<=bd.maxbx;bx+=2){
 				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc(bd.cnum(tx,by))){ break;}}
-				if(!evalfunc.call(this, [bx-2,by,k.RT], bd.cellinside(bx,by,tx-2,by))){
+				if(!evalfunc.call(this, [bx-2,by,bd.RT], bd.cellinside(bx,by,tx-2,by))){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}
@@ -446,7 +436,7 @@ pzprv3.createCommonClass('AnsCheck', '',
 		for(var bx=1;bx<=bd.maxbx;bx+=2){
 			for(var by=1;by<=bd.maxby;by+=2){
 				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc(bd.cnum(bx,ty))){ break;}}
-				if(!evalfunc.call(this, [bx,by-2,k.DN], bd.cellinside(bx,by,bx,ty-2))){
+				if(!evalfunc.call(this, [bx,by-2,bd.DN], bd.cellinside(bx,by,bx,ty-2))){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}

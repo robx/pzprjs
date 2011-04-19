@@ -211,7 +211,7 @@ Graphic:{
 
 	// オーバーライド
 	prepaint : function(x1,y1,x2,y2){
-		if(!ans.errDisp && pp.getVal('colorslash')){ x1=bd.minbx; y1=bd.minby; x2=bd.maxbx; y2=bd.maxby;}
+		if(!bd.haserror && pp.getVal('colorslash')){ x1=bd.minbx; y1=bd.minby; x2=bd.maxbx; y2=bd.maxby;}
 		this.setRange(x1,y1,x2,y2);
 
 		this.flushCanvas();
@@ -237,7 +237,7 @@ Graphic:{
 	},
 
 	drawSlashes : function(){
-		if(!ans.errDisp && pp.getVal('colorslash')){
+		if(!bd.haserror && pp.getVal('colorslash')){
 			var sdata=bd.getSlashData();
 			for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.sErC([c],sdata[c]);} }
 

@@ -69,8 +69,7 @@ Board:{
 
 	// 問題入力モードだけ、、0でも入力できるようにする
 	sQnC : function(id, num) {
-		um.addOpe(k.CELL, k.QNUM, id, this.cell[id].qnum, num);
-		this.cell[id].qnum = num;
+		this.setdata(this.CELL, this.QNUM, id, num);
 	},
 
 	// この関数は回答モードでしか呼ばれないはず、
@@ -373,8 +372,8 @@ AnsCheck:{
 	},
 	isTotalNumber : function(keycellpos, clist){
 		var number, bx=keycellpos[0], by=keycellpos[1], dir=keycellpos[2];
-		if     (dir===k.RT){ number = (bx===-1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx,by)));}
-		else if(dir===k.DN){ number = (by===-1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by)));}
+		if     (dir===bd.RT){ number = (bx===-1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx,by)));}
+		else if(dir===bd.DN){ number = (by===-1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by)));}
 
 		var sum = 0;
 		for(var i=0;i<clist.length;i++){

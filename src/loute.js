@@ -69,13 +69,13 @@ KeyEvent:{
 		this.key_loute(ca);
 	},
 	key_loute : function(ca){
-		if     (ca==='1'||(this.isSHIFT && ca===k.KEYUP)){ ca='1';}
-		else if(ca==='2'||(this.isSHIFT && ca===k.KEYRT)){ ca='4';}
-		else if(ca==='3'||(this.isSHIFT && ca===k.KEYDN)){ ca='2';}
-		else if(ca==='4'||(this.isSHIFT && ca===k.KEYLT)){ ca='3';}
-		else if(ca==='5'||ca==='q')                      { ca='5';}
-		else if(ca==='-')                                { ca='s1';}
-		else if(ca==='6'||ca===' ')                      { ca=' ';}
+		if     (ca==='1'||(this.isSHIFT && ca===this.KEYUP)){ ca='1';}
+		else if(ca==='2'||(this.isSHIFT && ca===this.KEYRT)){ ca='4';}
+		else if(ca==='3'||(this.isSHIFT && ca===this.KEYDN)){ ca='2';}
+		else if(ca==='4'||(this.isSHIFT && ca===this.KEYLT)){ ca='3';}
+		else if(ca==='5'||ca==='q')                         { ca='5';}
+		else if(ca==='-')                                   { ca='s1';}
+		else if(ca==='6'||ca===' ')                         { ca=' ';}
 	}
 },
 
@@ -273,10 +273,10 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				var cc = clist[i], num = bd.getNum(cc);
 				if(num>=1 && num<=4 &&
-				   ((num===k.UP && bd.isBorder(bd.ub(cc))) ||
-					(num===k.DN && bd.isBorder(bd.db(cc))) ||
-					(num===k.LT && bd.isBorder(bd.lb(cc))) ||
-					(num===k.RT && bd.isBorder(bd.rb(cc)))) )
+				   ((num===bd.UP && bd.isBorder(bd.ub(cc))) ||
+					(num===bd.DN && bd.isBorder(bd.db(cc))) ||
+					(num===bd.LT && bd.isBorder(bd.lb(cc))) ||
+					(num===bd.RT && bd.isBorder(bd.rb(cc)))) )
 				{
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(rinfo.room[id].idlist,1);

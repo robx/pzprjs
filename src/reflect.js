@@ -130,7 +130,7 @@ MenuExec:{
 
 Menu:{
 	menufix : function(){
-		menu.addRedLineToFlags();
+		this.addRedLineToFlags();
 	}
 },
 

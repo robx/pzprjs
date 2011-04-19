@@ -45,13 +45,13 @@ MouseEvent:{
 		if(id===null || bd.getStar(id)===0){ return;}
 
 		var cc=null, group=bd.star[id].group, gid=bd.star[id].groupid;
-		if(group===k.CELL){
+		if(group===bd.CELL){
 			cc = bd.star[id].groupid;
 		}
-		else if(group===k.CROSS && bd.areas.lcntCross(gid)===0){
+		else if(group===bd.CROSS && bd.areas.lcntCross(gid)===0){
 			cc = bd.cnum(bd.star[id].bx-1, bd.star[id].by-1);
 		}
-		else if(group===k.BORDER && bd.QaB(gid)===0){
+		else if(group===bd.BORDER && bd.QaB(gid)===0){
 			cc = bd.border[gid].cellcc[0];
 		}
 
@@ -117,7 +117,7 @@ Cell:{
 	// 一部qsubで消したくないものがあるため上書き
 	subclear : function(id){
 		if(this.qsub===1){
-			um.addOpe(k.CELL, k.QSUB, id, 1, 0);
+			um.addOpe(bd.CELL, bd.QSUB, id, 1, 0);
 			this.qsub = 0;
 		}
 		this.error = 0;
@@ -154,15 +154,15 @@ Board:{
 			obj.bx = id%(2*col-1)+1;
 			obj.by = ((id/(2*col-1))|0)+1;
 			if((obj.bx&1)===1 && (obj.by&1)===1){
-				obj.group   = k.CELL;
+				obj.group   = this.CELL;
 				obj.groupid = this.cnum(obj.bx, obj.by);
 			}
 			else if((obj.bx&1)===0 && (obj.by&1)===0){
-				obj.group   = k.CROSS;
+				obj.group   = this.CROSS;
 				obj.groupid = this.xnum(obj.bx, obj.by);
 			}
 			else{
-				obj.group   = k.BORDER;
+				obj.group   = this.BORDER;
 				obj.groupid = this.bnum(obj.bx, obj.by);
 			}
 		}
@@ -181,18 +181,18 @@ Board:{
 	},
 
 	getStar : function(id){
-		if     (this.star[id].group===k.CELL) { return this.QnC(this.star[id].groupid);}
-		else if(this.star[id].group===k.CROSS){ return this.QnX(this.star[id].groupid);}
-		else                                  { return this.QnB(this.star[id].groupid);}
+		if     (this.star[id].group===this.CELL) { return this.QnC(this.star[id].groupid);}
+		else if(this.star[id].group===this.CROSS){ return this.QnX(this.star[id].groupid);}
+		else                                     { return this.QnB(this.star[id].groupid);}
 	},
 	isStarError : function(id){
 		return (this.getObject(this.star[id].group, this.star[id].groupid).error!==0);
 	},
 	setStar : function(id,val){
 		um.disCombine = 1;
-		if     (this.star[id].group===k.CELL) { this.sQnC(this.star[id].groupid, val);}
-		else if(this.star[id].group===k.CROSS){ this.sQnX(this.star[id].groupid, val);}
-		else                                  { this.sQnB(this.star[id].groupid, val);}
+		if     (this.star[id].group===this.CELL) { this.sQnC(this.star[id].groupid, val);}
+		else if(this.star[id].group===this.CROSS){ this.sQnX(this.star[id].groupid, val);}
+		else                                     { this.sQnB(this.star[id].groupid, val);}
 		um.disCombine = 0;
 	},
 
@@ -234,9 +234,9 @@ Board:{
 			for(var n=0;n<idlist.length;n++){
 				var id=idlist[n], group=this.star[id].group, gid=this.star[id].groupid;
 				if(this.getStar(id)>0){
-					if( group===k.CELL ||
-					   (group===k.CROSS && this.areas.lcntCross(gid)===0) ||
-					   (group===k.BORDER && this.QaB(gid)===0)
+					if( group===this.CELL ||
+					   (group===this.CROSS && this.areas.lcntCross(gid)===0) ||
+					   (group===this.BORDER && this.QaB(gid)===0)
 					)
 					{ cnt++; ret={id:id, err:0};}
 				}
@@ -491,12 +491,12 @@ AnsCheck:{
 			if(bd.getStar(s)<=0){ continue;}
 
 			var group=bd.star[s].group, gid=bd.star[s].groupid;
-			if(group===k.CROSS && bd.areas.lcntCross(gid)!==0){
+			if(group===bd.CROSS && bd.areas.lcntCross(gid)!==0){
 				if(this.inAutoCheck){ return false;}
 				bd.setCrossBorderError(bd.star[s].bx, bd.star[s].by);
 				result = false;
 			}
-			else if(group===k.BORDER && bd.QaB(gid)!==0){
+			else if(group===bd.BORDER && bd.QaB(gid)!==0){
 				if(this.inAutoCheck){ return false;}
 				bd.sErB(gid,1);
 				result = false;

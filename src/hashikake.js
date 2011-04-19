@@ -36,7 +36,7 @@ MouseEvent:{
 
 			if(this.previdlist.isnull() || !this.previdlist.include(id)){ this.inputData=null;}
 			if(this.inputData===null){ this.inputData = [1,2,0][bd.LiB(id)];}
-			if(this.inputData>0 && (dir===k.UP||dir===k.LT)){ idlist.reverseData();} // 色分けの都合上の処理
+			if(this.inputData>0 && (dir===bd.UP||dir===bd.LT)){ idlist.reverseData();} // 色分けの都合上の処理
 			for(var i=0;i<idlist.data.length;i++){
 				bd.sLiB(idlist.data[i], this.inputData);
 				bd.sQsB(idlist.data[i], 0);

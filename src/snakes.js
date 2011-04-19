@@ -288,10 +288,10 @@ AnsCheck:{
 
 			var bx=bd.cell[c].bx, by=bd.cell[c].by, clist=[c], cc;
 			switch(dir){
-				case k.UP: by-=2; while(gonext()){ by-=2;} break;
-				case k.DN: by+=2; while(gonext()){ by+=2;} break;
-				case k.LT: bx-=2; while(gonext()){ bx-=2;} break;
-				case k.RT: bx+=2; while(gonext()){ bx+=2;} break;
+				case bd.UP: by-=2; while(gonext()){ by-=2;} break;
+				case bd.DN: by+=2; while(gonext()){ by+=2;} break;
+				case bd.LT: bx-=2; while(gonext()){ bx-=2;} break;
+				case bd.RT: bx+=2; while(gonext()){ bx+=2;} break;
 			}
 			// ccは数字のあるマスのIDか、null(盤面外)を指す
 
@@ -321,23 +321,23 @@ AnsCheck:{
 		};
 
 		for(var r=1;r<=sinfo.max;r++){
-			var idlist=sinfo.room[r].idlist, c1=null, dir=k.NONE, c2;
+			var idlist=sinfo.room[r].idlist, c1=null, dir=bd.NDIR, c2;
 
 			for(var i=0;i<idlist.length;i++){ if(bd.AnC(idlist[i])===1){ c1=idlist[i]; break;}}
 			if(c1===null){ continue;}
 
-			c2=bd.dn(c1); if(c2!==null && bd.AnC(c2)===2){ dir=k.UP;}
-			c2=bd.up(c1); if(c2!==null && bd.AnC(c2)===2){ dir=k.DN;}
-			c2=bd.rt(c1); if(c2!==null && bd.AnC(c2)===2){ dir=k.LT;}
-			c2=bd.lt(c1); if(c2!==null && bd.AnC(c2)===2){ dir=k.RT;}
-			if(dir===k.NONE){ continue;}
+			c2=bd.dn(c1); if(c2!==null && bd.AnC(c2)===2){ dir=bd.UP;}
+			c2=bd.up(c1); if(c2!==null && bd.AnC(c2)===2){ dir=bd.DN;}
+			c2=bd.rt(c1); if(c2!==null && bd.AnC(c2)===2){ dir=bd.LT;}
+			c2=bd.lt(c1); if(c2!==null && bd.AnC(c2)===2){ dir=bd.RT;}
+			if(dir===bd.NDIR){ continue;}
 
 			var bx = bd.cell[c1].bx, by = bd.cell[c1].by, clist=[c1], cc;
 			switch(dir){
-				case k.UP: by-=2; while(gonext()){ by-=2;} break;
-				case k.DN: by+=2; while(gonext()){ by+=2;} break;
-				case k.LT: bx-=2; while(gonext()){ bx-=2;} break;
-				case k.RT: bx+=2; while(gonext()){ bx+=2;} break;
+				case bd.UP: by-=2; while(gonext()){ by-=2;} break;
+				case bd.DN: by+=2; while(gonext()){ by+=2;} break;
+				case bd.LT: bx-=2; while(gonext()){ bx-=2;} break;
+				case bd.RT: bx+=2; while(gonext()){ bx+=2;} break;
 			}
 			// ccは数字のあるマスのIDか、null(盤面外)を指す
 

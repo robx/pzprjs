@@ -140,8 +140,7 @@ Board:{
 		return (!!this.cell[c] && (this.cell[c].qans>=41 && this.cell[c].qans<=45));
 	},
 	sQaC : function(id, num){
-		um.addOpe(k.CELL, k.QANS, id, this.cell[id].qans, num);
-		this.cell[id].qans = num;
+		this.setdata(this.CELL, this.QANS, id, num);
 
 		this.areas.setCell('block',id,(num===1)); /* ここを変更 */
 	}

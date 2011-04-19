@@ -121,10 +121,10 @@ Graphic:{
 			if(bd.cell[c].qdir!=0){
 				g.fillStyle = this.cellcolor;
 				switch(bd.cell[c].qdir){
-					case k.UP: py-=(rsize-1); break;
-					case k.DN: py+=(rsize-1); break;
-					case k.LT: px-=(rsize-1); break;
-					case k.RT: px+=(rsize-1); break;
+					case bd.UP: py-=(rsize-1); break;
+					case bd.DN: py+=(rsize-1); break;
+					case bd.LT: px-=(rsize-1); break;
+					case bd.RT: px+=(rsize-1); break;
 				}
 				if(this.vnop(headers[1]+c,this.NONE)){
 					g.fillCircle(px, py, rsize3);
@@ -215,8 +215,8 @@ AnsCheck:{
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.noNum(c) || bd.DiC(c)==0){ continue;}
-			if((bd.DiC(c)==k.UP && !bd.isLine(bd.ub(c))) || (bd.DiC(c)==k.DN && !bd.isLine(bd.db(c))) ||
-			   (bd.DiC(c)==k.LT && !bd.isLine(bd.lb(c))) || (bd.DiC(c)==k.RT && !bd.isLine(bd.rb(c))) )
+			if((bd.DiC(c)==bd.UP && !bd.isLine(bd.ub(c))) || (bd.DiC(c)==bd.DN && !bd.isLine(bd.db(c))) ||
+			   (bd.DiC(c)==bd.LT && !bd.isLine(bd.lb(c))) || (bd.DiC(c)==bd.RT && !bd.isLine(bd.rb(c))) )
 			{
 				if(this.inAutoCheck){ return false;}
 				bd.sErC([c],1);

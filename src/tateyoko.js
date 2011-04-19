@@ -37,8 +37,8 @@ MouseEvent:{
 			}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===k.UP || dir===k.DN){ this.inputData=12; input=true;}
-				else if(dir===k.LT || dir===k.RT){ this.inputData=13; input=true;}
+				if     (dir===bd.UP || dir===bd.DN){ this.inputData=12; input=true;}
+				else if(dir===bd.LT || dir===bd.RT){ this.inputData=13; input=true;}
 			}
 
 			if(input){
@@ -51,8 +51,8 @@ MouseEvent:{
 			if(this.inputData==0){ this.inputData=0; input=true;}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===k.UP || dir===k.DN){ this.inputData=12; input=true;}
-				else if(dir===k.LT || dir===k.RT){ this.inputData=13; input=true;}
+				if     (dir===bd.UP || dir===bd.DN){ this.inputData=12; input=true;}
+				else if(dir===bd.LT || dir===bd.RT){ this.inputData=13; input=true;}
 			}
 		}
 

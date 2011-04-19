@@ -86,18 +86,18 @@ KeyEvent:{
 		if(id===null){ return;}
 
 		if(ca=='q'||ca=='w'||ca=='e' || ca==' ' || ca=='-'){
-			var tmp=k.NONE;
-			if(ca=='q'){ tmp=((bd.border[id].bx&1)?k.UP:k.LT);}
-			if(ca=='w'){ tmp=((bd.border[id].bx&1)?k.DN:k.RT);}
+			var tmp=bd.NDIR;
+			if(ca=='q'){ tmp=((bd.border[id].bx&1)?bd.UP:bd.LT);}
+			if(ca=='w'){ tmp=((bd.border[id].bx&1)?bd.DN:bd.RT);}
 
-			bd.sDiB(id,(bd.DiB(id)!==tmp?tmp:k.NONE));
+			bd.sDiB(id,(bd.DiB(id)!==tmp?tmp:bd.NDIR));
 			bd.sQnB(id,-1);
 		}
 		else if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
 			var max = Math.max(bd.qcols,bd.qrows)-1;
 
-			bd.sDiB(id,k.NONE);
+			bd.sDiB(id,bd.NDIR);
 			if(bd.QnB(id)<=0 || this.prev!=id){ if(num<=max){ bd.sQnB(id,num);}}
 			else{
 				if(bd.QnB(id)*10+num<=max){ bd.sQnB(id,bd.QnB(id)*10+num);}
@@ -201,13 +201,13 @@ Graphic:{
 
 			// 不等号の描画
 			this.vhide([headers[1]+id, headers[2]+id]);
-			if(obj.qdir!==k.NONE){
+			if(obj.qdir!==bd.NDIR){
 				if(this.vnop(headers[((obj.qdir+1)&1)+1]+id,this.NONE)){
 					switch(obj.qdir){
-						case k.UP: g.setOffsetLinePath(obj.px,obj.py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false); break;
-						case k.DN: g.setOffsetLinePath(obj.px,obj.py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false); break;
-						case k.LT: g.setOffsetLinePath(obj.px,obj.py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false); break;
-						case k.RT: g.setOffsetLinePath(obj.px,obj.py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false); break;
+						case bd.UP: g.setOffsetLinePath(obj.px,obj.py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false); break;
+						case bd.DN: g.setOffsetLinePath(obj.px,obj.py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false); break;
+						case bd.LT: g.setOffsetLinePath(obj.px,obj.py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false); break;
+						case bd.RT: g.setOffsetLinePath(obj.px,obj.py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false); break;
 					}
 					g.stroke();
 				}
@@ -251,8 +251,8 @@ Encode:{
 			else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-18);}
 			else if(type===1 && ca==="/"){ id=bd.cellmax-1;}
 
-			if     (tmp===1){ obj.qdir = ((obj.bx&1)?k.UP:k.LT);}
-			else if(tmp===2){ obj.qdir = ((obj.bx&1)?k.DN:k.RT);}
+			if     (tmp===1){ obj.qdir = ((obj.bx&1)?bd.UP:bd.LT);}
+			else if(tmp===2){ obj.qdir = ((obj.bx&1)?bd.DN:bd.RT);}
 
 			id++;
 			if(id>=2*bd.qcols*bd.qrows){ a=i+1; break;}
@@ -270,8 +270,8 @@ Encode:{
 			if(id<bd.bdmax){
 				var pstr="", dir=bd.border[id].qdir, qnum=bd.border[id].qnum;
 
-				if     (dir===k.UP||dir===k.LT){ pstr = ((type===0 || id<bd.cellmax)?"g":"h");}
-				else if(dir===k.DN||dir===k.RT){ pstr = ((type===0 || id<bd.cellmax)?"h":"g");}
+				if     (dir===bd.UP||dir===bd.LT){ pstr = ((type===0 || id<bd.cellmax)?"g":"h");}
+				else if(dir===bd.DN||dir===bd.RT){ pstr = ((type===0 || id<bd.cellmax)?"h":"g");}
 				else if(qnum===-2){ pstr = ".";}
 				else if(qnum>= 0&&qnum< 16){ pstr = ""+ qnum.toString(16);}
 				else if(qnum>=16&&qnum<256){ pstr = "-"+qnum.toString(16);}
@@ -291,8 +291,8 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeBorder( function(obj,ca){
-			if     (ca==="a"){ obj.qdir = ((obj.bx&1)?k.UP:k.LT);}
-			else if(ca==="b"){ obj.qdir = ((obj.bx&1)?k.DN:k.RT);}
+			if     (ca==="a"){ obj.qdir = ((obj.bx&1)?bd.UP:bd.LT);}
+			else if(ca==="b"){ obj.qdir = ((obj.bx&1)?bd.DN:bd.RT);}
 			else if(ca==="."){ obj.qnum = -2;}
 			else if(ca!=="0"){ obj.qnum = parseInt(ca);}
 		});
@@ -301,8 +301,8 @@ FileIO:{
 	encodeData : function(){
 		this.encodeBorder( function(obj){
 			var dir=obj.qdir;
-			if     (dir===k.UP||dir===k.LT){ return "a ";}
-			else if(dir===k.DN||dir===k.RT){ return "b ";}
+			if     (dir===bd.UP||dir===bd.LT){ return "a ";}
+			else if(dir===bd.DN||dir===bd.RT){ return "b ";}
 			else if(obj.qnum===-2){ return ". ";}
 			else if(obj.qnum!==-1){ return ""+obj.qnum.toString()+" ";}
 			else                  { return "0 ";}

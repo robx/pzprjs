@@ -8,34 +8,7 @@ pzprv3.createCommonClass('Flags', '',
 	initialize : function(){
 		this.editmode = (pzprv3.EDITOR && !pzprv3.DEBUG);	// 問題配置モード
 		this.playmode = !this.editmode;						// 回答モード
-	},
-
-	// const値
-	BOARD  : 'board',
-	CELL   : 'cell',
-	CROSS  : 'cross',
-	BORDER : 'border',
-	EXCELL : 'excell',
-	OTHER  : 'other',
-
-	QUES : 'ques',
-	QNUM : 'qnum',
-	QDIR : 'qdir',
-	QANS : 'qans',
-	ANUM : 'anum',
-	LINE : 'line',
-	QSUB : 'qsub',
-
-	NONE : 0,	// 方向なし
-	UP   : 1,	// up
-	DN   : 2,	// down
-	LT   : 3,	// left
-	RT   : 4,	// right
-
-	KEYUP : 'up',
-	KEYDN : 'down',
-	KEYLT : 'left',
-	KEYRT : 'right'
+	}
 });
 
 //---------------------------------------------------------------------------

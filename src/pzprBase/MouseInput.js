@@ -89,7 +89,7 @@ pzprv3.createCommonClass('MouseEvent', '',
 		if(this.enableMouse){
 			this.btn = this.getMouseButton(e);
 			if(this.btn.Left || this.btn.Right){
-				if(ans.errDisp){ bd.errclear();}
+				bd.errclear();
 				um.newOperation(true);
 				this.setposition(e);
 				this.ismousedown = true;
@@ -405,7 +405,7 @@ pzprv3.createCommonClass('MouseEvent', '',
 		if(cc!==null){
 			if(bd.QnC(cc)!==-1){
 				var dir = this.getdir(this.prevPos, pos);
-				if(dir!==k.NONE){
+				if(dir!==bd.NDIR){
 					bd.sDiC(cc, (bd.DiC(cc)!==dir?dir:0));
 					pc.paintCell(cc);
 				}
@@ -417,10 +417,10 @@ pzprv3.createCommonClass('MouseEvent', '',
 		var pos = this.borderpos(0);
 		if(this.prevPos.equals(pos) && this.inputData===1){ return;}
 
-		var dir = k.NONE, cc = bd.cnum(this.prevPos.x, this.prevPos.y);
+		var dir = bd.NDIR, cc = bd.cnum(this.prevPos.x, this.prevPos.y);
 		if(cc!==null){
 			var dir = this.getdir(this.prevPos, pos);
-			if(dir!==k.NONE){
+			if(dir!==bd.NDIR){
 				bd.setNum(cc,dir);
 				pc.paintCell(cc);
 				this.mousereset();
@@ -431,11 +431,11 @@ pzprv3.createCommonClass('MouseEvent', '',
 	},
 
 	getdir : function(base, current){
-		if     (current.x-base.x=== 0 && current.y-base.y===-2){ return k.UP;}
-		else if(current.x-base.x=== 0 && current.y-base.y=== 2){ return k.DN;}
-		else if(current.x-base.x===-2 && current.y-base.y=== 0){ return k.LT;}
-		else if(current.x-base.x=== 2 && current.y-base.y=== 0){ return k.RT;}
-		return k.NONE;
+		if     (current.x-base.x=== 0 && current.y-base.y===-2){ return bd.UP;}
+		else if(current.x-base.x=== 0 && current.y-base.y=== 2){ return bd.DN;}
+		else if(current.x-base.x===-2 && current.y-base.y=== 0){ return bd.LT;}
+		else if(current.x-base.x=== 2 && current.y-base.y=== 0){ return bd.RT;}
+		return bd.NDIR;
 	},
 
 	//---------------------------------------------------------------------------
@@ -641,7 +641,7 @@ pzprv3.createCommonClass('MouseEvent', '',
 		if(cc===null || !bd.isBlack(cc)){ return;}
 		if(!this.RBBlackCell){ bd.sErC(bd.areas.bcell[bd.areas.bcell.id[cc]].clist,1);}
 		else{ this.db0(function(c){ return (bd.isBlack(c) && bd.cell[c].error===0);},cc,1);}
-		ans.errDisp = true;
+		bd.haserror = true;
 		pc.paintAll();
 	},
 	db0 : function(func, cc, num){
@@ -677,7 +677,7 @@ pzprv3.createCommonClass('MouseEvent', '',
 		if(id===null){ return;}
 
 		bd.sErBAll(2); bd.sErB(bd.lines.data[bd.lines.data.id[id]].idlist,1);
-		ans.errDisp = true;
+		bd.haserror = true;
 		pc.paintAll();
 	}
 });

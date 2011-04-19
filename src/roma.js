@@ -33,12 +33,12 @@ MouseEvent:{
 
 		var ldata = [];
 		for(var c=0;c<bd.cellmax;c++){ ldata[c]=-1;}
-		ans.checkBall1(cc,ldata);
+		bd.trackBall1(cc,ldata);
 		for(var c=0;c<bd.cellmax;c++){
 			if     (ldata[c]===1){ bd.sErC([c],2);}
 			else if(ldata[c]===2){ bd.sErC([c],3);}
 		}
-		ans.errDisp = true;
+		bd.haserror = true;
 		pc.paintAll();
 	}
 },
@@ -56,13 +56,13 @@ KeyEvent:{
 		this.key_roma(ca);
 	},
 	key_roma : function(ca){
-		if     (ca==='1'||(this.isSHIFT && ca===k.KEYUP)){ ca='1';}
-		else if(ca==='2'||(this.isSHIFT && ca===k.KEYRT)){ ca='4';}
-		else if(ca==='3'||(this.isSHIFT && ca===k.KEYDN)){ ca='2';}
-		else if(ca==='4'||(this.isSHIFT && ca===k.KEYLT)){ ca='3';}
-		else if(ca==='q')                                { ca='5';}
-		else if(k.editmode && (ca==='5'||ca==='-'))      { ca='s1';}
-		else if(ca==='6'||ca===' ')                      { ca=' ';}
+		if     (ca==='1'||(this.isSHIFT && ca===this.KEYUP)){ ca='1';}
+		else if(ca==='2'||(this.isSHIFT && ca===this.KEYRT)){ ca='4';}
+		else if(ca==='3'||(this.isSHIFT && ca===this.KEYDN)){ ca='2';}
+		else if(ca==='4'||(this.isSHIFT && ca===this.KEYLT)){ ca='3';}
+		else if(ca==='q')                                   { ca='5';}
+		else if(k.editmode && (ca==='5'||ca==='-'))         { ca='s1';}
+		else if(ca==='6'||ca===' ')                         { ca=' ';}
 	}
 },
 
@@ -78,6 +78,38 @@ Board:{
 
 	nummaxfunc : function(){
 		return (k.editmode?5:4);
+	},
+
+	trackBall1 : function(startcc, ldata){
+		var bx=this.cell[startcc].bx, by=this.cell[startcc].by;
+		var dir=this.getNum(startcc), cc=startcc, result=(dir===5);
+		ldata[cc]=0;
+
+		while(dir>=1 && dir<=4){
+			switch(dir){ case 1: by-=2; break; case 2: by+=2; break; case 3: bx-=2; break; case 4: bx+=2; break;}
+			cc = this.cnum(bx,by);
+			if(cc===null){ break;}
+			if(ldata[cc]!==-1){ result=(ldata[cc]===2); break;}
+
+			ldata[cc]=0;
+
+			dir=this.getNum(cc);
+			if(dir===5){ result=true;}
+		}
+		this.cb0(startcc, ldata);
+
+		for(var c=0;c<this.cellmax;c++){
+			if(ldata[c]===0){ ldata[c] = (result?2:1)}
+		}
+		return result;
+	},
+	cb0 : function(c, ldata){
+		ldata[c]=0;
+		var tc, dir=this.getNum(c);
+		tc=this.up(c); if( dir!==1 && tc!==null && ldata[tc]===-1 && this.getNum(tc)===2 ){ this.cb0(tc,ldata);}
+		tc=this.dn(c); if( dir!==2 && tc!==null && ldata[tc]===-1 && this.getNum(tc)===1 ){ this.cb0(tc,ldata);}
+		tc=this.lt(c); if( dir!==3 && tc!==null && ldata[tc]===-1 && this.getNum(tc)===4 ){ this.cb0(tc,ldata);}
+		tc=this.rt(c); if( dir!==4 && tc!==null && ldata[tc]===-1 && this.getNum(tc)===3 ){ this.cb0(tc,ldata);}
 	}
 },
 
@@ -195,7 +227,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){ ldata[c]=(bd.getNum(c)===5?2:-1);}
 		for(var c=0;c<bd.cellmax;c++){
 			if(ldata[c]!==-1){ continue;}
-			if(!this.checkBall1(c,ldata) && this.inAutoCheck){ return false;}
+			if(!bd.trackBall1(c,ldata) && this.inAutoCheck){ return false;}
 		}
 
 		var result = true;
@@ -203,37 +235,6 @@ AnsCheck:{
 			if(ldata[c]===1){ bd.sErC([c],1); result=false;}
 		}
 		return result;
-	},
-	checkBall1 : function(startcc, ldata){
-		var bx=bd.cell[startcc].bx, by=bd.cell[startcc].by;
-		var dir=bd.getNum(startcc), cc=startcc, result=(dir===5);
-		ldata[cc]=0;
-
-		while(dir>=1 && dir<=4){
-			switch(dir){ case 1: by-=2; break; case 2: by+=2; break; case 3: bx-=2; break; case 4: bx+=2; break;}
-			cc = bd.cnum(bx,by);
-			if(cc===null){ break;}
-			if(ldata[cc]!==-1){ result=(ldata[cc]===2); break;}
-
-			ldata[cc]=0;
-
-			dir=bd.getNum(cc);
-			if(dir===5){ result=true;}
-		}
-		ans.cb0(startcc, ldata);
-
-		for(var c=0;c<bd.cellmax;c++){
-			if(ldata[c]===0){ ldata[c] = (result?2:1)}
-		}
-		return result;
-	},
-	cb0 : function(c, ldata){
-		ldata[c]=0;
-		var tc, dir=bd.getNum(c);
-		tc=bd.up(c); if( dir!==1 && tc!==null && ldata[tc]===-1 && bd.getNum(tc)===2 ){ this.cb0(tc,ldata);}
-		tc=bd.dn(c); if( dir!==2 && tc!==null && ldata[tc]===-1 && bd.getNum(tc)===1 ){ this.cb0(tc,ldata);}
-		tc=bd.lt(c); if( dir!==3 && tc!==null && ldata[tc]===-1 && bd.getNum(tc)===4 ){ this.cb0(tc,ldata);}
-		tc=bd.rt(c); if( dir!==4 && tc!==null && ldata[tc]===-1 && bd.getNum(tc)===3 ){ this.cb0(tc,ldata);}
 	}
 }
 };

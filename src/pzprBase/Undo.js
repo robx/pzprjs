@@ -21,17 +21,17 @@ pzprv3.createCommonClass('Operation', '',
 	// ope.exec()  操作opeを反映する。um.undo(),um.redo()から内部的に呼ばれる
 	//---------------------------------------------------------------------------
 	exec : function(num){
-		if(this.group !== k.BOARD && this.group !== k.OTHER){
+		if(this.group !== bd.BOARD && this.group !== bd.OTHER){
 			var name = um.getfuncname(this.group, this.property);
-			if(!!bd[name]){ bd[name].call(bd, this.id, num);}
+			bd.setdata(this.group, this.property, this.id, num);
 
 			switch(this.group){
-				case k.CELL:   um.stackCell(this.id); break;
-				case k.CROSS:  um.stackCross(this.id); break;
-				case k.BORDER: um.stackBorder(this.id); break;
+				case bd.CELL:   um.stackCell(this.id); break;
+				case bd.CROSS:  um.stackCross(this.id); break;
+				case bd.BORDER: um.stackBorder(this.id); break;
 			}
 		}
-		else if(this.group === k.BOARD){
+		else if(this.group === bd.BOARD){
 			var d = {x1:0,y1:0,x2:2*bd.qcols,y2:2*bd.qrows};
 			if(num & menu.ex.TURNFLIP){ menu.ex.turnflip    (num,d);}
 			else                      { menu.ex.expandreduce(num,d);}
@@ -58,8 +58,8 @@ pzprv3.createCommonClass('Operation', '',
 			this.num = parseInt(strs[4]);
 		}
 		else if(strs[0]==='AL'){
-			this.group = k.BOARD;
-			this.property = k.BOARD;
+			this.group = bd.BOARD;
+			this.property = bd.BOARD;
 			this.id = 0;
 			this.old = parseInt(strs[3]);
 			this.num = parseInt(strs[4]);
@@ -68,12 +68,12 @@ pzprv3.createCommonClass('Operation', '',
 		return true;
 	},
 	toString : function(){
-		if(this.group!==k.BOARD && this.group !== k.OTHER){
+		if(this.group!==bd.BOARD && this.group !== bd.OTHER){
 			var prefix = um.getprefix(this.group, this.property);
 			var obj = bd.getObject(this.group, this.id);
 			return [prefix, obj.bx, obj.by, this.old, this.num].join(',');
 		}
-		else if(this.group===k.BOARD){ return ['AL', 0, 0, this.old, this.num].join(',');}
+		else if(this.group===bd.BOARD){ return ['AL', 0, 0, this.old, this.num].join(',');}
 		else{ return '';}
 	}
 });
@@ -126,19 +126,19 @@ pzprv3.createCommonClass('OperationManager', '',
 
 	/* 変換テーブル */
 	STRGROUP : {
-		C: 'cell',   // k.CELL,
-		X: 'cross',  // k.CROSS,
-		B: 'border', // k.BORDER,
-		E: 'excell'  // k.EXCELL
+		C: 'cell',   // bd.CELL,
+		X: 'cross',  // bd.CROSS,
+		B: 'border', // bd.BORDER,
+		E: 'excell'  // bd.EXCELL
 	},
 	STRPROP : {
-		U: ['ques', 'sQu'], // k.QUES
-		N: ['qnum', 'sQn'], // k.QNUM
-		M: ['anum', 'sAn'], // k.ANUM
-		D: ['qdir', 'sDi'], // k.QDIR
-		A: ['qans', 'sQa'], // k.QANS
-		S: ['qsub', 'sQs'], // k.QSUB
-		L: ['line', 'sLi']  // k.LINE
+		U: ['ques', 'sQu'], // bd.QUES
+		N: ['qnum', 'sQn'], // bd.QNUM
+		M: ['anum', 'sAn'], // bd.ANUM
+		D: ['qdir', 'sDi'], // bd.QDIR
+		A: ['qans', 'sQa'], // bd.QANS
+		S: ['qsub', 'sQs'], // bd.QSUB
+		L: ['line', 'sLi']  // bd.LINE
 	},
 
 	//---------------------------------------------------------------------------
@@ -210,7 +210,7 @@ pzprv3.createCommonClass('OperationManager', '',
 		this.ope.push(this.lastope);
 	},
 	addOpe : function(group, property, id, old, num){
-		if(!this.isenableRecord() || (old===num && group!==k.BOARD)){ return;}
+		if(!this.isenableRecord() || (old===num && group!==bd.BOARD)){ return;}
 
 		if(this.enableRedo){
 			for(var i=this.ope.length-1;i>=this.current;i--){ this.ope.pop();}
@@ -223,7 +223,7 @@ pzprv3.createCommonClass('OperationManager', '',
 		if( this.disCombine==0 && !!ref &&
 			ref.group == group && ref.property == property &&
 			ref.id == id && ref.num == old &&
-			( (group == k.CELL && ( property == k.QNUM || property == k.ANUM )) || group == k.CROSS)
+			( (group == bd.CELL && ( property == bd.QNUM || property == bd.ANUM )) || group == bd.CROSS)
 		)
 			{ ref.num = num;}
 		else{
@@ -231,7 +231,7 @@ pzprv3.createCommonClass('OperationManager', '',
 			this.lastope.push(new (pzprv3.getPuzzleClass('Operation'))(group, property, id, old, num));
 		}
 
-		if(property!=k.QSUB){ this.anscount++;}
+		if(property!=bd.QSUB){ this.anscount++;}
 		this.changeflag = true;
 		this.enb_btn();
 	},
@@ -305,7 +305,7 @@ pzprv3.createCommonClass('OperationManager', '',
 		if(!refope){ return;}
 		for(var i=refope.length-1;i>=0;i--){
 			refope[i].exec(refope[i].old);
-			if(refope[i].property!=k.QSUB){ this.anscount--;}
+			if(refope[i].property!=bd.QSUB){ this.anscount--;}
 		}
 		this.current--;
 	},
@@ -314,7 +314,7 @@ pzprv3.createCommonClass('OperationManager', '',
 		if(!refope){ return;}
 		for(var i=0,len=refope.length;i<len;i++){
 			refope[i].exec(refope[i].num);
-			if(refope[i].property!=k.QSUB){ this.anscount++;}
+			if(refope[i].property!=bd.QSUB){ this.anscount++;}
 		}
 		this.current++;
 	},

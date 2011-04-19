@@ -14,7 +14,7 @@ MouseEvent:{
 		}
 	},
 	mouseup : function(){
-		if(this.inputData==12){ ans.errDisp=true; bd.errclear();}
+		if(this.inputData==12){ bd.lightclear();}
 	},
 	mousemove : function(){
 		if     (k.editmode && this.btn.Left){ this.inputborder();}
@@ -51,9 +51,8 @@ MouseEvent:{
 		if(this.inputData!=11 && this.inputData!==null){ }
 		else if(this.inputData===null && bd.excell[ec].qlight===1){ this.inputData=12;}
 		else{
-			ans.errDisp=true;
-			bd.errclear();
-			mv.flashlight(ec);
+			bd.flashlight(ec);
+			pc.paintAll();
 			this.inputData=11;
 		}
 		this.mouseCell=ec;
@@ -69,24 +68,13 @@ MouseEvent:{
 			pc.paintEXcell(ec0);
 		}
 		else if(ec!==null && ec===ec0){
-			var flag = (bd.excell[ec].qlight!==1);
-			ans.errDisp=true;
-			bd.errclear();
-			if(flag){ mv.flashlight(ec);}
+			if(bd.excell[ec].qlight!==1){ bd.flashlight(ec);}
+			else{ bd.lightclear();}
+			pc.paintAll();
 		}
 
 		this.btn.Left = false;
 		return true;
-	},
-
-	flashlight : function(ec){
-		var ldata = [];
-		for(var c=0;c<bd.cellmax;c++){ ldata[c]=0;}
-		var ret = bd.searchLight(ec, ldata);
-		bd.excell[ec].qlight      =1;
-		bd.excell[ret.dest].qlight=1;
-		for(var c=0;c<bd.cellmax;c++){ bd.cell[c].qlight=ldata[c];}
-		pc.paintAll();
 	}
 },
 
@@ -98,19 +86,19 @@ KeyEvent:{
 		var cc0 = tc.getTEC(), tcp = tc.getTCP();
 		var flag = true;
 
-		if     (ca===k.KEYUP){
+		if     (ca===this.KEYUP){
 			if(tcp.y===tc.maxy && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.pos.y=tc.miny;}
 			else if(tcp.y>tc.miny){ tc.decTCY(2);}else{ flag=false;}
 		}
-		else if(ca===k.KEYDN){
+		else if(ca===this.KEYDN){
 			if(tcp.y===tc.miny && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.pos.y=tc.maxy;}
 			else if(tcp.y<tc.maxy){ tc.incTCY(2);}else{ flag=false;}
 		}
-		else if(ca===k.KEYLT){
+		else if(ca===this.KEYLT){
 			if(tcp.x===tc.maxx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.pos.x=tc.minx;}
 			else if(tcp.x>tc.minx){ tc.decTCX(2);}else{ flag=false;}
 		}
-		else if(ca===k.KEYRT){
+		else if(ca===this.KEYRT){
 			if(tcp.x===tc.minx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.pos.x=tc.maxx;}
 			else if(tcp.x<tc.maxx){ tc.incTCX(2);}else{ flag=false;}
 		}
@@ -153,10 +141,9 @@ KeyEvent:{
 			else              { bd.sQnE(ec,-1); bd.sDiE(ec,0);}
 		}
 		else if(ca=='F4'){
-			var flag = (bd.excell[ec].qlight!==1);
-			ans.errDisp=true;
-			bd.errclear();
-			if(flag){ mv.flashlight(ec);}
+			if(bd.excell[ec].qlight!==1){ bd.flashlight(ec);}
+			else{ bd.lightclear();}
+			pc.paintAll();
 		}
 		else if(ca==' '){ bd.sQnE(ec,-1); bd.sDiE(ec,0);}
 		else{ return;}
@@ -215,15 +202,28 @@ Board:{
 
 	numzero : true,
 
-	errclear : function(){
-		if(!ans.errDisp){ return;}
-		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].qlight=0;}
-		for(var i=0;i<this.excellmax;i++){ this.excell[i].qlight=0;}
-		this.SuperFunc.errclear.call(this);
+	errclear : function(isrepaint){
+		this.SuperFunc.errclear.call(this,false);
+
+		this.lightclear();
+		pc.paintAll();
 	},
 
-	searchLight : function(startec, ldata){
-		var ccnt=0;
+	haslight : false,
+	lightclear : function(){
+		if(!this.haslight){ return;}
+		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].qlight=0;}
+		for(var i=0;i<this.excellmax;i++){ this.excell[i].qlight=0;}
+		this.haslight = false;
+	},
+	flashlight : function(ec){
+		this.lightclear();
+		this.searchLight(ec, true);
+	},
+
+	searchLight : function(startec, setlight){
+		var ccnt=0, ldata = [];
+		for(var c=0;c<this.cellmax;c++){ ldata[c]=0;}
 
 		var bx=this.excell[startec].bx, by=this.excell[startec].by;
 		var dir=0;
@@ -257,7 +257,16 @@ Board:{
 			if(ccnt>this.cellmax){ break;} // 念のためガード条件(多分引っかからない)
 		}
 
-		return {cnt:ccnt, dest:this.exnum(bx,by)};
+		var destec = this.exnum(bx,by);
+		if(!!setlight){
+			for(var c=0;c<this.excellmax;c++){ this.excell[c].qlight=0;}
+			this.excell[startec].qlight = 1;
+			this.excell[destec].qlight  = 1;
+			for(var c=0;c<this.cellmax;c++){ this.cell[c].qlight=ldata[c];}
+			this.haslight = true;
+		}
+
+		return {cnt:ccnt, dest:destec};
 	}
 },
 
@@ -521,17 +530,10 @@ AnsCheck:{
 		var d = [];
 		for(var ec=0;ec<bd.excellmax-4;ec++){
 			if(!isNaN(d[ec]) || bd.QnE(ec)==-1 || bd.DiE(ec)==0){ continue;}
-			var ldata = [];
-			for(var c=0;c<bd.cellmax;c++){ ldata[c]=0;}
-
-			var ret = bd.searchLight(ec, ldata);
+			var ret = bd.searchLight(ec, (!this.inAutoCheck));
 			if( (type==1&& (bd.DiE(ec)!=bd.DiE(ret.dest)) )||
 				(type==2&&((bd.QnE(ec)!=bd.QnE(ret.dest)) || bd.QnE(ec)!=ret.cnt))
 			){
-				for(var c=0;c<bd.excellmax;c++){ bd.excell[c].qlight=0;}
-				bd.excell[ec].qlight      =1;
-				bd.excell[ret.dest].qlight=1;
-				for(var c=0;c<bd.cellmax;c++){ bd.cell[c].qlight=ldata[c];}
 				return false;
 			}
 			d[ec]=1; d[ret.dest]=1;

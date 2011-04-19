@@ -17,10 +17,10 @@ pzprv3.createCommonClass('MenuExec', '',
 
 		// expand/reduce処理用
 		this.insex = {};
-		this.insex[k.CELL]   = {1:true};
-		this.insex[k.CROSS]  = (bd.iscross===1 ? {2:true} : {0:true});
-		this.insex[k.BORDER] = {1:true, 2:true};
-		this.insex[k.EXCELL] = {1:true};
+		this.insex[bd.CELL]   = {1:true};
+		this.insex[bd.CROSS]  = (bd.iscross===1 ? {2:true} : {0:true});
+		this.insex[bd.BORDER] = {1:true, 2:true};
+		this.insex[bd.EXCELL] = {1:true};
 	},
 
 	fileio : (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi"),
@@ -33,15 +33,15 @@ pzprv3.createCommonClass('MenuExec', '',
 	FLIP   : 0x80,
 	TURNFLIP: 0xC0, // (this.TURN|this.FLIP),
 
-	EXPANDUP: 0x11, // (this.EXPAND|k.UP),
-	EXPANDDN: 0x12, // (this.EXPAND|k.DN),
-	EXPANDLT: 0x13, // (this.EXPAND|k.LT),
-	EXPANDRT: 0x14, // (this.EXPAND|k.RT),
+	EXPANDUP: 0x11, // (this.EXPAND|bd.UP),
+	EXPANDDN: 0x12, // (this.EXPAND|bd.DN),
+	EXPANDLT: 0x13, // (this.EXPAND|bd.LT),
+	EXPANDRT: 0x14, // (this.EXPAND|bd.RT),
 
-	REDUCEUP: 0x21, // (this.REDUCE|k.UP),
-	REDUCEDN: 0x22, // (this.REDUCE|k.DN),
-	REDUCELT: 0x23, // (this.REDUCE|k.LT),
-	REDUCERT: 0x24, // (this.REDUCE|k.RT),
+	REDUCEUP: 0x21, // (this.REDUCE|bd.UP),
+	REDUCEDN: 0x22, // (this.REDUCE|bd.DN),
+	REDUCELT: 0x23, // (this.REDUCE|bd.LT),
+	REDUCERT: 0x24, // (this.REDUCE|bd.RT),
 
 	TURNL: 0x41, // (this.TURN|1),
 	TURNR: 0x42, // (this.TURN|2),
@@ -95,7 +95,7 @@ pzprv3.createCommonClass('MenuExec', '',
 		tc.adjust_modechange();
 		if(kp.haspanel[1] || kp.haspanel[3]){ pp.funcs.keypopup();}
 
-		ans.errDisp=true;
+		bd.haserror=true;
 		pc.paintAll();
 	},
 
@@ -350,7 +350,7 @@ pzprv3.createCommonClass('MenuExec', '',
 		else if(name.match(/(turn|flip)/)){ this.turnflip    (this.boardtype[name][1],d);}
 
 		// reduceはここ必須
-		um.addOpe(k.BOARD, name, 0, this.boardtype[name][0], this.boardtype[name][1]);
+		um.addOpe(bd.BOARD, name, 0, this.boardtype[name][0], this.boardtype[name][1]);
 
 		bd.setminmax();
 		if(!um.undoExec){ bd.resetInfo();}
@@ -370,16 +370,16 @@ pzprv3.createCommonClass('MenuExec', '',
 			if     (key===this.EXPANDUP||key===this.EXPANDDN){ bd.qrows++;}
 			else if(key===this.EXPANDLT||key===this.EXPANDRT){ bd.qcols++;}
 
-							 { this.expandGroup(k.CELL,   key);}
-			if(!!bd.iscross) { this.expandGroup(k.CROSS,  key);}
-			if(!!bd.isborder){ this.expandGroup(k.BORDER, key);}
-			if(!!bd.isexcell){ this.expandGroup(k.EXCELL, key);}
+							 { this.expandGroup(bd.CELL,   key);}
+			if(!!bd.iscross) { this.expandGroup(bd.CROSS,  key);}
+			if(!!bd.isborder){ this.expandGroup(bd.BORDER, key);}
+			if(!!bd.isexcell){ this.expandGroup(bd.EXCELL, key);}
 		}
 		else if(key & this.REDUCE){
-							 { this.reduceGroup(k.CELL,   key);}
-			if(!!bd.iscross) { this.reduceGroup(k.CROSS,  key);}
-			if(!!bd.isborder){ this.reduceGroup(k.BORDER, key);}
-			if(!!bd.isexcell){ this.reduceGroup(k.EXCELL, key);}
+							 { this.reduceGroup(bd.CELL,   key);}
+			if(!!bd.iscross) { this.reduceGroup(bd.CROSS,  key);}
+			if(!!bd.isborder){ this.reduceGroup(bd.BORDER, key);}
+			if(!!bd.isexcell){ this.reduceGroup(bd.EXCELL, key);}
 
 			if     (key===this.REDUCEUP||key===this.REDUCEDN){ bd.qrows--;}
 			else if(key===this.REDUCELT||key===this.REDUCERT){ bd.qcols--;}
@@ -401,10 +401,10 @@ pzprv3.createCommonClass('MenuExec', '',
 			else if(margin>0){ group[i] = group[i-margin];}
 		}
 
-		if(type===k.BORDER){ this.expandborder(key);}
+		if(type===bd.BORDER){ this.expandborder(key);}
 	},
 	reduceGroup : function(type,key){
-		if(type===k.BORDER){ this.reduceborder(key);}
+		if(type===bd.BORDER){ this.reduceborder(key);}
 
 		var margin=0, group = bd.getGroup(type), isrec=(!um.undoExec && !um.redoExec);
 		if(isrec){ um.forceRecord = true;}
@@ -433,15 +433,15 @@ pzprv3.createCommonClass('MenuExec', '',
 			d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows};
 		}
 
-						   { this.turnflipGroup(k.CELL,   key, d);}
-		if(!!bd.iscross)   { this.turnflipGroup(k.CROSS,  key, d);}
-		if(!!bd.isborder)  { this.turnflipGroup(k.BORDER, key, d);}
-		if(bd.isexcell===2){ this.turnflipGroup(k.EXCELL, key, d);}
+						   { this.turnflipGroup(bd.CELL,   key, d);}
+		if(!!bd.iscross)   { this.turnflipGroup(bd.CROSS,  key, d);}
+		if(!!bd.isborder)  { this.turnflipGroup(bd.BORDER, key, d);}
+		if(bd.isexcell===2){ this.turnflipGroup(bd.EXCELL, key, d);}
 		else if(bd.isexcell===1 && (key & this.FLIP)){
 			var d2 = {x1:d.x1, y1:d.y1, x2:d.x2, y2:d.y2};
 			if     (key===this.FLIPY){ d2.x1 = d2.x2 = -1;}
 			else if(key===this.FLIPX){ d2.y1 = d2.y2 = -1;}
-			this.turnflipGroup(k.EXCELL, key, d2);
+			this.turnflipGroup(bd.EXCELL, key, d2);
 		}
 		bd.setposAll();
 
@@ -489,10 +489,10 @@ pzprv3.createCommonClass('MenuExec', '',
 		if(!obj){ return -1;}
 
 		key &= 0x0F;
-		if     (key===k.UP){ return obj.by;}
-		else if(key===k.DN){ return 2*bd.qrows-obj.by;}
-		else if(key===k.LT){ return obj.bx;}
-		else if(key===k.RT){ return 2*bd.qcols-obj.bx;}
+		if     (key===bd.UP){ return obj.by;}
+		else if(key===bd.DN){ return 2*bd.qrows-obj.by;}
+		else if(key===bd.LT){ return obj.bx;}
+		else if(key===bd.RT){ return 2*bd.qcols-obj.bx;}
 		return -1;
 	},
 
@@ -511,7 +511,7 @@ pzprv3.createCommonClass('MenuExec', '',
 
 			var dist = (bd.lines.borderAsLine?2:1);
 			for(var id=0;id<bd.bdmax;id++){
-				if(this.distObj(k.BORDER,id,key)!==dist){ continue;}
+				if(this.distObj(bd.BORDER,id,key)!==dist){ continue;}
 
 				var source = (bd.lines.borderAsLine ? this.outerBorder(id,key) : this.innerBorder(id,key));
 				this.copyBorder(id,source);
@@ -522,7 +522,7 @@ pzprv3.createCommonClass('MenuExec', '',
 	reduceborder : function(key){
 		if(bd.lines.borderAsLine){
 			for(var id=0;id<bd.bdmax;id++){
-				if(this.distObj(k.BORDER,id,key)!==0){ continue;}
+				if(this.distObj(bd.BORDER,id,key)!==0){ continue;}
 
 				var source = this.innerBorder(id,key);
 				this.copyBorder(id,source);
@@ -542,19 +542,19 @@ pzprv3.createCommonClass('MenuExec', '',
 	innerBorder : function(id,key){
 		var bx=bd.border[id].bx, by=bd.border[id].by;
 		key &= 0x0F;
-		if     (key===k.UP){ return bd.bnum(bx, by+2);}
-		else if(key===k.DN){ return bd.bnum(bx, by-2);}
-		else if(key===k.LT){ return bd.bnum(bx+2, by);}
-		else if(key===k.RT){ return bd.bnum(bx-2, by);}
+		if     (key===bd.UP){ return bd.bnum(bx, by+2);}
+		else if(key===bd.DN){ return bd.bnum(bx, by-2);}
+		else if(key===bd.LT){ return bd.bnum(bx+2, by);}
+		else if(key===bd.RT){ return bd.bnum(bx-2, by);}
 		return null;
 	},
 	outerBorder : function(id,key){
 		var bx=bd.border[id].bx, by=bd.border[id].by;
 		key &= 0x0F;
-		if     (key===k.UP){ return bd.bnum(bx, by-2);}
-		else if(key===k.DN){ return bd.bnum(bx, by+2);}
-		else if(key===k.LT){ return bd.bnum(bx-2, by);}
-		else if(key===k.RT){ return bd.bnum(bx+2, by);}
+		if     (key===bd.UP){ return bd.bnum(bx, by-2);}
+		else if(key===bd.DN){ return bd.bnum(bx, by+2);}
+		else if(key===bd.LT){ return bd.bnum(bx-2, by);}
+		else if(key===bd.RT){ return bd.bnum(bx+2, by);}
 		return null;
 	},
 
@@ -584,7 +584,7 @@ pzprv3.createCommonClass('MenuExec', '',
 		if(key & this.REDUCE){
 			this.qnums = [];
 			for(var i=0;i<bd.cell.length;i++){
-				if(!!this.insex[k.CELL][this.distObj(k.CELL,i,key)] && bd.cell[i].qnum!==-1){
+				if(!!this.insex[bd.CELL][this.distObj(bd.CELL,i,key)] && bd.cell[i].qnum!==-1){
 					this.qnums.push({areaid:bd.areas.getRoomID(i), val:bd.cell[i].qnum});
 				}
 			}

@@ -27,7 +27,7 @@ MouseEvent:{
 			if(bd.QaC(c)===32 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]===1){ bd.sErC([c],2);}
 		}
 
-		ans.errDisp = true;
+		bd.haserror = true;
 		pc.paintAll();
 	},
 	inputslash : function(){

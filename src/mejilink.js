@@ -35,7 +35,7 @@ Border:{
 	allclear : function(id,isrec){
 		var def = (id<bd.qcols*(bd.qrows-1)+(bd.qcols-1)*bd.qrows ? 1 : 0);
 		if(this.ques!==def){
-			if(isrec){ um.addOpe(k.BORDER, k.QUES, id, this.ques, def);}
+			if(isrec){ um.addOpe(bd.BORDER, bd.QUES, id, this.ques, def);}
 			this.ques = def;
 		}
 

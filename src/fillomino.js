@@ -80,10 +80,10 @@ KeyEvent:{
 
 		var nc, nb, move, flag;
 		switch(ca){
-			case k.KEYUP: nc=bd.up(cc); nb=bd.ub(cc); move=function(){ tc.decTCY(2);}; break;
-			case k.KEYDN: nc=bd.dn(cc); nb=bd.db(cc); move=function(){ tc.incTCY(2);}; break;
-			case k.KEYLT: nc=bd.lt(cc); nb=bd.lb(cc); move=function(){ tc.decTCX(2);}; break;
-			case k.KEYRT: nc=bd.rt(cc); nb=bd.rb(cc); move=function(){ tc.incTCX(2);}; break;
+			case this.KEYUP: nc=bd.up(cc); nb=bd.ub(cc); move=function(){ tc.decTCY(2);}; break;
+			case this.KEYDN: nc=bd.dn(cc); nb=bd.db(cc); move=function(){ tc.incTCY(2);}; break;
+			case this.KEYLT: nc=bd.lt(cc); nb=bd.lb(cc); move=function(){ tc.decTCX(2);}; break;
+			case this.KEYRT: nc=bd.rt(cc); nb=bd.rb(cc); move=function(){ tc.incTCX(2);}; break;
 			default: return;
 		}
 		if(nc!==null){

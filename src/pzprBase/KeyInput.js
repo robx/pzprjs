@@ -15,6 +15,12 @@ pzprv3.createCommonClass('KeyEvent', '',
 	enablemake : false,
 	enableplay : false,
 
+	// const値
+	KEYUP : 'up',
+	KEYDN : 'down',
+	KEYLT : 'left',
+	KEYRT : 'right',
+
 	//---------------------------------------------------------------------------
 	// kc.keyreset()  キーボード入力に関する情報を初期化する
 	// kc.isenabled() 現在のモードでキー入力が有効か判定する
@@ -129,10 +135,10 @@ pzprv3.createCommonClass('KeyEvent', '',
 	//---------------------------------------------------------------------------
 	// 48～57は0～9キー、65～90はa～z、96～105はテンキー、112～123はF1～F12キー
 	getchar : function(e){
-		if     (e.keyCode==38){ return k.KEYUP;}
-		else if(e.keyCode==40){ return k.KEYDN;}
-		else if(e.keyCode==37){ return k.KEYLT;}
-		else if(e.keyCode==39){ return k.KEYRT;}
+		if     (e.keyCode==38){ return this.KEYUP;}
+		else if(e.keyCode==40){ return this.KEYDN;}
+		else if(e.keyCode==37){ return this.KEYLT;}
+		else if(e.keyCode==39){ return this.KEYRT;}
 
 		var keycode = (!!e.keyCode ? e.keyCode: e.charCode);
 		if     ( 48<=keycode && keycode<= 57){ return (keycode-48).toString(36);}
@@ -204,10 +210,10 @@ pzprv3.createCommonClass('KeyEvent', '',
 	moveTC : function(ca,mv){
 		var tcp = tc.getTCP(), flag = false;
 		switch(ca){
-			case k.KEYUP: if(tcp.y-mv>=tc.miny){ tc.decTCY(mv); flag = true;} break;
-			case k.KEYDN: if(tcp.y+mv<=tc.maxy){ tc.incTCY(mv); flag = true;} break;
-			case k.KEYLT: if(tcp.x-mv>=tc.minx){ tc.decTCX(mv); flag = true;} break;
-			case k.KEYRT: if(tcp.x+mv<=tc.maxx){ tc.incTCX(mv); flag = true;} break;
+			case this.KEYUP: if(tcp.y-mv>=tc.miny){ tc.decTCY(mv); flag = true;} break;
+			case this.KEYDN: if(tcp.y+mv<=tc.maxy){ tc.incTCY(mv); flag = true;} break;
+			case this.KEYLT: if(tcp.x-mv>=tc.minx){ tc.decTCX(mv); flag = true;} break;
+			case this.KEYRT: if(tcp.x+mv<=tc.maxx){ tc.incTCX(mv); flag = true;} break;
 		}
 
 		if(flag){
@@ -274,10 +280,10 @@ pzprv3.createCommonClass('KeyEvent', '',
 
 		var flag = true;
 		switch(ca){
-			case k.KEYUP: bd.sDiC(cc, (bd.DiC(cc)!=k.UP?k.UP:0)); break;
-			case k.KEYDN: bd.sDiC(cc, (bd.DiC(cc)!=k.DN?k.DN:0)); break;
-			case k.KEYLT: bd.sDiC(cc, (bd.DiC(cc)!=k.LT?k.LT:0)); break;
-			case k.KEYRT: bd.sDiC(cc, (bd.DiC(cc)!=k.RT?k.RT:0)); break;
+			case this.KEYUP: bd.sDiC(cc, (bd.DiC(cc)!=bd.UP?bd.UP:0)); break;
+			case this.KEYDN: bd.sDiC(cc, (bd.DiC(cc)!=bd.DN?bd.DN:0)); break;
+			case this.KEYLT: bd.sDiC(cc, (bd.DiC(cc)!=bd.LT?bd.LT:0)); break;
+			case this.KEYRT: bd.sDiC(cc, (bd.DiC(cc)!=bd.RT?bd.RT:0)); break;
 			default: flag = false;
 		}
 

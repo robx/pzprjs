@@ -196,7 +196,7 @@ Board:{
 		}
 	},
 	errclear : function(){
-		if(!ans.errDisp){ return;}
+		if(!this.haserror){ return;}
 
 		if(!!this.segs){
 			var idlist = this.segs.getallsegment();
@@ -231,7 +231,7 @@ Operation:{
 	decode : function(strs){
 		if(this.SuperFunc.decode.call(this,strs)){ return;}
 
-		this.group = k.OTHER;
+		this.group = bd.OTHER;
 		this.property = 'segment';
 		this.id = [strs[1],strs[2],strs[3],strs[4]];
 		this.old = +strs[5];
@@ -934,7 +934,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	// segs.seterrorAll() 全てのsegmentに指定したエラー値を設定する
 	//---------------------------------------------------------------------------
 	seterror : function(idlist,val){
-		if(!ans.isenableSetError()){ return;}
+		if(!bd.isenableSetError()){ return;}
 		for(var i=0;i<idlist.length;i++){ this.seg[idlist[i]].error = val;}
 	},
 	seterrorAll : function(val){
@@ -986,14 +986,14 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.segmax++;
 		this.seg[this.segmax] = new (pzprv3.getPuzzleClass('Segment'))(bx1,by1,bx2,by2);
 		this.setSegmentInfo(this.segmax, true);
-		um.addOpe(k.OTHER, 'segment', [bx1,by1,bx2,by2], 0, 1);
+		um.addOpe(bd.OTHER, 'segment', [bx1,by1,bx2,by2], 0, 1);
 	},
 	removeSegment : function(bx1,by1,bx2,by2){
 		var id = bx1;
 		if(by1!==(void 0)){ id = this.getSegmentId(bx1,by1,bx2,by2);}
 		this.setSegmentInfo(id, false);
 		var seg = this.seg[id];
-		um.addOpe(k.OTHER, 'segment', [seg.bx1,seg.by1,seg.bx2,seg.by2], 1, 0);
+		um.addOpe(bd.OTHER, 'segment', [seg.bx1,seg.by1,seg.bx2,seg.by2], 1, 0);
 		pc.eraseSegment1(id);
 		delete this.seg[id];
 	},

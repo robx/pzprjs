@@ -53,7 +53,7 @@ MouseEvent:{
 		this.inputData = null;
 		pc.paintCell(bd.startid);
 		if(this.firstCell!==bd.startid){
-			um.addOpe(k.OTHER, 'st', 0, this.firstCell, bd.startid);
+			um.addOpe(bd.OTHER, 'st', 0, this.firstCell, bd.startid);
 		}
 	},
 	inputGate : function(){
@@ -90,8 +90,8 @@ MouseEvent:{
 			}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===k.UP || dir===k.DN){ this.inputData=21; input=true;}
-				else if(dir===k.LT || dir===k.RT){ this.inputData=22; input=true;}
+				if     (dir===bd.UP || dir===bd.DN){ this.inputData=21; input=true;}
+				else if(dir===bd.LT || dir===bd.RT){ this.inputData=22; input=true;}
 			}
 
 			if(input){
@@ -104,8 +104,8 @@ MouseEvent:{
 			if(this.inputData==0){ this.inputData=0; input=true;}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===k.UP || dir===k.DN){ this.inputData=21; input=true;}
-				else if(dir===k.LT || dir===k.RT){ this.inputData=22; input=true;}
+				if     (dir===bd.UP || dir===bd.DN){ this.inputData=21; input=true;}
+				else if(dir===bd.LT || dir===bd.RT){ this.inputData=22; input=true;}
 			}
 		}
 
@@ -218,7 +218,7 @@ Board:{
 	startid : 0,
 	inputstartid : function(cc){
 		if(cc!=this.startid){
-			um.addOpe(k.OTHER, 'st', 0, cc, this.startid);
+			um.addOpe(this.OTHER, 'st', 0, cc, this.startid);
 			var cc0 = this.startid;
 			this.startid = cc;
 			pc.paintCell(cc0);
@@ -245,7 +245,7 @@ Operation:{
 	decode : function(strs){
 		if(this.SuperFunc.decode.call(this,strs)){ return;}
 
-		this.group = k.OTHER;
+		this.group = bd.OTHER;
 		this.property = 'st';
 		this.old = bd.cnum(strs[1], strs[2]);
 		this.num = bd.cnum(strs[3], strs[4]);
@@ -276,7 +276,7 @@ MenuExec:{
 			}
 		}
 
-		bd.startid = this.adjustBoardObject(key,d,k.CELL,bd.startid);
+		bd.startid = this.adjustBoardObject(key,d,bd.CELL,bd.startid);
 	},
 	adjustBoardData2 : function(key,d){
 		bd.hinfo.generateGates();	// 念のため

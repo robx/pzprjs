@@ -56,12 +56,12 @@ KeyEvent:{
 		this.key_toichika(ca);
 	},
 	key_toichika : function(ca){
-		if     (ca==='1'||ca==='w'||(this.isSHIFT && ca===k.KEYUP)){ ca='1';}
-		else if(ca==='2'||ca==='s'||(this.isSHIFT && ca===k.KEYRT)){ ca='4';}
-		else if(ca==='3'||ca==='z'||(this.isSHIFT && ca===k.KEYDN)){ ca='2';}
-		else if(ca==='4'||ca==='a'||(this.isSHIFT && ca===k.KEYLT)){ ca='3';}
-		else if(ca==='5'||ca==='q'||ca==='-')                      { ca='s1';}
-		else if(ca==='6'||ca==='e'||ca===' ')                      { ca=' ';}
+		if     (ca==='1'||ca==='w'||(this.isSHIFT && ca===this.KEYUP)){ ca='1';}
+		else if(ca==='2'||ca==='s'||(this.isSHIFT && ca===this.KEYRT)){ ca='4';}
+		else if(ca==='3'||ca==='z'||(this.isSHIFT && ca===this.KEYDN)){ ca='2';}
+		else if(ca==='4'||ca==='a'||(this.isSHIFT && ca===this.KEYLT)){ ca='3';}
+		else if(ca==='5'||ca==='q'||ca==='-')                         { ca='s1';}
+		else if(ca==='6'||ca==='e'||ca===' ')                         { ca=' ';}
 	},
 },
 
@@ -82,12 +82,12 @@ Board:{
 			var bx=this.cell[c].bx, by=this.cell[c].by, tc=c, dir=this.getNum(c);
 
 			while(1){
-				switch(dir){ case k.UP: by-=2; break; case k.DN: by+=2; break; case k.LT: bx-=2; break; case k.RT: bx+=2; break;}
+				switch(dir){ case this.UP: by-=2; break; case this.DN: by+=2; break; case this.LT: bx-=2; break; case this.RT: bx+=2; break;}
 				tc = this.cnum(bx,by);
 				if(tc===null){ ainfo.push([c]); break;}
 				if(!!isarrow[tc]){
 					var tdir = this.getNum(tc);
-					if(tdir!==[0,k.DN,k.UP,k.RT,k.LT][dir]){ ainfo.push([c]);}
+					if(tdir!==[0,this.DN,this.UP,this.RT,this.LT][dir]){ ainfo.push([c]);}
 					else{ ainfo.push([c,tc]);}
 					break;
 				}

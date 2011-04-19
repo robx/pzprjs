@@ -175,6 +175,12 @@ pzprv3.createCommonClass('Board', '',
 		this.maxbx;
 		this.maxby;
 
+		// エラー設定可能状態かどうか
+		this.diserror = 0;
+
+		// エラー表示中かどうか
+		this.haserror = false;
+
 		// 補助オブジェクト
 		this.lines  = new (pzprv3.getPuzzleClass('LineManager'))();		// 線情報管理オブジェクト
 		this.areas  = new (pzprv3.getPuzzleClass('AreaManager'))();		// 領域情報管理オブジェクト
@@ -204,19 +210,41 @@ pzprv3.createCommonClass('Board', '',
 	enableLineNG       : false,
 	enableLineCombined : false,
 
-	// isLineNG系統で用いる定
+	// isLineNG系統で用いる定数
 	isLPobj : {
-		1 : {11:1,12:1,14:1,15:1}, /* k.UP */
-		2 : {11:1,12:1,16:1,17:1}, /* k.DN */
-		3 : {11:1,13:1,15:1,16:1}, /* k.LT */
-		4 : {11:1,13:1,14:1,17:1}  /* k.RT */
+		1 : {11:1,12:1,14:1,15:1}, /* bd.UP */
+		2 : {11:1,12:1,16:1,17:1}, /* bd.DN */
+		3 : {11:1,13:1,15:1,16:1}, /* bd.LT */
+		4 : {11:1,13:1,14:1,17:1}  /* bd.RT */
 	},
 	noLPobj : {
-		1 : {1:1,4:1,5:1,13:1,16:1,17:1,21:1}, /* k.UP */
-		2 : {1:1,2:1,3:1,13:1,14:1,15:1,21:1}, /* k.DN */
-		3 : {1:1,2:1,5:1,12:1,14:1,17:1,22:1}, /* k.LT */
-		4 : {1:1,3:1,4:1,12:1,15:1,16:1,22:1}  /* k.RT */
+		1 : {1:1,4:1,5:1,13:1,16:1,17:1,21:1}, /* bd.UP */
+		2 : {1:1,2:1,3:1,13:1,14:1,15:1,21:1}, /* bd.DN */
+		3 : {1:1,2:1,5:1,12:1,14:1,17:1,22:1}, /* bd.LT */
+		4 : {1:1,3:1,4:1,12:1,15:1,16:1,22:1}  /* bd.RT */
 	},
+
+	// const値
+	BOARD  : 'board',
+	CELL   : 'cell',
+	CROSS  : 'cross',
+	BORDER : 'border',
+	EXCELL : 'excell',
+	OTHER  : 'other',
+
+	QUES : 'ques',
+	QNUM : 'qnum',
+	QDIR : 'qdir',
+	QANS : 'qans',
+	ANUM : 'anum',
+	LINE : 'line',
+	QSUB : 'qsub',
+
+	NDIR : 0,	// 方向なし
+	UP   : 1,	// up
+	DN   : 2,	// down
+	LT   : 3,	// left
+	RT   : 4,	// right
 
 	//---------------------------------------------------------------------------
 	// bd.initBoardSize() 指定されたサイズで盤面の初期化を行う
@@ -224,10 +252,10 @@ pzprv3.createCommonClass('Board', '',
 	initBoardSize : function(col,row){
 		this.allclear(false); // initGroupで、新Objectに対してはallclearが個別に呼ばれます
 
-						   { this.initGroup(k.CELL,   col, row);}
-		if(!!this.iscross) { this.initGroup(k.CROSS,  col, row);}
-		if(!!this.isborder){ this.initGroup(k.BORDER, col, row);}
-		if(!!this.isexcell){ this.initGroup(k.EXCELL, col, row);}
+						   { this.initGroup(this.CELL,   col, row);}
+		if(!!this.iscross) { this.initGroup(this.CROSS,  col, row);}
+		if(!!this.isborder){ this.initGroup(this.BORDER, col, row);}
+		if(!!this.isexcell){ this.initGroup(this.EXCELL, col, row);}
 
 		this.qcols = col;
 		this.qrows = row;
@@ -267,37 +295,37 @@ pzprv3.createCommonClass('Board', '',
 		return (len-clen);
 	},
 	getGroup : function(type){
-		if     (type===k.CELL)  { return this.cell;}
-		else if(type===k.CROSS) { return this.cross;}
-		else if(type===k.BORDER){ return this.border;}
-		else if(type===k.EXCELL){ return this.excell;}
+		if     (type===this.CELL)  { return this.cell;}
+		else if(type===this.CROSS) { return this.cross;}
+		else if(type===this.BORDER){ return this.border;}
+		else if(type===this.EXCELL){ return this.excell;}
 		return [];
 	},
 	estimateSize : function(type, col, row){
-		if     (type===k.CELL)  { return col*row;}
-		else if(type===k.CROSS) { return (col+1)*(row+1);}
-		else if(type===k.BORDER){
+		if     (type===this.CELL)  { return col*row;}
+		else if(type===this.CROSS) { return (col+1)*(row+1);}
+		else if(type===this.BORDER){
 			if     (this.isborder===1){ return 2*col*row-(col+row);}
 			else if(this.isborder===2){ return 2*col*row+(col+row);}
 		}
-		else if(type===k.EXCELL){
+		else if(type===this.EXCELL){
 			if     (this.isexcell===1){ return col+row+1;}
 			else if(this.isexcell===2){ return 2*col+2*row+4;}
 		}
 		return 0;
 	},
 	newObject : function(type){
-		if     (type===k.CELL)  { return (new (pzprv3.getPuzzleClass('Cell'))());}
-		else if(type===k.CROSS) { return (new (pzprv3.getPuzzleClass('Cross'))());}
-		else if(type===k.BORDER){ return (new (pzprv3.getPuzzleClass('Border'))());}
-		else if(type===k.EXCELL){ return (new (pzprv3.getPuzzleClass('EXCell'))());}
+		if     (type===this.CELL)  { return (new (pzprv3.getPuzzleClass('Cell'))());}
+		else if(type===this.CROSS) { return (new (pzprv3.getPuzzleClass('Cross'))());}
+		else if(type===this.BORDER){ return (new (pzprv3.getPuzzleClass('Border'))());}
+		else if(type===this.EXCELL){ return (new (pzprv3.getPuzzleClass('EXCell'))());}
 		return (void 0);
 	},
 	getObject : function(type,id){
-		if     (type===k.CELL)  { return this.cell[id];}
-		else if(type===k.CROSS) { return this.cross[id];}
-		else if(type===k.BORDER){ return this.border[id];}
-		else if(type===k.EXCELL){ return this.excell[id];}
+		if     (type===this.CELL)  { return this.cell[id];}
+		else if(type===this.CROSS) { return this.cross[id];}
+		else if(type===this.BORDER){ return this.border[id];}
+		else if(type===this.EXCELL){ return this.excell[id];}
 		return (void 0);
 	},
 
@@ -343,10 +371,10 @@ pzprv3.createCommonClass('Board', '',
 		this.setcoordAll();
 	},
 	setposGroup : function(type){
-		if     (type===k.CELL)  { this.setposCells();}
-		else if(type===k.CROSS) { this.setposCrosses();}
-		else if(type===k.BORDER){ this.setposBorders();}
-		else if(type===k.EXCELL){ this.setposEXcells();}
+		if     (type===this.CELL)  { this.setposCells();}
+		else if(type===this.CROSS) { this.setposCrosses();}
+		else if(type===this.BORDER){ this.setposBorders();}
+		else if(type===this.EXCELL){ this.setposEXcells();}
 	},
 
 	setposCells : function(){
@@ -490,14 +518,14 @@ pzprv3.createCommonClass('Board', '',
 	},
 
 	errclear : function(isrepaint){
-		if(!ans.errDisp){ return;}
+		if(!this.haserror){ return;}
 
 		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].error=0;}
 		for(var i=0;i<this.crossmax ;i++){ this.cross[i].error=0;}
 		for(var i=0;i<this.bdmax    ;i++){ this.border[i].error=0;}
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].error=0;}
 
-		ans.errDisp = false;
+		this.haserror = false;
 		if(isrepaint!==false){ pc.paintAll();}
 	},
 
@@ -505,10 +533,10 @@ pzprv3.createCommonClass('Board', '',
 	// bd.idnum()  (X,Y)の位置にあるオブジェクトのIDを返す
 	//---------------------------------------------------------------------------
 	idnum : function(type,bx,by,qc,qr){
-		if     (type===k.CELL)  { return this.cnum(bx,by,qc,qr);}
-		else if(type===k.CROSS) { return this.xnum(bx,by,qc,qr);}
-		else if(type===k.BORDER){ return this.bnum(bx,by,qc,qr);}
-		else if(type===k.EXCELL){ return this.exnum(bx,by,qc,qr);}
+		if     (type===this.CELL)  { return this.cnum(bx,by,qc,qr);}
+		else if(type===this.CROSS) { return this.xnum(bx,by,qc,qr);}
+		else if(type===this.BORDER){ return this.bnum(bx,by,qc,qr);}
+		else if(type===this.EXCELL){ return this.exnum(bx,by,qc,qr);}
 		return null;
 	},
 
@@ -566,10 +594,10 @@ pzprv3.createCommonClass('Board', '',
 	// bd.objectinside() 座標(x1,y1)-(x2,y2)に含まれるオブジェクトのIDリストを取得する
 	//---------------------------------------------------------------------------
 	objectinside : function(type,x1,y1,x2,y2){
-		if     (type===k.CELL)  { return this.cellinside  (x1,y1,x2,y2);}
-		else if(type===k.CROSS) { return this.crossinside (x1,y1,x2,y2);}
-		else if(type===k.BORDER){ return this.borderinside(x1,y1,x2,y2);}
-		else if(type===k.EXCELL){ return this.excellinside(x1,y1,x2,y2);}
+		if     (type===this.CELL)  { return this.cellinside  (x1,y1,x2,y2);}
+		else if(type===this.CROSS) { return this.crossinside (x1,y1,x2,y2);}
+		else if(type===this.BORDER){ return this.borderinside(x1,y1,x2,y2);}
+		else if(type===this.EXCELL){ return this.excellinside(x1,y1,x2,y2);}
 		return [];
 	},
 
@@ -639,8 +667,8 @@ pzprv3.createCommonClass('Board', '',
 	//  -> cellidの片方がnullになっていることを考慮していません
 	isLineEX : function(id){
 		var cc1 = this.border[id].cellcc[0], cc2 = this.border[id].cellcc[1];
-		return this.border[id].bx&1 ? (this.isLP(cc1,k.DN) && this.isLP(cc2,k.UP)) :
-									  (this.isLP(cc1,k.RT) && this.isLP(cc2,k.LT));
+		return this.border[id].bx&1 ? (this.isLP(cc1,this.DN) && this.isLP(cc2,this.UP)) :
+									  (this.isLP(cc1,this.RT) && this.isLP(cc2,this.LT));
 	},
 	isLP : function(cc,dir){
 		return !!this.isLPobj[dir][this.cell[cc].ques];
@@ -650,8 +678,8 @@ pzprv3.createCommonClass('Board', '',
 	//  -> cellidの片方がnullになっていることを考慮していません
 	isLineNG : function(id){
 		var cc1 = this.border[id].cellcc[0], cc2 = this.border[id].cellcc[1];
-		return this.border[id].bx&1 ? (this.noLP(cc1,k.DN) || this.noLP(cc2,k.UP)) :
-									  (this.noLP(cc1,k.RT) || this.noLP(cc2,k.LT));
+		return this.border[id].bx&1 ? (this.noLP(cc1,this.DN) || this.noLP(cc2,this.UP)) :
+									  (this.noLP(cc1,this.RT) || this.noLP(cc2,this.LT));
 	},
 	// ans.checkenableLinePartsからnoLP()関数が直接呼ばれている
 	noLP : function(cc,dir){
@@ -698,6 +726,18 @@ pzprv3.createCommonClass('Board', '',
 	},
 
 	//---------------------------------------------------------------------------
+	// bd.setdata() Cell,Cross,Border,EXCellの値を取得する
+	// bd.setdata() Cell,Cross,Border,EXCellの値を設定する
+	//---------------------------------------------------------------------------
+	getdata : function(group, prop, id, num){
+		return this[group][id][prop];
+	},
+	setdata : function(group, prop, id, num){
+		um.addOpe(group, prop, id, this[group][id][prop], num);
+		this[group][id][prop] = num;
+	},
+
+	//---------------------------------------------------------------------------
 	// sQuC / QuC : bd.setQuesCell() / bd.getQuesCell()  該当するCellのquesを設定する/返す
 	// sQnC / QnC : bd.setQnumCell() / bd.getQnumCell()  該当するCellのqnumを設定する/返す
 	// sQsC / QsC : bd.setQsubCell() / bd.getQsubCell()  該当するCellのqsubを設定する/返す
@@ -706,8 +746,7 @@ pzprv3.createCommonClass('Board', '',
 	//---------------------------------------------------------------------------
 	// Cell関連Get/Set関数 <- 各Cellが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuC : function(id, num) {
-		um.addOpe(k.CELL, k.QUES, id, this.cell[id].ques, num);
-		this.cell[id].ques = num;
+		this.setdata(this.CELL, this.QUES, id, num);
 
 		if(this.enableLineCombined){ this.setCombinedLine(id);}
 	},
@@ -715,35 +754,30 @@ pzprv3.createCommonClass('Board', '',
 	sQnC : function(id, num) {
 		if(!this.numzero && num===0){ return;}
 
-		um.addOpe(k.CELL, k.QNUM, id, this.cell[id].qnum, num);
-		this.cell[id].qnum = num;
+		this.setdata(this.CELL, this.QNUM, id, num);
 
 		this.areas.setCell('number',id);
 	},
 	sAnC : function(id, num) {
 		if(!this.numzero && num===0){ return;}
 
-		um.addOpe(k.CELL, k.ANUM, id, this.cell[id].anum, num);
-		this.cell[id].anum = num;
+		this.setdata(this.CELL, this.ANUM, id, num);
 
 		this.areas.setCell('number',id);
 	},
 	// override by lightup.js, shugaku.js
 	sQaC : function(id, num) {
-		um.addOpe(k.CELL, k.QANS, id, this.cell[id].qans, num);
-		this.cell[id].qans = num;
+		this.setdata(this.CELL, this.QANS, id, num);
 
 		this.areas.setCell('block',id);
 	},
 	sQsC : function(id, num) {
-		um.addOpe(k.CELL, k.QSUB, id, this.cell[id].qsub, num);
-		this.cell[id].qsub = num;
+		this.setdata(this.CELL, this.QSUB, id, num);
 
 		if(this.numberWithMB){ this.areas.setCell('number',id);}
 	},
 	sDiC : function(id, num) {
-		um.addOpe(k.CELL, k.QDIR, id, this.cell[id].qdir, num);
-		this.cell[id].qdir = num;
+		this.setdata(this.CELL, this.QDIR, id, num);
 	},
 
 	QuC : function(id){ return this.cell[id].ques;},
@@ -759,12 +793,10 @@ pzprv3.createCommonClass('Board', '',
 	//---------------------------------------------------------------------------
 	// EXcell関連Get/Set関数
 	sQnE : function(id, num) {
-		um.addOpe(k.EXCELL, k.QNUM, id, this.excell[id].qnum, num);
-		this.excell[id].qnum = num;
+		this.setdata(this.EXCELL, this.QNUM, id, num);
 	},
 	sDiE : function(id, num) {
-		um.addOpe(k.EXCELL, k.QDIR, id, this.excell[id].qdir, num);
-		this.excell[id].qdir = num;
+		this.setdata(this.EXCELL, this.QDIR, id, num);
 	},
 
 	QnE : function(id){ return this.excell[id].qnum;},
@@ -776,12 +808,10 @@ pzprv3.createCommonClass('Board', '',
 	//---------------------------------------------------------------------------
 	// Cross関連Get/Set関数 <- 各Crossが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuX : function(id, num) {
-		um.addOpe(k.CROSS, k.QUES, id, this.cross[id].ques, num);
-		this.cross[id].ques = num;
+		this.setdata(this.CROSS, this.QUES, id, num);
 	},
 	sQnX : function(id, num) {
-		um.addOpe(k.CROSS, k.QNUM, id, this.cross[id].qnum, num);
-		this.cross[id].qnum = num;
+		this.setdata(this.CROSS, this.QNUM, id, num);
 	},
 
 	QuX : function(id){ return this.cross[id].ques;},
@@ -797,38 +827,32 @@ pzprv3.createCommonClass('Board', '',
 	//---------------------------------------------------------------------------
 	// Border関連Get/Set関数 <- 各Borderが持っているとメモリを激しく消費するのでここに置くこと.
 	sQuB : function(id, num) {
-		um.addOpe(k.BORDER, k.QUES, id, this.border[id].ques, num);
-		this.border[id].ques = num;
+		this.setdata(this.BORDER, this.QUES, id, num);
 
 		this.areas.setBorder(id,(num>0));
 	},
 	sQnB : function(id, num) {
-		um.addOpe(k.BORDER, k.QNUM, id, this.border[id].qnum, num);
-		this.border[id].qnum = num;
+		this.setdata(this.BORDER, this.QNUM, id, num);
 	},
 	sQaB : function(id, num) {
 		if(this.border[id].ques!==0){ return;}
 
-		um.addOpe(k.BORDER, k.QANS, id, this.border[id].qans, num);
-		this.border[id].qans = num;
+		this.setdata(this.BORDER, this.QANS, id, num);
 
 		this.areas.setBorder(id,(num>0));
 	},
 	sQsB : function(id, num) {
-		um.addOpe(k.BORDER, k.QSUB, id, this.border[id].qsub, num);
-		this.border[id].qsub = num;
+		this.setdata(this.BORDER, this.QSUB, id, num);
 	},
 	sLiB : function(id, num) {
 		if(this.enableLineNG && this.checkStableLine(id,num)){ return;}
 
-		um.addOpe(k.BORDER, k.LINE, id, this.border[id].line, num);
-		this.border[id].line = num;
+		this.setdata(this.BORDER, this.LINE, id, num);
 
 		this.lines.setLine(id,(num>0));
 	},
 	sDiB : function(id, num) {
-		um.addOpe(k.BORDER, k.QDIR, id, this.border[id].qdir, num);
-		this.border[id].qdir = num;
+		this.setdata(this.BORDER, this.QDIR, id, num);
 	},
 
 	QuB : function(id){ return this.border[id].ques;},
@@ -847,27 +871,27 @@ pzprv3.createCommonClass('Board', '',
 	//---------------------------------------------------------------------------
 	// Get/SetError関数(setは配列で入力)
 	sErC : function(idlist, num) {
-		if(!ans.isenableSetError()){ return;}
+		if(!this.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
 		for(var i=0;i<idlist.length;i++){ if(!!this.cell[idlist[i]]){ this.cell[idlist[i]].error = num;} }
 	},
 	sErX : function(idlist, num) {
-		if(!ans.isenableSetError()){ return;}
+		if(!this.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
 		for(var i=0;i<idlist.length;i++){ if(!!this.cross[idlist[i]]){ this.cross[idlist[i]].error = num;} }
 	},
 	sErB : function(idlist, num) {
-		if(!ans.isenableSetError()){ return;}
+		if(!this.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
 		for(var i=0;i<idlist.length;i++){ if(!!this.border[idlist[i]]){ this.border[idlist[i]].error = num;} }
 	},
 	sErE : function(idlist, num) {
-		if(!ans.isenableSetError()){ return;}
+		if(!this.isenableSetError()){ return;}
 		if(!idlist.push){ idlist = [idlist];}
 		for(var i=0;i<idlist.length;i++){ if(!!this.excell[idlist[i]]){ this.excell[idlist[i]].error = num;} }
 	},
 	sErBAll : function(num){
-		if(!ans.isenableSetError()){ return;}
+		if(!this.isenableSetError()){ return;}
 		for(var i=0;i<this.bdmax;i++){ this.border[i].error = num;}
 	},
 
@@ -875,6 +899,15 @@ pzprv3.createCommonClass('Board', '',
 	// ErX : function(id){ return (!!this.cross[id] ?this.cross[id].error :undef);},
 	// ErB : function(id){ return (!!this.border[id]?this.border[id].error:undef);},
 	// ErE : function(id){ return (!!this.excell[id]?this.excell[id].error:undef);},
+
+	//---------------------------------------------------------------------------
+	// bd.disableSetError()  盤面のオブジェクトにエラーフラグを設定できないようにする
+	// bd.enableSetError()   盤面のオブジェクトにエラーフラグを設定できるようにする
+	// bd.isenableSetError() 盤面のオブジェクトにエラーフラグを設定できるかどうかを返す
+	//---------------------------------------------------------------------------
+	disableSetError  : function(){ this.diserror++;},
+	enableSetError   : function(){ this.diserror--;},
+	isenableSetError : function(){ return (this.diserror<=0); },
 
 	//---------------------------------------------------------------------------
 	// bd.isBlack()   該当するCellが黒マスかどうか返す

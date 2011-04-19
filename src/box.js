@@ -41,10 +41,10 @@ KeyEvent:{
 	moveTarget : function(ca){
 		var cc0 = tc.getTEC(), tcp = tc.getTCP(), flag = false;
 		switch(ca){
-			case k.KEYUP: if(tcp.x===tc.minx && tc.miny<tcp.y){ tc.decTCY(2); flag=true;} break;
-			case k.KEYDN: if(tcp.x===tc.minx && tc.maxy>tcp.y){ tc.incTCY(2); flag=true;} break;
-			case k.KEYLT: if(tcp.y===tc.miny && tc.minx<tcp.x){ tc.decTCX(2); flag=true;} break;
-			case k.KEYRT: if(tcp.y===tc.miny && tc.maxx>tcp.x){ tc.incTCX(2); flag=true;} break;
+			case this.KEYUP: if(tcp.x===tc.minx && tc.miny<tcp.y){ tc.decTCY(2); flag=true;} break;
+			case this.KEYDN: if(tcp.x===tc.minx && tc.maxy>tcp.y){ tc.incTCY(2); flag=true;} break;
+			case this.KEYLT: if(tcp.y===tc.miny && tc.minx<tcp.x){ tc.decTCX(2); flag=true;} break;
+			case this.KEYRT: if(tcp.y===tc.miny && tc.maxx>tcp.x){ tc.incTCX(2); flag=true;} break;
 		}
 
 		if(flag){

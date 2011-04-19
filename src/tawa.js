@@ -163,23 +163,23 @@ MenuExec:{
 	expandreduce : function(key,d){
 		if(key & this.EXPAND){
 			switch(key & 0x0F){
-				case k.LT: bd.qcols+=[0,0,1,1][bd.lap];  bd.lap=[2,3,0,1][bd.lap]; break;
-				case k.RT: bd.qcols+=[0,1,0,1][bd.lap];  bd.lap=[1,0,3,2][bd.lap]; break;
-				case k.UP: bd.qcols+=[-1,0,0,1][bd.lap]; bd.lap=[3,2,1,0][bd.lap]; bd.qrows++; break;
-				case k.DN: bd.qrows++; break;
+				case bd.LT: bd.qcols+=[0,0,1,1][bd.lap];  bd.lap=[2,3,0,1][bd.lap]; break;
+				case bd.RT: bd.qcols+=[0,1,0,1][bd.lap];  bd.lap=[1,0,3,2][bd.lap]; break;
+				case bd.UP: bd.qcols+=[-1,0,0,1][bd.lap]; bd.lap=[3,2,1,0][bd.lap]; bd.qrows++; break;
+				case bd.DN: bd.qrows++; break;
 			}
 			bd.setminmax();
 
-			this.expandGroup(k.CELL,key);
+			this.expandGroup(bd.CELL,key);
 		}
 		else if(key & this.REDUCE){
-			this.reduceGroup(k.CELL,key);
+			this.reduceGroup(bd.CELL,key);
 
 			switch(key & 0x0F){
-				case k.LT: bd.qcols-=[1,1,0,0][bd.lap];  bd.lap=[2,3,0,1][bd.lap]; break;
-				case k.RT: bd.qcols-=[1,0,1,0][bd.lap];  bd.lap=[1,0,3,2][bd.lap]; break;
-				case k.UP: bd.qcols-=[1,0,0,-1][bd.lap]; bd.lap=[3,2,1,0][bd.lap]; bd.qrows--; break;
-				case k.DN: bd.qrows--; break;
+				case bd.LT: bd.qcols-=[1,1,0,0][bd.lap];  bd.lap=[2,3,0,1][bd.lap]; break;
+				case bd.RT: bd.qcols-=[1,0,1,0][bd.lap];  bd.lap=[1,0,3,2][bd.lap]; break;
+				case bd.UP: bd.qcols-=[1,0,0,-1][bd.lap]; bd.lap=[3,2,1,0][bd.lap]; bd.qrows--; break;
+				case bd.DN: bd.qrows--; break;
 			}
 		}
 		bd.setposAll();
@@ -191,17 +191,17 @@ MenuExec:{
 		if     (key===this.FLIPY){ if(!(bd.qrows&1)){ bd.lap = {0:3,1:2,2:1,3:0}[bd.lap];} }
 		else if(key===this.FLIPX){ bd.lap = {0:0,1:2,2:1,3:3}[bd.lap];}
 
-		this.turnflipGroup(k.CELL, key, d);
+		this.turnflipGroup(bd.CELL, key, d);
 
 		bd.setposAll();
 	},
 	distObj : function(type,id,key){
 		var obj = bd.cell[id];
 		key &= 0x0F;
-		if     (key===k.UP){ return obj.by;}
-		else if(key===k.DN){ return bd.maxby-obj.by;}
-		else if(key===k.LT){ return obj.bx;}
-		else if(key===k.RT){ return bd.maxbx-obj.bx;}
+		if     (key===bd.UP){ return obj.by;}
+		else if(key===bd.DN){ return bd.maxby-obj.by;}
+		else if(key===bd.LT){ return obj.bx;}
+		else if(key===bd.RT){ return bd.maxbx-obj.bx;}
 		return -1;
 	},
 

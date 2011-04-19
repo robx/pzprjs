@@ -141,7 +141,7 @@ FileIO:{
 	},
 
 	decodeCellDirecQnum_kanpen : function(isurl){
-		var dirs = [k.UP, k.LT, k.DN, k.RT];
+		var dirs = [bd.UP, bd.LT, bd.DN, bd.RT];
 		this.decodeCell( function(obj,ca){
 			if     (ca==="#" && !isurl){ obj.qans = 1;}
 			else if(ca==="+" && !isurl){ obj.qsub = 1;}
@@ -153,10 +153,10 @@ FileIO:{
 		});
 	},
 	encodeCellDirecQnum_kanpen : function(isurl){
-		var dirs = [k.UP, k.LT, k.DN, k.RT];
+		var dirs = [bd.UP, bd.LT, bd.DN, bd.RT];
 		this.encodeCell( function(obj){
 			var num = ((obj.qnum>=0&&obj.qnum<16) ? obj.qnum : -1), dir;
-			if(num!==-1 && obj.qdir!==k.NONE){
+			if(num!==-1 && obj.qdir!==bd.NDIR){
 				for(dir=0;dir<4;dir++){ if(dirs[dir]===obj.qdir){ break;}}
 				return (""+((dir<<4)+(num&0x0F))+" ");
 			}
@@ -215,10 +215,10 @@ AnsCheck:{
 			if(!bd.isValidNum(c) || bd.DiC(c)==0 || bd.isBlack(c)){ continue;}
 			var bx = bd.cell[c].bx, by = bd.cell[c].by, dir = bd.DiC(c);
 			var cnt=0, clist = [];
-			if     (dir==k.UP){ by-=2; while(by>bd.minby){ clist.push(bd.cnum(bx,by)); by-=2;} }
-			else if(dir==k.DN){ by+=2; while(by<bd.maxby){ clist.push(bd.cnum(bx,by)); by+=2;} }
-			else if(dir==k.LT){ bx-=2; while(bx>bd.minbx){ clist.push(bd.cnum(bx,by)); bx-=2;} }
-			else if(dir==k.RT){ bx+=2; while(bx<bd.maxbx){ clist.push(bd.cnum(bx,by)); bx+=2;} }
+			if     (dir==bd.UP){ by-=2; while(by>bd.minby){ clist.push(bd.cnum(bx,by)); by-=2;} }
+			else if(dir==bd.DN){ by+=2; while(by<bd.maxby){ clist.push(bd.cnum(bx,by)); by+=2;} }
+			else if(dir==bd.LT){ bx-=2; while(bx>bd.minbx){ clist.push(bd.cnum(bx,by)); bx-=2;} }
+			else if(dir==bd.RT){ bx+=2; while(bx<bd.maxbx){ clist.push(bd.cnum(bx,by)); bx+=2;} }
 
 			for(var i=0;i<clist.length;i++){ if(bd.isBlack(clist[i])){ cnt++;} }
 
