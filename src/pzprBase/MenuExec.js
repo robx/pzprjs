@@ -324,13 +324,11 @@ pzprv3.createCommonClass('MenuExec', '',
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.popupadjust()  "盤面の調整""回転・反転"でボタンが押された時に
-	//                        対応する関数へジャンプする
+	// menu.ex.popupadjust()  "盤面の調整""回転・反転"でボタンが押された時に実行条件をチェック
+	// menu.ex.execadjust()   盤面の調整、回転、反転で対応する関数へジャンプする
 	//------------------------------------------------------------------------------
 	popupadjust : function(e){
 		if(menu.pop){
-			um.newOperation(true);
-
 			var name = ee.getSrcElement(e).name;
 			if(name.indexOf("reduce")===0){
 				if(name==="reduceup"||name==="reducedn"){
@@ -341,17 +339,22 @@ pzprv3.createCommonClass('MenuExec', '',
 				}
 			}
 
-			var d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows};
-			if (name.match(/(expand|reduce)/)){ this.expandreduce(this.boardtype[name][1],d);}
-			else if(name.match(/(turn|flip)/)){ this.turnflip    (this.boardtype[name][1],d);}
-
-			// reduceはここ必須
-			um.addOpe(k.BOARD, name, 0, this.boardtype[name][0], this.boardtype[name][1]);
-
-			bd.setminmax();
-			if(!um.undoExec){ bd.resetInfo();}
-			pc.resize_canvas();				// Canvasを更新する
+			this.execadjust(name);
 		}
+	},
+	execadjust : function(name){
+		if(!um.undoExec && !um.redoExec){ um.newOperation(true);}
+
+		var d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows};
+		if (name.match(/(expand|reduce)/)){ this.expandreduce(this.boardtype[name][1],d);}
+		else if(name.match(/(turn|flip)/)){ this.turnflip    (this.boardtype[name][1],d);}
+
+		// reduceはここ必須
+		um.addOpe(k.BOARD, name, 0, this.boardtype[name][0], this.boardtype[name][1]);
+
+		bd.setminmax();
+		if(!um.undoExec){ bd.resetInfo();}
+		pc.resize_canvas();				// Canvasを更新する
 	},
 
 	//------------------------------------------------------------------------------

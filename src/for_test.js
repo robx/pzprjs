@@ -118,11 +118,12 @@ debug.extend({
 		//Answer test--------------------------------------------------------------
 		case 20:
 			(function(){
-				bd.puzzleid = pid;
-				alstr = acsstr[n][0];
-				qstr  = acsstr[n][1];
-				fio.filedecode_main(acsstr[n][1]);
 				setTimeout(function(){
+					bd.puzzleid = pid;
+					alstr = acsstr[n][0];
+					qstr  = acsstr[n][1];
+					fio.filedecode_main(acsstr[n][1]);
+
 					ans.inCheck = true;
 					ans.alstr = { jp:'' ,en:''};
 					ans.checkresult = true;
@@ -138,8 +139,9 @@ debug.extend({
 					else if(!debug.alltimer){ debug.addTextarea("Answer test "+(n+1)+" = pass \""+acsstr[n][0]+"\"");}
 
 					n++;
-					if(n<acsstr.length){ debug.phase = 20;}
-					else{ debug.phase = (menu.ispencilbox ? 31 : 30);}
+					if(n<acsstr.length){ setTimeout(arguments.callee,fint); return;}
+
+					debug.phase = (menu.ispencilbox ? 31 : 30);
 				},fint);
 			})();
 			break;
@@ -189,59 +191,64 @@ debug.extend({
 		//Turn test--------------------------------------------------------------
 		case 40:
 			(function(){
-				var bd2 = debug.bd_freezecopy();
-				var func = function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnr'}}); menu.pop = '';};
-				func();
-				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
+				var bd2 = debug.bd_freezecopy(), retry = 4;
+				setTimeout(function(){
+					menu.ex.execadjust('turnr');
+					retry--; if(retry>0){ setTimeout(arguments.callee,fint); return;}
+
 					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("TurnR test 1  = failure..."); fails++;}
 					else if(!debug.alltimer){ debug.addTextarea("TurnR test 1  = pass");}
 					debug.phase = 41;
-				},fint); },fint); },fint);
+				},fint);
 			})();
 			break;
 		case 41:
 			(function(){
-				var bd2 = debug.bd_freezecopy();
-				var func = function(){ um.undo(1);};
-				func();
-				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
+				var bd2 = debug.bd_freezecopy(), retry = 4;
+				setTimeout(function(){
+					um.undo(1);
+					retry--; if(retry>0){ setTimeout(arguments.callee,fint); return;}
+
 					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("TurnR test 2  = failure..."); fails++;}
 					else if(!debug.alltimer){ debug.addTextarea("TurnR test 2  = pass");}
 					debug.phase = 45;
-				},fint); },fint); },fint);
+				},fint);
 			})();
 			break;
 		case 45:
 			(function(){
-				var bd2 = debug.bd_freezecopy();
-				var func = function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'turnl'}}); menu.pop = '';};
-				func();
-				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
+				var bd2 = debug.bd_freezecopy(), retry = 4;
+				setTimeout(function(){
+					menu.ex.execadjust('turnl');
+					retry--; if(retry>0){ setTimeout(arguments.callee,fint); return;}
+
 					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("TurnL test 1  = failure..."); fails++;}
 					else if(!debug.alltimer){ debug.addTextarea("TurnL test 1  = pass");}
 					debug.phase = 46;
-				},fint); },fint); },fint);
+				},fint);
 			})();
 			break;
 		case 46:
 			(function(){
-				var bd2 = debug.bd_freezecopy();
-				var func = function(){ um.undo(1);};
-				func();
-				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("TurnR test 2  = failure..."); fails++;}
-					else if(!debug.alltimer){ debug.addTextarea("TurnR test 2  = pass");}
+				var bd2 = debug.bd_freezecopy(), retry = 4;
+				setTimeout(function(){
+					um.undo(1);
+					retry--; if(retry>0){ setTimeout(arguments.callee,fint); return;}
+
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("TurnL test 2  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("TurnL test 2  = pass");}
 					debug.phase = 50;
-				},fint); },fint); },fint);
+				},fint);
 			})();
 			break;
 		//Flip test--------------------------------------------------------------
 		case 50:
 			(function(){
-				var bd2 = debug.bd_freezecopy();
-				menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}});
+				var bd2 = debug.bd_freezecopy(), retry = 2;
+				setTimeout(function(){
+					menu.ex.execadjust('flipx');
+					retry--; if(retry>0){ setTimeout(arguments.callee,fint); return;}
 
-				setTimeout(function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipx'}}); menu.pop = '';
 					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FlipX test 1  = failure..."); fails++;}
 					else if(!debug.alltimer){ debug.addTextarea("FlipX test 1  = pass");}
 					debug.phase = 51;
@@ -250,10 +257,11 @@ debug.extend({
 			break;
 		case 51:
 			(function(){
-				var bd2 = debug.bd_freezecopy();
-				um.undo(1);
+				var bd2 = debug.bd_freezecopy(), retry = 2;
+				setTimeout(function(){
+					um.undo(1);
+					retry--; if(retry>0){ setTimeout(arguments.callee,fint); return;}
 
-				setTimeout(function(){ um.undo(1);
 					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FlipX test 2  = failure..."); fails++;}
 					else if(!debug.alltimer){ debug.addTextarea("FlipX test 2  = pass");}
 					debug.phase = 55;
@@ -262,10 +270,11 @@ debug.extend({
 			break;
 		case 55:
 			(function(){
-				var bd2 = debug.bd_freezecopy();
-				menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}});
+				var bd2 = debug.bd_freezecopy(), retry = 2;
+				setTimeout(function(){
+					menu.ex.execadjust('flipy');
+					retry--; if(retry>0){ setTimeout(arguments.callee,fint); return;}
 
-				setTimeout(function(){ menu.pop = ee("pop2_2"); menu.ex.popupadjust({srcElement:{name:'flipy'}}); menu.pop = '';
 					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FlipY test 1  = failure..."); fails++;}
 					else if(!debug.alltimer){ debug.addTextarea("FlipY test 1  = pass");}
 					debug.phase = 56;
@@ -274,12 +283,13 @@ debug.extend({
 			break;
 		case 56:
 			(function(){
-				var bd2 = debug.bd_freezecopy();
-				um.undo(1);
+				var bd2 = debug.bd_freezecopy(), retry = 2;
+				setTimeout(function(){
+					um.undo(1);
+					retry--; if(retry>0){ setTimeout(arguments.callee,fint); return;}
 
-				setTimeout(function(){ um.undo(1);
-					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FlipX test 2  = failure..."); fails++;}
-					else if(!debug.alltimer){ debug.addTextarea("FlipX test 2  = pass");}
+					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("FlipY test 2  = failure..."); fails++;}
+					else if(!debug.alltimer){ debug.addTextarea("FlipY test 2  = pass");}
 					debug.phase = 60;
 				},fint);
 			})();
@@ -288,32 +298,29 @@ debug.extend({
 		case 60:
 			debug.phase=0;
 			(function(){
-				var bd2 = debug.bd_freezecopy();
-				var func = function(nid){ menu.pop = ee("pop2_1"); menu.ex.popupadjust({srcElement:{name:nid}}); menu.pop = '';};
-				setTimeout(function(){ func('expandup'); setTimeout(function(){ func('expandrt');
-				setTimeout(function(){ func('expanddn'); setTimeout(function(){ func('expandlt');
-				setTimeout(function(){ func('reduceup'); setTimeout(function(){ func('reducert');
-				setTimeout(function(){ func('reducedn'); setTimeout(function(){ func('reducelt');
+				var bd2 = debug.bd_freezecopy(), retry = 8;
+				var names = ['expandup','expanddn','expandlt','expandrt','reduceup','reducedn','reducelt','reducert'];
+				setTimeout(function(){
+					menu.ex.execadjust(names[8-retry]);
+					retry--; if(retry>0){ setTimeout(arguments.callee,fint); return;}
+
 					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("Adjust test 1 = failure..."); fails++;}
 					else if(!debug.alltimer){ debug.addTextarea("Adjust test 1 = pass");}
 					debug.phase = 61;
-				},fint); },fint); },fint); },fint); },fint); },fint); },fint); },fint);
+				},fint);
 			})();
 			break;
-		case 61: // ワンクッション置く
-			setTimeout(function(){ debug.phase = 62;},((fint/2)|0));
-			break;
-		case 62:
+		case 61:
 			(function(){
-				var bd2 = debug.bd_freezecopy();
-				var func = function(){ um.undo(1);};
-				func();
-				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
-				setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func(); setTimeout(function(){ func();
+				var bd2 = debug.bd_freezecopy(), retry = 8;
+				setTimeout(function(){
+					um.undo(1);
+					retry--; if(retry>0){ setTimeout(arguments.callee,fint); return;}
+
 					if(!debug.bd_compare(bd,bd2)){ debug.addTextarea("Adjust test 2 = failure..."); fails++;}
 					else if(!debug.alltimer){ debug.addTextarea("Adjust test 2 = pass");}
 					debug.phase = 90;
-				},fint); },fint); },fint); },fint); },fint); },fint); },fint);
+				},fint);
 			})();
 			break;
 		//test end--------------------------------------------------------------
