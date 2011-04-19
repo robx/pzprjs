@@ -166,18 +166,11 @@ MenuExec:{
 },
 
 Menu:{
+	disable_subclear : true,
+
 	menufix : function(){
 		this.addUseToFlags();
 		this.addRedLineToFlags();
-	},
-
-	menuinit : function(){
-		this.SuperFunc.menuinit.call(this);
-		ee('btnclear2').el.style.display = 'none';
-	},
-	menureset : function(){
-		ee('btnclear2').el.style.display = 'inline';
-		this.SuperFunc.menureset.call(this);
 	}
 },
 

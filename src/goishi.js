@@ -137,6 +137,8 @@ UndoTimer:{
 },
 
 Menu:{
+	disable_subclear : true,
+
 	menufix : function(){
 		if(pzprv3.EDITOR){
 			pp.addCheck('bdpadding','setting',true, '空隙つきURL', 'URL with Padding');
@@ -144,15 +146,6 @@ Menu:{
 			pp.funcs['bdpadding'] = function(){ };
 		}
 	},
-
-	menuinit : function(){
-		this.SuperFunc.menuinit.call(this);
-		ee('btnclear2').el.style.display = 'none';
-	},
-	menureset : function(){
-		ee('btnclear2').el.style.display = 'inline';
-		this.SuperFunc.menureset.call(this);
-	}
 },
 
 //---------------------------------------------------------

@@ -59,6 +59,8 @@ pzprv3.createCommonClass('Menu', '',
 
 	language : 'ja',
 
+	disable_subclear : false, // "補助消去"ボタンを作らない
+
 	//---------------------------------------------------------------------------
 	// menu.menuinit()   メニュー、サブメニュー、フロートメニュー、ボタン、
 	//                   管理領域、ポップアップメニューの初期設定を行う
@@ -75,13 +77,9 @@ pzprv3.createCommonClass('Menu', '',
 
 		this.displayDesign();	// デザイン変更関連関数の呼び出し
 		this.checkUserLang();	// 言語のチェック
-
-		// this.finalfix(); -> menuinitのオーバーライドにしてください
 	},
 
 	menureset : function(){
-		// this.protoOriginal(); -> menuresetのオーバーライドにしてください
-
 		this.dispfloat  = [];
 		this.floatpanel = [];
 		this.pop        = "";
@@ -95,7 +93,6 @@ pzprv3.createCommonClass('Menu', '',
 
 		ee('float_parent').el.innerHTML = '';
 
-		if(!!ee('btncolor2')){ ee('btncolor2').remove();}
 		ee('btnarea').el.innerHTML = '';
 
 		ee('urlbuttonarea').el.innerHTML = '';
@@ -272,7 +269,9 @@ pzprv3.createCommonClass('Menu', '',
 		aa('cap_board','board', '盤面','Display mode');
 		as('check',    'board', 'チェック', 'Check the Answer');
 		as('ansclear', 'board', '回答消去', 'Erase answer');
-		as('subclear', 'board', '補助記号消去', 'Erase auxiliary marks');
+		if(!this.disable_subclear){
+			as('subclear', 'board', '補助記号消去', 'Erase auxiliary marks');
+		}
 
 		// *表示 ==============================================================
 		am('disp', "表示", "Display");
@@ -636,26 +635,25 @@ pzprv3.createCommonClass('Menu', '',
 		ee.createEL(this.EL_UBUTTON, 'btnredo');
 		ee('btnarea').appendHTML('&nbsp;');
 		ee.createEL(this.EL_UBUTTON, 'btnclear');
-		ee.createEL(this.EL_UBUTTON, 'btnclear2');
 
 		this.addButtons(ee("btncheck").el,  ee.binder(ans, ans.check),             "チェック", "Check");
 		this.addButtons(ee("btnundo").el,   ee.binder(um, um.undo, [1]),           "戻",       "<-");
 		this.addButtons(ee("btnredo").el,   ee.binder(um, um.redo, [1]),           "進",       "->");
 		this.addButtons(ee("btnclear").el,  ee.binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
-		this.addButtons(ee("btnclear2").el, ee.binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
 
 		// 初期値ではどっちも押せない
 		ee('btnundo').el.disabled = true;
 		ee('btnredo').el.disabled = true;
 
-		// なぜかF5で更新するとtrueになってるので応急処置...
-		ee('btnclear') .el.disabled = false;
-		ee('btnclear2').el.disabled = false;
+		if(!this.disable_subclear){
+			ee.createEL(this.EL_UBUTTON, 'btnclear2');
+			this.addButtons(ee("btnclear2").el, ee.binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
+		}
 
 		if(pc.irowake!=0){
-			var el = ee.createEL(this.EL_BUTTON, 'btncolor2');
+			var el = ee.createEL(this.EL_UBUTTON, 'btncolor2');
 			this.addButtons(el, ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
-			ee('btncolor2').insertAfter(ee('btnclear2').el).el.style.display = 'none';
+			el.style.display = 'none';
 		}
 	},
 

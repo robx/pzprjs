@@ -297,6 +297,8 @@ MenuExec:{
 },
 
 Menu:{
+	disable_subclear : true,
+
 	menufix : function(){
 		pp.addCheck('circolor','setting',true,'点をグレーにする','Set Grey Color');
 		pp.setLabel('circolor', '線が2本になったら点をグレーにする', 'Grey if the number of linked segment is two.');
@@ -307,15 +309,6 @@ Menu:{
 
 		pp.addCheck('lattice','setting',true,'格子点チェック','Check lattice point');
 		pp.setLabel('lattice', '点を通過する線を引けないようにする', 'Disable drawing segment passing over a lattice point.');
-	},
-
-	menuinit : function(){
-		this.SuperFunc.menuinit.call(this);
-		ee('btnclear2').el.style.display = 'none';
-	},
-	menureset : function(){
-		ee('btnclear2').el.style.display = 'inline';
-		this.SuperFunc.menureset.call(this);
 	}
 },
 

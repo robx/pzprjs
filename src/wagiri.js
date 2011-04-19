@@ -172,21 +172,14 @@ MenuExec:{
 },
 
 Menu:{
+	disable_subclear : true,
+
 	menufix : function(){
 		this.addUseToFlags();
 
 		pp.addCheck('colorslash','setting',false, '斜線の色分け', 'Slash with color');
 		pp.setLabel('colorslash', '斜線を輪切りかのどちらかで色分けする(重いと思います)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
 		pp.funcs['colorslash'] = function(){ pc.paintAll();};
-	},
-
-	menuinit : function(){
-		this.SuperFunc.menuinit.call(this);
-		ee('btnclear2').el.style.display = 'none';
-	},
-	menureset : function(){
-		ee('btnclear2').el.style.display = 'inline';
-		this.SuperFunc.menureset.call(this);
 	}
 },
 
