@@ -1158,7 +1158,7 @@ var debug = {
 		_doc.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
 		_doc.testform.database.style.display = (base.dec.enLocalStorage() ? 'none' : 'inline');
 
-		if(pzprv3.DEBUG){ debug.testonly_func();}	// テスト用
+		if(pzprv3.DEBUG){ this.testonly_func();}	// テスト用
 	},
 
 	disppoptest : function(){

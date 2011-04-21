@@ -461,7 +461,7 @@ pzprv3.createCoreClass('PBase', '',
 		tm.reset();
 
 		// デバッグのスクリプトチェック時は、ここで発火させる
-		if(pzprv3.DEBUG && debug.phase===0){ debug.sccheck.call(debug);}
+		if(pzprv3.DEBUG && debug.phase===0){ debug.sccheck(debug);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -475,7 +475,7 @@ pzprv3.createCoreClass('PBase', '',
 			this.decodeBoardData();
 
 			// デバッグのスクリプトチェック時は、ここで発火させる
-			if(pzprv3.DEBUG && debug.phase===0){ debug.sccheck.call(debug);}
+			if(pzprv3.DEBUG && debug.phase===0){ debug.sccheck(debug);}
 		}
 	},
 	decodeBoardData : function(){
