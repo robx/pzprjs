@@ -140,6 +140,10 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Cross:{
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+		this.segment = []; /* インスタンス化 */
+	},
 	segment : []
 },
 

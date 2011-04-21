@@ -22,9 +22,7 @@ pzprv3.createCommonClass('Operation', '',
 	//---------------------------------------------------------------------------
 	exec : function(num){
 		if(this.group !== bd.BOARD && this.group !== bd.OTHER){
-			var name = um.getfuncname(this.group, this.property);
 			bd.setdata(this.group, this.property, this.id, num);
-
 			switch(this.group){
 				case bd.CELL:   um.stackCell(this.id); break;
 				case bd.CROSS:  um.stackCross(this.id); break;
@@ -68,12 +66,13 @@ pzprv3.createCommonClass('Operation', '',
 		return true;
 	},
 	toString : function(){
-		if(this.group!==bd.BOARD && this.group !== bd.OTHER){
-			var prefix = um.getprefix(this.group, this.property);
-			var obj = bd.getObject(this.group, this.id);
+		if(this.group !== bd.BOARD && this.group !== bd.OTHER){
+			var prefix = '', obj = bd.getObject(this.group, this.id);
+			for(var i in um.STRGROUP){ if(this.group   ==um.STRGROUP[i]){ prefix+=i; break;}}
+			for(var i in um.STRPROP) { if(this.property==um.STRPROP[i]) { prefix+=i; break;}}
 			return [prefix, obj.bx, obj.by, this.old, this.num].join(',');
 		}
-		else if(this.group===bd.BOARD){ return ['AL', 0, 0, this.old, this.num].join(',');}
+		else if(this.group === bd.BOARD){ return ['AL', 0, 0, this.old, this.num].join(',');}
 		else{ return '';}
 	}
 });
@@ -132,30 +131,13 @@ pzprv3.createCommonClass('OperationManager', '',
 		E: 'excell'  // bd.EXCELL
 	},
 	STRPROP : {
-		U: ['ques', 'sQu'], // bd.QUES
-		N: ['qnum', 'sQn'], // bd.QNUM
-		M: ['anum', 'sAn'], // bd.ANUM
-		D: ['qdir', 'sDi'], // bd.QDIR
-		A: ['qans', 'sQa'], // bd.QANS
-		S: ['qsub', 'sQs'], // bd.QSUB
-		L: ['line', 'sLi']  // bd.LINE
-	},
-
-	//---------------------------------------------------------------------------
-	// um.getfuncname() ope.exec()関数で関数名を取得するのに用いる
-	// um.getprefix()   ope.toString()関数でprefix名を取得するのに用いる
-	//---------------------------------------------------------------------------
-	getfuncname : function(group, prop){
-		var func1, func2;
-		for(var i in this.STRPROP){ if(prop==this.STRPROP[i][0]){ func1=this.STRPROP[i][1]; break;}}
-		for(var i in this.STRGROUP){ if(group==this.STRGROUP[i]){ func2=i; break;}}
-		return func1+func2;
-	},
-	getprefix : function(group, prop){
-		var func1, func2;
-		for(var i in this.STRGROUP){ if(group==this.STRGROUP[i]){ func1=i; break;}}
-		for(var i in this.STRPROP){ if(prop==this.STRPROP[i][0]){ func2=i; break;}}
-		return func1+func2;
+		U: 'ques',   // bd.QUES
+		N: 'qnum',   // bd.QNUM
+		M: 'anum',   // bd.ANUM
+		D: 'qdir',   // bd.QDIR
+		A: 'qans',   // bd.QANS
+		S: 'qsub',   // bd.QSUB
+		L: 'line'    // bd.LINE
 	},
 
 	//---------------------------------------------------------------------------

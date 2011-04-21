@@ -16,7 +16,7 @@
 	custom : {},	// パズル別クラスのスーパークラスからの差分
 
 	createCoreClass : function(classname, baseclass, proto){
-		var NewClass = function(){ this.initialize.apply(this,arguments);};
+		var NewClass = function(){ if(!!this.initialize){ this.initialize.apply(this,arguments);}};
 		if(!!baseclass && !!this.core[baseclass]){
 			var BaseClass = this.core[baseclass];
 			for(var name in BaseClass.prototype){ NewClass.prototype[name] = BaseClass.prototype[name];}
@@ -25,7 +25,7 @@
 		this.core[classname] = NewClass;
 	},
 	createCommonClass : function(classname, baseclass, proto){
-		var NewClass = function(){ };
+		var NewClass = function(){ if(!!this.initialize){ this.initialize.apply(this,arguments);}};
 		if(!!baseclass && !!this.core[baseclass]){
 			var BaseClass = this.core[baseclass];
 			for(var name in BaseClass.prototype){ NewClass.prototype[name] = BaseClass.prototype[name];}
@@ -65,15 +65,8 @@
 	inherit : function(scriptid, classname, proto){
 		var SuperClass = this.getCommonClass(classname), SubClass;
 		if(!!SuperClass){
-			SubClass = function(){
-				if(!!this.initialize){
-					this.initialize.apply(this,arguments);
-				}
-				else if(!!SuperClass.prototype.initialize){
-					SuperClass.prototype.initialize.apply(this,arguments);
-				}
-			};
-			SubClass.prototype = new SuperClass();
+			SubClass = function(){ if(!!this.initialize){ this.initialize.apply(this,arguments);}};
+			for(var name in SuperClass.prototype){ SubClass.prototype[name] = SuperClass.prototype[name];}
 			SubClass.prototype.SuperClass = SuperClass;
 			SubClass.prototype.SuperFunc  = SuperClass.prototype;
 		}

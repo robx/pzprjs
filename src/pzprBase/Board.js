@@ -86,9 +86,6 @@ pzprv3.createCommonClass('Cell', 'BoardPiece',
 // Crossクラスの定義
 pzprv3.createCommonClass('Cross', 'BoardPiece',
 {
-	initialize : function(){
-		pzprv3.core.BoardPiece.prototype.initialize.call(this);
-	},
 	group : 'cross',
 
 	// デフォルト値
@@ -136,9 +133,6 @@ pzprv3.createCommonClass('Border', 'BoardPiece',
 // EXCellクラスの定義
 pzprv3.createCommonClass('EXCell', 'BoardPiece',
 {
-	initialize : function(){
-		pzprv3.core.BoardPiece.prototype.initialize.call(this);
-	},
 	group : 'excell',
 
 	// デフォルト値
@@ -186,6 +180,8 @@ pzprv3.createCommonClass('Board', '',
 		this.areas  = new (pzprv3.getPuzzleClass('AreaManager'))();		// 領域情報管理オブジェクト
 
 		this.puzzleid = pid;	// パズルのID("creek"など)
+
+		this.setHooks();
 	},
 
 	qcols : 10,		/* 盤面の横幅(デフォルト) */
@@ -692,20 +688,25 @@ pzprv3.createCommonClass('Board', '',
 	//---------------------------------------------------------------------------
 	// [pipelink, loopsp], [barns, slalom, reflect, yajirin]で呼ばれる関数
 	checkStableLine : function(id, num){	// bd.sLiBから呼ばれる
-		if(this.enableLineCombined){
-			return ( (num!==0 && this.isLineNG(id)) ||
-					 (num===0 && this.isLineEX(id)) );
+		if(this.enableLineNG){
+			if(this.enableLineCombined){
+				return ( (num!==0 && this.isLineNG(id)) ||
+						 (num===0 && this.isLineEX(id)) );
+			}
+			return (num!==0 && this.isLineNG(id));
 		}
-		return (num!==0 && this.isLineNG(id));
+		return false;
 	},
-	setCombinedLine : function(cc){	// bd.sQuBから呼ばれる
-		var bx=this.cell[cc].bx, by=this.cell[cc].by;
-		var idlist = this.borderinside(bx-1,by-1,bx+1,by+1);
-		for(var i=0;i<idlist.length;i++){
-			var id=idlist[i];
-			if        (this.border[id].line===0 && this.isLineEX(id)){ this.sLiB(id,1);}
-			// 黒マスが入力されたら線を消すとかやりたい場合、↓のコメントアウトをはずす
-			// else if(this.border[id].line!==0 && this.isLineNG(id)){ this.sLiB(id,0);}
+	setCombinedLine : function(cc){	// bd.sQuCから呼ばれる
+		if(this.enableLineCombined){
+			var bx=this.cell[cc].bx, by=this.cell[cc].by;
+			var idlist = this.borderinside(bx-1,by-1,bx+1,by+1);
+			for(var i=0;i<idlist.length;i++){
+				var id=idlist[i];
+				if        (this.border[id].line===0 && this.isLineEX(id)){ this.sLiB(id,1);}
+				// 黒マスが入力されたら線を消すとかやりたい場合、↓のコメントアウトをはずす
+				// else if(this.border[id].line!==0 && this.isLineNG(id)){ this.sLiB(id,0);}
+			}
 		}
 	},
 
@@ -726,15 +727,55 @@ pzprv3.createCommonClass('Board', '',
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.setdata() Cell,Cross,Border,EXCellの値を取得する
+	// bd.getdata() Cell,Cross,Border,EXCellの値を取得する
 	// bd.setdata() Cell,Cross,Border,EXCellの値を設定する
 	//---------------------------------------------------------------------------
 	getdata : function(group, prop, id, num){
 		return this[group][id][prop];
 	},
 	setdata : function(group, prop, id, num){
+		if(!!this.prehook[group] && !!this.prehook[group][prop]){ if(this.prehook[group][prop].call(this,id,num)){ return;}}
+
 		um.addOpe(group, prop, id, this[group][id][prop], num);
 		this[group][id][prop] = num;
+
+		if(!!this.posthook[group] && !!this.posthook[group][prop]){ this.posthook[group][prop].call(this,id,num);}
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.prehook  値の設定前にやっておく処理や、設定禁止処理を行う
+	// bd.posthook 値の設定後にやっておく処理を行う
+	// bd.setHooks 値の設定前後の処理を定義する
+	//---------------------------------------------------------------------------
+	prehook  : {},
+	posthook : {},
+	setHooks : function(){
+		/* return true -> setdataを呼ばない */
+		this.prehook = {
+			cell : {
+				ques : function(id,num){ if(this.enableLineCombined){ this.setCombinedLine(id,num);} return false;},
+				qnum : function(id,num){ return (!this.numzero && num===0);},
+				anum : function(id,num){ return (!this.numzero && num===0);},
+			},
+			border : {
+				qans : function(id,num){ return (this.border[id].ques!==0);},
+				line : function(id,num){ return (this.checkStableLine(id,num));}
+			}
+		};
+
+		this.posthook = {
+			cell : {
+				qnum : function(id,num){ this.areas.setCell('number',id);},
+				anum : function(id,num){ this.areas.setCell('number',id);},
+				qans : function(id,num){ this.areas.setCell('block',id);},
+				qsub : function(id,num){ if(this.numberWithMB){ this.areas.setCell('number',id);}} /* bd.numberWithMBの○を文字扱い */
+			},
+			border : {
+				ques : function(id,num){ this.areas.setBorder(id,(num>0));},
+				qans : function(id,num){ this.areas.setBorder(id,(num>0));},
+				line : function(id,num){ this.lines.setLine(id,(num>0));}
+			}
+		};
 	},
 
 	//---------------------------------------------------------------------------
@@ -744,41 +785,13 @@ pzprv3.createCommonClass('Board', '',
 	// sAnC / AnC : bd.setQansCell() / bd.getQansCell()  該当するCellのanumを設定する/返す
 	// sDiC / DiC : bd.setDirecCell()/ bd.getDirecCell() 該当するCellのqdirを設定する/返す
 	//---------------------------------------------------------------------------
-	// Cell関連Get/Set関数 <- 各Cellが持っているとメモリを激しく消費するのでここに置くこと.
-	sQuC : function(id, num) {
-		this.setdata(this.CELL, this.QUES, id, num);
-
-		if(this.enableLineCombined){ this.setCombinedLine(id);}
-	},
-	// overwrite by lightup.js
-	sQnC : function(id, num) {
-		if(!this.numzero && num===0){ return;}
-
-		this.setdata(this.CELL, this.QNUM, id, num);
-
-		this.areas.setCell('number',id);
-	},
-	sAnC : function(id, num) {
-		if(!this.numzero && num===0){ return;}
-
-		this.setdata(this.CELL, this.ANUM, id, num);
-
-		this.areas.setCell('number',id);
-	},
-	// override by lightup.js, shugaku.js
-	sQaC : function(id, num) {
-		this.setdata(this.CELL, this.QANS, id, num);
-
-		this.areas.setCell('block',id);
-	},
-	sQsC : function(id, num) {
-		this.setdata(this.CELL, this.QSUB, id, num);
-
-		if(this.numberWithMB){ this.areas.setCell('number',id);}
-	},
-	sDiC : function(id, num) {
-		this.setdata(this.CELL, this.QDIR, id, num);
-	},
+	// Cell関連Get/Set関数
+	sQuC : function(id, num){ this.setdata(this.CELL, this.QUES, id, num);},
+	sQnC : function(id, num){ this.setdata(this.CELL, this.QNUM, id, num);},
+	sAnC : function(id, num){ this.setdata(this.CELL, this.ANUM, id, num);},
+	sQaC : function(id, num){ this.setdata(this.CELL, this.QANS, id, num);},
+	sQsC : function(id, num){ this.setdata(this.CELL, this.QSUB, id, num);},
+	sDiC : function(id, num){ this.setdata(this.CELL, this.QDIR, id, num);},
 
 	QuC : function(id){ return this.cell[id].ques;},
 	QnC : function(id){ return this.cell[id].qnum;},
@@ -792,12 +805,8 @@ pzprv3.createCommonClass('Board', '',
 	// sDiE / DiE : bd.setDirecEXcell()/ bd.getDirecEXcell() 該当するEXCellのqdirを設定する/返す
 	//---------------------------------------------------------------------------
 	// EXcell関連Get/Set関数
-	sQnE : function(id, num) {
-		this.setdata(this.EXCELL, this.QNUM, id, num);
-	},
-	sDiE : function(id, num) {
-		this.setdata(this.EXCELL, this.QDIR, id, num);
-	},
+	sQnE : function(id, num){ this.setdata(this.EXCELL, this.QNUM, id, num);},
+	sDiE : function(id, num){ this.setdata(this.EXCELL, this.QDIR, id, num);},
 
 	QnE : function(id){ return this.excell[id].qnum;},
 	DiE : function(id){ return this.excell[id].qdir;},
@@ -806,13 +815,9 @@ pzprv3.createCommonClass('Board', '',
 	// sQuX / QuX : bd.setQuesCross(id,num) / bd.getQuesCross() 該当するCrossのquesを設定する/返す
 	// sQnX / QnX : bd.setQnumCross(id,num) / bd.getQnumCross() 該当するCrossのqnumを設定する/返す
 	//---------------------------------------------------------------------------
-	// Cross関連Get/Set関数 <- 各Crossが持っているとメモリを激しく消費するのでここに置くこと.
-	sQuX : function(id, num) {
-		this.setdata(this.CROSS, this.QUES, id, num);
-	},
-	sQnX : function(id, num) {
-		this.setdata(this.CROSS, this.QNUM, id, num);
-	},
+	// Cross関連Get/Set関数
+	sQuX : function(id, num){ this.setdata(this.CROSS, this.QUES, id, num);},
+	sQnX : function(id, num){ this.setdata(this.CROSS, this.QNUM, id, num);},
 
 	QuX : function(id){ return this.cross[id].ques;},
 	QnX : function(id){ return this.cross[id].qnum;},
@@ -825,35 +830,13 @@ pzprv3.createCommonClass('Board', '',
 	// sLiB / LiB : bd.setLineBorder() / bd.getLineBorder() 該当するBorderのlineを設定する/返す
 	// sDiB / DiB : bd.setDirecBorder()/ bd.getDirecBorder()該当するBorderのqdirを設定する/返す
 	//---------------------------------------------------------------------------
-	// Border関連Get/Set関数 <- 各Borderが持っているとメモリを激しく消費するのでここに置くこと.
-	sQuB : function(id, num) {
-		this.setdata(this.BORDER, this.QUES, id, num);
-
-		this.areas.setBorder(id,(num>0));
-	},
-	sQnB : function(id, num) {
-		this.setdata(this.BORDER, this.QNUM, id, num);
-	},
-	sQaB : function(id, num) {
-		if(this.border[id].ques!==0){ return;}
-
-		this.setdata(this.BORDER, this.QANS, id, num);
-
-		this.areas.setBorder(id,(num>0));
-	},
-	sQsB : function(id, num) {
-		this.setdata(this.BORDER, this.QSUB, id, num);
-	},
-	sLiB : function(id, num) {
-		if(this.enableLineNG && this.checkStableLine(id,num)){ return;}
-
-		this.setdata(this.BORDER, this.LINE, id, num);
-
-		this.lines.setLine(id,(num>0));
-	},
-	sDiB : function(id, num) {
-		this.setdata(this.BORDER, this.QDIR, id, num);
-	},
+	// Border関連Get/Set関数
+	sQuB : function(id, num){ this.setdata(this.BORDER, this.QUES, id, num);},
+	sQnB : function(id, num){ this.setdata(this.BORDER, this.QNUM, id, num);},
+	sQaB : function(id, num){ this.setdata(this.BORDER, this.QANS, id, num);},
+	sQsB : function(id, num){ this.setdata(this.BORDER, this.QSUB, id, num);},
+	sLiB : function(id, num){ this.setdata(this.BORDER, this.LINE, id, num);},
+	sDiB : function(id, num){ this.setdata(this.BORDER, this.QDIR, id, num);},
 
 	QuB : function(id){ return this.border[id].ques;},
 	QnB : function(id){ return this.border[id].qnum;},

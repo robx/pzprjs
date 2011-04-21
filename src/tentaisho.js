@@ -136,6 +136,12 @@ Board:{
 
 	disInputHatena : true,
 
+	initialize : function(pid){
+		this.SuperFunc.initialize.call(this,pid);
+
+		this.star = []; /* インスタンス化 */
+	},
+
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
 

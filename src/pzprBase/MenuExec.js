@@ -353,7 +353,7 @@ pzprv3.createCommonClass('MenuExec', '',
 		um.addOpe(bd.BOARD, name, 0, this.boardtype[name][0], this.boardtype[name][1]);
 
 		bd.setminmax();
-		if(!um.undoExec){ bd.resetInfo();}
+		if(!um.undoExec && !um.redoExec){ bd.resetInfo();} /* undo/redo時は終わった時にOperationManagerでresetInfoする */
 		pc.resize_canvas();				// Canvasを更新する
 	},
 

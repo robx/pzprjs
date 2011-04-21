@@ -67,9 +67,11 @@ Board:{
 	/* 問題の0入力は↓の特別処理で可能にしてます */
 	disInputHatena : true,
 
-	// 問題入力モードだけ、、0でも入力できるようにする
-	sQnC : function(id, num) {
-		this.setdata(this.CELL, this.QNUM, id, num);
+	initialize : function(pid){
+		this.SuperFunc.initialize.call(this,pid);
+
+		// 問題入力モードだけ、、0でも入力できるようにする
+		this.prehook.cell.qnum = null;
 	},
 
 	// この関数は回答モードでしか呼ばれないはず、
