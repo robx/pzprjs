@@ -275,7 +275,7 @@ pzprv3.createCommonClass('AnsCheck', '',
 	// ans.checkSideAreaCell() 境界線をはさんでタテヨコに接するセルの判定を行う
 	//---------------------------------------------------------------------------
 	checkSideAreaSize : function(rinfo, getval){
-		var sides = bd.areas.getSideAreaInfo(rinfo);
+		var sides = bd.getSideAreaInfo(rinfo);
 		for(var r=1;r<=rinfo.max-1;r++){
 			for(var i=0;i<sides[r].length;i++){
 				var s=sides[r][i], a1=getval(rinfo,r), a2=getval(rinfo,s);
@@ -296,8 +296,8 @@ pzprv3.createCommonClass('AnsCheck', '',
 			if(cc1!==null && cc2!==null && func(cc1, cc2)){
 				if(!flag){ bd.sErC([cc1,cc2],1);}
 				else{
-					 bd.sErC(bd.areas.room[bd.areas.room.id[cc1]].clist,1);
-					 bd.sErC(bd.areas.room[bd.areas.room.id[cc2]].clist,1);
+					 bd.sErC(bd.areas.rinfo[bd.areas.rinfo.id[cc1]].clist,1);
+					 bd.sErC(bd.areas.rinfo[bd.areas.rinfo.id[cc2]].clist,1);
 				}
 				return false;
 			}
@@ -314,18 +314,12 @@ pzprv3.createCommonClass('AnsCheck', '',
 	//---------------------------------------------------------------------------
 	checkSeqBlocksInRoom : function(){
 		var result = true;
-		for(var id=1;id<=bd.areas.room.max;id++){
-			var data = {max:0,id:[]};
-			for(var c=0;c<bd.cellmax;c++){ data.id[c] = ((bd.areas.room.id[c]===id && bd.isBlack(c))?0:null);}
-			for(var c=0;c<bd.cellmax;c++){
-				if(data.id[c]!==0){ continue;}
-				data.max++;
-				data[data.max] = {clist:[]};
-				bd.areas.sc0(c, data);
-			}
+		for(var id=1;id<=bd.areas.rinfo.max;id++){
+			var isset = function(c){ return (bd.areas.rinfo.id[c]===id && bd.isBlack(c));};
+			var data = bd.areas.searchEXT(isset, null);
 			if(data.max>1){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(bd.areas.room[id].clist,1);
+				bd.sErC(bd.areas.rinfo[id].clist,1);
 				result = false;
 			}
 		}
@@ -447,14 +441,14 @@ pzprv3.createCommonClass('AnsCheck', '',
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkLcntCross()      ある交点との周り四方向の境界線の数を判定する(bp==1:黒点が打たれている場合)
+	// ans.checkLcntCross()  ある交点との周り四方向の境界線の数を判定する(bp==1:黒点が打たれている場合)
 	//---------------------------------------------------------------------------
 	checkLcntCross : function(val, bp){
 		var result=true, mm=(bd.iscross===1?2:0);
 		for(var by=mm;by<=bd.maxby-mm;by+=2){
 			for(var bx=mm;bx<=bd.maxbx-mm;bx+=2){
 				var id = (bx>>1)+(by>>1)*(bd.qcols+1);
-				var lcnts = (bd.lines.borderAsLine?bd.lines.lcnt[id]:bd.areas.lcnt[id]);
+				var lcnts = (bd.lines.borderAsLine?bd.lines.lcnt[id]:bd.areas.rinfo.cnt[id]);
 				if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(bx,by))==1) || (bp==2&&bd.QnX(bd.xnum(bx,by))!=1) )){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.sErBAll(2);}

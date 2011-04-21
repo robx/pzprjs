@@ -765,15 +765,15 @@ pzprv3.createCommonClass('Board', '',
 
 		this.posthook = {
 			cell : {
-				qnum : function(id,num){ this.areas.setCell('number',id);},
-				anum : function(id,num){ this.areas.setCell('number',id);},
-				qans : function(id,num){ this.areas.setCell('block',id);},
-				qsub : function(id,num){ if(this.numberWithMB){ this.areas.setCell('number',id);}} /* bd.numberWithMBの○を文字扱い */
+				qnum : function(id,num){ this.areas.setCell(id);},
+				anum : function(id,num){ this.areas.setCell(id);},
+				qans : function(id,num){ this.areas.setCell(id);},
+				qsub : function(id,num){ if(this.numberWithMB){ this.areas.setCell(id);}} /* bd.numberWithMBの○を文字扱い */
 			},
 			border : {
-				ques : function(id,num){ this.areas.setBorder(id,(num>0));},
-				qans : function(id,num){ this.areas.setBorder(id,(num>0));},
-				line : function(id,num){ this.lines.setLine(id,(num>0));}
+				ques : function(id,num){ this.areas.setBorder(id);},
+				qans : function(id,num){ this.areas.setBorder(id);},
+				line : function(id,num){ this.lines.setLine(id); this.areas.setBorder(id);}
 			}
 		};
 	},
@@ -909,6 +909,7 @@ pzprv3.createCommonClass('Board', '',
 	// bd.noNum()      該当するCellに数字がないか返す
 	// bd.isValidNum() 該当するCellに0以上の数字があるか返す
 	// bd.sameNumber() ２つのCellに同じ有効な数字があるか返す
+	// bd.isNumberObj()該当するCellに数字or○があるか返す
 	//
 	// bd.getNum()     該当するCellの数字を返す
 	// bd.setNum()     該当するCellに数字を設定する
@@ -924,6 +925,10 @@ pzprv3.createCommonClass('Board', '',
 	},
 	sameNumber : function(c1,c2){
 		return (this.isValidNum(c1) && (this.getNum(c1)===this.getNum(c2)));
+	},
+
+	isNumberObj : function(c){
+		return (!!this.cell[c] && (this.cell[c].qnum!==-1 || this.cell[c].anum!==-1 || (this.numberWithMB && (this.cell[c].qsub===1))));
 	},
 
 	getNum : function(c){
@@ -1016,6 +1021,44 @@ pzprv3.createCommonClass('Board', '',
 		cc=this.lt(c); if(cc!==null && func(cc)){ cnt++;}
 		cc=this.rt(c); if(cc!==null && func(cc)){ cnt++;}
 		return cnt;
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.getdir4cblist()  上下左右4方向のセル＆境界線＆方向を返す
+	//---------------------------------------------------------------------------
+	getdir4cblist : function(c){
+		var cc, id, cblist=[];
+		cc=this.up(c); id=this.ub(c); if(cc!==null || id!==null){ cblist.push([cc,id,this.UP]);}
+		cc=this.dn(c); id=this.db(c); if(cc!==null || id!==null){ cblist.push([cc,id,this.DN]);}
+		cc=this.lt(c); id=this.lb(c); if(cc!==null || id!==null){ cblist.push([cc,id,this.LT]);}
+		cc=this.rt(c); id=this.rb(c); if(cc!==null || id!==null){ cblist.push([cc,id,this.RT]);}
+		return cblist;
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.getSideAreaInfo()   境界線をはさんで接する部屋を取得する
+	//---------------------------------------------------------------------------
+	getSideAreaInfo : function(rinfo){
+		var adjs=[], sides=[], max=rinfo.max;
+		for(var r=1;r<=max-1;r++){ adjs[r]=[];}
+
+		for(var id=0;id<this.bdmax;id++){
+			var cc1 = this.border[id].cellcc[0], cc2 = this.border[id].cellcc[1];
+			if(cc1===null || cc2===null){ continue;}
+			var r1=rinfo.id[cc1], r2=rinfo.id[cc2];
+			if(r1===null || r2===null){ continue;}
+
+			if(r1<r2){ adjs[r1][r2]=true;}
+			if(r1>r2){ adjs[r2][r1]=true;}
+		}
+
+		for(var r=1;r<=max-1;r++){
+			sides[r]=[];
+			for(var s=r+1;s<=max;s++){
+				if(!!adjs[r][s]){ sides[r].push(s);}
+			}
+		}
+		return sides;
 	},
 
 	//---------------------------------------------------------------------------

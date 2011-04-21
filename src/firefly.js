@@ -60,6 +60,10 @@ LineManager:{
 	isCenterLine : true
 },
 
+AreaManager:{
+	lineToArea : true
+},
+
 MenuExec:{
 	adjustBoardData : function(key,d){
 		this.adjustNumberArrow(key,d);
@@ -192,7 +196,7 @@ AnsCheck:{
 		}
 
 		this.performAsLine = true;
-		if( !this.checkOneArea( bd.lines.getLareaInfo() ) ){
+		if( !this.checkOneArea( bd.areas.getLareaInfo() ) ){
 			this.setAlert('線が全体で一つながりになっていません。', 'All lines and fireflies are not connected each other.'); return false;
 		}
 

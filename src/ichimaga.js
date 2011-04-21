@@ -44,6 +44,10 @@ LineManager:{
 	iscrossing : function(cc){ return bd.noNum(cc);}
 },
 
+AreaManager:{
+	lineToArea : true
+},
+
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
@@ -144,7 +148,7 @@ AnsCheck:{
 		}
 
 		this.performAsLine = true
-		if( !this.checkOneArea( bd.lines.getLareaInfo() ) ){
+		if( !this.checkOneArea( bd.areas.getLareaInfo() ) ){
 			this.setAlert('線が全体で一つながりになっていません。', 'All lines and circles are not connected each other.'); return false;
 		}
 

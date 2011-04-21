@@ -132,6 +132,10 @@ LineManager:{
 	iscrossing : function(cc){ return bd.noNum(cc);}
 },
 
+AreaManager:{
+	lineToArea : true
+},
+
 Menu:{
 	menufix : function(){
 		pp.addCheck('circolor','setting',false,'数字をグレーにする','Set Grey Color');
@@ -308,7 +312,7 @@ AnsCheck:{
 		}
 
 		this.performAsLine = true;
-		if( !this.checkOneArea( bd.lines.getLareaInfo() ) ){
+		if( !this.checkOneArea( bd.areas.getLareaInfo() ) ){
 			this.setAlert('線が全体で一つながりになっていません。', 'All lines and numbers are not connected each other.'); return false;
 		}
 

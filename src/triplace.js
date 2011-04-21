@@ -100,18 +100,15 @@ Board:{
 	},
 
 	getTileInfo : function(){
-		var tinfo = new pzprv3.core.AreaInfo(), self=this;
-		for(var c=0;c<this.cellmax;c++){ tinfo.id[c]=(this.QuC(c)!==51?0:null);}
-		for(var c=0;c<this.cellmax;c++){
-			if(tinfo.id[c]!==0){ continue;}
-			tinfo.max++;
-			tinfo[tinfo.max] = {clist:[]};
-			this.areas.sr0(c, tinfo, function(c){ return self.isBorder(c);});
+		var self = this;
+		var tinfo = this.areas.searchEXT(
+			function(c){ return (self.QuC(c)!==51);},
+			function(id){ return self.isBorder(id);}
+		);
 
-			var clist = tinfo[tinfo.max].clist;
-			var d = this.getSizeOfClist(clist);
-
-			tinfo.room[tinfo.max] = {idlist:clist, is1x3:((((d.x1===d.x2)||(d.y1===d.y2))&&d.cnt===3)?1:0)};
+		for(var r=1;r<=tinfo.max;r++){
+			var d = this.getSizeOfClist(tinfo.room[r].idlist);
+			tinfo.room[r].is1x3=((((d.x1===d.x2)||(d.y1===d.y2))&&d.cnt===3)?1:0);
 		}
 		return tinfo;
 	}

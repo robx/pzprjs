@@ -106,7 +106,8 @@ LineManager:{
 },
 
 AreaManager:{
-	hasroom : true
+	hasroom : true,
+	lineToArea : true
 },
 
 //---------------------------------------------------------
@@ -231,7 +232,7 @@ AnsCheck:{
 		}
 
 		this.performAsLine = false;
-		var linfo = bd.lines.getLareaInfo();
+		var linfo = bd.areas.getLareaInfo();
 		if( !this.checkDoubleNumber(linfo) ){
 			this.setAlert('○が繋がっています。','There are connected circles.'); return false;
 		}

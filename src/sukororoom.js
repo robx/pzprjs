@@ -141,11 +141,11 @@ AnsCheck:{
 			this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 		}
 
-		if( !this.checkSameObjectInRoom(rinfo, function(c){ return (bd.areas.isBlock(c)?1:2);}) ){
+		if( !this.checkSameObjectInRoom(rinfo, function(c){ return (bd.isNumberObj(c)?1:2);}) ){
 			this.setAlert('数字のあるなしが混在した部屋があります。','A room includes both numbered and non-numbered cells.'); return false;
 		}
 
-		if( !this.checkDir4Cell(function(c){ return bd.areas.isBlock(c);},0) ){
+		if( !this.checkDir4Cell(function(c){ return bd.isNumberObj(c);},0) ){
 			this.setAlert('数字と、その数字の上下左右に入る数字の数が一致していません。','The number of numbers placed in four adjacent cells is not equal to the number.'); return false;
 		}
 

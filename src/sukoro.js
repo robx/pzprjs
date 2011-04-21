@@ -117,7 +117,7 @@ AnsCheck:{
 			this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
 		}
 
-		if( !this.checkDir4Cell(function(c){ return bd.areas.isBlock(c);},0) ){
+		if( !this.checkDir4Cell(function(c){ return bd.isNumberObj(c);},0) ){
 			this.setAlert('数字と、その数字の上下左右に入る数字の数が一致していません。','The number of numbers placed in four adjacent cells is not equal to the number.'); return false;
 		}
 

@@ -208,6 +208,12 @@ LineManager:{
 	isLineCross  : true
 },
 
+AreaManager:{
+	getIcebarnArea : function(){
+		return this.searchEXT(function(c){ return (bd.QuC(c)==6);}, null);
+	}
+},
+
 MenuExec:{
 	adjustBoardData : function(key,d){
 		this.adjustBorderArrow(key,d);
@@ -476,7 +482,7 @@ AnsCheck:{
 			this.setAlert('通過していない白マスがあります。', 'The line doesn\'t pass all of the white cell.'); return false;
 		}
 
-		if( (bd.puzzleid==='icelom2') && !this.checkIcebarns() ){
+		if( (bd.puzzleid==='icelom2') && !this.checkLinesInArea(bd.areas.getIcebarnArea(), function(w,h,a,n){ return (a!=0);}) ){
 			this.setAlert('すべてのアイスバーンを通っていません。', 'A icebarn is not gone through.'); return false;
 		}
 
@@ -485,21 +491,6 @@ AnsCheck:{
 		}
 
 		return true;
-	},
-
-	checkIcebarns : function(){
-		var iarea = new pzprv3.core.AreaInfo();
-		for(var cc=0;cc<bd.cellmax;cc++){ iarea.id[cc]=(bd.QuC(cc)==6?0:null); }
-		for(var cc=0;cc<bd.cellmax;cc++){
-			if(iarea.id[cc]!==0){ continue;}
-			iarea.max++;
-			iarea[iarea.max] = {clist:[]};
-			bd.areas.sc0(cc,iarea);
-
-			iarea.room[iarea.max] = {idlist:iarea[iarea.max].clist};
-		}
-
-		return this.checkLinesInArea(iarea, function(w,h,a,n){ return (a!=0);});
 	},
 
 	checkLine : function(){

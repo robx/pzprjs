@@ -42,8 +42,8 @@ Board:{
 	numzero : true,
 
 	nummaxfunc : function(cc){
-		var id = this.areas.room.id[cc];
-		var d = this.getSizeOfClist(this.areas.room[id].clist);
+		var id = this.areas.rinfo.id[cc];
+		var d = this.getSizeOfClist(this.areas.rinfo[id].clist);
 		var m=d.cols, n=d.rows; if(m>n){ var t=m;m=n;n=t;}
 		if     (m===1){ return ((n+1)>>1);}
 		else if(m===2){ return n;}

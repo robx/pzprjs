@@ -298,7 +298,8 @@ pzprv3.createCommonClass('Encode', '',
 	// enc.encodeRoomNumber16()  部屋＋部屋の一つのquesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeRoomNumber16 : function(){
-		bd.areas.resetRarea();
+		bd.areas.rinfo.reset();
+		if(bd.areas.roomNumber){ bd.areas.moveRoomNumber();}
 		var r=1, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), c=bd.areas.getTopOfRoom(r), obj=bd.cell[c];
@@ -314,14 +315,15 @@ pzprv3.createCommonClass('Encode', '',
 			else if(ca >= 'g' && ca <= 'z'){ r += (parseInt(ca,36)-16);}
 
 			r++;
-			if(r > bd.areas.room.max){ break;}
+			if(r > bd.areas.rinfo.max){ break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeRoomNumber16 : function(){
-		bd.areas.resetRarea();
+		bd.areas.rinfo.reset();
+		if(bd.areas.roomNumber){ bd.areas.moveRoomNumber();}
 		var count=0, cm="";
-		for(var r=1;r<=bd.areas.room.max;r++){
+		for(var r=1;r<=bd.areas.rinfo.max;r++){
 			var pstr = "", qn = bd.cell[bd.areas.getTopOfRoom(r)].qnum;
 
 			if     (qn>=    0 && qn<   16){ pstr =       qn.toString(16);}
@@ -420,7 +422,8 @@ pzprv3.createCommonClass('Encode', '',
 			}
 		}
 
-		bd.areas.resetRarea();
+		bd.areas.rinfo.reset();
+		if(bd.areas.roomNumber){ bd.areas.moveRoomNumber();}
 		this.outbstr = bstr.substr(pos2);
 	},
 	encodeBorder : function(){

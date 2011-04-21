@@ -56,7 +56,7 @@ MouseEvent:{
 		}
 
 		if(cc!==null){
-			var clist = bd.areas.room[bd.areas.room.id[cc]].clist;
+			var clist = bd.areas.rinfo[bd.areas.rinfo.id[cc]].clist;
 			if(bd.encolor(clist)){
 				var d = bd.getSizeOfClist(clist);
 				pc.paintRange(d.x1, d.y1, d.x2, d.y2);

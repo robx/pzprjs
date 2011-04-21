@@ -44,8 +44,15 @@ Board:{
 
 	getBlockInfo : function(){
 		var self = this;
-		var tinfo = this.getArea(function(id){ return !self.isGround(id);});
-		var cinfo = this.getArea(function(id){ return self.border[id].qans>0;});
+		var tinfo = bd.areas.searchEXT(
+			function(cc){ return true;},
+			function(id){ return !self.isGround(id);}
+		);
+		var cinfo = bd.areas.searchEXT(
+			function(cc){ return true;},
+			function(id){ return self.border[id].qans>0;}
+		);
+
 		for(var r=1;r<=cinfo.max;r++){
 			var d=[], cnt=0, room=cinfo.room[r], clist=room.idlist;
 			room.size = room.idlist.length;
@@ -58,19 +65,6 @@ Board:{
 			room.dotcnt = cnt;
 		}
 		return cinfo;
-	},
-	getArea : function(func){
-		var tarea = new pzprv3.core.AreaInfo();
-		for(var cc=0;cc<this.cellmax;cc++){ tarea.id[cc]=null;}
-		for(var cc=0;cc<this.cellmax;cc++){
-			if(tarea.id[cc]!=null){ continue;}
-			tarea.max++;
-			tarea[tarea.max] = {clist:[]};
-			this.areas.sr0(cc,tarea,func);
-
-			tarea.room[tarea.max] = {idlist:tarea[tarea.max].clist};
-		}
-		return tarea;
 	},
 
 	getBlockShapes : function(cinfo, r){
@@ -231,7 +225,7 @@ AnsCheck:{
 	},
 
 	checkDifferentShapeBlock : function(cinfo){
-		var result=true, sides=bd.areas.getSideAreaInfo(cinfo), sc={};
+		var result=true, sides=bd.getSideAreaInfo(cinfo), sc={};
 		for(var r=1;r<=cinfo.max-1;r++){
 			if(cinfo.room[r].dotcnt!==2){ continue;}
 			for(var i=0;i<sides[r].length;i++){

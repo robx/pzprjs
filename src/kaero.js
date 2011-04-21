@@ -100,7 +100,8 @@ LineManager:{
 },
 
 AreaManager:{
-	hasroom : true
+	hasroom : true,
+	lineToArea : true
 },
 
 //---------------------------------------------------------
@@ -287,7 +288,7 @@ AnsCheck:{
 			this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 		}
 
-		var linfo = bd.lines.getLareaInfo();
+		var linfo = bd.areas.getLareaInfo();
 		if( !this.checkDoubleNumber(linfo) ){
 			this.setAlert('アルファベットが繋がっています。','There are connected letters.'); return false;
 		}

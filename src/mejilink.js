@@ -216,16 +216,10 @@ AnsCheck:{
 	},
 	checkDotLength : function(){
 		var result = true;
-		var tarea = new pzprv3.core.AreaInfo();
-		for(var cc=0;cc<bd.cellmax;cc++){ tarea.id[cc]=0;}
-		for(var cc=0;cc<bd.cellmax;cc++){
-			if(tarea.id[cc]!=0){ continue;}
-			tarea.max++;
-			tarea[tarea.max] = {clist:[]};
-			bd.areas.sr0(cc,tarea,function(id){ return !bd.isGround(id);});
-
-			tarea.room[tarea.max] = {idlist:tarea[tarea.max].clist};
-		}
+		var tarea = bd.areas.searchEXT(
+			function(cc){ return true;},
+			function(id){ return !bd.isGround(id);}
+		);
 
 		var tcount = [], numerous_value = 999999;
 		for(var r=1;r<=tarea.max;r++){ tcount[r]=0;}

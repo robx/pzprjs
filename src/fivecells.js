@@ -29,7 +29,7 @@ KeyEvent:{
 		if(ca=='w'){ this.key_inputvalid(ca);}
 		else{ this.key_inputqnum(ca);}
 	},
-	key_inputvalid : function(){
+	key_inputvalid : function(ca){
 		if(ca=='w'){
 			var cc = tc.getTCC();
 			if(cc!==null){
@@ -55,6 +55,14 @@ Board:{
 
 	maxnum : 3,
 
+	initialize : function(pid){
+		this.SuperFunc.initialize.call(this,pid);
+
+		this.posthook.cell.ques = function(c){ this.areas.setCell(c);};
+
+		this.akariinfo = []; /* インスタンス化 */
+	},
+
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
 
@@ -69,36 +77,12 @@ Board:{
 	isEmpty : function(c){ return ( !this.cell[c] || this.cell[c].ques===7);},
 	isValid : function(c){ return (!!this.cell[c] && this.cell[c].ques===0);},
 
-	getValidRoomInfo : function(){
-		var rinfo = new pzprv3.core.AreaInfo();
-		for(var c=0;c<this.cellmax;c++){ rinfo.id[c]=(this.isValid(c)?0:null);}
-		for(var c=0;c<this.cellmax;c++){
-			if(rinfo.id[c]!=0){ continue;}
-			rinfo.max++;
-			rinfo.room[rinfo.max] = {idlist:[]};
-			var stack = [c];
-			while(stack.length>0){
-				var cc=stack.pop();
-				if(rinfo.id[cc]!==0){ continue;}
-				rinfo.id[cc] = rinfo.max;
-				rinfo.room[rinfo.max].idlist.push(cc);
-
-				var cblist = this.getdir4cblist(cc);
-				for(var i=0;i<cblist.length;i++){
-					var tc=cblist[i][0], tid=cblist[i][1];
-					if(tc!==null && rinfo.id[tc]===0 && !this.isBorder(tid)){ stack.push(tc);}
-				}
-			}
-		}
-		return rinfo;
+	isBorder : function(id){
+		return ((!!this.border[id] && (this.border[id].qans>0)) || this.isQuesBorder(id));
 	},
-	getdir4cblist : function(c){
-		var cc, id, cblist=[];
-		cc=this.up(c); id=this.ub(c); if(cc!==null || id!==null){ cblist.push([cc,id,this.UP]);}
-		cc=this.dn(c); id=this.db(c); if(cc!==null || id!==null){ cblist.push([cc,id,this.DN]);}
-		cc=this.lt(c); id=this.lb(c); if(cc!==null || id!==null){ cblist.push([cc,id,this.LT]);}
-		cc=this.rt(c); id=this.rb(c); if(cc!==null || id!==null){ cblist.push([cc,id,this.RT]);}
-		return cblist;
+	isQuesBorder : function(id){
+		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+		return !!(bd.isEmpty(cc1)^bd.isEmpty(cc2));
 	},
 
 	getdir4Border_fivecells : function(cc){
@@ -108,25 +92,13 @@ Board:{
 			if(tc===null || this.isEmpty(tc) || this.isBorder(tid)){ cnt++;}
 		}
 		return cnt;
-	},
-
-	// AreaManagerが無効なので、別に作る
-	getLcntCross : function(bx, by){
-		var cnt=0;
-		if(this.isBorder_fivecells(this.bnum(bx,by-1))){ cnt++;}
-		if(this.isBorder_fivecells(this.bnum(bx,by+1))){ cnt++;}
-		if(this.isBorder_fivecells(this.bnum(bx-1,by))){ cnt++;}
-		if(this.isBorder_fivecells(this.bnum(bx+1,by))){ cnt++;}
-		return cnt;
-	},
-	isBorder_fivecells : function(id){
-		if(id===null){ return false;} /* 外枠境界線もIDつきなのでfalseでよい */
-		if(this.border[id].qans===1){ return true;} /* 回答の境界線 */
-
-		var cc1 = this.border[id].cellcc[0], cc2 = this.border[id].cellcc[1];
-		return (this.isEmpty(cc1)^this.isEmpty(cc2)); /* 問題の境界線 */
 	}
 },
+
+AreaManager:{
+	hasroom : true
+},
+
 
 //---------------------------------------------------------
 // 画像表示系
@@ -181,8 +153,7 @@ Graphic:{
 		return false;
 	},
 	setQuesBorderColor : function(id){
-		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-		return (bd.isEmpty(cc1)^bd.isEmpty(cc2));
+		return bd.isQuesBorder(id);
 	},
 
 	drawValidDashedGrid : function(){
@@ -297,7 +268,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = bd.getValidRoomInfo();
+		var rinfo = bd.areas.getRoomInfo();
 		if( !this.checkAllArea(rinfo, function(w,h,a,n){ return (a>=5);} ) ){
 			this.setAlert('サイズが5マスより小さいブロックがあります。','The size of block is smaller than five.'); return false;
 		}
@@ -306,7 +277,7 @@ AnsCheck:{
 			this.setAlert('数字の周りにある境界線の本数が違います。','The number is not equal to the number of border lines around it.'); return false;
 		}
 
-		if( !this.checkLcntCross_fivecells() ){
+		if( !this.checkLcntCross(1,0) ){
 			this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
 		}
 
@@ -324,22 +295,6 @@ AnsCheck:{
 				if(this.inAutoCheck){ return false;}
 				bd.sErC([c],1);
 				result = false;
-			}
-		}
-		return result;
-	},
-
-	/* AreaManagerを無効にしているので、別に作る */
-	checkLcntCross_fivecells : function(){
-		var result=true;
-		for(var by=bd.minby+2;by<=bd.maxby-2;by+=2){
-			for(var bx=bd.minbx+2;bx<=bd.maxbx-2;bx+=2){
-				if(bd.getLcntCross(bx,by)===1){
-					if(this.inAutoCheck){ return false;}
-					if(result){ bd.sErBAll(2);}
-					bd.setCrossBorderError(bx,by);
-					result = false;
-				}
 			}
 		}
 		return result;

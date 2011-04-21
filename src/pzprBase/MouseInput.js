@@ -449,14 +449,14 @@ pzprv3.createCommonClass('MouseEvent', '',
 		this.mouseCell = cc; 
 		var areaid = bd.areas.getRoomID(cc);
 
-		for(var i=0;i<bd.areas.room[areaid].clist.length;i++){
-			var c = bd.areas.room[areaid].clist[i];
+		for(var i=0;i<bd.areas.rinfo[areaid].clist.length;i++){
+			var c = bd.areas.rinfo[areaid].clist[i];
 			if(this.inputData==1 || bd.QsC(c)!=3){
 				(this.inputData==1?bd.setBlack:bd.setWhite).call(bd,c);
 				bd.sQsC(c, (this.inputData==2?1:0));
 			}
 		}
-		var d = bd.getSizeOfClist(bd.areas.room[areaid].clist);
+		var d = bd.getSizeOfClist(bd.areas.rinfo[areaid].clist);
 
 		pc.paintRange(d.x1, d.y1, d.x2, d.y2);
 	},
