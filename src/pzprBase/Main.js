@@ -140,7 +140,7 @@ pzprv3.createCoreClass('ExtData', '',
 			// index.htmlからのURL読み込み時
 			search = localStorage['pzprv3_urldata'];
 			delete localStorage['pzprv3_urldata'];
-			base.require_accesslog = false;
+			pzprv3.base.require_accesslog = false;
 		}
 		else{ search = location.search;}
 
@@ -161,7 +161,7 @@ pzprv3.createCoreClass('ExtData', '',
 			case 'PLAYER': pzprv3.EDITOR = false; break;
 			case 'EDITOR': pzprv3.EDITOR = true;  break;
 			case 'TEST'  : pzprv3.EDITOR = true;  pzprv3.DEBUG = true;
-				this.parseURI(['?',this.id,'_test/',debug.urls[this.id]].join('')); break;
+				this.parseURI(['?',this.id,'_test/',pzprv3.debug.urls[this.id]].join('')); break;
 		}
 		pzprv3.PLAYER = !pzprv3.EDITOR;
 	},
@@ -296,7 +296,7 @@ pzprv3.createCoreClass('ExtData', '',
 			this.fstr = str;
 
 			pzprv3.EDITOR = true; pzprv3.PLAYER = false;
-			base.require_accesslog = false;
+			pzprv3.base.require_accesslog = false;
 			// sessionStorageのデータは残しておきます
 			
 			return true;
@@ -345,7 +345,7 @@ pzprv3.createCoreClass('PBase', '',
 			this.includeFile("src/for_test.js");
 			var self = this;
 			setTimeout(function(){
-				if(!!debug.urls){ self.onload_func2.call(self);}
+				if(!!pzprv3.debug.urls){ self.onload_func2.call(self);}
 				else{ setTimeout(arguments.callee,20);}
 			},20);
 		}
@@ -361,24 +361,24 @@ pzprv3.createCoreClass('PBase', '',
 
 		// Campの設定
 		Camp('divques');
-		if(Camp.enable.canvas && !!_doc.createElement('canvas').toDataURL){
+		if(Camp.enable.canvas && !!document.createElement('canvas').toDataURL){
 			this.dec.enableSaveImage = true;
 			Camp('divques_sub', 'canvas');
 		}
 
 		// 一般タイマーオブジェクトは1つだけしか使わないので、今のところここにおきます
-		tm = new pzprv3.core.Timer();	// 一般タイマー用オブジェクト
+		pzprv3.timer = new pzprv3.core.Timer();	// 一般タイマー用オブジェクト
 
 		// dbmは、フロートメニューを開いたまま別パズルへの遷移があるのでここにおいておく
-		dbm = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
+		pzprv3.dbm = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
 
 		this.reload_func(this.dec.id);
 	},
 	includeFile : function(file){
-		var _script = _doc.createElement('script');
+		var _script = document.createElement('script');
 		_script.type = 'text/javascript';
 		_script.src = file;
-		_doc.body.appendChild(_script);
+		document.body.appendChild(_script);
 	},
 
 	//---------------------------------------------------------------------------
@@ -429,7 +429,6 @@ pzprv3.createCoreClass('PBase', '',
 
 		mv  = new (pzprv3.getPuzzleClass('MouseEvent'))();		// マウス入力オブジェクト
 		kc  = new (pzprv3.getPuzzleClass('KeyEvent'))();		// キーボード入力オブジェクト
-		kp  = new (pzprv3.getPuzzleClass('KeyPopup'))();		// 入力パネルオブジェクト
 		tc  = new (pzprv3.getPuzzleClass('TargetCursor'))();	// 入力用カーソルオブジェクト
 
 		um = new (pzprv3.getPuzzleClass('OperationManager'))();	// 操作情報管理オブジェクト
@@ -458,10 +457,10 @@ pzprv3.createCoreClass('PBase', '',
 		this.accesslog();
 
 		// タイマーリセット(最後)
-		tm.reset();
+		pzprv3.timer.reset();
 
 		// デバッグのスクリプトチェック時は、ここで発火させる
-		if(pzprv3.DEBUG && debug.phase===0){ debug.sccheck(debug);}
+		if(pzprv3.DEBUG && pzprv3.debug.phase===0){ pzprv3.debug.sccheck();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -475,7 +474,7 @@ pzprv3.createCoreClass('PBase', '',
 			this.decodeBoardData();
 
 			// デバッグのスクリプトチェック時は、ここで発火させる
-			if(pzprv3.DEBUG && debug.phase===0){ debug.sccheck(debug);}
+			if(pzprv3.DEBUG && pzprv3.debug.phase===0){ pzprv3.debug.sccheck();}
 		}
 	},
 	decodeBoardData : function(){
@@ -511,7 +510,7 @@ pzprv3.createCoreClass('PBase', '',
 		}
 
 		// onBlurにイベントを割り当てる
-		ee.addEvent(_doc, 'blur', ee.ebinder(this, this.onblur_func));
+		ee.addEvent(document, 'blur', ee.ebinder(this, this.onblur_func));
 
 		// onresizeイベントを割り当てる
 		ee.addEvent(window, (!ee.os.iPhoneOS ? 'resize' : 'orientationchange'),
@@ -540,9 +539,9 @@ pzprv3.createCoreClass('PBase', '',
 
 		if(pzprv3.EDITOR){ return;}
 
-		if(_doc.domain!=='indi.s58.xrea.com' &&
-		   _doc.domain!=='pzprv3.sakura.ne.jp' &&
-		   !_doc.domain.match(/pzv\.jp/)){ return;}
+		if(document.domain!=='indi.s58.xrea.com' &&
+		   document.domain!=='pzprv3.sakura.ne.jp' &&
+		   !document.domain.match(/pzv\.jp/)){ return;}
 
 		// 送信
 		var xmlhttp = false;
@@ -554,7 +553,7 @@ pzprv3.createCoreClass('PBase', '',
 			xmlhttp = new XMLHttpRequest();
 		}
 		if(xmlhttp){
-			var refer = _doc.referrer;
+			var refer = document.referrer;
 			refer = refer.replace(/\?/g,"%3f");
 			refer = refer.replace(/\&/g,"%26");
 			refer = refer.replace(/\=/g,"%3d");
@@ -575,5 +574,5 @@ pzprv3.createCoreClass('PBase', '',
 	}
 });
 
-base = new pzprv3.core.PBase();
-ee.addEvent(window, "load", ee.ebinder(base, base.onload_func));	// 1回起動したら、消されても大丈夫
+pzprv3.base = new pzprv3.core.PBase();
+ee.addEvent(window, "load", ee.ebinder(pzprv3.base, pzprv3.base.onload_func));	// 1回起動したら、消されても大丈夫

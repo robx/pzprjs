@@ -486,7 +486,7 @@ pzprv3.createCommonClass('MouseEvent', '',
 		else{
 			if(this.btn.Left){
 				if(bd.QuC(cc)!==51){ bd.set51cell(cc);}
-				else{ kc.chtarget('shift');}
+				else{ tc.chtarget('shift');}
 			}
 			else if(this.btn.Right){ bd.remove51cell(cc);}
 		}

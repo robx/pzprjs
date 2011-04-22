@@ -48,12 +48,10 @@ KeyEvent:{
 		else{ return;}
 		this.prev=cc;
 		pc.paintCell(cc);
-	}
-},
+	},
 
-KeyPopup:{
-	enablemake : true,
-	enableplay : true,
+	enablemake_p : true,
+	enableplay_p : true,
 	generate : function(mode,type){
 		if(mode==1){
 			this.inputcol('num','knumq1','q1','■');

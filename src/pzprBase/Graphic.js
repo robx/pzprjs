@@ -213,13 +213,13 @@ pzprv3.createCommonClass('Graphic', '',
 	},
 	onresize_process : function(){
 		this.resetVectorFunctions();
-		kp.resize();
+		kc.resizepanel();
 		bd.setcoordAll();
 
 		this.lw = Math.max(this.cw/this.lwratio, 3);
 		this.lm = (this.lw-1)/2;
 
-		this.fillTextEmulate = (g.use.canvas && !_doc.createElement('canvas').getContext('2d').fillText);
+		this.fillTextEmulate = (g.use.canvas && !document.createElement('canvas').getContext('2d').fillText);
 		if(g.use.canvas){ g.elements = [];}
 
 		// 再描画
@@ -1378,7 +1378,7 @@ pzprv3.createCommonClass('Graphic', '',
 
 		var cc = tc.getTCC(), ex = null;
 		if(cc===null){ ex = tc.getTEC();}
-		var target = kc.detectTarget(cc,ex);
+		var target = tc.detectTarget(cc,ex);
 		if(target===0){ return;}
 
 		g.fillStyle = this.ttcolor;

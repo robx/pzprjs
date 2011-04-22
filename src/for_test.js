@@ -1,7 +1,8 @@
 // for_test.js v3.4.0
 
-debug.extend({
+pzprv3.debug.extend({
 	testonly_func : function(){
+		var _doc = document;
 		_doc.testform.starttest.style.display = 'inline';
 		_doc.testform.starttest.onclick = ee.binder(this, this.starttest);
 		
@@ -56,9 +57,9 @@ debug.extend({
 			self.phase = 0;
 
 			var newid = idlist[pnum];
-			base.dec.reset();
-			base.dec.parseURI('?'+newid+'/'+self.urls[newid]);
-			base.importBoardData(newid);
+			pzprv3.base.dec.reset();
+			pzprv3.base.dec.parseURI('?'+newid+'/'+self.urls[newid]);
+			pzprv3.base.importBoardData(newid);
 
 			if(pnum >= term){ clearInterval(self.alltimer);}
 
@@ -84,8 +85,8 @@ debug.extend({
 	check_encode : function(self){
 		var col = bd.qcols;
 		var row = bd.qrows;
-		var pfg = base.dec.pflag;
-		var str = base.dec.bstr;
+		var pfg = pzprv3.base.dec.pflag;
+		var str = pzprv3.base.dec.bstr;
 
 		var inp = enc.getURLBase(enc.PZPRV3)+(pfg?(pfg+"/"):"")+(col+"/"+row)+("/"+str);
 		var ta  = enc.pzloutput(enc.PZPRV3);
@@ -99,7 +100,7 @@ debug.extend({
 		if(PZLINFO.info[bd.puzzleid].exists.kanpen){
 			var bd2 = self.bd_freezecopy();
 
-			_doc.urlinput.ta.value = enc.pzloutput(enc.KANPEN);
+			document.urlinput.ta.value = enc.pzloutput(enc.KANPEN);
 			menu.pop = ee("pop1_5");
 			menu.ex.urlinput({});
 

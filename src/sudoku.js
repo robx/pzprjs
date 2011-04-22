@@ -12,12 +12,10 @@ MouseEvent:{
 // キーボード入力系
 KeyEvent:{
 	enablemake : true,
-	enableplay : true
-},
-
-KeyPopup:{
-	enablemake : true,
 	enableplay : true,
+
+	enablemake_p : true,
+	enableplay_p : true,
 	generate : function(mode,type){
 		this.inputcol('num','knum1','1','1');
 		this.inputcol('num','knum2','2','2');
@@ -51,7 +49,7 @@ Board:{
 MenuExec:{
 	newboard : function(e){
 		if(menu.pop){
-			var col,row;
+			var col, row, _doc=document;
 			if     (_doc.newboard.size[1].checked){ col=row=16;}
 			else if(_doc.newboard.size[2].checked){ col=row=25;}
 			else if(_doc.newboard.size[3].checked){ col=row= 4;}
@@ -63,9 +61,9 @@ MenuExec:{
 
 Menu:{
 	menuinit : function(){
-		this.newboard_html_original = _doc.newboard.innerHTML;
+		this.newboard_html_original = document.newboard.innerHTML;
 
-		_doc.newboard.innerHTML =
+		document.newboard.innerHTML =
 			["<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n",
 			 "<input type=\"radio\" name=\"size\" value=\"9\" checked>9×9<br>\n",
 			 "<input type=\"radio\" name=\"size\" value=\"16\">16×16<br>\n",
@@ -77,7 +75,7 @@ Menu:{
 		this.SuperFunc.menuinit.call(this);
 	},
 	menureset : function(){
-		_doc.newboard.innerHTML = this.newboard_html_original;
+		document.newboard.innerHTML = this.newboard_html_original;
 
 		this.SuperFunc.menureset.call(this);
 	}

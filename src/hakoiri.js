@@ -57,12 +57,10 @@ KeyEvent:{
 		else if(ca==='3'||ca==='e'||ca==='d'||ca==='c'){ ca='3';}
 		else if(ca==='4'||ca==='r'||ca==='f'||ca==='v'){ ca='s1';}
 		else if(ca==='5'||ca==='t'||ca==='g'||ca==='b'){ ca=' ';}
-	}
-},
+	},
 
-KeyPopup:{
-	enablemake : true,
-	enableplay : true,
+	enablemake_p : true,
+	enableplay_p : true,
 	generate : function(mode,type){
 		if(mode==3){ this.tdcolor = pc.fontAnscolor;}
 		this.inputcol('num','knum1','1','○');

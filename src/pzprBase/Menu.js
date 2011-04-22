@@ -180,7 +180,7 @@ pzprv3.createCommonClass('Menu', '',
 	//---------------------------------------------------------------------------
 	displayDesign : function(){
 		this.displayTitle();
-		_doc.body.style.backgroundImage = "url(./bg/"+bd.puzzleid+".gif)";
+		document.body.style.backgroundImage = "url(./bg/"+bd.puzzleid+".gif)";
 		if(ee.br.IE6){
 			ee('title2').el.style.marginTop = "24px";
 			ee('separator2').el.style.margin = '0pt';
@@ -191,7 +191,7 @@ pzprv3.createCommonClass('Menu', '',
 		if(pzprv3.EDITOR){ title = ""+this.getPuzzleName()+this.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
 		else			 { title = ""+this.getPuzzleName()+this.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
 
-		_doc.title = title;
+		document.title = title;
 		ee('title2').el.innerHTML = title;
 	},
 	getPuzzleName : function(){ return this.selectStr(PZLINFO.info[bd.puzzleid].ja,PZLINFO.info[bd.puzzleid].en);},
@@ -223,10 +223,10 @@ pzprv3.createCommonClass('Menu', '',
 		ap('sep_file', 'file');
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
 		at('filesavep', 'file', 'ファイル保存 ->',  'Save the file as ... ->');
-		if(base.dec.DBaccept!==0){
+		if(pzprv3.base.dec.DBaccept!==0){
 			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
 		}
-		if(base.dec.enableSaveImage){
+		if(pzprv3.base.dec.enableSaveImage){
 			ap('sep_image', 'file');
 			at('imagesavep', 'file', '画像を保存 ->', 'Save as image file');
 		}
@@ -239,7 +239,7 @@ pzprv3.createCommonClass('Menu', '',
 		}
 
 		// *ファイル - 画像を保存 -------------------------------------------
-		if(base.dec.enableSaveImage){
+		if(pzprv3.base.dec.enableSaveImage){
 			as('imagedl',   'imagesavep', '画像をダウンロード', 'Download the image');
 			as('imagesave', 'imagesavep', '別ウィンドウで開く', 'Open another window');
 		}
@@ -253,7 +253,7 @@ pzprv3.createCommonClass('Menu', '',
 
 		as('adjust', 'edit', '盤面の調整', 'Adjust the Board');
 		as('turn',   'edit', '反転・回転', 'Filp/Turn the Board');
-		if(base.dec.enSessionStorage()){
+		if(pzprv3.base.dec.enSessionStorage()){
 			ap('sep_edit2',  'edit');
 			as('duplicate', 'edit', '盤面の複製', 'Duplicate the Board');
 		}
@@ -325,7 +325,7 @@ pzprv3.createCommonClass('Menu', '',
 		ac('autocheck','setting', k.playmode, '正答自動判定', 'Auto Answer Check');
 		ac('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
 		sl('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
-		if(kp.haspanel[1] || kp.haspanel[3]){
+		if(kc.haspanel[1] || kc.haspanel[3]){
 			ac('keypopup', 'setting', false, 'パネル入力', 'Panel inputting');
 			sl('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
 		}
@@ -673,6 +673,7 @@ pzprv3.createCommonClass('Menu', '',
 	// menu.poparea()       ポップアップメニューの初期設定を行う
 	//---------------------------------------------------------------------------
 	poparea : function(){
+		var _doc = document;
 
 		//=====================================================================
 		//// 各タイトルバーの動作設定
@@ -751,7 +752,7 @@ pzprv3.createCommonClass('Menu', '',
 		btn(_doc.fileform.close,    close, "閉じる",     "Close");
 
 		// データベースを開く -------------------------------------------------
-		func = ee.ebinder(dbm, dbm.clickHandler);
+		func = ee.ebinder(pzprv3.dbm, pzprv3.dbm.clickHandler);
 		lab(ee('bar1_8').el, "一時保存/戻す", "Temporary Stack");
 		_doc.database.sorts   .onchange = func;
 		_doc.database.datalist.onchange = func;
@@ -805,7 +806,7 @@ pzprv3.createCommonClass('Menu', '',
 		btn(_doc.dispsize.cancel,   close, "キャンセル", "Cancel");
 
 		// poptest ------------------------------------------------------------
-		debug.poptest_func();
+		pzprv3.debug.poptest_func();
 
 		if(ee("pop1_8").el.style.display=='inline'){ this.pop = ee("pop1_8");}
 	},
@@ -838,7 +839,7 @@ pzprv3.createCommonClass('Menu', '',
 	popclose : function(){
 		if(this.pop){
 			if(this.pop.el.id=='pop1_8'){
-				dbm.closeDialog();
+				pzprv3.dbm.closeDialog();
 			}
 
 			this.pop.el.style.display = "none";
@@ -892,7 +893,7 @@ pzprv3.createCommonClass('Menu', '',
 	// menu.textsize()   テキストのサイズを設定する
 	//--------------------------------------------------------------------------------
 	textsize : function(num){
-		var sheet = _doc.styleSheets[0];
+		var sheet = document.styleSheets[0];
 		var rules = (!!sheet.cssRules ? sheet.cssRules : sheet.rules);
 		if(!rules){ return;} /* Chrome6の挙動がおかしいのでエラー回避用 */
 		for(var i=0,len=rules.length;i<len;i++){
@@ -1065,14 +1066,14 @@ pzprv3.createCommonClass('Properties', '',
 	// submenuから呼び出される関数たち
 	funcs : {
 		urlinput  : function(){ menu.pop = ee("pop1_2");},
-		urloutput : function(){ menu.pop = ee("pop1_3"); _doc.urloutput.ta.value = "";},
+		urloutput : function(){ menu.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
 		fileopen  : function(){ menu.pop = ee("pop1_4");},
 		filesave  : function(){ menu.ex.filesave(fio.PZPR);},
 //		filesave3 : function(){ menu.ex.filesave(fio.PZPH);},
 		filesave2 : function(){ if(!!fio.kanpenSave){ menu.ex.filesave(fio.PBOX);}},
 		imagedl   : function(){ menu.ex.imagesave(true);},
 		imagesave : function(){ menu.ex.imagesave(false);},
-		database  : function(){ menu.pop = ee("pop1_8"); dbm.openDialog();},
+		database  : function(){ menu.pop = ee("pop1_8"); pzprv3.dbm.openDialog();},
 
 		h_oldest  : function(){ um.undoall();},
 		h_undo    : function(){ um.undo(1);},
@@ -1083,7 +1084,7 @@ pzprv3.createCommonClass('Properties', '',
 		subclear  : function(){ menu.ex.ASconfirm();},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
-		duplicate : function(){ base.dec.exportFileData();},
+		duplicate : function(){ pzprv3.base.dec.exportFileData();},
 
 		credit    : function(){ menu.pop = ee("pop3_1");},
 		jumpexp   : function(){ window.open('./faq.html?'+bd.puzzleid+(pzprv3.EDITOR?"_edit":""), '');},
@@ -1093,7 +1094,7 @@ pzprv3.createCommonClass('Properties', '',
 		irowake   : function(){ pc.paintAll();},
 		cursor    : function(){ pc.paintAll();},
 		manarea   : function(){ menu.ex.dispman();},
-		poptest   : function(){ debug.disppoptest();},
+		poptest   : function(){ pzprv3.debug.disppoptest();},
 
 		mode      : function(num){ menu.ex.modechange(num);},
 		text      : function(num){ menu.textsize(num); pc.resize_canvas();},
@@ -1105,22 +1106,22 @@ pzprv3.createCommonClass('Properties', '',
 		newboard : function(){
 			menu.pop = ee("pop1_1");
 			if(bd.puzzleid!="sudoku"){
-				_doc.newboard.col.value = bd.qcols;
-				_doc.newboard.row.value = bd.qrows;
+				document.newboard.col.value = bd.qcols;
+				document.newboard.row.value = bd.qrows;
 			}
 			kc.enableKey = false;
 		},
 		dispsize : function(){
 			menu.pop = ee("pop4_1");
-			_doc.dispsize.cs.value = pc.cellsize;
+			document.dispsize.cs.value = pc.cellsize;
 			kc.enableKey = false;
 		},
 		keypopup : function(){
-			var f = kp.haspanel[pp.flags['mode'].val];
+			var f = kc.haspanel[pp.flags['mode'].val];
 			ee('ck_keypopup').el.disabled    = (f?"":"true");
 			ee('cl_keypopup').el.style.color = (f?"black":"silver");
 
-			kp.display();
+			kc.display();
 		}
 	}
 });
@@ -1128,12 +1129,14 @@ pzprv3.createCommonClass('Properties', '',
 //---------------------------------------------------------------------------
 // ★debugオブジェクト  poptest関連の関数など
 //---------------------------------------------------------------------------
-var debug = {
+pzprv3.debug = {
 	extend : function(object){
 		for(var i in object){ this[i] = object[i];}
 	},
 
 	poptest_func : function(){
+		var _doc = document;
+
 		menu.titlebarfunc(ee('bartest').el);
 
 		_doc.testform.t1.onclick        = ee.binder(this, this.perfeval);
@@ -1156,7 +1159,7 @@ var debug = {
 
 		_doc.testform.perfload.style.display = (bd.puzzleid!=='country' ? 'none' : 'inline');
 		_doc.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
-		_doc.testform.database.style.display = (base.dec.enLocalStorage() ? 'none' : 'inline');
+		_doc.testform.database.style.display = (pzprv3.base.dec.enLocalStorage() ? 'none' : 'inline');
 
 		if(pzprv3.DEBUG){ this.testonly_func();}	// テスト用
 	},
@@ -1207,13 +1210,13 @@ var debug = {
 	},
 	timeeval : function(text,func){
 		this.addTA(text);
-		var count=0, old = tm.now();
-		while(tm.now() - old < 3000){
+		var count=0, old = pzprv3.timer.now();
+		while(pzprv3.timer.now() - old < 3000){
 			count++;
 
 			func();
 		}
-		var time = tm.now() - old;
+		var time = pzprv3.timer.now() - old;
 
 		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
 	},
@@ -1233,7 +1236,7 @@ var debug = {
 		pp.setVal('irowake',true);
 	},
 
-	getTA : function(){ return _doc.testform.testarea.value;},
-	setTA : function(str){ _doc.testform.testarea.value  = str;},
-	addTA : function(str){ _doc.testform.testarea.value += (str+"\n");}
+	getTA : function(){ return document.testform.testarea.value;},
+	setTA : function(str){ document.testform.testarea.value  = str;},
+	addTA : function(str){ document.testform.testarea.value += (str+"\n");}
 };

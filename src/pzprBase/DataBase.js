@@ -24,7 +24,7 @@ pzprv3.createCoreClass('ProblemData', '',
 		this.row = bd.qrows;
 		this.hard = 0;
 		this.pdata = fio.fileencode(fio.PZPH);
-		this.time = (tm.now()/1000)|0;
+		this.time = (pzprv3.timer.now()/1000)|0;
 		this.comment = '';
 	},
 	toString : function(){
@@ -65,7 +65,7 @@ pzprv3.createCoreClass('DataBaseManager', '',
 	//---------------------------------------------------------------------------
 	openDialog : function(){
 		// データベースを開く
-		if(base.dec.enLocalStorage()){ this.dbh = new pzprv3.core.DataBaseHandler_LS();}
+		if(pzprv3.base.dec.enLocalStorage()){ this.dbh = new pzprv3.core.DataBaseHandler_LS();}
 		else{ return;}
 
 		this.sync = false;
@@ -100,9 +100,10 @@ pzprv3.createCoreClass('DataBaseManager', '',
 	// dbm.updateDialog() 管理テーブル情報やダイアログの表示を更新する
 	//---------------------------------------------------------------------------
 	getDataID : function(){
-		if(_doc.database.datalist.value!="new" && _doc.database.datalist.value!=""){
+		var val = document.database.datalist.value;
+		if(val!="new" && val!=""){
 			for(var i=0;i<this.DBlist.length;i++){
-				if(this.DBlist[i].id==_doc.database.datalist.value){ return i;}
+				if(this.DBlist[i].id==val){ return i;}
 			}
 		}
 		return -1;
@@ -121,14 +122,14 @@ pzprv3.createCoreClass('DataBaseManager', '',
 	// dbm.dateString()           時刻の文字列を生成する
 	//---------------------------------------------------------------------------
 	displayDataTableList : function(){
-		switch(_doc.database.sorts.value){
+		switch(document.database.sorts.value){
 			case 'idlist' : this.DBlist = this.DBlist.sort(function(a,b){ return (a.id-b.id);}); break;
 			case 'newsave': this.DBlist = this.DBlist.sort(function(a,b){ return (b.time-a.time || a.id-b.id);}); break;
 			case 'oldsave': this.DBlist = this.DBlist.sort(function(a,b){ return (a.time-b.time || a.id-b.id);}); break;
 			case 'size'   : this.DBlist = this.DBlist.sort(function(a,b){ return (a.col-b.col || a.row-b.row || a.hard-b.hard || a.id-b.id);}); break;
 		}
 
-		_doc.database.datalist.innerHTML = "";
+		document.database.datalist.innerHTML = "";
 		for(var i=0;i<this.DBlist.length;i++){
 			var row = this.DBlist[i];
 			if(!!row){ this.appendNewOption(row.id, this.getRowString(row));}
@@ -136,12 +137,12 @@ pzprv3.createCoreClass('DataBaseManager', '',
 		this.appendNewOption(-1, "&nbsp;&lt;新しく保存する&gt;");
 	},
 	appendNewOption : function(id, str){
-		var opt = _doc.createElement('option');
+		var opt = document.createElement('option');
 		opt.setAttribute('value', (id!=-1 ? id : "new"));
 		opt.innerHTML = str;
 		if(this.DBsid==id){ opt.setAttribute('selected', "selected");}
 
-		_doc.database.datalist.appendChild(opt);
+		document.database.datalist.appendChild(opt);
 	},
 	getRowString : function(row){
 		var hardstr = [
@@ -177,7 +178,7 @@ pzprv3.createCoreClass('DataBaseManager', '',
 	// dbm.selectDataTable() データを選択して、コメントなどを表示する
 	//---------------------------------------------------------------------------
 	selectDataTable : function(){
-		var selected = this.getDataID();
+		var selected = this.getDataID(), _doc = document;
 		if(selected>=0){
 			_doc.database.comtext.value = ""+this.DBlist[selected].comment;
 			this.DBsid = parseInt(this.DBlist[selected].id);
@@ -328,7 +329,7 @@ pzprv3.createCoreClass('DataBaseHandler_LS', '',
 	},
 	updateManageData : function(parent){
 		localStorage['pzprv3_storage:count'] = parent.DBlist.length;
-		localStorage['pzprv3_storage:time']  = (tm.now()/1000)|0;
+		localStorage['pzprv3_storage:time']  = (pzprv3.timer.now()/1000)|0;
 	},
 
 	//---------------------------------------------------------------------------
@@ -427,7 +428,7 @@ pzprv3.createCoreClass('DataBaseHandler_LS', '',
 		puzzles.sort(function(a,b){ return (a.time-b.time || a.id-b.id);});
 		localStorage['pzprv3_storage:version'] = '2.0';
 		localStorage['pzprv3_storage:count'] = puzzles.length;
-		localStorage['pzprv3_storage:time']  = (tm.now()/1000)|0;
+		localStorage['pzprv3_storage:time']  = (pzprv3.timer.now()/1000)|0;
 		for(var i=0;i<puzzles.length;i++){
 			puzzles[i].id = (i+1);
 			localStorage['pzprv3_storage:data:'+(i+1)] = puzzles[i].toString();

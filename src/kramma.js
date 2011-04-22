@@ -95,7 +95,7 @@ AreaManager:{
 Menu:{
 	menuinit : function(){
 		this.SuperFunc.menuinit.call(this);
-		if(bd.puzzleid==='shwolf' && base.dec.enableSaveImage){
+		if(bd.puzzleid==='shwolf' && pzprv3.base.dec.enableSaveImage){
 			if(ee.br.Gecko && !location.hostname){
 				ee('ms_imagesavep').el.className = 'smenunull';
 			}

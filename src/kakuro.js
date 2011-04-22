@@ -20,13 +20,11 @@ KeyEvent:{
 	keyinput : function(ca){
 		if     (k.editmode){ this.inputnumber51(ca,{2:45,4:45});}
 		else if(k.playmode){ this.key_inputqnum(ca);}
-	}
-},
+	},
 
-KeyPopup:{
-	paneltype  : 51,
-	enablemake : true,
-	enableplay : true,
+	enablemake_p : true,
+	enableplay_p : true,
+	paneltype    : 51,
 	generate : function(mode,type){
 		if(mode===3){ this.gentable10(mode,type);}
 		else        { this.gentable51(mode,type);}
@@ -39,8 +37,7 @@ TargetCursor:{
 			if(this.pos.x<1){ this.pos.x = 1;}
 			if(this.pos.y<1){ this.pos.y = 1;}
 		}
-	},
-	targetdir : 2
+	}
 },
 
 //---------------------------------------------------------

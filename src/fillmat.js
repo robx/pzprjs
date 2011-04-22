@@ -23,11 +23,9 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
-	enablemake : true
-},
-
-KeyPopup:{
 	enablemake : true,
+
+	enablemake_p : true,
 	generate : function(mode,type){
 		if(bd.puzzleid==='fillmat'){
 			this.inputcol('num','knum1','1','1');

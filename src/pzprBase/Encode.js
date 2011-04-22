@@ -44,7 +44,7 @@ pzprv3.createCommonClass('Encode', '',
 	// enc.pzlexport()    各パズルのURL出力用(オーバーライド用)
 	//---------------------------------------------------------------------------
 	pzlinput : function(){
-		var uri = base.dec;
+		var uri = pzprv3.base.dec;
 
 		bd.initBoardSize(uri.cols, uri.rows);
 
@@ -113,7 +113,7 @@ pzprv3.createCommonClass('Encode', '',
 	getURLBase : function(type){
 		var str = this.urlbase[type];
 
-		var domain = _doc.domain;
+		var domain = document.domain;
 		if(!domain){ domain = "pzv.jp";}
 		else if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
 

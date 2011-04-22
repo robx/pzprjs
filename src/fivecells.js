@@ -38,12 +38,10 @@ KeyEvent:{
 				pc.paintCell(cc);
 			}
 		}
-	}
-},
+	},
 
-KeyPopup:{
-	paneltype  : 1,
-	enablemake : true
+	enablemake_p : true,
+	paneltype    : 1
 },
 
 //---------------------------------------------------------

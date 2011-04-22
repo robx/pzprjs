@@ -28,11 +28,9 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
-	enablemake : true
-},
-
-KeyPopup:{
 	enablemake : true,
+
+	enablemake_p : true,
 	generate : function(mode,type){
 		this.inputcol('num','knum1','1','同');
 		this.inputcol('num','knum2','2','短');

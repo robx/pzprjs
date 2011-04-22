@@ -31,11 +31,9 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
-	enablemake : true
-},
-
-KeyPopup:{
 	enablemake : true,
+
+	enablemake_p : true,
 	generate : function(mode,type){
 		this.inputcol('num','knum0','0','0');
 		this.inputcol('num','knum1','1','1');
@@ -219,14 +217,14 @@ MenuExec:{
 	newboard_show : function(){		// "新規盤面作成"を表示するとき
 		menu.pop = ee("pop1_1");
 		this.selectlap([0,2,3,1][bd.lap]);
-		_doc.newboard.col.value = (bd.qcols+(bd.lap==3?1:0));
-		_doc.newboard.row.value = bd.qrows;
+		document.newboard.col.value = (bd.qcols+(bd.lap==3?1:0));
+		document.newboard.row.value = bd.qrows;
 		kc.enableKey = false;
 	},
 	newboard : function(e){			// "新規盤面作成"ボタンが押されたとき
 		if(menu.pop){
-			var col = ((parseInt(_doc.newboard.col.value))|0);
-			var row = ((parseInt(_doc.newboard.row.value))|0);
+			var col = ((parseInt(document.newboard.col.value))|0);
+			var row = ((parseInt(document.newboard.row.value))|0);
 			var slap = [0,3,1,2][this.clap];
 
 			if(!!col && !!row && !isNaN(slap) && !(col==1 && (slap==0||slap==3))){
@@ -247,9 +245,9 @@ Menu:{
 	},
 
 	menuinit : function(){
-		this.newboard_html_original = _doc.newboard.innerHTML;
+		this.newboard_html_original = document.newboard.innerHTML;
 
-		_doc.newboard.innerHTML =
+		document.newboard.innerHTML =
 			["<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n",
 			 "<input type=\"number\" name=\"col\" value=\"\" size=\"4\" maxlength=\"3\" min=\"1\" max=\"999\" /> <span id=\"pop1_1_cap1x\">横幅 (黄色の数)</span><br>\n",
 			 "<input type=\"number\" name=\"row\" value=\"\" size=\"4\" maxlength=\"3\" min=\"1\" max=\"999\" /> <span id=\"pop1_1_cap2x\">高さ</span><br>\n",
@@ -274,14 +272,14 @@ Menu:{
 
 		this.SuperFunc.menuinit.call(this);
 
-		_doc.flip.turnl.disabled = true;
-		_doc.flip.turnr.disabled = true;
+		document.flip.turnl.disabled = true;
+		document.flip.turnr.disabled = true;
 	},
 	menureset : function(){
-		_doc.newboard.innerHTML  = this.newboard_html_original;
+		document.newboard.innerHTML  = this.newboard_html_original;
 
-		_doc.flip.turnl.disabled = false;
-		_doc.flip.turnr.disabled = false;
+		document.flip.turnl.disabled = false;
+		document.flip.turnr.disabled = false;
 
 		this.SuperFunc.menureset.call(this);
 	}
@@ -376,7 +374,7 @@ Encode:{
 		var barray = this.outbstr.split("/");
 
 		bd.setLap(parseInt(barray[0]));
-		bd.initBoardSize(base.dec.cols, base.dec.rows);
+		bd.initBoardSize(pzprv3.base.dec.cols, pzprv3.base.dec.rows);
 
 		this.outbstr = barray[1];
 		this.decodeNumber10();

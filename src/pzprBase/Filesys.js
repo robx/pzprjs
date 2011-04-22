@@ -26,10 +26,10 @@ pzprv3.createCommonClass('FileIO', '',
 	//---------------------------------------------------------------------------
 	filedecode : function(datastr){
 		var lines = datastr.split('/');
-		base.dec.reset();
-		base.dec.id = (lines[0].match(/^pzprv3/) ? lines[1] : bd.puzzleid);
-		base.dec.fstr = datastr;
-		base.importBoardData(base.dec.id);
+		pzprv3.base.dec.reset();
+		pzprv3.base.dec.id = (lines[0].match(/^pzprv3/) ? lines[1] : bd.puzzleid);
+		pzprv3.base.dec.fstr = datastr;
+		pzprv3.base.importBoardData(pzprv3.base.dec.id);
 	},
 	filedecode_main : function(datastr){
 		datastr = datastr.replace(/[\r\n]/g,"");

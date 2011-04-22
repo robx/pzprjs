@@ -94,13 +94,11 @@ KeyEvent:{
 
 			if(this.tcMoved){ pc.paintCell(cc);}
 		}
-	}
-},
+	},
 
-KeyPopup:{
-	paneltype  : 10,
-	enablemake : true,
-	enableplay : true
+	enablemake_p : true,
+	enableplay_p : true,
+	paneltype    : 10
 },
 
 //---------------------------------------------------------

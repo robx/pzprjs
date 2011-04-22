@@ -56,14 +56,10 @@ KeyEvent:{
 
 	keyinput : function(ca){
 		this.inputnumber51(ca,{2:(bd.qcols-(tc.pos.x>>1)-1), 4:(bd.qrows-(tc.pos.y>>1)-1)});
-	}
-},
-KeyPopup:{
-	paneltype  : 51,
-	enablemake : true
-},
-TargetCursor:{
-	targetdir : 2
+	},
+
+	enablemake_p : true,
+	paneltype    : 51
 },
 
 //---------------------------------------------------------

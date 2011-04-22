@@ -43,12 +43,10 @@ KeyEvent:{
 			else if(ca==='2' && bd.AnC(cc)===2)            { ca='s2';}
 		}
 		this.key_inputqnum(ca);
-	}
-},
+	},
 
-KeyPopup:{
-	enablemake : true,
-	enableplay : true,
+	enablemake_p : true,
+	enableplay_p : true,
 	generate : function(mode,type){
 		var mbcolor = (pzprv3.getPuzzleClass('Graphic')).prototype.mbcolor;
 		if(bd.puzzleid==='sukoro'||bd.puzzleid==='sukororoom'){

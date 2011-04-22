@@ -50,12 +50,10 @@ KeyEvent:{
 
 	keyinput : function(ca){
 		this.key_inputcross(ca);
-	}
-},
+	},
 
-KeyPopup:{
-	paneltype  : 4,
-	enablemake : true
+	enablemake_p : true,
+	paneltype    : 4
 },
 
 TargetCursor:{

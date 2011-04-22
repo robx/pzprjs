@@ -10,6 +10,8 @@ pzprv3.createCommonClass('KeyEvent', '',
 	initialize : function(){
 		this.enableKey = true;	// キー入力は有効か
 		this.keyreset();
+
+		this.initialize_panel();
 	},
 
 	enablemake : false,
@@ -49,9 +51,9 @@ pzprv3.createCommonClass('KeyEvent', '',
 	//---------------------------------------------------------------------------
 	setEvents : function(){
 		// キー入力イベントの設定
-		ee.addEvent(_doc, 'keydown',  ee.ebinder(this, this.e_keydown));
-		ee.addEvent(_doc, 'keyup',    ee.ebinder(this, this.e_keyup));
-		ee.addEvent(_doc, 'keypress', ee.ebinder(this, this.e_keypress));
+		ee.addEvent(document, 'keydown',  ee.ebinder(this, this.e_keydown));
+		ee.addEvent(document, 'keyup',    ee.ebinder(this, this.e_keyup));
+		ee.addEvent(document, 'keypress', ee.ebinder(this, this.e_keypress));
 		// Silverlightのキー入力イベント設定
 		if(g.use.sl){
 			var sender = g.content.findName(g.canvasid);
@@ -178,7 +180,7 @@ pzprv3.createCommonClass('KeyEvent', '',
 			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); flag=true;}
 			else if(k.playmode &&  this.isSHIFT){ pp.setVal('mode',1); flag=true;}
 		}
-		flag = (flag || debug.keydown(this.ca));
+		flag = (flag || pzprv3.debug.keydown(this.ca));
 
 		return flag;
 	},
@@ -300,11 +302,11 @@ pzprv3.createCommonClass('KeyEvent', '',
 	// kc.getnum51()      モード別に数字を取得する
 	//---------------------------------------------------------------------------
 	inputnumber51 : function(ca,max_obj){
-		if(this.chtarget(ca)){ return;}
+		if(tc.chtarget(ca)){ return;}
 
 		var cc = tc.getTCC(), ex = null;
 		if(cc===null){ ex = tc.getTEC();}
-		var target = this.detectTarget(cc,ex);
+		var target = tc.detectTarget(cc,ex);
 		if(target===0 || (cc!==null && bd.QuC(cc)===51)){
 			if(ca==='q' && cc!==null){
 				if(bd.QuC(cc)!==51){ bd.set51cell(cc);}
@@ -340,45 +342,13 @@ pzprv3.createCommonClass('KeyEvent', '',
 		else        { return (target==2 ? bd.QnE(ex) : bd.DiE(ex));}
 	},
 
-	//---------------------------------------------------------------------------
-	// kc.chtarget()     SHIFTを押した時に[＼]の入力するところを選択する
-	// kc.detectTarget() [＼]の右・下どちらに数字を入力するか判断する
-	//---------------------------------------------------------------------------
-	chtarget : function(ca){
-		if(ca!='shift'){ return false;}
-		if(tc.targetdir==2){ tc.targetdir=4;}
-		else{ tc.targetdir=2;}
-		pc.paintCell(tc.getTCC());
-		return true;
-	},
-	detectTarget : function(cc,ex){
-		if((cc===null && ex===null) || (cc!==null && bd.QuC(cc)!==51)){ return 0;}
-		if(cc===bd.cellmax-1 || ex===bd.qcols+bd.qrows){ return 0;}
-		if(cc!==null){
-			if	  ((bd.rt(cc)===null || bd.QuC(bd.rt(cc))===51) &&
-				   (bd.dn(cc)===null || bd.QuC(bd.dn(cc))===51)){ return 0;}
-			else if(bd.rt(cc)===null || bd.QuC(bd.rt(cc))===51){ return 4;}
-			else if(bd.dn(cc)===null || bd.QuC(bd.dn(cc))===51){ return 2;}
-		}
-		else if(ex!==null){
-			if	  ((bd.excell[ex].by===-1 && bd.QuC(bd.cnum(bd.excell[ex].bx,1))===51) ||
-				   (bd.excell[ex].bx===-1 && bd.QuC(bd.cnum(1,bd.excell[ex].by))===51)){ return 0;}
-			else if(bd.excell[ex].by===-1){ return 4;}
-			else if(bd.excell[ex].bx===-1){ return 2;}
-		}
-
-		return tc.targetdir;
-	}
-});
-
 //---------------------------------------------------------------------------
 // ★KeyPopupクラス マウスからキーボード入力する際のPopupウィンドウを管理する
+//   ※KeyEventクラスと一緒にしました
 //---------------------------------------------------------------------------
 // キー入力用Popupウィンドウ
-// KeyPopupクラス
-pzprv3.createCommonClass('KeyPopup', '',
-{
-	initialize : function(){
+
+	initialize_panel : function(){
 		this.haspanel = {1:false, 3:false};	// 有効かどうか
 		this.element = null;				// キーポップアップのエレメント
 
@@ -402,15 +372,15 @@ pzprv3.createCommonClass('KeyPopup', '',
 		this.create();
 	},
 
-	paneltype  : 10,
-	enablemake : false,
-	enableplay : false,
+	enablemake_p : false,
+	enableplay_p : false,
+	paneltype    : 10,
 
 	//---------------------------------------------------------------------------
 	// kp.kpinput()     キーポップアップから入力された時の処理をオーバーライドで記述する
 	//---------------------------------------------------------------------------
 	kpinput : function(e, ca){
-		kc.keyinput(ca);
+		this.keyinput(ca);
 	},
 
 	//---------------------------------------------------------------------------
@@ -444,8 +414,8 @@ pzprv3.createCommonClass('KeyPopup', '',
 			ee('barkeypopup').el.ondblclick = function(){ pp.setVal('keypopup',false)};
 		}
 
-		if(this.enablemake && pzprv3.EDITOR){ this.createtable(1);}
-		if(this.enableplay)                 { this.createtable(3);}
+		if(this.enablemake_p && pzprv3.EDITOR){ this.createtable(1);}
+		if(this.enableplay_p)                 { this.createtable(3);}
 	},
 	createtable : function(mode){
 		this.haspanel[mode] = true;
@@ -454,11 +424,11 @@ pzprv3.createCommonClass('KeyPopup', '',
 		var basediv = ee('panelbase'+mode).el;
 		basediv.innerHTML = '';
 
-		var table = _doc.createElement('table');
+		var table = document.createElement('table');
 		table.cellSpacing = '2pt';
 		basediv.appendChild(table);
 
-		this.tbodytmp = _doc.createElement('tbody');
+		this.tbodytmp = document.createElement('tbody');
 		table.appendChild(this.tbodytmp);
 
 		this.trtmp = null;
@@ -530,7 +500,7 @@ pzprv3.createCommonClass('KeyPopup', '',
 	// kp.insertrow() テーブルの行を追加する
 	//---------------------------------------------------------------------------
 	inputcol : function(type, id, ca, disp){
-		if(!this.trtmp){ this.trtmp = _doc.createElement('tr');}
+		if(!this.trtmp){ this.trtmp = document.createElement('tr');}
 		var _td = null;
 		if(type==='empty'){
 			_td = ee.createEL(this.EL_KPEMPTY, '');
@@ -566,9 +536,9 @@ pzprv3.createCommonClass('KeyPopup', '',
 	},
 
 	//---------------------------------------------------------------------------
-	// kp.resize() キーポップアップのセルのサイズを変更する
+	// kp.resizepanel() キーポップアップのセルのサイズを変更する
 	//---------------------------------------------------------------------------
-	resize : function(){
+	resizepanel : function(){
 		var tfunc = function(el,tsize){
 			el.style.width    = ""+((tsize*0.90)|0)+"px"
 			el.style.height   = ""+((tsize*0.90)|0)+"px"
@@ -689,5 +659,36 @@ pzprv3.createCommonClass('TargetCursor', '',
 	setTEC : function(id){
 		if(!bd.excell[id]){ return;}
 		this.pos = new pzprv3.core.Address(bd.excell[id].bx, bd.excell[id].by);
+	},
+
+	//---------------------------------------------------------------------------
+	// tc.chtarget()     SHIFTを押した時に[＼]の入力するところを選択する
+	// tc.detectTarget() [＼]の右・下どちらに数字を入力するか判断する
+	//---------------------------------------------------------------------------
+	targetdir : 2,
+	chtarget : function(ca){
+		if(ca!='shift'){ return false;}
+		if(this.targetdir==2){ this.targetdir=4;}
+		else{ this.targetdir=2;}
+		pc.paintCell(this.getTCC());
+		return true;
+	},
+	detectTarget : function(cc,ex){
+		if((cc===null && ex===null) || (cc!==null && bd.QuC(cc)!==51)){ return 0;}
+		if(cc===bd.cellmax-1 || ex===bd.qcols+bd.qrows){ return 0;}
+		if(cc!==null){
+			if	  ((bd.rt(cc)===null || bd.QuC(bd.rt(cc))===51) &&
+				   (bd.dn(cc)===null || bd.QuC(bd.dn(cc))===51)){ return 0;}
+			else if(bd.rt(cc)===null || bd.QuC(bd.rt(cc))===51){ return 4;}
+			else if(bd.dn(cc)===null || bd.QuC(bd.dn(cc))===51){ return 2;}
+		}
+		else if(ex!==null){
+			if	  ((bd.excell[ex].by===-1 && bd.QuC(bd.cnum(bd.excell[ex].bx,1))===51) ||
+				   (bd.excell[ex].bx===-1 && bd.QuC(bd.cnum(1,bd.excell[ex].by))===51)){ return 0;}
+			else if(bd.excell[ex].by===-1){ return 4;}
+			else if(bd.excell[ex].bx===-1){ return 2;}
+		}
+
+		return this.targetdir;
 	}
 });

@@ -23,7 +23,7 @@ pzprv3.createCommonClass('MenuExec', '',
 		this.insex[bd.EXCELL] = {1:true};
 	},
 
-	fileio : (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi"),
+	fileio : (document.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi"),
 	enableReadText : false,
 
 	// 定数
@@ -93,7 +93,7 @@ pzprv3.createCommonClass('MenuExec', '',
 		kc.keyreset();
 		bd.errclear();
 		tc.adjust_modechange();
-		if(kp.haspanel[1] || kp.haspanel[3]){ pp.funcs.keypopup();}
+		if(kc.haspanel[1] || kc.haspanel[3]){ pp.funcs.keypopup();}
 
 		bd.haserror=true;
 		pc.paintAll();
@@ -105,16 +105,16 @@ pzprv3.createCommonClass('MenuExec', '',
 	//------------------------------------------------------------------------------
 	newboard : function(e){
 		if(menu.pop){
-			var col = (parseInt(_doc.newboard.col.value))|0;
-			var row = (parseInt(_doc.newboard.row.value))|0;
+			var col = (parseInt(document.newboard.col.value))|0;
+			var row = (parseInt(document.newboard.row.value))|0;
 			if(!!col && !!row){ this.newboard_open('/'+col+'/'+row);}
 		}
 	},
 	newboard_open : function(url){
 		menu.popclose();
 
-		base.dec.parseURI('?'+bd.puzzleid+url);
-		base.importBoardData(base.dec.id);
+		pzprv3.base.dec.parseURI('?'+bd.puzzleid+url);
+		pzprv3.base.importBoardData(pzprv3.base.dec.id);
 	},
 
 	//------------------------------------------------------------------------------
@@ -126,14 +126,15 @@ pzprv3.createCommonClass('MenuExec', '',
 		if(menu.pop){
 			menu.popclose();
 
-			base.dec.parseURI(_doc.urlinput.ta.value);
-			if(!!base.dec.id){
-				base.importBoardData(base.dec.id);
+			pzprv3.base.dec.parseURI(document.urlinput.ta.value);
+			if(!!pzprv3.base.dec.id){
+				pzprv3.base.importBoardData(pzprv3.base.dec.id);
 			}
 		}
 	},
 	urloutput : function(e){
 		if(menu.pop){
+			var _doc = document;
 			switch(ee.getSrcElement(e).name){
 				case "pzprv3":     _doc.urloutput.ta.value = enc.pzloutput(enc.PZPRV3);  break;
 				case "pzprapplet": _doc.urloutput.ta.value = enc.pzloutput(enc.PZPRAPP); break;
@@ -145,8 +146,8 @@ pzprv3.createCommonClass('MenuExec', '',
 	},
 	openurl : function(e){
 		if(menu.pop){
-			if(_doc.urloutput.ta.value!==''){
-				var win = window.open(_doc.urloutput.ta.value, '', '');
+			if(document.urloutput.ta.value!==''){
+				var win = window.open(document.urloutput.ta.value, '', '');
 			}
 		}
 	},
@@ -158,7 +159,7 @@ pzprv3.createCommonClass('MenuExec', '',
 	//------------------------------------------------------------------------------
 	fileopen : function(e){
 		if(menu.pop){ menu.popclose();}
-		var fileEL = _doc.fileform.filebox;
+		var _doc = document, fileEL = _doc.fileform.filebox;
 
 		if(!!this.reader || this.enableGetText){
 			var fitem = fileEL.files[0];
@@ -185,8 +186,8 @@ pzprv3.createCommonClass('MenuExec', '',
 
 		fio.filedecode(fstr);
 
-		_doc.fileform.reset();
-		tm.reset();
+		document.fileform.reset();
+		pzprv3.timer.reset();
 	},
 
 	filesave : function(ftype){
@@ -195,6 +196,7 @@ pzprv3.createCommonClass('MenuExec', '',
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;} }
 
+		var _doc = document;
 		_doc.fileform2.filename.value = fname;
 
 		if     (navigator.platform.indexOf("Win")!==-1){ _doc.fileform2.platform.value = "Win";}
@@ -233,6 +235,7 @@ pzprv3.createCommonClass('MenuExec', '',
 			var url = g.canvas.toDataURL();
 
 			if(isDL){
+				var _doc = document;
 				_doc.fileform2.filename.value  = bd.puzzleid+'.png';
 				_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
 				_doc.fileform2.operation.value = 'imagesave';
@@ -277,7 +280,7 @@ pzprv3.createCommonClass('MenuExec', '',
 	//------------------------------------------------------------------------------
 	dispsize : function(e){
 		if(menu.pop){
-			var csize = parseInt(_doc.dispsize.cs.value);
+			var csize = parseInt(document.dispsize.cs.value);
 			if(csize>0){ pc.cellsize = (csize|0);}
 
 			menu.popclose();

@@ -164,11 +164,9 @@ KeyEvent:{
 	},
 	keyup : function(ca){
 		if(ca=='x'){ pc.drawNumbersOnGate(false);}
-	}
-},
+	},
 
-KeyPopup:{
-	enablemake : true,
+	enablemake_p : true,
 	generate : function(mode,type){
 		this.imgCR = [4,1];
 		this.inputcol('image','knumq','q',[0,0]);

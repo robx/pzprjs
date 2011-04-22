@@ -40,11 +40,9 @@ KeyEvent:{
 		else{ return;}
 
 		pc.paintCell(cc);
-	}
-},
+	},
 
-KeyPopup:{
-	enablemake : true,
+	enablemake_p : true,
 	generate : function(mode,type){
 		this.inputcol('num','knumq','q','╋');
 		this.inputcol('num','knumw','w','┃');

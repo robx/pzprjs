@@ -98,11 +98,9 @@ KeyEvent:{
 		this.prev=cc;
 		pc.paintCell(cc);
 		return true;
-	}
-},
+	},
 
-KeyPopup:{
-	enablemake : true,
+	enablemake_p : true,
 	generate : function(mode,type){
 		this.inputcol('num','knumq1','q1','■');
 		this.inputcol('num','knumq2','q2','□');
