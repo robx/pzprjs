@@ -249,13 +249,13 @@ AnsCheck:{
 
 		var rinfo = bd.areas.getRoomInfo(), minfo = bd.getMovedPosition(linfo);
 		var mfunc = function(c){ return ((c!==null && minfo.id[c]!==null) ? bd.QnC(minfo.id[c]) : -1);};
-		if( bd.puzzleid==='bonsan' && !this.checkFractal(rinfo, mfunc) ){
+		if( (bd.puzzleid==='bonsan') && !this.checkFractal(rinfo, mfunc) ){
 			this.setAlert('○が点対称に配置されていません。', 'Position of circles is not point symmetric.'); return false;
 		}
-		if( bd.puzzleid==='heyabon' && !this.checkFractal(rinfo, mfunc) ){
+		if( (bd.puzzleid==='heyabon') && !this.checkFractal(rinfo, mfunc) ){
 			this.setAlert('部屋の中の○が点対称に配置されていません。', 'Position of circles in the room is not point symmetric.'); return false;
 		}
-		if( bd.puzzleid==='heyabon' && !this.checkNoObjectInRoom(rinfo, mfunc) ){
+		if( (bd.puzzleid==='heyabon') && !this.checkNoObjectInRoom(rinfo, mfunc) ){
 			this.setAlert('○のない部屋があります。','A room has no circle.'); return false;
 		}
 

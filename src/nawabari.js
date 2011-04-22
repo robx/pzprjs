@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 なわばり版 nawabari.js v3.4.0
+// パズル固有スクリプト部 なわばり・フォーセルズ版 nawabari.js v3.4.0
 //
 pzprv3.custom.nawabari = {
 //---------------------------------------------------------
@@ -36,9 +36,16 @@ KeyPopup:{
 Board:{
 	isborder : 1,
 
-	numzero : true,
-
-	maxnum : 4,
+	initialize : function(pid){
+		this.SuperFunc.initialize.call(this,pid);
+		if(pid==='nawabari'){
+			this.numzero = true;
+			this.maxnum = 4;
+		}
+		else if(pid==='fourcells'){
+			this.maxnum = 3;
+		}
+	},
 
 	getdir4Border : function(cc){
 		var cnt=0, bx=this.cell[cc].bx, by=this.cell[cc].by;
@@ -103,16 +110,20 @@ AnsCheck:{
 	checkAns : function(){
 
 		var rinfo = bd.areas.getRoomInfo();
-		if( !this.checkAreaRect(rinfo) ){
+		if( (bd.puzzleid==='nawabari') && !this.checkAreaRect(rinfo) ){
 			this.setAlert('部屋の形が長方形ではありません。','There is not rectangle territory.'); return false;
 		}
 
-		if( !this.checkNoNumber(rinfo) ){
+		if( (bd.puzzleid==='nawabari') && !this.checkNoNumber(rinfo) ){
 			this.setAlert('数字の入っていない部屋があります。','A territory has no numbers.'); return false;
 		}
 
-		if( !this.checkDoubleNumber(rinfo) ){
+		if( (bd.puzzleid==='nawabari') && !this.checkDoubleNumber(rinfo) ){
 			this.setAlert('1つの部屋に2つ以上の数字が入っています。','A territory has plural numbers.'); return false;
+		}
+
+		if( (bd.puzzleid==='fourcells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a>=4);} ) ){
+			this.setAlert('サイズが4マスより小さいブロックがあります。','The size of block is smaller than four.'); return false;
 		}
 
 		if( !this.checkdir4BorderAns() ){
@@ -121,6 +132,10 @@ AnsCheck:{
 
 		if( !this.checkLcntCross(1,0) ){
 			this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
+		}
+
+		if( (bd.puzzleid==='fourcells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a<=4);} ) ){
+			this.setAlert('サイズが4マスより大きいブロックがあります。','The size of block is larger than four.'); return false;
 		}
 
 		return true;

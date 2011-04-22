@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 四角に切れ版 shikaku.js v3.4.0
+// パズル固有スクリプト部 四角に切れ・アホになり切れ版 shikaku.js v3.4.0
 //
 pzprv3.custom.shikaku = {
 //---------------------------------------------------------
@@ -140,8 +140,16 @@ AnsCheck:{
 			this.setAlert('1つの領域に2つ以上の数字が入っています。','An area has plural numbers.'); return false;
 		}
 
-		if( !this.checkAreaRect(rinfo) ){
+		if( (bd.puzzleid==='shikaku') && !this.checkAreaRect(rinfo) ){
 			this.setAlert('四角形ではない領域があります。','An area is not rectangle.'); return false;
+		}
+
+		if( (bd.puzzleid==='aho') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (n<0 || (n%3)==0 || w*h==a);} ) ){
+			this.setAlert('大きさが3の倍数ではないのに四角形ではない領域があります。','An area whose size is not multiples of three is not rectangle.'); return false;
+		}
+
+		if( (bd.puzzleid==='aho') && !this.checkLshapeArea(rinfo) ){
+			this.setAlert('大きさが3の倍数である領域がL字型になっていません。','An area whose size is multiples of three is not L-shape.'); return false;
 		}
 
 		if( !this.checkNumberAndSize(rinfo) ){
@@ -154,5 +162,32 @@ AnsCheck:{
 
 		return true;
 	},
+
+	checkLshapeArea : function(rinfo){
+		var result = true;
+		for(var id=1;id<=rinfo.max;id++){
+			var cc = bd.areas.getQnumCellOfClist(rinfo.room[id].idlist);
+			if(cc===null){ continue;}
+
+			var n = bd.QnC(cc);
+			if(n<0 || (n%3)!==0){ continue;}
+
+			var d = bd.getSizeOfClist(rinfo.room[id].idlist);
+			var clist = [];
+			for(var bx=d.x1;bx<=d.x2;bx+=2){
+				for(var by=d.y1;by<=d.y2;by+=2){
+					var cc = bd.cnum(bx,by);
+					if(rinfo.id[cc]!=id){ clist.push(cc);}
+				}
+			}
+			var dl = bd.getSizeOfClist(clist);
+			if( clist.length==0 || (dl.cols*dl.rows!=dl.cnt) || (d.x1!==dl.x1 && d.x2!==dl.x2) || (d.y1!==dl.y1 && d.y2!==dl.y2) ){
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(rinfo.room[id].idlist,1);
+				result = false;
+			}
+		}
+		return result;
+	}
 }
 };

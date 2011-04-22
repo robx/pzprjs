@@ -6,7 +6,7 @@
 // LineManagerクラスの定義
 pzprv3.createCommonClass('LineManager', '',
 {
-	initialize : function(){
+	initialize : function(pid){
 		this.lcnt    = [];
 		this.ltotal  = [];
 
@@ -495,7 +495,7 @@ pzprv3.createCoreClass('AreaData', '',
 // 部屋のTOPに数字を入力する時の、ハンドリング等
 pzprv3.createCommonClass('AreaManager', '',
 {
-	initialize : function(){
+	initialize : function(pid){
 		this.rinfo = {};	// 部屋情報を保持する
 		this.linfo = {};	// 線つながり情報を保持する
 

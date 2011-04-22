@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 島国版 shimaguni.js v3.4.0
+// パズル固有スクリプト部 島国・チョコナ版 shimaguni.js v3.4.0
 //
 pzprv3.custom.shimaguni = {
 //---------------------------------------------------------
@@ -36,6 +36,13 @@ KeyPopup:{
 Board:{
 	isborder : 1,
 
+	initialize : function(pid){
+		this.SuperFunc.initialize.call(this,pid);
+		if(pid==='chocona'){
+			this.numzero = true;
+		}
+	},
+
 	nummaxfunc : function(cc){
 		return Math.min(this.maxnum, this.areas.getCntOfRoomByCell(cc));
 	},
@@ -50,6 +57,12 @@ Board:{
 },
 
 AreaManager:{
+	initialize : function(pid){
+		this.SuperFunc.initialize.call(this,pid);
+		if(pid==='chocona'){
+			this.checkBlackCell = true;
+		}
+	},
 	hasroom    : true,
 	roomNumber : true
 },
@@ -64,9 +77,14 @@ Menu:{
 // 画像表示系
 Graphic:{
 	setColors : function(){
+		if(bd.puzzleid==='shimaguni'){
+			this.bcolor = "rgb(191, 191, 255)";
+			this.bbcolor = "rgb(191, 191, 255)";
+		}
+		else if(bd.puzzleid==='chocona'){
+			this.bcolor = this.bcolor_GREEN;
+		}
 		this.gridcolor = this.gridcolor_LIGHT;
-		this.bcolor = "rgb(191, 191, 255)";
-		this.bbcolor = "rgb(191, 191, 255)";
 		this.setBGCellColorFunc('qsub1');
 	},
 	paint : function(){
@@ -116,6 +134,12 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
+		if     (bd.puzzleid==='shimaguni'){ return this.checkAns_shimaguni();}
+		else if(bd.puzzleid==='chocona')  { return this.checkAns_chocona();}
+		return true;
+	},
+
+	checkAns_shimaguni : function(){
 
 		var rinfo = bd.areas.getRoomInfo();
 		if( !this.checkSideAreaCell(rinfo, function(c1,c2){ return (bd.isBlack(c1) && bd.isBlack(c2));}, true) ){
@@ -136,6 +160,19 @@ AnsCheck:{
 
 		if( !this.checkBlackCellInArea(rinfo, function(a){ return (a>0);}) ){
 			this.setAlert('黒マスのカタマリがない海域があります。','A marine area has no black cells.'); return false;
+		}
+
+		return true;
+	},
+
+	checkAns_chocona : function(){
+
+		if( !this.checkAreaRect(bd.areas.getBCellInfo()) ){
+			this.setAlert('黒マスのカタマリが正方形か長方形ではありません。','A mass of black cells is not rectangle.'); return false;
+		}
+
+		if( !this.checkBlackCellCount( bd.areas.getRoomInfo() ) ){
+			this.setAlert('数字のある領域と、領域の中にある黒マスの数が違います。','The number of Black cells in the area and the number written in the area is different.'); return false;
 		}
 
 		return true;

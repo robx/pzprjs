@@ -176,8 +176,8 @@ pzprv3.createCommonClass('Board', '',
 		this.haserror = false;
 
 		// 補助オブジェクト
-		this.lines  = new (pzprv3.getPuzzleClass('LineManager'))();		// 線情報管理オブジェクト
-		this.areas  = new (pzprv3.getPuzzleClass('AreaManager'))();		// 領域情報管理オブジェクト
+		this.lines  = new (pzprv3.getPuzzleClass('LineManager'))(pid);		// 線情報管理オブジェクト
+		this.areas  = new (pzprv3.getPuzzleClass('AreaManager'))(pid);		// 領域情報管理オブジェクト
 
 		this.puzzleid = pid;	// パズルのID("creek"など)
 

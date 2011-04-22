@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 フィルマット版 fillmat.js v3.4.0
+// パズル固有スクリプト部 フィルマット・ウソタタミ版 fillmat.js v3.4.0
 //
 pzprv3.custom.fillmat = {
 //---------------------------------------------------------
@@ -29,14 +29,19 @@ KeyEvent:{
 KeyPopup:{
 	enablemake : true,
 	generate : function(mode,type){
-		this.inputcol('num','knum1','1','1');
-		this.inputcol('num','knum2','2','2');
-		this.inputcol('num','knum3','3','3');
-		this.insertrow();
-		this.inputcol('num','knum4','4','4');
-		this.inputcol('num','knum_',' ',' ');
-		this.inputcol('num','knum.','-','?');
-		this.insertrow();
+		if(bd.puzzleid==='fillmat'){
+			this.inputcol('num','knum1','1','1');
+			this.inputcol('num','knum2','2','2');
+			this.inputcol('num','knum3','3','3');
+			this.insertrow();
+			this.inputcol('num','knum4','4','4');
+			this.inputcol('num','knum_',' ',' ');
+			this.inputcol('num','knum.','-','?');
+			this.insertrow();
+		}
+		else if(bd.puzzleid==='usotatami'){
+			this.gentable10(mode,10);
+		}
 	}
 },
 
@@ -45,7 +50,16 @@ KeyPopup:{
 Board:{
 	isborder : 1,
 
-	maxnum : 4
+	initialize : function(pid){
+		this.SuperFunc.initialize.call(this,pid);
+		if(bd.puzzleid==='fillmat'){
+			this.maxnum = 4;
+		}
+		else if(bd.puzzleid==='usotatami'){
+			this.qcols = 8;
+			this.qrows = 8;
+		}
+	}
 },
 
 AreaManager:{
@@ -105,24 +119,36 @@ AnsCheck:{
 		}
 
 		var rinfo = bd.areas.getRoomInfo();
-		if( !this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.room[r].idlist.length;}) ){
+		if( (bd.puzzleid==='fillmat') && !this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.room[r].idlist.length;}) ){
 			this.setAlert('隣り合うタタミの大きさが同じです。','The same size Tatami are adjacent.'); return false;
 		}
 
-		if( !this.checkAllArea(rinfo, function(w,h,a,n){ return (w==1||h==1)&&a<=4;}) ){
+		if( (bd.puzzleid==='fillmat') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (w==1||h==1)&&a<=4;}) ){
 			this.setAlert('「幅１マス、長さ１～４マス」ではないタタミがあります。','The width of Tatami is over 1 or the length is over 4.'); return false;
 		}
 
-		if( !this.checkDoubleNumber(rinfo) ){
-			this.setAlert('1つのタタミに2つ以上の数字が入っています。','A Tatami has two or more numbers.'); return false;
+		if( (bd.puzzleid==='usotatami') && !this.checkNoNumber(rinfo) ){
+			this.setAlert('数字の入っていないタタミがあります。','A tatami has no numbers.'); return false;
 		}
 
-		if( !this.checkNumberAndSize(rinfo) ){
+		if( !this.checkDoubleNumber(rinfo) ){
+			this.setAlert('1つのタタミに2つ以上の数字が入っています。','A tatami has plural numbers.'); return false;
+		}
+
+		if( (bd.puzzleid==='fillmat') && !this.checkNumberAndSize(rinfo) ){
 			this.setAlert('数字とタタミの大きさが違います。','The size of Tatami and the number written in Tatami is different.'); return false;
 		}
 
+		if( (bd.puzzleid==='usotatami') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (n<0||n!=a);}) ){
+			this.setAlert('数字とタタミの大きさが同じです。','The size of the tatami and the number is the same.'); return false;
+		}
+
 		if( !this.checkLcntCross(1,0) ){
-			this.setAlert('途切れている線があります。','There is an dead-end border line.'); return false;
+			this.setAlert('途切れている線があります。','There is a dead-end border line.'); return false;
+		}
+
+		if( (bd.puzzleid==='usotatami') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (w==1||h==1);} ) ){
+			this.setAlert('幅が１マスではないタタミがあります。','The width of the tatami is not one.'); return false;
 		}
 
 		return true;

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 へやわけ版 heyawake.js v3.4.0
+// パズル固有スクリプト部 へやわけ・∀人∃ＨＥＹＡ版 heyawake.js v3.4.0
 //
 pzprv3.custom.heyawake = {
 //---------------------------------------------------------
@@ -184,6 +184,10 @@ AnsCheck:{
 		}
 
 		var rinfo = bd.areas.getRoomInfo();
+		if( (bd.puzzleid==='ayeheya') && !this.checkFractal(rinfo) ){
+			this.setAlert('部屋の中の黒マスが点対称に配置されていません。', 'Position of black cells in the room is not point symmetric.'); return false;
+		}
+
 		if( !this.checkBlackCellCount(rinfo) ){
 			this.setAlert('部屋の数字と黒マスの数が一致していません。','The number of Black cells in the room and The number written in the room is different.'); return false;
 		}
@@ -197,6 +201,23 @@ AnsCheck:{
 		}
 
 		return true;
+	},
+
+	checkFractal : function(rinfo){
+		var result = true;
+		for(var r=1;r<=rinfo.max;r++){
+			var d = bd.getSizeOfClist(rinfo.room[r].idlist);
+			var sx=d.x1+d.x2, sy=d.y1+d.y2;
+			for(var i=0;i<rinfo.room[r].idlist.length;i++){
+				var c=rinfo.room[r].idlist[i];
+				if(bd.isBlack(c) ^ bd.isBlack(bd.cnum(sx-bd.cell[c].bx, sy-bd.cell[c].by))){
+					if(this.inAutoCheck){ return false;}
+					bd.sErC(rinfo.room[r].idlist,1);
+					result = false;
+				}
+			}
+		}
+		return result;
 	},
 
 	isBorderCount : function(keycellpos, clist){
