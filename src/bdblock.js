@@ -112,7 +112,7 @@ AnsCheck:{
 			this.setAlert('黒点以外のところで線が交差しています。','Lines are crossed out of the black point.'); return false;
 		}
 
-		rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.areas.getRoomInfo();
 		if( !this.checkNoNumber(rinfo) ){
 			this.setAlert('数字のないブロックがあります。','A block has no number.'); return false;
 		}

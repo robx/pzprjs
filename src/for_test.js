@@ -44,7 +44,7 @@ debug.extend({
 	phase : 99,
 	all_test : function(){
 		if(this.alltimer != null){ return;}
-		var pnum=0, term=0, idlist=[], self = this;
+		var pnum=0, term=10, idlist=[], self = this;
 		self.phase = 99;
 
 		for(var i in self.urls){ idlist.push(i);}

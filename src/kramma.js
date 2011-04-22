@@ -226,7 +226,7 @@ AnsCheck:{
 			this.setAlert('外枠につながっていない線があります。','A line doesn\'t connect to the chassis.'); return false;
 		}
 
-		rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.areas.getRoomInfo();
 		if( !this.checkNoNumber(rinfo) ){
 			if(bd.puzzleid!=='shwolf')
 				{ this.setAlert('白丸も黒丸も含まれない領域があります。','An area has no marks.');}

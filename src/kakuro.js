@@ -189,13 +189,13 @@ Encode:{
 
 		// 盤面外数字のデコード
 		var i=a;
-		for(bx=1;bx<bd.maxbx;bx+=2){
+		for(var bx=1;bx<bd.maxbx;bx+=2){
 			if(bd.cell[bd.cnum(bx,1)].ques!==51){
 				bd.excell[bd.exnum(bx,-1)].qdir = this.decval(bstr.charAt(i));
 				i++;
 			}
 		}
-		for(by=1;by<bd.maxby;by+=2){
+		for(var by=1;by<bd.maxby;by+=2){
 			if(bd.cell[bd.cnum(1,by)].ques!==51){
 				bd.excell[bd.exnum(-1,by)].qnum = this.decval(bstr.charAt(i));
 				i++;

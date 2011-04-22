@@ -642,7 +642,7 @@ AnsCheck:{
 	},
 
 	checkConsequentLetter : function(idlist){
-		result = true, count = {}, qnlist = [];
+		var result = true, count = {}, qnlist = [];
 		// この関数に来る時は、線は黒－黒、黒－文字、文字－文字(同じ)のいずれか
 		for(var c=0;c<bd.crossmax;c++){ var qn = bd.cross[c].qnum; if(qn>=0){ count[qn] = [0,0,0];}}
 		for(var c=0;c<bd.crossmax;c++){
@@ -737,7 +737,7 @@ Segment:{
 	},
 	setLattices : function(){
 		// ユークリッドの互助法で最大公約数を求める
-		var div=(this.dx>>1), n=(this.dy>>1);
+		var div=(this.dx>>1), n=(this.dy>>1), tmp;
 		div=(div<0?-div:div); n=(n<0?-n:n);
 		if(div<n){ tmp=div;div=n;n=tmp;} // (m,n)=(0,0)は想定外
 		while(n>0){ tmp=(div%n); div=n; n=tmp;}
@@ -852,7 +852,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		return bd.crossinside(d.x1,d.y1,d.x2,d.y2);
 	},
 	getRangeFromIdlist : function(idlist){
-		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1, cnt:0};
+		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1, cnt:0}, tmp;
 		for(var i=0;i<idlist.length;i++){
 			var bx1=this.seg[idlist[i]].bx1, bx2=this.seg[idlist[i]].bx2;
 			var by1=this.seg[idlist[i]].by1, by2=this.seg[idlist[i]].by2;

@@ -99,6 +99,7 @@ LineManager:{
 MenuExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURNFLIP){
+			var tques={};
 			switch(key){
 				case this.FLIPY: tques={14:17,15:16,16:15,17:14}; break;
 				case this.FLIPX: tques={14:15,15:14,16:17,17:16}; break;

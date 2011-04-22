@@ -303,10 +303,10 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	pzlimport : function(type){
-		if(type==0){ bstr = this.decodeIcebarn();}
+		if     (type==0){ this.decodeIcebarn();}
 		else if(type==1){
-			if(this.checkpflag("c")){ bstr = this.decodeIcebarn_old2();}
-			else{ bstr = this.decodeIcebarn_old1();}
+			if(this.checkpflag("c")){ this.decodeIcebarn_old2();}
+			else                    { this.decodeIcebarn_old1();}
 		}
 	},
 	pzlexport : function(type){
@@ -362,7 +362,7 @@ Encode:{
 	},
 	encodeIcebarn : function(){
 		var cm = "", num=0, pass=0, twi=[16,8,4,2,1];
-		for(c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
 			if(num==5){ cm += pass.toString(32); num=0; pass=0;}
 		}
