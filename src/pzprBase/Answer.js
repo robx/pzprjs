@@ -218,6 +218,28 @@ pzprv3.createCommonClass('AnsCheck', '',
 	},
 
 	//---------------------------------------------------------------------------
+	// ans.checkRBBlackCell() 連黒分断禁のパズルで白マスが分断されているかチェックする
+	//---------------------------------------------------------------------------
+	checkRBBlackCell : function(winfo){
+		if(winfo.max>1){
+			var errclist = [];
+			for(var c=0;c<bd.cellmax;c++){
+				if(!bd.isBlack(c)){ continue;}
+
+				var clist=bd.getdir4clist(c), fid=null;
+				for(var i=0;i<clist.length;i++){
+					var cc=clist[i][0];
+					if(fid===null){ fid=winfo.id[cc];}
+					else if(fid!==winfo.id[cc]){ errclist.push(c); break;}
+				}
+			}
+			bd.sErC(errclist,1);
+			return false;
+		}
+		return true;
+	},
+
+	//---------------------------------------------------------------------------
 	// ans.checkAllArea()    すべてのエリアがevalfuncを満たすかどうか判定する
 	// ans.checkAllBlock()   すべてのfuncを満たすマスで構成されるエリアが
 	//                       evalfuncを満たすかどうか判定する

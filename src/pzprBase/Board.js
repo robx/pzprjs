@@ -1024,8 +1024,17 @@ pzprv3.createCommonClass('Board', '',
 	},
 
 	//---------------------------------------------------------------------------
+	// bd.getdir4clist()   上下左右4方向の存在するセルを返す
 	// bd.getdir4cblist()  上下左右4方向のセル＆境界線＆方向を返す
 	//---------------------------------------------------------------------------
+	getdir4clist : function(c){
+		var cc, clist=[];
+		cc=this.up(c); if(cc!==null){ clist.push([cc,this.UP]);}
+		cc=this.dn(c); if(cc!==null){ clist.push([cc,this.DN]);}
+		cc=this.lt(c); if(cc!==null){ clist.push([cc,this.LT]);}
+		cc=this.rt(c); if(cc!==null){ clist.push([cc,this.RT]);}
+		return clist;
+	},
 	getdir4cblist : function(c){
 		var cc, id, cblist=[];
 		cc=this.up(c); id=this.ub(c); if(cc!==null || id!==null){ cblist.push([cc,id,this.UP]);}
