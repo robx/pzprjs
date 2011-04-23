@@ -439,32 +439,40 @@ pzprv3.createCommonClass('LineManager', '',
 //--------------------------------------------------------------------------------
 pzprv3.createCoreClass('AreaData', '',
 {
-	initialize : function(parent, enabled, isset_func, isborder_func){
-		this.parent   = parent;
+	initialize : function(parent, enabled, isvalid_func, isborder_func){
+		this.parent  = parent;
 
-		this.max      = 0;
-		this.invalid  = []; /* 使わなくなったIDのリスト */
+		this.max     = 0;
+		this.invalid = []; /* 使わなくなったIDのリスト */
 
-		this.id    = [];	// 各々のセルのid
-		this.isbd  = [];	// 境界線に線が引いてあるかどうか
-		this.cnt   = [];	// 交点id -> 交点から出る線 or セルis -> セルから出る線の本数
+		this.id    = [];		// 各々のセルのid
+		this.isbd  = [];		// 境界線に線が引いてあるかどうか
+		this.bdcnt = [];		// セルの周りの境界線の数
 
 		this.enabled  = enabled;
-		this.isset    = isset_func;
+		this.isvalid  = isvalid_func;
 		this.isborder = !!isborder_func;
 
 		if(this.isborder){ this.bdfunc = isborder_func;}
 	},
 
-	isborder    : function(id){ return false;}, /* 境界線の存在条件 */
+	bdfunc      : function(id){ return false;}, /* 境界線の存在条件 */
 	reset_count : function(){ return;},
-	setbd       : function(id){ this.isbd[id] = this.bdfunc(id);},
+
+	setbd : function(id){
+		var isbd = this.bdfunc(id);
+		if(this.isbd[id]!==isbd){
+			this.isbd[id]=isbd;
+			return true;
+		}
+		return false;
+	},
 
 	reset : function(){
 		if(this.enabled){
 			this.reset_count();
-			for(var c=0;c<bd.cellmax;c++){ this.id[c] = (this.isset.call(this.parent,c)?0:null);}
 			if(!!this.isborder){ for(var id=0;id<bd.bdmax;id++){ this.isbd[id]=false; this.setbd(id);}}
+			for(var c=0;c<bd.cellmax;c++){ this.id[c] = (this.isvalid(c)?0:null);}
 			this.parent.searchAll(this);
 		}
 	},
@@ -529,49 +537,49 @@ pzprv3.createCommonClass('AreaManager', '',
 	//--------------------------------------------------------------------------------
 	init : function(){
 		var self = this;
-		this.rinfo = new pzprv3.core.AreaData(self, this.hasroom,    function(c){ return bd.cell[c].ques!==7;},     function(id){ return bd.isBorder(id);});
-		this.linfo = new pzprv3.core.AreaData(self, this.lineToArea, function(c){ return bd.areas.linfo.cnt[c]>0;}, function(id){ return !bd.isLine(id);});
+		this.rinfo = new pzprv3.core.AreaData(self, this.hasroom,    function(c){ return bd.cell[c].ques!==7;}, function(id){ return bd.isBorder(id);});
+		this.linfo = new pzprv3.core.AreaData(self, this.lineToArea, function(c){ return this.bdcnt[c]<4;},     function(id){ return !bd.isLine(id);});
 
 		this.bcell = new pzprv3.core.AreaData(self, this.checkBlackCell, function(c){ return bd.isBlack(c);});
 		this.wcell = new pzprv3.core.AreaData(self, this.checkWhiteCell, function(c){ return bd.isWhite(c);});
 		this.ncell = new pzprv3.core.AreaData(self, this.linkNumber,     function(c){ return bd.isNumberObj(c);});
 
 		this.rinfo.reset_count = function(){
-			this.cnt = [];
+			this.bdcnt = []; /* "交点の周り"のカウント */
 			for(var by=bd.minby;by<=bd.maxby;by+=2){ for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
 				var c = (bx>>1)+(by>>1)*(bd.qcols+1);
 				var ischassis = (bd.isborder===1 ? (bx===bd.minbx||bx===bd.maxbx||by===bd.minby||by===bd.maxby):false);
-				this.cnt[c]=(ischassis?2:0);
+				this.bdcnt[c]=(ischassis?2:0);
 			}}
 		};
 		this.linfo.reset_count = function(){
-			this.cnt = [];
-			for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){ for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
-				var c = (bx>>1)+(by>>1)*(bd.qcols);
-				this.cnt[c]=4;
-				if(bx===bd.minbx+1||bx===bd.maxbx-1){ this.cnt[c]--;}
-				if(by===bd.minby+1||by===bd.maxby-1){ this.cnt[c]--;}
-			}}
+			this.bdcnt = []; /* "セルの周り"のカウント */
+			for(var c=0;c<bd.cellmax;c++){
+				var bx=bd.cell[c].bx, by=bd.cell[c].by;
+				this.bdcnt[c]=0;
+				if(bx===bd.minbx+1||bx===bd.maxbx-1){ this.bdcnt[c]++;}
+				if(by===bd.minby+1||by===bd.maxby-1){ this.bdcnt[c]++;}
+			}
 		};
 
 		this.rinfo.setbd = function(id){
-			var isset = this.bdfunc(id);
-			if(this.isbd[id]!==isset){
+			var isbd = this.bdfunc(id);
+			if(this.isbd[id]!==isbd){
 				var cc1 = bd.border[id].crosscc[0], cc2 = bd.border[id].crosscc[1];
-				if(isset){ if(cc1!==null){ this.cnt[cc1]++;} if(cc2!==null){ this.cnt[cc2]++;}}
-				else     { if(cc1!==null){ this.cnt[cc1]--;} if(cc2!==null){ this.cnt[cc2]--;}}
-				this.isbd[id]=isset;
+				if(cc1!==null){ this.bdcnt[cc1]+=(isbd?1:-1);}
+				if(cc2!==null){ this.bdcnt[cc2]+=(isbd?1:-1);}
+				this.isbd[id]=isbd;
 				return true;
 			}
 			return false;
 		};
 		this.linfo.setbd = function(id){
-			var isset = this.bdfunc(id);
-			if(this.isbd[id]!==isset){
+			var isbd = this.bdfunc(id);
+			if(this.isbd[id]!==isbd){
 				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(isset){ if(cc1!==null){ this.cnt[cc1]--;} if(cc2!==null){ this.cnt[cc2]--;}}
-				else     { if(cc1!==null){ this.cnt[cc1]++;} if(cc2!==null){ this.cnt[cc2]++;}}
-				this.isbd[id]=isset;
+				if(cc1!==null){ this.bdcnt[cc1]+=(isbd?1:-1);}
+				if(cc2!==null){ this.bdcnt[cc2]+=(isbd?1:-1);}
+				this.isbd[id]=isbd;
 				return true;
 			}
 			return false;
@@ -620,7 +628,7 @@ pzprv3.createCommonClass('AreaManager', '',
 	// 
 	// bd.areas.getQnumCellOfClist()  部屋の中で一番左上にある数字を返す
 	//--------------------------------------------------------------------------------
-	lcntCross : function(id){ return this.rinfo.cnt[id];},
+	lcntCross : function(id){ return this.rinfo.bdcnt[id];},
 
 	getRoomID : function(cc){ return this.rinfo.id[cc];},
 //	setRoomID : function(cc,val){ this.rinfo.id[cc] = val;},
@@ -652,14 +660,14 @@ pzprv3.createCommonClass('AreaManager', '',
 		var xc1 = bd.border[id].crosscc[0], xc2 = bd.border[id].crosscc[1];
 		var cc1 = bd.border[id].cellcc[0],  cc2 = bd.border[id].cellcc[1];
 		if(data.isbd[id]){ /* 部屋を分けるとき */
-			if(isroom && (data.cnt[xc1]===1 || data.cnt[xc2]===1)){ return;} // 途切れた線だったとき
+			if(isroom && (data.bdcnt[xc1]===1 || data.bdcnt[xc2]===1)){ return;} // 途切れた線だったとき
 			if(cc1===null || cc2===null){ return;}
 			if(data.id[cc1]===null || data.id[cc2]===null || data.id[cc1]!==data.id[cc2]){ return;} // はじめから分かれていた
 
 			var clist=this.popRoom(data, [cc1]), oldmax=data.max;
 		}
 		else{ /* 部屋を繋げるとき */
-			if(isroom && (data.cnt[xc1]===0 || data.cnt[xc2]===0)){ return;} // 途切れた線だったとき
+			if(isroom && (data.bdcnt[xc1]===0 || data.bdcnt[xc2]===0)){ return;} // 途切れた線だったとき
 			if(cc1===null || cc2===null){ return;}
 			if(data.id[cc1]!==null && data.id[cc1]===data.id[cc2]){ return;} // はじめから同じ部屋だった
 
@@ -724,8 +732,8 @@ pzprv3.createCommonClass('AreaManager', '',
 	},
 	setBWCell : function(cc,data){
 		if(!this.isenableRecord()){ return;}
-		var isset=data.isset.call(this,cc);
-		if(isset===(data.id[cc]!==null)){ return;}
+		var isvalid=data.isvalid(cc);
+		if(isvalid===(data.id[cc]!==null)){ return;}
 
 		var cid = [], cblist = bd.getdir4cblist(cc);
 		for(var i=0;i<cblist.length;i++){
@@ -734,8 +742,8 @@ pzprv3.createCommonClass('AreaManager', '',
 			if(data.isborder && tid!==null){ data.setbd(tid);}
 		}
 
-		if(isset){ this.setBWCell_set(data,cc,cid);}   // 新たに黒マス(白マス)になった時
-		else     { this.setBWCell_clear(data,cc,cid);} // 黒マス(白マス)ではなくなった時
+		if(isvalid){ this.setBWCell_set(data,cc,cid);}   // 新たに黒マス(白マス)になった時
+		else       { this.setBWCell_clear(data,cc,cid);} // 黒マス(白マス)ではなくなった時
 	},
 	setBWCell_set : function(data,cc,cid){
 		// まわりに黒マス(白マス)がない時は新しいIDで登録です
@@ -805,7 +813,7 @@ pzprv3.createCommonClass('AreaManager', '',
 	searchClist : function(data,clist,isdisp){
 		for(var i=0;i<clist.length;i++){
 			var cc = clist[i];
-			data.id[cc] = (data.isset.call(this,cc)?0:null);
+			data.id[cc] = (data.isvalid(cc)?0:null);
 		}
 		for(var i=0;i<clist.length;i++){
 			var cc = clist[i];
