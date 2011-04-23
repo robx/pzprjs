@@ -4,7 +4,7 @@
 // ★LineManagerクラス 主に色分けの情報を管理する
 //---------------------------------------------------------------------------
 // LineManagerクラスの定義
-pzprv3.createCommonClass('LineManager', '',
+pzprv3.createCommonClass('LineManager',
 {
 	initialize : function(pid){
 		this.lcnt    = [];
@@ -437,7 +437,7 @@ pzprv3.createCommonClass('LineManager', '',
 //--------------------------------------------------------------------------------
 // ★AreaDataクラス AreaManagerで使用するオブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzprv3.createCoreClass('AreaData', '',
+pzprv3.createCoreClass('AreaData',
 {
 	initialize : function(parent, enabled, isvalid_func, isborder_func){
 		this.parent  = parent;
@@ -501,7 +501,7 @@ pzprv3.createCoreClass('AreaData', '',
 //     回答チェックやファイル出力前には一旦resetRarea()等が必要です。
 //--------------------------------------------------------------------------------
 // 部屋のTOPに数字を入力する時の、ハンドリング等
-pzprv3.createCommonClass('AreaManager', '',
+pzprv3.createCommonClass('AreaManager',
 {
 	initialize : function(pid){
 		this.rinfo = {};	// 部屋情報を保持する

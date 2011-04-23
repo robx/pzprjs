@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------------
 // 入力情報管理クラス
 // Operationクラス
-pzprv3.createCommonClass('Operation', '',
+pzprv3.createCommonClass('Operation',
 {
 	initialize : function(group, property, id, old, num){
 		this.group = group;
@@ -77,7 +77,7 @@ pzprv3.createCommonClass('Operation', '',
 	}
 });
 
-pzprv3.createCommonClass('OperationArray', '',
+pzprv3.createCommonClass('OperationArray',
 {
 	initialize : function(){ this.items = [];},
 	push : function(ope){ this.items.push(ope);},
@@ -101,7 +101,7 @@ pzprv3.createCommonClass('OperationArray', '',
 });
 
 // OperationManagerクラス
-pzprv3.createCommonClass('OperationManager', '',
+pzprv3.createCommonClass('OperationManager',
 {
 	initialize : function(){
 		this.lastope;		// this.opeのLasstIndexへのポインタ

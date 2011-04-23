@@ -3,7 +3,7 @@
 //---------------------------------------------------------------------------
 // ★Timerクラス
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('Timer', '',
+pzprv3.createCoreClass('Timer',
 {
 	initialize : function(){
 		// ** 一般タイマー
@@ -89,7 +89,7 @@ pzprv3.createCoreClass('Timer', '',
 //---------------------------------------------------------------------------
 // ★UndoTimerクラス
 //---------------------------------------------------------------------------
-pzprv3.createCommonClass('UndoTimer', '',
+pzprv3.createCommonClass('UndoTimer',
 {
 	initialize : function(){
 		// ** Undoタイマー

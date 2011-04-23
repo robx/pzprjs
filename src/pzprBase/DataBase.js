@@ -3,7 +3,7 @@
 //---------------------------------------------------------------------------
 // ★ProblemDataクラス データベースに保存する1つのデータを保持する
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('ProblemData', '',
+pzprv3.createCoreClass('ProblemData',
 {
 	initialize : function(){
 		this.id = null;
@@ -47,7 +47,7 @@ pzprv3.createCoreClass('ProblemData', '',
 //---------------------------------------------------------------------------
 // ★DataBaseManagerクラス Web Storage用 データベースの設定・管理を行う
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('DataBaseManager', '',
+pzprv3.createCoreClass('DataBaseManager',
 {
 	initialize : function(){
 		this.dbh    = null;	// データベースハンドラ
@@ -298,7 +298,7 @@ pzprv3.createCoreClass('DataBaseManager', '',
 //---------------------------------------------------------------------------
 // ★DataBaseHandler_LSクラス Web localStorage用 データベースハンドラ
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('DataBaseHandler_LS', '',
+pzprv3.createCoreClass('DataBaseHandler_LS',
 {
 	//---------------------------------------------------------------------------
 	// dbm.dbh.initialize()    初期化時にデータベースを開く

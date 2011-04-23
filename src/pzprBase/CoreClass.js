@@ -9,29 +9,33 @@
 	PLAYER : false,	// playerモード
 	DEBUG  : false,	// for_test用(デバッグモード)
 
-	core   : {},	// CoreClass保存用
+	core   : {},	// CoreClass保存用(継承元になれるのはここのみ)
 	common : {},	// パズル別クラスのスーパークラス保存用
 	pclass : {},	// パズル別クラス保存用
 
 	custom : {},	// パズル別クラスのスーパークラスからの差分
 
-	createCoreClass : function(classname, baseclass, proto){
-		var NewClass = function(){ if(!!this.initialize){ this.initialize.apply(this,arguments);}};
-		if(!!baseclass && !!this.core[baseclass]){
-			var BaseClass = this.core[baseclass];
-			for(var name in BaseClass.prototype){ NewClass.prototype[name] = BaseClass.prototype[name];}
-		}
-		for(var name in proto){ NewClass.prototype[name] = proto[name];}
-		this.core[classname] = NewClass;
+	createCoreClass : function(classname, proto){
+		this._createClass(this.core, classname, proto);
 	},
-	createCommonClass : function(classname, baseclass, proto){
+	createCommonClass : function(classname, proto){
+		this._createClass(this.common, classname, proto);
+	},
+	_createClass : function(target, classname, proto){
+		classname = classname.replace(/\s+/g,'');
+		var colon = classname.indexOf(':'), baseclass = '';
+		if(colon>=0){
+			baseclass = classname.substr(colon+1);
+			classname = classname.substr(0,colon);
+		}
+
 		var NewClass = function(){ if(!!this.initialize){ this.initialize.apply(this,arguments);}};
 		if(!!baseclass && !!this.core[baseclass]){
 			var BaseClass = this.core[baseclass];
 			for(var name in BaseClass.prototype){ NewClass.prototype[name] = BaseClass.prototype[name];}
 		}
 		for(var name in proto){ NewClass.prototype[name] = proto[name];}
-		this.common[classname] = NewClass;
+		target[classname] = NewClass;
 	},
 
 	getCoreClass   : function(classname){ return this.core[classname];},
@@ -90,7 +94,7 @@ var g;	// グラフィックコンテキスト
 // ★Pointクラス, Addressクラス (x,y)座標を扱う
 //---------------------------------------------------------------------------
 // Pointクラス
-pzprv3.createCoreClass('Point', '',
+pzprv3.createCoreClass('Point',
 {
 	initialize : function(xx,yy){ this.x = xx; this.y = yy;},
 	set : function(pos){ this.x = pos.x; this.y = pos.y;},
@@ -99,7 +103,7 @@ pzprv3.createCoreClass('Point', '',
 	equals : function(pos){ return (this.x===pos.x && this.y===pos.y);}
 });
 // Addressクラス
-pzprv3.createCoreClass('Address', '',
+pzprv3.createCoreClass('Address',
 {
 	initialize : function(xx,yy){ this.x = xx; this.y = yy;},
 	set : function(pos){ this.x = pos.x; this.y = pos.y;},
@@ -114,7 +118,7 @@ pzprv3.createCoreClass('Address', '',
 //         0     どの部屋に属させるかの処理中
 //         1以上 その番号の部屋に属する
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('AreaInfo', '',
+pzprv3.createCoreClass('AreaInfo',
 {
 	initialize : function(){
 		this.max  = 0;	// 最大の部屋番号(1～maxまで存在するよう構成してください)
@@ -126,7 +130,7 @@ pzprv3.createCoreClass('AreaInfo', '',
 //---------------------------------------------------------------------------
 // ★IDListクラス 複数IDの集合を扱う
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('IDList', '',
+pzprv3.createCoreClass('IDList',
 {
 	initialize : function(list){
 		this.data = ((list instanceof Array) ? list : []);

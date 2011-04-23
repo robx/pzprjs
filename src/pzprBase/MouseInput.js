@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------------
 // パズル共通 マウス入力部
 // MouseEventクラスを定義
-pzprv3.createCommonClass('MouseEvent', '',
+pzprv3.createCommonClass('MouseEvent',
 {
 	initialize : function(){
 		this.enableMouse = true;	// マウス入力は有効か

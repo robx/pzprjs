@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------------
 // パズル共通 キーボード入力部
 // KeyEventクラスを定義
-pzprv3.createCommonClass('KeyEvent', '',
+pzprv3.createCommonClass('KeyEvent',
 {
 	initialize : function(){
 		this.enableKey = true;	// キー入力は有効か
@@ -568,7 +568,7 @@ pzprv3.createCommonClass('KeyEvent', '',
 // ★TargetCursorクラス キー入力のターゲットを保持する
 //---------------------------------------------------------------------------
 
-pzprv3.createCommonClass('TargetCursor', '',
+pzprv3.createCommonClass('TargetCursor',
 {
 	initialize : function(){
 		// 現在入力ターゲットになっている場所(border座標系)

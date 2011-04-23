@@ -6,7 +6,7 @@
 
 // 回答チェッククラス
 // AnsCheckクラス
-pzprv3.createCommonClass('AnsCheck', '',
+pzprv3.createCommonClass('AnsCheck',
 {
 	initialize :  function(){
 		this.performAsLine = false;

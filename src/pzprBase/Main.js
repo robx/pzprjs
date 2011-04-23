@@ -3,7 +3,7 @@
 //---------------------------------------------------------------------------
 // ★グローバル変数
 //---------------------------------------------------------------------------
-pzprv3.createCommonClass('Flags', '',
+pzprv3.createCommonClass('Flags',
 {
 	initialize : function(){
 		this.editmode = (pzprv3.EDITOR && !pzprv3.DEBUG);	// 問題配置モード
@@ -16,7 +16,7 @@ pzprv3.createCommonClass('Flags', '',
 //    p.html?(pid)/(qdata)
 //                  qdata -> [(pflag)/](cols)/(rows)/(bstr)
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('ExtData', '',
+pzprv3.createCoreClass('ExtData',
 {
 	initialize : function(){
 		this.type;		// URLのサイト指定部分
@@ -325,7 +325,7 @@ pzprv3.createCoreClass('ExtData', '',
 //---------------------------------------------------------------------------
 
 // PBaseクラス
-pzprv3.createCoreClass('PBase', '',
+pzprv3.createCoreClass('PBase',
 {
 	initialize : function(){
 		this.resizetimer  = null;	// resizeタイマー

@@ -3,7 +3,7 @@
 //---------------------------------------------------------------------------
 // ★BoardPieceクラス Cell, Cross, Border, EXCellクラスのベース
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('BoardPiece', '',
+pzprv3.createCoreClass('BoardPiece',
 {
 	initialize : function(){
 		this.bx;	// X座標(border座標系)を保持する
@@ -56,7 +56,7 @@ pzprv3.createCoreClass('BoardPiece', '',
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(1)
 // Cellクラスの定義
-pzprv3.createCommonClass('Cell', 'BoardPiece',
+pzprv3.createCommonClass('Cell:BoardPiece',
 {
 	initialize : function(){
 		pzprv3.core.BoardPiece.prototype.initialize.call(this);
@@ -84,7 +84,7 @@ pzprv3.createCommonClass('Cell', 'BoardPiece',
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(2)
 // Crossクラスの定義
-pzprv3.createCommonClass('Cross', 'BoardPiece',
+pzprv3.createCommonClass('Cross:BoardPiece',
 {
 	group : 'cross',
 
@@ -102,7 +102,7 @@ pzprv3.createCommonClass('Cross', 'BoardPiece',
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(3)
 // Borderクラスの定義
-pzprv3.createCommonClass('Border', 'BoardPiece',
+pzprv3.createCommonClass('Border:BoardPiece',
 {
 	initialize : function(){
 		pzprv3.core.BoardPiece.prototype.initialize.call(this);
@@ -131,7 +131,7 @@ pzprv3.createCommonClass('Border', 'BoardPiece',
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(4)
 // EXCellクラスの定義
-pzprv3.createCommonClass('EXCell', 'BoardPiece',
+pzprv3.createCommonClass('EXCell:BoardPiece',
 {
 	group : 'excell',
 
@@ -148,7 +148,7 @@ pzprv3.createCommonClass('EXCell', 'BoardPiece',
 // ★Boardクラス 盤面の情報を保持する。Cell, Cross, Borderのオブジェクトも保持する
 //---------------------------------------------------------------------------
 // Boardクラスの定義
-pzprv3.createCommonClass('Board', '',
+pzprv3.createCommonClass('Board',
 {
 	initialize : function(pid){
 		this.cell   = [];

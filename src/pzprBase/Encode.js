@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------------
 // URLエンコード/デコード
 // Encodeクラス
-pzprv3.createCommonClass('Encode', '',
+pzprv3.createCommonClass('Encode',
 {
 	initialize : function(){
 		this.pflag = "";

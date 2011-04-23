@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------------
 
 // Menuクラス実行部
-pzprv3.createCommonClass('MenuExec', '',
+pzprv3.createCommonClass('MenuExec',
 {
 	initialize : function(){
 		this.displaymanage = true;

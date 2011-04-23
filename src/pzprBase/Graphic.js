@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------------
 // パズル共通 Canvas/DOM制御部
 // Graphicクラスの定義
-pzprv3.createCommonClass('Graphic', '',
+pzprv3.createCommonClass('Graphic',
 {
 	initialize : function(){
 		g = ee('divques').unselectable().el.getContext("2d");

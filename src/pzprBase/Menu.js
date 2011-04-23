@@ -6,7 +6,7 @@
 
 // メニュー描画/取得/html表示系
 // Menuクラス
-pzprv3.createCommonClass('Menu', '',
+pzprv3.createCommonClass('Menu',
 {
 	initialize : function(){
 		this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
@@ -943,7 +943,7 @@ pzprv3.createCommonClass('Menu', '',
 //---------------------------------------------------------------------------
 // ★Propertiesクラス 設定値の値などを保持する
 //---------------------------------------------------------------------------
-pzprv3.createCommonClass('Properties', '',
+pzprv3.createCommonClass('Properties',
 {
 	initialize : function(){
 		this.flags    = [];	// サブメニュー項目の情報(オブジェクトの配列になる)
