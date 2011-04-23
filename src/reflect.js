@@ -153,7 +153,7 @@ Graphic:{
 		this.drawTriangleBorder();
 		this.drawNumbers();
 
-		this.draw11();
+		this.draw11s();
 
 		this.drawChassis();
 
@@ -161,7 +161,7 @@ Graphic:{
 	},
 
 	drawTriangleBorder : function(){
-		this.vinc('cell_triangle_border', 'crispEdges');
+		var g = this.vinc('cell_triangle_border', 'crispEdges');
 
 		var header = "b_tb_";
 		var idlist = this.range.borders;
@@ -184,28 +184,28 @@ Graphic:{
 			else{ this.vhide(header+id);}
 		}
 	},
-	draw11 : function(){
-		this.vinc('cell_ques', 'crispEdges');
+	draw11s : function(){
+		var g = this.vinc('cell_ques', 'crispEdges');
+		var headers = ["c_lp1_", "c_lp2_"];
 
 		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){ this.draw11_1(clist[i]);}
-	},
-	draw11_1 : function(id){
-		var vids = ["c_lp1_"+id, "c_lp2_"+id];
+		for(var i=0;i<clist.length;i++){
+			var c = clist[i];
 
-		if(bd.cell[id].ques===11){
-			var lw = this.lw+2, lm=(lw-1)/2, ll=this.cw*0.76;
-			g.fillStyle = this.cellcolor;
+			if(bd.cell[c].ques===11){
+				var lw = this.lw+2, lm=(lw-1)/2, ll=this.cw*0.76;
+				g.fillStyle = this.cellcolor;
 
-			// Gridの真ん中＝cpx,cpy+0.5
-			if(this.vnop(vids[0],this.NONE)){
-				g.fillRect(bd.cell[id].cpx+0.5-lm, bd.cell[id].cpy+0.5-ll/2,  lw, ll);
+				// Gridの真ん中＝cpx,cpy+0.5
+				if(this.vnop(headers[0]+c,this.NONE)){
+					g.fillRect(bd.cell[c].cpx+0.5-lm, bd.cell[c].cpy+0.5-ll/2,  lw, ll);
+				}
+				if(this.vnop(headers[1]+c,this.NONE)){
+					g.fillRect(bd.cell[c].cpx+0.5-ll/2, bd.cell[c].cpy+0.5-lm,  ll, lw);
+				}
 			}
-			if(this.vnop(vids[1],this.NONE)){
-				g.fillRect(bd.cell[id].cpx+0.5-ll/2, bd.cell[id].cpy+0.5-lm,  ll, lw);
-			}
+			else{ this.vhide([headers[0]+c, headers[1]+c]);}
 		}
-		else{ this.vhide(vids);}
 	},
 	drawNumber1 : function(c){
 		var obj = bd.cell[c], key = ['cell',c].join('_');
@@ -216,10 +216,9 @@ Graphic:{
 	},
 
 	repaintParts : function(idlist){
-		var clist = bd.lines.getClistFromIdlist(idlist);
-		for(var i=0;i<clist.length;i++){
-			this.draw11_1(clist[i]);
-		}
+		this.range.cells = bd.lines.getClistFromIdlist(idlist);
+
+		this.draw11s();
 	}
 },
 

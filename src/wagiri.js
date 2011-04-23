@@ -219,12 +219,9 @@ Graphic:{
 	},
 
 	// オーバーライド
-	setBGCellColor : function(c){
-		if(bd.cell[c].qans===0 && bd.cell[c].error===1){
-			g.fillStyle = this.errbcolor1;
-			return true;
-		}
-		return false;
+	getBGCellColor : function(cell){
+		if(cell.qans===0 && cell.error===1){ return this.errbcolor1;}
+		return null;
 	},
 
 	drawNumber1 : function(c){

@@ -159,7 +159,9 @@ Graphic:{
 	},
 
 	drawBDBase : function(){
+		var g = this.vinc('border_base', 'auto');
 		if(!g.use.canvas){ return;}
+
 		var csize = this.cw*0.29;
 		var idlist = this.range.borders;
 		for(var i=0;i<idlist.length;i++){
@@ -172,7 +174,7 @@ Graphic:{
 		}
 	},
 	drawBDNumbers_and_IneqSigns : function(){
-		this.vinc('border_marks', 'auto');
+		var g = this.vinc('border_marks', 'auto');
 
 		var csize = this.cw*0.27;
 		var ssize = this.cw*0.22;

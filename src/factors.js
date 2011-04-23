@@ -74,7 +74,7 @@ Graphic:{
 	},
 
 	drawNumbers_factors : function(){
-		this.vinc('cell_number', 'auto');
+		var g = this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){

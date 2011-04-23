@@ -313,7 +313,7 @@ Graphic:{
 	},
 
 	drawBGCells_kinkonkan : function(){
-		this.vinc('cell_back', 'crispEdges');
+		var g = this.vinc('cell_back', 'crispEdges');
 
 		var headers = ["c_full_", "c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_"];
 		var clist = this.range.cells;
@@ -333,12 +333,12 @@ Graphic:{
 		}
 	},
 
-	setBGEXcellColor : function(c){
-		if(bd.excell[c].qlight===1){ g.fillStyle = this.errbcolor2; return true;}
-		return false;
+	getBGEXcellColor : function(excell){
+		if(excell.qlight===1){ return this.errbcolor2;}
+		return null;
 	},
 	drawNumbers_kinkonkan : function(){
-		this.vinc('excell_number', 'auto');
+		var g = this.vinc('excell_number', 'auto');
 
 		var header = "ex_full_";
 		var exlist = this.range.excells;

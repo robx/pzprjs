@@ -136,7 +136,7 @@ Graphic:{
 	},
 
 	drawSheepWolf : function(){
-		this.vinc('cell_number_image', 'auto');
+		var g = this.vinc('cell_number_image', 'auto');
 
 		if(!this.imgtile.loaded){
 			var func = arguments.callee, self = this;

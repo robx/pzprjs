@@ -79,8 +79,8 @@ Board:{
 		return ((!!this.border[id] && (this.border[id].qans>0)) || this.isQuesBorder(id));
 	},
 	isQuesBorder : function(id){
-		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-		return !!(bd.isEmpty(cc1)^bd.isEmpty(cc2));
+		var cc1 = this.border[id].cellcc[0], cc2 = this.border[id].cellcc[1];
+		return !!(this.isEmpty(cc1)^this.isEmpty(cc2));
 	},
 
 	getdir4Border_fivecells : function(cc){
@@ -103,7 +103,6 @@ AreaManager:{
 Graphic:{
 	setColors : function(){
 		this.gridcolor = this.gridcolor_DLIGHT;
-		this.setBorderColorFunc('qans');
 	},
 	paint : function(){
 		this.drawBGCells();
@@ -118,44 +117,21 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	// 問題と回答の境界線を別々に描画するようにします(triplaceからコピー)
-	drawQansBorders : function(){
-		this.vinc('border_answer', 'crispEdges');
-		this.bdheader = "b_bdans";
-		this.setBorderColor = this.setQansBorderColor;
-
-		g.fillStyle = this.borderQanscolor;
-		var idlist = this.range.borders;
-		for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
-		this.isdrawBD = true;
-	},
-	drawQuesBorders : function(){
-		this.vinc('border_question', 'crispEdges');
-		this.bdheader = "b_bdques";
-		this.setBorderColor = this.setQuesBorderColor;
-
-		g.fillStyle = this.borderQuescolor;
-		var idlist = this.range.borders;
-		for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
-		this.isdrawBD = true;
-	},
-
-	setQansBorderColor : function(id){
-		if(bd.border[id].qans===1){
-			var err = bd.border[id].error;
-			if     (err===1){ g.fillStyle = this.errcolor1;          }
-			else if(err===2){ g.fillStyle = this.errborderQanscolor2;}
-			else            { g.fillStyle = this.borderQanscolor;    }
-			return true;
+	getQansBorderColor : function(border){
+		if(border.qans===1){
+			var err = border.error;
+			if     (err===1){ return this.errcolor1;          }
+			else if(err===2){ return this.errborderQanscolor2;}
+			else            { return this.borderQanscolor;    }
 		}
-		return false;
+		return null;
 	},
-	setQuesBorderColor : function(id){
-		return bd.isQuesBorder(id);
+	getQuesBorderColor : function(border){
+		return (bd.isQuesBorder(border.id) ? this.cellcolor : null);
 	},
 
 	drawValidDashedGrid : function(){
-		this.vinc('grid_waritai', 'crispEdges');
+		var g = this.vinc('grid_waritai', 'crispEdges');
 
 		var dotmax   = this.cw/10+3;
 		var dotCount = Math.max(this.cw/dotmax, 1);

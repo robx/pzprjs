@@ -108,30 +108,26 @@ Graphic:{
 	},
 
 	// オーバーライド drawBGCells用
-	setBGCellColor : function(cc){
-		var err = (bd.cell[cc].error===1), q51 = (bd.cell[cc].ques===51);
-		if     (err){ g.fillStyle = this.errbcolor1;    return true;}
-		else if(q51){ g.fillStyle = "rgb(192,192,192)"; return true;}
-		return false;
+	getBGCellColor : function(cell){
+		if     (cell.error== 1){ return this.errbcolor1;}
+		else if(cell.ques===51){ return "rgb(192,192,192)";}
+		return null;
 	},
-	setBGEXcellColor : function(cc){
-		var err = (bd.excell[cc].error===1);
-		if(err){ g.fillStyle = this.errbcolor1;   }
-		else   { g.fillStyle = "rgb(192,192,192)";}
-		return true;
+	getBGEXcellColor : function(excell){
+		if(excell.error){ return this.errbcolor1;   }
+		else            { return "rgb(192,192,192)";}
 	},
 	// オーバーライド 境界線用
-	setBorderColor : function(id){
-		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+	getBorderColor : function(border){
+		var cc1 = border.cellcc[0], cc2 = border.cellcc[1];
 		if(cc1!==null && cc2!==null && ((bd.cell[cc1].ques===51)^(bd.cell[cc2].ques===51))){
-			g.fillStyle = this.cellcolor;
-			return true;
+			return this.cellcolor;
 		}
-		return false;
+		return null;
 	},
 
 	drawNumbers_kakuro : function(){
-		this.vinc('cell_number', 'auto');
+		var g = this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){

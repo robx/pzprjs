@@ -105,7 +105,7 @@ Graphic:{
 	},
 
 	drawMarks : function(){
-		this.vinc('cell_ques', 'crispEdges');
+		var g = this.vinc('cell_ques', 'crispEdges');
 
 		var lw = Math.max(this.cw/12, 3);	//LineWidth
 		var ll = this.cw*0.70;				//LineLength

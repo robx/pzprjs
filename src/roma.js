@@ -153,16 +153,15 @@ Graphic:{
 		this.drawCursor();
 	},
 
-	setBGCellColor : function(c){
-		var cell = bd.cell[c];
-		if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
-		else if(cell.error===2){ g.fillStyle = this.errbcolor2; return true;}
-		else if(cell.error===3){ g.fillStyle = this.errbcolor3; return true;}
-		return false;
+	getBGCellColor : function(cell){
+		if     (cell.error===1){ return this.errbcolor1;}
+		else if(cell.error===2){ return this.errbcolor2;}
+		else if(cell.error===3){ return this.errbcolor3;}
+		return null;
 	},
 
 	drawGoals : function(){
-		this.vinc('cell_circle', 'auto');
+		var g = this.vinc('cell_circle', 'auto');
 
 		var rsize = this.cw*this.circleratio[0];
 		var header = "c_cir_";

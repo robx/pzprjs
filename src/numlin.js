@@ -77,7 +77,7 @@ Graphic:{
 	},
 
 	drawCellSquare : function(){
-		this.vinc('cell_number_base', 'crispEdges');
+		var g = this.vinc('cell_number_base', 'crispEdges');
 
 		var mgnw = this.cw*0.15;
 		var mgnh = this.ch*0.15;

@@ -307,8 +307,9 @@ Graphic:{
 		this.drawTarget();
 	},
 	flushCanvas : function(){
-		this.flushCanvas = ((g.use.canvas) ?
+		this.flushCanvas = ((this.use.canvas) ?
 			function(){
+				var g = this.currentContext
 				if(x1<=bd.minbx && y1<=bd.minby && x2>=bd.maxbx && y2>=bd.maxby){
 					this.flushCanvasAll();
 				}
@@ -324,7 +325,7 @@ Graphic:{
 	},
 
 	drawGrid_tawa : function(){
-		this.vinc('grid', 'crispEdges');
+		var g = this.vinc('grid', 'crispEdges');
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}

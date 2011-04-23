@@ -99,51 +99,50 @@ Graphic:{
 	},
 
 	drawFireflies : function(){
-		this.vinc('cell_firefly', 'auto');
+		var g = this.vinc('cell_firefly', 'auto');
 
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){ this.drawFirefly1(clist[i]);}
-	},
-	drawFirefly1 : function(c){
-		if(c===null){ return;}
+		g.lineWidth = 1.5;
+		g.strokeStyle = this.cellcolor;
 
 		var rsize  = this.cw*0.40;
 		var rsize3 = this.cw*0.10;
+
 		var headers = ["c_cira_", "c_cirb_"];
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var c = clist[i];
 
-		if(bd.cell[c].qnum!=-1){
-			var px=bd.cell[c].cpx, py=bd.cell[c].cpy;
+			if(bd.cell[c].qnum!=-1){
+				var px=bd.cell[c].cpx, py=bd.cell[c].cpy;
 
-			g.lineWidth = 1.5;
-			g.strokeStyle = this.cellcolor;
-			g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-			if(this.vnop(headers[0]+c,this.FILL)){
-				g.shapeCircle(px, py, rsize);
-			}
-
-			this.vdel([headers[1]+c]);
-			if(bd.cell[c].qdir!=0){
-				g.fillStyle = this.cellcolor;
-				switch(bd.cell[c].qdir){
-					case bd.UP: py-=(rsize-1); break;
-					case bd.DN: py+=(rsize-1); break;
-					case bd.LT: px-=(rsize-1); break;
-					case bd.RT: px+=(rsize-1); break;
+				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
+				if(this.vnop(headers[0]+c,this.FILL)){
+					g.shapeCircle(px, py, rsize);
 				}
-				if(this.vnop(headers[1]+c,this.NONE)){
-					g.fillCircle(px, py, rsize3);
+
+				this.vdel([headers[1]+c]);
+				if(bd.cell[c].qdir!=0){
+					g.fillStyle = this.cellcolor;
+					switch(bd.cell[c].qdir){
+						case bd.UP: py-=(rsize-1); break;
+						case bd.DN: py+=(rsize-1); break;
+						case bd.LT: px-=(rsize-1); break;
+						case bd.RT: px+=(rsize-1); break;
+					}
+					if(this.vnop(headers[1]+c,this.NONE)){
+						g.fillCircle(px, py, rsize3);
+					}
 				}
 			}
+			else{ this.vhide([headers[0]+c, headers[1]+c]);}
 		}
-		else{ this.vhide([headers[0]+c, headers[1]+c]);}
 	},
 
 	repaintParts : function(idlist){
-		var clist = bd.lines.getClistFromIdlist(idlist);
-		for(var i=0;i<clist.length;i++){
-			this.drawFirefly1(clist[i]);
-			this.drawNumber1(clist[i]);
-		}
+		this.range.cells = bd.lines.getClistFromIdlist(idlist);
+
+		this.drawFireflies();
+		this.drawNumbers();
 	}
 },
 

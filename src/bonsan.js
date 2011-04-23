@@ -140,7 +140,7 @@ Graphic:{
 	},
 
 	drawTip : function(){
-		this.vinc('cell_linetip', 'auto');
+		var g = this.vinc('cell_linetip', 'auto');
 
 		var tsize = this.cw*0.30;
 		var tplus = this.cw*0.05;

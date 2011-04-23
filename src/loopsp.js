@@ -179,7 +179,7 @@ Graphic:{
 	},
 	paint : function(){
 		this.drawBGCells();
-		if(g.use.canvas){ this.drawPekes(2);}
+		this.drawPekes(2);
 		this.drawDashedGrid();
 
 		this.drawLines();
@@ -197,12 +197,11 @@ Graphic:{
 	},
 
 	repaintParts : function(idlist){
-		var clist = bd.lines.getClistFromIdlist(idlist);
-		for(var i=0;i<clist.length;i++){
-			this.drawLineParts1(clist[i]);
-			this.drawCircle1AtNumber(clist[i]);
-			this.drawNumber1(clist[i]);
-		}
+		this.range.cells = bd.lines.getClistFromIdlist(idlist);
+
+		this.drawCirclesAtNumber();
+		this.drawNumbers();
+		this.drawLineParts();
 	}
 },
 

@@ -68,7 +68,7 @@ Graphic:{
 	},
 
 	drawCirclesAtNumber_shikaku : function(){
-		this.vinc('cell_circle', 'auto');
+		var g = this.vinc('cell_circle', 'auto');
 
 		var rsize2 = this.cw*this.circleratio[1];
 		var header = "c_cir_";

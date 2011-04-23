@@ -113,17 +113,15 @@ Graphic:{
 	},
 
 	// オーバーライド
-	setBorderColor : function(id){
-		if(bd.border[id].ques===1){
-			var cc2=bd.border[id].cellcc[1];
-			g.fillStyle = ((cc2===null || bd.cell[cc2].error===0) ? this.borderQuescolor : this.errbcolor1);
-			return true;
+	getBorderColor : function(border){
+		if(border.ques===1){
+			var cc2=border.cellcc[1];
+			return ((cc2===null || bd.cell[cc2].error===0) ? this.borderQuescolor : this.errbcolor1);
 		}
-		else if(bd.border[id].qans===1){
-			g.fillStyle = this.borderQanscolor;
-			return true;
+		else if(border.qans===1){
+			return this.borderQanscolor;
 		}
-		return false;
+		return null;
 	}
 },
 

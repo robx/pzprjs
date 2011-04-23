@@ -95,20 +95,18 @@ Graphic:{
 	},
 
 	// オーバーライド
-	setBorderColor : function(id){
-		if(bd.border[id].ques===1){
-			var cc2=bd.border[id].cellcc[1];
-			g.fillStyle = ((cc2===null || bd.cell[cc2].error===0) ? this.borderQuescolor : this.errbcolor1);
-			return true;
+	getBorderColor : function(border){
+		if(border.ques===1){
+			var cc2=border.cellcc[1];
+			return ((cc2===null || bd.cell[cc2].error===0) ? this.borderQuescolor : this.errbcolor1);
 		}
-		return false;
+		return null;
 	},
 
 	repaintParts : function(idlist){
-		var xlist = bd.lines.getXlistFromIdlist(idlist);
-		for(var i=0;i<xlist.length;i++){
-			this.drawBaseMark1(xlist[i]);
-		}
+		this.range.crosses = bd.lines.getXlistFromIdlist(idlist);
+
+		this.drawBaseMarks();
 	}
 },
 

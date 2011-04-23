@@ -174,24 +174,23 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	setBGCellColor : function(c){
-		if     (bd.cell[c].error===1)                           { g.fillStyle = this.errbcolor1; return true;}
-		else if(bd.cell[c].ques===6 && pp.getVal('disptype')==2){ g.fillStyle = this.icecolor;   return true;}
-		return false;
+	getBGCellColor : function(cell){
+		if     (cell.error===1)                           { return this.errbcolor1;}
+		else if(cell.ques===6 && pp.getVal('disptype')==2){ return this.icecolor;}
+		return null;
 	},
-	setBorderColor : function(id){
+	getBorderColor : function(border){
 		if(pp.getVal('disptype')==2){
-			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+			var cc1 = border.cellcc[0], cc2 = border.cellcc[1];
 			if(cc1!==null && cc2!==null && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
-				g.fillStyle = this.cellcolor;
-				return true;
+				return this.cellcolor;
 			}
 		}
-		return false;
+		return null;
 	},
 
 	drawCircles_pipelink : function(isdraw){
-		this.vinc('cell_circle', 'auto');
+		var g = this.vinc('cell_circle', 'auto');
 
 		var header = "c_cir_";
 		var clist = this.range.cells;
@@ -215,10 +214,9 @@ Graphic:{
 	},
 
 	repaintParts : function(idlist){
-		var clist = bd.lines.getClistFromIdlist(idlist);
-		for(var i=0;i<clist.length;i++){
-			this.drawLineParts1(clist[i]);
-		}
+		this.range.cells = bd.lines.getClistFromIdlist(idlist);
+
+		this.drawLineParts();
 	}
 },
 

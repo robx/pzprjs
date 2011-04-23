@@ -292,7 +292,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDashedGrid();
 
-		this.drawBorderAnswers();
+		this.drawQansBorders();
 		this.drawBorderQsubs();
 
 		this.drawStars();
@@ -302,30 +302,8 @@ Graphic:{
 		this.drawTarget_tentaisho();
 	},
 
-	drawBorderAnswers : function(){
-		this.vinc('border', 'crispEdges');
-
-		var lw = this.lw, lm = this.lm;
-		var header = "b_bd_";
-
-		var idlist = this.range.borders;
-		for(var i=0;i<idlist.length;i++){
-			var id = idlist[i];
-			if(bd.border[id].qans===1){
-				if     (bd.border[id].error===1){ g.fillStyle = this.errcolor1;}
-				else if(bd.border[id].error===2){ g.fillStyle = this.errborderQanscolor2;}
-				else                            { g.fillStyle = this.borderQanscolor;}
-
-				if(this.vnop(header+id,this.FILL)){
-					if     (bd.border[id].by&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-this.bh-lm,  lw, this.ch+lw);}
-					else if(bd.border[id].bx&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm,  this.cw+lw, lw);}
-				}
-			}
-			else{ this.vhide(header+id);}
-		}
-	},
 	drawStars : function(){
-		this.vinc('star', 'auto');
+		var g = this.vinc('star', 'auto');
 
 		g.lineWidth = Math.max(this.cw*0.04, 1);
 		var headers = ["s_star1_", "s_star2_"];

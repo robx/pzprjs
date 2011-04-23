@@ -78,11 +78,10 @@ Graphic:{
 	},
 
 	// オーバーライド drawBGCells用 (qsub==1は表示しない..)
-	setBGCellColor : function(cc){
-		var cell = bd.cell[cc];
-		if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
-		else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2; return true;}
-		return false;
+	getBGCellColor : function(cell){
+		if     (cell.error===1){ return this.errbcolor1;}
+		else if(cell.qsub ===2){ return this.qsubcolor2;}
+		return null;
 	}
 },
 

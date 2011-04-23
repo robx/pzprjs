@@ -171,24 +171,23 @@ Graphic:{
 		this.drawCursor();
 	},
 
-	setBorderColor : function(id){
+	getBorderColor : function(border){
 		if(!pp.getVal('snakebd')){ return false;}
 
-		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+		var cc1 = border.cellcc[0], cc2 = border.cellcc[1];
 		if(cc1!==null && cc2!==null &&
 		   (bd.cell[cc1].qnum===-1 && bd.cell[cc2].qnum===-1) &&
 		   (bd.cell[cc1].anum!==-1 || bd.cell[cc2].anum!==-1) &&
 		   ( ((bd.cell[cc1].anum===-1)^(bd.cell[cc2].anum===-1)) ||
 			 (Math.abs(bd.cell[cc1].anum-bd.cell[cc2].anum)!==1)) )
 		{
-			g.fillStyle = this.borderQanscolor;
-			return true;
+			return this.borderQanscolor;
 		}
-		return false;
+		return null;
 	},
 
 	drawAnswerNumbers : function(){
-		this.vinc('cell_number', 'auto');
+		var g = this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){

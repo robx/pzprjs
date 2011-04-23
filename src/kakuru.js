@@ -111,16 +111,16 @@ Graphic:{
 	},
 
 	// オーバーライド drawBGCells用
-	setBGCellColor : function(cc){
-		if     (bd.cell[cc].qnum !==-1){ g.fillStyle = "rgb(208, 208, 208)"; return true;}
-		else if(bd.cell[cc].error=== 1){ g.fillStyle = this.errbcolor1;      return true;}
-		return false;
+	getBGCellColor : function(cell){
+		if     (cell.qnum !==-1){ return "rgb(208, 208, 208)";}
+		else if(cell.error=== 1){ return this.errbcolor1;}
+		return null;
 	},
 	// オーバーライド drawBlackCells用
-	setCellColor : function(cc){
-		if(bd.cell[cc].ques===1){ g.fillStyle = this.cellcolor; return true;}
-		return false;
-	},
+	getCellColor : function(cell){
+		if(cell.ques===1){ return this.cellcolor;}
+		return null;
+	}
 },
 
 //---------------------------------------------------------

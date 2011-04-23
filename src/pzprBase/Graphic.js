@@ -8,7 +8,7 @@
 pzprv3.createCommonClass('Graphic',
 {
 	initialize : function(){
-		g = ee('divques').unselectable().el.getContext("2d");
+		this.currentContext = ee('divques').unselectable().el.getContext("2d");
 
 		// 盤面のCellを分ける色
 		this.gridcolor = "black";
@@ -110,8 +110,6 @@ pzprv3.createCommonClass('Graphic',
 		this.lwratio = 12;	// onresize_processでlwの値の算出に用いる
 		this.addlw = 0;		// エラー時に線の太さを広げる
 
-		this.bdheader = "b_bd";	// drawBorder1で使うheader
-
 		this.lastHdeg = 0;
 		this.lastYdeg = 0;
 		this.minYdeg = 0.18;
@@ -125,6 +123,8 @@ pzprv3.createCommonClass('Graphic',
 		this.numobj = {};					// エレメントへの参照を保持する
 		this.fillTextEmulate = false;		// 数字をg.fillText()で描画しない
 		this.outputImage = false;			// 画像保存中
+
+		this.use = {};						// 描画ルーチン外で参照する値として、g.useをコピーしておく
 
 		this.isdrawBC = false;
 		this.isdrawBD = false;
@@ -201,8 +201,8 @@ pzprv3.createCommonClass('Graphic',
 		if(!!bd.isexcell){ x0 += this.cw; y0 += this.ch;}
 
 		// Canvasのサイズ・Offset変更
-		g.changeSize((cols*this.cw)|0, (rows*this.ch)|0);
-		g.translate(x0, y0);
+		this.currentContext.changeSize((cols*this.cw)|0, (rows*this.ch)|0);
+		this.currentContext.translate(x0, y0);
 
 		// 盤面のページ内座標を設定(fillTextEmurate用)
 		var rect = ee('divques').getRect();
@@ -219,8 +219,11 @@ pzprv3.createCommonClass('Graphic',
 		this.lw = Math.max(this.cw/this.lwratio, 3);
 		this.lm = (this.lw-1)/2;
 
-		this.fillTextEmulate = (g.use.canvas && !document.createElement('canvas').getContext('2d').fillText);
-		if(g.use.canvas){ g.elements = [];}
+		var g = this.currentContext;
+		g.elements = {};
+
+		for(var type in g.use){ this.use[type] = g.use[type];}
+		this.fillTextEmulate = (this.use.canvas && !document.createElement('canvas').getContext('2d').fillText);
 
 		// 再描画
 		this.flushCanvasAll();
@@ -252,7 +255,7 @@ pzprv3.createCommonClass('Graphic',
 		this.paint();
 	},
 	setRange : function(x1,y1,x2,y2){
-		if(g.use.canvas){
+		if(this.use.canvas){
 			// Undo時に跡が残ってしまうこと等を防止
 			if(this.isdrawBC || this.isdrawBD){ x1--; y1--; x2++; y2++;}
 		}
@@ -353,22 +356,23 @@ pzprv3.createCommonClass('Graphic',
 
 	//---------------------------------------------------------------------------
 	// pc.drawBlackCells() Cellの、境界線の上から描画される■黒マスをCanvasに書き込む
-	// pc.setCellColor()   前景色の設定・描画判定する
-	// pc.setCellColorFunc()   pc.setCellColor関数を設定する
+	// pc.getCellColor()   前景色の設定・描画判定する
+	// pc.setCellColorFunc()   pc.getCellColor関数を設定する
 	//
 	// pc.drawBGCells()    Cellの、境界線の下に描画される背景色をCanvasに書き込む
-	// pc.setBGCellColor() 背景色の設定・描画判定する
-	// pc.setBGCellColorFunc() pc.setBGCellColor関数を設定する
+	// pc.getBGCellColor() 背景色の設定・描画判定する
+	// pc.setBGCellColorFunc() pc.getBGCellColor関数を設定する
 	//---------------------------------------------------------------------------
 	// err==2になるlitsは、drawBGCellsで描画してます。。
 	drawBlackCells : function(){
-		this.vinc('cell_front', 'crispEdges');
+		var g = this.vinc('cell_front', 'crispEdges');
 		var header = "c_fullb_";
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(this.setCellColor(c)){
+			var c = clist[i], color = this.getCellColor(bd.cell[c]);
+			if(!!color){
+				g.fillStyle = color;
 				if(this.vnop(header+c,this.FILL)){
 					g.fillRect(bd.cell[c].px, bd.cell[c].py, this.cw+1, this.ch+1);
 				}
@@ -378,22 +382,20 @@ pzprv3.createCommonClass('Graphic',
 		this.isdrawBC = true;
 	},
 	// 'qans'用
-	setCellColor : function(c){
-		var err = bd.cell[c].error;
-		if(bd.cell[c].qans!==1){ return false;}
-		else if(err===0){ g.fillStyle = this.cellcolor; return true;}
-		else if(err===1){ g.fillStyle = this.errcolor1; return true;}
-		return false;
+	getCellColor : function(cell){
+		if(cell.qans!==1){ return null;}
+		else if(cell.error===0){ return this.cellcolor;}
+		else if(cell.error===1){ return this.errcolor1;}
+		return null;
 	},
 	setCellColorFunc : function(type){
 		switch(type){
 		case 'qnum':
-			this.setCellColor = function(c){
-				var err = bd.cell[c].error;
-				if(bd.cell[c].qnum===-1){ return false;}
-				else if(err===0){ g.fillStyle = this.cellcolor; return true;}
-				else if(err===1){ g.fillStyle = this.errcolor1; return true;}
-				return false;
+			this.getCellColor = function(cell){
+				if(cell.qnum===-1){ return null;}
+				else if(cell.error===0){ return this.cellcolor;}
+				else if(cell.error===1){ return this.errcolor1;}
+				return null;
 			};
 			break;
 		default:
@@ -402,12 +404,13 @@ pzprv3.createCommonClass('Graphic',
 	},
 
 	drawBGCells : function(){
-		this.vinc('cell_back', 'crispEdges');
+		var g = this.vinc('cell_back', 'crispEdges');
 		var header = "c_full_";
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(this.setBGCellColor(c)){
+			var c = clist[i], color = this.getBGCellColor(bd.cell[c]);
+			if(!!color){
+				g.fillStyle = color;
 				if(this.vnop(header+c,this.FILL)){
 					g.fillRect(bd.cell[c].px, bd.cell[c].py, this.cw, this.ch);
 				}
@@ -416,79 +419,68 @@ pzprv3.createCommonClass('Graphic',
 		}
 	},
 	// 'error1'用
-	setBGCellColor : function(c){
-		if(bd.cell[c].error===1){ g.fillStyle = this.errbcolor1; return true;}
-		return false;
+	getBGCellColor : function(cell){
+		if(cell.error===1){ return this.errbcolor1;}
+		return null;
 	},
 	setBGCellColorFunc : function(type){
 		switch(type){
 		case 'error2':
-			this.setBGCellColor = function(c){
-				var cell = bd.cell[c];
-				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
-				else if(cell.error===2){ g.fillStyle = this.errbcolor2; return true;}
-				return false;
+			this.getBGCellColor = function(cell){
+				if     (cell.error===1){ return this.errbcolor1;}
+				else if(cell.error===2){ return this.errbcolor2;}
+				return null;
 			}
 			break;
 		case 'qans1':
-			this.setBGCellColor = function(c){
-				var cell = bd.cell[c];
-				if(cell.qans===1){
-					g.fillStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
-					return true;
-				}
-				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
-				else if(cell.qsub ===1 && this.bcolor!=="white"){ g.fillStyle = this.bcolor; return true;}
-				return false;
+			this.getBGCellColor = function(cell){
+				if     (cell.qans=== 1){ return (cell.error===1 ? this.errcolor1 : this.cellcolor);}
+				else if(cell.error===1){ return this.errbcolor1;}
+				else if(cell.qsub ===1 && this.bcolor!=="white"){ return this.bcolor;}
+				return null;
 			};
 			break;
 		case 'qans2':
-			this.setBGCellColor = function(c){
-				var cell = bd.cell[c];
+			this.getBGCellColor = function(cell){
 				if(cell.qans===1){
-					if     (cell.error===0){ g.fillStyle = this.cellcolor;}
-					else if(cell.error===1){ g.fillStyle = this.errcolor1;}
-					else if(cell.error===2){ g.fillStyle = this.errcolor2;}
-					return true;
+					if     (cell.error===0){ return this.cellcolor;}
+					else if(cell.error===1){ return this.errcolor1;}
+					else if(cell.error===2){ return this.errcolor2;}
 				}
-				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
-				else if(cell.qsub ===1 && this.bcolor!=="white"){ g.fillStyle = this.bcolor; return true;}
-				return false;
+				if     (cell.error===1){ return this.errbcolor1;}
+				else if(cell.qsub ===1 && this.bcolor!=="white"){ return this.bcolor;}
+				return null;
 			};
 			break;
 		case 'qsub1':
-			this.setBGCellColor = function(c){
-				var cell = bd.cell[c];
-				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
-				else if(cell.qsub ===1){ g.fillStyle = this.bcolor;     return true;}
-				return false;
+			this.getBGCellColor = function(cell){
+				if     (cell.error===1){ return this.errbcolor1;}
+				else if(cell.qsub ===1){ return this.bcolor;}
+				return null;
 			};
 			break;
 		case 'qsub2':
-			this.setBGCellColor = function(c){
-				var cell = bd.cell[c];
-				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
-				else if(cell.qsub ===1){ g.fillStyle = this.qsubcolor1; return true;}
-				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2; return true;}
-				return false;
+			this.getBGCellColor = function(cell){
+				if     (cell.error===1){ return this.errbcolor1;}
+				else if(cell.qsub ===1){ return this.qsubcolor1;}
+				else if(cell.qsub ===2){ return this.qsubcolor2;}
+				return null;
 			};
 			break;
 		case 'qsub3':
-			this.setBGCellColor = function(c){
-				var cell = bd.cell[c];
-				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
-				else if(cell.qsub ===1){ g.fillStyle = this.qsubcolor1; return true;}
-				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2; return true;}
-				else if(cell.qsub ===3){ g.fillStyle = this.qsubcolor3; return true;}
-				return false;
+			this.getBGCellColor = function(cell){
+				if     (cell.error===1){ return this.errbcolor1;}
+				else if(cell.qsub ===1){ return this.qsubcolor1;}
+				else if(cell.qsub ===2){ return this.qsubcolor2;}
+				else if(cell.qsub ===3){ return this.qsubcolor3;}
+				return null;
 			};
 			break;
 		case 'icebarn':
-			this.setBGCellColor = function(c){
-				var cell = bd.cell[c];
-				if     (cell.error===1){ g.fillStyle = this.errbcolor1; return true;}
-				else if(cell.ques ===6){ g.fillStyle = this.icecolor;   return true;}
-				return false;
+			this.getBGCellColor = function(cell){
+				if     (cell.error===1){ return this.errbcolor1;}
+				else if(cell.ques ===6){ return this.icecolor;}
+				return null;
 			};
 			break;
 		default:
@@ -498,16 +490,17 @@ pzprv3.createCommonClass('Graphic',
 
 	//---------------------------------------------------------------------------
 	// pc.drawBGEXcells()    EXCellに描画される背景色をCanvasに書き込む
-	// pc.setBGEXcellColor() 背景色の設定・描画判定する
+	// pc.getBGEXcellColor() 背景色の設定・描画判定する
 	//---------------------------------------------------------------------------
 	drawBGEXcells : function(){
-		this.vinc('excell_back', 'crispEdges');
+		var g = this.vinc('excell_back', 'crispEdges');
 
 		var header = "ex_full_";
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
-			var c = exlist[i];
-			if(this.setBGEXcellColor(c)){
+			var c = exlist[i], color = this.getBGEXcellColor(bd.excell[c]);
+			if(!!color){
+				g.fillStyle = color;
 				if(this.vnop(header+c,this.FILL)){
 					g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, this.cw-1, this.ch-1);
 				}
@@ -515,16 +508,16 @@ pzprv3.createCommonClass('Graphic',
 			else{ this.vhide(header+c); continue;}
 		}
 	},
-	setBGEXcellColor : function(c){
-		if(bd.excell[c].error===1){ g.fillStyle = this.errbcolor1; return true;}
-		return false;
+	getBGEXcellColor : function(excell){
+		if(excell.error===1){ return this.errbcolor1;}
+		return null;
 	},
 
 	//---------------------------------------------------------------------------
 	// pc.drawDotCells()  ・だけをCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawDotCells : function(isrect){
-		this.vinc('cell_dot', (isrect ? 'crispEdges' : 'auto'));
+		var g = this.vinc('cell_dot', (isrect ? 'crispEdges' : 'auto'));
 
 		var dsize = Math.max(this.cw*(isrect?0.075:0.06), 2);
 		var header = "c_dot_";
@@ -547,7 +540,7 @@ pzprv3.createCommonClass('Graphic',
 	// pc.drawCellArrows() 矢印だけをCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawCellArrows : function(){
-		this.vinc('cell_arrow', 'auto');
+		var g = this.vinc('cell_arrow', 'auto');
 
 		var headers = ["c_arup_", "c_ardn_", "c_arlt_", "c_arrt_"];
 		var ll = this.cw*0.8;				//LineLength
@@ -583,7 +576,7 @@ pzprv3.createCommonClass('Graphic',
 	// pc.drawSlashes() 斜線をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawSlashes : function(){
-		this.vinc('cell_slash', 'auto');
+		var g = this.vinc('cell_slash', 'auto');
 
 		var headers = ["c_sl1_", "c_sl2_"];
 		g.lineWidth = Math.max(this.cw/8, 2);
@@ -626,7 +619,7 @@ pzprv3.createCommonClass('Graphic',
 	// pc.drawHatenas()     ques===-2の時に？をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawNumbers : function(){
-		this.vinc('cell_number', 'auto');
+		var g = this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){ this.drawNumber1(clist[i]);}
@@ -636,27 +629,27 @@ pzprv3.createCommonClass('Graphic',
 		if(num>0 || (bd.numzero && num===0) || (!this.hideHatena && num===-2)){
 			var text      = (num>=0 ? ""+num : "?");
 			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
-			var color     = this.getCellNumberColor(c);
+			var color     = this.getCellNumberColor(bd.cell[c]);
 			this.dispnum(key, 1, text, fontratio, color, obj.cpx, obj.cpy);
 		}
 		else{ this.hidenum(key);}
 	},
-	getCellNumberColor : function(c){
-		var obj = bd.cell[c], color = this.fontcolor;
-		if((obj.ques>=1 && obj.ques<=5) || (obj.qans>=1 && obj.qans<=5)){
+	getCellNumberColor : function(cell){
+		var color = this.fontcolor;
+		if((cell.ques>=1 && cell.ques<=5) || (cell.qans>=1 && cell.qans<=5)){
 			color = this.fontBCellcolor;
 		}
-		else if(obj.error===1 || obj.error===4){
+		else if(cell.error===1 || cell.error===4){
 			color = this.fontErrcolor;
 		}
-		else if(obj.qnum===-1 && obj.anum!==-1){
+		else if(cell.qnum===-1 && cell.anum!==-1){
 			color = this.fontAnscolor;
 		}
 		return color;
 	},
 
 	drawArrowNumbers : function(){
-		this.vinc('cell_arrownumber', 'auto');
+		var g = this.vinc('cell_arrownumber', 'auto');
 
 		var headers = ["c_ar1_", "c_dt1_", "c_dt2_", "c_ar3_", "c_dt3_", "c_dt4_"];
 		var ll = this.cw*0.7;				//LineLength
@@ -743,7 +736,7 @@ pzprv3.createCommonClass('Graphic',
 		}
 	},
 	drawHatenas : function(){
-		this.vinc('cell_number', 'auto');
+		var g = this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
@@ -761,7 +754,7 @@ pzprv3.createCommonClass('Graphic',
 	// pc.drawCrossMarks() Cross上の黒点をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawCrosses : function(){
-		this.vinc('cross_base', 'auto');
+		var g = this.vinc('cross_base', 'auto');
 
 		var csize = this.cw*this.crosssize+1;
 		var header = "x_cp_";
@@ -788,7 +781,7 @@ pzprv3.createCommonClass('Graphic',
 		}
 	},
 	drawCrossMarks : function(){
-		this.vinc('cross_mark', 'auto');
+		var g = this.vinc('cross_mark', 'auto');
 
 		var csize = this.cw*this.crosssize;
 		var header = "x_cm_";
@@ -808,60 +801,88 @@ pzprv3.createCommonClass('Graphic',
 
 	//---------------------------------------------------------------------------
 	// pc.drawBorders()        境界線をCanvasに書き込む
-	// pc.drawBorder1()        1カ所の境界線をCanvasに書き込む
-	// pc.setBorderColor()     境界線の設定・描画判定する
-	// pc.setBorderColorFunc() pc.setBorderColor関数を設定する
+	// pc.drawBorders_common() 境界線をCanvasに書き込む(共通処理)
+	// pc.getBorderColor()     境界線の設定・描画判定する
+	// pc.setBorderColorFunc() pc.getBorderColor関数を設定する
 	//---------------------------------------------------------------------------
 	drawBorders : function(){
-		this.vinc('border', 'crispEdges');
+		var g = this.vinc('border', 'crispEdges');
+		this.drawBorders_common("b_bd");
+	},
+	drawBorders_common : function(header){
+		var g = this.currentContext;
 
 		var idlist = this.range.borders;
-		for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
+		for(var i=0;i<idlist.length;i++){
+			var id = idlist[i], color = this.getBorderColor(bd.border[id]);
+			if(!!color){
+				g.fillStyle = color;
+				if(this.vnop(header+id,this.FILL)){
+					var lw = this.lw + this.addlw, lm = this.lm;
+					var bx = bd.border[id].bx, by = bd.border[id].by;
+					var px = bd.border[id].px, py = bd.border[id].py;
+					if     (by&1){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
+					else if(bx&1){ g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
+				}
+			}
+			else{ this.vhide(header+id);}
+		}
 		this.isdrawBD = true;
 	},
-	drawBorder1 : function(id){
-		var vid = [this.bdheader, id].join("_");
-		if(this.setBorderColor(id)){
-			if(this.vnop(vid,this.FILL)){
-				var lw = this.lw + this.addlw, lm = this.lm;
-				var bx = bd.border[id].bx, by = bd.border[id].by;
-				var px = bd.border[id].px, py = bd.border[id].py;
-				if     (by&1){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
-				else if(bx&1){ g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
-			}
-		}
-		else{ this.vhide(vid);}
-	},
 
-	setBorderColor : function(id){
-		if(bd.border[id].ques===1){ g.fillStyle = this.borderQuescolor; return true;}
-		return false;
+	getBorderColor : function(border){
+		if(border.ques===1){ return this.borderQuescolor;}
+		return null;
 	},
 	setBorderColorFunc : function(type){
 		switch(type){
 		case 'qans':
-			this.setBorderColor = function(id){
-				var err=bd.border[id].error;
-				if(bd.isBorder(id)){
-					if     (err===1){ g.fillStyle = this.errcolor1;          }
-					else if(err===2){ g.fillStyle = this.errborderQanscolor2;}
-					else            { g.fillStyle = this.borderQanscolor;    }
-					return true;
+			this.getBorderColor = function(border){
+				var err=border.error;
+				if(bd.isBorder(border.id)){
+					if     (err===1){ return this.errcolor1;          }
+					else if(err===2){ return this.errborderQanscolor2;}
+					else            { return this.borderQanscolor;    }
 				}
-				return false;
+				return null;
 			}
 			break;
 		case 'ice':
-			this.setBorderColor = function(id){
-				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
+			this.getBorderColor = function(border){
+				var cc1 = border.cellcc[0], cc2 = border.cellcc[1];
 				if(cc1!==null && cc2!==null && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
-					g.fillStyle = this.cellcolor;
-					return true;
+					return this.cellcolor;
 				}
-				return false;
+				return null;
 			}
 			break;
 		}
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.drawQansBorders()    問題の境界線をCanvasに書き込む
+	// pc.drawQuesBorders()    回答の境界線をCanvasに書き込む
+	// pc.getQuesBorderColor() 問題の境界線の設定・描画判定する
+	// pc.getQansBorderColor() 回答の境界線の設定・描画判定する
+	//---------------------------------------------------------------------------
+	drawQansBorders : function(){
+		var g = this.vinc('border_answer', 'crispEdges');
+		this.getBorderColor = this.getQansBorderColor;
+		this.drawBorders_common("b_bdans");
+	},
+	drawQuesBorders : function(){
+		var g = this.vinc('border_question', 'crispEdges');
+		this.getBorderColor = this.getQuesBorderColor;
+		this.drawBorders_common("b_bdques");
+	},
+
+	getQuesBorderColor : function(border){
+		if(border.ques===1){ return this.borderQuescolor;}
+		return null;
+	},
+	getQansBorderColor : function(border){
+		if(border.qans===1){ return this.borderQanscolor;}
+		return null;
 	},
 
 	//---------------------------------------------------------------------------
@@ -869,7 +890,7 @@ pzprv3.createCommonClass('Graphic',
 	// pc.drawBoxBorders()  境界線と黒マスの間の線を描画する
 	//---------------------------------------------------------------------------
 	drawBorderQsubs : function(){
-		this.vinc('border_qsub', 'crispEdges');
+		var g = this.vinc('border_qsub', 'crispEdges');
 
 		var m = this.cw*0.15; //Margin
 		var header = "b_qsub1_";
@@ -890,7 +911,7 @@ pzprv3.createCommonClass('Graphic',
 
 	// 外枠がない場合は考慮していません
 	drawBoxBorders  : function(tileflag){
-		this.vinc('boxborder', 'crispEdges');
+		var g = this.vinc('boxborder', 'crispEdges');
 
 		var lw = this.lw, lm = this.lm;
 		var cw = this.cw;
@@ -951,58 +972,63 @@ pzprv3.createCommonClass('Graphic',
 
 	//---------------------------------------------------------------------------
 	// pc.drawLines()    回答の線をCanvasに書き込む
+	// pc.getLineColor() 描画する線の色を設定する
+	// 
 	// pc.repaintLines() ひとつながりの線を再描画する
 	// pc.repaintParts() repaintLine()関数で、さらに上から描画しなおしたい処理を書く
 	//                   canvas描画時のみ呼ばれます(他は描画しなおす必要なし)
-	// pc.drawLine1()    回答の線をCanvasに書き込む(1カ所のみ)
-	// pc.setLineColor() 描画する線の色を設定する
-	// pc.drawPekes()    境界線上の×をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawLines : function(){
-		this.vinc('line', 'crispEdges');
+		var g = this.vinc('line', 'crispEdges');
 
+		var lw = this.lw + this.addlw, lm = this.lm;
+
+		var header = "b_line_";
 		var idlist = this.range.borders;
-		for(var i=0;i<idlist.length;i++){ this.drawLine1(idlist[i]);}
+		for(var i=0;i<idlist.length;i++){
+			var id = idlist[i], color = this.getLineColor(bd.border[id]);
+			if(!!color){
+				g.fillStyle = color;
+				if(this.vnop(header+id,this.FILL)){
+					var bx = bd.border[id].bx, by = bd.border[id].by;
+					var px = bd.border[id].px, py = bd.border[id].py;
+					if     (bd.lines.isCenterLine===!!(bx&1)){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
+					else if(bd.lines.isCenterLine===!!(by&1)){ g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
+				}
+			}
+			else{ this.vhide(header+id);}
+		}
 		this.addlw = 0;
 	},
-	repaintLines : function(idlist, id){
-		this.vinc('line', 'crispEdges');
-
-		for(var i=0;i<idlist.length;i++){
-			if(id!==idlist[i]){ this.drawLine1(idlist[i]);}
+	getLineColor : function(border){
+		this.addlw = 0;
+		if(bd.isLine(border.id)){
+			if(border.error===1){
+				if(this.currentContext.use.canvas){ this.addlw=1;}
+				return this.errlinecolor1;
+			}
+			else if(border.error===2){ return this.errlinecolor2;}
+			else if(this.irowake===0 || !pp.getVal('irowake') || !border.color){ return this.linecolor;}
+			else{ return border.color;}
 		}
-		if(g.use.canvas){ this.repaintParts(idlist);}
+		return null;
+	},
+
+	repaintLines : function(idlist, id){
+		this.range.borders = idlist;
+		this.drawLines();
+
+		if(this.use.canvas){ this.repaintParts(idlist);}
 	},
 	repaintParts : function(idlist){ }, // オーバーライド用
 
-	drawLine1 : function(id){
-		var vid = "b_line_"+id;
-		if(this.setLineColor(id)){
-			if(this.vnop(vid,this.FILL)){
-				var lw = this.lw + this.addlw, lm = this.lm;
-				var bx = bd.border[id].bx, by = bd.border[id].by;
-				var px = bd.border[id].px, py = bd.border[id].py;
-				if     (bd.lines.isCenterLine===!!(bx&1)){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
-				else if(bd.lines.isCenterLine===!!(by&1)){ g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
-			}
-		}
-		else{ this.vhide(vid);}
-	},
-	setLineColor : function(id){
-		this.addlw = 0;
-		if(bd.isLine(id)){
-			if     (bd.border[id].error===1){ g.fillStyle = this.errlinecolor1; if(g.use.canvas){ this.addlw=1;}}
-			else if(bd.border[id].error===2){ g.fillStyle = this.errlinecolor2;}
-			else if(this.irowake===0 || !pp.getVal('irowake') || !bd.border[id].color){ g.fillStyle = this.linecolor;}
-			else{ g.fillStyle = bd.border[id].color;}
-			return true;
-		}
-		return false;
-	},
+	//---------------------------------------------------------------------------
+	// pc.drawPekes()    境界線上の×をCanvasに書き込む
+	//---------------------------------------------------------------------------
 	drawPekes : function(flag){
-		if(!g.use.canvas && flag===2){ return;}
+		var g = this.vinc('border_peke', 'auto');
 
-		this.vinc('border_peke', 'auto');
+		if(!g.use.canvas && flag===2){ return;}
 
 		var size = this.cw*0.15+1; if(size<4){ size=4;}
 		var headers = ["b_peke0_", "b_peke1_"];
@@ -1035,19 +1061,19 @@ pzprv3.createCommonClass('Graphic',
 
 	//---------------------------------------------------------------------------
 	// pc.drawBaseMarks() 交点のdotをCanvasに書き込む
-	// pc.drawBaseMark1() 交点のdotをCanvasに書き込む(1つのみ)
 	//---------------------------------------------------------------------------
 	drawBaseMarks : function(){
-		this.vinc('cross_mark', 'auto');
+		var g = this.vinc('cross_mark', 'auto');
 
+		var header = "x_cm_";
 		var clist = this.range.crosses;
-		for(var i=0;i<clist.length;i++){ this.drawBaseMark1(clist[i]);}
-	},
-	drawBaseMark1 : function(id){
-		var vid = "x_cm_"+id;
-		g.fillStyle = this.cellcolor;
-		if(this.vnop(vid,this.NONE)){
-			g.fillCircle(bd.cross[id].px, bd.cross[id].py, (this.lw*1.2)/2);
+		for(var i=0;i<clist.length;i++){
+			var c = clist[i];
+
+			g.fillStyle = this.cellcolor;
+			if(this.vnop(header+c,this.NONE)){
+				g.fillCircle(bd.cross[c].px, bd.cross[c].py, (this.lw*1.2)/2);
+			}
 		}
 	},
 
@@ -1056,7 +1082,7 @@ pzprv3.createCommonClass('Graphic',
 	// pc.drawTriangle1()  三角形をCanvasに書き込む(1マスのみ)
 	//---------------------------------------------------------------------------
 	drawTriangle : function(){
-		this.vinc('cell_triangle', 'auto');
+		var g = this.vinc('cell_triangle', 'auto');
 		var headers = ["c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_"];
 
 		var clist = this.range.cells;
@@ -1080,6 +1106,7 @@ pzprv3.createCommonClass('Graphic',
 		}
 	},
 	drawTriangle1 : function(px,py,num,vid){
+		var g = this.currentContext;
 		if(this.vnop(vid,this.FILL)){
 			var cw = this.cw, ch = this.ch, mgn = (bd.puzzleid==="reflect"?1:0);
 			switch(num){
@@ -1096,7 +1123,7 @@ pzprv3.createCommonClass('Graphic',
 	// pc.drawMBs()    Cell上の○,×をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawMBs : function(){
-		this.vinc('cell_mb', 'auto');
+		var g = this.vinc('cell_mb', 'auto');
 		g.strokeStyle = this.mbcolor;
 		g.lineWidth = 1;
 
@@ -1128,10 +1155,9 @@ pzprv3.createCommonClass('Graphic',
 	//---------------------------------------------------------------------------
 	// pc.drawQnumCircles()    Cell上の黒丸と白丸をCanvasに書き込む
 	// pc.drawCirclesAtNumber() 数字が描画されるCellの丸を書き込む
-	// pc.drawCircle1AtNumber() 数字が描画されるCellの丸を書き込む(1マスのみ)
 	//---------------------------------------------------------------------------
 	drawQnumCircles : function(){
-		this.vinc('cell_circle', 'auto');
+		var g = this.vinc('cell_circle', 'auto');
 
 		g.lineWidth = Math.max(this.cw*(this.circleratio[0]-this.circleratio[1]), 1);
 		var rsize1 = this.cw*(this.circleratio[0]+this.circleratio[1])/2;
@@ -1160,61 +1186,60 @@ pzprv3.createCommonClass('Graphic',
 		}
 	},
 	drawCirclesAtNumber : function(){
-		this.vinc('cell_circle', 'auto');
+		var g = this.vinc('cell_circle', 'auto');
 
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){ this.drawCircle1AtNumber(clist[i]);}
-	},
-	drawCircle1AtNumber : function(c){
-		if(c===null){ return;}
+		g.lineWidth = this.cw*0.05;
 
 		var rsize  = this.cw*this.circleratio[0];
 		var rsize2 = this.cw*this.circleratio[1];
+
 		var headers = ["c_cira_", "c_cirb_"];
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var c = clist[i];
 
-		if(bd.cell[c].qnum!==-1){
-			g.lineWidth = this.cw*0.05;
-			g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : this.circledcolor);
-			if(this.vnop(headers[1]+c,this.FILL)){
-				g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize2);
-			}
+			if(bd.cell[c].qnum!==-1){
+				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : this.circledcolor);
+				if(this.vnop(headers[1]+c,this.FILL)){
+					g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize2);
+				}
 
-			g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
-			if(this.vnop(headers[0]+c,this.STROKE)){
-				g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
+				g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
+				if(this.vnop(headers[0]+c,this.STROKE)){
+					g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
+				}
 			}
+			else{ this.vhide([headers[0]+c, headers[1]+c]);}
 		}
-		else{ this.vhide([headers[0]+c, headers[1]+c]);}
 	},
 
 	//---------------------------------------------------------------------------
 	// pc.drawLineParts()   ╋などをCanvasに書き込む
-	// pc.drawLineParts1()  ╋などをCanvasに書き込む(1マスのみ)
 	//---------------------------------------------------------------------------
 	drawLineParts : function(){
-		this.vinc('cell_lineparts', 'crispEdges');
+		var g = this.vinc('cell_lineparts', 'crispEdges');
 
+		var lw  = this.lw, lm = this.lm;
+		var hhp = this.bh+this.lm, hwp = this.bw+this.lm;
+
+		var headers = ["c_lp1_", "c_lp2_", "c_lp3_", "c_lp4_"];
 		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){ this.drawLineParts1(clist[i]);}
-	},
-	drawLineParts1 : function(id){
-		var vids = ["c_lp1_"+id, "c_lp2_"+id, "c_lp3_"+id, "c_lp4_"+id];
+		for(var i=0;i<clist.length;i++){
+			var c = clist[i], qu = bd.cell[c].ques;
 
-		var qu = bd.cell[id].ques;
-		if(qu>=11 && qu<=17){
-			var lw  = this.lw, lm = this.lm;
-			var hhp = this.bh+this.lm, hwp = this.bw+this.lm;
-			var px  = bd.cell[id].px, py = bd.cell[id].py;
-			var cpx = bd.cell[id].cpx, cpy = bd.cell[id].cpy;
-			g.fillStyle = this.borderQuescolor;
+			this.vhide([headers[0]+c,headers[1]+c,headers[2]+c,headers[3]+c]);
+			if(qu>=11 && qu<=17){
+				var px  = bd.cell[c].px,  py  = bd.cell[c].py;
+				var cpx = bd.cell[c].cpx, cpy = bd.cell[c].cpy;
+				g.fillStyle = this.borderQuescolor;
 
-			var flag  = {11:15, 12:3, 13:12, 14:9, 15:5, 16:6, 17:10}[qu];
-			if(flag&1){ if(this.vnop(vids[0],this.NONE)){ g.fillRect(cpx-lm, py    , lw, hhp);} }else{ this.vhide(vids[0]);}
-			if(flag&2){ if(this.vnop(vids[1],this.NONE)){ g.fillRect(cpx-lm, cpy-lm, lw, hhp);} }else{ this.vhide(vids[1]);}
-			if(flag&4){ if(this.vnop(vids[2],this.NONE)){ g.fillRect(px    , cpy-lm, hwp, lw);} }else{ this.vhide(vids[2]);}
-			if(flag&8){ if(this.vnop(vids[3],this.NONE)){ g.fillRect(cpx-lm, cpy-lm, hwp, lw);} }else{ this.vhide(vids[3]);}
+				var flag  = {11:15, 12:3, 13:12, 14:9, 15:5, 16:6, 17:10}[qu];
+				if(flag&1){ if(this.vnop(headers[0]+c,this.NONE)){ g.fillRect(cpx-lm, py    , lw, hhp);} }
+				if(flag&2){ if(this.vnop(headers[1]+c,this.NONE)){ g.fillRect(cpx-lm, cpy-lm, lw, hhp);} }
+				if(flag&4){ if(this.vnop(headers[2]+c,this.NONE)){ g.fillRect(px    , cpy-lm, hwp, lw);} }
+				if(flag&8){ if(this.vnop(headers[3]+c,this.NONE)){ g.fillRect(cpx-lm, cpy-lm, hwp, lw);} }
+			}
 		}
-		else{ this.vhide(vids);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -1230,7 +1255,7 @@ pzprv3.createCommonClass('Graphic',
 		this.drawTargetTriangle();
 	},
 	drawSlash51Cells : function(){
-		this.vinc('cell_ques51', 'crispEdges');
+		var g = this.vinc('cell_ques51', 'crispEdges');
 
 		var header = "c_slash51_";
 		g.strokeStyle = this.cellcolor;
@@ -1248,7 +1273,7 @@ pzprv3.createCommonClass('Graphic',
 		}
 	},
 	drawSlash51EXcells : function(){
-		this.vinc('excell_ques51', 'crispEdges');
+		var g = this.vinc('excell_ques51', 'crispEdges');
 
 		var header = "ex_slash51_";
 		g.strokeStyle = this.cellcolor;
@@ -1262,7 +1287,7 @@ pzprv3.createCommonClass('Graphic',
 		}
 	},
 	drawEXCellGrid : function(){
-		this.vinc('grid_excell', 'crispEdges');
+		var g = this.vinc('grid_excell', 'crispEdges');
 
 		g.fillStyle = this.cellcolor;
 		var headers = ["ex_bdx_", "ex_bdy_"];
@@ -1289,7 +1314,7 @@ pzprv3.createCommonClass('Graphic',
 	// pc.drawNumbersOn51_1() 1つの[＼]に数字を記入する
 	//---------------------------------------------------------------------------
 	drawNumbersOn51 : function(){
-		this.vinc('cell_number51', 'auto');
+		var g = this.vinc('cell_number51', 'auto');
 
 		var d = this.range;
 		for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
@@ -1341,7 +1366,7 @@ pzprv3.createCommonClass('Graphic',
 	},
 
 	drawCursor : function(islarge,isdraw){
-		this.vinc('target_cursor', 'crispEdges');
+		var g = this.vinc('target_cursor', 'crispEdges');
 
 		if(isdraw!==false && pp.getVal('cursor')){
 			var d = this.range;
@@ -1365,8 +1390,7 @@ pzprv3.createCommonClass('Graphic',
 	},
 
 	drawTargetTriangle : function(){
-		this.vinc('target_triangle', 'auto');
-
+		var g = this.vinc('target_triangle', 'auto');
 		var vid = "target_triangle";
 		this.vdel([vid]);
 
@@ -1389,7 +1413,7 @@ pzprv3.createCommonClass('Graphic',
 	// pc.drawDashedCenterLines() セルの中心から中心にひかれる点線をCanvasに描画する
 	//---------------------------------------------------------------------------
 	drawDashedCenterLines : function(){
-		this.vinc('centerline', 'crispEdges');
+		var g = this.vinc('centerline', 'crispEdges');
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx+1){ x1=bd.minbx+1;} if(x2>bd.maxbx-1){ x2=bd.maxbx-1;}
@@ -1431,7 +1455,7 @@ pzprv3.createCommonClass('Graphic',
 	//---------------------------------------------------------------------------
 
 	drawGrid : function(haschassis, isdraw){
-		this.vinc('grid', 'crispEdges');
+		var g = this.vinc('grid', 'crispEdges');
 
 		// 外枠まで描画するわけじゃないので、maxbxとか使いません
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
@@ -1456,7 +1480,7 @@ pzprv3.createCommonClass('Graphic',
 		}
 	},
 	drawDashedGrid : function(haschassis){
-		this.vinc('grid', 'crispEdges');
+		var g = this.vinc('grid', 'crispEdges');
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
@@ -1508,7 +1532,7 @@ pzprv3.createCommonClass('Graphic',
 	// pc.drawChassis_ex1() bd.isexcell==1の時の外枠をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawChassis : function(){
-		this.vinc('chassis', 'crispEdges');
+		var g = this.vinc('chassis', 'crispEdges');
 
 		// ex===0とex===2で同じ場所に描画するので、maxbxとか使いません
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
@@ -1533,7 +1557,7 @@ pzprv3.createCommonClass('Graphic',
 		}
 	},
 	drawChassis_ex1 : function(boldflag){
-		this.vinc('chassis_ex1', 'crispEdges');
+		var g = this.vinc('chassis_ex1', 'crispEdges');
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<=0){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
@@ -1621,13 +1645,14 @@ pzprv3.createCommonClass('Graphic',
 	},
 
 	flushCanvasAll : function(){
-		this.flushCanvasAll = ((g.use.canvas) ?
+		this.flushCanvasAll = ((this.use.canvas) ?
 			function(){
 				this.numobj = {};
 				ee('numobj_parent').el.innerHTML = '';
 			}
 		:
 			function(){
+				var g = this.currentContext
 				g.clear();
 				this.zidx=0;
 				this.zidx_array=[];
@@ -1635,7 +1660,7 @@ pzprv3.createCommonClass('Graphic',
 				this.numobj = {};
 				ee('numobj_parent').el.innerHTML = '';
 
-				this.vinc('board_base', 'crispEdges');
+				var g = this.vinc('board_base', 'crispEdges');
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
 				if(this.vnop("boardfull",this.NONE)){
 					g.fillRect(0, 0, bd.qcols*this.cw, bd.qrows*this.ch);
@@ -1645,9 +1670,11 @@ pzprv3.createCommonClass('Graphic',
 		this.flushCanvasAll();
 	},
 	flushCanvas : function(){
-		this.flushCanvas = ((g.use.canvas) ?
+		var g = this.currentContext
+		this.flushCanvas = ((this.use.canvas) ?
 			function(){
 				var d = this.range;
+				var g = this.currentContext
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
 				g.fillRect(d.x1*this.bw, d.y1*this.bh, (d.x2-d.x1)*this.bw, (d.y2-d.y1)*this.bh);
 			}
@@ -1666,10 +1693,11 @@ pzprv3.createCommonClass('Graphic',
 	//---------------------------------------------------------------------------
 	// ccflag -> 0:strokeのみ, 1:fillのみ, 2:両方, 3:色の変更なし
 	vnop : function(vid, ccflag){
-		this.vnop = ((g.use.canvas) ?
+		this.vnop = ((this.use.canvas) ?
 			function(vid, ccflag){ return true;}
-		: (g.use.vml) ?
+		: (this.use.vml) ?
 			function(vid, ccflag){
+				var g = this.currentContext
 				g.vid = vid;
 				var el = g.elements[vid];
 				if(!el){ return true;}
@@ -1678,8 +1706,9 @@ pzprv3.createCommonClass('Graphic',
 				if(this.vnop_STROKE[ccflag]){ el.strokecolor = Camp.parse(g.strokeStyle);}
 				return false;
 			}
-		: (g.use.sl) ?
+		: (this.use.sl) ?
 			function(vid, ccflag){
+				var g = this.currentContext
 				g.vid = vid;
 				var el = g.elements[vid];
 				if(!el){ return true;}
@@ -1688,8 +1717,9 @@ pzprv3.createCommonClass('Graphic',
 				if(this.vnop_STROKE[ccflag]){ el.stroke = Camp.parse(g.strokeStyle);}
 				return false;
 			}
-		: /* (g.use.svg) */
+		: /* (this.use.svg) */
 			function(vid, ccflag){
+				var g = this.currentContext
 				g.vid = vid;
 				var el = g.elements[vid];
 				if(!el){ return true;}
@@ -1702,10 +1732,11 @@ pzprv3.createCommonClass('Graphic',
 		return this.vnop(vid, ccflag);
 	},
 	vshow : function(vid){
-		this.vshow = ((g.use.canvas) ?
+		this.vshow = ((this.use.canvas) ?
 			function(vid){}
 		:
 			function(vid){
+				var g = this.currentContext
 				g.vid = vid;
 				if(!g.elements[vid]){ return;}
 
@@ -1717,10 +1748,12 @@ pzprv3.createCommonClass('Graphic',
 		this.vshow(vid);
 	},
 	vhide : function(vid){
-		this.vhide = ((g.use.canvas) ?
+		var g = this.currentContext
+		this.vhide = ((this.use.canvas) ?
 			function(vid){}
 		:
 			function(vid){
+				var g = this.currentContext
 				if(typeof vid === 'string'){ vid = [vid];}
 				for(var i=0;i<vid.length;i++){
 					if(!g.elements[vid[i]]){ continue;}
@@ -1734,10 +1767,12 @@ pzprv3.createCommonClass('Graphic',
 		this.vhide(vid);
 	},
 	vdel : function(vid){
-		this.vdel = ((g.use.canvas) ?
+		var g = this.currentContext
+		this.vdel = ((this.use.canvas) ?
 			function(vid){}
 		:
 			function(vid){
+				var g = this.currentContext
 				for(var i=0;i<vid.length;i++){
 					if(!g.elements[vid[i]]){ continue;}
 
@@ -1750,13 +1785,17 @@ pzprv3.createCommonClass('Graphic',
 		this.vdel(vid);
 	},
 	vinc : function(layerid, rendering){
-		this.vinc = ((g.use.canvas) ?
+		var g = this.currentContext
+		this.vinc = ((this.use.canvas) ?
 			function(layerid, rendering){
+				var g = this.currentContext
 				g.setLayer(layerid);
 				if(rendering){ g.setRendering(rendering);}
+				return g;
 			}
 		:
 			function(layerid, rendering){
+				var g = this.currentContext
 				g.vid = "";
 				g.setLayer(layerid);
 
@@ -1767,9 +1806,10 @@ pzprv3.createCommonClass('Graphic',
 					if(!g.use.sl){ g.getLayerElement().style.zIndex = this.zidx;}
 					else{ g.getLayerElement()["Canvas.ZIndex"] = this.zidx;}
 				}
+				return g;
 			}
 		);
-		this.vinc(layerid, rendering);
+		return this.vinc(layerid, rendering);
 	},
 
 	//---------------------------------------------------------------------------
@@ -1824,6 +1864,8 @@ pzprv3.createCommonClass('Graphic',
 			el.style.top  = (pc.pageY + py) + 'px';
 		}
 		else{
+			var g = this.currentContext;
+
 			g.font = ("" + fontsize + "px 'Serif'");
 			g.fillStyle = color;
 

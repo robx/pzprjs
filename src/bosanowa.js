@@ -129,7 +129,12 @@ Board:{
 
 	// 入力可能できないマスかどうか
 	isEmpty : function(c){ return ( !this.cell[c] || this.cell[c].ques===7);},
-	isValid : function(c){ return (!!this.cell[c] && this.cell[c].ques===0);}
+	isValid : function(c){ return (!!this.cell[c] && this.cell[c].ques===0);},
+
+	isBorder : function(id){
+		var cc1 = this.border[id].cellcc[0], cc2 = this.border[id].cellcc[1];
+		return !!(this.isEmpty(cc1)^this.isEmpty(cc2));
+	}
 },
 
 Menu:{
@@ -186,7 +191,7 @@ Graphic:{
 	},
 
 	drawErrorCells_bosanowa : function(){
-		this.vinc('cell_back', 'crispEdges');
+		var g = this.vinc('cell_back', 'crispEdges');
 
 		var header = "c_fullerr_";
 		g.fillStyle = this.errbcolor1;
@@ -203,7 +208,7 @@ Graphic:{
 	},
 
 	drawCircles_bosanowa : function(){
-		this.vinc('cell_circle', 'auto');
+		var g = this.vinc('cell_circle', 'auto');
 
 		g.lineWidth = 1;
 		g.fillStyle = "white";
@@ -224,7 +229,7 @@ Graphic:{
 	},
 
 	drawGrid_souko : function(){
-		this.vinc('grid_souko', 'crispEdges');
+		var g = this.vinc('grid_souko', 'crispEdges');
 
 		var header = "b_grids_";
 		g.lineWidth = 1;
@@ -269,7 +274,7 @@ Graphic:{
 		}
 	},
 	drawGrid_waritai : function(){
-		this.vinc('grid_waritai', 'crispEdges');
+		var g = this.vinc('grid_waritai', 'crispEdges');
 
 		var csize = this.cw*0.20;
 		var headers = ["b_grid_", "b_grid2_"];
@@ -294,7 +299,7 @@ Graphic:{
 	},
 
 	drawBDnumbase : function(){
-		this.vinc('border_number_base', 'crispEdges');
+		var g = this.vinc('border_number_base', 'crispEdges');
 
 		var csize = this.cw*0.20;
 		var header = "b_bbse_";
@@ -312,7 +317,7 @@ Graphic:{
 		}
 	},
 	drawNumbersBD : function(){
-		this.vinc('border_number', 'auto');
+		var g = this.vinc('border_number', 'auto');
 
 		var idlist = this.range.borders;
 		for(var i=0;i<idlist.length;i++){
@@ -326,7 +331,7 @@ Graphic:{
 
 	// 倉庫番の外側(グレー)描画用
 	drawOutside_souko : function(){
-		this.vinc('cell_outside_souko', 'crispEdges');
+		var g = this.vinc('cell_outside_souko', 'crispEdges');
 
 		var header = "c_full_", d = this.range;
 		for(var bx=(d.x1-2)|1;bx<=d.x2+2;bx+=2){
@@ -347,15 +352,6 @@ Graphic:{
 			}
 		}
 	},
-	// ワリタイの太線描画用
-	setBorderColor : function(id){
-		var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-		if(bd.isEmpty(cc1)^bd.isEmpty(cc2)){
-			g.fillStyle = this.cellcolor;
-			return true;
-		}
-		return false;
-	},
 
 	drawTarget_bosanowa : function(){
 		var islarge = !!((tc.pos.x&1)&&(tc.pos.y&1));
@@ -367,17 +363,17 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	pzlimport : function(type){
-			this.decodeBoard();
-			this.decodeNumber16();
+		this.decodeBoard();
+		this.decodeNumber16();
 
-			if     (this.checkpflag("h")){ pp.setVal('disptype',2);}
-			else if(this.checkpflag("t")){ pp.setVal('disptype',3);}
+		if     (this.checkpflag("h")){ pp.setVal('disptype',2);}
+		else if(this.checkpflag("t")){ pp.setVal('disptype',3);}
 	},
 	pzlexport : function(type){
-			this.encodeBosanowa();
+		this.encodeBosanowa();
 
-			if     (pp.getVal('disptype')==2){ this.outpflag="h";}
-			else if(pp.getVal('disptype')==3){ this.outpflag="t";}
+		if     (pp.getVal('disptype')==2){ this.outpflag="h";}
+		else if(pp.getVal('disptype')==3){ this.outpflag="t";}
 	},
 
 	decodeBoard : function(){

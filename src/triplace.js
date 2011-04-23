@@ -147,28 +147,6 @@ Graphic:{
 		this.drawNumbersOn51();
 
 		this.drawTarget();
-	},
-
-	// 問題と回答の境界線を別々に描画するようにします
-	drawQansBorders : function(){
-		this.vinc('border_answer', 'crispEdges');
-		this.bdheader = "b_bdans";
-		this.setBorderColor = function(id){ return (bd.border[id].qans===1);};
-
-		g.fillStyle = this.borderQanscolor;
-		var idlist = this.range.borders;
-		for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
-		this.isdrawBD = true;
-	},
-	drawQuesBorders : function(){
-		this.vinc('border_question', 'crispEdges');
-		this.bdheader = "b_bdques";
-		this.setBorderColor = function(id){ return (bd.border[id].ques===1);};
-
-		g.fillStyle = this.borderQuescolor;
-		var idlist = this.range.borders;
-		for(var i=0;i<idlist.length;i++){ this.drawBorder1(idlist[i]);}
-		this.isdrawBD = true;
 	}
 },
 

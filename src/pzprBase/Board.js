@@ -13,6 +13,8 @@ pzprv3.createCoreClass('BoardPiece',
 	},
 
 	group : 'none',
+	id : null,
+
 	error: 0,
 
 	propall : [],
@@ -26,6 +28,7 @@ pzprv3.createCoreClass('BoardPiece',
 	// comclear() 3つの共通処理
 	//---------------------------------------------------------------------------
 	allclear : function(id,isrec) { /* undo,redo以外で盤面縮小やったときは, isrec===true */
+		this.id = id;
 		this.comclear(this.propall, id, isrec);
 		if(this.color!==(void 0)){ this.color = "";}
 		this.error = 0;
@@ -379,6 +382,7 @@ pzprv3.createCommonClass('Board',
 			var obj = this.cell[id];
 			obj.bx = (id%this.qcols)*2+1;
 			obj.by = ((id/this.qcols)<<1)+1;
+			obj.id = id;
 		}
 	},
 	setposCrosses : function(){
@@ -387,6 +391,7 @@ pzprv3.createCommonClass('Board',
 			var obj = this.cross[id];
 			obj.bx = (id%(this.qcols+1))*2;
 			obj.by = (id/(this.qcols+1))<<1;
+			obj.id = id;
 		}
 	},
 	setposBorders : function(){
@@ -403,6 +408,8 @@ pzprv3.createCommonClass('Board',
 				if(i>=0 && i<this.qrows){ obj.bx=2*this.qcols; obj.by=i*2+1;       } i-=this.qrows;
 			}
 
+			obj.id = id;
+
 			obj.cellcc[0] = this.cnum(obj.bx-(obj.by&1), obj.by-(obj.bx&1));
 			obj.cellcc[1] = this.cnum(obj.bx+(obj.by&1), obj.by+(obj.bx&1));
 
@@ -416,6 +423,7 @@ pzprv3.createCommonClass('Board',
 			var obj = this.excell[id], i=id;
 			obj.bx=-1;
 			obj.by=-1;
+			obj.id = id;
 			if(this.isexcell===1){
 				if(i>=0 && i<this.qcols){ obj.bx=i*2+1; obj.by=-1;    continue;} i-=this.qcols;
 				if(i>=0 && i<this.qrows){ obj.bx=-1;    obj.by=i*2+1; continue;} i-=this.qrows;

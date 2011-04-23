@@ -166,7 +166,7 @@ Graphic:{
 	},
 
 	drawCenterLines : function(){
-		this.vinc('centerline', 'crispEdges');
+		var g = this.vinc('centerline', 'crispEdges');
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx+1){ x1=bd.minbx+1;} if(x2>bd.maxbx-1){ x2=bd.maxbx-1;}
@@ -178,7 +178,7 @@ Graphic:{
 		for(var i=y1;i<=y2;i+=2){ if(this.vnop("clinex_"+i,this.NONE)){ g.fillRect(x1*this.bw,  i*this.bh, (x2-x1)*this.bw+1, 1);} }
 	},
 	drawCircles_goishi : function(){
-		this.vinc('cell_goishi', 'auto');
+		var g = this.vinc('cell_goishi', 'auto');
 
 		g.lineWidth = Math.max(this.cw*0.05, 1);
 		var rsize  = this.cw*0.38;
@@ -197,7 +197,7 @@ Graphic:{
 		}
 	},
 	drawCellSquare : function(){
-		this.vinc('cell_number_base', 'crispEdges');
+		var g = this.vinc('cell_number_base', 'crispEdges');
 
 		var mgnw = this.cw*0.1;
 		var mgnh = this.ch*0.1;

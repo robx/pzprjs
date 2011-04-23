@@ -131,7 +131,7 @@ Graphic:{
 	},
 
 	drawTip : function(){
-		this.vinc('cell_linetip', 'auto');
+		var g = this.vinc('cell_linetip', 'auto');
 
 		var tsize = this.cw*0.30;
 		var tplus = this.cw*0.05;
@@ -165,7 +165,7 @@ Graphic:{
 		}
 	},
 	drawCellSquare : function(){
-		this.vinc('cell_number_base', 'crispEdges');
+		var g = this.vinc('cell_number_base', 'crispEdges');
 
 		var mgnw = this.cw*0.15;
 		var mgnh = this.ch*0.15;
@@ -189,7 +189,7 @@ Graphic:{
 		}
 	},
 	drawNumbers_kaero : function(){
-		this.vinc('cell_number', 'auto');
+		var g = this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){

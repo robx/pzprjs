@@ -97,7 +97,7 @@ Graphic:{
 	},
 
 	drawBlockBorders : function(){
-		this.vinc('border_block', 'crispEdges');
+		var g = this.vinc('border_block', 'crispEdges');
 
 		var lw = this.lw, lm = this.lm;
 

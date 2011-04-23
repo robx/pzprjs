@@ -174,7 +174,7 @@ Graphic:{
 	},
 
 	drawNumbers_box : function(){
-		this.vinc('excell_number', 'auto');
+		var g = this.vinc('excell_number', 'auto');
 
 		var header = "ex_full_";
 		var exlist = this.range.excells;
@@ -195,7 +195,7 @@ Graphic:{
 		if(x2>=bd.maxbx){ for(var by=(y1|1),max=Math.min(bd.maxby,y2);by<=max;by+=2){ exlist.push([bd.maxbx+1,by]);}}
 		if(y2>=bd.maxby){ for(var bx=(x1|1),max=Math.min(bd.maxbx,x2);bx<=max;bx+=2){ exlist.push([bx,bd.maxby+1]);}}
 
-		this.vinc('excell_circle', 'auto');
+		var g = this.vinc('excell_circle', 'auto');
 		var header = "ex2_cir_", rsize  = this.cw*0.36;
 		g.fillStyle   = this.circledcolor;
 		g.strokeStyle = this.cellcolor;
@@ -208,7 +208,7 @@ Graphic:{
 			}
 		}
 
-		this.vinc('excell_number2', 'auto');
+		var g = this.vinc('excell_number2', 'auto');
 		var key = "ex2_cir_";
 		for(var i=0;i<exlist.length;i++){
 			var num = ((exlist[i][0]!==bd.maxbx+1 ? exlist[i][0] : exlist[i][1])+1)>>1;

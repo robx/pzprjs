@@ -319,15 +319,17 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	setCellColor : function(cc){
-		var err = bd.cell[cc].error;
-		if(bd.cell[cc].ques!==1){ return false;}
-		else if(err===0)        { g.fillStyle = this.cellcolor; return true;}
-		else if(err===1)        { g.fillStyle = this.errcolor1; return true;}
-		return false;
+	getCellColor : function(cell){
+		if(cell.ques===1){
+			if     (cell.error===0){ return this.cellcolor;}
+			else if(cell.error===1){ return this.errcolor1;}
+		}
+		return null;
 	},
 
 	drawGates : function(){
+		var g = this.vinc('cell_gate', 'auto');
+
 		var lw = Math.max(this.cw/10, 3);	//LineWidth
 		var lm = lw/2;						//LineMargin
 		var ll = lw*1.1;					//LineLength
@@ -359,7 +361,7 @@ Graphic:{
 	},
 
 	drawStartpos : function(){
-		this.vinc('cell_circle', 'auto');
+		var g = this.vinc('cell_circle', 'auto');
 
 		var c = bd.startid, d = this.range;
 		if(bd.cell[c].bx<d.x1 || d.x2<bd.cell[c].bx || bd.cell[c].by<d.y1 || d.y2<bd.cell[c].by){ return;}
@@ -379,7 +381,7 @@ Graphic:{
 		this.dispnumStartpos(c);
 	},
 	dispnumStartpos : function(c){
-		this.vinc('cell_numberpos', 'auto');
+		var g = this.vinc('cell_numberpos', 'auto');
 
 		var num = bd.hinfo.max, obj = bd.cell[c];
 		if(num>=0){
@@ -396,7 +398,8 @@ Graphic:{
 			if(c!==bd.startid){ continue;}
 
 			var bx = bd.cell[c].bx, by = bd.cell[c].by;
-			this.drawStartpos(bx,by,bx,by);
+			this.range = {x1:bx,y1:by,x2:bx,y2:by};
+			this.drawStartpos();
 
 			// startは一箇所だけなので、描画したら終了してよい
 			break;

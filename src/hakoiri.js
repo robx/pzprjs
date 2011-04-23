@@ -114,7 +114,7 @@ Graphic:{
 	},
 
 	drawQnumMarks : function(){
-		this.vinc('cell_mark', 'auto');
+		var g = this.vinc('cell_mark', 'auto');
 
 		var rsize = this.cw*0.30, tsize=this.cw*0.26;
 		var lampcolor = "rgb(0, 127, 96)";
@@ -127,7 +127,7 @@ Graphic:{
 			this.vhide([headers[0]+c, headers[1]+c, headers[2]+c]);
 			if(num<=0){ continue;}
 
-			g.strokeStyle = this.getCellNumberColor(c);
+			g.strokeStyle = this.getCellNumberColor(bd.cell[c]);
 			var cpx=bd.cell[c].cpx, cpy=bd.cell[c].cpy;
 			if(this.vnop(headers[(num-1)]+c,this.STROKE)){
 				switch(num){

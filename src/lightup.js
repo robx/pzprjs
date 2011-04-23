@@ -95,7 +95,7 @@ Board:{
 			if(val===2){ this.cell[c].qlight = 0;}
 		}
 
-		if(!!g){
+		if(!!pc.currentContext){
 			var d=this.cellRange(c), bx=this.cell[c].bx, by=this.cell[c].by;
 			pc.paintRange(d.x1, by, d.x2, by);
 			pc.paintRange(bx, d.y1, bx, d.y2);
@@ -156,15 +156,16 @@ Graphic:{
 	},
 
 	// オーバーライド drawBGCells用
-	setBGCellColor : function(cc){
-		if     (bd.cell[cc].qnum!==-1){ return false;}
-		else if(bd.cell[cc].error===1){ g.fillStyle = this.errbcolor1; return true;}
-		else if(bd.cell[cc].qlight===1){g.fillStyle = this.lightcolor; return true;}
-		return false;
+	getBGCellColor : function(cell){
+		if(cell.qnum===-1){
+			if     (cell.error ===1){ return this.errbcolor1;}
+			else if(cell.qlight===1){ return this.lightcolor;}
+		}
+		return null;
 	},
 
 	drawAkari : function(){
-		this.vinc('cell_akari', 'auto');
+		var g = this.vinc('cell_akari', 'auto');
 
 		var rsize = this.cw*0.40;
 		var lampcolor = "rgb(0, 127, 96)";

@@ -340,7 +340,7 @@ Graphic:{
 	},
 
 	repaintSegments : function(idlist, id){
-		this.vinc('segment', 'auto');
+		var g = this.vinc('segment', 'auto');
 
 		for(var i=0;i<idlist.length;i++){
 			if(id!==idlist[i]){ this.drawSegment1(idlist[i],true);}
@@ -348,7 +348,7 @@ Graphic:{
 	},
 
 	drawSegments : function(){
-		this.vinc('segment', 'auto');
+		var g = this.vinc('segment', 'auto');
 
 		var idlist = [];
 		/* 全領域の30%以下なら範囲指定 */
@@ -361,10 +361,12 @@ Graphic:{
 		for(var i=0;i<idlist.length;i++){ this.drawSegment1(idlist[i],true);}
 	},
 	eraseSegment1 : function(id){
-		this.vinc('segment', 'auto');
+		var g = this.vinc('segment', 'auto');
 		this.drawSegment1(id,false);
 	},
 	drawSegment1 : function(id,isdraw){
+		var g = this.currentContext;
+
 		g.lineWidth = this.lw;
 
 		var seg = bd.segs.seg[id];
@@ -385,7 +387,7 @@ Graphic:{
 	},
 
 	drawCrosses_kouchoku : function(){
-		this.vinc('cross_base', 'auto');
+		var g = this.vinc('cross_base', 'auto');
 
 		var isgray = pp.getVal('circolor');
 		var csize1 = this.cw*0.30+1, csize2 = this.cw*0.20;
@@ -423,7 +425,7 @@ Graphic:{
 	},
 
 	drawSegmentTarget : function(){
-		this.vinc('cross_target_', 'auto');
+		var g = this.vinc('cross_target_', 'auto');
 
 		var csize = this.cw*0.32;
 		var header = "x_point_";

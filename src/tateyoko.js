@@ -186,7 +186,7 @@ Graphic:{
 	},
 
 	drawTateyokos : function(){
-		this.vinc('cell_tateyoko', 'crispEdges');
+		var g = this.vinc('cell_tateyoko', 'crispEdges');
 
 		var headers = ["c_bar1_", "c_bar2_"];
 		var clist = this.range.cells;
@@ -220,7 +220,7 @@ Graphic:{
 	},
 
 	drawBcellsAtNumber : function(){
-		this.vinc('cell_number', 'crispEdges');
+		var g = this.vinc('cell_number', 'crispEdges');
 
 		var header = "c_full_";
 		var clist = this.range.cells;
@@ -236,7 +236,7 @@ Graphic:{
 		}
 	},
 	drawNumbers_tateyoko : function(){
-		this.vinc('cell_number', 'auto');
+		var g = this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){

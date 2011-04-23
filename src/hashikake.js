@@ -165,72 +165,86 @@ Graphic:{
 		this.drawGrid(false, (k.editmode && !this.outputImage));
 
 		this.drawPekes(0);
-		this.drawLines();
+		this.drawLines_hashikake();
 
-		this.drawCirclesAtNumber();
+		this.drawCirclesAtNumber_hashikake();
 		this.drawNumbers();
 
 		this.drawTarget();
 	},
 
 	// オーバーライド
-	drawLine1 : function(id){
-		var vids = ["b_line_"+id,"b_dline1_"+id,"b_dline2_"+id];
+	drawLines_hashikake : function(id){
+		var g = this.vinc('line', 'crispEdges');
 
 		// LineWidth, LineMargin, LineSpace
 		var lw = this.lw + this.addlw, lm = this.lm, ls = lw*1.5;
-		if(this.setLineColor(id)){
-			if(bd.border[id].line==1){
-				if(this.vnop(vids[0],this.FILL)){
-					if(bd.border[id].bx&1){ g.fillRect(bd.border[id].px-lm, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
-					if(bd.border[id].by&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm, this.cw+lw, lw);}
-				}
-			}
-			else{ this.vhide(vids[0]);}
 
-			if(bd.border[id].line==2){
-				if(this.vnop(vids[1],this.FILL)){
-					if(bd.border[id].bx&1){ g.fillRect(bd.border[id].px-lm-ls, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
-					if(bd.border[id].by&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm-ls, this.cw+lw, lw);}
+		var headers = ["b_line_","b_dline1_","b_dline2_"];
+		var idlist = this.range.borders;
+		for(var i=0;i<idlist.length;i++){
+			var id = idlist[i], color = this.getLineColor(bd.border[id]);
+			if(!!color){
+				g.fillStyle = color;
+				var bx = bd.border[id].bx, by = bd.border[id].by;
+				var px = bd.border[id].px, py = bd.border[id].py;
+
+				if(bd.border[id].line==1){
+					if(this.vnop(headers[0]+id,this.FILL)){
+						if(bx&1){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
+						if(by&1){ g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
+					}
 				}
-				if(this.vnop(vids[2],this.FILL)){
-					if(bd.border[id].bx&1){ g.fillRect(bd.border[id].px-lm+ls, bd.border[id].py-this.bh-lm, lw, this.ch+lw);}
-					if(bd.border[id].by&1){ g.fillRect(bd.border[id].px-this.bw-lm, bd.border[id].py-lm+ls, this.cw+lw, lw);}
+				else{ this.vhide(headers[0]+id);}
+
+				if(bd.border[id].line==2){
+					if(this.vnop(headers[1]+id,this.FILL)){
+						if(bx&1){ g.fillRect(px-lm-ls, py-this.bh-lm, lw, this.ch+lw);}
+						if(by&1){ g.fillRect(px-this.bw-lm, py-lm-ls, this.cw+lw, lw);}
+					}
+					if(this.vnop(headers[2]+id,this.FILL)){
+						if(bx&1){ g.fillRect(px-lm+ls, py-this.bh-lm, lw, this.ch+lw);}
+						if(by&1){ g.fillRect(px-this.bw-lm, py-lm+ls, this.cw+lw, lw);}
+					}
 				}
+				else{ this.vhide([headers[1]+id, headers[2]+id]);}
 			}
-			else{ this.vhide([vids[1], vids[2]]);}
+			else{ this.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);}
 		}
-		else{ this.vhide(vids);}
 	},
-	// 背景色をつける為オーバーライド
-	drawCircle1AtNumber : function(c){
-		if(c===null){ return;}
+	// 背景色をつけたい
+	drawCirclesAtNumber_hashikake : function(c){
+		var g = this.vinc('cell_circle', 'auto');
+
+		g.lineWidth   = this.cw*0.05;
+		g.strokeStyle = this.cellcolor;
 
 		var rsize = this.cw*0.44;
 		var header = "c_cir_";
 
-		if(bd.cell[c].qnum!=-1){
-			g.lineWidth   = this.cw*0.05;
-			g.strokeStyle = this.cellcolor;
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var c = clist[i];
 
-			if (pp.getVal('circolor') && bd.cell[c].qnum===bd.getCountOfBridges(c))
-										 { g.fillStyle = this.bcolor;      }
-			else if(bd.cell[c].error===1){ g.fillStyle = this.errbcolor1;  }
-			else                         { g.fillStyle = this.circledcolor;}
+			if(bd.cell[c].qnum!=-1){
+				if (pp.getVal('circolor') && bd.cell[c].qnum===bd.getCountOfBridges(c))
+											 { g.fillStyle = this.bcolor;      }
+				else if(bd.cell[c].error===1){ g.fillStyle = this.errbcolor1;  }
+				else                         { g.fillStyle = this.circledcolor;}
 
-			if(this.vnop(header+c,this.FILL)){
-				g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
+				if(this.vnop(header+c,this.FILL)){
+					g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
+				}
 			}
+			else{ this.vhide([header+c]);}
 		}
-		else{ this.vhide([header+c]);}
 	},
 
-	epaintParts : function(idlist){
-		var clist = bd.lines.getClistFromIdlist(idlist);
-		for(var i=0;i<clist.length;i++){
-			this.drawCircle1AtNumber(clist[i]);
-			this.drawNumber1(clist[i]);
-		}
+	repaintParts : function(idlist){
+		this.range.cells = bd.lines.getClistFromIdlist(idlist);
+
+		this.drawCirclesAtNumber_hashikake();
+		this.drawNumbers();
 	}
 },
 

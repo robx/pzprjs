@@ -226,13 +226,13 @@ pzprv3.createCommonClass('MenuExec',
 			pc.fillTextEmulate = false;
 			pc.bdmargin = pc.bdmargin_image;
 			pp.setValOnly('cursor', false);
-			g = ee('divques_sub').el.getContext("2d");
+			pc.currentContext = ee('divques_sub').el.getContext("2d");
 
 			// canvas要素の設定を適用して、再描画
 			pc.resize_canvas();
 
 			// canvasの描画内容をDataURLとして取得する
-			var url = g.canvas.toDataURL();
+			var url = pc.currentContext.canvas.toDataURL();
 
 			if(isDL){
 				var _doc = document;
@@ -269,7 +269,7 @@ pzprv3.createCommonClass('MenuExec',
 		pc.fillTextEmulate = temp_flag;
 		pc.bdmargin = temp_margin;
 		pp.setValOnly('cursor', temp_cursor);
-		g = ee('divques').unselectable().el.getContext("2d");
+		pc.currentContext = ee('divques').unselectable().el.getContext("2d");
 
 		// その他の設定を元に戻して、再描画
 		pc.resize_canvas();

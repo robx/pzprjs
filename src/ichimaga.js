@@ -78,11 +78,10 @@ Graphic:{
 	},
 
 	repaintParts : function(idlist){
-		var clist = bd.lines.getClistFromIdlist(idlist);
-		for(var i=0;i<clist.length;i++){
-			this.drawCircle1AtNumber(clist[i]);
-			this.drawNumber1(clist[i]);
-		}
+		this.range.cells = bd.lines.getClistFromIdlist(idlist);
+
+		this.drawCirclesAtNumber();
+		this.drawNumbers();
 	}
 },
 

@@ -70,12 +70,11 @@ Graphic:{
 		this.drawCursor();
 	},
 
-	setBorderColor : function(id){
-		if(bd.border[id].ques===1){
-			g.fillStyle = (bd.border[id].error===1 ? this.errcolor1 : this.borderQuescolor);
-			return true;
+	getBorderColor : function(border){
+		if(border.ques===1){
+			return (border.error===1 ? this.errcolor1 : this.borderQuescolor);
 		}
-		return false;
+		return null;
 	}
 },
 

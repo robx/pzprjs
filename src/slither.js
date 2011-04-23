@@ -149,10 +149,9 @@ Graphic:{
 	},
 
 	repaintParts : function(idlist){
-		var xlist = bd.lines.getXlistFromIdlist(idlist);
-		for(var i=0;i<xlist.length;i++){
-			this.drawBaseMark1(xlist[i]);
-		}
+		this.range.crosses = bd.lines.getXlistFromIdlist(idlist);
+
+		this.drawBaseMarks();
 	}
 },
 

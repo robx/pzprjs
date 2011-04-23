@@ -269,42 +269,44 @@ Graphic:{
 
 	// IN/OUTの矢印用に必要ですね。。
 	drawBorderArrows : function(){
-		this.vinc('border_arrow', 'crispEdges');
-
-		var idlist = this.range.borders;
-		for(var i=0;i<idlist.length;i++){ this.drawBorderArrow1(idlist[i]);}
-	},
-	drawBorderArrow1 : function(id){
-		var headers = ["b_ar_","b_tipa_","b_tipb_"]; /* 1つのidでは2方向しかとれないはず */
+		var g = this.vinc('border_arrow', 'crispEdges');
 
 		var ll = this.cw*0.35;				//LineLength
 		var lw = Math.max(this.cw/36, 1);	//LineWidth
 		var lm = lw/2;						//LineMargin
-		var px=bd.border[id].px, py=bd.border[id].py, dir=bd.getArrow(id);
 
-		this.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);
-		if(dir>=1 && dir<=4){
-			g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.cellcolor);
-			if(this.vnop(headers[0]+id,this.FILL)){
-				switch(dir){
-					case bd.UP: case bd.DN: g.fillRect(px-lm, py-ll, lw, ll*2); break;
-					case bd.LT: case bd.RT: g.fillRect(px-ll, py-lm, ll*2, lw); break;
-				}
-			}
+		var headers = ["b_ar_","b_tipa_","b_tipb_"]; /* 1つのidでは2方向しかとれないはず */
+		var idlist = this.range.borders;
+		for(var i=0;i<idlist.length;i++){
+			var id = idlist[i], dir=bd.getArrow(id);
 
-			if(this.vnop(headers[((dir+1)&1)+1]+id,this.FILL)){
-				switch(dir){
-					case bd.UP: g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true); break;
-					case bd.DN: g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true); break;
-					case bd.LT: g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true); break;
-					case bd.RT: g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true); break;
+			this.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);
+			if(dir>=1 && dir<=4){
+				var px=bd.border[id].px, py=bd.border[id].py;
+
+				g.fillStyle = (bd.border[id].error===3 ? this.errcolor1 : this.cellcolor);
+				if(this.vnop(headers[0]+id,this.FILL)){
+					switch(dir){
+						case bd.UP: case bd.DN: g.fillRect(px-lm, py-ll, lw, ll*2); break;
+						case bd.LT: case bd.RT: g.fillRect(px-ll, py-lm, ll*2, lw); break;
+					}
 				}
-				g.fill();
+
+				if(this.vnop(headers[((dir+1)&1)+1]+id,this.FILL)){
+					switch(dir){
+						case bd.UP: g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true); break;
+						case bd.DN: g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true); break;
+						case bd.LT: g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true); break;
+						case bd.RT: g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true); break;
+					}
+					g.fill();
+				}
 			}
 		}
 	},
 	drawInOut : function(){
 		if(bd.arrowin<bd.bdinside || bd.arrowin>=bd.bdmax || bd.arrowout<bd.bdinside || bd.arrowout>=bd.bdmax){ return;}
+		var g = this.currentContext;
 
 		g.fillStyle = (bd.border[bd.arrowin].error===3 ? this.errcolor1 : this.cellcolor);
 		var bx = bd.border[bd.arrowin].bx, by = bd.border[bd.arrowin].by;
@@ -324,11 +326,9 @@ Graphic:{
 	},
 
 	repaintParts : function(idlist){
-		for(var i=0;i<idlist.length;i++){
-			if(idlist[i]===bd.arrowin || idlist[i]===bd.arrowout){
-				this.drawBorderArrow1(idlist[i],true);
-			}
-		}
+		this.range.borders = idlist;
+
+		this.drawBorderArrows();
 	}
 },
 
