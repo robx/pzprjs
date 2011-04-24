@@ -299,7 +299,6 @@ pzprv3.createCommonClass('Encode',
 	//---------------------------------------------------------------------------
 	decodeRoomNumber16 : function(){
 		bd.areas.rinfo.reset();
-		if(bd.areas.roomNumber){ bd.areas.moveRoomNumber();}
 		var r=1, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), c=bd.areas.getTopOfRoom(r), obj=bd.cell[c];
@@ -321,7 +320,6 @@ pzprv3.createCommonClass('Encode',
 	},
 	encodeRoomNumber16 : function(){
 		bd.areas.rinfo.reset();
-		if(bd.areas.roomNumber){ bd.areas.moveRoomNumber();}
 		var count=0, cm="";
 		for(var r=1;r<=bd.areas.rinfo.max;r++){
 			var pstr = "", qn = bd.cell[bd.areas.getTopOfRoom(r)].qnum;
@@ -423,7 +421,6 @@ pzprv3.createCommonClass('Encode',
 		}
 
 		bd.areas.rinfo.reset();
-		if(bd.areas.roomNumber){ bd.areas.moveRoomNumber();}
 		this.outbstr = bstr.substr(pos2);
 	},
 	encodeBorder : function(){

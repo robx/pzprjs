@@ -454,6 +454,8 @@ pzprv3.createCoreClass('AreaData',
 		this.isborder = !!isborder_func;
 
 		if(this.isborder){ this.bdfunc = isborder_func;}
+
+		this.hastop = false;
 	},
 
 	bdfunc      : function(id){ return false;}, /* 境界線の存在条件 */
@@ -474,6 +476,7 @@ pzprv3.createCoreClass('AreaData',
 			if(!!this.isborder){ for(var id=0;id<bd.bdmax;id++){ this.isbd[id]=false; this.setbd(id);}}
 			for(var c=0;c<bd.cellmax;c++){ this.id[c] = (this.isvalid(c)?0:null);}
 			this.parent.searchAll(this);
+			if(this.hastop){ this.resetRoomNumber();}
 		}
 	},
 
@@ -490,6 +493,32 @@ pzprv3.createCoreClass('AreaData',
 		this[id] = {clist:[]};
 		this.invalid.push(id);
 		return clist;
+	},
+
+	setTopOfRoom : function(roomid){
+		var cc=null, bx=bd.maxbx, by=bd.maxby;
+		var clist = this[roomid].clist;
+		for(var i=0;i<clist.length;i++){
+			var cell = bd.cell[clist[i]];
+			if(cell.bx>bx || (cell.bx===bx && cell.by>=by)){ continue;}
+			cc=clist[i];
+			bx=cell.bx;
+			by=cell.by;
+		}
+		this[roomid].top = cc;
+	},
+	resetRoomNumber : function(){
+		for(var r=1;r<=this.max;r++){
+			var val = -1, clist = this[r].clist;
+			for(var i=0,len=clist.length;i<len;i++){
+				var c = clist[i];
+				if(this.id[c]===r && bd.cell[c].qnum!==-1){
+					if(val===-1){ val = bd.cell[c].qnum;}
+					if(this[r].top!==c){ bd.sQnC(c, -1);}
+				}
+			}
+			if(val!==-1 && bd.QnC(this[r].top)===-1){ bd.sQnC(this[r].top, val);}
+		}
 	}
 });
 
@@ -584,6 +613,10 @@ pzprv3.createCommonClass('AreaManager',
 			}
 			return false;
 		};
+
+		this.rinfo.hastop = this.roomNumber;
+
+		this.resetArea();
 	},
 
 	resetArea : function(){
@@ -593,27 +626,6 @@ pzprv3.createCommonClass('AreaManager',
 		this.bcell.reset();
 		this.wcell.reset();
 		this.ncell.reset();
-
-		if(this.roomNumber){ this.moveRoomNumber();}
-	},
-
-	//--------------------------------------------------------------------------------
-	// bd.areas.moveRoomNumber() 部屋ごとに、TOPの場所に数字があるかどうか判断して移動する
-	//--------------------------------------------------------------------------------
-	moveRoomNumber : function(){
-		for(var r=1;r<=this.rinfo.max;r++){
-			this.setTopOfRoom(r);
-
-			var val = -1, clist = this.rinfo[r].clist;
-			for(var i=0,len=clist.length;i<len;i++){
-				var c = clist[i];
-				if(this.rinfo.id[c]===r && bd.cell[c].qnum!==-1){
-					if(val===-1){ val = bd.cell[c].qnum;}
-					if(this.rinfo[r].top!==c){ bd.sQnC(c, -1);}
-				}
-			}
-			if(val!==-1 && bd.QnC(this.rinfo[r].top)===-1){ bd.sQnC(this.rinfo[r].top, val);}
-		}
 	},
 
 	//--------------------------------------------------------------------------------
@@ -664,7 +676,7 @@ pzprv3.createCommonClass('AreaManager',
 			if(cc1===null || cc2===null){ return;}
 			if(data.id[cc1]===null || data.id[cc2]===null || data.id[cc1]!==data.id[cc2]){ return;} // はじめから分かれていた
 
-			var clist=this.popRoom(data, [cc1]), oldmax=data.max;
+			var clist=this.popRoom(data, [cc1]);
 		}
 		else{ /* 部屋を繋げるとき */
 			if(isroom && (data.bdcnt[xc1]===0 || data.bdcnt[xc2]===0)){ return;} // 途切れた線だったとき
@@ -674,20 +686,14 @@ pzprv3.createCommonClass('AreaManager',
 			// roomNumberの時 どっちの数字を残すかは、TOP同士の位置で比較する
 			if(isroom && this.roomNumber){ this.setTopOfRoom_combine(data,cc1,cc2);}
 
-			var clist=this.popRoom(data, [cc1,cc2]), oldmax=data.max;
+			var clist=this.popRoom(data, [cc1,cc2]);
 		}
 
 		this.searchClist(data, clist);
-
-		// TOPの情報を設定する
-		if(isroom && this.roomNumber){
-			for(var r=oldmax+1;r<=data.max;r++){ this.setTopOfRoom(r);}
-		}
 	},
 
 	//--------------------------------------------------------------------------------
 	// bd.areas.setTopOfRoom_combine()  部屋が繋がったとき、部屋のTOPを設定する
-	// bd.areas.setTopOfRoom()          セルのリストから部屋のTOPを設定する
 	//---------------------------------------------------------------------------
 	setTopOfRoom_combine : function(data,cc1,cc2){
 		var merged, keep;
@@ -703,19 +709,6 @@ pzprv3.createCommonClass('AreaManager',
 			if(bd.QnC(keep)===-1){ bd.sQnC(keep, bd.QnC(merged)); pc.paintCell(keep);}
 			bd.sQnC(merged,-1); pc.paintCell(merged);
 		}
-	},
-
-	setTopOfRoom : function(roomid){
-		var cc=null, bx=bd.maxbx, by=bd.maxby;
-		var clist = this.rinfo[roomid].clist;
-		for(var i=0;i<clist.length;i++){
-			var cell = bd.cell[clist[i]];
-			if(cell.bx>bx || (cell.bx===bx && cell.by>=by)){ continue;}
-			cc=clist[i];
-			bx=cell.bx;
-			by=cell.by;
-		}
-		this.rinfo[roomid].top = cc;
 	},
 
 	//--------------------------------------------------------------------------------
@@ -759,7 +752,7 @@ pzprv3.createCommonClass('AreaManager',
 		}
 		// 2方向以上の時
 		else{
-			var clist=this.popRoom(data, cid), oldmax=data.max;
+			var clist=this.popRoom(data, cid);
 			clist.push(cc);
 			this.searchClist(data, clist);
 		}
@@ -778,7 +771,7 @@ pzprv3.createCommonClass('AreaManager',
 		}
 		// 2方向以上の時
 		else{
-			var clist=this.popRoom(data, cid), oldmax=data.max;
+			var clist=this.popRoom(data, cid);
 			this.searchClist(data, clist);
 		}
 	},
@@ -835,6 +828,7 @@ pzprv3.createCommonClass('AreaManager',
 				if(tc!==null && data.id[tc]===iid && (!data.isborder || !data.isbd[tid])){ stack.push(tc);}
 			}
 		}
+		if(data.hastop){ data.setTopOfRoom(newid);}
 	},
 	searchEXT : function(isset_func, isborder_func){
 		var data = new pzprv3.core.AreaData(this,true,isset_func,isborder_func);

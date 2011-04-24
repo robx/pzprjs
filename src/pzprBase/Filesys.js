@@ -456,7 +456,6 @@ pzprv3.createCommonClass('FileIO',
 		this.rdata2Border(isques, this.getItemList(bd.qrows));
 
 		bd.areas.rinfo.reset();
-		if(bd.areas.roomNumber){ bd.areas.moveRoomNumber();}
 	},
 	encodeAreaRoom_com : function(isques){
 		var rinfo = bd.areas.getRoomInfo();
@@ -604,7 +603,6 @@ pzprv3.createCommonClass('FileIO',
 		this.rdata2Border(isques, rdata);
 
 		bd.areas.rinfo.reset();
-		if(bd.areas.roomNumber){ bd.areas.moveRoomNumber();}
 	},
 	setRdataRect : function(rdata, i, sp){
 		for(var bx=sp.x1;bx<=sp.x2;bx+=2){
