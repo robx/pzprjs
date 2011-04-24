@@ -65,7 +65,7 @@ pzprv3.createCoreClass('DataBaseManager',
 	//---------------------------------------------------------------------------
 	openDialog : function(){
 		// データベースを開く
-		if(pzprv3.base.dec.enLocalStorage()){ this.dbh = new pzprv3.core.DataBaseHandler_LS();}
+		if(ee.storage.localST){ this.dbh = new pzprv3.core.DataBaseHandler_LS();}
 		else{ return;}
 
 		this.sync = false;

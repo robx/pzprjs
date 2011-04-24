@@ -78,6 +78,33 @@ var
 	_ElementManager.os = { iPhoneOS : (navigator.userAgent.indexOf('like Mac OS X') > -1)};
 	_ElementManager.mobile = (navigator.userAgent.indexOf('like Mac OS X') > -1 || navigator.userAgent.indexOf('Android') > -1);
 
+	// localStorageがなくてglobalStorage対応(Firefox3.0)ブラウザのハック
+	try{ if(typeof localStorage != "object" && typeof globalStorage == "object"){
+		localStorage = globalStorage[location.host];
+	}}catch(e){}
+
+	var val = (function(){
+		var val = 0x00;
+		try{ if(!!window.sessionStorage){ val |= 0x10;}}catch(e){}
+		try{ if(!!window.localStorage)  { val |= 0x08;}}catch(e){}
+		try{ if(!!window.indexedDB)     { val |= 0x04;}}catch(e){}
+		try{ if(!!window.openDatabase){ // Opera10.50対策
+			var dbtmp = openDatabase('pzprv3_manage', '1.0', 'manager', 1024*1024*5);	// Chrome3対策
+			if(!!dbtmp){ val |= 0x02;}
+		}}catch(e){}
+
+		// Firefoxはローカルだとデータベース系は使えない
+		if(!_ElementManager.br.Gecko || !!location.hostname){ val = 0;}
+		return val;
+	})();
+	
+	_ElementManager.storage = {
+		session : !!(val & 0x10),
+		localST : !!(val & 0x08),
+		WebIDB  : !!(val & 0x04),
+		WebSQL  : !!(val & 0x02)
+	};
+
 	_win.ee = _ElementManager;
 	var _iOS = ee.os.iPhoneOS;
 

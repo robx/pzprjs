@@ -33,18 +33,8 @@ pzprv3.createCoreClass('ExtData',
 
 		this.enableSaveImage = false;	// 画像保存が有効か
 
-		this.DBaccept = 0;	// データベースのタイプ 1:Gears 2:WebDB 4:IdxDB 8:localStorage
-
-		this.selectDBtype();
-
 		this.initial_import();
 	},
-
-	// 定数
-	Session : 0x10,
-	LocalST : 0x08,
-	WebIDB  : 0x04,
-	WebSQL  : 0x02,
 
 	//---------------------------------------------------------------------------
 	// reset()   オブジェクトで持つ値を初期化する
@@ -62,60 +52,6 @@ pzprv3.createCoreClass('ExtData',
 
 		this.fstr = '';
 	},
-	
-	//---------------------------------------------------------------------------
-	// selectDBtype()  Web DataBaseが使えるかどうか判定する(起動時)
-	//---------------------------------------------------------------------------
-	selectDBtype : function(){
-		// localStorageがなくてglobalStorage対応(Firefox3.0)ブラウザのハック
-		try{
-			if(typeof localStorage != "object" && typeof globalStorage == "object"){
-				localStorage = globalStorage[location.host];
-			}
-		}
-		catch(e){}
-
-		// HTML5 - Web localStorage判定用(sessionStorage)
-		try{
-			if(!!window.sessionStorage){ this.DBaccept |= this.Session;}
-		}
-		catch(e){}
-
-		// HTML5 - Web localStorage判定用(localStorage)
-		try{
-			if(!!window.localStorage){
-				// FirefoxはローカルだとlocalStorageが使えない
-				if(!ee.br.Gecko || !!location.hostname){ this.DBaccept |= this.LocalST;}
-			}
-		}
-		catch(e){}
-
-		// HTML5 - Indexed Dataase API判定用
-		try{
-			if(!!window.indexedDB){
-				// FirefoxはローカルだとlocalStorageが使えない
-				this.DBaccept |= this.WebIDB;
-			}
-		}
-		catch(e){}
-
-		// HTML5 - Web SQL DataBase判定用
-		try{	// Opera10.50対策
-			if(!!window.openDatabase){
-				var dbtmp = openDatabase('pzprv3_manage', '1.0', 'manager', 1024*1024*5);	// Chrome3対策
-				if(!!dbtmp){ this.DBaccept |= this.WebSQL;}
-			}
-		}
-		catch(e){}
-	},
-
-	//---------------------------------------------------------------------------
-	// enSessionStorage()など おのおのの機能が有効かどうか
-	//---------------------------------------------------------------------------
-	enSessionStorage  : function(){ return !!(this.DBaccept & this.Session);},
-	enLocalStorage    : function(){ return !!(this.DBaccept & this.LocalST);},
-	enIndexedDatabase : function(){ return !!(this.DBaccept & this.WebIDB);},
-	enWebSQLDatabase  : function(){ return !!(this.DBaccept & this.WebSQL);},
 
 	//---------------------------------------------------------------------------
 	// initial_import() onload時に、ぱずぷれv3の動作モード・初期パズルを設定する

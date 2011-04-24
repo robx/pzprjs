@@ -227,7 +227,7 @@ pzprv3.createCommonClass('Menu',
 		ap('sep_file', 'file');
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
 		at('filesavep', 'file', 'ファイル保存 ->',  'Save the file as ... ->');
-		if(pzprv3.base.dec.DBaccept!==0){
+		if(ee.storage.localST){
 			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
 		}
 		if(pzprv3.base.dec.enableSaveImage){
@@ -257,7 +257,7 @@ pzprv3.createCommonClass('Menu',
 
 		as('adjust', 'edit', '盤面の調整', 'Adjust the Board');
 		as('turn',   'edit', '反転・回転', 'Filp/Turn the Board');
-		if(pzprv3.base.dec.enSessionStorage()){
+		if(ee.storage.session){
 			ap('sep_edit2',  'edit');
 			as('duplicate', 'edit', '盤面の複製', 'Duplicate the Board');
 		}
@@ -1164,7 +1164,7 @@ pzprv3.debug = {
 
 		_doc.testform.perfload.style.display = (bd.puzzleid!=='country' ? 'none' : 'inline');
 		_doc.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
-		_doc.testform.database.style.display = (pzprv3.base.dec.enLocalStorage() ? 'none' : 'inline');
+		_doc.testform.database.style.display = (ee.storage.localST ? 'none' : 'inline');
 
 		if(pzprv3.DEBUG){ this.testonly_func();}	// テスト用
 	},
