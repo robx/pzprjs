@@ -155,7 +155,7 @@ pzprv3.createCoreClass('DataBaseManager',
 
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (PZLINFO.info[row.pid].ja+"&nbsp;");
+		str += (pzprv3.PZLINFO.info[row.pid].ja+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
 			str += (hardstr[row.hard][menu.language]+"&nbsp;");
@@ -400,7 +400,7 @@ pzprv3.createCoreClass('DataBaseHandler_LS',
 		delete localStorage['pzprv3_manage:manage'];
 
 		var puzzles = [];
-		for(var pid in PZLINFO.info){ // いらないのもあるけど、問題ないのでOK
+		for(var pid in pzprv3.PZLINFO.info){ // いらないのもあるけど、問題ないのでOK
 			if(!localStorage['pzprv3_'+pid]){ continue;}
 			var mheader = 'pzprv3_manage:manage!'+pid+'!';
 			var count = localStorage[mheader+'count'];

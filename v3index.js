@@ -1,18 +1,19 @@
-﻿var v3index = {};
-
-(function(){
+﻿(function(){
 
 /* variables */
-v3index = {
+var v3index = {
 	typelist : [],
 	current  : '',
 	language : 'ja',
+	complete : false,
+	LS       : false,
 	extend : function(obj){ for(var n in obj){ this[n] = obj[n];}}
 };
 
 var _doc = document;
 var self = v3index;
 var typelist = self.typelist;
+var isGecko = (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1);
 
 v3index.extend({
 	/* common function */
@@ -21,10 +22,30 @@ v3index.extend({
 		else if(!!element.attachEvent){ element.attachEvent("on"+type,func);}
 		else                          { element["on"+type] = func;}
 	},
+	includeFile : function(filename){
+		var _script = _doc.createElement('script');
+		_script.type = 'text/javascript';
+		_script.src = filename;
+		_doc.body.appendChild(_script);
+	},
 
 	/* onload function */
+	onload_include : function(){
+		if(!pzprv3.PZLINFO){ self.includeFile("puzzlename.js");}
+		setTimeout(function(){
+			if(!pzprv3.PZLINFO){ setTimeout(arguments.callee,50); return;}
+			self.onload_func();
+			self.complete = true;
+		},50);
+	},
 	onload_func : function(){
 		if(!self.current){
+			if(!self.input_init()){
+				var el = _doc.getElementById("puzmenu_input");
+				el.parentNode.removeChild(el);
+				_doc.getElementById("table_input").style.display = 'none';
+			}
+
 			var el = _doc.getElementById("puztypes").firstChild;
 			while(!!el){
 				if(!!el.tagName && el.tagName.toLowerCase()==='li' &&
@@ -40,17 +61,20 @@ v3index.extend({
 
 			var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
 			if(userlang.substr(0,2)!=='ja'){ self.language = 'en';}
-
-			el = _doc.getElementById("urlinput_btn");
-			if(!!el){ self.addEvent(el,"click",self.urlinput);}
-
-			el = null;
-			if(!!_doc.fileform){ el = _doc.fileform.filebox;}
-			if(!!el){ self.addEvent(_doc.fileform.filebox, "change", self.fileinput);}
-
-			self.dbif.init();
 		}
 		self.disp();
+	},
+	input_init : function(){
+		// HTML5 - Web localStorage判定用(localStorage)
+		try{ if(!!window.localStorage && (!isGecko || !!location.hostname)){ self.LS = true;}}
+		catch(e){}
+
+		var cnt=0;
+		if(self.urlif.init()) { cnt++;}
+		if(self.fileif.init()){ cnt++;}
+		if(self.dbif.init())  { cnt++;}
+
+		return (cnt>0);
 	},
 
 	reset_func : function(){
@@ -59,17 +83,112 @@ v3index.extend({
 		self.onload_func();
 	},
 
+	/* tab-click function */
+	click_tab : function(e){
+		var el = (e.target || e.srcElement);
+		if(!!el){ self.current = el.id.substr(8); self.disp();}
+		if(self.current=="input"){ self.dbif.display();} /* iPhone用 */
+	},
 
-	/* input-URL function */
+	/* display tabs and tables function */
+	disp : function(){
+		for(var i=0;i<typelist.length;i++){
+			var el = _doc.getElementById("puzmenu_"+typelist[i]);
+			var table = _doc.getElementById("table_"+typelist[i]);
+			if(typelist[i]===self.current){
+				el.className = "puzmenusel";
+				try     { table.style.display = 'table';}
+				catch(e){ table.style.display = 'block';} //IE raises error
+			}
+			else{
+				el.className = "puzmenu";
+				table.style.display = 'none';
+			}
+		}
+	}
+});
+
+/* addEventListener */
+self.addEvent(window, 'load', self.onload_include);
+
+/* extern */
+if(!window.pzprv3){ window.pzprv3={};}
+window.pzprv3.v3index = v3index;
+
+})();
+
+/*********************/
+/* URLInput function */
+/*********************/
+(function(){
+
+var v3index = window.pzprv3.v3index;
+
+v3index.urlif = {
+	extend : function(obj){ for(var n in obj){ this[n] = obj[n];}}
+};
+
+var _doc = document;
+var _form;
+var self = v3index.urlif;
+var isGecko = (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1);
+
+v3index.urlif.extend({
+	init : function(){
+		_form = _doc.urlinput;
+		if(!!_form){
+			if(v3index.LS){
+				v3index.addEvent(_doc.getElementbyId("urlinput_clr"), "click", self.urlinput);
+				return true;
+			}
+			else{
+				_form.style.display = 'none';
+				return false;
+			}
+		}
+	},
 	urlinput : function(e){
 		var url = _doc.getElementById("urlinput_text").value;
 		if(!!url){
 			localStorage['pzprv3_urldata'] = url;
 			window.open('./p.html', '');
 		}
+	}
+});
+
+})();
+
+/*********************/
+/* FileRead function */
+/*********************/
+(function(){
+
+var v3index = window.pzprv3.v3index;
+
+v3index.fileif = {
+	extend : function(obj){ for(var n in obj){ this[n] = obj[n];}}
+};
+
+var _doc = document;
+var _form;
+var self = v3index.fileif;
+var isGecko = (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1);
+
+v3index.fileif.extend({
+	init : function(){
+		_form = _doc.fileform;
+		if(!!_form){
+			if(v3index.LS){
+				v3index.addEvent(_form.filebox, "change", self.fileinput);
+				return true;
+			}
+			else{
+				_form.style.display = 'none';
+				return false;
+			}
+		}
 	},
 
-	/* file-read function */
 	fileinput : function(e){
 		var fileEL = _doc.fileform.filebox;
 		if(typeof FileReader != 'undefined'){
@@ -105,35 +224,8 @@ v3index.extend({
 			localStorage['pzprv3_filedata'] = fstr;
 			window.open('./p.html', '');
 		}
-	},
-
-	/* tab-click function */
-	click_tab : function(e){
-		var el = (e.target || e.srcElement);
-		if(!!el){ self.current = el.id.substr(8); self.disp();}
-		if(self.current=="input"){ self.dbif.display();} /* iPhone用 */
-	},
-
-	/* display tabs and tables function */
-	disp : function(){
-		for(var i=0;i<typelist.length;i++){
-			var el = _doc.getElementById("puzmenu_"+typelist[i]);
-			var table = _doc.getElementById("table_"+typelist[i]);
-			if(typelist[i]===self.current){
-				el.className = "puzmenusel";
-				try     { table.style.display = 'table';}
-				catch(e){ table.style.display = 'block';} //IE raises error
-			}
-			else{
-				el.className = "puzmenu";
-				table.style.display = 'none';
-			}
-		}
 	}
 });
-
-/* addEventListener */
-self.addEvent(window, 'load', self.onload_func);
 
 })();
 
@@ -141,6 +233,8 @@ self.addEvent(window, 'load', self.onload_func);
 /* Database function */
 /*********************/
 (function(){
+
+var v3index = window.pzprv3.v3index;
 
 v3index.dbif = {
 	list   : [],
@@ -152,27 +246,24 @@ var _doc = document;
 var _form;
 var self = v3index.dbif;
 var DBlist = self.list;
-var isGecko = (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1);
 var pheader = '';
 
 v3index.dbif.extend({
 	init : function(){
-		// HTML5 - Web localStorage判定用(localStorage)
-		try{ if(!!window.localStorage && (!isGecko || !!location.hostname)){ self.LS = true;}}
-		catch(e){}
-		
 		_form = _doc.database;
 		if(!!_form){
-			if(self.LS){
+			if(v3index.LS){
 				v3index.addEvent(_form.sorts,    "change", self.display);
 				v3index.addEvent(_form.datalist, "change", self.select);
 				v3index.addEvent(_form.open,     "click",  self.open);
 				
 				pheader = 'pzprv3_storage:data:';
 				self.importlist(self.display);
+				return true;
 			}
 			else{
 				_form.style.display = 'none';
+				return false;
 			}
 		}
 	},
@@ -234,7 +325,7 @@ v3index.dbif.extend({
 
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (PZLINFO.info[row.pid][v3index.language]+"&nbsp;");
+		str += (pzprv3.PZLINFO.info[row.pid][v3index.language]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
 			str += (hardstr[row.hard][v3index.language]+"&nbsp;");

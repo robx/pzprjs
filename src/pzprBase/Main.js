@@ -135,6 +135,7 @@ pzprv3.createCoreClass('ExtData',
 	//             puzzleidの抽出やエディタ/player判定を行う
 	//---------------------------------------------------------------------------
 	importURL : function(){
+		// どの文字列をURL判定するかチェック
 		var search = "";
 		if(!!window.localStorage && !!localStorage['pzprv3_urldata']){
 			// index.htmlからのURL読み込み時
@@ -143,13 +144,12 @@ pzprv3.createCoreClass('ExtData',
 			pzprv3.base.require_accesslog = false;
 		}
 		else{ search = location.search;}
-
-	// checkMode : function(search){
 		if(search.length<=0){ return;}
 
+		// エディタモードかplayerモードか、等を判定する
 		var startmode = '';
-		if     (search=="?test")       { startmode = 'TEST'; search = '?country';}
-		else if(search.match(/_test/)) { startmode = 'TEST';}
+		if     (search=="?test")       { startmode = 'DEBUG'; search = '?country';}
+		else if(search.match(/_test/)) { startmode = 'DEBUG';}
 		else if(search.match(/^\?m\+/)){ startmode = 'EDITOR';}
 		else if(search.match(/_edit/)) { startmode = 'EDITOR';}
 		else if(search.match(/_play/)) { startmode = 'PLAYER';}
@@ -160,7 +160,7 @@ pzprv3.createCoreClass('ExtData',
 		switch(startmode){
 			case 'PLAYER': pzprv3.EDITOR = false; break;
 			case 'EDITOR': pzprv3.EDITOR = true;  break;
-			case 'TEST'  : pzprv3.EDITOR = true;  pzprv3.DEBUG = true;
+			case 'DEBUG' : pzprv3.EDITOR = true;  pzprv3.DEBUG = true;
 				this.parseURI(['?',this.id,'_test/',pzprv3.debug.urls[this.id]].join('')); break;
 		}
 		pzprv3.PLAYER = !pzprv3.EDITOR;
@@ -220,7 +220,7 @@ pzprv3.createCoreClass('ExtData',
 			this.id = this.id.replace(/(m\+|_edit|_test|_play)/,'');
 			this.type = en.PZPRV3;
 		}
-		this.id = PZLINFO.toPID(this.id);
+		this.id = pzprv3.PZLINFO.toPID(this.id);
 
 		switch(this.type){
 			case en.KANPEN:  this.parseURI_kanpen();  break;
@@ -336,26 +336,9 @@ pzprv3.createCoreClass('PBase',
 	},
 
 	//---------------------------------------------------------------------------
-	// base.onload_func()   ページがLoadされた時の処理
-	// base.onload_func2()  ページがLoadされた時の処理その2
-	// base.includeFile()   単体ファイルの読み込み
+	// base.onload_func() ページがLoadされた後の処理
 	//---------------------------------------------------------------------------
 	onload_func : function(){
-		if(location.search.match(/[\?_]test/)){
-			this.includeFile("src/for_test.js");
-			var self = this;
-			setTimeout(function(){
-				if(!!pzprv3.debug.urls){ self.onload_func2.call(self);}
-				else{ setTimeout(arguments.callee,20);}
-			},20);
-		}
-		else{
-			this.onload_func2();
-		}
-	},
-	onload_func2 : function(){
-		if(location.search.match(/[\?_]test/)){ this.includeFile("src/for_test.js");}
-
 		this.dec = new pzprv3.core.ExtData();
 		if(!this.dec.id){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
 
@@ -374,12 +357,6 @@ pzprv3.createCoreClass('PBase',
 
 		this.reload_func(this.dec.id);
 	},
-	includeFile : function(file){
-		var _script = document.createElement('script');
-		_script.type = 'text/javascript';
-		_script.src = file;
-		document.body.appendChild(_script);
-	},
 
 	//---------------------------------------------------------------------------
 	// base.reload_func()  個別パズルのファイルを読み込み、初期化する関数
@@ -387,11 +364,11 @@ pzprv3.createCoreClass('PBase',
 	reload_func : function(pid){
 		this.initProcess = true;
 
-		var scriptid = PZLINFO.toScript(pid);
+		var scriptid = pzprv3.PZLINFO.toScript(pid);
 
 		// idを取得して、ファイルを読み込み
 		if(!pzprv3.custom[scriptid]){
-			this.includeFile("src/"+scriptid+".js");
+			pzprv3.includeFile("src/"+scriptid+".js");
 		}
 
 		// 今のパズルが存在している場合
@@ -405,12 +382,12 @@ pzprv3.createCoreClass('PBase',
 
 		// 中身を読み取れるまでwait
 		var self = this;
-		var tim = setInterval(function(){
-			if(!pzprv3.custom[scriptid] || !Camp.isready()){ return;}
-			clearInterval(tim);
+		setTimeout(function(){
+			var completed = (!!pzprv3.custom[scriptid] && Camp.isready());
+			if(!completed){ setTimeout(arguments.callee,10); return;}
 
 			// 初期化ルーチンへジャンプ
-			self.initObjects(pid);
+			self.initObjects.call(self,pid);
 		},10);
 	},
 
@@ -573,6 +550,3 @@ pzprv3.createCoreClass('PBase',
 		}
 	}
 });
-
-pzprv3.base = new pzprv3.core.PBase();
-ee.addEvent(window, "load", ee.ebinder(pzprv3.base, pzprv3.base.onload_func));	// 1回起動したら、消されても大丈夫

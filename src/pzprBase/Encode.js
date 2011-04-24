@@ -122,8 +122,8 @@ pzprv3.createCommonClass('Encode',
 			else if(bd.puzzleid==='heyabon')  { str=str.replace("%PID%","bonsan");}
 		}
 		return str.replace("%DOMAIN%", domain)
-				  .replace("%PID%", PZLINFO.toURLID(bd.puzzleid))
-				  .replace("%KID%", PZLINFO.toKanpen(bd.puzzleid));
+				  .replace("%PID%", pzprv3.PZLINFO.toURLID(bd.puzzleid))
+				  .replace("%KID%", pzprv3.PZLINFO.toKanpen(bd.puzzleid));
 	},
 
 	// オーバーライド用

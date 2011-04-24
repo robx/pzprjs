@@ -203,4 +203,7 @@ var FBGcolor = function(pid){
 /* extern */
 window.PZLINFO = PZLINFO;
 
+if(!window.pzprv3){ window.pzprv3={};}
+window.pzprv3.PZLINFO = PZLINFO;
+
 })();

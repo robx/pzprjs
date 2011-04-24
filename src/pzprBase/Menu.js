@@ -21,7 +21,8 @@ pzprv3.createCommonClass('Menu',
 
 		this.ex = new (pzprv3.getPuzzleClass('MenuExec'))();	// MenuExecオブジェクト用
 
-		this.ispencilbox = (PZLINFO.info[bd.puzzleid].exists.kanpen && (bd.puzzleid!=="nanro" && bd.puzzleid!=="ayeheya" && bd.puzzleid!=="kurochute"));
+		var pinfo = pzprv3.PZLINFO.info[bd.puzzleid];
+		this.ispencilbox = (pinfo.exists.kanpen && (bd.puzzleid!=="nanro" && bd.puzzleid!=="ayeheya" && bd.puzzleid!=="kurochute"));
 
 		// ElementTemplate : メニュー領域
 		var menu_funcs = {mouseover : ee.ebinder(this, this.menuhover), mouseout  : ee.ebinder(this, this.menuout)};
@@ -29,7 +30,7 @@ pzprv3.createCommonClass('Menu',
 
 		// ElementTemplate : フロートメニュー
 		var float_funcs = {mouseout:ee.ebinder(this, this.floatmenuout)};
-		this.EL_FLOAT = ee.addTemplate('float_parent','menu', {className:'floatmenu'}, {backgroundColor:PZLINFO.toFBGcolor(bd.puzzleid)}, float_funcs);
+		this.EL_FLOAT = ee.addTemplate('float_parent','menu', {className:'floatmenu'}, {backgroundColor:pzprv3.PZLINFO.toFBGcolor(bd.puzzleid)}, float_funcs);
 
 		// ElementTemplate : フロートメニュー(中身)
 		var smenu_funcs  = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout), click:ee.ebinder(this, this.submenuclick)};
@@ -194,7 +195,10 @@ pzprv3.createCommonClass('Menu',
 		document.title = title;
 		ee('title2').el.innerHTML = title;
 	},
-	getPuzzleName : function(){ return this.selectStr(PZLINFO.info[bd.puzzleid].ja,PZLINFO.info[bd.puzzleid].en);},
+	getPuzzleName : function(){
+		var pinfo = pzprv3.PZLINFO.info[bd.puzzleid];
+		return this.selectStr(pinfo.ja, pinfo.en);
+	},
 
 //--------------------------------------------------------------------------------------------------------------
 
@@ -734,9 +738,10 @@ pzprv3.createCommonClass('Menu',
 			ee('urlbuttonarea').appendEL(el).appendBR();
 			btn(el, func, strJP, strEN);
 		};
+		var pinfo = pzprv3.PZLINFO.info[bd.puzzleid];
 		btt('pzprv3',     "ぱずぷれv3のURLを出力する",           "Output PUZ-PRE v3 URL",          true);
-		btt('pzprapplet', "ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", PZLINFO.info[bd.puzzleid].exists.pzprapp);
-		btt('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              PZLINFO.info[bd.puzzleid].exists.kanpen);
+		btt('pzprapplet', "ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", pinfo.exists.pzprapp);
+		btt('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              pinfo.exists.kanpen);
 		btt('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (bd.puzzleid==="heyawake"));
 		btt('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
 		ee("urlbuttonarea").appendBR();

@@ -3,7 +3,28 @@
 //----------------------------------------------------------------------------
 // ★pzprv3オブジェクト (クラス作成関数等)
 //---------------------------------------------------------------------------
-(function(obj){ for(var name in obj){ pzprv3[name] = obj[name];}})({
+(function(obj){
+	var self = {};
+	for(var name in obj){ self[name] = obj[name];}
+	window.pzprv3 = self;
+
+	ee.addEvent(window, "load", function(e){
+		self.base = new pzprv3.core.PBase();
+
+		var isdebug = location.search.match(/[\?_]test/);
+		if(!self.PZLINFO){ self.includeFile("puzzlename.js");}
+		if(isdebug)      { self.includeFile("src/for_test.js");}
+
+		setTimeout(function(){
+			var completed = (!!self.PZLINFO && (!isdebug || !!self.debug.urls));
+			if(!completed){ setTimeout(arguments.callee,10); return;}
+
+			self.base.onload_func();
+		},10);
+	});
+})({
+	version : 'v3.4.0pre',
+
 	scriptid : '',	// getPuzzleClass用
 	EDITOR : true,	// エディタモード
 	PLAYER : false,	// playerモード
@@ -43,12 +64,12 @@
 	getPuzzleClass : function(classname){ return this.pclass[this.scriptid][classname];},
 
 	setPuzzleID : function(pid){
-		this.scriptid = PZLINFO.toScript(pid);
+		this.scriptid = this.PZLINFO.toScript(pid);
 		this.inheritSubClass(pid);		// 継承させたパズル個別のクラスを設定
 	},
 
 	inheritSubClass : function(pid){
-		var scriptid = PZLINFO.toScript(pid);
+		var scriptid = this.PZLINFO.toScript(pid);
 		if(!this.pclass[scriptid]){ this.pclass[scriptid] = {};}
 
 		// 追加があるクラスを継承する(たまにこっちにしかないのもあるので、、)
@@ -82,6 +103,14 @@
 
 		if(!this.pclass[scriptid]){ this.pclass[scriptid] = {};}
 		this.pclass[scriptid][classname] = SubClass;
+	},
+
+	// 単体ファイルの読み込み
+	includeFile : function(filename){
+		var _script = document.createElement('script');
+		_script.type = 'text/javascript';
+		_script.src = filename;
+		document.body.appendChild(_script);
 	}
 });
 

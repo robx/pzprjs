@@ -97,7 +97,7 @@ pzprv3.debug.extend({
 		setTimeout(function(){ self.check_encode_kanpen(self);},0);
 	},
 	check_encode_kanpen : function(self){
-		if(PZLINFO.info[bd.puzzleid].exists.kanpen){
+		if(pzprv3.PZLINFO.info[bd.puzzleid].exists.kanpen){
 			var bd2 = self.bd_freezecopy();
 
 			document.urlinput.ta.value = enc.pzloutput(enc.KANPEN);
