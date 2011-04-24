@@ -20,18 +20,11 @@ pzprv3.createCommonClass('FileIO',
 	PZPH : 3,
 
 	//---------------------------------------------------------------------------
-	// fio.filedecode()      ファイルを開く用の関数
-	//                       [menu.ex.fileopen] -> [fileio.xcg@iframe] -> [ここ]
-	// fio.filedecode_main() ファイルを開く時、ファイルデータからのデコード実行関数
+	// fio.filedecode() ファイルを開く時、ファイルデータからのデコード実行関数
+	//                  [menu.ex.fileopen] -> [fileio.cgi@iframe]
+	//               -> [menu.ex.fileonload] -> [base.importData] -> [ここ]
 	//---------------------------------------------------------------------------
 	filedecode : function(datastr){
-		var lines = datastr.split('/');
-		pzprv3.base.dec.reset();
-		pzprv3.base.dec.id = (lines[0].match(/^pzprv3/) ? lines[1] : bd.puzzleid);
-		pzprv3.base.dec.fstr = datastr;
-		pzprv3.base.importBoardData(pzprv3.base.dec.id);
-	},
-	filedecode_main : function(datastr){
 		datastr = datastr.replace(/[\r\n]/g,"");
 
 		this.filever = 0;
@@ -41,7 +34,7 @@ pzprv3.createCommonClass('FileIO',
 		// ヘッダの処理
 		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
-			if(this.readLine()!==bd.puzzleid){ ;} /* パズルIDが入っている(filedecode()で使う関数) */
+			if(this.readLine()!==bd.puzzleid){ ;} /* パズルIDが入っている(fileonload()で処理) */
 			this.currentType = this.PZPR;
 		}
 		else{
@@ -77,7 +70,7 @@ pzprv3.createCommonClass('FileIO',
 	},
 	//---------------------------------------------------------------------------
 	// fio.fileencode() ファイル文字列へのエンコード、ファイル保存実行関数
-	//                  [[menu.ex.filesave] -> [ここ]] -> [fileio.xcg@iframe]
+	//                  [[menu.ex.filesave] -> [ここ]] -> [fileio.cgi@iframe]
 	//---------------------------------------------------------------------------
 	fileencode : function(type){
 		this.filever = 0;

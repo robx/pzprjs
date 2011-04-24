@@ -177,14 +177,16 @@ pzprv3.createCommonClass('MenuExec',
 		_doc.fileform.reset();
 	},
 	fileonload : function(data){
-		var farray = data.split(/[\t\r\n]+/);
-		var fstr = "", fheader = ['',''];
+		var farray = data.split(/[\t\r\n]+/), fstr = "";
 		for(var i=0;i<farray.length;i++){
 			if(farray[i].match(/^http\:\/\//)){ break;}
 			fstr += (farray[i]+"/");
 		}
 
-		fio.filedecode(fstr);
+		pzprv3.base.dec.reset();
+		pzprv3.base.dec.id = (farray[0].match(/^pzprv3/) ? farray[1] : bd.puzzleid);
+		pzprv3.base.dec.fstr = fstr;
+		pzprv3.base.importBoardData(pzprv3.base.dec.id);
 
 		document.fileform.reset();
 		pzprv3.timer.reset();

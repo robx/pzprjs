@@ -354,7 +354,7 @@ pzprv3.createCoreClass('DataBaseHandler_LS',
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback){
 		var data = new pzprv3.core.ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
-		fio.filedecode(data.pdata);
+		menu.ex.fileonload(data.pdata);
 		if(!!callback){ callback();}
 	},
 	saveDataTable : function(parent, id, callback){

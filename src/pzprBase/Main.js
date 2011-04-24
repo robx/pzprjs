@@ -356,13 +356,13 @@ pzprv3.createCoreClass('PBase',
 		// メニュー関係初期化
 		menu.menuinit();
 
-		// URL・ファイルデータの読み込み
-		this.decodeBoardData();
-
 		// イベントをくっつける
 		mv.setEvents();
 		kc.setEvents();
 		this.setEvents();
+
+		// URL・ファイルデータの読み込み
+		this.decodeBoardData();
 
 		this.initProcess = false;
 
@@ -371,9 +371,6 @@ pzprv3.createCoreClass('PBase',
 
 		// タイマーリセット(最後)
 		pzprv3.timer.reset();
-
-		// デバッグのスクリプトチェック時は、ここで発火させる
-		if(pzprv3.DEBUG && pzprv3.debug.phase===0){ pzprv3.debug.sccheck();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -382,18 +379,17 @@ pzprv3.createCoreClass('PBase',
 	//---------------------------------------------------------------------------
 	importBoardData : function(pid){
 		// 今のパズルと別idの時
-		if(bd.puzzleid != pid){ this.reload_func(pid);}
+		if(bd.puzzleid != pid){
+			this.reload_func(pid);
+		}
 		else{
 			this.decodeBoardData();
-
-			// デバッグのスクリプトチェック時は、ここで発火させる
-			if(pzprv3.DEBUG && pzprv3.debug.phase===0){ pzprv3.debug.sccheck();}
 		}
 	},
 	decodeBoardData : function(){
 		// ファイルを開く・複製されたデータを開く
 		if(!!this.dec.fstr){
-			fio.filedecode_main(this.dec.fstr);
+			fio.filedecode(this.dec.fstr);
 			this.dec.fstr = '';
 		}
 		// URLからパズルのデータを読み出す
@@ -405,6 +401,9 @@ pzprv3.createCoreClass('PBase',
 			bd.initBoardSize(bd.qcols,bd.qrows);
 			pc.resize_canvas();
 		}
+
+		// デバッグのスクリプトチェック時は、ここで発火させる
+		if(pzprv3.DEBUG && pzprv3.debug.phase===0){ pzprv3.debug.sccheck();}
 	},
 
 	//---------------------------------------------------------------------------
