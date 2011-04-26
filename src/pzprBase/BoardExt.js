@@ -470,8 +470,16 @@ pzprv3.createCoreClass('AreaData',
 		return false;
 	},
 
+	init : function(){
+		this.max     = 0;
+		this.invalid = [];
+		this.id    = [];
+		this.isbd  = [];
+		this.bdcnt = [];
+	},
 	reset : function(){
 		if(this.enabled){
+			this.init();
 			this.reset_count();
 			if(!!this.isborder){ for(var id=0;id<bd.bdmax;id++){ this.isbd[id]=false; this.setbd(id);}}
 			for(var c=0;c<bd.cellmax;c++){ this.id[c] = (this.isvalid(c)?0:null);}
@@ -495,7 +503,24 @@ pzprv3.createCoreClass('AreaData',
 		return clist;
 	},
 
-	setTopOfRoom : function(roomid){
+	removeCell : function(c){
+		var areaid = this.id[c];
+		if(areaid===null || areaid===0){ return;}
+
+		var clist = this[areaid].clist;
+		if(clist.length===1){
+			this.invalidid(areaid);
+			this.id[c] = null;
+		}
+		else{
+			for(var i=0;i<clist.length;i++){
+				if(clist[i]===c){ clist.splice(i,1); break;}
+			}
+			this.id[c] = null;
+		}
+	},
+
+	calcTopOfRoom : function(roomid){
 		var cc=null, bx=bd.maxbx, by=bd.maxby;
 		var clist = this[roomid].clist;
 		for(var i=0;i<clist.length;i++){
@@ -505,7 +530,10 @@ pzprv3.createCoreClass('AreaData',
 			bx=cell.bx;
 			by=cell.by;
 		}
-		this[roomid].top = cc;
+		return cc;
+	},
+	setTopOfRoom : function(roomid){
+		this[roomid].top = this.calcTopOfRoom(roomid);
 	},
 	resetRoomNumber : function(){
 		for(var r=1;r<=this.max;r++){
@@ -760,16 +788,9 @@ pzprv3.createCommonClass('AreaManager',
 		}
 	},
 	setBWCell_clear : function(data,cc,cid){
-		// まわりに黒マス(白マス)がない時は情報を消去するだけ
-		if(cid.length===0){
-			data.invalidid(data.id[cc]);
-			data.id[cc] = null;
-		}
-		// まわり1方向の時も自分を消去するだけでよい
-		else if(cid.length===1){
-			var ownid = data.id[cc], clist = data[ownid].clist;
-			for(var i=0;i<clist.length;i++){ if(clist[i]===cc){ clist.splice(i,1); break;} }
-			data.id[cc] = null;
+		// まわりが0か1なら情報or自分を消去するだけ
+		if(cid.length<=1){
+			data.removeCell(cc);
 		}
 		// 2方向以上の時
 		else{

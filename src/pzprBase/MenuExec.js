@@ -368,6 +368,7 @@ pzprv3.createCommonClass('MenuExec',
 	expandreduce : function(key,d){
 		bd.disableInfo();
 		this.adjustBoardData(key,d);
+		if(bd.areas.roomNumber && (key & this.REDUCE)){ this.reduceRoomNumber(key,d);}
 
 		if(key & this.EXPAND){
 			if     (key===this.EXPANDUP||key===this.EXPANDDN){ bd.qrows++;}
@@ -575,12 +576,39 @@ pzprv3.createCommonClass('MenuExec',
 		return null;
 	},
 
+	//---------------------------------------------------------------------------
+	// menu.ex.reduceRoomNumber()   盤面縮小時に数字つき部屋の処理を行う
+	//---------------------------------------------------------------------------
+	reduceRoomNumber : function(key,d){
+		var qnums = [];
+		for(var c=0;c<bd.cell.length;c++){
+			if(!!this.insex[bd.CELL][this.distObj(bd.CELL,c,key)]){
+				if(bd.cell[c].qnum!==-1){
+					qnums.push({areaid:bd.areas.getRoomID(c), id:c, val:bd.cell[c].qnum});
+					bd.cell[c].qnum=-1;
+				}
+				bd.areas.rinfo.removeCell(c);
+			}
+		}
+		for(var i=0;i<qnums.length;i++){
+			var areaid = qnums[i].areaid;
+			var top = bd.areas.rinfo.calcTopOfRoom(areaid);
+			if(top===null){
+				if(!um.undoExec && !um.redoExec){
+					um.forceRecord = true;
+					um.addOpe(bd.CELL, bd.QNUM, qnums[i].id, qnums[i].val, -1);
+					um.forceRecord = false;
+				}
+			}
+			else{
+				bd.cell[top].qnum = qnums[i].val;
+			}
+		}
+	},
+
 	//------------------------------------------------------------------------------
 	// menu.ex.adjustBoardData()    回転・反転開始前に各セルの調節を行う(共通処理)
 	// menu.ex.adjustBoardData2()   回転・反転終了後に各セルの調節を行う(共通処理)
-	// 
-	// menu.ex.adjustRoomNumber()   回転・反転開始前に数字つき部屋の処理を行う
-	// menu.ex.adjustRoomNumber2()  回転・反転終了後に数字つき部屋の処理を行う
 	// 
 	// menu.ex.adjustNumberArrow()  回転・反転開始前の矢印つき数字の調整
 	// menu.ex.adjustCellArrow()    回転・反転開始前の矢印セルの調整
@@ -590,32 +618,8 @@ pzprv3.createCommonClass('MenuExec',
 	// 
 	// menu.ex.adjustBoardObject()  回転・反転開始前のIN/OUTなどの位置の調整
 	//------------------------------------------------------------------------------
-	adjustBoardData : function(key,d){
-		if(bd.areas.roomNumber){ this.adjustRoomNumber(key,d);}
-	},
-	adjustBoardData2 : function(key,d){
-		if(bd.areas.roomNumber){ this.adjustRoomNumber2(key,d);}
-	},
-
-	adjustRoomNumber : function(key,d){
-		if(key & this.REDUCE){
-			this.qnums = [];
-			for(var i=0;i<bd.cell.length;i++){
-				if(!!this.insex[bd.CELL][this.distObj(bd.CELL,i,key)] && bd.cell[i].qnum!==-1){
-					this.qnums.push({areaid:bd.areas.getRoomID(i), val:bd.cell[i].qnum});
-				}
-			}
-		}
-	},
-	adjustRoomNumber2 : function(key,d){
-		if(key & this.REDUCE){
-			bd.areas.resetArea();
-			for(var i=0;i<this.qnums.length;i++){
-				var c = bd.areas.getTopOfRoom(this.qnums[i].areaid);
-				bd.cell[c].qnum = this.qnums[i].val;
-			}
-		}
-	},
+	adjustBoardData  : function(key,d){ },
+	adjustBoardData2 : function(key,d){ },
 
 	adjustNumberArrow : function(key,d){
 		if(key & this.TURNFLIP){
