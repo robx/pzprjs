@@ -126,7 +126,11 @@ Board:{
 
 	setarrowin : function(id){
 		if(!isNaN(id)){
-			um.addOpe(this.OTHER, 'in', 0, this.arrowin, id);
+			if(um.isenableRecord()){
+				var id0 = this.arrowin, obj1=bd.border[id0], obj2=bd.border[id];
+				um.addOpe(this.OTHER, 'in', 0, [obj1.bx,obj1.by], [obj2.bx,obj2.by]);
+			}
+
 			this.arrowin = id;
 			if     (this.border[id].by===this.maxby){ this.setArrow(id,this.UP);}
 			else if(this.border[id].by===this.minby){ this.setArrow(id,this.DN);}
@@ -136,7 +140,11 @@ Board:{
 	},
 	setarrowout : function(id){
 		if(!isNaN(id)){
-			um.addOpe(this.OTHER, 'out', 0, this.arrowout, id);
+			if(um.isenableRecord()){
+				var id0 = this.arrowout, obj1=bd.border[id0], obj2=bd.border[id];
+				um.addOpe(this.OTHER, 'out', 0, [obj1.bx,obj1.by], [obj2.bx,obj2.by]);
+			}
+
 			this.arrowout = id;
 			if     (this.border[id].by===this.minby){ this.setArrow(id,this.UP);}
 			else if(this.border[id].by===this.maxby){ this.setArrow(id,this.DN);}
@@ -150,29 +158,27 @@ Operation:{
 	exec : function(num){
 		if(this.SuperFunc.exec.call(this,num)){ return;}
 
-		var id0 = bd.startid;
-		if     (this.property==='in') { bd.arrowin  = num;}
-		else if(this.property==='out'){ bd.arrowout = num;}
+		var id0, id = bd.bnum(num[0], num[1]);
+		if     (this.property==='in') { id0 = bd.arrowin;  bd.arrowin  = id;}
+		else if(this.property==='out'){ id0 = bd.arrowout; bd.arrowout = id;}
 		um.stackBorder(id0);
-		um.stackBorder(num);
+		um.stackBorder(id);
 	},
 	decode : function(strs){
 		if(this.SuperFunc.decode.call(this,strs)){ return;}
 
 		this.group = bd.OTHER;
 		this.property = (strs[0]=='PI'?'in':'out');
-		this.old = bd.bnum(strs[1], strs[2]);
-		this.num = bd.bnum(strs[3], strs[4]);
+		this.id  = 0;
+		this.old = [+strs[1], +strs[2]];
+		this.num = [+strs[3], +strs[4]];
 	},
 	toString : function(){
 		var str = this.SuperFunc.toString.call(this);
 		if(!!str){ return str;}
 
 		var prefix = (this.property=='in'?'PI':'PO');
-		var obj1=bd.border[this.old], obj2=bd.border[this.num];
-		var bx1=(!!obj1 ? obj1.bx : -1), by1=(!!obj1 ? obj1.by : -1);
-		var bx2=(!!obj2 ? obj2.bx : -1), by2=(!!obj2 ? obj2.by : -1);
-		return [prefix, bx1, by1, bx2, by2].join(',');
+		return [prefix, this.old[0], this.old[1], this.num[0], this.num[1]].join(',');
 	}
 },
 

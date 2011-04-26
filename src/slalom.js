@@ -216,8 +216,12 @@ Board:{
 	startid : 0,
 	inputstartid : function(cc){
 		if(cc!=this.startid){
-			um.addOpe(this.OTHER, 'st', 0, cc, this.startid);
 			var cc0 = this.startid;
+			if(um.isenableRecord()){
+				var obj1=bd.cell[cc0], obj2=bd.cell[cc];
+				um.addOpe(this.OTHER, 'st', 0, [obj1.bx,obj1.by], [obj2.bx,obj2.by]);
+			}
+
 			this.startid = cc;
 			pc.paintCell(cc0);
 			pc.paintCell(cc);
@@ -235,27 +239,25 @@ Operation:{
 	exec : function(num){
 		if(this.SuperFunc.exec.call(this,num)){ return;}
 
-		var cc0 = bd.startid;
-		bd.startid = num;
+		var cc0, cc = bd.cnum(num[0], num[1]);
+		cc0 = bd.startid; bd.startid = cc;
 		um.stackCell(cc0);
-		um.stackCell(num);
+		um.stackCell(cc);
 	},
 	decode : function(strs){
 		if(this.SuperFunc.decode.call(this,strs)){ return;}
 
 		this.group = bd.OTHER;
 		this.property = 'st';
-		this.old = bd.cnum(strs[1], strs[2]);
-		this.num = bd.cnum(strs[3], strs[4]);
+		this.id  = 0;
+		this.old = [+strs[1], +strs[2]];
+		this.num = [+strs[3], +strs[4]];
 	},
 	toString : function(){
 		var str = this.SuperFunc.toString.call(this);
 		if(!!str){ return str;}
 
-		var obj1=bd.cell[this.old], obj2=bd.cell[this.num];
-		var bx1=(!!obj1 ? obj1.bx : -1), by1=(!!obj1 ? obj1.by : -1);
-		var bx2=(!!obj2 ? obj2.bx : -1), by2=(!!obj2 ? obj2.by : -1);
-		return ['PS', bx1, by1, bx2, by2].join(',');
+		return ['PS', this.old[0], this.old[1], this.num[0], this.num[1]].join(',');
 	}
 },
 

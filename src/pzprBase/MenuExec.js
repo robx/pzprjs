@@ -177,7 +177,7 @@ pzprv3.createCommonClass('MenuExec',
 		_doc.fileform.reset();
 	},
 	fileonload : function(data){
-		var farray = data.split(/[\t\r\n]+/), fstr = "";
+		var farray = data.split(/[\t\r\n\/]+/), fstr = "";
 		for(var i=0;i<farray.length;i++){
 			if(farray[i].match(/^http\:\/\//)){ break;}
 			fstr += (farray[i]+"/");
@@ -348,18 +348,16 @@ pzprv3.createCommonClass('MenuExec',
 		}
 	},
 	execadjust : function(name){
-		if(!um.undoExec && !um.redoExec){ um.newOperation(true);}
+		um.newOperation(true);
 
-		var d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows};
+		// undo/redo時はexpandreduce・turnflipを直接呼びます
+		var d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows}; // 範囲が必要なのturnflipだけかも..
 		if (name.match(/(expand|reduce)/)){ this.expandreduce(this.boardtype[name][1],d);}
 		else if(name.match(/(turn|flip)/)){ this.turnflip    (this.boardtype[name][1],d);}
 
-		// reduceはここ必須
-		um.addOpe(bd.BOARD, name, 0, this.boardtype[name][0], this.boardtype[name][1]);
-
 		bd.setminmax();
-		if(!um.undoExec && !um.redoExec){ bd.resetInfo();} /* undo/redo時は終わった時にOperationManagerでresetInfoする */
-		pc.resize_canvas();				// Canvasを更新する
+		bd.resetInfo();
+		pc.resize_canvas();	// Canvasを更新する
 	},
 
 	//------------------------------------------------------------------------------
@@ -393,6 +391,13 @@ pzprv3.createCommonClass('MenuExec',
 
 		this.adjustBoardData2(key,d);
 		bd.enableInfo();
+
+		// 処理後にOperationManagerに登録する必要あり
+		if(!um.undoExec && !um.redoExec){
+			var key2 = key;
+			for(var name in this.boardtype){ if(key===this.boardtype[name][1]){ key2=this.boardtype[name][0]; break;}}
+			um.addOpe(bd.BOARD, 'adjust', 0, key2, key);
+		}
 	},
 	expandGroup : function(type,key){
 		var margin = bd.initGroup(type, bd.qcols, bd.qrows);
@@ -452,6 +457,13 @@ pzprv3.createCommonClass('MenuExec',
 
 		this.adjustBoardData2(key,d);
 		bd.enableInfo();
+
+		// 処理後にOperationManagerに登録する必要あり
+		if(!um.undoExec && !um.redoExec){
+			var key2 = key;
+			for(var name in this.boardtype){ if(key===this.boardtype[name][1]){ key2=this.boardtype[name][0]; break;}}
+			um.addOpe(bd.BOARD, 'turnflip', d, key2, key);
+		}
 	},
 	turnflipGroup : function(type,key,d){
 		var ch=[], idlist=bd.objectinside(type,d.x1,d.y1,d.x2,d.y2);

@@ -22,17 +22,24 @@ pzprv3.createCommonClass('Operation',
 	//---------------------------------------------------------------------------
 	exec : function(num){
 		if(this.group !== bd.BOARD && this.group !== bd.OTHER){
-			bd.setdata(this.group, this.property, this.id, num);
+			var id = bd.idnum(this.group, this.id[0], this.id[1]);
+			bd.setdata(this.group, this.property, id, num);
 			switch(this.group){
-				case bd.CELL:   um.stackCell(this.id); break;
-				case bd.CROSS:  um.stackCross(this.id); break;
-				case bd.BORDER: um.stackBorder(this.id); break;
+				case bd.CELL:   um.stackCell(id); break;
+				case bd.CROSS:  um.stackCross(id); break;
+				case bd.BORDER: um.stackBorder(id); break;
 			}
 		}
 		else if(this.group === bd.BOARD){
-			var d = {x1:0,y1:0,x2:2*bd.qcols,y2:2*bd.qrows};
-			if(num & menu.ex.TURNFLIP){ menu.ex.turnflip    (num,d);}
-			else                      { menu.ex.expandreduce(num,d);}
+			if(!(num & menu.ex.TURNFLIP)){
+				var d = {x1:0,y1:0,x2:2*bd.qcols,y2:2*bd.qrows};
+				menu.ex.expandreduce(num,d);
+			}
+			else{ // とりあえず盤面全部の対応だけ
+				var d = this.id, tmp;
+				if(um.undoExec && (num & menu.ex.TURN)){ tmp=d.x1;d.x1=d.y1;d.y1=tmp;}
+				menu.ex.turnflip(num,d);
+			}
 
 			bd.disableInfo();
 			um.stackAll();
@@ -52,27 +59,40 @@ pzprv3.createCommonClass('Operation',
 			this.group    = um.STRGROUP[strs[0].charAt(0)];
 			this.property = um.STRPROP[strs[0].charAt(1)][0];
 			this.id = bd.idnum(this.group, strs[1], strs[2]);
-			this.old = parseInt(strs[3]);
-			this.num = parseInt(strs[4]);
+			this.old = +strs[3];
+			this.num = +strs[4];
 		}
-		else if(strs[0]==='AL'){
-			this.group = bd.BOARD;
-			this.property = bd.BOARD;
+		else if(strs[0]==='AJ'){
+			this.group    = bd.BOARD;
+			this.property = 'adjust';
 			this.id = 0;
-			this.old = parseInt(strs[3]);
-			this.num = parseInt(strs[4]);
+			this.old = +strs[1];
+			this.num = +strs[2];
+		}
+		else if(strs[0]==='AT'){
+			this.group    = bd.BOARD;
+			this.property = 'turnflip';
+			this.id = {x1:+strs[1],y1:+strs[2],x2:+strs[3],y2:+strs[4]};
+			this.old = +strs[5];
+			this.num = +strs[6];
 		}
 		else{ return false;}
 		return true;
 	},
 	toString : function(){
 		if(this.group !== bd.BOARD && this.group !== bd.OTHER){
-			var prefix = '', obj = bd.getObject(this.group, this.id);
+			var prefix = '';
 			for(var i in um.STRGROUP){ if(this.group   ==um.STRGROUP[i]){ prefix+=i; break;}}
 			for(var i in um.STRPROP) { if(this.property==um.STRPROP[i]) { prefix+=i; break;}}
-			return [prefix, obj.bx, obj.by, this.old, this.num].join(',');
+			return [prefix, this.id[0], this.id[1], this.old, this.num].join(',');
 		}
-		else if(this.group === bd.BOARD){ return ['AL', 0, 0, this.old, this.num].join(',');}
+		else if(this.group === bd.BOARD){
+			var d = this.id;
+			switch(this.property){
+				case 'adjust':   return ['AJ', this.old, this.num].join(',');
+				case 'turnflip': return ['AT', d.x1, d.y1, d.x2, d.y2, this.old, this.num].join(',');
+			}
+		}
 		else{ return '';}
 	}
 });
@@ -82,22 +102,7 @@ pzprv3.createCommonClass('OperationArray',
 	initialize : function(){ this.items = [];},
 	push : function(ope){ this.items.push(ope);},
 	last : function(){ return (this.items.length>0 ? this.items[this.items.length-1] : null);},
-	isnull : function(){ return (this.items.length===0);},
-
-	decode : function(strs){
-		if(typeof strs == "string"){ strs = [strs];}
-		for(var i=0,len=strs.length;i<len;i++){
-			this.items.push(new (pzprv3.getPuzzleClass('Operation'))(strs[i]));
-		}
-	},
-	toString : function(){
-		if(this.items.length===1){ return this.items[0].toString();}
-		var strs=[];
-		for(var i=0,len=this.items.length;i<len;i++){
-			strs[i] = this.items[i].toString();
-		}
-		return strs;
-	}
+	isnull : function(){ return (this.items.length===0);}
 });
 
 // OperationManagerクラス
@@ -203,13 +208,13 @@ pzprv3.createCommonClass('OperationManager',
 
 		// 前回と同じ場所なら前回の更新のみ
 		if( this.disCombine==0 && !!ref &&
-			ref.group == group && ref.property == property &&
-			ref.id == id && ref.num == old &&
+			ref.group == group && ref.property == property && ref.id == id && ref.num == old &&
 			( (group == bd.CELL && ( property == bd.QNUM || property == bd.ANUM )) || group == bd.CROSS)
 		)
 			{ ref.num = num;}
 		else{
 			if(!ref){ this.current++;}
+			if(group!==bd.BOARD&&group!==bd.OTHER){ var obj=bd.getObject(group,id); id=[obj.bx,obj.by];}
 			this.lastope.push(new (pzprv3.getPuzzleClass('Operation'))(group, property, id, old, num));
 		}
 
@@ -225,32 +230,49 @@ pzprv3.createCommonClass('OperationManager',
 	//---------------------------------------------------------------------------
 	decodeLines : function(){
 		this.allerase();
-		var linepos = fio.lineseek;
+		var linepos = fio.lineseek, data = [], inhistory = false;
 		while(1){
 			var line = fio.readLine();
 			if(line===(void 0)){ fio.lineseek=linepos; break;}
-			else if(line==="__HISTORY__"){ this.parse(); break;}
+			else if(!inhistory){
+				if(line==='history:{'){ inhistory=true; data=['{'];}
+			}
+			else if(inhistory){
+				data.push(line);
+				if(line==='}'){ this.parse(data.join('')); break;}
+			}
 		}
 		this.enb_btn();
 	},
-	parse : function(){
+	parse : function(str){
 		if(!window.JSON){ return;}
-		var data = JSON.parse(fio.readLine());
+		var data = JSON.parse(str);
 		this.ope = [];
 		this.current = data.current;
 		for(var i=0,len=data.datas.length;i<len;i++){
-			this.addOpeArray();
-			this.lastope.decode(data.datas[i]);
+			if(data.datas[i].charAt(0)!=='+'){ this.addOpeArray();}
+			else{ data.datas[i] = data.datas[i].substr(1);}
+			this.lastope.push(new (pzprv3.getPuzzleClass('Operation'))(data.datas[i]));
 		}
 	},
 	toString : function(){
 		if(!window.JSON){ return '';}
 		var lastid = this.ope.length-(this.lastope.isnull()?1:0);
-		var data = {version:0.1, history:lastid, current:this.current, datas:[]};
+		var data = ['history:{'], datas = [];
+		data.push('"version":0.2,');
+		data.push('"history":'+lastid+',');
+		data.push('"current":'+this.current+',');
+		data.push('"datas":[');
 		for(var i=0;i<lastid;i++){
-			data.datas[i] = this.ope[i].toString();
+			for(var n=0,len=this.ope[i].items.length;n<len;n++){
+				var str = this.ope[i].items[n].toString();
+				datas.push(['"',(n===0?"":"+"),str,'"'].join(''));
+			}
 		}
-		return ['__HISTORY__',JSON.stringify(data)].join('/');
+		data.push(datas.join(',/'));
+		data.push(']');
+		data.push('}');
+		return data.join('/');
 	},
 
 	//---------------------------------------------------------------------------

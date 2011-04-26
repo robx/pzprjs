@@ -514,10 +514,12 @@ pzprv3.createCoreClass('AreaData',
 				var c = clist[i];
 				if(this.id[c]===r && bd.cell[c].qnum!==-1){
 					if(val===-1){ val = bd.cell[c].qnum;}
-					if(this[r].top!==c){ bd.sQnC(c, -1);}
+					if(this[r].top!==c){ bd.cell[c].qnum = -1;}
 				}
 			}
-			if(val!==-1 && bd.QnC(this[r].top)===-1){ bd.sQnC(this[r].top, val);}
+			if(val!==-1 && bd.cell[this[r].top].qnum===-1){
+				bd.cell[this[r].top].qnum = val;
+			}
 		}
 	}
 });
