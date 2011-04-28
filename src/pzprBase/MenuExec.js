@@ -364,6 +364,7 @@ pzprv3.createCommonClass('MenuExec',
 	// menu.ex.expandreduce() 盤面の拡大・縮小を実行する
 	// menu.ex.expandGroup()  オブジェクトの追加を行う
 	// menu.ex.reduceGroup()  オブジェクトの消去を行う
+	// menu.ex.isdel()        消去されるオブジェクトかどうか判定する
 	//------------------------------------------------------------------------------
 	expandreduce : function(key,d){
 		bd.disableInfo();
@@ -404,7 +405,7 @@ pzprv3.createCommonClass('MenuExec',
 		var margin = bd.initGroup(type, bd.qcols, bd.qrows);
 		var group = bd.getGroup(type);
 		for(var i=group.length-1;i>=0;i--){
-			if(!!this.insex[type][this.distObj(type,i,key)]){
+			if(this.isdel(type,i,key)){
 				group[i] = bd.newObject(type);
 				group[i].allclear(i,false);
 				margin--;
@@ -420,7 +421,7 @@ pzprv3.createCommonClass('MenuExec',
 		var margin=0, group = bd.getGroup(type), isrec=(!um.undoExec && !um.redoExec);
 		if(isrec){ um.forceRecord = true;}
 		for(var i=0;i<group.length;i++){
-			if(!!this.insex[type][this.distObj(type,i,key)]){
+			if(this.isdel(type,i,key)){
 				group[i].allclear(i,isrec);
 				margin++;
 			}
@@ -428,6 +429,9 @@ pzprv3.createCommonClass('MenuExec',
 		}
 		for(var i=0;i<margin;i++){ group.pop();}
 		if(isrec){ um.forceRecord = false;}
+	},
+	isdel : function(type,id,key){
+		return !!this.insex[type][this.distObj(type,id,key)];
 	},
 
 	//------------------------------------------------------------------------------
@@ -759,26 +763,26 @@ pzprv3.createCommonClass('MenuExec',
 		}
 	},
 
-	adjustBoardObject : function(key,d,group,id){
+	getAfterPos : function(key,d,group,id){
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
 
-		var obj=bd.getObject(group,id), bx=obj.bx, by=obj.by, newid;
+		var obj=bd.getObject(group,id), bx1=obj.bx, by1=obj.by, bx2, by2;
 		switch(key){
-			case this.FLIPY: newid = bd.idnum(group, bx,yy-by); break;
-			case this.FLIPX: newid = bd.idnum(group, xx-bx,by); break;
-			case this.TURNR: newid = bd.idnum(group, yy-by,bx,bd.qrows,bd.qcols); break;
-			case this.TURNL: newid = bd.idnum(group, by,xx-bx,bd.qrows,bd.qcols); break;
-			case this.EXPANDUP: newid = bd.idnum(group, bx,by+(by===bd.minby?0:2), bd.qcols,bd.qrows+1); break;
-			case this.EXPANDDN: newid = bd.idnum(group, bx,by+(by===bd.maxby?2:0), bd.qcols,bd.qrows+1); break;
-			case this.EXPANDLT: newid = bd.idnum(group, bx+(bx===bd.minbx?0:2),by, bd.qcols+1,bd.qrows); break;
-			case this.EXPANDRT: newid = bd.idnum(group, bx+(bx===bd.maxbx?2:0),by, bd.qcols+1,bd.qrows); break;
-			case this.REDUCEUP: newid = bd.idnum(group, bx,by-(by<=bd.minby+2?0:2), bd.qcols,bd.qrows-1); break;
-			case this.REDUCEDN: newid = bd.idnum(group, bx,by-(by>=bd.maxby-2?2:0), bd.qcols,bd.qrows-1); break;
-			case this.REDUCELT: newid = bd.idnum(group, bx-(bx<=bd.minbx+2?0:2),by, bd.qcols-1,bd.qrows); break;
-			case this.REDUCERT: newid = bd.idnum(group, bx-(bx>=bd.maxbx-2?2:0),by, bd.qcols-1,bd.qrows); break;
-			default: newid = id; break;
+			case this.FLIPY: bx2 = bx1; by2 = yy-by1; break;
+			case this.FLIPX: bx2 = xx-bx1; by2 = by1; break;
+			case this.TURNR: bx2 = yy-by1; by2 = bx1; break;
+			case this.TURNL: bx2 = by1; by2 = xx-bx1; break;
+			case this.EXPANDUP: bx2 = bx1; by2 = by1+(by1===bd.minby?0:2); break;
+			case this.EXPANDDN: bx2 = bx1; by2 = by1+(by1===bd.maxby?2:0); break;
+			case this.EXPANDLT: bx2 = bx1+(bx1===bd.minbx?0:2); by2 = by1; break;
+			case this.EXPANDRT: bx2 = bx1+(bx1===bd.maxbx?2:0); by2 = by1; break;
+			case this.REDUCEUP: bx2 = bx1; by2 = by1-(by1<=bd.minby+2?0:2); break;
+			case this.REDUCEDN: bx2 = bx1; by2 = by1-(by1>=bd.maxby-2?2:0); break;
+			case this.REDUCELT: bx2 = bx1-(bx1<=bd.minbx+2?0:2); by2 = by1; break;
+			case this.REDUCERT: bx2 = bx1-(bx1>=bd.maxbx-2?2:0); by2 = by1; break;
+			default: bx2 = bx1; by2 = by1; break;
 		}
-		return newid;
+		return {bx1:bx1, by1:by1, bx2:bx2, by2:by2, isdel:this.isdel(group,id,key)};
 	},
 
 	//------------------------------------------------------------------------------

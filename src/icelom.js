@@ -157,27 +157,34 @@ Board:{
 				var id0 = this.arrowin, obj1=bd.border[id0], obj2=bd.border[id];
 				um.addOpe(this.OTHER, 'in', 0, [obj1.bx,obj1.by], [obj2.bx,obj2.by]);
 			}
-
 			this.arrowin = id;
-			if     (this.border[id].by===this.maxby){ this.setArrow(id,this.UP);}
-			else if(this.border[id].by===this.minby){ this.setArrow(id,this.DN);}
-			else if(this.border[id].bx===this.maxbx){ this.setArrow(id,this.LT);}
-			else if(this.border[id].bx===this.minbx){ this.setArrow(id,this.RT);}
+
+			this.setarrowin_arrow(id);
 		}
 	},
+	setarrowin_arrow : function(id){
+		if     (this.border[id].by===this.maxby){ this.setArrow(id,this.UP);}
+		else if(this.border[id].by===this.minby){ this.setArrow(id,this.DN);}
+		else if(this.border[id].bx===this.maxbx){ this.setArrow(id,this.LT);}
+		else if(this.border[id].bx===this.minbx){ this.setArrow(id,this.RT);}
+	},
+
 	setarrowout : function(id){
 		if(!isNaN(id)){
 			if(um.isenableRecord()){
 				var id0 = this.arrowout, obj1=bd.border[id0], obj2=bd.border[id];
 				um.addOpe(this.OTHER, 'out', 0, [obj1.bx,obj1.by], [obj2.bx,obj2.by]);
 			}
-
 			this.arrowout = id;
-			if     (this.border[id].by===this.minby){ this.setArrow(id,this.UP);}
-			else if(this.border[id].by===this.maxby){ this.setArrow(id,this.DN);}
-			else if(this.border[id].bx===this.minbx){ this.setArrow(id,this.LT);}
-			else if(this.border[id].bx===this.maxbx){ this.setArrow(id,this.RT);}
+
+			this.setarrowout_arrow(id);
 		}
+	},
+	setarrowout_arrow : function(id){
+		if     (this.border[id].by===this.minby){ this.setArrow(id,this.UP);}
+		else if(this.border[id].by===this.maxby){ this.setArrow(id,this.DN);}
+		else if(this.border[id].bx===this.minbx){ this.setArrow(id,this.LT);}
+		else if(this.border[id].bx===this.maxbx){ this.setArrow(id,this.RT);}
 	}
 },
 
@@ -224,8 +231,26 @@ MenuExec:{
 	adjustBoardData : function(key,d){
 		this.adjustBorderArrow(key,d);
 
-		bd.arrowin  = this.adjustBoardObject(key,d,bd.BORDER,bd.arrowin);
-		bd.arrowout = this.adjustBoardObject(key,d,bd.BORDER,bd.arrowout);
+		bd.arrowin  = this.getAfterPos(key,d,bd.BORDER,bd.arrowin);
+		bd.arrowout = this.getAfterPos(key,d,bd.BORDER,bd.arrowout);
+	},
+	adjustBoardData2 : function(key,d){
+		var d1 = bd.arrowin, d2 = bd.arrowout;
+		bd.arrowin  = bd.bnum(d1.bx2, d1.by2);
+		bd.arrowout = bd.bnum(d2.bx2, d2.by2);
+
+		if((key & this.REDUCE) && !um.undoExec && !um.redoExec){
+			um.forceRecord = true;
+			if(d1.isdel){
+				um.addOpe(bd.OTHER, 'in',  0, [d1.bx1,d1.by1], [d1.bx2,d1.by2]);
+				bd.setarrowin_arrow (bd.arrowin);
+			}
+			if(d2.isdel){
+				um.addOpe(bd.OTHER, 'out', 0, [d2.bx1,d2.by1], [d2.bx2,d2.by2]);
+				bd.setarrowout_arrow(bd.arrowout);
+			}
+			um.forceRecord = false;
+		}
 	}
 },
 

@@ -276,9 +276,20 @@ MenuExec:{
 			}
 		}
 
-		bd.startid = this.adjustBoardObject(key,d,bd.CELL,bd.startid);
+		bd.startid = this.getAfterPos(key,d,bd.CELL,bd.startid);
 	},
 	adjustBoardData2 : function(key,d){
+		var d = bd.startid;
+		bd.startid = bd.cnum(d.bx2, d.by2);
+
+		if((key & this.REDUCE) && !um.undoExec && !um.redoExec){
+			um.forceRecord = true;
+			if(d.isdel){
+				um.addOpe(bd.OTHER, 'st',  0, [d.bx1,d.by1], [d.bx2,d.by2]);
+			}
+			um.forceRecord = false;
+		}
+
 		bd.hinfo.generateGates();	// 念のため
 	}
 },
