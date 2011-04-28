@@ -111,7 +111,7 @@ pzprv3.createCoreClass('ExtData',
 
 		url = url.replace(/(\r|\n)/g,""); // textarea上の改行が実際の改行扱いになるUAに対応(Operaとか)
 
-		var type=0, en=pzprv3.common.Encode.prototype;
+		var type=0, en=pzprv3.core.Encode.prototype;
 		// カンペンの場合
 		if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
 			url.match(/([0-9a-z]+)\.html/);
@@ -307,15 +307,6 @@ pzprv3.createCoreClass('PBase',
 			pzprv3.includeFile("src/"+scriptid+".js");
 		}
 
-		// 今のパズルが存在している場合
-		if(!!pzprv3.scriptid){
-			ee.removeAllEvents();
-
-			menu.menureset();
-			ee('numobj_parent').el.innerHTML = '';
-			ee.clean();
-		}
-
 		// 中身を読み取れるまでwait
 		var self = this;
 		setTimeout(function(){
@@ -328,7 +319,8 @@ pzprv3.createCoreClass('PBase',
 	},
 
 	//---------------------------------------------------------------------------
-	// base.initObjects()     各オブジェクトの生成などの処理
+	// base.initObjects()    各オブジェクトの生成などの処理
+	// base.clearObjects()   イベントやメニューの設定を設定前に戻す
 	//---------------------------------------------------------------------------
 	initObjects : function(pid){
 		pzprv3.setPuzzleID(pid);	// パズルIDを設定
@@ -373,6 +365,14 @@ pzprv3.createCoreClass('PBase',
 		pzprv3.timer.reset();
 	},
 
+	clearObjects : function(){
+		ee.removeAllEvents();
+
+		menu.menureset();
+		ee('numobj_parent').el.innerHTML = '';
+		ee.clean();
+	},
+
 	//---------------------------------------------------------------------------
 	// base.importBoardData() 新しくパズルのファイルを開く時の処理
 	// base.decodeBoardData() URLや複製されたデータを読み出す
@@ -380,6 +380,7 @@ pzprv3.createCoreClass('PBase',
 	importBoardData : function(pid){
 		// 今のパズルと別idの時
 		if(bd.puzzleid != pid){
+			this.clearObjects();
 			this.reload_func(pid);
 		}
 		else{

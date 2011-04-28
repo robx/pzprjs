@@ -31,78 +31,67 @@
 	DEBUG  : false,	// for_test用(デバッグモード)
 
 	core   : {},	// CoreClass保存用(継承元になれるのはここのみ)
-	common : {},	// パズル別クラスのスーパークラス保存用
 	pclass : {},	// パズル別クラス保存用
-
 	custom : {},	// パズル別クラスのスーパークラスからの差分
 
+	commonlist : [],	// パズル別クラスのスーパークラスになるクラスを保存
+
 	createCoreClass : function(classname, proto){
-		this._createClass(this.core, classname, proto);
+		var rel = this._createClass(classname, proto);
+		this.core[rel.name] = rel.body;
 	},
 	createCommonClass : function(classname, proto){
-		this._createClass(this.common, classname, proto);
+		var rel = this._createClass(classname, proto);
+		this.core[rel.name] = rel.body;
+		this.commonlist.push(rel.name);
 	},
-	_createClass : function(target, classname, proto){
+	_createClass : function(classname, proto){
 		classname = classname.replace(/\s+/g,'');
-		var colon = classname.indexOf(':'), baseclass = '';
+		var colon = classname.indexOf(':'), basename = '';
 		if(colon>=0){
-			baseclass = classname.substr(colon+1);
+			basename  = classname.substr(colon+1);
 			classname = classname.substr(0,colon);
 		}
 
 		var NewClass = function(){ if(!!this.initialize){ this.initialize.apply(this,arguments);}};
-		if(!!baseclass && !!this.core[baseclass]){
-			var BaseClass = this.core[baseclass];
+		if(!!basename && !!this.core[basename]){
+			var BaseClass = this.core[basename];
 			for(var name in BaseClass.prototype){ NewClass.prototype[name] = BaseClass.prototype[name];}
+			NewClass.prototype.SuperClass = BaseClass;
+			NewClass.prototype.SuperFunc  = BaseClass.prototype;
 		}
 		for(var name in proto){ NewClass.prototype[name] = proto[name];}
-		target[classname] = NewClass;
+		NewClass.prototype.constructor = NewClass;
+		return {body:NewClass, name:classname, base:basename};
 	},
 
-	getCoreClass   : function(classname){ return this.core[classname];},
-	getCommonClass : function(classname){ return this.common[classname];},
 	getPuzzleClass : function(classname){ return this.pclass[this.scriptid][classname];},
 
 	setPuzzleID : function(pid){
 		this.scriptid = this.PZLINFO.toScript(pid);
-		this.inheritSubClass(pid);		// 継承させたパズル個別のクラスを設定
-	},
 
-	inheritSubClass : function(pid){
-		var scriptid = this.PZLINFO.toScript(pid);
-		if(!this.pclass[scriptid]){ this.pclass[scriptid] = {};}
+		// 継承させたパズル個別のクラスを設定
+		var scriptid = this.scriptid, list = [];
+		if(!!this.pclass[scriptid]){ return;}
+		this.pclass[scriptid] = {};
 
-		// 追加があるクラスを継承する(たまにこっちにしかないのもあるので、、)
-		for(var classname in this.custom[scriptid]){
-			var object = this.custom[scriptid][classname];
-			if(!this.pclass[scriptid][classname]){
-				this.inherit(scriptid, classname, object);
-			}
+		// 追加があるクラス => 残りの共通クラスの順に継承
+		for(var classname in this.custom[scriptid]){ list.push(classname);}
+		for(var i=0;i<this.commonlist.length;i++)  { list.push(this.commonlist[i]);}
+
+		for(var i=0;i<list.length;i++){
+			if(!!this.pclass[scriptid][list[i]]){ continue;}
+
+			var proto = (!!this.custom[scriptid][list[i]]?this.custom[scriptid][list[i]]:{});
+			if(!!this.core[list[i]]){ list[i] = list[i]+":"+list[i];}
+
+			var rel = this._createClass(list[i], proto);
+			this.pclass[scriptid][rel.name] = rel.body;
 		}
 
-		// 共通クラスをそのまま継承させる
-		for(var classname in this.common){
-			if(!this.pclass[scriptid][classname]){
-				this.inherit(scriptid, classname, {});
-			}
-		}
-	},
-	inherit : function(scriptid, classname, proto){
-		var SuperClass = this.getCommonClass(classname), SubClass;
-		if(!!SuperClass){
-			SubClass = function(){ if(!!this.initialize){ this.initialize.apply(this,arguments);}};
-			for(var name in SuperClass.prototype){ SubClass.prototype[name] = SuperClass.prototype[name];}
-			SubClass.prototype.SuperClass = SuperClass;
-			SubClass.prototype.SuperFunc  = SuperClass.prototype;
-		}
-		else{
-			SubClass = function(){ this.initialize.apply(this,arguments);};
-		}
-		for(var name in proto){ SubClass.prototype[name] = proto[name];}
-		SubClass.prototype.constructor = SubClass;
-
-		if(!this.pclass[scriptid]){ this.pclass[scriptid] = {};}
-		this.pclass[scriptid][classname] = SubClass;
+		// 継承済みなので、メモリから消しておく ※空はダメなので、trueだけ代入
+		delete this.custom[scriptid];
+		this.custom[scriptid] = true;
 	},
 
 	// 単体ファイルの読み込み
