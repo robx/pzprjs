@@ -59,6 +59,7 @@ pzprv3.createCommonClass('Operation',
 				menu.ex.turnflip(num,d);
 			}
 
+			bd.disableInfo();
 			um.stackAll();
 			um.reqReset = true;
 		}
@@ -320,7 +321,7 @@ pzprv3.createCommonClass('OperationManager',
 		this.reqReset=false;
 
 		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
-		bd.disableInfo();
+		this.disableRecord();
 	},
 	postproc : function(){
 		if(this.reqReset){
@@ -333,9 +334,9 @@ pzprv3.createCommonClass('OperationManager',
 			pc.resize_canvas();
 		}
 		else{
-			bd.enableInfo();
 			pc.paintRange(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
 		}
+		this.enableRecord();
 		this.enb_btn();
 	},
 
