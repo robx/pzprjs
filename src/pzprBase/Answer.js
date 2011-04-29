@@ -80,7 +80,7 @@ pzprv3.createCommonClass('AnsCheck',
 	// リンク系は重いので最初に端点を判定する
 	autocheck1st : function(){
 		if(!this.check1st()){ return false;}
-		if((bd.lines.isCenterLine && !this.checkLcntCell(1)) || (bd.lines.borderAsLine && !this.checkLcntCross(1,0))){ return false;}
+		if((bd.lines.isCenterLine && !bd.areas.lineToArea && !this.checkLcntCell(1)) || (bd.lines.borderAsLine && !this.checkLcntCross(1,0))){ return false;}
 		return true;
 	},
 
