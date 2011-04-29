@@ -301,7 +301,7 @@ pzprv3.createCommonClass('Encode',
 		bd.areas.rinfo.reset();
 		var r=1, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), c=bd.areas.getTopOfRoom(r), obj=bd.cell[c];
+			var ca = bstr.charAt(i), c=bd.areas.rinfo.getTopOfRoom(r), obj=bd.cell[c];
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
 							  { obj.qnum = parseInt(ca,16);}
@@ -322,7 +322,7 @@ pzprv3.createCommonClass('Encode',
 		bd.areas.rinfo.reset();
 		var count=0, cm="";
 		for(var r=1;r<=bd.areas.rinfo.max;r++){
-			var pstr = "", qn = bd.cell[bd.areas.getTopOfRoom(r)].qnum;
+			var pstr = "", qn = bd.cell[bd.areas.rinfo.getTopOfRoom(r)].qnum;
 
 			if     (qn>=    0 && qn<   16){ pstr =       qn.toString(16);}
 			else if(qn>=   16 && qn<  256){ pstr = "-" + qn.toString(16);}
@@ -420,7 +420,7 @@ pzprv3.createCommonClass('Encode',
 			}
 		}
 
-		bd.areas.rinfo.reset();
+		if(!!bd.areas.rinfo){ bd.areas.rinfo.reset();}
 		this.outbstr = bstr.substr(pos2);
 	},
 	encodeBorder : function(){

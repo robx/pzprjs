@@ -301,7 +301,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(cc===null || cc===this.mouseCell){ return;}
 
 		if(cc===tc.getTCC()){
-			if(k.editmode && bd.areas.roomNumber){ cc = bd.areas.getTopOfRoomByCell(cc);}
+			if(k.editmode && bd.areas.roomNumber){ cc = bd.areas.rinfo.getTopOfRoomByCell(cc);}
 
 			var subtype=0;
 			if     (k.editmode)       { subtype =-1;}
@@ -447,7 +447,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(this.inputData===null){ this.decIC(cc);}
 
 		this.mouseCell = cc; 
-		var areaid = bd.areas.getRoomID(cc);
+		var areaid = bd.areas.rinfo.getRoomID(cc);
 
 		for(var i=0;i<bd.areas.rinfo[areaid].clist.length;i++){
 			var c = bd.areas.rinfo[areaid].clist[i];

@@ -164,7 +164,7 @@ AnsCheck:{
 	checkLshapeArea : function(rinfo){
 		var result = true;
 		for(var id=1;id<=rinfo.max;id++){
-			var cc = bd.areas.getQnumCellOfClist(rinfo.room[id].idlist);
+			var cc = bd.getQnumCellOfClist(rinfo.room[id].idlist);
 			if(cc===null){ continue;}
 
 			var n = bd.QnC(cc);

@@ -196,12 +196,6 @@ LineManager:{
 	isLineCross  : true
 },
 
-AreaManager:{
-	getIcebarnArea : function(){
-		return this.searchEXT(function(c){ return (bd.QuC(c)==6);}, null);
-	}
-},
-
 MenuExec:{
 	adjustBoardData : function(key,d){
 		this.adjustBorderArrow(key,d);
@@ -616,7 +610,8 @@ AnsCheck:{
 			this.setAlert('線がひとつながりではありません。', 'Lines are not countinuous.'); return false;
 		}
 
-		if( !this.checkLinesInArea(bd.areas.getIcebarnArea(), function(w,h,a,n){ return (a!=0);}) ){
+		var iarea = (new pzprv3.core.AreaData(function(c){ return (bd.QuC(c)==6);})).getAreaInfo();
+		if( !this.checkLinesInArea(iarea, function(w,h,a,n){ return (a!=0);}) ){
 			this.setAlert('すべてのアイスバーンを通っていません。', 'A icebarn is not gone through.'); return false;
 		}
 

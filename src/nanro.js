@@ -116,7 +116,7 @@ Board:{
 	numberWithMB : true,
 
 	nummaxfunc : function(cc){
-		return this.areas.getCntOfRoomByCell(cc);
+		return this.areas.rinfo.getCntOfRoomByCell(cc);
 	}
 },
 

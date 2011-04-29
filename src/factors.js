@@ -157,7 +157,7 @@ AnsCheck:{
 			}
 			if(product==0){ continue;}
 
-			if(product!=bd.QnC(bd.areas.getTopOfRoom(id))){
+			if(product!=bd.QnC(bd.areas.rinfo.getTopOfRoom(id))){
 				if(this.inAutoCheck){ return false;}
 				bd.sErC(rinfo.room[id].idlist,1);
 				result = false;

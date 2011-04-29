@@ -252,7 +252,7 @@ pzprv3.createCommonClass('KeyEvent',
 	//---------------------------------------------------------------------------
 	key_inputqnum : function(ca){
 		var cc = tc.getTCC();
-		if(k.editmode && bd.areas.roomNumber){ cc = bd.areas.getTopOfRoomByCell(cc);}
+		if(k.editmode && bd.areas.roomNumber){ cc = bd.areas.rinfo.getTopOfRoomByCell(cc);}
 		var max = bd.nummaxfunc(cc), val=-1;
 
 		if('0'<=ca && ca<='9'){

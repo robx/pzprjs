@@ -610,7 +610,7 @@ pzprv3.createCommonClass('FileIO',
 		this.datastr += (rinfo.max+"/");
 		for(var id=1;id<=rinfo.max;id++){
 			var d = bd.getSizeOfClist(rinfo.room[id].idlist);
-			var num = (isques ? bd.cell[bd.areas.getTopOfRoom(id)].qnum : -1);
+			var num = (isques ? bd.cell[bd.areas.rinfo.getTopOfRoom(id)].qnum : -1);
 			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" "+(num>=0 ? ""+num : "")+"/");
 		}
 	}

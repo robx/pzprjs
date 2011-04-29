@@ -264,7 +264,7 @@ pzprv3.createCommonClass('AnsCheck',
 			var d = bd.getSizeOfClist(clist,func);
 			var a = (function(){ var cnt=0; for(var i=0;i<clist.length;i++){ if(func(clist[i])){ cnt++;}} return cnt;})();
 
-			var cc = (bd.areas.roomNumber ? bd.areas.getTopOfRoomByCell(clist[0]) : bd.areas.getQnumCellOfClist(clist));
+			var cc = (bd.areas.roomNumber ? bd.areas.rinfo.getTopOfRoomByCell(clist[0]) : bd.getQnumCellOfClist(clist));
 			var n = (cc!==null?bd.QnC(cc):-1);
 
 			if( !evalfunc(d.cols, d.rows, a, n) ){
@@ -338,7 +338,7 @@ pzprv3.createCommonClass('AnsCheck',
 		var result = true;
 		for(var id=1;id<=bd.areas.rinfo.max;id++){
 			var isset = function(c){ return (bd.areas.rinfo.id[c]===id && bd.isBlack(c));};
-			var data = bd.areas.searchEXT(isset, null);
+			var data = (new pzprv3.core.AreaData(isset)).getAreaInfo();
 			if(data.max>1){
 				if(this.inAutoCheck){ return false;}
 				bd.sErC(bd.areas.rinfo[id].clist,1);

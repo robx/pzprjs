@@ -46,7 +46,7 @@ Board:{
 	numzero : true,
 
 	nummaxfunc : function(cc){
-		return Math.min(this.maxnum, this.areas.getCntOfRoomByCell(cc));
+		return Math.min(this.maxnum, this.areas.rinfo.getCntOfRoomByCell(cc));
 	}
 },
 

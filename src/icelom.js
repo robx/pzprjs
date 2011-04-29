@@ -223,12 +223,6 @@ LineManager:{
 	isLineCross  : true
 },
 
-AreaManager:{
-	getIcebarnArea : function(){
-		return this.searchEXT(function(c){ return (bd.QuC(c)==6);}, null);
-	}
-},
-
 MenuExec:{
 	adjustBoardData : function(key,d){
 		this.adjustBorderArrow(key,d);
@@ -515,7 +509,7 @@ AnsCheck:{
 			this.setAlert('通過していない白マスがあります。', 'The line doesn\'t pass all of the white cell.'); return false;
 		}
 
-		if( (bd.puzzleid==='icelom2') && !this.checkLinesInArea(bd.areas.getIcebarnArea(), function(w,h,a,n){ return (a!=0);}) ){
+		if( (bd.puzzleid==='icelom2') && !this.checkIgnoreIcebarn() ){
 			this.setAlert('すべてのアイスバーンを通っていません。', 'A icebarn is not gone through.'); return false;
 		}
 
@@ -524,6 +518,11 @@ AnsCheck:{
 		}
 
 		return true;
+	},
+
+	checkIgnoreIcebarn : function(){
+		var iarea = (new pzprv3.core.AreaData(function(c){ return (bd.QuC(c)==6);})).getAreaInfo();
+		return this.checkLinesInArea(iarea, function(w,h,a,n){ return (a!=0);})
 	},
 
 	checkLine : function(){

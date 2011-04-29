@@ -48,7 +48,7 @@ MouseEvent:{
 		if(group===bd.CELL){
 			cc = bd.star[id].groupid;
 		}
-		else if(group===bd.CROSS && bd.areas.lcntCross(gid)===0){
+		else if(group===bd.CROSS && bd.areas.rinfo.bdcnt[gid]===0){
 			cc = bd.cnum(bd.star[id].bx-1, bd.star[id].by-1);
 		}
 		else if(group===bd.BORDER && bd.QaB(gid)===0){
@@ -241,7 +241,7 @@ Board:{
 				var id=idlist[n], group=this.star[id].group, gid=this.star[id].groupid;
 				if(this.getStar(id)>0){
 					if( group===this.CELL ||
-					   (group===this.CROSS && this.areas.lcntCross(gid)===0) ||
+					   (group===this.CROSS && this.areas.rinfo.bdcnt[gid]===0) ||
 					   (group===this.BORDER && this.QaB(gid)===0)
 					)
 					{ cnt++; ret={id:id, err:0};}
@@ -475,7 +475,7 @@ AnsCheck:{
 			if(bd.getStar(s)<=0){ continue;}
 
 			var group=bd.star[s].group, gid=bd.star[s].groupid;
-			if(group===bd.CROSS && bd.areas.lcntCross(gid)!==0){
+			if(group===bd.CROSS && bd.areas.rinfo.bdcnt[gid]!==0){
 				if(this.inAutoCheck){ return false;}
 				bd.setCrossBorderError(bd.star[s].bx, bd.star[s].by);
 				result = false;

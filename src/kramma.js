@@ -259,7 +259,7 @@ AnsCheck:{
 		for(var bx=bd.minbx+2;bx<=bd.maxbx-2;bx+=2){
 			for(var by=bd.minby+2;by<=bd.maxby-2;by+=2){
 				var xc = bd.xnum(bx,by);
-				if(bd.areas.lcntCross(xc)===2 && bd.QnX(xc)!==1){
+				if(bd.areas.rinfo.bdcnt[xc]===2 && bd.QnX(xc)!==1){
 					if(    !(bd.QaB(bd.bnum(bx  ,by-1))===1 && bd.QaB(bd.bnum(bx  ,by+1))===1)
 						&& !(bd.QaB(bd.bnum(bx-1,by  ))===1 && bd.QaB(bd.bnum(bx+1,by  ))===1) )
 					{

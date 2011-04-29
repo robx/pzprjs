@@ -97,10 +97,10 @@ Board:{
 
 	getTileInfo : function(){
 		var self = this;
-		var tinfo = this.areas.searchEXT(
+		var tinfo = (new pzprv3.core.AreaBorderData(
 			function(c){ return (self.QuC(c)!==51);},
 			function(id){ return self.isBorder(id);}
-		);
+		)).getAreaInfo();
 
 		for(var r=1;r<=tinfo.max;r++){
 			var d = this.getSizeOfClist(tinfo.room[r].idlist);

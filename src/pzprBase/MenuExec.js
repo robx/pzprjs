@@ -588,7 +588,7 @@ pzprv3.createCommonClass('MenuExec',
 		for(var c=0;c<bd.cell.length;c++){
 			if(!!this.insex[bd.CELL][this.distObj(bd.CELL,c,key)]){
 				if(bd.cell[c].qnum!==-1){
-					qnums.push({areaid:bd.areas.getRoomID(c), id:c, val:bd.cell[c].qnum});
+					qnums.push({areaid:bd.areas.rinfo.getRoomID(c), id:c, val:bd.cell[c].qnum});
 					bd.cell[c].qnum=-1;
 				}
 				bd.areas.rinfo.removeCell(c);

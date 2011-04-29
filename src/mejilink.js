@@ -214,10 +214,7 @@ AnsCheck:{
 	},
 	checkDotLength : function(){
 		var result = true;
-		var tarea = bd.areas.searchEXT(
-			function(cc){ return true;},
-			function(id){ return !bd.isGround(id);}
-		);
+		var tarea = (new pzprv3.core.AreaBorderData(null,function(id){ return !bd.isGround(id);})).getAreaInfo();
 
 		var tcount = [], numerous_value = 999999;
 		for(var r=1;r<=tarea.max;r++){ tcount[r]=0;}
