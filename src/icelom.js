@@ -198,20 +198,22 @@ Operation:{
 		um.stackBorder(id0);
 		um.stackBorder(id);
 	},
-	decode : function(strs){
-		if(this.SuperFunc.decode.call(this,strs)){ return;}
-
-		this.group = bd.OTHER;
-		this.property = (strs[0]=='PI'?'in':'out');
-		this.id  = 0;
-		this.old = [+strs[1], +strs[2]];
-		this.num = [+strs[3], +strs[4]];
+	decode : function(str){
+		var strs = this.SuperFunc.decode.call(this,str);
+		if(!!strs){
+			this.group = bd.OTHER;
+			this.property = (strs[0]=='PI'?'in':'out');
+			this.id  = 0;
+			this.old = [+strs[1], +strs[2]];
+			this.num = [+strs[3], +strs[4]];
+		}
+		return '';
 	},
 	toString : function(){
 		var str = this.SuperFunc.toString.call(this);
 		if(!!str){ return str;}
 
-		var prefix = (this.property=='in'?'PI':'PO');
+		var prefix = (this.chain?'+':'')+(this.property=='in'?'PI':'PO');
 		return [prefix, this.old[0], this.old[1], this.num[0], this.num[1]].join(',');
 	}
 },

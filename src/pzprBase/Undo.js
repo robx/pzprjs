@@ -7,14 +7,32 @@
 // Operationクラス
 pzprv3.createCommonClass('Operation',
 {
-	initialize : function(group, property, id, old, num){
+	initialize : function(group, property, id, old, num, chain){
 		this.group = group;
 		this.property = property;
 		this.id = id;
 		this.old = old;
 		this.num = num;
+		this.chain = chain;
 		
 		if(arguments.length===1){ this.decode(arguments[0]);}
+	},
+
+	/* 変換テーブル */
+	STRGROUP : {
+		C: 'cell',   // bd.CELL,
+		X: 'cross',  // bd.CROSS,
+		B: 'border', // bd.BORDER,
+		E: 'excell'  // bd.EXCELL
+	},
+	STRPROP : {
+		U: 'ques',   // bd.QUES
+		N: 'qnum',   // bd.QNUM
+		M: 'anum',   // bd.ANUM
+		D: 'qdir',   // bd.QDIR
+		A: 'qans',   // bd.QANS
+		S: 'qsub',   // bd.QSUB
+		L: 'line'    // bd.LINE
 	},
 
 	//---------------------------------------------------------------------------
@@ -53,11 +71,16 @@ pzprv3.createCommonClass('Operation',
 	// ope.toString() ファイル出力する履歴の出力用ルーチン
 	//---------------------------------------------------------------------------
 	decode : function(str){
+		if(str.charAt(0)==='+'){
+			this.chain = true;
+			str = str.substr(1);
+		}
+
 		var strs = str.split(/,/);
-		if(!!um.STRGROUP[strs[0].charAt(0)]){
-			this.group    = um.STRGROUP[strs[0].charAt(0)];
-			this.property = um.STRPROP[strs[0].charAt(1)][0];
-			this.id = bd.idnum(this.group, strs[1], strs[2]);
+		if(!!this.STRGROUP[strs[0].charAt(0)]){
+			this.group    = this.STRGROUP[strs[0].charAt(0)];
+			this.property = this.STRPROP[strs[0].charAt(1)];
+			this.id = [+strs[1], +strs[2]];
 			this.old = +strs[3];
 			this.num = +strs[4];
 		}
@@ -75,33 +98,25 @@ pzprv3.createCommonClass('Operation',
 			this.old = +strs[5];
 			this.num = +strs[6];
 		}
-		else{ return false;}
-		return true;
+		else{ return strs;}
+		return '';
 	},
 	toString : function(){
 		if(this.group !== bd.BOARD && this.group !== bd.OTHER){
-			var prefix = '';
-			for(var i in um.STRGROUP){ if(this.group   ==um.STRGROUP[i]){ prefix+=i; break;}}
-			for(var i in um.STRPROP) { if(this.property==um.STRPROP[i]) { prefix+=i; break;}}
+			var prefix = (this.chain?'+':'');
+			for(var i in this.STRGROUP){ if(this.group   ==this.STRGROUP[i]){ prefix+=i; break;}}
+			for(var i in this.STRPROP) { if(this.property==this.STRPROP[i]) { prefix+=i; break;}}
 			return [prefix, this.id[0], this.id[1], this.old, this.num].join(',');
 		}
 		else if(this.group === bd.BOARD){
-			var d = this.id;
+			var d = this.id, prepre = (this.chain?'+':'');
 			switch(this.property){
-				case 'adjust':   return ['AJ', this.old, this.num].join(',');
-				case 'turnflip': return ['AT', d.x1, d.y1, d.x2, d.y2, this.old, this.num].join(',');
+				case 'adjust':   return [prepre+'AJ', this.old, this.num].join(',');
+				case 'turnflip': return [prepre+'AT', d.x1, d.y1, d.x2, d.y2, this.old, this.num].join(',');
 			}
 		}
 		else{ return '';}
 	}
-});
-
-pzprv3.createCommonClass('OperationArray',
-{
-	initialize : function(){ this.items = [];},
-	push : function(ope){ this.items.push(ope);},
-	last : function(){ return (this.items.length>0 ? this.items[this.items.length-1] : null);},
-	isnull : function(){ return (this.items.length===0);}
 });
 
 // OperationManagerクラス
@@ -117,6 +132,7 @@ pzprv3.createCommonClass('OperationManager',
 		this.disCombine = 0;	// 数字がくっついてしまうので、それを一時的に無効にするためのフラグ
 		this.forceRecord = false;	// 強制的に登録する(盤面縮小時限定)
 		this.changeflag = false;	// 操作が行われたらtrueにする(mv.notInputted()用)
+		this.chainflag = false;		// chainされたOperationオブジェクトを登録する
 
 		this.enableUndo = false;	// Undoできる状態か？
 		this.enableRedo = false;	// Redoできる状態か？
@@ -125,23 +141,6 @@ pzprv3.createCommonClass('OperationManager',
 		this.redoExec = false;		// Redo中
 		this.reqReset = false;		// Undo/Redo時に盤面回転等が入っていた時、resize,resetInfo関数のcallを要求する
 		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
-	},
-
-	/* 変換テーブル */
-	STRGROUP : {
-		C: 'cell',   // bd.CELL,
-		X: 'cross',  // bd.CROSS,
-		B: 'border', // bd.BORDER,
-		E: 'excell'  // bd.EXCELL
-	},
-	STRPROP : {
-		U: 'ques',   // bd.QUES
-		N: 'qnum',   // bd.QNUM
-		M: 'anum',   // bd.ANUM
-		D: 'qdir',   // bd.QDIR
-		A: 'qans',   // bd.QANS
-		S: 'qsub',   // bd.QSUB
-		L: 'line'    // bd.LINE
 	},
 
 	//---------------------------------------------------------------------------
@@ -164,8 +163,8 @@ pzprv3.createCommonClass('OperationManager',
 	enb_btn : function(){
 		if(this.ope===(void 0)){ return;}
 
-		this.enableUndo = (this.current>0);
-		this.enableRedo = (this.current<this.ope.length-(this.lastope.isnull()?1:0));
+		this.enableUndo = (this.current>-1);
+		this.enableRedo = (this.current<this.ope.length-1);
 
 		ee('btnundo').el.disabled = (!this.enableUndo ? 'disabled' : '');
 		ee('btnredo').el.disabled = (!this.enableRedo ? 'disabled' : '');
@@ -176,34 +175,27 @@ pzprv3.createCommonClass('OperationManager',
 		ee('ms_h_latest').el.className = (this.enableRedo ? 'smenu' : 'smenunull');
 	},
 	allerase : function(){
-		this.lastope  = new (pzprv3.getPuzzleClass('OperationArray'))();
-		this.ope      = [this.lastope];
-		this.current  = 0;
+		this.ope      = [];
+		this.current  = -1;
 		this.anscount = 0;
 		this.enb_btn();
 	},
 	newOperation : function(flag){	// キー、ボタンを押し始めたときはtrue
-		if(!this.lastope.isnull()){ this.addOpeArray();}
+		this.chainflag = false;
 		if(flag){ this.changeflag = false;}
 	},
 
 	//---------------------------------------------------------------------------
-	// um.addOpeArray() OperationArrayを追加する
-	// um.addOpe()      指定された操作を追加する。id等が同じ場合は最終操作を変更する
+	// um.addOpe() 指定された操作を追加する。id等が同じ場合は最終操作を変更する
 	//---------------------------------------------------------------------------
-	addOpeArray : function(){
-		this.lastope = new (pzprv3.getPuzzleClass('OperationArray'))();
-		this.ope.push(this.lastope);
-	},
 	addOpe : function(group, property, id, old, num){
 		if(!this.isenableRecord() || (old===num && group!==bd.BOARD)){ return;}
 
 		if(this.enableRedo){
 			for(var i=this.ope.length-1;i>=this.current;i--){ this.ope.pop();}
-			this.addOpeArray();
 			this.current = this.ope.length-1;
 		}
-		var ref = this.lastope.last();
+		var ref = this.ope[this.current];
 
 		// 前回と同じ場所なら前回の更新のみ
 		if( this.disCombine==0 && !!ref &&
@@ -212,12 +204,13 @@ pzprv3.createCommonClass('OperationManager',
 		)
 			{ ref.num = num;}
 		else{
-			if(!ref){ this.current++;}
+			this.current++;
 			if(group!==bd.BOARD&&group!==bd.OTHER){ var obj=bd.getObject(group,id); id=[obj.bx,obj.by];}
-			this.lastope.push(new (pzprv3.getPuzzleClass('Operation'))(group, property, id, old, num));
+			this.ope.push(new (pzprv3.getPuzzleClass('Operation'))(group, property, id, old, num, this.chainflag));
 		}
 
 		if(property!=bd.QSUB){ this.anscount++;}
+		this.chainflag = true;
 		this.changeflag = true;
 		this.enb_btn();
 	},
@@ -247,26 +240,21 @@ pzprv3.createCommonClass('OperationManager',
 		if(!window.JSON){ return;}
 		var data = JSON.parse(str);
 		this.ope = [];
-		this.current = data.current;
+		this.current = data.current-1;
 		for(var i=0,len=data.datas.length;i<len;i++){
-			if(data.datas[i].charAt(0)!=='+'){ this.addOpeArray();}
-			else{ data.datas[i] = data.datas[i].substr(1);}
-			this.lastope.push(new (pzprv3.getPuzzleClass('Operation'))(data.datas[i]));
+			this.ope[i] = new (pzprv3.getPuzzleClass('Operation'))(data.datas[i]);
 		}
 	},
 	toString : function(){
 		if(!window.JSON){ return '';}
-		var lastid = this.ope.length-(this.lastope.isnull()?1:0);
-		var data = ['history:{'], datas = [];
+		var lastid = this.ope.length;
+		var data = ['','history:{'], datas = [];
 		data.push('"version":0.2,');
 		data.push('"history":'+lastid+',');
-		data.push('"current":'+this.current+',');
+		data.push('"current":'+(this.current+1)+',');
 		data.push('"datas":[');
 		for(var i=0;i<lastid;i++){
-			for(var n=0,len=this.ope[i].items.length;n<len;n++){
-				var str = this.ope[i].items[n].toString();
-				datas.push(['"',(n===0?"":"+"),str,'"'].join(''));
-			}
+			datas.push(['"',(this.ope[i].toString()),'"'].join(''));
 		}
 		data.push(datas.join(',/'));
 		data.push(']');
@@ -300,26 +288,28 @@ pzprv3.createCommonClass('OperationManager',
 		this.redoExec = false;
 		if(!this.enableRedo){ kc.inREDO=false;}
 	},
-	undoall : function(){ this.undo(this.current);},
-	redoall : function(){ this.redo(this.ope.length-this.current-1);},
+	undoall : function(){ this.undo(this.current+1);},
+	redoall : function(){ this.redo(this.ope.length-this.current);},
 
 	undoSingle : function(){
-		var refope = this.ope[this.current-1].items;
-		if(!refope){ return;}
-		for(var i=refope.length-1;i>=0;i--){
-			refope[i].exec(refope[i].old);
-			if(refope[i].property!=bd.QSUB){ this.anscount--;}
+		for(var i=this.current;i>-1;i--){
+			var ref = this.ope[i];
+			if(!ref){ break;}
+			ref.exec(ref.old);
+			if(ref.property!=bd.QSUB){ this.anscount--;}
+			this.current--;
+			if(!ref.chain){ break;}
 		}
-		this.current--;
 	},
 	redoSingle : function(){
-		var refope = this.ope[this.current].items;
-		if(!refope){ return;}
-		for(var i=0,len=refope.length;i<len;i++){
-			refope[i].exec(refope[i].num);
-			if(refope[i].property!=bd.QSUB){ this.anscount++;}
+		for(var i=this.current+1,len=this.ope.length;i<len;i++){
+			var ref = this.ope[i];
+			if(!ref){ break;}
+			ref.exec(ref.num);
+			if(ref.property!=bd.QSUB){ this.anscount++;}
+			this.current++;
+			if(!this.ope[i+1] || !this.ope[i+1].chain){ break;}
 		}
-		this.current++;
 	},
 
 	//---------------------------------------------------------------------------

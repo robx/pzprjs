@@ -244,20 +244,23 @@ Operation:{
 		um.stackCell(cc0);
 		um.stackCell(cc);
 	},
-	decode : function(strs){
-		if(this.SuperFunc.decode.call(this,strs)){ return;}
-
-		this.group = bd.OTHER;
-		this.property = 'st';
-		this.id  = 0;
-		this.old = [+strs[1], +strs[2]];
-		this.num = [+strs[3], +strs[4]];
+	decode : function(str){
+		var strs = this.SuperFunc.decode.call(this,str);
+		if(!!strs){
+			this.group = bd.OTHER;
+			this.property = 'st';
+			this.id  = 0;
+			this.old = [+strs[1], +strs[2]];
+			this.num = [+strs[3], +strs[4]];
+		}
+		return '';
 	},
 	toString : function(){
 		var str = this.SuperFunc.toString.call(this);
 		if(!!str){ return str;}
 
-		return ['PS', this.old[0], this.old[1], this.num[0], this.num[1]].join(',');
+		var prefix = (this.chain?'+':'')+'PS';
+		return [prefix, this.old[0], this.old[1], this.num[0], this.num[1]].join(',');
 	}
 },
 
