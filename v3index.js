@@ -138,7 +138,7 @@ v3index.urlif.extend({
 		_form = _doc.urlinput;
 		if(!!_form){
 			if(v3index.LS){
-				v3index.addEvent(_doc.getElementbyId("urlinput_clr"), "click", self.urlinput);
+				v3index.addEvent(_doc.getElementById("urlinput_clr"), "click", self.urlinput);
 				return true;
 			}
 			else{
