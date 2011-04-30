@@ -193,7 +193,7 @@ pzprv3.createCommonClass('OperationManager',
 		if(!this.isenableRecord() || (old===num && group!==bd.BOARD)){ return;}
 
 		if(this.enableRedo){
-			for(var i=this.ope.length-1;i>=this.current;i--){ this.ope.pop();}
+			for(var i=this.ope.length-1;i>this.current;i--){ this.ope.pop();}
 			this.current = this.ope.length-1;
 		}
 		var ref = this.ope[this.current];
