@@ -31,26 +31,27 @@ Board:{
 
 	getdir8WareaInfo : function(){
 		var winfo = new pzprv3.core.AreaInfo();
-		for(var c=0;c<this.cellmax;c++){ winfo.id[c]=(this.isWhite(c)?0:null);}
-		for(var c=0;c<this.cellmax;c++){
-			if(winfo.id[c]!==0){ continue;}
+		for(var fc=0;fc<this.cellmax;fc++){ winfo.id[fc]=(this.isWhite(fc)?0:null);}
+		for(var fc=0;fc<this.cellmax;fc++){
+			if(winfo.id[fc]!==0){ continue;}
 			winfo.max++;
 			winfo.room[winfo.max] = {idlist:[]};
-			this.sk0(winfo, c, winfo.max);
+
+			var stack=[fc], id=winfo.max;
+			while(stack.length>0){
+				var c=stack.pop();
+				if(winfo.id[c]!==0){ continue;}
+				winfo.id[c] = id;
+				winfo.room[id].idlist.push(c);
+
+				var bx=this.cell[c].bx, by=this.cell[c].by;
+				var clist = this.cellinside(bx-2, by-2, bx+2, by+2);
+				for(var i=0;i<clist.length;i++){
+					if(winfo.id[clist[i]]===0){ stack.push(clist[i]);}
+				}
+			}
 		}
 		return winfo;
-	},
-	sk0 : function(winfo, id, areaid){
-		if(winfo.id[id]!==0){ return;}
-		winfo.id[id] = areaid;
-		winfo.room[areaid].idlist.push(id);
-
-		var bx=this.cell[id].bx, by=this.cell[id].by;
-		var clist = this.cellinside(bx-2, by-2, bx+2, by+2);
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(c!==id && winfo.id[c]===0){ this.sk0(winfo, c, areaid);}
-		}
 	}
 },
 

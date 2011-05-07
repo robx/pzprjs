@@ -631,26 +631,31 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.dispRed() ひとつながりの黒マスを赤く表示する
-	// mv.db0()     ななめつながりの黒マスを赤く表示する(再起呼び出し用関数)
-	// mv.dispRedLine()  ひとつながりの線を赤く表示する
+	// mv.dispRed()  ひとつながりの黒マスを赤く表示する
+	// mv.dispRed8() ななめつながりの黒マスを赤く表示する
+	// mv.dispRedLine()   ひとつながりの線を赤く表示する
 	//---------------------------------------------------------------------------
 	dispRed : function(){
 		var cc = this.cellid();
 		this.mousereset();
 		if(cc===null || !bd.isBlack(cc)){ return;}
 		if(!this.RBBlackCell){ bd.sErC(bd.areas.bcell[bd.areas.bcell.id[cc]].clist,1);}
-		else{ this.db0(function(c){ return (bd.isBlack(c) && bd.cell[c].error===0);},cc,1);}
+		else{ this.dispRed8(cc);}
 		bd.haserror = true;
 		pc.paintAll();
 	},
-	db0 : function(func, cc, num){
-		if(bd.cell[cc].error!==0){ return;}
-		bd.sErC([cc],num);
-		var bx=bd.cell[cc].bx, by=bd.cell[cc].by, clist=bd.cellinside(bx-2,by-2,bx+2,by+2);
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(c!==cc && func(c)){ this.db0(func, c, num);}
+	dispRed8 : function(fc){
+		var stack=[fc];
+		while(stack.length>0){
+			var c = stack.pop();
+			if(bd.cell[c].error!==0){ continue;}
+
+			bd.sErC([c],1);
+			var bx=bd.cell[c].bx, by=bd.cell[c].by, clist=bd.cellinside(bx-2,by-2,bx+2,by+2);
+			for(var i=0;i<clist.length;i++){
+				var cc = clist[i];
+				if(bd.cell[cc].error===0 && bd.isBlack(cc)){ stack.push(cc);}
+			}
 		}
 	},
 

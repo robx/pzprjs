@@ -21,7 +21,7 @@ MouseEvent:{
 		for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
 
 		var fc = bd.xnum(bd.cell[cc].bx+(bd.QaC(cc)===31?-1:1),bd.cell[cc].by-1);
-		bd.searchline(check, 0, fc);
+		bd.searchline(check, fc);
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.QaC(c)===31 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]===1){ bd.sErC([c],2);}
 			if(bd.QaC(c)===32 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]===1){ bd.sErC([c],2);}
@@ -138,20 +138,19 @@ Board:{
 		return scnt;
 	},
 
-	searchline : function(check, dir, c){
-		var nx, tx=this.cross[c].bx, ty=this.cross[c].by, flag=true;
-		check[c]=1;
+	searchline : function(check, fc){
+		var stack=[fc];
+		while(stack.length>0){
+			var c=stack.pop();
+			if(check[c]!==0){ continue;}
 
-		nx = this.xnum(tx-2,ty-2);
-		if(nx!==null && dir!==4 && this.QaC(this.cnum(tx-1,ty-1))===31 && (check[nx]!==0 || !this.searchline(check,1,nx))){ flag=false;}
-		nx = this.xnum(tx-2,ty+2);
-		if(nx!==null && dir!==3 && this.QaC(this.cnum(tx-1,ty+1))===32 && (check[nx]!==0 || !this.searchline(check,2,nx))){ flag=false;}
-		nx = this.xnum(tx+2,ty-2);
-		if(nx!==null && dir!==2 && this.QaC(this.cnum(tx+1,ty-1))===32 && (check[nx]!==0 || !this.searchline(check,3,nx))){ flag=false;}
-		nx = this.xnum(tx+2,ty+2);
-		if(nx!==null && dir!==1 && this.QaC(this.cnum(tx+1,ty+1))===31 && (check[nx]!==0 || !this.searchline(check,4,nx))){ flag=false;}
-
-		return flag;
+			check[c]=1;
+			var nc, tx=this.cross[c].bx, ty=this.cross[c].by;
+			nc=this.xnum(tx-2,ty-2); if(nc!==null && check[nc]===0 && this.QaC(this.cnum(tx-1,ty-1))===31){ stack.push(nc);}
+			nc=this.xnum(tx-2,ty+2); if(nc!==null && check[nc]===0 && this.QaC(this.cnum(tx-1,ty+1))===32){ stack.push(nc);}
+			nc=this.xnum(tx+2,ty-2); if(nc!==null && check[nc]===0 && this.QaC(this.cnum(tx+1,ty-1))===32){ stack.push(nc);}
+			nc=this.xnum(tx+2,ty+2); if(nc!==null && check[nc]===0 && this.QaC(this.cnum(tx+1,ty+1))===31){ stack.push(nc);}
+		}
 	},
 },
 

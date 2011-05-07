@@ -43,26 +43,29 @@ Board:{
 				}
 			}
 		}
-		var dinfo = new pzprv3.core.AreaInfo(); /* 同じ形に含まれる黒マスのつながり情報 */
-		for(var c=0;c<this.cellmax;c++){ dinfo.id[c]=(tinfo.id[c]!==null?0:null);}
-		for(var c=0;c<this.cellmax;c++){
-			if(dinfo.id[c]!=0){ continue;}
+		return this.getBlockInfo(tinfo);
+	},
+	getBlockInfo : function(tinfo){
+		var dinfo = new pzprv3.core.AreaInfo(); /* 同じ部屋に含まれる黒マスのつながり情報 */
+		for(var fc=0;fc<this.cellmax;fc++){ dinfo.id[fc]=(tinfo.id[fc]!==null?0:null);}
+		for(var fc=0;fc<this.cellmax;fc++){
+			if(dinfo.id[fc]!==0){ continue;}
 			dinfo.max++;
 			dinfo.room[dinfo.max] = {idlist:[]};
-			this.st0(dinfo, c, dinfo.max, tinfo);
+
+			var stack=[fc], id=dinfo.max;
+			while(stack.length>0){
+				var c = stack.pop();
+				if(dinfo.id[c]!==0){ continue;}
+				dinfo.id[c] = id;
+				dinfo.room[id].idlist.push(c);
+				var clist = bd.getdir4clist(c);
+				for(var i=0;i<clist.length;i++){
+					if(tinfo.id[c]==tinfo.id[clist[i][0]]){ stack.push(clist[i][0]);}
+				}
+			}
 		}
 		return dinfo;
-	},
-	st0 : function(dinfo,c,id,tinfo){
-		if(dinfo.id[c]!=0){ return;}
-		dinfo.id[c] = id;
-		dinfo.room[id].idlist.push(c);
-		var func = function(cc){ return (cc!==null && tinfo.id[c]==tinfo.id[cc]);};
-		if( func(this.up(c)) ){ this.st0(dinfo, this.up(c), id, tinfo);}
-		if( func(this.dn(c)) ){ this.st0(dinfo, this.dn(c), id, tinfo);}
-		if( func(this.lt(c)) ){ this.st0(dinfo, this.lt(c), id, tinfo);}
-		if( func(this.rt(c)) ){ this.st0(dinfo, this.rt(c), id, tinfo);}
-		return;
 	}
 },
 

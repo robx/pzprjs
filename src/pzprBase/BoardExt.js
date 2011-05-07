@@ -81,7 +81,7 @@ pzprv3.createCommonClass('LineManager',
 				this.data.id[id] = null;
 			}
 		}
-		this.lc0main(bid);
+		this.reassignId(bid);
 		if(pc.irowake!==0){ this.newIrowake();}
 	},
 	newIrowake : function(){
@@ -288,7 +288,7 @@ pzprv3.createCommonClass('LineManager',
 		else     { dataid[id] = null;}
 
 		// 新しいidを設定する
-		this.lc0main(bid);
+		this.reassignId(bid);
 
 		// できた中でもっとも長い線に、従来最も長かった線の色を継承する
 		// それ以外の線には新しい色を付加する
@@ -331,9 +331,8 @@ pzprv3.createCommonClass('LineManager',
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.lines.getbid()  指定したpieceに繋がる、最大6箇所に引かれている線を全て取得する
-	// bd.lines.lc0main() 指定されたpieceのリストに対して、lc0関数を呼び出す
-	// bd.lines.lc0()     ひとつながりの線にlineidを設定する(再帰呼び出し用関数)
+	// bd.lines.getbid()     指定したpieceに繋がる、最大6箇所に引かれている線を全て取得する
+	// bd.lines.reassignId() ひとつながりの線にlineidを設定する
 	//---------------------------------------------------------------------------
 	getbid : function(id,val){
 		var erase=(val>0?0:1), bx=bd.border[id].bx, by=bd.border[id].by;
@@ -374,44 +373,46 @@ pzprv3.createCommonClass('LineManager',
 		return bid;
 	},
 
-	lc0main : function(bid){
+	reassignId : function(bid){
 		for(var i=0,len=bid.length;i<len;i++){
-			if(this.data.id[bid[i]]!=0){ continue;}	// 既にidがついていたらスルー
-			var bx=bd.border[bid[i]].bx, by=bd.border[bid[i]].by;
+			if(this.data.id[bid[i]]!==0){ continue;}	// 既にidがついていたらスルー
+			var bx0=bd.border[bid[i]].bx, by0=bd.border[bid[i]].by;
 			this.data.max++;
 			this.data[this.data.max] = {idlist:[]};
-			if(!this.isCenterLine^(bx&1)){ this.lc0(bx,by+1,1,this.data.max); this.lc0(bx,by,2,this.data.max);}
-			else                         { this.lc0(bx+1,by,3,this.data.max); this.lc0(bx,by,4,this.data.max);}
-		}
-	},
-	lc0 : function(bx,by,dir,newid){
-		while(1){
-			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-			if((bx+by)%2===0){
-				var cc = (this.isCenterLine?bd.cnum:bd.xnum).call(bd,bx,by);
-				if(cc===null){ break;}
-				else if(this.lcnt[cc]>=3){
-					if(!this.iscrossing(cc)){
-						if(bd.isLine(bd.bnum(bx,by-1))){ this.lc0(bx,by,1,newid);}
-						if(bd.isLine(bd.bnum(bx,by+1))){ this.lc0(bx,by,2,newid);}
-						if(bd.isLine(bd.bnum(bx-1,by))){ this.lc0(bx,by,3,newid);}
-						if(bd.isLine(bd.bnum(bx+1,by))){ this.lc0(bx,by,4,newid);}
-						break;
+
+			var newid = this.data.max;
+			var stack=((!this.isCenterLine^(bx0&1))?[[bx0,by0+1,1],[bx0,by0,2]]:[[bx0+1,by0,3],[bx0,by0,4]]);
+			while(stack.length>0){
+				var dat=stack.pop(), bx=dat[0], by=dat[1], dir=dat[2];
+				while(1){
+					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
+					if((bx+by)%2===0){
+						var cc = (this.isCenterLine?bd.cnum:bd.xnum).call(bd,bx,by);
+						if(cc===null){ break;}
+						else if(this.lcnt[cc]>=3){
+							if(!this.iscrossing(cc)){
+								if(bd.isLine(bd.bnum(bx,by-1))){ stack.push([bx,by,1]);}
+								if(bd.isLine(bd.bnum(bx,by+1))){ stack.push([bx,by,2]);}
+								if(bd.isLine(bd.bnum(bx-1,by))){ stack.push([bx,by,3]);}
+								if(bd.isLine(bd.bnum(bx+1,by))){ stack.push([bx,by,4]);}
+								break;
+							}
+							/* lcnt>=3でiscrossing==trueの時は直進＝何もしない */
+						}
+						else{
+							if     (dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
+							else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ dir=1;}
+							else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ dir=4;}
+							else if(dir!=4 && bd.isLine(bd.bnum(bx-1,by))){ dir=3;}
+						}
 					}
-					/* lcnt>=3でiscrossing==trueの時は直進＝何もしない */
+					else{
+						var id = bd.bnum(bx,by);
+						if(this.data.id[id]!==0){ break;}
+						this.data.id[id] = newid;
+						this.data[newid].idlist.push(id);
+					}
 				}
-				else{
-					if     (dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
-					else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ dir=1;}
-					else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ dir=4;}
-					else if(dir!=4 && bd.isLine(bd.bnum(bx-1,by))){ dir=3;}
-				}
-			}
-			else{
-				var id = bd.bnum(bx,by);
-				if(this.data.id[id]!=0){ break;}
-				this.data.id[id] = newid;
-				this.data[newid].idlist.push(id);
 			}
 		}
 	},

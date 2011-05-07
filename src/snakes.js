@@ -106,25 +106,25 @@ Board:{
 
 	getSnakeInfo : function(){
 		var sinfo = new pzprv3.core.AreaInfo();
-		var func = function(c,cc){ return (cc!==null && (Math.abs(this.AnC(c)-this.AnC(cc))===1)); };
-		for(var c=0;c<this.cellmax;c++){ sinfo.id[c]=(this.AnC(c)>0?0:-1);}
-		for(var c=0;c<this.cellmax;c++){
-			if(sinfo.id[c]!=0){ continue;}
+		for(var fc=0;fc<this.cellmax;fc++){ sinfo.id[fc]=(this.AnC(fc)>0?0:-1);}
+		for(var fc=0;fc<this.cellmax;fc++){
+			if(sinfo.id[fc]!==0){ continue;}
 			sinfo.max++;
 			sinfo.room[sinfo.max] = {idlist:[]};
-			this.ss0(func, sinfo, c, sinfo.max);
+
+			var stack=[fc], id=sinfo.max;
+			while(stack.length>0){
+				var c=stack.pop();
+				if(sinfo.id[c]!==0){ continue;}
+				sinfo.id[c] = id;
+				sinfo.room[id].idlist.push(c);
+				var clist = bd.getdir4clist(c);
+				for(var i=0;i<clist.length;i++){
+					if(Math.abs(this.AnC(c)-this.AnC(clist[i][0]))===1){ stack.push(clist[i][0]);}
+				}
+			}
 		}
 		return sinfo;
-	},
-	ss0 : function(func, sinfo, c, areaid){
-		if(sinfo.id[c]!=0){ return;}
-		sinfo.id[c] = areaid;
-		sinfo.room[areaid].idlist.push(c);
-		if( func.call(this, c, this.up(c)) ){ this.ss0(func, sinfo, this.up(c), areaid);}
-		if( func.call(this, c, this.dn(c)) ){ this.ss0(func, sinfo, this.dn(c), areaid);}
-		if( func.call(this, c, this.lt(c)) ){ this.ss0(func, sinfo, this.lt(c), areaid);}
-		if( func.call(this, c, this.rt(c)) ){ this.ss0(func, sinfo, this.rt(c), areaid);}
-		return;
 	}
 },
 

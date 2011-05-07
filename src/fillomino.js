@@ -270,7 +270,7 @@ AnsCheck:{
 					if(rinfo.id[clist[i]]!=0){ continue;}
 					rinfo.max++; max++;
 					rinfo.room[rinfo.max] = {idlist:[]};
-					this.sa0(rinfo, clist[i], rinfo.max);
+					this.setNewID(rinfo, clist[i], rinfo.max);
 				}
 				// 最後に自分の情報を無効にする
 				room = {idlist:[], error:0, number:-1};
@@ -278,15 +278,18 @@ AnsCheck:{
 		}
 		return rinfo;
 	},
-	sa0 : function(rinfo, i, areaid){
-		if(rinfo.id[i]!=0){ return;}
-		rinfo.id[i] = areaid;
-		rinfo.room[areaid].idlist.push(i);
-		if( bd.sameNumber(i,bd.up(i)) ){ this.sa0(rinfo, bd.up(i), areaid);}
-		if( bd.sameNumber(i,bd.dn(i)) ){ this.sa0(rinfo, bd.dn(i), areaid);}
-		if( bd.sameNumber(i,bd.lt(i)) ){ this.sa0(rinfo, bd.lt(i), areaid);}
-		if( bd.sameNumber(i,bd.rt(i)) ){ this.sa0(rinfo, bd.rt(i), areaid);}
-		return;
+	setNewID : function(rinfo, fc, areaid){
+		var stack=[fc];
+		while(stack.length>0){
+			var c=stack.pop();
+			if(rinfo.id[c]!==0){ continue;}
+			rinfo.id[c] = areaid;
+			rinfo.room[areaid].idlist.push(c);
+			var clist = bd.getdir4clist(c);
+			for(var i=0;i<clist.length;i++){
+				if(bd.sameNumber(c,clist[i][0])){ stack.push(clist[i][0]);}
+			}
+		}
 	}
 }
 };

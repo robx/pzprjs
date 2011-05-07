@@ -121,24 +121,27 @@ Board:{
 
 	getSlopeWareaInfo : function(){
 		var winfo = new pzprv3.core.AreaInfo();
-		for(var c=0;c<this.cellmax;c++){ winfo.id[c]=(this.noNum(c)?0:null);}
-		for(var c=0;c<this.cellmax;c++){
-			if(winfo.id[c]!==0){ continue;}
+		for(var fc=0;fc<this.cellmax;fc++){ winfo.id[fc]=(this.noNum(fc)?0:null);}
+		for(var fc=0;fc<this.cellmax;fc++){
+			if(winfo.id[fc]!==0){ continue;}
 			winfo.max++;
 			winfo.room[winfo.max] = {idlist:[]};
-			this.sw0(winfo, c, winfo.max);
+
+			var stack=[fc], id=winfo.max;
+			while(stack.length>0){
+				var c=stack.pop();
+				if(winfo.id[c]!==0){ continue;}
+				winfo.id[c] = id;
+				winfo.room[id].idlist.push(c);
+				var a=this.QaC(c), b, cc;
+				cc=this.up(c); if(cc!==null){ b=this.QaC(cc); if(winfo.id[cc]===0 && (a!==4&&a!==5) && (b!==2&&b!==3)){ stack.push(cc);} }
+				cc=this.dn(c); if(cc!==null){ b=this.QaC(cc); if(winfo.id[cc]===0 && (a!==2&&a!==3) && (b!==4&&b!==5)){ stack.push(cc);} }
+				cc=this.lt(c); if(cc!==null){ b=this.QaC(cc); if(winfo.id[cc]===0 && (a!==2&&a!==5) && (b!==3&&b!==4)){ stack.push(cc);} }
+				cc=this.rt(c); if(cc!==null){ b=this.QaC(cc); if(winfo.id[cc]===0 && (a!==3&&a!==4) && (b!==2&&b!==5)){ stack.push(cc);} }
+			}
 		}
 		return winfo;
 	},
-	sw0 : function(winfo,c,areaid){
-		winfo.id[c] = areaid;
-		winfo.room[areaid].idlist.push(c);
-		var a=this.QaC(c), b, cc;
-		cc=this.up(c); if(cc!==null){ b=this.QaC(cc); if(winfo.id[cc]===0 && (a!==4&&a!==5) && (b!==2&&b!==3)){ this.sw0(winfo,cc,areaid);} }
-		cc=this.dn(c); if(cc!==null){ b=this.QaC(cc); if(winfo.id[cc]===0 && (a!==2&&a!==3) && (b!==4&&b!==5)){ this.sw0(winfo,cc,areaid);} }
-		cc=this.lt(c); if(cc!==null){ b=this.QaC(cc); if(winfo.id[cc]===0 && (a!==2&&a!==5) && (b!==3&&b!==4)){ this.sw0(winfo,cc,areaid);} }
-		cc=this.rt(c); if(cc!==null){ b=this.QaC(cc); if(winfo.id[cc]===0 && (a!==3&&a!==4) && (b!==2&&b!==5)){ this.sw0(winfo,cc,areaid);} }
-	}
 },
 
 MenuExec:{

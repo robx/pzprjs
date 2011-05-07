@@ -82,34 +82,37 @@ Board:{
 
 	trackBall1 : function(startcc, ldata){
 		var bx=this.cell[startcc].bx, by=this.cell[startcc].by;
-		var dir=this.getNum(startcc), cc=startcc, result=(dir===5);
-		ldata[cc]=0;
+		var dir=this.getNum(startcc), result=(dir===5);
+		ldata[startcc]=0;
 
 		while(dir>=1 && dir<=4){
 			switch(dir){ case 1: by-=2; break; case 2: by+=2; break; case 3: bx-=2; break; case 4: bx+=2; break;}
-			cc = this.cnum(bx,by);
-			if(cc===null){ break;}
-			if(ldata[cc]!==-1){ result=(ldata[cc]===2); break;}
+			var c=this.cnum(bx,by);
+			if(c===null){ break;}
+			if(ldata[c]!==-1){ result=(ldata[c]===2); break;}
 
-			ldata[cc]=0;
+			ldata[c]=0;
 
-			dir=this.getNum(cc);
+			dir=this.getNum(c);
 			if(dir===5){ result=true;}
 		}
-		this.cb0(startcc, ldata);
+
+		var stack=[startcc];
+		while(stack.length>0){
+			var c=stack.pop();
+			if(c!=startcc && ldata[c]!==-1){ continue;}
+			ldata[c]=0;
+			var tc, dir=this.getNum(c);
+			tc=this.up(c); if( dir!==1 && tc!==null && ldata[tc]===-1 && this.getNum(tc)===2 ){ stack.push(tc);}
+			tc=this.dn(c); if( dir!==2 && tc!==null && ldata[tc]===-1 && this.getNum(tc)===1 ){ stack.push(tc);}
+			tc=this.lt(c); if( dir!==3 && tc!==null && ldata[tc]===-1 && this.getNum(tc)===4 ){ stack.push(tc);}
+			tc=this.rt(c); if( dir!==4 && tc!==null && ldata[tc]===-1 && this.getNum(tc)===3 ){ stack.push(tc);}
+		}
 
 		for(var c=0;c<this.cellmax;c++){
 			if(ldata[c]===0){ ldata[c] = (result?2:1)}
 		}
 		return result;
-	},
-	cb0 : function(c, ldata){
-		ldata[c]=0;
-		var tc, dir=this.getNum(c);
-		tc=this.up(c); if( dir!==1 && tc!==null && ldata[tc]===-1 && this.getNum(tc)===2 ){ this.cb0(tc,ldata);}
-		tc=this.dn(c); if( dir!==2 && tc!==null && ldata[tc]===-1 && this.getNum(tc)===1 ){ this.cb0(tc,ldata);}
-		tc=this.lt(c); if( dir!==3 && tc!==null && ldata[tc]===-1 && this.getNum(tc)===4 ){ this.cb0(tc,ldata);}
-		tc=this.rt(c); if( dir!==4 && tc!==null && ldata[tc]===-1 && this.getNum(tc)===3 ){ this.cb0(tc,ldata);}
 	}
 },
 
