@@ -680,18 +680,21 @@ Puzzles.kouchoku.prototype = {
 			for(var i=0;i<cand1.length;i++){
 				var seg1=bd.segs.seg[cand1[i][0]], bx1=seg1.bx1, bx2=seg1.bx2, by1=seg1.by1, by2=seg1.by2;
 				var seg2=bd.segs.seg[cand1[i][1]], bx3=seg2.bx1, bx4=seg2.bx2, by3=seg2.by1, by4=seg2.by2;
-				if     (bx1===bx2){ // 片方の線だけ垂直
-					var bx0=bx1, by0=(by4-by3)/(bx4-bx3)*(bx0-bx3)+by3;
-					if((by1<by0 && by0<by2)||(by2<by0 && by0<by1)){ cand2.push(cand1[i]);}
+				var dx1=(bx2-bx1), dx2=(bx4-bx3), dy1=(by2-by1), dy2=(by4-by3);
+				if     (dx1===0){ // 片方の線だけ垂直
+					var _by0=dy2*(bx1-bx3)+by3*dx2, t=dx2;
+					if(t<0){ _by0*=-1; t*=-1;} var _by1=by1*t, _by2=by2*t;
+					if(_by1<_by0 && _by0<_by2){ cand2.push(cand1[i]);}
 				}
-				else if(bx3===bx4){ // 片方の線だけ垂直
-					var bx0=bx3, by0=(by2-by1)/(bx2-bx1)*(bx0-bx1)+by1;
-					if((by3<by0 && by0<by4)||(by4<by0 && by0<by3)){ cand2.push(cand1[i]);}
+				else if(dx2===0){ // 片方の線だけ垂直
+					var _by0=dy1*(bx3-bx1)+by1*dx1, t=dx1;
+					if(t<0){ _by0*=-1; t*=-1;} var _by3=by3*t, _by4=by4*t;
+					if(_by3<_by0 && _by0<_by4){ cand2.push(cand1[i]);}
 				}
 				else{ // 2本とも垂直でない (SegmentManagerの仕様的にbx1<bx2になるはず)
-					var div1=(by2-by1)/(bx2-bx1), div2=(by4-by3)/(bx4-bx3);
-					var bx0=((bx3*div2-by3)-(bx1*div1-by1))/(div2-div1);
-					if(bx1<bx0 && bx0<bx2 && bx3<bx0 && bx0<bx4){ cand2.push(cand1[i]);}
+					var _bx0=(bx3*dy2-by3*dx2)*dx1-(bx1*dy1-by1*dx1)*dx2, t=dy2*dx1-dy1*dx2;
+					if(t<0){ _bx0*=-1; t*=-1;} var _bx1=bx1*t, _bx2=bx2*t, _bx3=bx3*t, _bx4=bx4*t;
+					if(_bx1<_bx0 && _bx0<_bx2 && _bx3<_bx0 && _bx0<_bx4){ cand2.push(cand1[i]);}
 				}
 			}
 			/* 直角判定 */ // 傾きベクトルの内積=0なら直角
