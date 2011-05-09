@@ -900,17 +900,19 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 
 		/* 交差している位置を調べる */
 		if     (dx1===0){ // 片方の線だけ垂直
-			var bx0=bx11, by0=(dy2/dx2)*(bx0-bx21)+by21;
-			if((by11<by0 && by0<by12)||(by12<by0 && by0<by11)){ return true;}
+			var _by0=dy2*(bx11-bx21)+by21*dx2, t=dx2;
+			if(t<0){ _by0*=-1; t*=-1;} var _by11=by11*t, _by12=by12*t;
+			if(_by11<_by0 && _by0<_by12){ return true;}
 		}
 		else if(dx2===0){ // 片方の線だけ垂直
-			var bx0=bx21, by0=(dy1/dx1)*(bx0-bx11)+by11;
-			if((by21<by0 && by0<by22)||(by22<by0 && by0<by21)){ return true;}
+			var _by0=dy1*(bx21-bx11)+by11*dx1, t=dx1;
+			if(t<0){ _by0*=-1; t*=-1;} var _by21=by21*dx1, _by22=by22*dx1;
+			if(_by21<_by0 && _by0<_by22){ return true;}
 		}
 		else{ // 2本とも垂直でない (仕様的にbx1<bx2になるはず)
-			var div1=dy1/dx1, div2=dy2/dx2;
-			var bx0=((bx21*div2-by21)-(bx11*div1-by11))/(div2-div1);
-			if((bx11<bx0 && bx0<bx12)&&(bx21<bx0 && bx0<bx22)){ return true;}
+			var _bx0=(bx21*dy2-by21*dx2)*dx1-(bx11*dy1-by11*dx1)*dx2, t=(dy2*dx1)-(dy1*dx2);
+			if(t<0){ _bx0*=-1; t*=-1;} var _bx11=bx11*t, _bx12=bx12*t, _bx21=bx21*t, _bx22=bx22*t;
+			if((_bx11<_bx0 && _bx0<_bx12)&&(_bx21<_bx0 && _bx0<_bx22)){ return true;}
 		}
 		return false;
 	},

@@ -6,97 +6,172 @@ pzprv3.custom.shakashaka = {
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
-		if(k.playmode){ this.inputTriangle(0);}
+		if(k.playmode){
+			if(pp.getVal('use')==3){ this.inputTriangle_onebtn();}
+			else if(this.btn.Left){
+				if     (pp.getVal('use')==1){ this.inputTriangle_corner();}
+				else if(pp.getVal('use')==2){ this.inputTriangle_pull_start();}
+			}
+			else if(this.btn.Right){
+				this.inputDot();
+			}
+		}
 		if(k.editmode){ this.inputqnum();}
 	},
 	mouseup : function(){
-		if(k.playmode && pp.getVal('use')==2 && this.notInputted()){
-			this.inputTriangle(2);
+		if(k.playmode){
+			if(pp.getVal('use')==2 && this.inputData===null){
+				this.inputTriangle_pull_end();
+			}
 		}
 	},
 	mousemove : function(){
-		if(k.playmode && pp.getVal('use')==2 && this.mouseCell!==null){
-			this.inputTriangle(1);
+		if(k.playmode){
+			if(this.inputData===null){
+				if(pp.getVal('use')==2){  this.inputTriangle_pull_move();}
+			}
+			else if(this.inputData>=2 && this.inputData<=5){
+				this.inputTriangle_drag();
+			}
+			else{ // this.inputData==0か-1
+				this.inputDot();
+			}
 		}
 	},
 
-	inputTriangle : function(use2step){
-		var use = pp.getVal('use'), cc;
-		if(use!=2 || use2step==0){
-			cc = this.cellid();
-			if(cc===null || bd.isNum(cc)){ this.mousereset(); return;}
-		}
+	inputTriangle_corner : function(){
+		var cc = this.cellid();
+		if(cc===null || bd.isNum(cc)){ return;}
 
-		if(use==1){
-			if(this.btn.Left){
-				var dx = this.inputPoint.x - bd.cell[cc].px;
-				var dy = this.inputPoint.y - bd.cell[cc].py;
-				if(dx>0&&dx<=pc.cw/2){
-					if(dy>0&&dy<=pc.ch/2){ this.inputData = 5;}
-					else if  (dy>pc.ch/2){ this.inputData = 2;}
-				}
-				else if(dx>pc.cw/2){
-					if(dy>0&&dy<=pc.ch/2){ this.inputData = 4;}
-					else if  (dy>pc.ch/2){ this.inputData = 3;}
-				}
+		this.inputData = this.checkCornerData(cc);
+		if(this.inputData===bd.QaC(cc)){ this.inputData = 0;}
 
-				bd.sQaC(cc, (bd.QaC(cc)!==this.inputData?this.inputData:0));
-				bd.sQsC(cc, 0);
-			}
-			else if(this.btn.Right){
-				bd.sQaC(cc, 0);
-				bd.sQsC(cc, (bd.QsC(cc)===0?1:0));
-			}
-		}
-		else if(use==2){
-			if(use2step==0){
-				// 最初はどこのセルをクリックしたか取得するだけ
-				this.firstPoint.set(this.inputPoint);
-				this.mouseCell = cc;
-				return;
-			}
-
-			var dx=(this.inputPoint.x-this.firstPoint.x), dy=(this.inputPoint.y-this.firstPoint.y);
-			cc = this.mouseCell;
-
-			if(use2step==1){
-				// 一定以上動いていたら三角形を入力
-				var diff = 12;
-				if     (dx<=-diff && dy>= diff){ this.inputData=2;}
-				else if(dx<=-diff && dy<=-diff){ this.inputData=5;}
-				else if(dx>= diff && dy>= diff){ this.inputData=3;}
-				else if(dx>= diff && dy<=-diff){ this.inputData=4;}
-
-				if(this.inputData!==null){
-					bd.sQaC(cc, (bd.QaC(cc)!==this.inputData)?this.inputData:0);
-					bd.sQsC(cc, 0);
-					this.mousereset();
-				}
-			}
-			else if(use2step==2){
-				// ほとんど動いていなかった場合は・を入力
-				if(Math.abs(dx)<=3 && Math.abs(dy)<=3){
-					bd.sQaC(cc, 0);
-					bd.sQsC(cc, (bd.QsC(cc)==1?0:1));
-				}
-			}
-		}
-		else if(use==3){
-			if(this.btn.Left){
-				if     (bd.QsC(cc)===1){ bd.sQaC(cc,0); bd.sQsC(cc,0);}
-				else if(bd.QaC(cc)===0){ bd.sQaC(cc,2); bd.sQsC(cc,0);}
-				else if(bd.QaC(cc)===5){ bd.sQaC(cc,0); bd.sQsC(cc,1);}
-				else{ bd.sQaC(cc,bd.QaC(cc)+1); bd.sQsC(cc,0);}
-			}
-			else if(this.btn.Right){
-				if     (bd.QsC(cc)===1){ bd.sQaC(cc,5); bd.sQsC(cc,0);}
-				else if(bd.QaC(cc)===0){ bd.sQaC(cc,0); bd.sQsC(cc,1);}
-				else if(bd.QaC(cc)===2){ bd.sQaC(cc,0); bd.sQsC(cc,0);}
-				else{ bd.sQaC(cc,bd.QaC(cc)-1); bd.sQsC(cc,0);}
-			}
-		}
-
+		this.setAnswer(cc, this.inputData);
+		this.mouseCell = cc;
 		pc.paintCell(cc);
+	},
+	checkCornerData : function(cc){
+		var dx = this.inputPoint.x - bd.cell[cc].cpx;
+		var dy = this.inputPoint.y - bd.cell[cc].cpy;
+		if(dx<=0){ return ((dy<=0)?5:2);}
+		else     { return ((dy<=0)?4:3);}
+	},
+
+	inputTriangle_pull_start : function(){
+		var cc = this.cellid();
+		if(cc===null || bd.isNum(cc)){ this.mousereset(); return;}
+
+		// 最初はどこのセルをクリックしたか取得するだけ
+		this.firstPoint.set(this.inputPoint);
+		this.mouseCell = cc;
+	},
+	inputTriangle_pull_move : function(){
+		var cc = this.mouseCell;
+		var dx = (this.inputPoint.x-this.firstPoint.x);
+		var dy = (this.inputPoint.y-this.firstPoint.y);
+
+		// 一定以上動いていたら三角形を入力
+		var diff = 12;
+		if     (dx<=-diff && dy>= diff){ this.inputData = 2;}
+		else if(dx<=-diff && dy<=-diff){ this.inputData = 5;}
+		else if(dx>= diff && dy>= diff){ this.inputData = 3;}
+		else if(dx>= diff && dy<=-diff){ this.inputData = 4;}
+
+		if(this.inputData!==null){
+			if(this.inputData===bd.QaC(cc)){ this.inputData = 0;}
+			this.setAnswer(cc, this.inputData);
+			this.mouseCell = cc;
+		}
+		pc.paintCell(cc);
+	},
+	inputTriangle_pull_end : function(){
+		var dx = (this.inputPoint.x-this.firstPoint.x);
+		var dy = (this.inputPoint.y-this.firstPoint.y);
+
+		// ほとんど動いていなかった場合は・を入力
+		if(Math.abs(dx)<=3 && Math.abs(dy)<=3){
+			var cc = this.mouseCell;
+			this.setAnswer(cc,(bd.QsC(cc)!==1?-1:0));
+			pc.paintCell(cc);
+		}
+	},
+
+	inputTriangle_drag : function(){
+		if(this.inputData===null || this.inputData<=0){ return;}
+
+		var cc = this.cellid();
+		if(cc===null || bd.isNum(cc)){ return;}
+
+		var dbx=bd.cell[cc].bx-bd.cell[this.mouseCell].bx;
+		var dby=bd.cell[cc].by-bd.cell[this.mouseCell].by;
+		var tri=this.checkCornerData(cc), ret=null, cur=this.inputData;
+		if((dbx===2 && dby===2)||(dbx===-2 && dby===-2)){ // 左上・右下
+			if(cur===2||cur===4){ ret=cur;}
+		}
+		else if((dbx===2 && dby===-2)||(dbx===-2 && dby===2)){ // 右上・左下
+			if(cur===3||cur===5){ ret=cur;}
+		}
+		else if(dbx===0 && dby===-2){ // 上下反転(上側)
+			if(((cur===2||cur===3)&&(tri!==cur))||((cur===4||cur===5)&&(tri===cur))){
+				ret=[null,null,5,4,3,2][cur];
+			}
+		}
+		else if(dbx===0 && dby===2){  // 上下反転(下側)
+			if(((cur===4||cur===5)&&(tri!==cur))||((cur===2||cur===3)&&(tri===cur))){
+				ret=[null,null,5,4,3,2][cur];
+			}
+		}
+		else if(dbx===-2 && dby===0){ // 左右反転(左側)
+			if(((cur===3||cur===4)&&(tri!==cur))||((cur===2||cur===5)&&(tri===cur))){
+				ret=[null,null,3,2,5,4][cur];
+			}
+		}
+		else if(dbx===2 && dby===0){  // 左右反転(右側)
+			if(((cur===2||cur===5)&&(tri!==cur))||((cur===3||cur===4)&&(tri===cur))){
+				ret=[null,null,3,2,5,4][cur];
+			}
+		}
+
+		if(ret!==null){
+			this.setAnswer(cc,ret);
+			this.inputData = ret;
+			this.mouseCell = cc;
+			pc.paintCell(cc);
+		}
+	},
+	inputDot : function(){
+		var cc = this.cellid();
+		if(cc===null || bd.isNum(cc)){ return;}
+
+		if(this.inputData===null){ this.inputData = (bd.QsC(cc)===1?0:-1);}
+
+		this.setAnswer(cc, this.inputData);
+		this.mouseCell = cc;
+		pc.paintCell(cc);
+	},
+
+	inputTriangle_onebtn : function(){
+		var cc = this.cellid();
+		if(cc===null || bd.isNum(cc)){ return;}
+
+		var ans = this.getAnswer(cc);
+		if     (this.btn.Left) { this.inputData = [0,2,1,3,4,5,-1][ans+1];}
+		else if(this.btn.Right){ this.inputData = [5,-1,1,0,2,3,4][ans+1];}
+		this.setAnswer(cc, this.inputData);
+		this.mouseCell = cc;
+		pc.paintCell(cc);
+	},
+
+	getAnswer : function(c){
+		if(c===null || bd.isNum(c)){ return 0;}
+		if     (bd.QaC(c)>0)  { return bd.QaC(c);}
+		else if(bd.QsC(c)===1){ return -1;}
+		return 0;
+	},
+	setAnswer : function(c,val){
+		if(c===null || bd.isNum(c)){ return;}
+		bd.sQaC(c,((val>=2&&val<=5)?val:0));
+		bd.sQsC(c,((val===-1)?1:0));
 	}
 },
 
@@ -165,8 +240,8 @@ Menu:{
 		pp.addSelect('use','setting',(!ee.mobile?1:2),[1,2,3], '三角形の入力方法', 'Input Triangle Type');
 		pp.setLabel ('use', '三角形の入力方法', 'Input Triangle Type');
 
-		pp.addChild('use_1', 'use', 'クリックした位置', 'Position of Cell');
-		pp.addChild('use_2', 'use', 'ドラッグ入力', 'Drag Type');
+		pp.addChild('use_1', 'use', 'クリックした位置', 'Corner-side');
+		pp.addChild('use_2', 'use', '引っ張り入力', 'Pull-to-Input');
 		pp.addChild('use_3', 'use', '1ボタン', 'One Button');
 	}
 },
