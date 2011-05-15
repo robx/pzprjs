@@ -71,11 +71,13 @@
 	div#keypopup { background-color:silver; line-height:1;}
 	div.panelbase{ margin:1pt;}
 
-	div.panelbase td { width:32px; height:32px; background-color:white; cursor:pointer;}
-	td.kpnum     { text-align:center; vertical-align:middle; font-size:24px;}
-	td.kpimgcell { text-align:left; vertical-align:top;}
-	div.kpimgdiv { position:absolute; display:inline;}
-	img.kpimg    { position:absolute; overflow:hidden;}
+	div.kpcell { width:32px; height:32px; margin:1px; position:relative; float:left;
+				 cursor:pointer; text-align:center; line-height:32px;}
+	div.kpcellempty { cursor:default;}
+	div.kpcellvalid { background-color:white;}
+
+	span.kpnum    { font-size:24px; vertical-align:middle;}
+	img.kpimg     { position:absolute; overflow:hidden;}
 
 	/* 置換要素 */
 	input, button, select, textarea{ font-size:1.0em; line-height:1;}

@@ -895,23 +895,32 @@ pzprv3.createCommonClass('Menu',
 //--------------------------------------------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------------
-	// menu.textsize()   テキストのサイズを設定する
+	// menu.textsize()  テキストのサイズを設定する
+	// menu.modifyCSS() スタイルシートの中身を変更する
 	//--------------------------------------------------------------------------------
 	textsize : function(num){
+		var rule = {
+			fontSize:['1.0em','1.5em','2.0em','3.0em'][num],
+			lineHeight:['1.2','1.1','1.1','1.1'][num]
+		};
+		this.modifyCSS({
+			'div#menuboard':rule,
+			'div#btnarea':rule,
+			'div#popup_parent':rule,
+			'div#float_parent':rule
+		});
+	},
+	modifyCSS : function(input){
 		var sheet = document.styleSheets[0];
 		var rules = (!!sheet.cssRules ? sheet.cssRules : sheet.rules);
 		if(!rules){ return;} /* Chrome6の挙動がおかしいのでエラー回避用 */
 		for(var i=0,len=rules.length;i<len;i++){
 			var rule = rules[i];
 			if(!rule.selectorText){ continue;}
-			switch(rule.selectorText.toLowerCase()){
-			case 'div#menuboard':
-			case 'div#btnarea':
-			case 'div#popup_parent':
-			case 'div#float_parent':
-				rule.style.fontSize = ['1.0em','1.5em','2.0em','3.0em'][num];
-				rule.style.lineHeight = ['1.2','1.1','1.1','1.1'][num];
-				break;
+			var pps = input[rule.selectorText.toLowerCase()]
+			if(!!pps){
+				var pps = input[rule.selectorText.toLowerCase()];
+				for(var p in pps){ rule.style[p]=pps[p];}
 			}
 		}
 	},

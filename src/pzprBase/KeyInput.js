@@ -357,18 +357,17 @@ pzprv3.createCommonClass('KeyEvent',
 		this.tdcolor = "black";
 		this.imgCR = [1,1];		// img表示用画像の横×縦のサイズ
 
-		this.tds  = [];			// resize用
-		this.imgs = [];			// resize用
+		this.imgs  = [];			// resize用
 
-		this.tbodytmp = null;
-		this.trtmp    = null;
+		this.basetmp   = null;
+		this.clearflag = false;
 
 		// ElementTemplate
-		this.EL_KPNUM   = ee.addTemplate('','td', {unselectable:'on', className:'kpnum'}, null, null);
-		this.EL_KPEMPTY = ee.addTemplate('','td', {unselectable:'on'}, null, null);
-		this.EL_KPIMG   = ee.addTemplate('','td', {unselectable:'on', className:'kpimgcell'}, null, null);
-		this.EL_KPIMG_DIV = ee.addTemplate('','div', {unselectable:'on', className:'kpimgdiv'}, null, null);
-		this.EL_KPIMG_IMG = ee.addTemplate('','img', {unselectable:'on', className:'kpimg', src:"./src/img/"+bd.puzzleid+"_kp.gif"}, null, null);
+		this.EL_KPEMPTY = ee.addTemplate('','div', {unselectable:'on', className:'kpcell kpcellempty'}, null, null);
+		this.EL_KPDIV   = ee.addTemplate('','div', {unselectable:'on', className:'kpcell kpcellvalid'}, null, null);
+
+		this.EL_KPNUM_SP = ee.addTemplate('','span', {unselectable:'on', className:'kpnum'}, null, null);
+		this.EL_KPIMG_IMG = ee.addTemplate('','img', {unselectable:'on', className:'kpimg'}, null, null);
 
 		this.create();
 	},
@@ -422,17 +421,9 @@ pzprv3.createCommonClass('KeyEvent',
 		this.haspanel[mode] = true;
 		this.prefix = ['kp',mode,'_'].join('');
 
-		var basediv = ee('panelbase'+mode).el;
-		basediv.innerHTML = '';
+		this.basetmp = ee('panelbase'+mode).el;
+		this.basetmp.innerHTML = '';
 
-		var table = document.createElement('table');
-		table.cellSpacing = '2pt';
-		basediv.appendChild(table);
-
-		this.tbodytmp = document.createElement('tbody');
-		table.appendChild(this.tbodytmp);
-
-		this.trtmp = null;
 		this.generate(mode,this.paneltype);
 	},
 
@@ -501,67 +492,53 @@ pzprv3.createCommonClass('KeyEvent',
 	// kp.insertrow() テーブルの行を追加する
 	//---------------------------------------------------------------------------
 	inputcol : function(type, id, ca, disp){
-		if(!this.trtmp){ this.trtmp = document.createElement('tr');}
-		var _td = null;
-		if(type==='empty'){
-			_td = ee.createEL(this.EL_KPEMPTY, '');
+		var _div = null, _child = null;
+		if(type!=='empty'){
+			_div = ee.createEL(this.EL_KPDIV, this.prefix+id);
+			_div.onclick = ee.ebinder(this, this.kpinput, [ca]);
 		}
-		else if(type==='num'){
-			_td = ee.createEL(this.EL_KPNUM, this.prefix+id);
-			_td.style.color = this.tdcolor;
-			_td.innerHTML   = disp;
-			_td.onclick     = ee.ebinder(this, this.kpinput, [ca]);
+		else{ _div = ee.createEL(this.EL_KPEMPTY, '');}
+
+		if(type==='num'){
+			_child = ee.createEL(this.EL_KPNUM_SP, this.prefix+id+"_s");
+			_child.style.color = this.tdcolor;
+			_child.innerHTML   = disp;
 		}
 		else if(type==='image'){
-			var _img = ee.createEL(this.EL_KPIMG_IMG, this.prefix+id+"_i");
-			var _div = ee.createEL(this.EL_KPIMG_DIV, '');
-			_div.appendChild(_img);
-
-			_td = ee.createEL(this.EL_KPIMG, id);
-			_td.onclick = ee.ebinder(this, this.kpinput, [ca]);
-			_td.appendChild(_div);
-
-			this.imgs.push({'el':_img, 'x':disp[0], 'y':disp[1]});
+			_child = ee.createEL(this.EL_KPIMG_IMG, this.prefix+id+"_i");
+			_child.src = "./src/img/"+bd.puzzleid+"_kp.gif";
+			this.imgs.push({'el':_child, 'x':disp[0], 'y':disp[1]});
 		}
 
-		if(_td){
-			this.tds.push(_td);
-			this.trtmp.appendChild(_td);
-		}
+		if(this.clearflag){ _div.style.clear='both'; this.clearflag=false;}
+		if(!!_child){ _div.appendChild(_child);}
+		this.basetmp.appendChild(_div);
 	},
 	insertrow : function(){
-		if(this.trtmp){
-			this.tbodytmp.appendChild(this.trtmp);
-			this.trtmp = null;
-		}
+		this.clearflag = true;
 	},
 
 	//---------------------------------------------------------------------------
 	// kp.resizepanel() キーポップアップのセルのサイズを変更する
 	//---------------------------------------------------------------------------
 	resizepanel : function(){
-		var tfunc = function(el,tsize){
-			el.style.width    = ""+((tsize*0.90)|0)+"px"
-			el.style.height   = ""+((tsize*0.90)|0)+"px"
-			el.style.fontSize = ""+((tsize*0.70)|0)+"px";
-		};
-		var ifunc = function(obj,bsize){
-			obj.el.style.width  = ""+(bsize*this.imgCR[0])+"px";
-			obj.el.style.height = ""+(bsize*this.imgCR[1])+"px";
-			obj.el.style.clip   = "rect("+(bsize*obj.y+1)+"px,"+(bsize*(obj.x+1))+"px,"+(bsize*(obj.y+1))+"px,"+(bsize*obj.x+1)+"px)";
-			obj.el.style.top    = "-"+(obj.y*bsize+1)+"px";
-			obj.el.style.left   = "-"+(obj.x*bsize+1)+"px";
-		};
-
 		var cellsize = Math.min(pc.cw, 120);
-		if(cellsize>=24){
-			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i], cellsize);}
-			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc.call(this, this.imgs[i], (cellsize*0.90)|0);}
+		if(cellsize<20){ cellsize=20;}
+
+		var dsize = (cellsize*0.90)|0, tsize = (cellsize*0.70)|0;
+		for(var i=0,len=this.imgs.length;i<len;i++){
+			var obj = this.imgs[i], img=obj.el;
+			img.style.width  = ""+(dsize*this.imgCR[0])+"px";
+			img.style.height = ""+(dsize*this.imgCR[1])+"px";
+			img.style.clip   = "rect("+(dsize*obj.y+1)+"px,"+(dsize*(obj.x+1))+"px,"+(dsize*(obj.y+1))+"px,"+(dsize*obj.x+1)+"px)";
+			img.style.top    = "-"+(obj.y*dsize)+"px";
+			img.style.left   = "-"+(obj.x*dsize)+"px";
 		}
-		else{
-			for(var i=0,len=this.tds.length ;i<len;i++){ tfunc(this.tds[i], 22);}
-			for(var i=0,len=this.imgs.length;i<len;i++){ ifunc.call(this, this.imgs[i], 18);}
-		}
+
+		menu.modifyCSS({
+			"div.kpcell" : { width:(""+dsize+"px"), height:(""+dsize+"px"), lineHeight:(""+dsize+"px")},
+			"span.kpnum" : { fontSize:(""+tsize+"px")}
+		});
 	}
 });
 
