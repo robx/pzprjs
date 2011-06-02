@@ -98,68 +98,75 @@ Board:{
 
 	// 正答判定用
 	getSlashData : function(){
-		var sdata=[], scnt=this.getScntData();
+		var sdata=[], sinfo=this.getSlashInfo();
 		for(var c=0;c<this.cellmax;c++){ sdata[c] =(this.QaC(c)!==0?0:-1);}
 		for(var c=0;c<this.cellmax;c++){
 			if(sdata[c]!==0){ continue;}
-			// history -> スタックみたいなオブジェクト
-			var history={cell:[],cross:[]};
-			for(var cc=0;cc<this.cellmax;cc++) { history.cell[cc] =0;}
-			for(var xc=0;xc<this.crossmax;xc++){ history.cross[xc]=0;}
 
 			var fc = this.xnum(this.cell[c].bx+(this.QaC(c)===31?-1:1), this.cell[c].by-1);
-			this.sp0(fc, 1, scnt, sdata, history);
+			this.searchloop(fc, sinfo, sdata);
 		}
 		for(var c=0;c<this.cellmax;c++){ if(sdata[c]===0){ sdata[c]=2;} }
 		return sdata;
 	},
-	sp0 : function(xc, depth, scnt, sdata, history){
-		// 過ぎ去った地点に到達した→その地点からココまではループしてる
-		if(history.cross[xc]>0){
-			var min = history.cross[xc];
-			for(var cc=0;cc<this.cellmax;cc++){ if(history.cell[cc]>=min){ sdata[cc]=1;} }
-			return;
-		}
+	searchloop : function(fc, sinfo, sdata){
+		var passed=[];
+		for(var xc=0;xc<this.crossmax;xc++){ passed[xc]=false;}
 
-		// 別に到達していない -> 隣に進んでみる
-		history.cross[xc] = depth; // この交点にマーキング
-		var bx=this.cross[xc].bx, by=this.cross[xc].by;
-		var nb = [
-			{ cell:this.cnum(bx-1,by-1), cross:this.xnum(bx-2,by-2), qans:31},
-			{ cell:this.cnum(bx+1,by-1), cross:this.xnum(bx+2,by-2), qans:32},
-			{ cell:this.cnum(bx-1,by+1), cross:this.xnum(bx-2,by+2), qans:32},
-			{ cell:this.cnum(bx+1,by+1), cross:this.xnum(bx+2,by+2), qans:31}
-		];
-		for(var i=0;i<4;i++){
-			if( nb[i].cell===null ||					// そっちは盤面の外だよ！
-				history.cell[nb[i].cell]!==0 ||			// そっちは通って来た道だよ！
-				nb[i].qans!==this.QaC(nb[i].cell) ||	// そっちは繋がってない。
-				scnt[nb[i].cross]===1 || 				// そっちは行き止まり。
-				sdata[nb[i].cell]===1 )		// sdataが1になってるってことは前にそっちから既に来ている
-			{ continue;}					//  -> 先に分岐があるとしても、既に探索済みです.
+		var xc=fc, history=[{cell:null,cross:fc}];
 
-			history.cell[nb[i].cell] = depth;	 // 隣のセルにマーキング
-			this.sp0(nb[i].cross, depth+1, scnt, sdata, history);
-			history.cell[nb[i].cell] = 0;		 // セルのマーキングを外す
+		while(history.length>0){
+			var cc=null, xc=history[history.length-1].cross;
+			passed[xc] = true;
+
+			// 今まで通っていないセルを調べる
+			for(var i=0;i<sinfo.cross[xc].length;i++){
+				var cellid = sinfo.cross[xc][i];
+				if(!!sinfo.cell[cellid].length){ cc=cellid; break;}
+			}
+
+			// セルを経由してその先の交点へ
+			if(cc!==null){
+				var xc2 = sinfo.cell[cc][((sinfo.cell[cc][0]!==xc)?0:1)];
+				history.push({cell:cc,cross:null});
+				sinfo.cell[cc] = []
+
+				// ループになった場合 => ループフラグをセットする
+				if(!!passed[xc2]){
+					for(var i=history.length-1;i>=0;i--){
+						if(history[i].cross===xc2){ break;}
+						sdata[history[i].cell] = 1;
+					}
+				}
+				// 先の交点でループ判定にならなかった場合 => 次のループへ
+				else{
+					history[history.length-1].cross = xc2;
+					continue;
+				}
+			}
+			else{ sinfo.cross[xc] = [];}	/* 全て通過済み */
+
+			// 一つ前に戻る
+			var h = history.pop();
+			if(sdata[h.cell]===0){ sdata[h.cell]=2;}
 		}
-		history.cross[xc] = 0; // 交点のマーキングを外す
 	},
 
-	getScntData : function(){
-		var scnt = [];
-		for(var c=0;c<this.crossmax;c++){ scnt[c]=0;}
+	getSlashInfo : function(){
+		var sinfo={cell:[],cross:[]};
+		for(var c=0;c<this.crossmax;c++){ sinfo.cross[c]=[];}
 		for(var c=0;c<this.cellmax;c++){
-			var bx=this.cell[c].bx, by=this.cell[c].by;
-			if(this.QaC(c)===31){
-				scnt[this.xnum(bx-1,by-1)]++;
-				scnt[this.xnum(bx+1,by+1)]++;
-			}
-			else if(this.QaC(c)===32){
-				scnt[this.xnum(bx-1,by+1)]++;
-				scnt[this.xnum(bx+1,by-1)]++;
-			}
+			sinfo.cell[c]=[];
+			var bx=this.cell[c].bx, by=this.cell[c].by, qa=this.QaC(c), xc1, xc2;
+			if     (qa===31){ xc1=this.xnum(bx-1,by-1); xc2=this.xnum(bx+1,by+1);}
+			else if(qa===32){ xc1=this.xnum(bx-1,by+1); xc2=this.xnum(bx+1,by-1);}
+			else{ continue;}
+
+			sinfo.cell[c] = [xc1,xc2];
+			sinfo.cross[xc1].push(c);
+			sinfo.cross[xc2].push(c);
 		}
-		return scnt;
+		return sinfo;
 	}
 },
 
@@ -322,10 +329,10 @@ AnsCheck:{
 	},
 
 	checkQnumCross : function(){
-		var result = true, scnt = bd.getScntData();
+		var result = true, sinfo = bd.getSlashInfo();
 		for(var c=0;c<bd.crossmax;c++){
 			var qn = bd.QnX(c);
-			if(qn>=0 && qn!=scnt[c]){
+			if(qn>=0 && qn!=sinfo.cross[c].length){
 				if(this.inAutoCheck){ return false;}
 				bd.sErX([c],1);
 				result = false;
