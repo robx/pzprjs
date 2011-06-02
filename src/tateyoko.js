@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.3.2
+// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.3.3
 //
 Puzzles.tateyoko = function(){ };
 Puzzles.tateyoko.prototype = {
@@ -204,7 +204,7 @@ Puzzles.tateyoko.prototype = {
 		};
 
 		pc.drawBcellsAtNumber = function(){
-			this.vinc('cell_number', 'crispEdges');
+			this.vinc('cell_bcells', 'crispEdges');
 
 			var header = "c_full_";
 			var clist = this.range.cells;
