@@ -460,6 +460,7 @@ Graphic.prototype = {
 				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2; return true;}
 				return false;
 			};
+			this.bcolor = "silver"; /* 数字入力で背景が消えないようにする応急処置 */
 			break;
 		case 'qsub3':
 			this.setBGCellColor = function(c){
