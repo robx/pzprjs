@@ -46,6 +46,7 @@ pzprv3.createCommonClass('Operation',
 				case bd.CELL:   um.stackCell(id); break;
 				case bd.CROSS:  um.stackCross(id); break;
 				case bd.BORDER: um.stackBorder(id); break;
+				case bd.EXCELL: um.stackEXCell(id); break;
 			}
 		}
 		else if(this.group === bd.BOARD){
@@ -345,6 +346,7 @@ pzprv3.createCommonClass('OperationManager',
 	// um.stackCell()   Cellの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
 	// um.stackCross()  Crossの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
 	// um.stackBorder() Borderの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
+	// um.stackEXCell() EXCellの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
 	// um.paintStack()  変更が入った範囲を保持する
 	//---------------------------------------------------------------------------
 	stackAll : function(){
@@ -364,6 +366,9 @@ pzprv3.createCommonClass('OperationManager',
 		else{
 			this.paintStack(bd.border[id].bx-1, bd.border[id].by-2, bd.border[id].bx+1, bd.border[id].by+2);
 		}
+	},
+	stackEXCell : function(id){
+		this.paintStack(bd.excell[id].bx-1, bd.excell[id].by-1, bd.excell[id].bx+1, bd.excell[id].by+1);
 	},
 	paintStack : function(x1,y1,x2,y2){
 		if(this.range.x1 > x1){ this.range.x1 = x1;}

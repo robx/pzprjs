@@ -220,7 +220,7 @@ Graphic:{
 	},
 
 	drawBcellsAtNumber : function(){
-		var g = this.vinc('cell_number', 'crispEdges');
+		var g = this.vinc('cell_bcells', 'crispEdges');
 
 		var header = "c_full_";
 		var clist = this.range.cells;

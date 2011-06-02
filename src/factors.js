@@ -150,16 +150,16 @@ AnsCheck:{
 	checkRoomNumber : function(rinfo){
 		var result = true;
 		for(var id=1;id<=rinfo.max;id++){
-			var product = 1;
-			for(var i=0;i<rinfo.room[id].idlist.length;i++){
-				if(bd.AnC(rinfo.room[id].idlist[i])>0){ product *= bd.AnC(rinfo.room[id].idlist[i]);}
+			var product = 1, room = rinfo.room[id];
+			for(var i=0;i<room.idlist.length;i++){
+				if(bd.AnC(room.idlist[i])>0){ product *= bd.AnC(room.idlist[i]);}
 				else{ product = 0;}
 			}
 			if(product==0){ continue;}
 
-			if(product!=bd.QnC(bd.areas.rinfo.getTopOfRoom(id))){
+			if(product!=bd.QnC(bd.areas.rinfo.getTopOfRoomByCell(room.idlist[0]))){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(rinfo.room[id].idlist,1);
+				bd.sErC(room.idlist,1);
 				result = false;
 			}
 		}
