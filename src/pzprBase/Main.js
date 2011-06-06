@@ -31,8 +31,6 @@ pzprv3.createCoreClass('ExtData',
 
 		this.fstr;		// ファイルの文字列
 
-		this.enableSaveImage = false;	// 画像保存が有効か
-
 		this.initial_import();
 	},
 
@@ -281,7 +279,6 @@ pzprv3.createCoreClass('PBase',
 		// Campの設定
 		Camp('divques');
 		if(Camp.enable.canvas && !!document.createElement('canvas').toDataURL){
-			this.dec.enableSaveImage = true;
 			Camp('divques_sub', 'canvas');
 		}
 

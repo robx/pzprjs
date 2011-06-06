@@ -61,6 +61,7 @@ pzprv3.createCommonClass('Menu',
 	language : 'ja',
 
 	disable_subclear : false, // "補助消去"ボタンを作らない
+	enableSaveImage  : false, // 画像保存が有効か
 
 	//---------------------------------------------------------------------------
 	// menu.menuinit()   メニュー、サブメニュー、フロートメニュー、ボタン、
@@ -69,6 +70,10 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	menuinit : function(){
 		this.ex.init();
+
+		if(!!ee("divques_sub").el.getContext){
+			this.enableSaveImage = true;
+		}
 
 		this.menuarea();
 		this.managearea();
@@ -230,7 +235,7 @@ pzprv3.createCommonClass('Menu',
 		if(ee.storage.localST){
 			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
 		}
-		if(pzprv3.base.dec.enableSaveImage){
+		if(this.enableSaveImage){
 			ap('sep_image', 'file');
 			at('imagesavep', 'file', '画像を保存 ->', 'Save as image file');
 		}
@@ -243,7 +248,7 @@ pzprv3.createCommonClass('Menu',
 		}
 
 		// *ファイル - 画像を保存 -------------------------------------------
-		if(pzprv3.base.dec.enableSaveImage){
+		if(this.enableSaveImage){
 			as('imagedl',   'imagesavep', '画像をダウンロード', 'Download the image');
 			as('imagesave', 'imagesavep', '別ウィンドウで開く', 'Open another window');
 		}
