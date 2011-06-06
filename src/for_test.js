@@ -57,9 +57,7 @@ pzprv3.debug.extend({
 			self.phase = 0;
 
 			var newid = idlist[pnum];
-			pzprv3.base.dec.reset();
-			pzprv3.base.dec.parseURI('?'+newid+'/'+self.urls[newid]);
-			pzprv3.base.importBoardData(newid);
+			pzprv3.base.importBoardData({id:newid});
 
 			if(pnum >= term){ clearInterval(self.alltimer);}
 
@@ -83,12 +81,7 @@ pzprv3.debug.extend({
 	},
 	//Encode test--------------------------------------------------------------
 	check_encode : function(self){
-		var col = bd.qcols;
-		var row = bd.qrows;
-		var pfg = pzprv3.base.dec.pflag;
-		var str = pzprv3.base.dec.bstr;
-
-		var inp = enc.getURLBase(enc.PZPRV3)+(pfg?(pfg+"/"):"")+(col+"/"+row)+("/"+str);
+		var inp = enc.getURLBase(enc.PZPRV3)+self.urls[bd.puzzleid];
 		var ta  = enc.pzloutput(enc.PZPRV3);
 
 		if(inp!=ta){ self.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}

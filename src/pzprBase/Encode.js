@@ -37,31 +37,32 @@ pzprv3.createCommonClass('Encode',
 	checkpflag : function(ca){ return (this.pflag.indexOf(ca)>=0);},
 
 	//---------------------------------------------------------------------------
-	// enc.pzlinput()   parseURI()を行った後に呼び出し、各パズルのpzlimport関数を呼び出す
+	// enc.pzlinput()   parseData()を行い、各パズルのpzlimport関数を呼び出す
 	// enc.getURLBase() URLの元となる部分を取得する
 	// 
 	// enc.pzlimport()    各パズルのURL入力用(オーバーライド用)
 	// enc.pzlexport()    各パズルのURL出力用(オーバーライド用)
 	//---------------------------------------------------------------------------
-	pzlinput : function(){
-		var uri = pzprv3.base.dec;
+	pzlinput : function(pzl){
+		if(pzl.type===void 0){ pzl.type=this.PZPRV3;}
+		var dat = this.parseData(pzl);
 
-		bd.initBoardSize(uri.cols, uri.rows);
+		bd.initBoardSize(dat.cols, dat.rows);
 
-		if(!!uri.bstr){
-			this.pflag = uri.pflag;
-			switch(uri.type){
+		if(!!dat.bstr){
+			this.pflag = dat.pflag;
+			switch(pzl.type){
 			case this.PZPRV3: case this.PZPRAPP: case this.PZPRV3E:
-				this.outbstr = uri.bstr;
-				this.pzlimport(uri.type);
+				this.outbstr = dat.bstr;
+				this.pzlimport(pzl.type);
 				break;
 			case this.KANPEN:
 				fio.lineseek = 0;
-				fio.dataarray = uri.bstr.replace(/_/g, " ").split("/");
+				fio.dataarray = dat.bstr.replace(/_/g, " ").split("/");
 				this.decodeKanpen();
 				break;
 			case this.HEYAAPP:
-				this.outbstr = uri.bstr;
+				this.outbstr = dat.bstr;
 				this.decodeHeyaApp();
 				break;
 			}
@@ -133,6 +134,100 @@ pzprv3.createCommonClass('Encode',
 	encodeKanpen : function(){ },
 	decodeHeyaApp : function(){ },
 	encodeHeyaApp : function(){ },
+
+	//---------------------------------------------------------------------------
+	// enc.parseURL() 入力されたURLからどのパズルか、およびURLの種類を抽出する
+	//                p.html?(pid)/(qdata)
+	//---------------------------------------------------------------------------
+	parseURL : function(url){
+		url = url.replace(/(\r|\n)/g,""); // textarea上の改行が実際の改行扱いになるUAに対応(Operaとか)
+
+		var pzl = {id:'',type:0,qdata:''};
+		// カンペンの場合
+		if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
+			url.match(/([0-9a-z]+)\.html/);
+			pzl.id = RegExp.$1;
+			// カンペンだけどデータ形式はへやわけアプレット
+			if(url.indexOf("?heyawake=")>=0){
+				pzl.qdata = url.substr(url.indexOf("?heyawake=")+10);
+				pzl.type = this.HEYAAPP;
+			}
+			// カンペンだけどデータ形式はぱずぷれ
+			else if(url.indexOf("?pzpr=")>=0){
+				pzl.qdata = url.substr(url.indexOf("?pzpr=")+6);
+				pzl.type = this.PZPRV3;
+			}
+			else{
+				pzl.qdata = url.substr(url.indexOf("?problem=")+9);
+				pzl.type = this.KANPEN;
+			}
+		}
+		// へやわけアプレットの場合
+		else if(url.match(/www\.geocities(\.co)?\.jp\/heyawake/)){
+			pzl.id = 'heyawake';
+			pzl.qdata = url.substr(url.indexOf("?problem=")+9);
+			pzl.type = this.HEYAAPP;
+		}
+		// ぱずぷれアプレットの場合
+		else if(url.match(/indi\.s58\.xrea\.com\/(.+)\/(sa|sc)\//)){
+			pzl.id = RegExp.$1;
+			pzl.qdata = url.substr(url.indexOf("?"));
+			pzl.type = this.PZPRAPP;
+		}
+		// ぱずぷれv3の場合
+		else{
+			var qs = url.indexOf("/", url.indexOf("?"));
+			if(qs>-1){
+				pzl.id = url.substring(url.indexOf("?")+1,qs);
+				pzl.qdata = url.substr(qs+1);
+			}
+			else{
+				pzl.id = url.substr(1);
+			}
+			pzl.id = pzl.id.replace(/(m\+|_edit|_test|_play)/,'');
+			pzl.type = this.PZPRV3;
+		}
+		pzl.id = pzprv3.PZLINFO.toPID(pzl.id);
+
+		return pzl;
+	},
+
+	//---------------------------------------------------------------------------
+	// enc.parseData() URLを縦横・問題部分などに分解する
+	//                 qdata -> [(pflag)/](cols)/(rows)/(bstr)
+	//---------------------------------------------------------------------------
+	parseData : function(pzl){
+		var inp=pzl.qdata.split("/"), dat={pflag:'',cols:0,rows:0,bstr:''};
+		switch(pzl.type){
+		case this.KANPEN:
+			if(pzl.id=="sudoku"){
+				dat.rows = dat.cols = parseInt(inp.shift());
+			}
+			else{
+				dat.rows = parseInt(inp.shift());
+				dat.cols = parseInt(inp.shift());
+				if(pzl.id=="kakuro"){ dat.rows--; dat.cols--;}
+			}
+			dat.bstr = inp.join("/");
+			break;
+
+		case this.HEYAAPP:
+			var size = inp.shift().split("x");
+			dat.cols = parseInt(size[0]);
+			dat.rows = parseInt(size[1]);
+			dat.bstr = inp.join("/");
+			break;
+
+		default:
+			if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
+			dat.pflag = inp.shift();
+			dat.cols = parseInt(inp.shift());
+			dat.rows = parseInt(inp.shift());
+			dat.bstr = inp.join("/");
+			break;
+		}
+		return dat;
+	},
 
 	//---------------------------------------------------------------------------
 	// enc.decode4Cell()  quesが0～4までの場合、デコードする

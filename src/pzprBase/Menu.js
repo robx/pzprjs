@@ -1103,7 +1103,7 @@ pzprv3.createCommonClass('Properties',
 		subclear  : function(){ menu.ex.ASconfirm();},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
-		duplicate : function(){ pzprv3.base.dec.exportFileData();},
+		duplicate : function(){ menu.ex.duplicate();},
 
 		credit    : function(){ menu.pop = ee("pop3_1");},
 		jumpexp   : function(){ window.open('./faq.html?'+bd.puzzleid+(pzprv3.EDITOR?"_edit":""), '');},

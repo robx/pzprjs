@@ -107,14 +107,13 @@ pzprv3.createCommonClass('MenuExec',
 		if(menu.pop){
 			var col = (parseInt(document.newboard.col.value))|0;
 			var row = (parseInt(document.newboard.row.value))|0;
-			if(!!col && !!row){ this.newboard_open('/'+col+'/'+row);}
+			if(!!col && !!row){ this.newboard_open(col+'/'+row);}
 		}
 	},
-	newboard_open : function(url){
+	newboard_open : function(qdata){
 		menu.popclose();
 
-		pzprv3.base.dec.parseURI('?'+bd.puzzleid+url);
-		pzprv3.base.importBoardData(pzprv3.base.dec.id);
+		pzprv3.base.importBoardData({id:bd.puzzleid, qdata:qdata});
 	},
 
 	//------------------------------------------------------------------------------
@@ -126,10 +125,8 @@ pzprv3.createCommonClass('MenuExec',
 		if(menu.pop){
 			menu.popclose();
 
-			pzprv3.base.dec.parseURI(document.urlinput.ta.value);
-			if(!!pzprv3.base.dec.id){
-				pzprv3.base.importBoardData(pzprv3.base.dec.id);
-			}
+			var pzl = enc.parseURL(document.urlinput.ta.value);
+			if(!!pzl.id){ pzprv3.base.importBoardData(pzl);}
 		}
 	},
 	urloutput : function(e){
@@ -183,10 +180,8 @@ pzprv3.createCommonClass('MenuExec',
 			fstr += (farray[i]+"/");
 		}
 
-		pzprv3.base.dec.reset();
-		pzprv3.base.dec.id = (farray[0].match(/^pzprv3/) ? farray[1] : bd.puzzleid);
-		pzprv3.base.dec.fstr = fstr;
-		pzprv3.base.importBoardData(pzprv3.base.dec.id);
+		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : bd.puzzleid);
+		pzprv3.base.importBoardData({id:pid, fstr:fstr});
 
 		document.fileform.reset();
 		pzprv3.timer.reset();
@@ -211,6 +206,25 @@ pzprv3.createCommonClass('MenuExec',
 
 		_doc.fileform2.action = this.fileio
 		_doc.fileform2.submit();
+	},
+
+	//------------------------------------------------------------------------------
+	// menu.ex.duplicate() 盤面の複製を行う => 受取はCoreClass.jsのimportFileData()
+	//------------------------------------------------------------------------------
+	duplicate : function(){
+		var str = fio.fileencode(fio.PZPH);
+		var url = './p.html?'+bd.puzzleid+(pzprv3.PLAYER?"_play":"");
+		if(!ee.br.Opera){
+			var old = sessionStorage['filedata'];
+			sessionStorage['filedata'] = (str+fio.history);
+			window.open(url,'');
+			if(!!old){ sessionStorage['filedata'] = old;}
+			else     { delete sessionStorage['filedata'];}
+		}
+		else{
+			localStorage['pzprv3_filedata'] = (str+fio.history);
+			window.open(url,'');
+		}
 	},
 
 	//------------------------------------------------------------------------------

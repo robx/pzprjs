@@ -230,7 +230,7 @@ MenuExec:{
 			if(!!col && !!row && !isNaN(slap) && !(col==1 && (slap==0||slap==3))){
 				if(slap==3){ col--;}
 
-				this.newboard_open('/'+col+'/'+row+'/'+slap);
+				this.newboard_open(col+'/'+row+'/'+slap);
 			}
 			menu.popclose();
 		}
@@ -375,7 +375,7 @@ Encode:{
 		var barray = this.outbstr.split("/");
 
 		bd.setLap(parseInt(barray[0]));
-		bd.initBoardSize(pzprv3.base.dec.cols, pzprv3.base.dec.rows);
+		bd.initBoardSize(bd.qcols, bd.qrows);
 
 		this.outbstr = barray[1];
 		this.decodeNumber10();

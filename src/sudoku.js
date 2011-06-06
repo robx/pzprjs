@@ -54,7 +54,7 @@ MenuExec:{
 			else if(_doc.newboard.size[2].checked){ col=row=25;}
 			else if(_doc.newboard.size[3].checked){ col=row= 4;}
 			else                                  { col=row= 9;}
-			this.newboard_open('/'+col+'/'+row);
+			this.newboard_open(col+'/'+row);
 		}
 	}
 },
