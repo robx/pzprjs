@@ -818,16 +818,16 @@ Menu.prototype = {
 
 		// 盤面の調整 ---------------------------------------------------------
 		func = ee.ebinder(this.ex, this.ex.popupadjust);
-		lab(ee('bar2_1').el,      "盤面の調整",             "Adjust the board");
+		lab(ee('bar2_1').el,      "盤面の調整",             "Board Dimension Resizer");
 		lab(ee('pop2_1_cap0').el, "盤面の調整を行います。", "Adjust the board.");
 		lab(ee('pop2_1_cap1').el, "拡大",  "Expand");
-		btn(_doc.adjust.expandup,   func,  "上",     "UP");
-		btn(_doc.adjust.expanddn,   func,  "下",     "Down");
+		btn(_doc.adjust.expandup,   func,  "上",     "Top");
+		btn(_doc.adjust.expanddn,   func,  "下",     "Bottom");
 		btn(_doc.adjust.expandlt,   func,  "左",     "Left");
 		btn(_doc.adjust.expandrt,   func,  "右",     "Right");
 		lab(ee('pop2_1_cap2').el, "縮小", "Reduce");
-		btn(_doc.adjust.reduceup,   func,  "上",     "UP");
-		btn(_doc.adjust.reducedn,   func,  "下",     "Down");
+		btn(_doc.adjust.reduceup,   func,  "上",     "Top");
+		btn(_doc.adjust.reducedn,   func,  "下",     "Bottom");
 		btn(_doc.adjust.reducelt,   func,  "左",     "Left");
 		btn(_doc.adjust.reducert,   func,  "右",     "Right");
 		btn(_doc.adjust.close,      close, "閉じる", "Close");
