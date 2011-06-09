@@ -1,4 +1,4 @@
-// Graphic.js v3.3.3
+// Graphic.js v3.3.4
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
@@ -114,6 +114,8 @@ Graphic = function(){
 
 	this.zidx = 1;
 	this.zidx_array=[];
+
+	this.cell_arrow_qdir = false;
 
 	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', {className:'divnum', unselectable:'on'}, null, null);
 
@@ -547,7 +549,7 @@ Graphic.prototype = {
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], dir=bd.getNum(c);
+			var c = clist[i], dir=(this.cell_arrow_qdir?bd.cell[c].qdir:bd.getNum(c));
 			this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
 			if(dir>=1 && dir<=4){
 				g.fillStyle = (bd.cell[c].qnum!==-1?this.fontcolor:this.fontAnscolor);

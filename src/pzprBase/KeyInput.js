@@ -1,4 +1,4 @@
-// KeyInput.js v3.3.2
+// KeyInput.js v3.3.4
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -256,7 +256,9 @@ KeyEvent.prototype = {
 		if(!this.isSHIFT){ return false;}
 
 		var cc = tc.getTCC();
-		if(bd.QnC(cc)===-1){ return false;}
+		if(k.puzzleid==="firefly" || k.puzzleid==="snakes" || k.puzzleid==="yajikazu" || k.puzzleid==="yajirin"){
+			if(bd.QnC(cc)===-1){ return false;}
+		}
 
 		var flag = true;
 		switch(ca){
