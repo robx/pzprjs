@@ -2,6 +2,7 @@
 	/* 日本語のパズル名 */
 	ja : {
 		aho        : 'アホになり切れ',
+		amibo      : 'あみぼー',
 		ayeheya    : '∀人∃ＨＥＹＡ',
 		bag        : 'バッグ',
 		barns      : 'バーンズ',
@@ -94,6 +95,7 @@
 	/* 英語のパズル名 */
 	en : {
 		aho        : 'Aho-ni-Narikire',
+		amibo      : 'Amibo',
 		ayeheya    : 'ekawayeh',
 		bag        : 'BAG (Corral)',
 		barns      : 'Barns',
