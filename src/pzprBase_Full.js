@@ -5,15 +5,15 @@
  * written in JavaScript.
  * 
  * @author  dk22
- * @version v3.3.3
- * @date    2011-04-01
+ * @version v3.3.4
+ * @date    2011-06-11
  * 
  * This script is licensed under the MIT license. See below,
  * http://www.opensource.org/licenses/mit-license.php
  * 
  */
 
-var pzprversion="v3.3.3";
+var pzprversion="v3.3.4";
  
 (function(){
 
@@ -4454,6 +4454,8 @@ Graphic = function(){
 	this.zidx = 1;
 	this.zidx_array=[];
 
+	this.cell_arrow_qdir = false;
+
 	this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', {className:'divnum', unselectable:'on'}, null, null);
 
 	this.numobj = {};					// エレメントへの参照を保持する
@@ -4799,6 +4801,7 @@ Graphic.prototype = {
 				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2; return true;}
 				return false;
 			};
+			this.bcolor = "silver"; /* 数字入力で背景が消えないようにする応急処置 */
 			break;
 		case 'qsub3':
 			this.setBGCellColor = function(c){
@@ -4885,7 +4888,7 @@ Graphic.prototype = {
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], dir=bd.getNum(c);
+			var c = clist[i], dir=(this.cell_arrow_qdir?bd.cell[c].qdir:bd.getNum(c));
 			this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
 			if(dir>=1 && dir<=4){
 				g.fillStyle = (bd.cell[c].qnum!==-1?this.fontcolor:this.fontAnscolor);
@@ -7055,7 +7058,9 @@ KeyEvent.prototype = {
 		if(!this.isSHIFT){ return false;}
 
 		var cc = tc.getTCC();
-		if(bd.QnC(cc)===-1){ return false;}
+		if(k.puzzleid==="firefly" || k.puzzleid==="snakes" || k.puzzleid==="yajikazu" || k.puzzleid==="yajirin"){
+			if(bd.QnC(cc)===-1){ return false;}
+		}
 
 		var flag = true;
 		switch(ca){
@@ -9931,6 +9936,7 @@ OperationManager.prototype = {
 				case k.CELL:   this.stackCell(ope.id); break;
 				case k.CROSS:  this.stackCross(ope.id); break;
 				case k.BORDER: this.stackBorder(ope.id); break;
+				case k.EXCELL: this.stackEXCell(ope.id); break;
 			}
 		}
 		else if(ope.group === k.BOARD){
@@ -9953,6 +9959,7 @@ OperationManager.prototype = {
 	// um.stackCell()   Cellの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
 	// um.stackCross()  Crossの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
 	// um.stackBorder() Borderの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
+	// um.stackEXCell() EXCellの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
 	// um.paintStack()  変更が入った範囲を保持する
 	//---------------------------------------------------------------------------
 	stackAll : function(){
@@ -9972,6 +9979,9 @@ OperationManager.prototype = {
 		else{
 			this.paintStack(bd.border[id].bx-1, bd.border[id].by-2, bd.border[id].bx+1, bd.border[id].by+2);
 		}
+	},
+	stackEXCell : function(id){
+		this.paintStack(bd.excell[id].bx-1, bd.excell[id].by-1, bd.excell[id].bx+1, bd.excell[id].by+1);
 	},
 	paintStack : function(x1,y1,x2,y2){
 		if(this.range.x1 > x1){ this.range.x1 = x1;}
@@ -10799,16 +10809,16 @@ Menu.prototype = {
 
 		// 盤面の調整 ---------------------------------------------------------
 		func = ee.ebinder(this.ex, this.ex.popupadjust);
-		lab(ee('bar2_1').el,      "盤面の調整",             "Adjust the board");
+		lab(ee('bar2_1').el,      "盤面の調整",             "Board Dimension Resizer");
 		lab(ee('pop2_1_cap0').el, "盤面の調整を行います。", "Adjust the board.");
 		lab(ee('pop2_1_cap1').el, "拡大",  "Expand");
-		btn(_doc.adjust.expandup,   func,  "上",     "UP");
-		btn(_doc.adjust.expanddn,   func,  "下",     "Down");
+		btn(_doc.adjust.expandup,   func,  "上",     "Top");
+		btn(_doc.adjust.expanddn,   func,  "下",     "Bottom");
 		btn(_doc.adjust.expandlt,   func,  "左",     "Left");
 		btn(_doc.adjust.expandrt,   func,  "右",     "Right");
 		lab(ee('pop2_1_cap2').el, "縮小", "Reduce");
-		btn(_doc.adjust.reduceup,   func,  "上",     "UP");
-		btn(_doc.adjust.reducedn,   func,  "下",     "Down");
+		btn(_doc.adjust.reduceup,   func,  "上",     "Top");
+		btn(_doc.adjust.reducedn,   func,  "下",     "Bottom");
 		btn(_doc.adjust.reducelt,   func,  "左",     "Left");
 		btn(_doc.adjust.reducert,   func,  "右",     "Right");
 		btn(_doc.adjust.close,      close, "閉じる", "Close");
