@@ -367,7 +367,7 @@ pzprv3.createCommonClass('Board',
 
 		this.latticemax = (this.qcols+1)*(this.qrows+1);
 
-		this.setcoordAll();
+		this.setcoordAll(pc.bw,pc.bh);
 	},
 	setposGroup : function(type){
 		if     (type===this.CELL)  { this.setposCells();}
@@ -446,35 +446,35 @@ pzprv3.createCommonClass('Board',
 	// bd.setminmax()   盤面のbx,byの最小値/最大値をセットする
 	// bd.isinside()    指定された(bx,by)が盤面内かどうか判断する
 	//---------------------------------------------------------------------------
-	setcoordAll : function(){
+	setcoordAll : function(bw,bh){
 		{
 			for(var id=0;id<this.cellmax;id++){
 				var obj = this.cell[id];
-				obj.px = (obj.bx-1)*pc.bw;
-				obj.py = (obj.by-1)*pc.bh;
-				obj.cpx = obj.bx*pc.bw;
-				obj.cpy = obj.by*pc.bh;
+				obj.px = (obj.bx-1)*bw;
+				obj.py = (obj.by-1)*bh;
+				obj.cpx = obj.bx*bw;
+				obj.cpy = obj.by*bh;
 			}
 		}
 		if(!!this.iscross){
 			for(var id=0;id<this.crossmax;id++){
 				var obj = this.cross[id];
-				obj.px = obj.bx*pc.bw;
-				obj.py = obj.by*pc.bh;
+				obj.px = obj.bx*bw;
+				obj.py = obj.by*bh;
 			}
 		}
 		if(!!this.isborder){
 			for(var id=0;id<this.bdmax;id++){
 				var obj = this.border[id];
-				obj.px = obj.bx*pc.bw;
-				obj.py = obj.by*pc.bh;
+				obj.px = obj.bx*bw;
+				obj.py = obj.by*bh;
 			}
 		}
 		if(!!this.isexcell){
 			for(var id=0;id<this.excellmax;id++){
 				var obj = this.excell[id];
-				obj.px = (obj.bx-1)*pc.bw;
-				obj.py = (obj.by-1)*pc.bh;
+				obj.px = (obj.bx-1)*bw;
+				obj.py = (obj.by-1)*bh;
 			}
 		}
 	},

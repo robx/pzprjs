@@ -45,13 +45,14 @@ pzprv3.createCoreClass('PBase',
 	//---------------------------------------------------------------------------
 	initObjects : function(pzl){
 		pzprv3.setPuzzleID(pzl.id);	// パズルIDを設定
+		var canvas = ee('divques').unselectable().el;
 
 		// クラス初期化
 		k = new (pzprv3.getPuzzleClass('Flags'))();		// フラグの初期化・設定
 
 		bd  = new (pzprv3.getPuzzleClass('Board'))(pzl.id);	// 盤面オブジェクト
 		ans = new (pzprv3.getPuzzleClass('AnsCheck'))();	// 正解判定オブジェクト
-		pc  = new (pzprv3.getPuzzleClass('Graphic'))();		// 描画系オブジェクト
+		pc  = new (pzprv3.getPuzzleClass('Graphic'))(canvas);	// 描画系オブジェクト
 
 		mv  = new (pzprv3.getPuzzleClass('MouseEvent'))();		// マウス入力オブジェクト
 		kc  = new (pzprv3.getPuzzleClass('KeyEvent'))();		// キーボード入力オブジェクト

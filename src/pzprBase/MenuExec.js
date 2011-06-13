@@ -234,13 +234,13 @@ pzprv3.createCommonClass('MenuExec',
 	//------------------------------------------------------------------------------
 	imagesave : function(isDL){
 		try{
-			var pc2 = new (pzprv3.getPuzzleClass('Graphic'))();
+			var pc2 = new (pzprv3.getPuzzleClass('Graphic'))(ee('divques_sub').el);
 
 			// 設定値・変数をcanvas用のものに変更
 			pc2.outputImage = true;
 			pc2.fillTextEmulate = false;
 			pc2.bdmargin = pc.bdmargin_image;
-			pc2.currentContext = ee('divques_sub').el.getContext("2d");
+			pc2.setcellsize = function(){ pc2.cw=pc.cw; pc2.ch=pc.ch;};
 
 			// canvas要素の設定を適用して、再描画
 			pc2.resize_canvas();
@@ -254,6 +254,7 @@ pzprv3.createCommonClass('MenuExec',
 		catch(e){
 			menu.alertStr('画像の出力に失敗しました..','Fail to Output the Image..');
 		}
+		bd.setcoordAll(pc.bw,pc.bh); // 元に戻す
 	},
 
 	submitimage : function(url){

@@ -7,8 +7,9 @@
 // Graphicクラスの定義
 pzprv3.createCommonClass('Graphic',
 {
-	initialize : function(){
-		this.currentContext = ee('divques').unselectable().el.getContext("2d");
+	initialize : function(element){
+		this.currentContext = element.getContext("2d");
+		var g = this.currentContext;
 
 		// 盤面のCellを分ける色
 		this.gridcolor = "black";
@@ -120,16 +121,17 @@ pzprv3.createCommonClass('Graphic',
 
 		this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', {className:'divnum', unselectable:'on'}, null, null);
 
-		this.numobj = {};					// エレメントへの参照を保持する
-		this.fillTextEmulate = false;		// 数字をg.fillText()で描画しない
-		this.outputImage = false;			// 画像保存中
-
 		this.use = {};						// 描画ルーチン外で参照する値として、g.useをコピーしておく
+		for(var type in g.use){ this.use[type] = g.use[type];}
+
+		this.numobj = {};					// エレメントへの参照を保持する
+		this.fillTextEmulate				// 数字をg.fillText()で描画しない
+					 = (this.use.canvas && !document.createElement('canvas').getContext('2d').fillText);
+
+		this.outputImage = false;			// 画像保存中
 
 		this.isdrawBC = false;
 		this.isdrawBD = false;
-
-		if(ee.mobile){ this.bdmargin = this.bdmargin_image;}
 
 		this.setColors();
 	},
@@ -153,13 +155,38 @@ pzprv3.createCommonClass('Graphic',
 	//---------------------------------------------------------------------------
 	// pc.resize_canvas()    ウィンドウのLoad/Resize時の処理。
 	//                       Canvas/表示するマス目の大きさを設定する。
+	// pc.setcellsize()      pc.cw, pc.chのサイズを設定する
 	// pc.onresize_process() resize時にサイズを変更する
 	//---------------------------------------------------------------------------
 	resize_canvas : function(){
-		var wwidth = ee.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
-		var cols   = (bd.maxbx-bd.minbx)/2+2*this.bdmargin; // canvasの横幅がセル何個分に相当するか
-		var rows   = (bd.maxby-bd.minby)/2+2*this.bdmargin; // canvasの縦幅がセル何個分に相当するか
+		if(ee.mobile && !this.outputImage){ this.bdmargin = this.bdmargin_image;}
+		var cols = (bd.maxbx-bd.minbx)/2+2*this.bdmargin; // canvasの横幅がセル何個分に相当するか
+		var rows = (bd.maxby-bd.minby)/2+2*this.bdmargin; // canvasの縦幅がセル何個分に相当するか
 		if(bd.puzzleid==='box'){ cols++; rows++;}
+
+		this.setcellsize(cols,rows);
+
+		this.bw = this.cw/2;
+		this.bh = this.ch/2;
+
+		// 盤面のセルID:0が描画される左上の位置の設定
+		var x0, y0; x0 = y0 = (this.cw*this.bdmargin)|0;
+		// extendxell==0でない時は位置をずらす
+		if(!!bd.isexcell){ x0 += this.cw; y0 += this.ch;}
+
+		// Canvasのサイズ・Offset変更
+		this.currentContext.changeSize((cols*this.cw)|0, (rows*this.ch)|0);
+		this.currentContext.translate(x0, y0);
+
+		// 盤面のページ内座標を設定(fillTextEmurate用)
+		var rect = ee('divques').getRect();
+		this.pageX = (x0 + rect.left);
+		this.pageY = (y0 + rect.top);
+
+		this.onresize_process();
+	},
+	setcellsize : function(cols, rows){
+		var wwidth = ee.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
 
 		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[pp.getVal('size')];
 		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
@@ -188,42 +215,21 @@ pzprv3.createCommonClass('Graphic',
 			mwidth = wwidth*ws.limit-4;
 			this.cw = this.ch = (this.cellsize*cr.limit)|0;
 		}
-		this.bw = this.cw/2;
-		this.bh = this.ch/2;
 
 		// mainのサイズ変更
-		ee('main').el.style.width = ''+(mwidth|0)+'px';
-		if(ee.mobile){ ee('menuboard').el.style.width = '90%';}
-
-		// 盤面のセルID:0が描画される左上の位置の設定
-		var x0, y0; x0 = y0 = (this.cw*this.bdmargin)|0;
-		// extendxell==0でない時は位置をずらす
-		if(!!bd.isexcell){ x0 += this.cw; y0 += this.ch;}
-
-		// Canvasのサイズ・Offset変更
-		this.currentContext.changeSize((cols*this.cw)|0, (rows*this.ch)|0);
-		this.currentContext.translate(x0, y0);
-
-		// 盤面のページ内座標を設定(fillTextEmurate用)
-		var rect = ee('divques').getRect();
-		this.pageX = (x0 + rect.left);
-		this.pageY = (y0 + rect.top);
-
-		this.onresize_process();
+		if(!this.outputImage){
+			ee('main').el.style.width = ''+(mwidth|0)+'px';
+			if(ee.mobile){ ee('menuboard').el.style.width = '90%';}
+		}
 	},
+
 	onresize_process : function(){
 		this.resetVectorFunctions();
 		kc.resizepanel();
-		bd.setcoordAll();
+		bd.setcoordAll(this.bw,this.bh);
 
 		this.lw = Math.max(this.cw/this.lwratio, 3);
 		this.lm = (this.lw-1)/2;
-
-		var g = this.currentContext;
-		g.elements = {};
-
-		for(var type in g.use){ this.use[type] = g.use[type];}
-		this.fillTextEmulate = (this.use.canvas && !document.createElement('canvas').getContext('2d').fillText);
 
 		// 再描画
 		this.flushCanvasAll();
