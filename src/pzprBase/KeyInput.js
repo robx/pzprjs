@@ -279,7 +279,9 @@ pzprv3.createCommonClass('KeyEvent',
 		if(!this.isSHIFT){ return false;}
 
 		var cc = tc.getTCC();
-		if(bd.QnC(cc)===-1){ return false;}
+		if(k.puzzleid==="firefly" || k.puzzleid==="snakes" || k.puzzleid==="yajikazu" || k.puzzleid==="yajirin"){
+			if(bd.QnC(cc)===-1){ return false;}
+		}
 
 		var flag = true;
 		switch(ca){

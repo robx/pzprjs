@@ -552,7 +552,7 @@ pzprv3.createCommonClass('Graphic',
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], dir=bd.getNum(c);
+			var c = clist[i], dir=(!bd.numberAsObject?bd.cell[c].qdir:bd.getNum(c));
 			this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
 			if(dir>=1 && dir<=4){
 				g.fillStyle = (bd.cell[c].qnum!==-1?this.fontcolor:this.fontAnscolor);

@@ -58,6 +58,7 @@ PZLDATA.prototype = {
 
 PZLINFO.register({
 	aho       :[false, false, 'アホになり切れ', 'Aho-ni-Narikire', 'shikaku', {}],
+	amibo     :[false, false, 'あみぼー', 'Amibo', 'amibo', {}],
 	ayeheya   :[false, true,  '∀人∃ＨＥＹＡ', 'ekawayeh', 'heyawake', {}],
 	bag       :[true,  false, 'バッグ', 'BAG (Corral)', '', {}],
 	barns     :[true,  false, 'バーンズ', 'Barns', '', {}],
@@ -79,6 +80,7 @@ PZLINFO.register({
 	goishi    :[false, true,  '碁石ひろい', 'Goishi', '', {}],
 	gokigen   :[true,  false, 'ごきげんななめ', 'Gokigen-naname', '', {}],
 	hakoiri   :[true,  false, 'はこいり○△□', 'Triplets', '', {}],
+	hanare    :[false, false, 'はなれ組', 'Hanare-gumi', 'hanare', {}],
 	hashikake :[false, true,  '橋をかけろ', 'Bridges', '', { kanpen:'hashi'}],
 	heyawake  :[false, true,  'へやわけ', 'Heyawake', 'heyawake', {}],
 	heyabon   :[true,  false, 'へやぼん', 'Heya-Bon', 'bonsan', {}],
@@ -122,6 +124,7 @@ PZLINFO.register({
 	renban    :[false, false, '連番窓口', 'Renban-Madoguchi', '', {}],
 	ripple    :[false, true,  '波及効果', 'Ripple Effect', 'ripple', { kanpen:'hakyukoka'}],
 	roma      :[false, false, 'ろーま', 'Roma', '', {}],
+	sashigane :[false, false, 'さしがね', 'Sashigane', 'loute', {}],
 	shakashaka:[false, true,  'シャカシャカ', 'ShakaShaka', '', {}],
 	shikaku   :[false, true,  '四角に切れ', 'Shikaku', 'shikaku', {}],
 	shimaguni :[true,  false, '島国', 'Islands', 'shimaguni', {}],
@@ -171,7 +174,7 @@ var FBGcolor = function(pid){
 	case 'hakoiri': case 'roma': case 'toichika':        col="rgb(127, 160, 96)"; break;
 	case 'shikaku': case 'aho':  case 'loute':           col="rgb(127, 191, 0)"; break;
 	case 'fillmat': case 'tatamibari': case 'usotatami': col="rgb(96, 224, 0)"; break;
-	case 'kinkonkan':                                    col="rgb(160, 191, 0)"; break;
+	case 'kinkonkan': case 'sashigane':                  col="rgb(160, 191, 0)"; break;
 	case 'sudoku': case 'hitori': case 'hashikake':      col="rgb(191, 191, 0)"; break;
 
 	case 'gokigen': case 'wagiri': case 'nagenawa':      col="rgb(0, 127, 0)"; break;
@@ -180,7 +183,7 @@ var FBGcolor = function(pid){
 	case 'yajirin': case 'yajikazu': case 'firefly':     col="rgb(0, 224, 0)"; break;
 	case 'pipelink': case 'pipelinkr': case 'loopsp':    col="rgb(0, 255, 0)"; break;
 	case 'fourcells': case 'fivecells':                  col="rgb(64, 255, 64)"; break;
-	case 'tateyoko': case 'kakuru':                      col="rgb(96, 255, 96)"; break;
+	case 'tateyoko': case 'amibo': case 'kakuru':        col="rgb(96, 255, 96)"; break;
 
 	case 'bdblock': case 'reflect':                      col="rgb(0, 127, 96)"; break;
 	case 'norinori': case 'shimaguni':                   col="rgb(0, 127, 127)"; break;
@@ -188,7 +191,7 @@ var FBGcolor = function(pid){
 	case 'icebarn': case 'icelom': case 'icelom2':       col="rgb(0, 0, 127)"; break;
 	case 'tentaisho':                                    col="rgb(0, 0, 160)"; break;
 	case 'barns':                                        col="rgb(0, 0, 191)"; break;
-	case 'creek': case 'nanro':                          col="rgb(0, 0, 255)"; break;
+	case 'creek': case 'nanro': case 'hanare':           col="rgb(0, 0, 255)"; break;
 	case 'ripple': case 'cojun': case 'renban':          col="rgb(32, 32, 255)"; break;
 	case 'nawabari':                                     col="rgb(64, 64, 255)"; break;
 	case 'slalom':                                       col="rgb(96, 96, 255)"; break;
