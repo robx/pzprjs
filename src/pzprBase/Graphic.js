@@ -1369,7 +1369,7 @@ pzprv3.createCommonClass('Graphic',
 	drawCursor : function(islarge,isdraw){
 		var g = this.vinc('target_cursor', 'crispEdges');
 
-		if(isdraw!==false && pp.getVal('cursor')){
+		if(isdraw!==false && pp.getVal('cursor') && !this.outputImage){
 			var d = this.range;
 			if(tc.pos.x < d.x1-1 || d.x2+1 < tc.pos.x){ return;}
 			if(tc.pos.y < d.y1-1 || d.y2+1 < tc.pos.y){ return;}

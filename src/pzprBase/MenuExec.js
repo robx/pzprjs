@@ -228,67 +228,58 @@ pzprv3.createCommonClass('MenuExec',
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.ex.imagesave() 画像を保存する
+	// menu.ex.imagesave()   画像を保存する
+	// menu.ex.submitimage() "画像をダウンロード"の処理ルーチン
+	// menu.ex.openimage()   "別ウィンドウで開く"の処理ルーチン
 	//------------------------------------------------------------------------------
 	imagesave : function(isDL){
-		// 現在の設定を保存する
-		var temp_flag   = pc.fillTextEmulate;
-		var temp_margin = pc.bdmargin;
-		var temp_cursor = pp.getVal('cursor');
-
 		try{
+			var pc2 = new (pzprv3.getPuzzleClass('Graphic'))();
+
 			// 設定値・変数をcanvas用のものに変更
-			pc.outputImage = true;
-			pc.fillTextEmulate = false;
-			pc.bdmargin = pc.bdmargin_image;
-			pp.setValOnly('cursor', false);
-			pc.currentContext = ee('divques_sub').el.getContext("2d");
+			pc2.outputImage = true;
+			pc2.fillTextEmulate = false;
+			pc2.bdmargin = pc.bdmargin_image;
+			pc2.currentContext = ee('divques_sub').el.getContext("2d");
 
 			// canvas要素の設定を適用して、再描画
-			pc.resize_canvas();
+			pc2.resize_canvas();
 
 			// canvasの描画内容をDataURLとして取得する
-			var url = pc.currentContext.canvas.toDataURL();
+			var url = pc2.currentContext.canvas.toDataURL();
 
-			if(isDL){
-				var _doc = document;
-				_doc.fileform2.filename.value  = bd.puzzleid+'.png';
-				_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
-				_doc.fileform2.operation.value = 'imagesave';
-
-				_doc.fileform2.action = this.fileio
-				_doc.fileform2.submit();
-			}
-			else{
-				if(!ee.br.IE9){
-					window.open(url, '', '');
-				}
-				else{
-					// IE9だとアドレスバーの長さが2KBだったり、
-					// そもそもDataURL入れても何も起こらなかったりする対策
-					var cdoc = window.open('', '', '').document;
-					cdoc.open();
-					cdoc.writeln("<!DOCTYPE html>\n<HTML LANG=\"ja\">\n<HEAD>");
-					cdoc.writeln("<META CHARSET=\"utf-8\">");
-					cdoc.writeln("<TITLE>ぱずぷれv3<\/TITLE>\n<\/HEAD>");
-					cdoc.writeln("<BODY><img src=\"", url, "\"><\/BODY>\n<\/HTML>");
-					cdoc.close();
-				}
-			}
+			if(isDL){ this.submitimage(url);}
+			else    { this.openimage(url);}
 		}
 		catch(e){
 			menu.alertStr('画像の出力に失敗しました..','Fail to Output the Image..');
 		}
+	},
 
-		// 設定値・変数を元に戻す
-		pc.outputImage = false;
-		pc.fillTextEmulate = temp_flag;
-		pc.bdmargin = temp_margin;
-		pp.setValOnly('cursor', temp_cursor);
-		pc.currentContext = ee('divques').unselectable().el.getContext("2d");
+	submitimage : function(url){
+		var _doc = document;
+		_doc.fileform2.filename.value  = bd.puzzleid+'.png';
+		_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
+		_doc.fileform2.operation.value = 'imagesave';
 
-		// その他の設定を元に戻して、再描画
-		pc.resize_canvas();
+		_doc.fileform2.action = this.fileio
+		_doc.fileform2.submit();
+	},
+	openimage : function(url){
+		if(!ee.br.IE9){
+			window.open(url, '', '');
+		}
+		else{
+			// IE9だとアドレスバーの長さが2KBだったり、
+			// そもそもDataURL入れても何も起こらなかったりする対策
+			var cdoc = window.open('', '', '').document;
+			cdoc.open();
+			cdoc.writeln("<!DOCTYPE html>\n<HTML LANG=\"ja\">\n<HEAD>");
+			cdoc.writeln("<META CHARSET=\"utf-8\">");
+			cdoc.writeln("<TITLE>ぱずぷれv3<\/TITLE>\n<\/HEAD>");
+			cdoc.writeln("<BODY><img src=\"", url, "\"><\/BODY>\n<\/HTML>");
+			cdoc.close();
+		}
 	},
 
 	//------------------------------------------------------------------------------
