@@ -84,6 +84,8 @@ Board:{
 
 	disInputHatena : true,
 
+	minnum : 3,
+
 	enableLineNG : true,
 
 	getTriLine : function(c){

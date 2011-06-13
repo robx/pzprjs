@@ -70,10 +70,10 @@ MouseEvent:{
 		return true;
 	},
 	inputqnum_snakes : function(){
-		bd.numzero = k.editmode;
+		if(k.editmode){ bd.minnum = 1;}
 		this.mouseCell=null;
 		this.inputqnum();
-		bd.numzero = true;
+		bd.minnum = 0;
 	}
 },
 
@@ -100,9 +100,8 @@ KeyEvent:{
 Board:{
 	isborder : 1,
 
-	numzero : true,
-
 	maxnum : 5,
+	minnum : 0,
 
 	getSnakeInfo : function(){
 		var sinfo = new pzprv3.core.AreaInfo();

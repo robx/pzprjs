@@ -36,7 +36,8 @@ Board:{
 
 	nummaxfunc : function(cc){
 		return this.qcols+this.qrows-1;
-	}
+	},
+	minnum : 2
 },
 
 AreaManager:{

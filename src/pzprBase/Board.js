@@ -194,10 +194,10 @@ pzprv3.createCommonClass('Board',
 	isborder : 0,	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
 	isexcell : 0,	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
- 	// 入力できる最大の数字
+ 	// 入力できる最大・最小の数字
 	maxnum : 255,
+	minnum : 1,
 
-	numzero        : false,	// cell.qnum・anumに0を表示・入力するかどうか
 	disInputHatena : false,	// qnum==-2を入力できないようにする
 
 	numberWithMB   : false,	// 回答の数字と○×が入るパズル(○は数字が入っている扱いされる)
@@ -729,10 +729,10 @@ pzprv3.createCommonClass('Board',
 
 	//---------------------------------------------------------------------------
 	// bd.nummaxfunc() 入力できる数字の最大値を返す
+	// bd.numminfunc() 入力できる数字の最小値を返す
 	//---------------------------------------------------------------------------
-	nummaxfunc : function(cc){
-		return this.maxnum;
-	},
+	nummaxfunc : function(cc){ return this.maxnum;},
+	numminfunc : function(cc){ return this.minnum;},
 
 	//---------------------------------------------------------------------------
 	// bd.getdata() Cell,Cross,Border,EXCellの値を取得する
@@ -762,8 +762,8 @@ pzprv3.createCommonClass('Board',
 		this.prehook = {
 			cell : {
 				ques : function(id,num){ if(this.enableLineCombined){ this.setCombinedLine(id,num);} return false;},
-				qnum : function(id,num){ return (!this.numzero && num===0);},
-				anum : function(id,num){ return (!this.numzero && num===0);},
+				qnum : function(id,num){ return (this.minnum>0 && num===0);},
+				anum : function(id,num){ return (this.minnum>0 && num===0);},
 			},
 			border : {
 				qans : function(id,num){ return (this.border[id].ques!==0);},
@@ -943,7 +943,7 @@ pzprv3.createCommonClass('Board',
 		return (this.cell[c].qnum!==-1 ? this.cell[c].qnum : this.cell[c].anum);
 	},
 	setNum : function(c,val){
-		if(!this.numzero && val===0){ return;}
+		if(this.minnum>0 && val===0){ return;}
 		// editmode時 val>=0は数字 val=-1は消去 val=-2は？など
 		if(k.editmode){
 			val = (((this.numberAsObject||val===-2) && this.cell[c].qnum===val)?-1:val);

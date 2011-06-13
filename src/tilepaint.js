@@ -69,10 +69,11 @@ Board:{
 	isborder : 1,
 	isexcell : 1,
 
-	numzero        : true,
 	disInputHatena : true,
 
 	numberIsWhite : true,
+
+	minnum : 0,
 
 	set51cell : function(c){
 		this.sQuC(c,51); this.sQnC(c, 0); this.sDiC(c, 0); this.setWhite(c); this.sQsC(c, 0);

@@ -49,7 +49,7 @@ KeyEvent:{
 Board:{
 	isborder : 1,
 
-	numzero : true,
+	minnum : 0,
 
 	numberIsWhite : true,
 

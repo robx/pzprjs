@@ -37,9 +37,8 @@ TargetCursor:{
 Board:{
 	iscross : 2,
 
-	numzero : true,
-
-	maxunm : 4
+	maxnum : 4,
+	minnum : 0
 },
 
 AreaManager:{

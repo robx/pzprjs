@@ -49,9 +49,8 @@ KeyEvent:{
 Board:{
 	isborder : 2,
 
-	numzero : true,
-
 	maxnum : 3,
+	minnum : 0,
 
 	initialize : function(pid){
 		this.SuperFunc.initialize.call(this,pid);

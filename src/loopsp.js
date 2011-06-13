@@ -84,12 +84,11 @@ KeyEvent:{
 		else if(ca=='d'){ bd.sQuC(cc,16); bd.sQnC(cc,-1);}
 		else if(ca=='f'){ bd.sQuC(cc,17); bd.sQnC(cc,-1);}
 		else if((ca>='0' && ca<='9') || ca=='-'){
-			var old = bd.QnC(cc);
-			this.key_inputqnum(ca);
-			if(old!=bd.QnC(cc)){ bd.sQuC(cc,0);}
+			if(this.key_inputqnum_main(cc,ca)){ bd.sQuC(cc,0);}
 		}
 		else{ return;}
 
+		this.prev=cc;
 		pc.paintCell(cc);
 	},
 

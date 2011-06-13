@@ -253,23 +253,29 @@ pzprv3.createCommonClass('KeyEvent',
 	key_inputqnum : function(ca){
 		var cc = tc.getTCC();
 		if(k.editmode && bd.areas.roomNumber){ cc = bd.areas.rinfo.getTopOfRoomByCell(cc);}
-		var max = bd.nummaxfunc(cc), val=-1;
+
+		if(this.key_inputqnum_main(cc,ca)){
+			this.prev = cc;
+			pc.paintCell(cc);
+		}
+	},
+	key_inputqnum_main : function(cc,ca){
+		var max = bd.nummaxfunc(cc), min = bd.numminfunc(cc), val=-1;
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca), cur = bd.getNum(cc);
 			if(cur<=0 || cur*10+num>max || this.prev!=cc){ cur=0;}
 			val = cur*10+num;
-			if(val>max){ return;}
+			if(val>max || (min>0 && val===0)){ return false;}
 		}
-		else if(ca==='-') { val = (k.editmode?-2:-1);}
+		else if(ca==='-') { val = ((k.editmode&&!bd.disInputHatena)?-2:-1);}
 		else if(ca===' ') { val = -1;}
 		else if(ca==='s1'){ val = -2;}
 		else if(ca==='s2'){ val = -3;}
-		else{ return;}
+		else{ return false;}
 
 		bd.setNum(cc,val);
-		this.prev = cc;
-		pc.paintCell(cc);
+		return true;
 	},
 
 	//---------------------------------------------------------------------------

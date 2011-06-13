@@ -627,7 +627,7 @@ pzprv3.createCommonClass('Graphic',
 	},
 	drawNumber1 : function(c){
 		var obj = bd.cell[c], key = ['cell',c].join('_'), num = bd.getNum(c);
-		if(num>0 || (bd.numzero && num===0) || (!this.hideHatena && num===-2)){
+		if(num>=0 || (!this.hideHatena && num===-2)){
 			var text      = (num>=0 ? ""+num : "?");
 			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
 			var color     = this.getCellNumberColor(bd.cell[c]);
@@ -662,7 +662,7 @@ pzprv3.createCommonClass('Graphic',
 		for(var i=0;i<clist.length;i++){
 			var c=clist[i], num=bd.cell[c].qnum;
 
-			if(num>0 || (bd.numzero && num===0) || (!this.hideHatena && num===-2)){
+			if(num>=0 || (!this.hideHatena && num===-2)){
 				var px=bd.cell[c].px, ax=px, py=bd.cell[c].py, ay=py, dir = bd.cell[c].qdir;
 
 				if     (bd.cell[c].qans ===1){ g.fillStyle = this.fontBCellcolor;}

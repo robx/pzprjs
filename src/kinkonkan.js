@@ -200,7 +200,7 @@ Board:{
 	isborder : 1,
 	isexcell : 2,
 
-	numzero : true,
+	minnum : 0,
 
 	errclear : function(isrepaint){
 		this.SuperFunc.errclear.call(this,false);

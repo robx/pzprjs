@@ -6,10 +6,7 @@ pzprv3.custom.loute = {
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
-		if(k.editmode){
-			if     (bd.puzzleid==='loute')    { return this.inputarrow_cell();}
-			else if(bd.puzzleid==='sashigane'){ return this.inputarrow_cell_sashigane();}
-		}
+		if     (k.editmode){ return this.inputarrow_cell_loute();}
 		else if(k.playmode){
 			if     (this.btn.Left) { this.inputborderans();}
 			else if(this.btn.Right){ this.inputQsubLine();}
@@ -19,17 +16,14 @@ MouseEvent:{
 		if(k.editmode && this.notInputted()){ return this.inputqnum_loute();}
 	},
 	mousemove : function(){
-		if(k.editmode){
-			if     (bd.puzzleid==='loute')    { return this.inputarrow_cell();}
-			else if(bd.puzzleid==='sashigane'){ return this.inputarrow_cell_sashigane();}
-		}
+		if     (k.editmode){ return this.inputarrow_cell_loute();}
 		else if(k.playmode){
 			if     (this.btn.Left) { this.inputborderans();}
 			else if(this.btn.Right){ this.inputQsubLine();}
 		}
 	},
 
-	inputarrow_cell_sashigane : function(){
+	inputarrow_cell_loute : function(){
 		var pos = this.borderpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 
@@ -52,40 +46,38 @@ MouseEvent:{
 		if(cc===null || cc===this.mouseCell){ return;}
 
 		if(cc===tc.getTCC()){
-			if(bd.puzzleid==='loute'){
-				var qn = bd.QnC(cc), array = [-1,5,1,2,3,4,-2], flag = false;
+			var dir = bd.DiC(cc);
+			if(dir!==5){
+				var array = [0,5,1,2,3,4,-2], flag = false;
 				if(this.btn.Left){
 					for(var i=0;i<array.length-1;i++){
-						if(!flag && qn===array[i]){ bd.sQnC(cc,array[i+1]); flag=true;}
+						if(!flag && dir===array[i]){ bd.sDiC(cc,array[i+1]); flag=true;}
 					}
-					if(!flag && qn===array[array.length-1]){ bd.sQnC(cc,array[0]); flag=true;}
+					if(!flag && dir===array[array.length-1]){ bd.sDiC(cc,array[0]); flag=true;}
 				}
 				else if(this.btn.Right){
 					for(var i=array.length;i>0;i--){
-						if(!flag && qn===array[i]){ bd.sQnC(cc,array[i-1]); flag=true;}
+						if(!flag && dir===array[i]){ bd.sDiC(cc,array[i-1]); flag=true;}
 					}
-					if(!flag && qn===array[0]){ bd.sQnC(cc,array[array.length-1]); flag=true;}
+					if(!flag && dir===array[0]){ bd.sDiC(cc,array[array.length-1]); flag=true;}
+					if(bd.DiC(cc)===5 && bd.puzzleid==='sashigane'){ bd.sQnC(cc,bd.nummaxfunc(cc));}
 				}
 			}
-			else if(bd.puzzleid==='sashigane'){
-				var dir = bd.DiC(cc), qn = bd.QnC(cc);
-				var min = bd.numminfunc(cc), max = bd.nummaxfunc(cc);
-				if(dir===0){
-					bd.sDiC(cc,5);
-					if(qn===-1 && this.btn.Right){ bd.sQnC(cc,max);}
+			else{
+				var qn = bd.getNum(cc), min, max;
+				if(bd.puzzleid==='sashigane'){ max=bd.nummaxfunc(cc), min=bd.numminfunc(cc);}
+				if(this.btn.Left){
+					if(bd.puzzleid==='loute'){ bd.sDiC(cc,1);}
+					else if(qn<min){ bd.setNum(cc,min);}
+					else if(qn<max){ bd.setNum(cc,qn+1);}
+					else           { bd.setNum(cc,-1); bd.sDiC(cc,1);}
 				}
-				else if(dir===5){
-					if(this.btn.Left){
-						if     (qn>=max){ bd.sDiC(cc,0); bd.sQnC(cc,-1);}
-						else if(qn< min){ bd.sQnC(cc,min);}
-						else{ bd.sQnC(cc,qn+1);}
-					}
-					else if(this.btn.Right){
-						if     (qn===-1){ bd.sDiC(cc,0); bd.sQnC(cc,-1);}
-						else if(qn<=min){ bd.sQnC(cc,-1);}
-						else if(qn> max){ bd.sQnC(cc,max);}
-						else{ bd.sQnC(cc,qn-1);}
-					}
+				else if(this.btn.Right){
+					if(bd.puzzleid==='loute'){ bd.sDiC(cc,0);}
+					else if(qn>max){ bd.setNum(cc,max);}
+					else if(qn>min){ bd.setNum(cc,qn-1);}
+					else if(qn!==-1){ bd.setNum(cc,-1);}
+					else            { bd.sDiC(cc,0);}
 				}
 			}
 		}
@@ -109,27 +101,39 @@ KeyEvent:{
 	},
 
 	keyinput : function(ca){
+		if(this.key_inputdirec(ca)){ return;}
+
 		if(bd.puzzleid==='loute'){
-			this.key_loute(ca);
+			this.key_arrow_loute(ca);
 		}
 		else if(bd.puzzleid==='sashigane'){
-			if(this.key_inputdirec(ca)){ return;}
-			if(this.key_sashigane(ca)){ return;}
 			this.key_inputqnum_sashigane(ca);
 		}
 	},
 
-	key_loute : function(ca){
-		if     (ca==='1'||(this.isSHIFT && ca===this.KEYUP)){ ca='1';}
-		else if(ca==='2'||(this.isSHIFT && ca===this.KEYRT)){ ca='4';}
-		else if(ca==='3'||(this.isSHIFT && ca===this.KEYDN)){ ca='2';}
-		else if(ca==='4'||(this.isSHIFT && ca===this.KEYLT)){ ca='3';}
-		else if(ca==='5'||ca==='q')                         { ca='5';}
-		else if(ca==='-')                                   { ca='s1';}
-		else if(ca==='6'||ca===' ')                         { ca=' ';}
+	key_arrow_loute : function(ca){
+		if     (ca==='1')          { ca='1';}
+		else if(ca==='2')          { ca='4';}
+		else if(ca==='3')          { ca='2';}
+		else if(ca==='4')          { ca='3';}
+		else if(ca==='5'||ca==='q'){ ca='q';}
+		else if(ca==='6'||ca===' '){ ca=' ';}
+
+		var cc = tc.getTCC(), val=-1;
+
+		if('1'<=ca && ca<='4'){ val = parseInt(ca);}
+		else if(ca==='-') { val = (bd.DiC(cc)!==-2?-2:0);}
+		else if(ca==='q') { val = (bd.DiC(cc)!==5?5:0);}
+		else if(ca===' ') { val = 0;}
+		else if(ca==='s1'){ val = -2;}
+		else{ return;}
+
+		bd.sDiC(cc,val);
+		this.prev = cc;
+		pc.paintCell(cc);
 	},
 
-	key_sashigane : function(ca){
+	key_inputqnum_sashigane : function(ca){
 		var cc = tc.getTCC();
 		if(ca==='q'){
 			if(bd.DiC(cc)===5){
@@ -137,26 +141,22 @@ KeyEvent:{
 				bd.sQnC(cc,-1);
 			}
 			else{ bd.sDiC(cc,5);}
-			pc.paintCell(cc);
-			return true;
 		}
-		return false;
-	},
-	key_inputqnum_sashigane : function(ca){
-		var cc = tc.getTCC();
-		if(ca===' ' || ca==='-'){
-			if     (ca===' '){ bd.sDiC(cc,0);}
-			else if(ca==='-'){ bd.sDiC(cc,((bd.DiC(cc)!==5||bd.QnC(cc)!==-1)?5:0));}
+		else if(ca==='-'){
+			bd.sDiC(cc,((bd.DiC(cc)!==-2||bd.QnC(cc)!==-1)?-2:0));
 			bd.sQnC(cc,-1);
-			pc.paintCell(cc);
-			return;
+		}
+		else if(ca===' '){
+			bd.sDiC(cc,0);
+			bd.sQnC(cc,-1);
+		}
+		else{
+			this.key_inputqnum_main(cc,ca);
+			if(bd.isNum(cc) && bd.DiC(cc)!==5){ bd.sDiC(cc,5);}
 		}
 
-		this.key_inputqnum(ca);
-		if(bd.isNum(cc) && bd.DiC(cc)!==5){
-			bd.sDiC(cc,5);
-			pc.paintCell(cc);
-		}
+		this.prev=cc;
+		pc.paintCell(cc);
 	}
 },
 
@@ -167,17 +167,6 @@ Board:{
 	qrows : 8,
 
 	isborder : 1,
-
-	initialize : function(pid){
-		if(pid==='loute'){
-			this.numberAsObject = true;
-		}
-		else if(pid==='sashigane'){
-			this.disInputHatena = true;
-		}
-
-		this.SuperFunc.initialize.call(this,pid);
-	},
 
 	getLblockInfo : function(){
 		var rinfo = bd.areas.getRoomInfo();
@@ -228,17 +217,17 @@ Board:{
 
 	nummaxfunc : function(cc){
 		var bx=this.cell[cc].bx, by=this.cell[cc].by;
-		var col = (((bx<(this.maxbx>>1))?(this.maxbx-bx):bx)>>1);
-		var row = (((by<(this.maxby>>1))?(this.maxby-by):by)>>1);
+		var col = (((bx<(this.maxbx>>1))?(this.maxbx-bx+2):bx+2)>>1);
+		var row = (((by<(this.maxby>>1))?(this.maxby-by+2):by+2)>>1);
 		return (col+row-1);
 	},
 	numminfunc : function(cc){
 		return ((this.qcols>=2?2:1)+(this.qrows>=2?2:1)-1);
 	},
+	minnum : 3,
 
-	getObjNum : function(c){
-		return (!this.numberAsObject ? this.DiC(c) : this.getNum(c));
-	}
+	getObjNum : function(c){ return this.DiC(c);},
+	isCircle  : function(c){ return this.DiC(c)===5;}
 },
 
 AreaManager:{
@@ -247,8 +236,7 @@ AreaManager:{
 
 MenuExec:{
 	adjustBoardData : function(key,d){
-		if     (bd.puzzleid==='loute')    { this.adjustCellArrow(key,d);}
-		else if(bd.puzzleid==='sashigane'){ this.adjustNumberArrow(key,d);}
+		this.adjustNumberArrow(key,d);
 	}
 },
 
@@ -262,8 +250,9 @@ Graphic:{
 		this.circledcolor = "black";
 		this.circleratio = [0.35, 0.40];
 
+		this.fontAnscolor = "black"; /* 矢印用 */
+
 		if(bd.puzzleid==='sashigane'){
-			this.fontAnscolor = "black"; /* 矢印用 */
 			this.fontsizeratio = 0.85;
 
 			this.hideHatena = true;
@@ -276,8 +265,8 @@ Graphic:{
 
 		this.drawCellArrows();
 		this.drawCircles();
-		if     (bd.puzzleid==='loute')    { this.drawHatenas();}
-		else if(bd.puzzleid==='sashigane'){ this.drawNumbers();}
+		this.drawHatenas_loute();
+		if(bd.puzzleid==='sashigane'){ this.drawNumbers();}
 
 		this.drawBorderQsubs();
 
@@ -294,13 +283,27 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
-			if(bd.getObjNum(c)===5){
+			if(bd.isCircle(c)){
 				g.strokeStyle = this.cellcolor;
 				if(this.vnop(header+c,this.STROKE)){
 					g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize2);
 				}
 			}
 			else{ this.vhide([header+c]);}
+		}
+	},
+	drawHatenas_loute : function(){
+		var g = this.vinc('cell_hatena', 'auto');
+		var ratio = 0.8/this.fontsizeratio;
+
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var obj = bd.cell[clist[i]], key = 'cell_h_'+clist[i];
+			if(obj.qdir===-2){
+				var color = (obj.error===1 ? this.fontErrcolor : this.fontcolor);
+				this.dispnum(key, 1, "?", ratio, color, obj.cpx, obj.cpy);
+			}
+			else{ this.hidenum(key);}
 		}
 	}
 },
@@ -310,7 +313,7 @@ Graphic:{
 Encode:{
 	pzlimport : function(type){
 		if(bd.puzzleid==='loute'){
-			this.decodeNumber16();
+			this.decodeLoute();
 		}
 		else if(bd.puzzleid==='sashigane'){
 			this.decodeSashigane();
@@ -318,11 +321,43 @@ Encode:{
 	},
 	pzlexport : function(type){
 		if(bd.puzzleid==='loute'){
-			this.encodeNumber16();
+			this.encodeLoute();
 		}
 		else if(bd.puzzleid==='sashigane'){
 			this.encodeSashigane();
 		}
+	},
+
+	decodeLoute : function(){
+		var c=0, i=0, bstr = this.outbstr;
+		for(i=0;i<bstr.length;i++){
+			var obj = bd.cell[c], ca = bstr.charAt(i);
+
+			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
+							  { obj.qdir = parseInt(ca,16);}
+			else if(ca == '.'){ obj.qdir = -2;}
+			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-16);}
+
+			c++;
+			if(c > bd.cellmax){ break;}
+		}
+		this.outbstr = bstr.substr(i);
+	},
+	encodeLoute : function(){
+		var count=0, cm="";
+		for(var c=0;c<bd.cellmax;c++){
+			var pstr = "", dir = bd.cell[c].qdir;
+
+			if     (dir===-2){ pstr = ".";}
+			else if(dir!== 0){ pstr = dir.toString(16);}
+			else{ count++;}
+
+			if(count==0){ cm += pstr;}
+			else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
+		}
+		if(count>0){ cm+=(15+count).toString(36);}
+
+		this.outbstr += cm;
 	},
 
 	decodeSashigane : function(){
@@ -334,6 +369,7 @@ Encode:{
 							  { obj.qdir = 5; obj.qnum = parseInt(ca,16);}
 			else if(ca == '-'){ obj.qdir = 5; obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
 			else if(ca == '.'){ obj.qdir = 5;}
+			else if(ca == '%'){ obj.qdir = -2;}
 			else if(ca>='g' && ca<='j'){ obj.qdir = (parseInt(ca,20)-15);}
 			else if(ca>='k' && ca<='z'){ c+=(parseInt(ca,36)-20);}
 
@@ -346,12 +382,13 @@ Encode:{
 		var cm = "", count = 0;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", dir=bd.cell[c].qdir, qn=bd.cell[c].qnum;
-			if(dir>=1 && dir<=4){ pstr=(dir+15).toString(20);}
-			else if(dir===5){
-				if     (qn===-1)        { pstr=".";}
-				else if(qn>= 0&&qn<  16){ pstr=    qn.toString(16);}
+			if(dir===5){
+				if     (qn>= 0&&qn<  16){ pstr=    qn.toString(16);}
 				else if(qn>=16&&qn< 256){ pstr="-"+qn.toString(16);}
+				else                    { pstr=".";}
 			}
+			else if(dir===-2){ pstr="%";}
+			else if(dir!==0) { pstr=(dir+15).toString(20);}
 			else{ count++;}
 
 			if     (count=== 0){ cm += pstr;}
@@ -365,33 +402,26 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		if(bd.puzzleid==='loute'){
-			this.decodeCellQnum();
-		}
-		else if(bd.puzzleid==='sashigane'){
-			this.decodeCell( function(obj,ca){
-				if(ca==="o"){ obj.qdir = 5;}
-				else if(ca.charAt(0)==="o"){ obj.qdir = 5; obj.qnum = parseInt(ca.substr(1));}
-				else if(ca!=="."){ obj.qdir = parseInt(ca);}
-			});
-		}
+		this.decodeCell( function(obj,ca){
+			if(ca.charAt(0)==="o"){
+				obj.qdir = 5;
+				if(ca.length>1){ obj.qnum = parseInt(ca.substr(1));}
+			}
+			else if(ca==="-"){ obj.qdir = -2;}
+			else if(ca!=="."){ obj.qdir = parseInt(ca);}
+		});
 
 		this.decodeBorderAns();
 	},
 	encodeData : function(){
-		if(bd.puzzleid==='loute'){
-			this.encodeCellQnum();
-		}
-		else if(bd.puzzleid==='sashigane'){
-			this.encodeCell( function(obj){
-				if(obj.qdir===5){
-					if(obj.qnum===-1){ return "o ";}
-					else{ return "o"+obj.qnum+" ";}
-				}
-				else if(obj.qdir!==0){ return obj.qdir+" ";}
-				else{ return ". ";}
-			});
-		}
+		this.encodeCell( function(obj){
+			if(bd.puzzleid==='sashigane' && obj.qdir===5){
+				return "o"+(obj.qnum!==-1?obj.qnum:'')+" ";
+			}
+			else if(obj.qdir===-2){ return "- ";}
+			else if(obj.qdir!== 0){ return obj.qdir+" ";}
+			else{ return ". ";}
+		});
 
 		this.encodeBorderAns();
 	}
@@ -481,7 +511,7 @@ AnsCheck:{
 			var clist = rinfo.room[id].idlist;
 			for(var i=0;i<clist.length;i++){
 				var cc = clist[i];
-				if(bd.getObjNum(cc)===5 && rinfo.place[cc]!==3){
+				if(bd.isCircle(cc) && rinfo.place[cc]!==3){
 					if(this.inAutoCheck){ return false;}
 					bd.sErC(rinfo.room[id].idlist,1);
 					result = false;

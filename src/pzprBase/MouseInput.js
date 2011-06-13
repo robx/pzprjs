@@ -319,33 +319,37 @@ pzprv3.createCommonClass('MouseEvent',
 
 		pc.paintCell(cc);
 	},
-	inputqnum_main : function(cc,subtype){
+	inputqnum_main : function(cc,subtype){ // subtypeはqsubを0～いくつまで入力可能かの設定
 		if(k.playmode && bd.QnC(cc)!==pzprv3.getPuzzleClass('Cell').prototype.qnum){ return;}
 
-		var max = bd.nummaxfunc(cc), bn = (bd.numzero?0:1);
-		var num=bd.getNum(cc), sub=(k.editmode ? 0 : bd.QsC(cc));
-		var val=-1, vals=0, ishatena=(k.editmode && !bd.disInputHatena);
+		var max=bd.nummaxfunc(cc), min=bd.numminfunc(cc);
+		var num=bd.getNum(cc), qs=(k.editmode ? 0 : bd.QsC(cc));
+		var val=-1, ishatena=(k.editmode && !bd.disInputHatena);
 
-		// playmode: subtypeは0以上、subに何かの値が入る
-		// editmode: subtypeは-1固定、subは常に0が入る
+		// playmode: subtypeは0以上、 qsにqsub値が入る
+		// editmode: subtypeは-1固定、qsは常に0が入る
 		if(this.btn.Left){
-			if     (num===max){ if(subtype>=1){ vals = 1;}}
-			else if(sub===1)  { if(subtype>=2){ vals = 2;}}
-			else if(sub===2)  { val = -1;}
-			else if(num===-1) { val = (ishatena ? -2 : bn);}
-			else if(num===-2) { val = bn;}
-			else              { val = num+1;}
+			if     (num>=max){ val = ((subtype>=1) ? -2 : -1);}
+			else if(qs === 1){ val = ((subtype>=2) ? -3 : -1);}
+			else if(qs === 2){ val = -1;}
+			else if(num===-1){ val = (ishatena ? -2 : min);}
+			else if(num< min){ val = min;}
+			else             { val = num+1;}
 		}
 		else if(this.btn.Right){
-			if     (sub===1) { val = max;}
-			else if(sub===2) { vals = 1;}
-			else if(num===-1 && subtype>=1){ vals = subtype;}
-			else if(num===-1){ val = max;}
+			if     (qs === 1){ val = max;}
+			else if(qs === 2){ val = -2;}
+			else if(num===-1){
+				if     (subtype===1){ val = -2;}
+				else if(subtype===2){ val = -3;}
+				else                { val = max;}
+			}
+			else if(num> max){ val = max;}
+			else if(num<=min){ val = (ishatena ? -2 : -1);}
 			else if(num===-2){ val = -1;}
-			else if(num===bn){ val = (ishatena ? -2 : -1);}
 			else             { val = num-1;}
 		}
-		bd.setNum(cc,(val-vals));
+		bd.setNum(cc,val);
 	},
 
 	//---------------------------------------------------------------------------
@@ -421,7 +425,8 @@ pzprv3.createCommonClass('MouseEvent',
 		if(cc!==null){
 			var dir = this.getdir(this.prevPos, pos);
 			if(dir!==bd.NDIR){
-				bd.setNum(cc,dir);
+				if(bd.numberAsObject){ bd.setNum(cc,dir);}
+				else{ bd.sDiC(cc,dir);}
 				pc.paintCell(cc);
 				this.mousereset();
 				return;

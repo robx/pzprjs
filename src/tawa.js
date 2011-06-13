@@ -86,11 +86,10 @@ Board:{
 		this.setminmax();
 	},
 
-	numzero : true,
-
 	numberIsWhite : true,
 
 	maxnum : 6,
+	minnum : 0,
 
 	estimateSize : function(type, col, row){
 		var total = 0;

@@ -187,11 +187,10 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
-	numzero : true,
-
 	numberIsWhite : true,
 
 	maxnum : 4,
+	minnum : 0,
 	isTri : function(c){ return (!!this.cell[c] && this.cell[c].qans!==0);},
 
 	getSlopeWareaInfo : function(){

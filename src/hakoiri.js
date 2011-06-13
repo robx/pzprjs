@@ -57,6 +57,7 @@ KeyEvent:{
 		else if(ca==='3'||ca==='e'||ca==='d'||ca==='c'){ ca='3';}
 		else if(ca==='4'||ca==='r'||ca==='f'||ca==='v'){ ca='s1';}
 		else if(ca==='5'||ca==='t'||ca==='g'||ca==='b'){ ca=' ';}
+		this.key_inputqnum(ca);
 	},
 
 	enablemake_p : true,

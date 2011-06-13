@@ -37,7 +37,7 @@ Board:{
 	initialize : function(pid){
 		this.SuperFunc.initialize.call(this,pid);
 		if(pid==='chocona'){
-			this.numzero = true;
+			this.minnum = 0;
 		}
 	},
 

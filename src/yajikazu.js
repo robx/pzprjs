@@ -44,7 +44,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
-	numzero : true
+	minnum : 0
 },
 
 AreaManager:{

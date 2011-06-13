@@ -65,9 +65,8 @@ Board:{
 
 	iscross : 2,
 
-	numzero : true,
-
 	maxnum : 4,
+	minnum : 0,
 
 	// 正答判定用
 	getSlashData : function(){

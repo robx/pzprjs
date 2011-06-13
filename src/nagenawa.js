@@ -43,11 +43,10 @@ Board:{
 
 	isborder : 1,
 
-	numzero : true,
-
 	nummaxfunc : function(cc){
 		return Math.min(this.maxnum, this.areas.rinfo.getCntOfRoomByCell(cc));
-	}
+	},
+	minnum : 0
 },
 
 LineManager:{

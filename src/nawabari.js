@@ -37,8 +37,8 @@ Board:{
 	initialize : function(pid){
 		this.SuperFunc.initialize.call(this,pid);
 		if(pid==='nawabari'){
-			this.numzero = true;
 			this.maxnum = 4;
+			this.minnum = 0;
 		}
 		else if(pid==='fourcells'){
 			this.maxnum = 3;

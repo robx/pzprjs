@@ -30,9 +30,8 @@ Cell:{
 },
 
 Board:{
-	numzero : true,
-
 	maxnum : 4,
+	minnum : 0,
 
 	numberIsWhite : true,
 

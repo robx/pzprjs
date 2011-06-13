@@ -114,7 +114,7 @@ Board:{
 			this.qrows = 8;
 		}
 		if(pid==='view'){
-			this.numzero = true;
+			this.minnum = 0;
 		}
 		if(pid==='sukororoom'){
 			this.isborder = 1;

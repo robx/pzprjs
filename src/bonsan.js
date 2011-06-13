@@ -72,11 +72,10 @@ Board:{
 
 	isborder : 1,
 
-	numzero : true,
-
 	nummaxfunc : function(cc){
 		return Math.max(this.qcols,this.qrows)-1;
 	},
+	minnum : 0,
 
 	getMovedPosition : function(linfo){
 		var minfo = new pzprv3.core.AreaInfo();

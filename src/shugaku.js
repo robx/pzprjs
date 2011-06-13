@@ -128,11 +128,10 @@ KeyEvent:{
 Board:{
 	isborder : 1,
 
-	numzero : true,
-
 	numberIsWhite : true,
 
 	maxnum : 4,
+	minnum : 0,
 
 	isPillow : function(c){
 		return (!!this.cell[c] && (this.cell[c].qans>=41 && this.cell[c].qans<=45));

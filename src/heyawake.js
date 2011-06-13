@@ -37,8 +37,6 @@ KeyEvent:{
 Board:{
 	isborder : 1,
 
-	numzero : true,
-
 	nummaxfunc : function(cc){
 		var id = this.areas.rinfo.id[cc];
 		var d = this.getSizeOfClist(this.areas.rinfo[id].clist);
@@ -56,7 +54,8 @@ Board:{
 			else if((m&1)&&(n&1)){ return (((m*n+m+n-1)/3)|0);}
 			else{ return (((m*n+m+n-2)/3)|0);}
 		}
-	}
+	},
+	minnum : 0
 },
 
 AreaManager:{

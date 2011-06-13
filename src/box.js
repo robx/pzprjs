@@ -99,7 +99,6 @@ Board:{
 
 	isexcell : 1,
 
-	numzero        : true,
 	disInputHatena : true,
 
 	nummaxfunc : function(ec){
@@ -108,7 +107,8 @@ Board:{
 		var sum=0;
 		for(var n=(bx===-1?this.qrows:this.qcols);n>0;n--){ sum+=n;}
 		return sum;
-	}
+	},
+	minnum : 0
 },
 
 MenuExec:{

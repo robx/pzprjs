@@ -35,9 +35,8 @@ KeyEvent:{
 Board:{
 	isborder : 1,
 
-	numzero : true,
-
-	maxnum : 4
+	maxnum : 4,
+	minnum : 0
 },
 
 AreaManager:{

@@ -25,18 +25,15 @@ KeyEvent:{
 	key_inputqnum_kakuru : function(ca){
 		var cc = tc.getTCC();
 
-		if('0'<=ca && ca<='9'){
+		if(('0'<=ca && ca<='9') || ca==='-'){
 			if(bd.QuC(cc)===1){ return;}
-			this.key_inputqnum(ca);
-		}
-		else if(ca==='-'){
-			if(bd.QuC(cc)===1){ return;}
-			bd.setNum(cc,(k.editmode?-2:-1));
+			if(!this.key_inputqnum_main(cc,ca)){ return;}
 		}
 		else if(ca===' '){
 			if(k.editmode){ bd.sQuC(cc,0);}
 			bd.setNum(cc,-1);
 		}
+		// qはキーボードのQ, q1,q2はキーポップアップから
 		else if(k.editmode && (ca==='q'||ca==='q1'||ca==='q2')){
 			if(ca==='q'){ ca = (bd.QuC(cc)!==1?'q1':'q2');}
 			if(ca==='q1'){
@@ -46,6 +43,7 @@ KeyEvent:{
 			else if(ca=='q2'){ bd.sQuC(cc, 0);}
 		}
 		else{ return;}
+
 		this.prev=cc;
 		pc.paintCell(cc);
 	},

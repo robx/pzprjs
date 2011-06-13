@@ -68,6 +68,7 @@ Board:{
 	nummaxfunc : function(cc){
 		return Math.min(this.maxnum, this.qcols+this.qrows-1);
 	},
+	minnum : 2,
 
 	getInsideArea : function(){
 		var icheck = [];

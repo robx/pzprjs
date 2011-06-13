@@ -82,9 +82,8 @@ Board:{
 	iscross  : 2,
 	isborder : 2,
 
-	numzero : true,
-
 	maxnum : 3,
+	minnum : 0,
 
 	getdir4BorderLine1 : function(cc){
 		var cnt=0, bx=this.cell[cc].bx, by=this.cell[cc].by;

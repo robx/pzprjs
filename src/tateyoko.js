@@ -128,11 +128,10 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
-	numzero : true,
-
 	nummaxfunc : function(cc){
 		return (this.cell[cc].ques===1?4:Math.max(this.qcols,this.qrows));
 	},
+	minnum : 0,
 
 	getBarInfo : function(){
 		var binfo = new pzprv3.core.AreaInfo();

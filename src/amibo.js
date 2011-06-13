@@ -137,6 +137,7 @@ Board:{
 		var row = (((by<(this.maxby>>1))?(this.maxby-by):by)>>1);
 		return Math.max(col, row);
 	},
+	minnum : 2,
 
 	getBarInfo : function(){
 		var self = this;

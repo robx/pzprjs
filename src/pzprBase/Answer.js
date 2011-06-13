@@ -403,8 +403,9 @@ pzprv3.createCommonClass('AnsCheck',
 		return result;
 	},
 	isDifferentNumberInClist : function(clist, numfunc){
-		var result = true, d = [], num = [], bottom = (bd.numzero?0:1);
-		for(var n=bottom,max=bd.nummaxfunc(clist[0]);n<=max;n++){ d[n]=0;}
+		var result = true, d = [], num = [];
+		var max = bd.nummaxfunc(clist[0]), bottom = bd.numminfunc(clist[0]);
+		for(var n=bottom;n<=max;n++){ d[n]=0;}
 		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc(clist[i]);}
 
 		for(var i=0;i<clist.length;i++){ if(num[clist[i]]>=bottom){ d[num[clist[i]]]++;} }
