@@ -31,7 +31,7 @@ MouseEvent:{
 		if(cc!==null){
 			var dir = this.getdir(this.prevPos, pos);
 			if(dir!==bd.NDIR){
-				bd.sDiC(cc,dir);
+				bd.sDiC(cc,(bd.DiC(cc)!==dir?dir:0));
 				bd.sQnC(cc,-1);
 				pc.paintCell(cc);
 				this.mousereset();
@@ -121,7 +121,7 @@ KeyEvent:{
 
 		var cc = tc.getTCC(), val=-1;
 
-		if('1'<=ca && ca<='4'){ val = parseInt(ca);}
+		if('1'<=ca && ca<='4'){ val = parseInt(ca); val = (bd.DiC(cc)!==val?val:0);}
 		else if(ca==='-') { val = (bd.DiC(cc)!==-2?-2:0);}
 		else if(ca==='q') { val = (bd.DiC(cc)!==5?5:0);}
 		else if(ca===' ') { val = 0;}
@@ -136,11 +136,8 @@ KeyEvent:{
 	key_inputqnum_sashigane : function(ca){
 		var cc = tc.getTCC();
 		if(ca==='q'){
-			if(bd.DiC(cc)===5){
-				bd.sDiC(cc,0);
-				bd.sQnC(cc,-1);
-			}
-			else{ bd.sDiC(cc,5);}
+			bd.sDiC(cc,((bd.DiC(cc)!==5)?5:0));
+			bd.sQnC(cc,-1);
 		}
 		else if(ca==='-'){
 			bd.sDiC(cc,((bd.DiC(cc)!==-2||bd.QnC(cc)!==-1)?-2:0));

@@ -63,6 +63,7 @@ KeyEvent:{
 		else if(ca==='q')                                   { ca='5';}
 		else if(k.editmode && (ca==='5'||ca==='-'))         { ca='s1';}
 		else if(ca==='6'||ca===' ')                         { ca=' ';}
+		this.key_inputqnum(ca);
 	}
 },
 

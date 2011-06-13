@@ -62,6 +62,7 @@ KeyEvent:{
 		else if(ca==='4'||ca==='a'||(this.isSHIFT && ca===this.KEYLT)){ ca='3';}
 		else if(ca==='5'||ca==='q'||ca==='-')                         { ca='s1';}
 		else if(ca==='6'||ca==='e'||ca===' ')                         { ca=' ';}
+		this.key_inputqnum(ca);
 	},
 },
 
