@@ -6,7 +6,7 @@ pzprv3.custom.lits = {
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
-		if(bd.puzzleid==='lits' && (kc.isZ ^ pp.getVal('dispred'))){ this.dispRed();}
+		if(this.owner.pid==='lits' && (kc.isZ ^ pp.getVal('dispred'))){ this.dispRed();}
 		else if(k.editmode){ this.inputborder();}
 		else if(k.playmode){ this.inputcell();}
 	},
@@ -77,7 +77,7 @@ AreaManager:{
 Menu:{
 	menufix : function(){
 		this.addUseToFlags();
-		if(bd.puzzleid==='lits'){
+		if(this.owner.pid==='lits'){
 			this.addRedBlockToFlags();
 		}
 	}
@@ -87,12 +87,12 @@ Menu:{
 // 画像表示系
 Graphic:{
 	setColors : function(){
-		if(bd.puzzleid==='lits'){
+		if(this.owner.pid==='lits'){
 			this.gridcolor = "rgb(48, 48, 48)";
 			this.cellcolor = "rgb(96, 96, 96)";
 			this.setBGCellColorFunc('qans2');
 		}
-		else if(bd.puzzleid==='norinori'){
+		else if(this.owner.pid==='norinori'){
 			this.gridcolor = this.gridcolor_LIGHT;
 			this.bcolor = "rgb(96, 224, 160)";
 			this.bbcolor = "rgb(96, 127, 127)";
@@ -101,15 +101,15 @@ Graphic:{
 	},
 	paint : function(){
 		this.drawBGCells();
-		if(bd.puzzleid==='lits'){ this.drawDotCells(false);}
+		if(this.owner.pid==='lits'){ this.drawDotCells(false);}
 		this.drawGrid();
-		if(bd.puzzleid==='norinori'){ this.drawBlackCells();}
+		if(this.owner.pid==='norinori'){ this.drawBlackCells();}
 
 		this.drawBorders();
 
 		this.drawChassis();
 
-		if(bd.puzzleid==='norinori'){ this.drawBoxBorders(false);}
+		if(this.owner.pid==='norinori'){ this.drawBoxBorders(false);}
 	}
 },
 
@@ -118,7 +118,7 @@ Graphic:{
 Encode:{
 	pzlimport : function(type){
 		var oldflag = ((type===0 && this.checkpflag("d"))||(type===1 && !this.checkpflag("c")));
-		if(!oldflag || bd.puzzleid==='norinori'){
+		if(!oldflag || this.owner.pid==='norinori'){
 			this.decodeBorder();
 		}
 		else{
@@ -126,7 +126,7 @@ Encode:{
 		}
 	},
 	pzlexport : function(type){
-		if(type==0 || bd.puzzleid==='norinori'){
+		if(type==0 || this.owner.pid==='norinori'){
 			this.encodeBorder();
 		}
 		else{
@@ -176,8 +176,8 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		if     (bd.puzzleid==='lits')    { return this.checkAns_lits();}
-		else if(bd.puzzleid==='norinori'){ return this.checkAns_norinori();}
+		if     (this.owner.pid==='lits')    { return this.checkAns_lits();}
+		else if(this.owner.pid==='norinori'){ return this.checkAns_norinori();}
 		return true;
 	},
 

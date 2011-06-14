@@ -309,7 +309,7 @@ pzprv3.createCommonClass('MouseEvent',
 			if     (k.editmode)       { subtype =-1;}
 			else if(bd.numberWithMB)  { subtype = 2;}
 			else if(bd.numberAsObject){ subtype = 1;}
-			if(bd.puzzleid==="roma" && k.playmode){ subtype=0;}
+			if(this.owner.pid==="roma" && k.playmode){ subtype=0;}
 			this.inputqnum_main(cc,subtype);
 		}
 		else{

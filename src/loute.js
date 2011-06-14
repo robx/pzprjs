@@ -60,20 +60,20 @@ MouseEvent:{
 						if(!flag && dir===array[i]){ bd.sDiC(cc,array[i-1]); flag=true;}
 					}
 					if(!flag && dir===array[0]){ bd.sDiC(cc,array[array.length-1]); flag=true;}
-					if(bd.DiC(cc)===5 && bd.puzzleid==='sashigane'){ bd.sQnC(cc,bd.nummaxfunc(cc));}
+					if(bd.DiC(cc)===5 && this.owner.pid==='sashigane'){ bd.sQnC(cc,bd.nummaxfunc(cc));}
 				}
 			}
 			else{
 				var qn = bd.getNum(cc), min, max;
-				if(bd.puzzleid==='sashigane'){ max=bd.nummaxfunc(cc), min=bd.numminfunc(cc);}
+				if(this.owner.pid==='sashigane'){ max=bd.nummaxfunc(cc), min=bd.numminfunc(cc);}
 				if(this.btn.Left){
-					if(bd.puzzleid==='loute'){ bd.sDiC(cc,1);}
+					if(this.owner.pid==='loute'){ bd.sDiC(cc,1);}
 					else if(qn<min){ bd.setNum(cc,min);}
 					else if(qn<max){ bd.setNum(cc,qn+1);}
 					else           { bd.setNum(cc,-1); bd.sDiC(cc,1);}
 				}
 				else if(this.btn.Right){
-					if(bd.puzzleid==='loute'){ bd.sDiC(cc,0);}
+					if(this.owner.pid==='loute'){ bd.sDiC(cc,0);}
 					else if(qn>max){ bd.setNum(cc,max);}
 					else if(qn>min){ bd.setNum(cc,qn-1);}
 					else if(qn!==-1){ bd.setNum(cc,-1);}
@@ -103,10 +103,10 @@ KeyEvent:{
 	keyinput : function(ca){
 		if(this.key_inputdirec(ca)){ return;}
 
-		if(bd.puzzleid==='loute'){
+		if(this.owner.pid==='loute'){
 			this.key_arrow_loute(ca);
 		}
-		else if(bd.puzzleid==='sashigane'){
+		else if(this.owner.pid==='sashigane'){
 			this.key_inputqnum_sashigane(ca);
 		}
 	},
@@ -249,7 +249,7 @@ Graphic:{
 
 		this.fontAnscolor = "black"; /* 矢印用 */
 
-		if(bd.puzzleid==='sashigane'){
+		if(this.owner.pid==='sashigane'){
 			this.fontsizeratio = 0.85;
 
 			this.hideHatena = true;
@@ -263,7 +263,7 @@ Graphic:{
 		this.drawCellArrows();
 		this.drawCircles();
 		this.drawHatenas_loute();
-		if(bd.puzzleid==='sashigane'){ this.drawNumbers();}
+		if(this.owner.pid==='sashigane'){ this.drawNumbers();}
 
 		this.drawBorderQsubs();
 
@@ -309,18 +309,18 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	pzlimport : function(type){
-		if(bd.puzzleid==='loute'){
+		if(this.owner.pid==='loute'){
 			this.decodeLoute();
 		}
-		else if(bd.puzzleid==='sashigane'){
+		else if(this.owner.pid==='sashigane'){
 			this.decodeSashigane();
 		}
 	},
 	pzlexport : function(type){
-		if(bd.puzzleid==='loute'){
+		if(this.owner.pid==='loute'){
 			this.encodeLoute();
 		}
-		else if(bd.puzzleid==='sashigane'){
+		else if(this.owner.pid==='sashigane'){
 			this.encodeSashigane();
 		}
 	},
@@ -411,8 +411,9 @@ FileIO:{
 		this.decodeBorderAns();
 	},
 	encodeData : function(){
+		var pid = this.owner.pid;
 		this.encodeCell( function(obj){
-			if(bd.puzzleid==='sashigane' && obj.qdir===5){
+			if(pid==='sashigane' && obj.qdir===5){
 				return "o"+(obj.qnum!==-1?obj.qnum:'')+" ";
 			}
 			else if(obj.qdir===-2){ return "- ";}
@@ -442,7 +443,7 @@ AnsCheck:{
 			this.setAlert('白丸がブロックの角にありません。','A circle is out of the corner.'); return false;
 		}
 
-		if( (bd.puzzleid==='sashigane') && !this.checkNumberAndSize(rinfo) ){
+		if( (this.owner.pid==='sashigane') && !this.checkNumberAndSize(rinfo) ){
 			this.setAlert('数字とブロックのサイズが違います。','The size of the block is not equal to the number.'); return false;
 		}
 

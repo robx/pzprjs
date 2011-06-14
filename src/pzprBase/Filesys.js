@@ -36,7 +36,7 @@ pzprv3.createCommonClass('FileIO',
 		// ヘッダの処理
 		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
-			if(this.readLine()!==bd.puzzleid){ ;} /* パズルIDが入っている(fileonload()で処理) */
+			if(this.readLine()!==this.owner.pid){ ;} /* パズルIDが入っている(fileonload()で処理) */
 			this.currentType = this.PZPR;
 		}
 		else{
@@ -46,10 +46,10 @@ pzprv3.createCommonClass('FileIO',
 
 		// サイズを表す文字列
 		var row, col;
-		if(bd.puzzleid!=="sudoku"){
+		if(this.owner.pid!=="sudoku"){
 			row = parseInt(this.readLine(), 10);
 			col = parseInt(this.readLine(), 10);
-			if(this.currentType===this.PBOX && bd.puzzleid==="kakuro"){ row--; col--;}
+			if(this.currentType===this.PBOX && this.owner.pid==="kakuro"){ row--; col--;}
 		}
 		else{
 			row = col = parseInt(this.readLine(), 10);
@@ -93,7 +93,7 @@ pzprv3.createCommonClass('FileIO',
 		// ヘッダの処理
 		if(this.currentType===this.PZPR){
 			var header = (this.filever===0 ? "pzprv3" : ("pzprv3."+this.filever));
-			this.datastr = [header, bd.puzzleid, this.datastr].join("/");
+			this.datastr = [header, this.owner.pid, this.datastr].join("/");
 		}
 		var bstr = this.datastr;
 
@@ -156,7 +156,7 @@ pzprv3.createCommonClass('FileIO',
 		this.decodeObj(func, bd.CROSS, 0, 0, 2*bd.qcols,   2*bd.qrows  );
 	},
 	decodeBorder : function(func){
-		if(bd.isborder===1 || bd.puzzleid==='bosanowa'){
+		if(bd.isborder===1 || this.owner.pid==='bosanowa'){
 			this.decodeObj(func, bd.BORDER, 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
 			this.decodeObj(func, bd.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
@@ -195,7 +195,7 @@ pzprv3.createCommonClass('FileIO',
 		this.encodeObj(func, bd.CROSS, 0, 0, 2*bd.qcols,   2*bd.qrows  );
 	},
 	encodeBorder : function(func){
-		if(bd.isborder===1 || bd.puzzleid==='bosanowa'){
+		if(bd.isborder===1 || this.owner.pid==='bosanowa'){
 			this.encodeObj(func, bd.BORDER, 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
 			this.encodeObj(func, bd.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}

@@ -115,7 +115,7 @@ pzprv3.createCommonClass('MenuExec',
 	newboard_open : function(qdata){
 		menu.popclose();
 
-		this.owner.importBoardData({id:bd.puzzleid, qdata:qdata});
+		this.owner.importBoardData({id:this.owner.pid, qdata:qdata});
 	},
 
 	//------------------------------------------------------------------------------
@@ -182,7 +182,7 @@ pzprv3.createCommonClass('MenuExec',
 			fstr += (farray[i]+"/");
 		}
 
-		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : bd.puzzleid);
+		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : this.owner.pid);
 		this.owner.importBoardData({id:pid, fstr:fstr});
 
 		document.fileform.reset();
@@ -190,7 +190,7 @@ pzprv3.createCommonClass('MenuExec',
 	},
 
 	filesave : function(ftype){
-		var fname = prompt("保存するファイル名を入力して下さい。", bd.puzzleid+".txt");
+		var fname = prompt("保存するファイル名を入力して下さい。", this.owner.pid+".txt");
 		if(!fname){ return;}
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;} }
@@ -215,7 +215,7 @@ pzprv3.createCommonClass('MenuExec',
 	//------------------------------------------------------------------------------
 	duplicate : function(){
 		var str = fio.fileencode(fio.PZPH);
-		var url = './p.html?'+bd.puzzleid+(pzprv3.PLAYER?"_play":"");
+		var url = './p.html?'+this.owner.pid+(pzprv3.PLAYER?"_play":"");
 		if(!ee.br.Opera){
 			var old = sessionStorage['filedata'];
 			sessionStorage['filedata'] = (str+fio.history);
@@ -268,7 +268,7 @@ pzprv3.createCommonClass('MenuExec',
 
 	submitimage : function(url){
 		var _doc = document;
-		_doc.fileform2.filename.value  = bd.puzzleid+'.png';
+		_doc.fileform2.filename.value  = this.owner.pid+'.png';
 		_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
 		_doc.fileform2.operation.value = 'imagesave';
 
@@ -355,7 +355,7 @@ pzprv3.createCommonClass('MenuExec',
 					if(bd.qrows<=1){ return;}
 				}
 				else if(name==="reducelt"||name==="reducert"){
-					if(bd.qcols<=1 && (bd.puzzleid!=="tawa" || bd.lap!==3)){ return;}
+					if(bd.qcols<=1 && (this.owner.pid!=="tawa" || bd.lap!==3)){ return;}
 				}
 			}
 

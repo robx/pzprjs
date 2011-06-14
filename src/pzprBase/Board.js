@@ -186,8 +186,6 @@ pzprv3.createCommonClass('Board',
 		this.lines  = new owner.classes.LineManager(owner);		// 線情報管理オブジェクト
 		this.areas  = new owner.classes.AreaManager(owner);		// 領域情報管理オブジェクト
 
-		this.puzzleid = owner.pid;	// パズルのID("creek"など)
-
 		this.setHooks();
 	},
 

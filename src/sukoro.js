@@ -6,21 +6,21 @@ pzprv3.custom.sukoro = {
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
-		if(bd.puzzleid==='sukoro' || bd.puzzleid==='view'){
+		if(this.owner.pid==='sukoro' || this.owner.pid==='view'){
 			this.inputqnum();
 		}
-		else if(bd.puzzleid==='sukororoom'){
+		else if(this.owner.pid==='sukororoom'){
 			if(k.editmode){ this.inputborder();}
 			if(k.playmode){ this.inputqnum();}
 		}
 	},
 	mouseup : function(){
-		if(bd.puzzleid==='sukororoom' && this.notInputted()){
+		if(this.owner.pid==='sukororoom' && this.notInputted()){
 			if(k.editmode){ this.inputqnum();}
 		}
 	},
 	mousemove : function(){
-		if(bd.puzzleid==='sukororoom' && k.editmode && this.btn.Left){ this.inputborder();}
+		if(this.owner.pid==='sukororoom' && k.editmode && this.btn.Left){ this.inputborder();}
 	}
 },
 
@@ -49,7 +49,7 @@ KeyEvent:{
 	enableplay_p : true,
 	generate : function(mode,type){
 		var mbcolor = this.owner.classes.Graphic.prototype.mbcolor;
-		if(bd.puzzleid==='sukoro'||bd.puzzleid==='sukororoom'){
+		if(this.owner.pid==='sukoro'||this.owner.pid==='sukororoom'){
 			this.inputcol('num','knum1','1','1');
 			this.inputcol('num','knum2','2','2');
 			this.inputcol('num','knum3','3','3');
@@ -72,7 +72,7 @@ KeyEvent:{
 				this.insertrow();
 			}
 		}
-		else if(bd.puzzleid=='view'){
+		else if(this.owner.pid=='view'){
 			if(mode==3){
 				this.tdcolor = mbcolor;
 				this.inputcol('num','knumq','q','○');
@@ -153,7 +153,7 @@ AreaManager:{
 // 画像表示系
 Graphic:{
 	setColors : function(){
-		if(bd.puzzleid==='view'){
+		if(this.owner.pid==='view'){
 			this.errbcolor2 = "rgb(255, 255, 127)";
 			this.setBGCellColorFunc('error2');
 		}
@@ -162,7 +162,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawGrid();
 
-		if(bd.puzzleid==='sukororoom'){ this.drawBorders();}
+		if(this.owner.pid==='sukororoom'){ this.drawBorders();}
 
 		this.drawMBs();
 		this.drawNumbers();
@@ -189,7 +189,7 @@ Encode:{
 	pzlexport : function(type){
 		var pid = this.owner.pid;
 		if(pid==='sukoro'||pid==='sukororoom'){
-			if(bd.puzzleid==='sukororoom'){ this.encodeBorder();}
+			if(pid==='sukororoom'){ this.encodeBorder();}
 			this.encodeNumber10();
 		}
 		else if(pid==='view'){
@@ -200,12 +200,12 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		if(bd.puzzleid==='sukororoom'){ this.decodeBorderQues();}
+		if(this.owner.pid==='sukororoom'){ this.decodeBorderQues();}
 		this.decodeCellQnum();
 		this.decodeCellAnumsub();
 	},
 	encodeData : function(){
-		if(bd.puzzleid==='sukororoom'){ this.encodeBorderQues();}
+		if(this.owner.pid==='sukororoom'){ this.encodeBorderQues();}
 		this.encodeCellQnum();
 		this.encodeCellAnumsub();
 	}
@@ -216,24 +216,24 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( (bd.puzzleid!=='sukororoom') && !this.checkSideCell(function(c1,c2){ return bd.sameNumber(c1,c2);}) ){
+		if( (this.owner.pid!=='sukororoom') && !this.checkSideCell(function(c1,c2){ return bd.sameNumber(c1,c2);}) ){
 			this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
 		}
 
-		if(bd.puzzleid==='sukororoom'){ var rinfo = bd.areas.getRoomInfo();}
-		if( (bd.puzzleid==='sukororoom') && !this.checkDifferentNumberInRoom(rinfo, function(c){ return bd.getNum(c);}) ){
+		if(this.owner.pid==='sukororoom'){ var rinfo = bd.areas.getRoomInfo();}
+		if( (this.owner.pid==='sukororoom') && !this.checkDifferentNumberInRoom(rinfo, function(c){ return bd.getNum(c);}) ){
 			this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 		}
 
-		if( (bd.puzzleid==='sukororoom') && !this.checkSameObjectInRoom(rinfo, function(c){ return (bd.isNumberObj(c)?1:2);}) ){
+		if( (this.owner.pid==='sukororoom') && !this.checkSameObjectInRoom(rinfo, function(c){ return (bd.isNumberObj(c)?1:2);}) ){
 			this.setAlert('数字のあるなしが混在した部屋があります。','A room includes both numbered and non-numbered cells.'); return false;
 		}
 
-		if( (bd.puzzleid!=='view') && !this.checkDir4Cell(function(c){ return bd.isNumberObj(c);},0) ){
+		if( (this.owner.pid!=='view') && !this.checkDir4Cell(function(c){ return bd.isNumberObj(c);},0) ){
 			this.setAlert('数字と、その数字の上下左右に入る数字の数が一致していません。','The number of numbers placed in four adjacent cells is not equal to the number.'); return false;
 		}
 
-		if( (bd.puzzleid==='view') && !this.checkViewNumber() ){
+		if( (this.owner.pid==='view') && !this.checkViewNumber() ){
 			this.setAlert('数字と、他のマスにたどり着くまでのマスの数の合計が一致していません。','Sum of four-way gaps to another number is not equal to the number.'); return false;
 		}
 

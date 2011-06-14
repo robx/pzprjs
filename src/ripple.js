@@ -129,15 +129,15 @@ AnsCheck:{
 			this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 		}
 
-		if( (bd.puzzleid==='ripple') && !this.checkRippleNumber() ){
+		if( (this.owner.pid==='ripple') && !this.checkRippleNumber() ){
 			this.setAlert('数字よりもその間隔が短いところがあります。','The gap of the same kind of number is smaller than the number.'); return false;
 		}
 
-		if( (bd.puzzleid==='cojun') && !this.checkSideCell(function(c1,c2){ return bd.sameNumber(c1,c2);}) ){
+		if( (this.owner.pid==='cojun') && !this.checkSideCell(function(c1,c2){ return bd.sameNumber(c1,c2);}) ){
 			this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
 		}
 
-		if( (bd.puzzleid==='cojun') && !this.checkUpperNumber(rinfo) ){
+		if( (this.owner.pid==='cojun') && !this.checkUpperNumber(rinfo) ){
 			this.setAlert('同じ部屋で上に小さい数字が乗っています。','There is an small number on big number in a room.'); return false;
 		}
 

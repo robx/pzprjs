@@ -7,7 +7,7 @@ pzprv3.custom.bonsan = {
 MouseEvent:{
 	mousedown : function(){
 		if(k.editmode){
-			if(bd.puzzleid==='heyabon'){ this.inputborder();}
+			if(this.owner.pid==='heyabon'){ this.inputborder();}
 		}
 		else if(k.playmode){
 			if(this.btn.Left){ this.inputLine();}
@@ -21,7 +21,7 @@ MouseEvent:{
 	},
 	mousemove : function(){
 		if(k.editmode){
-			if(bd.puzzleid==='heyabon'){ this.inputborder();}
+			if(this.owner.pid==='heyabon'){ this.inputborder();}
 		}
 		else if(k.playmode){
 			if(this.btn.Left){ this.inputLine();}
@@ -124,7 +124,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		if(bd.puzzleid==='heyabon'){ this.drawBorders();}
+		if(this.owner.pid==='heyabon'){ this.drawBorders();}
 
 		this.drawTip();
 		this.drawLines();
@@ -184,14 +184,14 @@ Encode:{
 		this.checkPuzzleid();
 	},
 	pzlexport : function(type){
-		if(type===1 || bd.puzzleid==='heyabon'){ this.encodeBorder();}else{ this.outpflag="c";}
+		if(type===1 || this.owner.pid==='heyabon'){ this.encodeBorder();}else{ this.outpflag="c";}
 		this.encodeNumber16();
 	},
 
 	checkPuzzleid : function(){
-		if(bd.puzzleid==='bonsan'){
+		if(this.owner.pid==='bonsan'){
 			for(var id=0;id<bd.bdmax;id++){
-				if(bd.border[id].ques===1){ bd.puzzleid='heyabon'; break;}
+				if(bd.border[id].ques===1){ this.owner.pid='heyabon'; break;}
 			}
 			menu.displayDesign();
 		}
@@ -246,13 +246,13 @@ AnsCheck:{
 
 		var rinfo = bd.areas.getRoomInfo(), minfo = bd.getMovedPosition(linfo);
 		var mfunc = function(c){ return ((c!==null && minfo.id[c]!==null) ? bd.QnC(minfo.id[c]) : -1);};
-		if( (bd.puzzleid==='bonsan') && !this.checkFractal(rinfo, mfunc) ){
+		if( (this.owner.pid==='bonsan') && !this.checkFractal(rinfo, mfunc) ){
 			this.setAlert('○が点対称に配置されていません。', 'Position of circles is not point symmetric.'); return false;
 		}
-		if( (bd.puzzleid==='heyabon') && !this.checkFractal(rinfo, mfunc) ){
+		if( (this.owner.pid==='heyabon') && !this.checkFractal(rinfo, mfunc) ){
 			this.setAlert('部屋の中の○が点対称に配置されていません。', 'Position of circles in the room is not point symmetric.'); return false;
 		}
-		if( (bd.puzzleid==='heyabon') && !this.checkNoObjectInRoom(rinfo, mfunc) ){
+		if( (this.owner.pid==='heyabon') && !this.checkNoObjectInRoom(rinfo, mfunc) ){
 			this.setAlert('○のない部屋があります。','A room has no circle.'); return false;
 		}
 

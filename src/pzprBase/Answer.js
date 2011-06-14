@@ -173,7 +173,7 @@ pzprv3.createCommonClass('AnsCheck',
 	checkOneArea : function(cinfo){
 		if(cinfo.max>1){
 			if(this.performAsLine){ bd.sErBAll(2); bd.setErrLareaByCell(cinfo,1,1); }
-			if(!this.performAsLine || bd.puzzleid=="firefly"){ bd.sErC(cinfo.room[1].idlist,1);}
+			if(!this.performAsLine || this.owner.pid=="firefly"){ bd.sErC(cinfo.room[1].idlist,1);}
 			return false;
 		}
 		return true;
@@ -272,7 +272,7 @@ pzprv3.createCommonClass('AnsCheck',
 			if( !evalfunc(d.cols, d.rows, a, n) ){
 				if(this.inAutoCheck){ return false;}
 				if(this.performAsLine){ if(result){ bd.sErBAll(2);} bd.setErrLareaById(cinfo,id,1);}
-				else{ bd.sErC(clist,(bd.puzzleid!="tateyoko"?1:4));}
+				else{ bd.sErC(clist,(this.owner.pid!="tateyoko"?1:4));}
 				result = false;
 			}
 		}
@@ -362,7 +362,7 @@ pzprv3.createCommonClass('AnsCheck',
 
 				if(this.performAsLine){ bd.sErBAll(2); bd.setErrLareaByCell(rinfo,c,1);}
 				else{ bd.sErC(rinfo.room[rinfo.id[c]].idlist,1);}
-				if(bd.puzzleid=="kaero"){
+				if(this.owner.pid=="kaero"){
 					for(var cc=0;cc<bd.cellmax;cc++){
 						if(rinfo.id[c]===rinfo.id[cc] && this.getBeforeCell(cc)!==null && rinfo.id[c]!==rinfo.id[this.getBeforeCell(cc)])
 							{ bd.sErC([this.getBeforeCell(cc)],4);}
@@ -383,7 +383,7 @@ pzprv3.createCommonClass('AnsCheck',
 			else if(d[val[c]]!==rinfo.id[c]){
 				var clist = [];
 				for(var cc=0;cc<bd.cellmax;cc++){
-					if(bd.puzzleid=="kaero"){ if(val[c]===bd.QnC(cc)){ clist.push(cc);}}
+					if(this.owner.pid=="kaero"){ if(val[c]===bd.QnC(cc)){ clist.push(cc);}}
 					else{ if(rinfo.id[c]===rinfo.id[cc] || d[val[c]]===rinfo.id[cc]){ clist.push(cc);} }
 				}
 				bd.sErC(clist,1);

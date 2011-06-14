@@ -164,7 +164,7 @@ pzprv3.createCommonClass('Graphic',
 		if(ee.mobile && !this.outputImage){ this.bdmargin = this.bdmargin_image;}
 		var cols = (bd.maxbx-bd.minbx)/2+2*this.bdmargin; // canvasの横幅がセル何個分に相当するか
 		var rows = (bd.maxby-bd.minby)/2+2*this.bdmargin; // canvasの縦幅がセル何個分に相当するか
-		if(bd.puzzleid==='box'){ cols++; rows++;}
+		if(this.owner.pid==='box'){ cols++; rows++;}
 
 		this.setcellsize(cols,rows);
 
@@ -1101,7 +1101,7 @@ pzprv3.createCommonClass('Graphic',
 
 			this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c]);
 			if(num>=2 && num<=5){
-				switch(bd.puzzleid){
+				switch(this.owner.pid){
 				case 'reflect':
 					g.fillStyle = ((bd.cell[c].error===1||bd.cell[c].error===4) ? this.errcolor1 : this.cellcolor);
 					break;
@@ -1117,7 +1117,7 @@ pzprv3.createCommonClass('Graphic',
 	drawTriangle1 : function(px,py,num,vid){
 		var g = this.currentContext;
 		if(this.vnop(vid,this.FILL)){
-			var cw = this.cw, ch = this.ch, mgn = (bd.puzzleid==="reflect"?1:0);
+			var cw = this.cw, ch = this.ch, mgn = (this.owner.pid==="reflect"?1:0);
 			switch(num){
 				case 2: g.setOffsetLinePath(px,py, mgn,mgn,  mgn,ch+1, cw+1,ch+1, true); break;
 				case 3: g.setOffsetLinePath(px,py, cw+1,mgn, mgn,ch+1, cw+1,ch+1, true); break;
@@ -1548,7 +1548,7 @@ pzprv3.createCommonClass('Graphic',
 		if(x1<0){ x1=0;} if(x2>2*bd.qcols){ x2=2*bd.qcols;}
 		if(y1<0){ y1=0;} if(y2>2*bd.qrows){ y2=2*bd.qrows;}
 
-		var lw = (bd.puzzleid!=='bosanowa'?this.lw:1), bw = this.bw, bh = this.bh;
+		var lw = (this.owner.pid!=='bosanowa'?this.lw:1), bw = this.bw, bh = this.bh;
 		var boardWidth = bd.qcols*this.cw, boardHeight = bd.qrows*this.ch;
 		g.fillStyle = "black";
 

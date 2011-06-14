@@ -91,10 +91,10 @@ Encode:{
 	pzlimport : function(type){
 		this.decode4Cell();
 
-		if(bd.puzzleid==='ichimaga'){
-			if     (this.checkpflag("m")){ bd.puzzleid="ichimagam";}
-			else if(this.checkpflag("x")){ bd.puzzleid="ichimagax";}
-			else                         { bd.puzzleid="ichimaga"; }
+		if(this.owner.pid==='ichimaga'){
+			if     (this.checkpflag("m")){ this.owner.pid="ichimagam";}
+			else if(this.checkpflag("x")){ this.owner.pid="ichimagax";}
+			else                         { this.owner.pid="ichimaga"; }
 			menu.displayDesign();
 		}
 	},
@@ -106,10 +106,10 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		var pzlflag = this.readLine();
-		if(bd.puzzleid==='ichimaga'){
-			if     (pzlflag=="mag")  { bd.puzzleid="ichimagam";}
-			else if(pzlflag=="cross"){ bd.puzzleid="ichimagax";}
-			else                     { bd.puzzleid="ichimaga"; }
+		if(this.owner.pid==='ichimaga'){
+			if     (pzlflag=="mag")  { this.owner.pid="ichimagam";}
+			else if(pzlflag=="cross"){ this.owner.pid="ichimagax";}
+			else                     { this.owner.pid="ichimaga"; }
 			menu.displayDesign();
 		}
 
@@ -117,9 +117,9 @@ FileIO:{
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
-		if     (bd.puzzleid==="ichimagam"){ this.datastr+="mag/";}
-		else if(bd.puzzleid==="ichimagax"){ this.datastr+="cross/";}
-		else                              { this.datastr+="def/";}
+		if     (this.owner.pid==="ichimagam"){ this.datastr+="mag/";}
+		else if(this.owner.pid==="ichimagax"){ this.datastr+="cross/";}
+		else                                 { this.datastr+="def/";}
 
 		this.encodeCellQnum();
 		this.encodeBorderLine();
@@ -134,7 +134,7 @@ AnsCheck:{
 		if( !this.checkLcntCell_firefly(3) ){
 			this.setAlert('分岐している線があります。', 'There is a branch line.'); return false;
 		}
-		if( (bd.puzzleid!=='ichimagax') && !this.checkLcntCell_firefly(4) ){
+		if( (this.owner.pid!=='ichimagax') && !this.checkLcntCell_firefly(4) ){
 			this.setAlert('線が交差しています。', 'There is a crossing line.'); return false;
 		}
 
@@ -176,7 +176,7 @@ AnsCheck:{
 		var c1=room.cells[0], c2=room.cells[1];
 
 		var qn1=bd.QnC(c1), qn2=(c2!==null?bd.QnC(c2):-1), err=0;
-		if((bd.puzzleid==='ichimagam') && qn1!==-2 && qn1===qn2){ err=3;}
+		if((this.owner.pid==='ichimagam') && qn1!==-2 && qn1===qn2){ err=3;}
 		else if(c2!==null && ccnt>1){ err=2;}
 		else if(c2===null){ err=1;}
 		room.error = err;

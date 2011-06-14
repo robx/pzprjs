@@ -181,7 +181,7 @@ AnsCheck:{
 		}
 
 		var rinfo = bd.areas.getRoomInfo();
-		if( (bd.puzzleid==='ayeheya') && !this.checkFractal(rinfo) ){
+		if( (this.owner.pid==='ayeheya') && !this.checkFractal(rinfo) ){
 			this.setAlert('部屋の中の黒マスが点対称に配置されていません。', 'Position of black cells in the room is not point symmetric.'); return false;
 		}
 

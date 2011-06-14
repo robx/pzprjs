@@ -75,11 +75,11 @@ Menu:{
 // 画像表示系
 Graphic:{
 	setColors : function(){
-		if(bd.puzzleid==='shimaguni'){
+		if(this.owner.pid==='shimaguni'){
 			this.bcolor = "rgb(191, 191, 255)";
 			this.bbcolor = "rgb(191, 191, 255)";
 		}
-		else if(bd.puzzleid==='chocona'){
+		else if(this.owner.pid==='chocona'){
 			this.bcolor = this.bcolor_GREEN;
 		}
 		this.gridcolor = this.gridcolor_LIGHT;
@@ -132,8 +132,8 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		if     (bd.puzzleid==='shimaguni'){ return this.checkAns_shimaguni();}
-		else if(bd.puzzleid==='chocona')  { return this.checkAns_chocona();}
+		if     (this.owner.pid==='shimaguni'){ return this.checkAns_shimaguni();}
+		else if(this.owner.pid==='chocona')  { return this.checkAns_chocona();}
 		return true;
 	},
 

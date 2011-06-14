@@ -7,7 +7,7 @@ pzprv3.custom.kramma = {
 MouseEvent:{
 	mousedown : function(){
 		if(k.editmode){
-			if(bd.puzzleid!=='kramma'){ this.inputcrossMark();}
+			if(this.owner.pid!=='kramma'){ this.inputcrossMark();}
 		}
 		else if(k.playmode){
 			if     (this.btn.Left) { this.inputborderans();}
@@ -95,7 +95,7 @@ AreaManager:{
 Menu:{
 	menuinit : function(){
 		this.SuperFunc.menuinit.call(this);
-		if(bd.puzzleid==='shwolf' && this.enableSaveImage){
+		if(this.owner.pid==='shwolf' && this.enableSaveImage){
 			if(ee.br.Gecko && !location.hostname){
 				ee('ms_imagesavep').el.className = 'smenunull';
 			}
@@ -112,7 +112,7 @@ Graphic:{
 		this.setBorderColorFunc('qans');
 
 		this.crosssize = 0.15;
-		if(bd.puzzleid==='shwolf'){
+		if(this.owner.pid==='shwolf'){
 			this.imgtile = new pzprv3.core.ImageTile('./src/img/shwolf_obj.png',2,1);
 		}
 	},
@@ -121,10 +121,10 @@ Graphic:{
 		this.drawDashedGrid();
 		this.drawBorders();
 
-		if(bd.puzzleid!=='shwolf'){ this.drawQnumCircles();}
-		else                      { this.drawSheepWolf();}
+		if(this.owner.pid!=='shwolf'){ this.drawQnumCircles();}
+		else                         { this.drawSheepWolf();}
 
-		if(bd.puzzleid!=='kramma'){ this.drawCrossMarks();}
+		if(this.owner.pid!=='kramma'){ this.drawCrossMarks();}
 
 		this.drawHatenas();
 
@@ -161,7 +161,7 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	pzlimport : function(type){
-		if(bd.puzzleid==='shwolf' || !this.checkpflag("c")){
+		if(this.owner.pid==='shwolf' || !this.checkpflag("c")){
 			this.decodeCrossMark();
 			this.decodeCircle();
 		}
@@ -172,7 +172,7 @@ Encode:{
 		this.checkPuzzleid();
 	},
 	pzlexport : function(type){
-		if(bd.puzzleid!=='kramma'){
+		if(this.owner.pid!=='kramma'){
 			this.encodeCrossMark();
 			this.encodeCircle();
 		}
@@ -183,9 +183,9 @@ Encode:{
 	},
 
 	checkPuzzleid : function(){
-		if(bd.puzzleid==='kramma'){
+		if(this.owner.pid==='kramma'){
 			for(var c=0;c<bd.crossmax;c++){
-				if(bd.cross[c].qnum===1){ bd.puzzleid='kramman'; break;}
+				if(bd.cross[c].qnum===1){ this.owner.pid='kramman'; break;}
 			}
 			menu.displayDesign();
 		}
@@ -212,23 +212,23 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( (bd.puzzleid!=='kramma') && !this.checkLcntCross(3,0) ){
+		if( (this.owner.pid!=='kramma') && !this.checkLcntCross(3,0) ){
 			this.setAlert('分岐している線があります。','There is a branched line.'); return false;
 		}
-		if( (bd.puzzleid!=='kramma') && !this.checkLcntCross(4,1) ){
+		if( (this.owner.pid!=='kramma') && !this.checkLcntCross(4,1) ){
 			this.setAlert('線が黒点上で交差しています。','There is a crossing line on the black point.'); return false;
 		}
-		if( (bd.puzzleid!=='kramma') && !this.checkLcntCurve() ){
+		if( (this.owner.pid!=='kramma') && !this.checkLcntCurve() ){
 			this.setAlert('線が黒点以外で曲がっています。','A line curves out of the black points.'); return false;
 		}
 
-		if( (bd.puzzleid==='shwolf') && !this.checkLineChassis() ){
+		if( (this.owner.pid==='shwolf') && !this.checkLineChassis() ){
 			this.setAlert('外枠につながっていない線があります。','A line doesn\'t connect to the chassis.'); return false;
 		}
 
 		var rinfo = bd.areas.getRoomInfo();
 		if( !this.checkNoNumber(rinfo) ){
-			if(bd.puzzleid!=='shwolf')
+			if(this.owner.pid!=='shwolf')
 				{ this.setAlert('白丸も黒丸も含まれない領域があります。','An area has no marks.');}
 			else
 				{ this.setAlert('ヤギもオオカミもいない領域があります。','An area has neither sheeps nor wolves.');}
@@ -236,23 +236,23 @@ AnsCheck:{
 		}
 
 		if( !this.checkSameObjectInRoom(rinfo, function(c){ return bd.getNum(c);}) ){
-			if(bd.puzzleid!=='shwolf')
+			if(this.owner.pid!=='shwolf')
 				{ this.setAlert('白丸と黒丸が両方含まれる領域があります。','An area has both white and black circles.');}
 			else
 				{ this.setAlert('ヤギとオオカミが両方いる領域があります。','An area has both sheeps and wolves.');}
 			return false;
 		}
 
-		if( (bd.puzzleid!=='kramma') && !this.checkLcntCross(1,0) ){
+		if( (this.owner.pid!=='kramma') && !this.checkLcntCross(1,0) ){
 			this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
 		}
-		if( (bd.puzzleid==='kramman') && !this.checkLcntCross(0,1) ){
+		if( (this.owner.pid==='kramman') && !this.checkLcntCross(0,1) ){
 			this.setAlert('黒点上を線が通過していません。','No lines on the black point.'); return false;
 		}
 
 		return true;
 	},
-	check1st : function(){ return (bd.puzzleid==='kramma') || this.checkLcntCross(1,0);},
+	check1st : function(){ return (this.owner.pid==='kramma') || this.checkLcntCross(1,0);},
 
 	checkLcntCurve : function(){
 		var result = true;

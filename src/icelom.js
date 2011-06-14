@@ -367,8 +367,8 @@ Encode:{
 		this.decodeNumber16();
 		this.decodeInOut();
 
-		if(bd.puzzleid==='icelom'){
-			bd.puzzleid = (this.checkpflag("a")?'icelom':'icelom2');
+		if(this.owner.pid==='icelom'){
+			this.owner.pid = (this.checkpflag("a")?'icelom':'icelom2');
 			menu.displayDesign();
 		}
 	},
@@ -377,7 +377,7 @@ Encode:{
 		this.encodeNumber16();
 		this.encodeInOut();
 
-		if(bd.puzzleid==='icelom'){ this.outpflag="a";}
+		if(this.owner.pid==='icelom'){ this.outpflag="a";}
 	},
 
 	decodeIcelom : function(){
@@ -428,8 +428,8 @@ FileIO:{
 		bd.inputarrowout(parseInt(this.readLine()));
 
 		var pzltype = this.readLine();
-		if(bd.puzzleid==='icelom'){
-			bd.puzzleid = (pzltype==="allwhite"?'icelom':'icelom2');
+		if(this.owner.pid==='icelom'){
+			this.owner.pid = (pzltype==="allwhite"?'icelom':'icelom2');
 			menu.displayDesign();
 		}
 
@@ -446,7 +446,7 @@ FileIO:{
 		});
 	},
 	encodeData : function(){
-		var pzltype = (bd.puzzleid==='icelom'?"allwhite":"skipwhite");
+		var pzltype = (this.owner.pid==='icelom'?"allwhite":"skipwhite");
 
 		this.datastr += (bd.arrowin+"/"+bd.arrowout+"/"+pzltype+"/");
 		this.encodeCell( function(obj){
@@ -505,11 +505,11 @@ AnsCheck:{
 			this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
 		}
 
-		if( (bd.puzzleid==='icelom') && !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===0 && bd.QuC(c)!==6);}) ){
+		if( (this.owner.pid==='icelom') && !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===0 && bd.QuC(c)!==6);}) ){
 			this.setAlert('通過していない白マスがあります。', 'The line doesn\'t pass all of the white cell.'); return false;
 		}
 
-		if( (bd.puzzleid==='icelom2') && !this.checkIgnoreIcebarn() ){
+		if( (this.owner.pid==='icelom2') && !this.checkIgnoreIcebarn() ){
 			this.setAlert('すべてのアイスバーンを通っていません。', 'A icebarn is not gone through.'); return false;
 		}
 

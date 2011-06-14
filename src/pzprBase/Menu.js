@@ -23,8 +23,8 @@ pzprv3.createCommonClass('Menu',
 
 		this.ex = new owner.classes.MenuExec(owner);	// MenuExecオブジェクト用
 
-		var pinfo = pzprv3.PZLINFO.info[bd.puzzleid];
-		this.ispencilbox = (pinfo.exists.kanpen && (bd.puzzleid!=="nanro" && bd.puzzleid!=="ayeheya" && bd.puzzleid!=="kurochute"));
+		var pid = this.owner.pid, pinfo = pzprv3.PZLINFO.info[pid];
+		this.ispencilbox = (pinfo.exists.kanpen && (pid!=="nanro" && pid!=="ayeheya" && pid!=="kurochute"));
 
 		// ElementTemplate : メニュー領域
 		var menu_funcs = {mouseover : ee.ebinder(this, this.menuhover), mouseout  : ee.ebinder(this, this.menuout)};
@@ -32,7 +32,7 @@ pzprv3.createCommonClass('Menu',
 
 		// ElementTemplate : フロートメニュー
 		var float_funcs = {mouseout:ee.ebinder(this, this.floatmenuout)};
-		this.EL_FLOAT = ee.addTemplate('float_parent','menu', {className:'floatmenu'}, {backgroundColor:pzprv3.PZLINFO.toFBGcolor(bd.puzzleid)}, float_funcs);
+		this.EL_FLOAT = ee.addTemplate('float_parent','menu', {className:'floatmenu'}, {backgroundColor:pzprv3.PZLINFO.toFBGcolor(pid)}, float_funcs);
 
 		// ElementTemplate : フロートメニュー(中身)
 		var smenu_funcs  = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout), click:ee.ebinder(this, this.submenuclick)};
@@ -188,7 +188,7 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	displayDesign : function(){
 		this.displayTitle();
-		document.body.style.backgroundImage = "url(./bg/"+bd.puzzleid+".gif)";
+		document.body.style.backgroundImage = "url(./bg/"+this.owner.pid+".gif)";
 		if(ee.br.IE6){
 			ee('title2').el.style.marginTop = "24px";
 			ee('separator2').el.style.margin = '0pt';
@@ -203,7 +203,7 @@ pzprv3.createCommonClass('Menu',
 		ee('title2').el.innerHTML = title;
 	},
 	getPuzzleName : function(){
-		var pinfo = pzprv3.PZLINFO.info[bd.puzzleid];
+		var pinfo = pzprv3.PZLINFO.info[this.owner.pid];
 		return this.selectStr(pinfo.ja, pinfo.en);
 	},
 
@@ -722,7 +722,7 @@ pzprv3.createCommonClass('Menu',
 		func = ee.ebinder(this.ex, this.ex.newboard);
 		lab(ee('bar1_1').el,      "盤面の新規作成",         "Createing New Board");
 		lab(ee('pop1_1_cap0').el, "盤面を新規作成します。", "Create New Board.");
-		if(bd.puzzleid!=='sudoku' && bd.puzzleid!=='tawa'){
+		if(this.owner.pid!=='sudoku' && this.owner.pid!=='tawa'){
 			lab(ee('pop1_1_cap1').el, "よこ",                   "Cols");
 			lab(ee('pop1_1_cap2').el, "たて",                   "Rows");
 		}
@@ -745,11 +745,11 @@ pzprv3.createCommonClass('Menu',
 			ee('urlbuttonarea').appendEL(el).appendBR();
 			btn(el, func, strJP, strEN);
 		};
-		var pinfo = pzprv3.PZLINFO.info[bd.puzzleid];
+		var pinfo = pzprv3.PZLINFO.info[this.owner.pid];
 		btt('pzprv3',     "ぱずぷれv3のURLを出力する",           "Output PUZ-PRE v3 URL",          true);
 		btt('pzprapplet', "ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", pinfo.exists.pzprapp);
 		btt('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              pinfo.exists.kanpen);
-		btt('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (bd.puzzleid==="heyawake"));
+		btt('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (this.owner.pid==="heyawake"));
 		btt('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
 		ee("urlbuttonarea").appendBR();
 		func = ee.ebinder(this.ex, this.ex.openurl);
@@ -1110,7 +1110,7 @@ pzprv3.createCommonClass('Properties',
 		duplicate : function(){ menu.ex.duplicate();},
 
 		credit    : function(){ menu.pop = ee("pop3_1");},
-		jumpexp   : function(){ window.open('./faq.html?'+bd.puzzleid+(pzprv3.EDITOR?"_edit":""), '');},
+		jumpexp   : function(){ window.open('./faq.html?'+this.owner.pid+(pzprv3.EDITOR?"_edit":""), '');},
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
 		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},
@@ -1128,7 +1128,7 @@ pzprv3.createCommonClass('Properties',
 
 		newboard : function(){
 			menu.pop = ee("pop1_1");
-			if(bd.puzzleid!="sudoku"){
+			if(this.owner.pid!="sudoku"){
 				document.newboard.col.value = bd.qcols;
 				document.newboard.row.value = bd.qrows;
 			}
@@ -1181,7 +1181,7 @@ pzprv3.debug = {
 
 		_doc.testform.starttest.style.display = 'none';
 
-		_doc.testform.perfload.style.display = (bd.puzzleid!=='country' ? 'none' : 'inline');
+		_doc.testform.perfload.style.display = (pzprv3.base.pid!=='country' ? 'none' : 'inline');
 		_doc.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
 		_doc.testform.database.style.display = (ee.storage.localST ? 'none' : 'inline');
 

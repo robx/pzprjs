@@ -48,7 +48,7 @@ KeyEvent:{
 		else if(ca=='d'){ bd.sQuC(cc,16); }
 		else if(ca=='f'){ bd.sQuC(cc,17); }
 		else if(ca=='-'){ bd.sQuC(cc,(bd.QuC(cc)!==-2?-2:0)); }
-		else if(bd.puzzleid==='pipelinkr' && ca=='1'){ bd.sQuC(cc, 6); }
+		else if(this.owner.pid==='pipelinkr' && ca=='1'){ bd.sQuC(cc, 6); }
 		else{ return false;}
 
 		pc.paintCellAround(cc);
@@ -70,7 +70,7 @@ KeyEvent:{
 		this.inputcol('num','knum_','-','?');
 		this.inputcol('empty','','','');
 		this.inputcol('empty','','','');
-		if(bd.puzzleid==='pipelink'){
+		if(this.owner.pid==='pipelink'){
 			this.inputcol('empty','','','');
 		}
 		else{
@@ -117,7 +117,7 @@ Menu:{
 	menufix : function(){
 		this.addRedLineToFlags();
 
-		if(bd.puzzleid==='pipelinkr'){
+		if(this.owner.pid==='pipelinkr'){
 			pp.addSelect('disptype','setting',1,[1,2],'表示形式','Display');
 
 			pp.addChild('disptype_1', 'disptype', '○', 'Circle');
@@ -156,7 +156,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDashedGrid();
 
-		if(bd.puzzleid==='pipelinkr'){
+		if(this.owner.pid==='pipelinkr'){
 			this.drawCircles_pipelink((pp.getVal('disptype')==1));
 			this.drawBorders();
 		}
@@ -227,10 +227,10 @@ Encode:{
 		this.decodePipelink();
 
 		this.checkPuzzleid();
-		if(bd.puzzleid==='pipelinkr'){ pp.setVal('disptype', (!this.checkpflag('i')?1:2));}
+		if(this.owner.pid==='pipelinkr'){ pp.setVal('disptype', (!this.checkpflag('i')?1:2));}
 	},
 	pzlexport : function(type){
-		this.outpflag = ((bd.puzzleid==='pipelinkr' && pp.getVal('disptype')==2)?"i":"");
+		this.outpflag = ((this.owner.pid==='pipelinkr' && pp.getVal('disptype')==2)?"i":"");
 		this.encodePipelink(type);
 	},
 
@@ -284,9 +284,9 @@ Encode:{
 	},
 
 	checkPuzzleid : function(){
-		if(bd.puzzleid==='pipelink'){
+		if(this.owner.pid==='pipelink'){
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.cell[c].ques===6){ bd.puzzleid='pipelinkr'; break;}
+				if(bd.cell[c].ques===6){ this.owner.pid='pipelinkr'; break;}
 			}
 			menu.displayDesign();
 		}
@@ -304,11 +304,11 @@ FileIO:{
 		this.decodeBorderLine();
 
 		enc.checkPuzzleid();
-		if(bd.puzzleid==='pipelinkr'){ pp.setVal('disptype', (disptype=="circle"?1:2));}
+		if(this.owner.pid==='pipelinkr'){ pp.setVal('disptype', (disptype=="circle"?1:2));}
 	},
 	encodeData : function(){
-		if     (bd.puzzleid==='pipelink') { this.datastr += 'pipe/';}
-		else if(bd.puzzleid==='pipelinkr'){ this.datastr += (pp.getVal('disptype')==1?"circle/":"ice/");}
+		if     (this.owner.pid==='pipelink') { this.datastr += 'pipe/';}
+		else if(this.owner.pid==='pipelinkr'){ this.datastr += (pp.getVal('disptype')==1?"circle/":"ice/");}
 		this.encodeCell( function(obj){
 			if     (obj.ques==6) { return "o ";}
 			else if(obj.ques==-2){ return "- ";}
@@ -332,10 +332,10 @@ AnsCheck:{
 			this.setAlert('分岐している線があります。','There is a branched line.'); return false;
 		}
 
-		if( (bd.puzzleid==='pipelinkr') && !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===4 && bd.QuC(c)!==6 && bd.QuC(c)!==11);}) ){
+		if( (this.owner.pid==='pipelinkr') && !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===4 && bd.QuC(c)!==6 && bd.QuC(c)!==11);}) ){
 			this.setAlert((pp.getVal('disptype')==2?'氷':'○')+'の部分以外で線が交差しています。','There is a crossing line out of '+(pp.getVal('disptype')==1?'circles':'ices')+'.'); return false;
 		}
-		if( (bd.puzzleid==='pipelinkr') && !this.checkIceLines() ){
+		if( (this.owner.pid==='pipelinkr') && !this.checkIceLines() ){
 			this.setAlert((pp.getVal('disptype')==2?'氷':'○')+'の部分で線が曲がっています。','A line curves on '+(pp.getVal('disptype')==1?'circles':'ices')+'.'); return false;
 		}
 

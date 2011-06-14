@@ -19,7 +19,7 @@ pzprv3.createCoreClass('ProblemData',
 	},
 	setnewData : function(id){
 		this.id = id;
-		this.pid = bd.puzzleid;
+		this.pid = pzprv3.base.pid;
 		this.col = bd.qcols;
 		this.row = bd.qrows;
 		this.hard = 0;

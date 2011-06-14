@@ -516,7 +516,7 @@ pzprv3.createCommonClass('KeyEvent',
 		}
 		else if(type==='image'){
 			_child = ee.createEL(this.EL_KPIMG_IMG, this.prefix+id+"_i");
-			_child.src = "./src/img/"+bd.puzzleid+"_kp.gif";
+			_child.src = "./src/img/"+this.owner.pid+"_kp.gif";
 			this.imgs.push({'el':_child, 'x':disp[0], 'y':disp[1]});
 		}
 

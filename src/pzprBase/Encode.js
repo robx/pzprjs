@@ -74,7 +74,7 @@ pzprv3.createCommonClass('Encode',
 		pc.resize_canvas();
 	},
 	pzloutput : function(type){
-		if(type===this.KANPEN && bd.puzzleid=='lits'){ type = this.KANPENP;}
+		if(type===this.KANPEN && this.owner.pid=='lits'){ type = this.KANPENP;}
 		var size='', ispflag=false;
 
 		this.outpflag = '';
@@ -121,12 +121,12 @@ pzprv3.createCommonClass('Encode',
 		else if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
 
 		if(type===this.PZPRAPP){
-			if     (bd.puzzleid==='pipelinkr'){ str=str.replace("%PID%","pipelink");}
-			else if(bd.puzzleid==='heyabon')  { str=str.replace("%PID%","bonsan");}
+			if     (this.owner.pid==='pipelinkr'){ str=str.replace("%PID%","pipelink");}
+			else if(this.owner.pid==='heyabon')  { str=str.replace("%PID%","bonsan");}
 		}
 		return str.replace("%DOMAIN%", domain)
-				  .replace("%PID%", pzprv3.PZLINFO.toURLID(bd.puzzleid))
-				  .replace("%KID%", pzprv3.PZLINFO.toKanpen(bd.puzzleid));
+				  .replace("%PID%", pzprv3.PZLINFO.toURLID(this.owner.pid))
+				  .replace("%KID%", pzprv3.PZLINFO.toKanpen(this.owner.pid));
 	},
 
 	// オーバーライド用

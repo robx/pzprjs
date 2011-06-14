@@ -23,7 +23,7 @@ pzprv3.createCoreClass('Owner',
 	initialize : function(){
 		this.resizetimer  = null;	// resizeタイマー
 
-		this.pid     = '';
+		this.pid     = '';			// パズルのID("creek"など)
 		this.canvas  = null;
 		this.classes = {};
 	},
@@ -50,9 +50,8 @@ pzprv3.createCoreClass('Owner',
 	// base.clearObjects()   イベントやメニューの設定を設定前に戻す
 	//---------------------------------------------------------------------------
 	initObjects : function(pzl){
-		this.pid    = pzl.id;
-		this.canvas = ee('divques').unselectable().el;
-
+		this.pid     = pzl.id;
+		this.canvas  = ee('divques').unselectable().el;
 		this.classes = pzprv3.setPuzzleClass(this);	// クラスを取得
 
 		// クラス初期化
@@ -104,7 +103,7 @@ pzprv3.createCoreClass('Owner',
 	//---------------------------------------------------------------------------
 	importBoardData : function(pzl){
 		// 今のパズルと別idの時
-		if(bd.puzzleid != pzl.id){
+		if(this.pid != pzl.id){
 			this.clearObjects();
 			this.reload_func(pzl);
 		}

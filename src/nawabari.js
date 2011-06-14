@@ -108,19 +108,19 @@ AnsCheck:{
 	checkAns : function(){
 
 		var rinfo = bd.areas.getRoomInfo();
-		if( (bd.puzzleid==='nawabari') && !this.checkAreaRect(rinfo) ){
+		if( (this.owner.pid==='nawabari') && !this.checkAreaRect(rinfo) ){
 			this.setAlert('部屋の形が長方形ではありません。','There is not rectangle territory.'); return false;
 		}
 
-		if( (bd.puzzleid==='nawabari') && !this.checkNoNumber(rinfo) ){
+		if( (this.owner.pid==='nawabari') && !this.checkNoNumber(rinfo) ){
 			this.setAlert('数字の入っていない部屋があります。','A territory has no numbers.'); return false;
 		}
 
-		if( (bd.puzzleid==='nawabari') && !this.checkDoubleNumber(rinfo) ){
+		if( (this.owner.pid==='nawabari') && !this.checkDoubleNumber(rinfo) ){
 			this.setAlert('1つの部屋に2つ以上の数字が入っています。','A territory has plural numbers.'); return false;
 		}
 
-		if( (bd.puzzleid==='fourcells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a>=4);} ) ){
+		if( (this.owner.pid==='fourcells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a>=4);} ) ){
 			this.setAlert('サイズが4マスより小さいブロックがあります。','The size of block is smaller than four.'); return false;
 		}
 
@@ -132,7 +132,7 @@ AnsCheck:{
 			this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
 		}
 
-		if( (bd.puzzleid==='fourcells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a<=4);} ) ){
+		if( (this.owner.pid==='fourcells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a<=4);} ) ){
 			this.setAlert('サイズが4マスより大きいブロックがあります。','The size of block is larger than four.'); return false;
 		}
 

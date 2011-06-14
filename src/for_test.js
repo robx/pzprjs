@@ -43,6 +43,7 @@ pzprv3.debug.extend({
 
 	alltimer : null,
 	phase : 99,
+	pid : '',
 	all_test : function(){
 		if(this.alltimer != null){ return;}
 		var pnum=0, term=10, idlist=[], self = this;
@@ -57,6 +58,7 @@ pzprv3.debug.extend({
 			self.phase = 0;
 
 			var newid = idlist[pnum];
+			self.pid = newid;
 			pzprv3.base.importBoardData({id:newid});
 
 			if(pnum >= term){ clearInterval(self.alltimer);}
@@ -77,11 +79,12 @@ pzprv3.debug.extend({
 		var self = this;
 
 		self.fails = 0;
+		self.pid = pzprv3.base.pid;
 		setTimeout(function(){ self.check_encode(self);},0);
 	},
 	//Encode test--------------------------------------------------------------
 	check_encode : function(self){
-		var inp = enc.getURLBase(enc.PZPRV3)+self.urls[bd.puzzleid];
+		var inp = enc.getURLBase(enc.PZPRV3)+self.urls[self.pid];
 		var ta  = enc.pzloutput(enc.PZPRV3);
 
 		if(inp!=ta){ self.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
@@ -90,7 +93,7 @@ pzprv3.debug.extend({
 		setTimeout(function(){ self.check_encode_kanpen(self);},0);
 	},
 	check_encode_kanpen : function(self){
-		if(pzprv3.PZLINFO.info[bd.puzzleid].exists.kanpen){
+		if(pzprv3.PZLINFO.info[self.pid].exists.kanpen){
 			var bd2 = self.bd_freezecopy();
 
 			document.urlinput.ta.value = enc.pzloutput(enc.KANPEN);
@@ -104,7 +107,7 @@ pzprv3.debug.extend({
 	},
 	//Answer test--------------------------------------------------------------
 	check_answer : function(self){
-		var acsstr = self.acs[bd.puzzleid], len = self.acs[bd.puzzleid].length;
+		var acsstr = self.acs[self.pid], len = self.acs[self.pid].length;
 		for(var n=0;n<acsstr.length;n++){
 			fio.filedecode(acsstr[n][1]);
 
@@ -152,7 +155,7 @@ pzprv3.debug.extend({
 
 			fio.filedecode(outputstr);
 
-			self.qsubf = !(bd.puzzleid=='fillomino'||bd.puzzleid=='hashikake'||bd.puzzleid=='kurodoko'||bd.puzzleid=='shikaku'||bd.puzzleid=='tentaisho');
+			self.qsubf = !(self.pid=='fillomino'||self.pid=='hashikake'||self.pid=='kurodoko'||self.pid=='shikaku'||self.pid=='tentaisho');
 			if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO kanpen = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTextarea("FileIO kanpen = pass");}
 			self.qsubf = true;

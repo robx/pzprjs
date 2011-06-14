@@ -138,15 +138,15 @@ AnsCheck:{
 			this.setAlert('1つの領域に2つ以上の数字が入っています。','An area has plural numbers.'); return false;
 		}
 
-		if( (bd.puzzleid==='shikaku') && !this.checkAreaRect(rinfo) ){
+		if( (this.owner.pid==='shikaku') && !this.checkAreaRect(rinfo) ){
 			this.setAlert('四角形ではない領域があります。','An area is not rectangle.'); return false;
 		}
 
-		if( (bd.puzzleid==='aho') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (n<0 || (n%3)==0 || w*h==a);} ) ){
+		if( (this.owner.pid==='aho') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (n<0 || (n%3)==0 || w*h==a);} ) ){
 			this.setAlert('大きさが3の倍数ではないのに四角形ではない領域があります。','An area whose size is not multiples of three is not rectangle.'); return false;
 		}
 
-		if( (bd.puzzleid==='aho') && !this.checkLshapeArea(rinfo) ){
+		if( (this.owner.pid==='aho') && !this.checkLshapeArea(rinfo) ){
 			this.setAlert('大きさが3の倍数である領域がL字型になっていません。','An area whose size is multiples of three is not L-shape.'); return false;
 		}
 

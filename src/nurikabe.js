@@ -6,7 +6,7 @@ pzprv3.custom.nurikabe = {
 // マウス入力系
 MouseEvent:{
 	mousedown : function(){
-		if(bd.puzzleid==='nurikabe' && (kc.isZ ^ pp.getVal('dispred'))){ this.dispRed();}
+		if(this.owner.pid==='nurikabe' && (kc.isZ ^ pp.getVal('dispred'))){ this.dispRed();}
 		else if(k.editmode){ this.inputqnum();}
 		else if(k.playmode){ this.inputcell();}
 	},
@@ -66,7 +66,7 @@ AreaManager:{
 Menu:{
 	menufix : function(){
 		this.addUseToFlags();
-		if(bd.puzzleid==='nurikabe'){
+		if(this.owner.pid==='nurikabe'){
 			this.addRedBlockToFlags();
 		}
 	}
@@ -76,14 +76,14 @@ Menu:{
 // 画像表示系
 Graphic:{
 	setColors : function(){
-		if(bd.puzzleid!=='nurikabe'){
+		if(this.owner.pid!=='nurikabe'){
 			this.bcolor = this.bcolor_GREEN;
 			this.setBGCellColorFunc('qsub1');
 		}
 	},
 	paint : function(){
 		this.drawBGCells();
-		if(bd.puzzleid==='nurikabe'){ this.drawDotCells(false);}
+		if(this.owner.pid==='nurikabe'){ this.drawDotCells(false);}
 		this.drawGrid();
 		this.drawBlackCells();
 
@@ -115,7 +115,7 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		if(bd.puzzleid==='nurikabe'){
+		if(this.owner.pid==='nurikabe'){
 			this.decodeCellQnumAns();
 		}
 		else{
@@ -124,7 +124,7 @@ FileIO:{
 		}
 	},
 	encodeData : function(){
-		if(bd.puzzleid==='nurikabe'){
+		if(this.owner.pid==='nurikabe'){
 			this.encodeCellQnumAns();
 		}
 		else{
@@ -145,18 +145,18 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		var mochi = (bd.puzzleid==='mochikoro'||bd.puzzleid==='mochinyoro');
+		var mochi = (this.owner.pid==='mochikoro'||this.owner.pid==='mochinyoro');
 
-		if( (bd.puzzleid!=='nuribou') && !this.check2x2Block( function(c){ return bd.isBlack(c);} ) ){
+		if( (this.owner.pid!=='nuribou') && !this.check2x2Block( function(c){ return bd.isBlack(c);} ) ){
 			this.setAlert('2x2の黒マスのかたまりがあります。','There is a 2x2 block of black cells.'); return false;
 		}
 
-		if(bd.puzzleid!=='mochikoro'){ var binfo = bd.areas.getBCellInfo();}
-		if( (bd.puzzleid==='nuribou') && !this.checkAllArea(binfo, function(w,h,a,n){ return (w==1||h==1);} ) ){
+		if(this.owner.pid!=='mochikoro'){ var binfo = bd.areas.getBCellInfo();}
+		if( (this.owner.pid==='nuribou') && !this.checkAllArea(binfo, function(w,h,a,n){ return (w==1||h==1);} ) ){
 			this.setAlert('「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。','There is a mass of black cells, whose width is more than two.'); return false;
 		}
 
-		if( (bd.puzzleid==='nuribou') && !this.checkCorners(binfo) ){
+		if( (this.owner.pid==='nuribou') && !this.checkCorners(binfo) ){
 			this.setAlert('同じ面積の黒マスのカタマリが、角を共有しています。','Masses of black cells whose length is the same share a corner.'); return false;
 		}
 
@@ -173,7 +173,7 @@ AnsCheck:{
 			this.setAlert('数字の入っていないシマがあります。','An area of white cells has no numbers.'); return false;
 		}
 
-		if( (bd.puzzleid==='nurikabe') && !this.checkOneArea( binfo ) ){
+		if( (this.owner.pid==='nurikabe') && !this.checkOneArea( binfo ) ){
 			this.setAlert('黒マスが分断されています。','Black cells are devided,'); return false;
 		}
 
@@ -189,7 +189,7 @@ AnsCheck:{
 			return false;
 		}
 
-		if( bd.puzzleid==='mochinyoro' && !this.checkAllArea(binfo, function(w,h,a,n){ return (w*h!=a);} ) ){
+		if( this.owner.pid==='mochinyoro' && !this.checkAllArea(binfo, function(w,h,a,n){ return (w*h!=a);} ) ){
 			this.setAlert('四角形になっている黒マスのブロックがあります。','There is a block of black cells that is rectangle.'); return false;
 		}
 
