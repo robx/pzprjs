@@ -127,14 +127,7 @@ pzprv3.createCoreClass('Point',
 	equals : function(pos){ return (this.x===pos.x && this.y===pos.y);}
 });
 // Addressクラス
-pzprv3.createCoreClass('Address',
-{
-	initialize : function(xx,yy){ this.x = xx; this.y = yy;},
-	set : function(pos){ this.x = pos.x; this.y = pos.y;},
-	reset : function(){ this.x = null; this.y = null;},
-	valid : function(){ return (this.x!==null && this.y!==null);},
-	equals : function(pos){ return (this.x===pos.x && this.y===pos.y);}
-});
+pzprv3.createCoreClass('Address:Point',{});
 
 //---------------------------------------------------------------------------
 // ★AreaInfoクラス 主に色分けの情報を管理する
