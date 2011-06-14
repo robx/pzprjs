@@ -5,21 +5,27 @@
 //---------------------------------------------------------------------------
 pzprv3.createCommonClass('Flags',
 {
-	initialize : function(){
+	initialize : function(owner){
+		this.owner = owner;
+
 		this.editmode = (pzprv3.EDITOR && !pzprv3.DEBUG);	// 問題配置モード
 		this.playmode = !this.editmode;						// 回答モード
 	}
 });
 
 //---------------------------------------------------------------------------
-// ★PBaseクラス ぱずぷれv3のベース処理やその他の処理を行う
+// ★Ownerクラス ぱずぷれv3のベース処理やその他の処理を行う
 //---------------------------------------------------------------------------
 
-// PBaseクラス
-pzprv3.createCoreClass('PBase',
+// Ownerクラス
+pzprv3.createCoreClass('Owner',
 {
 	initialize : function(){
 		this.resizetimer  = null;	// resizeタイマー
+
+		this.pid     = '';
+		this.canvas  = null;
+		this.classes = {};
 	},
 
 	//---------------------------------------------------------------------------
@@ -44,28 +50,30 @@ pzprv3.createCoreClass('PBase',
 	// base.clearObjects()   イベントやメニューの設定を設定前に戻す
 	//---------------------------------------------------------------------------
 	initObjects : function(pzl){
-		pzprv3.setPuzzleID(pzl.id);	// パズルIDを設定
-		var canvas = ee('divques').unselectable().el;
+		this.pid    = pzl.id;
+		this.canvas = ee('divques').unselectable().el;
+
+		this.classes = pzprv3.setPuzzleClass(this);	// クラスを取得
 
 		// クラス初期化
-		k = new (pzprv3.getPuzzleClass('Flags'))();		// フラグの初期化・設定
+		k = new this.classes.Flags(this);		// フラグの初期化・設定
 
-		bd  = new (pzprv3.getPuzzleClass('Board'))(pzl.id);	// 盤面オブジェクト
-		ans = new (pzprv3.getPuzzleClass('AnsCheck'))();	// 正解判定オブジェクト
-		pc  = new (pzprv3.getPuzzleClass('Graphic'))(canvas);	// 描画系オブジェクト
+		bd  = new this.classes.Board(this);			// 盤面オブジェクト
+		ans = new this.classes.AnsCheck(this);		// 正解判定オブジェクト
+		pc  = new this.classes.Graphic(this);		// 描画系オブジェクト
 
-		mv  = new (pzprv3.getPuzzleClass('MouseEvent'))();		// マウス入力オブジェクト
-		kc  = new (pzprv3.getPuzzleClass('KeyEvent'))();		// キーボード入力オブジェクト
-		tc  = new (pzprv3.getPuzzleClass('TargetCursor'))();	// 入力用カーソルオブジェクト
+		mv  = new this.classes.MouseEvent(this);	// マウス入力オブジェクト
+		kc  = new this.classes.KeyEvent(this);		// キーボード入力オブジェクト
+		tc  = new this.classes.TargetCursor(this);	// 入力用カーソルオブジェクト
 
-		um = new (pzprv3.getPuzzleClass('OperationManager'))();	// 操作情報管理オブジェクト
-		ut = new (pzprv3.getPuzzleClass('UndoTimer'))();		// Undo用Timerオブジェクト
+		um = new this.classes.OperationManager(this);	// 操作情報管理オブジェクト
+		ut = new this.classes.UndoTimer(this);			// Undo用Timerオブジェクト
 
-		enc = new (pzprv3.getPuzzleClass('Encode'))();		// URL入出力用オブジェクト
-		fio = new (pzprv3.getPuzzleClass('FileIO'))();		// ファイル入出力用オブジェクト
+		enc = new this.classes.Encode(this);		// URL入出力用オブジェクト
+		fio = new this.classes.FileIO(this);		// ファイル入出力用オブジェクト
 
-		menu = new (pzprv3.getPuzzleClass('Menu'))();		// メニューを扱うオブジェクト
-		pp = new (pzprv3.getPuzzleClass('Properties'))();	// メニュー関係の設定値を保持するオブジェクト
+		menu = new this.classes.Menu(this);		// メニューを扱うオブジェクト
+		pp = new this.classes.Properties(this);	// メニュー関係の設定値を保持するオブジェクト
 
 		// メニュー関係初期化
 		menu.menuinit();

@@ -284,8 +284,8 @@ Menu:{
 	}
 },
 Properties:{
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
 		this.funcs.newboard = function(){ menu.ex.newboard_show();};
 	}
 },

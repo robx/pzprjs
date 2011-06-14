@@ -56,9 +56,9 @@ Board:{
 },
 
 AreaManager:{
-	initialize : function(pid){
-		this.SuperFunc.initialize.call(this,pid);
-		if(pid!=='mochikoro'){ this.checkBlackCell = true;}
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
+		if(owner.pid!=='mochikoro'){ this.checkBlackCell = true;}
 	},
 	checkWhiteCell : true
 },

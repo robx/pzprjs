@@ -48,12 +48,12 @@ KeyEvent:{
 Board:{
 	isborder : 1,
 
-	initialize : function(pid){
-		this.SuperFunc.initialize.call(this,pid);
-		if(bd.puzzleid==='fillmat'){
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
+		if(owner.pid==='fillmat'){
 			this.maxnum = 4;
 		}
-		else if(bd.puzzleid==='usotatami'){
+		else if(owner.pid==='usotatami'){
 			this.qcols = 8;
 			this.qrows = 8;
 		}

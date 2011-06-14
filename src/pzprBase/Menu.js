@@ -8,7 +8,9 @@
 // Menuクラス
 pzprv3.createCommonClass('Menu',
 {
-	initialize : function(){
+	initialize : function(owner){
+		this.owner = owner;
+
 		this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
 		this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
 		this.pop        = "";			// 現在表示しているポップアップウィンドウ(オブジェクト)
@@ -19,7 +21,7 @@ pzprv3.createCommonClass('Menu',
 		this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
 		this.labelstack = [];			// span等の文字列の情報(idnameと文字列のリスト)
 
-		this.ex = new (pzprv3.getPuzzleClass('MenuExec'))();	// MenuExecオブジェクト用
+		this.ex = new owner.classes.MenuExec(owner);	// MenuExecオブジェクト用
 
 		var pinfo = pzprv3.PZLINFO.info[bd.puzzleid];
 		this.ispencilbox = (pinfo.exists.kanpen && (bd.puzzleid!=="nanro" && bd.puzzleid!=="ayeheya" && bd.puzzleid!=="kurochute"));
@@ -964,7 +966,9 @@ pzprv3.createCommonClass('Menu',
 //---------------------------------------------------------------------------
 pzprv3.createCommonClass('Properties',
 {
-	initialize : function(){
+	initialize : function(owner){
+		this.owner = owner;
+
 		this.flags    = [];	// サブメニュー項目の情報(オブジェクトの配列になる)
 		this.flaglist = [];	// idnameの配列
 	},

@@ -8,7 +8,9 @@
 // AnsCheckクラス
 pzprv3.createCommonClass('AnsCheck',
 {
-	initialize :  function(){
+	initialize :  function(owner){
+		this.owner = owner;
+
 		this.performAsLine = false;
 		this.inCheck = false;
 		this.inAutoCheck = false;
@@ -338,7 +340,7 @@ pzprv3.createCommonClass('AnsCheck',
 		var result = true;
 		for(var id=1;id<=bd.areas.rinfo.max;id++){
 			var isset = function(c){ return (bd.areas.rinfo.id[c]===id && bd.isBlack(c));};
-			var data = (new pzprv3.core.AreaData(isset)).getAreaInfo();
+			var data = (new pzprv3.core.AreaData(this.owner, isset)).getAreaInfo();
 			if(data.max>1){
 				if(this.inAutoCheck){ return false;}
 				bd.sErC(bd.areas.rinfo[id].clist,1);

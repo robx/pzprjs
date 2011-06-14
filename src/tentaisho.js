@@ -136,8 +136,8 @@ Board:{
 
 	disInputHatena : true,
 
-	initialize : function(pid){
-		this.SuperFunc.initialize.call(this,pid);
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
 
 		this.star = []; /* インスタンス化 */
 	},

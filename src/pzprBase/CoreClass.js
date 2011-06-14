@@ -21,7 +21,6 @@
 })({
 	version : 'v3.4.0pre',
 
-	scriptid : '',	// getPuzzleClass用
 	EDITOR : true,	// エディタモード
 	PLAYER : false,	// playerモード
 	DEBUG  : false,	// for_test用(デバッグモード)
@@ -63,32 +62,31 @@
 		return {body:NewClass, name:classname, base:basename};
 	},
 
-	getPuzzleClass : function(classname){ return this.pclass[this.scriptid][classname];},
-
-	setPuzzleID : function(pid){
-		this.scriptid = this.PZLINFO.toScript(pid);
-
+	setPuzzleClass : function(owner){
 		// 継承させたパズル個別のクラスを設定
-		var scriptid = this.scriptid, list = [];
-		if(!!this.pclass[scriptid]){ return;}
-		this.pclass[scriptid] = {};
+		var scriptid = this.PZLINFO.toScript(owner.pid);
+		if(!this.pclass[scriptid]){
+			this.pclass[scriptid] = {};
 
-		// 追加があるクラス => 残りの共通クラスの順に継承
-		for(var classname in this.custom[scriptid]){ list.push(classname);}
-		for(var i=0;i<this.commonlist.length;i++)  { list.push(this.commonlist[i]);}
-		for(var i=0;i<list.length;i++){
-			if(!!this.pclass[scriptid][list[i]]){ continue;}
+			// 追加があるクラス => 残りの共通クラスの順に継承
+			var list = [];
+			for(var classname in this.custom[scriptid]){ list.push(classname);}
+			for(var i=0;i<this.commonlist.length;i++)  { list.push(this.commonlist[i]);}
+			for(var i=0;i<list.length;i++){
+				if(!!this.pclass[scriptid][list[i]]){ continue;}
 
-			var proto = (!!this.custom[scriptid][list[i]]?this.custom[scriptid][list[i]]:{});
-			if(!!this.core[list[i]]){ list[i] = list[i]+":"+list[i];}
+				var proto = (!!this.custom[scriptid][list[i]]?this.custom[scriptid][list[i]]:{});
+				if(!!this.core[list[i]]){ list[i] = list[i]+":"+list[i];}
 
-			var rel = this._createClass(list[i], proto);
-			this.pclass[scriptid][rel.name] = rel.body;
+				var rel = this._createClass(list[i], proto);
+				this.pclass[scriptid][rel.name] = rel.body;
+			}
+
+			// 継承済みなので、メモリから消しておく ※空はダメなので、trueだけ代入
+			delete this.custom[scriptid];
+			this.custom[scriptid] = true;
 		}
-
-		// 継承済みなので、メモリから消しておく ※空はダメなので、trueだけ代入
-		delete this.custom[scriptid];
-		this.custom[scriptid] = true;
+		return this.pclass[scriptid];
 	},
 
 	//---------------------------------------------------------------
@@ -215,7 +213,7 @@ function onload_func(self){
 	self.dbm   = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
 
 	// 単体初期化処理のルーチンへ
-	self.base = new pzprv3.core.PBase();
+	self.base = new pzprv3.core.Owner();
 	self.base.reload_func(pzl);
 
 	// アクセスログをとってみる

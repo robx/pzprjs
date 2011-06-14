@@ -7,7 +7,9 @@
 // Menuクラス実行部
 pzprv3.createCommonClass('MenuExec',
 {
-	initialize : function(){
+	initialize : function(owner){
+		this.owner = owner;
+
 		this.displaymanage = true;
 		this.qnumw;	// Ques==51の回転･反転用
 		this.qnumh;	// Ques==51の回転･反転用
@@ -113,7 +115,7 @@ pzprv3.createCommonClass('MenuExec',
 	newboard_open : function(qdata){
 		menu.popclose();
 
-		pzprv3.base.importBoardData({id:bd.puzzleid, qdata:qdata});
+		this.owner.importBoardData({id:bd.puzzleid, qdata:qdata});
 	},
 
 	//------------------------------------------------------------------------------
@@ -126,7 +128,7 @@ pzprv3.createCommonClass('MenuExec',
 			menu.popclose();
 
 			var pzl = enc.parseURL(document.urlinput.ta.value);
-			if(!!pzl.id){ pzprv3.base.importBoardData(pzl);}
+			if(!!pzl.id){ this.owner.importBoardData(pzl);}
 		}
 	},
 	urloutput : function(e){
@@ -181,7 +183,7 @@ pzprv3.createCommonClass('MenuExec',
 		}
 
 		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : bd.puzzleid);
-		pzprv3.base.importBoardData({id:pid, fstr:fstr});
+		this.owner.importBoardData({id:pid, fstr:fstr});
 
 		document.fileform.reset();
 		pzprv3.timer.reset();
@@ -233,8 +235,10 @@ pzprv3.createCommonClass('MenuExec',
 	// menu.ex.openimage()   "別ウィンドウで開く"の処理ルーチン
 	//------------------------------------------------------------------------------
 	imagesave : function(isDL,cellsize){
+		var canvas_sv = this.owner.canvas;
 		try{
-			var pc2 = new (pzprv3.getPuzzleClass('Graphic'))(ee('divques_sub').el);
+			this.owner.canvas = ee('divques_sub').el;
+			var pc2 = new this.owner.classes.Graphic(this.owner);
 
 			// 設定値・変数をcanvas用のものに変更
 			pc2.outputImage = true;
@@ -258,6 +262,7 @@ pzprv3.createCommonClass('MenuExec',
 		catch(e){
 			menu.alertStr('画像の出力に失敗しました..','Fail to Output the Image..');
 		}
+		this.owner.canvas = canvas_sv;
 		bd.setcoordAll(pc.bw,pc.bh); // 元に戻す
 	},
 

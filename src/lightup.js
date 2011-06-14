@@ -35,8 +35,8 @@ Board:{
 
 	numberIsWhite : true,
 
-	initialize : function(pid){
-		this.SuperFunc.initialize.call(this,pid);
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
 
 		this.posthook.cell.qnum = this.setAkariInfo;
 		this.posthook.cell.qans = this.setAkariInfo;

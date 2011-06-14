@@ -7,8 +7,10 @@
 // Graphicクラスの定義
 pzprv3.createCommonClass('Graphic',
 {
-	initialize : function(element){
-		this.currentContext = element.getContext("2d");
+	initialize : function(owner){
+		this.owner = owner;
+
+		this.currentContext = owner.canvas.getContext("2d");
 		var g = this.currentContext;
 
 		// 盤面のCellを分ける色
@@ -1642,7 +1644,7 @@ pzprv3.createCommonClass('Graphic',
 	// pc.flushCanvasAll() Canvas全面を白で塗りつぶす
 	//---------------------------------------------------------------------------
 	resetVectorFunctions : function(){
-		var proto = pzprv3.getPuzzleClass('Graphic').prototype;
+		var proto = this.owner.classes.Graphic.prototype;
 		this.flushCanvasAll = proto.flushCanvasAll;
 		this.flushCanvas    = proto.flushCanvas;
 		this.vnop  = proto.vnop;

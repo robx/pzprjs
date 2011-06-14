@@ -34,9 +34,9 @@ KeyEvent:{
 Board:{
 	isborder : 1,
 
-	initialize : function(pid){
-		this.SuperFunc.initialize.call(this,pid);
-		if(pid==='chocona'){
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
+		if(owner.pid==='chocona'){
 			this.minnum = 0;
 		}
 	},
@@ -55,9 +55,9 @@ Board:{
 },
 
 AreaManager:{
-	initialize : function(pid){
-		this.SuperFunc.initialize.call(this,pid);
-		if(pid==='chocona'){
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
+		if(owner.pid==='chocona'){
 			this.checkBlackCell = true;
 		}
 	},

@@ -98,7 +98,7 @@ Board:{
 
 	getTileInfo : function(){
 		var self = this;
-		var tinfo = (new pzprv3.core.AreaBorderData(
+		var tinfo = (new pzprv3.core.AreaBorderData(this.owner,
 			function(c){ return (self.QuC(c)!==51);},
 			function(id){ return self.isBorder(id);}
 		)).getAreaInfo();

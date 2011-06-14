@@ -64,8 +64,8 @@ Board:{
 	/* 問題の0入力は↓の特別処理で可能にしてます */
 	disInputHatena : true,
 
-	initialize : function(pid){
-		this.SuperFunc.initialize.call(this,pid);
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
 
 		// 問題入力モードだけ、、0でも入力できるようにする
 		this.prehook.cell.qnum = null;

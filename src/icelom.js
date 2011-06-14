@@ -521,7 +521,7 @@ AnsCheck:{
 	},
 
 	checkIgnoreIcebarn : function(){
-		var iarea = (new pzprv3.core.AreaData(function(c){ return (bd.QuC(c)==6);})).getAreaInfo();
+		var iarea = (new pzprv3.core.AreaData(this.owner, function(c){ return (bd.QuC(c)==6);})).getAreaInfo();
 		return this.checkLinesInArea(iarea, function(w,h,a,n){ return (a!=0);})
 	},
 

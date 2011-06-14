@@ -64,10 +64,10 @@ Board:{
 
 	maxnum : 2,
 
-	initialize : function(pid){
-		this.SuperFunc.initialize.call(this,pid);
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
 
-		if(pid==='kramma'||pid==='kramman'){
+		if(owner.pid==='kramma'||owner.pid==='kramman'){
 			this.qcols = 8;
 			this.qrows = 8;
 		}
@@ -113,7 +113,7 @@ Graphic:{
 
 		this.crosssize = 0.15;
 		if(bd.puzzleid==='shwolf'){
-			this.imgtile = new (pzprv3.getPuzzleClass('ImageTile'))('./src/img/shwolf_obj.png',2,1);
+			this.imgtile = new pzprv3.core.ImageTile('./src/img/shwolf_obj.png',2,1);
 		}
 	},
 	paint : function(){
@@ -322,11 +322,11 @@ AnsCheck:{
 			}
 		}
 	}
-},
+}
+};
 
-//---------------------------------------------------------
-//---------------------------------------------------------
-ImageTile:{
+pzprv3.createCoreClass('ImageTile',
+{
 	initialize : function(src,col,row){
 		this.image = new Image();
 		this.image.src = src;
@@ -362,5 +362,4 @@ ImageTile:{
 		}
 		return false;
 	}
-}
-};
+});

@@ -52,8 +52,8 @@ Board:{
 	maxnum : 3,
 	minnum : 0,
 
-	initialize : function(pid){
-		this.SuperFunc.initialize.call(this,pid);
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
 
 		this.posthook.cell.ques = function(c){ this.areas.setCell(c);};
 

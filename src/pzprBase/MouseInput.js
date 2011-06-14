@@ -7,7 +7,9 @@
 // MouseEventクラスを定義
 pzprv3.createCommonClass('MouseEvent',
 {
-	initialize : function(){
+	initialize : function(owner){
+		this.owner = owner;
+
 		this.enableMouse = true;	// マウス入力は有効か
 
 		this.inputPoint = new pzprv3.core.Point(null, null);	// 入力イベントが発生したpixel位置
@@ -320,7 +322,7 @@ pzprv3.createCommonClass('MouseEvent',
 		pc.paintCell(cc);
 	},
 	inputqnum_main : function(cc,subtype){ // subtypeはqsubを0～いくつまで入力可能かの設定
-		if(k.playmode && bd.QnC(cc)!==pzprv3.getPuzzleClass('Cell').prototype.qnum){ return;}
+		if(k.playmode && bd.QnC(cc)!==this.owner.classes.Cell.prototype.qnum){ return;}
 
 		var max=bd.nummaxfunc(cc), min=bd.numminfunc(cc);
 		var num=bd.getNum(cc), qs=(k.editmode ? 0 : bd.QsC(cc));

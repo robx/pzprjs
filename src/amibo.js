@@ -102,10 +102,10 @@ Board:{
 
 	numberIsWhite : true,
 
-	initialize : function(pid){
-		this.SuperFunc.initialize.call(this,pid);
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
 
-		this.bars = new (pzprv3.getPuzzleClass('BarManager'))();
+		this.bars = new owner.classes.BarManager(owner);
 
 		this.posthook.cell.qans = this.setInfo;
 	},
@@ -556,7 +556,9 @@ AnsCheck:{
 //---------------------------------------------------------
 //---------------------------------------------------------
 BarManager:{
-	initialize : function(){
+	initialize : function(owner){
+		this.owner = owner;
+
 		this.cellinfo = {};	// qansを保持しておく
 
 		this.barinfo = {};	// 線の情報を保持する

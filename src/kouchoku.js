@@ -140,8 +140,8 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Cross:{
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
 		this.segment = []; /* インスタンス化 */
 	},
 	segment : []
@@ -160,7 +160,7 @@ Board:{
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
 
-		this.segs = new (pzprv3.getPuzzleClass('SegmentManager'))();
+		this.segs = new this.owner.classes.SegmentManager(this.owner);
 		this.segs.init();
 	},
 
@@ -211,7 +211,7 @@ Board:{
 	},
 
 	getLatticePoint : function(bx1,by1,bx2,by2){
-		var seg = new (pzprv3.getPuzzleClass('Segment'))(bx1,by1,bx2,by2), lattice = [];
+		var seg = new this.owner.classes.Segment(this.owner,bx1,by1,bx2,by2), lattice = [];
 		for(var i=0;i<seg.lattices.length;i++){
 			var xc = seg.lattices[i][2];
 			if(xc!==null && bd.cross[xc].qnum!==-1){ lattice.push(xc);}
@@ -704,7 +704,9 @@ AnsCheck:{
 //---------------------------------------------------------
 //---------------------------------------------------------
 Segment:{
-	initialize : function(bx1, by1, bx2, by2){
+	initialize : function(owner, bx1, by1, bx2, by2){
+		this.owner = owner;
+
 		this.point1;	// 端点1のIDを保持する
 		this.point2;	// 端点2のIDを保持する
 
@@ -760,7 +762,9 @@ Segment:{
 },
 
 SegmentManager:{ /* LineManagerクラスを拡張してます */
-	initialize : function(){
+	initialize : function(owner){
+		this.owner = owner;
+
 		this.seg    = {};	// segmentの配列
 		this.segmax = 0;
 
@@ -992,7 +996,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	},
 	setSegment : function(bx1,by1,bx2,by2){
 		this.segmax++;
-		this.seg[this.segmax] = new (pzprv3.getPuzzleClass('Segment'))(bx1,by1,bx2,by2);
+		this.seg[this.segmax] = new this.owner.classes.Segment(this.owner,bx1,by1,bx2,by2);
 		this.setSegmentInfo(this.segmax, true);
 		um.addOpe(bd.OTHER, 'segment', [bx1,by1,bx2,by2], 0, 1);
 	},

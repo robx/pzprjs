@@ -34,13 +34,13 @@ KeyEvent:{
 Board:{
 	isborder : 1,
 
-	initialize : function(pid){
-		this.SuperFunc.initialize.call(this,pid);
-		if(pid==='nawabari'){
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
+		if(owner.pid==='nawabari'){
 			this.maxnum = 4;
 			this.minnum = 0;
 		}
-		else if(pid==='fourcells'){
+		else if(owner.pid==='fourcells'){
 			this.maxnum = 3;
 		}
 	},

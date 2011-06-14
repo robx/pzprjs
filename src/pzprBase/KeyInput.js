@@ -7,7 +7,9 @@
 // KeyEventクラスを定義
 pzprv3.createCommonClass('KeyEvent',
 {
-	initialize : function(){
+	initialize : function(owner){
+		this.owner = owner;
+
 		this.enableKey = true;	// キー入力は有効か
 		this.keyreset();
 
@@ -326,7 +328,7 @@ pzprv3.createCommonClass('KeyEvent',
 		}
 		if(target==0){ return;}
 
-		var def = pzprv3.getPuzzleClass('Cell').prototype[(target==2?'qnum':'qdir')];
+		var def = this.owner.classes.Cell.prototype[(target==2?'qnum':'qdir')];
 		var max = max_obj[target], val=def;
 
 		if('0'<=ca && ca<='9'){
@@ -556,7 +558,9 @@ pzprv3.createCommonClass('KeyEvent',
 
 pzprv3.createCommonClass('TargetCursor',
 {
-	initialize : function(){
+	initialize : function(owner){
+		this.owner = owner;
+
 		// 現在入力ターゲットになっている場所(border座標系)
 		this.pos = new pzprv3.core.Address(1,1);
 

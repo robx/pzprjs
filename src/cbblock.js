@@ -44,8 +44,8 @@ Board:{
 
 	getBlockInfo : function(){
 		var self = this;
-		var tinfo = (new pzprv3.core.AreaBorderData(null,function(id){ return !self.isGround(id);})).getAreaInfo();
-		var cinfo = (new pzprv3.core.AreaBorderData(null,function(id){ return self.border[id].qans>0;})).getAreaInfo();
+		var tinfo = (new pzprv3.core.AreaBorderData(this.owner,null,function(id){ return !self.isGround(id);})).getAreaInfo();
+		var cinfo = (new pzprv3.core.AreaBorderData(this.owner,null,function(id){ return self.border[id].qans>0;})).getAreaInfo();
 
 		for(var r=1;r<=cinfo.max;r++){
 			var d=[], cnt=0, room=cinfo.room[r], clist=room.idlist;

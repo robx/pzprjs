@@ -5,7 +5,9 @@
 //---------------------------------------------------------------------------
 pzprv3.createCommonClass('FileIO',
 {
-	initialize : function(){
+	initialize : function(owner){
+		this.owner = owner;
+
 		this.filever = 0;
 		this.lineseek = 0;
 		this.dataarray = [];

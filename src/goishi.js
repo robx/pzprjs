@@ -109,8 +109,8 @@ Board:{
 },
 
 UndoTimer:{
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
 		this.ismouse = false;
 	},
 	start : function(ismouse){

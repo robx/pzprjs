@@ -48,7 +48,7 @@ KeyEvent:{
 	enablemake_p : true,
 	enableplay_p : true,
 	generate : function(mode,type){
-		var mbcolor = (pzprv3.getPuzzleClass('Graphic')).prototype.mbcolor;
+		var mbcolor = this.owner.classes.Graphic.prototype.mbcolor;
 		if(bd.puzzleid==='sukoro'||bd.puzzleid==='sukororoom'){
 			this.inputcol('num','knum1','1','1');
 			this.inputcol('num','knum2','2','2');
@@ -106,17 +106,17 @@ KeyEvent:{
 Board:{
 	numberWithMB : true,
 
-	initialize : function(pid){
-		this.SuperFunc.initialize.call(this,pid);
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
 
-		if(pid==='view' || pid==='sukororoom'){
+		if(owner.pid==='view' || owner.pid==='sukororoom'){
 			this.qcols = 8;
 			this.qrows = 8;
 		}
-		if(pid==='view'){
+		if(owner.pid==='view'){
 			this.minnum = 0;
 		}
-		if(pid==='sukororoom'){
+		if(owner.pid==='sukororoom'){
 			this.isborder = 1;
 		}
 	},
@@ -142,9 +142,9 @@ Board:{
 },
 
 AreaManager:{
-	initialize : function(pid){
-		this.SuperFunc.initialize.call(this,pid);
-		if(pid==='sukororoom'){ this.hasroom = true;}
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
+		if(owner.pid==='sukororoom'){ this.hasroom = true;}
 	},
 	linkNumber : true
 },
@@ -177,7 +177,7 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	pzlimport : function(type){
-		var pid = bd.puzzleid;
+		var pid = this.owner.pid;
 		if(pid==='sukoro'||pid==='sukororoom'){
 			if(pid==='sukororoom'){ this.decodeBorder();}
 			this.decodeNumber10();
@@ -187,7 +187,7 @@ Encode:{
 		}
 	},
 	pzlexport : function(type){
-		var pid = bd.puzzleid;
+		var pid = this.owner.pid;
 		if(pid==='sukoro'||pid==='sukororoom'){
 			if(bd.puzzleid==='sukororoom'){ this.encodeBorder();}
 			this.encodeNumber10();

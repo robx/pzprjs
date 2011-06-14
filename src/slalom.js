@@ -202,9 +202,9 @@ Board:{
 
 	hinfo : null,
 
-	initialize : function(pid){
-		this.SuperFunc.initialize.call(this,pid);
-		this.hinfo = new (pzprv3.getPuzzleClass('HurdleManager'))();
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
+		this.hinfo = new owner.classes.HurdleManager(owner);
 	},
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
@@ -815,7 +815,9 @@ AnsCheck:{
 //---------------------------------------------------------
 //---------------------------------------------------------
 HurdleData:{
-	initialize : function(){
+	initialize : function(owner){
+		this.owner = owner;
+
 		this.clist  = [];		// この旗門に含まれるセルのリスト
 		this.number = -1;		// この旗門が持つ順番
 		this.val    = 0;		// この旗門の方向(21:タテ 22:ヨコ)
@@ -824,7 +826,9 @@ HurdleData:{
 },
 
 HurdleManager:{
-	initialize : function(){
+	initialize : function(owner){
+		this.owner = owner;
+
 		this.max    = 0;
 		this.gateid = [];
 		this.data   = [];
@@ -884,7 +888,7 @@ HurdleManager:{
 			var val=bd.QuC(c);
 
 			this.max++;
-			this.data[this.max] = new (pzprv3.getPuzzleClass('HurdleData'))();
+			this.data[this.max] = new this.owner.classes.HurdleData(this.owner);
 			while(1){
 				var cc = bd.cnum(bx,by);
 				if(cc===null || bd.QuC(cc)!==val){ break;}

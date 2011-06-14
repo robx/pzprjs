@@ -5,7 +5,9 @@
 //---------------------------------------------------------------------------
 pzprv3.createCoreClass('BoardPiece',
 {
-	initialize : function(){
+	initialize : function(owner){
+		this.owner = owner;
+
 		this.bx;	// X座標(border座標系)を保持する
 		this.by;	// Y座標(border座標系)を保持する
 		this.px;	// 描画用X座標を保持する
@@ -61,8 +63,8 @@ pzprv3.createCoreClass('BoardPiece',
 // Cellクラスの定義
 pzprv3.createCommonClass('Cell:BoardPiece',
 {
-	initialize : function(){
-		pzprv3.core.BoardPiece.prototype.initialize.call(this);
+	initialize : function(owner){
+		pzprv3.core.BoardPiece.prototype.initialize.call(this, owner);
 
 		this.cpx;	// セルの描画用中心X座標を保持する
 		this.cpy;	// セルの描画用中心Y座標を保持する
@@ -107,8 +109,8 @@ pzprv3.createCommonClass('Cross:BoardPiece',
 // Borderクラスの定義
 pzprv3.createCommonClass('Border:BoardPiece',
 {
-	initialize : function(){
-		pzprv3.core.BoardPiece.prototype.initialize.call(this);
+	initialize : function(owner){
+		pzprv3.core.BoardPiece.prototype.initialize.call(this, owner);
 
 		this.cellcc  = [null,null];	// 隣接セルのID
 		this.crosscc = [null,null];	// 隣接交点のID
@@ -153,7 +155,9 @@ pzprv3.createCommonClass('EXCell:BoardPiece',
 // Boardクラスの定義
 pzprv3.createCommonClass('Board',
 {
-	initialize : function(pid){
+	initialize : function(owner){
+		this.owner = owner;
+
 		this.cell   = [];
 		this.cross  = [];
 		this.border = [];
@@ -179,10 +183,10 @@ pzprv3.createCommonClass('Board',
 		this.haserror = false;
 
 		// 補助オブジェクト
-		this.lines  = new (pzprv3.getPuzzleClass('LineManager'))(pid);		// 線情報管理オブジェクト
-		this.areas  = new (pzprv3.getPuzzleClass('AreaManager'))(pid);		// 領域情報管理オブジェクト
+		this.lines  = new owner.classes.LineManager(owner);		// 線情報管理オブジェクト
+		this.areas  = new owner.classes.AreaManager(owner);		// 領域情報管理オブジェクト
 
-		this.puzzleid = pid;	// パズルのID("creek"など)
+		this.puzzleid = owner.pid;	// パズルのID("creek"など)
 
 		this.setHooks();
 	},
@@ -314,10 +318,10 @@ pzprv3.createCommonClass('Board',
 		return 0;
 	},
 	newObject : function(type){
-		if     (type===this.CELL)  { return (new (pzprv3.getPuzzleClass('Cell'))());}
-		else if(type===this.CROSS) { return (new (pzprv3.getPuzzleClass('Cross'))());}
-		else if(type===this.BORDER){ return (new (pzprv3.getPuzzleClass('Border'))());}
-		else if(type===this.EXCELL){ return (new (pzprv3.getPuzzleClass('EXCell'))());}
+		if     (type===this.CELL)  { return (new this.owner.classes.Cell(this.owner));}
+		else if(type===this.CROSS) { return (new this.owner.classes.Cross(this.owner));}
+		else if(type===this.BORDER){ return (new this.owner.classes.Border(this.owner));}
+		else if(type===this.EXCELL){ return (new this.owner.classes.EXCell(this.owner));}
 		return (void 0);
 	},
 	getObject : function(type,id){

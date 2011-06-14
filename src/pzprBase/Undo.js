@@ -7,7 +7,9 @@
 // Operationクラス
 pzprv3.createCommonClass('Operation',
 {
-	initialize : function(group, property, id, old, num, chain){
+	initialize : function(owner, group, property, id, old, num, chain){
+		this.owner = owner;
+
 		this.group = group;
 		this.property = property;
 		this.id = id;
@@ -15,7 +17,7 @@ pzprv3.createCommonClass('Operation',
 		this.num = num;
 		this.chain = chain;
 		
-		if(arguments.length===1){ this.decode(arguments[0]);}
+		if(arguments.length===2){ this.decode(arguments[0]);}
 	},
 
 	/* 変換テーブル */
@@ -124,7 +126,9 @@ pzprv3.createCommonClass('Operation',
 // OperationManagerクラス
 pzprv3.createCommonClass('OperationManager',
 {
-	initialize : function(){
+	initialize : function(owner){
+		this.owner = owner;
+
 		this.lastope;		// this.opeのLasstIndexへのポインタ
 		this.ope;			// Operationクラスを保持する配列
 		this.current;		// 現在の表示操作番号を保持する
@@ -208,7 +212,7 @@ pzprv3.createCommonClass('OperationManager',
 		else{
 			this.current++;
 			if(group!==bd.BOARD&&group!==bd.OTHER){ var obj=bd.getObject(group,id); id=[obj.bx,obj.by];}
-			this.ope.push(new (pzprv3.getPuzzleClass('Operation'))(group, property, id, old, num, this.chainflag));
+			this.ope.push(new this.owner.classes.Operation(this.owner, group, property, id, old, num, this.chainflag));
 		}
 
 		if(property!=bd.QSUB){ this.anscount++;}
@@ -244,7 +248,7 @@ pzprv3.createCommonClass('OperationManager',
 		this.ope = [];
 		this.current = data.current-1;
 		for(var i=0,len=data.datas.length;i<len;i++){
-			this.ope[i] = new (pzprv3.getPuzzleClass('Operation'))(data.datas[i]);
+			this.ope[i] = new this.owner.classes.Operation(this.owner, data.datas[i]);
 		}
 	},
 	toString : function(){

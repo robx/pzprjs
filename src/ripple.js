@@ -35,10 +35,10 @@ KeyEvent:{
 Board:{
 	isborder : 1,
 
-	initialize : function(pid){
-		this.SuperFunc.initialize.call(this,pid);
+	initialize : function(owner){
+		this.SuperFunc.initialize.call(this, owner);
 
-		if(pid==='cojun'){
+		if(owner.pid==='cojun'){
 			this.qcols = 8;
 			this.qrows = 8;
 		}

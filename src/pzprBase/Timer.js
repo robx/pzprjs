@@ -91,7 +91,9 @@ pzprv3.createCoreClass('Timer',
 //---------------------------------------------------------------------------
 pzprv3.createCommonClass('UndoTimer',
 {
-	initialize : function(){
+	initialize : function(owner){
+		this.owner = owner;
+
 		// ** Undoタイマー
 		this.TID           = null;	// タイマーID
 		this.timerInterval = 25
