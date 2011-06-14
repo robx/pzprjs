@@ -3,9 +3,11 @@
 //---------------------------------------------------------------------------
 // ★Timerクラス
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('Timer',
+pzprv3.createCommonClass('Timer',
 {
-	initialize : function(){
+	initialize : function(owner){
+		this.owner = owner;
+
 		// ** 一般タイマー
 		this.TID;				// タイマーID
 		this.timerInterval = 100;

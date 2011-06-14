@@ -24,7 +24,7 @@ pzprv3.createCoreClass('ProblemData',
 		this.row = bd.qrows;
 		this.hard = 0;
 		this.pdata = fio.fileencode(fio.PZPH);
-		this.time = (pzprv3.timer.now()/1000)|0;
+		this.time = (timer.now()/1000)|0;
 		this.comment = '';
 	},
 	toString : function(){
@@ -329,7 +329,7 @@ pzprv3.createCoreClass('DataBaseHandler_LS',
 	},
 	updateManageData : function(parent){
 		localStorage['pzprv3_storage:count'] = parent.DBlist.length;
-		localStorage['pzprv3_storage:time']  = (pzprv3.timer.now()/1000)|0;
+		localStorage['pzprv3_storage:time']  = (timer.now()/1000)|0;
 	},
 
 	//---------------------------------------------------------------------------
@@ -428,7 +428,7 @@ pzprv3.createCoreClass('DataBaseHandler_LS',
 		puzzles.sort(function(a,b){ return (a.time-b.time || a.id-b.id);});
 		localStorage['pzprv3_storage:version'] = '2.0';
 		localStorage['pzprv3_storage:count'] = puzzles.length;
-		localStorage['pzprv3_storage:time']  = (pzprv3.timer.now()/1000)|0;
+		localStorage['pzprv3_storage:time']  = (timer.now()/1000)|0;
 		for(var i=0;i<puzzles.length;i++){
 			puzzles[i].id = (i+1);
 			localStorage['pzprv3_storage:data:'+(i+1)] = puzzles[i].toString();

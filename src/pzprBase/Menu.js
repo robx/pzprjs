@@ -1234,13 +1234,13 @@ pzprv3.debug = {
 	},
 	timeeval : function(text,func){
 		this.addTA(text);
-		var count=0, old = pzprv3.timer.now();
-		while(pzprv3.timer.now() - old < 3000){
+		var count=0, old = timer.now();
+		while(timer.now() - old < 3000){
 			count++;
 
 			func();
 		}
-		var time = pzprv3.timer.now() - old;
+		var time = timer.now() - old;
 
 		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
 	},

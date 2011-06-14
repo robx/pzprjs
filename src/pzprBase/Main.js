@@ -67,6 +67,7 @@ pzprv3.createCoreClass('Owner',
 
 		um = new this.classes.OperationManager(this);	// 操作情報管理オブジェクト
 		ut = new this.classes.UndoTimer(this);			// Undo用Timerオブジェクト
+		timer = new this.classes.Timer(this);			// 一般タイマー用オブジェクト
 
 		enc = new this.classes.Encode(this);		// URL入出力用オブジェクト
 		fio = new this.classes.FileIO(this);		// ファイル入出力用オブジェクト
@@ -86,7 +87,7 @@ pzprv3.createCoreClass('Owner',
 		this.decodeBoardData(pzl);
 
 		// タイマーリセット(最後)
-		pzprv3.timer.reset();
+		timer.reset();
 	},
 
 	clearObjects : function(){

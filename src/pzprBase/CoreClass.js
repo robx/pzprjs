@@ -209,7 +209,6 @@ function onload_func(self){
 	}
 
 	// パズルが入力しなおされても、共通で使用されるオブジェクト
-	self.timer = new pzprv3.core.Timer();			// 一般タイマー用オブジェクト
 	self.dbm   = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
 
 	// 単体初期化処理のルーチンへ
