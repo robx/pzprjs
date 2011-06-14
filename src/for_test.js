@@ -59,7 +59,7 @@ pzprv3.debug.extend({
 
 			var newid = idlist[pnum];
 			self.pid = newid;
-			pzprv3.base.importBoardData({id:newid});
+			pzprv3.target.importBoardData({id:newid});
 
 			if(pnum >= term){ clearInterval(self.alltimer);}
 
@@ -79,7 +79,7 @@ pzprv3.debug.extend({
 		var self = this;
 
 		self.fails = 0;
-		self.pid = pzprv3.base.pid;
+		self.pid = pzprv3.target.pid;
 		setTimeout(function(){ self.check_encode(self);},0);
 	},
 	//Encode test--------------------------------------------------------------

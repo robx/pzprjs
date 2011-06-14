@@ -213,8 +213,8 @@ function onload_func(self){
 	self.dbm   = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
 
 	// 単体初期化処理のルーチンへ
-	self.base = new pzprv3.core.Owner();
-	self.base.reload_func(pzl);
+	self.target = new pzprv3.core.Owner();
+	self.target.reload_func(pzl);
 
 	// アクセスログをとってみる
 	if(!!pzprv3.require_accesslog){ accesslog(pzl);}

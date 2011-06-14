@@ -1181,7 +1181,7 @@ pzprv3.debug = {
 
 		_doc.testform.starttest.style.display = 'none';
 
-		_doc.testform.perfload.style.display = (pzprv3.base.pid!=='country' ? 'none' : 'inline');
+		_doc.testform.perfload.style.display = (pzprv3.target.pid!=='country' ? 'none' : 'inline');
 		_doc.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
 		_doc.testform.database.style.display = (ee.storage.localST ? 'none' : 'inline');
 

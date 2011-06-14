@@ -29,7 +29,7 @@ pzprv3.createCoreClass('Owner',
 	},
 
 	//---------------------------------------------------------------------------
-	// base.reload_func()  個別パズルのファイルを読み込み、初期化する関数
+	// owner.reload_func()  個別パズルのファイルを読み込み、初期化する関数
 	//---------------------------------------------------------------------------
 	reload_func : function(pzl){
 		pzprv3.includeCustomFile(pzl.id);
@@ -46,8 +46,8 @@ pzprv3.createCoreClass('Owner',
 	},
 
 	//---------------------------------------------------------------------------
-	// base.initObjects()    各オブジェクトの生成などの処理
-	// base.clearObjects()   イベントやメニューの設定を設定前に戻す
+	// owner.initObjects()    各オブジェクトの生成などの処理
+	// owner.clearObjects()   イベントやメニューの設定を設定前に戻す
 	//---------------------------------------------------------------------------
 	initObjects : function(pzl){
 		this.pid     = pzl.id;
@@ -98,8 +98,8 @@ pzprv3.createCoreClass('Owner',
 	},
 
 	//---------------------------------------------------------------------------
-	// base.importBoardData() 新しくパズルのファイルを開く時の処理
-	// base.decodeBoardData() URLや複製されたデータを読み出す
+	// owner.importBoardData() 新しくパズルのファイルを開く時の処理
+	// owner.decodeBoardData() URLや複製されたデータを読み出す
 	//---------------------------------------------------------------------------
 	importBoardData : function(pzl){
 		// 今のパズルと別idの時
@@ -131,7 +131,7 @@ pzprv3.createCoreClass('Owner',
 	},
 
 	//---------------------------------------------------------------------------
-	// base.setEvents()       マウス入力、キー入力以外のイベントの設定を行う
+	// owner.setEvents()       マウス入力、キー入力以外のイベントの設定を行う
 	//---------------------------------------------------------------------------
 	setEvents : function(){
 		// File API＋Drag&Drop APIの設定
@@ -154,8 +154,8 @@ pzprv3.createCoreClass('Owner',
 	},
 
 	//---------------------------------------------------------------------------
-	// base.onresize_func() ウィンドウリサイズ時に呼ばれる関数
-	// base.onblur_func()   ウィンドウからフォーカスが離れた時に呼ばれる関数
+	// owner.onresize_func() ウィンドウリサイズ時に呼ばれる関数
+	// owner.onblur_func()   ウィンドウからフォーカスが離れた時に呼ばれる関数
 	//---------------------------------------------------------------------------
 	onresize_func : function(){
 		if(this.resizetimer){ clearTimeout(this.resizetimer);}
