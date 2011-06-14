@@ -232,7 +232,7 @@ pzprv3.createCommonClass('MenuExec',
 	// menu.ex.submitimage() "画像をダウンロード"の処理ルーチン
 	// menu.ex.openimage()   "別ウィンドウで開く"の処理ルーチン
 	//------------------------------------------------------------------------------
-	imagesave : function(isDL){
+	imagesave : function(isDL,cellsize){
 		try{
 			var pc2 = new (pzprv3.getPuzzleClass('Graphic'))(ee('divques_sub').el);
 
@@ -240,7 +240,11 @@ pzprv3.createCommonClass('MenuExec',
 			pc2.outputImage = true;
 			pc2.fillTextEmulate = false;
 			pc2.bdmargin = pc.bdmargin_image;
-			pc2.setcellsize = function(){ pc2.cw=pc.cw; pc2.ch=pc.ch;};
+			pc2.setcellsize = function(){
+				if(!cellsize){ cellsize = pc.cw;}
+				pc2.cw = cellsize;
+				pc2.ch = cellsize*(pc.ch/pc.cw);
+			};
 
 			// canvas要素の設定を適用して、再描画
 			pc2.resize_canvas();
