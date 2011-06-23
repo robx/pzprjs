@@ -109,7 +109,6 @@ pzprv3.createCommonClass('MouseEvent',
 	e_mouseup   : function(e){
 		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
-			if(!ee.mobile){ this.setposition(e);}
 			this.ismousedown = false;
 			this.mouseup();		// 各パズルのルーチンへ
 			this.mousereset();
@@ -166,6 +165,7 @@ pzprv3.createCommonClass('MouseEvent',
 		else{ left=(e.touches.length===1); right=(e.touches.length>1);}
 
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
+		kc.checkmodifiers(e);
 		if(((kc.isSHIFT || kc.isMETA)^pp.getVal('lrcheck'))&&(left!==right))
 			{ left=!left; right=!right;}
 
