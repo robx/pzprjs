@@ -283,7 +283,7 @@ pzprv3.createCommonClass('OperationManager',
 		for(var i=0;i<num;i++){ this.undoSingle();}
 		this.postproc();
 		this.undoExec = false;
-		if(!this.enableUndo){ kc.inUNDO=false;}
+		if(!this.enableUndo){ ut.stop();}
 	},
 	redo : function(num){
 		if(!this.enableRedo){ return;}
@@ -292,7 +292,7 @@ pzprv3.createCommonClass('OperationManager',
 		for(var i=0;i<num;i++){ this.redoSingle();}
 		this.postproc();
 		this.redoExec = false;
-		if(!this.enableRedo){ kc.inREDO=false;}
+		if(!this.enableRedo){ ut.stop();}
 	},
 	undoall : function(){ this.undo(this.current+1);},
 	redoall : function(){ this.redo(this.ope.length-this.current);},

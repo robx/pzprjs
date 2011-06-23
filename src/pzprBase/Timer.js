@@ -101,35 +101,48 @@ pzprv3.createCommonClass('UndoTimer',
 		this.timerInterval = 25
 		if(ee.br.IE6 || ee.br.IE7 || ee.br.IE8){ this.timerInterval *= 2;}
 
+		this.inUNDO = false;
+		this.inREDO = false;
+
 		// Undo/Redo用変数
 		this.undoWaitTime  = 300;	// 1回目にwaitを多く入れるための値
 		this.undoWaitCount = 0;
 	},
 
 	//---------------------------------------------------------------------------
-	// ut.start()     Undo/Redo呼び出しを開始する
+	// ut.startUndo() Undo呼び出しを開始する
+	// ut.startRedo() Redo呼び出しを開始する
+	// ut.startProc() Undo/Redo呼び出しを開始する
+	// 
 	// ut.stop()      Undo/Redo呼び出しを終了する
-	// ut.procUndo()  Undo/Redo呼び出しを実行する
-	// ut.execUndo()  Undo/Redo関数を呼び出す
 	//---------------------------------------------------------------------------
-	start : function(){
+	startUndo : function(){ if(!this.inUNDO){ this.inUNDO=true; this.startProc();}},
+	startRedo : function(){ if(!this.inREDO){ this.inREDO=true; this.startProc();}},
+	startProc : function(){
 		this.undoWaitCount = this.undoWaitTime/this.timerInterval;
-		if(!this.TID){ this.TID = setInterval(ee.binder(this, this.procUndo), this.timerInterval);}
-		this.execUndo();
+		if(!this.TID){ this.TID = setInterval(ee.binder(this, this.proc), this.timerInterval);}
+		this.exec();
 	},
+
 	stop : function(){
-		kc.inUNDO=false;
-		kc.inREDO=false;
+		this.inUNDO = false;
+		this.inREDO = false;
+
 		clearInterval(this.TID);
 		this.TID = null;
 	},
-	procUndo : function(){
-		if (!kc.inUNDO && !kc.inREDO){ this.stop();}
+
+	//---------------------------------------------------------------------------
+	// ut.proc()  Undo/Redo呼び出しを実行する
+	// ut.exec()  Undo/Redo関数を呼び出す
+	//---------------------------------------------------------------------------
+	proc : function(){
+		if (!this.inUNDO && !this.inREDO){ this.stop();}
 		else if(this.undoWaitCount>0){ this.undoWaitCount--;}
-		else{ this.execUndo();}
+		else{ this.exec();}
 	},
-	execUndo : function(){
-		if     (kc.inUNDO){ um.undo(1);}
-		else if(kc.inREDO){ um.redo(1);}
+	exec : function(){
+		if     (this.inUNDO){ um.undo(1);}
+		else if(this.inREDO){ um.redo(1);}
 	}
 });

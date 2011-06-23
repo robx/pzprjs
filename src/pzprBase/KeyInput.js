@@ -37,10 +37,7 @@ pzprv3.createCommonClass('KeyEvent',
 		this.isZ = false;
 		this.isX = false;
 
-		this.inUNDO  = false;
-		this.inREDO  = false;
 		this.tcMoved = false;	// カーソル移動時にスクロールさせない
-
 		this.prev = null;
 		this.ca = '';
 	},
@@ -168,7 +165,7 @@ pzprv3.createCommonClass('KeyEvent',
 		if(this.isMETA  ^ e.metaKey) { this.isMETA  = e.metaKey;  this.ca='';}
 		if(this.isALT   ^ e.altKey)  { this.isALT   = e.altKey;   this.ca='';}
 
-		if(!(this.isCTRL || this.isMETA)){ this.inUNDO=false; this.inREDO=false;}
+		if(!(this.isCTRL || this.isMETA)){ ut.stop();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -176,11 +173,11 @@ pzprv3.createCommonClass('KeyEvent',
 	// kc.keyup_common()   キーを離した際のイベント共通処理(Undo等)
 	//---------------------------------------------------------------------------
 	keydown_common : function(e){
-		if(!this.isZ && this.ca==='z') { this.isZ=true;}
-		if(!this.isX && this.ca==='x') { this.isX=true;}
+		if(this.ca==='z' && !this.isZ){ this.isZ=true;}
+		if(this.ca==='x' && !this.isX){ this.isX=true;}
 
-		if((this.isCTRL || this.isMETA) && !this.inUNDO && this.ca=='z'){ this.inUNDO=true; this.ca=''; ut.start();}
-		if((this.isCTRL || this.isMETA) && !this.inREDO && this.ca=='y'){ this.inREDO=true; this.ca=''; ut.start();}
+		if(this.ca==='z' && (this.isCTRL || this.isMETA)){ ut.startUndo(); this.ca='';}
+		if(this.ca==='y' && (this.isCTRL || this.isMETA)){ ut.startRedo(); this.ca='';}
 
 		if(this.ca==='F2' && pzprv3.EDITOR){ // 112～123はF1～F12キー
 			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); this.ca='';}
@@ -191,11 +188,11 @@ pzprv3.createCommonClass('KeyEvent',
 		if(pzprv3.debug.keydown(this.ca)){ this.ca='';}
 	},
 	keyup_common : function(e){
-		if(this.isZ && this.ca==='z')  { this.isZ=false;}
-		if(this.isX && this.ca==='x')  { this.isX=false;}
+		if(this.ca==='z' && this.isZ){ this.isZ=false;}
+		if(this.ca==='x' && this.isX){ this.isX=false;}
 
-		if((this.isCTRL || this.isMETA) && this.inUNDO && this.ca=='z'){ this.inUNDO=false; this.ca='';}
-		if((this.isCTRL || this.isMETA) && this.inREDO && this.ca=='y'){ this.inREDO=false; this.ca='';}
+		if(this.ca==='z' && (this.isCTRL || this.isMETA)){ ut.stop(); this.ca='';}
+		if(this.ca==='y' && (this.isCTRL || this.isMETA)){ ut.stop(); this.ca='';}
 	},
 	//---------------------------------------------------------------------------
 	// kc.moveTarget()  キーボードからの入力対象を矢印キーで動かす

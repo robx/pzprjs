@@ -8,14 +8,11 @@ MouseEvent:{
 	mousedown : function(){
 		if     (k.editmode){ this.inputstone();}
 		else if(k.playmode){
-			if     (this.btn.Left){ this.inputqans();}
-			else if(this.btn.Right){
-				kc.inUNDO = true;
-				ut.start(true);
-			}
+			if     (this.btn.Left) { this.inputqans();}
+			else if(this.btn.Right){ ut.inUNDO = true; ut.start(true);}
 		}
 	},
-	mouseup : function(){ kc.inUNDO = false; kc.inREDO = false;},
+	mouseup : function(){ ut.stop();},
 
 	inputstone : function(){
 		var cc = this.cellid();
@@ -33,7 +30,7 @@ MouseEvent:{
 	inputqans : function(){
 		var cc = this.cellid();
 		if(cc===null || !bd.isStone(cc) || bd.cell[cc].anum!==-1){
-			kc.inREDO = true;
+			ut.inREDO = true; 
 			ut.start(true);
 			return;
 		}
@@ -121,16 +118,16 @@ UndoTimer:{
 		this.SuperFunc.stop.call(this);
 		this.ismouse = false;
 	},
-	execUndo : function(){
-		if(!this.ismouse){ this.SuperFunc.execUndo.call(this);}
+	exec : function(){
+		if(!this.ismouse){ this.SuperFunc.exec.call(this);}
 		else{
-			if(kc.inUNDO){
+			if(this.inUNDO){
 				var prop = (um.current>0 ? um.ope[um.current-1].last().property : '');
-				if(prop===bd.ANUM){ um.undo(1);} else{ kc.inUNDO = false;}
+				if(prop===bd.ANUM){ um.undo(1);} else{ this.inUNDO = false;}
 			}
-			else if(kc.inREDO){
+			else if(this.inREDO){
 				var prop = (um.current<um.ope.length ? um.ope[um.current].last().property : '');
-				if(prop===bd.ANUM){ um.redo(1);} else{ kc.inREDO = false;}
+				if(prop===bd.ANUM){ um.redo(1);} else{ this.inREDO = false;}
 			}
 		}
 	}
