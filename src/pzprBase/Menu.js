@@ -96,7 +96,6 @@ pzprv3.createCommonClass('Menu',
 		this.managestack = [];
 
 		this.popclose();
-		this.menuclear();
 		this.floatmenuclose(0);
 
 		ee('float_parent').el.innerHTML = '';
@@ -454,57 +453,51 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	// menu.menuhover(e) メニューにマウスが乗ったときの表示設定を行う
 	// menu.menuout(e)   メニューからマウスが外れた時の表示設定を行う
-	// menu.menuclear()  メニュー/サブメニュー/フロートメニューを全て選択されていない状態に戻す
 	//---------------------------------------------------------------------------
 	menuhover : function(e){
 		if(!!this.movingpop){ return true;}
 
 		var idname = ee.getSrcElement(e).id.substr(3);
 		this.floatmenuopen(e,idname,0);
-		ee('menupanel').replaceChildrenClass('menusel','menu');
-		ee.getSrcElement(e).className = "menusel";
 	},
 	menuout   : function(e){
 		if(!this.insideOfMenu(e)){
-			this.menuclear();
 			this.floatmenuclose(0);
 		}
-	},
-	menuclear : function(){
-		ee('menupanel').replaceChildrenClass('menusel','menu');
 	},
 
 	//---------------------------------------------------------------------------
 	// menu.submenuhover(e) サブメニューにマウスが乗ったときの表示設定を行う
 	// menu.submenuout(e)   サブメニューからマウスが外れたときの表示設定を行う
-	// menu.submenuclick(e) 通常/選択型/チェック型サブメニューがクリックされたときの動作を実行する
 	//---------------------------------------------------------------------------
 	submenuhover : function(e){
 		var idname = ee.getSrcElement(e).id.substr(3);
-		if(ee.getSrcElement(e).className==="smenu"){ ee.getSrcElement(e).className="smenusel";}
 		if(pp.flags[idname] && (pp.type(idname)===pp.SELECT || pp.type(idname)===pp.SPARENT)){
-			if(ee.getSrcElement(e).className!=='smenunull'){
+			if(ee.getSrcElement(e).className==='smenu'){
 				this.floatmenuopen(e,idname,this.dispfloat.length);
 			}
 		}
 	},
 	submenuout   : function(e){
 		var idname = ee.getSrcElement(e).id.substr(3);
-		if(ee.getSrcElement(e).className==="smenusel"){ ee.getSrcElement(e).className="smenu";}
 		if(pp.flags[idname] && (pp.type(idname)===pp.SELECT || pp.type(idname)===pp.SPARENT)){
 			this.floatmenuout(e);
 		}
 	},
+
+	//---------------------------------------------------------------------------
+	// menu.submenuclick(e) 通常/選択型/チェック型サブメニューがクリックされたときの動作を実行する
+	//---------------------------------------------------------------------------
 	submenuclick : function(e){
 		var idname = ee.getSrcElement(e).id.substr(3);
-		if(ee.getSrcElement(e).className==="smenunull"){ return;}
-		this.menuclear();
-		this.floatmenuclose(0);
+		if(ee.getSrcElement(e).className==="smenu"){
+			this.floatmenuclose(0);
 
-		switch(pp.type(idname)){
-			case pp.SMENU: this.popopen(e, idname); break;
-			case pp.CHILD: pp.setVal(pp.flags[idname].parent, pp.getVal(idname)); break;
-			case pp.CHECK: pp.setVal(idname, !pp.getVal(idname)); break;
+			switch(pp.type(idname)){
+				case pp.SMENU: this.popopen(e, idname); break;
+				case pp.CHILD: pp.setVal(pp.flags[idname].parent, pp.getVal(idname)); break;
+				case pp.CHECK: pp.setVal(idname, !pp.getVal(idname)); break;
+			}
 		}
 	},
 
@@ -516,7 +509,6 @@ pzprv3.createCommonClass('Menu',
 	// menu.insideOfMenu()   マウスがメニュー領域の中にいるか判定する
 	//---------------------------------------------------------------------------
 	floatmenuopen : function(e, idname, depth){
-		if(depth===0){ this.menuclear();}
 		this.floatmenuclose(depth);
 
 		if(depth>0 && !this.dispfloat[depth-1]){ return;}
@@ -563,7 +555,6 @@ pzprv3.createCommonClass('Menu',
 			}
 		}
 		// ここに来るのはすべて消える場合
-		this.menuclear();
 		this.floatmenuclose(0);
 	},
 
@@ -856,7 +847,6 @@ pzprv3.createCommonClass('Menu',
 
 			this.pop.el.style.display = "none";
 			this.pop = '';
-			this.menuclear();
 			this.movingpop = "";
 			kc.enableKey = true;
 		}
