@@ -8,9 +8,11 @@
 
 	h2#title{ text-align:center;margin:16pt 0pt 24pt 0pt;}
 
+	/* 盤面外の表示部分(管理領域・メニュー・ポップアップ・ボタン) */
+	.outofboard { font-size:1.0em; line-height:1.2;}
+
 	/* 管理領域 */
-	div#menuboard{ width:380pt; margin:auto; margin-bottom:8pt; padding:0pt 0pt 8pt 0pt;
-				   text-align:left; font-size:1.0em; line-height:1.2; border:1px red solid;}
+	div#menuboard{ width:380pt; margin:auto; margin-bottom:8pt; padding:0pt 0pt 8pt 0pt; text-align:left; border:1px red solid;}
 
 	/* メニュー領域 */
 	menu#menupanel{ display:block; font-size:0.9em; background-color:#efefef; margin:0pt 0pt 6pt 0pt; padding:2pt 4pt 2pt 4pt;}
@@ -20,7 +22,6 @@
 	/* li.menunull{ display:inline; margin-right:4pt; color:silver; cursor:pointer;} */
 
 	/* フロートメニュー */
-	div#float_parent{ font-size:1.0em;}
 	menu.floatmenu  { visibility:visible; display:none; margin:0pt; padding:2pt; position:absolute;
 					  list-style-type:none; text-align:left; font-size:0.9em; line-height:1.33; background-color:blue; z-index:101;}
 	/* フロートメニュー - サブメニュー項目 */
@@ -44,15 +45,13 @@
 	/* パズル表示部 */
 	div#quesboard{ margin:auto; margin-top:16pt; margin-bottom:16pt; text-align:center;}
 	div#divques { position:relative; border:solid 1px gray; cursor:default; margin-left:auto; margin-right:auto;}
-	div#btnarea { position:relative; font-size:1.0em; margin-top:1.0em;}
+	div#btnarea { position:relative; margin-top:1.0em;}
 
 	/* (canvas.context.fillText代替用) */
 	div#numobj_parent{ position:absolute; left:0px; top:0px; z-index:20;}
 	div#numobj_parent div.divnum{ display:inline; position:absolute; cursor:default; line-height:100%;}
 
 	/* ポップアップウィンドウ */
-	div#popup_parent { font-size:1.0em;}
-
 	div.popup{ display:none; position:absolute; left:0pt; top:0pt; margin:0pt; text-align:left;
 			   background-color:#efefff; border:1px black solid; font-size:0.9em; line-height:1.6; z-index:100;}
 	div.popup div.titlebar

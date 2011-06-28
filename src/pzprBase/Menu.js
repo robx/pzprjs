@@ -906,16 +906,10 @@ pzprv3.createCommonClass('Menu',
 	// menu.modifyCSS() スタイルシートの中身を変更する
 	//--------------------------------------------------------------------------------
 	textsize : function(num){
-		var rule = {
+		this.modifyCSS({'.outofboard':{
 			fontSize:['1.0em','1.5em','2.0em','3.0em'][num],
 			lineHeight:['1.2','1.1','1.1','1.1'][num]
-		};
-		this.modifyCSS({
-			'div#menuboard':rule,
-			'div#btnarea':rule,
-			'div#popup_parent':rule,
-			'div#float_parent':rule
-		});
+		} });
 	},
 	modifyCSS : function(input){
 		var sheet = document.styleSheets[0];
