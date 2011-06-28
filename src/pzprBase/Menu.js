@@ -35,19 +35,14 @@ pzprv3.createCommonClass('Menu',
 		this.EL_FLOAT = ee.addTemplate('float_parent','menu', {className:'floatmenu'}, {backgroundColor:pzprv3.PZLINFO.toFBGcolor(pid)}, float_funcs);
 
 		// ElementTemplate : フロートメニュー(中身)
-		var smenu_funcs  = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout), click:ee.ebinder(this, this.submenuclick)};
-		var select_funcs = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout)};
-		this.EL_SMENU    = ee.addTemplate('','li', {className:'smenu'}, null, smenu_funcs);
-		this.EL_SPARENT  = ee.addTemplate('','li', {className:'smenu'}, null, select_funcs);
-		this.EL_SELECT   = ee.addTemplate('','li', {className:'smenu'}, {fontWeight :'900', fontSize:'0.9em'}, select_funcs);
-		this.EL_CHECK    = ee.addTemplate('','li', {className:'smenu'}, {paddingLeft:'6pt', fontSize:'0.9em'}, smenu_funcs);
-		this.EL_LABEL    = ee.addTemplate('','li', {className:'smenulabel'}, null, null);
+		this.EL_SMENU    = ee.addTemplate('','li', {className:'smenu'}, null, null);
+		this.EL_SPARENT  = this.EL_SMENU;
+		this.EL_SPARENT2 = ee.addTemplate('','li', {className:'smenu'}, {fontWeight :'900', fontSize:'0.9em'}, null);
+		this.EL_SELECT   = this.EL_SPARENT2;
+		this.EL_CHECK    = ee.addTemplate('','li', {className:'smenu'}, {paddingLeft:'6pt', fontSize:'0.9em'}, null);
 		this.EL_CHILD    = this.EL_CHECK;
-		this.EL_SEPARATE = (
-			// IE7以下向けのCSSハックをやめて、ここで設定するようにした
-			(!ee.br.IE6) ? ee.addTemplate('','li', {className:'smenusep', innerHTML:'&nbsp;'}, null, null)
-						 : ee.addTemplate('','li', {className:'smenusep', innerHTML:'&nbsp;'}, {lineHeight :'2pt', display:'inline'}, null)
-		);
+		this.EL_SEPARATE = ee.addTemplate('','li', {className:'smenusep', innerHTML:'&nbsp;'}, null, null);
+		this.EL_LABEL    = ee.addTemplate('','li', {className:'smenulabel'}, null, null);
 
 		// ElementTemplate : 管理領域
 		this.EL_DIVPACK  = ee.addTemplate('','div',  null, null, null);
@@ -75,6 +70,10 @@ pzprv3.createCommonClass('Menu',
 
 		if(!!ee("divques_sub").el.getContext){
 			this.enableSaveImage = true;
+		}
+
+		if(ee.br.IE6){
+			this.modifyCSS('menu.floatmenu li.smenusep', {lineHeight :'2pt', display:'inline'});
 		}
 
 		this.menuarea();
@@ -147,7 +146,7 @@ pzprv3.createCommonClass('Menu',
 			if(!!pmenu){ pmenu.el.innerHTML = "["+pp.getMenuStr(idname)+"]";}
 			break;
 
-		case pp.SMENU: case pp.LABEL: case pp.SPARENT:
+		case pp.SMENU: case pp.LABEL: case pp.SPARENT: case pp.SPARENT2:
 			var smenu = ee('ms_'+idname);
 			if(!!smenu){ smenu.el.innerHTML = pp.getMenuStr(idname);}
 			break;
@@ -215,6 +214,7 @@ pzprv3.createCommonClass('Menu',
 	menuarea : function(){
 		var am = ee.binder(pp, pp.addMenu),
 			at = ee.binder(pp, pp.addSParent),
+			an = ee.binder(pp, pp.addSParent2),
 			as = ee.binder(pp, pp.addSmenu),
 			au = ee.binder(pp, pp.addSelect),
 			ac = ee.binder(pp, pp.addCheck),
@@ -257,8 +257,8 @@ pzprv3.createCommonClass('Menu',
 		// *編集 ==============================================================
 		am('edit', "編集", "Edit");
 
-		at('hist', 'edit', '履歴', 'History');
-		at('board','edit', '盤面', 'Board');
+		an('hist', 'edit', '履歴', 'History');
+		an('board','edit', '盤面', 'Board');
 		ap('sep_edit1', 'edit');
 
 		as('adjust', 'edit', '盤面の調整', 'Adjust the Board');
@@ -355,8 +355,8 @@ pzprv3.createCommonClass('Menu',
 		as('credit',   'other', 'ぱずぷれv3について', 'About PUZ-PRE v3');
 		as('jumpexp',  'other', '操作説明',           'How to Input');
 		ap('sep_other','other');
-		at('link',     'other', 'リンク', 'Link');
-		at('debug',    'other', 'デバッグ', 'Debug');
+		an('link',     'other', 'リンク', 'Link');
+		an('debug',    'other', 'デバッグ', 'Debug');
 
 		// *その他 - リンク ---------------------------------------------------
 		as('jumpv3',  'link', 'ぱずぷれv3のページへ', 'Jump to PUZ-PRE v3 page');
@@ -404,20 +404,25 @@ pzprv3.createCommonClass('Menu',
 			var id = pp.flaglist[i];
 			if(!pp.flags[id]){ continue;}
 
-			var smenu, smenuid = 'ms_'+id;
+			var eltype=null, smenuid = 'ms_'+id, sfunc=false, cfunc=false;
 			switch(pp.type(id)){
-				case pp.MENU:     smenu = ee.createEL(this.EL_MENU,    smenuid); continue; break;
-				case pp.SEPARATE: smenu = ee.createEL(this.EL_SEPARATE,smenuid); break;
-				case pp.LABEL:    smenu = ee.createEL(this.EL_LABEL,   smenuid); break;
-				case pp.SELECT:   smenu = ee.createEL(this.EL_SELECT,  smenuid); break;
-				case pp.SMENU:    smenu = ee.createEL(this.EL_SMENU,   smenuid); break;
-				case pp.CHECK:    smenu = ee.createEL(this.EL_CHECK,   smenuid); break;
-				case pp.CHILD:    smenu = ee.createEL(this.EL_CHILD,   smenuid); break;
-				case pp.SPARENT:
-					var dispnormal = (pp.getMenuStr(id).indexOf("->")>=0);
-					smenu = ee.createEL((dispnormal ? this.EL_SPARENT : this.EL_SELECT), smenuid);
-					break;
+				case pp.MENU:     ee.createEL(this.EL_MENU, smenuid); continue; break;
+				case pp.SEPARATE: eltype = this.EL_SEPARATE; break;
+				case pp.LABEL:    eltype = this.EL_LABEL;    break;
+				case pp.SELECT:   eltype = this.EL_SELECT;   sfunc = true; break;
+				case pp.SPARENT:  eltype = this.EL_SPARENT;  sfunc = true; break;
+				case pp.SPARENT2: eltype = this.EL_SPARENT2; sfunc = true; break;
+				case pp.SMENU:    eltype = this.EL_SMENU;    sfunc = cfunc = true; break;
+				case pp.CHECK:    eltype = this.EL_CHECK;    sfunc = cfunc = true; break;
+				case pp.CHILD:    eltype = this.EL_CHILD;    sfunc = cfunc = true; break;
 				default: continue; break;
+			}
+
+			var smenu = ee.createEL(eltype, smenuid);
+			if(sfunc){
+				ee.addEvent(smenu, "mouseover", ee.ebinder(this, this.submenuhover));
+				ee.addEvent(smenu, "mouseout",  ee.ebinder(this, this.submenuout));
+				if(cfunc){ ee.addEvent(smenu, "click", ee.ebinder(this, this.submenuclick));}
 			}
 
 			var parentid = pp.flags[id].parent;
@@ -457,8 +462,7 @@ pzprv3.createCommonClass('Menu',
 	menuhover : function(e){
 		if(!!this.movingpop){ return true;}
 
-		var idname = ee.getSrcElement(e).id.substr(3);
-		this.floatmenuopen(e,idname,0);
+		this.floatmenuopen(e, 0);
 	},
 	menuout   : function(e){
 		if(!this.insideOfMenu(e)){
@@ -471,16 +475,14 @@ pzprv3.createCommonClass('Menu',
 	// menu.submenuout(e)   サブメニューからマウスが外れたときの表示設定を行う
 	//---------------------------------------------------------------------------
 	submenuhover : function(e){
-		var idname = ee.getSrcElement(e).id.substr(3);
-		if(pp.flags[idname] && (pp.type(idname)===pp.SELECT || pp.type(idname)===pp.SPARENT)){
+		if(pp.haschild(ee.getSrcElement(e).id.substr(3))){
 			if(ee.getSrcElement(e).className==='smenu'){
-				this.floatmenuopen(e,idname,this.dispfloat.length);
+				this.floatmenuopen(e, this.dispfloat.length);
 			}
 		}
 	},
 	submenuout   : function(e){
-		var idname = ee.getSrcElement(e).id.substr(3);
-		if(pp.flags[idname] && (pp.type(idname)===pp.SELECT || pp.type(idname)===pp.SPARENT)){
+		if(pp.haschild(ee.getSrcElement(e).id.substr(3))){
 			this.floatmenuout(e);
 		}
 	},
@@ -489,10 +491,11 @@ pzprv3.createCommonClass('Menu',
 	// menu.submenuclick(e) 通常/選択型/チェック型サブメニューがクリックされたときの動作を実行する
 	//---------------------------------------------------------------------------
 	submenuclick : function(e){
-		var idname = ee.getSrcElement(e).id.substr(3);
-		if(ee.getSrcElement(e).className==="smenu"){
+		var el = ee.getSrcElement(e);
+		if(!!el && el.className==="smenu"){
 			this.floatmenuclose(0);
 
+			var idname = el.id.substr(3);
 			switch(pp.type(idname)){
 				case pp.SMENU: this.popopen(e, idname); break;
 				case pp.CHILD: pp.setVal(pp.flags[idname].parent, pp.getVal(idname)); break;
@@ -508,12 +511,13 @@ pzprv3.createCommonClass('Menu',
 	// menu.insideOf()       イベントeがエレメントの範囲内で起こったか？
 	// menu.insideOfMenu()   マウスがメニュー領域の中にいるか判定する
 	//---------------------------------------------------------------------------
-	floatmenuopen : function(e, idname, depth){
+	floatmenuopen : function(e, depth){
 		this.floatmenuclose(depth);
 
 		if(depth>0 && !this.dispfloat[depth-1]){ return;}
 
 		var rect = ee(ee.getSrcElement(e).id).getRect();
+		var idname = ee.getSrcElement(e).id.substr(3);
 		var _float = this.floatpanel[idname];
 		if(depth==0){
 			_float.style.left = rect.left   + 1 + 'px';
@@ -960,6 +964,7 @@ pzprv3.createCommonClass('Properties',
 	// 定数
 	MENU     : 6,
 	SPARENT  : 7,
+	SPARENT2 : 8,
 	SMENU    : 0,
 	SELECT   : 1,
 	CHECK    : 2,
@@ -978,6 +983,7 @@ pzprv3.createCommonClass('Properties',
 	//---------------------------------------------------------------------------
 	// pp.addMenu()      メニュー最上位の情報を登録する
 	// pp.addSParent()   フロートメニューを開くサブメニュー項目を登録する
+	// pp.addSParent2()  フロートメニューを開くサブメニュー項目を登録する
 	// pp.addSmenu()     Popupメニューを開くサブメニュー項目を登録する
 	// pp.addCaption()   Captionとして使用するサブメニュー項目を登録する
 	// pp.addSeparator() セパレータとして使用するサブメニュー項目を登録する
@@ -991,6 +997,9 @@ pzprv3.createCommonClass('Properties',
 	},
 	addSParent : function(idname, parent, strJP, strEN){
 		this.addFlags(idname, parent, this.SPARENT, null, strJP, strEN);
+	},
+	addSParent2 : function(idname, parent, strJP, strEN){
+		this.addFlags(idname, parent, this.SPARENT2, null, strJP, strEN);
 	},
 
 	addSmenu : function(idname, parent, strJP, strEN){
@@ -1048,6 +1057,7 @@ pzprv3.createCommonClass('Properties',
 	// pp.getMenuStr() 管理パネルと選択型/チェック型サブメニューに表示する文字列を返す
 	// pp.getLabel()   管理パネルとチェック型サブメニューに表示する文字列を返す
 	// pp.type()       設定値のサブメニュータイプを返す
+	// pp.haschild()   サブメニューがあるかどうか調べる
 	//
 	// pp.getVal()     各フラグのvalの値を返す
 	// pp.setVal()     各フラグの設定値を設定する
@@ -1056,6 +1066,12 @@ pzprv3.createCommonClass('Properties',
 	getMenuStr : function(idname){ return this.flags[idname].str[menu.language].menu; },
 	getLabel   : function(idname){ return this.flags[idname].str[menu.language].label;},
 	type       : function(idname){ return this.flags[idname].type;},
+	haschild   : function(idname){
+		var flag = this.flags[idname];
+		if(!flag){ return false;}
+		var type = flag.type;
+		return (type===this.SELECT || type===this.SPARENT || type===this.SPARENT2);
+	},
 
 	getVal : function(idname){ return this.flags[idname]?this.flags[idname].val:null;},
 	setVal : function(idname, newval, isexecfunc){
