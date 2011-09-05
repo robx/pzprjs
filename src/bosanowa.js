@@ -207,7 +207,7 @@ Graphic:{
 			var c = clist[i];
 			if(bd.cell[c].error===1){
 				if(this.vnop(header+c,this.FILL)){
-					g.fillRect(bd.cell[c].px, bd.cell[c].py, this.cw, this.ch);
+					g.fillRect(this.cell[c].rpx, this.cell[c].rpy, this.cw, this.ch);
 				}
 			}
 			else{ this.vhide([header+c]);}
@@ -228,7 +228,7 @@ Graphic:{
 			if(bd.isValid(c) && !bd.isNum(c)){
 				g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(header+c,this.STROKE)){
-					g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
+					g.strokeCircle(this.cell[c].px, this.cell[c].py, rsize);
 				}
 			}
 			else{ this.vhide([header+c]);}
@@ -250,12 +250,12 @@ Graphic:{
 				if(!g.use.canvas){
 					if(this.vnop(header+id,this.NONE)){
 						if(bd.border[id].by&1){
-							var px = bd.border[id].px, py1 = bd.border[id].py-this.bh, py2 = py1+this.ch+1;
+							var px = this.border[id].px, py1 = this.border[id].py-this.bh, py2 = py1+this.ch+1;
 							g.strokeLine(px, py1, px, py2);
 							g.setDashSize(3);
 						}
 						else if(bd.border[id].bx&1){
-							var py = bd.border[id].py, px1 = bd.border[id].px-this.bw, px2 = px1+this.cw+1;
+							var py = this.border[id].py, px1 = this.border[id].px-this.bw, px2 = px1+this.cw+1;
 							g.strokeLine(px1, py, px2, py);
 							g.setDashSize(3);
 						}
@@ -267,12 +267,12 @@ Graphic:{
 					var dotSize  = this.cw/(dotCount*2);
 					if     (bd.border[id].by&1){ 
 						for(var j=0;j<this.ch+1;j+=(2*dotSize)){
-							g.fillRect(bd.border[id].px, bd.border[id].py-this.bh+j, 1, dotSize);
+							g.fillRect(this.border[id].px, this.border[id].py-this.bh+j, 1, dotSize);
 						}
 					}
 					else if(bd.border[id].bx&1){ 
 						for(var j=0;j<this.cw+1 ;j+=(2*dotSize)){
-							g.fillRect(bd.border[id].px-this.bw+j, bd.border[id].py, dotSize, 1);
+							g.fillRect(this.border[id].px-this.bw+j, this.border[id].py, dotSize, 1);
 						}
 					}
 				}
@@ -291,14 +291,14 @@ Graphic:{
 			if(bd.isValid(cc1) && bd.isValid(cc2)){
 				g.fillStyle=this.gridcolor;
 				if(this.vnop(headers[0]+id,this.NONE)){
-					if     (bd.border[id].by&1){ g.fillRect(bd.border[id].px, bd.border[id].py-this.bh, 1, this.ch+1);}
-					else if(bd.border[id].bx&1){ g.fillRect(bd.border[id].px-this.bw, bd.border[id].py, this.cw+1, 1);}
+					if     (bd.border[id].by&1){ g.fillRect(this.border[id].px, this.border[id].py-this.bh, 1, this.ch+1);}
+					else if(bd.border[id].bx&1){ g.fillRect(this.border[id].px-this.bw, this.border[id].py, this.cw+1, 1);}
 				}
 
 				g.fillStyle = ((bd.cell[cc2].error===0) ? "white" : this.errbcolor1);
 				if(this.vnop(headers[1]+id,this.FILL)){
-					if     (bd.border[id].by&1){ g.fillRect(bd.border[id].px, bd.border[id].py-csize, 1, 2*csize+1);}
-					else if(bd.border[id].bx&1){ g.fillRect(bd.border[id].px-csize, bd.border[id].py, 2*csize+1, 1);}
+					if     (bd.border[id].by&1){ g.fillRect(this.border[id].px, this.border[id].py-csize, 1, 2*csize+1);}
+					else if(bd.border[id].bx&1){ g.fillRect(this.border[id].px-csize, this.border[id].py, 2*csize+1, 1);}
 				}
 			}
 			else{ this.vhide([headers[0]+id, headers[1]+id]);}
@@ -317,7 +317,7 @@ Graphic:{
 			if(bd.border[id].qsub>=0 && (!bd.isEmpty(cc1) && !bd.isEmpty(cc2))){
 				g.fillStyle = "white";
 				if(this.vnop(header+id,this.NONE)){
-					g.fillRect(bd.border[id].px-csize, bd.border[id].py-csize, 2*csize+1, 2*csize+1);
+					g.fillRect(this.border[id].px-csize, this.border[id].py-csize, 2*csize+1, 2*csize+1);
 				}
 			}
 			else{ this.vhide(header+id);}
@@ -328,9 +328,10 @@ Graphic:{
 
 		var idlist = this.range.borders;
 		for(var i=0;i<idlist.length;i++){
-			var id=idlist[i], obj=bd.border[id], key='border_'+id;
+			var id=idlist[i], key='border_'+id;
 			if(bd.border[id].qsub>=0){
-				this.dispnum(key, 1, ""+bd.QsB(id), 0.35 ,this.borderfontcolor, obj.px, obj.py);
+				var px = this.border[id].px, py = this.border[id].py;
+				this.dispnum(key, 1, ""+bd.QsB(id), 0.35 ,this.borderfontcolor, px, py);
 			}
 			else{ this.hideEL(key);}
 		}
@@ -373,8 +374,8 @@ Encode:{
 		this.decodeBoard();
 		this.decodeNumber16();
 
-		if     (this.checkpflag("h")){ pp.setVal('disptype',2);}
-		else if(this.checkpflag("t")){ pp.setVal('disptype',3);}
+		if     (this.checkpflag("h")){ pp.setValOnly('disptype',2);}
+		else if(this.checkpflag("t")){ pp.setValOnly('disptype',3);}
 	},
 	pzlexport : function(type){
 		this.encodeBosanowa();

@@ -147,7 +147,7 @@ Graphic:{
 				else                            { g.strokeStyle = this.linecolor;}
 
 				if(this.vnop(header+c,this.STROKE)){
-					var px=bd.cell[c].cpx+1, py=bd.cell[c].cpy+1;
+					var px=this.cell[c].px+1, py=this.cell[c].py+1;
 					if     (dir===1){ g.setOffsetLinePath(px,py ,-tsize, tsize ,0,-tplus , tsize, tsize, false);}
 					else if(dir===2){ g.setOffsetLinePath(px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize, false);}
 					else if(dir===3){ g.setOffsetLinePath(px,py , tsize,-tsize ,-tplus,0 , tsize, tsize, false);}
@@ -160,8 +160,8 @@ Graphic:{
 	drawCellSquare : function(){
 		var g = this.vinc('cell_number_base', 'crispEdges');
 
-		var mgnw = this.cw*0.15;
-		var mgnh = this.ch*0.15;
+		var rw = this.bw*0.7-1;
+		var rh = this.bh*0.7-1;
 		var header = "c_sq_";
 
 		var clist = this.range.cells;
@@ -175,7 +175,7 @@ Graphic:{
 				else                  { g.fillStyle = "white";}
 
 				if(this.vnop(header+c,this.FILL)){
-					g.fillRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, this.cw-mgnw*2-1, this.ch-mgnh*2-1);
+					g.fillRect(this.cell[c].px-rw, this.cell[c].py-rh, rw*2+1, rh*2+1);
 				}
 			}
 			else{ this.vhide(header+c);}
@@ -198,7 +198,8 @@ Graphic:{
 				else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
 				else{ text+=num;}
 
-				this.dispnum(key, 1, text, 0.85, color, obj.cpx, obj.cpy);
+				var px = this.cell[c].px, py = this.cell[c].py;
+				this.dispnum(key, 1, text, 0.85, color, px, py);
 			}
 			else{ this.hideEL(key);}
 		}

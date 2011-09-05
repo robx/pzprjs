@@ -134,7 +134,8 @@ Graphic:{
 				var obj = bd.cell[c];
 				var color = (bd.cell[c].error===1 ? this.fontErrcolor : this.fontAnscolor);
 				var text  = ""+bd.cell[c].anum;
-				this.dispnum(key, 1, text, 0.80, color, obj.cpx, obj.cpy);
+				var px = this.cell[c].px, py = this.cell[c].py;
+				this.dispnum(key, 1, text, 0.80, color, px, py);
 			}
 			else{ this.hideEL(key);}
 		}

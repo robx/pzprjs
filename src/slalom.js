@@ -349,23 +349,39 @@ Graphic:{
 			var c = clist[i];
 			g.fillStyle = (bd.cell[c].error===4 ? this.errcolor1 : this.cellcolor);
 
-			for(var j=bd.cell[c].py,max=bd.cell[c].py+this.ch;j<max;j+=ll*2){ //たて
-				if(bd.cell[c].ques===21){
-					if(this.vnop([headers[0],c,(j|0)].join("_"),this.FILL)){
-						g.fillRect(bd.cell[c].cpx-lm+1, j, lw, ll);
+			if(bd.cell[c].ques===21){ //たて
+				if(this.vnop([headers[0],c].join("_"),this.FILL)){
+					var px = this.cell[c].px-lm+1, py, rpy = this.cell[c].rpy;
+					g.beginPath();
+					for(py=rpy,max=rpy+this.ch;py<max;py+=ll*2){
+						g.moveTo(px,   py);
+						g.lineTo(px+lw,py);
+						g.lineTo(px+lw,py+ll);
+						g.lineTo(px,   py+ll);
+						g.lineTo(px,   py);
 					}
+					g.closePath();
+					g.fill();
 				}
-				else{ this.vhide([headers[0],c,(j|0)].join("_"));}
 			}
+			else{ this.vhide([headers[0],c].join("_"));}
 
-			for(var j=bd.cell[c].px,max=bd.cell[c].px+this.cw;j<max;j+=ll*2){ //よこ
-				if(bd.cell[c].ques===22){
-					if(this.vnop([headers[1],c,(j|0)].join("_"),this.FILL)){
-						g.fillRect(j, bd.cell[c].cpy-lm+1, ll, lw);
+			if(bd.cell[c].ques===22){ //よこ
+				if(this.vnop([headers[1],c].join("_"),this.FILL)){
+					var px, py = this.cell[c].py-lm+1, rpx = this.cell[c].rpx;
+					g.beginPath();
+					for(px=rpx,max=rpx+this.cw;px<max;px+=ll*2){
+						g.moveTo(px,   py);
+						g.lineTo(px+ll,py);
+						g.lineTo(px+ll,py+lw);
+						g.lineTo(px,   py+lw);
+						g.lineTo(px,   py);
 					}
+					g.closePath();
+					g.fill();
 				}
-				else{ this.vhide([headers[1],c,(j|0)].join("_"));}
 			}
+			else{ this.vhide([headers[1],c].join("_"));}
 		}
 	},
 
@@ -384,7 +400,7 @@ Graphic:{
 		g.strokeStyle = this.cellcolor;
 		g.fillStyle = (mv.inputData==10 ? this.errbcolor1 : "white");
 		if(this.vnop(vids[0],this.FILL)){
-			g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, csize);
+			g.shapeCircle(this.cell[c].px, this.cell[c].py, csize);
 		}
 
 		this.dispnumStartpos(c);
@@ -392,10 +408,11 @@ Graphic:{
 	dispnumStartpos : function(c){
 		var g = this.vinc('cell_numberpos', 'auto');
 
-		var num = bd.hinfo.max, obj = bd.cell[c];
+		var num = bd.hinfo.max;
 		if(num>=0){
 			var fontratio = (num<10?0.75:0.66);
-			this.dispnum('stpos', 1, ""+num, fontratio, "black", obj.cpx, obj.cpy);
+			var px = this.cell[c].px, py = this.cell[c].py;
+			this.dispnum('stpos', 1, ""+num, fontratio, "black", px, py);
 		}
 		else{ this.hidenum(key);}
 	},
@@ -421,13 +438,14 @@ Graphic:{
 
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].ques!==21 && bd.cell[c].ques!==22){ continue;}
-			var obj = bd.cell[c], key='cell_'+c;
+			var key='cell_'+c;
 
 			var r = bd.hinfo.getGateid(c);
 			var num = (r>0?bd.hinfo.data[r].number:-1);
 			if(keydown && num>0){
 				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
-				this.dispnum(key, 1, ""+num, fontratio ,"tomato", obj.cpx, obj.cpy);
+				var px = this.cell[c].px, py = this.cell[c].py;
+				this.dispnum(key, 1, ""+num, fontratio ,"tomato", px, py);
 			}
 			else{ this.hidenum(key);}
 		}

@@ -190,7 +190,7 @@ Graphic:{
 				g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.cellcolor);
 				g.fillStyle   = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 				if(this.vnop(header+c,this.FILL_STROKE)){
-					g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
+					g.shapeCircle(this.cell[c].px, this.cell[c].py, rsize);
 				}
 			}
 			else{ this.vhide([header+c]);}
@@ -199,8 +199,8 @@ Graphic:{
 	drawCellSquare : function(){
 		var g = this.vinc('cell_number_base', 'crispEdges');
 
-		var mgnw = this.cw*0.1;
-		var mgnh = this.ch*0.1;
+		var rw = this.bw*0.8-2;
+		var rh = this.bh*0.8-2;
 		var header = "c_sq2_";
 
 		var clist = this.range.cells;
@@ -209,7 +209,7 @@ Graphic:{
 			if(bd.isStone(c) && bd.cell[c].anum!==-1){
 				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 				if(this.vnop(header+c,this.FILL)){
-					g.fillRect(bd.cell[c].px+mgnw+2, bd.cell[c].py+mgnh+2, this.cw-mgnw*2-3, this.ch-mgnh*2-3);
+					g.fillRect(this.cell[c].px-rw, this.cell[c].py-rh, rw*2+1, rh*2+1);
 				}
 			}
 			else{ this.vhide([header+c]);}

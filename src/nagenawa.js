@@ -87,7 +87,8 @@ Graphic:{
 		var obj = bd.cell[id], key = ['cell',id].join('_');
 		if(obj.qnum!==-1){
 			var text = (obj.qnum>=0 ? ""+obj.qnum : "?");
-			this.dispnum(key, 5, text, 0.45, this.fontcolor, obj.cpx, obj.cpy);
+			var px = this.cell[id].px, py = this.cell[id].py;
+			this.dispnum(key, 5, text, 0.45, this.fontcolor, px, py);
 		}
 		else{ this.hideEL(key);}
 	}

@@ -170,7 +170,7 @@ Graphic:{
 		for(var n=0;n<idlist.length;n++){
 			var id = idlist[n], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(bd.isValid(cc1) && bd.isValid(cc2)){
-				var px = bd.border[id].px, py = bd.border[id].py;
+				var px = this.border[id].px, py = this.border[id].py;
 				if(g.use.canvas){
 					g.fillStyle = this.gridcolor;
 					if     (bd.border[id].by&1){

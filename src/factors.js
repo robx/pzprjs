@@ -83,11 +83,12 @@ Graphic:{
 			var c = clist[i], obj = bd.cell[c];
 			var key_qans = ['cell',c,'qans'].join('_');
 			var key_ques = ['cell',c,'ques'].join('_');
+			var px = this.cell[c].px, py = this.cell[c].py;
 
 			if(bd.cell[c].anum!==-1){
 				var color = (bd.cell[c].error==1?this.fontErrcolor:this.fontAnscolor);
 				var size = (bd.cell[c].anum<10?0.8:0.7);
-				this.dispnum(key_qans, 1, (""+bd.cell[c].anum), size, color, obj.cpx, obj.cpy);
+				this.dispnum(key_qans, 1, (""+bd.cell[c].anum), size, color, px, py);
 			}
 			else{ this.hideEL(key_qans);}
 
@@ -95,7 +96,7 @@ Graphic:{
 				var size = 0.45;
 				if     (bd.cell[c].qnum>=100000){ size = 0.30;}
 				else if(bd.cell[c].qnum>= 10000){ size = 0.36;}
-				this.dispnum(key_ques, 5, (""+bd.cell[c].qnum), size, this.fontcolor, obj.cpx, obj.cpy);
+				this.dispnum(key_ques, 5, (""+bd.cell[c].qnum), size, this.fontcolor, px, py);
 			}
 			else{ this.hideEL(key_ques);}
 		}

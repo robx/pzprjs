@@ -105,7 +105,7 @@ Graphic:{
 			var c = clist[i];
 
 			if(bd.cell[c].qnum!=-1){
-				var px=bd.cell[c].cpx, py=bd.cell[c].cpy;
+				var px=this.cell[c].px, py=this.cell[c].py;
 
 				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 				if(this.vnop(headers[0]+c,this.FILL)){

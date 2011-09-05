@@ -152,7 +152,7 @@ Graphic:{
 				else                           { g.strokeStyle = this.linecolor;}
 
 				if(this.vnop(header+c,this.STROKE)){
-					var px=bd.cell[c].cpx+1, py=bd.cell[c].cpy+1;
+					var px=this.cell[c].px+1, py=this.cell[c].py+1;
 					if     (dir==1){ g.setOffsetLinePath(px,py ,-tsize, tsize ,0,-tplus , tsize, tsize, false);}
 					else if(dir==2){ g.setOffsetLinePath(px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize, false);}
 					else if(dir==3){ g.setOffsetLinePath(px,py , tsize,-tsize ,-tplus,0 , tsize, tsize, false);}

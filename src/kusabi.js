@@ -80,10 +80,11 @@ Graphic:{
 	},
 
 	drawNumber1 : function(id){
-		var num = bd.cell[id].qnum, obj = bd.cell[id], key='cell_'+id;
+		var num = bd.cell[id].qnum, key='cell_'+id;
 		if(num>=1 && num<=3){
 			var text = ({1:"同",2:"短",3:"長"})[num];
-			this.dispnum(key, 1, text, 0.65, this.fontcolor, obj.cpx, obj.cpy);
+			var px = this.cell[id].px, py = this.cell[id].py;
+			this.dispnum(key, 1, text, 0.65, this.fontcolor, px, py);
 		}
 		else{ this.hideEL(key);}
 	}

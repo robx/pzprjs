@@ -121,23 +121,23 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], num=bd.getNum(c), cpx, cpy;
+			var c = clist[i], num=bd.getNum(c), px, py;
 			this.vhide([headers[0]+c, headers[1]+c, headers[2]+c]);
 			if(num<=0){ continue;}
 
 			g.strokeStyle = this.getCellNumberColor(bd.cell[c]);
-			var cpx=bd.cell[c].cpx, cpy=bd.cell[c].cpy;
+			var px=this.cell[c].px, py=this.cell[c].py;
 			if(this.vnop(headers[(num-1)]+c,this.STROKE)){
 				switch(num){
 				case 1:
-					g.strokeCircle(cpx, cpy, rsize);
+					g.strokeCircle(px, py, rsize);
 					break;
 				case 2:
-					g.setOffsetLinePath(cpx, cpy, 0,-tsize, -rsize,tsize, rsize,tsize, true);
+					g.setOffsetLinePath(px, py, 0,-tsize, -rsize,tsize, rsize,tsize, true);
 					g.stroke();
 					break;
 				case 3:
-					g.strokeRect(cpx-rsize, cpy-rsize, 2*rsize, 2*rsize);
+					g.strokeRect(px-rsize, py-rsize, 2*rsize, 2*rsize);
 					break;
 				}
 			}

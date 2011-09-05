@@ -139,8 +139,9 @@ Graphic:{
 			var c = clist[i], obj = bd.cell[c];
 			var keyimg = ['cell',c,'quesimg'].join('_');
 			if(obj.qnum>0){
+				var rpx = this.cell[c].rpx, rpy = this.cell[c].rpy;
 				this.vshow(keyimg);
-				this.imgtile.putImage(obj.qnum-1, g,obj.px,obj.py,this.cw,this.ch);
+				this.imgtile.putImage(obj.qnum-1, g, rpx,rpy,this.cw,this.ch);
 			}
 			else{ this.vhide(keyimg);}
 		}

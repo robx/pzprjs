@@ -195,7 +195,7 @@ Graphic:{
 				if(bd.cell[c].ques===6){
 					g.strokeStyle = this.cellcolor;
 					if(this.vnop(header+c,this.NONE)){
-						g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
+						g.strokeCircle(this.cell[c].px, this.cell[c].py, rsize);
 					}
 				}
 				else{ this.vhide(header+c);}
@@ -221,7 +221,7 @@ Encode:{
 		this.decodePipelink();
 
 		this.checkPuzzleid();
-		if(this.owner.pid==='pipelinkr'){ pp.setVal('disptype', (!this.checkpflag('i')?1:2));}
+		if(this.owner.pid==='pipelinkr'){ pp.setValOnly('disptype', (!this.checkpflag('i')?1:2));}
 	},
 	pzlexport : function(type){
 		this.outpflag = ((this.owner.pid==='pipelinkr' && pp.getVal('disptype')==2)?"i":"");
@@ -298,7 +298,7 @@ FileIO:{
 		this.decodeBorderLine();
 
 		enc.checkPuzzleid();
-		if(this.owner.pid==='pipelinkr'){ pp.setVal('disptype', (disptype=="circle"?1:2));}
+		if(this.owner.pid==='pipelinkr'){ pp.setValOnly('disptype', (disptype=="circle"?1:2));}
 	},
 	encodeData : function(){
 		if     (this.owner.pid==='pipelink') { this.datastr += 'pipe/';}

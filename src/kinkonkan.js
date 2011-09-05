@@ -331,10 +331,10 @@ Graphic:{
 				else if(ql > 0){ g.fillStyle = this.errbcolor2;}
 				if(err===1 || ql===1){
 					if(this.vnop(headers[0]+c,this.FILL)){
-						g.fillRect(bd.cell[c].px, bd.cell[c].py, this.cw, this.ch);
+						g.fillRect(this.cell[c].px, this.cell[c].py, this.cw, this.ch);
 					}
 				}
-				else{ this.drawTriangle1(bd.cell[c].px, bd.cell[c].py, ql, headers[ql-1]+c);}
+				else{ this.drawTriangle1(this.cell[c].px, this.cell[c].py, ql, headers[ql-1]+c);}
 			}
 			else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c, headers[4]+c, headers[5]+c]);}
 		}
@@ -368,7 +368,8 @@ Graphic:{
 				else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
 				if(num>=0){ text+=num.toString(10);}
 
-				this.dispnum(key, 1, text, fontratio, color, obj.px+this.bw, obj.py+this.bh);
+				var px = this.excell[c].rpx + this.bw, py = this.excell[c].rpy + this.bh;
+				this.dispnum(key, 1, text, fontratio, color, px, py);
 			}
 			else{ this.hideEL(key);}
 		}

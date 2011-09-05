@@ -10,8 +10,6 @@ pzprv3.createCoreClass('BoardPiece',
 
 		this.bx;	// X座標(border座標系)を保持する
 		this.by;	// Y座標(border座標系)を保持する
-		this.px;	// 描画用X座標を保持する
-		this.py;	// 描画用Y座標を保持する
 	},
 
 	group : 'none',
@@ -63,12 +61,6 @@ pzprv3.createCoreClass('BoardPiece',
 // Cellクラスの定義
 pzprv3.createCommonClass('Cell:BoardPiece',
 {
-	initialize : function(owner){
-		pzprv3.core.BoardPiece.prototype.initialize.call(this, owner);
-
-		this.cpx;	// セルの描画用中心X座標を保持する
-		this.cpy;	// セルの描画用中心Y座標を保持する
-	},
 	group : 'cell',
 
 	// デフォルト値
@@ -369,8 +361,6 @@ pzprv3.createCommonClass('Board',
 		if(!!this.isexcell){ this.setposEXcells();}
 
 		this.latticemax = (this.qcols+1)*(this.qrows+1);
-
-		this.setcoordAll(pc.bw,pc.bh);
 	},
 	setposGroup : function(type){
 		if     (type===this.CELL)  { this.setposCells();}
@@ -445,43 +435,9 @@ pzprv3.createCommonClass('Board',
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.setcoordAll() 全てのCell, Cross, BorderオブジェクトのsetcoordCell()等を呼び出す
 	// bd.setminmax()   盤面のbx,byの最小値/最大値をセットする
 	// bd.isinside()    指定された(bx,by)が盤面内かどうか判断する
 	//---------------------------------------------------------------------------
-	setcoordAll : function(bw,bh){
-		{
-			for(var id=0;id<this.cellmax;id++){
-				var obj = this.cell[id];
-				obj.px = (obj.bx-1)*bw;
-				obj.py = (obj.by-1)*bh;
-				obj.cpx = obj.bx*bw;
-				obj.cpy = obj.by*bh;
-			}
-		}
-		if(!!this.iscross){
-			for(var id=0;id<this.crossmax;id++){
-				var obj = this.cross[id];
-				obj.px = obj.bx*bw;
-				obj.py = obj.by*bh;
-			}
-		}
-		if(!!this.isborder){
-			for(var id=0;id<this.bdmax;id++){
-				var obj = this.border[id];
-				obj.px = obj.bx*bw;
-				obj.py = obj.by*bh;
-			}
-		}
-		if(!!this.isexcell){
-			for(var id=0;id<this.excellmax;id++){
-				var obj = this.excell[id];
-				obj.px = (obj.bx-1)*bw;
-				obj.py = (obj.by-1)*bh;
-			}
-		}
-	},
-
 	setminmax : function(){
 		var extUL = (this.isexcell===1 || this.isexcell===2);
 		var extDR = (this.isexcell===2);

@@ -199,14 +199,14 @@ Graphic:{
 			if(bd.cell[c].qans!==0){
 				if(bd.cell[c].qans===12){
 					if(this.vnop(headers[0]+c,this.FILL)){
-						g.fillRect(bd.cell[c].px+lp, bd.cell[c].py, lw, this.ch+1);
+						g.fillRect(this.cell[c].rpx+lp, this.cell[c].rpy, lw, this.ch+1);
 					}
 				}
 				else{ this.vhide(headers[0]+c);}
 
 				if(bd.cell[c].qans===13){
 					if(this.vnop(headers[1]+c,this.FILL)){
-						g.fillRect(bd.cell[c].px, bd.cell[c].py+lp, this.cw+1, lw);
+						g.fillRect(this.cell[c].rpx, this.cell[c].rpy+lp, this.cw+1, lw);
 					}
 				}
 				else{ this.vhide(headers[1]+c);}
@@ -221,11 +221,12 @@ Graphic:{
 		var header = "c_full_";
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c=clist[i], obj=bd.cell[c];
+			var c=clist[i];
 			if(bd.cell[c].ques===1){
 				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(header+c,this.FILL)){
-					g.fillRect(obj.px, obj.py, this.cw+1, this.ch+1);
+					var rpx = this.cell[c].rpx, rpy = this.cell[c].rpy;
+					g.fillRect(rpx, rpy, this.cw+1, this.ch+1);
 				}
 			}
 			else{ this.vhide(header+c);}
@@ -236,11 +237,12 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], obj = bd.cell[c], key='cell_'+c;
+			var c = clist[i], key='cell_'+c;
 			var num = bd.cell[c].qnum;
 			if(num!==-1){
 				var color = (bd.cell[c].ques!==1 ? this.fontcolor : "white");
-				this.dispnum(key, 1, (num!=-2?""+num:"?"), (num<10?0.8:0.75), color, obj.cpx, obj.cpy);
+				var px = this.cell[c].px, py = this.cell[c].py;
+				this.dispnum(key, 1, (num!=-2?""+num:"?"), (num<10?0.8:0.75), color, px, py);
 			}
 			else{ this.hideEL(key);}
 		}

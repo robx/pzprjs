@@ -170,7 +170,7 @@ Graphic:{
 
 			if(bd.border[id].qdir!==0 || bd.border[id].qnum!==-1){
 				g.fillStyle = "white";
-				g.fillRect(bd.border[id].px-csize, bd.border[id].py-csize, 2*csize+1, 2*csize+1);
+				g.fillRect(this.border[id].px-csize, this.border[id].py-csize, 2*csize+1, 2*csize+1);
 			}
 		}
 	},
@@ -187,18 +187,19 @@ Graphic:{
 		var idlist = this.range.borders;
 		for(var i=0;i<idlist.length;i++){
 			var id=idlist[i], obj=bd.border[id], key=['border',id].join('_');
+			var px = this.border[id].px, py = this.border[id].py;
 			// ○の描画
 			if(obj.qnum!=-1){
 				g.fillStyle = (obj.error==1 ? this.errcolor1 : "white");
 				if(this.vnop(headers[0]+id,this.FILL)){
-					g.shapeCircle(obj.px, obj.py, csize);
+					g.shapeCircle(px, py, csize);
 				}
 			}
 			else{ this.vhide([headers[0]+id]);}
 
 			// 数字の描画
 			if(obj.qnum>0){
-				this.dispnum(key, 1, ""+obj.qnum, 0.45, this.borderfontcolor, obj.px, obj.py);
+				this.dispnum(key, 1, ""+obj.qnum, 0.45, this.borderfontcolor, px, py);
 			}
 			else{ this.hideEL(key);}
 
@@ -207,10 +208,10 @@ Graphic:{
 			if(obj.qdir!==bd.NDIR){
 				if(this.vnop(headers[((obj.qdir+1)&1)+1]+id,this.NONE)){
 					switch(obj.qdir){
-						case bd.UP: g.setOffsetLinePath(obj.px,obj.py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false); break;
-						case bd.DN: g.setOffsetLinePath(obj.px,obj.py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false); break;
-						case bd.LT: g.setOffsetLinePath(obj.px,obj.py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false); break;
-						case bd.RT: g.setOffsetLinePath(obj.px,obj.py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false); break;
+						case bd.UP: g.setOffsetLinePath(px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false); break;
+						case bd.DN: g.setOffsetLinePath(px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false); break;
+						case bd.LT: g.setOffsetLinePath(px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false); break;
+						case bd.RT: g.setOffsetLinePath(px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false); break;
 					}
 					g.stroke();
 				}

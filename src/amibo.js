@@ -259,7 +259,7 @@ Graphic:{
 				if(qa===1 || qa===3){
 					g.fillStyle = this.getBarColor(c,true);
 					if(this.vnop(headers[0]+c,this.FILL)){
-						g.fillRect(bd.cell[c].px+lp, bd.cell[c].py, lw, this.ch+1);
+						g.fillRect(this.cell[c].rpx+lp, this.cell[c].rpy, lw, this.ch+1);
 					}
 				}
 				else{ this.vhide(headers[0]+c);}
@@ -267,7 +267,7 @@ Graphic:{
 				if(qa===2 || qa===3){
 					g.fillStyle = this.getBarColor(c,false);
 					if(this.vnop(headers[1]+c,this.FILL)){
-						g.fillRect(bd.cell[c].px, bd.cell[c].py+lp, this.cw+1, lw);
+						g.fillRect(this.cell[c].rpx, this.cell[c].rpy+lp, this.cw+1, lw);
 					}
 				}
 				else{ this.vhide(headers[1]+c);}
@@ -284,6 +284,7 @@ Graphic:{
 
 		var headers = ["c_bars1_", "c_bars2_", "c_bars3_", "c_bars4_"];
 		var clist = this.range.cells;
+		var bw = this.bw, bh = this.bh;
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i];
 			if(!bd.isNum(c)){
@@ -293,12 +294,13 @@ Graphic:{
 
 			var lw = Math.max(this.cw/6, 3);	//LineWidth
 			var lp = (this.bw-lw/2);			//LinePadding
+			var px = this.cell[c].px, this.cell[c].py;
 
 			var cc = bd.up(c);
 			if(cc!==null && (bd.cell[cc].qans===1||bd.cell[cc].qans===3)){
 				g.fillStyle = this.getBarColor(cc,true);
 				if(this.vnop(headers[0]+c,this.FILL)){
-					g.fillRect(bd.cell[c].px+lp, bd.cell[c].py, lw, this.bh);
+					g.fillRect(px-bw+lp, py-bh, lw, bh);
 				}
 			}
 			else{ this.vhide(headers[0]+c);}
@@ -307,7 +309,7 @@ Graphic:{
 			if(cc!==null && (bd.cell[cc].qans===1||bd.cell[cc].qans===3)){
 				g.fillStyle = this.getBarColor(cc,true);
 				if(this.vnop(headers[1]+c,this.FILL)){
-					g.fillRect(bd.cell[c].px+lp, bd.cell[c].py+this.bh+1, lw, this.bh);
+					g.fillRect(px-bw+lp, py+1, lw, bh);
 				}
 			}
 			else{ this.vhide(headers[1]+c);}
@@ -316,7 +318,7 @@ Graphic:{
 			if(cc!==null && (bd.cell[cc].qans===2||bd.cell[cc].qans===3)){
 				g.fillStyle = this.getBarColor(cc,false);
 				if(this.vnop(headers[2]+c,this.FILL)){
-					g.fillRect(bd.cell[c].px, bd.cell[c].py+lp, this.bw, lw);
+					g.fillRect(px-bw, py-bh+lp, bw, lw);
 				}
 			}
 			else{ this.vhide(headers[2]+c);}
@@ -325,7 +327,7 @@ Graphic:{
 			if(cc!==null && (bd.cell[cc].qans===2||bd.cell[cc].qans===3)){
 				g.fillStyle = this.getBarColor(cc,false);
 				if(this.vnop(headers[3]+c,this.FILL)){
-					g.fillRect(bd.cell[c].px+this.bw+1, bd.cell[c].py+lp, this.bw, lw);
+					g.fillRect(px+1, py-bh+lp, bw, lw);
 				}
 			}
 			else{ this.vhide(headers[3]+c);}
@@ -345,7 +347,7 @@ Graphic:{
 				if(this.vnop(header+id,this.NONE)){
 					var lw = this.lw + this.addlw, lm = this.lm, mgn=this.ch*0.2;
 					var bx = bd.border[id].bx, by = bd.border[id].by;
-					var px = bd.border[id].px, py = bd.border[id].py;
+					var px = this.border[id].px, py = this.border[id].py;
 					if     (by&1){ g.fillRect(px-lm, py-this.bh-lm+mgn, lw, this.ch+lw-mgn*2);}
 					else if(bx&1){ g.fillRect(px-this.bw-lm+mgn, py-lm, this.cw+lw-mgn*2, lw);}
 				}

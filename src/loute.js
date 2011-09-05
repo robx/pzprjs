@@ -276,7 +276,7 @@ Graphic:{
 			if(bd.isCircle(c)){
 				g.strokeStyle = this.cellcolor;
 				if(this.vnop(header+c,this.STROKE)){
-					g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize2);
+					g.strokeCircle(this.cell[c].px, this.cell[c].py, rsize2);
 				}
 			}
 			else{ this.vhide([header+c]);}
@@ -288,10 +288,11 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var obj = bd.cell[clist[i]], key = 'cell_h_'+clist[i];
+			var c = clist[i], obj = bd.cell[c], key = 'cell_h_'+c;
 			if(obj.qdir===-2){
 				var color = (obj.error===1 ? this.fontErrcolor : this.fontcolor);
-				this.dispnum(key, 1, "?", ratio, color, obj.cpx, obj.cpy);
+				var px = this.cell[c].px, py = this.cell[c].py;
+				this.dispnum(key, 1, "?", ratio, color, px, py);
 			}
 			else{ this.hidenum(key);}
 		}

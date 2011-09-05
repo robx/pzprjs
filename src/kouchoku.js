@@ -395,18 +395,19 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i], obj = bd.cross[c], key = ['cross',c].join('_');
 			var graydisp = (isgray && obj.error===0 && obj.segment.length>=2);
+			var px = this.cross[c].px, py = this.cross[c].py;
 			if(obj.qnum>0){
 				// ○の描画
 				g.fillStyle = (obj.error===1 ? this.errbcolor1 : "white");
 				g.strokeStyle = (graydisp ? "gray" : "black");
 				if(this.vnop(headers[0]+c,this.FILL_STROKE)){
-					g.shapeCircle(obj.px, obj.py, csize1);
+					g.shapeCircle(px, py, csize1);
 				}
 
 				// アルファベットの描画
 				var letter = (obj.qnum+9).toString(36).toUpperCase();
 				var color = (graydisp ? "gray" : this.fontcolor);
-				this.dispnum(key, 1, letter, 0.55, color, obj.px, obj.py);
+				this.dispnum(key, 1, letter, 0.55, color, px, py);
 			}
 			else{ this.vhide([headers[0]+c]); this.hidenum(key);}
 
@@ -414,7 +415,7 @@ Graphic:{
 				g.fillStyle = (obj.error===1 ? this.errcolor1 : this.cellcolor);
 				if(graydisp){ g.fillStyle="gray";}
 				if(this.vnop(headers[1]+c,this.FILL)){
-					g.fillCircle(obj.px, obj.py, csize2);
+					g.fillCircle(px, py, csize2);
 				}
 			}
 			else{ this.vhide(headers[1]+c);}
@@ -431,10 +432,10 @@ Graphic:{
 
 		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], obj = bd.cross[c];
+			var c = clist[i];
 			if(mv.targetPoint[0]===c || mv.targetPoint[1]===c){
 				if(this.vnop(header+c,this.STROKE)){
-					g.strokeCircle(obj.px, obj.py, csize);
+					g.strokeCircle(this.cross[c].px, this.cross[c].py, csize);
 				}
 			}
 			else{ this.vhide(header+c);}

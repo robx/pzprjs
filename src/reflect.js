@@ -168,12 +168,12 @@ Graphic:{
 			g.fillStyle = this.gridcolor;
 			if(lflag && (qs1===3||qs1===4)&&(qs2===2||qs2===5)){
 				if(this.vnop(header+id,this.NONE)){
-					g.fillRect(bd.border[id].px, bd.border[id].py-this.bh, 1, this.ch);
+					g.fillRect(this.border[id].px, this.border[id].py-this.bh, 1, this.ch);
 				}
 			}
 			else if(!lflag && (qs1===2||qs1===3)&&(qs2===4||qs2===5)){
 				if(this.vnop(header+id,this.NONE)){
-					g.fillRect(bd.border[id].px-this.bw, bd.border[id].py, this.cw, 1);
+					g.fillRect(this.border[id].px-this.bw, this.border[id].py, this.cw, 1);
 				}
 			}
 			else{ this.vhide(header+id);}
@@ -193,10 +193,10 @@ Graphic:{
 
 				// Gridの真ん中＝cpx,cpy+0.5
 				if(this.vnop(headers[0]+c,this.NONE)){
-					g.fillRect(bd.cell[c].cpx+0.5-lm, bd.cell[c].cpy+0.5-ll/2,  lw, ll);
+					g.fillRect(this.cell[c].px+0.5-lm, this.cell[c].py+0.5-ll/2,  lw, ll);
 				}
 				if(this.vnop(headers[1]+c,this.NONE)){
-					g.fillRect(bd.cell[c].cpx+0.5-ll/2, bd.cell[c].cpy+0.5-lm,  ll, lw);
+					g.fillRect(this.cell[c].px+0.5-ll/2, this.cell[c].py+0.5-lm,  ll, lw);
 				}
 			}
 			else{ this.vhide([headers[0]+c, headers[1]+c]);}
@@ -205,7 +205,8 @@ Graphic:{
 	drawNumber1 : function(c){
 		var obj = bd.cell[c], key = ['cell',c].join('_');
 		if((obj.ques>=2 && obj.ques<=5) && obj.qnum>0){
-			this.dispnum(key, obj.ques, ""+obj.qnum, 0.45, "white", obj.cpx, obj.cpy);
+			var px = this.cell[c].px, py = this.cell[c].py;
+			this.dispnum(key, obj.ques, ""+obj.qnum, 0.45, "white", px, py);
 		}
 		else{ this.hideEL(key);}
 	},

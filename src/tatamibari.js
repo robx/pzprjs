@@ -114,14 +114,14 @@ Graphic:{
 			var qn = bd.cell[c].qnum;
 			if(qn===1||qn===2){
 				if(this.vnop(headers[0]+c,this.NONE)){
-					g.fillRect(bd.cell[c].cpx-lw/2, bd.cell[c].cpy-ll/2, lw, ll);
+					g.fillRect(this.cell[c].px-lw/2, this.cell[c].py-ll/2, lw, ll);
 				}
 			}
 			else{ this.vhide(headers[0]+c);}
 
 			if(qn===1||qn===3){
 				if(this.vnop(headers[1]+c,this.NONE)){
-					g.fillRect(bd.cell[c].cpx-ll/2, bd.cell[c].cpy-lw/2, ll, lw);
+					g.fillRect(this.cell[c].px-ll/2, this.cell[c].py-lw/2, ll, lw);
 				}
 			}
 			else{ this.vhide(headers[1]+c);}

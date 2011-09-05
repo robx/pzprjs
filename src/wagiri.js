@@ -229,10 +229,11 @@ Graphic:{
 	},
 
 	drawNumber1 : function(c){
-		var obj = bd.cell[c], num = obj.qnum, key='cell_'+c;
+		var num = bd.cell[c].qnum, key='cell_'+c;
 		if(num!==-1){
 			var text = (num!==-2 ? ({1:"輪",2:"切"})[num] : "?");
-			this.dispnum(key, 1, text, 0.70, this.fontcolor, obj.cpx, obj.cpy);
+			var px = this.cell[c].px, py = this.cell[c].py;
+			this.dispnum(key, 1, text, 0.70, this.fontcolor, px, py);
 		}
 		else{ this.hideEL(key);}
 	},

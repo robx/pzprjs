@@ -189,7 +189,8 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i], obj = bd.cell[c], key='cell_'+c;
 			if(obj.qnum===-1 && obj.anum>0){
-				this.dispnum(key, 1, ""+obj.anum, 0.8, this.fontAnscolor, obj.cpx, obj.cpy);
+				var px = this.cell[c].px, py = this.cell[c].py;
+				this.dispnum(key, 1, ""+obj.anum, 0.8, this.fontAnscolor, px, py);
 			}
 			/* 不要な文字はdrawArrowNumbersで消しているので、ここでは消さない */
 		}

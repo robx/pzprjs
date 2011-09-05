@@ -181,7 +181,7 @@ Graphic:{
 			if(!!color){
 				g.fillStyle = color;
 				var bx = bd.border[id].bx, by = bd.border[id].by;
-				var px = bd.border[id].px, py = bd.border[id].py;
+				var px = this.border[id].px, py = this.border[id].py;
 
 				if(bd.border[id].line==1){
 					if(this.vnop(headers[0]+id,this.FILL)){
@@ -227,7 +227,7 @@ Graphic:{
 				else                         { g.fillStyle = this.circledcolor;}
 
 				if(this.vnop(header+c,this.FILL)){
-					g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
+					g.shapeCircle(this.cell[c].px, this.cell[c].py, rsize);
 				}
 			}
 			else{ this.vhide([header+c]);}

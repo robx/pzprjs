@@ -184,7 +184,8 @@ Graphic:{
 			if(obj.bx===-1 && obj.by===-1){ continue;}
 			var color = (obj.error!==1 ? this.fontcolor : this.fontErrcolor);
 			var fontratio = (obj.qnum<10?0.8:0.7);
-			this.dispnum(key, 1, ""+obj.qnum, fontratio, color, obj.px+this.bw, obj.py+this.bh);
+			var px = this.excell[c].rpx + this.bw, py = this.excell[c].rpy + this.bh;
+			this.dispnum(key, 1, ""+obj.qnum, fontratio, color, px, py);
 		}
 	},
 

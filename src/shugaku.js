@@ -215,7 +215,7 @@ Graphic:{
 			if(isdraw){
 				g.fillStyle = color;
 				if(this.vnop(header+c,this.FILL)){
-					g.fillRect(bd.cell[c].px+1, bd.cell[c].py+1, this.cw-1, this.ch-1);
+					g.fillRect(this.cell[c].rpx+1, this.cell[c].rpy+1, this.cw-1, this.ch-1);
 				}
 			}
 			else{ this.vhide(header+c);}
@@ -232,6 +232,7 @@ Graphic:{
 
 		var header = "c_pillow_";
 		var clist = this.range.cells;
+		var rw = this.bw*0.7-1, rh = this.bh*0.7-1;
 		for(var i=0;i<clist.length;i++){
 			var c = clist[i], isdraw = (bd.cell[c].qans>=41 && bd.cell[c].qans<=45);
 			if(inputting){
@@ -247,8 +248,7 @@ Graphic:{
 				else                         { g.fillStyle = "white";}
 
 				if(this.vnop(header+c,this.FILL)){
-					var mgnw = this.cw*0.15, mgnh = this.ch*0.15;
-					g.shapeRect(bd.cell[c].px+mgnw+1, bd.cell[c].py+mgnh+1, this.cw-mgnw*2-1, this.ch-mgnh*2-1);
+					g.shapeRect(this.cell[c].px-rw, this.cell[c].py-rh, rw*2+1, rh*2+1);
 				}
 			}
 			else{ this.vhide([header+c]);}

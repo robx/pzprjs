@@ -135,6 +135,12 @@ pzprv3.createCommonClass('Graphic',
 		this.isdrawBC = false;
 		this.isdrawBD = false;
 
+		// 座標キャッシュ用
+		this.cell   = [];
+		this.cross  = [];
+		this.border = [];
+		this.excell = [];
+
 		this.setColors();
 	},
 	setColors : function(){ },
@@ -227,8 +233,7 @@ pzprv3.createCommonClass('Graphic',
 
 	onresize_process : function(){
 		this.resetVectorFunctions();
-		kc.resizepanel();
-		bd.setcoordAll(this.bw,this.bh);
+		this.setcoordAll();
 
 		this.lw = Math.max(this.cw/this.lwratio, 3);
 		this.lm = (this.lw-1)/2;
@@ -236,6 +241,48 @@ pzprv3.createCommonClass('Graphic',
 		// 再描画
 		this.flushCanvasAll();
 		this.paintAll();
+
+		kc.resizepanel();
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.setcoordAll() Cell, Cross, Border, EXCellオブジェクトの座標を計算する
+	//---------------------------------------------------------------------------
+	setcoordAll : function(){
+		var bw=this.bw, bh=this.bh;
+		{
+			for(var id=0;id<bd.cellmax;id++){
+				var obj = bd.cell[id];
+				this.cell[id] = {
+					rpx : (obj.bx-1)*bw, rpy : (obj.by-1)*bh,
+					px : obj.bx*bw, py : obj.by*bh
+				};
+			}
+		}
+		if(!!bd.iscross){
+			for(var id=0;id<bd.crossmax;id++){
+				var obj = bd.cross[id];
+				this.cross[id] = {
+					px : obj.bx*bw, py : obj.by*bh
+				};
+			}
+		}
+		if(!!bd.isborder){
+			for(var id=0;id<bd.bdmax;id++){
+				var obj = bd.border[id];
+				this.border[id] = {
+					px : obj.bx*bw, py : obj.by*bh
+				};
+			}
+		}
+		if(!!bd.isexcell){
+			for(var id=0;id<bd.excellmax;id++){
+				var obj = bd.excell[id];
+				this.excell[id] = {
+					rpx : (obj.bx-1)*bw, rpy : (obj.by-1)*bh
+				};
+			}
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -382,7 +429,7 @@ pzprv3.createCommonClass('Graphic',
 			if(!!color){
 				g.fillStyle = color;
 				if(this.vnop(header+c,this.FILL)){
-					g.fillRect(bd.cell[c].px, bd.cell[c].py, this.cw+1, this.ch+1);
+					g.fillRect(this.cell[c].rpx, this.cell[c].rpy, this.cw+1, this.ch+1);
 				}
 			}
 			else{ this.vhide(header+c); continue;}
@@ -420,7 +467,7 @@ pzprv3.createCommonClass('Graphic',
 			if(!!color){
 				g.fillStyle = color;
 				if(this.vnop(header+c,this.FILL)){
-					g.fillRect(bd.cell[c].px, bd.cell[c].py, this.cw, this.ch);
+					g.fillRect(this.cell[c].rpx, this.cell[c].rpy, this.cw, this.ch);
 				}
 			}
 			else{ this.vhide(header+c); continue;}
@@ -519,7 +566,7 @@ pzprv3.createCommonClass('Graphic',
 			if(!!color){
 				g.fillStyle = color;
 				if(this.vnop(header+c,this.FILL)){
-					g.fillRect(bd.excell[c].px+1, bd.excell[c].py+1, this.cw-1, this.ch-1);
+					g.fillRect(this.excell[c].rpx+1, this.excell[c].rpy+1, this.cw-1, this.ch-1);
 				}
 			}
 			else{ this.vhide(header+c); continue;}
@@ -545,8 +592,8 @@ pzprv3.createCommonClass('Graphic',
 			var c = clist[i];
 			if(bd.cell[c].qsub===1){
 				if(this.vnop(header+c,this.NONE)){
-					if(isrect){ g.fillRect(bd.cell[c].cpx-dsize, bd.cell[c].cpy-dsize, dsize*2, dsize*2);}
-					else      { g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, dsize);}
+					if(isrect){ g.fillRect(this.cell[c].px-dsize, this.cell[c].py-dsize, dsize*2, dsize*2);}
+					else      { g.fillCircle(this.cell[c].px, this.cell[c].py, dsize);}
 				}
 			}
 			else{ this.vhide(header+c);}
@@ -575,8 +622,8 @@ pzprv3.createCommonClass('Graphic',
 
 				// 矢印の描画 ここに来る場合、dirは1～4
 				if(this.vnop(headers[(dir-1)]+c,this.FILL)){
-					var px=bd.cell[c].cpx, ax=px;
-					var py=bd.cell[c].cpy, ay=py;
+					var px=this.cell[c].px, ax=px;
+					var py=this.cell[c].py, ay=py;
 					switch(dir){
 						case bd.UP: g.setOffsetLinePath(ax,ay, 0,-al, -tw,-tl, -aw,-tl, -aw, al,  aw, al, aw,-tl,  tw,-tl, true); break;
 						case bd.DN: g.setOffsetLinePath(ax,ay, 0, al, -tw, tl, -aw, tl, -aw,-al,  aw,-al, aw, tl,  tw, tl, true); break;
@@ -609,7 +656,7 @@ pzprv3.createCommonClass('Graphic',
 
 				if(bd.cell[c].qans==31){
 					if(this.vnop(headers[0]+c,this.STROKE)){
-						g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, 0,0, this.cw,this.ch, true);
+						g.setOffsetLinePath(this.cell[c].rpx,this.cell[c].rpy, 0,0, this.cw,this.ch, true);
 						g.stroke();
 					}
 				}
@@ -617,7 +664,7 @@ pzprv3.createCommonClass('Graphic',
 
 				if(bd.cell[c].qans==32){
 					if(this.vnop(headers[1]+c,this.STROKE)){
-						g.setOffsetLinePath(bd.cell[c].px,bd.cell[c].py, this.cw,0, 0,this.ch, true);
+						g.setOffsetLinePath(this.cell[c].rpx,this.cell[c].rpy, this.cw,0, 0,this.ch, true);
 						g.stroke();
 					}
 				}
@@ -642,12 +689,12 @@ pzprv3.createCommonClass('Graphic',
 		for(var i=0;i<clist.length;i++){ this.drawNumber1(clist[i]);}
 	},
 	drawNumber1 : function(c){
-		var obj = bd.cell[c], key = ['cell',c].join('_'), num = bd.getNum(c);
+		var key = ['cell',c].join('_'), num = bd.getNum(c);
 		if(num>=0 || (!this.hideHatena && num===-2)){
 			var text      = (num>=0 ? ""+num : "?");
 			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
 			var color     = this.getCellNumberColor(bd.cell[c]);
-			this.dispnum(key, 1, text, fontratio, color, obj.cpx, obj.cpy);
+			this.dispnum(key, 1, text, fontratio, color, this.cell[c].px, this.cell[c].py);
 		}
 		else{ this.hidenum(key);}
 	},
@@ -679,7 +726,7 @@ pzprv3.createCommonClass('Graphic',
 			var c=clist[i], num=bd.cell[c].qnum;
 
 			if(num>=0 || (!this.hideHatena && num===-2)){
-				var px=bd.cell[c].px, ax=px, py=bd.cell[c].py, ay=py, dir = bd.cell[c].qdir;
+				var rpx=this.cell[c].rpx, ax=rpx, rpy=this.cell[c].rpy, ay=rpy, dir = bd.cell[c].qdir;
 
 				if     (bd.cell[c].qans ===1){ g.fillStyle = this.fontBCellcolor;}
 				else if(bd.cell[c].error===1){ g.fillStyle = this.fontErrcolor;}
@@ -740,7 +787,7 @@ pzprv3.createCommonClass('Graphic',
 				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
 				var color = g.fillStyle;
 
-				var cpx = bd.cell[c].cpx, cpy = bd.cell[c].cpy;
+				var cpx = this.cell[c].px, cpy = this.cell[c].py;
 				if     (dir===bd.UP||dir===bd.DN){ fontratio *= 0.85; cpx-=this.cw*0.1;}
 				else if(dir===bd.LT||dir===bd.RT){ fontratio *= 0.85; cpy+=this.ch*0.1;}
 
@@ -760,7 +807,7 @@ pzprv3.createCommonClass('Graphic',
 			var obj = bd.cell[clist[i]], key = 'cell_'+clist[i];
 			if(obj.ques===-2||obj.qnum===-2){
 				var color = (obj.error===1 ? this.fontErrcolor : this.fontcolor);
-				this.dispnum(key, 1, "?", 0.8, color, obj.cpx, obj.cpy);
+				this.dispnum(key, 1, "?", 0.8, color, this.cell[clist[i]].px, this.cell[clist[i]].py);
 			}
 			else{ this.hidenum(key);}
 		}
@@ -785,14 +832,14 @@ pzprv3.createCommonClass('Graphic',
 				g.fillStyle = (obj.error===1 ? this.errcolor1 : "white");
 				g.strokeStyle = "black";
 				if(this.vnop(header+c,this.FILL_STROKE)){
-					g.shapeCircle(obj.px, obj.py, csize);
+					g.shapeCircle(this.cross[c].px, this.cross[c].py, csize);
 				}
 			}
 			else{ this.vhide([header+c]);}
 
 			// 数字の描画
 			if(obj.qnum>=0){
-				this.dispnum(key, 1, ""+obj.qnum, 0.6, this.fontcolor, obj.px, obj.py);
+				this.dispnum(key, 1, ""+obj.qnum, 0.6, this.fontcolor, this.cross[c].px, this.cross[c].py);
 			}
 			else{ this.hidenum(key);}
 		}
@@ -809,7 +856,7 @@ pzprv3.createCommonClass('Graphic',
 			if(bd.cross[c].qnum===1){
 				g.fillStyle = (bd.cross[c].error===1 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(header+c,this.FILL)){
-					g.fillCircle(bd.cross[c].px, bd.cross[c].py, csize);
+					g.fillCircle(this.cross[c].px, this.cross[c].py, csize);
 				}
 			}
 			else{ this.vhide(header+c);}
@@ -837,7 +884,7 @@ pzprv3.createCommonClass('Graphic',
 				if(this.vnop(header+id,this.FILL)){
 					var lw = this.lw + this.addlw, lm = this.lm;
 					var bx = bd.border[id].bx, by = bd.border[id].by;
-					var px = bd.border[id].px, py = bd.border[id].py;
+					var px = this.border[id].px, py = this.border[id].py;
 					if     (by&1){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
 					else if(bx&1){ g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
 				}
@@ -918,8 +965,8 @@ pzprv3.createCommonClass('Graphic',
 			var id = idlist[i];
 			if(bd.border[id].qsub===1){
 				if(this.vnop(header+id,this.NONE)){
-					if     (bd.border[id].bx&1){ g.fillRect(bd.border[id].px, bd.border[id].py-this.bh+m, 1, this.ch-2*m);}
-					else if(bd.border[id].by&1){ g.fillRect(bd.border[id].px-this.bw+m, bd.border[id].py, this.cw-2*m, 1);}
+					if     (bd.border[id].bx&1){ g.fillRect(this.border[id].px, this.border[id].py-this.bh+m, 1, this.ch-2*m);}
+					else if(bd.border[id].by&1){ g.fillRect(this.border[id].px-this.bw+m, this.border[id].py, this.cw-2*m, 1);}
 				}
 			}
 			else{ this.vhide(header+id);}
@@ -944,7 +991,7 @@ pzprv3.createCommonClass('Graphic',
 			if(bd.cell[c].qans!==1){ this.vhide(vids); continue;}
 
 			var bx = bd.cell[c].bx, by = bd.cell[c].by;
-			var px = bd.cell[c].px, py = bd.cell[c].py;
+			var px = this.cell[c].rpx, py = this.cell[c].rpy;
 			var px1 = px+lm+1, px2 = px+cw-lm-1;
 			var py1 = py+lm+1, py2 = py+ch-lm-1;
 
@@ -1008,7 +1055,7 @@ pzprv3.createCommonClass('Graphic',
 				g.fillStyle = color;
 				if(this.vnop(header+id,this.FILL)){
 					var bx = bd.border[id].bx, by = bd.border[id].by;
-					var px = bd.border[id].px, py = bd.border[id].py;
+					var px = this.border[id].px, py = this.border[id].py;
 					if     (bd.lines.isCenterLine===!!(bx&1)){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
 					else if(bd.lines.isCenterLine===!!(by&1)){ g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
 				}
@@ -1061,7 +1108,7 @@ pzprv3.createCommonClass('Graphic',
 			if(g.use.canvas){
 				if(flag===0 || flag===2){
 					if(this.vnop(headers[0]+id,this.NONE)){
-						g.fillRect(bd.border[id].px-size, bd.border[id].py-size, 2*size+1, 2*size+1);
+						g.fillRect(this.border[id].px-size, this.border[id].py-size, 2*size+1, 2*size+1);
 					}
 				}
 				else{ this.vhide(headers[0]+id);}
@@ -1069,7 +1116,7 @@ pzprv3.createCommonClass('Graphic',
 
 			if(flag===0 || flag===1){
 				if(this.vnop(headers[1]+id,this.NONE)){
-					g.strokeCross(bd.border[id].px, bd.border[id].py, size-1);
+					g.strokeCross(this.border[id].px, this.border[id].py, size-1);
 				}
 			}
 			else{ this.vhide(headers[1]+id);}
@@ -1089,7 +1136,7 @@ pzprv3.createCommonClass('Graphic',
 
 			g.fillStyle = this.cellcolor;
 			if(this.vnop(header+c,this.NONE)){
-				g.fillCircle(bd.cross[c].px, bd.cross[c].py, (this.lw*1.2)/2);
+				g.fillCircle(this.cross[c].px, this.cross[c].py, (this.lw*1.2)/2);
 			}
 		}
 	},
@@ -1118,7 +1165,7 @@ pzprv3.createCommonClass('Graphic',
 					break;
 				}
 
-				this.drawTriangle1(bd.cell[c].px,bd.cell[c].py,num,headers[num-2]+c);
+				this.drawTriangle1(this.cell[c].rpx,this.cell[c].rpy,num,headers[num-2]+c);
 			}
 		}
 	},
@@ -1155,13 +1202,13 @@ pzprv3.createCommonClass('Graphic',
 			switch(bd.cell[c].qsub){
 			case 1:
 				if(this.vnop(headers[0]+c,this.NONE)){
-					g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
+					g.strokeCircle(this.cell[c].px, this.cell[c].py, rsize);
 				}
 				this.vhide(headers[1]+c);
 				break;
 			case 2:
 				if(this.vnop(headers[1]+c,this.NONE)){
-					g.strokeCross(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
+					g.strokeCross(this.cell[c].px, this.cell[c].py, rsize);
 				}
 				this.vhide(headers[0]+c);
 				break;
@@ -1188,7 +1235,7 @@ pzprv3.createCommonClass('Graphic',
 				g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.cellcolor);
 				g.fillStyle   = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
 				if(this.vnop(headers[0]+c,this.FILL_STROKE)){
-					g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize1);
+					g.shapeCircle(this.cell[c].px, this.cell[c].py, rsize1);
 				}
 			}
 			else{ this.vhide(headers[0]+c);}
@@ -1196,7 +1243,7 @@ pzprv3.createCommonClass('Graphic',
 			if(bd.cell[c].qnum===2){
 				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(headers[1]+c,this.FILL)){
-					g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize2);
+					g.fillCircle(this.cell[c].px, this.cell[c].py, rsize2);
 				}
 			}
 			else{ this.vhide(headers[1]+c);}
@@ -1218,12 +1265,12 @@ pzprv3.createCommonClass('Graphic',
 			if(bd.cell[c].qnum!==-1){
 				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : this.circledcolor);
 				if(this.vnop(headers[1]+c,this.FILL)){
-					g.fillCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize2);
+					g.fillCircle(this.cell[c].px, this.cell[c].py, rsize2);
 				}
 
 				g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(headers[0]+c,this.STROKE)){
-					g.strokeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
+					g.strokeCircle(this.cell[c].px, this.cell[c].py, rsize);
 				}
 			}
 			else{ this.vhide([headers[0]+c, headers[1]+c]);}
@@ -1236,7 +1283,7 @@ pzprv3.createCommonClass('Graphic',
 	drawLineParts : function(){
 		var g = this.vinc('cell_lineparts', 'crispEdges');
 
-		var lw  = this.lw, lm = this.lm;
+		var lw  = this.lw, lm = this.lm, bw = this.bw, bh = this.bh;
 		var hhp = this.bh+this.lm, hwp = this.bw+this.lm;
 
 		var headers = ["c_lp1_", "c_lp2_", "c_lp3_", "c_lp4_"];
@@ -1246,15 +1293,14 @@ pzprv3.createCommonClass('Graphic',
 
 			this.vhide([headers[0]+c,headers[1]+c,headers[2]+c,headers[3]+c]);
 			if(qu>=11 && qu<=17){
-				var px  = bd.cell[c].px,  py  = bd.cell[c].py;
-				var cpx = bd.cell[c].cpx, cpy = bd.cell[c].cpy;
+				var px = this.cell[c].px, py = this.cell[c].py;
 				g.fillStyle = this.borderQuescolor;
 
 				var flag  = {11:15, 12:3, 13:12, 14:9, 15:5, 16:6, 17:10}[qu];
-				if(flag&1){ if(this.vnop(headers[0]+c,this.NONE)){ g.fillRect(cpx-lm, py    , lw, hhp);} }
-				if(flag&2){ if(this.vnop(headers[1]+c,this.NONE)){ g.fillRect(cpx-lm, cpy-lm, lw, hhp);} }
-				if(flag&4){ if(this.vnop(headers[2]+c,this.NONE)){ g.fillRect(px    , cpy-lm, hwp, lw);} }
-				if(flag&8){ if(this.vnop(headers[3]+c,this.NONE)){ g.fillRect(cpx-lm, cpy-lm, hwp, lw);} }
+				if(flag&1){ if(this.vnop(headers[0]+c,this.NONE)){ g.fillRect(px-lm, py-bh, lw, hhp);} }
+				if(flag&2){ if(this.vnop(headers[1]+c,this.NONE)){ g.fillRect(px-lm, py-lm, lw, hhp);} }
+				if(flag&4){ if(this.vnop(headers[2]+c,this.NONE)){ g.fillRect(px-bw, py-lm, hwp, lw);} }
+				if(flag&8){ if(this.vnop(headers[3]+c,this.NONE)){ g.fillRect(px-lm, py-lm, hwp, lw);} }
 			}
 		}
 	},
@@ -1279,7 +1325,7 @@ pzprv3.createCommonClass('Graphic',
 		g.lineWidth = 1;
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], px = bd.cell[c].px, py = bd.cell[c].py;
+			var c = clist[i], px = this.cell[c].rpx, py = this.cell[c].rpy;
 
 			if(bd.cell[c].ques===51){
 				if(this.vnop(header+c,this.NONE)){
@@ -1297,7 +1343,7 @@ pzprv3.createCommonClass('Graphic',
 		g.lineWidth = 1;
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
-			var c = exlist[i], px = bd.excell[c].px, py = bd.excell[c].py;
+			var c = exlist[i], px = this.excell[c].rpx, py = this.excell[c].rpy;
 			if(this.vnop(header+c,this.NONE)){
 				g.strokeLine(px+1,py+1, px+this.cw,py+this.ch);
 			}
@@ -1310,7 +1356,7 @@ pzprv3.createCommonClass('Graphic',
 		var headers = ["ex_bdx_", "ex_bdy_"];
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
-			var c = exlist[i], px = bd.excell[c].px, py = bd.excell[c].py;
+			var c = exlist[i], px = this.excell[c].rpx, py = this.excell[c].rpy;
 
 			if(bd.excell[c].by===-1 && bd.excell[c].bx<bd.maxbx){
 				if(this.vnop(headers[0]+c,this.NONE)){
@@ -1361,8 +1407,9 @@ pzprv3.createCommonClass('Graphic',
 				if(val!==-1 && guard!==-1 && nb!==null && bd.cell[nb].ques!==51){
 					var color = (obj.error===1?this.fontErrcolor:this.fontcolor);
 					var text = (val>=0?""+val:"");
+					var px = this[family][c].rpx + this.bw, py = this[family][c].rpy + this.bh;
 
-					this.dispnum(keys[i], type, text, 0.45, color, obj.px+this.bw, obj.py+this.bh);
+					this.dispnum(keys[i], type, text, 0.45, color, px, py);
 				}
 				else{ this.hidenum(keys[i]);}
 			}
@@ -1625,7 +1672,7 @@ pzprv3.createCommonClass('Graphic',
 			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var c = clist[i], bx = bd.cell[c].bx, by = bd.cell[c].by;
-				var px = bd.cell[c].px, py = bd.cell[c].py;
+				var px = this.cell[c].rpx, py = this.cell[c].rpy;
 				if(bx===1){
 					if(bd.cell[c].ques!==51){
 						if(this.vnop(headers[0]+by,this.NONE)){
@@ -1877,8 +1924,8 @@ pzprv3.createCommonClass('Graphic',
 				case 4: case 5:            py+=-this.bh+1; break;
 				case 2: case 3: py-=hgt;   py+= this.bh+2; break;
 			}
-			el.style.left = (pc.pageX + px) + 'px';
-			el.style.top  = (pc.pageY + py) + 'px';
+			el.style.left = (this.pageX + px) + 'px';
+			el.style.top  = (this.pageY + py) + 'px';
 		}
 		else{
 			var g = this.currentContext;

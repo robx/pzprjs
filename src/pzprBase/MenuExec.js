@@ -263,7 +263,6 @@ pzprv3.createCommonClass('MenuExec',
 			menu.alertStr('画像の出力に失敗しました..','Fail to Output the Image..');
 		}
 		this.owner.canvas = canvas_sv;
-		bd.setcoordAll(pc.bw,pc.bh); // 元に戻す
 	},
 
 	submitimage : function(url){
